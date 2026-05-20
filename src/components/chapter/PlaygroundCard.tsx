@@ -70,6 +70,70 @@ const LANG_LABELS: Record<string, string> = {
   sql: "SQL", lua: "Lua", dart: "Dart", r: "R", scala: "Scala",
 };
 
+const PREVIEW_SAFETY_SCRIPT = `
+<script>
+(() => {
+  function normalizeHref(rawHref) {
+    if (!rawHref || rawHref.startsWith("#")) return null;
+    if (/^(mailto:|tel:|https?:\\/\\/)/i.test(rawHref)) return rawHref;
+    if (rawHref.startsWith("//")) return window.location.protocol + rawHref;
+    if (/^[\\w.-]+\\.[a-z]{2,}(\\/.*)?$/i.test(rawHref)) return "https://" + rawHref;
+    return new URL(rawHref, window.location.href).toString();
+  }
+
+  document.addEventListener("click", (event) => {
+    const anchor = event.target?.closest?.("a[href]");
+    if (!anchor) return;
+
+    const href = normalizeHref(anchor.getAttribute("href"));
+    if (!href) {
+      event.preventDefault();
+      return;
+    }
+
+    event.preventDefault();
+    window.open(href, "_blank", "noopener,noreferrer");
+  });
+})();
+</script>`;
+
+function injectIntoHead(html: string, content: string) {
+  if (/<head[^>]*>/i.test(html)) {
+    return html.replace(/<head([^>]*)>/i, `<head$1>${content}`);
+  }
+  if (/<html[^>]*>/i.test(html)) {
+    return html.replace(/<html([^>]*)>/i, `<html$1><head>${content}</head>`);
+  }
+  return `<!DOCTYPE html><html><head>${content}</head><body>${html}</body></html>`;
+}
+
+function injectBeforeBodyEnd(html: string, content: string) {
+  if (/<\/body>/i.test(html)) {
+    return html.replace(/<\/body>/i, `${content}</body>`);
+  }
+  return `${html}${content}`;
+}
+
+function buildHtmlPreview(userCode: string) {
+  const trimmed = userCode.trim();
+  const fullHtml = trimmed.includes("<html") || trimmed.includes("<!DOCTYPE")
+    ? trimmed
+    : `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body>${trimmed}</body></html>`;
+  const withBase = injectIntoHead(fullHtml, '<meta charset="utf-8"><base target="_blank">');
+  return injectBeforeBodyEnd(withBase, PREVIEW_SAFETY_SCRIPT);
+}
+
+function buildCssPreview(css: string) {
+  return buildHtmlPreview(`<style>${css}</style><div class="demo">
+  <h1>標題 H1</h1>
+  <h2>次標題 H2</h2>
+  <p>段落、看 CSS 怎麼套。<a href="#">連結</a></p>
+  <button>按鈕</button>
+  <ul><li>項目 A</li><li>項目 B</li></ul>
+  <input placeholder="輸入" />
+</div>`);
+}
+
 export function PlaygroundCard({
   playground,
   lessonId,
@@ -119,24 +183,9 @@ export function PlaygroundCard({
     setOutput("");
 
     if (lang === "html") {
-      // 確保 user code 包完整 HTML、所有 <a> target=_blank、避免在 iframe 內 navigate
-      const userCode = code.trim();
-      const wrapped = userCode.includes("<html") || userCode.includes("<!DOCTYPE")
-        ? userCode
-        : `<!DOCTYPE html><html><head><meta charset="utf-8"><base target="_blank"></head><body>${userCode}</body></html>`;
-      // base target="_blank" 讓所有 <a> 點擊在新分頁開、避免被 sandbox 卡住
-      // 若 user code 已含完整 HTML、自己負責
-      if (iframeRef.current) iframeRef.current.srcdoc = wrapped;
+      if (iframeRef.current) iframeRef.current.srcdoc = buildHtmlPreview(code);
     } else if (lang === "css") {
-      const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><base target="_blank"><style>${code}</style></head><body><div class="demo">
-  <h1>標題 H1</h1>
-  <h2>次標題 H2</h2>
-  <p>段落、看 CSS 怎麼套。<a href="#">連結</a></p>
-  <button>按鈕</button>
-  <ul><li>項目 A</li><li>項目 B</li></ul>
-  <input placeholder="輸入" />
-</div></body></html>`;
-      if (iframeRef.current) iframeRef.current.srcdoc = html;
+      if (iframeRef.current) iframeRef.current.srcdoc = buildCssPreview(code);
     } else if (lang === "js" || lang === "javascript") {
       try {
         const logs: string[] = [];
@@ -344,7 +393,7 @@ export function PlaygroundCard({
             ref={iframeRef}
             title="preview"
             className="bg-white w-full h-full block"
-            sandbox="allow-scripts allow-same-origin allow-forms allow-modals"
+            sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox"
             srcDoc='<!DOCTYPE html><html><body style="font-family:sans-serif;color:#888;padding:20px;text-align:center;"><p>👈 編輯 code、點 ▶ 執行</p></body></html>'
             style={{
               minHeight: fullscreen ? undefined : (playground.height ?? 320),
