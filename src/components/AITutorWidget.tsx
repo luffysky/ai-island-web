@@ -53,6 +53,7 @@ export function AITutorWidget({
   const [quotaUsed, setQuotaUsed] = useState<{ used: number; limit: number } | null>(null);
   const [showSettings, setShowSettings] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [showModelMenu, setShowModelMenu] = useState(false);
   const [history, setHistory] = useState<Array<{ id: string; title: string; updated_at: string }>>([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -277,7 +278,13 @@ export function AITutorWidget({
               <button onClick={newChat} className="p-1.5 hover:bg-[var(--color-bg-elevated)] rounded" title="新對話">
                 <Plus size={16} />
               </button>
-              <button onClick={() => setShowSettings(!showSettings)} className={`p-1.5 rounded ${showSettings ? "bg-[var(--color-bg-elevated)]" : "hover:bg-[var(--color-bg-elevated)]"}`}>
+              <button
+                onClick={() => {
+                  setShowSettings(!showSettings);
+                  setShowModelMenu(false);
+                }}
+                className={`p-1.5 rounded ${showSettings ? "bg-[var(--color-bg-elevated)]" : "hover:bg-[var(--color-bg-elevated)]"}`}
+              >
                 <SettingsIcon size={16} />
               </button>
               <button onClick={() => setOpen(false)} className="p-1.5 hover:bg-[var(--color-bg-elevated)] rounded">
@@ -326,20 +333,44 @@ export function AITutorWidget({
 
           {/* Settings panel */}
           {showSettings && (
-            <div className="p-3 border-b border-[var(--color-border)] bg-[var(--color-bg)] space-y-3 text-sm">
-              <div>
+            <div className="relative z-20 p-3 border-b border-[var(--color-border)] bg-[var(--color-bg)] space-y-3 text-sm overflow-visible">
+              <div className="relative z-30">
                 <label className="text-xs text-[var(--color-fg-muted)] mb-1 block">AI 模型</label>
-                <select
-                  value={selectedModelId}
-                  onChange={(e) => setSelectedModelId(e.target.value)}
-                  className="w-full bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded p-2 text-sm"
+                <button
+                  type="button"
+                  onClick={() => setShowModelMenu(!showModelMenu)}
+                  className="w-full flex items-center justify-between gap-2 bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded p-2 text-sm text-left"
                 >
-                  {models.map((m) => (
-                    <option key={m.id} value={m.id}>
-                      {m.display_name} ({m.provider})
-                    </option>
-                  ))}
-                </select>
+                  <span className="truncate">
+                    {selectedModel ? `${selectedModel.display_name} (${selectedModel.provider})` : "選擇 AI 模型"}
+                  </span>
+                  <ChevronDown size={14} className={`shrink-0 transition ${showModelMenu ? "rotate-180" : ""}`} />
+                </button>
+                {showModelMenu && (
+                  <ul className="absolute left-0 right-0 top-[calc(100%+4px)] z-[80] max-h-56 overflow-y-auto rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-card)] shadow-2xl">
+                    {models.length === 0 ? (
+                      <li className="px-3 py-2 text-xs text-[var(--color-fg-muted)]">沒有可用模型</li>
+                    ) : (
+                      models.map((m) => (
+                        <li key={m.id}>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedModelId(m.id);
+                              setShowModelMenu(false);
+                            }}
+                            className={`w-full px-3 py-2 text-left text-sm hover:bg-[var(--color-bg-elevated)] ${
+                              selectedModelId === m.id ? "text-[var(--color-accent)]" : ""
+                            }`}
+                          >
+                            <div className="font-medium">{m.display_name}</div>
+                            <div className="text-xs text-[var(--color-fg-muted)]">{m.provider} / {m.model_name}</div>
+                          </button>
+                        </li>
+                      ))
+                    )}
+                  </ul>
+                )}
                 {selectedModel?.description && (
                   <p className="text-xs text-[var(--color-fg-muted)] mt-1">{selectedModel.description}</p>
                 )}
