@@ -11,7 +11,7 @@ export default async function ModelsAdminPage() {
 
   const { data: keys } = await supabase
     .from("ai_api_keys")
-    .select("provider, enabled, monthly_budget_usd, used_this_month_usd, updated_at");
+    .select("id, provider, enabled, monthly_budget_usd, used_this_month_usd, metadata, updated_at");
 
   if (error?.message?.includes("does not exist")) {
     return (
