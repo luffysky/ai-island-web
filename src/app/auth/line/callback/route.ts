@@ -12,26 +12,24 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 //    - NEXT_PUBLIC_SITE_URL（production domain、必設）
 
 function getOrigin(req: NextRequest): string {
-  // 1. NEXT_PUBLIC_SITE_URL 優先（production 必設、排除 localhost）
-  const env = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "");
-  if (env && !env.includes("localhost")) {
-    return env;
-  }
-
-  // 2. forwarded headers（反向代理）
+  // LINE token exchange 的 redirect_uri 必須和前端送去 LINE 的 window.location.origin 完全一致。
+  // 所以這裡優先信任實際 request host，再 fallback 到 env。
   const fwdHost = req.headers.get("x-forwarded-host");
   const fwdProto = req.headers.get("x-forwarded-proto") || "https";
   if (fwdHost && !fwdHost.includes("localhost")) {
     return `${fwdProto}://${fwdHost}`;
   }
 
-  // 3. host header
   const host = req.headers.get("host");
   if (host && !host.includes("localhost")) {
     return `https://${host}`;
   }
 
-  // 4. fallback：req.url（最不可信）
+  const env = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "");
+  if (env && !env.includes("localhost")) {
+    return env;
+  }
+
   return new URL(req.url).origin;
 }
 
@@ -189,9 +187,7 @@ export async function GET(req: NextRequest) {
         body: JSON.stringify({
           type: "magiclink",
           email: lineEmail,
-          options: {
-            redirect_to: `${origin}/auth/callback`,
-          },
+          redirect_to: `${origin}/auth/callback`,
         }),
       }
     );

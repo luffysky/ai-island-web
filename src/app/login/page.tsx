@@ -1,7 +1,19 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import Link from "next/link";
+
+const AUTH_ERROR_LABELS: Record<string, string> = {
+  incomplete_token: "LINE 登入回傳的 session 不完整，請重新登入一次。",
+  line_admin: "LINE 登入後台連線失敗，請檢查 Supabase service role 設定。",
+  line_create_user: "LINE 登入建立會員失敗，請稍後再試或改用 Email 登入。",
+  line_not_configured: "LINE 登入尚未設定完成，請檢查 LINE channel 環境變數。",
+  line_profile: "LINE 登入取得個人資料失敗，請重新授權一次。",
+  line_token: "LINE token 交換失敗，請檢查 LINE Callback URL 是否和目前網域完全一致。",
+  no_code: "LINE 沒有回傳授權碼，請重新登入一次。",
+  no_token: "LINE 登入沒有取得 access token，請重新登入一次。",
+  session_failed: "登入成功但寫入網站 session 失敗，請重新登入一次。",
+};
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -9,6 +21,13 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const supabase = createSupabaseBrowser();
+
+  useEffect(() => {
+    const code = new URLSearchParams(window.location.search).get("error");
+    if (code) {
+      setError(AUTH_ERROR_LABELS[code] ?? `登入失敗：${code}`);
+    }
+  }, []);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
