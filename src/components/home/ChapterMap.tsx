@@ -10,13 +10,14 @@ interface Props {
 export function ChapterMap({ chapters }: Props) {
   const byStage: Record<number, any[]> = {};
   chapters.forEach(c => {
-    if (!byStage[c.stage]) byStage[c.stage] = [];
-    byStage[c.stage].push(c);
+    const stageKey = c.stage === "appendix" ? 7 : Number(c.stage);
+    if (!byStage[stageKey]) byStage[stageKey] = [];
+    byStage[stageKey].push(c);
   });
 
   return (
     <div className="space-y-12">
-      {[1, 2, 3, 4, 5, 6].map((stage) => {
+      {[1, 2, 3, 4, 5, 6, 7].map((stage) => {
         const cfg = STAGE_COLORS[stage];
         const list = byStage[stage] ?? [];
         return (
@@ -54,10 +55,17 @@ export function ChapterMap({ chapters }: Props) {
                       <span>{DIFFICULTY_LABELS[ch.difficulty]}</span>
                       <span>{ch.lessonCount} lessons</span>
                     </div>
-                    <div className="mt-2 text-xs flex items-center gap-1 text-[var(--color-fg-muted)]">
-                      <span>{ch.boss.emoji}</span>
-                      <span className="truncate">{ch.boss.name}</span>
-                    </div>
+                    {ch.boss ? (
+                      <div className="mt-2 text-xs flex items-center gap-1 text-[var(--color-fg-muted)]">
+                        <span>{ch.boss.emoji}</span>
+                        <span className="truncate">{ch.boss.name}</span>
+                      </div>
+                    ) : (
+                      <div className="mt-2 text-xs flex items-center gap-1 text-[var(--color-fg-muted)]">
+                        <span>📖</span>
+                        <span className="truncate">速查附錄</span>
+                      </div>
+                    )}
                   </Link>
                 </motion.div>
               ))}

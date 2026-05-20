@@ -182,7 +182,7 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
             <ChevronLeft size={16} /> Ch {chapter.id - 1}
           </Link>
         ) : <div />}
-        {chapter.id < 60 && (
+        {chapter.id < 70 && (
           <Link href={`/chapters/${chapter.id + 1}`} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--color-bg-card)] border border-[var(--color-border)] hover:border-[var(--color-accent)]">
             Ch {chapter.id + 1} <ChevronRight size={16} />
           </Link>

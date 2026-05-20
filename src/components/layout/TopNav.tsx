@@ -70,6 +70,7 @@ export function TopNav() {
 
         <div className="flex items-center gap-4 text-sm">
           <Link href="/chapters" className="hover:text-[var(--color-accent)]">章節</Link>
+          <Link href="/courses" className="hover:text-[var(--color-accent)]">副本</Link>
           <Link href="/leaderboard" className="hover:text-[var(--color-accent)]">排行榜</Link>
           <Link href="/career" className="hover:text-[var(--color-accent)]">職業路線</Link>
 
