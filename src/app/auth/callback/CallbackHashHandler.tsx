@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 
 /**
@@ -9,9 +10,46 @@ import { createSupabaseBrowser } from "@/lib/supabase-browser";
  */
 export function CallbackHashHandler() {
   const [status, setStatus] = useState<string>("讀取 token...");
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     (async () => {
+      const supabase = createSupabaseBrowser();
+      const error = searchParams.get("error");
+      const errorDescription = searchParams.get("error_description");
+      const code = searchParams.get("code");
+
+      if (error) {
+        setStatus(errorDescription || error);
+        setTimeout(() => (window.location.href = `/login?error=${encodeURIComponent(error)}`), 2000);
+        return;
+      }
+
+      if (code) {
+        setStatus("交換登入 session...");
+        const { error } = await supabase.auth.exchangeCodeForSession(code);
+
+        if (error) {
+          console.error("[Callback] exchangeCodeForSession FAILED:", error);
+          setStatus("登入失敗：" + error.message);
+          return;
+        }
+
+        setStatus("建立會員資料...");
+        const res = await fetch("/api/auth/ensure-profile", { method: "POST" });
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          setStatus("建立會員資料失敗：" + (data.error || res.statusText));
+          return;
+        }
+
+        setStatus("登入成功、跳轉中...");
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 300);
+        return;
+      }
+
       const hash = window.location.hash;
       console.log("[Callback] hash =", hash.slice(0, 80));
 
@@ -34,7 +72,6 @@ export function CallbackHashHandler() {
       setStatus("寫入 session...");
       console.log("[Callback] calling setSession");
 
-      const supabase = createSupabaseBrowser();
       const { data, error } = await supabase.auth.setSession({ access_token, refresh_token });
 
       if (error) {
@@ -46,30 +83,14 @@ export function CallbackHashHandler() {
       console.log("[Callback] setSession OK, user =", data.user?.email);
       setStatus("登入成功、跳轉中...");
 
-      // 確保 profile 存在（client-side 寫）
+      // 確保 profile 存在（server-side service role 寫，避免 profiles RLS 擋 insert）
       if (data.user) {
-        try {
-          const { data: existing } = await supabase
-            .from("profiles")
-            .select("id")
-            .eq("id", data.user.id)
-            .maybeSingle();
-
-          if (!existing) {
-            const username = (data.user.email?.split("@")[0] ?? `user${Date.now()}`).slice(0, 30);
-            await supabase.from("profiles").insert({
-              id: data.user.id,
-              username,
-              display_name: username,
-              avatar_url: data.user.user_metadata?.avatar_url ?? null,
-              xp: 0,
-              z_coin: 100,
-              hearts: 5,
-            });
-            console.log("[Callback] profile created");
-          }
-        } catch (e) {
-          console.error("[Callback] profile check failed:", e);
+        const res = await fetch("/api/auth/ensure-profile", { method: "POST" });
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}));
+          console.error("[Callback] ensure profile failed:", body);
+          setStatus("建立會員資料失敗：" + (body.error || res.statusText));
+          return;
         }
       }
 
@@ -78,7 +99,7 @@ export function CallbackHashHandler() {
         window.location.href = "/";
       }, 300);
     })();
-  }, []);
+  }, [searchParams]);
 
   return (
     <div className="text-sm text-[var(--color-fg-muted)]">

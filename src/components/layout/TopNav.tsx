@@ -10,6 +10,16 @@ export function TopNav() {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const supabase = createSupabaseBrowser();
+  const displayProfile = profile ?? {
+    username: user?.email?.split("@")[0] ?? "AI 島民",
+    display_name: user?.user_metadata?.display_name || user?.user_metadata?.full_name || user?.user_metadata?.name,
+    avatar_url: user?.user_metadata?.avatar_url || user?.user_metadata?.picture,
+    streak_days: 0,
+    z_coin: 0,
+    hearts: 5,
+    level: 1,
+    role: "member",
+  };
 
   useEffect(() => {
     (async () => {
@@ -63,20 +73,20 @@ export function TopNav() {
           <Link href="/leaderboard" className="hover:text-[var(--color-accent)]">排行榜</Link>
           <Link href="/career" className="hover:text-[var(--color-accent)]">職業路線</Link>
 
-          {user && profile ? (
+          {user ? (
             <>
               <div className="hidden md:flex items-center gap-3 text-xs">
                 <span className="flex items-center gap-1" title="連勝">
                   <Flame size={14} className="text-orange-400" />
-                  {profile.streak_days ?? 0}
+                  {displayProfile.streak_days ?? 0}
                 </span>
                 <span className="flex items-center gap-1" title="Z-coin">
                   <Coins size={14} className="text-yellow-400" />
-                  {profile.z_coin ?? 0}
+                  {displayProfile.z_coin ?? 0}
                 </span>
                 <span className="flex items-center gap-1" title="生命">
                   <Heart size={14} className="text-red-400" />
-                  {profile.hearts ?? 5}
+                  {displayProfile.hearts ?? 5}
                 </span>
               </div>
 
@@ -86,9 +96,9 @@ export function TopNav() {
                   className="flex items-center gap-2 px-3 py-1.5 bg-[var(--color-bg-card)] rounded-lg hover:bg-[var(--color-border)] transition"
                 >
                   <span className="text-xs px-1.5 py-0.5 rounded bg-gradient-to-r from-[var(--color-accent)] to-[var(--color-accent-2)] text-black font-bold">
-                    Lv {profile.level ?? 1}
+                    Lv {displayProfile.level ?? 1}
                   </span>
-                  <span className="hidden md:inline">{profile.display_name || profile.username}</span>
+                  <span className="hidden md:inline">{displayProfile.display_name || displayProfile.username}</span>
                   <ChevronDown size={14} className={`transition ${open ? 'rotate-180' : ''}`} />
                 </button>
 
@@ -97,15 +107,15 @@ export function TopNav() {
                     {/* 顯示頭像 + 資訊 */}
                     <div className="px-4 py-3 border-b border-[var(--color-border)]">
                       <div className="flex items-center gap-3">
-                        {profile.avatar_url ? (
-                          <img src={profile.avatar_url} alt="" className="w-10 h-10 rounded-full" />
+                        {displayProfile.avatar_url ? (
+                          <img src={displayProfile.avatar_url} alt="" className="w-10 h-10 rounded-full" />
                         ) : (
                           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-accent-2)] flex items-center justify-center font-bold text-black">
-                            {(profile.display_name || profile.username || "U")[0].toUpperCase()}
+                            {(displayProfile.display_name || displayProfile.username || "U")[0].toUpperCase()}
                           </div>
                         )}
                         <div className="flex-1 min-w-0">
-                          <div className="font-semibold truncate">{profile.display_name || profile.username}</div>
+                          <div className="font-semibold truncate">{displayProfile.display_name || displayProfile.username}</div>
                           <div className="text-xs text-[var(--color-fg-muted)] truncate">{user.email}</div>
                         </div>
                       </div>
@@ -146,7 +156,7 @@ export function TopNav() {
                       <span>設定</span>
                     </Link>
 
-                    {profile.role === "admin" && (
+                    {displayProfile.role === "admin" && (
                       <Link
                         href={`/${process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2"}/admin` as any}
                         className="flex items-center gap-3 px-4 py-2 hover:bg-[var(--color-bg-elevated)] transition text-[var(--color-warning)]"

@@ -221,6 +221,7 @@ ALTER TABLE public.notes ENABLE ROW LEVEL SECURITY;
 
 -- profiles：自己讀寫、其他人讀（公開資料）
 CREATE POLICY "profiles_select_all" ON public.profiles FOR SELECT USING (TRUE);
+CREATE POLICY "profiles_insert_own" ON public.profiles FOR INSERT WITH CHECK (auth.uid() = id);
 CREATE POLICY "profiles_update_own" ON public.profiles FOR UPDATE USING (auth.uid() = id);
 
 -- lesson_progress：只能讀寫自己

@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export default function LoginPage() {
@@ -9,7 +8,6 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const router = useRouter();
   const supabase = createSupabaseBrowser();
 
   const submit = async (e: React.FormEvent) => {
@@ -18,7 +16,16 @@ export default function LoginPage() {
     setError("");
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) setError(error.message);
-    else router.push("/");
+    else {
+      const res = await fetch("/api/auth/ensure-profile", { method: "POST" });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setError(data.error || "登入成功，但建立會員資料失敗");
+        setLoading(false);
+        return;
+      }
+      window.location.href = "/";
+    }
     setLoading(false);
   };
 

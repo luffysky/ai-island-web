@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createSupabaseServer } from "@/lib/supabase-server";
+import { createSupabaseAdmin } from "@/lib/supabase-admin";
 
 // LINE OAuth callback handler
 // 設定步驟：
@@ -112,50 +112,60 @@ export async function GET(req: NextRequest) {
     // 用 LINE userId 當 unique identifier
     const lineEmail = email || `line_${lineProfile.userId}@line.local`;
 
-    // 嘗試取得既有 user
-    const adminRes = await fetch(
-      `${supabaseUrl}/auth/v1/admin/users?email=${encodeURIComponent(lineEmail)}`,
-      {
-        headers: {
-          apikey: serviceRoleKey,
-          Authorization: `Bearer ${serviceRoleKey}`,
-        },
-      }
-    );
-
     let userId: string;
-    const adminData = await adminRes.json();
+    const admin = createSupabaseAdmin();
+    const { data: usersData, error: listError } = await admin.auth.admin.listUsers();
 
-    if (adminData.users && adminData.users.length > 0) {
+    if (listError) {
+      console.error("LINE list users error:", listError);
+      return NextResponse.redirect(`${origin}/login?error=line_admin`);
+    }
+
+    const existingUser = usersData.users.find((u) => u.email === lineEmail);
+
+    if (existingUser) {
       // 既有 user
-      userId = adminData.users[0].id;
+      userId = existingUser.id;
+
+      const { data: existingProfile } = await admin
+        .from("profiles")
+        .select("id")
+        .eq("id", userId)
+        .maybeSingle();
+
+      if (!existingProfile) {
+        await admin.from("profiles").insert({
+          id: userId,
+          username: `line_${lineProfile.userId.slice(-8)}`.slice(0, 30),
+          display_name: lineProfile.displayName,
+          avatar_url: lineProfile.pictureUrl,
+          xp: 0,
+          z_coin: 100,
+          hearts: 5,
+        });
+      }
     } else {
       // 建立新 user
-      const createRes = await fetch(`${supabaseUrl}/auth/v1/admin/users`, {
-        method: "POST",
-        headers: {
-          apikey: serviceRoleKey,
-          Authorization: `Bearer ${serviceRoleKey}`,
-          "Content-Type": "application/json",
+      const { data: createData, error: createError } = await admin.auth.admin.createUser({
+        email: lineEmail,
+        email_confirm: true,
+        user_metadata: {
+          line_user_id: lineProfile.userId,
+          display_name: lineProfile.displayName,
+          avatar_url: lineProfile.pictureUrl,
+          provider: "line",
         },
-        body: JSON.stringify({
-          email: lineEmail,
-          email_confirm: true,
-          user_metadata: {
-            line_user_id: lineProfile.userId,
-            display_name: lineProfile.displayName,
-            avatar_url: lineProfile.pictureUrl,
-            provider: "line",
-          },
-        }),
       });
 
-      const newUser = await createRes.json();
-      userId = newUser.id;
+      if (createError || !createData.user) {
+        console.error("LINE create user error:", createError);
+        return NextResponse.redirect(`${origin}/login?error=line_create_user`);
+      }
+
+      userId = createData.user.id;
 
       // 建立 profile
-      const supabase = await createSupabaseServer();
-      await supabase.from("profiles").insert({
+      await admin.from("profiles").insert({
         id: userId,
         username: `line_${lineProfile.userId.slice(-8)}`,
         display_name: lineProfile.displayName,
@@ -179,6 +189,9 @@ export async function GET(req: NextRequest) {
         body: JSON.stringify({
           type: "magiclink",
           email: lineEmail,
+          options: {
+            redirect_to: `${origin}/auth/callback`,
+          },
         }),
       }
     );
