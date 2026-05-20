@@ -1,0 +1,458 @@
+{
+  "id": 34,
+  "slug": "java",
+  "stage": 4,
+  "title": "Java + Spring Boot",
+  "subtitle": "企業 / 銀行",
+  "icon": "coffee",
+  "description": "Java + Spring Boot：企業 / 銀行",
+  "status": "published",
+  "difficulty": "intermediate",
+  "prerequisites": [
+    7
+  ],
+  "estimatedHours": 16,
+  "outcomes": [
+    "理解核心概念",
+    "實作主流工具",
+    "整章實戰可發佈作品",
+    "知道生態 / 接案行情",
+    "對齊 2026 業界主流"
+  ],
+  "lessons": [
+    {
+      "title": "Java 為什麼仍是主流",
+      "oneLineSummary": "2026 Java 仍是企業 backend 第一",
+      "analogy": "銀行、政府、大公司全 Java。",
+      "content": "## 為什麼仍主流\n- JVM 穩定 30 年\n- 生態最完整（Spring 王者）\n- 招募市場大\n- 銀行 / 保險 / 電信幾乎都 Java\n- 薪水高（NT$ 90-180k）\n\n## Java 演進\n- Java 8：Lambda、Stream\n- Java 17：LTS、Records、Pattern Matching\n- Java 21：LTS、Virtual Threads（神武）、Pattern Matching for switch\n- Java 25：LTS\n\n## Spring Boot vs Spring\n- Spring：原始框架（XML 設定地獄）\n- Spring Boot：自動配置、5 分鐘起專案\n\n## 適合 vs 不適合\n\n### ✅ 適合\n- 大企業\n- 高並發 / 重交易\n- 金融 / 保險\n- 長期專案\n- 大團隊\n\n### ❌ 不適合\n- Indie / startup MVP（重）\n- 全棧開發（前後一致用 TS 簡單）\n- 快速迭代\n\n## 跟 Node / Go 比\n\n| 面向 | Java | Node | Go |\n|---|---|---|---|\n| 啟動 | 慢 | 快 | 快 |\n| 記憶體 | 高 | 中 | 低 |\n| 生態 | 巨 | 巨 | 中 |\n| 招募 | 多 | 多 | 中 |\n| 薪水 | 高 | 中 | 高 |\n| 開發速度 | 慢 | 快 | 中 |\n\n## Indie 接案\n- Java 接案少（企業案大、要團隊）\n- 比較適合：全職企業工程師\n\n## 心法\n- 想進大企業 / 金融：學 Java\n- 想做 startup / Indie：不一定\n- 求穩定高薪：Java 是好選擇\n- 不要為了「新」放棄 Java（仍是金礦）",
+      "tip": {
+        "type": "practical",
+        "text": "Java 不時髦、但養老穩定、薪水高。"
+      },
+      "id": "34.1",
+      "number": "LESSON 34.1",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "34.1.auto",
+          "language": "java",
+          "title": "試試看",
+          "initialCode": "public class Main {\n    public static void main(String[] args) {\n        System.out.println(\"Hello AI 島！\");\n\n        int[] nums = {1, 2, 3, 4, 5};\n        int sum = 0;\n        for (int n : nums) sum += n;\n        System.out.println(\"總和: \" + sum);\n    }\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "找一個你身邊的例子、用「Java 為什麼仍是主流」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼仍主流"
+        },
+        {
+          "level": 2,
+          "text": "Java 演進"
+        },
+        {
+          "level": 2,
+          "text": "Spring Boot vs Spring"
+        },
+        {
+          "level": 2,
+          "text": "適合 vs 不適合"
+        },
+        {
+          "level": 3,
+          "text": "✅ 適合"
+        },
+        {
+          "level": 3,
+          "text": "❌ 不適合"
+        },
+        {
+          "level": 2,
+          "text": "跟 Node / Go 比"
+        },
+        {
+          "level": 2,
+          "text": "Indie 接案"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Spring Boot 起步 + REST API",
+      "oneLineSummary": "5 分鐘建一個企業級 API",
+      "analogy": "Java 後端標準框架。",
+      "content": "## 起步\n```bash\n# Spring Initializr\ncurl https://start.spring.io/starter.zip \\\n  -d dependencies=web,data-jpa,h2 \\\n  -d type=gradle-project \\\n  -d language=java \\\n  -d javaVersion=21 \\\n  -o my-app.zip\n```\n\n或網頁版：start.spring.io。\n\n## Hello World\n```java\n@SpringBootApplication\n@RestController\npublic class App {\n    public static void main(String[] args) {\n        SpringApplication.run(App.class, args);\n    }\n    \n    @GetMapping(\"/\")\n    public String hello() {\n        return \"Hello, World!\";\n    }\n}\n```\n\n```bash\n./gradlew bootRun\n```\n\n## REST Controller\n```java\n@RestController\n@RequestMapping(\"/api/users\")\npublic class UserController {\n    \n    @Autowired\n    private UserService userService;\n    \n    @GetMapping\n    public List<User> list() {\n        return userService.findAll();\n    }\n    \n    @GetMapping(\"/{id}\")\n    public User get(@PathVariable Long id) {\n        return userService.findById(id)\n            .orElseThrow(() -> new ResponseStatusException(NOT_FOUND));\n    }\n    \n    @PostMapping\n    @ResponseStatus(CREATED)\n    public User create(@Valid @RequestBody CreateUserDto dto) {\n        return userService.create(dto);\n    }\n    \n    @PutMapping(\"/{id}\")\n    public User update(@PathVariable Long id, @Valid @RequestBody UpdateUserDto dto) {\n        return userService.update(id, dto);\n    }\n    \n    @DeleteMapping(\"/{id}\")\n    @ResponseStatus(NO_CONTENT)\n    public void delete(@PathVariable Long id) {\n        userService.delete(id);\n    }\n}\n```\n\n## JPA Entity\n```java\n@Entity\n@Table(name = \"users\")\npublic class User {\n    @Id\n    @GeneratedValue(strategy = IDENTITY)\n    private Long id;\n    \n    @Column(unique = true, nullable = false)\n    private String email;\n    \n    private String name;\n    \n    @CreatedDate\n    private LocalDateTime createdAt;\n    \n    // getters / setters\n}\n```\n\n## Repository\n```java\n@Repository\npublic interface UserRepository extends JpaRepository<User, Long> {\n    Optional<User> findByEmail(String email);\n    List<User> findByCreatedAtAfter(LocalDateTime date);\n}\n```\n\nJPA 自動生 SQL、不用寫 boilerplate。\n\n## Service\n```java\n@Service\npublic class UserService {\n    @Autowired\n    private UserRepository userRepository;\n    \n    public User create(CreateUserDto dto) {\n        if (userRepository.findByEmail(dto.getEmail()).isPresent()) {\n            throw new IllegalArgumentException(\"Email exists\");\n        }\n        \n        User user = new User();\n        user.setEmail(dto.getEmail());\n        user.setName(dto.getName());\n        return userRepository.save(user);\n    }\n}\n```\n\n## Validation\n```java\npublic class CreateUserDto {\n    @NotBlank\n    @Email\n    private String email;\n    \n    @NotBlank\n    @Size(min = 2, max = 50)\n    private String name;\n}\n```\n\n## application.yml\n```yaml\nspring:\n  datasource:\n    url: jdbc:postgresql://localhost:5432/mydb\n    username: user\n    password: pass\n  jpa:\n    hibernate:\n      ddl-auto: update\n    show-sql: true\n\nserver:\n  port: 8080\n```\n\n## 部署\n```bash\n./gradlew build\njava -jar build/libs/my-app.jar\n\n# Docker\nFROM eclipse-temurin:21\nCOPY build/libs/*.jar app.jar\nENTRYPOINT [\"java\", \"-jar\", \"app.jar\"]\n```\n\n## 心法\n- Spring Boot 自動配置魔法\n- DI（@Autowired）注入\n- JPA 不寫 SQL（但要懂）\n- application.yml 環境分離",
+      "tip": {
+        "type": "milestone",
+        "text": "Spring Boot = Java 工程師標準。"
+      },
+      "id": "34.2",
+      "number": "LESSON 34.2",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "34.2.auto",
+          "language": "java",
+          "title": "試試看",
+          "initialCode": "@SpringBootApplication\n@RestController\npublic class App {\n    public static void main(String[] args) {\n        SpringApplication.run(App.class, args);\n    }\n    \n    @GetMapping(\"/\")\n    public String hello() {\n        return \"Hello, World!\";\n    }\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 10 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "起步"
+        },
+        {
+          "level": 2,
+          "text": "Hello World"
+        },
+        {
+          "level": 2,
+          "text": "REST Controller"
+        },
+        {
+          "level": 2,
+          "text": "JPA Entity"
+        },
+        {
+          "level": 2,
+          "text": "Repository"
+        },
+        {
+          "level": 2,
+          "text": "Service"
+        },
+        {
+          "level": 2,
+          "text": "Validation"
+        },
+        {
+          "level": 2,
+          "text": "application.yml"
+        },
+        {
+          "level": 2,
+          "text": "部署"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Spring Boot 進階",
+      "oneLineSummary": "Auth / Migration / Test / 部署",
+      "analogy": "寫 production-grade Java 必懂。",
+      "content": "## Spring Security（Auth）\n```java\n@Configuration\n@EnableWebSecurity\npublic class SecurityConfig {\n    @Bean\n    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {\n        http.csrf(csrf -> csrf.disable())\n            .authorizeHttpRequests(auth -> auth\n                .requestMatchers(\"/api/public/**\").permitAll()\n                .anyRequest().authenticated()\n            )\n            .oauth2ResourceServer(oauth2 -> oauth2.jwt());\n        return http.build();\n    }\n}\n```\n\n## JWT\n```java\n@RestController\npublic class AuthController {\n    @PostMapping(\"/login\")\n    public Map<String, String> login(@RequestBody LoginDto dto) {\n        User user = userService.authenticate(dto.email, dto.password);\n        String token = jwtService.generate(user);\n        return Map.of(\"token\", token);\n    }\n}\n```\n\n## Flyway / Liquibase（Migration）\n```sql\n-- db/migration/V1__create_users.sql\nCREATE TABLE users (\n  id BIGSERIAL PRIMARY KEY,\n  email VARCHAR(255) UNIQUE NOT NULL,\n  name VARCHAR(100),\n  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n);\n```\n\n啟動自動 migrate。\n\n## Exception Handling\n```java\n@RestControllerAdvice\npublic class GlobalExceptionHandler {\n    @ExceptionHandler(EntityNotFoundException.class)\n    public ResponseEntity<ErrorResponse> handleNotFound(EntityNotFoundException ex) {\n        return ResponseEntity.status(NOT_FOUND).body(new ErrorResponse(ex.getMessage()));\n    }\n    \n    @ExceptionHandler(MethodArgumentNotValidException.class)\n    public ResponseEntity<Map<String, String>> handleValidation(MethodArgumentNotValidException ex) {\n        Map<String, String> errors = new HashMap<>();\n        ex.getBindingResult().getFieldErrors().forEach(error ->\n            errors.put(error.getField(), error.getDefaultMessage())\n        );\n        return ResponseEntity.badRequest().body(errors);\n    }\n}\n```\n\n## Testing\n```java\n@SpringBootTest\n@AutoConfigureMockMvc\nclass UserControllerTest {\n    @Autowired\n    private MockMvc mockMvc;\n    \n    @Test\n    void createUser_validInput_returns201() throws Exception {\n        mockMvc.perform(post(\"/api/users\")\n            .contentType(APPLICATION_JSON)\n            .content(\"\"\"\n                { \"email\": \"test@example.com\", \"name\": \"Test\" }\n            \"\"\"))\n            .andExpect(status().isCreated())\n            .andExpect(jsonPath(\"$.email\").value(\"test@example.com\"));\n    }\n}\n```\n\n## Virtual Threads（Java 21）\n```java\n@RestController\npublic class Controller {\n    @GetMapping(\"/slow\")\n    public String slow() throws InterruptedException {\n        Thread.sleep(1000);\n        return \"done\";\n    }\n}\n\n// application.yml\nspring.threads.virtual.enabled: true\n```\n\n每 request 一個 virtual thread、可同時 100k requests。\n\n## Async\n```java\n@Service\npublic class EmailService {\n    @Async\n    public CompletableFuture<Void> sendEmail(String to, String body) {\n        // 慢 IO\n        return CompletableFuture.completedFuture(null);\n    }\n}\n```\n\n## Cache\n```java\n@Cacheable(\"users\")\npublic User findById(Long id) {\n    return userRepository.findById(id).orElseThrow();\n}\n\n@CacheEvict(value = \"users\", key = \"#user.id\")\npublic User update(User user) {\n    return userRepository.save(user);\n}\n```\n\n## 部署\n- Docker container\n- Kubernetes\n- AWS Beanstalk\n- Heroku\n- Railway / Fly.io（也支援）\n\n## GraalVM Native Image\n編譯成 native binary：\n- 啟動快（< 100ms）\n- 記憶體少（10MB）\n- 適合 serverless\n\n```bash\n./gradlew nativeCompile\n```\n\n## 心法\n- Spring Boot 是 Java 標準\n- 學熟 = 大企業履歷強\n- Java 21 + Virtual Threads = 性能爆好\n- 跟 startup 比慢、跟企業比穩",
+      "tip": {
+        "type": "milestone",
+        "text": "Java + Spring Boot = 進大企業 / 金融的入場券。"
+      },
+      "id": "34.3",
+      "number": "LESSON 34.3",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "34.3.auto",
+          "language": "java",
+          "title": "試試看",
+          "initialCode": "@Configuration\n@EnableWebSecurity\npublic class SecurityConfig {\n    @Bean\n    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {\n        http.csrf(csrf -> csrf.disable())\n            .authorizeHttpRequests(auth -> auth\n                .requestMatchers(\"/api/public/**\").permitAll()\n                .anyRequest().authenticated()\n            )\n            .oauth2ResourceServer(oauth2 -> oauth2.jwt());\n        return http.build();\n    }\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "挑一個你做過的舊專案、用本節「Spring Boot 進階」介紹的進階技術重構它。",
+        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
+        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "Spring Security（Auth）"
+        },
+        {
+          "level": 2,
+          "text": "JWT"
+        },
+        {
+          "level": 2,
+          "text": "Flyway / Liquibase（Migration）"
+        },
+        {
+          "level": 2,
+          "text": "Exception Handling"
+        },
+        {
+          "level": 2,
+          "text": "Testing"
+        },
+        {
+          "level": 2,
+          "text": "Virtual Threads（Java 21）"
+        },
+        {
+          "level": 2,
+          "text": "Async"
+        },
+        {
+          "level": 2,
+          "text": "Cache"
+        },
+        {
+          "level": 2,
+          "text": "部署"
+        },
+        {
+          "level": 2,
+          "text": "GraalVM Native Image"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Spring Boot 是什麼",
+      "oneLineSummary": "Java 生態最大後端 framework",
+      "analogy": "金融 / 大企業必備。",
+      "content": "## 為什麼用 Spring Boot\n\n### 生態\n- 業界用最廣\n- 金融 / 銀行 / 電商\n- 工作機會多\n\n### 優點\n- 約定 > 配置\n- 內建 server\n- 龐大社群\n- IDE 支援好（IntelliJ）\n\n### 缺點\n- 啟動慢（10-30 秒）\n- 記憶體高\n- 學習曲線\n- 不適合 serverless\n\n## 快速起步\n\n```bash\n# Spring Initializr\ncurl https://start.spring.io/starter.tgz \\\n  -d type=maven-project \\\n  -d language=java \\\n  -d bootVersion=3.2.0 \\\n  -d groupId=com.example \\\n  -d artifactId=myapi \\\n  -d dependencies=web,jpa,postgresql | tar -xzvf -\n```\n\n### Hello World\n```java\n@RestController\n@RequestMapping(\"/api\")\npublic class HelloController {\n    @GetMapping(\"/hello\")\n    public Map<String, String> hello() {\n        return Map.of(\"message\", \"Hello, World!\");\n    }\n}\n```\n\n跑：\n```bash\n./mvnw spring-boot:run\n```\n\n## 核心概念\n\n### Dependency Injection\n```java\n@Service\npublic class UserService {\n    private final UserRepository repo;\n    \n    public UserService(UserRepository repo) {\n        this.repo = repo;  // Spring 自動注入\n    }\n}\n```\n\n### JPA（DB）\n```java\n@Entity\n@Table(name = \"users\")\npublic class User {\n    @Id @GeneratedValue\n    private Long id;\n    private String email;\n    private String name;\n}\n\npublic interface UserRepository extends JpaRepository<User, Long> {\n    Optional<User> findByEmail(String email);\n}\n```\n\nCRUD 自動有、不用寫 SQL。\n\n## 心法\n- Spring Boot 是 enterprise 標配\n- Indie 用太重（推薦 Node / Go）\n- 找 Java 工作必學\n- IntelliJ 是 IDE 首選",
+      "tip": {
+        "type": "practical",
+        "text": "Java 工作多但 Indie 不推、選 stack 看目標。"
+      },
+      "exercise": {
+        "question": "找一個你身邊的例子、用「Spring Boot 是什麼」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "id": "34.4",
+      "number": "LESSON 34.4",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "34.4.auto",
+          "language": "java",
+          "title": "試試看",
+          "initialCode": "@RestController\n@RequestMapping(\"/api\")\npublic class HelloController {\n    @GetMapping(\"/hello\")\n    public Map<String, String> hello() {\n        return Map.of(\"message\", \"Hello, World!\");\n    }\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼用 Spring Boot"
+        },
+        {
+          "level": 3,
+          "text": "生態"
+        },
+        {
+          "level": 3,
+          "text": "優點"
+        },
+        {
+          "level": 3,
+          "text": "缺點"
+        },
+        {
+          "level": 2,
+          "text": "快速起步"
+        },
+        {
+          "level": 3,
+          "text": "Hello World"
+        },
+        {
+          "level": 2,
+          "text": "核心概念"
+        },
+        {
+          "level": 3,
+          "text": "Dependency Injection"
+        },
+        {
+          "level": 3,
+          "text": "JPA（DB）"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Spring Security + JPA 進階",
+      "oneLineSummary": "認證 + 資料層、Spring 兩大支柱",
+      "analogy": "懂這兩個 = 能做 80% 後端。",
+      "content": "## Spring Security\n\n### 設定\n```java\n@Configuration\n@EnableWebSecurity\npublic class SecurityConfig {\n    @Bean\n    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {\n        http\n            .csrf(csrf -> csrf.disable())\n            .authorizeHttpRequests(auth -> auth\n                .requestMatchers(\"/api/public/**\").permitAll()\n                .requestMatchers(\"/api/admin/**\").hasRole(\"ADMIN\")\n                .anyRequest().authenticated()\n            )\n            .oauth2ResourceServer(oauth -> oauth.jwt());\n        return http.build();\n    }\n}\n```\n\n### JWT 驗證\n```java\n@RestController\npublic class ProfileController {\n    @GetMapping(\"/api/me\")\n    public Map<String, Object> me(@AuthenticationPrincipal Jwt jwt) {\n        return Map.of(\n            \"userId\", jwt.getSubject(),\n            \"email\", jwt.getClaim(\"email\")\n        );\n    }\n}\n```\n\n## JPA Query\n\n### Repository 方法名\n```java\npublic interface UserRepository extends JpaRepository<User, Long> {\n    List<User> findByRole(String role);\n    List<User> findByCreatedAtAfter(LocalDateTime date);\n    Optional<User> findFirstByEmailIgnoreCase(String email);\n}\n```\n\nSpring 自動產 SQL。\n\n### 自訂 query\n```java\n@Query(\"SELECT u FROM User u WHERE u.email = :email AND u.active = true\")\nOptional<User> findActiveByEmail(@Param(\"email\") String email);\n```\n\n### Native SQL\n```java\n@Query(value = \"SELECT * FROM users WHERE ...\", nativeQuery = true)\nList<User> customQuery();\n```\n\n## Transaction\n```java\n@Service\npublic class OrderService {\n    @Transactional\n    public Order createOrder(OrderRequest req) {\n        Order order = orderRepo.save(new Order(...));\n        paymentService.charge(req.amount);\n        notificationService.sendEmail(req.userEmail);\n        return order;\n    }\n}\n```\n\n任一步失敗 → 全 rollback。\n\n## 心法\n- Spring Security 強但複雜、用範本起步\n- JPA 方便但要懂 N+1 問題\n- Transaction 別亂用 @Transactional\n- Production 開 SQL log 找慢查",
+      "tip": {
+        "type": "milestone",
+        "text": "Spring 找工作必懂、自己 side project 不推。"
+      },
+      "exercise": {
+        "question": "挑一個你做過的舊專案、用本節「Spring Security + JPA 進階」介紹的進階技術重構它。",
+        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
+        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+      },
+      "id": "34.5",
+      "number": "LESSON 34.5",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "34.5.auto",
+          "language": "java",
+          "title": "試試看",
+          "initialCode": "@Configuration\n@EnableWebSecurity\npublic class SecurityConfig {\n    @Bean\n    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {\n        http\n            .csrf(csrf -> csrf.disable())\n            .authorizeHttpRequests(auth -> auth\n                .requestMatchers(\"/api/public/**\").permitAll()\n                .requestMatchers(\"/api/admin/**\").hasRole(\"ADMIN\")\n                .anyRequest().authenticated()\n            )\n            .oauth2ResourceServer(oauth -> oauth.jwt());\n        return http.build();\n    }\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "outline": [
+        {
+          "level": 2,
+          "text": "Spring Security"
+        },
+        {
+          "level": 3,
+          "text": "設定"
+        },
+        {
+          "level": 3,
+          "text": "JWT 驗證"
+        },
+        {
+          "level": 2,
+          "text": "JPA Query"
+        },
+        {
+          "level": 3,
+          "text": "Repository 方法名"
+        },
+        {
+          "level": 3,
+          "text": "自訂 query"
+        },
+        {
+          "level": 3,
+          "text": "Native SQL"
+        },
+        {
+          "level": 2,
+          "text": "Transaction"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Spring Boot 部署 + 接案",
+      "oneLineSummary": "上線 + 找客戶",
+      "analogy": "Java 工作多、但啟動 Indie 慢。",
+      "content": "## 部署選擇\n\n### 1. JAR\n```bash\n./mvnw clean package\njava -jar target/myapp.jar\n```\n傳到 VPS / Docker。\n\n### 2. Docker\n```dockerfile\nFROM eclipse-temurin:21-jre-alpine\nCOPY target/myapp.jar /app.jar\nENTRYPOINT [\"java\", \"-jar\", \"/app.jar\"]\n```\n\n### 3. 託管\n- **Railway**：友善\n- **Fly.io**：可\n- **AWS Elastic Beanstalk**\n- **Google App Engine**\n- ❌ Vercel（不支援 Java）\n\n### 4. 雲端 VM\n- AWS EC2\n- GCP Compute\n- 自管\n\n## 性能優化\n\n### Native Image（GraalVM）\n```bash\n./mvnw native:compile -Pnative\n```\n- 啟動快 10x\n- Memory 降 5x\n- 但 build 慢、有些 lib 不支援\n\n### JVM tuning\n```bash\njava -Xms512m -Xmx2g -XX:+UseG1GC -jar app.jar\n```\n\n## 接案\n\n### 客戶類型\n- 銀行 / 金融\n- 政府 / 公部門\n- 大型企業\n- 電商（中大）\n\n### 報價\n- Indie Java：少（沒人找）\n- 企業 freelancer：NT$ 100-300/hr\n- 月薪：NT$ 80-200k\n\n### 客戶常用 stack\n- Spring Boot + Oracle / Postgres\n- Spring MVC + JSP（舊）\n- Spring Cloud（microservices）\n\n## 心法\n- Java 接案 = 進企業 / 開發團隊\n- Indie SaaS 不推 Java\n- 學 Java 是「履歷」、不是「Indie 工具」\n- 同樣時間學 Go / Node 對 Indie 更值",
+      "tip": {
+        "type": "business",
+        "text": "Java 工作多 = 找全職好、Indie 不推。"
+      },
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "id": "34.6",
+      "number": "LESSON 34.6",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "34.6.auto",
+          "language": "dockerfile",
+          "title": "試試看",
+          "initialCode": "FROM eclipse-temurin:21-jre-alpine\nCOPY target/myapp.jar /app.jar\nENTRYPOINT [\"java\", \"-jar\", \"/app.jar\"]",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "outline": [
+        {
+          "level": 2,
+          "text": "部署選擇"
+        },
+        {
+          "level": 3,
+          "text": "1. JAR"
+        },
+        {
+          "level": 3,
+          "text": "2. Docker"
+        },
+        {
+          "level": 3,
+          "text": "3. 託管"
+        },
+        {
+          "level": 3,
+          "text": "4. 雲端 VM"
+        },
+        {
+          "level": 2,
+          "text": "性能優化"
+        },
+        {
+          "level": 3,
+          "text": "Native Image（GraalVM）"
+        },
+        {
+          "level": 3,
+          "text": "JVM tuning"
+        },
+        {
+          "level": 2,
+          "text": "接案"
+        },
+        {
+          "level": 3,
+          "text": "客戶類型"
+        },
+        {
+          "level": 3,
+          "text": "報價"
+        },
+        {
+          "level": 3,
+          "text": "客戶常用 stack"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    }
+  ],
+  "boss": {
+    "name": "Java 老靈",
+    "hp": 200,
+    "emoji": "☕",
+    "description": "JVM 是它的迷宮、Spring 是它的咒語"
+  },
+  "quiz": {
+    "id": "ch34-quiz",
+    "questions": [],
+    "xpReward": 50,
+    "perfectBonus": 50
+  }
+}

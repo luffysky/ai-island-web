@@ -1,0 +1,133 @@
+import { createSupabaseServer } from "@/lib/supabase-server";
+import { chapters } from "@/data/chapters";
+import Link from "next/link";
+
+export default async function MeOverviewPage() {
+  const supabase = await createSupabaseServer();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  const [
+    { data: progress },
+    { count: notesCount },
+    { count: bookmarksCount },
+    { count: playgroundsCount },
+    { data: recentLessons },
+  ] = await Promise.all([
+    supabase.from("lesson_progress").select("chapter_id, lesson_id").eq("user_id", user.id),
+    supabase.from("notes").select("*", { count: "exact", head: true }).eq("user_id", user.id),
+    supabase.from("bookmarks").select("*", { count: "exact", head: true }).eq("user_id", user.id),
+    supabase.from("playgrounds").select("*", { count: "exact", head: true }).eq("user_id", user.id),
+    supabase.from("lesson_progress").select("*").eq("user_id", user.id).order("completed_at", { ascending: false }).limit(5),
+  ] as any);
+
+  const completedLessons = progress?.length ?? 0;
+  const totalLessons = chapters.reduce((sum, c) => sum + c.lessons.length, 0);
+  const pct = totalLessons > 0 ? Math.round(completedLessons / totalLessons * 100) : 0;
+
+  // 章節進度
+  const chapterProgress = chapters.map((ch) => {
+    const done = progress?.filter((p: any) => p.chapter_id === ch.id).length ?? 0;
+    return { ...ch, done, total: ch.lessons.length, pct: Math.round(done / ch.lessons.length * 100) };
+  });
+
+  const inProgress = chapterProgress.filter((c) => c.done > 0 && c.done < c.total).slice(0, 4);
+
+  return (
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold">📊 學習總覽</h1>
+
+      {/* 統計 */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <Stat label="完成 lesson" value={`${completedLessons} / ${totalLessons}`} color="text-[var(--color-accent)]" />
+        <Stat label="總進度" value={`${pct}%`} color="text-yellow-400" />
+        <Stat label="我的筆記" value={notesCount ?? 0} color="text-blue-400" />
+        <Stat label="書籤" value={bookmarksCount ?? 0} color="text-pink-400" />
+      </div>
+
+      {/* 進度條 */}
+      <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-5">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-bold">📈 整體進度</h2>
+          <span className="text-sm text-[var(--color-fg-muted)]">{completedLessons} / {totalLessons}</span>
+        </div>
+        <div className="h-3 bg-[var(--color-bg)] rounded-full overflow-hidden">
+          <div
+            className="h-full bg-gradient-to-r from-[var(--color-accent)] to-yellow-400 transition-all"
+            style={{ width: `${pct}%` }}
+          />
+        </div>
+      </div>
+
+      {/* 進行中的章節 */}
+      {inProgress.length > 0 && (
+        <div>
+          <h2 className="font-bold mb-3">📚 繼續學習</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {inProgress.map((ch) => (
+              <Link
+                key={ch.id}
+                href={`/chapters/${ch.id}` as any}
+                className="bg-[var(--color-bg-card)] border border-[var(--color-border)] hover:border-[var(--color-accent)]/50 rounded-xl p-4 transition"
+              >
+                <div className="flex items-start justify-between mb-2">
+                  <div className="min-w-0 flex-1">
+                    <div className="text-xs text-[var(--color-fg-muted)]">Ch {String(ch.id).padStart(2, "0")}</div>
+                    <h3 className="font-bold truncate">{ch.title}</h3>
+                  </div>
+                  <div className="text-2xl ml-2">{ch.pct}%</div>
+                </div>
+                <div className="h-1.5 bg-[var(--color-bg)] rounded-full overflow-hidden">
+                  <div className="h-full bg-[var(--color-accent)]" style={{ width: `${ch.pct}%` }} />
+                </div>
+                <div className="text-xs text-[var(--color-fg-muted)] mt-2">{ch.done} / {ch.total} lessons</div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 最近完成 */}
+      {recentLessons && recentLessons.length > 0 && (
+        <div>
+          <h2 className="font-bold mb-3">⏱️ 最近完成</h2>
+          <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl divide-y divide-[var(--color-border)]">
+            {recentLessons.map((p: any) => {
+              const ch = chapters.find((c) => c.id === p.chapter_id);
+              const lesson = ch?.lessons.find((l) => l.id === p.lesson_id);
+              return (
+                <Link
+                  key={p.id}
+                  href={`/chapters/${p.chapter_id}` as any}
+                  className="flex items-center justify-between p-3 hover:bg-[var(--color-bg-elevated)] transition"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-8 h-8 rounded-full bg-[var(--color-accent)]/20 flex items-center justify-center text-[var(--color-accent)] flex-shrink-0">
+                      ✓
+                    </div>
+                    <div className="min-w-0">
+                      <div className="font-medium truncate">{lesson?.title ?? p.lesson_id}</div>
+                      <div className="text-xs text-[var(--color-fg-muted)]">{ch?.title} · +{p.xp_earned ?? 0} XP</div>
+                    </div>
+                  </div>
+                  <div className="text-xs text-[var(--color-fg-muted)] flex-shrink-0">
+                    {new Date(p.completed_at).toLocaleDateString('zh-TW')}
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Stat({ label, value, color }: { label: string; value: any; color: string }) {
+  return (
+    <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-4">
+      <div className="text-xs text-[var(--color-fg-muted)]">{label}</div>
+      <div className={`text-2xl font-bold mt-1 ${color}`}>{value}</div>
+    </div>
+  );
+}

@@ -1,0 +1,1932 @@
+{
+  "id": 27,
+  "slug": "python-data",
+  "stage": 4,
+  "title": "Python 資料分析",
+  "subtitle": "Pandas / NumPy / Jupyter",
+  "icon": "bar-chart-3",
+  "description": "Python 資料分析：Pandas / NumPy / Jupyter",
+  "status": "published",
+  "difficulty": "intermediate",
+  "prerequisites": [
+    26
+  ],
+  "estimatedHours": 16,
+  "outcomes": [
+    "理解核心概念",
+    "實作主流工具",
+    "整章實戰可發佈作品",
+    "知道生態 / 接案行情",
+    "對齊 2026 業界主流"
+  ],
+  "lessons": [
+    {
+      "id": "27.1",
+      "number": "LESSON 27.1",
+      "title": "為什麼 Python 是資料分析霸主？",
+      "oneLineSummary": "Python 在資料分析的地位 = JavaScript 在前端的地位—2026 全球資料分析師 90% 用它。",
+      "analogy": "想像瑞士刀 vs 一字螺絲起子—Excel 是螺絲起子（5 千筆 OK、5 萬筆掙扎）、Python 是瑞士刀（百萬筆秒回）。台灣資料分析職缺月薪 NT$ 50-120k、會 Python 是基本門檻。",
+      "content": "### Python 為什麼贏 R / SAS / SPSS\n\n      \n- 📚 生態豐富：NumPy / Pandas / Scikit-learn / TensorFlow 全在 Python\n- 🌍 通用：分析完直接接 API / 自動化\n- 💰 開源免費：SAS 一年 $10 萬美金、Python $0\n- 🤖 AI 時代：90% AI 框架 Python first\n\n      \n### 核心 4 大套件（這章重點）\n\n      \n- **NumPy**：數值計算底層、所有套件基礎\n- **Pandas**：90% 時間用、處理表格\n- **matplotlib**：畫圖底層\n- **seaborn**：基於 matplotlib 的美化版\n\n      \n### 2026 進階套件\n\n      \n- **Polars**：Rust 寫的 Pandas 替代、快 5-10 倍\n- **Plotly**：互動式圖表\n- **Streamlit**：1 小時把分析變網頁 dashboard\n- **DuckDB**：Python 內跑 SQL、超快",
+      "tip": {
+        "type": "practical",
+        "text": "PRO / 518 上「資料分析」案件 NT$ 5,000-50,000 / 件。會 Python + 寫報告（不只 code）的人最值錢。Portfolio 放 3-5 個分析專案、月入 5-10 萬不難。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "27.1.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "# Python 範例\ndef fibonacci(n):\n    a, b = 0, 1\n    for _ in range(n):\n        yield a\n        a, b = b, a + b\n\nprint(list(fibonacci(10)))\n\n# List comprehension\nsquares = [x**2 for x in range(1, 6)]\nprint(\"平方:\", squares)",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "找一個你身邊的例子、用「為什麼 Python 是資料分析霸主？」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "Python 為什麼贏 R / SAS / SPSS"
+        },
+        {
+          "level": 3,
+          "text": "核心 4 大套件（這章重點）"
+        },
+        {
+          "level": 3,
+          "text": "2026 進階套件"
+        }
+      ]
+    },
+    {
+      "id": "27.2",
+      "number": "LESSON 27.2",
+      "title": "Jupyter Notebook：資料分析師的 IDE",
+      "oneLineSummary": "Jupyter = 「能跑 code 的筆記本」—寫一段、跑一段、看結果、寫筆記—像做實驗。",
+      "analogy": "想像實驗室筆記本—不是寫完整篇 code 跑、是一格一格實驗。改公式立刻看結果、加註解整理思路、最後變完整報告。資料分析的本質是「探索」、Jupyter 為此而生。",
+      "content": "### 3 種使用方式\n\n      \n- **Jupyter Lab**（本地、推薦）：完整環境\n- **Google Colab**：雲端免費 + 免費 GPU\n- **VS Code + Jupyter**：在 VS Code 寫 .ipynb\n\n      \n### 安裝 + 啟動\n\n```bash\npip install jupyterlab pandas numpy matplotlib seaborn\njupyter lab\n# → http://localhost:8888\n```\n\n      \n### 必背快捷鍵\n\n      \n- `Shift + Enter`：執行 + 跳下一格\n- `Ctrl + Enter`：執行 + 留原處\n- `A`/`B`：上 / 下加新 cell\n- `DD`：刪 cell\n- `M`/`Y`：轉 Markdown / Code\n- `Shift + Tab`：看函式說明\n\n      \n### Magic Commands\n\n```python\n%%time              # 計時這格\n%whos               # 看變數列表\n!pip install plotly # 跑 shell\n%load_ext autoreload\n%autoreload 2       # 自動 reload 模組\n```",
+      "tip": {
+        "type": "practical",
+        "text": "2026 推薦 Jupyter Lab + 黑暗主題。雲端用 Google Colab 做 ML（免費 GPU）、本地用 Jupyter Lab 日常分析。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "27.2.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "%%time              # 計時這格\n%whos               # 看變數列表\n!pip install plotly # 跑 shell\n%load_ext autoreload\n%autoreload 2       # 自動 reload 模組",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "3 種使用方式"
+        },
+        {
+          "level": 3,
+          "text": "安裝 + 啟動"
+        },
+        {
+          "level": 3,
+          "text": "必背快捷鍵"
+        },
+        {
+          "level": 3,
+          "text": "Magic Commands"
+        }
+      ]
+    },
+    {
+      "id": "27.3",
+      "number": "LESSON 27.3",
+      "title": "NumPy：所有資料分析的底層",
+      "oneLineSummary": "NumPy = 「Python 的高速計算引擎」—向量化計算快 Python 100 倍。Pandas / TF / PyTorch 全基於它。",
+      "analogy": "想像手算 100 題數學 vs 用計算機—Python loop 慢、NumPy 在 C 底層整批計算。不會 NumPy = 資料分析學不深。",
+      "content": "### 建陣列\n\n```python\nimport numpy as np\n\narr = np.array([1, 2, 3, 4, 5])\nmat = np.array([[1, 2, 3], [4, 5, 6]])  # 2D 矩陣\n\n# 常用初始化\nnp.zeros(10)              # 10 個 0\nnp.ones((3, 3))           # 3x3 全 1\nnp.arange(0, 10, 2)       # [0, 2, 4, 6, 8]\nnp.linspace(0, 1, 11)     # 0-1 平均切 11 點\nnp.random.rand(3, 3)      # 3x3 隨機 [0, 1)\nnp.random.randn(1000)     # 常態分布\nnp.random.randint(1, 100, 10)  # 10 個整數\n```\n\n      \n### 向量化運算（核心！）\n\n```python\n# 純 Python（慢）\nresult = [x * 2 + 1 for x in arr]\n\n# NumPy（快 100 倍）\nresult = arr * 2 + 1\n\n# 數學函數\nnp.sqrt(arr); np.exp(arr); np.log(arr); np.sin(arr)\n\n# 統計\narr.mean(); arr.std(); arr.sum()\narr.max(); arr.min(); arr.argmax()\n\n# 矩陣運算\nA @ B               # 矩陣乘法\nA.T                 # 轉置\nnp.linalg.inv(A)    # 反矩陣\n```\n\n      \n### 布林索引（超強）\n\n```python\narr = np.array([10, 20, 30, 40, 50])\narr[arr > 25]                  # [30, 40, 50]\narr[(arr > 15) & (arr < 45)]   # [20, 30, 40]\n```\n\n      \n### Broadcasting（廣播）\n\n```python\n# 不同形狀的陣列也能運算\narr = np.array([[1, 2, 3], [4, 5, 6]])\narr + 10                          # 每個元素 +10\narr * np.array([1, 2, 3])         # 每行乘 [1,2,3]\n\n# 範例：標準化資料\ndata = np.random.rand(100, 5)\nnormalized = (data - data.mean(axis=0)) / data.std(axis=0)\n```\n\n      \n### 實戰：考試成績分析\n\n```python\nscores = np.array([\n    [85, 92, 78],\n    [73, 88, 91],\n    [65, 70, 82],\n    [95, 87, 93],\n    [78, 80, 75]\n])\n\nprint('各科平均：', scores.mean(axis=0))\nprint('各生平均：', scores.mean(axis=1))\nprint('最高分學生：', scores.sum(axis=1).argmax())\n```",
+      "tip": {
+        "type": "pro",
+        "text": "能向量化就不要 Python loop—快 50-100 倍。看到 for i in range(len(arr)) 馬上想「能不能改向量化」。這是 Python 資料分析師基本素養。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "27.3.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "import numpy as np\n\narr = np.array([1, 2, 3, 4, 5])\nmat = np.array([[1, 2, 3], [4, 5, 6]])  # 2D 矩陣\n\n# 常用初始化\nnp.zeros(10)              # 10 個 0\nnp.ones((3, 3))           # 3x3 全 1\nnp.arange(0, 10, 2)       # [0, 2, 4, 6, 8]\nnp.linspace(0, 1, 11)     # 0-1 平均切 11 點\nnp.random.rand(3, 3)      # 3x3 隨機 [0, 1)\nnp.random.randn(1000)     # 常態分布\nnp.random.randint(1, 100, 10)  # 10 個整數",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "挑一個你做過的舊專案、用本節「NumPy：所有資料分析的底層」介紹的進階技術重構它。",
+        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
+        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "建陣列"
+        },
+        {
+          "level": 3,
+          "text": "向量化運算（核心！）"
+        },
+        {
+          "level": 3,
+          "text": "布林索引（超強）"
+        },
+        {
+          "level": 3,
+          "text": "Broadcasting（廣播）"
+        },
+        {
+          "level": 3,
+          "text": "實戰：考試成績分析"
+        }
+      ]
+    },
+    {
+      "id": "27.4",
+      "number": "LESSON 27.4",
+      "title": "Pandas：資料分析的瑞士刀",
+      "oneLineSummary": "Pandas = 「Python 的 Excel」—能處理百萬筆、自動化所有 Excel 操作、跟 DB / ML 無縫接軌。",
+      "analogy": "想像 Excel + SQL + 程式自動化—DataFrame 就是工作表、但能用 Python 自動化、能讀 100GB CSV。學會 = 從 Excel 工程師升級成資料分析師。",
+      "content": "### 核心物件：DataFrame + Series\n\n```python\nimport pandas as pd\n\ndf = pd.DataFrame({\n    'name': ['小明', '小華', '小美'],\n    'age': [25, 30, 28],\n    'city': ['台北', '高雄', '台中']\n})\n\nages = df['age']   # Series\n```\n\n      \n### 讀資料（多格式）\n\n```python\n# CSV / Excel / SQL / JSON / API 都行\ndf = pd.read_csv('sales.csv', encoding='utf-8')\ndf = pd.read_excel('data.xlsx', sheet_name='2026Q1')\ndf = pd.read_sql('SELECT * FROM orders', engine)\ndf = pd.read_json('data.json')\ndf = pd.read_csv('https://example.com/data.csv')  # URL\n```\n\n      \n### 看資料\n\n```python\ndf.head()          # 前 5 筆\ndf.tail(10)        # 後 10 筆\ndf.sample(5)       # 隨機\ndf.shape           # (筆數, 欄數)\ndf.info()          # 欄位 / 型別 / 缺值\ndf.describe()      # 統計摘要\ndf.dtypes\n```\n\n      \n### 選取 + 過濾\n\n```python\n# 單 / 多欄\ndf['name']\ndf[['name', 'age']]\n\n# 條件過濾\ndf[df['age'] > 25]\ndf[(df['age'] > 25) & (df['city'] == '台北')]\ndf[df['city'].isin(['台北', '台中'])]\ndf[df['name'].str.contains('明')]\n\n# 精準選取\ndf.loc[0:2, 'name']\ndf.iloc[0:3, 1:3]\n\n# SQL 風格查詢\ndf.query('age > 25 and city == \"台北\"')\n```\n\n      \n### 處理缺值\n\n```python\ndf.isna().sum()         # 每欄缺幾筆\ndf.dropna()             # 有缺就刪\ndf.fillna(0)            # 填 0\ndf.fillna(df.mean())    # 填平均\ndf.interpolate()        # 內插\n```\n\n      \n### GroupBy（最重要！）\n\n```python\n# 各城市平均年齡\ndf.groupby('city')['age'].mean()\n\n# 多欄聚合\ndf.groupby('city').agg({\n    'age': ['mean', 'max'],\n    'salary': ['sum', 'count']\n})\n\n# 樞紐分析（像 Excel）\ndf.pivot_table(values='sales', index='month',\n                columns='product', aggfunc='sum')\n```\n\n      \n### 合併（JOIN）\n\n```python\n# 縱向疊起來\npd.concat([df1, df2])\n\n# 橫向 JOIN（像 SQL）\npd.merge(orders, users, on='user_id', how='left')\n# how: inner / left / right / outer\n```\n\n      \n### 新增欄位\n\n```python\ndf['is_adult'] = df['age'] >= 18\ndf['age_group'] = pd.cut(df['age'],\n    bins=[0, 18, 35, 60, 100],\n    labels=['兒童', '青年', '壯年', '老年'])\n\n# 自訂運算\ndf['name_upper'] = df['name'].apply(lambda x: x.upper())\n```\n\n      \n### 輸出\n\n```python\ndf.to_csv('output.csv', index=False)\ndf.to_excel('output.xlsx', sheet_name='Q1')\ndf.to_sql('orders', engine, if_exists='append')\n```",
+      "tip": {
+        "type": "trend",
+        "text": "Polars（Rust 寫的）崛起、快 Pandas 5-10 倍、API 類似。處理 GB 級資料 Polars 完勝、Pandas 生態還是最大。新手先學 Pandas、需要再用 Polars。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "27.4.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "import pandas as pd\n\ndf = pd.DataFrame({\n    'name': ['小明', '小華', '小美'],\n    'age': [25, 30, 28],\n    'city': ['台北', '高雄', '台中']\n})\n\nages = df['age']   # Series",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 9 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "核心物件：DataFrame + Series"
+        },
+        {
+          "level": 3,
+          "text": "讀資料（多格式）"
+        },
+        {
+          "level": 3,
+          "text": "看資料"
+        },
+        {
+          "level": 3,
+          "text": "選取 + 過濾"
+        },
+        {
+          "level": 3,
+          "text": "處理缺值"
+        },
+        {
+          "level": 3,
+          "text": "GroupBy（最重要！）"
+        },
+        {
+          "level": 3,
+          "text": "合併（JOIN）"
+        },
+        {
+          "level": 3,
+          "text": "新增欄位"
+        },
+        {
+          "level": 3,
+          "text": "輸出"
+        }
+      ]
+    },
+    {
+      "id": "27.5",
+      "number": "LESSON 27.5",
+      "title": "matplotlib + seaborn：畫圖兩件套",
+      "oneLineSummary": "matplotlib = 「畫圖底層」、seaborn = 「美化 + 統計圖」—兩個一起用、什麼圖都能畫。",
+      "analogy": "matplotlib 像鉛筆顏料—自由但費神。seaborn 像濾鏡—一行套設計師美感。2026 主流：seaborn 美化 + matplotlib 微調。",
+      "content": "### 基本設定（中文 + 美化）\n\n```python\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n\n# Mac/Linux 中文\nplt.rcParams['font.family'] = ['PingFang TC', 'Noto Sans CJK TC']\n# Windows：['Microsoft JhengHei']\n\nplt.rcParams['axes.unicode_minus'] = False  # 負號顯示\n\nsns.set_theme(style='whitegrid', palette='Set2')\n```\n\n      \n### 8 種主流圖表\n\n```python\n# 1. 折線圖（時序）\nplt.figure(figsize=(10, 6))\nplt.plot(df['date'], df['sales'], marker='o')\nplt.title('銷售趨勢'); plt.show()\n\n# 2. 長條圖（分類比較）\nsns.barplot(data=df, x='category', y='sales', hue='region')\n\n# 3. 散點圖（兩個變量關係）\nsns.scatterplot(data=df, x='age', y='salary', hue='gender')\n\n# 4. 直方圖（分布）\nsns.histplot(df['age'], bins=30, kde=True)\n\n# 5. 盒鬚圖（分布 + 離群值）\nsns.boxplot(data=df, x='department', y='salary')\n\n# 6. 熱力圖（相關性）\nsns.heatmap(df.corr(), annot=True, cmap='coolwarm')\n\n# 7. 圓餅圖\ndf['category'].value_counts().plot(kind='pie', autopct='%1.1f%%')\n\n# 8. Pair Plot（多變量）\nsns.pairplot(df, hue='species')\n```\n\n      \n### 子圖（多 chart 一張圖）\n\n```python\nfig, axes = plt.subplots(2, 2, figsize=(12, 8))\naxes[0, 0].plot(x, y1); axes[0, 0].set_title('圖 1')\naxes[0, 1].bar(cats, vals)\nsns.boxplot(data=df, ax=axes[1, 0])\nsns.heatmap(corr_mat, ax=axes[1, 1])\nplt.tight_layout(); plt.show()\n```\n\n      \n### 儲存\n\n```python\nplt.savefig('chart.png', dpi=300, bbox_inches='tight')\nplt.savefig('chart.svg')  # 向量、網頁用\n```\n\n      \n### Plotly：互動圖表\n\n```python\nimport plotly.express as px\n\nfig = px.scatter(df, x='age', y='salary', color='dept',\n                  hover_data=['name'], size='experience')\nfig.show()\nfig.write_html('chart.html')  # 嵌入網頁\n```",
+      "tip": {
+        "type": "pro",
+        "text": "不要用預設配色！matplotlib 預設藍超 ugly。sns.set_palette('Set2')、plt.style.use('seaborn-v0_8-darkgrid')—一行美感升 100 倍。報告 / Portfolio 用的圖、字體大一點（fontsize=14）。"
+      },
+      "xp": 15,
+      "playgrounds": [
+        {
+          "key": "27.5.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "import matplotlib.pyplot as plt\nimport seaborn as sns\n\n# Mac/Linux 中文\nplt.rcParams['font.family'] = ['PingFang TC', 'Noto Sans CJK TC']\n# Windows：['Microsoft JhengHei']\n\nplt.rcParams['axes.unicode_minus'] = False  # 負號顯示\n\nsns.set_theme(style='whitegrid', palette='Set2')",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "基本設定（中文 + 美化）"
+        },
+        {
+          "level": 3,
+          "text": "8 種主流圖表"
+        },
+        {
+          "level": 3,
+          "text": "子圖（多 chart 一張圖）"
+        },
+        {
+          "level": 3,
+          "text": "儲存"
+        },
+        {
+          "level": 3,
+          "text": "Plotly：互動圖表"
+        }
+      ]
+    },
+    {
+      "id": "27.6",
+      "number": "LESSON 27.6",
+      "title": "時序資料處理",
+      "oneLineSummary": "時序資料 = 「按時間排的資料」—股價、營收、感測器、log—Pandas 處理時序超強。",
+      "analogy": "想像看股票線圖—一秒一筆、每分鐘聚合、月線年線—pandas 1 行轉換。量化交易 / 業績分析 / IoT 都靠這。",
+      "content": "```python\n# 1. 把欄位變 datetime\ndf['date'] = pd.to_datetime(df['date'])\ndf.set_index('date', inplace=True)\n\n# 2. 時間範圍切片\ndf['2026-01']          # 1 月所有資料\ndf['2026']              # 整年\ndf['2026-01-01':'2026-03-31']  # Q1\n\n# 3. Resample（重採樣聚合）\ndf['sales'].resample('D').sum()   # 每日總和\ndf['sales'].resample('W').mean()  # 每週平均\ndf['sales'].resample('M').sum()   # 每月總和\ndf['sales'].resample('Q').sum()   # 每季\ndf['sales'].resample('Y').sum()   # 每年\n\n# 4. 滾動視窗（移動平均、技術指標）\ndf['ma7'] = df['price'].rolling(7).mean()    # 7 日均線\ndf['ma30'] = df['price'].rolling(30).mean()  # 30 日\ndf['std30'] = df['price'].rolling(30).std()   # 30 日標準差\n\n# 5. 變化率\ndf['pct_change'] = df['price'].pct_change()  # 日報酬率\ndf['cumulative'] = (1 + df['pct_change']).cumprod()  # 累積\n\n# 6. 時間欄位提取\ndf['year'] = df.index.year\ndf['month'] = df.index.month\ndf['weekday'] = df.index.day_name()  # Monday/Tuesday...\ndf['is_weekend'] = df.index.dayofweek >= 5\n\n# 7. Shift（位移）—用昨天的值\ndf['prev_price'] = df['price'].shift(1)\ndf['change'] = df['price'] - df['prev_price']\n```",
+      "tip": {
+        "type": "practical",
+        "text": "台股 / 美股量化交易、80% 用 Pandas。yfinance 套件抓 Yahoo Finance 股價、Pandas 算 MA / RSI / MACD、Plotly 畫 K 棒—1 小時做出個股技術分析儀表板。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "27.6.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "# 1. 把欄位變 datetime\ndf['date'] = pd.to_datetime(df['date'])\ndf.set_index('date', inplace=True)\n\n# 2. 時間範圍切片\ndf['2026-01']          # 1 月所有資料\ndf['2026']              # 整年\ndf['2026-01-01':'2026-03-31']  # Q1\n\n# 3. Resample（重採樣聚合）\ndf['sales'].resample('D').sum()   # 每日總和\ndf['sales'].resample('W').mean()  # 每週平均\ndf['sales'].resample('M').sum()   # 每月總和\ndf['sales'].resample('Q').sum()   # 每季\ndf['sales'].resample('Y').sum()   # 每年\n\n# 4. 滾動視窗（移動平均、技術指標）\ndf['ma7'] = df['price'].rolling(7).mean()    # 7 日均線\ndf['ma30'] = df['price'].rolling(30).mean()  # 30 日\ndf['std30'] = df['price'].rolling(30).std()   # 30 日標準差\n\n# 5. 變化率\ndf['pct_change'] = df['price'].pct_change()  # 日報酬率\ndf['cumulative'] = (1 + df['pct_change']).cumprod()  # 累積\n\n# 6. 時間欄位提取\ndf['year'] = df.index.year\ndf['month'] = df.index.month\ndf['weekday'] = df.index.day_name()  # Monday/Tuesday...\ndf['is_weekend'] = df.index.dayofweek >= 5\n\n# 7. Shift（位移）—用昨天的值\ndf['prev_price'] = df['price'].shift(1)\ndf['change'] = df['price'] - df['prev_price']",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      }
+    },
+    {
+      "id": "27.7",
+      "number": "LESSON 27.7",
+      "title": "實戰：完整資料分析流程",
+      "oneLineSummary": "把整章學的整合成完整報告—讀資料 → 清洗 → 探索 → 視覺化 → 結論。",
+      "analogy": "像偵探辦案—收線索（讀）→ 整理（清洗）→ 找模式（探索）→ 圖表（視覺化）→ 報告（結論）。學會這流程、任何資料都能做出值錢分析。",
+      "content": "```python\nimport pandas as pd\nimport numpy as np\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n\nplt.rcParams['font.family'] = ['PingFang TC']\nsns.set_theme(style='whitegrid', palette='Set2')\n\n# === Step 1: 讀資料 ===\ndf = pd.read_csv('sales_2026Q1.csv', parse_dates=['order_date'])\nprint(f'資料筆數：{len(df)}')\nprint(df.info())\n\n# === Step 2: 資料清洗 ===\n# 處理缺值\ndf['discount'] = df['discount'].fillna(0)\ndf = df.dropna(subset=['customer_id'])  # 必要欄位\n\n# 型別轉換\ndf['amount'] = pd.to_numeric(df['amount'], errors='coerce')\n\n# 移除異常值（負金額）\ndf = df[df['amount'] > 0]\n\n# 加衍生欄位\ndf['month'] = df['order_date'].dt.month\ndf['weekday'] = df['order_date'].dt.day_name()\ndf['is_weekend'] = df['order_date'].dt.dayofweek >= 5\ndf['price_tier'] = pd.cut(df['amount'],\n    bins=[0, 500, 2000, 10000, np.inf],\n    labels=['低', '中', '高', '豪華'])\n\n# === Step 3: 探索性分析（EDA）===\n# 整體狀況\nprint(f'總營業額：NT$ {df[\"amount\"].sum():,.0f}')\nprint(f'平均客單價：NT$ {df[\"amount\"].mean():,.0f}')\nprint(f'訂單數：{len(df)}')\nprint(f'客戶數：{df[\"customer_id\"].nunique()}')\n\n# 各類別表現\ncategory_stats = df.groupby('category').agg(\n    revenue=('amount', 'sum'),\n    orders=('order_id', 'count'),\n    avg_value=('amount', 'mean')\n).sort_values('revenue', ascending=False)\nprint(category_stats)\n\n# Top 10 客戶（VIP 找出來）\ntop_customers = df.groupby('customer_id')['amount'].sum()\\\n    .nlargest(10)\nprint('Top 10 VIP 客戶：', top_customers)\n\n# === Step 4: 視覺化 ===\nfig, axes = plt.subplots(2, 2, figsize=(14, 10))\n\n# 圖 1：月營收趨勢\nmonthly = df.groupby('month')['amount'].sum()\naxes[0, 0].plot(monthly.index, monthly.values, marker='o', linewidth=2)\naxes[0, 0].set_title('2026 Q1 月營收趨勢', fontsize=14)\naxes[0, 0].set_xlabel('月份')\naxes[0, 0].set_ylabel('營收（NT$）')\n\n# 圖 2：類別佔比\ncategory_stats['revenue'].plot(kind='bar', ax=axes[0, 1], color='#50fa7b')\naxes[0, 1].set_title('各類別營收', fontsize=14)\naxes[0, 1].tick_params(axis='x', rotation=45)\n\n# 圖 3：星期幾下單最多\nweekday_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday',\n                  'Friday', 'Saturday', 'Sunday']\nweekday_counts = df['weekday'].value_counts().reindex(weekday_order)\nsns.barplot(x=weekday_counts.index, y=weekday_counts.values,\n            ax=axes[1, 0], palette='pastel')\naxes[1, 0].set_title('各週天訂單數', fontsize=14)\naxes[1, 0].tick_params(axis='x', rotation=45)\n\n# 圖 4：客單價分布\nsns.histplot(df['amount'], bins=50, kde=True, ax=axes[1, 1])\naxes[1, 1].set_title('客單價分布', fontsize=14)\naxes[1, 1].set_xlabel('金額')\n\nplt.tight_layout()\nplt.savefig('2026Q1_report.png', dpi=300, bbox_inches='tight')\nplt.show()\n\n# === Step 5: 結論 ===\n# 📊 2026 Q1 銷售報告\n#\n# 【關鍵指標】\n# - 總營收：NT$ X,XXX,XXX\n# - 訂單數：X,XXX 筆\n# - 客單價：NT$ X,XXX\n# - 活躍客戶：X,XXX 位\n#\n# 【發現】\n# 1. 3 月營收最高、Q1 月成長率 +X%\n# 2. 「電子產品」類別佔總營收 40%、為主力\n# 3. 週六下單最多（佔 30%）、週二最低\n# 4. 80% 訂單在 NT$ 500-2000 區間\n#\n# 【建議】\n# 1. 加碼週末廣告、強化高需求時段\n# 2. 電子產品上新品、保持類別優勢\n# 3. 設計 NT$ 2000 加價購、拉客單\n\n# 輸出報告\nreport_df = pd.DataFrame({\n    'metric': ['總營收', '訂單數', '客單價', '客戶數'],\n    'value': [df['amount'].sum(), len(df),\n              df['amount'].mean(), df['customer_id'].nunique()]\n})\nreport_df.to_excel('2026Q1_summary.xlsx', index=False)\n```",
+      "tip": {
+        "type": "milestone",
+        "text": "完成這個分析、你能跟客戶 / 老闆對等對話：「給我看 Q2 銷售資料、我給你完整分析報告」。月薪 8 萬職位 / NT$ 30k 一個 case 的接案門檻、你已經跨過。"
+      },
+      "xp": 15,
+      "playgrounds": [
+        {
+          "key": "27.7.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "import pandas as pd\nimport numpy as np\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n\nplt.rcParams['font.family'] = ['PingFang TC']\nsns.set_theme(style='whitegrid', palette='Set2')\n\n# === Step 1: 讀資料 ===\ndf = pd.read_csv('sales_2026Q1.csv', parse_dates=['order_date'])\nprint(f'資料筆數：{len(df)}')\nprint(df.info())\n\n# === Step 2: 資料清洗 ===\n# 處理缺值\ndf['discount'] = df['discount'].fillna(0)\ndf = df.dropna(subset=['customer_id'])  # 必要欄位\n\n# 型別轉換\ndf['amount'] = pd.to_numeric(df['amount'], errors='coerce')\n\n# 移除異常值（負金額）\ndf = df[df['amount'] > 0]\n\n# 加衍生欄位\ndf['month'] = df['order_date'].dt.month\ndf['weekday'] = df['order_date'].dt.day_name()\ndf['is_weekend'] = df['order_date'].dt.dayofweek >= 5\ndf['price_tier'] = pd.cut(df['amount'],\n    bins=[0, 500, 2000, 10000, np.inf],\n    labels=['低', '中', '高', '豪華'])\n\n# === Step 3: 探索性分析（EDA）===\n# 整體狀況\nprint(f'總營業額：NT$ {df[\"amount\"].sum():,.0f}')\nprint(f'平均客單價：NT$ {df[\"amount\"].mean():,.0f}')\nprint(f'訂單數：{len(df)}')\nprint(f'客戶數：{df[\"customer_id\"].nunique()}')\n\n# 各類別表現\ncategory_stats = df.groupby('category').agg(\n    revenue=('amount', 'sum'),\n    orders=('order_id', 'count'),\n    avg_value=('amount', 'mean')\n).sort_values('revenue', ascending=False)\nprint(category_stats)\n\n# Top 10 客戶（VIP 找出來）\ntop_customers = df.groupby('customer_id')['amount'].sum()\\\n    .nlargest(10)\nprint('Top 10 VIP 客戶：', top_customers)\n\n# === Step 4: 視覺化 ===\nfig, axes = plt.subplots(2, 2, figsize=(14, 10))\n\n# 圖 1：月營收趨勢\nmonthly = df.groupby('month')['amount'].sum()\naxes[0, 0].plot(monthly.index, monthly.values, marker='o', linewidth=2)\naxes[0, 0].set_title('2026 Q1 月營收趨勢', fontsize=14)\naxes[0, 0].set_xlabel('月份')\naxes[0, 0].set_ylabel('營收（NT$）')\n\n# 圖 2：類別佔比\ncategory_stats['revenue'].plot(kind='bar', ax=axes[0, 1], color='#50fa7b')\naxes[0, 1].set_title('各類別營收', fontsize=14)\naxes[0, 1].tick_params(axis='x', rotation=45)\n\n# 圖 3：星期幾下單最多\nweekday_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday',\n                  'Friday', 'Saturday', 'Sunday']\nweekday_counts = df['weekday'].value_counts().reindex(weekday_order)\nsns.barplot(x=weekday_counts.index, y=weekday_counts.values,\n            ax=axes[1, 0], palette='pastel')\naxes[1, 0].set_title('各週天訂單數', fontsize=14)\naxes[1, 0].tick_params(axis='x', rotation=45)\n\n# 圖 4：客單價分布\nsns.histplot(df['amount'], bins=50, kde=True, ax=axes[1, 1])\naxes[1, 1].set_title('客單價分布', fontsize=14)\naxes[1, 1].set_xlabel('金額')\n\nplt.tight_layout()\nplt.savefig('2026Q1_report.png', dpi=300, bbox_inches='tight')\nplt.show()\n\n# === Step 5: 結論 ===\n# 📊 2026 Q1 銷售報告\n#\n# 【關鍵指標】\n# - 總營收：NT$ X,XXX,XXX\n# - 訂單數：X,XXX 筆\n# - 客單價：NT$ X,XXX\n# - 活躍客戶：X,XXX 位\n#\n# 【發現】\n# 1. 3 月營收最高、Q1 月成長率 +X%\n# 2. 「電子產品」類別佔總營收 40%、為主力\n# 3. 週六下單最多（佔 30%）、週二最低\n# 4. 80% 訂單在 NT$ 500-2000 區間\n#\n# 【建議】\n# 1. 加碼週末廣告、強化高需求時段\n# 2. 電子產品上新品、保持類別優勢\n# 3. 設計 NT$ 2000 加價購、拉客單\n\n# 輸出報告\nreport_df = pd.DataFrame({\n    'metric': ['總營收', '訂單數', '客單價', '客戶數'],\n    'value': [df['amount'].sum(), len(df),\n              df['amount'].mean(), df['customer_id'].nunique()]\n})\nreport_df.to_excel('2026Q1_summary.xlsx', index=False)",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      }
+    },
+    {
+      "title": "pandas 完整：5 大資料操作",
+      "oneLineSummary": "filter / sort / groupby / merge / pivot—Excel 90% 功能 1 行寫完",
+      "analogy": "pandas 是「Python 的 Excel」、處理百萬筆、自動化、可寫 pipeline。",
+      "content": "## DataFrame 基本\n```python\nimport pandas as pd\n\ndf = pd.read_csv(\"data.csv\")\ndf.head()           # 前 5 筆\ndf.tail(10)         # 後 10 筆\ndf.info()           # 欄位資訊\ndf.describe()       # 統計摘要\ndf.shape            # (rows, cols)\ndf.columns          # 欄位名\ndf.dtypes           # 各欄型別\n```\n\n## 1. Filter（過濾）\n```python\nadults = df[df[\"age\"] >= 18]\nadults_tw = df[(df[\"age\"] >= 18) & (df[\"country\"] == \"TW\")]\nmany = df[df[\"name\"].isin([\"Alice\", \"Bob\", \"Charlie\"])]\nnot_null = df[df[\"email\"].notna()]\n\n# 文字\ndf[df[\"name\"].str.contains(\"王\")]\ndf[df[\"email\"].str.endswith(\"@gmail.com\")]\n```\n\n## 2. Sort\n```python\ndf.sort_values(\"amount\", ascending=False)\ndf.sort_values([\"category\", \"amount\"], ascending=[True, False])\ndf.sort_index()  # 按 index 排\n```\n\n## 3. GroupBy（樞紐分析核心）\n```python\n# 各國銷售總額\ndf.groupby(\"country\")[\"amount\"].sum()\n\n# 多欄分組 + 多種統計\ndf.groupby([\"country\", \"category\"]).agg({\n    \"amount\": [\"sum\", \"mean\", \"count\"],\n    \"user_id\": \"nunique\"  # 不重複數\n})\n\n# 用 transform 取得 group 內排名\ndf[\"rank\"] = df.groupby(\"country\")[\"amount\"].transform(\n    lambda x: x.rank(ascending=False)\n)\n```\n\n## 4. Merge（SQL JOIN）\n```python\n# inner join\nresult = pd.merge(orders, users, on=\"user_id\", how=\"inner\")\n\n# left / right / outer\nresult = pd.merge(orders, users, on=\"user_id\", how=\"left\")\n\n# 多欄 join\nresult = pd.merge(a, b, left_on=\"user_id\", right_on=\"id\")\n```\n\n## 5. Pivot（樞紐表）\n```python\npivot = pd.pivot_table(\n    df, \n    values=\"amount\",\n    index=\"month\",\n    columns=\"category\",\n    aggfunc=\"sum\",\n    fill_value=0\n)\n\n# Melt（pivot 反向）\nmelted = pd.melt(df, id_vars=[\"id\"], value_vars=[\"jan\", \"feb\", \"mar\"])\n```\n\n## 其他常用\n```python\n# 新欄位\ndf[\"total\"] = df[\"price\"] * df[\"quantity\"]\ndf[\"category_upper\"] = df[\"category\"].str.upper()\n\n# 條件 + apply\ndf[\"tier\"] = df[\"amount\"].apply(\n    lambda x: \"high\" if x > 1000 else \"low\"\n)\n\n# 合併條件\nimport numpy as np\ndf[\"tier\"] = np.where(df[\"amount\"] > 1000, \"high\", \"low\")\n\n# 多條件\ndf[\"grade\"] = np.select(\n    [df[\"score\"] >= 90, df[\"score\"] >= 60],\n    [\"A\", \"B\"], default=\"F\"\n)\n\n# 刪欄位 / 列\ndf.drop(\"col_name\", axis=1)        # 刪欄\ndf.drop_duplicates(subset=[\"email\"]) # 去重\ndf.dropna(subset=[\"email\"])        # 刪 NaN\n\n# Fill NaN\ndf[\"age\"].fillna(df[\"age\"].mean(), inplace=True)\ndf[\"category\"].fillna(\"unknown\", inplace=True)\n```",
+      "tip": {
+        "type": "practical",
+        "text": "pandas 操作 vs Excel：1 行 vs 5-10 步。資料分析 80% 時間在 pandas、學熟一輩子受用。"
+      },
+      "id": "27.8",
+      "number": "LESSON 27.8",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "27.8.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "import pandas as pd\n\ndf = pd.read_csv(\"data.csv\")\ndf.head()           # 前 5 筆\ndf.tail(10)         # 後 10 筆\ndf.info()           # 欄位資訊\ndf.describe()       # 統計摘要\ndf.shape            # (rows, cols)\ndf.columns          # 欄位名\ndf.dtypes           # 各欄型別",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "DataFrame 基本"
+        },
+        {
+          "level": 2,
+          "text": "1. Filter（過濾）"
+        },
+        {
+          "level": 2,
+          "text": "2. Sort"
+        },
+        {
+          "level": 2,
+          "text": "3. GroupBy（樞紐分析核心）"
+        },
+        {
+          "level": 2,
+          "text": "4. Merge（SQL JOIN）"
+        },
+        {
+          "level": 2,
+          "text": "5. Pivot（樞紐表）"
+        },
+        {
+          "level": 2,
+          "text": "其他常用"
+        }
+      ]
+    },
+    {
+      "title": "NumPy 向量運算：矩陣的基礎",
+      "oneLineSummary": "array 計算比 Python list 快 100 倍、ML 基礎",
+      "analogy": "NumPy 是 pandas / sklearn / pytorch 的底層—會了往 AI 走順。",
+      "content": "## 為什麼比 list 快\n```python\nimport numpy as np\nimport time\n\n# Python list\nlst = list(range(1000000))\nstart = time.time()\nresult = [x * 2 for x in lst]\nprint(f\"list: {time.time() - start:.3f}s\")  # ~0.1s\n\n# NumPy array\narr = np.arange(1000000)\nstart = time.time()\nresult = arr * 2\nprint(f\"numpy: {time.time() - start:.3f}s\")  # ~0.001s（100 倍快）\n```\n\nNumPy 用 C 寫 + 向量化（SIMD）。\n\n## 建立 array\n```python\nnp.array([1, 2, 3])             # 從 list\nnp.zeros(10)                    # 10 個 0\nnp.ones((3, 4))                 # 3x4 全 1\nnp.eye(3)                       # 3x3 單位矩陣\nnp.arange(0, 10, 2)             # [0, 2, 4, 6, 8]\nnp.linspace(0, 1, 11)           # 0-1 均分 11 個\nnp.random.rand(3, 3)            # 0-1 隨機\nnp.random.normal(0, 1, 1000)    # 常態分布\nnp.random.randint(0, 100, 50)   # 整數\n```\n\n## 屬性\n```python\narr = np.array([[1, 2, 3], [4, 5, 6]])\narr.shape       # (2, 3)\narr.ndim        # 2 維\narr.size        # 6\narr.dtype       # int64\n```\n\n## 索引 / Slice\n```python\narr[0, 1]           # 第 0 列、第 1 行\narr[:, 1]           # 所有列、第 1 行\narr[0, :]           # 第 0 列\narr[1:3, 0:2]       # 子矩陣\n\n# Boolean indexing\narr[arr > 3]        # 大於 3 的\narr[(arr > 2) & (arr < 5)]\n```\n\n## 向量運算\n```python\na = np.array([1, 2, 3])\nb = np.array([4, 5, 6])\n\na + b               # [5, 7, 9]\na * b               # [4, 10, 18]（element-wise）\na @ b               # 32（dot product）\na * 2               # [2, 4, 6]（廣播）\n\nnp.sin(a)\nnp.exp(a)\nnp.log(a)\nnp.sqrt(a)\n```\n\n## Broadcasting（廣播、神功能）\n```python\n# 不同形狀自動擴展\nm = np.array([[1, 2, 3], [4, 5, 6]])  # 2x3\nv = np.array([10, 20, 30])             # 3\n\nm + v\n# [[11, 22, 33],\n#  [14, 25, 36]]\n# 自動擴展成 (2, 3)\n```\n\n## 矩陣運算\n```python\nA = np.array([[1, 2], [3, 4]])\nB = np.array([[5, 6], [7, 8]])\n\nA @ B                  # 矩陣乘\nA.T                    # 轉置\nnp.linalg.inv(A)       # 反矩陣\nnp.linalg.det(A)       # 行列式\nnp.linalg.eig(A)       # 特徵值\nnp.linalg.solve(A, b)  # 解 Ax = b\n```\n\n## 統計\n```python\narr.mean()      # 平均\narr.std()       # 標準差\narr.var()       # 變異\narr.min()\narr.max()\narr.sum()\narr.argmax()    # 最大值的 index\narr.cumsum()    # 累積和\nnp.percentile(arr, 90)  # 90 百分位\n```\n\n## reshape / 形狀變化\n```python\narr = np.arange(12)\narr.reshape(3, 4)\narr.reshape(-1, 3)  # 自動算 row\narr.flatten()       # 攤平\nnp.concatenate([a, b])\nnp.stack([a, b])    # 增加維度\n```\n\n## 隨機（重要）\n```python\nnp.random.seed(42)  # 設 seed、結果重現\n\nnp.random.choice([1, 2, 3], size=5)        # 隨機選\nnp.random.shuffle(arr)                      # 原地打亂\nnp.random.normal(0, 1, 1000)                # 常態\nnp.random.uniform(0, 100, 1000)             # 均勻\n```\n\n## 應用：替代 Python loop\n```python\n# ❌ 慢\nresult = []\nfor x in data:\n    if x > 0:\n        result.append(x ** 2)\n\n# ✅ 快 100 倍\narr = np.array(data)\nresult = arr[arr > 0] ** 2\n```",
+      "tip": {
+        "type": "pro",
+        "text": "向量化是 Python 資料分析最大門檻。寫到 NumPy 不是 for loop = 從新手變中階。"
+      },
+      "id": "27.9",
+      "number": "LESSON 27.9",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "27.9.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "import numpy as np\nimport time\n\n# Python list\nlst = list(range(1000000))\nstart = time.time()\nresult = [x * 2 for x in lst]\nprint(f\"list: {time.time() - start:.3f}s\")  # ~0.1s\n\n# NumPy array\narr = np.arange(1000000)\nstart = time.time()\nresult = arr * 2\nprint(f\"numpy: {time.time() - start:.3f}s\")  # ~0.001s（100 倍快）",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 11 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼比 list 快"
+        },
+        {
+          "level": 2,
+          "text": "建立 array"
+        },
+        {
+          "level": 2,
+          "text": "屬性"
+        },
+        {
+          "level": 2,
+          "text": "索引 / Slice"
+        },
+        {
+          "level": 2,
+          "text": "向量運算"
+        },
+        {
+          "level": 2,
+          "text": "Broadcasting（廣播、神功能）"
+        },
+        {
+          "level": 2,
+          "text": "矩陣運算"
+        },
+        {
+          "level": 2,
+          "text": "統計"
+        },
+        {
+          "level": 2,
+          "text": "reshape / 形狀變化"
+        },
+        {
+          "level": 2,
+          "text": "隨機（重要）"
+        },
+        {
+          "level": 2,
+          "text": "應用：替代 Python loop"
+        }
+      ]
+    },
+    {
+      "title": "matplotlib + seaborn 視覺化",
+      "oneLineSummary": "不畫圖等於沒分析—用 chart 講故事",
+      "analogy": "資料分析師 50% 時間在「畫圖給老闆看」。",
+      "content": "## matplotlib 基礎\n```python\nimport matplotlib.pyplot as plt\n\n# 中文字體（解決亂碼）\nplt.rcParams[\"font.family\"] = \"Noto Sans CJK TC\"\nplt.rcParams[\"axes.unicode_minus\"] = False\n\n# 線圖\nplt.plot(x, y)\nplt.title(\"月銷售\")\nplt.xlabel(\"月份\")\nplt.ylabel(\"營收\")\nplt.savefig(\"plot.png\", dpi=300)\nplt.show()\n```\n\n## 5 種基本圖\n\n### Line（趨勢）\n```python\nplt.plot(months, sales, marker=\"o\")\n```\n\n### Bar\n```python\nplt.bar(categories, values)\nplt.barh(categories, values)  # 橫向\n```\n\n### Scatter（散點）\n```python\nplt.scatter(x, y, s=sizes, c=colors, alpha=0.5)\n```\n\n### Histogram\n```python\nplt.hist(data, bins=30)\n```\n\n### Pie（少用）\n```python\nplt.pie(values, labels=labels, autopct=\"%.1f%%\")\n```\n\n## 子圖\n```python\nfig, axes = plt.subplots(2, 2, figsize=(12, 8))\naxes[0, 0].plot(x, y)\naxes[0, 1].bar(categories, values)\naxes[1, 0].scatter(x, y)\naxes[1, 1].hist(data)\nplt.tight_layout()\n```\n\n## seaborn（漂亮 stats 圖）\n```python\nimport seaborn as sns\n\n# Bar\nsns.barplot(data=df, x=\"category\", y=\"amount\")\n\n# Box plot（看分布）\nsns.boxplot(data=df, x=\"country\", y=\"income\")\n\n# Violin（box + density）\nsns.violinplot(data=df, x=\"country\", y=\"income\")\n\n# Heatmap（相關矩陣）\nsns.heatmap(df.corr(), annot=True, cmap=\"coolwarm\", fmt=\".2f\")\n\n# 散點 + 回歸\nsns.regplot(data=df, x=\"price\", y=\"rating\")\n\n# Pairplot（多變數關係）\nsns.pairplot(df[[\"age\", \"income\", \"spending\"]])\n\n# Distribution\nsns.histplot(df[\"age\"], kde=True)\n```\n\n## 設定樣式\n```python\nsns.set_theme(style=\"whitegrid\")\nsns.set_palette(\"husl\")\n\n# 自訂顏色\ncolors = [\"#50fa7b\", \"#8be9fd\", \"#ff79c6\"]\nsns.barplot(data=df, x=\"cat\", y=\"val\", palette=colors)\n```\n\n## 進階：故事化圖\n\n### 加註解\n```python\nplt.plot(months, sales)\nplt.annotate(\n    \"iPhone 17 發表\",\n    xy=(7, 50000),\n    xytext=(5, 60000),\n    arrowprops={\"arrowstyle\": \"->\"}\n)\n```\n\n### 加水平線（基準）\n```python\nplt.axhline(y=target, color=\"red\", linestyle=\"--\", label=\"目標\")\nplt.legend()\n```\n\n### 突出重點\n```python\ncolors = [\"#50fa7b\" if v > target else \"#cccccc\" for v in values]\nplt.bar(categories, values, color=colors)\n```\n\n## 對比表\n\n| 工具 | 適合 |\n|---|---|\n| matplotlib | 細節控制、客製 |\n| seaborn | 統計圖、漂亮 |\n| Plotly | 互動式 |\n| Bokeh | 互動式、大資料 |\n| Altair | 宣告式 |\n\n## 出版品質\n```python\nfig, ax = plt.subplots(figsize=(8, 5), dpi=300)\nax.plot(x, y, linewidth=2, color=\"#50fa7b\")\nax.set_xlabel(\"Month\", fontsize=12)\nax.set_ylabel(\"Revenue (NT$)\", fontsize=12)\nax.set_title(\"2026 月營收\", fontsize=14, fontweight=\"bold\")\nax.grid(alpha=0.3)\nax.spines[\"top\"].set_visible(False)\nax.spines[\"right\"].set_visible(False)\nplt.savefig(\"publication.pdf\", bbox_inches=\"tight\")\n```",
+      "tip": {
+        "type": "practical",
+        "text": "不要追炫、追清楚。一個簡單 bar chart 講對故事 > 10 個花俏圖。"
+      },
+      "id": "27.10",
+      "number": "LESSON 27.10",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "27.10.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "import matplotlib.pyplot as plt\n\n# 中文字體（解決亂碼）\nplt.rcParams[\"font.family\"] = \"Noto Sans CJK TC\"\nplt.rcParams[\"axes.unicode_minus\"] = False\n\n# 線圖\nplt.plot(x, y)\nplt.title(\"月銷售\")\nplt.xlabel(\"月份\")\nplt.ylabel(\"營收\")\nplt.savefig(\"plot.png\", dpi=300)\nplt.show()",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 13 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "matplotlib 基礎"
+        },
+        {
+          "level": 2,
+          "text": "5 種基本圖"
+        },
+        {
+          "level": 3,
+          "text": "Line（趨勢）"
+        },
+        {
+          "level": 3,
+          "text": "Bar"
+        },
+        {
+          "level": 3,
+          "text": "Scatter（散點）"
+        },
+        {
+          "level": 3,
+          "text": "Histogram"
+        },
+        {
+          "level": 3,
+          "text": "Pie（少用）"
+        },
+        {
+          "level": 2,
+          "text": "子圖"
+        },
+        {
+          "level": 2,
+          "text": "seaborn（漂亮 stats 圖）"
+        },
+        {
+          "level": 2,
+          "text": "設定樣式"
+        },
+        {
+          "level": 2,
+          "text": "進階：故事化圖"
+        },
+        {
+          "level": 3,
+          "text": "加註解"
+        },
+        {
+          "level": 3,
+          "text": "加水平線（基準）"
+        },
+        {
+          "level": 3,
+          "text": "突出重點"
+        },
+        {
+          "level": 2,
+          "text": "對比表"
+        },
+        {
+          "level": 2,
+          "text": "出版品質"
+        }
+      ]
+    },
+    {
+      "title": "Plotly：互動式圖表",
+      "oneLineSummary": "可縮放 / hover / 下載—老闆看了會感動",
+      "analogy": "靜態圖看 1 次、互動圖能玩很久。職涯加分必裝。",
+      "content": "## 為什麼用 Plotly\n- ✅ 互動（hover、zoom、pan）\n- ✅ 可嵌入網頁（HTML）\n- ✅ 大資料可撐（WebGL）\n- ✅ 適合 dashboard\n- ✅ Jupyter 友善\n- ❌ 靜態出版選 matplotlib\n\n## 安裝\n```bash\npip install plotly pandas\n```\n\n## Plotly Express（簡潔版、推薦）\n```python\nimport plotly.express as px\nimport pandas as pd\n\ndf = pd.read_csv(\"data.csv\")\n\n# 散點圖\nfig = px.scatter(\n    df, x=\"gdp\", y=\"life_expectancy\",\n    size=\"population\", color=\"continent\",\n    hover_name=\"country\", log_x=True,\n    title=\"GDP vs 壽命\"\n)\nfig.show()\n\n# 線圖\nfig = px.line(df, x=\"year\", y=\"sales\", color=\"region\")\n\n# Bar\nfig = px.bar(df, x=\"category\", y=\"amount\", color=\"country\")\n\n# Histogram\nfig = px.histogram(df, x=\"age\", nbins=30)\n\n# Box\nfig = px.box(df, x=\"country\", y=\"income\")\n\n# Heatmap\nfig = px.imshow(df.corr(), text_auto=True)\n\n# Map\nfig = px.scatter_geo(\n    df, locations=\"iso_alpha\",\n    size=\"population\", color=\"continent\"\n)\n```\n\n## Plotly Graph Objects（精細控制）\n```python\nimport plotly.graph_objects as go\n\nfig = go.Figure()\nfig.add_trace(go.Scatter(x=x1, y=y1, name=\"2025\", mode=\"lines+markers\"))\nfig.add_trace(go.Scatter(x=x2, y=y2, name=\"2026\", mode=\"lines+markers\"))\nfig.update_layout(\n    title=\"年度對比\",\n    xaxis_title=\"月份\",\n    yaxis_title=\"營收\"\n)\nfig.show()\n```\n\n## 進階圖類型\n\n### Sankey（流向圖）\n```python\nfig = go.Figure(go.Sankey(\n    node={\"label\": [\"A\", \"B\", \"C\", \"D\"]},\n    link={\n        \"source\": [0, 1, 0, 2],\n        \"target\": [2, 3, 3, 3],\n        \"value\": [10, 20, 5, 15]\n    }\n))\n```\n\n### Sunburst（多層圓餅）\n```python\nfig = px.sunburst(\n    df, path=[\"region\", \"country\", \"city\"],\n    values=\"population\"\n)\n```\n\n### Treemap\n```python\nfig = px.treemap(df, path=[\"category\", \"subcategory\"], values=\"amount\")\n```\n\n### 3D scatter\n```python\nfig = px.scatter_3d(df, x=\"x\", y=\"y\", z=\"z\", color=\"category\")\n```\n\n## 輸出\n```python\n# 顯示\nfig.show()\n\n# 存 HTML（互動保留）\nfig.write_html(\"chart.html\")\n\n# 存圖片（要 kaleido：pip install kaleido）\nfig.write_image(\"chart.png\", width=1200, height=800)\n\n# 嵌入網頁\nhtml_str = fig.to_html(include_plotlyjs=\"cdn\")\n```\n\n## Dash（Plotly 的 Dashboard）\n```python\nimport dash\nfrom dash import dcc, html\n\napp = dash.Dash(__name__)\napp.layout = html.Div([\n    html.H1(\"我的 Dashboard\"),\n    dcc.Graph(figure=fig1),\n    dcc.Graph(figure=fig2),\n])\napp.run_server(debug=True)\n```\n\n## 對比 Streamlit\n- **Dash**：Python web app、純 Python 寫\n- **Streamlit**：更簡單、適合資料分析師\n- **Plotly Dash**：類 React、適合工程師\n\n新手選 Streamlit、進階選 Dash。",
+      "tip": {
+        "type": "pro",
+        "text": "互動圖丟 Streamlit / Jupyter dashboard、老闆能自己探索、不用反覆改圖。職涯加分巨大。"
+      },
+      "id": "27.11",
+      "number": "LESSON 27.11",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "27.11.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "import plotly.express as px\nimport pandas as pd\n\ndf = pd.read_csv(\"data.csv\")\n\n# 散點圖\nfig = px.scatter(\n    df, x=\"gdp\", y=\"life_expectancy\",\n    size=\"population\", color=\"continent\",\n    hover_name=\"country\", log_x=True,\n    title=\"GDP vs 壽命\"\n)\nfig.show()\n\n# 線圖\nfig = px.line(df, x=\"year\", y=\"sales\", color=\"region\")\n\n# Bar\nfig = px.bar(df, x=\"category\", y=\"amount\", color=\"country\")\n\n# Histogram\nfig = px.histogram(df, x=\"age\", nbins=30)\n\n# Box\nfig = px.box(df, x=\"country\", y=\"income\")\n\n# Heatmap\nfig = px.imshow(df.corr(), text_auto=True)\n\n# Map\nfig = px.scatter_geo(\n    df, locations=\"iso_alpha\",\n    size=\"population\", color=\"continent\"\n)",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 9 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼用 Plotly"
+        },
+        {
+          "level": 2,
+          "text": "安裝"
+        },
+        {
+          "level": 2,
+          "text": "Plotly Express（簡潔版、推薦）"
+        },
+        {
+          "level": 2,
+          "text": "Plotly Graph Objects（精細控制）"
+        },
+        {
+          "level": 2,
+          "text": "進階圖類型"
+        },
+        {
+          "level": 3,
+          "text": "Sankey（流向圖）"
+        },
+        {
+          "level": 3,
+          "text": "Sunburst（多層圓餅）"
+        },
+        {
+          "level": 3,
+          "text": "Treemap"
+        },
+        {
+          "level": 3,
+          "text": "3D scatter"
+        },
+        {
+          "level": 2,
+          "text": "輸出"
+        },
+        {
+          "level": 2,
+          "text": "Dash（Plotly 的 Dashboard）"
+        },
+        {
+          "level": 2,
+          "text": "對比 Streamlit"
+        }
+      ]
+    },
+    {
+      "title": "Streamlit：5 分鐘做出 Dashboard",
+      "oneLineSummary": "寫 Python 像寫 Markdown、自動變網頁",
+      "analogy": "資料分析師最強武器—不會前端也能交付 dashboard。",
+      "content": "## 為什麼用 Streamlit\n- ✅ 純 Python、不用 HTML/CSS/JS\n- ✅ 5 分鐘從 notebook 變 dashboard\n- ✅ 內建 widget（selectbox / slider / button）\n- ✅ 部署一鍵（Streamlit Cloud 免費）\n- ✅ 接案神器\n\n## 安裝\n```bash\npip install streamlit pandas plotly\nstreamlit run app.py\n```\n\n## Hello World\n```python\n# app.py\nimport streamlit as st\n\nst.title(\"我的第一個 Dashboard\")\nst.write(\"Hello Streamlit\")\n```\n\n```bash\nstreamlit run app.py\n# 自動打開 http://localhost:8501\n```\n\n## 基本元件\n```python\nimport streamlit as st\n\n# 文字\nst.title(\"標題\")\nst.header(\"子標題\")\nst.subheader(\"子子標題\")\nst.markdown(\"**粗體** *斜體*\")\nst.code(\"print('hello')\", language=\"python\")\n\n# 資料\nst.dataframe(df)          # 互動表格\nst.table(df)              # 靜態\nst.json({\"key\": \"value\"})\n\n# 圖\nst.line_chart(df)\nst.bar_chart(df)\nst.plotly_chart(fig)\nst.pyplot(matplotlib_fig)\n\n# 媒體\nst.image(\"image.png\")\nst.video(\"video.mp4\")\nst.audio(\"audio.mp3\")\n```\n\n## 互動 Widget\n```python\n# 輸入\nname = st.text_input(\"姓名\")\nage = st.number_input(\"年齡\", min_value=0, max_value=120)\ndate = st.date_input(\"日期\")\n\n# 選擇\nchoice = st.selectbox(\"選一個\", [\"A\", \"B\", \"C\"])\nmulti = st.multiselect(\"選多個\", [\"X\", \"Y\", \"Z\"])\nvalue = st.slider(\"滑桿\", 0, 100, 50)\nchecked = st.checkbox(\"同意\")\nradio = st.radio(\"選擇\", [\"選項 1\", \"選項 2\"])\n\n# 按鈕\nif st.button(\"送出\"):\n    st.success(\"成功！\")\n\n# 上傳檔案\nfile = st.file_uploader(\"上傳 CSV\", type=[\"csv\"])\nif file:\n    df = pd.read_csv(file)\n    st.dataframe(df)\n```\n\n## Layout\n```python\n# 左右分欄\ncol1, col2, col3 = st.columns(3)\ncol1.metric(\"營收\", \"NT$ 1.2M\", \"+12%\")\ncol2.metric(\"使用者\", \"5,234\", \"-23\")\ncol3.metric(\"Churn\", \"5.4%\", \"0.3%\")\n\n# Tab\ntab1, tab2 = st.tabs([\"概覽\", \"詳細\"])\nwith tab1:\n    st.line_chart(df)\nwith tab2:\n    st.dataframe(df)\n\n# Sidebar\nwith st.sidebar:\n    country = st.selectbox(\"國家\", df[\"country\"].unique())\n    \nfiltered = df[df[\"country\"] == country]\n```\n\n## 進階功能\n\n### Session State\n```python\n# 跨 rerun 保留狀態\nif \"count\" not in st.session_state:\n    st.session_state.count = 0\n\nif st.button(\"+1\"):\n    st.session_state.count += 1\n\nst.write(f\"count: {st.session_state.count}\")\n```\n\n### Cache（避免重算）\n```python\n@st.cache_data\ndef load_data():\n    return pd.read_csv(\"big.csv\")\n\ndf = load_data()  # 第二次不會重讀\n```\n\n### Form\n```python\nwith st.form(\"my_form\"):\n    name = st.text_input(\"姓名\")\n    age = st.number_input(\"年齡\")\n    submitted = st.form_submit_button(\"送出\")\n    if submitted:\n        st.write(f\"Hi {name}, you are {age}\")\n```\n\n## 實戰範例：銷售 Dashboard\n```python\nimport streamlit as st\nimport pandas as pd\nimport plotly.express as px\n\nst.set_page_config(page_title=\"銷售 Dashboard\", layout=\"wide\")\nst.title(\"📊 2026 銷售分析\")\n\n@st.cache_data\ndef load():\n    return pd.read_csv(\"sales.csv\")\ndf = load()\n\n# Sidebar 篩選\nwith st.sidebar:\n    countries = st.multiselect(\n        \"國家\", df[\"country\"].unique(),\n        default=df[\"country\"].unique()\n    )\n    date_range = st.date_input(\"日期區間\", value=[df[\"date\"].min(), df[\"date\"].max()])\n\nfiltered = df[df[\"country\"].isin(countries)]\n\n# Metrics\ncol1, col2, col3 = st.columns(3)\ncol1.metric(\"總營收\", f\"NT$ {filtered['amount'].sum():,.0f}\")\ncol2.metric(\"訂單數\", len(filtered))\ncol3.metric(\"客單價\", f\"{filtered['amount'].mean():.0f}\")\n\n# 圖\nfig = px.bar(\n    filtered.groupby(\"month\")[\"amount\"].sum().reset_index(),\n    x=\"month\", y=\"amount\", title=\"月營收\"\n)\nst.plotly_chart(fig, use_container_width=True)\n\n# 表格\nst.dataframe(filtered)\n```\n\n## 部署\n```bash\n# Streamlit Cloud（免費）\n# 1. 推到 GitHub\n# 2. share.streamlit.io 連 repo\n# 3. 5 分鐘上線\n```",
+      "tip": {
+        "type": "milestone",
+        "text": "接案 NT$ 30-100k：客戶要「自家業務 dashboard」、Streamlit 1 週做完、續案率超高。"
+      },
+      "id": "27.12",
+      "number": "LESSON 27.12",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "27.12.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "# app.py\nimport streamlit as st\n\nst.title(\"我的第一個 Dashboard\")\nst.write(\"Hello Streamlit\")",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 11 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼用 Streamlit"
+        },
+        {
+          "level": 2,
+          "text": "安裝"
+        },
+        {
+          "level": 2,
+          "text": "Hello World"
+        },
+        {
+          "level": 2,
+          "text": "基本元件"
+        },
+        {
+          "level": 2,
+          "text": "互動 Widget"
+        },
+        {
+          "level": 2,
+          "text": "Layout"
+        },
+        {
+          "level": 2,
+          "text": "進階功能"
+        },
+        {
+          "level": 3,
+          "text": "Session State"
+        },
+        {
+          "level": 3,
+          "text": "Cache（避免重算）"
+        },
+        {
+          "level": 3,
+          "text": "Form"
+        },
+        {
+          "level": 2,
+          "text": "實戰範例：銷售 Dashboard"
+        },
+        {
+          "level": 2,
+          "text": "部署"
+        }
+      ]
+    },
+    {
+      "title": "SQLAlchemy + pandas：DB 資料分析",
+      "oneLineSummary": "真實工作不在 CSV、在 DB、把 PG / MySQL 拉到 pandas",
+      "analogy": "資料工程的核心—SQL 撈、pandas 分析、結果寫回。",
+      "content": "## 連 DB\n```python\n# pip install sqlalchemy psycopg2-binary pandas\nimport pandas as pd\nfrom sqlalchemy import create_engine\n\n# PostgreSQL\nengine = create_engine(\"postgresql://user:pass@host:5432/db\")\n\n# MySQL\nengine = create_engine(\"mysql+pymysql://user:pass@host/db\")\n\n# SQLite\nengine = create_engine(\"sqlite:///local.db\")\n```\n\n## SQL → pandas\n```python\ndf = pd.read_sql(\"\"\"\n    SELECT date, category, SUM(amount) AS revenue\n    FROM orders\n    WHERE date >= NOW() - INTERVAL '30 days'\n    GROUP BY date, category\n    ORDER BY date\n\"\"\", engine)\n\n# 或用 table 名稱\ndf = pd.read_sql_table(\"orders\", engine)\n\n# 帶參數（防 SQL injection）\ndf = pd.read_sql(\"\"\"\n    SELECT * FROM orders WHERE user_id = %(uid)s\n\"\"\", engine, params={\"uid\": 123})\n```\n\n## pandas → DB\n```python\n# 整個 df 寫進 DB\ndf.to_sql(\"results\", engine, if_exists=\"replace\", index=False)\n\n# 選項\nif_exists=\"fail\"     # 表存在就報錯\nif_exists=\"replace\"  # 取代\nif_exists=\"append\"   # 接後面\n\n# 大資料分批寫\ndf.to_sql(\"big\", engine, chunksize=10000, method=\"multi\")\n```\n\n## 完整 ETL pipeline\n```python\ndef daily_etl():\n    # Extract\n    df = pd.read_sql(\"\"\"\n        SELECT order_id, user_id, amount, created_at\n        FROM orders\n        WHERE DATE(created_at) = CURRENT_DATE - 1\n    \"\"\", engine)\n    \n    # Transform\n    df[\"month\"] = df[\"created_at\"].dt.to_period(\"M\")\n    summary = df.groupby([\"month\", \"user_id\"]).agg(\n        order_count=(\"order_id\", \"count\"),\n        total_amount=(\"amount\", \"sum\")\n    ).reset_index()\n    \n    # Load\n    summary.to_sql(\n        \"daily_user_summary\",\n        engine,\n        if_exists=\"append\",\n        index=False\n    )\n    print(f\"處理 {len(summary)} 筆\")\n\n# 排程：每天凌晨 1 點\n# 用 cron / Airflow / Prefect\n```\n\n## SQLAlchemy ORM（進階）\n```python\nfrom sqlalchemy.orm import declarative_base, sessionmaker\nfrom sqlalchemy import Column, Integer, String\n\nBase = declarative_base()\n\nclass User(Base):\n    __tablename__ = \"users\"\n    id = Column(Integer, primary_key=True)\n    name = Column(String)\n\nSession = sessionmaker(bind=engine)\nsession = Session()\n\nusers = session.query(User).filter(User.id > 10).all()\n```\n\n## 處理大資料\n\n### Chunking（分批讀）\n```python\nchunks = pd.read_sql(\"SELECT * FROM huge_table\", engine, chunksize=10000)\nfor chunk in chunks:\n    process(chunk)\n```\n\n### Lazy load\n```python\nimport dask.dataframe as dd\n\ndf = dd.read_sql_table(\"huge\", engine, index_col=\"id\")\nresult = df.groupby(\"category\").amount.sum().compute()\n```\n\n## Pandas + Parquet（比 CSV 快 10 倍）\n```python\ndf.to_parquet(\"data.parquet\", compression=\"snappy\")\ndf = pd.read_parquet(\"data.parquet\")\n\n# 寫到 S3\ndf.to_parquet(\"s3://bucket/data.parquet\")\n```\n\n## 接 BigQuery / Snowflake\n```python\n# BigQuery\nfrom google.cloud import bigquery\nclient = bigquery.Client()\ndf = client.query(\"SELECT * FROM `project.dataset.table`\").to_dataframe()\n\n# Snowflake\nimport snowflake.connector\nimport pandas as pd\n\nconn = snowflake.connector.connect(...)\ndf = pd.read_sql(\"SELECT * FROM table\", conn)\n```\n\n## 真實 ETL stack（2026）\n```\n資料源（PG / MySQL / API）\n    ↓\nExtract（SQLAlchemy / boto3）\n    ↓\nTransform（pandas / Polars / DuckDB）\n    ↓\nLoad（BigQuery / Snowflake / S3）\n    ↓\n分析（pandas / Streamlit / BI 工具）\n```\n\n## 工具\n- **Apache Airflow**：排程 workflow\n- **Prefect / Dagster**：modern airflow\n- **dbt**：SQL transformation\n- **Great Expectations**：資料品質檢查",
+      "tip": {
+        "type": "practical",
+        "text": "Production data pipeline 80% 用 SQLAlchemy + pandas + Airflow + S3。資料工程師月薪 NT$ 80-150k。"
+      },
+      "id": "27.13",
+      "number": "LESSON 27.13",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "27.13.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "# pip install sqlalchemy psycopg2-binary pandas\nimport pandas as pd\nfrom sqlalchemy import create_engine\n\n# PostgreSQL\nengine = create_engine(\"postgresql://user:pass@host:5432/db\")\n\n# MySQL\nengine = create_engine(\"mysql+pymysql://user:pass@host/db\")\n\n# SQLite\nengine = create_engine(\"sqlite:///local.db\")",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 10 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "連 DB"
+        },
+        {
+          "level": 2,
+          "text": "SQL → pandas"
+        },
+        {
+          "level": 2,
+          "text": "pandas → DB"
+        },
+        {
+          "level": 2,
+          "text": "完整 ETL pipeline"
+        },
+        {
+          "level": 2,
+          "text": "SQLAlchemy ORM（進階）"
+        },
+        {
+          "level": 2,
+          "text": "處理大資料"
+        },
+        {
+          "level": 3,
+          "text": "Chunking（分批讀）"
+        },
+        {
+          "level": 3,
+          "text": "Lazy load"
+        },
+        {
+          "level": 2,
+          "text": "Pandas + Parquet（比 CSV 快 10 倍）"
+        },
+        {
+          "level": 2,
+          "text": "接 BigQuery / Snowflake"
+        },
+        {
+          "level": 2,
+          "text": "真實 ETL stack（2026）"
+        },
+        {
+          "level": 2,
+          "text": "工具"
+        }
+      ]
+    },
+    {
+      "title": "Jupyter Notebook 進階技巧",
+      "oneLineSummary": "Magic command、widget、報告化—讓 Jupyter 不只是「跑 cell」",
+      "analogy": "Jupyter 是資料分析師主場、用熟提升效率 50%。",
+      "content": "## Magic Commands\n\n### % 行 magic\n```python\n%timeit df.sort_values(\"amount\")  # 計時\n%pwd                                # 當前目錄\n%ls                                 # 列檔案\n%who                                # 列變數\n%matplotlib inline                  # 圖內嵌\n%load_ext autoreload                # 自動 reload\n%autoreload 2\n```\n\n### %% cell magic\n```python\n%%time\n# 整個 cell 計時\nresult = expensive_computation()\n```\n\n```python\n%%writefile config.py\n# 把 cell 內容寫到檔案\nSECRET = \"...\"\n```\n\n```python\n%%sql\nSELECT * FROM users LIMIT 10\n```\n\n```python\n%%bash\nls -la\ngit status\n```\n\n## 鍵盤快捷鍵（必背）\n- **Shift + Enter**：跑 cell + 下一個\n- **Ctrl + Enter**：跑 cell + 留原地\n- **A**：上面加 cell\n- **B**：下面加 cell\n- **DD**：刪 cell\n- **M**：轉 markdown\n- **Y**：轉 code\n- **Esc**：command mode\n- **Enter**：edit mode\n\n## 互動 Widget\n```python\nfrom ipywidgets import interact\n\n@interact(country=df[\"country\"].unique(), year=(2020, 2026))\ndef show(country, year):\n    filtered = df[(df[\"country\"] == country) & (df[\"year\"] == year)]\n    print(filtered)\n```\n\n```python\nimport ipywidgets as widgets\n\nslider = widgets.IntSlider(min=0, max=100)\ndisplay(slider)\nprint(slider.value)\n```\n\n## Plotly + Jupyter\n```python\nimport plotly.express as px\nfig = px.scatter(df, x=\"age\", y=\"income\")\nfig  # 自動顯示、可互動\n```\n\n## 寫成 HTML 報告\n```bash\njupyter nbconvert --to html notebook.ipynb\n```\n\n## 寫成 PDF（需 LaTeX）\n```bash\njupyter nbconvert --to pdf notebook.ipynb\n```\n\n## 寫成 Python script\n```bash\njupyter nbconvert --to script notebook.ipynb\n```\n\n## Notebook 好習慣\n\n### 1. 標題清楚\n```markdown\n# 2026 Q1 銷售分析\n- 作者：你的名字\n- 日期：2026-05-17\n- 目標：找出成長最快的品類\n\n## 1. 載入資料\n## 2. 清理\n## 3. 分析\n## 4. 結論\n```\n\n### 2. Import 集中\n所有 import 放第一個 cell。\n\n### 3. 用 markdown 解釋\n每個 section 加說明、不要只貼 code。\n\n### 4. 最後寫結論\n不要讓人讀 100 個 cell 後問「所以呢」。\n\n### 5. nbstripout 清 output\n```bash\npip install nbstripout\nnbstripout --install\n```\ngit commit 前自動清掉 output、diff 乾淨。\n\n## 部署 Jupyter\n\n### Voilà（變 dashboard）\n```bash\npip install voila\nvoila notebook.ipynb\n```\nnotebook 變網頁、互動 widget 直接用、不用會前端。\n\n### Google Colab\n- 雲端 Jupyter、免費 GPU\n- 適合教學 / 實驗\n- 缺點：runtime 會斷\n\n### JupyterHub\n- 多人共用 Jupyter\n- 適合團隊 / 公司\n\n### Deepnote / Hex\n- Cloud 版本、團隊協作\n- 付費但好用\n\n## 跟 VS Code 整合\nVS Code 內建 Jupyter 支援：\n- `.ipynb` 直接打開\n- 可以混用 Python file 跟 cell\n- Git diff 友善\n\n## 替代品\n- **Pluto.jl**（Julia）：reactive notebook\n- **Observable**（JS）：reactive、適合視覺化\n- **Marimo**：Python reactive notebook",
+      "tip": {
+        "type": "pro",
+        "text": "jupyter notebook 寫得像論文、面試直接拿去當作品集—雇主看「資料思考力」比看 LeetCode 強。"
+      },
+      "id": "27.14",
+      "number": "LESSON 27.14",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "27.14.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "%timeit df.sort_values(\"amount\")  # 計時\n%pwd                                # 當前目錄\n%ls                                 # 列檔案\n%who                                # 列變數\n%matplotlib inline                  # 圖內嵌\n%load_ext autoreload                # 自動 reload\n%autoreload 2",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "挑一個你做過的舊專案、用本節「Jupyter Notebook 進階技巧」介紹的進階技術重構它。",
+        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（.ipynb）通常在效能 / 維護性 / 擴展性卡住時才登場。",
+        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "Magic Commands"
+        },
+        {
+          "level": 3,
+          "text": "% 行 magic"
+        },
+        {
+          "level": 3,
+          "text": "%% cell magic"
+        },
+        {
+          "level": 2,
+          "text": "鍵盤快捷鍵（必背）"
+        },
+        {
+          "level": 2,
+          "text": "互動 Widget"
+        },
+        {
+          "level": 2,
+          "text": "Plotly + Jupyter"
+        },
+        {
+          "level": 2,
+          "text": "寫成 HTML 報告"
+        },
+        {
+          "level": 2,
+          "text": "寫成 PDF（需 LaTeX）"
+        },
+        {
+          "level": 2,
+          "text": "寫成 Python script"
+        },
+        {
+          "level": 2,
+          "text": "Notebook 好習慣"
+        },
+        {
+          "level": 3,
+          "text": "1. 標題清楚"
+        },
+        {
+          "level": 3,
+          "text": "2. Import 集中"
+        },
+        {
+          "level": 3,
+          "text": "3. 用 markdown 解釋"
+        },
+        {
+          "level": 3,
+          "text": "4. 最後寫結論"
+        },
+        {
+          "level": 3,
+          "text": "5. nbstripout 清 output"
+        },
+        {
+          "level": 2,
+          "text": "部署 Jupyter"
+        },
+        {
+          "level": 3,
+          "text": "Voilà（變 dashboard）"
+        },
+        {
+          "level": 3,
+          "text": "Google Colab"
+        },
+        {
+          "level": 3,
+          "text": "JupyterHub"
+        },
+        {
+          "level": 3,
+          "text": "Deepnote / Hex"
+        },
+        {
+          "level": 2,
+          "text": "跟 VS Code 整合"
+        },
+        {
+          "level": 2,
+          "text": "替代品"
+        }
+      ]
+    },
+    {
+      "title": "時間序列分析 + Prophet 預測",
+      "oneLineSummary": "老闆問「下個月營收會多少」、不靠猜、用資料說話",
+      "analogy": "時間序列分析是商業分析必修—預測、趨勢、季節性。",
+      "content": "## pandas 時間索引\n```python\nimport pandas as pd\n\n# 解析日期\ndf = pd.read_csv(\"sales.csv\", parse_dates=[\"date\"])\ndf = df.set_index(\"date\").sort_index()\n\n# 切片\ndf[\"2026\"]                # 2026 全年\ndf[\"2026-01\"]             # 1 月\ndf[\"2026-01\":\"2026-03\"]   # 範圍\n\n# Resample（重採樣）\ndaily = df[\"sales\"].resample(\"D\").sum()\nweekly = df[\"sales\"].resample(\"W\").sum()\nmonthly = df[\"sales\"].resample(\"ME\").sum()\n\n# Rolling（滑動窗口）\ndf[\"ma7\"] = df[\"sales\"].rolling(7).mean()\ndf[\"ma30\"] = df[\"sales\"].rolling(30).mean()\ndf[\"std30\"] = df[\"sales\"].rolling(30).std()\n\n# Diff（一階差分）\ndf[\"change\"] = df[\"sales\"].diff()\ndf[\"pct_change\"] = df[\"sales\"].pct_change() * 100\n\n# Shift（位移）\ndf[\"yesterday\"] = df[\"sales\"].shift(1)\ndf[\"last_week\"] = df[\"sales\"].shift(7)\n```\n\n## Decomposition（趨勢 / 季節 / 殘差分解）\n```python\nfrom statsmodels.tsa.seasonal import seasonal_decompose\n\nresult = seasonal_decompose(df[\"sales\"], model=\"additive\", period=7)\nresult.plot()\n```\n看出：\n- **Trend**：長期趨勢\n- **Seasonal**：週期性\n- **Residual**：剩下的噪音\n\n## Stationarity（平穩性）\n時間序列要先「平穩」才好預測：\n```python\nfrom statsmodels.tsa.stattools import adfuller\n\nresult = adfuller(df[\"sales\"])\np_value = result[1]\nif p_value < 0.05:\n    print(\"平穩\")\nelse:\n    print(\"不平穩、需要 diff\")\n```\n\n## ARIMA（傳統模型）\n```python\nfrom statsmodels.tsa.arima.model import ARIMA\n\nmodel = ARIMA(df[\"sales\"], order=(1, 1, 1))  # p, d, q\nfitted = model.fit()\nforecast = fitted.forecast(steps=30)\n```\n\n學起來累、新手跳過。\n\n## Prophet（Facebook 出品、推薦）\n```bash\npip install prophet\n```\n\n```python\nfrom prophet import Prophet\nimport pandas as pd\n\n# 整理資料：必須 ds / y 兩欄\ndata = df.reset_index().rename(columns={\"date\": \"ds\", \"sales\": \"y\"})\n\n# 訓練\nm = Prophet(\n    yearly_seasonality=True,\n    weekly_seasonality=True,\n    daily_seasonality=False,\n    seasonality_mode=\"multiplicative\"\n)\nm.fit(data)\n\n# 預測未來 90 天\nfuture = m.make_future_dataframe(periods=90)\nforecast = m.predict(future)\n\n# 視覺化\nfig = m.plot(forecast)\nfig2 = m.plot_components(forecast)  # 看 trend / season / 假日\n```\n\n## Prophet 加假日效應\n```python\n# 台灣假日\nholidays = pd.DataFrame({\n    \"holiday\": \"新年\",\n    \"ds\": pd.to_datetime([\"2026-01-01\", \"2027-01-01\"]),\n    \"lower_window\": -1,\n    \"upper_window\": 3\n})\n\nm = Prophet(holidays=holidays)\n```\n\n## 異常偵測\n```python\n# 用 Prophet 的 confidence interval\nforecast[\"actual\"] = data[\"y\"]\nforecast[\"is_anomaly\"] = (\n    (forecast[\"actual\"] < forecast[\"yhat_lower\"]) |\n    (forecast[\"actual\"] > forecast[\"yhat_upper\"])\n)\n```\n\n或用 statistical 方法：\n```python\nmean = df[\"sales\"].mean()\nstd = df[\"sales\"].std()\ndf[\"is_anomaly\"] = abs(df[\"sales\"] - mean) > 3 * std\n```\n\n## 真實應用\n- **銷售預測**：下個月、Q4 營收\n- **流量預測**：網站、伺服器需求\n- **庫存管理**：補貨時機\n- **異常偵測**：發現問題早\n- **金融**：股價、匯率（要小心、市場很雜）\n\n## 進階：神經網路（深度學習）\n- **LSTM / GRU**：經典 RNN\n- **Transformer**：最新\n- 適合複雜模式、但 ROI 不一定比 Prophet 好\n\n## 常見坑\n- **未來資訊洩漏**：訓練時用了未來資料（如用整年算 mean）\n- **過度擬合**：模型完美對訓練資料、預測爆掉\n- **沒看 baseline**：簡單 moving average 可能贏複雜模型\n- **忽略外部變數**：行銷活動、新聞事件影響",
+      "tip": {
+        "type": "business",
+        "text": "「下季營收預測」是電商 / 製造業最熱門 AI 服務。Prophet 入門快、客戶超愛、接案 NT$ 30-100k。"
+      },
+      "id": "27.15",
+      "number": "LESSON 27.15",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "27.15.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "import pandas as pd\n\n# 解析日期\ndf = pd.read_csv(\"sales.csv\", parse_dates=[\"date\"])\ndf = df.set_index(\"date\").sort_index()\n\n# 切片\ndf[\"2026\"]                # 2026 全年\ndf[\"2026-01\"]             # 1 月\ndf[\"2026-01\":\"2026-03\"]   # 範圍\n\n# Resample（重採樣）\ndaily = df[\"sales\"].resample(\"D\").sum()\nweekly = df[\"sales\"].resample(\"W\").sum()\nmonthly = df[\"sales\"].resample(\"ME\").sum()\n\n# Rolling（滑動窗口）\ndf[\"ma7\"] = df[\"sales\"].rolling(7).mean()\ndf[\"ma30\"] = df[\"sales\"].rolling(30).mean()\ndf[\"std30\"] = df[\"sales\"].rolling(30).std()\n\n# Diff（一階差分）\ndf[\"change\"] = df[\"sales\"].diff()\ndf[\"pct_change\"] = df[\"sales\"].pct_change() * 100\n\n# Shift（位移）\ndf[\"yesterday\"] = df[\"sales\"].shift(1)\ndf[\"last_week\"] = df[\"sales\"].shift(7)",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 9 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "pandas 時間索引"
+        },
+        {
+          "level": 2,
+          "text": "Decomposition（趨勢 / 季節 / 殘差分解）"
+        },
+        {
+          "level": 2,
+          "text": "Stationarity（平穩性）"
+        },
+        {
+          "level": 2,
+          "text": "ARIMA（傳統模型）"
+        },
+        {
+          "level": 2,
+          "text": "Prophet（Facebook 出品、推薦）"
+        },
+        {
+          "level": 2,
+          "text": "Prophet 加假日效應"
+        },
+        {
+          "level": 2,
+          "text": "異常偵測"
+        },
+        {
+          "level": 2,
+          "text": "真實應用"
+        },
+        {
+          "level": 2,
+          "text": "進階：神經網路（深度學習）"
+        },
+        {
+          "level": 2,
+          "text": "常見坑"
+        }
+      ]
+    },
+    {
+      "title": "A/B Test 統計分析",
+      "oneLineSummary": "產品經理推 A vs B、誰好？不靠感覺、用統計顯著性",
+      "analogy": "A/B test 是現代產品決策的基石。會這個 = 從工程師升 PM 必修。",
+      "content": "## 為什麼 A/B test\n不靠「我覺得 A 好」、用資料：\n1. 隨機分組（A / B）\n2. 跑一段時間\n3. 統計分析誰好\n\n## 範例：按鈕顏色\n- A 組（綠色按鈕）：5000 訪客、240 點擊（4.8%）\n- B 組（橘色按鈕）：5000 訪客、275 點擊（5.5%）\n\n差距 0.7% 真的有意義？還是隨機波動？\n\n## p-value 概念\n**p-value < 0.05** 通常代表「顯著」、不是隨機。\n\n```python\nfrom statsmodels.stats.proportion import proportions_ztest\n\ncount = [240, 275]      # 成功數\nnobs = [5000, 5000]     # 樣本數\nstat, pval = proportions_ztest(count, nobs)\nprint(f\"p-value: {pval:.4f}\")\n\nif pval < 0.05:\n    print(\"✅ 顯著、B 真的比較好\")\nelse:\n    print(\"❌ 不顯著、可能只是隨機\")\n```\n\n## Power Analysis（事前算需要多少樣本）\n**前**做、不是事後：\n```python\nfrom statsmodels.stats.power import zt_ind_solve_power\n\n# 想偵測 0.5% 的差異（從 5% → 5.5%）\nn = zt_ind_solve_power(\n    effect_size=0.025,  # Cohen's h\n    alpha=0.05,\n    power=0.8\n)\nprint(f\"每組需要 {n:.0f} 樣本\")\n```\n\n樣本不夠 = 看不到差異 = 浪費時間。\n\n## 三大檢定方式\n\n### 1. 比例（轉換率）\n```python\n# Chi-square / Z-test\nfrom scipy.stats import chi2_contingency\n\nobserved = [[240, 4760], [275, 4725]]  # success / fail\nchi2, pval, _, _ = chi2_contingency(observed)\n```\n\n### 2. 平均（連續變數、客單價）\n```python\n# T-test\nfrom scipy.stats import ttest_ind\n\na_sales = [1000, 1200, 1500, ...]\nb_sales = [1100, 1300, 1450, ...]\nstat, pval = ttest_ind(a_sales, b_sales)\n```\n\n### 3. 多組（不只 2 個變體）\n```python\n# ANOVA\nfrom scipy.stats import f_oneway\nstat, pval = f_oneway(a, b, c, d)\n```\n\n## 信心區間\n比 p-value 更好的指標：\n```python\nimport numpy as np\nfrom scipy import stats\n\nmean = np.mean(data)\nsem = stats.sem(data)\nci = stats.t.interval(0.95, len(data)-1, loc=mean, scale=sem)\nprint(f\"95% CI: {ci}\")\n```\n\n報告寫：「B 比 A 提升 14% (95% CI: 5% to 23%)」、比「p<0.05」實用。\n\n## A/B test 流程\n1. **定假設**：B 會比 A 高 ≥ 10%\n2. **算樣本數**：Power analysis\n3. **隨機分組**：注意公平\n4. **跑滿時間**（至少 1-2 週、含週末週間）\n5. **不偷看**（早停會偏）\n6. **分析**：p-value + 信心區間 + 業務意義\n7. **決定**：A 還 B 還是兩個都不夠好\n\n## 經典坑\n\n### 1. Peeking（偷看早停）\n中間看「好像 B 贏了」就停 = 偽陽性大增。\n\n### 2. 樣本太少\n看到 5% vs 6%「B 贏」、其實是隨機。\n\n### 3. 多重比較\n測 20 個指標、5% 機率是巧合。\n→ 用 Bonferroni 修正：alpha 0.05 / 20 = 0.0025\n\n### 4. Novelty effect\n新東西短期吸引、長期沒差。\n→ 跑久一點。\n\n### 5. Selection bias\n分組不公平（A 都給老用戶、B 都給新用戶）。\n\n## 工具\n- **Optimizely**：商業 A/B test 平台\n- **VWO**：類似\n- **PostHog**：開源、含 A/B\n- **GrowthBook**：開源\n- **Google Optimize**：免費但已停（2023）\n- 自己寫：feature flag + analytics\n\n## 進階：Bayesian A/B test\n不用 p-value、用機率：\n「B 比 A 好的機率是 87%」更直觀。\n工具：**PyMC** / **Bayesian-AB**\n\n## 心法\n- A/B test 不是「找最大值」、是「降低決策風險」\n- 沒辦法 A/B 的事：品牌、政策、長期戰略\n- 80% 的 A/B test 結果是 flat（沒差）\n- 接受 flat = 把資源放真正有效的事",
+      "tip": {
+        "type": "pro",
+        "text": "PM / Growth 必懂。會 A/B test 設計 + 統計分析、面試立刻加分、職涯加薪。"
+      },
+      "id": "27.16",
+      "number": "LESSON 27.16",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "27.16.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "from statsmodels.stats.proportion import proportions_ztest\n\ncount = [240, 275]      # 成功數\nnobs = [5000, 5000]     # 樣本數\nstat, pval = proportions_ztest(count, nobs)\nprint(f\"p-value: {pval:.4f}\")\n\nif pval < 0.05:\n    print(\"✅ 顯著、B 真的比較好\")\nelse:\n    print(\"❌ 不顯著、可能只是隨機\")",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼 A/B test"
+        },
+        {
+          "level": 2,
+          "text": "範例：按鈕顏色"
+        },
+        {
+          "level": 2,
+          "text": "p-value 概念"
+        },
+        {
+          "level": 2,
+          "text": "Power Analysis（事前算需要多少樣本）"
+        },
+        {
+          "level": 2,
+          "text": "三大檢定方式"
+        },
+        {
+          "level": 3,
+          "text": "1. 比例（轉換率）"
+        },
+        {
+          "level": 3,
+          "text": "2. 平均（連續變數、客單價）"
+        },
+        {
+          "level": 3,
+          "text": "3. 多組（不只 2 個變體）"
+        },
+        {
+          "level": 2,
+          "text": "信心區間"
+        },
+        {
+          "level": 2,
+          "text": "A/B test 流程"
+        },
+        {
+          "level": 2,
+          "text": "經典坑"
+        },
+        {
+          "level": 3,
+          "text": "1. Peeking（偷看早停）"
+        },
+        {
+          "level": 3,
+          "text": "2. 樣本太少"
+        },
+        {
+          "level": 3,
+          "text": "3. 多重比較"
+        },
+        {
+          "level": 3,
+          "text": "4. Novelty effect"
+        },
+        {
+          "level": 3,
+          "text": "5. Selection bias"
+        },
+        {
+          "level": 2,
+          "text": "工具"
+        },
+        {
+          "level": 2,
+          "text": "進階：Bayesian A/B test"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "PySpark：處理 TB 級資料",
+      "oneLineSummary": "單機 pandas 100GB 會爆—Spark 分散式處理 TB 級",
+      "analogy": "pandas 處理 10GB 還可以、100GB 機器爆。Spark 用集群、處理 TB 級。",
+      "content": "## 為什麼需要 Spark\n- pandas：單機、< 10GB\n- Spark：集群、TB 級\n- 速度比 Hadoop MapReduce 快 100 倍\n\n## 安裝\n```bash\npip install pyspark\n# 或用 Databricks（雲端）\n```\n\n## 起 Spark\n```python\nfrom pyspark.sql import SparkSession\n\nspark = SparkSession.builder \\\n    .appName(\"analysis\") \\\n    .config(\"spark.executor.memory\", \"4g\") \\\n    .getOrCreate()\n```\n\n## DataFrame API\n```python\n# 讀資料（Parquet 比 CSV 快 10 倍）\ndf = spark.read.parquet(\"s3://bucket/data.parquet\")\ndf = spark.read.csv(\"data.csv\", header=True, inferSchema=True)\ndf = spark.read.json(\"data.json\")\n\n# 看 schema\ndf.printSchema()\ndf.show(5)\ndf.count()\n```\n\n## 操作（跟 pandas 像）\n```python\nfrom pyspark.sql.functions import col, sum as _sum, avg, count\n\n# Filter\ndf.filter(col(\"age\") >= 18)\n\n# Select + 計算\ndf.select(\"name\", (col(\"price\") * col(\"qty\")).alias(\"total\"))\n\n# GroupBy\ndf.groupBy(\"country\").agg(\n    _sum(\"amount\").alias(\"total\"),\n    avg(\"amount\").alias(\"avg\"),\n    count(\"*\").alias(\"orders\")\n)\n\n# JOIN\nresult = df1.join(df2, on=\"user_id\", how=\"inner\")\n\n# Sort\ndf.orderBy(col(\"amount\").desc())\n\n# Limit\ndf.limit(100)\n```\n\n## Spark SQL\n```python\ndf.createOrReplaceTempView(\"orders\")\n\nresult = spark.sql(\"\"\"\n    SELECT country, SUM(amount) AS total\n    FROM orders\n    WHERE year = 2026\n    GROUP BY country\n    ORDER BY total DESC\n\"\"\")\nresult.show()\n```\n\n## UDF（自訂函式）\n```python\nfrom pyspark.sql.functions import udf\nfrom pyspark.sql.types import StringType\n\n@udf(returnType=StringType())\ndef categorize(amount):\n    if amount > 1000: return \"high\"\n    elif amount > 100: return \"mid\"\n    else: return \"low\"\n\ndf.withColumn(\"tier\", categorize(col(\"amount\")))\n```\n\n## Lazy evaluation\nSpark 不會馬上算、組合 plan 後一起跑：\n```python\ndf1 = spark.read.parquet(\"...\")\ndf2 = df1.filter(...)\ndf3 = df2.groupBy(...).agg(...)\ndf3.show()  # ← 這時才真正執行\n```\n\n## 寫出\n```python\ndf.write.parquet(\"s3://output/result.parquet\")\ndf.write.mode(\"overwrite\").parquet(\"...\")  # 覆蓋\ndf.write.csv(\"output.csv\", header=True)\n\n# Partition 寫（按欄位分資料夾）\ndf.write.partitionBy(\"year\", \"month\").parquet(\"...\")\n```\n\n## Pandas API on Spark（pyspark.pandas）\n原本 pandas code 直接跑大資料：\n```python\nimport pyspark.pandas as ps\n\ndf = ps.read_csv(\"huge.csv\")\ndf[\"new\"] = df[\"a\"] + df[\"b\"]\ndf.groupby(\"country\").mean()\n# 寫法一樣、但跑在 Spark\n```\n\n## 平台\n- **Databricks**（最熱門、Apache Spark 商業化）\n- **AWS EMR**（AWS 集群）\n- **GCP Dataproc**\n- **本地 docker**（學習用）\n\n## 何時用 Spark\n- ✅ 資料 > 50GB\n- ✅ 需要分散式\n- ✅ 結合 ML（MLlib）\n- ❌ < 10GB（pandas / Polars 更快）\n\n## 替代品\n- **Polars**（Rust 寫、單機快）\n- **DuckDB**（in-process OLAP）\n- **Dask**（Python 分散式）\n- **Modin**（pandas 替代品、自動並行）\n\n## 心法\n- 不要 collect() 到 driver（OOM）\n- 善用 cache() 重複用的 DataFrame\n- Partition 適中（不要太大太小）\n- 看 Spark UI 找瓶頸",
+      "tip": {
+        "type": "practical",
+        "text": "台灣資料工程師 60% 在用 Spark。會 Spark + SQL + Python = 月薪 NT$ 100k+。"
+      },
+      "id": "27.17",
+      "number": "LESSON 27.17",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "27.17.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "from pyspark.sql import SparkSession\n\nspark = SparkSession.builder \\\n    .appName(\"analysis\") \\\n    .config(\"spark.executor.memory\", \"4g\") \\\n    .getOrCreate()",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 9 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼需要 Spark"
+        },
+        {
+          "level": 2,
+          "text": "安裝"
+        },
+        {
+          "level": 2,
+          "text": "起 Spark"
+        },
+        {
+          "level": 2,
+          "text": "DataFrame API"
+        },
+        {
+          "level": 2,
+          "text": "操作（跟 pandas 像）"
+        },
+        {
+          "level": 2,
+          "text": "Spark SQL"
+        },
+        {
+          "level": 2,
+          "text": "UDF（自訂函式）"
+        },
+        {
+          "level": 2,
+          "text": "Lazy evaluation"
+        },
+        {
+          "level": 2,
+          "text": "寫出"
+        },
+        {
+          "level": 2,
+          "text": "Pandas API on Spark（pyspark.pandas）"
+        },
+        {
+          "level": 2,
+          "text": "平台"
+        },
+        {
+          "level": 2,
+          "text": "何時用 Spark"
+        },
+        {
+          "level": 2,
+          "text": "替代品"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Polars：取代 pandas 的新星",
+      "oneLineSummary": "Rust 寫、比 pandas 快 5-10 倍、API 現代",
+      "analogy": "2025+ Python 資料分析的下一代主流、值得學。",
+      "content": "## 為什麼 Polars\n- ⚡ Rust 底層、快 pandas 5-10 倍\n- 💪 多核 CPU 自動並行\n- 🎯 Lazy evaluation（query optimization）\n- 📦 API 現代（type-safe）\n- 🔄 跟 pandas / NumPy 互通\n\n## 安裝\n```bash\npip install polars\n```\n\n## 基本\n```python\nimport polars as pl\n\ndf = pl.read_csv(\"data.csv\")\ndf.head()\ndf.shape\ndf.schema\n```\n\n## 操作（比 pandas 簡潔）\n```python\n# Filter\ndf.filter(pl.col(\"age\") >= 18)\n\n# Select\ndf.select([\"name\", \"age\", \"email\"])\n\n# With column（加新欄）\ndf.with_columns(\n    (pl.col(\"price\") * pl.col(\"qty\")).alias(\"total\")\n)\n\n# GroupBy\ndf.group_by(\"country\").agg([\n    pl.col(\"amount\").sum().alias(\"total\"),\n    pl.col(\"amount\").mean().alias(\"avg\"),\n    pl.count().alias(\"orders\")\n])\n\n# Sort\ndf.sort(\"amount\", descending=True)\n```\n\n## Lazy（query optimization）\n```python\nresult = (\n    pl.scan_csv(\"huge.csv\")              # 不馬上讀\n    .filter(pl.col(\"country\") == \"TW\")    # 只在 query 計劃內\n    .group_by(\"category\")\n    .agg(pl.col(\"amount\").sum())\n    .sort(\"amount\", descending=True)\n    .collect()                            # ← 這時才執行、優化過\n)\n```\n\n## pandas → Polars\n```python\nimport pandas as pd\nimport polars as pl\n\n# pandas df → Polars\ndf_pl = pl.from_pandas(df_pd)\n\n# Polars → pandas\ndf_pd = df_pl.to_pandas()\n```\n\n## Polars vs pandas 對比\n\n| 操作 | pandas | Polars |\n|---|---|---|\n| 讀 1GB CSV | 8s | 1s |\n| GroupBy + sum | 5s | 0.5s |\n| JOIN 100M rows | OOM | 30s |\n| 語法 | df[df[\"a\"]>5] | df.filter(pl.col(\"a\")>5) |\n| 多核 | 不支援 | 自動 |\n\n## 範例\n```python\ndf = pl.read_parquet(\"orders.parquet\")\n\n# 各國月銷售 top 5\nresult = (\n    df.filter(pl.col(\"year\") == 2026)\n    .group_by([\"country\", \"month\"])\n    .agg([\n        pl.col(\"amount\").sum().alias(\"revenue\"),\n        pl.col(\"order_id\").count().alias(\"orders\"),\n    ])\n    .sort(\"revenue\", descending=True)\n    .group_by(\"country\")\n    .head(5)\n)\n```\n\n## Time series\n```python\ndf = pl.read_csv(\"sales.csv\")\ndf = df.with_columns(pl.col(\"date\").str.to_date())\n\n# Resample\ndf.group_by_dynamic(\n    \"date\", every=\"1mo\", closed=\"left\"\n).agg(pl.col(\"sales\").sum())\n\n# Rolling\ndf.with_columns(\n    pl.col(\"sales\").rolling_mean(7).alias(\"ma7\")\n)\n```\n\n## 何時用 Polars\n- ✅ 中型資料（1GB - 100GB）\n- ✅ 速度敏感的 ETL\n- ✅ 新專案\n- ✅ TS / Rust 工程師（API 更友善）\n\n## 何時還是 pandas\n- ✅ 生態整合（sklearn / statsmodels）\n- ✅ 教學 / 入門\n- ✅ 老 codebase\n\n## 何時用 Spark\n- > 100GB\n- 真正需要集群\n\n## 心法\n- pandas → Polars 學習曲線 1-2 天\n- API 設計更好、寫起來爽\n- 跟 pandas 並存沒問題",
+      "tip": {
+        "type": "trend",
+        "text": "Polars 是 2026 資料分析的「Vite vs Webpack」時刻。學會 = 領先別人 2 年。"
+      },
+      "id": "27.18",
+      "number": "LESSON 27.18",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "27.18.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "import polars as pl\n\ndf = pl.read_csv(\"data.csv\")\ndf.head()\ndf.shape\ndf.schema",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼 Polars"
+        },
+        {
+          "level": 2,
+          "text": "安裝"
+        },
+        {
+          "level": 2,
+          "text": "基本"
+        },
+        {
+          "level": 2,
+          "text": "操作（比 pandas 簡潔）"
+        },
+        {
+          "level": 2,
+          "text": "Lazy（query optimization）"
+        },
+        {
+          "level": 2,
+          "text": "pandas → Polars"
+        },
+        {
+          "level": 2,
+          "text": "Polars vs pandas 對比"
+        },
+        {
+          "level": 2,
+          "text": "範例"
+        },
+        {
+          "level": 2,
+          "text": "Time series"
+        },
+        {
+          "level": 2,
+          "text": "何時用 Polars"
+        },
+        {
+          "level": 2,
+          "text": "何時還是 pandas"
+        },
+        {
+          "level": 2,
+          "text": "何時用 Spark"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "DuckDB：In-process OLAP",
+      "oneLineSummary": "SQLite for analytics—嵌入應用、不用 server、處理 GB 級超快",
+      "analogy": "DuckDB 是「分析版的 SQLite」—一個檔案、嵌入 Python、跑 SQL 比 pandas 快 10 倍。",
+      "content": "## 為什麼 DuckDB\n- ⚡ 比 pandas 快 5-20 倍（OLAP 場景）\n- 📦 In-process（不用起 server）\n- 🦆 完整 SQL 支援（90% PG 相容）\n- 🗂️ 直接讀 Parquet / CSV / JSON\n- 🐍 Python / R / JS 整合好\n\n## 安裝\n```bash\npip install duckdb\n```\n\n## 基本\n```python\nimport duckdb\n\n# 直接 SQL（in-memory）\nresult = duckdb.sql(\"SELECT 42\").fetchall()\n\n# 連到檔案\nconn = duckdb.connect(\"mydata.duckdb\")\nconn.execute(\"CREATE TABLE users (id INT, name TEXT)\")\nconn.execute(\"INSERT INTO users VALUES (1, 'Alice')\")\n```\n\n## 殺手特色：直接 query 檔案\n```python\n# CSV\nduckdb.sql(\"SELECT * FROM 'data.csv' WHERE age > 18\")\n\n# Parquet\nduckdb.sql(\"SELECT * FROM 'data.parquet'\")\n\n# 多個檔案\nduckdb.sql(\"SELECT * FROM 'data/*.parquet'\")\n\n# S3\nduckdb.sql(\"SELECT * FROM 's3://bucket/*.parquet'\")\n```\n\n## pandas 整合\n```python\nimport pandas as pd\nimport duckdb\n\ndf = pd.read_csv(\"data.csv\")\n\n# 直接 query pandas DF\nresult = duckdb.sql(\"\"\"\n    SELECT category, SUM(amount) AS total\n    FROM df\n    WHERE year = 2026\n    GROUP BY category\n\"\"\").to_df()\n```\n\n## 速度比較\n```python\n# 100M rows\n# pandas: 30s\n# Polars: 5s\n# DuckDB: 3s\n```\n\n## 進階：JOIN 多檔\n```python\nresult = duckdb.sql(\"\"\"\n    SELECT o.id, u.name, o.amount\n    FROM 'orders.parquet' o\n    JOIN 'users.csv' u ON o.user_id = u.id\n    WHERE o.amount > 1000\n\"\"\").to_df()\n```\n\n## Window functions（pandas 沒）\n```python\nduckdb.sql(\"\"\"\n    SELECT name, amount,\n           RANK() OVER (PARTITION BY country ORDER BY amount DESC) as rank,\n           SUM(amount) OVER (PARTITION BY country) as country_total\n    FROM 'orders.parquet'\n\"\"\")\n```\n\n## 寫出\n```python\nduckdb.sql(\"\"\"\n    COPY (\n        SELECT * FROM 'data.csv' WHERE active = true\n    ) TO 'output.parquet' (FORMAT PARQUET, COMPRESSION ZSTD)\n\"\"\")\n```\n\n## Python API\n```python\n# 1. 直接 SQL\nduckdb.sql(\"...\")\n\n# 2. 用 connection\nconn = duckdb.connect(\"db.duckdb\")\nconn.execute(\"...\")\ndf = conn.execute(\"SELECT * FROM users\").df()\n\n# 3. 從 pandas\nduckdb.from_df(pandas_df).query(...)\n```\n\n## Web 用：DuckDB-Wasm\nDuckDB 編譯成 WebAssembly、瀏覽器跑 SQL：\n```javascript\nimport * as duckdb from '@duckdb/duckdb-wasm';\nconst db = await duckdb.AsyncDuckDB.create(...);\nawait db.query(\"SELECT * FROM 'data.parquet'\");\n```\n適合：互動式 dashboard、不用後端。\n\n## 何時用 DuckDB\n- ✅ 分析查詢（OLAP）\n- ✅ 處理 Parquet / CSV\n- ✅ Notebook / ETL\n- ✅ 嵌入應用\n- ❌ Production transactional（用 PG）\n- ❌ Real-time inserts（用 SQL）\n\n## DuckDB vs SQLite vs PG\n\n| 面向 | DuckDB | SQLite | PG |\n|---|---|---|---|\n| 場景 | OLAP（分析）| OLTP（小型 app）| 通用 |\n| 列存 | ✅ | ❌ | ❌（extension）|\n| 並行 | 單 writer | 單 writer | 多 |\n| Server | No | No | Yes |\n| 速度（分析）| 最快 | 慢 | 中 |\n\n## 案例：取代 pandas\n```python\n# pandas 寫法\ndf = pd.read_parquet(\"big.parquet\")\nfiltered = df[df[\"country\"] == \"TW\"]\nresult = filtered.groupby(\"category\")[\"amount\"].sum()\n\n# DuckDB 寫法（快 10 倍）\nresult = duckdb.sql(\"\"\"\n    SELECT category, SUM(amount) AS total\n    FROM 'big.parquet'\n    WHERE country = 'TW'\n    GROUP BY category\n\"\"\").to_df()\n```",
+      "tip": {
+        "type": "milestone",
+        "text": "DuckDB 是 2024-2026 最酷分析工具。學會 = 取代 pandas 80% 場景、處理大資料不用 Spark。"
+      },
+      "id": "27.19",
+      "number": "LESSON 27.19",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "27.19.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "import duckdb\n\n# 直接 SQL（in-memory）\nresult = duckdb.sql(\"SELECT 42\").fetchall()\n\n# 連到檔案\nconn = duckdb.connect(\"mydata.duckdb\")\nconn.execute(\"CREATE TABLE users (id INT, name TEXT)\")\nconn.execute(\"INSERT INTO users VALUES (1, 'Alice')\")",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 11 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼 DuckDB"
+        },
+        {
+          "level": 2,
+          "text": "安裝"
+        },
+        {
+          "level": 2,
+          "text": "基本"
+        },
+        {
+          "level": 2,
+          "text": "殺手特色：直接 query 檔案"
+        },
+        {
+          "level": 2,
+          "text": "pandas 整合"
+        },
+        {
+          "level": 2,
+          "text": "速度比較"
+        },
+        {
+          "level": 2,
+          "text": "進階：JOIN 多檔"
+        },
+        {
+          "level": 2,
+          "text": "Window functions（pandas 沒）"
+        },
+        {
+          "level": 2,
+          "text": "寫出"
+        },
+        {
+          "level": 2,
+          "text": "Python API"
+        },
+        {
+          "level": 2,
+          "text": "Web 用：DuckDB-Wasm"
+        },
+        {
+          "level": 2,
+          "text": "何時用 DuckDB"
+        },
+        {
+          "level": 2,
+          "text": "DuckDB vs SQLite vs PG"
+        },
+        {
+          "level": 2,
+          "text": "案例：取代 pandas"
+        }
+      ]
+    },
+    {
+      "title": "資料清理：缺失值 / 重複 / 異常",
+      "oneLineSummary": "真實資料 80% 時間在清理、不是分析",
+      "analogy": "「資料分析師 90% 時間整理資料、10% 抱怨資料髒」。",
+      "content": "## 缺失值（Missing Data）\n\n### 偵測\n```python\ndf.isna()                  # 每格 True/False\ndf.isna().sum()            # 各欄缺多少\ndf.isna().sum() / len(df)  # %\n\n# 視覺化\nimport seaborn as sns\nsns.heatmap(df.isna(), cbar=False)\n```\n\n### 處理策略\n\n#### 1. 刪除\n```python\ndf.dropna()                          # 任何欄 NaN 就刪\ndf.dropna(subset=[\"email\"])          # email NaN 才刪\ndf.dropna(thresh=3)                  # 至少 3 個非 NaN 才留\n```\n\n#### 2. 填充\n```python\ndf[\"age\"].fillna(df[\"age\"].mean())             # 平均\ndf[\"age\"].fillna(df[\"age\"].median())           # 中位數（防 outlier）\ndf[\"category\"].fillna(\"unknown\")               # 固定值\ndf[\"score\"].fillna(method=\"ffill\")             # 用前一個\ndf[\"score\"].fillna(method=\"bfill\")             # 用後一個\ndf[\"age\"].fillna(df.groupby(\"country\")[\"age\"].transform(\"mean\"))  # 分組平均\n```\n\n#### 3. 插值\n```python\ndf[\"temp\"].interpolate(method=\"linear\")\ndf[\"temp\"].interpolate(method=\"time\")          # 時間插值\n```\n\n#### 4. ML imputation\n```python\nfrom sklearn.impute import KNNImputer\nimputer = KNNImputer(n_neighbors=5)\ndf_imputed = pd.DataFrame(imputer.fit_transform(df), columns=df.columns)\n```\n\n## 重複資料\n\n```python\n# 找重複\ndf.duplicated()                      # 完全相同\ndf.duplicated(subset=[\"email\"])      # email 重複\n\n# 刪除\ndf.drop_duplicates()\ndf.drop_duplicates(subset=[\"email\"], keep=\"first\")  # 留第一個\ndf.drop_duplicates(subset=[\"email\"], keep=\"last\")\ndf.drop_duplicates(subset=[\"email\"], keep=False)    # 全刪\n```\n\n## 異常值（Outliers）\n\n### IQR 方法\n```python\nQ1 = df[\"amount\"].quantile(0.25)\nQ3 = df[\"amount\"].quantile(0.75)\nIQR = Q3 - Q1\n\noutliers = df[\n    (df[\"amount\"] < Q1 - 1.5 * IQR) |\n    (df[\"amount\"] > Q3 + 1.5 * IQR)\n]\n\n# 用 cap 處理\ndf[\"amount\"] = df[\"amount\"].clip(\n    lower=Q1 - 1.5 * IQR,\n    upper=Q3 + 1.5 * IQR\n)\n```\n\n### Z-score 方法\n```python\nfrom scipy import stats\ndf[\"z\"] = stats.zscore(df[\"amount\"])\noutliers = df[abs(df[\"z\"]) > 3]\n```\n\n### Isolation Forest（ML）\n```python\nfrom sklearn.ensemble import IsolationForest\niso = IsolationForest(contamination=0.05)\ndf[\"is_outlier\"] = iso.fit_predict(df[[\"amount\"]])\n```\n\n## 資料型別\n\n```python\ndf.dtypes                            # 看\ndf[\"age\"] = df[\"age\"].astype(int)    # 轉\ndf[\"date\"] = pd.to_datetime(df[\"date\"])\ndf[\"amount\"] = pd.to_numeric(df[\"amount\"], errors=\"coerce\")  # 失敗變 NaN\n```\n\n## 字串清理\n\n```python\ndf[\"name\"].str.strip()                # 去頭尾空白\ndf[\"name\"].str.lower()\ndf[\"name\"].str.replace(\" \", \"_\")\ndf[\"email\"].str.contains(\"@\")\ndf[\"phone\"].str.match(r\"^09\\d{8}$\")  # 正規\n\n# 提取\ndf[\"domain\"] = df[\"email\"].str.split(\"@\").str[1]\ndf[\"year\"] = df[\"date\"].str.extract(r\"(\\d{4})\")\n```\n\n## 日期清理\n\n```python\ndf[\"date\"] = pd.to_datetime(df[\"date\"], errors=\"coerce\", format=\"%Y-%m-%d\")\n\n# 找出無效日期\ndf[df[\"date\"].isna()]\n\n# 統一格式\ndf[\"date_str\"] = df[\"date\"].dt.strftime(\"%Y-%m-%d\")\n\n# 抽出特徵\ndf[\"year\"] = df[\"date\"].dt.year\ndf[\"month\"] = df[\"date\"].dt.month\ndf[\"dayofweek\"] = df[\"date\"].dt.dayofweek\ndf[\"is_weekend\"] = df[\"date\"].dt.dayofweek >= 5\n```\n\n## Pandas Profiling（一鍵 EDA 報告）\n```bash\npip install ydata-profiling\n```\n```python\nfrom ydata_profiling import ProfileReport\nreport = ProfileReport(df, title=\"資料分析報告\")\nreport.to_file(\"report.html\")\n```\n→ 自動產生完整分析報告、所有欄位統計、相關矩陣、缺失模式。\n\n## 心法\n- 不要追完美、追「夠用」\n- 清理前先備份原始資料\n- 紀錄每個步驟（為什麼這樣清）\n- 異常值不一定要刪—可能是真實 outlier（VIP 大額交易）\n- 缺失值的「為什麼缺」比怎麼填重要",
+      "tip": {
+        "type": "warning",
+        "text": "直接 dropna() 可能丟掉 80% 資料、變成 sample bias。每個 NaN 想清楚為什麼缺。"
+      },
+      "id": "27.20",
+      "number": "LESSON 27.20",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "27.20.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "df.isna()                  # 每格 True/False\ndf.isna().sum()            # 各欄缺多少\ndf.isna().sum() / len(df)  # %\n\n# 視覺化\nimport seaborn as sns\nsns.heatmap(df.isna(), cbar=False)",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 14 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "缺失值（Missing Data）"
+        },
+        {
+          "level": 3,
+          "text": "偵測"
+        },
+        {
+          "level": 3,
+          "text": "處理策略"
+        },
+        {
+          "level": 2,
+          "text": "重複資料"
+        },
+        {
+          "level": 2,
+          "text": "異常值（Outliers）"
+        },
+        {
+          "level": 3,
+          "text": "IQR 方法"
+        },
+        {
+          "level": 3,
+          "text": "Z-score 方法"
+        },
+        {
+          "level": 3,
+          "text": "Isolation Forest（ML）"
+        },
+        {
+          "level": 2,
+          "text": "資料型別"
+        },
+        {
+          "level": 2,
+          "text": "字串清理"
+        },
+        {
+          "level": 2,
+          "text": "日期清理"
+        },
+        {
+          "level": 2,
+          "text": "Pandas Profiling（一鍵 EDA 報告）"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Feature Engineering：把資料變模型可用",
+      "oneLineSummary": "資料給機器學模型前必須轉換—特徵工程是 ML 的勝負關鍵",
+      "analogy": "「好資料勝過好模型」—Feature engineering 決定 80% ML 效果。",
+      "content": "## 為什麼需要\n原始資料 → 模型輸入。需要：\n- 數值化（文字 → 數字）\n- Scale（範圍統一）\n- 抽特徵（從複雜資料抓重點）\n\n## 1. 類別變數編碼\n\n### Label Encoding（有序）\n```python\nfrom sklearn.preprocessing import LabelEncoder\nle = LabelEncoder()\ndf[\"education_encoded\"] = le.fit_transform(df[\"education\"])\n# 大學=0、碩士=1、博士=2（有大小關係）\n```\n\n### One-Hot Encoding（無序）\n```python\npd.get_dummies(df[\"country\"], prefix=\"country\")\n# country_TW、country_JP、country_US 三欄\n```\n\n### Target Encoding\n用該類別的 target 平均：\n```python\ndf[\"category_target\"] = df.groupby(\"category\")[\"amount\"].transform(\"mean\")\n```\n\n## 2. 數值變換\n\n### Scaling（範圍統一）\n```python\nfrom sklearn.preprocessing import StandardScaler, MinMaxScaler\n\n# Standard：平均 0、std 1\nscaler = StandardScaler()\ndf_scaled = scaler.fit_transform(df[[\"age\", \"income\"]])\n\n# MinMax：0-1\nmm = MinMaxScaler()\ndf_norm = mm.fit_transform(df[[\"age\", \"income\"]])\n```\n\n### Log 轉換（處理偏態）\n```python\nimport numpy as np\ndf[\"log_income\"] = np.log1p(df[\"income\"])  # log(1+x)、handle 0\n```\n\n### Binning（分箱）\n```python\ndf[\"age_group\"] = pd.cut(df[\"age\"], bins=[0, 18, 35, 60, 120],\n                          labels=[\"minor\", \"young\", \"mid\", \"senior\"])\n\n# 等頻\ndf[\"income_quintile\"] = pd.qcut(df[\"income\"], q=5, labels=False)\n```\n\n## 3. 文字特徵\n\n### 長度\n```python\ndf[\"text_length\"] = df[\"text\"].str.len()\ndf[\"word_count\"] = df[\"text\"].str.split().str.len()\n```\n\n### TF-IDF\n```python\nfrom sklearn.feature_extraction.text import TfidfVectorizer\nvec = TfidfVectorizer(max_features=100)\ntfidf = vec.fit_transform(df[\"text\"])\n```\n\n### Embedding（深度學習）\n```python\nfrom sentence_transformers import SentenceTransformer\nmodel = SentenceTransformer(\"all-MiniLM-L6-v2\")\nembeddings = model.encode(df[\"text\"].tolist())\n# 每筆變 384 維向量\n```\n\n## 4. 時間特徵\n\n```python\ndf[\"hour\"] = df[\"timestamp\"].dt.hour\ndf[\"day_of_week\"] = df[\"timestamp\"].dt.dayofweek\ndf[\"is_weekend\"] = df[\"day_of_week\"] >= 5\ndf[\"is_holiday\"] = df[\"date\"].isin(holidays)\ndf[\"month_sin\"] = np.sin(2 * np.pi * df[\"month\"] / 12)  # 週期性\ndf[\"month_cos\"] = np.cos(2 * np.pi * df[\"month\"] / 12)\n```\n\n## 5. 交互特徵\n```python\ndf[\"price_per_qty\"] = df[\"price\"] / df[\"quantity\"]\ndf[\"bmi\"] = df[\"weight\"] / (df[\"height\"] / 100) ** 2\n```\n\n## 6. Lag / Rolling features（時序）\n```python\ndf[\"sales_yesterday\"] = df[\"sales\"].shift(1)\ndf[\"sales_last_week\"] = df[\"sales\"].shift(7)\ndf[\"sales_ma7\"] = df[\"sales\"].rolling(7).mean()\ndf[\"sales_std30\"] = df[\"sales\"].rolling(30).std()\n```\n\n## 7. Group features\n```python\ndf[\"user_avg_amount\"] = df.groupby(\"user_id\")[\"amount\"].transform(\"mean\")\ndf[\"user_count\"] = df.groupby(\"user_id\")[\"amount\"].transform(\"count\")\n```\n\n## 8. PCA（降維）\n高維資料降低維度：\n```python\nfrom sklearn.decomposition import PCA\npca = PCA(n_components=5)\ndf_reduced = pca.fit_transform(df_scaled)\n```\n\n## Pipeline（推薦做法）\n```python\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.compose import ColumnTransformer\nfrom sklearn.preprocessing import StandardScaler, OneHotEncoder\n\nnumeric_features = [\"age\", \"income\"]\ncategorical_features = [\"country\", \"education\"]\n\npreprocessor = ColumnTransformer([\n    (\"num\", StandardScaler(), numeric_features),\n    (\"cat\", OneHotEncoder(handle_unknown=\"ignore\"), categorical_features),\n])\n\npipeline = Pipeline([\n    (\"preprocessor\", preprocessor),\n    (\"model\", RandomForestClassifier()),\n])\n\npipeline.fit(X_train, y_train)\n```\n\n→ 一個 pipeline 處理一切、避免 train/test 不一致。\n\n## 特徵選擇\n\n### 用相關性\n```python\ndf.corr()[\"target\"].abs().sort_values(ascending=False)\n```\n\n### 用 Random Forest 重要度\n```python\nfrom sklearn.ensemble import RandomForestRegressor\nrf = RandomForestRegressor().fit(X, y)\nimportance = pd.Series(rf.feature_importances_, index=X.columns)\nimportance.sort_values(ascending=False).plot.bar()\n```\n\n### Recursive Feature Elimination\n```python\nfrom sklearn.feature_selection import RFE\nrfe = RFE(estimator=model, n_features_to_select=10)\nrfe.fit(X, y)\nselected = X.columns[rfe.support_]\n```\n\n## 心法\n- 領域知識 > 自動化\n- 不要為加特徵而加（過擬合）\n- Train / test 用同樣的 preprocessor\n- 避免 data leakage（target encoding 要 CV）",
+      "tip": {
+        "type": "pro",
+        "text": "Kaggle 比賽贏家 90% 靠 feature engineering、不是模型多神。學會這個資料工程薪水跳一級。"
+      },
+      "id": "27.21",
+      "number": "LESSON 27.21",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "27.21.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "from sklearn.preprocessing import LabelEncoder\nle = LabelEncoder()\ndf[\"education_encoded\"] = le.fit_transform(df[\"education\"])\n# 大學=0、碩士=1、博士=2（有大小關係）",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 18 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼需要"
+        },
+        {
+          "level": 2,
+          "text": "1. 類別變數編碼"
+        },
+        {
+          "level": 3,
+          "text": "Label Encoding（有序）"
+        },
+        {
+          "level": 3,
+          "text": "One-Hot Encoding（無序）"
+        },
+        {
+          "level": 3,
+          "text": "Target Encoding"
+        },
+        {
+          "level": 2,
+          "text": "2. 數值變換"
+        },
+        {
+          "level": 3,
+          "text": "Scaling（範圍統一）"
+        },
+        {
+          "level": 3,
+          "text": "Log 轉換（處理偏態）"
+        },
+        {
+          "level": 3,
+          "text": "Binning（分箱）"
+        },
+        {
+          "level": 2,
+          "text": "3. 文字特徵"
+        },
+        {
+          "level": 3,
+          "text": "長度"
+        },
+        {
+          "level": 3,
+          "text": "TF-IDF"
+        },
+        {
+          "level": 3,
+          "text": "Embedding（深度學習）"
+        },
+        {
+          "level": 2,
+          "text": "4. 時間特徵"
+        },
+        {
+          "level": 2,
+          "text": "5. 交互特徵"
+        },
+        {
+          "level": 2,
+          "text": "6. Lag / Rolling features（時序）"
+        },
+        {
+          "level": 2,
+          "text": "7. Group features"
+        },
+        {
+          "level": 2,
+          "text": "8. PCA（降維）"
+        },
+        {
+          "level": 2,
+          "text": "Pipeline（推薦做法）"
+        },
+        {
+          "level": 2,
+          "text": "特徵選擇"
+        },
+        {
+          "level": 3,
+          "text": "用相關性"
+        },
+        {
+          "level": 3,
+          "text": "用 Random Forest 重要度"
+        },
+        {
+          "level": 3,
+          "text": "Recursive Feature Elimination"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "機器學習入門：scikit-learn",
+      "oneLineSummary": "Python 最熱門 ML 套件、20 行寫完一個分類器",
+      "analogy": "不是要學會 ML、是學「怎麼把資料給模型 + 評估」。",
+      "content": "## 安裝\n```bash\npip install scikit-learn numpy pandas\n```\n\n## ML 流程\n```\n1. 載入資料\n2. EDA + 清理\n3. Feature engineering\n4. Train / Test split\n5. 選模型\n6. 訓練\n7. 評估\n8. 部署\n```\n\n## 範例：分類（預測會不會購買）\n```python\nimport pandas as pd\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.metrics import accuracy_score, classification_report\n\n# 1. 載入\ndf = pd.read_csv(\"customer.csv\")\n\n# 2. Feature / Target\nX = df[[\"age\", \"income\", \"days_since_last_visit\"]]\ny = df[\"purchased\"]  # 0 / 1\n\n# 3. Train / Test split\nX_train, X_test, y_train, y_test = train_test_split(\n    X, y, test_size=0.2, random_state=42, stratify=y\n)\n\n# 4. Scale\nscaler = StandardScaler()\nX_train_scaled = scaler.fit_transform(X_train)\nX_test_scaled = scaler.transform(X_test)\n\n# 5. 模型\nmodel = RandomForestClassifier(n_estimators=100, random_state=42)\nmodel.fit(X_train_scaled, y_train)\n\n# 6. 預測 + 評估\npreds = model.predict(X_test_scaled)\nprint(f\"Accuracy: {accuracy_score(y_test, preds):.3f}\")\nprint(classification_report(y_test, preds))\n```\n\n## 常用模型\n\n### 分類\n- **LogisticRegression**：簡單 / 可解釋\n- **RandomForest**：通用 / 表現好\n- **GradientBoosting / XGBoost / LightGBM**：競賽常勝\n- **SVM**：小資料量好\n- **NeuralNetwork（MLP）**：複雜\n\n### 回歸\n- **LinearRegression**：基線\n- **Ridge / Lasso**：正則化\n- **RandomForest Regressor**\n- **GradientBoosting Regressor**\n\n### 集群\n- **KMeans**：最常見\n- **DBSCAN**：適合非球形\n- **HierarchicalClustering**\n\n## 評估指標\n\n### 分類\n```python\nfrom sklearn.metrics import (\n    accuracy_score, precision_score, recall_score, f1_score,\n    confusion_matrix, roc_auc_score, roc_curve\n)\n\n# Confusion matrix\ncm = confusion_matrix(y_test, preds)\nprint(cm)\n\n# ROC AUC（imbalanced 用）\nprobs = model.predict_proba(X_test)[:, 1]\nauc = roc_auc_score(y_test, probs)\n```\n\n### 回歸\n```python\nfrom sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score\n\nmse = mean_squared_error(y_test, preds)\nmae = mean_absolute_error(y_test, preds)\nr2 = r2_score(y_test, preds)\n```\n\n## 交叉驗證\n```python\nfrom sklearn.model_selection import cross_val_score\n\nscores = cross_val_score(model, X, y, cv=5, scoring=\"accuracy\")\nprint(f\"CV: {scores.mean():.3f} ± {scores.std():.3f}\")\n```\n\n## Hyperparameter tuning\n```python\nfrom sklearn.model_selection import GridSearchCV\n\nparams = {\n    \"n_estimators\": [100, 200, 500],\n    \"max_depth\": [5, 10, None],\n    \"min_samples_split\": [2, 5, 10]\n}\n\ngrid = GridSearchCV(\n    RandomForestClassifier(),\n    params,\n    cv=5,\n    scoring=\"accuracy\",\n    n_jobs=-1  # 全核心\n)\ngrid.fit(X_train, y_train)\n\nprint(grid.best_params_)\nprint(grid.best_score_)\n```\n\n## XGBoost / LightGBM（競賽常勝）\n```bash\npip install xgboost lightgbm\n```\n\n```python\nimport xgboost as xgb\n\nmodel = xgb.XGBClassifier(\n    n_estimators=500,\n    learning_rate=0.1,\n    max_depth=6,\n    objective=\"binary:logistic\"\n)\nmodel.fit(X_train, y_train, eval_set=[(X_test, y_test)])\n```\n\n## 模型部署\n\n### 存模型\n```python\nimport joblib\njoblib.dump(model, \"model.pkl\")\njoblib.dump(scaler, \"scaler.pkl\")\n\n# 載入\nmodel = joblib.load(\"model.pkl\")\n```\n\n### Flask / FastAPI 服務\n```python\nfrom fastapi import FastAPI\nimport joblib\n\napp = FastAPI()\nmodel = joblib.load(\"model.pkl\")\n\n@app.post(\"/predict\")\ndef predict(features: dict):\n    X = [[features[\"age\"], features[\"income\"]]]\n    pred = model.predict(X)[0]\n    return {\"prediction\": int(pred)}\n```\n\n## 不要踩的坑\n- **Data leakage**：用了未來資料訓練\n- **Test set 偷看**：tuning 時用 test、cheating\n- **Imbalanced data**：99% 是 0、模型全猜 0 也 99% 準\n- **過擬合**：train 99%、test 50%\n- **沒做 CV**：單次 split 結果不穩\n\n## ML 路線圖\n1. **第 1 個月**：scikit-learn + 跑通流程\n2. **第 2 個月**：XGBoost + feature engineering\n3. **第 3 個月**：Kaggle 小比賽\n4. **第 4-6 個月**：深度學習 PyTorch / TensorFlow\n\n入門足夠應付 80% 工作場景。",
+      "tip": {
+        "type": "practical",
+        "text": "不是「會 ML」就接得到案、是「會給模型對的資料 + 評估」。後者比模型重要。"
+      },
+      "id": "27.22",
+      "number": "LESSON 27.22",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "27.22.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "import pandas as pd\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.metrics import accuracy_score, classification_report\n\n# 1. 載入\ndf = pd.read_csv(\"customer.csv\")\n\n# 2. Feature / Target\nX = df[[\"age\", \"income\", \"days_since_last_visit\"]]\ny = df[\"purchased\"]  # 0 / 1\n\n# 3. Train / Test split\nX_train, X_test, y_train, y_test = train_test_split(\n    X, y, test_size=0.2, random_state=42, stratify=y\n)\n\n# 4. Scale\nscaler = StandardScaler()\nX_train_scaled = scaler.fit_transform(X_train)\nX_test_scaled = scaler.transform(X_test)\n\n# 5. 模型\nmodel = RandomForestClassifier(n_estimators=100, random_state=42)\nmodel.fit(X_train_scaled, y_train)\n\n# 6. 預測 + 評估\npreds = model.predict(X_test_scaled)\nprint(f\"Accuracy: {accuracy_score(y_test, preds):.3f}\")\nprint(classification_report(y_test, preds))",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "找一個你身邊的例子、用「機器學習入門：scikit-learn」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "安裝"
+        },
+        {
+          "level": 2,
+          "text": "ML 流程"
+        },
+        {
+          "level": 2,
+          "text": "範例：分類（預測會不會購買）"
+        },
+        {
+          "level": 2,
+          "text": "常用模型"
+        },
+        {
+          "level": 3,
+          "text": "分類"
+        },
+        {
+          "level": 3,
+          "text": "回歸"
+        },
+        {
+          "level": 3,
+          "text": "集群"
+        },
+        {
+          "level": 2,
+          "text": "評估指標"
+        },
+        {
+          "level": 3,
+          "text": "分類"
+        },
+        {
+          "level": 3,
+          "text": "回歸"
+        },
+        {
+          "level": 2,
+          "text": "交叉驗證"
+        },
+        {
+          "level": 2,
+          "text": "Hyperparameter tuning"
+        },
+        {
+          "level": 2,
+          "text": "XGBoost / LightGBM（競賽常勝）"
+        },
+        {
+          "level": 2,
+          "text": "模型部署"
+        },
+        {
+          "level": 3,
+          "text": "存模型"
+        },
+        {
+          "level": 3,
+          "text": "Flask / FastAPI 服務"
+        },
+        {
+          "level": 2,
+          "text": "不要踩的坑"
+        },
+        {
+          "level": 2,
+          "text": "ML 路線圖"
+        }
+      ]
+    },
+    {
+      "title": "Geo 分析：pandas + Folium / GeoPandas",
+      "oneLineSummary": "地理資料分析、畫地圖、空間查詢",
+      "analogy": "不只地圖、是「按地理位置分析資料」—外送 / 蝦皮店家 / 房地產都用。",
+      "content": "## 為什麼需要\n- 「最近的 5 家店」\n- 「方圓 1km 銷售統計」\n- 「各區房價熱力圖」\n- 「客戶分布地圖」\n\n## Folium（互動地圖）\n```bash\npip install folium\n```\n\n```python\nimport folium\n\n# 基本地圖\nm = folium.Map(location=[25.04, 121.5], zoom_start=12)\nm.save(\"map.html\")\n\n# 加 marker\nfolium.Marker(\n    [25.04, 121.5],\n    popup=\"台北 101\",\n    tooltip=\"點我\",\n    icon=folium.Icon(color=\"green\")\n).add_to(m)\n\n# 圈圈\nfolium.Circle(\n    location=[25.04, 121.5],\n    radius=500,  # meters\n    color=\"red\",\n    fill=True\n).add_to(m)\n```\n\n## 多 markers from DataFrame\n```python\nimport pandas as pd\n\ndf = pd.DataFrame({\n    \"lat\": [25.04, 25.05, 25.03],\n    \"lng\": [121.5, 121.51, 121.49],\n    \"name\": [\"A 店\", \"B 店\", \"C 店\"],\n    \"sales\": [100, 200, 150]\n})\n\nm = folium.Map(location=[25.04, 121.5], zoom_start=13)\n\nfor _, row in df.iterrows():\n    folium.CircleMarker(\n        [row[\"lat\"], row[\"lng\"]],\n        radius=row[\"sales\"] / 10,  # 大小代表銷售\n        popup=f\"{row['name']}: NT$ {row['sales']}\",\n        color=\"green\",\n        fill=True\n    ).add_to(m)\n\nm.save(\"stores.html\")\n```\n\n## Heatmap\n```python\nfrom folium.plugins import HeatMap\n\nm = folium.Map(location=[25.04, 121.5], zoom_start=12)\nHeatMap(df[[\"lat\", \"lng\", \"sales\"]].values).add_to(m)\n```\n\n## Marker Cluster（大量點）\n```python\nfrom folium.plugins import MarkerCluster\n\nm = folium.Map(location=[25.04, 121.5])\ncluster = MarkerCluster().add_to(m)\n\nfor _, row in big_df.iterrows():\n    folium.Marker([row[\"lat\"], row[\"lng\"]]).add_to(cluster)\n```\n\n## GeoPandas（空間查詢）\n```bash\npip install geopandas\n```\n\n```python\nimport geopandas as gpd\nfrom shapely.geometry import Point\n\n# 從 DataFrame 建 GeoDataFrame\ndf[\"geometry\"] = df.apply(lambda r: Point(r[\"lng\"], r[\"lat\"]), axis=1)\ngdf = gpd.GeoDataFrame(df, geometry=\"geometry\", crs=\"EPSG:4326\")\n\n# 載入 shapefile（區域邊界）\ndistricts = gpd.read_file(\"taipei_districts.shp\")\n\n# 空間 JOIN：每個店在哪一區\nresult = gpd.sjoin(gdf, districts, how=\"left\", predicate=\"within\")\n```\n\n## 距離計算\n```python\nfrom geopy.distance import distance\n\n# 兩點距離（公里）\ndist = distance((25.04, 121.5), (25.05, 121.51)).km\n\n# 套到 DataFrame\ndef calc_dist(row):\n    return distance((25.04, 121.5), (row[\"lat\"], row[\"lng\"])).km\n\ndf[\"dist_from_101\"] = df.apply(calc_dist, axis=1)\n```\n\n## 範圍內查詢\n```python\nfrom shapely.geometry import Point\n\ntarget = Point(121.5, 25.04)\ngdf[\"dist\"] = gdf.distance(target) * 111  # 約 km\n\nnearby = gdf[gdf[\"dist\"] < 1]\n```\n\n## Geocoding（地址 → 經緯度）\n```python\nfrom geopy.geocoders import Nominatim\n\ngeocoder = Nominatim(user_agent=\"my-app\")\nlocation = geocoder.geocode(\"台北市信義區信義路五段 7 號\")\nprint(location.latitude, location.longitude)\n```\n\n## 反向 Geocoding（經緯度 → 地址）\n```python\nlocation = geocoder.reverse((25.04, 121.5))\nprint(location.address)\n```\n\n## Plotly 地圖（互動超讚）\n```python\nimport plotly.express as px\n\nfig = px.scatter_mapbox(\n    df, lat=\"lat\", lon=\"lng\",\n    size=\"sales\", color=\"category\",\n    hover_name=\"name\",\n    mapbox_style=\"open-street-map\",\n    zoom=12\n)\nfig.show()\n```\n\n## 進階：路徑規劃\n```python\n# 用 OpenRouteService API\nimport requests\n\nAPI_KEY = \"...\"\nres = requests.get(\n    \"https://api.openrouteservice.org/v2/directions/driving-car\",\n    params={\n        \"api_key\": API_KEY,\n        \"start\": \"121.5,25.04\",\n        \"end\": \"121.6,25.1\"\n    }\n).json()\n# 取得導航資訊\n```\n\n## 真實案例\n- **外送 App**：方圓 3km 餐廳\n- **房仲**：捷運站附近房價\n- **蝦皮**：物流網絡優化\n- **政府**：人口分布、設施規劃",
+      "tip": {
+        "type": "business",
+        "text": "Geo 分析是接案藍海—會的人少、需求多（餐飲 / 房地產 / 物流）。"
+      },
+      "id": "27.23",
+      "number": "LESSON 27.23",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "27.23.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "import folium\n\n# 基本地圖\nm = folium.Map(location=[25.04, 121.5], zoom_start=12)\nm.save(\"map.html\")\n\n# 加 marker\nfolium.Marker(\n    [25.04, 121.5],\n    popup=\"台北 101\",\n    tooltip=\"點我\",\n    icon=folium.Icon(color=\"green\")\n).add_to(m)\n\n# 圈圈\nfolium.Circle(\n    location=[25.04, 121.5],\n    radius=500,  # meters\n    color=\"red\",\n    fill=True\n).add_to(m)",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 13 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼需要"
+        },
+        {
+          "level": 2,
+          "text": "Folium（互動地圖）"
+        },
+        {
+          "level": 2,
+          "text": "多 markers from DataFrame"
+        },
+        {
+          "level": 2,
+          "text": "Heatmap"
+        },
+        {
+          "level": 2,
+          "text": "Marker Cluster（大量點）"
+        },
+        {
+          "level": 2,
+          "text": "GeoPandas（空間查詢）"
+        },
+        {
+          "level": 2,
+          "text": "距離計算"
+        },
+        {
+          "level": 2,
+          "text": "範圍內查詢"
+        },
+        {
+          "level": 2,
+          "text": "Geocoding（地址 → 經緯度）"
+        },
+        {
+          "level": 2,
+          "text": "反向 Geocoding（經緯度 → 地址）"
+        },
+        {
+          "level": 2,
+          "text": "Plotly 地圖（互動超讚）"
+        },
+        {
+          "level": 2,
+          "text": "進階：路徑規劃"
+        },
+        {
+          "level": 2,
+          "text": "真實案例"
+        }
+      ]
+    },
+    {
+      "title": "NLP 入門：文字資料分析",
+      "oneLineSummary": "中文 NLP 的基本盤—分詞、TF-IDF、情感分析",
+      "analogy": "客戶評論、社群留言、新聞分析—文字資料越來越多。",
+      "content": "## 中文分詞（基礎）\n英文用空白分、中文要先「斷詞」。\n\n### jieba（最熱門）\n```bash\npip install jieba\n```\n\n```python\nimport jieba\n\ntext = \"我愛吃台灣牛肉麵和滷肉飯\"\nwords = list(jieba.cut(text))\nprint(words)\n# ['我', '愛', '吃', '台灣', '牛肉麵', '和', '滷肉飯']\n\n# 自訂詞典\njieba.add_word(\"AI 島\")\njieba.del_word(\"不要的詞\")\n\n# 載入外部詞典\njieba.load_userdict(\"custom_dict.txt\")\n\n# 詞性標註\nimport jieba.posseg\nwords = jieba.posseg.cut(text)\nfor w in words:\n    print(w.word, w.flag)\n```\n\n### CKIP（中研院、更準）\n```bash\npip install ckip-transformers\n```\n適合學術用、慢但更準。\n\n## TF-IDF（重要詞抽取）\n```python\nfrom sklearn.feature_extraction.text import TfidfVectorizer\nimport jieba\n\ndocs = [\n    \"我愛 Python\",\n    \"Python 是程式語言\",\n    \"Python 適合資料分析\"\n]\n\n# 中文要先斷詞\ndef tokenize(text):\n    return list(jieba.cut(text))\n\nvec = TfidfVectorizer(tokenizer=tokenize)\ntfidf = vec.fit_transform(docs)\nprint(vec.get_feature_names_out())\n```\n\n## 詞頻分析\n```python\nfrom collections import Counter\n\ntext = \" \".join(reviews)\nwords = [w for w in jieba.cut(text) if len(w) > 1]\ncounter = Counter(words)\ntop10 = counter.most_common(10)\n```\n\n## 文字雲\n```bash\npip install wordcloud\n```\n\n```python\nfrom wordcloud import WordCloud\nimport matplotlib.pyplot as plt\n\ntext = \" \".join(jieba.cut(all_text))\n\nwc = WordCloud(\n    font_path=\"/path/to/NotoSansCJKtc-Regular.otf\",  # 中文必設\n    width=800, height=400,\n    background_color=\"white\"\n).generate(text)\n\nplt.imshow(wc)\nplt.axis(\"off\")\nplt.show()\n```\n\n## 情感分析\n\n### 用預訓練模型（推薦）\n```bash\npip install transformers torch\n```\n\n```python\nfrom transformers import pipeline\n\n# 中文情感模型\nclassifier = pipeline(\n    \"sentiment-analysis\",\n    model=\"uer/roberta-base-finetuned-jd-binary-chinese\"\n)\n\nresults = classifier([\n    \"這家店超好吃！\",\n    \"服務態度很差、再也不來\"\n])\n# [{label: positive, score: 0.99}, {label: negative, score: 0.95}]\n```\n\n### 用 OpenAI / Claude API\n```python\nimport anthropic\n\nclient = anthropic.Anthropic()\n\nresponse = client.messages.create(\n    model=\"claude-opus-4-7\",\n    max_tokens=100,\n    messages=[{\n        \"role\": \"user\",\n        \"content\": f\"分析以下評論的情感（正面/負面/中性）：\\n{review}\"\n    }]\n)\n```\n\n## 主題建模（LDA）\n```python\nfrom sklearn.decomposition import LatentDirichletAllocation\n\n# tfidf → LDA\nlda = LatentDirichletAllocation(n_components=5, random_state=42)\nlda.fit(tfidf)\n\n# 看每個主題的關鍵詞\nfor i, topic in enumerate(lda.components_):\n    top_words = [vec.get_feature_names_out()[j] for j in topic.argsort()[-10:]]\n    print(f\"Topic {i}: {top_words}\")\n```\n\n## Embedding + 相似度\n```python\nfrom sentence_transformers import SentenceTransformer\nfrom sklearn.metrics.pairwise import cosine_similarity\n\nmodel = SentenceTransformer(\"uer/sbert-base-chinese-nli\")\n\ntexts = [\"我愛吃牛肉麵\", \"我喜歡牛肉麵\", \"Python 很棒\"]\nembeddings = model.encode(texts)\n\n# 計算兩兩相似度\nsimilarities = cosine_similarity(embeddings)\nprint(similarities)\n```\n\n## 應用範例\n\n### 1. 客服分類\n```python\nclassifier = pipeline(\"text-classification\", model=\"...\")\nticket_class = classifier(\"我的訂單還沒到\")\n# → \"物流問題\"\n```\n\n### 2. 評論情感監控\n每天爬商品評論、自動標 + / 0 / -、追蹤趨勢。\n\n### 3. 摘要\n```python\nsummarizer = pipeline(\"summarization\", model=\"uer/...\")\nsummary = summarizer(long_article)\n```\n\n### 4. 翻譯\n```python\ntranslator = pipeline(\"translation\", model=\"Helsinki-NLP/opus-mt-zh-en\")\nen = translator(\"我愛 Python\")\n```\n\n## 中文 NLP 套件比較\n\n| 套件 | 強項 |\n|---|---|\n| jieba | 分詞、最快 |\n| CKIP | 學術、最準 |\n| spaCy | 工程友善 |\n| Transformers (HF) | 最新 SOTA |\n| Anthropic / OpenAI API | 最強、付費 |\n\n## 何時用哪個\n- 純分詞 / 詞頻：jieba\n- 情感分析：Transformers\n- 複雜理解 / 摘要：LLM API\n- 學術研究：CKIP",
+      "tip": {
+        "type": "trend",
+        "text": "2026 NLP 80% 場景用 LLM API（Claude / GPT）就夠、不用自己訓練。學會 prompt + API 是當前性價比最高。"
+      },
+      "id": "27.24",
+      "number": "LESSON 27.24",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "27.24.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "import jieba\n\ntext = \"我愛吃台灣牛肉麵和滷肉飯\"\nwords = list(jieba.cut(text))\nprint(words)\n# ['我', '愛', '吃', '台灣', '牛肉麵', '和', '滷肉飯']\n\n# 自訂詞典\njieba.add_word(\"AI 島\")\njieba.del_word(\"不要的詞\")\n\n# 載入外部詞典\njieba.load_userdict(\"custom_dict.txt\")\n\n# 詞性標註\nimport jieba.posseg\nwords = jieba.posseg.cut(text)\nfor w in words:\n    print(w.word, w.flag)",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "找一個你身邊的例子、用「NLP 入門：文字資料分析」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "中文分詞（基礎）"
+        },
+        {
+          "level": 3,
+          "text": "jieba（最熱門）"
+        },
+        {
+          "level": 3,
+          "text": "CKIP（中研院、更準）"
+        },
+        {
+          "level": 2,
+          "text": "TF-IDF（重要詞抽取）"
+        },
+        {
+          "level": 2,
+          "text": "詞頻分析"
+        },
+        {
+          "level": 2,
+          "text": "文字雲"
+        },
+        {
+          "level": 2,
+          "text": "情感分析"
+        },
+        {
+          "level": 3,
+          "text": "用預訓練模型（推薦）"
+        },
+        {
+          "level": 3,
+          "text": "用 OpenAI / Claude API"
+        },
+        {
+          "level": 2,
+          "text": "主題建模（LDA）"
+        },
+        {
+          "level": 2,
+          "text": "Embedding + 相似度"
+        },
+        {
+          "level": 2,
+          "text": "應用範例"
+        },
+        {
+          "level": 3,
+          "text": "1. 客服分類"
+        },
+        {
+          "level": 3,
+          "text": "2. 評論情感監控"
+        },
+        {
+          "level": 3,
+          "text": "3. 摘要"
+        },
+        {
+          "level": 3,
+          "text": "4. 翻譯"
+        },
+        {
+          "level": 2,
+          "text": "中文 NLP 套件比較"
+        },
+        {
+          "level": 2,
+          "text": "何時用哪個"
+        }
+      ]
+    },
+    {
+      "title": "資料分析職涯 + 學習路徑",
+      "oneLineSummary": "想做 data analyst / scientist / engineer—怎麼開始？怎麼進階？",
+      "analogy": "台灣資料相關職缺爆炸成長、但分工要先搞清楚。",
+      "content": "## 三大資料職涯\n\n### 1. Data Analyst（資料分析師）\n- 工作：寫 SQL、做報表、看 dashboard\n- 技能：SQL（必）、Excel、Tableau / Power BI、Python pandas\n- 月薪（台）：NT$ 50-90k\n- 入門難度：⭐⭐⭐\n\n### 2. Data Scientist（資料科學家）\n- 工作：建模、A/B test、預測\n- 技能：Python（pandas / sklearn / pytorch）、統計、ML\n- 月薪：NT$ 80-150k\n- 入門難度：⭐⭐⭐⭐\n\n### 3. Data Engineer（資料工程師）\n- 工作：建 pipeline、ETL、資料倉儲\n- 技能：SQL、Python、Spark、Airflow、AWS / GCP\n- 月薪：NT$ 90-180k\n- 入門難度：⭐⭐⭐⭐⭐\n\n### 加碼：ML Engineer / MLOps\n- 工作：把 ML 模型上 production\n- 技能：DS + 工程 + 部署\n- 月薪：NT$ 100-200k\n\n## 學習路線圖\n\n### 0-3 個月：基礎\n- [ ] Python 基本（Ch26）\n- [ ] pandas（這章）\n- [ ] SQL（Ch17）\n- [ ] 統計（平均 / 中位數 / 分布）\n- [ ] 視覺化（matplotlib / seaborn）\n\n### 3-6 個月：能交付\n- [ ] 完整資料專案（從 raw → 結論）\n- [ ] Streamlit / Tableau dashboard\n- [ ] 至少 1 個 portfolio project\n- [ ] Kaggle 試 1-2 個比賽\n\n### 6-12 個月：找工作\n- [ ] 履歷 + LinkedIn\n- [ ] 投 10-30 個職位\n- [ ] 練 SQL leetcode\n- [ ] 練面試題\n\n### 12+ 個月：進階\n- 選一個方向：DS / DE / MLE\n- 深入該領域\n- 持續做 side project\n\n## Portfolio 準備\n3 個 project：\n1. **EDA**：開放資料集分析、寫 blog\n2. **預測**：時間序列 / 分類 / 回歸\n3. **儀表板**：Streamlit / Tableau 互動 dashboard\n\n放 GitHub + 寫文章解釋。\n\n## 學習資源\n\n### 課程\n- **Coursera / edX**：IBM Data Science、Google\n- **DataCamp**：互動式\n- **Kaggle Learn**：免費、實用\n- **Hahow / Udemy**：台灣中文\n\n### 書\n- 《Python for Data Analysis》Wes McKinney（pandas 作者）\n- 《Hands-on ML》Aurélien Géron\n- 《Designing Data-Intensive Apps》Martin Kleppmann（DE 必讀）\n\n### 中文\n- 林軒田《機器學習基石》（NTU 開放課）\n- 李宏毅《機器學習》（NTU、YouTube 免費）\n\n### 比賽\n- Kaggle（國際）\n- Tianchi（中國）\n- DataCastle\n\n## 找工作管道\n- LinkedIn（最重要）\n- 104 / Yourator\n- Apple / Google / FB / 蝦皮 career page\n- 內推（最有效）\n\n## 履歷必有\n- 1-2 個有完整故事的專案\n- GitHub 整理過、有 README\n- 量化成果（提升 X%、節省 Y 小時）\n- 簡潔（1 頁）\n\n## 面試準備\n- **SQL**：LeetCode / StrataScratch\n- **Python**：basic 演算法\n- **Statistics**：p-value、CI、A/B test\n- **ML**：模型優缺、評估指標\n- **Case study**：「如何衡量 X 產品的成功」\n\n## 跳槽時機\n- 1-2 年累積、跳薪水 +20-30%\n- 換領域（金融 → 電商 → SaaS）擴大經驗\n- 不要 1 年內換 2 次（履歷不好看）\n\n## Indie 路線\n- 接案：資料分析 NT$ 30-100k / 案\n- SaaS：做 dashboard SaaS\n- 顧問：垂直領域（電商 / 金融）\n\n## 心法\n- **SQL** 是命根、寫不好別想做資料\n- **溝通** > 技術深度（會解釋給老闆聽）\n- **領域知識** 是護城河（懂業務的資料人比純技術人值錢）\n- **持續輸出**（blog / GitHub）是長期競爭力",
+      "tip": {
+        "type": "milestone",
+        "text": "資料職涯不是「會 Python 就行」、是「會用資料解決問題」。從第一個 project 開始、慢慢長出競爭力。"
+      },
+      "id": "27.25",
+      "number": "LESSON 27.25",
+      "xp": 10,
+      "exercise": {
+        "question": "找一個你身邊的例子、用「資料分析職涯 + 學習路徑」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "三大資料職涯"
+        },
+        {
+          "level": 3,
+          "text": "1. Data Analyst（資料分析師）"
+        },
+        {
+          "level": 3,
+          "text": "2. Data Scientist（資料科學家）"
+        },
+        {
+          "level": 3,
+          "text": "3. Data Engineer（資料工程師）"
+        },
+        {
+          "level": 3,
+          "text": "加碼：ML Engineer / MLOps"
+        },
+        {
+          "level": 2,
+          "text": "學習路線圖"
+        },
+        {
+          "level": 3,
+          "text": "0-3 個月：基礎"
+        },
+        {
+          "level": 3,
+          "text": "3-6 個月：能交付"
+        },
+        {
+          "level": 3,
+          "text": "6-12 個月：找工作"
+        },
+        {
+          "level": 3,
+          "text": "12+ 個月：進階"
+        },
+        {
+          "level": 2,
+          "text": "Portfolio 準備"
+        },
+        {
+          "level": 2,
+          "text": "學習資源"
+        },
+        {
+          "level": 3,
+          "text": "課程"
+        },
+        {
+          "level": 3,
+          "text": "書"
+        },
+        {
+          "level": 3,
+          "text": "中文"
+        },
+        {
+          "level": 3,
+          "text": "比賽"
+        },
+        {
+          "level": 2,
+          "text": "找工作管道"
+        },
+        {
+          "level": 2,
+          "text": "履歷必有"
+        },
+        {
+          "level": 2,
+          "text": "面試準備"
+        },
+        {
+          "level": 2,
+          "text": "跳槽時機"
+        },
+        {
+          "level": 2,
+          "text": "Indie 路線"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    }
+  ],
+  "boss": {
+    "name": "資料煉金師",
+    "hp": 230,
+    "emoji": "⚗️",
+    "description": "Pandas 是它的坩堝、NumPy 是它的試劑"
+  },
+  "quiz": {
+    "id": "ch27-quiz",
+    "questions": [],
+    "xpReward": 50,
+    "perfectBonus": 50
+  }
+}

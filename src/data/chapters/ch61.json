@@ -1,0 +1,263 @@
+{
+  "id": 61,
+  "stage": "appendix",
+  "title": "附錄 A：前端三劍客大全",
+  "subtitle": "HTML 標籤、CSS 屬性、JS API 速查字典",
+  "description": "需要查標籤、屬性、方法時翻這裡。150+ HTML 標籤、300+ CSS 屬性、200+ JS API 全部分類列好。",
+  "difficulty": "reference",
+  "estimatedHours": 2,
+  "color": "#a78bfa",
+  "icon": "📖",
+  "lessons": [
+    {
+      "id": "61.1",
+      "number": "61.1",
+      "title": "HTML 標籤完整大全（150+）",
+      "oneLineSummary": "從 a 到 wbr，所有 HTML5 標籤依用途分類整理。",
+      "xp": 100,
+      "content": "# HTML 標籤完整大全\n\n所有 HTML5 標籤、依用途分 12 大類。每個標籤含**用途**、**重要屬性**、**範例**。\n\n## 1. 文件結構（Document Structure）\n\n| 標籤 | 用途 | 範例 |\n|---|---|---|\n| `<!DOCTYPE html>` | 宣告 HTML5 文件 | 寫在文件第一行 |\n| `<html>` | 文件根元素 | `<html lang=\"zh-Hant\">` |\n| `<head>` | 機器看的中繼資料 | 放 meta / link / title / script |\n| `<body>` | 人看的內容 | 所有顯示的內容 |\n| `<title>` | 瀏覽器分頁標題 | `<title>AI 島</title>` |\n| `<meta>` | 中繼資料 | `<meta charset=\"UTF-8\">` |\n| `<link>` | 外部資源 | `<link rel=\"stylesheet\" href=\"...\">` |\n| `<style>` | 內嵌 CSS | `<style>body{...}</style>` |\n| `<script>` | 內嵌或外部 JS | `<script src=\"app.js\"></script>` |\n| `<noscript>` | 沒 JS 時顯示 | 給關 JS 的人看 |\n| `<base>` | 頁面基準 URL | 影響所有相對連結 |\n\n## 2. 語意化結構（HTML5 Semantic）\n\n| 標籤 | 用途 | 範例 |\n|---|---|---|\n| `<header>` | 頁首或區塊首部 | 含 logo / 導航 |\n| `<nav>` | 導航區 | 主選單、麵包屑 |\n| `<main>` | 主要內容（每頁只能一個） | 包住核心內容 |\n| `<section>` | 主題區塊 | 有獨立主題的段落 |\n| `<article>` | 獨立完整內容 | 文章、貼文、商品卡 |\n| `<aside>` | 旁邊輔助 | 側邊欄、推薦 |\n| `<footer>` | 頁尾或區塊尾部 | 版權、聯絡 |\n| `<address>` | 聯絡資訊 | `<address>luffysky@...</address>` |\n| `<hgroup>` | 標題組 | 包多個 h1-h6 |\n\n## 3. 文字標題（Headings）\n\n| 標籤 | 用途 |\n|---|---|\n| `<h1>` 到 `<h6>` | 標題層級、SEO 重要 |\n\n**重要原則**：\n- 每頁**只有一個** `<h1>`（通常是頁面主標）\n- 層級不能跳（h2 後不能直接 h4）\n- 不要為了**樣式**選 h 標籤、要為了**意義**\n\n## 4. 文字內容（Text Content）\n\n| 標籤 | 用途 | 範例 |\n|---|---|---|\n| `<p>` | 段落 | `<p>這是段落</p>` |\n| `<br>` | 換行（不換段） | 詩、地址用 |\n| `<hr>` | 主題分隔線 | 章節之間 |\n| `<pre>` | 保留空白格式 | 程式碼、ASCII art |\n| `<blockquote>` | 區塊引用 | 含 `cite=\"來源\"` |\n| `<q>` | 短引用 | inline 引號 |\n| `<cite>` | 引用作品名 | 書名、電影名 |\n| `<code>` | 程式碼片段 | inline code |\n| `<kbd>` | 鍵盤按鍵 | `<kbd>Ctrl</kbd>` |\n| `<samp>` | 程式輸出 | 電腦回應 |\n| `<var>` | 變數 | 數學變數 |\n| `<abbr>` | 縮寫 | `<abbr title=\"World Wide Web\">WWW</abbr>` |\n| `<dfn>` | 術語定義 | 第一次出現的專有名詞 |\n| `<mark>` | 高亮 | 搜尋結果反白 |\n| `<small>` | 細項說明 | 版權、免責聲明 |\n| `<sub>` | 下標 | H<sub>2</sub>O |\n| `<sup>` | 上標 | x<sup>2</sup> |\n| `<time>` | 時間 | `<time datetime=\"2026-05-19\">今天</time>` |\n| `<data>` | 機器可讀資料 | 串接其他系統 |\n\n## 5. 強調與語意（Inline Semantic）\n\n| 標籤 | 用途 |\n|---|---|\n| `<strong>` | 重要（語意層級高） |\n| `<b>` | 粗體（純視覺） |\n| `<em>` | 強調（語意） |\n| `<i>` | 斜體（純視覺，或外文/術語） |\n| `<u>` | 底線（拼字錯誤、人名） |\n| `<s>` | 刪除線（不再正確） |\n| `<del>` | 刪除內容（編輯歷史） |\n| `<ins>` | 插入內容（編輯歷史） |\n| `<bdi>` | 隔離雙向文字 |\n| `<bdo>` | 強制文字方向 |\n| `<wbr>` | 建議換行點 |\n| `<ruby>` `<rt>` `<rp>` | 注音、ふりがな |\n\n## 6. 列表（Lists）\n\n| 標籤 | 用途 |\n|---|---|\n| `<ul>` | 無序列表（bullet） |\n| `<ol>` | 有序列表（數字） |\n| `<li>` | 列表項目 |\n| `<dl>` | 定義列表 |\n| `<dt>` | 定義術語 |\n| `<dd>` | 定義說明 |\n| `<menu>` | 命令列表（HTML5.2） |\n\n## 7. 連結與媒體\n\n| 標籤 | 用途 | 重要屬性 |\n|---|---|---|\n| `<a>` | 連結 | href / target / rel / download |\n| `<img>` | 圖片 | src / alt / width / height / loading=\"lazy\" / srcset / sizes |\n| `<picture>` | 響應式圖片 | 包多個 `<source>` |\n| `<source>` | 媒體來源 | srcset / type / media |\n| `<audio>` | 音訊 | src / controls / autoplay / loop |\n| `<video>` | 影片 | src / controls / poster / muted |\n| `<track>` | 字幕軌 | src / kind=\"subtitles\" / srclang |\n| `<embed>` | 嵌入外部資源 | src / type |\n| `<object>` | 嵌入物件 | data / type |\n| `<iframe>` | 嵌入網頁 | src / sandbox / loading |\n| `<map>` `<area>` | 圖片熱區 | shape / coords / href |\n| `<svg>` | 向量圖 | viewBox / xmlns |\n| `<canvas>` | 畫布（JS 畫圖） | width / height |\n\n## 8. 表格\n\n| 標籤 | 用途 |\n|---|---|\n| `<table>` | 表格容器 |\n| `<caption>` | 表格標題 |\n| `<thead>` `<tbody>` `<tfoot>` | 表頭 / 表身 / 表尾 |\n| `<tr>` | 列 |\n| `<th>` | 標題格（scope=\"col\" / \"row\"） |\n| `<td>` | 資料格 |\n| `<colgroup>` `<col>` | 整欄樣式 |\n\n## 9. 表單\n\n| 標籤 | 用途 | 範例 |\n|---|---|---|\n| `<form>` | 表單容器 | action / method=\"POST\" |\n| `<input>` | 輸入欄位（22 種 type） | type=\"email/password/number/date/file/...\" |\n| `<textarea>` | 多行文字 | rows / cols |\n| `<select>` `<option>` `<optgroup>` | 下拉選單 | multiple / size |\n| `<button>` | 按鈕 | type=\"submit/button/reset\" |\n| `<label>` | 標籤（for=id） | 點 label 會聚焦 input |\n| `<fieldset>` `<legend>` | 表單分組 | 視覺分區 |\n| `<datalist>` | 自動完成選項 | 配 input list= |\n| `<output>` | 計算結果 | 給 JS 寫入 |\n| `<progress>` | 進度條 | value / max |\n| `<meter>` | 範圍量度 | value / min / max / low / high |\n\n### Input type 完整列表\n\n| Type | 用途 |\n|---|---|\n| text | 一般文字 |\n| email | email（手機跳 @ 鍵盤） |\n| password | 密碼（遮蔽） |\n| number | 數字 |\n| tel | 電話 |\n| url | 網址 |\n| search | 搜尋 |\n| date | 日期選擇 |\n| time | 時間 |\n| datetime-local | 日期+時間 |\n| month | 月份 |\n| week | 週次 |\n| color | 顏色選擇器 |\n| range | 滑桿 |\n| file | 檔案上傳 |\n| checkbox | 多選框 |\n| radio | 單選 |\n| submit / reset / button | 按鈕 |\n| hidden | 隱藏（傳值用） |\n| image | 圖片按鈕 |\n\n## 10. 互動 / 細節\n\n| 標籤 | 用途 |\n|---|---|\n| `<details>` `<summary>` | 摺疊區（不用 JS） |\n| `<dialog>` | 對話框 / Modal |\n| `<menu>` | 命令選單 |\n\n## 11. 樣板（Templating）\n\n| 標籤 | 用途 |\n|---|---|\n| `<template>` | 不渲染、JS 複製用 |\n| `<slot>` | Web Components 插槽 |\n\n## 12. 容器 / 通用\n\n| 標籤 | 用途 |\n|---|---|\n| `<div>` | 通用區塊容器（最後選擇） |\n| `<span>` | 通用 inline 容器 |\n\n---\n\n## 全域屬性（所有標籤通用）\n\n| 屬性 | 用途 |\n|---|---|\n| `id` | 唯一識別 |\n| `class` | CSS 樣式 / JS 抓取 |\n| `style` | inline 樣式 |\n| `title` | 滑鼠 hover 顯示 |\n| `lang` | 語言 |\n| `dir` | 文字方向（ltr/rtl）|\n| `hidden` | 隱藏 |\n| `tabindex` | Tab 順序 |\n| `contenteditable` | 可編輯 |\n| `draggable` | 可拖曳 |\n| `spellcheck` | 拼字檢查 |\n| `data-*` | 自訂資料 |\n| `aria-*` | 無障礙 |\n| `role` | ARIA 角色 |\n\n## 事件屬性（onXXX）\n\n常用：`onclick` / `onsubmit` / `onchange` / `oninput` / `onfocus` / `onblur` / `onkeydown` / `onkeyup` / `onload` / `onerror`\n\n---\n\n## 💡 學習建議\n\n1. **不用全部背**：常用 20 個會用就行（div, span, a, p, h1-6, ul/li, img, form, input, button, table, header, nav, section, article, footer）\n2. **語意 > 樣式**：用 `<article>` 不要用 `<div class=\"article\">`\n3. **無障礙先行**：每個圖片都要 `alt`、表單都要 `<label>`\n4. **看 MDN**：[developer.mozilla.org](https://developer.mozilla.org) 是最權威的參考",
+      "outline": [
+        {
+          "level": 2,
+          "text": "1. 文件結構（Document Structure）"
+        },
+        {
+          "level": 2,
+          "text": "2. 語意化結構（HTML5 Semantic）"
+        },
+        {
+          "level": 2,
+          "text": "3. 文字標題（Headings）"
+        },
+        {
+          "level": 2,
+          "text": "4. 文字內容（Text Content）"
+        },
+        {
+          "level": 2,
+          "text": "5. 強調與語意（Inline Semantic）"
+        },
+        {
+          "level": 2,
+          "text": "6. 列表（Lists）"
+        },
+        {
+          "level": 2,
+          "text": "7. 連結與媒體"
+        },
+        {
+          "level": 2,
+          "text": "8. 表格"
+        },
+        {
+          "level": 2,
+          "text": "9. 表單"
+        },
+        {
+          "level": 3,
+          "text": "Input type 完整列表"
+        },
+        {
+          "level": 2,
+          "text": "10. 互動 / 細節"
+        },
+        {
+          "level": 2,
+          "text": "11. 樣板（Templating）"
+        },
+        {
+          "level": 2,
+          "text": "12. 容器 / 通用"
+        },
+        {
+          "level": 2,
+          "text": "全域屬性（所有標籤通用）"
+        },
+        {
+          "level": 2,
+          "text": "事件屬性（onXXX）"
+        },
+        {
+          "level": 2,
+          "text": "💡 學習建議"
+        }
+      ]
+    },
+    {
+      "id": "61.2",
+      "number": "61.2",
+      "title": "CSS 屬性完整大全（300+）",
+      "oneLineSummary": "從 align-content 到 z-index，所有 CSS 屬性依類別整理。",
+      "xp": 100,
+      "content": "# CSS 屬性完整大全\n\n300+ CSS 屬性、依 14 大類整理。每個含**用途**、**常用值**、**範例**。\n\n## 1. 文字（Text）\n\n| 屬性 | 用途 | 範例 |\n|---|---|---|\n| `color` | 文字顏色 | `red` / `#fff` / `rgb(255,0,0)` / `rgba(0,0,0,.5)` |\n| `font-family` | 字型 | `\"Noto Sans TC\", sans-serif` |\n| `font-size` | 字體大小 | `16px` / `1.2rem` / `1em` / `clamp(14px, 2vw, 20px)` |\n| `font-weight` | 字重 | `100` / `400` / `700` / `900` / `bold` / `normal` |\n| `font-style` | 樣式 | `normal` / `italic` / `oblique` |\n| `font-variant` | 變體 | `small-caps` |\n| `line-height` | 行高 | `1.5` / `1.5em` / `24px` |\n| `letter-spacing` | 字距 | `0.05em` / `2px` |\n| `word-spacing` | 詞距 | `0.5em` |\n| `text-align` | 對齊 | `left` / `center` / `right` / `justify` |\n| `text-decoration` | 裝飾 | `none` / `underline` / `line-through` / `overline` |\n| `text-decoration-color` | 裝飾色 | `red` |\n| `text-decoration-style` | 裝飾樣式 | `solid` / `dashed` / `dotted` / `wavy` |\n| `text-transform` | 大小寫 | `uppercase` / `lowercase` / `capitalize` |\n| `text-indent` | 首行縮排 | `2em` |\n| `text-shadow` | 文字陰影 | `2px 2px 4px rgba(0,0,0,.5)` |\n| `white-space` | 空白處理 | `normal` / `nowrap` / `pre` / `pre-wrap` |\n| `word-break` | 斷詞 | `normal` / `break-all` / `keep-all` |\n| `overflow-wrap` | 換行 | `normal` / `break-word` |\n| `text-overflow` | 溢出處理 | `clip` / `ellipsis` |\n| `direction` | 方向 | `ltr` / `rtl` |\n| `writing-mode` | 寫字方向 | `horizontal-tb` / `vertical-rl` |\n\n## 2. 背景（Background）\n\n| 屬性 | 用途 | 範例 |\n|---|---|---|\n| `background-color` | 背景色 | `#f0f0f0` |\n| `background-image` | 背景圖 | `url(...)` / `linear-gradient(...)` / `radial-gradient(...)` |\n| `background-repeat` | 重複 | `repeat` / `no-repeat` / `repeat-x` / `repeat-y` |\n| `background-position` | 位置 | `center` / `top left` / `50% 50%` |\n| `background-size` | 尺寸 | `cover` / `contain` / `100% auto` |\n| `background-attachment` | 滾動 | `scroll` / `fixed` / `local` |\n| `background-origin` | 原點 | `border-box` / `padding-box` / `content-box` |\n| `background-clip` | 裁切 | `border-box` / `padding-box` / `content-box` / `text` |\n| `background` | 簡寫 | `#fff url(...) no-repeat center / cover` |\n\n## 3. 盒模型（Box Model）\n\n| 屬性 | 用途 | 範例 |\n|---|---|---|\n| `width` | 寬度 | `100px` / `50%` / `auto` / `min-content` / `max-content` / `fit-content` |\n| `height` | 高度 | `100vh` / `auto` |\n| `min-width` `min-height` | 最小尺寸 | `300px` |\n| `max-width` `max-height` | 最大尺寸 | `1200px` |\n| `padding` | 內距 | `10px` / `10px 20px` / `10px 20px 15px 5px` |\n| `padding-top/right/bottom/left` | 個別內距 | |\n| `margin` | 外距 | `auto`（水平置中） |\n| `margin-top/right/bottom/left` | 個別外距 | |\n| `border` | 邊框（簡寫） | `1px solid #ccc` |\n| `border-width` | 寬度 | `1px` |\n| `border-style` | 樣式 | `solid` / `dashed` / `dotted` / `double` / `none` |\n| `border-color` | 顏色 | |\n| `border-radius` | 圓角 | `8px` / `50%` / `10px 20px 30px 40px` |\n| `box-sizing` | 計算模式 | `content-box` / `border-box`（推薦） |\n| `box-shadow` | 陰影 | `0 4px 8px rgba(0,0,0,.1)` / `inset 0 0 0 1px #ccc` |\n| `outline` | 外框（不佔空間） | `2px solid blue` |\n| `outline-offset` | 外框距離 | `4px` |\n\n## 4. Display & 排版（Layout）\n\n| 屬性 | 用途 | 值 |\n|---|---|---|\n| `display` | 顯示模式 | `block` / `inline` / `inline-block` / `flex` / `inline-flex` / `grid` / `inline-grid` / `none` / `contents` / `table` |\n| `position` | 定位 | `static` / `relative` / `absolute` / `fixed` / `sticky` |\n| `top` `right` `bottom` `left` | 偏移 | `0` / `10px` / `50%` |\n| `inset` | 簡寫 | `0`（四邊都 0） |\n| `z-index` | 層級 | `1` / `999` / `-1` |\n| `float` | 浮動 | `left` / `right` / `none` |\n| `clear` | 清除浮動 | `both` |\n| `overflow` | 溢出處理 | `visible` / `hidden` / `scroll` / `auto` / `clip` |\n| `overflow-x` `overflow-y` | 個別 | |\n| `visibility` | 可見性 | `visible` / `hidden`（保留空間） / `collapse` |\n| `opacity` | 透明度 | `0` 到 `1` |\n| `cursor` | 滑鼠樣式 | `pointer` / `default` / `grab` / `not-allowed` / `wait` |\n\n## 5. Flexbox\n\n| 屬性（容器） | 用途 |\n|---|---|\n| `display: flex` | 啟用 flex |\n| `flex-direction` | `row` / `column` / `row-reverse` / `column-reverse` |\n| `flex-wrap` | `nowrap` / `wrap` / `wrap-reverse` |\n| `justify-content` | 主軸：`flex-start` / `center` / `flex-end` / `space-between` / `space-around` / `space-evenly` |\n| `align-items` | 交叉軸：`stretch` / `center` / `flex-start` / `flex-end` / `baseline` |\n| `align-content` | 多行交叉軸 |\n| `gap` | 間距 | `10px` / `10px 20px` |\n\n| 屬性（子元素） | 用途 |\n|---|---|\n| `flex` | 簡寫 `flex-grow flex-shrink flex-basis` |\n| `flex-grow` | 放大比例（預設 0）|\n| `flex-shrink` | 縮小比例（預設 1）|\n| `flex-basis` | 基準大小 |\n| `align-self` | 覆蓋父 align-items |\n| `order` | 順序（預設 0） |\n\n## 6. Grid\n\n| 屬性（容器） | 用途 |\n|---|---|\n| `display: grid` | 啟用 grid |\n| `grid-template-columns` | `1fr 1fr 1fr` / `repeat(3, 1fr)` / `repeat(auto-fit, minmax(200px, 1fr))` |\n| `grid-template-rows` | 同上 |\n| `grid-template-areas` | 命名區域 |\n| `grid-auto-columns/rows` | 隱式 grid |\n| `grid-auto-flow` | `row` / `column` / `dense` |\n| `gap` `row-gap` `column-gap` | 間距 |\n| `justify-items` `align-items` | 對齊 |\n| `place-items` | 兩者簡寫 |\n\n| 屬性（子元素） | 用途 |\n|---|---|\n| `grid-column` | `1 / 3` / `span 2` |\n| `grid-row` | 同上 |\n| `grid-area` | 命名區或 row/col 簡寫 |\n| `justify-self` `align-self` | 自身對齊 |\n\n## 7. 顏色與漸層\n\n```css\n/* 顏色寫法 */\ncolor: red;                              /* 名稱 */\ncolor: #ff0000;                          /* hex */\ncolor: rgb(255, 0, 0);                   /* RGB */\ncolor: rgba(255, 0, 0, 0.5);             /* RGBA */\ncolor: hsl(0, 100%, 50%);                /* HSL */\ncolor: hsla(0, 100%, 50%, 0.5);          /* HSLA */\ncolor: oklch(70% 0.15 30);               /* OKLCH（新）*/\n\n/* 漸層 */\nbackground: linear-gradient(45deg, red, blue);\nbackground: radial-gradient(circle, red, blue);\nbackground: conic-gradient(red, yellow, green, blue, red);\n```\n\n## 8. Transform & 動畫\n\n| 屬性 | 用途 |\n|---|---|\n| `transform` | `translate(x, y)` / `rotate(45deg)` / `scale(1.5)` / `skew(10deg)` / `matrix(...)` |\n| `transform-origin` | 變形原點：`center` / `top left` / `50% 50%` |\n| `transform-style` | `flat` / `preserve-3d` |\n| `perspective` | 3D 透視距離 |\n| `backface-visibility` | 背面可見：`visible` / `hidden` |\n| `transition` | 過渡：`all 0.3s ease` |\n| `transition-property` | 哪些屬性 |\n| `transition-duration` | 時長 |\n| `transition-timing-function` | `ease` / `linear` / `ease-in` / `ease-out` / `cubic-bezier(...)` |\n| `transition-delay` | 延遲 |\n| `animation` | 動畫：`spin 2s linear infinite` |\n| `animation-name` | @keyframes 名稱 |\n| `animation-duration` | 時長 |\n| `animation-iteration-count` | `infinite` / `3` |\n| `animation-direction` | `normal` / `reverse` / `alternate` |\n| `animation-fill-mode` | `forwards` / `backwards` / `both` |\n| `animation-play-state` | `running` / `paused` |\n\n## 9. Filter & 視覺效果\n\n```css\nfilter: blur(5px);\nfilter: brightness(0.5);\nfilter: contrast(200%);\nfilter: grayscale(100%);\nfilter: hue-rotate(90deg);\nfilter: invert(100%);\nfilter: opacity(50%);\nfilter: saturate(2);\nfilter: sepia(100%);\nfilter: drop-shadow(2px 4px 6px black);\n\nbackdrop-filter: blur(10px);  /* 背景模糊 */\nmix-blend-mode: multiply;     /* 混合模式 */\n```\n\n## 10. List 與表格\n\n| 屬性 | 用途 |\n|---|---|\n| `list-style` | 簡寫 |\n| `list-style-type` | `disc` / `circle` / `square` / `decimal` / `lower-roman` / `none` |\n| `list-style-position` | `inside` / `outside` |\n| `list-style-image` | 自訂圖示 |\n| `border-collapse` | 表格邊框：`separate` / `collapse` |\n| `border-spacing` | 表格間距 |\n| `caption-side` | 標題位置 |\n| `table-layout` | `auto` / `fixed` |\n| `vertical-align` | 垂直對齊：`top` / `middle` / `bottom` / `baseline` |\n\n## 11. CSS 變數（Custom Properties）\n\n```css\n:root {\n  --primary-color: #50fa7b;\n  --spacing: 8px;\n  --font-stack: 'Noto Sans TC', sans-serif;\n}\n\n.button {\n  color: var(--primary-color);\n  padding: var(--spacing);\n  /* 提供 fallback */\n  background: var(--bg-color, #fff);\n}\n```\n\n## 12. 響應式設計\n\n```css\n/* Media queries */\n@media (max-width: 768px) { ... }\n@media (min-width: 1024px) { ... }\n@media (prefers-color-scheme: dark) { ... }\n@media (prefers-reduced-motion: reduce) { ... }\n@media (orientation: portrait) { ... }\n@media (hover: hover) { ... }\n\n/* 容器查詢（Container Queries）*/\n@container (min-width: 400px) { ... }\n\n/* 邏輯屬性（國際化）*/\nmargin-inline-start: 10px;  /* LTR=margin-left, RTL=margin-right */\npadding-block: 10px;        /* 上下 */\n```\n\n## 13. 偽類與偽元素\n\n### 偽類（State）\n\n| | 用途 |\n|---|---|\n| `:hover` | 滑鼠懸停 |\n| `:focus` | 聚焦 |\n| `:focus-visible` | 鍵盤聚焦（不含滑鼠）|\n| `:active` | 點擊中 |\n| `:visited` | 已訪問連結 |\n| `:disabled` `:enabled` | 禁用 / 啟用 |\n| `:checked` | 勾選 |\n| `:required` `:optional` | 必填 / 選填 |\n| `:valid` `:invalid` | 驗證通過 / 失敗 |\n| `:placeholder-shown` | 顯示佔位字 |\n| `:first-child` `:last-child` `:nth-child(n)` | 子元素位置 |\n| `:first-of-type` `:last-of-type` `:nth-of-type(n)` | 同類型位置 |\n| `:not(...)` | 排除 |\n| `:is(...)` `:where(...)` | 任一符合 |\n| `:has(...)` | 包含某子元素（CSS4）|\n| `:empty` | 空元素 |\n| `:root` | 文件根 |\n| `:target` | 當前錨點 |\n\n### 偽元素（Virtual elements）\n\n| | 用途 |\n|---|---|\n| `::before` `::after` | 插入內容（需 `content:`） |\n| `::first-line` | 第一行 |\n| `::first-letter` | 第一個字 |\n| `::selection` | 選取的文字 |\n| `::placeholder` | input 佔位字 |\n| `::marker` | 列表標記 |\n| `::backdrop` | dialog/fullscreen 背景 |\n\n## 14. 其他常用\n\n| 屬性 | 用途 |\n|---|---|\n| `user-select` | `none` / `text` / `auto` |\n| `pointer-events` | `none` / `auto` |\n| `appearance` | `none`（移除預設外觀） |\n| `accent-color` | 表單元素強調色 |\n| `caret-color` | 游標色 |\n| `scroll-behavior` | `smooth` / `auto` |\n| `scroll-snap-type` | 滾動吸附 |\n| `aspect-ratio` | 長寬比 `16/9` |\n| `object-fit` | 圖片填滿：`cover` / `contain` / `fill` / `none` / `scale-down` |\n| `object-position` | 圖片位置 |\n| `content-visibility` | 效能優化：`auto` / `hidden` |\n| `will-change` | 提示瀏覽器預備優化 |\n\n---\n\n## 💡 學習建議\n\n1. **常用 50 個會用就 90% 場景搞定**\n2. **記不住沒關係**——這是查的、不是背的\n3. **CSS 變數**讓主題色一鍵切換、強烈推薦\n4. **學現代的**：用 grid / flex，少用 float / table layout\n5. **Logical properties**（margin-inline-start 等）支援 RTL 國際化、未來主流",
+      "outline": [
+        {
+          "level": 2,
+          "text": "1. 文字（Text）"
+        },
+        {
+          "level": 2,
+          "text": "2. 背景（Background）"
+        },
+        {
+          "level": 2,
+          "text": "3. 盒模型（Box Model）"
+        },
+        {
+          "level": 2,
+          "text": "4. Display & 排版（Layout）"
+        },
+        {
+          "level": 2,
+          "text": "5. Flexbox"
+        },
+        {
+          "level": 2,
+          "text": "6. Grid"
+        },
+        {
+          "level": 2,
+          "text": "7. 顏色與漸層"
+        },
+        {
+          "level": 2,
+          "text": "8. Transform & 動畫"
+        },
+        {
+          "level": 2,
+          "text": "9. Filter & 視覺效果"
+        },
+        {
+          "level": 2,
+          "text": "10. List 與表格"
+        },
+        {
+          "level": 2,
+          "text": "11. CSS 變數（Custom Properties）"
+        },
+        {
+          "level": 2,
+          "text": "12. 響應式設計"
+        },
+        {
+          "level": 2,
+          "text": "13. 偽類與偽元素"
+        },
+        {
+          "level": 3,
+          "text": "偽類（State）"
+        },
+        {
+          "level": 3,
+          "text": "偽元素（Virtual elements）"
+        },
+        {
+          "level": 2,
+          "text": "14. 其他常用"
+        },
+        {
+          "level": 2,
+          "text": "💡 學習建議"
+        }
+      ]
+    },
+    {
+      "id": "61.3",
+      "number": "61.3",
+      "title": "JavaScript API 完整大全（200+）",
+      "oneLineSummary": "Array、Object、String、DOM、Window、Promise 等核心 API 全部整理。",
+      "xp": 100,
+      "content": "# JavaScript API 完整大全\n\n常用 JS 內建 API、依物件分類。\n\n## 1. Array（陣列）\n\n### 不改變原陣列（推薦）\n\n| 方法 | 用途 | 範例 |\n|---|---|---|\n| `map(fn)` | 轉換每個元素 | `[1,2,3].map(x => x*2)` → `[2,4,6]` |\n| `filter(fn)` | 過濾 | `[1,2,3].filter(x => x>1)` → `[2,3]` |\n| `reduce(fn, init)` | 累積計算 | `[1,2,3].reduce((a,b) => a+b, 0)` → `6` |\n| `reduceRight(fn, init)` | 從右開始 reduce | |\n| `find(fn)` | 找第一個符合 | `[1,2,3].find(x => x>1)` → `2` |\n| `findIndex(fn)` | 找索引 | |\n| `findLast(fn)` | 從末尾找 | |\n| `findLastIndex(fn)` | 從末尾找索引 | |\n| `some(fn)` | 任一符合 | `[1,2,3].some(x => x>2)` → `true` |\n| `every(fn)` | 全符合 | `[1,2,3].every(x => x>0)` → `true` |\n| `includes(value)` | 是否包含 | `[1,2,3].includes(2)` → `true` |\n| `indexOf(value)` | 第一個索引 | |\n| `lastIndexOf(value)` | 最後一個索引 | |\n| `concat(...)` | 合併 | `[1,2].concat([3,4])` → `[1,2,3,4]` |\n| `slice(start, end)` | 切片（不含 end） | `[1,2,3,4].slice(1, 3)` → `[2,3]` |\n| `flat(depth)` | 攤平 | `[[1,2],[3]].flat()` → `[1,2,3]` |\n| `flatMap(fn)` | map 後 flat | |\n| `join(sep)` | 連成字串 | `[1,2,3].join('-')` → `'1-2-3'` |\n| `toString()` | 字串化 | |\n| `toSorted(fn)` | 排序（新陣列）ES2023 | |\n| `toReversed()` | 反轉（新陣列）ES2023 | |\n| `toSpliced()` | splice（新陣列）ES2023 | |\n| `with(idx, val)` | 取代（新陣列）ES2023 | |\n| `at(idx)` | 取索引（支援負數） | `[1,2,3].at(-1)` → `3` |\n| `entries()` `keys()` `values()` | 迭代器 | |\n| `forEach(fn)` | 遍歷（無回傳） | |\n\n### 改變原陣列\n\n| 方法 | 用途 |\n|---|---|\n| `push(...)` | 末尾加 |\n| `pop()` | 末尾移除 |\n| `unshift(...)` | 開頭加 |\n| `shift()` | 開頭移除 |\n| `splice(start, count, ...add)` | 增刪改 |\n| `sort(fn)` | 排序 |\n| `reverse()` | 反轉 |\n| `fill(value, start, end)` | 填滿 |\n| `copyWithin(target, start, end)` | 內部複製 |\n\n### 靜態方法\n\n| 方法 | 用途 |\n|---|---|\n| `Array.from(iter, mapFn)` | 從可迭代物件建陣列 |\n| `Array.of(...)` | 從參數建 |\n| `Array.isArray(x)` | 判斷 |\n\n## 2. Object\n\n| 方法 | 用途 |\n|---|---|\n| `Object.keys(obj)` | 屬性名陣列 |\n| `Object.values(obj)` | 屬性值陣列 |\n| `Object.entries(obj)` | [key, value] 陣列 |\n| `Object.fromEntries(arr)` | entries 轉物件 |\n| `Object.assign(target, ...src)` | 合併（淺）|\n| `Object.freeze(obj)` | 凍結（不能改）|\n| `Object.isFrozen(obj)` | 是否凍結 |\n| `Object.seal(obj)` | 封印（不能加減屬性）|\n| `Object.create(proto)` | 從原型建 |\n| `Object.getPrototypeOf(obj)` | 取原型 |\n| `Object.setPrototypeOf(obj, proto)` | 設原型 |\n| `Object.defineProperty(obj, key, desc)` | 定義屬性 |\n| `Object.getOwnPropertyDescriptor(obj, key)` | 取描述 |\n| `Object.getOwnPropertyNames(obj)` | 所有屬性名 |\n| `Object.hasOwn(obj, key)` ES2022 | 自有屬性？|\n| `Object.is(a, b)` | 嚴格相等（含 NaN）|\n| `Object.groupBy(arr, fn)` ES2024 | 分組 |\n\n## 3. String\n\n| 方法 | 用途 | 範例 |\n|---|---|---|\n| `length` | 長度 | |\n| `charAt(i)` `at(i)` | 取字元 | |\n| `concat(...)` | 連接 | |\n| `includes(sub)` | 是否含 | |\n| `startsWith(sub)` `endsWith(sub)` | 開頭 / 結尾 | |\n| `indexOf(sub)` `lastIndexOf(sub)` | 索引 | |\n| `slice(s, e)` | 切片 | |\n| `substring(s, e)` | 子字串 | |\n| `split(sep)` | 切割 | `'a,b,c'.split(',')` |\n| `replace(s, r)` | 取代（一次）| |\n| `replaceAll(s, r)` ES2021 | 取代（全部）| |\n| `repeat(n)` | 重複 | |\n| `padStart(len, ch)` | 前面補 | `'5'.padStart(3, '0')` → `'005'` |\n| `padEnd(len, ch)` | 後面補 | |\n| `trim()` `trimStart()` `trimEnd()` | 去空白 | |\n| `toUpperCase()` `toLowerCase()` | 大小寫 | |\n| `match(regex)` | 比對 | |\n| `matchAll(regex)` | 全部比對 | |\n| `search(regex)` | 搜尋 | |\n| `normalize()` | Unicode 正規化 | |\n| `codePointAt(i)` | Unicode code point | |\n| `String.raw\\`...\\`` | 原始字串 | |\n\n## 4. Number\n\n| 方法 | 用途 |\n|---|---|\n| `Number(x)` | 轉數字 |\n| `parseInt(s, base)` | 字串轉整數 |\n| `parseFloat(s)` | 字串轉浮點 |\n| `Number.isInteger(x)` | 整數？|\n| `Number.isFinite(x)` | 有限數？|\n| `Number.isNaN(x)` | NaN？（嚴格）|\n| `Number.isSafeInteger(x)` | 安全整數？|\n| `Number.MAX_SAFE_INTEGER` | 2^53 - 1 |\n| `Number.EPSILON` | 浮點精度 |\n| `x.toFixed(n)` | 固定小數位 |\n| `x.toPrecision(n)` | 有效位數 |\n| `x.toString(base)` | 轉字串（含進位）|\n| `x.toLocaleString()` | 本地化 |\n\n## 5. Math\n\n| 方法 | 用途 |\n|---|---|\n| `Math.abs(x)` | 絕對值 |\n| `Math.floor(x)` `Math.ceil(x)` `Math.round(x)` | 取整 |\n| `Math.trunc(x)` | 去小數 |\n| `Math.sign(x)` | 正負號 |\n| `Math.min(...)` `Math.max(...)` | 最值 |\n| `Math.pow(b, e)` 或 `b ** e` | 次方 |\n| `Math.sqrt(x)` | 平方根 |\n| `Math.cbrt(x)` | 立方根 |\n| `Math.exp(x)` `Math.log(x)` `Math.log2(x)` `Math.log10(x)` | 指數對數 |\n| `Math.sin(x)` `Math.cos(x)` `Math.tan(x)` | 三角 |\n| `Math.asin(x)` `Math.acos(x)` `Math.atan(x)` `Math.atan2(y, x)` | 反三角 |\n| `Math.PI` `Math.E` | 常數 |\n| `Math.random()` | 0-1 隨機 |\n| `Math.hypot(...)` | 多維距離 |\n\n```js\n// 隨機整數 [min, max]\nconst rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;\n```\n\n## 6. Date\n\n```js\nnew Date()                          // 現在\nnew Date('2026-05-19')              // ISO 字串\nnew Date(2026, 4, 19)               // 月份從 0 開始（4 = 5 月）\nnew Date(timestamp)                 // 毫秒時間戳\n\nDate.now()                          // 當前時間戳\n\n// 取部分\ndate.getFullYear()\ndate.getMonth()                     // 0-11\ndate.getDate()                      // 1-31\ndate.getDay()                       // 0-6（週日為 0）\ndate.getHours()\ndate.getMinutes()\ndate.getSeconds()\ndate.getMilliseconds()\ndate.getTime()                      // 時間戳\ndate.getTimezoneOffset()\n\n// 設定\ndate.setFullYear(2027)\ndate.setMonth(0)\n\n// 格式化\ndate.toISOString()                  // \"2026-05-19T00:00:00.000Z\"\ndate.toLocaleDateString('zh-TW')   // \"2026/5/19\"\ndate.toLocaleString('zh-TW')\n\n// 計算（直接相減得到毫秒差）\nconst diff = new Date() - new Date('2026-01-01');\n```\n\n**Tip**: 複雜日期處理用 **date-fns** 或 **Day.js**，內建 Date API 很難用。\n\n## 7. Promise & async\n\n```js\n// 建立\nconst p = new Promise((resolve, reject) => {\n  setTimeout(() => resolve('ok'), 1000);\n});\n\n// 用法\np.then(v => ...).catch(e => ...).finally(() => ...);\n\n// async/await（現代寫法）\nasync function fetchData() {\n  try {\n    const res = await fetch('/api');\n    const data = await res.json();\n    return data;\n  } catch (e) {\n    console.error(e);\n  }\n}\n\n// 靜態方法\nPromise.all([p1, p2, p3])           // 全部完成、有一個失敗就 reject\nPromise.allSettled([p1, p2, p3])    // 全部結束（不管成敗）\nPromise.race([p1, p2, p3])          // 第一個結束的\nPromise.any([p1, p2, p3])           // 第一個成功的\nPromise.resolve(value)              // 立刻 resolved\nPromise.reject(error)               // 立刻 rejected\n```\n\n## 8. DOM Selection\n\n```js\ndocument.getElementById('id')\ndocument.querySelector('.class')             // 第一個\ndocument.querySelectorAll('.class')          // NodeList\ndocument.getElementsByClassName('class')     // HTMLCollection（live）\ndocument.getElementsByTagName('div')\ndocument.getElementsByName('name')\n\n// 從元素往內找\nelement.querySelector('...')\nelement.querySelectorAll('...')\n\n// 走樹\nelement.parentElement\nelement.children                  // HTMLCollection\nelement.childNodes                // NodeList（含 text node）\nelement.firstElementChild\nelement.lastElementChild\nelement.nextElementSibling\nelement.previousElementSibling\nelement.closest('.parent')        // 最近祖先\n```\n\n## 9. DOM 修改\n\n```js\n// 建立\nconst div = document.createElement('div');\nconst text = document.createTextNode('hi');\nconst frag = document.createDocumentFragment();\n\n// 插入\nparent.appendChild(child)\nparent.append(...nodes)                   // 多個 + 字串\nparent.prepend(...nodes)                  // 開頭\nparent.insertBefore(new, ref)\nelement.before(...nodes)                  // 自己前\nelement.after(...nodes)                   // 自己後\nelement.replaceWith(...nodes)\nelement.insertAdjacentHTML(pos, html)     // 'beforebegin' / 'afterbegin' / 'beforeend' / 'afterend'\nelement.insertAdjacentElement(pos, el)\nelement.insertAdjacentText(pos, text)\n\n// 移除\nelement.remove()\nparent.removeChild(child)\n\n// 內容\nelement.textContent                       // 純文字\nelement.innerHTML                         // HTML（小心 XSS）\nelement.innerText                         // 視覺文字\nelement.outerHTML\n\n// 屬性\nelement.getAttribute('href')\nelement.setAttribute('href', '...')\nelement.removeAttribute('href')\nelement.hasAttribute('href')\nelement.attributes                        // NamedNodeMap\nelement.dataset.userId                    // data-user-id\n\n// Class\nelement.classList.add('foo', 'bar')\nelement.classList.remove('foo')\nelement.classList.toggle('foo')\nelement.classList.contains('foo')\nelement.classList.replace('foo', 'bar')\n\n// Style\nelement.style.color = 'red'\nelement.style.cssText = 'color: red; font-size: 16px;'\ngetComputedStyle(element).color\n\n// 尺寸與位置\nelement.offsetWidth / offsetHeight        // 含 border\nelement.clientWidth / clientHeight        // 不含 border\nelement.scrollWidth / scrollHeight        // 含滾動隱藏\nelement.getBoundingClientRect()           // { top, left, width, height, ... }\nelement.scrollIntoView({ behavior: 'smooth' })\n```\n\n## 10. Events\n\n```js\nelement.addEventListener('click', handler, options);\nelement.removeEventListener('click', handler);\n\n// Event object\nevent.target            // 觸發元素\nevent.currentTarget     // 綁定元素\nevent.preventDefault()  // 阻止預設\nevent.stopPropagation() // 阻止冒泡\nevent.key / event.code  // 鍵盤\nevent.clientX / clientY // 滑鼠位置\n\n// 常見事件\n// Mouse: click / dblclick / mousedown / mouseup / mousemove / mouseover / mouseout / mouseenter / mouseleave / wheel / contextmenu\n// Keyboard: keydown / keyup / keypress\n// Form: submit / change / input / focus / blur / reset\n// Window: load / DOMContentLoaded / resize / scroll / beforeunload / unload\n// Touch: touchstart / touchend / touchmove / touchcancel\n// Drag: dragstart / dragend / dragover / drop\n```\n\n## 11. Fetch & 網路\n\n```js\n// GET\nconst res = await fetch(url);\nconst data = await res.json();    // 或 .text() / .blob() / .formData()\n\n// POST\nawait fetch(url, {\n  method: 'POST',\n  headers: { 'Content-Type': 'application/json' },\n  body: JSON.stringify(data),\n  credentials: 'include',          // 帶 cookie\n  mode: 'cors',\n  signal: abortController.signal,  // 取消\n});\n\n// AbortController\nconst ctrl = new AbortController();\nfetch(url, { signal: ctrl.signal });\nctrl.abort();\n\n// Response\nres.ok                  // 200-299\nres.status              // 200 / 404 / ...\nres.headers.get('content-type')\nres.url\nres.redirected\n```\n\n## 12. Storage\n\n```js\n// localStorage（永久）\nlocalStorage.setItem('key', JSON.stringify(value));\nconst v = JSON.parse(localStorage.getItem('key') ?? 'null');\nlocalStorage.removeItem('key');\nlocalStorage.clear();\nlocalStorage.length;\nlocalStorage.key(0);\n\n// sessionStorage（關閉分頁就沒）— 同 API\n\n// Cookie（簡易）\ndocument.cookie = 'name=value; path=/; max-age=3600';\n```\n\n## 13. Window & Document\n\n```js\nwindow.location.href                  // 當前 URL\nwindow.location.pathname              // 路徑\nwindow.location.search                // ?xxx\nwindow.location.hash                  // #xxx\nwindow.location.reload()\nwindow.location.assign(url)\nwindow.location.replace(url)          // 不留歷史\n\nwindow.history.back()\nwindow.history.forward()\nwindow.history.go(n)\nwindow.history.pushState(state, '', url)\nwindow.history.replaceState(state, '', url)\n\nwindow.innerWidth / innerHeight       // viewport\nwindow.scrollX / scrollY\nwindow.scrollTo({ top: 0, behavior: 'smooth' })\nwindow.open(url, '_blank')\n\nwindow.alert(msg)\nwindow.confirm(msg)                   // 回傳 boolean\nwindow.prompt(msg)                    // 回傳 string\n\nwindow.requestAnimationFrame(fn)\nwindow.cancelAnimationFrame(id)\nwindow.setTimeout(fn, ms)\nwindow.setInterval(fn, ms)\nwindow.clearTimeout(id)\nwindow.clearInterval(id)\n\n// document\ndocument.title\ndocument.cookie\ndocument.readyState\ndocument.documentElement              // <html>\ndocument.body\ndocument.head\n```\n\n## 14. Set & Map\n\n```js\nconst s = new Set([1, 2, 3]);\ns.add(4); s.has(1); s.delete(1); s.size; s.clear();\n[...s]                            // 轉陣列\n\nconst m = new Map();\nm.set('key', 'value');\nm.get('key');\nm.has('key');\nm.delete('key');\nm.size;\nfor (const [k, v] of m) { ... }\n\n// 弱引用（GC 友善）\nnew WeakMap()  new WeakSet()\n```\n\n## 15. JSON\n\n```js\nJSON.stringify(obj)\nJSON.stringify(obj, null, 2)      // 縮排\nJSON.stringify(obj, ['name'])     // 只要某欄位\nJSON.stringify(obj, (k, v) => ...) // replacer\n\nJSON.parse(str)\nJSON.parse(str, (k, v) => ...)    // reviver\n```\n\n## 16. RegExp（正則）\n\n```js\nconst re = /pattern/flags;        // i=不分大小寫 g=全部 m=多行 s=. 含換行 u=Unicode y=粘性\nconst re = new RegExp('pattern', 'i');\n\nre.test(str)                      // 是否符合\nre.exec(str)                      // 配對細節\n\nstr.match(re)\nstr.matchAll(re)\nstr.replace(re, replacement)\nstr.split(re)\n\n// 常見 pattern\n/^abc$/        // 完全等於 abc\n/[a-z]/        // 小寫字母\n/\\d/           // 數字 \\D 非數字\n/\\w/           // 字 \\W 非字\n/\\s/           // 空白 \\S 非空白\n/.+/           // 一或多個任意\n/(.+?)/        // 非貪婪\n/(?<name>...)/ // 命名捕捉組\n/(?:...)/      // 不捕捉\n/(?=...)/      // 正向先行\n/(?!...)/      // 負向先行\n```\n\n## 17. 其他重要\n\n```js\n// Optional chaining\nuser?.address?.city\nuser?.getName?.()\narray?.[0]\n\n// Nullish coalescing\nvalue ?? defaultValue           // null/undefined 才用 default\nvalue || defaultValue           // falsy 都會 default（含 0、'')\n\n// Destructuring\nconst { a, b = 1, c: alias } = obj;\nconst [first, ...rest] = arr;\n\n// Spread\n{ ...obj, newKey: 1 }\n[...arr, 4]\nfn(...args)\n\n// Template literals\n`Hello ${name}!`\n`多行\n   字串`\n```\n\n## 18. ES2024/ES2025 新特性\n\n- `Object.groupBy()` / `Map.groupBy()` 分組\n- `Promise.withResolvers()` 解構式 Promise\n- `Array.prototype.toSorted/toReversed/toSpliced/with` 不變陣列方法\n- `RegExp v flag` 進階字元類\n- Set methods: `union / intersection / difference / symmetricDifference / isSubsetOf / isSupersetOf / isDisjointFrom`\n- `Promise.try()` 安全執行同步/非同步\n\n---\n\n## 💡 學習建議\n\n1. **Array map/filter/reduce 是核心**——日常用最多\n2. **DOM API 用 querySelector / classList 就好**——少用古老 API\n3. **fetch + async/await** 是現代寫法、不要再用 XMLHttpRequest\n4. **Optional chaining + nullish coalescing** 大大降低 null check 噪音\n5. **常去 MDN 查**：[developer.mozilla.org/zh-TW](https://developer.mozilla.org/zh-TW)",
+      "outline": [
+        {
+          "level": 2,
+          "text": "1. Array（陣列）"
+        },
+        {
+          "level": 3,
+          "text": "不改變原陣列（推薦）"
+        },
+        {
+          "level": 3,
+          "text": "改變原陣列"
+        },
+        {
+          "level": 3,
+          "text": "靜態方法"
+        },
+        {
+          "level": 2,
+          "text": "2. Object"
+        },
+        {
+          "level": 2,
+          "text": "3. String"
+        },
+        {
+          "level": 2,
+          "text": "4. Number"
+        },
+        {
+          "level": 2,
+          "text": "5. Math"
+        },
+        {
+          "level": 2,
+          "text": "6. Date"
+        },
+        {
+          "level": 2,
+          "text": "7. Promise & async"
+        },
+        {
+          "level": 2,
+          "text": "8. DOM Selection"
+        },
+        {
+          "level": 2,
+          "text": "9. DOM 修改"
+        },
+        {
+          "level": 2,
+          "text": "10. Events"
+        },
+        {
+          "level": 2,
+          "text": "11. Fetch & 網路"
+        },
+        {
+          "level": 2,
+          "text": "12. Storage"
+        },
+        {
+          "level": 2,
+          "text": "13. Window & Document"
+        },
+        {
+          "level": 2,
+          "text": "14. Set & Map"
+        },
+        {
+          "level": 2,
+          "text": "15. JSON"
+        },
+        {
+          "level": 2,
+          "text": "16. RegExp（正則）"
+        },
+        {
+          "level": 2,
+          "text": "17. 其他重要"
+        },
+        {
+          "level": 2,
+          "text": "18. ES2024/ES2025 新特性"
+        },
+        {
+          "level": 2,
+          "text": "💡 學習建議"
+        }
+      ]
+    }
+  ]
+}

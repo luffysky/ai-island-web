@@ -1,0 +1,933 @@
+{
+  "id": 24,
+  "slug": "monitoring",
+  "stage": 3,
+  "title": "監控與 Logs",
+  "subtitle": "Sentry / PostHog / Datadog",
+  "icon": "activity",
+  "description": "監控與 Logs：Sentry / PostHog / Datadog",
+  "status": "published",
+  "difficulty": "intermediate",
+  "prerequisites": [
+    22
+  ],
+  "estimatedHours": 8,
+  "outcomes": [
+    "理解核心概念",
+    "實作主流工具",
+    "整章實戰可發佈作品",
+    "知道生態 / 接案行情",
+    "對齊 2026 業界主流"
+  ],
+  "lessons": [
+    {
+      "title": "監控總圖：四黃金訊號",
+      "oneLineSummary": "上線後 80% 工作是看儀表板",
+      "analogy": "沒監控 = 瞎飛。",
+      "content": "## SRE 四黃金訊號\n1. **Latency**：response 時間\n2. **Traffic**：流量\n3. **Errors**：錯誤率\n4. **Saturation**：資源使用率（CPU / RAM / disk）\n\n只看這四個就 ok。\n\n## 監控層級\n\n### Infrastructure\n- CPU / RAM / disk / network\n- 工具：Datadog / Prometheus\n\n### Application\n- Response time\n- Error rate\n- Throughput\n- 工具：APM（Sentry / Datadog APM）\n\n### Business\n- 註冊數 / 訂單 / 收入\n- 工具：Analytics（GA / Posthog / Mixpanel）\n\n### Real User\n- 真實使用者體驗\n- LCP / INP / CLS\n- 工具：Sentry RUM / Vercel Speed Insights\n\n## Monitoring vs Observability\n\n### Monitoring（已知問題）\n- CPU 高？\n- Error rate 高？\n- 看儀表板\n\n### Observability（未知問題）\n- 為什麼這 user 慢？\n- 追 distributed trace\n- log / metric / trace 三位一體\n\n## Indie 黃金組合\n- **Sentry**：錯誤\n- **Better Stack Uptime**：監控\n- **Better Stack Logtail**：log\n- **Vercel Analytics / Plausible**：traffic\n- **Pino**：structured log\n\n< NT$ 500/月。\n\n## 必設 alert\n- Uptime down\n- Error rate > 1%\n- Response time p95 > 2s\n- DB CPU > 80%\n- Disk > 90%\n\n## 心法\n- Day 1 必裝\n- 不要過度敏感（warning fatigue）\n- Alert 要「值得起床」\n- 月 review trend",
+      "tip": {
+        "type": "milestone",
+        "text": "監控 = Senior 工程師命脈。"
+      },
+      "id": "24.1",
+      "number": "LESSON 24.1",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "24.1.auto",
+          "language": "bash",
+          "title": "試試看",
+          "initialCode": "#!/bin/bash\necho \"Hello AI 島！\"\n\n# 列檔案\nfor file in *.txt; do\n  echo \"找到: $file\"\ndone\n\n# 變數\nNAME=\"Luffysky\"\necho \"Hi, $NAME\"",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "用 Chrome DevTools Performance 跑一遍當前頁面、找出 3 個可以優化的點。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "SRE 四黃金訊號"
+        },
+        {
+          "level": 2,
+          "text": "監控層級"
+        },
+        {
+          "level": 3,
+          "text": "Infrastructure"
+        },
+        {
+          "level": 3,
+          "text": "Application"
+        },
+        {
+          "level": 3,
+          "text": "Business"
+        },
+        {
+          "level": 3,
+          "text": "Real User"
+        },
+        {
+          "level": 2,
+          "text": "Monitoring vs Observability"
+        },
+        {
+          "level": 3,
+          "text": "Monitoring（已知問題）"
+        },
+        {
+          "level": 3,
+          "text": "Observability（未知問題）"
+        },
+        {
+          "level": 2,
+          "text": "Indie 黃金組合"
+        },
+        {
+          "level": 2,
+          "text": "必設 alert"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Sentry：錯誤追蹤",
+      "oneLineSummary": "出 bug 不等 user 報、Sentry 自動回報",
+      "analogy": "Indie 必裝、5 分鐘設好。",
+      "content": "## 為什麼\n- 自動回報 error\n- Stack trace\n- User context\n- Source map（原始檔位置）\n- Performance monitoring\n- Session Replay（影片）\n\n## Next.js 安裝\n```bash\nnpx @sentry/wizard@latest -i nextjs\n```\n\n自動產生：\n- sentry.client.config.ts\n- sentry.server.config.ts\n- sentry.edge.config.ts\n- next.config.js（上傳 source map）\n\n## Init\n```typescript\nimport * as Sentry from \"@sentry/nextjs\";\n\nSentry.init({\n  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,\n  tracesSampleRate: 1.0,\n  replaysSessionSampleRate: 0.1,\n  replaysOnErrorSampleRate: 1.0\n});\n```\n\n## 手動捕捉\n```typescript\ntry {\n  await dangerousOperation();\n} catch (err) {\n  Sentry.captureException(err);\n  throw err;\n}\n\n// 訊息\nSentry.captureMessage(\"Something happened\", \"warning\");\n\n// User\nSentry.setUser({ id: userId, email });\nSentry.setTag(\"plan\", \"pro\");\nSentry.setContext(\"order\", { id: orderId, amount: 1000 });\n```\n\n## Performance Monitoring\n```typescript\n// 自動：HTTP / DB / fetch\n// 手動：\nconst transaction = Sentry.startTransaction({ name: \"process-order\" });\nconst span = transaction.startChild({ op: \"db.query\" });\n\nawait db.order.create(...);\n\nspan.finish();\ntransaction.finish();\n```\n\n## Session Replay\n看 user 觸發 error 前的操作影片：\n- 點哪\n- 輸入什麼\n- 看了哪頁\n\ndebug 神器。\n\n## Release Tracking\n```bash\nsentry-cli releases new my-app@v1.2.3\nsentry-cli releases set-commits my-app@v1.2.3 --auto\nsentry-cli releases finalize my-app@v1.2.3\n```\n\n知道哪 version 引入的 bug。\n\n## Source Map\nproduction 是 minified、看不出原始 code。\nSentry 上傳 source map → 自動還原。\n\n## 過濾雜訊\n```typescript\nSentry.init({\n  beforeSend(event, hint) {\n    // 不上傳 dev\n    if (process.env.NODE_ENV === \"development\") return null;\n    \n    // 不上傳特定 error\n    const error = hint.originalException;\n    if (error?.message?.includes(\"ResizeObserver\")) return null;\n    \n    return event;\n  }\n});\n```\n\n## Alerts\nDashboard → Alerts：\n- New issue\n- High error rate\n- Spike detection\n- 通知 Slack / Email / PagerDuty\n\n## 費用\n- Free：5k error / 月\n- Team：$26/月\n- Indie 通常 free 夠\n\n## 替代\n- **Rollbar**：類似\n- **Bugsnag**：類似\n- **LogRocket**：含 session replay\n- **Highlight.io**：開源\n\n## 心法\n- Day 1 必裝\n- 設 alert\n- User context 加\n- Release tracking\n- Source map 上傳",
+      "tip": {
+        "type": "milestone",
+        "text": "Sentry = Production debug 神器。"
+      },
+      "id": "24.2",
+      "number": "LESSON 24.2",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "24.2.auto",
+          "language": "bash",
+          "title": "試試看",
+          "initialCode": "sentry-cli releases new my-app@v1.2.3\nsentry-cli releases set-commits my-app@v1.2.3 --auto\nsentry-cli releases finalize my-app@v1.2.3",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "用 Chrome DevTools Performance 跑一遍當前頁面、找出 3 個可以優化的點。",
+        "hint": "坑通常是「你以為很簡單但其實有暗雷」。本節列的常見錯誤、80% 的新手都會中。",
+        "answer": "預防勝於治療：把本節列的所有「常見錯誤」存成個人 checklist、每次寫類似 code 前過一遍。當 senior 不是因為比較聰明、是因為踩過的坑比較多、所以會避開。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼"
+        },
+        {
+          "level": 2,
+          "text": "Next.js 安裝"
+        },
+        {
+          "level": 2,
+          "text": "Init"
+        },
+        {
+          "level": 2,
+          "text": "手動捕捉"
+        },
+        {
+          "level": 2,
+          "text": "Performance Monitoring"
+        },
+        {
+          "level": 2,
+          "text": "Session Replay"
+        },
+        {
+          "level": 2,
+          "text": "Release Tracking"
+        },
+        {
+          "level": 2,
+          "text": "Source Map"
+        },
+        {
+          "level": 2,
+          "text": "過濾雜訊"
+        },
+        {
+          "level": 2,
+          "text": "Alerts"
+        },
+        {
+          "level": 2,
+          "text": "費用"
+        },
+        {
+          "level": 2,
+          "text": "替代"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Logs：結構化 + 集中化",
+      "oneLineSummary": "不是 console.log、是 structured + searchable",
+      "analogy": "出事查 log 是 50% 的時間。",
+      "content": "## 為什麼結構化\n\n### ❌ 字串 log\n```javascript\nconsole.log(`User ${userId} ordered ${amount}`);\n```\n難 query、難 aggregate。\n\n### ✅ JSON log\n```javascript\nlogger.info({ user_id: userId, amount, event: \"order_placed\" });\n```\n易 filter、aggregate。\n\n## Pino（推薦）\n```bash\nnpm install pino pino-pretty\n```\n\n```typescript\nimport pino from \"pino\";\n\nconst logger = pino({\n  level: process.env.LOG_LEVEL || \"info\",\n  formatters: {\n    level: (label) => ({ level: label })\n  },\n  timestamp: pino.stdTimeFunctions.isoTime\n});\n\nlogger.info({ user_id: \"u1\", action: \"login\" }, \"User logged in\");\nlogger.warn({ slow: true, duration: 1500 }, \"Slow query\");\nlogger.error({ err }, \"Failed to fetch\");\n```\n\nDev 加 pretty：\n```bash\nnode app.js | pino-pretty\n```\n\n## 集中化 services\n\n### Better Stack Logtail\n```typescript\nimport { pino } from \"pino\";\nimport { createWriteStream } from \"@logtail/pino\";\n\nconst transport = await createWriteStream({ sourceToken: \"...\" });\nconst logger = pino(transport);\n```\n\nUI 好看、便宜。\n\n### Datadog\n最強、貴。\n\n### Papertrail / Loggly\n老牌。\n\n### AWS CloudWatch\nAWS 整合。\n\n### Grafana Loki\n開源、自架。\n\n## Log Levels\n- **trace**：超細\n- **debug**：dev\n- **info**：一般事件\n- **warn**：警告（仍 work）\n- **error**：錯誤（壞了）\n- **fatal**：致命\n\nProduction：info 起。\n\n## Request ID\n串 distributed log：\n```typescript\nimport { v4 as uuid } from \"uuid\";\n\napp.use((req, res, next) => {\n  req.id = req.headers[\"x-request-id\"] || uuid();\n  res.setHeader(\"x-request-id\", req.id);\n  next();\n});\n\n// 用\nlogger.info({ request_id: req.id, ... }, \"...\");\n```\n\n跨 service 帶這 ID、可串完整流程。\n\n## 不要 log 什麼\n- ❌ 密碼明文\n- ❌ 信用卡\n- ❌ JWT / Session\n- ❌ PII（個資）非必要\n\n## Sampling\n高流量 service：\n```typescript\nconst shouldLog = Math.random() < 0.1;  // 10%\nif (shouldLog) logger.info(...);\n```\n\n省成本。\n\n## Retention\n- Hot：7 天（隨時查）\n- Warm：30 天（壓縮）\n- Cold：1 年（S3 歸檔）\n\n## 看 log 神器\n- **lnav**：terminal\n- **jq**：JSON 過濾\n- **grep / awk**：基礎\n\n```bash\ncat app.log | jq 'select(.level == \"error\")'\ncat app.log | jq 'select(.user_id == \"u1\")'\n```\n\n## 心法\n- 永遠 structured\n- request_id 串流程\n- 不 log 敏感\n- 集中化（不要散在多 server）\n- 月 review log（找 pattern）",
+      "tip": {
+        "type": "milestone",
+        "text": "Pino + Better Stack = Indie log 黃金組合。"
+      },
+      "id": "24.3",
+      "number": "LESSON 24.3",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "24.3.auto",
+          "language": "bash",
+          "title": "試試看",
+          "initialCode": "cat app.log | jq 'select(.level == \"error\")'\ncat app.log | jq 'select(.user_id == \"u1\")'",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "用 Chrome DevTools Performance 跑一遍當前頁面、找出 3 個可以優化的點。",
+        "hint": "課程內有 9 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼結構化"
+        },
+        {
+          "level": 3,
+          "text": "❌ 字串 log"
+        },
+        {
+          "level": 3,
+          "text": "✅ JSON log"
+        },
+        {
+          "level": 2,
+          "text": "Pino（推薦）"
+        },
+        {
+          "level": 2,
+          "text": "集中化 services"
+        },
+        {
+          "level": 3,
+          "text": "Better Stack Logtail"
+        },
+        {
+          "level": 3,
+          "text": "Datadog"
+        },
+        {
+          "level": 3,
+          "text": "Papertrail / Loggly"
+        },
+        {
+          "level": 3,
+          "text": "AWS CloudWatch"
+        },
+        {
+          "level": 3,
+          "text": "Grafana Loki"
+        },
+        {
+          "level": 2,
+          "text": "Log Levels"
+        },
+        {
+          "level": 2,
+          "text": "Request ID"
+        },
+        {
+          "level": 2,
+          "text": "不要 log 什麼"
+        },
+        {
+          "level": 2,
+          "text": "Sampling"
+        },
+        {
+          "level": 2,
+          "text": "Retention"
+        },
+        {
+          "level": 2,
+          "text": "看 log 神器"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Web Vitals + RUM",
+      "oneLineSummary": "看真實使用者體驗、不是實驗室數字",
+      "analogy": "LCP / INP / CLS 影響 SEO + 留存。",
+      "content": "## Core Web Vitals\n- **LCP**（Largest Contentful Paint）< 2.5s\n- **INP**（Interaction to Next Paint）< 200ms\n- **CLS**（Cumulative Layout Shift）< 0.1\n\n## Lab vs Field\n\n### Lab（Lighthouse / PageSpeed）\n模擬環境、不變的網路 + 裝置。\n- 一致、易 debug\n- 但不代表真實\n\n### Field / RUM（Real User Monitoring）\n真實使用者數據。\n- 真實\n- 多元（4G 慢 + 高階 5G）\n\n## web-vitals lib\n```bash\nnpm install web-vitals\n```\n\n```typescript\nimport { onCLS, onINP, onLCP } from \"web-vitals\";\n\nfunction sendToAnalytics(metric) {\n  const body = JSON.stringify(metric);\n  \n  fetch(\"/api/vitals\", { method: \"POST\", body });\n}\n\nonCLS(sendToAnalytics);\nonINP(sendToAnalytics);\nonLCP(sendToAnalytics);\n```\n\n## Next.js（內建）\n```typescript\n// app/layout.tsx\nimport { SpeedInsights } from \"@vercel/speed-insights/next\";\n\n<SpeedInsights />\n```\n\nVercel Dashboard 看 RUM 數據。\n\n## Sentry Performance + Replay\n```typescript\nSentry.init({\n  tracesSampleRate: 0.1,\n  replaysSessionSampleRate: 0.1\n});\n```\n\n看慢 user 的 session replay。\n\n## 工具\n- **Vercel Speed Insights**：Next.js 首選\n- **Sentry Performance**：含 error 關聯\n- **Datadog RUM**：企業\n- **SpeedCurve**：專業\n\n## 優化 LCP\n- LCP element 是？\n  - 通常 hero image / heading\n- 加快：\n  - CDN\n  - preload critical image\n  - 不要 JS 阻塞\n\n```html\n<link rel=\"preload\" as=\"image\" href=\"/hero.jpg\" />\n```\n\n## 優化 INP\n- 重 JS task 切片\n- 用 `requestIdleCallback`\n- Debounce input\n- Virtual list（大列表）\n\n```typescript\n// React 18 transition\nimport { useTransition } from \"react\";\n\nconst [isPending, startTransition] = useTransition();\n\nfunction handleChange(e) {\n  startTransition(() => {\n    setQuery(e.target.value);\n  });\n}\n```\n\n## 優化 CLS\n- 圖加 width / height\n- Font 用 `font-display: swap`\n- 不要 dynamic insert above-fold\n\n## 監控 alert\n- p75 LCP > 4s → alert\n- p75 INP > 500ms → alert\n- p75 CLS > 0.25 → alert\n\n## 心法\n- 不要只看 Lighthouse\n- 看 p75（不是 mean）\n- 不同裝置 / 國家 segment\n- 月 review trend",
+      "tip": {
+        "type": "performance",
+        "text": "快 1 秒 = 留存率 +20%。"
+      },
+      "id": "24.4",
+      "number": "LESSON 24.4",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "24.4.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "import { onCLS, onINP, onLCP } from \"web-vitals\";\n\nfunction sendToAnalytics(metric) {\n  const body = JSON.stringify(metric);\n  \n  fetch(\"/api/vitals\", { method: \"POST\", body });\n}\n\nonCLS(sendToAnalytics);\nonINP(sendToAnalytics);\nonLCP(sendToAnalytics);",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "用 Chrome DevTools Performance 跑一遍當前頁面、找出 3 個可以優化的點。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "Core Web Vitals"
+        },
+        {
+          "level": 2,
+          "text": "Lab vs Field"
+        },
+        {
+          "level": 3,
+          "text": "Lab（Lighthouse / PageSpeed）"
+        },
+        {
+          "level": 3,
+          "text": "Field / RUM（Real User Monitoring）"
+        },
+        {
+          "level": 2,
+          "text": "web-vitals lib"
+        },
+        {
+          "level": 2,
+          "text": "Next.js（內建）"
+        },
+        {
+          "level": 2,
+          "text": "Sentry Performance + Replay"
+        },
+        {
+          "level": 2,
+          "text": "工具"
+        },
+        {
+          "level": 2,
+          "text": "優化 LCP"
+        },
+        {
+          "level": 2,
+          "text": "優化 INP"
+        },
+        {
+          "level": 2,
+          "text": "優化 CLS"
+        },
+        {
+          "level": 2,
+          "text": "監控 alert"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Uptime + Alert + On-call",
+      "oneLineSummary": "掛了立刻知道、不要 user 抱怨才發現",
+      "analogy": "Indie 也要有 on-call 心態。",
+      "content": "## Uptime Monitoring\n\n### Better Stack\n- 30 秒 ping 一次\n- 全球 6 個 region\n- 免費 plan 10 monitors\n\n### UptimeRobot\n- 5 分鐘 ping（免費）\n- 簡單\n\n### Pingdom\n- 老牌、商業\n\n### Cron-based（自架）\n```javascript\nimport cron from \"node-cron\";\n\ncron.schedule(\"*/5 * * * *\", async () => {\n  try {\n    const res = await fetch(\"https://api.example.com/health\");\n    if (!res.ok) await sendAlert();\n  } catch {\n    await sendAlert();\n  }\n});\n```\n\n## Health Endpoint\n```typescript\n// /api/health\nexport async function GET() {\n  try {\n    // 檢查 DB\n    await db.$queryRaw`SELECT 1`;\n    \n    // 檢查 Redis\n    await redis.ping();\n    \n    // 檢查外部 API\n    const ext = await fetch(\"https://api.external.com/ping\");\n    if (!ext.ok) throw new Error(\"External API down\");\n    \n    return Response.json({\n      status: \"ok\",\n      version: process.env.GIT_SHA,\n      timestamp: new Date()\n    });\n  } catch (err) {\n    return Response.json({\n      status: \"fail\",\n      error: err.message\n    }, { status: 503 });\n  }\n}\n```\n\n## Alert Channels\n- Slack / Discord（一般）\n- Email（重要）\n- LINE Notify（台灣常用）\n- SMS / Phone（緊急）\n- PagerDuty（on-call rotation）\n\n## Alert Severity\n- **P0**：全站掛、立刻打電話\n- **P1**：核心功能掛、15 分鐘內處理\n- **P2**：次要功能、營業時間處理\n- **P3**：警告、看到再處理\n\n## Status Page\n給 user 看：\n- Better Stack Status Page（免費）\n- statuspage.io（Atlassian）\n- 自架（Cachet）\n\n## SLA / SLO\n\n### SLA（合約）\n- 99.9% = 一個月 down 43 分鐘\n- 99.99% = 4.3 分鐘\n\n### SLO（內部目標）\n通常比 SLA 高一級。\n\n### Error Budget\n99.9% SLO = 0.1% error budget = 43 分鐘/月。\n用完 → 暫停新功能、focus 穩定。\n\n## On-call\n\n### 大公司\n輪班、PagerDuty 通知。\n\n### Indie\n自己 24/7、手機收 alert。\n\n### 減 alert\n- 升級 retry / fallback\n- 自動 restart（K8s liveness）\n- 不重要的 不 alert\n\n## 出事 SOP\n1. **Acknowledge**：我看到了\n2. **Triage**：嚴重度\n3. **Investigate**：找 root cause\n4. **Mitigate**：先止血（rollback / 切流量）\n5. **Fix**：修\n6. **Postmortem**：blameless review\n\n## Postmortem 範本\n- 時間線\n- 影響範圍\n- Root cause\n- 修復行動\n- 預防\n\n## 心法\n- Day 1 設 uptime + alert\n- Alert 要值得起床\n- Postmortem blameless（不指責人）\n- 不要害怕掛、focus 怎麼快復原",
+      "tip": {
+        "type": "milestone",
+        "text": "Better Stack + Sentry + Health endpoint = 完整監控。"
+      },
+      "id": "24.5",
+      "number": "LESSON 24.5",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "24.5.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "import cron from \"node-cron\";\n\ncron.schedule(\"*/5 * * * *\", async () => {\n  try {\n    const res = await fetch(\"https://api.example.com/health\");\n    if (!res.ok) await sendAlert();\n  } catch {\n    await sendAlert();\n  }\n});",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "用 Chrome DevTools Performance 跑一遍當前頁面、找出 3 個可以優化的點。",
+        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "Uptime Monitoring"
+        },
+        {
+          "level": 3,
+          "text": "Better Stack"
+        },
+        {
+          "level": 3,
+          "text": "UptimeRobot"
+        },
+        {
+          "level": 3,
+          "text": "Pingdom"
+        },
+        {
+          "level": 3,
+          "text": "Cron-based（自架）"
+        },
+        {
+          "level": 2,
+          "text": "Health Endpoint"
+        },
+        {
+          "level": 2,
+          "text": "Alert Channels"
+        },
+        {
+          "level": 2,
+          "text": "Alert Severity"
+        },
+        {
+          "level": 2,
+          "text": "Status Page"
+        },
+        {
+          "level": 2,
+          "text": "SLA / SLO"
+        },
+        {
+          "level": 3,
+          "text": "SLA（合約）"
+        },
+        {
+          "level": 3,
+          "text": "SLO（內部目標）"
+        },
+        {
+          "level": 3,
+          "text": "Error Budget"
+        },
+        {
+          "level": 2,
+          "text": "On-call"
+        },
+        {
+          "level": 3,
+          "text": "大公司"
+        },
+        {
+          "level": 3,
+          "text": "Indie"
+        },
+        {
+          "level": 3,
+          "text": "減 alert"
+        },
+        {
+          "level": 2,
+          "text": "出事 SOP"
+        },
+        {
+          "level": 2,
+          "text": "Postmortem 範本"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Observability 三柱",
+      "oneLineSummary": "看不見的系統 = 不能管理的系統",
+      "analogy": "Logs / Metrics / Traces 各司其職。",
+      "content": "## 三柱\n\n### 1. Logs（日誌）\n「發生了什麼」\n\n- 一行一行的事件\n- 含時間 / 訊息 / 上下文\n- 適合：debug、audit\n\n範例：\n```\n2026-05-17 10:30:15 ERROR user_id=u123 path=/api/login error=\"Invalid password\"\n```\n\n### 2. Metrics（指標）\n「多少次」\n\n- 數字、可聚合\n- 適合：dashboard、alert\n\n範例：\n```\nhttp_requests_total{path=\"/api/login\",status=\"200\"} = 4523\napi_latency_p95 = 234ms\nerror_rate = 0.5%\n```\n\n### 3. Traces（追蹤）\n「一個 request 跑了什麼」\n\n- 一個 request 跨多 service 的鏈\n- 適合：找瓶頸 / debug 分散式\n\n範例：\n```\nGET /api/order\n├─ auth (5ms)\n├─ db.query users (12ms)\n├─ db.query orders (45ms)\n├─ stripe.charge (320ms)  ← 瓶頸\n└─ send email (8ms)\ntotal: 390ms\n```\n\n## 主流工具\n\n### All-in-one\n- **Datadog**：業界標準、貴\n- **New Relic**：類似\n- **Better Stack**：Indie 友善\n- **Sentry**：errors + traces\n\n### Logs\n- **Logtail / Better Stack Logs**\n- **Loki + Grafana**（開源）\n- **CloudWatch Logs**（AWS）\n- **Papertrail**\n\n### Metrics\n- **Prometheus + Grafana**（開源標配）\n- **Datadog**\n- **Vercel Analytics**\n\n### Traces\n- **OpenTelemetry**（標準）\n- **Jaeger**（開源）\n- **Honeycomb**\n\n## Indie 推薦組合\n\n### NT$ 0\n- Vercel Analytics（內建）\n- Sentry free tier\n- Console.log（暫時）\n\n### NT$ 500/月\n- Sentry $26（errors）\n- Better Stack $30（logs + uptime）\n- Vercel Analytics（內建）\n\n### NT$ 2000/月\n- Datadog\n- 或：Sentry + Better Stack + Grafana Cloud\n\n## 心法\n- 三柱缺一不可\n- Sentry 先（errors 最痛）\n- Logs 第二\n- Metrics + Traces 進階",
+      "tip": {
+        "type": "practical",
+        "text": "Indie：Sentry + Better Stack 即可走 95%。"
+      },
+      "exercise": {
+        "question": "用 Chrome DevTools Performance 跑一遍當前頁面、找出 3 個可以優化的點。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "id": "24.6",
+      "number": "LESSON 24.6",
+      "xp": 10,
+      "outline": [
+        {
+          "level": 2,
+          "text": "三柱"
+        },
+        {
+          "level": 3,
+          "text": "1. Logs（日誌）"
+        },
+        {
+          "level": 3,
+          "text": "2. Metrics（指標）"
+        },
+        {
+          "level": 3,
+          "text": "3. Traces（追蹤）"
+        },
+        {
+          "level": 2,
+          "text": "主流工具"
+        },
+        {
+          "level": 3,
+          "text": "All-in-one"
+        },
+        {
+          "level": 3,
+          "text": "Logs"
+        },
+        {
+          "level": 3,
+          "text": "Metrics"
+        },
+        {
+          "level": 3,
+          "text": "Traces"
+        },
+        {
+          "level": 2,
+          "text": "Indie 推薦組合"
+        },
+        {
+          "level": 3,
+          "text": "NT$ 0"
+        },
+        {
+          "level": 3,
+          "text": "NT$ 500/月"
+        },
+        {
+          "level": 3,
+          "text": "NT$ 2000/月"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Sentry 完整實作",
+      "oneLineSummary": "Error tracking、Indie 必裝",
+      "analogy": "5 分鐘 setup、永遠救命。",
+      "content": "## 為什麼 Sentry\n\n### 沒 Sentry\n- User 看到錯誤頁\n- User 不報 bug（80% 不會）\n- 你不知道有 bug\n- 同樣 bug 影響 100 個 user 1 週\n\n### 有 Sentry\n- 立刻 alert\n- 看完整 stack trace\n- 看哪個 user 中\n- 看影響範圍\n\n## 安裝（Next.js）\n\n```bash\nnpx @sentry/wizard@latest -i nextjs\n```\n\n自動：\n- 加 SDK\n- 設 config\n- 加 error boundary\n- 加 source map upload\n\n## 設定\n\n`.env.local`：\n```\nNEXT_PUBLIC_SENTRY_DSN=https://...\nSENTRY_AUTH_TOKEN=...\n```\n\n## 手動報錯\n```typescript\nimport * as Sentry from \"@sentry/nextjs\";\n\ntry {\n  await riskyOperation();\n} catch (err) {\n  Sentry.captureException(err);\n  throw err;  // 還是要 throw\n}\n```\n\n## 加上下文\n```typescript\nSentry.setUser({ id: user.id, email: user.email });\nSentry.setTag(\"feature\", \"checkout\");\nSentry.setContext(\"order\", { id: orderId, items: items.length });\n\n// 之後出錯、Sentry 有完整資訊\n```\n\n## Breadcrumb（事件軌跡）\n```typescript\nSentry.addBreadcrumb({\n  category: \"click\",\n  message: \"User clicked checkout\",\n  level: \"info\"\n});\n```\n\nUser 按了什麼 → API 出錯：完整時間線。\n\n## Performance Monitoring\n\n```typescript\nSentry.init({\n  tracesSampleRate: 0.1,  // 10% request 採樣\n  \n  // 慢的優先採\n  beforeSendTransaction(transaction) {\n    if (transaction.spans?.some(s => s.endTimestamp - s.startTimestamp > 1)) {\n      return transaction;  // > 1s 必收\n    }\n    return Math.random() < 0.1 ? transaction : null;\n  }\n});\n```\n\n看 transaction：\n- P50 / P75 / P95 / P99 latency\n- 哪個 endpoint 最慢\n- 哪個 query 拖慢\n\n## Session Replay（神器）\n\n```typescript\nSentry.init({\n  replaysSessionSampleRate: 0.01,  // 1% session\n  replaysOnErrorSampleRate: 1.0,    // 100% on error\n});\n```\n\nUser 出錯 → 自動錄影 → 你看完整重現。\n含：\n- 點擊\n- 鍵盤輸入（密碼 mask）\n- Network requests\n- Console log\n\n## Alert 規則\n\n`Sentry Dashboard → Alerts → Create`：\n\n```\nWHEN: error.unhandled = true\nAND: project = my-app\nAND: count > 10 in 5 minutes\nTHEN: Slack #alerts\n```\n\n範例：\n- New error type → email\n- Same error 100 次 / 1 小時 → Slack\n- Performance regression > 50% → PagerDuty\n\n## Pricing\n- Free：5k errors / 月\n- Team $26/月：50k errors\n- Business $80/月：100k errors\n\nIndie 免費 plan 通常夠。\n\n## 心法\n- Day 1 裝\n- 加 user context\n- Breadcrumb 加業務事件\n- Session Replay 開\n- Alert 設好（不要 spam）",
+      "tip": {
+        "type": "milestone",
+        "text": "Sentry 是 Indie 第一個必裝服務。"
+      },
+      "exercise": {
+        "question": "用 Chrome DevTools Performance 跑一遍當前頁面、找出 3 個可以優化的點。",
+        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "id": "24.7",
+      "number": "LESSON 24.7",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "24.7.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "import * as Sentry from \"@sentry/nextjs\";\n\ntry {\n  await riskyOperation();\n} catch (err) {\n  Sentry.captureException(err);\n  throw err;  // 還是要 throw\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼 Sentry"
+        },
+        {
+          "level": 3,
+          "text": "沒 Sentry"
+        },
+        {
+          "level": 3,
+          "text": "有 Sentry"
+        },
+        {
+          "level": 2,
+          "text": "安裝（Next.js）"
+        },
+        {
+          "level": 2,
+          "text": "設定"
+        },
+        {
+          "level": 2,
+          "text": "手動報錯"
+        },
+        {
+          "level": 2,
+          "text": "加上下文"
+        },
+        {
+          "level": 2,
+          "text": "Breadcrumb（事件軌跡）"
+        },
+        {
+          "level": 2,
+          "text": "Performance Monitoring"
+        },
+        {
+          "level": 2,
+          "text": "Session Replay（神器）"
+        },
+        {
+          "level": 2,
+          "text": "Alert 規則"
+        },
+        {
+          "level": 2,
+          "text": "Pricing"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Structured Logging",
+      "oneLineSummary": "一行 message 不夠、用 JSON 結構化",
+      "analogy": "AI / 搜尋 / 過濾都靠這個。",
+      "content": "## 為什麼 Structured\n\n### 傳統 log\n```\n2026-05-17 10:30:15 User u123 logged in from 1.2.3.4\n2026-05-17 10:30:20 User u456 failed login: invalid password\n```\n\n要找「u123 的事件」→ grep。\n要算「failed login 數」→ 各種 regex。\n\n### Structured（JSON）\n```json\n{\"ts\":\"2026-05-17T10:30:15Z\",\"level\":\"info\",\"event\":\"login\",\"userId\":\"u123\",\"ip\":\"1.2.3.4\"}\n{\"ts\":\"2026-05-17T10:30:20Z\",\"level\":\"warn\",\"event\":\"login_failed\",\"userId\":\"u456\",\"reason\":\"invalid_password\"}\n```\n\n可：\n- SQL-like 查詢\n- 自動 dashboard\n- AI 分析\n\n## 用 pino（推薦 Node）\n\n```bash\nnpm install pino\n```\n\n```typescript\nimport pino from \"pino\";\n\nconst log = pino({\n  level: \"info\",\n  formatters: {\n    level: (label) => ({ level: label }),\n  }\n});\n\nlog.info({ userId: \"u123\", action: \"login\" }, \"User logged in\");\nlog.warn({ userId: \"u456\", reason: \"invalid_password\" }, \"Login failed\");\nlog.error({ err }, \"Database error\");\n```\n\n輸出（production）：\n```json\n{\"level\":\"info\",\"time\":1717000000,\"userId\":\"u123\",\"action\":\"login\",\"msg\":\"User logged in\"}\n```\n\n## 必加欄位\n\n### 每筆都要\n- `ts` / `time`：時間戳\n- `level`：info / warn / error\n- `service`：哪個 service\n- `env`：dev / staging / prod\n- `trace_id`：跨 service 追蹤\n\n### 業務相關\n- `userId`\n- `tenantId`\n- `requestId`\n- `event`：類型\n\n## 不要 log 的東西\n\n### Sensitive\n- ❌ 密碼\n- ❌ Credit card\n- ❌ 完整 JWT\n- ❌ 完整 email（GDPR）\n\n### 用 redact\n```typescript\nconst log = pino({\n  redact: [\"password\", \"token\", \"creditCard\", \"*.ssn\"]\n});\n\nlog.info({ password: \"secret\" });\n// 輸出：\"password\":\"[Redacted]\"\n```\n\n## Log Level 標準\n\n- **trace**：超詳細、平常不開\n- **debug**：開發用、prod 關\n- **info**：正常事件（user 登入 / 訂單建立）\n- **warn**：可能有問題（retry / fallback）\n- **error**：錯誤、要修\n- **fatal**：服務無法繼續\n\n```typescript\nlog.info(\"Order created\");      // 正常\nlog.warn(\"Slow query 2s\");      // 注意\nlog.error(err, \"Payment failed\"); // 錯\nlog.fatal(\"DB unreachable\");    // 死掉\n```\n\nProduction：info 以上。\n\n## Aggregator\n\n寫 log 沒人看 = 沒寫。\n\n### 工具\n- **Better Stack Logs**：簡單便宜\n- **Logtail**\n- **Datadog Logs**：貴強\n- **Loki + Grafana**：自架免費\n\n### 為什麼需要\n- Centralized：跨 service 一起搜\n- Search：full-text / structured query\n- Dashboard：視覺化\n- Alert：log pattern 觸發\n\n## 心法\n- Day 1 用 structured（不要 console.log）\n- 永遠加 userId / requestId\n- Redact 敏感\n- 集中 aggregator\n- Sentry + Better Stack = 黃金組合",
+      "tip": {
+        "type": "practical",
+        "text": "pino + Better Stack = Node 黃金組合。"
+      },
+      "exercise": {
+        "question": "用 Chrome DevTools Performance 跑一遍當前頁面、找出 3 個可以優化的點。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "id": "24.8",
+      "number": "LESSON 24.8",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "24.8.auto",
+          "language": "json",
+          "title": "試試看",
+          "initialCode": "{\"ts\":\"2026-05-17T10:30:15Z\",\"level\":\"info\",\"event\":\"login\",\"userId\":\"u123\",\"ip\":\"1.2.3.4\"}\n{\"ts\":\"2026-05-17T10:30:20Z\",\"level\":\"warn\",\"event\":\"login_failed\",\"userId\":\"u456\",\"reason\":\"invalid_password\"}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼 Structured"
+        },
+        {
+          "level": 3,
+          "text": "傳統 log"
+        },
+        {
+          "level": 3,
+          "text": "Structured（JSON）"
+        },
+        {
+          "level": 2,
+          "text": "用 pino（推薦 Node）"
+        },
+        {
+          "level": 2,
+          "text": "必加欄位"
+        },
+        {
+          "level": 3,
+          "text": "每筆都要"
+        },
+        {
+          "level": 3,
+          "text": "業務相關"
+        },
+        {
+          "level": 2,
+          "text": "不要 log 的東西"
+        },
+        {
+          "level": 3,
+          "text": "Sensitive"
+        },
+        {
+          "level": 3,
+          "text": "用 redact"
+        },
+        {
+          "level": 2,
+          "text": "Log Level 標準"
+        },
+        {
+          "level": 2,
+          "text": "Aggregator"
+        },
+        {
+          "level": 3,
+          "text": "工具"
+        },
+        {
+          "level": 3,
+          "text": "為什麼需要"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Metrics + Dashboard",
+      "oneLineSummary": "看數字、不靠感覺",
+      "analogy": "Latency / Error rate / Throughput 三大件。",
+      "content": "## 4 個黃金信號（Google SRE）\n\n### 1. Latency（延遲）\nRequest 多久回？\n- P50 / P95 / P99\n- 不看平均（會被極端拖偏）\n\n### 2. Traffic（流量）\n每秒多少 request？\n\n### 3. Errors（錯誤）\n失敗率多少？\n\n### 4. Saturation（飽和度）\n資源用了幾成？\n- CPU 70%\n- Memory 80%\n- Disk 90%\n\n監控這 4 個 80% 問題抓到。\n\n## RED Method（API service）\n- **R**equests：rate\n- **E**rrors：count\n- **D**uration：latency\n\n## USE Method（resource）\n- **U**tilization\n- **S**aturation\n- **E**rrors\n\n## 工具\n\n### Prometheus（開源）\n```yaml\n# prometheus.yml\nscrape_configs:\n  - job_name: 'my-app'\n    static_configs:\n      - targets: ['localhost:3000']\n```\n\nApp 暴露 `/metrics`：\n```typescript\nimport { register, Counter, Histogram } from \"prom-client\";\n\nconst httpRequests = new Counter({\n  name: \"http_requests_total\",\n  help: \"Total HTTP requests\",\n  labelNames: [\"method\", \"path\", \"status\"]\n});\n\nconst httpDuration = new Histogram({\n  name: \"http_request_duration_seconds\",\n  help: \"HTTP request duration\",\n  labelNames: [\"method\", \"path\"]\n});\n\napp.use((req, res, next) => {\n  const end = httpDuration.startTimer({ method: req.method, path: req.path });\n  res.on(\"finish\", () => {\n    httpRequests.inc({ method: req.method, path: req.path, status: res.statusCode });\n    end();\n  });\n  next();\n});\n\napp.get(\"/metrics\", async (req, res) => {\n  res.set(\"Content-Type\", register.contentType);\n  res.send(await register.metrics());\n});\n```\n\n### Grafana\n連 Prometheus、畫 dashboard：\n- 各 endpoint latency\n- Error rate\n- DB query time\n\n### Datadog / New Relic\n託管、貴但好。\n\n### Vercel Analytics\nNext.js 內建：\n- Web Vitals\n- Speed insights\n- 免費 hobby plan\n\n## Custom Business Metrics\n\n不只看 system、看業務：\n```typescript\nconst usersRegistered = new Counter({ name: \"users_registered_total\" });\nconst ordersCompleted = new Counter({ name: \"orders_completed_total\" });\nconst revenueCents = new Counter({ name: \"revenue_cents_total\" });\n\n// 註冊時\nusersRegistered.inc();\n\n// 訂單完成\nordersCompleted.inc();\nrevenueCents.inc(order.amountCents);\n```\n\nDashboard：\n- 今日新註冊\n- MRR\n- DAU / WAU\n\n## Alert 規則\n\n### Threshold\n- Error rate > 5% → Slack\n- P95 latency > 1s → Slack\n- DB CPU > 80% → email\n\n### Anomaly Detection\n比平均高 3 sigma → alert\n（流量正常週末低、用算法判斷）\n\n### 不要 alert\n- 單一 user 出錯\n- 非 prod 環境\n- 預期錯誤（400）\n\n## 心法\n- 4 黃金信號必看\n- Business metrics 跟 technical 一樣重要\n- Alert 不要 spam\n- Dashboard 給團隊看（每日早會用）",
+      "tip": {
+        "type": "milestone",
+        "text": "看數字決策、不靠感覺。"
+      },
+      "exercise": {
+        "question": "用 Chrome DevTools Performance 跑一遍當前頁面、找出 3 個可以優化的點。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "id": "24.9",
+      "number": "LESSON 24.9",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "24.9.auto",
+          "language": "yaml",
+          "title": "試試看",
+          "initialCode": "# prometheus.yml\nscrape_configs:\n  - job_name: 'my-app'\n    static_configs:\n      - targets: ['localhost:3000']",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "outline": [
+        {
+          "level": 2,
+          "text": "4 個黃金信號（Google SRE）"
+        },
+        {
+          "level": 3,
+          "text": "1. Latency（延遲）"
+        },
+        {
+          "level": 3,
+          "text": "2. Traffic（流量）"
+        },
+        {
+          "level": 3,
+          "text": "3. Errors（錯誤）"
+        },
+        {
+          "level": 3,
+          "text": "4. Saturation（飽和度）"
+        },
+        {
+          "level": 2,
+          "text": "RED Method（API service）"
+        },
+        {
+          "level": 2,
+          "text": "USE Method（resource）"
+        },
+        {
+          "level": 2,
+          "text": "工具"
+        },
+        {
+          "level": 3,
+          "text": "Prometheus（開源）"
+        },
+        {
+          "level": 3,
+          "text": "Grafana"
+        },
+        {
+          "level": 3,
+          "text": "Datadog / New Relic"
+        },
+        {
+          "level": 3,
+          "text": "Vercel Analytics"
+        },
+        {
+          "level": 2,
+          "text": "Custom Business Metrics"
+        },
+        {
+          "level": 2,
+          "text": "Alert 規則"
+        },
+        {
+          "level": 3,
+          "text": "Threshold"
+        },
+        {
+          "level": 3,
+          "text": "Anomaly Detection"
+        },
+        {
+          "level": 3,
+          "text": "不要 alert"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Alert 文化：別 spam",
+      "oneLineSummary": "Alert 太多 = 一個都不看",
+      "analogy": "精準 alert 比多 alert 重要 100 倍。",
+      "content": "## Alert Fatigue（疲勞）\n\n### 症狀\n- Slack #alerts 1 天 200 則\n- 大家 mute\n- 真出事沒人看\n- On-call 工程師壓力大、離職\n\n### 怎麼來的\n- 太多 metric alert\n- Threshold 設太低\n- 同一個問題重複 alert\n- 沒 deduplicate\n\n## 設計原則\n\n### 1. Actionable\n每個 alert 必須：\n- 有人能做什麼\n- 知道怎麼做\n- 不能做 → 不該 alert\n\n### 2. Severity\n分 3 級：\n- **P0 (Critical)**：立刻、pager\n  - 全站掛\n  - 大量資料外洩\n  - 金流壞\n- **P1 (High)**：1 小時內、Slack DM\n  - 部分功能掛\n  - Error rate spike\n- **P2 (Warning)**：營業時間、Slack channel\n  - 性能 degradation\n  - Disk 80%\n\n### 3. Routing\n- P0 → 值班 pager\n- P1 → on-call Slack\n- P2 → #alerts channel\n\n### 4. Aggregation\n同個問題不要重複：\n- 1 個 error 出現 100 次 = 1 個 alert\n- 加 cooldown：5 分鐘內不重複 alert\n- 同類 group together\n\n### 5. Auto-resolve\n問題消失自動 close、不留 ghost。\n\n## 工具\n\n### PagerDuty\n業界標準、貴。\n\n### Opsgenie\n類似。\n\n### Better Stack\nIndie 友善、月 $30 起。\n\n### 純 Slack\n小團隊夠：\n```yaml\n# Datadog → Slack #alerts\n# But 設好 severity routing\n```\n\n## On-call 制度\n\n### 輪班\n- 每週 1 個 primary\n- 1 個 backup\n- 補休 / 加給\n\n### Runbook\n每個 alert 有 doc：\n```markdown\n# Alert: Database CPU > 80%\n\n## What's happening\nDB CPU 高、可能慢查 / 攻擊 / 高峰\n\n## Immediate\n1. 看 slow query log\n2. 看 active connections\n3. 看流量\n\n## Common causes\n- Missing index\n- Cron job 太重\n- DDoS\n\n## Escalate\n> 30 min not resolved → wake up DB lead\n```\n\n## Postmortem\n\n出事後 48 小時內：\n- 時間線\n- Root cause\n- Impact\n- Action items\n- Lessons\n\nBlameless（怪系統不怪人）。\n\n## 心法\n- Alert 是「需要立刻反應」、不是「FYI」\n- 不能 action 的不要 alert\n- 同類 group + dedupe\n- Severity 分級\n- On-call 公平輪班\n- Runbook 必寫",
+      "tip": {
+        "type": "milestone",
+        "text": "少而精的 alert > 多而散。"
+      },
+      "exercise": {
+        "question": "用 Chrome DevTools Performance 跑一遍當前頁面、找出 3 個可以優化的點。",
+        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "id": "24.10",
+      "number": "LESSON 24.10",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "24.10.auto",
+          "language": "yaml",
+          "title": "試試看",
+          "initialCode": "# Datadog → Slack #alerts\n# But 設好 severity routing",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "outline": [
+        {
+          "level": 2,
+          "text": "Alert Fatigue（疲勞）"
+        },
+        {
+          "level": 3,
+          "text": "症狀"
+        },
+        {
+          "level": 3,
+          "text": "怎麼來的"
+        },
+        {
+          "level": 2,
+          "text": "設計原則"
+        },
+        {
+          "level": 3,
+          "text": "1. Actionable"
+        },
+        {
+          "level": 3,
+          "text": "2. Severity"
+        },
+        {
+          "level": 3,
+          "text": "3. Routing"
+        },
+        {
+          "level": 3,
+          "text": "4. Aggregation"
+        },
+        {
+          "level": 3,
+          "text": "5. Auto-resolve"
+        },
+        {
+          "level": 2,
+          "text": "工具"
+        },
+        {
+          "level": 3,
+          "text": "PagerDuty"
+        },
+        {
+          "level": 3,
+          "text": "Opsgenie"
+        },
+        {
+          "level": 3,
+          "text": "Better Stack"
+        },
+        {
+          "level": 3,
+          "text": "純 Slack"
+        },
+        {
+          "level": 2,
+          "text": "On-call 制度"
+        },
+        {
+          "level": 3,
+          "text": "輪班"
+        },
+        {
+          "level": 3,
+          "text": "Runbook"
+        },
+        {
+          "level": 2,
+          "text": "Postmortem"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    }
+  ],
+  "boss": {
+    "name": "監控千眼",
+    "hp": 230,
+    "emoji": "👁️‍🗨️",
+    "description": "Sentry / Datadog / Grafana 看穿你的 bug"
+  },
+  "quiz": {
+    "id": "ch24-quiz",
+    "questions": [],
+    "xpReward": 50,
+    "perfectBonus": 50
+  }
+}

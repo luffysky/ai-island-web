@@ -1,0 +1,1561 @@
+{
+  "id": 18,
+  "slug": "nosql",
+  "stage": 3,
+  "title": "NoSQL 資料庫",
+  "subtitle": "MongoDB / Firebase / Redis / Vector",
+  "icon": "database-zap",
+  "description": "NoSQL 資料庫：MongoDB / Firebase / Redis / Vector",
+  "status": "published",
+  "difficulty": "intermediate",
+  "prerequisites": [
+    16,
+    17
+  ],
+  "estimatedHours": 12,
+  "outcomes": [
+    "MongoDB 操作",
+    "Firebase 即時資料",
+    "Redis 快取 / 排行榜",
+    "Vector DB 做 RAG",
+    "知道 SQL vs NoSQL 怎麼選"
+  ],
+  "lessons": [
+    {
+      "id": "18.1",
+      "number": "LESSON 18.1",
+      "title": "什麼是 NoSQL？跟 SQL 差在哪？",
+      "oneLineSummary": "NoSQL = 「Not Only SQL」—不是反 SQL、是補它的不足。彈性 schema、橫向擴展、特殊用途各有強項。",
+      "analogy": "SQL 像井然有序的檔案櫃—欄位固定、規則嚴格、找東西超快但要先設計。NoSQL 像雲端硬碟—丟什麼都行、結構彈性、加新欄位不用改全表。場景不同、選法不同。",
+      "content": "### NoSQL 4 大類型\n\n      \n- **Document（文件式）**：MongoDB / Couchbase / Firestore—JSON 形式\n- **Key-Value**：Redis / DynamoDB—超快快取\n- **Wide Column**：Cassandra / HBase—大資料分析\n- **Graph**：Neo4j / Amazon Neptune—關係網路（社交）\n- **Vector**（2023+ 新類）：Pinecone / Weaviate / pgvector—AI 應用\n\n      \n### SQL vs NoSQL 對比\n\n      \n| 面向 | SQL | NoSQL |\n| --- | --- | --- |\n| Schema | 嚴格（事先定義） | 彈性（隨意加欄位） |\n| 關聯 | JOIN 強大 | 通常嵌套或冗餘 |\n| 擴展 | 垂直（加 CPU/RAM） | 水平（加機器） |\n| 一致性 | 強（ACID） | 最終一致性常見（BASE） |\n| 適合 | 金流 / 訂單 / 結構固定 | 日誌 / 即時 / 大資料 / AI |\n\n      \n### 什麼場景用 NoSQL\n\n      \n- 📊 **日誌 / 事件**：MongoDB / Cassandra（量大、結構變動）\n- 💬 **即時聊天 / 通知**：Firebase / Redis Pub/Sub\n- ⚡ **快取 / Session**：Redis\n- 🤖 **AI 向量搜尋**：Pinecone / pgvector / Weaviate\n- 📱 **App 後端（彈性 schema）**：Firebase / MongoDB\n- 🗺️ **地理 / 圖網路**：MongoDB（GeoJSON）/ Neo4j\n\n      \n### 2026 主流選擇\n\n      \nIndie SaaS 常見 stack：**PostgreSQL（主）+ Redis（快取）+ pgvector（AI）**—一個 PG 通殺。需要的時候才加 MongoDB / Firebase。",
+      "tip": {
+        "type": "pro",
+        "text": "「SQL vs NoSQL 怎麼選」是面試經典題。答案不是「NoSQL 比較新所以好」、而是「看場景—金流用 SQL、即時聊天用 NoSQL、AI 應用用 Vector DB」。能說出具體理由的人才是中級工程師。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "18.1.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// 試試改變數、按執行\nconst numbers = [1, 2, 3, 4, 5];\nconst doubled = numbers.map(n => n * 2);\nconsole.log(\"原本:\", numbers);\nconsole.log(\"乘 2:\", doubled);\nconsole.log(\"總和:\", numbers.reduce((a, b) => a + b, 0));",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "用 Express 寫一個 RESTful API：GET / POST / PUT / DELETE /users。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "NoSQL 4 大類型"
+        },
+        {
+          "level": 3,
+          "text": "SQL vs NoSQL 對比"
+        },
+        {
+          "level": 3,
+          "text": "什麼場景用 NoSQL"
+        },
+        {
+          "level": 3,
+          "text": "2026 主流選擇"
+        }
+      ]
+    },
+    {
+      "id": "18.2",
+      "number": "LESSON 18.2",
+      "title": "MongoDB：JSON 風格的 NoSQL 王者",
+      "oneLineSummary": "MongoDB = 「把 JSON 當資料庫」—不用 table、用 collection；不用 row、用 document（JSON）。彈性 schema 第一名。",
+      "analogy": "想像把 Google Drive 上的 JSON 檔案直接當資料庫—想加新欄位就加、不用 ALTER TABLE。新創用 MongoDB 開發超快、不用一開始就把 schema 定死。",
+      "content": "### 核心概念對照\n\n      \n- **SQL Table → MongoDB Collection**\n- **SQL Row → MongoDB Document**（一個 JSON）\n- **SQL Column → MongoDB Field**\n- **SQL Schema 嚴格 → MongoDB Schema 彈性**（每個 document 可以不同）\n\n      \n### 連線 + 基本操作（Node.js）\n\n```javascript\n// npm install mongodb\nimport { MongoClient } from 'mongodb';\n\nconst client = new MongoClient('mongodb://localhost:27017');\nawait client.connect();\n\nconst db = client.db('myapp');\nconst users = db.collection('users');\n\n// 1. 新增（insertOne / insertMany）\nawait users.insertOne({\n  name: '小明',\n  email: 'ming@x.com',\n  age: 25,\n  tags: ['admin', 'premium'],  // 陣列！\n  profile: { city: '台北', hobbies: ['coding'] }  // 嵌套物件！\n});\n\n// 2. 讀（find / findOne）\nconst user = await users.findOne({ email: 'ming@x.com' });\n\nconst adults = await users.find({\n  age: { $gte: 18 },\n  'profile.city': '台北'  // 嵌套欄位查詢\n}).toArray();\n\n// 3. 更新\nawait users.updateOne(\n  { email: 'ming@x.com' },\n  { $set: { age: 26 }, $push: { tags: 'vip' } }\n);\n\n// 4. 刪除\nawait users.deleteOne({ email: 'ming@x.com' });\n```\n\n      \n### 查詢運算子\n\n```javascript\n{ age: { $gt: 18 } }              // 大於\n{ age: { $gte: 18, $lte: 65 } }   // 範圍\n{ status: { $in: ['A', 'B'] } }   // IN\n{ name: { $regex: /^張/ } }       // 正規表達式\n{ 'tags.0': 'admin' }              // 陣列第一個是 admin\n{ tags: { $all: ['a', 'b'] } }    // 包含 a 和 b\n{ $and: [...] }, { $or: [...] }   // 邏輯\n{ deletedAt: { $exists: false } } // 不存在這欄位\n```\n\n      \n### Aggregation Pipeline（強大查詢）\n\n```javascript\n// 像 SQL 的 GROUP BY + JOIN + 等多步處理\nconst result = await orders.aggregate([\n  { $match: { status: 'paid' } },                // 1. 過濾\n  { $group: {                                          // 2. 分組\n    _id: '$customer_id',\n    total: { $sum: '$amount' },\n    count: { $sum: 1 }\n  }},\n  { $sort: { total: -1 } },                            // 3. 排序\n  { $limit: 10 },                                      // 4. 取前 10\n  { $lookup: {                                         // 5. JOIN users\n    from: 'users',\n    localField: '_id',\n    foreignField: '_id',\n    as: 'user'\n  }}\n]).toArray();\n```\n\n      \n### 索引\n\n```javascript\n// 跟 SQL 一樣、加索引超快\nawait users.createIndex({ email: 1 }, { unique: true });\nawait users.createIndex({ 'profile.city': 1, age: -1 });\n\n// 文字搜尋索引\nawait articles.createIndex({ content: 'text' });\nawait articles.find({ $text: { $search: '機器學習' } });\n\n// 地理索引\nawait shops.createIndex({ location: '2dsphere' });\nawait shops.find({\n  location: {\n    $near: {\n      $geometry: { type: 'Point', coordinates: [121.5, 25.0] },\n      $maxDistance: 1000  // 1km 內\n    }\n  }\n});\n```\n\n      \n### 用 Mongoose（ODM、像 ORM 但給 MongoDB）\n\n```javascript\n// npm install mongoose\nimport mongoose from 'mongoose';\n\nconst UserSchema = new mongoose.Schema({\n  name: { type: String, required: true },\n  email: { type: String, unique: true },\n  age: Number,\n  tags: [String],\n  profile: {\n    city: String,\n    hobbies: [String]\n  }\n}, { timestamps: true });  // 自動加 createdAt / updatedAt\n\nconst User = mongoose.model('User', UserSchema);\n\n// 跟 SQL ORM 一樣的 API\nconst user = await User.create({ name: '小明', ... });\nconst users = await User.find({ age: { $gte: 18 } });\n```\n\n      \n### MongoDB Atlas（雲端版）\n\n      \nMongoDB 官方雲端、Free tier 512MB 永久免費、適合 prototyping。Production 用 M10+ 約 $57/月起。",
+      "tip": {
+        "type": "warning",
+        "text": "MongoDB 預設沒有 schema 驗證、自由度高但容易出包（同一個 collection 裡 age 有時是 string 有時是 number）。Production 一定要用 Mongoose + Schema 約束、或 MongoDB 內建 JSON Schema validator。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "18.2.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// npm install mongodb\nimport { MongoClient } from 'mongodb';\n\nconst client = new MongoClient('mongodb://localhost:27017');\nawait client.connect();\n\nconst db = client.db('myapp');\nconst users = db.collection('users');\n\n// 1. 新增（insertOne / insertMany）\nawait users.insertOne({\n  name: '小明',\n  email: 'ming@x.com',\n  age: 25,\n  tags: ['admin', 'premium'],  // 陣列！\n  profile: { city: '台北', hobbies: ['coding'] }  // 嵌套物件！\n});\n\n// 2. 讀（find / findOne）\nconst user = await users.findOne({ email: 'ming@x.com' });\n\nconst adults = await users.find({\n  age: { $gte: 18 },\n  'profile.city': '台北'  // 嵌套欄位查詢\n}).toArray();\n\n// 3. 更新\nawait users.updateOne(\n  { email: 'ming@x.com' },\n  { $set: { age: 26 }, $push: { tags: 'vip' } }\n);\n\n// 4. 刪除\nawait users.deleteOne({ email: 'ming@x.com' });",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "用 Express 寫一個 RESTful API：GET / POST / PUT / DELETE /users。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "核心概念對照"
+        },
+        {
+          "level": 3,
+          "text": "連線 + 基本操作（Node.js）"
+        },
+        {
+          "level": 3,
+          "text": "查詢運算子"
+        },
+        {
+          "level": 3,
+          "text": "Aggregation Pipeline（強大查詢）"
+        },
+        {
+          "level": 3,
+          "text": "索引"
+        },
+        {
+          "level": 3,
+          "text": "用 Mongoose（ODM、像 ORM 但給 MongoDB）"
+        },
+        {
+          "level": 3,
+          "text": "MongoDB Atlas（雲端版）"
+        }
+      ]
+    },
+    {
+      "id": "18.3",
+      "number": "LESSON 18.3",
+      "title": "Firebase：Google 出的雲端後端神器",
+      "oneLineSummary": "Firebase = 「Google 雲端後端 BaaS」—Firestore（DB）+ Auth + Storage + Hosting + Functions 一條龍。學生 / Indie 首選。",
+      "analogy": "想像後端的 IKEA—不用自己組件件家具、買套裝直接擺好。Firebase 給你 DB + 認證 + 存檔 + 部署、5 分鐘建好完整 App。但客製化少、長期可能想換 Supabase。",
+      "content": "### Firebase 核心服務\n\n      \n- **Firestore**：NoSQL document DB（取代舊版 Realtime Database）\n- **Authentication**：Email / Google / Facebook / Apple 一鍵接\n- **Storage**：圖片 / 檔案儲存\n- **Hosting**：靜態網站 + CDN\n- **Cloud Functions**：Serverless 後端邏輯\n- **Cloud Messaging（FCM）**：推播通知\n\n      \n### 10 分鐘 Setup\n\n      \n1. 去 firebase.google.com Add project\n2. Enable Firestore Database（選 Asia / 台灣最近）\n3. Project settings → 拿 config（apiKey / authDomain / projectId 等）\n\n      \n### 從 JS 用 Firestore\n\n```javascript\n// npm install firebase\nimport { initializeApp } from 'firebase/app';\nimport {\n  getFirestore, collection, doc,\n  getDocs, getDoc, addDoc, updateDoc, deleteDoc,\n  query, where, orderBy, limit, onSnapshot\n} from 'firebase/firestore';\n\nconst app = initializeApp({\n  apiKey: '...',\n  projectId: 'my-app',\n  authDomain: 'my-app.firebaseapp.com'\n});\nconst db = getFirestore(app);\n\n// 1. 新增（auto-ID）\nawait addDoc(collection(db, 'todos'), {\n  title: '學 Firebase',\n  completed: false,\n  createdAt: new Date()\n});\n\n// 2. 讀全部\nconst snap = await getDocs(collection(db, 'todos'));\nconst todos = snap.docs.map(d => ({ id: d.id, ...d.data() }));\n\n// 3. 條件查詢\nconst q = query(\n  collection(db, 'todos'),\n  where('completed', '==', false),\n  orderBy('createdAt', 'desc'),\n  limit(10)\n);\nconst snap2 = await getDocs(q);\n\n// 4. 更新\nawait updateDoc(doc(db, 'todos', todoId), {\n  completed: true\n});\n\n// 5. 刪除\nawait deleteDoc(doc(db, 'todos', todoId));\n\n// 6. Realtime 訂閱（Firebase 殺手鐧）\nconst unsub = onSnapshot(collection(db, 'todos'), snap => {\n  console.log('changed!', snap.docs.map(d => d.data()));\n});\n// 之後要停訂閱：unsub();\n```\n\n      \n### Firebase Authentication\n\n```javascript\nimport { getAuth, signInWithEmailAndPassword,\n  createUserWithEmailAndPassword,\n  signInWithPopup, GoogleAuthProvider,\n  onAuthStateChanged, signOut\n} from 'firebase/auth';\n\nconst auth = getAuth(app);\n\n// Email 註冊\nawait createUserWithEmailAndPassword(auth, 'a@b.com', 'password');\n\n// Email 登入\nawait signInWithEmailAndPassword(auth, 'a@b.com', 'password');\n\n// Google 一鍵登入\nawait signInWithPopup(auth, new GoogleAuthProvider());\n\n// 監聽登入狀態\nonAuthStateChanged(auth, user => {\n  if (user) console.log('logged in:', user.uid);\n  else console.log('logged out');\n});\n\n// 登出\nawait signOut(auth);\n```\n\n      \n### Security Rules（重要！）\n\n```javascript\n// firestore.rules\nrules_version = '2';\nservice cloud.firestore {\n  match /databases/{database}/documents {\n    // users 只能讀寫自己的\n    match /users/{userId} {\n      allow read, write: if request.auth.uid == userId;\n    }\n\n    // todos 只能讀寫自己的\n    match /todos/{todoId} {\n      allow read, write: if request.auth != null\n        && request.auth.uid == resource.data.userId;\n    }\n  }\n}\n```\n\n      \n### 2026 定價\n\n      \n- **Spark plan（免費）**：1GB Firestore + 1GB Storage + 50K reads/day + 20K writes/day—Indie / MVP 夠\n- **Blaze plan（按用量）**：超過免費額度才付—小型 SaaS 月費 $0-50 美金\n\n      \n### Firebase vs Supabase\n\n      \n- **Firebase**：NoSQL（Firestore）/ Google 支援 / 行動 App 強\n- **Supabase**：SQL（PostgreSQL）/ 開源 / Web 優先\n\n      \n2026 趨勢：indie 創業偏 Supabase（標準 SQL、不被綁定）、行動 App + 即時性偏 Firebase。",
+      "tip": {
+        "type": "security",
+        "text": "Firebase 最常見的資安事故是「Security Rules 設成 allow read, write: if true」—等於整個 DB 公開、任何人能讀寫。Production 上線前一定 review rules、用 Firebase Local Emulator 測過再上。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "18.3.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// npm install firebase\nimport { initializeApp } from 'firebase/app';\nimport {\n  getFirestore, collection, doc,\n  getDocs, getDoc, addDoc, updateDoc, deleteDoc,\n  query, where, orderBy, limit, onSnapshot\n} from 'firebase/firestore';\n\nconst app = initializeApp({\n  apiKey: '...',\n  projectId: 'my-app',\n  authDomain: 'my-app.firebaseapp.com'\n});\nconst db = getFirestore(app);\n\n// 1. 新增（auto-ID）\nawait addDoc(collection(db, 'todos'), {\n  title: '學 Firebase',\n  completed: false,\n  createdAt: new Date()\n});\n\n// 2. 讀全部\nconst snap = await getDocs(collection(db, 'todos'));\nconst todos = snap.docs.map(d => ({ id: d.id, ...d.data() }));\n\n// 3. 條件查詢\nconst q = query(\n  collection(db, 'todos'),\n  where('completed', '==', false),\n  orderBy('createdAt', 'desc'),\n  limit(10)\n);\nconst snap2 = await getDocs(q);\n\n// 4. 更新\nawait updateDoc(doc(db, 'todos', todoId), {\n  completed: true\n});\n\n// 5. 刪除\nawait deleteDoc(doc(db, 'todos', todoId));\n\n// 6. Realtime 訂閱（Firebase 殺手鐧）\nconst unsub = onSnapshot(collection(db, 'todos'), snap => {\n  console.log('changed!', snap.docs.map(d => d.data()));\n});\n// 之後要停訂閱：unsub();",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "用 Express 寫一個 RESTful API：GET / POST / PUT / DELETE /users。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "Firebase 核心服務"
+        },
+        {
+          "level": 3,
+          "text": "10 分鐘 Setup"
+        },
+        {
+          "level": 3,
+          "text": "從 JS 用 Firestore"
+        },
+        {
+          "level": 3,
+          "text": "Firebase Authentication"
+        },
+        {
+          "level": 3,
+          "text": "Security Rules（重要！）"
+        },
+        {
+          "level": 3,
+          "text": "2026 定價"
+        },
+        {
+          "level": 3,
+          "text": "Firebase vs Supabase"
+        }
+      ]
+    },
+    {
+      "id": "18.4",
+      "number": "LESSON 18.4",
+      "title": "Redis：把網站加速 10 倍的記憶體 DB",
+      "oneLineSummary": "Redis = 「記憶體裡的鍵值資料庫」—資料存在 RAM、讀寫快過硬碟 100 倍。快取 / Session / 排行榜 / 限流必備。",
+      "analogy": "想像圖書館（資料庫）vs 桌上的書（Redis）—常用的書放桌上、要看時不用跑圖書館。常查的資料放 Redis、不用每次都 query DB—網站快 10 倍、DB 壓力降 90%。",
+      "content": "### Redis 用途 Top 5\n\n      \n1. **快取**：常查資料存 Redis、降低 DB 壓力\n2. **Session 儲存**：登入狀態\n3. **排行榜**：用 Sorted Set 做排名\n4. **限流（rate limit）**：用 INCR 計次數\n5. **Pub/Sub**：即時通知 / 訊息佇列\n\n      \n### 5 種資料結構\n\n```bash\n# 1. String（最常用）\nSET user:1 \"小明\"\nGET user:1\nEXPIRE user:1 3600  # 1 小時後過期\nSETEX user:1 3600 \"小明\"  # 簡寫\nINCR page_views    # 自動 +1\nINCRBY page_views 10\n\n# 2. Hash（物件）\nHSET user:1 name \"小明\" age 25\nHGET user:1 name\nHGETALL user:1\nHINCRBY user:1 age 1\n\n# 3. List（佇列、最新動態）\nLPUSH posts \"post1\"     # 左推\nRPUSH posts \"post2\"     # 右推\nLRANGE posts 0 9     # 取前 10 個\nLPOP posts           # 左 pop（取出）\n\n# 4. Set（不重複集合）\nSADD tags \"AI\" \"web\"\nSMEMBERS tags\nSISMEMBER tags \"AI\"     # 是否包含\nSINTER tags1 tags2     # 交集\n\n# 5. Sorted Set（排行榜！）\nZADD leaderboard 100 \"小明\"\nZADD leaderboard 85 \"小華\"\nZADD leaderboard 95 \"小美\"\nZREVRANGE leaderboard 0 9 WITHSCORES  # 前 10 名\n```\n\n      \n### Node.js + Redis（ioredis）\n\n```javascript\n// npm install ioredis\nimport Redis from 'ioredis';\nconst redis = new Redis('redis://localhost:6379');\n\n// 簡單快取\nawait redis.set('user:1', JSON.stringify(user));\nawait redis.expire('user:1', 3600);\n\nconst cached = await redis.get('user:1');\nif (cached) return JSON.parse(cached);\n\n// Cache-aside pattern（最常用）\nasync function getUser(id) {\n  const cached = await redis.get(`user:${id}`);\n  if (cached) return JSON.parse(cached);\n\n  const user = await db.users.findUnique({ where: { id } });\n  await redis.setex(`user:${id}`, 300, JSON.stringify(user));  // 5 分鐘\n  return user;\n}\n```\n\n      \n### 限流 / Rate Limit\n\n```javascript\n// 限制每個 IP 1 分鐘 100 次請求\nasync function rateLimit(ip) {\n  const key = `rate:${ip}`;\n  const count = await redis.incr(key);\n  if (count === 1) await redis.expire(key, 60);\n  if (count > 100) throw new Error('Too many requests');\n}\n```\n\n      \n### Pub/Sub 即時通訊\n\n```javascript\n// Publisher（發送方）\nawait redis.publish('notifications', JSON.stringify({ userId: 1, msg: 'Hi' }));\n\n// Subscriber（訂閱方）\nconst sub = redis.duplicate();\nawait sub.subscribe('notifications');\nsub.on('message', (channel, msg) => {\n  console.log('received:', JSON.parse(msg));\n});\n```\n\n      \n### 2026 Redis 雲端服務\n\n      \n- **Upstash**：Serverless Redis、按用量計費、Indie 神器\n- **Redis Cloud**：官方、30MB Free tier\n- **Vercel KV**：用 Upstash、跟 Next.js 整合好",
+      "tip": {
+        "type": "pro",
+        "text": "每個爆紅 SaaS 都有 Redis—Instagram / Twitter / Stack Overflow 全用。加 Redis 快取後、DB 查詢從 80% 降到 5%、整體效能爆增。Indie SaaS 從第一天就該加上。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "18.4.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// npm install ioredis\nimport Redis from 'ioredis';\nconst redis = new Redis('redis://localhost:6379');\n\n// 簡單快取\nawait redis.set('user:1', JSON.stringify(user));\nawait redis.expire('user:1', 3600);\n\nconst cached = await redis.get('user:1');\nif (cached) return JSON.parse(cached);\n\n// Cache-aside pattern（最常用）\nasync function getUser(id) {\n  const cached = await redis.get(`user:${id}`);\n  if (cached) return JSON.parse(cached);\n\n  const user = await db.users.findUnique({ where: { id } });\n  await redis.setex(`user:${id}`, 300, JSON.stringify(user));  // 5 分鐘\n  return user;\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "用 Express 寫一個 RESTful API：GET / POST / PUT / DELETE /users。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "Redis 用途 Top 5"
+        },
+        {
+          "level": 3,
+          "text": "5 種資料結構"
+        },
+        {
+          "level": 3,
+          "text": "Node.js + Redis（ioredis）"
+        },
+        {
+          "level": 3,
+          "text": "限流 / Rate Limit"
+        },
+        {
+          "level": 3,
+          "text": "Pub/Sub 即時通訊"
+        },
+        {
+          "level": 3,
+          "text": "2026 Redis 雲端服務"
+        }
+      ]
+    },
+    {
+      "id": "18.5",
+      "number": "LESSON 18.5",
+      "title": "Vector Database：AI 應用的核心",
+      "oneLineSummary": "Vector DB = 「以語意搜尋的資料庫」—不是搜關鍵字、是搜「意思接近的」。RAG / 推薦 / 圖搜圖必備。",
+      "analogy": "傳統搜尋找「貓」只找到含「貓」字的；Vector DB 找「貓」會找到「喵喵動物」「kitten」「貓科」—因為它懂「意思」。把文字 / 圖片 / 聲音變成「向量」、然後用數學算距離找最像的。2023 起爆紅、AI 應用必備。",
+      "content": "### Embedding 是什麼\n\n      \nEmbedding = 把文字 / 圖片 / 影音**變成數字陣列**（向量）—通常 384 / 768 / 1536 維。語意相近的向量距離近、不相干的距離遠。\n\n```text\n# 例子（簡化版）\n\"我喜歡貓\" → [0.2, -0.5, 0.8, 0.1, ...]   (1536 維)\n\"我愛貓咪\" → [0.21, -0.49, 0.79, 0.12, ...]  (1536 維)\n\"今天下雨\" → [-0.8, 0.3, -0.1, 0.7, ...]   (1536 維)\n\n# 「我喜歡貓」跟「我愛貓咪」距離 = 0.02（很近）\n# 「我喜歡貓」跟「今天下雨」距離 = 1.6（很遠）\n```\n\n      \n### 產生 Embedding（OpenAI / Claude / Local）\n\n```javascript\n// OpenAI Embedding\nimport OpenAI from 'openai';\nconst openai = new OpenAI();\n\nconst res = await openai.embeddings.create({\n  model: 'text-embedding-3-small',\n  input: '我喜歡貓'\n});\nconst embedding = res.data[0].embedding;  // [0.2, -0.5, ...] 1536 維\n\n// 或用本地模型（免費、隱私）\n// npm install @xenova/transformers\nimport { pipeline } from '@xenova/transformers';\nconst embedder = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');\nconst result = await embedder('我喜歡貓');\n```\n\n      \n### 主流 Vector DB 對照\n\n      \n- **pgvector**（PostgreSQL extension）：Indie 首選、跟 SQL 並存\n- **Pinecone**：商業 SaaS、效能最好、付費\n- **Weaviate**：開源、功能完整\n- **Chroma**：local-first、Python 友善、學習用\n- **Qdrant**：Rust 寫的、效能極好、可自架\n- **Milvus**：大規模、企業級\n- **Supabase Vector**：基於 pgvector、整合 Supabase 生態\n\n      \n### pgvector 實作（最推薦）\n\n```sql\n-- 1. 啟用 extension（Supabase 內建）\nCREATE EXTENSION IF NOT EXISTS vector;\n\n-- 2. 建表加 vector 欄位\nCREATE TABLE documents (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  content TEXT,\n  embedding vector(1536)  -- OpenAI 是 1536 維\n);\n\n-- 3. 索引（HNSW 演算法、超快）\nCREATE INDEX ON documents\nUSING hnsw (embedding vector_cosine_ops);\n\n-- 4. 插入\nINSERT INTO documents (content, embedding)\nVALUES ('貓咪的飲食指南', '[0.1, 0.2, ...]');\n\n-- 5. 語意搜尋（用 cosine 距離找最近）\nSELECT content, embedding  '[0.15, 0.25, ...]' AS distance\nFROM documents\nORDER BY distance\nLIMIT 5;\n```\n\n      \n### 實戰：RAG（Retrieval Augmented Generation）\n\n      \nRAG = 先用 vector 搜尋找相關資料、再給 LLM 生成答案。2026 企業 AI 應用主流。\n\n```javascript\nasync function rag(question) {\n  // 1. 把問題變 embedding\n  const { embedding: qEmbed } = await embed(question);\n\n  // 2. 從 vector DB 找最相關的 3 個文件\n  const docs = await supabase.rpc('match_documents', {\n    query_embedding: qEmbed,\n    match_count: 3,\n    similarity_threshold: 0.7\n  });\n\n  // 3. 把這些文件當 context 給 LLM\n  const context = docs.map(d => d.content).join('\\n\\n');\n  const answer = await claude.messages.create({\n    model: 'claude-opus-4-7',\n    messages: [{\n      role: 'user',\n      content: `根據以下資料回答：\\n\\n${context}\\n\\n問題：${question}`\n    }]\n  });\n\n  return answer.content[0].text;\n}\n\n// 使用\nconst ans = await rag('貓咪可以吃巧克力嗎？');\n// → AI 根據文件回答、不會幻覺\n```\n\n      \n### 應用場景\n\n      \n- 🤖 **客服 AI**：吃公司 FAQ、回答精準\n- 📚 **知識庫搜尋**：找最相關的文章\n- 🛒 **推薦系統**：找相似商品 / 喜好\n- 🖼️ **以圖搜圖**：CLIP 模型把圖變向量\n- 🎵 **音樂推薦**：把歌曲變向量找相似\n- 📑 **文件去重**：找語意重複的文章",
+      "tip": {
+        "type": "trend",
+        "text": "Vector DB 是 2023-2026 最熱門資料庫類別。Pinecone 估值 $7.5 億美金、Weaviate 估值 $2 億。Indie 推 pgvector—免費、跟 SQL 並存、不用學新 DB。RAG 是企業 AI 採購最熱單品。"
+      },
+      "xp": 15,
+      "playgrounds": [
+        {
+          "key": "18.5.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// OpenAI Embedding\nimport OpenAI from 'openai';\nconst openai = new OpenAI();\n\nconst res = await openai.embeddings.create({\n  model: 'text-embedding-3-small',\n  input: '我喜歡貓'\n});\nconst embedding = res.data[0].embedding;  // [0.2, -0.5, ...] 1536 維\n\n// 或用本地模型（免費、隱私）\n// npm install @xenova/transformers\nimport { pipeline } from '@xenova/transformers';\nconst embedder = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');\nconst result = await embedder('我喜歡貓');",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "用 Express 寫一個 RESTful API：GET / POST / PUT / DELETE /users。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "Embedding 是什麼"
+        },
+        {
+          "level": 3,
+          "text": "產生 Embedding（OpenAI / Claude / Local）"
+        },
+        {
+          "level": 3,
+          "text": "主流 Vector DB 對照"
+        },
+        {
+          "level": 3,
+          "text": "pgvector 實作（最推薦）"
+        },
+        {
+          "level": 3,
+          "text": "實戰：RAG（Retrieval Augmented Generation）"
+        },
+        {
+          "level": 3,
+          "text": "應用場景"
+        }
+      ]
+    },
+    {
+      "id": "18.6",
+      "number": "LESSON 18.6",
+      "title": "SQL vs NoSQL 怎麼選？決策指南",
+      "oneLineSummary": "沒有「最好」的、只有「適合」的—看 4 個維度決定：資料結構 / 關聯複雜度 / 一致性需求 / 規模。",
+      "analogy": "像選交通工具去某地—5 公里騎車、50 公里開車、500 公里高鐵、5000 公里飛機。SQL / NoSQL / Vector 一樣、不同場景用不同工具。",
+      "content": "### 用 SQL 的訊號\n\n      \n- ✅ 資料結構固定（使用者 / 訂單 / 商品）\n- ✅ 表跟表有複雜關聯（要 JOIN）\n- ✅ 需要強一致性（金流、庫存）\n- ✅ 需要 Transaction（ACID）\n- ✅ 團隊熟悉 SQL（多數工程師）\n\n      \n### 用 NoSQL Document（MongoDB）的訊號\n\n      \n- ✅ Schema 變化快（早期 MVP）\n- ✅ 資料天然是 JSON 結構（log、events）\n- ✅ 需要橫向擴展到超大規模\n- ✅ 不太需要複雜 JOIN\n\n      \n### 用 Firebase 的訊號\n\n      \n- ✅ 行動 App / Web 即時同步\n- ✅ 不想自己架後端\n- ✅ MVP / 學生作品\n- ✅ Google 生態（FCM / Analytics）\n\n      \n### 用 Redis 的訊號\n\n      \n- ✅ 已有主 DB（SQL / NoSQL）、需要加速\n- ✅ Session 儲存\n- ✅ 排行榜 / 限流\n- ✅ Pub/Sub 通訊\n\n      \n### 用 Vector DB 的訊號\n\n      \n- ✅ AI 應用（RAG / 推薦 / 搜尋）\n- ✅ 語意搜尋（不是關鍵字）\n- ✅ 處理 embedding（文字 / 圖 / 音）\n\n      \n### 2026 黃金組合（按專案規模）\n\n      \n- **學生 / MVP**：Firebase / Supabase（單一服務搞定）\n- **Indie SaaS**：Supabase + Upstash Redis（PG + Redis）\n- **中型 SaaS**：PostgreSQL + Redis + S3 + 可能加 pgvector\n- **AI 應用**：PostgreSQL + pgvector + Redis（RAG 必備）\n- **大型 / 多模態**：PG（業務）+ MongoDB（log）+ Redis（cache）+ Pinecone（vector）\n\n      \n### 反模式：不要這樣做\n\n      \n- ❌ 用 MongoDB 存金流 / 訂單（沒 ACID）\n- ❌ 用 SQL 存大量 log（變動快、JOIN 用不到）\n- ❌ 每查一次資料都打 DB（一定要加 Redis 快取）\n- ❌ 為了「酷」用 5 種 DB（維護地獄、選 1-2 個夠了）",
+      "tip": {
+        "type": "pro",
+        "text": "2026 indie 工程師 90% 的場景用「PostgreSQL（Supabase）+ Redis（Upstash）」就夠了—簡單、便宜、好維護。需要 vector 加 pgvector。一定要等到「真的撐不住」才換更專門的 DB。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "用 Express 寫一個 RESTful API：GET / POST / PUT / DELETE /users。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "用 SQL 的訊號"
+        },
+        {
+          "level": 3,
+          "text": "用 NoSQL Document（MongoDB）的訊號"
+        },
+        {
+          "level": 3,
+          "text": "用 Firebase 的訊號"
+        },
+        {
+          "level": 3,
+          "text": "用 Redis 的訊號"
+        },
+        {
+          "level": 3,
+          "text": "用 Vector DB 的訊號"
+        },
+        {
+          "level": 3,
+          "text": "2026 黃金組合（按專案規模）"
+        },
+        {
+          "level": 3,
+          "text": "反模式：不要這樣做"
+        }
+      ]
+    },
+    {
+      "title": "NoSQL 是什麼？跟 SQL 怎麼選",
+      "oneLineSummary": "\"Not Only SQL\"—不是取代 SQL、是另一套適合不同場景的工具",
+      "analogy": "SQL 是「結構嚴謹的圖書館」、NoSQL 是「彈性的雜物櫃」。各有適合場景。",
+      "content": "## NoSQL 4 大類型\n\n### 1. Document（文件型）\n存 JSON-like 物件、schema 彈性。\n代表：**MongoDB**、Firestore、CouchDB\n\n### 2. Key-Value\n最簡單、像 hash map。\n代表：**Redis**、DynamoDB、Memcached\n\n### 3. Wide-Column\n類 SQL 但 schema 彈性、適合超大資料。\n代表：**Cassandra**、HBase、ScyllaDB\n\n### 4. Graph\n存「關係」、社交網路 / 推薦系統。\n代表：**Neo4j**、Dgraph、ArangoDB\n\n### 5. Vector（2023+ 新增）\nAI embeddings、相似度搜尋。\n代表：**Pinecone**、Qdrant、Weaviate、pgvector\n\n## SQL vs NoSQL 選擇\n\n| 場景 | 選 |\n|---|---|\n| 結構固定（user / order / product）| SQL |\n| Schema 變動快（events / logs）| NoSQL Document |\n| 快取 / Session | Redis |\n| 排行榜 / Queue | Redis |\n| 超大規模 write（IoT / log）| Cassandra |\n| 社交關係 / 推薦 | Graph |\n| AI / RAG | Vector |\n| 不知道用什麼 | SQL（PostgreSQL）|\n\n## 為什麼 SQL 仍主流\n- ACID 保證\n- 標準語法、跨產品\n- 工具生態巨大\n- PG 內建 JSONB（NoSQL 彈性）+ pgvector\n\n## NoSQL 致命缺點\n- 沒 JOIN（複雜查詢痛）\n- 沒 transaction（部分有但弱）\n- 一致性 vs 可用性取捨（CAP）\n\n## 2026 主流組合\n- **PG + Redis**：大部分 Indie / SaaS\n- **PG + Vector**：AI 應用\n- **MongoDB + Redis**：JS 全端團隊\n- **MySQL + Cassandra**：超大規模\n\n## 不要為 NoSQL 而 NoSQL\n看到「NoSQL 快」就跳的人 80% 後悔。\n規模沒大到那程度、用 SQL 簡單 10 倍。",
+      "tip": {
+        "type": "practical",
+        "text": "Indie / 中小 SaaS 第一選擇：PG + Redis。撞到瓶頸再加 NoSQL—大部分人撞不到。"
+      },
+      "id": "18.7",
+      "number": "LESSON 18.7",
+      "xp": 10,
+      "exercise": {
+        "question": "用 Express 寫一個 RESTful API：GET / POST / PUT / DELETE /users。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "NoSQL 4 大類型"
+        },
+        {
+          "level": 3,
+          "text": "1. Document（文件型）"
+        },
+        {
+          "level": 3,
+          "text": "2. Key-Value"
+        },
+        {
+          "level": 3,
+          "text": "3. Wide-Column"
+        },
+        {
+          "level": 3,
+          "text": "4. Graph"
+        },
+        {
+          "level": 3,
+          "text": "5. Vector（2023+ 新增）"
+        },
+        {
+          "level": 2,
+          "text": "SQL vs NoSQL 選擇"
+        },
+        {
+          "level": 2,
+          "text": "為什麼 SQL 仍主流"
+        },
+        {
+          "level": 2,
+          "text": "NoSQL 致命缺點"
+        },
+        {
+          "level": 2,
+          "text": "2026 主流組合"
+        },
+        {
+          "level": 2,
+          "text": "不要為 NoSQL 而 NoSQL"
+        }
+      ]
+    },
+    {
+      "title": "MongoDB 完整 CRUD",
+      "oneLineSummary": "Mongo 是 NoSQL 最熱門、document 型代表",
+      "analogy": "Atlas 雲端免費 plan + Mongoose ODM + Compass GUI = 友善體驗。",
+      "content": "## 安裝\n```bash\n# Docker（推薦）\ndocker run -d --name mongo -p 27017:27017 mongo\n\n# 或 MongoDB Atlas（雲端免費）\n# atlas.mongodb.com 註冊 → 5 分鐘起 cluster\n```\n\n## Node 連線\n```bash\nnpm install mongodb mongoose\n```\n\n```javascript\nimport mongoose from \"mongoose\";\n\nawait mongoose.connect(\"mongodb://localhost:27017/myapp\");\n```\n\n## Schema + Model（用 Mongoose）\n```javascript\nconst userSchema = new mongoose.Schema({\n  name: { type: String, required: true },\n  email: { type: String, unique: true },\n  age: Number,\n  tags: [String],\n  profile: {\n    bio: String,\n    avatar: String,\n  },\n  createdAt: { type: Date, default: Date.now }\n});\n\nconst User = mongoose.model(\"User\", userSchema);\n```\n\n## CRUD\n\n### Create\n```javascript\nconst u = await User.create({ name: \"Alice\", email: \"a@x.com\" });\n\n// 多筆\nawait User.insertMany([\n  { name: \"Bob\" }, { name: \"Charlie\" }\n]);\n```\n\n### Read\n```javascript\nconst all = await User.find();\nconst adults = await User.find({ age: { $gte: 18 } });\nconst one = await User.findById(id);\nconst byEmail = await User.findOne({ email: \"a@x.com\" });\n\n// 進階查詢\nawait User.find({\n  age: { $gte: 18, $lte: 65 },\n  tags: { $in: [\"vip\", \"premium\"] },\n  email: { $regex: /@gmail.com$/ }\n});\n```\n\n### Update\n```javascript\nawait User.findByIdAndUpdate(id, { name: \"Bob\" }, { new: true });\nawait User.updateMany({ age: { $lt: 18 } }, { $set: { minor: true } });\n\n// 進階：$inc / $push / $pull\nawait User.findByIdAndUpdate(id, {\n  $inc: { loginCount: 1 },\n  $push: { tags: \"active\" },\n  $pull: { tags: \"inactive\" }\n});\n```\n\n### Delete\n```javascript\nawait User.findByIdAndDelete(id);\nawait User.deleteMany({ active: false });\n```\n\n## Indexes\n```javascript\nuserSchema.index({ email: 1 });          // 升序\nuserSchema.index({ age: -1 });           // 降序\nuserSchema.index({ name: 1, age: -1 });  // 複合\nuserSchema.index({ email: 1 }, { unique: true });\nuserSchema.index({ name: \"text\" });      // 全文搜尋\n```\n\n## Compass（GUI）\n免費官方 GUI、看資料 / 試 query 必裝。\n\n## 比 SQL 簡單的地方\n- 不用 ALTER TABLE（schema 自由）\n- 巢狀資料直接存（不用 JOIN）\n- JS 物件 ↔ DB 自然\n\n## 比 SQL 困難的地方\n- 沒 JOIN（要 $lookup、慢）\n- Transaction 弱\n- 大寫入規模仍輸 SQL",
+      "tip": {
+        "type": "practical",
+        "text": "Node 全端 + MongoDB 是經典組合（MEAN / MERN stack）。但 2026 PG + Supabase 反而更熱。"
+      },
+      "id": "18.8",
+      "number": "LESSON 18.8",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "18.8.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "import mongoose from \"mongoose\";\n\nawait mongoose.connect(\"mongodb://localhost:27017/myapp\");",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "用 Express 寫一個 RESTful API：GET / POST / PUT / DELETE /users。",
+        "hint": "課程內有 9 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "安裝"
+        },
+        {
+          "level": 2,
+          "text": "Node 連線"
+        },
+        {
+          "level": 2,
+          "text": "Schema + Model（用 Mongoose）"
+        },
+        {
+          "level": 2,
+          "text": "CRUD"
+        },
+        {
+          "level": 3,
+          "text": "Create"
+        },
+        {
+          "level": 3,
+          "text": "Read"
+        },
+        {
+          "level": 3,
+          "text": "Update"
+        },
+        {
+          "level": 3,
+          "text": "Delete"
+        },
+        {
+          "level": 2,
+          "text": "Indexes"
+        },
+        {
+          "level": 2,
+          "text": "Compass（GUI）"
+        },
+        {
+          "level": 2,
+          "text": "比 SQL 簡單的地方"
+        },
+        {
+          "level": 2,
+          "text": "比 SQL 困難的地方"
+        }
+      ]
+    },
+    {
+      "title": "MongoDB Aggregation Pipeline",
+      "oneLineSummary": "Mongo 的 GROUP BY + JOIN = aggregation pipeline、複雜分析的核心",
+      "analogy": "不是「一句 SQL」、是「多 stage pipeline」—每 stage 處理 + 傳下去。",
+      "content": "## Pipeline 概念\n```\n[資料] → $match → $group → $sort → $limit → [結果]\n```\n\n每個 `$xxx` 是一個 stage。\n\n## 基本範例\n```javascript\nawait Order.aggregate([\n  { $match: { status: \"paid\" } },         // 過濾\n  { $group: {\n    _id: \"$userId\",                        // group by userId\n    total: { $sum: \"$amount\" },            // 加總\n    count: { $sum: 1 }                     // 計數\n  }},\n  { $sort: { total: -1 } },\n  { $limit: 10 }\n]);\n```\n\n對應 SQL：\n```sql\nSELECT user_id, SUM(amount) AS total, COUNT(*) AS count\nFROM orders\nWHERE status = 'paid'\nGROUP BY user_id\nORDER BY total DESC\nLIMIT 10;\n```\n\n## 常用 Stage\n\n### $match（WHERE）\n```javascript\n{ $match: { age: { $gte: 18 } } }\n```\n\n### $project（SELECT 欄位）\n```javascript\n{ $project: { name: 1, email: 1, _id: 0 } }\n```\n\n### $group（GROUP BY）\n```javascript\n{ $group: {\n  _id: { year: \"$year\", category: \"$category\" },\n  total: { $sum: \"$amount\" },\n  avg: { $avg: \"$amount\" },\n  max: { $max: \"$amount\" },\n  count: { $sum: 1 }\n}}\n```\n\n### $sort + $limit + $skip\n```javascript\n{ $sort: { createdAt: -1 } },\n{ $skip: 20 },\n{ $limit: 10 }\n```\n\n### $lookup（JOIN！）\n```javascript\n{ $lookup: {\n  from: \"users\",                  // join 哪個 collection\n  localField: \"userId\",           // 本表 key\n  foreignField: \"_id\",            // 外表 key\n  as: \"user\"                      // 結果放哪個欄位\n}}\n```\n\n### $unwind（展開 array）\n```javascript\n// 把 tags array 展開成多筆\n{ $unwind: \"$tags\" }\n```\n\n### $addFields（加新欄位）\n```javascript\n{ $addFields: {\n  fullName: { $concat: [\"$firstName\", \" \", \"$lastName\"] },\n  isAdult: { $gte: [\"$age\", 18] }\n}}\n```\n\n## 進階：時間分組\n```javascript\n// 各月銷售\nawait Order.aggregate([\n  { $group: {\n    _id: {\n      year: { $year: \"$createdAt\" },\n      month: { $month: \"$createdAt\" }\n    },\n    total: { $sum: \"$amount\" }\n  }},\n  { $sort: { \"_id.year\": 1, \"_id.month\": 1 } }\n]);\n```\n\n## 效能注意\n- 第一個 stage 最好是 `$match` + 走 index\n- 巨大 pipeline 用 `{ allowDiskUse: true }`\n- 看 explain：`.explain(\"executionStats\")`\n\n## 比 SQL 痛的地方\n- 不像 SQL 一行寫完\n- $lookup 慢（沒真正的 JOIN 優化）\n- 學習曲線陡\n\n## 比 SQL 強的地方\n- 巢狀資料處理友善\n- pipeline 可組合\n- 動態 schema 友善",
+      "tip": {
+        "type": "pro",
+        "text": "Aggregation 是 MongoDB 中高級分水嶺。會這個 + Mongo 工程師薪水 +20%。"
+      },
+      "id": "18.9",
+      "number": "LESSON 18.9",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "18.9.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "await Order.aggregate([\n  { $match: { status: \"paid\" } },         // 過濾\n  { $group: {\n    _id: \"$userId\",                        // group by userId\n    total: { $sum: \"$amount\" },            // 加總\n    count: { $sum: 1 }                     // 計數\n  }},\n  { $sort: { total: -1 } },\n  { $limit: 10 }\n]);",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "用 Express 寫一個 RESTful API：GET / POST / PUT / DELETE /users。",
+        "hint": "課程內有 11 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "Pipeline 概念"
+        },
+        {
+          "level": 2,
+          "text": "基本範例"
+        },
+        {
+          "level": 2,
+          "text": "常用 Stage"
+        },
+        {
+          "level": 3,
+          "text": "$match（WHERE）"
+        },
+        {
+          "level": 3,
+          "text": "$project（SELECT 欄位）"
+        },
+        {
+          "level": 3,
+          "text": "$group（GROUP BY）"
+        },
+        {
+          "level": 3,
+          "text": "$sort + $limit + $skip"
+        },
+        {
+          "level": 3,
+          "text": "$lookup（JOIN！）"
+        },
+        {
+          "level": 3,
+          "text": "$unwind（展開 array）"
+        },
+        {
+          "level": 3,
+          "text": "$addFields（加新欄位）"
+        },
+        {
+          "level": 2,
+          "text": "進階：時間分組"
+        },
+        {
+          "level": 2,
+          "text": "效能注意"
+        },
+        {
+          "level": 2,
+          "text": "比 SQL 痛的地方"
+        },
+        {
+          "level": 2,
+          "text": "比 SQL 強的地方"
+        }
+      ]
+    },
+    {
+      "title": "Firebase Firestore：純前端的後端",
+      "oneLineSummary": "Google 的 BaaS（Backend as a Service）—免後端、純 JS 前端直接讀寫",
+      "analogy": "不用寫 Express、不用部署 server—Firestore 給你 DB + Auth + Storage + Functions。",
+      "content": "## 為什麼用 Firestore\n- ⚡ 即時同步（多裝置自動同步）\n- 🔐 內建 Auth（Google / FB / Email / SMS）\n- 📦 Storage、Functions、Hosting\n- 💰 免費額度大（50k reads/day）\n- 🚀 React Native / Flutter 親密\n\n## 缺點\n- Vendor lock-in（Google）\n- 複雜查詢限制多\n- 計費複雜（讀寫都算錢）\n- 沒有真 JOIN\n- 不是標準 SQL\n\n## 初始化\n```javascript\n// npm install firebase\nimport { initializeApp } from \"firebase/app\";\nimport { getFirestore } from \"firebase/firestore\";\n\nconst app = initializeApp({\n  apiKey: \"...\",\n  projectId: \"...\",\n});\n\nconst db = getFirestore(app);\n```\n\n## CRUD\n\n### Create\n```javascript\nimport { collection, addDoc, setDoc, doc } from \"firebase/firestore\";\n\n// 自動 ID\nconst ref = await addDoc(collection(db, \"users\"), {\n  name: \"Alice\",\n  age: 25,\n  createdAt: new Date()\n});\n\n// 指定 ID\nawait setDoc(doc(db, \"users\", \"user-1\"), {\n  name: \"Alice\"\n});\n```\n\n### Read\n```javascript\nimport { getDoc, getDocs, query, where, orderBy, limit } from \"firebase/firestore\";\n\n// 單筆\nconst snap = await getDoc(doc(db, \"users\", \"user-1\"));\nconst data = snap.data();\n\n// 多筆\nconst q = query(\n  collection(db, \"users\"),\n  where(\"age\", \">=\", 18),\n  where(\"active\", \"==\", true),\n  orderBy(\"createdAt\", \"desc\"),\n  limit(20)\n);\nconst snap = await getDocs(q);\nsnap.forEach(doc => console.log(doc.id, doc.data()));\n```\n\n### Update\n```javascript\nimport { updateDoc } from \"firebase/firestore\";\nawait updateDoc(doc(db, \"users\", \"user-1\"), {\n  age: 26\n});\n```\n\n### Delete\n```javascript\nimport { deleteDoc } from \"firebase/firestore\";\nawait deleteDoc(doc(db, \"users\", \"user-1\"));\n```\n\n## Realtime 訂閱（殺手特色）\n```javascript\nimport { onSnapshot } from \"firebase/firestore\";\n\nconst unsub = onSnapshot(\n  query(collection(db, \"messages\"), orderBy(\"createdAt\", \"desc\")),\n  (snap) => {\n    snap.docChanges().forEach(change => {\n      console.log(change.type, change.doc.data());\n    });\n  }\n);\n\n// 取消\nunsub();\n```\n\n## Security Rules（必設）\n```javascript\n// Firestore Console → Rules\nrules_version = '2';\nservice cloud.firestore {\n  match /databases/{database}/documents {\n    \n    // users：每人只能改自己\n    match /users/{userId} {\n      allow read: if request.auth != null;\n      allow write: if request.auth.uid == userId;\n    }\n    \n    // posts：公開讀、登入可寫\n    match /posts/{postId} {\n      allow read: if true;\n      allow write: if request.auth != null;\n    }\n  }\n}\n```\n\n⚠️ 預設規則 `allow read, write: if false`—不設規則就完全鎖死。\n\n## 限制\n- 單文件 < 1 MB\n- 集合查詢 < 500 results / call\n- 不能 OR 多欄位（要 array-contains）\n- 不能複雜 JOIN\n\n## Firestore vs MongoDB\n\n| 面向 | Firestore | MongoDB |\n|---|---|---|\n| Hosted | 必須 | 可自架 |\n| Realtime | 內建 | 需 Change Streams |\n| Auth | 整合 | 自己刻 |\n| 查詢 | 限制多 | 強大 |\n| 鎖定 | Google lock-in | 可換 |\n\n## 適合場景\n- ✅ 行動 App（React Native / Flutter）\n- ✅ MVP 快速上線\n- ✅ 即時聊天 / 通知\n- ❌ 複雜查詢 / 分析\n- ❌ 怕 vendor lock-in",
+      "tip": {
+        "type": "practical",
+        "text": "學生 / hackathon / 個人專案首選 Firebase。商業 / Indie SaaS 推 Supabase（PG + 不被綁定）。"
+      },
+      "id": "18.10",
+      "number": "LESSON 18.10",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "18.10.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// npm install firebase\nimport { initializeApp } from \"firebase/app\";\nimport { getFirestore } from \"firebase/firestore\";\n\nconst app = initializeApp({\n  apiKey: \"...\",\n  projectId: \"...\",\n});\n\nconst db = getFirestore(app);",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "用 Express 寫一個 RESTful API：GET / POST / PUT / DELETE /users。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼用 Firestore"
+        },
+        {
+          "level": 2,
+          "text": "缺點"
+        },
+        {
+          "level": 2,
+          "text": "初始化"
+        },
+        {
+          "level": 2,
+          "text": "CRUD"
+        },
+        {
+          "level": 3,
+          "text": "Create"
+        },
+        {
+          "level": 3,
+          "text": "Read"
+        },
+        {
+          "level": 3,
+          "text": "Update"
+        },
+        {
+          "level": 3,
+          "text": "Delete"
+        },
+        {
+          "level": 2,
+          "text": "Realtime 訂閱（殺手特色）"
+        },
+        {
+          "level": 2,
+          "text": "Security Rules（必設）"
+        },
+        {
+          "level": 2,
+          "text": "限制"
+        },
+        {
+          "level": 2,
+          "text": "Firestore vs MongoDB"
+        },
+        {
+          "level": 2,
+          "text": "適合場景"
+        }
+      ]
+    },
+    {
+      "title": "Redis 完整：5 種資料結構 + 應用場景",
+      "oneLineSummary": "Redis 是「記憶體裡的瑞士刀」—快取、排行榜、訊息佇列、計數器全包",
+      "analogy": "不只是快取、5 種資料結構各有殺手用途。Indie / Production 必裝。",
+      "content": "## 安裝\n```bash\ndocker run -d --name redis -p 6379:6379 redis\n# 或：brew install redis（Mac）\n```\n\n## Node 連線\n```bash\nnpm install ioredis\n```\n\n```javascript\nimport Redis from \"ioredis\";\nconst r = new Redis();  // localhost:6379\n\n// 雲端 Upstash：\nconst r = new Redis(process.env.UPSTASH_REDIS_URL);\n```\n\n## 1. String（基本）\n\n### 快取\n```javascript\nawait r.set(\"user:1\", JSON.stringify(user));\nawait r.setex(\"user:1\", 3600, JSON.stringify(user));  // 1 小時過期\n\nconst cached = await r.get(\"user:1\");\nif (cached) return JSON.parse(cached);\n```\n\n### 計數器\n```javascript\nawait r.incr(\"page:home:views\");        // +1\nawait r.incrby(\"user:1:credits\", 10);   // +10\nawait r.decr(\"stock:product:1\");        // -1\n```\n\n### Rate limit 用\n```javascript\nconst key = `rate:${userId}`;\nconst count = await r.incr(key);\nif (count === 1) await r.expire(key, 60);  // 1 分鐘窗口\nif (count > 100) throw new Error(\"rate limit\");\n```\n\n## 2. Hash（結構化）\n\n### 存物件\n```javascript\nawait r.hset(\"user:1\", {\n  name: \"Alice\",\n  age: 25,\n  email: \"a@x.com\"\n});\n\nconst user = await r.hgetall(\"user:1\");\nconst name = await r.hget(\"user:1\", \"name\");\nawait r.hincrby(\"user:1\", \"loginCount\", 1);\n```\n\n比 String + JSON 好：可以只改一個欄位、不用整包讀寫。\n\n## 3. List（雙端佇列）\n\n### 訊息佇列（job queue）\n```javascript\n// Producer：加 job\nawait r.lpush(\"queue:emails\", JSON.stringify({ to: \"...\", subject: \"...\" }));\n\n// Consumer：取 job（阻塞等待）\nconst job = await r.brpop(\"queue:emails\", 0);\nconst data = JSON.parse(job[1]);\n// 處理...\n```\n\n### 最近 N 條 log\n```javascript\nawait r.lpush(\"logs\", message);\nawait r.ltrim(\"logs\", 0, 999);  // 只保留最新 1000 條\nconst recent = await r.lrange(\"logs\", 0, 99);  // 取最新 100 條\n```\n\n## 4. Set（去重）\n\n### 標籤\n```javascript\nawait r.sadd(\"article:1:tags\", \"python\", \"sql\", \"ai\");\nawait r.smembers(\"article:1:tags\");\n\n// 交集\nawait r.sinter(\"article:1:tags\", \"article:2:tags\");\n\n// 用戶喜歡列表\nawait r.sadd(`user:1:likes`, postId);\nconst liked = await r.sismember(`user:1:likes`, postId);\n```\n\n### Unique visitors\n```javascript\nawait r.sadd(`visitors:${today}`, ip);\nconst count = await r.scard(`visitors:${today}`);\n```\n\n## 5. Sorted Set（排行榜殺手）\n\n### 排行榜\n```javascript\nawait r.zadd(\"leaderboard\", 1500, \"alice\");\nawait r.zadd(\"leaderboard\", 2300, \"bob\");\nawait r.zincrby(\"leaderboard\", 100, \"alice\");  // 加分\n\n// Top 10\nconst top10 = await r.zrevrange(\"leaderboard\", 0, 9, \"WITHSCORES\");\n\n// 某人排名\nconst rank = await r.zrevrank(\"leaderboard\", \"alice\");\nconst score = await r.zscore(\"leaderboard\", \"alice\");\n\n// 範圍查詢\nawait r.zrangebyscore(\"leaderboard\", 1000, 2000);\n```\n\n### 時間序列 / 最近熱門\n```javascript\n// 用時間戳當 score\nawait r.zadd(\"recent:posts\", Date.now(), postId);\nconst recent = await r.zrevrange(\"recent:posts\", 0, 19);\n```\n\n## Pub/Sub（即時訊息）\n```javascript\n// Subscriber\nconst sub = new Redis();\nsub.subscribe(\"notifications\");\nsub.on(\"message\", (channel, msg) => {\n  console.log(`收到 ${channel}: ${msg}`);\n});\n\n// Publisher\nawait r.publish(\"notifications\", \"Hello!\");\n```\n\n## Persistence\nRedis 預設記憶體、可以開：\n- **RDB**：定期 snapshot\n- **AOF**：每個 command 寫 log\n- 兩者並用最安全\n\n## 雲端\n- **Upstash**（Serverless Redis、推薦 Indie）\n- **Redis Cloud**（官方）\n- **AWS ElastiCache**\n- 自架 Docker\n\n## 主流用途\n1. **快取**（90% 場景）\n2. **排行榜**（Sorted Set）\n3. **Job queue**（List + BullMQ）\n4. **Rate limit**（incr + expire）\n5. **Session store**\n6. **Pub/Sub** 即時推送",
+      "tip": {
+        "type": "milestone",
+        "text": "會 Redis 5 種資料結構 = 後端工程師中高階分水嶺。面試必問、production 必用。"
+      },
+      "id": "18.11",
+      "number": "LESSON 18.11",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "18.11.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "import Redis from \"ioredis\";\nconst r = new Redis();  // localhost:6379\n\n// 雲端 Upstash：\nconst r = new Redis(process.env.UPSTASH_REDIS_URL);",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "用 Express 寫一個 RESTful API：GET / POST / PUT / DELETE /users。",
+        "hint": "課程內有 14 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "安裝"
+        },
+        {
+          "level": 2,
+          "text": "Node 連線"
+        },
+        {
+          "level": 2,
+          "text": "1. String（基本）"
+        },
+        {
+          "level": 3,
+          "text": "快取"
+        },
+        {
+          "level": 3,
+          "text": "計數器"
+        },
+        {
+          "level": 3,
+          "text": "Rate limit 用"
+        },
+        {
+          "level": 2,
+          "text": "2. Hash（結構化）"
+        },
+        {
+          "level": 3,
+          "text": "存物件"
+        },
+        {
+          "level": 2,
+          "text": "3. List（雙端佇列）"
+        },
+        {
+          "level": 3,
+          "text": "訊息佇列（job queue）"
+        },
+        {
+          "level": 3,
+          "text": "最近 N 條 log"
+        },
+        {
+          "level": 2,
+          "text": "4. Set（去重）"
+        },
+        {
+          "level": 3,
+          "text": "標籤"
+        },
+        {
+          "level": 3,
+          "text": "Unique visitors"
+        },
+        {
+          "level": 2,
+          "text": "5. Sorted Set（排行榜殺手）"
+        },
+        {
+          "level": 3,
+          "text": "排行榜"
+        },
+        {
+          "level": 3,
+          "text": "時間序列 / 最近熱門"
+        },
+        {
+          "level": 2,
+          "text": "Pub/Sub（即時訊息）"
+        },
+        {
+          "level": 2,
+          "text": "Persistence"
+        },
+        {
+          "level": 2,
+          "text": "雲端"
+        },
+        {
+          "level": 2,
+          "text": "主流用途"
+        }
+      ]
+    },
+    {
+      "title": "Vector DB 完整：pgvector / Pinecone / Qdrant",
+      "oneLineSummary": "AI 時代的核心 DB—相似度搜尋、RAG 必備",
+      "analogy": "不是「比較字串」、是「比較語意」—把文字變向量、找最相近的。",
+      "content": "## 為什麼需要 Vector DB\n\n### 傳統搜尋\n```sql\nSELECT * FROM docs WHERE content LIKE '%機器學習%';\n```\n只能找「字面包含」、找不到「意思相近但用字不同」。\n\n### Vector 搜尋\n```\nquery: \"ML basics\"\n→ 找到「機器學習入門」「人工智慧概論」「神經網路基礎」\n```\n靠的是 **embedding**—把文字轉成 1536 維向量、向量越近 = 語意越近。\n\n## Embedding 怎麼來\n用 LLM 提供商的 API：\n```javascript\nimport OpenAI from \"openai\";\nconst openai = new OpenAI();\n\nconst res = await openai.embeddings.create({\n  model: \"text-embedding-3-small\",\n  input: \"機器學習入門\"\n});\nconsole.log(res.data[0].embedding);  // [0.023, -0.118, ...] 1536 維\n```\n\nAnthropic / Gemini / Cohere 都有 embedding API、價格 < $0.001 / 1k tokens。\n\n## 三大 Vector DB\n\n### 1. pgvector（PostgreSQL extension）\n**最推薦給 Indie**—不用多裝服務、PG 直接用。\n\n```sql\nCREATE EXTENSION vector;\n\nCREATE TABLE documents (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  content TEXT,\n  embedding vector(1536)\n);\n\nCREATE INDEX ON documents USING hnsw (embedding vector_cosine_ops);\n```\n\n```javascript\n// 寫入\nconst emb = await embed(content);\nawait supabase.from(\"documents\").insert({ content, embedding: emb });\n\n// 找最相近 5 個\nconst { data } = await supabase.rpc(\"match_documents\", {\n  query_embedding: queryEmb,\n  match_count: 5\n});\n```\n\n### 2. Pinecone（Managed、商業）\n- 託管、不用管 infra\n- API 簡單\n- 免費 plan 限制大\n- 適合不想自己管 DB\n\n```javascript\nconst index = pinecone.index(\"docs\");\nawait index.upsert([{ id, values: emb, metadata: { text } }]);\nconst res = await index.query({ vector: queryEmb, topK: 5 });\n```\n\n### 3. Qdrant（開源、效能怪獸）\n- Rust 寫的、超快\n- 開源、可自架\n- 功能豐富（filter / payload / 多向量）\n\n```javascript\nimport { QdrantClient } from \"@qdrant/js-client-rest\";\nconst client = new QdrantClient({ host: \"localhost\" });\n\nawait client.upsert(\"docs\", {\n  points: [{ id, vector: emb, payload: { text } }]\n});\n\nconst res = await client.search(\"docs\", {\n  vector: queryEmb, limit: 5\n});\n```\n\n## 對比\n\n| 面向 | pgvector | Pinecone | Qdrant |\n|---|---|---|---|\n| Hosted | 自架 / Supabase | Managed | 自架 / Cloud |\n| 價格 | DB 既有費 | $70+/月 | $0+ |\n| 速度 | 中 | 快 | 最快 |\n| 規模 | 百萬 | 億級 | 億級 |\n| 整合 | SQL | API | API |\n| 適合 | Indie / Supabase | Enterprise | 中大規模 |\n\n## Index 演算法\n- **HNSW**（最常用）：近似最近鄰、快但稍不精準\n- **IVF**：分群、適合大規模\n- **Flat**：暴力搜尋、慢但精準\n\n## 距離函數\n- **Cosine**（餘弦相似度、常用）：方向相近 = 相似\n- **Euclidean**（歐氏距離）：實際距離\n- **Dot product**：兩者結合\n\n## 進階：Hybrid Search\n單靠 vector 不夠—混合 keyword 搜尋（BM25）：\n```javascript\nconst [vecResults, kwResults] = await Promise.all([\n  vectorSearch(query),\n  keywordSearch(query)\n]);\n\n// Reciprocal Rank Fusion 合併\nconst merged = rrf(vecResults, kwResults);\n```\n\n## 實戰場景\n- **RAG**：AI 知道你的文件（Ch47 詳解）\n- **語意搜尋**：站內搜尋升級\n- **推薦**：「相似商品」「猜你喜歡」\n- **去重**：找出語意重複的資料\n- **客服 FAQ 比對**\n\n## 成本估算\n- Embedding API：$0.001 / 1k tokens\n- 1 萬篇文章 * 平均 500 token = $5\n- pgvector：DB 既有費（幾乎免費）\n- Pinecone：$70/月起\n\nIndie 推 pgvector、便宜十倍。",
+      "tip": {
+        "type": "trend",
+        "text": "2026 AI 應用必學。會 pgvector + embedding + RAG = 隨便接案 NT$ 50-100k 一個 case。"
+      },
+      "id": "18.12",
+      "number": "LESSON 18.12",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "18.12.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "import OpenAI from \"openai\";\nconst openai = new OpenAI();\n\nconst res = await openai.embeddings.create({\n  model: \"text-embedding-3-small\",\n  input: \"機器學習入門\"\n});\nconsole.log(res.data[0].embedding);  // [0.023, -0.118, ...] 1536 維",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "用 Express 寫一個 RESTful API：GET / POST / PUT / DELETE /users。",
+        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼需要 Vector DB"
+        },
+        {
+          "level": 3,
+          "text": "傳統搜尋"
+        },
+        {
+          "level": 3,
+          "text": "Vector 搜尋"
+        },
+        {
+          "level": 2,
+          "text": "Embedding 怎麼來"
+        },
+        {
+          "level": 2,
+          "text": "三大 Vector DB"
+        },
+        {
+          "level": 3,
+          "text": "1. pgvector（PostgreSQL extension）"
+        },
+        {
+          "level": 3,
+          "text": "2. Pinecone（Managed、商業）"
+        },
+        {
+          "level": 3,
+          "text": "3. Qdrant（開源、效能怪獸）"
+        },
+        {
+          "level": 2,
+          "text": "對比"
+        },
+        {
+          "level": 2,
+          "text": "Index 演算法"
+        },
+        {
+          "level": 2,
+          "text": "距離函數"
+        },
+        {
+          "level": 2,
+          "text": "進階：Hybrid Search"
+        },
+        {
+          "level": 2,
+          "text": "實戰場景"
+        },
+        {
+          "level": 2,
+          "text": "成本估算"
+        }
+      ]
+    },
+    {
+      "title": "Supabase 完整：Auth + DB + Realtime + Storage",
+      "oneLineSummary": "PG 雲端版 + 全套後端、Indie SaaS 2026 第一選擇",
+      "analogy": "不只是 DB、是「不用後端的後端」—Auth / Storage / Realtime / Edge Functions 一條龍。",
+      "content": "## 為什麼選 Supabase\n- ✅ 開源（可自架、不被綁）\n- ✅ 用 PG（標準 SQL）\n- ✅ 內建 Auth（Email / OAuth / SMS）\n- ✅ Realtime（PG NOTIFY 包裝）\n- ✅ Storage（S3-like）\n- ✅ Edge Functions（Deno）\n- ✅ pgvector 內建（AI 應用）\n- ✅ 免費 plan 大方\n\n## 5 分鐘起 project\n1. supabase.com 註冊（GitHub）\n2. New Project → 選地區（推薦 Singapore）\n3. 等 2 分鐘\n4. 拿到：\n   - DB URL\n   - API URL + anon key\n   - service_role key\n\n## Client setup\n```bash\nnpm install @supabase/supabase-js @supabase/ssr\n```\n\n```typescript\nimport { createBrowserClient } from \"@supabase/ssr\";\n\nconst supabase = createBrowserClient(\n  process.env.NEXT_PUBLIC_SUPABASE_URL!,\n  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!\n);\n```\n\n## DB（標準 PG）\n```sql\nCREATE TABLE posts (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,\n  title TEXT NOT NULL,\n  body TEXT,\n  created_at TIMESTAMPTZ DEFAULT NOW()\n);\n\n-- 必開 RLS！\nALTER TABLE posts ENABLE ROW LEVEL SECURITY;\n\nCREATE POLICY \"公開讀\" ON posts FOR SELECT USING (true);\nCREATE POLICY \"自己寫\" ON posts FOR INSERT WITH CHECK (auth.uid() = user_id);\nCREATE POLICY \"自己改\" ON posts FOR UPDATE USING (auth.uid() = user_id);\nCREATE POLICY \"自己刪\" ON posts FOR DELETE USING (auth.uid() = user_id);\n```\n\n## Client CRUD\n```typescript\n// Read\nconst { data } = await supabase.from(\"posts\")\n  .select(\"*, author:users(name)\")\n  .order(\"created_at\", { ascending: false })\n  .limit(20);\n\n// Create\nawait supabase.from(\"posts\").insert({ title, body });\n\n// Update\nawait supabase.from(\"posts\").update({ title }).eq(\"id\", id);\n\n// Delete\nawait supabase.from(\"posts\").delete().eq(\"id\", id);\n```\n\n## Auth（內建超完整）\n```typescript\n// Email + Password\nawait supabase.auth.signUp({ email, password });\nawait supabase.auth.signInWithPassword({ email, password });\n\n// OAuth\nawait supabase.auth.signInWithOAuth({ provider: \"google\" });\n\n// Magic Link\nawait supabase.auth.signInWithOtp({ email });\n\n// 取目前 user\nconst { data: { user } } = await supabase.auth.getUser();\n\n// 監聽變化\nsupabase.auth.onAuthStateChange((event, session) => {\n  console.log(event, session);\n});\n\n// 登出\nawait supabase.auth.signOut();\n```\n\n## Realtime（自動同步）\n```typescript\n// 訂閱 DB 變化\nconst channel = supabase\n  .channel(\"posts\")\n  .on(\"postgres_changes\",\n    { event: \"*\", schema: \"public\", table: \"posts\" },\n    (payload) => {\n      console.log(payload.eventType, payload.new);\n    })\n  .subscribe();\n\n// 取消\nchannel.unsubscribe();\n```\n\n## Storage（S3-like）\n```typescript\n// Upload\nconst { data } = await supabase.storage\n  .from(\"avatars\")\n  .upload(`user-1/avatar.png`, file);\n\n// Get URL\nconst { data: { publicUrl } } = supabase.storage\n  .from(\"avatars\")\n  .getPublicUrl(\"user-1/avatar.png\");\n\n// Download\nconst { data: blob } = await supabase.storage\n  .from(\"avatars\")\n  .download(\"user-1/avatar.png\");\n```\n\n## Edge Functions（Deno）\n```typescript\n// supabase/functions/hello/index.ts\nimport { serve } from \"https://deno.land/std/http/server.ts\";\n\nserve(async (req) => {\n  const { name } = await req.json();\n  return new Response(JSON.stringify({ message: `Hi ${name}` }), {\n    headers: { \"Content-Type\": \"application/json\" }\n  });\n});\n```\n\n```bash\nsupabase functions deploy hello\n```\n\n## 定價（2026）\n- **Free**：500MB DB / 2GB 頻寬、不錯支撐 1k-10k 使用者\n- **Pro $25/月**：8GB DB / 100GB / Daily backups\n- **Team $599/月**：SOC2、enterprise\n- **Enterprise**：協商\n\n## Indie SaaS 黃金組合\n```\nNext.js 15（前端）\n  + Supabase（DB + Auth + Storage + Realtime）\n  + Vercel（部署）\n  + Stripe / Newebpay（金流）\n= 完整 SaaS、月成本 $0-50\n```\n\n## 注意事項\n- **永遠設 RLS**：忘了 = 所有資料公開\n- **service_role key 絕不放前端**\n- **連線池**：直接連 DB 用 pgBouncer 端口（6543）\n- **備份**：Pro plan 有自動備份、免費 plan 自己 cron pg_dump",
+      "tip": {
+        "type": "milestone",
+        "text": "Supabase 是 2026 Indie SaaS 標配。學會這個 + Next.js = 你能 ship 任何 SaaS。SnowRealm 全套都用它。"
+      },
+      "id": "18.13",
+      "number": "LESSON 18.13",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "18.13.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "import { createBrowserClient } from \"@supabase/ssr\";\n\nconst supabase = createBrowserClient(\n  process.env.NEXT_PUBLIC_SUPABASE_URL!,\n  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!\n);",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "用 Express 寫一個 RESTful API：GET / POST / PUT / DELETE /users。",
+        "hint": "課程內有 10 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼選 Supabase"
+        },
+        {
+          "level": 2,
+          "text": "5 分鐘起 project"
+        },
+        {
+          "level": 2,
+          "text": "Client setup"
+        },
+        {
+          "level": 2,
+          "text": "DB（標準 PG）"
+        },
+        {
+          "level": 2,
+          "text": "Client CRUD"
+        },
+        {
+          "level": 2,
+          "text": "Auth（內建超完整）"
+        },
+        {
+          "level": 2,
+          "text": "Realtime（自動同步）"
+        },
+        {
+          "level": 2,
+          "text": "Storage（S3-like）"
+        },
+        {
+          "level": 2,
+          "text": "Edge Functions（Deno）"
+        },
+        {
+          "level": 2,
+          "text": "定價（2026）"
+        },
+        {
+          "level": 2,
+          "text": "Indie SaaS 黃金組合"
+        },
+        {
+          "level": 2,
+          "text": "注意事項"
+        }
+      ]
+    },
+    {
+      "title": "NoSQL 索引 + 效能調校",
+      "oneLineSummary": "沒 index 一樣慢、但策略跟 SQL 略不同",
+      "analogy": "Mongo 100 萬筆沒索引 = 卡住。索引種類多、要懂哪個用什麼。",
+      "content": "## MongoDB 索引種類\n\n### 1. Single Field\n```javascript\ndb.users.createIndex({ email: 1 });   // 升序\ndb.users.createIndex({ age: -1 });    // 降序\n```\n\n### 2. Compound（複合）\n```javascript\ndb.orders.createIndex({ userId: 1, createdAt: -1 });\n\n// 規則：ESR\n// Equality → Sort → Range\n// 過濾相等的欄位放前面、再 sort 欄位、最後 range（>=、<=）\n```\n\n### 3. Multikey（array 索引）\n```javascript\n// 自動為 array 內每個值建 index\ndb.posts.createIndex({ tags: 1 });\n\n// 查：\ndb.posts.find({ tags: \"python\" });\n```\n\n### 4. Text（全文搜尋）\n```javascript\ndb.posts.createIndex({ title: \"text\", body: \"text\" });\n\ndb.posts.find({ $text: { $search: \"機器學習\" } });\n```\n\n### 5. Geospatial（地理）\n```javascript\ndb.shops.createIndex({ location: \"2dsphere\" });\n\ndb.shops.find({\n  location: {\n    $near: {\n      $geometry: { type: \"Point\", coordinates: [121.5, 25.0] },\n      $maxDistance: 1000  // 1km\n    }\n  }\n});\n```\n\n### 6. Hashed\n```javascript\ndb.users.createIndex({ userId: \"hashed\" });\n// 適合 sharding key\n```\n\n### 7. Partial（部分索引）\n```javascript\ndb.users.createIndex(\n  { email: 1 },\n  { partialFilterExpression: { active: true } }\n);\n// 只 index active=true 的、節省空間\n```\n\n### 8. TTL（自動過期）\n```javascript\ndb.sessions.createIndex(\n  { createdAt: 1 },\n  { expireAfterSeconds: 3600 }\n);\n// 1 小時後自動刪\n```\n\n## 查 query plan\n```javascript\ndb.users.find({ email: \"a@x.com\" }).explain(\"executionStats\");\n```\n\n關鍵指標：\n- `executionTimeMillis`：跑多久\n- `totalDocsExamined`：掃了幾筆\n- `nReturned`：回幾筆\n\n理想：`totalDocsExamined ≈ nReturned`（走 index）。\n災難：`totalDocsExamined = 100 萬, nReturned = 5`（全表掃）。\n\n## 慢查詢分析\n```javascript\n// 開啟 profiler\ndb.setProfilingLevel(1, { slowms: 100 });  // > 100ms 的記錄\n\n// 看結果\ndb.system.profile.find().sort({ ts: -1 }).limit(10);\n```\n\n## Aggregation 效能\n```javascript\ndb.orders.aggregate([\n  { $match: { status: \"paid\" } },    // 第一個放 $match、走 index\n  { $sort: { amount: -1 } },          // 早 sort 利用 index\n  { $limit: 10 },                      // 早 limit 減少資料\n  { $group: { /* ... */ } }\n], { allowDiskUse: true });            // 巨量資料允許用 disk\n```\n\n## 何時不該建 index\n- 寫多讀少（每次寫都要更新 index）\n- 低 cardinality（boolean 欄位）\n- 罕用查詢（每月 1 次）\n- 已被 compound index 涵蓋\n\n## 找出沒被使用的 index\n```javascript\ndb.users.aggregate([{ $indexStats: {} }]);\n```\n看 `accesses.ops`、為 0 的可以 drop。\n\n## Redis 效能\n- 永遠在記憶體、本身就快\n- 避免大 key（10MB+ 的 value）\n- 避免阻塞 cmd（KEYS *、不要用！用 SCAN）\n- pipeline 批次 cmd\n\n```javascript\n// ❌ 慢\nfor (let i = 0; i < 1000; i++) {\n  await r.set(`key:${i}`, i);\n}\n\n// ✅ Pipeline 快 10 倍\nconst p = r.pipeline();\nfor (let i = 0; i < 1000; i++) {\n  p.set(`key:${i}`, i);\n}\nawait p.exec();\n```\n\n## Firestore 效能\n- 自動 index 但複合 index 要手動建\n- Cost：每次 read / write / delete 都算錢\n- 善用 cache（前端 SDK 內建）",
+      "tip": {
+        "type": "performance",
+        "text": "MongoDB 100 萬筆無 index = 全表掃 5-10 秒、有 index = 5 毫秒。差距 1000 倍。"
+      },
+      "id": "18.14",
+      "number": "LESSON 18.14",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "18.14.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "db.users.createIndex({ email: 1 });   // 升序\ndb.users.createIndex({ age: -1 });    // 降序",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "用 Express 寫一個 RESTful API：GET / POST / PUT / DELETE /users。",
+        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（executionTimeMillis、totalDocsExamined、nReturned、totalDocsExamined ≈ nReturned）通常在效能 / 維護性 / 擴展性卡住時才登場。",
+        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "MongoDB 索引種類"
+        },
+        {
+          "level": 3,
+          "text": "1. Single Field"
+        },
+        {
+          "level": 3,
+          "text": "2. Compound（複合）"
+        },
+        {
+          "level": 3,
+          "text": "3. Multikey（array 索引）"
+        },
+        {
+          "level": 3,
+          "text": "4. Text（全文搜尋）"
+        },
+        {
+          "level": 3,
+          "text": "5. Geospatial（地理）"
+        },
+        {
+          "level": 3,
+          "text": "6. Hashed"
+        },
+        {
+          "level": 3,
+          "text": "7. Partial（部分索引）"
+        },
+        {
+          "level": 3,
+          "text": "8. TTL（自動過期）"
+        },
+        {
+          "level": 2,
+          "text": "查 query plan"
+        },
+        {
+          "level": 2,
+          "text": "慢查詢分析"
+        },
+        {
+          "level": 2,
+          "text": "Aggregation 效能"
+        },
+        {
+          "level": 2,
+          "text": "何時不該建 index"
+        },
+        {
+          "level": 2,
+          "text": "找出沒被使用的 index"
+        },
+        {
+          "level": 2,
+          "text": "Redis 效能"
+        },
+        {
+          "level": 2,
+          "text": "Firestore 效能"
+        }
+      ]
+    },
+    {
+      "title": "SQL vs NoSQL 對比 + 怎麼選",
+      "oneLineSummary": "不是「誰好」、是「什麼場景用什麼」",
+      "analogy": "面試經典題。會答 = 中階以上工程師。",
+      "content": "## 完整對比表\n\n| 面向 | SQL | NoSQL |\n|---|---|---|\n| Schema | 嚴格 | 彈性 |\n| 標準 | SQL | 各 DB 不同 |\n| JOIN | 完整支援 | 限制多 |\n| Transaction | ACID 完整 | 部分支援 |\n| 一致性 | 強一致 | 通常最終一致 |\n| 規模 | 垂直 + 部分水平 | 水平擴展強 |\n| 學習 | 一招走天下 | 各家學各家 |\n| 工具 | 巨大 | 各 DB 不同 |\n\n## 怎麼選\n\n### 選 SQL 如果\n- 結構固定（user / order / product）\n- 需要複雜查詢 + JOIN\n- 需要 ACID transaction（金流）\n- 資料 < 1TB（單機可容）\n- 不想 vendor lock-in\n- **不知道用什麼 = 選 SQL**\n\n### 選 NoSQL 如果\n- Schema 變動快（events / logs / IoT）\n- 需要水平擴展（10TB+）\n- 特殊資料模型（圖、文件、向量）\n- 已有強需求（即時、地理、快取）\n\n## 真實 stack 範例\n\n### Indie SaaS\n- **PostgreSQL**（Supabase）：99% 業務資料\n- **Redis**：快取 + Session\n- 加上 pgvector → AI 應用\n\n### 中型公司\n- **MySQL / PG**：交易資料\n- **Redis**：快取 + 排行榜\n- **MongoDB / DynamoDB**：用戶生成內容（評論、活動）\n- **Elasticsearch**：全文搜尋\n\n### 巨型公司\n- 全部都有、按場景拆\n- **Cassandra**：時序 / IoT\n- **HBase**：超大 OLAP\n- **Neo4j**：社交圖\n- **Snowflake / BigQuery**：分析\n\n## 反 pattern\n\n### ❌ 為 NoSQL 而 NoSQL\n「聽說 NoSQL 快」就轉、結果痛苦。\n規模沒大到 = SQL 簡單 10 倍。\n\n### ❌ 全用 SQL\n即使 PG 強、Redis 快取仍該用、不要用 PG 當快取。\n\n### ❌ Mongo 模仿 SQL\n寫一堆 $lookup（JOIN）= 走錯路、該回 SQL。\n\n### ❌ Firestore 大資料分析\nNoSQL 不適合 ad-hoc 分析、要 ETL 到 BigQuery / Snowflake。\n\n## Polyglot Persistence（多元存儲）\n不要堅持「一個 DB 解決一切」。\n每種資料用最適合的 DB：\n- 交易資料 → PG\n- Session → Redis\n- 全文 → Elasticsearch\n- 圖 → Neo4j\n- 向量 → pgvector\n- 時序 → InfluxDB\n\n## CAP 理論\n分散式系統三選二：\n- **C** onsistency：所有節點同時看到一樣\n- **A** vailability：永遠可回應\n- **P** artition tolerance：網路斷時仍工作\n\n實務：P 必選、然後 C 或 A 二選一。\n- SQL 通常選 CP（一致性優先）\n- NoSQL 通常選 AP（可用性優先）\n\n## 面試標準答案\n\n「我選 PG 為主、因為：\n1. 結構化資料、SQL 強大查詢\n2. PG JSONB 提供 NoSQL 彈性\n3. pgvector 支援 AI\n4. 一份運維知識、不要學 5 種 DB\n\nRedis 作快取 + 排行榜、\nElasticsearch 給全文搜尋、\n這樣的 stack 撐 1M MAU 沒問題。」\n\n→ 答對。",
+      "tip": {
+        "type": "milestone",
+        "text": "2026 雲端時代、Polyglot Persistence 是專業標配。但「先用 PG 撐起來」是 Indie 真理。"
+      },
+      "id": "18.15",
+      "number": "LESSON 18.15",
+      "xp": 10,
+      "exercise": {
+        "question": "用 Express 寫一個 RESTful API：GET / POST / PUT / DELETE /users。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "完整對比表"
+        },
+        {
+          "level": 2,
+          "text": "怎麼選"
+        },
+        {
+          "level": 3,
+          "text": "選 SQL 如果"
+        },
+        {
+          "level": 3,
+          "text": "選 NoSQL 如果"
+        },
+        {
+          "level": 2,
+          "text": "真實 stack 範例"
+        },
+        {
+          "level": 3,
+          "text": "Indie SaaS"
+        },
+        {
+          "level": 3,
+          "text": "中型公司"
+        },
+        {
+          "level": 3,
+          "text": "巨型公司"
+        },
+        {
+          "level": 2,
+          "text": "反 pattern"
+        },
+        {
+          "level": 3,
+          "text": "❌ 為 NoSQL 而 NoSQL"
+        },
+        {
+          "level": 3,
+          "text": "❌ 全用 SQL"
+        },
+        {
+          "level": 3,
+          "text": "❌ Mongo 模仿 SQL"
+        },
+        {
+          "level": 3,
+          "text": "❌ Firestore 大資料分析"
+        },
+        {
+          "level": 2,
+          "text": "Polyglot Persistence（多元存儲）"
+        },
+        {
+          "level": 2,
+          "text": "CAP 理論"
+        },
+        {
+          "level": 2,
+          "text": "面試標準答案"
+        }
+      ]
+    },
+    {
+      "title": "DynamoDB：AWS Serverless 標配",
+      "oneLineSummary": "AWS Lambda + DynamoDB 黃金組合、毫秒級回應",
+      "analogy": "自動 scale、按使用付費、AWS lock-in。",
+      "content": "## 概念\n- **Partition Key**：唯一識別 + 決定資料分布\n- **Sort Key**：搭 PK 變 composite、可排序\n- **GSI**：global secondary index\n\n## SDK\n```javascript\nimport { DynamoDBClient } from \"@aws-sdk/client-dynamodb\";\nimport { DynamoDBDocumentClient, PutCommand, QueryCommand } from \"@aws-sdk/lib-dynamodb\";\n\nconst client = DynamoDBDocumentClient.from(new DynamoDBClient({}));\n\nawait client.send(new PutCommand({\n  TableName: \"orders\",\n  Item: { user_id: \"u1\", order_id: \"...\", amount: 100 }\n}));\n\nawait client.send(new QueryCommand({\n  TableName: \"orders\",\n  KeyConditionExpression: \"user_id = :uid\",\n  ExpressionAttributeValues: { \":uid\": \"u1\" }\n}));\n```\n\n## Single Table Design\n```\nPK            | SK                | data\nUSER#u1       | PROFILE           | { name, email }\nUSER#u1       | ORDER#2026-05-17  | { amount: 100 }\nPRODUCT#p1    | DETAIL            | { name, price }\n```\n1 個 query 抓多種資料、效能爆好、設計難。\n\n## 何時用\n✅ AWS Serverless、已知 access pattern、巨量\n❌ Ad-hoc 查詢、複雜分析",
+      "tip": {
+        "type": "practical",
+        "text": "AWS Lambda 99% 配 DynamoDB。其他環境用 PG 簡單 10 倍。"
+      },
+      "id": "18.16",
+      "number": "LESSON 18.16",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "18.16.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "import { DynamoDBClient } from \"@aws-sdk/client-dynamodb\";\nimport { DynamoDBDocumentClient, PutCommand, QueryCommand } from \"@aws-sdk/lib-dynamodb\";\n\nconst client = DynamoDBDocumentClient.from(new DynamoDBClient({}));\n\nawait client.send(new PutCommand({\n  TableName: \"orders\",\n  Item: { user_id: \"u1\", order_id: \"...\", amount: 100 }\n}));\n\nawait client.send(new QueryCommand({\n  TableName: \"orders\",\n  KeyConditionExpression: \"user_id = :uid\",\n  ExpressionAttributeValues: { \":uid\": \"u1\" }\n}));",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "用 Express 寫一個 RESTful API：GET / POST / PUT / DELETE /users。",
+        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "概念"
+        },
+        {
+          "level": 2,
+          "text": "SDK"
+        },
+        {
+          "level": 2,
+          "text": "Single Table Design"
+        },
+        {
+          "level": 2,
+          "text": "何時用"
+        }
+      ]
+    },
+    {
+      "title": "Cassandra：超大規模分散式",
+      "oneLineSummary": "寫入每秒百萬、Netflix / IG 用",
+      "analogy": "Indie 用不到、知道有就好。",
+      "content": "## 為什麼\n- 寫入超快（百萬/秒）\n- 多 DC、無單點故障\n- 水平擴展\n\n## CQL\n```sql\nCREATE TABLE events (\n  user_id UUID,\n  event_time TIMESTAMP,\n  PRIMARY KEY (user_id, event_time)\n) WITH CLUSTERING ORDER BY (event_time DESC);\n\nSELECT * FROM events WHERE user_id = '...' LIMIT 100;\n```\n\n## 限制\n- ❌ JOIN / Transaction / Ad-hoc 查詢\n- ✅ 為已知 query pattern 設計\n\n## 替代\n- **ScyllaDB**：C++ rewrite、快 10 倍\n- **CockroachDB**：SQL + 分散式",
+      "tip": {
+        "type": "practical",
+        "text": "99% 公司用不到。知道有這個就好。"
+      },
+      "id": "18.17",
+      "number": "LESSON 18.17",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "18.17.auto",
+          "language": "sql",
+          "title": "試試看",
+          "initialCode": "CREATE TABLE events (\n  user_id UUID,\n  event_time TIMESTAMP,\n  PRIMARY KEY (user_id, event_time)\n) WITH CLUSTERING ORDER BY (event_time DESC);\n\nSELECT * FROM events WHERE user_id = '...' LIMIT 100;",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "用 Express 寫一個 RESTful API：GET / POST / PUT / DELETE /users。",
+        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼"
+        },
+        {
+          "level": 2,
+          "text": "CQL"
+        },
+        {
+          "level": 2,
+          "text": "限制"
+        },
+        {
+          "level": 2,
+          "text": "替代"
+        }
+      ]
+    },
+    {
+      "title": "Neo4j / Graph DB：社交 + 推薦",
+      "oneLineSummary": "存「關係」、找朋友的朋友 SQL 5 JOIN、Cypher 一行",
+      "analogy": "社交 / 推薦 / 知識圖譜最佳工具。",
+      "content": "## Cypher\n```cypher\nCREATE (a:User {name: \"Alice\"}),\n       (b:User {name: \"Bob\"}),\n       (a)-[:FRIEND]->(b);\n\n-- 推薦：朋友的朋友\nMATCH (me {id: $id})-[:FRIEND]->(f)-[:FRIEND]->(fof)\nWHERE NOT (me)-[:FRIEND]->(fof) AND me <> fof\nRETURN fof, COUNT(*) AS mutual\nORDER BY mutual DESC LIMIT 10;\n```\n\n## Node\n```javascript\nimport neo4j from \"neo4j-driver\";\nconst driver = neo4j.driver(\"neo4j://localhost\", neo4j.auth.basic(\"neo4j\", \"pw\"));\nconst session = driver.session();\nconst result = await session.run(\"MATCH (u {name: $n}) RETURN u\", { n: \"Alice\" });\n```\n\n## 應用\n- 社交（FB / LinkedIn）\n- 推薦（買 X 也買 Y）\n- 知識圖譜\n- 詐騙偵測",
+      "tip": {
+        "type": "pro",
+        "text": "Graph DB = 稀缺人才。社交 / 推薦工作直接加分。"
+      },
+      "id": "18.18",
+      "number": "LESSON 18.18",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "18.18.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "import neo4j from \"neo4j-driver\";\nconst driver = neo4j.driver(\"neo4j://localhost\", neo4j.auth.basic(\"neo4j\", \"pw\"));\nconst session = driver.session();\nconst result = await session.run(\"MATCH (u {name: $n}) RETURN u\", { n: \"Alice\" });",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "用 Express 寫一個 RESTful API：GET / POST / PUT / DELETE /users。",
+        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "Cypher"
+        },
+        {
+          "level": 2,
+          "text": "Node"
+        },
+        {
+          "level": 2,
+          "text": "應用"
+        }
+      ]
+    },
+    {
+      "title": "TimescaleDB / InfluxDB：時序資料",
+      "oneLineSummary": "IoT / 監控 / 股票—時序專用 DB",
+      "analogy": "寫入優化、自動降採樣、TTL。",
+      "content": "## TimescaleDB（PG extension、推薦）\n```sql\nCREATE EXTENSION timescaledb;\n\nCREATE TABLE sensor_data (\n  time TIMESTAMPTZ NOT NULL,\n  sensor_id INT,\n  temperature DOUBLE PRECISION\n);\n\nSELECT create_hypertable('sensor_data', 'time');\n\nSELECT time_bucket('1 hour', time) AS hour,\n       avg(temperature) AS avg_temp\nFROM sensor_data\nWHERE time > NOW() - INTERVAL '24 hours'\nGROUP BY hour;\n```\n\n## 殺手功能\n- **Downsampling**：1 分鐘精度保留 1 週\n- **Retention**：自動刪超過 30 天\n- **Continuous Aggregates**：背景算統計\n\n## 監控 stack\n```\n[App] → [InfluxDB / Prometheus] → [Grafana]\n```\n\n## 選擇\n- 通用 + 時序：TimescaleDB\n- 純 metrics：InfluxDB + Grafana\n- 小資料：PG 直接撐",
+      "tip": {
+        "type": "practical",
+        "text": "IoT / SaaS metrics 用 TimescaleDB、保留 PG 知識。"
+      },
+      "id": "18.19",
+      "number": "LESSON 18.19",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "18.19.auto",
+          "language": "sql",
+          "title": "試試看",
+          "initialCode": "CREATE EXTENSION timescaledb;\n\nCREATE TABLE sensor_data (\n  time TIMESTAMPTZ NOT NULL,\n  sensor_id INT,\n  temperature DOUBLE PRECISION\n);\n\nSELECT create_hypertable('sensor_data', 'time');\n\nSELECT time_bucket('1 hour', time) AS hour,\n       avg(temperature) AS avg_temp\nFROM sensor_data\nWHERE time > NOW() - INTERVAL '24 hours'\nGROUP BY hour;",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "用 Express 寫一個 RESTful API：GET / POST / PUT / DELETE /users。",
+        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "TimescaleDB（PG extension、推薦）"
+        },
+        {
+          "level": 2,
+          "text": "殺手功能"
+        },
+        {
+          "level": 2,
+          "text": "監控 stack"
+        },
+        {
+          "level": 2,
+          "text": "選擇"
+        }
+      ]
+    },
+    {
+      "title": "Elasticsearch / Meilisearch：全文搜尋",
+      "oneLineSummary": "Google 級搜尋體驗、log 分析必備",
+      "analogy": "PG 全文 < Meilisearch < Elasticsearch 遞進選。",
+      "content": "## Meilisearch（推薦 Indie）\n```bash\ndocker run -d -p 7700:7700 getmeili/meilisearch\n```\n\n```javascript\nimport { MeiliSearch } from \"meilisearch\";\nconst client = new MeiliSearch({ host: \"http://localhost:7700\" });\nawait client.index(\"products\").addDocuments([\n  { id: 1, name: \"iPhone 17 Pro\", price: 35900 }\n]);\nconst res = await client.index(\"products\").search(\"iphone\");\n```\n\n## Elasticsearch（企業）\n```javascript\nconst res = await es.search({\n  index: \"products\",\n  query: {\n    bool: {\n      must: [{ match: { name: \"iPhone\" } }],\n      filter: [{ range: { price: { lte: 50000 } } }]\n    }\n  }\n});\n```\n\n## ELK Stack\n```\n[App logs] → [Logstash / Filebeat] → [Elasticsearch] → [Kibana]\n```\n\n## 選擇\n\n| 場景 | 推薦 |\n|---|---|\n| 小型 | PG 全文 |\n| 中型 | Meilisearch |\n| 大型 + log | Elasticsearch |\n| 不自架 | Algolia |",
+      "tip": {
+        "type": "practical",
+        "text": "Indie 加搜尋：Meilisearch 是甜蜜點、5 分鐘上線。"
+      },
+      "id": "18.20",
+      "number": "LESSON 18.20",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "18.20.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "import { MeiliSearch } from \"meilisearch\";\nconst client = new MeiliSearch({ host: \"http://localhost:7700\" });\nawait client.index(\"products\").addDocuments([\n  { id: 1, name: \"iPhone 17 Pro\", price: 35900 }\n]);\nconst res = await client.index(\"products\").search(\"iphone\");",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "用 Express 寫一個 RESTful API：GET / POST / PUT / DELETE /users。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "Meilisearch（推薦 Indie）"
+        },
+        {
+          "level": 2,
+          "text": "Elasticsearch（企業）"
+        },
+        {
+          "level": 2,
+          "text": "ELK Stack"
+        },
+        {
+          "level": 2,
+          "text": "選擇"
+        }
+      ]
+    },
+    {
+      "title": "Backup / Restore：永遠別賭",
+      "oneLineSummary": "Production DB 出事 = 公司倒、Day 1 設好",
+      "analogy": "3-2-1 規則：3 份、2 種媒介、1 份異地。",
+      "content": "## PG Backup\n```bash\npg_dump -U postgres mydb | gzip > backup.sql.gz\npg_dump -U postgres mydb -F c -f backup.dump\n\npsql -U postgres mydb < backup.sql\npg_restore -U postgres -d mydb backup.dump\n```\n\n## 自動 cron\n```bash\n0 3 * * * postgres pg_dump mydb | gzip > /backup/$(date +\\%Y-\\%m-\\%d).sql.gz\n0 4 * * * aws s3 sync /backup/ s3://bucket/backups/\n0 5 * * * find /backup/ -mtime +30 -delete\n```\n\n## PITR（Point-in-Time Recovery）\nPG WAL / MySQL binlog—可 restore 到任意時間。\n\n## 雲端\n- Supabase Pro：每日自動 backup\n- AWS RDS：自動 + PITR\n\n## 演練！\n沒測過的 backup ≈ 沒 backup。每月演練 restore。",
+      "tip": {
+        "type": "security",
+        "text": "Day 1 必須設 backup。出事痛比設定痛大 1000 倍。"
+      },
+      "id": "18.21",
+      "number": "LESSON 18.21",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "18.21.auto",
+          "language": "bash",
+          "title": "試試看",
+          "initialCode": "pg_dump -U postgres mydb | gzip > backup.sql.gz\npg_dump -U postgres mydb -F c -f backup.dump\n\npsql -U postgres mydb < backup.sql\npg_restore -U postgres -d mydb backup.dump",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "用 Express 寫一個 RESTful API：GET / POST / PUT / DELETE /users。",
+        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "PG Backup"
+        },
+        {
+          "level": 2,
+          "text": "自動 cron"
+        },
+        {
+          "level": 2,
+          "text": "PITR（Point-in-Time Recovery）"
+        },
+        {
+          "level": 2,
+          "text": "雲端"
+        },
+        {
+          "level": 2,
+          "text": "演練！"
+        }
+      ]
+    },
+    {
+      "title": "Connection Pool + 效能優化",
+      "oneLineSummary": "每次 new connection 巨慢、Pool 重用快 100 倍",
+      "analogy": "Production 必設、不然撐不過 100 並發。",
+      "content": "## Node + PG\n```javascript\nimport pg from \"pg\";\nconst pool = new pg.Pool({\n  max: 20,\n  idleTimeoutMillis: 30000,\n  connectionTimeoutMillis: 2000\n});\n\nconst result = await pool.query(\"SELECT * FROM users WHERE id = $1\", [1]);\n```\n\n## 10 大效能優化\n1. Index（最重要）\n2. EXPLAIN ANALYZE 找慢 query\n3. N+1 殺手—用 JOIN / include\n4. 不要 SELECT *\n5. Cursor 分頁（不用 OFFSET）\n6. 批量操作\n7. Read replicas\n8. Redis 快取\n9. Materialized View\n10. Partitioning（巨表按時間切）\n\n## N+1 範例\n```javascript\n// ❌\nfor (const u of users) {\n  u.posts = await Post.findMany({ where: { userId: u.id } });\n}\n\n// ✅\nconst users = await prisma.user.findMany({ include: { posts: true } });\n```\n\n## Cursor pagination\n```sql\n-- ❌ 慢\nSELECT * FROM posts ORDER BY id LIMIT 20 OFFSET 10000;\n\n-- ✅\nSELECT * FROM posts WHERE id > $lastId ORDER BY id LIMIT 20;\n```",
+      "tip": {
+        "type": "performance",
+        "text": "99% 慢問題：沒 index / N+1 / SELECT *。EXPLAIN ANALYZE 都能找。"
+      },
+      "id": "18.22",
+      "number": "LESSON 18.22",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "18.22.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "import pg from \"pg\";\nconst pool = new pg.Pool({\n  max: 20,\n  idleTimeoutMillis: 30000,\n  connectionTimeoutMillis: 2000\n});\n\nconst result = await pool.query(\"SELECT * FROM users WHERE id = $1\", [1]);",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "用 Express 寫一個 RESTful API：GET / POST / PUT / DELETE /users。",
+        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
+        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "Node + PG"
+        },
+        {
+          "level": 2,
+          "text": "10 大效能優化"
+        },
+        {
+          "level": 2,
+          "text": "N+1 範例"
+        },
+        {
+          "level": 2,
+          "text": "Cursor pagination"
+        }
+      ]
+    },
+    {
+      "title": "Migration 工具：Prisma / Drizzle",
+      "oneLineSummary": "Schema 版控、Git 友善、可回滾",
+      "analogy": "不寫 raw SQL、用工具管。",
+      "content": "## Prisma\n```prisma\nmodel User {\n  id     String  @id @default(uuid())\n  email  String  @unique\n  posts  Post[]\n}\n```\n\n```bash\nnpx prisma migrate dev --name init\nnpx prisma migrate deploy  # production\n```\n\n```typescript\nconst prisma = new PrismaClient();\nawait prisma.user.create({ data: { email: \"...\" } });\nconst users = await prisma.user.findMany({ include: { posts: true } });\n```\n\n## Drizzle（TS first）\n```typescript\nimport { pgTable, uuid, text } from \"drizzle-orm/pg-core\";\n\nexport const users = pgTable(\"users\", {\n  id: uuid(\"id\").defaultRandom().primaryKey(),\n  email: text(\"email\").notNull().unique(),\n});\n\nawait db.insert(users).values({ email: \"...\" });\n```\n\n## 心法\n- ✅ 永遠加新欄、不刪舊\n- ✅ Migration 可逆\n- ❌ 別手動改 production schema",
+      "tip": {
+        "type": "milestone",
+        "text": "2026 TS 全端：Edge 友善 = Drizzle、生態大 = Prisma。"
+      },
+      "id": "18.23",
+      "number": "LESSON 18.23",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "18.23.auto",
+          "language": "prisma",
+          "title": "試試看",
+          "initialCode": "model User {\n  id     String  @id @default(uuid())\n  email  String  @unique\n  posts  Post[]\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "用 Express 寫一個 RESTful API：GET / POST / PUT / DELETE /users。",
+        "hint": "工具的學習曲線通常卡在「環境設定」這關。Node 版本、Python 版本、權限、PATH 變數、port 衝突——遇到一個解一個。",
+        "answer": "踩坑筆記範本：『遇到：[錯誤訊息] → 原因：[根本原因] → 解：[具體指令]』。整理在自己的 GitHub gist 或 Notion、下次遇到同樣坑直接複製貼上 = 把痛苦變資產。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "Prisma"
+        },
+        {
+          "level": 2,
+          "text": "Drizzle（TS first）"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "DB 選型決策樹",
+      "oneLineSummary": "看資料屬性 + scale + access pattern 三軸",
+      "analogy": "不是 DB 選錯就死、是「不懂怎麼用」死。",
+      "content": "## 決策樹\n```\n你的資料是什麼？\n├─ 結構化 → PostgreSQL ✓\n├─ 半結構 → PG JSONB / MongoDB\n├─ 快取 → Redis\n├─ 搜尋 → Meilisearch / ES\n├─ 向量 → pgvector / Pinecone\n├─ 時序 → TimescaleDB / InfluxDB\n├─ 關係 → Neo4j\n└─ 不知道 → PG\n```\n\n## Indie SaaS 三階段\n\n### 階段 1（0-1k 用戶）\nSupabase 全套\n\n### 階段 2（1k-100k）\nPG + Redis + Meilisearch\n\n### 階段 3（> 100k）\n自架 PG + read replicas + Redis cluster + Elasticsearch\n\n## 9 大紀律\n1. 永遠 backup\n2. 永遠 index\n3. 永遠 connection pool\n4. 永遠 prepared statement\n5. 永遠 transaction（多步驟）\n6. 永遠 monitor\n7. 永遠 timeout\n8. 永遠分頁\n9. 永遠用 ORM",
+      "tip": {
+        "type": "milestone",
+        "text": "DB 是 backend 核心。學透 PG + Redis 撐起任何 startup。"
+      },
+      "id": "18.24",
+      "number": "LESSON 18.24",
+      "xp": 10,
+      "exercise": {
+        "question": "用 Express 寫一個 RESTful API：GET / POST / PUT / DELETE /users。",
+        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "決策樹"
+        },
+        {
+          "level": 2,
+          "text": "Indie SaaS 三階段"
+        },
+        {
+          "level": 3,
+          "text": "階段 1（0-1k 用戶）"
+        },
+        {
+          "level": 3,
+          "text": "階段 2（1k-100k）"
+        },
+        {
+          "level": 3,
+          "text": "階段 3（> 100k）"
+        },
+        {
+          "level": 2,
+          "text": "9 大紀律"
+        }
+      ]
+    },
+    {
+      "title": "DB 心法 + 學習路徑",
+      "oneLineSummary": "從新手到專家的 4 年路線",
+      "analogy": "不是會 SQL 就行、是「會解決資料問題」。",
+      "content": "## 4 年路線\n\n### Year 1\n- SQL 基本\n- 1 個 ORM\n- Index 概念\n- 簡單 backup\n\n### Year 2\n- EXPLAIN ANALYZE\n- 連線池 / Transaction\n- 慢查詢\n- Redis 快取\n\n### Year 3\n- Replication / sharding\n- 監控 + 告警\n- 多 DB 整合\n\n### Year 4+\n- DB 內部原理\n- 自己調 query plan\n- 跨 region\n\n## 資源\n- 《Designing Data-Intensive Applications》\n- Postgres 官方 docs\n- Use The Index, Luke!\n\n## 接案 / 工作（2026 台灣）\n- Backend + DB：NT$ 70-150k\n- DBA / Data Engineer：NT$ 90-180k\n\n## 永遠的真理\n- SQL 是命根\n- 領域知識 > 技術深度\n- PG 是 forever",
+      "tip": {
+        "type": "milestone",
+        "text": "DB 是 backend 工程師核心競爭力。一輩子的技能。"
+      },
+      "id": "18.25",
+      "number": "LESSON 18.25",
+      "xp": 10,
+      "exercise": {
+        "question": "用 Express 寫一個 RESTful API：GET / POST / PUT / DELETE /users。",
+        "hint": "心法 ≠ 知識、心法要落地。「我從今天起、每天 ___」這種格式。",
+        "answer": "好行動 = 小（5-10 分鐘以內）+ 具體（不模糊）+ 可量化（有沒有做得出來）。例：『每天起床先列 3 件最重要的事再開電腦』比『更專注』可執行 100 倍。配合 streak（連續紀錄）讓自己上癮。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "4 年路線"
+        },
+        {
+          "level": 3,
+          "text": "Year 1"
+        },
+        {
+          "level": 3,
+          "text": "Year 2"
+        },
+        {
+          "level": 3,
+          "text": "Year 3"
+        },
+        {
+          "level": 3,
+          "text": "Year 4+"
+        },
+        {
+          "level": 2,
+          "text": "資源"
+        },
+        {
+          "level": 2,
+          "text": "接案 / 工作（2026 台灣）"
+        },
+        {
+          "level": 2,
+          "text": "永遠的真理"
+        }
+      ]
+    }
+  ],
+  "boss": {
+    "name": "文件之蛇",
+    "hp": 200,
+    "emoji": "🐍",
+    "description": "JSON 是鱗、嵌套無窮層、會 swallow 任何結構"
+  },
+  "quiz": {
+    "id": "ch18-quiz",
+    "questions": [],
+    "xpReward": 50,
+    "perfectBonus": 50
+  }
+}

@@ -1,0 +1,518 @@
+{
+  "id": 40,
+  "slug": "kotlin-dart",
+  "stage": 5,
+  "title": "Kotlin / Dart",
+  "subtitle": "Android / Flutter",
+  "icon": "smartphone-nfc",
+  "description": "Kotlin / Dart：Android / Flutter",
+  "status": "published",
+  "difficulty": "intermediate",
+  "prerequisites": [
+    11
+  ],
+  "estimatedHours": 14,
+  "outcomes": [
+    "理解核心概念",
+    "實作主流工具",
+    "整章實戰可發佈作品",
+    "知道生態 / 接案行情",
+    "對齊 2026 業界主流"
+  ],
+  "lessons": [
+    {
+      "title": "Kotlin vs Dart：兩大 Mobile 語言",
+      "oneLineSummary": "Android 原生 vs Flutter 跨平台",
+      "analogy": "寫 Mobile 必選一個。",
+      "content": "## Kotlin\n- Google 力推、Android 官方\n- 取代 Java\n- 跑 JVM、可寫後端（Ktor）\n- KMP（Kotlin Multiplatform）：寫一份跑 iOS / Android\n\n## Dart\n- Google 出\n- 主要給 Flutter\n- 跨平台（iOS / Android / Web / Desktop）\n- 學習曲線平\n\n## Kotlin vs Dart\n\n| 面向 | Kotlin | Dart |\n|---|---|---|\n| 主場 | Android 原生 | Flutter |\n| 跨平台 | KMP（新）| Flutter（成熟）|\n| 語言 | 現代、強型別 | 現代、強型別 |\n| 生態 | Java + Android | Flutter |\n| 工作 | Android 工程師 | Flutter 工程師 |\n| 學一個 | Android 深度 | 全平台廣度 |\n\n## Kotlin Sample\n```kotlin\ndata class User(val id: String, val name: String, val age: Int = 0)\n\nfun main() {\n    val users = listOf(\n        User(\"u1\", \"Alice\", 25),\n        User(\"u2\", \"Bob\", 30)\n    )\n    \n    val adults = users.filter { it.age >= 18 }\n        .sortedBy { it.name }\n        .map { it.name }\n    \n    println(adults)\n}\n\n// Coroutines（非同步）\nsuspend fun fetchUser(id: String): User {\n    delay(1000)\n    return User(id, \"Alice\", 25)\n}\n```\n\n## Dart Sample\n```dart\nclass User {\n  final String id;\n  final String name;\n  final int age;\n  \n  User(this.id, this.name, {this.age = 0});\n}\n\nvoid main() {\n  final users = [\n    User('u1', 'Alice', age: 25),\n    User('u2', 'Bob', age: 30),\n  ];\n  \n  final adults = users\n    .where((u) => u.age >= 18)\n    .map((u) => u.name)\n    .toList()\n    ..sort();\n  \n  print(adults);\n}\n\n// Async\nFuture<User> fetchUser(String id) async {\n  await Future.delayed(Duration(seconds: 1));\n  return User(id, 'Alice', age: 25);\n}\n```\n\n## Indie 選擇\n\n### 想做 Android 原生 / 進大公司\n- Kotlin\n\n### 想一份 code 跨 iOS / Android\n- Dart + Flutter\n\n### 想 cross-platform 但已會 React\n- React Native（不選這兩個）\n\n### 想全平台（Web + Mobile + Desktop）\n- Flutter\n\n## 心法\n- 同時學兩個浪費時間、選一個深入\n- RN（React Native）競爭力可能比這兩個強（已會 React）\n- Flutter 適合：愛 Google、想全平台、能 build 漂亮 UI\n- Kotlin 適合：進 Android team、做 native 原生",
+      "tip": {
+        "type": "practical",
+        "text": "已會 React → RN。從零開始 → Flutter。"
+      },
+      "id": "40.1",
+      "number": "LESSON 40.1",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "40.1.auto",
+          "language": "kotlin",
+          "title": "試試看",
+          "initialCode": "data class User(val id: String, val name: String, val age: Int = 0)\n\nfun main() {\n    val users = listOf(\n        User(\"u1\", \"Alice\", 25),\n        User(\"u2\", \"Bob\", 30)\n    )\n    \n    val adults = users.filter { it.age >= 18 }\n        .sortedBy { it.name }\n        .map { it.name }\n    \n    println(adults)\n}\n\n// Coroutines（非同步）\nsuspend fun fetchUser(id: String): User {\n    delay(1000)\n    return User(id, \"Alice\", 25)\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "找一個你身邊的例子、用「Kotlin vs Dart：兩大 Mobile 語言」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "Kotlin"
+        },
+        {
+          "level": 2,
+          "text": "Dart"
+        },
+        {
+          "level": 2,
+          "text": "Kotlin vs Dart"
+        },
+        {
+          "level": 2,
+          "text": "Kotlin Sample"
+        },
+        {
+          "level": 2,
+          "text": "Dart Sample"
+        },
+        {
+          "level": 2,
+          "text": "Indie 選擇"
+        },
+        {
+          "level": 3,
+          "text": "想做 Android 原生 / 進大公司"
+        },
+        {
+          "level": 3,
+          "text": "想一份 code 跨 iOS / Android"
+        },
+        {
+          "level": 3,
+          "text": "想 cross-platform 但已會 React"
+        },
+        {
+          "level": 3,
+          "text": "想全平台（Web + Mobile + Desktop）"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Kotlin + Android 開發",
+      "oneLineSummary": "Jetpack Compose 是新世代 UI",
+      "analogy": "取代 XML、寫法現代。",
+      "content": "## 工具\n- **Android Studio**（必）\n- **Kotlin 1.9+**\n- **Jetpack Compose**（新 UI）\n- **Gradle**（build）\n\n## Hello World\n```kotlin\nclass MainActivity : ComponentActivity() {\n    override fun onCreate(savedInstanceState: Bundle?) {\n        super.onCreate(savedInstanceState)\n        setContent {\n            Greeting(\"World\")\n        }\n    }\n}\n\n@Composable\nfun Greeting(name: String) {\n    Text(text = \"Hello, $name!\")\n}\n```\n\n## 元件\n```kotlin\n@Composable\nfun MyApp() {\n    var count by remember { mutableStateOf(0) }\n    \n    Column(\n        modifier = Modifier.fillMaxSize().padding(16.dp),\n        horizontalAlignment = Alignment.CenterHorizontally\n    ) {\n        Text(\n            text = \"Count: $count\",\n            style = MaterialTheme.typography.headlineMedium\n        )\n        Spacer(Modifier.height(16.dp))\n        Button(onClick = { count++ }) {\n            Text(\"Increment\")\n        }\n    }\n}\n```\n\n## ViewModel（state 管理）\n```kotlin\nclass CounterViewModel : ViewModel() {\n    private val _count = MutableStateFlow(0)\n    val count: StateFlow<Int> = _count\n    \n    fun increment() {\n        _count.value++\n    }\n}\n\n@Composable\nfun Counter(viewModel: CounterViewModel = viewModel()) {\n    val count by viewModel.count.collectAsState()\n    \n    Button(onClick = { viewModel.increment() }) {\n        Text(\"Count: $count\")\n    }\n}\n```\n\n## Navigation\n```kotlin\nval navController = rememberNavController()\n\nNavHost(navController, startDestination = \"home\") {\n    composable(\"home\") { HomeScreen(navController) }\n    composable(\"detail/{id}\") { backStackEntry ->\n        val id = backStackEntry.arguments?.getString(\"id\")\n        DetailScreen(id)\n    }\n}\n\n// 跳轉\nnavController.navigate(\"detail/123\")\n```\n\n## Networking（Retrofit + Ktor）\n```kotlin\ninterface ApiService {\n    @GET(\"users/{id}\")\n    suspend fun getUser(@Path(\"id\") id: String): User\n}\n\nval api = Retrofit.Builder()\n    .baseUrl(\"https://api.example.com/\")\n    .addConverterFactory(MoshiConverterFactory.create())\n    .build()\n    .create(ApiService::class.java)\n\n// Coroutine 內\nviewModelScope.launch {\n    val user = api.getUser(\"u1\")\n}\n```\n\n## Room（local DB）\n```kotlin\n@Entity\ndata class Note(\n    @PrimaryKey val id: String,\n    val title: String,\n    val content: String\n)\n\n@Dao\ninterface NoteDao {\n    @Query(\"SELECT * FROM Note\")\n    fun getAll(): Flow<List<Note>>\n    \n    @Insert\n    suspend fun insert(note: Note)\n}\n```\n\n## Hilt（DI）\n```kotlin\n@HiltAndroidApp\nclass MyApp : Application()\n\n@HiltViewModel\nclass HomeViewModel @Inject constructor(\n    private val repository: UserRepository\n) : ViewModel() { ... }\n```\n\n## 部署 Play Store\n1. signed APK / AAB\n2. Play Console 上傳\n3. 填 metadata + 截圖\n4. Submit review\n\n## KMP（Multiplatform）\n```kotlin\n// commonMain\nclass GreetingViewModel {\n    fun greet(name: String) = \"Hello, $name!\"\n}\n\n// androidMain：Android 用\n// iosMain：iOS 用（Compose Multiplatform）\n```\n\n寫一份、跑 iOS + Android。Flutter 對手。\n\n## 接案\n- Android App 接案：NT$ 100-500k\n- 大企業 Android：NT$ 80-200k 月薪\n- KMP / Compose Multiplatform：少但加分\n\n## 心法\n- Compose 是新世代、不學 XML\n- Hilt + Coroutines 是黃金組合\n- 接案要會上架 Play Store",
+      "tip": {
+        "type": "practical",
+        "text": "Compose + Hilt + Coroutines = 2026 Android 標配。"
+      },
+      "id": "40.2",
+      "number": "LESSON 40.2",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "40.2.auto",
+          "language": "kotlin",
+          "title": "試試看",
+          "initialCode": "class MainActivity : ComponentActivity() {\n    override fun onCreate(savedInstanceState: Bundle?) {\n        super.onCreate(savedInstanceState)\n        setContent {\n            Greeting(\"World\")\n        }\n    }\n}\n\n@Composable\nfun Greeting(name: String) {\n    Text(text = \"Hello, $name!\")\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "工具"
+        },
+        {
+          "level": 2,
+          "text": "Hello World"
+        },
+        {
+          "level": 2,
+          "text": "元件"
+        },
+        {
+          "level": 2,
+          "text": "ViewModel（state 管理）"
+        },
+        {
+          "level": 2,
+          "text": "Navigation"
+        },
+        {
+          "level": 2,
+          "text": "Networking（Retrofit + Ktor）"
+        },
+        {
+          "level": 2,
+          "text": "Room（local DB）"
+        },
+        {
+          "level": 2,
+          "text": "Hilt（DI）"
+        },
+        {
+          "level": 2,
+          "text": "部署 Play Store"
+        },
+        {
+          "level": 2,
+          "text": "KMP（Multiplatform）"
+        },
+        {
+          "level": 2,
+          "text": "接案"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Dart + Flutter 開發",
+      "oneLineSummary": "一份 code 跑 iOS / Android / Web / Desktop",
+      "analogy": "寫 UI 像 React、體驗超流暢。",
+      "content": "## 安裝\n```bash\n# 裝 Flutter SDK\nbrew install flutter\n\nflutter doctor\nflutter create my_app\ncd my_app\nflutter run\n```\n\n## Hello World\n```dart\nimport 'package:flutter/material.dart';\n\nvoid main() => runApp(MyApp());\n\nclass MyApp extends StatelessWidget {\n  @override\n  Widget build(BuildContext context) {\n    return MaterialApp(\n      title: 'My App',\n      home: Scaffold(\n        appBar: AppBar(title: Text('Hello')),\n        body: Center(child: Text('Hello, World!')),\n      ),\n    );\n  }\n}\n```\n\n## 元件（Widget）\n全是 Widget：\n```dart\nclass Counter extends StatefulWidget {\n  @override\n  _CounterState createState() => _CounterState();\n}\n\nclass _CounterState extends State<Counter> {\n  int count = 0;\n  \n  @override\n  Widget build(BuildContext context) {\n    return Scaffold(\n      body: Center(\n        child: Column(\n          mainAxisAlignment: MainAxisAlignment.center,\n          children: [\n            Text('Count: $count', style: TextStyle(fontSize: 24)),\n            SizedBox(height: 16),\n            ElevatedButton(\n              onPressed: () => setState(() => count++),\n              child: Text('Increment'),\n            ),\n          ],\n        ),\n      ),\n    );\n  }\n}\n```\n\n## State Management\n\n### Provider（簡單）\n```dart\nclass CounterModel extends ChangeNotifier {\n  int _count = 0;\n  int get count => _count;\n  \n  void increment() {\n    _count++;\n    notifyListeners();\n  }\n}\n\n// Wrap App\nChangeNotifierProvider(\n  create: (_) => CounterModel(),\n  child: MyApp(),\n);\n\n// Use\nfinal counter = context.watch<CounterModel>();\ncounter.count;\ncounter.increment();\n```\n\n### Riverpod（現代推薦）\n```dart\nfinal counterProvider = StateProvider((ref) => 0);\n\nclass Counter extends ConsumerWidget {\n  @override\n  Widget build(BuildContext context, WidgetRef ref) {\n    final count = ref.watch(counterProvider);\n    return Column(\n      children: [\n        Text('$count'),\n        ElevatedButton(\n          onPressed: () => ref.read(counterProvider.notifier).state++,\n          child: Text('+'),\n        ),\n      ],\n    );\n  }\n}\n```\n\n### Bloc（企業）\n複雜、適合大型 App。\n\n## Navigation\n```dart\n// 簡單\nNavigator.push(\n  context,\n  MaterialPageRoute(builder: (_) => DetailPage(id: '123')),\n);\n\n// go_router（推薦）\nfinal router = GoRouter(routes: [\n  GoRoute(path: '/', builder: (_, __) => HomePage()),\n  GoRoute(path: '/user/:id', builder: (_, state) => UserPage(id: state.pathParameters['id']!)),\n]);\n```\n\n## HTTP\n```dart\nimport 'package:http/http.dart' as http;\n\nfinal response = await http.get(Uri.parse('https://api.example.com/users'));\nfinal data = jsonDecode(response.body);\n```\n\n## Local Storage\n```dart\nfinal prefs = await SharedPreferences.getInstance();\nawait prefs.setString('user_id', 'u1');\nfinal id = prefs.getString('user_id');\n```\n\n## Hive（NoSQL local DB）\n```dart\nfinal box = await Hive.openBox('users');\nawait box.put('u1', {'name': 'Alice'});\nfinal user = box.get('u1');\n```\n\n## Firebase 整合\n- Auth\n- Firestore\n- Storage\n- Push\n\n```dart\nawait FirebaseAuth.instance.signInWithEmailAndPassword(\n  email: email, password: password\n);\n\nawait FirebaseFirestore.instance.collection('users').doc('u1').set({\n  'name': 'Alice'\n});\n```\n\n## 部署\n\n### iOS\n- Xcode build\n- TestFlight\n- App Store\n\n### Android\n- AAB build\n- Play Console\n\n### Web\n- `flutter build web`\n- 部署 Firebase Hosting / Vercel\n\n### Desktop\n- `flutter build macos / windows / linux`\n\n## 接案\n- Flutter App：NT$ 100-500k\n- 跨平台優勢、客戶愛\n- Firebase 整合好賣\n\n## 心法\n- Riverpod + go_router = 2026 黃金組合\n- Material Design 預設、想客製學 custom widget\n- Firebase 整合超快\n- 全平台一份 code = 接案優勢",
+      "tip": {
+        "type": "milestone",
+        "text": "Flutter + Riverpod = 2026 跨平台 Mobile 首選。"
+      },
+      "id": "40.3",
+      "number": "LESSON 40.3",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "40.3.auto",
+          "language": "bash",
+          "title": "試試看",
+          "initialCode": "# 裝 Flutter SDK\nbrew install flutter\n\nflutter doctor\nflutter create my_app\ncd my_app\nflutter run",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 10 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "安裝"
+        },
+        {
+          "level": 2,
+          "text": "Hello World"
+        },
+        {
+          "level": 2,
+          "text": "元件（Widget）"
+        },
+        {
+          "level": 2,
+          "text": "State Management"
+        },
+        {
+          "level": 3,
+          "text": "Provider（簡單）"
+        },
+        {
+          "level": 3,
+          "text": "Riverpod（現代推薦）"
+        },
+        {
+          "level": 3,
+          "text": "Bloc（企業）"
+        },
+        {
+          "level": 2,
+          "text": "Navigation"
+        },
+        {
+          "level": 2,
+          "text": "HTTP"
+        },
+        {
+          "level": 2,
+          "text": "Local Storage"
+        },
+        {
+          "level": 2,
+          "text": "Hive（NoSQL local DB）"
+        },
+        {
+          "level": 2,
+          "text": "Firebase 整合"
+        },
+        {
+          "level": 2,
+          "text": "部署"
+        },
+        {
+          "level": 3,
+          "text": "iOS"
+        },
+        {
+          "level": 3,
+          "text": "Android"
+        },
+        {
+          "level": 3,
+          "text": "Web"
+        },
+        {
+          "level": 3,
+          "text": "Desktop"
+        },
+        {
+          "level": 2,
+          "text": "接案"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Kotlin 進階：Coroutines + Flow",
+      "oneLineSummary": "Kotlin 並發 / async 神器",
+      "analogy": "取代 callback hell + RxJava。",
+      "content": "## Coroutine 基礎\n\n### 啟動\n```kotlin\nimport kotlinx.coroutines.*\n\nfun main() = runBlocking {\n    launch {\n        delay(1000)\n        println(\"World\")\n    }\n    println(\"Hello\")\n}\n// 印：Hello, World（順序）\n```\n\n### Suspend\n```kotlin\nsuspend fun fetchUser(id: String): User {\n    delay(1000)  // 非阻塞\n    return User(...)\n}\n\n// 用\nval user = fetchUser(\"u123\")\n```\n\n### Scope\n```kotlin\n// GlobalScope（不建議）\nGlobalScope.launch { ... }\n\n// CoroutineScope（推薦）\nval scope = CoroutineScope(Dispatchers.IO)\nscope.launch { ... }\n\n// ViewModelScope（Android）\nviewModelScope.launch { ... }\n```\n\n## Flow（reactive stream）\n\n```kotlin\nfun userFlow(): Flow<User> = flow {\n    while (true) {\n        val user = fetchUser()\n        emit(user)\n        delay(5000)\n    }\n}\n\n// 收\nuserFlow().collect { user ->\n    println(user)\n}\n```\n\n### StateFlow（UI state）\n```kotlin\nclass UserViewModel : ViewModel() {\n    private val _user = MutableStateFlow<User?>(null)\n    val user: StateFlow<User?> = _user\n    \n    fun load(id: String) = viewModelScope.launch {\n        _user.value = api.getUser(id)\n    }\n}\n\n// Compose\nval user by viewModel.user.collectAsState()\n```\n\n### SharedFlow（events）\n```kotlin\nprivate val _events = MutableSharedFlow<String>()\nval events: SharedFlow<String> = _events\n\n// 發\n_events.emit(\"Login success\")\n```\n\n## Structured Concurrency\n\n### supervisorScope\n其中一個 fail 不影響其他：\n```kotlin\nsupervisorScope {\n    launch { task1() }\n    launch { task2() }  // task1 fail、task2 仍跑\n}\n```\n\n### withContext（切 thread）\n```kotlin\nsuspend fun loadData() = withContext(Dispatchers.IO) {\n    db.query(...)  // IO thread\n}\n```\n\n## 心法\n- Coroutine 取代 Thread / Callback\n- viewModelScope 自動 cancel\n- Flow > LiveData（現代）\n- StateFlow for UI、SharedFlow for events",
+      "tip": {
+        "type": "practical",
+        "text": "Kotlin Coroutine + Flow = Android 現代寫法。"
+      },
+      "exercise": {
+        "question": "挑一個你做過的舊專案、用本節「Kotlin 進階：Coroutines + Flow」介紹的進階技術重構它。",
+        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
+        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+      },
+      "id": "40.4",
+      "number": "LESSON 40.4",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "40.4.auto",
+          "language": "kotlin",
+          "title": "試試看",
+          "initialCode": "import kotlinx.coroutines.*\n\nfun main() = runBlocking {\n    launch {\n        delay(1000)\n        println(\"World\")\n    }\n    println(\"Hello\")\n}\n// 印：Hello, World（順序）",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "outline": [
+        {
+          "level": 2,
+          "text": "Coroutine 基礎"
+        },
+        {
+          "level": 3,
+          "text": "啟動"
+        },
+        {
+          "level": 3,
+          "text": "Suspend"
+        },
+        {
+          "level": 3,
+          "text": "Scope"
+        },
+        {
+          "level": 2,
+          "text": "Flow（reactive stream）"
+        },
+        {
+          "level": 3,
+          "text": "StateFlow（UI state）"
+        },
+        {
+          "level": 3,
+          "text": "SharedFlow（events）"
+        },
+        {
+          "level": 2,
+          "text": "Structured Concurrency"
+        },
+        {
+          "level": 3,
+          "text": "supervisorScope"
+        },
+        {
+          "level": 3,
+          "text": "withContext（切 thread）"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Jetpack Compose 完整心法",
+      "oneLineSummary": "Android UI 新範式、取代 XML",
+      "analogy": "宣告式 + Kotlin = 現代。",
+      "content": "## Compose vs XML\n\n### XML\n```xml\n<TextView\n    android:id=\"@+id/text\"\n    android:layout_width=\"wrap_content\"\n    android:layout_height=\"wrap_content\"\n    android:text=\"Hello\" />\n```\n\n```kotlin\nval text = findViewById<TextView>(R.id.text)\ntext.text = \"Hello, World!\"\n```\n\n### Compose\n```kotlin\n@Composable\nfun Greeting(name: String) {\n    Text(\"Hello, $name!\")\n}\n```\n\n短、快、type-safe。\n\n## 基本元件\n\n```kotlin\n@Composable\nfun MyScreen() {\n    Column(\n        modifier = Modifier.fillMaxSize().padding(16.dp),\n        verticalArrangement = Arrangement.Center,\n        horizontalAlignment = Alignment.CenterHorizontally\n    ) {\n        Text(\"Hello\", style = MaterialTheme.typography.headlineLarge)\n        Spacer(modifier = Modifier.height(16.dp))\n        Button(onClick = { /* ... */ }) {\n            Text(\"Click me\")\n        }\n    }\n}\n```\n\n## State\n\n### remember\n```kotlin\n@Composable\nfun Counter() {\n    var count by remember { mutableStateOf(0) }\n    \n    Column {\n        Text(\"Count: $count\")\n        Button(onClick = { count++ }) {\n            Text(\"+\")\n        }\n    }\n}\n```\n\n### Lift state up\n```kotlin\n@Composable\nfun MyScreen() {\n    var count by remember { mutableStateOf(0) }\n    \n    Counter(count = count, onIncrement = { count++ })\n    Display(count = count)\n}\n\n@Composable\nfun Counter(count: Int, onIncrement: () -> Unit) { ... }\n```\n\n## ViewModel + Compose\n\n```kotlin\nclass CounterViewModel : ViewModel() {\n    private val _count = MutableStateFlow(0)\n    val count: StateFlow<Int> = _count\n    \n    fun increment() { _count.value++ }\n}\n\n@Composable\nfun CounterScreen(viewModel: CounterViewModel = viewModel()) {\n    val count by viewModel.count.collectAsState()\n    \n    Button(onClick = viewModel::increment) {\n        Text(\"Count: $count\")\n    }\n}\n```\n\n## Navigation\n\n```kotlin\nval navController = rememberNavController()\n\nNavHost(navController, startDestination = \"home\") {\n    composable(\"home\") { HomeScreen(navController) }\n    composable(\"detail/{id}\") { backStackEntry ->\n        val id = backStackEntry.arguments?.getString(\"id\")\n        DetailScreen(id = id, navController = navController)\n    }\n}\n\n// 跳轉\nnavController.navigate(\"detail/123\")\n```\n\n## Theme\n\n```kotlin\n@Composable\nfun MyAppTheme(content: @Composable () -> Unit) {\n    MaterialTheme(\n        colorScheme = lightColorScheme(\n            primary = Color(0xFF6200EE),\n            secondary = Color(0xFF03DAC6)\n        ),\n        typography = Typography(...),\n        content = content\n    )\n}\n```\n\n## 心法\n- Compose 是新 default\n- 宣告式 = state 變、UI 變\n- ViewModel + StateFlow + collectAsState 黃金組合\n- Material Design 3 預設\n- Preview 看 UI 不用跑 emulator",
+      "tip": {
+        "type": "milestone",
+        "text": "Compose 是 2026 Android 必學。"
+      },
+      "exercise": {
+        "question": "把本節「Jetpack Compose 完整心法」的核心心法、轉成一個具體的「我今天 / 這週要做」的小行動。",
+        "hint": "心法 ≠ 知識、心法要落地。「我從今天起、每天 ___」這種格式。",
+        "answer": "好行動 = 小（5-10 分鐘以內）+ 具體（不模糊）+ 可量化（有沒有做得出來）。例：『每天起床先列 3 件最重要的事再開電腦』比『更專注』可執行 100 倍。配合 streak（連續紀錄）讓自己上癮。"
+      },
+      "id": "40.5",
+      "number": "LESSON 40.5",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "40.5.auto",
+          "language": "kotlin",
+          "title": "試試看",
+          "initialCode": "val text = findViewById<TextView>(R.id.text)\ntext.text = \"Hello, World!\"",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "outline": [
+        {
+          "level": 2,
+          "text": "Compose vs XML"
+        },
+        {
+          "level": 3,
+          "text": "XML"
+        },
+        {
+          "level": 3,
+          "text": "Compose"
+        },
+        {
+          "level": 2,
+          "text": "基本元件"
+        },
+        {
+          "level": 2,
+          "text": "State"
+        },
+        {
+          "level": 3,
+          "text": "remember"
+        },
+        {
+          "level": 3,
+          "text": "Lift state up"
+        },
+        {
+          "level": 2,
+          "text": "ViewModel + Compose"
+        },
+        {
+          "level": 2,
+          "text": "Navigation"
+        },
+        {
+          "level": 2,
+          "text": "Theme"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Dart 進階 + Flutter 心法",
+      "oneLineSummary": "一份 code 跨 iOS / Android / Web / Desktop",
+      "analogy": "生態快速成長中。",
+      "content": "## Dart 進階\n\n### Null safety\n```dart\nString name = \"Alice\";       // 不能為 null\nString? maybeName;            // 可以為 null\n\n// Null check\nif (maybeName != null) {\n    print(maybeName.length);   // 自動 narrow type\n}\n\n// 安全 access\nprint(maybeName?.length);     // null 時不 crash\n```\n\n### Late\n```dart\nlate String name;  // 用前必 init\n\nname = \"Alice\";    // OK\nprint(name);\n```\n\n### Spread + cascade\n```dart\nfinal list = [1, 2, ...other, 3];\n\nfinal user = User()\n  ..name = \"Alice\"\n  ..age = 25;\n```\n\n### Records (Dart 3+)\n```dart\n(String, int) parseName(String s) {\n    return (s.toUpperCase(), s.length);\n}\n\nfinal (name, len) = parseName(\"alice\");\n```\n\n### Pattern matching (Dart 3+)\n```dart\nswitch (user) {\n    case User(name: 'Alice'):\n        print('Hi Alice');\n    case User(name: String n) when n.startsWith('B'):\n        print('B user');\n    default:\n        print('Other');\n}\n```\n\n## Flutter 心法\n\n### Widget 樹\n```dart\nclass MyApp extends StatelessWidget {\n    @override\n    Widget build(BuildContext context) {\n        return MaterialApp(\n            home: Scaffold(\n                appBar: AppBar(title: Text(\"Home\")),\n                body: Center(child: Text(\"Hello!\")),\n            ),\n        );\n    }\n}\n```\n\n### State management\n\n#### Provider（簡單）\n```dart\nclass CounterModel extends ChangeNotifier {\n    int _count = 0;\n    int get count => _count;\n    \n    void increment() {\n        _count++;\n        notifyListeners();\n    }\n}\n\n// 用\nChangeNotifierProvider(\n    create: (_) => CounterModel(),\n    child: MyApp(),\n);\n\n// Access\nfinal counter = context.watch<CounterModel>();\n```\n\n#### Riverpod（現代推薦）\n```dart\nfinal counterProvider = StateProvider((ref) => 0);\n\nclass Counter extends ConsumerWidget {\n    @override\n    Widget build(BuildContext context, WidgetRef ref) {\n        final count = ref.watch(counterProvider);\n        return Text(\"$count\");\n    }\n}\n```\n\n#### Bloc（複雜業務）\n\n### Navigation\n```dart\n// 簡單\nNavigator.push(context, MaterialPageRoute(\n    builder: (_) => DetailPage(id: '123')\n));\n\n// go_router（推薦）\nfinal router = GoRouter(routes: [\n    GoRoute(path: '/', builder: (_, __) => HomePage()),\n    GoRoute(path: '/user/:id', builder: (_, state) => UserPage(id: state.pathParameters['id']!)),\n]);\n```\n\n### HTTP\n\n```dart\nfinal response = await http.get(Uri.parse('https://api.example.com/users'));\nfinal data = jsonDecode(response.body);\n```\n\n### Local DB\n\n```dart\n// Hive\nfinal box = await Hive.openBox('users');\nawait box.put('u1', User(name: 'Alice'));\nfinal user = box.get('u1');\n\n// SQLite (drift / floor)\n// Isar (NoSQL)\n```\n\n## 心法\n- Flutter 跨平台 = 一份 code 全平台\n- Riverpod + go_router = 2026 黃金組合\n- Material 3 預設\n- 學習曲線比 RN / Android 平\n- 性能逼近原生",
+      "tip": {
+        "type": "milestone",
+        "text": "Flutter 2026 仍是 indie 跨平台 #1。"
+      },
+      "exercise": {
+        "question": "挑一個你做過的舊專案、用本節「Dart 進階 + Flutter 心法」介紹的進階技術重構它。",
+        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
+        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+      },
+      "id": "40.6",
+      "number": "LESSON 40.6",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "40.6.auto",
+          "language": "dart",
+          "title": "試試看",
+          "initialCode": "String name = \"Alice\";       // 不能為 null\nString? maybeName;            // 可以為 null\n\n// Null check\nif (maybeName != null) {\n    print(maybeName.length);   // 自動 narrow type\n}\n\n// 安全 access\nprint(maybeName?.length);     // null 時不 crash",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "outline": [
+        {
+          "level": 2,
+          "text": "Dart 進階"
+        },
+        {
+          "level": 3,
+          "text": "Null safety"
+        },
+        {
+          "level": 3,
+          "text": "Late"
+        },
+        {
+          "level": 3,
+          "text": "Spread + cascade"
+        },
+        {
+          "level": 3,
+          "text": "Records (Dart 3+)"
+        },
+        {
+          "level": 3,
+          "text": "Pattern matching (Dart 3+)"
+        },
+        {
+          "level": 2,
+          "text": "Flutter 心法"
+        },
+        {
+          "level": 3,
+          "text": "Widget 樹"
+        },
+        {
+          "level": 3,
+          "text": "State management"
+        },
+        {
+          "level": 3,
+          "text": "Navigation"
+        },
+        {
+          "level": 3,
+          "text": "HTTP"
+        },
+        {
+          "level": 3,
+          "text": "Local DB"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    }
+  ],
+  "boss": {
+    "name": "行動跨界者",
+    "hp": 220,
+    "emoji": "📱",
+    "description": "Kotlin 是右手、Dart 是左手"
+  },
+  "quiz": {
+    "id": "ch40-quiz",
+    "questions": [],
+    "xpReward": 50,
+    "perfectBonus": 50
+  }
+}

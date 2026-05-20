@@ -1,0 +1,822 @@
+{
+  "id": 21,
+  "slug": "auth",
+  "stage": 3,
+  "title": "認證授權",
+  "subtitle": "JWT / OAuth / Clerk",
+  "icon": "key-round",
+  "description": "認證授權：JWT / OAuth / Clerk",
+  "status": "published",
+  "difficulty": "intermediate",
+  "prerequisites": [
+    16,
+    20
+  ],
+  "estimatedHours": 10,
+  "outcomes": [
+    "理解核心概念",
+    "實作主流工具",
+    "整章實戰可發佈作品",
+    "知道生態 / 接案行情",
+    "對齊 2026 業界主流"
+  ],
+  "lessons": [
+    {
+      "title": "認證授權總圖",
+      "oneLineSummary": "「你是誰」+「你能做什麼」是兩件事",
+      "analogy": "搞清楚才能設計安全系統。",
+      "content": "## Authentication（認證）\n「你是誰」\n- 帳號密碼\n- OAuth（Google / FB）\n- Magic Link\n- WebAuthn / Passkeys\n- 2FA / MFA\n\n## Authorization（授權）\n「你能做什麼」\n- RBAC（role-based）\n- ABAC（attribute-based）\n- ACL（access control list）\n- Row Level Security\n\n## Session vs Token\n\n### Session\nServer 存 session ID → 查 DB。\n- 簡單、好 revoke\n- 不適合 microservice\n\n### JWT\nStateless、自帶資訊。\n- 跨服務、Mobile 友善\n- 難 revoke\n\n## 主流方案\n\n### Indie / SaaS\n- **Supabase Auth**：免費 + PG + RLS\n- **Clerk**：最美 UI、商業\n- **Auth0**：企業級\n- **NextAuth / Auth.js**：Next.js 友善\n\n### Enterprise\n- Okta\n- Azure AD\n- SAML / OIDC\n\n## 自己刻？\n**不要。**\n- 浪費 1 個月\n- 必出資安漏洞\n- 後續維護成本高\n\n## 心法\n- 用現成（Supabase / Clerk）\n- 別自己刻 OAuth\n- 永遠 bcrypt / argon2\n- 短 access token + 長 refresh",
+      "tip": {
+        "type": "security",
+        "text": "永遠別自己刻 auth。"
+      },
+      "id": "21.1",
+      "number": "LESSON 21.1",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "21.1.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// 試試改變數、按執行\nconst numbers = [1, 2, 3, 4, 5];\nconst doubled = numbers.map(n => n * 2);\nconsole.log(\"原本:\", numbers);\nconsole.log(\"乘 2:\", doubled);\nconsole.log(\"總和:\", numbers.reduce((a, b) => a + b, 0));",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "找一個你身邊的例子、用「認證授權總圖」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "Authentication（認證）"
+        },
+        {
+          "level": 2,
+          "text": "Authorization（授權）"
+        },
+        {
+          "level": 2,
+          "text": "Session vs Token"
+        },
+        {
+          "level": 3,
+          "text": "Session"
+        },
+        {
+          "level": 3,
+          "text": "JWT"
+        },
+        {
+          "level": 2,
+          "text": "主流方案"
+        },
+        {
+          "level": 3,
+          "text": "Indie / SaaS"
+        },
+        {
+          "level": 3,
+          "text": "Enterprise"
+        },
+        {
+          "level": 2,
+          "text": "自己刻？"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "密碼 + OAuth + Magic Link",
+      "oneLineSummary": "三種主流認證流程",
+      "analogy": "各有 UX trade-off。",
+      "content": "## Email + Password\n\n### 流程\n1. User 註冊（email + password）\n2. Server bcrypt hash 存\n3. Login：bcrypt.compare()\n4. 發 token / session\n\n### 痛點\n- 密碼疲勞（記不住）\n- 密碼洩漏\n- 重設流程複雜\n\n## OAuth（Google / FB / GitHub）\n\n### 流程\n```\n1. User → \"Login with Google\"\n2. App 跳轉 Google 授權頁\n3. User 同意\n4. Google → app callback?code=...\n5. App → Google exchange code for token\n6. App → Google API 拿 user info\n7. App 建 session\n```\n\n### 優點\n- 不存密碼\n- UX 好\n- 信任 Google 安全\n\n### 缺點\n- 依賴第三方\n- 用戶不一定有帳號\n\n## Magic Link\n\n### 流程\n1. User 填 email\n2. Server 寄 link（含 token）\n3. User 點 link\n4. Server 驗 token、建 session\n\n### 優點\n- 不用記密碼\n- 安全（有 email = 你）\n- 簡單\n\n### 缺點\n- 要等 email\n- 不在 email 環境麻煩\n\n## Passkey / WebAuthn\n\n### 流程\n- 用 Touch ID / Face ID / 硬體 key\n- 公私鑰加密\n- 不能 phishing\n\n### 優點\n- 最安全\n- 最快（一秒登入）\n\n### 缺點\n- 裝置綁定\n- 還在推廣\n\n## 實作（Supabase）\n```typescript\n// Email + Password\nawait supabase.auth.signUp({ email, password });\nawait supabase.auth.signInWithPassword({ email, password });\n\n// OAuth\nawait supabase.auth.signInWithOAuth({\n  provider: \"google\",\n  options: { redirectTo: \"https://example.com/callback\" }\n});\n\n// Magic Link\nawait supabase.auth.signInWithOtp({ email });\n```\n\n## 心法\n- 提供多種選項\n- Magic Link + Google 是甜蜜點\n- 密碼可選（不強制）\n- 高敏感加 2FA",
+      "tip": {
+        "type": "milestone",
+        "text": "Magic Link + Google OAuth = 2026 最佳 UX。"
+      },
+      "id": "21.2",
+      "number": "LESSON 21.2",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "21.2.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "// Email + Password\nawait supabase.auth.signUp({ email, password });\nawait supabase.auth.signInWithPassword({ email, password });\n\n// OAuth\nawait supabase.auth.signInWithOAuth({\n  provider: \"google\",\n  options: { redirectTo: \"https://example.com/callback\" }\n});\n\n// Magic Link\nawait supabase.auth.signInWithOtp({ email });",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "Email + Password"
+        },
+        {
+          "level": 3,
+          "text": "流程"
+        },
+        {
+          "level": 3,
+          "text": "痛點"
+        },
+        {
+          "level": 2,
+          "text": "OAuth（Google / FB / GitHub）"
+        },
+        {
+          "level": 3,
+          "text": "流程"
+        },
+        {
+          "level": 3,
+          "text": "優點"
+        },
+        {
+          "level": 3,
+          "text": "缺點"
+        },
+        {
+          "level": 2,
+          "text": "Magic Link"
+        },
+        {
+          "level": 3,
+          "text": "流程"
+        },
+        {
+          "level": 3,
+          "text": "優點"
+        },
+        {
+          "level": 3,
+          "text": "缺點"
+        },
+        {
+          "level": 2,
+          "text": "Passkey / WebAuthn"
+        },
+        {
+          "level": 3,
+          "text": "流程"
+        },
+        {
+          "level": 3,
+          "text": "優點"
+        },
+        {
+          "level": 3,
+          "text": "缺點"
+        },
+        {
+          "level": 2,
+          "text": "實作（Supabase）"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "2FA / MFA / Passkeys",
+      "oneLineSummary": "多一層防護、防帳號被盜",
+      "analogy": "金融 / 高敏感必備。",
+      "content": "## TOTP（Google Authenticator）\n最常用：\n```typescript\nimport { authenticator } from \"otplib\";\n\n// 註冊\nconst secret = authenticator.generateSecret();\nconst qrUrl = authenticator.keyuri(user.email, \"MyApp\", secret);\n// 顯示 QR、user 用 Authenticator app 掃\n\n// 驗證\nconst valid = authenticator.verify({ token: userInput, secret });\n```\n\n存 secret 加密。\n\n## SMS（弱、不推）\nSIM swap 攻擊風險。\n\n## Email OTP\n```typescript\nconst otp = Math.floor(100000 + Math.random() * 900000);\nawait redis.set(`otp:${user.id}`, otp, \"EX\", 600);\nawait sendEmail(user.email, `Your code: ${otp}`);\n\n// 驗證\nconst stored = await redis.get(`otp:${user.id}`);\nif (stored === userInput) { /* 通過 */ }\n```\n\n## Push（OneTrust / Auth0 Guardian）\n推到手機 App、user approve。\n\n## Passkey / WebAuthn\n```typescript\n// 註冊\nconst credential = await navigator.credentials.create({\n  publicKey: {\n    challenge: serverChallenge,\n    rp: { name: \"AI 島\" },\n    user: { id: userId, name: email, displayName: name },\n    pubKeyCredParams: [{ type: \"public-key\", alg: -7 }]\n  }\n});\n\n// 登入\nconst assertion = await navigator.credentials.get({\n  publicKey: { challenge: serverChallenge }\n});\n```\n\n支援：Touch ID、Face ID、Windows Hello、YubiKey。\n\n## Backup Codes\n2FA 設好給 10 個 backup codes、user 印下來：\n```typescript\nconst codes = Array.from({ length: 10 }, () => \n  crypto.randomBytes(4).toString(\"hex\")\n);\n// hash 後存\n```\n\n裝置壞了能 recover。\n\n## Adaptive MFA\n不是每次都要 MFA、看風險：\n- 新裝置 → 要\n- 新 IP → 要\n- 異地登入 → 要\n- 同裝置同 IP → 不用\n\n## Recovery\n- Backup codes\n- Email recovery\n- 客服驗證\n- 信任聯絡人\n\n## 實作（Supabase）\n```typescript\n// 啟用 MFA\nconst { data } = await supabase.auth.mfa.enroll({ factorType: \"totp\" });\n// 顯示 QR：data.totp.qr_code\n\n// 驗證\nawait supabase.auth.mfa.challenge({ factorId });\nawait supabase.auth.mfa.verify({ factorId, challengeId, code });\n```\n\n## 心法\n- 強制 admin 用 MFA\n- 一般 user 可選\n- 提供多種方法\n- Backup codes 必給\n- 不要 SMS（弱）",
+      "tip": {
+        "type": "security",
+        "text": "Passkey 是未來、TOTP 是現在。"
+      },
+      "id": "21.3",
+      "number": "LESSON 21.3",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "21.3.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "import { authenticator } from \"otplib\";\n\n// 註冊\nconst secret = authenticator.generateSecret();\nconst qrUrl = authenticator.keyuri(user.email, \"MyApp\", secret);\n// 顯示 QR、user 用 Authenticator app 掃\n\n// 驗證\nconst valid = authenticator.verify({ token: userInput, secret });",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "TOTP（Google Authenticator）"
+        },
+        {
+          "level": 2,
+          "text": "SMS（弱、不推）"
+        },
+        {
+          "level": 2,
+          "text": "Email OTP"
+        },
+        {
+          "level": 2,
+          "text": "Push（OneTrust / Auth0 Guardian）"
+        },
+        {
+          "level": 2,
+          "text": "Passkey / WebAuthn"
+        },
+        {
+          "level": 2,
+          "text": "Backup Codes"
+        },
+        {
+          "level": 2,
+          "text": "Adaptive MFA"
+        },
+        {
+          "level": 2,
+          "text": "Recovery"
+        },
+        {
+          "level": 2,
+          "text": "實作（Supabase）"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "RBAC + RLS：細緻權限",
+      "oneLineSummary": "不只「管理員 vs 用戶」、要更細",
+      "analogy": "Multi-tenant SaaS 必懂。",
+      "content": "## RBAC（Role-Based）\n```typescript\nconst PERMISSIONS = {\n  ADMIN: [\"users.*\", \"posts.*\", \"settings.*\"],\n  EDITOR: [\"posts.read\", \"posts.write\"],\n  VIEWER: [\"posts.read\"]\n};\n\nfunction can(user, permission) {\n  return PERMISSIONS[user.role].some(p =>\n    p === permission || p === `${permission.split(\".\")[0]}.*`\n  );\n}\n```\n\n## ABAC（Attribute-Based）\n```typescript\nfunction canEditPost(user, post) {\n  if (user.role === \"admin\") return true;\n  if (post.author_id === user.id) return true;\n  if (user.role === \"editor\" && post.status === \"draft\") return true;\n  return false;\n}\n```\n\n## Casl（JS）\n```typescript\nimport { AbilityBuilder, Ability } from \"@casl/ability\";\n\nfunction defineAbilitiesFor(user) {\n  const { can, cannot, build } = new AbilityBuilder(Ability);\n  \n  if (user.role === \"admin\") {\n    can(\"manage\", \"all\");\n  } else {\n    can(\"read\", \"Post\");\n    can(\"update\", \"Post\", { author_id: user.id });\n  }\n  \n  return build();\n}\n\n// 用\nconst ability = defineAbilitiesFor(user);\nif (ability.can(\"update\", post)) { /* 允許 */ }\n```\n\n## Row Level Security（PG）\nDB 層級權限：\n```sql\nALTER TABLE posts ENABLE ROW LEVEL SECURITY;\n\nCREATE POLICY \"own_posts\" ON posts\nFOR ALL USING (author_id = auth.uid());\n\nCREATE POLICY \"admin_all\" ON posts\nFOR ALL USING (\n  EXISTS (SELECT 1 FROM users WHERE id = auth.uid() AND role = 'admin')\n);\n```\n\nSupabase 內建。\n\n## Multi-tenant\n\n### 模式 1：Shared DB + tenant_id\n```sql\nCREATE TABLE posts (\n  id UUID,\n  tenant_id UUID,\n  ...\n);\n\n-- RLS\nCREATE POLICY \"tenant_isolation\" ON posts\nFOR ALL USING (tenant_id = current_setting('app.tenant_id')::uuid);\n```\n\n### 模式 2：Schema per tenant\n- 每 tenant 一個 schema\n- 隔離強\n- 管理複雜\n\n### 模式 3：DB per tenant\n- 最強隔離\n- 成本高\n- 適合企業客戶\n\n## Middleware\n```typescript\n// Express\nfunction requirePermission(permission) {\n  return (req, res, next) => {\n    if (!can(req.user, permission)) {\n      return res.status(403).end();\n    }\n    next();\n  };\n}\n\napp.delete(\"/posts/:id\", requirePermission(\"posts.delete\"), deletePost);\n```\n\n```typescript\n// Next.js Middleware\nexport async function middleware(req) {\n  const user = await getUser(req);\n  if (req.nextUrl.pathname.startsWith(\"/admin\") && user.role !== \"admin\") {\n    return NextResponse.redirect(\"/\");\n  }\n}\n```\n\n## IDOR 防護\n永遠檢查擁有者：\n```typescript\n// ❌\napp.get(\"/api/posts/:id\", (req, res) => {\n  return db.post.findUnique({ where: { id: req.params.id } });\n});\n\n// ✅\napp.get(\"/api/posts/:id\", async (req, res) => {\n  const post = await db.post.findUnique({ where: { id: req.params.id } });\n  if (post.author_id !== req.user.id && req.user.role !== \"admin\") {\n    return res.status(403).end();\n  }\n  return post;\n});\n```\n\n## 心法\n- 永遠在 server 檢查（前端只是 UX）\n- RBAC 起手、需要再 ABAC\n- RLS 雙保險\n- 永遠檢查 ownership",
+      "tip": {
+        "type": "security",
+        "text": "前端權限 = UX、後端權限 = 安全。"
+      },
+      "id": "21.4",
+      "number": "LESSON 21.4",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "21.4.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "const PERMISSIONS = {\n  ADMIN: [\"users.*\", \"posts.*\", \"settings.*\"],\n  EDITOR: [\"posts.read\", \"posts.write\"],\n  VIEWER: [\"posts.read\"]\n};\n\nfunction can(user, permission) {\n  return PERMISSIONS[user.role].some(p =>\n    p === permission || p === `${permission.split(\".\")[0]}.*`\n  );\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "RBAC（Role-Based）"
+        },
+        {
+          "level": 2,
+          "text": "ABAC（Attribute-Based）"
+        },
+        {
+          "level": 2,
+          "text": "Casl（JS）"
+        },
+        {
+          "level": 2,
+          "text": "Row Level Security（PG）"
+        },
+        {
+          "level": 2,
+          "text": "Multi-tenant"
+        },
+        {
+          "level": 3,
+          "text": "模式 1：Shared DB + tenantid"
+        },
+        {
+          "level": 3,
+          "text": "模式 2：Schema per tenant"
+        },
+        {
+          "level": 3,
+          "text": "模式 3：DB per tenant"
+        },
+        {
+          "level": 2,
+          "text": "Middleware"
+        },
+        {
+          "level": 2,
+          "text": "IDOR 防護"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Session vs JWT 實作",
+      "oneLineSummary": "兩種主流 token 管理",
+      "analogy": "看場景選。",
+      "content": "## Session\n```typescript\n// Express + express-session + Redis\nimport session from \"express-session\";\nimport RedisStore from \"connect-redis\";\n\napp.use(session({\n  store: new RedisStore({ client: redis }),\n  secret: process.env.SESSION_SECRET,\n  cookie: {\n    httpOnly: true,\n    secure: true,\n    sameSite: \"lax\",\n    maxAge: 24 * 60 * 60 * 1000  // 1 天\n  }\n}));\n\n// 登入\napp.post(\"/login\", async (req, res) => {\n  const user = await validateUser(req.body);\n  req.session.userId = user.id;\n  res.json({ user });\n});\n\n// 中介\nfunction requireAuth(req, res, next) {\n  if (!req.session.userId) return res.status(401).end();\n  next();\n}\n```\n\n## JWT\n```typescript\nimport { SignJWT, jwtVerify } from \"jose\";\n\nconst secret = new TextEncoder().encode(process.env.JWT_SECRET);\n\n// 簽\nasync function signToken(payload) {\n  return await new SignJWT(payload)\n    .setProtectedHeader({ alg: \"HS256\" })\n    .setIssuedAt()\n    .setExpirationTime(\"15m\")\n    .sign(secret);\n}\n\n// 驗\nasync function verifyToken(token) {\n  const { payload } = await jwtVerify(token, secret);\n  return payload;\n}\n\n// 登入回 access + refresh\napp.post(\"/login\", async (req, res) => {\n  const user = await validateUser(req.body);\n  const accessToken = await signToken({ sub: user.id });\n  const refreshToken = crypto.randomBytes(32).toString(\"hex\");\n  \n  // 存 refresh token 在 DB（可 revoke）\n  await db.refreshTokens.create({\n    data: { token: refreshToken, userId: user.id, expiresAt: new Date(Date.now() + 30 * 86400000) }\n  });\n  \n  res.cookie(\"refresh\", refreshToken, { httpOnly: true, secure: true });\n  res.json({ accessToken });\n});\n\n// Refresh\napp.post(\"/refresh\", async (req, res) => {\n  const refresh = req.cookies.refresh;\n  const record = await db.refreshTokens.findUnique({ where: { token: refresh } });\n  if (!record || record.expiresAt < new Date()) {\n    return res.status(401).end();\n  }\n  const accessToken = await signToken({ sub: record.userId });\n  res.json({ accessToken });\n});\n```\n\n## Cookie vs LocalStorage\n- **Cookie HttpOnly**：JS 讀不到、防 XSS\n- **localStorage**：JS 讀得到、XSS 偷得到\n\n永遠 cookie（HttpOnly + Secure + SameSite）。\n\n## Refresh Token Rotation\n每次 refresh 換新的 refresh token：\n```typescript\n// Refresh\nconst newRefresh = crypto.randomBytes(32).toString(\"hex\");\nawait db.refreshTokens.update({\n  where: { token: oldRefresh },\n  data: { token: newRefresh, expiresAt: ... }\n});\n```\n\n舊的被用 = 知道有人偷 → revoke 全部。\n\n## Logout\n```typescript\n// Session\nreq.session.destroy();\n\n// JWT\nawait db.refreshTokens.delete({ where: { token: refresh } });\nres.clearCookie(\"refresh\");\n```\n\n## 心法\n- Cookie HttpOnly（防 XSS）\n- Short access + long refresh\n- Refresh rotation\n- Logout revoke refresh",
+      "tip": {
+        "type": "security",
+        "text": "永遠 HttpOnly Cookie、不要 localStorage 存 token。"
+      },
+      "id": "21.5",
+      "number": "LESSON 21.5",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "21.5.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "// Express + express-session + Redis\nimport session from \"express-session\";\nimport RedisStore from \"connect-redis\";\n\napp.use(session({\n  store: new RedisStore({ client: redis }),\n  secret: process.env.SESSION_SECRET,\n  cookie: {\n    httpOnly: true,\n    secure: true,\n    sameSite: \"lax\",\n    maxAge: 24 * 60 * 60 * 1000  // 1 天\n  }\n}));\n\n// 登入\napp.post(\"/login\", async (req, res) => {\n  const user = await validateUser(req.body);\n  req.session.userId = user.id;\n  res.json({ user });\n});\n\n// 中介\nfunction requireAuth(req, res, next) {\n  if (!req.session.userId) return res.status(401).end();\n  next();\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "找一個你身邊的例子、用「Session vs JWT 實作」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "Session"
+        },
+        {
+          "level": 2,
+          "text": "JWT"
+        },
+        {
+          "level": 2,
+          "text": "Cookie vs LocalStorage"
+        },
+        {
+          "level": 2,
+          "text": "Refresh Token Rotation"
+        },
+        {
+          "level": 2,
+          "text": "Logout"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Session vs JWT vs Cookie 完整對比",
+      "oneLineSummary": "3 種 auth 方式、各有適合場景",
+      "analogy": "選對省 80% bug。",
+      "content": "## Cookie-based Session\n\n### 流程\n1. User 登入、server 產 sessionId、存 DB\n2. 回 cookie `Set-Cookie: sessionId=xxx`\n3. 之後 user 每 request 自動帶 cookie\n4. Server 查 DB 取 user\n\n### 優\n- 簡單\n- 可即時 revoke（刪 DB session）\n- HttpOnly cookie 防 XSS\n- 跨 tab 自動 work\n\n### 劣\n- 每 request 查 DB\n- 不好做 microservice\n- 不適合 mobile App\n\n## JWT\n\n### 流程\n1. User 登入、server 簽 JWT\n2. 回 JWT（前端存 localStorage 或 cookie）\n3. 之後 user 帶 `Authorization: Bearer xxx`\n4. Server verify signature、不查 DB\n\n### 優\n- Stateless（不查 DB）\n- 適合 microservice\n- Mobile 友善\n- 可放 user info（role / permissions）\n\n### 劣\n- 難 revoke（簽出去就有效）\n- Payload size 大（cookie 限制）\n- Secret 洩漏 = 全部失效\n\n## OAuth + OIDC\n\n### 不是「auth 方法」、是「授權協議」\n- OAuth 2.0：授權（你能做什麼）\n- OIDC：認證 + OAuth（你是誰 + 你能做什麼）\n\n### 流程（Google Login）\n1. User 點「Login with Google」\n2. Redirect to Google\n3. User approve\n4. Google redirect back with code\n5. Backend exchange code for token\n6. Backend 取得 user info\n\n### Magic Link / OTP\n- Email 寄 link / code\n- 點開 / 輸入即登入\n- 簡單、user 不用記密碼\n\n## 選擇\n\n| 場景 | 推薦 |\n|---|---|\n| 傳統 web app | Session cookie |\n| Microservices | JWT |\n| Mobile App | JWT + Refresh token |\n| 公開 API | API key |\n| 整合第三方 | OAuth + OIDC |\n| 無密碼 | Magic Link |\n\n## Indie 推薦組合\n\n### Web SaaS\n- Supabase Auth（Cookie-based session）\n- OAuth providers（Google / GitHub）\n- Email + password fallback\n\n### Mobile App\n- JWT access + refresh\n- Biometric login（Face ID / Touch ID）\n\n### API Service\n- API key for B2B\n- OAuth 2.0 for developer integration\n\n## 心法\n- Indie：用 Supabase Auth / Clerk / Auth0\n- 別自己刻（安全坑很多）\n- Web cookie / Mobile JWT\n- 永遠 HTTPS\n- HttpOnly cookie",
+      "tip": {
+        "type": "security",
+        "text": "99% Indie：用託管 auth、不自己刻。"
+      },
+      "exercise": {
+        "question": "用一張紙、把「Session vs JWT vs Cookie 完整對比」的核心概念畫成心智圖。中心是這節的主題、第一圈放 3-5 個關鍵詞（如 Set-Cookie: sessionId=xxx、Authorization: Bearer xxx）、第二圈延伸細節。",
+        "hint": "關鍵概念可以從 lesson 內出現的這些關鍵字入手：Set-Cookie: sessionId=xxx、Authorization: Bearer xxx。畫完不要光放著、試著用自己的話講一次。",
+        "answer": "心智圖三步：(1) 中心 = lesson 主題 (2) 第一圈 = 主要分類（通常 3-5 個）(3) 第二圈 = 具體例子或工具。畫完拿給朋友看、能講通 = 真懂。常見錯誤：抄關鍵字當分類、應該用自己理解後的歸納。"
+      },
+      "id": "21.6",
+      "number": "LESSON 21.6",
+      "xp": 10,
+      "outline": [
+        {
+          "level": 2,
+          "text": "Cookie-based Session"
+        },
+        {
+          "level": 3,
+          "text": "流程"
+        },
+        {
+          "level": 3,
+          "text": "優"
+        },
+        {
+          "level": 3,
+          "text": "劣"
+        },
+        {
+          "level": 2,
+          "text": "JWT"
+        },
+        {
+          "level": 3,
+          "text": "流程"
+        },
+        {
+          "level": 3,
+          "text": "優"
+        },
+        {
+          "level": 3,
+          "text": "劣"
+        },
+        {
+          "level": 2,
+          "text": "OAuth + OIDC"
+        },
+        {
+          "level": 3,
+          "text": "不是「auth 方法」、是「授權協議」"
+        },
+        {
+          "level": 3,
+          "text": "流程（Google Login）"
+        },
+        {
+          "level": 3,
+          "text": "Magic Link / OTP"
+        },
+        {
+          "level": 2,
+          "text": "選擇"
+        },
+        {
+          "level": 2,
+          "text": "Indie 推薦組合"
+        },
+        {
+          "level": 3,
+          "text": "Web SaaS"
+        },
+        {
+          "level": 3,
+          "text": "Mobile App"
+        },
+        {
+          "level": 3,
+          "text": "API Service"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "OAuth 2.0 完整流程",
+      "oneLineSummary": "「用 Google / GitHub 登入」背後是什麼",
+      "analogy": "懂了才能 debug + 整合。",
+      "content": "## 角色\n\n- **Resource Owner**：用戶（你）\n- **Client**：你的 App\n- **Authorization Server**：Google\n- **Resource Server**：Google API（拿 user info）\n\n## Authorization Code Flow（最常用）\n\n```\n1. User 點 \"Login with Google\"\n   App → Google：跳轉到 oauth/authorize?...\n\n2. User 在 Google 同意\n   Google → App：?code=AUTH_CODE&state=...\n\n3. App backend 用 code 換 token\n   POST oauth/token\n   { code, client_id, client_secret }\n   → { access_token, refresh_token, id_token }\n\n4. App backend 用 token 拿 user info\n   GET /userinfo\n   Authorization: Bearer access_token\n   → { sub, name, email, picture }\n\n5. App backend 建 session、回 cookie 給前端\n```\n\n## 完整 code（Node.js）\n\n```typescript\n// 1. 產 Google login URL\napp.get(\"/auth/google\", (req, res) => {\n  const state = crypto.randomBytes(16).toString(\"hex\");\n  req.session.oauthState = state;\n  \n  const params = new URLSearchParams({\n    client_id: process.env.GOOGLE_CLIENT_ID!,\n    redirect_uri: \"https://myapp.com/auth/callback\",\n    response_type: \"code\",\n    scope: \"openid email profile\",\n    state\n  });\n  \n  res.redirect(`https://accounts.google.com/o/oauth2/v2/auth?${params}`);\n});\n\n// 2. Callback\napp.get(\"/auth/callback\", async (req, res) => {\n  const { code, state } = req.query;\n  \n  // 驗 state 防 CSRF\n  if (state !== req.session.oauthState) {\n    return res.status(400).send(\"Invalid state\");\n  }\n  \n  // 換 token\n  const tokenRes = await fetch(\"https://oauth2.googleapis.com/token\", {\n    method: \"POST\",\n    headers: { \"Content-Type\": \"application/x-www-form-urlencoded\" },\n    body: new URLSearchParams({\n      code: code as string,\n      client_id: process.env.GOOGLE_CLIENT_ID!,\n      client_secret: process.env.GOOGLE_CLIENT_SECRET!,\n      redirect_uri: \"https://myapp.com/auth/callback\",\n      grant_type: \"authorization_code\"\n    })\n  });\n  \n  const { access_token, id_token } = await tokenRes.json();\n  \n  // 取 user info\n  const userRes = await fetch(\"https://www.googleapis.com/oauth2/v2/userinfo\", {\n    headers: { Authorization: `Bearer ${access_token}` }\n  });\n  const googleUser = await userRes.json();\n  \n  // 建立 / 找 user\n  const user = await upsertUserFromGoogle(googleUser);\n  \n  // 建 session\n  req.session.userId = user.id;\n  res.redirect(\"/dashboard\");\n});\n```\n\n## 重要安全考量\n\n### state（防 CSRF）\n必要、不然攻擊者可偽造 callback。\n\n### PKCE（mobile / SPA）\nSPA 無法藏 client_secret、改用 PKCE：\n- App 產 random `code_verifier`\n- Hash 成 `code_challenge` 一起送\n- 換 token 時送 `code_verifier`\n- Server 驗證\n\n### Scope\n只要必要的、不要全部：\n- `openid`：要拿 ID token\n- `email`：要 user email\n- `profile`：要 name + picture\n\n## OIDC 加值\nOAuth 2.0 + ID Token（JWT）：\n```\nid_token: eyJ...\npayload: {\n  sub: \"google-user-id\",\n  email: \"user@gmail.com\",\n  name: \"Alice\",\n  iat: ...,\n  exp: ...\n}\n```\n\n不用再 call userinfo endpoint、JWT 已含資訊。\n\n## 心法\n- Indie 用 Supabase / Auth0 / Clerk（已包好）\n- 想懂原理才自己刻\n- 永遠驗 state\n- SPA / Mobile 用 PKCE\n- 只要 minimum scope",
+      "tip": {
+        "type": "milestone",
+        "text": "OAuth 不難、但細節多。Indie 用 Supabase 省心。"
+      },
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "id": "21.7",
+      "number": "LESSON 21.7",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "21.7.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "// 1. 產 Google login URL\napp.get(\"/auth/google\", (req, res) => {\n  const state = crypto.randomBytes(16).toString(\"hex\");\n  req.session.oauthState = state;\n  \n  const params = new URLSearchParams({\n    client_id: process.env.GOOGLE_CLIENT_ID!,\n    redirect_uri: \"https://myapp.com/auth/callback\",\n    response_type: \"code\",\n    scope: \"openid email profile\",\n    state\n  });\n  \n  res.redirect(`https://accounts.google.com/o/oauth2/v2/auth?${params}`);\n});\n\n// 2. Callback\napp.get(\"/auth/callback\", async (req, res) => {\n  const { code, state } = req.query;\n  \n  // 驗 state 防 CSRF\n  if (state !== req.session.oauthState) {\n    return res.status(400).send(\"Invalid state\");\n  }\n  \n  // 換 token\n  const tokenRes = await fetch(\"https://oauth2.googleapis.com/token\", {\n    method: \"POST\",\n    headers: { \"Content-Type\": \"application/x-www-form-urlencoded\" },\n    body: new URLSearchParams({\n      code: code as string,\n      client_id: process.env.GOOGLE_CLIENT_ID!,\n      client_secret: process.env.GOOGLE_CLIENT_SECRET!,\n      redirect_uri: \"https://myapp.com/auth/callback\",\n      grant_type: \"authorization_code\"\n    })\n  });\n  \n  const { access_token, id_token } = await tokenRes.json();\n  \n  // 取 user info\n  const userRes = await fetch(\"https://www.googleapis.com/oauth2/v2/userinfo\", {\n    headers: { Authorization: `Bearer ${access_token}` }\n  });\n  const googleUser = await userRes.json();\n  \n  // 建立 / 找 user\n  const user = await upsertUserFromGoogle(googleUser);\n  \n  // 建 session\n  req.session.userId = user.id;\n  res.redirect(\"/dashboard\");\n});",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "outline": [
+        {
+          "level": 2,
+          "text": "角色"
+        },
+        {
+          "level": 2,
+          "text": "Authorization Code Flow（最常用）"
+        },
+        {
+          "level": 2,
+          "text": "完整 code（Node.js）"
+        },
+        {
+          "level": 2,
+          "text": "重要安全考量"
+        },
+        {
+          "level": 3,
+          "text": "state（防 CSRF）"
+        },
+        {
+          "level": 3,
+          "text": "PKCE（mobile / SPA）"
+        },
+        {
+          "level": 3,
+          "text": "Scope"
+        },
+        {
+          "level": 2,
+          "text": "OIDC 加值"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Role-Based Access Control (RBAC)",
+      "oneLineSummary": "不只「登入」、誰能做什麼",
+      "analogy": "權限設計影響整個系統。",
+      "content": "## 為什麼 RBAC\n\n簡單 if/else 不夠：\n```typescript\n// ❌ 散在 code 各處、難維護\nif (user.email === \"admin@...\" || user.id === \"owner\") { ... }\n```\n\nRBAC：\n- 角色（roles）有權限（permissions）\n- User 有 roles\n- 集中管理\n\n## 設計\n\n### Schema\n```sql\nCREATE TABLE users (id, email, ...);\n\nCREATE TABLE roles (\n  id TEXT PRIMARY KEY,  -- 'admin', 'editor', 'member'\n  description TEXT\n);\n\nCREATE TABLE permissions (\n  id TEXT PRIMARY KEY,  -- 'lesson:read', 'lesson:write', 'user:delete'\n  description TEXT\n);\n\nCREATE TABLE role_permissions (\n  role_id TEXT REFERENCES roles,\n  permission_id TEXT REFERENCES permissions,\n  PRIMARY KEY (role_id, permission_id)\n);\n\nCREATE TABLE user_roles (\n  user_id UUID REFERENCES users,\n  role_id TEXT REFERENCES roles,\n  PRIMARY KEY (user_id, role_id)\n);\n```\n\n### Permission naming\n`resource:action` 格式：\n- `lesson:read`\n- `lesson:write`\n- `lesson:delete`\n- `user:invite`\n- `billing:manage`\n\n### 角色組合\n- **member**：lesson:read\n- **editor**：lesson:read, lesson:write\n- **admin**：lesson:*, user:*, billing:*\n\n## 程式碼層級\n\n### Middleware\n```typescript\nfunction requirePermission(permission: string) {\n  return async (req, res, next) => {\n    const user = req.user;\n    if (!user) return res.status(401).end();\n    \n    const has = await hasPermission(user.id, permission);\n    if (!has) return res.status(403).json({ error: \"Forbidden\" });\n    \n    next();\n  };\n}\n\napp.delete(\"/lessons/:id\", requirePermission(\"lesson:delete\"), handler);\n```\n\n### Helper\n```typescript\nasync function hasPermission(userId: string, perm: string): Promise<boolean> {\n  const result = await db.query(`\n    SELECT 1 FROM user_roles ur\n    JOIN role_permissions rp ON ur.role_id = rp.role_id\n    WHERE ur.user_id = $1 AND rp.permission_id = $2\n    LIMIT 1\n  `, [userId, perm]);\n  return result.rows.length > 0;\n}\n```\n\n### Cache（避免每 request 查 DB）\n```typescript\nconst cache = new Map<string, Set<string>>();\n\nasync function getUserPermissions(userId: string): Promise<Set<string>> {\n  if (cache.has(userId)) return cache.get(userId)!;\n  \n  const perms = await loadPermissions(userId);\n  cache.set(userId, new Set(perms));\n  setTimeout(() => cache.delete(userId), 60_000);  // 1 min TTL\n  return cache.get(userId)!;\n}\n```\n\n## ABAC（進階）\nAttribute-Based：不只看 role、看 context：\n- user 在自己 team 才能 edit\n- 文章在 draft 狀態才能 edit\n- 30 天內才能 refund\n\n```typescript\nfunction canEditLesson(user, lesson) {\n  if (user.role === \"admin\") return true;\n  if (user.id === lesson.authorId) return true;\n  if (user.teamId === lesson.teamId && user.role === \"editor\") return true;\n  return false;\n}\n```\n\n## Multi-tenant Roles\nSaaS 場景：\n- User 在 team A 是 admin\n- User 在 team B 是 member\n- 同個 user、不同 team 不同權限\n\n```sql\nCREATE TABLE team_members (\n  team_id UUID,\n  user_id UUID,\n  role TEXT,  -- per team\n  PRIMARY KEY (team_id, user_id)\n);\n```\n\n## 心法\n- 設計 permissions、不 hardcode roles\n- 集中 logic、middleware 攔截\n- Cache 加速\n- 永遠 server 檢查（client UI hint 而已）\n- Audit log 記錄敏感操作",
+      "tip": {
+        "type": "security",
+        "text": "永遠 server 檢查權限。Client 隱藏按鈕不算 security。"
+      },
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "id": "21.8",
+      "number": "LESSON 21.8",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "21.8.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "// ❌ 散在 code 各處、難維護\nif (user.email === \"admin@...\" || user.id === \"owner\") { ... }",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼 RBAC"
+        },
+        {
+          "level": 2,
+          "text": "設計"
+        },
+        {
+          "level": 3,
+          "text": "Schema"
+        },
+        {
+          "level": 3,
+          "text": "Permission naming"
+        },
+        {
+          "level": 3,
+          "text": "角色組合"
+        },
+        {
+          "level": 2,
+          "text": "程式碼層級"
+        },
+        {
+          "level": 3,
+          "text": "Middleware"
+        },
+        {
+          "level": 3,
+          "text": "Helper"
+        },
+        {
+          "level": 3,
+          "text": "Cache（避免每 request 查 DB）"
+        },
+        {
+          "level": 2,
+          "text": "ABAC（進階）"
+        },
+        {
+          "level": 2,
+          "text": "Multi-tenant Roles"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Multi-factor Authentication (MFA)",
+      "oneLineSummary": "Password 不夠、加第二道",
+      "analogy": "帳號被駭 90% 因為單密碼。",
+      "content": "## 為什麼 MFA\n\n### 風險\n- 密碼洩漏（database leak / phishing）\n- 密碼重用（一個破全部破）\n- 弱密碼\n\n### MFA 解\n即使密碼洩、攻擊者還要：\n- 你的手機（TOTP / SMS）\n- 你的生物特徵（Face ID）\n- 你的硬體 key（YubiKey）\n\n破解難度 ×100。\n\n## 主流 MFA 方式\n\n### 1. TOTP（Time-based OTP）\nGoogle Authenticator / Authy / 1Password\n- 每 30 秒換 6 位數\n- 離線可用\n- 推薦\n\n### 2. SMS\n簡訊送 OTP。\n- ⚠️ 不夠安全（SIM swap）\n- 不推薦敏感操作\n\n### 3. Email OTP\n寄信送 code。\n- 比 SMS 安全\n- 信箱被駭就完蛋\n\n### 4. Push notification\nApp 推、用戶按 Approve。\n- 體驗最好\n- 但需要 App\n\n### 5. WebAuthn / Passkey\n- 生物特徵 / 硬體 key\n- 最強、最現代\n- iOS / Android / 瀏覽器都支援\n\n### 6. Backup codes\n給 10 個一次性 code。\n存安全的地方、忘了 MFA 才用。\n\n## TOTP 實作\n\n### 用 `otplib`\n```bash\nnpm install otplib qrcode\n```\n\n```typescript\nimport { authenticator } from \"otplib\";\nimport qrcode from \"qrcode\";\n\n// 啟用 MFA\nasync function setupMfa(userId: string) {\n  const secret = authenticator.generateSecret();\n  \n  // 存 secret（加密）\n  await db.user.update({\n    where: { id: userId },\n    data: { mfaSecret: encrypt(secret), mfaEnabled: false }  // 還沒驗證\n  });\n  \n  // 產 QR code\n  const otpauth = authenticator.keyuri(user.email, \"AI 島\", secret);\n  const qr = await qrcode.toDataURL(otpauth);\n  \n  return { qr, secret };  // 顯示給 user 掃\n}\n\n// User 掃完輸入 6 位數驗證\nasync function verifyMfaSetup(userId: string, token: string) {\n  const user = await db.user.findUnique({ where: { id: userId } });\n  const secret = decrypt(user.mfaSecret);\n  \n  const valid = authenticator.verify({ token, secret });\n  if (!valid) throw new Error(\"Invalid code\");\n  \n  await db.user.update({\n    where: { id: userId },\n    data: { mfaEnabled: true }\n  });\n  \n  // 產 backup codes\n  const backupCodes = Array.from({ length: 10 }, () => \n    crypto.randomBytes(4).toString(\"hex\")\n  );\n  await db.user.update({\n    where: { id: userId },\n    data: { backupCodes: backupCodes.map(c => hash(c)) }\n  });\n  \n  return { backupCodes };  // 顯示一次給 user 抄\n}\n\n// 登入時驗 MFA\nasync function verifyMfaLogin(userId: string, token: string) {\n  const user = await db.user.findUnique({ where: { id: userId } });\n  const secret = decrypt(user.mfaSecret);\n  \n  return authenticator.verify({ token, secret });\n}\n```\n\n## WebAuthn / Passkey\n\n未來、最安全：\n```typescript\n// 註冊\nconst credential = await navigator.credentials.create({\n  publicKey: {\n    challenge: new Uint8Array(32),\n    rp: { name: \"AI 島\" },\n    user: { id: userId, name: email, displayName: name },\n    pubKeyCredParams: [{ type: \"public-key\", alg: -7 }],\n    authenticatorSelection: {\n      authenticatorAttachment: \"platform\"  // Face ID / Touch ID\n    }\n  }\n});\n\n// 登入\nconst assertion = await navigator.credentials.get({\n  publicKey: { challenge: new Uint8Array(32) }\n});\n```\n\nServer 驗 assertion。Apple / Google / Microsoft 推。\n\n## UX 注意\n\n### 別強迫所有人\n- 給選項（建議啟用）\n- 高敏感 user（admin / 大客戶）強制\n- 登入新裝置才要 MFA\n\n### Recovery\n- Backup codes（必要）\n- Email recovery（風險高）\n- Customer support（識別流程）\n\n### 別問太多次\n- Trusted device 30 天免再驗\n\n## 心法\n- TOTP 是 Indie 起手最佳\n- 強制 admin 用\n- 提供 backup codes\n- 教育用戶用 password manager\n- 未來轉 Passkey",
+      "tip": {
+        "type": "security",
+        "text": "Admin 帳號必開 MFA、其他 user 鼓勵但不強迫。"
+      },
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "id": "21.9",
+      "number": "LESSON 21.9",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "21.9.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "import { authenticator } from \"otplib\";\nimport qrcode from \"qrcode\";\n\n// 啟用 MFA\nasync function setupMfa(userId: string) {\n  const secret = authenticator.generateSecret();\n  \n  // 存 secret（加密）\n  await db.user.update({\n    where: { id: userId },\n    data: { mfaSecret: encrypt(secret), mfaEnabled: false }  // 還沒驗證\n  });\n  \n  // 產 QR code\n  const otpauth = authenticator.keyuri(user.email, \"AI 島\", secret);\n  const qr = await qrcode.toDataURL(otpauth);\n  \n  return { qr, secret };  // 顯示給 user 掃\n}\n\n// User 掃完輸入 6 位數驗證\nasync function verifyMfaSetup(userId: string, token: string) {\n  const user = await db.user.findUnique({ where: { id: userId } });\n  const secret = decrypt(user.mfaSecret);\n  \n  const valid = authenticator.verify({ token, secret });\n  if (!valid) throw new Error(\"Invalid code\");\n  \n  await db.user.update({\n    where: { id: userId },\n    data: { mfaEnabled: true }\n  });\n  \n  // 產 backup codes\n  const backupCodes = Array.from({ length: 10 }, () => \n    crypto.randomBytes(4).toString(\"hex\")\n  );\n  await db.user.update({\n    where: { id: userId },\n    data: { backupCodes: backupCodes.map(c => hash(c)) }\n  });\n  \n  return { backupCodes };  // 顯示一次給 user 抄\n}\n\n// 登入時驗 MFA\nasync function verifyMfaLogin(userId: string, token: string) {\n  const user = await db.user.findUnique({ where: { id: userId } });\n  const secret = decrypt(user.mfaSecret);\n  \n  return authenticator.verify({ token, secret });\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼 MFA"
+        },
+        {
+          "level": 3,
+          "text": "風險"
+        },
+        {
+          "level": 3,
+          "text": "MFA 解"
+        },
+        {
+          "level": 2,
+          "text": "主流 MFA 方式"
+        },
+        {
+          "level": 3,
+          "text": "1. TOTP（Time-based OTP）"
+        },
+        {
+          "level": 3,
+          "text": "2. SMS"
+        },
+        {
+          "level": 3,
+          "text": "3. Email OTP"
+        },
+        {
+          "level": 3,
+          "text": "4. Push notification"
+        },
+        {
+          "level": 3,
+          "text": "5. WebAuthn / Passkey"
+        },
+        {
+          "level": 3,
+          "text": "6. Backup codes"
+        },
+        {
+          "level": 2,
+          "text": "TOTP 實作"
+        },
+        {
+          "level": 3,
+          "text": "用 otplib"
+        },
+        {
+          "level": 2,
+          "text": "WebAuthn / Passkey"
+        },
+        {
+          "level": 2,
+          "text": "UX 注意"
+        },
+        {
+          "level": 3,
+          "text": "別強迫所有人"
+        },
+        {
+          "level": 3,
+          "text": "Recovery"
+        },
+        {
+          "level": 3,
+          "text": "別問太多次"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Password 安全 + Hashing",
+      "oneLineSummary": "永遠不存明文、永遠用 bcrypt / argon2",
+      "analogy": "DB 洩漏 = 用戶 360 度淪陷。",
+      "content": "## 永遠不要\n\n### ❌ 存明文\n```sql\nINSERT INTO users (password) VALUES ('mypassword');\n```\nDB 洩漏 → 所有 user 密碼裸奔。\n\n### ❌ 用 MD5 / SHA1\n```typescript\nconst hash = crypto.createHash(\"md5\").update(password).digest(\"hex\");\n```\n這些是 hash、不是 password hash。\n1 秒可算 10 億次、rainbow table 秒破。\n\n### ❌ 自己「加 salt」\n```typescript\nconst hash = sha256(password + \"mysecret\");\n```\n仍快、不夠慢。\n\n## 永遠用\n\n### bcrypt（業界標準）\n```bash\nnpm install bcrypt\n```\n\n```typescript\nimport bcrypt from \"bcrypt\";\n\n// 註冊\nconst hash = await bcrypt.hash(password, 12);  // 12 = cost factor\nawait db.user.create({ data: { email, password: hash } });\n\n// 登入\nconst user = await db.user.findUnique({ where: { email } });\nconst valid = await bcrypt.compare(password, user.password);\n```\n\nCost factor：\n- 10：~100ms（快、稍弱）\n- 12：~250ms（推薦）\n- 14：~1s（高安全 / 慢）\n\n每 +1 慢 2 倍。\n\n### argon2（最新最強）\n```bash\nnpm install argon2\n```\n\n```typescript\nimport argon2 from \"argon2\";\n\nconst hash = await argon2.hash(password);\nconst valid = await argon2.verify(hash, password);\n```\n\n優勢：\n- 防 GPU attack\n- 防 side-channel\n- 2015 Password Hashing Competition 冠軍\n\n但 bcrypt 仍夠用、生態更廣。\n\n## Password 政策\n\n### 強度要求\n- ❌ 「至少 8 字、含大寫小寫數字符號」（user 寫 `Password1!`）\n- ✅ NIST 2024+ 建議：至少 8 字、不限制 composition\n- ✅ 比對 HaveIBeenPwned API（被洩過的不准用）\n\n```typescript\nasync function isPwned(password: string): Promise<boolean> {\n  const hash = sha1(password).toUpperCase();\n  const prefix = hash.slice(0, 5);\n  const suffix = hash.slice(5);\n  \n  const res = await fetch(`https://api.pwnedpasswords.com/range/${prefix}`);\n  const text = await res.text();\n  \n  return text.includes(suffix);\n}\n```\n\n### 鼓勵 Password Manager\n- 不限制長度（讓 user 用 64 字長 random）\n- 允許貼上（很多笨蛋網站禁止）\n- 顯示密碼按鈕（user 確認沒打錯）\n\n## Reset 流程\n\n### 安全做法\n```typescript\n// 1. User 輸入 email\n// 2. Server 產 token（不論 user 是否存在都做、防 enumerate）\nconst token = crypto.randomBytes(32).toString(\"hex\");\nconst expires = new Date(Date.now() + 3600_000);  // 1 hour\n\nawait db.passwordReset.create({\n  data: { token: hash(token), userId, expires }\n});\n\n// 3. 寄 email：https://app/reset?token=xxx\n//   永遠回 user「已寄信」（即使 email 不存在）\n\n// 4. User 點 link\n// 5. 驗 token\nconst record = await db.passwordReset.findUnique({ where: { token: hash(token) } });\nif (!record || record.expires < new Date()) throw new Error(\"Invalid\");\n\n// 6. 新密碼\nawait db.user.update({\n  where: { id: record.userId },\n  data: { password: await bcrypt.hash(newPassword, 12) }\n});\n\n// 7. 刪 token\nawait db.passwordReset.delete({ where: { token: hash(token) } });\n\n// 8. 通知 user：「您的密碼已重設、如非本人請聯絡客服」\n```\n\n### Don't\n- ❌ 寄明文密碼（你連自己都不該知道）\n- ❌ 不過期的 reset link\n- ❌ Token 用簡單 ID\n- ❌ 揭露 user 是否存在\n\n## 變動通知\n\n任何敏感操作 → email 通知：\n- 改密碼\n- 改 email\n- 改 MFA\n- 新裝置登入\n\nUser 出事第一時間發現。\n\n## 心法\n- bcrypt 12+ 永遠夠\n- 不限制密碼 composition\n- 鼓勵 password manager\n- Reset link 1 小時過期\n- 敏感操作必通知",
+      "tip": {
+        "type": "security",
+        "text": "bcrypt 12 + HaveIBeenPwned + email 通知。"
+      },
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 9 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "id": "21.10",
+      "number": "LESSON 21.10",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "21.10.auto",
+          "language": "sql",
+          "title": "試試看",
+          "initialCode": "INSERT INTO users (password) VALUES ('mypassword');",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "outline": [
+        {
+          "level": 2,
+          "text": "永遠不要"
+        },
+        {
+          "level": 3,
+          "text": "❌ 存明文"
+        },
+        {
+          "level": 3,
+          "text": "❌ 用 MD5 / SHA1"
+        },
+        {
+          "level": 3,
+          "text": "❌ 自己「加 salt」"
+        },
+        {
+          "level": 2,
+          "text": "永遠用"
+        },
+        {
+          "level": 3,
+          "text": "bcrypt（業界標準）"
+        },
+        {
+          "level": 3,
+          "text": "argon2（最新最強）"
+        },
+        {
+          "level": 2,
+          "text": "Password 政策"
+        },
+        {
+          "level": 3,
+          "text": "強度要求"
+        },
+        {
+          "level": 3,
+          "text": "鼓勵 Password Manager"
+        },
+        {
+          "level": 2,
+          "text": "Reset 流程"
+        },
+        {
+          "level": 3,
+          "text": "安全做法"
+        },
+        {
+          "level": 3,
+          "text": "Don't"
+        },
+        {
+          "level": 2,
+          "text": "變動通知"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    }
+  ],
+  "boss": {
+    "name": "密鑰守者",
+    "hp": 220,
+    "emoji": "🔑",
+    "description": "把你的身份藏在 JWT 中、解開才能進門"
+  },
+  "quiz": {
+    "id": "ch21-quiz",
+    "questions": [],
+    "xpReward": 50,
+    "perfectBonus": 50
+  }
+}

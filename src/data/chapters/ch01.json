@@ -1,0 +1,1320 @@
+{
+  "id": 1,
+  "slug": "html",
+  "stage": 1,
+  "title": "HTML 完整",
+  "subtitle": "網頁的骨架與語意",
+  "icon": "code-2",
+  "description": "HTML 完整：網頁的骨架與語意",
+  "status": "published",
+  "difficulty": "beginner",
+  "prerequisites": [],
+  "estimatedHours": 8,
+  "outcomes": [
+    "掌握所有常用 HTML 標籤的語意",
+    "會寫無障礙的表單",
+    "知道每個 meta 標籤的用途",
+    "會寫 Open Graph / JSON-LD",
+    "能用最少 HTML 寫出能跑的網頁"
+  ],
+  "lessons": [
+    {
+      "id": "1.1",
+      "number": "LESSON 1.1",
+      "title": "HTML 是什麼？為什麼網頁長那樣？",
+      "oneLineSummary": "HTML 就是「網頁的說明書」—告訴瀏覽器「這裡是標題、這裡是圖片、這裡是按鈕」。",
+      "analogy": "就像你寫信會在開頭寫「親愛的某某某」、中間寫內文、最後寫「祝好」—HTML 也是用固定格式跟瀏覽器溝通，瀏覽器看懂後就把網頁畫出來。",
+      "content": "HTML（HyperText Markup Language）= **超文本標記語言**。1991 年由 Tim Berners-Lee 發明、原本是為了讓物理學家分享論文。30 年後，全世界的網頁都是它寫的。\n\n      \n### HTML 的兩個身份\n\n      \n1. **給人看**（透過瀏覽器渲染）：使用者看到的網頁\n2. **給機器看**（透過 parser / crawler / AI）：Google 抓內容做 SEO、AI 摘要、螢幕閱讀器讀給盲人聽\n\n      \n很多人只顧第一個身份、結果機器看不懂 → SEO 爛、無障礙差、AI 摘要錯。**會寫好 HTML 的人、網頁能被找到、能被讀懂、能被 AI 引用**。這比視覺設計值錢得多。\n\n      \n### HTML 標籤的完整語法\n\n```html\n<!DOCTYPE html>\n<html lang=\"zh-Hant\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>我的第一頁</title>\n</head>\n<body>\n  <h1>Hello World</h1>\n  <p>這是我的第一個網頁</p>\n</body>\n</html>\n```\n\n      \n### 5 個 head 必有\n\n      \n- ``：告訴瀏覽器是 HTML5\n- ``：語言（影響 SEO、無障礙、自動翻譯）\n- ``：編碼（沒寫中文會變亂碼）\n- ``：手機要這個才會正確縮放\n- ``：分頁標題、Google 搜尋結果、社群分享預覽\n\n      \n**2026 SEO 加分項**：加 ``、``、Open Graph tags（og:title / og:image）、JSON-LD 結構化資料。AI 引擎（ChatGPT / Perplexity）抓內容會看這些。",
+      "tip": {
+        "type": "practical",
+        "text": "剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「HTML」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "1.1.html-basics",
+          "language": "html",
+          "title": "編輯左邊、按 ▶ 執行",
+          "initialCode": "<!DOCTYPE html>\n<html lang=\"zh-Hant\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>我的第一頁</title>\n</head>\n<body>\n  <h1>Hello AI 島！</h1>\n  <p>這是我寫的第一個網頁、改改看吧！</p>\n</body>\n</html>",
+          "hint": "改 h1 的文字、再按執行看看"
+        }
+      ],
+      "miniQuiz": {
+        "question": "下面哪個是 HTML 的「文件型別宣告」？",
+        "options": [
+          {
+            "label": "<!DOCTYPE html>",
+            "value": "a"
+          },
+          {
+            "label": "<doctype>",
+            "value": "b"
+          },
+          {
+            "label": "<html-version=5>",
+            "value": "c"
+          },
+          {
+            "label": "<type=html>",
+            "value": "d"
+          }
+        ],
+        "answer": "a",
+        "explanation": "`<!DOCTYPE html>` 告訴瀏覽器這份文件用 HTML5 規範解析。"
+      },
+      "exercise": {
+        "question": "找一個你身邊的例子、用「HTML 是什麼？為什麼網頁長那樣？」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "HTML 的兩個身份"
+        },
+        {
+          "level": 3,
+          "text": "HTML 標籤的完整語法"
+        },
+        {
+          "level": 3,
+          "text": "5 個 head 必有"
+        }
+      ]
+    },
+    {
+      "id": "1.2",
+      "number": "LESSON 1.2",
+      "title": "head 區塊：給機器看的全部秘密",
+      "oneLineSummary": "&lt;head&gt; 區塊是「給瀏覽器跟搜尋引擎看的設定區」—使用者看不到、但決定網頁怎麼被找到 / 分享 / 顯示。",
+      "analogy": "就像你 IG 個人檔案的個人介紹—大頭照不是別人滑限動看到的、但點進你主頁那一刻就決定別人對你的第一印象。head 區就是網頁的「個人檔案」。",
+      "content": "```html\n<!DOCTYPE html>\n<html lang=\"zh-Hant\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <meta name=\"description\" content=\"AI 島：全端養成班\">\n  <meta name=\"keywords\" content=\"HTML, CSS, JavaScript, 教學\">\n  <meta name=\"author\" content=\"Luffysky\">\n\n  <!-- SEO + Social -->\n  <title>我的網站 - 副標</title>\n  <link rel=\"canonical\" href=\"https://example.com/page\">\n  <meta property=\"og:title\" content=\"我的網站\">\n  <meta property=\"og:description\" content=\"網站描述\">\n  <meta property=\"og:image\" content=\"https://example.com/og.png\">\n\n  <!-- favicon -->\n  <link rel=\"icon\" href=\"/favicon.svg\" type=\"image/svg+xml\">\n\n  <!-- 樣式 + 腳本 -->\n  <link rel=\"stylesheet\" href=\"/style.css\">\n  <script src=\"/app.js\" defer></script>\n</head>\n<body>\n  <!-- content -->\n</body>\n</html>\n```\n\n  \n    **🚀 進階技巧**\n    \n`script` 的三種載入：(1) 一般 — 阻擋 HTML 解析 (2) `async` — 並行下載，下載完立刻執行（順序不保證）(3) `defer` — 並行下載，HTML 解析完才執行（保留順序）。**大部分情況用 defer**。\n\n  \n\n  \n    \n      🎯\n      面試考點\n    \n    台灣科技公司面試 90% 會問「HTML」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。",
+      "tip": {
+        "type": "pro",
+        "text": "台灣科技公司面試 90% 會問「HTML」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "1.2.head-meta",
+          "language": "html",
+          "title": "head 區塊：給機器看的",
+          "initialCode": "<!DOCTYPE html>\n<html lang=\"zh-Hant\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <meta name=\"description\" content=\"改成你的網站描述\">\n  <title>我的網站</title>\n  <link rel=\"canonical\" href=\"https://example.com/\">\n</head>\n<body>\n  <h1>看 tab 標題</h1>\n  <p>改 title、看上面 tab 變了沒</p>\n</body>\n</html>",
+          "hint": "title 影響 tab、description 影響 Google 搜尋結果"
+        }
+      ],
+      "miniQuiz": {
+        "question": "Mobile 響應式網頁必須加哪個 meta？",
+        "options": [
+          {
+            "label": "<meta name=\"mobile\" content=\"true\">",
+            "value": "a"
+          },
+          {
+            "label": "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">",
+            "value": "b"
+          },
+          {
+            "label": "<meta charset=\"UTF-8\">",
+            "value": "c"
+          },
+          {
+            "label": "<meta name=\"responsive\" content=\"yes\">",
+            "value": "d"
+          }
+        ],
+        "answer": "b",
+        "explanation": "沒這行手機看你的網頁會像縮小的桌機版、不會自適應。"
+      },
+      "exercise": {
+        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（defer, script, async）做出一個簡單的個人介紹頁。",
+        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      }
+    },
+    {
+      "id": "1.3",
+      "number": "LESSON 1.3",
+      "title": "語意化標籤：HTML5 的革命",
+      "oneLineSummary": "語意化標籤就是用有意義的名字來分區、讓機器看懂這塊是「導覽列」、那塊是「主內容」。",
+      "analogy": "想像你整理書包—有標籤的夾鏈袋（這袋裝筆、那袋裝考卷）vs 全部丟一起的塑膠袋。語意化就是給每塊內容貼標籤、搜尋引擎跟螢幕閱讀器才知道誰是誰。",
+      "content": "HTML5 之前，所有東西都用 ``。HTML5 加入語意化標籤，**讓機器讀得懂**。\n\n```html\n<!-- 語意化標籤 -->\n<header>\n  <nav>\n    <ul>\n      <li><a href=\"/\">首頁</a></li>\n      <li><a href=\"/about\">關於</a></li>\n    </ul>\n  </nav>\n</header>\n\n<main>\n  <article>\n    <header>\n      <h1>文章標題</h1>\n      <time datetime=\"2026-05-18\">2026/5/18</time>\n    </header>\n    <section>\n      <h2>第一段</h2>\n      <p>段落內容...</p>\n    </section>\n    <aside>\n      <p>側邊補充</p>\n    </aside>\n  </article>\n</main>\n\n<footer>\n  <p>&copy; 2026 AI 島</p>\n</footer>\n```\n\n  \n### section vs article vs div：什麼時候用哪個？\n\n  \n- **article**：抽出去也能獨立的（部落格文、產品卡、留言）\n- **section**：主題區塊，內部通常有自己的 h2/h3\n- **div**：純樣式 wrapper，沒有語意\n- **aside**：旁邊內容（廣告、相關連結、註解）\n\n  \n判斷法：「**這塊內容能不能丟到 RSS 給人讀？**」能 → article。\n\n  \n### 更多語意標籤\n\n\n\n  \n    **✨ 接案小技巧**\n    \n用語意化標籤的客戶網站**SEO 排名平均比純 div 網站高 15-30%**（Google 自己說的）。這是**免費的 SEO 加分**，只是換個標籤名而已。\n\n  \n\n  \n    \n      ⚡\n      學習加速器\n    \n    把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。",
+      "tip": {
+        "type": "practical",
+        "text": "把這節學到的馬上應用到一個小東西—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "1.3.semantic",
+          "language": "html",
+          "title": "語意化 HTML5：header / main / footer",
+          "initialCode": "<!DOCTYPE html>\n<html lang=\"zh-Hant\">\n<head><meta charset=\"UTF-8\"><style>\nbody { font-family: sans-serif; max-width: 700px; margin: 0 auto; padding: 20px; }\nheader, main, footer, nav, article, aside, section { display: block; margin: 12px 0; padding: 12px; border: 1px dashed #999; }\nheader { background: #fef3c7; }\nmain { background: #e0f2fe; }\nfooter { background: #f3f4f6; }\nnav { background: #fce7f3; }\n</style></head>\n<body>\n  <header>\n    <h1>我的部落格</h1>\n    <nav>\n      <a href=\"#\">首頁</a> | <a href=\"#\">關於</a>\n    </nav>\n  </header>\n  <main>\n    <article>\n      <h2>文章標題</h2>\n      <p>內容...</p>\n    </article>\n  </main>\n  <footer>\n    <p>&copy; 2026</p>\n  </footer>\n</body>\n</html>",
+          "hint": "對比看用 div 跟用 semantic 標籤、SEO 跟讀屏軟體會差很多"
+        }
+      ],
+      "miniQuiz": {
+        "question": "「網站頂部含 logo + 導覽」應該用哪個標籤？",
+        "options": [
+          {
+            "label": "<top>",
+            "value": "a"
+          },
+          {
+            "label": "<div class=\"header\">",
+            "value": "b"
+          },
+          {
+            "label": "<header>",
+            "value": "c"
+          },
+          {
+            "label": "<banner>",
+            "value": "d"
+          }
+        ],
+        "answer": "c",
+        "explanation": "`<header>` 是 HTML5 語意標籤、SEO + 無障礙友善、優於 div。"
+      },
+      "exercise": {
+        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（<header>, <main>, <footer> 等）做出一個簡單的個人介紹頁。",
+        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "section vs article vs div：什麼時候用哪個？"
+        },
+        {
+          "level": 3,
+          "text": "更多語意標籤"
+        }
+      ]
+    },
+    {
+      "id": "1.4",
+      "number": "LESSON 1.4",
+      "title": "文字標籤完整版",
+      "oneLineSummary": "文字標籤就是 HTML 給你的文字裝飾工具箱—粗體 / 斜體 / 刪除線 / 標重點全包。",
+      "analogy": "像你在 Word 裡的「粗體 B」「斜體 I」「螢光筆」按鈕—HTML 提供同樣的工具、但每個都有不同的「意義」。&lt;strong&gt; 不只是粗體、是告訴機器「這裡很重要」。",
+      "content": "### 標題：h1–h6\n\n```html\n<h1>最大標題</h1>\n<h2>次標題</h2>\n<h3>小標題</h3>\n\n<p>段落、<strong>粗體</strong>、<em>斜體</em>、<mark>螢光</mark>。</p>\n<p>這是 <code>inline code</code>。</p>\n\n<blockquote cite=\"https://example.com\">\n  引用文字\n</blockquote>\n\n<pre><code>多行\n保留格式\n的程式碼</code></pre>\n\n<hr>\n\n<p>段落 1</p>\n<p>段落 2</p>\n```\n\n  \nSEO 鐵律：\n\n  \n- 每頁**只能一個 h1**（搜尋引擎看這個判斷主題）\n- 標題層級不要跳（h2 後不要直接 h4）\n- 不要為了字大用 h1（用 CSS 調字級）\n\n  \n### 段落與換行\n\n\n\n  \n### 文字強調：每個都有不同語意\n\n\n\n  \n    **⚠ 踩雷警告**\n    \n不要用 `` 跟 ``（雖然合法）— 它們**只有視覺意義沒有語意**。要粗就用 `**`，要斜用 ``。搜尋引擎跟螢幕閱讀器才會強調。\n\n  \n\n  \n### 引用\n\n\n\n  \n### 程式碼\n\n\nfunction hi() {\n  console.log(\"hi\");\n}\n```\n\nCtrl + S            \n程式輸出                  \nx                          \n```\n\n  \n    \n      🚀\n      2026 趨勢\n    \n    這個技術 2026 還在主流、未來 5 年不會過時。但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。",
+      "tip": {
+        "type": "trend",
+        "text": "這個技術 2026 還在主流、未來 5 年不會過時。但工具會更新—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "1.4.text",
+          "language": "html",
+          "title": "文字標籤大集合",
+          "initialCode": "<!DOCTYPE html>\n<html><head><style>body{font-family:sans-serif;padding:16px;max-width:600px}</style></head>\n<body>\n  <h1>最大標題</h1>\n  <h2>次標題</h2>\n  <p>段落、<strong>粗體</strong>、<em>斜體</em>、<mark>螢光</mark>。</p>\n  <p>程式碼：<code>const x = 1;</code></p>\n  <blockquote>名人說過的話</blockquote>\n  <pre><code>多行\n程式碼\n保留格式</code></pre>\n  <hr>\n  <small>底部小字</small>\n</body>\n</html>",
+          "hint": "試試把 strong 改成 b、看差別 (strong 有語意、b 只是粗體)"
+        }
+      ],
+      "exercise": {
+        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（，要斜用 ,  跟 , （雖然合法）— 它們**只有視覺意義沒有語意**。要粗就用 ）做出一個簡單的個人介紹頁。",
+        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "標題：h1–h6"
+        },
+        {
+          "level": 3,
+          "text": "段落與換行"
+        },
+        {
+          "level": 3,
+          "text": "文字強調：每個都有不同語意"
+        },
+        {
+          "level": 3,
+          "text": "引用"
+        },
+        {
+          "level": 3,
+          "text": "程式碼"
+        }
+      ]
+    },
+    {
+      "id": "1.5",
+      "number": "LESSON 1.5",
+      "title": "列表三兄弟",
+      "oneLineSummary": "列表就是「條列式內容」的標籤—有編號（ol）、沒編號（ul）、跟名詞解釋（dl）三種。",
+      "analogy": "像你寫購物清單會自然分兩種寫法：「1. 牛奶 2. 麵包」（有順序）vs 「• 牛奶 • 麵包」（沒順序）。HTML 也分這兩種、寫對了搜尋引擎才知道是「步驟」還是「項目」。",
+      "content": "```html\n<!-- 無序列表 -->\n<ul>\n  <li>蘋果</li>\n  <li>香蕉</li>\n  <li>橘子</li>\n</ul>\n\n<!-- 有序列表 -->\n<ol>\n  <li>起床</li>\n  <li>刷牙</li>\n  <li>吃早餐</li>\n</ol>\n\n<!-- 定義列表 -->\n<dl>\n  <dt>HTML</dt>\n  <dd>HyperText Markup Language</dd>\n  <dt>CSS</dt>\n  <dd>Cascading Style Sheets</dd>\n</dl>\n```\n\n  \n    **✨ 接案小技巧**\n    \n導覽列、選單都用 `` 結構。Bootstrap、Material UI、Tailwind 都這樣做。原因：螢幕閱讀器跟 SEO 都會看 nav 結構。\n\n  \n\n  \n    \n      🛠️\n      工具推薦\n    \n    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。",
+      "tip": {
+        "type": "practical",
+        "text": "配合這節用的工具：(1) VS Code（編輯器、免費）(2) Chrome DevTools（F12 開啟、除錯神器）(3) Live Server（VS Code 擴充、即時預覽）(4) GitHub Copilot / Cursor（AI 寫程式、學習加速 2-10x）。"
+      },
+      "xp": 15,
+      "playgrounds": [
+        {
+          "key": "1.5.lists",
+          "language": "html",
+          "title": "三種列表",
+          "initialCode": "<!DOCTYPE html>\n<html><head><style>body{font-family:sans-serif;padding:16px}</style></head>\n<body>\n  <h3>無序（ul + li）</h3>\n  <ul>\n    <li>蘋果</li>\n    <li>香蕉</li>\n    <li>橘子</li>\n  </ul>\n\n  <h3>有序（ol + li）</h3>\n  <ol>\n    <li>起床</li>\n    <li>刷牙</li>\n    <li>吃早餐</li>\n  </ol>\n\n  <h3>定義列表（dl）</h3>\n  <dl>\n    <dt>HTML</dt>\n    <dd>HyperText Markup Language</dd>\n    <dt>CSS</dt>\n    <dd>Cascading Style Sheets</dd>\n  </dl>\n</body>\n</html>",
+          "hint": "試試 ol type=\"a\" 改字母編號"
+        }
+      ],
+      "exercise": {
+        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（<header>, <main>, <footer> 等）做出一個簡單的個人介紹頁。",
+        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      }
+    },
+    {
+      "id": "1.6",
+      "number": "LESSON 1.6",
+      "title": "連結與媒體",
+      "oneLineSummary": "連結（&lt;a&gt;）跟媒體（&lt;img&gt; / &lt;video&gt;）是網頁跟外面世界連在一起的關鍵。",
+      "analogy": "連結像 IG 限動上的「點這裡」貼紙—點下去帶你去別的地方。圖片跟影片就是真的把照片貼進你的網頁。沒有連結、整個網路就只是一堆孤島。",
+      "content": "### 連結 a 標籤\n\n```html\n<!-- 連結 -->\n<a href=\"https://example.com\">外部連結</a>\n<a href=\"/about\">內部連結</a>\n<a href=\"#section1\">頁內錨點</a>\n<a href=\"mailto:hi@example.com\">寄信</a>\n<a href=\"tel:+886912345678\">打電話</a>\n\n<!-- 新分頁 + 安全屬性 -->\n<a href=\"https://example.com\" target=\"_blank\" rel=\"noopener noreferrer\">\n  在新分頁開啟\n</a>\n\n<!-- 下載 -->\n<a href=\"/file.pdf\" download>下載 PDF</a>\n```\n\n  \n    **🚨 資安警報**\n    \n`target=\"_blank\"` 一定要加 `rel=\"noopener noreferrer\"`。**沒加會讓新分頁能存取你的 window.opener**，攻擊者能改你頁面的網址（tabnabbing 攻擊）。\n\n  \n\n  \n### 圖片：完整版\n\n\n\n  \n### alt 屬性的學問\n\n  \n- **裝飾用圖**：`alt=\"\"`（讓螢幕閱讀器跳過）\n- **內容圖**：簡潔描述（「橘色貓在沙發睡」），不要寫「圖片」\n- **功能圖示**：描述功能（「關閉視窗」、「下載」）\n- **圖表**：描述要傳達的數據\n\n  \n### 影片\n\n\n\n  \n### iframe（嵌入其他網頁）\n\n\n\n  \n    \n      ⚠️\n      新手常見錯誤\n    \n    新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。",
+      "tip": {
+        "type": "warning",
+        "text": "新手 3 大坑：(1) 不看 console—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) 不存檔就 F5—改完忘記儲存以為「程式沒效果」 (3) 抄 code 不理解—複製貼上能跑、但下次要改就崩潰。記得：先看懂、再寫。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "1.6.links",
+          "language": "html",
+          "title": "連結 + 圖片",
+          "initialCode": "<!DOCTYPE html>\n<html><head><style>body{font-family:sans-serif;padding:16px}img{max-width:200px}</style></head>\n<body>\n  <p><a href=\"https://example.com\" target=\"_blank\" rel=\"noopener\">外部連結 (新分頁)</a></p>\n  <p><a href=\"mailto:hi@example.com\">寄信</a></p>\n  <p><a href=\"tel:+886912345678\">打電話</a></p>\n  <p><a href=\"#bottom\">頁內錨點到底部</a></p>\n\n  <img src=\"https://picsum.photos/200/150\" alt=\"隨機圖\" loading=\"lazy\">\n\n  <hr style=\"margin:300px 0\">\n  <p id=\"bottom\">這裡是底部</p>\n</body>\n</html>",
+          "hint": "img 沒 alt = 無障礙不及格、SEO 也虧"
+        }
+      ],
+      "miniQuiz": {
+        "question": "在新分頁開啟外部連結、要避免「opener attack」應該怎樣寫？",
+        "options": [
+          {
+            "label": "target=\"_blank\"",
+            "value": "a"
+          },
+          {
+            "label": "target=\"_blank\" rel=\"noopener\"",
+            "value": "b"
+          },
+          {
+            "label": "target=\"new\"",
+            "value": "c"
+          },
+          {
+            "label": "windowOpen=\"true\"",
+            "value": "d"
+          }
+        ],
+        "answer": "b",
+        "explanation": "rel=\"noopener\" 防止新分頁透過 window.opener 控制原網頁。"
+      },
+      "exercise": {
+        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（alt=\"\", target=\"_blank\", rel=\"noopener noreferrer\"）做出一個簡單的個人介紹頁。",
+        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "連結 a 標籤"
+        },
+        {
+          "level": 3,
+          "text": "圖片：完整版"
+        },
+        {
+          "level": 3,
+          "text": "alt 屬性的學問"
+        },
+        {
+          "level": 3,
+          "text": "影片"
+        },
+        {
+          "level": 3,
+          "text": "iframe（嵌入其他網頁）"
+        }
+      ]
+    },
+    {
+      "id": "1.7",
+      "number": "LESSON 1.7",
+      "title": "表格",
+      "oneLineSummary": "表格（&lt;table&gt;）是放整齊資料用—價目表、課表、比較表。絕對不要用來排版！",
+      "analogy": "像你看 Netflix 的「每月方案比較」那種整齊的格子—免費版有什麼、付費版有什麼、一格一格對應。表格生來就是做這種「兩個維度交叉」的資料。",
+      "content": "```html\n<!-- 圖片基本 -->\n<img src=\"/photo.jpg\" alt=\"一隻橘色貓在睡覺\">\n\n<!-- 響應式（不同尺寸 + 不同密度） -->\n<img\n  src=\"/photo-800.jpg\"\n  srcset=\"/photo-400.jpg 400w, /photo-800.jpg 800w, /photo-1600.jpg 1600w\"\n  sizes=\"(max-width: 600px) 400px, 800px\"\n  alt=\"貓\"\n  loading=\"lazy\"\n>\n\n<!-- picture 元素：多格式 -->\n<picture>\n  <source type=\"image/avif\" srcset=\"/photo.avif\">\n  <source type=\"image/webp\" srcset=\"/photo.webp\">\n  <img src=\"/photo.jpg\" alt=\"貓\">\n</picture>\n\n<!-- 純裝飾 -->\n<img src=\"/divider.png\" alt=\"\">\n```\n\n  \n    **⚠ 踩雷警告**\n    \n2000 年代很多人用 `` 排版整個網站，現在已經是**嚴重錯誤**。表格只用於「真正的表格資料」（時間表、財報、價格表）。排版用 Flexbox / Grid。\n\n  \n\n  \n    \n      💼\n      接案小知識\n    \n    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「HTML」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。",
+      "tip": {
+        "type": "practical",
+        "text": "剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「HTML」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "1.7.image",
+          "language": "html",
+          "title": "響應式圖片",
+          "initialCode": "<!DOCTYPE html>\n<html><head><style>body{font-family:sans-serif;padding:16px}img{max-width:100%}</style></head>\n<body>\n  <h3>基本 img</h3>\n  <img src=\"https://picsum.photos/600/300?random=1\" alt=\"風景\">\n\n  <h3>picture：多格式自動選</h3>\n  <picture>\n    <source type=\"image/webp\" srcset=\"https://picsum.photos/600/300?random=2\">\n    <img src=\"https://picsum.photos/600/300?random=2\" alt=\"風景 2\">\n  </picture>\n\n  <h3>lazy loading</h3>\n  <img src=\"https://picsum.photos/600/300?random=3\" alt=\"風景 3\" loading=\"lazy\">\n</body>\n</html>",
+          "hint": "alt=\"\" 對純裝飾圖、有意義的圖一定要寫描述"
+        }
+      ],
+      "exercise": {
+        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（<header>, <main>, <footer> 等）做出一個簡單的個人介紹頁。",
+        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      }
+    },
+    {
+      "id": "1.8",
+      "number": "LESSON 1.8",
+      "title": "表單：HTML 最複雜也最有用的部分",
+      "oneLineSummary": "表單是讓使用者輸入東西給你的標籤—登入、註冊、留言、買東西都靠它。",
+      "analogy": "像你填寫蝦皮註冊頁面—姓名格、Email 格、密碼格、最後按「註冊」按鈕。所有「使用者要打字 / 選擇 / 上傳」的場景都是表單。學會表單 = 學會跟使用者要資料。",
+      "content": "表單是**網站跟使用者對話的橋樑**。註冊、登入、結帳、搜尋全靠它。\n\n```html\n<!-- 表格 -->\n<table>\n  <caption>2026 第一季業績</caption>\n  <thead>\n    <tr>\n      <th>月份</th>\n      <th>收入</th>\n      <th>支出</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td>1月</td>\n      <td>100,000</td>\n      <td>60,000</td>\n    </tr>\n    <tr>\n      <td>2月</td>\n      <td>120,000</td>\n      <td>65,000</td>\n    </tr>\n  </tbody>\n  <tfoot>\n    <tr>\n      <td>總計</td>\n      <td>220,000</td>\n      <td>125,000</td>\n    </tr>\n  </tfoot>\n</table>\n```\n\n  \n### input 完整型別\n\n\n\n  \n### input 屬性\n\n\n\n  \n### autocomplete 完整值\n\n  \n讓瀏覽器跟密碼管理員（1Password、Apple Keychain）正確填寫：\n\n\n\n  \n### 各種 input 變體\n\n\n\n  \n### 分組與標題（fieldset）\n\n\n\n  \n### 表單驗證\n\n\n\n  \n    **🚨 資安警報**\n    \nHTML 表單驗證**只是前端體驗加分**，不是安全防線。**後端永遠必須再驗一次**。攻擊者可以繞過前端直接發 request。\n\n  \n\n  \n    \n      🎯\n      面試考點\n    \n    台灣科技公司面試 90% 會問「HTML」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。",
+      "tip": {
+        "type": "pro",
+        "text": "台灣科技公司面試 90% 會問「HTML」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "1.8.table",
+          "language": "html",
+          "title": "表格",
+          "initialCode": "<!DOCTYPE html>\n<html><head><style>\nbody{font-family:sans-serif;padding:16px}\ntable{border-collapse:collapse;width:100%}\nth,td{border:1px solid #ddd;padding:8px;text-align:left}\nth{background:#f3f4f6}\ntr:nth-child(even){background:#f9fafb}\n</style></head>\n<body>\n  <table>\n    <caption>2026 Q1 收支</caption>\n    <thead>\n      <tr><th>月份</th><th>收入</th><th>支出</th></tr>\n    </thead>\n    <tbody>\n      <tr><td>1月</td><td>100,000</td><td>60,000</td></tr>\n      <tr><td>2月</td><td>120,000</td><td>65,000</td></tr>\n      <tr><td>3月</td><td>150,000</td><td>70,000</td></tr>\n    </tbody>\n    <tfoot>\n      <tr><td>總計</td><td>370,000</td><td>195,000</td></tr>\n    </tfoot>\n  </table>\n</body>\n</html>"
+        }
+      ],
+      "exercise": {
+        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（<header>, <main>, <footer> 等）做出一個簡單的個人介紹頁。",
+        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "input 完整型別"
+        },
+        {
+          "level": 3,
+          "text": "input 屬性"
+        },
+        {
+          "level": 3,
+          "text": "autocomplete 完整值"
+        },
+        {
+          "level": 3,
+          "text": "各種 input 變體"
+        },
+        {
+          "level": 3,
+          "text": "分組與標題（fieldset）"
+        },
+        {
+          "level": 3,
+          "text": "表單驗證"
+        }
+      ]
+    },
+    {
+      "id": "1.9",
+      "number": "LESSON 1.9",
+      "title": "SEO 必備：meta、Open Graph、Twitter Card",
+      "oneLineSummary": "SEO meta 就是給 Google 看的廣告詞—決定你的網頁在搜尋結果頁長什麼樣。",
+      "analogy": "就像你 PO 一篇 IG 限動、會自己選封面 + 寫標題吸引人點。SEO meta（title / description / OG image）就是你的網頁在 Google 跟 LINE 分享時的「封面+標題」。寫得好點擊率差 5-10 倍。",
+      "content": "### 基本 SEO meta\n\n```html\n<form action=\"/api/contact\" method=\"POST\">\n  <label for=\"name\">姓名</label>\n  <input type=\"text\" id=\"name\" name=\"name\" required>\n\n  <label for=\"email\">Email</label>\n  <input type=\"email\" id=\"email\" name=\"email\" required>\n\n  <label for=\"message\">訊息</label>\n  <textarea id=\"message\" name=\"message\" rows=\"4\"></textarea>\n\n  <label>\n    <input type=\"checkbox\" name=\"subscribe\"> 訂閱電子報\n  </label>\n\n  <fieldset>\n    <legend>聯絡方式</legend>\n    <label><input type=\"radio\" name=\"contact\" value=\"email\"> Email</label>\n    <label><input type=\"radio\" name=\"contact\" value=\"phone\"> 電話</label>\n  </fieldset>\n\n  <button type=\"submit\">送出</button>\n</form>\n```\n\n  \n### Open Graph（Facebook、Threads、LINE 分享卡片）\n\n\n\n  \n### Twitter Card\n\n\n\n  \n    **✨ 接案小技巧**\n    \nOG 圖片標準尺寸：**1200×630**。手機平板都好看。製作工具：Figma、Canva 都有現成模板。動態產 OG 圖：Vercel 的 `@vercel/og`、Cloudflare Workers + satori。每篇文章自動產獨特 OG 圖，社群分享品牌感大幅提升。\n\n  \n\n  \n    \n      ⚡\n      學習加速器\n    \n    把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。",
+      "tip": {
+        "type": "practical",
+        "text": "把這節學到的馬上應用到一個小東西—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "1.9.form",
+          "language": "html",
+          "title": "完整表單",
+          "initialCode": "<!DOCTYPE html>\n<html><head><style>\nbody{font-family:sans-serif;padding:16px;max-width:500px}\nlabel{display:block;margin-top:12px;font-weight:600}\ninput,textarea,select{width:100%;padding:8px;margin-top:4px;border:1px solid #ddd;border-radius:6px}\nbutton{margin-top:16px;padding:10px 20px;background:#50fa7b;border:0;border-radius:6px;font-weight:600;cursor:pointer}\nfieldset{margin-top:12px;border:1px solid #ddd;border-radius:6px;padding:12px}\n</style></head>\n<body>\n  <form>\n    <label for=\"name\">姓名 *</label>\n    <input type=\"text\" id=\"name\" required>\n\n    <label for=\"email\">Email *</label>\n    <input type=\"email\" id=\"email\" required placeholder=\"you@example.com\">\n\n    <label for=\"age\">年齡</label>\n    <input type=\"number\" id=\"age\" min=\"18\" max=\"120\">\n\n    <fieldset>\n      <legend>聯絡方式</legend>\n      <label><input type=\"radio\" name=\"contact\" value=\"email\"> Email</label>\n      <label><input type=\"radio\" name=\"contact\" value=\"phone\"> 電話</label>\n    </fieldset>\n\n    <label for=\"msg\">訊息</label>\n    <textarea id=\"msg\" rows=\"4\"></textarea>\n\n    <button type=\"submit\">送出</button>\n  </form>\n</body>\n</html>",
+          "hint": "label 的 for 要對應 input 的 id、點 label 會 focus 到 input"
+        }
+      ],
+      "miniQuiz": {
+        "question": "Email 輸入框、要瀏覽器自動驗證格式、用哪個 type？",
+        "options": [
+          {
+            "label": "type=\"text\"",
+            "value": "a"
+          },
+          {
+            "label": "type=\"email\"",
+            "value": "b"
+          },
+          {
+            "label": "type=\"mail\"",
+            "value": "c"
+          },
+          {
+            "label": "type=\"validate\"",
+            "value": "d"
+          }
+        ],
+        "answer": "b",
+        "explanation": "type=\"email\" 瀏覽器自動驗證格式、手機 keyboard 也會切換成 email 模式。"
+      },
+      "files": [
+        {
+          "name": "完整聯絡表單範例",
+          "filename": "contact-form.html",
+          "type": "complete",
+          "content": "<!DOCTYPE html>\n<html lang=\"zh-Hant\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  <title>聯絡我們</title>\n  <style>\n    body { font-family: system-ui, sans-serif; max-width: 500px; margin: 40px auto; padding: 20px; }\n    label { display: block; margin-top: 12px; font-weight: 600; }\n    input, textarea, select { width: 100%; padding: 10px; margin-top: 4px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; }\n    button { margin-top: 20px; padding: 12px 24px; background: #50fa7b; color: black; border: 0; border-radius: 6px; font-weight: 600; cursor: pointer; }\n    button:hover { background: #3ddb6a; }\n    fieldset { margin-top: 12px; border: 1px solid #ddd; border-radius: 6px; padding: 12px; }\n  </style>\n</head>\n<body>\n  <h1>聯絡我們</h1>\n  <form action=\"/api/contact\" method=\"POST\">\n    <label for=\"name\">姓名 *</label>\n    <input type=\"text\" id=\"name\" name=\"name\" required>\n\n    <label for=\"email\">Email *</label>\n    <input type=\"email\" id=\"email\" name=\"email\" required>\n\n    <label for=\"phone\">電話</label>\n    <input type=\"tel\" id=\"phone\" name=\"phone\" pattern=\"09[0-9]{8}\" placeholder=\"0912345678\">\n\n    <label for=\"topic\">主題</label>\n    <select id=\"topic\" name=\"topic\">\n      <option value=\"question\">一般問題</option>\n      <option value=\"bug\">回報 Bug</option>\n      <option value=\"feature\">功能建議</option>\n      <option value=\"business\">商業合作</option>\n    </select>\n\n    <label for=\"msg\">訊息 *</label>\n    <textarea id=\"msg\" name=\"message\" rows=\"5\" required></textarea>\n\n    <label>\n      <input type=\"checkbox\" name=\"subscribe\" style=\"width:auto;margin-right:6px\">\n      訂閱電子報\n    </label>\n\n    <button type=\"submit\">送出</button>\n  </form>\n</body>\n</html>",
+          "size": "1.4KB"
+        }
+      ],
+      "exercise": {
+        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（@vercel/og）做出一個簡單的個人介紹頁。",
+        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "基本 SEO meta"
+        },
+        {
+          "level": 3,
+          "text": "Open Graph（Facebook、Threads、LINE 分享卡片）"
+        },
+        {
+          "level": 3,
+          "text": "Twitter Card"
+        }
+      ]
+    },
+    {
+      "id": "1.10",
+      "number": "LESSON 1.10",
+      "title": "JSON-LD 結構化資料：Google 富片段的秘密",
+      "oneLineSummary": "JSON-LD 是給 AI 跟 Google 看的「結構化說明書」—讓你的網頁有機會出現在「富片段」（評分星星、價格、FAQ 直接顯示）。",
+      "analogy": "想像你開店要登錄 Google Maps—填營業時間 / 電話 / 地址 / 評分。JSON-LD 就是幫你的網頁做這件事、告訴 Google「這頁是食譜」「這頁是商品」「這頁是文章」。2026 AI 引擎抓內容、就是看這個。",
+      "content": "Google 搜尋結果有時會出現特殊樣式（星級、價格、FAQ、麵包屑、影片預覽）— 那不是 Google 猜的，是**你告訴它的**。用的就是 JSON-LD。\n\n  \n2026 更重要：AI 搜尋（ChatGPT search、Perplexity）會直接引用你的結構化資料。**沒寫 JSON-LD 等於不存在**。\n\n  \n### 文章類\n\n```html\n<!-- HTML5 新 input types -->\n<input type=\"email\" placeholder=\"email@example.com\">\n<input type=\"tel\" placeholder=\"0912345678\">\n<input type=\"url\" placeholder=\"https://...\">\n<input type=\"number\" min=\"0\" max=\"100\" step=\"1\">\n<input type=\"range\" min=\"0\" max=\"100\">\n<input type=\"date\">\n<input type=\"time\">\n<input type=\"color\">\n<input type=\"file\" accept=\"image/*\">\n<input type=\"password\" minlength=\"8\">\n<input type=\"search\">\n\n<!-- 驗證 -->\n<input\n  type=\"email\"\n  required\n  pattern=\"[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}$\"\n  title=\"請輸入有效的 email\"\n>\n```\n\n  \n### 產品（電商必備）\n\n\n\n  \n### FAQ（容易在搜尋上方出現）\n\n\n\n  \n### 麵包屑（讓搜尋顯示路徑）\n\n\n\n  \n### 組織\n\n\n\n  \nSchema.org 有**數百種類型**：影片、活動、食譜、課程、餐廳、地點、電影、書、Podcast... 每種都會在搜尋結果有特殊顯示。GEO/AEO 時代的核心技能。\n\n  \n### 驗證工具\n\n  \n- **Google Rich Results Test**：search.google.com/test/rich-results\n- **Schema Markup Validator**：validator.schema.org\n\n  \n    \n      🚀\n      2026 趨勢\n    \n    這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。",
+      "tip": {
+        "type": "trend",
+        "text": "這個技術 2026 還在主流、未來 5 年不會過時。但工具會更新—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "1.10.input-types",
+          "language": "html",
+          "title": "HTML5 各種 input",
+          "initialCode": "<!DOCTYPE html>\n<html><head><style>\nbody{font-family:sans-serif;padding:16px;max-width:400px}\ninput{width:100%;padding:8px;margin:4px 0 12px;border:1px solid #ddd;border-radius:6px}\nlabel{font-size:14px;color:#666}\n</style></head>\n<body>\n  <label>email</label>\n  <input type=\"email\" placeholder=\"you@example.com\">\n\n  <label>tel</label>\n  <input type=\"tel\" placeholder=\"0912345678\">\n\n  <label>number</label>\n  <input type=\"number\" min=\"0\" max=\"100\" step=\"5\">\n\n  <label>range</label>\n  <input type=\"range\" min=\"0\" max=\"100\">\n\n  <label>date</label>\n  <input type=\"date\">\n\n  <label>time</label>\n  <input type=\"time\">\n\n  <label>color</label>\n  <input type=\"color\">\n\n  <label>file (圖片限定)</label>\n  <input type=\"file\" accept=\"image/*\">\n\n  <label>search</label>\n  <input type=\"search\" placeholder=\"搜尋...\">\n</body>\n</html>",
+          "hint": "用手機開、各 type 會跳不同 keyboard"
+        }
+      ],
+      "exercise": {
+        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（<header>, <main>, <footer> 等）做出一個簡單的個人介紹頁。",
+        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "文章類"
+        },
+        {
+          "level": 3,
+          "text": "產品（電商必備）"
+        },
+        {
+          "level": 3,
+          "text": "FAQ（容易在搜尋上方出現）"
+        },
+        {
+          "level": 3,
+          "text": "麵包屑（讓搜尋顯示路徑）"
+        },
+        {
+          "level": 3,
+          "text": "組織"
+        },
+        {
+          "level": 3,
+          "text": "驗證工具"
+        }
+      ]
+    },
+    {
+      "id": "1.11",
+      "number": "LESSON 1.11",
+      "title": "無障礙（ARIA）",
+      "oneLineSummary": "無障礙（ARIA）就是讓盲人 / 行動不便者也能用你的網站—在台灣是法定義務（政府網站必須）、也是基本良善。",
+      "analogy": "像捷運站的無障礙坡道 + 引導磚—不是給多數人用、但少數人沒它就動不了。ARIA 屬性就是給螢幕閱讀器（盲人用）的「引導磚」、告訴它「這個按鈕是『關閉』、那個是『搜尋』」。",
+      "content": "10–20% 使用者有無障礙需求。寫無障礙 HTML 不難，但要記住。\n\n  \n### 語意化標籤已經包了大半\n\n  \n用對 HTML 標籤 = 70% 無障礙完成。`` 自帶鍵盤支援、focus 狀態，`` 也是。用 `` 是**無障礙地獄**。\n\n  \n### ARIA：補語意\n\n```html\n<!-- 語意化 + ARIA -->\n<button aria-label=\"關閉視窗\" onclick=\"close()\">×</button>\n\n<nav aria-label=\"主選單\">\n  <ul>\n    <li><a href=\"/\">首頁</a></li>\n    <li><a href=\"/about\" aria-current=\"page\">關於</a></li>\n  </ul>\n</nav>\n\n<div role=\"alert\" aria-live=\"polite\">\n  存檔成功！\n</div>\n\n<div role=\"dialog\" aria-labelledby=\"dialog-title\" aria-modal=\"true\">\n  <h2 id=\"dialog-title\">確認刪除</h2>\n  <p>真的要刪除嗎？</p>\n  <button>確定</button>\n  <button>取消</button>\n</div>\n\n<input\n  type=\"search\"\n  aria-label=\"搜尋商品\"\n  aria-describedby=\"search-hint\"\n>\n<span id=\"search-hint\">輸入關鍵字後按 Enter</span>\n```\n\n  \n### ARIA 第一定律\n\n  \n**能不用 ARIA 就不用**。能用 HTML 原生標籤就用 HTML。ARIA 是補丁，不是替代。\n\n  \n### 鍵盤導航\n\n\n\n  \n### 跳過導覽連結（Skip link）\n\n\n\n  \n### 螢幕閱讀器專用內容\n\n\n\n  \n    \n      🛠️\n      工具推薦\n    \n    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。",
+      "tip": {
+        "type": "practical",
+        "text": "配合這節用的工具：(1) VS Code（編輯器、免費）(2) Chrome DevTools（F12 開啟、除錯神器）(3) Live Server（VS Code 擴充、即時預覽）(4) GitHub Copilot / Cursor（AI 寫程式、學習加速 2-10x）。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "1.11.auto",
+          "language": "html",
+          "title": "試試看",
+          "initialCode": "<!-- 語意化 + ARIA -->\n<button aria-label=\"關閉視窗\" onclick=\"close()\">×</button>\n\n<nav aria-label=\"主選單\">\n  <ul>\n    <li><a href=\"/\">首頁</a></li>\n    <li><a href=\"/about\" aria-current=\"page\">關於</a></li>\n  </ul>\n</nav>\n\n<div role=\"alert\" aria-live=\"polite\">\n  存檔成功！\n</div>\n\n<div role=\"dialog\" aria-labelledby=\"dialog-title\" aria-modal=\"true\">\n  <h2 id=\"dialog-title\">確認刪除</h2>\n  <p>真的要刪除嗎？</p>\n  <button>確定</button>\n  <button>取消</button>\n</div>\n\n<input\n  type=\"search\"\n  aria-label=\"搜尋商品\"\n  aria-describedby=\"search-hint\"\n>\n<span id=\"search-hint\">輸入關鍵字後按 Enter</span>",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（ 也是。用 ,  自帶鍵盤支援、focus 狀態，）做出一個簡單的個人介紹頁。",
+        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "語意化標籤已經包了大半"
+        },
+        {
+          "level": 3,
+          "text": "ARIA：補語意"
+        },
+        {
+          "level": 3,
+          "text": "ARIA 第一定律"
+        },
+        {
+          "level": 3,
+          "text": "鍵盤導航"
+        },
+        {
+          "level": 3,
+          "text": "跳過導覽連結（Skip link）"
+        },
+        {
+          "level": 3,
+          "text": "螢幕閱讀器專用內容"
+        }
+      ]
+    },
+    {
+      "id": "1.12",
+      "number": "LESSON 1.12",
+      "title": "Web Components：自訂 HTML 元素",
+      "oneLineSummary": "Web Components 是自己造一個 HTML 標籤—像把一塊常用的卡片區包裝成 &lt;my-card&gt;、到處能重用。",
+      "analogy": "像你買一台樂高 Technic 機器手臂組—自己用一堆小零件組起來、然後當成「一整個手臂」放進更大的作品。Web Component 就是把你寫好的一堆 HTML+CSS+JS、打包成「一個自訂標籤」、別人 import 一行就能用。",
+      "content": "2026 的 HTML 已經支援自訂元素，不需框架就能寫元件。React、Vue 不在的場合（純 HTML 站、跨框架共用），這是答案。\n\n```js\n// 1. 定義 class\nclass CountdownTimer extends HTMLElement {\n  constructor() {\n    super();\n    this.count = parseInt(this.getAttribute(\"start\") || \"10\");\n  }\n  \n  // 進入 DOM 時觸發\n  connectedCallback() {\n    this.render();\n    this.timer = setInterval(() => {\n      this.count--;\n      this.render();\n      if (this.count \n\n```\n\n  \n### Shadow DOM：樣式封裝\n\n```js\nclass CoolButton extends HTMLElement {\n  connectedCallback() {\n    const shadow = this.attachShadow({ mode: \"open\" });\n    shadow.innerHTML = `\n      \n        button {\n          background: gold;\n          padding: 10px;\n        }\n      \n      \n    `;\n  }\n}\ncustomElements.define(\"cool-btn\", CoolButton);\n```\n\n```html\n<!-- 自訂元素：必有 hyphen -->\n<my-button>點我</my-button>\n<user-card user-id=\"123\"></user-card>\n\n<script>\nclass MyButton extends HTMLElement {\n  constructor() {\n    super();\n    const shadow = this.attachShadow({ mode: 'open' });\n    shadow.innerHTML = `\n      <style>\n        button { background: #50fa7b; padding: 8px 16px; }\n      </style>\n      <button><slot></slot></button>\n    `;\n  }\n}\ncustomElements.define('my-button', MyButton);\n</script>\n\n<!-- template + slot -->\n<template id=\"card-template\">\n  <article>\n    <h3><slot name=\"title\">預設標題</slot></h3>\n    <p><slot>預設內容</slot></p>\n  </article>\n</template>\n```\n\n  \n### 屬性變更監聽\n\n```js\nclass User extends HTMLElement {\n  static get observedAttributes() {\n    return [\"name\", \"age\"];\n  }\n  \n  attributeChangedCallback(name, oldVal, newVal) {\n    console.log(`${name}: ${oldVal} → ${newVal}`);\n    this.render();\n  }\n}\n```\n\n  \n### 用得多的場合\n\n  \n- 公司內部 design system，跨產品/跨框架共用\n- 嵌入第三方的 widget（聊天室、評論）\n- Storybook 等工具元件\n- WordPress 等 CMS 的 block\n\n  \n    \n      ⚠️\n      新手常見錯誤\n    \n    新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。",
+      "tip": {
+        "type": "warning",
+        "text": "新手 3 大坑：(1) 不看 console—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) 不存檔就 F5—改完忘記儲存以為「程式沒效果」 (3) 抄 code 不理解—複製貼上能跑、但下次要改就崩潰。記得：先看懂、再寫。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "1.12.auto",
+          "language": "html",
+          "title": "試試看",
+          "initialCode": "<!-- 自訂元素：必有 hyphen -->\n<my-button>點我</my-button>\n<user-card user-id=\"123\"></user-card>\n\n<script>\nclass MyButton extends HTMLElement {\n  constructor() {\n    super();\n    const shadow = this.attachShadow({ mode: 'open' });\n    shadow.innerHTML = `\n      <style>\n        button { background: #50fa7b; padding: 8px 16px; }\n      </style>\n      <button><slot></slot></button>\n    `;\n  }\n}\ncustomElements.define('my-button', MyButton);\n</script>\n\n<!-- template + slot -->\n<template id=\"card-template\">\n  <article>\n    <h3><slot name=\"title\">預設標題</slot></h3>\n    <p><slot>預設內容</slot></p>\n  </article>\n</template>",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（${name}: ${oldVal} → ${newVal}）做出一個簡單的個人介紹頁。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "Shadow DOM：樣式封裝"
+        },
+        {
+          "level": 3,
+          "text": "屬性變更監聽"
+        },
+        {
+          "level": 3,
+          "text": "用得多的場合"
+        }
+      ]
+    },
+    {
+      "id": "1.13",
+      "number": "LESSON 1.13",
+      "title": "PWA 基礎",
+      "oneLineSummary": "PWA 是讓網頁變得像 App 一樣—可以裝到桌面 / 離線使用 / 推播通知。",
+      "analogy": "你用過「加到主畫面」嗎？把網頁變成手機圖示、點開不會看到瀏覽器網址列、像個原生 App。PWA 就是讓你的網站有資格做到這件事—只要加 3 個檔案（manifest / sw / icon）就行。",
+      "content": "PWA（Progressive Web App）= 網頁變 App。可以裝到手機、離線執行、推播。\n\n  \n### manifest.json\n\n```html\n\n```\n\n```json\n{\n  \"name\": \"AI 島 全端養成班\",\n  \"short_name\": \"AI 島\",\n  \"description\": \"從入門到怪物工程師\",\n  \"start_url\": \"/\",\n  \"display\": \"standalone\",\n  \"orientation\": \"portrait\",\n  \"theme_color\": \"#0070f3\",\n  \"background_color\": \"#000000\",\n  \"icons\": [\n    { \"src\": \"/icon-192.png\", \"sizes\": \"192x192\", \"type\": \"image/png\" },\n    { \"src\": \"/icon-512.png\", \"sizes\": \"512x512\", \"type\": \"image/png\" },\n    { \"src\": \"/icon-maskable.png\", \"sizes\": \"512x512\", \"purpose\": \"maskable\" }\n  ]\n}\n```\n\n  \n### Service Worker（離線）\n\n```js\n// app.js\nif (\"serviceWorker\" in navigator) {\n  navigator.serviceWorker.register(\"/sw.js\");\n}\n\n// sw.js\nself.addEventListener(\"install\", e => {\n  e.waitUntil(\n    caches.open(\"v1\").then(c =>\n      c.addAll([\"/\", \"/styles.css\", \"/app.js\"])\n    )\n  );\n});\n\nself.addEventListener(\"fetch\", e => {\n  e.respondWith(\n    caches.match(e.request).then(r => r || fetch(e.request))\n  );\n});\n```\n\n  \n使用者點「加到主畫面」就能像 App 一樣用。離線可開、有圖示、全螢幕。\n\n  \n    \n      💼\n      接案小知識\n    \n    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「HTML」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。",
+      "tip": {
+        "type": "practical",
+        "text": "剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「HTML」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "1.13.auto",
+          "language": "json",
+          "title": "試試看",
+          "initialCode": "{\n  \"name\": \"AI 島 全端養成班\",\n  \"short_name\": \"AI 島\",\n  \"description\": \"從入門到怪物工程師\",\n  \"start_url\": \"/\",\n  \"display\": \"standalone\",\n  \"orientation\": \"portrait\",\n  \"theme_color\": \"#0070f3\",\n  \"background_color\": \"#000000\",\n  \"icons\": [\n    { \"src\": \"/icon-192.png\", \"sizes\": \"192x192\", \"type\": \"image/png\" },\n    { \"src\": \"/icon-512.png\", \"sizes\": \"512x512\", \"type\": \"image/png\" },\n    { \"src\": \"/icon-maskable.png\", \"sizes\": \"512x512\", \"purpose\": \"maskable\" }\n  ]\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（<header>, <main>, <footer> 等）做出一個簡單的個人介紹頁。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "manifest.json"
+        },
+        {
+          "level": 3,
+          "text": "Service Worker（離線）"
+        }
+      ]
+    },
+    {
+      "id": "1.14",
+      "number": "LESSON 1.14",
+      "title": "SVG：向量圖直接寫在 HTML",
+      "oneLineSummary": "SVG 是用文字寫出來的圖—放大不會糊、檔案小、可以用 CSS / JS 改顏色或動畫。",
+      "analogy": "你在 IG 看到那種放大也不會糊的 logo—大部分是 SVG。它不是用像素畫的、是用數學公式畫的（這條線從 A 點到 B 點、半徑 5 的圓在這裡）。2026 logo / icon 主流全是 SVG。",
+      "content": "```html\n<!-- SVG 直接寫在 HTML -->\n<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\" width=\"100\" height=\"100\">\n  <circle cx=\"50\" cy=\"50\" r=\"40\" fill=\"#50fa7b\" />\n  <text x=\"50\" y=\"55\" text-anchor=\"middle\" fill=\"white\">Hi</text>\n</svg>\n\n<!-- 圖示用 SVG（可繼承顏色） -->\n<svg width=\"24\" height=\"24\" fill=\"currentColor\" viewBox=\"0 0 24 24\">\n  <path d=\"M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5\" />\n</svg>\n\n<!-- 漸層 -->\n<svg viewBox=\"0 0 200 100\">\n  <defs>\n    <linearGradient id=\"g\">\n      <stop offset=\"0\" stop-color=\"#50fa7b\" />\n      <stop offset=\"1\" stop-color=\"#8be9fd\" />\n    </linearGradient>\n  </defs>\n  <rect width=\"200\" height=\"100\" fill=\"url(#g)\" />\n</svg>\n```\n\n  \n### 為什麼 SVG 比 PNG 強\n\n  \n- 無限放大不模糊\n- 可以用 CSS 改顏色（icon system 必備）\n- 可動畫\n- 檔案小（簡單圖示比 PNG 小 10 倍）\n- 無障礙友善（可加 ``）\n\n  \n### SVG icon system\n\n\n\n  \n    \n      🎯\n      面試考點\n    \n    台灣科技公司面試 90% 會問「HTML」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。",
+      "tip": {
+        "type": "pro",
+        "text": "台灣科技公司面試 90% 會問「HTML」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "1.14.auto",
+          "language": "html",
+          "title": "試試看",
+          "initialCode": "<!-- SVG 直接寫在 HTML -->\n<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\" width=\"100\" height=\"100\">\n  <circle cx=\"50\" cy=\"50\" r=\"40\" fill=\"#50fa7b\" />\n  <text x=\"50\" y=\"55\" text-anchor=\"middle\" fill=\"white\">Hi</text>\n</svg>\n\n<!-- 圖示用 SVG（可繼承顏色） -->\n<svg width=\"24\" height=\"24\" fill=\"currentColor\" viewBox=\"0 0 24 24\">\n  <path d=\"M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5\" />\n</svg>\n\n<!-- 漸層 -->\n<svg viewBox=\"0 0 200 100\">\n  <defs>\n    <linearGradient id=\"g\">\n      <stop offset=\"0\" stop-color=\"#50fa7b\" />\n      <stop offset=\"1\" stop-color=\"#8be9fd\" />\n    </linearGradient>\n  </defs>\n  <rect width=\"200\" height=\"100\" fill=\"url(#g)\" />\n</svg>",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（<header>, <main>, <footer> 等）做出一個簡單的個人介紹頁。",
+        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "為什麼 SVG 比 PNG 強"
+        },
+        {
+          "level": 3,
+          "text": "SVG icon system"
+        }
+      ]
+    },
+    {
+      "id": "1.15",
+      "number": "LESSON 1.15",
+      "title": "效能：HTML 寫法影響速度",
+      "oneLineSummary": "效能就是網頁載入有多快—Google 用速度排名、慢 1 秒少 20% 用戶。",
+      "analogy": "你滑 IG 圖片載半天會直接關掉吧？網頁也一樣。HTML 怎麼寫直接影響速度—圖片用對格式、JS 放對位置、預載入關鍵資源、就能從「3 秒」變「0.8 秒」。電商網站的金流就在這 2 秒之間。",
+      "content": "### 資源載入順序\n\n```html\n<!-- 效能優化 -->\n\n<!-- 1. preload 關鍵資源 -->\n<link rel=\"preload\" href=\"/fonts/main.woff2\" as=\"font\" type=\"font/woff2\" crossorigin>\n<link rel=\"preload\" href=\"/hero.jpg\" as=\"image\">\n\n<!-- 2. preconnect 第三方 -->\n<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n<link rel=\"dns-prefetch\" href=\"https://cdn.example.com\">\n\n<!-- 3. 圖片 lazy load -->\n<img src=\"/below-fold.jpg\" loading=\"lazy\" alt=\"...\">\n\n<!-- 4. script 載入策略 -->\n<script src=\"/critical.js\"></script>\n<script src=\"/normal.js\" defer></script>\n<script src=\"/analytics.js\" async></script>\n\n<!-- 5. critical CSS inline -->\n<style>\n  /* 首屏 CSS 內嵌、減少 round-trip */\n  body { margin: 0; font-family: system-ui; }\n</style>\n<link rel=\"stylesheet\" href=\"/non-critical.css\" media=\"print\" onload=\"this.media='all'\">\n```\n\n  \n### 圖片必設 width / height\n\n\n\n  \n### 關鍵的 Core Web Vitals 影響\n\n  \n- **LCP（最大內容繪製）**：hero 圖加 `fetchpriority=\"high\"`\n- **CLS（佈局位移）**：圖片設 width/height、字型設 `font-display: swap`\n- **INP（互動到下一次繪製）**：不要 inline 大型 JS\n\n  \n    **🚀 進階技巧**\n    \n2024+ 的 `fetchpriority` 屬性：`` 告訴瀏覽器先載這張。Hero 圖永遠加這個，LCP 分數會跳一個量級。\n\n  \n\n  \n    \n      ⚡\n      學習加速器\n    \n    把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。",
+      "tip": {
+        "type": "practical",
+        "text": "把這節學到的馬上應用到一個小東西—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "1.15.auto",
+          "language": "html",
+          "title": "試試看",
+          "initialCode": "<!-- 效能優化 -->\n\n<!-- 1. preload 關鍵資源 -->\n<link rel=\"preload\" href=\"/fonts/main.woff2\" as=\"font\" type=\"font/woff2\" crossorigin>\n<link rel=\"preload\" href=\"/hero.jpg\" as=\"image\">\n\n<!-- 2. preconnect 第三方 -->\n<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n<link rel=\"dns-prefetch\" href=\"https://cdn.example.com\">\n\n<!-- 3. 圖片 lazy load -->\n<img src=\"/below-fold.jpg\" loading=\"lazy\" alt=\"...\">\n\n<!-- 4. script 載入策略 -->\n<script src=\"/critical.js\"></script>\n<script src=\"/normal.js\" defer></script>\n<script src=\"/analytics.js\" async></script>\n\n<!-- 5. critical CSS inline -->\n<style>\n  /* 首屏 CSS 內嵌、減少 round-trip */\n  body { margin: 0; font-family: system-ui; }\n</style>\n<link rel=\"stylesheet\" href=\"/non-critical.css\" media=\"print\" onload=\"this.media='all'\">",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（font-display: swap, fetchpriority, fetchpriority=\"high\"）做出一個簡單的個人介紹頁。",
+        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（fetchpriority=\"high\"、font-display: swap、fetchpriority）通常在效能 / 維護性 / 擴展性卡住時才登場。",
+        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "資源載入順序"
+        },
+        {
+          "level": 3,
+          "text": "圖片必設 width / height"
+        },
+        {
+          "level": 3,
+          "text": "關鍵的 Core Web Vitals 影響"
+        }
+      ]
+    },
+    {
+      "id": "1.16",
+      "number": "LESSON 1.16",
+      "title": "實戰：完整的網頁範本",
+      "oneLineSummary": "把整章學的全部用在一個完整網頁範本—包含 SEO + a11y + PWA + 效能、可以直接拿去當你下個專案的起手式。",
+      "analogy": "像你練了一整年廚藝、最後做一桌完整的年夜飯給家人吃—不是練單道菜、是把所有技巧整合起來呈現一張漂亮的桌面。學完這節你會有一個可以直接拿去用的網頁起手範本。",
+      "content": "實際接案、寫 SaaS 都用這個結構：\n\n```html\n<!DOCTYPE html>\n<html lang=\"zh-Hant\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  <title>AI 島：全端養成班</title>\n  <meta name=\"description\" content=\"用最簡單的想法邏輯把最難的變成任何人都能懂\">\n  <link rel=\"icon\" href=\"/favicon.svg\">\n  <link rel=\"canonical\" href=\"https://aiisland.tw/\">\n\n  <!-- Open Graph -->\n  <meta property=\"og:title\" content=\"AI 島\">\n  <meta property=\"og:image\" content=\"https://aiisland.tw/og.png\">\n\n  <!-- preconnect -->\n  <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n\n  <!-- 樣式 -->\n  <link rel=\"stylesheet\" href=\"/style.css\">\n</head>\n<body>\n  <header>\n    <nav aria-label=\"主選單\">\n      <a href=\"/\" aria-label=\"回首頁\">🏝️ AI 島</a>\n      <ul>\n        <li><a href=\"/chapters\">章節</a></li>\n        <li><a href=\"/login\">登入</a></li>\n      </ul>\n    </nav>\n  </header>\n\n  <main>\n    <section>\n      <h1>用最簡單的邏輯學最難的事</h1>\n      <p>60 章從 0 到全端 + AI</p>\n      <a href=\"/signup\" class=\"cta\">開始冒險</a>\n    </section>\n  </main>\n\n  <footer>\n    <p>&copy; 2026 SnowRealm. <a href=\"/privacy\">隱私權</a></p>\n  </footer>\n\n  <script src=\"/app.js\" defer></script>\n</body>\n</html>\n```\n\n  \n    \n      🚀\n      2026 趨勢\n    \n    這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。",
+      "tip": {
+        "type": "trend",
+        "text": "這個技術 2026 還在主流、未來 5 年不會過時。但工具會更新—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。"
+      },
+      "xp": 15,
+      "playgrounds": [
+        {
+          "key": "1.16.full-page",
+          "language": "html",
+          "title": "組合 nav / header / main / footer—做 mini SaaS landing",
+          "initialCode": "<!DOCTYPE html>\n<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n<style>\n  *{box-sizing:border-box;margin:0;padding:0}\n  body{font-family:sans-serif;line-height:1.6}\n  nav{padding:16px 24px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center}\n  .hero{background:linear-gradient(135deg,#0066ff,#003d99);color:white;padding:80px 24px;text-align:center}\n  .hero h1{font-size:42px;margin-bottom:12px}\n  .btn{display:inline-block;background:white;color:#0066ff;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:600;margin-top:20px}\n  footer{padding:24px;text-align:center;color:#666;border-top:1px solid #eee}\n</style></head>\n<body>\n  <nav>\n    <strong>🏝️ AI 島</strong>\n    <span><a href=\"#\">登入</a></span>\n  </nav>\n  <header class=\"hero\">\n    <h1>Ship faster</h1>\n    <p>Indie SaaS 最佳起手 stack</p>\n    <a href=\"#\" class=\"btn\">免費試用</a>\n  </header>\n  <main style=\"padding:40px 24px;max-width:800px;margin:0 auto\">\n    <h2>Features</h2>\n    <p>挑戰：加 pricing section（3 個 card）+ contact form</p>\n  </main>\n  <footer>© 2026 SnowSaaS</footer>\n</body>\n</html>",
+          "hint": "挑戰：加 pricing section（3 個 card）+ contact form",
+          "height": 500
+        }
+      ],
+      "files": [
+        {
+          "name": "完整 landing page 範本",
+          "filename": "landing-page-starter.html",
+          "type": "starter",
+          "content": "<!DOCTYPE html>\n<html lang=\"zh-Hant\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  <meta name=\"description\" content=\"你的 SaaS 描述\">\n  <title>你的 SaaS</title>\n  <link rel=\"canonical\" href=\"https://example.com/\">\n  <meta property=\"og:title\" content=\"你的 SaaS\">\n  <meta property=\"og:image\" content=\"/og.png\">\n  <link rel=\"icon\" href=\"/favicon.svg\">\n</head>\n<body>\n  <!-- TODO: nav -->\n  <header><!-- hero --></header>\n  <main>\n    <section><!-- features --></section>\n    <section><!-- pricing --></section>\n    <section><!-- contact form --></section>\n  </main>\n  <footer></footer>\n</body>\n</html>",
+          "size": "0.5KB"
+        }
+      ],
+      "exercise": {
+        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（<header>, <main>, <footer> 等）做出一個簡單的個人介紹頁。",
+        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      }
+    },
+    {
+      "title": "語意化 HTML5：header / nav / main / article / section / aside / footer",
+      "oneLineSummary": "不只是 div，HTML5 提供語意化標籤讓螢幕閱讀器、搜尋引擎都看得懂",
+      "analogy": "像房子的格局：客廳是 main、書房是 article、走廊是 nav、陽台是 aside。把 div soup 換成語意化標籤，無障礙 + SEO 雙贏。",
+      "content": "## 7 大語意標籤\n\n### `<header>` 頁首\n網頁或區塊的頂部，可放標題、logo、導航。\n```html\n&lt;header&gt;\n  &lt;h1&gt;AI 島&lt;/h1&gt;\n  &lt;nav&gt;...&lt;/nav&gt;\n&lt;/header&gt;\n```\n\n### `<nav>` 主導航\n重要的導覽連結，**不是**所有連結都要包 nav。\n```html\n&lt;nav aria-label=\"主選單\"&gt;\n  &lt;ul&gt;\n    &lt;li&gt;&lt;a href=\"/\"&gt;首頁&lt;/a&gt;&lt;/li&gt;\n    &lt;li&gt;&lt;a href=\"/about\"&gt;關於&lt;/a&gt;&lt;/li&gt;\n  &lt;/ul&gt;\n&lt;/nav&gt;\n```\n\n### `<main>` 主內容\n**一頁只能有一個**，包住主要內容（不含 header / footer / nav）。\n\n### `<article>` 獨立內容\n可獨立分發的內容：部落格文章、新聞、評論、卡片。\n\n### `<section>` 主題章節\n一組相關內容，**通常要有標題**。\n\n### `<aside>` 旁支內容\nside bar、廣告、相關推薦、註腳。\n\n### `<footer>` 頁尾\n版權、隱私連結、社群圖標。\n\n## SEO 跟 a11y 效益\n- Google 用語意標籤理解內容結構\n- 螢幕閱讀器讓盲人用戶「跳到主內容」「跳到導航」\n- Chrome 開「閱讀模式」抓 article 內容",
+      "tip": {
+        "type": "pro",
+        "text": "SEO 工具會用語意標籤推內容權重。`<article>` 內的 `<h1>` 比一般 `<div>` 內的 `<h1>` 重要。寫對標籤、SEO 自然提升。"
+      },
+      "id": "1.17",
+      "number": "LESSON 1.17",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "1.17.auto",
+          "language": "html",
+          "title": "試試看",
+          "initialCode": "&lt;header&gt;\n  &lt;h1&gt;AI 島&lt;/h1&gt;\n  &lt;nav&gt;...&lt;/nav&gt;\n&lt;/header&gt;",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（<article>, <section>, <nav>, <header>, <main>）做出一個簡單的個人介紹頁。",
+        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "7 大語意標籤"
+        },
+        {
+          "level": 3,
+          "text": "<header> 頁首"
+        },
+        {
+          "level": 3,
+          "text": "<nav> 主導航"
+        },
+        {
+          "level": 3,
+          "text": "<main> 主內容"
+        },
+        {
+          "level": 3,
+          "text": "<article> 獨立內容"
+        },
+        {
+          "level": 3,
+          "text": "<section> 主題章節"
+        },
+        {
+          "level": 3,
+          "text": "<aside> 旁支內容"
+        },
+        {
+          "level": 3,
+          "text": "<footer> 頁尾"
+        },
+        {
+          "level": 2,
+          "text": "SEO 跟 a11y 效益"
+        }
+      ]
+    },
+    {
+      "title": "無障礙 a11y：aria 屬性 + 鍵盤導航",
+      "oneLineSummary": "不只「能看到的人」用、視障 / 鍵盤族 / 老人 / 手部不便—都是你的使用者",
+      "analogy": "台灣身障人士有 120 萬人、a11y 不是道德、是商業 + 法律（政府網站強制要求）。寫對 ARIA、所有人都能用你的網站。",
+      "content": "## ARIA 三大屬性\n\n### `aria-label` 標籤\n給沒有可見文字的元素一個無障礙名稱：\n```html\n&lt;button aria-label=\"關閉\"&gt;×&lt;/button&gt;\n&lt;a href=\"/\" aria-label=\"回首頁\"&gt;&lt;img src=\"logo.svg\"&gt;&lt;/a&gt;\n```\n\n### `aria-labelledby` 用其他元素當標籤\n```html\n&lt;h2 id=\"title\"&gt;使用者列表&lt;/h2&gt;\n&lt;table aria-labelledby=\"title\"&gt;...&lt;/table&gt;\n```\n\n### `aria-describedby` 補充描述\n```html\n&lt;input id=\"pwd\" aria-describedby=\"pwd-hint\"&gt;\n&lt;small id=\"pwd-hint\"&gt;至少 8 字、含大小寫 + 數字&lt;/small&gt;\n```\n\n## 動態狀態 `aria-*`\n```html\n&lt;button aria-pressed=\"true\"&gt;已關注&lt;/button&gt;\n&lt;details&gt;\n  &lt;summary aria-expanded=\"false\"&gt;展開更多&lt;/summary&gt;\n&lt;/details&gt;\n&lt;div role=\"alert\"&gt;您的訂單已送出！&lt;/div&gt;\n```\n\n## 鍵盤導航必備\n- 所有互動元素 `tabindex=\"0\"` 可以 Tab 到\n- ESC 關彈窗\n- Enter / Space 觸發按鈕\n- 方向鍵在 list / tab 之間移動\n\n## 焦點樣式\n```css\n/* 別關 :focus-visible！盲人 + 鍵盤族靠它 */\nbutton:focus-visible {\n  outline: 2px solid #50fa7b;\n  outline-offset: 2px;\n}\n```\n\n## 工具\n- **axe DevTools**（瀏覽器外掛）：免費掃 a11y 問題\n- **Lighthouse**：Chrome 內建、a11y 分數\n- **VoiceOver**（Mac）/ **NVDA**（Windows）：實際試聽",
+      "tip": {
+        "type": "business",
+        "text": "台灣政府網站案 80% 要求 WCAG 2.1 AA 級。會 a11y 接案直接 NT$ +20-50%、競爭少。"
+      },
+      "id": "1.18",
+      "number": "LESSON 1.18",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "1.18.auto",
+          "language": "html",
+          "title": "試試看",
+          "initialCode": "&lt;button aria-label=\"關閉\"&gt;×&lt;/button&gt;\n&lt;a href=\"/\" aria-label=\"回首頁\"&gt;&lt;img src=\"logo.svg\"&gt;&lt;/a&gt;",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（aria-describedby, aria-*, tabindex=\"0\", aria-labelledby, aria-label）做出一個簡單的個人介紹頁。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "ARIA 三大屬性"
+        },
+        {
+          "level": 3,
+          "text": "aria-label 標籤"
+        },
+        {
+          "level": 3,
+          "text": "aria-labelledby 用其他元素當標籤"
+        },
+        {
+          "level": 3,
+          "text": "aria-describedby 補充描述"
+        },
+        {
+          "level": 2,
+          "text": "動態狀態 aria-"
+        },
+        {
+          "level": 2,
+          "text": "鍵盤導航必備"
+        },
+        {
+          "level": 2,
+          "text": "焦點樣式"
+        },
+        {
+          "level": 2,
+          "text": "工具"
+        }
+      ]
+    },
+    {
+      "title": "表單：input / label / fieldset / 驗證",
+      "oneLineSummary": "表單寫不好、轉換率掉一半。Label 連結、自動填入、驗證—細節決定成敗",
+      "analogy": "為什麼有些網站填表單超順、有些填三次都還錯？關鍵在 `<label>` 配對、`autocomplete` 屬性、HTML5 內建驗證。",
+      "content": "## label 配對 input\n**必做**—不只 a11y、點 label 文字也會 focus input。\n```html\n&lt;!-- 寫法 1：for + id --&gt;\n&lt;label for=\"email\"&gt;Email&lt;/label&gt;\n&lt;input type=\"email\" id=\"email\" name=\"email\"&gt;\n\n&lt;!-- 寫法 2：包起來 --&gt;\n&lt;label&gt;\n  Email\n  &lt;input type=\"email\" name=\"email\"&gt;\n&lt;/label&gt;\n```\n\n## input type 超完整\n```html\n&lt;input type=\"email\"&gt;      &lt;!-- 手機自動跳 @ 鍵盤 --&gt;\n&lt;input type=\"tel\"&gt;        &lt;!-- 數字鍵盤 --&gt;\n&lt;input type=\"number\"&gt;     &lt;!-- 數字、有上下箭頭 --&gt;\n&lt;input type=\"date\"&gt;       &lt;!-- 日期選擇器 --&gt;\n&lt;input type=\"color\"&gt;      &lt;!-- 顏色選擇器 --&gt;\n&lt;input type=\"range\"&gt;      &lt;!-- 滑桿 --&gt;\n&lt;input type=\"search\"&gt;     &lt;!-- 搜尋框（有 X 清除） --&gt;\n&lt;input type=\"url\"&gt;\n&lt;input type=\"password\"&gt;\n&lt;input type=\"file\" accept=\"image/*\"&gt;\n```\n\n## autocomplete（神救援）\n讓 Chrome / Safari 自動填入：\n```html\n&lt;input type=\"email\" autocomplete=\"email\"&gt;\n&lt;input type=\"tel\" autocomplete=\"tel\"&gt;\n&lt;input type=\"password\" autocomplete=\"current-password\"&gt;\n&lt;input type=\"password\" autocomplete=\"new-password\"&gt;\n&lt;input autocomplete=\"name\"&gt;\n&lt;input autocomplete=\"given-name\"&gt;\n&lt;input autocomplete=\"family-name\"&gt;\n&lt;input autocomplete=\"street-address\"&gt;\n```\n\n## 內建驗證\n```html\n&lt;input type=\"email\" required&gt;\n&lt;input minlength=\"8\" maxlength=\"32\"&gt;\n&lt;input type=\"text\" pattern=\"[A-Z]{3}\\d{4}\" title=\"例：ABC1234\"&gt;\n&lt;input type=\"number\" min=\"0\" max=\"100\" step=\"0.1\"&gt;\n```\n\n## fieldset / legend 分組\n```html\n&lt;fieldset&gt;\n  &lt;legend&gt;聯絡方式&lt;/legend&gt;\n  &lt;label&gt;Email &lt;input type=\"email\"&gt;&lt;/label&gt;\n  &lt;label&gt;電話 &lt;input type=\"tel\"&gt;&lt;/label&gt;\n&lt;/fieldset&gt;\n```\n\n## 進階：表單 UX 細節\n- `inputmode=\"decimal\"` 數字鍵盤但允許小數\n- `enterkeyhint=\"send\"` 改 Enter 鍵的文字\n- `autofocus` 自動聚焦（首頁慎用）\n- `disabled` vs `readonly`：disabled 不會 submit、readonly 會",
+      "tip": {
+        "type": "practical",
+        "text": "`autocomplete` 屬性寫對、Chrome 自動填入準確率 +90%、表單轉換率 +20%。電商 / 註冊頁必加。"
+      },
+      "id": "1.19",
+      "number": "LESSON 1.19",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "1.19.auto",
+          "language": "html",
+          "title": "試試看",
+          "initialCode": "&lt;!-- 寫法 1：for + id --&gt;\n&lt;label for=\"email\"&gt;Email&lt;/label&gt;\n&lt;input type=\"email\" id=\"email\" name=\"email\"&gt;\n\n&lt;!-- 寫法 2：包起來 --&gt;\n&lt;label&gt;\n  Email\n  &lt;input type=\"email\" name=\"email\"&gt;\n&lt;/label&gt;",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（enterkeyhint=\"send\", autofocus, inputmode=\"decimal\", readonly, disabled）做出一個簡單的個人介紹頁。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "label 配對 input"
+        },
+        {
+          "level": 2,
+          "text": "input type 超完整"
+        },
+        {
+          "level": 2,
+          "text": "autocomplete（神救援）"
+        },
+        {
+          "level": 2,
+          "text": "內建驗證"
+        },
+        {
+          "level": 2,
+          "text": "fieldset / legend 分組"
+        },
+        {
+          "level": 2,
+          "text": "進階：表單 UX 細節"
+        }
+      ]
+    },
+    {
+      "title": "meta 標籤 + Open Graph + Twitter Card",
+      "oneLineSummary": "網頁分享到 LINE / Threads / FB / Twitter，預覽長怎樣由 meta 決定",
+      "analogy": "為什麼有的網頁分享出去有大圖 + 標題 + 描述、有的醜醜一行文字？關鍵在 og: 標籤。",
+      "content": "## 基本 meta\n```html\n&lt;meta charset=\"utf-8\"&gt;\n&lt;meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"&gt;\n&lt;meta name=\"description\" content=\"2026 全端養成 60 章課程\"&gt;\n&lt;meta name=\"theme-color\" content=\"#50fa7b\"&gt;\n&lt;title&gt;AI 島 - 全端養成班&lt;/title&gt;\n```\n\n## Open Graph（FB / LINE / Threads 等都吃）\n```html\n&lt;meta property=\"og:type\" content=\"website\"&gt;\n&lt;meta property=\"og:url\" content=\"https://aiisland.tw\"&gt;\n&lt;meta property=\"og:title\" content=\"AI 島 - 60 章全端養成\"&gt;\n&lt;meta property=\"og:description\" content=\"從 HTML 到 AI Agent\"&gt;\n&lt;meta property=\"og:image\" content=\"https://aiisland.tw/og.png\"&gt;\n&lt;meta property=\"og:image:width\" content=\"1200\"&gt;\n&lt;meta property=\"og:image:height\" content=\"630\"&gt;\n&lt;meta property=\"og:locale\" content=\"zh_TW\"&gt;\n```\n\n## Twitter Card\n```html\n&lt;meta name=\"twitter:card\" content=\"summary_large_image\"&gt;\n&lt;meta name=\"twitter:title\" content=\"AI 島\"&gt;\n&lt;meta name=\"twitter:description\" content=\"...\"&gt;\n&lt;meta name=\"twitter:image\" content=\"https://aiisland.tw/og.png\"&gt;\n```\n\n## OG 圖規格\n- **1200 × 630 px**（最廣相容）\n- **檔案 < 1 MB**\n- 重要文字放中間（外圍可能被裁切）\n- 用 PNG 或 JPG（不支援 SVG）\n\n## 自動產生 OG 圖\nNext.js 13+ 內建：\n```typescript\n// app/og/route.tsx\nimport { ImageResponse } from \"next/og\";\n\nexport async function GET() {\n  return new ImageResponse(\n    <div style={{ fontSize: 60, color: \"white\", background: \"#0a0e14\",\n                  width: \"100%\", height: \"100%\", display: \"flex\",\n                  alignItems: \"center\", justifyContent: \"center\" }}>\n      AI 島\n    </div>,\n    { width: 1200, height: 630 }\n  );\n}\n```\n\n## 工具\n- **opengraph.xyz**：貼網址看預覽\n- **metatags.io**：產生 + 預覽各平台\n- **og:image generator**（Vercel）",
+      "tip": {
+        "type": "business",
+        "text": "接案網站不做 OG 圖、客戶分享到 LINE 群「醜醜一行字」、超丟臉。每個案子至少做 3 張 OG（首頁 / 服務 / 聯絡）。"
+      },
+      "id": "1.20",
+      "number": "LESSON 1.20",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "1.20.auto",
+          "language": "html",
+          "title": "試試看",
+          "initialCode": "&lt;meta charset=\"utf-8\"&gt;\n&lt;meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"&gt;\n&lt;meta name=\"description\" content=\"2026 全端養成 60 章課程\"&gt;\n&lt;meta name=\"theme-color\" content=\"#50fa7b\"&gt;\n&lt;title&gt;AI 島 - 全端養成班&lt;/title&gt;",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（<header>, <main>, <footer> 等）做出一個簡單的個人介紹頁。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "基本 meta"
+        },
+        {
+          "level": 2,
+          "text": "Open Graph（FB / LINE / Threads 等都吃）"
+        },
+        {
+          "level": 2,
+          "text": "Twitter Card"
+        },
+        {
+          "level": 2,
+          "text": "OG 圖規格"
+        },
+        {
+          "level": 2,
+          "text": "自動產生 OG 圖"
+        },
+        {
+          "level": 2,
+          "text": "工具"
+        }
+      ]
+    },
+    {
+      "title": "結構化資料：JSON-LD / Schema.org",
+      "oneLineSummary": "Google 不只讀文字、讀結構化資料才知道你是部落格 / 商店 / 食譜",
+      "analogy": "為什麼有些網頁在 Google 搜尋結果有「星評」「價格」「FAQ 展開」？因為 JSON-LD 告訴 Google「這是商品」「這是評論」。",
+      "content": "## 為什麼用 JSON-LD（不是 microdata）\n2026 Google 推薦 JSON-LD：\n- 跟 HTML 分離、好維護\n- 一個 `<script>` 內全寫完\n- 不影響 HTML 結構\n\n## 常用 Schema 類型\n\n### Article 部落格 / 教學\n```html\n&lt;script type=\"application/ld+json\"&gt;\n{\n  \"@context\": \"https://schema.org\",\n  \"@type\": \"Article\",\n  \"headline\": \"Ch17 SQL 完整教學\",\n  \"image\": \"https://aiisland.tw/ch17.jpg\",\n  \"datePublished\": \"2026-05-17\",\n  \"author\": { \"@type\": \"Person\", \"name\": \"Luffysky\" }\n}\n&lt;/script&gt;\n```\n\n### Product 商品（有星評會在搜尋顯示）\n```json\n{\n  \"@context\": \"https://schema.org\",\n  \"@type\": \"Product\",\n  \"name\": \"iPhone 17 Pro\",\n  \"image\": \"https://...\",\n  \"offers\": {\n    \"@type\": \"Offer\",\n    \"price\": \"35900\",\n    \"priceCurrency\": \"TWD\"\n  },\n  \"aggregateRating\": {\n    \"@type\": \"AggregateRating\",\n    \"ratingValue\": \"4.8\",\n    \"reviewCount\": \"127\"\n  }\n}\n```\n\n### FAQ 常見問題（會在搜尋直接展開）\n```json\n{\n  \"@context\": \"https://schema.org\",\n  \"@type\": \"FAQPage\",\n  \"mainEntity\": [{\n    \"@type\": \"Question\",\n    \"name\": \"什麼是 SQL？\",\n    \"acceptedAnswer\": {\n      \"@type\": \"Answer\",\n      \"text\": \"SQL 是和資料庫溝通的標準語言...\"\n    }\n  }]\n}\n```\n\n### LocalBusiness 在地商家\n```json\n{\n  \"@type\": \"LocalBusiness\",\n  \"name\": \"GLACÉRA 陶藝\",\n  \"address\": { \"addressLocality\": \"鶯歌\", \"addressRegion\": \"新北市\" },\n  \"openingHours\": \"Mo-Fr 10:00-19:00\",\n  \"telephone\": \"+886-2-...\"\n}\n```\n\n## 測試工具\n- **Google Rich Results Test**：rich-results.google.com\n- **Schema.org Validator**：validator.schema.org\n\n## SEO 效益\n- 部落格加 FAQPage → 搜尋結果 CTR +30%\n- 商店加 Product → 出現星評、價格\n- 食譜加 Recipe → 出現烹飪時間、卡路里",
+      "tip": {
+        "type": "pro",
+        "text": "SEO 接案神器。客戶網站結構不變、只加 JSON-LD、3 個月後 CTR / 流量明顯提升。技術門檻低、效果立刻看到。"
+      },
+      "id": "1.21",
+      "number": "LESSON 1.21",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "1.21.auto",
+          "language": "html",
+          "title": "試試看",
+          "initialCode": "&lt;script type=\"application/ld+json\"&gt;\n{\n  \"@context\": \"https://schema.org\",\n  \"@type\": \"Article\",\n  \"headline\": \"Ch17 SQL 完整教學\",\n  \"image\": \"https://aiisland.tw/ch17.jpg\",\n  \"datePublished\": \"2026-05-17\",\n  \"author\": { \"@type\": \"Person\", \"name\": \"Luffysky\" }\n}\n&lt;/script&gt;",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（<script>）做出一個簡單的個人介紹頁。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼用 JSON-LD（不是 microdata）"
+        },
+        {
+          "level": 2,
+          "text": "常用 Schema 類型"
+        },
+        {
+          "level": 3,
+          "text": "Article 部落格 / 教學"
+        },
+        {
+          "level": 3,
+          "text": "Product 商品（有星評會在搜尋顯示）"
+        },
+        {
+          "level": 3,
+          "text": "FAQ 常見問題（會在搜尋直接展開）"
+        },
+        {
+          "level": 3,
+          "text": "LocalBusiness 在地商家"
+        },
+        {
+          "level": 2,
+          "text": "測試工具"
+        },
+        {
+          "level": 2,
+          "text": "SEO 效益"
+        }
+      ]
+    },
+    {
+      "title": "lazy loading + 圖片優化（picture / srcset / WebP）",
+      "oneLineSummary": "網頁慢 70% 是圖片問題。學會這幾招、Lighthouse 直接 90+ 分",
+      "analogy": "同一張圖、用對技巧、檔案小 80%、載入快 5 倍、SEO 排名 +10 位。",
+      "content": "## lazy loading（原生、不用 JS）\n```html\n&lt;!-- 第一螢幕的圖：eager（預設）--&gt;\n&lt;img src=\"hero.jpg\" alt=\"主視覺\"&gt;\n\n&lt;!-- 下方的圖：lazy（捲到才載入）--&gt;\n&lt;img src=\"below.jpg\" alt=\"...\" loading=\"lazy\"&gt;\n\n&lt;!-- iframe 也支援 --&gt;\n&lt;iframe src=\"...\" loading=\"lazy\"&gt;&lt;/iframe&gt;\n```\n\n## srcset 響應式圖\n不同螢幕載不同尺寸：\n```html\n&lt;img src=\"medium.jpg\"\n     srcset=\"small.jpg 480w, medium.jpg 768w, large.jpg 1200w\"\n     sizes=\"(max-width: 600px) 480px, (max-width: 1024px) 768px, 1200px\"\n     alt=\"...\"&gt;\n```\n\n## picture 不同格式\n新瀏覽器吃 WebP / AVIF，舊瀏覽器 fallback JPG：\n```html\n&lt;picture&gt;\n  &lt;source srcset=\"image.avif\" type=\"image/avif\"&gt;\n  &lt;source srcset=\"image.webp\" type=\"image/webp\"&gt;\n  &lt;img src=\"image.jpg\" alt=\"...\" loading=\"lazy\"&gt;\n&lt;/picture&gt;\n```\n\n## 圖片格式選擇\n- **AVIF**：最小、最美，2024+ 主流\n- **WebP**：相容性最好，比 JPG 小 30%\n- **JPG**：照片\n- **PNG**：透明背景、UI 圖\n- **SVG**：圖示、Logo（向量）\n\n## width / height（防止 layout shift）\n```html\n&lt;!-- 一定要寫，瀏覽器才能預留空間 --&gt;\n&lt;img src=\"...\" width=\"800\" height=\"600\" alt=\"...\"&gt;\n```\n\nCLS（Cumulative Layout Shift）是 Core Web Vitals 三大指標之一，沒寫 width / height 會被扣分。\n\n## 工具\n- **squoosh.app**（Google 出）：壓縮 + 轉格式\n- **TinyPNG**：傳統壓縮\n- **Next.js `<Image>`**：自動產生 srcset + WebP + lazy\n- **cloudinary**：CDN 動態裁切\n\n## Next.js Image 範例\n```tsx\nimport Image from \"next/image\";\n<Image src=\"/hero.jpg\" width={1200} height={630}\n       alt=\"...\" priority />\n```",
+      "tip": {
+        "type": "performance",
+        "text": "Lighthouse 失分 80% 在圖片。把圖換成 WebP + 加 lazy loading + 寫 width/height，分數從 60 跳到 90+。"
+      },
+      "id": "1.22",
+      "number": "LESSON 1.22",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "1.22.auto",
+          "language": "html",
+          "title": "試試看",
+          "initialCode": "&lt;!-- 第一螢幕的圖：eager（預設）--&gt;\n&lt;img src=\"hero.jpg\" alt=\"主視覺\"&gt;\n\n&lt;!-- 下方的圖：lazy（捲到才載入）--&gt;\n&lt;img src=\"below.jpg\" alt=\"...\" loading=\"lazy\"&gt;\n\n&lt;!-- iframe 也支援 --&gt;\n&lt;iframe src=\"...\" loading=\"lazy\"&gt;&lt;/iframe&gt;",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（<Image>）做出一個簡單的個人介紹頁。",
+        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（<Image>）通常在效能 / 維護性 / 擴展性卡住時才登場。",
+        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "lazy loading（原生、不用 JS）"
+        },
+        {
+          "level": 2,
+          "text": "srcset 響應式圖"
+        },
+        {
+          "level": 2,
+          "text": "picture 不同格式"
+        },
+        {
+          "level": 2,
+          "text": "圖片格式選擇"
+        },
+        {
+          "level": 2,
+          "text": "width / height（防止 layout shift）"
+        },
+        {
+          "level": 2,
+          "text": "工具"
+        },
+        {
+          "level": 2,
+          "text": "Next.js Image 範例"
+        }
+      ]
+    },
+    {
+      "title": "iframe / embed / video / audio：嵌入媒體",
+      "oneLineSummary": "YouTube / Spotify / Google Maps、HTML 嵌入第三方內容的方式",
+      "analogy": "不用自己寫播放器、第三方平台給你一段 iframe，貼就好。但要懂安全 + 效能技巧。",
+      "content": "## iframe 嵌 YouTube\n```html\n&lt;iframe width=\"560\" height=\"315\"\n        src=\"https://www.youtube.com/embed/VIDEO_ID\"\n        title=\"YouTube video\"\n        frameborder=\"0\"\n        loading=\"lazy\"\n        allow=\"accelerometer; autoplay; encrypted-media; gyroscope\"\n        allowfullscreen&gt;&lt;/iframe&gt;\n```\n\n## iframe 安全：sandbox 屬性\n**第三方內容一定要加** sandbox，限制能做的事：\n```html\n&lt;iframe src=\"https://untrusted.com\"\n        sandbox=\"allow-scripts allow-same-origin\"&gt;\n&lt;/iframe&gt;\n```\n\n可選項：\n- `allow-scripts`：允許 JS\n- `allow-same-origin`：允許同源請求\n- `allow-forms`：允許表單\n- `allow-popups`：允許彈窗\n- `allow-modals`：允許 alert\n- 不加任何 = 最嚴格沙箱\n\n## video 標籤\n```html\n&lt;video controls width=\"640\"\n       poster=\"thumbnail.jpg\"\n       preload=\"metadata\"&gt;\n  &lt;source src=\"video.mp4\" type=\"video/mp4\"&gt;\n  &lt;source src=\"video.webm\" type=\"video/webm\"&gt;\n  &lt;track kind=\"subtitles\" src=\"zh.vtt\" srclang=\"zh\" label=\"中文\"&gt;\n  您的瀏覽器不支援 video\n&lt;/video&gt;\n```\n\n屬性：\n- `controls`：顯示播放控制\n- `autoplay muted`：自動播放（必須 muted）\n- `loop`：循環\n- `poster`：未播放時的縮圖\n- `preload=\"none|metadata|auto\"`：預載策略\n\n## audio 標籤\n```html\n&lt;audio controls&gt;\n  &lt;source src=\"podcast.mp3\" type=\"audio/mpeg\"&gt;\n  &lt;source src=\"podcast.ogg\" type=\"audio/ogg\"&gt;\n&lt;/audio&gt;\n```\n\n## 嵌入 Google Map\n```html\n&lt;iframe src=\"https://www.google.com/maps/embed?pb=...\"\n        width=\"600\" height=\"450\"\n        loading=\"lazy\" allowfullscreen&gt;&lt;/iframe&gt;\n```\n\n## 影片優化\n- 影片 > 1MB **絕對不放官網**，用 YouTube / Cloudflare Stream\n- 自動播放動畫 → 用 WebP / video.muted 而不是 GIF（GIF 是 10 倍大）\n- 字幕用 .vtt 檔（純文字、可被搜尋）",
+      "tip": {
+        "type": "security",
+        "text": "iframe 嵌第三方一定要加 sandbox。沒加的話，惡意 iframe 可以彈窗、抓 cookie、改 parent 頁面。"
+      },
+      "id": "1.23",
+      "number": "LESSON 1.23",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "1.23.auto",
+          "language": "html",
+          "title": "試試看",
+          "initialCode": "&lt;iframe width=\"560\" height=\"315\"\n        src=\"https://www.youtube.com/embed/VIDEO_ID\"\n        title=\"YouTube video\"\n        frameborder=\"0\"\n        loading=\"lazy\"\n        allow=\"accelerometer; autoplay; encrypted-media; gyroscope\"\n        allowfullscreen&gt;&lt;/iframe&gt;",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（allow-same-origin, allow-forms, allow-scripts, allow-popups, allow-modals）做出一個簡單的個人介紹頁。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "iframe 嵌 YouTube"
+        },
+        {
+          "level": 2,
+          "text": "iframe 安全：sandbox 屬性"
+        },
+        {
+          "level": 2,
+          "text": "video 標籤"
+        },
+        {
+          "level": 2,
+          "text": "audio 標籤"
+        },
+        {
+          "level": 2,
+          "text": "嵌入 Google Map"
+        },
+        {
+          "level": 2,
+          "text": "影片優化"
+        }
+      ]
+    },
+    {
+      "title": "HTML 全域屬性：data-* / contenteditable / draggable",
+      "oneLineSummary": "不是只有 id / class，HTML 還有一堆冷門但好用的全域屬性",
+      "analogy": "`data-*` 自訂資料、`contenteditable` 讓 div 變編輯區、`draggable` 拖拉—寫互動 UI 超實用。",
+      "content": "## data-* 自訂屬性\n存資料用，JS 可以讀：\n```html\n&lt;button data-action=\"delete\" data-id=\"42\" data-confirm=\"true\"&gt;刪除&lt;/button&gt;\n```\n```javascript\nconst btn = document.querySelector(\"button\");\nconsole.log(btn.dataset.action);   // \"delete\"\nconsole.log(btn.dataset.id);        // \"42\"\nconsole.log(btn.dataset.confirm);   // \"true\"\n```\n\nCSS 也能用：\n```css\n[data-state=\"active\"] { color: green; }\nbutton[data-confirm=\"true\"]::after { content: \" ⚠️\"; }\n```\n\n## contenteditable 讓 div 變編輯區\n```html\n&lt;div contenteditable=\"true\"&gt;點我可以編輯&lt;/div&gt;\n&lt;div contenteditable=\"plaintext-only\"&gt;只能純文字&lt;/div&gt;\n```\n\n寫筆記 / 評論 / 富文字編輯器（Notion-style）的基礎。\n\n## draggable 拖拉\n```html\n&lt;div draggable=\"true\" id=\"card\"&gt;拖我&lt;/div&gt;\n```\n```javascript\ncard.addEventListener(\"dragstart\", e => {\n  e.dataTransfer.setData(\"text/plain\", card.id);\n});\n```\n\n## hidden 屬性\n```html\n&lt;div hidden&gt;看不到&lt;/div&gt;\n&lt;!-- 等同 display: none --&gt;\n```\n\n## title 屬性（hover tooltip）\n```html\n&lt;abbr title=\"HyperText Markup Language\"&gt;HTML&lt;/abbr&gt;\n&lt;button title=\"送出表單\"&gt;送出&lt;/button&gt;\n```\n\n## lang 屬性（多語言）\n```html\n&lt;html lang=\"zh-Hant\"&gt;\n&lt;p&gt;This is English &lt;span lang=\"zh-Hant\"&gt;這是中文&lt;/span&gt;&lt;/p&gt;\n```\n\n讓 Chrome / 翻譯工具 / 螢幕閱讀器知道語言。\n\n## spellcheck / autocapitalize\n```html\n&lt;textarea spellcheck=\"true\"&gt;&lt;/textarea&gt;\n&lt;input autocapitalize=\"words\"&gt;  &lt;!-- 每個單字首字大寫 --&gt;\n&lt;input autocapitalize=\"off\"&gt;    &lt;!-- 不自動大寫（密碼用）--&gt;\n```\n\n## dir 方向\n```html\n&lt;p dir=\"rtl\"&gt;阿拉伯文 / 希伯來文&lt;/p&gt;\n```\n\n## inputmode（手機鍵盤）\n```html\n&lt;input type=\"text\" inputmode=\"numeric\"&gt;  &lt;!-- 數字鍵盤 --&gt;\n&lt;input type=\"text\" inputmode=\"decimal\"&gt;  &lt;!-- 小數鍵盤 --&gt;\n&lt;input type=\"text\" inputmode=\"tel\"&gt;      &lt;!-- 電話鍵盤 --&gt;\n```",
+      "tip": {
+        "type": "pro",
+        "text": "data-* + CSS attribute selector 可以做出超多互動 UI 不用 JS。例如 dropdown、tab、accordion 都可純 CSS 寫。"
+      },
+      "id": "1.24",
+      "number": "LESSON 1.24",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "1.24.auto",
+          "language": "html",
+          "title": "試試看",
+          "initialCode": "&lt;button data-action=\"delete\" data-id=\"42\" data-confirm=\"true\"&gt;刪除&lt;/button&gt;",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（<header>, <main>, <footer> 等）做出一個簡單的個人介紹頁。",
+        "hint": "課程內有 12 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "data- 自訂屬性"
+        },
+        {
+          "level": 2,
+          "text": "contenteditable 讓 div 變編輯區"
+        },
+        {
+          "level": 2,
+          "text": "draggable 拖拉"
+        },
+        {
+          "level": 2,
+          "text": "hidden 屬性"
+        },
+        {
+          "level": 2,
+          "text": "title 屬性（hover tooltip）"
+        },
+        {
+          "level": 2,
+          "text": "lang 屬性（多語言）"
+        },
+        {
+          "level": 2,
+          "text": "spellcheck / autocapitalize"
+        },
+        {
+          "level": 2,
+          "text": "dir 方向"
+        },
+        {
+          "level": 2,
+          "text": "inputmode（手機鍵盤）"
+        }
+      ]
+    },
+    {
+      "title": "整章實戰：寫一張可發佈的 Portfolio 頁",
+      "oneLineSummary": "把整章學的綜合應用、做出履歷可放的個人作品",
+      "analogy": "不只是練習、做出可以放到履歷、放到客戶面前的個人網站。一頁完成、全部技能展示。",
+      "content": "## 完整檔案結構\n```\nportfolio/\n├── index.html\n├── style.css\n├── og.png (1200×630)\n├── favicon.svg\n└── images/\n    ├── avatar.webp\n    └── projects/\n```\n\n## index.html 範本（重點段）\n```html\n&lt;!DOCTYPE html&gt;\n&lt;html lang=\"zh-Hant\"&gt;\n&lt;head&gt;\n  &lt;meta charset=\"utf-8\"&gt;\n  &lt;meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"&gt;\n  &lt;title&gt;Luffysky - 全端工程師 / Indie Hacker&lt;/title&gt;\n  &lt;meta name=\"description\" content=\"鶯歌出身、SnowRealm 創辦人、專注 AI 應用 + 一人公司\"&gt;\n\n  &lt;!-- Open Graph --&gt;\n  &lt;meta property=\"og:title\" content=\"Luffysky\"&gt;\n  &lt;meta property=\"og:description\" content=\"全端工程師 / Indie Hacker\"&gt;\n  &lt;meta property=\"og:image\" content=\"/og.png\"&gt;\n  &lt;meta property=\"og:type\" content=\"profile\"&gt;\n  &lt;meta property=\"og:locale\" content=\"zh_TW\"&gt;\n\n  &lt;link rel=\"icon\" href=\"/favicon.svg\"&gt;\n  &lt;link rel=\"stylesheet\" href=\"style.css\"&gt;\n\n  &lt;!-- JSON-LD 結構化資料 --&gt;\n  &lt;script type=\"application/ld+json\"&gt;\n  {\n    \"@context\": \"https://schema.org\",\n    \"@type\": \"Person\",\n    \"name\": \"Luffysky\",\n    \"jobTitle\": \"Full-stack Engineer\",\n    \"url\": \"https://luffysky.tw\",\n    \"sameAs\": [\n      \"https://twitter.com/luffysky\",\n      \"https://github.com/luffysky\"\n    ]\n  }\n  &lt;/script&gt;\n&lt;/head&gt;\n\n&lt;body&gt;\n  &lt;header&gt;\n    &lt;nav aria-label=\"主選單\"&gt;\n      &lt;ul&gt;\n        &lt;li&gt;&lt;a href=\"#about\"&gt;關於&lt;/a&gt;&lt;/li&gt;\n        &lt;li&gt;&lt;a href=\"#projects\"&gt;作品&lt;/a&gt;&lt;/li&gt;\n        &lt;li&gt;&lt;a href=\"#contact\"&gt;聯絡&lt;/a&gt;&lt;/li&gt;\n      &lt;/ul&gt;\n    &lt;/nav&gt;\n  &lt;/header&gt;\n\n  &lt;main&gt;\n    &lt;section id=\"hero\"&gt;\n      &lt;h1&gt;Hi, 我是 Luffysky&lt;/h1&gt;\n      &lt;p&gt;全端工程師、SnowRealm 創辦人、Indie hacker&lt;/p&gt;\n    &lt;/section&gt;\n\n    &lt;section id=\"about\"&gt;\n      &lt;h2&gt;關於我&lt;/h2&gt;\n      &lt;article&gt;...&lt;/article&gt;\n    &lt;/section&gt;\n\n    &lt;section id=\"projects\"&gt;\n      &lt;h2&gt;作品集&lt;/h2&gt;\n      &lt;article class=\"project\"&gt;\n        &lt;picture&gt;\n          &lt;source srcset=\"img.avif\" type=\"image/avif\"&gt;\n          &lt;source srcset=\"img.webp\" type=\"image/webp\"&gt;\n          &lt;img src=\"img.jpg\" width=\"600\" height=\"400\"\n               alt=\"專案截圖\" loading=\"lazy\"&gt;\n        &lt;/picture&gt;\n        &lt;h3&gt;AI 島&lt;/h3&gt;\n        &lt;p&gt;60 章全端養成課程網站&lt;/p&gt;\n      &lt;/article&gt;\n    &lt;/section&gt;\n\n    &lt;section id=\"contact\"&gt;\n      &lt;h2&gt;聯絡&lt;/h2&gt;\n      &lt;form&gt;\n        &lt;label&gt;\n          您的 Email\n          &lt;input type=\"email\" name=\"email\" required\n                 autocomplete=\"email\"&gt;\n        &lt;/label&gt;\n        &lt;label&gt;\n          訊息\n          &lt;textarea name=\"message\" required\n                    minlength=\"10\" maxlength=\"500\"&gt;&lt;/textarea&gt;\n        &lt;/label&gt;\n        &lt;button type=\"submit\"&gt;送出&lt;/button&gt;\n      &lt;/form&gt;\n    &lt;/section&gt;\n  &lt;/main&gt;\n\n  &lt;footer&gt;\n    &lt;p&gt;© 2026 Luffysky · &lt;a href=\"https://snowrealm.pet\"&gt;SnowRealm&lt;/a&gt;&lt;/p&gt;\n  &lt;/footer&gt;\n&lt;/body&gt;\n&lt;/html&gt;\n```\n\n## 檢查清單\n- [ ] `<html lang=\"zh-Hant\">` 設好\n- [ ] Meta description 寫 100-150 字\n- [ ] OG image 1200×630\n- [ ] favicon.svg（不只 .ico）\n- [ ] JSON-LD 結構化資料\n- [ ] 所有圖片有 alt + loading=\"lazy\" + width/height\n- [ ] 表單有 label + autocomplete + required\n- [ ] 語意化標籤 header / nav / main / article / section / footer\n- [ ] Lighthouse 跑一次、目標 90+\n- [ ] 用 Mobile-friendly Test\n- [ ] 註冊免費 domain（Cloudflare）+ 部署 Cloudflare Pages\n\n## 部署 1 分鐘\n```bash\n# Cloudflare Pages（免費、超快）\nnpx wrangler pages deploy ./portfolio --project-name=my-portfolio\n```",
+      "tip": {
+        "type": "milestone",
+        "text": "完成這個 portfolio = 你能投履歷了。寫對 HTML、面試官打開 Devtools 看 source、第一印象 +50%。Senior engineer 看新人就看 HTML 結構。"
+      },
+      "id": "1.25",
+      "number": "LESSON 1.25",
+      "xp": 15,
+      "playgrounds": [
+        {
+          "key": "1.25.auto",
+          "language": "html",
+          "title": "試試看",
+          "initialCode": "&lt;!DOCTYPE html&gt;\n&lt;html lang=\"zh-Hant\"&gt;\n&lt;head&gt;\n  &lt;meta charset=\"utf-8\"&gt;\n  &lt;meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"&gt;\n  &lt;title&gt;Luffysky - 全端工程師 / Indie Hacker&lt;/title&gt;\n  &lt;meta name=\"description\" content=\"鶯歌出身、SnowRealm 創辦人、專注 AI 應用 + 一人公司\"&gt;\n\n  &lt;!-- Open Graph --&gt;\n  &lt;meta property=\"og:title\" content=\"Luffysky\"&gt;\n  &lt;meta property=\"og:description\" content=\"全端工程師 / Indie Hacker\"&gt;\n  &lt;meta property=\"og:image\" content=\"/og.png\"&gt;\n  &lt;meta property=\"og:type\" content=\"profile\"&gt;\n  &lt;meta property=\"og:locale\" content=\"zh_TW\"&gt;\n\n  &lt;link rel=\"icon\" href=\"/favicon.svg\"&gt;\n  &lt;link rel=\"stylesheet\" href=\"style.css\"&gt;\n\n  &lt;!-- JSON-LD 結構化資料 --&gt;\n  &lt;script type=\"application/ld+json\"&gt;\n  {\n    \"@context\": \"https://schema.org\",\n    \"@type\": \"Person\",\n    \"name\": \"Luffysky\",\n    \"jobTitle\": \"Full-stack Engineer\",\n    \"url\": \"https://luffysky.tw\",\n    \"sameAs\": [\n      \"https://twitter.com/luffysky\",\n      \"https://github.com/luffysky\"\n    ]\n  }\n  &lt;/script&gt;\n&lt;/head&gt;\n\n&lt;body&gt;\n  &lt;header&gt;\n    &lt;nav aria-label=\"主選單\"&gt;\n      &lt;ul&gt;\n        &lt;li&gt;&lt;a href=\"#about\"&gt;關於&lt;/a&gt;&lt;/li&gt;\n        &lt;li&gt;&lt;a href=\"#projects\"&gt;作品&lt;/a&gt;&lt;/li&gt;\n        &lt;li&gt;&lt;a href=\"#contact\"&gt;聯絡&lt;/a&gt;&lt;/li&gt;\n      &lt;/ul&gt;\n    &lt;/nav&gt;\n  &lt;/header&gt;\n\n  &lt;main&gt;\n    &lt;section id=\"hero\"&gt;\n      &lt;h1&gt;Hi, 我是 Luffysky&lt;/h1&gt;\n      &lt;p&gt;全端工程師、SnowRealm 創辦人、Indie hacker&lt;/p&gt;\n    &lt;/section&gt;\n\n    &lt;section id=\"about\"&gt;\n      &lt;h2&gt;關於我&lt;/h2&gt;\n      &lt;article&gt;...&lt;/article&gt;\n    &lt;/section&gt;\n\n    &lt;section id=\"projects\"&gt;\n      &lt;h2&gt;作品集&lt;/h2&gt;\n      &lt;article class=\"project\"&gt;\n        &lt;picture&gt;\n          &lt;source srcset=\"img.avif\" type=\"image/avif\"&gt;\n          &lt;source srcset=\"img.webp\" type=\"image/webp\"&gt;\n          &lt;img src=\"img.jpg\" width=\"600\" height=\"400\"\n               alt=\"專案截圖\" loading=\"lazy\"&gt;\n        &lt;/picture&gt;\n        &lt;h3&gt;AI 島&lt;/h3&gt;\n        &lt;p&gt;60 章全端養成課程網站&lt;/p&gt;\n      &lt;/article&gt;\n    &lt;/section&gt;\n\n    &lt;section id=\"contact\"&gt;\n      &lt;h2&gt;聯絡&lt;/h2&gt;\n      &lt;form&gt;\n        &lt;label&gt;\n          您的 Email\n          &lt;input type=\"email\" name=\"email\" required\n                 autocomplete=\"email\"&gt;\n        &lt;/label&gt;\n        &lt;label&gt;\n          訊息\n          &lt;textarea name=\"message\" required\n                    minlength=\"10\" maxlength=\"500\"&gt;&lt;/textarea&gt;\n        &lt;/label&gt;\n        &lt;button type=\"submit\"&gt;送出&lt;/button&gt;\n      &lt;/form&gt;\n    &lt;/section&gt;\n  &lt;/main&gt;\n\n  &lt;footer&gt;\n    &lt;p&gt;© 2026 Luffysky · &lt;a href=\"https://snowrealm.pet\"&gt;SnowRealm&lt;/a&gt;&lt;/p&gt;\n  &lt;/footer&gt;\n&lt;/body&gt;\n&lt;/html&gt;",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（<html lang=\"zh-Hant\">）做出一個簡單的個人介紹頁。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "完整檔案結構"
+        },
+        {
+          "level": 2,
+          "text": "index.html 範本（重點段）"
+        },
+        {
+          "level": 2,
+          "text": "檢查清單"
+        },
+        {
+          "level": 2,
+          "text": "部署 1 分鐘"
+        }
+      ]
+    }
+  ],
+  "boss": {
+    "name": "語法守衛獸",
+    "hp": 80,
+    "emoji": "🐉",
+    "description": "盤踞網頁源頭、用 <tag> 拘住新手"
+  },
+  "quiz": {
+    "id": "ch01-quiz",
+    "questions": [],
+    "xpReward": 50,
+    "perfectBonus": 50
+  }
+}

@@ -1,0 +1,542 @@
+{
+  "id": 35,
+  "slug": "csharp",
+  "stage": 4,
+  "title": "C# + .NET",
+  "subtitle": "Windows / Unity",
+  "icon": "boxes",
+  "description": "C# + .NET：Windows / Unity",
+  "status": "published",
+  "difficulty": "intermediate",
+  "prerequisites": [
+    7
+  ],
+  "estimatedHours": 14,
+  "outcomes": [
+    "理解核心概念",
+    "實作主流工具",
+    "整章實戰可發佈作品",
+    "知道生態 / 接案行情",
+    "對齊 2026 業界主流"
+  ],
+  "lessons": [
+    {
+      "title": "C# + .NET 為什麼選",
+      "oneLineSummary": "Microsoft 出、跨平台、企業愛",
+      "analogy": "台灣金融 / 政府常用。",
+      "content": "## C# 是什麼\n- Microsoft 2000 年發表\n- 類 Java 但更現代\n- 主要寫 Windows / 遊戲 / Web / Mobile\n\n## .NET vs .NET Framework\n- .NET Framework：舊、Windows only（停止支援中）\n- .NET 8 / 9：新、跨平台（Linux / macOS / Windows）\n\n新專案永遠選 .NET 8+。\n\n## 為什麼選\n\n### ✅ 適合\n- Microsoft 環境\n- 金融 / 政府（台灣大量用）\n- Unity 遊戲開發\n- 高性能 web API\n- 企業內部系統\n\n### ❌ 不適合\n- 個人 / Indie startup\n- 開源優先環境\n- 全 stack 一致（用 TS 簡單）\n\n## C# vs Java\n\n| 面向 | C# | Java |\n|---|---|---|\n| 語法 | 現代、語法糖多 | 較囉嗦 |\n| 跨平台 | 8+ 全跨 | 全跨 |\n| 生態 | 大、MS-centric | 巨、開源多 |\n| Mobile | MAUI / Xamarin | Spring 不適合 mobile |\n| 遊戲 | Unity 主流 | 弱 |\n| 求職（台灣）| 中等 | 多 |\n\n## ASP.NET Core\n.NET 的 web framework：\n- 高性能（Top 10）\n- 跨平台\n- 內建 DI、middleware、auth\n\n## 學習路線\n1. C# 基礎（語法、OOP、LINQ）\n2. ASP.NET Core\n3. EF Core（ORM）\n4. Identity（auth）\n5. 部署（Azure / Docker）\n\n## 工具\n- **Visual Studio**：Windows / Mac\n- **Rider**：JetBrains（推薦）\n- **VS Code + C# Dev Kit**\n\n## 心法\n- .NET 8+ 是現代\n- 別碰 .NET Framework\n- Rider > VS Code > Visual Studio\n- 學一次、企業職缺多",
+      "tip": {
+        "type": "practical",
+        "text": "台灣金融 / 政府很常用 .NET。"
+      },
+      "id": "35.1",
+      "number": "LESSON 35.1",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "35.1.auto",
+          "language": "csharp",
+          "title": "試試看",
+          "initialCode": "using System;\nusing System.Linq;\n\nclass Program {\n    static void Main() {\n        Console.WriteLine(\"Hello AI 島！\");\n\n        var nums = new[] { 1, 2, 3, 4, 5 };\n        Console.WriteLine($\"總和: {nums.Sum()}\");\n        Console.WriteLine($\"平均: {nums.Average()}\");\n    }\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "找一個你身邊的例子、用「C# + .NET 為什麼選」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "C# 是什麼"
+        },
+        {
+          "level": 2,
+          "text": ".NET vs .NET Framework"
+        },
+        {
+          "level": 2,
+          "text": "為什麼選"
+        },
+        {
+          "level": 3,
+          "text": "✅ 適合"
+        },
+        {
+          "level": 3,
+          "text": "❌ 不適合"
+        },
+        {
+          "level": 2,
+          "text": "C# vs Java"
+        },
+        {
+          "level": 2,
+          "text": "ASP.NET Core"
+        },
+        {
+          "level": 2,
+          "text": "學習路線"
+        },
+        {
+          "level": 2,
+          "text": "工具"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "ASP.NET Core 起步",
+      "oneLineSummary": "建一個 REST API、跟 Spring Boot 類似",
+      "analogy": "寫起來現代、性能爆好。",
+      "content": "## 安裝\n```bash\n# 裝 .NET 8 SDK（https://dotnet.microsoft.com）\ndotnet --version\n```\n\n## 建專案\n```bash\ndotnet new webapi -n MyApp\ncd MyApp\ndotnet run\n```\n\n## Minimal API（最簡單）\n```csharp\nvar builder = WebApplication.CreateBuilder(args);\nvar app = builder.Build();\n\napp.MapGet(\"/\", () => \"Hello, World!\");\n\napp.MapGet(\"/users/{id}\", (int id) => new { id, name = \"Alice\" });\n\napp.MapPost(\"/users\", (User user) => {\n    return Results.Created($\"/users/{user.Id}\", user);\n});\n\napp.Run();\n\nrecord User(int Id, string Name);\n```\n\n## Controller-based\n```csharp\n[ApiController]\n[Route(\"api/[controller]\")]\npublic class UsersController : ControllerBase\n{\n    private readonly UserService _service;\n    \n    public UsersController(UserService service)\n    {\n        _service = service;\n    }\n    \n    [HttpGet]\n    public async Task<IEnumerable<User>> GetAll()\n    {\n        return await _service.GetAllAsync();\n    }\n    \n    [HttpGet(\"{id}\")]\n    public async Task<ActionResult<User>> GetById(int id)\n    {\n        var user = await _service.GetByIdAsync(id);\n        if (user == null) return NotFound();\n        return user;\n    }\n    \n    [HttpPost]\n    public async Task<ActionResult<User>> Create(CreateUserDto dto)\n    {\n        var user = await _service.CreateAsync(dto);\n        return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);\n    }\n}\n```\n\n## EF Core（ORM）\n```csharp\npublic class User\n{\n    public int Id { get; set; }\n    public string Email { get; set; }\n    public string Name { get; set; }\n    public DateTime CreatedAt { get; set; }\n}\n\npublic class AppDbContext : DbContext\n{\n    public DbSet<User> Users { get; set; }\n    \n    protected override void OnConfiguring(DbContextOptionsBuilder options)\n    {\n        options.UseNpgsql(\"Host=localhost;Database=mydb\");\n    }\n}\n```\n\n```csharp\nvar users = await db.Users\n    .Where(u => u.CreatedAt > DateTime.UtcNow.AddDays(-7))\n    .OrderBy(u => u.Name)\n    .ToListAsync();\n\nawait db.Users.AddAsync(new User { Email = \"...\", Name = \"...\" });\nawait db.SaveChangesAsync();\n```\n\n## Migration\n```bash\ndotnet ef migrations add CreateUsers\ndotnet ef database update\n```\n\n## DI（Dependency Injection）\n```csharp\n// Program.cs\nbuilder.Services.AddDbContext<AppDbContext>();\nbuilder.Services.AddScoped<UserService>();\n\n// Service\npublic class UserService\n{\n    private readonly AppDbContext _db;\n    \n    public UserService(AppDbContext db) => _db = db;\n    \n    public async Task<List<User>> GetAllAsync() => await _db.Users.ToListAsync();\n}\n```\n\n## Validation\n```csharp\npublic class CreateUserDto\n{\n    [Required]\n    [EmailAddress]\n    public string Email { get; set; }\n    \n    [Required]\n    [MinLength(2)]\n    public string Name { get; set; }\n}\n```\n\n## 部署\n```bash\ndotnet publish -c Release -o ./publish\n\n# Docker\nFROM mcr.microsoft.com/dotnet/aspnet:8.0\nCOPY publish/ .\nENTRYPOINT [\"dotnet\", \"MyApp.dll\"]\n```\n\n## Auth\n```bash\ndotnet add package Microsoft.AspNetCore.Authentication.JwtBearer\n```\n\n```csharp\nbuilder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)\n    .AddJwtBearer(options => {\n        options.TokenValidationParameters = new TokenValidationParameters\n        {\n            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret))\n        };\n    });\n```\n\n## 心法\n- Minimal API 適合小 service\n- Controller 適合大 app\n- EF Core 寫起來爽\n- 部署 Docker / Azure 都很 smooth\n- 性能在 .NET 8 + AOT 飛升",
+      "tip": {
+        "type": "milestone",
+        "text": "ASP.NET Core 是 Spring Boot 的對手。學起來更現代。"
+      },
+      "id": "35.2",
+      "number": "LESSON 35.2",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "35.2.auto",
+          "language": "csharp",
+          "title": "試試看",
+          "initialCode": "var builder = WebApplication.CreateBuilder(args);\nvar app = builder.Build();\n\napp.MapGet(\"/\", () => \"Hello, World!\");\n\napp.MapGet(\"/users/{id}\", (int id) => new { id, name = \"Alice\" });\n\napp.MapPost(\"/users\", (User user) => {\n    return Results.Created($\"/users/{user.Id}\", user);\n});\n\napp.Run();\n\nrecord User(int Id, string Name);",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 12 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "安裝"
+        },
+        {
+          "level": 2,
+          "text": "建專案"
+        },
+        {
+          "level": 2,
+          "text": "Minimal API（最簡單）"
+        },
+        {
+          "level": 2,
+          "text": "Controller-based"
+        },
+        {
+          "level": 2,
+          "text": "EF Core（ORM）"
+        },
+        {
+          "level": 2,
+          "text": "Migration"
+        },
+        {
+          "level": 2,
+          "text": "DI（Dependency Injection）"
+        },
+        {
+          "level": 2,
+          "text": "Validation"
+        },
+        {
+          "level": 2,
+          "text": "部署"
+        },
+        {
+          "level": 2,
+          "text": "Auth"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": ".NET 進階 + 接案",
+      "oneLineSummary": "C# 接案市場 + 進階主題",
+      "analogy": "台灣金融 / 政府需求穩定。",
+      "content": "## SignalR（即時通訊）\nWebSocket / SSE 統一 API：\n```csharp\npublic class ChatHub : Hub\n{\n    public async Task SendMessage(string user, string message)\n    {\n        await Clients.All.SendAsync(\"ReceiveMessage\", user, message);\n    }\n}\n\napp.MapHub<ChatHub>(\"/chathub\");\n```\n\nClient（JS）：\n```javascript\nconst connection = new signalR.HubConnectionBuilder()\n    .withUrl(\"/chathub\")\n    .build();\n\nawait connection.start();\nawait connection.invoke(\"SendMessage\", \"Alice\", \"Hello\");\nconnection.on(\"ReceiveMessage\", (user, msg) => console.log(`${user}: ${msg}`));\n```\n\n## Background Jobs\n```csharp\npublic class EmailWorker : BackgroundService\n{\n    protected override async Task ExecuteAsync(CancellationToken stoppingToken)\n    {\n        while (!stoppingToken.IsCancellationRequested)\n        {\n            await SendPendingEmails();\n            await Task.Delay(60000, stoppingToken);\n        }\n    }\n}\n\nbuilder.Services.AddHostedService<EmailWorker>();\n```\n\nHangfire 是 popular cron lib。\n\n## gRPC\n比 REST 快、Microsoft 力推：\n```csharp\npublic class GreeterService : Greeter.GreeterBase\n{\n    public override Task<HelloReply> SayHello(HelloRequest request, ServerCallContext context)\n    {\n        return Task.FromResult(new HelloReply { Message = $\"Hello {request.Name}\" });\n    }\n}\n\napp.MapGrpcService<GreeterService>();\n```\n\n## Blazor（C# 寫前端）\n```razor\n@page \"/counter\"\n\n<h1>Counter</h1>\n<p>Current count: @currentCount</p>\n<button @onclick=\"Increment\">Click me</button>\n\n@code {\n    private int currentCount = 0;\n    \n    private void Increment()\n    {\n        currentCount++;\n    }\n}\n```\n\n兩種模式：\n- Server：HTML 在 server 渲染、SignalR 連線\n- WASM：跑在瀏覽器（WebAssembly）\n\n替代 React、但生態不如。\n\n## MAUI（跨平台 App）\n.NET MAUI：一份 code 跑 iOS / Android / Windows / Mac。\n類 Flutter / React Native。\n\n## Unity（遊戲）\n全用 C#：\n- 2D / 3D 遊戲\n- AR / VR\n- Indie 遊戲首選\n\n## 接案市場（台灣 2026）\n\n### 全職\n- 金融 / 銀行：NT$ 80-180k\n- 政府專案：NT$ 60-120k\n- 跨國企業：NT$ 100-200k\n\n### 接案\n- 企業內部系統：NT$ 200k-2M\n- ERP 客製：NT$ 500k-5M\n- Unity 遊戲：NT$ 100k-1M\n\n## 為什麼接案少\n- 大企業愛找 vendor、不 freelance\n- 案子大、要團隊\n- Indie 個人接到的多是維護\n\n## Indie 路線\n- 全職企業薪水高\n- 副業：Unity 遊戲\n- SaaS：不流行（用 Node / Go 更輕）\n\n## 學習資源\n- Microsoft Learn（官方、免費）\n- .NET YouTube channel\n- Tim Corey YouTube\n- Nick Chapsas YouTube\n\n## 心法\n- C# 是「養老」型語言\n- 學會 + 進企業 = 穩定高薪\n- 不適合 Indie SaaS\n- Unity 遊戲是個人變現出路",
+      "tip": {
+        "type": "practical",
+        "text": "台灣 .NET 全職很穩。Indie 接案不多。"
+      },
+      "id": "35.3",
+      "number": "LESSON 35.3",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "35.3.auto",
+          "language": "csharp",
+          "title": "試試看",
+          "initialCode": "public class ChatHub : Hub\n{\n    public async Task SendMessage(string user, string message)\n    {\n        await Clients.All.SendAsync(\"ReceiveMessage\", user, message);\n    }\n}\n\napp.MapHub<ChatHub>(\"/chathub\");",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "挑一個你做過的舊專案、用本節「.NET 進階 + 接案」介紹的進階技術重構它。",
+        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（${user}: ${msg}）通常在效能 / 維護性 / 擴展性卡住時才登場。",
+        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "SignalR（即時通訊）"
+        },
+        {
+          "level": 2,
+          "text": "Background Jobs"
+        },
+        {
+          "level": 2,
+          "text": "gRPC"
+        },
+        {
+          "level": 2,
+          "text": "Blazor（C# 寫前端）"
+        },
+        {
+          "level": 2,
+          "text": "MAUI（跨平台 App）"
+        },
+        {
+          "level": 2,
+          "text": "Unity（遊戲）"
+        },
+        {
+          "level": 2,
+          "text": "接案市場（台灣 2026）"
+        },
+        {
+          "level": 3,
+          "text": "全職"
+        },
+        {
+          "level": 3,
+          "text": "接案"
+        },
+        {
+          "level": 2,
+          "text": "為什麼接案少"
+        },
+        {
+          "level": 2,
+          "text": "Indie 路線"
+        },
+        {
+          "level": 2,
+          "text": "學習資源"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": ".NET Core / 9 完整心法",
+      "oneLineSummary": "Microsoft 生態、跨平台、性能優",
+      "analogy": "不只 Windows、Mac / Linux 都跑。",
+      "content": "## .NET 9（2025）\n\n### 是什麼\nMicrosoft 主推 backend framework。\n.NET Core → .NET 5/6/7/8/9（每年新版）。\n\n### 跨平台\n- Windows / macOS / Linux\n- Docker / K8s\n- 雲端 / 邊緣\n\n### 性能\n- 業界前段（跟 Go / Rust 一級）\n- ASP.NET Core 是 benchmarks 常勝軍\n\n## Hello World\n```csharp\n// Program.cs\nvar builder = WebApplication.CreateBuilder(args);\nvar app = builder.Build();\n\napp.MapGet(\"/\", () => \"Hello, World!\");\napp.MapGet(\"/api/users/{id}\", (int id) => new { id, name = \"Alice\" });\n\napp.Run();\n```\n\n3 行就跑得起來。\n\n跑：\n```bash\ndotnet run\n```\n\n## Minimal API vs Controller\n\n### Minimal（簡單）\n```csharp\napp.MapPost(\"/users\", (UserDto dto) => {\n    var user = userService.Create(dto);\n    return Results.Created($\"/users/{user.Id}\", user);\n});\n```\n\n### Controller（傳統、適合大專案）\n```csharp\n[ApiController]\n[Route(\"api/[controller]\")]\npublic class UsersController : ControllerBase\n{\n    private readonly IUserService _service;\n    \n    public UsersController(IUserService service) {\n        _service = service;\n    }\n    \n    [HttpPost]\n    public async Task<IActionResult> Create(UserDto dto) {\n        var user = await _service.CreateAsync(dto);\n        return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);\n    }\n}\n```\n\n## Entity Framework Core\n\n```csharp\npublic class AppDbContext : DbContext\n{\n    public DbSet<User> Users { get; set; }\n    public DbSet<Post> Posts { get; set; }\n}\n\n// Service\nvar users = await db.Users\n    .Where(u => u.IsActive)\n    .Include(u => u.Posts)\n    .ToListAsync();\n```\n\nLINQ to SQL、跟 JPA 類似。\n\n## DI（Dependency Injection）\n```csharp\nbuilder.Services.AddScoped<IUserService, UserService>();\nbuilder.Services.AddDbContext<AppDbContext>(opts =>\n    opts.UseNpgsql(connectionString));\n```\n\n## 心法\n- .NET 9+ 比 Java 快、現代\n- 微軟生態強（Azure / Office）\n- 適合：企業 / 金融 / 接案\n- Indie 用較少、但越來越多\n- C# 語法現代、像 Java + TypeScript",
+      "tip": {
+        "type": "practical",
+        "text": ".NET 性能逼近 Go、學習比 Java 平。"
+      },
+      "exercise": {
+        "question": "把本節「.NET Core / 9 完整心法」的核心心法、轉成一個具體的「我今天 / 這週要做」的小行動。",
+        "hint": "心法 ≠ 知識、心法要落地。「我從今天起、每天 ___」這種格式。",
+        "answer": "好行動 = 小（5-10 分鐘以內）+ 具體（不模糊）+ 可量化（有沒有做得出來）。例：『每天起床先列 3 件最重要的事再開電腦』比『更專注』可執行 100 倍。配合 streak（連續紀錄）讓自己上癮。"
+      },
+      "id": "35.4",
+      "number": "LESSON 35.4",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "35.4.auto",
+          "language": "csharp",
+          "title": "試試看",
+          "initialCode": "// Program.cs\nvar builder = WebApplication.CreateBuilder(args);\nvar app = builder.Build();\n\napp.MapGet(\"/\", () => \"Hello, World!\");\napp.MapGet(\"/api/users/{id}\", (int id) => new { id, name = \"Alice\" });\n\napp.Run();",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "outline": [
+        {
+          "level": 2,
+          "text": ".NET 9（2025）"
+        },
+        {
+          "level": 3,
+          "text": "是什麼"
+        },
+        {
+          "level": 3,
+          "text": "跨平台"
+        },
+        {
+          "level": 3,
+          "text": "性能"
+        },
+        {
+          "level": 2,
+          "text": "Hello World"
+        },
+        {
+          "level": 2,
+          "text": "Minimal API vs Controller"
+        },
+        {
+          "level": 3,
+          "text": "Minimal（簡單）"
+        },
+        {
+          "level": 3,
+          "text": "Controller（傳統、適合大專案）"
+        },
+        {
+          "level": 2,
+          "text": "Entity Framework Core"
+        },
+        {
+          "level": 2,
+          "text": "DI（Dependency Injection）"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Blazor + WPF + MAUI",
+      "oneLineSummary": "微軟全平台 UI 方案",
+      "analogy": "想做 C# 全棧必懂。",
+      "content": "## Blazor（Web）\n\nC# 跑在瀏覽器！不寫 JS。\n\n### Blazor Server\n```razor\n@page \"/counter\"\n\n<h1>Counter</h1>\n<p>Count: @count</p>\n<button @onclick=\"Increment\">+</button>\n\n@code {\n    int count = 0;\n    void Increment() => count++;\n}\n```\n\nUI 在 server、SignalR 同步。\n\n### Blazor WebAssembly\nC# 編譯成 WASM、跑瀏覽器：\n- 完整 SPA\n- 離線可用\n- 但 bundle 較大（~ 3-5MB）\n\n### .NET 8+ Blazor United\nServer + WASM 混合模式。\n\n## WPF（Windows Desktop）\n\n```xml\n<Window x:Class=\"MyApp.MainWindow\">\n    <Grid>\n        <Button Content=\"Click me\" Click=\"OnClick\" />\n    </Grid>\n</Window>\n```\n\n```csharp\nvoid OnClick(object sender, RoutedEventArgs e) {\n    MessageBox.Show(\"Hello\");\n}\n```\n\n只 Windows、適合：企業內部工具。\n\n## MAUI（跨平台）\n\n寫一份、跑 iOS / Android / macOS / Windows：\n\n```csharp\npublic class MainPage : ContentPage\n{\n    public MainPage() {\n        var button = new Button { Text = \"Click\" };\n        button.Clicked += (s, e) => DisplayAlert(\"Hi\", \"Hello!\", \"OK\");\n        Content = button;\n    }\n}\n```\n\nvs React Native / Flutter：\n- 優：C# 共用、Visual Studio\n- 劣：生態較小\n\n## Indie 選擇\n\n| 需求 | 推薦 |\n|---|---|\n| Web | Blazor（如果你 C# 強） |\n| Windows desktop | WPF / WinUI 3 |\n| 跨平台 mobile | MAUI（C# 強）或 RN / Flutter |\n| 全 web/mobile | Blazor + MAUI |\n| AI / 資料 | ❌ Python 強 |\n\n## 心法\n- C# 全棧夢：Blazor + MAUI\n- 但學習資源比 React 少\n- Indie 選擇較少\n- 適合：已會 C# 的人\n\n## 對手分析\n\n### Blazor vs React\n- 開發者數：React 10x\n- 生態：React 大\n- 性能：類似\n- 學會 C# 用 Blazor = 不用碰 JS\n\n### MAUI vs RN/Flutter\n- MAUI < Flutter < RN（採用度）\n- C# 開發者愛 MAUI\n- 其他人多選 Flutter / RN",
+      "tip": {
+        "type": "practical",
+        "text": "Blazor 適合 C# 全棧、但市場小於 React。"
+      },
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "id": "35.5",
+      "number": "LESSON 35.5",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "35.5.auto",
+          "language": "csharp",
+          "title": "試試看",
+          "initialCode": "void OnClick(object sender, RoutedEventArgs e) {\n    MessageBox.Show(\"Hello\");\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "outline": [
+        {
+          "level": 2,
+          "text": "Blazor（Web）"
+        },
+        {
+          "level": 3,
+          "text": "Blazor Server"
+        },
+        {
+          "level": 3,
+          "text": "Blazor WebAssembly"
+        },
+        {
+          "level": 3,
+          "text": ".NET 8+ Blazor United"
+        },
+        {
+          "level": 2,
+          "text": "WPF（Windows Desktop）"
+        },
+        {
+          "level": 2,
+          "text": "MAUI（跨平台）"
+        },
+        {
+          "level": 2,
+          "text": "Indie 選擇"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        },
+        {
+          "level": 2,
+          "text": "對手分析"
+        },
+        {
+          "level": 3,
+          "text": "Blazor vs React"
+        },
+        {
+          "level": 3,
+          "text": "MAUI vs RN/Flutter"
+        }
+      ]
+    },
+    {
+      "title": "Unity + C# 遊戲開發",
+      "oneLineSummary": "C# 第二大用途、遊戲業界霸主",
+      "analogy": "會 C# 順便會做遊戲。",
+      "content": "## Unity 是什麼\n\n- 遊戲引擎 #1\n- C# scripting\n- 2D / 3D / VR / AR\n- 跨平台（PC / Mobile / Console / Web）\n\n## 為什麼選 Unity\n\n- 學習資源最多\n- Asset Store 大\n- 接案 / 工作多\n- Indie 友善\n\n## Hello Game\n\n```csharp\npublic class PlayerController : MonoBehaviour\n{\n    public float speed = 5f;\n    Rigidbody rb;\n    \n    void Start() {\n        rb = GetComponent<Rigidbody>();\n    }\n    \n    void Update() {\n        float h = Input.GetAxis(\"Horizontal\");\n        float v = Input.GetAxis(\"Vertical\");\n        rb.velocity = new Vector3(h, 0, v) * speed;\n    }\n}\n```\n\n掛到 GameObject 上、立刻可玩。\n\n## Unity 結構\n\n### GameObject\n- 場景中所有東西\n- 含 Component（行為）\n\n### Component\n- Transform（位置）\n- Renderer（顯示）\n- Collider（碰撞）\n- Script（你寫的邏輯）\n\n### Scene\n- 一個關卡 / 場景\n\n### Prefab\n- 可重用的 GameObject 模板\n\n## 生命週期\n```csharp\nvoid Awake() { }       // 場景載入\nvoid Start() { }       // 第一次 update 前\nvoid Update() { }      // 每 frame\nvoid FixedUpdate() { } // 物理更新（穩定 fps）\nvoid OnDestroy() { }   // 銷毀\n```\n\n## Variety 遊戲類型\n\n### 2D\n- Sprite\n- 2D physics\n- Tilemap\n\n### 3D\n- Mesh\n- 3D physics\n- Lighting\n\n### VR / AR\n- XR Toolkit\n- AR Foundation\n\n## 上架\n\n### 平台\n- Steam（PC）\n- App Store / Play Store\n- Console（Switch / PS / Xbox）\n- itch.io（Indie 友善）\n\n### Indie 起點\n- itch.io（簡單上架）\n- App Store（手遊）\n- Steam（PC、$100 申請費）\n\n## 變現\n\n### 模式\n- 一次付費（$5-30）\n- F2P + IAP\n- F2P + ads\n- 廣告（incentivized）\n\n### Indie 案例\n- Stardew Valley（$15、賣 1000 萬份）\n- Vampire Survivors（$5、賣百萬份）\n- Among Us（手遊、廣告 + IAP）\n\n## Unity 接案\n\n### 類型\n- 手遊外包\n- AR 應用\n- 模擬 / 訓練\n- VR 體驗\n\n### 報價\n- 簡單 2D：NT$ 50-200k\n- 中型：NT$ 200-500k\n- 複雜：NT$ 500k+\n- 月薪：NT$ 60-150k\n\n## 競爭對手\n\n### Unreal\n- 3D 強、Epic 出\n- C++ / Blueprint\n- AAA 級\n- 學習曲線陡\n\n### Godot\n- 開源、輕量\n- GDScript / C#\n- 2D 強\n- 新興\n\n### Indie 推薦\n- 2D：Godot / Unity\n- 3D：Unity / Unreal\n- VR：Unity\n- 跨平台：Unity 最廣\n\n## 心法\n- 第一個遊戲做小（pong / snake）\n- 完整上線 > 完美\n- Asset Store 善用\n- 累積作品 = 開始接案",
+      "tip": {
+        "type": "milestone",
+        "text": "會 C# 順便會 Unity = Indie 2 條路。"
+      },
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "id": "35.6",
+      "number": "LESSON 35.6",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "35.6.auto",
+          "language": "csharp",
+          "title": "試試看",
+          "initialCode": "public class PlayerController : MonoBehaviour\n{\n    public float speed = 5f;\n    Rigidbody rb;\n    \n    void Start() {\n        rb = GetComponent<Rigidbody>();\n    }\n    \n    void Update() {\n        float h = Input.GetAxis(\"Horizontal\");\n        float v = Input.GetAxis(\"Vertical\");\n        rb.velocity = new Vector3(h, 0, v) * speed;\n    }\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "outline": [
+        {
+          "level": 2,
+          "text": "Unity 是什麼"
+        },
+        {
+          "level": 2,
+          "text": "為什麼選 Unity"
+        },
+        {
+          "level": 2,
+          "text": "Hello Game"
+        },
+        {
+          "level": 2,
+          "text": "Unity 結構"
+        },
+        {
+          "level": 3,
+          "text": "GameObject"
+        },
+        {
+          "level": 3,
+          "text": "Component"
+        },
+        {
+          "level": 3,
+          "text": "Scene"
+        },
+        {
+          "level": 3,
+          "text": "Prefab"
+        },
+        {
+          "level": 2,
+          "text": "生命週期"
+        },
+        {
+          "level": 2,
+          "text": "Variety 遊戲類型"
+        },
+        {
+          "level": 3,
+          "text": "2D"
+        },
+        {
+          "level": 3,
+          "text": "3D"
+        },
+        {
+          "level": 3,
+          "text": "VR / AR"
+        },
+        {
+          "level": 2,
+          "text": "上架"
+        },
+        {
+          "level": 3,
+          "text": "平台"
+        },
+        {
+          "level": 3,
+          "text": "Indie 起點"
+        },
+        {
+          "level": 2,
+          "text": "變現"
+        },
+        {
+          "level": 3,
+          "text": "模式"
+        },
+        {
+          "level": 3,
+          "text": "Indie 案例"
+        },
+        {
+          "level": 2,
+          "text": "Unity 接案"
+        },
+        {
+          "level": 3,
+          "text": "類型"
+        },
+        {
+          "level": 3,
+          "text": "報價"
+        },
+        {
+          "level": 2,
+          "text": "競爭對手"
+        },
+        {
+          "level": 3,
+          "text": "Unreal"
+        },
+        {
+          "level": 3,
+          "text": "Godot"
+        },
+        {
+          "level": 3,
+          "text": "Indie 推薦"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    }
+  ],
+  "boss": {
+    "name": "C# 微軟使徒",
+    "hp": 200,
+    "emoji": "💎",
+    "description": ".NET 是它的法典、Unity 是它的舞台"
+  },
+  "quiz": {
+    "id": "ch35-quiz",
+    "questions": [],
+    "xpReward": 50,
+    "perfectBonus": 50
+  }
+}

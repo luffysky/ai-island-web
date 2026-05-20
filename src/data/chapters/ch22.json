@@ -1,0 +1,855 @@
+{
+  "id": 22,
+  "slug": "deployment",
+  "stage": 3,
+  "title": "部署 + Docker",
+  "subtitle": "Docker / Railway / Fly.io",
+  "icon": "container",
+  "description": "部署 + Docker：Docker / Railway / Fly.io",
+  "status": "published",
+  "difficulty": "intermediate",
+  "prerequisites": [
+    16,
+    20
+  ],
+  "estimatedHours": 12,
+  "outcomes": [
+    "理解核心概念",
+    "實作主流工具",
+    "整章實戰可發佈作品",
+    "知道生態 / 接案行情",
+    "對齊 2026 業界主流"
+  ],
+  "lessons": [
+    {
+      "title": "部署總圖：從 dev 到 production",
+      "oneLineSummary": "寫完 code → user 用到、中間有 10 個關卡",
+      "analogy": "懂部署 = Senior 工程師。",
+      "content": "## 部署選項\n\n### 1. Serverless（Indie 首選）\n- Vercel / Cloudflare Pages / Netlify\n- 不管 server、按用量付\n- 5 分鐘上線\n\n### 2. PaaS\n- Railway / Render / Fly.io / Heroku\n- 比 serverless 彈性、比 IaaS 簡單\n- 適合：要長期跑的 server\n\n### 3. IaaS\n- AWS EC2 / GCP Compute / DigitalOcean\n- 完全控制、最便宜大規模\n- 要自己管 OS、安裝、SSL\n\n### 4. K8s\n- Kubernetes\n- 微服務、大規模\n- Indie 不需要\n\n## 部署管道\n\n### 手動\nSSH 上去 git pull、npm install、pm2 restart。\n慢、易錯。\n\n### CI/CD\nGitHub push → 自動 build → 自動部署。\n是 2026 標準。\n\n## Static vs SSR vs Container\n\n### Static\nHTML/CSS/JS 純靜態。\n平台：Vercel / Cloudflare Pages / GitHub Pages。\n\n### SSR（Server-Side Rendering）\nNext.js / Nuxt / Astro。\n平台：Vercel / Cloudflare / Railway。\n\n### Container（Docker）\n任何語言、任何 stack。\n平台：Railway / Fly.io / AWS ECS / Render。\n\n## Indie 選擇\n\n| 場景 | 推薦 |\n|---|---|\n| 純前端 / 靜態 | Cloudflare Pages |\n| Next.js | Vercel |\n| Node API | Railway |\n| Python / Go / Rust | Railway / Fly.io |\n| 重客製 / 多語言 | Docker → Fly.io |\n\n## 心法\n- Indie 不要自架 VPS（除非要省極致）\n- 託管平台 5 分鐘上線、值得月 $5-20\n- Docker 是「跨平台保險」\n- 不要過早 K8s",
+      "tip": {
+        "type": "milestone",
+        "text": "Indie 2026：Vercel + Railway + Cloudflare 三巨頭夠用。"
+      },
+      "id": "22.1",
+      "number": "LESSON 22.1",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "22.1.auto",
+          "language": "bash",
+          "title": "試試看",
+          "initialCode": "#!/bin/bash\necho \"Hello AI 島！\"\n\n# 列檔案\nfor file in *.txt; do\n  echo \"找到: $file\"\ndone\n\n# 變數\nNAME=\"Luffysky\"\necho \"Hi, $NAME\"",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "找一個你身邊的例子、用「部署總圖：從 dev 到 production」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "部署選項"
+        },
+        {
+          "level": 3,
+          "text": "1. Serverless（Indie 首選）"
+        },
+        {
+          "level": 3,
+          "text": "2. PaaS"
+        },
+        {
+          "level": 3,
+          "text": "3. IaaS"
+        },
+        {
+          "level": 3,
+          "text": "4. K8s"
+        },
+        {
+          "level": 2,
+          "text": "部署管道"
+        },
+        {
+          "level": 3,
+          "text": "手動"
+        },
+        {
+          "level": 3,
+          "text": "CI/CD"
+        },
+        {
+          "level": 2,
+          "text": "Static vs SSR vs Container"
+        },
+        {
+          "level": 3,
+          "text": "Static"
+        },
+        {
+          "level": 3,
+          "text": "SSR（Server-Side Rendering）"
+        },
+        {
+          "level": 3,
+          "text": "Container（Docker）"
+        },
+        {
+          "level": 2,
+          "text": "Indie 選擇"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Docker 入門",
+      "oneLineSummary": "把 app 跟所有依賴打包成 image、到處都能跑",
+      "analogy": "寫一次、跑遍 macOS / Linux / 雲端。",
+      "content": "## 為什麼 Docker\n- 不用「在我電腦跑得起來」\n- 一份 image 跨平台\n- 隔離（不污染 host）\n- 部署簡單\n- 版本控制\n\n## 三個核心\n- **Image**：模板（唯讀）\n- **Container**：跑起來的 instance\n- **Dockerfile**：image 配方\n\n## Hello World\n`Dockerfile`：\n```dockerfile\nFROM node:20-alpine\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci\nCOPY . .\nEXPOSE 3000\nCMD [\"node\", \"server.js\"]\n```\n\n```bash\n# Build\ndocker build -t my-app .\n\n# Run\ndocker run -p 3000:3000 my-app\n\n# List\ndocker ps\ndocker images\n\n# Stop\ndocker stop <container_id>\n```\n\n## 多階段 build（重要）\n```dockerfile\n# Stage 1: Build\nFROM node:20-alpine AS builder\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci\nCOPY . .\nRUN npm run build\n\n# Stage 2: Production\nFROM node:20-alpine\nWORKDIR /app\nCOPY --from=builder /app/dist ./dist\nCOPY --from=builder /app/node_modules ./node_modules\nCOPY --from=builder /app/package.json ./\nEXPOSE 3000\nCMD [\"node\", \"dist/server.js\"]\n```\n\nImage 小、安全（沒 build 工具）。\n\n## docker-compose（多容器）\n`docker-compose.yml`：\n```yaml\nservices:\n  app:\n    build: .\n    ports: [\"3000:3000\"]\n    environment:\n      DATABASE_URL: postgresql://user:pass@db:5432/app\n    depends_on: [db, redis]\n  \n  db:\n    image: postgres:16\n    environment:\n      POSTGRES_USER: user\n      POSTGRES_PASSWORD: pass\n      POSTGRES_DB: app\n    volumes:\n      - pg_data:/var/lib/postgresql/data\n  \n  redis:\n    image: redis:7-alpine\n    volumes:\n      - redis_data:/data\n\nvolumes:\n  pg_data:\n  redis_data:\n```\n\n```bash\ndocker compose up -d\ndocker compose logs -f app\ndocker compose down\n```\n\n## 環境變數\n```bash\ndocker run -e DATABASE_URL=... -p 3000:3000 my-app\n\n# 或用 .env\ndocker run --env-file .env -p 3000:3000 my-app\n```\n\n## Volume（持久化）\n```bash\n# Bind mount（dev）\ndocker run -v $(pwd):/app my-app\n\n# Named volume（production）\ndocker run -v app_data:/app/data my-app\n```\n\n## .dockerignore\n```\nnode_modules\n.git\n.env\n*.log\n.DS_Store\n```\n\n## Image registry\n- **Docker Hub**：免費 public、付費 private\n- **GitHub Container Registry**：免費 private（個人）\n- **AWS ECR**：AWS 整合\n- **GCP Artifact Registry**\n\n```bash\ndocker tag my-app username/my-app:latest\ndocker push username/my-app:latest\n```\n\n## 常用指令\n```bash\ndocker ps                  # running containers\ndocker ps -a               # 全部（含停止）\ndocker logs <id>           # 看 log\ndocker exec -it <id> sh    # 進入 container\ndocker stats               # 看資源用量\ndocker system prune -a     # 清空\n```\n\n## 體積優化\n- 用 `alpine` 變體（最小）\n- 多階段 build\n- 合併 RUN（減少 layer）\n- .dockerignore\n\n## 心法\n- Dockerfile 是「可重現的環境」\n- 永遠 multi-stage\n- 不要在 image 內存 secrets\n- docker-compose 適合 dev / 小 production\n- K8s 大規模才需要",
+      "tip": {
+        "type": "milestone",
+        "text": "Docker 是「環境的 Git」。學一次、用一輩子。"
+      },
+      "id": "22.2",
+      "number": "LESSON 22.2",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "22.2.auto",
+          "language": "bash",
+          "title": "試試看",
+          "initialCode": "# Build\ndocker build -t my-app .\n\n# Run\ndocker run -p 3000:3000 my-app\n\n# List\ndocker ps\ndocker images\n\n# Stop\ndocker stop <container_id>",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "用一張紙、把「Docker 入門」的核心概念畫成心智圖。中心是這節的主題、第一圈放 3-5 個關鍵詞（如 Dockerfile、docker-compose.yml、alpine）、第二圈延伸細節。",
+        "hint": "關鍵概念可以從 lesson 內出現的這些關鍵字入手：Dockerfile、docker-compose.yml、alpine。畫完不要光放著、試著用自己的話講一次。",
+        "answer": "心智圖三步：(1) 中心 = lesson 主題 (2) 第一圈 = 主要分類（通常 3-5 個）(3) 第二圈 = 具體例子或工具。畫完拿給朋友看、能講通 = 真懂。常見錯誤：抄關鍵字當分類、應該用自己理解後的歸納。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼 Docker"
+        },
+        {
+          "level": 2,
+          "text": "三個核心"
+        },
+        {
+          "level": 2,
+          "text": "Hello World"
+        },
+        {
+          "level": 2,
+          "text": "多階段 build（重要）"
+        },
+        {
+          "level": 2,
+          "text": "docker-compose（多容器）"
+        },
+        {
+          "level": 2,
+          "text": "環境變數"
+        },
+        {
+          "level": 2,
+          "text": "Volume（持久化）"
+        },
+        {
+          "level": 2,
+          "text": ".dockerignore"
+        },
+        {
+          "level": 2,
+          "text": "Image registry"
+        },
+        {
+          "level": 2,
+          "text": "常用指令"
+        },
+        {
+          "level": 2,
+          "text": "體積優化"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Railway / Fly.io / Render",
+      "oneLineSummary": "PaaS 三巨頭、Indie 部署 server 首選",
+      "analogy": "不寫 Dockerfile 也行、寫了更好。",
+      "content": "## Railway\n\n### 為什麼\n- ✅ GitHub push 自動 deploy\n- ✅ DB 一鍵建（PG / MySQL / Redis）\n- ✅ UI 最友善\n- ✅ $5 起步（每月）\n\n### 部署\n1. railway.app\n2. 連 GitHub\n3. 選 repo\n4. 自動偵測 stack\n5. 加環境變數\n6. Deploy\n\n支援：Node / Python / Go / Ruby / Rust / PHP / Elixir / Java...\n\n### railway.toml\n```toml\n[build]\nbuilder = \"nixpacks\"\n\n[deploy]\nstartCommand = \"npm start\"\nhealthcheckPath = \"/health\"\n```\n\n## Fly.io\n\n### 為什麼\n- ✅ 全球 30+ 城市\n- ✅ Docker first\n- ✅ 免費 plan\n- ✅ 寫得很 dev-friendly\n\n### 部署\n```bash\nbrew install flyctl\nfly auth login\nfly launch  # 自動建 fly.toml + Dockerfile\n\nfly deploy\nfly logs\nfly ssh console\n```\n\n### fly.toml\n```toml\napp = \"my-app\"\nprimary_region = \"nrt\"  # Tokyo\n\n[build]\n\n[http_service]\n  internal_port = 3000\n  force_https = true\n\n[[vm]]\n  cpu_kind = \"shared\"\n  cpus = 1\n  memory_mb = 256\n```\n\n### 多 region\n```bash\nfly regions add nrt sin sjc\nfly scale count 3\n```\n\n## Render\n\n### 為什麼\n- ✅ 類 Heroku\n- ✅ 免費 plan\n- ✅ DB / Static / Worker 全支援\n- ⚠️ 免費 plan 會睡眠\n\n### 部署\n1. render.com\n2. New → Web Service\n3. 連 GitHub\n4. 設環境變數\n5. Deploy\n\n### render.yaml\n```yaml\nservices:\n  - type: web\n    name: my-app\n    env: node\n    buildCommand: npm install && npm run build\n    startCommand: npm start\n    envVars:\n      - key: DATABASE_URL\n        fromDatabase:\n          name: my-db\n          property: connectionString\n\ndatabases:\n  - name: my-db\n    plan: starter\n```\n\n## 三巨頭對比\n\n| 面向 | Railway | Fly.io | Render |\n|---|---|---|---|\n| UI | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ |\n| 全球 | 美單區 | 30+ 城市 | 美單區 |\n| Docker | 可 | 必 | 可 |\n| 免費 | 試用 | 慷慨 | 會睡 |\n| DB | 整合 | 整合 | 整合 |\n| 價格 | $5+ | $0+ | $7+ |\n\n## Indie 選擇\n- 全 stack TS / Node：Vercel + Railway\n- 跨語言：Fly.io\n- 預算極省：Render（接受 cold start）\n- 全球 latency：Fly.io\n\n## 替代\n\n### Heroku\n老牌、不再免費、貴。\n\n### DigitalOcean App Platform\n類 Render、$5+。\n\n### AWS App Runner\nAWS 簡化版。\n\n### Google Cloud Run\nContainer only、超彈性、按請求計費。\n\n## 心法\n- Indie：Railway / Fly.io 兩個就夠\n- 全球 user → Fly.io\n- 純 API server → Railway\n- 大流量再升 AWS / GCP",
+      "tip": {
+        "type": "practical",
+        "text": "Railway 5 分鐘部署、Fly.io 全球 30 城市。"
+      },
+      "id": "22.3",
+      "number": "LESSON 22.3",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "22.3.auto",
+          "language": "bash",
+          "title": "試試看",
+          "initialCode": "brew install flyctl\nfly auth login\nfly launch  # 自動建 fly.toml + Dockerfile\n\nfly deploy\nfly logs\nfly ssh console",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "Railway"
+        },
+        {
+          "level": 3,
+          "text": "為什麼"
+        },
+        {
+          "level": 3,
+          "text": "部署"
+        },
+        {
+          "level": 3,
+          "text": "railway.toml"
+        },
+        {
+          "level": 2,
+          "text": "Fly.io"
+        },
+        {
+          "level": 3,
+          "text": "為什麼"
+        },
+        {
+          "level": 3,
+          "text": "部署"
+        },
+        {
+          "level": 3,
+          "text": "fly.toml"
+        },
+        {
+          "level": 3,
+          "text": "多 region"
+        },
+        {
+          "level": 2,
+          "text": "Render"
+        },
+        {
+          "level": 3,
+          "text": "為什麼"
+        },
+        {
+          "level": 3,
+          "text": "部署"
+        },
+        {
+          "level": 3,
+          "text": "render.yaml"
+        },
+        {
+          "level": 2,
+          "text": "三巨頭對比"
+        },
+        {
+          "level": 2,
+          "text": "Indie 選擇"
+        },
+        {
+          "level": 2,
+          "text": "替代"
+        },
+        {
+          "level": 3,
+          "text": "Heroku"
+        },
+        {
+          "level": 3,
+          "text": "DigitalOcean App Platform"
+        },
+        {
+          "level": 3,
+          "text": "AWS App Runner"
+        },
+        {
+          "level": 3,
+          "text": "Google Cloud Run"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Vercel / Cloudflare Workers",
+      "oneLineSummary": "Edge 部署、全球毫秒級",
+      "analogy": "前端 + API 邊緣化、cold start 趨近 0。",
+      "content": "## Edge Computing\n\n### vs Serverless\n- Serverless：跑在 region（如 us-east-1）\n- Edge：跑在 user 最近的 city（300+ 城市）\n\n### 優點\n- Latency 低（< 50ms）\n- 全球分散\n- 自動 scale\n\n### 限制\n- 不能用 Node API（部分）\n- 不能跑長任務\n- DB connection 要 pool\n\n## Vercel Edge Functions\n```typescript\n// app/api/hello/route.ts\nexport const runtime = \"edge\";\n\nexport async function GET(req: Request) {\n  const country = req.headers.get(\"x-vercel-ip-country\");\n  return Response.json({ hello: country });\n}\n```\n\n只能用 Web standard API（fetch / Response / Crypto）。\n\n## Cloudflare Workers\n```typescript\n// src/index.ts\nexport default {\n  async fetch(request: Request, env: Env) {\n    const url = new URL(request.url);\n    \n    if (url.pathname === \"/api/hello\") {\n      return Response.json({ hello: \"world\" });\n    }\n    \n    return new Response(\"Not found\", { status: 404 });\n  }\n};\n```\n\n部署：\n```bash\nnpm install -g wrangler\nwrangler init my-worker\nwrangler dev    # 本地\nwrangler deploy # 上線\n```\n\n## Cloudflare 生態\n- **Workers**：edge function\n- **R2**：S3 替代、免費 10GB\n- **KV**：edge key-value\n- **D1**：edge SQL\n- **Durable Objects**：stateful\n- **Queues**：訊息佇列\n\n```typescript\n// 全部整合一起\nexport default {\n  async fetch(request, env) {\n    // KV\n    const cached = await env.MY_KV.get(\"key\");\n    \n    // R2\n    const obj = await env.MY_BUCKET.get(\"file.png\");\n    \n    // D1\n    const result = await env.DB.prepare(\"SELECT * FROM users WHERE id = ?\")\n      .bind(userId).first();\n    \n    return Response.json(result);\n  }\n};\n```\n\n## 免費額度（驚人）\n- 100,000 req/天\n- 10ms CPU / req\n- 10MB worker\n- R2：10GB\n- D1：5M reads / day\n\nIndie 可永遠免費。\n\n## Hono（Workers 框架）\n```typescript\nimport { Hono } from \"hono\";\n\nconst app = new Hono();\n\napp.get(\"/\", c => c.json({ hello: \"world\" }));\napp.get(\"/users/:id\", async c => {\n  const id = c.req.param(\"id\");\n  const user = await c.env.DB.prepare(\"SELECT * FROM users WHERE id = ?\")\n    .bind(id).first();\n  return c.json(user);\n});\n\nexport default app;\n```\n\n跑在 Workers / Bun / Node / Deno、跨平台。\n\n## Next.js + Cloudflare\n- Next.js 15 開始原生支援 Edge\n- 用 `@opennextjs/cloudflare` 跑 Next.js 在 Workers\n\n```bash\nnpx create-next-app --use-cloudflare\n```\n\n## Cron Triggers\n```toml\n# wrangler.toml\n[triggers]\ncrons = [\"0 3 * * *\"]\n```\n\n```typescript\nexport default {\n  async scheduled(event, env) {\n    // 每天 3am 跑\n    await runDailyJob();\n  }\n};\n```\n\n## Limits\n\n### Vercel Edge\n- 1MB code\n- 30s timeout\n- 4MB response\n\n### Cloudflare Workers\n- 10MB code（Free 1MB）\n- 30s wall clock\n- 50ms CPU（Free 10ms）\n- 128MB memory\n\n長任務 → Queue / Durable Objects。\n\n## 心法\n- Static + API 邊緣化 = 最快\n- 但 DB connection 要 pool（Hyperdrive）\n- 不適合長任務 / 重計算\n- Cloudflare 免費額度大、Indie 可永遠免費",
+      "tip": {
+        "type": "milestone",
+        "text": "Edge = 2026 趨勢。Cloudflare Workers 是 Indie 救星。"
+      },
+      "id": "22.4",
+      "number": "LESSON 22.4",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "22.4.auto",
+          "language": "bash",
+          "title": "試試看",
+          "initialCode": "npm install -g wrangler\nwrangler init my-worker\nwrangler dev    # 本地\nwrangler deploy # 上線",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "Edge Computing"
+        },
+        {
+          "level": 3,
+          "text": "vs Serverless"
+        },
+        {
+          "level": 3,
+          "text": "優點"
+        },
+        {
+          "level": 3,
+          "text": "限制"
+        },
+        {
+          "level": 2,
+          "text": "Vercel Edge Functions"
+        },
+        {
+          "level": 2,
+          "text": "Cloudflare Workers"
+        },
+        {
+          "level": 2,
+          "text": "Cloudflare 生態"
+        },
+        {
+          "level": 2,
+          "text": "免費額度（驚人）"
+        },
+        {
+          "level": 2,
+          "text": "Hono（Workers 框架）"
+        },
+        {
+          "level": 2,
+          "text": "Next.js + Cloudflare"
+        },
+        {
+          "level": 2,
+          "text": "Cron Triggers"
+        },
+        {
+          "level": 2,
+          "text": "Limits"
+        },
+        {
+          "level": 3,
+          "text": "Vercel Edge"
+        },
+        {
+          "level": 3,
+          "text": "Cloudflare Workers"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "部署 Best Practices",
+      "oneLineSummary": "不是把 code 推上去就好、有 SOP",
+      "analogy": "減少出事、加快迭代。",
+      "content": "## 環境分離\n- Development：本地\n- Staging：preview deploy\n- Production：正式\n\n各自獨立 DB / Secrets。\n\n## CI/CD Pipeline\n```yaml\n# .github/workflows/deploy.yml\nname: Deploy\non:\n  push:\n    branches: [main]\n\njobs:\n  deploy:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n      - run: npm ci\n      - run: npm run lint\n      - run: npm test\n      - run: npm run build\n      - uses: amondnet/vercel-action@v25\n        with:\n          vercel-token: ${{ secrets.VERCEL_TOKEN }}\n          vercel-args: \"--prod\"\n```\n\n## Health Check\n```typescript\n// /api/health\nexport async function GET() {\n  try {\n    await db.$queryRaw`SELECT 1`;\n    return Response.json({ status: \"ok\" });\n  } catch {\n    return Response.json({ status: \"fail\" }, { status: 503 });\n  }\n}\n```\n\n平台用這個判斷 instance 健康。\n\n## Graceful Shutdown\n```typescript\nprocess.on(\"SIGTERM\", async () => {\n  console.log(\"Shutting down...\");\n  await server.close();\n  await db.disconnect();\n  process.exit(0);\n});\n```\n\n避免 deploy 時切斷 in-progress request。\n\n## Migration 順序\n```\n1. Backward-compatible migration（加新欄、不破壞）\n2. Deploy new code（可同時用舊 / 新 schema）\n3. 等穩定\n4. 下次 deploy 清舊欄位\n```\n\n⚠️ 不要：\n- Deploy 前 drop column\n- 直接改 type\n- 沒 backfill 加 NOT NULL\n\n## Blue-Green Deploy\n- 兩個 environment（Blue + Green）\n- Blue 跑 production\n- Deploy 到 Green\n- 測 Green\n- 切流量 Blue → Green\n- 出事切回\n\nVercel / Cloudflare 自動類似機制。\n\n## Canary\n- 1% 流量到新版\n- 看指標\n- OK → 10% → 50% → 100%\n\n## Rollback Plan\n- 部署前知道怎麼 rollback\n- Vercel UI 一鍵\n- 寫 rollback script\n\n## 監控部署\n- Sentry 看 error rate\n- Datadog 看 latency\n- Better Stack 看 uptime\n\n異常 → 立刻 rollback。\n\n## 環境變數管理\n\n### Doppler\n```bash\ndoppler setup\ndoppler run -- npm start\n```\n集中管理、跨平台同步。\n\n### 1Password CLI\n```bash\nop run -- npm start\n```\n\n### Vercel / Railway env\n平台內建。\n\n## Secrets Rotation\n定期換：\n- API key：每 90 天\n- DB password：每 180 天\n- JWT secret：每年\n\n## 不要在 production\n- console.log（用 logger）\n- 開 debug mode\n- assert（會 crash）\n- 寫 file（無 persistent storage）\n\n## 部署時機\n- ❌ 週五下午\n- ❌ 大假期前\n- ❌ 流量高峰\n- ✅ 週二早上\n- ✅ 流量低峰\n\n## Post-deploy Checklist\n- [ ] 監控 30 分鐘\n- [ ] 看 Sentry\n- [ ] 客服 channel\n- [ ] 24 小時後 review\n\n## 心法\n- staging 永遠先測\n- 監控不要瞎飛\n- Rollback 比修補快\n- 週五不部署\n- 一致流程、不要憑感覺",
+      "tip": {
+        "type": "milestone",
+        "text": "部署流程化 = 不靠運氣、靠 system。"
+      },
+      "id": "22.5",
+      "number": "LESSON 22.5",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "22.5.auto",
+          "language": "yaml",
+          "title": "試試看",
+          "initialCode": "# .github/workflows/deploy.yml\nname: Deploy\non:\n  push:\n    branches: [main]\n\njobs:\n  deploy:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n      - run: npm ci\n      - run: npm run lint\n      - run: npm test\n      - run: npm run build\n      - uses: amondnet/vercel-action@v25\n        with:\n          vercel-token: ${{ secrets.VERCEL_TOKEN }}\n          vercel-args: \"--prod\"",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "環境分離"
+        },
+        {
+          "level": 2,
+          "text": "CI/CD Pipeline"
+        },
+        {
+          "level": 2,
+          "text": "Health Check"
+        },
+        {
+          "level": 2,
+          "text": "Graceful Shutdown"
+        },
+        {
+          "level": 2,
+          "text": "Migration 順序"
+        },
+        {
+          "level": 2,
+          "text": "Blue-Green Deploy"
+        },
+        {
+          "level": 2,
+          "text": "Canary"
+        },
+        {
+          "level": 2,
+          "text": "Rollback Plan"
+        },
+        {
+          "level": 2,
+          "text": "監控部署"
+        },
+        {
+          "level": 2,
+          "text": "環境變數管理"
+        },
+        {
+          "level": 3,
+          "text": "Doppler"
+        },
+        {
+          "level": 3,
+          "text": "1Password CLI"
+        },
+        {
+          "level": 3,
+          "text": "Vercel / Railway env"
+        },
+        {
+          "level": 2,
+          "text": "Secrets Rotation"
+        },
+        {
+          "level": 2,
+          "text": "不要在 production"
+        },
+        {
+          "level": 2,
+          "text": "部署時機"
+        },
+        {
+          "level": 2,
+          "text": "Post-deploy Checklist"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Docker 基礎",
+      "oneLineSummary": "把 App 包成 container、到處跑",
+      "analogy": "不再「我電腦能跑啊」。",
+      "content": "## 是什麼\nDocker = 把 App + 環境打包成 image、在任何裝 Docker 的地方跑。\n\n### vs 虛擬機\n- VM：整套 OS、慢、肥\n- Container：共用 host kernel、輕、快\n\n## Dockerfile 範例\n```dockerfile\nFROM node:20-alpine\n\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci --only=production\n\nCOPY . .\nRUN npm run build\n\nEXPOSE 3000\nCMD [\"node\", \"server.js\"]\n```\n\n## Build + Run\n```bash\ndocker build -t myapp:1.0 .\ndocker run -p 3000:3000 myapp:1.0\n```\n\n## docker-compose\n多個 service 一起：\n```yaml\nversion: \"3\"\nservices:\n  app:\n    build: .\n    ports: [\"3000:3000\"]\n    depends_on: [db]\n  db:\n    image: postgres:16\n    environment:\n      POSTGRES_PASSWORD: secret\n    volumes: [\"db-data:/var/lib/postgresql/data\"]\nvolumes:\n  db-data:\n```\n\n```bash\ndocker compose up\n```\n\n## Multi-stage Build（縮 image 大小）\n```dockerfile\nFROM node:20 AS builder\nWORKDIR /build\nCOPY . .\nRUN npm ci && npm run build\n\nFROM node:20-alpine\nWORKDIR /app\nCOPY --from=builder /build/dist ./dist\nCOPY --from=builder /build/node_modules ./node_modules\nCMD [\"node\", \"dist/server.js\"]\n```\n\n500MB → 100MB。\n\n## 心法\n- Dockerfile 一定要 multi-stage\n- 用 alpine base 省空間\n- `.dockerignore` 排除 node_modules / .git\n- Layer cache 優化（不常變的放上面）",
+      "tip": {
+        "type": "practical",
+        "text": "Multi-stage + alpine = 標準做法。"
+      },
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "id": "22.6",
+      "number": "LESSON 22.6",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "22.6.auto",
+          "language": "bash",
+          "title": "試試看",
+          "initialCode": "docker build -t myapp:1.0 .\ndocker run -p 3000:3000 myapp:1.0",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "outline": [
+        {
+          "level": 2,
+          "text": "是什麼"
+        },
+        {
+          "level": 3,
+          "text": "vs 虛擬機"
+        },
+        {
+          "level": 2,
+          "text": "Dockerfile 範例"
+        },
+        {
+          "level": 2,
+          "text": "Build + Run"
+        },
+        {
+          "level": 2,
+          "text": "docker-compose"
+        },
+        {
+          "level": 2,
+          "text": "Multi-stage Build（縮 image 大小）"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "CI/CD：GitHub Actions",
+      "oneLineSummary": "不再手動 deploy、push 就上線",
+      "analogy": "一次設定、永遠省時。",
+      "content": "## 基本 workflow\n`.github/workflows/deploy.yml`：\n```yaml\nname: Deploy\n\non:\n  push:\n    branches: [main]\n\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with: { node-version: 20 }\n      - run: npm ci\n      - run: npm test\n      - run: npm run lint\n\n  deploy:\n    needs: test\n    runs-on: ubuntu-latest\n    if: github.ref == 'refs/heads/main'\n    steps:\n      - uses: actions/checkout@v4\n      - name: Deploy to Vercel\n        run: |\n          npm install -g vercel\n          vercel --prod --token=${{ secrets.VERCEL_TOKEN }}\n```\n\n## Secrets\nSettings → Secrets → Actions：\n- `VERCEL_TOKEN`\n- `DATABASE_URL`\n- `AWS_ACCESS_KEY_ID`\n\n## 多環境\n```yaml\n- name: Deploy staging\n  if: github.ref == 'refs/heads/develop'\n  run: vercel deploy --token=$VERCEL_TOKEN\n\n- name: Deploy production\n  if: github.ref == 'refs/heads/main'\n  run: vercel deploy --prod --token=$VERCEL_TOKEN\n```\n\n## Matrix（多版本測試）\n```yaml\nstrategy:\n  matrix:\n    node: [18, 20, 22]\nsteps:\n  - uses: actions/setup-node@v4\n    with: { node-version: ${{ matrix.node }} }\n  - run: npm test\n```\n\n## Cache 加速\n```yaml\n- uses: actions/cache@v4\n  with:\n    path: ~/.npm\n    key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}\n```\n\n## Build Docker + Push\n```yaml\n- uses: docker/login-action@v3\n  with:\n    registry: ghcr.io\n    username: ${{ github.actor }}\n    password: ${{ secrets.GITHUB_TOKEN }}\n\n- uses: docker/build-push-action@v5\n  with:\n    push: true\n    tags: ghcr.io/myorg/myapp:latest\n```\n\n## 心法\n- main branch 自動 prod\n- PR 自動 preview\n- Test 沒過不能 merge\n- Secrets 永遠別 commit",
+      "tip": {
+        "type": "milestone",
+        "text": "CI/CD setup 一次、永遠省時。"
+      },
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "id": "22.7",
+      "number": "LESSON 22.7",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "22.7.auto",
+          "language": "yaml",
+          "title": "試試看",
+          "initialCode": "name: Deploy\n\non:\n  push:\n    branches: [main]\n\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with: { node-version: 20 }\n      - run: npm ci\n      - run: npm test\n      - run: npm run lint\n\n  deploy:\n    needs: test\n    runs-on: ubuntu-latest\n    if: github.ref == 'refs/heads/main'\n    steps:\n      - uses: actions/checkout@v4\n      - name: Deploy to Vercel\n        run: |\n          npm install -g vercel\n          vercel --prod --token=${{ secrets.VERCEL_TOKEN }}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "outline": [
+        {
+          "level": 2,
+          "text": "基本 workflow"
+        },
+        {
+          "level": 2,
+          "text": "Secrets"
+        },
+        {
+          "level": 2,
+          "text": "多環境"
+        },
+        {
+          "level": 2,
+          "text": "Matrix（多版本測試）"
+        },
+        {
+          "level": 2,
+          "text": "Cache 加速"
+        },
+        {
+          "level": 2,
+          "text": "Build Docker + Push"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Zero-downtime Deploy",
+      "oneLineSummary": "上線時不能掛、要無縫切換",
+      "analogy": "5 秒 down 都會被罵。",
+      "content": "## 策略\n\n### 1. Rolling Update\n逐台換、不會全掛：\n```\nServer A (v1) → 換 v2\nServer B (v1)\nServer C (v1)\n（A 換好再換 B）\n```\n\nK8s / Vercel / Cloudflare 預設用這個。\n\n### 2. Blue-Green\n兩套環境輪替：\n- Blue (v1) 正在跑\n- Green (v2) 部署完\n- LB 切到 Green\n- Blue 留著回 rollback\n\n優：rollback 1 秒\n劣：成本雙倍\n\n### 3. Canary\n新版先給 5% 流量：\n- 5% 看 metric\n- 沒問題 → 50%\n- 沒問題 → 100%\n\n優：發現 bug 影響小\n劣：複雜\n\n## Health Check\n```typescript\napp.get(\"/healthz\", (req, res) => {\n  // 檢查 DB / cache / 外部 service\n  const dbOk = await db.$queryRaw`SELECT 1`;\n  if (!dbOk) return res.status(503).end();\n  res.json({ status: \"ok\" });\n});\n```\n\nLoad balancer 拿到 503 → 不送流量過來。\n\n## Graceful Shutdown\n```typescript\nconst server = app.listen(3000);\n\nprocess.on(\"SIGTERM\", () => {\n  console.log(\"SIGTERM received\");\n  server.close(() => {\n    // 等現有 request 處理完\n    db.$disconnect();\n    process.exit(0);\n  });\n  \n  // 強制超時\n  setTimeout(() => process.exit(1), 30_000);\n});\n```\n\nK8s 給 30 秒、超過砍。\n\n## Database Migration\n\n### 規則\n1. 先加 column / table（不破壞舊 code）\n2. Deploy 新 code（雙寫舊新）\n3. Backfill 資料\n4. Deploy 純新 code\n5. 刪舊 column\n\n詳見 Ch19 migration 章節。\n\n## 心法\n- Indie 用託管平台（Vercel / Zeabur）自動 zero-downtime\n- 自己 deploy 學 K8s / Docker Swarm\n- 永遠 health check\n- 永遠 graceful shutdown",
+      "tip": {
+        "type": "milestone",
+        "text": "Vercel / Zeabur 自動 zero-downtime、Indie 別自己刻。"
+      },
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "id": "22.8",
+      "number": "LESSON 22.8",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "22.8.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "app.get(\"/healthz\", (req, res) => {\n  // 檢查 DB / cache / 外部 service\n  const dbOk = await db.$queryRaw`SELECT 1`;\n  if (!dbOk) return res.status(503).end();\n  res.json({ status: \"ok\" });\n});",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "outline": [
+        {
+          "level": 2,
+          "text": "策略"
+        },
+        {
+          "level": 3,
+          "text": "1. Rolling Update"
+        },
+        {
+          "level": 3,
+          "text": "2. Blue-Green"
+        },
+        {
+          "level": 3,
+          "text": "3. Canary"
+        },
+        {
+          "level": 2,
+          "text": "Health Check"
+        },
+        {
+          "level": 2,
+          "text": "Graceful Shutdown"
+        },
+        {
+          "level": 2,
+          "text": "Database Migration"
+        },
+        {
+          "level": 3,
+          "text": "規則"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Kubernetes 入門",
+      "oneLineSummary": "Container orchestration 業界標準",
+      "analogy": "小公司用 Vercel 就好、大公司用 K8s。",
+      "content": "## 何時用 K8s\n\n### 適合\n- 50+ container\n- 多 region\n- 大團隊\n- 複雜架構\n\n### 不適合（Indie）\n- < 10 container\n- 小團隊\n- 用 Vercel / Railway / Zeabur\n\n## 核心概念\n\n### Pod\n最小單位、1 個或多個 container：\n```yaml\napiVersion: v1\nkind: Pod\nmetadata:\n  name: my-app\nspec:\n  containers:\n  - name: app\n    image: myapp:1.0\n    ports:\n    - containerPort: 3000\n```\n\n### Deployment\n管理多個 Pod：\n```yaml\napiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: my-app\nspec:\n  replicas: 3\n  selector:\n    matchLabels: { app: my-app }\n  template:\n    metadata:\n      labels: { app: my-app }\n    spec:\n      containers:\n      - name: app\n        image: myapp:1.0\n```\n\n### Service\n讓 Pod 對外可達：\n```yaml\napiVersion: v1\nkind: Service\nmetadata:\n  name: my-app-svc\nspec:\n  selector: { app: my-app }\n  ports:\n  - port: 80\n    targetPort: 3000\n  type: LoadBalancer\n```\n\n### Ingress\nHTTP routing：\n```yaml\napiVersion: networking.k8s.io/v1\nkind: Ingress\nmetadata:\n  name: my-app-ingress\nspec:\n  rules:\n  - host: api.myapp.com\n    http:\n      paths:\n      - path: /\n        pathType: Prefix\n        backend:\n          service: { name: my-app-svc, port: { number: 80 } }\n```\n\n## 託管 K8s\n- **AWS EKS**：貴、強\n- **Google GKE**：易用\n- **Azure AKS**\n- **DigitalOcean K8s**：便宜入門\n\n自己架：太累、別。\n\n## 替代方案（Indie）\n- **Vercel**：Next.js / serverless\n- **Railway**：簡單、像 K8s lite\n- **Zeabur**：台灣、中文\n- **Fly.io**：global edge\n- **Render**：類 Heroku\n- **Cloudflare Workers**：edge function\n\n90% Indie 用這些就好。\n\n## 心法\n- K8s 學習曲線陡（3-6 月）\n- Indie 別碰\n- 學是好的（履歷加分）\n- 真的需要才用",
+      "tip": {
+        "type": "warning",
+        "text": "K8s 不是 「越早用越專業」、是「真的需要才用」。"
+      },
+      "exercise": {
+        "question": "找一個你身邊的例子、用「Kubernetes 入門」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "id": "22.9",
+      "number": "LESSON 22.9",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "22.9.auto",
+          "language": "yaml",
+          "title": "試試看",
+          "initialCode": "apiVersion: v1\nkind: Pod\nmetadata:\n  name: my-app\nspec:\n  containers:\n  - name: app\n    image: myapp:1.0\n    ports:\n    - containerPort: 3000",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "outline": [
+        {
+          "level": 2,
+          "text": "何時用 K8s"
+        },
+        {
+          "level": 3,
+          "text": "適合"
+        },
+        {
+          "level": 3,
+          "text": "不適合（Indie）"
+        },
+        {
+          "level": 2,
+          "text": "核心概念"
+        },
+        {
+          "level": 3,
+          "text": "Pod"
+        },
+        {
+          "level": 3,
+          "text": "Deployment"
+        },
+        {
+          "level": 3,
+          "text": "Service"
+        },
+        {
+          "level": 3,
+          "text": "Ingress"
+        },
+        {
+          "level": 2,
+          "text": "託管 K8s"
+        },
+        {
+          "level": 2,
+          "text": "替代方案（Indie）"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Infrastructure as Code (IaC)",
+      "oneLineSummary": "基礎建設用 code 管、不用滑鼠點",
+      "analogy": "Terraform / Pulumi 神器。",
+      "content": "## 為什麼 IaC\n\n### 痛點\n- 「我們 prod server 上次怎麼設定的？」忘了\n- 換人接手不知道\n- 災難復原沒 SOP\n- 環境差異（dev vs prod）\n\n### 解\n所有資源（VM / DB / DNS / S3 bucket）寫成 code：\n- Version control\n- Code review\n- 自動化\n- 文件\n\n## 主流工具\n\n### Terraform（最熱）\nHCL 語法：\n```hcl\nprovider \"aws\" {\n  region = \"ap-northeast-1\"\n}\n\nresource \"aws_instance\" \"web\" {\n  ami           = \"ami-xxxxxx\"\n  instance_type = \"t3.small\"\n  \n  tags = {\n    Name = \"WebServer\"\n  }\n}\n\nresource \"aws_s3_bucket\" \"uploads\" {\n  bucket = \"myapp-uploads\"\n  acl    = \"private\"\n}\n```\n\n### Pulumi\n用 TS / Python / Go 寫：\n```typescript\nimport * as aws from \"@pulumi/aws\";\n\nconst web = new aws.ec2.Instance(\"web\", {\n  ami: \"ami-xxxxxx\",\n  instanceType: \"t3.small\",\n  tags: { Name: \"WebServer\" }\n});\n\nconst bucket = new aws.s3.Bucket(\"uploads\", {\n  acl: \"private\"\n});\n```\n\n優：用熟悉語言。\n\n### CloudFormation\nAWS 原生。\n\n### Ansible\nConfiguration management（不只資源建立）。\n\n## 工作流\n\n### 1. 寫 code\n```bash\n# terraform/main.tf\n```\n\n### 2. Init\n```bash\nterraform init\n```\n\n### 3. Plan（預覽變動）\n```bash\nterraform plan\n```\n\n### 4. Apply\n```bash\nterraform apply\n```\n\n### 5. Destroy（拆掉所有資源）\n```bash\nterraform destroy\n```\n\n## State 管理\n\nTerraform 記住「現在有什麼」在 state file。\n- Local：個人用\n- S3 + DynamoDB lock：團隊\n- Terraform Cloud：託管\n\n## 多環境\n```\nenvironments/\n├── dev/\n├── staging/\n└── prod/\n```\n\n各自 state、共用 modules。\n\n## CI/CD 整合\n```yaml\n# .github/workflows/terraform.yml\n- run: terraform plan -out=plan.tfplan\n- run: terraform apply plan.tfplan\n  if: github.ref == 'refs/heads/main'\n```\n\nPR 顯示 `terraform plan` diff、reviewer 看清楚。\n\n## 心法\n- 不一定全部 IaC（漸進）\n- Secrets 不放 git（用 Vault / SSM）\n- 永遠 plan 才 apply\n- State 鎖好（防多人同時改）",
+      "tip": {
+        "type": "milestone",
+        "text": "IaC = 基礎建設「可重現」、災難復原從幾天變幾小時。"
+      },
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 9 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "id": "22.10",
+      "number": "LESSON 22.10",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "22.10.auto",
+          "language": "hcl",
+          "title": "試試看",
+          "initialCode": "provider \"aws\" {\n  region = \"ap-northeast-1\"\n}\n\nresource \"aws_instance\" \"web\" {\n  ami           = \"ami-xxxxxx\"\n  instance_type = \"t3.small\"\n  \n  tags = {\n    Name = \"WebServer\"\n  }\n}\n\nresource \"aws_s3_bucket\" \"uploads\" {\n  bucket = \"myapp-uploads\"\n  acl    = \"private\"\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼 IaC"
+        },
+        {
+          "level": 3,
+          "text": "痛點"
+        },
+        {
+          "level": 3,
+          "text": "解"
+        },
+        {
+          "level": 2,
+          "text": "主流工具"
+        },
+        {
+          "level": 3,
+          "text": "Terraform（最熱）"
+        },
+        {
+          "level": 3,
+          "text": "Pulumi"
+        },
+        {
+          "level": 3,
+          "text": "CloudFormation"
+        },
+        {
+          "level": 3,
+          "text": "Ansible"
+        },
+        {
+          "level": 2,
+          "text": "工作流"
+        },
+        {
+          "level": 3,
+          "text": "1. 寫 code"
+        },
+        {
+          "level": 3,
+          "text": "2. Init"
+        },
+        {
+          "level": 3,
+          "text": "3. Plan（預覽變動）"
+        },
+        {
+          "level": 3,
+          "text": "4. Apply"
+        },
+        {
+          "level": 3,
+          "text": "5. Destroy（拆掉所有資源）"
+        },
+        {
+          "level": 2,
+          "text": "State 管理"
+        },
+        {
+          "level": 2,
+          "text": "多環境"
+        },
+        {
+          "level": 2,
+          "text": "CI/CD 整合"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    }
+  ],
+  "boss": {
+    "name": "容器巨人",
+    "hp": 250,
+    "emoji": "🐋",
+    "description": "Docker 是它的鱗片、Compose 是它的呼吸"
+  },
+  "quiz": {
+    "id": "ch22-quiz",
+    "questions": [],
+    "xpReward": 50,
+    "perfectBonus": 50
+  }
+}

@@ -1,0 +1,1348 @@
+{
+  "id": 16,
+  "slug": "backend",
+  "stage": 3,
+  "title": "後端世界全圖",
+  "subtitle": "HTTP / REST / GraphQL",
+  "icon": "server",
+  "description": "後端世界全圖：HTTP / REST / GraphQL",
+  "status": "published",
+  "difficulty": "intermediate",
+  "prerequisites": [
+    4
+  ],
+  "estimatedHours": 12,
+  "outcomes": [
+    "理解核心概念",
+    "實作主流工具",
+    "整章實戰可發佈作品",
+    "知道生態 / 接案行情",
+    "對齊 2026 業界主流"
+  ],
+  "lessons": [
+    {
+      "id": "16.1",
+      "number": "LESSON 16.1",
+      "title": "後端到底在做什麼？請求生命週期完整解析",
+      "oneLineSummary": "後端就是「網站的廚房」—使用者看不到、但所有資料 / 邏輯 / 帳號都在這。",
+      "analogy": "像一家餐廳—前端是用餐區（你看到的桌椅、菜單、餐點）、後端是廚房（食材庫存、烹調、會員制度、結帳）。沒廚房就只是樣品屋、買東西付不了錢。",
+      "content": "你按下「登入」按鈕、3 秒後看到主頁—**這 3 秒發生了什麼？**這是後端工程師每天在處理的事。\n\n  \n### 請求的完整旅程（10 個 step）\n\n```text\n你在 Chrome 按下「登入」：\n\nStep 1：DNS 查詢\n  你的瀏覽器：「facebook.com 在哪？」\n  → 問 DNS server\n  → 回 IP 地址（例：157.240.241.35）\n  耗時：5-50ms\n\nStep 2：TCP 連線\n  瀏覽器：「我要跟你建連線」\n  Server：「OK、來吧」\n  三次握手（SYN → SYN-ACK → ACK）\n  耗時：50-100ms\n\nStep 3：TLS 握手（HTTPS）\n  協商加密方式、交換金鑰\n  確認憑證\n  耗時：100-300ms\n\nStep 4：HTTP Request\n  瀏覽器送：\n  POST /login HTTP/2\n  Host: facebook.com\n  Content-Type: application/json\n  \n  {\"email\": \"alice@x.com\", \"password\": \"secret\"}\n\nStep 5：Load Balancer\n  Facebook 有 100 萬台 server、你的請求送哪台？\n  Load Balancer 決定（看哪台閒）\n  耗時：1-5ms\n\nStep 6：Web Server（Nginx / Apache）\n  接收請求、轉給 application server\n\nStep 7：Application Server（後端 code）\n  ← 這裡才是「後端」真正在做的事\n  1. 解析 JSON 拿 email / password\n  2. 連 DB 查 user\n  3. 用 bcrypt 比對 password\n  4. 對 → 生 JWT token\n  5. 寫 log（誰登入了）\n  6. 回應 200 OK + token\n  耗時：50-200ms\n\nStep 8：Database\n  Application 跟 DB 來回查詢\n  - SELECT * FROM users WHERE email=?\n  - SELECT permissions FROM ...\n  耗時：5-50ms（看複雜度）\n\nStep 9：HTTP Response 回送\n  HTTP/2 200 OK\n  Content-Type: application/json\n  Set-Cookie: session=xxx\n  \n  {\"token\": \"eyJhbGc...\", \"user\": {...}}\n\nStep 10：瀏覽器處理\n  - 存 cookie\n  - 解析 JSON\n  - Redirect 到主頁\n  耗時：10-50ms\n\n→ 整個過程 200-700ms\n→ 後端要做的事在 Step 5-9\n```\n\n  \n### 後端的 5 大職責\n\n```text\n1. 處理請求（Request handling）\n   - 解析 HTTP request\n   - 驗證輸入\n   - 路由到對的處理函數\n\n2. 業務邏輯（Business logic）\n   - 算稅、算折扣、判斷權限\n   - 工作流程\n   - 整合多個服務\n\n3. 資料管理（Data persistence）\n   - DB CRUD（Create / Read / Update / Delete）\n   - Cache 加速\n   - 檔案 / 圖片 / 影片 處理\n\n4. 整合外部（Integration）\n   - 第三方 API（Stripe 付款、SendGrid 寄信）\n   - Webhook（接收外部通知）\n   - 訊息隊列\n\n5. 系統運維（Operations）\n   - 日誌\n   - 監控\n   - 錯誤處理\n   - 安全（防 SQL injection、防 XSS）\n```\n\n  \n### 後端 vs 前端\n\n```text\n前端：\n- 在使用者瀏覽器 / 手機跑\n- 處理 UI 顯示、互動\n- HTML / CSS / JS\n- 看得到、摸得到\n\n後端：\n- 在 server 跑\n- 處理資料、邏輯\n- 任何語言（Python / Node / Go / Rust...）\n- 看不到、但沒它前端是空殼\n\n例：Facebook\n前端：你看到的 timeline UI（React）\n後端：\n- 你 follow 誰存 DB\n- 顯示誰的 post 用什麼算法\n- 圖片存哪、CDN 怎麼送\n- 廣告怎麼投\n- 數十億 user 同時用\n\n→ 前端 1 個工程師能搞定\n→ 後端要幾百個\n```\n\n  \n### 單體（Monolith）後端 vs 微服務\n\n```text\n單體（Monolith）：\n- 整個後端 1 個程式\n- 所有功能在一起\n- 1 個 DB\n- 簡單、適合新創 / 中型\n\n[ Web App ] → [ Backend Monolith ] → [ DB ]\n              (登入 + 訂單 + 寄信 + 推播)\n\n優：\n- 容易開發 / 部署\n- 1 個團隊就行\n- 1 個地方找 bug\n\n缺：\n- 1 段壞掉、全壞\n- 不易 scale 個別功能\n- 1000 萬 user 後痛\n\n微服務（Microservices）：\n- 拆成多個獨立服務\n- 每個服務一個職責\n- 各自 DB\n- 透過 API / queue 互通\n\n[ Auth Service ] [ Order Service ] [ Email Service ]\n    ↓               ↓                 ↓\n  Auth DB        Order DB          (no DB)\n\n優：\n- 各自 scale\n- 1 個壞不影響其他\n- 不同 team 各自做\n\n缺：\n- 複雜（多了網路、分散式問題）\n- 多 team 才划算\n- DevOps 痛\n\n→ 2026 主流建議：「monolith first、痛了再拆」\n```\n\n  \n### 用「餐廳」理解後端\n\n```text\n客人（前端）：\n- 看菜單\n- 點餐\n- 等\n\n服務生（API endpoint）：\n- 接訂單\n- 轉給廚房\n\n廚房（業務邏輯）：\n- 看食材有沒（DB 查）\n- 做菜（運算）\n- 出餐（response）\n\n冰箱（資料庫）：\n- 存食材\n- 隨時拿\n\n倉庫（檔案儲存）：\n- 大型食材\n- S3 / R2\n\n訂單記事本（log）：\n- 誰點什麼\n- 之後對帳\n\n→ 後端 = 整個廚房系統\n→ 前端 = 餐廳門面 + 客人\n```\n\n  \n    **☕ 用人話講**\n    \n後端 = **使用者看不到、但讓 App 能跑的部分**。每個按鈕背後 = 一段後端 code 在做事。沒後端：(1) 你存的資料消失（沒 DB） (2) 你看的內容無法個人化（沒邏輯） (3) 你寄的訊息不會送到（沒 server）。**看 App 想「這個動作後端怎麼做？」** = 培養後端思維的第一步。\n\n  \n\n  \n    **🚀 進階技巧**\n    \n2026 後端工程師薪資普遍比前端高 10-30%—因為（1）**技術棧複雜**（DB / Cache / Queue / DevOps / Security 都要懂）（2）**影響大**（後端壞 = 全公司死）（3）**稀缺**（前端 senior 多、後端 senior 少）。Indie / 一人公司更需要—因為你**沒** dedicated DevOps、後端 + 部署都你做。\n\n  \n\n  \n    \n      💼\n      接案小知識\n    \n    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「後端 API」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。",
+      "tip": {
+        "type": "practical",
+        "text": "剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「後端 API」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "16.1.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// 試試改變數、按執行\nconst numbers = [1, 2, 3, 4, 5];\nconst doubled = numbers.map(n => n * 2);\nconsole.log(\"原本:\", numbers);\nconsole.log(\"乘 2:\", doubled);\nconsole.log(\"總和:\", numbers.reduce((a, b) => a + b, 0));",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "請求的完整旅程（10 個 step）"
+        },
+        {
+          "level": 3,
+          "text": "後端的 5 大職責"
+        },
+        {
+          "level": 3,
+          "text": "後端 vs 前端"
+        },
+        {
+          "level": 3,
+          "text": "單體（Monolith）後端 vs 微服務"
+        },
+        {
+          "level": 3,
+          "text": "用「餐廳」理解後端"
+        }
+      ]
+    },
+    {
+      "id": "16.2",
+      "number": "LESSON 16.2",
+      "title": "HTTP 協定完整：method、status、header、cookie",
+      "oneLineSummary": "HTTP 是「網路的共通語言」—瀏覽器跟伺服器溝通的標準協議。",
+      "analogy": "像寄信的標準格式—信封寫「收件人 / 寄件人」、內容寫信。HTTP：method + URL + headers + body—全球網路用同一套格式溝通、所以瀏覽器才能讀全世界網站。",
+      "content": "HTTP 是後端的「**共通語言**」—不管你用什麼語言寫後端、客戶端用瀏覽器 / 手機 / 別的 server、大家都講 HTTP。學透它 = 看 API debug 不用查書。\n\n  \n### 一個 HTTP request 長什麼樣\n\n```text\n你按「登入」、瀏覽器送的 HTTP request：\n\nPOST /api/login HTTP/2\nHost: example.com\nAccept: application/json\nContent-Type: application/json\nUser-Agent: Mozilla/5.0 ...\nCookie: theme=dark; lang=zh-TW\nAuthorization: Bearer xxx\nContent-Length: 53\n\n{\"email\": \"alice@x.com\", \"password\": \"secret\"}\n\n3 個部分：\n1. Request line：POST /api/login HTTP/2\n   - method（POST）\n   - path（/api/login）\n   - protocol version（HTTP/2）\n\n2. Headers：\n   - 描述性資訊\n   - 一行一個 key: value\n\n3. Body（optional）：\n   - 實際資料\n   - GET 通常無 body、POST 有\n```\n\n  \n### 9 個 HTTP method\n\n```text\nGET    讀資料（不該有 side effect）\nPOST   建立新資料 / 動作\nPUT    完整更新（替換）\nPATCH  部分更新（只改某欄）\nDELETE 刪除\nHEAD   像 GET 但只回 header（檢查存在）\nOPTIONS 詢問支援什麼（CORS preflight）\nCONNECT 建立 tunnel（很少用）\nTRACE  追蹤路徑（debug、不安全）\n\n實戰 90% 用：GET / POST / PUT / PATCH / DELETE\n\nRESTful 慣例：\nGET    /users          列所有 user\nGET    /users/123      拿 user 123\nPOST   /users          建新 user\nPUT    /users/123      完整替換 user 123\nPATCH  /users/123      改 user 123 的某欄\nDELETE /users/123      刪 user 123\n```\n\n  \n### POST vs PUT vs PATCH 該用哪個\n\n```text\nPOST：「建立新東西」\nPOST /users\n{\"name\": \"Alice\", \"age\": 30}\n→ 建新 user、id 由 server 給\n→ 同樣 request 跑 2 次 = 建 2 個 user\n\nPUT：「完整替換」\nPUT /users/123\n{\"name\": \"Alice\", \"age\": 30, \"email\": \"alice@x.com\"}\n→ user 123 整個被這 object 取代\n→ 沒提到的欄位被清空\n→ 同 request 跑 2 次 = 結果相同（idempotent）\n\nPATCH：「部分修改」\nPATCH /users/123\n{\"age\": 31}\n→ 只改 age、其他不動\n→ 同 request 跑 2 次 = 結果相同\n\n實戰建議：\n- 新增 → POST\n- 修改 → 用 PATCH（不要 PUT、PUT 風險高）\n- 刪除 → DELETE\n```\n\n  \n### Idempotent vs 非 Idempotent\n\n```text\nIdempotent = 「同樣 request 跑多次、結果相同」\n\nGET    ✓ Idempotent（讀東西、跑幾次都一樣）\nPUT    ✓ Idempotent（替換、跑幾次都同 state）\nDELETE ✓ Idempotent（第一次刪、之後 404 但 state 同）\nPATCH  ✓ 通常 idempotent（但要看實作）\nPOST   ✗ 非 Idempotent（每次建新東西）\n\n為什麼重要？\n- 網路不穩、可能重送\n- Idempotent 的 method 重送 safe\n- 非 idempotent 重送危險（建 2 個訂單）\n\n實戰：\n建訂單用 POST、要小心 retry\n建議加 idempotency key（避免重複扣款）\n\n例：\nPOST /orders\nIdempotency-Key: abc-123-xyz\n{...}\n\n→ Server 看 idempotency key、相同的不重複處理\n```\n\n  \n### Status code 完整\n\n```text\n1xx 資訊（很少用）：\n100 Continue\n101 Switching Protocols（升級到 WebSocket）\n\n2xx 成功：\n200 OK                  一般成功\n201 Created             建立成功（POST 常用）\n202 Accepted            接收了、還在處理（async）\n204 No Content          成功、沒回傳內容（DELETE 常用）\n\n3xx 重新導向：\n301 Moved Permanently   永久搬家、SEO 友善\n302 Found               暫時重定向\n304 Not Modified        用 cache、不傳新資料\n307 Temporary Redirect  暫時、保留 method\n308 Permanent Redirect  永久、保留 method\n\n4xx 客戶端錯：\n400 Bad Request         請求格式錯（JSON 壞 / 參數不對）\n401 Unauthorized        沒登入（其實是未認證）\n403 Forbidden           登入了但沒權限\n404 Not Found           資源不存在\n405 Method Not Allowed  用錯 method\n408 Request Timeout     太慢\n409 Conflict            衝突（如同帳號已存在）\n410 Gone                永久不見\n422 Unprocessable       語法對但語意錯（驗證失敗）\n429 Too Many Requests   rate limit\n\n5xx 伺服器錯：\n500 Internal Server Error  通用錯\n501 Not Implemented        沒實作\n502 Bad Gateway            proxy 連 upstream 失敗\n503 Service Unavailable    server 太忙 / 維護\n504 Gateway Timeout        proxy 等 upstream 超時\n\n實戰常用：\n200 / 201 / 204 / 301 / 400 / 401 / 403 / 404 / 422 / 429 / 500\n\n→ 看 status code 知問題在哪\n→ 4xx 你的鍋、5xx server 的鍋\n```\n\n  \n### 常見 HTTP headers\n\n```text\nRequest headers（客戶端發給 server）：\n\nHost: example.com               # 哪個網域\nUser-Agent: Mozilla/5.0 ...     # 瀏覽器 / client 資訊\nAccept: application/json        # 我要 JSON\nAccept-Language: zh-TW,en       # 我要中文 / 英文\nAccept-Encoding: gzip, br       # 我能解壓 gzip / brotli\nContent-Type: application/json  # 我送 JSON\nContent-Length: 53              # body 多長\nAuthorization: Bearer xxx       # 我的 token\nCookie: name=value              # 我的 cookies\nOrigin: https://myapp.com       # 我從哪 origin 來（CORS）\nReferer: https://google.com     # 我從哪頁來\nX-Forwarded-For: 1.2.3.4        # 真實 IP（proxy 後）\nCache-Control: no-cache         # 不要用 cache\n\nResponse headers（server 回給客戶端）：\n\nContent-Type: application/json   # 我回 JSON\nContent-Length: 1024\nSet-Cookie: session=xxx; HttpOnly  # 設 cookie\nCache-Control: max-age=3600      # cache 1 小時\nLocation: /new-url               # 重定向到哪\nETag: \"abc123\"                   # 版本指紋（cache）\nLast-Modified: Wed, 13 May 2026\nX-RateLimit-Remaining: 99        # 還能呼叫幾次\nAccess-Control-Allow-Origin: *   # CORS 允許\nStrict-Transport-Security: max-age=31536000  # 強制 HTTPS\n```\n\n  \n### Cookies：保持「登入狀態」的秘訣\n\n```text\nHTTP 是 stateless—每個 request 互不認識。\n那「登入後保持登入」怎麼做？\n\n→ Cookie\n\n流程：\n1. 你登入 → server 回 Set-Cookie: session=xxx\n2. 瀏覽器自動存 cookie\n3. 之後每個 request 自動帶 Cookie: session=xxx\n4. Server 看 cookie 知道你是誰\n\nSet-Cookie 完整：\nSet-Cookie: session=xxx;\n            Domain=example.com;\n            Path=/;\n            Max-Age=3600;\n            HttpOnly;        ← JS 不能讀（防 XSS）\n            Secure;          ← 只 HTTPS 送\n            SameSite=Strict; ← 防 CSRF\n\n實戰：\n- 登入用 cookie + JWT 雙保險\n- HttpOnly 是必須（不然 XSS 偷 cookie）\n- SameSite=Lax 或 Strict（防 CSRF）\n```\n\n  \n### HTTP/1.1 vs HTTP/2 vs HTTP/3\n\n```text\nHTTP/1.1（1997）：\n- 1 個 connection 1 個 request\n- 慢、有 head-of-line blocking\n- 純文字\n- 仍是 fallback\n\nHTTP/2（2015）：\n- Multiplexing（1 連線多 request）\n- 壓縮 header\n- Binary protocol\n- Server push（沒怎麼用、被廢）\n\nHTTP/3（2022）：\n- 基於 QUIC（UDP）\n- 無 head-of-line blocking\n- 連線快（0-RTT）\n- 行動網路友善\n\n2026 主流：\n- HTTP/2 為主\n- HTTP/3 上升（CloudFlare / Google 強推）\n- HTTP/1.1 fallback\n\n→ 大多 framework 自動處理、你不用管細節\n```\n\n  \n    **🚀 進階技巧**\n    \nDebug API 必用工具：(1) **curl**—命令列發 request、看完整 header (2) **HTTPie**—curl 友善版、彩色 (3) **Postman / Insomnia / Bruno**—圖形化 API client (4) **瀏覽器 DevTools Network**—看實際 request / response (5) **mitmproxy**—攔截看流量。**看不懂 API 時、先用 curl 試**—往往發現問題在 headers 或 status code、不是 code 本身。\n\n  \n\n  \n    \n      🎯\n      面試考點\n    \n    台灣科技公司面試 90% 會問「後端 API」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。",
+      "tip": {
+        "type": "pro",
+        "text": "台灣科技公司面試 90% 會問「後端 API」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "16.2.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// 試試改變數、按執行\nconst numbers = [1, 2, 3, 4, 5];\nconst doubled = numbers.map(n => n * 2);\nconsole.log(\"原本:\", numbers);\nconsole.log(\"乘 2:\", doubled);\nconsole.log(\"總和:\", numbers.reduce((a, b) => a + b, 0));",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "一個 HTTP request 長什麼樣"
+        },
+        {
+          "level": 3,
+          "text": "9 個 HTTP method"
+        },
+        {
+          "level": 3,
+          "text": "POST vs PUT vs PATCH 該用哪個"
+        },
+        {
+          "level": 3,
+          "text": "Idempotent vs 非 Idempotent"
+        },
+        {
+          "level": 3,
+          "text": "Status code 完整"
+        },
+        {
+          "level": 3,
+          "text": "常見 HTTP headers"
+        },
+        {
+          "level": 3,
+          "text": "Cookies：保持「登入狀態」的秘訣"
+        },
+        {
+          "level": 3,
+          "text": "HTTP/1.1 vs HTTP/2 vs HTTP/3"
+        }
+      ]
+    },
+    {
+      "id": "16.3",
+      "number": "LESSON 16.3",
+      "title": "API 設計模式：REST / GraphQL / gRPC / WebSocket / tRPC",
+      "oneLineSummary": "HTTP Methods（GET / POST / PUT / DELETE）是「要做什麼動作」—讀 / 建立 / 更新 / 刪除。",
+      "analogy": "像圖書館的操作—GET 是借書、POST 是捐新書、PUT 是修書、DELETE 是丟書。RESTful API 就是按這套規矩設計—學會這 4 個動詞、80% API 都能看懂。",
+      "content": "後端「**怎麼跟前端 / 別系統溝通**」有多種方式。每種有適合的場景—2026 主流不只 REST。\n\n  \n### REST：最普及\n\n```text\n核心：「資源」+ HTTP method\n\nGET    /users           列所有 user\nGET    /users/123       拿 user 123\nPOST   /users           建 user\nPATCH  /users/123       改 user\nDELETE /users/123       刪 user\n\nGET    /users/123/orders     拿 user 123 的訂單\nPOST   /users/123/orders     幫 user 123 建訂單\n\n優：\n- 大家都會\n- HTTP 友善（cache / proxy 都支援）\n- 容易 debug（curl 直接試）\n- RESTful 大量教學\n\n缺：\n- 大資料：N+1（要多個 request 拼）\n- 過度抓取（一次給很多、用不到）\n- 不適合即時通訊\n- 版本管理痛苦\n\n實戰：\n- 90% indie / SaaS 用 REST\n- 簡單夠用\n```\n\n  \n### GraphQL：客戶端決定要什麼\n\n```text\n核心：「1 個 endpoint、客戶端 query」\n\nPOST /graphql\n{\n  user(id: 123) {\n    name\n    email\n    orders(limit: 5) {\n      id\n      total\n      items {\n        product { name price }\n      }\n    }\n  }\n}\n\n→ 1 個 request 拿到 user + orders + items + products\n→ 只拿想要的欄位、不多不少\n\n優：\n- 解決 N+1 / 過度抓取\n- 強型別（schema）\n- 自動產生文件\n- 1 個 endpoint\n\n缺：\n- 學習曲線陡\n- Server 實作複雜\n- Cache 比 REST 難\n- 容易寫出貴 query\n\n工具：\n- Apollo（最大）\n- Hasura（自動產 GraphQL）\n- Relay（Facebook）\n\n實戰：\n- Facebook / GitHub / Shopify 主用\n- 中大型 API 收益大\n- 小 SaaS overkill\n```\n\n  \n### gRPC：超快的 RPC\n\n```text\n核心：「函數呼叫感」+ binary 協定 + HTTP/2\n\n定義 service（.proto 檔）：\nservice UserService {\n    rpc GetUser(GetUserRequest) returns (User);\n    rpc CreateUser(CreateUserRequest) returns (User);\n}\n\nmessage User {\n    int32 id = 1;\n    string name = 2;\n    string email = 3;\n}\n\n呼叫感覺像 function call：\nuser = userService.GetUser({id: 123})\n\n優：\n- 超快（binary、HTTP/2）\n- 跨語言（auto-generate client / server）\n- Streaming 強（雙向）\n- 強型別\n\n缺：\n- 不能用 curl debug（binary）\n- 瀏覽器不能直接用（需要 grpc-web）\n- 學習曲線陡\n\n實戰：\n- Google / Netflix / Uber 內部用\n- 服務間通訊（不是 client-server）\n- 微服務架構推薦\n```\n\n  \n### tRPC：TypeScript 全端王者\n\n```text\n核心：「全 TS、function call 感、無需 schema」\n\n// Server\nexport const appRouter = router({\n  getUser: publicProcedure\n    .input(z.object({ id: z.number() }))\n    .query(async ({ input }) => {\n      return await db.user.findUnique({ where: { id: input.id } });\n    }),\n});\n\n// Client（看起來像函數呼叫）\nconst user = await trpc.getUser.query({ id: 123 });\n// 完整 TypeScript 型別推導\n\n優：\n- 全 TS、type safe end-to-end\n- 不用寫 schema（自動推導）\n- 開發體驗超好\n- 不用 versioning\n\n缺：\n- 只 TS / JS\n- 不適合公開 API（給其他語言用）\n\n實戰：\n- 2024+ Next.js 全端首選\n- 內部前後端通訊\n- 小 / 中 SaaS 完美\n```\n\n  \n### WebSocket：雙向即時通訊\n\n```text\nHTTP：客戶端發、server 回（單向）\nWebSocket：雙向、長連線、即時\n\n流程：\n1. 客戶端：HTTP 升級請求\n   GET / HTTP/1.1\n   Upgrade: websocket\n2. Server：101 Switching Protocols\n3. 之後雙向收發\n\n實戰場景：\n- 聊天（LINE / Discord）\n- 即時通知\n- 線上協作（Figma / Google Docs）\n- 即時遊戲\n- 股票 / 加密貨幣\n\n優：\n- 即時\n- 雙向\n- 低延遲\n\n缺：\n- 連線狀態管理複雜\n- 不易 scale\n- Reconnection 邏輯麻煩\n\n實戰工具：\n- Socket.io（Node、最普及）\n- ws（Node 純）\n- Phoenix Channels（Elixir）\n- Django Channels\n- ASP.NET SignalR\n```\n\n  \n### SSE（Server-Sent Events）：單向串流\n\n```text\n「Server 持續推、client 只收」\n\n實戰場景：\n- AI 串流（ChatGPT 一字一字出）\n- 即時通知（推播）\n- 股票報價\n- 進度條\n\n範例：\n// Server（Node）\nres.setHeader('Content-Type', 'text/event-stream');\nsetInterval(() => {\n    res.write(`data: ${JSON.stringify({time: Date.now()})}\\n\\n`);\n}, 1000);\n\n// Client\nconst evtSource = new EventSource('/events');\nevtSource.onmessage = (e) => {\n    console.log(e.data);\n};\n\n優：\n- 比 WebSocket 簡單\n- HTTP 上跑、proxy / firewall 友善\n- 自動重連\n- 純文字易 debug\n\n缺：\n- 單向（只 server → client）\n- 連線數限制（瀏覽器 6 個 / domain）\n\n→ AI 應用 2026 主流\n```\n\n  \n### 怎麼選\n\n```text\n場景 → 選什麼：\n\n1. 一般 CRUD API、給多客戶端用\n   → REST（最通用）\n\n2. 客戶端複雜、要彈性查資料\n   → GraphQL\n\n3. 全 TS 全端（前後端同 repo）\n   → tRPC\n\n4. 服務間高效溝通\n   → gRPC\n\n5. 聊天 / 即時遊戲 / 雙向協作\n   → WebSocket\n\n6. AI 串流 / 通知推播\n   → SSE\n\n7. 大檔上傳 / 下載\n   → HTTP（multipart / range）\n\n實戰：\n- indie SaaS：REST + SSE（AI）\n- 大型 SaaS：REST + GraphQL（公開）+ gRPC（內部）\n- 即時 app：REST + WebSocket\n- 全 TS：tRPC + WebSocket\n```\n\n  \n    **🚀 進階技巧**\n    \n2026 趨勢：**「不再 REST 一統天下」**。Facebook 內部 GraphQL、Google 內部 gRPC、Next.js 全 stack 用 tRPC、AI app 大量 SSE—不同場景用不同工具。**新手先學 REST**（基礎、通用），熟練後加 SSE（AI 必用）、之後看需求學 GraphQL / tRPC / WebSocket。**不要只會 REST**—2026 後端 senior 一定要懂 3-4 種。\n\n  \n\n  \n    \n      ⚡\n      學習加速器\n    \n    把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。",
+      "tip": {
+        "type": "practical",
+        "text": "把這節學到的馬上應用到一個小東西—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "16.3.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// 試試改變數、按執行\nconst numbers = [1, 2, 3, 4, 5];\nconst doubled = numbers.map(n => n * 2);\nconsole.log(\"原本:\", numbers);\nconsole.log(\"乘 2:\", doubled);\nconsole.log(\"總和:\", numbers.reduce((a, b) => a + b, 0));",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "REST：最普及"
+        },
+        {
+          "level": 3,
+          "text": "GraphQL：客戶端決定要什麼"
+        },
+        {
+          "level": 3,
+          "text": "gRPC：超快的 RPC"
+        },
+        {
+          "level": 3,
+          "text": "tRPC：TypeScript 全端王者"
+        },
+        {
+          "level": 3,
+          "text": "WebSocket：雙向即時通訊"
+        },
+        {
+          "level": 3,
+          "text": "SSE（Server-Sent Events）：單向串流"
+        },
+        {
+          "level": 3,
+          "text": "怎麼選"
+        }
+      ]
+    },
+    {
+      "id": "16.4",
+      "number": "LESSON 16.4",
+      "title": "後端架構：Monolith / Microservice / Serverless / Edge",
+      "oneLineSummary": "Status Code（200 / 404 / 500）是「伺服器的回應狀態」—成功 / 沒找到 / 壞了。",
+      "analogy": "像客服回應—200「好的、給您」、401「請先登入」、404「您找的不存在」、500「我們系統壞了」。看 status code 就知道哪邊出問題、debug 第一步。",
+      "content": "同個產品、4 種架構選擇。**選錯** = 公司成本高 10 倍、團隊痛苦 2 年。\n\n  \n### 架構 1：Monolith（單體）\n\n```text\n所有功能塞 1 個程式：\n\n[ Frontend ] → [ Backend (登入+訂單+寄信+付款+...) ] → [ 1 個 DB ]\n\n例：\n- Basecamp（DHH 自豪）\n- Shopify（Rails 巨型 monolith）\n- GitHub（早期）\n- Stack Overflow（C# monolith 跑很大）\n\n優：\n- 簡單（1 個 deploy）\n- 開發快（同 codebase）\n- 1 個 team 就行\n- 沒分散式問題\n\n缺：\n- 1 段壞、全壞（用 graceful degradation 解）\n- 不易單獨 scale 某功能\n- Codebase 越來越大（10 萬+ 行）\n\n什麼時候用：\n- 新創早期（10 人以下 team）\n- MVP 階段\n- Indie SaaS（90% 適用）\n- 中型公司（ 15 分鐘）\n- Vendor lock-in\n- 大流量可能比 server 貴\n\n什麼時候用：\n- Indie / MVP（cost 0 起跳）\n- 流量波動大（白天高、晚上 0）\n- 不想管 server\n- 邊緣 / 全球分散\n\n不該用：\n- 持續高流量（server 反而便宜）\n- 長時間 task（用 worker / job queue）\n- 需要 stateful\n```\n\n  \n### 架構 4：Edge Computing\n\n```text\nCode 跑在「最靠近 user 的地方」：\n\n傳統：\n[ Taiwan User ] → [ US-East Server ] → 300ms\n\nEdge：\n[ Taiwan User ] → [ Taipei Edge Node ] → 10ms\n                       ↓\n                [ US Origin Server ]（only if needed）\n\n主流平台：\n- Cloudflare Workers（200+ 城市）\n- Vercel Edge Functions\n- Deno Deploy\n- Fastly Compute@Edge\n\n特色：\n- 全球低延遲\n- V8 isolate（不是 container、更快）\n- 嚴限制（CPU 50ms / req）\n- Storage 在 edge（KV / D1 / R2）\n\n優：\n- 全球毫秒級\n- 自動全球部署\n- 抗 DDoS\n- 便宜\n\n缺：\n- 限制多（不能跑 Python、只 JS / Rust / WASM）\n- Stateful 困難\n- Debug 痛\n\n實戰：\n- 認證 / 路由 / A/B test\n- 個人化 redirect\n- 邊緣 API（不訪問 origin DB）\n- 全球 SaaS\n```\n\n  \n### 2026 主流：混合架構\n\n```text\n大多公司不是純 1 種：\n\n典型 indie SaaS（你）：\n- Monolith（主邏輯）on Vercel / Railway\n- Edge Functions（auth / routing）on Cloudflare\n- Serverless（背景任務）on Vercel Functions\n- 1 個 PostgreSQL DB\n\n典型 startup（30 人）：\n- Monolith（主應用）\n- 1-2 個 microservice（特殊高負載功能）\n- Serverless（cron / webhook）\n- Edge（CDN + routing）\n\n典型大公司（Meta）：\n- 大量 microservices\n- 部分 monolith（傳統部門）\n- Serverless（內部工具）\n- Edge（CDN）\n\n→ 沒「銀彈架構」、看你公司 stage / size\n```\n\n  \n### 選擇 framework\n\n```text\n4 個問題決定：\n\n1. Team size？\n   1-5 人 → Monolith\n   5-30 人 → Monolith + 1-2 服務\n   30+ 人 → 開始拆 microservices\n\n2. 流量？\n   \n    **⚠ 踩雷警告**\n    \n新創最大坑：**過早微服務化**。看 Netflix / Google 用 microservices、就學 → 5 人 team 拆 20 個服務 → DevOps 死、開發慢、永遠不 ship。**2026 主流建議**：「**Monolith first**」—DHH / Basecamp / 37signals 用 monolith 賺 $100M+/年。**不痛就不拆**—10 萬行 monolith 比 50 個 microservices 維護容易 10 倍。\n\n  \n\n  \n    \n      🚀\n      2026 趨勢\n    \n    這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。",
+      "tip": {
+        "type": "trend",
+        "text": "這個技術 2026 還在主流、未來 5 年不會過時。但工具會更新—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "16.4.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// 試試改變數、按執行\nconst numbers = [1, 2, 3, 4, 5];\nconst doubled = numbers.map(n => n * 2);\nconsole.log(\"原本:\", numbers);\nconsole.log(\"乘 2:\", doubled);\nconsole.log(\"總和:\", numbers.reduce((a, b) => a + b, 0));",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "架構 1：Monolith（單體）"
+        },
+        {
+          "level": 3,
+          "text": "架構 4：Edge Computing"
+        },
+        {
+          "level": 3,
+          "text": "2026 主流：混合架構"
+        },
+        {
+          "level": 3,
+          "text": "選擇 framework"
+        }
+      ]
+    },
+    {
+      "id": "16.5",
+      "number": "LESSON 16.5",
+      "title": "後端語言全覽：11 個主流選擇",
+      "oneLineSummary": "REST API 是「設計 API 的一套通用規矩」—2026 仍是最主流。",
+      "analogy": "像菜單的標準寫法—菜名 / 價格 / 描述—大家看了都懂。REST：GET /users（讀全部）POST /users（建一個）—一看就知道在做什麼、跨團隊溝通成本低。",
+      "content": "後端能用什麼語言？答案：**幾乎任何能寫 server code 的**。2026 主流 11 種、各有強項。\n\n  \n### 11 個主流語言速覽\n\n  \n| 語言 | 主流 framework | 性能 | 2026 熱度 | indie 友善 |\n| --- | --- | --- | --- | --- |\n| Python | FastAPI / Django / Flask | 中 | 🔥🔥🔥🔥🔥 | 🌟🌟🌟🌟🌟 |\n| JavaScript / Node | Express / Hono / NestJS | 中高 | 🔥🔥🔥🔥🔥 | 🌟🌟🌟🌟🌟 |\n| TypeScript | 同 Node、tRPC | 中高 | 🔥🔥🔥🔥🔥 | 🌟🌟🌟🌟🌟 |\n| Go | Gin / Fiber / Chi | 高 | 🔥🔥🔥🔥 | 🌟🌟🌟🌟 |\n| Rust | Axum / Actix | 極高 | 🔥🔥🔥🔥 | 🌟🌟🌟 |\n| Java | Spring Boot | 高 | 🔥🔥🔥 | 🌟🌟 |\n| C# | ASP.NET Core | 高 | 🔥🔥🔥 | 🌟🌟🌟 |\n| PHP | Laravel / Symfony | 中 | 🔥🔥🔥 | 🌟🌟🌟🌟🌟 |\n| Ruby | Rails | 中 | 🔥🔥 | 🌟🌟🌟🌟🌟 |\n| Kotlin | Ktor / Spring | 高 | 🔥🔥🔥 | 🌟🌟🌟 |\n| Elixir | Phoenix | 高 | 🔥🔥 | 🌟🌟🌟 |\n\n  \n### 各語言定位\n\n```text\nPython：「AI / 簡單後端」\n- 賣點：寫得快、生態無敵（AI / data / web）\n- 主場：FastAPI 寫 API server、Django 整合大型 app\n- 公司：Instagram、Spotify、Dropbox、Pinterest\n- 適合：indie、AI 後端、data pipeline、勝任所有 SaaS\n\nJavaScript / Node：「全 JS / 全端」\n- 賣點：前後端同語言、event loop 強 I/O\n- 主場：Express 通用、Hono edge、NestJS 企業\n- 公司：Netflix、Uber、PayPal、LinkedIn\n- 適合：全 JS 團隊、real-time app、middleware\n\nTypeScript：「JS 加強版」\n- 賣點：JS 生態 + 型別安全\n- 主場：所有 Node 框架都支援\n- 公司：Microsoft、Stripe、Shopify、Vercel\n- 2026 主流：新 Node 專案 95% TS\n\nGo：「簡單高效」\n- 賣點：超快、並發強（goroutine）、單 binary 部署\n- 主場：API server、CLI、DevOps tools\n- 公司：Google、Uber、Twitch、Dropbox、Cloudflare\n- 適合：高並發 server、容器化、microservices\n\nRust：「極致效能 + 安全」\n- 賣點：C++ 速度 + 無 GC + 無 null pointer bug\n- 主場：高性能 server、系統程式、瀏覽器、blockchain\n- 公司：Discord（後端）、Dropbox、Mozilla、Cloudflare\n- 適合：性能極致、需要安全、學習曲線陡\n\nJava：「企業之王」\n- 賣點：成熟、穩定、生態強、JVM 強\n- 主場：Spring Boot（業界標準）、大型企業 app\n- 公司：銀行、保險、政府、Amazon、Netflix\n- 適合：傳統企業、需要長期穩定、大團隊\n\nC#：「微軟生態」\n- 賣點：類 Java 但更新、跨平台（.NET Core）\n- 主場：ASP.NET Core、Unity 遊戲\n- 公司：Microsoft、Stack Overflow、所有 .NET 用戶\n- 適合：Microsoft 生態、企業 app、遊戲\n\nPHP：「Web 一霸（70% 網站）」\n- 賣點：簡單、便宜、超多 hosting\n- 主場：Laravel（modern）、WordPress（全球 40% 網站）\n- 公司：Facebook（Hack）、WordPress、Wikipedia、Slack 早期\n- 適合：接案、CMS、傳統電商\n\nRuby：「DHH 哲學 / Rails 神器」\n- 賣點：寫得最爽（DHH 名言）、convention over configuration\n- 主場：Ruby on Rails\n- 公司：Basecamp、GitHub、Shopify、Airbnb、Stripe\n- 適合：indie、startup MVP、追求開發速度\n\nKotlin：「Android 後端兩用」\n- 賣點：JVM、null safe、type safe、簡潔\n- 主場：Android（官方）、Ktor 後端、Spring\n- 公司：JetBrains、Pinterest、Trello、Square\n- 適合：Android dev 拓展、想離開 Java\n\nElixir：「並發王者」\n- 賣點：Actor model、容錯極強、輕量\n- 主場：Phoenix（類 Rails、即時強）\n- 公司：Discord、WhatsApp（Erlang 同系）、Pinterest\n- 適合：即時系統、聊天、高並發\n```\n\n  \n### 2026 各語言熱度趨勢\n\n```text\n上升：\n- TypeScript 🔥 全端 JS 主流\n- Python 🔥 AI 帶動爆紅\n- Rust 🔥 性能 + 安全\n- Go 🔥 雲原生 + 服務間\n\n穩定：\n- JavaScript（Node）\n- Java\n- C#\n- Kotlin\n\n下降但仍主流：\n- PHP（Laravel 撐著、WordPress 不會死）\n- Ruby（Rails 復興運動中）\n\n小眾但有特殊強項：\n- Elixir（高並發、Discord 證明）\n- Crystal（類 Ruby 但編譯型）\n- Zig（C 替代品、新興）\n```\n\n  \n### 各語言典型「Hello World 後端」\n\n```text\nPython（FastAPI）：\nfrom fastapi import FastAPI\napp = FastAPI()\n\n@app.get(\"/\")\ndef hello():\n    return {\"message\": \"Hello\"}\n\nNode（Express）：\nconst express = require('express');\nconst app = express();\n\napp.get('/', (req, res) => {\n    res.json({ message: 'Hello' });\n});\n\napp.listen(3000);\n\nGo（Gin）：\npackage main\nimport \"github.com/gin-gonic/gin\"\n\nfunc main() {\n    r := gin.Default()\n    r.GET(\"/\", func(c *gin.Context) {\n        c.JSON(200, gin.H{\"message\": \"Hello\"})\n    })\n    r.Run()\n}\n\nRust（Axum）：\nuse axum::{Router, routing::get, Json};\nuse serde_json::json;\n\n#[tokio::main]\nasync fn main() {\n    let app = Router::new()\n        .route(\"/\", get(|| async {\n            Json(json!({ \"message\": \"Hello\" }))\n        }));\n    \n    axum::Server::bind(&\"0.0.0.0:3000\".parse().unwrap())\n        .serve(app.into_make_service())\n        .await.unwrap();\n}\n\nJava（Spring Boot）：\n@RestController\npublic class HelloController {\n    @GetMapping(\"/\")\n    public Map hello() {\n        return Map.of(\"message\", \"Hello\");\n    }\n}\n\nC#（ASP.NET Core）：\nvar builder = WebApplication.CreateBuilder(args);\nvar app = builder.Build();\n\napp.MapGet(\"/\", () => new { message = \"Hello\" });\napp.Run();\n\nPHP（Laravel）：\nRoute::get('/', function () {\n    return ['message' => 'Hello'];\n});\n\nRuby（Rails 或 Sinatra）：\n# Sinatra（簡單）\nrequire 'sinatra'\nget '/' do\n    { message: 'Hello' }.to_json\nend\n\nKotlin（Ktor）：\nfun main() {\n    embeddedServer(Netty, port = 8080) {\n        routing {\n            get(\"/\") {\n                call.respond(mapOf(\"message\" to \"Hello\"))\n            }\n        }\n    }.start(wait = true)\n}\n\nElixir（Phoenix 或 Plug）：\ndefmodule MyApp.Router do\n    use Plug.Router\n    \n    get \"/\" do\n        send_resp(conn, 200, Jason.encode!(%{message: \"Hello\"}))\n    end\nend\n```\n\n  \n    **☕ 用人話講**\n    \n沒有「最好的後端語言」、只有「**適合你的**」。Python 寫得快、Go 跑得快、Rust 不出 bug、PHP 接案多、Ruby on Rails 寫起來爽。**選你能寫得久**的、不是**跑得最快**的。Pieter Levels 用 PHP + jQuery 賺 $1M+/年—語言不是 bottleneck、執行力是。\n\n  \n\n  \n    \n      🛠️\n      工具推薦\n    \n    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。",
+      "tip": {
+        "type": "practical",
+        "text": "配合這節用的工具：(1) VS Code（編輯器、免費）(2) Chrome DevTools（F12 開啟、除錯神器）(3) Live Server（VS Code 擴充、即時預覽）(4) GitHub Copilot / Cursor（AI 寫程式、學習加速 2-10x）。"
+      },
+      "xp": 15,
+      "playgrounds": [
+        {
+          "key": "16.5.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// 試試改變數、按執行\nconst numbers = [1, 2, 3, 4, 5];\nconst doubled = numbers.map(n => n * 2);\nconsole.log(\"原本:\", numbers);\nconsole.log(\"乘 2:\", doubled);\nconsole.log(\"總和:\", numbers.reduce((a, b) => a + b, 0));",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "11 個主流語言速覽"
+        },
+        {
+          "level": 3,
+          "text": "各語言定位"
+        },
+        {
+          "level": 3,
+          "text": "2026 各語言熱度趨勢"
+        },
+        {
+          "level": 3,
+          "text": "各語言典型「Hello World 後端」"
+        }
+      ]
+    },
+    {
+      "id": "16.6",
+      "number": "LESSON 16.6",
+      "title": "怎麼選後端語言：5 個維度決策",
+      "oneLineSummary": "GraphQL 是「客戶端問什麼伺服器給什麼」—解決 REST 過取 / 少取問題。",
+      "analogy": "像客製化便當 vs 套餐—套餐（REST）拿固定菜色、客製化（GraphQL）你說要什麼就有什麼。複雜資料前端用 GraphQL 超爽、簡單 CRUD REST 比較順。",
+      "content": "11 個語言、怎麼選？看 5 個維度。\n\n  \n### 維度 1：你的目標\n\n```text\n目標 → 推薦語言：\n\n「Indie SaaS、想快速 ship」\n→ Python（FastAPI / Django） / Node（TS）\n→ 寫得快、生態強、debug 容易\n\n「進矽谷 / 大廠」\n→ Go / Rust / Java / Python\n→ 看公司：\n  - FAANG：Python / Go / Java / TS\n  - Crypto / Web3：Rust / Go\n  - 銀行 / 金融：Java / C# / Python\n\n「接案 / Freelance」\n→ PHP（Laravel / WordPress） / Python / Node\n→ PHP 接案最多、Python 中型\n\n「AI / ML 後端」\n→ Python（沒之一）\n→ 生態無敵：FastAPI + LangChain + HF + ...\n\n「即時系統 / 聊天 / 遊戲後端」\n→ Elixir / Go / Node\n→ Discord 用 Elixir、簡單即時用 Node\n\n「企業 / B2B SaaS」\n→ Java（Spring） / C#（.NET） / Go\n→ 穩定、好招人、企業客戶信任\n\n「Android dev 想擴展」\n→ Kotlin（Ktor 後端）\n→ 同語言、無痛切換\n\n「想學最熱、未來」\n→ Rust（系統 / 高性能）+ TypeScript（全端）\n→ 2026-2030 雙王\n```\n\n  \n### 維度 2：性能需求\n\n```text\n每秒能處理多少 request（簡單 hello world）：\n\nRust (Axum)：       400k+ req/s\nGo (Gin)：          300k+ req/s\nJava (Spring)：     200k+ req/s\nC# (.NET 8+)：      250k+ req/s\nNode (Bun)：        200k+ req/s\nNode (Express)：    50k+ req/s\nPython (FastAPI)：  50k+ req/s\nPython (Django)：   15k req/s\nPHP (Laravel)：     20k req/s\nRuby (Rails)：      5k req/s\nElixir (Phoenix)：  100k+ req/s\n\n但實戰：\n- 99% 場景性能不是瓶頸\n- DB / 網路 / 外部 API 才是\n- Python 5k req/s 對 indie 已超夠\n- 別過早優化\n\n何時真的需要 Rust / Go 級性能：\n- 百萬+ concurrent connections\n- 微秒級延遲（HFT、遊戲）\n- CPU 密集計算（不是 web）\n- 資源敏感（IoT / edge）\n```\n\n  \n### 維度 3：生態系\n\n```text\n生態完整度：\n\nPython：⭐⭐⭐⭐⭐\n- AI / ML：絕對王者\n- Web：FastAPI / Django 完整\n- Data：Pandas / NumPy 無敵\n- 100 萬+ packages\n\nNode / TS：⭐⭐⭐⭐⭐\n- 任何 web 場景\n- 1500 萬+ packages\n- 前後端共用\n\nJava：⭐⭐⭐⭐⭐\n- 25 年生態\n- 任何企業需求都有 library\n- Maven 中央倉庫\n\nGo：⭐⭐⭐⭐\n- 標準庫超強\n- DevOps / 雲原生工具大本營\n- Web framework 少但夠\n\nRust：⭐⭐⭐\n- 上升中\n- 系統 / DB / 工具強\n- Web 還在追趕\n\nC#：⭐⭐⭐⭐\n- Microsoft 生態\n- NuGet 完整\n- 遊戲（Unity）獨步\n\nPHP：⭐⭐⭐⭐\n- Web 老大哥\n- Composer / Packagist\n- WordPress 生態巨大\n\nRuby：⭐⭐⭐\n- Rails 生態強\n- Gem 完整但小\n- 不適合 AI / data\n\nKotlin：⭐⭐⭐⭐\n- JVM 全用\n- Android 官方\n- 後端 Ktor 新但快速成長\n\nElixir：⭐⭐⭐\n- Hex 完整\n- Phoenix 強\n- 小眾、學習資源少\n```\n\n  \n### 維度 4：學習曲線\n\n```text\n新手友善度（容易 → 困難）：\n\n1. Python ⭐⭐⭐⭐⭐\n   - 簡潔語法、像英文\n   - 縮排取代 { }\n   - 1 週上手\n\n2. Ruby ⭐⭐⭐⭐⭐\n   - 像英文、Matz「為快樂寫程式」\n   - Rails magic\n   - 1 週上手\n\n3. JavaScript ⭐⭐⭐⭐\n   - 瀏覽器直接跑\n   - 但 type 陷阱多\n   - 2 週上手\n\n4. PHP ⭐⭐⭐⭐\n   - 簡單、教學多\n   - Laravel 體驗好\n   - 1-2 週上手\n\n5. Go ⭐⭐⭐⭐\n   - 故意設計簡單\n   - 25 個關鍵字\n   - 2 週上手\n\n6. TypeScript ⭐⭐⭐\n   - JS + 型別\n   - 學完 JS 再學\n   - 3-4 週\n\n7. C# / Java ⭐⭐⭐\n   - 靜態型別\n   - OOP 重\n   - 4-8 週\n\n8. Kotlin ⭐⭐⭐\n   - 比 Java 簡潔\n   - JVM 概念要懂\n\n9. Elixir ⭐⭐\n   - 函數式\n   - Pattern matching 概念新\n   - 1-3 個月\n\n10. Rust ⭐\n    - Ownership 系統難\n    - 1-3 個月才順手\n    - 但學會後超強\n```\n\n  \n### 維度 5：招聘 / 薪資\n\n```text\n2026 台灣 / 全球薪資（年薪、有經驗）：\n\n最高：\n- Rust：$120k-$300k+（稀缺、高薪）\n- Go：$100k-$250k+\n- Kotlin：$100k-$200k\n\n中高：\n- Java / C#：$90k-$180k\n- TypeScript：$90k-$180k\n\n中：\n- Python：$80k-$170k（差距大、AI 多 $20k+）\n- Node.js：$80k-$160k\n\n中下：\n- PHP：$60k-$140k（高低差大）\n- Ruby：$80k-$150k\n\n招聘量（多 → 少）：\n1. JavaScript / TS（最多）\n2. Python\n3. Java\n4. PHP\n5. C#\n6. Go\n7. Ruby\n8. Kotlin\n9. Rust（稀缺）\n10. Elixir（最少）\n\n→ 想穩定找工作：TS / Python / Java\n→ 想高薪稀缺：Rust / Go\n→ 想接案：PHP / Python\n```\n\n  \n### 給不同人的推薦\n\n```text\n「新手想 ship indie SaaS」：\n→ TypeScript（Next.js + Hono / tRPC）\n理由：前後端同語言、生態強、indie 大師都用\n\n「Python 已會、想做 backend」：\n→ 繼續 Python（FastAPI）\n理由：用熟練的、別跳語言\n\n「想當 senior 工程師」：\n→ Python + TypeScript + Go\n理由：3 種主流、coverage 80% job\n\n「想做 AI 創業」：\n→ Python + TypeScript\n理由：Python 寫 AI 後端、TS 寫前端 / SDK\n\n「想做 modern 高薪 backend」：\n→ Go 或 Rust\n理由：稀缺、薪資高\n\n「想接案 / freelance」：\n→ PHP（Laravel + WordPress）\n理由：客戶最多、入門容易\n\n「企業 backend 工作」：\n→ Java（Spring Boot）或 C#（.NET）\n理由：企業最愛、穩定 career\n```\n\n  \n    **🚀 進階技巧**\n    \n選語言**3 條黃金法則**：(1) **選你 enjoy 的**—寫得久才會精 (2) **選有人帶的**—身邊有 mentor 比語言重要 (3) **選有「下個版本**」的—Python 學完進 ML、TS 學完進 Edge、Go 學完進雲原生—別選 dead-end。**最大坑**：每 6 個月換語言 = 永遠 junior。**對策**：選 1 個主力、深用 2-3 年再考慮第二語言。\n\n  \n\n  \n    \n      ⚠️\n      新手常見錯誤\n    \n    新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。",
+      "tip": {
+        "type": "warning",
+        "text": "新手 3 大坑：(1) 不看 console—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) 不存檔就 F5—改完忘記儲存以為「程式沒效果」 (3) 抄 code 不理解—複製貼上能跑、但下次要改就崩潰。記得：先看懂、再寫。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "維度 1：你的目標"
+        },
+        {
+          "level": 3,
+          "text": "維度 2：性能需求"
+        },
+        {
+          "level": 3,
+          "text": "維度 3：生態系"
+        },
+        {
+          "level": 3,
+          "text": "維度 4：學習曲線"
+        },
+        {
+          "level": 3,
+          "text": "維度 5：招聘 / 薪資"
+        },
+        {
+          "level": 3,
+          "text": "給不同人的推薦"
+        }
+      ]
+    },
+    {
+      "id": "16.7",
+      "number": "LESSON 16.7",
+      "title": "資料庫整合：ORM、Query Builder、Raw SQL",
+      "oneLineSummary": "WebSocket：「即時雙向通訊」—聊天 / 通知 / 多人協作必備。",
+      "analogy": "像講電話 vs 寄信—HTTP 是寄信（一來一回、要時間）、WebSocket 是講電話（即時、雙向）。聊天 App / Notion / Figma 多人同步—全用 WebSocket。",
+      "content": "後端 90% 時間在跟 DB 互動。**怎麼寫 query**有 3 種方式—各有適合場景。\n\n  \n### 3 種方式對比\n\n```text\n「拿 user id=123 的訂單、依日期排序」：\n\n1. Raw SQL（直接寫 SQL）：\n   SELECT * FROM orders \n   WHERE user_id = 123 \n   ORDER BY created_at DESC;\n\n2. Query Builder（用 method 組 SQL）：\n   db('orders')\n     .where('user_id', 123)\n     .orderBy('created_at', 'desc')\n     .select();\n\n3. ORM（物件導向、跟 class 對應）：\n   user = User.find(123)\n   orders = user.orders.order_by('-created_at')\n\n每個有 trade-off\n```\n\n  \n### ORM：最高層抽象\n\n```text\nORM = Object-Relational Mapping\n「DB 表 ↔ 程式 class」對應\n\n# Python（SQLAlchemy）\nclass User(Base):\n    __tablename__ = \"users\"\n    id = Column(Integer, primary_key=True)\n    name = Column(String)\n    orders = relationship(\"Order\", back_populates=\"user\")\n\nclass Order(Base):\n    __tablename__ = \"orders\"\n    id = Column(Integer, primary_key=True)\n    user_id = Column(Integer, ForeignKey(\"users.id\"))\n    total = Column(Float)\n\n# 用\nuser = session.query(User).filter_by(id=123).first()\nfor order in user.orders:\n    print(order.total)\n\n# Node（Prisma）\nmodel User {\n    id     Int     @id @default(autoincrement())\n    name   String\n    orders Order[]\n}\n\nconst user = await prisma.user.findUnique({\n    where: { id: 123 },\n    include: { orders: true }\n});\n\n# Ruby（Rails ActiveRecord）\nclass User ', 1000)\n    .orderBy('created_at', 'desc')\n    .limit(10)\n    .select('id', 'total', 'created_at');\n\n# Python（SQLAlchemy Core）\nstmt = select(Order).where(\n    Order.user_id == 123,\n    Order.total > 1000\n).order_by(Order.created_at.desc()).limit(10)\n\n# Rust（sqlx）\nlet orders = sqlx::query_as!(Order,\n    \"SELECT * FROM orders WHERE user_id = $1 LIMIT 10\",\n    user_id\n).fetch_all(&pool).await?;\n\n優：\n- 比 ORM 透明（你知道生成什麼 SQL）\n- 比 raw SQL 安全（自動參數化、防 injection）\n- 跨 DB 支援\n\n缺：\n- 還是要學 builder API\n- 複雜 query 仍痛苦\n\n2026 主流：\n- Drizzle（TS、極流行）\n- Kysely（TS）\n- sqlx（Rust）\n- jOOQ（Java）\n```\n\n  \n### Raw SQL：最直接\n\n```text\n# Python\nresult = session.execute(\n    text(\"\"\"\n        SELECT u.name, COUNT(o.id) as order_count\n        FROM users u\n        LEFT JOIN orders o ON o.user_id = u.id\n        WHERE u.created_at > :date\n        GROUP BY u.id\n        HAVING COUNT(o.id) > 5\n        ORDER BY order_count DESC\n    \"\"\"),\n    {\"date\": \"2026-01-01\"}\n)\n\n# Node（pg / postgres）\nconst { rows } = await pool.query(\n    \"SELECT * FROM users WHERE id = $1\",\n    [userId]\n);\n\n優：\n- 完全控制（任何複雜 query）\n- 性能最佳（你寫什麼跑什麼）\n- DBA 友善\n\n缺：\n- 易 SQL injection（要永遠用參數化）\n- 換 DB 痛（PG → MySQL 語法不同）\n- 不好維護（散在 code 各處）\n\n實戰建議：\n- 簡單 CRUD → ORM\n- 複雜 query / 分析 → Raw SQL\n- 中間需求 → Query Builder\n- 90% Senior 是混合用\n```\n\n  \n### 2026 主流選擇\n\n```text\nNode / TypeScript：Prisma 或 Drizzle\n- Prisma：最普及、schema-first、好用\n- Drizzle：新興、輕量、SQL-like、TS 完美\n\nPython：SQLAlchemy 2.0\n- 業界標準\n- 2.0 async + 新 query API 很 modern\n- Django ORM 也行（Django 內建）\n\nGo：sqlc 或 GORM\n- sqlc：寫 SQL → 自動生 Go code（型別安全）\n- GORM：傳統 ORM 風\n\nRust：sqlx 或 SeaORM\n- sqlx：寫 SQL + compile-time 檢查\n- SeaORM：類 ActiveRecord\n\nJava：JPA / Hibernate / jOOQ\n- JPA 業界標準\n- jOOQ 更彈性\n\n→ 2026 趨勢：「Type-safe SQL」\n（Prisma / Drizzle / sqlx / sqlc）\n比傳統 ORM 流行\n```\n\n  \n    **🚀 進階技巧**\n    \n2026 共識：**「ORM 對簡單 CRUD、Raw SQL 對複雜 query」**。Stripe / GitHub / Shopify 都混用—不教條。新手 3 個習慣：(1) **用 ORM**學 schema 跟基本 query (2) **看 ORM 生成的 SQL**—一定要看實際跑什麼 (3) **複雜 query 換 raw SQL**—別跟 ORM 鬥。**N+1 是頭號性能殺手**—每次寫 loop 內 query 想一下能不能 batch。\n\n  \n\n  \n    \n      💼\n      接案小知識\n    \n    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「後端 API」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。",
+      "tip": {
+        "type": "practical",
+        "text": "剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「後端 API」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "安裝 lesson 內介紹的工具、用官方的 quick start 跑一次 hello world。記錄安裝過程踩了哪些坑。",
+        "hint": "工具的學習曲線通常卡在「環境設定」這關。Node 版本、Python 版本、權限、PATH 變數、port 衝突——遇到一個解一個。",
+        "answer": "踩坑筆記範本：『遇到：[錯誤訊息] → 原因：[根本原因] → 解：[具體指令]』。整理在自己的 GitHub gist 或 Notion、下次遇到同樣坑直接複製貼上 = 把痛苦變資產。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "3 種方式對比"
+        },
+        {
+          "level": 3,
+          "text": "ORM：最高層抽象"
+        },
+        {
+          "level": 3,
+          "text": "Raw SQL：最直接"
+        },
+        {
+          "level": 3,
+          "text": "2026 主流選擇"
+        }
+      ]
+    },
+    {
+      "id": "16.8",
+      "number": "LESSON 16.8",
+      "title": "認證與授權：JWT、Session、OAuth、RBAC、ABAC",
+      "oneLineSummary": "REST vs GraphQL vs gRPC：三種 API 風格比較—場景選對工具。",
+      "analogy": "像機車 / 汽車 / 卡車—不是哪個最好、是適合不同場景。REST（簡單 CRUD）、GraphQL（複雜資料前端）、gRPC（微服務內部通訊、超快）。學會看場景選工具。",
+      "content": "「**確認你是誰**（認證 Authentication）」+「**確認你能做什麼**（授權 Authorization）」是後端最關鍵的安全機制。\n\n  \n### 認證 vs 授權\n\n```text\n認證（Authentication / authn）：\n「你是誰？」\n- 帳密、Google 登入、指紋、Face ID\n- 結果：「你是 user 123」\n\n授權（Authorization / authz）：\n「你能做什麼？」\n- 「user 123 能看自己訂單、不能看別人的」\n- 「admin 能刪除任何文章」\n- 結果：「准 / 拒」\n\n兩個都重要、不能搞混\n```\n\n  \n### 3 種主流認證方式\n\n  \n#### 1. Session-based（傳統）\n\n```text\n1. user 登入 → server 建 session（存 DB / Redis）\n2. server 回 cookie 包 session ID\n3. 之後每個 request 帶 cookie\n4. server 查 session ID 確認身份\n\n優：\n- Server 全 control（能立刻 logout）\n- 簡單\n- 適合單一網站\n\n缺：\n- 要 server 維護 state\n- 多服務 / 跨網站難共享\n- 不適合 mobile app\n\n工具：\n- Express + express-session\n- Django session\n- Rails session\n- Laravel session\n```\n\n  \n#### 2. JWT（JSON Web Token）—現代主流\n\n```text\n「無狀態 token」：\n\n1. user 登入 → server 生 JWT（簽名）\n2. server 回 JWT 給 client\n3. client 之後每個 request 帶 JWT\n4. server 不查 DB、驗簽名就知道是誰\n\nJWT 結構：\nheader.payload.signature\n\n# header（base64）\n{\"alg\":\"HS256\",\"typ\":\"JWT\"}\n\n# payload（base64、放 user info）\n{\"sub\":\"123\",\"name\":\"Alice\",\"exp\":1715000000}\n\n# signature（防偽）\nHMAC-SHA256(header.payload, SECRET)\n\n優：\n- Stateless（不查 DB）\n- 跨服務 / 多端適用\n- Mobile app 完美\n\n缺：\n- 不能立刻撤銷（要等 expire）\n- Token 大（比 session ID 大很多）\n- 對策：短 expire + refresh token\n\n實戰 pattern：\n- Access token：短期（15 min）\n- Refresh token：長期（30 天、存 DB）\n- Access expire → 用 refresh 換新 access\n\n工具：\n- jose（Node、modern）\n- pyjwt（Python）\n- jsonwebtoken（Node 經典）\n```\n\n  \n#### 3. OAuth 2.0 / OIDC\n\n```text\n「用 Google 登入」「用 LINE 登入」就是 OAuth：\n\n流程：\n1. user 點「用 Google 登入」\n2. redirect 到 Google 授權頁\n3. user 同意\n4. Google redirect 回你網站 + code\n5. 你 server 用 code 跟 Google 換 token\n6. 拿 token 取 user info（email、name、photo）\n7. 你網站建 user / 登入\n\nOAuth = 授權框架\nOIDC = OAuth 的 user 認證擴充\n\n實戰：\n- 90% 網站用第三方登入（Google / LINE / Apple）\n- 不用自己存密碼（資安省心）\n- 一個帳號跨多服務\n\n工具：\n- NextAuth.js / Auth.js（最普及）\n- Clerk（最簡單、付費）\n- Supabase Auth\n- Auth0（企業）\n- Firebase Auth\n- Keycloak（自架）\n\n2026 主流：Clerk（小到中）或 NextAuth（自架）\n```\n\n  \n### 密碼存哪、怎麼存\n\n```text\n規則 1：絕對不能存明文！\n\n# ❌ 大罪\nINSERT INTO users (email, password) VALUES ('a@x.com', 'secret');\n\n# ✓ 對：hash 後存\nINSERT INTO users (email, password) VALUES ('a@x.com', '$2b$12$...');\n\n規則 2：用 bcrypt / argon2、不用 MD5 / SHA\n\n# Python\nfrom bcrypt import hashpw, gensalt, checkpw\n\n# 註冊\nhashed = hashpw(password.encode(), gensalt(rounds=12))\n\n# 登入驗證\nif checkpw(password.encode(), stored_hash):\n    # 對\n    \n# Node\nconst bcrypt = require('bcrypt');\nconst hashed = await bcrypt.hash(password, 12);\nconst valid = await bcrypt.compare(password, stored);\n\n2026 建議：\n- bcrypt（最普及、夠安全）\n- argon2id（最新、最強、推薦）\n- 不用 MD5（早被破）\n- 不用 SHA-256（給檔案 hash 用、不給密碼）\n```\n\n  \n### 授權：RBAC vs ABAC\n\n```text\nRBAC（Role-Based Access Control）：「角色」\n\nuser → role → permissions\n\n角色：\n- admin：全部能做\n- editor：能編輯、不能刪\n- viewer：只能看\n\n實作：\nclass User:\n    role: str  # \"admin\" / \"editor\" / \"viewer\"\n\ndef can_delete_post(user, post):\n    return user.role == \"admin\"\n\n優：\n- 簡單\n- 90% 場景夠用\n\n缺：\n- 不夠細\n- 「editor 只能編輯自己的」要混合條件\n\nABAC（Attribute-Based Access Control）：「屬性 + 規則」\n\n考慮：user / resource / action / context 屬性\n\n例：\n「使用者 X 能編輯 post Y 嗎？」\n\n規則：\ndef can_edit_post(user, post):\n    return (\n        user.role == \"admin\" or\n        (user.role == \"editor\" and post.author_id == user.id) or\n        (post.is_public and user.is_active)\n    )\n\n優：\n- 超彈性\n- 精細控制\n\n缺：\n- 規則複雜易出錯\n- 難 audit「誰能做什麼」\n\n工具：\n- Casbin（多語言、強大）\n- Permit.io（SaaS）\n- Oso（modern）\n- Cerbos\n\n2026 主流：RBAC 80% 場景、+ ABAC for special case\n```\n\n  \n### 實戰：完整認證 + 授權 stack\n\n```text\n典型 indie SaaS：\n\n認證：\n- Clerk / Auth.js（OAuth + JWT）\n- Google / GitHub / Email 登入\n- 不自己存密碼\n\n授權：\n- DB users 表 role 欄\n- middleware 檢查每個 endpoint\n- 簡單 RBAC\n\nmiddleware 範例（Node）：\nfunction requireRole(role) {\n    return (req, res, next) => {\n        if (req.user?.role !== role) {\n            return res.status(403).json({ error: 'Forbidden' });\n        }\n        next();\n    };\n}\n\napp.delete('/api/posts/:id',\n    requireAuth,           // 必須登入\n    requireRole('admin'),  // 必須是 admin\n    deletePost\n);\n\n複雜需求：\n- Row-level security（PostgreSQL RLS）\n- 或加 Casbin / Oso\n\n→ 90% indie 不需要超精細\n→ 但 day 1 就要寫對\n```\n\n  \n    **⚠ 踩雷警告**\n    \n認證 / 授權是**頭號資安漏洞**。常見錯誤：(1) **密碼存明文**—被 hack 就洩漏 (2) **用 MD5 / SHA-1**—早被破（用 bcrypt / argon2） (3) **JWT secret 寫死在 code**—放 env var (4) **沒驗 token / session**—API 直接讓人 access (5) **授權檢查在 client**—client 改了就過（一定在 server 檢查）。**新手別自己搞 auth**—用 Clerk / Auth.js / Supabase Auth、安全很多。\n\n  \n\n  \n    \n      🎯\n      面試考點\n    \n    台灣科技公司面試 90% 會問「後端 API」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。",
+      "tip": {
+        "type": "pro",
+        "text": "台灣科技公司面試 90% 會問「後端 API」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "認證 vs 授權"
+        },
+        {
+          "level": 3,
+          "text": "3 種主流認證方式"
+        },
+        {
+          "level": 3,
+          "text": "密碼存哪、怎麼存"
+        },
+        {
+          "level": 3,
+          "text": "授權：RBAC vs ABAC"
+        },
+        {
+          "level": 3,
+          "text": "實戰：完整認證 + 授權 stack"
+        }
+      ]
+    },
+    {
+      "id": "16.9",
+      "number": "LESSON 16.9",
+      "title": "Background Job / Queue：Redis、RabbitMQ、Kafka",
+      "oneLineSummary": "Auth 認證：「確認你是誰」—Session / JWT / OAuth 三種主流。",
+      "analogy": "像進門驗證—Session 是「給你一張會員卡、每次進門出示」、JWT 是「給你一張護照、自己驗證」、OAuth 是「用 Google 帳號代登入」。",
+      "content": "有些事**不能在 user request 中做**—寄信、處理影片、跑報表、發推播。這些丟到「**背景任務**」（background job）非同步處理。\n\n  \n### 為什麼需要 background job\n\n```text\n場景：user 註冊、要寄歡迎信\n\n爛寫法（同步）：\ndef register(email, password):\n    user = create_user(email, password)\n    send_welcome_email(user)    # 等 3 秒\n    return user\n\n# user 等 3 秒才看到註冊成功\n# 信箱 server 慢 = user 一直等\n\n好寫法（async background）：\ndef register(email, password):\n    user = create_user(email, password)\n    queue.push({\"task\": \"send_welcome_email\", \"user_id\": user.id})\n    return user\n    # 立刻回應、信信背景慢慢寄\n\n# user 0.5 秒看到成功\n# 寄信失敗也不影響註冊\n\n→ User-facing 慢操作全部丟 queue\n→ 寄信、推播、影片轉檔、報表、AI 處理\n```\n\n  \n### Queue 是什麼\n\n```text\nQueue = 「先進先出的工作清單」\n\n[ Web Server ] → push task → [ Queue ] ← pull task ← [ Worker ]\n                                              ← pull task ← [ Worker ]\n                                              ← pull task ← [ Worker ]\n\n流程：\n1. Web server 接 request、把慢工作丟 queue\n2. Worker 從 queue 拿、做、做完\n3. Worker 失敗 → 重試 / 進 dead letter queue\n\n3 種主流：\n\n1. Redis（最簡單）\n   - 內存、快\n   - 不適合 critical / 大量\n   - 工具：BullMQ（Node）、Celery（Python、+ Redis）、Sidekiq（Ruby）\n\n2. RabbitMQ（穩定、中規模）\n   - 持久化\n   - 各種模式（topic、fanout、direct）\n   - 工具：Celery（Python）、各語言 client\n\n3. Kafka（大規模、log-based）\n   - 高吞吐量\n   - 訊息保留\n   - 適合 event sourcing、串流\n   - Netflix / Uber / LinkedIn 用\n```\n\n  \n### 實戰範例：寄歡迎信\n\n```text\n# Python（Celery + Redis）\n\n# 1. 定義 task\nfrom celery import Celery\n\napp = Celery('myapp', broker='redis://localhost:6379')\n\n@app.task\ndef send_welcome_email(user_id):\n    user = User.objects.get(id=user_id)\n    email_service.send(\n        to=user.email,\n        subject=\"Welcome!\",\n        body=\"...\"\n    )\n\n# 2. 觸發（從 API endpoint）\n@app.post(\"/register\")\ndef register(...):\n    user = create_user(email, password)\n    send_welcome_email.delay(user.id)   # 丟 queue、立刻 return\n    return {\"user\": user}\n\n# 3. Worker 跑（另一個 process）\n$ celery -A myapp worker --loglevel=info\n\n# Node（BullMQ + Redis）\nimport { Queue, Worker } from 'bullmq';\n\nconst emailQueue = new Queue('emails');\n\n// 觸發\napp.post('/register', async (req, res) => {\n    const user = await createUser(...);\n    await emailQueue.add('welcome', { userId: user.id });\n    res.json({ user });\n});\n\n// Worker\nconst worker = new Worker('emails', async job => {\n    const user = await getUser(job.data.userId);\n    await emailService.send(user.email, ...);\n});\n```\n\n  \n### Job 失敗處理\n\n```text\n重試策略：\n\n@app.task(bind=True, max_retries=3, default_retry_delay=60)\ndef send_email(self, user_id):\n    try:\n        ...\n    except SMTPException as exc:\n        # 失敗 → 60 秒後重試、最多 3 次\n        raise self.retry(exc=exc)\n\n# 重試多次都失敗 → Dead Letter Queue（DLQ）\n# 之後人工處理 / 分析\n\n策略：\n1. Exponential backoff（每次重試間隔翻倍）\n   1s → 2s → 4s → 8s\n   避免打爆下游\n\n2. Max retry\n   3-5 次合理、無限重試會卡\n\n3. Dead Letter Queue\n   失敗多次的任務存這、不影響主 queue\n\n4. Idempotency\n   同個任務跑 2 次結果一樣\n   重試 safe\n```\n\n  \n### Cron / 排程任務\n\n```text\n「每天凌晨 3 點跑報表」「每 5 分鐘檢查」：\n\n# Celery beat\nfrom celery.schedules import crontab\n\napp.conf.beat_schedule = {\n    'daily-report': {\n        'task': 'tasks.generate_daily_report',\n        'schedule': crontab(hour=3, minute=0),  # 凌晨 3 點\n    },\n    'check-every-5-min': {\n        'task': 'tasks.health_check',\n        'schedule': 300.0,  # 每 300 秒\n    },\n}\n\n# Node：node-cron / Agenda\nconst cron = require('node-cron');\n\ncron.schedule('0 3 * * *', () => {\n    generateDailyReport();\n});\n\n# 或 cloud platform\n- Vercel Cron\n- Cloudflare Cron Triggers\n- GitHub Actions schedule\n- AWS EventBridge\n- Google Cloud Scheduler\n```\n\n  \n### Queue 的進階模式\n\n```text\n1. Pub/Sub（發布訂閱）\n   1 個事件、多個 subscriber\n\n   訂單建立 → 同時觸發：\n   - 寄訂單確認信\n   - 扣庫存\n   - 寫 log\n   - 通知後台\n\n2. Priority Queue\n   緊急任務先做\n   付款處理 > 寄信 > 報表\n\n3. Delay Queue\n   排程未來執行\n   「下單 1 小時後檢查付款」\n\n4. Rate-limited Queue\n   一秒最多 X 個（防爆下游）\n\n5. Worker Pool\n   多個 worker 平行跑\n   1 個 worker 跑 1 個任務\n```\n\n  \n### 2026 主流選擇\n\n  \n| 場景 | 推薦 |\n| --- | --- |\n| Indie SaaS、簡單背景任務 | BullMQ (Node) / Celery (Python) + Redis |\n| 中型企業、穩定優先 | RabbitMQ + 各語言 client |\n| 大規模 event streaming | Kafka |\n| Serverless 環境 | SQS (AWS) / Cloud Tasks (GCP) |\n| 不想自架 | Inngest / Trigger.dev / Defer（SaaS） |\n\n  \n    **☕ 用人話講**\n    \nQueue 是「**把慢工作丟到背景、用戶不用等**」。Indie SaaS day 1 就該裝—寄信 / 推播 / 重 task 全丟 queue。Production 上線後沒 queue = user 等待時間長 + server 容易掛。**3 個習慣養成**：(1) **慢操作（> 100ms）丟 queue**（寄信、外部 API） (2) **每個 job 寫 idempotent**（跑 2 次結果一樣） (3) **監控 queue 長度**（一直累積 = worker 不夠）。\n\n  \n\n  \n    \n      ⚡\n      學習加速器\n    \n    把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。",
+      "tip": {
+        "type": "practical",
+        "text": "把這節學到的馬上應用到一個小東西—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "為什麼需要 background job"
+        },
+        {
+          "level": 3,
+          "text": "Queue 是什麼"
+        },
+        {
+          "level": 3,
+          "text": "實戰範例：寄歡迎信"
+        },
+        {
+          "level": 3,
+          "text": "Job 失敗處理"
+        },
+        {
+          "level": 3,
+          "text": "Cron / 排程任務"
+        },
+        {
+          "level": 3,
+          "text": "Queue 的進階模式"
+        },
+        {
+          "level": 3,
+          "text": "2026 主流選擇"
+        }
+      ]
+    },
+    {
+      "id": "16.10",
+      "number": "LESSON 16.10",
+      "title": "Cache 策略：Redis、Memcached、CDN",
+      "oneLineSummary": "JWT（JSON Web Token）是「自帶簽名的身分證」—2026 API 認證主流。",
+      "analogy": "像有防偽簽名的會員卡—卡上寫著「使用者 ID + 過期時間」、用密鑰簽名、別人改不了。後端拿到 JWT 不用查 DB 就知道你是誰、省超多查詢。",
+      "content": "「**同樣資料、不要每次都重算 / 重查**」—Cache 是後端最簡單但 ROI 最高的優化。\n\n  \n### 為什麼要 Cache\n\n```text\n場景：首頁顯示「熱門商品 top 10」\n\n爛寫法（每個 request 跑）：\ndef homepage():\n    top_products = db.query(\"\"\"\n        SELECT * FROM products\n        ORDER BY sales DESC\n        LIMIT 10\n    \"\"\")\n    return render(top_products)\n\n# DB 累\n# 100 個 user 一秒 = DB 跑 100 次同個 query\n\n好寫法（cache）：\ndef homepage():\n    top_products = cache.get(\"top_products\")\n    if not top_products:\n        top_products = db.query(...)\n        cache.set(\"top_products\", top_products, ttl=60)\n        # 存 60 秒\n    return render(top_products)\n\n# 60 秒內 DB 只查 1 次\n# 後續 99 個 user 直接拿 cache\n# 速度 10-100x\n\n→ Cache 是「用記憶體換速度」\n```\n\n  \n### 多層 Cache 架構\n\n```text\n實戰 SaaS 通常多層：\n\n[ Browser ] \n    ↓ 1. Browser cache（Cache-Control header）\n[ CDN ] \n    ↓ 2. CDN cache（Cloudflare / Vercel）\n[ Load Balancer ]\n    ↓\n[ Web Server ]\n    ↓ 3. Application cache（in-memory）\n    ↓ 4. Redis cache（共享）\n[ Database ]\n    ↑ 5. DB query cache（內部）\n\n層級越往上、越快但容量小\n\n實戰：\n1. 靜態資源（圖片、CSS、JS）：browser + CDN\n2. API response：CDN（短 TTL）+ Redis\n3. DB query：Redis\n4. 計算結果：in-memory 或 Redis\n```\n\n  \n### Cache 工具\n\n```text\n1. Redis（最普及）\n   - 內存、超快（\n    **🚀 進階技巧**\n    \nCache 心法 5 條：(1) **讀多寫少的資料先 cache**—80/20 法則 (2) **Cache-aside pattern 是 default**—簡單夠用 (3) **Delete 比 update 簡單**—寫 DB 時刪 cache (4) **TTL 短一點比長安全**—不一致比慢恐怖 (5) **monitor cache hit rate**—\n\n  \n    \n      🚀\n      2026 趨勢\n    \n    這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。",
+      "tip": {
+        "type": "trend",
+        "text": "這個技術 2026 還在主流、未來 5 年不會過時。但工具會更新—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "把本節「Cache 策略：Redis、Memcached、CDN」的核心心法、轉成一個具體的「我今天 / 這週要做」的小行動。",
+        "hint": "心法 ≠ 知識、心法要落地。「我從今天起、每天 ___」這種格式。",
+        "answer": "好行動 = 小（5-10 分鐘以內）+ 具體（不模糊）+ 可量化（有沒有做得出來）。例：『每天起床先列 3 件最重要的事再開電腦』比『更專注』可執行 100 倍。配合 streak（連續紀錄）讓自己上癮。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "為什麼要 Cache"
+        },
+        {
+          "level": 3,
+          "text": "多層 Cache 架構"
+        },
+        {
+          "level": 3,
+          "text": "Cache 工具"
+        }
+      ]
+    },
+    {
+      "id": "16.11",
+      "number": "LESSON 16.11",
+      "title": "Rate Limiting + API 防護",
+      "oneLineSummary": "OAuth：「用 Google / Facebook 帳號登入別的網站」—第三方認證標準。",
+      "analogy": "像「LINE 一鍵登入」—不用註冊新帳號、用 LINE 帳號授權給該網站。OAuth 流程：你 → Google → 授權 → 第三方網站—Google 幫你做認證。",
+      "content": "沒 rate limit 的 API = 開放給 hackers / bots / 失控的 client。**必須限制每個 user / IP 每秒能呼叫幾次**。\n\n  \n### 為什麼要 rate limit\n\n```text\n沒 rate limit 的後果：\n\n1. 暴力破解\n   - 攻擊者一秒嘗試 1 萬個密碼\n   - 沒擋會被破\n\n2. DDoS / 爆量\n   - 攻擊者灌爆 server\n   - 真 user 進不來\n\n3. 失控的 bug\n   - Client 寫錯 retry 邏輯、無限呼叫\n   - 1 個 client 拖垮整個 server\n\n4. 成本失控\n   - API 後端是 GPT-5（$0.01/call）\n   - 1 個惡意 user 一天打 100 萬次 = $10000\n   - 你倒了\n\n5. Spam\n   - 註冊系統被機器人灌\n   - 留言系統被廣告灌\n```\n\n  \n### Rate Limit 演算法\n\n  \n#### 1. Token Bucket（最常用）\n\n```text\n想像水桶：\n- 容量 100 token\n- 每秒自動補 10 token\n- 每個 request 用 1 token\n- 沒 token = reject\n\n優：\n- 平滑 / 簡單\n- 允許突發（burst）\n- 容易實作\n\n實作：\nimport time\n\nclass TokenBucket:\n    def __init__(self, capacity=100, refill_rate=10):\n        self.capacity = capacity\n        self.refill_rate = refill_rate\n        self.tokens = capacity\n        self.last_refill = time.time()\n    \n    def consume(self, count=1):\n        now = time.time()\n        elapsed = now - self.last_refill\n        self.tokens = min(\n            self.capacity,\n            self.tokens + elapsed * self.refill_rate\n        )\n        self.last_refill = now\n        \n        if self.tokens >= count:\n            self.tokens -= count\n            return True\n        return False\n```\n\n  \n#### 2. Sliding Window（精準）\n\n```text\n記錄每個 request 時間：\n- 1 分鐘只能 60 次\n- 看「過去 60 秒」有幾次\n- 超過 reject\n\n優：精準\n缺：要存所有 timestamp（用 Redis sorted set）\n\n# Python + Redis\ndef rate_limit(user_id, max_req=60, window=60):\n    key = f\"rate:{user_id}\"\n    now = time.time()\n    \n    # 刪掉 window 外的\n    redis.zremrangebyscore(key, 0, now - window)\n    \n    # 算現在多少\n    count = redis.zcard(key)\n    \n    if count >= max_req:\n        return False  # rejected\n    \n    # 加新的\n    redis.zadd(key, {str(now): now})\n    redis.expire(key, window)\n    return True\n```\n\n  \n#### 3. Fixed Window（簡單）\n\n```text\n「1 分鐘 60 次、過 0 秒重置」：\n\n# Redis incr + expire\ndef check(user_id):\n    key = f\"rate:{user_id}:{minute()}\"\n    count = redis.incr(key)\n    redis.expire(key, 60)\n    return count \n    **⚠ 踩雷警告**\n    \nDay 1 沒 rate limit 的 production API = 等著被攻擊 / 被刷帳單。最常見悲劇：(1) **登入沒 rate limit** → 暴力破解 (2) **付款 API 沒 idempotency + rate limit** → 重複扣款 (3) **AI API 沒 user-based limit** → 1 個惡意 user 跑爆 GPT 帳單。**最簡單對策**：Cloudflare 開 rate limit + WAF + bot fight mode = 5 分鐘搞定 80% 攻擊。\n\n  \n\n  \n    \n      🛠️\n      工具推薦\n    \n    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。",
+      "tip": {
+        "type": "practical",
+        "text": "配合這節用的工具：(1) VS Code（編輯器、免費）(2) Chrome DevTools（F12 開啟、除錯神器）(3) Live Server（VS Code 擴充、即時預覽）(4) GitHub Copilot / Cursor（AI 寫程式、學習加速 2-10x）。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "為什麼要 rate limit"
+        },
+        {
+          "level": 3,
+          "text": "Rate Limit 演算法"
+        }
+      ]
+    },
+    {
+      "id": "16.12",
+      "number": "LESSON 16.12",
+      "title": "WebSocket、SSE、長輪詢：即時通訊",
+      "oneLineSummary": "Database 入門：「資料怎麼存」—關聯式（SQL）vs 文件式（NoSQL）。",
+      "analogy": "像檔案櫃 vs 雲端硬碟—SQL 像井然有序的檔案櫃（表格 / 欄位固定）、NoSQL 像雲端硬碟（彈性、隨便丟）。資料結構固定用 SQL、變動大用 NoSQL。",
+      "content": "「**Server 主動推資料給 client**」是 HTTP 原本不擅長的事—HTTP 是 client 主動拉。即時通訊有 3 種解法。\n\n  \n### 3 種方式對比\n\n```text\n1. 長輪詢（Long Polling）\n   - HTTP 上、傳統\n   - Client 發 request、server 等到有事才回\n   - 回完 client 立刻再發\n   - 看起來像即時\n\n2. SSE（Server-Sent Events）\n   - HTTP 上、單向 server → client\n   - 長連線 streaming\n   - 純 server push\n\n3. WebSocket\n   - 升級 HTTP 後雙向\n   - 真正即時、低延遲\n   - 用得最多但最複雜\n```\n\n  \n### WebSocket：雙向即時\n\n```text\n流程：\n1. Client 發 HTTP 升級請求\n   GET /chat HTTP/1.1\n   Upgrade: websocket\n   Connection: Upgrade\n\n2. Server 回 101\n   HTTP/1.1 101 Switching Protocols\n\n3. 之後雙向收發二進位 frames\n\n實戰：聊天室\n# Server（Node + Socket.io）\nimport { Server } from 'socket.io';\nconst io = new Server(server);\n\nio.on('connection', (socket) => {\n    console.log('user connected:', socket.id);\n    \n    socket.on('message', (msg) => {\n        // 廣播給所有 user\n        io.emit('message', { user: socket.id, text: msg });\n    });\n    \n    socket.on('disconnect', () => {\n        console.log('user left');\n    });\n});\n\n# Client（browser）\nconst socket = io('https://example.com');\n\nsocket.on('message', (data) => {\n    console.log(`${data.user}: ${data.text}`);\n});\n\ndocument.getElementById('send').onclick = () => {\n    socket.emit('message', 'Hello!');\n};\n\n主流 library：\n- Node：Socket.io（最普及）、ws（純）、uWebSockets.js（最快）\n- Python：python-socketio、websockets、FastAPI WebSocket\n- Go：gorilla/websocket\n- Rust：tokio-tungstenite\n- Elixir：Phoenix Channels（神器）\n```\n\n  \n### WebSocket 適合場景\n\n  \n- 聊天系統（LINE / Discord / WhatsApp）\n- 多人協作（Figma / Notion / Google Docs）\n- 即時遊戲\n- 股票 / 加密貨幣即時報價\n- 線上拍賣\n- 即時通知（少量、簡單可用 SSE）\n\n  \n### SSE：單向 Server Push\n\n```text\n「Server 持續推、client 只收」：\n\n# Server（Node）\napp.get('/events', (req, res) => {\n    res.setHeader('Content-Type', 'text/event-stream');\n    res.setHeader('Cache-Control', 'no-cache');\n    res.setHeader('Connection', 'keep-alive');\n    \n    setInterval(() => {\n        res.write(`data: ${JSON.stringify({ time: Date.now() })}\\n\\n`);\n    }, 1000);\n});\n\n# Client（browser）\nconst evtSource = new EventSource('/events');\n\nevtSource.onmessage = (e) => {\n    const data = JSON.parse(e.data);\n    console.log(data);\n};\n\nevtSource.onerror = () => {\n    console.log('reconnecting...');\n    // 自動重連\n};\n\n優：\n- 比 WebSocket 簡單\n- HTTP 上跑、proxy / firewall 友善\n- 自動重連（瀏覽器內建）\n- 純文字易 debug\n\n缺：\n- 單向（只 server → client）\n- 連線數限制（瀏覽器 6 個 / domain）\n\n實戰場景（2026 爆紅）：\n- ChatGPT / Claude 串流（一字一字出）\n- AI 應用 token streaming\n- 即時通知 / 推播\n- 進度條 / 即時數據\n```\n\n  \n### 長輪詢（Long Polling）：最簡單\n\n```text\n# Client\nasync function poll() {\n    while (true) {\n        const response = await fetch('/api/poll');\n        const data = await response.json();\n        handleMessage(data);\n        // 立刻再 poll\n    }\n}\n\n# Server\napp.get('/api/poll', async (req, res) => {\n    const event = await waitForNewEvent(30000); // 最多等 30 秒\n    res.json(event);\n});\n\n優：\n- HTTP 原生、任何環境都能跑\n- 不用 WebSocket 庫\n- 防火牆 / proxy 友善\n\n缺：\n- 每次 reconnect overhead\n- 比 WebSocket / SSE 慢\n- Server 連線數高\n\n實戰：\n- WebSocket 不可用的環境\n- Fallback 方案\n- 2026 主要被 SSE 取代\n```\n\n  \n### 怎麼選\n\n```text\n場景 → 推薦：\n\n1. 聊天 / 多人協作 / 雙向即時\n   → WebSocket\n\n2. AI 串流 / 推送通知 / 進度條\n   → SSE\n\n3. 簡單通知（不頻繁）+ 老瀏覽器\n   → 長輪詢\n\n4. 高頻交易 / 遊戲 / 極低延遲\n   → WebSocket（甚至 raw TCP / WebRTC）\n\n5. 公司 firewall 嚴\n   → SSE（HTTPS over standard port）\n   → 或 long polling\n\n實戰 indie SaaS：\n- AI 串流用 SSE\n- 通知用 SSE\n- 聊天 / 即時協作用 WebSocket\n```\n\n  \n### WebSocket scale 挑戰\n\n```text\nWebSocket = stateful（連線狀態）\n不像 HTTP stateless 容易 scale\n\n挑戰：\n1. 10 萬 concurrent 連線 → memory 大\n2. 多 server 之間怎麼廣播？\n\n對策：\n1. Sticky session（同 user 永遠連同 server）\n2. Redis Pub/Sub（多 server 間訊息分發）\n3. Cluster-aware library（Socket.io Redis adapter）\n\n主流 stack：\n- Socket.io + Redis adapter\n- Phoenix Channels（Elixir、天生支援）\n- Centrifugo（Go 寫的 WebSocket server）\n- Ably / Pusher（managed service）\n\n雲服務：\n- Cloudflare Durable Objects（state 在 edge）\n- AWS API Gateway WebSocket\n- Vercel + Pusher\n```\n\n  \n    **🚀 進階技巧**\n    \n2026 即時通訊主流組合：(1) **WebSocket**（雙向、低延遲）→ 聊天、協作 (2) **SSE**（單向、AI 必用）→ Claude / ChatGPT 答案串流 (3) **WebRTC**（點對點、無 server）→ 視訊 / 語音通話。**大多 indie 不用全用**—1 個 SaaS 通常 SSE 為主、聊天 feature 才加 WebSocket。**Day 1 別預先 scale**—Socket.io 單 server 撐 1 萬連線完全沒問題。\n\n  \n\n  \n    \n      ⚠️\n      新手常見錯誤\n    \n    新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。",
+      "tip": {
+        "type": "warning",
+        "text": "新手 3 大坑：(1) 不看 console—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) 不存檔就 F5—改完忘記儲存以為「程式沒效果」 (3) 抄 code 不理解—複製貼上能跑、但下次要改就崩潰。記得：先看懂、再寫。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "3 種方式對比"
+        },
+        {
+          "level": 3,
+          "text": "WebSocket：雙向即時"
+        },
+        {
+          "level": 3,
+          "text": "WebSocket 適合場景"
+        },
+        {
+          "level": 3,
+          "text": "SSE：單向 Server Push"
+        },
+        {
+          "level": 3,
+          "text": "長輪詢（Long Polling）：最簡單"
+        },
+        {
+          "level": 3,
+          "text": "怎麼選"
+        },
+        {
+          "level": 3,
+          "text": "WebSocket scale 挑戰"
+        }
+      ]
+    },
+    {
+      "id": "16.13",
+      "number": "LESSON 16.13",
+      "title": "檔案 / 串流處理：S3、R2、大檔上傳",
+      "oneLineSummary": "SQL 基礎：SELECT / INSERT / UPDATE / DELETE—4 個動作走天下。",
+      "analogy": "像Excel 的四種操作—讀資料（SELECT）、加列（INSERT）、改格子（UPDATE）、刪列（DELETE）。SQL 一樣、學會這 4 個 80% 的 DB 操作都會了。",
+      "content": "User 上傳照片、影片、PDF—**檔案不該存 DB**、要存「物件儲存」。Indie SaaS 必懂的成本 + 性能優化。\n\n  \n### 為什麼不存 DB\n\n```text\n把圖片存 DB：\n- DB size 爆炸（每張圖 2MB、1 萬張 = 20GB）\n- backup 慢\n- query 慢（DB 不擅長 binary）\n- 貴（DB 1GB > S3 100GB）\n- 無 CDN 加速\n\n把圖片存 Object Storage：\n- 便宜（$0.02/GB/月）\n- 容量無限\n- 全球 CDN\n- DB 只存 URL string\n\n[ DB ] users 表\n  id | name  | avatar_url\n  1  | Alice | https://r2.example.com/avatars/1.jpg\n                                    ↑\n                          檔案存這、不在 DB\n```\n\n  \n### 主流 Object Storage\n\n```text\n1. AWS S3（最早、最普及）\n   - 業界標準\n   - 全球 CDN（CloudFront）\n   - 成本：$0.023/GB/月\n   - 流量費高（流出 $0.09/GB）\n\n2. Cloudflare R2（新興、indie 友善）\n   - S3-compatible API\n   - 零流量費（重點！）\n   - $0.015/GB/月\n   - 2026 indie 主流選擇\n\n3. Backblaze B2\n   - 便宜（$0.005/GB/月）\n   - Indie 預算友善\n   - 流量費低\n\n4. Google Cloud Storage\n   - 跟 GCP 整合\n   - 性能好\n\n5. MinIO（自架）\n   - 開源、S3-compatible\n   - 自己機房放\n   - 完全 control\n\n2026 indie 推薦：R2\n- 寫東西免費（無 egress）\n- 性能好\n- 全球 CDN 內建\n```\n\n  \n### 檔案上傳的 3 種方式\n\n  \n#### 1. 前端 → server → S3（傳統、爛）\n\n```text\n流程：\nBrowser → upload to your server → your server → S3\n\n問題：\n- 你 server 是 bottleneck\n- 大檔耗 server 流量\n- Memory 爆炸\n- 慢\n\n❌ 別這樣做\n```\n\n  \n#### 2. Presigned URL（推薦）\n\n```text\n流程：\n1. Browser 跟你 server 要 upload URL\n2. Server 生 presigned S3 URL（短期有效）\n3. Browser 直接上傳到 S3\n4. 你 server 不經手 binary data\n\n# Server（Node）\nimport { S3Client, PutObjectCommand } from \"@aws-sdk/client-s3\";\nimport { getSignedUrl } from \"@aws-sdk/s3-request-presigner\";\n\napp.post('/api/upload-url', async (req, res) => {\n    const { fileName, fileType } = req.body;\n    const command = new PutObjectCommand({\n        Bucket: \"my-bucket\",\n        Key: `uploads/${Date.now()}-${fileName}`,\n        ContentType: fileType,\n    });\n    const url = await getSignedUrl(s3Client, command, { expiresIn: 300 });\n    res.json({ url });\n});\n\n# Browser\nconst file = document.getElementById('file').files[0];\n\n// 1. 拿 presigned URL\nconst { url } = await fetch('/api/upload-url', {\n    method: 'POST',\n    body: JSON.stringify({\n        fileName: file.name,\n        fileType: file.type\n    })\n}).then(r => r.json());\n\n// 2. 直接上傳 S3\nawait fetch(url, {\n    method: 'PUT',\n    body: file,\n});\n\n優：\n- 你 server 不經手檔案\n- 流量直接 user ↔ S3\n- 大檔不爆 server\n```\n\n  \n#### 3. Multipart Upload（大檔）\n\n```text\n1GB+ 檔案：分片上傳\n\n1. 把檔案切成 5MB chunks\n2. 每 chunk 並行上傳\n3. 完成後通知 S3 合併\n\n優：\n- 並行加速\n- 失敗只重傳失敗那片（不是整個）\n- 支援暫停 / 繼續\n\n實作：\n- S3 Multipart Upload API\n- Uppy / FilePond（前端 library）\n- tus protocol（恢復性上傳）\n```\n\n  \n### 串流處理：大檔下載\n\n```text\n下載大檔案不能整個讀進 memory：\n\n# ❌ 爛：整個讀\ndef download(file_id):\n    file = read_entire_file(file_id)  # 1GB 進 memory\n    return file\n\n# ✓ 對：串流\ndef download(file_id):\n    return StreamingResponse(\n        stream_file(file_id),\n        media_type='application/octet-stream'\n    )\n\ndef stream_file(file_id):\n    with open(file_path, 'rb') as f:\n        while chunk := f.read(8192):  # 8KB 一塊\n            yield chunk\n\n# Node\napp.get('/download/:id', (req, res) => {\n    const stream = fs.createReadStream(filePath);\n    stream.pipe(res);\n});\n```\n\n  \n### 圖片處理：縮圖 + 格式\n\n```text\nUser 上傳 5MB 圖片、不該原樣顯示：\n\n策略：\n1. 上傳時生成多 size\n   - thumbnail（200x200）\n   - medium（800x800）\n   - original（保留但不直接 serve）\n\n2. 用 CDN 動態 resize\n   - Cloudflare Image Resizing\n   - Vercel Image Optimization\n   - imgix / Cloudinary（SaaS）\n\n3. 改成 WebP / AVIF\n   - 比 JPG 小 30-50%\n   - 現代瀏覽器都支援\n\n實戰：\n# Next.js（內建）\n\n// 自動 lazy load + WebP + 多 size\n\n# Cloudflare Image Transform\nhttps://example.com/cdn-cgi/image/width=400,quality=80/upload/img.jpg\n```\n\n  \n### 影片處理：HLS / MP4\n\n```text\n影片不像圖片簡單：\n\n問題：\n- 1GB 影片用戶等不及下載完\n- 不同網速要不同畫質\n- 全球延遲問題\n\n解法：HLS streaming\n- 切成 5-10 秒小片段\n- 多畫質版本（480p / 720p / 1080p）\n- Player 動態切換\n\n工具：\n- FFmpeg（命令列、processing）\n- AWS MediaConvert（managed）\n- Mux（SaaS、indie 友善）\n- Cloudflare Stream（簡單）\n- Bunny Stream（便宜）\n\n實戰：\nindie SaaS 不自己 host video\n- 用 Mux / Cloudflare Stream / Bunny\n- $0-10/月 起跳\n```\n\n  \n### 檔案處理常見坑\n\n  \n- **沒限制檔案大小**—user 上傳 10GB 把 server 撐爆\n- **沒驗證 MIME type**—user 上傳 .exe 改名 .jpg 攻擊\n- **把上傳路徑當 URL**—path traversal 漏洞\n- **沒 virus scan**—UGC 平台必加（ClamAV / VirusTotal API）\n- **圖片元資料洩漏**—EXIF 含 GPS / 相機 / 創作者\n- **沒 CDN**—直接 serve S3 慢且貴\n\n  \n    **🚀 進階技巧**\n    \n2026 indie 檔案 stack：**Cloudflare R2 + Workers + 內建 CDN**。原因：(1) 零 egress 費 = 100GB 圖片月 $1.5 (2) S3-compatible = 教學多 (3) 全球 CDN 免費 (4) Worker 能做動態 resize。相比 AWS S3 + CloudFront 月可能 $100+、R2 對 indie 是 game changer。**Day 1 用 R2、未來不用搬**。\n\n  \n\n  \n    \n      💼\n      接案小知識\n    \n    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「後端 API」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。",
+      "tip": {
+        "type": "practical",
+        "text": "剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「後端 API」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "為什麼不存 DB"
+        },
+        {
+          "level": 3,
+          "text": "主流 Object Storage"
+        },
+        {
+          "level": 3,
+          "text": "檔案上傳的 3 種方式"
+        },
+        {
+          "level": 3,
+          "text": "串流處理：大檔下載"
+        },
+        {
+          "level": 3,
+          "text": "圖片處理：縮圖 + 格式"
+        },
+        {
+          "level": 3,
+          "text": "影片處理：HLS / MP4"
+        },
+        {
+          "level": 3,
+          "text": "檔案處理常見坑"
+        }
+      ]
+    },
+    {
+      "id": "16.14",
+      "number": "LESSON 16.14",
+      "title": "日誌 / 監控 / 追蹤：Logging、Metrics、Tracing",
+      "oneLineSummary": "JOIN：「把兩個表合在一起」—訂單 + 使用者資料一起拿。",
+      "analogy": "像連連看—訂單表記著「使用者 ID」、使用者表記著「ID + 姓名」—JOIN 一起就能看到「誰買了什麼」。SQL 最重要技能、面試必考。",
+      "content": "「**Production 出問題你怎麼知道？**」答案：log + metrics + tracing。沒這 3 樣 = 半夜 user 罵你才知道、找原因要 1 週。\n\n  \n### 3 個 pillar of observability\n\n```text\n1. Logging（日誌）\n   - 「發生了什麼事」\n   - 詳細事件 record\n   - 例：「user 123 在 14:30 登入」\n\n2. Metrics（指標）\n   - 「系統健康嗎」\n   - 數字、aggregable\n   - 例：「過去 1 分 200 個 req、平均 50ms」\n\n3. Tracing（追蹤）\n   - 「1 個 request 走過哪些服務」\n   - 跨服務時間軸\n   - 例：「請求進來 → API gateway 5ms → DB 30ms → cache 1ms」\n\n→ 3 個結合 = observability\n```\n\n  \n### Logging：5 個 level\n\n```text\nDEBUG    開發細節（production 通常關）\nINFO     一般流程訊息\nWARNING  可能有問題（不影響）\nERROR    出錯（但繼續跑）\nCRITICAL 嚴重、立刻處理\n\n實戰：\nimport logging\nlogger = logging.getLogger(__name__)\n\nlogger.info(\"User logged in\", extra={\"user_id\": 123})\nlogger.warning(\"Slow query\", extra={\"duration_ms\": 2500})\nlogger.error(\"Payment failed\", extra={\"user_id\": 123, \"error\": str(e)})\n\n# Node\nlogger.info({ userId: 123 }, \"User logged in\");\nlogger.error({ userId: 123, error }, \"Payment failed\");\n```\n\n  \n### Structured Logging（重要）\n\n```text\n不用字串 log、用 JSON：\n\n# 爛\nlogger.info(f\"User {user_id} bought {product_id} for ${amount}\")\n# 字串、難搜尋\n\n# 好\nlogger.info(\"purchase\", user_id=user_id, product_id=product_id, amount=amount)\n\n# 輸出：\n{\n  \"level\": \"info\",\n  \"msg\": \"purchase\",\n  \"user_id\": 123,\n  \"product_id\": 456,\n  \"amount\": 1500,\n  \"timestamp\": \"2026-05-13T14:30:25Z\",\n  \"service\": \"checkout-api\",\n  \"trace_id\": \"abc-123-xyz\"\n}\n\n優：\n- 能 query（「找所有 user_id=123」）\n- 能 aggregate\n- Tools 友善（Datadog / Logtail）\n```\n\n  \n### 什麼該 log、什麼不該\n\n```text\n該 log：\n✓ 重要操作（登入、付款、刪除）\n✓ 錯誤 + context\n✓ 慢 query（> 500ms）\n✓ 外部 API 呼叫（duration / status）\n✓ 商業 metrics（訂單、註冊）\n\n不該 log：\n✗ 密碼、credit card、身分證、健保卡\n✗ Token / API key\n✗ 每行 code 的細節（噪音）\n✗ 大物件（log 爆）\n✗ PII（個資、依 GDPR）\n\n實戰：log 完先 mask 敏感資料\nmasked_email = email.replace(\"@\", \"***@\")\nlogger.info(\"login attempt\", email=masked_email)\n```\n\n  \n### Metrics：4 個經典\n\n```text\nUSE method（Brendan Gregg）：\n- Utilization（使用率）：CPU 80%\n- Saturation（飽和度）：queue 長度\n- Errors（錯誤數）：500 status 數\n\nRED method（API server）：\n- Rate（請求數 / 秒）\n- Errors（錯誤率）\n- Duration（latency 分布）\n\n「Golden Signals」（Google SRE）：\n1. Latency（回應時間）\n2. Traffic（流量）\n3. Errors（錯誤）\n4. Saturation（飽和度）\n\n實戰指標：\n- HTTP 200 / 4xx / 5xx 數量\n- API latency p50, p95, p99\n- DB query 時間\n- Cache hit rate\n- Queue 長度\n- Memory / CPU 使用\n```\n\n  \n### Latency：p99 重要\n\n```text\n不要只看平均：\n平均 100ms、實際：\n- 95% 在 50ms\n- 5% 在 1000ms\n→ 5% user 體驗超慘\n\n看 percentile：\n- p50：50% user 體驗（中位數）\n- p95：95% user 體驗\n- p99：99% user 體驗\n\n實戰目標：\n- p50  5s 持續 5 分鐘\n- 5xx error rate > 1% 持續 5 分鐘\n- DB connection pool 用盡\n- Queue 長度 > threshold 持續 10 分\n- Disk > 80% 滿\n- Uptime down\n\n不該 alert：\n- 單一 error（短暫的）\n- info / warning level log\n- 沒 actionable 的（看了不能做什麼）\n\n工具：\n- PagerDuty（傳統、貴）\n- Opsgenie\n- Better Stack\n- Slack / Discord webhook（簡單）\n```\n\n  \n    **☕ 用人話講**\n    \nDay 1 加 monitoring = 半夜睡得著。沒 monitoring 的後果：(1) user 比你早知道網站掛 (2) 故障原因找不到 (3) 慢性問題（DB 越來越慢）沒人察覺。Indie 推薦最小套裝：**Sentry（free）+ Vercel/Railway 內建 + Better Stack uptime（free）**。10 分鐘設好、終身受益。\n\n  \n\n  \n    \n      🎯\n      面試考點\n    \n    台灣科技公司面試 90% 會問「後端 API」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。",
+      "tip": {
+        "type": "pro",
+        "text": "台灣科技公司面試 90% 會問「後端 API」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "3 個 pillar of observability"
+        },
+        {
+          "level": 3,
+          "text": "Logging：5 個 level"
+        },
+        {
+          "level": 3,
+          "text": "Structured Logging（重要）"
+        },
+        {
+          "level": 3,
+          "text": "什麼該 log、什麼不該"
+        },
+        {
+          "level": 3,
+          "text": "Metrics：4 個經典"
+        },
+        {
+          "level": 3,
+          "text": "Latency：p99 重要"
+        }
+      ]
+    },
+    {
+      "id": "16.15",
+      "number": "LESSON 16.15",
+      "title": "效能優化：N+1、connection pool、index、異步",
+      "oneLineSummary": "Index（索引）是「資料庫的快速查找」—沒索引大表查找慢 1000 倍。",
+      "analogy": "像書的目錄—有目錄翻 3 秒找到、沒目錄一頁頁翻找半天。Index 一樣、給常查的欄位建索引、查詢速度爆升。",
+      "content": "「**我網站變慢了**」的 80% 是這 4 個原因。學會這節 = 95% 效能問題你能自己抓 + 修。\n\n  \n### 瓶頸定位：先量再修\n\n```text\n新手錯：「感覺慢、亂優化」\nSenior：「先 measure、找瓶頸」\n\n工具：\n- APM（Application Performance Monitoring）\n  - Datadog / New Relic / Sentry Performance\n  - 自動找慢 endpoint\n\n- DB 慢 query log\n  - PostgreSQL：log_min_duration_statement = 1000\n  - MySQL：slow_query_log\n\n- Profiling\n  - Python：cProfile / py-spy\n  - Node：clinic.js\n  - Go：pprof\n\n步驟：\n1. Profile production\n2. 找 top 3 慢的\n3. 修最痛的\n4. 重 profile\n5. 繼續\n```\n\n  \n### 瓶頸 1：N+1 Query\n\n```text\n10.7 提過、最常見：\n\n# 慢（101 queries）\nusers = User.all()\nfor user in users:\n    print(user.orders.count())\n\n# 快（1 query）\nusers = User.objects.prefetch_related('orders').all()\n# 或 select_related (Django)、includes (Rails)、joinedload (SQLAlchemy)\n\n→ ORM 最大坑\n→ 寫 loop 內 query 立刻警覺\n```\n\n  \n### 瓶頸 2：DB Index 沒加\n\n```text\nIndex 是 DB 的「目錄」：\n\n沒 index：\nSELECT * FROM users WHERE email = 'alice@x.com'\n→ 翻整個 table（100 萬 row 慢）\n\n有 index：\nCREATE INDEX idx_email ON users(email);\nSELECT * FROM users WHERE email = 'alice@x.com'\n→ 瞬間找到（O(log n)）\n\n該加 index 的欄位：\n- 常被 WHERE 篩選\n- 常被 JOIN\n- 常被 ORDER BY\n\n不該無腦加：\n- Index 占空間\n- INSERT / UPDATE 變慢（要更新 index）\n- 太多 index 反而慢\n\n實戰：\n1. 看慢 query\n2. EXPLAIN ANALYZE 看執行計畫\n3. 找「seq scan」（沒用 index）\n4. 加 index\n5. 重 EXPLAIN 確認用了\n\n進階：\n- Composite index：CREATE INDEX ON users(country, age);\n- Partial index：CREATE INDEX ON users(email) WHERE deleted_at IS NULL;\n- Expression index：CREATE INDEX ON users(LOWER(email));\n```\n\n  \n### 瓶頸 3：Connection Pool\n\n```text\n每個 DB 連線開很貴：\n- TCP 三次握手\n- 認證 / TLS\n- 加密 channel\n- ~100ms\n\n每個 request 新開連線 = 慢\n\n對策：Connection Pool\n- 預先開 N 個連線\n- 用完還回 pool\n- 不開新的\n\n# Node（pg pool）\nimport { Pool } from 'pg';\nconst pool = new Pool({\n    max: 20,        // 最多 20 連線\n    idleTimeoutMillis: 30000,\n});\n\nconst client = await pool.connect();\ntry {\n    const res = await client.query('SELECT * FROM users');\n} finally {\n    client.release();   // 還回 pool\n}\n\n# Python（SQLAlchemy）\nengine = create_engine(\n    DATABASE_URL,\n    pool_size=20,\n    max_overflow=10,\n)\n\n設定：\n- pool size：CPU cores × 2 起跳\n- 同時連線太多 = DB 累\n- 太少 = 等 connection\n\n監控：\n- 連線使用率\n- 等 connection 時間\n```\n\n  \n### 瓶頸 4：同步等 I/O\n\n```text\n場景：endpoint 需要 3 個外部 API\n\n爛寫法（同步）：\ndef get_dashboard():\n    user = fetch_user()       # 100ms\n    orders = fetch_orders()    # 200ms\n    notifications = fetch_notifications()  # 150ms\n    return { user, orders, notifications }\n# 總：450ms\n\n好寫法（並發）：\nasync def get_dashboard():\n    user, orders, notifications = await asyncio.gather(\n        fetch_user(),\n        fetch_orders(),\n        fetch_notifications()\n    )\n    return { user, orders, notifications }\n# 總：max(100, 200, 150) = 200ms\n\n# Node\nconst [user, orders, notifications] = await Promise.all([\n    fetchUser(),\n    fetchOrders(),\n    fetchNotifications()\n]);\n\n→ I/O 平行 = 大幅加速\n→ 10.21 lesson 講過 async\n```\n\n  \n### 其他常見優化\n\n```text\n1. Cache（11.10 講過）\n   - 重複算 → 算 1 次 cache\n   - hot endpoints 10-100x 提升\n\n2. Pagination（分頁）\n   - 不 SELECT * 1000 萬 row\n   - LIMIT 20 + OFFSET（或 cursor）\n\n3. Compression（壓縮）\n   - gzip / brotli\n   - response body 小 70%\n\n4. CDN（靜態資源）\n   - 圖片 / CSS / JS\n   - 全球加速\n\n5. HTTP/2 / HTTP/3\n   - Multiplexing\n   - 預設啟用（多 framework）\n\n6. JSON 替代品\n   - Protocol Buffers（gRPC）\n   - MessagePack\n   - 適合內部高效服務間\n\n7. Database 讀寫分離\n   - 寫到 master\n   - 讀從 replica\n   - 大流量必加\n\n8. Sharding（分片）\n   - 1 個 DB 不夠 → 多 DB\n   - 大廠才需要\n   - 早期不用\n```\n\n  \n### 常見假優化（別做）\n\n```text\n1. 過早優化\n   - 沒 traffic 就 K8s + microservice\n   - 100 user 就 sharding\n   - DHH 名言：「premature optimization is the root of all evil」\n\n2. 換語言「為了快」\n   - Python → Go「快 10x」\n   - 但 90% 瓶頸是 DB、不是語言\n   - 換語言花 6 個月、可能無用\n\n3. Cache 一切\n   - Cache 是雙面刃（invalidation 痛）\n   - 只 cache 真的熱的\n\n4. 自己寫 ORM / framework\n   - 永遠寫不過 Prisma / SQLAlchemy\n   - 花時間在 differentiation、不是重造輪子\n```\n\n  \n    **🚀 進階技巧**\n    \n2026 indie 效能順序：(1) **先 measure**（Sentry Performance / APM） (2) **找 top 3 慢**—80% 場景是這 3 個原因之一：N+1、缺 index、同步等 I/O (3) **修最痛的**—每修 1 個重 measure (4) **沒問題不優化**—premature optimization 是 indie 殺手。**記住：你不是 Google、你 user 100-10000 個、用 boring stack 完全夠**。\n\n  \n\n  \n    \n      ⚡\n      學習加速器\n    \n    把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。",
+      "tip": {
+        "type": "practical",
+        "text": "把這節學到的馬上應用到一個小東西—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "挑一個你做過的舊專案、用本節「效能優化：N+1、connection pool、index、異步」介紹的進階技術重構它。",
+        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
+        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "瓶頸定位：先量再修"
+        },
+        {
+          "level": 3,
+          "text": "瓶頸 1：N+1 Query"
+        },
+        {
+          "level": 3,
+          "text": "瓶頸 2：DB Index 沒加"
+        },
+        {
+          "level": 3,
+          "text": "瓶頸 3：Connection Pool"
+        },
+        {
+          "level": 3,
+          "text": "瓶頸 4：同步等 I/O"
+        },
+        {
+          "level": 3,
+          "text": "其他常見優化"
+        },
+        {
+          "level": 3,
+          "text": "常見假優化（別做）"
+        }
+      ]
+    },
+    {
+      "id": "16.16",
+      "number": "LESSON 16.16",
+      "title": "部署與運維：Docker、環境變數、health check",
+      "oneLineSummary": "API 測試工具：Postman / Bruno / curl—寫後端必備工具。",
+      "analogy": "像實驗室的測試儀器—不能每次都從前端測 API、太慢。Postman 是工程師日常—寫好一個 API、用 Postman 模擬請求、檢查回應—快 100 倍。",
+      "content": "「**後端寫完怎麼跑在 server 上？**」這節基本概念—Ch24 部署章詳細講。\n\n  \n### 從本機到 production\n\n```text\n本機（development）：\n$ python app.py\nhttp://localhost:8000\n\nProduction：\n?\n```\n\n  \n### Docker：把整個環境打包\n\n```text\n問題：\n- 你 Mac 跑得起來\n- 同事 Windows 跑不起來\n- production Linux 又不一樣\n- 「在我電腦能跑啊！」\n\n解法：Docker\n- 把 OS + 程式 + 依賴打包成 image\n- image 在哪都一樣跑\n\nDockerfile（Python）：\nFROM python:3.12-slim\n\nWORKDIR /app\nCOPY requirements.txt .\nRUN pip install -r requirements.txt\n\nCOPY . .\n\nCMD [\"python\", \"app.py\"]\n\nbuild + run：\n$ docker build -t myapp .\n$ docker run -p 8000:8000 myapp\n\n→ 任何裝 Docker 的機器都能跑你 app\n→ 部署統一化\n```\n\n  \n### 環境變數：別寫死設定\n\n```text\n# ❌ 爛\nDATABASE_URL = \"postgresql://user:pass@localhost/mydb\"\nAPI_KEY = \"sk-abcdef123\"\n\n# ✓ 用 env var\nimport os\nDATABASE_URL = os.environ[\"DATABASE_URL\"]\nAPI_KEY = os.environ[\"API_KEY\"]\n\n優：\n- 不同環境不同設定（dev / staging / prod）\n- 機密不進 git\n- 容易改\n\n實戰：\n- .env 檔（local development）\n- .env.example 範本進 git\n- .env 加入 .gitignore\n- production 用 platform UI 設（Vercel / Railway / Heroku）\n\n工具：\n- python-dotenv\n- dotenv（Node）\n- godotenv（Go）\n\n12-factor app 規則：\n「Store config in environment」\n```\n\n  \n### Health check：「server 還活著嗎？」\n\n```text\n每個 server 提供 health endpoint：\n\n# Python\n@app.get(\"/health\")\ndef health():\n    return {\"status\": \"ok\"}\n\n# 進階：檢查 DB / Redis\n@app.get(\"/health\")\nasync def health():\n    try:\n        await db.execute(\"SELECT 1\")\n        return {\"status\": \"ok\"}\n    except:\n        return {\"status\": \"unhealthy\"}, 503\n\n用途：\n1. Load balancer 知道哪台 server 還活\n2. K8s 自動重啟掛掉的\n3. Monitoring uptime\n4. Deploy 確認新版上線\n```\n\n  \n### Graceful Shutdown\n\n```text\nServer 重啟時：\n- 已連線的 user 不該斷\n- 處理到一半的 request 要完成\n- 新 request 不接\n\n實作：\n1. 收到 SIGTERM signal\n2. 停止接 new request\n3. 等所有 in-flight request 完成（max 30s）\n4. 關 DB connection\n5. 退出\n\n# Node\nprocess.on('SIGTERM', async () => {\n    console.log('Shutting down...');\n    server.close(() => {\n        console.log('Server closed');\n    });\n    await db.disconnect();\n    process.exit(0);\n});\n\n# Python（uvicorn 內建）\n\n優：\n- Zero-downtime deploy\n- 不掉 user request\n```\n\n  \n### 2026 部署選擇\n\n```text\nIndie / 簡單：\n- Vercel（前端 / serverless）\n- Railway（後端 / DB / Redis 全包）\n- Render\n- Fly.io\n→ git push 自動 deploy\n\n中型：\n- AWS（EC2 / ECS / Fargate）\n- GCP Cloud Run\n- DigitalOcean App Platform\n- Heroku（老但穩）\n\n大型：\n- Kubernetes（k8s）\n- 自建 cluster\n- 複雜但彈性\n```\n\n  \n### 2026 indie 推薦 stack\n\n```text\nApp：Railway / Vercel / Fly.io\nDB：Neon / Supabase（managed PostgreSQL）\nCache：Upstash Redis（serverless）\nStorage：Cloudflare R2\nCDN：Cloudflare\nMonitoring：Sentry + Vercel/Railway 內建\nEmail：Resend\nDomain：Cloudflare\n\n月成本（0-1000 user）：$0-30\n月成本（10k user）：$50-200\n月成本（100k user）：$300-1000\n\n→ 比 AWS 自架便宜\n→ 比 traditional VPS 容易\n→ 2026 indie sweet spot\n```\n\n  \n    **☕ 用人話講**\n    \n部署不用複雜：Day 1 用 Vercel / Railway / Fly.io（git push 自動 deploy）—不要學 AWS / K8s 那套（除非你公司付錢）。Indie 0-10000 user 用 managed PaaS 完全夠、月 $30-100 搞定。等到痛了再考慮自架（很多 indie 一輩子不需要）。\n\n  \n\n  \n    \n      🚀\n      2026 趨勢\n    \n    這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。",
+      "tip": {
+        "type": "trend",
+        "text": "這個技術 2026 還在主流、未來 5 年不會過時。但工具會更新—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "從本機到 production"
+        },
+        {
+          "level": 3,
+          "text": "Docker：把整個環境打包"
+        },
+        {
+          "level": 3,
+          "text": "環境變數：別寫死設定"
+        },
+        {
+          "level": 3,
+          "text": "Health check：「server 還活著嗎？」"
+        },
+        {
+          "level": 3,
+          "text": "Graceful Shutdown"
+        },
+        {
+          "level": 3,
+          "text": "2026 部署選擇"
+        },
+        {
+          "level": 3,
+          "text": "2026 indie 推薦 stack"
+        }
+      ]
+    },
+    {
+      "id": "16.17",
+      "number": "LESSON 16.17",
+      "title": "後端架構模式 + API 設計原則",
+      "oneLineSummary": "API 文件：OpenAPI / Swagger—寫 API 必附文件、不然沒人會用。",
+      "analogy": "像產品說明書—沒說明書的家電誰買？API 一樣：用 OpenAPI 寫好規格、Swagger UI 自動生成互動文件—前端不用問就能串、團隊溝通成本掉一半。",
+      "content": "「**怎麼組織你的後端 code**」決定它好不好維護。架構模式 = 大家踩過的坑、提煉的最佳實踐。\n\n  \n### Layered Architecture（最常見）\n\n```text\n分層：\n\n[ Presentation Layer ]      ← API route / Controller\n        ↓\n[ Business Logic Layer ]    ← Service\n        ↓\n[ Data Access Layer ]       ← Repository / ORM\n        ↓\n[ Database ]\n\n範例：建立訂單\n├── routes/orders.py        ← API endpoint\n│   def create_order(req): \n│       order = OrderService.create(req.data)\n│       return order\n│\n├── services/order_service.py   ← 業務邏輯\n│   class OrderService:\n│       def create(data):\n│           # 驗證、扣庫存、算總價、建單\n│           order = OrderRepository.save(...)\n│           EmailService.send_confirmation(...)\n│           return order\n│\n└── repositories/order_repo.py  ← DB access\n    class OrderRepository:\n        def save(data):\n            return db.insert(...)\n\n優：\n- 職責分明\n- 容易測試（mock 各層）\n- 新人能理解\n\n90% 後端用這架構\n```\n\n  \n### Repository Pattern\n\n```text\n「資料存取抽象化」：\n\nclass UserRepository:\n    def find_by_id(id):\n        return db.users.find(id)\n    \n    def find_by_email(email):\n        return db.users.where(\"email\", email).first()\n    \n    def save(user):\n        return db.users.insert(user)\n\n優：\n- 換 DB 容易（PostgreSQL → MongoDB 改 repo 就好）\n- 業務邏輯不知道 DB 細節\n- 容易 mock for test\n\n不該太教條：\n- 簡單 CRUD 直接 ORM 就好\n- 複雜 / 多 source 才包 Repository\n```\n\n  \n### Service Layer：業務邏輯放這\n\n```text\nroute / controller 不該寫太多邏輯：\n\n# ❌ 全擠 controller\n@app.post(\"/orders\")\ndef create_order(req):\n    # 驗證 input\n    if req.amount \n    **🚀 進階技巧**\n    \n2026 後端架構心法：**「Boring is good」**。Layered Architecture + Repository + Service + RESTful + OpenAPI = 90% 後端最佳實踐。**別追新**：Hexagonal、Onion、Clean Architecture、CQRS、Event Sourcing—99% indie / startup 不需要。等你變 Netflix 再考慮。**3 個關鍵原則**：(1) 1 個 endpoint 1 件事 (2) 業務邏輯不在 controller (3) 一致性 > 完美。\n\n  \n\n  \n    \n      🛠️\n      工具推薦\n    \n    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。",
+      "tip": {
+        "type": "practical",
+        "text": "配合這節用的工具：(1) VS Code（編輯器、免費）(2) Chrome DevTools（F12 開啟、除錯神器）(3) Live Server（VS Code 擴充、即時預覽）(4) GitHub Copilot / Cursor（AI 寫程式、學習加速 2-10x）。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "Layered Architecture（最常見）"
+        },
+        {
+          "level": 3,
+          "text": "Repository Pattern"
+        },
+        {
+          "level": 3,
+          "text": "Service Layer：業務邏輯放這"
+        }
+      ]
+    },
+    {
+      "id": "16.18",
+      "number": "LESSON 16.18",
+      "title": "2026-2030 後端趨勢：Edge、Serverless、AI-native",
+      "oneLineSummary": "整章實戰：用 Node + Express 做一個 To-Do API—CRUD + Auth + DB + Swagger。",
+      "analogy": "像從零開一家小餐廳—菜單（API spec）、廚房（後端邏輯）、倉庫（DB）、會員制（auth）。學完這節你能獨立做小型後端、可以接案了。",
+      "content": "後端世界 2026 在**大轉變**。看到趨勢 = 提前布局。\n\n  \n### 趨勢 1：Edge Computing 主流化\n\n```text\n2024 前：app 在 1 個 region\n2026 後：app 跑在「離 user 最近的地方」\n\n驅動：\n- 全球用戶 latency 要求\n- Cloudflare Workers / Vercel Edge 成熟\n- 5G / 行動網路普及\n\n特色：\n- V8 isolate（不是 container）\n- 啟動  {\n            return await db.user.findUnique({ where: { id: input.id } });\n        }),\n});\n\n// Client（自動推導）\nconst user = await trpc.getUser.query({ id: 123 });\n// user 型別自動是 User、自動 autocomplete\n\n→ 全 TS 團隊愛\n→ 多語言 team 不適用\n```\n\n  \n### 趨勢 6：Rust 滲透\n\n```text\nRust 從系統程式進入 web：\n\n被 Rust 取代 / 重寫的：\n- Discord backend（部分）\n- Cloudflare Workers runtime\n- Bun（Node 替代）\n- Tauri（Electron 替代）\n- Astro CLI（Vite 替代）\n- Turborepo\n- Biome（ESLint + Prettier）\n\n新興 Rust web framework：\n- Axum（最普及）\n- Actix（傳統）\n- Loco（類 Rails）\n- Rocket\n\n實戰：\n- 寫 hot path 用 Rust（性能 critical）\n- 大多 endpoint 用 Python / TS\n- Rust 在 framework / tool 層滲透\n```\n\n  \n### 趨勢 7：Bun + Deno 替代 Node\n\n```text\nNode.js 統治 10 年、2026 競爭加劇：\n\nBun（2022 出、2024 火）：\n- 比 Node 快 3-5x\n- npm 相容\n- TS / JSX 內建\n- 全 stack（runtime + bundler + test）\n\nDeno（2018 出、2024 翻身）：\n- TS-first\n- Web standard API（不是 node API）\n- Deno Deploy（serverless）\n- 安全（permission system）\n\nNode：\n- 仍主流、生態最大\n- ES Module 支援改善\n- Built-in test runner\n- Permission system 跟進\n\n→ 2026 indie 可選 Bun（速度 + 生態好）\n→ Enterprise 還是 Node（穩定）\n```\n\n  \n### 趨勢 8：DevOps 自動化\n\n```text\n2026 趨勢：「不再手動 DevOps」\n\n工具：\n- Railway / Render / Fly.io（git push 自動）\n- Vercel（前端 + serverless 完整）\n- Coolify（自架版 Vercel）\n- Docker Swarm Mode（簡單 orchestration）\n- Kubernetes（仍主流大企業）\n\nAI for DevOps：\n- AI 寫 Dockerfile / K8s yaml\n- AI 找 production bug\n- AI 優化 query\n- Sentry AI、Datadog Bits\n\n→ 中小公司不再需要 dedicated DevOps\n→ 開發者 deploy 自己 code\n```\n\n  \n### 對你的 implication\n\n  \n- **Indie / SaaS**：用 Vercel + Neon + Cloudflare R2 + Resend = 月成本 $0-30、撐 1 萬 user\n- **AI app**：Vercel AI SDK / Mastra + streaming + 多 model\n- **全球 SaaS**：Edge functions + 全球 DB\n- **學習投資**：TypeScript + Python（AI）+ 1 個高性能語言（Go / Rust）\n- **面試準備**：理解 RESTful / GraphQL / SSE / async / cache—2026 主流知識\n- **避免**：過早 microservices、K8s、自建 infra（除非真需要）\n\n  \n    **🚀 進階技巧**\n    \n2026 後端工程師**最有價值技能**：(1) **TypeScript 全 stack**—前後端一致 (2) **AI 整合**—LangChain / Vercel AI SDK (3) **Serverless / Edge**—Cloudflare Workers 或 Vercel (4) **Database 設計 + ORM**—Prisma / Drizzle / SQLAlchemy (5) **Async + Queue**—背景任務 + 即時通訊。**這 5 個學會 = 任何後端 job 都接得了**。下章 Python 完整、之後 11 個語言深教—實踐這些概念。\n\n  \n\n  \n    \n      ⚠️\n      新手常見錯誤\n    \n    新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。",
+      "tip": {
+        "type": "warning",
+        "text": "新手 3 大坑：(1) 不看 console—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) 不存檔就 F5—改完忘記儲存以為「程式沒效果」 (3) 抄 code 不理解—複製貼上能跑、但下次要改就崩潰。記得：先看懂、再寫。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "趨勢 1：Edge Computing 主流化"
+        },
+        {
+          "level": 3,
+          "text": "趨勢 6：Rust 滲透"
+        },
+        {
+          "level": 3,
+          "text": "趨勢 7：Bun + Deno 替代 Node"
+        },
+        {
+          "level": 3,
+          "text": "趨勢 8：DevOps 自動化"
+        },
+        {
+          "level": 3,
+          "text": "對你的 implication"
+        }
+      ]
+    },
+    {
+      "title": "HTTP 完整：method / status code / header / cookies",
+      "oneLineSummary": "所有 web 互動的底層、會 HTTP 才會 debug 任何網路問題",
+      "analogy": "F12 → Network 看到的所有東西都是 HTTP。學透 HTTP、debug API 不用再瞎猜。",
+      "content": "## HTTP Methods\n- **GET**：取資料（冪等、可快取）\n- **POST**：建資料（不冪等）\n- **PUT**：完整更新\n- **PATCH**：部分更新\n- **DELETE**：刪除\n- **HEAD**：只取 header\n- **OPTIONS**：CORS preflight\n\n## 冪等性（Idempotency）\nGET / PUT / DELETE：重複呼叫結果相同。\nPOST：重複呼叫可能建多筆。\n\n## Status Codes\n- **2xx 成功**\n  - 200 OK\n  - 201 Created\n  - 204 No Content\n- **3xx 重導**\n  - 301 永久搬家\n  - 302 暫時搬家\n  - 304 Not Modified（快取有效）\n- **4xx 客戶端錯**\n  - 400 Bad Request\n  - 401 未認證\n  - 403 已認證但無權限\n  - 404 找不到\n  - 409 衝突\n  - 422 資料不合法\n  - 429 太多請求\n- **5xx 伺服器錯**\n  - 500 Internal Error\n  - 502 Bad Gateway\n  - 503 Service Unavailable\n  - 504 Gateway Timeout\n\n## 常用 Header\n```\nRequest:\n  Authorization: Bearer xxx\n  Content-Type: application/json\n  Accept: application/json\n  User-Agent: Mozilla/5.0 ...\n  Cookie: session=xxx\n  X-Requested-With: XMLHttpRequest\n\nResponse:\n  Content-Type: application/json\n  Cache-Control: max-age=3600\n  Set-Cookie: session=xxx; HttpOnly; Secure\n  Access-Control-Allow-Origin: *\n  X-RateLimit-Remaining: 99\n```\n\n## Cookies\n```http\nSet-Cookie: session=xxx;\n  HttpOnly;          # JS 讀不到（防 XSS）\n  Secure;            # HTTPS only\n  SameSite=Strict;   # 跨站不送（防 CSRF）\n  Max-Age=86400;\n  Path=/;\n  Domain=example.com\n```\n\n## CORS（跨域）\n不同 domain 的 fetch 預設被擋：\n```\nFrontend: https://app.example.com\nAPI:      https://api.example.com  ← 不同 domain\n```\n\nServer 要回：\n```\nAccess-Control-Allow-Origin: https://app.example.com\nAccess-Control-Allow-Credentials: true\nAccess-Control-Allow-Methods: GET, POST, PUT, DELETE\nAccess-Control-Allow-Headers: Content-Type, Authorization\n```\n\n## Preflight Request\nPUT / DELETE / Custom Header 會先打 OPTIONS、檢查 CORS。\n\n## HTTPS / TLS\n- 永遠用 HTTPS、不用 HTTP\n- Let's Encrypt 免費憑證\n- Cloudflare 自動處理\n\n## HTTP/2 vs HTTP/3\n- HTTP/2：multiplexing、推送、優先序\n- HTTP/3：基於 QUIC、UDP、抗封包遺失\n\n## 工具\n- **curl**：命令列\n- **Postman / Insomnia / Bruno**：圖形化測試\n- **Chrome DevTools → Network**：debug 必用\n- **ngrok**：本地對外暴露 webhook",
+      "tip": {
+        "type": "pro",
+        "text": "前端 debug API 時、看 F12 Network → Status Code + Response Body。500 是 server 問題、4xx 是你的請求問題。"
+      },
+      "id": "16.19",
+      "number": "LESSON 16.19",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "16.19.auto",
+          "language": "http",
+          "title": "試試看",
+          "initialCode": "Set-Cookie: session=xxx;\n  HttpOnly;          # JS 讀不到（防 XSS）\n  Secure;            # HTTPS only\n  SameSite=Strict;   # 跨站不送（防 CSRF）\n  Max-Age=86400;\n  Path=/;\n  Domain=example.com",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "HTTP Methods"
+        },
+        {
+          "level": 2,
+          "text": "冪等性（Idempotency）"
+        },
+        {
+          "level": 2,
+          "text": "Status Codes"
+        },
+        {
+          "level": 2,
+          "text": "常用 Header"
+        },
+        {
+          "level": 2,
+          "text": "Cookies"
+        },
+        {
+          "level": 2,
+          "text": "CORS（跨域）"
+        },
+        {
+          "level": 2,
+          "text": "Preflight Request"
+        },
+        {
+          "level": 2,
+          "text": "HTTPS / TLS"
+        },
+        {
+          "level": 2,
+          "text": "HTTP/2 vs HTTP/3"
+        },
+        {
+          "level": 2,
+          "text": "工具"
+        }
+      ]
+    },
+    {
+      "title": "REST API 設計原則",
+      "oneLineSummary": "不只「能跑」、設計好的 REST 讓 API 自然好用",
+      "analogy": "為什麼 GitHub API、Stripe API 用起來這麼順？因為遵守 REST 設計原則—名詞、HTTP method 對應、合理 status code。",
+      "content": "## REST 6 大原則\n1. **Client-Server**：前後分離\n2. **Stateless**：每個 request 獨立\n3. **Cacheable**：可快取\n4. **Uniform Interface**：一致介面\n5. **Layered System**：分層（可加 CDN / 負載均衡）\n6. **Code on Demand**（選用）\n\n## 命名規則\n✅ **用名詞、用複數**\n```\nGET    /users          列出\nGET    /users/123      取單筆\nPOST   /users          建立\nPUT    /users/123      完整更新\nPATCH  /users/123      部分更新\nDELETE /users/123      刪除\n```\n\n❌ **不要用動詞**\n```\nGET /getUsers          ← 錯\nPOST /createUser       ← 錯\n```\n\n## 巢狀資源\n```\nGET /users/123/posts          # 某使用者的所有文章\nGET /users/123/posts/456      # 特定文章\nPOST /users/123/posts         # 為使用者建文章\n```\n\n## Query Parameters\n```\nGET /users?role=admin&limit=20&offset=40&sort=-createdAt\n        ↓\n    過濾 / 分頁 / 排序\n```\n\n## 篩選 / 排序 / 分頁慣例\n- 過濾：`?status=active`\n- 排序：`?sort=createdAt`（升）/ `?sort=-createdAt`（降）\n- 分頁：`?limit=20&offset=40` 或 `?page=3&limit=20`\n- Cursor：`?cursor=xxx&limit=20`（推薦）\n- 欄位選擇：`?fields=id,name,email`\n- 嵌入相關：`?include=posts,comments`\n\n## 回應結構\n```json\n{\n  \"data\": [...],          // 主資料\n  \"meta\": {\n    \"total\": 1000,\n    \"page\": 3,\n    \"perPage\": 20\n  },\n  \"links\": {\n    \"next\": \"?page=4\",\n    \"prev\": \"?page=2\"\n  }\n}\n```\n\n## 錯誤回應\n```json\n{\n  \"error\": {\n    \"code\": \"VALIDATION_ERROR\",\n    \"message\": \"Email is required\",\n    \"details\": [\n      { \"field\": \"email\", \"issue\": \"required\" }\n    ]\n  }\n}\n```\n\n## Versioning\n```\n/api/v1/users          # URL 版本\n/api/users (v=2)       # Header 版本\nAccept: application/vnd.api+json; version=2\n```\n\n## RESTful 範例（最佳實踐）\n```http\n# 取所有 article、過濾 + 分頁\nGET /api/v1/articles?author=alice&page=1&limit=20\n\n# 取單一 article\nGET /api/v1/articles/abc-123\n\n# 建立\nPOST /api/v1/articles\nContent-Type: application/json\n{ \"title\": \"...\", \"body\": \"...\" }\n→ 201 Created\nLocation: /api/v1/articles/new-id\n\n# 部分更新\nPATCH /api/v1/articles/abc-123\n{ \"title\": \"New Title\" }\n→ 200 OK\n\n# 刪除\nDELETE /api/v1/articles/abc-123\n→ 204 No Content\n```\n\n## REST vs RPC\n- **REST**：以資源為中心（noun）\n- **RPC**：以動作為中心（verb）\n- RPC 例：tRPC、JSON-RPC、gRPC\n\n## 不要過度設計\n- 簡單 CRUD 用 REST\n- 複雜業務動作（refund、merge）→ POST `/orders/123/refund`（不糾結）\n- 公開 API → REST 最相容\n- 內部 TS → tRPC 更爽",
+      "tip": {
+        "type": "practical",
+        "text": "REST 80% 規則是「常識」、其他 20% 大家吵半天。Stripe / GitHub / GitLab API 是業界教科書、抄它們就好。"
+      },
+      "id": "16.20",
+      "number": "LESSON 16.20",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "16.20.auto",
+          "language": "json",
+          "title": "試試看",
+          "initialCode": "{\n  \"data\": [...],          // 主資料\n  \"meta\": {\n    \"total\": 1000,\n    \"page\": 3,\n    \"perPage\": 20\n  },\n  \"links\": {\n    \"next\": \"?page=4\",\n    \"prev\": \"?page=2\"\n  }\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "REST 6 大原則"
+        },
+        {
+          "level": 2,
+          "text": "命名規則"
+        },
+        {
+          "level": 2,
+          "text": "巢狀資源"
+        },
+        {
+          "level": 2,
+          "text": "Query Parameters"
+        },
+        {
+          "level": 2,
+          "text": "篩選 / 排序 / 分頁慣例"
+        },
+        {
+          "level": 2,
+          "text": "回應結構"
+        },
+        {
+          "level": 2,
+          "text": "錯誤回應"
+        },
+        {
+          "level": 2,
+          "text": "Versioning"
+        },
+        {
+          "level": 2,
+          "text": "RESTful 範例（最佳實踐）"
+        },
+        {
+          "level": 2,
+          "text": "REST vs RPC"
+        },
+        {
+          "level": 2,
+          "text": "不要過度設計"
+        }
+      ]
+    },
+    {
+      "title": "API 認證：API Key / OAuth / JWT 對比",
+      "oneLineSummary": "API 怎麼確定「是你」？3 大主流認證方式各有適用場景",
+      "analogy": "API key 簡單但難管理、OAuth 標準但複雜、JWT 折衷但有自己的坑。選對方案省下無數運維時間。",
+      "content": "## 1. API Key（最簡單）\n```http\nGET /api/users\nAuthorization: Bearer sk_live_abc123...\n```\n或\n```http\nGET /api/users\nX-API-Key: abc123...\n```\n\n**適合**：\n- B2B API（後端對後端）\n- 內部 service\n- 第三方 webhook\n\n**痛點**：\n- 撤銷需要伺服器查 DB\n- 不能限定使用者\n- 洩漏要全部 rotate\n\n## 2. OAuth 2.0（標準）\n複雜但業界標準。流程：\n```\n1. App 帶使用者去 OAuth provider 登入\n2. 使用者授權\n3. Provider 回 authorization code\n4. App 用 code 換 access token\n5. App 用 token call API\n```\n\n**適合**：\n- 第三方應用（Google、GitHub 登入）\n- 公開 API（給很多開發者用）\n- 需要使用者授權範圍\n\n**Grant Types**：\n- **Authorization Code**：Web App\n- **PKCE**：Mobile / SPA\n- **Client Credentials**：M2M\n- **Device Code**：CLI、smart TV\n- ⚠️ Implicit / Password 已淘汰\n\n## 3. JWT（自包含 token）\n詳見 Ch6 JSON 章節。\n\n**適合**：\n- SPA / Mobile 認證\n- 微服務之間\n- Stateless 架構\n\n## 4. Session + Cookie（傳統）\n```\n登入 → server 建 session → 回 sessionId in Cookie\n之後請求 → server 查 session 看是誰\n登出 → 刪 session\n```\n\n**適合**：\n- 傳統 server-rendered web\n- 需要強撤銷能力\n- 客戶端不複雜\n\n## 5. mTLS（雙向 TLS）\n雙方都用 cert 互相認證、企業 / 銀行用。\n\n## 對比表\n\n| 方案 | 易用 | 安全 | 撤銷 | 適合 |\n|---|---|---|---|---|\n| API Key | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | DB lookup | B2B |\n| OAuth | ⭐⭐ | ⭐⭐⭐⭐⭐ | Refresh | 公開 API |\n| JWT | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | 困難 | SPA |\n| Session | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | 容易 | 傳統 web |\n| mTLS | ⭐⭐ | ⭐⭐⭐⭐⭐ | Cert revoke | 企業 |\n\n## 實務建議\n- **個人 / Indie 專案**：Supabase Auth / Clerk / NextAuth、別自己刻\n- **B2B SaaS**：API Key + Webhook secret\n- **公開平台**：OAuth 2.0（必須）\n- **內部 service**：mTLS 或 JWT\n\n## 進階：API Gateway\n- Cloudflare API Shield\n- AWS API Gateway\n- Kong / Tyk\n- 統一處理 auth / rate limit / log",
+      "tip": {
+        "type": "security",
+        "text": "永遠別自己刻 OAuth。用 Supabase / Clerk / NextAuth、省下 1-2 個月開發 + 無數資安風險。"
+      },
+      "id": "16.21",
+      "number": "LESSON 16.21",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "16.21.auto",
+          "language": "http",
+          "title": "試試看",
+          "initialCode": "GET /api/users\nAuthorization: Bearer sk_live_abc123...",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "1. API Key（最簡單）"
+        },
+        {
+          "level": 2,
+          "text": "2. OAuth 2.0（標準）"
+        },
+        {
+          "level": 2,
+          "text": "3. JWT（自包含 token）"
+        },
+        {
+          "level": 2,
+          "text": "4. Session + Cookie（傳統）"
+        },
+        {
+          "level": 2,
+          "text": "5. mTLS（雙向 TLS）"
+        },
+        {
+          "level": 2,
+          "text": "對比表"
+        },
+        {
+          "level": 2,
+          "text": "實務建議"
+        },
+        {
+          "level": 2,
+          "text": "進階：API Gateway"
+        }
+      ]
+    },
+    {
+      "title": "Rate Limiting：防止 API 被打爆",
+      "oneLineSummary": "一個惡意 client 一秒打 10 萬次 API、伺服器爆—Rate Limit 是必備防線",
+      "analogy": "不只防駭客、也防自己的 bug（無限迴圈打 API）。Rate Limit 是 production API 的最低標。",
+      "content": "## 4 種演算法\n\n### 1. Fixed Window\n每 60 秒最多 100 次：\n```\n00:00-00:59: 計數器 = 100 上限\n01:00-01:59: 重置 = 100 上限\n```\n**痛**：邊界突發（00:59 + 01:00 連續 200 次）\n\n### 2. Sliding Window（推薦）\n滑動視窗、平滑很多。\n\n### 3. Token Bucket\n每秒補 10 個 token、最多存 100、每次請求扣 1。\n適合突發流量。\n\n### 4. Leaky Bucket\n固定速率處理、超過丟掉。\n\n## Express middleware 範例\n```javascript\nimport rateLimit from \"express-rate-limit\";\n\nconst limiter = rateLimit({\n  windowMs: 60 * 1000,  // 1 分鐘\n  max: 100,              // 100 次\n  message: \"Too many requests, try later\",\n  standardHeaders: true,\n});\n\napp.use(\"/api/\", limiter);\n```\n\n## Redis-based（分散式必用）\n```javascript\nimport { RateLimiterRedis } from \"rate-limiter-flexible\";\nimport Redis from \"ioredis\";\n\nconst redis = new Redis();\nconst limiter = new RateLimiterRedis({\n  storeClient: redis,\n  points: 100,          // 上限\n  duration: 60,         // 秒\n});\n\napp.use(async (req, res, next) => {\n  try {\n    await limiter.consume(req.ip);\n    next();\n  } catch (rejRes) {\n    res.set(\"Retry-After\", String(rejRes.msBeforeNext / 1000));\n    res.status(429).send(\"Rate limit exceeded\");\n  }\n});\n```\n\n## 回應 Header\n```http\nX-RateLimit-Limit: 100\nX-RateLimit-Remaining: 95\nX-RateLimit-Reset: 1735689660\nRetry-After: 30\n```\n\n## 分層 Rate Limit\n- **匿名**：60/分鐘 IP\n- **認證**：300/分鐘 user\n- **付費**：1000/分鐘 user\n- **企業**：協商\n\n## 進階：Different limits per endpoint\n```javascript\n// 一般 API\napp.use(\"/api\", rateLimit({ max: 100, windowMs: 60000 }));\n\n// 嚴格：登入\napp.post(\"/api/login\", rateLimit({ max: 5, windowMs: 60000 }));\n\n// 寬鬆：GET\napp.get(\"/api/posts\", rateLimit({ max: 200, windowMs: 60000 }));\n```\n\n## Cloudflare Rate Limiting\n不用寫 code、Cloudflare 設定面板開：\n- 每 IP 每分鐘 60\n- 每登入 user 每分鐘 300\n- 自動擋掉、不打到後端\n\n## 工具 / 服務\n- **express-rate-limit**：Node 簡單\n- **rate-limiter-flexible**：分散式\n- **Upstash Ratelimit**：Serverless 友善\n- **Cloudflare WAF**：邊緣層\n- **AWS WAF**：AWS 環境",
+      "tip": {
+        "type": "security",
+        "text": "Production 第一天就要開 Rate Limit。被人爬蟲打到 OOM 才加、就太晚了。Cloudflare 免費方案就有。"
+      },
+      "id": "16.22",
+      "number": "LESSON 16.22",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "16.22.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "import rateLimit from \"express-rate-limit\";\n\nconst limiter = rateLimit({\n  windowMs: 60 * 1000,  // 1 分鐘\n  max: 100,              // 100 次\n  message: \"Too many requests, try later\",\n  standardHeaders: true,\n});\n\napp.use(\"/api/\", limiter);",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "4 種演算法"
+        },
+        {
+          "level": 3,
+          "text": "1. Fixed Window"
+        },
+        {
+          "level": 3,
+          "text": "2. Sliding Window（推薦）"
+        },
+        {
+          "level": 3,
+          "text": "3. Token Bucket"
+        },
+        {
+          "level": 3,
+          "text": "4. Leaky Bucket"
+        },
+        {
+          "level": 2,
+          "text": "Express middleware 範例"
+        },
+        {
+          "level": 2,
+          "text": "Redis-based（分散式必用）"
+        },
+        {
+          "level": 2,
+          "text": "回應 Header"
+        },
+        {
+          "level": 2,
+          "text": "分層 Rate Limit"
+        },
+        {
+          "level": 2,
+          "text": "進階：Different limits per endpoint"
+        },
+        {
+          "level": 2,
+          "text": "Cloudflare Rate Limiting"
+        },
+        {
+          "level": 2,
+          "text": "工具 / 服務"
+        }
+      ]
+    },
+    {
+      "title": "Caching：快取策略 + Redis 入門",
+      "oneLineSummary": "一個快取讓 API 從 500ms 降到 5ms、DB 壓力降 95%",
+      "analogy": "常被讀但少改的資料（首頁文章、商品列表）每次查 DB 浪費。快取一次、之後 1ms 回應。",
+      "content": "## 4 層快取\n```\n[Browser Cache] ← Cache-Control header\n       ↓\n[CDN Cache]     ← Cloudflare / Vercel Edge\n       ↓\n[App Cache]     ← Redis / Memcached\n       ↓\n[DB Cache]      ← PG buffer pool\n```\n\n## Browser Cache\n```http\nCache-Control: max-age=3600          # 快取 1 小時\nCache-Control: public, max-age=31536000, immutable  # CSS/JS 永久\nCache-Control: no-cache              # 每次驗證\nCache-Control: no-store              # 不快取（敏感資料）\n\nETag: \"abc123\"\nLast-Modified: Mon, 17 May 2026 ...\n```\n\n## CDN Cache（Cloudflare 等）\n靜態檔自動快取在 200+ 城市、user 從最近節點拿。\n\n## Redis 快取（App 層）\n```javascript\nimport Redis from \"ioredis\";\nconst redis = new Redis();\n\nasync function getUser(id) {\n  // 1. 先查快取\n  const cached = await redis.get(`user:${id}`);\n  if (cached) return JSON.parse(cached);\n\n  // 2. 沒有 → 查 DB\n  const user = await db.user.findUnique({ where: { id } });\n\n  // 3. 寫快取（1 小時）\n  await redis.setex(`user:${id}`, 3600, JSON.stringify(user));\n\n  return user;\n}\n```\n\n## Cache Invalidation（最難）\n資料更新後、快取要失效：\n\n### 1. 時間過期（TTL）\n```javascript\nawait redis.setex(key, 3600, value);  // 1 小時自動過期\n```\n簡單但資料更新後仍延遲。\n\n### 2. 主動刪除\n```javascript\nasync function updateUser(id, data) {\n  await db.user.update({ where: { id }, data });\n  await redis.del(`user:${id}`);  // 主動清快取\n}\n```\n\n### 3. Write-through\n寫 DB 同時寫快取：\n```javascript\nconst user = await db.user.update(...);\nawait redis.setex(`user:${id}`, 3600, JSON.stringify(user));\n```\n\n### 4. Pub/Sub 同步多 server\n```javascript\nredis.publish(\"user-updated\", id);\nredis.subscribe(\"user-updated\", id => localCache.del(id));\n```\n\n## 快取策略\n\n### Cache-Aside（最常用）\n1. 讀：先查快取、沒有再查 DB + 寫快取\n2. 寫：直接寫 DB + 刪快取\n\n### Write-Through\n1. 寫：同時寫 DB + 快取\n\n### Write-Back\n1. 寫：先寫快取、之後批次寫 DB\n2. ⚠️ 風險：crash 會丟資料\n\n## Redis 進階\n```javascript\n// Hash\nawait redis.hset(\"user:1\", { name: \"Alice\", age: 25 });\nawait redis.hget(\"user:1\", \"name\");\n\n// Sorted Set（排行榜）\nawait redis.zadd(\"leaderboard\", 100, \"alice\");\nawait redis.zrevrange(\"leaderboard\", 0, 9);  // Top 10\n\n// Pub/Sub\nconst subscriber = redis.duplicate();\nsubscriber.subscribe(\"channel\");\nsubscriber.on(\"message\", (ch, msg) => console.log(msg));\n\n// Pipeline（批次）\nconst pipeline = redis.pipeline();\npipeline.set(\"a\", 1).set(\"b\", 2).get(\"c\");\nconst results = await pipeline.exec();\n```\n\n## 何時不該快取\n- 即時資料（股價、聊天）\n- 個人化 high cardinality（每人不同）\n- 寫多讀少\n- 強一致性要求（金流）\n\n## 工具\n- **Redis**：最熱門\n- **Upstash**：Serverless Redis\n- **Memcached**：Redis 之前的霸主\n- **PG `LISTEN/NOTIFY`**：簡單 pub/sub",
+      "tip": {
+        "type": "performance",
+        "text": "95% 場景：用 Cloudflare Cache + Redis 兩層、效能爆增、DB 壓力降 90%。Indie SaaS Day 1 就該設。"
+      },
+      "id": "16.23",
+      "number": "LESSON 16.23",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "16.23.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "import Redis from \"ioredis\";\nconst redis = new Redis();\n\nasync function getUser(id) {\n  // 1. 先查快取\n  const cached = await redis.get(`user:${id}`);\n  if (cached) return JSON.parse(cached);\n\n  // 2. 沒有 → 查 DB\n  const user = await db.user.findUnique({ where: { id } });\n\n  // 3. 寫快取（1 小時）\n  await redis.setex(`user:${id}`, 3600, JSON.stringify(user));\n\n  return user;\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "用一張紙、把「Caching：快取策略 + Redis 入門」的核心概念畫成心智圖。中心是這節的主題、第一圈放 3-5 個關鍵詞（如 user:${id}、LISTEN/NOTIFY）、第二圈延伸細節。",
+        "hint": "關鍵概念可以從 lesson 內出現的這些關鍵字入手：user:${id}、LISTEN/NOTIFY。畫完不要光放著、試著用自己的話講一次。",
+        "answer": "心智圖三步：(1) 中心 = lesson 主題 (2) 第一圈 = 主要分類（通常 3-5 個）(3) 第二圈 = 具體例子或工具。畫完拿給朋友看、能講通 = 真懂。常見錯誤：抄關鍵字當分類、應該用自己理解後的歸納。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "4 層快取"
+        },
+        {
+          "level": 2,
+          "text": "Browser Cache"
+        },
+        {
+          "level": 2,
+          "text": "CDN Cache（Cloudflare 等）"
+        },
+        {
+          "level": 2,
+          "text": "Redis 快取（App 層）"
+        },
+        {
+          "level": 2,
+          "text": "Cache Invalidation（最難）"
+        },
+        {
+          "level": 3,
+          "text": "1. 時間過期（TTL）"
+        },
+        {
+          "level": 3,
+          "text": "2. 主動刪除"
+        },
+        {
+          "level": 3,
+          "text": "3. Write-through"
+        },
+        {
+          "level": 3,
+          "text": "4. Pub/Sub 同步多 server"
+        },
+        {
+          "level": 2,
+          "text": "快取策略"
+        },
+        {
+          "level": 3,
+          "text": "Cache-Aside（最常用）"
+        },
+        {
+          "level": 3,
+          "text": "Write-Through"
+        },
+        {
+          "level": 3,
+          "text": "Write-Back"
+        },
+        {
+          "level": 2,
+          "text": "Redis 進階"
+        },
+        {
+          "level": 2,
+          "text": "何時不該快取"
+        },
+        {
+          "level": 2,
+          "text": "工具"
+        }
+      ]
+    },
+    {
+      "title": "WebSocket / SSE：即時通訊",
+      "oneLineSummary": "聊天 / 通知 / 即時協作—Server 主動推給 Client",
+      "analogy": "HTTP 是 client 問、server 答。WebSocket / SSE 反過來、server 可以主動推—聊天、即時通知靠它。",
+      "content": "## 三種即時技術對比\n\n### 1. Polling（最簡單、最爛）\n```javascript\nsetInterval(async () => {\n  const messages = await fetch(\"/api/messages\");\n}, 3000);\n```\n- ❌ 浪費頻寬\n- ❌ 延遲高\n\n### 2. SSE（Server-Sent Events）\n**單向**（Server → Client）、簡單、適合通知：\n```javascript\nconst events = new EventSource(\"/api/stream\");\nevents.onmessage = (e) => console.log(e.data);\n```\n\nServer（Node）：\n```javascript\nres.setHeader(\"Content-Type\", \"text/event-stream\");\nres.setHeader(\"Cache-Control\", \"no-cache\");\nres.setHeader(\"Connection\", \"keep-alive\");\n\nsetInterval(() => {\n  res.write(`data: ${JSON.stringify({ time: Date.now() })}\\n\\n`);\n}, 1000);\n```\n\n**用途**：股票、通知、AI streaming response。\n\n### 3. WebSocket\n**雙向**（Server ↔ Client）、聊天 / 協作必用：\n\nClient：\n```javascript\nconst ws = new WebSocket(\"wss://example.com/chat\");\n\nws.onopen = () => ws.send(\"Hello\");\nws.onmessage = (e) => console.log(\"從 server:\", e.data);\nws.onclose = () => console.log(\"斷線\");\n\nws.send(JSON.stringify({ type: \"message\", text: \"Hi\" }));\n```\n\nServer（ws + Node）：\n```javascript\nimport { WebSocketServer } from \"ws\";\n\nconst wss = new WebSocketServer({ port: 8080 });\nwss.on(\"connection\", (ws) => {\n  ws.on(\"message\", (data) => {\n    // Echo to all clients\n    wss.clients.forEach((c) => c.send(data));\n  });\n});\n```\n\n## Socket.IO（最熱門 lib）\nSocket.IO = WebSocket + 自動重連 + room + fallback：\n```javascript\n// Server\nimport { Server } from \"socket.io\";\nconst io = new Server(httpServer, { cors: { origin: \"*\" } });\n\nio.on(\"connection\", (socket) => {\n  socket.join(\"room-1\");\n  socket.on(\"message\", (data) => {\n    io.to(\"room-1\").emit(\"message\", data);\n  });\n});\n\n// Client\nimport { io } from \"socket.io-client\";\nconst socket = io();\nsocket.emit(\"message\", \"Hello\");\nsocket.on(\"message\", (data) => console.log(data));\n```\n\n## 雲端 / 託管方案（推薦）\n- **Pusher**：付費、最方便\n- **Ably**：類似 Pusher\n- **Supabase Realtime**：開源、跟 DB 整合（PG NOTIFY）\n- **PartyKit**：Cloudflare Durable Objects\n- **Liveblocks**：協作專用（光標、評論）\n\n## Supabase Realtime（推薦給 Indie）\n```javascript\n// 訂閱 DB 變化\nsupabase\n  .channel(\"messages\")\n  .on(\"postgres_changes\",\n    { event: \"INSERT\", schema: \"public\", table: \"messages\" },\n    (payload) => console.log(payload))\n  .subscribe();\n\n// 訂閱 presence（誰在線上）\nconst channel = supabase.channel(\"room\");\nchannel.on(\"presence\", { event: \"sync\" }, () => {\n  console.log(\"online users:\", channel.presenceState());\n});\nchannel.track({ user: \"alice\" });\n```\n\n## 何時用什麼\n\n| 需求 | 推薦 |\n|---|---|\n| Server 通知 client | SSE |\n| 雙向聊天 | WebSocket / Socket.IO |\n| 多人協作（光標）| Liveblocks / PartyKit |\n| DB 即時同步 | Supabase Realtime |\n| AI streaming | SSE |\n| 大型即時遊戲 | Socket.IO / 自建 |\n\n## 部署痛點\n- WebSocket 不能用 serverless（持久連線）\n- Vercel 不支援 WebSocket（要用 Pusher / Supabase）\n- Cloudflare Workers Durable Objects 是新選項",
+      "tip": {
+        "type": "practical",
+        "text": "Indie SaaS 加即時功能、別自己刻 WebSocket。Supabase Realtime / Pusher 免費額度夠用、Day 1 上線。"
+      },
+      "id": "16.24",
+      "number": "LESSON 16.24",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "16.24.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "setInterval(async () => {\n  const messages = await fetch(\"/api/messages\");\n}, 3000);",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "三種即時技術對比"
+        },
+        {
+          "level": 3,
+          "text": "1. Polling（最簡單、最爛）"
+        },
+        {
+          "level": 3,
+          "text": "2. SSE（Server-Sent Events）"
+        },
+        {
+          "level": 3,
+          "text": "3. WebSocket"
+        },
+        {
+          "level": 2,
+          "text": "Socket.IO（最熱門 lib）"
+        },
+        {
+          "level": 2,
+          "text": "雲端 / 託管方案（推薦）"
+        },
+        {
+          "level": 2,
+          "text": "Supabase Realtime（推薦給 Indie）"
+        },
+        {
+          "level": 2,
+          "text": "何時用什麼"
+        },
+        {
+          "level": 2,
+          "text": "部署痛點"
+        }
+      ]
+    },
+    {
+      "title": "API 文件 + Testing（Postman / Bruno / Vitest）",
+      "oneLineSummary": "API 沒文件 + 沒測試 = bug 工廠。3 種工具讓你 API 質感升級",
+      "analogy": "寫對 API 還不夠、要能 demo、要能測試、要能交接。Postman / Bruno / Vitest 是必備。",
+      "content": "## API 測試工具\n\n### Postman（傳統王者）\n- 雲端 collection、團隊共享\n- 自動產文件\n- Mock server\n- 商業化、有免費版\n\n### Bruno（開源新星、推薦）\n- 純本地檔案、Git 友善\n- 跟 code 一起版控\n- 免費、無需註冊\n- 介面類 Postman\n\n### Insomnia\n- 開源\n- 也很多人用\n\n### Thunder Client（VS Code 外掛）\n- IDE 內測試\n- 輕量\n\n### HTTPie / curl（CLI）\n```bash\nhttp POST localhost:3000/users name=Alice email=a@x.com\ncurl -X POST localhost:3000/users -d '{\"name\":\"Alice\"}'\n```\n\n## 寫 API 測試（Vitest 範例）\n```typescript\n// api.test.ts\nimport { describe, test, expect, beforeAll } from \"vitest\";\nimport request from \"supertest\";\nimport { app } from \"./app\";\n\ndescribe(\"POST /api/users\", () => {\n  test(\"建立使用者成功\", async () => {\n    const res = await request(app)\n      .post(\"/api/users\")\n      .send({ name: \"Alice\", email: \"a@x.com\" });\n\n    expect(res.status).toBe(201);\n    expect(res.body).toHaveProperty(\"id\");\n    expect(res.body.name).toBe(\"Alice\");\n  });\n\n  test(\"缺 email 失敗\", async () => {\n    const res = await request(app)\n      .post(\"/api/users\")\n      .send({ name: \"Alice\" });\n\n    expect(res.status).toBe(400);\n    expect(res.body.error).toMatch(/email/i);\n  });\n\n  test(\"重複 email 失敗\", async () => {\n    await request(app).post(\"/api/users\").send({ name: \"Alice\", email: \"dup@x.com\" });\n    const res = await request(app).post(\"/api/users\").send({ name: \"Bob\", email: \"dup@x.com\" });\n    expect(res.status).toBe(409);\n  });\n});\n```\n\n## E2E 測試：Playwright\n```typescript\nimport { test, expect } from \"@playwright/test\";\n\ntest(\"使用者註冊流程\", async ({ page }) => {\n  await page.goto(\"/signup\");\n  await page.fill(\"[name=email]\", \"test@x.com\");\n  await page.fill(\"[name=password]\", \"pass1234\");\n  await page.click(\"button[type=submit]\");\n  await expect(page).toHaveURL(\"/dashboard\");\n});\n```\n\n## Contract Testing\n前後端共用 schema、確保 API contract 一致：\n- **Pact**：消費者驅動\n- **Zod + OpenAPI**：手動但有效\n\n## CI / CD 整合\n```yaml\n# .github/workflows/test.yml\n- name: Run API tests\n  run: |\n    npm install\n    npm run test:api\n  env:\n    DATABASE_URL: postgres://test:test@localhost/test\n```\n\n## 文件自動產生\n- OpenAPI / Swagger：寫規範 → 自動產文件\n- **Bruno → 直接交給客戶**：純檔案、版控、好維護\n- **Stoplight**：寫一份產出多種格式\n\n## 監控（Production）\n- **Sentry**：錯誤追蹤\n- **Datadog / New Relic**：APM\n- **PostHog**：使用者行為\n- **Better Stack**：log 整合\n- **Uptime Robot**：免費 uptime 監控\n\n## 實戰建議\n- 開發：Bruno 手動測（Git 版控）\n- CI：Vitest + supertest 自動化\n- 公開 API：OpenAPI 文件\n- E2E：Playwright（不要太多、選關鍵流程）",
+      "tip": {
+        "type": "practical",
+        "text": "接案交付加上 Bruno collection、客戶後續工程師 1 分鐘上手。比寫 1000 字文件還有效。"
+      },
+      "id": "16.25",
+      "number": "LESSON 16.25",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "16.25.auto",
+          "language": "bash",
+          "title": "試試看",
+          "initialCode": "http POST localhost:3000/users name=Alice email=a@x.com\ncurl -X POST localhost:3000/users -d '{\"name\":\"Alice\"}'",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "API 測試工具"
+        },
+        {
+          "level": 3,
+          "text": "Postman（傳統王者）"
+        },
+        {
+          "level": 3,
+          "text": "Bruno（開源新星、推薦）"
+        },
+        {
+          "level": 3,
+          "text": "Insomnia"
+        },
+        {
+          "level": 3,
+          "text": "Thunder Client（VS Code 外掛）"
+        },
+        {
+          "level": 3,
+          "text": "HTTPie / curl（CLI）"
+        },
+        {
+          "level": 2,
+          "text": "寫 API 測試（Vitest 範例）"
+        },
+        {
+          "level": 2,
+          "text": "E2E 測試：Playwright"
+        },
+        {
+          "level": 2,
+          "text": "Contract Testing"
+        },
+        {
+          "level": 2,
+          "text": "CI / CD 整合"
+        },
+        {
+          "level": 2,
+          "text": "文件自動產生"
+        },
+        {
+          "level": 2,
+          "text": "監控（Production）"
+        },
+        {
+          "level": 2,
+          "text": "實戰建議"
+        }
+      ]
+    }
+  ],
+  "boss": {
+    "name": "伺服神獸",
+    "hp": 180,
+    "emoji": "🦅",
+    "description": "統治後端世界、用 REST/GraphQL/gRPC 三利爪"
+  },
+  "quiz": {
+    "id": "ch16-quiz",
+    "questions": [],
+    "xpReward": 50,
+    "perfectBonus": 50
+  }
+}

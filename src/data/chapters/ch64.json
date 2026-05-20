@@ -1,0 +1,348 @@
+{
+  "id": 64,
+  "stage": 7,
+  "title": "附錄 D：開發工具速查",
+  "subtitle": "VSCode、npm、Docker、正則表達式",
+  "description": "日常開發必查的工具指令、快捷鍵、設定。",
+  "difficulty": "reference",
+  "estimatedHours": 2,
+  "icon": "🛠️",
+  "lessons": [
+    {
+      "id": "64.1",
+      "number": "64.1",
+      "title": "VSCode 快捷鍵 + 必裝套件",
+      "oneLineSummary": "提升 10 倍效率的快捷鍵 + 30 個必裝套件。",
+      "xp": 100,
+      "content": "# VSCode 完整速查\n\n## 一、必備快捷鍵（Mac / Windows）\n\n### 檔案 / 視窗\n| 動作 | Mac | Windows |\n|---|---|---|\n| 開啟檔案 | `⌘P` | `Ctrl+P` |\n| 開啟最近 | `⌘R` | `Ctrl+R` |\n| 新檔案 | `⌘N` | `Ctrl+N` |\n| 儲存 | `⌘S` | `Ctrl+S` |\n| 全部儲存 | `⌥⌘S` | `Ctrl+K S` |\n| 關閉檔案 | `⌘W` | `Ctrl+W` |\n| 切換檔案 | `⌃Tab` | `Ctrl+Tab` |\n| 切換側欄 | `⌘B` | `Ctrl+B` |\n| 切換終端機 | `` ⌃` `` | `` Ctrl+` `` |\n| Command Palette | `⇧⌘P` | `Ctrl+Shift+P` |\n| Zen Mode | `⌘K Z` | 同 |\n\n### 編輯\n| 動作 | Mac | Windows |\n|---|---|---|\n| 複製整行 | `⇧⌥↓` | `Shift+Alt+↓` |\n| 移動行 | `⌥↑↓` | `Alt+↑↓` |\n| 刪除整行 | `⇧⌘K` | `Ctrl+Shift+K` |\n| 註解 | `⌘/` | `Ctrl+/` |\n| 區塊註解 | `⇧⌥A` | `Shift+Alt+A` |\n| 撤銷 / 重做 | `⌘Z` / `⇧⌘Z` | `Ctrl+Z` / `Ctrl+Y` |\n| 跳到行 | `⌃G` | `Ctrl+G` |\n| 跳到符號 | `⇧⌘O` | `Ctrl+Shift+O` |\n| 全域搜尋 | `⇧⌘F` | `Ctrl+Shift+F` |\n| 搜尋 / 取代 | `⌘F` / `⌥⌘F` | `Ctrl+F` / `Ctrl+H` |\n\n### Multi-cursor（神技）\n| 動作 | Mac | Windows |\n|---|---|---|\n| 加 cursor 到下一個同字 | `⌘D` | `Ctrl+D` |\n| 加 cursor 到所有同字 | `⌘⇧L` | `Ctrl+Shift+L` |\n| 在每行加 cursor | `⇧⌥I` | `Shift+Alt+I` |\n| 在某處加 cursor | `⌥click` | `Alt+click` |\n| 向上下加 cursor | `⌥⌘↑↓` | `Ctrl+Alt+↑↓` |\n\n### 程式\n| 動作 | Mac | Windows |\n|---|---|---|\n| 跳到定義 | `F12` | 同 |\n| 預覽定義 | `⌥F12` | `Alt+F12` |\n| 找引用 | `⇧F12` | 同 |\n| Rename symbol | `F2` | 同 |\n| Quick fix | `⌘.` | `Ctrl+.` |\n| 格式化文件 | `⇧⌥F` | `Shift+Alt+F` |\n| 自動 import | `⌘.` | `Ctrl+.` |\n| 程式碼建議 | `⌃Space` | `Ctrl+Space` |\n| 函數簽名 | `⇧⌘Space` | `Ctrl+Shift+Space` |\n\n### 分割視窗\n| 動作 | Mac | Windows |\n|---|---|---|\n| 分割編輯器 | `⌘\\` | `Ctrl+\\` |\n| 切換編輯器 | `⌘1/2/3` | `Ctrl+1/2/3` |\n\n## 二、必裝套件（30 個）\n\n### 通用神器\n1. **GitLens** — Git 強化（每行誰改的）\n2. **Error Lens** — 錯誤訊息直接顯示在行尾\n3. **Auto Rename Tag** — 改開頭 tag 同步改結尾\n4. **Path Intellisense** — 路徑自動完成\n5. **Better Comments** — 註解依類型上色（TODO、FIXME 等）\n6. **Bracket Pair Colorizer** —（已內建）括號配對上色\n7. **indent-rainbow** — 縮排彩虹色\n8. **Material Icon Theme** — 漂亮的檔案 icon\n9. **TODO Tree** — 收集所有 TODO 註解\n\n### Web 開發\n10. **Prettier** — 自動格式化\n11. **ESLint** — JS/TS lint\n12. **Tailwind CSS IntelliSense** — Tailwind class 自動完成\n13. **PostCSS Language Support**\n14. **CSS Peek** — 點 class 看 CSS\n15. **Live Server** — HTML 即時預覽\n16. **Live Preview** — 微軟的內建預覽\n\n### Framework\n17. **ES7+ React/Redux snippets** — `rfc` Tab 一鍵生 component\n18. **Vue Language Features (Volar)**\n19. **Astro**\n20. **Svelte**\n\n### 資料庫 / API\n21. **SQLTools** — 多資料庫 GUI\n22. **REST Client** — 在編輯器發 HTTP 請求\n23. **Thunder Client** — Postman 替代品\n24. **Database Client** — 視覺化資料庫管理\n\n### Git / 協作\n25. **Conventional Commits** — 提示 commit 訊息格式\n26. **GitHub Pull Requests** — 在 VSCode 內處理 PR\n27. **Code Spell Checker** — 拼字檢查\n\n### AI\n28. **GitHub Copilot** — AI 自動完成（付費但值得）\n29. **Continue** — 開源 AI（可接 Claude / Ollama）\n30. **Codeium** — 免費 Copilot 替代\n\n### 其他\n- **Better TOML**\n- **Markdown All in One**\n- **Markdown Preview Enhanced**\n- **Polacode** — 截圖 code 美化\n\n## 三、必設 settings.json\n\n```json\n{\n  // 編輯\n  \"editor.formatOnSave\": true,\n  \"editor.defaultFormatter\": \"esbenp.prettier-vscode\",\n  \"editor.tabSize\": 2,\n  \"editor.fontSize\": 14,\n  \"editor.fontFamily\": \"'JetBrains Mono', 'Fira Code', monospace\",\n  \"editor.fontLigatures\": true,\n  \"editor.lineHeight\": 1.6,\n  \"editor.minimap.enabled\": false,\n  \"editor.wordWrap\": \"on\",\n  \"editor.smoothScrolling\": true,\n  \"editor.cursorBlinking\": \"smooth\",\n  \"editor.cursorSmoothCaretAnimation\": \"on\",\n  \"editor.linkedEditing\": true,\n  \"editor.bracketPairColorization.enabled\": true,\n  \"editor.guides.bracketPairs\": \"active\",\n  \"editor.suggestSelection\": \"first\",\n\n  // 儲存自動修\n  \"editor.codeActionsOnSave\": {\n    \"source.fixAll.eslint\": \"explicit\",\n    \"source.organizeImports\": \"explicit\"\n  },\n\n  // 檔案\n  \"files.autoSave\": \"onFocusChange\",\n  \"files.trimTrailingWhitespace\": true,\n  \"files.insertFinalNewline\": true,\n\n  // 終端機\n  \"terminal.integrated.fontSize\": 13,\n  \"terminal.integrated.fontFamily\": \"'JetBrains Mono'\",\n  \"terminal.integrated.cursorBlinking\": true,\n\n  // 工作區\n  \"workbench.colorTheme\": \"Default Dark Modern\",\n  \"workbench.iconTheme\": \"material-icon-theme\",\n  \"workbench.startupEditor\": \"none\",\n  \"workbench.editor.enablePreview\": false,\n  \"workbench.tree.indent\": 16,\n\n  // Git\n  \"git.autofetch\": true,\n  \"git.confirmSync\": false,\n  \"git.enableSmartCommit\": true,\n\n  // JS/TS\n  \"typescript.updateImportsOnFileMove.enabled\": \"always\",\n  \"javascript.updateImportsOnFileMove.enabled\": \"always\",\n\n  // 隱藏\n  \"files.exclude\": {\n    \"**/.DS_Store\": true,\n    \"**/node_modules\": true\n  }\n}\n```\n\n## 四、Snippet（用 Tab 觸發）\n\n```json\n// .vscode/typescript.json\n{\n  \"React Function Component\": {\n    \"prefix\": \"rfc\",\n    \"body\": [\n      \"export function ${1:Name}() {\",\n      \"  return (\",\n      \"    <div>\",\n      \"      ${2}\",\n      \"    </div>\",\n      \"  );\",\n      \"}\"\n    ]\n  },\n  \"console log\": {\n    \"prefix\": \"cl\",\n    \"body\": [\"console.log($1);\"]\n  }\n}\n```\n\n## 💡 Tip\n\n- **學 multi-cursor** 是最大效率提升\n- **`⌘P` + 檔名** 比點檔案樹快\n- **`⌘⇧P` Command Palette** 不記快捷鍵時用\n- **Zen Mode** 寫長文用\n",
+      "outline": [
+        {
+          "level": 2,
+          "text": "一、必備快捷鍵（Mac / Windows）"
+        },
+        {
+          "level": 3,
+          "text": "檔案 / 視窗"
+        },
+        {
+          "level": 3,
+          "text": "編輯"
+        },
+        {
+          "level": 3,
+          "text": "Multi-cursor（神技）"
+        },
+        {
+          "level": 3,
+          "text": "程式"
+        },
+        {
+          "level": 3,
+          "text": "分割視窗"
+        },
+        {
+          "level": 2,
+          "text": "二、必裝套件（30 個）"
+        },
+        {
+          "level": 3,
+          "text": "通用神器"
+        },
+        {
+          "level": 3,
+          "text": "Web 開發"
+        },
+        {
+          "level": 3,
+          "text": "Framework"
+        },
+        {
+          "level": 3,
+          "text": "資料庫 / API"
+        },
+        {
+          "level": 3,
+          "text": "Git / 協作"
+        },
+        {
+          "level": 3,
+          "text": "AI"
+        },
+        {
+          "level": 3,
+          "text": "其他"
+        },
+        {
+          "level": 2,
+          "text": "三、必設 settings.json"
+        },
+        {
+          "level": 2,
+          "text": "四、Snippet（用 Tab 觸發）"
+        },
+        {
+          "level": 2,
+          "text": "💡 Tip"
+        }
+      ]
+    },
+    {
+      "id": "64.2",
+      "number": "64.2",
+      "title": "npm / yarn / pnpm 指令對照",
+      "oneLineSummary": "三大 package manager 指令對照、含 monorepo。",
+      "xp": 100,
+      "content": "# npm / yarn / pnpm 完整速查\n\n## 1. 基本指令對照表\n\n| 動作 | npm | yarn | pnpm |\n|---|---|---|---|\n| 初始化 | `npm init -y` | `yarn init -y` | `pnpm init` |\n| 裝全部 | `npm install` | `yarn` | `pnpm install` 或 `pnpm i` |\n| 加套件 | `npm i pkg` | `yarn add pkg` | `pnpm add pkg` |\n| 加 dev | `npm i -D pkg` | `yarn add -D pkg` | `pnpm add -D pkg` |\n| 加全域 | `npm i -g pkg` | `yarn global add pkg` | `pnpm add -g pkg` |\n| 移除 | `npm uninstall pkg` | `yarn remove pkg` | `pnpm remove pkg` |\n| 更新 | `npm update` | `yarn upgrade` | `pnpm update` |\n| 跑 script | `npm run dev` | `yarn dev` | `pnpm dev` |\n| 直接執行 | `npx pkg` | `yarn dlx pkg` | `pnpm dlx pkg` |\n| 列出 | `npm ls` | `yarn list` | `pnpm list` |\n| 看哪個版本 | `npm view pkg version` | `yarn info pkg` | `pnpm view pkg version` |\n| 看 outdated | `npm outdated` | `yarn outdated` | `pnpm outdated` |\n| 看授權 | `npm view pkg license` | 同 | 同 |\n| 清快取 | `npm cache clean --force` | `yarn cache clean` | `pnpm store prune` |\n\n## 2. package.json 必懂\n\n```json\n{\n  \"name\": \"ai-island\",\n  \"version\": \"1.0.0\",\n  \"type\": \"module\",                    // ESM\n  \"private\": true,                      // 防止誤發佈\n\n  // 依賴\n  \"dependencies\": {\n    \"react\": \"^18.0.0\"                  // ^ 同主版本最新\n  },\n  \"devDependencies\": {\n    \"typescript\": \"~5.6.0\"              // ~ 同次版本最新\n  },\n  \"peerDependencies\": {\n    \"react\": \">=18\"                     // 用我的人需要先裝這個\n  },\n  \"optionalDependencies\": { },\n  \"bundledDependencies\": [],\n\n  // Scripts\n  \"scripts\": {\n    \"dev\": \"next dev\",\n    \"build\": \"next build\",\n    \"start\": \"next start\",\n    \"lint\": \"next lint\",\n    \"test\": \"vitest\",\n    \"pre-commit\": \"lint-staged\"\n  },\n\n  // 引擎\n  \"engines\": {\n    \"node\": \">=18\",\n    \"pnpm\": \">=8\"\n  },\n\n  // 入口\n  \"main\": \"dist/index.cjs\",\n  \"module\": \"dist/index.mjs\",\n  \"types\": \"dist/index.d.ts\",\n  \"exports\": {\n    \".\": {\n      \"import\": \"./dist/index.mjs\",\n      \"require\": \"./dist/index.cjs\",\n      \"types\": \"./dist/index.d.ts\"\n    }\n  },\n  \"files\": [\"dist\"],                    // 發佈時包含的檔案\n\n  // 元資料\n  \"description\": \"...\",\n  \"keywords\": [\"next\", \"react\"],\n  \"author\": \"Luffysky\",\n  \"license\": \"MIT\",\n  \"repository\": { \"type\": \"git\", \"url\": \"...\" },\n  \"homepage\": \"...\",\n  \"bugs\": { \"url\": \"...\" }\n}\n```\n\n## 3. Version 範圍\n\n```\n\"1.2.3\"      固定\n\"^1.2.3\"     >=1.2.3 <2.0.0    (預設、最常用)\n\"~1.2.3\"     >=1.2.3 <1.3.0    (更嚴)\n\">=1.2.3\"\n\"1.2.x\"      1.2.0 ~ 1.2.999\n\"*\"          任何版本\n\"latest\"     最新（不固定、有風險）\n\"github:user/repo\"\n\"git+https://...\"\n\"file:../local-pkg\"\n\"workspace:*\"  monorepo 內部包\n```\n\n## 4. Scripts 進階\n\n### 串接\n```json\n{\n  \"scripts\": {\n    \"build:clean\": \"rm -rf dist\",\n    \"build:compile\": \"tsc\",\n    \"build\": \"pnpm build:clean && pnpm build:compile\",\n    \"dev:web\": \"next dev\",\n    \"dev:api\": \"ts-node server.ts\",\n    \"dev\": \"concurrently \\\"pnpm dev:web\\\" \\\"pnpm dev:api\\\"\"\n  }\n}\n```\n\n### Pre / Post hooks（npm/yarn 才有、pnpm 預設不跑）\n```json\n{\n  \"scripts\": {\n    \"prebuild\": \"echo 'before build'\",\n    \"build\": \"...\",\n    \"postbuild\": \"echo 'after'\"\n  }\n}\n```\n\n### Lifecycle scripts\n```\npreinstall / postinstall\nprepublish / prepare / postpublish\nprestart / poststart\npretest / posttest\n```\n\n## 5. pnpm 特色\n\n### Workspace（Monorepo）\n```yaml\n# pnpm-workspace.yaml\npackages:\n  - \"apps/*\"\n  - \"packages/*\"\n```\n\n```bash\n# 在 root 安裝所有\npnpm install\n\n# 在某個 workspace 操作\npnpm --filter web add react\npnpm --filter web dev\npnpm -F web -F api build\n\n# 工作區內部依賴\npnpm --filter web add @repo/ui --workspace\n```\n\n### 全域 store（節省空間）\npnpm 把套件存在 `~/.pnpm-store/`、用 hard link 連到專案、所以多個 project 不會重複佔空間。\n\n### 嚴格依賴\n默認 hoist 較少、import 你沒裝的東西會立即報錯。\n\n## 6. yarn 4 Berry 特色\n\n```bash\n# 啟用\nyarn set version berry\n\n# Plug'n'Play（PnP）：取代 node_modules\n# 啟用後沒有 node_modules 資料夾\n```\n\n## 7. npx / pnpm dlx 用法\n\n```bash\n# 不裝直接跑\nnpx create-next-app my-app\npnpm dlx create-next-app my-app\n\n# 跑特定版本\nnpx cowsay@1 \"hi\"\n\n# 跑 GitHub\nnpx github:user/repo\n```\n\n## 8. 常見問題\n\n### node_modules 太大 / 損壞\n```bash\nrm -rf node_modules\nrm package-lock.json    # 或 yarn.lock / pnpm-lock.yaml\npnpm install\n```\n\n### 切換 Node 版本\n```bash\nnvm install 20\nnvm use 20\nnvm alias default 20\n\n# 或 fnm（更快）\nfnm install 20\nfnm use 20\n```\n\n### lock file 衝突\n1. 接受對方的 lock\n2. `pnpm install` 重產\n\n### Update 大躍進\n```bash\n# 看哪些可以升\npnpm outdated\n\n# 互動式選\npnpm update -i\n\n# 升大版本（major）\npnpm update --latest\n```\n\n### 全域 bin 不在 PATH\n```bash\necho $PATH\n\n# 加 npm global 路徑\nnpm config get prefix    # 看在哪\nexport PATH=$PATH:$(npm config get prefix)/bin\n```\n\n## 💡 推薦\n\n**新 project 用 pnpm**：\n- 快（hard link）\n- 嚴格（防止 phantom deps）\n- 省空間\n- monorepo 第一名\n\n**舊 project 看原本用什麼就繼續**、不要混用。\n",
+      "outline": [
+        {
+          "level": 2,
+          "text": "1. 基本指令對照表"
+        },
+        {
+          "level": 2,
+          "text": "2. package.json 必懂"
+        },
+        {
+          "level": 2,
+          "text": "3. Version 範圍"
+        },
+        {
+          "level": 2,
+          "text": "4. Scripts 進階"
+        },
+        {
+          "level": 3,
+          "text": "串接"
+        },
+        {
+          "level": 3,
+          "text": "Pre / Post hooks（npm/yarn 才有、pnpm 預設不跑）"
+        },
+        {
+          "level": 3,
+          "text": "Lifecycle scripts"
+        },
+        {
+          "level": 2,
+          "text": "5. pnpm 特色"
+        },
+        {
+          "level": 3,
+          "text": "Workspace（Monorepo）"
+        },
+        {
+          "level": 3,
+          "text": "全域 store（節省空間）"
+        },
+        {
+          "level": 3,
+          "text": "嚴格依賴"
+        },
+        {
+          "level": 2,
+          "text": "6. yarn 4 Berry 特色"
+        },
+        {
+          "level": 2,
+          "text": "7. npx / pnpm dlx 用法"
+        },
+        {
+          "level": 2,
+          "text": "8. 常見問題"
+        },
+        {
+          "level": 3,
+          "text": "nodemodules 太大 / 損壞"
+        },
+        {
+          "level": 3,
+          "text": "切換 Node 版本"
+        },
+        {
+          "level": 3,
+          "text": "lock file 衝突"
+        },
+        {
+          "level": 3,
+          "text": "Update 大躍進"
+        },
+        {
+          "level": 3,
+          "text": "全域 bin 不在 PATH"
+        },
+        {
+          "level": 2,
+          "text": "💡 推薦"
+        }
+      ]
+    },
+    {
+      "id": "64.3",
+      "number": "64.3",
+      "title": "Docker / Docker Compose 速查",
+      "oneLineSummary": "容器化必備指令、Dockerfile、compose、優化。",
+      "xp": 100,
+      "content": "# Docker / Docker Compose 速查\n\n## 1. 基本指令\n\n```bash\n# 映像（Image）\ndocker pull nginx                   # 下載\ndocker images                       # 列映像\ndocker rmi <image>                  # 刪映像\ndocker build -t myapp .             # 建映像\ndocker build -t myapp:v1 .          # 含 tag\ndocker tag old new                  # 改 tag\ndocker push username/myapp          # 上傳 Docker Hub\n\n# 容器（Container）\ndocker run nginx                              # 跑（前景）\ndocker run -d nginx                           # 跑（背景）\ndocker run -d -p 8080:80 nginx                # 對應 port\ndocker run -d -p 8080:80 -v ./data:/data nginx  # mount volume\ndocker run -d -e ENV=prod nginx               # env\ndocker run --rm -it node bash                 # 互動 + 結束自動刪\ndocker run --name myapp nginx                 # 命名\ndocker run -d --restart always nginx          # 重啟政策\n\n# 看\ndocker ps                          # 跑著的容器\ndocker ps -a                       # 含停掉的\ndocker logs <id>                   # 看 log\ndocker logs -f <id>                # 追蹤\ndocker stats                       # 即時資源\n\n# 操作\ndocker stop <id>\ndocker start <id>\ndocker restart <id>\ndocker rm <id>                     # 刪\ndocker rm -f <id>                  # 強制\ndocker exec -it <id> bash          # 進去容器\ndocker cp file <id>:/path          # 複製進去\n\n# 清理\ndocker container prune             # 清停的容器\ndocker image prune                 # 清沒用映像\ndocker volume prune                # 清 volume\ndocker system prune -a             # 全清（小心）\n```\n\n## 2. Dockerfile 完整範例\n\n### Next.js App\n```dockerfile\n# 階段 1：建置\nFROM node:20-alpine AS builder\nWORKDIR /app\n\n# 先複製 package（利用 cache）\nCOPY package.json pnpm-lock.yaml ./\nRUN npm install -g pnpm && pnpm install --frozen-lockfile\n\n# 再複製其他\nCOPY . .\nRUN pnpm build\n\n# 階段 2：執行（更小）\nFROM node:20-alpine AS runner\nWORKDIR /app\n\nENV NODE_ENV=production\nRUN addgroup -g 1001 nodejs && adduser -S nextjs -u 1001\n\nCOPY --from=builder /app/public ./public\nCOPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./\nCOPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static\n\nUSER nextjs\nEXPOSE 3000\n\nCMD [\"node\", \"server.js\"]\n```\n\n### Python Flask\n```dockerfile\nFROM python:3.12-slim\n\nWORKDIR /app\nCOPY requirements.txt .\nRUN pip install --no-cache-dir -r requirements.txt\n\nCOPY . .\nEXPOSE 5000\n\nCMD [\"gunicorn\", \"--bind\", \"0.0.0.0:5000\", \"app:app\"]\n```\n\n### Go\n```dockerfile\nFROM golang:1.22-alpine AS builder\nWORKDIR /app\nCOPY go.mod go.sum ./\nRUN go mod download\nCOPY . .\nRUN CGO_ENABLED=0 go build -o app .\n\nFROM alpine:latest\nRUN apk add --no-cache ca-certificates\nWORKDIR /app\nCOPY --from=builder /app/app .\nEXPOSE 8080\nCMD [\"./app\"]\n```\n\n## 3. Dockerfile 指令參考\n\n| 指令 | 用途 |\n|---|---|\n| `FROM image:tag` | 基礎映像 |\n| `WORKDIR /path` | 工作目錄 |\n| `COPY src dst` | 複製檔案 |\n| `ADD src dst` | 複製（含 URL / tar 解壓）|\n| `RUN cmd` | build 時跑 |\n| `CMD [\"cmd\"]` | 容器啟動指令（可被 docker run 覆蓋）|\n| `ENTRYPOINT [\"cmd\"]` | 容器啟動指令（不可覆蓋）|\n| `ENV KEY=value` | 環境變數 |\n| `ARG KEY=value` | build 時參數 |\n| `EXPOSE 3000` | 文件用、實際要 -p |\n| `VOLUME /data` | 標記為 volume |\n| `USER nextjs` | 用什麼 user 跑 |\n| `LABEL key=value` | 標籤 |\n| `HEALTHCHECK CMD ...` | 健康檢查 |\n\n## 4. 多階段建置（Multi-stage）\n\n```dockerfile\n# 階段 1：依賴\nFROM node:20-alpine AS deps\nWORKDIR /app\nCOPY package.json pnpm-lock.yaml ./\nRUN npm i -g pnpm && pnpm install --prod --frozen-lockfile\n\n# 階段 2：建置\nFROM node:20-alpine AS builder\nWORKDIR /app\nCOPY --from=deps /app/node_modules ./node_modules\nCOPY . .\nRUN npm i -g pnpm && pnpm build\n\n# 階段 3：執行\nFROM node:20-alpine AS runner\nWORKDIR /app\nENV NODE_ENV=production\nCOPY --from=builder /app/dist ./dist\nCOPY --from=builder /app/node_modules ./node_modules\nCOPY package.json ./\nCMD [\"node\", \"dist/index.js\"]\n```\n\n## 5. docker-compose.yml\n\n```yaml\nservices:\n  web:\n    build:\n      context: .\n      dockerfile: Dockerfile\n      target: runner          # multi-stage 指定 target\n      args:\n        NODE_VERSION: 20\n    image: myapp:latest\n    container_name: myapp-web\n    ports:\n      - \"3000:3000\"\n    environment:\n      - NODE_ENV=production\n      - DATABASE_URL=postgres://...\n    env_file:\n      - .env\n    volumes:\n      - ./uploads:/app/uploads\n      - app-data:/app/data\n    depends_on:\n      db:\n        condition: service_healthy\n    restart: unless-stopped\n    healthcheck:\n      test: [\"CMD\", \"curl\", \"-f\", \"http://localhost:3000/health\"]\n      interval: 30s\n      timeout: 10s\n      retries: 3\n\n  db:\n    image: postgres:16-alpine\n    environment:\n      POSTGRES_USER: app\n      POSTGRES_PASSWORD: secret\n      POSTGRES_DB: appdb\n    volumes:\n      - postgres-data:/var/lib/postgresql/data\n    ports:\n      - \"5432:5432\"\n    healthcheck:\n      test: [\"CMD-SHELL\", \"pg_isready -U app\"]\n      interval: 10s\n\n  redis:\n    image: redis:7-alpine\n    volumes:\n      - redis-data:/data\n\n  nginx:\n    image: nginx:alpine\n    ports:\n      - \"80:80\"\n      - \"443:443\"\n    volumes:\n      - ./nginx.conf:/etc/nginx/nginx.conf:ro\n      - ./certs:/etc/nginx/certs:ro\n    depends_on:\n      - web\n\nvolumes:\n  postgres-data:\n  redis-data:\n  app-data:\n\nnetworks:\n  default:\n    name: myapp-network\n```\n\n### Compose 指令\n```bash\ndocker compose up                  # 啟動（前景）\ndocker compose up -d               # 背景\ndocker compose up --build          # 重 build\ndocker compose down                # 停 + 移除\ndocker compose down -v             # 連 volume 一起刪\ndocker compose ps\ndocker compose logs -f web\ndocker compose exec web bash\ndocker compose restart web\ndocker compose pull                # 拉最新 image\ndocker compose build               # build\ndocker compose run --rm web npm test  # 跑一次性指令\n```\n\n## 6. .dockerignore（重要）\n\n```\nnode_modules\n.next\ndist\n.git\n.env\n.env.local\n*.log\nREADME.md\n.vscode\n.idea\n.DS_Store\ncoverage\n.cache\n```\n\n## 7. 優化 image size\n\n```dockerfile\n# ❌ 不好（big）\nFROM node:20\n\n# ✅ 好（alpine 小很多）\nFROM node:20-alpine\n\n# ✅ 更好（distroless 最小）\nFROM gcr.io/distroless/nodejs20-debian12\n\n# 多階段 + 只複製需要的\nCOPY --from=builder /app/dist ./dist\n\n# 合併 RUN（少 layer）\nRUN apt-get update && \\\n    apt-get install -y curl && \\\n    rm -rf /var/lib/apt/lists/*\n\n# 用 --no-cache-dir / --frozen-lockfile\nRUN pnpm install --frozen-lockfile --prod\n```\n\n## 8. 常見 patterns\n\n### Build args\n```bash\ndocker build --build-arg VERSION=1.2.3 -t myapp .\n```\n```dockerfile\nARG VERSION\nENV APP_VERSION=$VERSION\n```\n\n### Secrets（不要寫進 image）\n```bash\n# build 時\ndocker build --secret id=mysecret,src=secret.txt .\n```\n```dockerfile\nRUN --mount=type=secret,id=mysecret cat /run/secrets/mysecret\n```\n\n### 健康檢查\n```dockerfile\nHEALTHCHECK --interval=30s --timeout=3s --retries=3 \\\n  CMD curl -f http://localhost:3000/health || exit 1\n```\n\n## 💡 Tip\n\n- **永遠寫 .dockerignore**（不寫 image 會很大）\n- **alpine 比 ubuntu 小 10 倍**\n- **build cache** = 把不常變的（package.json）放前面\n- **multi-stage build** 是 production 必備\n- **絕對不要把 secret 寫進 Dockerfile**\n- **container 設計成無狀態**（state 放 volume / DB）\n",
+      "outline": [
+        {
+          "level": 2,
+          "text": "1. 基本指令"
+        },
+        {
+          "level": 2,
+          "text": "2. Dockerfile 完整範例"
+        },
+        {
+          "level": 3,
+          "text": "Next.js App"
+        },
+        {
+          "level": 3,
+          "text": "Python Flask"
+        },
+        {
+          "level": 3,
+          "text": "Go"
+        },
+        {
+          "level": 2,
+          "text": "3. Dockerfile 指令參考"
+        },
+        {
+          "level": 2,
+          "text": "4. 多階段建置（Multi-stage）"
+        },
+        {
+          "level": 2,
+          "text": "5. docker-compose.yml"
+        },
+        {
+          "level": 3,
+          "text": "Compose 指令"
+        },
+        {
+          "level": 2,
+          "text": "6. .dockerignore（重要）"
+        },
+        {
+          "level": 2,
+          "text": "7. 優化 image size"
+        },
+        {
+          "level": 2,
+          "text": "8. 常見 patterns"
+        },
+        {
+          "level": 3,
+          "text": "Build args"
+        },
+        {
+          "level": 3,
+          "text": "Secrets（不要寫進 image）"
+        },
+        {
+          "level": 3,
+          "text": "健康檢查"
+        },
+        {
+          "level": 2,
+          "text": "💡 Tip"
+        }
+      ]
+    },
+    {
+      "id": "64.4",
+      "number": "64.4",
+      "title": "正則表達式（RegExp）完整 cheatsheet",
+      "oneLineSummary": "字元類、量詞、群組、先行斷言、30 個常用 pattern。",
+      "xp": 100,
+      "content": "# 正則表達式完整速查\n\n## 1. 基本字元\n\n| | 意義 |\n|---|---|\n| `.` | 任意字元（除換行）|\n| `\\d` | 數字 `[0-9]` |\n| `\\D` | 非數字 |\n| `\\w` | 字 / 數字 / 底線 `[A-Za-z0-9_]` |\n| `\\W` | 非字 |\n| `\\s` | 空白（空格、tab、換行）|\n| `\\S` | 非空白 |\n| `\\b` | 字邊界 |\n| `\\B` | 非字邊界 |\n| `\\n` `\\t` `\\r` | 換行、tab、回車 |\n\n## 2. 字元類 [...]\n\n```\n[abc]          a 或 b 或 c\n[^abc]         非 a b c\n[a-z]          a 到 z\n[A-Z]          A 到 Z\n[0-9]          0 到 9\n[a-zA-Z0-9]    字母 + 數字\n[\\u4e00-\\u9fa5]  中文範圍\n```\n\n## 3. 量詞（Quantifiers）\n\n| | 意義 |\n|---|---|\n| `*` | 0 或多次 |\n| `+` | 1 或多次 |\n| `?` | 0 或 1 次 |\n| `{3}` | 剛好 3 次 |\n| `{3,}` | 3 次以上 |\n| `{3,5}` | 3 到 5 次 |\n| `*?` `+?` `??` `{m,n}?` | 非貪婪（lazy）|\n\n### 貪婪 vs 非貪婪\n\n```\n\"<a><b>\"\n\n/<.+>/        匹配 \"<a><b>\"（貪婪、吃最多）\n/<.+?>/       匹配 \"<a>\"（非貪婪、吃最少）\n```\n\n## 4. 錨點\n\n```\n^         行首\n$         行尾\n^abc      開頭是 abc\nabc$      結尾是 abc\n^abc$     完全等於 abc\n```\n\n## 5. 群組與引用\n\n```\n(abc)         捕捉群組（第 1 組）\n(?:abc)       非捕捉（不抓進結果）\n(?<name>abc)  命名群組\n\\1            引用第 1 組\n\\k<name>      引用命名群組\n```\n\n範例：找重複字\n```\n/(\\w+)\\s+\\1/    匹配 \"hello hello\"\n```\n\n## 6. 選擇與分支\n\n```\na|b           a 或 b\n(cat|dog)     cat 或 dog\n```\n\n## 7. 先行 / 後行斷言\n\n```\n(?=...)       正向先行：後面是 ...\n(?!...)       負向先行：後面不是 ...\n(?<=...)      正向後行：前面是 ...\n(?<!...)      負向後行：前面不是 ...\n```\n\n範例：\n```\n/\\d+(?=元)/       匹配 \"100\"（後面是「元」）\n/(?<=\\$)\\d+/     匹配 \"100\"（前面是 $）\n```\n\n## 8. Flags\n\n```\ni     不分大小寫\ng     全部匹配（不只第一個）\nm     多行（^$ 對每行）\ns     . 包含換行\nu     Unicode\ny     粘性（從上次位置開始）\n```\n\n```js\n/hello/gi.test('Hello')   // true\n```\n\n## 9. JavaScript 用法\n\n```js\n// test\n/pattern/.test(str)\n\n// match\nstr.match(/pattern/)          // 含 g：[配對1, 配對2, ...]\nstr.match(/pattern/g)\nstr.matchAll(/pattern/g)      // 含 group 細節\n\n// replace\nstr.replace(/old/g, 'new')\nstr.replace(/(\\w+) (\\w+)/, '$2 $1')   // 用群組\nstr.replace(/(\\w+)/g, (m) => m.toUpperCase())  // 用 function\n\n// split\nstr.split(/\\s+/)              // 多個空白切\n\n// search\nstr.search(/pattern/)         // 回傳 index\n```\n\n## 10. 30 個實用 pattern\n\n### 驗證類\n\n```js\n// Email\n/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/\n\n// 台灣手機（09開頭、10 碼）\n/^09\\d{8}$/\n\n// 台灣身分證\n/^[A-Z][12]\\d{8}$/\n\n// URL（簡單）\n/^https?:\\/\\/.+/\n\n// URL（嚴格）\n/^https?:\\/\\/[\\w.-]+(:\\d+)?(\\/[^\\s]*)?$/\n\n// IPv4\n/^((25[0-5]|2[0-4]\\d|[01]?\\d\\d?)\\.){3}(25[0-5]|2[0-4]\\d|[01]?\\d\\d?)$/\n\n// 日期 YYYY-MM-DD\n/^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$/\n\n// 時間 HH:MM\n/^([01]\\d|2[0-3]):[0-5]\\d$/\n\n// 密碼（8+ 字、含大小寫數字）\n/^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$/\n\n// 中文（繁體 + 簡體）\n/[\\u4e00-\\u9fa5\\u3400-\\u4dbf]+/\n\n// 只允許英文+數字（用於 username）\n/^[a-zA-Z0-9_]{3,20}$/\n\n// 信用卡（16 位）\n/^\\d{4}[\\s-]?\\d{4}[\\s-]?\\d{4}[\\s-]?\\d{4}$/\n\n// 統一編號\n/^\\d{8}$/\n\n// HEX 顏色\n/^#([0-9a-f]{3}|[0-9a-f]{6})$/i\n```\n\n### 萃取類\n\n```js\n// 取所有 URL\ntext.match(/https?:\\/\\/[^\\s]+/g)\n\n// 取所有 hashtag\ntext.match(/#\\w+/g)\n\n// 取所有 @mention\ntext.match(/@\\w+/g)\n\n// 取所有 email\ntext.match(/[\\w.-]+@[\\w.-]+\\.\\w+/g)\n\n// 取所有電話\ntext.match(/\\b09\\d{8}\\b/g)\n\n// 取數字\ntext.match(/\\d+/g)\n\n// 取浮點數\ntext.match(/\\d+\\.\\d+/g)\n\n// 取 markdown 連結 [text](url)\ntext.match(/\\[([^\\]]+)\\]\\(([^)]+)\\)/g)\n```\n\n### 替換類\n\n```js\n// 駝峰轉 kebab：myVariable → my-variable\nstr.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()\n\n// kebab 轉駝峰：my-variable → myVariable\nstr.replace(/-([a-z])/g, (_, c) => c.toUpperCase())\n\n// 去 HTML tags\nstr.replace(/<[^>]+>/g, '')\n\n// 去多餘空白\nstr.replace(/\\s+/g, ' ').trim()\n\n// 千分位\nstr.replace(/\\B(?=(\\d{3})+(?!\\d))/g, ',')\n// 1234567 → 1,234,567\n\n// 去除多行註解\ncode.replace(/\\/\\*[\\s\\S]*?\\*\\//g, '')\n\n// 去除單行註解（小心會誤刪 URL）\ncode.replace(/\\/\\/.*$/gm, '')\n\n// 標題加 anchor\nmd.replace(/^(#+)\\s+(.+)$/gm, (_, h, t) => `${h} ${t}<a id=\"${t.toLowerCase().replace(/\\s+/g, '-')}\">`)\n```\n\n## 11. 常見坑\n\n### 1. `.` 不含換行\n```js\n\"a\\nb\".match(/a.b/)   // null\n\"a\\nb\".match(/a.b/s)  // ['a\\nb']\n```\n\n### 2. 量詞預設貪婪\n```js\n\"<a><b>\".match(/<.+>/)    // ['<a><b>']\n\"<a><b>\".match(/<.+?>/)   // ['<a>']\n```\n\n### 3. 跳脫\n特殊字元要跳脫：`. * + ? ( ) [ ] { } \\ | / ^ $`\n```js\n/\\./.test('1.5')   // true\n/./.test('1.5')    // true（任意字元、結果一樣但意義不同）\n```\n\n### 4. global flag 影響 test\n```js\nconst re = /abc/g;\nre.test('abc')      // true\nre.test('abc')      // false（lastIndex 跑掉）\n```\n\n## 12. 工具\n\n- **regex101.com**：最強線上測試 + 解釋\n- **regexr.com**：互動學習\n- **rubular.com**：Ruby 風格\n- **regex-vis.com**：視覺化\n\n## 💡 Tip\n\n- **不要硬背語法**、用 regex101 邊試邊寫\n- **複雜 regex 加註解 `(?x)`**（讓人看得懂）\n- **效能**：避免 catastrophic backtracking（如 `(a+)+`）\n- **驗證 email 不要太嚴**（RFC 標準允許很多奇怪格式）\n- **常用 pattern 抽出來** const、命名清楚\n",
+      "outline": [
+        {
+          "level": 2,
+          "text": "1. 基本字元"
+        },
+        {
+          "level": 2,
+          "text": "2. 字元類 [...]"
+        },
+        {
+          "level": 2,
+          "text": "3. 量詞（Quantifiers）"
+        },
+        {
+          "level": 3,
+          "text": "貪婪 vs 非貪婪"
+        },
+        {
+          "level": 2,
+          "text": "4. 錨點"
+        },
+        {
+          "level": 2,
+          "text": "5. 群組與引用"
+        },
+        {
+          "level": 2,
+          "text": "6. 選擇與分支"
+        },
+        {
+          "level": 2,
+          "text": "7. 先行 / 後行斷言"
+        },
+        {
+          "level": 2,
+          "text": "8. Flags"
+        },
+        {
+          "level": 2,
+          "text": "9. JavaScript 用法"
+        },
+        {
+          "level": 2,
+          "text": "10. 30 個實用 pattern"
+        },
+        {
+          "level": 3,
+          "text": "驗證類"
+        },
+        {
+          "level": 3,
+          "text": "萃取類"
+        },
+        {
+          "level": 3,
+          "text": "替換類"
+        },
+        {
+          "level": 2,
+          "text": "11. 常見坑"
+        },
+        {
+          "level": 3,
+          "text": "1. . 不含換行"
+        },
+        {
+          "level": 3,
+          "text": "2. 量詞預設貪婪"
+        },
+        {
+          "level": 3,
+          "text": "3. 跳脫"
+        },
+        {
+          "level": 3,
+          "text": "4. global flag 影響 test"
+        },
+        {
+          "level": 2,
+          "text": "12. 工具"
+        },
+        {
+          "level": 2,
+          "text": "💡 Tip"
+        }
+      ]
+    }
+  ]
+}

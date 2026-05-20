@@ -1,0 +1,1516 @@
+{
+  "id": 17,
+  "slug": "sql",
+  "stage": 3,
+  "title": "SQL 資料庫",
+  "subtitle": "MySQL / PG / Supabase",
+  "icon": "database",
+  "description": "SQL 資料庫：MySQL / PG / Supabase",
+  "status": "published",
+  "difficulty": "intermediate",
+  "prerequisites": [
+    16
+  ],
+  "estimatedHours": 14,
+  "outcomes": [
+    "SELECT / INSERT / UPDATE / DELETE 操作",
+    "5 種 JOIN 全會",
+    "設計合理表結構",
+    "用索引把查詢從 10 秒到 0.01 秒",
+    "Transaction 保證一致性",
+    "在 Supabase 10 分鐘架後端"
+  ],
+  "lessons": [
+    {
+      "id": "17.1",
+      "number": "LESSON 17.1",
+      "title": "什麼是 SQL？為什麼學了 50 年還在用？",
+      "oneLineSummary": "SQL 就是「跟資料庫說話的語言」—跟 DB 說「給我所有使用者」「加新訂單」「改這欄」。",
+      "analogy": "想像圖書館管理員—你說「1990 年後出版、作者姓陳、評分 4 星以上的小說」、他立刻搬出來。SQL 就是你跟資料庫的對話方式。1970 年發明、50 年後 Google / 蝦皮 / 銀行還在用—因為「找資料」的數學原理沒變過。",
+      "content": "## SQL 的歷史\n\nSQL = **Structured Query Language**（結構化查詢語言）。發明者 Edgar Codd（IBM）在 1970 年提出「關聯式模型」、用**數學集合論**處理資料、革命整個資訊產業。\n\n## 為什麼 2026 還在學 SQL\n\n- **標準化**：學會 MySQL 的 SELECT、PostgreSQL / SQLite / Oracle 全會、跨平台\n- **需求量超大**：台灣後端職缺 90% 要求 SQL、不會 SQL = 後端不會走\n- **不會被淘汰**：NoSQL 紅了 10 年、企業還是 SQL 為主、雙軌並行\n- **AI 也用**：Vector DB（pgvector）建在 PostgreSQL 上、AI 應用基礎\n\n## 第一個 SQL 範例\n\n```sql\nSELECT name, email\nFROM users\nWHERE age >= 18\nORDER BY created_at DESC\nLIMIT 10;\n```\n\n看起來像英文吧？這就是 SQL 的設計哲學—**讀起來像話、所以好學**。\n\n## 2026 主流 SQL 資料庫\n\n| 名稱 | 特色 | 適合 |\n|---|---|---|\n| **MySQL** | 最熱門 | WordPress / 蝦皮 / Facebook |\n| **PostgreSQL** | 功能最強 | 企業 / Indie / AI 應用 |\n| **SQLite** | 單檔案、不用 server | 行動 App / 學習 |\n| **Supabase** | PG 雲端版 + 認證 + Realtime | Indie SaaS 神器 |",
+      "tip": {
+        "type": "business",
+        "text": "接案時客戶常問「你會 SQL 嗎」—不會直接砍掉一半案子。WP 案要會 MySQL、Indie SaaS 要會 PG / Supabase—兩個學一個、剩下查文件 10 分鐘就會。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "17.1.auto",
+          "language": "sql",
+          "title": "試試看",
+          "initialCode": "SELECT name, email\nFROM users\nWHERE age >= 18\nORDER BY created_at DESC\nLIMIT 10;",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "找一個你身邊的例子、用「什麼是 SQL？為什麼學了 50 年還在用？」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "SQL 的歷史"
+        },
+        {
+          "level": 2,
+          "text": "為什麼 2026 還在學 SQL"
+        },
+        {
+          "level": 2,
+          "text": "第一個 SQL 範例"
+        },
+        {
+          "level": 2,
+          "text": "2026 主流 SQL 資料庫"
+        }
+      ]
+    },
+    {
+      "id": "17.2",
+      "number": "LESSON 17.2",
+      "title": "安裝 PostgreSQL 與第一次連線",
+      "oneLineSummary": "裝 PostgreSQL 5 分鐘、連 DB 試 SELECT 1—走出第一步。",
+      "analogy": "像買新手機—不是學功能、是先開機通電。裝好 PG、能跑 `SELECT 1` 回 `1`，你就已經是 DB 工程師 0.01 級。",
+      "content": "## 三種安裝方式\n\n### 方式 1：Docker（推薦、最乾淨）\n```bash\ndocker run -d \\\n  --name postgres \\\n  -e POSTGRES_PASSWORD=secret \\\n  -p 5432:5432 \\\n  -v pg_data:/var/lib/postgresql/data \\\n  postgres:17\n```\n\n### 方式 2：Homebrew（Mac）\n```bash\nbrew install postgresql@17\nbrew services start postgresql@17\n```\n\n### 方式 3：直接用 Supabase（最快、不用本地裝）\n- 去 [supabase.com](https://supabase.com) 註冊\n- New Project → 等 2 分鐘起好\n- 拿 DB URL 直接連\n\n## 第一次連線\n\n```bash\n# CLI 工具\npsql -h localhost -U postgres -d postgres\n\n# 進去後：\npostgres=# SELECT 1;\n ?column?\n----------\n        1\npostgres=# \\q   -- 離開\n```\n\n## 推薦 GUI 工具（2026）\n\n- **TablePlus**（Mac/Win、收費但超美）\n- **DBeaver**（免費跨平台）\n- **pgAdmin**（PG 官方）\n- **Supabase Studio**（網頁版、SaaS）",
+      "tip": {
+        "type": "practical",
+        "text": "初學千萬別用 root / 沒密碼跑 DB。Docker 起 PG 一定要設密碼、port 別開到公網—被掃到就是 ransomware 大餐。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "17.2.auto",
+          "language": "bash",
+          "title": "試試看",
+          "initialCode": "docker run -d \\\n  --name postgres \\\n  -e POSTGRES_PASSWORD=secret \\\n  -p 5432:5432 \\\n  -v pg_data:/var/lib/postgresql/data \\\n  postgres:17",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "三種安裝方式"
+        },
+        {
+          "level": 3,
+          "text": "方式 1：Docker（推薦、最乾淨）"
+        },
+        {
+          "level": 3,
+          "text": "方式 2：Homebrew（Mac）"
+        },
+        {
+          "level": 3,
+          "text": "方式 3：直接用 Supabase（最快、不用本地裝）"
+        },
+        {
+          "level": 2,
+          "text": "第一次連線"
+        },
+        {
+          "level": 2,
+          "text": "推薦 GUI 工具（2026）"
+        }
+      ]
+    },
+    {
+      "id": "17.3",
+      "number": "LESSON 17.3",
+      "title": "資料表（Table）：SQL 的基本單位",
+      "oneLineSummary": "Table = Excel 表格—有欄位、有資料列、每格存一個值。",
+      "analogy": "Google Sheets 用過吧？SQL table 一模一樣—第一列是欄位名稱（id / name / age）、之後每列是一筆資料。差別在：SQL 嚴格規定每欄的型別。",
+      "content": "## 建一個 users 表\n\n```sql\nCREATE TABLE users (\n  id SERIAL PRIMARY KEY,\n  name VARCHAR(100) NOT NULL,\n  email VARCHAR(255) UNIQUE NOT NULL,\n  age INTEGER,\n  created_at TIMESTAMP DEFAULT NOW()\n);\n```\n\n## 逐行解釋\n- `id SERIAL PRIMARY KEY`：自動遞增整數、唯一識別\n- `name VARCHAR(100) NOT NULL`：字串、最多 100 字、不能空\n- `email UNIQUE NOT NULL`：唯一、不能空\n- `age INTEGER`：整數、可空\n- `created_at TIMESTAMP DEFAULT NOW()`：時間戳、預設現在\n\n## SQL 常用資料型別\n\n- **整數**：`INT`, `SERIAL`, `BIGINT`\n- **字串**：`VARCHAR(n)`, `TEXT`, `CHAR(n)`\n- **數字**：`DECIMAL(p,s)`（金額用！）, `FLOAT`\n- **布林**：`BOOLEAN`\n- **日期時間**：`DATE`, `TIMESTAMP`, `TIMESTAMPTZ`\n- **進階**：`JSON`, `JSONB`（PG）, `UUID`, `ARRAY`\n\n## 為什麼金額不用 FLOAT\nFLOAT 是浮點數、計算有**四捨五入誤差**—`1.1 + 2.2 = 3.3000000004`。金額一律用 `DECIMAL(10, 2)`。",
+      "tip": {
+        "type": "warning",
+        "text": "VARCHAR(255) 是 MySQL 慣例、PG 沒這限制。emoji 一個字佔 4 byte、utf8mb4 編碼下 VARCHAR(255) 是字元數、不是 byte。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "17.3.auto",
+          "language": "sql",
+          "title": "試試看",
+          "initialCode": "CREATE TABLE users (\n  id SERIAL PRIMARY KEY,\n  name VARCHAR(100) NOT NULL,\n  email VARCHAR(255) UNIQUE NOT NULL,\n  age INTEGER,\n  created_at TIMESTAMP DEFAULT NOW()\n);",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "建一個 users 表"
+        },
+        {
+          "level": 2,
+          "text": "逐行解釋"
+        },
+        {
+          "level": 2,
+          "text": "SQL 常用資料型別"
+        },
+        {
+          "level": 2,
+          "text": "為什麼金額不用 FLOAT"
+        }
+      ]
+    },
+    {
+      "id": "17.4",
+      "number": "LESSON 17.4",
+      "title": "建表進階：CHECK / UNIQUE / FOREIGN KEY 約束",
+      "oneLineSummary": "約束（Constraints）= 在 schema 層防止髒資料、好過 application 才檢查。",
+      "analogy": "像保險絲—不是等用了才檢查、是事先約定好「年齡只能 0-150」「email 不能重複」「user_id 必須存在 users」。DB 自己會擋。",
+      "content": "## 完整約束範例\n\n```sql\nCREATE TABLE orders (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,\n  amount DECIMAL(10,2) NOT NULL CHECK (amount > 0),\n  status TEXT NOT NULL DEFAULT 'pending'\n    CHECK (status IN ('pending','paid','shipped','cancelled')),\n  email TEXT NOT NULL CHECK (email LIKE '%@%'),\n  created_at TIMESTAMPTZ DEFAULT NOW(),\n  updated_at TIMESTAMPTZ DEFAULT NOW(),\n  UNIQUE (user_id, status)  -- 複合唯一\n);\n```\n\n## 5 種約束\n\n- **PRIMARY KEY**：唯一識別、不能 NULL\n- **FOREIGN KEY**（REFERENCES）：指向另一個表\n- **UNIQUE**：值不能重複\n- **NOT NULL**：必填\n- **CHECK**：自訂條件、像 `amount > 0`\n\n## ON DELETE 行為\n\n```sql\nON DELETE CASCADE     -- 連刪（小心用）\nON DELETE SET NULL    -- 設為 NULL\nON DELETE RESTRICT    -- 禁止刪除有關聯的（預設）\n```\n\n## ALTER TABLE（事後加約束）\n\n```sql\nALTER TABLE users ADD COLUMN phone VARCHAR(20);\nALTER TABLE users ADD CONSTRAINT phone_format CHECK (phone ~ '^09[0-9]{8}$');\nALTER TABLE users DROP COLUMN phone;\n```",
+      "tip": {
+        "type": "practical",
+        "text": "從 day 1 就加 CHECK 約束、不要寄望 app 層永遠擋。半年後新工程師寫 raw SQL 繞過 ORM、髒資料就進去了—DB 層是最後一道防線。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "17.4.auto",
+          "language": "sql",
+          "title": "試試看",
+          "initialCode": "CREATE TABLE orders (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,\n  amount DECIMAL(10,2) NOT NULL CHECK (amount > 0),\n  status TEXT NOT NULL DEFAULT 'pending'\n    CHECK (status IN ('pending','paid','shipped','cancelled')),\n  email TEXT NOT NULL CHECK (email LIKE '%@%'),\n  created_at TIMESTAMPTZ DEFAULT NOW(),\n  updated_at TIMESTAMPTZ DEFAULT NOW(),\n  UNIQUE (user_id, status)  -- 複合唯一\n);",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "挑一個你做過的舊專案、用本節「建表進階：CHECK / UNIQUE / FOREIGN KEY 約束」介紹的進階技術重構它。",
+        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（amount > 0）通常在效能 / 維護性 / 擴展性卡住時才登場。",
+        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "完整約束範例"
+        },
+        {
+          "level": 2,
+          "text": "5 種約束"
+        },
+        {
+          "level": 2,
+          "text": "ON DELETE 行為"
+        },
+        {
+          "level": 2,
+          "text": "ALTER TABLE（事後加約束）"
+        }
+      ]
+    },
+    {
+      "id": "17.5",
+      "number": "LESSON 17.5",
+      "title": "SELECT 基本：讀資料的瑞士刀",
+      "oneLineSummary": "SELECT 是「給我資料」—99% 操作在用它、學會等於學會 SQL 一半。",
+      "analogy": "像跟店員點餐：「大冰拿鐵半糖去冰」—店員聽完精準給你。SELECT 一樣：「給我 users 表、年齡 > 18、按註冊日期、前 10 筆」—DB 精準回應。",
+      "content": "## 基本 SELECT\n```sql\n-- 全部欄位（學習用、production 別用）\nSELECT * FROM users;\n\n-- 指定欄位（推薦、效能好）\nSELECT id, name, email FROM users;\n\n-- 別名（AS 可省略）\nSELECT name AS 姓名, price * 1.05 AS 含稅價 FROM products;\n\n-- 算術\nSELECT id, price, quantity, price * quantity AS total FROM orders;\n\n-- DISTINCT 去重\nSELECT DISTINCT country FROM users;\n```\n\n## SELECT 7 大子句執行順序\nSQL 寫的順序跟跑的順序不一樣：\n```\n寫的順序：  SELECT → FROM → WHERE → GROUP BY → HAVING → ORDER BY → LIMIT\n跑的順序：  FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT\n```\n\n**懂這個你 SQL 就升一級**—為什麼 WHERE 不能用別名、HAVING 可以用 aggregate—都是因為執行順序。",
+      "tip": {
+        "type": "pro",
+        "text": "永遠別用 SELECT * production code。拉太多欄位、走不到 Index Only Scan、network 浪費、且新增欄位時可能炸。明確列出需要的欄位是專業最低標。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "17.5.auto",
+          "language": "sql",
+          "title": "試試看",
+          "initialCode": "-- 全部欄位（學習用、production 別用）\nSELECT * FROM users;\n\n-- 指定欄位（推薦、效能好）\nSELECT id, name, email FROM users;\n\n-- 別名（AS 可省略）\nSELECT name AS 姓名, price * 1.05 AS 含稅價 FROM products;\n\n-- 算術\nSELECT id, price, quantity, price * quantity AS total FROM orders;\n\n-- DISTINCT 去重\nSELECT DISTINCT country FROM users;",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "基本 SELECT"
+        },
+        {
+          "level": 2,
+          "text": "SELECT 7 大子句執行順序"
+        }
+      ]
+    },
+    {
+      "id": "17.6",
+      "number": "LESSON 17.6",
+      "title": "WHERE 過濾：精準找到要的資料",
+      "oneLineSummary": "WHERE = 「給我符合條件的」—AND / OR / IN / LIKE / BETWEEN / NULL 全在這。",
+      "analogy": "像 Google 搜尋的進階過濾—「2020 後、中文、發在台灣、含 AI 關鍵字」。WHERE 是 SQL 版本、語法更精準。",
+      "content": "## 比較運算子\n```sql\nSELECT * FROM users WHERE age > 18;\nSELECT * FROM users WHERE age != 25;          -- 或 <>\nSELECT * FROM users WHERE age >= 18 AND age <= 65;\nSELECT * FROM users WHERE name = '小明';\n```\n\n## 邏輯運算子\n```sql\nSELECT * FROM users\nWHERE age >= 18\n  AND country = 'TW'\n  AND (city = '台北' OR city = '台中');\n```\n\n## IN / NOT IN（多選）\n```sql\nSELECT * FROM orders\nWHERE status IN ('pending', 'processing', 'shipped');\n\nSELECT * FROM users\nWHERE country NOT IN ('TW', 'HK', 'JP');\n```\n\n## BETWEEN（範圍、含頭尾）\n```sql\nSELECT * FROM orders\nWHERE created_at BETWEEN '2026-01-01' AND '2026-12-31';\n\nSELECT * FROM products\nWHERE price BETWEEN 100 AND 1000;\n```\n\n## LIKE（模糊比對）\n```sql\nSELECT * FROM users WHERE email LIKE '%@gmail.com';\nSELECT * FROM users WHERE name LIKE '王_';     -- _ 是單字元\nSELECT * FROM users WHERE name LIKE '張%';     -- 開頭是張\nSELECT * FROM users WHERE bio ILIKE '%python%'; -- PG 不分大小寫\n```\n\n## NULL 處理（重要！）\n```sql\n-- ❌ 錯：永遠回空\nSELECT * FROM users WHERE deleted_at = NULL;\n\n-- ✅ 正確\nSELECT * FROM users WHERE deleted_at IS NULL;\nSELECT * FROM users WHERE deleted_at IS NOT NULL;\n```\n\n## EXISTS / NOT EXISTS（搭配子查詢）\n```sql\n-- 找下過訂單的使用者\nSELECT * FROM users u\nWHERE EXISTS (SELECT 1 FROM orders o WHERE o.user_id = u.id);\n```",
+      "tip": {
+        "type": "pro",
+        "text": "`LIKE %xxx%` 前綴 % 走不到索引、大表巨慢。需要全文搜尋時用 PG 內建 `to_tsvector` + GIN index、或 Elasticsearch / Meilisearch。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "17.6.auto",
+          "language": "sql",
+          "title": "試試看",
+          "initialCode": "SELECT * FROM users WHERE age > 18;\nSELECT * FROM users WHERE age != 25;          -- 或 <>\nSELECT * FROM users WHERE age >= 18 AND age <= 65;\nSELECT * FROM users WHERE name = '小明';",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "比較運算子"
+        },
+        {
+          "level": 2,
+          "text": "邏輯運算子"
+        },
+        {
+          "level": 2,
+          "text": "IN / NOT IN（多選）"
+        },
+        {
+          "level": 2,
+          "text": "BETWEEN（範圍、含頭尾）"
+        },
+        {
+          "level": 2,
+          "text": "LIKE（模糊比對）"
+        },
+        {
+          "level": 2,
+          "text": "NULL 處理（重要！）"
+        },
+        {
+          "level": 2,
+          "text": "EXISTS / NOT EXISTS（搭配子查詢）"
+        }
+      ]
+    },
+    {
+      "id": "17.7",
+      "number": "LESSON 17.7",
+      "title": "ORDER BY / LIMIT / OFFSET：排序與分頁",
+      "oneLineSummary": "ORDER BY 排序、LIMIT 取幾筆、OFFSET 跳過幾筆—API 分頁的基礎。",
+      "analogy": "像 Google 搜尋結果—按相關度排序（ORDER BY）、一頁 10 筆（LIMIT 10）、第 3 頁就是 OFFSET 20。",
+      "content": "## ORDER BY\n```sql\nSELECT * FROM articles ORDER BY created_at DESC;\nSELECT * FROM products ORDER BY category ASC, price DESC;\nSELECT * FROM users ORDER BY name COLLATE \"zh-TW-x-icu\";  -- 中文排序\nSELECT * FROM products ORDER BY price DESC NULLS LAST;    -- NULL 排最後\n```\n\n## LIMIT / OFFSET 分頁\n```sql\n-- 第 1 頁\nSELECT * FROM products ORDER BY id LIMIT 10 OFFSET 0;\n-- 第 2 頁\nSELECT * FROM products ORDER BY id LIMIT 10 OFFSET 10;\n-- 第 N 頁\nSELECT * FROM products ORDER BY id LIMIT 10 OFFSET (N - 1) * 10;\n```\n\n## OFFSET 的效能問題（重要！）\n\n`OFFSET 1000000` 看起來只跳過 100 萬筆、實際 DB 還是要算出前 100 萬筆才能跳—**超大表會慢死**。\n\n## 解法：Cursor Pagination（推薦）\n```sql\n-- 第一頁\nSELECT * FROM articles WHERE id > 0 ORDER BY id LIMIT 10;\n-- 第二頁：用上一頁最後一筆的 id\nSELECT * FROM articles WHERE id > 10 ORDER BY id LIMIT 10;\n-- 第三頁\nSELECT * FROM articles WHERE id > 20 ORDER BY id LIMIT 10;\n```\n\n走索引、O(log n)、不管第幾頁都一樣快。Twitter / Instagram 都用這套。",
+      "tip": {
+        "type": "performance",
+        "text": "永遠別在 production 寫 `LIMIT 10 OFFSET 1000000`—1000 萬筆的表要算 30 秒以上。用 cursor pagination（keyset pagination）取代。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "17.7.auto",
+          "language": "sql",
+          "title": "試試看",
+          "initialCode": "SELECT * FROM articles ORDER BY created_at DESC;\nSELECT * FROM products ORDER BY category ASC, price DESC;\nSELECT * FROM users ORDER BY name COLLATE \"zh-TW-x-icu\";  -- 中文排序\nSELECT * FROM products ORDER BY price DESC NULLS LAST;    -- NULL 排最後",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "ORDER BY"
+        },
+        {
+          "level": 2,
+          "text": "LIMIT / OFFSET 分頁"
+        },
+        {
+          "level": 2,
+          "text": "OFFSET 的效能問題（重要！）"
+        },
+        {
+          "level": 2,
+          "text": "解法：Cursor Pagination（推薦）"
+        }
+      ]
+    },
+    {
+      "id": "17.8",
+      "number": "LESSON 17.8",
+      "title": "GROUP BY 聚合：統計報表的基礎",
+      "oneLineSummary": "GROUP BY = 「分組統計」—COUNT / SUM / AVG / MIN / MAX 是它的左右手。",
+      "analogy": "像 Excel 樞紐分析—不是看每筆訂單、是看「各國總營收」「各月平均」「各客戶最大訂單」。GROUP BY 就是 SQL 的樞紐表。",
+      "content": "## 5 大聚合函數\n```sql\nSELECT\n  COUNT(*) AS 訂單數,\n  COUNT(DISTINCT user_id) AS 客戶數,\n  SUM(amount) AS 總營收,\n  AVG(amount) AS 平均客單,\n  MAX(amount) AS 最大訂單,\n  MIN(amount) AS 最小訂單\nFROM orders;\n```\n\n## GROUP BY 基本\n```sql\n-- 各國有多少使用者\nSELECT country, COUNT(*)\nFROM users\nGROUP BY country\nORDER BY COUNT(*) DESC;\n\n-- 各分類各月總營收（多欄分組）\nSELECT\n  DATE_TRUNC('month', created_at) AS month,\n  category,\n  SUM(amount) AS revenue\nFROM orders\nGROUP BY month, category\nORDER BY month, revenue DESC;\n```\n\n## HAVING：對 GROUP 後過濾\n```sql\n-- 找出訂單數 > 100 的國家\nSELECT country, COUNT(*) AS n\nFROM users\nGROUP BY country\nHAVING COUNT(*) > 100;\n\n-- ⚠️ WHERE 過濾「個別資料」、HAVING 過濾「分組後」\n```\n\n## 進階：FILTER（條件聚合）\n```sql\n-- 各國的「總人數」跟「成年人數」\nSELECT\n  country,\n  COUNT(*) AS total,\n  COUNT(*) FILTER (WHERE age >= 18) AS adults\nFROM users\nGROUP BY country;\n```\n\n## ROLLUP / CUBE（小計總計）\n```sql\nSELECT category, region, SUM(amount)\nFROM orders\nGROUP BY ROLLUP (category, region);\n-- 出 「各 cate 各 region」+「各 cate 小計」+「總計」\n```",
+      "tip": {
+        "type": "pro",
+        "text": "SELECT 中除了 GROUP BY 的欄位、其他都必須是聚合函數—違反這規則是新手最常的錯。FILTER（PG）比 CASE WHEN 寫起來簡潔 5 倍。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "17.8.auto",
+          "language": "sql",
+          "title": "試試看",
+          "initialCode": "SELECT\n  COUNT(*) AS 訂單數,\n  COUNT(DISTINCT user_id) AS 客戶數,\n  SUM(amount) AS 總營收,\n  AVG(amount) AS 平均客單,\n  MAX(amount) AS 最大訂單,\n  MIN(amount) AS 最小訂單\nFROM orders;",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "5 大聚合函數"
+        },
+        {
+          "level": 2,
+          "text": "GROUP BY 基本"
+        },
+        {
+          "level": 2,
+          "text": "HAVING：對 GROUP 後過濾"
+        },
+        {
+          "level": 2,
+          "text": "進階：FILTER（條件聚合）"
+        },
+        {
+          "level": 2,
+          "text": "ROLLUP / CUBE（小計總計）"
+        }
+      ]
+    },
+    {
+      "id": "17.9",
+      "number": "LESSON 17.9",
+      "title": "Window Functions：超越 GROUP BY 的進階分析",
+      "oneLineSummary": "Window function = 「在保留原資料的前提下做聚合」—算排名、移動平均、累積值的神器。",
+      "analogy": "GROUP BY 把多筆變一筆（粗）、Window function 保留每筆但加上分析結果（細）。寫 BI / 報表 / 排行榜必用。",
+      "content": "## ROW_NUMBER / RANK / DENSE_RANK\n```sql\nSELECT\n  name,\n  score,\n  ROW_NUMBER() OVER (ORDER BY score DESC) AS row_num,\n  RANK()       OVER (ORDER BY score DESC) AS rank,\n  DENSE_RANK() OVER (ORDER BY score DESC) AS dense_rank\nFROM students;\n\n-- 分數: 100, 95, 95, 90\n-- ROW_NUMBER: 1, 2, 3, 4\n-- RANK:       1, 2, 2, 4  ← 跳號\n-- DENSE_RANK: 1, 2, 2, 3  ← 不跳號\n```\n\n## PARTITION BY（分組內排名）\n```sql\n-- 每個科系內前 3 名\nSELECT * FROM (\n  SELECT\n    name, dept, gpa,\n    ROW_NUMBER() OVER (PARTITION BY dept ORDER BY gpa DESC) AS rnk\n  FROM students\n) t\nWHERE rnk <= 3;\n```\n\n## LAG / LEAD（前後筆比較）\n```sql\n-- 比較今天跟昨天的銷售\nSELECT\n  date,\n  sales,\n  LAG(sales, 1) OVER (ORDER BY date) AS prev_day,\n  sales - LAG(sales, 1) OVER (ORDER BY date) AS diff\nFROM daily_sales;\n```\n\n## 累積值（cumulative sum）\n```sql\nSELECT\n  date,\n  sales,\n  SUM(sales) OVER (ORDER BY date) AS cumulative_sales\nFROM daily_sales;\n```\n\n## 移動平均\n```sql\nSELECT\n  date,\n  price,\n  AVG(price) OVER (\n    ORDER BY date\n    ROWS BETWEEN 6 PRECEDING AND CURRENT ROW\n  ) AS ma_7day\nFROM stock_prices;\n```",
+      "tip": {
+        "type": "pro",
+        "text": "Window functions 是 SQL 中級 / 高級的分水嶺。會寫的人薪水多 30%、寫 BI / 報表 / 量化分析必備。MySQL 8+ / PG 都支援。"
+      },
+      "xp": 15,
+      "playgrounds": [
+        {
+          "key": "17.9.auto",
+          "language": "sql",
+          "title": "試試看",
+          "initialCode": "SELECT\n  name,\n  score,\n  ROW_NUMBER() OVER (ORDER BY score DESC) AS row_num,\n  RANK()       OVER (ORDER BY score DESC) AS rank,\n  DENSE_RANK() OVER (ORDER BY score DESC) AS dense_rank\nFROM students;\n\n-- 分數: 100, 95, 95, 90\n-- ROW_NUMBER: 1, 2, 3, 4\n-- RANK:       1, 2, 2, 4  ← 跳號\n-- DENSE_RANK: 1, 2, 2, 3  ← 不跳號",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "挑一個你做過的舊專案、用本節「Window Functions：超越 GROUP BY 的進階分析」介紹的進階技術重構它。",
+        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
+        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "ROWNUMBER / RANK / DENSERANK"
+        },
+        {
+          "level": 2,
+          "text": "PARTITION BY（分組內排名）"
+        },
+        {
+          "level": 2,
+          "text": "LAG / LEAD（前後筆比較）"
+        },
+        {
+          "level": 2,
+          "text": "累積值（cumulative sum）"
+        },
+        {
+          "level": 2,
+          "text": "移動平均"
+        }
+      ]
+    },
+    {
+      "id": "17.10",
+      "number": "LESSON 17.10",
+      "title": "CTE 跟子查詢：把複雜 SQL 拆解可讀",
+      "oneLineSummary": "CTE（WITH）= 「子查詢的命名版」—複雜 SQL 一層層寫、像 Python function。",
+      "analogy": "像寫程式不能一行 1000 字、要分 function。CTE 把巨型 SQL 拆成可讀片段、debug + 維護爽 10 倍。",
+      "content": "## 普通子查詢（縮排深 = 痛苦）\n```sql\nSELECT name, total FROM (\n  SELECT user_id, SUM(amount) AS total FROM orders\n  WHERE created_at > NOW() - INTERVAL '30 days'\n  GROUP BY user_id\n) t JOIN users u ON t.user_id = u.id\nWHERE total > 10000;\n```\n\n## CTE 版（讀起來像中文）\n```sql\nWITH recent_orders AS (\n  SELECT user_id, SUM(amount) AS total\n  FROM orders\n  WHERE created_at > NOW() - INTERVAL '30 days'\n  GROUP BY user_id\n)\nSELECT u.name, r.total\nFROM recent_orders r\nJOIN users u ON r.user_id = u.id\nWHERE r.total > 10000;\n```\n\n## 多層 CTE\n```sql\nWITH\n  active_users AS (\n    SELECT id FROM users WHERE last_login > NOW() - INTERVAL '7 days'\n  ),\n  their_orders AS (\n    SELECT o.* FROM orders o JOIN active_users a ON o.user_id = a.id\n  ),\n  top_categories AS (\n    SELECT category, SUM(amount) AS total\n    FROM their_orders\n    GROUP BY category\n    ORDER BY total DESC\n    LIMIT 5\n  )\nSELECT * FROM top_categories;\n```\n\n## Recursive CTE（樹狀資料）\n```sql\n-- 找出某員工的所有下屬（包含下屬的下屬）\nWITH RECURSIVE subordinates AS (\n  SELECT id, name, manager_id\n  FROM employees\n  WHERE id = 1  -- 起點\n  UNION ALL\n  SELECT e.id, e.name, e.manager_id\n  FROM employees e\n  JOIN subordinates s ON e.manager_id = s.id\n)\nSELECT * FROM subordinates;\n```",
+      "tip": {
+        "type": "pro",
+        "text": "CTE 比子查詢可讀性高、可重用、PG 還支援 MATERIALIZED 提示 query plan。複雜 SQL 永遠先寫 CTE—未來 6 個月的你會感謝今天的你。"
+      },
+      "xp": 15,
+      "playgrounds": [
+        {
+          "key": "17.10.auto",
+          "language": "sql",
+          "title": "試試看",
+          "initialCode": "SELECT name, total FROM (\n  SELECT user_id, SUM(amount) AS total FROM orders\n  WHERE created_at > NOW() - INTERVAL '30 days'\n  GROUP BY user_id\n) t JOIN users u ON t.user_id = u.id\nWHERE total > 10000;",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "普通子查詢（縮排深 = 痛苦）"
+        },
+        {
+          "level": 2,
+          "text": "CTE 版（讀起來像中文）"
+        },
+        {
+          "level": 2,
+          "text": "多層 CTE"
+        },
+        {
+          "level": 2,
+          "text": "Recursive CTE（樹狀資料）"
+        }
+      ]
+    },
+    {
+      "id": "17.11",
+      "number": "LESSON 17.11",
+      "title": "INSERT：新增資料的 5 種寫法",
+      "oneLineSummary": "INSERT = 「加新資料」—單筆 / 多筆 / UPSERT / RETURNING / FROM SELECT。",
+      "analogy": "像 Excel 加列—單筆、多筆、複製貼上一片。SQL 的 INSERT 更精準、能批量、能拿 ID 回來。",
+      "content": "## 單筆 INSERT\n```sql\nINSERT INTO users (name, email, age) VALUES ('小明', 'ming@x.com', 25);\n```\n\n## 多筆（一次寫多筆、效能好）\n```sql\nINSERT INTO users (name, email) VALUES\n  ('小華', 'hua@x.com'),\n  ('小美', 'mei@x.com'),\n  ('小強', 'qiang@x.com');\n```\n\n## RETURNING（拿到剛建的資料、PG 特有）\n```sql\nINSERT INTO users (name) VALUES ('新人')\nRETURNING id, created_at, name;\n-- 回傳：插入的整筆、不用再 SELECT\n```\n\n## UPSERT（INSERT OR UPDATE）\n```sql\nINSERT INTO users (id, name, email)\nVALUES (1, '小明更新', 'ming@x.com')\nON CONFLICT (id)\nDO UPDATE SET name = EXCLUDED.name, email = EXCLUDED.email;\n\n-- 衝突時忽略\nON CONFLICT (id) DO NOTHING;\n```\n\n## INSERT ... SELECT（從另一個表複製）\n```sql\nINSERT INTO archived_users (id, name, email)\nSELECT id, name, email FROM users WHERE deleted_at IS NOT NULL;\n```",
+      "tip": {
+        "type": "performance",
+        "text": "批量插入 100 筆別寫 100 個 INSERT—寫一個 INSERT 帶 100 個 VALUES、快 10-50 倍。Bulk insert 大量資料用 `COPY`（PG）/ `LOAD DATA`（MySQL）。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "17.11.auto",
+          "language": "sql",
+          "title": "試試看",
+          "initialCode": "INSERT INTO users (name, email, age) VALUES ('小明', 'ming@x.com', 25);",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "單筆 INSERT"
+        },
+        {
+          "level": 2,
+          "text": "多筆（一次寫多筆、效能好）"
+        },
+        {
+          "level": 2,
+          "text": "RETURNING（拿到剛建的資料、PG 特有）"
+        },
+        {
+          "level": 2,
+          "text": "UPSERT（INSERT OR UPDATE）"
+        },
+        {
+          "level": 2,
+          "text": "INSERT ... SELECT（從另一個表複製）"
+        }
+      ]
+    },
+    {
+      "id": "17.12",
+      "number": "LESSON 17.12",
+      "title": "UPDATE：修改資料的安全寫法",
+      "oneLineSummary": "UPDATE = 「改資料」—永遠記得加 WHERE、不然全表洗白。",
+      "analogy": "像給文章批改紅字—改錯改地方就糟。UPDATE 沒 WHERE 等於整本書改、業界發生過無數次「我忘了加 WHERE」事故。",
+      "content": "## 基本 UPDATE\n```sql\nUPDATE users SET age = 26 WHERE id = 1;\n\n-- 多欄一起改\nUPDATE users\nSET name = '小明', age = 26, updated_at = NOW()\nWHERE id = 1;\n```\n\n## 批量 UPDATE\n```sql\n-- 全電子產品漲 5%\nUPDATE products\nSET price = price * 1.05\nWHERE category = 'electronics';\n\n-- 條件 + JOIN（UPDATE FROM、PG 寫法）\nUPDATE orders o\nSET status = 'cancelled'\nFROM users u\nWHERE o.user_id = u.id AND u.banned = TRUE;\n```\n\n## RETURNING（看到改了什麼、PG）\n```sql\nUPDATE products\nSET stock = stock - 1\nWHERE id = 42\nRETURNING id, name, stock;\n```\n\n## 防錯：先 SELECT 看影響範圍\n```sql\n-- 跑 UPDATE 前一定先這樣確認\nSELECT count(*) FROM users WHERE id = 1;\n-- → 確認是 1、不是 100 萬、再 UPDATE\n```\n\n## 安全包裝（Transaction）\n```sql\nBEGIN;\nUPDATE users SET email = 'new@x.com' WHERE id = 1;\nSELECT * FROM users WHERE id = 1;  -- 看結果\n-- 如果對：COMMIT;\n-- 如果錯：ROLLBACK;\n```",
+      "tip": {
+        "type": "security",
+        "text": "**永遠別在 production CLI 跑沒 WHERE 的 UPDATE**。每個工程師生涯都至少出過一次「忘加 WHERE 洗掉一整張表」、寫成日記掛在牆上。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "17.12.auto",
+          "language": "sql",
+          "title": "試試看",
+          "initialCode": "UPDATE users SET age = 26 WHERE id = 1;\n\n-- 多欄一起改\nUPDATE users\nSET name = '小明', age = 26, updated_at = NOW()\nWHERE id = 1;",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "基本 UPDATE"
+        },
+        {
+          "level": 2,
+          "text": "批量 UPDATE"
+        },
+        {
+          "level": 2,
+          "text": "RETURNING（看到改了什麼、PG）"
+        },
+        {
+          "level": 2,
+          "text": "防錯：先 SELECT 看影響範圍"
+        },
+        {
+          "level": 2,
+          "text": "安全包裝（Transaction）"
+        }
+      ]
+    },
+    {
+      "id": "17.13",
+      "number": "LESSON 17.13",
+      "title": "DELETE：刪除資料 / 軟刪除 vs 硬刪除",
+      "oneLineSummary": "DELETE = 「刪資料」—但 production 推薦軟刪除（用 deleted_at 標記）、不真的 DELETE。",
+      "analogy": "像丟垃圾 vs 放回收—硬刪除真的丟掉、救不回；軟刪除放回收桶、能還原。GDPR / 訴訟 / 還原都靠軟刪除。",
+      "content": "## 硬刪除（DELETE）\n```sql\nDELETE FROM users WHERE id = 1;\n\n-- 條件刪除\nDELETE FROM logs WHERE created_at < NOW() - INTERVAL '30 days';\n\n-- ⚠️ 沒 WHERE = 全表清空（小心！）\nDELETE FROM users;  -- 千萬別！\n\n-- TRUNCATE = 更快的全表清（不寫 log）\nTRUNCATE TABLE logs;\n```\n\n## 軟刪除（推薦 production）\n```sql\n-- 加 deleted_at 欄位\nALTER TABLE users ADD COLUMN deleted_at TIMESTAMPTZ;\n\n-- 「刪除」其實是 UPDATE\nUPDATE users SET deleted_at = NOW() WHERE id = 1;\n\n-- 查詢要過濾\nSELECT * FROM users WHERE deleted_at IS NULL;\n\n-- 還原\nUPDATE users SET deleted_at = NULL WHERE id = 1;\n```\n\n## 用 View 自動過濾\n```sql\nCREATE VIEW active_users AS\nSELECT * FROM users WHERE deleted_at IS NULL;\n\n-- 之後永遠查 active_users、不用每次加 WHERE\nSELECT * FROM active_users WHERE age > 18;\n```\n\n## 軟刪除 vs 硬刪除取捨\n\n| 面向 | 軟刪除 | 硬刪除 |\n|---|---|---|\n| 還原 | ✅ 容易 | ❌ 不可能 |\n| 法規（GDPR） | ⚠️ 要定期清 | ✅ 直接消失 |\n| 空間 | ⚠️ 累積 | ✅ 立刻釋放 |\n| 業務分析 | ✅ 有歷史 | ❌ 無紀錄 |",
+      "tip": {
+        "type": "business",
+        "text": "GDPR / 台灣 PDPA 規定使用者要求「刪除個資」時、軟刪除不夠—真的要 DELETE。實務做法：30 天內可還原（軟刪）、30 天後 cron 真 DELETE。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "17.13.auto",
+          "language": "sql",
+          "title": "試試看",
+          "initialCode": "DELETE FROM users WHERE id = 1;\n\n-- 條件刪除\nDELETE FROM logs WHERE created_at < NOW() - INTERVAL '30 days';\n\n-- ⚠️ 沒 WHERE = 全表清空（小心！）\nDELETE FROM users;  -- 千萬別！\n\n-- TRUNCATE = 更快的全表清（不寫 log）\nTRUNCATE TABLE logs;",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "找一個你身邊的例子、用「DELETE：刪除資料 / 軟刪除 vs 硬刪除」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "硬刪除（DELETE）"
+        },
+        {
+          "level": 2,
+          "text": "軟刪除（推薦 production）"
+        },
+        {
+          "level": 2,
+          "text": "用 View 自動過濾"
+        },
+        {
+          "level": 2,
+          "text": "軟刪除 vs 硬刪除取捨"
+        }
+      ]
+    },
+    {
+      "id": "17.14",
+      "number": "LESSON 17.14",
+      "title": "INNER JOIN：把兩個表合起來最常見的方式",
+      "oneLineSummary": "INNER JOIN = 「兩邊都有的才出現」—80% 場景用這個。",
+      "analogy": "像配對遊戲—兩張卡都翻到才算配對。orders 有 user_id 但要看「誰下的單」、跟 users JOIN 起來才有 name。",
+      "content": "## 設定情境\n```\nusers 表：\n  id=1, name=小明\n  id=2, name=小華\n  id=3, name=小美\n\norders 表：\n  id=1, user_id=1, amount=100\n  id=2, user_id=1, amount=200\n  id=3, user_id=2, amount=150\n  id=4, user_id=99（沒對應 user）, amount=50\n```\n\n## INNER JOIN（兩邊都有才出現）\n```sql\nSELECT u.name, o.amount\nFROM users u\nINNER JOIN orders o ON u.id = o.user_id;\n\n-- 結果：\n-- 小明 | 100\n-- 小明 | 200\n-- 小華 | 150\n-- （小美沒訂單、user_id=99 沒對應使用者—都不出現）\n```\n\n## 多表 JOIN\n```sql\nSELECT u.name, o.amount, p.name AS product\nFROM orders o\nJOIN users u ON o.user_id = u.id\nJOIN order_items oi ON oi.order_id = o.id\nJOIN products p ON p.id = oi.product_id;\n```\n\n## JOIN 條件 vs WHERE\n```sql\n-- ✅ 在 ON 過濾（推薦）\nSELECT * FROM users u JOIN orders o\n  ON u.id = o.user_id AND o.status = 'paid';\n\n-- 也可以但效能稍差\nSELECT * FROM users u JOIN orders o ON u.id = o.user_id\n  WHERE o.status = 'paid';\n```",
+      "tip": {
+        "type": "pro",
+        "text": "每張表給短別名（u / o / p）—寫 SQL 不會手痛、可讀性還更好。慣例：表名第一個字母小寫。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "17.14.auto",
+          "language": "sql",
+          "title": "試試看",
+          "initialCode": "SELECT u.name, o.amount\nFROM users u\nINNER JOIN orders o ON u.id = o.user_id;\n\n-- 結果：\n-- 小明 | 100\n-- 小明 | 200\n-- 小華 | 150\n-- （小美沒訂單、user_id=99 沒對應使用者—都不出現）",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "設定情境"
+        },
+        {
+          "level": 2,
+          "text": "INNER JOIN（兩邊都有才出現）"
+        },
+        {
+          "level": 2,
+          "text": "多表 JOIN"
+        },
+        {
+          "level": 2,
+          "text": "JOIN 條件 vs WHERE"
+        }
+      ]
+    },
+    {
+      "id": "17.15",
+      "number": "LESSON 17.15",
+      "title": "LEFT JOIN：找出沒下單的客戶",
+      "oneLineSummary": "LEFT JOIN = 「左邊全保留、右邊沒對應補 NULL」—找「缺什麼」的神器。",
+      "analogy": "像點名—左邊（學生名單）每個都念到、右邊（出席紀錄）沒打勾的補空白。「沒出席的學生」一目了然。",
+      "content": "## LEFT JOIN 範例\n```sql\nSELECT u.name, o.amount\nFROM users u\nLEFT JOIN orders o ON u.id = o.user_id;\n\n-- 結果（小美也出現、amount 是 NULL）：\n-- 小明 | 100\n-- 小明 | 200\n-- 小華 | 150\n-- 小美 | NULL  ← 沒訂單也出現\n```\n\n## 找「沒下單的使用者」（經典題！）\n```sql\nSELECT u.*\nFROM users u\nLEFT JOIN orders o ON u.id = o.user_id\nWHERE o.id IS NULL;\n\n-- 「LEFT JOIN + WHERE 右邊 IS NULL」= 找出左邊有但右邊沒的\n-- → 面試 80% 機率出現\n```\n\n## 計算「每個使用者下了幾筆訂單」（含 0 筆）\n```sql\nSELECT\n  u.name,\n  COUNT(o.id) AS order_count,\n  COALESCE(SUM(o.amount), 0) AS total\nFROM users u\nLEFT JOIN orders o ON u.id = o.user_id\nGROUP BY u.id, u.name\nORDER BY total DESC;\n\n-- COALESCE(x, 0)：x 是 NULL 時回 0\n-- 沒訂單的小美也會出現、total = 0\n```\n\n## RIGHT JOIN（很少用）\n跟 LEFT 對調—實務上會把左右換、繼續用 LEFT JOIN。\n\n## FULL OUTER JOIN\n兩邊都不漏。MySQL 不支援、PG 支援。",
+      "tip": {
+        "type": "pro",
+        "text": "「LEFT JOIN + WHERE x IS NULL」是 SQL 最常被問的面試題、簡稱 anti-join 找差集。會這招你 SQL 中級沒問題。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "17.15.auto",
+          "language": "sql",
+          "title": "試試看",
+          "initialCode": "SELECT u.name, o.amount\nFROM users u\nLEFT JOIN orders o ON u.id = o.user_id;\n\n-- 結果（小美也出現、amount 是 NULL）：\n-- 小明 | 100\n-- 小明 | 200\n-- 小華 | 150\n-- 小美 | NULL  ← 沒訂單也出現",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "LEFT JOIN 範例"
+        },
+        {
+          "level": 2,
+          "text": "找「沒下單的使用者」（經典題！）"
+        },
+        {
+          "level": 2,
+          "text": "計算「每個使用者下了幾筆訂單」（含 0 筆）"
+        },
+        {
+          "level": 2,
+          "text": "RIGHT JOIN（很少用）"
+        },
+        {
+          "level": 2,
+          "text": "FULL OUTER JOIN"
+        }
+      ]
+    },
+    {
+      "id": "17.16",
+      "number": "LESSON 17.16",
+      "title": "JOIN 進階：CROSS JOIN / SELF JOIN / LATERAL",
+      "oneLineSummary": "JOIN 不只 INNER 跟 LEFT—還有產生組合、自我關聯、橫向關聯三種進階。",
+      "analogy": "INNER / LEFT 是基本招、CROSS 是「兩邊全配對」、SELF 是「自己跟自己 JOIN」、LATERAL 是「右邊用左邊每行的值」。",
+      "content": "## CROSS JOIN（笛卡兒積）\n```sql\nSELECT s.size, c.color\nFROM sizes s\nCROSS JOIN colors c;\n\n-- 3 個尺寸 × 4 個顏色 = 12 個組合\n```\n\n## SELF JOIN（自己跟自己 JOIN）\n```sql\n-- 找出主管 + 下屬的對應\nSELECT\n  e.name AS employee,\n  m.name AS manager\nFROM employees e\nLEFT JOIN employees m ON e.manager_id = m.id;\n```\n\n## LATERAL JOIN（PG 特有、超強）\n```sql\n-- 每個 user 的最新 3 筆訂單\nSELECT u.name, o.*\nFROM users u\nCROSS JOIN LATERAL (\n  SELECT * FROM orders WHERE user_id = u.id\n  ORDER BY created_at DESC LIMIT 3\n) o;\n```\n\nLATERAL = 右邊可以引用左邊每行的值（普通 JOIN 不行）。\n\n## JOIN 寫法選擇\n- 簡單關聯：INNER JOIN\n- 找缺漏：LEFT JOIN + IS NULL\n- 自我關聯：SELF JOIN\n- 每個 user 的 top N：LATERAL JOIN",
+      "tip": {
+        "type": "pro",
+        "text": "LATERAL 是 PG 大絕招、解決「每個 user 的 top N 筆訂單」這種題目—不用 LATERAL 要寫 window function 還更複雜。MySQL 沒有 LATERAL。"
+      },
+      "xp": 15,
+      "playgrounds": [
+        {
+          "key": "17.16.auto",
+          "language": "sql",
+          "title": "試試看",
+          "initialCode": "SELECT s.size, c.color\nFROM sizes s\nCROSS JOIN colors c;\n\n-- 3 個尺寸 × 4 個顏色 = 12 個組合",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "挑一個你做過的舊專案、用本節「JOIN 進階：CROSS JOIN / SELF JOIN / LATERAL」介紹的進階技術重構它。",
+        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
+        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "CROSS JOIN（笛卡兒積）"
+        },
+        {
+          "level": 2,
+          "text": "SELF JOIN（自己跟自己 JOIN）"
+        },
+        {
+          "level": 2,
+          "text": "LATERAL JOIN（PG 特有、超強）"
+        },
+        {
+          "level": 2,
+          "text": "JOIN 寫法選擇"
+        }
+      ]
+    },
+    {
+      "id": "17.17",
+      "number": "LESSON 17.17",
+      "title": "UNION / INTERSECT / EXCEPT：集合運算",
+      "oneLineSummary": "UNION = 合併、INTERSECT = 交集、EXCEPT = 差集—把多個 SELECT 結果做集合運算。",
+      "analogy": "像 Venn 圖—兩個圓圈的合 / 交 / 差。多個 query 結果想合起來、不是 JOIN、是 UNION。",
+      "content": "## UNION（合併、去重）\n```sql\nSELECT name, email FROM customers\nUNION\nSELECT name, email FROM suppliers;\n-- 兩邊資料合起來、重複的只出現一次\n```\n\n## UNION ALL（合併不去重、快很多）\n```sql\nSELECT name FROM customers\nUNION ALL\nSELECT name FROM suppliers;\n-- 100 萬筆 union all 比 union 快 5-10 倍\n```\n\n## INTERSECT（交集）\n```sql\nSELECT email FROM customers\nINTERSECT\nSELECT email FROM suppliers;\n-- 同時是客戶也是供應商的 email\n```\n\n## EXCEPT（差集）\n```sql\nSELECT email FROM customers\nEXCEPT\nSELECT email FROM blacklist;\n-- 在 customers 但不在 blacklist\n```\n\n## 規則\n- 每個 SELECT 欄位數要一樣\n- 對應欄位型別要相容\n- ORDER BY / LIMIT 放最後一個 SELECT 之後",
+      "tip": {
+        "type": "performance",
+        "text": "UNION 預設去重、會排序整個結果集、慢。不需要去重時永遠用 UNION ALL、效能差很大。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "17.17.auto",
+          "language": "sql",
+          "title": "試試看",
+          "initialCode": "SELECT name, email FROM customers\nUNION\nSELECT name, email FROM suppliers;\n-- 兩邊資料合起來、重複的只出現一次",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "UNION（合併、去重）"
+        },
+        {
+          "level": 2,
+          "text": "UNION ALL（合併不去重、快很多）"
+        },
+        {
+          "level": 2,
+          "text": "INTERSECT（交集）"
+        },
+        {
+          "level": 2,
+          "text": "EXCEPT（差集）"
+        },
+        {
+          "level": 2,
+          "text": "規則"
+        }
+      ]
+    },
+    {
+      "id": "17.18",
+      "number": "LESSON 17.18",
+      "title": "子查詢：SELECT 中的 SELECT",
+      "oneLineSummary": "子查詢 = 「裡面再寫一個 SELECT」—WHERE / FROM / SELECT 都能放。",
+      "analogy": "像問題裡有問題—「找出薪水比平均高的員工」要先算平均、再比較。子查詢就是「先算這個、再用」的寫法。",
+      "content": "## WHERE 子句中的子查詢\n```sql\n-- 薪水高於平均的員工\nSELECT name, salary\nFROM employees\nWHERE salary > (SELECT AVG(salary) FROM employees);\n\n-- 找出有訂單的使用者\nSELECT * FROM users\nWHERE id IN (SELECT DISTINCT user_id FROM orders);\n\n-- EXISTS（通常比 IN 快）\nSELECT * FROM users u\nWHERE EXISTS (SELECT 1 FROM orders WHERE user_id = u.id);\n```\n\n## FROM 子句中的子查詢（derived table）\n```sql\nSELECT category, avg_price FROM (\n  SELECT category, AVG(price) AS avg_price\n  FROM products\n  GROUP BY category\n) AS cat_avgs\nWHERE avg_price > 1000;\n```\n\n## SELECT 子句中的子查詢\n```sql\nSELECT\n  u.name,\n  (SELECT COUNT(*) FROM orders WHERE user_id = u.id) AS order_count\nFROM users u;\n```\n\n## Correlated vs Uncorrelated\n- **Uncorrelated**：子查詢可獨立執行（先算一次、給外層用）\n- **Correlated**：子查詢引用外層的值（每行都重算、慢）\n\n## 子查詢 vs CTE vs JOIN\n通常都能改寫、選 query plan 最好的：\n```sql\n-- 子查詢\nSELECT * FROM users WHERE id IN (SELECT user_id FROM orders);\n\n-- JOIN（更常被優化）\nSELECT DISTINCT u.* FROM users u JOIN orders o ON u.id = o.user_id;\n\n-- CTE（可讀性最佳）\nWITH order_users AS (SELECT DISTINCT user_id FROM orders)\nSELECT u.* FROM users u JOIN order_users o ON u.id = o.user_id;\n```",
+      "tip": {
+        "type": "pro",
+        "text": "子查詢 + IN 對小資料 OK、大資料慢—DB 不知道是不是要去重。EXISTS / JOIN 通常快 10 倍。用 EXPLAIN 看 query plan 決定。"
+      },
+      "xp": 15,
+      "playgrounds": [
+        {
+          "key": "17.18.auto",
+          "language": "sql",
+          "title": "試試看",
+          "initialCode": "-- 薪水高於平均的員工\nSELECT name, salary\nFROM employees\nWHERE salary > (SELECT AVG(salary) FROM employees);\n\n-- 找出有訂單的使用者\nSELECT * FROM users\nWHERE id IN (SELECT DISTINCT user_id FROM orders);\n\n-- EXISTS（通常比 IN 快）\nSELECT * FROM users u\nWHERE EXISTS (SELECT 1 FROM orders WHERE user_id = u.id);",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "WHERE 子句中的子查詢"
+        },
+        {
+          "level": 2,
+          "text": "FROM 子句中的子查詢（derived table）"
+        },
+        {
+          "level": 2,
+          "text": "SELECT 子句中的子查詢"
+        },
+        {
+          "level": 2,
+          "text": "Correlated vs Uncorrelated"
+        },
+        {
+          "level": 2,
+          "text": "子查詢 vs CTE vs JOIN"
+        }
+      ]
+    },
+    {
+      "id": "17.19",
+      "number": "LESSON 17.19",
+      "title": "索引（Index）：查詢從 10 秒到 0.01 秒",
+      "oneLineSummary": "索引 = 「資料庫的目錄」—沒索引大表查找慢 1000 倍、加了索引秒回。",
+      "analogy": "像書的目錄—翻 1000 頁找關鍵字 vs 看目錄 3 秒到。SQL 的索引一樣：常查的欄位建索引、查詢爆快。",
+      "content": "## 建索引\n```sql\n-- 單欄索引\nCREATE INDEX idx_users_email ON users(email);\n\n-- 複合索引（順序重要！）\nCREATE INDEX idx_orders_user_created ON orders(user_id, created_at);\n\n-- 唯一索引（兼具 UNIQUE 約束）\nCREATE UNIQUE INDEX idx_users_username ON users(username);\n\n-- 部分索引（PG 特有、節省空間）\nCREATE INDEX idx_active_users ON users(id) WHERE deleted_at IS NULL;\n\n-- 表達式索引\nCREATE INDEX idx_users_lower_email ON users(LOWER(email));\n```\n\n## 什麼欄位該建索引\n- ✅ 常用在 WHERE：email / status / user_id\n- ✅ 常用在 JOIN：所有 foreign key\n- ✅ 常用在 ORDER BY：created_at\n- ❌ 變動頻繁：每次寫入要更新索引、慢\n- ❌ 低基數：boolean（只有 true/false）沒意義\n\n## 索引的成本\n- 佔空間（大表索引可能幾百 MB）\n- 寫入變慢（每次 INSERT / UPDATE 都要更新索引）\n- 過多索引拖累整體效能\n\n**原則：讀多寫少的欄位該建、寫多讀少的別建。**\n\n## 找出沒被使用的索引（PG）\n```sql\nSELECT schemaname, tablename, indexname, idx_scan\nFROM pg_stat_user_indexes\nWHERE idx_scan = 0;\n-- → 從沒被用過的索引、可以 DROP 掉省空間\n```",
+      "tip": {
+        "type": "performance",
+        "text": "PG 的索引種類超多：B-tree（預設）/ Hash / GIN（JSON / 全文）/ GiST（GIS）/ BRIN（時序）/ HNSW（向量、AI）。pgvector 就用 HNSW 做近鄰搜尋。"
+      },
+      "xp": 15,
+      "playgrounds": [
+        {
+          "key": "17.19.auto",
+          "language": "sql",
+          "title": "試試看",
+          "initialCode": "-- 單欄索引\nCREATE INDEX idx_users_email ON users(email);\n\n-- 複合索引（順序重要！）\nCREATE INDEX idx_orders_user_created ON orders(user_id, created_at);\n\n-- 唯一索引（兼具 UNIQUE 約束）\nCREATE UNIQUE INDEX idx_users_username ON users(username);\n\n-- 部分索引（PG 特有、節省空間）\nCREATE INDEX idx_active_users ON users(id) WHERE deleted_at IS NULL;\n\n-- 表達式索引\nCREATE INDEX idx_users_lower_email ON users(LOWER(email));",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "建索引"
+        },
+        {
+          "level": 2,
+          "text": "什麼欄位該建索引"
+        },
+        {
+          "level": 2,
+          "text": "索引的成本"
+        },
+        {
+          "level": 2,
+          "text": "找出沒被使用的索引（PG）"
+        }
+      ]
+    },
+    {
+      "id": "17.20",
+      "number": "LESSON 17.20",
+      "title": "EXPLAIN：找出慢查詢的偵探刀",
+      "oneLineSummary": "EXPLAIN = 「告訴你這個 query 怎麼跑」—走不走索引、預計多久、卡在哪—一目了然。",
+      "analogy": "像看 Google Maps 規劃路線—不是直接開、先看預計時間 / 塞不塞車。EXPLAIN 一樣：跑前先看計畫、提前優化。",
+      "content": "## EXPLAIN vs EXPLAIN ANALYZE\n```sql\n-- 只看計畫、不真的跑\nEXPLAIN SELECT * FROM users WHERE email = 'x@y.com';\n\n-- 跑 + 看實際時間（推薦）\nEXPLAIN ANALYZE SELECT * FROM users WHERE email = 'x@y.com';\n\n-- BUFFERS + ANALYZE（看 I/O）\nEXPLAIN (ANALYZE, BUFFERS, VERBOSE)\nSELECT * FROM users WHERE email = 'x@y.com';\n```\n\n## 常見 Query Plan 類型\n- **Seq Scan**（順序掃描）：全表掃、慢、要避免\n- **Index Scan**：走索引、快、最理想\n- **Index Only Scan**：只看索引就夠、超快\n- **Bitmap Heap Scan**：建 bitmap 再掃、中速\n- **Nested Loop**：兩表 JOIN 像迴圈—小資料行、大表會爆\n- **Hash Join**：建 hash 表加速 JOIN、中大資料量好\n- **Merge Join**：排好序再合併、超大資料量適合\n\n## 實戰：從 120ms 到 0.3ms\n```sql\n-- 10 萬筆 users、沒索引\nEXPLAIN ANALYZE SELECT * FROM users WHERE email = 'a@x.com';\n-- Seq Scan, cost=0..2000, time=120ms ← 慢！\n\n-- 加索引\nCREATE INDEX idx_users_email ON users(email);\n\n-- 再跑\nEXPLAIN ANALYZE SELECT * FROM users WHERE email = 'a@x.com';\n-- Index Scan, cost=0..8, time=0.3ms ← 快 400 倍！\n```\n\n## 常見效能問題\n- **N+1 query**：查 1 個訂單 + 各查 user = 1+N 次。改 JOIN。\n- **SELECT \\***：拉很多用不到的欄位。指定欄位。\n- **OR 條件**：通常走不到索引。改 UNION 或重設計。\n- **LIKE '%xxx%'**：前綴 % 走不到索引。改全文搜尋。\n- **大 OFFSET**：用 cursor pagination 取代。",
+      "tip": {
+        "type": "pro",
+        "text": "慢查詢 80% 是「沒走索引」。EXPLAIN ANALYZE 看到 Seq Scan + 大表 = 該加索引。加索引前先看是不是讀多寫少。"
+      },
+      "xp": 15,
+      "playgrounds": [
+        {
+          "key": "17.20.auto",
+          "language": "sql",
+          "title": "試試看",
+          "initialCode": "-- 只看計畫、不真的跑\nEXPLAIN SELECT * FROM users WHERE email = 'x@y.com';\n\n-- 跑 + 看實際時間（推薦）\nEXPLAIN ANALYZE SELECT * FROM users WHERE email = 'x@y.com';\n\n-- BUFFERS + ANALYZE（看 I/O）\nEXPLAIN (ANALYZE, BUFFERS, VERBOSE)\nSELECT * FROM users WHERE email = 'x@y.com';",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "EXPLAIN vs EXPLAIN ANALYZE"
+        },
+        {
+          "level": 2,
+          "text": "常見 Query Plan 類型"
+        },
+        {
+          "level": 2,
+          "text": "實戰：從 120ms 到 0.3ms"
+        },
+        {
+          "level": 2,
+          "text": "常見效能問題"
+        }
+      ]
+    },
+    {
+      "id": "17.21",
+      "number": "LESSON 17.21",
+      "title": "Transaction：保證資料一致性",
+      "oneLineSummary": "Transaction = 「全部成功、或全部失敗」—轉帳必用、不然錢消失。",
+      "analogy": "像銀行轉帳—1. A 扣 1000、2. B 加 1000。如果只跑 1 系統當機—1000 元消失！Transaction 保證：兩步都成功才算、不然全退。",
+      "content": "## 基本 Transaction\n```sql\nBEGIN;\nUPDATE accounts SET balance = balance - 1000 WHERE id = 1;\nUPDATE accounts SET balance = balance + 1000 WHERE id = 2;\nCOMMIT;\n\n-- 中間出錯\nROLLBACK;\n```\n\n## ACID 四大特性\n- **A**tomicity：原子性、全成功或全失敗\n- **C**onsistency：一致性、前後狀態合法\n- **I**solation：隔離性、多 transaction 互不干擾\n- **D**urability：持久性、COMMIT 後永久保存\n\n## Isolation Levels（隔離等級）\n- **READ UNCOMMITTED**：能讀未 COMMIT 的（dirty read、幾乎沒人用）\n- **READ COMMITTED**（PG 預設）：只讀已 COMMIT 的\n- **REPEATABLE READ**（MySQL InnoDB 預設）：同 transaction 內讀到同樣資料\n- **SERIALIZABLE**：最嚴格、完全串行、效能差\n\n```sql\nBEGIN ISOLATION LEVEL SERIALIZABLE;\n-- ... 操作 ...\nCOMMIT;\n```\n\n## SAVEPOINT（部分回滾）\n```sql\nBEGIN;\nINSERT INTO orders ...;\nSAVEPOINT sp1;\nINSERT INTO order_items ...;\n-- 發現錯了\nROLLBACK TO sp1;  -- 只回到 sp1、第一個 INSERT 還在\nCOMMIT;\n```\n\n## Deadlock 死鎖\n兩個 transaction 互相等對方。DB 會自動偵測、犧牲一個。Code 要能 retry。\n\n## 並發控制\n```sql\n-- 鎖定該行（其他 transaction 等）\nSELECT * FROM accounts WHERE id = 1 FOR UPDATE;\n\n-- 樂觀鎖（用 version 欄位）\nUPDATE accounts SET balance = 500, version = version + 1\nWHERE id = 1 AND version = 5;\n-- 如果同時被改、影響 0 列、要 retry\n```",
+      "tip": {
+        "type": "business",
+        "text": "電商 / 金流接案必會 transaction—訂單成立、扣庫存、扣紅利、寄通知—任一步失敗整單 rollback。寫對 = 沒怨言、寫錯 = 一夜接 100 通客訴電話。"
+      },
+      "xp": 15,
+      "playgrounds": [
+        {
+          "key": "17.21.auto",
+          "language": "sql",
+          "title": "試試看",
+          "initialCode": "BEGIN;\nUPDATE accounts SET balance = balance - 1000 WHERE id = 1;\nUPDATE accounts SET balance = balance + 1000 WHERE id = 2;\nCOMMIT;\n\n-- 中間出錯\nROLLBACK;",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "基本 Transaction"
+        },
+        {
+          "level": 2,
+          "text": "ACID 四大特性"
+        },
+        {
+          "level": 2,
+          "text": "Isolation Levels（隔離等級）"
+        },
+        {
+          "level": 2,
+          "text": "SAVEPOINT（部分回滾）"
+        },
+        {
+          "level": 2,
+          "text": "Deadlock 死鎖"
+        },
+        {
+          "level": 2,
+          "text": "並發控制"
+        }
+      ]
+    },
+    {
+      "id": "17.22",
+      "number": "LESSON 17.22",
+      "title": "View / Materialized View：把複雜 query 包成虛擬表",
+      "oneLineSummary": "View = 「儲存好的 SELECT」—之後直接 SELECT view 就好、不用每次寫複雜 JOIN。",
+      "analogy": "像 Excel 樞紐表 — 設定好就反覆用、不用每次重做。View 是 SQL 的樞紐表、可讀性 + 重用性 +100%。",
+      "content": "## 普通 View\n```sql\nCREATE VIEW active_users AS\nSELECT id, name, email\nFROM users\nWHERE deleted_at IS NULL AND banned = FALSE;\n\n-- 使用（跟普通表一樣）\nSELECT * FROM active_users WHERE name LIKE '王%';\n```\n\n## 複雜 View（封裝 JOIN）\n```sql\nCREATE VIEW user_stats AS\nSELECT\n  u.id,\n  u.name,\n  COUNT(o.id) AS order_count,\n  COALESCE(SUM(o.amount), 0) AS total_spent,\n  MAX(o.created_at) AS last_order_at\nFROM users u\nLEFT JOIN orders o ON u.id = o.user_id\nWHERE u.deleted_at IS NULL\nGROUP BY u.id, u.name;\n\n-- 使用\nSELECT * FROM user_stats ORDER BY total_spent DESC LIMIT 10;\n```\n\n## Materialized View（快取）\n普通 View 每次查都重算。Materialized View 把結果存起來、查超快、但要 refresh。\n\n```sql\nCREATE MATERIALIZED VIEW monthly_sales AS\nSELECT\n  DATE_TRUNC('month', created_at) AS month,\n  SUM(amount) AS total\nFROM orders\nGROUP BY month;\n\n-- 重新整理\nREFRESH MATERIALIZED VIEW monthly_sales;\n\n-- 排程每天凌晨 3 點 refresh\n-- cron: 0 3 * * * psql -c \"REFRESH MATERIALIZED VIEW monthly_sales;\"\n```\n\n## View 跟 Stored Procedure 差別\n- View：是查詢、SELECT 就好\n- Procedure / Function：是 code、可有邏輯 / loop / 條件",
+      "tip": {
+        "type": "pro",
+        "text": "BI / 報表用 Materialized View 不只快、減 DB 壓力。CONCURRENTLY refresh 不鎖表、production 友善：`REFRESH MATERIALIZED VIEW CONCURRENTLY ...`。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "17.22.auto",
+          "language": "sql",
+          "title": "試試看",
+          "initialCode": "CREATE VIEW active_users AS\nSELECT id, name, email\nFROM users\nWHERE deleted_at IS NULL AND banned = FALSE;\n\n-- 使用（跟普通表一樣）\nSELECT * FROM active_users WHERE name LIKE '王%';",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "普通 View"
+        },
+        {
+          "level": 2,
+          "text": "複雜 View（封裝 JOIN）"
+        },
+        {
+          "level": 2,
+          "text": "Materialized View（快取）"
+        },
+        {
+          "level": 2,
+          "text": "View 跟 Stored Procedure 差別"
+        }
+      ]
+    },
+    {
+      "id": "17.23",
+      "number": "LESSON 17.23",
+      "title": "Trigger / Function：DB 內建邏輯",
+      "oneLineSummary": "Trigger = 「INSERT / UPDATE 發生時自動跑 code」—像 DB 的 webhook。",
+      "analogy": "像智慧家電—「冰箱開了自動開燈」「門關自動鎖」。DB Trigger 一樣：「INSERT 就自動更新 stat」「UPDATE 就自動寫 audit log」。",
+      "content": "## 場景：自動更新 updated_at\n```sql\nCREATE OR REPLACE FUNCTION update_updated_at()\nRETURNS TRIGGER AS $$\nBEGIN\n  NEW.updated_at = NOW();\n  RETURN NEW;\nEND;\n$$ LANGUAGE plpgsql;\n\nCREATE TRIGGER tr_products_updated\nBEFORE UPDATE ON products\nFOR EACH ROW EXECUTE FUNCTION update_updated_at();\n\n-- 之後 UPDATE products、updated_at 會自動變成 NOW()\n```\n\n## 場景：寫 audit log\n```sql\nCREATE OR REPLACE FUNCTION audit_user_changes()\nRETURNS TRIGGER AS $$\nBEGIN\n  INSERT INTO audit_log (table_name, action, old_data, new_data, user_id)\n  VALUES (\n    'users',\n    TG_OP,\n    row_to_json(OLD),\n    row_to_json(NEW),\n    current_setting('app.user_id', TRUE)\n  );\n  RETURN NEW;\nEND;\n$$ LANGUAGE plpgsql;\n\nCREATE TRIGGER tr_users_audit\nAFTER INSERT OR UPDATE OR DELETE ON users\nFOR EACH ROW EXECUTE FUNCTION audit_user_changes();\n```\n\n## Function（不只給 Trigger 用）\n```sql\nCREATE OR REPLACE FUNCTION get_user_total(user_id_param UUID)\nRETURNS DECIMAL AS $$\nDECLARE total DECIMAL;\nBEGIN\n  SELECT COALESCE(SUM(amount), 0)\n  INTO total\n  FROM orders\n  WHERE user_id = user_id_param AND status = 'paid';\n  RETURN total;\nEND;\n$$ LANGUAGE plpgsql;\n\n-- 使用\nSELECT name, get_user_total(id) FROM users;\n```\n\n## Trigger 何時用 / 何時不用\n- ✅ 自動 updated_at、自動 audit log、簡單派生欄位\n- ❌ 業務邏輯（放 application 層）、複雜計算\n- ❌ 跨服務操作（call API / 寄 email、用 message queue）",
+      "tip": {
+        "type": "warning",
+        "text": "Trigger 是隱形 code—debug 時很容易忘掉。寫了 trigger 一定要寫進文件、不然 6 個月後同事看到「為什麼 INSERT 自動有東西」會崩潰。"
+      },
+      "xp": 15,
+      "playgrounds": [
+        {
+          "key": "17.23.auto",
+          "language": "sql",
+          "title": "試試看",
+          "initialCode": "CREATE OR REPLACE FUNCTION update_updated_at()\nRETURNS TRIGGER AS $$\nBEGIN\n  NEW.updated_at = NOW();\n  RETURN NEW;\nEND;\n$$ LANGUAGE plpgsql;\n\nCREATE TRIGGER tr_products_updated\nBEFORE UPDATE ON products\nFOR EACH ROW EXECUTE FUNCTION update_updated_at();\n\n-- 之後 UPDATE products、updated_at 會自動變成 NOW()",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "場景：自動更新 updatedat"
+        },
+        {
+          "level": 2,
+          "text": "場景：寫 audit log"
+        },
+        {
+          "level": 2,
+          "text": "Function（不只給 Trigger 用）"
+        },
+        {
+          "level": 2,
+          "text": "Trigger 何時用 / 何時不用"
+        }
+      ]
+    },
+    {
+      "id": "17.24",
+      "number": "LESSON 17.24",
+      "title": "JSON 與 JSONB：在 SQL 裡塞 NoSQL",
+      "oneLineSummary": "PG 的 JSONB = 「在 SQL 裡存 JSON 還能查」—Schema 彈性 + SQL 強大、兩者兼得。",
+      "analogy": "像買了房子（SQL）還能放 IKEA 家具（JSON）—彈性。常見場景：使用者 settings、product variations、event metadata。",
+      "content": "## JSON vs JSONB\n- **JSON**：純文字、慢、保留空白\n- **JSONB**（推薦）：二進位、快、可索引\n\n```sql\nCREATE TABLE products (\n  id SERIAL PRIMARY KEY,\n  name TEXT,\n  metadata JSONB\n);\n\nINSERT INTO products (name, metadata) VALUES\n  ('iPhone 17', '{\"color\": \"blue\", \"storage\": \"256GB\", \"specs\": {\"weight\": 180}}'),\n  ('MacBook', '{\"color\": \"silver\", \"tags\": [\"pro\", \"m4\"]}');\n```\n\n## 查詢 JSON 欄位\n```sql\n-- -> 取 JSON、->> 取文字\nSELECT metadata -> 'color' FROM products;        -- \"blue\" (JSON)\nSELECT metadata ->> 'color' FROM products;       -- blue (TEXT)\n\n-- 巢狀\nSELECT metadata -> 'specs' ->> 'weight' FROM products;\n\n-- WHERE 過濾\nSELECT * FROM products WHERE metadata ->> 'color' = 'blue';\nSELECT * FROM products WHERE (metadata -> 'specs' ->> 'weight')::int > 200;\n\n-- @> 包含\nSELECT * FROM products WHERE metadata @> '{\"color\": \"blue\"}';\n\n-- ? 包含 key\nSELECT * FROM products WHERE metadata ? 'tags';\n```\n\n## JSONB 索引（重要！）\n```sql\n-- GIN 索引、整個 JSON 都能搜\nCREATE INDEX idx_products_metadata ON products USING GIN (metadata);\n\n-- 特定路徑索引\nCREATE INDEX idx_products_color ON products ((metadata ->> 'color'));\n```\n\n## 更新 JSON\n```sql\n-- 加 / 改 key\nUPDATE products\nSET metadata = metadata || '{\"discount\": 10}'\nWHERE id = 1;\n\n-- 刪 key\nUPDATE products SET metadata = metadata - 'discount' WHERE id = 1;\n\n-- 修改巢狀\nUPDATE products\nSET metadata = jsonb_set(metadata, '{specs,weight}', '195')\nWHERE id = 1;\n```\n\n## 什麼時候用 JSON 欄位\n- ✅ Schema 變動快（user settings、event data）\n- ✅ 每筆資料的欄位不同（product variations）\n- ✅ Webhook / API 收到的原始 payload\n- ❌ 結構固定的欄位（用 column）\n- ❌ 需要嚴格 type check 的（用 column + constraint）",
+      "tip": {
+        "type": "pro",
+        "text": "JSONB 讓 PG 在「需要 NoSQL 彈性 + SQL 強大查詢」的場景殺爆 MongoDB。Indie 用 PG + JSONB、不用同時跑 MongoDB、運維簡單一倍。"
+      },
+      "xp": 15,
+      "playgrounds": [
+        {
+          "key": "17.24.auto",
+          "language": "sql",
+          "title": "試試看",
+          "initialCode": "CREATE TABLE products (\n  id SERIAL PRIMARY KEY,\n  name TEXT,\n  metadata JSONB\n);\n\nINSERT INTO products (name, metadata) VALUES\n  ('iPhone 17', '{\"color\": \"blue\", \"storage\": \"256GB\", \"specs\": {\"weight\": 180}}'),\n  ('MacBook', '{\"color\": \"silver\", \"tags\": [\"pro\", \"m4\"]}');",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "JSON vs JSONB"
+        },
+        {
+          "level": 2,
+          "text": "查詢 JSON 欄位"
+        },
+        {
+          "level": 2,
+          "text": "JSONB 索引（重要！）"
+        },
+        {
+          "level": 2,
+          "text": "更新 JSON"
+        },
+        {
+          "level": 2,
+          "text": "什麼時候用 JSON 欄位"
+        }
+      ]
+    },
+    {
+      "id": "17.25",
+      "number": "LESSON 17.25",
+      "title": "Full-Text Search：DB 內建的全文搜尋",
+      "oneLineSummary": "PG 內建全文搜尋—不用裝 Elasticsearch、tsvector + GIN 索引就能做出秒級中文搜尋。",
+      "analogy": "像書的索引—不是逐字找、是預先建好詞彙表。LIKE 比較像 Ctrl+F、tsvector 比較像 Google 搜尋。",
+      "content": "## 基本全文搜尋\n```sql\nCREATE TABLE articles (\n  id SERIAL PRIMARY KEY,\n  title TEXT,\n  body TEXT,\n  search_vector TSVECTOR  -- 預計算的搜尋向量\n);\n\n-- 建立搜尋向量（用 simple 配置、適合中文）\nUPDATE articles\nSET search_vector = to_tsvector('simple', title || ' ' || body);\n\n-- 加 GIN 索引\nCREATE INDEX idx_articles_search ON articles USING GIN (search_vector);\n\n-- 搜尋\nSELECT title, ts_rank(search_vector, query) AS rank\nFROM articles, to_tsquery('simple', 'AI & 工程師') AS query\nWHERE search_vector @@ query\nORDER BY rank DESC;\n```\n\n## 自動維護搜尋向量（Trigger）\n```sql\nCREATE OR REPLACE FUNCTION update_search_vector()\nRETURNS TRIGGER AS $$\nBEGIN\n  NEW.search_vector :=\n    setweight(to_tsvector('simple', COALESCE(NEW.title, '')), 'A') ||\n    setweight(to_tsvector('simple', COALESCE(NEW.body, '')), 'B');\n  RETURN NEW;\nEND;\n$$ LANGUAGE plpgsql;\n\nCREATE TRIGGER tr_articles_search\nBEFORE INSERT OR UPDATE OF title, body ON articles\nFOR EACH ROW EXECUTE FUNCTION update_search_vector();\n```\n\n## 中文支援（zhparser）\nPG 內建的 tokenizer 不分中文詞、要裝 `zhparser`：\n```sql\nCREATE EXTENSION zhparser;\nCREATE TEXT SEARCH CONFIGURATION zh (PARSER = zhparser);\nALTER TEXT SEARCH CONFIGURATION zh\n  ADD MAPPING FOR n,v,a,i,e,l WITH simple;\n\n-- 用 zh 配置\nSELECT * FROM articles WHERE to_tsvector('zh', body) @@ to_tsquery('zh', '機器學習');\n```\n\n## 比 LIKE '%xxx%' 快多少\n- 100 萬筆 LIKE '%機器學習%'：3-5 秒\n- 100 萬筆 tsvector + GIN：20-50 毫秒\n\n**快 100 倍。**\n\n## 什麼時候該用 Elasticsearch\n- 需要拼字糾錯（did you mean）\n- 需要 facet / aggregation 聚合\n- 需要超大規模（10 億+ 文件）\n- 需要 BM25 進階排序\n\nIndie / 中小 SaaS 用 PG 全文搜尋通常夠。",
+      "tip": {
+        "type": "pro",
+        "text": "Wikipedia 中文版 backend 用 PG + 全文搜尋撐了好幾年才換 Elasticsearch。Indie SaaS 從 PG 開始、撞牆再升級—Elasticsearch 運維成本 5 倍。"
+      },
+      "xp": 15,
+      "playgrounds": [
+        {
+          "key": "17.25.auto",
+          "language": "sql",
+          "title": "試試看",
+          "initialCode": "CREATE TABLE articles (\n  id SERIAL PRIMARY KEY,\n  title TEXT,\n  body TEXT,\n  search_vector TSVECTOR  -- 預計算的搜尋向量\n);\n\n-- 建立搜尋向量（用 simple 配置、適合中文）\nUPDATE articles\nSET search_vector = to_tsvector('simple', title || ' ' || body);\n\n-- 加 GIN 索引\nCREATE INDEX idx_articles_search ON articles USING GIN (search_vector);\n\n-- 搜尋\nSELECT title, ts_rank(search_vector, query) AS rank\nFROM articles, to_tsquery('simple', 'AI & 工程師') AS query\nWHERE search_vector @@ query\nORDER BY rank DESC;",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "基本全文搜尋"
+        },
+        {
+          "level": 2,
+          "text": "自動維護搜尋向量（Trigger）"
+        },
+        {
+          "level": 2,
+          "text": "中文支援（zhparser）"
+        },
+        {
+          "level": 2,
+          "text": "比 LIKE '%xxx%' 快多少"
+        },
+        {
+          "level": 2,
+          "text": "什麼時候該用 Elasticsearch"
+        }
+      ]
+    },
+    {
+      "id": "17.26",
+      "number": "LESSON 17.26",
+      "title": "SQL Injection：永遠用 prepared statement",
+      "oneLineSummary": "SQL Injection = 「使用者輸入惡意 SQL、改寫你的查詢」—2026 還是 OWASP Top 10 第 3 名。",
+      "analogy": "像飯店 check-in 填名字—正常人寫「王小明」、駭客寫「王小明'; DROP TABLE users; --」—直接照單全收就 GG。",
+      "content": "## 危險寫法（永遠別這樣）\n```javascript\n// ❌ 字串拼接 = 必死\nconst username = req.body.username;\nconst query = `SELECT * FROM users WHERE name = '${username}'`;\n\n// 使用者輸入：' OR 1=1; --\n// 變成：SELECT * FROM users WHERE name = '' OR 1=1; --'\n// → 回傳所有使用者！\n\n// 更狠：'; DROP TABLE users; --\n// → 整張表沒了\n```\n\n## 正確寫法：Prepared Statement\n```javascript\n// Node + pg\nconst result = await pool.query(\n  'SELECT * FROM users WHERE name = $1',\n  [username]\n);\n\n// Python + psycopg2\ncursor.execute(\n  \"SELECT * FROM users WHERE name = %s\",\n  (username,)\n);\n\n// ORM 自動 escape\nawait prisma.user.findMany({ where: { name: username } });\nawait User.objects.filter(name=username)  // Django\n```\n\n## 為什麼 prepared statement 安全\nDB 把 SQL 結構跟參數**分開處理**—SQL 固定、參數只當「值」、不會被解析成命令。即使輸入「'; DROP TABLE; --」也只是字串。\n\n## 進階：second-order injection\n惡意輸入存進 DB、之後被另一個 query 拼進去：\n```javascript\n// 寫入：safe（用 prepared statement）\nawait db.query('INSERT INTO users(name) VALUES($1)', [\n  \"Alice'); DROP TABLE products; --\"\n]);\n\n// 讀出來再用：危險！\nconst user = await db.query('SELECT name FROM users WHERE id = 1');\nconst q2 = `SELECT * FROM orders WHERE customer = '${user.name}'`;\n// → 攻擊觸發\n```\n\n## 防護清單\n- ✅ 所有使用者輸入用 prepared statement / ORM\n- ✅ 最小權限：app 連線用的 DB user 不能 DROP TABLE\n- ✅ 開 WAF（Cloudflare）擋 SQL injection\n- ✅ SAST 掃描（CodeQL / Semgrep）\n- ✅ 錯誤訊息不要曝露 SQL 結構",
+      "tip": {
+        "type": "security",
+        "text": "2017 台灣某大電信因 SQL injection 被駭、5000 萬筆會員外洩、罰 $100 萬美金。SQL injection 不是技術問題、是整個公司倒閉的風險。永遠用 prepared statement。"
+      },
+      "xp": 15,
+      "playgrounds": [
+        {
+          "key": "17.26.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// ❌ 字串拼接 = 必死\nconst username = req.body.username;\nconst query = `SELECT * FROM users WHERE name = '${username}'`;\n\n// 使用者輸入：' OR 1=1; --\n// 變成：SELECT * FROM users WHERE name = '' OR 1=1; --'\n// → 回傳所有使用者！\n\n// 更狠：'; DROP TABLE users; --\n// → 整張表沒了",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "危險寫法（永遠別這樣）"
+        },
+        {
+          "level": 2,
+          "text": "正確寫法：Prepared Statement"
+        },
+        {
+          "level": 2,
+          "text": "為什麼 prepared statement 安全"
+        },
+        {
+          "level": 2,
+          "text": "進階：second-order injection"
+        },
+        {
+          "level": 2,
+          "text": "防護清單"
+        }
+      ]
+    },
+    {
+      "id": "17.27",
+      "number": "LESSON 17.27",
+      "title": "Supabase：10 分鐘架好 SQL 後端",
+      "oneLineSummary": "Supabase = 「PG 雲端 + 認證 + Storage + Realtime」—2026 Indie SaaS 後端神器。",
+      "analogy": "像 Firebase 的開源版—但用 PG（標準 SQL）、不被綁定。註冊 5 分鐘、開個專案、就有完整後端。",
+      "content": "## 10 分鐘 Setup\n1. 去 [supabase.com](https://supabase.com) 註冊（GitHub）\n2. New project → 取名 → 選 region（推薦 Singapore）\n3. 等 2 分鐘起好—拿到：\n   - PostgreSQL Database URL\n   - API URL + anon key（前端用）\n   - service_role key（後端用、絕不放前端！）\n\n## 在 Supabase Studio 建表\n```sql\nCREATE TABLE todos (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,\n  title TEXT NOT NULL,\n  completed BOOLEAN DEFAULT FALSE,\n  created_at TIMESTAMPTZ DEFAULT NOW()\n);\n\n-- 啟用 Row Level Security\nALTER TABLE todos ENABLE ROW LEVEL SECURITY;\n\n-- 政策：只能看 / 改自己的\nCREATE POLICY \"own_todos\" ON todos\n  FOR ALL USING (auth.uid() = user_id);\n```\n\n## 從 Next.js 用 Supabase\n```typescript\n// npm install @supabase/supabase-js @supabase/ssr\nimport { createBrowserClient } from '@supabase/ssr';\n\nconst supabase = createBrowserClient(URL, ANON_KEY);\n\n// CRUD\nconst { data, error } = await supabase\n  .from('todos')\n  .select('*')\n  .order('created_at', { ascending: false });\n\nawait supabase.from('todos').insert({ title: '學 SQL' });\n\nawait supabase.from('todos')\n  .update({ completed: true })\n  .eq('id', todoId);\n\nawait supabase.from('todos').delete().eq('id', todoId);\n\n// Realtime 訂閱\nsupabase.channel('todos')\n  .on('postgres_changes',\n    { event: '*', schema: 'public', table: 'todos' },\n    payload => console.log('Change!', payload))\n  .subscribe();\n```\n\n## Supabase 內建功能\n- 🔐 **Auth**：Email / Google / GitHub / Apple / OTP\n- 📦 **Storage**：S3 風格物件儲存\n- ⚡ **Realtime**：訂閱 DB 變化、聊天 / 多人協作\n- 🚀 **Edge Functions**：Deno、全球邊緣\n- 🤖 **pgvector**：內建向量搜尋、RAG\n- 🔧 **Studio**：網頁 DB 管理介面\n\n## 定價（2026）\n- **Free**：500MB DB / 1GB storage—Indie MVP 夠\n- **Pro $25/月**：8GB DB / 100GB storage\n- **Team / Enterprise**：大型專案",
+      "tip": {
+        "type": "milestone",
+        "text": "Supabase + Next.js + Vercel = 2026 Indie SaaS 黃金組合。從 0 到上線 1 週、月成本 $0-25、可服務 1 萬使用者。SnowRealm Insight / GLACÉRA / YukiChat 全用這套。"
+      },
+      "xp": 15,
+      "playgrounds": [
+        {
+          "key": "17.27.auto",
+          "language": "sql",
+          "title": "試試看",
+          "initialCode": "CREATE TABLE todos (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,\n  title TEXT NOT NULL,\n  completed BOOLEAN DEFAULT FALSE,\n  created_at TIMESTAMPTZ DEFAULT NOW()\n);\n\n-- 啟用 Row Level Security\nALTER TABLE todos ENABLE ROW LEVEL SECURITY;\n\n-- 政策：只能看 / 改自己的\nCREATE POLICY \"own_todos\" ON todos\n  FOR ALL USING (auth.uid() = user_id);",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "10 分鐘 Setup"
+        },
+        {
+          "level": 2,
+          "text": "在 Supabase Studio 建表"
+        },
+        {
+          "level": 2,
+          "text": "從 Next.js 用 Supabase"
+        },
+        {
+          "level": 2,
+          "text": "Supabase 內建功能"
+        },
+        {
+          "level": 2,
+          "text": "定價（2026）"
+        }
+      ]
+    },
+    {
+      "id": "17.28",
+      "number": "LESSON 17.28",
+      "title": "整章實戰：用 Supabase + Next.js 做完整 Todo 後端",
+      "oneLineSummary": "把整章學的整合—Supabase 建表 + RLS、Next.js client、Realtime 同步、Production-ready。",
+      "analogy": "像學完料理開店—不是練習、是端出能 ship 的菜。完成後你會有一個能放 Portfolio 的 mini SaaS。",
+      "content": "## Step 1：Supabase SQL Editor 建表\n```sql\nCREATE TABLE todos (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,\n  title TEXT NOT NULL CHECK (char_length(title) <= 200),\n  completed BOOLEAN DEFAULT FALSE,\n  priority INT DEFAULT 0 CHECK (priority IN (0, 1, 2)),\n  created_at TIMESTAMPTZ DEFAULT NOW(),\n  updated_at TIMESTAMPTZ DEFAULT NOW()\n);\n\nCREATE INDEX idx_todos_user_created ON todos(user_id, created_at DESC);\n\nALTER TABLE todos ENABLE ROW LEVEL SECURITY;\n\nCREATE POLICY \"own_todos_select\" ON todos FOR SELECT USING (auth.uid() = user_id);\nCREATE POLICY \"own_todos_insert\" ON todos FOR INSERT WITH CHECK (auth.uid() = user_id);\nCREATE POLICY \"own_todos_update\" ON todos FOR UPDATE USING (auth.uid() = user_id);\nCREATE POLICY \"own_todos_delete\" ON todos FOR DELETE USING (auth.uid() = user_id);\n\n-- Trigger 自動更新 updated_at\nCREATE OR REPLACE FUNCTION update_updated_at() RETURNS TRIGGER AS $$\nBEGIN NEW.updated_at = NOW(); RETURN NEW; END;\n$$ LANGUAGE plpgsql;\n\nCREATE TRIGGER todos_updated_at BEFORE UPDATE ON todos\nFOR EACH ROW EXECUTE FUNCTION update_updated_at();\n```\n\n## Step 2：Next.js Setup\n```bash\nnpx create-next-app@latest todo-app --typescript --tailwind --app\ncd todo-app\nnpm install @supabase/supabase-js @supabase/ssr\n```\n\n## Step 3：Todo Component（完整 CRUD + Realtime）\n```typescript\n'use client';\nimport { useEffect, useState } from 'react';\nimport { createBrowserClient } from '@supabase/ssr';\n\nconst supabase = createBrowserClient(\n  process.env.NEXT_PUBLIC_SUPABASE_URL!,\n  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!\n);\n\nexport default function TodosPage() {\n  const [todos, setTodos] = useState<any[]>([]);\n  const [title, setTitle] = useState('');\n\n  useEffect(() => {\n    const load = async () => {\n      const { data } = await supabase.from('todos')\n        .select('*').order('created_at', { ascending: false });\n      setTodos(data || []);\n    };\n    load();\n\n    // Realtime 訂閱\n    const channel = supabase.channel('todos')\n      .on('postgres_changes',\n        { event: '*', schema: 'public', table: 'todos' },\n        () => load())\n      .subscribe();\n\n    return () => { channel.unsubscribe(); };\n  }, []);\n\n  const add = async () => {\n    if (!title.trim()) return;\n    await supabase.from('todos').insert({ title });\n    setTitle('');\n  };\n\n  const toggle = async (id: string, completed: boolean) => {\n    await supabase.from('todos').update({ completed: !completed }).eq('id', id);\n  };\n\n  const remove = async (id: string) => {\n    await supabase.from('todos').delete().eq('id', id);\n  };\n\n  return (\n    <div className=\"max-w-md mx-auto p-6\">\n      <div className=\"flex gap-2 mb-4\">\n        <input\n          className=\"flex-1 border rounded px-3 py-2\"\n          value={title}\n          onChange={e => setTitle(e.target.value)}\n          onKeyDown={e => e.key === 'Enter' && add()}\n          placeholder=\"新增 todo...\"\n        />\n        <button onClick={add} className=\"bg-green-500 text-white px-4 rounded\">\n          新增\n        </button>\n      </div>\n      {todos.map(t => (\n        <div key={t.id} className=\"flex items-center gap-2 py-2 border-b\">\n          <input type=\"checkbox\" checked={t.completed}\n            onChange={() => toggle(t.id, t.completed)} />\n          <span className={t.completed ? 'line-through text-gray-400' : ''}>\n            {t.title}\n          </span>\n          <button onClick={() => remove(t.id)}\n            className=\"ml-auto text-red-500\">刪除</button>\n        </div>\n      ))}\n    </div>\n  );\n}\n```\n\n## 完成檢查\n✅ 完整 CRUD（建立 / 讀取 / 更新 / 刪除）\n✅ 認證 + RLS（只看自己的）\n✅ Realtime 即時同步（多裝置）\n✅ Production-ready（索引 / Trigger / CHECK 約束）\n\nVercel deploy 一鍵上線、就是個能 ship 的 mini SaaS。",
+      "tip": {
+        "type": "milestone",
+        "text": "完成這個專案 = 你能跟 Indie SaaS 工程師對等對話。下一步：加 OAuth、加付費、就是真正的小型 SaaS。Portfolio 第一個後端作品就是它。"
+      },
+      "xp": 30,
+      "playgrounds": [
+        {
+          "key": "17.28.auto",
+          "language": "sql",
+          "title": "試試看",
+          "initialCode": "CREATE TABLE todos (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,\n  title TEXT NOT NULL CHECK (char_length(title) <= 200),\n  completed BOOLEAN DEFAULT FALSE,\n  priority INT DEFAULT 0 CHECK (priority IN (0, 1, 2)),\n  created_at TIMESTAMPTZ DEFAULT NOW(),\n  updated_at TIMESTAMPTZ DEFAULT NOW()\n);\n\nCREATE INDEX idx_todos_user_created ON todos(user_id, created_at DESC);\n\nALTER TABLE todos ENABLE ROW LEVEL SECURITY;\n\nCREATE POLICY \"own_todos_select\" ON todos FOR SELECT USING (auth.uid() = user_id);\nCREATE POLICY \"own_todos_insert\" ON todos FOR INSERT WITH CHECK (auth.uid() = user_id);\nCREATE POLICY \"own_todos_update\" ON todos FOR UPDATE USING (auth.uid() = user_id);\nCREATE POLICY \"own_todos_delete\" ON todos FOR DELETE USING (auth.uid() = user_id);\n\n-- Trigger 自動更新 updated_at\nCREATE OR REPLACE FUNCTION update_updated_at() RETURNS TRIGGER AS $$\nBEGIN NEW.updated_at = NOW(); RETURN NEW; END;\n$$ LANGUAGE plpgsql;\n\nCREATE TRIGGER todos_updated_at BEFORE UPDATE ON todos\nFOR EACH ROW EXECUTE FUNCTION update_updated_at();",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "Step 1：Supabase SQL Editor 建表"
+        },
+        {
+          "level": 2,
+          "text": "Step 2：Next.js Setup"
+        },
+        {
+          "level": 2,
+          "text": "Step 3：Todo Component（完整 CRUD + Realtime）"
+        },
+        {
+          "level": 2,
+          "text": "完成檢查"
+        }
+      ]
+    }
+  ],
+  "boss": {
+    "name": "資料庫龍",
+    "hp": 220,
+    "emoji": "🐲",
+    "description": "盤臥資料海、SQL 是它的鱗片"
+  },
+  "quiz": {
+    "id": "ch17-quiz",
+    "questions": [
+      {
+        "id": "q1",
+        "text": "下面哪個 SQL 寫法**不安全**（有 SQL injection 風險）？",
+        "options": [
+          {
+            "value": "a",
+            "label": "`db.query(\"SELECT * FROM users WHERE id = $1\", [userId])`"
+          },
+          {
+            "value": "b",
+            "label": "`db.query(\\`SELECT * FROM users WHERE name = \\'${name}\\'\\`)`"
+          },
+          {
+            "value": "c",
+            "label": "`prisma.user.findUnique({ where: { id: userId } })`"
+          },
+          {
+            "value": "d",
+            "label": "`cursor.execute(\"SELECT * FROM users WHERE email = %s\", (email,))`"
+          }
+        ],
+        "answer": "b",
+        "explanation": "字串拼接是經典 SQL injection 寫法。永遠用 prepared statement（$1 / %s / ORM）。"
+      },
+      {
+        "id": "q2",
+        "text": "找「沒下過訂單的使用者」、應該用？",
+        "options": [
+          {
+            "value": "a",
+            "label": "INNER JOIN orders"
+          },
+          {
+            "value": "b",
+            "label": "LEFT JOIN orders + WHERE orders.id IS NULL"
+          },
+          {
+            "value": "c",
+            "label": "RIGHT JOIN orders"
+          },
+          {
+            "value": "d",
+            "label": "CROSS JOIN orders"
+          }
+        ],
+        "answer": "b",
+        "explanation": "LEFT JOIN 保留左邊全部 users、加 WHERE orders.id IS NULL 過濾沒對應的—面試經典題。"
+      },
+      {
+        "id": "q3",
+        "text": "100 萬筆 users 的 query 跑 EXPLAIN ANALYZE 看到 \"Seq Scan on users (cost=0..50000)\"、最該做的？",
+        "options": [
+          {
+            "value": "a",
+            "label": "改用 NoSQL"
+          },
+          {
+            "value": "b",
+            "label": "加索引在 WHERE 條件的欄位"
+          },
+          {
+            "value": "c",
+            "label": "改寫成 GROUP BY"
+          },
+          {
+            "value": "d",
+            "label": "用 DROP TABLE 重建"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Seq Scan = 全表掃描、大表慢。加索引到 WHERE 條件欄位、通常從 Seq Scan 變 Index Scan、速度爆升 100-1000 倍。"
+      },
+      {
+        "id": "q4",
+        "text": "`LIMIT 10 OFFSET 1000000` 為什麼慢？",
+        "options": [
+          {
+            "value": "a",
+            "label": "PG 有 bug"
+          },
+          {
+            "value": "b",
+            "label": "DB 還是要算出前 1000010 筆才能跳掉前 100 萬"
+          },
+          {
+            "value": "c",
+            "label": "網路慢"
+          },
+          {
+            "value": "d",
+            "label": "OFFSET 不能超過 100"
+          }
+        ],
+        "answer": "b",
+        "explanation": "OFFSET 看似跳過、實際 DB 要先處理掉那些列。解法：cursor pagination（用 `WHERE id > 上一頁最後 id`）。"
+      },
+      {
+        "id": "q5",
+        "text": "轉帳同時扣 A 帳戶、加 B 帳戶、最該用？",
+        "options": [
+          {
+            "value": "a",
+            "label": "兩個獨立 UPDATE"
+          },
+          {
+            "value": "b",
+            "label": "寫一個 stored procedure 但不用 BEGIN/COMMIT"
+          },
+          {
+            "value": "c",
+            "label": "BEGIN; UPDATE A; UPDATE B; COMMIT;"
+          },
+          {
+            "value": "d",
+            "label": "只跑 UPDATE A、之後人工確認 B"
+          }
+        ],
+        "answer": "c",
+        "explanation": "Transaction 保證 ACID—兩步都成功才算、中間出錯整個 rollback。轉帳 / 金流必用。"
+      }
+    ],
+    "xpReward": 100,
+    "perfectBonus": 50
+  },
+  "summary": [
+    "SQL 1970 年發明、50 年後仍是後端主流",
+    "核心 4 動作：SELECT / INSERT / UPDATE / DELETE",
+    "JOIN 是 SQL 最重要技能、5 種 JOIN 學會走天下",
+    "Window functions / CTE 是中級分水嶺",
+    "索引把查詢從 10 秒變 0.01 秒、但別亂建",
+    "Transaction（ACID）保證資料一致性",
+    "MySQL 熱門 / PG 功能強—Indie 推 PG",
+    "Supabase = PG 雲端、Indie SaaS 神器",
+    "SQL Injection 永遠用 prepared statement / ORM",
+    "EXPLAIN ANALYZE 是慢查詢偵探刀"
+  ],
+  "faq": [
+    {
+      "q": "先學 MySQL 還是 PostgreSQL？",
+      "a": "看目標。WordPress 接案 → MySQL。Indie SaaS / 新專案 → PostgreSQL（Supabase）。學會 SQL 標準語法、兩者切換成本超低。"
+    },
+    {
+      "q": "不會 SQL 也能用 ORM 嗎？",
+      "a": "短期可以、長期會卡住。ORM 寫不出複雜查詢、效能差也不知為什麼。建議：先學 1-2 週 SQL → 再學 ORM。"
+    },
+    {
+      "q": "Supabase 免費版能撐多大？",
+      "a": "500MB DB + 2GB 頻寬 / 月、約能撐 1-2 萬 MAU 的小 SaaS。MVP / Side project 夠。"
+    },
+    {
+      "q": "已經會 NoSQL（MongoDB）還要學 SQL 嗎？",
+      "a": "要。台灣 80% 後端職缺要求 SQL、且 SQL + NoSQL 雙修最強。Ch18 NoSQL 會講兩者選法。"
+    },
+    {
+      "q": "什麼時候該用 stored procedure？",
+      "a": "2026 主流是「業務邏輯放 application 層」、stored procedure 只放：(1) trigger 用的小 function (2) 效能極致需求 (3) DB 內部資料修正。"
+    }
+  ]
+}

@@ -1,0 +1,1246 @@
+{
+  "id": 6,
+  "slug": "json",
+  "stage": 1,
+  "title": "JSON 完整",
+  "subtitle": "前後端溝通標準",
+  "icon": "braces",
+  "description": "JSON 完整：前後端溝通標準",
+  "status": "published",
+  "difficulty": "beginner",
+  "prerequisites": [
+    4
+  ],
+  "estimatedHours": 6,
+  "outcomes": [
+    "理解核心概念",
+    "實作主流工具",
+    "整章實戰可發佈作品",
+    "知道生態 / 接案行情",
+    "對齊 2026 業界主流"
+  ],
+  "lessons": [
+    {
+      "id": "6.1",
+      "number": "LESSON 6.1",
+      "title": "JSON 是什麼，為什麼是事實標準",
+      "oneLineSummary": "JSON 是「給機器看的標準格式資料」—API 回傳、設定檔、跨語言溝通全用它。",
+      "analogy": "想像國際快遞用的標準箱—不管寄到日本還是美國、長寬高都統一、好處理。JSON 一樣：JS / Python / Go / Rust 都看得懂同一個格式、跨語言溝通的通用語。",
+      "content": "JSON = JavaScript Object Notation。1999 年由 Douglas Crockford 從 JS 物件的字面量演化而來，2006 年成為 IETF 標準（RFC 4627），現在是**所有現代 API 預設的資料交換格式**。\n\n  \n它打敗了誰：\n\n  \n- **XML**（2000 年代主流，太囉嗦）\n- **CSV**（無法表達巢狀結構）\n- **YAML**（人類好讀但機器解析慢、縮排坑多）\n- **protobuf**（更快但二進位、不能眼睛看）\n\n  \nJSON 贏在：**人讀得懂、機器解析快、所有語言都支援、夠簡單**。\n\n  \n    \nJSON 之於資料，像 USB Type-C 之於充電 — 不是最強，但**哪都能用**。學會它你跟任何系統溝通都不卡。\n\n  \n\n  \n### 2026 的 JSON 使用場景\n\n  \n- **REST API**：99% 用 JSON\n- **設定檔**：package.json、tsconfig.json、ESLint config 等\n- **AI 結構化輸出**：OpenAI / Claude 的 function calling\n- **NoSQL 資料庫**：MongoDB 用 BSON（JSON 的二進位版）\n- **瀏覽器儲存**：localStorage、IndexedDB 都吃 JSON 字串\n- **容器映像**：Docker manifest、OCI image config\n\n  \n    \n      💼\n      接案小知識\n    \n    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「JSON」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。",
+      "tip": {
+        "type": "practical",
+        "text": "剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「JSON」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "6.1.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// 試試改變數、按執行\nconst numbers = [1, 2, 3, 4, 5];\nconst doubled = numbers.map(n => n * 2);\nconsole.log(\"原本:\", numbers);\nconsole.log(\"乘 2:\", doubled);\nconsole.log(\"總和:\", numbers.reduce((a, b) => a + b, 0));",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "找一個你身邊的例子、用「JSON 是什麼，為什麼是事實標準」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "2026 的 JSON 使用場景"
+        }
+      ]
+    },
+    {
+      "id": "6.2",
+      "number": "LESSON 6.2",
+      "title": "完整語法：6 種值、2 個容器",
+      "oneLineSummary": "JSON 的6 種值：string / number / boolean / null / array / object—就這 6 種。",
+      "analogy": "像樂高基本 6 種積木—就 6 種、組合出無限結構。JSON 就 6 種值、組合出 Twitter API、Stripe 金流、Google Maps 資料—世界都用它。",
+      "content": "JSON 只認 6 種值：\n\n```json\n{\n  \"string\": \"用雙引號包起來\",\n  \"number\": 42,\n  \"boolean\": true,\n  \"null\": null,\n  \"array\": [1, 2, 3],\n  \"object\": { \"nested\": \"也行\" }\n}\n```\n\n  \n### 嚴格規則（很多人踩雷）\n\n  \n- 字串**只能用雙引號**，單引號違法\n- key **一定要加雙引號**（跟 JS object 不一樣！）\n- 最後一個元素**不能有逗號**（trailing comma 違法）\n- 不能有**註解**（沒有 `//` 也沒有 `/* */`）\n- 不支援 `undefined`、`NaN`、`Infinity`\n- 字串中的特殊字元要 escape：`\\\"`、`\\\\`、`\\n`、`\\t`、`\\uXXXX`\n\n```json\n{\n  \"escaped\": \"她說 \\\"嗨\\\"。\\n第二行\",\n  \"unicode\": \"\\u4e2d\\u6587\",\n  \"emoji\": \"招財 🐹\"\n}\n```\n\n  \n    **⚠ 踩雷警告**\n    \n新手最常見錯誤：寫成 JS object 那樣 key 沒引號 → 整份 JSON 解析失敗。**嚴格遵守雙引號規則**。VS Code 開 .json 副檔名會自動檢查，存檔前看一下有沒有紅線。\n\n  \n\n  \n### 實戰例：一筆訂單\n\n```json\n{\n  \"order_id\": \"ORD-20260510-001\",\n  \"customer\": {\n    \"name\": \"招財\",\n    \"email\": \"hamster@snowrealm.tw\",\n    \"vip_level\": 2\n  },\n  \"items\": [\n    { \"sku\": \"GLA-001\", \"qty\": 2, \"price\": 1800 },\n    { \"sku\": \"GLA-007\", \"qty\": 1, \"price\": 3200 }\n  ],\n  \"shipping_address\": {\n    \"line1\": \"信義路五段 7 號\",\n    \"city\": \"台北市\",\n    \"zip\": \"110\",\n    \"country\": \"TW\"\n  },\n  \"paid\": true,\n  \"note\": null,\n  \"created_at\": \"2026-05-10T11:30:00+08:00\"\n}\n```\n\n  \n### JSON5：給人類用的進化版\n\n  \nJSON 規範嚴，寫設定檔很痛苦。**JSON5** 是放寬規範的版本，給設定檔用：\n\n```json\n{\n  // 可以寫註解！\n  name: '招財',        // key 不用雙引號、字串可以用單引號\n  age: 3,\n  hobbies: [\n    'sleep',\n    'eat',         // trailing comma OK\n  ],\n  hex: 0xff,         // 16 進位\n  inf: Infinity        // 特殊數字\n}\n```\n\n  \n很多工具支援 JSON5：Babel config、TypeScript 的 tsconfig（其實是 JSONC，類似 JSON5）、Vite config。\n\n  \n    \n      🎯\n      面試考點\n    \n    台灣科技公司面試 90% 會問「JSON」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。",
+      "tip": {
+        "type": "pro",
+        "text": "台灣科技公司面試 90% 會問「JSON」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "6.2.auto",
+          "language": "json",
+          "title": "試試看",
+          "initialCode": "{\n  \"string\": \"用雙引號包起來\",\n  \"number\": 42,\n  \"boolean\": true,\n  \"null\": null,\n  \"array\": [1, 2, 3],\n  \"object\": { \"nested\": \"也行\" }\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "嚴格規則（很多人踩雷）"
+        },
+        {
+          "level": 3,
+          "text": "實戰例：一筆訂單"
+        },
+        {
+          "level": 3,
+          "text": "JSON5：給人類用的進化版"
+        }
+      ]
+    },
+    {
+      "id": "6.3",
+      "number": "LESSON 6.3",
+      "title": "JS / TS / Python 的解析與序列化",
+      "oneLineSummary": "JSON.parse() / JSON.stringify() 是「JS 跟 JSON 字串互轉」—基本 2 個 API。",
+      "analogy": "像翻譯—把 JS 物件「翻譯成」JSON 字串（stringify）寄出去、收到別人的 JSON 字串「翻譯回」JS 物件（parse）。每個 fetch 後面都跑這 2 個。",
+      "content": "### JavaScript / TypeScript\n\n```js\n// 字串 → 物件（解析）\nconst obj = JSON.parse(jsonString);\n\n// 物件 → 字串（序列化）\nconst jsonString = JSON.stringify(obj);\n\n// 美化輸出（縮排 2 格）\nconst pretty = JSON.stringify(obj, null, 2);\n\n// 縮排用 tab\nconst tabbed = JSON.stringify(obj, null, \"\\t\");\n\n// 過濾欄位（只留 name 跟 email）\nconst filtered = JSON.stringify(obj, [\"name\", \"email\"]);\n\n// 自訂轉換（每個值都過一遍）\nconst str = JSON.stringify(obj, (key, value) => {\n  if (key === \"password\") return undefined; // 移除敏感欄位\n  if (typeof value === \"bigint\") return value.toString();\n  return value;\n});\n\n// 解析時的 reviver（每個解析出的值都過一遍）\nconst data = JSON.parse(text, (key, value) => {\n  // 把 ISO 日期字串轉成 Date\n  if (typeof value === \"string\" && /^\\d{4}-\\d{2}-\\d{2}T/.test(value)) {\n    return new Date(value);\n  }\n  return value;\n});\n```\n\n  \n### Python\n\n```python\nimport json\n\n# 字串 → dict\ndata = json.loads(json_string)\n\n# dict → 字串\njson_string = json.dumps(data)\n\n# 美化輸出 + 中文不轉 \\uXXXX\npretty = json.dumps(data, indent=2, ensure_ascii=False)\n\n# 按 key 排序（diff 友善）\nsorted_json = json.dumps(data, sort_keys=True, indent=2)\n\n# 讀檔 / 寫檔\nwith open(\"data.json\") as f:\n    data = json.load(f)\n\nwith open(\"out.json\", \"w\", encoding=\"utf-8\") as f:\n    json.dump(data, f, indent=2, ensure_ascii=False)\n\n# 自訂編碼器（處理 datetime、Decimal、Pydantic 等）\nfrom datetime import datetime\n\nclass CustomEncoder(json.JSONEncoder):\n    def default(self, obj):\n        if isinstance(obj, datetime):\n            return obj.isoformat()\n        return super().default(obj)\n\njson.dumps(data, cls=CustomEncoder)\n```\n\n  \n    **✨ 接案小技巧**\n    \nPython `json.dumps` 預設會把中文變 `\\u4e2d\\u6587`，存檔給人類看一定要加 `ensure_ascii=False`。這個雷踩過的人都記得。\n\n  \n\n  \n### 更快的 JSON 套件\n\n  \n標準庫的 JSON 對小型資料 OK，但大型場景（GB 級 log、AI 訓練資料）會慢。\n\n  \n- **JS**：`JSON.parse` 已經很快（V8 內建）。要更快用 `simdjson`（基於 SIMD CPU 指令）\n- **Python**：`orjson`（Rust 寫的，比標準庫快 3-10 倍） / `ujson` / `msgspec`\n- **Go**：標準庫的 `encoding/json` 偏慢，`sonic`（位元組跳碼）快 5 倍\n- **Rust**：`serde_json` 是事實標準\n\n```python\nimport orjson\n\n# orjson：比 json 快 3-10 倍，回傳 bytes\ndata = orjson.loads(json_bytes)\njson_bytes = orjson.dumps(data, option=orjson.OPT_INDENT_2)\n```\n\n  \n    \n      ⚡\n      學習加速器\n    \n    把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。",
+      "tip": {
+        "type": "practical",
+        "text": "把這節學到的馬上應用到一個小東西—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "6.3.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// 字串 → 物件（解析）\nconst obj = JSON.parse(jsonString);\n\n// 物件 → 字串（序列化）\nconst jsonString = JSON.stringify(obj);\n\n// 美化輸出（縮排 2 格）\nconst pretty = JSON.stringify(obj, null, 2);\n\n// 縮排用 tab\nconst tabbed = JSON.stringify(obj, null, \"\\t\");\n\n// 過濾欄位（只留 name 跟 email）\nconst filtered = JSON.stringify(obj, [\"name\", \"email\"]);\n\n// 自訂轉換（每個值都過一遍）\nconst str = JSON.stringify(obj, (key, value) => {\n  if (key === \"password\") return undefined; // 移除敏感欄位\n  if (typeof value === \"bigint\") return value.toString();\n  return value;\n});\n\n// 解析時的 reviver（每個解析出的值都過一遍）\nconst data = JSON.parse(text, (key, value) => {\n  // 把 ISO 日期字串轉成 Date\n  if (typeof value === \"string\" && /^\\d{4}-\\d{2}-\\d{2}T/.test(value)) {\n    return new Date(value);\n  }\n  return value;\n});",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "JavaScript / TypeScript"
+        },
+        {
+          "level": 3,
+          "text": "Python"
+        },
+        {
+          "level": 3,
+          "text": "更快的 JSON 套件"
+        }
+      ]
+    },
+    {
+      "id": "6.4",
+      "number": "LESSON 6.4",
+      "title": "JSON Schema：給資料定規矩",
+      "oneLineSummary": "JSON 的常見錯誤：尾隨逗號 / 單引號 / 註解—都不合法、會 parse 失敗。",
+      "analogy": "像填寫護照表格—小錯就退件。JSON 嚴格：物件最後一個逗號（trailing comma）會死、用單引號會死、加 // 註解會死。記住這 3 個就避開 80% bug。",
+      "content": "JSON 自由 = 兩面刃。前端傳「年齡是字串」、後端期待「年齡是數字」就會壞。**Schema** 是寫給機器看的合約：「資料長這樣才合法」。\n\n```json\n{\n  \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n  \"type\": \"object\",\n  \"required\": [\"name\", \"age\"],\n  \"additionalProperties\": false,\n  \"properties\": {\n    \"name\": {\n      \"type\": \"string\",\n      \"minLength\": 1,\n      \"maxLength\": 50\n    },\n    \"age\": {\n      \"type\": \"integer\",\n      \"minimum\": 0,\n      \"maximum\": 150\n    },\n    \"email\": {\n      \"type\": \"string\",\n      \"format\": \"email\"\n    },\n    \"role\": {\n      \"type\": \"string\",\n      \"enum\": [\"admin\", \"user\", \"guest\"]\n    },\n    \"tags\": {\n      \"type\": \"array\",\n      \"items\": { \"type\": \"string\" },\n      \"minItems\": 1,\n      \"maxItems\": 10,\n      \"uniqueItems\": true\n    }\n  }\n}\n```\n\n  \n### 常用驗證關鍵字\n\n  \n| 類型 | 關鍵字 |\n| --- | --- |\n| 共用 | type, enum, const, required, default, examples |\n| string | minLength, maxLength, pattern, format（email/uri/date-time/uuid） |\n| number | minimum, maximum, exclusiveMinimum, multipleOf |\n| array | items, minItems, maxItems, uniqueItems, contains |\n| object | properties, required, additionalProperties, patternProperties |\n| 組合 | allOf, anyOf, oneOf, not, if/then/else |\n\n  \n### 進階：條件式 schema\n\n```json\n{\n  \"type\": \"object\",\n  \"properties\": {\n    \"role\": { \"enum\": [\"admin\", \"user\"] }\n  },\n  \"if\": {\n    \"properties\": { \"role\": { \"const\": \"admin\" } }\n  },\n  \"then\": {\n    \"required\": [\"permissions\"]\n  },\n  \"else\": {\n    \"not\": { \"required\": [\"permissions\"] }\n  }\n}\n// admin 才需要 permissions 欄位\n```\n\n  \nJSON Schema 是業界標準。OpenAI、Anthropic 的 tool use、OpenAPI / Swagger 背後都是它。\n\n  \n    \n      🚀\n      2026 趨勢\n    \n    這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。",
+      "tip": {
+        "type": "trend",
+        "text": "這個技術 2026 還在主流、未來 5 年不會過時。但工具會更新—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "6.4.auto",
+          "language": "json",
+          "title": "試試看",
+          "initialCode": "{\n  \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n  \"type\": \"object\",\n  \"required\": [\"name\", \"age\"],\n  \"additionalProperties\": false,\n  \"properties\": {\n    \"name\": {\n      \"type\": \"string\",\n      \"minLength\": 1,\n      \"maxLength\": 50\n    },\n    \"age\": {\n      \"type\": \"integer\",\n      \"minimum\": 0,\n      \"maximum\": 150\n    },\n    \"email\": {\n      \"type\": \"string\",\n      \"format\": \"email\"\n    },\n    \"role\": {\n      \"type\": \"string\",\n      \"enum\": [\"admin\", \"user\", \"guest\"]\n    },\n    \"tags\": {\n      \"type\": \"array\",\n      \"items\": { \"type\": \"string\" },\n      \"minItems\": 1,\n      \"maxItems\": 10,\n      \"uniqueItems\": true\n    }\n  }\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "常用驗證關鍵字"
+        },
+        {
+          "level": 3,
+          "text": "進階：條件式 schema"
+        }
+      ]
+    },
+    {
+      "id": "6.5",
+      "number": "LESSON 6.5",
+      "title": "Zod / Pydantic / Valibot：實戰驗證",
+      "oneLineSummary": "JSON Schema 是「給 JSON 寫規格」—驗證資料格式對不對。",
+      "analogy": "像身分證的版型—規定欄位順序、長度、必填項。JSON Schema 一樣：定義「user 物件必須有 id (數字) + name (字串、長度 1-50) + email (格式 email)」、不符合就拒收。",
+      "content": "JSON Schema 太囉嗦。實戰用**程式碼定義 schema**，自動產生型別 + 驗證 + 編輯器補全。\n\n  \n### TypeScript：Zod（最紅）\n\n```ts\nimport { z } from \"zod\";\n\nconst UserSchema = z.object({\n  name: z.string().min(1).max(50),\n  age: z.number().int().min(0).max(150),\n  email: z.string().email(),\n  role: z.enum([\"admin\", \"user\", \"guest\"]),\n  tags: z.array(z.string()).min(1).max(10),\n  bio: z.string().optional(),\n  birthday: z.coerce.date() // 字串自動轉 Date\n});\n\n// 自動推導型別\ntype User = z.infer;\n\n// 驗證（用在 API route）\nconst result = UserSchema.safeParse(req.body);\nif (!result.success) {\n  return Response.json({ error: result.error.flatten() }, { status: 400 });\n}\nconst user: User = result.data;\n\n// 進階：refine（自訂驗證邏輯）\nconst PasswordSchema = z.object({\n  password: z.string().min(8),\n  confirm: z.string()\n}).refine(d => d.password === d.confirm, {\n  message: \"密碼不一致\",\n  path: [\"confirm\"]\n});\n\n// transform（驗證後轉換）\nconst NumberFromString = z.string().transform(s => parseInt(s, 10));\n```\n\n  \n### Python：Pydantic（FastAPI 用）\n\n```python\nfrom pydantic import BaseModel, EmailStr, Field, field_validator\nfrom typing import Literal\nfrom datetime import date\n\nclass User(BaseModel):\n    name: str = Field(min_length=1, max_length=50)\n    age: int = Field(ge=0, le=150)\n    email: EmailStr\n    role: Literal[\"admin\", \"user\", \"guest\"]\n    birthday: date | None = None\n    \n    # 自訂驗證\n    @field_validator(\"name\")\n    @classmethod\n    def no_special_chars(cls, v: str) -> str:\n        if not v.replace(\"-\", \"\").isalnum():\n            raise ValueError(\"含特殊字元\")\n        return v\n\n# 驗證\ntry:\n    user = User(**request_data)\nexcept ValidationError as e:\n    return {\"error\": e.errors()}, 400\n\n# 序列化\nuser.model_dump()           # → dict\nuser.model_dump_json()      # → JSON 字串\nUser.model_validate(data)  # dict → User\nUser.model_validate_json(json_str)  # JSON → User\n```\n\n  \n### Valibot：Zod 的輕量版\n\n```ts\nimport * as v from \"valibot\";\n\nconst UserSchema = v.object({\n  name: v.pipe(v.string(), v.minLength(1)),\n  age: v.pipe(v.number(), v.integer(), v.minValue(0))\n});\n\n// bundle size 比 Zod 小 10 倍（適合 edge / 客戶端）\n```\n\n  \n    **🚀 進階技巧**\n    \nZod 跟 Pydantic 還能**反向產生 JSON Schema**（`zodToJsonSchema` / `Model.model_json_schema()`），直接餵給 OpenAI / Claude 的 tool use，一份 schema 三邊用：(1) TS 型別 (2) runtime 驗證 (3) LLM 結構化輸出。\n\n  \n\n  \n### 2026 業界選擇\n\n  \n- **TS**：Zod（生態最豐）、Valibot（要極致 bundle size）\n- **Python**：Pydantic v2（FastAPI 預設）\n- **跨語言**：JSON Schema（標準但寫起來囉嗦）\n\n  \n    \n      🛠️\n      工具推薦\n    \n    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。",
+      "tip": {
+        "type": "practical",
+        "text": "配合這節用的工具：(1) VS Code（編輯器、免費）(2) Chrome DevTools（F12 開啟、除錯神器）(3) Live Server（VS Code 擴充、即時預覽）(4) GitHub Copilot / Cursor（AI 寫程式、學習加速 2-10x）。"
+      },
+      "xp": 15,
+      "playgrounds": [
+        {
+          "key": "6.5.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "import { z } from \"zod\";\n\nconst UserSchema = z.object({\n  name: z.string().min(1).max(50),\n  age: z.number().int().min(0).max(150),\n  email: z.string().email(),\n  role: z.enum([\"admin\", \"user\", \"guest\"]),\n  tags: z.array(z.string()).min(1).max(10),\n  bio: z.string().optional(),\n  birthday: z.coerce.date() // 字串自動轉 Date\n});\n\n// 自動推導型別\ntype User = z.infer;\n\n// 驗證（用在 API route）\nconst result = UserSchema.safeParse(req.body);\nif (!result.success) {\n  return Response.json({ error: result.error.flatten() }, { status: 400 });\n}\nconst user: User = result.data;\n\n// 進階：refine（自訂驗證邏輯）\nconst PasswordSchema = z.object({\n  password: z.string().min(8),\n  confirm: z.string()\n}).refine(d => d.password === d.confirm, {\n  message: \"密碼不一致\",\n  path: [\"confirm\"]\n});\n\n// transform（驗證後轉換）\nconst NumberFromString = z.string().transform(s => parseInt(s, 10));",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "TypeScript：Zod（最紅）"
+        },
+        {
+          "level": 3,
+          "text": "Python：Pydantic（FastAPI 用）"
+        },
+        {
+          "level": 3,
+          "text": "Valibot：Zod 的輕量版"
+        },
+        {
+          "level": 3,
+          "text": "2026 業界選擇"
+        }
+      ]
+    },
+    {
+      "id": "6.6",
+      "number": "LESSON 6.6",
+      "title": "巢狀結構與資料正規化",
+      "oneLineSummary": "JSON-LD 是「給 Google + AI 看的 JSON」—加在網頁裡讓搜尋引擎理解內容。",
+      "analogy": "像商品掛上「無毒」「素食」「Halal」標籤—讓挑剔的顧客快速分辨。JSON-LD 給網頁掛上「這是食譜 / 這是文章 / 這是評論」標籤、Google 抓內容更準、AI 引擎引用率高。",
+      "content": "真實資料常常巢狀。一個論壇貼文：\n\n```json\n{\n  \"id\": \"post-001\",\n  \"title\": \"AI 島開課\",\n  \"author\": {\n    \"id\": \"user-42\",\n    \"name\": \"Luffysky\",\n    \"avatar\": \"https://...\"\n  },\n  \"comments\": [\n    {\n      \"id\": \"c1\",\n      \"author\": { \"id\": \"user-42\", \"name\": \"Luffysky\", \"avatar\": \"https://...\" },\n      \"text\": \"歡迎留言\"\n    }\n  ]\n}\n```\n\n  \n看出問題嗎？author 重複了。同一個人改頭像要改幾十處。\n\n  \n### 正規化（normalize）\n\n```json\n{\n  \"posts\": {\n    \"post-001\": { \"title\": \"AI 島開課\", \"author_id\": \"user-42\", \"comment_ids\": [\"c1\"] }\n  },\n  \"comments\": {\n    \"c1\": { \"author_id\": \"user-42\", \"text\": \"歡迎留言\" }\n  },\n  \"users\": {\n    \"user-42\": { \"name\": \"Luffysky\", \"avatar\": \"https://...\" }\n  }\n}\n```\n\n  \n後端 / Redux / Zustand 大型狀態幾乎都用這格式。**資料庫思維帶進前端**。\n\n  \n套件：`normalizr`（自動正規化）、`@reduxjs/toolkit` 的 createEntityAdapter。\n\n  \n### 反過來：denormalize（API 回傳時）\n\n  \nAPI 為了方便前端，常會把關聯資料展開：\n\n```json\n// GET /posts/post-001?include=author,comments.author\n{\n  \"id\": \"post-001\",\n  \"author\": { ... },\n  \"comments\": [\n    { \"author\": { ... } }\n  ]\n}\n```\n\n  \n這是 JSON:API 規範的做法，避免前端發 N+1 個請求。\n\n  \n    \n      ⚠️\n      新手常見錯誤\n    \n    新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。",
+      "tip": {
+        "type": "warning",
+        "text": "新手 3 大坑：(1) 不看 console—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) 不存檔就 F5—改完忘記儲存以為「程式沒效果」 (3) 抄 code 不理解—複製貼上能跑、但下次要改就崩潰。記得：先看懂、再寫。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "6.6.auto",
+          "language": "json",
+          "title": "試試看",
+          "initialCode": "{\n  \"id\": \"post-001\",\n  \"title\": \"AI 島開課\",\n  \"author\": {\n    \"id\": \"user-42\",\n    \"name\": \"Luffysky\",\n    \"avatar\": \"https://...\"\n  },\n  \"comments\": [\n    {\n      \"id\": \"c1\",\n      \"author\": { \"id\": \"user-42\", \"name\": \"Luffysky\", \"avatar\": \"https://...\" },\n      \"text\": \"歡迎留言\"\n    }\n  ]\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "正規化（normalize）"
+        },
+        {
+          "level": 3,
+          "text": "反過來：denormalize（API 回傳時）"
+        }
+      ]
+    },
+    {
+      "id": "6.7",
+      "number": "LESSON 6.7",
+      "title": "讓 LLM 強制回傳結構化 JSON",
+      "oneLineSummary": "JSON5 / JSONC 是「允許註解的 JSON」—設定檔常用、VS Code 就吃 JSONC。",
+      "analogy": "像允許備註的 Excel 表—正式 JSON 不能寫註解、JSONC 可以。寫設定檔（tsconfig.json）時用 JSONC 寫註解、之後接手的人才知道每個設定的意義。",
+      "content": "2026 年最值錢技能之一：把 AI 的「自由文字」鎖成「結構化資料」，這樣可以直接塞進 DB、串到下個流程。\n\n  \n### OpenAI：response_format（最簡單）\n\n```js\nconst resp = await openai.chat.completions.create({\n  model: \"gpt-4o\",\n  messages: [{ role: \"user\", content: \"分析這條評論：'真的超好吃，會再來！'\" }],\n  response_format: {\n    type: \"json_schema\",\n    json_schema: {\n      name: \"sentiment\",\n      strict: true,\n      schema: {\n        type: \"object\",\n        properties: {\n          sentiment: { type: \"string\", enum: [\"positive\", \"negative\", \"neutral\"] },\n          score: { type: \"number\", minimum: 0, maximum: 1 },\n          keywords: { type: \"array\", items: { type: \"string\" } }\n        },\n        required: [\"sentiment\", \"score\", \"keywords\"],\n        additionalProperties: false\n      }\n    }\n  }\n});\n\nconst result = JSON.parse(resp.choices[0].message.content);\n```\n\n  \n### Anthropic Claude：tool use\n\n```js\nconst msg = await anthropic.messages.create({\n  model: \"claude-opus-4-7\",\n  max_tokens: 1024,\n  tools: [{\n    name: \"submit_analysis\",\n    description: \"提交情緒分析結果\",\n    input_schema: {\n      type: \"object\",\n      properties: {\n        sentiment: { type: \"string\", enum: [\"positive\", \"negative\", \"neutral\"] },\n        score: { type: \"number\" },\n        keywords: { type: \"array\", items: { type: \"string\" } }\n      },\n      required: [\"sentiment\", \"score\", \"keywords\"]\n    }\n  }],\n  tool_choice: { type: \"tool\", name: \"submit_analysis\" },\n  messages: [{ role: \"user\", content: \"分析：'真的超好吃，會再來！'\" }]\n});\n\nconst result = msg.content.find(b => b.type === \"tool_use\").input;\n```\n\n  \n### 用 Zod 自動產 schema 餵 LLM\n\n```ts\nimport { z } from \"zod\";\nimport { zodToJsonSchema } from \"zod-to-json-schema\";\n\nconst AnalysisSchema = z.object({\n  sentiment: z.enum([\"positive\", \"negative\", \"neutral\"]),\n  score: z.number().min(0).max(1),\n  keywords: z.array(z.string()).max(5)\n});\n\n// 一份 schema 三邊用\ntype Analysis = z.infer;     // TS 型別\nconst jsonSchema = zodToJsonSchema(AnalysisSchema);   // 餵 LLM\n\nconst raw = JSON.parse(llmResponse);\nconst result = AnalysisSchema.parse(raw);              // runtime 驗證\n```\n\n  \n    **🚀 進階技巧**\n    \n用 Zod 寫 schema → 轉成 JSON Schema → 餵給 LLM → LLM 回傳 → 用同一個 Zod parse 一遍。**編譯期型別 + 執行期驗證 + AI 結構化輸出**三位一體。這個 pattern 在 LangChain / Vercel AI SDK 已標準化。\n\n  \n\n  \n### Function Calling vs JSON Mode 選擇\n\n  \n- **JSON Mode**（OpenAI 的 response_format）：適合「我要一個明確結構化的回應」\n- **Function Calling / Tool Use**：適合「給 AI 多個工具，它自己選用哪個」\n- **多步驟 Agent**：用 Tool Use 配合迴圈\n\n  \n    \n      💼\n      接案小知識\n    \n    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「JSON」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。",
+      "tip": {
+        "type": "practical",
+        "text": "剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「JSON」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "6.7.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "const resp = await openai.chat.completions.create({\n  model: \"gpt-4o\",\n  messages: [{ role: \"user\", content: \"分析這條評論：'真的超好吃，會再來！'\" }],\n  response_format: {\n    type: \"json_schema\",\n    json_schema: {\n      name: \"sentiment\",\n      strict: true,\n      schema: {\n        type: \"object\",\n        properties: {\n          sentiment: { type: \"string\", enum: [\"positive\", \"negative\", \"neutral\"] },\n          score: { type: \"number\", minimum: 0, maximum: 1 },\n          keywords: { type: \"array\", items: { type: \"string\" } }\n        },\n        required: [\"sentiment\", \"score\", \"keywords\"],\n        additionalProperties: false\n      }\n    }\n  }\n});\n\nconst result = JSON.parse(resp.choices[0].message.content);",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "OpenAI：responseformat（最簡單）"
+        },
+        {
+          "level": 3,
+          "text": "Anthropic Claude：tool use"
+        },
+        {
+          "level": 3,
+          "text": "用 Zod 自動產 schema 餵 LLM"
+        },
+        {
+          "level": 3,
+          "text": "Function Calling vs JSON Mode 選擇"
+        }
+      ]
+    },
+    {
+      "id": "6.8",
+      "number": "LESSON 6.8",
+      "title": "API 設計：RESTful、JSON-RPC、GraphQL",
+      "oneLineSummary": "JSON 跟其他格式（XML / YAML / TOML）的比較—各有適用場景。",
+      "analogy": "像飲料杯的選擇—紙杯（JSON）泛用、玻璃杯（XML）儀式感、馬克杯（YAML）日常—不是哪個最好、是看場景。API 用 JSON、devops 設定用 YAML、Rust / Cargo 用 TOML。",
+      "content": "### RESTful（最常見）\n\n```text\nGET    /users           ← 列表\nGET    /users/123       ← 單一\nPOST   /users           ← 建立\nPUT    /users/123       ← 整個取代\nPATCH  /users/123       ← 部分更新\nDELETE /users/123       ← 刪除\n```\n\n```json\n// 成功\n{\n  \"ok\": true,\n  \"data\": { \"id\": \"123\", \"name\": \"招財\" },\n  \"meta\": { \"page\": 1, \"total\": 42 }\n}\n\n// 失敗\n{\n  \"ok\": false,\n  \"error\": {\n    \"code\": \"VALIDATION_ERROR\",\n    \"message\": \"email 格式錯誤\",\n    \"fields\": { \"email\": \"必須是有效信箱\" }\n  }\n}\n```\n\n  \n### JSON-RPC（RPC 風格）\n\n```json\n// 請求\n{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"user.create\",\n  \"params\": { \"name\": \"招財\", \"email\": \"...\" },\n  \"id\": 1\n}\n\n// 成功回應\n{\n  \"jsonrpc\": \"2.0\",\n  \"result\": { \"id\": \"u-123\" },\n  \"id\": 1\n}\n\n// 錯誤回應\n{\n  \"jsonrpc\": \"2.0\",\n  \"error\": { \"code\": -32602, \"message\": \"Invalid params\" },\n  \"id\": 1\n}\n```\n\n  \n用途：MetaMask、區塊鏈節點、Language Server Protocol（VS Code 跟語言伺服器溝通）、Solana / Ethereum RPC。\n\n  \n### GraphQL（前端要什麼就拿什麼）\n\n```text\n# 請求\nquery {\n  user(id: \"123\") {\n    name\n    email\n    posts(limit: 5) {\n      title\n      created_at\n    }\n  }\n}\n\n# JSON 回應（只回你問的欄位）\n{\n  \"data\": {\n    \"user\": {\n      \"name\": \"招財\",\n      \"email\": \"...\",\n      \"posts\": [...]\n    }\n  }\n}\n```\n\n  \n### 該選哪個？\n\n  \n| 場景 | 選 |\n| --- | --- |\n| 一般 SaaS、公開 API | RESTful |\n| 內部微服務、區塊鏈、IDE 協定 | JSON-RPC |\n| 複雜資料圖、行動端優化 | GraphQL（Apollo、Relay） |\n| TS 全端、型別安全極致 | tRPC（內部是 JSON-RPC 變體） |\n\n  \n    \n      🎯\n      面試考點\n    \n    台灣科技公司面試 90% 會問「JSON」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。",
+      "tip": {
+        "type": "pro",
+        "text": "台灣科技公司面試 90% 會問「JSON」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "6.8.auto",
+          "language": "json",
+          "title": "試試看",
+          "initialCode": "// 成功\n{\n  \"ok\": true,\n  \"data\": { \"id\": \"123\", \"name\": \"招財\" },\n  \"meta\": { \"page\": 1, \"total\": 42 }\n}\n\n// 失敗\n{\n  \"ok\": false,\n  \"error\": {\n    \"code\": \"VALIDATION_ERROR\",\n    \"message\": \"email 格式錯誤\",\n    \"fields\": { \"email\": \"必須是有效信箱\" }\n  }\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "RESTful（最常見）"
+        },
+        {
+          "level": 3,
+          "text": "JSON-RPC（RPC 風格）"
+        },
+        {
+          "level": 3,
+          "text": "GraphQL（前端要什麼就拿什麼）"
+        },
+        {
+          "level": 3,
+          "text": "該選哪個？"
+        }
+      ]
+    },
+    {
+      "id": "6.9",
+      "number": "LESSON 6.9",
+      "title": "OpenAPI：API 的合約規範",
+      "oneLineSummary": "解析大型 JSON：streaming parser（Stream JSON）— 100 萬筆資料也不爆記憶體。",
+      "analogy": "像看一整桌菜 vs 一道一道上—大型 JSON 全部 load 進記憶體會爆、stream parser 一筆一筆讀、處理完就丟。爬蟲 / ETL / Big Data 必備技能。",
+      "content": "OpenAPI（前稱 Swagger）= 用 YAML/JSON 寫的 API 規格。寫一份規格 → 自動產生：\n\n  \n- 互動式 API 文件（Swagger UI、Redoc）\n- 所有語言的 client SDK（TS、Python、Go、Java、Swift...）\n- 後端骨架（FastAPI、NestJS 都吃）\n- mock server（不用真寫後端就能測前端）\n- 合約測試（Pact、Dredd）\n\n```json\n{\n  \"openapi\": \"3.1.0\",\n  \"info\": {\n    \"title\": \"SnowRealm API\",\n    \"version\": \"1.0\"\n  },\n  \"servers\": [{ \"url\": \"https://api.snowrealm.tw\" }],\n  \"paths\": {\n    \"/users/{id}\": {\n      \"get\": {\n        \"summary\": \"取得使用者\",\n        \"parameters\": [{\n          \"name\": \"id\",\n          \"in\": \"path\",\n          \"required\": true,\n          \"schema\": { \"type\": \"string\" }\n        }],\n        \"responses\": {\n          \"200\": {\n            \"description\": \"成功\",\n            \"content\": {\n              \"application/json\": {\n                \"schema\": { \"$ref\": \"#/components/schemas/User\" }\n              }\n            }\n          },\n          \"404\": { \"$ref\": \"#/components/responses/NotFound\" }\n        }\n      }\n    }\n  },\n  \"components\": {\n    \"schemas\": {\n      \"User\": {\n        \"type\": \"object\",\n        \"required\": [\"id\", \"name\"],\n        \"properties\": {\n          \"id\": { \"type\": \"string\" },\n          \"name\": { \"type\": \"string\" },\n          \"email\": { \"type\": \"string\", \"format\": \"email\" }\n        }\n      }\n    }\n  }\n}\n```\n\n  \n### 工具鏈\n\n  \n- **Swagger UI / Redoc**：產美觀文件頁\n- **openapi-typescript**：產 TS 型別\n- **orval / kubb**：產完整 client（含 React Query hook）\n- **Prism**：mock server\n- **FastAPI / NestJS**：寫 code 自動產 OpenAPI（反向）\n\n  \n    **✨ 接案小技巧**\n    \n跟客戶談需求時，**先一起寫 OpenAPI 規格**再開工。雙方對「API 長怎樣」有共識，少 50% 後續溝通成本。FastAPI 寫了 code 還能自動產 OpenAPI 文件，賣相超好。\n\n  \n\n  \n    \n      ⚡\n      學習加速器\n    \n    把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。",
+      "tip": {
+        "type": "practical",
+        "text": "把這節學到的馬上應用到一個小東西—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "6.9.auto",
+          "language": "json",
+          "title": "試試看",
+          "initialCode": "{\n  \"openapi\": \"3.1.0\",\n  \"info\": {\n    \"title\": \"SnowRealm API\",\n    \"version\": \"1.0\"\n  },\n  \"servers\": [{ \"url\": \"https://api.snowrealm.tw\" }],\n  \"paths\": {\n    \"/users/{id}\": {\n      \"get\": {\n        \"summary\": \"取得使用者\",\n        \"parameters\": [{\n          \"name\": \"id\",\n          \"in\": \"path\",\n          \"required\": true,\n          \"schema\": { \"type\": \"string\" }\n        }],\n        \"responses\": {\n          \"200\": {\n            \"description\": \"成功\",\n            \"content\": {\n              \"application/json\": {\n                \"schema\": { \"$ref\": \"#/components/schemas/User\" }\n              }\n            }\n          },\n          \"404\": { \"$ref\": \"#/components/responses/NotFound\" }\n        }\n      }\n    }\n  },\n  \"components\": {\n    \"schemas\": {\n      \"User\": {\n        \"type\": \"object\",\n        \"required\": [\"id\", \"name\"],\n        \"properties\": {\n          \"id\": { \"type\": \"string\" },\n          \"name\": { \"type\": \"string\" },\n          \"email\": { \"type\": \"string\", \"format\": \"email\" }\n        }\n      }\n    }\n  }\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "工具鏈"
+        }
+      ]
+    },
+    {
+      "id": "6.10",
+      "number": "LESSON 6.10",
+      "title": "進階格式：JSONL、JSONPath、JMESPath",
+      "oneLineSummary": "JSON 的常見資料結構—API response / config / state—實戰看熟很重要。",
+      "analogy": "像看食譜久了知道各種菜的格式—Twitter API、Stripe API、Google API 雖然不同公司、JSON 結構有共通模式。看 30 個 API 就熟了。",
+      "content": "### JSONL（JSON Lines）\n\n  \n每行一個 JSON 物件。串流處理、log 檔、AI 訓練資料的事實標準。\n\n```text\n{\"id\":1,\"text\":\"first\"}\n{\"id\":2,\"text\":\"second\"}\n{\"id\":3,\"text\":\"third\"}\n```\n\n  \n好處：可以邊讀邊處理（不用整檔載入）、失敗一行不影響其他行、容易 grep / awk 處理。OpenAI fine-tune 資料就用這格式。\n\n```python\n# 串流讀（大檔不爆記憶體）\nimport json\n\nwith open(\"data.jsonl\") as f:\n    for line in f:\n        record = json.loads(line)\n        process(record)\n\n# 寫\nwith open(\"out.jsonl\", \"w\") as f:\n    for record in records:\n        f.write(json.dumps(record, ensure_ascii=False) + \"\\n\")\n```\n\n  \n### JSONPath：用路徑取值（類似 XPath）\n\n```js\n$.store.book[*].author       // 所有書的作者\n$.store.book[?(@.price  `5`].name\n\n// 排序\nsort_by(items, &price)\n\n// 聚合\nlength(items)\nsum(items[*].price)\nmin_by(items, &price)\n```\n\n  \n處理 AWS / API 回傳的大型 JSON 時超好用。`aws-cli --query` 就用 JMESPath。\n\n  \n### 實戰：用 JMESPath 處理 API 回應\n\n```js\nimport jmespath from \"jmespath\";\n\nconst data = await fetch(\"/api/orders\").then(r => r.json());\n\n// 抽 customer name + total，已付款的，按金額排序\nconst result = jmespath.search(data,\n  \"orders[?paid].{name: customer.name, total: total} | sort_by(@, &total)\"\n);\n```\n\n  \n    \n      🚀\n      2026 趨勢\n    \n    這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。",
+      "tip": {
+        "type": "trend",
+        "text": "這個技術 2026 還在主流、未來 5 年不會過時。但工具會更新—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "6.10.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "# 串流讀（大檔不爆記憶體）\nimport json\n\nwith open(\"data.jsonl\") as f:\n    for line in f:\n        record = json.loads(line)\n        process(record)\n\n# 寫\nwith open(\"out.jsonl\", \"w\") as f:\n    for record in records:\n        f.write(json.dumps(record, ensure_ascii=False) + \"\\n\")",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "挑一個你做過的舊專案、用本節「進階格式：JSONL、JSONPath、JMESPath」介紹的進階技術重構它。",
+        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（aws-cli --query）通常在效能 / 維護性 / 擴展性卡住時才登場。",
+        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "JSONL（JSON Lines）"
+        },
+        {
+          "level": 3,
+          "text": "JSONPath：用路徑取值（類似 XPath）"
+        },
+        {
+          "level": 3,
+          "text": "實戰：用 JMESPath 處理 API 回應"
+        }
+      ]
+    },
+    {
+      "id": "6.11",
+      "number": "LESSON 6.11",
+      "title": "JSON 五大地雷",
+      "oneLineSummary": "JSON 安全：JSON injection / Prototype Pollution—接收使用者 JSON 要小心。",
+      "analogy": "像陌生人送你的飲料—不能直接喝、要先檢查。使用者送來的 JSON 一樣：不能直接 Object.assign(state, userJson)、可能會塞惡意 __proto__ 污染原型鏈。",
+      "content": "### 地雷 1：日期沒有原生型別\n\n  \nJSON 裡的「日期」其實都是字串。約定俗成用 ISO 8601：\n\n```json\n{ \"created_at\": \"2026-05-10T11:30:00Z\" }       // UTC\n{ \"created_at\": \"2026-05-10T19:30:00+08:00\" }  // 含時區\n```\n\n  \n不要用 `\"2026/05/10 11:30\"` 這種，跨時區會死。\n\n  \n### 地雷 2：Number 精度\n\n  \nJSON 的 number 走 IEEE 754 雙精度浮點，最大安全整數 `2^53 - 1 = 9007199254740991`。\n\n```js\nJSON.parse('{\"id\": 9007199254740993}');\n// { id: 9007199254740992 } ← 精度遺失！\n\n// 浮點數一樣\nJSON.parse('{\"price\": 0.1}');\n0.1 + 0.2; // 0.30000000000000004\n```\n\n  \n解法：\n\n  \n- **大數字（雪花 ID、加密貨幣金額）一律存字串**：`{ \"id\": \"9007199254740993\" }`\n- 金額用最小單位整數（分、satoshi）\n- 需要精確小數用 `Decimal.js`（前端）或 `decimal`（Python）\n- 金融場景用 BigInt：`BigInt(jsonString)`\n\n  \n### 地雷 3：null vs undefined vs 不存在\n\n```js\n// 三種「沒值」的差異\n{ \"a\": null }   // 明確說「沒有」\n{ \"a\": undefined } // 違法！JSON 不認 undefined\n{}                // 連這個 key 都沒有\n\n// JSON.stringify 會直接砍掉 undefined\nJSON.stringify({ a: 1, b: undefined });\n// '{\"a\":1}' ← b 不見了\n\n// 陣列中的 undefined 變 null\nJSON.stringify([1, undefined, 3]);\n// '[1,null,3]'\n```\n\n  \n### 地雷 4：循環引用\n\n```js\nconst obj = { name: \"A\" };\nobj.self = obj; // 自己指自己\n\nJSON.stringify(obj);\n// TypeError: Converting circular structure to JSON\n```\n\n  \n實戰常出現在 React component 把 DOM event 丟進 state 序列化。**序列化前先抽純資料**。\n\n```js\n// 解法：用 replacer 偵測\nfunction safeStringify(obj) {\n  const seen = new WeakSet();\n  return JSON.stringify(obj, (k, v) => {\n    if (typeof v === \"object\" && v !== null) {\n      if (seen.has(v)) return \"[Circular]\";\n      seen.add(v);\n    }\n    return v;\n  });\n}\n```\n\n  \n### 地雷 5：編碼\n\n  \nJSON 規範要求 UTF-8。Python `json.dumps` 預設 ASCII escape，中文變 `\\uXXXX`。`ensure_ascii=False` 解決。\n\n  \n    **🚨 資安警報**\n    \n永遠不要用 `eval()` 解析 JSON — 駭客可以塞惡意 code。**只用 `JSON.parse()`**。這條救過無數網站。另外 `JSON.parse()` 對使用者輸入會丟例外，記得 try-catch。\n\n  \n\n  \n    \n      🛠️\n      工具推薦\n    \n    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。",
+      "tip": {
+        "type": "practical",
+        "text": "配合這節用的工具：(1) VS Code（編輯器、免費）(2) Chrome DevTools（F12 開啟、除錯神器）(3) Live Server（VS Code 擴充、即時預覽）(4) GitHub Copilot / Cursor（AI 寫程式、學習加速 2-10x）。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "6.11.auto",
+          "language": "json",
+          "title": "試試看",
+          "initialCode": "{ \"created_at\": \"2026-05-10T11:30:00Z\" }       // UTC\n{ \"created_at\": \"2026-05-10T19:30:00+08:00\" }  // 含時區",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "地雷 1：日期沒有原生型別"
+        },
+        {
+          "level": 3,
+          "text": "地雷 2：Number 精度"
+        },
+        {
+          "level": 3,
+          "text": "地雷 3：null vs undefined vs 不存在"
+        },
+        {
+          "level": 3,
+          "text": "地雷 4：循環引用"
+        },
+        {
+          "level": 3,
+          "text": "地雷 5：編碼"
+        }
+      ]
+    },
+    {
+      "id": "6.12",
+      "number": "LESSON 6.12",
+      "title": "JSON vs Protobuf / Avro / MessagePack",
+      "oneLineSummary": "JSON 跟 SQL / NoSQL：JSONB (Postgres) 跟 BSON (MongoDB)—DB 存 JSON 的方法。",
+      "analogy": "像把書架上的書數位化—Postgres 的 JSONB 像「掃描成 PDF」（可搜尋）、MongoDB 的 BSON 像「整本電子書」（原生支援）。資料庫存 JSON 的兩種主流方式。",
+      "content": "JSON 是文字格式，**不是最快的**。極致效能場景有其他選擇。\n\n  \n| 格式 | 類型 | 速度 | 大小 | 場景 |\n| --- | --- | --- | --- | --- |\n| JSON | 文字 | 慢 | 大 | API、設定、日常 |\n| MessagePack | 二進位 | 快 | 小 30-50% | Redis、WebSocket |\n| Protobuf | 二進位（要 schema） | 很快 | 小 50-70% | gRPC、Google 內部 |\n| Avro | 二進位（要 schema） | 很快 | 小 | Kafka、Hadoop |\n| CBOR | 二進位 | 快 | 小 | IoT、COSE |\n| BSON | 二進位 | 中 | 較大 | MongoDB |\n\n  \n### Protobuf（最常見的高效替代）\n\n```text\n// user.proto\nsyntax = \"proto3\";\n\nmessage User {\n  string id = 1;\n  string name = 2;\n  int32 age = 3;\n  repeated string tags = 4;\n}\n```\n\n  \n用 `protoc` 編譯出對應語言的 class，再用它序列化。比 JSON 小、快，但要 schema 才能讀。Google、Twitch、Discord 內部都用。\n\n  \n### 什麼時候該換掉 JSON？\n\n  \n- QPS 上萬、每毫秒都重要 → Protobuf / Avro\n- IoT 裝置流量寶貴 → CBOR / MessagePack\n- 需要 schema 演進 → Avro / Protobuf\n- **其他 99% 場景** → JSON 就好\n\n  \n    **⚠ 踩雷警告**\n    \n不要為了效能優化過早換 Protobuf。新創常見錯誤：抄 Google 架構，結果 schema 維護成本大於效能收益。**JSON 撐到 100k QPS 不是問題**，到了再換。\n\n  \n\n  \n    \n      ⚠️\n      新手常見錯誤\n    \n    新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。",
+      "tip": {
+        "type": "warning",
+        "text": "新手 3 大坑：(1) 不看 console—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) 不存檔就 F5—改完忘記儲存以為「程式沒效果」 (3) 抄 code 不理解—複製貼上能跑、但下次要改就崩潰。記得：先看懂、再寫。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "用一張紙、把「JSON vs Protobuf / Avro / MessagePack」的核心概念畫成心智圖。中心是這節的主題、第一圈放 3-5 個關鍵詞（如 protoc）、第二圈延伸細節。",
+        "hint": "關鍵概念可以從 lesson 內出現的這些關鍵字入手：protoc。畫完不要光放著、試著用自己的話講一次。",
+        "answer": "心智圖三步：(1) 中心 = lesson 主題 (2) 第一圈 = 主要分類（通常 3-5 個）(3) 第二圈 = 具體例子或工具。畫完拿給朋友看、能講通 = 真懂。常見錯誤：抄關鍵字當分類、應該用自己理解後的歸納。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "Protobuf（最常見的高效替代）"
+        },
+        {
+          "level": 3,
+          "text": "什麼時候該換掉 JSON？"
+        }
+      ]
+    },
+    {
+      "id": "6.13",
+      "number": "LESSON 6.13",
+      "title": "效能：大型 JSON 處理",
+      "oneLineSummary": "JSON Tools：jq（CLI）/ JSON Viewer / json-server—工程師日常工具。",
+      "analogy": "像廚師的刀具組—不同情境用不同把。jq 在 terminal 操作 JSON（grep / filter）、JSON Viewer 看複雜 JSON 結構、json-server 30 秒架一個假 API 給前端測試。",
+      "content": "### 串流解析（不整檔載入）\n\n```js\n// Node.js：用 stream-json 套件\nimport StreamArray from \"stream-json/streamers/StreamArray.js\";\nimport fs from \"fs\";\n\nconst pipeline = fs.createReadStream(\"huge.json\")\n  .pipe(StreamArray.withParser());\n\npipeline.on(\"data\", ({ key, value }) => {\n  processItem(value); // 一個物件一個物件處理\n});\n```\n\n```python\n# Python：ijson\nimport ijson\n\nwith open(\"huge.json\") as f:\n    for item in ijson.items(f, \"items.item\"):\n        process(item)\n# 不會把整個檔讀進記憶體\n```\n\n  \n### SIMD JSON：CPU 指令加速\n\n```js\n// 標準 JSON.parse vs simdjson\n// 1GB JSON 檔：\n// JSON.parse:  ~3000ms\n// simdjson:    ~300ms（快 10 倍）\n\nimport simdjson from \"simdjson\";\nconst data = simdjson.parse(buffer);\n```\n\n  \n### 分批處理大型陣列\n\n```js\n// ✗ 一次 parse 整個陣列\nconst all = JSON.parse(huge_response); // 可能卡住主執行緒\n\n// ✓ 分批，配合 requestIdleCallback\nasync function processBatch(items, batchSize = 100) {\n  for (let i = 0; i  setTimeout(r, 0));\n  }\n}\n```\n\n  \n### Web Worker 處理 JSON\n\n  \n大型 JSON 解析丟給 Worker，主執行緒不卡：\n\n```js\n// main.js\nconst worker = new Worker(\"parser.js\");\nworker.postMessage(jsonString);\nworker.onmessage = e => render(e.data);\n\n// parser.js\nonmessage = e => {\n  const data = JSON.parse(e.data);\n  postMessage(data);\n};\n```\n\n  \n    \n      💼\n      接案小知識\n    \n    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「JSON」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。",
+      "tip": {
+        "type": "practical",
+        "text": "剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「JSON」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "6.13.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// Node.js：用 stream-json 套件\nimport StreamArray from \"stream-json/streamers/StreamArray.js\";\nimport fs from \"fs\";\n\nconst pipeline = fs.createReadStream(\"huge.json\")\n  .pipe(StreamArray.withParser());\n\npipeline.on(\"data\", ({ key, value }) => {\n  processItem(value); // 一個物件一個物件處理\n});",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "挑一個你做過的舊專案、用本節「效能：大型 JSON 處理」介紹的進階技術重構它。",
+        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
+        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "串流解析（不整檔載入）"
+        },
+        {
+          "level": 3,
+          "text": "SIMD JSON：CPU 指令加速"
+        },
+        {
+          "level": 3,
+          "text": "分批處理大型陣列"
+        },
+        {
+          "level": 3,
+          "text": "Web Worker 處理 JSON"
+        }
+      ]
+    },
+    {
+      "id": "6.14",
+      "number": "LESSON 6.14",
+      "title": "實戰：完整型別安全的 API 層",
+      "oneLineSummary": "整章實戰：用 JSON 設計一個完整 API 規格—寫 spec、寫 schema、寫 mock。",
+      "analogy": "像建築師畫設計圖—蓋房子前先有藍圖。寫 API 前先用 JSON Schema 訂規格、用 json-server 模擬、前端立刻可開工。會這個你就能跟後端工程師對等對話。",
+      "content": "實際接案、寫 SaaS 一定要會的 pattern。\n\n```ts\n// 1. 用 Zod 定義所有資料形狀\nimport { z } from \"zod\";\n\nexport const UserSchema = z.object({\n  id: z.string(),\n  name: z.string().min(1),\n  email: z.string().email(),\n  created_at: z.coerce.date()\n});\n\nexport const UserCreateSchema = UserSchema.omit({ id: true, created_at: true });\nexport const UserUpdateSchema = UserCreateSchema.partial();\n\nexport type User = z.infer;\nexport type UserCreate = z.infer;\n\n// 2. 標準回應形狀\nexport const ApiResponseSchema = (dataSchema: T) =>\n  z.discriminatedUnion(\"ok\", [\n    z.object({ ok: z.literal(true), data: dataSchema }),\n    z.object({\n      ok: z.literal(false),\n      error: z.object({\n        code: z.string(),\n        message: z.string(),\n        fields: z.record(z.string()).optional()\n      })\n    })\n  ]);\n\n// 3. 型別安全 fetch wrapper\nasync function api(\n  url: string,\n  schema: T,\n  opts?: RequestInit\n): Promise>> {\n  const r = await fetch(url, opts);\n  const raw = await r.json();\n  return ApiResponseSchema(schema).parse(raw);\n}\n\n// 4. 使用\nconst result = await api(\"/api/users/123\", UserSchema);\nif (result.ok) {\n  result.data.email; // 完整型別 + runtime 已驗證\n} else {\n  console.error(result.error.message);\n}\n```\n\n  \n這個 pattern 配合上一章的 TS 全部對得起來。**編譯期型別 + 執行期驗證 + 一致錯誤格式**。tRPC、Hono、Next.js Server Actions 全部都是這個哲學。\n\n  \n    \n      🎯\n      面試考點\n    \n    台灣科技公司面試 90% 會問「JSON」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。",
+      "tip": {
+        "type": "pro",
+        "text": "台灣科技公司面試 90% 會問「JSON」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+      },
+      "xp": 15,
+      "playgrounds": [
+        {
+          "key": "6.14.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "// 1. 用 Zod 定義所有資料形狀\nimport { z } from \"zod\";\n\nexport const UserSchema = z.object({\n  id: z.string(),\n  name: z.string().min(1),\n  email: z.string().email(),\n  created_at: z.coerce.date()\n});\n\nexport const UserCreateSchema = UserSchema.omit({ id: true, created_at: true });\nexport const UserUpdateSchema = UserCreateSchema.partial();\n\nexport type User = z.infer;\nexport type UserCreate = z.infer;\n\n// 2. 標準回應形狀\nexport const ApiResponseSchema = (dataSchema: T) =>\n  z.discriminatedUnion(\"ok\", [\n    z.object({ ok: z.literal(true), data: dataSchema }),\n    z.object({\n      ok: z.literal(false),\n      error: z.object({\n        code: z.string(),\n        message: z.string(),\n        fields: z.record(z.string()).optional()\n      })\n    })\n  ]);\n\n// 3. 型別安全 fetch wrapper\nasync function api(\n  url: string,\n  schema: T,\n  opts?: RequestInit\n): Promise>> {\n  const r = await fetch(url, opts);\n  const raw = await r.json();\n  return ApiResponseSchema(schema).parse(raw);\n}\n\n// 4. 使用\nconst result = await api(\"/api/users/123\", UserSchema);\nif (result.ok) {\n  result.data.email; // 完整型別 + runtime 已驗證\n} else {\n  console.error(result.error.message);\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      }
+    },
+    {
+      "title": "JSON Schema：驗證資料結構",
+      "oneLineSummary": "不只看「能 parse」、JSON Schema 驗證「結構對不對」",
+      "analogy": "收到 API 回應、怎麼確定真的長你預期的樣子？JSON Schema 用「Schema 規範」描述、自動驗證、不用手寫一堆 if。",
+      "content": "## 為什麼需要 Schema\n```javascript\n// ❌ 沒有驗證\nconst data = await fetch(\"/api/user\").then(r => r.json());\nconsole.log(data.user.name);  // 萬一 user 不存在？\n\n// ✅ Schema 驗證\nimport Ajv from \"ajv\";\nconst schema = { /* ... */ };\nconst valid = ajv.validate(schema, data);\nif (!valid) throw new Error(\"資料不合法\");\n```\n\n## JSON Schema 範例\n```json\n{\n  \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"name\": { \"type\": \"string\", \"minLength\": 1 },\n    \"age\": { \"type\": \"integer\", \"minimum\": 0, \"maximum\": 150 },\n    \"email\": { \"type\": \"string\", \"format\": \"email\" },\n    \"tags\": {\n      \"type\": \"array\",\n      \"items\": { \"type\": \"string\" },\n      \"minItems\": 1\n    },\n    \"role\": { \"enum\": [\"admin\", \"user\", \"guest\"] }\n  },\n  \"required\": [\"name\", \"email\"],\n  \"additionalProperties\": false\n}\n```\n\n## 用 Ajv 驗證（Node / JS）\n```javascript\nimport Ajv from \"ajv\";\nimport addFormats from \"ajv-formats\";\n\nconst ajv = new Ajv();\naddFormats(ajv);  // 支援 email / date / uri 等\n\nconst validate = ajv.compile(schema);\nconst valid = validate(data);\nif (!valid) console.log(validate.errors);\n```\n\n## TypeScript 從 JSON Schema 生 type\n```bash\nnpx json-schema-to-typescript schema.json\n```\n\n## 用途\n- **API 文件**：Swagger / OpenAPI 內部用 JSON Schema\n- **設定檔驗證**：tsconfig.json、package.json 都有 Schema\n- **表單生成**：Schema → 自動產表單\n- **資料驗證**：webhook payload、DB 寫入前檢查\n\n## 工具\n- **Ajv**（最快、最多人用）\n- **Zod**（TS first、更現代）\n- **Yup**（React Hook Form 常用）\n- **jsonschema.dev** 線上驗證",
+      "tip": {
+        "type": "practical",
+        "text": "個人專案用 Zod（TS 友善）、跨語言 API 用 JSON Schema（標準）。兩個別都學、選一個用熟。"
+      },
+      "id": "6.15",
+      "number": "LESSON 6.15",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "6.15.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// ❌ 沒有驗證\nconst data = await fetch(\"/api/user\").then(r => r.json());\nconsole.log(data.user.name);  // 萬一 user 不存在？\n\n// ✅ Schema 驗證\nimport Ajv from \"ajv\";\nconst schema = { /* ... */ };\nconst valid = ajv.validate(schema, data);\nif (!valid) throw new Error(\"資料不合法\");",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼需要 Schema"
+        },
+        {
+          "level": 2,
+          "text": "JSON Schema 範例"
+        },
+        {
+          "level": 2,
+          "text": "用 Ajv 驗證（Node / JS）"
+        },
+        {
+          "level": 2,
+          "text": "TypeScript 從 JSON Schema 生 type"
+        },
+        {
+          "level": 2,
+          "text": "用途"
+        },
+        {
+          "level": 2,
+          "text": "工具"
+        }
+      ]
+    },
+    {
+      "title": "Zod：TS 友善的 Schema 驗證",
+      "oneLineSummary": "比 JSON Schema 簡潔 10 倍、自動生 TS 型別、2026 最熱",
+      "analogy": "Zod 是 TS 圈最紅的驗證套件—寫一次 Schema、得到驗證 + TS 型別兩個東西。",
+      "content": "## 安裝\n```bash\nnpm install zod\n```\n\n## 基本使用\n```typescript\nimport { z } from \"zod\";\n\nconst UserSchema = z.object({\n  name: z.string().min(1).max(100),\n  age: z.number().int().min(0).max(150),\n  email: z.string().email(),\n  tags: z.array(z.string()).min(1),\n  role: z.enum([\"admin\", \"user\", \"guest\"]),\n});\n\n// 自動推斷 TS 型別\ntype User = z.infer<typeof UserSchema>;\n\n// 驗證\nconst result = UserSchema.safeParse(data);\nif (result.success) {\n  console.log(result.data);  // type-safe User\n} else {\n  console.log(result.error.format());\n}\n```\n\n## 進階組合\n```typescript\n// 巢狀\nconst PostSchema = z.object({\n  title: z.string(),\n  author: UserSchema,  // 重用\n  comments: z.array(z.object({\n    text: z.string(),\n    userId: z.string().uuid(),\n  })),\n});\n\n// Optional / Nullable\nz.object({\n  name: z.string().optional(),    // name?: string\n  bio: z.string().nullable(),     // bio: string | null\n  avatar: z.string().nullish(),   // avatar?: string | null\n});\n\n// Default\nz.object({\n  role: z.enum([\"admin\", \"user\"]).default(\"user\"),\n});\n\n// 轉換 + 驗證\nz.string()\n  .transform(s => s.trim().toLowerCase())\n  .pipe(z.string().email());\n\n// Discriminated union（聯合型別）\nconst Shape = z.discriminatedUnion(\"type\", [\n  z.object({ type: z.literal(\"circle\"), radius: z.number() }),\n  z.object({ type: z.literal(\"square\"), side: z.number() }),\n]);\n```\n\n## 常用驗證\n```typescript\nz.string().email();\nz.string().url();\nz.string().uuid();\nz.string().regex(/^09\\d{8}$/);  // 台灣手機\nz.string().min(8).max(32);\nz.string().datetime();\nz.number().positive();\nz.number().int();\nz.number().multipleOf(0.5);\nz.array(z.string()).nonempty();\nz.date().min(new Date(\"2026-01-01\"));\n```\n\n## 整合 React Hook Form\n```typescript\nimport { useForm } from \"react-hook-form\";\nimport { zodResolver } from \"@hookform/resolvers/zod\";\n\nconst { register, handleSubmit, formState: { errors } } = useForm<User>({\n  resolver: zodResolver(UserSchema),\n});\n```\n\n## 整合 Next.js Server Action\n```typescript\n\"use server\";\nimport { z } from \"zod\";\n\nconst SignupSchema = z.object({\n  email: z.string().email(),\n  password: z.string().min(8),\n});\n\nexport async function signup(formData: FormData) {\n  const data = SignupSchema.parse(Object.fromEntries(formData));\n  // data 是 type-safe\n}\n```",
+      "tip": {
+        "type": "trend",
+        "text": "Zod 是 2024-2026 TS 圈標配。Next.js 官方範例、tRPC、Hono、Drizzle 全用 Zod。學一個受用 5 年。"
+      },
+      "id": "6.16",
+      "number": "LESSON 6.16",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "6.16.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "import { z } from \"zod\";\n\nconst UserSchema = z.object({\n  name: z.string().min(1).max(100),\n  age: z.number().int().min(0).max(150),\n  email: z.string().email(),\n  tags: z.array(z.string()).min(1),\n  role: z.enum([\"admin\", \"user\", \"guest\"]),\n});\n\n// 自動推斷 TS 型別\ntype User = z.infer<typeof UserSchema>;\n\n// 驗證\nconst result = UserSchema.safeParse(data);\nif (result.success) {\n  console.log(result.data);  // type-safe User\n} else {\n  console.log(result.error.format());\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "安裝"
+        },
+        {
+          "level": 2,
+          "text": "基本使用"
+        },
+        {
+          "level": 2,
+          "text": "進階組合"
+        },
+        {
+          "level": 2,
+          "text": "常用驗證"
+        },
+        {
+          "level": 2,
+          "text": "整合 React Hook Form"
+        },
+        {
+          "level": 2,
+          "text": "整合 Next.js Server Action"
+        }
+      ]
+    },
+    {
+      "title": "JSON Path / JSONPath：在大物件裡找資料",
+      "oneLineSummary": "SQL 有 WHERE、JSON 有 JSONPath—`$.user.posts[*].title` 一次抽出所有標題",
+      "analogy": "巨大 JSON（API 回應、Log）裡找特定欄位、寫 JS 一層一層 for 太累—JSONPath 像 SQL 一行搞定。",
+      "content": "## 基本語法\n```\n$              根節點\n.field         子節點\n['field']      子節點（含特殊字元用）\n[*]            所有 array 元素\n[0]            索引 0\n[0:3]          slice\n..field        遞迴搜尋\n?(expr)        過濾\n```\n\n## 範例 JSON\n```json\n{\n  \"user\": {\n    \"name\": \"Alice\",\n    \"posts\": [\n      { \"title\": \"Hello\", \"views\": 100 },\n      { \"title\": \"World\", \"views\": 50 },\n      { \"title\": \"Foo\",   \"views\": 200 }\n    ]\n  }\n}\n```\n\n## 查詢範例\n```\n$.user.name              → \"Alice\"\n$.user.posts[*].title    → [\"Hello\", \"World\", \"Foo\"]\n$.user.posts[?(@.views > 80)].title  → [\"Hello\", \"Foo\"]\n$..title                 → [\"Hello\", \"World\", \"Foo\"]  (遞迴)\n$.user.posts[0:2]        → 前兩個 posts\n```\n\n## Node 使用（jsonpath-plus）\n```bash\nnpm install jsonpath-plus\n```\n```javascript\nimport { JSONPath } from \"jsonpath-plus\";\n\nconst titles = JSONPath({\n  path: \"$.user.posts[*].title\",\n  json: data\n});\n```\n\n## PostgreSQL 支援\n```sql\nSELECT data->'user'->'posts'->0->'title' FROM logs;\n-- PostgreSQL JSON path operators\nSELECT jsonb_path_query(data, '$.user.posts[*].title') FROM logs;\n```\n\n## MongoDB 支援\n類似但語法不同（用 dot notation）：\n```javascript\ndb.users.find({ \"user.posts.views\": { $gt: 80 } });\n```\n\n## 何時用 JSONPath\n- 處理 webhook payload\n- 解析 API 回應特定欄位\n- log 分析\n- GraphQL 替代（簡單場景）\n\n## 工具\n- **jsonpath.com** 線上測試\n- **jq**（命令列 JSON 處理神器）",
+      "tip": {
+        "type": "practical",
+        "text": "`jq` 是命令列 JSON 處理神器、CI/CD 必裝。`curl ... | jq \".user.name\"` 直接抽欄位、不用寫 Python。"
+      },
+      "id": "6.17",
+      "number": "LESSON 6.17",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "6.17.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "import { JSONPath } from \"jsonpath-plus\";\n\nconst titles = JSONPath({\n  path: \"$.user.posts[*].title\",\n  json: data\n});",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "基本語法"
+        },
+        {
+          "level": 2,
+          "text": "範例 JSON"
+        },
+        {
+          "level": 2,
+          "text": "查詢範例"
+        },
+        {
+          "level": 2,
+          "text": "Node 使用（jsonpath-plus）"
+        },
+        {
+          "level": 2,
+          "text": "PostgreSQL 支援"
+        },
+        {
+          "level": 2,
+          "text": "MongoDB 支援"
+        },
+        {
+          "level": 2,
+          "text": "何時用 JSONPath"
+        },
+        {
+          "level": 2,
+          "text": "工具"
+        }
+      ]
+    },
+    {
+      "title": "JSON5 / JSONC / YAML：人類友善的 JSON",
+      "oneLineSummary": "JSON 不能寫註解、不能尾逗號—JSON5 / JSONC 把這些補上",
+      "analogy": "為什麼 VS Code 的 settings.json 可以寫 `//` 註解？因為是 JSONC（JSON with Comments）。",
+      "content": "## 純 JSON 的痛點\n```json\n{\n  \"port\": 3000,\n  // 不能寫註解 ← 錯！\n  \"host\": \"localhost\",  ← 尾逗號也不行\n}\n```\n\n## JSON5（寬鬆 JSON）\n```json5\n{\n  // 可以寫註解\n  port: 3000,           // key 不用引號\n  host: 'localhost',    // 單引號也行\n  features: [\n    'lessons',\n    'achievements',     // 尾逗號 OK\n  ],\n  /* 多行\n     註解 */\n}\n```\n\n## JSONC（JSON with Comments）\n比 JSON5 寬鬆少一點、只多支援註解 + 尾逗號。VS Code 用這個。\n\n## YAML（最人類友善）\n```yaml\n# 也可寫註解\nport: 3000\nhost: localhost\nfeatures:\n  - lessons\n  - achievements\ndatabase:\n  url: postgres://...\n  pool: 10\n```\n\n## TOML（Rust / Python 愛用）\n```toml\nport = 3000\nhost = \"localhost\"\n\n[database]\nurl = \"postgres://...\"\npool = 10\n```\n\n## 各格式選擇\n| 格式 | 適合 | 例子 |\n|---|---|---|\n| JSON | API、Web | API response |\n| JSONC | VS Code 設定 | settings.json |\n| JSON5 | 一般設定檔 | .babelrc |\n| YAML | DevOps、長設定 | docker-compose.yml |\n| TOML | Rust / Python | Cargo.toml、pyproject.toml |\n\n## Node 讀寫\n```javascript\nimport json5 from \"json5\";\nconst config = json5.parse(fs.readFileSync(\"config.json5\", \"utf-8\"));\n\nimport yaml from \"yaml\";\nconst config = yaml.parse(fs.readFileSync(\"config.yml\", \"utf-8\"));\n\nimport toml from \"@iarna/toml\";\nconst config = toml.parse(fs.readFileSync(\"config.toml\", \"utf-8\"));\n```",
+      "tip": {
+        "type": "pro",
+        "text": "設定檔給人類維護 → YAML / TOML。API 跟 Web 傳輸 → JSON。內部 tooling 設定 → JSONC。"
+      },
+      "id": "6.18",
+      "number": "LESSON 6.18",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "6.18.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "import json5 from \"json5\";\nconst config = json5.parse(fs.readFileSync(\"config.json5\", \"utf-8\"));\n\nimport yaml from \"yaml\";\nconst config = yaml.parse(fs.readFileSync(\"config.yml\", \"utf-8\"));\n\nimport toml from \"@iarna/toml\";\nconst config = toml.parse(fs.readFileSync(\"config.toml\", \"utf-8\"));",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "純 JSON 的痛點"
+        },
+        {
+          "level": 2,
+          "text": "JSON5（寬鬆 JSON）"
+        },
+        {
+          "level": 2,
+          "text": "JSONC（JSON with Comments）"
+        },
+        {
+          "level": 2,
+          "text": "YAML（最人類友善）"
+        },
+        {
+          "level": 2,
+          "text": "TOML（Rust / Python 愛用）"
+        },
+        {
+          "level": 2,
+          "text": "各格式選擇"
+        },
+        {
+          "level": 2,
+          "text": "Node 讀寫"
+        }
+      ]
+    },
+    {
+      "title": "JSON Streaming：處理 100GB 大檔不爆記憶體",
+      "oneLineSummary": "巨大 JSON 用 `JSON.parse` 會 OOM crash—改 streaming 一行一行讀",
+      "analogy": "100GB 的 log JSON、`JSON.parse` 整檔載入記憶體 = 機器掛掉。Stream 分段讀、記憶體只用 MB 級。",
+      "content": "## JSONL（JSON Lines）格式\n每行一個 JSON 物件、適合 streaming：\n```jsonl\n{\"id\": 1, \"name\": \"Alice\"}\n{\"id\": 2, \"name\": \"Bob\"}\n{\"id\": 3, \"name\": \"Charlie\"}\n```\n\nOpenAI / Anthropic 訓練資料、Hugging Face datasets、大型 log 都用 JSONL。\n\n## Node Stream 讀 JSONL\n```javascript\nimport fs from \"node:fs\";\nimport readline from \"node:readline\";\n\nconst rl = readline.createInterface({\n  input: fs.createReadStream(\"huge.jsonl\"),\n});\n\nlet count = 0;\nfor await (const line of rl) {\n  if (!line.trim()) continue;\n  const obj = JSON.parse(line);\n  // 處理 obj\n  count++;\n}\nconsole.log(`處理 ${count} 筆`);\n```\n\n## Stream 寫 JSONL\n```javascript\nimport fs from \"node:fs\";\n\nconst out = fs.createWriteStream(\"output.jsonl\");\nfor (const item of bigArray) {\n  out.write(JSON.stringify(item) + \"\\n\");\n}\nout.end();\n```\n\n## 從 API 串流（fetch + ReadableStream）\n```javascript\nconst res = await fetch(\"https://api.example.com/stream\");\nconst reader = res.body.getReader();\nconst decoder = new TextDecoder();\nlet buffer = \"\";\n\nwhile (true) {\n  const { done, value } = await reader.read();\n  if (done) break;\n  buffer += decoder.decode(value, { stream: true });\n\n  const lines = buffer.split(\"\\n\");\n  buffer = lines.pop();  // 最後一行可能不完整\n\n  for (const line of lines) {\n    if (line.trim()) {\n      const obj = JSON.parse(line);\n      // process\n    }\n  }\n}\n```\n\n## NDJSON（Newline Delimited JSON）\nJSONL 的另一個名字、完全一樣。\n\n## 巨大 JSON Array 怎麼處理\n如果不是 JSONL、是純 JSON array `[{}, {}, ...]`：\n\n### 用 stream-json\n```bash\nnpm install stream-json\n```\n```javascript\nimport StreamArray from \"stream-json/streamers/StreamArray.js\";\nimport fs from \"node:fs\";\n\nconst stream = fs.createReadStream(\"big.json\")\n  .pipe(StreamArray.withParser());\n\nfor await (const { value } of stream) {\n  // 處理每個元素，記憶體只裝目前這個\n}\n```\n\n## ChatGPT / Claude streaming response\nLLM API 的 streaming 就是分段傳 JSON：\n```\ndata: {\"delta\": \"Hello\"}\ndata: {\"delta\": \" world\"}\ndata: [DONE]\n```",
+      "tip": {
+        "type": "performance",
+        "text": "處理 > 100MB JSON 永遠用 streaming。不只省記憶體、開始處理時間從幾分鐘變幾秒。"
+      },
+      "id": "6.19",
+      "number": "LESSON 6.19",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "6.19.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "import fs from \"node:fs\";\nimport readline from \"node:readline\";\n\nconst rl = readline.createInterface({\n  input: fs.createReadStream(\"huge.jsonl\"),\n});\n\nlet count = 0;\nfor await (const line of rl) {\n  if (!line.trim()) continue;\n  const obj = JSON.parse(line);\n  // 處理 obj\n  count++;\n}\nconsole.log(`處理 ${count} 筆`);",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "JSONL（JSON Lines）格式"
+        },
+        {
+          "level": 2,
+          "text": "Node Stream 讀 JSONL"
+        },
+        {
+          "level": 2,
+          "text": "Stream 寫 JSONL"
+        },
+        {
+          "level": 2,
+          "text": "從 API 串流（fetch + ReadableStream）"
+        },
+        {
+          "level": 2,
+          "text": "NDJSON（Newline Delimited JSON）"
+        },
+        {
+          "level": 2,
+          "text": "巨大 JSON Array 怎麼處理"
+        },
+        {
+          "level": 3,
+          "text": "用 stream-json"
+        },
+        {
+          "level": 2,
+          "text": "ChatGPT / Claude streaming response"
+        }
+      ]
+    },
+    {
+      "title": "GraphQL：選擇性查詢 vs REST",
+      "oneLineSummary": "REST 給你全部、GraphQL 給你「你要的」—資料量省一半",
+      "analogy": "為什麼大公司（GitHub / Shopify / Linear）用 GraphQL？因為前端能精準說「我只要 name + email」、後端不傳多餘資料。",
+      "content": "## REST vs GraphQL\n\n### REST：固定回傳結構\n```\nGET /users/1\n→ { id, name, email, avatar, bio, createdAt, updatedAt, ... }\n```\n前端只要 name，但伺服器傳整包。\n\n### GraphQL：前端決定\n```graphql\nquery {\n  user(id: 1) {\n    name\n    email\n  }\n}\n```\n回傳：\n```json\n{ \"data\": { \"user\": { \"name\": \"Alice\", \"email\": \"...\" } } }\n```\n\n## 完整 GraphQL 範例\n```graphql\nquery GetUserWithPosts {\n  user(id: \"1\") {\n    name\n    posts(limit: 5, orderBy: createdAt_DESC) {\n      title\n      comments(limit: 3) {\n        text\n        author { name }\n      }\n    }\n  }\n}\n```\n\nREST 要 3 個 endpoint 才能拿到、GraphQL 一次完成。\n\n## Mutation（寫入）\n```graphql\nmutation {\n  createPost(input: { title: \"Hello\", body: \"...\" }) {\n    id\n    title\n  }\n}\n```\n\n## Subscription（即時推送）\n```graphql\nsubscription {\n  newMessage(roomId: \"abc\") {\n    id\n    text\n    author { name }\n  }\n}\n```\n\n## 客戶端工具\n- **Apollo Client**（React、生態最大）\n- **urql**（輕量替代）\n- **graphql-request**（最簡）\n\n```javascript\nimport { request, gql } from \"graphql-request\";\n\nconst query = gql`\n  query { user(id: \"1\") { name } }\n`;\nconst data = await request(\"/graphql\", query);\n```\n\n## 伺服器端工具\n- **Apollo Server**\n- **GraphQL Yoga**\n- **Pothos**（TS-first、推薦）\n- **Hasura**（從 PG 自動生 GraphQL）\n\n## GraphQL vs tRPC\n- **GraphQL**：多語言、強 schema、生態大、複雜\n- **tRPC**：純 TS、零 codegen、簡單、僅限 TS\n\n如果你跟你的 client 都是 TS → **直接用 tRPC**。\n\n## 何時不該用 GraphQL\n- 簡單 CRUD API → REST 夠\n- 公開 API → REST 更標準\n- 內部 TS-only → tRPC 更爽",
+      "tip": {
+        "type": "pro",
+        "text": "GraphQL 學習曲線陡、運維複雜度高。Indie 推 tRPC、企業 / 多語言 / 開放 API 才用 GraphQL。"
+      },
+      "id": "6.20",
+      "number": "LESSON 6.20",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "6.20.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "import { request, gql } from \"graphql-request\";\n\nconst query = gql`\n  query { user(id: \"1\") { name } }\n`;\nconst data = await request(\"/graphql\", query);",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "找一個你身邊的例子、用「GraphQL：選擇性查詢 vs REST」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "REST vs GraphQL"
+        },
+        {
+          "level": 3,
+          "text": "REST：固定回傳結構"
+        },
+        {
+          "level": 3,
+          "text": "GraphQL：前端決定"
+        },
+        {
+          "level": 2,
+          "text": "完整 GraphQL 範例"
+        },
+        {
+          "level": 2,
+          "text": "Mutation（寫入）"
+        },
+        {
+          "level": 2,
+          "text": "Subscription（即時推送）"
+        },
+        {
+          "level": 2,
+          "text": "客戶端工具"
+        },
+        {
+          "level": 2,
+          "text": "伺服器端工具"
+        },
+        {
+          "level": 2,
+          "text": "GraphQL vs tRPC"
+        },
+        {
+          "level": 2,
+          "text": "何時不該用 GraphQL"
+        }
+      ]
+    },
+    {
+      "title": "tRPC：純 TS 全端 type-safe API",
+      "oneLineSummary": "不寫 OpenAPI、不寫 GraphQL Schema、純 TS 連 Server ↔ Client",
+      "analogy": "前後端都用 TS？tRPC 直接讓你像呼叫 function 一樣呼叫 API、型別完全 sync、零 codegen。",
+      "content": "## 為什麼革命性\n傳統流程：\n1. 後端寫 API\n2. 寫 OpenAPI 或 Swagger\n3. 前端 codegen 生成 client\n4. 前端用 client 呼叫\n\ntRPC 流程：\n1. 後端寫 API（自動有 TS 型別）\n2. 前端直接 import 後端的型別、呼叫\n\n## 後端：定義 router\n```typescript\n// server/router.ts\nimport { initTRPC } from \"@trpc/server\";\nimport { z } from \"zod\";\n\nconst t = initTRPC.create();\n\nexport const appRouter = t.router({\n  user: t.router({\n    list: t.procedure\n      .query(async () => {\n        return await db.users.findMany();\n      }),\n\n    byId: t.procedure\n      .input(z.string())\n      .query(async ({ input }) => {\n        return await db.users.findUnique({ where: { id: input } });\n      }),\n\n    create: t.procedure\n      .input(z.object({\n        name: z.string(),\n        email: z.string().email(),\n      }))\n      .mutation(async ({ input }) => {\n        return await db.users.create({ data: input });\n      }),\n  }),\n});\n\nexport type AppRouter = typeof appRouter;\n```\n\n## 前端：直接呼叫\n```typescript\n// client.ts\nimport { createTRPCProxyClient, httpBatchLink } from \"@trpc/client\";\nimport type { AppRouter } from \"../server/router\";\n\nconst trpc = createTRPCProxyClient<AppRouter>({\n  links: [httpBatchLink({ url: \"/api/trpc\" })],\n});\n\n// 型別 100% 安全\nconst users = await trpc.user.list.query();\nconst u = await trpc.user.byId.query(\"abc-123\");\nconst newUser = await trpc.user.create.mutate({\n  name: \"Alice\",\n  email: \"a@x.com\"\n});\n```\n\n## React 整合\n```typescript\nimport { useQuery, useMutation } from \"@tanstack/react-query\";\n\nfunction UserList() {\n  const { data: users } = trpc.user.list.useQuery();\n  const create = trpc.user.create.useMutation();\n\n  return (\n    <>\n      {users?.map(u => <div key={u.id}>{u.name}</div>)}\n      <button onClick={() => create.mutate({ name: \"Bob\", email: \"b@x.com\" })}>\n        Add\n      </button>\n    </>\n  );\n}\n```\n\n## tRPC 殺手特色\n- **零 codegen**：型別共享靠 TS import\n- **完美 IntelliSense**：寫 `trpc.` 出現所有 API\n- **自動 batch**：多個 query 合併一個 HTTP\n- **Built-in WebSocket / SSE**：subscription 內建\n- **Middleware**：auth、log 跟 Express middleware 一樣\n\n## 部署\n- Next.js App Router：`app/api/trpc/[trpc]/route.ts`\n- Cloudflare Workers / Vercel Edge / Bun 都支援\n\n## tRPC vs 別的\n\n| 面向 | tRPC | GraphQL | REST + Zod |\n|---|---|---|---|\n| 多語言 | ❌ TS only | ✅ | ✅ |\n| Type Safety | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ |\n| Bundle 大小 | 小 | 大 | 小 |\n| 學習曲線 | 平 | 陡 | 平 |\n| 適合 | TS 全端 | 大型 / 公開 API | 簡單 |",
+      "tip": {
+        "type": "trend",
+        "text": "TS 全端 / Indie SaaS 2026 必學。Cal.com、Linear、Vercel 都用 tRPC。比 GraphQL 簡單 10 倍、效果不差。"
+      },
+      "id": "6.21",
+      "number": "LESSON 6.21",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "6.21.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "// server/router.ts\nimport { initTRPC } from \"@trpc/server\";\nimport { z } from \"zod\";\n\nconst t = initTRPC.create();\n\nexport const appRouter = t.router({\n  user: t.router({\n    list: t.procedure\n      .query(async () => {\n        return await db.users.findMany();\n      }),\n\n    byId: t.procedure\n      .input(z.string())\n      .query(async ({ input }) => {\n        return await db.users.findUnique({ where: { id: input } });\n      }),\n\n    create: t.procedure\n      .input(z.object({\n        name: z.string(),\n        email: z.string().email(),\n      }))\n      .mutation(async ({ input }) => {\n        return await db.users.create({ data: input });\n      }),\n  }),\n});\n\nexport type AppRouter = typeof appRouter;",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼革命性"
+        },
+        {
+          "level": 2,
+          "text": "後端：定義 router"
+        },
+        {
+          "level": 2,
+          "text": "前端：直接呼叫"
+        },
+        {
+          "level": 2,
+          "text": "React 整合"
+        },
+        {
+          "level": 2,
+          "text": "tRPC 殺手特色"
+        },
+        {
+          "level": 2,
+          "text": "部署"
+        },
+        {
+          "level": 2,
+          "text": "tRPC vs 別的"
+        }
+      ]
+    },
+    {
+      "title": "JWT：JSON Web Token 認證",
+      "oneLineSummary": "把使用者身份打包成 JSON、簽章後給客戶端、之後每次帶它認證",
+      "analogy": "Session 要伺服器存、JWT 把資料丟給客戶端帶。Stateless、容易橫向擴展、JWT 是 API 認證主流。",
+      "content": "## JWT 結構（3 段、用 . 分隔）\n```\nxxx.yyy.zzz\n↓   ↓   ↓\nHeader.Payload.Signature\n```\n\n範例：\n```\neyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiIxMjMifQ.SIGNATURE\n```\n\n## Header\n```json\n{ \"alg\": \"HS256\", \"typ\": \"JWT\" }\n```\n\n## Payload（你的資料）\n```json\n{\n  \"userId\": \"abc-123\",\n  \"role\": \"admin\",\n  \"iat\": 1735689600,    // issued at\n  \"exp\": 1736294400      // expires\n}\n```\n\n⚠️ **Payload 可被 decode 看到**（Base64）、不要放密碼 / 信用卡。\n\n## Signature（防偽）\nServer 用 secret 簽 header + payload、客戶端改任何東西、簽章就對不上。\n\n## Node 簽 + 驗\n```javascript\nimport jwt from \"jsonwebtoken\";\n\nconst SECRET = process.env.JWT_SECRET;  // 至少 32 字元隨機\n\n// 簽\nconst token = jwt.sign(\n  { userId: \"abc-123\", role: \"admin\" },\n  SECRET,\n  { expiresIn: \"7d\" }\n);\n\n// 驗\ntry {\n  const decoded = jwt.verify(token, SECRET);\n  console.log(decoded.userId);\n} catch (err) {\n  // 過期 / 簽章錯\n}\n```\n\n## API 流程\n```\n1. 使用者登入 → server 簽 JWT 回給 client\n2. Client 把 JWT 存 localStorage / cookie\n3. 每次 request 帶 Authorization: Bearer <token>\n4. Server 驗證、解出 userId、處理\n```\n\n## 重大陷阱\n\n### 1. JWT 不能撤銷\n登出後 token 還是有效到過期。\n**解法**：\n- 短 access token（15 分）+ 長 refresh token（7 天）\n- DB 維護 blacklist\n\n### 2. Secret 外洩 = 災難\n任何人有 secret 就能簽假 token。\n**解法**：環境變數、定期 rotate。\n\n### 3. XSS 偷 localStorage 的 token\n**解法**：用 HttpOnly Cookie 存、不要放 localStorage。\n\n### 4. 演算法混淆\n攻擊者改 alg 為 \"none\"、繞過驗證。\n**解法**：固定 alg、不要相信 header 的 alg。\n\n## Refresh Token 模式\n```\n登入：\n  → access_token (15 分鐘)\n  → refresh_token (7 天、HttpOnly Cookie)\n\n過期：\n  → 用 refresh_token 換新 access_token\n  → 不用重登入\n\n撤銷：\n  → 把 refresh_token 加進 blacklist\n  → access_token 15 分鐘後失效\n```\n\n## 替代方案\n- **Session + Cookie**：簡單、易撤銷、要 server state\n- **Supabase Auth**：JWT-based、不用自己管\n- **NextAuth / Auth.js**：Next 圈標配\n- **Clerk**：商業、最美的 UI、付費",
+      "tip": {
+        "type": "security",
+        "text": "JWT secret 至少 32 字元、用 `openssl rand -hex 32` 產生。寫死 \"secret\" 或 \"12345\" 是駭客最愛。"
+      },
+      "id": "6.22",
+      "number": "LESSON 6.22",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "6.22.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "import jwt from \"jsonwebtoken\";\n\nconst SECRET = process.env.JWT_SECRET;  // 至少 32 字元隨機\n\n// 簽\nconst token = jwt.sign(\n  { userId: \"abc-123\", role: \"admin\" },\n  SECRET,\n  { expiresIn: \"7d\" }\n);\n\n// 驗\ntry {\n  const decoded = jwt.verify(token, SECRET);\n  console.log(decoded.userId);\n} catch (err) {\n  // 過期 / 簽章錯\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "JWT 結構（3 段、用 . 分隔）"
+        },
+        {
+          "level": 2,
+          "text": "Header"
+        },
+        {
+          "level": 2,
+          "text": "Payload（你的資料）"
+        },
+        {
+          "level": 2,
+          "text": "Signature（防偽）"
+        },
+        {
+          "level": 2,
+          "text": "Node 簽 + 驗"
+        },
+        {
+          "level": 2,
+          "text": "API 流程"
+        },
+        {
+          "level": 2,
+          "text": "重大陷阱"
+        },
+        {
+          "level": 3,
+          "text": "1. JWT 不能撤銷"
+        },
+        {
+          "level": 3,
+          "text": "2. Secret 外洩 = 災難"
+        },
+        {
+          "level": 3,
+          "text": "3. XSS 偷 localStorage 的 token"
+        },
+        {
+          "level": 3,
+          "text": "4. 演算法混淆"
+        },
+        {
+          "level": 2,
+          "text": "Refresh Token 模式"
+        },
+        {
+          "level": 2,
+          "text": "替代方案"
+        }
+      ]
+    },
+    {
+      "title": "JSON Patch：增量更新格式",
+      "oneLineSummary": "不傳整個物件、只傳「改了哪些」—API 更新更精準",
+      "analogy": "使用者改 name 一個欄位、傳整個 User 物件浪費。JSON Patch 只描述「把 name 改成 X」、節省頻寬 + 精準。",
+      "content": "## RFC 6902 JSON Patch\n```json\n[\n  { \"op\": \"replace\", \"path\": \"/name\", \"value\": \"Alice\" },\n  { \"op\": \"add\", \"path\": \"/tags/-\", \"value\": \"vip\" },\n  { \"op\": \"remove\", \"path\": \"/age\" },\n  { \"op\": \"copy\", \"from\": \"/old\", \"path\": \"/new\" },\n  { \"op\": \"move\", \"from\": \"/a\", \"path\": \"/b\" },\n  { \"op\": \"test\", \"path\": \"/version\", \"value\": 5 }\n]\n```\n\n## 6 種 op\n- **add**：加新欄位\n- **remove**：刪欄位\n- **replace**：改欄位\n- **copy**：複製\n- **move**：搬移\n- **test**：測試值（不對則整個 patch 失敗）\n\n## 套用 Patch\n```javascript\nimport { applyPatch } from \"fast-json-patch\";\n\nconst original = { name: \"Alice\", age: 25 };\nconst patch = [\n  { op: \"replace\", path: \"/name\", value: \"Bob\" },\n  { op: \"remove\", path: \"/age\" },\n];\n\nconst result = applyPatch(original, patch).newDocument;\n// { name: \"Bob\" }\n```\n\n## 產生 Diff\n```javascript\nimport { compare } from \"fast-json-patch\";\n\nconst before = { name: \"Alice\", age: 25 };\nconst after = { name: \"Bob\", email: \"b@x.com\" };\n\nconst diff = compare(before, after);\n// [\n//   { op: \"replace\", path: \"/name\", value: \"Bob\" },\n//   { op: \"remove\", path: \"/age\" },\n//   { op: \"add\", path: \"/email\", value: \"b@x.com\" }\n// ]\n```\n\n## REST API 使用\n```http\nPATCH /users/123 HTTP/1.1\nContent-Type: application/json-patch+json\n\n[\n  { \"op\": \"replace\", \"path\": \"/email\", \"value\": \"new@x.com\" }\n]\n```\n\n## JSON Merge Patch（RFC 7396、更簡單）\n```json\n{ \"email\": \"new@x.com\", \"age\": null }\n```\n- 直接寫新值\n- `null` 代表刪除\n- 不能改陣列特定 index\n\n```http\nPATCH /users/123\nContent-Type: application/merge-patch+json\n\n{ \"email\": \"new@x.com\" }\n```\n\n## 用途\n- **協作編輯**：每個 user 的改動傳 patch\n- **DB audit log**：記錄每次改了什麼\n- **離線同步**：累積 patch、上線後送\n- **API 增量更新**：節省頻寬\n\n## 真實案例\n- **Figma**：multiplayer 用類似機制\n- **Notion**：協作編輯\n- **CRDT 工具**：Y.js / Automerge",
+      "tip": {
+        "type": "pro",
+        "text": "GitHub API、Azure REST API、許多企業 API 都用 JSON Patch。會用的工程師面試立刻加分。"
+      },
+      "id": "6.23",
+      "number": "LESSON 6.23",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "6.23.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "import { applyPatch } from \"fast-json-patch\";\n\nconst original = { name: \"Alice\", age: 25 };\nconst patch = [\n  { op: \"replace\", path: \"/name\", value: \"Bob\" },\n  { op: \"remove\", path: \"/age\" },\n];\n\nconst result = applyPatch(original, patch).newDocument;\n// { name: \"Bob\" }",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "RFC 6902 JSON Patch"
+        },
+        {
+          "level": 2,
+          "text": "6 種 op"
+        },
+        {
+          "level": 2,
+          "text": "套用 Patch"
+        },
+        {
+          "level": 2,
+          "text": "產生 Diff"
+        },
+        {
+          "level": 2,
+          "text": "REST API 使用"
+        },
+        {
+          "level": 2,
+          "text": "JSON Merge Patch（RFC 7396、更簡單）"
+        },
+        {
+          "level": 2,
+          "text": "用途"
+        },
+        {
+          "level": 2,
+          "text": "真實案例"
+        }
+      ]
+    },
+    {
+      "title": "OpenAPI / Swagger：API 文件規範",
+      "oneLineSummary": "用 YAML / JSON 描述整個 API、自動產生文件 + Client SDK",
+      "analogy": "寫 API 不寫文件、其他工程師罵翻。OpenAPI 寫一份規範、自動產美麗的互動文件 + 各語言 client。",
+      "content": "## OpenAPI YAML 範例\n```yaml\nopenapi: 3.1.0\ninfo:\n  title: AI 島 API\n  version: 1.0.0\n  description: AI 島後端 API\n\nservers:\n  - url: https://api.aiisland.tw\n\npaths:\n  /users/{id}:\n    get:\n      summary: 取得使用者\n      parameters:\n        - name: id\n          in: path\n          required: true\n          schema:\n            type: string\n      responses:\n        \"200\":\n          description: 成功\n          content:\n            application/json:\n              schema:\n                $ref: \"#/components/schemas/User\"\n        \"404\":\n          description: 找不到\n\n  /users:\n    post:\n      summary: 建立使用者\n      requestBody:\n        required: true\n        content:\n          application/json:\n            schema:\n              $ref: \"#/components/schemas/CreateUser\"\n      responses:\n        \"201\":\n          description: 建立成功\n\ncomponents:\n  schemas:\n    User:\n      type: object\n      required: [id, name, email]\n      properties:\n        id: { type: string }\n        name: { type: string }\n        email: { type: string, format: email }\n        createdAt: { type: string, format: date-time }\n\n    CreateUser:\n      type: object\n      required: [name, email]\n      properties:\n        name: { type: string, minLength: 1 }\n        email: { type: string, format: email }\n```\n\n## 互動文件工具\n- **Swagger UI**：經典、最多人用\n- **Redoc**：美觀、企業愛用\n- **Scalar**：2024 新星、超漂亮\n- **Stoplight Elements**\n\n```html\n<!-- Swagger UI 嵌入 -->\n<div id=\"swagger-ui\"></div>\n<script src=\"https://unpkg.com/swagger-ui-dist/swagger-ui-bundle.js\"></script>\n<script>\n  SwaggerUIBundle({ url: \"/openapi.yaml\", dom_id: \"#swagger-ui\" });\n</script>\n```\n\n## 自動生 Client SDK\n```bash\nnpm install -g @openapitools/openapi-generator-cli\n\n# 產 TypeScript fetch client\nopenapi-generator-cli generate \\\n  -i openapi.yaml \\\n  -g typescript-fetch \\\n  -o ./client\n\n# 產 Python client\nopenapi-generator-cli generate \\\n  -i openapi.yaml \\\n  -g python -o ./py-client\n```\n\n## 從 code 自動產 OpenAPI\n- **Hono**：`@hono/zod-openapi` 自動產生\n- **NestJS**：`@nestjs/swagger`\n- **FastAPI**（Python）：內建\n- **Pothos / GraphQL Mesh**：GraphQL 也能輸出\n\n## OpenAPI vs GraphQL\n| 面向 | OpenAPI | GraphQL |\n|---|---|---|\n| 風格 | REST | Query Language |\n| 學習曲線 | 平 | 陡 |\n| 工具 | 巨大 | 中 |\n| 適合 | 開放 API | 複雜前端 |\n| 公司 | Stripe、Twilio | GitHub、Shopify |\n\n## 商業價值\n寫好 OpenAPI 文件 = 加 NT$ 5-15k 接案費用。\n客戶後續工程師交接、看文件就上手、不用問你。",
+      "tip": {
+        "type": "business",
+        "text": "接案附 OpenAPI 文件、客戶評價 +1 顆星、續案率 +30%。「我給你完整文件」客戶超有安全感。"
+      },
+      "id": "6.24",
+      "number": "LESSON 6.24",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "6.24.auto",
+          "language": "yaml",
+          "title": "試試看",
+          "initialCode": "openapi: 3.1.0\ninfo:\n  title: AI 島 API\n  version: 1.0.0\n  description: AI 島後端 API\n\nservers:\n  - url: https://api.aiisland.tw\n\npaths:\n  /users/{id}:\n    get:\n      summary: 取得使用者\n      parameters:\n        - name: id\n          in: path\n          required: true\n          schema:\n            type: string\n      responses:\n        \"200\":\n          description: 成功\n          content:\n            application/json:\n              schema:\n                $ref: \"#/components/schemas/User\"\n        \"404\":\n          description: 找不到\n\n  /users:\n    post:\n      summary: 建立使用者\n      requestBody:\n        required: true\n        content:\n          application/json:\n            schema:\n              $ref: \"#/components/schemas/CreateUser\"\n      responses:\n        \"201\":\n          description: 建立成功\n\ncomponents:\n  schemas:\n    User:\n      type: object\n      required: [id, name, email]\n      properties:\n        id: { type: string }\n        name: { type: string }\n        email: { type: string, format: email }\n        createdAt: { type: string, format: date-time }\n\n    CreateUser:\n      type: object\n      required: [name, email]\n      properties:\n        name: { type: string, minLength: 1 }\n        email: { type: string, format: email }",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "OpenAPI YAML 範例"
+        },
+        {
+          "level": 2,
+          "text": "互動文件工具"
+        },
+        {
+          "level": 2,
+          "text": "自動生 Client SDK"
+        },
+        {
+          "level": 2,
+          "text": "從 code 自動產 OpenAPI"
+        },
+        {
+          "level": 2,
+          "text": "OpenAPI vs GraphQL"
+        },
+        {
+          "level": 2,
+          "text": "商業價值"
+        }
+      ]
+    },
+    {
+      "title": "實戰：寫 Type-Safe Next.js API（Zod + tRPC）",
+      "oneLineSummary": "整合本章：Zod schema 共用、tRPC 連 server-client、表單驗證一條龍",
+      "analogy": "把 JSON 全章學的整合：寫一個從前端表單到 DB 全程 type-safe + runtime 驗證的 Next.js API。",
+      "content": "## 1. 共用 Schema（Single Source of Truth）\n```typescript\n// lib/schemas.ts\nimport { z } from \"zod\";\n\nexport const CreateUserSchema = z.object({\n  username: z.string().min(3).max(30),\n  email: z.string().email(),\n  age: z.number().int().min(13).max(150),\n  role: z.enum([\"member\", \"admin\"]).default(\"member\"),\n});\n\nexport type CreateUserInput = z.infer<typeof CreateUserSchema>;\n\nexport const UserSchema = CreateUserSchema.extend({\n  id: z.string().uuid(),\n  createdAt: z.date(),\n});\nexport type User = z.infer<typeof UserSchema>;\n```\n\n## 2. tRPC Router\n```typescript\n// server/routers/user.ts\nimport { router, publicProcedure } from \"../trpc\";\nimport { CreateUserSchema } from \"@/lib/schemas\";\nimport { db } from \"@/lib/db\";\n\nexport const userRouter = router({\n  list: publicProcedure\n    .query(async () => {\n      return await db.user.findMany();\n    }),\n\n  byId: publicProcedure\n    .input(z.string().uuid())\n    .query(async ({ input }) => {\n      const user = await db.user.findUnique({ where: { id: input } });\n      if (!user) throw new TRPCError({ code: \"NOT_FOUND\" });\n      return user;\n    }),\n\n  create: publicProcedure\n    .input(CreateUserSchema)\n    .mutation(async ({ input }) => {\n      return await db.user.create({ data: input });\n    }),\n});\n```\n\n## 3. Next.js App Router 整合\n```typescript\n// app/api/trpc/[trpc]/route.ts\nimport { fetchRequestHandler } from \"@trpc/server/adapters/fetch\";\nimport { appRouter } from \"@/server/router\";\n\nconst handler = (req: Request) =>\n  fetchRequestHandler({\n    endpoint: \"/api/trpc\",\n    req,\n    router: appRouter,\n    createContext: () => ({}),\n  });\n\nexport { handler as GET, handler as POST };\n```\n\n## 4. Client Hook\n```typescript\n// lib/trpc-client.ts\nimport { createTRPCReact } from \"@trpc/react-query\";\nimport type { AppRouter } from \"@/server/router\";\n\nexport const trpc = createTRPCReact<AppRouter>();\n```\n\n## 5. 前端表單（含 Zod 驗證）\n```typescript\n// app/users/create/page.tsx\n\"use client\";\nimport { useForm } from \"react-hook-form\";\nimport { zodResolver } from \"@hookform/resolvers/zod\";\nimport { CreateUserSchema, type CreateUserInput } from \"@/lib/schemas\";\nimport { trpc } from \"@/lib/trpc-client\";\n\nexport default function CreatePage() {\n  const { register, handleSubmit, formState: { errors } } = useForm<CreateUserInput>({\n    resolver: zodResolver(CreateUserSchema),\n  });\n  const create = trpc.user.create.useMutation();\n\n  return (\n    <form onSubmit={handleSubmit(data => create.mutate(data))}>\n      <input {...register(\"username\")} />\n      {errors.username && <p>{errors.username.message}</p>}\n\n      <input {...register(\"email\")} />\n      {errors.email && <p>{errors.email.message}</p>}\n\n      <input type=\"number\" {...register(\"age\", { valueAsNumber: true })} />\n      {errors.age && <p>{errors.age.message}</p>}\n\n      <button type=\"submit\" disabled={create.isPending}>\n        {create.isPending ? \"建立中...\" : \"建立\"}\n      </button>\n    </form>\n  );\n}\n```\n\n## 完整型別流\n```\n[Zod schema]\n    ↓\n[TS Type 自動推斷]\n    ↓\n[tRPC Server Procedure]\n    ↓\n[tRPC Client Type-Safe]\n    ↓\n[React Hook Form + Zod Resolver]\n    ↓\n[使用者輸入]\n```\n\n任何一層型別不符 = TS 編譯錯誤 = bug 提前抓到。\n\n## 完整檢查\n- ✅ 一份 schema、5 個地方共用\n- ✅ Server 驗證、Client 驗證\n- ✅ TS 型別 100% 同步\n- ✅ Runtime 也驗證（不只編譯時）\n- ✅ 錯誤訊息可中文化\n- ✅ Server / Client 都 type-safe",
+      "tip": {
+        "type": "milestone",
+        "text": "這個 stack（Zod + tRPC + Zod Resolver + Next.js）是 2026 TS 全端王道。學會這個、Indie SaaS / 接案都贏。"
+      },
+      "id": "6.25",
+      "number": "LESSON 6.25",
+      "xp": 15,
+      "playgrounds": [
+        {
+          "key": "6.25.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "// lib/schemas.ts\nimport { z } from \"zod\";\n\nexport const CreateUserSchema = z.object({\n  username: z.string().min(3).max(30),\n  email: z.string().email(),\n  age: z.number().int().min(13).max(150),\n  role: z.enum([\"member\", \"admin\"]).default(\"member\"),\n});\n\nexport type CreateUserInput = z.infer<typeof CreateUserSchema>;\n\nexport const UserSchema = CreateUserSchema.extend({\n  id: z.string().uuid(),\n  createdAt: z.date(),\n});\nexport type User = z.infer<typeof UserSchema>;",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "1. 共用 Schema（Single Source of Truth）"
+        },
+        {
+          "level": 2,
+          "text": "2. tRPC Router"
+        },
+        {
+          "level": 2,
+          "text": "3. Next.js App Router 整合"
+        },
+        {
+          "level": 2,
+          "text": "4. Client Hook"
+        },
+        {
+          "level": 2,
+          "text": "5. 前端表單（含 Zod 驗證）"
+        },
+        {
+          "level": 2,
+          "text": "完整型別流"
+        },
+        {
+          "level": 2,
+          "text": "完整檢查"
+        }
+      ]
+    }
+  ],
+  "boss": {
+    "name": "資料章魚",
+    "hp": 90,
+    "emoji": "🐙",
+    "description": "八爪展開 JSON 結構、需 schema 馴服"
+  },
+  "quiz": {
+    "id": "ch06-quiz",
+    "questions": [],
+    "xpReward": 50,
+    "perfectBonus": 50
+  }
+}

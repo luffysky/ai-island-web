@@ -1,0 +1,1104 @@
+{
+  "id": 10,
+  "slug": "nextjs",
+  "stage": 2,
+  "title": "Next.js / Nuxt",
+  "subtitle": "全端框架",
+  "icon": "rocket",
+  "description": "Next.js / Nuxt：全端框架",
+  "status": "published",
+  "difficulty": "intermediate",
+  "prerequisites": [
+    8,
+    9
+  ],
+  "estimatedHours": 14,
+  "outcomes": [
+    "理解核心概念",
+    "實作主流工具",
+    "整章實戰可發佈作品",
+    "知道生態 / 接案行情",
+    "對齊 2026 業界主流"
+  ],
+  "lessons": [
+    {
+      "id": "10.1",
+      "number": "LESSON 10.1",
+      "title": "為什麼純 React / Vue 不夠？",
+      "oneLineSummary": "Next.js 是「React 的全端框架」—React 寫前端、Next 加上路由 / SSR / API / 部署一條龍。",
+      "analogy": "React 像引擎、Next.js 像整台車—引擎強但缺輪子 / 方向盤 / 座椅就不能跑。Next 把 React 缺的全配齊—routing、SEO、API routes、image optim、部署一鍵—indie SaaS 主流。",
+      "content": "純 React / Vue 寫的網站是 **SPA（Single Page Application）**—瀏覽器拿到一個空 HTML，所有內容靠 JS 動態渲染。問題：\n\n  \n- **SEO 差**：搜尋引擎拿到空頁面（雖然 Google 能跑 JS，其他不一定）\n- **首屏慢**：要下載 + 解析 JS 才能看到內容（白屏 2-5 秒）\n- **社群分享卡片壞**：FB / LINE / Twitter 抓 OG 抓不到\n- **沒路由**：要自己裝 React Router / Vue Router\n- **沒 API**：後端要分開寫\n- **沒部署最佳化**：圖片、字型、code splitting 都要手動\n- **沒 SSR / SSG**：搜尋引擎友善的渲染要自己搞\n\n  \n### Next.js / Nuxt 解決什麼\n\n  \n- 檔案系統路由（不用手寫 router）\n- SSR / SSG / ISR / RSC 多種渲染模式\n- 內建 API routes（前後端同一專案）\n- 自動 code splitting、圖片優化、字型優化\n- SEO metadata、OG image 動態產生\n- Vercel / Cloudflare 一鍵部署\n- internationalization（i18n）支援\n- Streaming SSR、Suspense\n\n  \n    \nReact / Vue 像**引擎**。Next / Nuxt 像**整台車**—引擎、輪子、座椅、空調全配好。你想自己組車是 OK，但 99% 人直接買整台車。\n\n  \n\n  \n### 2026 業界共識\n\n  \n- **SaaS 產品**：99% 用 Next.js / Nuxt\n- **純後台**：可以純 Vite + React\n- **公開行銷頁 / 部落格**：必須用 SSG\n- **電商**：ISR + RSC 是黃金組合\n- **個人 portfolio**：Astro / Next.js / Nuxt 都行\n\n  \n### 什麼專案不該用 Next / Nuxt？\n\n  \n- 純桌面 App（用 Electron / Tauri）\n- 純手機 App（用 React Native / Expo）\n- 純 Chrome Extension\n- 已經有後端，前端只是純 SPA 後台\n- 追求極小 bundle 的 widget（用 Preact / Lit）\n\n  \n    \n      💼\n      接案小知識\n    \n    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「Next.js」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。",
+      "tip": {
+        "type": "practical",
+        "text": "剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「Next.js」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "10.1.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// 試試改變數、按執行\nconst numbers = [1, 2, 3, 4, 5];\nconst doubled = numbers.map(n => n * 2);\nconsole.log(\"原本:\", numbers);\nconsole.log(\"乘 2:\", doubled);\nconsole.log(\"總和:\", numbers.reduce((a, b) => a + b, 0));",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "找一個你身邊的例子、用「為什麼純 React / Vue 不夠？」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "Next.js / Nuxt 解決什麼"
+        },
+        {
+          "level": 3,
+          "text": "2026 業界共識"
+        },
+        {
+          "level": 3,
+          "text": "什麼專案不該用 Next / Nuxt？"
+        }
+      ]
+    },
+    {
+      "id": "10.2",
+      "number": "LESSON 10.2",
+      "title": "五種渲染模式深入",
+      "oneLineSummary": "App Router 是「Next.js 的新路由系統」—資料夾結構即路由、2024 起主流。",
+      "analogy": "像把文件夾名字當網址—app/about/page.tsx → /about。資料夾結構就是網站結構、超直觀。",
+      "content": "### 1. CSR（Client-Side Rendering）— 純前端渲染\n\n```text\n使用者請求頁面\n   ↓\n伺服器回傳空 HTML + JS bundle\n   ↓\n瀏覽器下載 JS（300ms~3s）\n   ↓\nJS 執行、React 渲染\n   ↓\n畫面出現\n```\n\n  \n**優點**：開發簡單、伺服器負擔小、互動極快（後續操作不用打 server）。\n\n  \n**缺點**：首屏白屏久、SEO 差、社群分享差。\n\n  \n**適合**：後台、管理介面、SEO 不重要的工具、登入後的 dashboard。\n\n  \n### 2. SSR（Server-Side Rendering）— 每次請求都渲染\n\n```text\n使用者請求頁面\n   ↓\n伺服器跑 React / Vue 元件、抓資料、產 HTML\n   ↓\n回傳完整 HTML\n   ↓\n瀏覽器顯示 HTML（首屏立刻有畫面）\n   ↓\nJS 載入後「Hydration」接管互動\n```\n\n  \n**優點**：SEO 好、首屏快、社群分享卡片正確。\n\n  \n**缺點**：每次請求都打 server，server 成本高；hydration 時可能短暫無互動。\n\n  \n**適合**：內容會變、需要登入狀態的頁面（用戶 dashboard、個人化內容）。\n\n  \n### 3. SSG（Static Site Generation）— 編譯時產 HTML\n\n```text\nbuild 時：\n  跑所有頁面、抓資料、產 HTML 檔\n  → /index.html, /about.html, /blog/post-1.html ...\n\n使用者請求：\n  CDN 直接吐 HTML（極快）\n  伺服器 0 計算\n```\n\n  \n**優點**：最快、最便宜、CDN 友善、安全（沒 runtime 容易被攻擊的點）。\n\n  \n**缺點**：內容變更要 rebuild、不適合每秒變的資料。\n\n  \n**適合**：部落格、文件、Landing page、行銷頁、Marketing 網站。\n\n  \n### 4. ISR（Incremental Static Regeneration）— SSG + 定期重 build\n\n```text\nbuild 時：產生 HTML（先給使用者）\n   ↓\n有人造訪後 X 秒過：\n   背景重新 build 那個頁面 → 替換舊版\n   \n使用者看到：永遠是「靜態檔」（快）\n        但內容會「漸進更新」（不用人工 rebuild）\n```\n\n  \n**優點**：又快又新鮮、不用全站重 build。\n\n  \n**缺點**：邏輯比 SSG 複雜、有時看到舊資料 1-2 分鐘。\n\n  \n**適合**：電商商品頁、新聞、需要新鮮但不要即時的資料。\n\n  \n### 5. RSC（React Server Components）— 元件在伺服器跑\n\n```text\nServer Components 在伺服器跑：\n  - 可 await（直接讀 DB）\n  - 不送 JS code 到 client\n  - 結果序列化送到瀏覽器\n\nClient Components 在瀏覽器跑：\n  - 處理互動（onClick、useState）\n  - 標 \"use client\"\n```\n\n  \n**優點**：bundle 變小（很多 code 不送到 client）、能直接讀 DB（不用寫 API）、首屏極快。\n\n  \n**缺點**：心智模型較複雜（要分清什麼能 server 什麼必須 client）。\n\n  \n**適合**：現代 SaaS、需要極致效能的網站、混合靜態 + 互動的頁面。\n\n  \n### 選擇對照表（最重要）\n\n  \n| 場景 | 渲染模式 | 典型例子 |\n| --- | --- | --- |\n| 部落格 / 文件 / Landing | SSG | 個人部落格 |\n| 電商商品頁 / 新聞 | ISR | 蝦皮、博客來 |\n| 個人化 dashboard | SSR + RSC | GitHub 首頁 |\n| 後台管理 | CSR | Admin panel |\n| 互動 SaaS | RSC + 部分 Client | Linear、Vercel |\n\n  \n    **🚀 進階技巧**\n    \n2026 業界趨勢：**混合模式**是王道。同個專案首頁用 SSG、商品列表用 ISR、購物車用 CSR、後台用 RSC。Next.js / Nuxt 都支援單個路由設定不同模式。\n\n  \n\n  \n    \n      🎯\n      面試考點\n    \n    台灣科技公司面試 90% 會問「Next.js」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。",
+      "tip": {
+        "type": "pro",
+        "text": "台灣科技公司面試 90% 會問「Next.js」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "10.2.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// 試試改變數、按執行\nconst numbers = [1, 2, 3, 4, 5];\nconst doubled = numbers.map(n => n * 2);\nconsole.log(\"原本:\", numbers);\nconsole.log(\"乘 2:\", doubled);\nconsole.log(\"總和:\", numbers.reduce((a, b) => a + b, 0));",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "挑一個你做過的舊專案、用本節「五種渲染模式深入」介紹的進階技術重構它。",
+        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
+        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "1. CSR（Client-Side Rendering）— 純前端渲染"
+        },
+        {
+          "level": 3,
+          "text": "2. SSR（Server-Side Rendering）— 每次請求都渲染"
+        },
+        {
+          "level": 3,
+          "text": "3. SSG（Static Site Generation）— 編譯時產 HTML"
+        },
+        {
+          "level": 3,
+          "text": "4. ISR（Incremental Static Regeneration）— SSG + 定期重 build"
+        },
+        {
+          "level": 3,
+          "text": "5. RSC（React Server Components）— 元件在伺服器跑"
+        },
+        {
+          "level": 3,
+          "text": "選擇對照表（最重要）"
+        }
+      ]
+    },
+    {
+      "id": "10.3",
+      "number": "LESSON 10.3",
+      "title": "Next.js 14+ App Router 完整架構",
+      "oneLineSummary": "Server Components：「在伺服器跑的 React」—Next.js 14+ 預設、效能極高。",
+      "analogy": "像租 vs 買—Client Component（買）下載到瀏覽器跑（檔案大、慢）、Server Component（租）伺服器算好結果送來（HTML 直送、快）。Next.js 14 預設全 Server、需要互動才轉 Client。",
+      "content": "```bash\npnpx create-next-app@latest my-app\n# 選擇：TypeScript ✓、Tailwind ✓、App Router ✓、ESLint ✓、src/ ✓\ncd my-app && pnpm dev\n```\n\n  \n### 完整檔案結構\n\n```text\nmy-app/\n├── src/\n│   ├── app/                       ← App Router 根目錄\n│   │   ├── layout.tsx             ← 根 layout（包整站）\n│   │   ├── page.tsx               ← 首頁 /\n│   │   ├── loading.tsx            ← 首頁 loading 狀態\n│   │   ├── error.tsx              ← 錯誤邊界\n│   │   ├── not-found.tsx          ← 404 頁\n│   │   ├── globals.css            ← 全域樣式\n│   │   ├── favicon.ico\n│   │   ├── icon.png               ← favicon（自動）\n│   │   ├── apple-icon.png         ← iOS 圖示（自動）\n│   │   ├── opengraph-image.tsx    ← 動態 OG 圖（自動）\n│   │   ├── robots.ts              ← robots.txt（自動產）\n│   │   ├── sitemap.ts             ← sitemap.xml（自動產）\n│   │   ├── about/\n│   │   │   └── page.tsx           ← /about\n│   │   ├── blog/\n│   │   │   ├── page.tsx           ← /blog\n│   │   │   ├── loading.tsx        ← /blog 的 loading\n│   │   │   └── [slug]/\n│   │   │       └── page.tsx       ← /blog/:slug\n│   │   ├── (marketing)/           ← 路由 group（括號不出現在 URL）\n│   │   │   ├── layout.tsx         ← 只給行銷頁的 layout\n│   │   │   └── pricing/\n│   │   │       └── page.tsx       ← /pricing\n│   │   ├── dashboard/\n│   │   │   ├── layout.tsx         ← 後台共用 layout\n│   │   │   ├── page.tsx           ← /dashboard\n│   │   │   └── settings/\n│   │   │       └── page.tsx       ← /dashboard/settings\n│   │   └── api/                   ← API endpoints\n│   │       └── users/\n│   │           └── route.ts       ← /api/users\n│   ├── components/                ← 共用元件\n│   ├── lib/                       ← 工具函式\n│   └── middleware.ts              ← 全域 middleware\n├── public/                        ← 靜態資源\n├── next.config.js\n├── tsconfig.json\n└── package.json\n```\n\n  \n### 檔案命名約定（必須記）\n\n  \n| 檔名 | 用途 |\n| --- | --- |\n| `page.tsx` | 路由的 UI（必須有才能訪問） |\n| `layout.tsx` | 包裹路由的 layout（共用 nav/footer） |\n| `loading.tsx` | 自動轉成 Suspense fallback |\n| `error.tsx` | 錯誤邊界（自動 catch error） |\n| `not-found.tsx` | 404 頁（可手動觸發） |\n| `route.ts` | API endpoint |\n| `template.tsx` | 類似 layout 但每次切路由重 mount |\n| `default.tsx` | Parallel Routes 的 fallback |\n\n  \n### 路由 group：(folder)\n\n  \n用括號包資料夾名，**不會出現在 URL**，純粹組織用：\n\n```text\napp/\n├── (marketing)/\n│   ├── layout.tsx       ← 只有 marketing 頁面用這 layout\n│   ├── about/page.tsx   → /about\n│   └── pricing/page.tsx → /pricing\n└── (auth)/\n    ├── layout.tsx       ← 登入註冊頁的特殊 layout\n    ├── login/page.tsx   → /login\n    └── signup/page.tsx  → /signup\n```\n\n  \n實戰用途：行銷頁要置中佈局，後台要 sidebar，登入頁要極簡 — 不同 layout group 解決。\n\n  \n### 第一個 Server Component Page\n\n```tsx\n// app/page.tsx\nexport default async function HomePage() {\n  // 直接在元件內 await（不用 useEffect！）\n  const users = await fetch(\"https://api.example.com/users\", {\n    next: { revalidate: 3600 } // ISR：每小時重新驗證\n  }).then(r => r.json());\n  \n  return (\n    \n      使用者列表\n      \n\n    \n  );\n}\n```\n\n  \n看到那個 `async` 嗎？**純 React 元件不能 async**。Server Component 可以！這是 Next.js 14+ 的革命。\n\n  \n### Root Layout\n\n```tsx\n// app/layout.tsx — 根 layout（每個專案唯一）\nimport \"./globals.css\";\nimport { Inter } from \"next/font/google\";\n\nconst inter = Inter({ subsets: [\"latin\"] });\n\nexport const metadata = {\n  title: \"AI 島 - 全端養成班\",\n  description: \"從入門到怪物工程師\"\n};\n\nexport default function RootLayout({ \n  children \n}: { \n  children: React.ReactNode \n}) {\n  return (\n    \n      \n        \n        {children}\n        \n      \n    \n  );\n}\n```\n\n  \n### 嵌套 Layout\n\n```tsx\n// app/blog/layout.tsx\nexport default function BlogLayout({ children }) {\n  return (\n    \n      \n        \n## 分類\n\n        \n      \n      {children}\n    \n  );\n}\n// /blog/* 會被 RootLayout + BlogLayout 兩層包住\n```\n\n  \n    \n      ⚡\n      學習加速器\n    \n    把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。",
+      "tip": {
+        "type": "practical",
+        "text": "把這節學到的馬上應用到一個小東西—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "10.3.auto",
+          "language": "bash",
+          "title": "試試看",
+          "initialCode": "pnpx create-next-app@latest my-app\n# 選擇：TypeScript ✓、Tailwind ✓、App Router ✓、ESLint ✓、src/ ✓\ncd my-app && pnpm dev",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "完整檔案結構"
+        },
+        {
+          "level": 3,
+          "text": "檔案命名約定（必須記）"
+        },
+        {
+          "level": 3,
+          "text": "路由 group：(folder)"
+        },
+        {
+          "level": 3,
+          "text": "第一個 Server Component Page"
+        },
+        {
+          "level": 3,
+          "text": "Root Layout"
+        },
+        {
+          "level": 3,
+          "text": "嵌套 Layout"
+        }
+      ]
+    },
+    {
+      "id": "10.4",
+      "number": "LESSON 10.4",
+      "title": "Server Components vs Client Components",
+      "oneLineSummary": "Client Components：「需要互動時用 \"use client\"」—按鈕 / 表單 / hook 都要這個。",
+      "analogy": "Server Component 不能用 useState、不能監聽 click—因為它在伺服器跑、沒有「按鈕被點」的概念。需要互動時加 \"use client\" 轉成 Client Component—像「這頁要在瀏覽器跑」。",
+      "content": "App Router 最重要的觀念。**預設所有元件都是 Server Component**，需要互動才用 Client。\n\n  \n### Server Component 的能力\n\n```tsx\n// 預設就是 Server Component（不需要任何標記）\nimport { db } from \"@/lib/db\";\nimport fs from \"node:fs\";\n\nexport default async function UserList() {\n  // ✓ 可以 async / await\n  // ✓ 可以直接讀 DB\n  // ✓ 可以用 Node.js API（fs、crypto）\n  // ✓ 可以讀環境變數（API key 安全）\n  // ✗ 不能用 useState、useEffect\n  // ✗ 不能綁 onClick\n  // ✗ 不能用 browser API（window、localStorage）\n  \n  const users = await db.users.findMany();\n  const apiKey = process.env.SECRET_KEY; // 不會曝露給 client\n  \n  return \n\n;\n}\n```\n\n  \n### Client Component 的能力\n\n```tsx\n\"use client\";\n// 檔案頂端加這行，整個檔案的元件都變 Client\n\nimport { useState, useEffect } from \"react\";\n\nexport default function Counter() {\n  // ✓ 可以用所有 hooks\n  // ✓ 可以綁事件\n  // ✓ 可以用 browser API\n  // ✗ 不能 async function 直接 await\n  // ✗ 不能直接讀 DB（要透過 API / Server Action）\n  \n  const [count, setCount] = useState(0);\n  \n  useEffect(() => {\n    const stored = localStorage.getItem(\"count\");\n    if (stored) setCount(Number(stored));\n  }, []);\n  \n  return  setCount(c => c + 1)}>\n    {count}\n  ;\n}\n```\n\n  \n### 邊界：怎麼混用\n\n  \n關鍵原則：**Server Component 可以 import Client Component，反之不行**。\n\n```tsx\n// ✓ 對的\n// app/page.tsx (Server)\nimport Counter from \"./Counter\"; // (Client)\n\nexport default async function Page() {\n  const data = await getData();\n  return (\n    <>\n      {data.title}  {/* Server 渲染 */}\n                 {/* Client 互動 */}\n    \n  );\n}\n```\n\n```tsx\n// ✗ 錯的：Client 不能 import Server Component\n\"use client\";\nimport ServerThing from \"./ServerThing\"; // 編譯錯\n```\n\n  \n### 但可以用 children 模式繞過\n\n```tsx\n// ClientWrapper.tsx (Client)\n\"use client\";\nexport default function ClientWrapper({ children }) {\n  const [open, setOpen] = useState(false);\n  return (\n    \n       setOpen(!open)}>切換\n      {open && children}  {/* 接受 Server Component 當 children */}\n    \n  );\n}\n\n// page.tsx (Server)\nexport default async function Page() {\n  const data = await getData();\n  return (\n    \n        {/* Server Component 可以塞給 Client Wrapper */}\n    \n  );\n}\n```\n\n  \n### 實戰準則\n\n  \n1. **預設 Server**，需要互動才加 \"use client\"\n2. **把 \"use client\" 推到葉子**（小元件），不要整個 page 都 client\n3. **抓資料在 Server**，傳到 Client 當 props\n4. **API key 永遠在 Server**，不要傳給 Client\n5. **狀態管理 / 表單 / 動畫 → Client**\n6. **內容展示 / SEO → Server**\n\n  \n    **⚠ 踩雷警告**\n    \n「我加 use client 不就好了，全部 client 比較簡單」— 這樣等於回到純 SPA，失去 RSC 所有好處（bundle 變大、SEO 變差、首屏變慢）。**盡量保留 Server Component**，只有真的要互動才 client。\n\n  \n\n  \n    \n      🚀\n      2026 趨勢\n    \n    這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。",
+      "tip": {
+        "type": "trend",
+        "text": "這個技術 2026 還在主流、未來 5 年不會過時。但工具會更新—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "10.4.auto",
+          "language": "tsx",
+          "title": "試試看",
+          "initialCode": "// 預設就是 Server Component（不需要任何標記）\nimport { db } from \"@/lib/db\";\nimport fs from \"node:fs\";\n\nexport default async function UserList() {\n  // ✓ 可以 async / await\n  // ✓ 可以直接讀 DB\n  // ✓ 可以用 Node.js API（fs、crypto）\n  // ✓ 可以讀環境變數（API key 安全）\n  // ✗ 不能用 useState、useEffect\n  // ✗ 不能綁 onClick\n  // ✗ 不能用 browser API（window、localStorage）\n  \n  const users = await db.users.findMany();\n  const apiKey = process.env.SECRET_KEY; // 不會曝露給 client\n  \n  return \n\n;\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "找一個你身邊的例子、用「Server Components vs Client Components」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "Server Component 的能力"
+        },
+        {
+          "level": 3,
+          "text": "Client Component 的能力"
+        },
+        {
+          "level": 3,
+          "text": "邊界：怎麼混用"
+        },
+        {
+          "level": 3,
+          "text": "但可以用 children 模式繞過"
+        },
+        {
+          "level": 3,
+          "text": "實戰準則"
+        }
+      ]
+    },
+    {
+      "id": "10.5",
+      "number": "LESSON 10.5",
+      "title": "動態路由與 SEO Metadata",
+      "oneLineSummary": "Layout 是「多頁共享的外框」—nav / footer 寫一次、所有頁面套用。",
+      "analogy": "像相框—外框不變、裡面照片可以換。layout.tsx 是外框、page.tsx 是裡面的內容。改 layout 一次、所有頁面都套用。",
+      "content": "### 動態路由：[slug]\n\n```tsx\n// app/blog/[slug]/page.tsx\ntype Props = { params: { slug: string } };\n\nexport default async function BlogPost({ params }: Props) {\n  const post = await getPost(params.slug);\n  \n  if (!post) {\n    return \n找不到\n;\n  }\n  \n  return (\n    \n      {post.title}\n      \n    \n  );\n}\n```\n\n  \n### 多參數動態路由\n\n```text\napp/shop/[category]/[id]/page.tsx\n  → /shop/electronics/123\n  → params = { category: \"electronics\", id: \"123\" }\n\napp/docs/[...path]/page.tsx        ← catch-all\n  → /docs/a/b/c\n  → params.path = [\"a\", \"b\", \"c\"]\n\napp/docs/[[...path]]/page.tsx      ← optional catch-all\n  → /docs              (params.path = undefined)\n  → /docs/a\n  → /docs/a/b\n```\n\n  \n### generateStaticParams：SSG 動態路由\n\n```tsx\n// 告訴 Next.js build 時要預先產哪些頁面\nexport async function generateStaticParams() {\n  const posts = await getAllPosts();\n  return posts.map(p => ({ slug: p.slug }));\n}\n\n// build 時會跑出：\n// /blog/post-1.html\n// /blog/post-2.html\n// /blog/post-3.html ...\n```\n\n  \n### 靜態 Metadata\n\n```tsx\n// app/about/page.tsx\nexport const metadata = {\n  title: \"關於 AI 島 | 全端養成班\",\n  description: \"從入門到怪物工程師的免費 20 章教程\",\n  keywords: [\"全端\", \"教學\", \"AI\"],\n  authors: [{ name: \"Luffysky\" }],\n  \n  openGraph: {\n    title: \"AI 島 - 關於我們\",\n    description: \"...\",\n    url: \"https://example.com/about\",\n    siteName: \"AI 島\",\n    images: [\n      { url: \"https://example.com/og.jpg\", width: 1200, height: 630 }\n    ],\n    locale: \"zh_TW\",\n    type: \"website\"\n  },\n  \n  twitter: {\n    card: \"summary_large_image\",\n    title: \"AI 島\",\n    description: \"...\",\n    images: [\"https://example.com/og.jpg\"]\n  },\n  \n  robots: {\n    index: true,\n    follow: true,\n    googleBot: { index: true, follow: true, \"max-image-preview\": \"large\" }\n  },\n  \n  alternates: {\n    canonical: \"https://example.com/about\",\n    languages: {\n      \"en\": \"https://example.com/en/about\",\n      \"zh-Hant\": \"https://example.com/about\"\n    }\n  }\n};\n```\n\n  \n### 動態 Metadata\n\n```tsx\n// app/blog/[slug]/page.tsx\nimport { Metadata } from \"next\";\n\nexport async function generateMetadata({ params }): Promise {\n  const post = await getPost(params.slug);\n  \n  return {\n    title: `${post.title} | AI 島部落格`,\n    description: post.excerpt,\n    openGraph: {\n      title: post.title,\n      description: post.excerpt,\n      images: [post.coverImage],\n      type: \"article\",\n      publishedTime: post.publishedAt,\n      authors: [post.author]\n    }\n  };\n}\n```\n\n  \n### 動態 OG Image（神技）\n\n```tsx\n// app/blog/[slug]/opengraph-image.tsx\nimport { ImageResponse } from \"next/og\";\n\nexport const runtime = \"edge\";\nexport const alt = \"Blog post cover\";\nexport const size = { width: 1200, height: 630 };\nexport const contentType = \"image/png\";\n\nexport default async function Image({ params }) {\n  const post = await getPost(params.slug);\n  \n  return new ImageResponse(\n    (\n      \n        \n          AI 島 / 部落格\n        \n        \n          {post.title}\n        \n        \n          {post.author} · {post.date}\n        \n      \n    ),\n    { ...size }\n  );\n}\n// 每篇文章自動有獨特 OG image！社群分享品牌感大幅提升\n```\n\n  \n### sitemap.xml 與 robots.txt\n\n```ts\n// app/sitemap.ts\nimport { MetadataRoute } from \"next\";\n\nexport default async function sitemap(): Promise {\n  const posts = await getAllPosts();\n  \n  return [\n    { url: \"https://example.com\", lastModified: new Date(), priority: 1.0 },\n    { url: \"https://example.com/about\", priority: 0.8 },\n    ...posts.map(p => ({\n      url: `https://example.com/blog/${p.slug}`,\n      lastModified: p.updatedAt,\n      priority: 0.6\n    }))\n  ];\n}\n\n// app/robots.ts\nexport default function robots(): MetadataRoute.Robots {\n  return {\n    rules: [\n      { userAgent: \"*\", allow: \"/\", disallow: [\"/admin/\", \"/api/\"] }\n    ],\n    sitemap: \"https://example.com/sitemap.xml\"\n  };\n}\n```\n\n  \n    \n      🛠️\n      工具推薦\n    \n    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。",
+      "tip": {
+        "type": "practical",
+        "text": "配合這節用的工具：(1) VS Code（編輯器、免費）(2) Chrome DevTools（F12 開啟、除錯神器）(3) Live Server（VS Code 擴充、即時預覽）(4) GitHub Copilot / Cursor（AI 寫程式、學習加速 2-10x）。"
+      },
+      "xp": 15,
+      "playgrounds": [
+        {
+          "key": "10.5.auto",
+          "language": "tsx",
+          "title": "試試看",
+          "initialCode": "// app/blog/[slug]/page.tsx\ntype Props = { params: { slug: string } };\n\nexport default async function BlogPost({ params }: Props) {\n  const post = await getPost(params.slug);\n  \n  if (!post) {\n    return \n找不到\n;\n  }\n  \n  return (\n    \n      {post.title}\n      \n    \n  );\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "動態路由：[slug]"
+        },
+        {
+          "level": 3,
+          "text": "多參數動態路由"
+        },
+        {
+          "level": 3,
+          "text": "generateStaticParams：SSG 動態路由"
+        },
+        {
+          "level": 3,
+          "text": "靜態 Metadata"
+        },
+        {
+          "level": 3,
+          "text": "動態 Metadata"
+        },
+        {
+          "level": 3,
+          "text": "動態 OG Image（神技）"
+        },
+        {
+          "level": 3,
+          "text": "sitemap.xml 與 robots.txt"
+        }
+      ]
+    },
+    {
+      "id": "10.6",
+      "number": "LESSON 10.6",
+      "title": "Server Actions：直接寫 server function",
+      "oneLineSummary": "Loading / Error / Not-Found：「特殊檔名自動處理載入 / 錯誤 / 404」。",
+      "analogy": "像飯店服務—來了招待（loading）、出錯了道歉（error）、走錯房間引導（not-found）。Next.js 用loading.tsx / error.tsx / not-found.tsx 自動處理這些狀態。",
+      "content": "Server Actions 是 Next.js 14+ 的革命：**在 component 內直接寫 server function**，不用 API route、不用 fetch。\n\n```tsx\n// app/posts/new/page.tsx\nimport { revalidatePath } from \"next/cache\";\nimport { redirect } from \"next/navigation\";\n\nasync function createPost(formData: FormData) {\n  \"use server\";\n  \n  const title = formData.get(\"title\") as string;\n  const content = formData.get(\"content\") as string;\n  \n  // 直接呼叫 DB\n  await db.posts.insert({ title, content });\n  \n  revalidatePath(\"/posts\"); // 重新驗證快取\n  redirect(\"/posts\");     // 導向列表\n}\n\nexport default function NewPost() {\n  return (\n    \n      \n      \n      發布\n    \n  );\n}\n// JS 關掉也能用！漸進式增強（Progressive Enhancement）\n```\n\n  \n### 把 Server Action 抽到獨立檔\n\n```ts\n// app/actions/posts.ts\n\"use server\";  // 整個檔案的 export 都是 server action\n\nimport { z } from \"zod\";\nimport { revalidatePath } from \"next/cache\";\n\nconst CreatePostSchema = z.object({\n  title: z.string().min(1).max(200),\n  content: z.string().min(10)\n});\n\nexport async function createPost(prevState: any, formData: FormData) {\n  const validated = CreatePostSchema.safeParse({\n    title: formData.get(\"title\"),\n    content: formData.get(\"content\")\n  });\n  \n  if (!validated.success) {\n    return { error: validated.error.flatten().fieldErrors };\n  }\n  \n  try {\n    const post = await db.posts.create({ data: validated.data });\n    revalidatePath(\"/posts\");\n    return { success: true, post };\n  } catch (e) {\n    return { error: { _form: [\"建立失敗\"] } };\n  }\n}\n\nexport async function deletePost(id: string) {\n  await db.posts.delete({ where: { id } });\n  revalidatePath(\"/posts\");\n}\n```\n\n  \n### useFormState / useFormStatus（React 19）\n\n```tsx\n\"use client\";\nimport { useFormState, useFormStatus } from \"react-dom\";\nimport { createPost } from \"@/app/actions/posts\";\n\nfunction SubmitButton() {\n  const { pending } = useFormStatus();\n  return (\n    \n      {pending ? \"送出中...\" : \"發布\"}\n    \n  );\n}\n\nexport default function PostForm() {\n  const [state, formAction] = useFormState(createPost, { error: null });\n  \n  return (\n    \n      \n      {state.error?.title && (\n        {state.error.title[0]}\n      )}\n      \n      \n      {state.error?.content && (\n        {state.error.content[0]}\n      )}\n      \n      \n    \n  );\n}\n```\n\n  \n### Server Action 從 onClick 呼叫\n\n```tsx\n\"use client\";\nimport { deletePost } from \"@/app/actions/posts\";\n\nfunction DeleteButton({ id }: { id: string }) {\n  return (\n     &#123;\n      if (confirm(\"確定刪除？\")) &#123;\n        await deletePost(id);\n      &#125;\n    &#125;}>\n      刪除\n    \n  );\n}\n```\n\n  \n### 樂觀更新（useOptimistic）\n\n```tsx\n\"use client\";\nimport { useOptimistic } from \"react\";\n\nfunction TodoList({ todos }) {\n  const [optimisticTodos, addOptimistic] = useOptimistic(\n    todos,\n    (state, newTodo) => [...state, newTodo]\n  );\n  \n  async function handleAdd(formData) {\n    const text = formData.get(\"text\");\n    addOptimistic({ id: \"temp\", text }); // 立刻顯示\n    await addTodoAction(text);          // 真的儲存\n  }\n  \n  return (\n    <>\n      \n\n      \n        \n      \n    \n  );\n}\n```\n\n  \n    **🚀 進階技巧**\n    \nServer Actions + RSC = **不用寫 API 中間層**。前端跟後端在同一個 component 檔。傳統 React 寫 fetch + API route 至少 30 行的事情，現在 5 行。\n\n  \n\n  \n    \n      ⚠️\n      新手常見錯誤\n    \n    新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。",
+      "tip": {
+        "type": "warning",
+        "text": "新手 3 大坑：(1) 不看 console—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) 不存檔就 F5—改完忘記儲存以為「程式沒效果」 (3) 抄 code 不理解—複製貼上能跑、但下次要改就崩潰。記得：先看懂、再寫。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "10.6.auto",
+          "language": "tsx",
+          "title": "試試看",
+          "initialCode": "// app/posts/new/page.tsx\nimport { revalidatePath } from \"next/cache\";\nimport { redirect } from \"next/navigation\";\n\nasync function createPost(formData: FormData) {\n  \"use server\";\n  \n  const title = formData.get(\"title\") as string;\n  const content = formData.get(\"content\") as string;\n  \n  // 直接呼叫 DB\n  await db.posts.insert({ title, content });\n  \n  revalidatePath(\"/posts\"); // 重新驗證快取\n  redirect(\"/posts\");     // 導向列表\n}\n\nexport default function NewPost() {\n  return (\n    \n      \n      \n      發布\n    \n  );\n}\n// JS 關掉也能用！漸進式增強（Progressive Enhancement）",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "把 Server Action 抽到獨立檔"
+        },
+        {
+          "level": 3,
+          "text": "useFormState / useFormStatus（React 19）"
+        },
+        {
+          "level": 3,
+          "text": "Server Action 從 onClick 呼叫"
+        },
+        {
+          "level": 3,
+          "text": "樂觀更新（useOptimistic）"
+        }
+      ]
+    },
+    {
+      "id": "10.7",
+      "number": "LESSON 10.7",
+      "title": "API Routes",
+      "oneLineSummary": "Dynamic Routes：[id] 資料夾 = 動態 URL—商品頁 / 文章頁 / 使用者頁全靠它。",
+      "analogy": "像萬用模板—app/post/[id]/page.tsx 一個檔案處理所有文章—/post/1 / /post/2 / /post/abc 全用同一個 page、只是 id 不同。",
+      "content": "Server Actions 適合內部用，**API Routes 適合給外部（行動 App、第三方）呼叫**。\n\n```ts\n// app/api/users/route.ts\nimport { NextRequest, NextResponse } from \"next/server\";\nimport { z } from \"zod\";\n\nexport async function GET(req: NextRequest) {\n  const { searchParams } = req.nextUrl;\n  const page = parseInt(searchParams.get(\"page\") ?? \"1\");\n  const limit = parseInt(searchParams.get(\"limit\") ?? \"20\");\n  \n  const users = await db.users.findMany({\n    skip: (page - 1) * limit,\n    take: limit\n  });\n  \n  return NextResponse.json({ data: users, page, limit });\n}\n\nconst CreateSchema = z.object({\n  name: z.string().min(1),\n  email: z.string().email()\n});\n\nexport async function POST(req: NextRequest) {\n  try {\n    const body = await req.json();\n    const data = CreateSchema.parse(body);\n    const user = await db.users.create({ data });\n    return NextResponse.json(user, { status: 201 });\n  } catch (err) {\n    if (err instanceof z.ZodError) {\n      return NextResponse.json({ error: err.flatten() }, { status: 400 });\n    }\n    return NextResponse.json({ error: \"Server error\" }, { status: 500 });\n  }\n}\n```\n\n  \n### 動態 API 路由\n\n```ts\n// app/api/users/[id]/route.ts\nexport async function GET(\n  req: NextRequest,\n  { params }: { params: { id: string } }\n) {\n  const user = await db.users.findUnique({ where: { id: params.id } });\n  if (!user) {\n    return NextResponse.json({ error: \"Not found\" }, { status: 404 });\n  }\n  return NextResponse.json(user);\n}\n\nexport async function PATCH(req, { params }) {\n  const updates = await req.json();\n  const user = await db.users.update({ where: { id: params.id }, data: updates });\n  return NextResponse.json(user);\n}\n\nexport async function DELETE(req, { params }) {\n  await db.users.delete({ where: { id: params.id } });\n  return new Response(null, { status: 204 });\n}\n```\n\n  \n### 處理檔案上傳\n\n```ts\n// app/api/upload/route.ts\nexport async function POST(req: NextRequest) {\n  const formData = await req.formData();\n  const file = formData.get(\"file\") as File;\n  \n  if (!file) {\n    return NextResponse.json({ error: \"No file\" }, { status: 400 });\n  }\n  \n  const buffer = await file.arrayBuffer();\n  // 存到 S3 / R2 / 本地\n  await uploadToS3(file.name, buffer);\n  \n  return NextResponse.json({ ok: true, url: `...` });\n}\n```\n\n  \n### 串流回應（AI 場景必備）\n\n```ts\n// app/api/chat/route.ts\nexport async function POST(req: NextRequest) {\n  const { messages } = await req.json();\n  \n  const stream = new ReadableStream({\n    async start(controller) {\n      const openaiStream = await openai.chat.completions.create({\n        model: \"gpt-4\",\n        messages,\n        stream: true\n      });\n      \n      for await (const chunk of openaiStream) {\n        const text = chunk.choices[0]?.delta?.content ?? \"\";\n        controller.enqueue(new TextEncoder().encode(text));\n      }\n      \n      controller.close();\n    }\n  });\n  \n  return new Response(stream, {\n    headers: { \"Content-Type\": \"text/event-stream\" }\n  });\n}\n```\n\n  \n### 什麼時候用 API vs Server Action？\n\n  \n| 場景 | 選 |\n| --- | --- |\n| 網頁內表單提交 | Server Action |\n| 網頁內 mutation | Server Action |\n| 給行動 App 用 | API Route |\n| 第三方 webhook | API Route |\n| 需要快取 header | API Route |\n| 需要 streaming | API Route |\n| 檔案上傳 | API Route |\n\n  \n    \n      💼\n      接案小知識\n    \n    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「Next.js」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。",
+      "tip": {
+        "type": "practical",
+        "text": "剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「Next.js」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "10.7.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "// app/api/users/route.ts\nimport { NextRequest, NextResponse } from \"next/server\";\nimport { z } from \"zod\";\n\nexport async function GET(req: NextRequest) {\n  const { searchParams } = req.nextUrl;\n  const page = parseInt(searchParams.get(\"page\") ?? \"1\");\n  const limit = parseInt(searchParams.get(\"limit\") ?? \"20\");\n  \n  const users = await db.users.findMany({\n    skip: (page - 1) * limit,\n    take: limit\n  });\n  \n  return NextResponse.json({ data: users, page, limit });\n}\n\nconst CreateSchema = z.object({\n  name: z.string().min(1),\n  email: z.string().email()\n});\n\nexport async function POST(req: NextRequest) {\n  try {\n    const body = await req.json();\n    const data = CreateSchema.parse(body);\n    const user = await db.users.create({ data });\n    return NextResponse.json(user, { status: 201 });\n  } catch (err) {\n    if (err instanceof z.ZodError) {\n      return NextResponse.json({ error: err.flatten() }, { status: 400 });\n    }\n    return NextResponse.json({ error: \"Server error\" }, { status: 500 });\n  }\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "動態 API 路由"
+        },
+        {
+          "level": 3,
+          "text": "處理檔案上傳"
+        },
+        {
+          "level": 3,
+          "text": "串流回應（AI 場景必備）"
+        },
+        {
+          "level": 3,
+          "text": "什麼時候用 API vs Server Action？"
+        }
+      ]
+    },
+    {
+      "id": "10.8",
+      "number": "LESSON 10.8",
+      "title": "資料抓取與三層快取",
+      "oneLineSummary": "Data Fetching：「在 Server Component 直接 fetch」—async function + await、超直觀。",
+      "analogy": "像「廚房直接準備好端上來」—不用前端再去抓 API、Server Component 在伺服器抓好資料、HTML 直接帶資料送來。SEO 友善、初始載入快。",
+      "content": "Next.js 14+ 的 fetch 自帶**三層快取**。重要參數：\n\n```ts\n// 1. 預設：強制快取（fetch 結果在 build 時就抓好）\nawait fetch(url);\nawait fetch(url, { cache: \"force-cache\" }); // 同上\n\n// 2. 不快取（每次都打）\nawait fetch(url, { cache: \"no-store\" });\n\n// 3. ISR：時間驗證（每 X 秒重新打）\nawait fetch(url, { next: { revalidate: 3600 } }); // 每小時\n\n// 4. 標籤驗證（手動觸發重新驗證）\nawait fetch(url, { next: { tags: [\"posts\"] } });\n\n// 在 server action 內手動觸發\nimport { revalidateTag, revalidatePath } from \"next/cache\";\n\nrevalidateTag(\"posts\"); // 所有 tag=\"posts\" 的 fetch 都重來\nrevalidatePath(\"/blog\"); // 重新驗證 /blog 路徑\n```\n\n  \n### 整頁快取設定\n\n```tsx\n// 整頁靜態化（build 時產生）\nexport const dynamic = \"force-static\";\n\n// 整頁動態（不快取）\nexport const dynamic = \"force-dynamic\";\n\n// ISR：每 60 秒\nexport const revalidate = 60;\n\n// 控制 fetch 預設快取行為\nexport const fetchCache = \"force-cache\"; // 或 force-no-store\n```\n\n  \n### unstable_cache：快取任何 async function\n\n```ts\nimport { unstable_cache } from \"next/cache\";\n\nconst getCachedPosts = unstable_cache(\n  async (category: string) => {\n    // 任何 async 邏輯（不只 fetch）\n    return await db.posts.findMany({ where: { category } });\n  },\n  [\"posts-by-category\"],  // 快取 key\n  { \n    revalidate: 3600,\n    tags: [\"posts\"]\n  }\n);\n\n// 使用\nconst posts = await getCachedPosts(\"tech\");\n```\n\n  \n### 常見抓資料模式\n\n```tsx\n// 並行抓多個\nexport default async function Page() {\n  const [user, posts, stats] = await Promise.all([\n    getUser(),\n    getPosts(),\n    getStats()\n  ]);\n  \n  return ;\n}\n\n// 序列抓（後者依賴前者）\nexport default async function Page({ params }) {\n  const user = await getUser(params.id);\n  const orders = await getUserOrders(user.id);\n  \n  return ;\n}\n```\n\n  \n    \n      🎯\n      面試考點\n    \n    台灣科技公司面試 90% 會問「Next.js」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。",
+      "tip": {
+        "type": "pro",
+        "text": "台灣科技公司面試 90% 會問「Next.js」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "10.8.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "// 1. 預設：強制快取（fetch 結果在 build 時就抓好）\nawait fetch(url);\nawait fetch(url, { cache: \"force-cache\" }); // 同上\n\n// 2. 不快取（每次都打）\nawait fetch(url, { cache: \"no-store\" });\n\n// 3. ISR：時間驗證（每 X 秒重新打）\nawait fetch(url, { next: { revalidate: 3600 } }); // 每小時\n\n// 4. 標籤驗證（手動觸發重新驗證）\nawait fetch(url, { next: { tags: [\"posts\"] } });\n\n// 在 server action 內手動觸發\nimport { revalidateTag, revalidatePath } from \"next/cache\";\n\nrevalidateTag(\"posts\"); // 所有 tag=\"posts\" 的 fetch 都重來\nrevalidatePath(\"/blog\"); // 重新驗證 /blog 路徑",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "整頁快取設定"
+        },
+        {
+          "level": 3,
+          "text": "unstablecache：快取任何 async function"
+        },
+        {
+          "level": 3,
+          "text": "常見抓資料模式"
+        }
+      ]
+    },
+    {
+      "id": "10.9",
+      "number": "LESSON 10.9",
+      "title": "Streaming + Suspense + Loading UI",
+      "oneLineSummary": "Caching：Next.js 4 層快取系統—Request Memoization / Data Cache / Full Route Cache / Router Cache。",
+      "analogy": "像多層備份—資料抓過放 4 層快取、下次直接從最快的拿。但複雜得讓人頭痛、是 Next.js 14 最被罵的部分。學會控制快取是 Next 工程師的進階課。",
+      "content": "Streaming 是 Next.js 14+ 的殺手鐧：**HTML 邊產邊送**，不用等全部好才回。\n\n  \n### loading.tsx：自動 Suspense\n\n```tsx\n// app/blog/loading.tsx\nexport default function Loading() {\n  return (\n    \n      \n      \n      \n    \n  );\n}\n// /blog 載入時自動顯示這個（Suspense fallback）\n```\n\n  \n### 手動 Suspense（更細粒度）\n\n```tsx\nimport { Suspense } from \"react\";\n\nasync function SlowComponent() {\n  await new Promise(r => setTimeout(r, 3000));\n  const data = await fetchSlow();\n  return \n{data}\n;\n}\n\nasync function FastComponent() {\n  const data = await fetchFast();\n  return \n{data}\n;\n}\n\nexport default function Page() {\n  return (\n    <>\n      標題（立刻出現）\n      \n      }>\n        \n      \n      \n      }>\n          {/* 3 秒後出現 */}\n      \n    \n  );\n}\n// 使用者立刻看到標題，快資料 200ms 內出現，慢資料 3 秒後出現\n// 而不是等 3 秒才看到全部\n```\n\n  \n### 實戰：Dashboard 並行載入\n\n```tsx\nexport default function Dashboard() {\n  return (\n    \n      }>\n             {/* 500ms */}\n      \n      \n      }>\n               {/* 1s */}\n      \n      \n      }>\n              {/* 2s */}\n      \n    \n  );\n}\n// 每張卡片獨立載入，誰快誰先出現\n```\n\n  \n    **🚀 進階技巧**\n    \nStreaming 大幅提升「**感知效能**」。實際載入時間沒變，但使用者體感「**頁面有在動**」就覺得快。Linear、Vercel、GitHub 都這樣做。\n\n  \n\n  \n    \n      ⚡\n      學習加速器\n    \n    把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。",
+      "tip": {
+        "type": "practical",
+        "text": "把這節學到的馬上應用到一個小東西—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "10.9.auto",
+          "language": "tsx",
+          "title": "試試看",
+          "initialCode": "// app/blog/loading.tsx\nexport default function Loading() {\n  return (\n    \n      \n      \n      \n    \n  );\n}\n// /blog 載入時自動顯示這個（Suspense fallback）",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "loading.tsx：自動 Suspense"
+        },
+        {
+          "level": 3,
+          "text": "手動 Suspense（更細粒度）"
+        },
+        {
+          "level": 3,
+          "text": "實戰：Dashboard 並行載入"
+        }
+      ]
+    },
+    {
+      "id": "10.10",
+      "number": "LESSON 10.10",
+      "title": "Error Handling",
+      "oneLineSummary": "Server Actions：「form submit 直接打到 server function」—不用寫 API route。",
+      "analogy": "像內線電話—不用走出大廳打公用電話、直接內線聯絡。Server Action 一樣：表單 submit 直接呼叫一個 server 函式、不用 /api/xxx 來來回回—寫起來像呼叫本地函式、執行在伺服器。",
+      "content": "### error.tsx：自動錯誤邊界\n\n```tsx\n// app/blog/error.tsx\n\"use client\"; // error.tsx 必須是 Client Component\n\nexport default function Error({\n  error,\n  reset\n}: {\n  error: Error & { digest?: string };\n  reset: () => void;\n}) {\n  return (\n    \n      \n## 發生錯誤\n\n      \n{error.message}\n\n      重試\n    \n  );\n}\n// 自動 catch /blog/* 內的所有錯誤\n```\n\n  \n### global-error.tsx：根層級錯誤\n\n```tsx\n// app/global-error.tsx（取代根 layout）\n\"use client\";\n\nexport default function GlobalError({ error, reset }) {\n  return (\n    \n      \n        \n## 致命錯誤\n\n        重試\n      \n    \n  );\n}\n```\n\n  \n### not-found.tsx\n\n```tsx\n// app/not-found.tsx — 全站 404\nexport default function NotFound() {\n  return (\n    \n      \n## 404\n\n      \n找不到頁面\n\n      [回首頁](/)\n    \n  );\n}\n\n// 程式內手動觸發 404\nimport { notFound } from \"next/navigation\";\n\nexport default async function Post({ params }) {\n  const post = await getPost(params.slug);\n  if (!post) notFound(); // 自動轉 not-found.tsx\n  return ...;\n}\n```\n\n  \n    \n      🚀\n      2026 趨勢\n    \n    這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。",
+      "tip": {
+        "type": "trend",
+        "text": "這個技術 2026 還在主流、未來 5 年不會過時。但工具會更新—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "10.10.auto",
+          "language": "tsx",
+          "title": "試試看",
+          "initialCode": "// app/blog/error.tsx\n\"use client\"; // error.tsx 必須是 Client Component\n\nexport default function Error({\n  error,\n  reset\n}: {\n  error: Error & { digest?: string };\n  reset: () => void;\n}) {\n  return (\n    \n      \n## 發生錯誤\n\n      \n{error.message}\n\n      重試\n    \n  );\n}\n// 自動 catch /blog/* 內的所有錯誤",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "error.tsx：自動錯誤邊界"
+        },
+        {
+          "level": 3,
+          "text": "global-error.tsx：根層級錯誤"
+        },
+        {
+          "level": 3,
+          "text": "not-found.tsx"
+        }
+      ]
+    },
+    {
+      "id": "10.11",
+      "number": "LESSON 10.11",
+      "title": "Middleware：請求中介層",
+      "oneLineSummary": "API Routes：「在 Next.js 裡寫後端 API」—app/api/route.ts 就是 endpoint。",
+      "analogy": "像家裡的副業店面—前端是主店面、API routes 是後門做 B2B。Next.js 一個專案做完前端 + 後端、indie SaaS 必備。",
+      "content": "```ts\n// middleware.ts（放在 src/ 或專案根目錄）\nimport { NextRequest, NextResponse } from \"next/server\";\n\nexport async function middleware(req: NextRequest) {\n  const token = req.cookies.get(\"token\")?.value;\n  \n  // 沒 token 導向登入\n  if (!token && req.nextUrl.pathname.startsWith(\"/dashboard\")) {\n    return NextResponse.redirect(new URL(\"/login\", req.url));\n  }\n  \n  // 加 header\n  const response = NextResponse.next();\n  response.headers.set(\"x-custom\", \"hello\");\n  return response;\n}\n\n// 設定哪些路徑跑 middleware\nexport const config = {\n  matcher: [\n    \"/dashboard/:path*\", \n    \"/api/:path*\",\n    // 排除某些路徑\n    \"/((?!_next/static|_next/image|favicon.ico).*)\"\n  ]\n};\n```\n\n  \n### 常見用途\n\n```ts\n// 1. 身份驗證\nif (path.startsWith(\"/admin\") && !isAdmin(token)) {\n  return NextResponse.redirect(\"/login\");\n}\n\n// 2. 地理區域導流\nconst country = req.geo?.country;\nif (country === \"TW\" && path === \"/\") {\n  return NextResponse.rewrite(new URL(\"/zh\", req.url));\n}\n\n// 3. A/B 測試\nconst variant = Math.random() > 0.5 ? \"a\" : \"b\";\nconst response = NextResponse.next();\nresponse.cookies.set(\"variant\", variant);\nreturn response;\n\n// 4. 安全 header\nconst response = NextResponse.next();\nresponse.headers.set(\"X-Frame-Options\", \"DENY\");\nresponse.headers.set(\"X-Content-Type-Options\", \"nosniff\");\nresponse.headers.set(\"Strict-Transport-Security\", \"max-age=31536000\");\nreturn response;\n\n// 5. 機器人偵測\nconst ua = req.headers.get(\"user-agent\") ?? \"\";\nif (\"bot|crawler|spider\".match(ua)) {\n  // 給 bot 看的版本\n}\n```\n\n  \n### Edge Runtime 限制\n\n  \nMiddleware 跑在 Edge Runtime（極輕量），**不能用 Node 套件**：\n\n  \n- 不能 `fs`、`net`、`child_process`\n- 不能用 native Node 模組\n- 不能用某些 npm 套件（檢查 `edge-runtime-compatible`）\n- 可以用 `fetch`、Web Crypto、URL API\n- 有 size limit（1MB）跟執行時間限制\n\n  \n    **⚠ 踩雷警告**\n    \nMiddleware 跑在**每個請求**（含靜態資源）。亂寫會拖慢全站。一定用 `matcher` 限制範圍。\n\n  \n\n  \n    \n      🛠️\n      工具推薦\n    \n    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。",
+      "tip": {
+        "type": "practical",
+        "text": "配合這節用的工具：(1) VS Code（編輯器、免費）(2) Chrome DevTools（F12 開啟、除錯神器）(3) Live Server（VS Code 擴充、即時預覽）(4) GitHub Copilot / Cursor（AI 寫程式、學習加速 2-10x）。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "10.11.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "// middleware.ts（放在 src/ 或專案根目錄）\nimport { NextRequest, NextResponse } from \"next/server\";\n\nexport async function middleware(req: NextRequest) {\n  const token = req.cookies.get(\"token\")?.value;\n  \n  // 沒 token 導向登入\n  if (!token && req.nextUrl.pathname.startsWith(\"/dashboard\")) {\n    return NextResponse.redirect(new URL(\"/login\", req.url));\n  }\n  \n  // 加 header\n  const response = NextResponse.next();\n  response.headers.set(\"x-custom\", \"hello\");\n  return response;\n}\n\n// 設定哪些路徑跑 middleware\nexport const config = {\n  matcher: [\n    \"/dashboard/:path*\", \n    \"/api/:path*\",\n    // 排除某些路徑\n    \"/((?!_next/static|_next/image|favicon.ico).*)\"\n  ]\n};",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "常見用途"
+        },
+        {
+          "level": 3,
+          "text": "Edge Runtime 限制"
+        }
+      ]
+    },
+    {
+      "id": "10.12",
+      "number": "LESSON 10.12",
+      "title": "圖片字型優化",
+      "oneLineSummary": "Middleware：「請求進來前先過一遍」—驗證 / redirect / A/B test 全在這。",
+      "analogy": "像機場安檢—所有人進去前先過。Middleware 一樣：每個請求進 Next.js 前先檢查—沒登入跳轉、特定國家跳不同頁、A/B test 隨機分流。",
+      "content": "### next/image：圖片自動優化\n\n```tsx\nimport Image from \"next/image\";\n\n// 自動：\n// - 轉 webp / avif（看瀏覽器支援）\n// - 響應式不同尺寸（srcset）\n// - lazy load（除非 priority）\n// - 防止 layout shift（CLS）\n// - 雲端 CDN 變換\n```\n\n  \n### fill mode（不知道尺寸）\n\n```tsx\n\n  \n\n```\n\n  \n### 遠端圖片設定\n\n```js\n// next.config.js\nmodule.exports = {\n  images: {\n    remotePatterns: [\n      { protocol: \"https\", hostname: \"cdn.example.com\" },\n      { protocol: \"https\", hostname: \"*.supabase.co\" }\n    ],\n    formats: [\"image/avif\", \"image/webp\"],\n    deviceSizes: [640, 750, 828, 1080, 1200, 1920]\n  }\n};\n```\n\n  \n### next/font：字型優化\n\n```tsx\n// app/layout.tsx\nimport { Inter, Noto_Sans_TC, JetBrains_Mono } from \"next/font/google\";\n\nconst inter = Inter({\n  subsets: [\"latin\"],\n  display: \"swap\",\n  variable: \"--font-inter\"\n});\n\nconst notoTC = Noto_Sans_TC({\n  subsets: [\"chinese-traditional\"],\n  display: \"swap\",\n  weight: [\"400\", \"500\", \"700\"],\n  variable: \"--font-noto\"\n});\n\nconst mono = JetBrains_Mono({\n  subsets: [\"latin\"],\n  variable: \"--font-mono\"\n});\n\nexport default function RootLayout({ children }) {\n  return (\n    \n      {children}\n    \n  );\n}\n\n// 自動：\n// - 自架字型（不用每次跟 Google 連線，GDPR 友善）\n// - font-display: swap\n// - 預載\n// - 防 layout shift\n// - 只載用到的字符（subset）\n```\n\n  \n### 自架字型檔\n\n```tsx\nimport localFont from \"next/font/local\";\n\nconst myFont = localFont({\n  src: [\n    { path: \"./fonts/MyFont-Regular.woff2\", weight: \"400\" },\n    { path: \"./fonts/MyFont-Bold.woff2\", weight: \"700\" }\n  ],\n  variable: \"--font-my\"\n});\n```\n\n  \n    \n      ⚠️\n      新手常見錯誤\n    \n    新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。",
+      "tip": {
+        "type": "warning",
+        "text": "新手 3 大坑：(1) 不看 console—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) 不存檔就 F5—改完忘記儲存以為「程式沒效果」 (3) 抄 code 不理解—複製貼上能跑、但下次要改就崩潰。記得：先看懂、再寫。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "10.12.auto",
+          "language": "tsx",
+          "title": "試試看",
+          "initialCode": "import Image from \"next/image\";\n\n// 自動：\n// - 轉 webp / avif（看瀏覽器支援）\n// - 響應式不同尺寸（srcset）\n// - lazy load（除非 priority）\n// - 防止 layout shift（CLS）\n// - 雲端 CDN 變換",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "挑一個你做過的舊專案、用本節「圖片字型優化」介紹的進階技術重構它。",
+        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
+        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "next/image：圖片自動優化"
+        },
+        {
+          "level": 3,
+          "text": "fill mode（不知道尺寸）"
+        },
+        {
+          "level": 3,
+          "text": "遠端圖片設定"
+        },
+        {
+          "level": 3,
+          "text": "next/font：字型優化"
+        },
+        {
+          "level": 3,
+          "text": "自架字型檔"
+        }
+      ]
+    },
+    {
+      "id": "10.13",
+      "number": "LESSON 10.13",
+      "title": "Parallel Routes + Intercepting Routes",
+      "oneLineSummary": "Image Optimization：&lt;Image&gt; 自動優化圖片—lazy load / WebP / 響應式尺寸全包。",
+      "analogy": "像自動修圖 App—丟原圖進去自動壓縮 / 調尺寸 / 選最佳格式。Next.js 的 Image 一樣：寫一行、效能提升 10 倍、SEO 加分。",
+      "content": "Next.js 14+ 的兩個進階路由特性，**讓某些 UI pattern 變得超簡單**。\n\n  \n### Parallel Routes：@slot\n\n  \n在同一個 layout 同時渲染多個獨立路由：\n\n```text\napp/\n└── dashboard/\n    ├── layout.tsx\n    ├── page.tsx\n    ├── @analytics/\n    │   └── page.tsx     ← 渲染為 layout 的 analytics slot\n    └── @team/\n        └── page.tsx     ← 渲染為 layout 的 team slot\n```\n\n```tsx\n// app/dashboard/layout.tsx\nexport default function Layout({ \n  children, \n  analytics, \n  team \n}: { \n  children: React.ReactNode;\n  analytics: React.ReactNode;\n  team: React.ReactNode;\n}) {\n  return (\n    \n      {children}\n      {analytics}\n      {team}\n    \n  );\n}\n// 三個 slot 各自獨立載入、獨立錯誤邊界\n```\n\n  \n### Intercepting Routes：(.) (..) (...)\n\n  \n「在不離開現在頁面下，顯示另一個路由的內容」— 經典用途是 modal：\n\n```text\napp/\n├── @modal/\n│   ├── default.tsx\n│   └── (.)photo/\n│       └── [id]/\n│           └── page.tsx     ← 攔截 /photo/:id 顯示為 modal\n├── photo/\n│   └── [id]/\n│       └── page.tsx          ← 直接訪問 /photo/:id 顯示完整頁\n└── layout.tsx\n└── page.tsx\n```\n\n  \n實戰：Instagram、Twitter 點圖開 modal、複製網址貼別人卻是完整頁。\n\n  \n    \n      💼\n      接案小知識\n    \n    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「Next.js」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。",
+      "tip": {
+        "type": "practical",
+        "text": "剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「Next.js」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "10.13.auto",
+          "language": "tsx",
+          "title": "試試看",
+          "initialCode": "// app/dashboard/layout.tsx\nexport default function Layout({ \n  children, \n  analytics, \n  team \n}: { \n  children: React.ReactNode;\n  analytics: React.ReactNode;\n  team: React.ReactNode;\n}) {\n  return (\n    \n      {children}\n      {analytics}\n      {team}\n    \n  );\n}\n// 三個 slot 各自獨立載入、獨立錯誤邊界",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "Parallel Routes：@slot"
+        },
+        {
+          "level": 3,
+          "text": "Intercepting Routes：(.) (..) (...)"
+        }
+      ]
+    },
+    {
+      "id": "10.14",
+      "number": "LESSON 10.14",
+      "title": "國際化（i18n）",
+      "oneLineSummary": "Font Optimization：next/font 自動載字體—零 layout shift、超快。",
+      "analogy": "像字體預載入—不用等 Google Fonts 下載、Next 在 build 時就準備好。import { Inter } from 'next/font/google'—1 行搞定、效能 +10。",
+      "content": "Next.js 14+ 的 i18n 用 middleware 自己組（比 Pages Router 彈性）。\n\n```text\napp/\n├── [lang]/\n│   ├── layout.tsx\n│   ├── page.tsx\n│   └── about/\n│       └── page.tsx\n└── middleware.ts\n```\n\n```ts\n// middleware.ts\nimport { NextRequest, NextResponse } from \"next/server\";\nimport { match } from \"@formatjs/intl-localematcher\";\nimport Negotiator from \"negotiator\";\n\nconst locales = [\"en\", \"zh-Hant\", \"ja\"];\nconst defaultLocale = \"en\";\n\nfunction getLocale(req: NextRequest) {\n  const headers = { \"accept-language\": req.headers.get(\"accept-language\") ?? \"\" };\n  const languages = new Negotiator({ headers }).languages();\n  return match(languages, locales, defaultLocale);\n}\n\nexport function middleware(req: NextRequest) {\n  const pathname = req.nextUrl.pathname;\n  const hasLocale = locales.some(l => pathname.startsWith(`/${l}`));\n  \n  if (!hasLocale) {\n    const locale = getLocale(req);\n    req.nextUrl.pathname = `/${locale}${pathname}`;\n    return NextResponse.redirect(req.nextUrl);\n  }\n}\n```\n\n  \n### 字典載入\n\n```ts\n// dictionaries/en.json, zh-Hant.json, ja.json\n\n// app/[lang]/dictionaries.ts\nconst dictionaries = {\n  en: () => import(\"./dictionaries/en.json\").then(m => m.default),\n  \"zh-Hant\": () => import(\"./dictionaries/zh-Hant.json\").then(m => m.default),\n  ja: () => import(\"./dictionaries/ja.json\").then(m => m.default)\n};\n\nexport const getDictionary = (locale: string) => dictionaries[locale]();\n\n// app/[lang]/page.tsx\nexport default async function Page({ params: { lang } }) {\n  const dict = await getDictionary(lang);\n  return {dict.welcome};\n}\n```\n\n  \n進階套件：`next-intl`（最完整）、`next-i18next`（老牌）。\n\n  \n    \n      🎯\n      面試考點\n    \n    台灣科技公司面試 90% 會問「Next.js」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。",
+      "tip": {
+        "type": "pro",
+        "text": "台灣科技公司面試 90% 會問「Next.js」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "10.14.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "// middleware.ts\nimport { NextRequest, NextResponse } from \"next/server\";\nimport { match } from \"@formatjs/intl-localematcher\";\nimport Negotiator from \"negotiator\";\n\nconst locales = [\"en\", \"zh-Hant\", \"ja\"];\nconst defaultLocale = \"en\";\n\nfunction getLocale(req: NextRequest) {\n  const headers = { \"accept-language\": req.headers.get(\"accept-language\") ?? \"\" };\n  const languages = new Negotiator({ headers }).languages();\n  return match(languages, locales, defaultLocale);\n}\n\nexport function middleware(req: NextRequest) {\n  const pathname = req.nextUrl.pathname;\n  const hasLocale = locales.some(l => pathname.startsWith(`/${l}`));\n  \n  if (!hasLocale) {\n    const locale = getLocale(req);\n    req.nextUrl.pathname = `/${locale}${pathname}`;\n    return NextResponse.redirect(req.nextUrl);\n  }\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "字典載入"
+        }
+      ]
+    },
+    {
+      "id": "10.15",
+      "number": "LESSON 10.15",
+      "title": "認證模式",
+      "oneLineSummary": "Metadata API：「在每頁設定 SEO」—title / description / OG image / canonical 全靠它。",
+      "analogy": "像給每頁掛上履歷—標題 / 描述 / 縮圖。Next.js Metadata 用 export 一個 object 就行、SEO + 社群分享一條龍。",
+      "content": "### 選擇\n\n  \n- **NextAuth.js / Auth.js**：最紅、支援所有 OAuth、open source\n- **Lucia Auth**：輕量、自由度高、要自己寫 UI\n- **Clerk**：付費但 UX 最好、整合最快\n- **Supabase Auth**：跟 Supabase DB 一起用方便\n- **自己寫**：完全控制（學習用）\n\n  \n### NextAuth.js v5（Auth.js）\n\n```bash\npnpm add next-auth@beta\n```\n\n```ts\n// auth.ts\nimport NextAuth from \"next-auth\";\nimport GitHub from \"next-auth/providers/github\";\nimport Google from \"next-auth/providers/google\";\n\nexport const { auth, handlers, signIn, signOut } = NextAuth({\n  providers: [\n    GitHub({ clientId: process.env.GITHUB_ID, clientSecret: process.env.GITHUB_SECRET }),\n    Google({ clientId: process.env.GOOGLE_ID, clientSecret: process.env.GOOGLE_SECRET })\n  ],\n  callbacks: {\n    session({ session, token }) {\n      session.user.id = token.sub;\n      return session;\n    }\n  }\n});\n\n// app/api/auth/[...nextauth]/route.ts\nexport { GET, POST } = handlers;\n\n// 任何 Server Component 用\nimport { auth } from \"@/auth\";\n\nexport default async function Page() {\n  const session = await auth();\n  if (!session) return \n請登入\n;\n  return \n歡迎 {session.user.email}\n;\n}\n\n// 登入 / 登出按鈕\nimport { signIn, signOut } from \"@/auth\";\n\nfunction LoginButton() {\n  return (\n     &#123; \"use server\"; await signIn(\"github\") &#125;}>\n      用 GitHub 登入\n    \n  );\n}\n```\n\n  \n### JWT vs Session\n\n  \n|  | JWT | Session |\n| --- | --- | --- |\n| 儲存 | cookie / localStorage | server DB + cookie ID |\n| 失效 | 到期才失效 | 可即時撤銷 |\n| 擴展性 | 無狀態，好 scale | 要 sticky session 或共享 store |\n| 建議 | 簡單應用、跨域 | 需要立刻登出全裝置 |\n\n  \n    **🚨 資安警報**\n    \nJWT 不要放**敏感資訊**（payload 是 base64，不是加密）。token 一律存 `httpOnly cookie`，**不要存 localStorage**（XSS 一中就完）。\n\n  \n\n  \n    \n      ⚡\n      學習加速器\n    \n    把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。",
+      "tip": {
+        "type": "practical",
+        "text": "把這節學到的馬上應用到一個小東西—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "10.15.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "// auth.ts\nimport NextAuth from \"next-auth\";\nimport GitHub from \"next-auth/providers/github\";\nimport Google from \"next-auth/providers/google\";\n\nexport const { auth, handlers, signIn, signOut } = NextAuth({\n  providers: [\n    GitHub({ clientId: process.env.GITHUB_ID, clientSecret: process.env.GITHUB_SECRET }),\n    Google({ clientId: process.env.GOOGLE_ID, clientSecret: process.env.GOOGLE_SECRET })\n  ],\n  callbacks: {\n    session({ session, token }) {\n      session.user.id = token.sub;\n      return session;\n    }\n  }\n});\n\n// app/api/auth/[...nextauth]/route.ts\nexport { GET, POST } = handlers;\n\n// 任何 Server Component 用\nimport { auth } from \"@/auth\";\n\nexport default async function Page() {\n  const session = await auth();\n  if (!session) return \n請登入\n;\n  return \n歡迎 {session.user.email}\n;\n}\n\n// 登入 / 登出按鈕\nimport { signIn, signOut } from \"@/auth\";\n\nfunction LoginButton() {\n  return (\n     &#123; \"use server\"; await signIn(\"github\") &#125;}>\n      用 GitHub 登入\n    \n  );\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "選擇"
+        },
+        {
+          "level": 3,
+          "text": "NextAuth.js v5（Auth.js）"
+        },
+        {
+          "level": 3,
+          "text": "JWT vs Session"
+        }
+      ]
+    },
+    {
+      "id": "10.16",
+      "number": "LESSON 10.16",
+      "title": "Nuxt 3 架構",
+      "oneLineSummary": "Streaming：「一段段送 HTML、不用等全部好」—大頁面也能秒開。",
+      "analogy": "像YouTube 影片邊看邊載—不用全下載才能看。Streaming 一樣：先送可見內容、再送下面的、整體感受極快。React Suspense + Next.js 自動處理。",
+      "content": "```bash\npnpx nuxi@latest init my-app\ncd my-app && pnpm install && pnpm dev\n```\n\n  \n### 檔案結構\n\n```text\nnuxt-app/\n├── nuxt.config.ts          ← 全局設定\n├── app.vue                  ← 根元件\n├── pages/                   ← 自動檔案路由\n│   ├── index.vue            → /\n│   ├── about.vue            → /about\n│   └── blog/\n│       ├── index.vue        → /blog\n│       └── [slug].vue       → /blog/:slug\n├── layouts/                 ← 共用 layout\n│   ├── default.vue\n│   └── admin.vue\n├── components/              ← 自動 import（不用手寫 import）\n│   └── MyButton.vue\n├── composables/             ← 自動 import\n│   └── useCounter.ts\n├── server/\n│   ├── api/\n│   │   └── users.get.ts     → GET /api/users\n│   ├── middleware/\n│   └── plugins/\n├── middleware/              ← 路由 middleware\n│   └── auth.ts\n├── plugins/                 ← Nuxt 啟動時跑\n├── public/                  ← 靜態檔\n├── assets/                  ← 處理過的資源\n└── stores/                  ← Pinia store（自動匯入）\n```\n\n  \n### 自動 import：Nuxt 殺手鐧\n\n  \n放在 `components/`、`composables/`、`utils/` 的東西**不用 import 就能用**：\n\n```vue\n\n// 不用寫 import！\nconst count = ref(0);          // 自動 import vue\nconst route = useRoute();        // 自動 import 路由\nconst { data } = await useFetch(\"/api/users\");  // Nuxt 內建 composable\nconst counter = useCounter(); // 你自己寫的 composable\n\n    \n\n```\n\n  \n### app.vue 根元件\n\n```vue\n\n  \n    \n        \n    \n  \n\n```\n\n  \n### Layout 系統\n\n```vue\n\n  \n    ...\n      \n    ...\n  \n\n  \n    \n    \n  \n\ndefinePageMeta({ layout: \"admin\" });\n\n```\n\n  \n    \n      🚀\n      2026 趨勢\n    \n    這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。",
+      "tip": {
+        "type": "trend",
+        "text": "這個技術 2026 還在主流、未來 5 年不會過時。但工具會更新—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "10.16.auto",
+          "language": "bash",
+          "title": "試試看",
+          "initialCode": "pnpx nuxi@latest init my-app\ncd my-app && pnpm install && pnpm dev",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "檔案結構"
+        },
+        {
+          "level": 3,
+          "text": "自動 import：Nuxt 殺手鐧"
+        },
+        {
+          "level": 3,
+          "text": "app.vue 根元件"
+        },
+        {
+          "level": 3,
+          "text": "Layout 系統"
+        }
+      ]
+    },
+    {
+      "id": "10.17",
+      "number": "LESSON 10.17",
+      "title": "Nuxt useFetch / useAsyncData / $fetch",
+      "oneLineSummary": "Parallel Routes / Intercepting Routes：「同一頁同時顯示多個 route」—進階用法。",
+      "analogy": "像分割畫面—左邊看清單、右邊看詳細—但 URL 各自獨立。Parallel Routes 適合 dashboard、Intercepting 適合 modal 顯示。Next.js 14 進階魔法。",
+      "content": "Nuxt 的資料抓取 SSR 友善，自動處理 cache、hydration。\n\n  \n### useFetch：最常用\n\n```vue\n\n// SSR + Client 都會跑，自動 cache 避免 hydration 後重打\nconst { data, pending, error, refresh } = await useFetch(\"/api/users\");\n\n// 帶選項\nconst { data } = await useFetch(\"/api/users\", {\n  method: \"POST\",\n  body: { name: \"招財\" },\n  headers: { \"X-Custom\": \"value\" },\n  query: { page: 1 },\n  \n  // 只在客戶端跑（SSR 跳過）\n  server: false,\n  \n  // lazy：不等抓完就渲染（搭配 pending 顯示 loading）\n  lazy: true,\n  \n  // 預設 cache key 是 url，可以自訂\n  key: \"users-list\",\n  \n  // transform 資料\n  transform: (data) => data.users.map(u => ({ ...u, name: u.name.toUpperCase() })),\n  \n  // 監聽 reactive 變化自動重抓\n  watch: [page]\n});\n\n  載入中...\n  {{ error.message }}\n  \n    {{ u.name }}\n  \n  重新整理\n\n```\n\n  \n### useAsyncData：更彈性的版本\n\n```ts\n// 任何 async 邏輯都能 cache（不限 fetch）\nconst { data, pending } = await useAsyncData(\"users\", async () => {\n  const users = await $fetch(\"/api/users\");\n  const stats = await $fetch(\"/api/stats\");\n  return { users, stats };\n});\n```\n\n  \n### $fetch：簡單版（不自動 SSR cache）\n\n```ts\n// 給 onClick、表單提交、mutation 用\nasync function handleSubmit() {\n  const r = await $fetch(\"/api/users\", {\n    method: \"POST\",\n    body: { name: \"招財\" }\n  });\n  // 不會自動 cache，每次都打\n}\n```\n\n  \n### SEO：useHead 跟 useSeoMeta\n\n```ts\n// 基本\nuseHead({\n  title: \"AI 島\",\n  meta: [\n    { name: \"description\", content: \"...\" }\n  ]\n});\n\n// 更方便的 useSeoMeta\nuseSeoMeta({\n  title: \"AI 島\",\n  description: \"...\",\n  ogImage: \"https://example.com/og.jpg\",\n  ogTitle: \"AI 島\",\n  twitterCard: \"summary_large_image\"\n});\n\n// 動態（reactive）\nconst post = ref(null);\nuseSeoMeta({\n  title: () => post.value?.title ?? \"載入中...\",\n  description: () => post.value?.excerpt\n});\n```\n\n  \n    \n      🛠️\n      工具推薦\n    \n    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。",
+      "tip": {
+        "type": "practical",
+        "text": "配合這節用的工具：(1) VS Code（編輯器、免費）(2) Chrome DevTools（F12 開啟、除錯神器）(3) Live Server（VS Code 擴充、即時預覽）(4) GitHub Copilot / Cursor（AI 寫程式、學習加速 2-10x）。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "10.17.auto",
+          "language": "vue",
+          "title": "試試看",
+          "initialCode": "// SSR + Client 都會跑，自動 cache 避免 hydration 後重打\nconst { data, pending, error, refresh } = await useFetch(\"/api/users\");\n\n// 帶選項\nconst { data } = await useFetch(\"/api/users\", {\n  method: \"POST\",\n  body: { name: \"招財\" },\n  headers: { \"X-Custom\": \"value\" },\n  query: { page: 1 },\n  \n  // 只在客戶端跑（SSR 跳過）\n  server: false,\n  \n  // lazy：不等抓完就渲染（搭配 pending 顯示 loading）\n  lazy: true,\n  \n  // 預設 cache key 是 url，可以自訂\n  key: \"users-list\",\n  \n  // transform 資料\n  transform: (data) => data.users.map(u => ({ ...u, name: u.name.toUpperCase() })),\n  \n  // 監聽 reactive 變化自動重抓\n  watch: [page]\n});\n\n  載入中...\n  {{ error.message }}\n  \n    {{ u.name }}\n  \n  重新整理",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "useFetch：最常用"
+        },
+        {
+          "level": 3,
+          "text": "useAsyncData：更彈性的版本"
+        },
+        {
+          "level": 3,
+          "text": "$fetch：簡單版（不自動 SSR cache）"
+        },
+        {
+          "level": 3,
+          "text": "SEO：useHead 跟 useSeoMeta"
+        }
+      ]
+    },
+    {
+      "id": "10.18",
+      "number": "LESSON 10.18",
+      "title": "Nuxt Server API（Nitro）",
+      "oneLineSummary": "MDX：「在 Markdown 裡用 React 元件」—部落格 / 文件站絕配。",
+      "analogy": "像能放互動圖表的 Word—寫文字像 Markdown 一樣輕鬆、嵌入互動 demo 像 React 一樣強大。本站文件 / 部落格都用 MDX。",
+      "content": "Nuxt 內建 Nitro server，**檔案路由也適用**。\n\n```text\nserver/api/\n├── users.get.ts          → GET /api/users\n├── users.post.ts         → POST /api/users\n├── users/[id].get.ts     → GET /api/users/:id\n├── users/[id].delete.ts  → DELETE /api/users/:id\n└── auth/login.post.ts    → POST /api/auth/login\n```\n\n```ts\n// server/api/users.get.ts\nexport default defineEventHandler(async (event) => {\n  const query = getQuery(event);\n  const page = parseInt(query.page as string) || 1;\n  \n  const users = await db.users.findMany({ skip: (page - 1) * 20, take: 20 });\n  return users;\n});\n\n// server/api/users.post.ts\nexport default defineEventHandler(async (event) => {\n  const body = await readBody(event);\n  // Pydantic 風的 schema 驗證可以用 zod\n  const user = await db.users.create({ data: body });\n  return user;\n});\n\n// server/api/users/[id].get.ts\nexport default defineEventHandler(async (event) => {\n  const id = getRouterParam(event, \"id\");\n  const user = await db.users.findUnique({ where: { id } });\n  if (!user) {\n    throw createError({ statusCode: 404, statusMessage: \"Not found\" });\n  }\n  return user;\n});\n```\n\n  \n### Server Middleware\n\n```ts\n// server/middleware/auth.ts\nexport default defineEventHandler(async (event) => {\n  const url = getRequestURL(event);\n  \n  if (url.pathname.startsWith(\"/api/admin\")) {\n    const token = getCookie(event, \"token\");\n    if (!isAdmin(token)) {\n      throw createError({ statusCode: 401, statusMessage: \"Unauthorized\" });\n    }\n  }\n});\n```\n\n  \n### cron / scheduled tasks（Nitro tasks）\n\n```ts\n// server/tasks/cleanup.ts\nexport default defineTask({\n  meta: {\n    name: \"cleanup\",\n    description: \"清理過期資料\"\n  },\n  async run() {\n    await db.sessions.deleteMany({ where: { expiresAt: { lt: new Date() } } });\n    return { result: \"ok\" };\n  }\n});\n\n// nuxt.config.ts\nexport default defineNuxtConfig({\n  nitro: {\n    experimental: { tasks: true },\n    scheduledTasks: {\n      \"0 * * * *\": [\"cleanup\"]  // 每小時\n    }\n  }\n});\n```\n\n  \n    \n      ⚠️\n      新手常見錯誤\n    \n    新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。",
+      "tip": {
+        "type": "warning",
+        "text": "新手 3 大坑：(1) 不看 console—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) 不存檔就 F5—改完忘記儲存以為「程式沒效果」 (3) 抄 code 不理解—複製貼上能跑、但下次要改就崩潰。記得：先看懂、再寫。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "10.18.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "// server/api/users.get.ts\nexport default defineEventHandler(async (event) => {\n  const query = getQuery(event);\n  const page = parseInt(query.page as string) || 1;\n  \n  const users = await db.users.findMany({ skip: (page - 1) * 20, take: 20 });\n  return users;\n});\n\n// server/api/users.post.ts\nexport default defineEventHandler(async (event) => {\n  const body = await readBody(event);\n  // Pydantic 風的 schema 驗證可以用 zod\n  const user = await db.users.create({ data: body });\n  return user;\n});\n\n// server/api/users/[id].get.ts\nexport default defineEventHandler(async (event) => {\n  const id = getRouterParam(event, \"id\");\n  const user = await db.users.findUnique({ where: { id } });\n  if (!user) {\n    throw createError({ statusCode: 404, statusMessage: \"Not found\" });\n  }\n  return user;\n});",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "Server Middleware"
+        },
+        {
+          "level": 3,
+          "text": "cron / scheduled tasks（Nitro tasks）"
+        }
+      ]
+    },
+    {
+      "id": "10.19",
+      "number": "LESSON 10.19",
+      "title": "Nuxt Hybrid Rendering — routeRules 神奇魔法",
+      "oneLineSummary": "Deployment：「推到 Vercel 自動上線」—Next.js 親兒子部署、3 秒完成。",
+      "analogy": "像App Store 親兒子發佈—Apple 自家做的 App 上架最順。Vercel 是 Next.js 親媽—push GitHub、自動部署、有 CI/CD、有 preview URL、indie 神器。",
+      "content": "Nuxt 比 Next 更直覺的地方：**單個專案不同路由用不同渲染策略**，全在一個地方設。\n\n```ts\n// nuxt.config.ts\nexport default defineNuxtConfig({\n  routeRules: {\n    // 首頁 ISR（每小時重生）\n    \"/\": { isr: 3600 },\n    \n    // 部落格全靜態（build 時產生）\n    \"/blog/**\": { prerender: true },\n    \n    // 後台 SPA（client only，不要 SSR）\n    \"/dashboard/**\": { ssr: false },\n    \n    // 管理員區強制 SSR + 加 header\n    \"/admin/**\": { \n      ssr: true,\n      headers: { \n        \"X-Frame-Options\": \"DENY\",\n        \"Cache-Control\": \"no-store\"\n      }\n    },\n    \n    // API 加 CORS\n    \"/api/**\": { cors: true },\n    \n    // 重定向\n    \"/old-page\": { redirect: \"/new-page\" },\n    \n    // Proxy\n    \"/proxy/**\": { proxy: \"https://api.external.com/**\" }\n  }\n});\n```\n\n  \n### 對應的部署行為\n\n  \nNuxt 自動產生對應的部署檔。例如部署到 Vercel：\n\n  \n- `isr` 路由 → Vercel ISR\n- `prerender` 路由 → 靜態檔案\n- `ssr: false` → 純 client 渲染\n- `headers` → vercel.json 自動產\n\n  \n同樣設定，**部署到 Cloudflare、Netlify、Zeabur 都自動轉換**，不用手動設。\n\n  \n    \n      💼\n      接案小知識\n    \n    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「Next.js」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。",
+      "tip": {
+        "type": "practical",
+        "text": "剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「Next.js」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "10.19.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "// nuxt.config.ts\nexport default defineNuxtConfig({\n  routeRules: {\n    // 首頁 ISR（每小時重生）\n    \"/\": { isr: 3600 },\n    \n    // 部落格全靜態（build 時產生）\n    \"/blog/**\": { prerender: true },\n    \n    // 後台 SPA（client only，不要 SSR）\n    \"/dashboard/**\": { ssr: false },\n    \n    // 管理員區強制 SSR + 加 header\n    \"/admin/**\": { \n      ssr: true,\n      headers: { \n        \"X-Frame-Options\": \"DENY\",\n        \"Cache-Control\": \"no-store\"\n      }\n    },\n    \n    // API 加 CORS\n    \"/api/**\": { cors: true },\n    \n    // 重定向\n    \"/old-page\": { redirect: \"/new-page\" },\n    \n    // Proxy\n    \"/proxy/**\": { proxy: \"https://api.external.com/**\" }\n  }\n});",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "對應的部署行為"
+        }
+      ]
+    },
+    {
+      "id": "10.20",
+      "number": "LESSON 10.20",
+      "title": "Nuxt Modules 生態",
+      "oneLineSummary": "ISR（Incremental Static Regeneration）：「靜態頁也能定期更新」—快又新鮮。",
+      "analogy": "像便利商店每天進新貨—架上有貨（快）+ 每天補（新）。ISR 一樣：頁面預先 build 好（速度極快）+ 每 60 秒重新 build（資料新鮮）。電商 / 新聞 / 部落格主流。",
+      "content": "Nuxt 模組系統超強。一行設定加完整功能：\n\n```ts\n// nuxt.config.ts\nexport default defineNuxtConfig({\n  modules: [\n    \"@nuxt/image\",\n    \"@nuxt/content\",\n    \"@nuxt/ui\",\n    \"@pinia/nuxt\",\n    \"@vueuse/nuxt\",\n    \"@nuxtjs/tailwindcss\",\n    \"@nuxtjs/i18n\",\n    \"@nuxtjs/seo\",\n    \"@nuxtjs/supabase\",\n    \"nuxt-auth-utils\"\n  ]\n});\n```\n\n  \n### @nuxt/image：圖片優化（類似 next/image）\n\n```vue\n\n```\n\n  \n### @nuxt/content：檔案系統 CMS\n\n```text\ncontent/\n├── blog/\n│   ├── 1.first-post.md\n│   └── 2.second-post.md\n└── docs/\n    └── intro.md\n```\n\n```vue\n\nconst { data: posts } = await useAsyncData(\"posts\", () =>\n  queryContent(\"blog\").sort({ date: -1 }).find()\n);\n\n  \n    \n## {{ post.title }}\n\n    \n  \n\n```\n\n  \n### @nuxt/ui：完整 UI 元件庫\n\n```vue\n送出\n\n  ...\n\n```\n\n  \n### @nuxtjs/seo\n\n  \n一鍵搞定 sitemap、robots、Open Graph、structured data：\n\n```ts\nexport default defineNuxtConfig({\n  modules: [\"@nuxtjs/seo\"],\n  site: {\n    url: \"https://example.com\",\n    name: \"AI 島\",\n    description: \"...\"\n  }\n});\n\n// 自動產生：\n// - /sitemap.xml\n// - /robots.txt\n// - OG meta\n// - JSON-LD\n```\n\n  \n    \n      🎯\n      面試考點\n    \n    台灣科技公司面試 90% 會問「Next.js」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。",
+      "tip": {
+        "type": "pro",
+        "text": "台灣科技公司面試 90% 會問「Next.js」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "10.20.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "// nuxt.config.ts\nexport default defineNuxtConfig({\n  modules: [\n    \"@nuxt/image\",\n    \"@nuxt/content\",\n    \"@nuxt/ui\",\n    \"@pinia/nuxt\",\n    \"@vueuse/nuxt\",\n    \"@nuxtjs/tailwindcss\",\n    \"@nuxtjs/i18n\",\n    \"@nuxtjs/seo\",\n    \"@nuxtjs/supabase\",\n    \"nuxt-auth-utils\"\n  ]\n});",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "@nuxt/image：圖片優化（類似 next/image）"
+        },
+        {
+          "level": 3,
+          "text": "@nuxt/content：檔案系統 CMS"
+        },
+        {
+          "level": 3,
+          "text": "@nuxt/ui：完整 UI 元件庫"
+        },
+        {
+          "level": 3,
+          "text": "@nuxtjs/seo"
+        }
+      ]
+    },
+    {
+      "id": "10.21",
+      "number": "LESSON 10.21",
+      "title": "Next vs Nuxt 完整對照",
+      "oneLineSummary": "Edge Runtime：「全球邊緣節點跑你的 code」—latency 趨近 0。",
+      "analogy": "像麥當勞分店—不用跑去美國總部、就近找一家。Edge Runtime 一樣：你的 code 跑在離使用者最近的 server（東京 / 新加坡 / 香港）、回應極快。Middleware / 部分 API 適合 Edge。",
+      "content": "| 項目 | Next.js | Nuxt 3 |\n| --- | --- | --- |\n| 底層 | React | Vue 3 |\n| 路由 | App Router（檔案） | 檔案路由 |\n| 渲染模式 | CSR/SSR/SSG/ISR/RSC | CSR/SSR/SSG/ISR |\n| RSC | ✓（領先） | 近似（Server Components 在預覽） |\n| Server Actions | ✓ | 用 server API 取代 |\n| 資料抓取 | fetch（內建快取） | useFetch / useAsyncData |\n| SEO Metadata | generateMetadata | useSeoMeta |\n| 圖片優化 | next/image | @nuxt/image |\n| 字型優化 | next/font | @nuxtjs/google-fonts |\n| Hybrid Rendering | 每路由獨立設 | routeRules（更直覺） |\n| 自動 import | ✗（手動） | ✓（components/composables） |\n| 原生模組系統 | ✗ | ✓（@nuxt/*） |\n| 主要部署 | Vercel（親兒子） | 多家平等 |\n| 市佔 | 80%+（全球） | 主要亞洲 |\n| 學習資源 | 英文最豐 | 中文最豐 |\n\n  \n### 該選誰？\n\n  \n- **已會 React** → Next.js\n- **已會 Vue** → Nuxt 3\n- **美國團隊 / FAANG 求職** → Next.js\n- **亞洲團隊 / 中文資源** → Nuxt 3\n- **個人專案，極簡上手** → Nuxt 3\n- **追求最新 RSC 體驗** → Next.js\n- **需要 Vercel 親兒子整合** → Next.js\n\n  \n    **🚀 進階技巧**\n    \n2026 業界共識：**會其中一個就好**，**看得懂另一個**。兩個架構心智模型 80% 相同（檔案路由、SSR、渲染模式、middleware），轉換成本一週內。\n\n  \n\n  \n    \n      ⚡\n      學習加速器\n    \n    把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。",
+      "tip": {
+        "type": "practical",
+        "text": "把這節學到的馬上應用到一個小東西—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "找一個你身邊的例子、用「Next vs Nuxt 完整對照」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "該選誰？"
+        }
+      ]
+    },
+    {
+      "id": "10.22",
+      "number": "LESSON 10.22",
+      "title": "部署",
+      "oneLineSummary": "整章實戰：用 Next.js 14 做一個完整 indie SaaS—auth / DB / Stripe / 部署一條龍。",
+      "analogy": "像蓋一棟可以租出去的房子—不只能用、能賺錢。學完這節你能從零做出一個能收費的 SaaS、ship 到 Vercel、開始有人付錢用。",
+      "content": "### Vercel（Next.js 親兒子，最簡單）\n\n```bash\n# 方法 1：CLI\npnpm add -g vercel\nvercel  # 互動式設定\n\n# 方法 2：GitHub 連 Vercel，push 自動部署（推薦）\n```\n\n  \nVercel 提供：CDN、Edge Functions、ISR、自動 HTTPS、preview deployment、A/B testing、analytics。Hobby 方案免費，足夠個人專案跟小型新創。\n\n  \n### Cloudflare Pages\n\n```bash\n# Next.js\npnpm add -D @cloudflare/next-on-pages\npnpx next-on-pages\n\n# Nuxt（內建 preset）\nNITRO_PRESET=cloudflare-pages pnpm build\n```\n\n  \nCloudflare 優勢：免費額度大（無限請求）、邊緣運算速度快、整合 R2 / D1 / KV 完整生態。但部分 Node API 不支援。\n\n  \n### Zeabur（台灣團隊愛用）\n\n```bash\n# 連 GitHub 就好，自動偵測 Next.js / Nuxt\n# 機房選東京（亞洲速度快）\n```\n\n  \nZeabur 優勢：亞洲機房（東京）、繁中介面、便宜、支援完整 Node 環境。台灣個人開發者首選。\n\n  \n### Netlify\n\n  \n跟 Vercel 類似，UX 接近。Next.js 支援用 `@netlify/plugin-nextjs`。Nuxt 內建 netlify preset。\n\n  \n### Railway / Render / Fly.io\n\n  \n傳統容器化，**支援所有 Node 套件**（沒 edge runtime 限制）。適合需要長連線、WebSocket、cron 的應用。\n\n  \n### 自架 Docker\n\n```dockerfile\n# Dockerfile\nFROM node:20-alpine AS deps\nWORKDIR /app\nCOPY package*.json pnpm-lock.yaml ./\nRUN npm i -g pnpm && pnpm install --frozen-lockfile\n\nFROM node:20-alpine AS builder\nWORKDIR /app\nCOPY --from=deps /app/node_modules ./node_modules\nCOPY . .\nRUN npm i -g pnpm && pnpm build\n\nFROM node:20-alpine AS runner\nWORKDIR /app\nENV NODE_ENV=production\nCOPY --from=builder /app/.next ./.next\nCOPY --from=builder /app/package.json ./\nCOPY --from=builder /app/node_modules ./node_modules\nEXPOSE 3000\nCMD [\"npm\", \"start\"]\n```\n\n  \n### 環境變數\n\n```bash\n# .env.local（不進 git）\nDATABASE_URL=postgres://...\nOPENAI_API_KEY=sk-...\n\n# Next.js 約定\n# NEXT_PUBLIC_* 開頭會曝露給 client\nNEXT_PUBLIC_GA_ID=G-XXX\n\n# Nuxt 約定\n# public 路徑（曝露給 client）\nNUXT_PUBLIC_API_BASE=...\n```\n\n  \n    **🚨 資安警報**\n    \n不要把 API key 用 `NEXT_PUBLIC_` 或 `NUXT_PUBLIC_` 開頭！會被 bundle 進 client，任何人都能看。**敏感資料只在 Server Component / Server Action / API Route 用**。\n\n  \n\n  \n    \n      🚀\n      2026 趨勢\n    \n    這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。",
+      "tip": {
+        "type": "trend",
+        "text": "這個技術 2026 還在主流、未來 5 年不會過時。但工具會更新—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "10.22.auto",
+          "language": "bash",
+          "title": "試試看",
+          "initialCode": "# 方法 1：CLI\npnpm add -g vercel\nvercel  # 互動式設定\n\n# 方法 2：GitHub 連 Vercel，push 自動部署（推薦）",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "Vercel（Next.js 親兒子，最簡單）"
+        },
+        {
+          "level": 3,
+          "text": "Cloudflare Pages"
+        },
+        {
+          "level": 3,
+          "text": "Zeabur（台灣團隊愛用）"
+        },
+        {
+          "level": 3,
+          "text": "Netlify"
+        },
+        {
+          "level": 3,
+          "text": "Railway / Render / Fly.io"
+        },
+        {
+          "level": 3,
+          "text": "自架 Docker"
+        },
+        {
+          "level": 3,
+          "text": "環境變數"
+        }
+      ]
+    },
+    {
+      "id": "10.23",
+      "number": "LESSON 10.23",
+      "title": "效能優化清單",
+      "oneLineSummary": "Next.js vs Remix vs Astro：2026 全端框架比較—場景選對工具。",
+      "analogy": "像SUV / 跑車 / 機車—Next.js 全能（SUV）、Remix 重表單 / Web 標準（跑車）、Astro 內容網站（機車快靈）。沒有最好、只有適合。",
+      "content": "### Core Web Vitals\n\n  \n- **LCP（Largest Contentful Paint）**：\n\n// strategy 選項：\n// - beforeInteractive: 在頁面互動前載入（用 polyfill 才用）\n// - afterInteractive: 預設，互動後\n// - lazyOnload: 全部 load 完後（GA、Crisp 等）\n// - worker: 跑在 Web Worker（experimental）\n```\n\n  \n    \n      🛠️\n      工具推薦\n    \n    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。",
+      "tip": {
+        "type": "practical",
+        "text": "配合這節用的工具：(1) VS Code（編輯器、免費）(2) Chrome DevTools（F12 開啟、除錯神器）(3) Live Server（VS Code 擴充、即時預覽）(4) GitHub Copilot / Cursor（AI 寫程式、學習加速 2-10x）。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "挑一個你做過的舊專案、用本節「效能優化清單」介紹的進階技術重構它。",
+        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
+        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "Core Web Vitals"
+        }
+      ]
+    },
+    {
+      "title": "Next.js 15 App Router 完整指南",
+      "oneLineSummary": "app/ 資料夾即路由、Server Component 預設、Streaming SSR",
+      "analogy": "像「資料夾就是路由」—不用設定、把 page.tsx 丟進 app/about/ 就有 /about 路徑。",
+      "content": "## 檔案約定\n```\napp/\n├── layout.tsx        ← 根 layout（包整個 app）\n├── page.tsx          ← /\n├── loading.tsx       ← 載入中 UI\n├── error.tsx         ← error boundary\n├── not-found.tsx     ← 404\n├── about/\n│   └── page.tsx      ← /about\n├── blog/\n│   ├── layout.tsx    ← /blog/* 共用 layout\n│   ├── page.tsx      ← /blog\n│   └── [slug]/\n│       └── page.tsx  ← /blog/:slug\n└── api/\n    └── posts/\n        └── route.ts  ← /api/posts (REST API)\n```\n\n## 動態路由\n```tsx\n// app/blog/[slug]/page.tsx\nexport default async function Post({ params }: { params: Promise<{ slug: string }> }) {\n  const { slug } = await params;\n  const post = await db.posts.findUnique({ where: { slug } });\n  return <article>{post.content}</article>;\n}\n\n// 靜態產生\nexport async function generateStaticParams() {\n  const posts = await db.posts.findMany();\n  return posts.map(p => ({ slug: p.slug }));\n}\n```\n\n## Route Groups（分區但不影響 URL）\n```\napp/\n├── (marketing)/\n│   ├── layout.tsx     ← 行銷頁 layout\n│   ├── page.tsx       ← /\n│   └── pricing/page.tsx  ← /pricing\n└── (app)/\n    ├── layout.tsx     ← app layout（含 sidebar）\n    └── dashboard/page.tsx  ← /dashboard\n```\n\n## Parallel Routes（多 slot 同時 render）\n```\napp/\n├── @sidebar/page.tsx\n├── @main/page.tsx\n└── layout.tsx\n```\n```tsx\nexport default function Layout({ sidebar, main }) {\n  return <><aside>{sidebar}</aside><main>{main}</main></>;\n}\n```\n\n## Streaming + Suspense\n```tsx\n// page.tsx\nimport { Suspense } from \"react\";\n\nexport default function Page() {\n  return (\n    <>\n      <h1>Dashboard</h1>\n      <Suspense fallback={<Loading />}>\n        <SlowComponent />  {/* 等這個慢 component 時其他先 render */}\n      </Suspense>\n    </>\n  );\n}\n```",
+      "tip": {
+        "type": "practical",
+        "text": "Next.js App Router 是 2026 React 標準。Pages Router 仍能用、但新專案直接 App Router、別走回頭路。"
+      },
+      "id": "10.24",
+      "number": "LESSON 10.24",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "10.24.auto",
+          "language": "tsx",
+          "title": "試試看",
+          "initialCode": "// app/blog/[slug]/page.tsx\nexport default async function Post({ params }: { params: Promise<{ slug: string }> }) {\n  const { slug } = await params;\n  const post = await db.posts.findUnique({ where: { slug } });\n  return <article>{post.content}</article>;\n}\n\n// 靜態產生\nexport async function generateStaticParams() {\n  const posts = await db.posts.findMany();\n  return posts.map(p => ({ slug: p.slug }));\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "檔案約定"
+        },
+        {
+          "level": 2,
+          "text": "動態路由"
+        },
+        {
+          "level": 2,
+          "text": "Route Groups（分區但不影響 URL）"
+        },
+        {
+          "level": 2,
+          "text": "Parallel Routes（多 slot 同時 render）"
+        },
+        {
+          "level": 2,
+          "text": "Streaming + Suspense"
+        }
+      ]
+    },
+    {
+      "title": "Next.js 部署：Vercel / Cloudflare / self-host",
+      "oneLineSummary": "三大主流部署選擇對比 + 各自設定",
+      "analogy": "像「房子蓋好了、要租在哪個地段」—Vercel 最方便、Cloudflare 最便宜、self-host 最自由。",
+      "content": "## Vercel（推薦、最方便）\n```bash\nnpm i -g vercel\nvercel  # 第一次：登入 + 連結 repo\nvercel --prod  # 部署到 production\n```\n\n優點：\n- 0 設定 Next.js 完美支援（畢竟是 Vercel 做的）\n- 全球 CDN\n- 免費額度大（hobby plan）\n- Edge Functions / Image Optimization 內建\n\n缺點：\n- 商業專案費用快漲（pro $20/月 + 流量費）\n- 中國 / 中國境內 user 速度慢\n\n## Cloudflare Pages（便宜方案）\n```bash\n# wrangler.toml\nname = \"my-app\"\ncompatibility_date = \"2025-05-01\"\ncompatibility_flags = [\"nodejs_compat\"]\n\n[build]\ncommand = \"npx @cloudflare/next-on-pages\"\noutput = \".vercel/output/static\"\n```\n\n優點：\n- 免費額度超大（500 builds/月、無限流量）\n- 全球 CDN、邊緣計算\n- 接 R2 / D1 / KV / Workers AI 便宜\n\n缺點：\n- Next.js 部分功能需要 adapter（@cloudflare/next-on-pages）\n- 不支援所有 Image Optimization\n\n## Self-Host（最自由、配 Docker）\n```dockerfile\nFROM node:22-alpine AS deps\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci\n\nFROM node:22-alpine AS builder\nWORKDIR /app\nCOPY --from=deps /app/node_modules ./node_modules\nCOPY . .\nRUN npm run build\n\nFROM node:22-alpine AS runner\nWORKDIR /app\nENV NODE_ENV=production\nCOPY --from=builder /app/.next/standalone ./\nCOPY --from=builder /app/.next/static ./.next/static\nCOPY --from=builder /app/public ./public\nEXPOSE 3000\nCMD [\"node\", \"server.js\"]\n```\n\n```js\n// next.config.mjs\nconst nextConfig = {\n  output: \"standalone\",  // self-host 必加\n};\n```\n\n部署選擇：\n- **Zeabur**（推薦 Indie）：Asia 機房、跟 Vercel 體驗類似\n- **Railway**：$5 起跳、適合 prototype\n- **Fly.io**：全球、配 Postgres / Redis 方便\n- **AWS / GCP**：企業級\n\n## 對比表\n\n| 平台 | 免費額度 | 月費起 | 適合 |\n|---|---|---|---|\n| Vercel | 100GB/月 | $20 | Indie / startup |\n| Cloudflare Pages | 無限流量 | $0 | 流量大 / 預算少 |\n| Zeabur | 試用 | NT$50 | 台灣 Indie |\n| Railway | $5 credit | $5 | prototype |\n| Fly.io | 試用 | $0 起 | 全球部署 |",
+      "tip": {
+        "type": "business",
+        "text": "Indie 接案推薦：MVP 用 Vercel hobby (免費)、客戶接收後轉 Vercel pro（NT$ 700/月）或 Cloudflare（免費）。Self-host 留給有 sysadmin 經驗的客戶。"
+      },
+      "id": "10.25",
+      "number": "LESSON 10.25",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "10.25.auto",
+          "language": "bash",
+          "title": "試試看",
+          "initialCode": "npm i -g vercel\nvercel  # 第一次：登入 + 連結 repo\nvercel --prod  # 部署到 production",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "Vercel（推薦、最方便）"
+        },
+        {
+          "level": 2,
+          "text": "Cloudflare Pages（便宜方案）"
+        },
+        {
+          "level": 2,
+          "text": "Self-Host（最自由、配 Docker）"
+        },
+        {
+          "level": 2,
+          "text": "對比表"
+        }
+      ]
+    }
+  ],
+  "boss": {
+    "name": "路由獵犬",
+    "hp": 160,
+    "emoji": "🐺",
+    "description": "帶你穿越 app router、迷路會被吃"
+  },
+  "quiz": {
+    "id": "ch10-quiz",
+    "questions": [],
+    "xpReward": 50,
+    "perfectBonus": 50
+  }
+}

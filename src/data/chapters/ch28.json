@@ -1,0 +1,1366 @@
+{
+  "id": 28,
+  "slug": "python-scraping",
+  "stage": 4,
+  "title": "Python 爬蟲",
+  "subtitle": "Scrapy / Playwright / 反爬",
+  "icon": "bug",
+  "description": "Python 爬蟲：Scrapy / Playwright / 反爬",
+  "status": "published",
+  "difficulty": "intermediate",
+  "prerequisites": [
+    26
+  ],
+  "estimatedHours": 14,
+  "outcomes": [
+    "理解核心概念",
+    "實作主流工具",
+    "整章實戰可發佈作品",
+    "知道生態 / 接案行情",
+    "對齊 2026 業界主流"
+  ],
+  "lessons": [
+    {
+      "id": "28.1",
+      "number": "LESSON 28.1",
+      "title": "爬蟲是什麼？能合法做什麼？",
+      "oneLineSummary": "爬蟲就是「自動讀網頁、抓資料」—你手動複製貼上的事、用程式做、一秒抓 100 筆。",
+      "analogy": "想像請工讀生 24 小時上網抓資料—不會累、不抱怨、月薪 NT$ 0。價格比較網（蝦皮 vs Momo）、Google News 聚合、Booking 比價—背後都是爬蟲。",
+      "content": "### 爬蟲 5 大應用\n\n      \n- 💰 **價格比較**：蝦皮 vs Momo vs PChome、找最便宜\n- 📰 **新聞聚合**：抓各大網站新聞做摘要\n- 📊 **市場研究**：競品價格 / 評論 / 銷量\n- 🤖 **AI 訓練資料**：抓網路文章 / 圖片訓練模型\n- 📈 **量化策略**：抓股價 / 新聞做交易訊號\n\n      \n### 合法 vs 非法\n\n      \n- ✅ **合法**：抓公開資料、遵守 robots.txt、合理頻率、不破解付費牆\n- ⚠️ **灰色**：抓社群網站（FB / IG）— ToS 禁止但實際大家在做\n- ❌ **違法**：破解登入、繞過反爬被告、商用付費資料、轉售別人資料\n\n      \n### 台灣相關案例\n\n      \n2020 台灣有人爬蝦皮商品被告、最後判決爬「公開資料」不構成電腦犯罪。**但**—大量爬導致對方伺服器當機可能涉刑法。\n\n      \n### 道德守則\n\n      \n- 看 robots.txt（網站告訴你哪能爬）\n- 每次請求 sleep 1-2 秒、不要打爆對方\n- User-Agent 寫真的（不要假裝瀏覽器騙人）\n- 有 API 用 API、爬蟲是最後手段\n- 抓到的資料不要商用 / 轉售（除非有授權）\n\n      \n### 爬蟲 3 大難度\n\n      \n- 🟢 **Easy**：靜態 HTML、無反爬（Wiki / 政府網站）\n- 🟡 **Medium**：JS 渲染、Cookie / 簡單反爬（蝦皮 / Momo）\n- 🔴 **Hard**：Cloudflare / 圖形驗證 / IP 限制（FB / Instagram）",
+      "tip": {
+        "type": "security",
+        "text": "2017 LinkedIn 告 hiQ Labs 爬資料、最終美國最高法院判決爬公開資料不違反 CFAA（電腦犯罪法）。但這是美國、台灣標準稍不同。商用爬蟲前先問律師、別亂爬。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "28.1.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "# Python 範例\ndef fibonacci(n):\n    a, b = 0, 1\n    for _ in range(n):\n        yield a\n        a, b = b, a + b\n\nprint(list(fibonacci(10)))\n\n# List comprehension\nsquares = [x**2 for x in range(1, 6)]\nprint(\"平方:\", squares)",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "找一個你身邊的例子、用「爬蟲是什麼？能合法做什麼？」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "爬蟲 5 大應用"
+        },
+        {
+          "level": 3,
+          "text": "合法 vs 非法"
+        },
+        {
+          "level": 3,
+          "text": "台灣相關案例"
+        },
+        {
+          "level": 3,
+          "text": "道德守則"
+        },
+        {
+          "level": 3,
+          "text": "爬蟲 3 大難度"
+        }
+      ]
+    },
+    {
+      "id": "28.2",
+      "number": "LESSON 28.2",
+      "title": "Requests + BeautifulSoup：靜態頁神器",
+      "oneLineSummary": "Requests 抓 HTML、BeautifulSoup 解析—學會這兩個 = 80% 網站能爬。",
+      "analogy": "想像送快遞 + 拆包裹—Requests 是快遞員（去網站把 HTML 拿回來）、BeautifulSoup 是拆包員（從 HTML 找出你要的資料）。組合超強、Python 爬蟲入門必學。",
+      "content": "### 安裝 + 第一個爬蟲\n\n```python\n# pip install requests beautifulsoup4 lxml\nimport requests\nfrom bs4 import BeautifulSoup\n\n# 1. 抓網頁\nurl = 'https://example.com'\nres = requests.get(url)\nprint(res.status_code)  # 200 = OK\nprint(res.text[:500])   # 看前 500 字\n\n# 2. 解析 HTML\nsoup = BeautifulSoup(res.text, 'lxml')\n\n# 3. 找資料（CSS selector）\ntitle = soup.select_one('h1').text\nlinks = [a['href'] for a in soup.select('a')]\nprices = [p.text for p in soup.select('.price')]\n```\n\n      \n### Requests 常用功能\n\n```python\n# 加 User-Agent（假裝是瀏覽器）\nheaders = {\n    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'\n}\nres = requests.get(url, headers=headers)\n\n# Query 參數\nparams = {'q': 'python', 'page': 2}\nres = requests.get('https://example.com/search', params=params)\n\n# POST 請求（送表單）\ndata = {'username': 'alice', 'password': 'secret'}\nres = requests.post('https://example.com/login', data=data)\n\n# Cookie / Session\nsession = requests.Session()\nsession.post('/login', data=data)\nres = session.get('/profile')  # 自動帶 cookie\n\n# Timeout（必設、不然會 hang）\nres = requests.get(url, timeout=10)\n\n# 處理錯誤\ntry:\n    res = requests.get(url, timeout=10)\n    res.raise_for_status()  # 4xx/5xx 會 raise\nexcept requests.RequestException as e:\n    print(f'錯誤：{e}')\n```\n\n      \n### BeautifulSoup 找資料方法\n\n```python\n# CSS Selector（推薦、跟前端一致）\nsoup.select('div.product .title')\nsoup.select_one('#main > h1')\nsoup.select('a[href^=\"/product/\"]')  # 開頭是 /product/\n\n# find / find_all（傳統方法）\nsoup.find('h1')\nsoup.find_all('div', class_='product')\nsoup.find('a', attrs={'data-id': '123'})\n\n# 取資料\nel.text                # 文字內容\nel.get_text(strip=True)  # 去除空白\nel['href']            # 屬性值\nel.attrs               # 全部屬性\n```\n\n      \n### 實戰：爬 PTT 八卦版標題\n\n```python\nimport requests\nfrom bs4 import BeautifulSoup\n\nurl = 'https://www.ptt.cc/bbs/Gossiping/index.html'\ncookies = {'over18': '1'}  # PTT 八卦版要這個\nheaders = {'User-Agent': 'Mozilla/5.0'}\n\nres = requests.get(url, headers=headers, cookies=cookies)\nsoup = BeautifulSoup(res.text, 'lxml')\n\nfor post in soup.select('.r-ent'):\n    title_el = post.select_one('.title a')\n    if title_el:\n        title = title_el.text.strip()\n        link = 'https://www.ptt.cc' + title_el['href']\n        push = post.select_one('.nrec').text  # 推文數\n        author = post.select_one('.author').text\n        print(f'{push} {title} by {author}')\n```\n\n      \n### 儲存到 CSV / DB\n\n```python\nimport pandas as pd\n\nresults = []\nfor post in soup.select('.r-ent'):\n    results.append({\n        'title': post.select_one('.title a').text,\n        'author': post.select_one('.author').text,\n        'push': post.select_one('.nrec').text,\n    })\n\ndf = pd.DataFrame(results)\ndf.to_csv('ptt_titles.csv', index=False, encoding='utf-8-sig')\n# utf-8-sig 讓 Excel 直接開不亂碼\n```",
+      "tip": {
+        "type": "warning",
+        "text": "沒設 User-Agent → 對方看 Python 預設 UA 直接 block。沒設 timeout → 請求 hang 住程式卡死。每次爬完必加 time.sleep(1)—不然 5 分鐘 IP 被封。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "28.2.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "# pip install requests beautifulsoup4 lxml\nimport requests\nfrom bs4 import BeautifulSoup\n\n# 1. 抓網頁\nurl = 'https://example.com'\nres = requests.get(url)\nprint(res.status_code)  # 200 = OK\nprint(res.text[:500])   # 看前 500 字\n\n# 2. 解析 HTML\nsoup = BeautifulSoup(res.text, 'lxml')\n\n# 3. 找資料（CSS selector）\ntitle = soup.select_one('h1').text\nlinks = [a['href'] for a in soup.select('a')]\nprices = [p.text for p in soup.select('.price')]",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "安裝 + 第一個爬蟲"
+        },
+        {
+          "level": 3,
+          "text": "Requests 常用功能"
+        },
+        {
+          "level": 3,
+          "text": "BeautifulSoup 找資料方法"
+        },
+        {
+          "level": 3,
+          "text": "實戰：爬 PTT 八卦版標題"
+        },
+        {
+          "level": 3,
+          "text": "儲存到 CSV / DB"
+        }
+      ]
+    },
+    {
+      "id": "28.3",
+      "number": "LESSON 28.3",
+      "title": "Playwright：JS 渲染網站殺手",
+      "oneLineSummary": "Playwright = 「自動操作真實瀏覽器」—點按鈕、捲動、等載入—現代 React / Vue 網站靠它。",
+      "analogy": "Requests 像讀靜態書（拿到 HTML 就完）、Playwright 像真的開瀏覽器看（等 JS 跑完、能點按鈕）。蝦皮 / IG / Twitter 全用 JS 渲染、Requests 抓不到、Playwright 才能爬。",
+      "content": "### 安裝\n\n```bash\npip install playwright\nplaywright install chromium  # 裝瀏覽器\n```\n\n      \n### 基本使用\n\n```python\nfrom playwright.sync_api import sync_playwright\n\nwith sync_playwright() as p:\n    # 開無頭瀏覽器（headless）\n    browser = p.chromium.launch(headless=True)\n    # 開發時用 headless=False、能看畫面\n\n    page = browser.new_page()\n    page.goto('https://example.com')\n\n    # 等元素出現\n    page.wait_for_selector('.product')\n\n    # 取資料\n    title = page.locator('h1').inner_text()\n    products = page.locator('.product').all()\n\n    for p in products:\n        name = p.locator('.name').inner_text()\n        price = p.locator('.price').inner_text()\n        print(name, price)\n\n    browser.close()\n```\n\n      \n### 互動：點擊 / 輸入 / 捲動\n\n```python\n# 點按鈕\npage.click('button.load-more')\n\n# 填表單\npage.fill('input[name=\"email\"]', 'a@b.com')\npage.fill('input[name=\"password\"]', 'secret')\npage.click('button[type=\"submit\"]')\n\n# 等待跳轉\npage.wait_for_url('**/dashboard')\n\n# 捲動到底（觸發 lazy load）\npage.evaluate('window.scrollTo(0, document.body.scrollHeight)')\n\n# 等 N 毫秒\npage.wait_for_timeout(2000)  # 2 秒\n\n# 等網路 idle（最穩）\npage.wait_for_load_state('networkidle')\n\n# 截圖\npage.screenshot(path='shot.png', full_page=True)\n```\n\n      \n### 無限捲動：抓所有商品\n\n```python\nfrom playwright.sync_api import sync_playwright\n\ndef scrape_infinite_scroll(url, max_scrolls=20):\n    with sync_playwright() as p:\n        browser = p.chromium.launch(headless=True)\n        page = browser.new_page()\n        page.goto(url)\n\n        previous_height = 0\n        for _ in range(max_scrolls):\n            page.evaluate('window.scrollTo(0, document.body.scrollHeight)')\n            page.wait_for_timeout(1500)\n            current_height = page.evaluate('document.body.scrollHeight')\n            if current_height == previous_height:\n                break  # 沒新內容就停\n            previous_height = current_height\n\n        # 抓所有商品\n        products = page.locator('.product-card').all()\n        results = []\n        for prod in products:\n            results.append({\n                'name': prod.locator('.name').inner_text(),\n                'price': prod.locator('.price').inner_text(),\n            })\n\n        browser.close()\n        return results\n```\n\n      \n### 處理彈窗 / 對話框\n\n```python\n# 自動處理 alert / confirm\npage.on('dialog', lambda d: d.accept())\n\n# 關閉 Cookie 同意彈窗\ntry:\n    page.click('button:has-text(\"同意\")', timeout=3000)\nexcept:\n    pass  # 沒彈窗也不錯\n```\n\n      \n### 截攔 API 回應（超強技巧）\n\n```python\n# 很多 SPA 後面打 JSON API、直接攔截比解析 HTML 快\napi_data = []\n\ndef handle_response(response):\n    if '/api/products' in response.url:\n        api_data.append(response.json())\n\npage.on('response', handle_response)\npage.goto('https://shop.example.com')\n# api_data 自動填入後端 JSON\n```\n\n      \n### async 版本（高速）\n\n```python\nimport asyncio\nfrom playwright.async_api import async_playwright\n\nasync def scrape(url):\n    async with async_playwright() as p:\n        browser = await p.chromium.launch()\n        page = await browser.new_page()\n        await page.goto(url)\n        text = await page.inner_text('h1')\n        await browser.close()\n        return text\n\n# 同時跑 10 個\nasync def main():\n    urls = [f'https://example.com/page/{i}' for i in range(10)]\n    results = await asyncio.gather(*[scrape(u) for u in urls])\n    print(results)\n\nasyncio.run(main())\n```",
+      "tip": {
+        "type": "trend",
+        "text": "2024+ Playwright 完勝 Selenium—速度快 / API 現代 / 內建多瀏覽器 / 微軟支援。Anthropic Computer Use 也用 Playwright 控瀏覽器。AI Agent 時代爬蟲首選。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "28.3.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "from playwright.sync_api import sync_playwright\n\nwith sync_playwright() as p:\n    # 開無頭瀏覽器（headless）\n    browser = p.chromium.launch(headless=True)\n    # 開發時用 headless=False、能看畫面\n\n    page = browser.new_page()\n    page.goto('https://example.com')\n\n    # 等元素出現\n    page.wait_for_selector('.product')\n\n    # 取資料\n    title = page.locator('h1').inner_text()\n    products = page.locator('.product').all()\n\n    for p in products:\n        name = p.locator('.name').inner_text()\n        price = p.locator('.price').inner_text()\n        print(name, price)\n\n    browser.close()",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "安裝"
+        },
+        {
+          "level": 3,
+          "text": "基本使用"
+        },
+        {
+          "level": 3,
+          "text": "互動：點擊 / 輸入 / 捲動"
+        },
+        {
+          "level": 3,
+          "text": "無限捲動：抓所有商品"
+        },
+        {
+          "level": 3,
+          "text": "處理彈窗 / 對話框"
+        },
+        {
+          "level": 3,
+          "text": "截攔 API 回應（超強技巧）"
+        },
+        {
+          "level": 3,
+          "text": "async 版本（高速）"
+        }
+      ]
+    },
+    {
+      "id": "28.4",
+      "number": "LESSON 28.4",
+      "title": "Scrapy：大規模分散式爬蟲框架",
+      "oneLineSummary": "Scrapy = 「爬蟲界的 Django」—專業框架、並發超強、適合每天爬百萬頁的場景。",
+      "analogy": "Requests + BS4 像單兵作戰（爬幾千頁 OK）、Scrapy 像軍團（爬百萬頁、自動排程、失敗重試）。商業爬蟲 / 比價平台 / 新聞聚合都用 Scrapy。",
+      "content": "### 安裝 + 建專案\n\n```bash\npip install scrapy\n\nscrapy startproject myspider\ncd myspider\nscrapy genspider books books.toscrape.com  # 練習網站\n```\n\n      \n### 第一個 Spider\n\n```python\n# myspider/spiders/books.py\nimport scrapy\n\nclass BooksSpider(scrapy.Spider):\n    name = 'books'\n    start_urls = ['http://books.toscrape.com']\n\n    def parse(self, response):\n        # 抓書名 + 價格\n        for book in response.css('article.product_pod'):\n            yield {\n                'title': book.css('h3 a::attr(title)').get(),\n                'price': book.css('.price_color::text').get(),\n                'stock': book.css('.availability::text').get().strip(),\n            }\n\n        # 找下一頁、繼續爬\n        next_page = response.css('li.next a::attr(href)').get()\n        if next_page:\n            yield response.follow(next_page, callback=self.parse)\n```\n\n      \n### 執行\n\n```bash\n# 跑爬蟲 + 輸出 JSON\nscrapy crawl books -o books.json\n\n# 輸出 CSV\nscrapy crawl books -o books.csv\n\n# 限制爬幾頁（測試用）\nscrapy crawl books -s CLOSESPIDER_ITEMCOUNT=20\n```\n\n      \n### settings.py 重要設定\n\n```python\n# 自動遵守 robots.txt\nROBOTSTXT_OBEY = True\n\n# 並發數（同時幾個請求）\nCONCURRENT_REQUESTS = 16\nCONCURRENT_REQUESTS_PER_DOMAIN = 8\n\n# 每個請求間隔\nDOWNLOAD_DELAY = 1  # 1 秒\nRANDOMIZE_DOWNLOAD_DELAY = True  # 0.5-1.5 倍隨機\n\n# 自動 throttle（智慧調速）\nAUTOTHROTTLE_ENABLED = True\nAUTOTHROTTLE_START_DELAY = 1\nAUTOTHROTTLE_MAX_DELAY = 10\n\n# User-Agent\nUSER_AGENT = 'Mozilla/5.0 (compatible; MyBot/1.0)'\n\n# Retry\nRETRY_ENABLED = True\nRETRY_TIMES = 3\nRETRY_HTTP_CODES = [500, 502, 503, 504, 408, 429]\n```\n\n      \n### Item Pipeline（資料處理 / 儲存）\n\n```python\n# pipelines.py\nimport pymongo\n\nclass MongoDBPipeline:\n    def open_spider(self, spider):\n        self.client = pymongo.MongoClient('mongodb://localhost:27017')\n        self.db = self.client['scrapy']\n\n    def process_item(self, item, spider):\n        # 去重、清洗、儲存\n        if self.db.books.find_one({'title': item['title']}):\n            raise scrapy.exceptions.DropItem('重複')\n\n        # 清洗價格\n        item['price'] = float(item['price'].replace('£', ''))\n\n        self.db.books.insert_one(dict(item))\n        return item\n\n    def close_spider(self, spider):\n        self.client.close()\n\n# settings.py 啟用\nITEM_PIPELINES = {\n    'myspider.pipelines.MongoDBPipeline': 300,\n}\n```\n\n      \n### Scrapy + Playwright（最強組合）\n\n```bash\npip install scrapy-playwright\nplaywright install chromium\n```\n\n```python\n# settings.py\nDOWNLOAD_HANDLERS = {\n    'http': 'scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler',\n    'https': 'scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler',\n}\nTWISTED_REACTOR = 'twisted.internet.asyncioreactor.AsyncioSelectorReactor'\n\n# spider 裡用\ndef start_requests(self):\n    yield scrapy.Request(url, meta={'playwright': True})\n```\n\n      \n### 分散式 Scrapy（Scrapy-Redis）\n\n      \n多台機器一起爬、共用 queue + 去重—爬全網規模時用。中型公司用這個架構爬百萬商品。",
+      "tip": {
+        "type": "practical",
+        "text": "「幫我爬 OO 網站、每天更新」這種案子台灣 NT$ 5,000-50,000 一個。Scrapy 寫好 + Scrapy Cloud / Zyte 託管、客戶按月付費 NT$ 3,000-10,000、被動收入。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "28.4.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "# myspider/spiders/books.py\nimport scrapy\n\nclass BooksSpider(scrapy.Spider):\n    name = 'books'\n    start_urls = ['http://books.toscrape.com']\n\n    def parse(self, response):\n        # 抓書名 + 價格\n        for book in response.css('article.product_pod'):\n            yield {\n                'title': book.css('h3 a::attr(title)').get(),\n                'price': book.css('.price_color::text').get(),\n                'stock': book.css('.availability::text').get().strip(),\n            }\n\n        # 找下一頁、繼續爬\n        next_page = response.css('li.next a::attr(href)').get()\n        if next_page:\n            yield response.follow(next_page, callback=self.parse)",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "安裝 + 建專案"
+        },
+        {
+          "level": 3,
+          "text": "第一個 Spider"
+        },
+        {
+          "level": 3,
+          "text": "執行"
+        },
+        {
+          "level": 3,
+          "text": "settings.py 重要設定"
+        },
+        {
+          "level": 3,
+          "text": "Item Pipeline（資料處理 / 儲存）"
+        },
+        {
+          "level": 3,
+          "text": "Scrapy + Playwright（最強組合）"
+        },
+        {
+          "level": 3,
+          "text": "分散式 Scrapy（Scrapy-Redis）"
+        }
+      ]
+    },
+    {
+      "id": "28.5",
+      "number": "LESSON 28.5",
+      "title": "反爬機制：你會遇到的 7 種防線",
+      "oneLineSummary": "大型網站都有反爬機制—User-Agent 偵測、IP 限流、驗證碼、Cloudflare、JS 挑戰—一層一層擋你。",
+      "analogy": "像銀行金庫的多層門禁—第一層刷卡（UA）、第二層指紋（IP）、第三層問題（驗證碼）。學會破解 = 真正的爬蟲工程師。",
+      "content": "### 常見反爬技術\n\n      \n#### 1. User-Agent 偵測\n\n      \n看你的 UA、是 Python 預設 → 直接 block。\n\n```python\n# 解法：用真實瀏覽器 UA\nheaders = {\n    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64) AppleWebKit/537.36'\n}\n\n# 進階：用 fake-useragent 套件、每次隨機\nfrom fake_useragent import UserAgent\nua = UserAgent()\nheaders = {'User-Agent': ua.random}\n```\n\n      \n#### 2. IP 限流（最常見）\n\n      \n同一 IP 1 分鐘超過 60 次 → 封 IP 1 小時。\n\n```python\n# 解法 1：sleep 控速\nimport time, random\nfor url in urls:\n    res = requests.get(url)\n    time.sleep(random.uniform(1, 3))  # 隨機 1-3 秒\n\n# 解法 2：用 IP 池\nproxies = {\n    'http': 'http://proxy.example.com:8080',\n    'https': 'http://proxy.example.com:8080',\n}\nres = requests.get(url, proxies=proxies)\n```\n\n      \n#### 3. Referer 檢查\n\n      \n看你從哪個頁面點過來、檢查 referer header。\n\n```python\nheaders = {\n    'User-Agent': '...',\n    'Referer': 'https://example.com/'  # 偽裝\n}\n```\n\n      \n#### 4. Cookie / Session 要求\n\n      \n沒帶 cookie 直接拒。\n\n```python\n# 用 Session 自動處理\nsession = requests.Session()\nsession.get('https://example.com')  # 拿 cookie\nsession.get('https://example.com/api/data')  # 帶上去\n```\n\n      \n#### 5. JavaScript Challenge / Cloudflare\n\n      \n對方塞一段 JS、必須跑完才放行—Cloudflare Bot Protection。\n\n```python\n# 解法 1：用 Playwright（自動跑 JS）\nfrom playwright.sync_api import sync_playwright\nwith sync_playwright() as p:\n    browser = p.chromium.launch()\n    page = browser.new_page()\n    page.goto(url)\n    # 自動跑完 Cloudflare 挑戰\n\n# 解法 2：用 undetected-chromedriver / cloudscraper\nimport cloudscraper\nscraper = cloudscraper.create_scraper()\nres = scraper.get('https://cloudflare-protected.com')\n```\n\n      \n#### 6. 圖形驗證碼 / reCAPTCHA\n\n      \n最難破解。3 種對策：\n\n      \n- 避開（換 IP / Cookie 不觸發）\n- 用第三方解碼服務（2Captcha / Anti-Captcha、$2 / 1000 題）\n- 用 AI（OCR / GPT-4V）— 簡單驗證碼可破\n\n      \n#### 7. 設備指紋（Canvas / WebGL fingerprint）\n\n      \n2025+ 高階反爬—用瀏覽器特徵建立 fingerprint。解法：用真實瀏覽器（Playwright）+ 反指紋套件（playwright-stealth）。\n\n      \n### 反爬難度排行\n\n      \n- 🟢 簡單：政府網站 / 學術網站 / 部落格\n- 🟡 中等：蝦皮 / Momo / 大部分電商（IP 限流）\n- 🟠 困難：Amazon / Google（多層偵測）\n- 🔴 極難：Instagram / TikTok / LinkedIn（設備指紋 + ML）\n- 🚫 幾乎不可能：Cloudflare Turnstile + reCAPTCHA Enterprise\n\n      \n### 反反爬黃金組合\n\n```python\n# Playwright + Stealth + Proxy + Random UA + Sleep\nfrom playwright.sync_api import sync_playwright\nfrom playwright_stealth import stealth_sync\nimport random, time\n\ndef scrape_protected(url):\n    with sync_playwright() as p:\n        browser = p.chromium.launch(\n            headless=True,\n            proxy={'server': 'http://proxy.io:8080'}  # 用 proxy\n        )\n        context = browser.new_context(\n            user_agent='Mozilla/5.0 ...',\n            viewport={'width': 1920, 'height': 1080},\n            locale='zh-TW',\n        )\n        page = context.new_page()\n        stealth_sync(page)  # 反指紋\n\n        page.goto(url)\n        time.sleep(random.uniform(2, 5))  # 模擬人類\n\n        # 隨機滾動\n        page.evaluate('window.scrollBy(0, 500)')\n        time.sleep(random.uniform(1, 2))\n\n        data = page.inner_html('body')\n        browser.close()\n        return data\n```",
+      "tip": {
+        "type": "trend",
+        "text": "2025+ AI 驅動爬蟲—Anthropic Computer Use / browser-use 用 LLM 控瀏覽器、能應對任何反爬。下個世代爬蟲：「告訴 AI『幫我抓蝦皮 iPhone 15 價格』、它自己想辦法繞」。"
+      },
+      "xp": 15,
+      "playgrounds": [
+        {
+          "key": "28.5.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "# 解法：用真實瀏覽器 UA\nheaders = {\n    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64) AppleWebKit/537.36'\n}\n\n# 進階：用 fake-useragent 套件、每次隨機\nfrom fake_useragent import UserAgent\nua = UserAgent()\nheaders = {'User-Agent': ua.random}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "常見反爬技術"
+        },
+        {
+          "level": 3,
+          "text": "反爬難度排行"
+        },
+        {
+          "level": 3,
+          "text": "反反爬黃金組合"
+        }
+      ]
+    },
+    {
+      "id": "28.6",
+      "number": "LESSON 28.6",
+      "title": "IP 池 / Proxy 服務：被封 IP 的救星",
+      "oneLineSummary": "Proxy = 「中間人 IP」—你的請求經過 Proxy 出去、對方看到的是 Proxy 的 IP、不是你的。",
+      "analogy": "像租車去搶銀行（誤）—不對、像用不同手機號打電話。一支被封換一支、IP 池就是一堆「電話號碼」、輪流用。",
+      "content": "### Proxy 類型\n\n      \n- **免費 Proxy**：不穩、慢、可能被監聽—別用！\n- **Datacenter Proxy**：機房 IP、便宜（$1-5/月/IP）、易被識破\n- **Residential Proxy**：真實住宅 IP、貴（$10-15/GB）、最難識別\n- **Mobile Proxy**：4G IP、最貴（$30-100/月）、最難封\n\n      \n### 主流付費服務\n\n      \n- **Bright Data**（前 Luminati）：全球第一、超貴超強\n- **Smartproxy**：中等價位、品質好\n- **Oxylabs**：企業級\n- **ScraperAPI**：簡單包好的 API、$49/月起\n- **Zyte（Scrapy Cloud）**：Scrapy 親兒子\n\n      \n### 用法（Requests）\n\n```python\nproxies = {\n    'http': 'http://user:pass@proxy.smartproxy.com:7000',\n    'https': 'http://user:pass@proxy.smartproxy.com:7000',\n}\nres = requests.get('https://example.com', proxies=proxies)\nprint(res.json()['origin'])  # 看到 Proxy 的 IP\n```\n\n      \n### IP 池輪詢\n\n```python\nimport random\nimport requests\n\nPROXY_POOL = [\n    'http://proxy1.io:8080',\n    'http://proxy2.io:8080',\n    'http://proxy3.io:8080',\n]\n\ndef get_with_proxy(url):\n    for _ in range(3):  # 試 3 次\n        proxy = random.choice(PROXY_POOL)\n        try:\n            res = requests.get(\n                url,\n                proxies={'https': proxy},\n                timeout=10\n            )\n            if res.status_code == 200:\n                return res\n        except:\n            continue\n    return None\n```\n\n      \n### 免費 IP 池（小規模測試用）\n\n```python\n# 自己抓免費 proxy 清單（注意：不穩）\ndef get_free_proxies():\n    res = requests.get('https://www.free-proxy-list.net')\n    soup = BeautifulSoup(res.text, 'lxml')\n    proxies = []\n    for row in soup.select('table tbody tr'):\n        cols = row.select('td')\n        if cols[6].text == 'yes':  # https?\n            proxies.append(f'http://{cols[0].text}:{cols[1].text}')\n    return proxies\n```\n\n      \n### 2026 推薦\n\n      \n- 個人 / 學習：**免費 proxy + sleep** 夠用\n- 小型專案：**ScraperAPI**（$49/月、最簡單）\n- 中大型：**Smartproxy / Bright Data residential**\n- 商業爬蟲：**Zyte + Scrapy Cloud** 一條龍",
+      "tip": {
+        "type": "practical",
+        "text": "商業爬蟲 proxy 成本佔大頭—爬 100 萬頁 residential proxy 約 $50-100 美金。算 ROI：抓的資料價值 &gt; proxy 成本才划算。新手先學免費方案、賺到錢再升級。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "28.6.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "proxies = {\n    'http': 'http://user:pass@proxy.smartproxy.com:7000',\n    'https': 'http://user:pass@proxy.smartproxy.com:7000',\n}\nres = requests.get('https://example.com', proxies=proxies)\nprint(res.json()['origin'])  # 看到 Proxy 的 IP",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "Proxy 類型"
+        },
+        {
+          "level": 3,
+          "text": "主流付費服務"
+        },
+        {
+          "level": 3,
+          "text": "用法（Requests）"
+        },
+        {
+          "level": 3,
+          "text": "IP 池輪詢"
+        },
+        {
+          "level": 3,
+          "text": "免費 IP 池（小規模測試用）"
+        },
+        {
+          "level": 3,
+          "text": "2026 推薦"
+        }
+      ]
+    },
+    {
+      "id": "28.7",
+      "number": "LESSON 28.7",
+      "title": "實戰：完整爬蟲專案（爬 PChome 商品）",
+      "oneLineSummary": "把整章所學整合：Requests + BS4 + Playwright + Pandas + 儲存—爬 PChome 24h 某分類所有商品、存成 CSV。",
+      "analogy": "像畢業專題—不練單一招、串成完整流程。完成後你能接「爬蟲 + 資料整理」案、定期更新給客戶。",
+      "content": "```python\nimport requests\nimport pandas as pd\nimport time, random\nfrom datetime import datetime\n\nHEADERS = {\n    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'\n                   ' AppleWebKit/537.36 (KHTML, like Gecko)'\n                   ' Chrome/120.0.0.0 Safari/537.36'\n}\n\ndef scrape_pchome(keyword, max_pages=5):\n    # PChome 商品搜尋爬蟲（用內部 API、最穩）\n    all_items = []\n\n    for page in range(1, max_pages + 1):\n        # PChome 用 JSON API、不用解 HTML\n        url = f'https://ecshweb.pchome.com.tw/search/v3.3/all/results'\n        params = {\n            'q': keyword,\n            'page': page,\n            'sort': 'sale/dc',  # 銷量排序\n        }\n\n        try:\n            res = requests.get(url, headers=HEADERS, params=params, timeout=15)\n            res.raise_for_status()\n            data = res.json()\n        except Exception as e:\n            print(f'第 {page} 頁失敗：{e}')\n            continue\n\n        items = data.get('prods', [])\n        if not items:\n            break\n\n        for item in items:\n            all_items.append({\n                'id': item.get('Id'),\n                'name': item.get('name'),\n                'price': item.get('price'),\n                'original_price': item.get('originPrice'),\n                'brand': item.get('brand'),\n                'category': item.get('cateName'),\n                'image': f'https://a.ecimg.tw/{item.get(\"picS\")}',\n                'url': f'https://24h.pchome.com.tw/prod/{item.get(\"Id\")}',\n                'scraped_at': datetime.now().isoformat(),\n            })\n\n        print(f'✓ 第 {page} 頁、累計 {len(all_items)} 筆')\n        time.sleep(random.uniform(1, 2))  # 禮貌等待\n\n    return all_items\n\nif __name__ == '__main__':\n    items = scrape_pchome('iPhone 17', max_pages=10)\n\n    df = pd.DataFrame(items)\n    print(f'總共爬到 {len(df)} 筆商品')\n\n    # 分析\n    print(f'平均價格：NT$ {df[\"price\"].mean():,.0f}')\n    print(f'最低價：NT$ {df[\"price\"].min():,.0f}')\n    print(f'最高價：NT$ {df[\"price\"].max():,.0f}')\n\n    # 儲存\n    timestamp = datetime.now().strftime('%Y%m%d_%H%M')\n    df.to_csv(f'pchome_{timestamp}.csv', index=False,\n              encoding='utf-8-sig')\n    df.to_excel(f'pchome_{timestamp}.xlsx', index=False)\n    print('✓ 已儲存 CSV + Excel')\n```\n\n      \n### 進階：定時跑（cron）\n\n```bash\n# Linux crontab：每天早上 8 點跑\n0 8 * * * /usr/bin/python3 /path/to/scraper.py\n\n# Windows Task Scheduler / Mac launchd 同理\n```\n\n      \n### 進階：監控價格變化、發 LINE 通知\n\n```python\ndef check_price_drops(today_df, yesterday_df):\n    # 找出降價商品\n    merged = today_df.merge(yesterday_df, on='id', suffixes=('_today', '_yesterday'))\n    drops = merged[merged['price_today'] < merged['price_yesterday']]\n\n    for _, row in drops.iterrows():\n        msg = f'📉 {row[\"name_today\"]} 從 NT$ {row[\"price_yesterday\"]} 降到 NT$ {row[\"price_today\"]}'\n        send_line_notify(msg)\n```",
+      "tip": {
+        "type": "milestone",
+        "text": "完成這個專案 = 你能跟客戶提案「我幫你每天爬競品價格、做比價儀表板、月費 NT$ 5,000」。這種 SaaS 在台灣超多人在做、低成本高利潤。"
+      },
+      "xp": 15,
+      "playgrounds": [
+        {
+          "key": "28.7.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "import requests\nimport pandas as pd\nimport time, random\nfrom datetime import datetime\n\nHEADERS = {\n    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'\n                   ' AppleWebKit/537.36 (KHTML, like Gecko)'\n                   ' Chrome/120.0.0.0 Safari/537.36'\n}\n\ndef scrape_pchome(keyword, max_pages=5):\n    # PChome 商品搜尋爬蟲（用內部 API、最穩）\n    all_items = []\n\n    for page in range(1, max_pages + 1):\n        # PChome 用 JSON API、不用解 HTML\n        url = f'https://ecshweb.pchome.com.tw/search/v3.3/all/results'\n        params = {\n            'q': keyword,\n            'page': page,\n            'sort': 'sale/dc',  # 銷量排序\n        }\n\n        try:\n            res = requests.get(url, headers=HEADERS, params=params, timeout=15)\n            res.raise_for_status()\n            data = res.json()\n        except Exception as e:\n            print(f'第 {page} 頁失敗：{e}')\n            continue\n\n        items = data.get('prods', [])\n        if not items:\n            break\n\n        for item in items:\n            all_items.append({\n                'id': item.get('Id'),\n                'name': item.get('name'),\n                'price': item.get('price'),\n                'original_price': item.get('originPrice'),\n                'brand': item.get('brand'),\n                'category': item.get('cateName'),\n                'image': f'https://a.ecimg.tw/{item.get(\"picS\")}',\n                'url': f'https://24h.pchome.com.tw/prod/{item.get(\"Id\")}',\n                'scraped_at': datetime.now().isoformat(),\n            })\n\n        print(f'✓ 第 {page} 頁、累計 {len(all_items)} 筆')\n        time.sleep(random.uniform(1, 2))  # 禮貌等待\n\n    return all_items\n\nif __name__ == '__main__':\n    items = scrape_pchome('iPhone 17', max_pages=10)\n\n    df = pd.DataFrame(items)\n    print(f'總共爬到 {len(df)} 筆商品')\n\n    # 分析\n    print(f'平均價格：NT$ {df[\"price\"].mean():,.0f}')\n    print(f'最低價：NT$ {df[\"price\"].min():,.0f}')\n    print(f'最高價：NT$ {df[\"price\"].max():,.0f}')\n\n    # 儲存\n    timestamp = datetime.now().strftime('%Y%m%d_%H%M')\n    df.to_csv(f'pchome_{timestamp}.csv', index=False,\n              encoding='utf-8-sig')\n    df.to_excel(f'pchome_{timestamp}.xlsx', index=False)\n    print('✓ 已儲存 CSV + Excel')",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "進階：定時跑（cron）"
+        },
+        {
+          "level": 3,
+          "text": "進階：監控價格變化、發 LINE 通知"
+        }
+      ]
+    },
+    {
+      "title": "requests + BeautifulSoup：爬蟲基本盤",
+      "oneLineSummary": "Python 爬蟲入門、抓網頁 + 解析 HTML 瑞士刀",
+      "analogy": "不會這兩個套件不算會爬蟲。",
+      "content": "## requests\n```python\nimport requests\n\nheaders = {\"User-Agent\": \"Mozilla/5.0 ...\"}\nres = requests.get(\"https://example.com\", headers=headers, timeout=10)\nprint(res.status_code, res.text)\n\n# Session（保留 cookie）\nsession = requests.Session()\nsession.get(\"https://example.com/login\")\nsession.post(\"...\", data={...})\n```\n\n## BeautifulSoup\n```python\nfrom bs4 import BeautifulSoup\nsoup = BeautifulSoup(res.text, \"lxml\")\n\nsoup.select(\"div.product\")\nsoup.select_one(\"h1.title\")\nsoup.select(\"a[href^='/product/']\")\n\ntitle = soup.select_one(\"h1\").get_text(strip=True)\nlink = soup.select_one(\"a\")[\"href\"]\nall_links = [a[\"href\"] for a in soup.select(\"a[href]\")]\n```\n\n## 完整範例\n```python\ndef scrape_products(page):\n    url = f\"https://example.com/products?page={page}\"\n    res = requests.get(url, headers=HEADERS, timeout=10)\n    soup = BeautifulSoup(res.text, \"lxml\")\n    \n    return [{\n        \"name\": card.select_one(\".name\").get_text(strip=True),\n        \"price\": card.select_one(\".price\").get_text(strip=True),\n        \"link\": card.select_one(\"a\")[\"href\"]\n    } for card in soup.select(\"div.product-card\")]\n\nall_products = []\nfor p in range(1, 11):\n    all_products.extend(scrape_products(p))\n    time.sleep(1)\n```",
+      "tip": {
+        "type": "practical",
+        "text": "90% 靜態網站 requests + BS4 搞定。"
+      },
+      "id": "28.8",
+      "number": "LESSON 28.8",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "28.8.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "import requests\n\nheaders = {\"User-Agent\": \"Mozilla/5.0 ...\"}\nres = requests.get(\"https://example.com\", headers=headers, timeout=10)\nprint(res.status_code, res.text)\n\n# Session（保留 cookie）\nsession = requests.Session()\nsession.get(\"https://example.com/login\")\nsession.post(\"...\", data={...})",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "requests"
+        },
+        {
+          "level": 2,
+          "text": "BeautifulSoup"
+        },
+        {
+          "level": 2,
+          "text": "完整範例"
+        }
+      ]
+    },
+    {
+      "title": "Scrapy：大型爬蟲框架",
+      "oneLineSummary": "Python 爬蟲工程師標配、適合大規模",
+      "analogy": "10 萬頁要 Scrapy。",
+      "content": "## 為什麼\n- 並發 / retry / throttle 自動\n- Pipeline（清理 / 存 DB）\n- Middleware（代理 / cookie 輪換）\n\n## 建專案\n```bash\npip install scrapy\nscrapy startproject myspider\nscrapy genspider products example.com\n```\n\n## Spider\n```python\nimport scrapy\n\nclass ProductsSpider(scrapy.Spider):\n    name = \"products\"\n    start_urls = [\"https://example.com/products?page=1\"]\n    custom_settings = {\n        \"DOWNLOAD_DELAY\": 1,\n        \"CONCURRENT_REQUESTS\": 8\n    }\n    \n    def parse(self, response):\n        for card in response.css(\"div.product-card\"):\n            yield {\n                \"name\": card.css(\".name::text\").get().strip(),\n                \"price\": card.css(\".price::text\").get(),\n                \"link\": response.urljoin(card.css(\"a::attr(href)\").get())\n            }\n        \n        next_page = response.css(\"a.next::attr(href)\").get()\n        if next_page:\n            yield response.follow(next_page, self.parse)\n```\n\n```bash\nscrapy crawl products -O products.json\n```\n\n## Pipeline\n```python\nclass MongoPipeline:\n    def open_spider(self, spider):\n        self.client = MongoClient(MONGO_URI)\n    \n    def process_item(self, item, spider):\n        self.client.db.products.insert_one(dict(item))\n        return item\n\n# settings.py\nITEM_PIPELINES = { \"myspider.pipelines.MongoPipeline\": 200 }\n```\n\n## CrawlSpider\n```python\nfrom scrapy.spiders import CrawlSpider, Rule\nfrom scrapy.linkextractors import LinkExtractor\n\nclass SiteSpider(CrawlSpider):\n    name = \"site\"\n    rules = (\n        Rule(LinkExtractor(allow=r\"/products/\\d+\"), callback=\"parse_product\"),\n        Rule(LinkExtractor(allow=r\"/category/\"), follow=True)\n    )\n```",
+      "tip": {
+        "type": "pro",
+        "text": "Scrapy 是業界主流、可接「爬蟲工程師」職缺。"
+      },
+      "id": "28.9",
+      "number": "LESSON 28.9",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "28.9.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "import scrapy\n\nclass ProductsSpider(scrapy.Spider):\n    name = \"products\"\n    start_urls = [\"https://example.com/products?page=1\"]\n    custom_settings = {\n        \"DOWNLOAD_DELAY\": 1,\n        \"CONCURRENT_REQUESTS\": 8\n    }\n    \n    def parse(self, response):\n        for card in response.css(\"div.product-card\"):\n            yield {\n                \"name\": card.css(\".name::text\").get().strip(),\n                \"price\": card.css(\".price::text\").get(),\n                \"link\": response.urljoin(card.css(\"a::attr(href)\").get())\n            }\n        \n        next_page = response.css(\"a.next::attr(href)\").get()\n        if next_page:\n            yield response.follow(next_page, self.parse)",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼"
+        },
+        {
+          "level": 2,
+          "text": "建專案"
+        },
+        {
+          "level": 2,
+          "text": "Spider"
+        },
+        {
+          "level": 2,
+          "text": "Pipeline"
+        },
+        {
+          "level": 2,
+          "text": "CrawlSpider"
+        }
+      ]
+    },
+    {
+      "title": "Playwright Python：動態網站",
+      "oneLineSummary": "JS 渲染的網站、SPA—Playwright 必用",
+      "analogy": "requests 抓不到的、Playwright 都能。",
+      "content": "## 安裝\n```bash\npip install playwright\nplaywright install chromium\n```\n\n## 基本\n```python\nfrom playwright.sync_api import sync_playwright\n\nwith sync_playwright() as p:\n    browser = p.chromium.launch(headless=True)\n    page = browser.new_page()\n    page.goto(\"https://example.com\")\n    page.wait_for_selector(\"h1\")\n    title = page.locator(\"h1\").text_content()\n    browser.close()\n```\n\n## 互動\n```python\npage.click(\"button.login\")\npage.fill(\"input[name='email']\", \"user@example.com\")\npage.wait_for_load_state(\"networkidle\")\npage.evaluate(\"window.scrollTo(0, document.body.scrollHeight)\")\n```\n\n## Async 並發\n```python\nimport asyncio\nfrom playwright.async_api import async_playwright\n\nasync def scrape_page(browser, url):\n    page = await browser.new_page()\n    await page.goto(url)\n    data = await page.locator(\"h1\").text_content()\n    await page.close()\n    return data\n\nasync def main():\n    async with async_playwright() as p:\n        browser = await p.chromium.launch()\n        urls = [f\"https://example.com/page/{i}\" for i in range(1, 11)]\n        results = await asyncio.gather(*[scrape_page(browser, u) for u in urls])\n        await browser.close()\n        return results\n\nasyncio.run(main())\n```\n\n## 攔截 API（神技）\n```python\ndef handle_response(response):\n    if \"/api/products\" in response.url:\n        data = response.json()\n        print(data)\n\npage.on(\"response\", handle_response)\npage.goto(\"https://example.com\")\n```\n\n## 反偵測\n```bash\npip install playwright-stealth\n```\n```python\nfrom playwright_stealth import stealth_sync\nstealth_sync(page)\n```",
+      "tip": {
+        "type": "milestone",
+        "text": "Playwright 是 2024+ 新主流、取代 Selenium。"
+      },
+      "id": "28.10",
+      "number": "LESSON 28.10",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "28.10.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "from playwright.sync_api import sync_playwright\n\nwith sync_playwright() as p:\n    browser = p.chromium.launch(headless=True)\n    page = browser.new_page()\n    page.goto(\"https://example.com\")\n    page.wait_for_selector(\"h1\")\n    title = page.locator(\"h1\").text_content()\n    browser.close()",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "安裝"
+        },
+        {
+          "level": 2,
+          "text": "基本"
+        },
+        {
+          "level": 2,
+          "text": "互動"
+        },
+        {
+          "level": 2,
+          "text": "Async 並發"
+        },
+        {
+          "level": 2,
+          "text": "攔截 API（神技）"
+        },
+        {
+          "level": 2,
+          "text": "反偵測"
+        }
+      ]
+    },
+    {
+      "title": "反爬蟲：UA / Cookie / 代理",
+      "oneLineSummary": "網站擋你？這些招數讓你像真人",
+      "analogy": "不是做壞事、是讓爬蟲穩定運作。",
+      "content": "## 偽裝 Headers\n```python\nHEADERS = {\n    \"User-Agent\": \"Mozilla/5.0 (Macintosh; Intel Mac OS X) Chrome/131.0\",\n    \"Accept\": \"text/html,application/xhtml+xml,*/*;q=0.8\",\n    \"Accept-Language\": \"zh-TW,zh;q=0.9,en;q=0.8\",\n    \"Accept-Encoding\": \"gzip, deflate, br\",\n    \"Connection\": \"keep-alive\"\n}\n```\n\n## fake-useragent\n```python\nfrom fake_useragent import UserAgent\nua = UserAgent()\nheaders = {\"User-Agent\": ua.random}\n```\n\n## 加延遲\n```python\nimport time, random\n\nfor url in urls:\n    res = requests.get(url)\n    time.sleep(random.uniform(1, 3))\n```\n\n## 代理\n```python\nPROXIES = [\n    \"http://user:pass@proxy1.com:8080\",\n    \"http://user:pass@proxy2.com:8080\"\n]\n\ndef get_with_proxy(url):\n    proxy = random.choice(PROXIES)\n    return requests.get(url, proxies={\"http\": proxy, \"https\": proxy})\n```\n\n付費代理：Bright Data / Smartproxy / Oxylabs（NT$ 500-5000/月）。\n\n## Cloudflare\n```bash\npip install curl_cffi\n```\n```python\nfrom curl_cffi import requests as cf_requests\nres = cf_requests.get(url, impersonate=\"chrome\")\n```\n\n## 法律\n- ✅ 公開資料、尊重 robots.txt、加延遲\n- ❌ 個資（個資法）、衝擊伺服器（妨害電腦使用罪）",
+      "tip": {
+        "type": "warning",
+        "text": "台灣《妨害電腦使用罪》：未經授權大量爬可被告。"
+      },
+      "id": "28.11",
+      "number": "LESSON 28.11",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "28.11.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "HEADERS = {\n    \"User-Agent\": \"Mozilla/5.0 (Macintosh; Intel Mac OS X) Chrome/131.0\",\n    \"Accept\": \"text/html,application/xhtml+xml,*/*;q=0.8\",\n    \"Accept-Language\": \"zh-TW,zh;q=0.9,en;q=0.8\",\n    \"Accept-Encoding\": \"gzip, deflate, br\",\n    \"Connection\": \"keep-alive\"\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "偽裝 Headers"
+        },
+        {
+          "level": 2,
+          "text": "fake-useragent"
+        },
+        {
+          "level": 2,
+          "text": "加延遲"
+        },
+        {
+          "level": 2,
+          "text": "代理"
+        },
+        {
+          "level": 2,
+          "text": "Cloudflare"
+        },
+        {
+          "level": 2,
+          "text": "法律"
+        }
+      ]
+    },
+    {
+      "title": "解析 HTML：CSS Selector + XPath",
+      "oneLineSummary": "抓到網頁後怎麼精準抽資料",
+      "analogy": "CSS 簡單、XPath 強大、看場景選。",
+      "content": "## CSS Selector\n```\n.class、#id\ndiv > p          直接子\ndiv p            後代\n[attr^=\"abc\"]    開頭\n[attr$=\"abc\"]    結尾\n[attr*=\"abc\"]    包含\n:nth-child(2)\n:not(.x)\n```\n\n## XPath（更強）\n```\n//div[@class=\"x\"]\n//div[contains(@class, \"abc\")]\n//div[contains(text(), '優惠')]/following-sibling::div[1]\n```\n\n## 抓資料 6 招\n\n### 1. JSON-LD（金礦）\n```python\nimport json\nscript = soup.select_one(\"script[type='application/ld+json']\")\ndata = json.loads(script.string)\n```\ne-commerce 直接拿到結構化資料、不用解 HTML。\n\n### 2. data-* 屬性\n```python\ndiv = soup.select_one(\"div[data-product-id]\")\nprint(div[\"data-product-id\"], div[\"data-price\"])\n```\n\n### 3. 內嵌 JSON\n```python\nimport re, json\nmatch = re.search(r'window\\.__INITIAL_DATA__\\s*=\\s*({.*?});', html)\ndata = json.loads(match.group(1))\n```\n\n### 4. 屬性\n```python\nimg_url = soup.select_one(\"img\")[\"src\"]\n```\n\n### 5. 多個值\n```python\ntags = [t.get_text() for t in soup.select(\".tag\")]\n```\n\n### 6. 巢狀\n```python\nfor card in soup.select(\"div.product\"):\n    name = card.select_one(\".name\").get_text(strip=True)\n```",
+      "tip": {
+        "type": "practical",
+        "text": "抓 e-commerce 先找 JSON-LD—價格 / 名稱 / 圖片都在裡面。"
+      },
+      "id": "28.12",
+      "number": "LESSON 28.12",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "28.12.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "import json\nscript = soup.select_one(\"script[type='application/ld+json']\")\ndata = json.loads(script.string)",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "CSS Selector"
+        },
+        {
+          "level": 2,
+          "text": "XPath（更強）"
+        },
+        {
+          "level": 2,
+          "text": "抓資料 6 招"
+        },
+        {
+          "level": 3,
+          "text": "1. JSON-LD（金礦）"
+        },
+        {
+          "level": 3,
+          "text": "2. data- 屬性"
+        },
+        {
+          "level": 3,
+          "text": "3. 內嵌 JSON"
+        },
+        {
+          "level": 3,
+          "text": "4. 屬性"
+        },
+        {
+          "level": 3,
+          "text": "5. 多個值"
+        },
+        {
+          "level": 3,
+          "text": "6. 巢狀"
+        }
+      ]
+    },
+    {
+      "title": "儲存資料：CSV / JSON / DB",
+      "oneLineSummary": "爬完存哪？4 種選擇",
+      "analogy": "不存 = 浪費。",
+      "content": "## CSV\n```python\nimport pandas as pd\ndf = pd.DataFrame(items)\ndf.to_csv(\"data.csv\", index=False, encoding=\"utf-8-sig\")\n```\n⚠️ Excel 中文用 `utf-8-sig`。\n\n## JSONL（大檔友善）\n```python\nwith open(\"data.jsonl\", \"w\", encoding=\"utf-8\") as f:\n    for item in items:\n        f.write(json.dumps(item, ensure_ascii=False) + \"\\n\")\n\nwith open(\"data.jsonl\", encoding=\"utf-8\") as f:\n    for line in f:\n        item = json.loads(line)\n```\n\n## SQLite\n```python\nimport sqlite3\n\nconn = sqlite3.connect(\"data.db\")\nc = conn.cursor()\nc.execute(\"\"\"\nCREATE TABLE IF NOT EXISTS products (\n  id INTEGER PRIMARY KEY,\n  name TEXT, price REAL, link TEXT UNIQUE\n)\n\"\"\")\n\nc.executemany(\n    \"INSERT OR IGNORE INTO products (name, price, link) VALUES (?, ?, ?)\",\n    [(p[\"name\"], p[\"price\"], p[\"link\"]) for p in products]\n)\nconn.commit()\n```\n\n## PostgreSQL\n```python\nimport psycopg2\nfrom psycopg2.extras import execute_values\n\nexecute_values(\n    cur,\n    \"INSERT INTO products (name, price, link) VALUES %s ON CONFLICT (link) DO NOTHING\",\n    [(p[\"name\"], p[\"price\"], p[\"link\"]) for p in products]\n)\n```\n\n## 選擇\n\n| 規模 | 推薦 |\n|---|---|\n| < 1 萬 | CSV / JSON |\n| 1 萬-1 百萬 | SQLite |\n| > 1 百萬 | PG |\n| 不規則 | MongoDB |",
+      "tip": {
+        "type": "practical",
+        "text": "Indie 標配：SQLite + S3 + Google Sheets（給客戶看）。"
+      },
+      "id": "28.13",
+      "number": "LESSON 28.13",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "28.13.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "import pandas as pd\ndf = pd.DataFrame(items)\ndf.to_csv(\"data.csv\", index=False, encoding=\"utf-8-sig\")",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "CSV"
+        },
+        {
+          "level": 2,
+          "text": "JSONL（大檔友善）"
+        },
+        {
+          "level": 2,
+          "text": "SQLite"
+        },
+        {
+          "level": 2,
+          "text": "PostgreSQL"
+        },
+        {
+          "level": 2,
+          "text": "選擇"
+        }
+      ]
+    },
+    {
+      "title": "Async 爬蟲：httpx",
+      "oneLineSummary": "並發 100 個 URL 不要 for loop、用 async",
+      "analogy": "序列 vs 並發 = 50 秒 vs 2 秒。",
+      "content": "## httpx\n```python\nimport asyncio\nimport httpx\n\nasync def fetch(client, url):\n    response = await client.get(url, timeout=10)\n    return response.text\n\nasync def main():\n    async with httpx.AsyncClient() as client:\n        urls = [f\"https://example.com/page/{i}\" for i in range(100)]\n        results = await asyncio.gather(*[fetch(client, url) for url in urls])\n    return results\n\nasyncio.run(main())\n```\n\n## 限制並發\n```python\nsem = asyncio.Semaphore(10)\n\nasync def fetch_limited(client, url):\n    async with sem:\n        return await fetch(client, url)\n```\n\n## 加 retry\n```python\nfrom tenacity import retry, stop_after_attempt, wait_exponential\n\n@retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))\nasync def fetch_with_retry(client, url):\n    response = await client.get(url, timeout=10)\n    response.raise_for_status()\n    return response.text\n```\n\n## 進度條\n```python\nfrom tqdm.asyncio import tqdm\n\nasync def main():\n    async with httpx.AsyncClient() as client:\n        tasks = [fetch(client, url) for url in urls]\n        results = await tqdm.gather(*tasks)\n```",
+      "tip": {
+        "type": "performance",
+        "text": "Async 是 Python 爬蟲必學。100 個 URL 從 100 秒降到 2 秒。"
+      },
+      "id": "28.14",
+      "number": "LESSON 28.14",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "28.14.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "import asyncio\nimport httpx\n\nasync def fetch(client, url):\n    response = await client.get(url, timeout=10)\n    return response.text\n\nasync def main():\n    async with httpx.AsyncClient() as client:\n        urls = [f\"https://example.com/page/{i}\" for i in range(100)]\n        results = await asyncio.gather(*[fetch(client, url) for url in urls])\n    return results\n\nasyncio.run(main())",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "httpx"
+        },
+        {
+          "level": 2,
+          "text": "限制並發"
+        },
+        {
+          "level": 2,
+          "text": "加 retry"
+        },
+        {
+          "level": 2,
+          "text": "進度條"
+        }
+      ]
+    },
+    {
+      "title": "登入 + Session 爬蟲",
+      "oneLineSummary": "抓需要登入才能看的資料",
+      "analogy": "Session 自動帶 cookie、login 後直接爬。",
+      "content": "## requests Session\n```python\nsession = requests.Session()\n\n# 1. 訪問登入頁、拿 CSRF token\nlogin_page = session.get(\"https://example.com/login\")\nsoup = BeautifulSoup(login_page.text, \"lxml\")\ncsrf = soup.select_one(\"input[name='csrf_token']\")[\"value\"]\n\n# 2. 登入\nsession.post(\"https://example.com/login\", data={\n    \"email\": \"user@example.com\",\n    \"password\": \"password\",\n    \"csrf_token\": csrf\n})\n\n# 3. 之後自動帶 cookie\nres = session.get(\"https://example.com/dashboard\")\n```\n\n## Playwright 自動化登入\n```python\nwith sync_playwright() as p:\n    browser = p.chromium.launch(headless=False)\n    page = browser.new_page()\n    \n    page.goto(\"https://example.com/login\")\n    page.fill(\"input[name='email']\", \"user@example.com\")\n    page.fill(\"input[name='password']\", \"password\")\n    page.click(\"button[type='submit']\")\n    page.wait_for_url(\"**/dashboard\")\n    \n    cookies = page.context.cookies()\n    browser.close()\n\n# 之後 requests 帶 cookie\nsession = requests.Session()\nfor cookie in cookies:\n    session.cookies.set(cookie[\"name\"], cookie[\"value\"])\n```\n\n## 儲存 cookie 重用\n```python\nimport pickle\n\nwith open(\"cookies.pkl\", \"wb\") as f:\n    pickle.dump(session.cookies, f)\n\nwith open(\"cookies.pkl\", \"rb\") as f:\n    session.cookies.update(pickle.load(f))\n```\n\n## TOTP\n```python\nimport pyotp\ntotp = pyotp.TOTP(\"BASE32_SECRET\")\ncode = totp.now()\n```\n\n## 注意\n- 別爬太快（容易封 IP）\n- 用測試帳號、不要爬主帳號\n- 違反 ToS",
+      "tip": {
+        "type": "practical",
+        "text": "登入爬蟲容易被 ban、用測試帳號。"
+      },
+      "id": "28.15",
+      "number": "LESSON 28.15",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "28.15.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "session = requests.Session()\n\n# 1. 訪問登入頁、拿 CSRF token\nlogin_page = session.get(\"https://example.com/login\")\nsoup = BeautifulSoup(login_page.text, \"lxml\")\ncsrf = soup.select_one(\"input[name='csrf_token']\")[\"value\"]\n\n# 2. 登入\nsession.post(\"https://example.com/login\", data={\n    \"email\": \"user@example.com\",\n    \"password\": \"password\",\n    \"csrf_token\": csrf\n})\n\n# 3. 之後自動帶 cookie\nres = session.get(\"https://example.com/dashboard\")",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "requests Session"
+        },
+        {
+          "level": 2,
+          "text": "Playwright 自動化登入"
+        },
+        {
+          "level": 2,
+          "text": "儲存 cookie 重用"
+        },
+        {
+          "level": 2,
+          "text": "TOTP"
+        },
+        {
+          "level": 2,
+          "text": "注意"
+        }
+      ]
+    },
+    {
+      "title": "Schedule：cron + Airflow",
+      "oneLineSummary": "不是手動跑、是「每天自動更新」",
+      "analogy": "Cron 簡單、Airflow Production 級。",
+      "content": "## Cron\n```bash\n0 3 * * * cd /app && python3 scraper.py >> /var/log/scraper.log 2>&1\n```\n\n## APScheduler\n```python\nfrom apscheduler.schedulers.blocking import BlockingScheduler\n\nsched = BlockingScheduler()\n\n@sched.scheduled_job(\"cron\", hour=3)\ndef scheduled_scrape():\n    scrape_all()\n\nsched.start()\n```\n\n## Airflow\n```python\nfrom airflow import DAG\nfrom airflow.operators.python import PythonOperator\n\ndag = DAG(\n    \"daily_scrape\",\n    schedule=\"0 3 * * *\",\n    start_date=datetime(2026, 1, 1)\n)\n\nPythonOperator(task_id=\"scrape\", python_callable=scrape_all, dag=dag)\n```\n\n## Prefect\n```python\nfrom prefect import flow, task\n\n@task(retries=3)\ndef scrape_url(url):\n    return requests.get(url).text\n\n@flow\ndef daily_scrape():\n    urls = get_urls()\n    results = [scrape_url(u) for u in urls]\n    save_to_db(results)\n\nif __name__ == \"__main__\":\n    daily_scrape.serve(cron=\"0 3 * * *\")\n```\n\n## GitHub Actions（免費）\n```yaml\nname: Scrape\non:\n  schedule:\n    - cron: \"0 3 * * *\"\njobs:\n  scrape:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v3\n      - uses: actions/setup-python@v4\n      - run: pip install -r requirements.txt\n      - run: python scraper.py\n```\n\n## 監控\n```python\nimport requests\n\ntry:\n    scrape_all()\n    requests.post(SLACK_WEBHOOK, json={\"text\": \"✅ 爬蟲完成\"})\nexcept Exception as e:\n    requests.post(SLACK_WEBHOOK, json={\"text\": f\"❌ 失敗：{e}\"})\n```",
+      "tip": {
+        "type": "practical",
+        "text": "Indie 選 GitHub Actions 免費 + Healthchecks.io 監控。"
+      },
+      "id": "28.16",
+      "number": "LESSON 28.16",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "28.16.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "from apscheduler.schedulers.blocking import BlockingScheduler\n\nsched = BlockingScheduler()\n\n@sched.scheduled_job(\"cron\", hour=3)\ndef scheduled_scrape():\n    scrape_all()\n\nsched.start()",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "Cron"
+        },
+        {
+          "level": 2,
+          "text": "APScheduler"
+        },
+        {
+          "level": 2,
+          "text": "Airflow"
+        },
+        {
+          "level": 2,
+          "text": "Prefect"
+        },
+        {
+          "level": 2,
+          "text": "GitHub Actions（免費）"
+        },
+        {
+          "level": 2,
+          "text": "監控"
+        }
+      ]
+    },
+    {
+      "title": "爬 API（不用解 HTML）",
+      "oneLineSummary": "網站背後常有 JSON API、直接打更快",
+      "analogy": "F12 → Network → 找 XHR、API 比 HTML 好爬 100 倍。",
+      "content": "## 找 API\n1. F12 開發者工具\n2. Network → Fetch/XHR\n3. 重新整理\n4. 看哪些 API 回 JSON\n5. Copy as cURL\n\n## 範例\n```python\nimport requests\n\nheaders = {\n    \"User-Agent\": \"Mozilla/5.0 ...\",\n    \"Referer\": \"https://shopee.tw/\"\n}\n\nres = requests.get(\n    \"https://shopee.tw/api/v4/search/search_items\",\n    params={\"keyword\": \"iPhone\", \"limit\": 60, \"newest\": 0},\n    headers=headers\n)\n\ndata = res.json()\nfor item in data[\"items\"]:\n    print(item[\"item_basic\"][\"name\"], item[\"item_basic\"][\"price\"])\n```\n\n## 比解 HTML 強\n- ✅ 資料結構化\n- ✅ 不會因 UI 改版壞\n- ✅ 速度快 10 倍\n- ✅ 分頁明確\n\n## GraphQL\n```python\nres = requests.post(\n    \"https://api.example.com/graphql\",\n    json={\n        \"query\": \"\"\"\n            query GetProducts($limit: Int) {\n                products(limit: $limit) { name price }\n            }\n        \"\"\",\n        \"variables\": {\"limit\": 20}\n    }\n)\n```\n\n## 分頁\n```python\ndef fetch_all():\n    all_items = []\n    page = 1\n    while True:\n        res = requests.get(f\"...?page={page}\").json()\n        items = res[\"data\"]\n        if not items: break\n        all_items.extend(items)\n        page += 1\n        time.sleep(1)\n    return all_items\n```\n\n## Cursor pagination\n```python\ncursor = None\nwhile True:\n    params = {\"limit\": 50}\n    if cursor: params[\"cursor\"] = cursor\n    res = requests.get(\"...\", params=params).json()\n    cursor = res.get(\"next_cursor\")\n    if not cursor: break\n```",
+      "tip": {
+        "type": "milestone",
+        "text": "永遠先找 API、再考慮解 HTML。"
+      },
+      "id": "28.17",
+      "number": "LESSON 28.17",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "28.17.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "import requests\n\nheaders = {\n    \"User-Agent\": \"Mozilla/5.0 ...\",\n    \"Referer\": \"https://shopee.tw/\"\n}\n\nres = requests.get(\n    \"https://shopee.tw/api/v4/search/search_items\",\n    params={\"keyword\": \"iPhone\", \"limit\": 60, \"newest\": 0},\n    headers=headers\n)\n\ndata = res.json()\nfor item in data[\"items\"]:\n    print(item[\"item_basic\"][\"name\"], item[\"item_basic\"][\"price\"])",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "找 API"
+        },
+        {
+          "level": 2,
+          "text": "範例"
+        },
+        {
+          "level": 2,
+          "text": "比解 HTML 強"
+        },
+        {
+          "level": 2,
+          "text": "GraphQL"
+        },
+        {
+          "level": 2,
+          "text": "分頁"
+        },
+        {
+          "level": 2,
+          "text": "Cursor pagination"
+        }
+      ]
+    },
+    {
+      "title": "爬蟲 + Pandas：抓 + 分析一條龍",
+      "oneLineSummary": "爬完直接用 pandas 分析",
+      "analogy": "抓 → 清理 → 分析 → 儲存、一個 script。",
+      "content": "## 完整範例\n```python\nimport pandas as pd\nimport requests\nfrom bs4 import BeautifulSoup\n\ndef scrape_products(pages=10):\n    products = []\n    for p in range(1, pages + 1):\n        res = requests.get(f\"https://example.com/products?page={p}\")\n        soup = BeautifulSoup(res.text, \"lxml\")\n        for card in soup.select(\"div.product\"):\n            products.append({\n                \"name\": card.select_one(\".name\").get_text(strip=True),\n                \"price\": card.select_one(\".price\").get_text(strip=True),\n                \"category\": card.select_one(\".category\").get_text(strip=True)\n            })\n    return products\n\ndf = pd.DataFrame(scrape_products())\n\n# 清理\ndf[\"price\"] = df[\"price\"].str.replace(\"NT$\", \"\").str.replace(\",\", \"\").astype(float)\n\n# 分析\ndf.groupby(\"category\")[\"price\"].agg([\"mean\", \"median\", \"count\"])\ntop10 = df.nlargest(10, \"price\")\n\n# 存\ndf.to_csv(\"products.csv\", index=False, encoding=\"utf-8-sig\")\ndf.to_parquet(\"products.parquet\")\n```\n\n## 從 API 直接到 DataFrame\n```python\nres = requests.get(\"https://api.example.com/products\")\ndf = pd.DataFrame(res.json()[\"data\"])\n```\n\n## HTML table\n```python\ntables = pd.read_html(\"https://example.com/stats\")\ndf = tables[0]\n```\n\n## 監控趨勢\n```python\ndf[\"date\"] = pd.Timestamp.today().date()\n\nhistory = pd.read_parquet(\"history.parquet\")\nhistory = pd.concat([history, df], ignore_index=True)\nhistory.to_parquet(\"history.parquet\")\n\nhistory.groupby([\"product_id\", \"date\"])[\"price\"].mean().unstack()\n```",
+      "tip": {
+        "type": "milestone",
+        "text": "「爬 + 分析 + 寄報表」一條龍是接案 NT$ 30-100k 神器。"
+      },
+      "id": "28.18",
+      "number": "LESSON 28.18",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "28.18.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "import pandas as pd\nimport requests\nfrom bs4 import BeautifulSoup\n\ndef scrape_products(pages=10):\n    products = []\n    for p in range(1, pages + 1):\n        res = requests.get(f\"https://example.com/products?page={p}\")\n        soup = BeautifulSoup(res.text, \"lxml\")\n        for card in soup.select(\"div.product\"):\n            products.append({\n                \"name\": card.select_one(\".name\").get_text(strip=True),\n                \"price\": card.select_one(\".price\").get_text(strip=True),\n                \"category\": card.select_one(\".category\").get_text(strip=True)\n            })\n    return products\n\ndf = pd.DataFrame(scrape_products())\n\n# 清理\ndf[\"price\"] = df[\"price\"].str.replace(\"NT$\", \"\").str.replace(\",\", \"\").astype(float)\n\n# 分析\ndf.groupby(\"category\")[\"price\"].agg([\"mean\", \"median\", \"count\"])\ntop10 = df.nlargest(10, \"price\")\n\n# 存\ndf.to_csv(\"products.csv\", index=False, encoding=\"utf-8-sig\")\ndf.to_parquet(\"products.parquet\")",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "完整範例"
+        },
+        {
+          "level": 2,
+          "text": "從 API 直接到 DataFrame"
+        },
+        {
+          "level": 2,
+          "text": "HTML table"
+        },
+        {
+          "level": 2,
+          "text": "監控趨勢"
+        }
+      ]
+    },
+    {
+      "title": "Selenium：傳統王者",
+      "oneLineSummary": "Playwright 之前的霸主、現在仍很多 legacy",
+      "analogy": "新專案用 Playwright、舊專案維護 Selenium。",
+      "content": "## 安裝\n```bash\npip install selenium webdriver-manager\n```\n\n## 基本\n```python\nfrom selenium import webdriver\nfrom selenium.webdriver.chrome.service import Service\nfrom webdriver_manager.chrome import ChromeDriverManager\nfrom selenium.webdriver.common.by import By\nfrom selenium.webdriver.support.ui import WebDriverWait\nfrom selenium.webdriver.support import expected_conditions as EC\n\ndriver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))\n\ndriver.get(\"https://example.com\")\ntitle = driver.find_element(By.TAG_NAME, \"h1\").text\n\nWebDriverWait(driver, 10).until(\n    EC.presence_of_element_located((By.CLASS_NAME, \"product\"))\n)\n\ndriver.find_element(By.CSS_SELECTOR, \"input[name='email']\").send_keys(\"user@example.com\")\ndriver.find_element(By.CSS_SELECTOR, \"button[type='submit']\").click()\n\ndriver.quit()\n```\n\n## Headless\n```python\noptions = webdriver.ChromeOptions()\noptions.add_argument(\"--headless=new\")\ndriver = webdriver.Chrome(options=options)\n```\n\n## undetected-chromedriver\n```python\nimport undetected_chromedriver as uc\ndriver = uc.Chrome()\ndriver.get(\"https://cloudflare-protected.com\")\n```\n\n## Selenium vs Playwright\n\n| 面向 | Selenium | Playwright |\n|---|---|---|\n| 速度 | 慢 | 快 5 倍 |\n| 自動等 | ❌ | ✅ |\n| 反偵測 | 弱 | 強 |",
+      "tip": {
+        "type": "practical",
+        "text": "新專案 Playwright、Selenium 留給 legacy。"
+      },
+      "id": "28.19",
+      "number": "LESSON 28.19",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "28.19.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "from selenium import webdriver\nfrom selenium.webdriver.chrome.service import Service\nfrom webdriver_manager.chrome import ChromeDriverManager\nfrom selenium.webdriver.common.by import By\nfrom selenium.webdriver.support.ui import WebDriverWait\nfrom selenium.webdriver.support import expected_conditions as EC\n\ndriver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))\n\ndriver.get(\"https://example.com\")\ntitle = driver.find_element(By.TAG_NAME, \"h1\").text\n\nWebDriverWait(driver, 10).until(\n    EC.presence_of_element_located((By.CLASS_NAME, \"product\"))\n)\n\ndriver.find_element(By.CSS_SELECTOR, \"input[name='email']\").send_keys(\"user@example.com\")\ndriver.find_element(By.CSS_SELECTOR, \"button[type='submit']\").click()\n\ndriver.quit()",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "安裝"
+        },
+        {
+          "level": 2,
+          "text": "基本"
+        },
+        {
+          "level": 2,
+          "text": "Headless"
+        },
+        {
+          "level": 2,
+          "text": "undetected-chromedriver"
+        },
+        {
+          "level": 2,
+          "text": "Selenium vs Playwright"
+        }
+      ]
+    },
+    {
+      "title": "代理 + IP 池：商業爬蟲核心",
+      "oneLineSummary": "單一 IP 必被擋、商業爬蟲靠 IP 池",
+      "analogy": "個人爬蟲免費、商業必投資代理。",
+      "content": "## 代理類型\n1. **Datacenter**：便宜（$5-20/月）、易擋\n2. **Residential**：真人 IP、難擋、貴（$100-500/月）\n3. **Mobile**：最難擋、最貴\n\n## 供應商\nBright Data / Smartproxy / Oxylabs / IPRoyal / Decodo\n\n## 用代理\n```python\nproxies = {\n    \"http\": \"http://user:pass@proxy.com:8080\",\n    \"https\": \"http://user:pass@proxy.com:8080\"\n}\nres = requests.get(url, proxies=proxies)\n```\n\n## 輪換\n```python\nimport random\n\nclass ProxyRotator:\n    def __init__(self, proxies):\n        self.proxies = proxies\n        self.failed = set()\n    \n    def get(self):\n        available = [p for p in self.proxies if p not in self.failed]\n        if not available:\n            self.failed.clear()\n            available = self.proxies\n        return random.choice(available)\n    \n    def mark_failed(self, proxy):\n        self.failed.add(proxy)\n\nrotator = ProxyRotator(PROXIES)\n\nfor url in urls:\n    proxy = rotator.get()\n    try:\n        res = requests.get(url, proxies={\"http\": proxy, \"https\": proxy})\n    except Exception:\n        rotator.mark_failed(proxy)\n```\n\n## Scrapy 代理 middleware\n```python\nclass ProxyMiddleware:\n    def __init__(self):\n        self.proxies = open(\"proxies.txt\").read().splitlines()\n    \n    def process_request(self, request, spider):\n        request.meta[\"proxy\"] = random.choice(self.proxies)\n```\n\n## 成本\n- 1 萬：$1-5\n- 10 萬：$10-50\n- 100 萬：$100-500\n\n## 反 pattern\n- ❌ 用免費代理（99% 失效）\n- ❌ 一個代理打 10000 次\n- ❌ 沒 retry 機制",
+      "tip": {
+        "type": "business",
+        "text": "商業爬蟲必須代理、月費 NT$ 1000-10000。算進客戶報價。"
+      },
+      "id": "28.20",
+      "number": "LESSON 28.20",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "28.20.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "proxies = {\n    \"http\": \"http://user:pass@proxy.com:8080\",\n    \"https\": \"http://user:pass@proxy.com:8080\"\n}\nres = requests.get(url, proxies=proxies)",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "代理類型"
+        },
+        {
+          "level": 2,
+          "text": "供應商"
+        },
+        {
+          "level": 2,
+          "text": "用代理"
+        },
+        {
+          "level": 2,
+          "text": "輪換"
+        },
+        {
+          "level": 2,
+          "text": "Scrapy 代理 middleware"
+        },
+        {
+          "level": 2,
+          "text": "成本"
+        },
+        {
+          "level": 2,
+          "text": "反 pattern"
+        }
+      ]
+    },
+    {
+      "title": "爬蟲監控 + 錯誤處理",
+      "oneLineSummary": "一個錯就死 vs 持續穩定—靠監控",
+      "analogy": "Production 爬蟲 80% 工作在錯誤處理。",
+      "content": "## 完整 try / except\n```python\ndef fetch_with_retry(url, max_retries=3):\n    for attempt in range(max_retries):\n        try:\n            res = requests.get(url, timeout=10)\n            res.raise_for_status()\n            return res\n        except HTTPError as e:\n            if res.status_code == 429:\n                time.sleep(2 ** attempt * 60)\n            elif res.status_code in (500, 502, 503, 504):\n                time.sleep(2 ** attempt)\n            else: raise\n        except (Timeout, ConnectionError):\n            time.sleep(2 ** attempt)\n    return None\n```\n\n## tenacity\n```python\nfrom tenacity import retry, stop_after_attempt, wait_exponential\n\n@retry(stop=stop_after_attempt(3), wait=wait_exponential(min=2, max=60))\ndef fetch(url):\n    res = requests.get(url, timeout=10)\n    res.raise_for_status()\n    return res\n```\n\n## Sentry\n```python\nimport sentry_sdk\nsentry_sdk.init(dsn=\"...\", traces_sample_rate=1.0)\n\ntry:\n    scrape()\nexcept Exception as e:\n    sentry_sdk.capture_exception(e)\n    raise\n```\n\n## Healthchecks.io\n```python\nimport requests\n\nrequests.get(\"https://hc-ping.com/UUID/start\")\ntry:\n    scrape()\n    requests.get(\"https://hc-ping.com/UUID\")\nexcept Exception:\n    requests.get(\"https://hc-ping.com/UUID/fail\")\n```\n\n## 驗證（pydantic）\n```python\nfrom pydantic import BaseModel, ValidationError\n\nclass Product(BaseModel):\n    name: str\n    price: float\n    link: str\n\ntry:\n    product = Product(**raw_data)\nexcept ValidationError as e:\n    logger.error(f\"資料無效: {e}\")\n```\n\n## 清單\n- [ ] Retry on network error\n- [ ] Rate limit 自動等\n- [ ] Rotation 代理 / UA\n- [ ] 驗證資料完整\n- [ ] 失敗 alert\n- [ ] 日誌完整",
+      "tip": {
+        "type": "milestone",
+        "text": "Production 爬蟲是「跑 24/7 不掉」。"
+      },
+      "id": "28.21",
+      "number": "LESSON 28.21",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "28.21.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "def fetch_with_retry(url, max_retries=3):\n    for attempt in range(max_retries):\n        try:\n            res = requests.get(url, timeout=10)\n            res.raise_for_status()\n            return res\n        except HTTPError as e:\n            if res.status_code == 429:\n                time.sleep(2 ** attempt * 60)\n            elif res.status_code in (500, 502, 503, 504):\n                time.sleep(2 ** attempt)\n            else: raise\n        except (Timeout, ConnectionError):\n            time.sleep(2 ** attempt)\n    return None",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "回想你過去做過的專案、有沒有踩過本節提到的坑？如果沒有、想一個你最近做的事、評估會不會踩。",
+        "hint": "坑通常是「你以為很簡單但其實有暗雷」。本節列的常見錯誤、80% 的新手都會中。",
+        "answer": "預防勝於治療：把本節列的所有「常見錯誤」存成個人 checklist、每次寫類似 code 前過一遍。當 senior 不是因為比較聰明、是因為踩過的坑比較多、所以會避開。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "完整 try / except"
+        },
+        {
+          "level": 2,
+          "text": "tenacity"
+        },
+        {
+          "level": 2,
+          "text": "Sentry"
+        },
+        {
+          "level": 2,
+          "text": "Healthchecks.io"
+        },
+        {
+          "level": 2,
+          "text": "驗證（pydantic）"
+        },
+        {
+          "level": 2,
+          "text": "清單"
+        }
+      ]
+    },
+    {
+      "title": "PDF / Excel / 圖片：非 HTML",
+      "oneLineSummary": "不是所有資料都在 HTML",
+      "analogy": "PDF / Excel / 圖片 OCR—多種維度。",
+      "content": "## PDF\n```python\nimport pdfplumber\n\nwith pdfplumber.open(\"file.pdf\") as pdf:\n    for page in pdf.pages:\n        text = page.extract_text()\n        tables = page.extract_tables()\n```\n\n## Excel\n```python\nimport pandas as pd\n\ndf = pd.read_excel(\"file.xlsx\", sheet_name=\"Sheet1\")\nsheets = pd.read_excel(\"file.xlsx\", sheet_name=None)\n```\n\n## CSV / JSON / RSS\n```python\ndf = pd.read_csv(\"file.csv\")\ndf = pd.read_json(\"file.jsonl\", lines=True)\n\nimport feedparser\nfeed = feedparser.parse(\"https://example.com/rss\")\n```\n\n## OCR\n```python\nimport pytesseract\nfrom PIL import Image\n\ntext = pytesseract.image_to_string(Image.open(\"invoice.png\"), lang=\"chi_tra+eng\")\n```\n\n## Claude Vision（更強）\n```python\nimport anthropic, base64\n\nclient = anthropic.Anthropic()\n\nwith open(\"invoice.png\", \"rb\") as f:\n    img = base64.b64encode(f.read()).decode()\n\nresponse = client.messages.create(\n    model=\"claude-opus-4-7\",\n    max_tokens=1024,\n    messages=[{\n        \"role\": \"user\",\n        \"content\": [\n            {\"type\": \"image\", \"source\": {\n                \"type\": \"base64\", \"media_type\": \"image/png\", \"data\": img\n            }},\n            {\"type\": \"text\", \"text\": \"抽出發票上：商家、日期、總金額、品項（JSON）\"}\n        ]\n    }]\n)\n```\n\n## Whisper\n```python\nimport whisper\nmodel = whisper.load_model(\"base\")\nresult = model.transcribe(\"audio.mp3\")\n```\n\n## 應用\n- 政府公開資料（PDF）\n- 財報抓取\n- 收據自動化\n- YouTube 字幕",
+      "tip": {
+        "type": "trend",
+        "text": "2025+ Claude / GPT Vision 取代傳統 OCR—效果好 10 倍。"
+      },
+      "id": "28.22",
+      "number": "LESSON 28.22",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "28.22.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "import pdfplumber\n\nwith pdfplumber.open(\"file.pdf\") as pdf:\n    for page in pdf.pages:\n        text = page.extract_text()\n        tables = page.extract_tables()",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "PDF"
+        },
+        {
+          "level": 2,
+          "text": "Excel"
+        },
+        {
+          "level": 2,
+          "text": "CSV / JSON / RSS"
+        },
+        {
+          "level": 2,
+          "text": "OCR"
+        },
+        {
+          "level": 2,
+          "text": "Claude Vision（更強）"
+        },
+        {
+          "level": 2,
+          "text": "Whisper"
+        },
+        {
+          "level": 2,
+          "text": "應用"
+        }
+      ]
+    },
+    {
+      "title": "爬蟲法律 + 道德",
+      "oneLineSummary": "不是「能爬就爬」、有法律道德底線",
+      "analogy": "台灣《妨害電腦使用罪》、爬錯被告很慘。",
+      "content": "## 台灣法律\n### 妨害電腦使用罪\n- 未經授權存取電腦 → 5 年以下\n- 衝擊伺服器、超大規模 = 高風險\n\n### 著作權法\n- 內容版權\n- 不能商業利用\n\n### 個資法\n- 抓「個資」就違法\n- 即使公開也算\n\n### GDPR / CCPA\n- 罰金可達 4% 全球營收\n\n## robots.txt\n```\nUser-agent: *\nDisallow: /private/\nCrawl-delay: 10\n```\n不是法律、是禮貌、期待你遵守。\n\n## 倫理\n\n### ✅ 通常 OK\n- 公開資料、非營利、研究\n- 比價、價格追蹤\n\n### ⚠️ 灰色\n- 商業使用公開資料\n\n### ❌ 危險\n- 抓個資、賣個資\n- 抓著作權內容轉賣\n- 衝擊網站\n\n## 真實案例\n- **LinkedIn vs hiQ**：hiQ 勝訴但訴訟成本巨大\n- **Clearview AI**：從社群爬 30 億張臉、被多國罰款\n\n## 自保 5 招\n1. 加延遲\n2. 看 robots.txt\n3. 不抓個資\n4. 不商業使用版權內容\n5. 聯絡網站問是否有 API\n\n## Indie 建議\n- 個人 / 研究：低風險\n- 商業：高風險、需法律諮詢\n- 不確定 → 不要做\n- 預算夠 → 用官方 API",
+      "tip": {
+        "type": "warning",
+        "text": "台灣《妨害電腦使用罪》是真的。商業爬蟲先諮詢律師。"
+      },
+      "id": "28.23",
+      "number": "LESSON 28.23",
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "台灣法律"
+        },
+        {
+          "level": 3,
+          "text": "妨害電腦使用罪"
+        },
+        {
+          "level": 3,
+          "text": "著作權法"
+        },
+        {
+          "level": 3,
+          "text": "個資法"
+        },
+        {
+          "level": 3,
+          "text": "GDPR / CCPA"
+        },
+        {
+          "level": 2,
+          "text": "robots.txt"
+        },
+        {
+          "level": 2,
+          "text": "倫理"
+        },
+        {
+          "level": 3,
+          "text": "✅ 通常 OK"
+        },
+        {
+          "level": 3,
+          "text": "⚠️ 灰色"
+        },
+        {
+          "level": 3,
+          "text": "❌ 危險"
+        },
+        {
+          "level": 2,
+          "text": "真實案例"
+        },
+        {
+          "level": 2,
+          "text": "自保 5 招"
+        },
+        {
+          "level": 2,
+          "text": "Indie 建議"
+        }
+      ]
+    },
+    {
+      "title": "爬蟲接案 + 變現",
+      "oneLineSummary": "會爬蟲 = 月入 NT$ 30-100k 副業",
+      "analogy": "台灣爬蟲需求大、會的人少。",
+      "content": "## 接案類型\n\n### 1. 一次性\n- NT$ 5-30k / 案\n- 1-3 天完成\n\n### 2. 持續監控\n- NT$ 1-5k / 月\n- 5-10 個客戶 = 月入 NT$ 10-50k 被動\n\n### 3. SaaS 工具\n- 月費 NT$ 100-500\n\n### 4. 顧問 / 教學\n- 1 對 1 NT$ 1500-3000/hr\n\n## 賣什麼最賺\n1. 電商比價（蝦皮 / PChome / Momo）\n2. 房地產（591 / 樂屋）\n3. 股票 / 金融\n4. 求職（104）\n5. 競品監控\n6. 政府公開資料\n\n## 報價\n- 簡單：4-8 hr\n- 中等：16-40 hr\n- 複雜：40-100 hr\n- 時薪：NT$ 800-3000\n\n## Value-based\n不報時薪、報「客戶價值」：\n「省你 1 人月、NT$ 40k、我收 NT$ 50k + 月費 NT$ 3k」\n\n## 案例：蝦皮比價\n**客戶**：3C 賣家\n**痛點**：對手價格天天變\n\n```\n[Cron 6am]\n→ [爬蝦皮 / PChome / Momo]\n→ [PG DB]\n→ [LINE 寄報告]\n```\n\n**報價**：NT$ 30k setup + NT$ 5k/月\n**客戶感受**：月省 NT$ 50k 人力\n\n## 心法\n- 不報「爬蟲設定費」、報「節省成本 + ROI」\n- 月費維護 = 被動收入\n- 跑 10 個客戶 = 月入 NT$ 30k 被動\n\n## 反 pattern\n- ❌ 接抓個資（違法）\n- ❌ 不簽合約",
+      "tip": {
+        "type": "milestone",
+        "text": "會爬蟲 + 1 個成功 case = 月入 NT$ 30k+ 副業。"
+      },
+      "id": "28.24",
+      "number": "LESSON 28.24",
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "接案類型"
+        },
+        {
+          "level": 3,
+          "text": "1. 一次性"
+        },
+        {
+          "level": 3,
+          "text": "2. 持續監控"
+        },
+        {
+          "level": 3,
+          "text": "3. SaaS 工具"
+        },
+        {
+          "level": 3,
+          "text": "4. 顧問 / 教學"
+        },
+        {
+          "level": 2,
+          "text": "賣什麼最賺"
+        },
+        {
+          "level": 2,
+          "text": "報價"
+        },
+        {
+          "level": 2,
+          "text": "Value-based"
+        },
+        {
+          "level": 2,
+          "text": "案例：蝦皮比價"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        },
+        {
+          "level": 2,
+          "text": "反 pattern"
+        }
+      ]
+    },
+    {
+      "title": "學習路徑 + 進階方向",
+      "oneLineSummary": "從新手到爬蟲專家、6 個月",
+      "analogy": "不只爬蟲、是「數據工程」職涯起點。",
+      "content": "## 學習路徑\n\n### Month 1：基礎\n- Python 基本\n- requests + BS4\n- 1 個小案\n\n### Month 2：進階\n- Scrapy\n- Playwright（動態網站）\n- 反爬蟲技巧\n\n### Month 3：規模\n- Async（httpx）\n- 代理輪換\n- Database\n\n### Month 4：Production\n- 監控（Sentry）\n- 排程（Airflow / GitHub Actions）\n\n### Month 5：接案\n- 履歷 / 作品集\n- 第 1 個付費客戶\n\n### Month 6：規模化\n- 多個客戶\n- SaaS 產品試水\n\n## 進階方向\n\n### 1. Data Engineer\n- Spark / Airflow / Snowflake\n- 月薪 NT$ 100-180k\n\n### 2. Web 反爬蟲\n- Cloudflare / Imperva\n\n### 3. SaaS 創業\n- Diffbot / Bright Data 等\n\n### 4. AI 訓練資料\n- 爬書 / 論文 / code\n- 賣給 OpenAI / Anthropic\n\n## 資源\n- 《Python 網路爬蟲開發實戰》\n- Scrapy Docs\n- **John Watson Rooney** YT\n- 練習：books.toscrape.com\n\n## 求職市場（台灣 2026）\n- 「資料工程師」、「爬蟲工程師」\n- NT$ 60-150k\n- 大公司：蝦皮、Yahoo、KKBOX\n\n## 心法\n- 爬蟲是工具、不是終點\n- 結合領域知識（金融 / 電商）才值錢\n- 法律風險評估比技術重要\n- 永遠先試官方 API",
+      "tip": {
+        "type": "milestone",
+        "text": "爬蟲是「進入資料工程的最快路線」。"
+      },
+      "id": "28.25",
+      "number": "LESSON 28.25",
+      "xp": 10,
+      "exercise": {
+        "question": "挑一個你做過的舊專案、用本節「學習路徑 + 進階方向」介紹的進階技術重構它。",
+        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
+        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "學習路徑"
+        },
+        {
+          "level": 3,
+          "text": "Month 1：基礎"
+        },
+        {
+          "level": 3,
+          "text": "Month 2：進階"
+        },
+        {
+          "level": 3,
+          "text": "Month 3：規模"
+        },
+        {
+          "level": 3,
+          "text": "Month 4：Production"
+        },
+        {
+          "level": 3,
+          "text": "Month 5：接案"
+        },
+        {
+          "level": 3,
+          "text": "Month 6：規模化"
+        },
+        {
+          "level": 2,
+          "text": "進階方向"
+        },
+        {
+          "level": 3,
+          "text": "1. Data Engineer"
+        },
+        {
+          "level": 3,
+          "text": "2. Web 反爬蟲"
+        },
+        {
+          "level": 3,
+          "text": "3. SaaS 創業"
+        },
+        {
+          "level": 3,
+          "text": "4. AI 訓練資料"
+        },
+        {
+          "level": 2,
+          "text": "資源"
+        },
+        {
+          "level": 2,
+          "text": "求職市場（台灣 2026）"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    }
+  ],
+  "boss": {
+    "name": "八腳爬蟲",
+    "hp": 240,
+    "emoji": "🕷️",
+    "description": "Scrapy 為毒牙、Playwright 為網"
+  },
+  "quiz": {
+    "id": "ch28-quiz",
+    "questions": [],
+    "xpReward": 50,
+    "perfectBonus": 50
+  }
+}

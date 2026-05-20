@@ -1,0 +1,183 @@
+"use client";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
+import { createSupabaseBrowser } from "@/lib/supabase-browser";
+import { Flame, Coins, Heart, LogOut, Settings, Trophy, User as UserIcon, ChevronDown } from "lucide-react";
+
+export function TopNav() {
+  const [user, setUser] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
+  const [open, setOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const supabase = createSupabaseBrowser();
+
+  useEffect(() => {
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+      if (user) {
+        const { data } = await supabase.from("profiles").select("*").eq("id", user.id).single();
+        setProfile(data);
+      }
+    })();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        const { data } = await supabase.from("profiles").select("*").eq("id", session.user.id).single();
+        setProfile(data);
+      } else {
+        setProfile(null);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // 點外面關閉 dropdown
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  async function handleLogout() {
+    await supabase.auth.signOut();
+    setOpen(false);
+    window.location.href = "/";
+  }
+
+  return (
+    <nav className="sticky top-0 z-40 bg-[var(--color-bg)]/90 backdrop-blur border-b border-[var(--color-border)]">
+      <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
+        <Link href="/" className="flex items-center gap-2 font-bold text-lg">
+          <span>🏝️</span>
+          <span className="bg-gradient-to-r from-[var(--color-accent)] to-[var(--color-accent-2)] bg-clip-text text-transparent">AI 島</span>
+        </Link>
+
+        <div className="flex items-center gap-4 text-sm">
+          <Link href="/chapters" className="hover:text-[var(--color-accent)]">章節</Link>
+          <Link href="/leaderboard" className="hover:text-[var(--color-accent)]">排行榜</Link>
+          <Link href="/career" className="hover:text-[var(--color-accent)]">職業路線</Link>
+
+          {user && profile ? (
+            <>
+              <div className="hidden md:flex items-center gap-3 text-xs">
+                <span className="flex items-center gap-1" title="連勝">
+                  <Flame size={14} className="text-orange-400" />
+                  {profile.streak_days ?? 0}
+                </span>
+                <span className="flex items-center gap-1" title="Z-coin">
+                  <Coins size={14} className="text-yellow-400" />
+                  {profile.z_coin ?? 0}
+                </span>
+                <span className="flex items-center gap-1" title="生命">
+                  <Heart size={14} className="text-red-400" />
+                  {profile.hearts ?? 5}
+                </span>
+              </div>
+
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  onClick={() => setOpen(!open)}
+                  className="flex items-center gap-2 px-3 py-1.5 bg-[var(--color-bg-card)] rounded-lg hover:bg-[var(--color-border)] transition"
+                >
+                  <span className="text-xs px-1.5 py-0.5 rounded bg-gradient-to-r from-[var(--color-accent)] to-[var(--color-accent-2)] text-black font-bold">
+                    Lv {profile.level ?? 1}
+                  </span>
+                  <span className="hidden md:inline">{profile.display_name || profile.username}</span>
+                  <ChevronDown size={14} className={`transition ${open ? 'rotate-180' : ''}`} />
+                </button>
+
+                {open && (
+                  <div className="absolute right-0 mt-2 w-56 bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-lg shadow-xl py-1 z-50">
+                    {/* 顯示頭像 + 資訊 */}
+                    <div className="px-4 py-3 border-b border-[var(--color-border)]">
+                      <div className="flex items-center gap-3">
+                        {profile.avatar_url ? (
+                          <img src={profile.avatar_url} alt="" className="w-10 h-10 rounded-full" />
+                        ) : (
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-accent-2)] flex items-center justify-center font-bold text-black">
+                            {(profile.display_name || profile.username || "U")[0].toUpperCase()}
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <div className="font-semibold truncate">{profile.display_name || profile.username}</div>
+                          <div className="text-xs text-[var(--color-fg-muted)] truncate">{user.email}</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <Link
+                      href="/me"
+                      className="flex items-center gap-3 px-4 py-2 hover:bg-[var(--color-bg-elevated)] transition"
+                      onClick={() => setOpen(false)}
+                    >
+                      <Trophy size={16} className="text-[var(--color-accent)]" />
+                      <span>我的學習後台</span>
+                    </Link>
+
+                    <Link
+                      href="/dashboard"
+                      className="flex items-center gap-3 px-4 py-2 hover:bg-[var(--color-bg-elevated)] transition text-sm text-[var(--color-fg-muted)]"
+                      onClick={() => setOpen(false)}
+                    >
+                      <span className="ml-7">📊 學習進度</span>
+                    </Link>
+
+                    <Link
+                      href="/profile"
+                      className="flex items-center gap-3 px-4 py-2 hover:bg-[var(--color-bg-elevated)] transition"
+                      onClick={() => setOpen(false)}
+                    >
+                      <UserIcon size={16} />
+                      <span>個人資料</span>
+                    </Link>
+
+                    <Link
+                      href="/settings"
+                      className="flex items-center gap-3 px-4 py-2 hover:bg-[var(--color-bg-elevated)] transition"
+                      onClick={() => setOpen(false)}
+                    >
+                      <Settings size={16} />
+                      <span>設定</span>
+                    </Link>
+
+                    {profile.role === "admin" && (
+                      <Link
+                        href={`/${process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2"}/admin` as any}
+                        className="flex items-center gap-3 px-4 py-2 hover:bg-[var(--color-bg-elevated)] transition text-[var(--color-warning)]"
+                        onClick={() => setOpen(false)}
+                      >
+                        <Settings size={16} />
+                        <span>後台管理</span>
+                      </Link>
+                    )}
+
+                    <div className="border-t border-[var(--color-border)] mt-1 pt-1">
+                      <button
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-3 px-4 py-2 hover:bg-[var(--color-bg-elevated)] transition text-red-400"
+                      >
+                        <LogOut size={16} />
+                        <span>登出</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </>
+          ) : (
+            <>
+              <Link href="/login" className="text-[var(--color-fg-muted)] hover:text-[var(--color-accent)]">登入</Link>
+              <Link href="/signup" className="px-4 py-1.5 bg-[var(--color-accent)] text-black rounded-lg font-semibold hover:bg-[var(--color-accent-2)]">註冊</Link>
+            </>
+          )}
+        </div>
+      </div>
+    </nav>
+  );
+}

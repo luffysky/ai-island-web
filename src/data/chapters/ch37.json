@@ -1,0 +1,682 @@
+{
+  "id": 37,
+  "slug": "wordpress",
+  "stage": 5,
+  "title": "WordPress 接案",
+  "subtitle": "主題 / 外掛 / 客製",
+  "icon": "newspaper",
+  "description": "WordPress 接案：主題 / 外掛 / 客製",
+  "status": "published",
+  "difficulty": "intermediate",
+  "prerequisites": [
+    36
+  ],
+  "estimatedHours": 10,
+  "outcomes": [
+    "理解核心概念",
+    "實作主流工具",
+    "整章實戰可發佈作品",
+    "知道生態 / 接案行情",
+    "對齊 2026 業界主流"
+  ],
+  "lessons": [
+    {
+      "title": "WordPress 為什麼仍是接案金礦",
+      "oneLineSummary": "43% 全網用 WordPress、台灣中小企業最愛",
+      "analogy": "不時髦、但月入 NT$ 30-100k 接案剛需。",
+      "content": "## 為什麼仍主流\n- 43% 全網（含大量企業 / 部落格）\n- 客戶熟悉\n- 主題 / 外掛超多\n- 不用寫 code 也能用\n- SEO 友善\n\n## WordPress 兩種\n\n### WordPress.com\n託管服務、限制多、不推薦商業。\n\n### WordPress.org（自架）\n完整控制、推薦。\n這章講這個。\n\n## 客戶類型\n\n### 1. 中小企業官網\n- 公司簡介 / 服務 / 聯絡\n- NT$ 30-100k\n- 1-2 週\n\n### 2. 部落格 / 內容網站\n- 個人 / 自媒體\n- NT$ 20-50k\n\n### 3. 電商（WooCommerce）\n- 中小電商\n- NT$ 50-300k\n\n### 4. 課程平台\n- LearnDash / Tutor LMS\n- NT$ 100-500k\n\n### 5. 會員網站\n- Membership\n- NT$ 50-200k\n\n### 6. 客製主題開發\n- 設計 + 開發\n- NT$ 100-500k\n\n### 7. 維護月費\n- NT$ 2-10k/月\n- 更新、備份、安全\n\n## 不要碰\n- ❌ 需大客製、企業級（用 Laravel / Next.js）\n- ❌ 高並發 / 高互動\n- ❌ Native App\n- ❌ 客戶很懂技術（會挑剔）\n\n## 收費策略\n\n### Fixed price\n明確規格、固定價。\n\n### Hourly\nNT$ 1000-3000/hr。\n\n### Retainer（月費）\n月固定費、優先處理。\n\n## 入門難度\n- 後台操作：1 週\n- 主題設定：2 週\n- 客製化（PHP）：1 個月\n- 全棧（外掛開發）：3-6 個月\n\n## 心法\n- 看不起 WordPress = 看不起錢\n- 中小企業老闆預算 NT$ 30-50k、剛好你的 sweet spot\n- 一年累積 20 個客戶 = 月被動 NT$ 30k+\n- 不要追完美主義、客戶不在乎",
+      "tip": {
+        "type": "business",
+        "text": "WordPress 接案 = Indie 月入 NT$ 30k+ 最快路線。"
+      },
+      "id": "37.1",
+      "number": "LESSON 37.1",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "37.1.auto",
+          "language": "php",
+          "title": "試試看",
+          "initialCode": "<?php\necho \"Hello AI 島！\\n\";\n\n$nums = [1, 2, 3, 4, 5];\necho \"總和: \" . array_sum($nums) . \"\\n\";\n\n$doubled = array_map(fn($n) => $n * 2, $nums);\necho \"乘 2: \" . implode(\", \", $doubled) . \"\\n\";",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "找一個你身邊的例子、用「WordPress 為什麼仍是接案金礦」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼仍主流"
+        },
+        {
+          "level": 2,
+          "text": "WordPress 兩種"
+        },
+        {
+          "level": 3,
+          "text": "WordPress.com"
+        },
+        {
+          "level": 3,
+          "text": "WordPress.org（自架）"
+        },
+        {
+          "level": 2,
+          "text": "客戶類型"
+        },
+        {
+          "level": 3,
+          "text": "1. 中小企業官網"
+        },
+        {
+          "level": 3,
+          "text": "2. 部落格 / 內容網站"
+        },
+        {
+          "level": 3,
+          "text": "3. 電商（WooCommerce）"
+        },
+        {
+          "level": 3,
+          "text": "4. 課程平台"
+        },
+        {
+          "level": 3,
+          "text": "5. 會員網站"
+        },
+        {
+          "level": 3,
+          "text": "6. 客製主題開發"
+        },
+        {
+          "level": 3,
+          "text": "7. 維護月費"
+        },
+        {
+          "level": 2,
+          "text": "不要碰"
+        },
+        {
+          "level": 2,
+          "text": "收費策略"
+        },
+        {
+          "level": 3,
+          "text": "Fixed price"
+        },
+        {
+          "level": 3,
+          "text": "Hourly"
+        },
+        {
+          "level": 3,
+          "text": "Retainer（月費）"
+        },
+        {
+          "level": 2,
+          "text": "入門難度"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "WordPress 後台 + 主題",
+      "oneLineSummary": "不寫 code 也能交付專業網站",
+      "analogy": "一個 SOP 通用所有客戶。",
+      "content": "## 安裝 SOP\n\n### 1. 主機\n- **WP Engine**：商業、貴\n- **Kinsta**：商業、快\n- **Cloudways**：中等\n- **SiteGround**：CP 值好\n- **共享主機**：BlueHost / GoDaddy（不推、慢）\n\n台灣選：Cloudways + Vultr Tokyo region。\n\n### 2. 安裝\n1. cPanel 一鍵安裝 / 手動\n2. wp-admin\n3. 改 admin URL（防駭）\n4. 強密碼 + 2FA\n\n### 3. 必裝外掛\n- **Akismet**：擋 spam\n- **Yoast SEO** / **Rank Math**：SEO\n- **WP Rocket** / **W3 Total Cache**：cache\n- **Wordfence** / **Sucuri**：安全\n- **UpdraftPlus**：backup\n- **Smush** / **Imagify**：圖片優化\n- **Cookie Notice**：GDPR\n- **Contact Form 7** / **WPForms**：表單\n\n### 4. 必設\n- Permalink：/%postname%/\n- Comments：關（除非 blog）\n- Anyone can register：關\n- Two-factor authentication\n\n## 主題選擇\n\n### Page Builder + 主題\n- **Astra** + Elementor / Bricks：快\n- **GeneratePress**：輕量\n- **Kadence**：彈性\n- **Hello（Elementor 親兒）**：白板\n\n### 主流 Page Builder\n\n#### Elementor\n- 最普及\n- 拖拉\n- 大量 widget\n- 收費版功能多\n\n#### Bricks Builder\n- 性能爆好\n- 開發者友善\n- 沒 Elementor 那麼多教學\n\n#### Beaver Builder\n- 老牌穩定\n\n#### Gutenberg（內建）\n- 區塊編輯器\n- 越來越強\n- 免費\n\n### Indie 接案建議\n**Astra + Elementor Pro**（NT$ 1500/年）：\n- 客戶易維護\n- 快交付\n- 主題市場大\n\n或 **Kadence**（免費 + Premium）：\n- 性能好\n- 客戶友善\n\n## 主題客製\n\n### Child Theme\n不改母主題、改 child theme：\n```\n/wp-content/themes/astra-child/\n├── style.css\n├── functions.php\n└── ...\n```\n\n更新母主題不會覆蓋你的修改。\n\n### functions.php\n```php\nfunction my_custom_function() {\n    // ...\n}\nadd_action('init', 'my_custom_function');\n```\n\n### Custom Post Type\n```php\nfunction create_portfolio() {\n    register_post_type('portfolio', [\n        'labels' => ['name' => 'Portfolio'],\n        'public' => true,\n        'has_archive' => true,\n        'supports' => ['title', 'editor', 'thumbnail']\n    ]);\n}\nadd_action('init', 'create_portfolio');\n```\n\n### Custom Fields\n- ACF（Advanced Custom Fields）：標準\n- Meta Box：替代品\n\n```php\n$price = get_field('price');\n```\n\n## SEO\n\n### Yoast / Rank Math\n- meta title / description\n- schema.org\n- sitemap\n- robots.txt\n- breadcrumb\n\n### 速度\n- Page Speed > 80\n- Lazy load images\n- WebP\n- CDN（Cloudflare）\n\n## 安全\n\n### 必做\n- 改 wp-admin URL\n- 2FA\n- limit login attempts\n- 隱藏 wp-version\n- 強密碼 enforce\n- 定期 update\n\n### 偵測\n- Wordfence scan\n- Sucuri SiteCheck\n\n## 心法\n- 80% 客戶不需要 custom theme、用 Astra + Elementor\n- 速度 + 安全是基本盤\n- 別亂裝外掛（多 = 慢 + 衝突）\n- 永遠 child theme",
+      "tip": {
+        "type": "practical",
+        "text": "Astra + Elementor + Yoast + WP Rocket + UpdraftPlus = 通用 stack。"
+      },
+      "id": "37.2",
+      "number": "LESSON 37.2",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "37.2.auto",
+          "language": "php",
+          "title": "試試看",
+          "initialCode": "function my_custom_function() {\n    // ...\n}\nadd_action('init', 'my_custom_function');",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "安裝 SOP"
+        },
+        {
+          "level": 3,
+          "text": "1. 主機"
+        },
+        {
+          "level": 3,
+          "text": "2. 安裝"
+        },
+        {
+          "level": 3,
+          "text": "3. 必裝外掛"
+        },
+        {
+          "level": 3,
+          "text": "4. 必設"
+        },
+        {
+          "level": 2,
+          "text": "主題選擇"
+        },
+        {
+          "level": 3,
+          "text": "Page Builder + 主題"
+        },
+        {
+          "level": 3,
+          "text": "主流 Page Builder"
+        },
+        {
+          "level": 3,
+          "text": "Indie 接案建議"
+        },
+        {
+          "level": 2,
+          "text": "主題客製"
+        },
+        {
+          "level": 3,
+          "text": "Child Theme"
+        },
+        {
+          "level": 3,
+          "text": "functions.php"
+        },
+        {
+          "level": 3,
+          "text": "Custom Post Type"
+        },
+        {
+          "level": 3,
+          "text": "Custom Fields"
+        },
+        {
+          "level": 2,
+          "text": "SEO"
+        },
+        {
+          "level": 3,
+          "text": "Yoast / Rank Math"
+        },
+        {
+          "level": 3,
+          "text": "速度"
+        },
+        {
+          "level": 2,
+          "text": "安全"
+        },
+        {
+          "level": 3,
+          "text": "必做"
+        },
+        {
+          "level": 3,
+          "text": "偵測"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "WooCommerce + 客製化 + 接案",
+      "oneLineSummary": "WordPress 電商 + 怎麼接到案子",
+      "analogy": "WooCommerce 是 Indie 電商飯碗。",
+      "content": "## WooCommerce\nWordPress 的電商外掛、免費、市占 40%+。\n\n## 基本設定\n1. 裝 WooCommerce\n2. 設定金流（藍新 / 綠界 / Stripe）\n3. 設定物流（黑貓 / 7-11）\n4. 加商品\n5. 設稅率 / 運費\n\n## 台灣金流外掛\n- **藍新金流官方**\n- **綠界金流官方**\n- **TapPay**\n- **LINE Pay**：透過綠界\n\n每個 NT$ 1500-3000 一次性。\n\n## 物流外掛\n- **黑貓宅急便**\n- **7-11 賣貨便**\n- **全家店到店**\n\n## 必裝電商外掛\n- **WooCommerce Subscriptions**：訂閱（$199）\n- **WooCommerce Bookings**：預約\n- **Yoast WooCommerce SEO**\n- **Cart Abandonment**：未結帳提醒\n\n## 主題\n- **Astra**：通用\n- **Flatsome**：電商專門\n- **WoodMart**：服飾類\n\n## 接案流程\n\n### Phase 1：報價\n- 客戶問什麼類型電商\n- 商品數量 / 客製需求\n- 報價範圍：NT$ 50-300k\n\n### Phase 2：規格\n- 商品分類 / 結構\n- 金流 / 物流\n- 會員 / 點數\n- SEO 需求\n\n### Phase 3：開發（1-2 月）\n- 主機 + 安裝\n- 設計（PSD → 主題）\n- 商品上架\n- 金流測試\n- 物流整合\n- 測試\n\n### Phase 4：交付\n- 教育訓練（後台 1-2 hr）\n- 上線\n- 30 天保固\n\n### Phase 5：月費維護\n- 主機 + SSL + 備份\n- 月 NT$ 3-10k\n\n## 接案 SOP\n\n### 找客戶\n1. **Threads / IG**：分享案例\n2. **FB 社團**：中小企業老闆\n3. **Google Ads**：「WordPress 接案」\n4. **104 接案**\n5. **客戶轉介**：最強\n\n### 報價單必有\n- Scope（做什麼 / 不做什麼）\n- 時程\n- 付款條件（50% 訂金、50% 完成）\n- 交付物\n- 維護保固\n- 著作權\n\n### 合約注意\n- 不包：「無限改」\n- 包：3 次大改\n- 加項：另計\n- 月維護獨立合約\n\n## 案例：服飾電商\n\n**客戶**：30 商品、月營業額目標 NT$ 30 萬\n\n**規格**：\n- WordPress + WooCommerce\n- Flatsome 主題\n- 藍新金流\n- 黑貓物流\n- LINE 客服整合\n\n**報價**：\n- Setup：NT$ 80k\n- 月維護：NT$ 5k\n\n**時程**：6 週\n\n**完成內容**：\n- 主機 + Domain\n- 主題 + 客製\n- 30 商品上架\n- 金流 / 物流測試\n- SEO 基礎\n- Google Analytics\n- 後台教學影片\n\n## 進階變現\n\n### 1. 主題開發\n做 niche 主題、賣 ThemeForest。\n月被動 $200-2000。\n\n### 2. 外掛開發\n做 niche plugin。\n- CodeCanyon\n- WordPress.org（免費 + Pro）\n\n### 3. SaaS\n做 WordPress 工具（如 backup as a service）。\n\n## 學習資源\n- WPBeginner（中文：WordPress 中文教學）\n- ThemeIsle\n- Kinsta blog\n- Astra documentation\n\n## 心法\n- WooCommerce 是門檻 + 飯碗\n- 中小企業不在乎技術、在乎結果\n- 月費維護 = 被動收入\n- 累積 case study + 客戶見證\n- 慢慢做專業領域（餐飲 / 服飾 / 美容）",
+      "tip": {
+        "type": "business",
+        "text": "WordPress 電商接案：月入 NT$ 50-150k 不難。"
+      },
+      "id": "37.3",
+      "number": "LESSON 37.3",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "37.3.auto",
+          "language": "php",
+          "title": "試試看",
+          "initialCode": "<?php\necho \"Hello AI 島！\\n\";\n\n$nums = [1, 2, 3, 4, 5];\necho \"總和: \" . array_sum($nums) . \"\\n\";\n\n$doubled = array_map(fn($n) => $n * 2, $nums);\necho \"乘 2: \" . implode(\", \", $doubled) . \"\\n\";",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "找一個你身邊的例子、用「WooCommerce + 客製化 + 接案」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "WooCommerce"
+        },
+        {
+          "level": 2,
+          "text": "基本設定"
+        },
+        {
+          "level": 2,
+          "text": "台灣金流外掛"
+        },
+        {
+          "level": 2,
+          "text": "物流外掛"
+        },
+        {
+          "level": 2,
+          "text": "必裝電商外掛"
+        },
+        {
+          "level": 2,
+          "text": "主題"
+        },
+        {
+          "level": 2,
+          "text": "接案流程"
+        },
+        {
+          "level": 3,
+          "text": "Phase 1：報價"
+        },
+        {
+          "level": 3,
+          "text": "Phase 2：規格"
+        },
+        {
+          "level": 3,
+          "text": "Phase 3：開發（1-2 月）"
+        },
+        {
+          "level": 3,
+          "text": "Phase 4：交付"
+        },
+        {
+          "level": 3,
+          "text": "Phase 5：月費維護"
+        },
+        {
+          "level": 2,
+          "text": "接案 SOP"
+        },
+        {
+          "level": 3,
+          "text": "找客戶"
+        },
+        {
+          "level": 3,
+          "text": "報價單必有"
+        },
+        {
+          "level": 3,
+          "text": "合約注意"
+        },
+        {
+          "level": 2,
+          "text": "案例：服飾電商"
+        },
+        {
+          "level": 2,
+          "text": "進階變現"
+        },
+        {
+          "level": 3,
+          "text": "1. 主題開發"
+        },
+        {
+          "level": 3,
+          "text": "2. 外掛開發"
+        },
+        {
+          "level": 3,
+          "text": "3. SaaS"
+        },
+        {
+          "level": 2,
+          "text": "學習資源"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "WordPress 仍是台灣接案主力",
+      "oneLineSummary": "全球 40% 網站、台灣中小企業 80%",
+      "analogy": "不會 WordPress = 接不到中小企業案。",
+      "content": "## 為什麼 WordPress 還是主流\n\n### 數字\n- 全球 40%+ 網站\n- 台灣中小企業 70-80% 用 WP\n- CMS market 60%+\n\n### 為什麼用戶愛\n- 不用會 code\n- Plugin 多\n- 主機便宜\n- 改 / 維護自己來\n\n### 為什麼 dev 還在做\n- 客戶要\n- 快（一週交付）\n- 報價穩\n\n## WordPress 適合 vs 不適合\n\n### ✅ 適合\n- 部落格 / 內容站\n- 中小企業 brochure\n- 簡單電商（WooCommerce）\n- 課程平台（LearnDash）\n- 預約系統（Amelia）\n\n### ❌ 不適合\n- 高流量 SaaS\n- 複雜業務邏輯\n- 即時互動\n- Mobile App\n\n## 接案類型\n\n### 1. 全新建站（NT$ 30-200k）\n- 主題客製\n- Plugin 整合\n- 內容上架\n- SEO 基本\n\n### 2. 改版升級（NT$ 20-100k）\n- 主題換新\n- WordPress 升級\n- 加新功能\n\n### 3. WooCommerce 電商（NT$ 50-300k）\n- 商品設置\n- 金流物流\n- 設計\n- 月維護\n\n### 4. 修 bug / 維護（NT$ 3-20k）\n- 一次性\n- 或月費\n\n### 5. 速度優化（NT$ 10-50k）\n- Image / CDN / cache\n- DB 清理\n- Lighthouse 改善\n\n### 6. SEO 顧問（NT$ 10-50k/月）\n- Yoast / RankMath\n- 內容策略\n\n## 客戶來源\n\n### 1. 在地（最多）\n- 老闆 / 中小企業朋友\n- 商會 / 扶輪社\n- Word of mouth\n\n### 2. 接案平台\n- 104 接案\n- 1111\n- Tasker\n- WordPress 社團\n\n### 3. 自己 brand\n- IG / FB 個人 / 自己 case study\n- WP 課程教學 → 帶來客戶\n\n## 報價心法\n\n### 不報「網站多少錢」\n- 客戶覺得「便宜的網站 = 一樣」\n- 你陷入價格戰\n\n### 報「解決什麼問題」\n- 「3 個月後讓你的網站 SEO 進前 10」\n- 「Mobile 速度 90 分」\n- 「金流 + 物流 + 客服整合」\n\n差很多。\n\n## 心法\n- WordPress 學會 = 月入 NT$ 50-150k 基本盤\n- 別只賣「網站」、賣「結果」\n- 月維護 > 一次性\n- 結合 SEO / 行銷加值\n- 不要怕「過時」、80% 客戶就要 WordPress",
+      "tip": {
+        "type": "milestone",
+        "text": "WordPress 接案 = Indie 最穩入口。"
+      },
+      "exercise": {
+        "question": "找一個你身邊的例子、用「WordPress 仍是台灣接案主力」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "id": "37.4",
+      "number": "LESSON 37.4",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "37.4.auto",
+          "language": "php",
+          "title": "試試看",
+          "initialCode": "<?php\necho \"Hello AI 島！\\n\";\n\n$nums = [1, 2, 3, 4, 5];\necho \"總和: \" . array_sum($nums) . \"\\n\";\n\n$doubled = array_map(fn($n) => $n * 2, $nums);\necho \"乘 2: \" . implode(\", \", $doubled) . \"\\n\";",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼 WordPress 還是主流"
+        },
+        {
+          "level": 3,
+          "text": "數字"
+        },
+        {
+          "level": 3,
+          "text": "為什麼用戶愛"
+        },
+        {
+          "level": 3,
+          "text": "為什麼 dev 還在做"
+        },
+        {
+          "level": 2,
+          "text": "WordPress 適合 vs 不適合"
+        },
+        {
+          "level": 3,
+          "text": "✅ 適合"
+        },
+        {
+          "level": 3,
+          "text": "❌ 不適合"
+        },
+        {
+          "level": 2,
+          "text": "接案類型"
+        },
+        {
+          "level": 3,
+          "text": "1. 全新建站（NT$ 30-200k）"
+        },
+        {
+          "level": 3,
+          "text": "2. 改版升級（NT$ 20-100k）"
+        },
+        {
+          "level": 3,
+          "text": "3. WooCommerce 電商（NT$ 50-300k）"
+        },
+        {
+          "level": 3,
+          "text": "4. 修 bug / 維護（NT$ 3-20k）"
+        },
+        {
+          "level": 3,
+          "text": "5. 速度優化（NT$ 10-50k）"
+        },
+        {
+          "level": 3,
+          "text": "6. SEO 顧問（NT$ 10-50k/月）"
+        },
+        {
+          "level": 2,
+          "text": "客戶來源"
+        },
+        {
+          "level": 3,
+          "text": "1. 在地（最多）"
+        },
+        {
+          "level": 3,
+          "text": "2. 接案平台"
+        },
+        {
+          "level": 3,
+          "text": "3. 自己 brand"
+        },
+        {
+          "level": 2,
+          "text": "報價心法"
+        },
+        {
+          "level": 3,
+          "text": "不報「網站多少錢」"
+        },
+        {
+          "level": 3,
+          "text": "報「解決什麼問題」"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "WordPress 性能優化",
+      "oneLineSummary": "預設 WP 慢、優化 5 倍速度",
+      "analogy": "PageSpeed 從 30 → 90 的 SOP。",
+      "content": "## WordPress 為什麼慢\n\n### 預設問題\n- 主題多餘 CSS / JS\n- Plugin 太多\n- 沒 cache\n- 圖片沒優化\n- DB 大\n- 共享主機慢\n\n### 結果\n- LCP 5+ 秒\n- INP 慢\n- SEO 打分低\n- 跳出率高\n\n## 優化 SOP\n\n### Phase 1：主機（NT$ 0-1000/月）\n\n#### 共享主機（最慢）\n- Bluehost / GoDaddy 主機\n- NT$ 200-500/月\n- 適合：流量低 / 學習\n\n#### VPS（推薦）\n- DigitalOcean / Linode\n- NT$ 600/月（$20）\n- 用 RunCloud / Ploi 管理\n\n#### 託管 WordPress\n- Kinsta / WP Engine\n- NT$ 1000+/月\n- 速度最快 + 自動 backup\n\n### Phase 2：CDN（NT$ 0）\n\n- **Cloudflare 免費**\n- 靜態資源邊緣\n- DDoS 防護\n- 5 分鐘 setup\n\n### Phase 3：Cache plugin\n\n#### WP Rocket（付費、最簡單）\n- $59/年\n- Page cache + DB cache + lazy load + minify\n- 安裝 → 自動\n\n#### LiteSpeed Cache（免費、超強）\n- 需要 LiteSpeed server\n- 自動配對\n\n#### W3 Total Cache（免費）\n- 老牌\n- 複雜\n\n### Phase 4：圖片優化\n\n#### Imagify / ShortPixel\n- $10/月\n- 自動 compress + WebP\n- 影響最大\n\n#### Smush / EWWW\n- 免費 quota\n\n### Phase 5：Plugin 清理\n\n每個 plugin 平均增加 50-200ms。\n原則：\n- 用必要的、其他刪\n- 30 個 → 10 個\n\n### Phase 6：DB 優化\n\n```bash\n# WP-CLI\nwp post delete $(wp post list --post_status=trash --field=ID)\nwp transient delete --all\nwp db optimize\n```\n\n或 plugin：WP-Optimize\n\n### Phase 7：主題輕量\n\n換主題：\n- **GeneratePress**（最輕）\n- **Astra**\n- **Kadence**\n\n不要：\n- Avada / Bridge（大慢）\n- 老 Divi（heavy）\n\n### Phase 8：CSS / JS\n\nWP Rocket / Autoptimize：\n- Minify\n- Defer\n- Critical CSS\n\n### Phase 9：FONT 優化\n\n```html\n<link rel=\"preload\" href=\"font.woff2\" as=\"font\" crossorigin />\n```\n\n`font-display: swap`。\n\n### Phase 10：移除多餘\n\nWP 預設一堆無用：\n```php\n// functions.php\nremove_action('wp_head', 'wp_generator');\nremove_action('wp_head', 'wlwmanifest_link');\nremove_action('wp_head', 'rsd_link');\nremove_action('wp_head', 'wp_shortlink_wp_head');\n```\n\n## 目標數字\n\n### Lighthouse Mobile\n- Performance > 80\n- Accessibility > 90\n- SEO > 95\n\n### Core Web Vitals\n- LCP < 2.5s\n- INP < 200ms\n- CLS < 0.1\n\n### GTmetrix\n- A grade\n- < 3s load\n\n## 接案賣點\n\n### Before / After\n- PageSpeed 30 → 92\n- 載入時間 8s → 1.5s\n- Bounce rate 70% → 35%\n\nNT$ 20-50k 一次優化、客戶 happy + 推薦。\n\n## 心法\n- 一次完整優化 = NT$ 30k 利潤\n- 月維護 NT$ 3-10k（被動）\n- 客戶看數字感動\n- 結合 SEO 更賺",
+      "tip": {
+        "type": "practical",
+        "text": "WordPress 優化是「快錢」、單次 30k、客戶愛。"
+      },
+      "exercise": {
+        "question": "挑一個你做過的舊專案、用本節「WordPress 性能優化」介紹的進階技術重構它。",
+        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（font-display: swap）通常在效能 / 維護性 / 擴展性卡住時才登場。",
+        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+      },
+      "id": "37.5",
+      "number": "LESSON 37.5",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "37.5.auto",
+          "language": "php",
+          "title": "試試看",
+          "initialCode": "// functions.php\nremove_action('wp_head', 'wp_generator');\nremove_action('wp_head', 'wlwmanifest_link');\nremove_action('wp_head', 'rsd_link');\nremove_action('wp_head', 'wp_shortlink_wp_head');",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "outline": [
+        {
+          "level": 2,
+          "text": "WordPress 為什麼慢"
+        },
+        {
+          "level": 3,
+          "text": "預設問題"
+        },
+        {
+          "level": 3,
+          "text": "結果"
+        },
+        {
+          "level": 2,
+          "text": "優化 SOP"
+        },
+        {
+          "level": 3,
+          "text": "Phase 1：主機（NT$ 0-1000/月）"
+        },
+        {
+          "level": 3,
+          "text": "Phase 2：CDN（NT$ 0）"
+        },
+        {
+          "level": 3,
+          "text": "Phase 3：Cache plugin"
+        },
+        {
+          "level": 3,
+          "text": "Phase 4：圖片優化"
+        },
+        {
+          "level": 3,
+          "text": "Phase 5：Plugin 清理"
+        },
+        {
+          "level": 3,
+          "text": "Phase 6：DB 優化"
+        },
+        {
+          "level": 3,
+          "text": "Phase 7：主題輕量"
+        },
+        {
+          "level": 3,
+          "text": "Phase 8：CSS / JS"
+        },
+        {
+          "level": 3,
+          "text": "Phase 9：FONT 優化"
+        },
+        {
+          "level": 3,
+          "text": "Phase 10：移除多餘"
+        },
+        {
+          "level": 2,
+          "text": "目標數字"
+        },
+        {
+          "level": 3,
+          "text": "Lighthouse Mobile"
+        },
+        {
+          "level": 3,
+          "text": "Core Web Vitals"
+        },
+        {
+          "level": 3,
+          "text": "GTmetrix"
+        },
+        {
+          "level": 2,
+          "text": "接案賣點"
+        },
+        {
+          "level": 3,
+          "text": "Before / After"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "WordPress 客製 + Block Editor",
+      "oneLineSummary": "不只 plugin、能客製就能多賺",
+      "analogy": "Gutenberg / Custom Block 是 2026 主流。",
+      "content": "## Gutenberg（Block Editor）\n\nWordPress 5.0+ 預設編輯器：\n- 拖拉式\n- 一個段落 = 一個 block\n- 取代 Classic editor\n\n## 自訂 Block\n\n### register_block_type\n```php\nfunction my_register_block() {\n    register_block_type('my-plugin/hero', [\n        'editor_script' => 'my-hero-editor',\n        'render_callback' => 'render_hero_block',\n    ]);\n}\nadd_action('init', 'my_register_block');\n\nfunction render_hero_block($attributes) {\n    $title = $attributes['title'] ?? '';\n    return \"<div class='hero'><h1>$title</h1></div>\";\n}\n```\n\n### Block JS\n```javascript\n// hero-block.js\nconst { registerBlockType } = wp.blocks;\nconst { TextControl } = wp.components;\n\nregisterBlockType('my-plugin/hero', {\n  title: 'Hero',\n  attributes: {\n    title: { type: 'string' }\n  },\n  edit: ({ attributes, setAttributes }) => (\n    <TextControl\n      label=\"Title\"\n      value={attributes.title}\n      onChange={(value) => setAttributes({ title: value })}\n    />\n  ),\n  save: ({ attributes }) => <div className=\"hero\"><h1>{attributes.title}</h1></div>\n});\n```\n\n## ACF（Advanced Custom Fields）\n\n不寫 code 也能自訂 field：\n```\nPlugin → ACF → Add Field Group\n- Field name: hero_title\n- Type: Text\n- Location: page = home\n```\n\n```php\n// template\n<?php $title = get_field('hero_title'); ?>\n<h1><?php echo $title; ?></h1>\n```\n\n接案神器、客戶能自己改內容。\n\n## 主題開發\n\n### Theme 結構\n```\nmy-theme/\n├── style.css       # 主題資訊\n├── index.php       # 預設 template\n├── functions.php   # 功能\n├── header.php\n├── footer.php\n├── single.php\n├── page.php\n└── template-parts/\n```\n\n### Hybrid Theme（推薦 2026）\n基於 GeneratePress / Kadence + Block 客製：\n- 不從零做\n- 客戶能自己改 70% 內容\n- 你只動框架\n\n## Custom Post Type\n```php\nadd_action('init', function() {\n    register_post_type('project', [\n        'label' => 'Projects',\n        'public' => true,\n        'has_archive' => true,\n        'menu_icon' => 'dashicons-portfolio',\n        'supports' => ['title', 'editor', 'thumbnail', 'custom-fields']\n    ]);\n});\n```\n\n加「Projects」menu、像 Post 一樣管。\n\n## REST API\n\nWordPress 內建：\n```\nGET /wp-json/wp/v2/posts\nGET /wp-json/wp/v2/posts/123\n```\n\n加 custom endpoint：\n```php\nadd_action('rest_api_init', function() {\n    register_rest_route('myapi/v1', '/featured', [\n        'methods' => 'GET',\n        'callback' => function() {\n            return get_posts(['meta_key' => 'featured', 'meta_value' => true]);\n        }\n    ]);\n});\n```\n\n可給 React frontend / Mobile App 用 → Headless WordPress！\n\n## Headless WordPress（進階）\n\n```\nWordPress 後台 (PHP)\n  ↓ REST API\nNext.js Frontend\n  ↓\nUser\n```\n\n優：\n- 速度（Next.js SSG）\n- 設計自由\n- 客戶熟悉 WP 後台\n\n接案爆賺：NT$ 100-500k。\n\n## 心法\n- ACF 是新手客製首選\n- 自訂 Block 是 2026 進階\n- Custom Post Type = 業務模組\n- Headless WP = 高單價接案\n- 賣「easy 後台」客戶最愛",
+      "tip": {
+        "type": "milestone",
+        "text": "客製 WordPress 比套模板貴 3-5 倍。"
+      },
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 9 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "id": "37.6",
+      "number": "LESSON 37.6",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "37.6.auto",
+          "language": "php",
+          "title": "試試看",
+          "initialCode": "function my_register_block() {\n    register_block_type('my-plugin/hero', [\n        'editor_script' => 'my-hero-editor',\n        'render_callback' => 'render_hero_block',\n    ]);\n}\nadd_action('init', 'my_register_block');\n\nfunction render_hero_block($attributes) {\n    $title = $attributes['title'] ?? '';\n    return \"<div class='hero'><h1>$title</h1></div>\";\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "outline": [
+        {
+          "level": 2,
+          "text": "Gutenberg（Block Editor）"
+        },
+        {
+          "level": 2,
+          "text": "自訂 Block"
+        },
+        {
+          "level": 3,
+          "text": "registerblocktype"
+        },
+        {
+          "level": 3,
+          "text": "Block JS"
+        },
+        {
+          "level": 2,
+          "text": "ACF（Advanced Custom Fields）"
+        },
+        {
+          "level": 2,
+          "text": "主題開發"
+        },
+        {
+          "level": 3,
+          "text": "Theme 結構"
+        },
+        {
+          "level": 3,
+          "text": "Hybrid Theme（推薦 2026）"
+        },
+        {
+          "level": 2,
+          "text": "Custom Post Type"
+        },
+        {
+          "level": 2,
+          "text": "REST API"
+        },
+        {
+          "level": 2,
+          "text": "Headless WordPress（進階）"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    }
+  ],
+  "boss": {
+    "name": "WP 仙人",
+    "hp": 170,
+    "emoji": "📰",
+    "description": "70% 網站背後的影子、外掛系統是它的法袍"
+  },
+  "quiz": {
+    "id": "ch37-quiz",
+    "questions": [],
+    "xpReward": 50,
+    "perfectBonus": 50
+  }
+}

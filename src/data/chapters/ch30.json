@@ -1,0 +1,1595 @@
+{
+  "id": 30,
+  "slug": "cross-scraping",
+  "stage": 4,
+  "title": "跨語言爬蟲",
+  "subtitle": "Go colly / Rust / cron",
+  "icon": "search-code",
+  "description": "跨語言爬蟲：Go colly / Rust / cron",
+  "status": "published",
+  "difficulty": "advanced",
+  "prerequisites": [
+    28,
+    29
+  ],
+  "estimatedHours": 14,
+  "outcomes": [
+    "理解核心概念",
+    "實作主流工具",
+    "整章實戰可發佈作品",
+    "知道生態 / 接案行情",
+    "對齊 2026 業界主流"
+  ],
+  "lessons": [
+    {
+      "id": "30.1",
+      "number": "LESSON 30.1",
+      "title": "什麼時候該用 Go / Rust 寫爬蟲？",
+      "oneLineSummary": "90% 場景 Python / Node 夠用。每天爬 100 萬頁以上、或客戶要求低資源—才換 Go / Rust。",
+      "analogy": "像送貨工具—10 件用機車（Python）、100 件用小貨車（Node）、1000 件用大卡車（Go）、10000 件用貨輪（Rust）。沒事用大卡車送 10 件、油錢不划算。",
+      "content": "### 規模選擇\n\n      \n| 日爬頁數 | 推薦語言 | 原因 |\n| --- | --- | --- |\n|  10M | **Rust + 分散式** | 記憶體最省、跨機並行 |\n\n      \n### 各語言爬蟲特性\n\n      \n- **Python（Scrapy）**：單機 100 並發、記憶體 500MB-1GB、好寫\n- **Node（Crawlee）**：單機 500 並發、記憶體 1-2GB、async 友善\n- **Go（colly）**：單機 50,000 並發、記憶體 200MB、編譯快\n- **Rust（scraper）**：單機 100,000 並發、記憶體 50MB、效能極致\n\n      \n### 實測對比（爬 1 萬個網頁）\n\n      \n- Python + Requests + 並發 10：**180 秒、記憶體 250MB**\n- Python + Scrapy：**120 秒、記憶體 180MB**\n- Node + Cheerio + Promise.all：**80 秒、記憶體 300MB**\n- Go + colly：**25 秒、記憶體 80MB**\n- Rust + reqwest + tokio：**18 秒、記憶體 35MB**\n\n      \n### 商業考量\n\n      \n- **Cloud 成本**：Rust 用 1/10 機器、年省幾十萬\n- **開發速度**：Python > Node > Go > Rust\n- **找工程師**：Python > Node > Go > Rust\n- **維護成本**：Go 跟 Rust 編譯型、bug 少、長期維護爽\n\n      \n### 2026 建議路徑\n\n      \n1. 新手：Python / Node 入門（學會爬蟲思維）\n2. 進階：Scrapy / Crawlee（框架化）\n3. 規模化：Go colly（並發爆量）\n4. 極致：Rust + 分散式架構（雲端省錢）",
+      "tip": {
+        "type": "business",
+        "text": "大型比價網（如 Trivago / Skyscanner）後端爬蟲都跑 Go / Rust—每天爬 1 億+ 頁。但 Indie / 中小公司根本到不了那規模、Python 夠用。別為了「酷」過度工程化。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "30.1.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "# Python 範例\ndef fibonacci(n):\n    a, b = 0, 1\n    for _ in range(n):\n        yield a\n        a, b = b, a + b\n\nprint(list(fibonacci(10)))\n\n# List comprehension\nsquares = [x**2 for x in range(1, 6)]\nprint(\"平方:\", squares)",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "找一個你身邊的例子、用「什麼時候該用 Go / Rust 寫爬蟲？」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "規模選擇"
+        },
+        {
+          "level": 3,
+          "text": "各語言爬蟲特性"
+        },
+        {
+          "level": 3,
+          "text": "實測對比（爬 1 萬個網頁）"
+        },
+        {
+          "level": 3,
+          "text": "商業考量"
+        },
+        {
+          "level": 3,
+          "text": "2026 建議路徑"
+        }
+      ]
+    },
+    {
+      "id": "30.2",
+      "number": "LESSON 30.2",
+      "title": "Go colly：並發 5 萬的爬蟲框架",
+      "oneLineSummary": "colly = 「Go 的 Scrapy」—單機 5 萬 goroutine 同時跑、單檔執行檔可部署任何 Linux。",
+      "analogy": "Python Scrapy 像單線生產（一條輸送帶）、Go colly 像萬條輸送帶並行—goroutine 比 thread 輕 1000 倍、開幾萬個沒問題。",
+      "content": "### 安裝\n\n```bash\ngo mod init my-scraper\ngo get github.com/gocolly/colly/v2\n```\n\n      \n### 第一個 colly 爬蟲\n\n```go\npackage main\n\nimport (\n    \"fmt\"\n    \"github.com/gocolly/colly/v2\"\n)\n\nfunc main() {\n    c := colly.NewCollector(\n        colly.AllowedDomains(\"books.toscrape.com\"),\n        colly.MaxDepth(3),\n    )\n\n    // 找書名 + 價格\n    c.OnHTML(\"article.product_pod\", func(e *colly.HTMLElement) {\n        title := e.ChildAttr(\"h3 a\", \"title\")\n        price := e.ChildText(\".price_color\")\n        fmt.Printf(\"%s | %s\\n\", title, price)\n    })\n\n    // 找下一頁、繼續爬\n    c.OnHTML(\"li.next a\", func(e *colly.HTMLElement) {\n        e.Request.Visit(e.Attr(\"href\"))\n    })\n\n    // 錯誤處理\n    c.OnError(func(r *colly.Response, err error) {\n        fmt.Printf(\"Error: %s\\n\", err)\n    })\n\n    c.Visit(\"http://books.toscrape.com\")\n}\n```\n\n      \n### 並發控制\n\n```go\n// 限制每個 domain 並發數\nc.Limit(&colly.LimitRule{\n    DomainGlob:  \"*\",\n    Parallelism: 10,                // 同時 10 個\n    Delay:       1 * time.Second,    // 每次間隔 1 秒\n    RandomDelay: 2 * time.Second,    // 額外隨機 0-2 秒\n})\n\n// async 模式（要記得 c.Wait()）\nc2 := c.Clone()\nc2.Async = true\nc2.Visit(\"https://example.com\")\nc2.Wait()  // 等所有 goroutine 完成\n```\n\n      \n### 處理 cookies / sessions / proxy\n\n```go\n// User-Agent\nc.UserAgent = \"Mozilla/5.0 ...\"\n\n// 自動處理 cookies\nc.SetCookieJar(...)\n\n// Proxy\nc.SetProxy(\"http://proxy.io:8080\")\n\n// IP 池輪換\nimport \"github.com/gocolly/colly/v2/proxy\"\nrp, _ := proxy.RoundRobinProxySwitcher(\n    \"http://proxy1.io:8080\",\n    \"http://proxy2.io:8080\",\n)\nc.SetProxyFunc(rp)\n```\n\n      \n### 儲存到資料庫 / CSV\n\n```go\nimport (\n    \"encoding/csv\"\n    \"os\"\n    \"sync\"\n)\n\ntype Book struct {\n    Title string\n    Price string\n}\n\nvar (\n    books []Book\n    mu    sync.Mutex  // 多 goroutine 寫入要 lock\n)\n\nc.OnHTML(\"article.product_pod\", func(e *colly.HTMLElement) {\n    book := Book{\n        Title: e.ChildAttr(\"h3 a\", \"title\"),\n        Price: e.ChildText(\".price_color\"),\n    }\n    mu.Lock()\n    books = append(books, book)\n    mu.Unlock()\n})\n\nc.Visit(url)\nc.Wait()\n\n// 寫 CSV\nfile, _ := os.Create(\"books.csv\")\ndefer file.Close()\nw := csv.NewWriter(file)\nw.Write([]string{\"Title\", \"Price\"})\nfor _, b := range books {\n    w.Write([]string{b.Title, b.Price})\n}\nw.Flush()\n```\n\n      \n### 分散式 colly（Redis backend）\n\n```go\nimport \"github.com/gocolly/redisstorage\"\n\nstorage := &redisstorage.Storage{\n    Address:  \"localhost:6379\",\n    Password: \"\",\n    DB:       0,\n    Prefix:   \"my-scraper\",\n}\nc.SetStorage(storage)\n\n// → 多台機器跑同一個 collector、共用 queue + 去重\n```\n\n      \n### colly 編譯部署\n\n```bash\n# 編譯成單檔 Linux binary（10MB）\nGOOS=linux GOARCH=amd64 go build -o scraper main.go\n\n# 上傳 server\nscp scraper user@server:/usr/local/bin/\nssh user@server './scraper'\n\n# Docker 部署\nFROM golang:1.22-alpine AS builder\nCOPY . /app\nWORKDIR /app\nRUN go build -o scraper\n\nFROM alpine\nCOPY --from=builder /app/scraper /scraper\nCMD [\"/scraper\"]\n```",
+      "tip": {
+        "type": "pro",
+        "text": "colly 內建 caching、相同 URL 不重複爬。再加 colly-redisstorage 可分散式去重。實測：3 台 server 跑同個 collector、爬 1000 萬頁 < 6 小時、Python 同規模要 2 天。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "30.2.auto",
+          "language": "bash",
+          "title": "試試看",
+          "initialCode": "go mod init my-scraper\ngo get github.com/gocolly/colly/v2",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "安裝"
+        },
+        {
+          "level": 3,
+          "text": "第一個 colly 爬蟲"
+        },
+        {
+          "level": 3,
+          "text": "並發控制"
+        },
+        {
+          "level": 3,
+          "text": "處理 cookies / sessions / proxy"
+        },
+        {
+          "level": 3,
+          "text": "儲存到資料庫 / CSV"
+        },
+        {
+          "level": 3,
+          "text": "分散式 colly（Redis backend）"
+        },
+        {
+          "level": 3,
+          "text": "colly 編譯部署"
+        }
+      ]
+    },
+    {
+      "id": "30.3",
+      "number": "LESSON 30.3",
+      "title": "Rust + reqwest + scraper：極致效能",
+      "oneLineSummary": "Rust 爬蟲 = 「記憶體最省、跑最快、零崩潰」—Discord / Cloudflare 內部都用 Rust。",
+      "analogy": "Rust 像F1 賽車—貴、難學、但跑得最快、油耗最低。寫複雜度高 2 倍、跑速快 5-10 倍、雲端費用降 80%。",
+      "content": "### 安裝 + 建專案\n\n```bash\ncargo new my-scraper\ncd my-scraper\n\n# Cargo.toml 加依賴\ncargo add reqwest --features json\ncargo add scraper\ncargo add tokio --features full\ncargo add serde --features derive\ncargo add serde_json\n```\n\n      \n### 基本爬蟲\n\n```rust\nuse reqwest;\nuse scraper::{Html, Selector};\n\n#[tokio::main]\nasync fn main() -> Result> {\n    // 抓 HTML\n    let body = reqwest::get(\"https://books.toscrape.com\")\n        .await?\n        .text()\n        .await?;\n\n    // 解析\n    let document = Html::parse_document(&body);\n    let book_sel = Selector::parse(\"article.product_pod\").unwrap();\n    let title_sel = Selector::parse(\"h3 a\").unwrap();\n    let price_sel = Selector::parse(\".price_color\").unwrap();\n\n    for book in document.select(&book_sel) {\n        let title = book.select(&title_sel)\n            .next()\n            .and_then(|e| e.value().attr(\"title\"))\n            .unwrap_or(\"\");\n        let price = book.select(&price_sel)\n            .next()\n            .map(|e| e.text().collect::())\n            .unwrap_or_default();\n        println!(\"{} | {}\", title, price);\n    }\n\n    Ok(())\n}\n```\n\n      \n### 並發爬多頁（Tokio）\n\n```rust\nuse futures::stream::{self, StreamExt};\nuse reqwest::Client;\n\n#[tokio::main]\nasync fn main() {\n    let client = Client::new();\n    let urls: Vec = (1..=100)\n        .map(|i| format!(\"https://example.com/page/{}\", i))\n        .collect();\n\n    // 並發 10、處理 100 URL\n    let bodies: Vec = stream::iter(urls)\n        .map(|url| {\n            let client = client.clone();\n            async move {\n                let resp = client.get(&url).send().await;\n                resp?.text().await\n            }\n        })\n        .buffer_unordered(10)\n        .collect()\n        .await;\n\n    println!(\"Fetched {} pages\", bodies.len());\n}\n```\n\n      \n### 結構化資料（Serde）\n\n```rust\nuse serde::Serialize;\n\n#[derive(Serialize, Debug)]\nstruct Book {\n    title: String,\n    price: f64,\n    available: bool,\n}\n\nlet books: Vec = parse_books(&document);\n\n// 存 JSON\nlet json = serde_json::to_string_pretty(&books)?;\nstd::fs::write(\"books.json\", json)?;\n```\n\n      \n### Rust + Playwright（fantoccini）\n\n```rust\n// 需要 JS 渲染時用 fantoccini（WebDriver）\n// 或 chromiumoxide（直連 CDP）\nuse chromiumoxide::{Browser, BrowserConfig};\n\nlet (browser, mut handler) = Browser::launch(\n    BrowserConfig::builder().build()?\n).await?;\n\n// handler 在背景跑\ntokio::task::spawn(async move {\n    while let Some(_) = handler.next().await {}\n});\n\nlet page = browser.new_page(\"https://example.com\").await?;\nlet title = page.get_title().await?;\n```\n\n      \n### Cargo 編譯部署\n\n```bash\n# Release 編譯（最佳化、極快）\ncargo build --release\n\n# 跨編譯（從 Mac 編 Linux）\nrustup target add x86_64-unknown-linux-musl\ncargo build --release --target x86_64-unknown-linux-musl\n\n# 部署\nscp target/x86_64-unknown-linux-musl/release/scraper server:/usr/local/bin/\n\n# Docker（極小、5MB）\nFROM alpine:latest\nCOPY target/.../scraper /scraper\nCMD [\"/scraper\"]\n```\n\n      \n### Rust 爬蟲生產級套件\n\n      \n- **reqwest**：HTTP client（最熱門）\n- **scraper**：HTML 解析（基於 html5ever）\n- **tokio**：async runtime\n- **serde**：JSON 序列化\n- **chromiumoxide**：CDP 控 Chrome\n- **fantoccini**：WebDriver 控瀏覽器",
+      "tip": {
+        "type": "practical",
+        "text": "Rust 學習曲線最陡—ownership / lifetime / 借用檢查—第一個月會痛苦。但寫過後對「記憶體安全 + 並發」理解大爆發。建議：先把 Python / Go 寫熟、有效能需求再學 Rust。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "30.3.auto",
+          "language": "bash",
+          "title": "試試看",
+          "initialCode": "cargo new my-scraper\ncd my-scraper\n\n# Cargo.toml 加依賴\ncargo add reqwest --features json\ncargo add scraper\ncargo add tokio --features full\ncargo add serde --features derive\ncargo add serde_json",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "挑一個你做過的舊專案、用本節「Rust + reqwest + scraper：極致效能」介紹的進階技術重構它。",
+        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
+        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "安裝 + 建專案"
+        },
+        {
+          "level": 3,
+          "text": "基本爬蟲"
+        },
+        {
+          "level": 3,
+          "text": "並發爬多頁（Tokio）"
+        },
+        {
+          "level": 3,
+          "text": "結構化資料（Serde）"
+        },
+        {
+          "level": 3,
+          "text": "Rust + Playwright（fantoccini）"
+        },
+        {
+          "level": 3,
+          "text": "Cargo 編譯部署"
+        },
+        {
+          "level": 3,
+          "text": "Rust 爬蟲生產級套件"
+        }
+      ]
+    },
+    {
+      "id": "30.4",
+      "number": "LESSON 30.4",
+      "title": "排程：cron / GitHub Actions / Temporal",
+      "oneLineSummary": "爬蟲不會一次跑完—每天 / 每小時定時跑。排程工具決定可靠度。",
+      "analogy": "像新聞媒體—不是手動發文、有自動 schedule。爬蟲一樣：「每天早上 8 點抓蝦皮價格」「每小時抓股價」—靠 cron 自動跑。",
+      "content": "### 1. Linux cron（最傳統）\n\n```bash\n# 編輯 crontab\ncrontab -e\n\n# 每天早上 8 點跑\n0 8 * * * /usr/bin/python3 /home/user/scraper.py >> /var/log/scraper.log 2>&1\n\n# 每小時\n0 * * * * /usr/bin/node /home/user/scraper.js\n\n# 每 5 分鐘\n*/5 * * * * /scrape.sh\n\n# 每週一 9 點\n0 9 * * 1 /weekly-report.py\n\n# 看 cron 是否在跑\nsudo systemctl status cron\ntail -f /var/log/cron\n```\n\n      \n### cron 語法（5 個欄位）\n\n```text\n* * * * * command\n│ │ │ │ │\n│ │ │ │ └─ 星期幾 (0-6, 0=Sun)\n│ │ │ └─── 月份 (1-12)\n│ │ └───── 日 (1-31)\n│ └─────── 小時 (0-23)\n└───────── 分鐘 (0-59)\n```\n\n      \n### 2. GitHub Actions（免費、推薦小型）\n\n```yaml\n# .github/workflows/scrape.yml\nname: Daily Scraper\n\non:\n  schedule:\n    - cron: '0 0 * * *'  # UTC 0:00 = 台北 8:00\n  workflow_dispatch:  # 也能手動觸發\n\njobs:\n  scrape:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n\n      - uses: actions/setup-python@v5\n        with:\n          python-version: '3.12'\n\n      - run: pip install -r requirements.txt\n\n      - run: python scraper.py\n        env:\n          API_KEY: ${{ secrets.API_KEY }}\n\n      - name: Commit results\n        run: |\n          git config user.name github-actions\n          git config user.email actions@github.com\n          git add data/\n          git commit -m \"chore: daily scrape $(date +%Y-%m-%d)\"\n          git push\n```\n\n      \n優點：免費（公開 repo 無限、私 repo 每月 2000 分鐘）、版本控制、不用自己架 server。\n\n      \n### 3. Vercel Cron（Next.js 友善）\n\n```json\n// vercel.json\n{\n  \"crons\": [{\n    \"path\": \"/api/cron/scrape\",\n    \"schedule\": \"0 0 * * *\"\n  }]\n}\n```\n\n```javascript\n// app/api/cron/scrape/route.ts\nexport async function GET(req: Request) {\n  // 驗證是 Vercel 來的\n  const auth = req.headers.get('authorization');\n  if (auth !== `Bearer ${process.env.CRON_SECRET}`) {\n    return new Response('Unauthorized', { status: 401 });\n  }\n\n  const data = await scrapeWebsite();\n  await saveToDatabase(data);\n\n  return new Response('OK');\n}\n```\n\n      \n### 4. Temporal / Inngest（工作流引擎、Production 級）\n\n```javascript\n// Inngest（serverless workflow）\nimport { inngest } from './client';\n\nexport const dailyScrape = inngest.createFunction(\n  { id: 'daily-scrape' },\n  { cron: '0 0 * * *' },\n  async ({ step }) => {\n    // step 1：抓商品列表（失敗自動重試）\n    const products = await step.run('fetch-products', async () => {\n      return await scrapeProducts();\n    });\n\n    // step 2：併發抓細節（fan-out）\n    await step.run('fetch-details', async () => {\n      await Promise.all(\n        products.map(p => fetchDetail(p.id))\n      );\n    });\n\n    // step 3：存入 DB\n    await step.run('save-to-db', async () => {\n      await db.products.bulkInsert(products);\n    });\n\n    // step 4：通知\n    await step.run('notify', async () => {\n      await sendLineMessage(`Today: ${products.length} products`);\n    });\n  }\n);\n```\n\n      \n優點：失敗自動 retry、可觀測、支援複雜 workflow、上 production 必備。\n\n      \n### 排程選擇指南\n\n      \n- **個人 / 學習**：Linux cron（最簡單）\n- **小型 SaaS**：GitHub Actions（免費、版本控制）\n- **Vercel / Next.js 專案**：Vercel Cron（整合好）\n- **商業級 / 複雜 workflow**：Inngest / Temporal",
+      "tip": {
+        "type": "security",
+        "text": "Cron job 必須加錯誤通知—跑壞了沒人知道、資料斷層幾週才發現。最少加 Discord / LINE webhook 通知失敗、避免半夜爬蟲掛掉沒人理。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "30.4.auto",
+          "language": "bash",
+          "title": "試試看",
+          "initialCode": "# 編輯 crontab\ncrontab -e\n\n# 每天早上 8 點跑\n0 8 * * * /usr/bin/python3 /home/user/scraper.py >> /var/log/scraper.log 2>&1\n\n# 每小時\n0 * * * * /usr/bin/node /home/user/scraper.js\n\n# 每 5 分鐘\n*/5 * * * * /scrape.sh\n\n# 每週一 9 點\n0 9 * * 1 /weekly-report.py\n\n# 看 cron 是否在跑\nsudo systemctl status cron\ntail -f /var/log/cron",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "1. Linux cron（最傳統）"
+        },
+        {
+          "level": 3,
+          "text": "cron 語法（5 個欄位）"
+        },
+        {
+          "level": 3,
+          "text": "2. GitHub Actions（免費、推薦小型）"
+        },
+        {
+          "level": 3,
+          "text": "3. Vercel Cron（Next.js 友善）"
+        },
+        {
+          "level": 3,
+          "text": "4. Temporal / Inngest（工作流引擎、Production 級）"
+        },
+        {
+          "level": 3,
+          "text": "排程選擇指南"
+        }
+      ]
+    },
+    {
+      "id": "30.5",
+      "number": "LESSON 30.5",
+      "title": "分散式爬蟲：Redis Queue + 多 Worker",
+      "oneLineSummary": "分散式 = 「多台機器一起爬」—一台爬 100 萬頁要 10 小時、10 台同時跑 1 小時。",
+      "analogy": "像外送公司—一個外送員一天送 100 單、100 個外送員 1 萬單。爬蟲也一樣：用 Redis 當共用 queue、多個 worker 從 queue 拿任務、結果寫回 DB。",
+      "content": "### 架構圖（概念）\n\n```text\n┌─────────────┐\n│  Scheduler  │ 產生 URL 任務丟進 Redis\n└──────┬──────┘\n       ↓\n┌─────────────┐\n│ Redis Queue │  URLs 待爬清單\n└──────┬──────┘\n       ↓ (多 worker 競爭拿任務)\n   ┌───┴───┬─────┬─────┐\n   ↓       ↓     ↓     ↓\n┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐\n│Worker│ │Worker│ │Worker│ │Worker│  ← 10 台機器\n└──┬───┘ └──┬───┘ └──┬───┘ └──┬───┘\n   ↓       ↓        ↓        ↓\n┌──────────────────────────────┐\n│         Database (PG)        │  結果寫入\n└──────────────────────────────┘\n```\n\n      \n### Python 版（Redis Queue / RQ）\n\n```bash\npip install rq redis\n```\n\n```python\n# tasks.py\nimport requests\nfrom bs4 import BeautifulSoup\n\ndef scrape_url(url):\n    res = requests.get(url, timeout=30)\n    soup = BeautifulSoup(res.text, 'lxml')\n    return {\n        'url': url,\n        'title': soup.select_one('h1').text,\n    }\n\n# scheduler.py（產生任務）\nfrom redis import Redis\nfrom rq import Queue\nfrom tasks import scrape_url\n\nq = Queue(connection=Redis())\n\nurls = [f'https://example.com/page/{i}' for i in range(1000)]\nfor url in urls:\n    q.enqueue(scrape_url, url)\n\n# worker.py（多台機器跑）\n# bash: rq worker\n```\n\n      \n### Node 版（BullMQ）\n\n```bash\nnpm install bullmq\n```\n\n```javascript\n// queue.js\nimport { Queue, Worker } from 'bullmq';\n\nconst queue = new Queue('scraper', {\n  connection: { host: 'localhost', port: 6379 }\n});\n\n// 產生任務\nfor (let i = 0; i  {\n  const { url } = job.data;\n  const res = await fetch(url);\n  const html = await res.text();\n  // ... 處理\n  return { url, scraped: true };\n}, {\n  connection: { host: 'localhost', port: 6379 },\n  concurrency: 10  // 每個 worker 並發 10\n});\n```\n\n      \n### 部署到多台（Docker Swarm / Kubernetes）\n\n```yaml\n# docker-compose.yml\nversion: '3.8'\nservices:\n  redis:\n    image: redis:7-alpine\n    ports:\n      - \"6379:6379\"\n\n  scheduler:\n    build: .\n    command: node scheduler.js\n    depends_on:\n      - redis\n\n  worker:\n    build: .\n    command: node worker.js\n    depends_on:\n      - redis\n    deploy:\n      replicas: 10  # 10 個 worker\n```\n\n      \n### Kubernetes（雲端 scaling）\n\n```yaml\n# k8s deployment.yaml\napiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: scraper-worker\nspec:\n  replicas: 50  # 50 個 worker pod\n  template:\n    spec:\n      containers:\n      - name: worker\n        image: my-scraper:latest\n        env:\n        - name: REDIS_URL\n          value: \"redis://redis-service:6379\"\n        resources:\n          limits:\n            memory: \"512Mi\"\n            cpu: \"500m\"\n```\n\n      \n### 監控（Bull Board / Grafana）\n\n```javascript\nimport { ExpressAdapter } from '@bull-board/express';\nimport { createBullBoard } from '@bull-board/api';\n\nconst serverAdapter = new ExpressAdapter();\ncreateBullBoard({\n  queues: [new BullMQAdapter(queue)],\n  serverAdapter,\n});\n\napp.use('/admin/queues', serverAdapter.getRouter());\n// → 開 /admin/queues 看任務進度\n```",
+      "tip": {
+        "type": "trend",
+        "text": "Serverless 爬蟲崛起—Cloudflare Workers / Vercel Edge Functions、按用量計費、自動 scale 到全球。下個世代：「不用管 server、丟 URL 進去自動爬完」。"
+      },
+      "xp": 15,
+      "playgrounds": [
+        {
+          "key": "30.5.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "# tasks.py\nimport requests\nfrom bs4 import BeautifulSoup\n\ndef scrape_url(url):\n    res = requests.get(url, timeout=30)\n    soup = BeautifulSoup(res.text, 'lxml')\n    return {\n        'url': url,\n        'title': soup.select_one('h1').text,\n    }\n\n# scheduler.py（產生任務）\nfrom redis import Redis\nfrom rq import Queue\nfrom tasks import scrape_url\n\nq = Queue(connection=Redis())\n\nurls = [f'https://example.com/page/{i}' for i in range(1000)]\nfor url in urls:\n    q.enqueue(scrape_url, url)\n\n# worker.py（多台機器跑）\n# bash: rq worker",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "架構圖（概念）"
+        },
+        {
+          "level": 3,
+          "text": "Python 版（Redis Queue / RQ）"
+        },
+        {
+          "level": 3,
+          "text": "Node 版（BullMQ）"
+        },
+        {
+          "level": 3,
+          "text": "部署到多台（Docker Swarm / Kubernetes）"
+        },
+        {
+          "level": 3,
+          "text": "Kubernetes（雲端 scaling）"
+        },
+        {
+          "level": 3,
+          "text": "監控（Bull Board / Grafana）"
+        }
+      ]
+    },
+    {
+      "id": "30.6",
+      "number": "LESSON 30.6",
+      "title": "實戰：千萬規模爬蟲架構設計",
+      "oneLineSummary": "整合本章所學：Go colly + Redis Queue + Postgres + Kubernetes—每天爬 1 千萬頁的真實架構。",
+      "analogy": "像工業級工廠—不是個人作坊。元件分工、可橫向擴展、failure 自動處理。能接「幫我做全網比價」這種百萬級 case。",
+      "content": "### 整體架構\n\n```text\n┌────────────────────────────────────────────┐\n│            Scheduler (Go)                  │\n│   每天產生 1000 萬 URL 進 Redis Queue       │\n└─────────────────┬──────────────────────────┘\n                  ↓\n        ┌─────────┴─────────┐\n        │   Redis Cluster   │  (3 node, HA)\n        │  - urls (queue)   │\n        │  - seen (set, 去重) │\n        │  - results (list)  │\n        └─────────┬─────────┘\n                  ↓\n   ┌──────────────┴──────────────┐\n   ↓                              ↓\n┌──────────┐                ┌──────────┐\n│  Worker  │  × 50          │  Worker  │  (K8s HPA 自動擴展)\n│ (Go colly)│                │ (Go colly)│\n└────┬─────┘                └────┬─────┘\n     ↓                            ↓\n┌─────────────────────────────────────┐\n│       PostgreSQL Master + Replica    │\n│   - products (主表)                  │\n│   - prices (時序、按日期 partition)    │\n└──────────────────────────────────────┘\n     ↓\n┌─────────────────────────────────────┐\n│    S3 / Cloudflare R2（原始 HTML 備份）│\n└──────────────────────────────────────┘\n```\n\n      \n### 關鍵設計決策\n\n      \n#### 1. URL 去重（避免重複爬）\n\n```go\n// 用 Redis SET 存已爬 URL hash\nimport \"crypto/sha256\"\n\nfunc isSeen(url string) bool {\n    hash := fmt.Sprintf(\"%x\", sha256.Sum256([]byte(url)))\n    exists, _ := redis.SIsMember(ctx, \"seen\", hash).Result()\n    return exists\n}\n\nfunc markSeen(url string) {\n    hash := fmt.Sprintf(\"%x\", sha256.Sum256([]byte(url)))\n    redis.SAdd(ctx, \"seen\", hash)\n    redis.Expire(ctx, \"seen\", 24*time.Hour)  // 24h 過期\n}\n```\n\n      \n#### 2. Rate Limiting（不打爆對方）\n\n```go\n// 每個 domain 各自限流\nimport \"golang.org/x/time/rate\"\n\nvar limiters = make(map[string]*rate.Limiter)\nvar mu sync.Mutex\n\nfunc getLimiter(domain string) *rate.Limiter {\n    mu.Lock()\n    defer mu.Unlock()\n    if l, ok := limiters[domain]; ok {\n        return l\n    }\n    // 每秒 5 個請求、burst 10\n    l := rate.NewLimiter(5, 10)\n    limiters[domain] = l\n    return l\n}\n\n// 使用\nlimiter := getLimiter(\"example.com\")\nlimiter.Wait(ctx)  // block 直到 token 可用\nfetch(url)\n```\n\n      \n#### 3. 錯誤分類 + 重試\n\n```go\nfunc shouldRetry(err error, statusCode int) bool {\n    // 4xx 不重試（資料問題）\n    if statusCode >= 400 && statusCode = 500 || isNetworkError(err) {\n        return true\n    }\n    return false\n}\n\n// Exponential backoff 重試\nfor attempt := 0; attempt  10% → 立刻通知\n- Worker < 5 個活著 → 緊急通知\n- 24h 爬不到資料 → 半夜叫醒工程師\n```\n\n      \n#### 5. 成本估算\n\n```text\n# 每天爬 1000 萬頁的成本（2026 報價）\n- 50 個 worker × $20/月 = $1000  (Hetzner)\n- Redis Cluster (3 node) = $60/月\n- PostgreSQL (managed) = $200/月\n- Residential Proxy (1TB/月) = $5000\n- S3 / R2 儲存 = $30/月\n- Cloudflare CDN = $20/月\n- Monitoring (Grafana Cloud) = $50/月\n─────────────────────────────────\n總計：~ $6360/月\n\n# 對比客戶價值\n- 月費 SaaS NT$ 5000 × 100 客戶 = NT$ 500K/月\n- 毛利率：60%+\n- 一人公司可運營\n```",
+      "tip": {
+        "type": "milestone",
+        "text": "學完這章你能跟大企業 CTO 對話—「我可以幫你建千萬規模爬蟲系統、月費 NT$ XX 萬」。這是台灣少數能談「百萬級 case」的工程師等級。"
+      },
+      "xp": 15,
+      "playgrounds": [
+        {
+          "key": "30.6.auto",
+          "language": "go",
+          "title": "試試看",
+          "initialCode": "// 用 Redis SET 存已爬 URL hash\nimport \"crypto/sha256\"\n\nfunc isSeen(url string) bool {\n    hash := fmt.Sprintf(\"%x\", sha256.Sum256([]byte(url)))\n    exists, _ := redis.SIsMember(ctx, \"seen\", hash).Result()\n    return exists\n}\n\nfunc markSeen(url string) {\n    hash := fmt.Sprintf(\"%x\", sha256.Sum256([]byte(url)))\n    redis.SAdd(ctx, \"seen\", hash)\n    redis.Expire(ctx, \"seen\", 24*time.Hour)  // 24h 過期\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "整體架構"
+        },
+        {
+          "level": 3,
+          "text": "關鍵設計決策"
+        }
+      ]
+    },
+    {
+      "title": "Python vs Node vs Go：爬蟲語言對比",
+      "oneLineSummary": "不同語言爬蟲各有所長",
+      "analogy": "不是「誰最好」、是「什麼場景用什麼」。",
+      "content": "## Python\n**強**：Scrapy 最強框架、BS4 解析強、pandas 一條龍、生態完整\n**弱**：跑得慢、並發要 async\n\n## Node / TS\n**強**：動態網站原生、同 stack、Cloudflare Workers 部署友善\n**弱**：沒 Scrapy 等級框架、資料分析弱\n\n## Go\n**強**：快、單一 binary、並發超強（goroutine）、適合大規模\n**弱**：生態小、解析弱（colly）\n\n## Rust\n**強**：最快、記憶體安全、適合 long-running\n**弱**：學習超陡、生態小\n\n## 對比\n\n| 面向 | Python | Node | Go | Rust |\n|---|---|---|---|---|\n| 速度 | 慢 | 中 | 快 | 最快 |\n| 學習 | 平 | 平 | 中 | 陡 |\n| 框架 | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ | - |\n| 招募 | 多 | 多 | 中 | 少 |\n\n## 怎麼選\n\n### 個人 / Indie\n- 已會 JS → Node\n- 已會 Python → Python\n- 都不會 → Python\n\n### 公司\n- 看技術 stack\n- Python 是萬用解\n\n### 規模化\n- 中等：Python / Node\n- 巨大：Go / Rust\n\n## 真實 stack\n- Indie：Python（90%）\n- 電商：Python + JS\n- 金融：Go / Rust\n- AI 訓練資料：Python",
+      "tip": {
+        "type": "milestone",
+        "text": "爬蟲選一個語言深耕、其他略懂。"
+      },
+      "id": "30.7",
+      "number": "LESSON 30.7",
+      "xp": 10,
+      "exercise": {
+        "question": "找一個你身邊的例子、用「Python vs Node vs Go：爬蟲語言對比」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "Python"
+        },
+        {
+          "level": 2,
+          "text": "Node / TS"
+        },
+        {
+          "level": 2,
+          "text": "Go"
+        },
+        {
+          "level": 2,
+          "text": "Rust"
+        },
+        {
+          "level": 2,
+          "text": "對比"
+        },
+        {
+          "level": 2,
+          "text": "怎麼選"
+        },
+        {
+          "level": 3,
+          "text": "個人 / Indie"
+        },
+        {
+          "level": 3,
+          "text": "公司"
+        },
+        {
+          "level": 3,
+          "text": "規模化"
+        },
+        {
+          "level": 2,
+          "text": "真實 stack"
+        }
+      ]
+    },
+    {
+      "title": "Go + Colly：高效能",
+      "oneLineSummary": "Go 爬蟲標配、速度爆量",
+      "analogy": "比 Python 快 5 倍。",
+      "content": "## 為什麼 Go\n- ⚡ 快、編譯\n- 🚀 並發（goroutine）\n- 📦 單一 binary\n\n## 安裝\n```bash\ngo get -u github.com/gocolly/colly/v2\n```\n\n## Hello World\n```go\npackage main\n\nimport (\n    \"fmt\"\n    \"github.com/gocolly/colly/v2\"\n)\n\nfunc main() {\n    c := colly.NewCollector(\n        colly.AllowedDomains(\"example.com\"),\n        colly.UserAgent(\"Mozilla/5.0 ...\"),\n    )\n\n    c.OnHTML(\"div.product\", func(e *colly.HTMLElement) {\n        fmt.Println(e.ChildText(\".name\"), e.ChildText(\".price\"))\n    })\n\n    c.Visit(\"https://example.com/products\")\n}\n```\n\n## 並發\n```go\nc.Limit(&colly.LimitRule{\n    DomainGlob:  \"*\",\n    Parallelism: 10,\n    RandomDelay: 1 * time.Second,\n})\n```\n\n## 跟連結\n```go\nc.OnHTML(\"a[href]\", func(e *colly.HTMLElement) {\n    c.Visit(e.Request.AbsoluteURL(e.Attr(\"href\")))\n})\n```\n\n## 儲存\n```go\ntype Product struct {\n    Name, Link string\n    Price float64\n}\n\nvar products []Product\n\nc.OnHTML(\"div.product\", func(e *colly.HTMLElement) {\n    products = append(products, Product{\n        Name:  e.ChildText(\".name\"),\n        Link:  e.ChildAttr(\"a\", \"href\"),\n    })\n})\n\nc.OnScraped(func(r *colly.Response) {\n    file, _ := os.Create(\"products.json\")\n    json.NewEncoder(file).Encode(products)\n})\n```\n\n## chromedp（headless）\n```go\nimport \"github.com/chromedp/chromedp\"\n\nctx, cancel := chromedp.NewContext(context.Background())\ndefer cancel()\n\nvar html string\nchromedp.Run(ctx,\n    chromedp.Navigate(\"https://example.com\"),\n    chromedp.OuterHTML(\"body\", &html),\n)\n```\n\n## 何時用\n- ✅ 巨量並發\n- ✅ 已是 Go 團隊\n- ❌ 個人（Python 簡單）",
+      "tip": {
+        "type": "pro",
+        "text": "Go + Colly 適合大規模。個人 Python 簡單 5 倍。"
+      },
+      "id": "30.8",
+      "number": "LESSON 30.8",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "30.8.auto",
+          "language": "go",
+          "title": "試試看",
+          "initialCode": "package main\n\nimport (\n    \"fmt\"\n    \"github.com/gocolly/colly/v2\"\n)\n\nfunc main() {\n    c := colly.NewCollector(\n        colly.AllowedDomains(\"example.com\"),\n        colly.UserAgent(\"Mozilla/5.0 ...\"),\n    )\n\n    c.OnHTML(\"div.product\", func(e *colly.HTMLElement) {\n        fmt.Println(e.ChildText(\".name\"), e.ChildText(\".price\"))\n    })\n\n    c.Visit(\"https://example.com/products\")\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "挑一個你做過的舊專案、用本節「Go + Colly：高效能」介紹的進階技術重構它。",
+        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
+        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼 Go"
+        },
+        {
+          "level": 2,
+          "text": "安裝"
+        },
+        {
+          "level": 2,
+          "text": "Hello World"
+        },
+        {
+          "level": 2,
+          "text": "並發"
+        },
+        {
+          "level": 2,
+          "text": "跟連結"
+        },
+        {
+          "level": 2,
+          "text": "儲存"
+        },
+        {
+          "level": 2,
+          "text": "chromedp（headless）"
+        },
+        {
+          "level": 2,
+          "text": "何時用"
+        }
+      ]
+    },
+    {
+      "title": "Rust 爬蟲：極致效能",
+      "oneLineSummary": "最快、但學習超陡",
+      "analogy": "99% 場景不需要。",
+      "content": "## 為什麼\n- ⚡ 比 Python 快 50 倍\n- 🔒 記憶體安全\n- 適合 long-running service\n\n## reqwest + scraper\n```rust\nuse reqwest;\nuse scraper::{Html, Selector};\n\n#[tokio::main]\nasync fn main() -> Result<(), Box<dyn std::error::Error>> {\n    let res = reqwest::get(\"https://example.com\").await?.text().await?;\n    let doc = Html::parse_document(&res);\n    let selector = Selector::parse(\"div.product\").unwrap();\n    \n    for el in doc.select(&selector) {\n        let name = el.select(&Selector::parse(\".name\").unwrap()).next()\n            .map(|e| e.text().collect::<String>());\n        println!(\"{:?}\", name);\n    }\n    Ok(())\n}\n```\n\n`Cargo.toml`：\n```toml\n[dependencies]\nreqwest = { version = \"0.12\", features = [\"json\"] }\nscraper = \"0.17\"\ntokio = { version = \"1\", features = [\"full\"] }\n```\n\n## 並發\n```rust\nuse futures::future::join_all;\n\nlet tasks: Vec<_> = urls.into_iter().map(|url| async move {\n    reqwest::get(url).await?.text().await\n}).collect();\n\nlet results: Vec<_> = join_all(tasks).await;\n```\n\n## 為什麼少人用\n- 學習超陡\n- 生態小\n- 爬蟲是 IO bound、不需要極致\n\n## 何時用\n- 巨大 scale（每天億級 req）\n- 已是 Rust 團隊\n- ❌ 個人 / Indie\n\n## 案例\n- Cloudflare 內部\n- Discord backend\n- 少數高頻交易\n\n## 心法\n99% 場景不要 Rust 爬蟲。\nPython 慢但夠用、Rust 快但累。",
+      "tip": {
+        "type": "practical",
+        "text": "個人別碰 Rust 爬蟲、Python / Go 夠。"
+      },
+      "id": "30.9",
+      "number": "LESSON 30.9",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "30.9.auto",
+          "language": "rust",
+          "title": "試試看",
+          "initialCode": "use reqwest;\nuse scraper::{Html, Selector};\n\n#[tokio::main]\nasync fn main() -> Result<(), Box<dyn std::error::Error>> {\n    let res = reqwest::get(\"https://example.com\").await?.text().await?;\n    let doc = Html::parse_document(&res);\n    let selector = Selector::parse(\"div.product\").unwrap();\n    \n    for el in doc.select(&selector) {\n        let name = el.select(&Selector::parse(\".name\").unwrap()).next()\n            .map(|e| e.text().collect::<String>());\n        println!(\"{:?}\", name);\n    }\n    Ok(())\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "挑一個你做過的舊專案、用本節「Rust 爬蟲：極致效能」介紹的進階技術重構它。",
+        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（Cargo.toml）通常在效能 / 維護性 / 擴展性卡住時才登場。",
+        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼"
+        },
+        {
+          "level": 2,
+          "text": "reqwest + scraper"
+        },
+        {
+          "level": 2,
+          "text": "並發"
+        },
+        {
+          "level": 2,
+          "text": "為什麼少人用"
+        },
+        {
+          "level": 2,
+          "text": "何時用"
+        },
+        {
+          "level": 2,
+          "text": "案例"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Java / Kotlin 爬蟲",
+      "oneLineSummary": "企業環境主流、Spring 生態",
+      "analogy": "個人少用、企業職缺多。",
+      "content": "## 套件\n- **jsoup**：HTML 解析\n- **OkHttp**：HTTP client\n- **Selenium / Playwright Java**\n\n## jsoup（Java）\n```java\nimport org.jsoup.Jsoup;\nimport org.jsoup.nodes.Document;\n\nDocument doc = Jsoup.connect(\"https://example.com\")\n    .userAgent(\"Mozilla/5.0 ...\")\n    .timeout(10000)\n    .get();\n\ndoc.select(\"div.product\").forEach(p -> {\n    String name = p.select(\".name\").text();\n    String price = p.select(\".price\").text();\n    System.out.println(name + \" - \" + price);\n});\n```\n\n## OkHttp\n```java\nOkHttpClient client = new OkHttpClient();\nRequest request = new Request.Builder()\n    .url(\"https://example.com\")\n    .header(\"User-Agent\", \"Mozilla/5.0 ...\")\n    .build();\n\nResponse response = client.newCall(request).execute();\nString html = response.body().string();\n```\n\n## Kotlin（更簡潔）\n```kotlin\nimport org.jsoup.Jsoup\n\nfun main() {\n    val doc = Jsoup.connect(\"https://example.com\")\n        .userAgent(\"Mozilla/5.0 ...\")\n        .get()\n    \n    doc.select(\"div.product\").forEach { product ->\n        val name = product.select(\".name\").text()\n        val price = product.select(\".price\").text()\n        println(\"$name - $price\")\n    }\n}\n```\n\n## Kotlin Coroutines（並發）\n```kotlin\nimport kotlinx.coroutines.*\n\nfun main() = runBlocking {\n    val results = urls.map { url ->\n        async(Dispatchers.IO) { fetch(url) }\n    }.awaitAll()\n}\n```\n\n## Spring Boot\n```java\n@Service\npublic class ScraperService {\n    @Scheduled(cron = \"0 0 3 * * *\")\n    public void dailyScrape() {\n        // ...\n    }\n}\n```\n\n## 何時用\n- ✅ Java / Spring 公司\n- ✅ Android（Kotlin）\n- ❌ 個人\n\n## 招募\n大企業 / 金融常用 Java、月薪 NT$ 80-150k。",
+      "tip": {
+        "type": "practical",
+        "text": "企業環境必要時學、個人不必。"
+      },
+      "id": "30.10",
+      "number": "LESSON 30.10",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "30.10.auto",
+          "language": "java",
+          "title": "試試看",
+          "initialCode": "import org.jsoup.Jsoup;\nimport org.jsoup.nodes.Document;\n\nDocument doc = Jsoup.connect(\"https://example.com\")\n    .userAgent(\"Mozilla/5.0 ...\")\n    .timeout(10000)\n    .get();\n\ndoc.select(\"div.product\").forEach(p -> {\n    String name = p.select(\".name\").text();\n    String price = p.select(\".price\").text();\n    System.out.println(name + \" - \" + price);\n});",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "套件"
+        },
+        {
+          "level": 2,
+          "text": "jsoup（Java）"
+        },
+        {
+          "level": 2,
+          "text": "OkHttp"
+        },
+        {
+          "level": 2,
+          "text": "Kotlin（更簡潔）"
+        },
+        {
+          "level": 2,
+          "text": "Kotlin Coroutines（並發）"
+        },
+        {
+          "level": 2,
+          "text": "Spring Boot"
+        },
+        {
+          "level": 2,
+          "text": "何時用"
+        },
+        {
+          "level": 2,
+          "text": "招募"
+        }
+      ]
+    },
+    {
+      "title": "PHP / Ruby 爬蟲",
+      "oneLineSummary": "PHP / Ruby 也能爬、少有人選",
+      "analogy": "已有 stack 才用。",
+      "content": "## PHP - Guzzle\n```php\nuse GuzzleHttp\\Client;\n\n$client = new Client(['headers' => ['User-Agent' => 'Mozilla/5.0 ...']]);\n$res = $client->request('GET', 'https://example.com');\n$html = $res->getBody()->getContents();\n```\n\n## PHP - Symfony DomCrawler\n```php\nuse Symfony\\Component\\DomCrawler\\Crawler;\n\n$crawler = new Crawler($html);\n$products = $crawler->filter('div.product')->each(function ($node) {\n    return [\n        'name' => $node->filter('.name')->text(),\n        'price' => $node->filter('.price')->text()\n    ];\n});\n```\n\n## PHP - Goutte（合併以上）\n```php\n$client = new Goutte\\Client();\n$crawler = $client->request('GET', 'https://example.com');\n$products = $crawler->filter('div.product')->each(function ($node) {\n    return ['name' => $node->filter('.name')->text()];\n});\n```\n\n## Ruby - Nokogiri\n```ruby\nrequire 'nokogiri'\nrequire 'open-uri'\n\ndoc = Nokogiri::HTML(URI.open('https://example.com'))\ndoc.css('div.product').each do |product|\n  name = product.css('.name').text\n  price = product.css('.price').text\n  puts \"#{name} - #{price}\"\nend\n```\n\n## Ruby - Mechanize（自動化）\n```ruby\nrequire 'mechanize'\n\nagent = Mechanize.new\npage = agent.get('https://example.com/login')\nform = page.forms.first\nform.email = 'user@example.com'\nform.password = 'pass'\npage = agent.submit(form)\n```\n\n## 為什麼少人用\n- 生態縮小\n- 沒 Scrapy 等級框架\n- Async 支援弱\n\n## 何時用\n- 已是 PHP / Ruby 團隊\n- WordPress / Laravel / Rails 整合\n- ❌ 新專案\n\n## 心法\n這兩個語言能用、不是最好。",
+      "tip": {
+        "type": "practical",
+        "text": "新專案：Python / Node。"
+      },
+      "id": "30.11",
+      "number": "LESSON 30.11",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "30.11.auto",
+          "language": "php",
+          "title": "試試看",
+          "initialCode": "use GuzzleHttp\\Client;\n\n$client = new Client(['headers' => ['User-Agent' => 'Mozilla/5.0 ...']]);\n$res = $client->request('GET', 'https://example.com');\n$html = $res->getBody()->getContents();",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "PHP - Guzzle"
+        },
+        {
+          "level": 2,
+          "text": "PHP - Symfony DomCrawler"
+        },
+        {
+          "level": 2,
+          "text": "PHP - Goutte（合併以上）"
+        },
+        {
+          "level": 2,
+          "text": "Ruby - Nokogiri"
+        },
+        {
+          "level": 2,
+          "text": "Ruby - Mechanize（自動化）"
+        },
+        {
+          "level": 2,
+          "text": "為什麼少人用"
+        },
+        {
+          "level": 2,
+          "text": "何時用"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "cURL：命令列爬蟲",
+      "oneLineSummary": "不寫 code、用 cURL + jq",
+      "analogy": "小型 / 一次性爬蟲、簡單到誇張。",
+      "content": "## 基本\n```bash\ncurl https://example.com\ncurl -o output.html https://example.com\ncurl -L https://example.com  # follow redirect\ncurl -H \"User-Agent: Mozilla/5.0\" https://example.com\n```\n\n## POST\n```bash\ncurl -X POST https://api.example.com \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"name\": \"Alice\"}'\n```\n\n## 並發（xargs）\n```bash\ncat urls.txt | xargs -P 10 -I{} curl -s {} -o {}.html\n```\n\n## 解析 JSON（jq）\n```bash\ncurl https://api.example.com/products | jq '.products[] | {name, price}'\n```\n\n## bash script\n```bash\n#!/bin/bash\nfor page in {1..10}; do\n    curl -s \"https://example.com/products?page=$page\" \\\n        -H \"User-Agent: Mozilla/5.0 ...\" \\\n        > \"page_$page.html\"\n    sleep 1\ndone\n```\n\n## htmlq（命令列 HTML 解析）\n```bash\ncargo install htmlq\n\ncurl https://example.com | htmlq 'div.product .name' --text\n```\n\n## pup\n```bash\ncurl https://example.com | pup 'div.product .name text{}'\n```\n\n## 完整 bash 爬蟲\n```bash\n#!/bin/bash\nfor keyword in \"iphone\" \"macbook\" \"ipad\"; do\n    encoded=$(echo \"$keyword\" | jq -sRr @uri)\n    \n    curl -s \"https://api.example.com/search?q=$encoded\" \\\n        -H \"User-Agent: Mozilla/5.0 ...\" \\\n        | jq -r '.products[] | [.name, .price] | @csv' \\\n        > \"data/$keyword.csv\"\n    \n    sleep 2\ndone\n```\n\n## cron\n```bash\n0 3 * * * /home/user/scrape.sh >> /var/log/scrape.log 2>&1\n```\n\n## 限制\n- 不能跑 JS\n- 複雜邏輯難\n- 錯誤處理弱\n\n## 何時用\n- 一次性簡單爬\n- server / Docker 內\n- CI/CD pipeline",
+      "tip": {
+        "type": "practical",
+        "text": "F12 → Copy as cURL → 改腳本、學爬蟲必備。"
+      },
+      "id": "30.12",
+      "number": "LESSON 30.12",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "30.12.auto",
+          "language": "bash",
+          "title": "試試看",
+          "initialCode": "curl https://example.com\ncurl -o output.html https://example.com\ncurl -L https://example.com  # follow redirect\ncurl -H \"User-Agent: Mozilla/5.0\" https://example.com",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 9 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "基本"
+        },
+        {
+          "level": 2,
+          "text": "POST"
+        },
+        {
+          "level": 2,
+          "text": "並發（xargs）"
+        },
+        {
+          "level": 2,
+          "text": "解析 JSON（jq）"
+        },
+        {
+          "level": 2,
+          "text": "bash script"
+        },
+        {
+          "level": 2,
+          "text": "htmlq（命令列 HTML 解析）"
+        },
+        {
+          "level": 2,
+          "text": "pup"
+        },
+        {
+          "level": 2,
+          "text": "完整 bash 爬蟲"
+        },
+        {
+          "level": 2,
+          "text": "cron"
+        },
+        {
+          "level": 2,
+          "text": "限制"
+        },
+        {
+          "level": 2,
+          "text": "何時用"
+        }
+      ]
+    },
+    {
+      "title": "Excel / Google Sheets 爬蟲",
+      "oneLineSummary": "不寫 code、用 Excel / GSheets",
+      "analogy": "行政 / 業務都能用。",
+      "content": "## Excel Power Query\n\n### 從網頁抓\n1. **資料** → **從網路**\n2. 貼 URL\n3. Excel 自動偵測表格\n\n抓 `<table>` 直接變 Excel。\n\n### M 語言\n```\nlet\n    Source = Web.Page(Web.Contents(\"https://example.com\")),\n    Data = Source{0}[Data]\nin\n    Data\n```\n\n## Google Sheets\n\n### IMPORTHTML\n```\n=IMPORTHTML(\"https://example.com\", \"table\", 1)\n```\n\n### IMPORTXML（XPath）\n```\n=IMPORTXML(\"https://example.com\", \"//div[@class='price']\")\n=IMPORTXML(\"https://example.com\", \"//a/@href\")\n```\n\n### IMPORTDATA（CSV）\n```\n=IMPORTDATA(\"https://example.com/data.csv\")\n```\n\n### IMPORTFEED（RSS）\n```\n=IMPORTFEED(\"https://example.com/rss\")\n```\n\n## Google Apps Script\n```javascript\nfunction scrapeAndStore() {\n  const response = UrlFetchApp.fetch(\"https://api.example.com/products\");\n  const data = JSON.parse(response.getContentText());\n  \n  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();\n  data.products.forEach(p => {\n    sheet.appendRow([p.name, p.price, new Date()]);\n  });\n}\n```\n設 trigger 每天 9am 跑。\n\n## 限制\n- ❌ 不能跑 JS\n- ❌ 大量資料慢\n- ❌ 複雜邏輯難\n- ❌ 不能解 Cloudflare\n\n## 何時用\n- 表格資料\n- 每天小量更新\n- 給行政 / 業務看\n- 不會寫 code 的人\n\n## 案例\n- 業務每天抓對手商品 → IMPORTXML\n- 老闆要每日報表 → Apps Script + Gmail",
+      "tip": {
+        "type": "business",
+        "text": "不會寫 code 的客戶用這些、會寫的接案就值錢。"
+      },
+      "id": "30.13",
+      "number": "LESSON 30.13",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "30.13.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "function scrapeAndStore() {\n  const response = UrlFetchApp.fetch(\"https://api.example.com/products\");\n  const data = JSON.parse(response.getContentText());\n  \n  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();\n  data.products.forEach(p => {\n    sheet.appendRow([p.name, p.price, new Date()]);\n  });\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "Excel Power Query"
+        },
+        {
+          "level": 3,
+          "text": "從網頁抓"
+        },
+        {
+          "level": 3,
+          "text": "M 語言"
+        },
+        {
+          "level": 2,
+          "text": "Google Sheets"
+        },
+        {
+          "level": 3,
+          "text": "IMPORTHTML"
+        },
+        {
+          "level": 3,
+          "text": "IMPORTXML（XPath）"
+        },
+        {
+          "level": 3,
+          "text": "IMPORTDATA（CSV）"
+        },
+        {
+          "level": 3,
+          "text": "IMPORTFEED（RSS）"
+        },
+        {
+          "level": 2,
+          "text": "Google Apps Script"
+        },
+        {
+          "level": 2,
+          "text": "限制"
+        },
+        {
+          "level": 2,
+          "text": "何時用"
+        },
+        {
+          "level": 2,
+          "text": "案例"
+        }
+      ]
+    },
+    {
+      "title": "AI 爬蟲：Claude / GPT + Browser",
+      "oneLineSummary": "2024+ 新範式—AI 自動讀網頁、抓需要的",
+      "analogy": "改版自動適應、未來主流。",
+      "content": "## 為什麼\n傳統爬蟲：每網站要 selector、改版就壞\nAI 爬蟲：給目標、AI 自己找\n\n## browser-use（Python）\n```python\nimport asyncio\nfrom browser_use import Agent\nfrom langchain_anthropic import ChatAnthropic\n\nasync def main():\n    agent = Agent(\n        task=\"去蝦皮搜尋 iPhone 17 Pro、找前 10 個最低價、回 JSON\",\n        llm=ChatAnthropic(model=\"claude-opus-4-7\")\n    )\n    result = await agent.run()\n    print(result)\n\nasyncio.run(main())\n```\n\n## Claude Computer Use\n```python\nimport anthropic\n\nresponse = client.messages.create(\n    model=\"claude-opus-4-7\",\n    max_tokens=4096,\n    tools=[{ \"type\": \"computer_20250124\", \"name\": \"computer\" }],\n    messages=[{\n        \"role\": \"user\",\n        \"content\": \"打開蝦皮、搜尋 iPhone、抓前 10 個價格\"\n    }]\n)\n```\n\n## Magnitude（TS）\n```typescript\nimport { Browser } from \"magnitude\";\n\nconst browser = new Browser();\nconst result = await browser.run({\n  task: \"Find iPhone price on PChome\",\n  url: \"https://pchome.com.tw\"\n});\n```\n\n## 文字 → 結構化\n```python\nprompt = f\"從這網頁抽出商品 name, price, link（JSON）：\\n{html}\"\n\nresponse = client.messages.create(\n    model=\"claude-opus-4-7\",\n    messages=[{\"role\": \"user\", \"content\": prompt}]\n)\n\ndata = json.loads(response.content[0].text)\n```\n\n## 成本\n- Claude Opus：1k token $0.003-0.015\n- 一頁約 NT$ 0.3-3\n\n## 何時用\n- ✅ 改版頻繁\n- ✅ 不規則資料\n- ✅ 多種網站同方法\n- ❌ 大量同一網站（traditional 便宜）\n\n## 限制\n- 慢（LLM 思考）\n- 貴\n- 不確定性\n- 仍會被反爬擋\n\n## 未來\n2026+：AI 爬蟲 + 真瀏覽器 + 反偵測 = 新世代。傳統 Scrapy 仍主流、AI 補空缺。",
+      "tip": {
+        "type": "trend",
+        "text": "2024+ AI 爬蟲爆發。學一個 = 未來 5 年領先。"
+      },
+      "id": "30.14",
+      "number": "LESSON 30.14",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "30.14.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "import asyncio\nfrom browser_use import Agent\nfrom langchain_anthropic import ChatAnthropic\n\nasync def main():\n    agent = Agent(\n        task=\"去蝦皮搜尋 iPhone 17 Pro、找前 10 個最低價、回 JSON\",\n        llm=ChatAnthropic(model=\"claude-opus-4-7\")\n    )\n    result = await agent.run()\n    print(result)\n\nasyncio.run(main())",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼"
+        },
+        {
+          "level": 2,
+          "text": "browser-use（Python）"
+        },
+        {
+          "level": 2,
+          "text": "Claude Computer Use"
+        },
+        {
+          "level": 2,
+          "text": "Magnitude（TS）"
+        },
+        {
+          "level": 2,
+          "text": "文字 → 結構化"
+        },
+        {
+          "level": 2,
+          "text": "成本"
+        },
+        {
+          "level": 2,
+          "text": "何時用"
+        },
+        {
+          "level": 2,
+          "text": "限制"
+        },
+        {
+          "level": 2,
+          "text": "未來"
+        }
+      ]
+    },
+    {
+      "title": "OCR + Computer Vision",
+      "oneLineSummary": "PDF / 圖片 / Captcha 都能抓",
+      "analogy": "不只 HTML 才能爬。",
+      "content": "## Tesseract\n```python\nimport pytesseract\nfrom PIL import Image\n\ntext = pytesseract.image_to_string(Image.open(\"image.png\"), lang=\"chi_tra+eng\")\n```\n\n## PaddleOCR（中文最強）\n```python\nfrom paddleocr import PaddleOCR\n\nocr = PaddleOCR(use_angle_cls=True, lang=\"ch\")\nresult = ocr.ocr(\"image.png\", cls=True)\n\nfor line in result[0]:\n    print(line[1][0])\n```\n\n## Claude Vision（2024+ 主流）\n```python\nimport anthropic, base64\n\nclient = anthropic.Anthropic()\n\nwith open(\"invoice.png\", \"rb\") as f:\n    img = base64.b64encode(f.read()).decode()\n\nresponse = client.messages.create(\n    model=\"claude-opus-4-7\",\n    max_tokens=1024,\n    messages=[{\n        \"role\": \"user\",\n        \"content\": [\n            {\"type\": \"image\", \"source\": {\n                \"type\": \"base64\", \"media_type\": \"image/png\", \"data\": img\n            }},\n            {\"type\": \"text\", \"text\": \"抽出發票：商家、日期、總金額、品項（JSON）\"}\n        ]\n    }]\n)\n```\n比 Tesseract 強 100 倍。\n\n## 解 Captcha\n```python\nimport requests\n\nres = requests.post(\"http://2captcha.com/in.php\", files={\n    \"file\": open(\"captcha.png\", \"rb\")\n}, data={\"key\": API_KEY, \"method\": \"post\"})\n\ncaptcha_id = res.text.split(\"|\")[1]\n\nwhile True:\n    res = requests.get(f\"http://2captcha.com/res.php?key={API_KEY}&action=get&id={captcha_id}\")\n    if res.text.startswith(\"OK\"):\n        solution = res.text.split(\"|\")[1]\n        break\n    time.sleep(2)\n```\n\n## YOLO（物件偵測）\n```python\nfrom ultralytics import YOLO\n\nmodel = YOLO(\"yolov8n.pt\")\nresults = model(\"image.jpg\")\n\nfor r in results:\n    for box in r.boxes:\n        cls = r.names[int(box.cls)]\n        print(f\"{cls}: {float(box.conf):.2f}\")\n```\n\n## 應用\n- 讀發票 → 記帳\n- 監視器 → 統計人流\n- 賽事資料\n- 政府 PDF\n\n## 心法\n- 簡單文字：Tesseract / PaddleOCR\n- 結構化：Claude Vision\n- 物件：YOLO\n- Captcha：付費服務",
+      "tip": {
+        "type": "trend",
+        "text": "Claude Vision 取代 90% OCR 需求。"
+      },
+      "id": "30.15",
+      "number": "LESSON 30.15",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "30.15.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "import pytesseract\nfrom PIL import Image\n\ntext = pytesseract.image_to_string(Image.open(\"image.png\"), lang=\"chi_tra+eng\")",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "Tesseract"
+        },
+        {
+          "level": 2,
+          "text": "PaddleOCR（中文最強）"
+        },
+        {
+          "level": 2,
+          "text": "Claude Vision（2024+ 主流）"
+        },
+        {
+          "level": 2,
+          "text": "解 Captcha"
+        },
+        {
+          "level": 2,
+          "text": "YOLO（物件偵測）"
+        },
+        {
+          "level": 2,
+          "text": "應用"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Streaming 爬蟲：邊抓邊處理",
+      "oneLineSummary": "不是抓完才處理、邊抓邊存、不佔記憶體",
+      "analogy": "巨大網站必用 streaming。",
+      "content": "## 為什麼\n傳統：累積 list → 記憶體爆\nStreaming：邊抓邊存 → 記憶體小\n\n## Python generator\n```python\ndef scrape_all():\n    for page in range(1, 1000):\n        for item in scrape_page(page):\n            yield item\n\nfor item in scrape_all():\n    save_to_db(item)\n```\n\n## JSONL streaming\n```python\nimport json\n\nwith open(\"data.jsonl\", \"w\") as f:\n    for item in scrape_all():\n        f.write(json.dumps(item, ensure_ascii=False) + \"\\n\")\n```\n\n## Async generator\n```python\nasync def scrape_all():\n    async with httpx.AsyncClient() as client:\n        for page in range(1, 1000):\n            res = await client.get(f\"https://example.com/page/{page}\")\n            for item in parse(res.text):\n                yield item\n\nasync for item in scrape_all():\n    await save_async(item)\n```\n\n## Scrapy Pipeline（自動 streaming）\n```python\nclass MongoPipeline:\n    def process_item(self, item, spider):\n        self.db.items.insert_one(dict(item))\n        return item\n```\n\n## Node Streams\n```javascript\nimport { pipeline } from \"node:stream/promises\";\nimport { createWriteStream } from \"node:fs\";\n\nasync function* scrapeAll() {\n  for (let page = 1; page <= 1000; page++) {\n    const items = await scrapePage(page);\n    for (const item of items) {\n      yield JSON.stringify(item) + \"\\n\";\n    }\n  }\n}\n\nawait pipeline(scrapeAll(), createWriteStream(\"data.jsonl\"));\n```\n\n## 批量寫 DB\n```python\nBATCH_SIZE = 1000\nbatch = []\n\nfor item in scrape_all():\n    batch.append(item)\n    if len(batch) >= BATCH_SIZE:\n        db.bulk_insert(batch)\n        batch = []\n\nif batch:\n    db.bulk_insert(batch)\n```\n\n## 記憶體監控\n```python\nimport psutil, os\n\nprocess = psutil.Process(os.getpid())\nprint(f\"Memory: {process.memory_info().rss / 1024 / 1024:.1f} MB\")\n```\n\n百萬筆用 streaming：< 100 MB。\n不用：可能 10 GB OOM。",
+      "tip": {
+        "type": "performance",
+        "text": "處理 > 10 萬筆、永遠 streaming。"
+      },
+      "id": "30.16",
+      "number": "LESSON 30.16",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "30.16.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "def scrape_all():\n    for page in range(1, 1000):\n        for item in scrape_page(page):\n            yield item\n\nfor item in scrape_all():\n    save_to_db(item)",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼"
+        },
+        {
+          "level": 2,
+          "text": "Python generator"
+        },
+        {
+          "level": 2,
+          "text": "JSONL streaming"
+        },
+        {
+          "level": 2,
+          "text": "Async generator"
+        },
+        {
+          "level": 2,
+          "text": "Scrapy Pipeline（自動 streaming）"
+        },
+        {
+          "level": 2,
+          "text": "Node Streams"
+        },
+        {
+          "level": 2,
+          "text": "批量寫 DB"
+        },
+        {
+          "level": 2,
+          "text": "記憶體監控"
+        }
+      ]
+    },
+    {
+      "title": "Distributed 爬蟲：跨多台",
+      "oneLineSummary": "一台不夠、用多台同時",
+      "analogy": "Celery / Redis Queue / Kafka—大規模架構。",
+      "content": "## 為什麼\n單台 1 萬 req/小時、100 萬 = 100 小時\n10 台 = 10 小時、100 台 = 1 小時\n\n## 架構\n```\n[Master]\n   ↓ 分派 task\n[Queue（Redis / RabbitMQ / Kafka）]\n   ↓\n[Worker 1] [Worker 2] [Worker N]\n   ↓\n[Storage]\n```\n\n## Celery（Python）\n```python\nfrom celery import Celery\n\napp = Celery(\"scraper\", broker=\"redis://localhost:6379\")\n\n@app.task\ndef scrape_url(url):\n    return scrape(url)\n\n# 跑 worker\n# celery -A tasks worker -l info\n\n# 派 task\nfrom tasks import scrape_url\nfor url in urls:\n    scrape_url.delay(url)\n```\n\n## Scrapy + scrapy-redis\n```python\n# settings.py\nSCHEDULER = \"scrapy_redis.scheduler.Scheduler\"\nDUPEFILTER_CLASS = \"scrapy_redis.dupefilter.RFPDupeFilter\"\nREDIS_URL = \"redis://localhost:6379\"\n```\n\n多台跑同個 spider、Redis 協調。\n\n## BullMQ（Node）\n```javascript\nimport { Queue, Worker } from \"bullmq\";\n\nconst queue = new Queue(\"scrape\", { connection: { host: \"localhost\", port: 6379 } });\n\nawait queue.add(\"scrape-url\", { url: \"https://example.com\" });\n\nconst worker = new Worker(\"scrape\", async (job) => {\n  return await scrape(job.data.url);\n}, { connection: { ... } });\n```\n\n## Kubernetes Jobs\n```yaml\napiVersion: batch/v1\nkind: Job\nspec:\n  parallelism: 10  # 10 個 pod\n  template:\n    spec:\n      containers:\n      - name: scraper\n        image: my-scraper:latest\n```\n\n## AWS Lambda + SQS\n```\n[Cron] → [SQS] → [Lambda × 100]\n```\n無 server、自動 scale。\n\n## 心法\n- 多 worker > 單台多執行緒\n- Redis / Queue 協調\n- 去重重要\n- Idempotent\n- 監控每台 worker\n\n## 規模建議\n\n| 規模 | 推薦 |\n|---|---|\n| < 1 萬 req/天 | 單台 |\n| 1 萬-10 萬 | Celery 多台 |\n| 10 萬-百萬 | Celery + 雲端 |\n| 百萬-千萬 | Scrapy + scrapy-redis |\n| > 千萬 | Kafka + Spark |\n\n## Indie 不需要\n99% 一台機器就夠。撞到瓶頸再分散式。",
+      "tip": {
+        "type": "practical",
+        "text": "分散式爬蟲是高階。Indie 99% 不需要。"
+      },
+      "id": "30.17",
+      "number": "LESSON 30.17",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "30.17.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "from celery import Celery\n\napp = Celery(\"scraper\", broker=\"redis://localhost:6379\")\n\n@app.task\ndef scrape_url(url):\n    return scrape(url)\n\n# 跑 worker\n# celery -A tasks worker -l info\n\n# 派 task\nfrom tasks import scrape_url\nfor url in urls:\n    scrape_url.delay(url)",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼"
+        },
+        {
+          "level": 2,
+          "text": "架構"
+        },
+        {
+          "level": 2,
+          "text": "Celery（Python）"
+        },
+        {
+          "level": 2,
+          "text": "Scrapy + scrapy-redis"
+        },
+        {
+          "level": 2,
+          "text": "BullMQ（Node）"
+        },
+        {
+          "level": 2,
+          "text": "Kubernetes Jobs"
+        },
+        {
+          "level": 2,
+          "text": "AWS Lambda + SQS"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        },
+        {
+          "level": 2,
+          "text": "規模建議"
+        },
+        {
+          "level": 2,
+          "text": "Indie 不需要"
+        }
+      ]
+    },
+    {
+      "title": "反偵測進階：fingerprint 全修",
+      "oneLineSummary": "TLS + Canvas + WebGL + Audio—全面偽裝",
+      "analogy": "商業爬蟲必懂。",
+      "content": "## 全方位指紋\n1. TLS / JA3\n2. HTTP/2 fingerprint\n3. Canvas fingerprint\n4. WebGL fingerprint\n5. AudioContext\n6. 字型列表\n7. 時區 / 語言\n8. 螢幕解析度\n\n## 偵測服務\nCloudflare / DataDome / PerimeterX / Akamai / Imperva\n\n## stealth plugin（修 5-7）\n```javascript\nimport puppeteer from \"puppeteer-extra\";\nimport Stealth from \"puppeteer-extra-plugin-stealth\";\n\npuppeteer.use(Stealth());\n```\n\n## Canvas 修補\n```javascript\nawait page.evaluateOnNewDocument(() => {\n  const orig = HTMLCanvasElement.prototype.toDataURL;\n  HTMLCanvasElement.prototype.toDataURL = function (...args) {\n    const ctx = this.getContext(\"2d\");\n    if (ctx) {\n      const imageData = ctx.getImageData(0, 0, this.width, this.height);\n      for (let i = 0; i < imageData.data.length; i += 4) {\n        imageData.data[i] += Math.random() < 0.5 ? -1 : 1;\n      }\n      ctx.putImageData(imageData, 0, 0);\n    }\n    return orig.apply(this, args);\n  };\n});\n```\n\n## WebGL 修補\n```javascript\nawait page.evaluateOnNewDocument(() => {\n  const orig = WebGLRenderingContext.prototype.getParameter;\n  WebGLRenderingContext.prototype.getParameter = function (param) {\n    if (param === 37445) return \"Intel Inc.\";\n    if (param === 37446) return \"Intel Iris OpenGL Engine\";\n    return orig.apply(this, [param]);\n  };\n});\n```\n\n## 商業反偵測\n- Browser fingerprint generator\n- Multilogin（多瀏覽器設定檔）\n- AdsPower / GoLogin\n- 月 NT$ 200-1000\n\n## ML 偵測（最難）\nDataDome / PerimeterX 用 ML：\n- 看「行為模式」\n- 滑鼠軌跡\n- 鍵盤節奏\n- 點擊位置\n\n對策：模擬人類行為。\n\n## 心法\n- 永遠用 stealth plugin（基本盤）\n- 困難網站用商業服務\n- ML 偵測 → 模擬真人\n- 別硬幹、看 ROI\n- 大網站（Apple / Google）放棄\n\n## 道德\n- 合法：研究、SEO、QA\n- 灰色：價格爬取\n- 非法：詐騙、ATO",
+      "tip": {
+        "type": "warning",
+        "text": "反偵測軍備競賽 = 道德 + 法律雙風險。"
+      },
+      "id": "30.18",
+      "number": "LESSON 30.18",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "30.18.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "import puppeteer from \"puppeteer-extra\";\nimport Stealth from \"puppeteer-extra-plugin-stealth\";\n\npuppeteer.use(Stealth());",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "挑一個你做過的舊專案、用本節「反偵測進階：fingerprint 全修」介紹的進階技術重構它。",
+        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
+        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "全方位指紋"
+        },
+        {
+          "level": 2,
+          "text": "偵測服務"
+        },
+        {
+          "level": 2,
+          "text": "stealth plugin（修 5-7）"
+        },
+        {
+          "level": 2,
+          "text": "Canvas 修補"
+        },
+        {
+          "level": 2,
+          "text": "WebGL 修補"
+        },
+        {
+          "level": 2,
+          "text": "商業反偵測"
+        },
+        {
+          "level": 2,
+          "text": "ML 偵測（最難）"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        },
+        {
+          "level": 2,
+          "text": "道德"
+        }
+      ]
+    },
+    {
+      "title": "Headless Browser Cluster",
+      "oneLineSummary": "一台機器跑 50 個瀏覽器、平行爬",
+      "analogy": "比 single Playwright 快 20-50 倍。",
+      "content": "## 為什麼\n單 Playwright：100 頁 = 500 秒\nCluster 10 個：100 頁 = 50 秒\n\n## puppeteer-cluster\n```bash\nnpm install puppeteer puppeteer-cluster\n```\n\n```javascript\nimport { Cluster } from \"puppeteer-cluster\";\n\nconst cluster = await Cluster.launch({\n  concurrency: Cluster.CONCURRENCY_CONTEXT,\n  maxConcurrency: 10,\n  puppeteerOptions: { headless: true }\n});\n\nawait cluster.task(async ({ page, data: url }) => {\n  await page.goto(url);\n  const title = await page.title();\n  return { url, title };\n});\n\nfor (const url of urls) {\n  cluster.queue(url);\n}\n\nawait cluster.idle();\nawait cluster.close();\n```\n\n## Playwright + p-limit\n```javascript\nimport { chromium } from \"playwright\";\nimport pLimit from \"p-limit\";\n\nconst browser = await chromium.launch();\nconst limit = pLimit(10);\n\nconst results = await Promise.all(\n  urls.map(url => limit(async () => {\n    const context = await browser.newContext();\n    const page = await context.newPage();\n    await page.goto(url);\n    const data = await page.locator(\"h1\").textContent();\n    await context.close();\n    return data;\n  }))\n);\n\nawait browser.close();\n```\n\n## Browser Pool\n```javascript\nclass BrowserPool {\n  constructor(size = 5) {\n    this.browsers = [];\n    this.queue = [];\n    this.size = size;\n  }\n  \n  async init() {\n    for (let i = 0; i < this.size; i++) {\n      this.browsers.push(await chromium.launch());\n    }\n  }\n  \n  async acquire() {\n    if (this.browsers.length > 0) return this.browsers.pop();\n    return new Promise(resolve => this.queue.push(resolve));\n  }\n  \n  release(browser) {\n    if (this.queue.length > 0) {\n      this.queue.shift()(browser);\n    } else {\n      this.browsers.push(browser);\n    }\n  }\n}\n```\n\n## 記憶體控制\n每 browser ~200MB、10 個 = 2GB。\n\n```javascript\nlet count = 0;\nasync function scrape(url) {\n  if (count++ % 100 === 0) {\n    await browser.close();\n    browser = await chromium.launch();\n  }\n}\n```\n\n## 雲端\n- AWS ECS + Fargate\n- Google Cloud Run Jobs\n- Cloudflare Browser Rendering\n- Browserless.io",
+      "tip": {
+        "type": "performance",
+        "text": "Cluster 10x、Cloud 100x。但成本也漲。"
+      },
+      "id": "30.19",
+      "number": "LESSON 30.19",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "30.19.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "import { Cluster } from \"puppeteer-cluster\";\n\nconst cluster = await Cluster.launch({\n  concurrency: Cluster.CONCURRENCY_CONTEXT,\n  maxConcurrency: 10,\n  puppeteerOptions: { headless: true }\n});\n\nawait cluster.task(async ({ page, data: url }) => {\n  await page.goto(url);\n  const title = await page.title();\n  return { url, title };\n});\n\nfor (const url of urls) {\n  cluster.queue(url);\n}\n\nawait cluster.idle();\nawait cluster.close();",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼"
+        },
+        {
+          "level": 2,
+          "text": "puppeteer-cluster"
+        },
+        {
+          "level": 2,
+          "text": "Playwright + p-limit"
+        },
+        {
+          "level": 2,
+          "text": "Browser Pool"
+        },
+        {
+          "level": 2,
+          "text": "記憶體控制"
+        },
+        {
+          "level": 2,
+          "text": "雲端"
+        }
+      ]
+    },
+    {
+      "title": "資料品質：去重 + 驗證",
+      "oneLineSummary": "爬到 100 萬筆但 50% 重複 / 髒 = 沒用",
+      "analogy": "品質 > 數量。",
+      "content": "## 去重\n\n### URL 去重\n```python\nseen = set()\nfor url in urls:\n    if url in seen: continue\n    seen.add(url)\n    scrape(url)\n```\n\n### Bloom Filter（百萬級）\n```python\nfrom pybloom_live import BloomFilter\n\nbf = BloomFilter(capacity=1000000, error_rate=0.001)\nfor url in urls:\n    if url in bf: continue\n    bf.add(url)\n    scrape(url)\n```\n\n### Content 去重（hash）\n```python\nimport hashlib\n\ndef content_hash(item):\n    return hashlib.md5(str(item).encode()).hexdigest()\n\nseen_hashes = set()\nfor item in items:\n    h = content_hash(item)\n    if h in seen_hashes: continue\n    seen_hashes.add(h)\n    save(item)\n```\n\n### Fuzzy 去重（相似內容）\n```python\nfrom rapidfuzz import fuzz\n\ndef is_similar(a, b, threshold=90):\n    return fuzz.ratio(a, b) > threshold\n```\n\n### DB UNIQUE constraint\n```sql\nCREATE TABLE products (\n  id UUID PRIMARY KEY,\n  link TEXT UNIQUE\n);\n\n-- 重複 INSERT 自動忽略\nINSERT INTO products ... ON CONFLICT (link) DO NOTHING;\n```\n\n## 驗證（pydantic）\n```python\nfrom pydantic import BaseModel, validator, HttpUrl\n\nclass Product(BaseModel):\n    name: str\n    price: float\n    link: HttpUrl\n    \n    @validator(\"name\")\n    def name_not_empty(cls, v):\n        if not v.strip(): raise ValueError(\"name empty\")\n        return v\n    \n    @validator(\"price\")\n    def price_reasonable(cls, v):\n        if v < 0 or v > 1_000_000: raise ValueError(\"price abnormal\")\n        return v\n\n# 用\ntry:\n    p = Product(**data)\nexcept ValidationError as e:\n    logger.error(f\"invalid: {e}\")\n```\n\n## 監控品質\n```python\ntotal = 0\nvalid = 0\nduplicates = 0\nerrors = []\n\nfor raw in scrape_all():\n    total += 1\n    try:\n        p = Product(**raw)\n        if p.link in seen:\n            duplicates += 1\n            continue\n        seen.add(p.link)\n        valid += 1\n        save(p)\n    except ValidationError as e:\n        errors.append(e)\n\nprint(f\"總：{total}、有效：{valid}、重複：{duplicates}、錯：{len(errors)}\")\nprint(f\"有效率：{valid/total*100:.1f}%\")\n```\n\n## 異常偵測\n```python\n# 價格異常\nimport numpy as np\n\nprices = [p.price for p in products]\nmean = np.mean(prices)\nstd = np.std(prices)\n\nfor p in products:\n    if abs(p.price - mean) > 3 * std:\n        print(f\"異常價格: {p.name} {p.price}\")\n```\n\n## 心法\n- 抓的時候就驗證\n- 不放髒資料進 DB\n- 監控有效率（< 80% 必有問題）\n- 異常 alert\n- 定期清理舊 / 無效資料",
+      "tip": {
+        "type": "milestone",
+        "text": "爬蟲品質 > 數量。100k 高品質 > 1M 髒資料。"
+      },
+      "id": "30.20",
+      "number": "LESSON 30.20",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "30.20.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "seen = set()\nfor url in urls:\n    if url in seen: continue\n    seen.add(url)\n    scrape(url)",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "去重"
+        },
+        {
+          "level": 3,
+          "text": "URL 去重"
+        },
+        {
+          "level": 3,
+          "text": "Bloom Filter（百萬級）"
+        },
+        {
+          "level": 3,
+          "text": "Content 去重（hash）"
+        },
+        {
+          "level": 3,
+          "text": "Fuzzy 去重（相似內容）"
+        },
+        {
+          "level": 3,
+          "text": "DB UNIQUE constraint"
+        },
+        {
+          "level": 2,
+          "text": "驗證（pydantic）"
+        },
+        {
+          "level": 2,
+          "text": "監控品質"
+        },
+        {
+          "level": 2,
+          "text": "異常偵測"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "資料清理 + ETL pipeline",
+      "oneLineSummary": "抓到的資料 90% 要清理",
+      "analogy": "原始資料 → 業務可用、靠 ETL。",
+      "content": "## 完整 ETL\n\n### Extract（抓）\n```python\ndef extract():\n    return scrape_all()\n```\n\n### Transform（清理 + 標準化）\n```python\ndef transform(raw_items):\n    cleaned = []\n    for item in raw_items:\n        # 清理價格\n        price_str = item[\"price\"].replace(\"NT$\", \"\").replace(\",\", \"\")\n        try:\n            price = float(price_str)\n        except ValueError:\n            continue\n        \n        # 清理名稱\n        name = item[\"name\"].strip()\n        if not name: continue\n        \n        # 標準化分類\n        category = standardize_category(item[\"category\"])\n        \n        # 加 timestamp\n        cleaned.append({\n            \"name\": name,\n            \"price\": price,\n            \"category\": category,\n            \"scraped_at\": datetime.now()\n        })\n    return cleaned\n```\n\n### Load（寫 DB）\n```python\ndef load(items):\n    db.bulk_insert(items)\n```\n\n### Orchestrate\n```python\ndef daily_etl():\n    raw = extract()\n    cleaned = transform(raw)\n    load(cleaned)\n    notify(f\"處理 {len(cleaned)} 筆\")\n```\n\n## pandas ETL\n```python\nimport pandas as pd\n\n# E\ndf = pd.DataFrame(scrape_all())\n\n# T\ndf[\"price\"] = df[\"price\"].str.replace(\"NT$\", \"\").str.replace(\",\", \"\").astype(float)\ndf[\"name\"] = df[\"name\"].str.strip()\ndf[\"category\"] = df[\"category\"].str.lower().map(category_mapping)\ndf = df.dropna(subset=[\"name\", \"price\"])\ndf = df.drop_duplicates(subset=[\"link\"])\ndf[\"scraped_at\"] = pd.Timestamp.now()\n\n# L\ndf.to_sql(\"products\", engine, if_exists=\"append\", index=False)\n```\n\n## 增量 ETL\n```python\nlast_run = get_last_run_time()\nnew_items = scrape_since(last_run)\n\nif new_items:\n    cleaned = transform(new_items)\n    load(cleaned)\n    update_last_run_time(datetime.now())\n```\n\n## 工具\n- **Airflow**：傳統 DAG\n- **Prefect**：modern Python\n- **Dagster**：data-aware\n- **dbt**：SQL transformation\n\n## 處理規則\n- ✅ 缺欄位 → 跳過 / 填預設\n- ✅ 格式錯 → 嘗試解析 / 跳過\n- ✅ 異常值 → 標記、不刪\n- ❌ 不要 silently drop（記 log）\n\n## 監控\n```python\nmetrics = {\n    \"extracted\": total,\n    \"valid\": valid,\n    \"invalid\": invalid,\n    \"duplicates\": dup,\n    \"loaded\": loaded\n}\nsend_to_dashboard(metrics)\n```\n\n## 心法\n- 抓的時候 raw、不要邊抓邊清（萬一爬錯重來）\n- T 寫成 idempotent（重跑結果一樣）\n- 永遠保留 raw（debug 用）\n- 失敗的記下、不要丟",
+      "tip": {
+        "type": "milestone",
+        "text": "ETL pipeline = production 爬蟲 80% 工作。"
+      },
+      "id": "30.21",
+      "number": "LESSON 30.21",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "30.21.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "def transform(raw_items):\n    cleaned = []\n    for item in raw_items:\n        # 清理價格\n        price_str = item[\"price\"].replace(\"NT$\", \"\").replace(\",\", \"\")\n        try:\n            price = float(price_str)\n        except ValueError:\n            continue\n        \n        # 清理名稱\n        name = item[\"name\"].strip()\n        if not name: continue\n        \n        # 標準化分類\n        category = standardize_category(item[\"category\"])\n        \n        # 加 timestamp\n        cleaned.append({\n            \"name\": name,\n            \"price\": price,\n            \"category\": category,\n            \"scraped_at\": datetime.now()\n        })\n    return cleaned",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "完整 ETL"
+        },
+        {
+          "level": 3,
+          "text": "Extract（抓）"
+        },
+        {
+          "level": 3,
+          "text": "Transform（清理 + 標準化）"
+        },
+        {
+          "level": 3,
+          "text": "Load（寫 DB）"
+        },
+        {
+          "level": 3,
+          "text": "Orchestrate"
+        },
+        {
+          "level": 2,
+          "text": "pandas ETL"
+        },
+        {
+          "level": 2,
+          "text": "增量 ETL"
+        },
+        {
+          "level": 2,
+          "text": "工具"
+        },
+        {
+          "level": 2,
+          "text": "處理規則"
+        },
+        {
+          "level": 2,
+          "text": "監控"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "儲存策略：CSV vs Parquet vs DB",
+      "oneLineSummary": "不同階段用不同 storage",
+      "analogy": "Raw → Parquet、Production → DB。",
+      "content": "## CSV\n**優**：人類可讀、跨工具\n**劣**：慢、大、無 schema\n\n```python\ndf.to_csv(\"data.csv\", encoding=\"utf-8-sig\", index=False)\n```\n\n## JSON / JSONL\n**優**：彈性 schema、巢狀資料\n**劣**：大、慢\n\n```python\ndf.to_json(\"data.jsonl\", orient=\"records\", lines=True)\n```\n\n## Parquet（推薦大資料）\n**優**：壓縮（小 5-10x）、快、有 schema、列式儲存\n**劣**：要套件解析\n\n```python\ndf.to_parquet(\"data.parquet\", compression=\"snappy\")\ndf = pd.read_parquet(\"data.parquet\")\n```\n\n## SQLite\n**優**：嵌入、SQL 查、易備份\n**劣**：單寫入\n\n## PostgreSQL / MySQL\n**優**：可靠、ACID、SQL 查\n**劣**：要 server\n\n## ClickHouse / DuckDB（分析）\n**優**：分析超快\n**劣**：寫入慢\n\n```python\nimport duckdb\n\nduckdb.sql(\"\"\"\n    SELECT category, AVG(price) AS avg_price\n    FROM 'data.parquet'\n    GROUP BY category\n\"\"\")\n```\n\n## S3 / R2（cold storage）\n**優**：便宜、無限大\n**劣**：慢、要 API\n\n```python\nimport boto3\n\ns3 = boto3.client(\"s3\")\ns3.put_object(\n    Bucket=\"my-bucket\",\n    Key=f\"data/{date}.parquet\",\n    Body=df.to_parquet()\n)\n```\n\n## 分層儲存\n```\nRaw（S3 Parquet）\n  ↓ 清理\nStaging（PG）\n  ↓ 加工\nProduction（PG indexed）\n  ↓ 分析\nAnalytics（DuckDB / ClickHouse / BigQuery）\n```\n\n## 選擇\n\n| 階段 | 推薦 |\n|---|---|\n| 抓資料中 | JSONL（append）|\n| 處理後存 | Parquet |\n| Production API | PG / MySQL |\n| 分析 | DuckDB / BigQuery |\n| 歸檔 | S3 Parquet |\n\n## Partition（按時間分）\n```python\ndf.to_parquet(\n    f\"data/year={year}/month={month}/data.parquet\"\n)\n```\n查詢時只讀需要的 partition。\n\n## 心法\n- 不要存重複（每階段不同 storage）\n- 列式（Parquet）比行式（CSV）快 10x\n- 巨量資料用 S3 + Parquet + DuckDB",
+      "tip": {
+        "type": "practical",
+        "text": "巨量爬蟲：S3 + Parquet 是黃金組合。"
+      },
+      "id": "30.22",
+      "number": "LESSON 30.22",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "30.22.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "df.to_csv(\"data.csv\", encoding=\"utf-8-sig\", index=False)",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "找一個你身邊的例子、用「儲存策略：CSV vs Parquet vs DB」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "CSV"
+        },
+        {
+          "level": 2,
+          "text": "JSON / JSONL"
+        },
+        {
+          "level": 2,
+          "text": "Parquet（推薦大資料）"
+        },
+        {
+          "level": 2,
+          "text": "SQLite"
+        },
+        {
+          "level": 2,
+          "text": "PostgreSQL / MySQL"
+        },
+        {
+          "level": 2,
+          "text": "ClickHouse / DuckDB（分析）"
+        },
+        {
+          "level": 2,
+          "text": "S3 / R2（cold storage）"
+        },
+        {
+          "level": 2,
+          "text": "分層儲存"
+        },
+        {
+          "level": 2,
+          "text": "選擇"
+        },
+        {
+          "level": 2,
+          "text": "Partition（按時間分）"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "客戶交付：報表 + Dashboard + API",
+      "oneLineSummary": "爬完不是結束、要給客戶看才有價值",
+      "analogy": "展示 = 變現關鍵。",
+      "content": "## 1. Email 報表\n```python\nimport smtplib\nfrom email.message import EmailMessage\n\nmsg = EmailMessage()\nmsg[\"Subject\"] = \"每日報表\"\nmsg[\"From\"] = \"bot@example.com\"\nmsg[\"To\"] = \"boss@example.com\"\nmsg.set_content(df.to_string())\n\nwith open(\"report.csv\", \"rb\") as f:\n    msg.add_attachment(f.read(), maintype=\"text\", subtype=\"csv\", filename=\"report.csv\")\n\nwith smtplib.SMTP(\"smtp.gmail.com\", 587) as s:\n    s.starttls()\n    s.login(USER, PASS)\n    s.send_message(msg)\n```\n\n## 2. Google Sheets（簡單）\n```python\nimport gspread\n\ngc = gspread.service_account()\nsheet = gc.open(\"Report\").sheet1\nsheet.clear()\nsheet.update(\"A1\", [df.columns.tolist()] + df.values.tolist())\n```\n\n## 3. Streamlit Dashboard\n```python\nimport streamlit as st\nimport pandas as pd\nimport plotly.express as px\n\nst.title(\"📊 爬蟲報表\")\n\ndf = pd.read_parquet(\"data.parquet\")\n\ncol1, col2, col3 = st.columns(3)\ncol1.metric(\"總商品\", len(df))\ncol2.metric(\"平均價\", f\"NT$ {df['price'].mean():,.0f}\")\ncol3.metric(\"分類數\", df['category'].nunique())\n\nfig = px.bar(df.groupby(\"category\")[\"price\"].mean().reset_index(),\n             x=\"category\", y=\"price\")\nst.plotly_chart(fig)\n\nst.dataframe(df)\n```\n\n```bash\nstreamlit run app.py\n```\n\n## 4. Next.js / React Dashboard\n```tsx\nimport { LineChart, Line } from \"recharts\";\n\nexport default function Dashboard() {\n  const { data } = useSWR(\"/api/products\", fetcher);\n  \n  return (\n    <div>\n      <h1>商品趨勢</h1>\n      <LineChart width={800} height={400} data={data}>\n        <Line type=\"monotone\" dataKey=\"price\" stroke=\"#8884d8\" />\n      </LineChart>\n    </div>\n  );\n}\n```\n\n## 5. API（FastAPI）\n```python\nfrom fastapi import FastAPI\n\napp = FastAPI()\n\n@app.get(\"/products\")\ndef get_products(limit: int = 100):\n    return db.query(\"SELECT * FROM products LIMIT $1\", limit)\n\n@app.get(\"/stats\")\ndef stats():\n    return {\n        \"total\": db.query_one(\"SELECT COUNT(*) FROM products\"),\n        \"avg_price\": db.query_one(\"SELECT AVG(price) FROM products\")\n    }\n```\n\n## 6. PDF 報表\n```python\nfrom weasyprint import HTML\n\nhtml = render_template(\"report.html\", data=data)\nHTML(string=html).write_pdf(\"report.pdf\")\n```\n\n## 7. LINE Notify（即時）\n```python\nrequests.post(\"https://notify-api.line.me/api/notify\",\n    headers={\"Authorization\": f\"Bearer {TOKEN}\"},\n    data={\"message\": f\"今日抓到 {count} 筆\"})\n```\n\n## 報價對比\n\n| 交付方式 | 報價 |\n|---|---|\n| CSV 寄信 | NT$ 5-15k |\n| Google Sheets | NT$ 10-30k |\n| Streamlit | NT$ 30-80k |\n| Custom Dashboard | NT$ 80-300k |\n| API | NT$ 50-200k |\n\n## 心法\n- 客戶看不到 = 沒做\n- 越漂亮 = 越好賣\n- 給 dashboard > 給 CSV\n- 自動更新 = 月費合約",
+      "tip": {
+        "type": "business",
+        "text": "Dashboard 是接案爬蟲的「門面」。給好看的、客戶愛、續約率高。"
+      },
+      "id": "30.23",
+      "number": "LESSON 30.23",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "30.23.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "import smtplib\nfrom email.message import EmailMessage\n\nmsg = EmailMessage()\nmsg[\"Subject\"] = \"每日報表\"\nmsg[\"From\"] = \"bot@example.com\"\nmsg[\"To\"] = \"boss@example.com\"\nmsg.set_content(df.to_string())\n\nwith open(\"report.csv\", \"rb\") as f:\n    msg.add_attachment(f.read(), maintype=\"text\", subtype=\"csv\", filename=\"report.csv\")\n\nwith smtplib.SMTP(\"smtp.gmail.com\", 587) as s:\n    s.starttls()\n    s.login(USER, PASS)\n    s.send_message(msg)",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "1. Email 報表"
+        },
+        {
+          "level": 2,
+          "text": "2. Google Sheets（簡單）"
+        },
+        {
+          "level": 2,
+          "text": "3. Streamlit Dashboard"
+        },
+        {
+          "level": 2,
+          "text": "4. Next.js / React Dashboard"
+        },
+        {
+          "level": 2,
+          "text": "5. API（FastAPI）"
+        },
+        {
+          "level": 2,
+          "text": "6. PDF 報表"
+        },
+        {
+          "level": 2,
+          "text": "7. LINE Notify（即時）"
+        },
+        {
+          "level": 2,
+          "text": "報價對比"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "跨語言爬蟲總結 + 學習路徑",
+      "oneLineSummary": "從新手到全方位爬蟲工程師",
+      "analogy": "不是會一個語言、是「會選對工具」。",
+      "content": "## 全能技能樹\n\n### 基礎（必備）\n- HTTP / HTML / CSS Selector\n- 至少 1 個語言（Python / Node）\n- requests / fetch\n- 解析（BS4 / cheerio）\n\n### 中階\n- 動態網站（Playwright）\n- 反爬蟲（UA / 代理 / Cookie）\n- Async / 並發\n- Database\n- 排程（cron / Airflow）\n\n### 進階\n- 反偵測（stealth / fingerprint）\n- TLS impersonate\n- Distributed（Celery）\n- AI 爬蟲（browser-use）\n- OCR / Vision\n\n### 商業\n- 接案 / 報價\n- 法律 / 道德\n- Dashboard / 交付\n- SaaS 化\n\n## 跨語言能力\n\n主語言精通（Python or Node）+ 略懂其他：\n- Go：知道 colly、巨量場景用\n- Rust：知道 reqwest、極致場景\n- Java：知道 jsoup、企業環境\n- PHP / Ruby：知道、不用主用\n- cURL：CLI 必懂\n\n## 學習路徑（1 年）\n\n### Q1\n- 主語言（Python）\n- requests + BS4 + Scrapy\n- 第一個爬蟲案\n\n### Q2\n- Playwright\n- 反爬蟲\n- Async\n- DB\n- 接第一個付費客戶\n\n### Q3\n- 反偵測\n- 代理 / cluster\n- AI 爬蟲試水\n- 多客戶\n\n### Q4\n- 自己刻 SaaS\n- 賣 Apify Actor\n- 教課 / 顧問\n\n## 真實接案範圍\n- 簡單：NT$ 5-30k（1-3 天）\n- 中等：NT$ 30-100k（1-2 週）\n- 複雜：NT$ 100-500k（1-2 月）\n- 維護：NT$ 1-10k/月\n\n## 工作市場（台灣 2026）\n- 爬蟲工程師：NT$ 60-120k\n- Data Engineer：NT$ 90-180k\n- 自由接案：年收 NT$ 100-500k\n\n## 國際 remote\n- Upwork / Toptal\n- $30-100 USD/hr\n- 英文好的可全球接\n\n## 心法\n- **領域知識 > 技術深度**：懂金融的爬蟲 > 純技術\n- **法律意識**：商業案必諮詢律師\n- **永遠先 API**：減少不必要爬\n- **客戶導向**：dashboard > raw data\n- **持續學新**：AI 爬蟲、反偵測在進化\n\n## 給新手最佳路徑\n1. 學 Python（最大生態）\n2. 跑通第一個爬蟲（任何網站）\n3. 學 Scrapy + Playwright\n4. 接第一個付費案\n5. 累積 5 個 case\n6. 開始 SaaS / 顧問\n\n1 年後、你會是專業爬蟲工程師。",
+      "tip": {
+        "type": "milestone",
+        "text": "跨語言爬蟲 = 不是會多種語言、是「選對工具解對的問題」。"
+      },
+      "id": "30.24",
+      "number": "LESSON 30.24",
+      "xp": 10,
+      "exercise": {
+        "question": "找一個你身邊的例子、用「跨語言爬蟲總結 + 學習路徑」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "全能技能樹"
+        },
+        {
+          "level": 3,
+          "text": "基礎（必備）"
+        },
+        {
+          "level": 3,
+          "text": "中階"
+        },
+        {
+          "level": 3,
+          "text": "進階"
+        },
+        {
+          "level": 3,
+          "text": "商業"
+        },
+        {
+          "level": 2,
+          "text": "跨語言能力"
+        },
+        {
+          "level": 2,
+          "text": "學習路徑（1 年）"
+        },
+        {
+          "level": 3,
+          "text": "Q1"
+        },
+        {
+          "level": 3,
+          "text": "Q2"
+        },
+        {
+          "level": 3,
+          "text": "Q3"
+        },
+        {
+          "level": 3,
+          "text": "Q4"
+        },
+        {
+          "level": 2,
+          "text": "真實接案範圍"
+        },
+        {
+          "level": 2,
+          "text": "工作市場（台灣 2026）"
+        },
+        {
+          "level": 2,
+          "text": "國際 remote"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        },
+        {
+          "level": 2,
+          "text": "給新手最佳路徑"
+        }
+      ]
+    },
+    {
+      "title": "跨語言爬蟲：總結 + 心法",
+      "oneLineSummary": "不是「會多種語言」、是「選對工具」",
+      "analogy": "6 個月一個專業爬蟲工程師。",
+      "content": "## 全方位心法\n\n### 1. 領域知識 > 技術深度\n懂金融的爬蟲 > 純技術爬蟲。\n找你熟悉的領域（電商 / 金融 / 房地產）深耕。\n\n### 2. 法律意識\n- 台灣《妨害電腦使用罪》\n- 著作權、個資法、GDPR\n- 商業爬蟲先諮詢律師\n- 不確定 → 不做\n\n### 3. 永遠先 API\n官方 API > 爬蟲\n- 穩定\n- 合法\n- 快\n- 不會擋\n\n### 4. 客戶導向\n- Dashboard > Raw data\n- 自動寄報表 > 給檔案\n- 月費維護 > 一次性\n\n### 5. 持續學新\n- AI 爬蟲（browser-use）\n- 反偵測（fingerprint）\n- TLS impersonate\n\n## 工具選擇\n\n| 場景 | 推薦 |\n|---|---|\n| 入門 | Python + requests + BS4 |\n| 大規模 | Scrapy / Crawlee |\n| 動態 | Playwright |\n| 反爬 | curl_cffi / stealth |\n| 商業 | Bright Data / Scrapfly |\n| AI 時代 | browser-use / Claude Vision |\n\n## 6 個月學習路徑\n- M1：Python 基礎 + BS4\n- M2：Scrapy + Playwright\n- M3：反爬 + 代理\n- M4：Production（監控 / 排程）\n- M5：接第一個客戶\n- M6：規模化、SaaS 試水\n\n## 變現路徑\n- 簡單案：NT$ 5-30k\n- 中等：NT$ 30-100k\n- 維護：NT$ 1-10k/月\n- SaaS：月費 NT$ 200-5000\n- 教課：NT$ 5-30k\n\n## 全職市場\n- 爬蟲工程師：NT$ 60-120k\n- Data Engineer：NT$ 90-180k\n- 自由接案：年 NT$ 100-500k\n\n## 給新手最佳建議\n1. 學 Python（最大生態）\n2. 跑通第一個爬蟲\n3. 學 Scrapy + Playwright\n4. 接第一個付費案\n5. 累積 5 個 case\n6. SaaS / 顧問\n\n## 終極心法\n爬蟲不是「能爬」、是：\n- 法律安全\n- 客戶滿意\n- 長期維護\n- 商業可行\n\n1 年後、你會是專業爬蟲工程師。",
+      "tip": {
+        "type": "milestone",
+        "text": "6 個月、改變職涯軌跡。"
+      },
+      "id": "30.25",
+      "number": "LESSON 30.25",
+      "xp": 10,
+      "exercise": {
+        "question": "把本節「跨語言爬蟲：總結 + 心法」的核心心法、轉成一個具體的「我今天 / 這週要做」的小行動。",
+        "hint": "心法 ≠ 知識、心法要落地。「我從今天起、每天 ___」這種格式。",
+        "answer": "好行動 = 小（5-10 分鐘以內）+ 具體（不模糊）+ 可量化（有沒有做得出來）。例：『每天起床先列 3 件最重要的事再開電腦』比『更專注』可執行 100 倍。配合 streak（連續紀錄）讓自己上癮。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "全方位心法"
+        },
+        {
+          "level": 3,
+          "text": "1. 領域知識 > 技術深度"
+        },
+        {
+          "level": 3,
+          "text": "2. 法律意識"
+        },
+        {
+          "level": 3,
+          "text": "3. 永遠先 API"
+        },
+        {
+          "level": 3,
+          "text": "4. 客戶導向"
+        },
+        {
+          "level": 3,
+          "text": "5. 持續學新"
+        },
+        {
+          "level": 2,
+          "text": "工具選擇"
+        },
+        {
+          "level": 2,
+          "text": "6 個月學習路徑"
+        },
+        {
+          "level": 2,
+          "text": "變現路徑"
+        },
+        {
+          "level": 2,
+          "text": "全職市場"
+        },
+        {
+          "level": 2,
+          "text": "給新手最佳建議"
+        },
+        {
+          "level": 2,
+          "text": "終極心法"
+        }
+      ]
+    }
+  ],
+  "boss": {
+    "name": "Go 戰士 + Rust 騎士",
+    "hp": 280,
+    "emoji": "⚔️",
+    "description": "極致效能雙王—colly 是劍、tokio 是盾"
+  },
+  "quiz": {
+    "id": "ch30-quiz",
+    "questions": [],
+    "xpReward": 50,
+    "perfectBonus": 50
+  }
+}

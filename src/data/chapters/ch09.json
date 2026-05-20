@@ -1,0 +1,1505 @@
+{
+  "id": 9,
+  "slug": "vue",
+  "stage": 2,
+  "title": "Vue 完整",
+  "subtitle": "亞洲團隊愛用",
+  "icon": "triangle",
+  "description": "Vue 完整：亞洲團隊愛用",
+  "status": "published",
+  "difficulty": "intermediate",
+  "prerequisites": [
+    4,
+    5,
+    7
+  ],
+  "estimatedHours": 12,
+  "outcomes": [
+    "理解核心概念",
+    "實作主流工具",
+    "整章實戰可發佈作品",
+    "知道生態 / 接案行情",
+    "對齊 2026 業界主流"
+  ],
+  "lessons": [
+    {
+      "id": "9.1",
+      "number": "LESSON 9.1",
+      "title": "Vue 是什麼？為什麼選 Vue？",
+      "oneLineSummary": "Vue 是「亞洲團隊愛用的前端框架」—學習曲線比 React 平緩、文件中文化好。",
+      "analogy": "像iPhone 跟 Android 的差別—兩個都是手機、都能拍照打電話。React 是 Android（彈性高 / 客製化）、Vue 是 iPhone（更簡單 / 上手快）。台灣中小企業 / 公務系統用 Vue 比例不低。",
+      "content": "Vue 由前 Google 工程師**尤雨溪**（Evan You）2014 年發布。他從 AngularJS 學到 declarative rendering，從 React 學到 component 化，提煉成「**容易上手、漸進式採用**」的框架。\n\n  \n    \nReact 像**樂高散裝**，給你積木自己拼，自由但要選很多。Vue 像**樂高套裝**，幫你配好了路由（Vue Router）、狀態（Pinia）、CLI，按指引走就行。\n\n  \n\n  \n### Vue 3 的革命（2020+）\n\n  \n- **Composition API**：取代 Options API，更接近 React Hooks（但更好用）\n- **Proxy-based Reactivity**：取代 Object.defineProperty，效能跟靈活性大躍進\n- **TypeScript 一等公民**：原生支援，型別推導好\n- **Vite**：尤雨溪自己做的 build tool，秒速啟動\n- **更小 bundle**：tree-shaking 友善\n\n  \n### 選擇場景\n\n  \n| 場景 | 選 Vue | 選 React |\n| --- | --- | --- |\n| 個人專案 / 小型 SaaS | ✓（學最快） | OK |\n| 中文資源 | ✓（中文文件完整） |  |\n| 大型企業（亞洲） | ✓（中國市場主流） |  |\n| FAANG / 美國新創 |  | ✓ |\n| 新人團隊 | ✓（上手快） |  |\n| 需要 React Native |  | ✓ |\n| 需要最大生態 |  | ✓ |\n\n  \n### 2026 Vue 生態\n\n  \n- **核心**：Vue 3.5+\n- **路由**：Vue Router 4\n- **狀態**：Pinia（官方推薦，取代 Vuex）\n- **全端**：Nuxt 3+\n- **UI**：Element Plus、Naive UI、Vuetify、Quasar、PrimeVue\n- **build**：Vite（預設）\n\n  \n    \n      💼\n      接案小知識\n    \n    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「Vue」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。",
+      "tip": {
+        "type": "practical",
+        "text": "剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「Vue」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "9.1.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// 試試改變數、按執行\nconst numbers = [1, 2, 3, 4, 5];\nconst doubled = numbers.map(n => n * 2);\nconsole.log(\"原本:\", numbers);\nconsole.log(\"乘 2:\", doubled);\nconsole.log(\"總和:\", numbers.reduce((a, b) => a + b, 0));",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "找一個你身邊的例子、用「Vue 是什麼？為什麼選 Vue？」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "Vue 3 的革命（2020+）"
+        },
+        {
+          "level": 3,
+          "text": "選擇場景"
+        },
+        {
+          "level": 3,
+          "text": "2026 Vue 生態"
+        }
+      ]
+    },
+    {
+      "id": "9.2",
+      "number": "LESSON 9.2",
+      "title": "第一個 Vue 應用",
+      "oneLineSummary": "Single File Component（.vue 檔）是「template + script + style 三合一」。",
+      "analogy": "像便當盒分三格—主菜（template / HTML）、配菜（script / JS）、調味（style / CSS）—一個檔案搞定一個 component。比 React 的「全部 JS」更直觀。",
+      "content": "```bash\n# 建專案（官方推薦：Vite）\npnpm create vue@latest my-app\ncd my-app && pnpm install && pnpm dev\n```\n\n  \n### SFC（Single File Component）：Vue 的招牌\n\n```vue\n\nimport { ref } from \"vue\";\n\nconst count = ref(0);\n\nfunction increment() {\n  count.value++;\n}\n\n  \n    Hello Vue\n    \nCount: &#123;&#123; count &#125;&#125;\n\n    +1\n  \n\n.hello {\n  text-align: center;\n  padding: 20px;\n}\n\n```\n\n  \n一個 `.vue` 檔包**template + script + style**，三合一。樣式自動 scoped（不會影響其他元件）。\n\n  \n### 三大區塊\n\n  \n- ``：JS 邏輯（Composition API 簡化版）\n- ``：HTML 結構（含 Vue 指令）\n- ``：樣式（scoped 表示只影響這元件）\n\n  \n### Vue vs React 寫法對照\n\n```text\nReact (JSX)                   Vue (SFC)\n─────────────────────         ─────────────────────\nclassName=\"\"                  class=\"\"\nonClick={fn}                  @click=\"fn\"\n{value}                       &#123;&#123; value &#125;&#125;\n&#123;arr.map(...)&#125;             v-for=\"x in arr\"\n&#123;cond && &#125;          v-if=\"cond\"\nuseState(0)                   ref(0)\nuseEffect(fn, [dep])          watch(dep, fn)\n```\n\n  \n    \n      🎯\n      面試考點\n    \n    台灣科技公司面試 90% 會問「Vue」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。",
+      "tip": {
+        "type": "pro",
+        "text": "台灣科技公司面試 90% 會問「Vue」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "9.2.auto",
+          "language": "bash",
+          "title": "試試看",
+          "initialCode": "# 建專案（官方推薦：Vite）\npnpm create vue@latest my-app\ncd my-app && pnpm install && pnpm dev",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "SFC（Single File Component）：Vue 的招牌"
+        },
+        {
+          "level": 3,
+          "text": "三大區塊"
+        },
+        {
+          "level": 3,
+          "text": "Vue vs React 寫法對照"
+        }
+      ]
+    },
+    {
+      "id": "9.3",
+      "number": "LESSON 9.3",
+      "title": "Template 語法：Vue 的招牌",
+      "oneLineSummary": "Composition API 是Vue 3 的新寫法—像 React Hook、但更靈活。",
+      "analogy": "像從「填表式」變「組合式」寫程式。舊版 Vue 2 像填寫死的欄位（data、methods、computed）、Composition API 自由組合 ref / computed / watch—跟 React Hook 哲學相通。",
+      "content": "### 插值與指令\n\n```vue\n\n  \n  \n&#123;&#123; message &#125;&#125;\n\n  \n  \n  \n  \n  \n  \n  \n  \n  \n  點我\n  \n  \n  \n  歡迎\n  訪客\n  請登入\n  \n  \n  ...\n  \n  \n  \n\n  \n  \n  \n  \n  \n  \n  \n  \n  \n  \n\n```\n\n  \n### 事件修飾符（Vue 強項）\n\n```vue\n\n```\n\n  \n### v-model 修飾符\n\n```vue\n\n```\n\n  \n    **✨ 接案小技巧**\n    \nVue 的修飾符語法比 React 簡潔太多。一個 `@submit.prevent` 就解決 React 的 `e.preventDefault()`，`v-model.lazy` 就解決 debounce input。這是亞洲團隊愛 Vue 的原因之一。\n\n  \n\n  \n    \n      ⚡\n      學習加速器\n    \n    把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。",
+      "tip": {
+        "type": "practical",
+        "text": "把這節學到的馬上應用到一個小東西—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "9.3.auto",
+          "language": "vue",
+          "title": "試試看",
+          "initialCode": "&#123;&#123; message &#125;&#125;\n\n  \n  \n  \n  \n  \n  \n  \n  \n  \n  點我\n  \n  \n  \n  歡迎\n  訪客\n  請登入\n  \n  \n  ...",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "插值與指令"
+        },
+        {
+          "level": 3,
+          "text": "事件修飾符（Vue 強項）"
+        },
+        {
+          "level": 3,
+          "text": "v-model 修飾符"
+        }
+      ]
+    },
+    {
+      "id": "9.4",
+      "number": "LESSON 9.4",
+      "title": "響應系統：ref、reactive、computed",
+      "oneLineSummary": "Reactive：ref / reactive—改了畫面自動更新、Vue 的核心魔法。",
+      "analogy": "像智慧燈泡—App 改了顏色、燈立刻變—不用手動同步。const count = ref(0); count.value++—Vue 自動偵測變化、相關畫面立刻重畫。",
+      "content": "Vue 的核心：**響應系統**。資料變，畫面自動更新。Vue 3 用 ES6 Proxy 實作，比 Vue 2 強很多。\n\n  \n### ref：包單個值\n\n```vue\n\nimport { ref } from \"vue\";\n\nconst count = ref(0);\nconst name = ref(\"招財\");\nconst user = ref({ name: \"招財\", age: 3 });\n\n// JS 中要用 .value\ncount.value++;\nconsole.log(count.value);\nuser.value.age = 4;\n\n  \n  \n&#123;&#123; count &#125;&#125;\n\n```\n\n  \n### reactive：包物件（不用 .value）\n\n```js\nimport { reactive } from \"vue\";\n\nconst state = reactive({\n  count: 0,\n  name: \"招財\",\n  pets: [\"小白\", \"小黑\"]\n});\n\n// 直接改\nstate.count++;\nstate.pets.push(\"招財\");\nconsole.log(state.name);\n\n// 注意：解構會失去響應性！\nconst { count } = state; // ✗ count 不再響應\n\n// 要用 toRefs\nimport { toRefs } from \"vue\";\nconst { count, name } = toRefs(state); // ✓\n```\n\n  \n### ref vs reactive 怎麼選？\n\n  \n- **原始型別**（number、string、boolean）→ `ref`\n- **物件 / 陣列**→ 兩者都行\n- **業界傾向**：**全部用 ref**（統一、解構不爆）\n\n  \n很多大型專案規範「**禁用 reactive**」，全用 ref。寫起來囉嗦一點，但維護成本低。\n\n  \n### computed：衍生狀態\n\n```js\nimport { ref, computed } from \"vue\";\n\nconst firstName = ref(\"招\");\nconst lastName = ref(\"財\");\n\nconst fullName = computed(() => firstName.value + lastName.value);\n\nconsole.log(fullName.value); // \"招財\"\n\n// 自動更新\nfirstName.value = \"小\";\nconsole.log(fullName.value); // \"小財\"\n\n// 可寫的 computed（少用）\nconst fullName2 = computed({\n  get: () => firstName.value + lastName.value,\n  set: (val) => {\n    [firstName.value, lastName.value] = val.split(\" \");\n  }\n});\n```\n\n  \n### watch & watchEffect\n\n```js\nimport { ref, watch, watchEffect } from \"vue\";\n\nconst count = ref(0);\n\n// watch：明確指定要監聽什麼\nwatch(count, (newVal, oldVal) => {\n  console.log(`count: ${oldVal} → ${newVal}`);\n});\n\n// 監聽多個\nwatch([count, name], ([c1, n1], [c0, n0]) => { ... });\n\n// 深層監聽（物件內部變化）\nwatch(user, ..., { deep: true });\n\n// 立即執行（不用等變化）\nwatch(count, ..., { immediate: true });\n\n// watchEffect：自動偵測依賴（類似 useEffect）\nwatchEffect(() => {\n  console.log(`count: ${count.value}`);\n  // 自動知道依賴 count\n});\n```\n\n  \n### 背後的魔法：Proxy\n\n  \nVue 3 用 ES6 Proxy 攔截物件的 get / set，達成響應性：\n\n```js\n// 簡化版 reactive 實作\nfunction reactive(obj) {\n  return new Proxy(obj, {\n    get(target, key) {\n      track(target, key); // 紀錄誰在用\n      return target[key];\n    },\n    set(target, key, value) {\n      target[key] = value;\n      trigger(target, key); // 通知所有用過的地方更新\n      return true;\n    }\n  });\n}\n```\n\n  \n這就是為什麼 Vue 3 寫起來「**感覺像普通物件，但會自動更新**」。\n\n  \n    \n      🚀\n      2026 趨勢\n    \n    這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。",
+      "tip": {
+        "type": "trend",
+        "text": "這個技術 2026 還在主流、未來 5 年不會過時。但工具會更新—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "9.4.auto",
+          "language": "vue",
+          "title": "試試看",
+          "initialCode": "import { ref } from \"vue\";\n\nconst count = ref(0);\nconst name = ref(\"招財\");\nconst user = ref({ name: \"招財\", age: 3 });\n\n// JS 中要用 .value\ncount.value++;\nconsole.log(count.value);\nuser.value.age = 4;\n\n  \n  \n&#123;&#123; count &#125;&#125;",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "ref：包單個值"
+        },
+        {
+          "level": 3,
+          "text": "reactive：包物件（不用 .value）"
+        },
+        {
+          "level": 3,
+          "text": "ref vs reactive 怎麼選？"
+        },
+        {
+          "level": 3,
+          "text": "computed：衍生狀態"
+        },
+        {
+          "level": 3,
+          "text": "watch & watchEffect"
+        },
+        {
+          "level": 3,
+          "text": "背後的魔法：Proxy"
+        }
+      ]
+    },
+    {
+      "id": "9.5",
+      "number": "LESSON 9.5",
+      "title": "元件通訊：Props、Emit、Provide/Inject",
+      "oneLineSummary": "Template Syntax：v-bind / v-on / v-if / v-for—Vue 模板的核心指令。",
+      "analogy": "像HTML 的擴充標籤。v-if 條件渲染（顯示 / 隱藏）、v-for 列表渲染、v-on:click 監聽事件、v-bind:src 動態屬性。寫起來像 HTML、能力像 JS。",
+      "content": "### Props（父→子）\n\n```vue\n\n// 簡單版\nconst props = defineProps([\"name\", \"age\"]);\n\n// TS 版（推薦）\ninterface Props {\n  name: string;\n  age?: number;\n  tags?: string[];\n}\n\nconst props = defineProps();\n\n// 帶預設值\nconst props = withDefaults(defineProps(), {\n  age: 0,\n  tags: () => []\n});\n\n  \n&#123;&#123; props.name &#125;&#125;\n\n```\n\n```vue\n\n  \n\n```\n\n  \n### Emit（子→父）\n\n```vue\n\nconst emit = defineEmits();\n\nfunction handleClick(e: MouseEvent) {\n  emit(\"click\", e);\n}\n\n```\n\n  \n### v-model on Component（雙向綁定）\n\n```vue\n\nconst model = defineModel(); // Vue 3.4+\n\n  \n\n```\n\n  \n### Slot（內容插槽）\n\n```vue\n\n  \n    \n      \n    \n    \n       \n    \n    \n      \n    \n  \n\n  \n## 標題\n\n  \n  \n內容會塞進預設 slot\n\n  \n  確認\n\n```\n\n  \n### Provide / Inject（跨層傳值）\n\n```js\n// 父元件\nimport { provide, ref } from \"vue\";\n\nconst theme = ref(\"dark\");\nprovide(\"theme\", theme);\n\n// 任何深度的子元件\nimport { inject } from \"vue\";\n\nconst theme = inject(\"theme\");\n// 不用一層層傳 props\n```\n\n  \n    \n      🛠️\n      工具推薦\n    \n    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。",
+      "tip": {
+        "type": "practical",
+        "text": "配合這節用的工具：(1) VS Code（編輯器、免費）(2) Chrome DevTools（F12 開啟、除錯神器）(3) Live Server（VS Code 擴充、即時預覽）(4) GitHub Copilot / Cursor（AI 寫程式、學習加速 2-10x）。"
+      },
+      "xp": 15,
+      "playgrounds": [
+        {
+          "key": "9.5.auto",
+          "language": "vue",
+          "title": "試試看",
+          "initialCode": "// 簡單版\nconst props = defineProps([\"name\", \"age\"]);\n\n// TS 版（推薦）\ninterface Props {\n  name: string;\n  age?: number;\n  tags?: string[];\n}\n\nconst props = defineProps();\n\n// 帶預設值\nconst props = withDefaults(defineProps(), {\n  age: 0,\n  tags: () => []\n});\n\n  \n&#123;&#123; props.name &#125;&#125;",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "Props（父→子）"
+        },
+        {
+          "level": 3,
+          "text": "Emit（子→父）"
+        },
+        {
+          "level": 3,
+          "text": "v-model on Component（雙向綁定）"
+        },
+        {
+          "level": 3,
+          "text": "Slot（內容插槽）"
+        },
+        {
+          "level": 3,
+          "text": "Provide / Inject（跨層傳值）"
+        }
+      ]
+    },
+    {
+      "id": "9.6",
+      "number": "LESSON 9.6",
+      "title": "生命週期與組合式函式",
+      "oneLineSummary": "Computed / Watch：「依賴變了自動算 / 自動跑」—Vue 的智慧計算。",
+      "analogy": "像Excel 公式—A1 = B1 + C1、B1 改了 A1 自動更新。computed 一樣：宣告 fullName = computed(() =&gt; firstName + lastName)—兩個任一變、fullName 自動算。",
+      "content": "### 生命週期 hooks\n\n```js\nimport {\n  onMounted, onUnmounted, onUpdated,\n  onBeforeMount, onBeforeUnmount, onBeforeUpdate\n} from \"vue\";\n\nonMounted(() => {\n  console.log(\"元件掛載\");\n  // 抓資料、設 timer、訂閱事件\n});\n\nonUnmounted(() => {\n  console.log(\"元件卸載\");\n  // 清 timer、取消訂閱\n});\n\nonUpdated(() => {\n  console.log(\"DOM 更新後\");\n});\n```\n\n  \n### Composables（Vue 版 Custom Hook）\n\n  \n把邏輯抽出來重用。慣例命名 `use*`。\n\n```js\n// useCounter.js\nimport { ref } from \"vue\";\n\nexport function useCounter(initial = 0) {\n  const count = ref(initial);\n  \n  const increment = () => count.value++;\n  const decrement = () => count.value--;\n  const reset = () => count.value = initial;\n  \n  return { count, increment, decrement, reset };\n}\n\n// 使用\n\nimport { useCounter } from \"./useCounter\";\n\nconst { count, increment } = useCounter(10);\n\n```\n\n  \n### VueUse：composables 超大集合\n\n```bash\npnpm add @vueuse/core\n```\n\n```js\nimport {\n  useLocalStorage, useDebounce, useMouse, useFetch,\n  useDark, useTitle, useClipboard, useIntersectionObserver\n} from \"@vueuse/core\";\n\n// 暗色模式\nconst isDark = useDark();\n\n// 滑鼠位置\nconst { x, y } = useMouse();\n\n// localStorage 同步\nconst theme = useLocalStorage(\"theme\", \"light\");\n\n// 200+ composables 解決 99% 常見需求\n```\n\n  \n    **🚀 進階技巧**\n    \nVueUse 是 Vue 生態的**瑞士刀**。網路、感測器、動畫、time、儲存全包。新專案幾乎都裝。比 React 的 usehooks 還完整。\n\n  \n\n  \n    \n      ⚠️\n      新手常見錯誤\n    \n    新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。",
+      "tip": {
+        "type": "warning",
+        "text": "新手 3 大坑：(1) 不看 console—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) 不存檔就 F5—改完忘記儲存以為「程式沒效果」 (3) 抄 code 不理解—複製貼上能跑、但下次要改就崩潰。記得：先看懂、再寫。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "9.6.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "import {\n  onMounted, onUnmounted, onUpdated,\n  onBeforeMount, onBeforeUnmount, onBeforeUpdate\n} from \"vue\";\n\nonMounted(() => {\n  console.log(\"元件掛載\");\n  // 抓資料、設 timer、訂閱事件\n});\n\nonUnmounted(() => {\n  console.log(\"元件卸載\");\n  // 清 timer、取消訂閱\n});\n\nonUpdated(() => {\n  console.log(\"DOM 更新後\");\n});",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "生命週期 hooks"
+        },
+        {
+          "level": 3,
+          "text": "Composables（Vue 版 Custom Hook）"
+        },
+        {
+          "level": 3,
+          "text": "VueUse：composables 超大集合"
+        }
+      ]
+    },
+    {
+      "id": "9.7",
+      "number": "LESSON 9.7",
+      "title": "Pinia：狀態管理（取代 Vuex）",
+      "oneLineSummary": "Pinia 是Vue 的狀態管理—取代 Vuex、Vue 3 標配。",
+      "analogy": "像家裡的中央衣櫃—全家衣物統一管。Pinia 一樣：使用者 / 購物車 / 設定—放一個全域 store、所有 component 都能拿。",
+      "content": "Pinia 是 Vue 3 官方推薦的狀態管理。比 Vuex 簡單、有完整 TS 支援。\n\n```bash\npnpm add pinia\n```\n\n```js\n// main.js\nimport { createApp } from \"vue\";\nimport { createPinia } from \"pinia\";\nimport App from \"./App.vue\";\n\nconst app = createApp(App);\napp.use(createPinia());\napp.mount(\"#app\");\n```\n\n  \n### 定義 Store（兩種寫法）\n\n```js\n// stores/counter.js — Composition API 風格（推薦）\nimport { defineStore } from \"pinia\";\nimport { ref, computed } from \"vue\";\n\nexport const useCounterStore = defineStore(\"counter\", () => {\n  // state\n  const count = ref(0);\n  \n  // getter\n  const doubled = computed(() => count.value * 2);\n  \n  // action\n  function increment() {\n    count.value++;\n  }\n  \n  async function fetchFromAPI() {\n    const r = await fetch(\"/api/count\");\n    count.value = (await r.json()).count;\n  }\n  \n  return { count, doubled, increment, fetchFromAPI };\n});\n```\n\n```vue\n\nimport { useCounterStore } from \"@/stores/counter\";\nimport { storeToRefs } from \"pinia\";\n\nconst counter = useCounterStore();\n\n// 解構時要用 storeToRefs 保留響應性\nconst { count, doubled } = storeToRefs(counter);\n\n// actions 不用 storeToRefs\nconst { increment, fetchFromAPI } = counter;\n\n  \nCount: &#123;&#123; count &#125;&#125;\n\n  \nDoubled: &#123;&#123; doubled &#125;&#125;\n\n  +\n\n```\n\n  \n### 持久化（搭配 plugin）\n\n```bash\npnpm add pinia-plugin-persistedstate\n```\n\n```js\nimport piniaPluginPersistedstate from \"pinia-plugin-persistedstate\";\n\nconst pinia = createPinia();\npinia.use(piniaPluginPersistedstate);\n\n// store 內\nexport const useStore = defineStore(\"main\", {\n  state: () => ({ count: 0 }),\n  persist: true // 自動存進 localStorage\n});\n```\n\n  \n    \n      💼\n      接案小知識\n    \n    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「Vue」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。",
+      "tip": {
+        "type": "practical",
+        "text": "剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「Vue」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "9.7.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// main.js\nimport { createApp } from \"vue\";\nimport { createPinia } from \"pinia\";\nimport App from \"./App.vue\";\n\nconst app = createApp(App);\napp.use(createPinia());\napp.mount(\"#app\");",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "定義 Store（兩種寫法）"
+        },
+        {
+          "level": 3,
+          "text": "持久化（搭配 plugin）"
+        }
+      ]
+    },
+    {
+      "id": "9.8",
+      "number": "LESSON 9.8",
+      "title": "Vue Router：SPA 路由",
+      "oneLineSummary": "Vue Router 是「Vue 的 URL 換頁」—SPA 多頁體驗。",
+      "analogy": "跟 React Router 概念一樣—URL 變 → 切換顯示 component、不刷新整頁。Vue 的版本內建得更深、寫法更簡單。",
+      "content": "```bash\npnpm add vue-router@4\n```\n\n```js\n// router.js\nimport { createRouter, createWebHistory } from \"vue-router\";\nimport Home from \"@/views/Home.vue\";\n\nconst router = createRouter({\n  history: createWebHistory(),\n  routes: [\n    { path: \"/\", component: Home },\n    { path: \"/about\", component: () => import(\"@/views/About.vue\") }, // lazy\n    { path: \"/user/:id\", component: () => import(\"@/views/User.vue\") },\n    {\n      path: \"/admin\",\n      component: () => import(\"@/layouts/Admin.vue\"),\n      meta: { requiresAuth: true },\n      children: [\n        { path: \"dashboard\", component: () => import(\"@/views/Dashboard.vue\") }\n      ]\n    },\n    { path: \"/:catchAll(.*)\", component: () => import(\"@/views/404.vue\") }\n  ]\n});\n\n// 全域守衛（auth 檢查）\nrouter.beforeEach((to, from, next) => {\n  if (to.meta.requiresAuth && !isLoggedIn()) {\n    next(\"/login\");\n  } else {\n    next();\n  }\n});\n\nexport default router;\n```\n\n```vue\n\n  \n    首頁\n    關於\n  \n  \n   \n\n```\n\n  \n### 程式化導航\n\n```js\nimport { useRouter, useRoute } from \"vue-router\";\n\nconst router = useRouter();\nconst route = useRoute();\n\n// 取參數\nconsole.log(route.params.id);\nconsole.log(route.query.search);\n\n// 導航\nrouter.push(\"/about\");\nrouter.push({ name: \"user\", params: { id: 123 } });\nrouter.replace(\"/login\");\nrouter.back();\n```\n\n  \n    \n      🎯\n      面試考點\n    \n    台灣科技公司面試 90% 會問「Vue」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。",
+      "tip": {
+        "type": "pro",
+        "text": "台灣科技公司面試 90% 會問「Vue」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "9.8.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// router.js\nimport { createRouter, createWebHistory } from \"vue-router\";\nimport Home from \"@/views/Home.vue\";\n\nconst router = createRouter({\n  history: createWebHistory(),\n  routes: [\n    { path: \"/\", component: Home },\n    { path: \"/about\", component: () => import(\"@/views/About.vue\") }, // lazy\n    { path: \"/user/:id\", component: () => import(\"@/views/User.vue\") },\n    {\n      path: \"/admin\",\n      component: () => import(\"@/layouts/Admin.vue\"),\n      meta: { requiresAuth: true },\n      children: [\n        { path: \"dashboard\", component: () => import(\"@/views/Dashboard.vue\") }\n      ]\n    },\n    { path: \"/:catchAll(.*)\", component: () => import(\"@/views/404.vue\") }\n  ]\n});\n\n// 全域守衛（auth 檢查）\nrouter.beforeEach((to, from, next) => {\n  if (to.meta.requiresAuth && !isLoggedIn()) {\n    next(\"/login\");\n  } else {\n    next();\n  }\n});\n\nexport default router;",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "程式化導航"
+        }
+      ]
+    },
+    {
+      "id": "9.9",
+      "number": "LESSON 9.9",
+      "title": "Nuxt：Vue 的全端框架",
+      "oneLineSummary": "Nuxt 是「Vue 的 Next.js」—全端框架、SSR / SSG / API routes 一條龍。",
+      "analogy": "像蘋果生態系—iPhone（Vue）+ AirPods（Pinia）+ Mac（Nuxt）—整合度高、開發體驗順。中小企業 / 內容網站常選 Nuxt 而不是 Next。",
+      "content": "Nuxt 之於 Vue，等於 Next.js 之於 React。SSR、SSG、API routes、檔案路由全包。\n\n```bash\npnpx nuxi@latest init my-app\ncd my-app && pnpm install && pnpm dev\n```\n\n  \n### 檔案路由（自動）\n\n```text\npages/\n├── index.vue              → /\n├── about.vue              → /about\n├── blog/\n│   ├── index.vue          → /blog\n│   └── [slug].vue         → /blog/:slug\n└── user-[id].vue          → /user-:id\n```\n\n  \n### useFetch：SSR 友善的資料抓取\n\n```vue\n\n// 自動處理 SSR / hydration / cache\nconst { data, pending, error, refresh } = await useFetch(\"/api/users\");\n\n  載入中...\n  錯誤\n  \n    &#123;&#123; u.name &#125;&#125;\n  \n\n```\n\n  \n### Server API（檔案系統路由）\n\n```text\nserver/api/\n├── users.get.ts      → GET /api/users\n├── users.post.ts     → POST /api/users\n└── users/[id].get.ts → GET /api/users/:id\n```\n\n```ts\n// server/api/users.get.ts\nexport default defineEventHandler(async (event) => {\n  const users = await db.query(\"SELECT * FROM users\");\n  return users;\n});\n```\n\n  \n### SSR / SSG / Hybrid\n\n```ts\n// nuxt.config.ts\nexport default defineNuxtConfig({\n  // 全站 SSR（預設）\n  ssr: true,\n  \n  // 或：混合模式\n  routeRules: {\n    \"/blog/**\": { static: true },         // 部落格用 SSG\n    \"/dashboard\": { ssr: false },         // 後台用 SPA\n    \"/api/**\": { cors: true },           // API 加 CORS\n    \"/\": { isr: 3600 }                  // 首頁每小時重新生成\n  }\n});\n```\n\n  \nNuxt 一個專案解決：SPA、SSR、SSG、API、middleware、auth。**是 Vue 全端的事實標準**。\n\n  \n    \n      ⚡\n      學習加速器\n    \n    把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。",
+      "tip": {
+        "type": "practical",
+        "text": "把這節學到的馬上應用到一個小東西—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "9.9.auto",
+          "language": "bash",
+          "title": "試試看",
+          "initialCode": "pnpx nuxi@latest init my-app\ncd my-app && pnpm install && pnpm dev",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "檔案路由（自動）"
+        },
+        {
+          "level": 3,
+          "text": "useFetch：SSR 友善的資料抓取"
+        },
+        {
+          "level": 3,
+          "text": "Server API（檔案系統路由）"
+        },
+        {
+          "level": 3,
+          "text": "SSR / SSG / Hybrid"
+        }
+      ]
+    },
+    {
+      "id": "9.10",
+      "number": "LESSON 9.10",
+      "title": "Vue vs React 怎麼選？",
+      "oneLineSummary": "整章實戰：用 Nuxt 做一個多頁部落格—SSR + 動態路由 + Markdown 渲染。",
+      "analogy": "像學完 Vue 後的第一個能炫耀的作品—一個能上線、有 SEO、可以連結分享的部落格。",
+      "content": "### API 風格差異\n\n```text\nReact              Vue\n─────────         ─────────\nJSX                Template（HTML-like）\nuseState           ref / reactive\nuseEffect          watchEffect / onMounted\nuseMemo            computed\nuseContext         provide / inject\nCustom Hook        Composable\nuseReducer         Pinia\nRedux              Pinia / Vuex（舊）\n```\n\n  \n### 各自優勢\n\n  \n**Vue 贏的點**：\n\n  \n- 學習曲線最緩\n- SFC（template + script + style 一起）寫起來舒服\n- v-model 雙向綁定方便\n- 內建指令（v-if、v-for、v-show）夠用\n- Pinia 比 Redux 簡單 10 倍\n- 中文資源最完整\n\n  \n**React 贏的點**：\n\n  \n- 生態最大\n- 工作機會多（特別美國）\n- React Native 跨平台\n- JSX 自由度最高（純 JS 表達式）\n- RSC / Server Actions 領先\n\n  \n### 效能\n\n  \n兩個都很快，差別小於 5%。**瓶頸永遠在你的 code 不在框架**。Vue 3 在某些場景比 React 略快（Proxy 響應比 VDOM diff 更精準）。React 在巨大列表略勝（搭配 Suspense + concurrent）。實際選哪個都不會卡效能。\n\n  \n### 遷移成本\n\n  \n會 React 學 Vue 大概一週上手，反過來也差不多。兩個框架的**心智模型 80% 一樣**，剩 20% 語法糖差異。\n\n  \n    **🚀 進階技巧**\n    \n2026 業界共識：**會一個夠用，會兩個薪水高**。資深工程師應該兩個都會（雖然只精通一個）。看到 Vue 專案不能說「我只會 React 不接」，看 Vue 文件 2-3 天就能 PR。\n\n  \n\n  \n    \n      🚀\n      2026 趨勢\n    \n    這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。",
+      "tip": {
+        "type": "trend",
+        "text": "這個技術 2026 還在主流、未來 5 年不會過時。但工具會更新—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "找一個你身邊的例子、用「Vue vs React 怎麼選？」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "API 風格差異"
+        },
+        {
+          "level": 3,
+          "text": "各自優勢"
+        },
+        {
+          "level": 3,
+          "text": "效能"
+        },
+        {
+          "level": 3,
+          "text": "遷移成本"
+        }
+      ]
+    },
+    {
+      "title": "Vue Composition API：setup + ref + reactive",
+      "oneLineSummary": "Vue 3 主流寫法、取代 Options API、跟 React Hook 概念類似",
+      "analogy": "寫法簡潔、邏輯可重用、TS 友善—Vue 3+ 必學。",
+      "content": "## script setup（最簡）\n```vue\n<script setup>\nimport { ref } from \"vue\";\n\nconst count = ref(0);\nfunction increment() { count.value++; }\n</script>\n\n<template>\n  <button @click=\"increment\">{{ count }}</button>\n</template>\n```\n\n## ref vs reactive\n\n### ref（原始值 + 物件）\n```javascript\nconst count = ref(0);\ncount.value++;  // .value 操作\n\nconst user = ref({ name: \"Alice\" });\nuser.value.name = \"Bob\";\n```\n\n### reactive（只能物件 / array）\n```javascript\nconst user = reactive({ name: \"Alice\" });\nuser.name = \"Bob\";  // 不用 .value\n```\n\n**推薦永遠用 ref**—統一寫法、不會混淆。\n\n## 為什麼 .value\n- ref 是 reactive 物件、`.value` 是它的內部值\n- template 內自動 unwrap（不用 .value）\n\n## computed（衍生值）\n```vue\n<script setup>\nimport { ref, computed } from \"vue\";\n\nconst firstName = ref(\"Alice\");\nconst lastName = ref(\"Wang\");\nconst fullName = computed(() => `${firstName.value} ${lastName.value}`);\n</script>\n```\n\n## watch（監聽變化）\n```javascript\nimport { ref, watch } from \"vue\";\n\nconst count = ref(0);\nwatch(count, (newVal, oldVal) => {\n  console.log(`${oldVal} → ${newVal}`);\n});\n\n// 監聽多個\nwatch([firstName, lastName], ([f, l]) => { ... });\n\n// 監聽物件深層\nwatch(user, () => { ... }, { deep: true });\n```\n\n## watchEffect（自動追蹤）\n```javascript\nwatchEffect(() => {\n  console.log(`count is ${count.value}`);\n  // 自動追蹤 count、改變就重跑\n});\n```\n\n## Lifecycle hooks\n```javascript\nimport { onMounted, onUnmounted } from \"vue\";\n\nonMounted(() => {\n  console.log(\"mounted!\");\n});\n\nonUnmounted(() => {\n  console.log(\"cleanup\");\n});\n```",
+      "tip": {
+        "type": "practical",
+        "text": "Composition API + script setup 是 Vue 3+ 唯一推薦寫法。Options API 留給 legacy。"
+      },
+      "id": "9.11",
+      "number": "LESSON 9.11",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "9.11.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "const count = ref(0);\ncount.value++;  // .value 操作\n\nconst user = ref({ name: \"Alice\" });\nuser.value.name = \"Bob\";",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "script setup（最簡）"
+        },
+        {
+          "level": 2,
+          "text": "ref vs reactive"
+        },
+        {
+          "level": 3,
+          "text": "ref（原始值 + 物件）"
+        },
+        {
+          "level": 3,
+          "text": "reactive（只能物件 / array）"
+        },
+        {
+          "level": 2,
+          "text": "為什麼 .value"
+        },
+        {
+          "level": 2,
+          "text": "computed（衍生值）"
+        },
+        {
+          "level": 2,
+          "text": "watch（監聽變化）"
+        },
+        {
+          "level": 2,
+          "text": "watchEffect（自動追蹤）"
+        },
+        {
+          "level": 2,
+          "text": "Lifecycle hooks"
+        }
+      ]
+    },
+    {
+      "title": "Vue 模板語法：v-if / v-for / v-model",
+      "oneLineSummary": "Vue 的「魔法指令」—讓 HTML 動起來",
+      "analogy": "不寫 JSX、寫接近真 HTML 的模板。學會這幾個指令、可寫 80% 場景。",
+      "content": "## v-if / v-else\n```vue\n<template>\n  <div v-if=\"loggedIn\">歡迎</div>\n  <div v-else-if=\"loading\">載入中...</div>\n  <div v-else>請登入</div>\n</template>\n```\n\n## v-show（CSS hide）\n```vue\n<div v-show=\"visible\">內容</div>\n<!-- 編譯成 display: none、不是 unmount -->\n```\n\n差別：\n- `v-if`：unmount component（適合切換少）\n- `v-show`：CSS 隱藏（適合切換多）\n\n## v-for\n```vue\n<template>\n  <ul>\n    <li v-for=\"user in users\" :key=\"user.id\">\n      {{ user.name }}\n    </li>\n  </ul>\n\n  <!-- 加 index -->\n  <li v-for=\"(item, index) in items\" :key=\"item.id\">\n    {{ index }}: {{ item }}\n  </li>\n\n  <!-- 物件 -->\n  <li v-for=\"(value, key) in obj\" :key=\"key\">\n    {{ key }}: {{ value }}\n  </li>\n</template>\n```\n\n⚠️ 永遠加 `:key`、Vue 才能追蹤元素。\n\n## v-model（雙向綁定殺手）\n```vue\n<script setup>\nimport { ref } from \"vue\";\nconst text = ref(\"\");\n</script>\n\n<template>\n  <input v-model=\"text\">\n  <p>{{ text }}</p>\n</template>\n```\n\n等於：\n```vue\n<input\n  :value=\"text\"\n  @input=\"text = $event.target.value\"\n>\n```\n\n## v-model modifiers\n```vue\n<input v-model.trim=\"text\">          <!-- 自動 trim -->\n<input v-model.number=\"age\">         <!-- 自動轉數字 -->\n<input v-model.lazy=\"text\">          <!-- change 才同步 -->\n```\n\n## v-bind / : 動態屬性\n```vue\n<img :src=\"imageUrl\" :alt=\"description\">\n<a :href=\"link\" :class=\"{ active: isActive }\">\n\n<!-- 多個 attribute -->\n<div v-bind=\"{ id: 'foo', class: 'bar' }\">\n\n<!-- :class array -->\n<div :class=\"[baseClass, isActive ? activeClass : '']\">\n\n<!-- :class object -->\n<div :class=\"{ active: isActive, error: hasError }\">\n```\n\n## v-on / @ 事件\n```vue\n<button @click=\"handleClick\">Click</button>\n<button @click=\"count++\">+</button>\n<input @keyup.enter=\"submit\">         <!-- 按 Enter -->\n<button @click.stop=\"handler\">        <!-- stopPropagation -->\n<form @submit.prevent=\"onSubmit\">     <!-- preventDefault -->\n```\n\n## v-html（小心！）\n```vue\n<div v-html=\"trustedHtml\"></div>\n```\n⚠️ 會塞進去 + 執行、XSS 風險、只給可信來源。\n\n## v-slot\n```vue\n<!-- 子 component -->\n<template>\n  <div class=\"card\">\n    <slot name=\"header\"></slot>\n    <slot></slot>\n    <slot name=\"footer\"></slot>\n  </div>\n</template>\n\n<!-- 父使用 -->\n<MyCard>\n  <template #header>標題</template>\n  內文\n  <template #footer>頁尾</template>\n</MyCard>\n```",
+      "tip": {
+        "type": "pro",
+        "text": "Vue 指令 vs React JSX：Vue 偏 HTML、入門快；React 偏 JS、彈性高。各有粉絲。"
+      },
+      "id": "9.12",
+      "number": "LESSON 9.12",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "9.12.auto",
+          "language": "vue",
+          "title": "試試看",
+          "initialCode": "<template>\n  <div v-if=\"loggedIn\">歡迎</div>\n  <div v-else-if=\"loading\">載入中...</div>\n  <div v-else>請登入</div>\n</template>",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 10 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "v-if / v-else"
+        },
+        {
+          "level": 2,
+          "text": "v-show（CSS hide）"
+        },
+        {
+          "level": 2,
+          "text": "v-for"
+        },
+        {
+          "level": 2,
+          "text": "v-model（雙向綁定殺手）"
+        },
+        {
+          "level": 2,
+          "text": "v-model modifiers"
+        },
+        {
+          "level": 2,
+          "text": "v-bind / : 動態屬性"
+        },
+        {
+          "level": 2,
+          "text": "v-on / @ 事件"
+        },
+        {
+          "level": 2,
+          "text": "v-html（小心！）"
+        },
+        {
+          "level": 2,
+          "text": "v-slot"
+        }
+      ]
+    },
+    {
+      "title": "Vue Component：props / emit / slots",
+      "oneLineSummary": "元件溝通三大方式—父傳子、子傳父、插槽",
+      "analogy": "React 用 props + children + callback、Vue 用 props + emit + slot—原理一樣。",
+      "content": "## Props（父傳子）\n\n### TS 寫法\n```vue\n<script setup lang=\"ts\">\ninterface Props {\n  name: string;\n  age?: number;  // optional\n  items: string[];\n}\n\nconst props = defineProps<Props>();\n\n// 帶 default\nconst props = withDefaults(defineProps<Props>(), {\n  age: 18,\n  items: () => [],\n});\n</script>\n```\n\n### 使用\n```vue\n<UserCard name=\"Alice\" :age=\"25\" :items=\"['a', 'b']\" />\n```\n\n## Emit（子傳父）\n\n### 子 component\n```vue\n<script setup lang=\"ts\">\nconst emit = defineEmits<{\n  (e: \"submit\", data: { name: string }): void;\n  (e: \"cancel\"): void;\n}>();\n\nfunction handleSubmit() {\n  emit(\"submit\", { name: \"Alice\" });\n}\n</script>\n\n<template>\n  <button @click=\"handleSubmit\">送出</button>\n  <button @click=\"emit('cancel')\">取消</button>\n</template>\n```\n\n### 父 component\n```vue\n<UserForm \n  @submit=\"onSubmit\"\n  @cancel=\"onCancel\"\n/>\n```\n\n## Slot（插槽 / children）\n\n### 預設 slot\n```vue\n<!-- Card.vue -->\n<template>\n  <div class=\"card\">\n    <slot></slot>  <!-- children 放這 -->\n  </div>\n</template>\n\n<!-- 使用 -->\n<Card>\n  <h2>標題</h2>\n  <p>內文</p>\n</Card>\n```\n\n### Named slot\n```vue\n<!-- Modal.vue -->\n<template>\n  <div class=\"modal\">\n    <header><slot name=\"title\"></slot></header>\n    <main><slot></slot></main>\n    <footer><slot name=\"actions\"></slot></footer>\n  </div>\n</template>\n\n<!-- 使用 -->\n<Modal>\n  <template #title>確認刪除</template>\n  確定要刪嗎？\n  <template #actions>\n    <button>取消</button>\n    <button>刪除</button>\n  </template>\n</Modal>\n```\n\n### Scoped slot（傳資料給 slot）\n```vue\n<!-- List.vue -->\n<template>\n  <ul>\n    <li v-for=\"item in items\" :key=\"item.id\">\n      <slot :item=\"item\"></slot>\n    </li>\n  </ul>\n</template>\n\n<!-- 使用 -->\n<List :items=\"users\">\n  <template #default=\"{ item }\">\n    {{ item.name }} ({{ item.age }})\n  </template>\n</List>\n```\n\n## v-model on Component（雙向綁定）\n```vue\n<!-- 子 component -->\n<script setup>\ndefineProps<{ modelValue: string }>();\ndefineEmits<{ \"update:modelValue\": [value: string] }>();\n</script>\n\n<template>\n  <input \n    :value=\"modelValue\"\n    @input=\"$emit('update:modelValue', $event.target.value)\"\n  />\n</template>\n\n<!-- 父使用 -->\n<CustomInput v-model=\"text\" />\n```",
+      "tip": {
+        "type": "practical",
+        "text": "Vue 元件溝通三招（props / emit / slot）= React 的（props / callback / children）—會一個會另一個。"
+      },
+      "id": "9.13",
+      "number": "LESSON 9.13",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "9.13.auto",
+          "language": "vue",
+          "title": "試試看",
+          "initialCode": "<script setup lang=\"ts\">\ninterface Props {\n  name: string;\n  age?: number;  // optional\n  items: string[];\n}\n\nconst props = defineProps<Props>();\n\n// 帶 default\nconst props = withDefaults(defineProps<Props>(), {\n  age: 18,\n  items: () => [],\n});\n</script>",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "Props（父傳子）"
+        },
+        {
+          "level": 3,
+          "text": "TS 寫法"
+        },
+        {
+          "level": 3,
+          "text": "使用"
+        },
+        {
+          "level": 2,
+          "text": "Emit（子傳父）"
+        },
+        {
+          "level": 3,
+          "text": "子 component"
+        },
+        {
+          "level": 3,
+          "text": "父 component"
+        },
+        {
+          "level": 2,
+          "text": "Slot（插槽 / children）"
+        },
+        {
+          "level": 3,
+          "text": "預設 slot"
+        },
+        {
+          "level": 3,
+          "text": "Named slot"
+        },
+        {
+          "level": 3,
+          "text": "Scoped slot（傳資料給 slot）"
+        },
+        {
+          "level": 2,
+          "text": "v-model on Component（雙向綁定）"
+        }
+      ]
+    },
+    {
+      "title": "Pinia：Vue 官方狀態管理",
+      "oneLineSummary": "取代 Vuex 的官方推薦、語法簡單、TS 友善",
+      "analogy": "小專案不用全域 state、大專案靠 Pinia。",
+      "content": "## 為什麼是 Pinia\n- Vuex 太繁瑣（mutation / action / module）\n- Pinia 簡化：直接寫 state + action\n- TS 自動推斷\n- Devtools 整合\n- SSR 友善\n\n## 安裝\n```bash\nnpm install pinia\n```\n\n```javascript\n// main.ts\nimport { createPinia } from \"pinia\";\nimport App from \"./App.vue\";\n\nconst app = createApp(App);\napp.use(createPinia());\napp.mount(\"#app\");\n```\n\n## 定義 Store\n```typescript\n// stores/user.ts\nimport { defineStore } from \"pinia\";\nimport { ref, computed } from \"vue\";\n\nexport const useUserStore = defineStore(\"user\", () => {\n  // state\n  const name = ref(\"\");\n  const xp = ref(0);\n\n  // getter（computed）\n  const level = computed(() => Math.floor(Math.sqrt(xp.value / 100)) + 1);\n\n  // action\n  function addXp(amount: number) {\n    xp.value += amount;\n  }\n\n  async function fetchUser(id: string) {\n    const res = await fetch(`/api/users/${id}`);\n    const data = await res.json();\n    name.value = data.name;\n    xp.value = data.xp;\n  }\n\n  return { name, xp, level, addXp, fetchUser };\n});\n```\n\n## 在 component 使用\n```vue\n<script setup>\nimport { useUserStore } from \"@/stores/user\";\nconst user = useUserStore();\n\nuser.addXp(100);\nconsole.log(user.level);  // computed\n\n// 監聽 store 變化\nuser.$subscribe((mutation, state) => {\n  console.log(\"changed:\", state);\n});\n</script>\n\n<template>\n  <div>{{ user.name }} - Lv {{ user.level }}</div>\n  <button @click=\"user.addXp(10)\">+10 XP</button>\n</template>\n```\n\n## 取多個 state（避免失去響應性）\n```javascript\nimport { storeToRefs } from \"pinia\";\n\nconst user = useUserStore();\nconst { name, xp, level } = storeToRefs(user);  // 保持響應\nconst { addXp } = user;  // action 直接取\n```\n\n❌ 解構：`const { name } = user` → 失去響應性。\n\n## 模組化\n- 一個 store 一個檔案：`stores/user.ts`, `stores/cart.ts`\n- store 之間可互相 call\n\n## Persistence（自動存 localStorage）\n```bash\nnpm install pinia-plugin-persistedstate\n```\n\n```javascript\nimport { createPinia } from \"pinia\";\nimport piniaPluginPersistedstate from \"pinia-plugin-persistedstate\";\n\nconst pinia = createPinia();\npinia.use(piniaPluginPersistedstate);\n```\n\n```typescript\nexport const useUserStore = defineStore(\"user\", () => {\n  // ...\n}, {\n  persist: true,  // 自動存 localStorage\n});\n```\n\n## SSR 友善\nNuxt 3 內建 Pinia 支援、`useUserStore()` 在 server / client 都能用。",
+      "tip": {
+        "type": "milestone",
+        "text": "Pinia 是 Vue 3 全端的核心。學會這 + Composition API、就會 Vue 90%。"
+      },
+      "id": "9.14",
+      "number": "LESSON 9.14",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "9.14.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// main.ts\nimport { createPinia } from \"pinia\";\nimport App from \"./App.vue\";\n\nconst app = createApp(App);\napp.use(createPinia());\napp.mount(\"#app\");",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼是 Pinia"
+        },
+        {
+          "level": 2,
+          "text": "安裝"
+        },
+        {
+          "level": 2,
+          "text": "定義 Store"
+        },
+        {
+          "level": 2,
+          "text": "在 component 使用"
+        },
+        {
+          "level": 2,
+          "text": "取多個 state（避免失去響應性）"
+        },
+        {
+          "level": 2,
+          "text": "模組化"
+        },
+        {
+          "level": 2,
+          "text": "Persistence（自動存 localStorage）"
+        },
+        {
+          "level": 2,
+          "text": "SSR 友善"
+        }
+      ]
+    },
+    {
+      "title": "Vue Router：SPA 路由",
+      "oneLineSummary": "不刷新整頁、改 URL 切換 view—SPA 必備",
+      "analogy": "React 用 React Router、Vue 用 Vue Router、概念一樣。",
+      "content": "## 安裝\n```bash\nnpm install vue-router@4\n```\n\n## 基本設定\n```typescript\n// router/index.ts\nimport { createRouter, createWebHistory } from \"vue-router\";\nimport HomeView from \"@/views/HomeView.vue\";\n\nconst router = createRouter({\n  history: createWebHistory(),\n  routes: [\n    { path: \"/\", name: \"home\", component: HomeView },\n    { \n      path: \"/about\", \n      name: \"about\", \n      component: () => import(\"@/views/AboutView.vue\")  // lazy load\n    },\n    { \n      path: \"/users/:id\", \n      name: \"user\", \n      component: () => import(\"@/views/UserView.vue\"),\n      props: true  // 把 :id 傳成 prop\n    },\n    { \n      path: \"/:pathMatch(.*)*\", \n      component: NotFound \n    },\n  ],\n});\n\nexport default router;\n```\n\n```javascript\n// main.ts\nimport router from \"./router\";\napp.use(router);\n```\n\n## 使用\n```vue\n<template>\n  <router-link to=\"/about\">About</router-link>\n  <router-link :to=\"{ name: 'user', params: { id: 1 } }\">\n    User 1\n  </router-link>\n  \n  <!-- 顯示路由匹配的 component -->\n  <router-view />\n</template>\n```\n\n## 在 script 內導航\n```vue\n<script setup>\nimport { useRouter, useRoute } from \"vue-router\";\n\nconst router = useRouter();\nconst route = useRoute();\n\n// 取 params / query\nconsole.log(route.params.id);     // 動態路由\nconsole.log(route.query.q);        // ?q=foo\n\n// 導航\nrouter.push(\"/about\");\nrouter.push({ name: \"user\", params: { id: 1 } });\nrouter.push({ path: \"/search\", query: { q: \"vue\" } });\nrouter.replace(\"/login\");\nrouter.go(-1);  // 後退\n</script>\n```\n\n## 巢狀路由\n```typescript\n{\n  path: \"/users/:id\",\n  component: UserLayout,\n  children: [\n    { path: \"profile\", component: Profile },\n    { path: \"posts\", component: Posts },\n  ],\n}\n```\n\n## Route Guards（保護路由）\n```typescript\nrouter.beforeEach((to, from) => {\n  if (to.meta.requiresAuth && !isLoggedIn()) {\n    return { name: \"login\", query: { redirect: to.fullPath } };\n  }\n});\n\n// per-route\n{\n  path: \"/admin\",\n  beforeEnter: (to, from) => {\n    if (!isAdmin()) return \"/\";\n  },\n}\n```\n\n## Lazy load\n```typescript\n// 不要 import 在頂部、用 () => import()\n{ path: \"/about\", component: () => import(\"./About.vue\") }\n```\n→ 自動 code splitting、初始 bundle 小。\n\n## Scroll behavior\n```typescript\nconst router = createRouter({\n  // ...\n  scrollBehavior(to, from, savedPosition) {\n    if (savedPosition) return savedPosition;  // 回上頁恢復位置\n    if (to.hash) return { el: to.hash };       // 滾到 #anchor\n    return { top: 0 };                          // 預設回頂\n  },\n});\n```",
+      "tip": {
+        "type": "practical",
+        "text": "Vue Router 跟 React Router 概念 90% 一樣。會一個學另一個 1 小時。"
+      },
+      "id": "9.15",
+      "number": "LESSON 9.15",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "9.15.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// main.ts\nimport router from \"./router\";\napp.use(router);",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 9 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "安裝"
+        },
+        {
+          "level": 2,
+          "text": "基本設定"
+        },
+        {
+          "level": 2,
+          "text": "使用"
+        },
+        {
+          "level": 2,
+          "text": "在 script 內導航"
+        },
+        {
+          "level": 2,
+          "text": "巢狀路由"
+        },
+        {
+          "level": 2,
+          "text": "Route Guards（保護路由）"
+        },
+        {
+          "level": 2,
+          "text": "Lazy load"
+        },
+        {
+          "level": 2,
+          "text": "Scroll behavior"
+        }
+      ]
+    },
+    {
+      "title": "Vue 元件生命週期",
+      "oneLineSummary": "onMounted / onUpdated / onUnmounted—元件何時做事",
+      "analogy": "對應 React useEffect 但更明確：mount / update / unmount 各有 hook。",
+      "content": "## 完整 lifecycle\n```vue\n<script setup>\nimport {\n  onBeforeMount,\n  onMounted,\n  onBeforeUpdate,\n  onUpdated,\n  onBeforeUnmount,\n  onUnmounted,\n  onErrorCaptured,\n} from \"vue\";\n\nonBeforeMount(() => {\n  console.log(\"元件還沒插入 DOM\");\n});\n\nonMounted(() => {\n  console.log(\"元件插入 DOM、可訪問 ref\");\n});\n\nonBeforeUpdate(() => {\n  console.log(\"資料變了、DOM 還沒更新\");\n});\n\nonUpdated(() => {\n  console.log(\"DOM 更新完\");\n});\n\nonBeforeUnmount(() => {\n  console.log(\"元件要消失了、清理時機\");\n});\n\nonUnmounted(() => {\n  console.log(\"元件消失\");\n});\n\nonErrorCaptured((err) => {\n  console.log(\"子元件錯誤:\", err);\n  return false;  // 阻止向上傳遞\n});\n</script>\n```\n\n## 常見用法\n\n### onMounted: 抓資料\n```javascript\nimport { onMounted, ref } from \"vue\";\n\nconst data = ref(null);\n\nonMounted(async () => {\n  const res = await fetch(\"/api/data\");\n  data.value = await res.json();\n});\n```\n\n### onMounted: 註冊事件\n```javascript\nimport { onMounted, onUnmounted } from \"vue\";\n\nfunction handleScroll() { ... }\n\nonMounted(() => {\n  window.addEventListener(\"scroll\", handleScroll);\n});\n\nonUnmounted(() => {\n  window.removeEventListener(\"scroll\", handleScroll);  // 清理\n});\n```\n\n### onMounted: 拿 DOM ref\n```vue\n<script setup>\nimport { ref, onMounted } from \"vue\";\n\nconst inputRef = ref(null);\n\nonMounted(() => {\n  inputRef.value.focus();  // 自動聚焦\n});\n</script>\n\n<template>\n  <input ref=\"inputRef\">\n</template>\n```\n\n### onErrorCaptured: 錯誤邊界\n```javascript\nonErrorCaptured((err, instance, info) => {\n  console.error(\"子元件 crash:\", err);\n  // 通知 Sentry\n  return false;  // 不要傳遞\n});\n```\n\n## SSR 注意\n- `onMounted` 只在 client 跑\n- `onBeforeMount` 也是 client only\n- server side 只跑 `setup`\n\n→ 用 `window` / DOM 必須在 onMounted 內：\n```javascript\n// ❌ 錯（SSR 會炸）\nconst width = window.innerWidth;\n\n// ✅ 對\nconst width = ref(0);\nonMounted(() => {\n  width.value = window.innerWidth;\n});\n```\n\n## 跟 React useEffect 對比\n```\nReact:                  Vue:\nuseEffect(() => {}, [])   onMounted\nuseEffect(() => {})        watchEffect\nuseEffect cleanup          onUnmounted\nuseLayoutEffect            (沒直接對應、用 nextTick)\n```",
+      "tip": {
+        "type": "practical",
+        "text": "onMounted 是 95% 場景用的、其他 hook 少用。記住 onMounted + onUnmounted 就夠用大部分情況。"
+      },
+      "id": "9.16",
+      "number": "LESSON 9.16",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "9.16.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "import { onMounted, ref } from \"vue\";\n\nconst data = ref(null);\n\nonMounted(async () => {\n  const res = await fetch(\"/api/data\");\n  data.value = await res.json();\n});",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "完整 lifecycle"
+        },
+        {
+          "level": 2,
+          "text": "常見用法"
+        },
+        {
+          "level": 3,
+          "text": "onMounted: 抓資料"
+        },
+        {
+          "level": 3,
+          "text": "onMounted: 註冊事件"
+        },
+        {
+          "level": 3,
+          "text": "onMounted: 拿 DOM ref"
+        },
+        {
+          "level": 3,
+          "text": "onErrorCaptured: 錯誤邊界"
+        },
+        {
+          "level": 2,
+          "text": "SSR 注意"
+        },
+        {
+          "level": 2,
+          "text": "跟 React useEffect 對比"
+        }
+      ]
+    },
+    {
+      "title": "Composables：可重用邏輯",
+      "oneLineSummary": "Vue 版的 React Hook—把邏輯抽出來、跨元件重用",
+      "analogy": "useUser / useFetch / useDarkMode—寫一次到處用。Vue 的 composable 是強大底牌。",
+      "content": "## 什麼是 composable\n封裝可重用的 reactive 邏輯、用 `use` 開頭命名。\n\n## 範例：useCounter\n```typescript\n// composables/useCounter.ts\nimport { ref, computed } from \"vue\";\n\nexport function useCounter(initial = 0) {\n  const count = ref(initial);\n  \n  const double = computed(() => count.value * 2);\n  \n  function increment() { count.value++; }\n  function decrement() { count.value--; }\n  function reset() { count.value = initial; }\n  \n  return { count, double, increment, decrement, reset };\n}\n```\n\n## 使用\n```vue\n<script setup>\nimport { useCounter } from \"@/composables/useCounter\";\n\nconst { count, double, increment, reset } = useCounter(10);\n</script>\n\n<template>\n  <div>{{ count }} (x2 = {{ double }})</div>\n  <button @click=\"increment\">+</button>\n  <button @click=\"reset\">Reset</button>\n</template>\n```\n\n## 實用範例：useFetch\n```typescript\nimport { ref, watchEffect } from \"vue\";\n\nexport function useFetch<T>(url: () => string) {\n  const data = ref<T | null>(null);\n  const error = ref<Error | null>(null);\n  const loading = ref(false);\n  \n  watchEffect(async () => {\n    loading.value = true;\n    error.value = null;\n    try {\n      const res = await fetch(url());\n      data.value = await res.json();\n    } catch (e) {\n      error.value = e as Error;\n    } finally {\n      loading.value = false;\n    }\n  });\n  \n  return { data, error, loading };\n}\n```\n\n```vue\n<script setup>\nimport { computed } from \"vue\";\nimport { useFetch } from \"@/composables/useFetch\";\n\nconst id = ref(\"1\");\nconst { data, loading, error } = useFetch(() => `/api/users/${id.value}`);\n</script>\n\n<template>\n  <div v-if=\"loading\">載入中</div>\n  <div v-else-if=\"error\">錯誤：{{ error.message }}</div>\n  <div v-else>{{ data.name }}</div>\n</template>\n```\n\n## 實用範例：useLocalStorage\n```typescript\nimport { ref, watch } from \"vue\";\n\nexport function useLocalStorage<T>(key: string, defaultValue: T) {\n  const stored = localStorage.getItem(key);\n  const value = ref<T>(stored ? JSON.parse(stored) : defaultValue);\n  \n  watch(value, (newVal) => {\n    localStorage.setItem(key, JSON.stringify(newVal));\n  }, { deep: true });\n  \n  return value;\n}\n```\n\n## 實用範例：useDarkMode\n```typescript\nimport { ref, watch } from \"vue\";\n\nexport function useDarkMode() {\n  const isDark = ref(matchMedia(\"(prefers-color-scheme: dark)\").matches);\n  \n  watch(isDark, (val) => {\n    document.documentElement.classList.toggle(\"dark\", val);\n  }, { immediate: true });\n  \n  return { isDark, toggle: () => isDark.value = !isDark.value };\n}\n```\n\n## VueUse（社群 composables）\n```bash\nnpm install @vueuse/core\n```\n\n200+ 個現成 composable：\n- `useMouse`、`useFetch`、`useLocalStorage`\n- `useScroll`、`useIntersectionObserver`\n- `useDebounce`、`useThrottle`\n- `useClipboard`、`useGeolocation`\n\n```vue\n<script setup>\nimport { useMouse, useDebouncedRef } from \"@vueuse/core\";\n\nconst { x, y } = useMouse();\nconst search = useDebouncedRef(\"\", 500);\n</script>\n```",
+      "tip": {
+        "type": "milestone",
+        "text": "VueUse 是 Vue 工程師命脈—不裝它你會重新發明輪子 100 次。Day 1 就裝。"
+      },
+      "id": "9.17",
+      "number": "LESSON 9.17",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "9.17.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "// composables/useCounter.ts\nimport { ref, computed } from \"vue\";\n\nexport function useCounter(initial = 0) {\n  const count = ref(initial);\n  \n  const double = computed(() => count.value * 2);\n  \n  function increment() { count.value++; }\n  function decrement() { count.value--; }\n  function reset() { count.value = initial; }\n  \n  return { count, double, increment, decrement, reset };\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "什麼是 composable"
+        },
+        {
+          "level": 2,
+          "text": "範例：useCounter"
+        },
+        {
+          "level": 2,
+          "text": "使用"
+        },
+        {
+          "level": 2,
+          "text": "實用範例：useFetch"
+        },
+        {
+          "level": 2,
+          "text": "實用範例：useLocalStorage"
+        },
+        {
+          "level": 2,
+          "text": "實用範例：useDarkMode"
+        },
+        {
+          "level": 2,
+          "text": "VueUse（社群 composables）"
+        }
+      ]
+    },
+    {
+      "title": "Vue Teleport / Suspense / Transition",
+      "oneLineSummary": "彈窗、loading、動畫的 Vue 內建解法",
+      "analogy": "不裝套件、Vue 內建這三個 hi-level 元件、解決常見痛點。",
+      "content": "## Teleport（傳送門）\n把 component 渲染到 DOM 別處—彈窗、tooltip 必用。\n\n```vue\n<template>\n  <button @click=\"open = true\">開彈窗</button>\n  \n  <Teleport to=\"body\">\n    <div v-if=\"open\" class=\"modal\">\n      <h2>彈窗</h2>\n      <button @click=\"open = false\">關</button>\n    </div>\n  </Teleport>\n</template>\n```\n\n為什麼用：\n- 避免 z-index 問題（彈窗在 parent overflow:hidden 內被切掉）\n- 避免 stacking context 干擾\n- DOM 結構乾淨（彈窗放 body 而非 nested）\n\n## Suspense（async loading）\n等 async component 載入時顯示 fallback。\n\n```vue\n<template>\n  <Suspense>\n    <template #default>\n      <AsyncDashboard />  <!-- 內部有 await -->\n    </template>\n    <template #fallback>\n      <div>載入中...</div>\n    </template>\n  </Suspense>\n</template>\n```\n\n```vue\n<!-- AsyncDashboard.vue -->\n<script setup>\nimport { ref } from \"vue\";\n\n// top-level await（Vue 3.x 支援）\nconst data = await fetch(\"/api/dashboard\").then(r => r.json());\n</script>\n\n<template>\n  <div>{{ data.title }}</div>\n</template>\n```\n\n## Transition（動畫）\n進場 / 退場動畫：\n\n```vue\n<template>\n  <button @click=\"show = !show\">Toggle</button>\n  \n  <Transition name=\"fade\">\n    <div v-if=\"show\" class=\"box\">內容</div>\n  </Transition>\n</template>\n\n<style>\n.fade-enter-active,\n.fade-leave-active {\n  transition: opacity 0.3s ease;\n}\n\n.fade-enter-from,\n.fade-leave-to {\n  opacity: 0;\n}\n</style>\n```\n\n### Transition class 自動加\n```\nv-enter-from     進入起點\nv-enter-active   進入中\nv-enter-to       進入終點\nv-leave-from     離開起點\nv-leave-active   離開中\nv-leave-to       離開終點\n```\n\n加 `name=\"fade\"` → 全部 prefix 變 `fade-`。\n\n## TransitionGroup（list 動畫）\n```vue\n<template>\n  <button @click=\"add\">+</button>\n  \n  <TransitionGroup name=\"list\" tag=\"ul\">\n    <li v-for=\"item in items\" :key=\"item.id\">\n      {{ item.text }}\n    </li>\n  </TransitionGroup>\n</template>\n\n<style>\n.list-enter-active,\n.list-leave-active {\n  transition: all 0.3s ease;\n}\n.list-enter-from,\n.list-leave-to {\n  opacity: 0;\n  transform: translateX(30px);\n}\n</style>\n```\n\n## KeepAlive（快取元件）\n```vue\n<template>\n  <KeepAlive>\n    <component :is=\"currentComponent\" />\n  </KeepAlive>\n</template>\n```\n切換 tab 時、隱藏的 component 保留 state、不重 mount。\n\n## 進階：自訂 transition with JS hooks\n```vue\n<Transition\n  @before-enter=\"beforeEnter\"\n  @enter=\"enter\"\n  @leave=\"leave\"\n  :css=\"false\"\n>\n  <div v-if=\"show\">內容</div>\n</Transition>\n```\n搭配 GSAP、Framer Motion 做複雜動畫。",
+      "tip": {
+        "type": "pro",
+        "text": "Teleport + Suspense + Transition 都是 Vue 內建、不用裝套件。比 React 需要 Portal / Suspense / Framer Motion 一堆 lib 簡潔。"
+      },
+      "id": "9.18",
+      "number": "LESSON 9.18",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "9.18.auto",
+          "language": "vue",
+          "title": "試試看",
+          "initialCode": "<template>\n  <button @click=\"open = true\">開彈窗</button>\n  \n  <Teleport to=\"body\">\n    <div v-if=\"open\" class=\"modal\">\n      <h2>彈窗</h2>\n      <button @click=\"open = false\">關</button>\n    </div>\n  </Teleport>\n</template>",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "Teleport（傳送門）"
+        },
+        {
+          "level": 2,
+          "text": "Suspense（async loading）"
+        },
+        {
+          "level": 2,
+          "text": "Transition（動畫）"
+        },
+        {
+          "level": 3,
+          "text": "Transition class 自動加"
+        },
+        {
+          "level": 2,
+          "text": "TransitionGroup（list 動畫）"
+        },
+        {
+          "level": 2,
+          "text": "KeepAlive（快取元件）"
+        },
+        {
+          "level": 2,
+          "text": "進階：自訂 transition with JS hooks"
+        }
+      ]
+    },
+    {
+      "title": "Nuxt 3：Vue 的 Next.js",
+      "oneLineSummary": "不是 Vue Router 自己刻、Nuxt 是完整框架（SSR / 路由 / API / 部署）",
+      "analogy": "React 有 Next.js、Vue 有 Nuxt 3。新 Vue 全端專案直接 Nuxt、不要從 Vite + Vue Router 開始。",
+      "content": "## 為什麼 Nuxt\n- 自動路由（檔案系統）\n- SSR / SSG / ISR 內建\n- API routes\n- Auto import（不用 import）\n- Tailwind / DB / Auth 模組超多\n- 部署到 Vercel / Cloudflare / Netlify 一鍵\n\n## 建專案\n```bash\nnpx nuxi@latest init my-app\ncd my-app\nnpm install\nnpm run dev\n```\n\n## 自動路由\n```\npages/\n├── index.vue          → /\n├── about.vue          → /about\n├── blog/\n│   ├── index.vue      → /blog\n│   └── [slug].vue     → /blog/:slug\n└── users/\n    └── [id]/\n        └── profile.vue → /users/:id/profile\n```\n\n## 取路由參數\n```vue\n<script setup>\nconst route = useRoute();\nconst id = route.params.id;\n</script>\n```\n\n## API Routes\n```typescript\n// server/api/users/[id].get.ts\nexport default defineEventHandler(async (event) => {\n  const id = getRouterParam(event, \"id\");\n  const user = await db.users.findUnique({ where: { id } });\n  return user;\n});\n```\n\n```vue\n<!-- 前端用 -->\n<script setup>\nconst { data: user } = await useFetch(`/api/users/${id}`);\n</script>\n```\n\n## SEO / Meta\n```vue\n<script setup>\nuseHead({\n  title: \"我的頁面\",\n  meta: [{ name: \"description\", content: \"...\" }]\n});\n\n// 進階：OG\nuseSeoMeta({\n  title: \"AI 島\",\n  ogImage: \"/og.png\",\n  twitterCard: \"summary_large_image\",\n});\n</script>\n```\n\n## Layouts\n```vue\n<!-- layouts/default.vue -->\n<template>\n  <header>...</header>\n  <slot />  <!-- 頁面內容 -->\n  <footer>...</footer>\n</template>\n```\n\n```vue\n<!-- pages/index.vue -->\n<script setup>\ndefinePageMeta({ layout: \"default\" });\n</script>\n```\n\n## 模組生態（Nuxt 殺手特色）\n```bash\n# Tailwind\nnpx nuxi@latest module add tailwindcss\n\n# Supabase\nnpx nuxi@latest module add @nuxtjs/supabase\n\n# i18n\nnpx nuxi@latest module add @nuxtjs/i18n\n\n# Sentry\nnpx nuxi@latest module add @sentry/nuxt\n```\n\n## 部署\n```bash\n# Vercel（推薦）\nnpm run build\n# 直接 git push、Vercel 自動 deploy\n\n# Cloudflare Pages\nnpm run build -- --preset=cloudflare-pages\n\n# Node server\nnpm run build\nnode .output/server/index.mjs\n```\n\n## Composables 自動 import\n```vue\n<script setup>\n// 不用 import！\nconst route = useRoute();\nconst { data } = await useFetch(\"/api/data\");\n</script>\n```\n\n## Nuxt vs Next.js\n\n| 面向 | Nuxt | Next.js |\n|---|---|---|\n| 框架 | Vue | React |\n| 路由 | 檔案 | 檔案 |\n| SSR | ✅ | ✅ |\n| API | ✅ | ✅ |\n| 生態 | 大 | 巨大 |\n| 招募 | 中 | 大 |\n\n兩個都行、看你選 Vue 還 React。",
+      "tip": {
+        "type": "milestone",
+        "text": "Nuxt 3 是 Vue 全端 2026 標配。從 Vite + Vue Router 起手做小專案沒問題、做正規 SaaS 直接 Nuxt。"
+      },
+      "id": "9.19",
+      "number": "LESSON 9.19",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "9.19.auto",
+          "language": "bash",
+          "title": "試試看",
+          "initialCode": "npx nuxi@latest init my-app\ncd my-app\nnpm install\nnpm run dev",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 11 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼 Nuxt"
+        },
+        {
+          "level": 2,
+          "text": "建專案"
+        },
+        {
+          "level": 2,
+          "text": "自動路由"
+        },
+        {
+          "level": 2,
+          "text": "取路由參數"
+        },
+        {
+          "level": 2,
+          "text": "API Routes"
+        },
+        {
+          "level": 2,
+          "text": "SEO / Meta"
+        },
+        {
+          "level": 2,
+          "text": "Layouts"
+        },
+        {
+          "level": 2,
+          "text": "模組生態（Nuxt 殺手特色）"
+        },
+        {
+          "level": 2,
+          "text": "部署"
+        },
+        {
+          "level": 2,
+          "text": "Composables 自動 import"
+        },
+        {
+          "level": 2,
+          "text": "Nuxt vs Next.js"
+        }
+      ]
+    },
+    {
+      "title": "Vue 3 TypeScript 完整",
+      "oneLineSummary": "型別好用、寫 Vue 必開 TS",
+      "analogy": "Vue 3 對 TS 支援超強、Composition API 自動推斷、寫起來比 Options API 順 5 倍。",
+      "content": "## defineProps 加 TS\n```vue\n<script setup lang=\"ts\">\ninterface Props {\n  name: string;\n  age?: number;\n  items: string[];\n  onClick: (id: string) => void;\n}\n\nconst props = defineProps<Props>();\n\n// 帶 default\nconst props = withDefaults(defineProps<Props>(), {\n  age: 18,\n  items: () => [],\n});\n</script>\n```\n\n## defineEmits 加 TS\n```vue\n<script setup lang=\"ts\">\nconst emit = defineEmits<{\n  (e: \"submit\", data: { name: string }): void;\n  (e: \"cancel\"): void;\n  (e: \"update:modelValue\", value: string): void;\n}>();\n</script>\n```\n\n新語法（Vue 3.3+）：\n```vue\n<script setup lang=\"ts\">\nconst emit = defineEmits<{\n  submit: [data: { name: string }];\n  cancel: [];\n}>();\n</script>\n```\n\n## ref 型別\n```typescript\nimport { ref, type Ref } from \"vue\";\n\nconst count = ref(0);              // Ref<number>\nconst name = ref<string>(\"\");      // 明確指定\nconst user = ref<User | null>(null);\n```\n\n## reactive 型別\n```typescript\nimport { reactive } from \"vue\";\n\ninterface State {\n  count: number;\n  user: User | null;\n}\n\nconst state = reactive<State>({\n  count: 0,\n  user: null,\n});\n```\n\n## computed 型別\n```typescript\nconst fullName = computed(() => `${firstName.value} ${lastName.value}`);\n// 自動推 ComputedRef<string>\n\nconst explicit = computed<string>(() => `...`);\n```\n\n## Template ref 型別\n```vue\n<script setup lang=\"ts\">\nimport { ref, onMounted } from \"vue\";\n\nconst inputRef = ref<HTMLInputElement | null>(null);\n\nonMounted(() => {\n  inputRef.value?.focus();\n});\n</script>\n\n<template>\n  <input ref=\"inputRef\">\n</template>\n```\n\n## Pinia store TS\n```typescript\nimport { defineStore } from \"pinia\";\nimport { ref, computed } from \"vue\";\n\ninterface User {\n  id: string;\n  name: string;\n}\n\nexport const useUserStore = defineStore(\"user\", () => {\n  const user = ref<User | null>(null);\n  const isLoggedIn = computed(() => user.value !== null);\n  \n  function setUser(u: User) {\n    user.value = u;\n  }\n  \n  return { user, isLoggedIn, setUser };\n});\n```\n\n## Generic components（Vue 3.3+）\n```vue\n<script setup lang=\"ts\" generic=\"T\">\ninterface Props {\n  items: T[];\n  renderItem: (item: T) => string;\n}\n\nconst props = defineProps<Props>();\n</script>\n\n<template>\n  <ul>\n    <li v-for=\"item in items\">\n      {{ renderItem(item) }}\n    </li>\n  </ul>\n</template>\n```\n\n## 使用\n```vue\n<List \n  :items=\"users\" \n  :render-item=\"(u: User) => u.name\"\n/>\n```\n\n## Provide / Inject 型別\n```typescript\nimport { provide, inject, type InjectionKey } from \"vue\";\n\ninterface Theme {\n  primary: string;\n  secondary: string;\n}\n\nconst ThemeKey: InjectionKey<Theme> = Symbol(\"theme\");\n\n// 提供\nprovide(ThemeKey, { primary: \"#50fa7b\", secondary: \"#8be9fd\" });\n\n// 使用\nconst theme = inject(ThemeKey);  // Theme | undefined\nconst theme = inject(ThemeKey, defaultTheme);  // Theme（保證有值）\n```\n\n## tsconfig.json 推薦\n```json\n{\n  \"compilerOptions\": {\n    \"target\": \"ES2020\",\n    \"strict\": true,\n    \"noUncheckedIndexedAccess\": true,\n    \"moduleResolution\": \"bundler\",\n    \"jsx\": \"preserve\",\n    \"paths\": {\n      \"@/*\": [\"./src/*\"]\n    }\n  }\n}\n```",
+      "tip": {
+        "type": "practical",
+        "text": "Vue 3 + TS + Composition API 是 2026 唯一推薦寫法。打死也別用 Options API + JS 寫新專案。"
+      },
+      "id": "9.20",
+      "number": "LESSON 9.20",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "9.20.auto",
+          "language": "vue",
+          "title": "試試看",
+          "initialCode": "<script setup lang=\"ts\">\ninterface Props {\n  name: string;\n  age?: number;\n  items: string[];\n  onClick: (id: string) => void;\n}\n\nconst props = defineProps<Props>();\n\n// 帶 default\nconst props = withDefaults(defineProps<Props>(), {\n  age: 18,\n  items: () => [],\n});\n</script>",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 12 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "defineProps 加 TS"
+        },
+        {
+          "level": 2,
+          "text": "defineEmits 加 TS"
+        },
+        {
+          "level": 2,
+          "text": "ref 型別"
+        },
+        {
+          "level": 2,
+          "text": "reactive 型別"
+        },
+        {
+          "level": 2,
+          "text": "computed 型別"
+        },
+        {
+          "level": 2,
+          "text": "Template ref 型別"
+        },
+        {
+          "level": 2,
+          "text": "Pinia store TS"
+        },
+        {
+          "level": 2,
+          "text": "Generic components（Vue 3.3+）"
+        },
+        {
+          "level": 2,
+          "text": "使用"
+        },
+        {
+          "level": 2,
+          "text": "Provide / Inject 型別"
+        },
+        {
+          "level": 2,
+          "text": "tsconfig.json 推薦"
+        }
+      ]
+    },
+    {
+      "title": "Vue 樣式：Scoped CSS / CSS Modules / Tailwind",
+      "oneLineSummary": "元件樣式怎管？scoped 簡單、Tailwind 主流",
+      "analogy": "寫 Vue 樣式有 5 種方式、各有適合場景。",
+      "content": "## 1. Scoped CSS（內建）\n```vue\n<template>\n  <button class=\"btn\">Click</button>\n</template>\n\n<style scoped>\n.btn {\n  background: #50fa7b;\n}\n</style>\n```\n\n編譯後：\n```html\n<button class=\"btn\" data-v-abc123>Click</button>\n\n<style>\n.btn[data-v-abc123] { background: #50fa7b; }\n</style>\n```\n→ 只影響這個 component。\n\n## 2. CSS Modules\n```vue\n<template>\n  <button :class=\"$style.btn\">Click</button>\n</template>\n\n<style module>\n.btn { background: #50fa7b; }\n</style>\n```\n\nclass name 自動 hash、零衝突。\n\n## 3. Tailwind CSS（推薦主流）\n```bash\nnpx nuxi@latest module add tailwindcss\n# 或 Vite Vue 專案：\nnpm install -D tailwindcss@latest\n```\n\n```vue\n<template>\n  <button class=\"bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded\">\n    Click\n  </button>\n</template>\n```\n\n## 4. 動態 binding\n```vue\n<template>\n  <div :class=\"['base', { active: isActive }]\">\n    內容\n  </div>\n  \n  <div :style=\"{ color: textColor, fontSize: size + 'px' }\">\n    內容\n  </div>\n</template>\n```\n\n## 5. CSS-in-JS（少用、不推薦）\nVue 較少用、社群偏 Tailwind / Scoped CSS。\n\n## v-deep（穿透 scoped）\n```vue\n<style scoped>\n/* 影響子元件 */\n.parent :deep(.child) {\n  color: red;\n}\n</style>\n```\n\n## v-bind in CSS（神功能、Vue 3.2+）\n```vue\n<script setup>\nimport { ref } from \"vue\";\nconst color = ref(\"#50fa7b\");\n</script>\n\n<template>\n  <button>動態色</button>\n</template>\n\n<style scoped>\nbutton {\n  background: v-bind(color);  /* 動態！ */\n}\n</style>\n```\n\n## 全域 CSS\n```typescript\n// main.ts\nimport \"./assets/global.css\";\n```\n\n## SCSS / PostCSS\n```bash\nnpm install -D sass postcss-nesting\n```\n\n```vue\n<style scoped lang=\"scss\">\n.btn {\n  background: $primary;\n  \n  &:hover {\n    background: $primary-dark;\n  }\n}\n</style>\n```\n\n## 推薦組合\n\n### 純前端\n- Tailwind + Scoped CSS（少量自訂）\n\n### 大型 design system\n- Tailwind + CSS variables（design tokens）\n\n### 多主題\n- CSS variables + v-bind\n\n### 企業 / 維護優先\n- BEM + Scoped CSS\n\n## 不要過度\n- 不要混 5 種方式\n- 一個 codebase 統一風格\n- Tailwind + Scoped 是 90% 場景的甜蜜點",
+      "tip": {
+        "type": "practical",
+        "text": "Vue + Tailwind 是 2026 主流組合、寫起來快、文件多、設計師也愛。"
+      },
+      "id": "9.21",
+      "number": "LESSON 9.21",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "9.21.auto",
+          "language": "vue",
+          "title": "試試看",
+          "initialCode": "<template>\n  <button class=\"btn\">Click</button>\n</template>\n\n<style scoped>\n.btn {\n  background: #50fa7b;\n}\n</style>",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 11 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "1. Scoped CSS（內建）"
+        },
+        {
+          "level": 2,
+          "text": "2. CSS Modules"
+        },
+        {
+          "level": 2,
+          "text": "3. Tailwind CSS（推薦主流）"
+        },
+        {
+          "level": 2,
+          "text": "4. 動態 binding"
+        },
+        {
+          "level": 2,
+          "text": "5. CSS-in-JS（少用、不推薦）"
+        },
+        {
+          "level": 2,
+          "text": "v-deep（穿透 scoped）"
+        },
+        {
+          "level": 2,
+          "text": "v-bind in CSS（神功能、Vue 3.2+）"
+        },
+        {
+          "level": 2,
+          "text": "全域 CSS"
+        },
+        {
+          "level": 2,
+          "text": "SCSS / PostCSS"
+        },
+        {
+          "level": 2,
+          "text": "推薦組合"
+        },
+        {
+          "level": 3,
+          "text": "純前端"
+        },
+        {
+          "level": 3,
+          "text": "大型 design system"
+        },
+        {
+          "level": 3,
+          "text": "多主題"
+        },
+        {
+          "level": 3,
+          "text": "企業 / 維護優先"
+        },
+        {
+          "level": 2,
+          "text": "不要過度"
+        }
+      ]
+    },
+    {
+      "title": "Vue + Vite：開發工具鏈",
+      "oneLineSummary": "Vite 是 Vue 親兒子的 build tool—速度比 Webpack 快 100 倍",
+      "analogy": "不用設定 Webpack、Vite 一行起專案、HMR 快到飛起。",
+      "content": "## 為什麼 Vite\n- **冷啟動 < 1 秒**（Webpack 通常 10-30 秒）\n- **HMR 即時**（毫秒級更新）\n- **production 用 Rollup**（很穩）\n- **支援 TS / Vue / React 開箱即用**\n\n## 建專案\n```bash\nnpm create vite@latest my-app -- --template vue-ts\ncd my-app\nnpm install\nnpm run dev\n```\n\n## vite.config.ts\n```typescript\nimport { defineConfig } from \"vite\";\nimport vue from \"@vitejs/plugin-vue\";\nimport path from \"path\";\n\nexport default defineConfig({\n  plugins: [vue()],\n  \n  resolve: {\n    alias: {\n      \"@\": path.resolve(__dirname, \"./src\"),\n    },\n  },\n  \n  server: {\n    port: 3000,\n    proxy: {\n      \"/api\": \"http://localhost:8000\",  // proxy 後端\n    },\n  },\n  \n  build: {\n    target: \"es2020\",\n    sourcemap: true,\n    rollupOptions: {\n      output: {\n        manualChunks: {\n          vue: [\"vue\", \"vue-router\", \"pinia\"],\n        },\n      },\n    },\n  },\n});\n```\n\n## Plugins\n```typescript\nimport { defineConfig } from \"vite\";\nimport vue from \"@vitejs/plugin-vue\";\nimport vueJsx from \"@vitejs/plugin-vue-jsx\";        // JSX in Vue\nimport autoImport from \"unplugin-auto-import/vite\";  // 自動 import\nimport components from \"unplugin-vue-components/vite\"; // 自動 import component\n\nexport default defineConfig({\n  plugins: [\n    vue(),\n    vueJsx(),\n    autoImport({\n      imports: [\"vue\", \"vue-router\", \"pinia\"],\n      dts: true,\n    }),\n    components({\n      dts: true,\n    }),\n  ],\n});\n```\n\n→ 之後 component / `ref` / `useRouter` 都不用 import、Vite 自動處理。\n\n## 環境變數\n```env\n# .env.local\nVITE_API_URL=http://localhost:8000\nVITE_GA_ID=G-XXXXXX\n```\n\n```typescript\nconsole.log(import.meta.env.VITE_API_URL);\n```\n\n⚠️ `VITE_` 開頭才會 expose 給 client。\n\n## 靜態檔\n```\npublic/         → 直接複製到 build output\nsrc/assets/     → 經過 build 處理（hash filename）\n```\n\n## 動態 import（code splitting）\n```typescript\nconst Component = () => import(\"./HeavyComponent.vue\");\n```\n→ 自動 lazy load、bundle 切分。\n\n## Production build\n```bash\nnpm run build\n# 產出 dist/\n\nnpm run preview\n# 預覽 production build\n```\n\n## 部署\n```bash\n# Vercel\nvercel deploy\n\n# Cloudflare Pages\nwrangler pages deploy dist\n\n# Netlify\nnetlify deploy --prod --dir=dist\n\n# Docker / VPS\n# 把 dist/ 用 nginx serve 就好\n```\n\n## Vitest（同生態的測試框架）\n```bash\nnpm install -D vitest @vue/test-utils happy-dom\n```\n\n```typescript\n// vitest.config.ts\nimport { defineConfig } from \"vitest/config\";\nimport vue from \"@vitejs/plugin-vue\";\n\nexport default defineConfig({\n  plugins: [vue()],\n  test: {\n    environment: \"happy-dom\",\n  },\n});\n```\n\n```typescript\nimport { mount } from \"@vue/test-utils\";\nimport { describe, test, expect } from \"vitest\";\nimport Counter from \"./Counter.vue\";\n\ndescribe(\"Counter\", () => {\n  test(\"increments\", async () => {\n    const wrapper = mount(Counter);\n    await wrapper.find(\"button\").trigger(\"click\");\n    expect(wrapper.text()).toContain(\"1\");\n  });\n});\n```",
+      "tip": {
+        "type": "milestone",
+        "text": "Vite 是 2026 前端 build tool 王者—Webpack / Parcel / Rollup 全輸。新專案直接 Vite。"
+      },
+      "id": "9.22",
+      "number": "LESSON 9.22",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "9.22.auto",
+          "language": "bash",
+          "title": "試試看",
+          "initialCode": "npm create vite@latest my-app -- --template vue-ts\ncd my-app\nnpm install\nnpm run dev",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "安裝 lesson 內介紹的工具、用官方的 quick start 跑一次 hello world。記錄安裝過程踩了哪些坑。",
+        "hint": "工具的學習曲線通常卡在「環境設定」這關。Node 版本、Python 版本、權限、PATH 變數、port 衝突——遇到一個解一個。",
+        "answer": "踩坑筆記範本：『遇到：[錯誤訊息] → 原因：[根本原因] → 解：[具體指令]』。整理在自己的 GitHub gist 或 Notion、下次遇到同樣坑直接複製貼上 = 把痛苦變資產。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼 Vite"
+        },
+        {
+          "level": 2,
+          "text": "建專案"
+        },
+        {
+          "level": 2,
+          "text": "vite.config.ts"
+        },
+        {
+          "level": 2,
+          "text": "Plugins"
+        },
+        {
+          "level": 2,
+          "text": "環境變數"
+        },
+        {
+          "level": 2,
+          "text": "靜態檔"
+        },
+        {
+          "level": 2,
+          "text": "動態 import（code splitting）"
+        },
+        {
+          "level": 2,
+          "text": "Production build"
+        },
+        {
+          "level": 2,
+          "text": "部署"
+        },
+        {
+          "level": 2,
+          "text": "Vitest（同生態的測試框架）"
+        }
+      ]
+    },
+    {
+      "title": "Vue 與 React 全面對比",
+      "oneLineSummary": "2026 學哪個？兩個都會最強、但實務選一個深耕",
+      "analogy": "台灣 React 職缺多、Vue 在亞洲 / 接案有市場。各有理由。",
+      "content": "## 寫法對比\n\n### React\n```jsx\nfunction Counter() {\n  const [count, setCount] = useState(0);\n  \n  return (\n    <button onClick={() => setCount(count + 1)}>\n      {count}\n    </button>\n  );\n}\n```\n\n### Vue\n```vue\n<script setup>\nimport { ref } from \"vue\";\nconst count = ref(0);\n</script>\n\n<template>\n  <button @click=\"count++\">{{ count }}</button>\n</template>\n```\n\n## 哲學差異\n\n### React\n- All in JS（JSX）\n- 顯式（useState、useEffect dependency）\n- 函式式\n- 框架越來越接近 vanilla JS\n\n### Vue\n- 接近 HTML（template）\n- 隱式（自動追蹤依賴）\n- 漸進式\n- 框架封裝更多\n\n## 對比表\n\n| 面向 | React | Vue |\n|---|---|---|\n| 寫法 | JSX | template + JSX |\n| 響應式 | 顯式 setState | 自動 ref/reactive |\n| 學習曲線 | 中等 | 平 |\n| 招募（台）| ⭐⭐⭐⭐⭐ | ⭐⭐ |\n| 招募（中）| ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |\n| 招募（東南亞）| ⭐⭐⭐ | ⭐⭐⭐⭐ |\n| 招募（美）| ⭐⭐⭐⭐⭐ | ⭐⭐ |\n| 生態 | 巨大 | 大 |\n| 大公司 | Meta / Netflix / Vercel | 阿里 / Bilibili / GitLab |\n| Server Components | 領先 | 跟進中 |\n| SSR | Next.js | Nuxt 3 |\n\n## 各自強項\n\n### React 強在\n- 招募市場（台 / 美）\n- 生態 / 套件最多\n- 跟 React Native 共用\n- Server Components 領先\n\n### Vue 強在\n- 入門快\n- template 對設計師友善\n- Single File Component（template / script / style 一個檔）\n- 框架封裝多（少 boilerplate）\n- 中文社群活躍\n\n## 怎麼選\n\n### 選 React 如果\n- 在台灣找工作 / 大公司\n- 想做 React Native\n- 想跟全球社群（GitHub trends）\n- 想最領先的技術\n\n### 選 Vue 如果\n- 入門想快\n- 喜歡 HTML 直觀\n- 中國 / 亞洲市場\n- 接案 / Indie SaaS\n- 設計師合作多\n\n### 都會的話最強\n換工作 / 接案、客戶要什麼就做什麼、不挑食。\n\n## 我的建議\n- **先學一個到熟**（3-6 個月）\n- **再學另一個**（1-2 週上手）\n- **兩個都熟** = 全端薪水 +20%\n\n## 不要被「哪個比較好」綁\nReact vs Vue 是宗教戰爭、沒答案。\n**會 100 個 React project < 會 1 個 Vue 上線的 SaaS**。\n\n## 跨工作的學習\n- TS：兩個都用\n- Tailwind：兩個都用\n- Supabase / Firebase：兩個都接\n- Vercel / Cloudflare：兩個都部署\n\n→ 核心技能跨框架、別只學語法。",
+      "tip": {
+        "type": "milestone",
+        "text": "2026 純 Vue / 純 React 太狹隘。學一個熟、另一個會看 = 全端工程師標配。"
+      },
+      "id": "9.23",
+      "number": "LESSON 9.23",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "9.23.auto",
+          "language": "jsx",
+          "title": "試試看",
+          "initialCode": "function Counter() {\n  const [count, setCount] = useState(0);\n  \n  return (\n    <button onClick={() => setCount(count + 1)}>\n      {count}\n    </button>\n  );\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "寫法對比"
+        },
+        {
+          "level": 3,
+          "text": "React"
+        },
+        {
+          "level": 3,
+          "text": "Vue"
+        },
+        {
+          "level": 2,
+          "text": "哲學差異"
+        },
+        {
+          "level": 3,
+          "text": "React"
+        },
+        {
+          "level": 3,
+          "text": "Vue"
+        },
+        {
+          "level": 2,
+          "text": "對比表"
+        },
+        {
+          "level": 2,
+          "text": "各自強項"
+        },
+        {
+          "level": 3,
+          "text": "React 強在"
+        },
+        {
+          "level": 3,
+          "text": "Vue 強在"
+        },
+        {
+          "level": 2,
+          "text": "怎麼選"
+        },
+        {
+          "level": 3,
+          "text": "選 React 如果"
+        },
+        {
+          "level": 3,
+          "text": "選 Vue 如果"
+        },
+        {
+          "level": 3,
+          "text": "都會的話最強"
+        },
+        {
+          "level": 2,
+          "text": "我的建議"
+        },
+        {
+          "level": 2,
+          "text": "不要被「哪個比較好」綁"
+        },
+        {
+          "level": 2,
+          "text": "跨工作的學習"
+        }
+      ]
+    },
+    {
+      "title": "Vue 實戰：完整 Todo App + Pinia + Supabase",
+      "oneLineSummary": "把整章學的串成一個能 ship 的小 SaaS",
+      "analogy": "不只練習、做一個能放 portfolio 的小作品。",
+      "content": "## 需求\n- 註冊 / 登入（Supabase Auth）\n- CRUD Todo\n- 標記完成\n- 即時同步多裝置（Realtime）\n\n## 1. 建專案\n```bash\nnpm create vite@latest todo-app -- --template vue-ts\ncd todo-app\nnpm install\nnpm install pinia vue-router @supabase/supabase-js\nnpm install -D tailwindcss\n```\n\n## 2. Supabase setup\n```sql\nCREATE TABLE todos (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,\n  title TEXT NOT NULL,\n  done BOOLEAN DEFAULT FALSE,\n  created_at TIMESTAMPTZ DEFAULT NOW()\n);\n\nALTER TABLE todos ENABLE ROW LEVEL SECURITY;\n\nCREATE POLICY \"own_todos\" ON todos\nFOR ALL USING (auth.uid() = user_id);\n```\n\n## 3. Supabase client\n```typescript\n// src/lib/supabase.ts\nimport { createClient } from \"@supabase/supabase-js\";\n\nexport const supabase = createClient(\n  import.meta.env.VITE_SUPABASE_URL,\n  import.meta.env.VITE_SUPABASE_ANON_KEY\n);\n```\n\n## 4. Pinia store\n```typescript\n// src/stores/todos.ts\nimport { defineStore } from \"pinia\";\nimport { ref } from \"vue\";\nimport { supabase } from \"@/lib/supabase\";\n\ninterface Todo {\n  id: string;\n  title: string;\n  done: boolean;\n}\n\nexport const useTodosStore = defineStore(\"todos\", () => {\n  const todos = ref<Todo[]>([]);\n  \n  async function load() {\n    const { data } = await supabase\n      .from(\"todos\")\n      .select(\"*\")\n      .order(\"created_at\", { ascending: false });\n    todos.value = data || [];\n  }\n  \n  async function add(title: string) {\n    const { data: { user } } = await supabase.auth.getUser();\n    const { data } = await supabase\n      .from(\"todos\")\n      .insert({ title, user_id: user!.id })\n      .select()\n      .single();\n    if (data) todos.value.unshift(data);\n  }\n  \n  async function toggle(id: string) {\n    const todo = todos.value.find(t => t.id === id);\n    if (!todo) return;\n    todo.done = !todo.done;\n    await supabase.from(\"todos\").update({ done: todo.done }).eq(\"id\", id);\n  }\n  \n  async function remove(id: string) {\n    todos.value = todos.value.filter(t => t.id !== id);\n    await supabase.from(\"todos\").delete().eq(\"id\", id);\n  }\n  \n  function subscribe() {\n    return supabase\n      .channel(\"todos\")\n      .on(\"postgres_changes\",\n        { event: \"*\", schema: \"public\", table: \"todos\" },\n        () => load())\n      .subscribe();\n  }\n  \n  return { todos, load, add, toggle, remove, subscribe };\n});\n```\n\n## 5. Auth 頁\n```vue\n<!-- src/views/Login.vue -->\n<script setup lang=\"ts\">\nimport { ref } from \"vue\";\nimport { useRouter } from \"vue-router\";\nimport { supabase } from \"@/lib/supabase\";\n\nconst email = ref(\"\");\nconst password = ref(\"\");\nconst router = useRouter();\n\nasync function signIn() {\n  const { error } = await supabase.auth.signInWithPassword({\n    email: email.value, password: password.value\n  });\n  if (!error) router.push(\"/\");\n}\n\nasync function signUp() {\n  const { error } = await supabase.auth.signUp({\n    email: email.value, password: password.value\n  });\n  if (!error) alert(\"檢查 email 完成註冊\");\n}\n</script>\n\n<template>\n  <div class=\"max-w-md mx-auto p-6\">\n    <h1 class=\"text-2xl mb-4\">登入 / 註冊</h1>\n    <input v-model=\"email\" type=\"email\" placeholder=\"Email\" class=\"block w-full p-2 mb-2 border rounded\">\n    <input v-model=\"password\" type=\"password\" placeholder=\"密碼\" class=\"block w-full p-2 mb-4 border rounded\">\n    <button @click=\"signIn\" class=\"bg-green-500 text-white px-4 py-2 rounded mr-2\">登入</button>\n    <button @click=\"signUp\" class=\"bg-blue-500 text-white px-4 py-2 rounded\">註冊</button>\n  </div>\n</template>\n```\n\n## 6. Todo 頁\n```vue\n<!-- src/views/Todos.vue -->\n<script setup lang=\"ts\">\nimport { ref, onMounted, onUnmounted } from \"vue\";\nimport { useTodosStore } from \"@/stores/todos\";\n\nconst store = useTodosStore();\nconst newTitle = ref(\"\");\nlet unsub: any;\n\nonMounted(async () => {\n  await store.load();\n  unsub = store.subscribe();\n});\n\nonUnmounted(() => unsub?.unsubscribe());\n\nfunction handleAdd() {\n  if (!newTitle.value.trim()) return;\n  store.add(newTitle.value);\n  newTitle.value = \"\";\n}\n</script>\n\n<template>\n  <div class=\"max-w-2xl mx-auto p-6\">\n    <h1 class=\"text-3xl font-bold mb-6\">📝 My Todos</h1>\n    \n    <form @submit.prevent=\"handleAdd\" class=\"flex gap-2 mb-6\">\n      <input\n        v-model=\"newTitle\"\n        placeholder=\"新增 todo...\"\n        class=\"flex-1 p-2 border rounded\"\n      >\n      <button type=\"submit\" class=\"bg-green-500 text-white px-4 py-2 rounded\">\n        +\n      </button>\n    </form>\n    \n    <ul class=\"space-y-2\">\n      <li\n        v-for=\"todo in store.todos\"\n        :key=\"todo.id\"\n        class=\"flex items-center gap-2 p-3 border rounded\"\n      >\n        <input\n          type=\"checkbox\"\n          :checked=\"todo.done\"\n          @change=\"store.toggle(todo.id)\"\n        >\n        <span :class=\"{ 'line-through text-gray-400': todo.done }\">\n          {{ todo.title }}\n        </span>\n        <button @click=\"store.remove(todo.id)\" class=\"ml-auto text-red-500\">\n          ×\n        </button>\n      </li>\n    </ul>\n  </div>\n</template>\n```\n\n## 7. Router\n```typescript\n// src/router/index.ts\nimport { createRouter, createWebHistory } from \"vue-router\";\nimport { supabase } from \"@/lib/supabase\";\n\nconst router = createRouter({\n  history: createWebHistory(),\n  routes: [\n    { path: \"/\", component: () => import(\"@/views/Todos.vue\"), meta: { requiresAuth: true } },\n    { path: \"/login\", component: () => import(\"@/views/Login.vue\") },\n  ],\n});\n\nrouter.beforeEach(async (to) => {\n  const { data: { user } } = await supabase.auth.getUser();\n  if (to.meta.requiresAuth && !user) return \"/login\";\n  if (to.path === \"/login\" && user) return \"/\";\n});\n\nexport default router;\n```\n\n## 8. Deploy\n```bash\nnpm run build\nvercel deploy --prod\n```\n\n5 分鐘上線、有 auth + DB + realtime 的小 SaaS。\n\n## 加分功能（自己練）\n- 拖拉排序（vue-draggable）\n- 分類 / tag\n- 截止日期\n- 通知（push）\n- 多人協作（share）",
+      "tip": {
+        "type": "milestone",
+        "text": "完成這個 = 你會 Vue 全端。放 portfolio、面試示範、客戶 demo 都行。"
+      },
+      "id": "9.24",
+      "number": "LESSON 9.24",
+      "xp": 15,
+      "playgrounds": [
+        {
+          "key": "9.24.auto",
+          "language": "bash",
+          "title": "試試看",
+          "initialCode": "npm create vite@latest todo-app -- --template vue-ts\ncd todo-app\nnpm install\nnpm install pinia vue-router @supabase/supabase-js\nnpm install -D tailwindcss",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "需求"
+        },
+        {
+          "level": 2,
+          "text": "1. 建專案"
+        },
+        {
+          "level": 2,
+          "text": "2. Supabase setup"
+        },
+        {
+          "level": 2,
+          "text": "3. Supabase client"
+        },
+        {
+          "level": 2,
+          "text": "4. Pinia store"
+        },
+        {
+          "level": 2,
+          "text": "5. Auth 頁"
+        },
+        {
+          "level": 2,
+          "text": "6. Todo 頁"
+        },
+        {
+          "level": 2,
+          "text": "7. Router"
+        },
+        {
+          "level": 2,
+          "text": "8. Deploy"
+        },
+        {
+          "level": 2,
+          "text": "加分功能（自己練）"
+        }
+      ]
+    },
+    {
+      "title": "Vue 生態 + 學習資源",
+      "oneLineSummary": "不只 Vue 本體、整個生態都該了解",
+      "analogy": "單一框架不夠—配套工具決定你的生產力。",
+      "content": "## 核心生態\n- **Vue 3** — 主體\n- **Vue Router** — 路由\n- **Pinia** — 狀態管理\n- **Vite** — build tool\n- **Nuxt 3** — SSR / 全端框架\n- **VueUse** — composables 集合\n- **Vitest** — 測試\n- **Vue Test Utils** — component 測試\n\n## UI 框架（2026 主流）\n- **shadcn-vue**（最熱、port 自 shadcn/ui）\n- **Element Plus**（中國老牌、企業愛用）\n- **Naive UI**（TS first、設計現代）\n- **PrimeVue**（巨大、enterprise）\n- **Vuetify**（Material design）\n- **Quasar**（含 mobile build）\n- **Ant Design Vue**（阿里出）\n\n## 動畫\n- **GSAP**（最強、付費）\n- **AutoAnimate**（輕量、自動）\n- **Motion One**（Web Animations API wrap）\n- **Vue Transition**（內建）\n\n## 資料 / API\n- **Pinia**（state）\n- **@vueuse/core**（reactive utils）\n- **TanStack Query Vue**（server state）\n- **VeeValidate**（表單驗證）\n- **Zod**（schema）\n\n## 部署 / Hosting\n- **Vercel**（Nuxt 親爸）\n- **Netlify**\n- **Cloudflare Pages**\n- **Railway / Zeabur / Fly.io**\n\n## 學習資源（2026）\n\n### 官方\n- **vuejs.org**（永遠先讀官方）\n- **vue-router docs**\n- **pinia.vuejs.org**\n- **nuxt.com**\n\n### 影片\n- **Vue Mastery**（付費、Evan You 認可）\n- **Vue School**（付費、深入）\n- **Vue.js 官方 YT**\n- **DevBytes 中文**（YouTube 免費）\n\n### 中文社群\n- **掘金**（中國最大）\n- **PTT WebDev**（台灣）\n- **Vue.js 台灣 FB / Discord**\n\n### 書\n- 《深入浅出 Vue.js》劉博文\n- 《Vue.js 設計與實作》霍春陽（核心原始碼）\n\n## 跟著做 project\n最快學法、做 3 個項目：\n1. **Todo App**（基本 CRUD + auth）\n2. **Blog**（Nuxt SSR + Markdown）\n3. **儀表板**（Pinia + charts + realtime）\n\n每個 1-2 週、3 個月會 Vue 80%。\n\n## 招募市場（2026 台灣）\n\n### 找工作關鍵字\n- Vue 3\n- Composition API\n- Pinia\n- Nuxt 3\n- TypeScript\n\n### 薪資範圍（2026 台灣）\n- Junior（1-2 年）：NT$ 50-70k\n- Mid（3-5 年）：NT$ 70-100k\n- Senior（5+ 年）：NT$ 100-150k\n- Tech Lead：NT$ 150-250k\n\n接案 / 自由：\n- 小案 NT$ 30-100k\n- 中案 NT$ 100-500k\n- 長期維護月費 NT$ 50-100k\n\n## 我的建議\n1. **第 1 個月**：Vue 3 基礎（這章）\n2. **第 2 個月**：做 2 個 project（Todo + Blog）\n3. **第 3 個月**：Nuxt 3 + 上線一個 portfolio\n4. **第 4-6 個月**：找工作 / 開始接案\n\n半年 0 → 有產出。",
+      "tip": {
+        "type": "milestone",
+        "text": "Vue 不是「次等 React」、是「不同哲學的選擇」。中文圈 Vue 比 React 大、接案市場別忽略。"
+      },
+      "id": "9.25",
+      "number": "LESSON 9.25",
+      "xp": 10,
+      "exercise": {
+        "question": "找一個你身邊的例子、用「Vue 生態 + 學習資源」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "核心生態"
+        },
+        {
+          "level": 2,
+          "text": "UI 框架（2026 主流）"
+        },
+        {
+          "level": 2,
+          "text": "動畫"
+        },
+        {
+          "level": 2,
+          "text": "資料 / API"
+        },
+        {
+          "level": 2,
+          "text": "部署 / Hosting"
+        },
+        {
+          "level": 2,
+          "text": "學習資源（2026）"
+        },
+        {
+          "level": 3,
+          "text": "官方"
+        },
+        {
+          "level": 3,
+          "text": "影片"
+        },
+        {
+          "level": 3,
+          "text": "中文社群"
+        },
+        {
+          "level": 3,
+          "text": "書"
+        },
+        {
+          "level": 2,
+          "text": "跟著做 project"
+        },
+        {
+          "level": 2,
+          "text": "招募市場（2026 台灣）"
+        },
+        {
+          "level": 3,
+          "text": "找工作關鍵字"
+        },
+        {
+          "level": 3,
+          "text": "薪資範圍（2026 台灣）"
+        },
+        {
+          "level": 2,
+          "text": "我的建議"
+        }
+      ]
+    }
+  ],
+  "boss": {
+    "name": "響應之龍",
+    "hp": 140,
+    "emoji": "🐲",
+    "description": "反應比閃電快、ref 才能抓住"
+  },
+  "quiz": {
+    "id": "ch09-quiz",
+    "questions": [],
+    "xpReward": 50,
+    "perfectBonus": 50
+  }
+}

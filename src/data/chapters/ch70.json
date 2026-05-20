@@ -1,0 +1,1111 @@
+{
+  "id": 70,
+  "stage": 7,
+  "title": "附錄 J：程式碼遊樂場",
+  "subtitle": "60+ 個線上 playground、不裝任何東西就能寫 code",
+  "description": "想試新語言、學 regex、玩 LLM、不裝任何東西就能開始。",
+  "difficulty": "reference",
+  "estimatedHours": 1,
+  "icon": "🎮",
+  "lessons": [
+    {
+      "id": "70.1",
+      "number": "70.1",
+      "title": "通用多語言遊樂場",
+      "oneLineSummary": "支援多種語言、一站搞定。",
+      "xp": 50,
+      "content": "下面這些遊樂場都支援多種語言、可以瀏覽器內直接寫 + 跑 code。",
+      "resourceGroups": [
+        {
+          "title": "🎮 多語言通用",
+          "resources": [
+            {
+              "type": "playground",
+              "title": "CodeSandbox",
+              "url": "https://codesandbox.io/",
+              "desc": "雲端 IDE、支援前端框架 + Node、可以分享 + fork",
+              "lang": "mixed",
+              "price": "freemium",
+              "level": "all",
+              "tags": [
+                "前端",
+                "Node",
+                "分享"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "StackBlitz",
+              "url": "https://stackblitz.com/",
+              "desc": "WebContainer 跑在瀏覽器、超快、支援 Next.js",
+              "lang": "mixed",
+              "price": "freemium",
+              "tags": [
+                "瀏覽器原生",
+                "Next.js"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "Replit",
+              "url": "https://replit.com/",
+              "desc": "50+ 語言、AI 整合、可以做完整 app",
+              "lang": "mixed",
+              "price": "freemium",
+              "level": "all",
+              "tags": [
+                "50+ 語言",
+                "AI"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "Glitch",
+              "url": "https://glitch.com/",
+              "desc": "Node / 全端、社群分享風氣",
+              "lang": "en",
+              "price": "freemium",
+              "tags": [
+                "Node",
+                "社群"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "JSFiddle",
+              "url": "https://jsfiddle.net/",
+              "desc": "最老牌、HTML/CSS/JS 三窗格、簡單",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "經典"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "CodePen",
+              "url": "https://codepen.io/",
+              "desc": "前端 demo / 動畫 / CSS 藝術社群",
+              "lang": "mixed",
+              "price": "freemium",
+              "tags": [
+                "前端",
+                "CSS"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "JS Bin",
+              "url": "https://jsbin.com/",
+              "desc": "極簡前端 playground",
+              "lang": "en",
+              "price": "free"
+            },
+            {
+              "type": "playground",
+              "title": "Plnkr",
+              "url": "https://plnkr.co/",
+              "desc": "老牌前端 / Angular playground",
+              "lang": "en",
+              "price": "free"
+            },
+            {
+              "type": "playground",
+              "title": "Programiz",
+              "url": "https://www.programiz.com/online-compiler",
+              "desc": "支援 15+ 語言、初學者友善",
+              "lang": "mixed",
+              "price": "free",
+              "level": "beginner"
+            },
+            {
+              "type": "playground",
+              "title": "OneCompiler",
+              "url": "https://onecompiler.com/",
+              "desc": "60+ 語言、包含 DB",
+              "lang": "mixed",
+              "price": "free"
+            },
+            {
+              "type": "playground",
+              "title": "JDoodle",
+              "url": "https://www.jdoodle.com/",
+              "desc": "70+ 語言、含 DB / Web tools",
+              "lang": "mixed",
+              "price": "freemium"
+            },
+            {
+              "type": "playground",
+              "title": "Paiza.IO",
+              "url": "https://paiza.io/",
+              "desc": "日本出品、20+ 語言",
+              "lang": "jp",
+              "price": "free"
+            }
+          ]
+        }
+      ],
+      "exercise": {
+        "question": "在 Replit 開一個你不熟的語言、寫一個 Hello World。",
+        "hint": "Replit 不用裝任何東西、開瀏覽器就能用 50 種語言。",
+        "answer": "推薦試 Rust 或 Go——你可能聽過但沒寫過、5 分鐘體驗一下。"
+      }
+    },
+    {
+      "id": "70.2",
+      "number": "70.2",
+      "title": "各語言官方遊樂場",
+      "oneLineSummary": "每個語言官方都有 playground、體驗最原汁原味。",
+      "xp": 50,
+      "content": "官方 playground 通常有最新語言特性、可以分享 URL。",
+      "resourceGroups": [
+        {
+          "title": "🎯 後端語言官方",
+          "resources": [
+            {
+              "type": "playground",
+              "title": "Go Playground",
+              "url": "https://go.dev/play/",
+              "desc": "Go 官方 playground、可分享",
+              "author": "Go Team",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "Go"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "Rust Playground",
+              "url": "https://play.rust-lang.org/",
+              "desc": "Rust 官方、含 Cargo、可選 stable/beta/nightly",
+              "author": "Rust Team",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "Rust"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "Python REPL（官方）",
+              "url": "https://www.python.org/shell/",
+              "desc": "Python 官方線上 REPL",
+              "author": "Python.org",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "Python"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "Ruby Playground",
+              "url": "https://try.ruby-lang.org/",
+              "desc": "Ruby 官方教學 + REPL",
+              "author": "Ruby Team",
+              "lang": "mixed",
+              "price": "free",
+              "tags": [
+                "Ruby"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "Java Playground (OneCompiler)",
+              "url": "https://onecompiler.com/java",
+              "desc": "Java 線上跑、含 main",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "Java"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "Kotlin Playground",
+              "url": "https://play.kotlinlang.org/",
+              "desc": "Kotlin 官方、含 coroutines 範例",
+              "author": "JetBrains",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "Kotlin"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "Scala Scastie",
+              "url": "https://scastie.scala-lang.org/",
+              "desc": "Scala 官方互動 playground",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "Scala"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "C# .NET Fiddle",
+              "url": "https://dotnetfiddle.net/",
+              "desc": "C# / .NET 線上 IDE",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "C#"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "PHP Sandbox",
+              "url": "https://onlinephp.io/",
+              "desc": "PHP 多版本可切換",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "PHP"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "Perl Playground",
+              "url": "https://onecompiler.com/perl",
+              "desc": "Perl 線上跑",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "Perl"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "Elixir Playground",
+              "url": "https://onecompiler.com/elixir",
+              "desc": "Elixir 線上 REPL",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "Elixir"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "Haskell Playground",
+              "url": "https://play.haskell.org/",
+              "desc": "Haskell 官方 playground",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "Haskell",
+                "FP"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "OCaml Playground",
+              "url": "https://try.ocaml.pro/",
+              "desc": "OCaml 互動式教學",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "OCaml",
+                "FP"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "Erlang Playground",
+              "url": "https://onecompiler.com/erlang",
+              "desc": "Erlang 線上跑",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "Erlang"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "Lua Demo",
+              "url": "https://www.lua.org/cgi-bin/demo",
+              "desc": "Lua 官方線上 demo",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "Lua"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "Crystal Play",
+              "url": "https://play.crystal-lang.org/",
+              "desc": "Crystal 語言 playground",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "Crystal"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "Zig Playground",
+              "url": "https://godbolt.org/",
+              "desc": "Zig 用 Godbolt 跑",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "Zig"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "Nim Playground",
+              "url": "https://play.nim-lang.org/",
+              "desc": "Nim 語言官方",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "Nim"
+              ]
+            }
+          ]
+        },
+        {
+          "title": "🌐 前端 / Web 官方",
+          "resources": [
+            {
+              "type": "playground",
+              "title": "TypeScript Playground",
+              "url": "https://www.typescriptlang.org/play",
+              "desc": "TS 官方、超強、可看編譯後 JS、有範例",
+              "author": "Microsoft",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "TS",
+                "必收"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "React Playground (React 官方)",
+              "url": "https://react.dev/learn",
+              "desc": "React 官方教學內嵌可寫 code",
+              "author": "React Team",
+              "lang": "mixed",
+              "price": "free",
+              "tags": [
+                "React"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "Vue SFC Playground",
+              "url": "https://play.vuejs.org/",
+              "desc": "Vue 官方 Single File Component playground",
+              "author": "Vue Team",
+              "lang": "mixed",
+              "price": "free",
+              "tags": [
+                "Vue"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "Svelte Playground",
+              "url": "https://svelte.dev/playground",
+              "desc": "Svelte 官方、超流暢",
+              "author": "Svelte Team",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "Svelte"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "Solid Playground",
+              "url": "https://playground.solidjs.com/",
+              "desc": "SolidJS 官方",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "SolidJS"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "Tailwind Play",
+              "url": "https://play.tailwindcss.com/",
+              "desc": "Tailwind 官方、即時預覽 utility class",
+              "author": "Tailwind Labs",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "Tailwind",
+                "CSS"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "Astro Playground",
+              "url": "https://astro.new/",
+              "desc": "Astro 官方 template 起手",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "Astro"
+              ]
+            }
+          ]
+        }
+      ],
+      "exercise": {
+        "question": "在 TypeScript Playground 玩 5 分鐘、看 examples 內的進階範例。",
+        "hint": "TS Playground 是學 TypeScript 最好的工具、看編譯後 JS 才知道在做什麼。",
+        "answer": "點 Examples → Type Manipulation、看那些變態的 type 怎麼推導出來、會打開新世界。"
+      }
+    },
+    {
+      "id": "70.3",
+      "number": "70.3",
+      "title": "資料庫 / SQL 遊樂場",
+      "oneLineSummary": "不裝 DB 就能練 SQL、查 schema。",
+      "xp": 50,
+      "content": "練 SQL 不用裝 Postgres、線上 playground 就夠。",
+      "resourceGroups": [
+        {
+          "title": "🗄️ SQL / DB",
+          "resources": [
+            {
+              "type": "playground",
+              "title": "DB Fiddle",
+              "url": "https://www.db-fiddle.com/",
+              "desc": "多種 SQL DB 都支援、能分享 schema + query",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "SQL",
+                "分享"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "SQLite Online",
+              "url": "https://sqliteonline.com/",
+              "desc": "瀏覽器內跑 SQLite、超快",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "SQLite"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "SQL Fiddle",
+              "url": "http://sqlfiddle.com/",
+              "desc": "老牌 SQL playground",
+              "lang": "en",
+              "price": "free"
+            },
+            {
+              "type": "playground",
+              "title": "Mode SQL Tutorial",
+              "url": "https://mode.com/sql-tutorial/",
+              "desc": "互動式 SQL 教學、含真實資料集",
+              "lang": "en",
+              "price": "free",
+              "level": "beginner",
+              "tags": [
+                "教學"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "SQLZoo",
+              "url": "https://sqlzoo.net/",
+              "desc": "SQL 練習題、互動式",
+              "lang": "en",
+              "price": "free",
+              "level": "beginner",
+              "tags": [
+                "練習"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "SQLBolt",
+              "url": "https://sqlbolt.com/",
+              "desc": "SQL 入門互動課",
+              "lang": "en",
+              "price": "free",
+              "level": "beginner"
+            },
+            {
+              "type": "playground",
+              "title": "MongoDB Playground",
+              "url": "https://mongoplayground.net/",
+              "desc": "MongoDB query 線上練",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "MongoDB"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "Neo4j Sandbox",
+              "url": "https://sandbox.neo4j.com/",
+              "desc": "圖形 DB 練習",
+              "author": "Neo4j",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "Neo4j",
+                "GraphDB"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "PostgreSQL Playground",
+              "url": "https://www.postgrespro.com/sandbox",
+              "desc": "Postgres Pro 提供、模擬機票資料庫",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "Postgres"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "Redis Try",
+              "url": "https://try.redis.io/",
+              "desc": "Redis 互動式教學",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "Redis"
+              ]
+            }
+          ]
+        }
+      ],
+      "exercise": {
+        "question": "在 SQLZoo 完成第一關（SELECT basics）。",
+        "hint": "SQL 是工程師最不會過時的技能、不會就吃虧一輩子。",
+        "answer": "做完 SQLZoo 前 5 章 + 1 章 Window Functions、SQL 已經贏過 80% 工程師。"
+      }
+    },
+    {
+      "id": "70.4",
+      "number": "70.4",
+      "title": "AI / ML 遊樂場",
+      "oneLineSummary": "玩 LLM、訓練模型、看 prompt 效果。",
+      "xp": 50,
+      "content": "AI 圈很多 playground 可以體驗、不用自己架。",
+      "resourceGroups": [
+        {
+          "title": "🤖 LLM 對話",
+          "resources": [
+            {
+              "type": "playground",
+              "title": "ChatGPT",
+              "url": "https://chatgpt.com/",
+              "desc": "OpenAI 官方介面",
+              "author": "OpenAI",
+              "lang": "mixed",
+              "price": "freemium"
+            },
+            {
+              "type": "playground",
+              "title": "Claude",
+              "url": "https://claude.ai/",
+              "desc": "Anthropic 官方介面、推理 / 寫作強",
+              "author": "Anthropic",
+              "lang": "mixed",
+              "price": "freemium"
+            },
+            {
+              "type": "playground",
+              "title": "Google AI Studio",
+              "url": "https://aistudio.google.com/",
+              "desc": "免費試 Gemini、含程式碼模式",
+              "author": "Google",
+              "lang": "mixed",
+              "price": "free",
+              "tags": [
+                "Gemini",
+                "免費"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "Anthropic Console",
+              "url": "https://console.anthropic.com/workbench",
+              "desc": "Claude 開發者 console、調 system prompt",
+              "author": "Anthropic",
+              "lang": "en",
+              "price": "freemium"
+            },
+            {
+              "type": "playground",
+              "title": "OpenAI Playground",
+              "url": "https://platform.openai.com/playground",
+              "desc": "OpenAI 開發者 playground、調參數",
+              "author": "OpenAI",
+              "lang": "en",
+              "price": "paid"
+            },
+            {
+              "type": "playground",
+              "title": "Perplexity",
+              "url": "https://www.perplexity.ai/",
+              "desc": "AI 搜尋、含 reference",
+              "lang": "mixed",
+              "price": "freemium",
+              "tags": [
+                "搜尋"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "Poe",
+              "url": "https://poe.com/",
+              "desc": "一個介面用多種 LLM",
+              "author": "Quora",
+              "lang": "mixed",
+              "price": "freemium"
+            },
+            {
+              "type": "playground",
+              "title": "Together AI Playground",
+              "url": "https://api.together.ai/playground/chat",
+              "desc": "多種開源 model 試用",
+              "lang": "en",
+              "price": "freemium",
+              "tags": [
+                "開源"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "Groq",
+              "url": "https://groq.com/",
+              "desc": "超快推論、免費試 Llama / Mixtral",
+              "lang": "en",
+              "price": "freemium",
+              "tags": [
+                "快"
+              ]
+            }
+          ]
+        },
+        {
+          "title": "🎨 圖像 / 影音 AI",
+          "resources": [
+            {
+              "type": "playground",
+              "title": "Midjourney",
+              "url": "https://www.midjourney.com/",
+              "desc": "頂級 AI 繪圖、Discord / web",
+              "lang": "en",
+              "price": "paid"
+            },
+            {
+              "type": "playground",
+              "title": "DALL·E（ChatGPT 內）",
+              "url": "https://chatgpt.com/",
+              "desc": "OpenAI 繪圖、整合在 ChatGPT",
+              "author": "OpenAI",
+              "lang": "mixed",
+              "price": "freemium"
+            },
+            {
+              "type": "playground",
+              "title": "Stable Diffusion Online",
+              "url": "https://stablediffusionweb.com/",
+              "desc": "瀏覽器跑 SD、免費",
+              "lang": "en",
+              "price": "free"
+            },
+            {
+              "type": "playground",
+              "title": "Leonardo AI",
+              "url": "https://leonardo.ai/",
+              "desc": "生成圖像、有 fine-tune",
+              "lang": "en",
+              "price": "freemium"
+            },
+            {
+              "type": "playground",
+              "title": "Runway",
+              "url": "https://runwayml.com/",
+              "desc": "AI 影片、Gen-3 / Gen-4",
+              "lang": "en",
+              "price": "freemium",
+              "tags": [
+                "影片"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "Pika",
+              "url": "https://pika.art/",
+              "desc": "文字轉影片",
+              "lang": "en",
+              "price": "freemium",
+              "tags": [
+                "影片"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "ElevenLabs",
+              "url": "https://elevenlabs.io/",
+              "desc": "AI 語音合成、超擬真",
+              "lang": "mixed",
+              "price": "freemium",
+              "tags": [
+                "TTS",
+                "語音"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "Suno",
+              "url": "https://www.suno.com/",
+              "desc": "AI 寫歌、給歌詞生整首",
+              "lang": "en",
+              "price": "freemium",
+              "tags": [
+                "音樂"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "Udio",
+              "url": "https://www.udio.com/",
+              "desc": "AI 音樂另一強者",
+              "lang": "en",
+              "price": "freemium",
+              "tags": [
+                "音樂"
+              ]
+            }
+          ]
+        },
+        {
+          "title": "🔬 ML 訓練 / 實驗",
+          "resources": [
+            {
+              "type": "playground",
+              "title": "Google Colab",
+              "url": "https://colab.research.google.com/",
+              "desc": "免費 GPU、Jupyter notebook 雲端跑",
+              "author": "Google",
+              "lang": "mixed",
+              "price": "freemium",
+              "tags": [
+                "GPU",
+                "免費"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "Kaggle Notebooks",
+              "url": "https://www.kaggle.com/code",
+              "desc": "免費 GPU + 公開資料集 + 競賽",
+              "author": "Google",
+              "lang": "mixed",
+              "price": "free",
+              "tags": [
+                "GPU",
+                "資料集"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "Hugging Face Spaces",
+              "url": "https://huggingface.co/spaces",
+              "desc": "部署 ML demo、看別人作品",
+              "lang": "en",
+              "price": "freemium"
+            },
+            {
+              "type": "playground",
+              "title": "TensorFlow Playground",
+              "url": "https://playground.tensorflow.org/",
+              "desc": "視覺化 neural network、學原理超讚",
+              "author": "Google",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "教學"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "Teachable Machine",
+              "url": "https://teachablemachine.withgoogle.com/",
+              "desc": "瀏覽器訓練 ML 模型、超簡單",
+              "author": "Google",
+              "lang": "mixed",
+              "price": "free",
+              "level": "beginner",
+              "tags": [
+                "入門"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "Replicate",
+              "url": "https://replicate.com/",
+              "desc": "跑 1000+ open-source models",
+              "lang": "en",
+              "price": "freemium"
+            }
+          ]
+        }
+      ],
+      "exercise": {
+        "question": "在 TensorFlow Playground 玩 5 分鐘、調整參數看 neural network 學習過程。",
+        "hint": "視覺化看 NN 學習超震撼、抽象概念瞬間具象化。",
+        "answer": "從 Circle 資料集開始、加 hidden layer、看 decision boundary 怎麼變化。看一遍勝過讀一本書。"
+      }
+    },
+    {
+      "id": "70.5",
+      "number": "70.5",
+      "title": "Regex / 工具類遊樂場",
+      "oneLineSummary": "正則、JSON、API、CSS 各種工具網站。",
+      "xp": 50,
+      "content": "工具型 playground、寫 code 時常開。",
+      "resourceGroups": [
+        {
+          "title": "🔍 正則表達式",
+          "resources": [
+            {
+              "type": "playground",
+              "title": "regex101",
+              "url": "https://regex101.com/",
+              "desc": "最強 regex 測試 + 解釋、必收",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "必收"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "RegExr",
+              "url": "https://regexr.com/",
+              "desc": "互動式學習 regex",
+              "lang": "en",
+              "price": "free",
+              "level": "beginner"
+            },
+            {
+              "type": "playground",
+              "title": "RegEx Vis",
+              "url": "https://regex-vis.com/",
+              "desc": "把 regex 畫成流程圖、視覺化",
+              "lang": "en",
+              "price": "free"
+            }
+          ]
+        },
+        {
+          "title": "🛠️ 開發者工具",
+          "resources": [
+            {
+              "type": "playground",
+              "title": "JSON Crack",
+              "url": "https://jsoncrack.com/",
+              "desc": "把 JSON 視覺化成圖、debug 神器",
+              "lang": "en",
+              "price": "freemium",
+              "tags": [
+                "JSON"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "JSON Hero",
+              "url": "https://jsonhero.io/",
+              "desc": "另一個 JSON 視覺化工具",
+              "lang": "en",
+              "price": "free"
+            },
+            {
+              "type": "playground",
+              "title": "Transform",
+              "url": "https://transform.tools/",
+              "desc": "JSON ↔ TypeScript / Go / Rust 互轉",
+              "lang": "en",
+              "price": "free"
+            },
+            {
+              "type": "playground",
+              "title": "Carbon",
+              "url": "https://carbon.now.sh/",
+              "desc": "把 code 截圖成美美的圖、發 Twitter 用",
+              "lang": "en",
+              "price": "free"
+            },
+            {
+              "type": "playground",
+              "title": "Ray.so",
+              "url": "https://ray.so/",
+              "desc": "Raycast 出品、code 截圖更精緻",
+              "lang": "en",
+              "price": "free"
+            },
+            {
+              "type": "playground",
+              "title": "Mockaroo",
+              "url": "https://www.mockaroo.com/",
+              "desc": "生成假資料、給開發測試用",
+              "lang": "en",
+              "price": "freemium"
+            },
+            {
+              "type": "playground",
+              "title": "RequestBin / Webhook.site",
+              "url": "https://webhook.site/",
+              "desc": "接 webhook 測試、debug 第三方整合",
+              "lang": "en",
+              "price": "free"
+            },
+            {
+              "type": "playground",
+              "title": "ngrok",
+              "url": "https://ngrok.com/",
+              "desc": "把 localhost 暴露到公網、測 webhook 必備",
+              "lang": "en",
+              "price": "freemium"
+            }
+          ]
+        },
+        {
+          "title": "🎨 CSS / 設計 playground",
+          "resources": [
+            {
+              "type": "playground",
+              "title": "Tailwind Play",
+              "url": "https://play.tailwindcss.com/",
+              "desc": "Tailwind 官方、即時預覽",
+              "lang": "en",
+              "price": "free"
+            },
+            {
+              "type": "playground",
+              "title": "CSS Grid Generator",
+              "url": "https://cssgrid-generator.netlify.app/",
+              "desc": "拖拉就出 CSS Grid code",
+              "lang": "en",
+              "price": "free"
+            },
+            {
+              "type": "playground",
+              "title": "Flexbox Froggy",
+              "url": "https://flexboxfroggy.com/",
+              "desc": "玩遊戲學 Flexbox",
+              "lang": "mixed",
+              "price": "free",
+              "level": "beginner",
+              "tags": [
+                "遊戲化"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "Grid Garden",
+              "url": "https://cssgridgarden.com/",
+              "desc": "玩遊戲學 CSS Grid",
+              "lang": "mixed",
+              "price": "free",
+              "level": "beginner",
+              "tags": [
+                "遊戲化"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "Animista",
+              "url": "https://animista.net/",
+              "desc": "CSS 動畫產生器",
+              "lang": "en",
+              "price": "free"
+            },
+            {
+              "type": "playground",
+              "title": "Coolors",
+              "url": "https://coolors.co/",
+              "desc": "配色產生器、設計師最愛",
+              "lang": "mixed",
+              "price": "freemium"
+            },
+            {
+              "type": "playground",
+              "title": "Shadow Generator",
+              "url": "https://shadows.brumm.af/",
+              "desc": "超精緻 box-shadow 產生器",
+              "lang": "en",
+              "price": "free"
+            }
+          ]
+        },
+        {
+          "title": "⚡ 編譯 / 反組譯",
+          "resources": [
+            {
+              "type": "playground",
+              "title": "Godbolt (Compiler Explorer)",
+              "url": "https://godbolt.org/",
+              "desc": "看 C/C++/Rust/Zig 編譯成什麼 assembly、神器",
+              "lang": "en",
+              "price": "free",
+              "level": "advanced",
+              "tags": [
+                "編譯",
+                "assembly"
+              ]
+            },
+            {
+              "type": "playground",
+              "title": "AST Explorer",
+              "url": "https://astexplorer.net/",
+              "desc": "看 JS/TS code 的 AST、寫 lint rule / babel plugin 必用",
+              "lang": "en",
+              "price": "free",
+              "level": "advanced"
+            },
+            {
+              "type": "playground",
+              "title": "Babel REPL",
+              "url": "https://babeljs.io/repl",
+              "desc": "看 modern JS 轉成什麼舊版",
+              "lang": "en",
+              "price": "free"
+            },
+            {
+              "type": "playground",
+              "title": "WebAssembly Studio",
+              "url": "https://webassembly.studio/",
+              "desc": "瀏覽器內寫 WebAssembly",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "WASM"
+              ]
+            }
+          ]
+        }
+      ],
+      "exercise": {
+        "question": "用 regex101 寫一個 regex、能匹配 email。",
+        "hint": "右邊有 explanation panel、看 regex 每個字元做什麼。",
+        "answer": "簡單版：[\\w.-]+@[\\w.-]+\\.\\w+。精確版很複雜（RFC 5322 完整 email 有 600 字元）、實務上 80% 場景簡單版就夠。"
+      }
+    }
+  ]
+}

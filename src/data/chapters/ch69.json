@@ -1,0 +1,1915 @@
+{
+  "id": 69,
+  "stage": 7,
+  "title": "附錄 I：學習資源庫",
+  "subtitle": "影片、書籍、課程、Podcast、App 全收錄",
+  "description": "需要學什麼點卡片直接到、所有資源一頁查完。",
+  "difficulty": "reference",
+  "estimatedHours": 1,
+  "icon": "📚",
+  "lessons": [
+    {
+      "id": "69.1",
+      "number": "69.1",
+      "title": "免費影片頻道（程式 / 全端）",
+      "oneLineSummary": "全網最強免費教學頻道、點卡片直接到頻道。",
+      "xp": 50,
+      "content": "看影片學最快。下面卡片點下去直接到頻道、選你喜歡的訂閱。",
+      "resourceGroups": [
+        {
+          "title": "🌍 英文 - 通用 / 全端",
+          "resources": [
+            {
+              "type": "video",
+              "title": "freeCodeCamp",
+              "url": "https://www.youtube.com/@freecodecamp",
+              "desc": "6 小時、10 小時長課程一堆、品質高、有完整 project tutorial",
+              "author": "freeCodeCamp",
+              "lang": "en",
+              "price": "free",
+              "level": "all",
+              "tags": [
+                "全端",
+                "long-form"
+              ]
+            },
+            {
+              "type": "video",
+              "title": "Fireship",
+              "url": "https://www.youtube.com/@Fireship",
+              "desc": "100 秒講完一個技術、快速 overview 神器、幽默",
+              "author": "Jeff Delaney",
+              "lang": "en",
+              "price": "free",
+              "level": "all",
+              "tags": [
+                "快速",
+                "新技術"
+              ]
+            },
+            {
+              "type": "video",
+              "title": "Theo - t3.gg",
+              "url": "https://www.youtube.com/@t3dotgg",
+              "desc": "Next.js / TypeScript 圈意見領袖、深度技術討論",
+              "author": "Theo Browne",
+              "lang": "en",
+              "price": "free",
+              "level": "intermediate",
+              "tags": [
+                "Next.js",
+                "TypeScript"
+              ]
+            },
+            {
+              "type": "video",
+              "title": "Web Dev Simplified",
+              "url": "https://www.youtube.com/@WebDevSimplified",
+              "desc": "JavaScript / React 講解清楚、節奏剛好",
+              "author": "Kyle Cook",
+              "lang": "en",
+              "price": "free",
+              "level": "beginner",
+              "tags": [
+                "JavaScript",
+                "React"
+              ]
+            },
+            {
+              "type": "video",
+              "title": "Traversy Media",
+              "url": "https://www.youtube.com/@TraversyMedia",
+              "desc": "老牌、各種 framework crash course",
+              "author": "Brad Traversy",
+              "lang": "en",
+              "price": "free",
+              "level": "all"
+            },
+            {
+              "type": "video",
+              "title": "Programming with Mosh",
+              "url": "https://www.youtube.com/@programmingwithmosh",
+              "desc": "初學者友善、節奏慢、解釋清楚",
+              "author": "Mosh Hamedani",
+              "lang": "en",
+              "price": "free",
+              "level": "beginner"
+            },
+            {
+              "type": "video",
+              "title": "The Net Ninja",
+              "url": "https://www.youtube.com/@NetNinja",
+              "desc": "系列教學、邏輯清楚、適合按順序學",
+              "author": "Shaun Pelling",
+              "lang": "en",
+              "price": "free",
+              "level": "beginner"
+            },
+            {
+              "type": "video",
+              "title": "Code with Antonio",
+              "url": "https://www.youtube.com/@codewithantonio",
+              "desc": "Next.js + SaaS 完整 project、跟著做一輪就會",
+              "author": "Antonio",
+              "lang": "en",
+              "price": "free",
+              "level": "intermediate",
+              "tags": [
+                "Next.js",
+                "SaaS"
+              ]
+            },
+            {
+              "type": "video",
+              "title": "Lee Robinson",
+              "url": "https://www.youtube.com/@leerob",
+              "desc": "Vercel VP、Next.js 一手資訊",
+              "author": "Lee Robinson",
+              "lang": "en",
+              "price": "free",
+              "level": "intermediate",
+              "tags": [
+                "Next.js",
+                "Vercel"
+              ]
+            },
+            {
+              "type": "video",
+              "title": "Jack Herrington",
+              "url": "https://www.youtube.com/@jherr",
+              "desc": "React / TypeScript 深度、進階開發者必看",
+              "author": "Jack Herrington",
+              "lang": "en",
+              "price": "free",
+              "level": "advanced"
+            },
+            {
+              "type": "video",
+              "title": "ByteByteGo",
+              "url": "https://www.youtube.com/@ByteByteGo",
+              "desc": "系統設計動畫講解、面試 / 進階必看",
+              "author": "Alex Xu",
+              "lang": "en",
+              "price": "free",
+              "level": "advanced",
+              "tags": [
+                "系統設計",
+                "interview"
+              ]
+            },
+            {
+              "type": "video",
+              "title": "Hussein Nasser",
+              "url": "https://www.youtube.com/@hnasr",
+              "desc": "後端深度、DB 內部、網路協議",
+              "author": "Hussein Nasser",
+              "lang": "en",
+              "price": "free",
+              "level": "advanced",
+              "tags": [
+                "後端",
+                "DB"
+              ]
+            }
+          ]
+        },
+        {
+          "title": "🇹🇼 中文 - 程式教學",
+          "resources": [
+            {
+              "type": "video",
+              "title": "六角學院",
+              "url": "https://www.youtube.com/@hexschool",
+              "desc": "台灣最大前端教學、JS / Vue / React 中文資源",
+              "author": "六角學院",
+              "lang": "zh",
+              "price": "freemium",
+              "level": "beginner"
+            },
+            {
+              "type": "video",
+              "title": "彭彭的課程",
+              "url": "https://www.youtube.com/@cwpeng-course",
+              "desc": "Python 教學中文最系統化、循序漸進",
+              "author": "彭彭",
+              "lang": "zh",
+              "price": "free",
+              "level": "beginner",
+              "tags": [
+                "Python"
+              ]
+            },
+            {
+              "type": "video",
+              "title": "莫煩 Python",
+              "url": "https://www.youtube.com/@MorvanZhou",
+              "desc": "Python / ML / DL 中文教學經典、適合入門",
+              "author": "莫煩",
+              "lang": "zh",
+              "price": "free",
+              "level": "beginner",
+              "tags": [
+                "Python",
+                "ML"
+              ]
+            },
+            {
+              "type": "video",
+              "title": "Cupoy AI 學院",
+              "url": "https://www.youtube.com/@cupoy7028",
+              "desc": "台灣 AI / ML 教學社群",
+              "author": "Cupoy",
+              "lang": "zh",
+              "price": "freemium",
+              "level": "intermediate"
+            },
+            {
+              "type": "video",
+              "title": "MTR Design 程式教學",
+              "url": "https://www.youtube.com/@mtrdesign",
+              "desc": "前端與設計結合、實戰風",
+              "author": "MTR",
+              "lang": "zh",
+              "price": "free"
+            },
+            {
+              "type": "video",
+              "title": "JS 大全",
+              "url": "https://www.youtube.com/@code-it",
+              "desc": "JavaScript 進階概念中文講解",
+              "lang": "zh",
+              "price": "free",
+              "level": "intermediate"
+            }
+          ]
+        }
+      ],
+      "exercise": {
+        "question": "從上面挑 2 個頻道訂閱、設定每週看 1 部影片的習慣。",
+        "hint": "訂閱太多會疲乏。挑你最有興趣的 2 個就夠。",
+        "answer": "推薦組合：Fireship（快速 overview）+ 一個深度頻道（如 ByteByteGo / 六角）。前者讓你不過時、後者讓你變強。"
+      }
+    },
+    {
+      "id": "69.2",
+      "number": "69.2",
+      "title": "AI / LLM 教學影片",
+      "oneLineSummary": "AI 領域變化最快、看這些頻道追上時代。",
+      "xp": 50,
+      "content": "AI 圈每週都有大事、靠這些頻道掌握。",
+      "resourceGroups": [
+        {
+          "title": "🤖 AI / LLM 深度",
+          "resources": [
+            {
+              "type": "video",
+              "title": "Andrej Karpathy",
+              "url": "https://www.youtube.com/@AndrejKarpathy",
+              "desc": "OpenAI 共同創辦人、從零實作 GPT、LLM 神級教學",
+              "author": "Andrej Karpathy",
+              "lang": "en",
+              "price": "free",
+              "level": "advanced",
+              "tags": [
+                "LLM",
+                "從零做"
+              ]
+            },
+            {
+              "type": "video",
+              "title": "Two Minute Papers",
+              "url": "https://www.youtube.com/@TwoMinutePapers",
+              "desc": "2 分鐘解析最新 AI 論文、追前沿必看",
+              "author": "Károly Zsolnai-Fehér",
+              "lang": "en",
+              "price": "free",
+              "level": "all",
+              "tags": [
+                "論文",
+                "前沿"
+              ]
+            },
+            {
+              "type": "video",
+              "title": "Yannic Kilcher",
+              "url": "https://www.youtube.com/@YannicKilcher",
+              "desc": "深入解析 AI 論文、學術派",
+              "author": "Yannic Kilcher",
+              "lang": "en",
+              "price": "free",
+              "level": "advanced",
+              "tags": [
+                "論文"
+              ]
+            },
+            {
+              "type": "video",
+              "title": "AI Explained",
+              "url": "https://www.youtube.com/@aiexplained-official",
+              "desc": "AI 業界新聞 + 模型評測、客觀分析",
+              "lang": "en",
+              "price": "free",
+              "level": "all"
+            },
+            {
+              "type": "video",
+              "title": "Matthew Berman",
+              "url": "https://www.youtube.com/@matthew_berman",
+              "desc": "每個新 LLM 出來都測一輪、開源 model 評測首選",
+              "author": "Matthew Berman",
+              "lang": "en",
+              "price": "free",
+              "level": "all",
+              "tags": [
+                "LLM",
+                "評測"
+              ]
+            },
+            {
+              "type": "video",
+              "title": "All About AI",
+              "url": "https://www.youtube.com/@AllAboutAI",
+              "desc": "實戰教學、LangChain / RAG / Agent 範例",
+              "lang": "en",
+              "price": "free",
+              "level": "intermediate"
+            },
+            {
+              "type": "video",
+              "title": "1littlecoder",
+              "url": "https://www.youtube.com/@1littlecoder",
+              "desc": "每天 1 部 AI 短片、追蹤即時",
+              "lang": "en",
+              "price": "free"
+            },
+            {
+              "type": "video",
+              "title": "Sentdex",
+              "url": "https://www.youtube.com/@sentdex",
+              "desc": "Python + ML 老牌、實作派",
+              "lang": "en",
+              "price": "free",
+              "level": "intermediate",
+              "tags": [
+                "Python",
+                "ML"
+              ]
+            }
+          ]
+        },
+        {
+          "title": "🇹🇼 中文 AI 教學",
+          "resources": [
+            {
+              "type": "video",
+              "title": "李宏毅老師",
+              "url": "https://www.youtube.com/@HungyiLeeNTU",
+              "desc": "台大教授、機器學習中文最強教學、免費全課程",
+              "author": "李宏毅",
+              "lang": "zh",
+              "price": "free",
+              "level": "all",
+              "tags": [
+                "ML",
+                "DL",
+                "LLM"
+              ]
+            },
+            {
+              "type": "video",
+              "title": "AI Engineer Taiwan",
+              "url": "https://www.youtube.com/@aiengineertaiwan",
+              "desc": "台灣 AI 工程師社群、實戰分享",
+              "lang": "zh",
+              "price": "free",
+              "level": "intermediate"
+            },
+            {
+              "type": "video",
+              "title": "陳愷甯老師 - Hahow",
+              "url": "https://www.hahow.in/courses?keyword=AI",
+              "desc": "台灣 AI 中文課程平台",
+              "lang": "zh",
+              "price": "paid",
+              "level": "all"
+            }
+          ]
+        }
+      ],
+      "exercise": {
+        "question": "看一部李宏毅老師的 LLM 課程、寫 5 點筆記。",
+        "hint": "李老師的 ML 課程是免費中文資源天花板、不看可惜。",
+        "answer": "推薦從 2024 春季「生成式 AI」開始、用心法解釋技術、不用會 PyTorch 也能聽懂。"
+      }
+    },
+    {
+      "id": "69.3",
+      "number": "69.3",
+      "title": "線上課程平台",
+      "oneLineSummary": "付費 / 免費都有、適合系統化學習。",
+      "xp": 50,
+      "content": "線上課程平台 = 系統化、有結構、適合從 0 學一個主題。",
+      "resourceGroups": [
+        {
+          "title": "🌍 國際大平台",
+          "resources": [
+            {
+              "type": "course",
+              "title": "Coursera",
+              "url": "https://www.coursera.org/",
+              "desc": "頂級大學課程、Stanford / MIT 都在這、可以拿證書",
+              "lang": "mixed",
+              "price": "freemium",
+              "level": "all",
+              "tags": [
+                "大學",
+                "證書"
+              ]
+            },
+            {
+              "type": "course",
+              "title": "edX",
+              "url": "https://www.edx.org/",
+              "desc": "MIT / Harvard 等名校課程、學術派",
+              "lang": "en",
+              "price": "freemium",
+              "level": "all",
+              "tags": [
+                "大學"
+              ]
+            },
+            {
+              "type": "course",
+              "title": "Udemy",
+              "url": "https://www.udemy.com/",
+              "desc": "課程超多、常有 NT$300 大特價、CP 值高",
+              "lang": "mixed",
+              "price": "paid",
+              "level": "all"
+            },
+            {
+              "type": "course",
+              "title": "Pluralsight",
+              "url": "https://www.pluralsight.com/",
+              "desc": "專注 IT / dev、有完整 skill path",
+              "lang": "en",
+              "price": "paid",
+              "level": "intermediate"
+            },
+            {
+              "type": "course",
+              "title": "LinkedIn Learning",
+              "url": "https://www.linkedin.com/learning/",
+              "desc": "軟硬技能都有、訂閱制",
+              "lang": "mixed",
+              "price": "paid"
+            },
+            {
+              "type": "course",
+              "title": "Egghead.io",
+              "url": "https://egghead.io/",
+              "desc": "短片精緻、適合進階前端",
+              "lang": "en",
+              "price": "paid",
+              "level": "intermediate",
+              "tags": [
+                "前端"
+              ]
+            },
+            {
+              "type": "course",
+              "title": "Frontend Masters",
+              "url": "https://frontendmasters.com/",
+              "desc": "前端最深、講師業界頂級",
+              "lang": "en",
+              "price": "paid",
+              "level": "advanced",
+              "tags": [
+                "前端"
+              ]
+            },
+            {
+              "type": "course",
+              "title": "Wes Bos Courses",
+              "url": "https://wesbos.com/courses",
+              "desc": "JavaScript / CSS / Node 經典課",
+              "author": "Wes Bos",
+              "lang": "en",
+              "price": "freemium",
+              "level": "all"
+            },
+            {
+              "type": "course",
+              "title": "Fullstack Open",
+              "url": "https://fullstackopen.com/",
+              "desc": "赫爾辛基大學免費全端課、品質超高",
+              "lang": "en",
+              "price": "free",
+              "level": "intermediate",
+              "tags": [
+                "免費",
+                "MOOC"
+              ]
+            },
+            {
+              "type": "course",
+              "title": "CS50（Harvard）",
+              "url": "https://cs50.harvard.edu/",
+              "desc": "哈佛資工入門、全網最有名的免費 CS 課",
+              "lang": "en",
+              "price": "free",
+              "level": "beginner",
+              "tags": [
+                "免費",
+                "資工"
+              ]
+            }
+          ]
+        },
+        {
+          "title": "🇹🇼 中文課程平台",
+          "resources": [
+            {
+              "type": "course",
+              "title": "Hahow",
+              "url": "https://hahow.in/",
+              "desc": "台灣最大、課程涵蓋廣、講師多",
+              "lang": "zh",
+              "price": "paid",
+              "level": "all"
+            },
+            {
+              "type": "course",
+              "title": "Yotta",
+              "url": "https://www.yottau.com.tw/",
+              "desc": "台灣老牌、商業 / 程式 / 設計都有",
+              "lang": "zh",
+              "price": "paid"
+            },
+            {
+              "type": "course",
+              "title": "TibaMe",
+              "url": "https://www.tibame.com/",
+              "desc": "資策會旗下、職訓導向",
+              "lang": "zh",
+              "price": "paid",
+              "level": "all"
+            },
+            {
+              "type": "course",
+              "title": "六角學院",
+              "url": "https://www.hexschool.com/",
+              "desc": "前端教學最強、有 mentor 制",
+              "lang": "zh",
+              "price": "paid",
+              "level": "beginner"
+            },
+            {
+              "type": "course",
+              "title": "ALPHA Camp",
+              "url": "https://tw.alphacamp.co/",
+              "desc": "轉職 bootcamp、半年完整訓練",
+              "lang": "zh",
+              "price": "paid",
+              "level": "beginner"
+            },
+            {
+              "type": "course",
+              "title": "AppWorks School",
+              "url": "https://school.appworks.tw/",
+              "desc": "免費 bootcamp、需 apply、品質高",
+              "lang": "zh",
+              "price": "free",
+              "level": "intermediate"
+            }
+          ]
+        }
+      ],
+      "exercise": {
+        "question": "找一個你最想學的主題、在上面挑一個課程加入願望清單。",
+        "hint": "Coursera 很多大學課可以「審計」（audit）免費聽。",
+        "answer": "推薦先看免費的（Fullstack Open / CS50）、確認自己學得進去、再投資付費課。"
+      }
+    },
+    {
+      "id": "69.4",
+      "number": "69.4",
+      "title": "互動式學習網站",
+      "oneLineSummary": "邊看邊寫、不像影片只能單向接收。",
+      "xp": 50,
+      "content": "看影片容易睡著、互動式網站讓你必須動手。",
+      "resourceGroups": [
+        {
+          "title": "💻 程式互動學習",
+          "resources": [
+            {
+              "type": "site",
+              "title": "freeCodeCamp",
+              "url": "https://www.freecodecamp.org/",
+              "desc": "免費全端課、有認證、邊學邊寫",
+              "lang": "en",
+              "price": "free",
+              "level": "beginner",
+              "tags": [
+                "免費",
+                "認證"
+              ]
+            },
+            {
+              "type": "site",
+              "title": "Codecademy",
+              "url": "https://www.codecademy.com/",
+              "desc": "互動式介面、各種語言都有",
+              "lang": "en",
+              "price": "freemium",
+              "level": "beginner"
+            },
+            {
+              "type": "site",
+              "title": "Exercism",
+              "url": "https://exercism.org/",
+              "desc": "65+ 語言練習、有 mentor 給回饋、免費",
+              "lang": "en",
+              "price": "free",
+              "level": "all",
+              "tags": [
+                "練習",
+                "mentor"
+              ]
+            },
+            {
+              "type": "site",
+              "title": "LeetCode",
+              "url": "https://leetcode.com/",
+              "desc": "演算法 / 面試題庫、競賽圈標配",
+              "lang": "mixed",
+              "price": "freemium",
+              "level": "intermediate",
+              "tags": [
+                "演算法",
+                "面試"
+              ]
+            },
+            {
+              "type": "site",
+              "title": "HackerRank",
+              "url": "https://www.hackerrank.com/",
+              "desc": "練習題 + 公司測驗、求職用",
+              "lang": "en",
+              "price": "free",
+              "level": "all",
+              "tags": [
+                "面試"
+              ]
+            },
+            {
+              "type": "site",
+              "title": "Codewars",
+              "url": "https://www.codewars.com/",
+              "desc": "kata 遊戲化、累積等級",
+              "lang": "en",
+              "price": "free",
+              "level": "all"
+            },
+            {
+              "type": "site",
+              "title": "Project Euler",
+              "url": "https://projecteuler.net/",
+              "desc": "數學 + 程式題、適合練思考",
+              "lang": "en",
+              "price": "free",
+              "level": "intermediate",
+              "tags": [
+                "數學"
+              ]
+            },
+            {
+              "type": "site",
+              "title": "CSS Battle",
+              "url": "https://cssbattle.dev/",
+              "desc": "用最少 CSS 做出指定圖、超 fun",
+              "lang": "en",
+              "price": "free",
+              "level": "intermediate",
+              "tags": [
+                "CSS"
+              ]
+            },
+            {
+              "type": "site",
+              "title": "Frontend Mentor",
+              "url": "https://www.frontendmentor.io/",
+              "desc": "真實設計稿練習、做完作品集就有了",
+              "lang": "en",
+              "price": "freemium",
+              "level": "beginner",
+              "tags": [
+                "前端",
+                "作品集"
+              ]
+            },
+            {
+              "type": "site",
+              "title": "JavaScript30",
+              "url": "https://javascript30.com/",
+              "desc": "30 天 30 個 vanilla JS 專案",
+              "author": "Wes Bos",
+              "lang": "en",
+              "price": "free",
+              "level": "beginner"
+            },
+            {
+              "type": "site",
+              "title": "Scrimba",
+              "url": "https://scrimba.com/",
+              "desc": "可以暫停影片改 code、互動式影片教學",
+              "lang": "en",
+              "price": "freemium",
+              "level": "all"
+            },
+            {
+              "type": "site",
+              "title": "MDN Web Docs",
+              "url": "https://developer.mozilla.org/",
+              "desc": "Web 開發官方文件、必收藏",
+              "author": "Mozilla",
+              "lang": "mixed",
+              "price": "free",
+              "level": "all",
+              "tags": [
+                "文件",
+                "必收"
+              ]
+            }
+          ]
+        },
+        {
+          "title": "🇹🇼 中文互動",
+          "resources": [
+            {
+              "type": "site",
+              "title": "Hexschool 卡米狗教室",
+              "url": "https://camp-pro.hexschool.com/",
+              "desc": "中文前端互動練習",
+              "lang": "zh",
+              "price": "paid"
+            },
+            {
+              "type": "site",
+              "title": "PJCHENder 那些前端碎碎念",
+              "url": "https://pjchender.dev/",
+              "desc": "中文前端最完整筆記網站",
+              "lang": "zh",
+              "price": "free",
+              "level": "intermediate",
+              "tags": [
+                "筆記",
+                "前端"
+              ]
+            }
+          ]
+        }
+      ],
+      "exercise": {
+        "question": "在 Frontend Mentor 或 CSS Battle 完成一個 challenge。",
+        "hint": "Frontend Mentor 的 newbie 等級就有真實設計稿、做完就是作品集一頁。",
+        "answer": "做完 git push 到 GitHub、加 README 寫你怎麼想的、面試時直接秀。"
+      }
+    },
+    {
+      "id": "69.5",
+      "number": "69.5",
+      "title": "工程師必讀書籍",
+      "oneLineSummary": "20 年不過時的經典、值得反覆讀。",
+      "xp": 50,
+      "content": "好書是長期投資。下面是各領域公認的經典。",
+      "resourceGroups": [
+        {
+          "title": "📖 程式設計經典",
+          "resources": [
+            {
+              "type": "book",
+              "title": "Clean Code",
+              "url": "https://www.amazon.com/Clean-Code-Handbook-Software-Craftsmanship/dp/0132350882",
+              "desc": "寫 code 美學、Bob 大叔經典",
+              "author": "Robert C. Martin",
+              "lang": "en",
+              "price": "paid",
+              "level": "all",
+              "tags": [
+                "經典",
+                "code"
+              ]
+            },
+            {
+              "type": "book",
+              "title": "Pragmatic Programmer",
+              "url": "https://www.amazon.com/Pragmatic-Programmer-journey-mastery-Anniversary/dp/0135957052",
+              "desc": "工程師思維方式、20 週年版超讚",
+              "author": "Hunt & Thomas",
+              "lang": "en",
+              "price": "paid"
+            },
+            {
+              "type": "book",
+              "title": "Code Complete",
+              "url": "https://www.amazon.com/Code-Complete-Practical-Handbook-Construction/dp/0735619670",
+              "desc": "老但全面、軟體建構聖經",
+              "author": "Steve McConnell",
+              "lang": "en",
+              "price": "paid"
+            },
+            {
+              "type": "book",
+              "title": "Refactoring",
+              "url": "https://martinfowler.com/books/refactoring.html",
+              "desc": "重構聖經、Martin Fowler 著",
+              "author": "Martin Fowler",
+              "lang": "en",
+              "price": "paid",
+              "tags": [
+                "重構"
+              ]
+            }
+          ]
+        },
+        {
+          "title": "🏗️ 系統設計 / 架構",
+          "resources": [
+            {
+              "type": "book",
+              "title": "Designing Data-Intensive Applications",
+              "url": "https://dataintensive.net/",
+              "desc": "分散式系統聖經、簡稱 DDIA、必讀",
+              "author": "Martin Kleppmann",
+              "lang": "en",
+              "price": "paid",
+              "level": "advanced",
+              "tags": [
+                "必讀",
+                "分散式"
+              ]
+            },
+            {
+              "type": "book",
+              "title": "System Design Interview",
+              "url": "https://www.amazon.com/System-Design-Interview-insiders-Second/dp/B08CMF2CQF",
+              "desc": "系統設計面試最熱、Alex Xu 著",
+              "author": "Alex Xu",
+              "lang": "en",
+              "price": "paid",
+              "tags": [
+                "interview"
+              ]
+            },
+            {
+              "type": "book",
+              "title": "Building Microservices",
+              "url": "https://samnewman.io/books/building_microservices_2nd_edition/",
+              "desc": "微服務聖經第二版",
+              "author": "Sam Newman",
+              "lang": "en",
+              "price": "paid"
+            },
+            {
+              "type": "book",
+              "title": "Database Internals",
+              "url": "https://www.databass.dev/",
+              "desc": "DB 內部原理、深度",
+              "author": "Alex Petrov",
+              "lang": "en",
+              "price": "paid",
+              "level": "advanced"
+            }
+          ]
+        },
+        {
+          "title": "🧠 思維 / 文化",
+          "resources": [
+            {
+              "type": "book",
+              "title": "The Mythical Man-Month",
+              "url": "https://en.wikipedia.org/wiki/The_Mythical_Man-Month",
+              "desc": "1975 寫的、現在還適用、軟體工程必讀",
+              "author": "Fred Brooks",
+              "lang": "en",
+              "price": "paid"
+            },
+            {
+              "type": "book",
+              "title": "Accelerate",
+              "url": "https://itrevolution.com/product/accelerate/",
+              "desc": "高效團隊的科學研究、DevOps 圣經",
+              "lang": "en",
+              "price": "paid"
+            },
+            {
+              "type": "book",
+              "title": "An Elegant Puzzle",
+              "url": "https://lethain.com/elegant-puzzle/",
+              "desc": "Staff Engineering 必讀",
+              "author": "Will Larson",
+              "lang": "en",
+              "price": "paid",
+              "level": "advanced"
+            },
+            {
+              "type": "book",
+              "title": "Staff Engineer",
+              "url": "https://staffeng.com/book",
+              "desc": "從 senior 到 staff 的路徑、有真實案例",
+              "author": "Will Larson",
+              "lang": "en",
+              "price": "paid",
+              "level": "advanced"
+            }
+          ]
+        },
+        {
+          "title": "🇹🇼 繁中好書",
+          "resources": [
+            {
+              "type": "book",
+              "title": "為你自己學 Git",
+              "url": "https://gitbook.tw/",
+              "desc": "高見龍寫、Git 中文教學最完整、可線上看",
+              "author": "高見龍",
+              "lang": "zh",
+              "price": "free",
+              "tags": [
+                "Git",
+                "免費"
+              ]
+            },
+            {
+              "type": "book",
+              "title": "從 Python 到 Web 應用程式開發實戰手冊",
+              "url": "https://www.tenlong.com.tw/",
+              "desc": "天瓏書局有大量繁中程式書",
+              "lang": "zh",
+              "price": "paid"
+            },
+            {
+              "type": "book",
+              "title": "深入淺出系列（O'Reilly 中譯）",
+              "url": "https://www.oreilly.com.tw/",
+              "desc": "O'Reilly 中譯本、插畫風格適合入門",
+              "lang": "zh",
+              "price": "paid",
+              "level": "beginner"
+            }
+          ]
+        }
+      ],
+      "exercise": {
+        "question": "挑一本書、列 3 個你最想學會的章節、訂今年讀完的計畫。",
+        "hint": "不需要全部讀完。挑你最缺的章節攻讀就有 80% 價值。",
+        "answer": "推薦先讀 Pragmatic Programmer（思維）+ DDIA（系統）。讀完前者你會變不一樣的人、讀完後者你會變高階工程師。"
+      }
+    },
+    {
+      "id": "69.6",
+      "number": "69.6",
+      "title": "AI / Prompt 書籍與資源",
+      "oneLineSummary": "AI 領域變太快、書 + 部落格 + 論文一起看。",
+      "xp": 50,
+      "content": "AI 變化快、書出版後就過時。建議書 + 即時 blog 並進。",
+      "resourceGroups": [
+        {
+          "title": "📚 AI 經典書",
+          "resources": [
+            {
+              "type": "book",
+              "title": "Build a Large Language Model (From Scratch)",
+              "url": "https://www.manning.com/books/build-a-large-language-model-from-scratch",
+              "desc": "從零實作 GPT、Sebastian Raschka 著、超棒",
+              "author": "Sebastian Raschka",
+              "lang": "en",
+              "price": "paid",
+              "level": "advanced"
+            },
+            {
+              "type": "book",
+              "title": "Hands-On Machine Learning",
+              "url": "https://www.oreilly.com/library/view/hands-on-machine-learning/9781098125967/",
+              "desc": "O'Reilly 經典、ML 實作入門最廣推",
+              "author": "Aurélien Géron",
+              "lang": "en",
+              "price": "paid",
+              "tags": [
+                "ML"
+              ]
+            },
+            {
+              "type": "book",
+              "title": "Deep Learning（花書）",
+              "url": "https://www.deeplearningbook.org/",
+              "desc": "Ian Goodfellow 著、DL 教科書、免費線上看",
+              "lang": "en",
+              "price": "free",
+              "level": "advanced",
+              "tags": [
+                "DL",
+                "免費"
+              ]
+            },
+            {
+              "type": "book",
+              "title": "AI Engineering",
+              "url": "https://www.oreilly.com/library/view/ai-engineering/9781098166298/",
+              "desc": "Chip Huyen 著、講 AI 系統工程",
+              "author": "Chip Huyen",
+              "lang": "en",
+              "price": "paid"
+            }
+          ]
+        },
+        {
+          "title": "📝 Prompt / RAG 文件",
+          "resources": [
+            {
+              "type": "site",
+              "title": "Anthropic Prompt Engineering Guide",
+              "url": "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview",
+              "desc": "Claude 官方 prompt 工法、最權威",
+              "author": "Anthropic",
+              "lang": "en",
+              "price": "free"
+            },
+            {
+              "type": "site",
+              "title": "OpenAI Cookbook",
+              "url": "https://cookbook.openai.com/",
+              "desc": "官方範例集、實戰 prompt + API 用法",
+              "author": "OpenAI",
+              "lang": "en",
+              "price": "free"
+            },
+            {
+              "type": "site",
+              "title": "Learn Prompting",
+              "url": "https://learnprompting.org/",
+              "desc": "免費 prompt 教學、最完整",
+              "lang": "mixed",
+              "price": "free",
+              "level": "all"
+            },
+            {
+              "type": "site",
+              "title": "Prompt Engineering Guide",
+              "url": "https://www.promptingguide.ai/",
+              "desc": "DAIR.AI 維護、技術深、含論文",
+              "lang": "mixed",
+              "price": "free",
+              "level": "intermediate"
+            },
+            {
+              "type": "site",
+              "title": "Awesome ChatGPT Prompts",
+              "url": "https://github.com/f/awesome-chatgpt-prompts",
+              "desc": "prompt 範例集、超過 100k stars",
+              "lang": "mixed",
+              "price": "free"
+            }
+          ]
+        },
+        {
+          "title": "🔬 論文與一手資料",
+          "resources": [
+            {
+              "type": "site",
+              "title": "arXiv.org",
+              "url": "https://arxiv.org/list/cs.AI/recent",
+              "desc": "AI 論文預印本、看一手研究",
+              "lang": "en",
+              "price": "free",
+              "level": "advanced"
+            },
+            {
+              "type": "site",
+              "title": "Papers with Code",
+              "url": "https://paperswithcode.com/",
+              "desc": "論文 + GitHub 實作、超實用",
+              "lang": "en",
+              "price": "free",
+              "level": "advanced"
+            },
+            {
+              "type": "site",
+              "title": "Hugging Face",
+              "url": "https://huggingface.co/",
+              "desc": "開源 model / dataset 集中地",
+              "lang": "en",
+              "price": "freemium"
+            },
+            {
+              "type": "site",
+              "title": "Anthropic Research",
+              "url": "https://www.anthropic.com/research",
+              "desc": "Anthropic 研究文章、interpretability 深度",
+              "author": "Anthropic",
+              "lang": "en",
+              "price": "free"
+            }
+          ]
+        }
+      ],
+      "exercise": {
+        "question": "訂閱一個 AI newsletter（如 Ben's Bites / The Rundown）、看 1 個月。",
+        "hint": "AI 圈每天都有新東西、newsletter 幫你過濾。",
+        "answer": "推薦 Ben's Bites（每日 5 分鐘）+ The Rundown AI（深度）。看 1 個月、你已經比 90% 工程師懂 AI。"
+      }
+    },
+    {
+      "id": "69.7",
+      "number": "69.7",
+      "title": "工程師 Podcast",
+      "oneLineSummary": "通勤、運動、洗碗時聽、被動學習。",
+      "xp": 50,
+      "content": "podcast 適合無法看螢幕的時間段。",
+      "resourceGroups": [
+        {
+          "title": "🎧 英文技術 Podcast",
+          "resources": [
+            {
+              "type": "podcast",
+              "title": "Lex Fridman Podcast",
+              "url": "https://lexfridman.com/podcast/",
+              "desc": "深度訪談、AI / tech / philosophy 各種人都來",
+              "author": "Lex Fridman",
+              "lang": "en",
+              "price": "free"
+            },
+            {
+              "type": "podcast",
+              "title": "Latent Space",
+              "url": "https://www.latent.space/",
+              "desc": "AI 工程師圈第一 podcast、深度技術訪談",
+              "lang": "en",
+              "price": "free",
+              "level": "advanced",
+              "tags": [
+                "AI"
+              ]
+            },
+            {
+              "type": "podcast",
+              "title": "Syntax.fm",
+              "url": "https://syntax.fm/",
+              "desc": "Wes Bos + Scott Tolinski 主持、JS / web dev",
+              "lang": "en",
+              "price": "free"
+            },
+            {
+              "type": "podcast",
+              "title": "Software Engineering Daily",
+              "url": "https://softwareengineeringdaily.com/",
+              "desc": "每日訪談業界 senior、廣度高",
+              "lang": "en",
+              "price": "free"
+            },
+            {
+              "type": "podcast",
+              "title": "Changelog",
+              "url": "https://changelog.com/podcast",
+              "desc": "開源世界八卦、有趣",
+              "lang": "en",
+              "price": "free"
+            },
+            {
+              "type": "podcast",
+              "title": "How I Built This",
+              "url": "https://www.npr.org/podcasts/510313/how-i-built-this",
+              "desc": "創業故事、不是純技術但很有用",
+              "author": "Guy Raz",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "創業"
+              ]
+            }
+          ]
+        },
+        {
+          "title": "🇹🇼 中文 Podcast",
+          "resources": [
+            {
+              "type": "podcast",
+              "title": "科技島讀",
+              "url": "https://daodu.tech/",
+              "desc": "台灣科技深度分析、訂閱制 + podcast",
+              "author": "周欽華",
+              "lang": "zh",
+              "price": "paid",
+              "tags": [
+                "科技",
+                "深度"
+              ]
+            },
+            {
+              "type": "podcast",
+              "title": "矽谷輕鬆談",
+              "url": "https://open.spotify.com/show/4obWAg2VxTWiZRtoZW2tWl",
+              "desc": "矽谷工程師聊矽谷大小事",
+              "lang": "zh",
+              "price": "free"
+            },
+            {
+              "type": "podcast",
+              "title": "星箭廣播",
+              "url": "https://podcast.starrocket.io/",
+              "desc": "科技 / 文化、台灣老牌",
+              "lang": "zh",
+              "price": "free"
+            },
+            {
+              "type": "podcast",
+              "title": "Gooaye 股癌",
+              "url": "https://open.spotify.com/show/14CRrt9rubFXmaboJpu0V8",
+              "desc": "不是技術、但投資 / 商業思維對工程師有用",
+              "lang": "zh",
+              "price": "free",
+              "tags": [
+                "商業"
+              ]
+            }
+          ]
+        }
+      ],
+      "exercise": {
+        "question": "選一集 Latent Space 或 Lex Fridman 聽完、寫 3 個 take-away。",
+        "hint": "Latent Space 訪 OpenAI / Anthropic / Google 工程師、含金量超高。",
+        "answer": "推薦從「Andrej Karpathy on Lex」開始、改變你對 AI 的看法。"
+      }
+    },
+    {
+      "id": "69.8",
+      "number": "69.8",
+      "title": "工程師必備 App",
+      "oneLineSummary": "開發、筆記、生產力、學習 App 大集合。",
+      "xp": 50,
+      "content": "好工具 = 生產力倍增。",
+      "resourceGroups": [
+        {
+          "title": "📝 筆記 / 知識管理",
+          "resources": [
+            {
+              "type": "app",
+              "title": "Obsidian",
+              "url": "https://obsidian.md/",
+              "desc": "本地 markdown + 雙向連結、知識管理神器",
+              "lang": "mixed",
+              "price": "freemium",
+              "tags": [
+                "筆記",
+                "markdown"
+              ]
+            },
+            {
+              "type": "app",
+              "title": "Notion",
+              "url": "https://www.notion.so/",
+              "desc": "筆記 + 資料庫 + wiki、最廣用",
+              "lang": "mixed",
+              "price": "freemium"
+            },
+            {
+              "type": "app",
+              "title": "Logseq",
+              "url": "https://logseq.com/",
+              "desc": "開源版 Roam、outline 筆記",
+              "lang": "mixed",
+              "price": "free"
+            },
+            {
+              "type": "app",
+              "title": "Bear",
+              "url": "https://bear.app/",
+              "desc": "Apple 生態最美的 markdown 筆記",
+              "lang": "mixed",
+              "price": "freemium"
+            },
+            {
+              "type": "app",
+              "title": "Heptabase",
+              "url": "https://heptabase.com/",
+              "desc": "視覺化卡片筆記、台灣團隊出品",
+              "lang": "mixed",
+              "price": "paid",
+              "tags": [
+                "台灣"
+              ]
+            }
+          ]
+        },
+        {
+          "title": "🖥️ 開發工具",
+          "resources": [
+            {
+              "type": "app",
+              "title": "VS Code",
+              "url": "https://code.visualstudio.com/",
+              "desc": "編輯器標配、免費、跨平台",
+              "author": "Microsoft",
+              "lang": "mixed",
+              "price": "free"
+            },
+            {
+              "type": "app",
+              "title": "Cursor",
+              "url": "https://cursor.com/",
+              "desc": "AI-first 編輯器、VS Code fork + Claude 整合",
+              "lang": "mixed",
+              "price": "freemium",
+              "tags": [
+                "AI",
+                "編輯器"
+              ]
+            },
+            {
+              "type": "app",
+              "title": "Zed",
+              "url": "https://zed.dev/",
+              "desc": "Rust 寫的超快編輯器、新銳",
+              "lang": "en",
+              "price": "free"
+            },
+            {
+              "type": "app",
+              "title": "Warp",
+              "url": "https://www.warp.dev/",
+              "desc": "現代化 terminal、AI 整合",
+              "lang": "en",
+              "price": "freemium"
+            },
+            {
+              "type": "app",
+              "title": "iTerm2",
+              "url": "https://iterm2.com/",
+              "desc": "Mac terminal 升級版、必裝",
+              "lang": "en",
+              "price": "free"
+            },
+            {
+              "type": "app",
+              "title": "Tableplus",
+              "url": "https://tableplus.com/",
+              "desc": "美麗的資料庫 GUI、跨多種 DB",
+              "lang": "en",
+              "price": "freemium"
+            },
+            {
+              "type": "app",
+              "title": "Postman",
+              "url": "https://www.postman.com/",
+              "desc": "API 測試標配",
+              "lang": "mixed",
+              "price": "freemium"
+            },
+            {
+              "type": "app",
+              "title": "Insomnia",
+              "url": "https://insomnia.rest/",
+              "desc": "Postman 替代、開源",
+              "lang": "mixed",
+              "price": "freemium"
+            },
+            {
+              "type": "app",
+              "title": "Raycast",
+              "url": "https://www.raycast.com/",
+              "desc": "Mac 啟動器、生產力神器",
+              "lang": "en",
+              "price": "freemium",
+              "tags": [
+                "Mac"
+              ]
+            }
+          ]
+        },
+        {
+          "title": "🎨 設計 / UI",
+          "resources": [
+            {
+              "type": "app",
+              "title": "Figma",
+              "url": "https://www.figma.com/",
+              "desc": "UI 設計標配、瀏覽器即用",
+              "lang": "mixed",
+              "price": "freemium"
+            },
+            {
+              "type": "app",
+              "title": "Excalidraw",
+              "url": "https://excalidraw.com/",
+              "desc": "手繪風白板、畫架構圖一流",
+              "lang": "mixed",
+              "price": "free"
+            },
+            {
+              "type": "app",
+              "title": "tldraw",
+              "url": "https://www.tldraw.com/",
+              "desc": "極簡白板、現代設計",
+              "lang": "en",
+              "price": "free"
+            },
+            {
+              "type": "app",
+              "title": "Canva",
+              "url": "https://www.canva.com/",
+              "desc": "非設計師也能做漂亮圖",
+              "lang": "mixed",
+              "price": "freemium"
+            }
+          ]
+        },
+        {
+          "title": "🤖 AI 工具",
+          "resources": [
+            {
+              "type": "app",
+              "title": "ChatGPT",
+              "url": "https://chatgpt.com/",
+              "desc": "最廣用的 LLM 對話介面",
+              "author": "OpenAI",
+              "lang": "mixed",
+              "price": "freemium"
+            },
+            {
+              "type": "app",
+              "title": "Claude",
+              "url": "https://claude.ai/",
+              "desc": "寫作 / 推理最強、Anthropic 出品",
+              "author": "Anthropic",
+              "lang": "mixed",
+              "price": "freemium"
+            },
+            {
+              "type": "app",
+              "title": "Perplexity",
+              "url": "https://www.perplexity.ai/",
+              "desc": "AI 搜尋、查資料神器",
+              "lang": "mixed",
+              "price": "freemium"
+            },
+            {
+              "type": "app",
+              "title": "Cursor",
+              "url": "https://cursor.com/",
+              "desc": "AI 編輯器、寫 code 加速",
+              "lang": "mixed",
+              "price": "freemium"
+            },
+            {
+              "type": "app",
+              "title": "Claude Code",
+              "url": "https://docs.claude.com/en/docs/agents-and-tools/claude-code/overview",
+              "desc": "Anthropic 出的 CLI agent、終端機內 AI",
+              "author": "Anthropic",
+              "lang": "en",
+              "price": "paid"
+            },
+            {
+              "type": "app",
+              "title": "v0 by Vercel",
+              "url": "https://v0.dev/",
+              "desc": "AI 生 React component、貼 Figma 也可",
+              "author": "Vercel",
+              "lang": "en",
+              "price": "freemium"
+            },
+            {
+              "type": "app",
+              "title": "GitHub Copilot",
+              "url": "https://github.com/features/copilot",
+              "desc": "VS Code 內 AI 補全",
+              "author": "GitHub",
+              "lang": "mixed",
+              "price": "paid"
+            }
+          ]
+        }
+      ],
+      "exercise": {
+        "question": "從上面挑 3 個你沒用過的、今天裝起來試。",
+        "hint": "工具不需要全用、但 3 大類各挑 1 個（編輯器、AI、筆記）。",
+        "answer": "推薦組合：Cursor（編輯器）+ Claude（AI）+ Obsidian（筆記）。3 個用熟、生產力 3 倍。"
+      }
+    },
+    {
+      "id": "69.9",
+      "number": "69.9",
+      "title": "工程師部落格 / Newsletter",
+      "oneLineSummary": "業界一手資訊、追頂尖工程師思考。",
+      "xp": 50,
+      "content": "好的 blog 比書還即時、比 Twitter 更深。",
+      "resourceGroups": [
+        {
+          "title": "🌟 業界大神 blog",
+          "resources": [
+            {
+              "type": "blog",
+              "title": "Joel on Software",
+              "url": "https://www.joelonsoftware.com/",
+              "desc": "Stack Overflow 創辦人、軟體業必讀",
+              "author": "Joel Spolsky",
+              "lang": "en",
+              "price": "free"
+            },
+            {
+              "type": "blog",
+              "title": "Paul Graham Essays",
+              "url": "https://paulgraham.com/articles.html",
+              "desc": "YC 創辦人、創業 / 思考經典",
+              "author": "Paul Graham",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "創業"
+              ]
+            },
+            {
+              "type": "blog",
+              "title": "Stratechery",
+              "url": "https://stratechery.com/",
+              "desc": "科技商業最深分析、訂閱制",
+              "author": "Ben Thompson",
+              "lang": "en",
+              "price": "paid",
+              "tags": [
+                "商業"
+              ]
+            },
+            {
+              "type": "blog",
+              "title": "Martin Fowler",
+              "url": "https://martinfowler.com/",
+              "desc": "軟體架構大師、Refactoring 作者",
+              "author": "Martin Fowler",
+              "lang": "en",
+              "price": "free"
+            },
+            {
+              "type": "blog",
+              "title": "Dan Abramov - overreacted",
+              "url": "https://overreacted.io/",
+              "desc": "React 核心、深入淺出寫得超棒",
+              "author": "Dan Abramov",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "React"
+              ]
+            },
+            {
+              "type": "blog",
+              "title": "Lethain (Will Larson)",
+              "url": "https://lethain.com/",
+              "desc": "Staff Engineering 的權威",
+              "author": "Will Larson",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "Staff Eng"
+              ]
+            },
+            {
+              "type": "blog",
+              "title": "High Scalability",
+              "url": "http://highscalability.com/",
+              "desc": "大規模系統真實案例分享",
+              "lang": "en",
+              "price": "free"
+            },
+            {
+              "type": "blog",
+              "title": "Engineering Blogs（GitHub）",
+              "url": "https://github.com/kilimchoi/engineering-blogs",
+              "desc": "600+ 公司工程 blog 索引、寶藏",
+              "lang": "en",
+              "price": "free"
+            }
+          ]
+        },
+        {
+          "title": "📧 必訂 Newsletter",
+          "resources": [
+            {
+              "type": "blog",
+              "title": "TLDR Newsletter",
+              "url": "https://tldr.tech/",
+              "desc": "每日科技新聞精華、5 分鐘看完",
+              "lang": "en",
+              "price": "free"
+            },
+            {
+              "type": "blog",
+              "title": "Bytes (JavaScript)",
+              "url": "https://bytes.dev/",
+              "desc": "JavaScript 圈每週精選、幽默",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "JS"
+              ]
+            },
+            {
+              "type": "blog",
+              "title": "Ben's Bites",
+              "url": "https://bensbites.beehiiv.com/",
+              "desc": "AI 圈每日 5 分鐘 newsletter",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "AI"
+              ]
+            },
+            {
+              "type": "blog",
+              "title": "The Pragmatic Engineer",
+              "url": "https://www.pragmaticengineer.com/",
+              "desc": "軟體業內幕、senior+ 必讀、付費",
+              "author": "Gergely Orosz",
+              "lang": "en",
+              "price": "paid",
+              "tags": [
+                "業界"
+              ]
+            },
+            {
+              "type": "blog",
+              "title": "Refactoring",
+              "url": "https://refactoring.fm/",
+              "desc": "工程師管理、文化、實務",
+              "lang": "en",
+              "price": "freemium"
+            },
+            {
+              "type": "blog",
+              "title": "The Rundown AI",
+              "url": "https://www.therundown.ai/",
+              "desc": "AI 每日深度分析",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "AI"
+              ]
+            }
+          ]
+        },
+        {
+          "title": "🇹🇼 中文寫手",
+          "resources": [
+            {
+              "type": "blog",
+              "title": "ihower 部落格",
+              "url": "https://ihower.tw/blog/",
+              "desc": "台灣 Ruby / Rails 圈大老",
+              "author": "ihower",
+              "lang": "zh",
+              "price": "free"
+            },
+            {
+              "type": "blog",
+              "title": "Huli's blog",
+              "url": "https://blog.huli.tw/",
+              "desc": "前端深度好文、台灣優質寫手",
+              "author": "Huli",
+              "lang": "zh",
+              "price": "free",
+              "tags": [
+                "前端"
+              ]
+            },
+            {
+              "type": "blog",
+              "title": "Kuro's Blog",
+              "url": "https://blog.kuoruan.com/",
+              "desc": "後端 / 系統好文",
+              "lang": "zh",
+              "price": "free"
+            },
+            {
+              "type": "blog",
+              "title": "Hannah Lin",
+              "url": "https://www.hannahdesign.studio/",
+              "desc": "台灣設計師寫的設計思考",
+              "lang": "zh",
+              "price": "free",
+              "tags": [
+                "設計"
+              ]
+            }
+          ]
+        }
+      ],
+      "exercise": {
+        "question": "訂閱 3 個 newsletter、設定每週 1 個固定時段讀。",
+        "hint": "訂太多反而都不看。3 個剛好。",
+        "answer": "推薦組合：TLDR（廣度）+ Bytes 或 Ben's Bites（你的領域）+ Pragmatic Engineer（深度）。"
+      }
+    },
+    {
+      "id": "69.10",
+      "number": "69.10",
+      "title": "技術社群",
+      "oneLineSummary": "獨學而無友、加幾個社群快樂變強。",
+      "xp": 50,
+      "content": "技術圈最賺的是人脈。線上社群是最便宜的入口。",
+      "resourceGroups": [
+        {
+          "title": "💬 國際社群",
+          "resources": [
+            {
+              "type": "community",
+              "title": "Hacker News",
+              "url": "https://news.ycombinator.com/",
+              "desc": "技術圈 top 1 新聞站、留言區比文章還精彩",
+              "author": "Y Combinator",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "必看"
+              ]
+            },
+            {
+              "type": "community",
+              "title": "Reddit r/programming",
+              "url": "https://www.reddit.com/r/programming/",
+              "desc": "reddit 程式版、多元討論",
+              "lang": "en",
+              "price": "free"
+            },
+            {
+              "type": "community",
+              "title": "Reddit r/webdev",
+              "url": "https://www.reddit.com/r/webdev/",
+              "desc": "前端 / 全端的話題",
+              "lang": "en",
+              "price": "free"
+            },
+            {
+              "type": "community",
+              "title": "Reddit r/ExperiencedDevs",
+              "url": "https://www.reddit.com/r/ExperiencedDevs/",
+              "desc": "5+ 年資工程師討論、職涯話題深",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "senior"
+              ]
+            },
+            {
+              "type": "community",
+              "title": "DEV Community",
+              "url": "https://dev.to/",
+              "desc": "工程師寫文社群、像 Medium for devs",
+              "lang": "en",
+              "price": "free"
+            },
+            {
+              "type": "community",
+              "title": "Discord - Reactiflux",
+              "url": "https://www.reactiflux.com/",
+              "desc": "React 圈 200k+ 人 Discord",
+              "lang": "en",
+              "price": "free",
+              "tags": [
+                "React"
+              ]
+            }
+          ]
+        },
+        {
+          "title": "🇹🇼 台灣社群",
+          "resources": [
+            {
+              "type": "community",
+              "title": "iThome 鐵人賽",
+              "url": "https://ithelp.ithome.com.tw/",
+              "desc": "台灣最大技術社群、每年鐵人賽精彩",
+              "lang": "zh",
+              "price": "free",
+              "tags": [
+                "必看"
+              ]
+            },
+            {
+              "type": "community",
+              "title": "Facebook - Front-End Developers Taiwan",
+              "url": "https://www.facebook.com/groups/f2e.tw",
+              "desc": "台灣前端社團、5 萬人",
+              "lang": "zh",
+              "price": "free",
+              "tags": [
+                "前端"
+              ]
+            },
+            {
+              "type": "community",
+              "title": "Facebook - 台灣 PHP 社團",
+              "url": "https://www.facebook.com/groups/php.tw/",
+              "desc": "PHP 圈活躍社團",
+              "lang": "zh",
+              "price": "free"
+            },
+            {
+              "type": "community",
+              "title": "Slack - JCConf TW",
+              "url": "https://jcconf.tw/",
+              "desc": "Java / JVM 社群",
+              "lang": "zh",
+              "price": "free"
+            },
+            {
+              "type": "community",
+              "title": "Discord - PyCon TW",
+              "url": "https://tw.pycon.org/",
+              "desc": "台灣 Python 社群",
+              "lang": "zh",
+              "price": "free"
+            },
+            {
+              "type": "community",
+              "title": "MOPCON",
+              "url": "https://mopcon.org/",
+              "desc": "行動開發者社群、年會",
+              "lang": "zh",
+              "price": "freemium"
+            },
+            {
+              "type": "community",
+              "title": "AI Taiwan",
+              "url": "https://www.facebook.com/groups/aitaiwan/",
+              "desc": "台灣 AI 社群、最大",
+              "lang": "zh",
+              "price": "free",
+              "tags": [
+                "AI"
+              ]
+            }
+          ]
+        },
+        {
+          "title": "🐦 X (Twitter) 必追",
+          "resources": [
+            {
+              "type": "community",
+              "title": "@dan_abramov",
+              "url": "https://x.com/dan_abramov2",
+              "desc": "React 核心開發、思考清晰",
+              "lang": "en",
+              "price": "free"
+            },
+            {
+              "type": "community",
+              "title": "@theo",
+              "url": "https://x.com/theo",
+              "desc": "Theo - t3.gg、TypeScript / Next 圈影響力",
+              "lang": "en",
+              "price": "free"
+            },
+            {
+              "type": "community",
+              "title": "@levelsio",
+              "url": "https://x.com/levelsio",
+              "desc": "Solo founder 代表、自由生活風",
+              "lang": "en",
+              "price": "free"
+            },
+            {
+              "type": "community",
+              "title": "@karpathy",
+              "url": "https://x.com/karpathy",
+              "desc": "Andrej Karpathy、AI 必追",
+              "lang": "en",
+              "price": "free"
+            },
+            {
+              "type": "community",
+              "title": "@swyx",
+              "url": "https://x.com/swyx",
+              "desc": "Latent Space podcast 主持、AI 圈廣",
+              "lang": "en",
+              "price": "free"
+            },
+            {
+              "type": "community",
+              "title": "@simonw",
+              "url": "https://x.com/simonw",
+              "desc": "Django 共同作者、AI / LLM 寫超多",
+              "lang": "en",
+              "price": "free"
+            }
+          ]
+        }
+      ],
+      "exercise": {
+        "question": "加入 1 個你領域的社群、開始閱讀討論。",
+        "hint": "先潛水 2 週、看大家在討論什麼、再決定要不要發言。",
+        "answer": "推薦先加 iThome 鐵人賽（看文章）+ HN（看留言）+ 一個你領域的 FB 社團。3 個月後你會發現自己跟得上潮流。"
+      }
+    }
+  ]
+}

@@ -1,0 +1,1369 @@
+{
+  "id": 11,
+  "slug": "mobile",
+  "stage": 2,
+  "title": "行動裝置 App",
+  "subtitle": "原生 / RN / Flutter",
+  "icon": "smartphone",
+  "description": "行動裝置 App：原生 / RN / Flutter",
+  "status": "published",
+  "difficulty": "intermediate",
+  "prerequisites": [
+    4,
+    8
+  ],
+  "estimatedHours": 16,
+  "outcomes": [
+    "理解核心概念",
+    "實作主流工具",
+    "整章實戰可發佈作品",
+    "知道生態 / 接案行情",
+    "對齊 2026 業界主流"
+  ],
+  "lessons": [
+    {
+      "title": "行動 App 三大路線：原生 / RN / Flutter",
+      "oneLineSummary": "寫 App 上 Apple Store + Google Play、2026 怎選",
+      "analogy": "原生效能最好、RN 跨平台、Flutter 設計一致。",
+      "content": "## 三條路線\n\n### 1. 原生\n- iOS：Swift + SwiftUI\n- Android：Kotlin + Jetpack Compose\n- ✅ 效能最好\n- ❌ 兩邊都寫 = 2 倍工\n\n### 2. React Native（Meta）\n- ✅ 一份 code 兩平台\n- ✅ Expo 加速\n- ❌ 複雜功能要 bridge\n\n### 3. Flutter（Google）\n- ✅ 跨平台一致、Hot reload 神速\n- ❌ 學 Dart\n\n## 對比\n\n| 面向 | 原生 | RN | Flutter |\n|---|---|---|---|\n| 學習 | 雙倍 | 會 React 即上手 | 學 Dart |\n| 效能 | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |\n| Indie | ❌ | ✅ | ✅ |\n\n## 真實案例\n- IG / Discord / Shopify → RN\n- Google Pay / 閒魚 → Flutter\n- WhatsApp / Twitter → 原生\n\n## Indie 推薦\n**RN + Expo**：1 個工程師、一條龍。\n\n## 不要的選項\n❌ Cordova / Ionic / Xamarin（皆已凋零）",
+      "tip": {
+        "type": "milestone",
+        "text": "2026 Indie：RN + Expo 是無腦選擇。"
+      },
+      "id": "11.1",
+      "number": "LESSON 11.1",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "11.1.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// 試試改變數、按執行\nconst numbers = [1, 2, 3, 4, 5];\nconst doubled = numbers.map(n => n * 2);\nconsole.log(\"原本:\", numbers);\nconsole.log(\"乘 2:\", doubled);\nconsole.log(\"總和:\", numbers.reduce((a, b) => a + b, 0));",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "找一個你身邊的例子、用「行動 App 三大路線：原生 / RN / Flutter」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "三條路線"
+        },
+        {
+          "level": 3,
+          "text": "1. 原生"
+        },
+        {
+          "level": 3,
+          "text": "2. React Native（Meta）"
+        },
+        {
+          "level": 3,
+          "text": "3. Flutter（Google）"
+        },
+        {
+          "level": 2,
+          "text": "對比"
+        },
+        {
+          "level": 2,
+          "text": "真實案例"
+        },
+        {
+          "level": 2,
+          "text": "Indie 推薦"
+        },
+        {
+          "level": 2,
+          "text": "不要的選項"
+        }
+      ]
+    },
+    {
+      "title": "React Native + Expo 完整入門",
+      "oneLineSummary": "Expo 把 RN 體驗變超友善—1 行起專案、不用 Xcode",
+      "analogy": "Expo 是 RN 的 Next.js。",
+      "content": "## 為什麼 Expo\n- 不用 Xcode / Android Studio\n- 手機掃 QR 看 app\n- 內建 Push / Auth / Storage\n- EAS Build / OTA Update\n\n## 5 分鐘起專案\n```bash\nnpx create-expo-app@latest my-app\ncd my-app\nnpx expo start\n```\n\n## 基本元件\n```tsx\nimport { View, Text, Pressable, StyleSheet } from \"react-native\";\n\nexport default function Home() {\n  return (\n    <View style={styles.container}>\n      <Text style={styles.title}>Hello AI 島</Text>\n      <Pressable style={styles.button} onPress={() => alert(\"clicked\")}>\n        <Text style={styles.buttonText}>點我</Text>\n      </Pressable>\n    </View>\n  );\n}\n\nconst styles = StyleSheet.create({\n  container: { flex: 1, alignItems: \"center\", justifyContent: \"center\" },\n  button: { backgroundColor: \"#50fa7b\", padding: 12, borderRadius: 8 }\n});\n```\n\n## HTML → RN\n\n| HTML | RN |\n|---|---|\n| div | View |\n| p | Text |\n| img | Image |\n| button | Pressable |\n| input | TextInput |\n| ul lazy | FlatList |\n\n## NativeWind（Tailwind for RN）\n```tsx\n<View className=\"flex-1 items-center justify-center bg-gray-900\">\n  <Text className=\"text-2xl text-white\">Hello</Text>\n</View>\n```",
+      "tip": {
+        "type": "milestone",
+        "text": "Expo + Expo Router + NativeWind = 1 週上 Store。"
+      },
+      "id": "11.2",
+      "number": "LESSON 11.2",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "11.2.auto",
+          "language": "bash",
+          "title": "試試看",
+          "initialCode": "npx create-expo-app@latest my-app\ncd my-app\nnpx expo start",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "找一個你身邊的例子、用「React Native + Expo 完整入門」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼 Expo"
+        },
+        {
+          "level": 2,
+          "text": "5 分鐘起專案"
+        },
+        {
+          "level": 2,
+          "text": "基本元件"
+        },
+        {
+          "level": 2,
+          "text": "HTML → RN"
+        },
+        {
+          "level": 2,
+          "text": "NativeWind（Tailwind for RN）"
+        }
+      ]
+    },
+    {
+      "title": "Expo Router：檔案系統路由",
+      "oneLineSummary": "app/ 資料夾即路由、跟 Next.js 同哲學",
+      "analogy": "不用設 react-navigation。",
+      "content": "## 檔案 = 路由\n```\napp/\n├── _layout.tsx\n├── index.tsx            # /\n├── about.tsx            # /about\n├── (tabs)/\n│   ├── _layout.tsx\n│   ├── home.tsx\n│   └── profile.tsx\n└── [id].tsx             # /:id\n```\n\n## Stack\n```tsx\nimport { Stack } from \"expo-router\";\n\nexport default function RootLayout() {\n  return (\n    <Stack>\n      <Stack.Screen name=\"index\" options={{ title: \"首頁\" }} />\n    </Stack>\n  );\n}\n```\n\n## 動態路由\n```tsx\nimport { useLocalSearchParams } from \"expo-router\";\n\nexport default function UserDetail() {\n  const { id } = useLocalSearchParams();\n  return <Text>User: {id}</Text>;\n}\n```\n\n## 導航\n```tsx\nimport { Link, router } from \"expo-router\";\n\n<Link href=\"/about\">About</Link>\n\nrouter.push(\"/about\");\nrouter.push({ pathname: \"/users/[id]\", params: { id: \"1\" } });\nrouter.back();\nrouter.replace(\"/login\");\n```",
+      "tip": {
+        "type": "practical",
+        "text": "Expo Router 是 2024+ 主流、寫起來簡潔 5 倍。"
+      },
+      "id": "11.3",
+      "number": "LESSON 11.3",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "11.3.auto",
+          "language": "tsx",
+          "title": "試試看",
+          "initialCode": "import { Stack } from \"expo-router\";\n\nexport default function RootLayout() {\n  return (\n    <Stack>\n      <Stack.Screen name=\"index\" options={{ title: \"首頁\" }} />\n    </Stack>\n  );\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "檔案 = 路由"
+        },
+        {
+          "level": 2,
+          "text": "Stack"
+        },
+        {
+          "level": 2,
+          "text": "動態路由"
+        },
+        {
+          "level": 2,
+          "text": "導航"
+        }
+      ]
+    },
+    {
+      "title": "UI + 設計系統",
+      "oneLineSummary": "自己刻 5-10 個核心元件、整 App 統一",
+      "analogy": "不要每個 button 都自己刻。",
+      "content": "## 元件庫\n- Tamagui：效能怪獸\n- React Native Paper：Material Design\n- NativeBase：類 Chakra\n\n## 自己寫 Button\n```tsx\nexport function Button({ title, onPress, variant = \"primary\", disabled }) {\n  return (\n    <Pressable\n      onPress={onPress}\n      disabled={disabled}\n      style={({ pressed }) => [\n        styles.base,\n        styles[variant],\n        pressed && styles.pressed\n      ]}\n    >\n      <Text style={styles.text}>{title}</Text>\n    </Pressable>\n  );\n}\n\nconst styles = StyleSheet.create({\n  base: { paddingHorizontal: 16, paddingVertical: 12, borderRadius: 8 },\n  primary: { backgroundColor: \"#50fa7b\" },\n  pressed: { opacity: 0.7 }\n});\n```\n\n## Design Tokens\n```tsx\nexport const colors = {\n  primary: \"#50fa7b\",\n  bg: \"#0a0e14\",\n  text: \"#e6edf3\"\n};\nexport const spacing = { 1: 4, 2: 8, 4: 16, 6: 24 };\n```\n\n## Dark Mode\n```tsx\nimport { useColorScheme } from \"react-native\";\nconst scheme = useColorScheme();\nconst bg = scheme === \"dark\" ? \"#0a0e14\" : \"#fff\";\n```",
+      "tip": {
+        "type": "pro",
+        "text": "自己寫 5-10 個核心元件、不要每頁重新發明。"
+      },
+      "id": "11.4",
+      "number": "LESSON 11.4",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "11.4.auto",
+          "language": "tsx",
+          "title": "試試看",
+          "initialCode": "export function Button({ title, onPress, variant = \"primary\", disabled }) {\n  return (\n    <Pressable\n      onPress={onPress}\n      disabled={disabled}\n      style={({ pressed }) => [\n        styles.base,\n        styles[variant],\n        pressed && styles.pressed\n      ]}\n    >\n      <Text style={styles.text}>{title}</Text>\n    </Pressable>\n  );\n}\n\nconst styles = StyleSheet.create({\n  base: { paddingHorizontal: 16, paddingVertical: 12, borderRadius: 8 },\n  primary: { backgroundColor: \"#50fa7b\" },\n  pressed: { opacity: 0.7 }\n});",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "元件庫"
+        },
+        {
+          "level": 2,
+          "text": "自己寫 Button"
+        },
+        {
+          "level": 2,
+          "text": "Design Tokens"
+        },
+        {
+          "level": 2,
+          "text": "Dark Mode"
+        }
+      ]
+    },
+    {
+      "title": "狀態管理：Zustand + TanStack Query",
+      "oneLineSummary": "2026 主流組合—Zustand 管 client、Query 管 server",
+      "analogy": "Redux 太重、Context 太累。",
+      "content": "## Zustand\n```typescript\nimport { create } from \"zustand\";\n\nexport const useUserStore = create((set) => ({\n  user: null,\n  setUser: (user) => set({ user }),\n  addXp: (n) => set((s) => ({\n    user: s.user ? { ...s.user, xp: s.user.xp + n } : null\n  }))\n}));\n```\n\n```tsx\nconst user = useUserStore((s) => s.user);\nconst addXp = useUserStore((s) => s.addXp);\n```\n\n## 持久化\n```typescript\nimport { persist, createJSONStorage } from \"zustand/middleware\";\nimport AsyncStorage from \"@react-native-async-storage/async-storage\";\n\nexport const useUserStore = create(\n  persist(\n    (set) => ({ user: null, setUser: (u) => set({ user: u }) }),\n    { name: \"user-store\", storage: createJSONStorage(() => AsyncStorage) }\n  )\n);\n```\n\n## TanStack Query（server state）\n```tsx\nconst { data, isLoading } = useQuery({\n  queryKey: [\"user\", id],\n  queryFn: () => fetch(`/api/users/${id}`).then(r => r.json())\n});\n\nconst mutation = useMutation({\n  mutationFn: (newPost) => fetch(\"/api/posts\", { method: \"POST\", body: JSON.stringify(newPost) }),\n  onSuccess: () => queryClient.invalidateQueries({ queryKey: [\"posts\"] })\n});\n```\n\n## 分工\n- **Zustand**：UI state（modal / theme）\n- **React Query**：server state（fetch / mutation / cache）",
+      "tip": {
+        "type": "milestone",
+        "text": "2026 黃金組合。Redux 退場。"
+      },
+      "id": "11.5",
+      "number": "LESSON 11.5",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "11.5.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "import { create } from \"zustand\";\n\nexport const useUserStore = create((set) => ({\n  user: null,\n  setUser: (user) => set({ user }),\n  addXp: (n) => set((s) => ({\n    user: s.user ? { ...s.user, xp: s.user.xp + n } : null\n  }))\n}));",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "Zustand"
+        },
+        {
+          "level": 2,
+          "text": "持久化"
+        },
+        {
+          "level": 2,
+          "text": "TanStack Query（server state）"
+        },
+        {
+          "level": 2,
+          "text": "分工"
+        }
+      ]
+    },
+    {
+      "title": "表單：React Hook Form + Zod",
+      "oneLineSummary": "TS friendly、效能好、最爽組合",
+      "analogy": "Formik 退場、RHF + Zod 是新王。",
+      "content": "## 範例\n```tsx\nimport { useForm, Controller } from \"react-hook-form\";\nimport { zodResolver } from \"@hookform/resolvers/zod\";\nimport { z } from \"zod\";\n\nconst schema = z.object({\n  email: z.string().email(\"無效 email\"),\n  password: z.string().min(8, \"至少 8 字\")\n});\n\ntype FormData = z.infer<typeof schema>;\n\nexport default function LoginForm() {\n  const { control, handleSubmit, formState: { errors } } = useForm<FormData>({\n    resolver: zodResolver(schema)\n  });\n\n  return (\n    <View>\n      <Controller\n        control={control}\n        name=\"email\"\n        render={({ field: { onChange, value } }) => (\n          <TextInput value={value} onChangeText={onChange} placeholder=\"Email\" />\n        )}\n      />\n      {errors.email && <Text>{errors.email.message}</Text>}\n      <Pressable onPress={handleSubmit(data => console.log(data))}>\n        <Text>登入</Text>\n      </Pressable>\n    </View>\n  );\n}\n```\n\n## 進階驗證\n```typescript\nconst schema = z.object({\n  phone: z.string().regex(/^09\\d{8}$/, \"台灣手機格式\"),\n}).refine((d) => d.password === d.confirm, {\n  message: \"密碼不一致\",\n  path: [\"confirm\"]\n});\n```",
+      "tip": {
+        "type": "milestone",
+        "text": "2026 表單黃金組合、web 跟 RN 都用。"
+      },
+      "id": "11.6",
+      "number": "LESSON 11.6",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "11.6.auto",
+          "language": "tsx",
+          "title": "試試看",
+          "initialCode": "import { useForm, Controller } from \"react-hook-form\";\nimport { zodResolver } from \"@hookform/resolvers/zod\";\nimport { z } from \"zod\";\n\nconst schema = z.object({\n  email: z.string().email(\"無效 email\"),\n  password: z.string().min(8, \"至少 8 字\")\n});\n\ntype FormData = z.infer<typeof schema>;\n\nexport default function LoginForm() {\n  const { control, handleSubmit, formState: { errors } } = useForm<FormData>({\n    resolver: zodResolver(schema)\n  });\n\n  return (\n    <View>\n      <Controller\n        control={control}\n        name=\"email\"\n        render={({ field: { onChange, value } }) => (\n          <TextInput value={value} onChangeText={onChange} placeholder=\"Email\" />\n        )}\n      />\n      {errors.email && <Text>{errors.email.message}</Text>}\n      <Pressable onPress={handleSubmit(data => console.log(data))}>\n        <Text>登入</Text>\n      </Pressable>\n    </View>\n  );\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "範例"
+        },
+        {
+          "level": 2,
+          "text": "進階驗證"
+        }
+      ]
+    },
+    {
+      "title": "FlatList / 列表效能",
+      "oneLineSummary": "巨量列表必用 FlatList—自動 virtualization",
+      "analogy": "1000 筆 map 卡死、FlatList 只渲染可見的。",
+      "content": "## FlatList\n```tsx\n<FlatList\n  data={items}\n  keyExtractor={item => item.id}\n  renderItem={({ item }) => <Item item={item} />}\n  \n  refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refetch} />}\n  \n  onEndReached={() => hasNextPage && fetchNextPage()}\n  onEndReachedThreshold={0.5}\n  \n  ListEmptyComponent={<Empty />}\n  ListFooterComponent={isLoading ? <Spinner /> : null}\n  \n  removeClippedSubviews={true}\n  maxToRenderPerBatch={10}\n  windowSize={10}\n  \n  getItemLayout={(_, index) => ({ length: 80, offset: 80 * index, index })}\n/>\n```\n\n## FlashList（Shopify、快 5-10 倍）\n```tsx\nimport { FlashList } from \"@shopify/flash-list\";\n\n<FlashList\n  data={items}\n  renderItem={({ item }) => <Item item={item} />}\n  estimatedItemSize={80}\n/>\n```\n\n## expo-image\n```tsx\nimport { Image } from \"expo-image\";\n\n<Image source={uri} placeholder={blurhash} contentFit=\"cover\" transition={200} />\n```",
+      "tip": {
+        "type": "performance",
+        "text": "巨量列表必用 FlatList / FlashList。"
+      },
+      "id": "11.7",
+      "number": "LESSON 11.7",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "11.7.auto",
+          "language": "tsx",
+          "title": "試試看",
+          "initialCode": "<FlatList\n  data={items}\n  keyExtractor={item => item.id}\n  renderItem={({ item }) => <Item item={item} />}\n  \n  refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refetch} />}\n  \n  onEndReached={() => hasNextPage && fetchNextPage()}\n  onEndReachedThreshold={0.5}\n  \n  ListEmptyComponent={<Empty />}\n  ListFooterComponent={isLoading ? <Spinner /> : null}\n  \n  removeClippedSubviews={true}\n  maxToRenderPerBatch={10}\n  windowSize={10}\n  \n  getItemLayout={(_, index) => ({ length: 80, offset: 80 * index, index })}\n/>",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "挑一個你做過的舊專案、用本節「FlatList / 列表效能」介紹的進階技術重構它。",
+        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
+        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "FlatList"
+        },
+        {
+          "level": 2,
+          "text": "FlashList（Shopify、快 5-10 倍）"
+        },
+        {
+          "level": 2,
+          "text": "expo-image"
+        }
+      ]
+    },
+    {
+      "title": "AsyncStorage + SecureStore + MMKV",
+      "oneLineSummary": "本地儲存—一般 / 敏感 / 高效能各有工具",
+      "analogy": "JWT 必用 SecureStore、高頻用 MMKV。",
+      "content": "## AsyncStorage\n```typescript\nimport AsyncStorage from \"@react-native-async-storage/async-storage\";\n\nawait AsyncStorage.setItem(\"theme\", \"dark\");\nconst theme = await AsyncStorage.getItem(\"theme\");\n```\n\n## SecureStore（敏感資料）\n```typescript\nimport * as SecureStore from \"expo-secure-store\";\n\nawait SecureStore.setItemAsync(\"jwt\", token);\nconst token = await SecureStore.getItemAsync(\"jwt\");\n```\niOS Keychain / Android Encrypted Storage。\n\n## MMKV（超快）\n```bash\nnpm install react-native-mmkv\n```\n```typescript\nimport { MMKV } from \"react-native-mmkv\";\n\nconst storage = new MMKV();\nstorage.set(\"user.name\", \"Alice\");\nconst name = storage.getString(\"user.name\");\n```\n比 AsyncStorage 快 30 倍。\n\n## SQLite（結構化）\n```typescript\nimport * as SQLite from \"expo-sqlite\";\n\nconst db = await SQLite.openDatabaseAsync(\"app.db\");\nawait db.execAsync(`CREATE TABLE IF NOT EXISTS users (id TEXT, name TEXT)`);\nawait db.runAsync(\"INSERT INTO users VALUES (?, ?)\", [\"1\", \"Alice\"]);\n```\n\n## 選擇\n\n| 工具 | 適合 |\n|---|---|\n| AsyncStorage | 設定 / theme |\n| SecureStore | JWT / 密碼 |\n| MMKV | 高頻讀寫 |\n| SQLite | 結構化 |",
+      "tip": {
+        "type": "security",
+        "text": "JWT / 密碼絕不放 AsyncStorage。只放 SecureStore。"
+      },
+      "id": "11.8",
+      "number": "LESSON 11.8",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "11.8.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "import AsyncStorage from \"@react-native-async-storage/async-storage\";\n\nawait AsyncStorage.setItem(\"theme\", \"dark\");\nconst theme = await AsyncStorage.getItem(\"theme\");",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "AsyncStorage"
+        },
+        {
+          "level": 2,
+          "text": "SecureStore（敏感資料）"
+        },
+        {
+          "level": 2,
+          "text": "MMKV（超快）"
+        },
+        {
+          "level": 2,
+          "text": "SQLite（結構化）"
+        },
+        {
+          "level": 2,
+          "text": "選擇"
+        }
+      ]
+    },
+    {
+      "title": "Camera + 圖片上傳",
+      "oneLineSummary": "拍照、選相片、上傳—App 標配",
+      "analogy": "Expo ImagePicker 3 行搞定。",
+      "content": "## ImagePicker\n```typescript\nimport * as ImagePicker from \"expo-image-picker\";\n\nconst result = await ImagePicker.launchImageLibraryAsync({\n  mediaTypes: ImagePicker.MediaTypeOptions.Images,\n  allowsEditing: true,\n  quality: 0.8\n});\n\nif (!result.canceled) {\n  const uri = result.assets[0].uri;\n}\n\n// 拍照\nconst photo = await ImagePicker.launchCameraAsync({ quality: 0.8 });\n```\n\n## 上傳 Supabase\n```typescript\nasync function uploadImage(uri: string) {\n  const response = await fetch(uri);\n  const blob = await response.blob();\n  const fileName = `${Date.now()}.jpg`;\n\n  const { data } = await supabase.storage\n    .from(\"avatars\")\n    .upload(fileName, blob, { contentType: \"image/jpeg\" });\n\n  return supabase.storage.from(\"avatars\").getPublicUrl(fileName).data.publicUrl;\n}\n```\n\n## 壓縮\n```typescript\nimport * as ImageManipulator from \"expo-image-manipulator\";\n\nconst compressed = await ImageManipulator.manipulateAsync(\n  uri,\n  [{ resize: { width: 1080 } }],\n  { compress: 0.8 }\n);\n```",
+      "tip": {
+        "type": "practical",
+        "text": "上傳前壓縮到 1080px + 80%—大小 1/5、體驗不變。"
+      },
+      "id": "11.9",
+      "number": "LESSON 11.9",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "11.9.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "import * as ImagePicker from \"expo-image-picker\";\n\nconst result = await ImagePicker.launchImageLibraryAsync({\n  mediaTypes: ImagePicker.MediaTypeOptions.Images,\n  allowsEditing: true,\n  quality: 0.8\n});\n\nif (!result.canceled) {\n  const uri = result.assets[0].uri;\n}\n\n// 拍照\nconst photo = await ImagePicker.launchCameraAsync({ quality: 0.8 });",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "ImagePicker"
+        },
+        {
+          "level": 2,
+          "text": "上傳 Supabase"
+        },
+        {
+          "level": 2,
+          "text": "壓縮"
+        }
+      ]
+    },
+    {
+      "title": "地圖 + 地理位置",
+      "oneLineSummary": "Map View、定位、地理圍欄—LBS App 必備",
+      "analogy": "expo-location + react-native-maps。",
+      "content": "## 取定位\n```typescript\nimport * as Location from \"expo-location\";\n\nconst { status } = await Location.requestForegroundPermissionsAsync();\nif (status !== \"granted\") return;\n\nconst location = await Location.getCurrentPositionAsync({});\n\n// 監聽\nconst sub = await Location.watchPositionAsync(\n  { accuracy: Location.Accuracy.High, distanceInterval: 10 },\n  (loc) => console.log(loc.coords)\n);\n```\n\n## Geocoding\n```typescript\nconst results = await Location.geocodeAsync(\"台北 101\");\nconst addr = await Location.reverseGeocodeAsync({ latitude: 25.04, longitude: 121.5 });\n```\n\n## react-native-maps\n```tsx\nimport MapView, { Marker } from \"react-native-maps\";\n\n<MapView\n  style={{ flex: 1 }}\n  initialRegion={{\n    latitude: 25.04,\n    longitude: 121.5,\n    latitudeDelta: 0.05,\n    longitudeDelta: 0.05\n  }}\n  showsUserLocation\n>\n  <Marker coordinate={{ latitude: 25.04, longitude: 121.5 }} title=\"台北 101\" />\n</MapView>\n```\n\n## 距離（haversine）\n```typescript\nfunction haversine(lat1, lng1, lat2, lng2) {\n  const R = 6371;\n  const dLat = (lat2 - lat1) * Math.PI / 180;\n  const dLng = (lng2 - lng1) * Math.PI / 180;\n  const a = Math.sin(dLat/2) ** 2 +\n            Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) *\n            Math.sin(dLng/2) ** 2;\n  return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));\n}\n```",
+      "tip": {
+        "type": "practical",
+        "text": "背景定位耗電 + iOS 嚴格。要明確說「為什麼需要」。"
+      },
+      "id": "11.10",
+      "number": "LESSON 11.10",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "11.10.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "import * as Location from \"expo-location\";\n\nconst { status } = await Location.requestForegroundPermissionsAsync();\nif (status !== \"granted\") return;\n\nconst location = await Location.getCurrentPositionAsync({});\n\n// 監聽\nconst sub = await Location.watchPositionAsync(\n  { accuracy: Location.Accuracy.High, distanceInterval: 10 },\n  (loc) => console.log(loc.coords)\n);",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "取定位"
+        },
+        {
+          "level": 2,
+          "text": "Geocoding"
+        },
+        {
+          "level": 2,
+          "text": "react-native-maps"
+        },
+        {
+          "level": 2,
+          "text": "距離（haversine）"
+        }
+      ]
+    },
+    {
+      "title": "Push Notification",
+      "oneLineSummary": "推送通知—觸發 user 回來的關鍵",
+      "analogy": "Expo Push 免費、跨 APNs / FCM 統一。",
+      "content": "## 取 token\n```typescript\nimport * as Notifications from \"expo-notifications\";\n\nasync function registerPush() {\n  const { status } = await Notifications.requestPermissionsAsync();\n  if (status !== \"granted\") return;\n\n  const token = (await Notifications.getExpoPushTokenAsync({\n    projectId: \"your-project-id\"\n  })).data;\n\n  await fetch(\"/api/save-push-token\", {\n    method: \"POST\",\n    body: JSON.stringify({ token })\n  });\n}\n```\n\n## 後端發送\n```typescript\nasync function sendPush(tokens, title, body) {\n  await fetch(\"https://exp.host/--/api/v2/push/send\", {\n    method: \"POST\",\n    headers: { \"Content-Type\": \"application/json\" },\n    body: JSON.stringify(\n      tokens.map(token => ({\n        to: token,\n        sound: \"default\",\n        title,\n        body,\n        data: { url: \"/posts/123\" }\n      }))\n    )\n  });\n}\n```\n\n## 接收\n```typescript\nNotifications.setNotificationHandler({\n  handleNotification: async () => ({\n    shouldShowAlert: true,\n    shouldPlaySound: true,\n    shouldSetBadge: true\n  })\n});\n\nNotifications.addNotificationResponseReceivedListener((response) => {\n  const url = response.notification.request.content.data.url;\n  router.push(url);\n});\n```\n\n## 本地通知\n```typescript\nawait Notifications.scheduleNotificationAsync({\n  content: { title: \"提醒\", body: \"該喝水了\" },\n  trigger: { seconds: 3600 }\n});\n```",
+      "tip": {
+        "type": "business",
+        "text": "Push 是 retention 神器、但濫推反效果。"
+      },
+      "id": "11.11",
+      "number": "LESSON 11.11",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "11.11.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "import * as Notifications from \"expo-notifications\";\n\nasync function registerPush() {\n  const { status } = await Notifications.requestPermissionsAsync();\n  if (status !== \"granted\") return;\n\n  const token = (await Notifications.getExpoPushTokenAsync({\n    projectId: \"your-project-id\"\n  })).data;\n\n  await fetch(\"/api/save-push-token\", {\n    method: \"POST\",\n    body: JSON.stringify({ token })\n  });\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "取 token"
+        },
+        {
+          "level": 2,
+          "text": "後端發送"
+        },
+        {
+          "level": 2,
+          "text": "接收"
+        },
+        {
+          "level": 2,
+          "text": "本地通知"
+        }
+      ]
+    },
+    {
+      "title": "Auth：Supabase / Clerk",
+      "oneLineSummary": "App 認證—不要自己刻、用現成 SaaS",
+      "analogy": "自己刻 OAuth = 浪費 1 個月 + 資安風險。",
+      "content": "## Supabase Auth（推薦 Indie）\n```typescript\nimport { createClient } from \"@supabase/supabase-js\";\n\nconst supabase = createClient(URL, ANON_KEY, {\n  auth: { storage: AsyncStorage }\n});\n\nawait supabase.auth.signUp({ email, password });\nawait supabase.auth.signInWithPassword({ email, password });\n\n// OAuth\nawait supabase.auth.signInWithOAuth({\n  provider: \"google\",\n  options: { redirectTo: AuthSession.makeRedirectUri() }\n});\n\n// Magic Link\nawait supabase.auth.signInWithOtp({ email });\n\nconst { data: { user } } = await supabase.auth.getUser();\n\nsupabase.auth.onAuthStateChange((event, session) => {\n  if (event === \"SIGNED_IN\") router.replace(\"/\");\n});\n\nawait supabase.auth.signOut();\n```\n\n## Clerk（最美 UI、商業）\n- 多 session、organizations\n- 付費\n\n## Apple Sign-In（iOS 必備）\n```tsx\nimport * as AppleAuthentication from \"expo-apple-authentication\";\n\n<AppleAuthentication.AppleAuthenticationButton\n  buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}\n  onPress={async () => {\n    const credential = await AppleAuthentication.signInAsync({\n      requestedScopes: [\n        AppleAuthentication.AppleAuthenticationScope.EMAIL,\n        AppleAuthentication.AppleAuthenticationScope.FULL_NAME\n      ]\n    });\n  }}\n/>\n```",
+      "tip": {
+        "type": "milestone",
+        "text": "自己刻 auth 是 2026 最不該做的事。"
+      },
+      "id": "11.12",
+      "number": "LESSON 11.12",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "11.12.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "import { createClient } from \"@supabase/supabase-js\";\n\nconst supabase = createClient(URL, ANON_KEY, {\n  auth: { storage: AsyncStorage }\n});\n\nawait supabase.auth.signUp({ email, password });\nawait supabase.auth.signInWithPassword({ email, password });\n\n// OAuth\nawait supabase.auth.signInWithOAuth({\n  provider: \"google\",\n  options: { redirectTo: AuthSession.makeRedirectUri() }\n});\n\n// Magic Link\nawait supabase.auth.signInWithOtp({ email });\n\nconst { data: { user } } = await supabase.auth.getUser();\n\nsupabase.auth.onAuthStateChange((event, session) => {\n  if (event === \"SIGNED_IN\") router.replace(\"/\");\n});\n\nawait supabase.auth.signOut();",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "Supabase Auth（推薦 Indie）"
+        },
+        {
+          "level": 2,
+          "text": "Clerk（最美 UI、商業）"
+        },
+        {
+          "level": 2,
+          "text": "Apple Sign-In（iOS 必備）"
+        }
+      ]
+    },
+    {
+      "title": "Animation：Reanimated 3",
+      "oneLineSummary": "RN 動畫直接在 UI thread 跑、60fps",
+      "analogy": "不卡主 thread、滑動時動畫順。",
+      "content": "## 安裝\n```bash\nnpx expo install react-native-reanimated\n```\n\n`babel.config.js`：\n```javascript\nmodule.exports = {\n  presets: [\"babel-preset-expo\"],\n  plugins: [\"react-native-reanimated/plugin\"]  // 最後\n};\n```\n\n## 基本\n```tsx\nimport Animated, { useSharedValue, useAnimatedStyle, withSpring } from \"react-native-reanimated\";\n\nfunction App() {\n  const offset = useSharedValue(0);\n  const animatedStyle = useAnimatedStyle(() => ({\n    transform: [{ translateX: offset.value }]\n  }));\n\n  return (\n    <>\n      <Animated.View style={[styles.box, animatedStyle]} />\n      <Button title=\"動\" onPress={() => offset.value = withSpring(100)} />\n    </>\n  );\n}\n```\n\n## Timing / Sequence\n```tsx\nimport { withTiming, withSequence, withDelay } from \"react-native-reanimated\";\n\noffset.value = withTiming(100, { duration: 500 });\noffset.value = withSequence(\n  withTiming(100),\n  withDelay(200, withTiming(0))\n);\n```\n\n## Layout Animation\n```tsx\nimport Animated, { FadeIn, FadeOut, Layout } from \"react-native-reanimated\";\n\n<Animated.View\n  entering={FadeIn.duration(400)}\n  exiting={FadeOut}\n  layout={Layout.springify()}\n>\n  {content}\n</Animated.View>\n```\n\n## Moti（簡化版）\n```tsx\nimport { MotiView } from \"moti\";\n\n<MotiView\n  from={{ opacity: 0, scale: 0.5 }}\n  animate={{ opacity: 1, scale: 1 }}\n  transition={{ type: \"spring\" }}\n/>\n```",
+      "tip": {
+        "type": "milestone",
+        "text": "Apple-tier 質感的 App 都狂用 Reanimated。"
+      },
+      "id": "11.13",
+      "number": "LESSON 11.13",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "11.13.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "module.exports = {\n  presets: [\"babel-preset-expo\"],\n  plugins: [\"react-native-reanimated/plugin\"]  // 最後\n};",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "安裝"
+        },
+        {
+          "level": 2,
+          "text": "基本"
+        },
+        {
+          "level": 2,
+          "text": "Timing / Sequence"
+        },
+        {
+          "level": 2,
+          "text": "Layout Animation"
+        },
+        {
+          "level": 2,
+          "text": "Moti（簡化版）"
+        }
+      ]
+    },
+    {
+      "title": "Deep Linking + Universal Links",
+      "oneLineSummary": "從外部點連結直接打開 App 特定畫面",
+      "analogy": "行銷神器—LINE 推 → 點 → App 直接到該頁。",
+      "content": "## Expo 設定\n```json\n{\n  \"expo\": {\n    \"scheme\": \"myapp\",\n    \"ios\": {\n      \"associatedDomains\": [\"applinks:example.com\"]\n    },\n    \"android\": {\n      \"intentFilters\": [{\n        \"action\": \"VIEW\",\n        \"autoVerify\": true,\n        \"data\": [{ \"scheme\": \"https\", \"host\": \"example.com\" }]\n      }]\n    }\n  }\n}\n```\n\n## Expo Router 自動處理\n```\napp/posts/[id].tsx → myapp://posts/123\n```\n\n## 手動處理\n```tsx\nimport { Linking } from \"react-native\";\n\nuseEffect(() => {\n  Linking.getInitialURL().then(url => {\n    if (url) handleUrl(url);\n  });\n  const sub = Linking.addEventListener(\"url\", ({ url }) => handleUrl(url));\n  return () => sub.remove();\n}, []);\n```\n\n## 開啟外部\n```typescript\nawait Linking.openURL(\"https://example.com\");\nawait Linking.openURL(\"tel:0912345678\");\nawait Linking.openURL(\"mailto:hello@example.com\");\n```\n\n## 測試\n```bash\nxcrun simctl openurl booted \"myapp://posts/123\"\nadb shell am start -W -a android.intent.action.VIEW -d \"myapp://posts/123\"\n```",
+      "tip": {
+        "type": "business",
+        "text": "沒 Deep Link、行銷 ROI 至少差 50%。"
+      },
+      "id": "11.14",
+      "number": "LESSON 11.14",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "11.14.auto",
+          "language": "json",
+          "title": "試試看",
+          "initialCode": "{\n  \"expo\": {\n    \"scheme\": \"myapp\",\n    \"ios\": {\n      \"associatedDomains\": [\"applinks:example.com\"]\n    },\n    \"android\": {\n      \"intentFilters\": [{\n        \"action\": \"VIEW\",\n        \"autoVerify\": true,\n        \"data\": [{ \"scheme\": \"https\", \"host\": \"example.com\" }]\n      }]\n    }\n  }\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "Expo 設定"
+        },
+        {
+          "level": 2,
+          "text": "Expo Router 自動處理"
+        },
+        {
+          "level": 2,
+          "text": "手動處理"
+        },
+        {
+          "level": 2,
+          "text": "開啟外部"
+        },
+        {
+          "level": 2,
+          "text": "測試"
+        }
+      ]
+    },
+    {
+      "title": "Offline / Local-first",
+      "oneLineSummary": "App 沒網路也能用、有網路自動同步",
+      "analogy": "Notion / Linear 都是 local-first—快又離線。",
+      "content": "## React Query 持久化\n```typescript\nimport { persistQueryClient } from \"@tanstack/react-query-persist-client\";\nimport { createAsyncStoragePersister } from \"@tanstack/query-async-storage-persister\";\n\nconst queryClient = new QueryClient({\n  defaultOptions: { queries: { gcTime: 1000 * 60 * 60 * 24 } }\n});\n\nconst persister = createAsyncStoragePersister({ storage: AsyncStorage });\npersistQueryClient({ queryClient, persister });\n```\n\n## 偵測網路\n```typescript\nimport NetInfo from \"@react-native-community/netinfo\";\n\nNetInfo.addEventListener(state => {\n  console.log(\"Connected:\", state.isConnected);\n});\n```\n\n## Write Queue\n```typescript\nasync function createPost(post) {\n  if (!isOnline()) {\n    await addToQueue({ type: \"createPost\", data: post });\n    return { ...post, syncing: true };\n  }\n  return await api.createPost(post);\n}\n\nNetInfo.addEventListener(async (state) => {\n  if (state.isConnected) {\n    const queue = await getQueue();\n    for (const item of queue) {\n      await processItem(item);\n    }\n  }\n});\n```\n\n## 進階\n- WatermelonDB：SQLite 自動 sync\n- PowerSync：Postgres ↔ App 雙向 sync\n- Replicache：最強 sync engine\n- TinyBase / Triplit：輕量\n\n## UI 反饋\n- 顯示「離線中」\n- 顯示「同步中」\n- 樂觀更新\n- 失敗有重試",
+      "tip": {
+        "type": "milestone",
+        "text": "2025+ 趨勢：local-first。使用者覺得「快」90% 靠這個。"
+      },
+      "id": "11.15",
+      "number": "LESSON 11.15",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "11.15.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "import { persistQueryClient } from \"@tanstack/react-query-persist-client\";\nimport { createAsyncStoragePersister } from \"@tanstack/query-async-storage-persister\";\n\nconst queryClient = new QueryClient({\n  defaultOptions: { queries: { gcTime: 1000 * 60 * 60 * 24 } }\n});\n\nconst persister = createAsyncStoragePersister({ storage: AsyncStorage });\npersistQueryClient({ queryClient, persister });",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "React Query 持久化"
+        },
+        {
+          "level": 2,
+          "text": "偵測網路"
+        },
+        {
+          "level": 2,
+          "text": "Write Queue"
+        },
+        {
+          "level": 2,
+          "text": "進階"
+        },
+        {
+          "level": 2,
+          "text": "UI 反饋"
+        }
+      ]
+    },
+    {
+      "title": "App 效能優化",
+      "oneLineSummary": "60fps 滑順 vs 卡頓 = 留存差 10 倍",
+      "analogy": "使用者不會說「卡」、直接刪 App。",
+      "content": "## 指標\n- 60 FPS（每幀 16.6ms）\n- TTI < 3s\n- Memory：iOS < 200MB、Android < 100MB\n- Bundle < 30MB\n\n## 10 大優化\n1. FlatList / FlashList（巨量列表）\n2. expo-image（圖片優化）\n3. StyleSheet 放外面\n4. React.memo / useMemo / useCallback\n5. InteractionManager（延後重活）\n6. Reanimated（動畫不用 Animated）\n7. Hermes 引擎（Expo 預設開）\n8. Bundle 分析 + 排除無用\n9. Native 模組（重邏輯）\n10. Lazy load\n\n## Cold Start\n```typescript\nimport * as SplashScreen from \"expo-splash-screen\";\n\nSplashScreen.preventAutoHideAsync();\nSplashScreen.hideAsync();  // App ready 後\n```\n\n## Sentry 監控\n```typescript\nimport * as Sentry from \"@sentry/react-native\";\nSentry.init({ dsn: \"...\", tracesSampleRate: 0.1 });\n```\n\n## 紅旗\n- [ ] FlatList 取代 ScrollView\n- [ ] Image 加 width / height\n- [ ] StyleSheet 外面\n- [ ] Reanimated 取代 Animated\n- [ ] memo 重要 component\n- [ ] Cold start < 3s",
+      "tip": {
+        "type": "performance",
+        "text": "刪 App 80% 因為「卡」「慢」「閃退」。Day 1 關注效能。"
+      },
+      "id": "11.16",
+      "number": "LESSON 11.16",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "11.16.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "import * as SplashScreen from \"expo-splash-screen\";\n\nSplashScreen.preventAutoHideAsync();\nSplashScreen.hideAsync();  // App ready 後",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "挑一個你做過的舊專案、用本節「App 效能優化」介紹的進階技術重構它。",
+        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
+        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "指標"
+        },
+        {
+          "level": 2,
+          "text": "10 大優化"
+        },
+        {
+          "level": 2,
+          "text": "Cold Start"
+        },
+        {
+          "level": 2,
+          "text": "Sentry 監控"
+        },
+        {
+          "level": 2,
+          "text": "紅旗"
+        }
+      ]
+    },
+    {
+      "title": "Testing：Jest + Maestro",
+      "oneLineSummary": "Indie 也要寫測試、上線前少 90% bug",
+      "analogy": "不追 100%、追「關鍵流程不爆」。",
+      "content": "## Jest\n```bash\nnpx expo install jest-expo @testing-library/react-native\n```\n\n```typescript\nimport { render, fireEvent, screen } from \"@testing-library/react-native\";\n\ntest(\"counter increments\", () => {\n  render(<Counter />);\n  fireEvent.press(screen.getByText(\"+\"));\n  expect(screen.getByText(\"Count: 1\")).toBeOnTheScreen();\n});\n```\n\n## Mock\n```typescript\njest.mock(\"@/lib/supabase\", () => ({\n  supabase: { auth: { getUser: jest.fn() } }\n}));\n```\n\n## Maestro（簡單 E2E）\n```yaml\nappId: com.you.app\n---\n- launchApp\n- tapOn: \"Email\"\n- inputText: \"test@example.com\"\n- tapOn: \"Login\"\n- assertVisible: \"Welcome\"\n```\n\n```bash\nmaestro test flows/login.yaml\n```\n\n## Detox（傳統 E2E）\n```typescript\nit(\"logs in\", async () => {\n  await element(by.id(\"email\")).typeText(\"test@example.com\");\n  await element(by.id(\"login-btn\")).tap();\n  await expect(element(by.id(\"home\"))).toBeVisible();\n});\n```\n\n## 比例\n- Unit：80%\n- Integration：15%\n- E2E：5%\n\n## Indie 簡易版\n- 沒時間寫測試 OK、至少 Sentry 裝\n- 上線前手動測 happy path\n- 重要邏輯（金流 / auth）寫單元測試",
+      "tip": {
+        "type": "practical",
+        "text": "Indie 不寫測試 OK、但 Sentry 一定要裝。"
+      },
+      "id": "11.17",
+      "number": "LESSON 11.17",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "11.17.auto",
+          "language": "bash",
+          "title": "試試看",
+          "initialCode": "npx expo install jest-expo @testing-library/react-native",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "Jest"
+        },
+        {
+          "level": 2,
+          "text": "Mock"
+        },
+        {
+          "level": 2,
+          "text": "Maestro（簡單 E2E）"
+        },
+        {
+          "level": 2,
+          "text": "Detox（傳統 E2E）"
+        },
+        {
+          "level": 2,
+          "text": "比例"
+        },
+        {
+          "level": 2,
+          "text": "Indie 簡易版"
+        }
+      ]
+    },
+    {
+      "title": "上架 App Store + Play Store",
+      "oneLineSummary": "註冊 → 配置 → 提交 → 審核 → 上線",
+      "analogy": "第一次需 1-2 週、之後幾小時。",
+      "content": "## Apple App Store\n\n### 1. Apple Developer\nNT$ 3,300 / 年\n\n### 2. EAS Build\n```bash\nnpm install -g eas-cli\neas login\neas build:configure\neas build --platform ios\n```\n\n### 3. App Store Connect\n- 建 App\n- 填 metadata\n- 上傳 build\n- 提交審核\n\n### 4. 必要素材\n- 截圖（6.7\" iPhone）\n- App icon 1024×1024\n- 隱私政策 URL\n\n### 5. 常見打回\n- ❌ Crash\n- ❌ 沒登入但要付費\n- ❌ Web 包殼\n- ❌ 內購不走 IAP\n- ❌ 沒 Sign in with Apple\n\n### 6. 審核\n- 一般 24-72 小時\n- 第一次 1 週\n\n## Google Play\n\n### 1. Play Console\n一次性 USD $25\n\n### 2. EAS Build\n```bash\neas build --platform android\n```\n\n### 3. 上傳 AAB\n\n### 4. 階段\n- Internal testing\n- Closed / Open testing\n- Production\n\n### 5. 審核\n- 第一次 7-14 天\n\n## EAS Submit\n```bash\neas submit --platform ios\neas submit --platform android\n```\n\n## EAS Update（OTA）\n```bash\neas update --branch production --message \"fix bug\"\n```\n\n## ASO\n- 標題含關鍵字\n- 第一張截圖決定 70% 下載\n- icon 精緻\n- 高分 + 多評論\n- 頻繁 update",
+      "tip": {
+        "type": "milestone",
+        "text": "第一次上架 1-2 週、被拒幾次很正常。"
+      },
+      "id": "11.18",
+      "number": "LESSON 11.18",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "11.18.auto",
+          "language": "bash",
+          "title": "試試看",
+          "initialCode": "npm install -g eas-cli\neas login\neas build:configure\neas build --platform ios",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "Apple App Store"
+        },
+        {
+          "level": 3,
+          "text": "1. Apple Developer"
+        },
+        {
+          "level": 3,
+          "text": "2. EAS Build"
+        },
+        {
+          "level": 3,
+          "text": "3. App Store Connect"
+        },
+        {
+          "level": 3,
+          "text": "4. 必要素材"
+        },
+        {
+          "level": 3,
+          "text": "5. 常見打回"
+        },
+        {
+          "level": 3,
+          "text": "6. 審核"
+        },
+        {
+          "level": 2,
+          "text": "Google Play"
+        },
+        {
+          "level": 3,
+          "text": "1. Play Console"
+        },
+        {
+          "level": 3,
+          "text": "2. EAS Build"
+        },
+        {
+          "level": 3,
+          "text": "3. 上傳 AAB"
+        },
+        {
+          "level": 3,
+          "text": "4. 階段"
+        },
+        {
+          "level": 3,
+          "text": "5. 審核"
+        },
+        {
+          "level": 2,
+          "text": "EAS Submit"
+        },
+        {
+          "level": 2,
+          "text": "EAS Update（OTA）"
+        },
+        {
+          "level": 2,
+          "text": "ASO"
+        }
+      ]
+    },
+    {
+      "title": "App 變現：IAP / 訂閱 / 廣告",
+      "oneLineSummary": "App 怎麼賺錢？4 種模式",
+      "analogy": "Apple / Google 抽 15-30%、要算進報價。",
+      "content": "## 4 大模式\n1. 付費下載（過時）\n2. IAP（一次性購買）\n3. 訂閱（最賺）\n4. 廣告\n\n## IAP（react-native-iap）\n```typescript\nimport { initConnection, getProducts, requestPurchase } from \"react-native-iap\";\n\nawait initConnection();\nconst products = await getProducts({ skus: [\"com.you.app.pro_month\"] });\nawait requestPurchase({ sku: \"com.you.app.pro_month\" });\n```\n\n## Receipt 驗證（後端、必做）\n```typescript\nasync function verifyApple(receipt) {\n  const res = await fetch(\"https://buy.itunes.apple.com/verifyReceipt\", {\n    method: \"POST\",\n    body: JSON.stringify({\n      \"receipt-data\": receipt,\n      password: APPLE_SHARED_SECRET\n    })\n  });\n  return await res.json();\n}\n```\n\n## 抽成\n- Small Business：< $1M ARR、抽 15%\n- 一般：30%\n\n## RevenueCat（推薦 Indie）\n```bash\nnpm install react-native-purchases\n```\n統一 Apple + Google IAP、免費 plan：$2500 MTR。\n\n## 廣告（AdMob）\n```typescript\nimport { AdMobBanner, AdMobInterstitial, AdMobRewarded } from \"expo-ads-admob\";\n\n<AdMobBanner bannerSize=\"banner\" adUnitID=\"ca-app-pub-xxx/yyy\" />\n```\n\neCPM 台 $1-5、美 $3-10。\n\n## 定價\n- 心理價：$0.99 / $4.99 / $9.99\n- 年費 8 折比月費\n- 免費試用降低門檻\n\n## 監控\nDAU / MAU、ARPU、LTV、Churn rate",
+      "tip": {
+        "type": "business",
+        "text": "App 賺錢 = 訂閱 + IAP > 廣告。"
+      },
+      "id": "11.19",
+      "number": "LESSON 11.19",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "11.19.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "import { initConnection, getProducts, requestPurchase } from \"react-native-iap\";\n\nawait initConnection();\nconst products = await getProducts({ skus: [\"com.you.app.pro_month\"] });\nawait requestPurchase({ sku: \"com.you.app.pro_month\" });",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "4 大模式"
+        },
+        {
+          "level": 2,
+          "text": "IAP（react-native-iap）"
+        },
+        {
+          "level": 2,
+          "text": "Receipt 驗證（後端、必做）"
+        },
+        {
+          "level": 2,
+          "text": "抽成"
+        },
+        {
+          "level": 2,
+          "text": "RevenueCat（推薦 Indie）"
+        },
+        {
+          "level": 2,
+          "text": "廣告（AdMob）"
+        },
+        {
+          "level": 2,
+          "text": "定價"
+        },
+        {
+          "level": 2,
+          "text": "監控"
+        }
+      ]
+    },
+    {
+      "title": "上線後：Sentry + Analytics + EAS Update",
+      "oneLineSummary": "Day 1 設好監控—使用者不 report bug、只默默刪",
+      "analogy": "Sentry + PostHog + EAS Update 是 Indie 標配。",
+      "content": "## Sentry\n```typescript\nimport * as Sentry from \"@sentry/react-native\";\n\nSentry.init({\n  dsn: \"...\",\n  tracesSampleRate: 1.0\n});\n\ntry { doSomething(); } catch (err) {\n  Sentry.captureException(err);\n}\n\nSentry.setUser({ id: userId });\nSentry.setTag(\"plan\", \"pro\");\n```\n\n## PostHog\n```bash\nnpm install posthog-react-native\n```\n```typescript\nconst posthog = new PostHog(\"API_KEY\");\n\nposthog.capture(\"button_clicked\", { name: \"buy\" });\nposthog.identify(userId, { email, plan });\nposthog.screen(\"HomeScreen\");\n```\n\n## 關鍵指標\n- 留存：D1 / D7 / D30\n- DAU/MAU > 20%（中等）\n- ARPU / LTV / CAC\n\n## A/B Test\n```typescript\nconst showNewUI = posthog.isFeatureEnabled(\"new-ui\");\n```\n\n## Session Replay\nPostHog / Hotjar 錄影使用者操作。\n\n## 上線清單\n- [ ] Sentry\n- [ ] Analytics（PostHog）\n- [ ] EAS Update\n- [ ] Crash 警報\n- [ ] App Store review 監控\n- [ ] 客服管道\n- [ ] 隱私政策\n\n## 心法\n- 上線 != 完成、是「開始監控 + 迭代」\n- 監控數據 > 主觀判斷\n- 早期 user 是金礦",
+      "tip": {
+        "type": "milestone",
+        "text": "Day 1 必裝：Sentry + Analytics + EAS Update。"
+      },
+      "id": "11.20",
+      "number": "LESSON 11.20",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "11.20.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "import * as Sentry from \"@sentry/react-native\";\n\nSentry.init({\n  dsn: \"...\",\n  tracesSampleRate: 1.0\n});\n\ntry { doSomething(); } catch (err) {\n  Sentry.captureException(err);\n}\n\nSentry.setUser({ id: userId });\nSentry.setTag(\"plan\", \"pro\");",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "Sentry"
+        },
+        {
+          "level": 2,
+          "text": "PostHog"
+        },
+        {
+          "level": 2,
+          "text": "關鍵指標"
+        },
+        {
+          "level": 2,
+          "text": "A/B Test"
+        },
+        {
+          "level": 2,
+          "text": "Session Replay"
+        },
+        {
+          "level": 2,
+          "text": "上線清單"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Todo App 完整實戰",
+      "oneLineSummary": "從 0 到上架 iOS / Android、整合所有概念",
+      "analogy": "做出能 ship 的真實 App。",
+      "content": "## 規格\n- 註冊 / 登入（Supabase Auth）\n- CRUD Todo（離線 + Realtime）\n- Push 提醒\n- 上架 iOS + Android\n\n## Stack\n- Expo SDK 52+ / Expo Router\n- NativeWind / Supabase\n- Zustand + TanStack Query\n- React Hook Form + Zod\n\n## Supabase Schema\n```sql\nCREATE TABLE todos (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,\n  title TEXT NOT NULL,\n  done BOOLEAN DEFAULT FALSE,\n  due_at TIMESTAMPTZ,\n  created_at TIMESTAMPTZ DEFAULT NOW()\n);\n\nALTER TABLE todos ENABLE ROW LEVEL SECURITY;\nCREATE POLICY \"own_todos\" ON todos FOR ALL USING (auth.uid() = user_id);\n```\n\n## Auth Flow\n```tsx\nuseEffect(() => {\n  supabase.auth.onAuthStateChange((_, session) => setSession(session));\n}, []);\n\nuseEffect(() => {\n  const inAuthGroup = segments[0] === \"(auth)\";\n  if (!session && !inAuthGroup) router.replace(\"/login\");\n  else if (session && inAuthGroup) router.replace(\"/\");\n}, [session, segments]);\n```\n\n## Todo + Realtime\n```tsx\nconst { data: todos } = useQuery({\n  queryKey: [\"todos\"],\n  queryFn: async () => {\n    const { data } = await supabase.from(\"todos\").select(\"*\")\n      .order(\"created_at\", { ascending: false });\n    return data || [];\n  }\n});\n\nuseEffect(() => {\n  const channel = supabase.channel(\"todos\")\n    .on(\"postgres_changes\",\n      { event: \"*\", schema: \"public\", table: \"todos\" },\n      () => queryClient.invalidateQueries({ queryKey: [\"todos\"] }))\n    .subscribe();\n  return () => { channel.unsubscribe(); };\n}, []);\n```\n\n## EAS Build + Submit\n```bash\neas build:configure\neas build --platform all\neas submit --platform ios\neas submit --platform android\n```\n\n## 上線後迭代\n- v1.1：Tags / 分類\n- v1.2：分享協作\n- v1.3：訂閱 plan\n\n## checklist\n- [x] Auth\n- [x] CRUD + Realtime\n- [x] Push\n- [x] Offline cache\n- [x] Sentry / Analytics\n- [x] EAS Update",
+      "tip": {
+        "type": "milestone",
+        "text": "完成這個 = 你能獨立做 mobile App 上架。"
+      },
+      "id": "11.21",
+      "number": "LESSON 11.21",
+      "xp": 15,
+      "playgrounds": [
+        {
+          "key": "11.21.auto",
+          "language": "sql",
+          "title": "試試看",
+          "initialCode": "CREATE TABLE todos (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,\n  title TEXT NOT NULL,\n  done BOOLEAN DEFAULT FALSE,\n  due_at TIMESTAMPTZ,\n  created_at TIMESTAMPTZ DEFAULT NOW()\n);\n\nALTER TABLE todos ENABLE ROW LEVEL SECURITY;\nCREATE POLICY \"own_todos\" ON todos FOR ALL USING (auth.uid() = user_id);",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "規格"
+        },
+        {
+          "level": 2,
+          "text": "Stack"
+        },
+        {
+          "level": 2,
+          "text": "Supabase Schema"
+        },
+        {
+          "level": 2,
+          "text": "Auth Flow"
+        },
+        {
+          "level": 2,
+          "text": "Todo + Realtime"
+        },
+        {
+          "level": 2,
+          "text": "EAS Build + Submit"
+        },
+        {
+          "level": 2,
+          "text": "上線後迭代"
+        },
+        {
+          "level": 2,
+          "text": "checklist"
+        }
+      ]
+    },
+    {
+      "title": "學習路徑 + 接案 / 職涯",
+      "oneLineSummary": "從 0 到專業 mobile 工程師、6-12 個月",
+      "analogy": "會 App = 接案 / 創業多一條路。",
+      "content": "## 學習路徑\n\n### Month 1-2：基礎\n- React + TS\n- Expo + Router\n- StyleSheet / NativeWind\n\n### Month 3-4：核心\n- React Query / Zustand\n- Supabase\n- Storage / Auth\n\n### Month 5-6：上線\n- EAS Build / Submit\n- 上 Store\n\n### Month 7-12：進階\n- Reanimated\n- Native module\n- 效能優化\n\n## 學習資源\n- Expo Docs（必看）\n- William Candillon YT（Reanimated 大師）\n- Beto Moedano YT\n- Akirashi YT（中文）\n\n## 接案市場（2026 台灣）\n- 簡單 App：NT$ 100-300k\n- 中等：NT$ 300-800k\n- 複雜：NT$ 500k+\n- 維護月費：NT$ 5-30k\n\n## 全職薪資\n- Junior：NT$ 60-90k\n- Mid：NT$ 90-130k\n- Senior：NT$ 130-200k\n- Tech Lead：NT$ 180-280k\n\n## Indie 路線\n- A. 商業 App（工具 / 生產力 / 學習）\n- B. 免費 + 廣告（流量大才賺）\n- C. B2B App（企業內部）\n\n## 成功案例\n- Pieter Levels - PhotoAI（$50k+/月）\n- Ahmet Sülek - Flighty\n- 台：Calm Coffee、Bear Coach\n\n## 心法\n- 不追完美、追上線\n- 第一版功能少、之後迭代\n- 不只寫 code、要會行銷\n- Indie 賺錢 = 60% 行銷 + 40% 產品\n\n## 給新手建議\n1. 學 React + TS\n2. 學 Expo\n3. 做 3 個小 App\n4. 做 1 個能 ship 的\n5. 放 portfolio、申請工作 / 接案\n\n6 個月、改變職涯軌跡。",
+      "tip": {
+        "type": "milestone",
+        "text": "會做 App 是 2026 工程師 ace card—投入 6 個月。"
+      },
+      "id": "11.22",
+      "number": "LESSON 11.22",
+      "xp": 10,
+      "exercise": {
+        "question": "找一個你身邊的例子、用「學習路徑 + 接案 / 職涯」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "學習路徑"
+        },
+        {
+          "level": 3,
+          "text": "Month 1-2：基礎"
+        },
+        {
+          "level": 3,
+          "text": "Month 3-4：核心"
+        },
+        {
+          "level": 3,
+          "text": "Month 5-6：上線"
+        },
+        {
+          "level": 3,
+          "text": "Month 7-12：進階"
+        },
+        {
+          "level": 2,
+          "text": "學習資源"
+        },
+        {
+          "level": 2,
+          "text": "接案市場（2026 台灣）"
+        },
+        {
+          "level": 2,
+          "text": "全職薪資"
+        },
+        {
+          "level": 2,
+          "text": "Indie 路線"
+        },
+        {
+          "level": 2,
+          "text": "成功案例"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        },
+        {
+          "level": 2,
+          "text": "給新手建議"
+        }
+      ]
+    },
+    {
+      "title": "Native Modules + Bridging",
+      "oneLineSummary": "JS 寫不出來的功能 → 寫原生 Swift / Kotlin",
+      "analogy": "影像處理、ML、Bluetooth—JS 弱項用原生補。",
+      "content": "## 何時需要 Native Module\n- 影像 / 影音重處理\n- ML inference（CoreML / TFLite）\n- Bluetooth / NFC\n- HealthKit / SensorKit\n- 高效能計算\n\n## Expo Modules API（推薦）\n```bash\nnpx create-expo-module my-module\n```\n\n### Swift（iOS）\n```swift\nimport ExpoModulesCore\n\npublic class MyModule: Module {\n    public func definition() -> ModuleDefinition {\n        Name(\"MyModule\")\n        \n        Function(\"hello\") { (name: String) -> String in\n            return \"Hello, \\(name)\"\n        }\n        \n        AsyncFunction(\"processImage\") { (uri: String) async throws -> String in\n            // 影像處理\n            return \"processed\"\n        }\n    }\n}\n```\n\n### Kotlin（Android）\n```kotlin\nclass MyModule : Module() {\n    override fun definition() = ModuleDefinition {\n        Name(\"MyModule\")\n        \n        Function(\"hello\") { name: String ->\n            \"Hello, $name\"\n        }\n        \n        AsyncFunction(\"processImage\") { uri: String ->\n            // 影像處理\n            \"processed\"\n        }\n    }\n}\n```\n\n### TS 端用\n```typescript\nimport MyModule from \"my-module\";\n\nconst result = MyModule.hello(\"World\");\nconst processed = await MyModule.processImage(uri);\n```\n\n## React Native Bridge（傳統）\n```objc\n// MyModule.m\n@implementation MyModule\nRCT_EXPORT_MODULE();\nRCT_EXPORT_METHOD(hello:(NSString *)name \n                  resolver:(RCTPromiseResolveBlock)resolve\n                  rejecter:(RCTPromiseRejectBlock)reject) {\n  resolve([NSString stringWithFormat:@\"Hello, %@\", name]);\n}\n@end\n```\n\n## TurboModules（新世代）\nReact Native 0.68+ 新 module 系統：\n- JSI 直接呼叫（不用 Bridge）\n- 同步 / 異步都行\n- 效能比舊 Bridge 快 10x\n\n## 重邏輯放原生\n```typescript\n// JS 端只做 UI\nfunction PhotoEditor({ uri }) {\n  const apply = async () => {\n    const result = await ImageProcessor.applyFilter(uri, \"sepia\");\n    return result;\n  };\n  return <Button onPress={apply} />;\n}\n\n// Swift / Kotlin 端做重計算\n```\n\n## 選擇\n\n| 需求 | 推薦 |\n|---|---|\n| JS 庫已存在 | 用 JS |\n| 平台 API | Expo Module |\n| 重計算 | TurboModule |\n| 簡單功能 | Expo 內建 |\n\n## 心法\n- 90% 場景不需要寫原生\n- 真要寫 = 同時懂 JS + Swift + Kotlin\n- 維護成本高、要評估 ROI",
+      "tip": {
+        "type": "pro",
+        "text": "會寫 Native Module = senior RN 工程師。薪水跳 30%。"
+      },
+      "id": "11.23",
+      "number": "LESSON 11.23",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "11.23.auto",
+          "language": "swift",
+          "title": "試試看",
+          "initialCode": "import ExpoModulesCore\n\npublic class MyModule: Module {\n    public func definition() -> ModuleDefinition {\n        Name(\"MyModule\")\n        \n        Function(\"hello\") { (name: String) -> String in\n            return \"Hello, \\(name)\"\n        }\n        \n        AsyncFunction(\"processImage\") { (uri: String) async throws -> String in\n            // 影像處理\n            return \"processed\"\n        }\n    }\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "何時需要 Native Module"
+        },
+        {
+          "level": 2,
+          "text": "Expo Modules API（推薦）"
+        },
+        {
+          "level": 3,
+          "text": "Swift（iOS）"
+        },
+        {
+          "level": 3,
+          "text": "Kotlin（Android）"
+        },
+        {
+          "level": 3,
+          "text": "TS 端用"
+        },
+        {
+          "level": 2,
+          "text": "React Native Bridge（傳統）"
+        },
+        {
+          "level": 2,
+          "text": "TurboModules（新世代）"
+        },
+        {
+          "level": 2,
+          "text": "重邏輯放原生"
+        },
+        {
+          "level": 2,
+          "text": "選擇"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Mobile Auth 深度：JWT / OAuth / Biometric",
+      "oneLineSummary": "不只 login、還有 token refresh、生物辨識、SSO",
+      "analogy": "Mobile auth 比 web 複雜、要考慮 offline + secure storage。",
+      "content": "## JWT 處理\n```typescript\nimport * as SecureStore from \"expo-secure-store\";\n\n// 存 token\nasync function saveTokens(access: string, refresh: string) {\n  await SecureStore.setItemAsync(\"access_token\", access);\n  await SecureStore.setItemAsync(\"refresh_token\", refresh);\n}\n\n// 取 token\nasync function getAccessToken() {\n  return await SecureStore.getItemAsync(\"access_token\");\n}\n\n// Refresh\nasync function refreshToken() {\n  const refresh = await SecureStore.getItemAsync(\"refresh_token\");\n  const res = await fetch(\"/api/refresh\", {\n    method: \"POST\",\n    body: JSON.stringify({ refresh_token: refresh })\n  });\n  const { access_token, refresh_token } = await res.json();\n  await saveTokens(access_token, refresh_token);\n  return access_token;\n}\n```\n\n## Axios Interceptor（自動 refresh）\n```typescript\nimport axios from \"axios\";\n\nconst api = axios.create({ baseURL: \"...\" });\n\napi.interceptors.request.use(async (config) => {\n  const token = await getAccessToken();\n  if (token) config.headers.Authorization = `Bearer ${token}`;\n  return config;\n});\n\napi.interceptors.response.use(\n  res => res,\n  async (error) => {\n    if (error.response?.status === 401) {\n      const newToken = await refreshToken();\n      error.config.headers.Authorization = `Bearer ${newToken}`;\n      return api(error.config);  // retry\n    }\n    return Promise.reject(error);\n  }\n);\n```\n\n## OAuth Flow\n```typescript\nimport * as WebBrowser from \"expo-web-browser\";\nimport * as AuthSession from \"expo-auth-session\";\n\nconst redirectUri = AuthSession.makeRedirectUri({ scheme: \"myapp\" });\n\nconst result = await AuthSession.promptAsync({\n  authUrl: `https://accounts.google.com/o/oauth2/auth?client_id=${CLIENT_ID}&redirect_uri=${redirectUri}&response_type=code&scope=email`\n});\n\nif (result.type === \"success\") {\n  const code = result.params.code;\n  // 換 access_token\n}\n```\n\n## Biometric Authentication\n```typescript\nimport * as LocalAuthentication from \"expo-local-authentication\";\n\n// 檢查支援\nconst hasHardware = await LocalAuthentication.hasHardwareAsync();\nconst isEnrolled = await LocalAuthentication.isEnrolledAsync();\n\n// 觸發\nconst result = await LocalAuthentication.authenticateAsync({\n  promptMessage: \"請驗證身份\",\n  fallbackLabel: \"用密碼\"\n});\n\nif (result.success) {\n  // 通過、給 token / 解鎖\n}\n```\n\n## SSO（企業）\n- Apple Sign-In\n- Google Sign-In\n- Microsoft / Azure AD\n- 用 Clerk / Auth0 / Supabase 整合\n\n## Multi-account\n```typescript\nconst accounts = await getStoredAccounts();\n// 讓 user 選一個\n\nawait switchToAccount(accountId);\n```\n\n## 安全 checklist\n- [ ] Token 存 SecureStore（不是 AsyncStorage）\n- [ ] Access token 短期（15 分）\n- [ ] Refresh token 長期（30 天）\n- [ ] HTTPS only\n- [ ] Certificate pinning（金融類）\n- [ ] App 鎖（Biometric on launch）\n- [ ] Token rotation\n- [ ] Detect jailbreak / root（敏感應用）",
+      "tip": {
+        "type": "security",
+        "text": "Mobile auth 比 web 安全要求高。JWT 必放 SecureStore、不是 AsyncStorage。"
+      },
+      "id": "11.24",
+      "number": "LESSON 11.24",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "11.24.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "import * as SecureStore from \"expo-secure-store\";\n\n// 存 token\nasync function saveTokens(access: string, refresh: string) {\n  await SecureStore.setItemAsync(\"access_token\", access);\n  await SecureStore.setItemAsync(\"refresh_token\", refresh);\n}\n\n// 取 token\nasync function getAccessToken() {\n  return await SecureStore.getItemAsync(\"access_token\");\n}\n\n// Refresh\nasync function refreshToken() {\n  const refresh = await SecureStore.getItemAsync(\"refresh_token\");\n  const res = await fetch(\"/api/refresh\", {\n    method: \"POST\",\n    body: JSON.stringify({ refresh_token: refresh })\n  });\n  const { access_token, refresh_token } = await res.json();\n  await saveTokens(access_token, refresh_token);\n  return access_token;\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "JWT 處理"
+        },
+        {
+          "level": 2,
+          "text": "Axios Interceptor（自動 refresh）"
+        },
+        {
+          "level": 2,
+          "text": "OAuth Flow"
+        },
+        {
+          "level": 2,
+          "text": "Biometric Authentication"
+        },
+        {
+          "level": 2,
+          "text": "SSO（企業）"
+        },
+        {
+          "level": 2,
+          "text": "Multi-account"
+        },
+        {
+          "level": 2,
+          "text": "安全 checklist"
+        }
+      ]
+    },
+    {
+      "title": "App 國際化（i18n）+ 在地化",
+      "oneLineSummary": "不只翻譯、還要日期 / 數字 / 貨幣格式",
+      "analogy": "想做全球市場 = i18n 是 Day 1 必做。",
+      "content": "## 為什麼從 Day 1 做\n- 後期加 i18n = 重構痛苦\n- 多語言 = 市場大 10x\n- App Store ASO 加分\n\n## i18next（業界主流）\n```bash\nnpm install i18next react-i18next\n```\n\n```typescript\n// i18n.ts\nimport i18n from \"i18next\";\nimport { initReactI18next } from \"react-i18next\";\n\nconst resources = {\n  \"zh-TW\": {\n    translation: {\n      welcome: \"歡迎\",\n      login: \"登入\",\n      hello_name: \"嗨 {{name}}\",\n      items: \"{{count}} 個項目\"\n    }\n  },\n  en: {\n    translation: {\n      welcome: \"Welcome\",\n      login: \"Sign in\",\n      hello_name: \"Hi {{name}}\",\n      items: \"{{count}} item\",\n      items_plural: \"{{count}} items\"\n    }\n  }\n};\n\ni18n.use(initReactI18next).init({\n  resources,\n  lng: \"zh-TW\",\n  fallbackLng: \"en\"\n});\n\nexport default i18n;\n```\n\n## 用\n```tsx\nimport { useTranslation } from \"react-i18next\";\n\nfunction Home() {\n  const { t, i18n } = useTranslation();\n  \n  return (\n    <View>\n      <Text>{t(\"welcome\")}</Text>\n      <Text>{t(\"hello_name\", { name: \"Luffysky\" })}</Text>\n      <Text>{t(\"items\", { count: 5 })}</Text>\n      \n      <Button onPress={() => i18n.changeLanguage(\"en\")} title=\"EN\" />\n    </View>\n  );\n}\n```\n\n## 偵測語言\n```typescript\nimport * as Localization from \"expo-localization\";\n\nconst deviceLang = Localization.locale;  // \"zh-TW\"\nconst deviceLocales = Localization.locales;  // [\"zh-TW\", \"en\"]\n```\n\n## 日期格式\n```typescript\nimport { format, formatDistanceToNow } from \"date-fns\";\nimport { zhTW, enUS } from \"date-fns/locale\";\n\nconst locale = i18n.language === \"zh-TW\" ? zhTW : enUS;\n\nformat(new Date(), \"yyyy 年 MM 月 dd 日\", { locale });\nformatDistanceToNow(date, { locale, addSuffix: true });\n// \"3 小時前\" / \"3 hours ago\"\n```\n\n## 數字 / 貨幣\n```typescript\nnew Intl.NumberFormat(\"zh-TW\", {\n  style: \"currency\",\n  currency: \"TWD\"\n}).format(1234.5);  // \"NT$1,234.50\"\n\nnew Intl.NumberFormat(\"en-US\", {\n  style: \"currency\",\n  currency: \"USD\"\n}).format(1234.5);  // \"$1,234.50\"\n```\n\n## RTL（阿拉伯語 / 希伯來語）\n```typescript\nimport { I18nManager } from \"react-native\";\n\nif (isRTL) {\n  I18nManager.forceRTL(true);\n  // 整 App 自動 mirror\n}\n```\n\n## 翻譯管理\n- **Lokalise** / **Crowdin**：商業\n- **Tolgee**：開源\n- **Locize**：i18next 官方\n\n## 動態語言切換\n```typescript\nimport AsyncStorage from \"@react-native-async-storage/async-storage\";\n\nasync function changeLang(lang) {\n  await i18n.changeLanguage(lang);\n  await AsyncStorage.setItem(\"lang\", lang);\n}\n\n// 啟動時讀\nconst savedLang = await AsyncStorage.getItem(\"lang\");\nif (savedLang) i18n.changeLanguage(savedLang);\n```\n\n## App Store 在地化\n- App 描述：每個語言一份\n- 截圖：用該語言版的 UI\n- 關鍵字：在地化\n- icon：節慶限定版\n\n## 心法\n- Day 1 就把所有 string 抽到 t() 函式\n- 不要寫死「歡迎」、寫 t(\"welcome\")\n- 數字 / 日期 / 貨幣永遠用 Intl\n- 至少 zh-TW + en、市場大 10x",
+      "tip": {
+        "type": "milestone",
+        "text": "i18n 是國際化的基石。Day 1 做、長期省 100 小時。"
+      },
+      "id": "11.25",
+      "number": "LESSON 11.25",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "11.25.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "// i18n.ts\nimport i18n from \"i18next\";\nimport { initReactI18next } from \"react-i18next\";\n\nconst resources = {\n  \"zh-TW\": {\n    translation: {\n      welcome: \"歡迎\",\n      login: \"登入\",\n      hello_name: \"嗨 {{name}}\",\n      items: \"{{count}} 個項目\"\n    }\n  },\n  en: {\n    translation: {\n      welcome: \"Welcome\",\n      login: \"Sign in\",\n      hello_name: \"Hi {{name}}\",\n      items: \"{{count}} item\",\n      items_plural: \"{{count}} items\"\n    }\n  }\n};\n\ni18n.use(initReactI18next).init({\n  resources,\n  lng: \"zh-TW\",\n  fallbackLng: \"en\"\n});\n\nexport default i18n;",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼從 Day 1 做"
+        },
+        {
+          "level": 2,
+          "text": "i18next（業界主流）"
+        },
+        {
+          "level": 2,
+          "text": "用"
+        },
+        {
+          "level": 2,
+          "text": "偵測語言"
+        },
+        {
+          "level": 2,
+          "text": "日期格式"
+        },
+        {
+          "level": 2,
+          "text": "數字 / 貨幣"
+        },
+        {
+          "level": 2,
+          "text": "RTL（阿拉伯語 / 希伯來語）"
+        },
+        {
+          "level": 2,
+          "text": "翻譯管理"
+        },
+        {
+          "level": 2,
+          "text": "動態語言切換"
+        },
+        {
+          "level": 2,
+          "text": "App Store 在地化"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    }
+  ],
+  "boss": {
+    "name": "行動觸手",
+    "hp": 130,
+    "emoji": "📱",
+    "description": "iOS Android 同時攻擊、跨平台才贏"
+  },
+  "quiz": {
+    "id": "ch11-quiz",
+    "questions": [],
+    "xpReward": 50,
+    "perfectBonus": 50
+  }
+}

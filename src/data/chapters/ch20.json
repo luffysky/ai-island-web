@@ -1,0 +1,822 @@
+{
+  "id": 20,
+  "slug": "api",
+  "stage": 3,
+  "title": "API 設計",
+  "subtitle": "REST / GraphQL / tRPC / WebSocket",
+  "icon": "network",
+  "description": "API 設計：REST / GraphQL / tRPC / WebSocket",
+  "status": "published",
+  "difficulty": "intermediate",
+  "prerequisites": [
+    16
+  ],
+  "estimatedHours": 12,
+  "outcomes": [
+    "理解核心概念",
+    "實作主流工具",
+    "整章實戰可發佈作品",
+    "知道生態 / 接案行情",
+    "對齊 2026 業界主流"
+  ],
+  "lessons": [
+    {
+      "title": "API 設計總圖：REST / GraphQL / tRPC",
+      "oneLineSummary": "三種主流 API 風格、各有適合場景",
+      "analogy": "不是「誰最好」、是「什麼情況用什麼」。",
+      "content": "## REST\n- HTTP 動詞 + URL\n- 業界主流\n- 適合：公開 API、大部分場景\n\n```\nGET    /users\nGET    /users/:id\nPOST   /users\nPUT    /users/:id\nDELETE /users/:id\n```\n\n## GraphQL\n- 一個 endpoint、用 query 拿需要的\n- 適合：複雜資料結構、行動 App、減少 round trip\n\n```graphql\nquery {\n  user(id: \"1\") {\n    name\n    posts(limit: 5) {\n      title\n    }\n  }\n}\n```\n\n## tRPC（TS only）\n- TS 推斷、無需 schema\n- 適合：Next.js 全端、TS 專案\n\n```typescript\nconst user = await trpc.user.byId.useQuery({ id: \"1\" });\n```\n\n## 對比\n\n| 面向 | REST | GraphQL | tRPC |\n|---|---|---|---|\n| 簡單 | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ |\n| 跨語言 | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐（TS only）|\n| Type-safe | ❌ | 部分 | ⭐⭐⭐⭐⭐ |\n| 公開 API | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ❌ |\n| 學習 | 平 | 中 | 平 |\n\n## Indie 選擇\n- 公開 API / 多語言：REST\n- TS Monorepo：tRPC\n- 複雜資料 / Mobile：GraphQL\n- 不確定：REST 起手",
+      "tip": {
+        "type": "milestone",
+        "text": "99% 場景 REST 夠用。tRPC 是 TS 黃金組合。"
+      },
+      "id": "20.1",
+      "number": "LESSON 20.1",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "20.1.auto",
+          "language": "graphql",
+          "title": "試試看",
+          "initialCode": "query {\n  user(id: \"1\") {\n    name\n    posts(limit: 5) {\n      title\n    }\n  }\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "REST"
+        },
+        {
+          "level": 2,
+          "text": "GraphQL"
+        },
+        {
+          "level": 2,
+          "text": "tRPC（TS only）"
+        },
+        {
+          "level": 2,
+          "text": "對比"
+        },
+        {
+          "level": 2,
+          "text": "Indie 選擇"
+        }
+      ]
+    },
+    {
+      "title": "RESTful 設計原則",
+      "oneLineSummary": "URL 是名詞、動詞用 HTTP method",
+      "analogy": "寫得對 = 直覺 + 標準。",
+      "content": "## URL 規則\n```\n✅ /users          - 名詞、複數\n✅ /users/123      - 取單一\n✅ /users/123/posts - 巢狀資源\n❌ /getUsers       - 不要動詞\n❌ /user           - 不要單數\n```\n\n## HTTP Methods\n- `GET`：讀取（safe、idempotent）\n- `POST`：建立\n- `PUT`：完整取代（idempotent）\n- `PATCH`：部分更新\n- `DELETE`：刪除（idempotent）\n\n## Status Codes\n- **2xx 成功**\n  - 200 OK\n  - 201 Created\n  - 204 No Content\n- **3xx 重導**\n  - 301 Moved Permanently\n  - 304 Not Modified\n- **4xx 客戶端錯**\n  - 400 Bad Request\n  - 401 Unauthorized（沒登入）\n  - 403 Forbidden（沒權限）\n  - 404 Not Found\n  - 422 Unprocessable Entity（驗證失敗）\n  - 429 Too Many Requests\n- **5xx 伺服器錯**\n  - 500 Internal Server Error\n  - 502 Bad Gateway\n  - 503 Service Unavailable\n\n## 分頁\n```\nGET /posts?page=1&limit=20\nGET /posts?cursor=abc&limit=20\n```\n\nResponse：\n```json\n{\n  \"data\": [...],\n  \"pagination\": {\n    \"page\": 1,\n    \"limit\": 20,\n    \"total\": 1500,\n    \"has_more\": true\n  }\n}\n```\n\n## Filter / Sort / Search\n```\nGET /posts?status=published&sort=-created_at\nGET /posts?search=python\nGET /posts?author=u1&tag=react\n```\n\n## 版本\n```\n✅ /v1/users\n✅ /api/v1/users\n✅ Header: API-Version: 1\n❌ /usersV1\n```\n\n## 錯誤格式\n```json\n{\n  \"error\": {\n    \"code\": \"VALIDATION_FAILED\",\n    \"message\": \"Email is invalid\",\n    \"field\": \"email\"\n  }\n}\n```\n\n## 心法\n- URL 名詞、動詞用 method\n- Status code 正確\n- 一致的錯誤格式\n- 永遠分頁（沒人想要 10000 筆）\n- 版本化（v1 / v2）",
+      "tip": {
+        "type": "practical",
+        "text": "REST 寫得好 = 文件少 50%。"
+      },
+      "id": "20.2",
+      "number": "LESSON 20.2",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "20.2.auto",
+          "language": "json",
+          "title": "試試看",
+          "initialCode": "{\n  \"data\": [...],\n  \"pagination\": {\n    \"page\": 1,\n    \"limit\": 20,\n    \"total\": 1500,\n    \"has_more\": true\n  }\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "URL 規則"
+        },
+        {
+          "level": 2,
+          "text": "HTTP Methods"
+        },
+        {
+          "level": 2,
+          "text": "Status Codes"
+        },
+        {
+          "level": 2,
+          "text": "分頁"
+        },
+        {
+          "level": 2,
+          "text": "Filter / Sort / Search"
+        },
+        {
+          "level": 2,
+          "text": "版本"
+        },
+        {
+          "level": 2,
+          "text": "錯誤格式"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "GraphQL 入門",
+      "oneLineSummary": "一個 endpoint、客戶端決定要什麼",
+      "analogy": "減少 round trip、適合複雜資料。",
+      "content": "## 為什麼\n- REST：N+1 API call、over-fetch\n- GraphQL：一次 query 拿全部\n\n## Schema\n```graphql\ntype User {\n  id: ID!\n  name: String!\n  email: String!\n  posts: [Post!]!\n}\n\ntype Post {\n  id: ID!\n  title: String!\n  author: User!\n}\n\ntype Query {\n  user(id: ID!): User\n  posts(limit: Int = 10): [Post!]!\n}\n\ntype Mutation {\n  createPost(title: String!): Post!\n}\n```\n\n## Query\n```graphql\nquery {\n  user(id: \"1\") {\n    name\n    posts(limit: 5) {\n      title\n    }\n  }\n}\n```\n\n## Mutation\n```graphql\nmutation {\n  createPost(title: \"Hello\") {\n    id\n    title\n  }\n}\n```\n\n## Server（Apollo）\n```typescript\nimport { ApolloServer } from \"@apollo/server\";\n\nconst resolvers = {\n  Query: {\n    user: (_, { id }) => db.user.findUnique({ where: { id } })\n  },\n  User: {\n    posts: (user) => db.post.findMany({ where: { authorId: user.id } })\n  }\n};\n\nconst server = new ApolloServer({ typeDefs, resolvers });\n```\n\n## Client（urql / Apollo）\n```typescript\nimport { useQuery } from \"urql\";\n\nconst QUERY = `\n  query GetUser($id: ID!) {\n    user(id: $id) { name email }\n  }\n`;\n\nconst [result] = useQuery({ query: QUERY, variables: { id: \"1\" } });\n```\n\n## DataLoader（解 N+1）\n```typescript\nconst userLoader = new DataLoader(async (ids) => {\n  const users = await db.user.findMany({ where: { id: { in: ids } } });\n  return ids.map(id => users.find(u => u.id === id));\n});\n\n// 多次 call、自動 batch\nawait userLoader.load(\"u1\");\nawait userLoader.load(\"u2\");\n```\n\n## 缺點\n- 學習曲線\n- Caching 複雜\n- N+1 要小心\n- 不適合 binary / file\n\n## 何時用\n- ✅ Mobile App（省頻寬）\n- ✅ 複雜資料結構\n- ✅ Frontend 多種需求\n- ❌ 簡單 CRUD（REST 簡單）\n- ❌ 公開 API（不熟悉）",
+      "tip": {
+        "type": "practical",
+        "text": "GraphQL 適合 mobile 或複雜資料。簡單 CRUD 用 REST。"
+      },
+      "id": "20.3",
+      "number": "LESSON 20.3",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "20.3.auto",
+          "language": "graphql",
+          "title": "試試看",
+          "initialCode": "type User {\n  id: ID!\n  name: String!\n  email: String!\n  posts: [Post!]!\n}\n\ntype Post {\n  id: ID!\n  title: String!\n  author: User!\n}\n\ntype Query {\n  user(id: ID!): User\n  posts(limit: Int = 10): [Post!]!\n}\n\ntype Mutation {\n  createPost(title: String!): Post!\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "找一個你身邊的例子、用「GraphQL 入門」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼"
+        },
+        {
+          "level": 2,
+          "text": "Schema"
+        },
+        {
+          "level": 2,
+          "text": "Query"
+        },
+        {
+          "level": 2,
+          "text": "Mutation"
+        },
+        {
+          "level": 2,
+          "text": "Server（Apollo）"
+        },
+        {
+          "level": 2,
+          "text": "Client（urql / Apollo）"
+        },
+        {
+          "level": 2,
+          "text": "DataLoader（解 N+1）"
+        },
+        {
+          "level": 2,
+          "text": "缺點"
+        },
+        {
+          "level": 2,
+          "text": "何時用"
+        }
+      ]
+    },
+    {
+      "title": "tRPC：TS 全端神器",
+      "oneLineSummary": "TS 推斷、無需 schema、Next.js 黃金搭檔",
+      "analogy": "寫起來像 call function、type-safe 到極致。",
+      "content": "## 為什麼\n- 沒 OpenAPI / GraphQL schema\n- TS 自動 propagate（後端改、前端立刻 type error）\n- 開發超快\n- Type-safe end-to-end\n\n## 安裝\n```bash\nnpm install @trpc/server @trpc/client @trpc/react-query @tanstack/react-query zod\n```\n\n## Server\n```typescript\n// server/api.ts\nimport { initTRPC } from \"@trpc/server\";\nimport { z } from \"zod\";\n\nconst t = initTRPC.create();\n\nexport const appRouter = t.router({\n  user: t.router({\n    byId: t.procedure\n      .input(z.object({ id: z.string() }))\n      .query(({ input }) => db.user.findUnique({ where: { id: input.id } })),\n    \n    create: t.procedure\n      .input(z.object({ name: z.string(), email: z.string().email() }))\n      .mutation(({ input }) => db.user.create({ data: input }))\n  })\n});\n\nexport type AppRouter = typeof appRouter;\n```\n\n## Client\n```typescript\n// client.ts\nimport { createTRPCReact } from \"@trpc/react-query\";\nimport type { AppRouter } from \"./server\";\n\nexport const trpc = createTRPCReact<AppRouter>();\n```\n\n```tsx\n// Component\nfunction UserProfile({ id }) {\n  const { data, isLoading } = trpc.user.byId.useQuery({ id });\n  \n  if (isLoading) return <div>Loading...</div>;\n  return <div>{data.name}</div>;\n}\n```\n\n寫起來像 call function、但是跨網路！\n\n## Mutation\n```tsx\nconst utils = trpc.useUtils();\n\nconst mutation = trpc.user.create.useMutation({\n  onSuccess: () => utils.user.list.invalidate()\n});\n\n<button onClick={() => mutation.mutate({ name: \"Alice\", email: \"...\" })}>\n  Create\n</button>\n```\n\n## Middleware\n```typescript\nconst protectedProcedure = t.procedure.use(({ ctx, next }) => {\n  if (!ctx.user) throw new TRPCError({ code: \"UNAUTHORIZED\" });\n  return next({ ctx: { user: ctx.user } });\n});\n\nexport const appRouter = t.router({\n  me: protectedProcedure.query(({ ctx }) => ctx.user)\n});\n```\n\n## Subscriptions（WebSocket）\n```typescript\nchat: t.procedure\n  .input(z.object({ room: z.string() }))\n  .subscription(({ input }) => {\n    return observable<Message>((emit) => {\n      const handler = (msg) => emit.next(msg);\n      pubsub.on(`chat:${input.room}`, handler);\n      return () => pubsub.off(`chat:${input.room}`, handler);\n    });\n  });\n```\n\n## vs REST / GraphQL\n\n| 面向 | tRPC |\n|---|---|\n| Type-safe | 🥇 最強 |\n| 開發速度 | 🥇 最快 |\n| 跨語言 | ❌ TS only |\n| 公開 API | ❌ 不適合 |\n\n## 何時用\n- ✅ Next.js / Remix 全端\n- ✅ TS monorepo\n- ✅ 內部 API\n- ❌ 跨語言 / 公開 API",
+      "tip": {
+        "type": "milestone",
+        "text": "TS 全端 = tRPC。寫起來爽到飛。"
+      },
+      "id": "20.4",
+      "number": "LESSON 20.4",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "20.4.auto",
+          "language": "bash",
+          "title": "試試看",
+          "initialCode": "npm install @trpc/server @trpc/client @trpc/react-query @tanstack/react-query zod",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼"
+        },
+        {
+          "level": 2,
+          "text": "安裝"
+        },
+        {
+          "level": 2,
+          "text": "Server"
+        },
+        {
+          "level": 2,
+          "text": "Client"
+        },
+        {
+          "level": 2,
+          "text": "Mutation"
+        },
+        {
+          "level": 2,
+          "text": "Middleware"
+        },
+        {
+          "level": 2,
+          "text": "Subscriptions（WebSocket）"
+        },
+        {
+          "level": 2,
+          "text": "vs REST / GraphQL"
+        },
+        {
+          "level": 2,
+          "text": "何時用"
+        }
+      ]
+    },
+    {
+      "title": "API Docs + Versioning",
+      "oneLineSummary": "沒 docs 的 API = 沒人用",
+      "analogy": "自動產生 docs、永遠保持新。",
+      "content": "## OpenAPI / Swagger\n標準格式描述 API：\n```yaml\nopenapi: 3.0.0\npaths:\n  /users/{id}:\n    get:\n      parameters:\n        - name: id\n          in: path\n          required: true\n      responses:\n        200:\n          description: User\n          content:\n            application/json:\n              schema:\n                $ref: \"#/components/schemas/User\"\n```\n\n## 自動產生\n\n### NestJS\n```typescript\n@Get(\":id\")\n@ApiResponse({ status: 200, type: User })\ngetUser(@Param(\"id\") id: string) {}\n```\n\n### Hono + Zod\n```typescript\nimport { OpenAPIHono } from \"@hono/zod-openapi\";\n\nconst app = new OpenAPIHono();\n\napp.openapi({\n  method: \"get\",\n  path: \"/users/{id}\",\n  request: { params: UserParams },\n  responses: { 200: { content: { \"application/json\": { schema: UserSchema } } } }\n}, async (c) => {\n  // ...\n});\n\napp.doc(\"/openapi.json\", { openapi: \"3.0.0\", info: { title: \"API\" } });\n```\n\n### FastAPI（Python）\n```python\n@app.get(\"/users/{id}\", response_model=User)\nasync def get_user(id: str):\n    return await find_user(id)\n```\n自動 /docs。\n\n## Scalar / Swagger UI\n- swagger.io/tools/swagger-ui/\n- scalar.com（現代 UI）\n\n把 OpenAPI JSON 變美的 docs。\n\n## Postman / Bruno\n- Postman：商業、popular\n- Bruno：開源、Git 友善\n- Insomnia：UI 好看\n\n匯出 collection 給客戶。\n\n## Stoplight Elements\n網頁版 OpenAPI viewer。\n\n## Versioning\n\n### URL Path\n```\n/v1/users\n/v2/users\n```\n\n### Header\n```\nAPI-Version: 1\n```\n\n### Query\n```\n/users?version=1\n```\n\nURL 最常見、最明顯。\n\n## 版本策略\n- v1：穩定、不破壞\n- v2：breaking change 才升\n- 同時支援多版本 6-12 個月\n- Deprecate 提前通知\n\n## Breaking vs Non-breaking\n\n### Non-breaking（不升版）\n- 加新欄位\n- 加新 endpoint\n- 加 optional parameter\n\n### Breaking（要升版）\n- 刪欄位 / endpoint\n- 改欄位 type\n- 改 required parameter\n- 改回應格式\n\n## Deprecation\n```http\nDeprecation: true\nSunset: Tue, 31 Dec 2026 23:59:59 GMT\nLink: <https://api.example.com/v2/users>; rel=\"successor-version\"\n```\n\n## 心法\n- Day 1 寫 docs（同步 code）\n- 自動產生（OpenAPI）\n- 版本明確\n- Breaking change 提前通知\n- 給 Postman collection",
+      "tip": {
+        "type": "practical",
+        "text": "OpenAPI + Scalar = 自動產生美 docs。"
+      },
+      "id": "20.5",
+      "number": "LESSON 20.5",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "20.5.auto",
+          "language": "yaml",
+          "title": "試試看",
+          "initialCode": "openapi: 3.0.0\npaths:\n  /users/{id}:\n    get:\n      parameters:\n        - name: id\n          in: path\n          required: true\n      responses:\n        200:\n          description: User\n          content:\n            application/json:\n              schema:\n                $ref: \"#/components/schemas/User\"",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "OpenAPI / Swagger"
+        },
+        {
+          "level": 2,
+          "text": "自動產生"
+        },
+        {
+          "level": 3,
+          "text": "NestJS"
+        },
+        {
+          "level": 3,
+          "text": "Hono + Zod"
+        },
+        {
+          "level": 3,
+          "text": "FastAPI（Python）"
+        },
+        {
+          "level": 2,
+          "text": "Scalar / Swagger UI"
+        },
+        {
+          "level": 2,
+          "text": "Postman / Bruno"
+        },
+        {
+          "level": 2,
+          "text": "Stoplight Elements"
+        },
+        {
+          "level": 2,
+          "text": "Versioning"
+        },
+        {
+          "level": 3,
+          "text": "URL Path"
+        },
+        {
+          "level": 3,
+          "text": "Header"
+        },
+        {
+          "level": 3,
+          "text": "Query"
+        },
+        {
+          "level": 2,
+          "text": "版本策略"
+        },
+        {
+          "level": 2,
+          "text": "Breaking vs Non-breaking"
+        },
+        {
+          "level": 3,
+          "text": "Non-breaking（不升版）"
+        },
+        {
+          "level": 3,
+          "text": "Breaking（要升版）"
+        },
+        {
+          "level": 2,
+          "text": "Deprecation"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "GraphQL：Schema-First 設計",
+      "oneLineSummary": "一個 endpoint、client 決定要什麼",
+      "analogy": "減少 over-fetch / under-fetch。",
+      "content": "## REST 的痛\n```\nGET /users/1       → user 基本資料\nGET /users/1/posts → user 文章\nGET /users/1/comments → 留言\n```\n3 個 round trip、且回多餘資料（你只要名字、卻收到全部）。\n\n## GraphQL 解\n```graphql\nquery {\n  user(id: 1) {\n    name\n    posts(limit: 5) { title }\n    comments { content }\n  }\n}\n```\n1 個 request、只拿要的。\n\n## Schema 設計\n\n```graphql\ntype Query {\n  user(id: ID!): User\n  posts(limit: Int = 10, offset: Int = 0): [Post!]!\n  searchPosts(query: String!): [Post!]!\n}\n\ntype Mutation {\n  createPost(input: CreatePostInput!): Post!\n  deletePost(id: ID!): Boolean!\n}\n\ntype User {\n  id: ID!\n  email: String!\n  name: String!\n  posts: [Post!]!\n}\n\ntype Post {\n  id: ID!\n  title: String!\n  content: String!\n  author: User!\n  createdAt: DateTime!\n}\n\ninput CreatePostInput {\n  title: String!\n  content: String!\n}\n\nscalar DateTime\n```\n\n## Resolver\n```typescript\nconst resolvers = {\n  Query: {\n    user: async (_, { id }) => db.user.findUnique({ where: { id } })\n  },\n  User: {\n    posts: async (parent) => db.post.findMany({ where: { authorId: parent.id } })\n  }\n};\n```\n\n## N+1 問題 + DataLoader\n```typescript\nconst userLoader = new DataLoader(async (ids) => {\n  const users = await db.user.findMany({ where: { id: { in: ids } } });\n  return ids.map(id => users.find(u => u.id === id));\n});\n\nconst resolvers = {\n  Post: {\n    author: (parent) => userLoader.load(parent.authorId)\n  }\n};\n```\n\n10 個 post → 10 次 author query → 1 次 batch query。\n\n## 框架\n\n### Apollo Server\n最熱門：\n```typescript\nimport { ApolloServer } from \"@apollo/server\";\nconst server = new ApolloServer({ typeDefs, resolvers });\n```\n\n### GraphQL Yoga\n輕量、modern。\n\n### Pothos\nTypeScript-first、code-first。\n\n### Hasura / Postgraphile\n自動從 PG schema 產 GraphQL。\n\n## REST vs GraphQL\n\n| | REST | GraphQL |\n|---|---|---|\n| 學習 | 平 | 中 |\n| 上手 | 快 | 慢 |\n| Over-fetch | 有 | 無 |\n| Cache | 好（HTTP）| 難 |\n| 工具 | 多 | 多 |\n| Mobile 友善 | 中 | 高 |\n\n## 心法\n- REST 90% 場景夠\n- GraphQL 適合 mobile + 複雜 relation\n- 別新人專案用 GraphQL（複雜度）\n- tRPC 是 TS 全棧的折衷",
+      "tip": {
+        "type": "practical",
+        "text": "Indie 預設 REST、必要時 GraphQL。"
+      },
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "id": "20.6",
+      "number": "LESSON 20.6",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "20.6.auto",
+          "language": "graphql",
+          "title": "試試看",
+          "initialCode": "query {\n  user(id: 1) {\n    name\n    posts(limit: 5) { title }\n    comments { content }\n  }\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "outline": [
+        {
+          "level": 2,
+          "text": "REST 的痛"
+        },
+        {
+          "level": 2,
+          "text": "GraphQL 解"
+        },
+        {
+          "level": 2,
+          "text": "Schema 設計"
+        },
+        {
+          "level": 2,
+          "text": "Resolver"
+        },
+        {
+          "level": 2,
+          "text": "N+1 問題 + DataLoader"
+        },
+        {
+          "level": 2,
+          "text": "框架"
+        },
+        {
+          "level": 3,
+          "text": "Apollo Server"
+        },
+        {
+          "level": 3,
+          "text": "GraphQL Yoga"
+        },
+        {
+          "level": 3,
+          "text": "Pothos"
+        },
+        {
+          "level": 3,
+          "text": "Hasura / Postgraphile"
+        },
+        {
+          "level": 2,
+          "text": "REST vs GraphQL"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Rate Limiting + Throttling",
+      "oneLineSummary": "防 abuse、保護 server + 公平分配",
+      "analogy": "不設 = 一個 user DDoS 你。",
+      "content": "## 為什麼\n- 防爬蟲 / bot\n- 防 brute force（登入）\n- 公平（Free / Pro tier）\n- 保護 server / DB / 第三方 API quota\n\n## 演算法\n\n### Fixed Window\n每分鐘 100 次。\n簡單、但 burst 問題（59 秒 100 次 + 0 秒 100 次 = 1 秒內 200 次）。\n\n### Sliding Window\n過去 60 秒內 ≤ 100 次。\n公平、稍貴。\n\n### Token Bucket\n桶子裡有 token、用一個少一個、定速補。\n適合 burst-tolerant 服務。\n\n### Leaky Bucket\n請求進 queue、定速處理。\n強制平滑、不允許 burst。\n\n## 實作\n\n### Redis + Sliding Window\n```typescript\nasync function checkRateLimit(userId: string, limit = 100, windowSec = 60) {\n  const key = `rate:${userId}`;\n  const now = Date.now();\n  const windowStart = now - windowSec * 1000;\n  \n  // 清過期\n  await redis.zRemRangeByScore(key, 0, windowStart);\n  \n  // 數\n  const count = await redis.zCard(key);\n  if (count >= limit) {\n    throw new Error(\"Rate limited\");\n  }\n  \n  // 加\n  await redis.zAdd(key, [{ score: now, value: now.toString() }]);\n  await redis.expire(key, windowSec);\n  \n  return { allowed: true, remaining: limit - count - 1 };\n}\n```\n\n### 用 lib\n\n#### upstash/ratelimit\n```typescript\nimport { Ratelimit } from \"@upstash/ratelimit\";\nimport { Redis } from \"@upstash/redis\";\n\nconst ratelimit = new Ratelimit({\n  redis: Redis.fromEnv(),\n  limiter: Ratelimit.slidingWindow(10, \"10 s\")\n});\n\nconst { success, remaining } = await ratelimit.limit(userId);\nif (!success) return res.status(429).end();\n```\n\n#### express-rate-limit\n```typescript\nimport rateLimit from \"express-rate-limit\";\n\napp.use(\"/api/login\", rateLimit({\n  windowMs: 15 * 60 * 1000,\n  max: 5,  // 15 分內最多 5 次\n  message: \"Too many login attempts\"\n}));\n```\n\n## 分層 limit\n```\n全域：1000 req/min\n每 IP：100 req/min\n每 user：50 req/min\n敏感 endpoint：5 req/min\n```\n\n## Response header\n```\nX-RateLimit-Limit: 100\nX-RateLimit-Remaining: 87\nX-RateLimit-Reset: 1717000000\nRetry-After: 30\n```\n\nUser 知道剩多少、優雅降級。\n\n## 429 vs 503\n- **429**：你超過 limit\n- **503**：服務本身忙不過來\n\n## Cloudflare 補刀\n```\nCloudflare Rate Limiting Rules\n└── 全域 + IP-level\n   └── 邊緣擋掉、不到你 server\n```\n\n免費 plan 也有基本。\n\n## 心法\n- 登入 / 註冊 / 寄信 必嚴\n- API 公開的必設\n- 不同 plan 不同 limit（Free / Pro）\n- 永遠回 429 + Retry-After",
+      "tip": {
+        "type": "security",
+        "text": "Day 1 設 rate limit、不要等被打。"
+      },
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "id": "20.7",
+      "number": "LESSON 20.7",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "20.7.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "async function checkRateLimit(userId: string, limit = 100, windowSec = 60) {\n  const key = `rate:${userId}`;\n  const now = Date.now();\n  const windowStart = now - windowSec * 1000;\n  \n  // 清過期\n  await redis.zRemRangeByScore(key, 0, windowStart);\n  \n  // 數\n  const count = await redis.zCard(key);\n  if (count >= limit) {\n    throw new Error(\"Rate limited\");\n  }\n  \n  // 加\n  await redis.zAdd(key, [{ score: now, value: now.toString() }]);\n  await redis.expire(key, windowSec);\n  \n  return { allowed: true, remaining: limit - count - 1 };\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼"
+        },
+        {
+          "level": 2,
+          "text": "演算法"
+        },
+        {
+          "level": 3,
+          "text": "Fixed Window"
+        },
+        {
+          "level": 3,
+          "text": "Sliding Window"
+        },
+        {
+          "level": 3,
+          "text": "Token Bucket"
+        },
+        {
+          "level": 3,
+          "text": "Leaky Bucket"
+        },
+        {
+          "level": 2,
+          "text": "實作"
+        },
+        {
+          "level": 3,
+          "text": "Redis + Sliding Window"
+        },
+        {
+          "level": 3,
+          "text": "用 lib"
+        },
+        {
+          "level": 2,
+          "text": "分層 limit"
+        },
+        {
+          "level": 2,
+          "text": "Response header"
+        },
+        {
+          "level": 2,
+          "text": "429 vs 503"
+        },
+        {
+          "level": 2,
+          "text": "Cloudflare 補刀"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Webhook 設計 + 安全",
+      "oneLineSummary": "第三方通知你、不是你 poll",
+      "analogy": "常用、但實作有坑。",
+      "content": "## 為什麼用 Webhook\n- 即時（vs polling 每分鐘一次）\n- 省資源\n- 第三方標準（Stripe / GitHub / LINE）\n\n## 接 Webhook（你是 receiver）\n\n### 基本\n```typescript\napp.post(\"/webhooks/stripe\", express.raw({ type: \"application/json\" }), async (req, res) => {\n  const sig = req.headers[\"stripe-signature\"];\n  \n  let event;\n  try {\n    event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);\n  } catch {\n    return res.status(400).send(\"Invalid signature\");\n  }\n  \n  // 處理\n  switch (event.type) {\n    case \"payment_intent.succeeded\":\n      await markOrderPaid(event.data.object.id);\n      break;\n    case \"subscription.deleted\":\n      await cancelUserSubscription(event.data.object.customer);\n      break;\n  }\n  \n  res.json({ received: true });\n});\n```\n\n### 必做\n\n#### 1. 驗簽章\n不驗 = 任何人都能假裝 Stripe 通知你「付款成功」。\n\n#### 2. Idempotent（冪等）\n同個 event 可能來 2 次（網路 retry）：\n```typescript\nconst exists = await db.processedEvents.findUnique({ where: { id: event.id } });\nif (exists) return res.json({ received: true });\nawait processEvent(event);\nawait db.processedEvents.create({ data: { id: event.id } });\n```\n\n#### 3. 快速回 200\n> 5 秒不回 = 第三方覺得失敗、會 retry。\n重邏輯丟 queue 處理：\n```typescript\napp.post(\"/webhooks/...\", async (req, res) => {\n  await queue.add(\"process-webhook\", { event });\n  res.json({ received: true });  // 立刻回\n});\n```\n\n#### 4. Retry-safe\n就算 worker 跑到一半掛、再來一次不會出事。\n\n## 發 Webhook（你是 sender）\n\n### 設計\n```typescript\nasync function dispatchWebhook(event: { type: string; data: any }, userId: string) {\n  const webhooks = await db.webhook.findMany({ where: { userId, event: event.type } });\n  \n  for (const wh of webhooks) {\n    const payload = JSON.stringify(event);\n    const signature = crypto.createHmac(\"sha256\", wh.secret).update(payload).digest(\"hex\");\n    \n    await queue.add(\"send-webhook\", {\n      url: wh.url,\n      payload,\n      signature,\n      retries: 0\n    });\n  }\n}\n```\n\n### Retry policy\n```\n1st try → 失敗\n等 30s → retry\n失敗 → 等 5min → retry\n失敗 → 等 30min → retry\n失敗 → 等 6h → retry\n失敗 → 標 disabled、通知 user\n```\n\nExponential backoff。\n\n### Webhook 設定 UI\n讓 user 設：\n- URL\n- 訂閱哪些 event\n- Secret（給他自己驗簽章）\n- 顯示最近 deliveries（成功 / 失敗 + payload + response）\n\n範例：Stripe Dashboard / GitHub Webhook 設定頁。\n\n## 安全 checklist\n\n### Receiver\n- ✅ 驗簽章\n- ✅ HTTPS only\n- ✅ Idempotent\n- ✅ 5 秒內回 200\n- ✅ Rate limit（不會被假 webhook 打爆）\n\n### Sender\n- ✅ HMAC 簽章\n- ✅ Timestamp（防 replay）\n- ✅ Retry with backoff\n- ✅ Dead letter queue\n- ✅ User dashboard 看 delivery log\n\n## 心法\n- 永遠驗簽章\n- 永遠 idempotent\n- 永遠 retry-safe\n- Webhook = async + 可能重複",
+      "tip": {
+        "type": "security",
+        "text": "不驗 webhook 簽章 = 任何人都能假裝。"
+      },
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "id": "20.8",
+      "number": "LESSON 20.8",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "20.8.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "app.post(\"/webhooks/stripe\", express.raw({ type: \"application/json\" }), async (req, res) => {\n  const sig = req.headers[\"stripe-signature\"];\n  \n  let event;\n  try {\n    event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);\n  } catch {\n    return res.status(400).send(\"Invalid signature\");\n  }\n  \n  // 處理\n  switch (event.type) {\n    case \"payment_intent.succeeded\":\n      await markOrderPaid(event.data.object.id);\n      break;\n    case \"subscription.deleted\":\n      await cancelUserSubscription(event.data.object.customer);\n      break;\n  }\n  \n  res.json({ received: true });\n});",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼用 Webhook"
+        },
+        {
+          "level": 2,
+          "text": "接 Webhook（你是 receiver）"
+        },
+        {
+          "level": 3,
+          "text": "基本"
+        },
+        {
+          "level": 3,
+          "text": "必做"
+        },
+        {
+          "level": 2,
+          "text": "發 Webhook（你是 sender）"
+        },
+        {
+          "level": 3,
+          "text": "設計"
+        },
+        {
+          "level": 3,
+          "text": "Retry policy"
+        },
+        {
+          "level": 3,
+          "text": "Webhook 設定 UI"
+        },
+        {
+          "level": 2,
+          "text": "安全 checklist"
+        },
+        {
+          "level": 3,
+          "text": "Receiver"
+        },
+        {
+          "level": 3,
+          "text": "Sender"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "API Versioning 策略",
+      "oneLineSummary": "改 API 不破壞舊 client",
+      "analogy": "有 user 後就回不去了。",
+      "content": "## 為什麼要版本\n\nApp / SDK 已被裝在用戶手機 / 客戶 server：\n- 你今天改 API → 舊 client 立刻壞\n- 不能強制升級\n- 必須漸進\n\n## 3 種策略\n\n### 1. URL Path（最常用）\n```\n/v1/users\n/v2/users\n```\n\n優：明顯、easy\n劣：URL 變多\n\n### 2. Header\n```http\nGET /users\nAPI-Version: 2\n```\n\n優：URL 不變\n劣：不直覺、cache 麻煩\n\n### 3. Query\n```\n/users?version=2\n```\n\n少用、易忘。\n\n### 4. Accept header（RESTful 正統）\n```\nAccept: application/vnd.myapp.v2+json\n```\n\n少用、複雜。\n\n## 推薦：URL Path\n99% 場景。\n\n## Breaking vs Non-breaking\n\n### Non-breaking（不升版）\n- 加新 field（client 忽略）\n- 加新 endpoint\n- 加 optional parameter\n- 內部優化\n\n### Breaking（升版）\n- 刪 field\n- 改 field 型別\n- 改 field 名稱\n- 改 endpoint behavior\n- 改 status code\n\n## Deprecation 流程\n\n### Phase 1: Announce\n```http\nX-API-Deprecation: This endpoint will be removed on 2026-12-31\nSunset: Tue, 31 Dec 2026 23:59:59 GMT\n```\n\nDocs / changelog 公告。\n\n### Phase 2: Migration period\n- 至少 6 個月（B2C）\n- 1-2 年（B2B）\n- 雙版本並存\n\n### Phase 3: Sunset\n舊版回 410 Gone。\n\n## 多版本並存\n\n### Code 設計\n```\n/api/v1/users.ts  ← 舊\n/api/v2/users.ts  ← 新\n/api/shared/      ← 共用 logic\n```\n\n或：\n```typescript\nfunction getUserHandler(version: number) {\n  const user = db.user.findUnique(...);\n  if (version === 1) return { ...user, name: user.fullName };\n  return user;\n}\n```\n\n## SDK 角度\n\n### Versioned SDK\n```bash\nnpm install @myapp/sdk@1\nnpm install @myapp/sdk@2\n```\n\n各 SDK 對應各 API version。\n\n### SDK 自動處理 deprecation\n```typescript\nconsole.warn(\"Method X is deprecated, use Y instead. Sunset: 2026-12-31\");\n```\n\n## 心法\n- v1 → 寧可慢點 design、不要急\n- Breaking change 必升版 + 公告\n- 至少並存 6 個月\n- 永遠 changelog\n- SDK 隨 API version",
+      "tip": {
+        "type": "milestone",
+        "text": "API versioning 是「對 user 的承諾」。"
+      },
+      "exercise": {
+        "question": "把本節「API Versioning 策略」的核心心法、轉成一個具體的「我今天 / 這週要做」的小行動。",
+        "hint": "心法 ≠ 知識、心法要落地。「我從今天起、每天 ___」這種格式。",
+        "answer": "好行動 = 小（5-10 分鐘以內）+ 具體（不模糊）+ 可量化（有沒有做得出來）。例：『每天起床先列 3 件最重要的事再開電腦』比『更專注』可執行 100 倍。配合 streak（連續紀錄）讓自己上癮。"
+      },
+      "id": "20.9",
+      "number": "LESSON 20.9",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "20.9.auto",
+          "language": "http",
+          "title": "試試看",
+          "initialCode": "X-API-Deprecation: This endpoint will be removed on 2026-12-31\nSunset: Tue, 31 Dec 2026 23:59:59 GMT",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼要版本"
+        },
+        {
+          "level": 2,
+          "text": "3 種策略"
+        },
+        {
+          "level": 3,
+          "text": "1. URL Path（最常用）"
+        },
+        {
+          "level": 3,
+          "text": "2. Header"
+        },
+        {
+          "level": 3,
+          "text": "3. Query"
+        },
+        {
+          "level": 3,
+          "text": "4. Accept header（RESTful 正統）"
+        },
+        {
+          "level": 2,
+          "text": "推薦：URL Path"
+        },
+        {
+          "level": 2,
+          "text": "Breaking vs Non-breaking"
+        },
+        {
+          "level": 3,
+          "text": "Non-breaking（不升版）"
+        },
+        {
+          "level": 3,
+          "text": "Breaking（升版）"
+        },
+        {
+          "level": 2,
+          "text": "Deprecation 流程"
+        },
+        {
+          "level": 3,
+          "text": "Phase 1: Announce"
+        },
+        {
+          "level": 3,
+          "text": "Phase 2: Migration period"
+        },
+        {
+          "level": 3,
+          "text": "Phase 3: Sunset"
+        },
+        {
+          "level": 2,
+          "text": "多版本並存"
+        },
+        {
+          "level": 3,
+          "text": "Code 設計"
+        },
+        {
+          "level": 2,
+          "text": "SDK 角度"
+        },
+        {
+          "level": 3,
+          "text": "Versioned SDK"
+        },
+        {
+          "level": 3,
+          "text": "SDK 自動處理 deprecation"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "API Documentation：OpenAPI / Swagger",
+      "oneLineSummary": "寫好 docs 比寫好 code 重要",
+      "analogy": "沒人用 = API 不存在。",
+      "content": "## OpenAPI（前 Swagger）\n\n業界標準、機器 + 人可讀。\n\n```yaml\nopenapi: 3.0.0\ninfo:\n  title: AI 島 API\n  version: 1.0.0\n  description: 學習平台 API\n\nservers:\n  - url: https://api.ai-island.tw/v1\n\npaths:\n  /lessons/{id}:\n    get:\n      summary: 取得單一 lesson\n      parameters:\n        - name: id\n          in: path\n          required: true\n          schema:\n            type: string\n      responses:\n        '200':\n          description: Success\n          content:\n            application/json:\n              schema:\n                $ref: '#/components/schemas/Lesson'\n        '404':\n          description: Not found\n      security:\n        - bearerAuth: []\n\ncomponents:\n  schemas:\n    Lesson:\n      type: object\n      required: [id, title]\n      properties:\n        id:\n          type: string\n          example: \"1.1\"\n        title:\n          type: string\n          example: \"HTML 是什麼\"\n        xp:\n          type: integer\n  \n  securitySchemes:\n    bearerAuth:\n      type: http\n      scheme: bearer\n```\n\n## 從 Code 自動產生\n\n### NestJS\n```typescript\n@ApiTags(\"lessons\")\n@Controller(\"lessons\")\nexport class LessonsController {\n  @Get(\":id\")\n  @ApiOperation({ summary: \"Get lesson\" })\n  @ApiResponse({ status: 200, type: LessonDto })\n  async findOne(@Param(\"id\") id: string) { ... }\n}\n\n// 自動產生 /api/docs\n```\n\n### Hono / Fastify with schemas\n```typescript\napp.get(\"/lessons/:id\", {\n  schema: {\n    params: { type: \"object\", properties: { id: { type: \"string\" } } },\n    response: { 200: lessonSchema }\n  }\n}, handler);\n```\n\n### Express + zod-to-openapi\n```typescript\nconst lessonSchema = z.object({\n  id: z.string(),\n  title: z.string(),\n  xp: z.number()\n});\n\nconst docs = generateOpenApi({ schemas: { lesson: lessonSchema } });\n```\n\n## 工具\n\n### Swagger UI\n```typescript\nimport swaggerUi from \"swagger-ui-express\";\napp.use(\"/docs\", swaggerUi.serve, swaggerUi.setup(openApiDoc));\n```\n\n開 `/docs` 看互動式 docs。\n\n### Redoc\n更美的 docs UI。\n\n### Stoplight Studio\n視覺化 OpenAPI 編輯器。\n\n### Postman / Bruno\n匯入 OpenAPI、可分享 collection 給 user。\n\n## 寫 docs 5 原則\n\n### 1. Example 比 schema 重要\n```json\n{\n  \"user_id\": \"u_abc123\",\n  \"amount\": 1000,\n  \"currency\": \"TWD\"\n}\n```\n\nUser 看 example 學最快。\n\n### 2. Error code 完整列\n```\n400 - Invalid input\n401 - Not authenticated\n403 - Not authorized\n404 - Not found\n429 - Rate limited\n```\n\n### 3. Curl example\n```bash\ncurl https://api.ai-island.tw/v1/lessons/1.1 \\\n  -H \"Authorization: Bearer YOUR_TOKEN\"\n```\n\n### 4. SDK 範例\n不只 curl、給 JS / Python / PHP code。\n\n### 5. Quickstart\n5 分鐘從 0 到第一個 API call。\n\n## 心法\n- Docs 跟 code 一起寫\n- Auto-generate > 手寫\n- Example 比 spec 重要\n- Quickstart 是 conversion 關鍵",
+      "tip": {
+        "type": "milestone",
+        "text": "好 docs = API 採用率 ×3。"
+      },
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "id": "20.10",
+      "number": "LESSON 20.10",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "20.10.auto",
+          "language": "yaml",
+          "title": "試試看",
+          "initialCode": "openapi: 3.0.0\ninfo:\n  title: AI 島 API\n  version: 1.0.0\n  description: 學習平台 API\n\nservers:\n  - url: https://api.ai-island.tw/v1\n\npaths:\n  /lessons/{id}:\n    get:\n      summary: 取得單一 lesson\n      parameters:\n        - name: id\n          in: path\n          required: true\n          schema:\n            type: string\n      responses:\n        '200':\n          description: Success\n          content:\n            application/json:\n              schema:\n                $ref: '#/components/schemas/Lesson'\n        '404':\n          description: Not found\n      security:\n        - bearerAuth: []\n\ncomponents:\n  schemas:\n    Lesson:\n      type: object\n      required: [id, title]\n      properties:\n        id:\n          type: string\n          example: \"1.1\"\n        title:\n          type: string\n          example: \"HTML 是什麼\"\n        xp:\n          type: integer\n  \n  securitySchemes:\n    bearerAuth:\n      type: http\n      scheme: bearer",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "outline": [
+        {
+          "level": 2,
+          "text": "OpenAPI（前 Swagger）"
+        },
+        {
+          "level": 2,
+          "text": "從 Code 自動產生"
+        },
+        {
+          "level": 3,
+          "text": "NestJS"
+        },
+        {
+          "level": 3,
+          "text": "Hono / Fastify with schemas"
+        },
+        {
+          "level": 3,
+          "text": "Express + zod-to-openapi"
+        },
+        {
+          "level": 2,
+          "text": "工具"
+        },
+        {
+          "level": 3,
+          "text": "Swagger UI"
+        },
+        {
+          "level": 3,
+          "text": "Redoc"
+        },
+        {
+          "level": 3,
+          "text": "Stoplight Studio"
+        },
+        {
+          "level": 3,
+          "text": "Postman / Bruno"
+        },
+        {
+          "level": 2,
+          "text": "寫 docs 5 原則"
+        },
+        {
+          "level": 3,
+          "text": "1. Example 比 schema 重要"
+        },
+        {
+          "level": 3,
+          "text": "2. Error code 完整列"
+        },
+        {
+          "level": 3,
+          "text": "3. Curl example"
+        },
+        {
+          "level": 3,
+          "text": "4. SDK 範例"
+        },
+        {
+          "level": 3,
+          "text": "5. Quickstart"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    }
+  ],
+  "boss": {
+    "name": "API 統帥",
+    "hp": 230,
+    "emoji": "⚔️",
+    "description": "揮舞 GraphQL 跟 tRPC 雙劍、新人別怕"
+  },
+  "quiz": {
+    "id": "ch20-quiz",
+    "questions": [],
+    "xpReward": 50,
+    "perfectBonus": 50
+  }
+}

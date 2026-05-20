@@ -1,0 +1,1461 @@
+{
+  "id": 26,
+  "slug": "python",
+  "stage": 4,
+  "title": "Python 基礎",
+  "subtitle": "語法 / OOP / FastAPI",
+  "icon": "feather",
+  "description": "Python 基礎：語法 / OOP / FastAPI",
+  "status": "published",
+  "difficulty": "beginner",
+  "prerequisites": [
+    7
+  ],
+  "estimatedHours": 14,
+  "outcomes": [
+    "理解核心概念",
+    "實作主流工具",
+    "整章實戰可發佈作品",
+    "知道生態 / 接案行情",
+    "對齊 2026 業界主流"
+  ],
+  "lessons": [
+    {
+      "id": "26.1",
+      "number": "LESSON 26.1",
+      "title": "為什麼是 Python？2026 安裝 + uv",
+      "oneLineSummary": "Python 就是「最好學的萬用工具」—2026 是 AI / 資料 / 爬蟲 / 自動化的首選語言。",
+      "analogy": "像瑞士刀—不是哪一項最強、是「什麼都能做」。寫 AI（PyTorch）、資料分析（pandas）、爬蟲（Scrapy）、後端（FastAPI）、自動化—Python 通通行。",
+      "content": "2026 學程式、**Python 是最 versatile 第一選擇**。理由：(1) 寫得最像英文 (2) AI / ML / DL 生態無敵 (3) 後端 / 自動化 / 資料分析全包 (4) 工作機會多。\n\n  \n### Python 的歷史\n\n```text\n1989 年 Guido van Rossum 寫的「給自己用」\n名字來自喜劇團體 Monty Python（不是蛇）\n\n設計哲學（PEP 20 The Zen of Python）：\n- Beautiful is better than ugly.\n- Explicit is better than implicit.\n- Simple is better than complex.\n- Readability counts.\n\n→ 「程式碼是寫給人看的、順便給機器跑」\n\n2026 主流版本：Python 3.12 / 3.13\n- 別碰 Python 2（已 EOL）\n- 別碰 3.7 以下（缺新功能）\n```\n\n  \n### Python 在 2026 的位置\n\n```text\n主場：\n🏆 AI / Machine Learning（沒之一）\n🏆 Data Science / Analytics\n🏆 自動化腳本\n🏆 後端 API（FastAPI / Django）\n🏆 教學 / 學生第一語言\n🏆 爬蟲 / 資料抓取\n🏆 DevOps（Ansible / SaltStack）\n\n不是主場：\n- 行動 App（用 Swift / Kotlin / Dart）\n- 系統程式（用 Rust / C++）\n- 遊戲（用 C# / C++）\n- 前端瀏覽器（必須是 JS）\n\n公司：\n- Instagram（Django）\n- Spotify（後端）\n- Dropbox（核心）\n- Pinterest\n- Netflix（部分）\n- Uber（部分）\n- Reddit（Python 寫的）\n- YouTube（早期）\n\n→ 你電腦現在跑的 90% AI 都是 Python 寫的\n```\n\n  \n### 2026 安裝 Python：用 uv\n\n```text\n過去：pip / pyenv / virtualenv 混亂\n2024+：uv 一統江湖\n\nuv 是什麼：\n- Rust 寫的 Python 工具\n- 比 pip 快 10-100 倍\n- 一個工具搞定：Python 版本 / venv / 安裝套件 / lock\n\n安裝 uv：\n# Mac / Linux\ncurl -LsSf https://astral.sh/uv/install.sh | sh\n\n# Windows\npowershell -c \"irm https://astral.sh/uv/install.ps1 | iex\"\n\n# 或用 pip\npip install uv\n\n# 或 Homebrew\nbrew install uv\n\n裝完確認：\n$ uv --version\nuv 0.5.x\n```\n\n  \n### 第一個 Python 程式\n\n```text\n# 建專案資料夾\n$ mkdir my-first-python\n$ cd my-first-python\n\n# uv 初始化\n$ uv init\n\n# 自動產生：\n.\n├── .python-version    # Python 版本\n├── pyproject.toml     # 專案設定\n├── README.md\n├── hello.py\n└── .gitignore\n\n# 看 hello.py 內容\ndef main():\n    print(\"Hello from my-first-python!\")\n\nif __name__ == \"__main__\":\n    main()\n\n# 跑\n$ uv run hello.py\nHello from my-first-python!\n\n→ uv 自動裝 Python 對應版本、建 venv、跑 code\n→ 比舊版 pip / venv 流程簡單 10 倍\n```\n\n  \n### 裝套件\n\n```text\n# 裝 requests（HTTP 客戶端）\n$ uv add requests\n\n# pyproject.toml 自動更新：\n[project]\ndependencies = [\n    \"requests>=2.32.0\",\n]\n\n# 用\n# hello.py\nimport requests\n\nresponse = requests.get(\"https://api.github.com/users/torvalds\")\nprint(response.json())\n\n$ uv run hello.py\n{'login': 'torvalds', 'name': 'Linus Torvalds', ...}\n\n# 移除套件\n$ uv remove requests\n\n# 安裝多個\n$ uv add fastapi uvicorn sqlalchemy\n\n# 開發專用（如 pytest）\n$ uv add --dev pytest\n\n# Sync（從 pyproject.toml 裝所有依賴）\n$ uv sync\n\n→ uv 自動管 venv、不需要手動 activate\n```\n\n  \n### 傳統做法（仍要懂）\n\n```text\n# pip + venv（如果遇到沒 uv 的環境）\n\n# 建 venv\n$ python -m venv .venv\n\n# 啟動 venv（每次都要）\n$ source .venv/bin/activate    # Mac/Linux\n$ .venv\\Scripts\\activate       # Windows\n\n# 看到 prompt 前有 (.venv) 表示在 venv 內\n\n# 裝\n$ pip install requests\n$ pip install -r requirements.txt\n\n# 記錄依賴\n$ pip freeze > requirements.txt\n\n# 退出 venv\n$ deactivate\n\n→ 還是會在某些教學 / 公司看到\n→ 知道概念就好、2026 用 uv\n```\n\n  \n### 編輯器：VS Code + Python 擴充\n\n```text\n2026 主流：VS Code（Cursor 也行、是 VS Code fork）\n\n必裝擴充：\n- Python（Microsoft）\n- Pylance（型別檢查）\n- Ruff（lint + format、超快）\n\n設定（.vscode/settings.json）：\n{\n  \"python.defaultInterpreterPath\": \".venv/bin/python\",\n  \"python.formatting.provider\": \"ruff\",\n  \"editor.formatOnSave\": true,\n  \"editor.codeActionsOnSave\": {\n    \"source.organizeImports\": \"explicit\"\n  }\n}\n\n其他選擇：\n- PyCharm（JetBrains、付費、最完整）\n- Cursor（AI-first、推薦 indie）\n- Vim / Neovim（高手）\n```\n\n  \n### 第一個有意義的程式\n\n```text\n# weather.py：抓台北天氣\nimport requests\n\ndef get_weather(city):\n    # 用 wttr.in 免費服務\n    url = f\"https://wttr.in/{city}?format=j1\"\n    response = requests.get(url)\n    data = response.json()\n    \n    current = data[\"current_condition\"][0]\n    return {\n        \"city\": city,\n        \"temp_c\": current[\"temp_C\"],\n        \"feels_like\": current[\"FeelsLikeC\"],\n        \"description\": current[\"weatherDesc\"][0][\"value\"],\n        \"humidity\": current[\"humidity\"],\n    }\n\nif __name__ == \"__main__\":\n    weather = get_weather(\"Taipei\")\n    print(f\"🌤  {weather['city']}: {weather['temp_c']}°C\")\n    print(f\"   感覺像 {weather['feels_like']}°C\")\n    print(f\"   {weather['description']}\")\n    print(f\"   濕度 {weather['humidity']}%\")\n\n# 跑\n$ uv run weather.py\n🌤  Taipei: 26°C\n   感覺像 28°C\n   Partly cloudy\n   濕度 78%\n\n→ 第一個 useful 的 Python 程式\n→ 30 行內、做真實的事\n```\n\n  \n### 常見新手坑\n\n  \n- **裝 Python 2**—2026 別碰、用 3.12+\n- **系統 Python 動到**—Mac 內建 Python 不要直接用、會壞 OS。用 uv 或 pyenv 管\n- **不用 venv**—全裝到 global、不同專案版本衝突\n- **檔名跟內建衝突**—`json.py`、`os.py` 自己寫的會 shadow 內建\n- **縮排混 tab 跟 space**—Python 嚴格、會錯。設定編輯器只用 space\n\n  \n    **☕ 用人話講**\n    \nPython 是 2026 最 friendly 的第一語言—語法像英文、生態最大、AI 主場、工作多。**2026 安裝心法**：(1) 用 uv 取代 pip + venv（快 10-100x） (2) 用 VS Code + Pylance + Ruff (3) 別動系統 Python。Day 1 環境設好、之後省 100 小時。\n\n  \n\n  \n    **🚀 進階技巧**\n    \n2026 indie / 學習者的 Python stack：**uv（環境）+ FastAPI（後端）+ Pydantic（驗證）+ SQLAlchemy（DB）+ pytest（測試）+ Ruff（lint + format）**。這套用 1 年、任何 Python job 都能無痛切換。**學語言比工具難 100 倍**—語法熟練後、framework 之間切換就 1 週的事。\n\n  \n\n  \n    \n      💼\n      接案小知識\n    \n    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「Python」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。",
+      "tip": {
+        "type": "practical",
+        "text": "剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「Python」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "26.1.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "# Python 範例\ndef fibonacci(n):\n    a, b = 0, 1\n    for _ in range(n):\n        yield a\n        a, b = b, a + b\n\nprint(list(fibonacci(10)))\n\n# List comprehension\nsquares = [x**2 for x in range(1, 6)]\nprint(\"平方:\", squares)",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "用一張紙、把「為什麼是 Python？2026 安裝 + uv」的核心概念畫成心智圖。中心是這節的主題、第一圈放 3-5 個關鍵詞（如 json.py、os.py）、第二圈延伸細節。",
+        "hint": "關鍵概念可以從 lesson 內出現的這些關鍵字入手：json.py、os.py。畫完不要光放著、試著用自己的話講一次。",
+        "answer": "心智圖三步：(1) 中心 = lesson 主題 (2) 第一圈 = 主要分類（通常 3-5 個）(3) 第二圈 = 具體例子或工具。畫完拿給朋友看、能講通 = 真懂。常見錯誤：抄關鍵字當分類、應該用自己理解後的歸納。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "Python 的歷史"
+        },
+        {
+          "level": 3,
+          "text": "Python 在 2026 的位置"
+        },
+        {
+          "level": 3,
+          "text": "2026 安裝 Python：用 uv"
+        },
+        {
+          "level": 3,
+          "text": "第一個 Python 程式"
+        },
+        {
+          "level": 3,
+          "text": "裝套件"
+        },
+        {
+          "level": 3,
+          "text": "傳統做法（仍要懂）"
+        },
+        {
+          "level": 3,
+          "text": "編輯器：VS Code + Python 擴充"
+        },
+        {
+          "level": 3,
+          "text": "第一個有意義的程式"
+        },
+        {
+          "level": 3,
+          "text": "常見新手坑"
+        }
+      ]
+    },
+    {
+      "id": "26.2",
+      "number": "LESSON 26.2",
+      "title": "Hello World、REPL、第一個變數",
+      "oneLineSummary": "Python 為什麼好學：「語法接近英文」—寫 code 像寫散文。",
+      "analogy": "像樂高 vs 軍規組合屋—Python 是樂高（直觀、好上手）、C++ 是軍規（強大但複雜）。for x in list: 念起來就是英文「對於列表中的每個 x」—國中生第一週就能寫東西。",
+      "content": "從最小單位開始—寫個 print、認識互動式（REPL）、學變數。10 分鐘上手 Python。\n\n  \n### 第一個 Python 程式\n\n```text\n# hello.py\nprint(\"Hello, World!\")\nprint(\"我學 Python 了\")\n\n# 跑\n$ uv run hello.py\nHello, World!\n我學 Python 了\n\n→ 沒 main、沒 function、沒 import\n→ 直接寫一行就能跑\n→ Python 是解釋型—不用編譯\n\n對比其他語言：\n# C\n#include \nint main() {\n    printf(\"Hello, World!\\n\");\n    return 0;\n}\n# 5 行才能 hello world\n\n# Java\npublic class Hello {\n    public static void main(String[] args) {\n        System.out.println(\"Hello, World!\");\n    }\n}\n# 5 行\n\n# Python\nprint(\"Hello, World!\")\n# 1 行\n\n→ Python 適合學習就是這個原因\n→ 1 行起步、慢慢加複雜\n```\n\n  \n### REPL：互動式 Python\n\n```text\nREPL = Read-Eval-Print Loop\n「打一行、立刻看結果」\n\n# 啟動\n$ python\nPython 3.12.x\n>>> \n\n# 試\n>>> 1 + 1\n2\n>>> \"hello\" * 3\n'hellohellohello'\n>>> print(\"hi\")\nhi\n>>> len(\"Python\")\n6\n\n# 退出\n>>> exit()\n# 或 Ctrl+D\n\n進階：\n$ uv run python\n# 或 ipython（更好用）\n$ uv add --dev ipython\n$ uv run ipython\n\nipython 有：\n- 語法高亮\n- 自動完成（Tab）\n- ?function（看說明）\n- !command（執行 shell）\n\n# 例\nIn [1]: import math\nIn [2]: math.pi\nOut[2]: 3.141592653589793\nIn [3]: math.sqrt?\n# 顯示說明\n\n→ 學新東西先在 REPL 試\n→ 確認再寫進 .py\n```\n\n  \n### 變數：給東西取名字\n\n```text\n# 第一個變數\nname = \"Alice\"\nage = 30\nis_student = False\n\n# 印出\nprint(name)        # Alice\nprint(age)         # 30\nprint(is_student)  # False\n\n# 多個變數\nx, y, z = 1, 2, 3\nprint(x, y, z)     # 1 2 3\n\n# 交換變數（Python 特色）\na = 5\nb = 10\na, b = b, a\nprint(a, b)        # 10 5\n# 不用 temp 變數！\n\n# 同時 assign 同值\nx = y = z = 0\n\n# 全是 0\nprint(x, y, z)     # 0 0 0\n```\n\n  \n### Python 是動態型別\n\n```text\n# 變數型別會自動推導\nx = 5         # int\nx = \"hello\"   # 變 string\nx = [1, 2, 3] # 變 list\nx = True      # 變 bool\n\n# 看當前型別\nprint(type(x))   # \n\n# 但 2024+ 主流加 type hint（不強制、但好看）\nage: int = 30\nname: str = \"Alice\"\nis_active: bool = True\n\n# Type hint 不影響執行\n# 只是給：\n# 1. 你自己看（文件）\n# 2. IDE 自動完成\n# 3. mypy / pyright 靜態檢查\n\nage = \"thirty\"   # 仍能跑、但 type checker 會抗議\n```\n\n  \n### 命名規則 + 慣例\n\n```text\n規則（不遵守會錯）：\n1. 只能英文 / 數字 / 底線\n   ✓ user_name\n   ✗ user-name（- 是減號）\n   ✗ 2nd_user（不能數字開頭）\n   ✓ user2\n\n2. 大小寫敏感\n   age ≠ Age ≠ AGE\n\n3. 不能用保留字\n   保留字：if, else, for, while, def, class, import, ...\n   ✗ class = \"Math\"\n   ✓ class_name = \"Math\"\n\n慣例（PEP 8）：\n- 變數 / 函數：snake_case\n  user_name\n  calculate_tax\n  \n- 常數：SCREAMING_SNAKE\n  MAX_RETRY = 5\n  API_KEY = \"...\"\n\n- 類別：PascalCase\n  class UserAccount: ...\n  class HttpClient: ...\n\n- 私密（慣例）：底線開頭\n  _internal_var = ...\n  __very_private = ...\n\n→ Python 不強制風格、但業界都遵守\n→ 寫錯風格 = code review 一眼看出新手\n```\n\n  \n### 輸入：input()\n\n```text\n# 問使用者\nname = input(\"你叫什麼名字？ \")\nprint(f\"嗨 {name}！\")\n\n$ uv run hello.py\n你叫什麼名字？ Alice\n嗨 Alice！\n\n# input 永遠回 str\nage = input(\"幾歲？ \")\nprint(type(age))   # \n\n# 要算數要轉\nage = int(input(\"幾歲？ \"))\nprint(age + 1)\n\n# 多個輸入\nnums = input(\"輸入 3 個數字（空白隔開）：\").split()\nprint(nums)   # ['1', '2', '3']\n\n# 全轉 int\nnums = [int(x) for x in input().split()]\nprint(sum(nums))\n```\n\n  \n### 輸出：print 進階\n\n```text\n# 基本\nprint(\"hello\")\nprint(\"hello\", \"world\")          # hello world（空白隔開）\nprint(\"hello\", \"world\", sep=\"-\") # hello-world\n\n# 不換行\nprint(\"hello\", end=\"\")\nprint(\"world\")        # helloworld\n\n# f-string（2026 主流）\nname = \"Alice\"\nage = 30\nprint(f\"{name} is {age} years old\")    # Alice is 30 years old\n\n# 表達式也行\nprint(f\"明年是 {age + 1} 歲\")           # 明年是 31 歲\n\n# 格式化數字\npi = 3.14159265\nprint(f\"π = {pi:.2f}\")               # π = 3.14\nprint(f\"π = {pi:.4f}\")               # π = 3.1416\n\n# 千分位\nbig = 1234567\nprint(f\"{big:,}\")                    # 1,234,567\n\n# 補 0\nn = 5\nprint(f\"{n:03d}\")                    # 005\n\n# 百分比\nratio = 0.756\nprint(f\"{ratio:.1%}\")                # 75.6%\n\n→ f-string 是 Python 3.6+ 神器、必用\n```\n\n  \n### 註解\n\n```text\n# 單行註解\n# 這行不會執行\n\nx = 5  # 行尾註解\n\n\"\"\"\n多行註解（其實是字串、放這沒用）\n但 Python 慣例：當多行 comment\n或當 docstring（function / class 內第一個）\n\"\"\"\n\ndef greet(name):\n    \"\"\"這是 docstring。\n    \n    給函數寫說明、help() 看得到。\n    \"\"\"\n    return f\"Hello, {name}\"\n\nhelp(greet)  # 印出 docstring\n\n→ 用註解解釋「為什麼」、不是「做什麼」\n→ Code 自己會說「做什麼」、註解說「為什麼」\n```\n\n  \n    **☕ 用人話講**\n    \nPython 30 秒上手：(1) **print** 印東西 (2) **變數**就是給東西取名字（`name = \"Alice\"`） (3) **f-string**是 2026 主流字串拼接（`f\"hi {name}\"`） (4) **input**問使用者 (5) **type**看型別。**練習方式**：開 REPL（`python`）+ 隨便試。錯了不會壞電腦、放心試。\n\n  \n\n  \n    \n      🎯\n      面試考點\n    \n    台灣科技公司面試 90% 會問「Python」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。",
+      "tip": {
+        "type": "pro",
+        "text": "台灣科技公司面試 90% 會問「Python」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "26.2.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "# Python 範例\ndef fibonacci(n):\n    a, b = 0, 1\n    for _ in range(n):\n        yield a\n        a, b = b, a + b\n\nprint(list(fibonacci(10)))\n\n# List comprehension\nsquares = [x**2 for x in range(1, 6)]\nprint(\"平方:\", squares)",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "第一個 Python 程式"
+        },
+        {
+          "level": 3,
+          "text": "REPL：互動式 Python"
+        },
+        {
+          "level": 3,
+          "text": "變數：給東西取名字"
+        },
+        {
+          "level": 3,
+          "text": "Python 是動態型別"
+        },
+        {
+          "level": 3,
+          "text": "命名規則 + 慣例"
+        },
+        {
+          "level": 3,
+          "text": "輸入：input()"
+        },
+        {
+          "level": 3,
+          "text": "輸出：print 進階"
+        },
+        {
+          "level": 3,
+          "text": "註解"
+        }
+      ]
+    },
+    {
+      "id": "26.3",
+      "number": "LESSON 26.3",
+      "title": "基本型態：int / float / str / bool",
+      "oneLineSummary": "變數 / 型別：Python 是動態型別—不用宣告 type、直接給值。",
+      "analogy": "像萬用便當盒—不分裝什麼、丟什麼都能裝。Python：x = 5（數字）x = \"hello\"（字串）—同一個變數能換不同型別。新手友善、大專案要小心。",
+      "content": "Python 4 個基本型態—學熟 80% 程式都在處理它們。\n\n  \n### int（整數）\n\n```text\nage = 25\nbig_num = 1_000_000        # 底線分位、好讀\nnegative = -10\nzero = 0\n\n# 沒上限（Python 特色）\nhuge = 10 ** 100           # 10 的 100 次方\nprint(huge)\n# 10000000000000000000000000000000000000...\n\n# Java / Go 會 overflow、Python 不會\n\n# 運算\na, b = 10, 3\nprint(a + b)     # 13\nprint(a - b)     # 7\nprint(a * b)     # 30\nprint(a / b)     # 3.333333... (永遠 float)\nprint(a // b)    # 3（整數除）\nprint(a % b)     # 1（餘數）\nprint(a ** b)    # 1000（次方）\n\n# 進制\nbinary = 0b1010      # 二進位 = 10\noctal = 0o12         # 八進位 = 10\nhex_num = 0xa        # 十六進位 = 10\n\n# 轉換\nint(\"42\")            # 42（從 string）\nint(\"42\", 16)        # 66（16 進位字串）\nint(3.9)             # 3（浮點數去小數、不是四捨五入）\nint(True)            # 1\nint(False)           # 0\n\n# Python 3 沒 long type、int 就好\n```\n\n  \n### float（浮點數）\n\n```text\npi = 3.14159\nbig = 1.5e10        # 1.5 × 10^10\nsmall = 1.5e-5      # 1.5 × 10^-5\n\n# 跟 int 混算 → 變 float\nprint(10 + 1.5)     # 11.5（float）\n\n# 浮點陷阱（所有語言通病）\nprint(0.1 + 0.2)    # 0.30000000000000004\nprint(0.1 + 0.2 == 0.3)   # False!\n\n# 對策 1：math.isclose\nimport math\nmath.isclose(0.1 + 0.2, 0.3)   # True\n\n# 對策 2：用 Decimal（精確、給錢用）\nfrom decimal import Decimal\na = Decimal(\"0.1\")\nb = Decimal(\"0.2\")\nprint(a + b)        # 0.3（精確）\n\n# 對策 3：自己 round\nround(0.1 + 0.2, 2)   # 0.3\n\n# 特殊值\ninf = float('inf')      # 無限大\nneg_inf = float('-inf')\nnan = float('nan')      # Not a Number（除以 0 之類）\n\nprint(inf > 1000000)    # True\nprint(nan == nan)       # False!（nan 跟誰都不等）\nimport math\nmath.isnan(nan)         # True\n\n# 轉換\nfloat(\"3.14\")           # 3.14\nfloat(\"inf\")            # inf\nfloat(3)                # 3.0\n```\n\n  \n### str（字串）\n\n```text\n# 3 種寫法\ns1 = \"Hello\"\ns2 = 'Hello'             # 單雙引號都行\ns3 = \"\"\"多行\n字串\"\"\"\n\n# 含特殊字元用 escape\nquote = \"She said \\\"hi\\\"\"\nnewline = \"Line 1\\nLine 2\"\ntab = \"col1\\tcol2\"\n\n# Raw string（不 escape）\npath = r\"C:\\Users\\Alice\\Documents\"\n# 反斜線不 escape\n\n# Unicode（中文沒問題）\ngreeting = \"你好\"\nemoji = \"👋 hello\"\n\n# 連接\ngreeting = \"Hello, \" + name\ngreeting = f\"Hello, {name}\"      # f-string 主流\ngreeting = \"Hello, {}\".format(name)   # 老式\n\n# 重複\n\"abc\" * 3              # \"abcabcabc\"\n\n# 查長度\nlen(\"Hello\")           # 5\nlen(\"你好\")            # 2（不是 byte 數）\n\n# 索引（從 0 開始）\ns = \"Python\"\ns[0]                   # 'P'\ns[1]                   # 'y'\ns[-1]                  # 'n'（從後算）\ns[-2]                  # 'o'\n\n# Slice\ns[0:3]                 # 'Pyt'\ns[3:]                  # 'hon'\ns[:3]                  # 'Pyt'\ns[::2]                 # 'Pto'（每隔 1 個）\ns[::-1]                # 'nohtyP'（反轉）\n\n# 不可變！\ns[0] = 'J'             # ❌ TypeError\n# 要建新的\ns = \"J\" + s[1:]        # 'Jython'\n```\n\n  \n### 字串常用方法\n\n```text\ns = \"  Hello World  \"\n\n# 大小寫\ns.upper()              # '  HELLO WORLD  '\ns.lower()              # '  hello world  '\ns.title()              # '  Hello World  '\ns.capitalize()         # '  hello world  '\n\n# 去空白\ns.strip()              # 'Hello World'\ns.lstrip()             # 'Hello World  '\ns.rstrip()             # '  Hello World'\n\n# 找位置\ns.find(\"World\")        # 8（找到位置）\ns.find(\"Python\")       # -1（找不到）\ns.index(\"World\")       # 8（找不到會 raise）\n\n# 包含\n\"Hello\" in s           # True\n\"Python\" in s          # False\ns.startswith(\"  H\")    # True\ns.endswith(\"d  \")      # True\n\n# 替換\ns.replace(\"World\", \"Python\")  # '  Hello Python  '\n\n# 切割\n\"a,b,c\".split(\",\")     # ['a', 'b', 'c']\n\"line 1\\nline 2\".splitlines()   # ['line 1', 'line 2']\n\n# 拼接\n\",\".join([\"a\", \"b\", \"c\"])   # 'a,b,c'\n\" \".join([\"Hello\", \"World\"])  # 'Hello World'\n\n# 判斷\n\"abc\".isalpha()        # True（全字母）\n\"123\".isdigit()        # True（全數字）\n\"abc123\".isalnum()     # True（字母+數字）\n\"   \".isspace()        # True（全空白）\n\n# 格式\n\"{:>10}\".format(\"hi\")   # '        hi'（右對齊）\n\"{: 3                  # True\n5 == 5                 # True\n5 != 6                 # True\n5 >= 5                 # True\n\n# Python 連鎖比較（其他語言沒有）\n1 \n    **☕ 用人話講**\n    \n4 個基本型態學熟 = Python 入門 50%。**新手常犯**：(1) `input()` 永遠是 str—算數要 int() 轉 (2) 浮點數比較不能直接 `==` (3) 字串**不可變**—不能 `s[0] = 'x'` (4) Python 的 True / False / None **首字大寫**。**f-string**是 2026 寫 Python 必用：`f\"hi {name}, you're {age}\"`。\n\n  \n\n  \n    \n      ⚡\n      學習加速器\n    \n    把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。",
+      "tip": {
+        "type": "practical",
+        "text": "把這節學到的馬上應用到一個小東西—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "26.3.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "# Python 範例\ndef fibonacci(n):\n    a, b = 0, 1\n    for _ in range(n):\n        yield a\n        a, b = b, a + b\n\nprint(list(fibonacci(10)))\n\n# List comprehension\nsquares = [x**2 for x in range(1, 6)]\nprint(\"平方:\", squares)",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "int（整數）"
+        },
+        {
+          "level": 3,
+          "text": "float（浮點數）"
+        },
+        {
+          "level": 3,
+          "text": "str（字串）"
+        },
+        {
+          "level": 3,
+          "text": "字串常用方法"
+        }
+      ]
+    },
+    {
+      "id": "26.4",
+      "number": "LESSON 26.4",
+      "title": "List / Tuple / Set / Dict：4 個容器",
+      "oneLineSummary": "字串操作：f-string / split / join / replace—文字處理超方便。",
+      "analogy": "像剪刀 + 膠帶—文字隨意剪貼、組合。f-string：f\"Hello {name}\"—1 行字串插值、比 JS 的 template literal 還順、爬蟲處理文字必用。",
+      "content": "Python 4 個內建容器、組合解 90% 資料問題。\n\n  \n### List：可變、有序\n\n```text\n# 建立\nfruits = [\"蘋果\", \"香蕉\", \"橘子\"]\nempty = []\nmixed = [1, \"hello\", True, [1, 2]]    # 能裝任何東西\n\n# 索引\nfruits[0]              # \"蘋果\"\nfruits[-1]             # \"橘子\"\n\n# Slice\nfruits[0:2]            # [\"蘋果\", \"香蕉\"]\nfruits[:2]             # 同上\nfruits[1:]             # [\"香蕉\", \"橘子\"]\nfruits[::-1]           # [\"橘子\", \"香蕉\", \"蘋果\"]（反轉）\n\n# 修改（可變）\nfruits[0] = \"草莓\"\nprint(fruits)          # [\"草莓\", \"香蕉\", \"橘子\"]\n\n# 新增\nfruits.append(\"葡萄\")              # 加最後\nfruits.insert(0, \"西瓜\")           # 加位置 0\nfruits.extend([\"檸檬\", \"桃子\"])    # 加多個\n# 或\nfruits += [\"檸檬\", \"桃子\"]\n\n# 刪除\nfruits.remove(\"香蕉\")              # 依值刪（刪第一個遇到的）\nfruits.pop()                       # 刪最後、回傳被刪的\nfruits.pop(0)                      # 刪位置 0\ndel fruits[0]                      # 刪位置 0\nfruits.clear()                     # 全清空\n\n# 查\n\"蘋果\" in fruits                   # True\nfruits.index(\"橘子\")               # 2\nfruits.count(\"蘋果\")               # 1\n\n# 長度\nlen(fruits)                        # 3\n\n# 排序\nnums = [3, 1, 4, 1, 5, 9, 2, 6]\nnums.sort()                        # 原地排序、改 nums\nprint(nums)                        # [1, 1, 2, 3, 4, 5, 6, 9]\n\nnums.sort(reverse=True)            # 降冪\n\n# 建新的、不改原本\nsorted_nums = sorted(nums)         # 新 list、原 nums 不變\n\n# 自訂排序\nusers = [{\"name\": \"Alice\", \"age\": 30}, {\"name\": \"Bob\", \"age\": 25}]\nusers.sort(key=lambda u: u[\"age\"])\n\n# 反轉\nnums.reverse()             # 原地\nreversed_nums = nums[::-1]   # 新的\n\n# 操作\nnums + [10, 11]            # 串接（新 list）\n[0] * 5                    # [0, 0, 0, 0, 0]（重複）\n```\n\n  \n### List Comprehension（Python 特色）\n\n```text\n# 經典場景：建 list\n\n# 傳統寫法\nsquares = []\nfor x in range(10):\n    squares.append(x ** 2)\n\n# Comprehension（更簡潔）\nsquares = [x ** 2 for x in range(10)]\n# [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]\n\n# 加條件\nevens = [x for x in range(10) if x % 2 == 0]\n# [0, 2, 4, 6, 8]\n\n# 變形 + 條件\nsquared_evens = [x ** 2 for x in range(10) if x % 2 == 0]\n# [0, 4, 16, 36, 64]\n\n# 巢狀\nmatrix = [[i * j for j in range(3)] for i in range(3)]\n# [[0, 0, 0], [0, 1, 2], [0, 2, 4]]\n\n# 平面化\nmatrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]\nflat = [x for row in matrix for x in row]\n# [1, 2, 3, 4, 5, 6, 7, 8, 9]\n\n# 字串處理\nnames = [\"alice\", \"bob\", \"charlie\"]\nupper_names = [n.upper() for n in names]\n# ['ALICE', 'BOB', 'CHARLIE']\n\n→ List comprehension 是 Python idiom\n→ 寫 Python 一定要熟練\n→ 比 map/filter 更 pythonic\n```\n\n  \n### Tuple：不可變、有序\n\n```text\n# 建立（用括號或不用）\npoint = (3, 4)\npoint = 3, 4          # 一樣\nempty = ()\nsingle = (5,)         # 注意逗號！\nsingle = 5,           # 也行\n\n# 索引、slice 同 list\npoint[0]              # 3\npoint[-1]             # 4\n\n# 不可變！\npoint[0] = 99         # ❌ TypeError\n\n# 為什麼用 tuple？\n# 1. 表示「一組相關但不變」的資料\nperson = (\"Alice\", 30, \"Engineer\")\nname, age, job = person   # 解包（unpack）\n\n# 2. 函數多回傳值\ndef divide(a, b):\n    return a // b, a % b\nq, r = divide(10, 3)\n\n# 3. 當 dict 的 key（list 不能、tuple 能）\nlocations = {\n    (25.04, 121.56): \"Taipei\",\n    (35.69, 139.69): \"Tokyo\",\n}\n\n# 4. 性能（比 list 快一點）\n\n# 操作\nlen((1, 2, 3))         # 3\n(1, 2, 3) + (4, 5)     # (1, 2, 3, 4, 5)\n2 in (1, 2, 3)         # True\n\n# Named Tuple（更 readable）\nfrom collections import namedtuple\n\nPoint = namedtuple(\"Point\", [\"x\", \"y\"])\np = Point(3, 4)\nprint(p.x, p.y)        # 3 4\n\n# 2024+ 用 dataclass 或 NamedTuple from typing\nfrom typing import NamedTuple\n\nclass Point(NamedTuple):\n    x: int\n    y: int\n\np = Point(3, 4)\nprint(p.x)             # 3\n```\n\n  \n### Set：不重複、無序\n\n```text\n# 建立\nfruits = {\"蘋果\", \"香蕉\", \"橘子\"}\nempty = set()           # 不能用 {}（那是 dict）\n\n# 自動去重\nnums = [1, 2, 3, 1, 2, 3]\nunique = set(nums)       # {1, 2, 3}\n\n# 操作\nfruits.add(\"葡萄\")\nfruits.remove(\"香蕉\")    # 不存在會 raise\nfruits.discard(\"xxx\")    # 不存在不會 raise\n\n# 集合運算\na = {1, 2, 3, 4}\nb = {3, 4, 5, 6}\n\na | b           # 聯集 {1, 2, 3, 4, 5, 6}\na & b           # 交集 {3, 4}\na - b           # 差集 {1, 2}\na ^ b           # 對稱差 {1, 2, 5, 6}\n\n# 子集\n{1, 2}.issubset({1, 2, 3})    # True\n{1, 2, 3}.issuperset({1, 2})  # True\n\n# 用途\n# 1. 去重\nitems = [\"a\", \"b\", \"a\", \"c\", \"b\"]\nunique = list(set(items))   # ['a', 'b', 'c']（順序可能變）\n\n# 2. 快速查找（O(1)）\nbanned_words = {\"spam\", \"abuse\", \"scam\"}\nif word in banned_words:    # 超快\n    block()\n\n# 3. 過濾共同 / 差異\nold_users = {\"alice\", \"bob\"}\nnew_users = {\"bob\", \"charlie\"}\nleft = old_users - new_users   # {\"alice\"}\njoined = new_users - old_users  # {\"charlie\"}\n\n# Set comprehension\nunique_lengths = {len(word) for word in [\"hi\", \"hello\", \"world\"]}\n# {2, 5}\n```\n\n  \n### Dict：鍵值對\n\n```text\n# 建立\nuser = {\n    \"name\": \"Alice\",\n    \"age\": 30,\n    \"email\": \"alice@x.com\"\n}\n\nempty = {}\n\n# 訪問\nuser[\"name\"]            # \"Alice\"\nuser.get(\"name\")        # \"Alice\"\nuser.get(\"phone\")       # None（沒 key 不會 raise）\nuser.get(\"phone\", \"N/A\") # \"N/A\"（給預設）\n\n# 修改 / 新增\nuser[\"age\"] = 31\nuser[\"phone\"] = \"0912-...\"\n\n# 刪除\ndel user[\"phone\"]\nuser.pop(\"phone\")           # 也行、回傳被刪的值\nuser.pop(\"xxx\", None)        # 沒 key 不 raise\n\n# 檢查\n\"name\" in user              # True\n\"phone\" in user             # False\n\n# 迭代\nfor key in user:            # 預設跑 key\n    print(key)\n\nfor value in user.values():\n    print(value)\n\nfor key, value in user.items():\n    print(f\"{key}: {value}\")\n\n# 長度\nlen(user)                   # 3\n\n# 合併\nuser.update({\"city\": \"Taipei\"})\n\n# 或 spread（Python 3.5+）\ncombined = {**user, \"city\": \"Taipei\"}\n\n# 或 | （Python 3.9+）\ncombined = user | {\"city\": \"Taipei\"}\n\n# Dict comprehension\nsquares = {x: x ** 2 for x in range(5)}\n# {0: 0, 1: 1, 2: 4, 3: 9, 4: 16}\n\n# 反轉 key-value\ninverted = {v: k for k, v in user.items()}\n\n# 預設值（Python 3.7+ 保證插入順序）\nfrom collections import defaultdict\n\ncounts = defaultdict(int)\nfor word in [\"a\", \"b\", \"a\", \"c\", \"a\"]:\n    counts[word] += 1   # int() = 0 為預設\n# defaultdict(int, {'a': 3, 'b': 1, 'c': 1})\n\n# Counter（最常用）\nfrom collections import Counter\n\nwords = [\"a\", \"b\", \"a\", \"c\", \"a\"]\nc = Counter(words)       # Counter({'a': 3, 'b': 1, 'c': 1})\nc.most_common(2)         # [('a', 3), ('b', 1)]\n```\n\n  \n### 4 個容器對比\n\n  \n| 容器 | 有序 | 可變 | 允許重複 | 用途 |\n| --- | --- | --- | --- | --- |\n| List | ✓ | ✓ | ✓ | 順序資料、最常用 |\n| Tuple | ✓ | ✗ | ✓ | 固定組合、多回傳值 |\n| Set | ✗ | ✓ | ✗ | 去重、快速查找 |\n| Dict | ✓ (3.7+) | ✓ | key 不重複 | 鍵值對、最強大 |\n\n  \n    **🚀 進階技巧**\n    \nPython 容器選擇心法：(1) **要順序 + 改** → list (2) **要當 dict key / 不變** → tuple (3) **要去重 / 快速 in 檢查** → set (4) **名字找東西** → dict。**2026 加分**：`collections.Counter` 算次數、`collections.defaultdict` 給預設值、`typing.NamedTuple` 替代 tuple。學完這 4 個 + comprehension = 寫 90% Python code 順手。\n\n  \n\n  \n    \n      🚀\n      2026 趨勢\n    \n    這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。",
+      "tip": {
+        "type": "trend",
+        "text": "這個技術 2026 還在主流、未來 5 年不會過時。但工具會更新—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "26.4.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "# Python 範例\ndef fibonacci(n):\n    a, b = 0, 1\n    for _ in range(n):\n        yield a\n        a, b = b, a + b\n\nprint(list(fibonacci(10)))\n\n# List comprehension\nsquares = [x**2 for x in range(1, 6)]\nprint(\"平方:\", squares)",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "List：可變、有序"
+        },
+        {
+          "level": 3,
+          "text": "List Comprehension（Python 特色）"
+        },
+        {
+          "level": 3,
+          "text": "Tuple：不可變、有序"
+        },
+        {
+          "level": 3,
+          "text": "Set：不重複、無序"
+        },
+        {
+          "level": 3,
+          "text": "Dict：鍵值對"
+        },
+        {
+          "level": 3,
+          "text": "4 個容器對比"
+        }
+      ]
+    },
+    {
+      "id": "26.5",
+      "number": "LESSON 26.5",
+      "title": "if / for / while + Comprehension",
+      "oneLineSummary": "List / Tuple / Dict / Set—Python 4 大資料結構—每個有不同用途。",
+      "analogy": "像4 種收納盒—List（有序、可改）、Tuple（有序、不可改）、Dict（鍵值對、像字典）、Set（不重複、像集合）。選對結構效能差 10 倍。",
+      "content": "流程控制—條件 + 迴圈。Python 用**縮排**取代 `{}`、特別。\n\n  \n### if / elif / else\n\n```text\nage = 20\n\nif age = 18 and has_license:\n    print(\"能開車\")\n\nif is_admin or is_owner:\n    print(\"有權限\")\n\nif not is_active:\n    print(\"不活躍\")\n\n# 三元運算（順序不同！）\nstatus = \"成人\" if age >= 18 else \"未成年\"\n\n# 對比：\n# JS: const status = age >= 18 ? \"成人\" : \"未成年\"\n# Python 沒 ? : 語法、用 if-else 表達式\n\n# Match-case（Python 3.10+ 才有）\ndef describe(point):\n    match point:\n        case (0, 0):\n            return \"原點\"\n        case (x, 0):\n            return f\"X 軸 x={x}\"\n        case (0, y):\n            return f\"Y 軸 y={y}\"\n        case (x, y):\n            return f\"在 ({x}, {y})\"\n        case _:\n            return \"不是點\"\n\ndescribe((3, 0))    # X 軸 x=3\ndescribe((1, 2))    # 在 (1, 2)\n```\n\n  \n### for 迴圈\n\n```text\n# 跑 list\nfor fruit in [\"蘋果\", \"香蕉\", \"橘子\"]:\n    print(fruit)\n\n# 跑 range\nfor i in range(5):       # 0, 1, 2, 3, 4\n    print(i)\n\nfor i in range(2, 8):    # 2, 3, 4, 5, 6, 7\n    print(i)\n\nfor i in range(0, 10, 2):  # 0, 2, 4, 6, 8\n    print(i)\n\n# 跑 string（一個字一個字）\nfor char in \"Python\":\n    print(char)\n\n# 同時要 index\nfor i, fruit in enumerate([\"蘋果\", \"香蕉\"]):\n    print(f\"{i}: {fruit}\")\n# 0: 蘋果\n# 1: 香蕉\n\n# enumerate 從 1 開始\nfor i, fruit in enumerate(fruits, start=1):\n    print(f\"第 {i} 個：{fruit}\")\n\n# 同時跑兩個 list\nnames = [\"Alice\", \"Bob\", \"Charlie\"]\nages = [30, 25, 35]\n\nfor name, age in zip(names, ages):\n    print(f\"{name}: {age}\")\n\n# 反轉\nfor fruit in reversed([\"蘋果\", \"香蕉\"]):\n    print(fruit)\n\n# 排序後跑\nfor num in sorted([3, 1, 4, 1, 5]):\n    print(num)\n\n# 跑 dict\nuser = {\"name\": \"Alice\", \"age\": 30}\n\nfor key in user:\n    print(key)\n\nfor key, value in user.items():\n    print(f\"{key}: {value}\")\n\n# break + continue\nfor i in range(10):\n    if i == 3:\n        continue   # 跳過 3\n    if i == 7:\n        break      # 7 之後不跑\n    print(i)\n# 0, 1, 2, 4, 5, 6\n\n# for-else（特別！）\nfor x in [1, 2, 3]:\n    if x == 5:\n        break\nelse:\n    print(\"沒找到 5\")   # 沒 break 才跑 else\n# 印 \"沒找到 5\"\n```\n\n  \n### while 迴圈\n\n```text\ncount = 0\nwhile count  0:\n    n -= 1\n    if n == 0:\n        break\nelse:\n    print(\"自然結束\")\n\n# Python 沒 do-while\n# 用 while True + break 模擬\nwhile True:\n    do_stuff()\n    if condition:\n        break\n```\n\n  \n### Comprehension：4 種容器\n\n```text\n# List comprehension\nsquares = [x ** 2 for x in range(10)]\n\n# Set comprehension\nunique_squares = {x ** 2 for x in [-1, 0, 1, 2, -2]}\n# {0, 1, 4}\n\n# Dict comprehension\nsquare_dict = {x: x ** 2 for x in range(5)}\n# {0: 0, 1: 1, 2: 4, 3: 9, 4: 16}\n\n# Generator expression（lazy）\ngen = (x ** 2 for x in range(10))\n# 不立刻算、用 next() 才算\n# 適合大資料、省記憶體\n\n# 加條件\nevens = [x for x in range(20) if x % 2 == 0]\npositives = {x for x in [-1, -2, 1, 2, 3] if x > 0}\n\n# 多層\nmatrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]\nflat = [x for row in matrix for x in row]\n# [1, 2, 3, 4, 5, 6, 7, 8, 9]\n\n# 條件 expression\nlabels = [\"odd\" if x % 2 else \"even\" for x in range(5)]\n# ['even', 'odd', 'even', 'odd', 'even']\n\n→ Comprehension 是 Pythonic 寫法\n→ 比 for 迴圈 + append 簡潔\n→ 比 map/filter 自然\n```\n\n  \n### 常見 pattern\n\n```text\n# 1. 累積總和\ntotal = sum([1, 2, 3, 4, 5])    # 15\n# 不用寫 for 迴圈\n\n# 2. 找最大 / 最小\nmax([3, 1, 4, 1, 5])             # 5\nmin([3, 1, 4, 1, 5])             # 1\n\n# 自訂 key\nusers = [{\"name\": \"Alice\", \"age\": 30}, {\"name\": \"Bob\", \"age\": 25}]\noldest = max(users, key=lambda u: u[\"age\"])\n\n# 3. 計數\ncount = len([x for x in nums if x > 10])\n\n# 或 Counter\nfrom collections import Counter\ncounts = Counter(words)\n\n# 4. 全部符合 / 至少一個\nall_active = all(u.is_active for u in users)    # True if 全 True\nany_admin = any(u.is_admin for u in users)      # True if 至少一個 True\n\n# 5. 找第一個符合\nfirst_admin = next((u for u in users if u.is_admin), None)\n# next 配 generator、找不到回 None\n\n# 6. 平面化巢狀 list\nnested = [[1, 2], [3, 4], [5, 6]]\nflat = [x for sub in nested for x in sub]\n# [1, 2, 3, 4, 5, 6]\n```\n\n  \n    **☕ 用人話講**\n    \nPython 流程控制重點：(1) 用**縮排**不用 `{}`—4 個 space (2) `if elif else`（不是 else if） (3) `for x in iterable`（不是 C-style for） (4) **list comprehension 是 Pythonic**—`[x * 2 for x in nums]` 寫熟才像 Python 工程師 (5) `range()` 不含尾—`range(5)` 是 0-4。**新手陷阱**：縮排混 tab 跟 space 會錯、設編輯器只用 space。\n\n  \n\n  \n    \n      🛠️\n      工具推薦\n    \n    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。",
+      "tip": {
+        "type": "practical",
+        "text": "配合這節用的工具：(1) VS Code（編輯器、免費）(2) Chrome DevTools（F12 開啟、除錯神器）(3) Live Server（VS Code 擴充、即時預覽）(4) GitHub Copilot / Cursor（AI 寫程式、學習加速 2-10x）。"
+      },
+      "xp": 15,
+      "playgrounds": [
+        {
+          "key": "26.5.auto",
+          "language": "python",
+          "title": "試試看",
+          "initialCode": "# Python 範例\ndef fibonacci(n):\n    a, b = 0, 1\n    for _ in range(n):\n        yield a\n        a, b = b, a + b\n\nprint(list(fibonacci(10)))\n\n# List comprehension\nsquares = [x**2 for x in range(1, 6)]\nprint(\"平方:\", squares)",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "if / elif / else"
+        },
+        {
+          "level": 3,
+          "text": "for 迴圈"
+        },
+        {
+          "level": 3,
+          "text": "while 迴圈"
+        },
+        {
+          "level": 3,
+          "text": "Comprehension：4 種容器"
+        },
+        {
+          "level": 3,
+          "text": "常見 pattern"
+        }
+      ]
+    },
+    {
+      "id": "26.6",
+      "number": "LESSON 26.6",
+      "title": "函數：def、預設值、*args、**kwargs、lambda",
+      "oneLineSummary": "List Comprehension：「1 行寫迴圈」—Python 最 Pythonic 的特色。",
+      "analogy": "像把 5 句話縮成 1 句—不用 5 行迴圈、1 行搞定。[x*2 for x in range(10) if x % 2 == 0]—把「偶數平方」變成一行散文式 code。",
+      "content": "函數是 Python 抽象的基本單位。學熟函數 = Python 進入中階。\n\n  \n### 基本函數\n\n```text\ndef greet(name):\n    return f\"Hello, {name}\"\n\nprint(greet(\"Alice\"))    # Hello, Alice\n\n# 多參數\ndef add(a, b):\n    return a + b\n\nprint(add(3, 5))         # 8\n\n# 預設值\ndef greet(name, greeting=\"Hello\"):\n    return f\"{greeting}, {name}\"\n\nprint(greet(\"Alice\"))              # Hello, Alice\nprint(greet(\"Bob\", \"Hi\"))          # Hi, Bob\n\n# 關鍵字參數（位置不重要）\ndef create_user(name, age, role=\"user\", active=True):\n    return {\"name\": name, \"age\": age, \"role\": role, \"active\": active}\n\n# 全部位置\ncreate_user(\"Alice\", 30)\n\n# 部分關鍵字\ncreate_user(\"Alice\", 30, role=\"admin\")\n\n# 全關鍵字（順序不重要）\ncreate_user(role=\"admin\", name=\"Alice\", age=30)\n\n# 多回傳值（用 tuple）\ndef divide(a, b):\n    return a // b, a % b\n\nq, r = divide(10, 3)\nprint(q, r)              # 3 1\n\n# 或 dict\ndef get_user_stats():\n    return {\"total\": 100, \"active\": 80, \"premium\": 20}\n\nstats = get_user_stats()\nprint(stats[\"total\"])\n```\n\n  \n### *args 跟 **kwargs\n\n```text\n# *args：收所有位置參數\ndef sum_all(*numbers):\n    return sum(numbers)\n\nsum_all(1, 2, 3)              # 6\nsum_all(1, 2, 3, 4, 5)        # 15\n\n# **kwargs：收所有關鍵字參數\ndef create(**fields):\n    print(fields)\n\ncreate(name=\"Alice\", age=30, role=\"admin\")\n# {'name': 'Alice', 'age': 30, 'role': 'admin'}\n\n# 混合用\ndef func(a, b, *args, **kwargs):\n    print(f\"a={a}, b={b}, args={args}, kwargs={kwargs}\")\n\nfunc(1, 2, 3, 4, 5, x=10, y=20)\n# a=1, b=2, args=(3, 4, 5), kwargs={'x': 10, 'y': 20}\n\n# 解包傳入（unpacking）\nnums = [1, 2, 3]\nsum_all(*nums)                # 等於 sum_all(1, 2, 3)\n\ndata = {\"name\": \"Alice\", \"age\": 30}\ncreate(**data)                # 等於 create(name=\"Alice\", age=30)\n\n# 常見 pattern：包一層\ndef log_call(func):\n    def wrapper(*args, **kwargs):\n        print(f\"Calling {func.__name__}\")\n        return func(*args, **kwargs)\n    return wrapper\n```\n\n  \n### Lambda（匿名函數）\n\n```text\n# 簡單一行函數\nsquare = lambda x: x ** 2\nprint(square(5))         # 25\n\n# 多參數\nadd = lambda a, b: a + b\n\n# 常用在 map / filter / sorted\nnums = [3, 1, 4, 1, 5, 9, 2, 6]\n\n# 排序\nsorted(nums, key=lambda x: -x)\n# [9, 6, 5, 4, 3, 2, 1, 1]\n\nusers = [\n    {\"name\": \"Alice\", \"age\": 30},\n    {\"name\": \"Bob\", \"age\": 25}\n]\n\n# 依 age 排序\nsorted(users, key=lambda u: u[\"age\"])\n\n# map（變形）\nsquared = list(map(lambda x: x ** 2, nums))\n# 但通常用 comprehension 更 pythonic\nsquared = [x ** 2 for x in nums]\n\n# filter（篩選）\nevens = list(filter(lambda x: x % 2 == 0, nums))\n# 同樣 comprehension 更好\nevens = [x for x in nums if x % 2 == 0]\n\n# Lambda 限制：只能一個表達式\n# 複雜邏輯用 def\n# 多行 = 一定用 def\n\n# 不要用 lambda 取代 def！\n# ❌ 爛\nsquare = lambda x: x ** 2\n\n# ✓ 對\ndef square(x):\n    return x ** 2\n# 命名 + 多行能加 docstring\n```\n\n  \n### Type Hints（2024+ 主流）\n\n```text\n# 沒 type hint\ndef add(a, b):\n    return a + b\n\n# 有 type hint（推薦）\ndef add(a: int, b: int) -> int:\n    return a + b\n\n# 複雜型別\nfrom typing import List, Dict, Optional, Union\n\ndef get_user(id: int) -> Optional[Dict]:\n    \"\"\"回傳 user 或 None。\"\"\"\n    return user_dict.get(id)\n\ndef process_users(users: List[Dict]) -> int:\n    return len(users)\n\n# Python 3.9+ 可用內建（不用 import）\ndef process(items: list[str]) -> dict[str, int]:\n    return {item: len(item) for item in items}\n\n# 3.10+ 用 | 替代 Union\ndef parse(x: int | str) -> int:\n    return int(x)\n\n# Optional 等於 | None\ndef find(id: int) -> User | None:\n    ...\n\n# Type hint 不影響執行\n# 只給：\n# 1. 自己 / 同事看\n# 2. IDE 補全\n# 3. mypy / pyright 靜態檢查\n\n# 跑 mypy 檢查\n$ uv add --dev mypy\n$ uv run mypy app.py\n\n# 找出 type 錯誤\n```\n\n  \n### Docstring：函數說明\n\n```text\ndef calculate_tax(price: float, rate: float = 0.05) -> float:\n    \"\"\"計算稅金。\n    \n    Args:\n        price: 商品原價\n        rate: 稅率、預設 5%\n    \n    Returns:\n        稅金金額\n    \n    Examples:\n        >>> calculate_tax(100)\n        5.0\n        >>> calculate_tax(100, 0.1)\n        10.0\n    \"\"\"\n    return price * rate\n\n# 看說明\nhelp(calculate_tax)\n# 印出 docstring\n\n# 主流格式：Google / NumPy / Sphinx\n# Google 最普及（看上面）\n```\n\n  \n### Scope（作用域）\n\n```text\nx = 10   # 全域\n\ndef func():\n    y = 20   # 區域\n    print(x)  # 看得到全域 → 10\n    print(y)  # 看得到區域 → 20\n\nfunc()\nprint(x)      # 10\nprint(y)      # ❌ NameError\n\n# 改全域要明確\nx = 10\n\ndef modify():\n    global x\n    x = 99\n\nmodify()\nprint(x)      # 99（改了）\n\n# 沒 global 的話：\ndef modify():\n    x = 99   # 變區域變數、不影響全域\n\n# Closure（函數內函數捕捉外面變數）\ndef make_counter():\n    count = 0\n    def increment():\n        nonlocal count  # 跟 enclosing scope 連\n        count += 1\n        return count\n    return increment\n\ncounter = make_counter()\ncounter()     # 1\ncounter()     # 2\ncounter()     # 3\n```\n\n  \n    **🚀 進階技巧**\n    \nPython 函數 2026 寫法：(1) **加 type hint**—好讀好維護 (2) **寫 docstring**—help() 看得到 (3) **少用 lambda**—複雜邏輯用 def (4) **關鍵字參數 > 位置參數**—`create_user(name=\"Alice\")` 比 `create_user(\"Alice\")` 清楚 (5) **函數做一件事**—超過 20 行考慮拆。寫熟函數 = 寫好 Python 的關鍵。\n\n  \n\n  \n    \n      ⚠️\n      新手常見錯誤\n    \n    新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。",
+      "tip": {
+        "type": "warning",
+        "text": "新手 3 大坑：(1) 不看 console—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) 不存檔就 F5—改完忘記儲存以為「程式沒效果」 (3) 抄 code 不理解—複製貼上能跑、但下次要改就崩潰。記得：先看懂、再寫。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "基本函數"
+        },
+        {
+          "level": 3,
+          "text": "args 跟 kwargs"
+        },
+        {
+          "level": 3,
+          "text": "Lambda（匿名函數）"
+        },
+        {
+          "level": 3,
+          "text": "Type Hints（2024+ 主流）"
+        },
+        {
+          "level": 3,
+          "text": "Docstring：函數說明"
+        },
+        {
+          "level": 3,
+          "text": "Scope（作用域）"
+        }
+      ]
+    },
+    {
+      "id": "26.7",
+      "number": "LESSON 26.7",
+      "title": "模組 + import + 套件管理（uv / pip）",
+      "oneLineSummary": "Function：def 定義函式、return 回傳結果—跟其他語言一樣。",
+      "analogy": "像食譜定義—def make_coffee(beans):—收材料、處理、回傳成品。Python 函式還能有預設值、可變參數—彈性極高。",
+      "content": "把 code 拆檔、用別人寫好的 library—大型專案必備。\n\n  \n### 什麼是模組\n\n```text\n# 一個 .py 檔 = 一個 module\n\n# math_utils.py\ndef add(a, b):\n    return a + b\n\ndef multiply(a, b):\n    return a * b\n\nPI = 3.14159\n\n# main.py（在同資料夾）\nimport math_utils\n\nprint(math_utils.add(2, 3))       # 5\nprint(math_utils.PI)              # 3.14159\n\n# 改名 import\nimport math_utils as mu\nmu.add(2, 3)\n\n# 只 import 某些（推薦）\nfrom math_utils import add, PI\nadd(2, 3)\nprint(PI)\n\n# import 全部（不推薦）\nfrom math_utils import *\n# 容易命名衝突\n```\n\n  \n### 標準函式庫（Python 內建）\n\n```text\n# 不用裝、直接 import\n\n# math：數學\nimport math\nmath.pi               # 3.14159...\nmath.sqrt(16)         # 4.0\nmath.floor(3.7)       # 3\nmath.ceil(3.2)        # 4\n\n# random：亂數\nimport random\nrandom.random()                    # 0-1 隨機\nrandom.randint(1, 10)              # 1-10 整數\nrandom.choice([\"a\", \"b\", \"c\"])     # 隨機選一個\nrandom.shuffle([1, 2, 3, 4])       # 原地洗牌\n\n# datetime：時間\nfrom datetime import datetime, timedelta\n\nnow = datetime.now()\nprint(now)            # 2026-05-13 14:30:00\nprint(now.year)       # 2026\n\n# 加減\ntomorrow = now + timedelta(days=1)\nlast_week = now - timedelta(weeks=1)\n\n# 格式化\nnow.strftime(\"%Y-%m-%d %H:%M\")    # \"2026-05-13 14:30\"\ndatetime.strptime(\"2026-05-13\", \"%Y-%m-%d\")\n\n# json：JSON\nimport json\ndata = {\"name\": \"Alice\", \"age\": 30}\njson_str = json.dumps(data)           # 變字串\nparsed = json.loads(json_str)         # 解析\n\n# 寫 / 讀檔\nwith open(\"data.json\", \"w\") as f:\n    json.dump(data, f, indent=2)\n\nwith open(\"data.json\") as f:\n    data = json.load(f)\n\n# os：作業系統\nimport os\nos.environ.get(\"API_KEY\")          # 取環境變數\nos.listdir(\".\")                    # 列檔案\nos.path.exists(\"file.txt\")         # 檢查存在\n\n# pathlib：更現代的檔案處理（推薦）\nfrom pathlib import Path\n\np = Path(\"data.txt\")\np.exists()                         # 檢查\np.read_text()                      # 讀\np.write_text(\"hello\")              # 寫\n\n# re：正則\nimport re\nre.findall(r\"\\d+\", \"今天 25 度、明天 28 度\")\n# ['25', '28']\n```\n\n  \n### 第三方套件：用 uv 裝\n\n```text\n# 裝 requests（HTTP 客戶端）\n$ uv add requests\n\n# pyproject.toml 自動加：\n[project]\ndependencies = [\n    \"requests>=2.32.0\",\n]\n\n# 用\nimport requests\n\nresponse = requests.get(\"https://api.github.com/users/torvalds\")\ndata = response.json()\nprint(data[\"name\"])\n\n# 多個套件\n$ uv add fastapi uvicorn sqlalchemy pydantic\n\n# 開發專用（test / lint、不上 production）\n$ uv add --dev pytest ruff mypy\n\n# 從別人專案 sync\n$ git clone someproject\n$ cd someproject\n$ uv sync   # 自動裝所有依賴\n\n# 升級\n$ uv lock --upgrade-package requests\n\n# 移除\n$ uv remove requests\n\n# Lock file（uv.lock）\n# 自動 commit、保證所有人裝同版本\n```\n\n  \n### 2026 必裝 Python 套件 Top 20\n\n  \n| 套件 | 用途 |\n| --- | --- |\n| **requests / httpx** | HTTP 客戶端 |\n| **fastapi** | 現代 API 框架 |\n| **uvicorn** | ASGI server |\n| **pydantic** | 資料驗證 |\n| **sqlalchemy** | ORM |\n| **alembic** | DB migration |\n| **django** | 大型 web framework |\n| **celery** | 背景任務 |\n| **redis** | Redis client |\n| **numpy** | 數值計算 |\n| **pandas** | 資料處理 |\n| **matplotlib / plotly** | 視覺化 |\n| **scikit-learn** | 機器學習 |\n| **torch / pytorch** | 深度學習 |\n| **transformers** | Hugging Face |\n| **langchain** | LLM 工具鏈 |\n| **openai / anthropic** | AI API client |\n| **pytest** | 測試 |\n| **ruff** | Linter + formatter（超快） |\n| **mypy / pyright** | 型別檢查 |\n\n  \n### 專案結構\n\n```text\n# 小專案\nmy-project/\n├── .python-version\n├── pyproject.toml\n├── uv.lock\n├── README.md\n├── .gitignore\n└── main.py\n\n# 中型專案\nmy-app/\n├── pyproject.toml\n├── uv.lock\n├── src/\n│   └── myapp/\n│       ├── __init__.py\n│       ├── main.py\n│       ├── models.py\n│       ├── api/\n│       │   ├── __init__.py\n│       │   ├── users.py\n│       │   └── products.py\n│       └── utils.py\n├── tests/\n│   ├── __init__.py\n│   ├── test_users.py\n│   └── test_api.py\n├── .env\n├── .gitignore\n└── README.md\n\n# __init__.py 讓資料夾變 package\n# 能 import myapp.api.users\n\n# 相對 import\n# api/users.py 想用 utils.py：\nfrom ..utils import helper\n\n# 絕對 import（推薦）\nfrom myapp.utils import helper\n```\n\n  \n### Virtual Environment（虛擬環境）\n\n```text\n為什麼要 venv？\n- 專案 A 用 Django 4\n- 專案 B 用 Django 5\n- 全裝到 global = 衝突\n\n解：每個專案自己的 venv\n\n# uv 自動處理！\n$ uv init\n$ uv add requests\n# 自動建 .venv、裝在裡面\n\n# 傳統方式\n$ python -m venv .venv\n$ source .venv/bin/activate\n(.venv) $ pip install requests\n(.venv) $ python main.py\n(.venv) $ deactivate\n\n# 啟動 venv 後、prompt 前有 (.venv)\n# pip / python 都用 venv 內的\n\n# .gitignore 加：\n.venv/\n__pycache__/\n*.pyc\n.env\n```\n\n  \n    **☕ 用人話講**\n    \n模組 + 套件管理 = 寫 Python 的「**用工具**」能力。**2026 心法**：(1) **uv 取代 pip + venv**—自動化、快 10 倍 (2) **標準函式庫先看**（math、json、datetime）—別重造輪子 (3) **第三方套件用 uv add**—自動裝 + 記錄 (4) **commit pyproject.toml + uv.lock**—團隊版本一致。**看官方文件**比 ChatGPT 答案準。\n\n  \n\n  \n    \n      💼\n      接案小知識\n    \n    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「Python」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。",
+      "tip": {
+        "type": "practical",
+        "text": "剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「Python」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "安裝 lesson 內介紹的工具、用官方的 quick start 跑一次 hello world。記錄安裝過程踩了哪些坑。",
+        "hint": "工具的學習曲線通常卡在「環境設定」這關。Node 版本、Python 版本、權限、PATH 變數、port 衝突——遇到一個解一個。",
+        "answer": "踩坑筆記範本：『遇到：[錯誤訊息] → 原因：[根本原因] → 解：[具體指令]』。整理在自己的 GitHub gist 或 Notion、下次遇到同樣坑直接複製貼上 = 把痛苦變資產。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "什麼是模組"
+        },
+        {
+          "level": 3,
+          "text": "標準函式庫（Python 內建）"
+        },
+        {
+          "level": 3,
+          "text": "第三方套件：用 uv 裝"
+        },
+        {
+          "level": 3,
+          "text": "2026 必裝 Python 套件 Top 20"
+        },
+        {
+          "level": 3,
+          "text": "專案結構"
+        },
+        {
+          "level": 3,
+          "text": "Virtual Environment（虛擬環境）"
+        }
+      ]
+    },
+    {
+      "id": "26.8",
+      "number": "LESSON 26.8",
+      "title": "檔案 I/O + with 語法",
+      "oneLineSummary": "Lambda：「匿名函式」—寫一次性的小邏輯時用。",
+      "analogy": "像便利貼便籤—寫個小函式、不取名、用完丟。sorted(arr, key=lambda x: x.name)—1 行排序、不用寫一個正式 function。",
+      "content": "讀寫檔案是日常—讀設定檔、存資料、處理 CSV / JSON / 文字。\n\n  \n### 讀檔案\n\n```text\n# 經典寫法（記得 close）\nf = open(\"data.txt\", \"r\")\ncontent = f.read()\nprint(content)\nf.close()   # 一定要\n\n# Pythonic：with 自動 close（推薦）\nwith open(\"data.txt\", \"r\") as f:\n    content = f.read()\nprint(content)\n\n# 讀模式\n\"r\"   # 讀（預設）\n\"w\"   # 寫（蓋掉原本）\n\"a\"   # 追加（接在後面）\n\"r+\"  # 讀+寫\n\"rb\"  # 讀 binary\n\"wb\"  # 寫 binary\n\n# 讀整個檔案\nwith open(\"data.txt\") as f:\n    content = f.read()     # 整個 string\n\n# 一行行讀（記憶體友善、大檔用這個）\nwith open(\"data.txt\") as f:\n    for line in f:\n        print(line.strip())   # strip 去掉換行\n\n# 讀所有行成 list\nwith open(\"data.txt\") as f:\n    lines = f.readlines()\n# ['line 1\\n', 'line 2\\n', ...]\n\n# 讀指定 bytes\nwith open(\"data.txt\") as f:\n    chunk = f.read(1024)   # 1KB\n\n# UTF-8（中文檔案）\nwith open(\"data.txt\", encoding=\"utf-8\") as f:\n    content = f.read()\n# Windows 預設 cp950、明確指定 encoding 防亂碼\n```\n\n  \n### 寫檔案\n\n```text\n# 寫（蓋掉）\nwith open(\"output.txt\", \"w\") as f:\n    f.write(\"Hello\\n\")\n    f.write(\"World\\n\")\n\n# 寫多行\nlines = [\"line 1\\n\", \"line 2\\n\", \"line 3\\n\"]\nwith open(\"output.txt\", \"w\") as f:\n    f.writelines(lines)\n# 注意：writelines 不加換行、要自己在每行加 \\n\n\n# 追加\nwith open(\"log.txt\", \"a\") as f:\n    f.write(f\"{datetime.now()} - event\\n\")\n\n# 用 print 寫檔案\nwith open(\"output.txt\", \"w\") as f:\n    print(\"Hello\", file=f)\n    print(\"World\", file=f)\n```\n\n  \n### JSON\n\n```text\nimport json\n\n# 寫 JSON\ndata = {\n    \"name\": \"Alice\",\n    \"age\": 30,\n    \"hobbies\": [\"reading\", \"hiking\"]\n}\n\nwith open(\"user.json\", \"w\") as f:\n    json.dump(data, f, indent=2)    # indent 美化\n\n# 讀 JSON\nwith open(\"user.json\") as f:\n    data = json.load(f)\n\nprint(data[\"name\"])\n\n# 字串 ↔ JSON\njson_str = json.dumps(data)        # dict → string\nparsed = json.loads(json_str)      # string → dict\n\n# 中文不要被 escape\njson.dumps({\"name\": \"愛麗絲\"}, ensure_ascii=False)\n# 否則會變 \"\\u611b...\"\n\n# 不能直接 dump 的型別\nimport json\nfrom datetime import datetime\n\ndata = {\"time\": datetime.now()}\njson.dumps(data)\n# ❌ TypeError\n\n# 解：自訂 encoder\ndef encoder(obj):\n    if isinstance(obj, datetime):\n        return obj.isoformat()\n    raise TypeError()\n\njson.dumps(data, default=encoder)\n```\n\n  \n### CSV\n\n```text\nimport csv\n\n# 寫 CSV\ndata = [\n    [\"name\", \"age\", \"city\"],\n    [\"Alice\", 30, \"Taipei\"],\n    [\"Bob\", 25, \"Tokyo\"],\n]\n\nwith open(\"users.csv\", \"w\", newline=\"\") as f:\n    writer = csv.writer(f)\n    writer.writerows(data)\n\n# 讀 CSV\nwith open(\"users.csv\") as f:\n    reader = csv.reader(f)\n    for row in reader:\n        print(row)   # ['Alice', '30', 'Taipei']\n\n# 用 DictReader（用 header 當 key）\nwith open(\"users.csv\") as f:\n    reader = csv.DictReader(f)\n    for row in reader:\n        print(row[\"name\"], row[\"age\"])\n\n# 用 DictWriter\ndata = [\n    {\"name\": \"Alice\", \"age\": 30},\n    {\"name\": \"Bob\", \"age\": 25},\n]\n\nwith open(\"users.csv\", \"w\", newline=\"\") as f:\n    writer = csv.DictWriter(f, fieldnames=[\"name\", \"age\"])\n    writer.writeheader()\n    writer.writerows(data)\n\n# 大資料用 pandas（後面講）\nimport pandas as pd\ndf = pd.read_csv(\"users.csv\")\ndf.to_csv(\"output.csv\", index=False)\n```\n\n  \n### pathlib：現代檔案操作\n\n```text\n# 推薦取代 os.path\nfrom pathlib import Path\n\n# 建立 path 物件\np = Path(\"data/users.txt\")\n\n# 屬性\np.name              # \"users.txt\"\np.stem              # \"users\"\np.suffix            # \".txt\"\np.parent            # PosixPath('data')\n\n# 檢查\np.exists()\np.is_file()\np.is_dir()\n\n# 讀 / 寫（簡單）\ncontent = p.read_text(encoding=\"utf-8\")\np.write_text(\"hello\", encoding=\"utf-8\")\n\n# Binary\ndata = p.read_bytes()\np.write_bytes(b\"binary data\")\n\n# 路徑運算\ndata_dir = Path(\"data\")\nuser_file = data_dir / \"users.txt\"   # 用 / 串接！\nprint(user_file)   # data/users.txt\n\n# 列資料夾\nfor f in data_dir.iterdir():\n    print(f)\n\n# Glob 找檔案\nfor f in data_dir.glob(\"*.json\"):\n    print(f)\n\n# 遞迴找\nfor f in data_dir.rglob(\"*.py\"):\n    print(f)\n\n# 建資料夾\nnew_dir = Path(\"output\")\nnew_dir.mkdir(exist_ok=True)        # 已存在不錯\nnew_dir.mkdir(parents=True, exist_ok=True)   # 連父建立\n\n# 刪\np.unlink()              # 刪檔\nnew_dir.rmdir()         # 刪空資料夾\n```\n\n  \n### 環境變數（.env）\n\n```text\n# 機密資訊不該寫 code！\n\n# .env 檔（不 commit、加 .gitignore）\nDATABASE_URL=postgresql://user:pass@localhost/db\nAPI_KEY=sk-abc123\nSECRET=xyz\n\n# 讀（python-dotenv）\n$ uv add python-dotenv\n\n# main.py\nfrom dotenv import load_dotenv\nimport os\n\nload_dotenv()   # 讀 .env 進 os.environ\n\ndb_url = os.environ[\"DATABASE_URL\"]\napi_key = os.getenv(\"API_KEY\", \"default\")   # 給預設\n\n# .gitignore 必加\n.env\n.venv/\n__pycache__/\n\n# .env.example（範本、給其他開發者）\nDATABASE_URL=postgresql://...\nAPI_KEY=your_key_here\n```\n\n  \n    **⚠ 踩雷警告**\n    \n新手 3 個檔案 I/O 坑：(1) **不用 with** → 忘記 close、檔案 lock 住 (2) **讀中文沒加 encoding=\"utf-8\"** → Windows 亂碼 (3) **密碼 / API key 寫死 code** → 推 GitHub 被偷。**對策**：永遠 with、永遠 utf-8、機密放 .env。**大 SaaS 半夜被刷帳單** = 99% API key commit 進 GitHub。\n\n  \n\n  \n    \n      🎯\n      面試考點\n    \n    台灣科技公司面試 90% 會問「Python」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。",
+      "tip": {
+        "type": "pro",
+        "text": "台灣科技公司面試 90% 會問「Python」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "讀檔案"
+        },
+        {
+          "level": 3,
+          "text": "寫檔案"
+        },
+        {
+          "level": 3,
+          "text": "JSON"
+        },
+        {
+          "level": 3,
+          "text": "CSV"
+        },
+        {
+          "level": 3,
+          "text": "pathlib：現代檔案操作"
+        },
+        {
+          "level": 3,
+          "text": "環境變數（.env）"
+        }
+      ]
+    },
+    {
+      "id": "26.9",
+      "number": "LESSON 26.9",
+      "title": "例外處理：try / except / finally",
+      "oneLineSummary": "Module 跟 Package：「把 code 拆成多個檔案」—大專案的基礎。",
+      "analogy": "像書的章節—不會把整本寫一頁、拆章節各管各的事。Python：import math、from datetime import date—用別人寫好的功能、自己 code 也按主題分檔。",
+      "content": "「**程式跑錯怎麼辦？**」—好的錯誤處理 = production 不掛。\n\n  \n### 基本 try / except\n\n```text\ntry:\n    result = 10 / 0\nexcept ZeroDivisionError:\n    print(\"不能除以 0\")\n\n# 抓所有錯（不推薦）\ntry:\n    risky_operation()\nexcept Exception as e:\n    print(f\"出錯：{e}\")\n\n# 抓特定錯（推薦）\ntry:\n    f = open(\"data.txt\")\nexcept FileNotFoundError:\n    print(\"檔案不存在\")\nexcept PermissionError:\n    print(\"沒權限\")\nexcept Exception as e:\n    print(f\"其他錯：{e}\")\n\n# 重新 raise\ntry:\n    risky()\nexcept SomeError as e:\n    log(e)\n    raise   # 處理完繼續往外丟\n\n# raise from（保留 chain）\ntry:\n    parse_json(data)\nexcept json.JSONDecodeError as e:\n    raise ValueError(\"Invalid input\") from e\n```\n\n  \n### finally：必跑\n\n```text\n# finally 不管有沒有錯都跑\ntry:\n    f = open(\"data.txt\")\n    process(f)\nexcept FileNotFoundError:\n    print(\"沒檔案\")\nfinally:\n    f.close()   # 一定關\n\n# 但更 pythonic 是 with\nwith open(\"data.txt\") as f:\n    process(f)\n# 自動關、不用 try/finally\n\n# finally 用途：\n# - DB connection 關\n# - lock 釋放\n# - log 記錄\n# - cleanup\n\ntry:\n    db.connect()\n    do_work()\nexcept Exception:\n    db.rollback()\n    raise\nelse:\n    db.commit()\nfinally:\n    db.close()\n\n# else：try 沒錯才跑（在 except 之後、finally 之前）\n```\n\n  \n### 常見 Exception 類型\n\n```text\n# 內建 Exception 層級\nBaseException\n ├── SystemExit\n ├── KeyboardInterrupt\n └── Exception\n      ├── ArithmeticError\n      │    ├── ZeroDivisionError\n      │    └── OverflowError\n      ├── LookupError\n      │    ├── IndexError\n      │    └── KeyError\n      ├── TypeError\n      ├── ValueError\n      ├── AttributeError\n      ├── ImportError\n      ├── FileNotFoundError\n      ├── PermissionError\n      └── ...\n\n# 抓特定：\ntry:\n    val = my_dict[\"key\"]\nexcept KeyError:\n    val = \"default\"\n\ntry:\n    n = int(s)\nexcept ValueError:\n    print(f\"'{s}' 不是數字\")\n\ntry:\n    user.profile.email\nexcept AttributeError:\n    print(\"沒這屬性\")\n\n# 不要直接 catch BaseException\n# 它包括 KeyboardInterrupt（Ctrl+C）\n# 你會擋掉用戶想停的能力\n```\n\n  \n### 自訂 Exception\n\n```text\n# 業務邏輯用自訂例外\nclass UserNotFoundError(Exception):\n    pass\n\nclass InsufficientBalanceError(Exception):\n    pass\n\nclass PaymentError(Exception):\n    def __init__(self, message, code):\n        super().__init__(message)\n        self.code = code\n\n# 用\ndef withdraw(user, amount):\n    if amount > user.balance:\n        raise InsufficientBalanceError(\n            f\"User {user.id} 餘額不足: {user.balance} \n    **🚀 進階技巧**\n    \n例外處理 5 大原則（2026 Senior 共識）：(1) **抓具體**例外、不抓 Exception (2) **不要默默吞錯**—永遠 log (3) **失敗早暴露**—不要繼續跑錯誤資料 (4) **用 with**—自動處理 close / cleanup (5) **用 EAFP（Easier to Ask Forgiveness than Permission）**—Python 慣用 try 而非 if 先檢查。\n\n  \n\n  \n    \n      ⚡\n      學習加速器\n    \n    把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。",
+      "tip": {
+        "type": "practical",
+        "text": "把這節學到的馬上應用到一個小東西—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "基本 try / except"
+        },
+        {
+          "level": 3,
+          "text": "finally：必跑"
+        },
+        {
+          "level": 3,
+          "text": "常見 Exception 類型"
+        },
+        {
+          "level": 3,
+          "text": "自訂 Exception"
+        }
+      ]
+    },
+    {
+      "id": "26.10",
+      "number": "LESSON 26.10",
+      "title": "OOP：class、繼承、dataclass",
+      "oneLineSummary": "Pip：「Python 的套件管理員」—一行 pip install 裝全世界。",
+      "analogy": "像App Store—想要什麼功能、安裝對應 App。Python：想做爬蟲 pip install scrapy、想做 AI pip install torch—85 萬個套件任你用。",
+      "content": "OOP 在 Python—寫 class 來組織「資料 + 行為」。\n\n  \n### 基本 class\n\n```text\nclass Dog:\n    # 類別屬性（所有 instance 共享）\n    species = \"Canis lupus familiaris\"\n    \n    # 建構子\n    def __init__(self, name, age):\n        self.name = name     # 實例屬性\n        self.age = age\n    \n    # 方法\n    def bark(self):\n        print(f\"{self.name} 汪汪叫\")\n    \n    def info(self):\n        return f\"{self.name} ({self.age} 歲)\"\n\n# 創建 instance\nlucky = Dog(\"Lucky\", 3)\nruby = Dog(\"Ruby\", 5)\n\n# 用\nlucky.bark()                # Lucky 汪汪叫\nprint(lucky.info())         # Lucky (3 歲)\nprint(lucky.species)        # Canis lupus familiaris\n\n# 改屬性\nlucky.age = 4\n\n# 動態加屬性（Python 特色）\nlucky.color = \"白\"          # 沒在 class 定義也行\n# 但不建議、容易亂\n```\n\n  \n### self 是什麼\n\n```text\n# self = 「呼叫這方法的物件」\n\nclass Calculator:\n    def __init__(self, initial=0):\n        self.value = initial   # 設這個 instance 的 value\n    \n    def add(self, n):\n        self.value += n        # 改這個 instance 的 value\n        return self             # 回傳自己（chainable）\n\nc1 = Calculator(0)\nc2 = Calculator(100)\n\nc1.add(5).add(10)    # c1.value = 15\nc2.add(5).add(10)    # c2.value = 115\n\n# 兩個 instance 各有自己的 value\n\n# 為什麼要 self（不像 Java this 隱式）？\n# Python 設計：明確 > 隱式\n# 你看 def bark(self): 就知道是 instance method\n```\n\n  \n### 繼承\n\n```text\nclass Animal:\n    def __init__(self, name):\n        self.name = name\n    \n    def eat(self):\n        print(f\"{self.name} 在吃\")\n    \n    def speak(self):\n        print(f\"{self.name} 發出聲音\")\n\nclass Dog(Animal):\n    def speak(self):\n        print(f\"{self.name} 汪汪叫\")    # 覆寫\n    \n    def fetch(self):\n        print(f\"{self.name} 撿球\")     # 新方法\n\nclass Cat(Animal):\n    def speak(self):\n        print(f\"{self.name} 喵喵叫\")\n    \n    def purr(self):\n        print(f\"{self.name} 呼嚕\")\n\n# 用\nd = Dog(\"Lucky\")\nd.eat()       # 繼承自 Animal\nd.speak()     # Dog 自己的\nd.fetch()     # Dog 獨有\n\nc = Cat(\"Mimi\")\nc.speak()     # 喵喵\nc.purr()      # 呼嚕\n\n# 呼叫 super\nclass Puppy(Dog):\n    def __init__(self, name, age):\n        super().__init__(name)   # 呼叫父的 __init__\n        self.age = age\n    \n    def speak(self):\n        super().speak()           # 呼叫父的\n        print(\"(小聲版)\")\n\np = Puppy(\"Lucky\", 1)\np.speak()\n# Lucky 汪汪叫\n# (小聲版)\n```\n\n  \n### 特殊方法（Dunder Methods）\n\n```text\n# __xxx__ 雙底線方法 = Python 特殊鉤子\n\nclass Vector:\n    def __init__(self, x, y):\n        self.x = x\n        self.y = y\n    \n    # print(v) 時呼叫\n    def __str__(self):\n        return f\"({self.x}, {self.y})\"\n    \n    # repr(v) 時呼叫（給開發者看）\n    def __repr__(self):\n        return f\"Vector({self.x}, {self.y})\"\n    \n    # v1 + v2\n    def __add__(self, other):\n        return Vector(self.x + other.x, self.y + other.y)\n    \n    # v1 == v2\n    def __eq__(self, other):\n        return self.x == other.x and self.y == other.y\n    \n    # len(v)\n    def __len__(self):\n        import math\n        return int(math.sqrt(self.x ** 2 + self.y ** 2))\n    \n    # v[0], v[1]\n    def __getitem__(self, idx):\n        return [self.x, self.y][idx]\n\nv1 = Vector(3, 4)\nv2 = Vector(1, 2)\n\nprint(v1)              # (3, 4)\nprint(v1 + v2)         # (4, 6)\nprint(v1 == Vector(3, 4))  # True\nprint(len(v1))         # 5\nprint(v1[0])           # 3\n\n# 常用 dunder：\n# __init__       建構子\n# __str__        print(obj) / str(obj)\n# __repr__       repr(obj)\n# __eq__         ==\n# __lt__ __gt__  \n# __add__ __sub__ __mul__   + - *\n# __len__        len(obj)\n# __iter__       for x in obj\n# __contains__   x in obj\n# __getitem__    obj[i]\n# __call__       obj()（讓 instance 變 callable）\n```\n\n  \n### dataclass：簡化 class（推薦）\n\n```text\n# 傳統寫法\nclass User:\n    def __init__(self, name, age, email):\n        self.name = name\n        self.age = age\n        self.email = email\n    \n    def __repr__(self):\n        return f\"User(name={self.name!r}, age={self.age}, email={self.email!r})\"\n    \n    def __eq__(self, other):\n        return self.name == other.name and self.age == other.age and self.email == other.email\n\n# Dataclass 寫法\nfrom dataclasses import dataclass\n\n@dataclass\nclass User:\n    name: str\n    age: int\n    email: str\n\n# 自動有 __init__、__repr__、__eq__！\nu = User(\"Alice\", 30, \"alice@x.com\")\nprint(u)\n# User(name='Alice', age=30, email='alice@x.com')\n\n# 預設值\n@dataclass\nclass Product:\n    name: str\n    price: float = 0.0\n    stock: int = 0\n    tags: list = None   # 不能直接給 [] (mutable default 陷阱)\n    \n    def __post_init__(self):\n        if self.tags is None:\n            self.tags = []\n\n# 更好用 field\nfrom dataclasses import dataclass, field\n\n@dataclass\nclass Product:\n    name: str\n    price: float = 0.0\n    tags: list = field(default_factory=list)\n    \n    def __post_init__(self):\n        if self.price  s2)   # True\n```\n\n  \n### Property（property decorator）\n\n```text\nclass Circle:\n    def __init__(self, radius):\n        self._radius = radius\n    \n    @property\n    def radius(self):\n        return self._radius\n    \n    @radius.setter\n    def radius(self, value):\n        if value \n    **🚀 進階技巧**\n    \n2026 Python OOP 心法：(1) **dataclass > 手寫 class**—簡單資料 class 必用 (2) **type hint 必加**—`name: str, age: int` (3) **不要過度繼承**—超過 2 層繼承通常設計有問題 (4) **用 composition 多過 inheritance**—has-a 比 is-a 彈性 (5) **property 取代 getter/setter**。**Pydantic**（後面講）是 dataclass 進階版、含驗證、API 主流。\n\n  \n\n  \n    \n      🚀\n      2026 趨勢\n    \n    這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。",
+      "tip": {
+        "type": "trend",
+        "text": "這個技術 2026 還在主流、未來 5 年不會過時。但工具會更新—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "基本 class"
+        },
+        {
+          "level": 3,
+          "text": "self 是什麼"
+        },
+        {
+          "level": 3,
+          "text": "繼承"
+        },
+        {
+          "level": 3,
+          "text": "特殊方法（Dunder Methods）"
+        },
+        {
+          "level": 3,
+          "text": "dataclass：簡化 class（推薦）"
+        },
+        {
+          "level": 3,
+          "text": "Property（property decorator）"
+        }
+      ]
+    },
+    {
+      "id": "26.11",
+      "number": "LESSON 26.11",
+      "title": "進階：decorator、generator、context manager",
+      "oneLineSummary": "Virtual Environment（venv）：「每個專案有獨立 Python 環境」—避免套件衝突。",
+      "analogy": "像每個專案一個獨立廚房—甲菜的醬油不會被乙菜污染。venv 一樣：專案 A 用 pandas 1.5、專案 B 用 pandas 2.0—互不干擾。",
+      "content": "3 個 Python 進階特性—寫熟讓你從中階變高階。\n\n  \n### Decorator（裝飾器）\n\n```text\n# Decorator = 「包一層、加功能」\n\n# 最簡單版\ndef my_decorator(func):\n    def wrapper():\n        print(\"Before\")\n        func()\n        print(\"After\")\n    return wrapper\n\n@my_decorator\ndef hello():\n    print(\"Hello\")\n\nhello()\n# Before\n# Hello\n# After\n\n# 等同於：\nhello = my_decorator(hello)\n\n# 帶參數的函數\ndef my_decorator(func):\n    def wrapper(*args, **kwargs):\n        print(\"Before\")\n        result = func(*args, **kwargs)\n        print(\"After\")\n        return result\n    return wrapper\n\n@my_decorator\ndef greet(name):\n    return f\"Hi, {name}\"\n\nprint(greet(\"Alice\"))\n\n# 實戰：計時\nimport time\nfrom functools import wraps\n\ndef timing(func):\n    @wraps(func)   # 保留原 function 的 metadata\n    def wrapper(*args, **kwargs):\n        start = time.time()\n        result = func(*args, **kwargs)\n        print(f\"{func.__name__} 花了 {time.time() - start:.2f}s\")\n        return result\n    return wrapper\n\n@timing\ndef slow_function():\n    time.sleep(1)\n    return \"完成\"\n\nslow_function()\n# slow_function 花了 1.00s\n\n# 實戰：log\ndef log_calls(func):\n    @wraps(func)\n    def wrapper(*args, **kwargs):\n        print(f\"Calling {func.__name__}({args}, {kwargs})\")\n        return func(*args, **kwargs)\n    return wrapper\n\n@log_calls\ndef add(a, b):\n    return a + b\n\n# 帶參數的 decorator\ndef retry(max_attempts=3):\n    def decorator(func):\n        @wraps(func)\n        def wrapper(*args, **kwargs):\n            for attempt in range(max_attempts):\n                try:\n                    return func(*args, **kwargs)\n                except Exception as e:\n                    if attempt == max_attempts - 1:\n                        raise\n                    time.sleep(2 ** attempt)\n        return wrapper\n    return decorator\n\n@retry(max_attempts=5)\ndef flaky_api_call():\n    ...\n\n# 內建 decorator\n@property            # getter\n@staticmethod        # 靜態方法\n@classmethod         # 類別方法\n@dataclass           # 自動產生 __init__ 等\n\n# Library 提供\n@app.route(\"/users\") # Flask\n@app.get(\"/users\")   # FastAPI\n@cache               # functools.cache\n@lru_cache           # functools.lru_cache\n@pytest.fixture      # pytest\n```\n\n  \n### Generator（生成器）\n\n```text\n# 用 yield 取代 return = generator\ndef count_up_to(n):\n    i = 0\n    while i \n\n# 一次拿一個\nfor x in gen:\n    print(x)\n\n# 0\n# 1\n# 2\n# 3\n# 4\n\n# 或 next() 拿\ngen = count_up_to(3)\nnext(gen)   # 0\nnext(gen)   # 1\nnext(gen)   # 2\nnext(gen)   # ❌ StopIteration\n\n# 為什麼用 generator？\n\n# 場景 1：大資料、不要全進 memory\ndef read_large_file(path):\n    with open(path) as f:\n        for line in f:\n            yield line\n\n# 1GB 檔案 OK、不爆 memory\nfor line in read_large_file(\"huge.txt\"):\n    process(line)\n\n# 場景 2：無限序列\ndef fibonacci():\n    a, b = 0, 1\n    while True:\n        yield a\n        a, b = b, a + b\n\nfib = fibonacci()\nfor _ in range(10):\n    print(next(fib))\n# 0, 1, 1, 2, 3, 5, 8, 13, 21, 34\n\n# 場景 3：管道（pipeline）\ndef numbers(n):\n    for i in range(n):\n        yield i\n\ndef squared(nums):\n    for n in nums:\n        yield n ** 2\n\ndef filtered(nums):\n    for n in nums:\n        if n % 2 == 0:\n            yield n\n\n# 組合（lazy）\nresult = filtered(squared(numbers(10)))\nfor n in result:\n    print(n)   # 0, 4, 16, 36, 64\n\n# Generator expression（簡潔版）\nsquares = (x ** 2 for x in range(1000000))\n# 跟 list comprehension 一樣、但是 generator\n# 不立刻算、省記憶體\n\n# vs list comprehension\nsquares_list = [x ** 2 for x in range(1000000)]\n# 立刻算 1M 個、佔 8MB+\n\nsquares_gen = (x ** 2 for x in range(1000000))\n# 不算、用才算、幾乎 0 memory\n```\n\n  \n### Context Manager（with 語法）\n\n```text\n# 你已經用過：\nwith open(\"file.txt\") as f:\n    ...\n# 自動 close\n\n# 自己寫 context manager（class 方式）\nclass DBConnection:\n    def __init__(self, db_url):\n        self.db_url = db_url\n    \n    def __enter__(self):\n        print(\"Connecting...\")\n        self.conn = connect(self.db_url)\n        return self.conn\n    \n    def __exit__(self, exc_type, exc_val, exc_tb):\n        print(\"Closing...\")\n        self.conn.close()\n        return False   # False = 不吞 exception\n\nwith DBConnection(\"...\") as conn:\n    conn.execute(\"SELECT * FROM users\")\n# Connecting...\n# (do stuff)\n# Closing...\n\n# 用 contextmanager decorator（簡潔）\nfrom contextlib import contextmanager\n\n@contextmanager\ndef timing():\n    start = time.time()\n    yield\n    print(f\"Took {time.time() - start:.2f}s\")\n\nwith timing():\n    expensive_operation()\n# Took 1.50s\n\n# 實戰例子\n@contextmanager\ndef db_transaction(conn):\n    try:\n        yield conn\n        conn.commit()\n    except Exception:\n        conn.rollback()\n        raise\n    finally:\n        conn.close()\n\nwith db_transaction(conn) as c:\n    c.execute(\"INSERT ...\")\n    c.execute(\"UPDATE ...\")\n# 全成功 → commit\n# 任一失敗 → rollback\n# 永遠 close\n```\n\n  \n### 實戰：3 個進階組合\n\n```text\n# 例：API 客戶端\nfrom functools import wraps\nfrom contextlib import contextmanager\nimport time\nimport requests\n\n# Decorator：retry\ndef retry(max_attempts=3):\n    def decorator(func):\n        @wraps(func)\n        def wrapper(*args, **kwargs):\n            for attempt in range(max_attempts):\n                try:\n                    return func(*args, **kwargs)\n                except requests.RequestException:\n                    if attempt == max_attempts - 1:\n                        raise\n                    time.sleep(2 ** attempt)\n        return wrapper\n    return decorator\n\n# Context manager：rate limit\n@contextmanager\ndef rate_limit(rps):\n    \"\"\"限制 request per second\"\"\"\n    time.sleep(1 / rps)\n    yield\n\n# Generator：分批拉資料\ndef paginated_fetch(base_url, page_size=100):\n    \"\"\"分頁拉、不一次全進 memory\"\"\"\n    page = 1\n    while True:\n        with rate_limit(rps=10):\n            data = api_get(f\"{base_url}?page={page}&size={page_size}\")\n        if not data:\n            break\n        yield from data\n        page += 1\n\n@retry(max_attempts=3)\ndef api_get(url):\n    return requests.get(url).json()\n\n# 用\nfor user in paginated_fetch(\"https://api.example.com/users\"):\n    process(user)\n\n# 結合：\n# - retry decorator 自動重試\n# - rate limit context manager 不打爆\n# - generator 不爆 memory\n```\n\n  \n    **🚀 進階技巧**\n    \nPython 進階 3 件神器：(1) **Decorator**—寫 middleware / log / cache 必用 (2) **Generator**—大資料處理、stream、無限序列 (3) **Context manager**—資源管理（檔案 / DB / lock）。**2026 主流 framework 大量用這 3 個**（FastAPI / Django / pytest 全靠它們）。寫熟你的 code 變 100x 優雅。\n\n  \n\n  \n    \n      🛠️\n      工具推薦\n    \n    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。",
+      "tip": {
+        "type": "practical",
+        "text": "配合這節用的工具：(1) VS Code（編輯器、免費）(2) Chrome DevTools（F12 開啟、除錯神器）(3) Live Server（VS Code 擴充、即時預覽）(4) GitHub Copilot / Cursor（AI 寫程式、學習加速 2-10x）。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "挑一個你做過的舊專案、用本節「進階：decorator、generator、context manager」介紹的進階技術重構它。",
+        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
+        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "Decorator（裝飾器）"
+        },
+        {
+          "level": 3,
+          "text": "Generator（生成器）"
+        },
+        {
+          "level": 3,
+          "text": "Context Manager（with 語法）"
+        },
+        {
+          "level": 3,
+          "text": "實戰：3 個進階組合"
+        }
+      ]
+    },
+    {
+      "id": "26.12",
+      "number": "LESSON 26.12",
+      "title": "Type Hints + mypy：靜態型別檢查",
+      "oneLineSummary": "File I/O：讀寫檔案—open / read / write—爬蟲 / 資料分析必備。",
+      "analogy": "像開檔案夾翻文件—with open(\"data.txt\") as f:—Python 的 with 自動關檔、不會忘記。比 C / Java 友善 10 倍。",
+      "content": "Python 是動態型別、但 2024+ 主流加 **type hint**—不影響執行、但**救你大專案的命**。\n\n  \n### 為什麼要 type hint\n\n```text\n# 沒 type hint\ndef process(items):\n    return [item.upper() for item in items]\n\n# 看名字看不出來：\n# - items 是什麼？list of string？dict？\n# - 回傳什麼？\n# - 用錯了什麼時候會發現？跑到才知\n\n# 有 type hint\ndef process(items: list[str]) -> list[str]:\n    return [item.upper() for item in items]\n\n# 一目瞭然：吃 list of string、回 list of string\n# IDE 自動完成神準\n# mypy 跑型別檢查、抓 bug\n```\n\n  \n### 基本 type hint\n\n```text\n# 變數\nage: int = 30\nname: str = \"Alice\"\nis_active: bool = True\npi: float = 3.14\nnothing: None = None\n\n# 函數\ndef add(a: int, b: int) -> int:\n    return a + b\n\ndef greet(name: str) -> str:\n    return f\"Hello, {name}\"\n\ndef log(msg: str) -> None:    # 不回值\n    print(msg)\n\n# Container（Python 3.9+ 用內建）\ndef get_users() -> list[str]:\n    return [\"Alice\", \"Bob\"]\n\ndef count_chars(s: str) -> dict[str, int]:\n    return {c: s.count(c) for c in set(s)}\n\n# Tuple（明確元素）\ndef get_point() -> tuple[float, float]:\n    return (3.0, 4.0)\n\n# 不定長 tuple\ndef get_nums() -> tuple[int, ...]:\n    return (1, 2, 3, 4)\n\n# Set\ndef get_tags() -> set[str]:\n    return {\"python\", \"ai\"}\n```\n\n  \n### Optional / Union\n\n```text\n# 可能 None\nfrom typing import Optional\n\ndef find_user(id: int) -> Optional[User]:\n    return db.get(id)   # 找不到回 None\n\n# Python 3.10+ 用 | None\ndef find_user(id: int) -> User | None:\n    return db.get(id)\n\n# Union（多種型別）\ndef parse(x: int | str) -> int:\n    return int(x)\n\n# 老式（Python 3.9 以下）\nfrom typing import Union\ndef parse(x: Union[int, str]) -> int:\n    return int(x)\n```\n\n  \n### Callable / 函數型別\n\n```text\nfrom typing import Callable\n\n# 「吃 int 回 int」的函數\ndef apply(func: Callable[[int], int], n: int) -> int:\n    return func(n)\n\ndef double(x: int) -> int:\n    return x * 2\n\napply(double, 5)   # 10\n\n# 多參數\ndef reducer(\n    func: Callable[[int, int], int],\n    items: list[int]\n) -> int:\n    ...\n\n# 沒參數 / 任何\nCallable[[], None]    # 不吃、不回\nCallable[..., int]    # 任意參數、回 int\n```\n\n  \n### Generic（泛型）\n\n```text\nfrom typing import TypeVar\n\nT = TypeVar(\"T\")\n\ndef first(items: list[T]) -> T:\n    return items[0]\n\nfirst([1, 2, 3])           # 推導 T=int、回 int\nfirst([\"a\", \"b\"])          # 推導 T=str、回 str\nfirst([True, False])       # 推導 T=bool、回 bool\n\n# 約束\nNumberT = TypeVar(\"NumberT\", int, float)\n\ndef avg(items: list[NumberT]) -> NumberT:\n    return sum(items) / len(items)\n\n# Python 3.12+ 簡潔語法\ndef first[T](items: list[T]) -> T:\n    return items[0]\n\n# class 泛型\nfrom typing import Generic\n\nclass Container(Generic[T]):\n    def __init__(self, item: T):\n        self.item = item\n    \n    def get(self) -> T:\n        return self.item\n\nc = Container[int](42)\nn: int = c.get()\n```\n\n  \n### 進階 type hint\n\n```text\n# Literal（指定值）\nfrom typing import Literal\n\ndef set_status(status: Literal[\"active\", \"inactive\", \"pending\"]) -> None:\n    ...\n\nset_status(\"active\")     # ✓\nset_status(\"xxx\")         # mypy 抗議\n\n# TypedDict（dict with 固定 key + type）\nfrom typing import TypedDict\n\nclass User(TypedDict):\n    name: str\n    age: int\n    email: str\n\nu: User = {\"name\": \"Alice\", \"age\": 30, \"email\": \"...\"}\n\n# Pydantic（API 主流、後面講）\n\n# Protocol（duck typing 的型別）\nfrom typing import Protocol\n\nclass Drawable(Protocol):\n    def draw(self) -> None: ...\n\n# 任何有 .draw() 方法的都符合\ndef render(item: Drawable) -> None:\n    item.draw()\n\n# Final（不可改）\nfrom typing import Final\n\nPI: Final = 3.14\nPI = 4   # mypy 抗議\n\n# NewType（取別名）\nfrom typing import NewType\n\nUserId = NewType(\"UserId\", int)\n\ndef get_user(id: UserId) -> User: ...\n\nuid = UserId(123)\nget_user(uid)    # ✓\nget_user(123)    # mypy 抗議（普通 int 不是 UserId）\n```\n\n  \n### mypy / pyright：型別檢查器\n\n```text\n# 裝\n$ uv add --dev mypy\n\n# 跑\n$ uv run mypy main.py\n\n# 例：\ndef add(a: int, b: int) -> int:\n    return a + b\n\nresult = add(1, \"2\")\n# mypy: error: Argument 2 to \"add\" has incompatible type \"str\"; expected \"int\"\n\n# 不用跑也能抓 bug！\n\n# 設定（pyproject.toml）\n[tool.mypy]\nstrict = true\npython_version = \"3.12\"\n\n# 漸進式採用\n[tool.mypy]\ndisallow_untyped_defs = true\n\n# IDE 內建（推薦）\n# VS Code + Pylance：自動 type check\n# Cursor / Zed：同 Pylance\n# PyCharm：內建\n\n# Pyright（更快、Microsoft 出）\n$ uv add --dev pyright\n$ uv run pyright\n```\n\n  \n### 實戰例子\n\n```text\n# 寫完整的 typed code\nfrom typing import Optional\nfrom dataclasses import dataclass\n\n@dataclass\nclass User:\n    id: int\n    name: str\n    email: str\n    age: Optional[int] = None\n    is_active: bool = True\n\nclass UserRepository:\n    def __init__(self, db: \"Database\"):\n        self.db = db\n    \n    def find_by_id(self, id: int) -> Optional[User]:\n        row = self.db.query(\"SELECT * FROM users WHERE id = ?\", [id])\n        if not row:\n            return None\n        return User(**row)\n    \n    def find_active(self) -> list[User]:\n        rows = self.db.query(\"SELECT * FROM users WHERE is_active = true\")\n        return [User(**row) for row in rows]\n    \n    def save(self, user: User) -> User:\n        if user.id:\n            self.db.update(user)\n        else:\n            user.id = self.db.insert(user)\n        return user\n\n# IDE 完整自動完成\n# mypy 抓所有型別錯\n# 自己看 1 個月後仍懂\n```\n\n  \n    **🚀 進階技巧**\n    \n2026 Python 加 type hint 4 大理由：(1) **IDE 補全強**—VS Code / Cursor 自動完成神準 (2) **mypy 抓 bug**—不用跑就知道哪錯 (3) **自我文件**—1 個月後自己 / 同事看得懂 (4) **大專案不能沒有**—10000 行以上不加 type 死。**新專案 day 1 加 type hint**—之後感謝過去的自己。**已有 code** 漸進式加（先 public function、再 internal）。\n\n  \n\n  \n    \n      ⚠️\n      新手常見錯誤\n    \n    新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。",
+      "tip": {
+        "type": "warning",
+        "text": "新手 3 大坑：(1) 不看 console—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) 不存檔就 F5—改完忘記儲存以為「程式沒效果」 (3) 抄 code 不理解—複製貼上能跑、但下次要改就崩潰。記得：先看懂、再寫。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "為什麼要 type hint"
+        },
+        {
+          "level": 3,
+          "text": "基本 type hint"
+        },
+        {
+          "level": 3,
+          "text": "Optional / Union"
+        },
+        {
+          "level": 3,
+          "text": "Callable / 函數型別"
+        },
+        {
+          "level": 3,
+          "text": "Generic（泛型）"
+        },
+        {
+          "level": 3,
+          "text": "進階 type hint"
+        },
+        {
+          "level": 3,
+          "text": "mypy / pyright：型別檢查器"
+        },
+        {
+          "level": 3,
+          "text": "實戰例子"
+        }
+      ]
+    },
+    {
+      "id": "26.13",
+      "number": "LESSON 26.13",
+      "title": "NumPy：陣列運算",
+      "oneLineSummary": "JSON 處理：json.loads / json.dumps—Python 內建、無需安裝。",
+      "analogy": "像Google 翻譯—JSON 字串轉 Python dict（loads）、Python dict 轉 JSON 字串（dumps）。API 串接 / 設定檔 / 爬蟲—一直用。",
+      "content": "NumPy 是 Python AI/ML/DL **所有 library 的基礎**—Pandas、scikit-learn、PyTorch 內部全用 NumPy。學會它 = 解鎖 AI 生態。\n\n  \n### 為什麼要 NumPy（不用 list）\n\n```text\n# Python list 算數很慢\nnums = list(range(1_000_000))\nsquared = [x ** 2 for x in nums]\n\n# NumPy：快 10-100 倍\nimport numpy as np\narr = np.arange(1_000_000)\nsquared = arr ** 2\n\n原因：\n1. NumPy 用 C 寫\n2. 連續記憶體\n3. SIMD 向量化指令\n4. 沒 Python overhead\n```\n\n  \n### 建立 ndarray\n\n```text\nimport numpy as np\n\n# 從 list\narr = np.array([1, 2, 3, 4, 5])\nprint(arr.shape)      # (5,)\nprint(arr.dtype)      # int64\nprint(arr.ndim)       # 1\n\n# 2D（矩陣）\nmatrix = np.array([[1, 2, 3], [4, 5, 6]])\nprint(matrix.shape)   # (2, 3)\n\n# 特殊建立\nnp.zeros((3, 4))           # 3x4 全 0\nnp.ones((2, 3))            # 2x3 全 1\nnp.eye(3)                  # 3x3 單位矩陣\n\n# 範圍\nnp.arange(10)              # [0 1 2 ... 9]\nnp.arange(0, 10, 2)        # [0 2 4 6 8]\nnp.linspace(0, 1, 5)       # [0. 0.25 0.5 0.75 1.]\n\n# 隨機\nnp.random.rand(3, 3)       # 均勻 [0, 1)\nnp.random.randn(3, 3)      # 標準常態\nnp.random.randint(0, 10, (3, 3))\n```\n\n  \n### 運算：Vectorization\n\n```text\na = np.array([1, 2, 3, 4])\nb = np.array([10, 20, 30, 40])\n\n# 元素級運算\na + b      # [11 22 33 44]\na * b      # [10 40 90 160]\na ** 2     # [1 4 9 16]\n\n# Broadcasting\na + 10     # [11 12 13 14]\na * 2      # [2 4 6 8]\n\n# 比較\na > 2      # [False False True True]\n\n# 矩陣乘法\nm1 = np.array([[1, 2], [3, 4]])\nm2 = np.array([[5, 6], [7, 8]])\n\nm1 @ m2    # 矩陣乘\nm1 * m2    # element-wise\n\n# 轉置 / inverse\nm1.T\nnp.linalg.inv(m1)\n```\n\n  \n### 常用函數 + 索引\n\n```text\narr = np.array([3, 1, 4, 1, 5, 9, 2, 6])\n\n# 統計\narr.sum()           # 31\narr.mean()          # 3.875\narr.std()\narr.min(), arr.max()\narr.argmax()        # 5（max index）\n\n# 數學\nnp.sqrt(arr)\nnp.log(arr)\nnp.exp(arr)\n\n# 排序\nnp.sort(arr)         # [1 1 2 3 4 5 6 9]\nnp.unique([1, 1, 2, 3])    # [1 2 3]\n\n# 索引\narr[0]              # 3\narr[arr > 5]        # [9 6] ← 條件篩選\n\n# 2D\nm = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])\nm[0, 0]             # 1\nm[:, 0]             # [1 4 7]（column 0）\nm[m > 5]            # [6 7 8 9]\n\n# Reshape\narr = np.arange(12)\nm = arr.reshape(3, 4)\nm = arr.reshape(-1, 4)    # -1 自動算\n\n# 攤平\nm.flatten()\n```\n\n  \n### 實戰例子\n\n```text\n# 圖片是 numpy array\nfrom PIL import Image\nimport numpy as np\n\nimg = Image.open(\"photo.jpg\")\narr = np.array(img)        # shape (h, w, 3) RGB\n\n# 變灰階\ngray = arr.mean(axis=2).astype(np.uint8)\n\n# 反轉\ninverted = 255 - arr\n\n# Crop\ncrop = arr[100:300, 200:400]\n\n# one-hot encoding\nlabels = np.array([2, 0, 1, 2, 0])\none_hot = np.eye(3)[labels]\n# [[0 0 1]\n#  [1 0 0]\n#  [0 1 0]\n#  [0 0 1]\n#  [1 0 0]]\n```\n\n  \n    **☕ 用人話講**\n    \nNumPy 是 Python AI 的**地基**。重點：(1) **向量化**—`arr * 2` 不是 `for` (2) **broadcasting**—不同 shape 自動配 (3) **boolean indexing**—`arr[arr > 5]` 篩選超強 (4) **reshape**—改 shape 不改 data。學熟後 Pandas / PyTorch 都是這套思維。\n\n  \n\n  \n    \n      💼\n      接案小知識\n    \n    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「Python」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。",
+      "tip": {
+        "type": "practical",
+        "text": "剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「Python」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "為什麼要 NumPy（不用 list）"
+        },
+        {
+          "level": 3,
+          "text": "建立 ndarray"
+        },
+        {
+          "level": 3,
+          "text": "運算：Vectorization"
+        },
+        {
+          "level": 3,
+          "text": "常用函數 + 索引"
+        },
+        {
+          "level": 3,
+          "text": "實戰例子"
+        }
+      ]
+    },
+    {
+      "id": "26.14",
+      "number": "LESSON 26.14",
+      "title": "Pandas：表格資料處理",
+      "oneLineSummary": "OOP：class / __init__ / self—Python 物件導向。",
+      "analogy": "像iPhone 跟 iPhone Pro—class 是設計圖、object 是實體。Python OOP 簡單清楚、寫 Django / FastAPI 都靠它。",
+      "content": "Pandas 處理「**表格資料**」—像 Excel 但是 100x 強。所有 data scientist 必用。\n\n  \n### DataFrame：核心物件\n\n```text\nimport pandas as pd\n\n# 從 dict 建\ndf = pd.DataFrame({\n    \"name\": [\"Alice\", \"Bob\", \"Charlie\"],\n    \"age\": [30, 25, 35],\n    \"city\": [\"Taipei\", \"Tokyo\", \"Seoul\"]\n})\n\n# 從檔案\ndf = pd.read_csv(\"users.csv\")\ndf = pd.read_excel(\"users.xlsx\")\ndf = pd.read_json(\"users.json\")\ndf = pd.read_sql(\"SELECT * FROM users\", con=engine)\n\n# 看資料\ndf.head()           # 前 5\ndf.tail()\ndf.sample(5)\ndf.shape            # (rows, cols)\ndf.columns\ndf.dtypes\ndf.describe()       # 統計總覽\ndf.info()\ndf.isnull().sum()   # 缺失\n```\n\n  \n### 選資料\n\n```text\n# 選欄位\ndf[\"name\"]                  # Series\ndf[[\"name\", \"age\"]]         # DataFrame\n\n# 選 row（位置）\ndf.iloc[0]\ndf.iloc[0:3]\n\n# 選 row（label）\ndf.loc[0]\n\n# 篩選（最常用）\ndf[df[\"age\"] > 30]\ndf[df[\"city\"] == \"Taipei\"]\ndf[(df[\"age\"] > 25) & (df[\"age\"]  30 and city == 'Taipei'\")\n```\n\n  \n### 修改 + 聚合\n\n```text\n# 加 column\ndf[\"country\"] = [\"TW\", \"JP\", \"KR\"]\ndf[\"age_in_5\"] = df[\"age\"] + 5\ndf[\"category\"] = df[\"age\"].apply(lambda x: \"young\" if x \n    **☕ 用人話講**\n    \nPandas 是 Excel 進化版—10 萬 row 也順、1 行 code 搞定。**核心 4 動作**：(1) 讀 (read_csv) (2) 篩 (df[條件]) (3) 改 (df[\"new\"] = ...) (4) 聚 (groupby + agg)。**2026 主流分析 stack**：Pandas + NumPy + Matplotlib + Jupyter。\n\n  \n\n  \n    \n      🎯\n      面試考點\n    \n    台灣科技公司面試 90% 會問「Python」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。",
+      "tip": {
+        "type": "pro",
+        "text": "台灣科技公司面試 90% 會問「Python」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "DataFrame：核心物件"
+        },
+        {
+          "level": 3,
+          "text": "選資料"
+        },
+        {
+          "level": 3,
+          "text": "修改 + 聚合"
+        }
+      ]
+    },
+    {
+      "id": "26.15",
+      "number": "LESSON 26.15",
+      "title": "Matplotlib / Seaborn / Plotly：視覺化",
+      "oneLineSummary": "Exception：try / except / finally—Python 錯誤處理。",
+      "analogy": "像備案計畫—正常跑（try）、出錯有 plan B（except）、最後一定要做的（finally、像關檔）。寫穩定 code 必備。",
+      "content": "「**圖勝千言**」—資料一定要視覺化。3 大繪圖工具各有定位。\n\n  \n### Matplotlib：基礎\n\n```text\nimport matplotlib.pyplot as plt\n\n# 折線\nplt.plot([1, 2, 3, 4], [10, 20, 25, 30])\nplt.title(\"Sales\")\nplt.xlabel(\"Month\")\nplt.ylabel(\"Revenue\")\nplt.show()\n\n# 多條線\nplt.plot(months, product_a, label=\"A\", marker=\"o\")\nplt.plot(months, product_b, label=\"B\", marker=\"s\")\nplt.legend()\nplt.show()\n\n# Bar\nplt.bar([\"A\", \"B\", \"C\"], [10, 24, 36])\n\n# Histogram\nplt.hist(np.random.randn(1000), bins=30)\n\n# Scatter\nplt.scatter(x, y)\n\n# Pie\nplt.pie([30, 25, 20, 15], labels=[\"A\", \"B\", \"C\", \"D\"])\n\n# Subplots\nfig, axes = plt.subplots(2, 2, figsize=(10, 8))\naxes[0, 0].plot([1, 2, 3], [1, 4, 9])\naxes[0, 1].bar([\"a\", \"b\"], [1, 2])\nplt.tight_layout()\nplt.savefig(\"chart.png\", dpi=300)\n```\n\n  \n### Seaborn：統計圖、好看\n\n```text\nimport seaborn as sns\n\n# 直接吃 DataFrame\nsns.scatterplot(data=df, x=\"age\", y=\"salary\", hue=\"department\")\nsns.histplot(data=df, x=\"salary\", bins=30)\nsns.boxplot(data=df, x=\"department\", y=\"salary\")\n\n# 熱力圖（相關性）\ncorrelation = df.corr()\nsns.heatmap(correlation, annot=True, cmap=\"coolwarm\")\n\n# Pair plot\nsns.pairplot(df, hue=\"category\")\n\n# 風格\nsns.set_style(\"whitegrid\")\nsns.set_palette(\"husl\")\n\n→ Seaborn 蓋在 Matplotlib 上\n→ 預設美觀\n→ 統計分析必用\n```\n\n  \n### Plotly：互動、Web\n\n```text\nimport plotly.express as px\n\n# 互動式（hover、zoom）\nfig = px.scatter(df, x=\"age\", y=\"salary\",\n                 color=\"department\",\n                 hover_data=[\"name\", \"city\"])\nfig.show()\n\n# 折線\npx.line(df, x=\"date\", y=\"sales\", color=\"product\")\n\n# 3D\npx.scatter_3d(df, x=\"x\", y=\"y\", z=\"z\", color=\"category\")\n\n# 動畫\npx.scatter(df, x=\"gdp\", y=\"life_exp\",\n           animation_frame=\"year\",\n           size=\"population\", color=\"continent\")\n\n# 寫成 HTML（嵌入網站）\nfig.write_html(\"dashboard.html\")\n\n→ 強在互動 + Web 友善\n→ 適合 dashboard（Dash 框架）\n```\n\n  \n### 怎麼選\n\n  \n| 場景 | 推薦 |\n| --- | --- |\n| 學術論文、靜態圖 | Matplotlib |\n| 統計探索分析 | Seaborn |\n| 互動 dashboard | Plotly |\n| Jupyter Notebook | 3 個都行 |\n| 快速 df 探索 | df.plot() 內建 |\n\n  \n### Pandas 內建畫圖\n\n```text\n# df 內建 .plot()\ndf[\"sales\"].plot()              # 折線\ndf[\"sales\"].plot.bar()\ndf[\"sales\"].plot.hist(bins=30)\ndf.plot.scatter(x=\"age\", y=\"salary\")\n\ndf.plot(figsize=(10, 6),\n        title=\"Sales\",\n        grid=True)\nplt.show()\n```\n\n  \n    **☕ 用人話講**\n    \n3 工具各有定位：(1) **Matplotlib**—基礎、靜態 (2) **Seaborn**—統計、預設美 (3) **Plotly**—互動、Web。**新手**：先學 Matplotlib + Seaborn。Plotly 等做 dashboard 再學。\n\n  \n\n  \n    \n      ⚡\n      學習加速器\n    \n    把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。",
+      "tip": {
+        "type": "practical",
+        "text": "把這節學到的馬上應用到一個小東西—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "Matplotlib：基礎"
+        },
+        {
+          "level": 3,
+          "text": "Seaborn：統計圖、好看"
+        },
+        {
+          "level": 3,
+          "text": "Plotly：互動、Web"
+        },
+        {
+          "level": 3,
+          "text": "怎麼選"
+        },
+        {
+          "level": 3,
+          "text": "Pandas 內建畫圖"
+        }
+      ]
+    },
+    {
+      "id": "26.16",
+      "number": "LESSON 26.16",
+      "title": "機器學習是什麼（監督 / 非監督 / 強化）",
+      "oneLineSummary": "Decorator：「在函式外面包一層裝飾」—Python 最酷的功能之一。",
+      "analogy": "像菜單上的「招牌菜」標籤—不改菜本身、加個標記。Decorator：@app.get(\"/users\")—標明這個函式是 GET 路由、Flask / FastAPI 全靠它。",
+      "content": "進 AI 章—先理解 ML 三大類、什麼問題用什麼方法。\n\n  \n### ML 是什麼\n\n```text\n傳統程式：\n規則 + 資料 → 答案\n\nML：\n資料 + 答案 → 規則（自己學）\n\n例：分辨貓狗\n- 傳統：「有鬍子 + 4 腿 + 喵叫 = 貓」（規則寫不完）\n- ML：給 1000 張貓 + 1000 張狗、機器自己學\n```\n\n  \n### 3 大類\n\n```text\n1. 監督學習（Supervised）\n   - 有「答案」訓練\n   - 給 input + 正確 output、學映射\n\n   類型：\n   - 分類：垃圾信 / 正常信、貓 / 狗 / 兔子\n   - 回歸：房價、氣溫預測（連續數字）\n\n2. 非監督學習（Unsupervised）\n   - 沒「答案」、自己找 pattern\n\n   類型：\n   - 聚類：客戶分群\n   - 降維：PCA / t-SNE 視覺化\n   - 異常偵測：詐騙、設備故障\n\n3. 強化學習（Reinforcement）\n   - Agent 在環境學\n   - 試錯 + 獎勵\n   - 例：AlphaGo、自駕車、LLM RLHF\n```\n\n  \n### 監督學習詳解\n\n```text\n過程：\n[ 訓練資料 ] X (特徵) + Y (答案)\n              ↓\n        [ 訓練 model ]\n              ↓\n[ 新資料 ] X' → 預測 Y'\n\n例：房價預測\nX：坪數、地點、屋齡、樓層\nY：房價\n給 1000 個樣本 → model 學\n新房 X' → 預估 Y'\n\n常見演算法：\n- Linear Regression（線性回歸）\n- Logistic Regression（其實是分類）\n- Decision Tree（決策樹）\n- Random Forest（隨機森林）\n- XGBoost / LightGBM（業界主流）\n- Neural Network（深度學習）\n```\n\n  \n### 非監督學習詳解\n\n```text\n沒答案、自己找 pattern：\n\n例 1：客戶分群\n1 萬個客戶資料（年齡、消費、頻率）\n不知道該怎麼分類\nML 自己分：\n- Group 1：年輕高頻小額\n- Group 2：中年低頻大額\n- Group 3：老年高頻大額\n\n例 2：異常偵測\n99% 正常 + 1% 詐欺\nML 學「正常」pattern\n新交易不符合 → 標記可疑\n\n常見：\n- K-Means（聚類最普及）\n- DBSCAN\n- PCA / t-SNE / UMAP（降維 / 視覺化）\n- Isolation Forest（異常）\n```\n\n  \n### 2026 ML 全景\n\n```text\n傳統 ML（仍主流業界）：\n- 表格資料、結構化\n- scikit-learn + XGBoost\n- 解釋性強\n\n深度學習（DL）：\n- 圖片、語音、文字\n- PyTorch / TensorFlow\n- 需大量資料 + GPU\n\nLLM（大語言模型）：\n- GPT-5、Claude、Gemini\n- Transformer 為基礎\n- 用提示而非訓練\n- 改變所有 AI 工作流\n\n選擇：\n- 資料是 CSV / 表格 → 傳統 ML（XGBoost）\n- 圖 / 聲 / 文字 → DL\n- 對話 / 寫作 → LLM（API）\n```\n\n  \n### ML 工作流（CRISP-DM）\n\n```text\n1. 業務理解（解什麼問題？成功標準？）\n2. 資料理解（有什麼資料？品質？）\n3. 資料準備（清洗、特徵工程、切 train/test）\n4. 建模（選演算法、訓練、調參）\n5. 評估（準確率？業務指標？）\n6. 部署（上線、監控、優化）\n\n實務 1 個 ML project：\n- 60% 時間在資料準備\n- 20% 在建模\n- 10% 在評估\n- 10% 在部署\n\n「Data Cleaning is 80% of ML」\n```\n\n  \n    **☕ 用人話講**\n    \nML 3 大類記憶：(1) **監督**= 有答案、學映射（房價、垃圾信） (2) **非監督**= 沒答案、找 pattern（分群、異常） (3) **強化**= 試錯 + 獎勵（遊戲、LLM RLHF）。**2026 indie ML**：90% 場景用 LLM API 直接解、10% 用 scikit-learn / XGBoost—除非做專業 AI 公司、不太需要從頭訓練。\n\n  \n\n  \n    \n      🚀\n      2026 趨勢\n    \n    這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。",
+      "tip": {
+        "type": "trend",
+        "text": "這個技術 2026 還在主流、未來 5 年不會過時。但工具會更新—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "找一個你身邊的例子、用「機器學習是什麼（監督 / 非監督 / 強化）」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "ML 是什麼"
+        },
+        {
+          "level": 3,
+          "text": "3 大類"
+        },
+        {
+          "level": 3,
+          "text": "監督學習詳解"
+        },
+        {
+          "level": 3,
+          "text": "非監督學習詳解"
+        },
+        {
+          "level": 3,
+          "text": "2026 ML 全景"
+        },
+        {
+          "level": 3,
+          "text": "ML 工作流（CRISP-DM）"
+        }
+      ]
+    },
+    {
+      "id": "26.17",
+      "number": "LESSON 26.17",
+      "title": "scikit-learn：第一個 ML 模型",
+      "oneLineSummary": "Iterator / Generator：「一次處理一個、不全部 load 進記憶體」—處理大資料神器。",
+      "analogy": "像看 Netflix 影片—不用全下載才能看、邊看邊載。Generator 一樣：用 yield 一次給一個、不爆記憶體。爬 100 萬筆資料必用。",
+      "content": "scikit-learn 是 Python ML **初學者首選**—API 一致、教學多、企業 95% 用。\n\n  \n### 第一個模型：房價預測\n\n```text\nimport numpy as np\nfrom sklearn.linear_model import LinearRegression\n\n# X：坪數、y：房價\nX = np.array([[20], [25], [30], [35], [40], [50]])\ny = np.array([800, 1000, 1200, 1400, 1600, 2000])\n\n# 1. 建模\nmodel = LinearRegression()\n\n# 2. 訓練\nmodel.fit(X, y)\n\n# 3. 預測\nnew_house = np.array([[27]])\npredicted = model.predict(new_house)\nprint(f\"預測：{predicted[0]:.0f} 萬\")\n\n# 4. 看模型\nprint(f\"斜率：{model.coef_[0]}\")    # 40\nprint(f\"截距：{model.intercept_}\")   # 0\n```\n\n  \n### scikit-learn 統一 API\n\n```text\n所有 model 同樣 API：\n\n# 1. 建\nmodel = SomeAlgorithm()\n\n# 2. 訓練\nmodel.fit(X_train, y_train)\n\n# 3. 預測\npredictions = model.predict(X_test)\n\n# 4. 評估\nscore = model.score(X_test, y_test)\n\n→ 換 algorithm 只改 import + 第 1 行\n```\n\n  \n### 分類：iris 鳶尾花\n\n```text\nfrom sklearn.datasets import load_iris\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.metrics import accuracy_score, classification_report\n\n# 1. 資料\niris = load_iris()\nX, y = iris.data, iris.target\n\n# 2. 切 train/test\nX_train, X_test, y_train, y_test = train_test_split(\n    X, y, test_size=0.2, random_state=42\n)\n\n# 3. 建模 + 訓練\nmodel = RandomForestClassifier(n_estimators=100)\nmodel.fit(X_train, y_train)\n\n# 4. 預測\ny_pred = model.predict(X_test)\n\n# 5. 評估\nprint(f\"準確率：{accuracy_score(y_test, y_pred):.2%}\")\nprint(classification_report(y_test, y_pred, target_names=iris.target_names))\n```\n\n  \n### 常見演算法\n\n```text\n分類：\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.tree import DecisionTreeClassifier\nfrom sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier\nfrom sklearn.neighbors import KNeighborsClassifier\nfrom sklearn.svm import SVC\n\n# 業界 #1：XGBoost / LightGBM\nimport xgboost as xgb\nmodel = xgb.XGBClassifier()\n\nimport lightgbm as lgb\nmodel = lgb.LGBMClassifier()\n\n回歸：\nfrom sklearn.linear_model import LinearRegression, Ridge, Lasso\nfrom sklearn.ensemble import RandomForestRegressor\n\n聚類：\nfrom sklearn.cluster import KMeans, DBSCAN\n\n降維：\nfrom sklearn.decomposition import PCA\n```\n\n  \n### 實戰：客戶流失預測\n\n```text\nimport pandas as pd\nfrom sklearn.model_selection import train_test_split, cross_val_score\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.ensemble import GradientBoostingClassifier\nfrom sklearn.metrics import classification_report\n\n# 1. 載入\ndf = pd.read_csv(\"customers.csv\")\n\n# 2. 特徵工程\ndf[\"avg_monthly\"] = df[\"total_charge\"] / df[\"tenure_months\"]\ndf = pd.get_dummies(df, columns=[\"plan_type\", \"country\"])\n\n# 3. 分 X y\nX = df.drop(columns=[\"churned\"])\ny = df[\"churned\"]\n\n# 4. Scale\nscaler = StandardScaler()\nX_scaled = scaler.fit_transform(X)\n\n# 5. 切\nX_train, X_test, y_train, y_test = train_test_split(\n    X_scaled, y, test_size=0.2, stratify=y\n)\n\n# 6. 訓練\nmodel = GradientBoostingClassifier(n_estimators=200)\nmodel.fit(X_train, y_train)\n\n# 7. 評估\ny_pred = model.predict(X_test)\nprint(classification_report(y_test, y_pred))\n\n# 8. 交叉驗證\nscores = cross_val_score(model, X_scaled, y, cv=5)\nprint(f\"CV：{scores.mean():.3f} ± {scores.std():.3f}\")\n\n# 9. 特徵重要性\nimportance = pd.DataFrame({\n    \"feature\": X.columns,\n    \"importance\": model.feature_importances_\n}).sort_values(\"importance\", ascending=False)\nprint(importance.head(10))\n```\n\n  \n### 儲存 + 部署\n\n```text\nimport joblib\n\n# 存\njoblib.dump(model, \"model.pkl\")\njoblib.dump(scaler, \"scaler.pkl\")\n\n# 載\nmodel = joblib.load(\"model.pkl\")\n\n# 部署 FastAPI\n@app.post(\"/predict\")\ndef predict(features: dict):\n    X = scaler.transform([list(features.values())])\n    pred = model.predict_proba(X)[0, 1]\n    return {\"churn_probability\": pred}\n```\n\n  \n    **☕ 用人話講**\n    \nscikit-learn 是 ML 入門最佳—API 統一、文件完整。**業界事實**：80% production ML 是 scikit-learn + XGBoost / LightGBM（不是深度學習）。表格資料 90% 用 GradientBoosting / RandomForest 就 work。\n\n  \n\n  \n    \n      🛠️\n      工具推薦\n    \n    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。",
+      "tip": {
+        "type": "practical",
+        "text": "配合這節用的工具：(1) VS Code（編輯器、免費）(2) Chrome DevTools（F12 開啟、除錯神器）(3) Live Server（VS Code 擴充、即時預覽）(4) GitHub Copilot / Cursor（AI 寫程式、學習加速 2-10x）。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "第一個模型：房價預測"
+        },
+        {
+          "level": 3,
+          "text": "scikit-learn 統一 API"
+        },
+        {
+          "level": 3,
+          "text": "分類：iris 鳶尾花"
+        },
+        {
+          "level": 3,
+          "text": "常見演算法"
+        },
+        {
+          "level": 3,
+          "text": "實戰：客戶流失預測"
+        },
+        {
+          "level": 3,
+          "text": "儲存 + 部署"
+        }
+      ]
+    },
+    {
+      "id": "26.18",
+      "number": "LESSON 26.18",
+      "title": "特徵工程 + train/test split",
+      "oneLineSummary": "Async / Await：「Python 的非同步」—FastAPI / aiohttp 基礎。",
+      "analogy": "像多工料理—等水滾的同時切菜、不是傻等。Python async 一樣：等 API 回來時做別的事、效能爆升。FastAPI 預設全 async。",
+      "content": "「**Garbage in, garbage out**」—資料品質決定 model 好壞。特徵工程是 ML 60% 的工作。\n\n  \n### train / test 切分\n\n```text\nfrom sklearn.model_selection import train_test_split\n\nX_train, X_test, y_train, y_test = train_test_split(\n    X, y,\n    test_size=0.2,       # 20% test\n    random_state=42,\n    stratify=y           # 保持類別比例\n)\n\n# 進階：train / val / test\nX_temp, X_test, y_temp, y_test = train_test_split(X, y, test_size=0.2)\nX_train, X_val, y_train, y_val = train_test_split(X_temp, y_temp, test_size=0.25)\n# 60 / 20 / 20\n```\n\n  \n### 處理缺失值\n\n```text\n# 看\ndf.isnull().sum()\n\n# 刪\ndf = df.dropna()\ndf = df.dropna(subset=[\"age\"])\n\n# 填\ndf[\"age\"].fillna(df[\"age\"].median(), inplace=True)\ndf[\"city\"].fillna(\"Unknown\", inplace=True)\n\n# KNN 預測缺值\nfrom sklearn.impute import KNNImputer\nimputer = KNNImputer(n_neighbors=5)\nX_filled = imputer.fit_transform(X)\n```\n\n  \n### 類別 → 數字\n\n```text\n# Label Encoding（有順序）\nfrom sklearn.preprocessing import LabelEncoder\nle = LabelEncoder()\ndf[\"size_encoded\"] = le.fit_transform(df[\"size\"])\n# small, medium, large → 0, 1, 2\n\n# One-Hot（沒順序）\ndf = pd.get_dummies(df, columns=[\"city\", \"category\"])\n\n# Target Encoding（進階）\nimport category_encoders as ce\nencoder = ce.TargetEncoder()\ndf[\"city_enc\"] = encoder.fit_transform(df[\"city\"], y)\n```\n\n  \n### 數值縮放\n\n```text\n# 為什麼 scale？\n# 年齡 0-100、薪資 20000-200000\n# 沒 scale → 薪資 dominate\n\n# StandardScaler（z-score）\nfrom sklearn.preprocessing import StandardScaler\nscaler = StandardScaler()\n\n# 重要：先 split、再 fit on train\nscaler.fit(X_train)\nX_train_scaled = scaler.transform(X_train)\nX_test_scaled = scaler.transform(X_test)\n# 不能 fit 整個 X（data leakage）\n\n# MinMaxScaler（[0, 1]）\nfrom sklearn.preprocessing import MinMaxScaler\n\n# RobustScaler（對 outlier 穩定）\nfrom sklearn.preprocessing import RobustScaler\n\n# 哪些 model 需要 scale：\n# Linear / SVM / KNN / NN → 要\n# Tree-based（RF / XGBoost）→ 不用\n```\n\n  \n### 創建新特徵\n\n```text\n# 日期 → 多特徵\ndf[\"date\"] = pd.to_datetime(df[\"date\"])\ndf[\"year\"] = df[\"date\"].dt.year\ndf[\"month\"] = df[\"date\"].dt.month\ndf[\"dayofweek\"] = df[\"date\"].dt.dayofweek\ndf[\"is_weekend\"] = df[\"dayofweek\"] >= 5\n\n# 比例\ndf[\"price_per_sqft\"] = df[\"price\"] / df[\"sqft\"]\n\n# 交互\ndf[\"age_x_income\"] = df[\"age\"] * df[\"income\"]\n\n# 聚合特徵\nuser_stats = df.groupby(\"user_id\").agg({\n    \"amount\": [\"mean\", \"max\", \"count\"],\n})\n```\n\n  \n### Pipeline 避免 leakage\n\n```text\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.ensemble import GradientBoostingClassifier\n\npipeline = Pipeline([\n    (\"scaler\", StandardScaler()),\n    (\"model\", GradientBoostingClassifier())\n])\n\npipeline.fit(X_train, y_train)\n# 自動 scale + 訓練\n# 自動避免 leakage\ny_pred = pipeline.predict(X_test)\n```\n\n  \n### 不平衡資料\n\n```text\n# 例：99% 正常、1% 詐欺\n# 全猜正常就 99% 準確、但沒用\n\n# 對策 1：stratify\ntrain_test_split(X, y, stratify=y)\n\n# 對策 2：SMOTE oversample\nfrom imblearn.over_sampling import SMOTE\nsmote = SMOTE()\nX_resampled, y_resampled = smote.fit_resample(X_train, y_train)\n\n# 對策 3：class_weight\nmodel = RandomForestClassifier(class_weight=\"balanced\")\n\n# 對策 4：看對的指標\n# precision / recall / F1 / AUC（不是 accuracy）\n```\n\n  \n    **🚀 進階技巧**\n    \n2026 特徵工程 5 原則：(1) **切 train/test 後才做特徵工程**—避免 leakage (2) **用 Pipeline**—自動化 (3) **類別 encoding 看 cardinality**—2-5 類用 one-hot、10+ 類用 target (4) **不平衡看 F1 不看 accuracy** (5) **新特徵驗證有用**—加進去看 score 變化。\n\n  \n\n  \n    \n      ⚠️\n      新手常見錯誤\n    \n    新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。",
+      "tip": {
+        "type": "warning",
+        "text": "新手 3 大坑：(1) 不看 console—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) 不存檔就 F5—改完忘記儲存以為「程式沒效果」 (3) 抄 code 不理解—複製貼上能跑、但下次要改就崩潰。記得：先看懂、再寫。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "train / test 切分"
+        },
+        {
+          "level": 3,
+          "text": "處理缺失值"
+        },
+        {
+          "level": 3,
+          "text": "類別 → 數字"
+        },
+        {
+          "level": 3,
+          "text": "數值縮放"
+        },
+        {
+          "level": 3,
+          "text": "創建新特徵"
+        },
+        {
+          "level": 3,
+          "text": "Pipeline 避免 leakage"
+        },
+        {
+          "level": 3,
+          "text": "不平衡資料"
+        }
+      ]
+    },
+    {
+      "id": "26.19",
+      "number": "LESSON 26.19",
+      "title": "評估指標：accuracy / precision / recall / F1 / AUC",
+      "oneLineSummary": "Type Hints：「Python 加上型別標註」—像 TypeScript、可選但建議用。",
+      "analogy": "像食譜註明「2 顆雞蛋」—清楚不會誤會。Type hint：def add(a: int, b: int) -&gt; int—編輯器自動補全、catch bug 早。2026 Python 趨勢。",
+      "content": "「**怎麼知道 model 好**」—看錯指標 = model 上線後爆。\n\n  \n### 混淆矩陣\n\n```text\n預測：正常    預測：詐欺\n實際：正常       TN            FP（誤報）\n實際：詐欺       FN（漏抓）     TP\n\nfrom sklearn.metrics import confusion_matrix\ncm = confusion_matrix(y_test, y_pred)\n```\n\n  \n### Accuracy / Precision / Recall / F1\n\n```text\naccuracy = (TP + TN) / 全部\n        = 對的比例\n        \n⚠ 不平衡資料看 accuracy 沒意義\n（999 正常 1 詐欺、全猜正常 = 99.9% 但沒抓詐欺）\n\nprecision = TP / (TP + FP)\n         = 預測詐欺中、真的是詐欺\n         「我說是、有多準？」\n高 precision = 不誤報\n（垃圾信過濾要高 precision）\n\nrecall = TP / (TP + FN)\n      = 實際詐欺中、抓到的\n      「真的是、我抓到幾個？」\n高 recall = 不漏抓\n（癌症檢測要高 recall）\n\nprecision vs recall：通常 trade-off\n- 嚴格 → 高 precision、低 recall\n- 寬鬆 → 低 precision、高 recall\n\nF1 = 兩者調和平均\nF1 = 2 * (precision * recall) / (precision + recall)\n兩個都重要時看 F1\n\nfrom sklearn.metrics import (\n    accuracy_score, precision_score, recall_score, f1_score\n)\n\naccuracy_score(y_test, y_pred)\nprecision_score(y_test, y_pred)\nrecall_score(y_test, y_pred)\nf1_score(y_test, y_pred)\n```\n\n  \n### ROC AUC\n\n```text\nROC 曲線：不同 threshold 下、TPR vs FPR\n\nAUC = ROC 曲線下面積\n0.5 = 隨機\n1.0 = 完美\n\n優：\n- 跟 threshold 無關\n- 不平衡資料友善\n- 比較 model 公平\n\nfrom sklearn.metrics import roc_auc_score\nroc_auc_score(y_test, y_pred_proba)\n\n# y_pred_proba = model.predict_proba(X_test)[:, 1]\n```\n\n  \n### 完整分類報告\n\n```text\nfrom sklearn.metrics import classification_report\n\nprint(classification_report(y_test, y_pred))\n\n              precision    recall  f1-score   support\n           0       0.95      0.98      0.96       900\n           1       0.78      0.65      0.71       100\n\n    accuracy                           0.94      1000\n   macro avg       0.86      0.81      0.84      1000\nweighted avg       0.93      0.94      0.93      1000\n```\n\n  \n### 回歸指標\n\n```text\nMAE（Mean Absolute Error）：\nmean(|預測 - 實際|)\n- 直觀\n- 對 outlier 不敏感\n\nfrom sklearn.metrics import mean_absolute_error\nmae = mean_absolute_error(y_test, y_pred)\n\nMSE / RMSE：\n平方放大大誤差\nRMSE = sqrt(MSE)、跟原單位一致\n\nfrom sklearn.metrics import mean_squared_error\nrmse = mean_squared_error(y_test, y_pred, squared=False)\n\nR² Score：\n變異被解釋的比例\n1.0 = 完美、0 = 跟亂猜一樣\n\nfrom sklearn.metrics import r2_score\nr2 = r2_score(y_test, y_pred)\n```\n\n  \n### 選對指標\n\n  \n| 場景 | 主要指標 |\n| --- | --- |\n| 平衡分類 | accuracy |\n| 不平衡分類 | F1 / AUC |\n| 不要漏抓（醫療 / 詐欺） | recall 優先 |\n| 不要誤報（垃圾信 / 推薦） | precision 優先 |\n| 房價預測 | RMSE / MAE |\n| 排名（推薦） | NDCG / MAP |\n\n  \n    **🚀 進階技巧**\n    \n3 大坑：(1) **不平衡看 accuracy**—99% 正常時全猜正常就 99%、沒用 (2) **只看一個指標**—precision 跟 recall 永遠一起看 (3) **用 train 指標**—一定看 test set。**業界主流**：分類看 F1 / AUC、回歸看 RMSE / R²。\n\n  \n\n  \n    \n      💼\n      接案小知識\n    \n    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「Python」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。",
+      "tip": {
+        "type": "practical",
+        "text": "剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「Python」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "混淆矩陣"
+        },
+        {
+          "level": 3,
+          "text": "Accuracy / Precision / Recall / F1"
+        },
+        {
+          "level": 3,
+          "text": "ROC AUC"
+        },
+        {
+          "level": 3,
+          "text": "完整分類報告"
+        },
+        {
+          "level": 3,
+          "text": "回歸指標"
+        },
+        {
+          "level": 3,
+          "text": "選對指標"
+        }
+      ]
+    },
+    {
+      "id": "26.20",
+      "number": "LESSON 26.20",
+      "title": "過擬合 / 欠擬合 / 交叉驗證",
+      "oneLineSummary": "Pytest：「Python 測試框架」—寫測試比 Python 內建還簡單。",
+      "analogy": "像實驗室驗證—寫 code 也要驗。Pytest 寫起來像寫一般函式、加個 assert—改 code 不會偷偷壞別處。",
+      "content": "Model 跑得很準 = 真的好？不一定—可能是**過擬合**（背答案）。\n\n  \n### 欠擬合 vs 過擬合\n\n```text\n欠擬合（Underfitting）：\n- Model 太簡單、抓不到 pattern\n- Train acc 低、test 也低\n- 像考前沒念書\n\n過擬合（Overfitting）：\n- Model 太複雜、背答案\n- Train acc 高、test 低\n- 像背題庫沒理解\n\n剛好（Good fit）：\n- Train 跟 test 都不錯、差距小\n\n判斷：\ntrain=0.95, test=0.95   → 剛好\ntrain=0.60, test=0.55   → 欠擬合\ntrain=1.00, test=0.70   → 過擬合（差 30%）\n```\n\n  \n### 欠擬合對策\n\n```text\n1. 增加 model 複雜度\n   - Linear → tree\n   - Tree depth 加深\n   - NN 加層\n\n2. 加更多特徵\n3. 訓練更久（epoch 加）\n4. 減正則化\n```\n\n  \n### 過擬合對策\n\n```text\n1. 簡化 model\n   - Tree 限制深度\n   - NN 減層\n\n2. 加更多資料\n3. Regularization\n   - L1 / L2\n   - Dropout（NN 用）\n\n4. Early stopping\n5. Cross-validation\n\n# Random Forest 防過擬合\nmodel = RandomForestClassifier(\n    n_estimators=100,\n    max_depth=10,\n    min_samples_split=20,\n    min_samples_leaf=10,\n)\n\n# XGBoost\nmodel = xgb.XGBClassifier(\n    max_depth=6,\n    reg_alpha=0.1,    # L1\n    reg_lambda=1.0,   # L2\n    early_stopping_rounds=10,\n)\n```\n\n  \n### 交叉驗證（CV）\n\n```text\n單一 split 問題：\n- 萬一 test 剛好簡單 / 困難？\n- 評估不穩\n\nK-Fold CV：\n切 K 份、輪流當 test\n\nfrom sklearn.model_selection import cross_val_score\n\nscores = cross_val_score(model, X, y, cv=5)\nprint(f\"平均：{scores.mean():.3f}\")\nprint(f\"標準差：{scores.std():.3f}\")\n\n# Stratified（分類用）\nfrom sklearn.model_selection import StratifiedKFold\n\nskf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)\nfor train_idx, val_idx in skf.split(X, y):\n    X_train, X_val = X[train_idx], X[val_idx]\n    y_train, y_val = y[train_idx], y[val_idx]\n    # 訓練 + 評估\n```\n\n  \n### Hyperparameter Tuning\n\n```text\n# Grid Search（暴力）\nfrom sklearn.model_selection import GridSearchCV\n\nparam_grid = {\n    \"n_estimators\": [50, 100, 200],\n    \"max_depth\": [3, 5, 10],\n}\n\ngrid = GridSearchCV(\n    RandomForestClassifier(),\n    param_grid,\n    cv=5,\n    scoring=\"f1\",\n    n_jobs=-1\n)\ngrid.fit(X_train, y_train)\n\nprint(grid.best_params_)\nprint(grid.best_score_)\n\n# Random Search\nfrom sklearn.model_selection import RandomizedSearchCV\n\nrandom_search = RandomizedSearchCV(\n    RandomForestClassifier(),\n    param_distributions=param_grid,\n    n_iter=50,\n    cv=5\n)\n\n# Optuna（業界主流、貝氏優化）\nimport optuna\n\ndef objective(trial):\n    params = {\n        \"n_estimators\": trial.suggest_int(\"n_estimators\", 50, 500),\n        \"max_depth\": trial.suggest_int(\"max_depth\", 3, 20),\n        \"learning_rate\": trial.suggest_float(\"lr\", 0.01, 0.3),\n    }\n    model = xgb.XGBClassifier(**params)\n    return cross_val_score(model, X, y, cv=5).mean()\n\nstudy = optuna.create_study(direction=\"maximize\")\nstudy.optimize(objective, n_trials=100)\nprint(study.best_params)\n```\n\n  \n### 學習曲線（診斷）\n\n```text\nfrom sklearn.model_selection import learning_curve\nimport matplotlib.pyplot as plt\n\ntrain_sizes, train_scores, val_scores = learning_curve(\n    model, X, y, cv=5,\n    train_sizes=np.linspace(0.1, 1.0, 10)\n)\n\nplt.plot(train_sizes, train_scores.mean(axis=1), label=\"train\")\nplt.plot(train_sizes, val_scores.mean(axis=1), label=\"val\")\nplt.legend()\n\n判斷：\n- train 高、val 低、差距大 → 過擬合（加資料 / 簡化）\n- train 低、val 低、差距小 → 欠擬合（複雜化）\n- train 高、val 高、差距小 → good fit\n```\n\n  \n    **🚀 進階技巧**\n    \n2026 ML 工作流：(1) **baseline model**—簡單 model 先跑 (2) **永遠用 cv**—不靠單一 split (3) **畫 learning curve**—判斷過 / 欠擬合 (4) **Optuna 調參**—比 Grid 快 10x (5) **記錄實驗**—MLflow / W&B。\n\n  \n\n  \n    \n      🎯\n      面試考點\n    \n    台灣科技公司面試 90% 會問「Python」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。",
+      "tip": {
+        "type": "pro",
+        "text": "台灣科技公司面試 90% 會問「Python」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "欠擬合 vs 過擬合"
+        },
+        {
+          "level": 3,
+          "text": "欠擬合對策"
+        },
+        {
+          "level": 3,
+          "text": "過擬合對策"
+        },
+        {
+          "level": 3,
+          "text": "交叉驗證（CV）"
+        },
+        {
+          "level": 3,
+          "text": "Hyperparameter Tuning"
+        },
+        {
+          "level": 3,
+          "text": "學習曲線（診斷）"
+        }
+      ]
+    },
+    {
+      "id": "26.21",
+      "number": "LESSON 26.21",
+      "title": "深度學習基礎：神經網路 / 反向傳播",
+      "oneLineSummary": "FastAPI：「2026 Python 後端首選」—async + 自動 OpenAPI 文件、極快。",
+      "analogy": "像iPhone 的相機 App—簡單但功能齊全。FastAPI：寫一個 endpoint、自動生成 Swagger 文件、自動驗證 input、效能跟 Node 一樣快—indie SaaS 首選。",
+      "content": "DL = ML 的子集、用**神經網路**。2010+ 革命突破。\n\n  \n### 神經網路\n\n```text\n靈感：人類神經元\n\n人工神經元：\n  x1 ─w1→  ┐\n  x2 ─w2→  ├─sum + bias─activation─→ y\n  x3 ─w3→  ┘\n\ny = activation(w1*x1 + w2*x2 + w3*x3 + b)\n\nw（weight）、b（bias）= 學習參數\nactivation = 非線性函數\n\n很多神經元組合 = 神經網路\n\n層（Layer）：\n[ Input ] → [ Hidden 1 ] → [ Hidden 2 ] → [ Output ]\n\n「深度」= 多 hidden layer\n```\n\n  \n### Activation Function\n\n```text\n沒 activation = 整個 NN 線性（沒比 linear 強）\n加 activation 學非線性\n\n1. ReLU（最普及）\n   f(x) = max(0, x)\n   - hidden layer 必選\n\n2. Sigmoid\n   f(x) = 1 / (1 + e^-x)\n   - 二分類 output\n\n3. Softmax\n   - 多分類 output（output 加起來 = 1）\n\n4. Tanh\n   - 輸出 -1 到 1\n   - RNN 常用\n\n實戰：\n- Hidden：ReLU（or GELU）\n- Output 二分類：Sigmoid\n- Output 多分類：Softmax\n- Output 回歸：無\n```\n\n  \n### 前向 + 反向傳播\n\n```text\n1. 前向（Forward）：\n   Input → Layer 1 → ... → Output\n   每層：y = activation(W*x + b)\n\n2. 算 Loss（差距）：\n   MSE / Cross-Entropy\n\n3. 反向（Backward）：\n   從 Output 算 gradient\n   往回傳到每層\n   更新 weight\n\n4. 更新（Gradient Descent）：\n   W = W - learning_rate * dW\n   往「降低 Loss」走\n\n重複千 / 萬次 → model 學會\n```\n\n  \n### Loss + Optimizer\n\n```text\nLoss：\n- 回歸：MSE / MAE\n- 二分類：Binary Cross-Entropy\n- 多分類：Cross-Entropy\n\nOptimizer：\n1. SGD（基本）\n2. SGD + Momentum\n3. Adam（最普及）\n   - 自動調 lr\n   - 預設選擇\n4. AdamW（2020+ 主流、Transformer 必用）\n\n實戰：\n- 新手：Adam（lr=0.001）\n- 進階：AdamW\n- 微調 lr：cosine schedule / warmup\n```\n\n  \n### 常見問題\n\n```text\n1. 梯度消失 / 爆炸\n   對策：\n   - ReLU\n   - Batch Normalization\n   - Residual Connection（ResNet）\n   - Gradient Clipping\n\n2. 過擬合\n   - Dropout\n   - L1 / L2\n   - Early stopping\n   - Data augmentation\n\n3. GPU OOM\n   - 減 batch size\n   - Gradient accumulation\n   - Mixed precision（FP16）\n```\n\n  \n### DL vs 傳統 ML\n\n  \n|  | 傳統 ML | DL |\n| --- | --- | --- |\n| 資料量 | 1k - 1M | 10K - 10B+ |\n| 特徵工程 | 手動 | 自動 |\n| 硬體 | CPU | GPU |\n| 解釋性 | 強 | 弱 |\n| 適合資料 | 表格 | 圖、聲、文字 |\n| 工具 | scikit-learn | PyTorch / TF |\n\n  \n    **☕ 用人話講**\n    \nNN = **很多層 layer 的數學運算**。Train = forward → 比答案 → backward → 更新 weight → 重複幾千次。**新手不用懂數學細節**—會用 PyTorch 寫就行。重點：layer / activation / loss / optimizer / overfitting。\n\n  \n\n  \n    \n      ⚡\n      學習加速器\n    \n    把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。",
+      "tip": {
+        "type": "practical",
+        "text": "把這節學到的馬上應用到一個小東西—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "神經網路"
+        },
+        {
+          "level": 3,
+          "text": "Activation Function"
+        },
+        {
+          "level": 3,
+          "text": "前向 + 反向傳播"
+        },
+        {
+          "level": 3,
+          "text": "Loss + Optimizer"
+        },
+        {
+          "level": 3,
+          "text": "常見問題"
+        },
+        {
+          "level": 3,
+          "text": "DL vs 傳統 ML"
+        }
+      ]
+    },
+    {
+      "id": "26.22",
+      "number": "LESSON 26.22",
+      "title": "PyTorch 入門：第一個神經網路",
+      "oneLineSummary": "Django：「Python 的大型框架」—企業 / 大型網站 / Instagram 都用。",
+      "analogy": "像蓋大樓的完整工具包—包含 ORM / Admin / Auth / Template—一條龍。新創用 FastAPI 快、企業用 Django 穩。",
+      "content": "PyTorch 是 2026 DL 主流—研究界 80%、Hugging Face 全用、學術論文 90%。\n\n  \n### 裝 + Tensor\n\n```text\n$ uv add torch torchvision\n\nimport torch\n\n# 從 list\nx = torch.tensor([1, 2, 3, 4])\nprint(x.shape)      # torch.Size([4])\nprint(x.dtype)      # torch.int64\n\n# 從 NumPy\nimport numpy as np\nx = torch.from_numpy(np.array([1, 2, 3]))\n\n# 特殊建\ntorch.zeros(3, 4)\ntorch.ones(2, 3)\ntorch.randn(3, 3)        # 標準常態\n\n# 運算（同 NumPy）\na = torch.tensor([1, 2, 3])\nb = torch.tensor([4, 5, 6])\na + b\na @ b        # 32\na.sum()\na.mean()\n\n# Reshape\nx.view(6, 4)\nx.reshape(-1, 4)\n\n# GPU\ndevice = torch.device(\"cuda\" if torch.cuda.is_available() else \"cpu\")\n# Mac M1+：mps\ndevice = torch.device(\"mps\" if torch.backends.mps.is_available() else \"cpu\")\nx = x.to(device)\n```\n\n  \n### Autograd：自動微分\n\n```text\nx = torch.tensor([2.0], requires_grad=True)\ny = x ** 2 + 3 * x + 1\n\ny.backward()\nprint(x.grad)   # tensor([7.])\n# dy/dx = 2x + 3 = 7\n\n# 神經網路靠這個更新 weight\n```\n\n  \n### 第一個 NN：iris 分類\n\n```text\nimport torch\nimport torch.nn as nn\nimport torch.optim as optim\nfrom sklearn.datasets import load_iris\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.preprocessing import StandardScaler\n\n# 1. 資料\niris = load_iris()\nX = StandardScaler().fit_transform(iris.data)\nX_train, X_test, y_train, y_test = train_test_split(\n    X, iris.target, test_size=0.2, random_state=42\n)\n\nX_train = torch.FloatTensor(X_train)\nX_test = torch.FloatTensor(X_test)\ny_train = torch.LongTensor(y_train)\ny_test = torch.LongTensor(y_test)\n\n# 2. Model\nclass IrisNet(nn.Module):\n    def __init__(self):\n        super().__init__()\n        self.fc1 = nn.Linear(4, 16)\n        self.fc2 = nn.Linear(16, 8)\n        self.fc3 = nn.Linear(8, 3)\n        self.relu = nn.ReLU()\n    \n    def forward(self, x):\n        x = self.relu(self.fc1(x))\n        x = self.relu(self.fc2(x))\n        x = self.fc3(x)\n        return x\n\nmodel = IrisNet()\n\n# 3. Loss + Optimizer\ncriterion = nn.CrossEntropyLoss()\noptimizer = optim.Adam(model.parameters(), lr=0.01)\n\n# 4. 訓練\nfor epoch in range(100):\n    outputs = model(X_train)\n    loss = criterion(outputs, y_train)\n    \n    optimizer.zero_grad()\n    loss.backward()\n    optimizer.step()\n    \n    if (epoch + 1) % 10 == 0:\n        print(f\"Epoch {epoch+1}, Loss: {loss.item():.4f}\")\n\n# 5. 評估\nmodel.eval()\nwith torch.no_grad():\n    outputs = model(X_test)\n    _, predicted = torch.max(outputs, 1)\n    accuracy = (predicted == y_test).float().mean()\n    print(f\"Test Accuracy: {accuracy:.2%}\")\n```\n\n  \n### DataLoader（處理 batch）\n\n```text\nfrom torch.utils.data import Dataset, DataLoader\n\nclass IrisDataset(Dataset):\n    def __init__(self, X, y):\n        self.X = torch.FloatTensor(X)\n        self.y = torch.LongTensor(y)\n    \n    def __len__(self):\n        return len(self.X)\n    \n    def __getitem__(self, idx):\n        return self.X[idx], self.y[idx]\n\ntrain_dataset = IrisDataset(X_train, y_train)\ntrain_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)\n\n# 訓練\nfor epoch in range(100):\n    for batch_X, batch_y in train_loader:\n        outputs = model(batch_X)\n        loss = criterion(outputs, batch_y)\n        \n        optimizer.zero_grad()\n        loss.backward()\n        optimizer.step()\n```\n\n  \n### 存 + 載 model\n\n```text\n# 存 state_dict（推薦）\ntorch.save(model.state_dict(), \"model.pth\")\n\n# 載\nmodel = IrisNet()\nmodel.load_state_dict(torch.load(\"model.pth\"))\nmodel.eval()\n```\n\n  \n    **☕ 用人話講**\n    \nPyTorch 5 核心：(1) **Tensor** (2) **nn.Module**（定義 model） (3) **Loss** (4) **Optimizer** (5) **Training loop**（forward + backward + step）。學熟 = 解鎖整個 DL 世界。\n\n  \n\n  \n    \n      🚀\n      2026 趨勢\n    \n    這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。",
+      "tip": {
+        "type": "trend",
+        "text": "這個技術 2026 還在主流、未來 5 年不會過時。但工具會更新—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "找一個你身邊的例子、用「PyTorch 入門：第一個神經網路」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "裝 + Tensor"
+        },
+        {
+          "level": 3,
+          "text": "Autograd：自動微分"
+        },
+        {
+          "level": 3,
+          "text": "第一個 NN：iris 分類"
+        },
+        {
+          "level": 3,
+          "text": "DataLoader（處理 batch）"
+        },
+        {
+          "level": 3,
+          "text": "存 + 載 model"
+        }
+      ]
+    },
+    {
+      "id": "26.23",
+      "number": "LESSON 26.23",
+      "title": "CNN / RNN / Transformer：3 大架構",
+      "oneLineSummary": "Flask：「Python 的微型框架」—輕量、彈性、新手第一個後端框架。",
+      "analogy": "像小型工具箱—只有最基本的、其他自己挑。Flask：寫 5 行 code 就有 web server—學後端最快上手的工具。",
+      "content": "不同資料用不同 NN 架構—圖用 CNN、序列用 RNN、語言用 Transformer。\n\n  \n### CNN：圖片之王\n\n```text\n為什麼圖片不用普通 NN？\n- 224x224 RGB = 150528 input\n- 太多、學不到、易過擬合\n\nCNN：\n- 卷積層（Conv）：學 local pattern（邊緣 / 紋理）\n- Pooling：降維\n- 全連接：分類\n\n[224x224x3] → Conv → Pool → Conv → Pool → FC → output\n\nPyTorch：\nclass CNN(nn.Module):\n    def __init__(self):\n        super().__init__()\n        self.conv1 = nn.Conv2d(3, 32, kernel_size=3, padding=1)\n        self.pool = nn.MaxPool2d(2)\n        self.conv2 = nn.Conv2d(32, 64, kernel_size=3, padding=1)\n        self.fc1 = nn.Linear(64 * 56 * 56, 128)\n        self.fc2 = nn.Linear(128, 10)\n        self.relu = nn.ReLU()\n    \n    def forward(self, x):\n        x = self.pool(self.relu(self.conv1(x)))\n        x = self.pool(self.relu(self.conv2(x)))\n        x = x.view(x.size(0), -1)\n        x = self.relu(self.fc1(x))\n        x = self.fc2(x)\n        return x\n\n實戰：用預訓練\nfrom torchvision.models import resnet50\nmodel = resnet50(weights=\"DEFAULT\")\nmodel.fc = nn.Linear(2048, 10)\n\n主流 CNN：\n- ResNet（業界 default）\n- EfficientNet\n- ConvNeXt（2022+）\n- ViT（Vision Transformer）\n```\n\n  \n### RNN：序列資料\n\n```text\n處理「有時間順序」：\n- 文字、股價、語音\n\n特色：\n- 有「記憶」（hidden state）\n- 上一個 input 影響下一個\n\n問題：vanilla RNN 學不到長依賴\n解：\n- LSTM（Long Short-Term Memory）\n- GRU（Gated Recurrent Unit）\n\nclass LSTM(nn.Module):\n    def __init__(self, input_size, hidden_size, num_layers, output_size):\n        super().__init__()\n        self.lstm = nn.LSTM(input_size, hidden_size, num_layers, batch_first=True)\n        self.fc = nn.Linear(hidden_size, output_size)\n    \n    def forward(self, x):\n        out, _ = self.lstm(x)\n        out = self.fc(out[:, -1, :])\n        return out\n\n2026 現實：\n- RNN / LSTM 大幅被 Transformer 取代\n- 仍有用：低資源、序列超長、即時推論\n```\n\n  \n### Transformer：2017 革命\n\n```text\n\"Attention Is All You Need\" (2017)\n取代 RNN、開啟現代 AI 時代\n\n核心：Attention\n「處理每個 token 時、看全部 token 學關係」\n\n例：「The cat sat on the mat because it was tired」\n- it ↔ cat：0.85\n- it ↔ mat：0.05\n\nSelf-Attention：\n- Q（Query）：「我要找什麼？」\n- K（Key）：「我有什麼？」\n- V（Value）：實際內容\n- attention = softmax(QK^T / sqrt(d)) * V\n\nTransformer 完整：\n- Multi-Head Attention（多個 attention 平行）\n- Feed-Forward\n- Layer Norm + Residual\n\n2026 應用：\n- GPT、Claude、Gemini（純 decoder）\n- BERT（純 encoder）\n- T5（encoder-decoder）\n- ViT（圖片）\n- Whisper（語音）\n- AlphaFold（蛋白質）\n\n→ 通吃所有任務\n```\n\n  \n### 2026 主流架構\n\n  \n| 任務 | 主流 | 例子 |\n| --- | --- | --- |\n| 圖片分類 | ViT / ConvNeXt | ImageNet |\n| 物件偵測 | DETR / YOLO | 自駕 |\n| 圖片生成 | Diffusion | Midjourney |\n| NLP 理解 | BERT / RoBERTa | 分類、NER |\n| NLP 生成 | GPT / Claude | ChatGPT |\n| 語音識別 | Whisper | 字幕 |\n\n  \n### 新手該學哪\n\n```text\n路徑：\n1. PyTorch 基礎\n2. CNN（圖片分類最直觀）\n3. LSTM（序列、感受 RNN）\n4. Transformer（從用預訓練開始）\n\n2026 indie 實戰：\n- 99% 直接用預訓練 model（HF）\n- 不從零訓練\n- Fine-tune 已有 model\n- 或 prompt LLM 解問題\n```\n\n  \n    **☕ 用人話講**\n    \n3 架構記憶：(1) **CNN**—圖片（local pattern） (2) **RNN/LSTM**—序列（有記憶） (3) **Transformer**—2017 革命、通吃所有任務。**indie 不用實作**—會用 HF 預訓練 model 就行。\n\n  \n\n  \n    \n      🛠️\n      工具推薦\n    \n    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。",
+      "tip": {
+        "type": "practical",
+        "text": "配合這節用的工具：(1) VS Code（編輯器、免費）(2) Chrome DevTools（F12 開啟、除錯神器）(3) Live Server（VS Code 擴充、即時預覽）(4) GitHub Copilot / Cursor（AI 寫程式、學習加速 2-10x）。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "CNN：圖片之王"
+        },
+        {
+          "level": 3,
+          "text": "RNN：序列資料"
+        },
+        {
+          "level": 3,
+          "text": "Transformer：2017 革命"
+        },
+        {
+          "level": 3,
+          "text": "2026 主流架構"
+        },
+        {
+          "level": 3,
+          "text": "新手該學哪"
+        }
+      ]
+    },
+    {
+      "id": "26.24",
+      "number": "LESSON 26.24",
+      "title": "Hugging Face：預訓練 + Fine-tune",
+      "oneLineSummary": "SQLAlchemy：「Python 的 ORM」—用 Python class 操作資料庫、不寫 SQL。",
+      "analogy": "像翻譯員—你說 Python（user.query.filter_by(name=\"Alice\")）、它翻成 SQL 去 DB。寫 Python 就能操作 DB、超直觀。",
+      "content": "Hugging Face = 2026 AI 的 GitHub—1 行 code 用世界最強 model。\n\n  \n### HF 是什麼\n\n```text\nHugging Face Hub：\n- 100 萬+ 預訓練 model\n- 100 萬+ dataset\n- 大多免費\n\n包括：\n- Llama 4（Meta）\n- Gemma（Google）\n- Whisper（OpenAI 語音）\n- Stable Diffusion\n- BERT、RoBERTa\n- 中文 model（Qwen、Yi、Baichuan）\n\n工具：\n- transformers（最主要）\n- datasets\n- tokenizers\n- accelerate（分散式）\n- peft（高效 fine-tune）\n\n裝：\n$ uv add transformers torch\n$ uv add datasets accelerate\n```\n\n  \n### Pipeline：3 行用 AI\n\n```text\nfrom transformers import pipeline\n\n# 情感分析\nclassifier = pipeline(\"sentiment-analysis\")\nresult = classifier(\"I love this product!\")\n# [{'label': 'POSITIVE', 'score': 0.9998}]\n\n# 翻譯\ntranslator = pipeline(\"translation_en_to_zh\")\ntranslator(\"Hello, how are you?\")\n\n# 摘要\nsummarizer = pipeline(\"summarization\")\nsummary = summarizer(long_text, max_length=50)\n\n# 問答\nqa = pipeline(\"question-answering\")\nqa(question=\"Who created Python?\",\n   context=\"Python was created by Guido van Rossum in 1991.\")\n\n# 文字生成\ngenerator = pipeline(\"text-generation\", model=\"gpt2\")\ngenerator(\"The future of AI is\", max_length=50)\n\n# Whisper 語音轉文字\ntranscriber = pipeline(\"automatic-speech-recognition\",\n                       model=\"openai/whisper-base\")\ntranscriber(\"audio.mp3\")\n\n# 圖像分類\nclassifier = pipeline(\"image-classification\")\nclassifier(\"dog.jpg\")\n\n# Stable Diffusion\nfrom diffusers import StableDiffusionPipeline\npipe = StableDiffusionPipeline.from_pretrained(\n    \"runwayml/stable-diffusion-v1-5\"\n)\nimage = pipe(\"a cat astronaut in space\").images[0]\nimage.save(\"cat.png\")\n```\n\n  \n### 明確 model 控制\n\n```text\n# 指定 model\nclassifier = pipeline(\n    \"sentiment-analysis\",\n    model=\"uer/roberta-base-finetuned-jd-binary-chinese\"\n)\nresult = classifier(\"這產品很爛\")\n\n# 找 model：https://huggingface.co/models\n# 篩選 task / language / size\n\n# 中文摘要\nsummarizer = pipeline(\n    \"summarization\",\n    model=\"csebuetnlp/mT5_multilingual_XLSum\"\n)\n```\n\n  \n### 底層 API\n\n```text\nfrom transformers import AutoTokenizer, AutoModelForSequenceClassification\nimport torch\n\nmodel_name = \"bert-base-uncased\"\ntokenizer = AutoTokenizer.from_pretrained(model_name)\nmodel = AutoModelForSequenceClassification.from_pretrained(model_name)\n\n# Tokenize\ntext = \"I love this product\"\ninputs = tokenizer(text, return_tensors=\"pt\",\n                   padding=True, truncation=True)\n\n# 推論\nwith torch.no_grad():\n    outputs = model(**inputs)\n    logits = outputs.logits\n    probs = torch.softmax(logits, dim=-1)\n    predicted = torch.argmax(probs, dim=-1)\n\n# 對應 task：\n# AutoModelForSequenceClassification（分類）\n# AutoModelForCausalLM（生成）\n# AutoModelForQuestionAnswering（QA）\n# AutoModelForTokenClassification（NER）\n```\n\n  \n### Fine-tune：客製化\n\n```text\nfrom transformers import (\n    AutoTokenizer, AutoModelForSequenceClassification,\n    Trainer, TrainingArguments\n)\nfrom datasets import Dataset\n\n# 1. 資料\ndata = {\n    \"text\": [\"這產品很棒\", \"服務很差\", \"普通\", \"超讚\", \"爛透\"],\n    \"label\": [1, 0, 1, 1, 0]\n}\ndataset = Dataset.from_dict(data)\ndataset = dataset.train_test_split(test_size=0.2)\n\n# 2. Tokenize\nmodel_name = \"bert-base-chinese\"\ntokenizer = AutoTokenizer.from_pretrained(model_name)\n\ndef tokenize(batch):\n    return tokenizer(batch[\"text\"], truncation=True, padding=True)\n\ntokenized = dataset.map(tokenize, batched=True)\n\n# 3. Model\nmodel = AutoModelForSequenceClassification.from_pretrained(\n    model_name, num_labels=2\n)\n\n# 4. Training args\ntraining_args = TrainingArguments(\n    output_dir=\"./results\",\n    num_train_epochs=3,\n    per_device_train_batch_size=16,\n    learning_rate=2e-5,\n    eval_strategy=\"epoch\",\n    save_strategy=\"epoch\",\n    load_best_model_at_end=True,\n)\n\n# 5. Trainer\ntrainer = Trainer(\n    model=model,\n    args=training_args,\n    train_dataset=tokenized[\"train\"],\n    eval_dataset=tokenized[\"test\"],\n    tokenizer=tokenizer,\n)\ntrainer.train()\n\n# 6. 存\ntrainer.save_model(\"./my-model\")\ntokenizer.save_pretrained(\"./my-model\")\n```\n\n  \n### LoRA / PEFT（高效 fine-tune）\n\n```text\n# 完整 fine-tune Llama 70B = 100GB GPU\n# LoRA：只 fine-tune 0.1% 參數、結果幾乎一樣\n\nfrom peft import LoraConfig, get_peft_model\n\nmodel = AutoModelForCausalLM.from_pretrained(\"meta-llama/Llama-3-8B\")\n\nlora_config = LoraConfig(\n    r=8,\n    lora_alpha=16,\n    target_modules=[\"q_proj\", \"v_proj\"],\n    lora_dropout=0.05,\n    bias=\"none\",\n    task_type=\"CAUSAL_LM\"\n)\n\nmodel = get_peft_model(model, lora_config)\nmodel.print_trainable_parameters()\n# trainable params: 4M / 8B（0.05%）\n\n# 2026 主流：LoRA + QLoRA（量化 + LoRA）\n# Single GPU fine-tune Llama 70B\n```\n\n  \n### 推 HF Hub\n\n```text\nfrom huggingface_hub import login\nlogin()    # 輸入 HF token\n\nmodel.push_to_hub(\"your-username/my-model\")\ntokenizer.push_to_hub(\"your-username/my-model\")\n\n# 別人能用\nfrom transformers import AutoModel\nmodel = AutoModel.from_pretrained(\"your-username/my-model\")\n```\n\n  \n### 2026 indie HF 應用\n\n```text\n1. SaaS 內建 AI feature\n   - pipeline 1 行加 AI\n\n2. 自己 fine-tune\n   - 公司資料 fine-tune\n   - 不送 OpenAI / Anthropic（隱私）\n\n3. Whisper 語音\n   - 會議轉錄\n   - YouTube 字幕\n\n4. Stable Diffusion\n   - 圖像生成\n   - 不付 Midjourney\n\n5. 自架 LLM（Llama / Mistral）\n   - 取代 OpenAI / Anthropic\n   - 隱私 + 成本\n\nLibrary：\n- transformers\n- diffusers（圖）\n- accelerate\n- peft（LoRA）\n- bitsandbytes（量化）\n- vllm（serving）\n```\n\n  \n    **🚀 進階技巧**\n    \n2026 AI 工程師核心 stack：**PyTorch + Transformers + HF Hub + PEFT + Datasets**。會這 5 個 = 能做 90% modern AI 工作。**indie 必學**：HF pipeline（5 分鐘加 AI）+ Whisper + Stable Diffusion。**3 個月內**能 fine-tune 自己 model + ship。\n\n  \n\n  \n    \n      ⚠️\n      新手常見錯誤\n    \n    新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。",
+      "tip": {
+        "type": "warning",
+        "text": "新手 3 大坑：(1) 不看 console—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) 不存檔就 F5—改完忘記儲存以為「程式沒效果」 (3) 抄 code 不理解—複製貼上能跑、但下次要改就崩潰。記得：先看懂、再寫。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "HF 是什麼"
+        },
+        {
+          "level": 3,
+          "text": "Pipeline：3 行用 AI"
+        },
+        {
+          "level": 3,
+          "text": "明確 model 控制"
+        },
+        {
+          "level": 3,
+          "text": "底層 API"
+        },
+        {
+          "level": 3,
+          "text": "Fine-tune：客製化"
+        },
+        {
+          "level": 3,
+          "text": "LoRA / PEFT（高效 fine-tune）"
+        },
+        {
+          "level": 3,
+          "text": "推 HF Hub"
+        },
+        {
+          "level": 3,
+          "text": "2026 indie HF 應用"
+        }
+      ]
+    },
+    {
+      "id": "26.25",
+      "number": "LESSON 26.25",
+      "title": "FastAPI Hello World + ASGI",
+      "oneLineSummary": "Database 串接：SQLite / PostgreSQL / MongoDB—Python 都有對應套件。",
+      "analogy": "像不同的儲物方式—SQLite（小檔案、學習用）、PostgreSQL（production 主流）、MongoDB（NoSQL、彈性）。Python 一行 import 就能用。",
+      "content": "FastAPI 是 2026 Python 後端 #1 選擇—超快、自動文件、type-safe。Indie SaaS 首選。\n\n  \n### 為什麼 FastAPI\n\n```text\n2026 Python 後端 ranking：\n1. FastAPI（modern、最快）\n2. Django（大型、batteries-included）\n3. Flask（傳統、簡單）\n4. Litestar（FastAPI 替代）\n\nFastAPI 賣點：\n- 速度 = Node.js / Go 等級\n- 自動 OpenAPI / Swagger 文件\n- 內建 Pydantic 驗證\n- async 原生支援\n- Type hint 全用\n\n公司：\n- Uber\n- Microsoft\n- Netflix（部分）\n- 大量 indie SaaS\n```\n\n  \n### 第一個 API\n\n```text\n# 1. 裝\n$ uv add fastapi uvicorn\n\n# 2. main.py\nfrom fastapi import FastAPI\n\napp = FastAPI()\n\n@app.get(\"/\")\ndef hello():\n    return {\"message\": \"Hello, World\"}\n\n@app.get(\"/users/{user_id}\")\ndef get_user(user_id: int):\n    return {\"user_id\": user_id, \"name\": \"Alice\"}\n\n# 3. 跑\n$ uv run uvicorn main:app --reload\n\nINFO:     Uvicorn running on http://127.0.0.1:8000\n\n# 4. 測\n$ curl http://localhost:8000\n{\"message\":\"Hello, World\"}\n\n$ curl http://localhost:8000/users/42\n{\"user_id\":42,\"name\":\"Alice\"}\n\n# 5. 自動文件\n# 訪問 http://localhost:8000/docs\n# Swagger UI 自動生成、能互動測試\n```\n\n  \n### 路徑參數 / 查詢參數 / Body\n\n```text\nfrom fastapi import FastAPI\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\n# 路徑參數\n@app.get(\"/users/{user_id}\")\ndef get_user(user_id: int):\n    return {\"user_id\": user_id}\n\n# 查詢參數\n@app.get(\"/search\")\ndef search(q: str, limit: int = 10, offset: int = 0):\n    return {\"q\": q, \"limit\": limit, \"offset\": offset}\n# /search?q=python&limit=20\n\n# 路徑 + 查詢\n@app.get(\"/users/{user_id}/orders\")\ndef get_orders(user_id: int, status: str = \"all\"):\n    return {\"user_id\": user_id, \"status\": status}\n\n# Body（POST）\nclass UserCreate(BaseModel):\n    name: str\n    age: int\n    email: str\n\n@app.post(\"/users\")\ndef create_user(user: UserCreate):\n    return {\"created\": user}\n\n# 自動驗證：\n# {\"name\": \"Alice\", \"age\": 30, \"email\": \"...\"} → OK\n# {\"name\": \"Alice\"} → 422 Unprocessable\n# {\"name\": \"Alice\", \"age\": \"thirty\"} → 422\n```\n\n  \n### ASGI vs WSGI\n\n```text\nWSGI（傳統）：\n- Django / Flask\n- 同步、1 request 1 thread\n- 高並發痛苦\n\nASGI（modern）：\n- FastAPI / Starlette / Sanic\n- async 原生\n- WebSocket 支援\n- 高並發強\n\n2026 主流 ASGI server：\n- Uvicorn（最快、純 ASGI）\n- Hypercorn\n- Daphne（Django Channels）\n\nproduction：\n$ uvicorn main:app --host 0.0.0.0 --port 8000 --workers 4\n\n# 4 個 worker process\n```\n\n  \n### 路由組織\n\n```text\n# 大型 app 用 router\n# routers/users.py\nfrom fastapi import APIRouter\n\nrouter = APIRouter(prefix=\"/users\", tags=[\"users\"])\n\n@router.get(\"/\")\ndef list_users():\n    return []\n\n@router.get(\"/{user_id}\")\ndef get_user(user_id: int):\n    return {\"user_id\": user_id}\n\n@router.post(\"/\")\ndef create_user(...):\n    ...\n\n# main.py\nfrom fastapi import FastAPI\nfrom routers import users, products\n\napp = FastAPI()\napp.include_router(users.router)\napp.include_router(products.router)\n```\n\n  \n### HTTP method + status code\n\n```text\nfrom fastapi import HTTPException, status\n\n@app.get(\"/users\")\ndef list_users():\n    return []\n\n@app.post(\"/users\", status_code=201)\ndef create_user(user: UserCreate):\n    return {\"id\": 1, **user.dict()}\n\n@app.patch(\"/users/{user_id}\")\ndef update_user(user_id: int, user: UserUpdate):\n    ...\n\n@app.delete(\"/users/{user_id}\", status_code=204)\ndef delete_user(user_id: int):\n    ...\n\n# 自訂 error\n@app.get(\"/users/{user_id}\")\ndef get_user(user_id: int):\n    user = db.find(user_id)\n    if not user:\n        raise HTTPException(\n            status_code=404,\n            detail=f\"User {user_id} not found\"\n        )\n    return user\n```\n\n  \n    **☕ 用人話講**\n    \nFastAPI 30 分鐘上手：(1) 裝 fastapi + uvicorn (2) 寫 `@app.get / @app.post` (3) 用 Pydantic class 當 body (4) `uvicorn main:app --reload`。**自動文件**是賣點—`/docs` 直接看 + 測試。**2026 indie API 首選**—寫得快、跑得快、文件完整。\n\n  \n\n  \n    \n      💼\n      接案小知識\n    \n    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「Python」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。",
+      "tip": {
+        "type": "practical",
+        "text": "剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「Python」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "為什麼 FastAPI"
+        },
+        {
+          "level": 3,
+          "text": "第一個 API"
+        },
+        {
+          "level": 3,
+          "text": "路徑參數 / 查詢參數 / Body"
+        },
+        {
+          "level": 3,
+          "text": "ASGI vs WSGI"
+        },
+        {
+          "level": 3,
+          "text": "路由組織"
+        },
+        {
+          "level": 3,
+          "text": "HTTP method + status code"
+        }
+      ]
+    },
+    {
+      "id": "26.26",
+      "number": "LESSON 26.26",
+      "title": "Pydantic v2：資料驗證",
+      "oneLineSummary": "Redis / Cache：「記憶體快取」—讓網站快 10 倍。",
+      "analogy": "像桌上的便條 vs 文件櫃—便條（Redis）取秒、文件櫃（DB）取慢。常查的資料放 Redis、Python 用 redis-py 操作。",
+      "content": "Pydantic 是 2026 Python **頭號驗證 library**—FastAPI / LangChain / Hugging Face / OpenAI SDK 全用。\n\n  \n### 為什麼用 Pydantic\n\n```text\n# 沒驗證\ndef create_user(data: dict):\n    name = data[\"name\"]            # KeyError 風險\n    age = int(data[\"age\"])         # ValueError 風險\n    email = data[\"email\"]\n    # 不知道 email 格式對不對\n\n# 用 Pydantic\nfrom pydantic import BaseModel, EmailStr\n\nclass User(BaseModel):\n    name: str\n    age: int\n    email: EmailStr\n\nuser = User(name=\"Alice\", age=30, email=\"alice@x.com\")\n# 自動驗證型別 + email 格式\n# 錯了 raise ValidationError\n```\n\n  \n### 基本用法\n\n```text\nfrom pydantic import BaseModel\nfrom typing import Optional\n\nclass Product(BaseModel):\n    name: str\n    price: float\n    stock: int = 0                  # 預設值\n    description: Optional[str] = None\n    tags: list[str] = []\n\n# 建立\np = Product(name=\"iPhone\", price=999.99, stock=10)\n\n# 從 dict\ndata = {\"name\": \"iPhone\", \"price\": \"999.99\"}\np = Product(**data)\n# Pydantic 會自動轉 string \"999.99\" → float 999.99\n\n# 自動驗證\nProduct(name=\"iPhone\", price=\"not a number\")\n# ValidationError\n```\n\n  \n### 進階型別 + 驗證\n\n```text\nfrom pydantic import BaseModel, EmailStr, HttpUrl, conint, constr\nfrom datetime import datetime\n\nclass User(BaseModel):\n    # 範圍限制\n    age: conint(ge=0, le=120)           # 0-120\n    \n    # 字串限制\n    username: constr(min_length=3, max_length=20)\n    \n    # Email 格式\n    email: EmailStr\n    \n    # URL 格式\n    website: HttpUrl\n    \n    # 時間\n    created_at: datetime\n    \n    # 列表\n    tags: list[str] = []\n    \n    # 巢狀\n    address: \"Address\"\n\nclass Address(BaseModel):\n    street: str\n    city: str\n    country: str\n\n# 自動驗證 email、url、字串長度、整數範圍...\n```\n\n  \n### 自訂驗證\n\n```text\nfrom pydantic import BaseModel, field_validator, model_validator\n\nclass User(BaseModel):\n    username: str\n    password: str\n    password_confirm: str\n    age: int\n    \n    @field_validator(\"username\")\n    @classmethod\n    def username_alphanumeric(cls, v):\n        if not v.isalnum():\n            raise ValueError(\"使用者名稱必須是字母 + 數字\")\n        return v\n    \n    @field_validator(\"age\")\n    @classmethod\n    def age_must_be_positive(cls, v):\n        if v  str:\n        return f\"{self.first_name} {self.last_name}\"\n\n# Generic\nfrom typing import Generic, TypeVar\nT = TypeVar(\"T\")\n\nclass Response(BaseModel, Generic[T]):\n    data: T\n    message: str = \"success\"\n\n# 用\nResponse[User](data=user)\nResponse[list[User]](data=[user1, user2])\n\n# Discriminated Union（多型）\nfrom typing import Literal\nfrom pydantic import Field\n\nclass Cat(BaseModel):\n    pet_type: Literal[\"cat\"]\n    meow: str\n\nclass Dog(BaseModel):\n    pet_type: Literal[\"dog\"]\n    bark: str\n\nclass PetOwner(BaseModel):\n    pet: Cat | Dog = Field(discriminator=\"pet_type\")\n```\n\n  \n    **☕ 用人話講**\n    \nPydantic = Python **資料驗證 + 型別轉換** 的瑞士刀。**2026 必學**：(1) FastAPI 內建 (2) LangChain / OpenAI / Anthropic SDK 用 (3) 替代手寫驗證。**用法**：定義 BaseModel + type hint = 自動驗證、自動 JSON 序列化、自動文件。\n\n  \n\n  \n    \n      🎯\n      面試考點\n    \n    台灣科技公司面試 90% 會問「Python」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。",
+      "tip": {
+        "type": "pro",
+        "text": "台灣科技公司面試 90% 會問「Python」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "為什麼用 Pydantic"
+        },
+        {
+          "level": 3,
+          "text": "基本用法"
+        },
+        {
+          "level": 3,
+          "text": "進階型別 + 驗證"
+        },
+        {
+          "level": 3,
+          "text": "自訂驗證"
+        }
+      ]
+    },
+    {
+      "id": "26.27",
+      "number": "LESSON 26.27",
+      "title": "Async / Dependency Injection",
+      "oneLineSummary": "Celery：「背景任務佇列」—寄信 / 處理影片 / 大型計算放後面跑。",
+      "analogy": "像餐廳的廚房號碼牌—客人下單給號碼牌、慢慢做、做好叫號。Celery 一樣：寄 1000 封信不擋網頁、丟到 Celery 隊列慢慢處理。",
+      "content": "FastAPI 兩大強項：async（高並發）+ DI（解耦）。\n\n  \n### async 路由\n\n```text\n# 同步（阻塞）\n@app.get(\"/users/{id}\")\ndef get_user(id: int):\n    user = db.query(User).filter(User.id == id).first()   # 阻塞\n    return user\n\n# async（非阻塞）\n@app.get(\"/users/{id}\")\nasync def get_user(id: int):\n    user = await db.fetch_one(query)    # 不阻塞\n    return user\n\n# 用 httpx async\nimport httpx\n\n@app.get(\"/proxy/{url}\")\nasync def proxy(url: str):\n    async with httpx.AsyncClient() as client:\n        response = await client.get(url)\n    return response.json()\n\n# 多個 async 並行\nimport asyncio\n\n@app.get(\"/dashboard\")\nasync def dashboard():\n    user, orders, notifications = await asyncio.gather(\n        fetch_user(),\n        fetch_orders(),\n        fetch_notifications()\n    )\n    return {\n        \"user\": user,\n        \"orders\": orders,\n        \"notifications\": notifications\n    }\n\n# 三個 API 同時打、不一個個等\n```\n\n  \n### 什麼時候用 async\n\n```text\n該用：\n- I/O 密集（DB、外部 API、檔案）\n- 高並發 web server\n- WebSocket / SSE\n\n不用：\n- CPU 密集（純計算）\n- 簡單 script\n\n混合：\nasync def endpoint():\n    # I/O 用 async\n    data = await fetch_from_db()\n    \n    # CPU 密集丟 thread\n    result = await asyncio.to_thread(\n        heavy_computation, data\n    )\n    return result\n```\n\n  \n### Dependency Injection\n\n```text\n# 場景：每個 endpoint 都要 DB session\n\n# 沒 DI（重複）\n@app.get(\"/users\")\ndef list_users():\n    db = SessionLocal()\n    try:\n        return db.query(User).all()\n    finally:\n        db.close()\n\n@app.get(\"/products\")\ndef list_products():\n    db = SessionLocal()    # 一樣的 code 重複\n    try:\n        return db.query(Product).all()\n    finally:\n        db.close()\n\n# 用 Depends\nfrom fastapi import Depends\n\ndef get_db():\n    db = SessionLocal()\n    try:\n        yield db\n    finally:\n        db.close()\n\n@app.get(\"/users\")\ndef list_users(db: Session = Depends(get_db)):\n    return db.query(User).all()\n\n@app.get(\"/products\")\ndef list_products(db: Session = Depends(get_db)):\n    return db.query(Product).all()\n\n# DI 自動處理 setup / teardown\n```\n\n  \n### Auth Dependency（最常見）\n\n```text\nfrom fastapi import Depends, HTTPException, status\nfrom fastapi.security import OAuth2PasswordBearer\n\noauth2_scheme = OAuth2PasswordBearer(tokenUrl=\"token\")\n\ndef get_current_user(token: str = Depends(oauth2_scheme)):\n    try:\n        payload = jwt.decode(token, SECRET_KEY, algorithms=[\"HS256\"])\n        user_id = payload.get(\"sub\")\n    except JWTError:\n        raise HTTPException(\n            status_code=status.HTTP_401_UNAUTHORIZED,\n            detail=\"Invalid token\"\n        )\n    \n    user = db.query(User).filter(User.id == user_id).first()\n    if not user:\n        raise HTTPException(status_code=404)\n    return user\n\n@app.get(\"/me\")\ndef read_me(current_user: User = Depends(get_current_user)):\n    return current_user\n\n@app.delete(\"/posts/{post_id}\")\ndef delete_post(\n    post_id: int,\n    current_user: User = Depends(get_current_user)\n):\n    # 自動有 current_user\n    ...\n```\n\n  \n### 巢狀 Dependency\n\n```text\n# Dependencies 能用 dependencies\n\ndef get_db():\n    ...\n\ndef get_current_user(db: Session = Depends(get_db), ...):\n    # 用 db\n    ...\n\ndef require_admin(user: User = Depends(get_current_user)):\n    if user.role != \"admin\":\n        raise HTTPException(403)\n    return user\n\n@app.delete(\"/users/{id}\")\ndef admin_delete(\n    id: int,\n    admin: User = Depends(require_admin)\n):\n    # 自動：get_db → get_current_user → require_admin\n    ...\n```\n\n  \n### 路由 dependencies（middleware）\n\n```text\n# 整個 router 都要 auth\nadmin_router = APIRouter(\n    prefix=\"/admin\",\n    dependencies=[Depends(require_admin)]\n)\n\n@admin_router.delete(\"/users/{id}\")\ndef delete_user(id: int):\n    # require_admin 自動跑\n    ...\n\n# 全 app\napp = FastAPI(dependencies=[Depends(verify_api_key)])\n```\n\n  \n    **🚀 進階技巧**\n    \nFastAPI 2 大殺手鐧：(1) **async**—I/O 並行、跑得快 (2) **Depends**—DI 解耦、test 友善。**實戰**：(1) endpoint 預設 async（用 await）(2) DB session、auth、settings 全用 Depends (3) test 用 dependency_overrides mock。\n\n  \n\n  \n    \n      ⚡\n      學習加速器\n    \n    把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。",
+      "tip": {
+        "type": "practical",
+        "text": "把這節學到的馬上應用到一個小東西—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "async 路由"
+        },
+        {
+          "level": 3,
+          "text": "什麼時候用 async"
+        },
+        {
+          "level": 3,
+          "text": "Dependency Injection"
+        },
+        {
+          "level": 3,
+          "text": "Auth Dependency（最常見）"
+        },
+        {
+          "level": 3,
+          "text": "巢狀 Dependency"
+        },
+        {
+          "level": 3,
+          "text": "路由 dependencies（middleware）"
+        }
+      ]
+    },
+    {
+      "id": "26.28",
+      "number": "LESSON 26.28",
+      "title": "SQLAlchemy 2.0 + Alembic",
+      "oneLineSummary": "Deploy Python App：Gunicorn / Uvicorn / Docker—讓 Python 上線。",
+      "analogy": "像把家裡食譜變成餐廳—自己煮跟賣給客人不同。Gunicorn（Flask）/ Uvicorn（FastAPI）/ Docker（打包）—讓 Python code 變 production 服務。",
+      "content": "SQLAlchemy 是 Python ORM 業界標準—Stripe、Reddit、Yelp 都用。2.0 加 async、modern API。\n\n  \n### 定義 Model\n\n```text\n# 1. 裝\n$ uv add sqlalchemy asyncpg alembic\n\n# 2. models.py\nfrom sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship\nfrom sqlalchemy import String, Integer, ForeignKey, DateTime, func\nfrom datetime import datetime\n\nclass Base(DeclarativeBase):\n    pass\n\nclass User(Base):\n    __tablename__ = \"users\"\n    \n    id: Mapped[int] = mapped_column(primary_key=True)\n    name: Mapped[str] = mapped_column(String(100))\n    email: Mapped[str] = mapped_column(String(255), unique=True)\n    age: Mapped[int | None]\n    created_at: Mapped[datetime] = mapped_column(default=func.now())\n    \n    orders: Mapped[list[\"Order\"]] = relationship(back_populates=\"user\")\n\nclass Order(Base):\n    __tablename__ = \"orders\"\n    \n    id: Mapped[int] = mapped_column(primary_key=True)\n    user_id: Mapped[int] = mapped_column(ForeignKey(\"users.id\"))\n    total: Mapped[float]\n    \n    user: Mapped[\"User\"] = relationship(back_populates=\"orders\")\n```\n\n  \n### 連線 + Session\n\n```text\n# 3. database.py\nfrom sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession\n\nDATABASE_URL = \"postgresql+asyncpg://user:pass@localhost/mydb\"\n\nengine = create_async_engine(DATABASE_URL, echo=True)\nAsyncSessionLocal = async_sessionmaker(engine, expire_on_commit=False)\n\nasync def get_db() -> AsyncSession:\n    async with AsyncSessionLocal() as session:\n        yield session\n\n# FastAPI 用\n@app.get(\"/users\")\nasync def list_users(db: AsyncSession = Depends(get_db)):\n    result = await db.execute(select(User))\n    return result.scalars().all()\n```\n\n  \n### CRUD\n\n```text\nfrom sqlalchemy import select, update, delete\n\n# Create\nnew_user = User(name=\"Alice\", email=\"alice@x.com\", age=30)\ndb.add(new_user)\nawait db.commit()\nawait db.refresh(new_user)   # 拿 id\n\n# Read\n# 一個\nresult = await db.execute(select(User).where(User.id == 1))\nuser = result.scalar_one_or_none()\n\n# 多個\nresult = await db.execute(select(User).where(User.age > 18))\nusers = result.scalars().all()\n\n# 排序 / 分頁\nstmt = (\n    select(User)\n    .where(User.is_active == True)\n    .order_by(User.created_at.desc())\n    .limit(20)\n    .offset(0)\n)\nresult = await db.execute(stmt)\nusers = result.scalars().all()\n\n# Update\nuser.name = \"Alice Smith\"\nawait db.commit()\n\n# 或 bulk update\nawait db.execute(\n    update(User)\n    .where(User.id == 1)\n    .values(name=\"Alice Smith\")\n)\nawait db.commit()\n\n# Delete\nawait db.delete(user)\nawait db.commit()\n\n# 或 bulk\nawait db.execute(delete(User).where(User.id == 1))\nawait db.commit()\n```\n\n  \n### Relationship + Join\n\n```text\nfrom sqlalchemy.orm import selectinload, joinedload\n\n# Lazy load（會 N+1）\nuser = await db.get(User, 1)\norders = user.orders   # 觸發 query\n\n# Eager load（避免 N+1）\nstmt = select(User).options(selectinload(User.orders)).where(User.id == 1)\nresult = await db.execute(stmt)\nuser = result.scalar_one()\n# 一個 query 連 orders 都載入\n\n# JOIN\nfrom sqlalchemy import select\n\nstmt = (\n    select(User, Order)\n    .join(Order)\n    .where(Order.total > 1000)\n)\nresult = await db.execute(stmt)\nfor user, order in result:\n    print(user.name, order.total)\n```\n\n  \n### Alembic：DB Migration\n\n```text\n# 改 schema 時、不能手動改 DB\n# 用 migration 自動 + 版控\n\n# 1. 初始化\n$ uv run alembic init alembic\n\n# 2. 設定 alembic.ini + env.py\n# sqlalchemy.url = postgresql+asyncpg://...\n\n# 3. 改 model 後、自動生 migration\n$ uv run alembic revision --autogenerate -m \"add user.age column\"\n\n# 自動產生：\n# alembic/versions/xxx_add_user_age_column.py\n\ndef upgrade():\n    op.add_column(\"users\", sa.Column(\"age\", sa.Integer))\n\ndef downgrade():\n    op.drop_column(\"users\", \"age\")\n\n# 4. 套用\n$ uv run alembic upgrade head\n\n# 5. 看狀態\n$ uv run alembic current\n$ uv run alembic history\n\n# 6. 回滾\n$ uv run alembic downgrade -1\n```\n\n  \n### Production 最佳實踐\n\n```text\n# Connection pool\nengine = create_async_engine(\n    DATABASE_URL,\n    pool_size=20,\n    max_overflow=10,\n    pool_pre_ping=True,    # 連線前 ping\n)\n\n# Transaction\nasync def transfer(from_id, to_id, amount):\n    async with db.begin():\n        from_user = await db.get(User, from_id)\n        from_user.balance -= amount\n        \n        to_user = await db.get(User, to_id)\n        to_user.balance += amount\n        \n    # 自動 commit / rollback\n\n# Repository pattern\nclass UserRepository:\n    def __init__(self, db: AsyncSession):\n        self.db = db\n    \n    async def find_by_id(self, id: int) -> User | None:\n        result = await self.db.execute(\n            select(User).where(User.id == id)\n        )\n        return result.scalar_one_or_none()\n    \n    async def find_active(self) -> list[User]:\n        result = await self.db.execute(\n            select(User).where(User.is_active == True)\n        )\n        return result.scalars().all()\n    \n    async def save(self, user: User) -> User:\n        self.db.add(user)\n        await self.db.commit()\n        await self.db.refresh(user)\n        return user\n```\n\n  \n    **☕ 用人話講**\n    \nSQLAlchemy 2.0 + Alembic = Python DB 完整 stack。**2026 重點**：(1) 用 async（FastAPI 完美搭） (2) 用新版 syntax（Mapped、select）—2.0 之前的 API 別學 (3) 永遠 eager load 避免 N+1 (4) Alembic migration 從 day 1 用。\n\n  \n\n  \n    \n      🚀\n      2026 趨勢\n    \n    這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。",
+      "tip": {
+        "type": "trend",
+        "text": "這個技術 2026 還在主流、未來 5 年不會過時。但工具會更新—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "定義 Model"
+        },
+        {
+          "level": 3,
+          "text": "連線 + Session"
+        },
+        {
+          "level": 3,
+          "text": "CRUD"
+        },
+        {
+          "level": 3,
+          "text": "Relationship + Join"
+        },
+        {
+          "level": 3,
+          "text": "Alembic：DB Migration"
+        },
+        {
+          "level": 3,
+          "text": "Production 最佳實踐"
+        }
+      ]
+    },
+    {
+      "id": "26.29",
+      "number": "LESSON 26.29",
+      "title": "認證：JWT / OAuth",
+      "oneLineSummary": "Python 效能優化:profiler / multiprocessing / Cython—讓 Python 飛起來。",
+      "analogy": "像調車—一般引擎夠用、調校後變賽車。Python 慢的地方用 multiprocessing（多核心）/ asyncio（async）/ Cython（編譯成 C）—速度可提升 10-100 倍。",
+      "content": "Python 後端認證實戰—密碼 hash、JWT、OAuth 第三方登入。\n\n  \n### 密碼 hash（bcrypt）\n\n```text\n# 裝\n$ uv add passlib[bcrypt]\n\nfrom passlib.context import CryptContext\n\npwd_context = CryptContext(schemes=[\"bcrypt\"], deprecated=\"auto\")\n\n# 註冊：hash 密碼\nhashed = pwd_context.hash(\"user_password_123\")\n# 存進 DB（永遠不存明文！）\n\n# 登入：驗證\nis_valid = pwd_context.verify(\"user_password_123\", hashed)\n# True / False\n```\n\n  \n### JWT 完整實作\n\n```text\n$ uv add python-jose[cryptography]\n\nfrom datetime import datetime, timedelta\nfrom jose import jwt, JWTError\nfrom fastapi import Depends, HTTPException, status\nfrom fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm\n\nSECRET_KEY = \"your-secret-key-keep-in-env\"\nALGORITHM = \"HS256\"\nACCESS_TOKEN_EXPIRE_MINUTES = 30\n\noauth2_scheme = OAuth2PasswordBearer(tokenUrl=\"token\")\n\ndef create_access_token(data: dict, expires_delta: timedelta = None):\n    to_encode = data.copy()\n    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=15))\n    to_encode.update({\"exp\": expire})\n    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)\n\n# 登入 endpoint\n@app.post(\"/token\")\nasync def login(\n    form_data: OAuth2PasswordRequestForm = Depends(),\n    db: AsyncSession = Depends(get_db)\n):\n    # 找 user\n    user = await db.execute(\n        select(User).where(User.email == form_data.username)\n    )\n    user = user.scalar_one_or_none()\n    \n    if not user or not pwd_context.verify(form_data.password, user.hashed_password):\n        raise HTTPException(\n            status_code=status.HTTP_401_UNAUTHORIZED,\n            detail=\"Incorrect email or password\"\n        )\n    \n    # 生 token\n    access_token = create_access_token(\n        data={\"sub\": str(user.id)},\n        expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)\n    )\n    \n    return {\"access_token\": access_token, \"token_type\": \"bearer\"}\n\n# 驗證 token 的 dependency\nasync def get_current_user(\n    token: str = Depends(oauth2_scheme),\n    db: AsyncSession = Depends(get_db)\n) -> User:\n    credentials_exception = HTTPException(\n        status_code=status.HTTP_401_UNAUTHORIZED,\n        detail=\"Could not validate credentials\"\n    )\n    try:\n        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])\n        user_id = payload.get(\"sub\")\n        if user_id is None:\n            raise credentials_exception\n    except JWTError:\n        raise credentials_exception\n    \n    user = await db.get(User, int(user_id))\n    if user is None:\n        raise credentials_exception\n    return user\n\n# 保護的 endpoint\n@app.get(\"/me\")\nasync def read_me(current_user: User = Depends(get_current_user)):\n    return current_user\n```\n\n  \n### Refresh Token Pattern\n\n```text\n# Access token 短期（15 分鐘）\n# Refresh token 長期（30 天、存 DB）\n\nclass TokenPair(BaseModel):\n    access_token: str\n    refresh_token: str\n    token_type: str = \"bearer\"\n\n@app.post(\"/token\", response_model=TokenPair)\nasync def login(...):\n    user = ...\n    \n    access_token = create_access_token(\n        data={\"sub\": str(user.id)},\n        expires_delta=timedelta(minutes=15)\n    )\n    \n    refresh_token = create_access_token(\n        data={\"sub\": str(user.id), \"type\": \"refresh\"},\n        expires_delta=timedelta(days=30)\n    )\n    \n    # Refresh token 存 DB（能撤銷）\n    db.add(RefreshToken(token=refresh_token, user_id=user.id))\n    await db.commit()\n    \n    return TokenPair(\n        access_token=access_token,\n        refresh_token=refresh_token\n    )\n\n@app.post(\"/refresh\", response_model=TokenPair)\nasync def refresh(refresh_token: str):\n    try:\n        payload = jwt.decode(refresh_token, SECRET_KEY, algorithms=[ALGORITHM])\n        if payload.get(\"type\") != \"refresh\":\n            raise HTTPException(401)\n        user_id = payload.get(\"sub\")\n    except JWTError:\n        raise HTTPException(401)\n    \n    # 檢查 refresh token 沒被撤銷\n    db_token = await db.execute(\n        select(RefreshToken).where(RefreshToken.token == refresh_token)\n    )\n    if not db_token.scalar_one_or_none():\n        raise HTTPException(401)\n    \n    # 生新 access token\n    new_access = create_access_token(\n        data={\"sub\": user_id},\n        expires_delta=timedelta(minutes=15)\n    )\n    return TokenPair(access_token=new_access, refresh_token=refresh_token)\n```\n\n  \n### OAuth 第三方登入\n\n```text\n# 「用 Google 登入」「用 LINE 登入」\n\n# 用 Authlib\n$ uv add authlib httpx\n\nfrom authlib.integrations.starlette_client import OAuth\n\noauth = OAuth()\noauth.register(\n    name=\"google\",\n    client_id=os.environ[\"GOOGLE_CLIENT_ID\"],\n    client_secret=os.environ[\"GOOGLE_CLIENT_SECRET\"],\n    server_metadata_url=\"https://accounts.google.com/.well-known/openid-configuration\",\n    client_kwargs={\"scope\": \"openid email profile\"}\n)\n\n@app.get(\"/auth/google\")\nasync def google_login(request: Request):\n    redirect_uri = request.url_for(\"google_callback\")\n    return await oauth.google.authorize_redirect(request, redirect_uri)\n\n@app.get(\"/auth/google/callback\")\nasync def google_callback(request: Request, db: AsyncSession = Depends(get_db)):\n    token = await oauth.google.authorize_access_token(request)\n    user_info = token.get(\"userinfo\")\n    \n    # 找 / 建 user\n    result = await db.execute(\n        select(User).where(User.email == user_info[\"email\"])\n    )\n    user = result.scalar_one_or_none()\n    \n    if not user:\n        user = User(\n            email=user_info[\"email\"],\n            name=user_info[\"name\"],\n            google_id=user_info[\"sub\"]\n        )\n        db.add(user)\n        await db.commit()\n    \n    # 生 JWT\n    access_token = create_access_token(data={\"sub\": str(user.id)})\n    return RedirectResponse(f\"/?token={access_token}\")\n```\n\n  \n### 用 Clerk / Auth.js（推薦 indie）\n\n```text\n# 不要自己搞 auth、用 SaaS\n# 安全 + 省時間\n\n# Clerk Python SDK\n$ uv add clerk-backend-api\n\nfrom clerk_backend_api import Clerk\n\nclerk = Clerk(bearer_auth=os.environ[\"CLERK_SECRET_KEY\"])\n\nasync def get_current_user_from_clerk(\n    token: str = Depends(oauth2_scheme)\n):\n    try:\n        session = clerk.sessions.verify(token=token)\n        user = clerk.users.get(user_id=session.user_id)\n        return user\n    except Exception:\n        raise HTTPException(401)\n\n# 不用自己處理：\n# - 密碼 hash / 重設\n# - Email 驗證\n# - OAuth 多 provider\n# - 2FA\n# - Session 管理\n```\n\n  \n    **⚠ 踩雷警告**\n    \nAuth 是頭號資安洞：(1) **絕對不存明文密碼**—用 bcrypt / argon2 (2) **JWT secret 放 env**—不寫死 code (3) **HTTPS only**—不然 token 被竊聽 (4) **HttpOnly cookie**—防 XSS (5) **新手用 Clerk / Supabase Auth**—別自己搞。\n\n  \n\n  \n    \n      🛠️\n      工具推薦\n    \n    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。",
+      "tip": {
+        "type": "practical",
+        "text": "配合這節用的工具：(1) VS Code（編輯器、免費）(2) Chrome DevTools（F12 開啟、除錯神器）(3) Live Server（VS Code 擴充、即時預覽）(4) GitHub Copilot / Cursor（AI 寫程式、學習加速 2-10x）。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "密碼 hash（bcrypt）"
+        },
+        {
+          "level": 3,
+          "text": "JWT 完整實作"
+        },
+        {
+          "level": 3,
+          "text": "Refresh Token Pattern"
+        },
+        {
+          "level": 3,
+          "text": "OAuth 第三方登入"
+        },
+        {
+          "level": 3,
+          "text": "用 Clerk / Auth.js（推薦 indie）"
+        }
+      ]
+    },
+    {
+      "id": "26.30",
+      "number": "LESSON 26.30",
+      "title": "WebSocket / 背景任務 / Celery",
+      "oneLineSummary": "Python 跟 AI：NumPy / Pandas / Scikit-learn / PyTorch—AI 工程師的標配。",
+      "analogy": "像木工的工具組—鋸子（NumPy）、量尺（Pandas）、模板（Scikit-learn）、自動化工具（PyTorch）。2026 AI 工程師 90% 寫 Python。",
+      "content": "非即時 / 慢 task 必備—Python 後端的進階能力。\n\n  \n### WebSocket：即時通訊\n\n```text\nfrom fastapi import FastAPI, WebSocket, WebSocketDisconnect\n\napp = FastAPI()\n\n# 連線管理\nclass ConnectionManager:\n    def __init__(self):\n        self.active: list[WebSocket] = []\n    \n    async def connect(self, ws: WebSocket):\n        await ws.accept()\n        self.active.append(ws)\n    \n    def disconnect(self, ws: WebSocket):\n        self.active.remove(ws)\n    \n    async def broadcast(self, msg: str):\n        for connection in self.active:\n            await connection.send_text(msg)\n\nmanager = ConnectionManager()\n\n@app.websocket(\"/ws/{client_id}\")\nasync def websocket_endpoint(websocket: WebSocket, client_id: int):\n    await manager.connect(websocket)\n    try:\n        while True:\n            data = await websocket.receive_text()\n            await manager.broadcast(f\"Client {client_id}: {data}\")\n    except WebSocketDisconnect:\n        manager.disconnect(websocket)\n        await manager.broadcast(f\"Client {client_id} left\")\n\n# Client（browser JS）\nconst ws = new WebSocket(\"ws://localhost:8000/ws/1\");\nws.onmessage = (e) => console.log(e.data);\nws.send(\"Hello!\");\n```\n\n  \n### SSE：Server-Sent Events\n\n```text\n# AI 串流主流（ChatGPT 一字一字出）\n\nfrom fastapi import FastAPI\nfrom fastapi.responses import StreamingResponse\nimport asyncio\n\n@app.get(\"/stream\")\nasync def stream():\n    async def generate():\n        for i in range(10):\n            yield f\"data: {{\\\"count\\\": {i}}}\\n\\n\"\n            await asyncio.sleep(1)\n    \n    return StreamingResponse(generate(), media_type=\"text/event-stream\")\n\n# AI 串流範例\n@app.post(\"/chat\")\nasync def chat(message: str):\n    async def generate():\n        async for chunk in openai_stream(message):\n            yield f\"data: {chunk}\\n\\n\"\n    return StreamingResponse(generate(), media_type=\"text/event-stream\")\n\n# Client\nconst evt = new EventSource(\"/stream\");\nevt.onmessage = (e) => console.log(JSON.parse(e.data));\n```\n\n  \n### BackgroundTasks（簡單背景）\n\n```text\nfrom fastapi import BackgroundTasks\n\ndef send_welcome_email(email: str):\n    # 慢操作\n    send_email(email, \"Welcome!\")\n\n@app.post(\"/register\")\nasync def register(\n    user: UserCreate,\n    background_tasks: BackgroundTasks,\n    db: AsyncSession = Depends(get_db)\n):\n    new_user = User(**user.dict())\n    db.add(new_user)\n    await db.commit()\n    \n    # 寄信丟背景、不擋回應\n    background_tasks.add_task(send_welcome_email, user.email)\n    \n    return {\"user\": new_user}\n\n# 適合：\n# - 簡單一次性背景\n# - 不需要重試\n# - 不需要 cross-process\n\n# 不適合：\n# - 重 task\n# - 需要 retry\n# - 需要監控\n```\n\n  \n### Celery：production-grade 任務隊列\n\n```text\n$ uv add celery redis\n\n# tasks.py\nfrom celery import Celery\n\ncelery_app = Celery(\n    \"myapp\",\n    broker=\"redis://localhost:6379/0\",\n    backend=\"redis://localhost:6379/1\"\n)\n\n@celery_app.task(bind=True, max_retries=3)\ndef send_email_task(self, email: str, subject: str, body: str):\n    try:\n        email_service.send(email, subject, body)\n    except Exception as exc:\n        # 自動重試（exponential backoff）\n        raise self.retry(exc=exc, countdown=2 ** self.request.retries)\n\n@celery_app.task\ndef process_video(video_id: int):\n    video = db.query(Video).get(video_id)\n    # 轉檔、產生縮圖、上傳 CDN\n    process(video)\n\n# 用\n@app.post(\"/upload-video\")\nasync def upload(video_data: ...):\n    video = Video(...)\n    db.add(video)\n    await db.commit()\n    \n    # 丟 Celery\n    process_video.delay(video.id)\n    \n    return {\"video_id\": video.id}\n\n# Worker（另一個 process）\n$ celery -A tasks worker --loglevel=info\n\n# 監控（Flower）\n$ uv add flower\n$ celery -A tasks flower\n# 訪問 http://localhost:5555\n```\n\n  \n### Celery Beat：定時任務\n\n```text\n# celery_app.py\nfrom celery.schedules import crontab\n\ncelery_app.conf.beat_schedule = {\n    \"daily-report\": {\n        \"task\": \"tasks.generate_daily_report\",\n        \"schedule\": crontab(hour=3, minute=0),\n    },\n    \"every-5-min\": {\n        \"task\": \"tasks.health_check\",\n        \"schedule\": 300.0,\n    },\n}\n\n# 跑\n$ celery -A tasks beat --loglevel=info\n\n# Beat 排程 + worker 執行\n```\n\n  \n### 2026 替代品\n\n```text\n# Celery 強但複雜\n# 新興簡單替代：\n\n1. RQ（Redis Queue）\n   - 比 Celery 簡單 5 倍\n   - 適合 indie\n\n2. Dramatiq\n   - modern Python task queue\n   - 比 Celery 設計好\n\n3. Taskiq\n   - async-first\n   - FastAPI 親和\n\n4. Inngest / Trigger.dev\n   - serverless 任務\n   - 不用自架 Redis\n\nindie 選擇：\n- 小 SaaS：BackgroundTasks\n- 中 SaaS：RQ\n- 大型 / 複雜：Celery\n- Serverless：Inngest\n```\n\n  \n    **🚀 進階技巧**\n    \n2026 Python 後端即時 / 背景 stack：(1) **WebSocket**—聊天、協作 (2) **SSE**—AI 串流、通知（最常用） (3) **BackgroundTasks**—簡單背景 (4) **Celery / RQ + Redis**—複雜任務。**Indie 順序**：先用 BackgroundTasks（day 1）→ 需要 retry / cron 加 RQ。\n\n  \n\n  \n    \n      ⚠️\n      新手常見錯誤\n    \n    新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。",
+      "tip": {
+        "type": "warning",
+        "text": "新手 3 大坑：(1) 不看 console—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) 不存檔就 F5—改完忘記儲存以為「程式沒效果」 (3) 抄 code 不理解—複製貼上能跑、但下次要改就崩潰。記得：先看懂、再寫。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "WebSocket：即時通訊"
+        },
+        {
+          "level": 3,
+          "text": "SSE：Server-Sent Events"
+        },
+        {
+          "level": 3,
+          "text": "BackgroundTasks（簡單背景）"
+        },
+        {
+          "level": 3,
+          "text": "Celery：production-grade 任務隊列"
+        },
+        {
+          "level": 3,
+          "text": "Celery Beat：定時任務"
+        },
+        {
+          "level": 3,
+          "text": "2026 替代品"
+        }
+      ]
+    },
+    {
+      "id": "26.31",
+      "number": "LESSON 26.31",
+      "title": "Django + DRF 對比",
+      "oneLineSummary": "Python 跟資料分析：Pandas + Jupyter—資料科學家的 Excel 替代品。",
+      "analogy": "像進階版 Excel—處理百萬筆資料 Excel 卡死、Pandas 秒完。Jupyter Notebook：寫一段跑一段、像在實驗、資料分析 / AI 入門必備。",
+      "content": "FastAPI 不是唯一—Django 仍主流大型 Python 後端。\n\n  \n### Django vs FastAPI vs Flask\n\n  \n|  | FastAPI | Django | Flask |\n| --- | --- | --- | --- |\n| 定位 | API-first、modern | Full-stack、batteries-included | Minimal、彈性 |\n| 速度 | 最快 | 中 | 中 |\n| 學習曲線 | 中 | 陡（內容多） | 簡單 |\n| 內建 | 少（你選工具） | 多（ORM / admin / auth / forms） | 少 |\n| async | 原生 | 4.0+ 支援、不完整 | 有限 |\n| 適合 | API / 微服務 / AI | 大型 monolith / CMS | 小工具 / prototype |\n| 公司 | Uber、Microsoft | Instagram、Pinterest、Spotify | 各種 startup |\n\n  \n### Django 範例\n\n```text\n# 1. 建專案\n$ uv add django djangorestframework\n$ django-admin startproject myapp\n$ cd myapp\n$ python manage.py startapp blog\n\n# 2. settings.py\nINSTALLED_APPS = [\n    \"django.contrib.admin\",\n    \"django.contrib.auth\",\n    \"rest_framework\",\n    \"blog\",\n]\n\n# 3. models.py\nfrom django.db import models\n\nclass Post(models.Model):\n    title = models.CharField(max_length=200)\n    content = models.TextField()\n    author = models.ForeignKey(\"auth.User\", on_delete=models.CASCADE)\n    created_at = models.DateTimeField(auto_now_add=True)\n\n# 4. Migration\n$ python manage.py makemigrations\n$ python manage.py migrate\n\n# 5. Admin（自動）\n# admin.py\nfrom django.contrib import admin\nfrom .models import Post\n\nadmin.site.register(Post)\n\n# 訪問 /admin/ → 內建完整 CRUD UI\n# Django 強項 #1\n\n# 6. DRF API\n# serializers.py\nfrom rest_framework import serializers\nfrom .models import Post\n\nclass PostSerializer(serializers.ModelSerializer):\n    class Meta:\n        model = Post\n        fields = \"__all__\"\n\n# views.py\nfrom rest_framework import viewsets\nfrom .models import Post\nfrom .serializers import PostSerializer\n\nclass PostViewSet(viewsets.ModelViewSet):\n    queryset = Post.objects.all()\n    serializer_class = PostSerializer\n\n# urls.py\nfrom rest_framework.routers import DefaultRouter\nfrom blog.views import PostViewSet\n\nrouter = DefaultRouter()\nrouter.register(\"posts\", PostViewSet)\n\nurlpatterns = router.urls\n\n# 自動有 GET / POST / PUT / PATCH / DELETE\n# 完整 RESTful API、不寫 endpoint\n```\n\n  \n### Django 強項\n\n```text\n1. Django Admin\n   - 內建 CRUD 後台\n   - 0 code 給管理者用\n\n2. Django ORM\n   - 簡單、教學多\n   - migration 內建\n\n3. Forms\n   - 自動驗證 + UI\n\n4. Authentication\n   - 內建（login、permissions、groups）\n\n5. 大量第三方\n   - django-rest-framework\n   - django-celery\n   - django-channels（WebSocket）\n\n6. Convention over configuration\n   - 大家寫法一致\n   - 接案 / 換工作友善\n```\n\n  \n### Django 不適合\n\n  \n- 純 API（FastAPI 更輕、更快）\n- Microservices（太重）\n- 需要極致效能\n- 新 startup（學習曲線陡）\n\n  \n### 怎麼選\n\n```text\n選 FastAPI 當：\n- 主要做 API\n- AI / ML backend\n- 微服務\n- 想 modern、async\n- 中小團隊（2026 主流）\n\n選 Django 當：\n- 全端 web app（含 UI）\n- 需要 admin 後台\n- CMS / 內容平台\n- 大型團隊有規範\n- 工作機會多（台灣中大企業）\n\n選 Flask 當：\n- 簡單 API / prototype\n- 小工具\n- 學習用\n\n2026 indie 推薦：\n- 純 API → FastAPI\n- 內含 UI → Next.js + FastAPI backend\n- 真的要 Django → 用 Django 但加 DRF\n```\n\n  \n    **☕ 用人話講**\n    \nDjango 是 Python 後端「老大哥」—Instagram / Spotify / Pinterest 用了 15 年。**2026 現實**：(1) 新專案 FastAPI 主流（速度 + modern） (2) Django 仍主流 enterprise / CMS（生態 + admin） (3) Flask 變 prototype 用。學 Python 後端建議：FastAPI 為主、Django 知道存在、Flask 不用學。\n\n  \n\n  \n    \n      💼\n      接案小知識\n    \n    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「Python」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。",
+      "tip": {
+        "type": "practical",
+        "text": "剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「Python」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "Django vs FastAPI vs Flask"
+        },
+        {
+          "level": 3,
+          "text": "Django 範例"
+        },
+        {
+          "level": 3,
+          "text": "Django 強項"
+        },
+        {
+          "level": 3,
+          "text": "Django 不適合"
+        },
+        {
+          "level": 3,
+          "text": "怎麼選"
+        }
+      ]
+    },
+    {
+      "id": "26.32",
+      "number": "LESSON 26.32",
+      "title": "部署：Uvicorn、Gunicorn、Docker",
+      "oneLineSummary": "整章實戰：用 Python 做一個能跑的 AI 聊天機器人—FastAPI + Claude API + Streamlit UI。",
+      "analogy": "像學完木工後做一個能用的書桌—不只練習、做出能 ship 的東西。Portfolio 第 1 號 Python 作品就靠這個。",
+      "content": "寫完 Python 後端、怎麼上 production？2026 主流選擇。\n\n  \n### 本機跑 vs Production\n\n```text\n# 本機 development\n$ uvicorn main:app --reload\n# 單 worker、改 code reload\n\n# Production：多 worker + 監控\n$ uvicorn main:app --host 0.0.0.0 --port 8000 --workers 4\n\n# 或用 Gunicorn 管 Uvicorn\n$ uv add gunicorn\n$ gunicorn main:app -w 4 -k uvicorn.workers.UvicornWorker\n\n# 為什麼多 worker：\n# Python GIL：1 個 process 1 個 thread 跑 Python\n# 多 worker = 多 process = 真平行\n# Rule: workers = CPU 核心 * 2\n```\n\n  \n### Dockerfile\n\n```text\n# Dockerfile\nFROM python:3.12-slim\n\nWORKDIR /app\n\n# 裝 uv\nCOPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/\n\n# 裝依賴（先複製 pyproject、利用 cache）\nCOPY pyproject.toml uv.lock ./\nRUN uv sync --frozen --no-cache\n\n# 複製 code\nCOPY . .\n\n# 環境變數\nENV PYTHONUNBUFFERED=1\n\nEXPOSE 8000\n\nCMD [\"uv\", \"run\", \"uvicorn\", \"main:app\", \"--host\", \"0.0.0.0\", \"--port\", \"8000\", \"--workers\", \"4\"]\n\n# Build + run\n$ docker build -t myapp .\n$ docker run -p 8000:8000 myapp\n```\n\n  \n### docker-compose（完整 stack）\n\n```text\n# docker-compose.yml\nversion: \"3.9\"\n\nservices:\n  app:\n    build: .\n    ports:\n      - \"8000:8000\"\n    environment:\n      - DATABASE_URL=postgresql+asyncpg://user:pass@db/mydb\n      - REDIS_URL=redis://redis:6379\n    depends_on:\n      - db\n      - redis\n  \n  db:\n    image: postgres:16-alpine\n    environment:\n      POSTGRES_USER: user\n      POSTGRES_PASSWORD: pass\n      POSTGRES_DB: mydb\n    volumes:\n      - postgres_data:/var/lib/postgresql/data\n    ports:\n      - \"5432:5432\"\n  \n  redis:\n    image: redis:7-alpine\n    ports:\n      - \"6379:6379\"\n  \n  worker:\n    build: .\n    command: celery -A tasks worker --loglevel=info\n    depends_on:\n      - redis\n\nvolumes:\n  postgres_data:\n\n# 一鍵啟動\n$ docker compose up\n\n# 全部 services 一起跑\n```\n\n  \n### 2026 部署平台\n\n```text\nIndie / 簡單：\n1. Railway（最簡單、$0-30/月）\n   - git push 自動 deploy\n   - DB / Redis 一鍵加\n   - 推薦 indie 首選\n\n2. Render\n   - 類 Railway\n   - 免費 tier\n\n3. Fly.io\n   - 全球邊緣\n   - Docker-native\n\n4. Vercel\n   - 主前端、serverless Python 也行\n   - Next.js + Python API 完美\n\n中型：\n5. AWS（ECS / Fargate / Lambda）\n   - 最完整、最複雜\n   - 學習曲線陡\n\n6. Google Cloud Run\n   - serverless container\n   - 按用量\n\n7. Heroku\n   - 老牌、貴但穩\n\n大型：\n8. Kubernetes\n   - 自架 cluster\n   - 太重、indie 不需要\n```\n\n  \n### 環境變數 + secrets\n\n```text\n# .env（不 commit）\nDATABASE_URL=postgresql://...\nSECRET_KEY=xxx\nOPENAI_API_KEY=sk-...\nREDIS_URL=redis://...\n\n# .gitignore\n.env\n\n# main.py\nfrom dotenv import load_dotenv\nimport os\n\nload_dotenv()\n\nDATABASE_URL = os.environ[\"DATABASE_URL\"]\nSECRET_KEY = os.environ[\"SECRET_KEY\"]\n\n# 或用 pydantic-settings（推薦）\nfrom pydantic_settings import BaseSettings\n\nclass Settings(BaseSettings):\n    database_url: str\n    secret_key: str\n    openai_api_key: str\n    \n    class Config:\n        env_file = \".env\"\n\nsettings = Settings()\n\n# Production：在平台 UI 設環境變數\n# Railway / Vercel / Render 都有設定頁\n```\n\n  \n### 監控 + 日誌\n\n```text\n# Sentry（error tracking）\n$ uv add sentry-sdk\n\nimport sentry_sdk\nsentry_sdk.init(\n    dsn=os.environ[\"SENTRY_DSN\"],\n    traces_sample_rate=0.1,\n)\n\n# 自動抓 unhandled exception\n\n# Structured log\nimport structlog\nlogger = structlog.get_logger()\n\nlogger.info(\"user_login\", user_id=123, ip=\"1.2.3.4\")\n\n# Health check\n@app.get(\"/health\")\nasync def health(db: AsyncSession = Depends(get_db)):\n    try:\n        await db.execute(text(\"SELECT 1\"))\n        return {\"status\": \"ok\"}\n    except Exception:\n        return {\"status\": \"unhealthy\"}, 503\n```\n\n  \n### Indie SaaS 完整 stack\n\n```text\n2026 推薦組合：\n\nApp：Railway / Fly.io\nDB：Neon（managed PostgreSQL）\nCache：Upstash Redis\nStorage：Cloudflare R2\nCDN：Cloudflare\nEmail：Resend\nAuth：Clerk\nMonitoring：Sentry\nDomain：Cloudflare\n\n月成本（0-1000 user）：$0-30\n月成本（10k user）：$50-200\n\n從本機到 production：\n1. uv sync（依賴）\n2. .env 設環境變數\n3. uvicorn 跑\n4. Dockerfile 包\n5. Railway / Render git push\n6. Sentry 監控\n7. Custom domain 設好\n8. 上線！\n```\n\n  \n    **☕ 用人話講**\n    \nPython 後端部署 2026 心法：(1) **Uvicorn + Gunicorn workers**（多 worker） (2) **Docker**（環境一致） (3) **Railway / Fly.io**（git push 自動 deploy） (4) **Managed DB / Redis**（不自架） (5) **Sentry**（監控）。**Indie 不要學 K8s**—用 PaaS 月 $30 撐 10k user 完全 OK。\n\n  \n\n  \n    \n      🎯\n      面試考點\n    \n    台灣科技公司面試 90% 會問「Python」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。",
+      "tip": {
+        "type": "pro",
+        "text": "台灣科技公司面試 90% 會問「Python」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "本機跑 vs Production"
+        },
+        {
+          "level": 3,
+          "text": "Dockerfile"
+        },
+        {
+          "level": 3,
+          "text": "docker-compose（完整 stack）"
+        },
+        {
+          "level": 3,
+          "text": "2026 部署平台"
+        },
+        {
+          "level": 3,
+          "text": "環境變數 + secrets"
+        },
+        {
+          "level": 3,
+          "text": "監控 + 日誌"
+        },
+        {
+          "level": 3,
+          "text": "Indie SaaS 完整 stack"
+        }
+      ]
+    }
+  ],
+  "boss": {
+    "name": "蟒蛇之祖",
+    "hp": 200,
+    "emoji": "🐍",
+    "description": "Python 從 1991 活到 2026、語法是它的呼吸"
+  },
+  "quiz": {
+    "id": "ch26-quiz",
+    "questions": [],
+    "xpReward": 50,
+    "perfectBonus": 50
+  }
+}

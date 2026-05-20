@@ -1,0 +1,1171 @@
+{
+  "id": 25,
+  "slug": "dns",
+  "stage": 3,
+  "title": "網域 + DNS + SSL",
+  "subtitle": "DNS / SSL / Cloudflare",
+  "icon": "globe",
+  "description": "網域 + DNS + SSL：DNS / SSL / Cloudflare",
+  "status": "published",
+  "difficulty": "intermediate",
+  "prerequisites": [
+    22
+  ],
+  "estimatedHours": 6,
+  "outcomes": [
+    "理解核心概念",
+    "實作主流工具",
+    "整章實戰可發佈作品",
+    "知道生態 / 接案行情",
+    "對齊 2026 業界主流"
+  ],
+  "lessons": [
+    {
+      "title": "網域註冊 + 管理",
+      "oneLineSummary": "買網域、設 DNS、上線你的網站",
+      "analogy": "網域是品牌資產、選好用一輩子。",
+      "content": "## 註冊商\n\n### Cloudflare Registrar（推薦）\n- 成本價、不抽\n- $9-15/年 .com\n- 整合 Cloudflare 服務\n\n### Namecheap\n- 老牌、便宜\n- 首年特價、續約恢復\n\n### Porkbun\n- 便宜、UI 好\n- 第二年起最便宜\n\n### GoDaddy\n- 廣告多、貴\n- 不推薦\n\n### Google Domains（已關）\n2024 賣給 Squarespace。\n\n## TLD 選擇\n- **.com**：首選、信任\n- **.io**：tech 慣用\n- **.dev**：Google 出、HTTPS-only\n- **.app**：HTTPS-only\n- **.ai**：AI 公司熱門、貴（$70-200/年）\n- **.tw / .com.tw**：台灣本地\n- **.so / .sh / .fm**：geeky\n\n避免：.xyz / .top / .info（spam 風）\n\n## 選名字\n- 短（≤ 10 字）\n- 易拼\n- 易念（國際化）\n- 不要 hyphen / number\n- 唯一（Google 搜不到太多重名）\n- Trademark 檢查\n\n## Trademark\n- USPTO（美國）\n- 智慧財產局（台灣）\n- 不要碰大牌\n\n## 隱私保護\nWHOIS 預設公開（你的名字 / email / 地址）。\n- 多數註冊商提供 free 隱私保護\n- Cloudflare / Porkbun / Namecheap 都有\n\n## DNS Records\n\n### A\ndomain → IPv4：\n```\nexample.com  A  76.76.21.21\n```\n\n### AAAA\ndomain → IPv6。\n\n### CNAME\ndomain → 另一個 domain：\n```\nwww.example.com  CNAME  example.com\napi.example.com  CNAME  my-app.vercel.app\n```\n\n### MX（Mail）\n```\nexample.com  MX  10  mail.example.com\n```\n\n### TXT\n任意文字（SPF / DKIM / verification）：\n```\nexample.com  TXT  \"v=spf1 include:_spf.google.com ~all\"\n```\n\n### NS\nNameserver。\n\n## 設定到 Vercel\n1. Vercel Dashboard → Domains → Add\n2. 填 domain\n3. Vercel 給你 DNS 設定\n4. 註冊商 / Cloudflare 加 record\n5. 等 propagation（幾分鐘到 48 小時）\n\n## Cloudflare DNS（推薦）\n1. 註冊商把 nameserver 改 Cloudflare\n2. Cloudflare 接管 DNS\n3. 自動 HTTPS / CDN / DDoS 防護\n4. 全部免費\n\n## Email Forwarding\n- Cloudflare Email Routing（免費）\n- ImprovMX（免費）\n- 把 hi@example.com 轉到你的 Gmail\n\n收 email 不用 Google Workspace（$6/月）、轉發夠用。\n\n## 心法\n- Cloudflare Registrar + DNS = Indie 黃金組合\n- .com 永遠首選\n- 一買就買 2-5 年（防忘 renew）\n- 開 auto-renew + 隱私保護",
+      "tip": {
+        "type": "practical",
+        "text": "網域月成本 < NT$ 50、不要省這個。"
+      },
+      "id": "25.1",
+      "number": "LESSON 25.1",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "25.1.auto",
+          "language": "bash",
+          "title": "試試看",
+          "initialCode": "#!/bin/bash\necho \"Hello AI 島！\"\n\n# 列檔案\nfor file in *.txt; do\n  echo \"找到: $file\"\ndone\n\n# 變數\nNAME=\"Luffysky\"\necho \"Hi, $NAME\"",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "註冊商"
+        },
+        {
+          "level": 3,
+          "text": "Cloudflare Registrar（推薦）"
+        },
+        {
+          "level": 3,
+          "text": "Namecheap"
+        },
+        {
+          "level": 3,
+          "text": "Porkbun"
+        },
+        {
+          "level": 3,
+          "text": "GoDaddy"
+        },
+        {
+          "level": 3,
+          "text": "Google Domains（已關）"
+        },
+        {
+          "level": 2,
+          "text": "TLD 選擇"
+        },
+        {
+          "level": 2,
+          "text": "選名字"
+        },
+        {
+          "level": 2,
+          "text": "Trademark"
+        },
+        {
+          "level": 2,
+          "text": "隱私保護"
+        },
+        {
+          "level": 2,
+          "text": "DNS Records"
+        },
+        {
+          "level": 3,
+          "text": "A"
+        },
+        {
+          "level": 3,
+          "text": "AAAA"
+        },
+        {
+          "level": 3,
+          "text": "CNAME"
+        },
+        {
+          "level": 3,
+          "text": "MX（Mail）"
+        },
+        {
+          "level": 3,
+          "text": "TXT"
+        },
+        {
+          "level": 3,
+          "text": "NS"
+        },
+        {
+          "level": 2,
+          "text": "設定到 Vercel"
+        },
+        {
+          "level": 2,
+          "text": "Cloudflare DNS（推薦）"
+        },
+        {
+          "level": 2,
+          "text": "Email Forwarding"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "SSL / HTTPS 設定",
+      "oneLineSummary": "2026 沒 HTTPS = 過時 + 不安全",
+      "analogy": "Cloudflare 5 分鐘搞定。",
+      "content": "## 為什麼 HTTPS\n- 加密（防中間人）\n- 認證（確認是真網站）\n- SEO 排名因素\n- 瀏覽器警告「不安全」（HTTP）\n- PWA 必須\n- Service Worker 必須\n\n## 取得 SSL\n\n### Cloudflare（最簡單）\n1. DNS 改 Cloudflare nameserver\n2. SSL/TLS → Full (strict)\n3. 完成\n\n免費 + 自動 renew + 全球邊緣。\n\n### Let's Encrypt\n自架 server：\n```bash\nsudo certbot --nginx -d example.com -d www.example.com\n```\n\n90 天自動 renew。\n\n### Vercel / Netlify / Railway\n平台自動處理、無感。\n\n### AWS Certificate Manager\nAWS 整合服務免費 SSL。\n\n## SSL Mode（Cloudflare）\n\n### Off\n不加密、不要。\n\n### Flexible\nUser → Cloudflare：HTTPS\nCloudflare → Origin：HTTP\n**不安全、別用**。\n\n### Full\n雙邊 HTTPS、但不驗 origin cert。\n\n### Full (strict)\n雙邊 HTTPS + 驗 origin cert。\n**最推薦**。\n\n## HSTS\n強制瀏覽器永遠用 HTTPS：\n```\nStrict-Transport-Security: max-age=31536000; includeSubDomains; preload\n```\n\nCloudflare Dashboard → SSL/TLS → Edge Certificates → HSTS。\n\n## HTTPS 重導\nHTTP → HTTPS 自動：\nCloudflare：Rules → 「Always Use HTTPS」開。\n\n## 多 domain SSL\n- Cloudflare 自動處理\n- Let's Encrypt：`-d a.com -d b.com`\n- 不用買 SAN cert\n\n## Wildcard SSL\n`*.example.com` 涵蓋所有 subdomain：\n- Cloudflare：免費自動\n- Let's Encrypt：要 DNS validation\n\n## Mixed Content\nHTTPS 頁面載 HTTP 資源 → 瀏覽器擋。\n\n修：\n```html\n<!-- 改全 HTTPS -->\n<script src=\"https://cdn.example.com/app.js\"></script>\n\n<!-- 或 protocol-relative -->\n<script src=\"//cdn.example.com/app.js\"></script>\n```\n\n## SSL Labs 測試\nssllabs.com/ssltest → 目標 A+。\n\n## Certificate Pinning（行動）\nApp 寫死「只信任特定 CA」、防 fake cert MITM：\n- 金融類必做\n- 一般 App 可選\n\n## TLS 版本\n- ❌ TLS 1.0 / 1.1（deprecated）\n- ✅ TLS 1.2\n- ✅ TLS 1.3（推薦）\n\nCloudflare 設定：Min TLS version = 1.2。\n\n## 心法\n- Day 1 開 HTTPS\n- Cloudflare Full (strict)\n- HSTS 開\n- 不要混 HTTP\n- 月測 SSL Labs",
+      "tip": {
+        "type": "security",
+        "text": "Cloudflare 5 分鐘 = 全網站 A+ SSL。"
+      },
+      "id": "25.2",
+      "number": "LESSON 25.2",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "25.2.auto",
+          "language": "bash",
+          "title": "試試看",
+          "initialCode": "sudo certbot --nginx -d example.com -d www.example.com",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼 HTTPS"
+        },
+        {
+          "level": 2,
+          "text": "取得 SSL"
+        },
+        {
+          "level": 3,
+          "text": "Cloudflare（最簡單）"
+        },
+        {
+          "level": 3,
+          "text": "Let's Encrypt"
+        },
+        {
+          "level": 3,
+          "text": "Vercel / Netlify / Railway"
+        },
+        {
+          "level": 3,
+          "text": "AWS Certificate Manager"
+        },
+        {
+          "level": 2,
+          "text": "SSL Mode（Cloudflare）"
+        },
+        {
+          "level": 3,
+          "text": "Off"
+        },
+        {
+          "level": 3,
+          "text": "Flexible"
+        },
+        {
+          "level": 3,
+          "text": "Full"
+        },
+        {
+          "level": 3,
+          "text": "Full (strict)"
+        },
+        {
+          "level": 2,
+          "text": "HSTS"
+        },
+        {
+          "level": 2,
+          "text": "HTTPS 重導"
+        },
+        {
+          "level": 2,
+          "text": "多 domain SSL"
+        },
+        {
+          "level": 2,
+          "text": "Wildcard SSL"
+        },
+        {
+          "level": 2,
+          "text": "Mixed Content"
+        },
+        {
+          "level": 2,
+          "text": "SSL Labs 測試"
+        },
+        {
+          "level": 2,
+          "text": "Certificate Pinning（行動）"
+        },
+        {
+          "level": 2,
+          "text": "TLS 版本"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Subdomain 策略",
+      "oneLineSummary": "主站 / API / 部落格分 subdomain",
+      "analogy": "不只整潔、有實際效益。",
+      "content": "## 常見配置\n```\nexample.com          → 主站（landing）\nwww.example.com      → 重導到 example.com\napp.example.com      → SaaS Dashboard\napi.example.com      → API\ndocs.example.com     → 文件\nblog.example.com     → 部落格\nstatus.example.com   → status page\nadmin.example.com    → 後台\n```\n\n## 為什麼\n\n### 1. 不同 hosting\n```\nexample.com → Vercel\napi.example.com → Railway\ndocs.example.com → Mintlify\n```\n\n### 2. 不同 stack\n```\napp.example.com → Next.js\napi.example.com → Go server\n```\n\n### 3. SEO 隔離\n- 主站排名不互相影響\n- blog 獨立 SEO\n\n### 4. Cookie 隔離\n不同 subdomain 預設不共享 cookie。\n\n## www vs apex\n\n### apex（example.com）\n- 短、好記\n- DNS 限制（不能 CNAME）\n- 要 A record\n\n### www（www.example.com）\n- DNS 彈性（CNAME）\n- 較長\n\n### 兩個都註冊\n```\nexample.com           A      76.76.21.21\nwww.example.com       CNAME  example.com\n```\n\n設定 301 redirect www → apex（或反過來）。\n\n## 多 region subdomain\n```\nus.example.com → US server\neu.example.com → EU server\nap.example.com → Asia server\n```\n\nCloudflare Load Balancer 自動路由到最近。\n\n## 環境分離\n```\ndev.example.com / dev-api.example.com\nstaging.example.com\nexample.com（production）\n```\n\n## Multi-tenant SaaS\n\n### 模式 1：Subdomain\n```\nacme.app.com\nbeta.app.com\ngamma.app.com\n```\n\n每 tenant 一個 subdomain。\n\nNext.js 中間件路由：\n```typescript\nexport function middleware(req) {\n  const host = req.headers.get(\"host\");\n  const subdomain = host.split(\".\")[0];\n  \n  return NextResponse.rewrite(new URL(`/${subdomain}${req.nextUrl.pathname}`, req.url));\n}\n```\n\n### 模式 2：Path\n```\napp.com/acme\napp.com/beta\n```\n\n### 模式 3：Custom domain\n讓客戶接自己 domain：\n```\nmy-blog.com → app.com/blog/acme\n```\n\nVercel API：\n```typescript\nawait fetch(`https://api.vercel.com/v9/projects/${id}/domains`, {\n  method: \"POST\",\n  body: JSON.stringify({ name: \"my-blog.com\" })\n});\n```\n\n## Cookie Domain\n```javascript\nres.cookie(\"session\", token, {\n  domain: \".example.com\",  // 跨 subdomain 共享\n});\n```\n\n注意：跨 subdomain 共享 cookie 有 CSRF 風險。\n\n## CORS\n不同 subdomain = 跨 origin、需 CORS 設定：\n```javascript\napp.use(cors({\n  origin: [\n    \"https://example.com\",\n    \"https://app.example.com\",\n    \"https://admin.example.com\"\n  ],\n  credentials: true\n}));\n```\n\n## DNS Wildcard\n```\n*.example.com  CNAME  myapp.vercel.app\n```\n\n任何 subdomain 都指到 same app。\n適合 multi-tenant。\n\n## 心法\n- API / 主站 / 部落格分清楚\n- www → apex 重導\n- staging / dev 用 subdomain\n- Multi-tenant 用 subdomain（不是 path）",
+      "tip": {
+        "type": "practical",
+        "text": "Subdomain 不只整潔、是架構決策。"
+      },
+      "id": "25.3",
+      "number": "LESSON 25.3",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "25.3.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "export function middleware(req) {\n  const host = req.headers.get(\"host\");\n  const subdomain = host.split(\".\")[0];\n  \n  return NextResponse.rewrite(new URL(`/${subdomain}${req.nextUrl.pathname}`, req.url));\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "把本節「Subdomain 策略」的核心心法、轉成一個具體的「我今天 / 這週要做」的小行動。",
+        "hint": "心法 ≠ 知識、心法要落地。「我從今天起、每天 ___」這種格式。",
+        "answer": "好行動 = 小（5-10 分鐘以內）+ 具體（不模糊）+ 可量化（有沒有做得出來）。例：『每天起床先列 3 件最重要的事再開電腦』比『更專注』可執行 100 倍。配合 streak（連續紀錄）讓自己上癮。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "常見配置"
+        },
+        {
+          "level": 2,
+          "text": "為什麼"
+        },
+        {
+          "level": 3,
+          "text": "1. 不同 hosting"
+        },
+        {
+          "level": 3,
+          "text": "2. 不同 stack"
+        },
+        {
+          "level": 3,
+          "text": "3. SEO 隔離"
+        },
+        {
+          "level": 3,
+          "text": "4. Cookie 隔離"
+        },
+        {
+          "level": 2,
+          "text": "www vs apex"
+        },
+        {
+          "level": 3,
+          "text": "apex（example.com）"
+        },
+        {
+          "level": 3,
+          "text": "www（www.example.com）"
+        },
+        {
+          "level": 3,
+          "text": "兩個都註冊"
+        },
+        {
+          "level": 2,
+          "text": "多 region subdomain"
+        },
+        {
+          "level": 2,
+          "text": "環境分離"
+        },
+        {
+          "level": 2,
+          "text": "Multi-tenant SaaS"
+        },
+        {
+          "level": 3,
+          "text": "模式 1：Subdomain"
+        },
+        {
+          "level": 3,
+          "text": "模式 2：Path"
+        },
+        {
+          "level": 3,
+          "text": "模式 3：Custom domain"
+        },
+        {
+          "level": 2,
+          "text": "Cookie Domain"
+        },
+        {
+          "level": 2,
+          "text": "CORS"
+        },
+        {
+          "level": 2,
+          "text": "DNS Wildcard"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Email：自己 domain 收信",
+      "oneLineSummary": "hello@yourbrand.com、不要 yourbrand@gmail.com",
+      "analogy": "商業必備、客戶才信任。",
+      "content": "## 選項\n\n### 1. Google Workspace\n- $6/月/帳號\n- Gmail + Drive + Calendar + Meet\n- 最熟悉\n- 適合：團隊 / 認真用 email\n\n### 2. Microsoft 365\n- $6/月/帳號\n- Outlook + Office\n- 適合：Windows 環境\n\n### 3. Fastmail\n- $3-5/月\n- 隱私、無廣告\n- 適合：個人\n\n### 4. Email Forwarding（免費）\n- Cloudflare Email Routing\n- ImprovMX\n- 把 hello@yourbrand.com 轉到你的 Gmail\n- 不能寄信、只能收\n\n## Cloudflare Email Routing（推薦 Indie）\n\n設定：\n1. Cloudflare → Email → Routing\n2. 加 routing rule：hello@example.com → your-gmail@gmail.com\n3. 完成\n\n✅ 免費\n✅ 無限 alias\n✅ 自動 SPF / DKIM / DMARC\n❌ 不能寄信\n\n寄信用 Gmail + SMTP relay。\n\n## 寄信：Resend / SendGrid\n\n### Resend（推薦）\n- 100 封/天 免費\n- 開發者友善\n- React Email 整合\n\n```typescript\nimport { Resend } from \"resend\";\nconst resend = new Resend(process.env.RESEND_API_KEY);\n\nawait resend.emails.send({\n  from: \"hello@yourbrand.com\",\n  to: \"user@example.com\",\n  subject: \"Welcome\",\n  html: \"<h1>Hi!</h1>\"\n});\n```\n\n### SendGrid\n老牌、企業常用。\n\n### Postmark\n高送達率、貴。\n\n### AWS SES\n$0.10 / 1000 封、便宜。\n設定複雜。\n\n## Email 認證\n\n### SPF\n```\nexample.com  TXT  \"v=spf1 include:_spf.resend.com include:_spf.google.com ~all\"\n```\n\n允許哪些 server 寄信代表你。\n\n### DKIM\n```\nresend._domainkey.example.com  TXT  \"v=DKIM1; ...\"\n```\n\n數位簽章、證明真的是你。\n\n### DMARC\n```\n_dmarc.example.com  TXT  \"v=DMARC1; p=quarantine; rua=mailto:dmarc@example.com\"\n```\n\n策略：reject / quarantine / none。\n\n## 送達率\n不設 SPF / DKIM / DMARC → 寄信進 spam。\n\n工具測試：\n- mail-tester.com\n- mxtoolbox.com\n\n## React Email\n寫 email template 像 React：\n```tsx\nimport { Html, Button } from \"@react-email/components\";\n\nexport default function WelcomeEmail({ name }) {\n  return (\n    <Html>\n      <Heading>Hi {name}</Heading>\n      <Button href=\"https://example.com\">Get Started</Button>\n    </Html>\n  );\n}\n```\n\n```typescript\nimport { render } from \"@react-email/render\";\nimport WelcomeEmail from \"./emails/Welcome\";\n\nconst html = await render(<WelcomeEmail name=\"Alice\" />);\nawait resend.emails.send({ from, to, subject, html });\n```\n\n## Transactional vs Marketing\n- **Transactional**：1對1（password reset / order）\n- **Marketing**：群發（newsletter）\n\n寄信服務通常分開 plan、不要混。\n\n## Indie Email 設定 SOP\n1. Cloudflare Email Routing：hello@yourbrand.com → Gmail\n2. Resend：寄信\n3. 設 SPF / DKIM / DMARC\n4. mail-tester.com 測試 10/10\n\n5 分鐘搞定、月成本 NT$ 0。\n\n## 心法\n- 商業用 yourbrand.com（不要 gmail）\n- Cloudflare Routing + Resend 是 Indie 黃金組合\n- SPF / DKIM / DMARC 必設\n- 不要從 personal Gmail 寄",
+      "tip": {
+        "type": "practical",
+        "text": "Cloudflare Routing + Resend = 月 NT$ 0 完整 email。"
+      },
+      "id": "25.4",
+      "number": "LESSON 25.4",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "25.4.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "import { Resend } from \"resend\";\nconst resend = new Resend(process.env.RESEND_API_KEY);\n\nawait resend.emails.send({\n  from: \"hello@yourbrand.com\",\n  to: \"user@example.com\",\n  subject: \"Welcome\",\n  html: \"<h1>Hi!</h1>\"\n});",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "選項"
+        },
+        {
+          "level": 3,
+          "text": "1. Google Workspace"
+        },
+        {
+          "level": 3,
+          "text": "2. Microsoft 365"
+        },
+        {
+          "level": 3,
+          "text": "3. Fastmail"
+        },
+        {
+          "level": 3,
+          "text": "4. Email Forwarding（免費）"
+        },
+        {
+          "level": 2,
+          "text": "Cloudflare Email Routing（推薦 Indie）"
+        },
+        {
+          "level": 2,
+          "text": "寄信：Resend / SendGrid"
+        },
+        {
+          "level": 3,
+          "text": "Resend（推薦）"
+        },
+        {
+          "level": 3,
+          "text": "SendGrid"
+        },
+        {
+          "level": 3,
+          "text": "Postmark"
+        },
+        {
+          "level": 3,
+          "text": "AWS SES"
+        },
+        {
+          "level": 2,
+          "text": "Email 認證"
+        },
+        {
+          "level": 3,
+          "text": "SPF"
+        },
+        {
+          "level": 3,
+          "text": "DKIM"
+        },
+        {
+          "level": 3,
+          "text": "DMARC"
+        },
+        {
+          "level": 2,
+          "text": "送達率"
+        },
+        {
+          "level": 2,
+          "text": "React Email"
+        },
+        {
+          "level": 2,
+          "text": "Transactional vs Marketing"
+        },
+        {
+          "level": 2,
+          "text": "Indie Email 設定 SOP"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "CDN / Cloudflare 進階",
+      "oneLineSummary": "一個 service 整合 DNS + CDN + SSL + WAF + Email",
+      "analogy": "Indie 必裝、95% 場景免費。",
+      "content": "## Cloudflare 全家桶\n\n### 必開（免費）\n- DNS（最快）\n- CDN\n- Auto SSL\n- DDoS 防護\n- Email Routing\n\n### 可選（免費 / Pro）\n- Workers\n- R2 storage\n- KV / D1\n- WAF\n- Image CDN\n- Analytics\n- Turnstile（CAPTCHA）\n\n### Pro（$20/月）\n- Image Resizing\n- Mobile Redirect\n- Polish（自動 image 優化）\n- WebP / AVIF\n\n## CDN 設定\n\n### Cache Rules\n```\nCache Everything 規則：\n- Static assets：1 month\n- API：no cache\n- HTML：4 hours\n```\n\n### Page Rules（舊 → 已升級 Rules）\n- URL pattern → 行為\n- 重導 / cache / security\n\n### Workers\n寫 code 在 edge 跑：\n```typescript\nexport default {\n  async fetch(req) {\n    const url = new URL(req.url);\n    \n    if (url.pathname.startsWith(\"/api/\")) {\n      return fetch(req);  // 透傳到 origin\n    }\n    \n    // 修改 response\n    const res = await fetch(req);\n    const newRes = new Response(res.body, res);\n    newRes.headers.set(\"X-Custom\", \"value\");\n    return newRes;\n  }\n};\n```\n\n## WAF\n- OWASP Top 10 預設保護\n- Bot 偵測\n- Rate limiting\n\n## DDoS 防護\n- 免費 plan 已含基礎保護\n- 大攻擊 Cloudflare 自動緩解\n- 真正企業級需 Pro+\n\n## Argo Smart Routing\n$5/月：\n- 動態選最佳 path\n- 平均快 30%\n- 適合全球 SaaS\n\n## Tunnel（取代 ngrok）\n免費把本地 server 開到網路：\n```bash\ncloudflared tunnel --url http://localhost:3000\n```\n\n得到 https URL、超快。\n適合：dev、demo、LINE Bot webhook。\n\n## Zero Trust\n- 取代 VPN\n- 員工從任何地方安全存取內部 service\n- 免費 50 user\n\n## Pages（部署）\n類 Vercel：\n```bash\nnpx wrangler pages deploy ./dist\n```\n\n- 免費 500 builds/月\n- 無限 bandwidth\n- Workers 整合\n\n## R2 Storage\n- S3 相容\n- $0.015/GB/月\n- **無 egress**\n- 10GB 免費\n\n## D1（SQLite）\n分散式 SQLite：\n```typescript\nconst result = await env.DB.prepare(\"SELECT * FROM users WHERE id = ?\")\n  .bind(userId).first();\n```\n\n5M reads / day 免費。\n\n## KV\nKey-value:\n```typescript\nawait env.MY_KV.put(\"key\", \"value\");\nconst value = await env.MY_KV.get(\"key\");\n```\n\n100k req/day 免費。\n\n## Hyperdrive\nDB connection pooling for serverless：\n```typescript\nconst result = await env.HYPERDRIVE.connectionString;\n// 連 PG、自動 pool\n```\n\n解 serverless DB connection 問題。\n\n## Image\n動態 resize / format：\n```html\n<img src=\"https://imagedelivery.net/{id}/photo/w=400,h=300,fit=cover\" />\n```\n\n$5/月 100k 圖。\n\n## Analytics\n- Web Analytics（免費、無 cookie）\n- 隱私友善、不需 GA\n\n## Indie 完整 stack（Cloudflare 為主）\n- 域名：Cloudflare Registrar\n- DNS：Cloudflare\n- CDN + SSL：Cloudflare\n- Hosting：Pages + Workers\n- DB：D1 + Hyperdrive 連外部 PG\n- Storage：R2\n- Email：Routing + Resend\n- Analytics：Web Analytics\n\n月成本：NT$ 30-300。\n\n## 心法\n- Cloudflare 是 Indie 的 AWS\n- 免費額度爆大\n- 整合好、學一個搞定\n- 永遠開 Cloudflare 在 DNS 前面",
+      "tip": {
+        "type": "milestone",
+        "text": "Cloudflare = Indie 救星。整合 + 免費 + 全球。"
+      },
+      "id": "25.5",
+      "number": "LESSON 25.5",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "25.5.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "export default {\n  async fetch(req) {\n    const url = new URL(req.url);\n    \n    if (url.pathname.startsWith(\"/api/\")) {\n      return fetch(req);  // 透傳到 origin\n    }\n    \n    // 修改 response\n    const res = await fetch(req);\n    const newRes = new Response(res.body, res);\n    newRes.headers.set(\"X-Custom\", \"value\");\n    return newRes;\n  }\n};",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "挑一個你做過的舊專案、用本節「CDN / Cloudflare 進階」介紹的進階技術重構它。",
+        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
+        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "Cloudflare 全家桶"
+        },
+        {
+          "level": 3,
+          "text": "必開（免費）"
+        },
+        {
+          "level": 3,
+          "text": "可選（免費 / Pro）"
+        },
+        {
+          "level": 3,
+          "text": "Pro（$20/月）"
+        },
+        {
+          "level": 2,
+          "text": "CDN 設定"
+        },
+        {
+          "level": 3,
+          "text": "Cache Rules"
+        },
+        {
+          "level": 3,
+          "text": "Page Rules（舊 → 已升級 Rules）"
+        },
+        {
+          "level": 3,
+          "text": "Workers"
+        },
+        {
+          "level": 2,
+          "text": "WAF"
+        },
+        {
+          "level": 2,
+          "text": "DDoS 防護"
+        },
+        {
+          "level": 2,
+          "text": "Argo Smart Routing"
+        },
+        {
+          "level": 2,
+          "text": "Tunnel（取代 ngrok）"
+        },
+        {
+          "level": 2,
+          "text": "Zero Trust"
+        },
+        {
+          "level": 2,
+          "text": "Pages（部署）"
+        },
+        {
+          "level": 2,
+          "text": "R2 Storage"
+        },
+        {
+          "level": 2,
+          "text": "D1（SQLite）"
+        },
+        {
+          "level": 2,
+          "text": "KV"
+        },
+        {
+          "level": 2,
+          "text": "Hyperdrive"
+        },
+        {
+          "level": 2,
+          "text": "Image"
+        },
+        {
+          "level": 2,
+          "text": "Analytics"
+        },
+        {
+          "level": 2,
+          "text": "Indie 完整 stack（Cloudflare 為主）"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "DNS 完整心法",
+      "oneLineSummary": "網址背後的對照表系統",
+      "analogy": "改 DNS 出錯 = 全站掛。",
+      "content": "## 是什麼\n\nDNS = Domain Name System\n把 `example.com` → IP 位址。\n\n```\n你打 example.com\n  ↓\nBrowser 問：example.com 的 IP？\n  ↓\nDNS resolver → root → .com → example.com nameserver\n  ↓\n回 IP 1.2.3.4\n  ↓\nBrowser 連 1.2.3.4\n```\n\n## 主要 Record\n\n### A\ndomain → IPv4\n```\nexample.com → 1.2.3.4\n```\n\n### AAAA\ndomain → IPv6\n```\nexample.com → 2001:db8::1\n```\n\n### CNAME\ndomain → 另一個 domain\n```\nwww.example.com → example.com\napi.example.com → my-app.vercel.app\n```\n\n不能用在 root domain（如 example.com）。\n\n### MX\n郵件 server\n```\nexample.com → mail.google.com priority=10\n```\n\n### TXT\n任意文字、用於：\n- 驗證 (Google Search Console)\n- SPF (反 spam)\n- DKIM (email 簽章)\n- DMARC\n\n### NS\n這個 domain 用哪個 nameserver\n```\nexample.com → ns1.cloudflare.com\n```\n\n## TTL\n\n「這資料 cache 多久」：\n```\nwww.example.com → 1.2.3.4  TTL: 300\n```\n300 秒 = 5 分鐘。\n\n設計：\n- 改不頻繁：3600 (1h)\n- 改頻繁 / 要做 failover：300 (5m)\n- 永久不變：86400 (1d)\n\n## 改 DNS 流程\n\n### Step 1：低 TTL\n改之前 24 小時把 TTL 設低：\n```\nold: A example.com → 1.2.3.4 TTL: 3600\nnew: A example.com → 1.2.3.4 TTL: 300\n```\n\n### Step 2：改 record\n```\nA example.com → 5.6.7.8 TTL: 300\n```\n\n### Step 3：等 propagation\n全球 cache 過期、5-10 分鐘。\n\n### Step 4：升 TTL 回去\n\n如果跳過 Step 1、改 record 後可能 24 小時部分 user 看舊 IP。\n\n## DNS Provider\n\n### Cloudflare（推薦）\n- 免費\n- 全球邊緣 fast\n- 內建 DDoS / CDN\n\n### Route 53（AWS）\n- 整合 AWS\n- 多\n\n### Google Domains（已被 Squarespace 收）\n- 簡單\n\n### NameCheap / GoDaddy\n- 註冊 + DNS\n- 介面醜、價格普\n\n## 心法\n- DNS 慎改、影響全用戶\n- Day 1 用 Cloudflare（DNS + CDN 一站式）\n- 改前低 TTL\n- 改完看 propagation（dnschecker.org）",
+      "tip": {
+        "type": "warning",
+        "text": "改 DNS 前先把 TTL 降低、不然 propagate 慢。"
+      },
+      "exercise": {
+        "question": "把本節「DNS 完整心法」的核心心法、轉成一個具體的「我今天 / 這週要做」的小行動。",
+        "hint": "心法 ≠ 知識、心法要落地。「我從今天起、每天 ___」這種格式。",
+        "answer": "好行動 = 小（5-10 分鐘以內）+ 具體（不模糊）+ 可量化（有沒有做得出來）。例：『每天起床先列 3 件最重要的事再開電腦』比『更專注』可執行 100 倍。配合 streak（連續紀錄）讓自己上癮。"
+      },
+      "id": "25.6",
+      "number": "LESSON 25.6",
+      "xp": 10,
+      "outline": [
+        {
+          "level": 2,
+          "text": "是什麼"
+        },
+        {
+          "level": 2,
+          "text": "主要 Record"
+        },
+        {
+          "level": 3,
+          "text": "A"
+        },
+        {
+          "level": 3,
+          "text": "AAAA"
+        },
+        {
+          "level": 3,
+          "text": "CNAME"
+        },
+        {
+          "level": 3,
+          "text": "MX"
+        },
+        {
+          "level": 3,
+          "text": "TXT"
+        },
+        {
+          "level": 3,
+          "text": "NS"
+        },
+        {
+          "level": 2,
+          "text": "TTL"
+        },
+        {
+          "level": 2,
+          "text": "改 DNS 流程"
+        },
+        {
+          "level": 3,
+          "text": "Step 1：低 TTL"
+        },
+        {
+          "level": 3,
+          "text": "Step 2：改 record"
+        },
+        {
+          "level": 3,
+          "text": "Step 3：等 propagation"
+        },
+        {
+          "level": 3,
+          "text": "Step 4：升 TTL 回去"
+        },
+        {
+          "level": 2,
+          "text": "DNS Provider"
+        },
+        {
+          "level": 3,
+          "text": "Cloudflare（推薦）"
+        },
+        {
+          "level": 3,
+          "text": "Route 53（AWS）"
+        },
+        {
+          "level": 3,
+          "text": "Google Domains（已被 Squarespace 收）"
+        },
+        {
+          "level": 3,
+          "text": "NameCheap / GoDaddy"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "SSL / HTTPS / Let's Encrypt",
+      "oneLineSummary": "HTTPS 不是選項、是必須",
+      "analogy": "2026 沒 HTTPS = 不能用。",
+      "content": "## 為什麼必須 HTTPS\n\n### 沒 HTTPS\n- 流量明文、可被監聽\n- Chrome 標「不安全」\n- SEO 被打壓\n- PWA 不能用\n- Cookie 不能 Secure flag\n- Service Worker 不能用\n\n### 有 HTTPS\n- 加密\n- 驗證 server 身份\n- 防中間人\n- 必要、無代價\n\n## Let's Encrypt（免費標配）\n\n### 是什麼\n- 非營利\n- 簽 SSL cert\n- 自動化\n- 免費\n\n### Cert 有效期 90 天\n強制 rotation、安全。\n\n### 自動 renewal\n```bash\n# Certbot\ncertbot renew\n\n# 或 cron job 每月\n```\n\n## 不用自己搞、用託管\n\n### Cloudflare\n進 dashboard → SSL/TLS → Full (strict)\n全自動。\n\n### Vercel / Netlify / Zeabur\ncustom domain 設好 → 自動 cert。\n\n### Caddy（自架）\n最簡單的 server、自動 Let's Encrypt：\n```\nexample.com {\n  reverse_proxy localhost:3000\n}\n```\n\n跑 `caddy run`、自動 HTTPS。\n\n## SSL/TLS 設定\n\n### Modern config\n- TLS 1.2 + 1.3 only\n- ECDHE cipher suites\n- HSTS\n\n### HSTS header\n```\nStrict-Transport-Security: max-age=31536000; includeSubDomains; preload\n```\n告訴 browser「永遠用 HTTPS」。\n\n### 測試\n- ssllabs.com/ssltest\n- 目標 A / A+\n\n## Mixed Content\n\n### 問題\nHTTPS 頁面載 HTTP 資源：\n```html\n<!-- ❌ HTTP 在 HTTPS 頁 -->\n<img src=\"http://example.com/img.jpg\" />\n```\n\nBrowser block、user 看到警告。\n\n### 解\n- 全部 HTTPS\n- 用 protocol-relative：`//example.com/img.jpg`\n- Content Security Policy upgrade-insecure-requests\n\n## Certificate Chain\n\ncert 由 CA 簽：\n```\nyour.cert → Let's Encrypt Intermediate → ISRG Root\n```\n\n3 個都要 valid、不然某些 client 連不到。\n\n## Wildcard cert\n\n```\n*.example.com\n```\n- 一張 cert cover 所有 subdomain\n- 用 DNS-01 驗證（不是 HTTP-01）\n- Let's Encrypt 支援\n\n## 心法\n- 用託管平台、別自架 cert\n- Cloudflare 是首選（Full strict）\n- HSTS 設好\n- 定期測 SSL Labs\n- 90 天 renew 自動化",
+      "tip": {
+        "type": "security",
+        "text": "HTTPS 是 2026 baseline、不是 nice-to-have。"
+      },
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "id": "25.7",
+      "number": "LESSON 25.7",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "25.7.auto",
+          "language": "html",
+          "title": "試試看",
+          "initialCode": "<!-- ❌ HTTP 在 HTTPS 頁 -->\n<img src=\"http://example.com/img.jpg\" />",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼必須 HTTPS"
+        },
+        {
+          "level": 3,
+          "text": "沒 HTTPS"
+        },
+        {
+          "level": 3,
+          "text": "有 HTTPS"
+        },
+        {
+          "level": 2,
+          "text": "Let's Encrypt（免費標配）"
+        },
+        {
+          "level": 3,
+          "text": "是什麼"
+        },
+        {
+          "level": 3,
+          "text": "Cert 有效期 90 天"
+        },
+        {
+          "level": 3,
+          "text": "自動 renewal"
+        },
+        {
+          "level": 2,
+          "text": "不用自己搞、用託管"
+        },
+        {
+          "level": 3,
+          "text": "Cloudflare"
+        },
+        {
+          "level": 3,
+          "text": "Vercel / Netlify / Zeabur"
+        },
+        {
+          "level": 3,
+          "text": "Caddy（自架）"
+        },
+        {
+          "level": 2,
+          "text": "SSL/TLS 設定"
+        },
+        {
+          "level": 3,
+          "text": "Modern config"
+        },
+        {
+          "level": 3,
+          "text": "HSTS header"
+        },
+        {
+          "level": 3,
+          "text": "測試"
+        },
+        {
+          "level": 2,
+          "text": "Mixed Content"
+        },
+        {
+          "level": 3,
+          "text": "問題"
+        },
+        {
+          "level": 3,
+          "text": "解"
+        },
+        {
+          "level": 2,
+          "text": "Certificate Chain"
+        },
+        {
+          "level": 2,
+          "text": "Wildcard cert"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Domain 註冊 + 管理",
+      "oneLineSummary": "買 domain 不只看價格、看續約 + 服務",
+      "analogy": "一些坑要避開。",
+      "content": "## 註冊商選擇\n\n### Cloudflare Registrar（推薦）\n- 成本價賣（最便宜）\n- .com 約 $10/年\n- 免費 WHOIS privacy\n- 整合 Cloudflare DNS + CDN\n\n### Namecheap\n- 介面友善\n- 免費 privacy\n- 第一年便宜、續約變貴\n\n### Google Domains / Squarespace\n- Google 收給 Squarespace\n- 簡單\n- 價格普\n\n### GoDaddy\n- 老牌但坑多\n- 業務多很煩\n- 不推薦\n\n## 注意事項\n\n### 1. WHOIS Privacy\n不開的話、你的個人 info 公開。\nCloudflare / Namecheap 免費。\n\n### 2. Auto-renewal\n忘記續約 = domain 被搶。\n**Day 1 開**。\n\n### 3. Lock\n防止被惡意 transfer。\n**Day 1 開**。\n\n### 4. 2FA\n帳號被駭 = domain 沒了。\n\n### 5. 續約價 vs 新註冊價\n有些註冊商第 1 年 $5、之後 $40。\n看清楚續約價。\n\n## Domain 選名\n\n### 好\n- 短（< 12 字）\n- 好記\n- 好拼\n- 不含特殊字\n- 不撞名\n\n### 避免\n- 連字號（容易拼錯）\n- 數字（容易拼錯）\n- 容易混淆字母（O vs 0）\n- 商標 / 別人品牌\n\n## TLD 選擇\n\n### .com（首選）\n- 信任度第一\n- 全球通用\n- $10/年\n\n### .io\n- 科技愛\n- $40/年\n\n### .ai\n- AI 公司愛\n- $60/年起\n\n### .app\n- App 開發\n- $15/年\n\n### .dev\n- 開發者\n- 強制 HTTPS\n\n### .tw / .com.tw（台灣）\n- 台灣品牌\n- NT$ 750/年\n\n### .me / .co / .org\n- 個人 / 一般 / 非營利\n\n### 避免\n- .info / .biz / .top（廉價感）\n- 大部分 ccTLD（不熟悉）\n\n## Email DNS（必設）\n\n### MX\n```\nexample.com MX 1 smtp.google.com\nexample.com MX 5 alt.smtp.google.com\n```\n\n### SPF\n```\nexample.com TXT \"v=spf1 include:_spf.google.com ~all\"\n```\n\n### DKIM\n```\ngoogle._domainkey.example.com TXT \"v=DKIM1; k=rsa; p=...\"\n```\n\n### DMARC\n```\n_dmarc.example.com TXT \"v=DMARC1; p=quarantine; rua=mailto:...\"\n```\n\n沒設 = 寄出去信進 spam。\n\n## 心法\n- Cloudflare Registrar 首選\n- Day 1 開 lock + 2FA + auto-renewal\n- .com 永遠是首選\n- 短 + 好拼 + 好記\n- Email DNS 4 個 record 必設",
+      "tip": {
+        "type": "practical",
+        "text": "Cloudflare Registrar = 便宜 + 整合好。"
+      },
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "id": "25.8",
+      "number": "LESSON 25.8",
+      "xp": 10,
+      "outline": [
+        {
+          "level": 2,
+          "text": "註冊商選擇"
+        },
+        {
+          "level": 3,
+          "text": "Cloudflare Registrar（推薦）"
+        },
+        {
+          "level": 3,
+          "text": "Namecheap"
+        },
+        {
+          "level": 3,
+          "text": "Google Domains / Squarespace"
+        },
+        {
+          "level": 3,
+          "text": "GoDaddy"
+        },
+        {
+          "level": 2,
+          "text": "注意事項"
+        },
+        {
+          "level": 3,
+          "text": "1. WHOIS Privacy"
+        },
+        {
+          "level": 3,
+          "text": "2. Auto-renewal"
+        },
+        {
+          "level": 3,
+          "text": "3. Lock"
+        },
+        {
+          "level": 3,
+          "text": "4. 2FA"
+        },
+        {
+          "level": 3,
+          "text": "5. 續約價 vs 新註冊價"
+        },
+        {
+          "level": 2,
+          "text": "Domain 選名"
+        },
+        {
+          "level": 3,
+          "text": "好"
+        },
+        {
+          "level": 3,
+          "text": "避免"
+        },
+        {
+          "level": 2,
+          "text": "TLD 選擇"
+        },
+        {
+          "level": 3,
+          "text": ".com（首選）"
+        },
+        {
+          "level": 3,
+          "text": ".io"
+        },
+        {
+          "level": 3,
+          "text": ".ai"
+        },
+        {
+          "level": 3,
+          "text": ".app"
+        },
+        {
+          "level": 3,
+          "text": ".dev"
+        },
+        {
+          "level": 3,
+          "text": ".tw / .com.tw（台灣）"
+        },
+        {
+          "level": 3,
+          "text": ".me / .co / .org"
+        },
+        {
+          "level": 3,
+          "text": "避免"
+        },
+        {
+          "level": 2,
+          "text": "Email DNS（必設）"
+        },
+        {
+          "level": 3,
+          "text": "MX"
+        },
+        {
+          "level": 3,
+          "text": "SPF"
+        },
+        {
+          "level": 3,
+          "text": "DKIM"
+        },
+        {
+          "level": 3,
+          "text": "DMARC"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Email DNS 完整設定",
+      "oneLineSummary": "寄信不進 Spam 必懂",
+      "analogy": "SPF + DKIM + DMARC 三劍客。",
+      "content": "## 為什麼信進 Spam\n\n### 沒設 DNS records\n- Receiver 無法驗證你\n- 預設 spam\n\n### 內容像 spam\n- 太多連結\n- 全大寫\n- 「賺錢」「免費」字眼\n\n### Reputation 低\n- 新 domain\n- 之前被檢舉\n\n## SPF (Sender Policy Framework)\n\n### 是什麼\n公告「哪些 IP 能用我的 domain 寄信」。\n\n### 設定\n```\nexample.com TXT \"v=spf1 include:_spf.google.com include:resend.com ~all\"\n```\n\n- `include:_spf.google.com`：Google 能寄\n- `include:resend.com`：Resend 能寄\n- `~all`：其他 soft fail\n- `-all`：其他 hard fail（嚴格）\n\n### 限制\n最多 10 個 DNS lookup。\n\n## DKIM (DomainKeys Identified Mail)\n\n### 是什麼\n每封信加 signature、收件方驗證沒被改。\n\n### 設定\n寄信服務（Google / Resend）給你 public key：\n```\ngoogle._domainkey.example.com TXT \"v=DKIM1; k=rsa; p=MIGfMA0G...\"\n```\n\n### 加多個（不同寄信服務）\n```\ngoogle._domainkey.example.com TXT \"...\"\nresend._domainkey.example.com TXT \"...\"\n```\n\n## DMARC (Domain-based Message Authentication)\n\n### 是什麼\nSPF + DKIM 都過了才算對、不然怎麼處理。\n\n### 設定\n```\n_dmarc.example.com TXT \"v=DMARC1; p=none; rua=mailto:dmarc@example.com\"\n```\n\n- `p=none`：監測模式（先看）\n- `p=quarantine`：丟 spam\n- `p=reject`：直接拒\n- `rua`：送 report 給你\n\n### 漸進\n1. `p=none` 1 個月看 report\n2. `p=quarantine` 1 個月觀察\n3. `p=reject` 上線\n\n## 寄信服務\n\n### Indie 推薦\n\n#### Resend（最熱門）\n- 簡單 setup\n- React Email 整合\n- 月 3000 封免費\n\n#### Postmark\n- 高 deliverability\n- 月 100 封免費\n\n#### SendGrid\n- 老牌、規模大\n\n#### Amazon SES\n- 便宜（$0.10/1000 封）\n- 設定複雜\n\n### 不要\n- 從你的 server 直接寄（IP reputation 低）\n- 用個人 Gmail（限制多）\n\n## 測試\n\n### Mail-tester.com\n寄信給他、回完整 report：\n- SPF / DKIM / DMARC\n- HTML / text 比\n- Spam score\n- 改進建議\n\n目標：10/10。\n\n### Google Postmaster Tools\n看你 domain 在 Gmail 的 reputation。\n\n## BIMI（進階）\n\nBrand Indicators for Message Identification：\n讓你的 logo 出現在 user inbox。\n\n需要：\n- DMARC `p=quarantine` 或 `p=reject`\n- VMC certificate（$1000+/年）\n\nIndie 多數不做。\n\n## 心法\n- 三劍客必設（SPF + DKIM + DMARC）\n- 用 Resend / Postmark、別自己寄\n- DMARC `p=none` 先觀察、再升嚴\n- Mail-tester 必測",
+      "tip": {
+        "type": "milestone",
+        "text": "SPF + DKIM + DMARC = 信不進 spam 的鐵三角。"
+      },
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "id": "25.9",
+      "number": "LESSON 25.9",
+      "xp": 10,
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼信進 Spam"
+        },
+        {
+          "level": 3,
+          "text": "沒設 DNS records"
+        },
+        {
+          "level": 3,
+          "text": "內容像 spam"
+        },
+        {
+          "level": 3,
+          "text": "Reputation 低"
+        },
+        {
+          "level": 2,
+          "text": "SPF (Sender Policy Framework)"
+        },
+        {
+          "level": 3,
+          "text": "是什麼"
+        },
+        {
+          "level": 3,
+          "text": "設定"
+        },
+        {
+          "level": 3,
+          "text": "限制"
+        },
+        {
+          "level": 2,
+          "text": "DKIM (DomainKeys Identified Mail)"
+        },
+        {
+          "level": 3,
+          "text": "是什麼"
+        },
+        {
+          "level": 3,
+          "text": "設定"
+        },
+        {
+          "level": 3,
+          "text": "加多個（不同寄信服務）"
+        },
+        {
+          "level": 2,
+          "text": "DMARC (Domain-based Message Authentication)"
+        },
+        {
+          "level": 3,
+          "text": "是什麼"
+        },
+        {
+          "level": 3,
+          "text": "設定"
+        },
+        {
+          "level": 3,
+          "text": "漸進"
+        },
+        {
+          "level": 2,
+          "text": "寄信服務"
+        },
+        {
+          "level": 3,
+          "text": "Indie 推薦"
+        },
+        {
+          "level": 3,
+          "text": "不要"
+        },
+        {
+          "level": 2,
+          "text": "測試"
+        },
+        {
+          "level": 3,
+          "text": "Mail-tester.com"
+        },
+        {
+          "level": 3,
+          "text": "Google Postmaster Tools"
+        },
+        {
+          "level": 2,
+          "text": "BIMI（進階）"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "CDN + DNS 進階整合",
+      "oneLineSummary": "邊緣 + 智能 routing",
+      "analogy": "速度 + 可靠 + 安全 三合一。",
+      "content": "## DNS-based Load Balancing\n\n### Round Robin\n```\nexample.com A 1.2.3.4\nexample.com A 5.6.7.8\nexample.com A 9.10.11.12\n```\nDNS resolver 輪流回不同 IP。\n\n### Geo DNS\n根據用戶地點回不同 IP：\n- 台灣用戶 → 台灣 server\n- 美國用戶 → 美國 server\n\n### Failover\n主 server 掛 → 自動切備用：\n```\nCloudflare Load Balancing：\n- Primary: 1.2.3.4 (health check)\n- Failover: 5.6.7.8\n```\n\n## Cloudflare 全功能\n\n### Workers（邊緣 compute）\n```typescript\nexport default {\n  async fetch(req: Request): Promise<Response> {\n    const url = new URL(req.url);\n    \n    // 邊緣 routing\n    if (url.pathname.startsWith(\"/api/\")) {\n      return fetch(`https://api-origin.com${url.pathname}`);\n    }\n    \n    return fetch(req);  // 預設 origin\n  }\n};\n```\n\n### Page Rules\n```\nexample.com/api/*\n  → Cache Level: Bypass\n  → SSL: Full\n\nexample.com/static/*\n  → Cache Level: Cache Everything\n  → Edge TTL: 1 month\n  → Browser TTL: 1 year\n```\n\n### Transform Rules\n邊緣改 request / response：\n- 加 header\n- Rewrite URL\n- Modify response\n\n### Rate Limiting\n```\n/api/login\n  → 5 requests per IP per minute\n  → block 1 hour after exceed\n```\n\n### Firewall\n```\nip.country eq \"RU\"\n  → Block\n\nhttp.user_agent contains \"scraper\"\n  → Challenge (CAPTCHA)\n```\n\n## Multi-CDN 策略\n\n### 為什麼\n- 一個 CDN 掛 = 你全網掛\n- 不同 region 表現不同\n- 避免 vendor lock-in\n\n### 怎麼\n```\nDNS Load Balancer:\n- Cloudflare (primary, 80%)\n- Fastly (backup, 20%)\n\n→ 兩家都有 origin pull\n→ 一家掛、自動切\n```\n\n成本：×1.5、用 Indie 通常不需要。\n\n## Anycast vs Unicast\n\n### Unicast\nIP → 一個地方\n所有人連同一台、距離有差。\n\n### Anycast\nIP → 多個地方\n不同人連近的那台。\n\nCloudflare / Google DNS 用 Anycast。\n\n## DNSSEC\n\n### 是什麼\nDNS 加 signature、防 DNS poisoning。\n\n### 設定\n- Cloudflare 一鍵\n- 自管 nameserver 較複雜\n\n### 影響\n- 安全 ↑\n- 複雜度 ↑\n- 大部分 user 不關心\n\n## 心法\n- Cloudflare 免費 plan 已 cover 90% Indie 需求\n- DNS load balancing 大型才需要\n- Multi-CDN 是奢侈、不是必需\n- Anycast 用託管不用煩\n- DNSSEC 看需求",
+      "tip": {
+        "type": "practical",
+        "text": "Cloudflare 免費 plan = Indie 全套 DNS+CDN。"
+      },
+      "exercise": {
+        "question": "挑一個你做過的舊專案、用本節「CDN + DNS 進階整合」介紹的進階技術重構它。",
+        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（https://api-origin.com${url.pathname}）通常在效能 / 維護性 / 擴展性卡住時才登場。",
+        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+      },
+      "id": "25.10",
+      "number": "LESSON 25.10",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "25.10.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "export default {\n  async fetch(req: Request): Promise<Response> {\n    const url = new URL(req.url);\n    \n    // 邊緣 routing\n    if (url.pathname.startsWith(\"/api/\")) {\n      return fetch(`https://api-origin.com${url.pathname}`);\n    }\n    \n    return fetch(req);  // 預設 origin\n  }\n};",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "outline": [
+        {
+          "level": 2,
+          "text": "DNS-based Load Balancing"
+        },
+        {
+          "level": 3,
+          "text": "Round Robin"
+        },
+        {
+          "level": 3,
+          "text": "Geo DNS"
+        },
+        {
+          "level": 3,
+          "text": "Failover"
+        },
+        {
+          "level": 2,
+          "text": "Cloudflare 全功能"
+        },
+        {
+          "level": 3,
+          "text": "Workers（邊緣 compute）"
+        },
+        {
+          "level": 3,
+          "text": "Page Rules"
+        },
+        {
+          "level": 3,
+          "text": "Transform Rules"
+        },
+        {
+          "level": 3,
+          "text": "Rate Limiting"
+        },
+        {
+          "level": 3,
+          "text": "Firewall"
+        },
+        {
+          "level": 2,
+          "text": "Multi-CDN 策略"
+        },
+        {
+          "level": 3,
+          "text": "為什麼"
+        },
+        {
+          "level": 3,
+          "text": "怎麼"
+        },
+        {
+          "level": 2,
+          "text": "Anycast vs Unicast"
+        },
+        {
+          "level": 3,
+          "text": "Unicast"
+        },
+        {
+          "level": 3,
+          "text": "Anycast"
+        },
+        {
+          "level": 2,
+          "text": "DNSSEC"
+        },
+        {
+          "level": 3,
+          "text": "是什麼"
+        },
+        {
+          "level": 3,
+          "text": "設定"
+        },
+        {
+          "level": 3,
+          "text": "影響"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    }
+  ],
+  "boss": {
+    "name": "域名仲裁者",
+    "hp": 220,
+    "emoji": "🌐",
+    "description": "DNS 是律法、SSL 是契約、過期就被流放"
+  },
+  "quiz": {
+    "id": "ch25-quiz",
+    "questions": [],
+    "xpReward": 50,
+    "perfectBonus": 50
+  }
+}

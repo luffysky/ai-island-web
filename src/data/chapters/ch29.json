@@ -1,0 +1,1421 @@
+{
+  "id": 29,
+  "slug": "js-scraping",
+  "stage": 4,
+  "title": "JavaScript 爬蟲",
+  "subtitle": "Puppeteer / Playwright / Cheerio",
+  "icon": "spider",
+  "description": "JavaScript 爬蟲：Puppeteer / Playwright / Cheerio",
+  "status": "published",
+  "difficulty": "intermediate",
+  "prerequisites": [
+    4,
+    5
+  ],
+  "estimatedHours": 12,
+  "outcomes": [
+    "理解核心概念",
+    "實作主流工具",
+    "整章實戰可發佈作品",
+    "知道生態 / 接案行情",
+    "對齊 2026 業界主流"
+  ],
+  "lessons": [
+    {
+      "id": "29.1",
+      "number": "LESSON 29.1",
+      "title": "Node.js 爬蟲 vs Python 爬蟲",
+      "oneLineSummary": "兩個都行—Python 文件多 / Node 對 JS 渲染天然友善。看你後端用什麼、選一個。",
+      "analogy": "像iPhone vs Android—都能拍照打電話、各有強項。Python 是「資料分析師之選」、Node 是「全端工程師之選」。前端用 React 的人、Node 爬蟲超順、共用 type / utils。",
+      "content": "### Node.js 爬蟲優勢\n\n      \n- ⚡ **原生 async / Promise**：並發 1000 個請求超輕鬆\n- 🌐 **同語言全棧**：前端 + 爬蟲 + 後端 + DB 全 JS / TS\n- 🤝 **跟瀏覽器同語言**：Puppeteer 跑 Chromium、跑的就是 JS\n- 📦 **npm 套件生態**：250 萬+ 套件、爬蟲相關超多\n- 🚀 **效能**：V8 引擎、單機並發遠勝 Python\n\n      \n### Python 爬蟲優勢\n\n      \n- 📚 **套件最完整**：Scrapy / BeautifulSoup / Requests 老牌\n- 🎯 **學習曲線平緩**：語法簡單、新手友善\n- 🤖 **跟 ML / AI 整合**：爬完直接接 pandas / scikit-learn\n- 📊 **資料分析強**：pandas / numpy / matplotlib 一條龍\n- 🌍 **社群中文資源**：台灣 / 中國資源 Python 多\n\n      \n### 2026 選擇指南\n\n      \n- **全端 / Indie SaaS**：Node（一個語言搞定所有）\n- **純資料抓取 + 分析**：Python（生態完整）\n- **大量並發**：Node（async 友善）\n- **跟 AI / ML 整合**：Python（pandas / PyTorch）\n- **接 Next.js 應用**：Node（同 codebase）\n- **Vibe Coding**：Node（Claude Code 生 TS 比 Python 順）\n\n      \n### 實際對照範例\n\n      \n#### 抓網頁標題（Python）\n\n```python\nimport requests\nfrom bs4 import BeautifulSoup\n\nres = requests.get('https://example.com')\nsoup = BeautifulSoup(res.text, 'lxml')\ntitle = soup.select_one('h1').text\n```\n\n      \n#### 抓網頁標題（Node）\n\n```javascript\nimport * as cheerio from 'cheerio';\n\nconst res = await fetch('https://example.com');\nconst html = await res.text();\nconst $ = cheerio.load(html);\nconst title = $('h1').text();\n```\n\n      \n幾乎一樣、JS 更短、能跑 async 並行。",
+      "tip": {
+        "type": "pro",
+        "text": "「最好的爬蟲語言」= 你後端用的那個。React + Next.js → Node 爬蟲。Django / FastAPI → Python 爬蟲。不要為了爬蟲學另一個語言—除非真的有需要。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "29.1.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "import * as cheerio from 'cheerio';\n\nconst res = await fetch('https://example.com');\nconst html = await res.text();\nconst $ = cheerio.load(html);\nconst title = $('h1').text();",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "找一個你身邊的例子、用「Node.js 爬蟲 vs Python 爬蟲」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "Node.js 爬蟲優勢"
+        },
+        {
+          "level": 3,
+          "text": "Python 爬蟲優勢"
+        },
+        {
+          "level": 3,
+          "text": "2026 選擇指南"
+        },
+        {
+          "level": 3,
+          "text": "實際對照範例"
+        }
+      ]
+    },
+    {
+      "id": "29.2",
+      "number": "LESSON 29.2",
+      "title": "fetch + Cheerio：Node 最輕量組合",
+      "oneLineSummary": "Node 內建 fetch + Cheerio（jQuery 風格）= 「Node 版的 Requests + BeautifulSoup」。輕、快、語法熟。",
+      "analogy": "想像「在 Node 裡寫 jQuery 操作網頁」—$('div.product .title') 就跟前端寫法一樣。jQuery 老手秒上手。",
+      "content": "### 安裝\n\n```bash\nnpm init -y\nnpm install cheerio\n# Node 18+ 內建 fetch、不用裝\n```\n\n      \n### 基本爬蟲\n\n```javascript\nimport * as cheerio from 'cheerio';\n\nasync function scrape(url) {\n  const res = await fetch(url, {\n    headers: {\n      'User-Agent': 'Mozilla/5.0 ...'\n    }\n  });\n  const html = await res.text();\n  const $ = cheerio.load(html);\n\n  // CSS Selector（跟 jQuery 一樣）\n  const title = $('h1').text();\n  const links = $('a').map((_, el) => $(el).attr('href')).get();\n\n  return { title, links };\n}\n\nscrape('https://example.com').then(console.log);\n```\n\n      \n### 實戰：爬 PTT 八卦版\n\n```javascript\nimport * as cheerio from 'cheerio';\nimport fs from 'fs/promises';\n\nasync function scrapePTT(board = 'Gossiping') {\n  const url = `https://www.ptt.cc/bbs/${board}/index.html`;\n\n  const res = await fetch(url, {\n    headers: {\n      'User-Agent': 'Mozilla/5.0',\n      'Cookie': 'over18=1',  // 八卦版要這個\n    },\n  });\n  const html = await res.text();\n  const $ = cheerio.load(html);\n\n  const posts = [];\n  $('.r-ent').each((_, el) => {\n    const $el = $(el);\n    const $title = $el.find('.title a');\n    if ($title.length === 0) return;  // 被刪文\n\n    posts.push({\n      title: $title.text().trim(),\n      link: 'https://www.ptt.cc' + $title.attr('href'),\n      author: $el.find('.author').text(),\n      push: $el.find('.nrec').text() || '0',\n      date: $el.find('.date').text(),\n    });\n  });\n\n  return posts;\n}\n\nconst posts = await scrapePTT('Stock');\nconsole.log(`抓到 ${posts.length} 篇文章`);\n\n// 存 JSON\nawait fs.writeFile('posts.json', JSON.stringify(posts, null, 2));\n```\n\n      \n### 並發抓多頁（Node 的強項）\n\n```javascript\n// 同時抓 10 頁、比 Python 順太多\nconst urls = Array.from({ length: 10 }, (_, i) =>\n  `https://www.ptt.cc/bbs/Gossiping/index${i + 1}.html`\n);\n\n// Promise.all 並發、5 秒抓完 10 頁\nconst allPages = await Promise.all(\n  urls.map(url => scrapePTT(url))\n);\n\n// 用 p-limit 控制並發數（避免被擋）\n// npm install p-limit\nimport pLimit from 'p-limit';\nconst limit = pLimit(3);  // 最多同時 3 個\n\nconst results = await Promise.all(\n  urls.map(url => limit(() => scrapePTT(url)))\n);\n```\n\n      \n### Cheerio 進階用法\n\n```javascript\n// 取屬性\n$('a').attr('href')\n$('img').attr('src')\n$('[data-id]').map((_, el) => $(el).data('id')).get()\n\n// 找子元素\n$('.product').find('.price')\n$('.product').children('.title')\n$('.product').parent()\n$('.product').siblings()\n\n// 過濾\n$('a').filter((_, el) => $(el).text().includes('下載'))\n\n// 文字 vs HTML\n$('.content').text()   // 純文字\n$('.content').html()   // 含 HTML\n\n// 修改 DOM（爬蟲少用）\n$('.ads').remove();\nconst cleanHtml = $.html();\n```",
+      "tip": {
+        "type": "pro",
+        "text": "Cheerio 解析 HTML 比 BeautifulSoup 快 5-8 倍（純 C++ libxml 底層）。並發 + Cheerio = Node 爬蟲速度殺手鐧。實測：抓 1000 頁、Node 60 秒、Python 5 分鐘。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "29.2.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "import * as cheerio from 'cheerio';\n\nasync function scrape(url) {\n  const res = await fetch(url, {\n    headers: {\n      'User-Agent': 'Mozilla/5.0 ...'\n    }\n  });\n  const html = await res.text();\n  const $ = cheerio.load(html);\n\n  // CSS Selector（跟 jQuery 一樣）\n  const title = $('h1').text();\n  const links = $('a').map((_, el) => $(el).attr('href')).get();\n\n  return { title, links };\n}\n\nscrape('https://example.com').then(console.log);",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "安裝"
+        },
+        {
+          "level": 3,
+          "text": "基本爬蟲"
+        },
+        {
+          "level": 3,
+          "text": "實戰：爬 PTT 八卦版"
+        },
+        {
+          "level": 3,
+          "text": "並發抓多頁（Node 的強項）"
+        },
+        {
+          "level": 3,
+          "text": "Cheerio 進階用法"
+        }
+      ]
+    },
+    {
+      "id": "29.3",
+      "number": "LESSON 29.3",
+      "title": "Puppeteer：Google 親兒子的瀏覽器控制",
+      "oneLineSummary": "Puppeteer = 「Google 出的 Chrome 控制器」—爬 SPA / 截圖 / PDF / 自動化測試全行。",
+      "analogy": "想像遙控 Chrome 瀏覽器—打開頁面、點按鈕、等載入、抓資料。Puppeteer 是 Google 親生、跟 Chromium 整合最深。但 2024+ Playwright 後來居上、功能更多。",
+      "content": "### 安裝\n\n```bash\nnpm install puppeteer\n# 自動下載 Chromium（約 200MB）\n\n# 或用 puppeteer-core（不下載瀏覽器）\nnpm install puppeteer-core\n```\n\n      \n### 基本使用\n\n```javascript\nimport puppeteer from 'puppeteer';\n\nasync function scrape(url) {\n  const browser = await puppeteer.launch({\n    headless: true,  // 開發時改 false 看畫面\n    args: ['--no-sandbox']  // Docker / Linux 需要\n  });\n\n  const page = await browser.newPage();\n\n  // 設定 User-Agent\n  await page.setUserAgent('Mozilla/5.0 ...');\n\n  // 設定視窗大小（影響 mobile vs desktop）\n  await page.setViewport({ width: 1920, height: 1080 });\n\n  // 開啟頁面、等載入\n  await page.goto(url, { waitUntil: 'networkidle2' });\n\n  // 等元素出現\n  await page.waitForSelector('.product');\n\n  // 取資料（在頁面 context 執行 JS）\n  const data = await page.evaluate(() => {\n    return Array.from(document.querySelectorAll('.product')).map(el => ({\n      name: el.querySelector('.name')?.textContent,\n      price: el.querySelector('.price')?.textContent,\n      image: el.querySelector('img')?.src,\n    }));\n  });\n\n  await browser.close();\n  return data;\n}\n```\n\n      \n### 互動：點擊 / 填表 / 等待\n\n```javascript\n// 點按鈕\nawait page.click('button.load-more');\n\n// 填表單\nawait page.type('input[name=\"email\"]', 'a@b.com');\nawait page.type('input[name=\"password\"]', 'secret');\nawait page.click('button[type=\"submit\"]');\n\n// 等跳轉\nawait page.waitForNavigation();\n\n// 等 N ms（不推薦）\nawait page.waitForTimeout(2000);\n\n// 等 selector（推薦）\nawait page.waitForSelector('.dashboard');\n\n// 等 function 條件為 true\nawait page.waitForFunction(() =>\n  document.querySelectorAll('.item').length > 20\n);\n```\n\n      \n### 無限捲動 + lazy load\n\n```javascript\nasync function autoScroll(page) {\n  await page.evaluate(async () => {\n    await new Promise(resolve => {\n      let totalHeight = 0;\n      const distance = 500;\n      const timer = setInterval(() => {\n        const scrollHeight = document.body.scrollHeight;\n        window.scrollBy(0, distance);\n        totalHeight += distance;\n\n        if (totalHeight >= scrollHeight) {\n          clearInterval(timer);\n          resolve();\n        }\n      }, 200);\n    });\n  });\n}\n\n// 使用\nawait page.goto('https://infinite-scroll.com');\nawait autoScroll(page);\nconst items = await page.$$eval('.item', els =>\n  els.map(el => el.textContent)\n);\n```\n\n      \n### 截圖 / PDF（Puppeteer 殺手鐧）\n\n```javascript\n// 截圖整頁\nawait page.screenshot({\n  path: 'shot.png',\n  fullPage: true\n});\n\n// 截特定元素\nconst element = await page.$('.product-card');\nawait element.screenshot({ path: 'product.png' });\n\n// 存 PDF\nawait page.pdf({\n  path: 'page.pdf',\n  format: 'A4',\n  printBackground: true\n});\n\n// → 用途：自動生成發票 / 報價單 / 報告\n```\n\n      \n### 截攔 Request / Response\n\n```javascript\n// 攔截 API 回應（最強技巧、跳過解 HTML）\nconst apiData = [];\npage.on('response', async response => {\n  const url = response.url();\n  if (url.includes('/api/products')) {\n    try {\n      const data = await response.json();\n      apiData.push(data);\n    } catch {}\n  }\n});\n\nawait page.goto('https://shop.example.com');\nconsole.log('API data:', apiData);\n\n// 阻擋資源加速（不載圖 / 廣告 / CSS）\nawait page.setRequestInterception(true);\npage.on('request', req => {\n  if (['image', 'stylesheet', 'font'].includes(req.resourceType())) {\n    req.abort();\n  } else {\n    req.continue();\n  }\n});\n```",
+      "tip": {
+        "type": "performance",
+        "text": "爬蟲時 block 圖片 / CSS / font—速度快 3-5 倍、流量省 80%。只要 HTML / API、不需要視覺。Puppeteer + 不載資源 = Node 爬蟲速度王。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "29.3.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "import puppeteer from 'puppeteer';\n\nasync function scrape(url) {\n  const browser = await puppeteer.launch({\n    headless: true,  // 開發時改 false 看畫面\n    args: ['--no-sandbox']  // Docker / Linux 需要\n  });\n\n  const page = await browser.newPage();\n\n  // 設定 User-Agent\n  await page.setUserAgent('Mozilla/5.0 ...');\n\n  // 設定視窗大小（影響 mobile vs desktop）\n  await page.setViewport({ width: 1920, height: 1080 });\n\n  // 開啟頁面、等載入\n  await page.goto(url, { waitUntil: 'networkidle2' });\n\n  // 等元素出現\n  await page.waitForSelector('.product');\n\n  // 取資料（在頁面 context 執行 JS）\n  const data = await page.evaluate(() => {\n    return Array.from(document.querySelectorAll('.product')).map(el => ({\n      name: el.querySelector('.name')?.textContent,\n      price: el.querySelector('.price')?.textContent,\n      image: el.querySelector('img')?.src,\n    }));\n  });\n\n  await browser.close();\n  return data;\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "安裝"
+        },
+        {
+          "level": 3,
+          "text": "基本使用"
+        },
+        {
+          "level": 3,
+          "text": "互動：點擊 / 填表 / 等待"
+        },
+        {
+          "level": 3,
+          "text": "無限捲動 + lazy load"
+        },
+        {
+          "level": 3,
+          "text": "截圖 / PDF（Puppeteer 殺手鐧）"
+        },
+        {
+          "level": 3,
+          "text": "截攔 Request / Response"
+        }
+      ]
+    },
+    {
+      "id": "29.4",
+      "number": "LESSON 29.4",
+      "title": "Playwright（Node 版）：2026 首選",
+      "oneLineSummary": "Playwright = 「微軟出的瀏覽器自動化框架」—跨 3 大瀏覽器（Chrome / Firefox / Safari）、API 比 Puppeteer 現代。",
+      "analogy": "Puppeteer 像Honda 老牌（穩、夠用）、Playwright 像Tesla（新潮、功能多）。2024 後 Playwright 全面超車—多瀏覽器 / 自動 wait / 內建錄製。",
+      "content": "### 安裝\n\n```bash\nnpm install playwright\nnpx playwright install chromium  # 或 firefox / webkit\n```\n\n      \n### 基本使用\n\n```javascript\nimport { chromium } from 'playwright';\n\nasync function scrape(url) {\n  const browser = await chromium.launch();\n  const context = await browser.newContext({\n    userAgent: 'Mozilla/5.0 ...',\n    viewport: { width: 1920, height: 1080 },\n    locale: 'zh-TW',\n  });\n  const page = await context.newPage();\n\n  await page.goto(url);\n  await page.waitForLoadState('networkidle');\n\n  // Locator API（比 Puppeteer 強）\n  const title = await page.locator('h1').innerText();\n\n  // 多個元素\n  const items = await page.locator('.product').all();\n  const data = [];\n  for (const item of items) {\n    data.push({\n      name: await item.locator('.name').innerText(),\n      price: await item.locator('.price').innerText(),\n    });\n  }\n\n  await browser.close();\n  return data;\n}\n```\n\n      \n### Playwright vs Puppeteer 差異\n\n      \n- **多瀏覽器**：Playwright 支援 Chrome / Firefox / Safari、Puppeteer 只 Chromium\n- **Auto-wait**：Playwright 點按鈕自動等元素可見、Puppeteer 要手動 wait\n- **Locator**：Playwright 有 locator API 比較不容易破\n- **錄製器**：`npx playwright codegen` 自動產生 code\n- **多語言**：Python / Java / .NET 都有 SDK\n\n      \n### codegen：錄製操作生 code\n\n```bash\n# 開瀏覽器、你手動操作、自動產生 code\nnpx playwright codegen https://example.com\n\n# → 在右邊看到自動生成的爬蟲 code\n# → 複製貼上、微調即可用\n```\n\n      \n### Stealth 模式（反偵測）\n\n```bash\nnpm install playwright-extra puppeteer-extra-plugin-stealth\n```\n\n```javascript\nimport { chromium } from 'playwright-extra';\nimport stealth from 'puppeteer-extra-plugin-stealth';\n\nchromium.use(stealth());\n\nconst browser = await chromium.launch();\n// → 自動偽裝、過大部分反爬偵測\n```\n\n      \n### 並發爬多頁\n\n```javascript\nimport { chromium } from 'playwright';\nimport pLimit from 'p-limit';\n\nasync function scrapeAll(urls) {\n  const browser = await chromium.launch();\n  const limit = pLimit(5);  // 同時 5 個 tab\n\n  const results = await Promise.all(\n    urls.map(url => limit(async () => {\n      const context = await browser.newContext();\n      const page = await context.newPage();\n      try {\n        await page.goto(url, { timeout: 30000 });\n        const title = await page.locator('h1').innerText();\n        return { url, title };\n      } finally {\n        await context.close();\n      }\n    }))\n  );\n\n  await browser.close();\n  return results;\n}\n```",
+      "tip": {
+        "type": "trend",
+        "text": "新專案直接用 Playwright—API 更現代、Auto-wait 救命、跨瀏覽器（測試也方便）。Puppeteer 留給 legacy 專案。Anthropic Computer Use 內部就用 Playwright。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "29.4.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "import { chromium } from 'playwright';\n\nasync function scrape(url) {\n  const browser = await chromium.launch();\n  const context = await browser.newContext({\n    userAgent: 'Mozilla/5.0 ...',\n    viewport: { width: 1920, height: 1080 },\n    locale: 'zh-TW',\n  });\n  const page = await context.newPage();\n\n  await page.goto(url);\n  await page.waitForLoadState('networkidle');\n\n  // Locator API（比 Puppeteer 強）\n  const title = await page.locator('h1').innerText();\n\n  // 多個元素\n  const items = await page.locator('.product').all();\n  const data = [];\n  for (const item of items) {\n    data.push({\n      name: await item.locator('.name').innerText(),\n      price: await item.locator('.price').innerText(),\n    });\n  }\n\n  await browser.close();\n  return data;\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "安裝"
+        },
+        {
+          "level": 3,
+          "text": "基本使用"
+        },
+        {
+          "level": 3,
+          "text": "Playwright vs Puppeteer 差異"
+        },
+        {
+          "level": 3,
+          "text": "codegen：錄製操作生 code"
+        },
+        {
+          "level": 3,
+          "text": "Stealth 模式（反偵測）"
+        },
+        {
+          "level": 3,
+          "text": "並發爬多頁"
+        }
+      ]
+    },
+    {
+      "id": "29.5",
+      "number": "LESSON 29.5",
+      "title": "Crawlee：Node 版的 Scrapy 框架",
+      "oneLineSummary": "Crawlee = 「Apify 開源的 Node 爬蟲框架」—2022 推出、2024 後爆紅。比手寫爬蟲快 5 倍上線。",
+      "analogy": "Cheerio + fetch 像從零組家具、Crawlee 像IKEA 套裝—queue / retry / proxy / 去重 / 並發控制全包好、改設定就能跑。商業爬蟲建議直接用。",
+      "content": "### 安裝\n\n```bash\nnpx crawlee create my-crawler\ncd my-crawler\nnpm start\n```\n\n      \n### 三種 Crawler\n\n      \n- **CheerioCrawler**：純 HTML 解析（最快）\n- **PlaywrightCrawler**：需要 JS 渲染\n- **PuppeteerCrawler**：legacy 支援\n\n      \n### CheerioCrawler 範例\n\n```javascript\nimport { CheerioCrawler, Dataset } from 'crawlee';\n\nconst crawler = new CheerioCrawler({\n  maxConcurrency: 10,        // 並發數\n  maxRequestsPerCrawl: 1000, // 最多 1000 頁\n  requestHandlerTimeoutSecs: 30,\n\n  async requestHandler({ request, $, enqueueLinks, log }) {\n    log.info(`Processing ${request.url}`);\n\n    // 抓資料\n    const title = $('h1').text();\n    const price = $('.price').text();\n\n    // 存進 Dataset（會自動寫 JSON）\n    await Dataset.pushData({\n      url: request.url,\n      title,\n      price,\n    });\n\n    // 找下一頁、加進 queue\n    await enqueueLinks({\n      selector: 'a.next-page',\n      label: 'LIST',\n    });\n\n    // 找商品連結\n    await enqueueLinks({\n      selector: 'a.product',\n      label: 'DETAIL',\n    });\n  },\n\n  // 失敗自動重試 3 次\n  maxRequestRetries: 3,\n});\n\n// 起跑點\nawait crawler.run(['https://example.com/products']);\n\n// 自動產生 storage/datasets/default/*.json\n```\n\n      \n### PlaywrightCrawler 範例\n\n```javascript\nimport { PlaywrightCrawler, Dataset } from 'crawlee';\n\nconst crawler = new PlaywrightCrawler({\n  launchContext: {\n    launchOptions: { headless: true },\n  },\n  maxConcurrency: 5,\n\n  async requestHandler({ page, request }) {\n    await page.goto(request.url);\n    await page.waitForSelector('.product');\n\n    const products = await page.$$eval('.product', els =>\n      els.map(el => ({\n        name: el.querySelector('.name')?.textContent,\n        price: el.querySelector('.price')?.textContent,\n      }))\n    );\n\n    await Dataset.pushData({ url: request.url, products });\n  },\n});\n\nawait crawler.run(['https://shop.example.com']);\n```\n\n      \n### Crawlee 核心功能（自動處理）\n\n      \n- ✅ **Request Queue**：自動去重、進度持久化\n- ✅ **Auto-scaling**：依 CPU / Memory 自動調並發數\n- ✅ **Proxy Rotation**：自動換 IP\n- ✅ **Session 管理**：cookie / fingerprint 自動處理\n- ✅ **Retry / Error handling**：失敗自動重試\n- ✅ **Dataset**：自動存 JSON / CSV / Excel\n- ✅ **Key-Value Store**：跨 request 共享狀態\n\n      \n### Apify 平台託管（賺錢用）\n\n      \nCrawlee 是 Apify 開源、爬蟲可直接部署到 Apify 平台：\n\n      \n- 每月免費 $5 credit\n- 自動 scale / 排程\n- 可上架賣（Apify Store、被動收入）\n- 有人寫的爬蟲、月入 $1000+ 美金（爬 Google Maps / Amazon）",
+      "tip": {
+        "type": "business",
+        "text": "Apify Store 上有人寫的「Google Maps 爬蟲」月入 $5,000 美金—台灣老闆需要競品店家資料、付月費用 API。Crawlee + Apify = Indie 爬蟲創業最快路徑。"
+      },
+      "xp": 15,
+      "playgrounds": [
+        {
+          "key": "29.5.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "import { CheerioCrawler, Dataset } from 'crawlee';\n\nconst crawler = new CheerioCrawler({\n  maxConcurrency: 10,        // 並發數\n  maxRequestsPerCrawl: 1000, // 最多 1000 頁\n  requestHandlerTimeoutSecs: 30,\n\n  async requestHandler({ request, $, enqueueLinks, log }) {\n    log.info(`Processing ${request.url}`);\n\n    // 抓資料\n    const title = $('h1').text();\n    const price = $('.price').text();\n\n    // 存進 Dataset（會自動寫 JSON）\n    await Dataset.pushData({\n      url: request.url,\n      title,\n      price,\n    });\n\n    // 找下一頁、加進 queue\n    await enqueueLinks({\n      selector: 'a.next-page',\n      label: 'LIST',\n    });\n\n    // 找商品連結\n    await enqueueLinks({\n      selector: 'a.product',\n      label: 'DETAIL',\n    });\n  },\n\n  // 失敗自動重試 3 次\n  maxRequestRetries: 3,\n});\n\n// 起跑點\nawait crawler.run(['https://example.com/products']);\n\n// 自動產生 storage/datasets/default/*.json",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "安裝"
+        },
+        {
+          "level": 3,
+          "text": "三種 Crawler"
+        },
+        {
+          "level": 3,
+          "text": "CheerioCrawler 範例"
+        },
+        {
+          "level": 3,
+          "text": "PlaywrightCrawler 範例"
+        },
+        {
+          "level": 3,
+          "text": "Crawlee 核心功能（自動處理）"
+        },
+        {
+          "level": 3,
+          "text": "Apify 平台託管（賺錢用）"
+        }
+      ]
+    },
+    {
+      "id": "29.6",
+      "number": "LESSON 29.6",
+      "title": "實戰：爬蝦皮商品（完整 Node 專案）",
+      "oneLineSummary": "爬蝦皮（React SPA）= 「Playwright + 攔 API + 並發」—2026 最完整 Node 爬蟲流程。",
+      "analogy": "蝦皮商品列表是 JS 渲染、傳統爬蟲抓不到。但他們後端打的 JSON API 可以攔截—直接拿乾淨資料、不用解 HTML、比官方 App 還快。",
+      "content": "```javascript\nimport { chromium } from 'playwright';\nimport fs from 'fs/promises';\n\nasync function scrapeShopee(keyword, maxItems = 100) {\n  const browser = await chromium.launch({ headless: true });\n  const context = await browser.newContext({\n    userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'\n              + ' AppleWebKit/537.36 (KHTML, like Gecko)'\n              + ' Chrome/120.0.0.0 Safari/537.36',\n    locale: 'zh-TW',\n  });\n\n  const page = await context.newPage();\n  const apiResponses = [];\n\n  // 攔截後端 JSON API\n  page.on('response', async response => {\n    const url = response.url();\n    if (url.includes('/api/v4/search') || url.includes('/recommend')) {\n      try {\n        const data = await response.json();\n        apiResponses.push(data);\n      } catch {}\n    }\n  });\n\n  // 阻擋圖片 / CSS 加速\n  await page.route('**/*', route => {\n    if (['image', 'stylesheet', 'font'].includes(route.request().resourceType())) {\n      route.abort();\n    } else {\n      route.continue();\n    }\n  });\n\n  // 搜尋頁\n  const searchUrl = `https://shopee.tw/search?keyword=${encodeURIComponent(keyword)}`;\n  await page.goto(searchUrl, { waitUntil: 'networkidle' });\n\n  // 捲動觸發 lazy load\n  let totalItems = 0;\n  for (let i = 0; i  [p.id, p])).values());\n\n  await browser.close();\n  return unique.slice(0, maxItems);\n}\n\n// 使用\nconst items = await scrapeShopee('AirPods Pro', 100);\nconsole.log(`抓到 ${items.length} 個商品`);\n\n// 存 JSON\nawait fs.writeFile('shopee.json', JSON.stringify(items, null, 2));\n\n// 分析\nconst avgPrice = items.reduce((s, i) => s + i.price, 0) / items.length;\nconsole.log(`平均價格 NT$ ${avgPrice.toFixed(0)}`);\nconsole.log(`最低 NT$ ${Math.min(...items.map(i => i.price))}`);\nconsole.log(`最高 NT$ ${Math.max(...items.map(i => i.price))}`);\n```\n\n      \n### 進階：接 Next.js API Route（變 SaaS）\n\n```javascript\n// app/api/scrape/route.ts\nimport { NextResponse } from 'next/server';\nimport { scrapeShopee } from '@/lib/scraper';\n\nexport async function POST(req: Request) {\n  const { keyword, max } = await req.json();\n  const items = await scrapeShopee(keyword, max);\n  return NextResponse.json({ items });\n}\n\n// 前端\nconst res = await fetch('/api/scrape', {\n  method: 'POST',\n  body: JSON.stringify({ keyword: 'iPhone', max: 50 })\n});\n```",
+      "tip": {
+        "type": "milestone",
+        "text": "完成這個專案 = 你能做「蝦皮比價工具」「電商市場研究」這種 SaaS。Indie 一人公司用這套 stack（Next.js + Playwright + Supabase）月入 NT$ 5-20 萬不難。"
+      },
+      "xp": 15,
+      "playgrounds": [
+        {
+          "key": "29.6.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "import { chromium } from 'playwright';\nimport fs from 'fs/promises';\n\nasync function scrapeShopee(keyword, maxItems = 100) {\n  const browser = await chromium.launch({ headless: true });\n  const context = await browser.newContext({\n    userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'\n              + ' AppleWebKit/537.36 (KHTML, like Gecko)'\n              + ' Chrome/120.0.0.0 Safari/537.36',\n    locale: 'zh-TW',\n  });\n\n  const page = await context.newPage();\n  const apiResponses = [];\n\n  // 攔截後端 JSON API\n  page.on('response', async response => {\n    const url = response.url();\n    if (url.includes('/api/v4/search') || url.includes('/recommend')) {\n      try {\n        const data = await response.json();\n        apiResponses.push(data);\n      } catch {}\n    }\n  });\n\n  // 阻擋圖片 / CSS 加速\n  await page.route('**/*', route => {\n    if (['image', 'stylesheet', 'font'].includes(route.request().resourceType())) {\n      route.abort();\n    } else {\n      route.continue();\n    }\n  });\n\n  // 搜尋頁\n  const searchUrl = `https://shopee.tw/search?keyword=${encodeURIComponent(keyword)}`;\n  await page.goto(searchUrl, { waitUntil: 'networkidle' });\n\n  // 捲動觸發 lazy load\n  let totalItems = 0;\n  for (let i = 0; i  [p.id, p])).values());\n\n  await browser.close();\n  return unique.slice(0, maxItems);\n}\n\n// 使用\nconst items = await scrapeShopee('AirPods Pro', 100);\nconsole.log(`抓到 ${items.length} 個商品`);\n\n// 存 JSON\nawait fs.writeFile('shopee.json', JSON.stringify(items, null, 2));\n\n// 分析\nconst avgPrice = items.reduce((s, i) => s + i.price, 0) / items.length;\nconsole.log(`平均價格 NT$ ${avgPrice.toFixed(0)}`);\nconsole.log(`最低 NT$ ${Math.min(...items.map(i => i.price))}`);\nconsole.log(`最高 NT$ ${Math.max(...items.map(i => i.price))}`);",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "進階：接 Next.js API Route（變 SaaS）"
+        }
+      ]
+    },
+    {
+      "title": "Node.js 爬蟲：fetch + cheerio",
+      "oneLineSummary": "JS 也能爬蟲、跟 Python 比各有優劣",
+      "analogy": "Python 是一哥、但 JS 在動態網站原生優勢。",
+      "content": "## 為什麼\n- ✅ 同 stack\n- ✅ 動態網站原生支援\n- ✅ Cloudflare Workers / Vercel 部署友善\n- ❌ 沒 Scrapy 那麼完整框架\n\n## fetch（Node 22+ 內建）\n```javascript\nconst res = await fetch(\"https://example.com\", {\n  headers: { \"User-Agent\": \"Mozilla/5.0 ...\" }\n});\nconst html = await res.text();\n```\n\n## cheerio\n```bash\nnpm install cheerio\n```\n\n```javascript\nimport * as cheerio from \"cheerio\";\n\nconst $ = cheerio.load(html);\n\n$(\"h1\").text();\n$(\"a\").each((i, el) => {\n  console.log($(el).attr(\"href\"));\n});\n\n$(\"div.product\").map((i, el) => ({\n  name: $(el).find(\".name\").text().trim(),\n  price: $(el).find(\".price\").text(),\n  link: $(el).find(\"a\").attr(\"href\")\n})).get();\n```\n\n## 完整範例\n```javascript\nasync function scrapeProducts(page) {\n  const res = await fetch(`https://example.com/products?page=${page}`, {\n    headers: { \"User-Agent\": \"Mozilla/5.0 ...\" }\n  });\n  const html = await res.text();\n  const $ = cheerio.load(html);\n  \n  const products = [];\n  $(\"div.product-card\").each((i, el) => {\n    products.push({\n      name: $(el).find(\".name\").text().trim(),\n      price: $(el).find(\".price\").text(),\n      link: $(el).find(\"a\").attr(\"href\")\n    });\n  });\n  return products;\n}\n\nconst all = [];\nfor (let p = 1; p <= 10; p++) {\n  all.push(...(await scrapeProducts(p)));\n  await new Promise(r => setTimeout(r, 1000));\n}\n```\n\n## 並發\n```javascript\nimport pLimit from \"p-limit\";\nconst limit = pLimit(5);\nconst results = await Promise.all(\n  urls.map(url => limit(() => scrapePage(url)))\n);\n```",
+      "tip": {
+        "type": "practical",
+        "text": "JS 工程師爬蟲：cheerio + Playwright、寫起來爽。"
+      },
+      "id": "29.7",
+      "number": "LESSON 29.7",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "29.7.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "const res = await fetch(\"https://example.com\", {\n  headers: { \"User-Agent\": \"Mozilla/5.0 ...\" }\n});\nconst html = await res.text();",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼"
+        },
+        {
+          "level": 2,
+          "text": "fetch（Node 22+ 內建）"
+        },
+        {
+          "level": 2,
+          "text": "cheerio"
+        },
+        {
+          "level": 2,
+          "text": "完整範例"
+        },
+        {
+          "level": 2,
+          "text": "並發"
+        }
+      ]
+    },
+    {
+      "title": "Playwright JS：跨平台動態",
+      "oneLineSummary": "Microsoft 出的瀏覽器自動化",
+      "analogy": "Selenium 退場、Playwright 新王者。",
+      "content": "## 安裝\n```bash\nnpm install playwright\nnpx playwright install chromium\n```\n\n## 基本\n```javascript\nimport { chromium } from \"playwright\";\n\nconst browser = await chromium.launch({ headless: true });\nconst page = await browser.newPage();\nawait page.goto(\"https://example.com\");\n\nconst title = await page.locator(\"h1\").textContent();\nawait page.screenshot({ path: \"screenshot.png\" });\n\nawait browser.close();\n```\n\n## 互動\n```javascript\nawait page.fill(\"input[name='email']\", \"user@example.com\");\nawait page.click(\"button[type='submit']\");\nawait page.waitForURL(\"**/dashboard\");\n```\n\n## 抓資料\n```javascript\nconst products = await page.locator(\"div.product\").evaluateAll(elements =>\n  elements.map(el => ({\n    name: el.querySelector(\".name\")?.textContent?.trim(),\n    price: el.querySelector(\".price\")?.textContent\n  }))\n);\n```\n\n## 並發\n```javascript\nasync function scrapePage(url) {\n  const context = await browser.newContext();\n  const page = await context.newPage();\n  await page.goto(url);\n  const data = await page.locator(\"h1\").textContent();\n  await context.close();\n  return data;\n}\n\nconst results = await Promise.all(urls.map(scrapePage));\n```\n\n## 攔截 API\n```javascript\npage.on(\"response\", async response => {\n  if (response.url().includes(\"/api/products\")) {\n    const data = await response.json();\n    console.log(data);\n  }\n});\n```\n\n## 反偵測\n```bash\nnpm install playwright-extra puppeteer-extra-plugin-stealth\n```\n\n```javascript\nimport { chromium } from \"playwright-extra\";\nimport StealthPlugin from \"puppeteer-extra-plugin-stealth\";\n\nchromium.use(StealthPlugin());\n```",
+      "tip": {
+        "type": "milestone",
+        "text": "Playwright JS 跟 Python 95% 一樣。"
+      },
+      "id": "29.8",
+      "number": "LESSON 29.8",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "29.8.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "import { chromium } from \"playwright\";\n\nconst browser = await chromium.launch({ headless: true });\nconst page = await browser.newPage();\nawait page.goto(\"https://example.com\");\n\nconst title = await page.locator(\"h1\").textContent();\nawait page.screenshot({ path: \"screenshot.png\" });\n\nawait browser.close();",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "安裝"
+        },
+        {
+          "level": 2,
+          "text": "基本"
+        },
+        {
+          "level": 2,
+          "text": "互動"
+        },
+        {
+          "level": 2,
+          "text": "抓資料"
+        },
+        {
+          "level": 2,
+          "text": "並發"
+        },
+        {
+          "level": 2,
+          "text": "攔截 API"
+        },
+        {
+          "level": 2,
+          "text": "反偵測"
+        }
+      ]
+    },
+    {
+      "title": "Puppeteer：Google 出的競品",
+      "oneLineSummary": "Playwright 之前的王者、現在仍很多 legacy",
+      "analogy": "只支援 Chromium。",
+      "content": "## vs Playwright\n- ⚠️ 只支援 Chromium\n- ✅ Google 官方\n- ✅ CDP 最完整\n\n## 用法\n```bash\nnpm install puppeteer\n```\n\n```javascript\nimport puppeteer from \"puppeteer\";\n\nconst browser = await puppeteer.launch({ headless: true });\nconst page = await browser.newPage();\nawait page.goto(\"https://example.com\");\n\nconst title = await page.$eval(\"h1\", el => el.textContent);\nawait browser.close();\n```\n\n## puppeteer-extra + stealth\n```javascript\nimport puppeteer from \"puppeteer-extra\";\nimport StealthPlugin from \"puppeteer-extra-plugin-stealth\";\n\npuppeteer.use(StealthPlugin());\nconst browser = await puppeteer.launch();\n```\n\n## CDP（Chrome DevTools Protocol）\n```javascript\nconst client = await page.target().createCDPSession();\n\nawait client.send(\"Network.enable\");\nclient.on(\"Network.requestWillBeSent\", e => {\n  console.log(e.request.url);\n});\n\nawait client.send(\"Network.emulateNetworkConditions\", {\n  offline: false,\n  downloadThroughput: 50 * 1024,\n  uploadThroughput: 20 * 1024,\n  latency: 500\n});\n```\n\n## Generate PDF\n```javascript\nawait page.pdf({ path: \"page.pdf\", format: \"A4\" });\n```\n\n## 對比\n\n| 面向 | Puppeteer | Playwright |\n|---|---|---|\n| 公司 | Google | Microsoft |\n| 瀏覽器 | Chromium | 全 |\n| API | 老 | 新 |\n\n新專案直接 Playwright。",
+      "tip": {
+        "type": "practical",
+        "text": "Puppeteer 留給 legacy、stealth 是它強項。"
+      },
+      "id": "29.9",
+      "number": "LESSON 29.9",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "29.9.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "import puppeteer from \"puppeteer\";\n\nconst browser = await puppeteer.launch({ headless: true });\nconst page = await browser.newPage();\nawait page.goto(\"https://example.com\");\n\nconst title = await page.$eval(\"h1\", el => el.textContent);\nawait browser.close();",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "vs Playwright"
+        },
+        {
+          "level": 2,
+          "text": "用法"
+        },
+        {
+          "level": 2,
+          "text": "puppeteer-extra + stealth"
+        },
+        {
+          "level": 2,
+          "text": "CDP（Chrome DevTools Protocol）"
+        },
+        {
+          "level": 2,
+          "text": "Generate PDF"
+        },
+        {
+          "level": 2,
+          "text": "對比"
+        }
+      ]
+    },
+    {
+      "title": "Crawlee：JS 版 Scrapy",
+      "oneLineSummary": "Apify 出的開源爬蟲框架",
+      "analogy": "JS 想要 Scrapy 等級體驗 = Crawlee。",
+      "content": "## 為什麼\n- ✅ 整合 Cheerio / Puppeteer / Playwright\n- ✅ 內建 Queue、代理、重試\n- ✅ 自動 storage\n- ✅ TypeScript first\n\n## 安裝\n```bash\nnpm install crawlee\n```\n\n## CheerioCrawler\n```typescript\nimport { CheerioCrawler, Dataset } from \"crawlee\";\n\nconst crawler = new CheerioCrawler({\n  async requestHandler({ $, request, enqueueLinks }) {\n    const products = $(\".product\").map((i, el) => ({\n      name: $(el).find(\".name\").text(),\n      price: $(el).find(\".price\").text()\n    })).get();\n    \n    await Dataset.pushData({ products, url: request.url });\n    await enqueueLinks({ selector: \"a.product-link\" });\n  },\n  maxRequestsPerCrawl: 100\n});\n\nawait crawler.run([\"https://example.com\"]);\n```\n\n## PlaywrightCrawler\n```typescript\nimport { PlaywrightCrawler, Dataset } from \"crawlee\";\n\nconst crawler = new PlaywrightCrawler({\n  async requestHandler({ page, request, enqueueLinks }) {\n    await page.waitForSelector(\".product\");\n    \n    const products = await page.locator(\".product\").evaluateAll(els =>\n      els.map(el => ({\n        name: el.querySelector(\".name\")?.textContent,\n        price: el.querySelector(\".price\")?.textContent\n      }))\n    );\n    \n    await Dataset.pushData(products);\n    await enqueueLinks({ selector: \"a.next-page\" });\n  }\n});\n\nawait crawler.run([\"https://example.com\"]);\n```\n\n## 代理\n```typescript\nimport { ProxyConfiguration } from \"crawlee\";\n\nconst proxy = new ProxyConfiguration({\n  proxyUrls: [\"http://user:pass@proxy1.com:8080\"]\n});\n\nconst crawler = new PlaywrightCrawler({\n  proxyConfiguration: proxy\n});\n```\n\n## Crawlee vs Scrapy\n\n| 面向 | Crawlee | Scrapy |\n|---|---|---|\n| 語言 | TS/JS | Python |\n| 動態 | 內建 | 要加 Splash |\n| 學習 | 平 | 中 |",
+      "tip": {
+        "type": "trend",
+        "text": "Crawlee 是 2024+ JS 爬蟲新主流。"
+      },
+      "id": "29.10",
+      "number": "LESSON 29.10",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "29.10.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "import { CheerioCrawler, Dataset } from \"crawlee\";\n\nconst crawler = new CheerioCrawler({\n  async requestHandler({ $, request, enqueueLinks }) {\n    const products = $(\".product\").map((i, el) => ({\n      name: $(el).find(\".name\").text(),\n      price: $(el).find(\".price\").text()\n    })).get();\n    \n    await Dataset.pushData({ products, url: request.url });\n    await enqueueLinks({ selector: \"a.product-link\" });\n  },\n  maxRequestsPerCrawl: 100\n});\n\nawait crawler.run([\"https://example.com\"]);",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼"
+        },
+        {
+          "level": 2,
+          "text": "安裝"
+        },
+        {
+          "level": 2,
+          "text": "CheerioCrawler"
+        },
+        {
+          "level": 2,
+          "text": "PlaywrightCrawler"
+        },
+        {
+          "level": 2,
+          "text": "代理"
+        },
+        {
+          "level": 2,
+          "text": "Crawlee vs Scrapy"
+        }
+      ]
+    },
+    {
+      "title": "Bun + 爬蟲：快 3 倍",
+      "oneLineSummary": "2024+ 新 JS runtime",
+      "analogy": "不只快、API 現代、寫爬蟲爽。",
+      "content": "## 為什麼 Bun\n- ⚡ 快 3 倍\n- 📦 內建 TS\n- 🌐 內建 fetch / SQLite\n- 💾 內建 .env\n\n## 寫 TS 直接跑\n```typescript\nimport * as cheerio from \"cheerio\";\n\nconst res = await fetch(\"https://example.com\");\nconst html = await res.text();\nconst $ = cheerio.load(html);\n\nconst products = $(\"div.product\").map((i, el) => ({\n  name: $(el).find(\".name\").text()\n})).get();\n\nimport { Database } from \"bun:sqlite\";\nconst db = new Database(\"data.db\");\ndb.exec(`CREATE TABLE IF NOT EXISTS products (name TEXT)`);\n\nfor (const p of products) {\n  db.run(\"INSERT INTO products VALUES (?)\", [p.name]);\n}\n```\n\n```bash\nbun run scrape.ts\n```\n\n## 內建 SQLite\n```typescript\nimport { Database } from \"bun:sqlite\";\n\nconst db = new Database(\"data.db\", { create: true });\ndb.exec(`\n  CREATE TABLE IF NOT EXISTS products (\n    id INTEGER PRIMARY KEY,\n    name TEXT, price REAL, link TEXT UNIQUE\n  )\n`);\n\nconst insert = db.prepare(\"INSERT OR IGNORE INTO products (name, price, link) VALUES (?, ?, ?)\");\nfor (const p of products) {\n  insert.run(p.name, p.price, p.link);\n}\n\nconst all = db.query(\"SELECT * FROM products WHERE price < ?\").all(1000);\n```\n\n## Worker\n```typescript\nconst worker = new Worker(\"./worker.ts\");\nworker.postMessage({ url: \"https://example.com\" });\nworker.onmessage = (msg) => console.log(msg.data);\n```\n\n## vs Node\n\n| 面向 | Bun | Node |\n|---|---|---|\n| TS | 內建 | 要 tsx |\n| 速度 | 快 3 倍 | 慢 |\n| SQLite | 內建 | 套件 |",
+      "tip": {
+        "type": "trend",
+        "text": "Bun 是 2024+ JS runtime 新熱門。爬蟲快 3 倍。"
+      },
+      "id": "29.11",
+      "number": "LESSON 29.11",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "29.11.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "import * as cheerio from \"cheerio\";\n\nconst res = await fetch(\"https://example.com\");\nconst html = await res.text();\nconst $ = cheerio.load(html);\n\nconst products = $(\"div.product\").map((i, el) => ({\n  name: $(el).find(\".name\").text()\n})).get();\n\nimport { Database } from \"bun:sqlite\";\nconst db = new Database(\"data.db\");\ndb.exec(`CREATE TABLE IF NOT EXISTS products (name TEXT)`);\n\nfor (const p of products) {\n  db.run(\"INSERT INTO products VALUES (?)\", [p.name]);\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼 Bun"
+        },
+        {
+          "level": 2,
+          "text": "寫 TS 直接跑"
+        },
+        {
+          "level": 2,
+          "text": "內建 SQLite"
+        },
+        {
+          "level": 2,
+          "text": "Worker"
+        },
+        {
+          "level": 2,
+          "text": "vs Node"
+        }
+      ]
+    },
+    {
+      "title": "攔截 + 修改 Network",
+      "oneLineSummary": "不只看 response、能改 / mock—debug 神器",
+      "analogy": "Playwright / Puppeteer 都能。",
+      "content": "## 攔截 Response\n```javascript\npage.on(\"response\", async response => {\n  const url = response.url();\n  if (url.includes(\"/api/products\")) {\n    const data = await response.json();\n    console.log(\"API response:\", data);\n  }\n});\n```\n\n## 攔截 Request\n```javascript\nawait page.route(\"**/*\", route => {\n  const req = route.request();\n  \n  if (req.resourceType() === \"image\") return route.abort();\n  if (req.url().includes(\"googletagmanager\")) return route.abort();\n  \n  route.continue({\n    headers: { ...req.headers(), \"X-Custom\": \"value\" }\n  });\n});\n```\n\n## Mock API\n```javascript\nawait page.route(\"**/api/users\", route => {\n  route.fulfill({\n    status: 200,\n    contentType: \"application/json\",\n    body: JSON.stringify([{ id: 1, name: \"Mock\" }])\n  });\n});\n```\n\n## 修改 response\n```javascript\nawait page.route(\"**/api/products\", async route => {\n  const response = await route.fetch();\n  const data = await response.json();\n  data.products.forEach(p => p.scraped_at = new Date());\n  route.fulfill({ response, json: data });\n});\n```\n\n## 抓 cookies / storage\n```javascript\nconst cookies = await page.context().cookies();\nconst data = await page.evaluate(() => ({ ...localStorage }));\n```\n\n## 加速：只載 HTML\n```javascript\nawait page.route(\"**/*\", route => {\n  const type = route.request().resourceType();\n  if ([\"stylesheet\", \"image\", \"font\", \"media\"].includes(type)) {\n    route.abort();\n  } else {\n    route.continue();\n  }\n});\n```\n省 80% 頻寬。\n\n## 抓 GraphQL\n```javascript\npage.on(\"response\", async response => {\n  if (response.url().includes(\"/graphql\")) {\n    const json = await response.json();\n    if (json.data?.products) {\n      console.log(json.data.products);\n    }\n  }\n});\n```",
+      "tip": {
+        "type": "milestone",
+        "text": "攔截 + 找 API > 解 HTML。商業爬蟲 90% 是「找對 API」。"
+      },
+      "id": "29.12",
+      "number": "LESSON 29.12",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "29.12.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "page.on(\"response\", async response => {\n  const url = response.url();\n  if (url.includes(\"/api/products\")) {\n    const data = await response.json();\n    console.log(\"API response:\", data);\n  }\n});",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "攔截 Response"
+        },
+        {
+          "level": 2,
+          "text": "攔截 Request"
+        },
+        {
+          "level": 2,
+          "text": "Mock API"
+        },
+        {
+          "level": 2,
+          "text": "修改 response"
+        },
+        {
+          "level": 2,
+          "text": "抓 cookies / storage"
+        },
+        {
+          "level": 2,
+          "text": "加速：只載 HTML"
+        },
+        {
+          "level": 2,
+          "text": "抓 GraphQL"
+        }
+      ]
+    },
+    {
+      "title": "Cloudflare Workers 爬蟲",
+      "oneLineSummary": "在 Cloudflare edge 跑、免費、全球 IP",
+      "analogy": "5 萬 req/天免費。",
+      "content": "## 為什麼\n- ✅ 免費 100k req/天\n- ✅ 全球 IP（300+ 城市）\n- ✅ 不用 server\n- ✅ Cron Triggers\n- ⚠️ 不能 Puppeteer\n\n## 簡單爬蟲\n```typescript\nexport default {\n  async fetch(request, env) {\n    const res = await fetch(\"https://example.com\");\n    \n    const products = [];\n    new HTMLRewriter()\n      .on(\"div.product\", {\n        element(el) {\n          const product = {};\n          el.onEndTag(() => products.push(product));\n        }\n      })\n      .transform(res);\n    \n    return new Response(JSON.stringify(products));\n  }\n};\n```\n\n## Cron Trigger\n```toml\n# wrangler.toml\n[triggers]\ncrons = [\"0 3 * * *\"]\n```\n\n```typescript\nexport default {\n  async scheduled(event, env) {\n    const data = await scrape();\n    await env.KV.put(\"data\", JSON.stringify(data));\n  }\n};\n```\n\n## 儲存\n```typescript\n// KV\nawait env.MY_KV.put(\"key\", \"value\");\n\n// R2（S3 替代、10GB 免費）\nawait env.BUCKET.put(`data/${Date.now()}.json`, JSON.stringify(data));\n\n// D1（SQL）\nawait env.DB.prepare(\"INSERT INTO products VALUES (?, ?)\").bind(name, price).run();\n```\n\n## Browser Rendering（付費）\n```typescript\nconst browser = await puppeteer.launch(env.BROWSER);\nconst page = await browser.newPage();\nawait page.goto(\"https://example.com\");\n```\n\n## 部署\n```bash\nnpx wrangler deploy\n```\n\n## 限制\n- ⚠️ CPU 10ms / request（免費）\n- ⚠️ 不能 Puppeteer\n- ⚠️ 不能長時間任務",
+      "tip": {
+        "type": "practical",
+        "text": "Indie 免費 + 全球 IP：Cloudflare Workers + R2。"
+      },
+      "id": "29.13",
+      "number": "LESSON 29.13",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "29.13.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "export default {\n  async fetch(request, env) {\n    const res = await fetch(\"https://example.com\");\n    \n    const products = [];\n    new HTMLRewriter()\n      .on(\"div.product\", {\n        element(el) {\n          const product = {};\n          el.onEndTag(() => products.push(product));\n        }\n      })\n      .transform(res);\n    \n    return new Response(JSON.stringify(products));\n  }\n};",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼"
+        },
+        {
+          "level": 2,
+          "text": "簡單爬蟲"
+        },
+        {
+          "level": 2,
+          "text": "Cron Trigger"
+        },
+        {
+          "level": 2,
+          "text": "儲存"
+        },
+        {
+          "level": 2,
+          "text": "Browser Rendering（付費）"
+        },
+        {
+          "level": 2,
+          "text": "部署"
+        },
+        {
+          "level": 2,
+          "text": "限制"
+        }
+      ]
+    },
+    {
+      "title": "反 fingerprint 進階",
+      "oneLineSummary": "網站看 Canvas / WebGL / 字型",
+      "analogy": "IP 換了仍能識別你。",
+      "content": "## 偵測指標\n- `navigator.webdriver`\n- Canvas / WebGL fingerprint\n- 字型 / 解析度 / 時區\n- 沒滑鼠移動\n- 鍵盤太規律\n\n## stealth plugin\n```javascript\nimport puppeteer from \"puppeteer-extra\";\nimport Stealth from \"puppeteer-extra-plugin-stealth\";\npuppeteer.use(Stealth());\n```\n\n修了 17+ 個 detection。\n\n## 手動修改\n```javascript\nawait page.evaluateOnNewDocument(() => {\n  Object.defineProperty(navigator, \"webdriver\", { get: () => undefined });\n  Object.defineProperty(navigator, \"plugins\", { get: () => [1,2,3,4,5] });\n  Object.defineProperty(navigator, \"languages\", { get: () => [\"zh-TW\", \"zh\", \"en\"] });\n});\n```\n\n## 模擬人類\n```javascript\nasync function humanType(page, selector, text) {\n  for (const char of text) {\n    await page.type(selector, char, { delay: Math.random() * 200 + 50 });\n  }\n}\n\nawait page.mouse.move(100, 200);\nawait page.waitForTimeout(500);\nawait page.mouse.move(300, 400, { steps: 10 });\n```\n\n## 商業服務\n- Multilogin / AdsPower / GoLogin\n- 月 NT$ 200-1000\n\n## 目標難度\n- 容易：靜態 + 沒反爬\n- 中等：Cloudflare\n- 困難：Akamai / DataDome\n- 地獄：Apple / Google / Meta\n\n## 心法\n- 目標太難 → 放棄\n- 看官方 API\n- 看 ROI",
+      "tip": {
+        "type": "pro",
+        "text": "商業反爬蟲 vs 反偵測 = 軍備競賽。Indie 別硬幹。"
+      },
+      "id": "29.14",
+      "number": "LESSON 29.14",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "29.14.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "import puppeteer from \"puppeteer-extra\";\nimport Stealth from \"puppeteer-extra-plugin-stealth\";\npuppeteer.use(Stealth());",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "挑一個你做過的舊專案、用本節「反 fingerprint 進階」介紹的進階技術重構它。",
+        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（navigator.webdriver）通常在效能 / 維護性 / 擴展性卡住時才登場。",
+        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "偵測指標"
+        },
+        {
+          "level": 2,
+          "text": "stealth plugin"
+        },
+        {
+          "level": 2,
+          "text": "手動修改"
+        },
+        {
+          "level": 2,
+          "text": "模擬人類"
+        },
+        {
+          "level": 2,
+          "text": "商業服務"
+        },
+        {
+          "level": 2,
+          "text": "目標難度"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Curl Impersonate：TLS fingerprint",
+      "oneLineSummary": "requests 偽裝不了 TLS、需特殊工具",
+      "analogy": "網站看 TLS handshake 就知道你是 Python / Node。",
+      "content": "## 為什麼被擋\nPython requests 的 TLS fingerprint 跟 Chrome 不一樣、網站一看就擋。\n\n## got-scraping（Node）\n```bash\nnpm install got-scraping\n```\n\n```javascript\nimport { gotScraping } from \"got-scraping\";\n\nconst res = await gotScraping({\n  url: \"https://example.com\",\n  headerGeneratorOptions: {\n    browsers: [{ name: \"chrome\", minVersion: 110 }],\n    devices: [\"desktop\"],\n    locales: [\"zh-TW\"]\n  }\n});\n```\n\n## undici + HTTP/2\n```javascript\nimport { fetch, Agent } from \"undici\";\n\nconst res = await fetch(\"https://example.com\", {\n  headers: { \"User-Agent\": \"Mozilla/5.0 ...\" },\n  dispatcher: new Agent({ allowH2: true })\n});\n```\n\n## Playwright（最徹底）\n直接用真瀏覽器、TLS 自動對。\n\n## FlareSolverr（過 Cloudflare）\n```bash\ndocker run -d -p 8191:8191 ghcr.io/flaresolverr/flaresolverr\n```\n\n```javascript\nconst res = await fetch(\"http://localhost:8191/v1\", {\n  method: \"POST\",\n  headers: { \"Content-Type\": \"application/json\" },\n  body: JSON.stringify({\n    cmd: \"request.get\",\n    url: \"https://cloudflare-protected.com\",\n    maxTimeout: 60000\n  })\n});\n```\n\n## 心法\n1. 試 fetch + UA\n2. 試 got-scraping（TLS）\n3. 試 Playwright（JS）\n4. 試 FlareSolverr（Cloudflare）\n5. 放棄",
+      "tip": {
+        "type": "milestone",
+        "text": "2024+ TLS fingerprint 偵測成主流。"
+      },
+      "id": "29.15",
+      "number": "LESSON 29.15",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "29.15.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "import { gotScraping } from \"got-scraping\";\n\nconst res = await gotScraping({\n  url: \"https://example.com\",\n  headerGeneratorOptions: {\n    browsers: [{ name: \"chrome\", minVersion: 110 }],\n    devices: [\"desktop\"],\n    locales: [\"zh-TW\"]\n  }\n});",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼被擋"
+        },
+        {
+          "level": 2,
+          "text": "got-scraping（Node）"
+        },
+        {
+          "level": 2,
+          "text": "undici + HTTP/2"
+        },
+        {
+          "level": 2,
+          "text": "Playwright（最徹底）"
+        },
+        {
+          "level": 2,
+          "text": "FlareSolverr（過 Cloudflare）"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "RSS / Sitemap：合法 + 友善",
+      "oneLineSummary": "不是所有資料都要硬爬",
+      "analogy": "友善網站歡迎你「爬」這些。",
+      "content": "## RSS\n```javascript\nimport Parser from \"rss-parser\";\n\nconst parser = new Parser();\nconst feed = await parser.parseURL(\"https://example.com/rss\");\n\nfor (const item of feed.items) {\n  console.log(item.title, item.link, item.pubDate);\n}\n```\n\n## 找 RSS\n```html\n<link rel=\"alternate\" type=\"application/rss+xml\" href=\"/feed.xml\">\n```\n\n常見路徑：`/feed`、`/rss`、`/feed.xml`、`/atom.xml`\n\n## Sitemap\n```\nhttps://example.com/sitemap.xml\n```\n\n```xml\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n  <url>\n    <loc>https://example.com/page/1</loc>\n    <lastmod>2026-05-17</lastmod>\n  </url>\n</urlset>\n```\n\n## 解析\n```javascript\nimport { XMLParser } from \"fast-xml-parser\";\n\nconst res = await fetch(\"https://example.com/sitemap.xml\");\nconst xml = await res.text();\nconst parser = new XMLParser();\nconst data = parser.parse(xml);\n\nconst urls = data.urlset.url.map(u => u.loc);\n```\n\n## 為什麼合法\n- 網站主動提供\n- robots.txt 通常 allow\n- SEO 需要\n\n## 應用\n- 監控新聞網站新文章\n- 抓部落格所有 URL\n- 找出網站所有商品\n- RSS 聚合器",
+      "tip": {
+        "type": "practical",
+        "text": "永遠先試 RSS / Sitemap、再考慮硬爬。"
+      },
+      "id": "29.16",
+      "number": "LESSON 29.16",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "29.16.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "import Parser from \"rss-parser\";\n\nconst parser = new Parser();\nconst feed = await parser.parseURL(\"https://example.com/rss\");\n\nfor (const item of feed.items) {\n  console.log(item.title, item.link, item.pubDate);\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "RSS"
+        },
+        {
+          "level": 2,
+          "text": "找 RSS"
+        },
+        {
+          "level": 2,
+          "text": "Sitemap"
+        },
+        {
+          "level": 2,
+          "text": "解析"
+        },
+        {
+          "level": 2,
+          "text": "為什麼合法"
+        },
+        {
+          "level": 2,
+          "text": "應用"
+        }
+      ]
+    },
+    {
+      "title": "Apify：商業爬蟲平台",
+      "oneLineSummary": "不寫 code、用現成 actor、或自架",
+      "analogy": "台灣 / 國際接案 = 專業工具。",
+      "content": "## 什麼是 Apify\n- 商業爬蟲平台\n- 1000+ 現成 actor\n- 出 Crawlee 開源框架\n\n## 用現成 Actor\n```\n1. apify.com 找「Shopee Scraper」\n2. 設參數\n3. Run、拿 JSON / CSV\n```\n每次 NT$ 5-50。\n\n## SDK 整合\n```javascript\nimport { ApifyClient } from \"apify-client\";\n\nconst client = new ApifyClient({ token: \"...\" });\n\nconst run = await client.actor(\"apify/web-scraper\").call({\n  startUrls: [{ url: \"https://example.com\" }],\n  pageFunction: `async ({ page }) => ({ title: await page.title() })`\n});\n\nconst { items } = await client.dataset(run.defaultDatasetId).listItems();\n```\n\n## 自己寫 Actor\n```bash\nnpm install -g apify-cli\napify create my-scraper\napify run\n```\n\n```typescript\nimport { Actor } from \"apify\";\nimport { PlaywrightCrawler } from \"crawlee\";\n\nawait Actor.init();\n\nconst input = await Actor.getInput();\n\nconst crawler = new PlaywrightCrawler({\n  async requestHandler({ page, request }) {\n    const title = await page.title();\n    await Actor.pushData({ url: request.url, title });\n  }\n});\n\nawait crawler.run(input.startUrls);\nawait Actor.exit();\n```\n\n```bash\napify push\n```\n\n## 賺錢\n- 賣 Actor 月入 $1000-10000 被動\n- 接案：寫 actor 給客戶\n\n## 替代品\n- Bright Data Web Scraper IDE\n- Scrapfly / Zyte",
+      "tip": {
+        "type": "business",
+        "text": "Apify 是「爬蟲 App Store」—被動收入機會。"
+      },
+      "id": "29.17",
+      "number": "LESSON 29.17",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "29.17.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "import { ApifyClient } from \"apify-client\";\n\nconst client = new ApifyClient({ token: \"...\" });\n\nconst run = await client.actor(\"apify/web-scraper\").call({\n  startUrls: [{ url: \"https://example.com\" }],\n  pageFunction: `async ({ page }) => ({ title: await page.title() })`\n});\n\nconst { items } = await client.dataset(run.defaultDatasetId).listItems();",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "什麼是 Apify"
+        },
+        {
+          "level": 2,
+          "text": "用現成 Actor"
+        },
+        {
+          "level": 2,
+          "text": "SDK 整合"
+        },
+        {
+          "level": 2,
+          "text": "自己寫 Actor"
+        },
+        {
+          "level": 2,
+          "text": "賺錢"
+        },
+        {
+          "level": 2,
+          "text": "替代品"
+        }
+      ]
+    },
+    {
+      "title": "TypeScript 爬蟲：型別安全",
+      "oneLineSummary": "爬蟲資料結構複雜、TS 救命",
+      "analogy": "Zod + TS 不再 undefined 滿天飛。",
+      "content": "## 定義型別\n```typescript\ninterface Product {\n  id: string;\n  name: string;\n  price: number;\n  link: string;\n  tags: string[];\n}\n```\n\n## Zod runtime 驗證\n```typescript\nimport { z } from \"zod\";\n\nconst ProductSchema = z.object({\n  id: z.string(),\n  name: z.string().min(1),\n  price: z.number().positive(),\n  link: z.string().url(),\n  tags: z.array(z.string())\n});\n\ntype Product = z.infer<typeof ProductSchema>;\n```\n\n## 爬 + 驗證\n```typescript\nasync function scrapeProduct(url: string): Promise<Product> {\n  const res = await fetch(url);\n  const html = await res.text();\n  const $ = cheerio.load(html);\n  \n  const raw = {\n    id: $(\"meta[name='product-id']\").attr(\"content\"),\n    name: $(\"h1\").text().trim(),\n    price: parseFloat($(\".price\").text().replace(/[^0-9.]/g, \"\")),\n    link: url,\n    tags: $(\".tag\").map((i, el) => $(el).text()).get()\n  };\n  \n  return ProductSchema.parse(raw);\n}\n```\n\n## Safe parse\n```typescript\nconst result = ProductSchema.safeParse(raw);\nif (result.success) {\n  return result.data;\n} else {\n  console.error(result.error.format());\n  return null;\n}\n```\n\n## Transform\n```typescript\nconst PriceSchema = z.string()\n  .transform(s => s.replace(/[^0-9.]/g, \"\"))\n  .pipe(z.coerce.number().positive());\n\nPriceSchema.parse(\"NT$ 1,299\");  // 1299\n```\n\n## Result type\n```typescript\ntype Result<T, E = Error> = { ok: true; data: T } | { ok: false; error: E };\n\nasync function safeScrape(url: string): Promise<Result<Product>> {\n  try {\n    const data = await scrapeProduct(url);\n    return { ok: true, data };\n  } catch (err) {\n    return { ok: false, error: err as Error };\n  }\n}\n```",
+      "tip": {
+        "type": "practical",
+        "text": "TS + Zod 是 production 配置。少 90% bug。"
+      },
+      "id": "29.18",
+      "number": "LESSON 29.18",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "29.18.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "interface Product {\n  id: string;\n  name: string;\n  price: number;\n  link: string;\n  tags: string[];\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "定義型別"
+        },
+        {
+          "level": 2,
+          "text": "Zod runtime 驗證"
+        },
+        {
+          "level": 2,
+          "text": "爬 + 驗證"
+        },
+        {
+          "level": 2,
+          "text": "Safe parse"
+        },
+        {
+          "level": 2,
+          "text": "Transform"
+        },
+        {
+          "level": 2,
+          "text": "Result type"
+        }
+      ]
+    },
+    {
+      "title": "爬蟲監控 + 告警（JS）",
+      "oneLineSummary": "上線就是開始監控、不是結束",
+      "analogy": "Sentry + Healthchecks + Slack = Indie 標配。",
+      "content": "## Sentry\n```javascript\nimport * as Sentry from \"@sentry/node\";\n\nSentry.init({\n  dsn: process.env.SENTRY_DSN,\n  tracesSampleRate: 1.0\n});\n\ntry {\n  await scrape();\n} catch (err) {\n  Sentry.captureException(err);\n  throw err;\n}\n```\n\n## Healthchecks.io\n```javascript\nconst PING_URL = \"https://hc-ping.com/UUID\";\n\nawait fetch(`${PING_URL}/start`);\n\ntry {\n  const items = await scrape();\n  await fetch(PING_URL);\n} catch (err) {\n  await fetch(`${PING_URL}/fail`);\n  throw err;\n}\n```\n\n## Slack\n```javascript\nasync function notifySlack(text) {\n  await fetch(process.env.SLACK_WEBHOOK, {\n    method: \"POST\",\n    headers: { \"Content-Type\": \"application/json\" },\n    body: JSON.stringify({ text })\n  });\n}\n\ntry {\n  const items = await scrape();\n  await notifySlack(`✅ ${items.length} 筆`);\n} catch (err) {\n  await notifySlack(`❌ ${err.message}`);\n}\n```\n\n## Discord\n```javascript\nawait fetch(process.env.DISCORD_WEBHOOK, {\n  method: \"POST\",\n  headers: { \"Content-Type\": \"application/json\" },\n  body: JSON.stringify({\n    embeds: [{ fields: [{ name: \"抓到\", value: items.length.toString() }] }]\n  })\n});\n```\n\n## LINE Notify\n```javascript\nawait fetch(\"https://notify-api.line.me/api/notify\", {\n  method: \"POST\",\n  headers: {\n    \"Authorization\": `Bearer ${LINE_TOKEN}`,\n    \"Content-Type\": \"application/x-www-form-urlencoded\"\n  },\n  body: new URLSearchParams({ message: `完成：${count} 筆` })\n});\n```\n\n## Pino log\n```javascript\nimport pino from \"pino\";\n\nconst logger = pino({ level: \"info\" });\nlogger.info(\"Starting\");\nlogger.error({ err }, \"Failed\");\n```\n\n## Indie 黃金組合\n- Sentry（crash）\n- Healthchecks（liveness）\n- Slack / Discord（通知）\n- Pino（log）\n- GitHub Actions（schedule）",
+      "tip": {
+        "type": "milestone",
+        "text": "Indie 必裝：Sentry + Healthchecks。免費、5 分鐘設好。"
+      },
+      "id": "29.19",
+      "number": "LESSON 29.19",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "29.19.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "import * as Sentry from \"@sentry/node\";\n\nSentry.init({\n  dsn: process.env.SENTRY_DSN,\n  tracesSampleRate: 1.0\n});\n\ntry {\n  await scrape();\n} catch (err) {\n  Sentry.captureException(err);\n  throw err;\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "Sentry"
+        },
+        {
+          "level": 2,
+          "text": "Healthchecks.io"
+        },
+        {
+          "level": 2,
+          "text": "Slack"
+        },
+        {
+          "level": 2,
+          "text": "Discord"
+        },
+        {
+          "level": 2,
+          "text": "LINE Notify"
+        },
+        {
+          "level": 2,
+          "text": "Pino log"
+        },
+        {
+          "level": 2,
+          "text": "Indie 黃金組合"
+        }
+      ]
+    },
+    {
+      "title": "Vercel / Netlify Functions 爬蟲",
+      "oneLineSummary": "Serverless 跑爬蟲、不付 server 費",
+      "analogy": "小規模、不用 VPS。",
+      "content": "## Vercel Functions\n```typescript\nimport * as cheerio from \"cheerio\";\n\nexport default async function handler(req) {\n  const res = await fetch(\"https://example.com\");\n  const html = await res.text();\n  const $ = cheerio.load(html);\n  \n  const products = $(\"div.product\").map((i, el) => ({\n    name: $(el).find(\".name\").text(),\n    price: $(el).find(\".price\").text()\n  })).get();\n  \n  return Response.json(products);\n}\n\nexport const config = {\n  runtime: \"edge\",\n  maxDuration: 60\n};\n```\n\n## Vercel Cron\n```json\n{\n  \"crons\": [{\n    \"path\": \"/api/scrape\",\n    \"schedule\": \"0 3 * * *\"\n  }]\n}\n```\n\n## 限制\n\n### Vercel\n- ⚠️ Free 100 GB-hr/月\n- ⚠️ Timeout 10s / 60s (pro)\n- ⚠️ 不能 Puppeteer\n\n### AWS Lambda\n- ⚠️ Timeout 15 分鐘\n- ✅ 可跑 Puppeteer\n\n## 處理長任務\n\n### 分批\n```typescript\nconst page = parseInt(req.query.page || \"1\");\nconst data = await scrapePage(page);\n\nif (data.hasNext) {\n  fetch(`/api/scrape?page=${page + 1}`);\n}\n```\n\n### Queue\n```\n[Cron] → [QStash] → [Function × N]\n```\n\n### Inngest\n```typescript\ninngest.createFunction(\n  { id: \"scrape\" },\n  { cron: \"0 3 * * *\" },\n  async ({ event, step }) => {\n    const urls = await step.run(\"get-urls\", () => getUrls());\n    for (const url of urls) {\n      await step.run(`scrape-${url}`, () => scrape(url));\n    }\n  }\n);\n```\n\n## 持久化\n- Cloudflare R2 / KV / D1\n- Vercel Postgres / Blob\n- Upstash Redis\n- Supabase\n\n## 何時用\n- ✅ 小規模（< 1000 req/day）\n- ✅ 排程\n- ❌ Puppeteer\n- ❌ 長任務",
+      "tip": {
+        "type": "practical",
+        "text": "Indie：Cloudflare Workers > Vercel > AWS Lambda。"
+      },
+      "id": "29.20",
+      "number": "LESSON 29.20",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "29.20.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "import * as cheerio from \"cheerio\";\n\nexport default async function handler(req) {\n  const res = await fetch(\"https://example.com\");\n  const html = await res.text();\n  const $ = cheerio.load(html);\n  \n  const products = $(\"div.product\").map((i, el) => ({\n    name: $(el).find(\".name\").text(),\n    price: $(el).find(\".price\").text()\n  })).get();\n  \n  return Response.json(products);\n}\n\nexport const config = {\n  runtime: \"edge\",\n  maxDuration: 60\n};",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "Vercel Functions"
+        },
+        {
+          "level": 2,
+          "text": "Vercel Cron"
+        },
+        {
+          "level": 2,
+          "text": "限制"
+        },
+        {
+          "level": 3,
+          "text": "Vercel"
+        },
+        {
+          "level": 3,
+          "text": "AWS Lambda"
+        },
+        {
+          "level": 2,
+          "text": "處理長任務"
+        },
+        {
+          "level": 3,
+          "text": "分批"
+        },
+        {
+          "level": 3,
+          "text": "Queue"
+        },
+        {
+          "level": 3,
+          "text": "Inngest"
+        },
+        {
+          "level": 2,
+          "text": "持久化"
+        },
+        {
+          "level": 2,
+          "text": "何時用"
+        }
+      ]
+    },
+    {
+      "title": "Web Scraping APIs：付費省心",
+      "oneLineSummary": "不寫爬蟲、付月費、別人處理反爬",
+      "analogy": "時間值錢、複雜網站直接買 API。",
+      "content": "## 主流服務\n\n### ScraperAPI\n- $49-$249/月\n- 內建代理 + JS rendering\n\n```javascript\nconst res = await fetch(\n  `https://api.scraperapi.com?api_key=${KEY}&url=https://target.com&render=true`\n);\n```\n\n### Bright Data Web Scraper IDE\n老牌最大、企業級。\n\n### Scrapfly\n```javascript\nimport { ScrapflyClient, ScrapeConfig } from \"scrapfly-sdk\";\n\nconst scrapfly = new ScrapflyClient({ key: \"...\" });\nconst result = await scrapfly.scrape(\n  new ScrapeConfig({ url: \"https://example.com\", asp: true })\n);\n```\n\n### Diffbot\n```javascript\nconst res = await fetch(\n  `https://api.diffbot.com/v3/product?token=${KEY}&url=${url}`\n);\n```\n\n### Browserless\n```javascript\nconst browser = await puppeteer.connect({\n  browserWSEndpoint: \"wss://chrome.browserless.io?token=...\"\n});\n```\n\n## 價格（2026）\n\n| 服務 | 起價 | 1k req |\n|---|---|---|\n| ScraperAPI | $49/月 | $0.5 |\n| Scrapfly | $30/月 | $0.6 |\n| Bright Data | $500/月 | $5 |\n| Zyte | $499/月 | $10 |\n| Cloudflare Workers | $0 | $0 |\n\n## ROI\n自己寫 vs 買 API：\n- 自己：1 個月 + 維護\n- 買：月費 NT$ 1.5k-5k、0 維護\n\n> 10k req/月 = 買 API 划算。\n\n## Indie 建議\n- 接案：客戶付錢 = 用 API\n- 個人：自己寫 + 免費代理\n- SaaS：先 API 上線、規模化後自架",
+      "tip": {
+        "type": "business",
+        "text": "客戶接案 = 用 API、成本算進報價。"
+      },
+      "id": "29.21",
+      "number": "LESSON 29.21",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "29.21.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "const res = await fetch(\n  `https://api.scraperapi.com?api_key=${KEY}&url=https://target.com&render=true`\n);",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "主流服務"
+        },
+        {
+          "level": 3,
+          "text": "ScraperAPI"
+        },
+        {
+          "level": 3,
+          "text": "Bright Data Web Scraper IDE"
+        },
+        {
+          "level": 3,
+          "text": "Scrapfly"
+        },
+        {
+          "level": 3,
+          "text": "Diffbot"
+        },
+        {
+          "level": 3,
+          "text": "Browserless"
+        },
+        {
+          "level": 2,
+          "text": "價格（2026）"
+        },
+        {
+          "level": 2,
+          "text": "ROI"
+        },
+        {
+          "level": 2,
+          "text": "Indie 建議"
+        }
+      ]
+    },
+    {
+      "title": "完整實戰：蝦皮比價工具",
+      "oneLineSummary": "從爬蟲到 SaaS、整合所有技術",
+      "analogy": "可上線、可賣、可放 portfolio。",
+      "content": "## 規格\n- 給商品名、自動爬蝦皮 + PChome + Momo\n- 每天 cron\n- 用戶訂閱「降價通知」\n- Dashboard 看歷史走勢\n\n## Stack\n- Bun（runtime）\n- Hono（API）\n- Playwright（動態）\n- Cheerio（解析）\n- Drizzle + PG\n- React + Recharts\n- Cloudflare Workers Cron\n\n## 架構\n```\n[Cron 6am]\n  ↓\n[Bun + Playwright 爬 3 網站]\n  ↓\n[Drizzle 寫 PG]\n  ↓\n[檢查訂閱、降價 → LINE Notify]\n  ↓\n[Next.js dashboard]\n```\n\n## DB Schema\n```typescript\nexport const prices = pgTable(\"prices\", {\n  id: uuid(\"id\").defaultRandom().primaryKey(),\n  product_id: uuid(\"product_id\").references(() => products.id),\n  site: text(\"site\").notNull(),\n  title: text(\"title\").notNull(),\n  price: decimal(\"price\").notNull(),\n  url: text(\"url\").notNull(),\n  scraped_at: timestamp(\"scraped_at\").defaultNow()\n});\n```\n\n## 爬蟲\n```typescript\nasync function scrapeShopee(keyword) {\n  const browser = await chromium.launch();\n  const page = await browser.newPage();\n  await page.goto(`https://shopee.tw/search?keyword=${encodeURIComponent(keyword)}`);\n  await page.waitForSelector(\".shopee-search-item-result__item\");\n  \n  const items = await page.locator(\".shopee-search-item-result__item\").evaluateAll(els =>\n    els.slice(0, 20).map(el => ({\n      title: el.querySelector(\".item-name\")?.textContent ?? \"\",\n      price: parseFloat(el.querySelector(\".item-price\")?.textContent?.replace(/[^0-9]/g, \"\") ?? \"0\")\n    }))\n  );\n  \n  await browser.close();\n  return items;\n}\n\nasync function scrapePChome(keyword) {\n  const res = await fetch(`https://ecshweb.pchome.com.tw/search/v3.3/?q=${encodeURIComponent(keyword)}`);\n  const data = await res.json();\n  return data.prods.slice(0, 20).map(p => ({\n    title: p.name, price: p.price\n  }));\n}\n```\n\n## Cron\n```typescript\nasync function main() {\n  const allProducts = await db.select().from(products);\n  \n  for (const p of allProducts) {\n    const [shopee, pchome] = await Promise.all([\n      scrapeShopee(p.keyword),\n      scrapePChome(p.keyword)\n    ]);\n    \n    await db.insert(prices).values([\n      ...shopee.map(i => ({ ...i, site: \"shopee\", product_id: p.id })),\n      ...pchome.map(i => ({ ...i, site: \"pchome\", product_id: p.id }))\n    ]);\n    \n    await checkAndNotify(p.id);\n  }\n}\n```\n\n## 通知\n```typescript\nasync function checkAndNotify(productId) {\n  const subs = await getSubscriptions(productId);\n  \n  for (const sub of subs) {\n    const minPrice = await getMinPriceToday(productId);\n    \n    if (minPrice < sub.target_price) {\n      await fetch(\"https://notify-api.line.me/api/notify\", {\n        method: \"POST\",\n        headers: { \"Authorization\": `Bearer ${sub.line_token}` },\n        body: new URLSearchParams({ message: `💰 降價了！${minPrice}` })\n      });\n    }\n  }\n}\n```\n\n## Dashboard\n```tsx\n<LineChart width={800} height={400} data={data}>\n  <XAxis dataKey=\"date\" />\n  <YAxis />\n  <Line type=\"monotone\" dataKey=\"shopee\" stroke=\"#f97316\" />\n  <Line type=\"monotone\" dataKey=\"pchome\" stroke=\"#3b82f6\" />\n</LineChart>\n```\n\n## 變現\n- 個人版：免費（廣告）\n- 商家版：NT$ 500/月\n- 企業版：NT$ 5000/月",
+      "tip": {
+        "type": "milestone",
+        "text": "完成這個 = 你能獨立做爬蟲 SaaS。"
+      },
+      "id": "29.22",
+      "number": "LESSON 29.22",
+      "xp": 15,
+      "playgrounds": [
+        {
+          "key": "29.22.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "export const prices = pgTable(\"prices\", {\n  id: uuid(\"id\").defaultRandom().primaryKey(),\n  product_id: uuid(\"product_id\").references(() => products.id),\n  site: text(\"site\").notNull(),\n  title: text(\"title\").notNull(),\n  price: decimal(\"price\").notNull(),\n  url: text(\"url\").notNull(),\n  scraped_at: timestamp(\"scraped_at\").defaultNow()\n});",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "安裝 lesson 內介紹的工具、用官方的 quick start 跑一次 hello world。記錄安裝過程踩了哪些坑。",
+        "hint": "工具的學習曲線通常卡在「環境設定」這關。Node 版本、Python 版本、權限、PATH 變數、port 衝突——遇到一個解一個。",
+        "answer": "踩坑筆記範本：『遇到：[錯誤訊息] → 原因：[根本原因] → 解：[具體指令]』。整理在自己的 GitHub gist 或 Notion、下次遇到同樣坑直接複製貼上 = 把痛苦變資產。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "規格"
+        },
+        {
+          "level": 2,
+          "text": "Stack"
+        },
+        {
+          "level": 2,
+          "text": "架構"
+        },
+        {
+          "level": 2,
+          "text": "DB Schema"
+        },
+        {
+          "level": 2,
+          "text": "爬蟲"
+        },
+        {
+          "level": 2,
+          "text": "Cron"
+        },
+        {
+          "level": 2,
+          "text": "通知"
+        },
+        {
+          "level": 2,
+          "text": "Dashboard"
+        },
+        {
+          "level": 2,
+          "text": "變現"
+        }
+      ]
+    },
+    {
+      "title": "AI 爬蟲：browser-use / Magnitude",
+      "oneLineSummary": "2024+ 新範式—AI 自動讀網頁、抓資料",
+      "analogy": "改版自動適應、未來主流。",
+      "content": "## 為什麼\n傳統爬蟲：每個網站要寫 selector、改版就壞\nAI 爬蟲：給目標、AI 自己找資料\n\n## browser-use（Python）\n```python\nimport asyncio\nfrom browser_use import Agent\nfrom langchain_anthropic import ChatAnthropic\n\nasync def main():\n    agent = Agent(\n        task=\"去蝦皮搜尋 iPhone 17 Pro、找前 10 個最低價、回 JSON\",\n        llm=ChatAnthropic(model=\"claude-opus-4-7\")\n    )\n    result = await agent.run()\n    print(result)\n\nasyncio.run(main())\n```\n\n## Magnitude（TS）\n```typescript\nimport { Browser } from \"magnitude\";\n\nconst browser = new Browser();\nconst result = await browser.run({\n  task: \"Find me the latest iPhone price on PChome\",\n  url: \"https://pchome.com.tw\"\n});\n```\n\n## Claude Computer Use\n```python\nimport anthropic\n\nresponse = client.messages.create(\n    model=\"claude-opus-4-7\",\n    tools=[{ \"type\": \"computer_20250124\", \"name\": \"computer\" }],\n    messages=[{\n        \"role\": \"user\",\n        \"content\": \"打開蝦皮、搜尋 iPhone、抓前 10 個價格\"\n    }]\n)\n```\n\n## 結構化抽取\n```javascript\nconst prompt = `從這個網頁抽出所有商品的：name, price, link、回 JSON：\\n\\n${html}`;\n\nconst response = await anthropic.messages.create({\n  model: \"claude-opus-4-7\",\n  messages: [{ role: \"user\", content: prompt }]\n});\n\nconst data = JSON.parse(response.content[0].text);\n```\n\n## 成本\n- Claude Opus：1k token 約 $0.003-0.015\n- 一頁約 NT$ 0.3-3\n- 比寫 code 慢、比代理便宜\n\n## 何時用\n- ✅ 改版頻繁的網站\n- ✅ 不規則資料\n- ✅ 多種網站同方法\n- ❌ 大量同一網站（traditional 便宜）\n- ❌ 結構化 API 已有\n\n## 限制\n- 慢（每頁 LLM 思考）\n- 貴（token 費）\n- 不確定性\n- 仍會被反爬擋\n\n## 未來\n2026+：AI 爬蟲 + 真瀏覽器 + 反偵測。傳統 Scrapy / Crawlee 仍主流、AI 爬蟲補空缺。",
+      "tip": {
+        "type": "trend",
+        "text": "2024+ AI 爬蟲爆發。學一個 = 未來 5 年領先。"
+      },
+      "id": "29.23",
+      "number": "LESSON 29.23",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "29.23.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "const prompt = `從這個網頁抽出所有商品的：name, price, link、回 JSON：\\n\\n${html}`;\n\nconst response = await anthropic.messages.create({\n  model: \"claude-opus-4-7\",\n  messages: [{ role: \"user\", content: prompt }]\n});\n\nconst data = JSON.parse(response.content[0].text);",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼"
+        },
+        {
+          "level": 2,
+          "text": "browser-use（Python）"
+        },
+        {
+          "level": 2,
+          "text": "Magnitude（TS）"
+        },
+        {
+          "level": 2,
+          "text": "Claude Computer Use"
+        },
+        {
+          "level": 2,
+          "text": "結構化抽取"
+        },
+        {
+          "level": 2,
+          "text": "成本"
+        },
+        {
+          "level": 2,
+          "text": "何時用"
+        },
+        {
+          "level": 2,
+          "text": "限制"
+        },
+        {
+          "level": 2,
+          "text": "未來"
+        }
+      ]
+    },
+    {
+      "title": "OCR + CV：圖片資料爬",
+      "oneLineSummary": "PDF / 圖片 / Captcha 都能抓",
+      "analogy": "不只 HTML 才能爬。",
+      "content": "## Tesseract\n```javascript\nimport Tesseract from \"tesseract.js\";\n\nconst { data: { text } } = await Tesseract.recognize(\n  \"image.png\",\n  \"chi_tra+eng\"\n);\n```\n\n## PaddleOCR（中文最強、Python）\n```bash\npip install paddleocr paddlepaddle\n```\n\n```python\nfrom paddleocr import PaddleOCR\n\nocr = PaddleOCR(use_angle_cls=True, lang=\"ch\")\nresult = ocr.ocr(\"image.png\", cls=True)\n\nfor line in result[0]:\n    print(line[1][0])\n```\n\n## Claude Vision（2024+ 主流）\n```javascript\nimport Anthropic from \"@anthropic-ai/sdk\";\n\nconst client = new Anthropic();\n\nconst imgBase64 = fs.readFileSync(\"invoice.png\").toString(\"base64\");\n\nconst response = await client.messages.create({\n  model: \"claude-opus-4-7\",\n  max_tokens: 1024,\n  messages: [{\n    role: \"user\",\n    content: [\n      { type: \"image\", source: { type: \"base64\", media_type: \"image/png\", data: imgBase64 } },\n      { type: \"text\", text: \"抽出發票上：商家、日期、總金額、品項（JSON）\" }\n    ]\n  }]\n});\n\nconst data = JSON.parse(response.content[0].text);\n```\n比 OCR 強 100 倍。\n\n## 解 Captcha\n2Captcha / CapSolver：$0.5-2 / 1000 次\n\n```javascript\nconst res = await fetch(\"http://2captcha.com/in.php\", {\n  method: \"POST\",\n  body: formData\n});\nconst captchaId = (await res.text()).split(\"|\")[1];\n\nwhile (true) {\n  const r = await fetch(`http://2captcha.com/res.php?key=${KEY}&action=get&id=${captchaId}`);\n  const text = await r.text();\n  if (text.startsWith(\"OK\")) {\n    const solution = text.split(\"|\")[1];\n    break;\n  }\n  await new Promise(r => setTimeout(r, 2000));\n}\n```\n\n## 應用\n- 自動讀發票 → 記帳\n- 監視器 → 統計人流\n- 賽事資料\n- 政府公開資料（PDF）\n\n## 心法\n- 簡單文字：Tesseract / PaddleOCR\n- 結構化：Claude Vision\n- Captcha：付費服務",
+      "tip": {
+        "type": "trend",
+        "text": "Claude Vision 取代 90% OCR 需求。"
+      },
+      "id": "29.24",
+      "number": "LESSON 29.24",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "29.24.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "import Tesseract from \"tesseract.js\";\n\nconst { data: { text } } = await Tesseract.recognize(\n  \"image.png\",\n  \"chi_tra+eng\"\n);",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "Tesseract"
+        },
+        {
+          "level": 2,
+          "text": "PaddleOCR（中文最強、Python）"
+        },
+        {
+          "level": 2,
+          "text": "Claude Vision（2024+ 主流）"
+        },
+        {
+          "level": 2,
+          "text": "解 Captcha"
+        },
+        {
+          "level": 2,
+          "text": "應用"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Node 爬蟲學習路徑",
+      "oneLineSummary": "從新手到 JS 爬蟲專家",
+      "analogy": "JS 爬蟲走 Node + Crawlee 路線。",
+      "content": "## 學習路徑\n\n### Month 1：基礎\n- Node + TS\n- fetch + cheerio\n- 小案：靜態網站\n\n### Month 2：動態 + 框架\n- Playwright JS\n- Crawlee\n- 小案：動態網站\n\n### Month 3：規模\n- Async + 並發\n- 代理輪換\n- Database\n\n### Month 4：Production\n- Sentry / Healthchecks\n- Cron（GitHub Actions / Cloudflare Workers）\n\n### Month 5：接案\n- 履歷 / 作品集\n- 第一個付費客戶\n\n### Month 6+：進階\n- 自己刻 SaaS\n- 賣 Apify Actor\n\n## 資源\n- Crawlee Docs（必看）\n- Playwright Docs\n- **John Watson Rooney** YT\n- 練習：books.toscrape.com\n\n## JS vs Python 爬蟲\n\n| 面向 | JS / Node | Python |\n|---|---|---|\n| 框架 | Crawlee | Scrapy |\n| 動態 | 內建 | 要加 |\n| 生態 | npm | PyPI |\n| 招募 | 少 | 多 |\n\n兩個都會最強。\n\n## 接案市場\n- 簡單：NT$ 5-30k\n- 中等：NT$ 30-100k\n- 維護：NT$ 1-10k/月\n\n## 全職\n- Node 爬蟲：NT$ 60-120k\n- Data Engineer（Python）：NT$ 90-180k\n\n## Indie 路線\n- 賣 Apify Actor 被動收入\n- 接案 + SaaS 並行\n- Cloudflare Workers 免費跑\n\n## 心法\n- JS 不是 Python 的替代、是補充\n- 同 stack 全端寫爬蟲體驗最爽\n- 商業選 Python（生態完整）\n- 個人 / Indie 選 JS（已會 stack）\n\n## 給新手建議\n1. 學 Node + TS\n2. 學 fetch + cheerio\n3. 學 Playwright\n4. 學 Crawlee\n5. 做 3 個小爬蟲\n6. 接第 1 個客戶\n\n6 個月、會 JS 爬蟲。",
+      "tip": {
+        "type": "milestone",
+        "text": "JS 爬蟲 = 同 stack 全端體驗。"
+      },
+      "id": "29.25",
+      "number": "LESSON 29.25",
+      "xp": 10,
+      "exercise": {
+        "question": "找一個你身邊的例子、用「Node 爬蟲學習路徑」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "學習路徑"
+        },
+        {
+          "level": 3,
+          "text": "Month 1：基礎"
+        },
+        {
+          "level": 3,
+          "text": "Month 2：動態 + 框架"
+        },
+        {
+          "level": 3,
+          "text": "Month 3：規模"
+        },
+        {
+          "level": 3,
+          "text": "Month 4：Production"
+        },
+        {
+          "level": 3,
+          "text": "Month 5：接案"
+        },
+        {
+          "level": 3,
+          "text": "Month 6+：進階"
+        },
+        {
+          "level": 2,
+          "text": "資源"
+        },
+        {
+          "level": 2,
+          "text": "JS vs Python 爬蟲"
+        },
+        {
+          "level": 2,
+          "text": "接案市場"
+        },
+        {
+          "level": 2,
+          "text": "全職"
+        },
+        {
+          "level": 2,
+          "text": "Indie 路線"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        },
+        {
+          "level": 2,
+          "text": "給新手建議"
+        }
+      ]
+    }
+  ],
+  "boss": {
+    "name": "JS 蜘蛛王",
+    "hp": 240,
+    "emoji": "🕸️",
+    "description": "在瀏覽器內織網、Puppeteer 是它的化身"
+  },
+  "quiz": {
+    "id": "ch29-quiz",
+    "questions": [],
+    "xpReward": 50,
+    "perfectBonus": 50
+  }
+}

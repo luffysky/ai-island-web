@@ -1,0 +1,1552 @@
+{
+  "id": 43,
+  "slug": "pm",
+  "stage": 5,
+  "title": "專案管理",
+  "subtitle": "Sprint / Linear / Notion",
+  "icon": "list-todo",
+  "description": "專案管理：Sprint / Linear / Notion",
+  "status": "published",
+  "difficulty": "beginner",
+  "prerequisites": [],
+  "estimatedHours": 10,
+  "outcomes": [
+    "理解核心概念",
+    "實作主流工具",
+    "整章實戰可發佈作品",
+    "知道生態 / 接案行情",
+    "對齊 2026 業界主流"
+  ],
+  "lessons": [
+    {
+      "id": "43.1",
+      "number": "LESSON 43.1",
+      "title": "為什麼工程師也要懂專案管理",
+      "oneLineSummary": "專案管理就是「把雜亂事情整理出輕重緩急」—工程師不是只寫 code、更要會規劃。",
+      "analogy": "像計畫週末出遊—行程 / 預算 / 分工 / 時間—家庭出遊都需要、何況公司專案。會 PM 的工程師薪水多 30%。",
+      "content": "講個現實。**同樣 5 年經驗的工程師**—一個年薪 100 萬、一個 200 萬。技術差不多。差別在哪？\n\n  \n### 差別在「能不能 ship」\n\n```text\n會寫 code 但東西出不來：\n- 任務拖延 → 老闆失望\n- 估時不準 → team 被你拖\n- 不會講優先序 → 做不重要的事\n- 沒文件 → 別人接手痛苦\n- 不會推 stakeholder → 卡在政治\n→ 永遠當「資深工程師」、升不上去\n\n會 PM 的工程師：\n- 估時準 → 老闆信任\n- 文件清楚 → 別人接得起來\n- 知道輕重緩急 → 把時間花刀口\n- 會跟非技術人溝通 → 推得動跨部門\n→ Lead → Manager → Director\n→ 或當 indie 一個人撐 SaaS\n```\n\n  \n### PM 不只是「專案經理」這個職位\n\n  \n很多工程師覺得 PM = 別人的事。錯。**任何規模的工作都要 PM**：\n\n  \n- 個人 side project—自己當 PM\n- 2 人小 team—兩個人輪流\n- 5 人 startup—有人兼著做\n- 10+ 人—專職 PM\n- 大 enterprise—多層 PM\n\n  \n不會 PM = 不會把自己 / team 的時間管好。\n\n  \n### 什麼是「專案管理」\n\n  \n本質：**在資源跟時間限制下、把事情做完**。聽起來廢話、但拆開有 4 件事：\n\n  \n1. **知道要做什麼**—Scope（範圍管理）\n2. **知道什麼時候做完**—Schedule（時程管理）\n3. **知道花多少**—Cost（成本管理）\n4. **知道誰負責什麼**—Resource（資源管理）\n\n  \n外加 3 個橫向：\n\n  \n- **溝通**—讓所有人知道狀況\n- **風險**—預判什麼會壞\n- **品質**—確保做出來能用\n\n  \n### PM ≠ 控管\n\n  \n很多人對 PM 的誤解：「**盯人交差、寫 status report、催進度**」—這是**差的 PM**。\n\n  \n好的 PM 做的事：\n\n  \n- **幫團隊掃除障礙**—不是製造障礙\n- **讓決策資訊透明**—不是把資訊鎖住\n- **翻譯不同部門語言**—工程 ↔ 業務 ↔ 設計\n- **提前看到風險**—不是事後 blame\n- **保護團隊 focus**—不是塞更多工作\n\n  \n### 工程師懂 PM 的具體好處\n\n  \n#### 1. 估時更準\n\n  \n大多工程師估時間錯 2-5 倍。學會三點估算（後面講）+ 加 buffer + 拆 task—估時準度提高 50%+。\n\n  \n#### 2. 溝通省力\n\n  \n用 PM 共通語言（sprint / blocker / dependency / scope）跟非工程師講事情、省 50% 時間。\n\n  \n#### 3. 升遷快\n\n  \n升 Senior → Lead 的關鍵能力是「能 deliver」、不是「會寫 code」。會 PM 的工程師升遷比純技術快 1-2 年。\n\n  \n#### 4. 接案 / indie 必備\n\n  \n一個人撐 SaaS = 你是**全公司唯一 PM**。沒有人提醒你「這個重要、那個不重要」—自己要會優先排序。\n\n  \n### PM 跟 PdM 差別（先講大綱）\n\n  \n|  | PM（專案） | PdM（產品） |\n| --- | --- | --- |\n| 關注 | How（怎麼做） | What & Why（做什麼、為什麼） |\n| 時間視角 | 當前 sprint / quarter | 1-3 年 product vision |\n| 產出 | Schedule、status | Roadmap、specs |\n| 對象 | 內部團隊 | 使用者 + 內部 |\n| 衡量 | 準時交付 | 商業 / 用戶指標 |\n\n  \nCh22 講 PM（這章）、Ch23 講 PdM（產品經理）。**兩個都要懂**。\n\n  \n### 2026 軟體業 PM 真實狀況\n\n  \n- 專職 PM 越來越少（大廠收編、startup 沒錢請）\n- 工程師 / EM（Engineering Manager）兼 PM 角色\n- AI 工具讓 PM 的 admin work 大幅減少\n- 但「**judgment / 溝通 / 預判風險**」更值錢\n\n  \n2026 結論：**「PM 思維」是核心技能、「PM 職位」是 nice to have**。\n\n  \n    **🚀 進階技巧**\n    \nindie hacker 殘酷現實：**一個人撐 SaaS 8 成失敗、不是技術不夠、是「東西做不完」**。專案管理是你跟自己 procrastination 對抗的工具。學會這章 = 比 80% 同行多一個生存技能。\n\n  \n\n  \n    \n      💼\n      接案小知識\n    \n    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「專案管理」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。",
+      "tip": {
+        "type": "practical",
+        "text": "剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「專案管理」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "43.1.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// 試試改變數、按執行\nconst numbers = [1, 2, 3, 4, 5];\nconst doubled = numbers.map(n => n * 2);\nconsole.log(\"原本:\", numbers);\nconsole.log(\"乘 2:\", doubled);\nconsole.log(\"總和:\", numbers.reduce((a, b) => a + b, 0));",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "找一個你身邊的例子、用「為什麼工程師也要懂專案管理」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "差別在「能不能 ship」"
+        },
+        {
+          "level": 3,
+          "text": "PM 不只是「專案經理」這個職位"
+        },
+        {
+          "level": 3,
+          "text": "什麼是「專案管理」"
+        },
+        {
+          "level": 3,
+          "text": "PM ≠ 控管"
+        },
+        {
+          "level": 3,
+          "text": "工程師懂 PM 的具體好處"
+        },
+        {
+          "level": 3,
+          "text": "PM 跟 PdM 差別（先講大綱）"
+        },
+        {
+          "level": 3,
+          "text": "2026 軟體業 PM 真實狀況"
+        }
+      ]
+    },
+    {
+      "id": "43.2",
+      "number": "LESSON 43.2",
+      "title": "三大流派：瀑布、敏捷、Lean",
+      "oneLineSummary": "Agile vs Waterfall：「敏捷 vs 瀑布」—2026 軟體業 90% 用 Agile。",
+      "analogy": "像邊走邊調整 vs 一次規劃到底—Agile 兩週一檢視、隨時調整；Waterfall 規劃好就執行、改不動。軟體變化快、Agile 適合。",
+      "content": "軟體業 50 年的 PM 史可以濃縮成**三個流派**—每個適合不同情境。不分好壞、看用對地方。\n\n  \n### 流派 1：瀑布（Waterfall）\n\n  \n1970-2000 主流。**線性、一階段做完再下一階段**：\n\n```text\n需求 → 設計 → 實作 → 測試 → 部署 → 維護\n │      │      │      │      │      │\n └──確定→ 不回頭 →不回頭→ 不回頭 →不回頭\n\n每階段：\n- 完整文件交付\n- 簽核才往下走\n- 計畫做得很細\n\n優：\n- 適合需求非常明確的場景\n- 政府 / 軍工 / 醫療規範行業\n- 預算 / 時程估得準\n\n缺：\n- 需求一改整個重來\n- 客戶要看完整成品才 feedback\n- 中途發現方向錯—炸\n```\n\n  \n### 什麼時候用瀑布\n\n  \n- **需求 100% 確定**—不會改\n- **監管嚴的行業**—醫材、銀行、政府\n- **硬體 / 物理產品**—工廠生產線\n- **有強規範 / SOP**—不能彈性\n\n  \n### 什麼時候別用瀑布\n\n  \n- 軟體 / 數位產品\n- 需求模糊或會變\n- 市場驗證階段\n- 新創 / 探索性專案\n\n  \n### 流派 2：敏捷（Agile）\n\n  \n2001 一群人在猶他州 Snowbird 滑雪場簽了「**Agile Manifesto**」—改變軟體業：\n\n```text\n4 個價值觀（重點是「左 > 右」）：\n\n個人與互動 > 流程與工具\n能用的軟體 > 鉅細靡遺的文件\n客戶協作  > 合約談判\n回應變化  > 遵循計畫\n\n12 個原則（節錄）：\n- 早期 + 持續交付有價值的軟體\n- 歡迎需求變化\n- 短週期交付（2-4 週）\n- 業務跟工程師每天合作\n- 信任 + 授權團隊\n- 反思怎麼更有效率\n...\n```\n\n  \n敏捷不是「方法」、是「**態度**」。底下有多種具體實作—Scrum 跟 Kanban 是最紅的。\n\n  \n### 敏捷 vs 瀑布 的核心差異\n\n  \n|  | 瀑布 | 敏捷 |\n| --- | --- | --- |\n| 計畫 | 一開始就詳細 | 邊做邊調整 |\n| 交付 | 最後一次大交付 | 每 2-4 週小交付 |\n| 需求改變 | 很貴 | 歡迎 |\n| 文件 | 多 | 夠用就好 |\n| 客戶 | 合約談完就走 | 持續參與 |\n| 失敗影響 | 大 | 小、快發現 |\n\n  \n### 2026 敏捷的問題\n\n  \n不黑也不白—**過去 10 年敏捷被「儀式化」**，失去原本精神：\n\n  \n- 「每天 standup 半小時」變成日常折磨\n- 「retro 寫白板」變成形式\n- 「sprint planning 估 story point」變成數字遊戲\n- 真正的價值「**適應 + 持續改善**」反而被忘\n\n  \n所以 2026 出現「**後敏捷**」想法—保留精神、放掉儀式。\n\n  \n### 流派 3：Lean（精實）\n\n  \n從**豐田生產系統**來、**The Lean Startup**（Eric Ries 2011）發揚光大：\n\n```text\n核心：build → measure → learn → repeat\n\n最小可行產品（MVP）：\n- 不是「品質差的 v1」\n- 是「最小能驗證假設的版本」\n- 例：賣鞋網站、先用 PPT 做給人看、不寫 code\n\n5 個原則：\n1. Eliminate Waste（消滅浪費）\n2. Build Quality In（內建品質）\n3. Create Knowledge（建構知識）\n4. Defer Commitment（延後決策）\n5. Deliver Fast（快速交付）\n6. Respect People（尊重人）\n7. Optimize the Whole（整體最佳化）\n```\n\n  \n### Lean 跟敏捷的差別\n\n  \n容易混淆—簡單分：\n\n  \n- **敏捷**：怎麼**做**軟體（開發方法）\n- **Lean**：怎麼**選**做什麼（產品方法）\n\n  \n實務上常結合：「**Lean Startup 找市場 + Agile 開發**」。\n\n  \n### 2026 主流組合\n\n  \n#### 大公司（500+ 人）\n\n  \n- 整體：類似敏捷\n- 實際：複雜版 Scrum、SAFe（Scaled Agile）\n- 很多儀式、很多 PM\n\n  \n#### 中型 SaaS（50-500 人）\n\n  \n- Scrum + Lean 思維\n- 2 週 sprint + 季度規劃\n- EM 兼一些 PM 工作\n\n  \n#### Startup（5-50 人）\n\n  \n- Kanban + Lean\n- 看板上拖卡、不開會\n- founder / Tech Lead 兼 PM\n\n  \n#### Indie / 個人\n\n  \n- 純 Lean + 個人 todo\n- 不開會（自己跟自己開？）\n- 每週 review 自己進度\n\n  \n### 怎麼選\n\n```text\n3 個維度判斷：\n\n需求變動度：\n- 低（醫療、政府）→ 瀑布\n- 中（B2B 內部工具）→ Scrum\n- 高（消費 App、新創）→ Kanban / Lean\n\n團隊大小：\n- 1-2 人 → Kanban\n- 3-10 人 → Scrum\n- 10-50 人 → Scrum\n- 50+ → SAFe / LeSS\n\n可預測性：\n- 高（重複性工作）→ Kanban\n- 低（探索）→ Lean\n```\n\n  \n### 2026 後敏捷趨勢\n\n  \n越來越多公司不再迷信 Scrum 儀式：\n\n  \n- **Shape Up**（37signals）：6 週 cycle、不估時、沒 backlog\n- **NoMeetings**：純非同步\n- **Linear method**：Kanban + 簡化 Scrum\n- **AI-augmented PM**：AI 處理 admin、人專心 judgment\n\n  \n共通點：**「少儀式、多交付、信任團隊」**。\n\n  \n    **🚀 進階技巧**\n    \n2026 indie 真實：**「別 100% 照書」**。每本 PM 書都吹自己流派、實際公司都是混搭。挑你能執行的、跟團隊文化合的、能解決你具體問題的—不要被「我們是 Scrum 公司」綁死。\n\n  \n\n  \n    \n      🎯\n      面試考點\n    \n    台灣科技公司面試 90% 會問「專案管理」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。",
+      "tip": {
+        "type": "pro",
+        "text": "台灣科技公司面試 90% 會問「專案管理」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "43.2.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// 試試改變數、按執行\nconst numbers = [1, 2, 3, 4, 5];\nconst doubled = numbers.map(n => n * 2);\nconsole.log(\"原本:\", numbers);\nconsole.log(\"乘 2:\", doubled);\nconsole.log(\"總和:\", numbers.reduce((a, b) => a + b, 0));",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "流派 1：瀑布（Waterfall）"
+        },
+        {
+          "level": 3,
+          "text": "什麼時候用瀑布"
+        },
+        {
+          "level": 3,
+          "text": "什麼時候別用瀑布"
+        },
+        {
+          "level": 3,
+          "text": "流派 2：敏捷（Agile）"
+        },
+        {
+          "level": 3,
+          "text": "敏捷 vs 瀑布 的核心差異"
+        },
+        {
+          "level": 3,
+          "text": "2026 敏捷的問題"
+        },
+        {
+          "level": 3,
+          "text": "流派 3：Lean（精實）"
+        },
+        {
+          "level": 3,
+          "text": "Lean 跟敏捷的差別"
+        },
+        {
+          "level": 3,
+          "text": "2026 主流組合"
+        },
+        {
+          "level": 3,
+          "text": "怎麼選"
+        },
+        {
+          "level": 3,
+          "text": "2026 後敏捷趨勢"
+        }
+      ]
+    },
+    {
+      "id": "43.3",
+      "number": "LESSON 43.3",
+      "title": "Scrum 完整：最主流的敏捷實作",
+      "oneLineSummary": "Sprint：「2 週一個衝刺週期」—Agile 的核心節奏。",
+      "analogy": "像學期分小考—不要一次考期末、兩週小考一次。Sprint 兩週一次、規劃 → 執行 → 檢視 → 回顧—持續迭代。",
+      "content": "2026 大部分軟體公司用某種「**變形的 Scrum**」。學會這個 = 進大多公司都接得起來。\n\n  \n### Scrum 三個角色\n\n  \n| 角色 | 負責 | 不負責 |\n| --- | --- | --- |\n| **Product Owner**（PO） | What & Why、優先序、需求 | How、技術決策 |\n| **Scrum Master**（SM） | 流程順、掃障礙、教 team Scrum | 分配工作、寫程式 |\n| **Development Team** | How、實作、自我管理 | 外部需求談判 |\n\n  \n2026 現實：**SM 角色逐漸消失**—被 EM / Tech Lead 兼。PO 在 startup 由 founder / PdM 兼。\n\n  \n### Scrum 三個產出（Artifacts）\n\n  \n#### 1. Product Backlog\n\n  \n所有想做的事的清單—**由 PO 排序**：\n\n```text\nProduct Backlog（200 個 item）：\n\n最重要 ────────\n[E1] 使用者註冊\n[E2] OAuth 登入\n[E3] 個人資料頁\n[E4] 訂閱方案頁\n[E5] 付款\n...\n[E199] AI 寫 prompt 助手\n[E200] 多語言支援\n──────── 最不重要\n\n每 item 有：\n- title\n- description\n- acceptance criteria\n- estimated effort（story point）\n- priority\n```\n\n  \n#### 2. Sprint Backlog\n\n  \n這個 sprint（2 週）要做的—**從 product backlog 挑出來**：\n\n```text\nSprint 24（2026/05/12 - 2026/05/26）\n\n承諾完成：\n[E1] 使用者註冊（8 點）\n[E2] OAuth 登入（5 點）  \n[E3] 個人資料頁（3 點）\n[E5] 付款（13 點）\n\n總點數：29 點（team velocity）\n```\n\n  \n#### 3. Increment（增量）\n\n  \nSprint 結束時的「**能用的軟體**」—不是 demo、是真的能上 production 的版本。\n\n  \n### Scrum 四個會議（Events）\n\n  \n#### 1. Sprint Planning（每 sprint 開始、2-4 小時）\n\n```text\n目的：決定這個 sprint 做什麼\n\n流程：\n1. PO 介紹 top backlog items（30 分）\n2. team 問問題、釐清（30 分）\n3. team 估算 effort（30 分）\n4. team 承諾能完成的量（30 分）\n\n產出：Sprint Backlog + Sprint Goal\n\nSprint Goal 範例：\n「讓使用者能註冊 + 付費訂閱」\n（不是逐 item 列、是一句話總目標）\n```\n\n  \n#### 2. Daily Standup（每天 15 分）\n\n```text\n每人回答 3 問題：\n1. 昨天做了什麼？\n2. 今天要做什麼？\n3. 有什麼擋住？\n\n注意：\n- 15 分鐘 hard limit\n- 是「同步 + 找 blocker」、不是 status report\n- 細節討論「Standup 後再開」\n- Async 也能做（Slack 寫 daily update）\n```\n\n  \n#### 3. Sprint Review（每 sprint 結束、1-2 小時）\n\n```text\n目的：給 stakeholder 看做出來的\n\n流程：\n1. team demo 每個完成的 feature\n2. stakeholder 回饋\n3. PO 決定要不要加進下個 sprint 改\n\n注意：\n- 不是 status meeting\n- 是「真的 demo」，不能用投影片\n- 邀 stakeholder（業務 / 設計 / 客戶）\n```\n\n  \n#### 4. Retrospective（每 sprint 結束、1 小時）\n\n```text\n目的：team 內部反思、怎麼變更好\n\n常用格式（Start / Stop / Continue）：\n- Start：開始做什麼？\n- Stop：別再做什麼？\n- Continue：繼續做什麼？\n\n或（4Ls）：\n- Liked：喜歡什麼？\n- Learned：學到什麼？\n- Lacked：缺什麼？\n- Longed for：期望什麼？\n\n關鍵：\n- 心理安全、能講真話\n- 一定要產出 action items\n- 下個 sprint 真的改\n```\n\n  \n### Sprint 長度怎麼選\n\n  \n| 長度 | 適合 |\n| --- | --- |\n| 1 週 | 非常動態 / startup MVP |\n| 2 週 | 主流選擇 |\n| 3 週 | 少見、中間地帶 |\n| 4 週（1 月） | 規模大 / 比較穩定 |\n\n  \n2026 大多選 2 週—平衡「**夠時間做事**」跟「**夠頻繁調整**」。\n\n  \n### Story Point vs 時間估算\n\n  \nScrum 推薦用「Story Point」不用「天/小時」估算：\n\n```text\nStory Point：相對大小（不是時間）\n\n例：\n- 「改 footer 顏色」= 1 點\n- 「加搜尋功能」= 5 點\n- 「整套支付整合」= 13 點\n\n用 Fibonacci 數列：1, 2, 3, 5, 8, 13, 21\n（避免「2.5 點」這種偽精準）\n\n為什麼不用時間：\n- 不同人速度不同（資深 vs 新人）\n- 時間估很容易壓力\n- 點數反映「複雜度」、不是工時\n- velocity（每 sprint 完成點數）會穩定下來\n```\n\n  \n2026 趨勢：**很多公司放棄 story point、改用「天」或「沒有估算」**—因為點數常被誤用成績效指標、扭曲。\n\n  \n### Planning Poker（估算遊戲）\n\n  \n避免「資深的人講完、新人不敢講」：\n\n```text\n1. PO 描述 user story\n2. 大家問問題釐清\n3. 每人「閉眼」選點數（1, 2, 3, 5, 8, 13, 21）\n4. 同時亮牌\n5. 最高跟最低的講為什麼\n6. 重新估\n7. 收斂到共識\n```\n\n  \n### Definition of Done（DoD）\n\n  \n什麼叫「**完成**」？必須事先定義—不然每個人理解不同：\n\n```text\n典型 DoD checklist：\n\n□ Code 寫完\n□ Unit test 寫完 + 過\n□ Integration test 過\n□ Code review 通過\n□ 文件更新\n□ Deploy 到 staging\n□ QA 驗收過\n□ Product Owner 看過 demo OK\n□ 監控 / log 設好\n\n只有全勾才能算 Done\n否則拖到下個 sprint\n```\n\n  \n### Scrum 常見坑\n\n  \n- **儀式化**—開會比做事多\n- **scope creep**—sprint 中加東西\n- **沒人當 SM**—沒人保護 team\n- **PO 不夠投入**—需求不清\n- **velocity 變 KPI**—大家虛報點數\n- **Retro 不改**—變抱怨大會\n- **跨 sprint dependency**—等別 team\n\n  \n### 2026 簡化版 Scrum\n\n  \n實務常見變形：\n\n```text\n「Lean Scrum」：\n- 2 週 sprint\n- 不開 Sprint Planning（PO 寫好 doc、team 異步看）\n- Standup 改 Slack daily update\n- Sprint Review 改 demo channel 影片\n- 只保留 Retro\n\n省下時間：每週 5-10 小時 → 寫 code\n```\n\n  \n    **🚀 進階技巧**\n    \n2026 心法：**「Scrum 的精神 > Scrum 的儀式」**。精神：頻繁交付、適應變化、持續改善、團隊自治。儀式：4 個會議、3 個產出、Story Point。**留精神、改儀式**—很多公司因為照本宣科反而效率低。\n\n  \n\n  \n    \n      ⚡\n      學習加速器\n    \n    把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。",
+      "tip": {
+        "type": "practical",
+        "text": "把這節學到的馬上應用到一個小東西—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "43.3.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// 試試改變數、按執行\nconst numbers = [1, 2, 3, 4, 5];\nconst doubled = numbers.map(n => n * 2);\nconsole.log(\"原本:\", numbers);\nconsole.log(\"乘 2:\", doubled);\nconsole.log(\"總和:\", numbers.reduce((a, b) => a + b, 0));",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 10 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "Scrum 三個角色"
+        },
+        {
+          "level": 3,
+          "text": "Scrum 三個產出（Artifacts）"
+        },
+        {
+          "level": 3,
+          "text": "Scrum 四個會議（Events）"
+        },
+        {
+          "level": 3,
+          "text": "Sprint 長度怎麼選"
+        },
+        {
+          "level": 3,
+          "text": "Story Point vs 時間估算"
+        },
+        {
+          "level": 3,
+          "text": "Planning Poker（估算遊戲）"
+        },
+        {
+          "level": 3,
+          "text": "Definition of Done（DoD）"
+        },
+        {
+          "level": 3,
+          "text": "Scrum 常見坑"
+        },
+        {
+          "level": 3,
+          "text": "2026 簡化版 Scrum"
+        }
+      ]
+    },
+    {
+      "id": "43.4",
+      "number": "LESSON 43.4",
+      "title": "Kanban 完整：拉式工作流",
+      "oneLineSummary": "Standup：「每天 15 分鐘短會」—昨天做什麼 / 今天做什麼 / 卡在哪。",
+      "analogy": "像軍隊早點名—短、有效、同步狀態。Standup 不是回報、是同步—讓團隊知道彼此進度、卡關早處理。",
+      "content": "另一個敏捷實作—**沒有 sprint、沒有估算、用 board 拖卡**。簡單但威力很強。\n\n  \n### Kanban 起源\n\n  \n1940s 豐田汽車生產線—零件不夠時往前一站「拉」更多。「**Kanban**」就是「**看板**」。\n\n  \n### Kanban 核心 4 原則\n\n  \n1. **視覺化工作**—所有任務在 board 上看得到\n2. **限制 WIP（Work in Progress）**—每階段同時做的事有上限\n3. **管理流動**—task 從左流到右，找瓶頸\n4. **持續改善**—不斷優化流程\n\n  \n### 典型 Kanban Board\n\n```text\n┌──────────┬──────────┬──────────┬──────────┬──────────┐\n│ Backlog  │  To Do   │   Doing   │  Review  │   Done   │\n│          │  (WIP 5) │  (WIP 3)  │ (WIP 2)  │          │\n├──────────┼──────────┼──────────┼──────────┼──────────┤\n│ ┌──────┐ │ ┌──────┐ │ ┌──────┐ │ ┌──────┐ │ ┌──────┐ │\n│ │T-101 │ │ │T-095 │ │ │T-090 │ │ │T-088 │ │ │T-080 │ │\n│ │新功能│ │ │bug A │ │ │feat X│ │ │feat Y│ │ │feat Z│ │\n│ └──────┘ │ └──────┘ │ └──────┘ │ └──────┘ │ └──────┘ │\n│ ┌──────┐ │ ┌──────┐ │ ┌──────┐ │ ┌──────┐ │ ┌──────┐ │\n│ │T-102 │ │ │T-096 │ │ │T-091 │ │ │T-089 │ │ │T-081 │ │\n│ │      │ │ │bug B │ │ │feat W│ │ │      │ │ │      │ │\n│ └──────┘ │ └──────┘ │ └──────┘ │ └──────┘ │ └──────┘ │\n└──────────┴──────────┴──────────┴──────────┴──────────┘\n\n各欄上限（WIP limit）：\n- To Do：5\n- Doing：3\n- Review：2\n\n超過上限 → 不能再拿新的、要先把舊的推完\n```\n\n  \n### 為什麼要 WIP limit\n\n```text\n沒 WIP 限制：\n\n工程師 A 同時做 8 件事：\n- task 1：寫到一半、卡在等 API\n- task 2：寫到一半、等 review\n- task 3：剛開始\n- task 4：等需求釐清\n- task 5：寫到一半、blocker\n- task 6：剛開始\n- task 7：等其他人\n- task 8：剛開始\n\n→ 每個都沒完成\n→ context switch 累死\n→ 老闆問「哪個會好？」答不出\n→ 心理壓力大\n\n有 WIP=3：\n\n工程師 A 只能同時做 3 件：\n- task 1：寫完一半再開新的\n- task 2：等待中\n- task 3：今天會完成\n\n新任務不能拿、要先完成現有\n→ Focus\n→ 流動快\n→ 看得到瓶頸\n```\n\n  \n### 怎麼設 WIP limit\n\n```text\n常見公式：(團隊人數 × 1.5)\n\n例：5 人團隊\n- Doing：5-8（每人 1-2 task）\n- Review：3（避免 PR 堆積）\n- Testing：2（QA 一次處理 2 個）\n\n調整原則：\n- 太低：常常閒著等\n- 太高：堆積 + context switch\n- 從寬鬆開始、慢慢收緊\n```\n\n  \n### Kanban 沒有 sprint\n\n  \n跟 Scrum 最大差別—**持續流動、沒固定週期**：\n\n```text\nScrum：\nsprint 1（2 週）→ sprint 2（2 週）→ ...\n每 sprint 末交付一批\n\nKanban：\n任務做完就 ship、不等週期\n持續部署（CI/CD）\n\n優：\n- 更靈活（不用等 sprint）\n- 緊急 task 容易插\n- 不用開很多會\n- 適合 ops / support team\n\n缺：\n- 沒明確 milestone（要自己加）\n- 沒「我們完成 sprint goal 了」的成就感\n- 容易失焦\n- 不適合需要協調的大專案\n```\n\n  \n### 什麼時候用 Kanban\n\n  \n- **Support / DevOps team**—任務不可預測\n- **小 indie / startup**—不想開 Scrum 會\n- **maintenance mode 產品**—多 bug fix\n- **個人 todo**—自己管自己\n- **內容 / 設計 team**—任務獨立\n\n  \n### 什麼時候用 Scrum\n\n  \n- **建立新功能 / 大專案**—需要協調\n- **規模較大團隊**（5+）\n- **需要 stakeholder demo**—固定週期 review\n- **產品還在建立階段**—需要 PMF 探索\n\n  \n### Scrumban（混搭）\n\n  \n2026 很多 team 用「Scrumban」—兩個結合：\n\n  \n- 從 Scrum 拿：兩週週期、retro\n- 從 Kanban 拿：WIP limit、視覺化、不估點\n- 不開 Sprint Planning + Sprint Review\n- 適合中型 team（10-30 人）\n\n  \n### Kanban 度量\n\n  \n沒 sprint 不代表沒指標：\n\n  \n#### 1. Cycle Time（週期時間）\n\n  \n從「開始做」到「完成」多久。**這是最重要指標**：\n\n```text\nTask 平均 cycle time：\n- 1-2 天：team 流動快\n- 3-5 天：正常\n- 7+ 天：太久、要拆 task 或找瓶頸\n```\n\n  \n#### 2. Throughput（流量）\n\n  \n每週 / 每月完成幾個 task。看穩不穩定。\n\n  \n#### 3. Lead Time（前置時間）\n\n  \n從「提出需求」到「上線」多久。**包含 backlog 等待時間**。\n\n  \n#### 4. Cumulative Flow Diagram（累積流圖）\n\n  \n看每個 status 的卡片數量隨時間變化—**瓶頸一目了然**。\n\n  \n### Linear（2024-2026 最紅工具）\n\n  \nKanban + 一點 Scrum、極簡介面：\n\n```text\n特色：\n- Issue 為核心\n- Cycle（類 sprint、但可選）\n- WIP 自然限制\n- 快速鍵驅動\n- 適合 startup / 中型 SaaS\n\nvs Jira：Linear 快 10 倍、UI 不痛苦\nvs Trello：Linear 有完整 issue tracking\n```\n\n  \n### 個人版 Kanban\n\n  \n就算只有自己也能用：\n\n```text\n3 欄 Kanban：\n\nTo Do │ Doing (限 2) │ Done\n\n每天早上：\n- 看 Doing 有沒有卡住的\n- 沒 → 從 To Do 拉 1 個進來\n- 卡住 → 先解卡\n\n工具：\n- Notion 看板\n- Linear 個人 workspace\n- Apple Reminders（簡單版）\n- Things 3\n- 紙本 + 便利貼（很多人推）\n```\n\n  \n    **🚀 進階技巧**\n    \nindie 真實心法：**「Kanban WIP = 2 是黃金數字」**。同時 1 件常閒、3 件以上必 context switch 痛苦。固定 WIP=2 + 把所有點子寫進 backlog（不開始做）—個人產出最高的設定。\n\n  \n\n  \n    \n      🚀\n      2026 趨勢\n    \n    這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。",
+      "tip": {
+        "type": "trend",
+        "text": "這個技術 2026 還在主流、未來 5 年不會過時。但工具會更新—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "43.4.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// 試試改變數、按執行\nconst numbers = [1, 2, 3, 4, 5];\nconst doubled = numbers.map(n => n * 2);\nconsole.log(\"原本:\", numbers);\nconsole.log(\"乘 2:\", doubled);\nconsole.log(\"總和:\", numbers.reduce((a, b) => a + b, 0));",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "Kanban 起源"
+        },
+        {
+          "level": 3,
+          "text": "Kanban 核心 4 原則"
+        },
+        {
+          "level": 3,
+          "text": "典型 Kanban Board"
+        },
+        {
+          "level": 3,
+          "text": "為什麼要 WIP limit"
+        },
+        {
+          "level": 3,
+          "text": "怎麼設 WIP limit"
+        },
+        {
+          "level": 3,
+          "text": "Kanban 沒有 sprint"
+        },
+        {
+          "level": 3,
+          "text": "什麼時候用 Kanban"
+        },
+        {
+          "level": 3,
+          "text": "什麼時候用 Scrum"
+        },
+        {
+          "level": 3,
+          "text": "Scrumban（混搭）"
+        },
+        {
+          "level": 3,
+          "text": "Kanban 度量"
+        },
+        {
+          "level": 3,
+          "text": "Linear（2024-2026 最紅工具）"
+        },
+        {
+          "level": 3,
+          "text": "個人版 Kanban"
+        }
+      ]
+    },
+    {
+      "id": "43.5",
+      "number": "LESSON 43.5",
+      "title": "怎麼估算（時間 / 成本）",
+      "oneLineSummary": "Kanban Board：「視覺化的工作清單」—To Do / In Progress / Done 三欄。",
+      "analogy": "像家裡冰箱貼便利貼—待辦 / 進行中 / 完成。Trello / Linear / Jira 都是電子版 Kanban、團隊一目了然。",
+      "content": "「**這個 feature 多久能做？**」是工程師被問最多的問題、也是最容易答錯的。學會估算 = 工作上少 80% 痛苦。\n\n  \n### 為什麼工程師估時不準\n\n  \n普遍規律：**實際時間是估計的 2-5 倍**。不是因為偷懶、是因為大腦結構：\n\n  \n- **規劃謬誤**—Daniel Kahneman 講的、人類對自己未來太樂觀\n- **「快樂路徑」偏誤**—只想到順利情況、沒想到 bug / 等待 / 開會\n- **細節隱藏**—估的時候沒拆細、沒看到實際工作量\n- **過度自信**—資深工程師最容易低估、覺得「我可以」\n- **沒考慮中斷**—估的時候假設 8 小時 focused work、實際 3-4 小時\n\n  \n### 3 種估算方法\n\n  \n#### 方法 1：類比估算（最快、準度中等）\n\n```text\n對比「我以前做過類似的」：\n\n「上次做付款整合花了 3 週」\n「這次做退款功能、類似但簡單一點」\n→ 估 2 週\n\n優：快\n缺：需經驗、新領域不適用\n```\n\n  \n#### 方法 2：拆解估算（最準、最花時間）\n\n```text\n「設計付款系統」拆成 30 個小 task：\n\n1. DB schema 設計 0.5 天\n2. 訂單 model 1 天\n3. 付款 API endpoint 1 天\n4. Stripe 整合 1 天\n5. Webhook 處理 1 天\n6. 失敗重試 0.5 天\n7. 發票 PDF 1 天\n8. Email 通知 0.5 天\n9. 客戶端 UI 2 天\n10. 測試 ...\n...\n30. 文件 0.5 天\n\n加總：15 天\n\n加 buffer（30%）：20 天\n\n優：最準\n缺：花 1-2 天才能估完\n```\n\n  \n#### 方法 3：三點估算（PERT、平衡）\n\n```text\n對每個 task 估 3 個時間：\n\n- 最樂觀（O）：一切順利多久？2 天\n- 最可能（M）：正常情況多久？4 天\n- 最悲觀（P）：什麼都壞掉多久？10 天\n\n加權平均（PERT 公式）：\nestimate = (O + 4M + P) / 6\n        = (2 + 16 + 10) / 6\n        = 4.67 天\n\n標準差 = (P - O) / 6 = 1.33\n\n→ 「4.67 天 ± 1.33」\n→ 95% 信心區間：2 - 7.3 天\n\n優：給「範圍」不是「點」、誠實\n缺：需要習慣思考三種情境\n```\n\n  \n### 「t-shirt size」估算（很粗）\n\n  \n還沒到要精準估的階段、roadmap 級別：\n\n```text\nXS： 1 個月）\n\n  \n單一估算不可能準—用**「分階段重估」**：\n\n```text\n大專案：「重寫 dashboard」\n\n階段 1：研究 + 設計（2 週）\n→ 完成後重估後續\n\n階段 2：MVP 實作（估 4-6 週、實作後再說）\n→ 完成後重估\n\n階段 3：完整功能（估 2-3 個月）\n→ 完成後重估\n\nstakeholder 知道：\n- 階段 1 估準\n- 階段 2 大概\n- 階段 3 範圍會變\n\n每階段交付一個「能 ship 的版本」\n```\n\n  \n### Cost 估算（接案 / consulting）\n\n```text\n時數計費：\n時數 × 時薪 = 報價\n\n例：5 週 × 5 天 × 6 小時 = 150 小時\n時薪 NT$2000 → 報價 NT$30 萬\n\n但實際：\n- 溝通 +20%\n- 修改 +30%\n- buffer +20%\n→ 報價 ×1.7 = NT$51 萬\n\n或固定報價：\n- 不按時數\n- 對方買「結果」\n- 自己承擔超時風險\n→ 報價要高 30-50%（自己賺風險溢價）\n```\n\n  \n    **⚠ 踩雷警告**\n    \n給老闆 / 客戶報數字時 **絕對不要報「最樂觀」**—他們聽到的數字會在他們腦中變承諾、之後超時 = 你的錯。報「**最可能 + buffer**」、附 caveat「視 X / Y 而定」。誠實一開始尷尬、長期保你飯碗。\n\n  \n\n  \n    \n      🛠️\n      工具推薦\n    \n    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。",
+      "tip": {
+        "type": "practical",
+        "text": "配合這節用的工具：(1) VS Code（編輯器、免費）(2) Chrome DevTools（F12 開啟、除錯神器）(3) Live Server（VS Code 擴充、即時預覽）(4) GitHub Copilot / Cursor（AI 寫程式、學習加速 2-10x）。"
+      },
+      "xp": 15,
+      "playgrounds": [
+        {
+          "key": "43.5.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// 試試改變數、按執行\nconst numbers = [1, 2, 3, 4, 5];\nconst doubled = numbers.map(n => n * 2);\nconsole.log(\"原本:\", numbers);\nconsole.log(\"乘 2:\", doubled);\nconsole.log(\"總和:\", numbers.reduce((a, b) => a + b, 0));",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "為什麼工程師估時不準"
+        },
+        {
+          "level": 3,
+          "text": "3 種估算方法"
+        },
+        {
+          "level": 3,
+          "text": "「t-shirt size」估算（很粗）"
+        }
+      ]
+    },
+    {
+      "id": "43.6",
+      "number": "LESSON 43.6",
+      "title": "Roadmap 怎麼畫",
+      "oneLineSummary": "User Story：「以用戶角度寫需求」—As a X, I want Y, so that Z。",
+      "analogy": "像從使用者角度寫日記—「身為新會員、我想能用 Google 登入、這樣不用記新密碼」。比技術需求清晰 10 倍。",
+      "content": "Roadmap 是「**未來 1-12 個月要做什麼**」的視覺呈現。不是 commitment、是 direction。\n\n  \n### Roadmap vs Backlog vs Sprint Plan\n\n```text\n時間維度：\n\nRoadmap：1-12 個月、高層次\n↓\nQuarterly Plan：3 個月、清楚的主題\n↓\nSprint Plan：2 週、具體 task\n↓\nDaily Plan：今天做什麼\n```\n\n  \n### Roadmap 該包含什麼\n\n  \n- **主題**（Themes）—大方向（不是 feature 清單）\n- **時間軸**—Q1 / Q2 / Q3 / Q4 或月份\n- **目標**（Outcomes）—預期影響\n- **狀態**—planning / building / shipped\n- **信心度**—committed / likely / aspirational\n\n  \n### Roadmap 不該包含什麼\n\n  \n- **精確日期**—「7/15 上線」會被當承諾\n- **太細的 task**—roadmap 是方向不是 backlog\n- **技術細節**—別人不在乎 你用 React 還 Vue\n- **所有想做的事**—只放重要的\n\n  \n### 三種 Roadmap 格式\n\n  \n#### 1. 時間軸式（Timeline）\n\n```text\nJan    Feb    Mar    Apr    May    Jun\n─────────────────────────────────────────────\n訂閱系統  ████████████\nAI 客服              ██████████████████\n多語言                                 ████████\nAPI v2                       ██████████████\n─────────────────────────────────────────────\n\n優：清楚時間\n缺：被當死期承諾\n```\n\n  \n#### 2. Now / Next / Later\n\n```text\n┌──────────┬──────────┬──────────┐\n│   Now    │   Next   │  Later   │\n│ (Q1)     │ (Q2)     │ (Q3-Q4)  │\n├──────────┼──────────┼──────────┤\n│ 訂閱系統 │ AI 客服   │ 多語言    │\n│ Email 行銷│ API v2   │ 行動 App  │\n│ 註冊優化 │ Webhook   │ Marketplace│\n└──────────┴──────────┴──────────┘\n\n優：彈性高、不被綁日期\n缺：stakeholder 想知道「什麼時候上」\n```\n\n  \n#### 3. 主題式（Themes）\n\n```text\n2026 Q1-Q2 主題：\n\n🎯 提升轉換率\n   - 註冊優化\n   - 付費流程改進\n   - A/B test 框架\n\n🛡️ 平台穩定\n   - 監控系統\n   - 自動化測試\n   - 災難恢復\n\n🚀 AI 功能\n   - 智慧客服\n   - 個人化推薦\n\n優：focus 在 outcome 不是 feature\n缺：難對應到具體交付\n```\n\n  \n### 2026 推薦：Now / Next / Later + 主題\n\n  \n結合兩者好處：\n\n```text\n📋 2026 Q1-Q4 Roadmap\n\n🎯 Theme: 提升 LTV\n\nNow（Q1）✓ committed\n- 訂閱系統 v1（4 月底前）\n- Email automation\n- 註冊優化（A/B test）\n\nNext（Q2）⏳ likely\n- AI 客服 bot\n- 個人化推薦\n- 行動 App MVP\n\nLater（Q3-Q4）💭 aspirational\n- 多語言\n- B2B Enterprise plan\n- 開放 API + marketplace\n```\n\n  \n### 怎麼決定 roadmap 上有什麼\n\n  \n不是「所有想做的」、要篩選：\n\n  \n#### 1. RICE 公式\n\n```text\n每個 feature 評分：\n\nR (Reach)：影響多少人（per quarter）\nI (Impact)：對 user 影響（0.25 / 0.5 / 1 / 2 / 3）\nC (Confidence)：信心（50% / 80% / 100%）\nE (Effort)：工時（person-months）\n\nRICE Score = R × I × C / E\n\n例：\nfeature A：1000 user × 1 × 0.8 / 2 = 400\nfeature B：100 user × 3 × 1.0 / 1 = 300\n\n→ A 排 roadmap 前面\n```\n\n  \n#### 2. Kano Model（用戶滿意度）\n\n```text\n4 種 feature：\n\n1. Basic（一定要有）\n   - 沒有 = 用戶離開\n   - 例：登入、付款\n   - 投資少、回報 baseline\n\n2. Performance（越好越棒）\n   - 量級重要\n   - 例：載入速度、客服回應\n   - 投資 = 回報線性\n\n3. Excitement（驚喜）\n   - 沒人預期、有了愛死\n   - 例：AI 智慧建議\n   - 投資高、競爭力強\n\n4. Indifferent（沒人在乎）\n   - 別做\n   - 例：花俏動畫\n   - 浪費資源\n```\n\n  \n#### 3. 純 prioritization（不數學）\n\n```text\n4 軸（簡單版）：\n\n      高影響\n        │\n   ⭐做 │ 🎯 大押注\n        │\n  ──────┼──────  \n  容易做│  困難\n  ──────┼──────\n        │\n   ⏳排程│ ❌別做\n        │\n      低影響\n```\n\n  \n### Roadmap 多久 review 一次\n\n  \n- **每月**：戰術調整\n- **每季**：大幅 review、根據前一季結果調整\n- **每半年**：策略 review\n\n  \n### Public Roadmap（給客戶看）\n\n  \n2026 SaaS 流行—把 roadmap 公開：\n\n```text\n工具：\n- ProductBoard\n- Canny\n- Productlane\n- Roadmunk\n\n格式：\n| Now（這個月） | Next（這季） | Later（未來） |\n| ✓ AI 客服 v2 | ⏳ 多語言 | 💭 行動 App |\n| ✓ 付款優化  | ⏳ 整合 Slack | 💭 開放 API |\n\n優：\n- 顧客可看 + 投票\n- 銷售 sales 講「我們有計畫」\n- 減少 ticket 問「什麼時候有 X」\n\n缺：\n- 變承諾、彈性少\n- 競品偷看\n- 順序變來變去顯得亂\n```\n\n  \n### 「Anti-roadmap」（沒 roadmap）\n\n  \n37signals（Basecamp 公司）主張不畫 roadmap：\n\n```text\n原因：\n- 計畫超過 6 週就會變\n- 假裝知道未來、其實不知道\n- Roadmap 變枷鎖\n\n替代：\n- Shape Up：每 6 週 cycle\n- 每 cycle 結束才決定下個 cycle 做什麼\n- 沒「半年計畫」\n\n適合：\n- 小團隊\n- 探索性產品\n- 不需要對外部 stakeholder 報告\n\n不適合：\n- 上市公司\n- 大客戶要看 roadmap\n- 跨部門協調\n```\n\n  \n    **🚀 進階技巧**\n    \nRoadmap 黃金法則：**「對 stakeholder 講 outcome、對 team 講 output」**。對老闆 / 客戶：「Q2 提升 retention 20%」（outcome）。對 team：「Q2 上 churn dashboard + email sequence + onboarding 改版」（output）。混在一起 stakeholder 開始要求 output 細節、team 失去靈活。\n\n  \n\n  \n    \n      ⚠️\n      新手常見錯誤\n    \n    新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。",
+      "tip": {
+        "type": "warning",
+        "text": "新手 3 大坑：(1) 不看 console—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) 不存檔就 F5—改完忘記儲存以為「程式沒效果」 (3) 抄 code 不理解—複製貼上能跑、但下次要改就崩潰。記得：先看懂、再寫。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 10 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "Roadmap vs Backlog vs Sprint Plan"
+        },
+        {
+          "level": 3,
+          "text": "Roadmap 該包含什麼"
+        },
+        {
+          "level": 3,
+          "text": "Roadmap 不該包含什麼"
+        },
+        {
+          "level": 3,
+          "text": "三種 Roadmap 格式"
+        },
+        {
+          "level": 3,
+          "text": "2026 推薦：Now / Next / Later + 主題"
+        },
+        {
+          "level": 3,
+          "text": "怎麼決定 roadmap 上有什麼"
+        },
+        {
+          "level": 3,
+          "text": "Roadmap 多久 review 一次"
+        },
+        {
+          "level": 3,
+          "text": "Public Roadmap（給客戶看）"
+        },
+        {
+          "level": 3,
+          "text": "「Anti-roadmap」（沒 roadmap）"
+        }
+      ]
+    },
+    {
+      "id": "43.7",
+      "number": "LESSON 43.7",
+      "title": "Sprint Planning + Standup 怎麼開",
+      "oneLineSummary": "Story Points：「估時間用相對單位」—不是寫「3 小時」、是寫「3 點」。",
+      "analogy": "像登山難度分級—不是「2 小時」、是「中級山」—每個人速度不同、但難度共識。Story points 估計準度比小時準。",
+      "content": "Scrum 兩個最常開的會。**開得好省 team 一週時間、開不好變折磨**。\n\n  \n### Sprint Planning 完整流程\n\n  \n#### 準備（會前 PO 該做）\n\n```text\n會議前 2-3 天：\n\n1. 整理 backlog top 20 items\n   - 標清楚 acceptance criteria\n   - 加上設計稿 / mockup\n   - 寫好 user story\n   \n2. 跟 EM / Tech Lead 對齊\n   - 技術 dependency\n   - 大概 effort 估計\n   - 不適合的先剔掉\n\n3. 寫 Sprint Goal 草案\n   - 一句話總目標\n   - 不是 feature 清單\n\n4. 發 agenda + items 連結給 team\n```\n\n  \n#### 會議流程（2 小時、10 人 team）\n\n```text\n0:00-0:10  Sprint Goal 介紹\n- PO 講這 sprint 想達到什麼\n- team 確認理解\n\n0:10-0:40  Walk through top items\n- PO 一個一個講\n- team 問問題\n- 釐清 acceptance criteria\n\n0:40-1:30  估算 + 承諾\n- Planning poker 每個 item\n- 看 capacity（誰請假、團隊 velocity）\n- team 選擇能完成的\n\n1:30-1:50  拆 task\n- 每個 user story 拆成 sub-task\n- 分認領\n\n1:50-2:00  Sprint Backlog 確認\n- 大家看 board\n- 確認 understand\n- 散會\n```\n\n  \n### Sprint Planning 常見問題\n\n  \n#### 1. 開太久（> 3 小時）\n\n  \n原因：\n\n  \n- PO 沒準備、現場才寫 spec\n- 糾結估點數\n- 沒 timebox\n\n  \n解法：PO 會前完整準備、估算用 timebox（每 item 最多 5 分鐘）、糾結的標 spike 之後研究。\n\n  \n#### 2. 估算太樂觀\n\n  \n原因：\n\n  \n- 沒考慮 meeting / 中斷\n- 新人估錯\n- 沒拆 task\n\n  \n解法：\n\n  \n- 每人 sprint 容量 = 工作時數 × 60%（其他是會議 / 中斷）\n- 三點估算（最樂觀 / 最可能 / 最悲觀）\n- 留 20% buffer 給 bug / 救火\n\n  \n#### 3. Sprint 中加東西（scope creep）\n\n  \n解法：\n\n```text\n建立「Sprint 入口規則」：\n\n新需求進來 → PO 評估：\n\n不緊急 → 加 backlog（下 sprint 再排）\n緊急但能等 → 加下 sprint\n真正緊急 → 進當前 sprint、但 同時拿掉等值 item\n\n「進就要 出」原則\n不能淨增加\n```\n\n  \n### Daily Standup 怎麼開不浪費時間\n\n  \n#### 原則\n\n  \n- **站著開**—不舒服才會快\n- **15 分鐘 hard limit**—超過用鬧鐘\n- **每人 60-90 秒**—10 人剛好 15 分\n- **不討論細節**—「standup 後找你」\n- **同個時間**—每天 10:00（給 dev 早上 focus）\n\n  \n#### 3 問題 vs walk the board\n\n```text\n傳統 3 問題：\n「昨天做了 X、今天做 Y、blocker 是 Z」\n→ 容易變 status report 給老闆聽\n→ 沒人在乎別人做什麼\n\n更好：Walk the Board\n看著 sprint board、從右到左（接近 done 的優先）\n\n「這張 card 怎樣？」\n「在 review、Alice 等我加 test、今天會做完」\n「下張 card？」\n「等 API spec、Bob 你能 unblock 嗎」\n「OK 那我跟你 standup 後對」\n...\n\n→ focus 在 blocker、不是個人 status\n→ 更有產出\n```\n\n  \n#### Async Standup（2026 趨勢）\n\n  \n遠端 team 越來越多用 Slack 寫 daily update：\n\n```text\n每天 10:00 自動 prompt：\n\n📝 Yesterday：\n- 修了 login bug\n- review 了 Alice 的 PR\n- 跟設計師對需求\n\n📌 Today：\n- 完成 payment 整合\n- 寫測試\n\n🚧 Blockers：\n- 等 Bob review PR #1234\n\n優：\n- 不打斷 deep work\n- 跨時區友善\n- 文字記錄可搜尋\n\n缺：\n- 失去面對面互動\n- blocker 處理慢\n- 容易變交差\n```\n\n  \n### Standup 工具\n\n  \n- **Geekbot**（Slack bot）：最紅 async standup\n- **Standuply**：類似\n- **Linear updates**：內建\n- **純 Slack channel**：#standup 大家手動發\n\n  \n### 什麼時候不該開 Standup\n\n  \n- 2 人 team—直接聊就好\n- 完全 async 公司—Slack 寫就好\n- 每個人做完全獨立的事—沒 dependency 不用 sync\n- maintenance mode（純 bug fix）—Kanban 看 board 就好\n\n  \n### 取消會議 = 賺到的會議\n\n  \n2026 indie 心法：\n\n```text\n每個會議成本：\n人數 × 時數 × 時薪 = 真實成本\n\n10 人 × 0.5 小時 × NT$2000 = NT$10,000 / 次 standup\n× 5 天 = NT$50,000 / 週\n× 50 週 = NT$2,500,000 / 年\n\n如果這個 standup 沒救到 250 萬效率\n→ 該取消\n\n評估：\n- 取消一週看看\n- 沒人在意 → 永遠取消\n- 大家慌 → 真的需要\n```\n\n  \n    **🚀 進階技巧**\n    \n真實心法：**「會議是 default off、不是 default on」**。每個會議都要證明它存在的價值。會議愛好者會說「我們 always 開這個」—正確問題是「**不開會發生什麼？**」。沒事發生 = 取消。\n\n  \n\n  \n    \n      💼\n      接案小知識\n    \n    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「專案管理」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。",
+      "tip": {
+        "type": "practical",
+        "text": "剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「專案管理」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "Sprint Planning 完整流程"
+        },
+        {
+          "level": 3,
+          "text": "Sprint Planning 常見問題"
+        },
+        {
+          "level": 3,
+          "text": "Daily Standup 怎麼開不浪費時間"
+        },
+        {
+          "level": 3,
+          "text": "Standup 工具"
+        },
+        {
+          "level": 3,
+          "text": "什麼時候不該開 Standup"
+        },
+        {
+          "level": 3,
+          "text": "取消會議 = 賺到的會議"
+        }
+      ]
+    },
+    {
+      "id": "43.8",
+      "number": "LESSON 43.8",
+      "title": "Retrospective + Postmortem",
+      "oneLineSummary": "Retrospective：「每個 sprint 結束的反省會」—做得好 / 不好 / 怎麼改。",
+      "analogy": "像球隊賽後檢討—不是抓戰犯、是學習。Retro 是團隊持續進步的關鍵、跳過 retro 的團隊 6 個月後就停滯。",
+      "content": "持續改善的兩個關鍵會議。**Retro 是預防、Postmortem 是治療**。\n\n  \n### Retrospective（回顧）\n\n  \n每 sprint 結束、team 內部反思：\n\n  \n#### 常見格式 1：Start / Stop / Continue\n\n```text\n每人寫便利貼：\n\n🟢 Start（開始做）\n- 寫更詳細的 PR description\n- 上線前讓 QA 看一眼\n- 用 Linear 取代 Jira\n\n🔴 Stop（停止）\n- 開不必要的會議\n- 沒有 spec 直接寫 code\n- code review 戰術討論放 PR\n\n🟡 Continue（繼續）\n- pair programming\n- Friday demo\n- async standup\n```\n\n  \n#### 常見格式 2：4Ls\n\n```text\nLiked（喜歡）\n- 新的 release process\n\nLearned（學到）\n- 我們可以用 feature flag 取代 long-lived branch\n\nLacked（缺少）\n- 文件不夠\n- 跨團隊溝通\n\nLonged for（期望）\n- 更快的 CI\n- 安靜的工作時間\n```\n\n  \n#### 常見格式 3：Mad / Sad / Glad\n\n```text\n😡 Mad（氣）\n- 半夜被叫起來修 prod\n\n😢 Sad（難過）\n- Alice 離職了\n\n😀 Glad（高興）\n- 終於修完那個拖了 3 個月的 bug\n```\n\n  \n### Retro 黃金規則\n\n  \n1. **心理安全**—能講真話、不被報復\n2. **對事不對人**—講行為、不指責\n3. **產出 Action Items**—不是抱怨大會\n4. **誰負責什麼**—action 要有 owner + 期限\n5. **下個 retro 檢查**—上次 action 做了嗎？\n\n  \n### 沒效的 retro\n\n  \n常見失敗：\n\n  \n- **每次 retro 講一樣的事**—講完沒改\n- **講 surface 不講根本**—「太忙」沒解決\n- **老闆在場**—大家不敢講真話\n- **action 沒人 own**—大家都該做 = 沒人做\n- **跳過困難話題**—和諧但無進步\n\n  \n### 5 Whys（找根本原因）\n\n  \n避免 surface 解：\n\n```text\n問題：「上週 deploy 失敗 3 次」\n\nWhy 1：為什麼失敗？\n→ Migration script 有 bug\n\nWhy 2：為什麼有 bug？\n→ 沒 staging 測試\n\nWhy 3：為什麼沒 staging 測？\n→ Staging DB schema 不一樣\n\nWhy 4：為什麼 schema 不一樣？\n→ 上個月手動改了 staging、沒同步\n\nWhy 5：為什麼沒同步？\n→ 沒有「DB schema 同步」流程\n\n根本原因：缺乏 staging sync process\n→ Action：建立 weekly schema sync\n```\n\n  \n### Postmortem（事後分析）\n\n  \n嚴重事件後做—**system down / data loss / 大 bug 上 prod**。\n\n  \n#### Blameless Postmortem（無責備）\n\n  \nGoogle SRE 推廣的概念：\n\n```text\n傳統文化：\n「誰幹的？」「誰負責？」「為什麼這麼粗心？」\n→ 沒人承認、下次再犯\n\nBlameless：\n「系統怎麼讓人能犯這個錯？」\n「process 哪裡有 gap？」\n「如何讓未來不發生？」\n→ 改變系統、不怪人\n```\n\n  \n#### Postmortem 模板\n\n```markdown\n## 標題：YYYY-MM-DD - 簡短描述\n\n## Status：Resolved / Open\n\n## 摘要\n一段話講發生什麼、影響多大\n\n## 影響\n- 受影響使用者：1500\n- 服務 down 時間：47 分鐘\n- 金錢影響：NT$XX 損失收入\n- SLA 違反：是\n\n## Timeline（UTC+8）\n- 14:23 ：deploy 上線\n- 14:30 ：Sentry 開始 alert\n- 14:35 ：on-call 接到通知\n- 14:50 ：發現是 DB migration 問題\n- 15:10 ：rollback 完成\n- 15:10 ：服務恢復\n\n## Root Cause\n（用 5 whys 分析）\n表面原因：migration script 加錯 index\n根本原因：缺乏 staging 完整測試流程\n\n## What Went Well\n- alerting 5 分鐘內觸發\n- on-call 9 分鐘內接到\n- rollback 自動化能用\n\n## What Went Poorly\n- migration 沒 staging 測試\n- rollback 花 20 分鐘（太久）\n- 用戶通知拖到 30 分鐘後\n\n## Action Items\n| 動作 | Owner | Due | 優先 |\n|------|------|-----|------|\n| 加 staging migration test | Alice | 5/20 | P0 |\n| Rollback 自動化縮短到 5 分 | Bob | 5/30 | P1 |\n| 用戶通知 SOP | Carol | 5/15 | P0 |\n\n## Lessons Learned\n1. 任何 schema change 必經 staging\n2. Rollback 應該是 1-click\n3. 用戶通知模板要預備\n```\n\n  \n### Postmortem 文化\n\n  \n2026 業界共識：\n\n  \n- **所有嚴重事件都要 PM（postmortem）**\n- **Blameless**—不點名怪\n- **公開分享**—讓全公司學\n- **Action items 一定追**—不然白寫\n- **review 制度**—每月看是否有重複事件\n\n  \n### Status Page Postmortem（公開）\n\n  \n2026 SaaS 流行—Stripe、Cloudflare 等都會寫公開 postmortem：\n\n```text\n客戶看到：\n\n「我們週五 14:23 有 47 分鐘 outage、\n原因：deployment 失誤。\n我們做了 X / Y / Z 改進、避免未來發生。」\n\n效益：\n- 客戶信任 +\n- 「他們認真在改」\n- 同行也學到\n\nvs 隱瞞：\n- 客戶猜疑\n- 失去信任\n- 不會學到（內部也不學）\n```\n\n  \n### 個人 / indie 版本\n\n```text\n個人 retro（每週）：\n\n週日晚 30 分鐘問自己：\n\n✓ 本週做了什麼？\n   - 哪些 ship 了\n   - 哪些卡住\n   \n🔄 下週做什麼？\n   - top 3 priority\n   - 拖了什麼要處理\n\n📝 學到 / 反思\n   - 哪裡做對\n   - 哪裡可以改\n\n🎯 一句話總結\n   - 本週主旋律\n\n寫進 journal、3 個月後回頭看\n能看到自己的成長軌跡\n```\n\n  \n    **🚀 進階技巧**\n    \nPostmortem 黃金法則：**「分析人為錯誤、永遠先看系統」**。「Alice 忘了測試」這種結論等於沒結論—正確：「系統允許未測試的 code 上線」。改 system 比改 human 有效 10 倍。\n\n  \n\n  \n    \n      🎯\n      面試考點\n    \n    台灣科技公司面試 90% 會問「專案管理」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。",
+      "tip": {
+        "type": "pro",
+        "text": "台灣科技公司面試 90% 會問「專案管理」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "Retrospective（回顧）"
+        },
+        {
+          "level": 3,
+          "text": "Retro 黃金規則"
+        },
+        {
+          "level": 3,
+          "text": "沒效的 retro"
+        },
+        {
+          "level": 3,
+          "text": "5 Whys（找根本原因）"
+        },
+        {
+          "level": 3,
+          "text": "Postmortem（事後分析）"
+        },
+        {
+          "level": 3,
+          "text": "Postmortem 文化"
+        },
+        {
+          "level": 3,
+          "text": "Status Page Postmortem（公開）"
+        },
+        {
+          "level": 3,
+          "text": "個人 / indie 版本"
+        }
+      ]
+    },
+    {
+      "id": "43.9",
+      "number": "LESSON 43.9",
+      "title": "OKR + KPI 設定",
+      "oneLineSummary": "Velocity：「團隊每 sprint 能完成多少」—planning 的基礎。",
+      "analogy": "像瞭解自己的步行速度—之後規劃路線才準。Velocity = 每 sprint 完成 story points 數—跑 3 sprint 就有平均值、之後 planning 用它。",
+      "content": "OKR / KPI / North Star Metric—2026 公司治理三件套。學會這個 = 知道**怎麼跟老闆對齊、怎麼讓 team 知道做什麼最重要**。\n\n  \n### OKR 是什麼\n\n  \nObjectives and Key Results。Intel 1970s 發明、Google 2000s 推廣到全業界。\n\n```text\n結構：\n\nObjective（目標）\n- 1 個 quarter 的方向\n- 質化、激勵人心\n- 「我們要去哪」\n\nKey Results（關鍵結果）\n- 3-5 個量化指標\n- 達成 KR = 達成 O\n- 「怎麼知道到了」\n```\n\n  \n### OKR 範例\n\n  \n#### 公司層級\n\n```text\nObjective: 成為台灣 SaaS 客服 AI 第一品牌\n\nKR1: ARR 從 NT$500 萬 → NT$1500 萬\nKR2: 客戶從 50 → 200 家\nKR3: NPS 從 35 → 60\nKR4: 業界 podcast / 媒體露出 10 次\n```\n\n  \n#### 工程 team\n\n```text\nObjective: 平台穩定性大幅提升\n\nKR1: uptime 從 99.5% → 99.95%\nKR2: P0 incident 從 月 3 次 → 月 0 次\nKR3: MTTR 從 45 分鐘 → 15 分鐘\nKR4: 自動化測試覆蓋率 60% → 85%\n```\n\n  \n#### 個人\n\n```text\nObjective: 升 Senior Engineer\n\nKR1: 主導完成 2 個重要 feature（spec → ship）\nKR2: 寫 4 個 RFC 並通過\nKR3: Mentor 1 個 junior\nKR4: 內部分享 / 對外 talk 2 次\n```\n\n  \n### 好 OKR 的特徵\n\n  \n- **Ambitious**—要 stretch、達成 70% 就算成功\n- **Specific**—具體可衡量\n- **Time-bound**—通常 1 個 quarter\n- **少而精**—一次 1 Objective、3-5 KRs\n- **可觀察**—不能含糊\n\n  \n### OKR 常見坑\n\n  \n#### 1. 把 task 當 KR\n\n```text\n錯：\nKR1: 重寫 dashboard\nKR2: 整合 Stripe\nKR3: 上線新 landing page\n\n→ 這是 to-do list、不是 KR\n\n對：\nKR1: dashboard 載入時間 5s → 1s\nKR2: 付費轉換率 2% → 5%\nKR3: landing page bounce rate 70% → 50%\n\n→ 衡量「結果」、不是「動作」\n```\n\n  \n#### 2. KR 太多\n\n```text\n錯：\nObjective: 改善產品\nKR1-KR10: 10 個指標\n\n→ 失去 focus、什麼都重要 = 什麼都不重要\n\n對：\n3-5 個 KR、覆蓋核心面向\n```\n\n  \n#### 3. 達成 100% = 設太低\n\n```text\nOKR 哲學：60-70% 達成才算成功\n\n如果 quarter 結束 全部 100% 完成\n→ 下 quarter 設更高目標\n→ 100% 達成的 OKR 不是 stretch goal\n\n如果 30% 都沒到\n→ 反思設太高、學經驗\n```\n\n  \n#### 4. 跟績效 / 獎金綁\n\n```text\nOKR 設計初衷：stretch goal、激勵\n但跟獎金綁 → 大家偷偷設「保證做得到的」\n\nGoogle 規則：\nOKR 跟績效完全分開\n績效用其他評估標準\n\n實務：\n要嘛真的脫鉤\n要嘛大家虛報 OKR\n中間沒有\n```\n\n  \n### OKR vs KPI 差別\n\n  \n|  | OKR | KPI |\n| --- | --- | --- |\n| 目的 | 變革 / 進步 | 監測 / 維持 |\n| 週期 | quarterly | 持續 |\n| 達成率 | 60-70% OK | 100%+ 要求 |\n| 數量 | 1 O + 3-5 KR | 10-20 個 |\n| 例子 | 「ARR 翻倍」 | 「daily uptime > 99.9%」 |\n\n  \n### North Star Metric（NSM）\n\n  \n2010+ Silicon Valley 概念—公司「**一個**最重要指標」：\n\n```text\n原則：\n- 1 個（不是 10 個）\n- 代表使用者價值\n- 領先指標（不是落後）\n- 全公司對齊\n\n例：\nAirbnb：訂房晚數\nSpotify：聽歌時間\nFacebook：DAU\nSlack：訊息數\nStripe：處理交易金額\nNotion：Active workspace\n\n工程師、設計、業務、行銷\n→ 都圍繞 NSM 做事\n```\n\n  \n### OKR + NSM 怎麼搭\n\n```text\n結構：\n\nNSM（永遠）：訂閱用戶活躍度\n\nAnnual OKR：\n  Objective: 把 NSM 從 50% → 70%\n  KR1: 新用戶啟用率 30% → 50%\n  KR2: 月活留存 60% → 80%\n  KR3: 平均使用時長 5 min → 15 min\n\nQuarterly OKR：拆 annual\n  Q1: 啟用率提升專案\n  Q2: retention 專案\n  Q3: 深度使用專案\n  Q4: 整合 + 衝刺\n```\n\n  \n### OKR Cadence（節奏）\n\n```text\n季度開始（第 1 週）：\n- 公司 OKR 公布\n- team OKR planning（半天 workshop）\n- 個人 OKR 跟 manager 對齊\n\n季度中（每月）：\n- Monthly check-in\n- KR 進度（紅 / 黃 / 綠）\n- 調整 action（不要改 OKR 本身）\n\n季度末（最後 2 週）：\n- Self-assessment\n- team retro\n- 下 quarter 規劃\n\n季度後（第 1 週）：\n- 公告達成率\n- 重要學習分享\n- 新 OKR 啟動\n```\n\n  \n### 實用工具\n\n  \n- **Notion / Google Doc**—簡單版\n- **Workboard**—企業級\n- **Lattice**—HR + OKR\n- **Mooncamp**—相對便宜\n- **Weekdone**—startup 級\n\n  \n### 個人 OKR\n\n  \n不只公司能用：\n\n```text\n2026 Q2 個人 OKR\n\nObjective: 從 freelance 過渡到 SaaS founder\n\nKR1: 完成 SaaS MVP、上線 + 取得 10 個付費客戶\nKR2: 累積 1000 個 newsletter 訂閱\nKR3: 學會 Stripe / Lemon Squeezy 訂閱整合\nKR4: 每週寫 1 篇 build in public 文章\nKR5: 個人月收入：freelance NT$80k + SaaS MRR NT$10k\n```\n\n  \n### 2026 OKR 趨勢\n\n  \n- **反過度 OKR**—很多公司放棄、改用簡單 priorities\n- **AI 輔助設定**—LLM 幫你拆 KR\n- **更短週期**—monthly OKR（vs quarterly）\n- **結合 storytelling**—不只數字、加上「why」\n\n  \n    **🚀 進階技巧**\n    \nOKR 不是萬靈丹—**「適合 50-500 人公司」**。 500 人：需要更嚴格 process（不只 OKR）。indie：用「3 個季目標」更實用。別硬套 Google 的東西到你的 garage。\n\n  \n\n  \n    \n      ⚡\n      學習加速器\n    \n    把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。",
+      "tip": {
+        "type": "practical",
+        "text": "把這節學到的馬上應用到一個小東西—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 12 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "OKR 是什麼"
+        },
+        {
+          "level": 3,
+          "text": "OKR 範例"
+        },
+        {
+          "level": 3,
+          "text": "好 OKR 的特徵"
+        },
+        {
+          "level": 3,
+          "text": "OKR 常見坑"
+        },
+        {
+          "level": 3,
+          "text": "OKR vs KPI 差別"
+        },
+        {
+          "level": 3,
+          "text": "North Star Metric（NSM）"
+        },
+        {
+          "level": 3,
+          "text": "OKR + NSM 怎麼搭"
+        },
+        {
+          "level": 3,
+          "text": "OKR Cadence（節奏）"
+        },
+        {
+          "level": 3,
+          "text": "實用工具"
+        },
+        {
+          "level": 3,
+          "text": "個人 OKR"
+        },
+        {
+          "level": 3,
+          "text": "2026 OKR 趨勢"
+        }
+      ]
+    },
+    {
+      "id": "43.10",
+      "number": "LESSON 43.10",
+      "title": "風險管理",
+      "oneLineSummary": "Roadmap：「3-6 個月的長期計畫」—不是 deadline、是方向。",
+      "analogy": "像戀愛計畫—年底見家長、明年訂婚、後年結婚—大方向但有彈性。Roadmap 一樣、有里程碑但不是死的。",
+      "content": "專案「**會出事**」的事永遠在發生。差別是：好 PM **事前預判**、爛 PM **事後 firefighting**。\n\n  \n### 風險 vs 議題\n\n```text\nRisk（風險）：可能發生的事\nIssue（議題）：已經發生的事\n\n例：\n- 「DB 可能爆掉」= Risk\n- 「DB 已經爆掉」= Issue\n\nPM 工作：把 risks 處理掉 / 監控、別變 issues\n```\n\n  \n### 四種風險來源\n\n  \n#### 1. 技術風險\n\n  \n- 沒用過的新技術、不確定能不能成\n- 系統規模化挑戰\n- 第三方 API 限制 / 變動\n- Data migration 風險\n- Performance 不夠\n\n  \n#### 2. 資源風險\n\n  \n- 關鍵人員離職 / 病假\n- 預算砍\n- 外包延遲交付\n- 新人入職時間長\n\n  \n#### 3. 時程風險\n\n  \n- 依賴別 team 還沒準備好\n- 客戶 deadline 突然提前\n- 節日 / 連假效率低\n- 估時嚴重低估\n\n  \n#### 4. 外部風險\n\n  \n- 競品搶先推出\n- 法規變動（GDPR、AI Act）\n- 市場狀況變\n- 客戶取消大單\n\n  \n### 風險評估矩陣\n\n```text\n每個 risk 評：機率 × 影響\n\n           影響\n        低   中   高\n      ┌────┬────┬────┐\n   高 │ 中 │ 高 │嚴重│\n      ├────┼────┼────┤\n機 中 │ 低 │ 中 │ 高 │\n率    ├────┼────┼────┤\n   低 │ 低 │ 低 │ 中 │\n      └────┴────┴────┘\n\n對應行動：\n嚴重：Must mitigate（立刻處理）\n高：Should mitigate（計畫處理）\n中：Monitor（持續追蹤）\n低：Accept（記下、不主動處理）\n```\n\n  \n### Risk Register（風險登記簿）\n\n```text\n| ID | 風險 | 機率 | 影響 | 等級 | 緩解 | Owner | Status |\n|----|------|------|------|------|------|-------|--------|\n| R1 | Stripe API 整合難 | M | H | 高 | 提早 spike 1 週 | Alice | 進行中 |\n| R2 | Alice 6/15 請婚假 | H | M | 高 | 提前完成關鍵 task | Alice | 已規劃 |\n| R3 | DB scale 不夠 | L | H | 中 | 監控、預備 sharding 方案 | Bob | 監控中 |\n| R4 | 競品搶先發 | M | M | 中 | 加速 MVP、focus 核心 | PM | 監控 |\n\n每週 review：\n- 新的 risk？\n- 哪些 risk 升級了？\n- 哪些可以 close？\n- 哪些變 issues 了？\n```\n\n  \n### 4 種緩解策略\n\n  \n#### 1. Avoid（避免）\n\n  \n改變 plan 讓 risk 不會發生：\n\n  \n- 「不確定新框架能不能 scale」→ 用熟悉的框架\n- 「客戶 deadline 太緊」→ 砍 scope\n\n  \n#### 2. Mitigate（緩解）\n\n  \n降低機率 / 影響：\n\n  \n- 「Alice 是 SPOF」→ Pair programming、knowledge sharing\n- 「Stripe API 不穩」→ 加 retry + fallback\n\n  \n#### 3. Transfer（轉移）\n\n  \n讓別人承擔：\n\n  \n- 「不會 DevOps」→ 用 Vercel / Render（外包）\n- 「不想自己管 server」→ 買 SaaS\n- 「火災怕資料丟」→ 買保險\n\n  \n#### 4. Accept（接受）\n\n  \n影響不大 / 不值得處理：\n\n  \n- 「可能 1% 機會地震」→ 接受、不準備\n- 「設計師可能不喜歡 logo」→ 接受、做完再改\n\n  \n### Premortem（事前 PM）\n\n  \nGary Klein 提出的方法—**專案開始前先想像「失敗」**：\n\n```text\n會議流程（30 分鐘）：\n\n1. PM 描述假設：\n   「想像 6 個月後、這專案徹底失敗。\n    請大家 silently 寫下 5-10 個原因。」\n\n2. 每人 5 分鐘寫\n   \n3. round-robin 分享原因\n\n4. 整理 + 排序\n\n5. 對最可能的 → 立刻準備 mitigation\n\n效益：\n- 不被 group think 影響\n- 「事後看」找出真問題\n- 防止集體樂觀\n```\n\n  \n### SPOF（單點失效）特別注意\n\n  \nSPOF = 一個失敗整個垮：\n\n```text\n常見 SPOF：\n\n人：\n- Alice 是唯一懂 X 的人 → 她離職 = 災難\n- 老闆是唯一能簽核的 → 度假 = 卡\n\n技術：\n- DB master 沒 replica\n- 所有 service 跑同一台\n- 只有一個 cert\n\n依賴：\n- 唯一 payment provider\n- 唯一 cloud provider\n- 唯一 API key\n\n緩解 SPOF：\n- 至少 N+1（一個壞還有一個）\n- Knowledge sharing\n- Backup 計畫\n- 定期演練 failover\n```\n\n  \n### 「Black Swan」事件\n\n  \nNassim Taleb 提出—**低機率 + 大影響** 的事：\n\n```text\n例：\n- COVID-19（2020）\n- 銀行倒閉（SVB 2023）\n- AWS 全 region down（2017、2021）\n- ChatGPT 出現顛覆整個業界\n\n特性：\n- 事前難預測\n- 事後好像「早該預料到」\n- 一次能毀掉整個專案 / 公司\n\n怎麼準備：\n- 不要在 single basket 放所有 egg\n- 保留 cash buffer\n- 多 plan B\n- 韌性 > 效率\n```\n\n  \n### Risk 文化\n\n  \n不同公司風險偏好不同：\n\n  \n| 類型 | 風險偏好 | 策略 |\n| --- | --- | --- |\n| Startup | 高 | 速度 > 完美、bet big |\n| SaaS 中型 | 中 | 平衡 |\n| Enterprise | 低 | process 多、review 多 |\n| Banking / 醫療 | 極低 | 合規優先 |\n\n  \n不要把**銀行的做法套到 startup**—會被速度甩開。反過來也是。\n\n  \n### 個人專案 / indie 的風險清單\n\n```text\n常見 indie risks：\n\n技術：\n- 用不熟悉技術 → 拖時間\n- 沒有 monitoring → 出事不知道\n- 一台 server 跑全部 → SPOF\n\n商業：\n- 沒先驗證需求 → 做完沒人要\n- 訂價錯 → 收不到夠錢\n- 只有一個 channel（FB 廣告）→ 平台改演算法 = 死\n\n健康：\n- 過勞 → burn out → 整個專案停\n- 沒備援 → 生病 = 損失\n\n財務：\n- runway 不夠 → 撐不到 PMF\n- 收入波動大 → 焦慮\n\n緩解：\n- 用熟悉技術 + buffer\n- 多管道\n- 設定休息規則\n- 6-12 個月 runway\n```\n\n  \n    **⚠ 踩雷警告**\n    \n「沒事發生」≠「沒風險」。沒事可能是運氣好—下次可能就出事。Risk register 看「**什麼如果發生會死**」、不是「**什麼正在發生**」。Mature PM 看不見的事、junior PM 看已經發生的事。\n\n  \n\n  \n    \n      🚀\n      2026 趨勢\n    \n    這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。",
+      "tip": {
+        "type": "trend",
+        "text": "這個技術 2026 還在主流、未來 5 年不會過時。但工具會更新—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "風險 vs 議題"
+        },
+        {
+          "level": 3,
+          "text": "四種風險來源"
+        },
+        {
+          "level": 3,
+          "text": "風險評估矩陣"
+        },
+        {
+          "level": 3,
+          "text": "Risk Register（風險登記簿）"
+        },
+        {
+          "level": 3,
+          "text": "4 種緩解策略"
+        },
+        {
+          "level": 3,
+          "text": "Premortem（事前 PM）"
+        },
+        {
+          "level": 3,
+          "text": "SPOF（單點失效）特別注意"
+        },
+        {
+          "level": 3,
+          "text": "「Black Swan」事件"
+        },
+        {
+          "level": 3,
+          "text": "Risk 文化"
+        },
+        {
+          "level": 3,
+          "text": "個人專案 / indie 的風險清單"
+        }
+      ]
+    },
+    {
+      "id": "43.11",
+      "number": "LESSON 43.11",
+      "title": "利害關係人管理",
+      "oneLineSummary": "OKR：Objectives + Key Results—Google 出的目標管理法。",
+      "analogy": "像新年計畫的進化版—Objective「變健康」、KR「跑步每週 3 次 / 體重降 5kg / 體脂率 18%」—可衡量、可追蹤。",
+      "content": "專案有沒有人在乎、會不會被支持—跟「**利害關係人**」（stakeholders）關係極大。**技術做對、政治做錯 = 一樣失敗**。\n\n  \n### 誰是 Stakeholder\n\n  \n「**會被專案影響、或能影響專案**」的人：\n\n```text\n內部：\n- 老闆（CEO / VP）\n- 直屬主管\n- 同 team（dev / design / QA）\n- 跨 team（sales / marketing / support）\n- 法務 / 財務 / HR\n- IT / DevOps\n\n外部：\n- 客戶\n- 合作夥伴\n- 供應商\n- 監管機構\n- 媒體 / 社群\n```\n\n  \n### Stakeholder 分類矩陣\n\n```text\n權力（能影響專案）\n        低              高\n      ┌──────────────┬──────────────┐\n   高 │  Keep        │   Manage     │\n興    │  Informed    │   Closely    │\n趣    │ （給更新）   │ （重點對象） │\n（   ├──────────────┼──────────────┤\n被    │  Monitor     │  Keep        │\n影    │             │  Satisfied   │\n響）  │ （定期溝通） │  （定期更新）│\n   低 │              │              │\n      └──────────────┴──────────────┘\n```\n\n  \n### 4 種對象怎麼處理\n\n  \n#### 1. Manage Closely（高權力、高興趣）\n\n  \n核心對象—老闆、PdM、主要客戶：\n\n  \n- 1-on-1 / weekly sync\n- 提前讓他們知道\n- 請他們決策\n- 有問題第一個 escalate\n\n  \n#### 2. Keep Satisfied（高權力、低興趣）\n\n  \n例：VP of Eng 平常不管細節、但有大問題會出手：\n\n  \n- 不要 spam 他\n- 只報重要 milestone\n- 有大問題才找他\n- Status report 簡潔\n\n  \n#### 3. Keep Informed（低權力、高興趣）\n\n  \n例：熱情 Junior dev、認真客戶：\n\n  \n- 定期更新\n- 讓他們有發聲管道\n- 聽他們建議（但不全部接受）\n\n  \n#### 4. Monitor（低權力、低興趣）\n\n  \n例：跨部門偶爾相關的人：\n\n  \n- broadcast 通訊管道夠（Slack、email）\n- 不用單獨找\n- 有狀況再升級\n\n  \n### Stakeholder Mapping 實作\n\n```text\n專案：「重寫 onboarding」\n\n| 利害關係人 | 權力 | 興趣 | 類別 | 期望 |\n|----|----|----|----|----|\n| Tony（CEO）| 高 | 中 | Keep Satisfied | 月報 |\n| Lily（PdM）| 高 | 高 | Manage Closely | Daily sync |\n| 設計 team | 中 | 高 | Keep Informed | 週會 |\n| Sales team | 中 | 中 | Keep Informed | sprint demo |\n| Support team | 低 | 高 | Keep Informed | release notes |\n| 客戶 X | 中 | 高 | Manage Closely | 月 demo |\n| 法務 | 低 | 低 | Monitor | 上線前通知 |\n```\n\n  \n### Status Update 範本\n\n  \n每週 / 每兩週發給高層的 update：\n\n```markdown\n# 專案：Onboarding 重寫 — Week 8 update\n\n## 狀態：🟡 At Risk\n\n## 摘要（30 秒）\n完成主要 UI、API 整合卡 1 週、預計順延 1 sprint\n\n## 進度\n- ✅ Wireframe + 視覺設計（完成）\n- ✅ 註冊頁面（完成）\n- 🚧 OAuth 整合（80%）\n- ⏳ 個人化問卷（next sprint）\n\n## 問題\n- Stripe webhook 處理比預期複雜\n- 設計師 Alice 突然離職、影響後續 iteration\n\n## 我們在做的\n- Outsourcing OAuth 給 Auth0（決策中）\n- 招新設計師（已面試 3 人）\n\n## 需要你的\n- ✋ 預算批准外包 Auth0 NT$30k\n- ✋ 新設計師招募加快\n\n## 下週重點\n- 完成 OAuth 整合（自做 OR Auth0）\n- 啟動個人化問卷 spec\n```\n\n  \n### 「向上管理」\n\n  \n跟老闆 / 高層互動的學問：\n\n  \n#### 1. 別 surprise 他們\n\n```text\n規則：\n重要消息他們不能從別人那聽到\n\n好的：\n「Hi Tony、你後天會議前我先說：\n我們可能會 delay 兩週、原因 X、\n我計畫做 Y / Z 處理。會議再詳談。」\n\n爛的：\nTony 在 board meeting 才知道專案 delay\n→ 他被 board 質問\n→ 你完蛋\n```\n\n  \n#### 2. 帶解法不帶問題\n\n```text\n爛：\n「Tony、我們 stuck 在 X、怎麼辦？」\n\n好：\n「Tony、X 卡住、有 3 個方案：\nA：花 NT$30k 外包、快 1 週搞定\nB：自己做、慢 2 週但省錢\nC：砍掉 feature\n\n我建議 A、因為 X 風險。\n要你決定？」\n```\n\n  \n#### 3. 控制節奏\n\n  \n- 主動 sync（不要等他來找你）\n- 固定週期（週一 update、不亂發）\n- preempt 問題（在他問之前先講）\n\n  \n#### 4. 學他講話\n\n```text\n跟 CEO 講：商業語言\n- ARR、churn、CAC、margin\n- 不講技術細節\n\n跟 VP Eng 講：技術 + 影響\n- architecture、tradeoff\n- 為什麼這樣選\n\n跟 Sales VP 講：客戶 + 收入\n- 客戶要的、能簽更多單嗎\n\n換頻道、不要全部一個套路\n```\n\n  \n### 跨部門協調（Cross-functional）\n\n  \n不同部門優先序不同—怎麼讓他們配合：\n\n```text\n工程要 marketing 幫忙：\n\n爛的開場：\n「Hi marketing team、能不能幫我們做這個？」\n→ 他們：「我們也忙、排隊」\n\n好的開場：\n「Hi 行銷負責人、這個 launch 能讓你 Q3 KR 達標\n（拿下 200 個新註冊）、需要你的：\n- landing page banner（5 天工）\n- email blast 給現有 user\n- 1 篇 case study\n\n我這邊已幫你準備：\n- benefit 列表\n- 競品比較\n- screenshot 模板\n\n時間：1 個月後上線、你那邊需要 2 週準備」\n\n→ 對齊 KR + 降低他負擔 = 容易答應\n```\n\n  \n### 客戶管理\n\n  \nB2B SaaS 大客戶有特別處理：\n\n```text\nCustomer Advisory Board：\n- 5-10 個大客戶\n- 每季開會\n- 給 sneak peak 新 feature\n- 收意見\n\n優：\n- 不被「需求暴擊」（一個客戶說要 = 做下去）\n- 看 patterns\n- 客戶感覺被重視\n\n注意：\n- 客戶意見 ≠ 命令\n- 你還是要做對大多數 user有用的\n```\n\n  \n### 困難對話：說 NO\n\n  \n不是所有要求都該接：\n\n```text\n客戶要求新 feature：\n\n爛的拒絕：\n「我們不能做」\n→ 客戶生氣\n\n好的拒絕：\n「謝謝建議。我們不會做這個、原因：\n1. 只有 5% 客戶會用\n2. 跟我們 vision 不符（我們是 B2B 不是 B2C）\n3. 工作量大、會 delay 其他重要 feature\n\n替代：\n你能不能用現有 X 達成你的目標？\n或我們可以介紹另一個工具？」\n\n→ 拒絕但顯尊重 + 給解法\n```\n\n  \n### 政治處理\n\n  \n真實世界：每個專案都有政治。**裝瞎不會讓政治消失**—只會讓你變受害者：\n\n  \n- **了解每個人的 incentive**—他升遷靠什麼？他想避免什麼？\n- **「敵人的敵人」原則**—找盟友\n- **1-on-1 比 group meeting 有效**—私下談\n- **給 credit 給該得的**—別人會幫你\n- **從不公開抱怨**—永遠在 1-on-1 講\n\n  \n    **🚀 進階技巧**\n    \n2026 心法：**「技術能力決定你做什麼、人際能力決定你能爬多高」**。Senior+ 之後 60% 工作是 stakeholder management。早練 = 早 unlock 升遷天花板。從現在開始：每週問自己「**我這週 update 對了哪些 stakeholder？**」。\n\n  \n\n  \n    \n      🛠️\n      工具推薦\n    \n    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。",
+      "tip": {
+        "type": "practical",
+        "text": "配合這節用的工具：(1) VS Code（編輯器、免費）(2) Chrome DevTools（F12 開啟、除錯神器）(3) Live Server（VS Code 擴充、即時預覽）(4) GitHub Copilot / Cursor（AI 寫程式、學習加速 2-10x）。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 10 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "誰是 Stakeholder"
+        },
+        {
+          "level": 3,
+          "text": "Stakeholder 分類矩陣"
+        },
+        {
+          "level": 3,
+          "text": "4 種對象怎麼處理"
+        },
+        {
+          "level": 3,
+          "text": "Stakeholder Mapping 實作"
+        },
+        {
+          "level": 3,
+          "text": "Status Update 範本"
+        },
+        {
+          "level": 3,
+          "text": "「向上管理」"
+        },
+        {
+          "level": 3,
+          "text": "跨部門協調（Cross-functional）"
+        },
+        {
+          "level": 3,
+          "text": "客戶管理"
+        },
+        {
+          "level": 3,
+          "text": "困難對話：說 NO"
+        },
+        {
+          "level": 3,
+          "text": "政治處理"
+        }
+      ]
+    },
+    {
+      "id": "43.12",
+      "number": "LESSON 43.12",
+      "title": "變更管理：對抗 Scope Creep",
+      "oneLineSummary": "Gantt Chart：「橫向時間軸」—大型瀑布專案常用、軟體業少用。",
+      "analogy": "像建案進度表—Q1 蓋骨架 / Q2 裝潢 / Q3 交屋。Gantt 適合「步驟明確 / 不太變」的專案。",
+      "content": "專案最常死法之一：**scope creep**—一開始說做 A、變成 A+B+C+D+E、永遠做不完。\n\n  \n### 為什麼會 scope creep\n\n  \n#### 1. Stakeholder 想到新需求\n\n```text\n「啊對了、能不能順便加個 X？」\n「我看別家有 Y、我們也加？」\n「客戶說想要 Z、能不能塞進這個 sprint？」\n\n每個「順便」5 天工\n10 次順便 = 50 天\n```\n\n  \n#### 2. 完美主義\n\n```text\n「這個 button 還可以再優化」\n「我們應該加 5 種 edge case 處理」\n「測試覆蓋率要 95% 才能上」\n\n→ 永遠不完美、永遠不 ship\n```\n\n  \n#### 3. 估算錯誤\n\n```text\n原以為 1 週、實際 1 個月\n不是 scope 變了\n是估錯了\n但感覺像 scope creep\n```\n\n  \n#### 4. 探索性需求\n\n```text\n實作中發現「啊原來還需要 X」\n這個是「discovered scope」\n跟 scope creep 不同\n但結果一樣 → 拖時間\n```\n\n  \n### 對抗 Scope Creep 的工具\n\n  \n#### 1. 明確 Scope 文件\n\n```text\n專案開始必寫：\n\n# 專案：使用者 onboarding 重寫\n\n## 範圍包含\n- 註冊 / 登入頁\n- 個人化問卷\n- 第一個 dashboard 體驗\n- onboarding email 序列（3 封）\n\n## 範圍不包含\n- ❌ Onboarding 的「再次回訪」流程\n- ❌ Mobile App 版本\n- ❌ B2B Enterprise 客製\n- ❌ 多語言\n- ❌ AI 個人化推薦\n\n## 假設\n- 設計 by Alice / 工程 by team A\n- 6 週時間\n- 用現有 Auth0、不換\n\n## 成功標準\n- 註冊轉換率 30% → 50%\n- Time to first value \n    **⚠ 踩雷警告**\n    \n對 PM / 工程師：**沒寫下來的 scope = 沒 scope**。會議口頭「順便加個 X」、3 個月後沒人記得是答應還是討論。**所有 scope 決定都要文字記錄**—在 PR、ticket、doc 都行。「他說的」永遠輸給「文件寫的」。\n\n  \n\n  \n    \n      ⚠️\n      新手常見錯誤\n    \n    新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。",
+      "tip": {
+        "type": "warning",
+        "text": "新手 3 大坑：(1) 不看 console—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) 不存檔就 F5—改完忘記儲存以為「程式沒效果」 (3) 抄 code 不理解—複製貼上能跑、但下次要改就崩潰。記得：先看懂、再寫。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "為什麼會 scope creep"
+        },
+        {
+          "level": 3,
+          "text": "對抗 Scope Creep 的工具"
+        }
+      ]
+    },
+    {
+      "id": "43.13",
+      "number": "LESSON 43.13",
+      "title": "RFC / Design Doc：寫對的需求",
+      "oneLineSummary": "Risk Management：「事先想到可能出包的事」—生產級專案必做。",
+      "analogy": "像結婚前買保險—不期望出事、但出事有依靠。Risk = 機率 × 影響、列出 top 5 risks + 應對方案。",
+      "content": "會寫 code 不夠—**會寫 RFC 才是 senior+ 必備**。RFC = Request for Comments、設計文件。\n\n  \n### RFC 是什麼\n\n  \n在動工前寫的「**我要做什麼、為什麼、怎麼做、有什麼 tradeoff**」文件：\n\n  \n- 讓自己想清楚（寫的過程發現問題）\n- 讓 stakeholder review（避免做完才發現要重做）\n- 留歷史紀錄（半年後忘了為什麼這樣設計）\n- onboard 新人\n\n  \n### RFC vs Code Review\n\n```text\nCode Review：「程式碼這樣寫對嗎？」\n→ 改 1 行容易、改架構難\n\nRFC：「這個方向對嗎？」\n→ 改文字容易、推翻架構痛但便宜\n\n寫 RFC 的時間：\n- 工程：1-2 天\n- review + 迭代：1 週\n- 省下的時間：可能 1-2 個月（避免錯誤方向）\n\nCP 值極高\n```\n\n  \n### 什麼時候要寫 RFC\n\n  \n不是每件事都要—但這些一定要：\n\n  \n- **新功能 / 系統**—影響大、要 align\n- **架構重大變動**—不能輕易回頭\n- **跨團隊影響**—別人會被影響\n- **新技術引入**—長期影響 tech stack\n- **scope 涉及多個 sprint**—值得提前對齊\n\n  \n不用寫 RFC 的事：\n\n  \n- 小 bug fix\n- UI 微調\n- 已有 spec 的明確 task\n- 實驗性 spike（先做、做完再決定要不要正式做）\n\n  \n### RFC 模板\n\n```markdown\n# RFC: 簡短標題\n\n**作者**：Alice\n**日期**：2026-05-12\n**狀態**：Draft / In Review / Approved / Rejected / Implemented\n**Reviewers**：Bob, Carol, Dave\n\n## TL;DR\n1-2 段、讓忙的 stakeholder 30 秒能懂。\n\n## 背景 / 動機\n- 為什麼現在做這個？\n- 不做會怎樣？\n- 使用者 / 業務問題是什麼？\n\n## 目標 / 非目標\n### 目標（Goals）\n- 解決 X\n- 達到 Y\n- 改善 Z\n\n### 非目標（Non-Goals）\n- 不處理 A（理由）\n- 不解決 B（之後 phase）\n\n## 提案方案\n詳細描述提案：\n- 架構圖\n- API 設計\n- DB schema\n- UI mockup\n- 流程圖\n\n## 替代方案\n### 方案 A：（用這個）\n優：...\n缺：...\n\n### 方案 B：（不用、原因）\n優：...\n缺：...\n\n### 方案 C：（不用、原因）\n...\n\n## 影響評估\n- 對使用者\n- 對其他 team\n- 對 performance / cost\n- 對安全性\n- 對 SLA\n\n## 實作計畫\n- Phase 1（2 週）：...\n- Phase 2（2 週）：...\n- Phase 3（2 週）：...\n\n## Migration / Rollout\n- 如何從 v1 → v2？\n- 如何分階段 rollout？\n- 如何 rollback？\n\n## 風險 + Mitigation\n| Risk | 機率 | 影響 | Mitigation |\n|------|------|------|------------|\n| X | M | H | ... |\n\n## 測試計畫\n- 單元測試\n- 整合測試\n- E2E test\n- Load test\n\n## Open Questions\n- 還沒決定的事\n- 需要 reviewer 給意見\n\n## References\n- 相關文件\n- 相關 PR / issue\n- 外部 paper / blog\n```\n\n  \n### RFC 流程\n\n```text\n1. 作者寫 draft（1-3 天）\n\n2. 找 1-2 個 reviewer 私下看（async）\n   → 修第一輪明顯問題\n\n3. 發到 #engineering 公開 review（async, 3-5 天）\n   → 大家 comment\n\n4. 開 RFC review meeting（1 小時、可選）\n   → 討論未解決的問題\n   → 不是說服、是 align\n\n5. 作者更新 doc、回應 comments\n\n6. Approved 或 Rejected\n   - Approved：寫進「狀態」、開始實作\n   - Rejected：寫清楚 reason、之後參考\n```\n\n  \n### 怎麼寫好 RFC\n\n  \n#### 1. TL;DR 永遠寫對\n\n```text\n爛 TL;DR：\n「本 RFC 提議實作一套機制以解決 X 問題」\n（沒講清楚提議什麼、解決什麼問題）\n\n好 TL;DR：\n「目前 onboarding 轉換率 30%、主因是流程太多步驟。\n我建議改成 3 步式 wizard、預期轉換率到 50%。\n工作量 4 週、需要設計師 + 2 名工程師。」\n```\n\n  \n#### 2. 替代方案要認真寫\n\n```text\n不要只列「方案 A：用這個」\n要寫 3 個方案、每個都認真分析\n\nreader 會看：\n- 你有沒有想過其他選項\n- 你的 reasoning 對不對\n- 有沒有他想到你沒想到的\n```\n\n  \n#### 3. 寫 trade-off、不寫「best」\n\n```text\n沒有「best」、只有「對 X 場景 best」\n\n寫法：\n「方案 A 的優勢是 X，但需要付出 Y 代價。\n我們選 A 因為 Y 我們能接受。\n如果 Z 變化、我們可能要重新評估。」\n```\n\n  \n#### 4. 寫「不做什麼」\n\n```text\n非目標跟目標一樣重要\n\n明確說：\n- 不處理什麼\n- 為什麼不處理\n- 之後可能怎麼處理\n\n避免 reader 一直問「那 X 呢？」\n```\n\n  \n### RFC 不是說服文件\n\n  \n常見誤解：把 RFC 當「**說服別人接受我的方案**」的工具。錯。\n\n```text\nRFC 的目的：\n\n❌ 推銷我的想法\n✅ 找出最好的方案（可能是別人提的）\n\n❌ 不接受 = 我輸了\n✅ 不接受 = 多 1 次學習機會\n\n❌ 我已經想完整、別 challenge\n✅ 我有 80% 想法、其他 20% 求大家幫想\n\n心態調整：\nRFC = 「我覺得這樣對、有人覺得不對嗎？」\n```\n\n  \n### Decision Log\n\n  \nRFC 之外、輕量級的「**我們決定了什麼**」紀錄：\n\n```markdown\n# Decision Log\n\n## 2026-05-12: 採用 Anthropic Claude 為主要 LLM\n- 決策者：Eng Lead + PdM\n- 替代：OpenAI GPT、Gemini\n- 原因：\n  - Claude 4.6/4.7 SWE-bench 領先\n  - 200k context window\n  - 價格合理\n- 風險：lock-in、但有 OpenRouter 抽象層\n- Revisit：2026 Q4\n\n## 2026-05-08: 不做 mobile app（Q3 前）\n- 決策者：CEO\n- 替代：PWA、React Native\n- 原因：\n  - 80% user 從 desktop\n  - 工程量大、現階段 ROI 低\n- Revisit：當 mobile traffic 達 30%\n\n...\n```\n\n  \n跟 RFC 的差別：\n\n  \n- RFC = 「**新**事情的提案文件」\n- Decision Log = 「**已決定的事**」一覽\n\n  \n### 真實案例：Stripe 的 RFC 文化\n\n  \nStripe 是 RFC 文化最強的公司之一：\n\n  \n- 所有重要決策都有 RFC\n- 內部 RFC repo 像 GitHub\n- 「Have you written an RFC?」是日常對話\n- RFC review 是 senior+ 重要 skill\n- RFC 公司歷史 = 公司技術記憶\n\n  \n### 個人 / Indie 也該寫 RFC\n\n```text\nindie 沒有 team 寫給誰看？\n\n寫給未來的自己\n\n3 個月後你會忘：\n- 為什麼選 Supabase 不選 Firebase\n- 為什麼用 Next.js App Router 不用 Pages\n- 為什麼訂閱定 NT$299 不 NT$499\n\n寫 RFC 紀錄：\n- 不會重複糾結\n- 換新工具前能 review\n- 萬一找 cofounder、能講清楚 history\n\n格式可以簡化（5 段就夠）：\n- 我要做什麼\n- 為什麼\n- 怎麼做\n- 替代\n- 預期結果\n```\n\n  \n    **🚀 進階技巧**\n    \nRFC = 升 Senior+ 的關鍵技能。Junior 寫好 code、Senior 寫好 RFC。寫 RFC 練的不是文字、是「**清晰思考**」。要解釋給別人 = 自己要先想清楚。**2026 寫 RFC 的工程師薪水比不寫的高 30-50%**—不是因為文字、是因為思考力。\n\n  \n\n  \n    \n      💼\n      接案小知識\n    \n    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「專案管理」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。",
+      "tip": {
+        "type": "practical",
+        "text": "剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「專案管理」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 10 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "RFC 是什麼"
+        },
+        {
+          "level": 3,
+          "text": "RFC vs Code Review"
+        },
+        {
+          "level": 3,
+          "text": "什麼時候要寫 RFC"
+        },
+        {
+          "level": 3,
+          "text": "RFC 模板"
+        },
+        {
+          "level": 3,
+          "text": "RFC 流程"
+        },
+        {
+          "level": 3,
+          "text": "怎麼寫好 RFC"
+        },
+        {
+          "level": 3,
+          "text": "RFC 不是說服文件"
+        },
+        {
+          "level": 3,
+          "text": "Decision Log"
+        },
+        {
+          "level": 3,
+          "text": "真實案例：Stripe 的 RFC 文化"
+        },
+        {
+          "level": 3,
+          "text": "個人 / Indie 也該寫 RFC"
+        }
+      ]
+    },
+    {
+      "id": "43.14",
+      "number": "LESSON 43.14",
+      "title": "開會的學問",
+      "oneLineSummary": "Linear：「2026 軟體業最熱的 PM 工具」—速度極快、設計極美。",
+      "analogy": "像PM 工具界的 Apple—貴但好用、indie / startup 主流。Linear 取代 Jira（傳統大公司）+ Trello（簡單但功能少）。",
+      "content": "軟體業有個共識：**「我們開太多會」**。但會議不會自己消失—除非你**主動管**。\n\n  \n### 會議的真實成本\n\n```text\n10 人會議 30 分鐘：\n- 5 hours of human time\n- 平均時薪 NT$1500 = NT$7500\n- 中斷 deep work：每人多損失 1 小時\n- 上下文 switch 成本\n\n如果每週 1 次：\n- 每年成本 ~NT$40 萬\n- 又 produce 不了 deliverable\n\n→ 要證明會議 worth 40 萬一年\n```\n\n  \n### 會議該不該開：3 個問題\n\n```text\n1. 能不能 async 解決？\n   ✓ Slack thread → 取消\n   ✓ Notion comments → 取消\n   ✓ email → 取消\n   ✗ 真的要即時互動 → 開\n\n2. 有沒有具體 outcome？\n   ✓ 「需要決策 A or B」 → 開\n   ✓ 「需要 align 5 人」 → 開\n   ✗ 「順便聊聊」 → 取消\n   ✗ 「同步進度」 → email update\n\n3. 對的人都到場嗎？\n   ✗ 決策者沒到 → 沒意義\n   ✗ 太多人 → 沒效率（> 7 人）\n   ✓ 6 人含決策者 → 開\n```\n\n  \n### 會議類型 + 主持要點\n\n  \n#### 1. Decision Meeting（決策會）\n\n```text\n目的：做出決定\n\n準備：\n- agenda 寫清楚要決定什麼\n- 提前發 doc / RFC 讓人讀\n- 列出選項 + tradeoff\n\n主持：\n- 一開始 restate 要決定什麼\n- 不要從零開始討論（doc 該讀過）\n- 每人發言 5-10 分鐘\n- 結尾 vote / decision maker 決\n- 寫下 decision + reasoning\n\n事後：\n- 24 小時內 send decision note\n```\n\n  \n#### 2. Brainstorm（發想會）\n\n```text\n目的：產出 ideas\n\n技巧：\n- 「先 quantity, 後 quality」\n- 不評論 idea 直到結束\n- 用 sticky notes 個人寫、不直接講\n- silent brainstorm 比口頭好\n- 收尾 vote 選 top 3\n\n時間：60-90 分鐘\n人數：5-8 人最佳\n```\n\n  \n#### 3. Status / Sync Meeting\n\n```text\n目的：同步進度\n\n警告：\n80% 的 sync meeting 該被 async 取代\n\n如果一定要開：\n- 嚴格 15-30 分鐘\n- 走 board / dashboard、不 freestyle\n- 只談 blockers\n- status 細節寫 Slack 不在會議講\n```\n\n  \n#### 4. 1-on-1（重要！）\n\n```text\n目的：個別管理 + 發展\n\n格式：\n- 每週 / 雙週 30 分鐘\n- 員工的時間、不是老闆的\n- 員工準備 agenda（不是老闆）\n- 60% 是員工想聊的\n- 30% 是 feedback\n- 10% career discussion\n\n主題：\n- 工作 blocker\n- 跨團隊問題\n- Career 想法\n- Personal（如果舒服）\n- Manager feedback（對你）\n\n筆記：\n- 老闆有自己的 notes\n- 員工也有\n- Action items 兩邊都記\n```\n\n  \n#### 5. All-hands / Town Hall\n\n```text\n目的：全公司同步\n\n主題：\n- 公司近況\n- 重要決策\n- Q&A\n- 慶祝成就\n\n頻率：月 1 或雙週 1\n\n注意：\n- 不要變單向 broadcast\n- Q&A 時間留夠\n- 提前收集問題（匿名）\n- 影片 record 給 remote\n```\n\n  \n### 開會 6 條規則\n\n  \n#### 1. 永遠有 Agenda\n\n```text\n沒 agenda 的會議 = 取消\n\nagenda 包含：\n- 時間（清楚開始 + 結束）\n- 主持人\n- 參與者\n- 想達到什麼\n- 每個主題的 timebox\n- 提前準備（讀什麼、想什麼）\n\nagenda 至少會議前 24 小時發\n```\n\n  \n#### 2. 8 人原則\n\n```text\nJeff Bezos 的 two-pizza rule：\n「如果一個會議 2 個 pizza 不夠吃、就太多人」\n\n實務上：8 人是上限\n\n為什麼：\n- > 8 人有人不發言（搭便車）\n- 決策慢\n- 容易離題\n- 排時間困難\n\n如果真要更多人：\n- 拆成多場小會\n- 大會議改 town hall（單向 broadcast）\n- 重要決策小組決、其他人事後通知\n```\n\n  \n#### 3. 開始 + 結束準時\n\n```text\n晚 5 分鐘開始 = 全部人浪費 5 分\n\n文化：\n- 9:00 開始 = 9:00（不是 9:05）\n- 9:30 結束 = 9:30（不是 9:35）\n\n技巧：\n- 設 25 分鐘會議（非 30 分）\n- 有提早結束的權利\n- 沒人到不等\n```\n\n  \n#### 4. 一人主持\n\n```text\n主持人責任：\n- 控時\n- 控話題\n- 收尾\n- 確保 outcome\n\n「沒人主持 = 大家主持 = 沒效率」\n```\n\n  \n#### 5. 結尾 3 件事\n\n```text\n會議最後 5 分鐘：\n\n1. 我們今天 decided 什麼？\n2. 接下來誰做什麼（owner + deadline）？\n3. 下次什麼時候 sync？\n\n寫進 minutes、會後立刻發\n```\n\n  \n#### 6. 「No-meeting」時段\n\n```text\n整個 team 同步保留 deep work 時間：\n\n例：\n- 每天 9-12 沒會議\n- 週三整天沒會議\n- 早上 / 下午分塊\n\n讓 dev 有完整 3-4 小時 focus\n不被 calendar 切碎\n```\n\n  \n### 2026 趨勢：Async-first\n\n  \n遠端團隊推 async-first：\n\n```text\n原則：\n1. 預設 async（doc / Slack / Loom）\n2. 真的需要互動才 sync 開會\n3. 開會也錄影 給沒到的人看\n\n工具組合：\n- Loom：5 分鐘錄影解釋（取代 30 分會議）\n- Notion：commented async discussion\n- Slack thread：long-form async\n- 影片 + transcript：開會錄\n\n效益：\n- 跨時區友善\n- Deep work 時間多\n- 文件 trail 完整\n- 不擾人\n```\n\n  \n### 會議「健康」指標\n\n  \n定期 review 個人 calendar：\n\n```text\n每月看：\n- 會議時數佔工作時數幾 %？\n  健康： 50%（IC）/ > 75%（manager）\n\n- 有多少 1-on-1 / status / brainstorm？\n  比例失衡要調整\n\n- 有多少 deep work block？\n  少 = 不會做事\n\n- 哪些會議能取消？\n  每月主動 audit 一次\n```\n\n  \n### 如何拒絕會議\n\n```text\n常見藉口（爛）：\n「我那時候有事」（什麼事？）\n「我之後再說」（之後不會說）\n\n好的拒絕：\n「謝謝邀請。基於 agenda：\n- 我覺得能 async 解決（這個 Slack thread）\n- 我參加不會貢獻很多\n- 我會看會議 notes 跟上\n\n如果你覺得我必要參加、tell me why\n我會 reconsider」\n\n對方會：\n- 退一步 reframe（你贏）\n- 真的需要你 → 解釋（你贏）\n- 不重要 → 不勉強（你贏）\n```\n\n  \n    **🚀 進階技巧**\n    \n2026 senior+ 心法：**「會議是 manager 的 deliverable、不是 IC 的」**。Manager 開會是工作、IC 開會是中斷工作。如果你是 IC、保護你的 deep work 時間像保護生命—因為那才是你 produce 的時段。學會拒絕會議 = senior IC 必備技能。\n\n  \n\n  \n    \n      🎯\n      面試考點\n    \n    台灣科技公司面試 90% 會問「專案管理」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。",
+      "tip": {
+        "type": "pro",
+        "text": "台灣科技公司面試 90% 會問「專案管理」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 16 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "會議的真實成本"
+        },
+        {
+          "level": 3,
+          "text": "會議該不該開：3 個問題"
+        },
+        {
+          "level": 3,
+          "text": "會議類型 + 主持要點"
+        },
+        {
+          "level": 3,
+          "text": "開會 6 條規則"
+        },
+        {
+          "level": 3,
+          "text": "2026 趨勢：Async-first"
+        },
+        {
+          "level": 3,
+          "text": "會議「健康」指標"
+        },
+        {
+          "level": 3,
+          "text": "如何拒絕會議"
+        }
+      ]
+    },
+    {
+      "id": "43.15",
+      "number": "LESSON 43.15",
+      "title": "文件化：永遠別嫌煩",
+      "oneLineSummary": "Notion / ClickUp：「全能型 PM 工具」—文件 + 任務 + database 一條龍。",
+      "analogy": "像瑞士刀—一個工具當多個用。Notion 文件 + DB / ClickUp 任務 + 時間追蹤—小公司很愛、複雜流程不夠用。",
+      "content": "工程師最不愛做的事 top 3：**(1) 寫文件 (2) 寫文件 (3) 寫文件**。但少了文件、整個 team 痛苦 100 倍。\n\n  \n### 為什麼工程師不愛寫文件\n\n  \n- **感覺浪費時間**—「我寫 code 都來不及了」\n- **怕寫不好**—不確定誰看、不知道寫多細\n- **看不到 ROI**—不像 code 立刻能 ship\n- **沒被獎勵**—寫好文件沒人 promote 你\n- **文件容易過期**—改 code 沒同步改\n\n  \n### 為什麼**必須**寫\n\n```text\n沒文件的真實後果：\n\n1. 同個問題被問 10 次\n   → 你解釋 10 次（總共 5 小時）\n   \n2. 新人 onboard 1 個月\n   → 應該 1 週能上手\n\n3. 你休假 1 週\n   → 沒人能接、被叫回來\n   \n4. 你離職 / 換 team\n   → knowledge 蒸發、要重 reverse engineer\n   \n5. 客戶要文件 → 沒有 → 失信任\n\n6. 找 bug 看 git log 才知道為什麼當初這樣寫\n   → 沒答案 → 不敢改\n\n每個都比寫文件痛 10 倍\n```\n\n  \n### 什麼該寫\n\n  \n#### 1. 系統架構文件\n\n```text\n每個 production 系統都該有：\n\n# System: Order Processing\n\n## Overview\n1 段話講系統幹嘛\n\n## Architecture Diagram\n[ASCII / Mermaid / 圖]\n\n## Components\n- API：Node.js + Express\n- DB：PostgreSQL on RDS\n- Queue：Redis + BullMQ\n- ...\n\n## Data Flow\n1. 客戶下單（API）\n2. 寫入 DB\n3. 推到 queue\n4. Worker 處理\n5. 通知客戶\n\n## External Dependencies\n- Stripe（支付）\n- SendGrid（email）\n- ...\n\n## SLA / Performance\n- p99 latency  5%\n- Sentry 大量 alert\n- 客戶開始 complain\n\n## 立刻檢查\n1. status.statuspage.io 確認上游沒掛\n2. AWS console 看 ECS 服務狀態\n3. CloudWatch 看 CPU / memory\n4. Database 連線數\n\n## 常見原因 + 解法\n| 症狀 | 原因 | 解法 |\n|------|------|------|\n| memory 100% | leak | restart pod |\n| DB 連線滿 | 慢 query | kill long query |\n| CPU 100% | infinite loop | hotfix or rollback |\n\n## 升級條件\n- 5 分鐘內沒恢復 → page senior\n- 客戶影響 > 1000 → 通知 CEO\n\n## 事後\n- Postmortem\n- Update runbook\n```\n\n  \n#### 5. Onboarding 文件\n\n```text\n# New Engineer Onboarding\n\n## Week 1\n- 看 Architecture doc\n- 跑通 dev 環境\n- 修 1 個「good first issue」\n\n## Week 2\n- 看 Coding Style guide\n- pair 寫一個 feature\n- 出第一個 PR\n\n## Week 3-4\n- 獨立完成中型 feature\n- 上 oncall（shadow）\n\n## Resources\n- #engineering Slack\n- 內部 wiki\n- 1-on-1 mentor\n- Common gotchas\n```\n\n  \n### 怎麼寫得有效率\n\n  \n#### 1. Write as you go\n\n  \n不要等專案結束才寫—邊做邊寫：\n\n  \n- 寫 RFC 時開 architecture doc\n- 改 endpoint 時更新 API doc\n- 解 bug 時更新 troubleshooting\n- 新人問問題 → 答案寫進 wiki（下次直接連）\n\n  \n#### 2. 「最小可行文件」\n\n  \n不要追求完美—**有勝過完美**：\n\n```text\nlevel 0：沒任何文件 → 災難\n\nlevel 1：README + 簡單 architecture\n        → 已經 80% 有用\n\nlevel 2：+ API doc + runbook\n        → 90% 有用\n\nlevel 3：完整 wiki + diagrams + onboarding\n        → 適合大公司\n\n中型 SaaS：level 1-2 就夠\n大公司：要 level 3\nindie：level 1 就好\n```\n\n  \n#### 3. AI 工具大幅降低成本\n\n  \n2026 寫文件痛苦大幅降低：\n\n```text\n工具：\n- Claude / GPT：把 code 變說明\n- Mintlify：自動產 API doc\n- Swimm：code-coupled docs\n- Codeium docs：内建 IDE\n\n工作流：\n1. 寫完 code\n2. 「Claude、看這段 code、寫 README 跟 API doc」\n3. 人 review + 修\n4. commit\n\n時間：傳統 1 小時 → 10 分鐘\n```\n\n  \n#### 4. 文件「同步」用 CI\n\n```text\n怕文件過期 → CI 強制：\n\n- API doc：每次 PR 自動 regenerate（OpenAPI from code）\n- 環境變數列表：從 .env.example 產\n- DB schema：從 migration 產\n\n不依賴人記得更新\n依賴自動化\n```\n\n  \n### 文件放哪\n\n  \n| 類型 | 放哪 |\n| --- | --- |\n| Code-specific（README、API） | repo 內 |\n| Cross-team architecture | Notion / Confluence |\n| Onboarding | internal wiki |\n| RFC / decisions | 專屬 RFC repo |\n| Runbook（oncall） | 容易找的地方（Slack pin） |\n| 客戶文件 | docs.yoursite.com |\n\n  \n### 「文件死亡」如何避免\n\n```text\n文件過期 → 沒人信 → 不看 → 不更新 → 更過期\n\n打破循環：\n\n1. Owner 制度\n   每個 doc 一個 owner\n   每季 review\n\n2. 「Last reviewed」標記\n   doc 開頭：「Last reviewed: 2026-05-12 by Alice」\n   超過 6 個月 → 自動標 stale\n\n3. 文件相關 PR 必修\n   改 code 但沒改文件 → PR 不過\n\n4. 鼓勵刪除\n   過期 / 沒用的 doc → 刪\n   不要留垃圾\n\n5. Search 重要\n   找不到的 doc = 不存在\n   工具：Notion search / Algolia\n```\n\n  \n### 2026 趨勢：Doc as Code\n\n  \n- 文件用 markdown 寫\n- 放 git repo（跟 code 同 PR review）\n- 用 Docusaurus / Nextra / Astro 產靜態站\n- CI 自動 build + deploy\n- 文件版本控制（v1.0 / v2.0）\n\n  \n這個方法的優點：\n\n  \n- 同 PR review 流程\n- git history 知道誰改了什麼\n- 不會被「忘記更新 Confluence」\n- 能 diff、能 rollback\n\n  \n    **🚀 進階技巧**\n    \n2026 senior 心法：**「文件就是程式碼的擴展」**。寫 code 不寫 doc = 只完成一半。Junior 用「我沒時間」當藉口、Senior 把寫 doc 排進時程。AI 時代寫 doc 已經不痛苦了—只剩「**願不願意**」這個問題。\n\n  \n\n  \n    \n      ⚡\n      學習加速器\n    \n    把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。",
+      "tip": {
+        "type": "practical",
+        "text": "把這節學到的馬上應用到一個小東西—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "為什麼工程師不愛寫文件"
+        },
+        {
+          "level": 3,
+          "text": "為什麼必須寫"
+        },
+        {
+          "level": 3,
+          "text": "什麼該寫"
+        },
+        {
+          "level": 3,
+          "text": "怎麼寫得有效率"
+        },
+        {
+          "level": 3,
+          "text": "文件放哪"
+        },
+        {
+          "level": 3,
+          "text": "「文件死亡」如何避免"
+        },
+        {
+          "level": 3,
+          "text": "2026 趨勢：Doc as Code"
+        }
+      ]
+    },
+    {
+      "id": "43.16",
+      "number": "LESSON 43.16",
+      "title": "工具地圖：Jira / Linear / Notion / Asana / 其他",
+      "oneLineSummary": "GitHub Projects：「跟 code 整合的 PM 工具」—免費、跟 PR / issue 直連。",
+      "analogy": "像「PM 工具長在 GitHub 裡」—issue 跟 PR 自動連結 task、code 跟 PM 不脫節。Indie / OSS 專案首選。",
+      "content": "2026 PM 工具**百花齊放**—選對工具團隊效率 ×2、選錯反過來。\n\n  \n### 工具分類\n\n```text\n4 大類：\n\n1. Issue Tracking（工程主力）\n   Jira, Linear, GitHub Issues, ClickUp\n\n2. Document / Wiki（文件 + spec）\n   Notion, Confluence, Coda, Slab\n\n3. Roadmap / Product\n   ProductBoard, Aha!, Roadmunk\n\n4. Communication\n   Slack, Microsoft Teams, Discord\n\n很多工具想做 all-in-one\n但實務上專業工具贏\n```\n\n  \n### 主流 Issue Tracking 比較\n\n  \n#### Jira\n\n  \n- **老牌**—Atlassian 2002 起\n- 大公司 / 規模化標配\n- 超強客製化（每個欄位、workflow、permission）\n- 學習曲線陡、UI 慢、被嫌「肥」\n- 適合：> 50 人 / 監管嚴的行業\n- 價格：$8-15/user/月\n\n  \n#### Linear（2024-2026 最紅）\n\n  \n- 2019 起、SF startup 標配\n- UI 極快、鍵盤驅動\n- 內建 Cycle（類 sprint）、roadmap\n- 限制：較不彈性、不適合非工程 team\n- 適合：tech startup / 中型 SaaS\n- 價格：$10/user/月\n\n  \n#### GitHub Issues\n\n  \n- 免費（含在 repo）\n- Projects v2 進步很多\n- 跟 PR / code 整合最好\n- 缺：複雜流程弱、跨 repo 難管\n- 適合：open source / 小 team\n- 價格：免費（含 GitHub）\n\n  \n#### ClickUp\n\n  \n- All-in-one：issue + doc + chat + goals\n- 客製化高\n- UI 有時亂、學習曲線高\n- 適合：跨職能 team（工程 + 行銷 + 業務）\n- 價格：$7-12/user/月\n\n  \n#### Trello\n\n  \n- Kanban 經典\n- 極簡、好上手\n- 大 team 不夠用\n- 適合：個人 / 小 team / 非工程\n- 價格：免費 / $5/user/月\n\n  \n#### Asana\n\n  \n- 跨職能強\n- UI 友善\n- 工程功能比 Jira / Linear 弱\n- 適合：跨部門 ops / 行銷\n- 價格：$10-25/user/月\n\n  \n### Document / Wiki\n\n  \n#### Notion\n\n  \n- 2026 最普及的 wiki\n- 強：DB、模板、整合\n- 缺：規模大會慢、search 不夠強\n- 適合：startup / 中型公司\n- 價格：$10-15/user/月\n\n  \n#### Confluence\n\n  \n- Atlassian 出、跟 Jira 同生態\n- 企業級、permission 細\n- UI 比 Notion 醜\n- 適合：大公司\n- 價格：$5-10/user/月\n\n  \n#### Coda\n\n  \n- 「Notion + Airtable」混合\n- 能寫 formula、做 mini-app\n- 學習曲線高\n- 適合：技術型 PM / ops\n\n  \n#### Slab / Slite / Almanac\n\n  \n- Wiki-focused\n- 更專注「文件」不是「DB」\n- 適合：純文件多的 team\n\n  \n### 2026 真實組合（依規模）\n\n  \n#### 個人 / Indie（1 人）\n\n```text\n- Linear（個人）或 Notion 看板\n- Notion（document）\n- Calendar app\n- 個人 todo（Things 3、Todoist）\n\n成本：\n    **🚀 進階技巧**\n    \n2026 indie 真實組合：**「Linear（issue）+ Notion（everything else）+ Slack」**。三個工具能撐到 100 人公司。新工具一直出但本質沒變—別跟潮流換工具、跟著「**解決什麼問題**」換。\n\n  \n\n  \n    \n      🚀\n      2026 趨勢\n    \n    這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。",
+      "tip": {
+        "type": "trend",
+        "text": "這個技術 2026 還在主流、未來 5 年不會過時。但工具會更新—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "安裝 lesson 內介紹的工具、用官方的 quick start 跑一次 hello world。記錄安裝過程踩了哪些坑。",
+        "hint": "工具的學習曲線通常卡在「環境設定」這關。Node 版本、Python 版本、權限、PATH 變數、port 衝突——遇到一個解一個。",
+        "answer": "踩坑筆記範本：『遇到：[錯誤訊息] → 原因：[根本原因] → 解：[具體指令]』。整理在自己的 GitHub gist 或 Notion、下次遇到同樣坑直接複製貼上 = 把痛苦變資產。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "工具分類"
+        },
+        {
+          "level": 3,
+          "text": "主流 Issue Tracking 比較"
+        },
+        {
+          "level": 3,
+          "text": "Document / Wiki"
+        },
+        {
+          "level": 3,
+          "text": "2026 真實組合（依規模）"
+        }
+      ]
+    },
+    {
+      "id": "43.17",
+      "number": "LESSON 43.17",
+      "title": "AI 時代的 PM 新工具",
+      "oneLineSummary": "PRD（Product Requirements Document）：「需求文件」—寫清楚要做什麼。",
+      "analogy": "像建築設計圖—蓋之前要有圖。PRD 寫：背景 / 目標 / user story / 規格 / 邊緣案例—工程師看了就能動工。",
+      "content": "2024-2026 PM 工具最大變化—**AI 大量取代 admin work**。會用 = 一個人能管 2 倍規模。\n\n  \n### AI 改變什麼\n\n```text\n傳統 PM 工作分配：\n\n50% admin（最痛苦）：\n- 寫 status report\n- 排程會議\n- 寫會議 minutes\n- 整理 ticket\n- 翻譯需求\n\n30% communication：\n- email / Slack 回覆\n- 跨部門 sync\n- stakeholder update\n\n20% real PM work：\n- 判斷優先序\n- 風險管理\n- 決策\n\n2026 AI 把 50% admin 自動化\n→ PM 能 focus 在 30% comm + 20% judgment\n→ 或一人管 2 倍 project\n```\n\n  \n### AI 工具地圖\n\n  \n#### 1. 會議自動化\n\n  \n- **Granola**—會議錄音 + AI minutes（2026 最紅）\n- **Fireflies**—類似 + transcription\n- **Otter**—老牌 transcription\n- **tl;dv**—Zoom recording + AI summary\n- **Krisp**—去雜訊 + meeting notes\n\n```text\n傳統 minutes：\n會後 30 分鐘整理、永遠拖\n\nAI minutes（會議結束自動有）：\n- 摘要\n- Action items（誰 / 何時）\n- Decisions\n- Topic 分類\n- 完整 transcript（可搜尋）\n\nPM 工作：review + send\n時間：30 分 → 5 分\n```\n\n  \n#### 2. Status / Update 自動產\n\n  \n- **Linear Updates**—從 issue 變動產 weekly\n- **Geekbot**—Slack async standup\n- **Status Hero**—團隊 status board\n- **Polly**—週期 prompt + 整合\n\n```text\n傳統週報：PM 2 小時整理\nAI 從 issue tracker / git log 自動產：\n\n- 過去一週完成 12 個 issue\n- 進行中 8 個\n- 3 個 at-risk（owner + 原因）\n- 主要 ship：feature X, Y\n\nPM 工作：review + 加 context\n時間：2 小時 → 20 分\n```\n\n  \n#### 3. Roadmap / Prioritization\n\n  \n- **ProductBoard AI**—從 feedback 找 patterns\n- **Productlane**—feedback → priority\n- **Cycle**—customer signals → priority\n- **自架 Claude prompt**—RICE 自動算\n\n  \n#### 4. RFC / Doc 寫作\n\n  \n- **Claude**—寫 RFC 草稿（人 review + 改）\n- **Notion AI**—integrated\n- **Mem**—long-form writing + AI\n\n  \n#### 5. Customer Feedback 分析\n\n  \n- **Enterpret**—統整多管道 feedback + categorize\n- **Anecdote AI**—from support tickets\n- **Crayon**—competitive intel\n\n  \n#### 6. Sprint Planning AI\n\n  \n- **Linear Magic Estimate**—AI 看 description 估時\n- **Jira AI**—類似\n- 自架 Claude—餵 codebase context、估更準\n\n  \n### 實戰：把 Claude 當 PM 助手\n\n```text\n把 Claude 當「資深 PM 顧問」：\n\n1. 寫 PRD：\n「我要做 X、目標 Y、限制 Z。\n幫我寫 PRD 大綱、包含背景 / 目標 / 非目標 / \nuser stories / acceptance criteria」\n\n2. 拆 task：\n「這個 feature 拆成可執行的 tickets、\n每個 1-3 天工、含 description + DoD」\n\n3. Risk 評估：\n「這個 plan 有什麼風險？\n給我 top 5 + 機率 + 影響 + mitigation」\n\n4. Stakeholder map：\n「這個專案誰會 care？怎麼跟他們溝通？」\n\n5. Retro 主持：\n「這 sprint 數據 [...]、團隊 sentiment [...]、\n幫我設計 retro agenda」\n\n6. 寫 update：\n「這週進度 [...]、寫成 stakeholder update、\n不超過 200 字」\n\n→ Claude 從零產草稿\n→ 人改 20% 變最終版\n→ 省 80% 時間\n```\n\n  \n### AI 不能取代的\n\n  \n- **政治判斷**—誰能 push、誰不能\n- **產品 vision**—Strategy 還是要人\n- **建立信任**—跟 stakeholder 1-on-1\n- **困難對話**—炒人、給壞消息\n- **創造性決策**—未知 territory\n\n  \n### 2026 新 PM 角色：「AI 編排師」\n\n```text\n過去 PM：\n- 自己寫 doc\n- 自己整理 status\n- 自己排會議\n- 大量 admin\n\n2026 PM：\n- 設定 AI prompt + workflow\n- review AI 輸出\n- focus 在 judgment + 溝通\n- 一人管更多 project\n\n需要新技能：\n- prompt engineering\n- AI 工具評估\n- 知道什麼 AI 做不到\n```\n\n  \n### indie / solopreneur 的 AI PM stack\n\n```text\n個人 PM 每日工作流（30 分鐘）：\n\n早上：\n- Granola 看昨天會議 summary\n- Linear AI 看 issue 變動\n- Claude 摘要 inbox\n\n規劃：\n- Claude 幫排今日 top 3\n- Notion AI 拆 task\n\n執行：\n- 一個 task 卡住 → Claude debug\n- 寫 update → Claude 改\n\n晚上：\n- Loom 5 分鐘錄今天進度\n- Claude 寫週報\n\n工具總成本：\n    **🚀 進階技巧**\n    \n2026 PM 真實：**「不用 AI 的 PM 慢慢被淘汰、過度依賴 AI 的 PM 失去判斷力」**。中間：用 AI 做 80% admin、保留 20% 自己手動（保持手感）。每個 update 至少 read & adjust、不要 raw 送出去。\n\n  \n\n  \n    \n      🛠️\n      工具推薦\n    \n    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。",
+      "tip": {
+        "type": "practical",
+        "text": "配合這節用的工具：(1) VS Code（編輯器、免費）(2) Chrome DevTools（F12 開啟、除錯神器）(3) Live Server（VS Code 擴充、即時預覽）(4) GitHub Copilot / Cursor（AI 寫程式、學習加速 2-10x）。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "安裝 lesson 內介紹的工具、用官方的 quick start 跑一次 hello world。記錄安裝過程踩了哪些坑。",
+        "hint": "工具的學習曲線通常卡在「環境設定」這關。Node 版本、Python 版本、權限、PATH 變數、port 衝突——遇到一個解一個。",
+        "answer": "踩坑筆記範本：『遇到：[錯誤訊息] → 原因：[根本原因] → 解：[具體指令]』。整理在自己的 GitHub gist 或 Notion、下次遇到同樣坑直接複製貼上 = 把痛苦變資產。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "AI 改變什麼"
+        },
+        {
+          "level": 3,
+          "text": "AI 工具地圖"
+        },
+        {
+          "level": 3,
+          "text": "實戰：把 Claude 當 PM 助手"
+        },
+        {
+          "level": 3,
+          "text": "AI 不能取代的"
+        },
+        {
+          "level": 3,
+          "text": "2026 新 PM 角色：「AI 編排師」"
+        },
+        {
+          "level": 3,
+          "text": "indie / solopreneur 的 AI PM stack"
+        }
+      ]
+    },
+    {
+      "id": "43.18",
+      "number": "LESSON 43.18",
+      "title": "跨時區 + 遠端團隊",
+      "oneLineSummary": "Tech Spec：「工程師寫的技術方案」—PRD 的補充。",
+      "analogy": "像建築結構圖—設計圖是 PRD、結構工法是 Tech Spec。寫架構 / DB schema / API design—大專案前必做。",
+      "content": "2026 軟體業現實：**純 office team 越來越少**。學會遠端 + 跨時區協作 = 不被地理限制。\n\n  \n### 3 種團隊模式\n\n  \n- **Co-located**—全部同 office\n- **Hybrid**—一週 X 天 office\n- **Distributed / Remote-first**—分散各地\n\n  \n2026 軟體業約：Co-located 20% / Hybrid 50% / Remote 30%。\n\n  \n### 跨時區挑戰\n\n```text\n典型分散：\n- 台灣（UTC+8）\n- 美西（UTC-8）\n- 歐洲（UTC+1）\n\n重疊時間：\n- 台 + 美：早台 1-3am ↔ 晚美 9-11pm\n- 台 + 歐：晚台 8-11pm ↔ 早歐 1-4pm\n- 美 + 歐：晚美 7-10am ↔ 下午歐 4-7pm\n\n→ 3 個時區沒有共同上班時間\n→ 必須 async-first\n```\n\n  \n### Async-first 原則\n\n  \n#### 1. 文字 > 口頭\n\n  \n- 所有重要決定**寫下來**\n- 會議要有 doc + 錄影\n- Decision log 公開\n- RFC 取代會議討論\n\n  \n#### 2. 預期回應時間\n\n```text\n規則：\n- 緊急（P0）：5 分鐘\n- 重要（P1）：4 小時\n- 一般（P2）：24 小時\n- 不急（P3）：48 小時\n\n不要因為「對方沒立刻回」焦慮\n他可能在睡覺\n```\n\n  \n#### 3. 自包含的訊息\n\n```text\n爛訊息（會 ping-pong）：\n「Alice、你 OK 嗎？」\n\n好訊息（一次到位）：\n「Alice、想 review 你的 PR #1234。\n3 個 questions：\n1. 為什麼選 X 不選 Y？\n2. test coverage 夠嗎？\n3. 跟 doc 同步嗎？\n\n如果都 OK 我 approve。\n不急、明天前回我就好。」\n\n→ Alice 醒來 1 read + 1 reply 完成\n```\n\n  \n### 文字工具優先順序\n\n  \n| 媒介 | 適合 | 不適合 |\n| --- | --- | --- |\n| Slack | 快速 sync | 長 discussion |\n| Notion comments | doc 上下文 | 實時聊 |\n| GitHub PR | code 相關 | 產品決策 |\n| Loom 影片 | 解釋複雜事 | 簡單事 |\n| Email | 外部 / 正式 | 內部快速 |\n| Video call | 建立關係 | routine |\n\n  \n### 「重疊小時」策略\n\n  \n跨時區 team 有 1-3 小時重疊—**那段做最有價值的事**：\n\n```text\n不要做：\n- standup（async 即可）\n- status report\n- 一般 sync meeting\n\n要做：\n- 困難決策討論\n- 新人 onboarding 對話\n- 1-on-1\n- whiteboard brainstorm\n- 客戶會議\n```\n\n  \n### 跨時區會議排程\n\n  \n**原則：分擔不便**。不要「亞洲 team 永遠半夜開會」：\n\n```text\n輪流：\n- 第 1 個會 9am 美 / 12am 台\n- 第 2 個會 9am 台 / 6pm 美前一天\n- 第 3 個會 同 1\n- 第 4 個會 同 2\n\n讓兩邊都不舒服 1/2 時間\n比一邊永遠不舒服好\n```\n\n  \n### Documentation Culture\n\n  \n遠端 team 必備—**沒 doc = 沒 knowledge**：\n\n```text\n每個會議：\n- agenda 提前發\n- doc 同步寫筆記\n- 錄影 + transcript\n- 沒到的人能 catch up\n\n每個 decision：\n- 寫 decision log\n- 理由清楚\n\n每個 process：\n- 寫成 runbook\n- 新人能照做\n\n每個 know-how：\n- 寫進 wiki\n- 改 code 同步更新\n```\n\n  \n### 建立 remote 關係\n\n  \n沒見過面 → 容易冷漠 → 衝突 → 解體。對策：\n\n```text\n1. Donut bot（Slack）\n   每週隨機 pair 2 人 30 分鐘虛擬咖啡\n\n2. Show & Tell\n   每月一次 5 分鐘分享\n   寵物 / 嗜好 / 旅行（不工作）\n\n3. Watercooler channel\n   Slack #random\n   迷因 / 趣事 / 寵物照\n\n4. Annual offsite\n   一年一次實體聚 1 週\n   建立深層連結\n```\n\n  \n### Remote-first 公司案例\n\n  \n| 公司 | 規模 | 特色 |\n| --- | --- | --- |\n| GitLab | 1500+ | 100% remote、operations manual 公開 |\n| Automattic | 2000+ | WordPress、無 office |\n| Zapier | 500+ | 從一開始 remote |\n| Buffer | 80 | 透明文化 + remote |\n| Doist | 100 | Todoist、async 為主 |\n\n  \n共通點：強文件、async-first、透明（薪資 / 決策）、結果導向、定期實體聚會。\n\n  \n### 常見遠端坑\n\n  \n- **Always-on**—工作 / 生活模糊、burnout\n- **Loneliness**—社交孤立、憂鬱\n- **Promotion 不公**—老闆看到的人易升\n- **新人 onboarding 慢**—沒 office overhear\n- **文化稀釋**—規模大 + 新人多 → 認同感低\n\n  \n### 遠端個人技巧\n\n  \n- **固定上下班時間**—不要 always-on\n- **專屬工作空間**—跟休閒分開\n- **定期出門**—coworking / 咖啡店\n- **運動 / 社交不能少**—主動安排\n- **視訊用清楚**—好麥克風 + 燈光\n- **主動 ping 老闆**—不要消失太久\n\n  \n    **🚀 進階技巧**\n    \n2026 indie / 接案 / SaaS founder 共通：**「能 remote = 能環遊世界邊工作」**。台灣 founder 在京都咖啡店 / 清邁公寓 / 葡萄牙海邊跑 SaaS 已很常見。前提：工作流真的能 async + 文件化。學會這章 = 解鎖地理自由。\n\n  \n\n  \n    \n      ⚠️\n      新手常見錯誤\n    \n    新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。",
+      "tip": {
+        "type": "warning",
+        "text": "新手 3 大坑：(1) 不看 console—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) 不存檔就 F5—改完忘記儲存以為「程式沒效果」 (3) 抄 code 不理解—複製貼上能跑、但下次要改就崩潰。記得：先看懂、再寫。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "3 種團隊模式"
+        },
+        {
+          "level": 3,
+          "text": "跨時區挑戰"
+        },
+        {
+          "level": 3,
+          "text": "Async-first 原則"
+        },
+        {
+          "level": 3,
+          "text": "文字工具優先順序"
+        },
+        {
+          "level": 3,
+          "text": "「重疊小時」策略"
+        },
+        {
+          "level": 3,
+          "text": "跨時區會議排程"
+        },
+        {
+          "level": 3,
+          "text": "Documentation Culture"
+        },
+        {
+          "level": 3,
+          "text": "建立 remote 關係"
+        },
+        {
+          "level": 3,
+          "text": "Remote-first 公司案例"
+        },
+        {
+          "level": 3,
+          "text": "常見遠端坑"
+        },
+        {
+          "level": 3,
+          "text": "遠端個人技巧"
+        }
+      ]
+    },
+    {
+      "id": "43.19",
+      "number": "LESSON 43.19",
+      "title": "從工程師到 Lead / Manager",
+      "oneLineSummary": "Estimation：「怎麼估時間不會準到死、但不會差太遠」—工程師最爛但最重要的技能。",
+      "analogy": "像算外送會到幾分鐘—不準但有大概。Estimation 法則：估完 × 1.5（buffer）—大致準。",
+      "content": "軟體業 career 早期路徑：**IC（個人貢獻者）→ Senior IC → Tech Lead → Engineering Manager**。轉變的關鍵不只 title。\n\n  \n### IC vs Lead vs Manager 差別\n\n  \n|  | IC (Senior) | Tech Lead | EM (Manager) |\n| --- | --- | --- | --- |\n| 主要產出 | code | code + 技術方向 | team 的成果 |\n| 寫 code 比例 | 80% | 50% | 10-30% |\n| 會議比例 | 15% | 30% | 50%+ |\n| 影響範圍 | 自己 | 3-7 人 | 5-15 人 |\n| 升 / 開除權 | 無 | 影響 | 有 |\n| 主要技能 | 技術深度 | 技術 + leadership | People + judgment |\n\n  \n### 不是所有人都該當 Manager\n\n  \n業界誤解：**「升職 = 變 manager」**。錯。\n\n```text\n2026 主流公司有兩條路徑：\n\n技術線（IC）：\nJunior → Mid → Senior → Staff → Principal → Distinguished\n\n管理線（M）：\nSenior IC → EM → Senior EM → Director → VP\n\n兩條同等升遷\n不是「IC 升不上去才當 EM」\n\n選 IC：你愛寫 code、解技術難題\n選 EM：你愛幫人、解 process 問題\n\n選錯路 = 痛苦 5 年\n```\n\n  \n### 適不適合當 EM？問自己\n\n  \n1. 能**透過別人**達成成就感嗎？（不能寫 code 而 deliver 也滿足？）\n2. 願意一週 30 小時開會？\n3. 能聽**同樣抱怨 100 次**還耐心？\n4. 能解雇你的好朋友？\n5. 能說「不知道」而不焦慮？\n\n  \n5 個都 yes → 可能適合。3 個 no → 留 IC 線。\n\n  \n### 從 IC 到 Lead 的 4 個轉變\n\n  \n#### 1. 從「我做」到「team 做」\n\n```text\nIC 看到 bug：立刻修\n\nLead 看到 bug：\n- 誰能修？\n- 是 onboarding 機會？\n- team 學到什麼？\n\n優先：教 + 授權\n```\n\n  \n#### 2. 從「最佳 code」到「最快 ship」\n\n```text\nIC 心態：「這個 design 不夠優雅、我重構」\nLead 心態：「team 1 個月內能 deliver 嗎？\n完美 vs 能用、選能用」\n\ntrade-off 思維\n```\n\n  \n#### 3. 從「個人輸出」到「team 輸出」\n\n```text\n1 人 ship 5 feature/季 → IC OK\n5 人 ship 25 feature/季 → Lead 才厲害\n\nLead 自己 ship 很多但 team 一般 → Lead 失職\nLead 的 KPI = team 的 KPI\n```\n\n  \n#### 4. 從「技術強」到「judgment 強」\n\n```text\nIC 強在：algorithm / pattern / debug\nLead 強在：trade-off / priority / 政治 / 預判風險\n\n技術變 hygiene、judgment 變差異化\n```\n\n  \n### 新手 Manager 常見錯誤\n\n  \n#### 1. 還在寫太多 code\n\n  \n「我比較快、自己做」→ team 沒成長 → 自己變 SPOF。**解法：給 task → 哪怕慢 → team 學。你只做沒人能做的事**。\n\n  \n#### 2. Micro-manage\n\n  \n每天問「你做得怎樣？」→ team 覺得不被信任。**解法：信任 + 設清楚 outcome、每週 sync、中間不打擾**。\n\n  \n#### 3. 避免困難對話\n\n  \nBob 工作品質下降你不講、半年後不得不開除。**解法：立刻給 feedback。「我注意到 X、會擔心 Y、能幫你嗎？」直接但 supportive**。\n\n  \n#### 4. 不夠 1-on-1\n\n  \n每月一次 → 不知道 team 真實狀況 → 突然有人離職。**解法：每週 30 分 1-on-1、不是 status check、是了解他們**。\n\n  \n#### 5. 不會說「不」\n\n  \n所有 stakeholder 要求都接 → team 累死。**解法：學 negotiate scope / time、保護 team 容量、NO 是 manager 必修**。\n\n  \n### EM 的 4 個工作（Will Larson framework）\n\n  \n- **People**：1-on-1 / Performance review / Career / 招聘 / 處理離職\n- **Process**：planning / prioritization / 會議 cadence / 跨團隊協作\n- **Technical**：架構（戰略）/ tech debt / 還要寫一些 code（保持 hands-on）\n- **Strategic**：跟 leadership 對齊 / 跨組溝通 / 長期規劃 / headcount + budget\n\n  \n### 新 Manager 的 30/60/90 計畫\n\n  \n#### 0-30 天：聽\n\n  \n- 跟每個 direct report 1-on-1 兩次\n- 跟 cross-team peer 認識\n- 看 team 文件 / 系統 / 流程\n- **不要急著改任何東西**\n\n  \n#### 30-60 天：診斷\n\n  \n- 找 team 痛點 top 3\n- 跟 manager 對齊優先序\n- 找 quick wins（30 天能改）\n- 規劃 long-term 變動\n\n  \n#### 60-90 天：開始改\n\n  \n- 實作 quick wins\n- 跟 team 解釋 long-term plan\n- 給 feedback（正面 + 改善）\n- 建立自己的節奏\n\n  \n### 從 Lead/Manager 回 IC 也 OK\n\n  \n2020+ 越來越多人「**反向**」：\n\n```text\n原因：\n- 發現不喜歡管理\n- 想念寫 code\n- burnout（manager 沒 deep work）\n- 想學新技術\n\n業界看法：\n- 不再是「降職」\n- 越來越被尊重\n- 「我試過、知道自己愛 IC」\n\n關鍵：先講清楚、別假裝\n```\n\n  \n### 遠端時代的 Manager 挑戰\n\n  \n- 看不到 body language\n- 非語言 cue 少\n- 容易 micro-manage（怕看不到 = 沒做事）\n- 建立信任慢\n\n  \n對策：更多 1-on-1 + 開鏡頭、結果導向（看 ship 不看時數）、主動 outreach、定期實體聚會。\n\n  \n    **🚀 進階技巧**\n    \n給想升 Lead/EM 的人：**「先做 Lead 工作、再要 Lead title」**。不要等 promotion 才開始 mentor、寫 RFC、跨團隊協作—現在就做。Manager 看到你已經在做 → 升你是 formalization。永遠倒過來想：「我做什麼讓 Manager 想升我？」\n\n  \n\n  \n    \n      💼\n      接案小知識\n    \n    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「專案管理」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。",
+      "tip": {
+        "type": "practical",
+        "text": "剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「專案管理」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "IC vs Lead vs Manager 差別"
+        },
+        {
+          "level": 3,
+          "text": "不是所有人都該當 Manager"
+        },
+        {
+          "level": 3,
+          "text": "適不適合當 EM？問自己"
+        },
+        {
+          "level": 3,
+          "text": "從 IC 到 Lead 的 4 個轉變"
+        },
+        {
+          "level": 3,
+          "text": "新手 Manager 常見錯誤"
+        },
+        {
+          "level": 3,
+          "text": "EM 的 4 個工作（Will Larson framework）"
+        },
+        {
+          "level": 3,
+          "text": "新 Manager 的 30/60/90 計畫"
+        },
+        {
+          "level": 3,
+          "text": "從 Lead/Manager 回 IC 也 OK"
+        },
+        {
+          "level": 3,
+          "text": "遠端時代的 Manager 挑戰"
+        }
+      ]
+    },
+    {
+      "id": "43.20",
+      "number": "LESSON 43.20",
+      "title": "2026-2030 PM 趨勢",
+      "oneLineSummary": "整章實戰：幫一個假想 SaaS 做完整 sprint 規劃—PRD / Tech Spec / Sprint Plan 全部寫。",
+      "analogy": "像畢業專題的計畫書—不只寫 code、會規劃才是完整工程師。學完接案 / 帶團隊都有用。",
+      "content": "未來 5 年 PM 工作會大幅改變。**了解趨勢 = 提前布局**。\n\n  \n### 趨勢 1：AI 取代 80% admin work\n\n```text\n2026 已開始、2028-2030 全面：\n\n被 AI 取代：\n- 寫會議 minutes\n- 排程\n- Status report\n- Ticket triage\n- Basic doc 寫作\n- Routine stakeholder update\n\nPM 變什麼：\n- 「AI 編排師」\n- 設定 prompt / workflow\n- review + adjust AI 輸出\n- focus 高 judgment 工作\n\n結果：\n- PM 一人能管 2-3 倍 project\n- 入門 PM 工作減少\n- 高階 PM 需求增加\n```\n\n  \n### 趨勢 2：「Solo Founder」變主流\n\n```text\n過去：\nSaaS 需要 5-10 人才能上市\n\n2026-2030：\n1 人 + AI agent + SaaS templates 能 ship\n\n成功案例（已存在）：\n- Pieter Levels（Nomad List）\n- Marc Lou（多個 indie SaaS）\n- Justin Welsh（建內容 SaaS）\n- 各種「one-person unicorn」\n\nPM 角色轉變：\n- founder 自己是 PM\n- 不用招 PM\n- 但要懂 PM 思維\n\n機會：\n- 個人能力槓桿大\n- 不用大團隊也能成\n- AI 取代「需要更多人」\n```\n\n  \n### 趨勢 3：垂直行業 PM 興起\n\n```text\n2010-2025：通用 PM 走天下\n2025-2030：垂直專精 + AI 替代通用\n\n熱門垂直領域：\n- 醫療 / 健康\n- 法律 tech\n- 金融 / fintech\n- 教育 tech\n- 製造 / 物流\n- 政府 / 國防\n\n特點：\n- 需要 domain expertise\n- AI 不易完全自動化\n- 薪資溢價高\n- 入行門檻高\n\nPM 行動：\n- 早點選一個垂直\n- 累積 domain knowledge\n- 「PM + 醫療」> 「通用 PM」\n```\n\n  \n### 趨勢 4：「Outcome-based」團隊\n\n```text\n過去：feature factory（一直 ship feature）\n未來：outcome team（負責商業指標）\n\n例：\n過去 PM：「Q3 ship 10 個 feature」\n未來 PM：「Q3 把 retention 從 60% 提到 75%」\n        ← 你決定 feature 是什麼\n\n差異：\n- 對 outcome 負責\n- 自主性更高\n- 也更難（不能藏在 feature 後面）\n- 失敗 = 真的失敗（不能說「但我 ship 了」）\n\n需要的技能：\n- 數據分析\n- 假設驗證\n- 商業 sense\n- 跨職能合作\n```\n\n  \n### 趨勢 5：Continuous Discovery（持續探索）\n\n```text\n過去：PM 一年訪 5-10 個客戶\n未來：每週訪 1-3 個\n\n工具：\n- AI 摘要訪談\n- 自動找 patterns\n- feedback 整合多管道\n\n意義：\n- PM 跟客戶更近\n- 假設驗證更快\n- 不靠 gut feeling\n- 「PM = 客戶代理人」更真實\n```\n\n  \n### 趨勢 6：AI Agent 改變 product spec\n\n```text\n過去 product spec：\n「使用者點按鈕、進入頁面、填表單...」\n\nAI 時代 product spec：\n「使用者對 agent 講想要什麼、agent 規劃 + 執行」\n\nPM 工作變：\n- 設計 agent 行為\n- 定義 agent boundary\n- 處理 agent failure\n- agent 跟使用者互動 UX\n\n新類型：\n- conversational PM\n- agent product PM\n- AI infrastructure PM\n```\n\n  \n### 趨勢 7：PM 數量「兩極化」\n\n```text\n2026-2030：\n\n中層 PM（5-10 年經驗）→ 工作減少\n- AI 取代大部分 admin\n- 公司不需要那麼多\n\n入門 PM → 工作減少\n- 不再「PM 是 entry 給好職涯」\n- AI 比 junior PM 強\n\nSenior+ PM → 工作增加\n- judgment、政治、strategy 不能 AI\n- 比過去更值錢\n\n結論：\n- 別「假裝 PM 撐」\n- 早點 commit 變 Senior+\n- 或當 founder（不用 PM title）\n```\n\n  \n### 趨勢 8：「Founder-led」產品決策\n\n```text\n大公司模式：\nPdM 決定產品 → 工程實作\n\n新興模式：\n創辦人持續主導產品（哪怕 100 人公司）\n- Notion 的 Ivan\n- Linear 的 Karri\n- Vercel 的 Guillermo\n\n意義：\n- PM 比較像「founder 的助手」\n- 而不是「產品決策者」\n- 需要重新定位\n```\n\n  \n### 趨勢 9：Async-first 變預設\n\n```text\n會議 → 文件 / Loom / Notion\n即時 → 24h SLA\n全球分散 → 預設\n\nPM 必備：\n- 寫作能力（取代會議）\n- 影片溝通（Loom）\n- async tool 熟練\n\n「不能 async 的 PM」會被淘汰\n```\n\n  \n### 趨勢 10：Open Source / Open Roadmap\n\n```text\n透明文化擴散：\n- Public roadmap（Linear / Vercel 等）\n- Build in public（indie hackers）\n- 內部決策 doc 公開（GitLab）\n- 透明定價 / 員工薪資\n\nPM 改變：\n- 不能藏在 NDA 後面\n- 客戶能看到你 ship 什麼\n- 競品也能看\n- pressure 加大、但信任度也加大\n```\n\n  \n### 2030 PM 樣貌預測\n\n```text\n典型 2030 高階 PM：\n\n技能組合：\n- 強 vertical domain（醫療 / 金融 / 等）\n- AI prompt & tool 熟練\n- 寫作（取代會議）\n- 數據分析（SQL + Python 基本）\n- 商業判斷\n- 跨職能溝通\n\n工作型態：\n- Remote-first\n- 一人管 3-5 個 project\n- 每週只開 5-10 小時會議\n- 大量寫作 + 思考時間\n- 對 outcome 負責\n\n薪資：\n- 入門 PM 慢慢消失\n- Senior PM 薪資溢價\n- Domain expert PM 最高\n- Founder PM（自己當）天花板高\n```\n\n  \n### 對工程師的啟示\n\n  \n你不一定要當「PM」這個 title、但：\n\n  \n- **PM 思維**是 senior+ 工程師必備\n- **AI** 會大幅減少非 judgment 工作\n- **溝通 + 寫作** 比 code 更難被 AI 取代\n- **Vertical expertise** 比通用技術值錢\n- **founder skill**（一人撐 SaaS）= 終極 career hedge\n\n  \n### 怎麼提前布局\n\n```text\n2026-2030 行動清單：\n\n1. 學 PM 思維（這章 + Ch23 + Ch24 + Ch25）\n2. 練寫作（每週 1 篇）\n3. 練 AI 工具（這章 + Ch17-21）\n4. 選一個 vertical 深耕\n5. Build in public（X / Threads / Newsletter）\n6. 累積實際 deliver 經驗\n7. 從 IC 升 Lead 或 build 自己 SaaS\n8. 不依賴單一雇主（多 income stream）\n```\n\n  \n    **🚀 進階技巧**\n    \n最大趨勢一句話：**「AI 解放 PM 的 admin work、放大 judgment 重要性」**。會用 AI + 強 judgment = 黃金組合。光會 admin = 被淘汰。光會 judgment 不會 AI = 沒槓桿。兩個都練、未來 5 年薪資跟槓桿都會跳級。\n\n  \n\n  \n    \n      🎯\n      面試考點\n    \n    台灣科技公司面試 90% 會問「專案管理」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。",
+      "tip": {
+        "type": "pro",
+        "text": "台灣科技公司面試 90% 會問「專案管理」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 12 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "趨勢 1：AI 取代 80% admin work"
+        },
+        {
+          "level": 3,
+          "text": "趨勢 2：「Solo Founder」變主流"
+        },
+        {
+          "level": 3,
+          "text": "趨勢 3：垂直行業 PM 興起"
+        },
+        {
+          "level": 3,
+          "text": "趨勢 4：「Outcome-based」團隊"
+        },
+        {
+          "level": 3,
+          "text": "趨勢 5：Continuous Discovery（持續探索）"
+        },
+        {
+          "level": 3,
+          "text": "趨勢 6：AI Agent 改變 product spec"
+        },
+        {
+          "level": 3,
+          "text": "趨勢 7：PM 數量「兩極化」"
+        },
+        {
+          "level": 3,
+          "text": "趨勢 8：「Founder-led」產品決策"
+        },
+        {
+          "level": 3,
+          "text": "趨勢 9：Async-first 變預設"
+        },
+        {
+          "level": 3,
+          "text": "趨勢 10：Open Source / Open Roadmap"
+        },
+        {
+          "level": 3,
+          "text": "2030 PM 樣貌預測"
+        },
+        {
+          "level": 3,
+          "text": "對工程師的啟示"
+        },
+        {
+          "level": 3,
+          "text": "怎麼提前布局"
+        }
+      ]
+    },
+    {
+      "title": "Agile / Scrum 完整流程",
+      "oneLineSummary": "為什麼大公司全部跑 Agile？因為計畫 1 年只完成 30%、計畫 2 週完成 90%",
+      "analogy": "不是「快」、是「短回饋循環」。每 2 週交付、調整方向、避免做 1 年才發現方向錯。",
+      "content": "## Agile 4 大價值觀\n1. **個人與互動**重於流程與工具\n2. **可運作的軟體**重於完整文件\n3. **客戶協作**重於合約談判\n4. **回應變化**重於遵循計畫\n\n## Scrum 三個角色\n- **PO（Product Owner）**：決定做什麼、優先序\n- **Scrum Master**：移除障礙、保護團隊\n- **Dev Team**：3-9 人、自組織\n\n## 4 個會議（儀式）\n\n### 1. Sprint Planning（衝刺規劃）\n- 每個 Sprint 開始\n- 2-4 小時\n- 從 backlog 拉任務、估時、承諾\n- 產出 Sprint Backlog\n\n### 2. Daily Standup（每日站會）\n- 每天 15 分鐘\n- 3 個問題：\n  1. 昨天做了什麼？\n  2. 今天要做什麼？\n  3. 有什麼障礙？\n\n### 3. Sprint Review（衝刺審查）\n- Sprint 結束\n- Demo 給 stakeholder 看\n- 收 feedback\n\n### 4. Retrospective（回顧）\n- Sprint 結束\n- 團隊內部討論：\n  - What went well? 哪些好\n  - What didn't? 哪些不好\n  - Action items 下次改善\n\n## Backlog 管理\n\n### Product Backlog\n所有想做的事、PO 排優先序。\n\n### Sprint Backlog\n這個 Sprint 要做的、團隊承諾完成。\n\n### 任務狀態\n```\nTo Do → In Progress → Review → Done\n```\n\n## Story Points（估時）\n不估「幾小時」、估「相對複雜度」：\n- 1, 2, 3, 5, 8, 13, 21（費氏數列）\n- 1 = 超簡單\n- 13 = 巨大、應該拆\n\n避免直接估時間（容易偏、責任壓力）。\n\n## Velocity（速度）\n團隊每 Sprint 完成的 story points。\n- Sprint 1: 32 points\n- Sprint 2: 28 points\n- Sprint 3: 35 points\n- → 平均 ~30、用來預測未來\n\n## Burndown Chart\n每天剩多少 points、視覺化進度。\n\n## 工具\n- **Linear**：2026 最熱、為 Indie / startup 設計\n- **Jira**：企業老牌、功能完整\n- **Notion**：彈性、適合小團隊\n- **Asana / Monday**：易用\n- **GitHub Projects**：跟 PR 整合\n\n## Scrum vs Kanban\n\n| 面向 | Scrum | Kanban |\n|---|---|---|\n| 週期 | Sprint（2 週）| Continuous |\n| WIP 限制 | Sprint backlog | 各狀態 WIP limit |\n| 適合 | 產品開發 | 維運 / 接案 |\n| 變動 | Sprint 內不變 | 隨時可變 |\n\n## SAFe（Scaled Agile Framework）\n大公司用、把 Agile 規模化、複雜。一般 startup 用純 Scrum。\n\n## 不要過度信教\n- 不是「跑 Scrum 就會成功」\n- 不是「不開 daily 就不 Agile」\n- 重點是「短回饋 + 持續調整」、形式隨意",
+      "tip": {
+        "type": "business",
+        "text": "Agile / Scrum 是面試必考。會背流程 + 有 1 個真實 Sprint 經驗（學校 / 開源專案）= 不會被問倒。"
+      },
+      "id": "43.21",
+      "number": "LESSON 43.21",
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "Agile 4 大價值觀"
+        },
+        {
+          "level": 2,
+          "text": "Scrum 三個角色"
+        },
+        {
+          "level": 2,
+          "text": "4 個會議（儀式）"
+        },
+        {
+          "level": 3,
+          "text": "1. Sprint Planning（衝刺規劃）"
+        },
+        {
+          "level": 3,
+          "text": "2. Daily Standup（每日站會）"
+        },
+        {
+          "level": 3,
+          "text": "3. Sprint Review（衝刺審查）"
+        },
+        {
+          "level": 3,
+          "text": "4. Retrospective（回顧）"
+        },
+        {
+          "level": 2,
+          "text": "Backlog 管理"
+        },
+        {
+          "level": 3,
+          "text": "Product Backlog"
+        },
+        {
+          "level": 3,
+          "text": "Sprint Backlog"
+        },
+        {
+          "level": 3,
+          "text": "任務狀態"
+        },
+        {
+          "level": 2,
+          "text": "Story Points（估時）"
+        },
+        {
+          "level": 2,
+          "text": "Velocity（速度）"
+        },
+        {
+          "level": 2,
+          "text": "Burndown Chart"
+        },
+        {
+          "level": 2,
+          "text": "工具"
+        },
+        {
+          "level": 2,
+          "text": "Scrum vs Kanban"
+        },
+        {
+          "level": 2,
+          "text": "SAFe（Scaled Agile Framework）"
+        },
+        {
+          "level": 2,
+          "text": "不要過度信教"
+        }
+      ]
+    },
+    {
+      "title": "Linear：2026 最熱 PM 工具",
+      "oneLineSummary": "為什麼新一代 startup 全部從 Jira 跑 Linear？因為速度快 5 倍、UI 美 5 倍",
+      "analogy": "Jira 像 Photoshop、什麼都能但慢且醜。Linear 像 Figma、專注核心、快到飛起來。",
+      "content": "## Linear 殺手特色\n1. **速度**：Cmd+K 0.1 秒完成任何操作\n2. **設計**：每個按鈕都精美\n3. **整合**：GitHub / Slack / Figma 深度整合\n4. **API**：GraphQL、自動化超方便\n5. **Issue tracker → product OS**：roadmap、cycle、project 一條龍\n\n## 核心概念\n\n### Issue\n基本工作單位、有 ID（ENG-123）。\n狀態：Backlog → Todo → In Progress → In Review → Done → Canceled\n\n### Project\n多個 Issue 組成、有 milestone / progress。\n\n### Cycle\n週期（類 Sprint）、預設 1 週或 2 週。\n\n### Team\n組織單位、每個 team 有自己的 cycle / project。\n\n## Workflow\n\n### 接到工作\n1. 收到需求\n2. 開 Linear Cmd+N 開 issue\n3. 寫描述、估點數、指派\n4. 加 project / cycle\n\n### 開發\n1. Cmd+L 複製 branch name：`feat/eng-123-add-search`\n2. 開 branch、寫 code\n3. 開 PR、貼 issue ID（Linear 自動連結）\n4. PR merge → issue 自動 Done\n\n### Cycle 結束\n1. Linear 自動 retrospective\n2. 沒做完 issue 自動轉下個 cycle\n3. 看 velocity 圖\n\n## 快捷鍵（精華）\n- **Cmd+K**：搜尋 / 操作\n- **C**：建 issue\n- **/**：搜尋\n- **G + I**：我的 issue\n- **G + B**：backlog\n- **A**：assign\n- **L**：加 label\n- **S**：改狀態\n\n## GitHub 整合\nPR 標題寫 `[ENG-123]` → Linear 自動連結。\nPR merge → issue 自動 Done。\n\n## Slack 整合\n- 在 channel 寫 `/linear issue` 開 issue\n- Linear 通知推 channel\n- 不用切視窗、減少 context switch\n\n## API + 自動化\n```typescript\nimport { LinearClient } from \"@linear/sdk\";\nconst linear = new LinearClient({ apiKey });\n\nawait linear.createIssue({\n  teamId: \"...\",\n  title: \"Bug: login fails\",\n  description: \"From error report...\",\n  priority: 1,\n});\n```\n適合：\n- 把 Sentry error 自動開 Linear issue\n- 客服 ticket → Linear\n- AI 助理自動分派工作\n\n## 定價（2026）\n- **Free**：250 issue / team\n- **Standard**：$8/seat/月\n- **Business**：$14/seat/月\n\n對 Indie 友善、小團隊免費版夠。\n\n## 替代品\n- **Height**：類似 Linear、自動化更強\n- **Plane**：開源 Linear\n- **Notion**：彈性但慢\n- **GitHub Projects**：免費、跟 PR 整合\n\n## Migration from Jira\n匯入工具：CSV export → Linear import、半小時搞定。\n\n## 我的建議\n- Indie / startup → Linear（無腦選）\n- 企業 / 嚴重客製需求 → Jira（不得已）\n- 跟設計 / 內容混 → Notion",
+      "tip": {
+        "type": "milestone",
+        "text": "2025-2026 工程師面試「你用過 Linear 嗎？」會成為加分題。學起來、放履歷、立刻顯老練。"
+      },
+      "id": "43.22",
+      "number": "LESSON 43.22",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "43.22.auto",
+          "language": "typescript",
+          "title": "試試看",
+          "initialCode": "import { LinearClient } from \"@linear/sdk\";\nconst linear = new LinearClient({ apiKey });\n\nawait linear.createIssue({\n  teamId: \"...\",\n  title: \"Bug: login fails\",\n  description: \"From error report...\",\n  priority: 1,\n});",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "安裝 lesson 內介紹的工具、用官方的 quick start 跑一次 hello world。記錄安裝過程踩了哪些坑。",
+        "hint": "工具的學習曲線通常卡在「環境設定」這關。Node 版本、Python 版本、權限、PATH 變數、port 衝突——遇到一個解一個。",
+        "answer": "踩坑筆記範本：『遇到：[錯誤訊息] → 原因：[根本原因] → 解：[具體指令]』。整理在自己的 GitHub gist 或 Notion、下次遇到同樣坑直接複製貼上 = 把痛苦變資產。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "Linear 殺手特色"
+        },
+        {
+          "level": 2,
+          "text": "核心概念"
+        },
+        {
+          "level": 3,
+          "text": "Issue"
+        },
+        {
+          "level": 3,
+          "text": "Project"
+        },
+        {
+          "level": 3,
+          "text": "Cycle"
+        },
+        {
+          "level": 3,
+          "text": "Team"
+        },
+        {
+          "level": 2,
+          "text": "Workflow"
+        },
+        {
+          "level": 3,
+          "text": "接到工作"
+        },
+        {
+          "level": 3,
+          "text": "開發"
+        },
+        {
+          "level": 3,
+          "text": "Cycle 結束"
+        },
+        {
+          "level": 2,
+          "text": "快捷鍵（精華）"
+        },
+        {
+          "level": 2,
+          "text": "GitHub 整合"
+        },
+        {
+          "level": 2,
+          "text": "Slack 整合"
+        },
+        {
+          "level": 2,
+          "text": "API + 自動化"
+        },
+        {
+          "level": 2,
+          "text": "定價（2026）"
+        },
+        {
+          "level": 2,
+          "text": "替代品"
+        },
+        {
+          "level": 2,
+          "text": "Migration from Jira"
+        },
+        {
+          "level": 2,
+          "text": "我的建議"
+        }
+      ]
+    },
+    {
+      "title": "Notion / Confluence：知識管理",
+      "oneLineSummary": "產品文件、會議記錄、SOP—團隊知識的家",
+      "analogy": "Code 在 GitHub、需求在 Linear、那「為什麼這樣決定」「客戶 onboarding 流程」在哪？答：Notion / Confluence。",
+      "content": "## Notion 適合什麼\n- 產品需求文件（PRD）\n- 設計決策記錄\n- 會議記錄\n- 員工 wiki\n- 客戶 onboarding 流程\n- 個人筆記\n\n## Notion 架構建議\n\n```\n工作區\n├── 🏢 公司\n│   ├── 📋 OKR\n│   └── 🗂️ All Hands 會議\n├── 📦 產品\n│   ├── 🎯 PRD 模板\n│   ├── 🔬 使用者研究\n│   └── 📊 競品分析\n├── 🛠️ 工程\n│   ├── 📐 架構決策（ADR）\n│   ├── 🔧 SOP（部署、on-call）\n│   └── 📚 內部 wiki\n├── 🎨 設計\n│   └── 設計系統\n├── 💼 人資\n│   └── 入職指南\n└── 👤 個人筆記\n```\n\n## PRD 模板\n```\n# [產品名] PRD\n\n## 1. 問題陳述\n解決什麼問題？影響多少人？\n\n## 2. 目標\n- 主要：MAU +20%\n- 次要：留存 +5%\n\n## 3. 使用者\n- Primary persona: ...\n- Secondary: ...\n\n## 4. 解法\n[草圖 / Figma 連結]\n\n## 5. 需求\n### MUST\n- [ ] 註冊\n- [ ] 登入\n\n### SHOULD\n- [ ] OAuth\n\n### NICE TO HAVE\n- [ ] 雙因素認證\n\n## 6. 不做（Out of scope）\n明確列出不做的\n\n## 7. 上線計畫\n- 日期：2026-Q2\n- 灰度：5% → 50% → 100%\n- 監控指標\n\n## 8. 風險\n- 風險 1：...\n- 緩解：...\n\n## 9. 開放問題\n- 待釐清...\n```\n\n## ADR（Architecture Decision Record）\n```\n# ADR-001: 選用 Supabase 作為後端\n\n## 狀態\nAccepted\n\n## 背景\nIndie SaaS 需要快速上線、不想自管 DB。\n\n## 決策\n用 Supabase。\n\n## 後果\n- 好：1 週上線、認證 + DB + Storage 一條龍\n- 壞：vendor lock-in、進階查詢受限\n\n## 替代方案\n- Firebase：不喜歡 NoSQL\n- 自架 PG + Auth：太花時間\n```\n\n## Notion 進階技巧\n- **Database**：把 table 當 DB 用\n- **Templates**：建模板、批量套用\n- **Linked Database**：跨頁面同步\n- **Synced Block**：一改全改\n- **API**：自動化（Zapier / n8n 整合）\n\n## 缺點\n- 速度（大資料卡）\n- 離線（雖然有但弱）\n- 中文搜尋（不夠強）\n\n## 替代品\n- **Confluence**：企業老牌、跟 Jira 整合\n- **GitBook**：技術文件強、Markdown\n- **Obsidian**：個人 PKM、本地 markdown\n- **Logseq**：開源 Obsidian\n- **AppFlowy**：開源 Notion\n\n## SOP（標準作業流程）\n```\n# SOP: 處理 Production Bug\n\n## 嚴重度判斷\n- P0：服務全掛、客戶影響大、立即處理\n- P1：部分功能掛、4 小時內\n- P2：小問題、下個 sprint\n- P3：技術債、有空再說\n\n## 處理流程\n1. 開 Linear issue\n2. 通知 Slack #incident\n3. 找原因\n4. Hotfix branch\n5. PR + 加緊急 review\n6. Merge + deploy\n7. Post-mortem 文件\n```\n\n## 文化建議\n- 重要決定**一定要文件化**（不寫等於沒發生）\n- 每次新人 onboarding 看到痛點 → 寫 SOP\n- 每月清掉沒用的頁面\n- 不要把所有東西都放 Notion",
+      "tip": {
+        "type": "business",
+        "text": "接案交付時、一份 Notion handoff 文件（含 SOP / 架構決策）= 客戶感激涕零。比寫 1000 行 code 還值錢。"
+      },
+      "id": "43.23",
+      "number": "LESSON 43.23",
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "Notion 適合什麼"
+        },
+        {
+          "level": 2,
+          "text": "Notion 架構建議"
+        },
+        {
+          "level": 2,
+          "text": "PRD 模板"
+        },
+        {
+          "level": 2,
+          "text": "ADR（Architecture Decision Record）"
+        },
+        {
+          "level": 2,
+          "text": "Notion 進階技巧"
+        },
+        {
+          "level": 2,
+          "text": "缺點"
+        },
+        {
+          "level": 2,
+          "text": "替代品"
+        },
+        {
+          "level": 2,
+          "text": "SOP（標準作業流程）"
+        },
+        {
+          "level": 2,
+          "text": "文化建議"
+        }
+      ]
+    },
+    {
+      "title": "OKR：目標管理",
+      "oneLineSummary": "Objective + Key Results—Google / Intel 全用、Indie 也適用",
+      "analogy": "為什麼大公司用 OKR 不用 KPI？因為 OKR 公開、雄心、不和獎金綁、適合創新。",
+      "content": "## OKR 結構\n```\nObjective（質化目標）\n├── KR 1（量化結果）\n├── KR 2\n└── KR 3-5\n```\n\n## 範例\n\n### Q2 2026 AI 島\n\n**Objective 1: 成為台灣最受歡迎的全端教學網站**\n- KR 1: 月活躍使用者達到 5,000\n- KR 2: Twitter follower 達到 2,000\n- KR 3: 完成 60 章內容（每章 25+ lesson）\n\n**Objective 2: 建立可獲利 SaaS**\n- KR 1: 達到 NT$ 50,000 MRR\n- KR 2: 100 名付費使用者\n- KR 3: Churn rate < 5%\n\n## OKR 好原則\n\n### O（目標）\n- 雄心、激勵\n- 質化（不是數字）\n- 例：「成為市場領導者」、「打造最棒的開發者體驗」\n\n### KR（關鍵結果）\n- 量化、可衡量\n- 3-5 個\n- 60-70% 達成算成功（不是 100%）\n- 例：「MAU 達到 10k」、「NPS > 50」\n\n## 不要寫的 OKR\n❌ 「O: 改善網站」（不夠具體）\n❌ 「KR: 上線新功能」（不可量化）\n❌ 「KR: 我們會很努力」（無意義）\n❌ KR 100% 達標 = 目標訂太低\n\n## 對齊（Alignment）\n```\n公司 OKR\n   ↓\n部門 OKR（支援公司 OKR）\n   ↓\n個人 OKR（支援部門 OKR）\n```\n\n## OKR 週期\n- **季度**：3 個月（最常用）\n- **半年**：6 個月\n- **年度**：1 年（高層）\n\n## 流程\n1. **Q 開始**：訂 OKR、團隊對齊\n2. **週週 check-in**：看進度、調整\n3. **Q 中**：mid-Q review\n4. **Q 結束**：scoring + retrospective\n\n## Scoring\n- 0.0 - 0.3：fail\n- 0.4 - 0.6：progress\n- 0.7 - 1.0：success（這才是目標！）\n\n如果常 1.0 → 目標訂太低。\n\n## OKR vs KPI\n\n| 面向 | OKR | KPI |\n|---|---|---|\n| 性質 | 雄心目標 | 維持指標 |\n| 達成率 | 60-70% | 100% |\n| 公開 | 全公司 | 個人 |\n| 跟獎金 | 不綁 | 綁 |\n| 變動 | 每季調整 | 長期 |\n\n## Indie / 一人公司也適用\n```\n個人 Q2 OKR\n\nObjective: 成為 AI 教學圈知名 indie hacker\n- KR 1: Twitter 從 500 follower 到 3000\n- KR 2: 月入 NT$ 50,000\n- KR 3: 出 1 個能 ship 的 AI 工具\n```\n\n## 工具\n- **Notion templates**：免費\n- **Lattice / 15Five**：HR + OKR 整合\n- **Mooncamp / Tability**：專業 OKR 工具\n- **ClickUp / Asana**：內建\n\n## 心法\n- OKR ≠ todo list（OKR 是「what」、todo 是「how」）\n- 不要太多（一人 3 個 O 已經滿了）\n- 公開、透明、不藏\n- 退一步：寫不出好 KR、表示 O 不夠清楚",
+      "tip": {
+        "type": "milestone",
+        "text": "Indie 也該寫 OKR。一個人容易迷失方向、每季 reset 寫新 OKR、3 個月內反覆檢視、避免做了一堆但沒進展。"
+      },
+      "id": "43.24",
+      "number": "LESSON 43.24",
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "OKR 結構"
+        },
+        {
+          "level": 2,
+          "text": "範例"
+        },
+        {
+          "level": 3,
+          "text": "Q2 2026 AI 島"
+        },
+        {
+          "level": 2,
+          "text": "OKR 好原則"
+        },
+        {
+          "level": 3,
+          "text": "O（目標）"
+        },
+        {
+          "level": 3,
+          "text": "KR（關鍵結果）"
+        },
+        {
+          "level": 2,
+          "text": "不要寫的 OKR"
+        },
+        {
+          "level": 2,
+          "text": "對齊（Alignment）"
+        },
+        {
+          "level": 2,
+          "text": "OKR 週期"
+        },
+        {
+          "level": 2,
+          "text": "流程"
+        },
+        {
+          "level": 2,
+          "text": "Scoring"
+        },
+        {
+          "level": 2,
+          "text": "OKR vs KPI"
+        },
+        {
+          "level": 2,
+          "text": "Indie / 一人公司也適用"
+        },
+        {
+          "level": 2,
+          "text": "工具"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Sprint Planning：估時 + 切任務",
+      "oneLineSummary": "把大需求切小、估時、排優先—會這個你就是合格 PM / Tech Lead",
+      "analogy": "需求大、不會切 = 永遠做不完。切小、估時、排優先序、可預測交付—Sprint Planning 的精髓。",
+      "content": "## 切任務原則：INVEST\n- **I**ndependent：可獨立做\n- **N**egotiable：可協商範圍\n- **V**aluable：對使用者有價值\n- **E**stimable：可估時\n- **S**mall：夠小（1-3 天）\n- **T**estable：可測試\n\n## 不好的 task\n❌ 「做使用者系統」（太大）\n❌ 「優化效能」（不明確）\n❌ 「研究 X」（沒交付）\n\n## 好的 task\n✅ 「實作 email + password 註冊 API」\n✅ 「Profile page UI（按 Figma 設計稿）」\n✅ 「DB schema：users 表 + RLS 政策」\n\n## 切任務範例\n\n### 大需求：「使用者註冊系統」\n\n切成：\n1. **DB schema**（4hr）\n   - users 表、profiles 表、RLS\n2. **註冊 API**（6hr）\n   - POST /signup、Zod 驗證、密碼 hash、寄 verify email\n3. **驗證 email**（4hr）\n   - GET /verify?token\n4. **登入 API**（4hr）\n   - POST /login、JWT 簽發\n5. **註冊頁 UI**（6hr）\n   - Form + 驗證 + error 處理\n6. **登入頁 UI**（4hr）\n7. **忘記密碼流程**（8hr）\n8. **E2E 測試**（4hr）\n\n總計 ~40 hr = 5 天（一個人）\n\n## 估時技巧\n\n### Planning Poker\n團隊每人秘密寫 story point、一起翻：\n- 大家估 3、5、5、8、3 → 平均 5、選 5\n- 大家估 1、3、13 → 差很大、討論為什麼\n- 通常 13 之上的要拆\n\n### 不要過度精準\n- 「3 hr」實際做 5 hr 很正常\n- 留 buffer（估時 × 1.5）\n\n### 學會說「不知道」\n研究型 task 用 timebox：「花 4 小時研究、回報結果」\n\n## 優先序：MoSCoW\n- **Must**：必做、不做產品殘缺\n- **Should**：應做、不做差很多\n- **Could**：可做、有時間就做\n- **Won't (this time)**：這次不做\n\n## RICE Score（Ch44 詳細介紹）\n```\nRICE = (Reach × Impact × Confidence) / Effort\n```\n\n## Sprint Planning 流程\n1. **PO 介紹優先序高的 backlog**（30 分）\n2. **團隊問問題 + 估時**（60 分）\n3. **承諾 sprint goal**（15 分）\n4. **拉進 sprint backlog**\n\n## Velocity 平均 = 預測未來\n- Sprint 1: 完成 30 points\n- Sprint 2: 25\n- Sprint 3: 35\n- 平均 30 → Sprint 4 也大概 30\n\n## 衝刺中的紀律\n- ⚠️ Sprint 開始後不加新 task（緊急 except）\n- 完成不了 → 拆、減 scope、不熬夜\n- 每天 standup 同步狀態\n\n## 寫好 Issue\n```\n# 標題\n[使用者] 註冊 email + password\n\n# 背景\n使用者目前只能 OAuth、需要 email 註冊。\n\n# 需求\n- [ ] POST /signup endpoint\n- [ ] 收 email + password (Zod 驗證)\n- [ ] 密碼 bcrypt hash (cost=12)\n- [ ] 寄驗證 email (Resend)\n- [ ] 200 + JWT\n\n# 驗收條件\n- 成功註冊回傳 200 + JWT\n- email 已存在回 409\n- 密碼 < 8 字回 400\n- 驗證 email 24 小時過期\n\n# 技術筆記\n- 用 Supabase auth.signUp 還是自己刻？決定: 自己刻、有客製需求\n- 寄 email 用 Resend（已設定）\n\n# 預估\n6 hr / 5 points\n```\n\n## 反 pattern\n- 開太多 issue（保持 backlog < 50）\n- 永遠在 In Progress（每個人最多 2-3 個）\n- 不更新狀態（要求每天更）\n- 估時 5 倍誤差（學習）",
+      "tip": {
+        "type": "practical",
+        "text": "接案永遠超時、80% 因為「沒切清楚」。學會切任務 + 估時 + buffer 30%、客戶滿意度 + 自己時間都贏。"
+      },
+      "id": "43.25",
+      "number": "LESSON 43.25",
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "切任務原則：INVEST"
+        },
+        {
+          "level": 2,
+          "text": "不好的 task"
+        },
+        {
+          "level": 2,
+          "text": "好的 task"
+        },
+        {
+          "level": 2,
+          "text": "切任務範例"
+        },
+        {
+          "level": 3,
+          "text": "大需求：「使用者註冊系統」"
+        },
+        {
+          "level": 2,
+          "text": "估時技巧"
+        },
+        {
+          "level": 3,
+          "text": "Planning Poker"
+        },
+        {
+          "level": 3,
+          "text": "不要過度精準"
+        },
+        {
+          "level": 3,
+          "text": "學會說「不知道」"
+        },
+        {
+          "level": 2,
+          "text": "優先序：MoSCoW"
+        },
+        {
+          "level": 2,
+          "text": "RICE Score（Ch44 詳細介紹）"
+        },
+        {
+          "level": 2,
+          "text": "Sprint Planning 流程"
+        },
+        {
+          "level": 2,
+          "text": "Velocity 平均 = 預測未來"
+        },
+        {
+          "level": 2,
+          "text": "衝刺中的紀律"
+        },
+        {
+          "level": 2,
+          "text": "寫好 Issue"
+        },
+        {
+          "level": 2,
+          "text": "反 pattern"
+        }
+      ]
+    }
+  ],
+  "boss": {
+    "name": "Sprint 戰術師",
+    "hp": 200,
+    "emoji": "📋",
+    "description": "Linear / Notion 是它的兵器、Agile 是它的戰術"
+  },
+  "quiz": {
+    "id": "ch43-quiz",
+    "questions": [],
+    "xpReward": 50,
+    "perfectBonus": 50
+  }
+}

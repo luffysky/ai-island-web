@@ -1,0 +1,1359 @@
+{
+  "id": 7,
+  "slug": "logic",
+  "stage": 2,
+  "title": "程式邏輯共通",
+  "subtitle": "所有語言的共通基礎",
+  "icon": "puzzle",
+  "description": "程式邏輯共通：所有語言的共通基礎",
+  "status": "published",
+  "difficulty": "beginner",
+  "prerequisites": [],
+  "estimatedHours": 12,
+  "outcomes": [
+    "理解核心概念",
+    "實作主流工具",
+    "整章實戰可發佈作品",
+    "知道生態 / 接案行情",
+    "對齊 2026 業界主流"
+  ],
+  "lessons": [
+    {
+      "id": "7.1",
+      "number": "LESSON 7.1",
+      "title": "程式是什麼？指令、執行、編譯 vs 直譯",
+      "oneLineSummary": "程式邏輯就是「電腦解決問題的步驟」—跟你做菜 / 算數學的思考方式一樣。",
+      "analogy": "像食譜—先洗菜、再切、再炒、最後盛盤—順序錯了菜就糊了。程式一樣：先檢查使用者輸入、再驗證、再存進 DB、最後回應—邏輯順序決定能不能跑。",
+      "content": "從最底層開始—**程式**就是「給電腦的指令清單」。但「電腦」只懂 0 跟 1。你寫的 Python、JS、Go—中間發生什麼？\n\n  \n### 從一段話到 CPU 執行\n\n```text\n你寫的：\nprint(\"Hello\")\n                    ↓\n變成：\n電腦能懂的指令（machine code）\n01001000 10100101 11110000 ...\n                    ↓\nCPU 執行：\n讀指令 → 算 → 寫記憶體 → 螢幕顯示「Hello」\n\n中間轉換 = 編譯（compile）或直譯（interpret）\n```\n\n  \n### 編譯型語言（Compiled）\n\n  \n原始碼**一次轉成**機器碼、之後直接執行：\n\n```text\n你的 .go / .rs / .c 檔\n        ↓ go build / rustc / gcc\n.exe 或執行檔（含機器碼）\n        ↓ 直接執行\nCPU 跑\n\n代表語言：\n- C / C++\n- Go\n- Rust\n- Swift\n- Kotlin（編成 JVM bytecode 算半編譯）\n\n優點：\n- 執行快（已轉成機器碼）\n- 部署簡單（一個 binary）\n- 不需要安裝 runtime\n\n缺點：\n- 編譯花時間（大專案幾分鐘）\n- 跨平台要重編（Mac / Windows / Linux 各一份）\n```\n\n  \n### 直譯型語言（Interpreted）\n\n  \n原始碼**不轉成機器碼**—另一個程式（直譯器）一行一行讀 + 執行：\n\n```text\n你的 .py / .rb / .js 檔\n        ↓ python / ruby / node\n直譯器讀一行 → 執行一行\n        ↓\n顯示結果\n\n代表語言：\n- Python\n- Ruby\n- JavaScript（瀏覽器 / Node）\n- PHP\n\n優點：\n- 寫完直接跑（沒編譯等）\n- 跨平台天然（裝直譯器就能跑）\n- 改 code 不用重編\n\n缺點：\n- 執行慢（一邊翻譯一邊跑）\n- 需要 runtime（裝 Python / Node）\n- 錯誤要跑到才發現\n```\n\n  \n### JIT 編譯（Just-In-Time）：中間派\n\n  \n2026 主流策略—**跑的時候邊翻譯邊優化**：\n\n```text\n原始碼\n   ↓ 直譯器先讀\n邊執行邊發現「這段常跑」\n   ↓ 動態編譯成機器碼\n之後跑這段直接用機器碼（快）\n\n代表：\n- Java（JVM）\n- C#（.NET）\n- JavaScript V8（Node / Chrome）\n- LuaJIT\n- PyPy（Python 的 JIT 版）\n\n優點：兼具直譯彈性 + 編譯速度\n缺點：啟動慢（先要熱身）\n```\n\n  \n### 2026 模糊化：界線越來越淡\n\n  \n傳統分類已過時、現在大多語言**混合**：\n\n  \n- **Python**—直譯為主、但 PyPy / Cython 可編譯\n- **JavaScript**—V8 用 JIT、Bun / Deno 加入 AOT 編譯\n- **Go**—編譯型、但跑得跟 JIT 一樣快\n- **Rust**—編譯型、但開發體驗近直譯（cargo run）\n- **Kotlin**—編譯到 JVM bytecode / 也能 native\n\n  \n### 實戰：你怎麼選\n\n```text\n1. 要極致速度 + 系統程式\n   → Rust / Go / C++（編譯型）\n\n2. 快速 prototype + indie SaaS\n   → Python / JavaScript / Ruby（直譯型）\n\n3. 企業大型專案 + JVM 生態\n   → Java / Kotlin / C#（JIT 編譯）\n\n4. Web 前端\n   → JavaScript / TypeScript（瀏覽器只跑 JS）\n\n5. 行動 App\n   → Swift（iOS）/ Kotlin（Android）/ Dart（Flutter）\n\n6. 遊戲\n   → C# (Unity) / C++ (Unreal)\n```\n\n  \n### 同個程式、不同語言怎麼跑\n\n```text\n「印出 Hello World」：\n\nPython（直譯）：\nprint(\"Hello\")\n$ python hello.py    # 直接跑\n\nJavaScript（直譯）：\nconsole.log(\"Hello\");\n$ node hello.js      # 直接跑\n\nGo（編譯）：\npackage main\nimport \"fmt\"\nfunc main() { fmt.Println(\"Hello\") }\n$ go build hello.go && ./hello   # 先編再跑\n\nRust（編譯）：\nfn main() { println!(\"Hello\"); }\n$ cargo run          # 編 + 跑（cargo 包了）\n\nJava（編譯到 JVM）：\npublic class Hello {\n    public static void main(String[] args) {\n        System.out.println(\"Hello\");\n    }\n}\n$ javac Hello.java && java Hello   # 編成 .class 再跑\n\n→ 同樣是「印 Hello」、流程差很多\n→ 但邏輯一樣\n```\n\n  \n    **☕ 用人話講**\n    \n編譯 = 像翻譯一整本書、之後讀者直接讀翻譯本（快但要等翻譯）。直譯 = 即席口譯、講一句翻一句（慢但立刻能聽）。JIT = 邊翻譯邊優化、常見句子翻過就記住。2026 大多語言用 JIT 折衷—兼具兩者優點。\n\n  \n\n  \n    **🚀 進階技巧**\n    \n選語言不要被「快 / 慢」迷惑。Instagram 用 Python（直譯、慢）服務 20 億用戶—因為瓶頸不在語言、在 DB / 網路。Discord 從 Go 換 Rust 因為 GC 暫停影響低延遲—語言選擇取決於**真實瓶頸**、不是 benchmark 數字。新手選你**能寫得快**的語言、不是**跑得最快**的。\n\n  \n\n  \n    \n      💼\n      接案小知識\n    \n    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「程式邏輯」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。",
+      "tip": {
+        "type": "practical",
+        "text": "剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「程式邏輯」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "7.1.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// 試試改變數、按執行\nconst numbers = [1, 2, 3, 4, 5];\nconst doubled = numbers.map(n => n * 2);\nconsole.log(\"原本:\", numbers);\nconsole.log(\"乘 2:\", doubled);\nconsole.log(\"總和:\", numbers.reduce((a, b) => a + b, 0));",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "從一段話到 CPU 執行"
+        },
+        {
+          "level": 3,
+          "text": "編譯型語言（Compiled）"
+        },
+        {
+          "level": 3,
+          "text": "直譯型語言（Interpreted）"
+        },
+        {
+          "level": 3,
+          "text": "JIT 編譯（Just-In-Time）：中間派"
+        },
+        {
+          "level": 3,
+          "text": "2026 模糊化：界線越來越淡"
+        },
+        {
+          "level": 3,
+          "text": "實戰：你怎麼選"
+        },
+        {
+          "level": 3,
+          "text": "同個程式、不同語言怎麼跑"
+        }
+      ]
+    },
+    {
+      "id": "7.2",
+      "number": "LESSON 7.2",
+      "title": "變數：所有語言都有的東西",
+      "oneLineSummary": "變數 / 常數是「給資料取名字、之後重複用」—所有語言都一樣。",
+      "analogy": "像幫東西貼標籤—「這個是媽媽的鑰匙」「這個是哥哥的便當」。變數一樣：給資料一個名字、之後用名字呼叫。「常數」是貼上「不准改」標籤的變數。",
+      "content": "變數 = **記憶體中一塊空間的名字**。所有程式語言第一個學的概念—因為它是**計算的基本單位**。\n\n  \n### 變數的本質\n\n```text\n記憶體：\n[0x1000] [0x1001] [0x1002] [0x1003] ...\n   42       hello    3.14    true\n\n變數 = 給某個記憶體位址取名字\n\n  age = 42\n  ↑      ↑\n  名字   值（在記憶體裡）\n\n之後用「age」這個名字、就能拿到那塊記憶體的值\n\n電腦只記 0x1000、人類記 age—變數是「人類友善的別名」\n```\n\n  \n### 宣告變數：6 個語言對比\n\n```text\nPython（動態、不用宣告型別）：\nage = 25\nname = \"Alice\"\nis_active = True\n\nJavaScript（動態、用 let / const）：\nlet age = 25;\nconst name = \"Alice\";\nlet isActive = true;\n\nTypeScript（靜態 + 動態混合、能標型別）：\nlet age: number = 25;\nconst name: string = \"Alice\";\nlet isActive: boolean = true;\n\nGo（靜態、能自動推導）：\nage := 25                  // 推導為 int\nvar name string = \"Alice\"  // 明確標\nisActive := true\n\nRust（靜態、預設不可變）：\nlet age = 25;              // i32（推導）\nlet name = \"Alice\";        // &str\nlet mut counter = 0;       // mut = 可變\n\nJava（靜態、要明確型別）：\nint age = 25;\nString name = \"Alice\";\nboolean isActive = true;\n\nC#（同 Java）：\nint age = 25;\nstring name = \"Alice\";\nbool isActive = true;\n\n→ 概念一樣：「給個名字、存個值」\n→ 語法差別 = 5 分鐘記得起來\n```\n\n  \n### 動態型別 vs 靜態型別\n\n  \n#### 動態型別（Python / JS / Ruby）\n\n```text\n變數能隨便變型別：\n\n# Python\nx = 25          # int\nx = \"hello\"     # 變 string\nx = [1, 2, 3]   # 變 list\n\n# 一切看執行時才知道\n\n優點：\n- 寫得快\n- 彈性大\n- 適合 prototype\n\n缺點：\n- 跑到才發現型別錯\n- 大專案難維護\n- IDE 自動完成弱\n```\n\n  \n#### 靜態型別（Java / Go / Rust / TS）\n\n```text\n變數型別一開始決定、不能改：\n\n// Go\nvar x int = 25\nx = \"hello\"  // ❌ 編譯錯誤\n\n// 寫的時候就知道有問題\n\n優點：\n- 錯誤編譯時抓到（不用跑就知道錯）\n- IDE 補全強\n- 大團隊容易維護\n- 跑得快（編譯器能優化）\n\n缺點：\n- 寫得慢（要標型別）\n- 對新手稍 verbose\n```\n\n  \n### 強型別 vs 弱型別\n\n```text\n強型別（Python / Rust / Java）：\n不同型別不能亂混\n\n# Python\n\"5\" + 3\n# ❌ TypeError: can only concatenate str to str\n\n弱型別（JavaScript / PHP）：\n不同型別會自動轉換（常出 bug）\n\n// JS\n\"5\" + 3        // \"53\"（變字串）\n\"5\" - 3        // 2（變數字）\n\"5\" * \"3\"      // 15\n[] + {}        // \"[object Object]\" wtf\n\n→ JS 著名的「型別陷阱」\n→ TypeScript 就是來救 JS 的\n```\n\n  \n### 命名風格慣例\n\n  \n| 風格 | 例子 | 常用語言 |\n| --- | --- | --- |\n| camelCase | userName, isActive | JS / Java / C# / Swift / Kotlin |\n| snake_case | user_name, is_active | Python / Ruby / Rust（變數）/ C |\n| PascalCase | UserName, IsActive | 類別名 / 大多語言 |\n| SCREAMING_SNAKE | MAX_RETRY, API_KEY | 常數（所有語言） |\n| kebab-case | user-name | 檔名 / CSS（變數內不能用） |\n\n  \n### 常數（不可變變數）\n\n```text\n「設一次、之後不能改」：\n\nPython（慣例大寫、其實仍能改）：\nMAX_RETRY = 5\n\nJavaScript（const 真的不能 reassign）：\nconst MAX_RETRY = 5;\nMAX_RETRY = 10;  // ❌ TypeError\n\nGo：\nconst MaxRetry = 5\n\nRust：\nconst MAX_RETRY: u32 = 5;\n\nJava：\nfinal int MAX_RETRY = 5;\n\nC#：\nconst int MaxRetry = 5;\n\n→ 「不會變的東西」用常數\n→ 提升可讀性 + 編譯器能優化\n```\n\n  \n### 變數作用域（Scope）\n\n```text\n變數「在哪裡能看到」：\n\n全域（Global）：\nx = 5  # 全域變數\ndef func():\n    print(x)  # 看得到\nfunc()\n\n區域（Local）：\ndef func():\n    y = 10  # 區域變數\n    print(y)\nfunc()\nprint(y)  # ❌ NameError（外面看不到）\n\n→ 區域變數「只在函數內存在」\n→ 函數結束 = 變數消失\n```\n\n  \n### 變數提升（Hoisting）—JS 特有陷阱\n\n```text\nJS 的怪現象：\n\nconsole.log(x);  // undefined（不是錯誤！）\nvar x = 5;\n\n// 等同於：\nvar x;           // 先宣告（undefined）\nconsole.log(x);\nx = 5;\n\n對策：用 let / const（沒 hoisting）\nconsole.log(x);  // ❌ ReferenceError\nlet x = 5;\n\n→ 2026 別再用 var\n→ let（可變）/ const（不可變）\n```\n\n  \n    **☕ 用人話講**\n    \n變數就像置物櫃—給它個名字（age）、放東西進去（25）、之後叫名字就能拿。動態型別 = 任何東西都能放（鞋子今天放、明天可以換放食物）。靜態型別 = 一開始說好放鞋子、就只能放鞋子（誤放食物會被擋）。靜態型別**限制**你、但**救**你—大專案沒它會死。\n\n  \n\n  \n    **🚀 進階技巧**\n    \n動態型別 vs 靜態型別不是非黑即白—2026 主流是「**漸進式型別**」：Python 加 type hints、JS 加 TypeScript、Ruby 加 Sorbet / RBS、PHP 加 type declarations。小專案動態快、大專案加靜態。最強組合：**動態型別語言 + 靜態型別 annotation**—Python + mypy / JS + TS 是 2026 sweet spot。\n\n  \n\n  \n    \n      🎯\n      面試考點\n    \n    台灣科技公司面試 90% 會問「程式邏輯」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。",
+      "tip": {
+        "type": "pro",
+        "text": "台灣科技公司面試 90% 會問「程式邏輯」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "7.2.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// 試試改變數、按執行\nconst numbers = [1, 2, 3, 4, 5];\nconst doubled = numbers.map(n => n * 2);\nconsole.log(\"原本:\", numbers);\nconsole.log(\"乘 2:\", doubled);\nconsole.log(\"總和:\", numbers.reduce((a, b) => a + b, 0));",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
+        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "變數的本質"
+        },
+        {
+          "level": 3,
+          "text": "宣告變數：6 個語言對比"
+        },
+        {
+          "level": 3,
+          "text": "動態型別 vs 靜態型別"
+        },
+        {
+          "level": 3,
+          "text": "強型別 vs 弱型別"
+        },
+        {
+          "level": 3,
+          "text": "命名風格慣例"
+        },
+        {
+          "level": 3,
+          "text": "常數（不可變變數）"
+        },
+        {
+          "level": 3,
+          "text": "變數作用域（Scope）"
+        },
+        {
+          "level": 3,
+          "text": "變數提升（Hoisting）—JS 特有陷阱"
+        }
+      ]
+    },
+    {
+      "id": "7.3",
+      "number": "LESSON 7.3",
+      "title": "資料型態大家族",
+      "oneLineSummary": "資料型別：數字 / 字串 / 布林 / 陣列 / 物件—不同型別有不同操作。",
+      "analogy": "像不同食材有不同處理方式—肉要煎、菜要炒、湯要煮。程式資料一樣：數字可以加減、字串可以拼接、陣列可以排序—型別決定能做什麼。",
+      "content": "所有程式語言處理 6-8 種**基本資料型態**。學完看任何語言都不會迷路。\n\n  \n### 整數（Integer）\n\n```text\n「沒有小數的數字」：\n1, 42, -5, 1000000, 0\n\nPython：\nage = 25                # int（無上限、自動擴張）\n\nJavaScript：\nlet age = 25;           // number（無 int 概念）\n\nGo（分大小）：\nvar age int = 25        // 預設大小（32 / 64 bit 看平台）\nvar age int32 = 25      // 確定 32 bit\nvar age int64 = 25      // 確定 64 bit\nvar age uint = 25       // 無符號（不能負）\n\nRust（嚴格）：\nlet age: i32 = 25;      // 32 bit signed\nlet age: u8 = 25;       // 8 bit unsigned (0-255)\nlet age: i64 = 25;      // 64 bit signed\n\nJava：\nint age = 25;           // 32 bit\nlong age = 25L;         // 64 bit\nshort age = 25;         // 16 bit\nbyte age = 25;          // 8 bit\n\n→ 系統程式語言（Go / Rust / C / Java）分大小\n→ 高階語言（Python / JS / Ruby）通常不管\n```\n\n  \n### 溢位（Overflow）—系統語言的陷阱\n\n```text\n整數有上限：\n\ni8（8 bit signed）：-128 到 127\nu8（8 bit unsigned）：0 到 255\ni32：-2,147,483,648 到 2,147,483,647\ni64：超過 9 千兆\n\n超過 = overflow（值溢出）：\n\n// Rust\nlet x: u8 = 255;\nlet y = x + 1;\n// ❌ Rust debug 模式 panic\n// ⚠ release 模式 wrap 到 0\n\n// Java\nint x = Integer.MAX_VALUE;\nint y = x + 1;\n// y = Integer.MIN_VALUE（負很大）\n\nPython / JS 沒這問題：\n- Python：自動擴張到任意大數\n- JS：超過 2^53 開始失精度（用 BigInt 解）\n```\n\n  \n### 浮點數（Float）\n\n```text\n「有小數的數字」：\n3.14, 0.5, -2.7, 1e10\n\nPython：\npi = 3.14               # float（64 bit）\n\nJavaScript：\nlet pi = 3.14;          // 一律 number\n\nGo：\nvar pi float32 = 3.14\nvar pi float64 = 3.14   // 大多用這個\n\nRust：\nlet pi: f32 = 3.14;\nlet pi: f64 = 3.14;     // 64 bit\n\nJava：\nfloat pi = 3.14f;       // f 後綴\ndouble pi = 3.14;       // 預設\n\n→ 大多寫 f64 / double（精度高）\n```\n\n  \n### 浮點數的詭異陷阱\n\n```text\n所有語言通病：\n\n0.1 + 0.2 === 0.3\n# ❌ false（變 0.30000000000000004）\n\n# Python\nprint(0.1 + 0.2)        # 0.30000000000000004\n\n# JavaScript\n0.1 + 0.2               // 0.30000000000000004\n\n# Java / Go 都一樣\n\n原因：\n電腦用 binary 存 0.1 = 無限循環\n就像 1/3 = 0.33333... 無法精確表示\n\n解法：\n1. 比較浮點數用 epsilon\n   abs(a - b)  = None;\nJava：         String x = null;\nC#：           string? x = null;\nPHP：          $x = null;\n\n→ Tony Hoare 稱 null 是「億萬美元錯誤」\n→ Rust / Swift 不給 null、強制用 Option / Maybe\n```\n\n  \n### Null 引發的災難\n\n```text\n所有語言頭號 bug：\n\n// Java\nString name = null;\nname.length();    // ❌ NullPointerException\n\n# Python\nname = None\nlen(name)         # ❌ TypeError\n\n// JS\nconst user = null;\nuser.name;        // ❌ TypeError\n\n對策（2026 主流）：\n\n1. Optional chaining（?.）\n   user?.name        // JS / TS / C# / Swift\n\n2. Null coalescing（??）\n   const name = user?.name ?? \"Unknown\";\n\n3. Rust / Swift Option\n   match value {\n       Some(n) => println!(\"{}\", n),\n       None => println!(\"沒值\"),\n   }\n   # 強制處理 None 情況\n```\n\n  \n    **⚠ 踩雷警告**\n    \n新手最常踩的型別坑：(1) **浮點數比較**—`0.1 + 0.2 !== 0.3`、要用 epsilon (2) **整數溢位**—Go / Rust / Java 都會、用大數時用 BigInt / BigDecimal (3) **null pointer**—80% 的 production bug 是它。新語言（Rust / Kotlin / Swift）強制 null safety = 你寫的 bug 自動少一半。\n\n  \n\n  \n    **🚀 進階技巧**\n    \n2026 寫程式選語言時、檢查 null 處理機制 = 大型專案 sanity 保障。**強 null safety 排名**：Rust（沒 null）> Swift / Kotlin（強制標）> TypeScript strict（要設）> C# 8+（可選）> Java / Go（弱）> Python / JS（最弱）。indie / 一人公司寫 Python 沒事、團隊大專案就要 type hints + mypy / TypeScript strict。\n\n  \n\n  \n    \n      ⚡\n      學習加速器\n    \n    把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。",
+      "tip": {
+        "type": "practical",
+        "text": "把這節學到的馬上應用到一個小東西—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "7.3.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// 試試改變數、按執行\nconst numbers = [1, 2, 3, 4, 5];\nconst doubled = numbers.map(n => n * 2);\nconsole.log(\"原本:\", numbers);\nconsole.log(\"乘 2:\", doubled);\nconsole.log(\"總和:\", numbers.reduce((a, b) => a + b, 0));",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（0.1 + 0.2 !== 0.3）寫一段小 code 解決一個實際問題。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "整數（Integer）"
+        },
+        {
+          "level": 3,
+          "text": "溢位（Overflow）—系統語言的陷阱"
+        },
+        {
+          "level": 3,
+          "text": "浮點數（Float）"
+        },
+        {
+          "level": 3,
+          "text": "浮點數的詭異陷阱"
+        },
+        {
+          "level": 3,
+          "text": "Null 引發的災難"
+        }
+      ]
+    },
+    {
+      "id": "7.4",
+      "number": "LESSON 7.4",
+      "title": "運算子：算術、比較、邏輯、位元、三元",
+      "oneLineSummary": "運算子（+ - * / == && ||）是「程式做數學跟邏輯判斷的工具」。",
+      "analogy": "像計算機按鈕—算數學（+ - × ÷）、比較大小（&gt; &lt; =）、做 AND / OR 條件—所有程式語言都用同樣的符號、概念相通。",
+      "content": "運算子 = **對值做運算的符號**。所有語言都有、長得幾乎一樣。\n\n  \n### 算術運算子\n\n```text\n所有語言通用：\n\na + b    # 加\na - b    # 減\na * b    # 乘\na / b    # 除\na % b    # 取餘數（modulo）\n\n# 進階\na ** b   # 次方（Python / JS / Ruby）\nmath.pow(a, b)  # 函數版（所有語言）\n\n# 整數除法（去小數）\na // b   # Python\nMath.floor(a / b)  # JS\na / b 自動    # Go（int / int 自動去小數）\n\n例子：\n10 / 3 = 3.333...（Python / JS / float）\n10 // 3 = 3（Python int 除）\n10 % 3 = 1（餘數）\n2 ** 10 = 1024（2 的 10 次方）\n```\n\n  \n### 取餘數的妙用\n\n```text\n# 判斷奇偶\nif num % 2 == 0:\n    print(\"偶數\")\n\n# 判斷能不能整除\nif year % 4 == 0:\n    print(\"閏年\")\n\n# 循環索引\nfor i in range(20):\n    idx = i % 5  # 0,1,2,3,4,0,1,2,3,4...\n\n# 雜湊分桶\nbucket = hash(key) % 100  # 分 100 個桶\n```\n\n  \n### 賦值運算子\n\n```text\nx += 5     # x = x + 5\nx -= 3     # x = x - 3\nx *= 2     # x = x * 2\nx /= 4     # x = x / 4\nx %= 3     # x = x % 3\nx **= 2    # x = x ** 2\n\n# 字串也能用 +=\ngreeting = \"Hello\"\ngreeting += \", world\"\n# = \"Hello, world\"\n\n→ 所有主流語言都支援\n```\n\n  \n### 比較運算子\n\n```text\n結果是 boolean（true / false）：\n\na == b    # 相等\na != b    # 不相等\na  b     # 大於\na = b    # 大於等於\n```\n\n  \n### == vs ===（嚴格相等）—JS 大陷阱\n\n```text\nJavaScript 兩種：\n\n== （寬鬆相等、自動轉型）：\n5 == \"5\"      # true（\"5\" 自動轉 5）\n0 == false    # true（false 變 0）\nnull == undefined  # true（怪）\n\n=== （嚴格相等、不轉型）：\n5 === \"5\"     # false（型別不同）\n0 === false   # false\n\n→ 永遠用 ===\n\n其他語言：\nPython：== 是嚴格的（不轉型）\nGo：== 嚴格、不同型別編譯錯誤\nRust：== 同 Go\nJava：== 比參考（不是值）！要用 .equals()\n\n# Java 陷阱\nString a = new String(\"hello\");\nString b = new String(\"hello\");\na == b           // false（不同物件）\na.equals(b)      // true（內容一樣）\n```\n\n  \n### 邏輯運算子\n\n```text\nAND、OR、NOT：\n\n# Python 用英文\na and b\na or b\nnot a\n\n# JS / Go / Rust / Java / C# 用符號\na && b    # AND\na || b    # OR\n!a        # NOT\n\n例子：\n(age >= 18) and (has_license)  # 兩個都要 True\n(is_admin) or (is_owner)       # 至少一個\n```\n\n  \n### 短路評估（Short-circuit）\n\n```text\n所有語言通用、節省效能 + 防 null：\n\n# AND：左邊 False 就不算右邊\nif user != None and user.is_active:\n    print(user.name)\n# 如果 user 是 None、後面 .is_active 不執行（不會爆）\n\n# OR：左邊 True 就不算右邊\nresult = cache.get(key) or fetch_from_db(key)\n# 如果 cache 有、不查 DB\n\n# 2020+ 推薦 ?? 避免 falsy 陷阱\nconst name = user.name ?? \"Anonymous\";\n# 只有 null / undefined 才用預設、不包含 \"\" 0 false\n```\n\n  \n### 位元運算子\n\n```text\n對二進位的位元運算：\n\n&     # AND（位元）\n|     # OR（位元）\n^     # XOR\n~     # NOT（取反）\n>    # 右移（÷2）\n\n# 實戰：權限 flags\nREAD = 1   # 001\nWRITE = 2  # 010\nEXEC = 4   # 100\n\nuser_perms = READ | WRITE  # 011 = 3（讀+寫）\nif user_perms & EXEC:      # 檢查有沒有執行權限\n    ...\n\n→ 一般 app 寫不到\n→ 系統程式 / 演算法 / 遊戲常用\n```\n\n  \n### 三元運算子\n\n```text\n「一行寫 if-else」：\n\n# JavaScript / TypeScript / Java / C# / Go / Rust\nconst status = age >= 18 ? \"成人\" : \"未成年\";\n\n# Python（不一樣的順序）\nstatus = \"成人\" if age >= 18 else \"未成年\"\n\n# Rust（用 if 表達式）\nlet status = if age >= 18 { \"成人\" } else { \"未成年\" };\n\n→ 簡單 if-else 用三元\n→ 複雜邏輯用完整 if-else\n```\n\n  \n    **🚀 進階技巧**\n    \n2026 主流：**避免複雜表達式、拆成多行**。`(a && b) || (c && d)` 雖然能寫、但拆成 `const isValid = a && b;` + `const isAlt = c && d;` + `const result = isValid || isAlt;` 可讀性高 10 倍。Senior 工程師寫的 code 看起來「**太簡單**」—因為每行只做一件事。Junior 寫的 code 一行做 5 件事、好像很厲害、其實是技術債。\n\n  \n\n  \n    \n      🚀\n      2026 趨勢\n    \n    這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。",
+      "tip": {
+        "type": "trend",
+        "text": "這個技術 2026 還在主流、未來 5 年不會過時。但工具會更新—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "7.4.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// 試試改變數、按執行\nconst numbers = [1, 2, 3, 4, 5];\nconst doubled = numbers.map(n => n * 2);\nconsole.log(\"原本:\", numbers);\nconsole.log(\"乘 2:\", doubled);\nconsole.log(\"總和:\", numbers.reduce((a, b) => a + b, 0));",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（(a && b) || (c && d), const isValid = a && b;, const result = isValid || isAlt;, const isAlt = c && d;）寫一段小 code 解決一個實際問題。",
+        "hint": "關鍵概念可以從 lesson 內出現的這些關鍵字入手：(a && b) || (c && d)、const isValid = a && b;、const isAlt = c && d;、const result = isValid || isAlt;。畫完不要光放著、試著用自己的話講一次。",
+        "answer": "心智圖三步：(1) 中心 = lesson 主題 (2) 第一圈 = 主要分類（通常 3-5 個）(3) 第二圈 = 具體例子或工具。畫完拿給朋友看、能講通 = 真懂。常見錯誤：抄關鍵字當分類、應該用自己理解後的歸納。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "算術運算子"
+        },
+        {
+          "level": 3,
+          "text": "取餘數的妙用"
+        },
+        {
+          "level": 3,
+          "text": "賦值運算子"
+        },
+        {
+          "level": 3,
+          "text": "比較運算子"
+        },
+        {
+          "level": 3,
+          "text": "== vs ===（嚴格相等）—JS 大陷阱"
+        },
+        {
+          "level": 3,
+          "text": "邏輯運算子"
+        },
+        {
+          "level": 3,
+          "text": "短路評估（Short-circuit）"
+        },
+        {
+          "level": 3,
+          "text": "位元運算子"
+        },
+        {
+          "level": 3,
+          "text": "三元運算子"
+        }
+      ]
+    },
+    {
+      "id": "7.5",
+      "number": "LESSON 7.5",
+      "title": "流程控制 1：條件（if / else / switch / pattern match）",
+      "oneLineSummary": "If / else 條件判斷是「程式的岔路口」—符合條件走 A、不然走 B。",
+      "analogy": "像出門前想穿什麼—「如果下雨 → 帶傘」「不然 → 戴墨鏡」。程式一樣：if 跟 else 做決策、巢狀 if 處理複雜邏輯—初學者最大坎之一。",
+      "content": "條件分支 = 「**看情況選不同路**」。程式不只是直線跑、要會判斷。\n\n  \n### 最基本：if / else\n\n```text\nPython（用縮排）：\nif age >= 18:\n    print(\"成人\")\nelse:\n    print(\"未成年\")\n\nJavaScript / Go：\nif (age >= 18) {\n    console.log(\"成人\");\n} else {\n    console.log(\"未成年\");\n}\n\nRust（if 是表達式）：\nlet status = if age >= 18 {\n    \"成人\"\n} else {\n    \"未成年\"\n};\n\nRuby：\nif age >= 18\n    puts \"成人\"\nelse\n    puts \"未成年\"\nend\n\n→ 邏輯一樣、語法差別\n→ Python 縮排 / 大多 {} / Ruby 用 end\n```\n\n  \n### 多重條件：elif / else if\n\n```text\nPython（elif）：\nif score >= 90:\n    grade = \"A\"\nelif score >= 80:\n    grade = \"B\"\nelif score >= 70:\n    grade = \"C\"\nelse:\n    grade = \"F\"\n\nJavaScript / Java / Go（else if）：\nif (score >= 90) {\n    grade = \"A\";\n} else if (score >= 80) {\n    grade = \"B\";\n} else {\n    grade = \"F\";\n}\n\nRuby（elsif）：\nif score >= 90\n    grade = \"A\"\nelsif score >= 80\n    grade = \"B\"\nelse\n    grade = \"F\"\nend\n\n→ 順序很重要—從上往下找第一個 True\n→ 如果「score >= 70」在最上面、永遠不會分 A / B\n```\n\n  \n### switch / case：多分支簡化\n\n```text\n有 5+ 個分支用 switch 比 if 好讀：\n\nJavaScript / Java / C#（用 case + break）：\nswitch (day) {\n    case \"MON\":\n    case \"TUE\":\n    case \"WED\":\n        console.log(\"上班日\");\n        break;\n    case \"SAT\":\n    case \"SUN\":\n        console.log(\"週末\");\n        break;\n    default:\n        console.log(\"無效\");\n}\n\n⚠ JS / Java / C 不寫 break 會 fall-through\n\nGo（不需 break）：\nswitch day {\ncase \"MON\", \"TUE\", \"WED\":\n    fmt.Println(\"上班日\")\ncase \"SAT\", \"SUN\":\n    fmt.Println(\"週末\")\ndefault:\n    fmt.Println(\"無效\")\n}\n\nRust（用 match、更強）：\nmatch day {\n    \"MON\" | \"TUE\" | \"WED\" => println!(\"上班日\"),\n    \"SAT\" | \"SUN\" => println!(\"週末\"),\n    _ => println!(\"無效\"),\n}\n\nPython（3.10+ match-case）：\nmatch day:\n    case \"MON\" | \"TUE\" | \"WED\":\n        print(\"上班日\")\n    case \"SAT\" | \"SUN\":\n        print(\"週末\")\n    case _:\n        print(\"無效\")\n```\n\n  \n### Pattern Matching：2020+ 進化版\n\n```text\nRust / Swift / Scala / Python 3.10+：\n不只比對值、比對「結構」：\n\n# Rust\nmatch user {\n    Some(User { age: 18..=64, .. }) => \"成年活躍\",\n    Some(User { age: 0..=17, .. }) => \"未成年\",\n    Some(User { age: 65.., .. }) => \"資深\",\n    None => \"沒人\",\n}\n\n# Python 3.10+\nmatch point:\n    case (0, 0):\n        print(\"原點\")\n    case (x, 0):\n        print(f\"X 軸上 x={x}\")\n    case (0, y):\n        print(f\"Y 軸上 y={y}\")\n    case (x, y):\n        print(f\"在 ({x}, {y})\")\n\n→ 函數式語言（Haskell / Elixir）最早這樣\n→ 現代主流語言都跟進\n→ 比 if-else 簡潔強大\n```\n\n  \n### 常見陷阱\n\n```text\n1. 忘記 break（JS / Java / C）\n   switch (status) {\n       case \"active\":\n           console.log(\"活躍\");\n           // 忘了 break！\n       case \"pending\":\n           console.log(\"待處理\");  // ⚠ 也會印\n           break;\n   }\n\n2. 浮點數比較\n   if (0.1 + 0.2 == 0.3) { ... }\n   # ❌ 不會印（不相等）\n\n3. 賦值 vs 比較\n   if (x = 5) { ... }  // ⚠ 是賦值！\n\n4. null / undefined 沒檢查\n   if (user.age >= 18) { ... }\n   # 如果 user 是 null → 爆\n```\n\n  \n### Guard Clause（早 return）\n\n```text\n新手寫法（深巢狀）：\ndef process(user):\n    if user:\n        if user.is_active:\n            if user.age >= 18:\n                send_email(user)\n\nSenior 寫法（early return）：\ndef process(user):\n    if not user:\n        return\n    if not user.is_active:\n        return\n    if user.age \n    **🚀 進階技巧**\n    \n2026 Senior 思維：**「條件越少越好」**。看到 5+ 個 if-else 通常能用 dict / map 取代。例：`if day == \"MON\": work = 1; elif day == \"TUE\": work = 2; ...` → `work_hours = {\"MON\": 1, \"TUE\": 2, ...}` + `work_hours.get(day)`。少 90% code、好讀 10 倍、易擴充。Pattern matching（Rust / Python 3.10+ / Swift）是「**條件分支的最終形態**」—學會它、你不會再寫 nested if。\n\n  \n\n  \n    \n      🛠️\n      工具推薦\n    \n    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。",
+      "tip": {
+        "type": "practical",
+        "text": "配合這節用的工具：(1) VS Code（編輯器、免費）(2) Chrome DevTools（F12 開啟、除錯神器）(3) Live Server（VS Code 擴充、即時預覽）(4) GitHub Copilot / Cursor（AI 寫程式、學習加速 2-10x）。"
+      },
+      "xp": 15,
+      "playgrounds": [
+        {
+          "key": "7.5.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// 試試改變數、按執行\nconst numbers = [1, 2, 3, 4, 5];\nconst doubled = numbers.map(n => n * 2);\nconsole.log(\"原本:\", numbers);\nconsole.log(\"乘 2:\", doubled);\nconsole.log(\"總和:\", numbers.reduce((a, b) => a + b, 0));",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（work_hours = {\"MON\": 1, \"TUE\": 2, ...}, if day == \"MON\": work = 1; elif day == \"TUE\": work = 2; ..., work_hours.get(day)）寫一段小 code 解決一個實際問題。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "最基本：if / else"
+        },
+        {
+          "level": 3,
+          "text": "多重條件：elif / else if"
+        },
+        {
+          "level": 3,
+          "text": "switch / case：多分支簡化"
+        },
+        {
+          "level": 3,
+          "text": "Pattern Matching：2020+ 進化版"
+        },
+        {
+          "level": 3,
+          "text": "常見陷阱"
+        },
+        {
+          "level": 3,
+          "text": "Guard Clause（早 return）"
+        }
+      ]
+    },
+    {
+      "id": "7.6",
+      "number": "LESSON 7.6",
+      "title": "流程控制 2：迴圈（for / while / 迭代器）",
+      "oneLineSummary": "Switch / Match 是「多分支選擇」—比一連串 if 更清楚。",
+      "analogy": "像飲料店點單—「珍奶大杯」「紅茶中杯」「冬瓜茶小杯」—switch 一樣：給一個值、配對不同情況做不同事、比連續 if-else 好讀 10 倍。",
+      "content": "迴圈 = 「**重複做同件事**」。所有程式語言核心—資料處理、批次運算都靠它。\n\n  \n### for 迴圈：跑固定次數\n\n```text\nPython（用 range 或 iterable）：\nfor i in range(5):\n    print(i)\n# 印 0, 1, 2, 3, 4\n\nfor fruit in [\"apple\", \"banana\", \"cherry\"]:\n    print(fruit)\n\nJavaScript（C-style for）：\nfor (let i = 0; i  x * 2);\nconst evens = nums.filter(x => x % 2 === 0);\nconst total = nums.reduce((a, b) => a + b, 0);\n\nRust：\nlet doubled: Vec = nums.iter().map(|x| x * 2).collect();\nlet evens: Vec = nums.iter().filter(|&&x| x % 2 == 0).copied().collect();\nlet total: i32 = nums.iter().sum();\n\nGo（無 functional、用迴圈）：\nnums := []int{1, 2, 3, 4, 5}\ndoubled := []int{}\nfor _, x := range nums {\n    doubled = append(doubled, x*2)\n}\n\n→ Go 哲學：「明確 > 簡潔」\n→ 大多語言走相反方向\n```\n\n  \n### 懶式評估（Lazy Evaluation）\n\n```text\nPython generator：\n# 一般 list（eager）\nnums = [x ** 2 for x in range(1000000)]\n# 立刻算 100 萬個、佔記憶體\n\n# Generator（lazy）\nnums = (x ** 2 for x in range(1000000))\n# 不立刻算、要用才算\n\n# 只取前 5 個\nfor i, n in enumerate(nums):\n    print(n)\n    if i >= 4:\n        break\n# 只算 5 個、不浪費\n\nRust（iterator 預設 lazy）：\nlet result: Vec = (0..1000000)\n    .map(|x| x * x)\n    .filter(|&x| x % 2 == 0)\n    .take(5)  // 只取前 5 個\n    .collect();\n# 中間不會算 100 萬次\n\n→ Lazy 對大量資料很重要\n```\n\n  \n### 常見迴圈 pattern\n\n```text\n1. 累積總和\n   total = sum(nums)             # Python\n   const total = nums.reduce((a, b) => a + b, 0);  # JS\n\n2. 找最大 / 最小\n   max_val = max(nums)            # Python\n   const max = Math.max(...nums); # JS\n\n3. 計數\n   count = len([n for n in nums if n > 10])  # Python\n   const count = nums.filter(n => n > 10).length;  # JS\n\n4. 找元素索引\n   index = nums.index(target)     # Python\n   const index = nums.indexOf(target);  # JS\n\n5. 對應多個 list\n   for name, age in zip(names, ages):  # Python\n       print(f\"{name}: {age}\")\n```\n\n  \n    **🚀 進階技巧**\n    \nSenior 工程師寫 code 的 mark：**「很少看到 for」**。處理 array 用 `nums.filter().map().reduce()` 鏈式、處理大資料用 generator / iterator lazy 評估、需要 break 的迴圈拆成 helper function 用 return。傳統 `for (let i = 0; i \n\n  \n    \n      ⚠️\n      新手常見錯誤\n    \n    新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。",
+      "tip": {
+        "type": "warning",
+        "text": "新手 3 大坑：(1) 不看 console—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) 不存檔就 F5—改完忘記儲存以為「程式沒效果」 (3) 抄 code 不理解—複製貼上能跑、但下次要改就崩潰。記得：先看懂、再寫。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（nums.filter().map().reduce()）寫一段小 code 解決一個實際問題。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "for 迴圈：跑固定次數"
+        },
+        {
+          "level": 3,
+          "text": "懶式評估（Lazy Evaluation）"
+        },
+        {
+          "level": 3,
+          "text": "常見迴圈 pattern"
+        }
+      ]
+    },
+    {
+      "id": "7.7",
+      "number": "LESSON 7.7",
+      "title": "函數：抽象的單位",
+      "oneLineSummary": "For / While 迴圈是「重複做同一件事 N 次」—不用複製貼上 100 行。",
+      "analogy": "像檢查 100 個學生作業—一個一個翻。迴圈一樣：for（知道次數）、while（不知次數但有條件停止）。所有程式語言核心結構之一。",
+      "content": "函數 = 「**給一段 code 取個名字、之後叫名字就執行**」。是程式設計最重要的抽象工具—DRY（Don't Repeat Yourself）的核心。\n\n  \n### 基本函數：6 個語言對比\n\n```text\nPython：\ndef greet(name):\n    return f\"Hello, {name}\"\n\nprint(greet(\"Alice\"))   # Hello, Alice\n\nJavaScript：\nfunction greet(name) {\n    return `Hello, ${name}`;\n}\n\n// 或 arrow function\nconst greet = (name) => `Hello, ${name}`;\n\nTypeScript（加型別）：\nfunction greet(name: string): string {\n    return `Hello, ${name}`;\n}\n\nconst greet = (name: string): string => `Hello, ${name}`;\n\nGo：\nfunc greet(name string) string {\n    return fmt.Sprintf(\"Hello, %s\", name)\n}\n\nRust：\nfn greet(name: &str) -> String {\n    format!(\"Hello, {}\", name)\n}\n\nJava：\npublic static String greet(String name) {\n    return \"Hello, \" + name;\n}\n\nC#：\npublic static string Greet(string name) {\n    return $\"Hello, {name}\";\n}\n\nRuby：\ndef greet(name)\n    \"Hello, #{name}\"\nend\n\n→ 邏輯一樣：取輸入、做事、回結果\n→ 差別：型別標、語法符號\n```\n\n  \n### 函數的 4 個元素\n\n```text\n1. 名字（greet）—怎麼叫\n2. 參數（name）—輸入\n3. 主體（return ...）—做什麼\n4. 回傳值（\"Hello, ...\"）—輸出\n\n完整公式：\ninput → function → output\n```\n\n  \n### 多個參數 + 預設值\n\n```text\nPython：\ndef greet(name, greeting=\"Hello\", punctuation=\"!\"):\n    return f\"{greeting}, {name}{punctuation}\"\n\ngreet(\"Alice\")                          # \"Hello, Alice!\"\ngreet(\"Alice\", \"Hi\")                    # \"Hi, Alice!\"\ngreet(\"Alice\", punctuation=\"?\")         # 關鍵字參數\n\nJavaScript：\nfunction greet(name, greeting = \"Hello\", punctuation = \"!\") {\n    return `${greeting}, ${name}${punctuation}`;\n}\n\nGo（沒預設參數）：\nfunc greet(name string, greeting string, punctuation string) string {\n    return greeting + \", \" + name + punctuation\n}\n\nRust（沒預設參數、用 Option）：\nfn greet(name: &str, greeting: Option) -> String {\n    let g = greeting.unwrap_or(\"Hello\");\n    format!(\"{}, {}!\", g, name)\n}\n\n→ Python / JS / TS / C# 都有預設值\n→ Go / Rust / Java 沒（哲學不同）\n```\n\n  \n### 可變參數（*args / Variadic）\n\n```text\n「不確定有幾個參數」：\n\nPython（*args / **kwargs）：\ndef sum_all(*numbers):\n    return sum(numbers)\n\nsum_all(1, 2, 3)         # 6\nsum_all(1, 2, 3, 4, 5)   # 15\n\ndef create_user(**kwargs):\n    print(kwargs)\n\ncreate_user(name=\"Alice\", age=25)\n\nJavaScript（...rest）：\nfunction sumAll(...numbers) {\n    return numbers.reduce((a, b) => a + b, 0);\n}\n\nsumAll(1, 2, 3, 4, 5);  // 15\n\nGo（variadic）：\nfunc sumAll(numbers ...int) int {\n    total := 0\n    for _, n := range numbers {\n        total += n\n    }\n    return total\n}\n\n→ 常用於：print(), max(), min()\n```\n\n  \n### 多回傳值\n\n```text\nPython（tuple）：\ndef divide(a, b):\n    return a // b, a % b\n\nq, r = divide(10, 3)   # q=3, r=1\n\nJavaScript（array / object destructuring）：\nfunction divide(a, b) {\n    return [Math.floor(a / b), a % b];\n}\n\nconst [q, r] = divide(10, 3);\n\nGo（原生支援）：\nfunc divide(a, b int) (int, int) {\n    return a / b, a % b\n}\n\nq, r := divide(10, 3)\n\n# 常見 pattern：值 + error\nfunc openFile(name string) (*File, error) {\n    ...\n}\n\nfile, err := openFile(\"data.txt\")\nif err != nil {\n    log.Fatal(err)\n}\n\nRust（用 tuple）：\nfn divide(a: i32, b: i32) -> (i32, i32) {\n    (a / b, a % b)\n}\n\nlet (q, r) = divide(10, 3);\n\n→ Python / Go / Rust 自然多回傳\n→ Java / C# 要包成 class\n```\n\n  \n### Closure（閉包）：函數記住外面變數\n\n```text\n函數能「捕捉」外面 scope 的變數：\n\n# Python\ndef make_counter():\n    count = 0\n    def increment():\n        nonlocal count\n        count += 1\n        return count\n    return increment\n\ncounter = make_counter()\ncounter()   # 1\ncounter()   # 2\n\n# JavaScript（自然支援）\nfunction makeCounter() {\n    let count = 0;\n    return function() {\n        count++;\n        return count;\n    };\n}\n\nconst counter = makeCounter();\ncounter();   // 1\ncounter();   // 2\n\n# Go\nfunc makeCounter() func() int {\n    count := 0\n    return func() int {\n        count++\n        return count\n    }\n}\n\n→ Closure 是函數式語言核心\n→ React Hooks / 中介軟體 / event handler 滿地都是\n```\n\n  \n### Lambda / Arrow Function：匿名函數\n\n```text\n「不用取名字、就地寫一個函數」：\n\nPython：\nsquare = lambda x: x ** 2\nsquare(5)   # 25\n\n# 常用於 map / filter / sort\nsorted(users, key=lambda u: u.age)\n\nJavaScript（arrow function）：\nconst square = x => x ** 2;\n\n// 多參數\nconst add = (a, b) => a + b;\n\nGo（匿名函數）：\nsquare := func(x int) int { return x * x }\n\nRust：\nlet square = |x: i32| x * x;\n\nJava（lambda 8+）：\nFunction square = x -> x * x;\n\n→ 短小函數用 lambda\n→ 大邏輯還是用具名函數\n```\n\n  \n### 純函數 vs 副作用函數\n\n```text\n純函數：\n- 同樣輸入永遠同樣輸出\n- 不改外面狀態\n\ndef add(a, b):\n    return a + b\n# 純函數！\n\n副作用函數：\n- 改外面狀態\n- 同樣輸入可能不同輸出\n\ncount = 0\ndef increment():\n    global count\n    count += 1\n    return count\n# 副作用：改了 count\n\ndef log(msg):\n    print(msg)\n# 副作用：印到螢幕\n\n→ 純函數好測試 / 好除錯\n→ 副作用必要、但要清楚標出\n```\n\n  \n### 遞迴（Recursion）\n\n```text\n「函數呼叫自己」：\n\nPython（階乘）：\ndef factorial(n):\n    if n \n    **🚀 進階技巧**\n    \n函數設計 5 大原則（2026 Senior 共識）：(1) **一個函數做一件事**（\n\n  \n    \n      💼\n      接案小知識\n    \n    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「程式邏輯」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。",
+      "tip": {
+        "type": "practical",
+        "text": "剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「程式邏輯」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（${greeting}, ${name}${punctuation}, Hello, ${name}）寫一段小 code 解決一個實際問題。",
+        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "基本函數：6 個語言對比"
+        },
+        {
+          "level": 3,
+          "text": "函數的 4 個元素"
+        },
+        {
+          "level": 3,
+          "text": "多個參數 + 預設值"
+        },
+        {
+          "level": 3,
+          "text": "可變參數（args / Variadic）"
+        },
+        {
+          "level": 3,
+          "text": "多回傳值"
+        },
+        {
+          "level": 3,
+          "text": "Closure（閉包）：函數記住外面變數"
+        },
+        {
+          "level": 3,
+          "text": "Lambda / Arrow Function：匿名函數"
+        },
+        {
+          "level": 3,
+          "text": "純函數 vs 副作用函數"
+        },
+        {
+          "level": 3,
+          "text": "遞迴（Recursion）"
+        }
+      ]
+    },
+    {
+      "id": "7.8",
+      "number": "LESSON 7.8",
+      "title": "資料結構 1：陣列（List / Array）",
+      "oneLineSummary": "Function（函式）是「把一段邏輯包起來、取名字、重複用」。",
+      "analogy": "像「煮泡麵 SOP」—寫一次步驟、每次想吃喊名字就行。Function 一樣：寫一次 function 算稅(收入)、之後算誰的稅都用同一個。不會寫函式就不會寫程式。",
+      "content": "想像一下你有 30 個學生的名字要存。寫 30 個變數？瘋了。**陣列**就是來解這個的—「一堆東西放一起、能依順序找到」。\n\n  \n### 陣列就是排隊的格子\n\n```text\n想像超商置物櫃：\n\n[0]: 蘋果\n[1]: 香蕉\n[2]: 橘子\n[3]: 西瓜\n ↑\n 位置（叫 index、從 0 開始）\n\n你說：「給我第 2 號的」\n→ 拿到「橘子」\n\n陣列也一樣—用「位置」找東西\n```\n\n  \n### 建立陣列：所有語言怎麼寫\n\n```text\nPython（叫 list）：\nfruits = [\"蘋果\", \"香蕉\", \"橘子\"]\nprint(fruits[0])     # 蘋果\nprint(fruits[2])     # 橘子\n\nJavaScript / TypeScript（叫 Array）：\nconst fruits = [\"蘋果\", \"香蕉\", \"橘子\"];\nconsole.log(fruits[0]);    // 蘋果\n\nGo（叫 slice）：\nfruits := []string{\"蘋果\", \"香蕉\", \"橘子\"}\nfmt.Println(fruits[0])\n\nRust（Vec）：\nlet fruits = vec![\"蘋果\", \"香蕉\", \"橘子\"];\nprintln!(\"{}\", fruits[0]);\n\nJava：\nString[] fruits = {\"蘋果\", \"香蕉\", \"橘子\"};\nSystem.out.println(fruits[0]);\n\n# 或 ArrayList（可變長度）\nList fruits = new ArrayList<>();\nfruits.add(\"蘋果\");\n\nC#：\nstring[] fruits = { \"蘋果\", \"香蕉\", \"橘子\" };\n// 或可變\nvar fruits = new List { \"蘋果\", \"香蕉\", \"橘子\" };\n\nPHP：\n$fruits = [\"蘋果\", \"香蕉\", \"橘子\"];\necho $fruits[0];   // 蘋果\n\nRuby：\nfruits = [\"蘋果\", \"香蕉\", \"橘子\"]\nputs fruits[0]\n\nSwift：\nlet fruits = [\"蘋果\", \"香蕉\", \"橘子\"]\nprint(fruits[0])\n\nKotlin：\nval fruits = listOf(\"蘋果\", \"香蕉\", \"橘子\")\nprintln(fruits[0])\n\nDart：\nvar fruits = [\"蘋果\", \"香蕉\", \"橘子\"];\nprint(fruits[0]);\n\n→ 都從 0 開始—這是業界慣例\n→ 不要被「第一個」騙、第一個是 [0]\n```\n\n  \n### 為什麼從 0 開始？\n\n```text\n很多人困惑「第 1 個東西是 [0]？」\n\n歷史原因：\n[0] [1] [2] [3]\n ↑\n這是「跟陣列起點的距離」\n第 0 號 = 距離 0（就是起點）\n第 1 號 = 距離 1（跳過 1 個）\n\n不是從 1 開始的語言：\n- Lua（從 1）\n- R（從 1）\n- MATLAB（從 1）\n\n主流（99%）：從 0 開始\n```\n\n  \n### 常用操作\n\n```text\n新增元素：\n\n# Python\nfruits.append(\"葡萄\")        # 加到最後\nfruits.insert(0, \"草莓\")     # 加到第 0 位置\n\n# JavaScript\nfruits.push(\"葡萄\");          // 加到最後\nfruits.unshift(\"草莓\");       // 加到開頭\n\n# Go\nfruits = append(fruits, \"葡萄\")\n\n# Rust\nfruits.push(\"葡萄\");\n\n刪除元素：\n\n# Python\nfruits.remove(\"香蕉\")        # 依值刪\nfruits.pop(0)                # 依位置刪\ndel fruits[0]                # 直接刪\n\n# JavaScript\nfruits.pop();                # 移除最後\nfruits.shift();              // 移除第一個\nfruits.splice(1, 1);         // 從位置 1 刪 1 個\n\n修改元素：\n\nfruits[0] = \"鳳梨\"           # 所有語言類似\n\n查長度：\n\n# Python\nlen(fruits)                  # 3\n\n# JavaScript\nfruits.length                // 3\n\n# Go\nlen(fruits)                  // 3\n\n# Rust\nfruits.len()                 // 3\n```\n\n  \n### 跑陣列每個元素\n\n```text\nPython：\nfor fruit in fruits:\n    print(fruit)\n\n# 或要 index\nfor i, fruit in enumerate(fruits):\n    print(f\"第 {i} 號是 {fruit}\")\n\nJavaScript：\nfruits.forEach((fruit, i) => {\n    console.log(`第 ${i} 號是 ${fruit}`);\n});\n\n// 或 for-of\nfor (const fruit of fruits) {\n    console.log(fruit);\n}\n\nGo：\nfor i, fruit := range fruits {\n    fmt.Printf(\"第 %d 號是 %s\\n\", i, fruit)\n}\n\nRust：\nfor (i, fruit) in fruits.iter().enumerate() {\n    println!(\"第 {} 號是 {}\", i, fruit);\n}\n```\n\n  \n### 常見陣列陷阱\n\n```text\n1. 超出範圍\n\nfruits = [\"蘋果\", \"香蕉\", \"橘子\"]\nfruits[10]\n# Python: IndexError\n# JS: undefined（不報錯、更危險）\n# Go / Rust: panic / 編譯時抓\n\n→ 取之前先檢查長度\nif 10 \n    **☕ 用人話講**\n    \n陣列像一排有編號的櫃子—想拿東西報編號就好。記住：(1) **編號從 0 開始**—第一個是 [0] (2) **長度有限**—超過會爆 (3) **JS 不爆會給 undefined**—比直接爆更可怕（你看不出 bug）。實戰你會 80% 時間在跑陣列、新增 / 刪除 / 找元素—寫熟它你就會寫 code 了。\n\n  \n\n  \n    \n      🎯\n      面試考點\n    \n    台灣科技公司面試 90% 會問「程式邏輯」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。",
+      "tip": {
+        "type": "pro",
+        "text": "台灣科技公司面試 90% 會問「程式邏輯」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（第 ${i} 號是 ${fruit}）寫一段小 code 解決一個實際問題。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "陣列就是排隊的格子"
+        },
+        {
+          "level": 3,
+          "text": "建立陣列：所有語言怎麼寫"
+        },
+        {
+          "level": 3,
+          "text": "為什麼從 0 開始？"
+        },
+        {
+          "level": 3,
+          "text": "常用操作"
+        },
+        {
+          "level": 3,
+          "text": "跑陣列每個元素"
+        },
+        {
+          "level": 3,
+          "text": "常見陣列陷阱"
+        }
+      ]
+    },
+    {
+      "id": "7.9",
+      "number": "LESSON 7.9",
+      "title": "資料結構 2：字典（Dict / Map / HashMap）",
+      "oneLineSummary": "Scope（作用域）是「變數在哪裡可以被看到」—local / global / closure。",
+      "analogy": "像家裡的房間—臥室的東西只你看得到（local）、客廳的東西大家都看得到（global）、抽屜裡的密碼鎖（closure）。Scope 弄錯是初學者頭痛來源。",
+      "content": "陣列用**數字**當編號。但有時你想用**名字**當編號—例如「Alice 的年齡」「Bob 的電話」。**字典**就是來解這個的。\n\n  \n### 字典就是「名字對值」\n\n```text\n想像通訊錄：\n\n姓名（key）       →   電話（value）\nAlice            →   0912-345-678\nBob              →   0987-654-321\nCharlie          →   0922-111-222\n\n你說「給我 Alice 的電話」\n→ 拿到 0912-345-678\n\n字典也一樣—用「key」找「value」\n```\n\n  \n### 建立字典：所有語言怎麼寫\n\n```text\nPython（叫 dict）：\nphones = {\n    \"Alice\": \"0912-345-678\",\n    \"Bob\": \"0987-654-321\",\n    \"Charlie\": \"0922-111-222\"\n}\n\nprint(phones[\"Alice\"])   # 0912-345-678\n\nJavaScript（叫 object 或 Map）：\nconst phones = {\n    Alice: \"0912-345-678\",\n    Bob: \"0987-654-321\",\n    Charlie: \"0922-111-222\"\n};\n\nconsole.log(phones.Alice);\nconsole.log(phones[\"Alice\"]);   // 兩種都行\n\n// 或正式的 Map（key 能是任何型別）\nconst phones = new Map();\nphones.set(\"Alice\", \"0912-345-678\");\nphones.get(\"Alice\");\n\nTypeScript（加型別）：\nconst phones: Record = {\n    Alice: \"0912-345-678\",\n    ...\n};\n\n// 或\nconst phones: Map = new Map([\n    [\"Alice\", \"0912-345-678\"],\n]);\n\nGo（叫 map）：\nphones := map[string]string{\n    \"Alice\": \"0912-345-678\",\n    \"Bob\": \"0987-654-321\",\n}\n\nfmt.Println(phones[\"Alice\"])\n\nRust（HashMap）：\nuse std::collections::HashMap;\n\nlet mut phones = HashMap::new();\nphones.insert(\"Alice\", \"0912-345-678\");\nphones.insert(\"Bob\", \"0987-654-321\");\n\nprintln!(\"{}\", phones[\"Alice\"]);\n\nJava：\nMap phones = new HashMap<>();\nphones.put(\"Alice\", \"0912-345-678\");\nphones.put(\"Bob\", \"0987-654-321\");\n\nSystem.out.println(phones.get(\"Alice\"));\n\nC#：\nvar phones = new Dictionary {\n    { \"Alice\", \"0912-345-678\" },\n    { \"Bob\", \"0987-654-321\" }\n};\n\nPHP（associative array）：\n$phones = [\n    \"Alice\" => \"0912-345-678\",\n    \"Bob\" => \"0987-654-321\"\n];\n\necho $phones[\"Alice\"];\n\nRuby：\nphones = {\n    \"Alice\" => \"0912-345-678\",\n    \"Bob\" => \"0987-654-321\"\n}\n\n# 或用 symbol（更 idiomatic）\nphones = {\n    alice: \"0912-345-678\",\n    bob: \"0987-654-321\"\n}\n\nSwift：\nlet phones: [String: String] = [\n    \"Alice\": \"0912-345-678\",\n    \"Bob\": \"0987-654-321\"\n]\n\nprint(phones[\"Alice\"]!)\n\nKotlin：\nval phones = mapOf(\n    \"Alice\" to \"0912-345-678\",\n    \"Bob\" to \"0987-654-321\"\n)\n\nprintln(phones[\"Alice\"])\n\nDart：\nvar phones = {\n    \"Alice\": \"0912-345-678\",\n    \"Bob\": \"0987-654-321\"\n};\n\nprint(phones[\"Alice\"]);\n\n→ 各語言名字不同（dict / object / map / HashMap）\n→ 概念一樣：「key → value」\n```\n\n  \n### 常用操作\n\n```text\n新增 / 修改：\n\n# Python（一樣的語法）\nphones[\"David\"] = \"0900-000-000\"   # 新增\nphones[\"Alice\"] = \"0911-111-111\"   # 修改\n\n# JS\nphones.David = \"0900-000-000\";\nphones[\"David\"] = \"0900-000-000\";\n\n# Go\nphones[\"David\"] = \"0900-000-000\"\n\n刪除：\n\n# Python\ndel phones[\"Alice\"]\n\n# JS\ndelete phones.Alice;\n\n# Go\ndelete(phones, \"Alice\")\n\n# Rust\nphones.remove(\"Alice\");\n\n檢查 key 存在：\n\n# Python\nif \"Alice\" in phones:\n    print(phones[\"Alice\"])\n\n# JS\nif (\"Alice\" in phones) { ... }\nif (phones.Alice !== undefined) { ... }\nif (phones.hasOwnProperty(\"Alice\")) { ... }\n\n# Go\nif value, ok := phones[\"Alice\"]; ok {\n    fmt.Println(value)\n}\n\n長度：\n\nlen(phones)                # Python / Go\nObject.keys(phones).length // JS\nphones.size                // JS Map\nphones.size()              // Java\nphones.len()               // Rust\n```\n\n  \n### 跑字典每個元素\n\n```text\nPython：\nfor name, phone in phones.items():\n    print(f\"{name}: {phone}\")\n\n# 或只跑 key\nfor name in phones:\n    print(name)\n\n# 只跑 value\nfor phone in phones.values():\n    print(phone)\n\nJavaScript：\nfor (const [name, phone] of Object.entries(phones)) {\n    console.log(`${name}: ${phone}`);\n}\n\n// Map\nfor (const [name, phone] of phones) {\n    ...\n}\n\nGo：\nfor name, phone := range phones {\n    fmt.Printf(\"%s: %s\\n\", name, phone)\n}\n\nRust：\nfor (name, phone) in &phones {\n    println!(\"{}: {}\", name, phone);\n}\n```\n\n  \n### 巢狀字典（資料的常見結構）\n\n```text\n真實 app 通常 key 不只一層：\n\n# Python\nusers = {\n    \"alice\": {\n        \"age\": 30,\n        \"email\": \"alice@x.com\",\n        \"hobbies\": [\"讀書\", \"登山\"]\n    },\n    \"bob\": {\n        \"age\": 25,\n        \"email\": \"bob@x.com\",\n        \"hobbies\": [\"遊戲\"]\n    }\n}\n\n# 取 Alice 的 email\nprint(users[\"alice\"][\"email\"])\n\n# 取 Bob 的第一個 hobby\nprint(users[\"bob\"][\"hobbies\"][0])\n\n# 改 Alice 的年齡\nusers[\"alice\"][\"age\"] = 31\n\n# 加新使用者\nusers[\"charlie\"] = {\n    \"age\": 28,\n    \"email\": \"charlie@x.com\",\n    \"hobbies\": []\n}\n\n→ JSON 本質就是巢狀字典\n→ API 回傳的資料都長這樣\n→ 寫網頁 / 後端常做\n```\n\n  \n### 常見字典陷阱\n\n```text\n1. Key 不存在\n\nprint(phones[\"Eve\"])\n# Python: KeyError\n# JS: undefined\n# Go: 回零值（空字串）\n\n對策：\n# Python\nphones.get(\"Eve\")            # 沒就 None\nphones.get(\"Eve\", \"未知\")    # 沒就用預設\n\n# JS\nphones.Eve ?? \"未知\"         // nullish coalescing\n\n2. JS object vs Map\n\nconst obj = {};\nobj.key1 = \"a\";\n\n// 看似 key 是 string、其實能用 number、boolean\nobj[1] = \"x\";\nobj[true] = \"y\";\n// 全變 string key（自動轉型）\n\n// 真正想要 key 是任意型別 → 用 Map\nconst map = new Map();\nmap.set(1, \"x\");      // 真的 key 是數字\nmap.set(true, \"y\");   // 真的 key 是 boolean\n\n3. 字典順序\n\nPython 3.7+：保證插入順序\nJS：保證 string key 的插入順序（symbol / int 不一定）\nGo：隨機順序（每次跑都不一樣！）\nJava HashMap：隨機\nJava LinkedHashMap：保證插入順序\n\n→ 不依賴順序最安全\n→ 要順序就用對的 class\n```\n\n  \n### 什麼時候用陣列 vs 字典\n\n```text\n用陣列（list）當：\n- 要「順序」很重要（前 10 名）\n- 要常常按 index 找\n- 不需要「依名字找」\n- 例：購物清單、log 訊息、輪流順序\n\n用字典（dict）當：\n- 用「名字」找東西\n- 不在乎順序\n- 大量資料（字典找比較快）\n- 例：通訊錄、設定檔、user 資料\n\n混合：\nusers = [\n    {\"name\": \"Alice\", \"age\": 30},\n    {\"name\": \"Bob\", \"age\": 25}\n]\n# 陣列存「使用者列表」、每個是字典\n# 這是 JSON / API 最常見格式\n```\n\n  \n    **☕ 用人話講**\n    \n字典就是「**名字對應值**」的對照表。陣列用**編號**找、字典用**名字**找。實戰你會大量用字典—API 回傳的 JSON、設定檔、使用者資料、表單—全都是字典結構。學會字典 + 巢狀字典 = 你能處理 90% 的真實資料。\n\n  \n\n  \n    \n      ⚡\n      學習加速器\n    \n    把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。",
+      "tip": {
+        "type": "practical",
+        "text": "把這節學到的馬上應用到一個小東西—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（${name}: ${phone}）寫一段小 code 解決一個實際問題。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "字典就是「名字對值」"
+        },
+        {
+          "level": 3,
+          "text": "建立字典：所有語言怎麼寫"
+        },
+        {
+          "level": 3,
+          "text": "常用操作"
+        },
+        {
+          "level": 3,
+          "text": "跑字典每個元素"
+        },
+        {
+          "level": 3,
+          "text": "巢狀字典（資料的常見結構）"
+        },
+        {
+          "level": 3,
+          "text": "常見字典陷阱"
+        },
+        {
+          "level": 3,
+          "text": "什麼時候用陣列 vs 字典"
+        }
+      ]
+    },
+    {
+      "id": "7.10",
+      "number": "LESSON 7.10",
+      "title": "資料結構 3：Set / Tuple / Stack / Queue / Tree / Graph",
+      "oneLineSummary": "Recursion（遞迴）是「函式自己呼叫自己」—解某些問題超漂亮。",
+      "analogy": "像俄羅斯娃娃—一個娃娃裡面有一個小一點的娃娃、無限延伸。遞迴一樣：階乘 / 樹狀結構 / 河內塔—用遞迴解最直觀、但要小心無限迴圈。",
+      "content": "陣列跟字典是 80% 場景。但有些情況有專門的資料結構更好用—先認識它們、不用全記、用到再深學。\n\n  \n### Set（集合）：不允許重複的陣列\n\n```text\n「我只要不重複的元素」：\n\n# Python\nfruits = {\"蘋果\", \"香蕉\", \"橘子\", \"蘋果\"}\n# 自動變 {\"蘋果\", \"香蕉\", \"橘子\"}（去重）\n\n# JS\nconst fruits = new Set([\"蘋果\", \"香蕉\", \"橘子\", \"蘋果\"]);\n// Set { \"蘋果\", \"香蕉\", \"橘子\" }\n\n# 常見用途：去掉重複\nvisitors = [\"alice\", \"bob\", \"alice\", \"charlie\", \"bob\"]\nunique = set(visitors)\n# {\"alice\", \"bob\", \"charlie\"}\n\n# Java\nSet fruits = new HashSet<>(Arrays.asList(\"蘋果\", \"香蕉\"));\n\n# C#\nvar fruits = new HashSet { \"蘋果\", \"香蕉\" };\n\n→ 想去重時就想到 Set\n→ 比陣列 + 一堆 if 判斷簡單 100 倍\n```\n\n  \n### Tuple（元組）：固定大小、能存多種型別\n\n```text\n「我要一組相關但不同型別的值」：\n\n# Python\nperson = (\"Alice\", 30, True)   # 名字、年齡、是否啟用\nname, age, is_active = person  # 解包\n\n# 為什麼不用陣列？\n# 陣列：通常存「同類型」（一堆名字 / 一堆數字）\n# Tuple：存「一組相關但不同類型」的值\n\n# 常見回傳多值\ndef get_user():\n    return (\"Alice\", 30, True)\n\nname, age, active = get_user()\n\n# JS（用 array 模擬 tuple、TypeScript 有真正 tuple）\nconst person: [string, number, boolean] = [\"Alice\", 30, true];\n\n# Rust（原生支援）\nlet person: (String, i32, bool) = (\n    String::from(\"Alice\"), 30, true\n);\n\n# Go（沒 tuple、用 struct 或 多回傳值）\nname, age := getUser()\n\n→ Python / Rust / TS 強支援\n→ Java / C# 後來加 Record / ValueTuple\n```\n\n  \n### Stack（堆疊）：後進先出（LIFO）\n\n```text\n想像疊盤子：\n往上疊（push）：最上面那個\n要拿（pop）：拿最上面那個（最後疊的）\n\n[3]  ← 最後 push、最先 pop\n[2]\n[1]  ← 最早 push、最後 pop\n\n實戰：\n- 瀏覽器「上一頁」（最後看的頁先回去）\n- 編輯器「復原」（最後動作先退）\n- 函數呼叫（最後呼叫的最先回）\n\n# Python（用 list 模擬）\nstack = []\nstack.append(1)   # push\nstack.append(2)\nstack.append(3)\nstack.pop()       # 3\nstack.pop()       # 2\n\n# JS\nconst stack = [];\nstack.push(1);\nstack.push(2);\nstack.pop();     // 2\n\n# Java\nDeque stack = new ArrayDeque<>();\nstack.push(1);\nstack.pop();\n```\n\n  \n### Queue（佇列）：先進先出（FIFO）\n\n```text\n想像排隊：\n最早排的最先服務\n\n[1] [2] [3]\n ↑           ↑\n出口        入口（push）\n\n實戰：\n- 訊息佇列（先發的先處理）\n- 印表機排程（先按列印的先印）\n- 廣度優先搜尋\n\n# Python\nfrom collections import deque\nqueue = deque()\nqueue.append(1)        # 入隊\nqueue.append(2)\nqueue.popleft()        # 1（最早的出隊）\n\n# JS\nconst queue = [];\nqueue.push(1);\nqueue.shift();         // 1\n\n# Java\nQueue queue = new LinkedList<>();\nqueue.offer(1);\nqueue.poll();          // 1\n```\n\n  \n### Tree（樹）：階層結構\n\n```text\n想像家譜：\n\n        老闆\n       /    \\\n    經理 A   經理 B\n    /   \\      \\\n  員工1 員工2  員工3\n\n實戰：\n- 檔案系統（資料夾 / 檔案）\n- DOM（HTML 元素階層）\n- 公司組織\n- 決策樹（AI / ML）\n\n簡單實作：\nclass TreeNode:\n    def __init__(self, value):\n        self.value = value\n        self.children = []\n\nroot = TreeNode(\"老闆\")\nmgr_a = TreeNode(\"經理 A\")\nroot.children.append(mgr_a)\nmgr_a.children.append(TreeNode(\"員工 1\"))\n\n→ 寫 web / app 一直在處理樹（DOM）\n→ 但很少自己寫 Tree class（用內建的）\n```\n\n  \n### Graph（圖）：節點 + 邊\n\n```text\n想像捷運路線圖：\n\n  台北車站 ─── 中山 ─── 民權西路\n      │\n   西門\n      │\n   龍山寺 ─── 江子翠\n\n每個站 = 節點\n每條線 = 邊\n\n實戰：\n- 社群網路（誰跟誰是朋友）\n- 地圖導航（哪些路通哪些）\n- 推薦系統（看過 X 也看過 Y）\n\n簡單實作（用字典）：\ngraph = {\n    \"台北車站\": [\"中山\", \"西門\"],\n    \"中山\": [\"台北車站\", \"民權西路\"],\n    \"西門\": [\"台北車站\", \"龍山寺\"],\n    ...\n}\n\n→ Graph 比 Tree 複雜\n→ 通常用專門資料庫（Neo4j、Memgraph）\n→ Facebook、LinkedIn 核心是 Graph\n```\n\n  \n### 各語言 Set / Tuple 對比表\n\n  \n| 語言 | Set | Tuple |\n| --- | --- | --- |\n| Python | set / frozenset | tuple（內建） |\n| JavaScript | Set | array（用 const） |\n| TypeScript | Set | [string, number]（真 tuple） |\n| Go | map[T]bool 模擬 | 多回傳值 / struct |\n| Rust | HashSet | (T1, T2)（原生） |\n| Java | HashSet | Record / Pair |\n| C# | HashSet | ValueTuple / Tuple |\n| Swift | Set | (T1, T2) |\n| Kotlin | setOf | Pair / Triple |\n\n  \n    **☕ 用人話講**\n    \n初學別怕記不起來—實際寫 code 你 90% 用 **陣列 + 字典**。其他資料結構（Set / Tuple / Stack / Queue / Tree / Graph）**遇到時再查**就好。但要知道它們**存在**—當你想「我要去重」就知道 Set、想「最後進先出」就知道 Stack。**知道有這個工具**比**記語法**重要。\n\n  \n\n  \n    \n      🚀\n      2026 趨勢\n    \n    這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。",
+      "tip": {
+        "type": "trend",
+        "text": "這個技術 2026 還在主流、未來 5 年不會過時。但工具會更新—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "Set（集合）：不允許重複的陣列"
+        },
+        {
+          "level": 3,
+          "text": "Tuple（元組）：固定大小、能存多種型別"
+        },
+        {
+          "level": 3,
+          "text": "Stack（堆疊）：後進先出（LIFO）"
+        },
+        {
+          "level": 3,
+          "text": "Queue（佇列）：先進先出（FIFO）"
+        },
+        {
+          "level": 3,
+          "text": "Tree（樹）：階層結構"
+        },
+        {
+          "level": 3,
+          "text": "Graph（圖）：節點 + 邊"
+        },
+        {
+          "level": 3,
+          "text": "各語言 Set / Tuple 對比表"
+        }
+      ]
+    },
+    {
+      "id": "7.11",
+      "number": "LESSON 7.11",
+      "title": "OOP 基本：class / object / method / 屬性",
+      "oneLineSummary": "OOP（物件導向）是「把資料跟操作打包」—Class / Object / 繼承 / 多型 4 大支柱。",
+      "analogy": "像iPhone vs iPhone Pro—都繼承「手機」這個 class、Pro 多了「相機」「LiDAR」這些 method。OOP 用模板（class）建實體（object）、用繼承擴充功能、用多型彈性處理。",
+      "content": "OOP = Object-Oriented Programming（物件導向）。聽起來很學術、其實邏輯很自然—就是「**把東西跟它能做的事綁在一起**」。\n\n  \n### 用「狗」理解 OOP\n\n```text\n想像你描述一隻狗：\n\n牠有：\n- 名字（Lucky）\n- 年齡（3 歲）\n- 品種（柴犬）\n\n牠會：\n- 吠（bark）\n- 跑（run）\n- 睡（sleep）\n\n寫成程式：\n\nclass Dog:                          # 定義「狗」這類東西\n    def __init__(self, name, age, breed):\n        self.name = name            # 屬性\n        self.age = age\n        self.breed = breed\n    \n    def bark(self):                 # 方法（會做的事）\n        print(f\"{self.name} 汪汪叫！\")\n    \n    def run(self):\n        print(f\"{self.name} 在跑！\")\n\n# 製造一隻具體的狗\nlucky = Dog(\"Lucky\", 3, \"柴犬\")\nlucky.bark()   # Lucky 汪汪叫！\nlucky.run()    # Lucky 在跑！\n\n# 製造另一隻\nruby = Dog(\"Ruby\", 5, \"黃金獵犬\")\nruby.bark()    # Ruby 汪汪叫！\n\n→ class = 「狗的設計圖」\n→ object = 「實際造出來的狗」（Lucky、Ruby）\n→ 屬性 = 牠有什麼（name、age）\n→ 方法 = 牠會做什麼（bark、run）\n```\n\n  \n### 各語言 OOP 對比\n\n```text\nJavaScript：\nclass Dog {\n    constructor(name, age, breed) {\n        this.name = name;\n        this.age = age;\n        this.breed = breed;\n    }\n    \n    bark() {\n        console.log(`${this.name} 汪汪叫！`);\n    }\n    \n    run() {\n        console.log(`${this.name} 在跑！`);\n    }\n}\n\nconst lucky = new Dog(\"Lucky\", 3, \"柴犬\");\nlucky.bark();\n\nTypeScript（加型別）：\nclass Dog {\n    name: string;\n    age: number;\n    breed: string;\n    \n    constructor(name: string, age: number, breed: string) {\n        this.name = name;\n        this.age = age;\n        this.breed = breed;\n    }\n    \n    bark(): void {\n        console.log(`${this.name} 汪汪叫！`);\n    }\n}\n\nJava：\npublic class Dog {\n    private String name;\n    private int age;\n    private String breed;\n    \n    public Dog(String name, int age, String breed) {\n        this.name = name;\n        this.age = age;\n        this.breed = breed;\n    }\n    \n    public void bark() {\n        System.out.println(name + \" 汪汪叫！\");\n    }\n}\n\nDog lucky = new Dog(\"Lucky\", 3, \"柴犬\");\nlucky.bark();\n\nC#：\npublic class Dog {\n    public string Name { get; set; }\n    public int Age { get; set; }\n    public string Breed { get; set; }\n    \n    public Dog(string name, int age, string breed) {\n        Name = name;\n        Age = age;\n        Breed = breed;\n    }\n    \n    public void Bark() {\n        Console.WriteLine($\"{Name} 汪汪叫！\");\n    }\n}\n\nGo（沒 class、用 struct + 方法）：\ntype Dog struct {\n    Name  string\n    Age   int\n    Breed string\n}\n\nfunc (d Dog) Bark() {\n    fmt.Printf(\"%s 汪汪叫！\\n\", d.Name)\n}\n\nlucky := Dog{Name: \"Lucky\", Age: 3, Breed: \"柴犬\"}\nlucky.Bark()\n\nRust（也沒 class、用 struct + impl）：\nstruct Dog {\n    name: String,\n    age: u32,\n    breed: String,\n}\n\nimpl Dog {\n    fn new(name: &str, age: u32, breed: &str) -> Self {\n        Dog {\n            name: name.to_string(),\n            age,\n            breed: breed.to_string(),\n        }\n    }\n    \n    fn bark(&self) {\n        println!(\"{} 汪汪叫！\", self.name);\n    }\n}\n\nlet lucky = Dog::new(\"Lucky\", 3, \"柴犬\");\nlucky.bark();\n\nPHP：\nclass Dog {\n    public string $name;\n    public int $age;\n    public string $breed;\n    \n    public function __construct(string $name, int $age, string $breed) {\n        $this->name = $name;\n        $this->age = $age;\n        $this->breed = $breed;\n    }\n    \n    public function bark() {\n        echo \"{$this->name} 汪汪叫！\\n\";\n    }\n}\n\n$lucky = new Dog(\"Lucky\", 3, \"柴犬\");\n$lucky->bark();\n\nRuby：\nclass Dog\n    attr_accessor :name, :age, :breed\n    \n    def initialize(name, age, breed)\n        @name = name\n        @age = age\n        @breed = breed\n    end\n    \n    def bark\n        puts \"#{@name} 汪汪叫！\"\n    end\nend\n\nlucky = Dog.new(\"Lucky\", 3, \"柴犬\")\nlucky.bark\n\nSwift：\nclass Dog {\n    var name: String\n    var age: Int\n    var breed: String\n    \n    init(name: String, age: Int, breed: String) {\n        self.name = name\n        self.age = age\n        self.breed = breed\n    }\n    \n    func bark() {\n        print(\"\\(name) 汪汪叫！\")\n    }\n}\n\nlet lucky = Dog(name: \"Lucky\", age: 3, breed: \"柴犬\")\nlucky.bark()\n\nKotlin（最簡潔）：\nclass Dog(val name: String, val age: Int, val breed: String) {\n    fun bark() {\n        println(\"$name 汪汪叫！\")\n    }\n}\n\nval lucky = Dog(\"Lucky\", 3, \"柴犬\")\nlucky.bark()\n\nDart：\nclass Dog {\n    String name;\n    int age;\n    String breed;\n    \n    Dog(this.name, this.age, this.breed);\n    \n    void bark() {\n        print('$name 汪汪叫！');\n    }\n}\n\nvar lucky = Dog(\"Lucky\", 3, \"柴犬\");\nlucky.bark();\n\n→ 看起來各語言寫法差別大\n→ 但核心邏輯完全一樣：\n   1. 定義有什麼屬性\n   2. 定義會做什麼方法\n   3. constructor 設定初始值\n   4. new 出一個實例\n```\n\n  \n### this / self：「我自己」\n\n```text\n方法裡常看到 this 或 self—指「呼叫這個方法的物件」：\n\n# Python（用 self）\nclass Dog:\n    def bark(self):\n        print(f\"{self.name} 汪汪叫\")\n        # self.name = 「呼叫這方法的那隻狗」的名字\n\n# JS / Java / C# / Swift（用 this）\nclass Dog {\n    bark() {\n        console.log(`${this.name} 汪汪叫`);\n    }\n}\n\n# Rust（明確 &self）\nimpl Dog {\n    fn bark(&self) {\n        println!(\"{} 汪汪叫\", self.name);\n    }\n}\n\n# Go（顯式 receiver）\nfunc (d Dog) Bark() {\n    fmt.Printf(\"%s 汪汪叫\\n\", d.Name)\n    // d 就是 self\n}\n\n→ this / self 是區分「我自己屬性」vs「外面變數」\n→ 沒它的話：name = name 不知道左右誰是誰\n```\n\n  \n### 什麼時候用 class、什麼時候不用\n\n```text\n用 class（OOP）當：\n- 東西有「狀態」（屬性會變）\n- 東西有「行為」（要做事）\n- 多個相似東西（一堆狗、一堆使用者）\n\n例：\n- User class（使用者）\n- Product class（商品）\n- Game character class\n- DB connection class\n\n不用 class（用函數就好）當：\n- 簡單轉換（純函數）\n- 一次性處理\n- 沒狀態\n\n例：\ndef calculate_tax(price):\n    return price * 0.05\n\n# 不需要包成 class\n# 函數就夠\n\n# 新手陷阱：什麼都包 class（過度 OOP）\n# 反例：\nclass Calculator:\n    def add(self, a, b):\n        return a + b\n\n# 這是 OOP 過度\n# 直接 def add(a, b): return a + b 就好\n\n→ OOP 是工具、不是強制\n→ Python / JS 都能寫純函數式\n```\n\n  \n### 2026 OOP 觀念演進\n\n```text\n古典 OOP（1990-2010）：\n- Java / C# / Ruby 為代表\n- 一切是 class\n- Inheritance 重度使用\n- 大型架構（Spring / .NET）\n\n現代 OOP（2010+）：\n- Python / JS / TS / Kotlin 為代表\n- class 是工具、不是教條\n- Composition > Inheritance（組合 > 繼承）\n- 函數式混搭\n\n純函數式（小眾但成長）：\n- Haskell / Elixir / F# / Clojure\n- 沒 class、只有 data + function\n- 適合並發 / 容錯系統\n\n→ 不用糾結「OOP 好還是函數式好」\n→ 都會、看場景用\n```\n\n  \n    **☕ 用人話講**\n    \nOOP 不是什麼高深玄學—就是「**把東西的屬性跟動作綁在一起**」。狗有名字（屬性）、會吠（動作）—寫成 class、之後造 100 隻狗都一樣方便。新手陷阱：**什麼都寫 class**—簡單函數就用函數、別硬塞 class。**看到資料 + 行為總是一起出現**—那個時候用 class 才有意義。\n\n  \n\n  \n    \n      🛠️\n      工具推薦\n    \n    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。",
+      "tip": {
+        "type": "practical",
+        "text": "配合這節用的工具：(1) VS Code（編輯器、免費）(2) Chrome DevTools（F12 開啟、除錯神器）(3) Live Server（VS Code 擴充、即時預覽）(4) GitHub Copilot / Cursor（AI 寫程式、學習加速 2-10x）。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（${this.name} 在跑！, ${this.name} 汪汪叫！, ${this.name} 汪汪叫）寫一段小 code 解決一個實際問題。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "用「狗」理解 OOP"
+        },
+        {
+          "level": 3,
+          "text": "各語言 OOP 對比"
+        },
+        {
+          "level": 3,
+          "text": "this / self：「我自己」"
+        },
+        {
+          "level": 3,
+          "text": "什麼時候用 class、什麼時候不用"
+        },
+        {
+          "level": 3,
+          "text": "2026 OOP 觀念演進"
+        }
+      ]
+    },
+    {
+      "id": "7.12",
+      "number": "LESSON 7.12",
+      "title": "OOP 三大特性：繼承、封裝、多型",
+      "oneLineSummary": "FP（函式式編程）是「用純函式 + 不變資料」寫程式—map / filter / reduce 是基本功。",
+      "analogy": "像料理加工線—每個函式是工人、把原料變產品、不影響其他人。FP 強調「沒副作用」、code 好測試、好平行—現代前端（React）骨子裡是 FP。",
+      "content": "學會 class 後、會看到 3 個術語：**繼承（Inheritance）**、**封裝（Encapsulation）**、**多型（Polymorphism）**。聽起來很玄、其實都很自然。\n\n  \n### 繼承：「兒子繼承爸爸的能力」\n\n```text\n想像：所有狗都會吠、跑、睡。\n但「柴犬」會更多事—比如「捲尾巴」。\n你寫程式時、要重新寫一次「會吠、會跑」嗎？\n\n→ 不用！讓「柴犬」繼承「狗」就好\n\n# Python\nclass Animal:           # 父類別（更廣的）\n    def __init__(self, name):\n        self.name = name\n    \n    def eat(self):\n        print(f\"{self.name} 在吃\")\n    \n    def sleep(self):\n        print(f\"{self.name} 在睡\")\n\nclass Dog(Animal):      # 繼承 Animal\n    def bark(self):\n        print(f\"{self.name} 汪汪叫\")\n\nclass ShibaInu(Dog):    # 繼承 Dog\n    def curl_tail(self):\n        print(f\"{self.name} 捲尾巴\")\n\n# 創建柴犬\nlucky = ShibaInu(\"Lucky\")\n\nlucky.eat()        # 從 Animal 繼承\nlucky.sleep()      # 從 Animal 繼承\nlucky.bark()       # 從 Dog 繼承\nlucky.curl_tail()  # ShibaInu 自己的\n\n→ 不用重複寫「吃 / 睡」\n→ 「柴犬 是 狗 是 動物」的層級\n```\n\n  \n### 各語言繼承語法\n\n```text\nJavaScript：\nclass Dog extends Animal {\n    bark() {\n        console.log(`${this.name} 汪汪叫`);\n    }\n}\n\nJava / C#：\npublic class Dog extends Animal {   // Java\n    public void bark() { ... }\n}\n\npublic class Dog : Animal {         // C#\n    public void Bark() { ... }\n}\n\nGo（沒繼承、用嵌入 Embedding）：\ntype Animal struct {\n    Name string\n}\n\nfunc (a Animal) Eat() {\n    fmt.Println(a.Name, \"在吃\")\n}\n\ntype Dog struct {\n    Animal      // 嵌入\n    Breed string\n}\n\nlucky := Dog{Animal: Animal{Name: \"Lucky\"}, Breed: \"柴犬\"}\nlucky.Eat()    // 能用 Animal 的方法\n\nRust（沒繼承、用 trait）：\ntrait Animal {\n    fn eat(&self);\n}\n\nstruct Dog { name: String }\n\nimpl Animal for Dog {\n    fn eat(&self) {\n        println!(\"{} 在吃\", self.name);\n    }\n}\n\nPHP：\nclass Dog extends Animal {\n    public function bark() { ... }\n}\n\nRuby：\nclass Dog  0:\n            self._balance += amount\n    \n    def withdraw(self, amount):\n        if 0 \n    **☕ 用人話講**\n    \nOOP 三大特性聽起來嚇人、其實簡單：(1) **繼承**—「兒子繼承爸的能力」、不用重複寫 (2) **封裝**—「私密屬性藏起來、只開特定操作」、像銀行帳戶 (3) **多型**—「同個動作、不同表現」、像每種動物都會 .speak() 但叫聲不同。實戰最常用的是**多型**—讓你的 code 容易擴充。新手不用全用、知道什麼時候該用就好。\n\n  \n\n  \n    \n      ⚠️\n      新手常見錯誤\n    \n    新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。",
+      "tip": {
+        "type": "warning",
+        "text": "新手 3 大坑：(1) 不看 console—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) 不存檔就 F5—改完忘記儲存以為「程式沒效果」 (3) 抄 code 不理解—複製貼上能跑、但下次要改就崩潰。記得：先看懂、再寫。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（${this.name} 汪汪叫）寫一段小 code 解決一個實際問題。",
+        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "繼承：「兒子繼承爸爸的能力」"
+        },
+        {
+          "level": 3,
+          "text": "各語言繼承語法"
+        }
+      ]
+    },
+    {
+      "id": "7.13",
+      "number": "LESSON 7.13",
+      "title": "函數式：純函數、不可變、map/filter/reduce",
+      "oneLineSummary": "Error Handling（try / catch）是「程式出錯時不整個崩潰」。",
+      "analogy": "像有保險的旅行—天氣壞了至少有理賠。try / catch 一樣：正常跑（try）、出錯了有備案（catch）、不會整個 App 掛掉。所有 production 程式必備。",
+      "content": "OOP 把資料跟動作綁一起。**函數式（Functional Programming, FP）**反過來—資料是資料、函數是函數、不混。聽起來奇怪、但讓 code 更**好預測、好測試**。\n\n  \n### 純函數：「同樣輸入永遠同樣輸出」\n\n```text\n純函數的特點：\n1. 同樣輸入 → 同樣輸出（不會變來變去）\n2. 不改外面狀態\n3. 不依賴外面狀態\n\n例：\ndef add(a, b):\n    return a + b\n\nadd(2, 3)   # 永遠是 5\nadd(2, 3)   # 永遠是 5\n\n→ 純函數！\n\n不純函數：\ncount = 0\n\ndef increment():\n    global count\n    count += 1\n    return count\n\nincrement()  # 1\nincrement()  # 2\nincrement()  # 3\n\n→ 同樣呼叫、結果不同\n→ 改了外面 count\n→ 不純！\n```\n\n  \n### 純函數的好處\n\n```text\n1. 好測試\n   def add(a, b):\n       return a + b\n   \n   assert add(2, 3) == 5     # 一行測完\n\n2. 好除錯\n   bug 一定在輸入或函數內、不會有「神秘狀態」\n\n3. 能 cache\n   add(2, 3) 算過、下次再叫直接拿結果\n\n4. 能平行\n   多個 thread 一起跑、不會互相影響\n\n5. 好推理\n   看函數簽名就懂 (input → output)\n```\n\n  \n### 不可變（Immutability）\n\n```text\n「資料一旦建立、不能改」：\n\n# 命令式（mutate）\nfruits = [\"蘋果\", \"香蕉\"]\nfruits.append(\"橘子\")        # 改原本\nprint(fruits)                # [\"蘋果\", \"香蕉\", \"橘子\"]\n\n# 函數式（immutable）\nfruits = [\"蘋果\", \"香蕉\"]\nnew_fruits = fruits + [\"橘子\"]   # 建新的\nprint(fruits)                    # [\"蘋果\", \"香蕉\"]（沒變）\nprint(new_fruits)                # [\"蘋果\", \"香蕉\", \"橘子\"]\n\n→ 不改舊的、建新的\n```\n\n  \n### 各語言不可變支援\n\n```text\nPython（用 frozen / tuple）：\ndata = (1, 2, 3)         # tuple 不可變\ndata[0] = 99             # ❌ TypeError\n\n# dict 用 frozen\nfrom dataclasses import dataclass, frozen\n@dataclass(frozen=True)\nclass Point:\n    x: int\n    y: int\n\nJavaScript（用 const + Object.freeze）：\nconst obj = Object.freeze({x: 1, y: 2});\nobj.x = 99;              // ⚠ 安靜失敗（嚴格模式才報錯）\n\n// 真的不可變 → 用 Immutable.js / Immer\n\nTypeScript（用 readonly / Readonly）：\ntype Point = Readonly;\nconst p: Point = {x: 1, y: 2};\np.x = 99;                // ❌ 編譯錯誤\n\nRust（預設不可變）：\nlet x = 5;\nx = 10;                  // ❌ 錯\nlet mut x = 5;           // 想可變要明確標\nx = 10;                  // ✓\n\nSwift / Kotlin：\nlet / val = 不可變（推薦）\nvar = 可變\n\n→ Rust / Swift / Kotlin 預設不可變\n→ Python / JS / Java 預設可變\n```\n\n  \n### map / filter / reduce：三大金剛\n\n  \n處理陣列三招、學會你會寫 80% 的資料處理：\n\n```text\nmap：「每個元素變形」\n\nnums = [1, 2, 3, 4, 5]\n\n# 每個 ×2\ndoubled = list(map(lambda x: x * 2, nums))\n# [2, 4, 6, 8, 10]\n\n# Python 慣用 list comprehension\ndoubled = [x * 2 for x in nums]\n\n# JS\nconst doubled = nums.map(x => x * 2);\n\n# Rust\nlet doubled: Vec = nums.iter().map(|x| x * 2).collect();\n\n# 實戰：把使用者名字全變大寫\nusers = [\"alice\", \"bob\", \"charlie\"]\nupper_users = [u.upper() for u in users]\n# [\"ALICE\", \"BOB\", \"CHARLIE\"]\n\nfilter：「選出符合條件的」\n\n# 只要偶數\nevens = list(filter(lambda x: x % 2 == 0, nums))\n# [2, 4]\n\n# Python comprehension\nevens = [x for x in nums if x % 2 == 0]\n\n# JS\nconst evens = nums.filter(x => x % 2 === 0);\n\n# 實戰：只要活躍使用者\nactive_users = [u for u in users if u.is_active]\n\nreduce：「聚合成一個值」\n\n# 加總\nfrom functools import reduce\ntotal = reduce(lambda a, b: a + b, nums, 0)\n# 15\n\n# Python 內建 sum\ntotal = sum(nums)\n\n# JS\nconst total = nums.reduce((a, b) => a + b, 0);\n\n# 實戰：算所有訂單總額\ntotal = sum(order.price for order in orders)\n```\n\n  \n### 鏈式呼叫：威力倍增\n\n```text\nmap / filter / reduce 串起來：\n\n# 給我「活躍使用者的薪水加總」\ntotal = sum(\n    u.salary for u in users \n    if u.is_active and u.salary > 30000\n)\n\n# 或鏈式\nresult = (\n    users\n    .filter(lambda u: u.is_active)\n    .filter(lambda u: u.salary > 30000)\n    .map(lambda u: u.salary)\n    .reduce(lambda a, b: a + b, 0)\n)\n\n# JS 最強\nconst total = users\n    .filter(u => u.isActive)\n    .filter(u => u.salary > 30000)\n    .map(u => u.salary)\n    .reduce((a, b) => a + b, 0);\n\n→ 1 行做完 3 步驟\n→ 比 for 迴圈快 100 倍寫\n→ 但要練習讀懂\n```\n\n  \n### 命令式 vs 函數式對比\n\n```text\n命令式（傳統 for 寫法）：\n\n# 「給我成年人的名字、全變大寫」\nresult = []\nfor user in users:\n    if user.age >= 18:\n        result.append(user.name.upper())\n\n# 6 行、有 mutation（改 result）\n\n函數式：\nresult = [u.name.upper() for u in users if u.age >= 18]\n# 1 行、沒 mutation\n\n# 或 JS\nconst result = users\n    .filter(u => u.age >= 18)\n    .map(u => u.name.toUpperCase());\n\n→ 函數式：聲明「我要什麼」\n→ 命令式：講「怎麼做」\n→ 函數式短、好讀（熟悉後）\n```\n\n  \n### 什麼語言適合函數式\n\n```text\n純函數式（極致）：\n- Haskell\n- Elixir\n- F#\n- Clojure\n- OCaml\n\n混合（OOP + FP）：\n- JavaScript（陣列方法完整）\n- Python（comprehension + map/filter）\n- TypeScript\n- Kotlin\n- Swift\n- Rust（不可變預設）\n- Scala\n\nOOP 為主（FP 較弱）：\n- Java（8+ 加 lambda）\n- C#（LINQ 強大）\n- Go（沒 map/filter、要自己寫迴圈）\n\n→ Go 哲學：明確 > 簡潔、不喜歡函數鏈\n→ 大多 2026 主流語言都支援 FP\n```\n\n  \n    **☕ 用人話講**\n    \n函數式不是要你完全放棄 OOP—是「**多用純函數、少改變數**」。實戰建議：(1) 寫函數時優先**純函數**—不改外面 (2) 處理陣列用 **map / filter / reduce**—不用 for (3) 變數能不變就**用 const**。這 3 個習慣養成、你的 bug 自動少一半—因為函數式 code 容易預測。\n\n  \n\n  \n    \n      💼\n      接案小知識\n    \n    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「程式邏輯」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。",
+      "tip": {
+        "type": "practical",
+        "text": "剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「程式邏輯」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
+        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "純函數：「同樣輸入永遠同樣輸出」"
+        },
+        {
+          "level": 3,
+          "text": "純函數的好處"
+        },
+        {
+          "level": 3,
+          "text": "不可變（Immutability）"
+        },
+        {
+          "level": 3,
+          "text": "各語言不可變支援"
+        },
+        {
+          "level": 3,
+          "text": "map / filter / reduce：三大金剛"
+        },
+        {
+          "level": 3,
+          "text": "鏈式呼叫：威力倍增"
+        },
+        {
+          "level": 3,
+          "text": "命令式 vs 函數式對比"
+        },
+        {
+          "level": 3,
+          "text": "什麼語言適合函數式"
+        }
+      ]
+    },
+    {
+      "id": "7.14",
+      "number": "LESSON 7.14",
+      "title": "型別系統：動態 vs 靜態、推導、聯合、泛型",
+      "oneLineSummary": "Async / Await 是「等久一點的事情怎麼寫得好看」—等 API / 等檔案 / 等使用者。",
+      "analogy": "像叫 UberEats—下單後不會傻等、可以滑手機、外送到了再處理。async / await 一樣：「等 API 回來、再處理結果」—JS / Python / Rust / C# 都有類似語法。",
+      "content": "10.2 講過動態 vs 靜態。這節深入**型別系統**—2026 主流語言越來越往「強型別 + 推導」走。\n\n  \n### 4 個維度\n\n```text\n所有語言的型別系統在 4 個維度上：\n\n1. 強型別 vs 弱型別\n   - 強：不同型別不能亂混（Python \"5\" + 3 報錯）\n   - 弱：自動轉型（JS \"5\" + 3 = \"53\"）\n\n2. 靜態 vs 動態\n   - 靜態：編譯時知道型別（Go / Rust / Java）\n   - 動態：執行時才知（Python / JS）\n\n3. 顯式 vs 推導\n   - 顯式：要明確寫型別（Java: int x = 5）\n   - 推導：編譯器猜（Go: x := 5、Rust: let x = 5）\n\n4. Null safe vs Null unsafe\n   - Safe：強制處理 null（Rust / Kotlin / Swift）\n   - Unsafe：null 隨便（Java / JS / Python）\n\n四個組合 = 各語言定位\n\n例：\n- Python：強動態、推導、null unsafe\n- JS：弱動態、推導、null unsafe\n- TypeScript：強靜態、推導、半 null safe（strict 模式）\n- Go：強靜態、推導、null unsafe\n- Rust：強靜態、推導、null safe\n- Java：強靜態、顯式、null unsafe\n- Kotlin：強靜態、推導、null safe\n```\n\n  \n### 型別推導\n\n```text\n「編譯器猜型別、你不用寫」：\n\nGo：\nx := 5         // 推導為 int\nname := \"Alice\" // 推導為 string\n\nRust：\nlet x = 5;            // i32\nlet name = \"Alice\";   // &str\n\nTypeScript：\nlet x = 5;            // number\nlet name = \"Alice\";   // string\n\nC++ 11+：\nauto x = 5;           // int\nauto name = \"Alice\";  // const char*\n\nC# 3.0+：\nvar x = 5;            // int\nvar name = \"Alice\";   // string\n\n→ 寫起來像動態型別、但其實是靜態\n→ 兩全其美：簡潔 + 安全\n→ 2026 主流\n```\n\n  \n### 聯合型別（Union Types）\n\n```text\n「這個變數可能是 A 或 B」：\n\nTypeScript：\nlet id: string | number;\nid = \"abc\";   // ✓\nid = 123;     // ✓\nid = true;    // ❌\n\n# 函數返回多型別\nfunction fetch(): User | null {\n    if (found) return user;\n    return null;\n}\n\nconst u = fetch();\nif (u) {\n    console.log(u.name);   // TS 知道這時 u 不是 null\n}\n\nPython（type hints）：\nfrom typing import Union\n\ndef fetch() -> Union[User, None]:\n    ...\n\n# 或 Python 3.10+ 簡寫\ndef fetch() -> User | None:\n    ...\n\nRust（用 enum）：\nenum Result {\n    Ok(T),\n    Err(E),\n}\n\nfn fetch() -> Result {\n    ...\n}\n\nKotlin（sealed class）：\nsealed class FetchResult {\n    data class Success(val user: User) : FetchResult()\n    data class Error(val msg: String) : FetchResult()\n}\n\n→ TypeScript 最直觀\n→ Rust / Kotlin 用 enum / sealed class\n```\n\n  \n### 泛型（Generics）\n\n```text\n「我這個函數能處理任何型別」：\n\n不用泛型（要寫多個函數）：\ndef get_first_int(items: list[int]) -> int:\n    return items[0]\n\ndef get_first_string(items: list[str]) -> str:\n    return items[0]\n\n# 每種型別寫一個？瘋了\n\n用泛型（一個函數搞定所有）：\nfrom typing import TypeVar\n\nT = TypeVar('T')\n\ndef get_first(items: list[T]) -> T:\n    return items[0]\n\n# T 是「任何型別」的占位符\nget_first([1, 2, 3])      # T = int、回傳 int\nget_first([\"a\", \"b\"])     # T = str、回傳 str\nget_first([True, False])  # T = bool、回傳 bool\n\nTypeScript：\nfunction getFirst(items: T[]): T {\n    return items[0];\n}\n\ngetFirst([1, 2, 3]);      // T = number\ngetFirst([\"a\", \"b\"]);     // T = string\n\nGo（1.18+ 加泛型）：\nfunc GetFirst[T any](items []T) T {\n    return items[0]\n}\n\nGetFirst([]int{1, 2, 3})\nGetFirst([]string{\"a\", \"b\"})\n\nRust：\nfn get_first(items: &[T]) -> T {\n    items[0]\n}\n\nJava：\npublic static  T getFirst(List items) {\n    return items.get(0);\n}\n\nC#：\npublic static T GetFirst(List items) {\n    return items[0];\n}\n\n→ 容器型別（List / Map / Set）大量用泛型\n→ List / List / List 都同個 class\n```\n\n  \n### 型別約束\n\n```text\n「T 不是任何型別、要符合某條件」：\n\nTypeScript：\ninterface HasName {\n    name: string;\n}\n\nfunction greet(item: T): string {\n    return `Hello, ${item.name}`;\n}\n\ngreet({name: \"Alice\", age: 30});   // ✓\ngreet({age: 30});                   // ❌（沒 name）\n\nGo：\nfunc PrintIf[T comparable](items []T, target T) {\n    for _, item := range items {\n        if item == target {\n            fmt.Println(item)\n        }\n    }\n}\n// comparable = 「能比較」的型別\n\nRust：\nfn print(item: T) {\n    println!(\"{}\", item);\n}\n// 必須能 Display\n\nJava：\npublic static > T max(List items) {\n    ...\n}\n\n→ 約束讓泛型更安全\n```\n\n  \n### 2026 型別系統發展趨勢\n\n  \n- **動態語言加靜態型別**—Python type hints、JS → TypeScript、Ruby Sorbet、PHP type declarations\n- **Null safety 標配**—Rust / Kotlin / Swift 引領、其他跟進\n- **更強的推導**—寫越少越好\n- **結構化型別**（TypeScript / Go）取代名稱型別（Java）\n- **編譯時錯誤越多越好**—在你 ship 前抓出 bug\n\n  \n    **🚀 進階技巧**\n    \n2026 選語言時、型別系統強度 = 大專案成功率指標。**強型別 + null safe + 推導**（TypeScript strict / Kotlin / Rust）= 上線後 bug 少 70%、但學習曲線高。**動態 + 弱型別**（純 JS / 早期 Python）= prototype 快、但大專案爆炸。Indie / 一人公司寫小工具 Python / JS 沒事、團隊 / 長期專案要用強型別。\n\n  \n\n  \n    \n      🎯\n      面試考點\n    \n    台灣科技公司面試 90% 會問「程式邏輯」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。",
+      "tip": {
+        "type": "pro",
+        "text": "台灣科技公司面試 90% 會問「程式邏輯」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（Hello, ${item.name}）寫一段小 code 解決一個實際問題。",
+        "hint": "關鍵概念可以從 lesson 內出現的這些關鍵字入手：Hello, ${item.name}。畫完不要光放著、試著用自己的話講一次。",
+        "answer": "心智圖三步：(1) 中心 = lesson 主題 (2) 第一圈 = 主要分類（通常 3-5 個）(3) 第二圈 = 具體例子或工具。畫完拿給朋友看、能講通 = 真懂。常見錯誤：抄關鍵字當分類、應該用自己理解後的歸納。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "4 個維度"
+        },
+        {
+          "level": 3,
+          "text": "型別推導"
+        },
+        {
+          "level": 3,
+          "text": "聯合型別（Union Types）"
+        },
+        {
+          "level": 3,
+          "text": "泛型（Generics）"
+        },
+        {
+          "level": 3,
+          "text": "型別約束"
+        },
+        {
+          "level": 3,
+          "text": "2026 型別系統發展趨勢"
+        }
+      ]
+    },
+    {
+      "id": "7.15",
+      "number": "LESSON 7.15",
+      "title": "記憶體模型：Stack / Heap / 指標 / GC",
+      "oneLineSummary": "資料結構：Array / Map / Set / Stack / Queue—不同結構解不同問題。",
+      "analogy": "像選對工具箱—螺絲起子拆螺絲、扳手拆螺帽。資料結構一樣：Array（有序列表）、Map（字典）、Set（不重複集合）、Stack（後進先出、像疊盤子）、Queue（先進先出、像排隊）。",
+      "content": "「**你的變數放在電腦哪裡？**」聽起來底層、但理解後一堆 bug 變秒懂。\n\n  \n### RAM 兩個區塊\n\n```text\n想像電腦記憶體分兩塊：\n\nStack（堆疊）：\n- 整齊排列、像盤子疊\n- 小、快、自動管\n- 函數呼叫進來 push、結束 pop\n\nHeap（堆積）：\n- 大空地、亂放\n- 慢、要明確分配 / 釋放\n- 大物件、長壽命物件\n\n簡單想：\nStack = 你桌上的東西（每天清）\nHeap = 倉庫（要記得管理）\n```\n\n  \n### 什麼放 Stack、什麼放 Heap\n\n```text\n# C / C++ / Rust（明確區分）\nint x = 5;              // Stack（簡單型別）\nint* arr = new int[100]; // Heap（明確分配）\n\n# Java\nint x = 5;              // Stack\nDog dog = new Dog();    // dog 變數在 Stack\n                        // Dog 物件本身在 Heap\n                        // dog 是指向物件的「參考」\n\n# Python（一切都在 Heap）\nx = 5                   // 都在 Heap\n                        // 但有「small int cache」優化\n\n→ 規則：\n- 簡單值（int、bool）→ 通常 Stack\n- 物件、陣列、字串 → 通常 Heap\n- 「函數變數」→ Stack（離開函數就消失）\n```\n\n  \n### 指標 / 參考：「指向某東西的地址」\n\n```text\n想像快遞地址：\n你不是把房子本身給朋友、\n是給他「房子的地址」。\n\n# Python（隱式參考、沒有「指標」概念）\na = [1, 2, 3]\nb = a              # b 跟 a 是同一個陣列\nb.append(4)\nprint(a)           # [1, 2, 3, 4]（a 也變了！）\n\n# JS 同樣\nconst a = [1, 2, 3];\nconst b = a;\nb.push(4);\nconsole.log(a);    // [1, 2, 3, 4]\n\n# Go（明確指標）\nx := 5\np := &x            // p 是「指向 x 的指標」\n*p = 10            // 透過指標改 x\nfmt.Println(x)     // 10\n\n# C / C++（最明確）\nint x = 5;\nint* p = &x;\n*p = 10;\nprintf(\"%d\", x);   // 10\n\n# Rust（嚴格、有 ownership）\nlet mut x = 5;\nlet p = &mut x;    // 可變借用\n*p = 10;\nprintln!(\"{}\", x); // 10\n\n# Java（隱式參考、沒指標）\nDog dog1 = new Dog(\"Lucky\");\nDog dog2 = dog1;   // 同個物件\ndog2.setName(\"Ruby\");\nSystem.out.println(dog1.getName());  // Ruby\n```\n\n  \n### 值傳遞 vs 參考傳遞\n\n```text\n函數參數—改了會影響外面嗎？\n\n# Python / JS（簡單型別「值傳」、複雜型別「參考傳」）\ndef add_one(x):\n    x += 1\n\nn = 5\nadd_one(n)\nprint(n)           # 5（沒變）\n\ndef modify_list(arr):\n    arr.append(99)\n\nnums = [1, 2, 3]\nmodify_list(nums)\nprint(nums)        # [1, 2, 3, 99]（變了！）\n\n→ int / float / string 是「值」、改不影響外面\n→ list / dict / object 是「參考」、改會影響\n\n# Go / Rust（明確控制）\n# 值傳\nfunc addOne(x int) {\n    x += 1\n}\n\n# 參考傳\nfunc addOne(x *int) {\n    *x += 1\n}\n\nn := 5\naddOne(&n)         // 傳指標\nfmt.Println(n)     // 6\n```\n\n  \n### 記憶體洩漏（Memory Leak）\n\n```text\n「分配了記憶體、忘記釋放、累積爆炸」：\n\n# C / C++（手動管理）\nchar* buffer = malloc(1024);  // 分配\n// ... 用 buffer\n// 忘了 free(buffer)！\n// 每次跑這函數、洩 1KB\n// 跑 1 萬次 = 洩 10MB\n\n→ Garbage Collector（GC）解決\n```\n\n  \n### Garbage Collection（GC）\n\n```text\n「自動找沒人用的記憶體、回收」：\n\nPython / Java / C# / Go / JS 都有 GC\n\n工作方式：\n- 看哪些物件「沒人指向」\n- 把它們的記憶體釋放\n\n優：\n- 不用手動釋放\n- 不會洩漏（理論上）\n\n缺：\n- 不可預測（什麼時候跑？）\n- 跑的時候會「暫停」（GC pause）\n- Latency 敏感的場景痛苦\n\n# 例：Java 老一代 GC pause 幾百 ms\n# Discord 從 Go 換 Rust 因為 GC pause 影響聊天延遲\n\n# Rust 無 GC、用 ownership 系統\n# - 編譯時決定何時釋放\n# - 無暫停\n# - 但學習曲線陡\n```\n\n  \n### 各語言記憶體管理\n\n  \n| 語言 | 管理方式 | 特色 |\n| --- | --- | --- |\n| C / C++ | 手動（malloc / free） | 最快、易洩漏 |\n| Rust | Ownership（編譯時決定） | 無 GC、無洩漏 |\n| Go | GC（並發、低暫停） | 2026 最強 GC 之一 |\n| Java / C# | GC（分代、複雜） | 成熟、可調 |\n| Python | 引用計數 + GC | 慢但簡單 |\n| JavaScript | GC（V8、追蹤） | 快、自動 |\n| Swift | ARC（自動引用計數） | 類 Rust 的混合 |\n| Kotlin | JVM GC（同 Java） | 無腦 |\n\n  \n    **☕ 用人話講**\n    \n記憶體模型聽起來底層、實戰你會卡這幾個地方：(1) 改了陣列 / 物件、外面也變了—因為傳的是「**地址**」、不是複製 (2) 程式越跑越慢、佔 memory 越來越多—可能是 memory leak (3) 跑大量資料卡頓—可能是 GC pause。**新手不用記細節、知道「有些東西傳的是地址**」就行—之後遇到 bug 才回來深學。\n\n  \n\n  \n    \n      ⚡\n      學習加速器\n    \n    把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。",
+      "tip": {
+        "type": "practical",
+        "text": "把這節學到的馬上應用到一個小東西—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "RAM 兩個區塊"
+        },
+        {
+          "level": 3,
+          "text": "什麼放 Stack、什麼放 Heap"
+        },
+        {
+          "level": 3,
+          "text": "指標 / 參考：「指向某東西的地址」"
+        },
+        {
+          "level": 3,
+          "text": "值傳遞 vs 參考傳遞"
+        },
+        {
+          "level": 3,
+          "text": "記憶體洩漏（Memory Leak）"
+        },
+        {
+          "level": 3,
+          "text": "Garbage Collection（GC）"
+        },
+        {
+          "level": 3,
+          "text": "各語言記憶體管理"
+        }
+      ]
+    },
+    {
+      "id": "7.16",
+      "number": "LESSON 7.16",
+      "title": "錯誤處理：try / catch / Result / Option / panic",
+      "oneLineSummary": "演算法基礎：排序 / 搜尋 / 遞迴 / 動態規劃—面試常考、實戰偶用。",
+      "analogy": "像數學公式—不是每天用、但學會懂背後邏輯。排序（O(n log n)）、二分搜尋（O(log n)）、DP（記憶化遞迴）—面試題 80% 圍著這幾種轉。",
+      "content": "「**程式跑錯怎麼辦？**」這是區分新手 / 老手的重要技能。爛 code 一錯就崩、好 code 優雅 fall back。\n\n  \n### 3 種主流錯誤處理\n\n```text\n1. Exception（try / catch）\n   - Python / Java / JS / C# / Ruby / PHP\n   \n2. Result / Option（明確錯誤型別）\n   - Rust / Swift / Kotlin / TypeScript\n\n3. 多回傳值（值 + error）\n   - Go\n\n每種都有支持者、實戰你會用到全部\n```\n\n  \n### Exception：「丟出 / 接住」\n\n```text\n想像：你做事出錯、丟出一個錯誤、外面有人接住。\n\n# Python\ndef divide(a, b):\n    if b == 0:\n        raise ValueError(\"不能除以 0\")\n    return a / b\n\ntry:\n    result = divide(10, 0)\nexcept ValueError as e:\n    print(f\"錯誤：{e}\")\n    # 印出 錯誤：不能除以 0\n\n# 沒接住會怎樣？\nresult = divide(10, 0)\n# 整個程式崩掉、印 traceback\n\n# JavaScript\nfunction divide(a, b) {\n    if (b === 0) {\n        throw new Error(\"不能除以 0\");\n    }\n    return a / b;\n}\n\ntry {\n    const result = divide(10, 0);\n} catch (e) {\n    console.log(`錯誤：${e.message}`);\n}\n\n# Java\npublic double divide(int a, int b) {\n    if (b == 0) {\n        throw new ArithmeticException(\"不能除以 0\");\n    }\n    return (double) a / b;\n}\n\ntry {\n    double result = divide(10, 0);\n} catch (ArithmeticException e) {\n    System.out.println(\"錯誤：\" + e.getMessage());\n}\n\n# C#（一樣）\ntry {\n    var result = Divide(10, 0);\n} catch (DivideByZeroException e) {\n    Console.WriteLine($\"錯誤：{e.Message}\");\n}\n```\n\n  \n### try / except / finally\n\n```text\ntry：嘗試做\nexcept / catch：失敗處理\nfinally：成功失敗都跑\n\ntry:\n    file = open(\"data.txt\")\n    data = file.read()\nexcept FileNotFoundError:\n    print(\"檔案不存在\")\nexcept PermissionError:\n    print(\"沒權限\")\nfinally:\n    file.close()   # 不管有沒有錯、都要關檔案\n\n# 各語言類似\nJavaScript：try / catch / finally\nJava：try / catch / finally\nC#：try / catch / finally\nPHP：try / catch / finally\nRuby：begin / rescue / ensure\n```\n\n  \n### Result：Rust / Swift 的方式\n\n```text\n「函數不丟錯、直接回傳『成功 or 失敗』」：\n\n# Rust\nfn divide(a: i32, b: i32) -> Result {\n    if b == 0 {\n        Err(String::from(\"不能除以 0\"))\n    } else {\n        Ok(a / b)\n    }\n}\n\nmatch divide(10, 0) {\n    Ok(result) => println!(\"結果：{}\", result),\n    Err(e) => println!(\"錯誤：{}\", e),\n}\n\n# 或用 ? 簡化\nfn calculate() -> Result {\n    let x = divide(10, 2)?;   // ? = 失敗就 return Err\n    let y = divide(x, 0)?;    // 在這 return Err\n    Ok(y + 1)\n}\n\n# Swift（Result type）\nenum DivisionError: Error {\n    case divideByZero\n}\n\nfunc divide(_ a: Int, _ b: Int) -> Result {\n    if b == 0 {\n        return .failure(.divideByZero)\n    }\n    return .success(a / b)\n}\n\nswitch divide(10, 0) {\ncase .success(let result):\n    print(\"結果：\\(result)\")\ncase .failure(let error):\n    print(\"錯誤\")\n}\n\n→ 編譯器強制你處理錯誤\n→ 不能忘記\n```\n\n  \n### Go 的方式：值 + error\n\n```text\n# Go 慣用 pattern：函數回 (值, error)\nfunc divide(a, b int) (int, error) {\n    if b == 0 {\n        return 0, errors.New(\"不能除以 0\")\n    }\n    return a / b, nil\n}\n\nresult, err := divide(10, 0)\nif err != nil {\n    fmt.Println(\"錯誤：\", err)\n    return\n}\nfmt.Println(\"結果：\", result)\n\n→ Go 全部 if err != nil { ... } 滿地\n→ 啰嗦但明確\n→ 沒辦法「忘記處理錯誤」\n```\n\n  \n### Option：「可能沒值」\n\n```text\nRust / Swift 用 Option 處理 null：\n\n# Rust\nfn find_user(id: u32) -> Option {\n    if exists(id) {\n        Some(get_user(id))\n    } else {\n        None\n    }\n}\n\nmatch find_user(1) {\n    Some(user) => println!(\"找到 {}\", user.name),\n    None => println!(\"沒這個人\"),\n}\n\n# Swift（用 Optional、加 ?）\nfunc findUser(id: Int) -> User? {\n    return exists(id) ? getUser(id) : nil\n}\n\nif let user = findUser(id: 1) {\n    print(\"找到 \\(user.name)\")\n} else {\n    print(\"沒這個人\")\n}\n\n→ 編譯器強制你檢查 None\n→ 沒辦法忘\n→ 永別 null pointer exception\n```\n\n  \n### Panic：不可恢復的錯誤\n\n```text\n有些錯誤不該繼續—整個程式掛掉比較好：\n\n# Rust\nfn main() {\n    let nums = vec![1, 2, 3];\n    nums[10];   // panic: index out of bounds\n    // 程式直接掛\n}\n\n# 或主動 panic\npanic!(\"不可能發生的狀況\");\n\n# Go 也有\npanic(\"不可能發生\")\n\n# Python 用 assert\nassert x > 0, \"x 必須是正數\"\n# 失敗 = AssertionError\n\n→ Panic 用於「程式邏輯錯」、不是「輸入錯」\n→ 例：陣列超界、不可能的狀態、bug\n\n→ 輸入錯 → 用 Result / try-catch\n→ 邏輯錯 → 用 panic（讓開發者快發現）\n```\n\n  \n### 錯誤處理 5 大原則\n\n```text\n1. 不要默默吞錯\n   try:\n       do_stuff()\n   except:\n       pass  # ❌ 這是大罪\n\n2. 抓具體型別、不要全包\n   try:\n       parse_json(data)\n   except JSONDecodeError:  # ✓ 具體\n       ...\n   \n   # 不是\n   except Exception:        # ❌ 抓太廣\n       ...\n\n3. 記錄錯誤 + context\n   except Exception as e:\n       logger.error(f\"處理 user {user_id} 失敗：{e}\")\n       # 不只訊息、要有 context\n\n4. 失敗要早 fail-fast\n   if not user:\n       raise ValueError(\"找不到 user\")\n   # 不要繼續、讓上層處理\n\n5. 給 user 友善訊息\n   try:\n       process_payment()\n   except PaymentError:\n       return \"付款失敗、請稍後再試\"\n   # 別把技術 stack trace 給 user 看\n```\n\n  \n### 實戰 pattern：層層上拋\n\n```text\ndef get_user_from_db(id):\n    # DB 層：技術錯誤\n    try:\n        row = db.query(f\"SELECT * FROM users WHERE id={id}\")\n        return User(row)\n    except DBConnectionError:\n        raise  # 直接往上丟、不處理\n\ndef get_user(id):\n    # 業務層：包裝成業務錯誤\n    try:\n        return get_user_from_db(id)\n    except DBConnectionError:\n        raise UserNotFoundError(\"找不到使用者\")\n\ndef api_get_user(id):\n    # API 層：給 client 友善回應\n    try:\n        return get_user(id)\n    except UserNotFoundError:\n        return {\"error\": \"找不到使用者\"}, 404\n\n→ 每層處理自己該處理的\n→ 不能處理的往上丟\n```\n\n  \n    **⚠ 踩雷警告**\n    \n新手 3 個錯誤處理大坑：(1) **except: pass**—吞掉所有錯、bug 永遠找不到 (2) **except Exception**—抓太廣、藏 bug (3) **忘記 log error**—錯了不知道。Production 出問題 80% 是「**log 不足**」找不到原因。**每個 except 都該 log**—之後感謝過去的自己。\n\n  \n\n  \n    \n      🚀\n      2026 趨勢\n    \n    這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。",
+      "tip": {
+        "type": "trend",
+        "text": "這個技術 2026 還在主流、未來 5 年不會過時。但工具會更新—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（錯誤：${e.message}）寫一段小 code 解決一個實際問題。",
+        "hint": "坑通常是「你以為很簡單但其實有暗雷」。本節列的常見錯誤、80% 的新手都會中。",
+        "answer": "預防勝於治療：把本節列的所有「常見錯誤」存成個人 checklist、每次寫類似 code 前過一遍。當 senior 不是因為比較聰明、是因為踩過的坑比較多、所以會避開。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "3 種主流錯誤處理"
+        },
+        {
+          "level": 3,
+          "text": "Exception：「丟出 / 接住」"
+        },
+        {
+          "level": 3,
+          "text": "try / except / finally"
+        },
+        {
+          "level": 3,
+          "text": "Result：Rust / Swift 的方式"
+        },
+        {
+          "level": 3,
+          "text": "Go 的方式：值 + error"
+        },
+        {
+          "level": 3,
+          "text": "Option：「可能沒值」"
+        },
+        {
+          "level": 3,
+          "text": "Panic：不可恢復的錯誤"
+        },
+        {
+          "level": 3,
+          "text": "錯誤處理 5 大原則"
+        },
+        {
+          "level": 3,
+          "text": "實戰 pattern：層層上拋"
+        }
+      ]
+    },
+    {
+      "id": "7.17",
+      "number": "LESSON 7.17",
+      "title": "模組化：import、export、package",
+      "oneLineSummary": "Big O 是「演算法的速度等級」—O(1) 最快、O(n²) 最慢。",
+      "analogy": "像從台北到高雄—飛機（O(1)）vs 高鐵（O(log n)）vs 走路（O(n²)）—資料量大時差異百萬倍。寫 code 知道 Big O 就懂哪裡會慢、提前優化。",
+      "content": "寫到 100 行 code、塞一個檔案還能。寫到 10000 行—**分檔**變必要。所有語言都有**模組系統**。\n\n  \n### 為什麼分檔\n\n```text\n沒分檔：\n- 1 個檔案 10000 行\n- 找東西要 Ctrl+F 一輩子\n- 一改影響全部\n- 多人開發互踩腳\n\n分檔後：\n- 每檔負責一個職責\n- user.py（使用者邏輯）\n- order.py（訂單邏輯）\n- email.py（寄信邏輯）\n- main.py（程式進入點）\n- 各檔互相 import\n\n→ 大型專案標配\n```\n\n  \n### import / export：6 個語言對比\n\n```text\n# Python\n# math_utils.py\ndef add(a, b):\n    return a + b\n\nPI = 3.14\n\n# main.py\nfrom math_utils import add, PI\n# 或\nimport math_utils\nmath_utils.add(2, 3)\n\n# JavaScript（ES Modules）\n# math_utils.js\nexport function add(a, b) { return a + b; }\nexport const PI = 3.14;\n\n# main.js\nimport { add, PI } from './math_utils.js';\n\n# 預設 export\nexport default function() { ... }\nimport myFunc from './math_utils.js';\n\n# TypeScript 同 JS\n\n# Go\n// math_utils.go\npackage math_utils\n\nfunc Add(a, b int) int {\n    return a + b\n}\n\n// main.go\nimport \"myproject/math_utils\"\nmath_utils.Add(2, 3)\n\n# Rust\n// math_utils.rs\npub fn add(a: i32, b: i32) -> i32 {\n    a + b\n}\n\n// main.rs\nmod math_utils;\nuse math_utils::add;\nadd(2, 3);\n\n# Java\n// MathUtils.java\npackage com.example.utils;\n\npublic class MathUtils {\n    public static int add(int a, int b) { return a + b; }\n}\n\n// Main.java\nimport com.example.utils.MathUtils;\nMathUtils.add(2, 3);\n\n# C#（同 Java）\nusing MyProject.Utils;\nMathUtils.Add(2, 3);\n\n→ 大同小異：定義 export、外面 import\n```\n\n  \n### 套件管理（Package Manager）\n\n```text\n「別人寫的好用 library 怎麼用」：\n\n每個語言有自己的套件管理：\n\nPython：\n- pip / uv（2026 主流）\n- 中央倉庫：PyPI\n\n# 安裝\npip install requests\nuv add requests\n\n# 用\nimport requests\nrequests.get(\"https://api.example.com\")\n\nJavaScript：\n- npm / yarn / pnpm / bun\n- 中央倉庫：npm registry\n\n# 安裝\nnpm install axios\n\n# 用\nimport axios from 'axios';\n\nGo：\n- go modules（內建）\n- 任何 git repo 都能當套件\n\ngo get github.com/gin-gonic/gin\n\nRust：\n- cargo（內建）\n- 中央倉庫：crates.io\n\n[dependencies]\nserde = \"1.0\"\n\nJava / Kotlin：\n- Maven / Gradle\n- 中央：Maven Central\n\nC#：\n- NuGet\n- dotnet add package Newtonsoft.Json\n\nPHP：\n- Composer\n- 中央：Packagist\n\ncomposer require guzzlehttp/guzzle\n\nRuby：\n- gem / Bundler\n- 中央：RubyGems\n\ngem install rails\n\nSwift：\n- Swift Package Manager（SPM）\n- CocoaPods（舊但仍用）\n\nDart：\n- pub.dev\n- pubspec.yaml 管理\n\n→ 每個語言一個套件管理工具\n→ 學熟你主語言的\n```\n\n  \n### 2026 主流套件管理趨勢\n\n  \n- **uv（Python）**—速度比 pip 快 10-100 倍、2024 後火速取代\n- **pnpm（JS）**—硬碟空間省 70%、速度快、取代 npm 中\n- **bun（JS）**—2025 後快速崛起、套件管理 + runtime 二合一\n- **cargo（Rust）**—2026 業界公認最強套件管理（其他都羨慕）\n\n  \n### 版本鎖定（Lock file）\n\n```text\n「保證所有人裝的版本一樣」：\n\n# 你裝 requests 1.0\n# 6 個月後別人 clone 專案、裝到 requests 2.0\n# 結果 API 變了、程式爆\n\n對策：lock file\n- package-lock.json（npm）\n- yarn.lock（yarn）\n- pnpm-lock.yaml（pnpm）\n- requirements.txt / poetry.lock / uv.lock（Python）\n- Cargo.lock（Rust）\n- go.sum（Go）\n\n→ 永遠 commit lock file 進 git！\n→ 確保所有環境一致\n```\n\n  \n### 命名空間（Namespace）\n\n```text\n「不同檔案能有同名 function 嗎？」\n\n可以、靠命名空間：\n\n# Python\n# user.py\ndef create(name): ...\n\n# product.py\ndef create(name): ...\n\n# main.py\nfrom user import create as create_user\nfrom product import create as create_product\n# 重新命名避免衝突\n\n# 或保留全名\nimport user\nimport product\nuser.create(\"Alice\")\nproduct.create(\"iPhone\")\n\n# Java（package）\ncom.example.user.User.create()\ncom.example.product.Product.create()\n\n# C# （namespace）\nnamespace MyApp.Users {\n    public class User { ... }\n}\n\nnamespace MyApp.Products {\n    public class Product { ... }\n}\n```\n\n  \n    **☕ 用人話講**\n    \n模組化 = 「**把 code 分檔、避免一個檔 10000 行**」。**import / export** 是檔案間互通的方法。**套件管理**是裝別人寫的 library。新手記住 2 件事：(1) **每個語言一個 package manager**—Python 用 uv、JS 用 pnpm / bun、Rust 用 cargo (2) **永遠 commit lock file**—不然版本亂掉一週後別人無法跑你 code。\n\n  \n\n  \n    \n      🛠️\n      工具推薦\n    \n    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。",
+      "tip": {
+        "type": "practical",
+        "text": "配合這節用的工具：(1) VS Code（編輯器、免費）(2) Chrome DevTools（F12 開啟、除錯神器）(3) Live Server（VS Code 擴充、即時預覽）(4) GitHub Copilot / Cursor（AI 寫程式、學習加速 2-10x）。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "為什麼分檔"
+        },
+        {
+          "level": 3,
+          "text": "import / export：6 個語言對比"
+        },
+        {
+          "level": 3,
+          "text": "套件管理（Package Manager）"
+        },
+        {
+          "level": 3,
+          "text": "2026 主流套件管理趨勢"
+        },
+        {
+          "level": 3,
+          "text": "版本鎖定（Lock file）"
+        },
+        {
+          "level": 3,
+          "text": "命名空間（Namespace）"
+        }
+      ]
+    },
+    {
+      "id": "7.18",
+      "number": "LESSON 7.18",
+      "title": "命名與風格：變數命名、縮排、linting",
+      "oneLineSummary": "命名規範：「變數名要看得懂」—寫 code 80% 時間在讀別人 / 過去自己的 code。",
+      "analogy": "像幫資料夾取名—「2024 旅遊」vs 「新增資料夾 (3)」—未來的你會感謝命名好的自己。命名是工程師最被低估的能力。",
+      "content": "「**程式碼是寫給人**看的、不是寫給**電腦**看的」—Knuth 名言。命名差 = 一週後自己看不懂。\n\n  \n### 命名的 5 大原則\n\n  \n#### 1. 看名字就懂用途\n\n```text\n爛：\nx = 5\nn = \"Alice\"\nd = \"2026-05-13\"\ndo(a, b)\n\n好：\nuser_count = 5\nuser_name = \"Alice\"\ncreated_date = \"2026-05-13\"\ncalculate_total(price, tax)\n```\n\n  \n#### 2. 變數用名詞、函數用動詞\n\n```text\n# 變數 = 「東西」（名詞）\nuser_age = 30\ntotal_price = 1500\nis_active = True\n\n# 函數 = 「做事」（動詞）\ndef calculate_tax(price): ...     # 動詞開頭\ndef fetch_user(id): ...\ndef send_email(to, body): ...\ndef is_valid(input): ...           # 回 bool 用 is/has/can\n\n# 不好\ndef user(id): ...                  # 名詞？拿 user 還是建 user？\ndef total(): ...                   # 名詞、不清楚\n```\n\n  \n#### 3. 別怕長\n\n```text\n# 太短\nufa = 30\ntnp = calc(p, t)\n\n# 太長\nthe_age_of_the_current_user_logged_in_to_the_system = 30\n\n# 剛好\nuser_age = 30\ntotal_price = calculate_total(price, tax)\n\n→ 變數名平均 15-25 字最好讀\n→ Modern IDE 補全好、不用怕長\n```\n\n  \n#### 4. 一致性\n\n```text\n# 不一致（看到頭暈）\nget_user(id)\nfetch_product(id)\nload_order(id)\nretrieve_payment(id)\n# 全部都是「取得」、卻 4 個動詞\n\n# 一致\nget_user(id)\nget_product(id)\nget_order(id)\nget_payment(id)\n# OR\nfetch_user(id)\nfetch_product(id)\n...\n\n→ 同一個動作、一個命名\n→ 整個 codebase 統一\n```\n\n  \n#### 5. 避免 magic number\n\n```text\n# 爛\nif user.age > 18 and user.purchases > 1000:\n    discount = 0.85\n# 18 / 1000 / 0.85 是什麼？\n\n# 好\nLEGAL_AGE = 18\nVIP_THRESHOLD = 1000\nVIP_DISCOUNT = 0.85\n\nif user.age > LEGAL_AGE and user.purchases > VIP_THRESHOLD:\n    discount = VIP_DISCOUNT\n# 名字解釋意義\n```\n\n  \n### 各語言命名風格\n\n  \n| 語言 | 變數 / 函數 | 類別 | 常數 |\n| --- | --- | --- | --- |\n| Python | snake_case | PascalCase | SCREAMING_SNAKE |\n| JavaScript | camelCase | PascalCase | SCREAMING_SNAKE |\n| TypeScript | camelCase | PascalCase | SCREAMING_SNAKE |\n| Go | camelCase（小寫=private） | PascalCase（大寫=public） | PascalCase |\n| Rust | snake_case | PascalCase | SCREAMING_SNAKE |\n| Java / C# | camelCase | PascalCase | SCREAMING_SNAKE |\n| Ruby | snake_case | PascalCase | SCREAMING_SNAKE |\n| PHP | $camelCase | PascalCase | SCREAMING_SNAKE |\n| Swift / Kotlin | camelCase | PascalCase | camelCase |\n| Dart | camelCase | PascalCase | SCREAMING_SNAKE |\n\n  \n學新語言第一件事：**查命名風格慣例**。寫錯風格 = 業界一看就知道你新手。\n\n  \n### 縮排（Indentation）\n\n```text\n2 個主流：\n- Tab（1 個 tab character）\n- Spaces（2 / 4 個空白）\n\n各語言慣例：\n- Python：4 spaces（PEP 8）—強制縮排！\n- JavaScript：2 spaces（Airbnb / Google）或 4\n- TypeScript：2 spaces\n- Go：tab（gofmt 自動）\n- Rust：4 spaces\n- Java：4 spaces\n- Ruby：2 spaces\n- PHP：4 spaces\n\n# Python 特殊：縮排是語法\nif x:\nprint(\"hello\")    # ❌ IndentationError\n\nif x:\n    print(\"hello\") # ✓\n\n→ Python 用縮排取代 { }\n→ 其他語言縮排是「習慣」、Python 是「強制」\n```\n\n  \n### Linter：自動找出爛 code\n\n```text\nLinter = 「自動檢查 code 風格 / bug」\n\n各語言主流：\n- Python：ruff / black / pylint / flake8\n  ruff 是 2024+ 新王（速度快 100 倍）\n\n- JavaScript / TS：ESLint / Biome\n  Biome 是 2024+ 新興（Rust 寫的、超快）\n\n- Go：gofmt / golangci-lint（內建）\n\n- Rust：clippy（內建）\n\n- Java：Checkstyle / SpotBugs\n\n- C#：Roslyn analyzers\n\n- Ruby：RuboCop\n\n- PHP：PHP_CodeSniffer / PHPStan\n\n工作：\n1. 自動格式化（縮排、空白、引號）\n2. 抓常見 bug（沒用變數、無限迴圈）\n3. 強制風格一致\n\n設定：\n- 每個專案有 config（.eslintrc / pyproject.toml）\n- CI/CD 跑 linter、不過 reject PR\n- VS Code 即時提醒\n\n→ 沒 linter 的專案 = 風格大亂\n→ Day 1 就裝\n```\n\n  \n### Formatter：自動排版\n\n```text\n「不爭論風格、讓工具決定」：\n\n- Python：black（不能改設定、強制一致）\n- JS / TS：Prettier\n- Go：gofmt（內建、所有 Go code 同風格）\n- Rust：rustfmt（內建）\n- Java：google-java-format\n- Dart：dart format\n\n工作：\n- 寫完按一鍵 / 存檔自動跑\n- 統一所有人的排版\n- 不再吵「tab vs spaces」\n\n設定：\n- VS Code「format on save」\n- Pre-commit hook\n- CI 強制\n\n效果：\n- Code review 不再吵格式\n- 新人 onboarding 不用學風格\n- Git diff 乾淨\n```\n\n  \n### 命名 vs 註解\n\n```text\n爛 code：\n# 算稅\ndef f(p):\n    # 是 5%\n    t = p * 0.05\n    return t\n\n好 code（用命名取代註解）：\nTAX_RATE = 0.05\n\ndef calculate_tax(price):\n    return price * TAX_RATE\n\n→ 名字夠好 = 不用註解\n→ 註解是「解釋『為什麼』」、不是「重複『做什麼』」\n\n# 好註解\ndef calculate_tax(price):\n    # 台灣 2026 標準稅率\n    # 不用 TaxAuthority class 因為依賴會擴散\n    return price * TAX_RATE\n\n# 壞註解\ndef calculate_tax(price):\n    # 算稅\n    return price * TAX_RATE\n# 廢話、code 已說\n```\n\n  \n    **☕ 用人話講**\n    \n命名好 = 一週後自己看懂。爛 code「x、y、t、do_it」—你 1 個月後自己都看不懂。新手 3 個習慣養成 = 從垃圾 code 變專業：(1) **變數用名詞、函數用動詞** (2) **每個專案裝 linter + formatter**（自動修正、不用想） (3) **遵守該語言慣例**（Python snake_case、JS camelCase）。這些不是潔癖、是 code review 過關的最低標。\n\n  \n\n  \n    \n      ⚠️\n      新手常見錯誤\n    \n    新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。",
+      "tip": {
+        "type": "warning",
+        "text": "新手 3 大坑：(1) 不看 console—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) 不存檔就 F5—改完忘記儲存以為「程式沒效果」 (3) 抄 code 不理解—複製貼上能跑、但下次要改就崩潰。記得：先看懂、再寫。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
+        "hint": "課程內有 9 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "命名的 5 大原則"
+        },
+        {
+          "level": 3,
+          "text": "各語言命名風格"
+        },
+        {
+          "level": 3,
+          "text": "縮排（Indentation）"
+        },
+        {
+          "level": 3,
+          "text": "Linter：自動找出爛 code"
+        },
+        {
+          "level": 3,
+          "text": "Formatter：自動排版"
+        },
+        {
+          "level": 3,
+          "text": "命名 vs 註解"
+        }
+      ]
+    },
+    {
+      "id": "7.19",
+      "number": "LESSON 7.19",
+      "title": "抽象與設計模式：singleton、factory、observer",
+      "oneLineSummary": "Code Style / Linter：「自動檢查程式碼風格」—Prettier / ESLint / ruff 是日常工具。",
+      "analogy": "像文章自動校稿—錯字 / 標點 / 格式自動抓。Linter 一樣：縮排不對、變數沒用到、安全漏洞—寫完自動檢查、儲存自動修。",
+      "content": "同樣的問題、被解過 1000 次。**設計模式**是「**大家公認的解法**」—不用自己發明。\n\n  \n### 什麼是設計模式\n\n```text\n類比：\n你蓋房子—不用每次發明「窗戶怎麼裝」、有標準工法\n程式設計—不用每次想「怎麼讓只有一個 instance」、有標準模式\n\n23 個經典模式（GoF / Gang of Four 1994）：\n- 創建型（5 個）：怎麼建物件\n- 結構型（7 個）：怎麼組合物件\n- 行為型（11 個）：怎麼互動\n\n不用全記！實戰常用 5-10 個\n```\n\n  \n### Singleton（單例）：「整個程式只能有一個」\n\n```text\n例：\n- DB 連線池（只能有一個）\n- 設定檔（讀一次就好）\n- Logger（全程式共用）\n\n# Python\nclass Database:\n    _instance = None\n    \n    def __new__(cls):\n        if cls._instance is None:\n            cls._instance = super().__new__(cls)\n            cls._instance.connect()\n        return cls._instance\n\ndb1 = Database()\ndb2 = Database()\ndb1 is db2   # True（同一個）\n\n# JS\nclass Database {\n    static instance;\n    \n    constructor() {\n        if (Database.instance) {\n            return Database.instance;\n        }\n        Database.instance = this;\n        this.connect();\n    }\n}\n\n# Java\npublic class Database {\n    private static Database instance;\n    \n    private Database() { ... }\n    \n    public static Database getInstance() {\n        if (instance == null) {\n            instance = new Database();\n        }\n        return instance;\n    }\n}\nDatabase db = Database.getInstance();\n\n→ 確保整個程式只有 1 個 instance\n→ 太多 singleton 是 anti-pattern（全域狀態）\n```\n\n  \n### Factory（工廠）：「決定要 new 哪個」\n\n```text\n問題：根據條件 new 不同 class\n\nclass Dog:\n    def speak(self): print(\"汪汪\")\n\nclass Cat:\n    def speak(self): print(\"喵喵\")\n\nclass Cow:\n    def speak(self): print(\"哞哞\")\n\n# 沒 factory（呼叫處到處 if）\ndef use_animal(kind):\n    if kind == \"dog\":\n        animal = Dog()\n    elif kind == \"cat\":\n        animal = Cat()\n    elif kind == \"cow\":\n        animal = Cow()\n    animal.speak()\n\n# 用 factory\nclass AnimalFactory:\n    @staticmethod\n    def create(kind):\n        animals = {\n            \"dog\": Dog,\n            \"cat\": Cat,\n            \"cow\": Cow,\n        }\n        return animals[kind]()\n\n# 用\nanimal = AnimalFactory.create(\"dog\")\nanimal.speak()\n\n→ 加新動物只改 factory、不影響其他 code\n→ 開閉原則：對擴充開放、對修改封閉\n```\n\n  \n### Observer（觀察者）：「事件發生通知所有訂閱者」\n\n```text\n例：\n- 使用者下訂單 → 寄信、扣庫存、寫 log\n- 不該硬寫在「下訂單」函數\n- 用 observer 解耦\n\n# Python\nclass OrderManager:\n    def __init__(self):\n        self.observers = []\n    \n    def subscribe(self, observer):\n        self.observers.append(observer)\n    \n    def create_order(self, order):\n        # 處理訂單\n        ...\n        # 通知所有訂閱者\n        for observer in self.observers:\n            observer.notify(order)\n\nclass EmailService:\n    def notify(self, order):\n        print(f\"寄信給 {order.user}\")\n\nclass InventoryService:\n    def notify(self, order):\n        print(f\"扣 {order.product} 庫存\")\n\nclass LoggerService:\n    def notify(self, order):\n        print(f\"log: 訂單 {order.id} 建立\")\n\n# 用\nmanager = OrderManager()\nmanager.subscribe(EmailService())\nmanager.subscribe(InventoryService())\nmanager.subscribe(LoggerService())\n\nmanager.create_order(some_order)\n# 自動寄信、扣庫存、log\n\n→ Event-driven 架構核心\n→ React useEffect、Vue watch 本質都是 Observer\n→ Redux、EventEmitter 也都是\n```\n\n  \n### Strategy（策略）：「同樣動作、不同算法」\n\n```text\n例：付款方式（LINE Pay / 信用卡 / 街口）—同個 .pay() 介面\n\nclass PaymentStrategy:\n    def pay(self, amount): pass\n\nclass LinePay(PaymentStrategy):\n    def pay(self, amount):\n        print(f\"LINE Pay {amount}\")\n\nclass CreditCard(PaymentStrategy):\n    def pay(self, amount):\n        print(f\"信用卡 {amount}\")\n\nclass JKoPay(PaymentStrategy):\n    def pay(self, amount):\n        print(f\"街口 {amount}\")\n\n# 結帳\nclass Cart:\n    def __init__(self, payment: PaymentStrategy):\n        self.payment = payment\n    \n    def checkout(self, amount):\n        self.payment.pay(amount)\n\n# 用\ncart = Cart(LinePay())\ncart.checkout(500)\n\n# 換策略\ncart.payment = CreditCard()\ncart.checkout(1200)\n\n→ 跟「多型」非常像\n→ 加新付款方式只要新 class、不改 Cart\n```\n\n  \n### Decorator（裝飾器）：「包一層、加功能」\n\n```text\n# Python 內建 @decorator 語法\nimport time\n\ndef timing(func):\n    def wrapper(*args, **kwargs):\n        start = time.time()\n        result = func(*args, **kwargs)\n        print(f\"花了 {time.time() - start}s\")\n        return result\n    return wrapper\n\n@timing\ndef slow_function():\n    time.sleep(1)\n    return \"完成\"\n\nslow_function()\n# 花了 1.0s\n# \"完成\"\n\n→ 不改原 function、加額外行為（log / 計時 / 權限檢查）\n\n# JS / TS（也有 decorator 提案）\nfunction timing(fn) {\n    return function(...args) {\n        const start = Date.now();\n        const result = fn(...args);\n        console.log(`花了 ${Date.now() - start}ms`);\n        return result;\n    };\n}\n\nconst slowFunc = timing(actualFunc);\n\n→ React middleware、Express middleware 都是 decorator pattern\n```\n\n  \n### 2026 常用模式總覽\n\n  \n| 模式 | 用途 | 實戰例 |\n| --- | --- | --- |\n| Singleton | 全程式 1 個 instance | DB 連線、Logger |\n| Factory | 條件式 new 物件 | 建立不同類型 user |\n| Observer | 事件 + 訂閱 | React useEffect、Redux |\n| Strategy | 同介面、不同實作 | 付款方式、排序算法 |\n| Decorator | 包一層加功能 | middleware、權限檢查 |\n| Adapter | 接駁不相容介面 | 串第三方 API |\n| Repository | 抽象資料來源 | 不管 DB / cache 都同介面 |\n| MVC / MVP / MVVM | 分離 UI / 邏輯 / 資料 | 所有現代 framework |\n\n  \n### 「過度設計」的警告\n\n```text\n新手學模式後常犯：\n- 「我來用 Factory + Strategy + Singleton + Decorator + ...」\n- 結果簡單功能寫 10 個 class\n\n正確：\n- 模式是「解決問題的工具」\n- 沒問題不用套\n- 簡單能 work 就好\n\nMark Seemann 名言：\n「過度設計是新手 senior 工程師的特徵」\n\n→ 真 senior：能 work 的最簡單 code\n→ 新 senior：什麼都套模式\n```\n\n  \n    **☕ 用人話講**\n    \n設計模式不是「**規矩**」、是「**工具箱**」。看到 5+ 個重複的 if、考慮 Strategy。看到事件 + 多個 handler、考慮 Observer。看到包一層加功能、考慮 Decorator。新手不用全記、知道**有這些工具存在**、需要時 Google 即可。**能寫簡單 code 解決問題 > 套 5 個模式炫技**—真 senior 反而 code 簡單。\n\n  \n\n  \n    \n      💼\n      接案小知識\n    \n    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「程式邏輯」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。",
+      "tip": {
+        "type": "practical",
+        "text": "剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「程式邏輯」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（花了 ${Date.now() - start}ms）寫一段小 code 解決一個實際問題。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "什麼是設計模式"
+        },
+        {
+          "level": 3,
+          "text": "Singleton（單例）：「整個程式只能有一個」"
+        },
+        {
+          "level": 3,
+          "text": "Factory（工廠）：「決定要 new 哪個」"
+        },
+        {
+          "level": 3,
+          "text": "Observer（觀察者）：「事件發生通知所有訂閱者」"
+        },
+        {
+          "level": 3,
+          "text": "Strategy（策略）：「同樣動作、不同算法」"
+        },
+        {
+          "level": 3,
+          "text": "Decorator（裝飾器）：「包一層、加功能」"
+        },
+        {
+          "level": 3,
+          "text": "2026 常用模式總覽"
+        },
+        {
+          "level": 3,
+          "text": "「過度設計」的警告"
+        }
+      ]
+    },
+    {
+      "id": "7.20",
+      "number": "LESSON 7.20",
+      "title": "並發 1：執行緒、行程、鎖",
+      "oneLineSummary": "Git 版本控制基礎：「程式的時光機」—每次改動都能回滾、跟團隊協作。",
+      "analogy": "像遊戲存檔系統—大魔王戰前存檔、輸了讀檔重打。Git 一樣：每次重要改動 commit、出包了回滾、跟團隊 merge。不會 Git 就不算工程師。",
+      "content": "「**同時做多件事**」—現代電腦 8 核心以上、不會並發 = 浪費 7 個核心。\n\n  \n### 3 個概念釐清\n\n```text\n1. 行程（Process）\n   - 1 個獨立程式\n   - 自己的記憶體空間\n   - 重、慢切換\n   - 例：Chrome 每個 tab 是 1 個 process\n\n2. 執行緒（Thread）\n   - Process 內的「執行單位」\n   - 共享 process 的記憶體\n   - 輕、快切換\n   - 例：Chrome 一個 tab 有多個 thread（UI、network、JS）\n\n3. 協程（Coroutine / async）\n   - 比 thread 還輕的並發單位\n   - 一個 thread 內能跑多個 coroutine\n   - 不切 OS、只切 user space\n   - 例：Python asyncio、Go goroutine、Rust async\n\n並發效能：\n協程 > thread > process（輕到重）\n```\n\n  \n### 為什麼要並發\n\n```text\n場景 1：CPU 密集（算很久）\n- 處理影像、訓練 model、加密\n- 8 核心電腦、1 個 thread 只用 1 核\n- 開 8 個 thread = 8 倍快\n\n場景 2：I/O 密集（等很久）\n- 等 DB 回應、等 API、等檔案讀完\n- 1 個 thread 等就 idle\n- 多 thread 同時等多個 I/O\n\n例：\n讀 100 個檔案\n- 同步：1 個一個讀、總共 100s\n- 並發：100 個一起讀、總共 1s\n```\n\n  \n### 各語言並發模型\n\n```text\n# Python（thread）\nimport threading\n\ndef task(n):\n    print(f\"task {n}\")\n\nthreads = []\nfor i in range(5):\n    t = threading.Thread(target=task, args=(i,))\n    threads.append(t)\n    t.start()\n\nfor t in threads:\n    t.join()  # 等所有完成\n\n# ⚠ Python GIL（Global Interpreter Lock）\n# 同時只能一個 thread 跑 Python bytecode\n# CPU 密集型沒幫助、I/O 密集才有\n\n# Python（process）\nfrom multiprocessing import Process\n\ndef task(n): ...\n\nprocesses = []\nfor i in range(5):\n    p = Process(target=task, args=(i,))\n    p.start()\n    processes.append(p)\n\nfor p in processes:\n    p.join()\n# 多 process = 真平行（突破 GIL）\n\n# Java / C#（thread）\nThread t = new Thread(() -> {\n    System.out.println(\"running\");\n});\nt.start();\nt.join();\n\n# 或 ExecutorService（thread pool）\nExecutorService executor = Executors.newFixedThreadPool(10);\nexecutor.submit(() -> doStuff());\n\n# Go（goroutine—最強）\nfunc task(n int) {\n    fmt.Println(\"task\", n)\n}\n\nfor i := 0; i  = (0..5).map(|i| {\n    thread::spawn(move || {\n        println!(\"task {}\", i);\n    })\n}).collect();\n\nfor h in handles {\n    h.join().unwrap();\n}\n\n→ Go 是並發最容易的語言（goroutine）\n→ Java / C# / Python 用 thread\n→ Rust 用 thread 但有 ownership 保護\n```\n\n  \n### 競爭條件（Race Condition）\n\n```text\n「多 thread 同時改同個變數、結果亂掉」：\n\n# Python\nimport threading\n\ncount = 0\n\ndef increment():\n    global count\n    for _ in range(1000):\n        count += 1\n\nthreads = [threading.Thread(target=increment) for _ in range(10)]\nfor t in threads: t.start()\nfor t in threads: t.join()\n\nprint(count)\n# 應該是 10000、但實際可能 9876 / 9999 / 不確定\n# Race condition！\n\n原因：\ncount += 1 其實是 3 步：\n1. 讀 count\n2. 加 1\n3. 寫回\n\n兩 thread 同時：\nT1 讀 count（5）\nT2 讀 count（5）\nT1 寫回 6\nT2 寫回 6（不是 7）\n\n→ 多少 lost update\n```\n\n  \n### 鎖（Lock / Mutex）\n\n```text\n「同時只能一個 thread 動」：\n\n# Python\nimport threading\n\ncount = 0\nlock = threading.Lock()\n\ndef increment():\n    global count\n    for _ in range(1000):\n        with lock:        # 拿鎖\n            count += 1    # 安全\n        # 出 with 釋放鎖\n\n# 現在永遠 10000\n\n# Java\nprivate final Object lock = new Object();\nprivate int count = 0;\n\npublic void increment() {\n    synchronized (lock) {\n        count++;\n    }\n}\n\n# Rust（用 Mutex）\nuse std::sync::Mutex;\n\nlet counter = Mutex::new(0);\n\nlet mut handle = counter.lock().unwrap();\n*handle += 1;\n// 出 scope 自動釋放\n\n# Go（用 sync.Mutex）\nvar mu sync.Mutex\ncount := 0\n\nfunc increment() {\n    mu.Lock()\n    defer mu.Unlock()\n    count++\n}\n```\n\n  \n### 死鎖（Deadlock）\n\n```text\n「兩個 thread 互相等對方的鎖、永遠卡住」：\n\nT1：拿了 lock_a、等 lock_b\nT2：拿了 lock_b、等 lock_a\n→ 永遠不會結束！\n\n避免：\n1. 鎖的順序一致\n   永遠先拿 lock_a 再 lock_b\n\n2. 用 timeout\n   try_lock(timeout=5)：5 秒拿不到放棄\n\n3. 用更高層工具\n   queue、channel、async / await\n   不直接用 lock\n\n→ 鎖是必要之惡\n→ 能不用就不用\n```\n\n  \n### Thread Pool：別亂開 thread\n\n```text\n不是每個 task 開新 thread：\n- 創建 thread 慢\n- 太多 thread = OS 切換開銷\n\n用 thread pool：\n- 預先創 N 個 thread\n- 任務丟進 queue\n- thread 從 queue 拿事做\n\n# Python\nfrom concurrent.futures import ThreadPoolExecutor\n\nwith ThreadPoolExecutor(max_workers=10) as executor:\n    results = list(executor.map(process, items))\n\n# Java\nExecutorService pool = Executors.newFixedThreadPool(10);\npool.submit(() -> doStuff());\n\n# C#\nTask.Run(() => DoStuff());\n\n→ 預設 thread pool 大小：CPU 核心數 × 2\n```\n\n  \n    **⚠ 踩雷警告**\n    \n並發是 bug 大本營：(1) **Race condition**—偶發、難重現、最痛 (2) **Deadlock**—整個程式卡死 (3) **Memory ordering**—不同 CPU 看到不同順序。新手 3 條建議：(1) 沒必要不開 thread (2) 開 thread 就要鎖 (3) 鎖能不用就用 higher-level tools（queue / channel / async）。Rust 的 ownership 系統能**編譯時**抓很多並發 bug—這是它紅的原因。\n\n  \n\n  \n    \n      🎯\n      面試考點\n    \n    台灣科技公司面試 90% 會問「程式邏輯」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。",
+      "tip": {
+        "type": "pro",
+        "text": "台灣科技公司面試 90% 會問「程式邏輯」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "3 個概念釐清"
+        },
+        {
+          "level": 3,
+          "text": "為什麼要並發"
+        },
+        {
+          "level": 3,
+          "text": "各語言並發模型"
+        },
+        {
+          "level": 3,
+          "text": "競爭條件（Race Condition）"
+        },
+        {
+          "level": 3,
+          "text": "鎖（Lock / Mutex）"
+        },
+        {
+          "level": 3,
+          "text": "死鎖（Deadlock）"
+        },
+        {
+          "level": 3,
+          "text": "Thread Pool：別亂開 thread"
+        }
+      ]
+    },
+    {
+      "id": "7.21",
+      "number": "LESSON 7.21",
+      "title": "並發 2：async / await / event loop",
+      "oneLineSummary": "Code Review：「同事互看程式碼」—不只抓 bug、更是學習文化。",
+      "analogy": "像作文互改—自己看不出的錯別人一眼就抓。Code Review 一樣：bug / 安全 / 命名 / 效能—大公司必過這關才能 merge。也是團隊文化的最強指標。",
+      "content": "Thread 重、async 輕。**I/O 密集場景用 async 比 thread 快 10-100 倍**。2020+ 主流並發方式。\n\n  \n### async 的核心想法\n\n```text\n同步（synchronous）：\n1. 跟 API 要資料 (等 100ms)\n2. 跟 DB 要資料 (等 50ms)\n3. 寄信 (等 200ms)\n總共 350ms、CPU 大部分時間 idle\n\nasync：\n1. 跟 API 要資料 → 不等、開始下個\n2. 跟 DB 要資料 → 不等、開始下個\n3. 寄信 → 不等\n4. 三個一起等\n總共 max(100, 50, 200) = 200ms\n\n→ I/O 等待時、CPU 做其他事\n→ 不開新 thread、單 thread 內切換\n```\n\n  \n### async 在各語言\n\n```text\n# Python（asyncio）\nimport asyncio\nimport aiohttp\n\nasync def fetch_url(url):\n    async with aiohttp.ClientSession() as session:\n        async with session.get(url) as response:\n            return await response.text()\n\nasync def main():\n    urls = [\"https://api1.com\", \"https://api2.com\", \"https://api3.com\"]\n    results = await asyncio.gather(*[fetch_url(u) for u in urls])\n    print(results)\n\nasyncio.run(main())\n\n# JavaScript（原生 async / await）\nasync function fetchUrl(url) {\n    const response = await fetch(url);\n    return await response.text();\n}\n\nasync function main() {\n    const urls = [\"https://api1.com\", \"https://api2.com\"];\n    const results = await Promise.all(urls.map(fetchUrl));\n    console.log(results);\n}\n\nmain();\n\n# TypeScript（同 JS、加型別）\nasync function fetchUrl(url: string): Promise {\n    const response = await fetch(url);\n    return await response.text();\n}\n\n# Rust（async / await、需要 runtime）\nuse tokio;\n\n#[tokio::main]\nasync fn main() {\n    let urls = vec![\"https://api1.com\", \"https://api2.com\"];\n    let futures: Vec = urls.iter()\n        .map(|u| fetch_url(u))\n        .collect();\n    \n    let results = futures::future::join_all(futures).await;\n}\n\n# C# (async / await、最早引入)\npublic async Task FetchUrl(string url) {\n    using var client = new HttpClient();\n    var response = await client.GetAsync(url);\n    return await response.Content.ReadAsStringAsync();\n}\n\n# Kotlin（coroutines）\nsuspend fun fetchUrl(url: String): String {\n    return withContext(Dispatchers.IO) {\n        URL(url).readText()\n    }\n}\n\n# Swift（async / await）\nfunc fetchUrl(_ url: URL) async throws -> String {\n    let (data, _) = try await URLSession.shared.data(from: url)\n    return String(data: data, encoding: .utf8)!\n}\n\n# Dart（同 JS 風格）\nFuture fetchUrl(String url) async {\n    final response = await http.get(Uri.parse(url));\n    return response.body;\n}\n\n→ 大多現代語言都有 async / await\n→ 語法幾乎一樣\n```\n\n  \n### Event Loop：async 的引擎\n\n```text\n單 thread 怎麼「同時做多件事」？\n\nEvent Loop：\n1. 看任務 queue 有沒有事做\n2. 拿一個做、做到要等 I/O\n3. 把它 park 起來、找下個任務\n4. I/O 完成 → 任務放回 queue\n5. 繼續執行\n\n像餐廳 1 個服務生服務 10 桌：\n- 桌 1：點餐 → 廚房準備（不等）\n- 桌 2：點餐 → 廚房準備\n- 桌 3：上菜（廚房好了）\n- 桌 1：上菜（廚房好了）\n- ...\n\n1 個 thread、看似同時服務 10 桌\n這就是 event loop\n\n主流實作：\n- Node.js：V8 + libuv\n- Python：asyncio + uvloop\n- Rust：tokio\n- Go：runtime（goroutine + scheduler）\n- Java：CompletableFuture / Project Loom（22+）\n- C# / .NET：Task / async runtime\n```\n\n  \n### async 陷阱：阻塞 event loop\n\n```text\nasync 單 thread—不能有「不放手」的 task：\n\n# ❌ 錯\nasync def task():\n    time.sleep(5)   # 同步 sleep、阻塞整個 event loop\n\n# ✓ 對\nasync def task():\n    await asyncio.sleep(5)   # async sleep、讓給其他 task\n\n# 同樣陷阱：\n- 同步 DB 連線（用 async DB client）\n- 同步 file I/O（用 aiofiles）\n- 同步 HTTP（用 aiohttp / httpx async）\n- 純 CPU 計算超過 100ms（用 thread / process）\n\n→ async 函數內不能有同步阻塞\n→ 不然「假 async」\n```\n\n  \n### 什麼時候用 async vs thread\n\n```text\nI/O 密集（等網路、DB、檔案）：\n→ async（10-100 倍輕量）\n- Web 後端\n- API 客戶端\n- 爬蟲\n- 即時通訊\n\nCPU 密集（純算數）：\n→ thread / process（async 沒幫助、單 thread 還是 1 核）\n- 影像處理\n- ML 訓練\n- 加密\n- 大量數學運算\n\n混合：\n- async 處理 I/O\n- 把 CPU 密集 task 丟到 thread pool\n\n# Python\nasync def handle_request(req):\n    data = await fetch_from_db(req.id)        # async I/O\n    \n    # CPU 密集、不能在 event loop 跑\n    result = await asyncio.to_thread(\n        heavy_computation, data\n    )\n    \n    return result\n```\n\n  \n### Promise / Future：async 的回傳值\n\n```text\nasync 函數不直接回值、回「未來會有的值」：\n\n# JS：Promise\nconst promise = fetchUrl(\"...\");\n// promise 不是字串、是「未來會變字串的東西」\n\nconst result = await promise;\n// await = 「等 promise 完成、拿到值」\n\n# 不用 await 的話：\npromise.then(result => {\n    console.log(result);\n});\n\n# Python：Coroutine\ncoro = fetch_url(\"...\")\n# coro 是 coroutine object、不是字串\n\nresult = await coro\n\n# Rust：Future\nlet fut = fetch_url(\"...\");\nlet result = fut.await;\n\n→ async 函數 = 「未來會回值的承諾」\n→ await = 「兌現承諾」\n```\n\n  \n### Go：channel + goroutine\n\n```text\nGo 不用 async / await、用另一個模型：\n\n// goroutine = 輕量並發單位\nfunc fetchUrl(url string, ch chan\n    **🚀 進階技巧**\n    \n2026 並發選擇：**Web 後端 / API client 用 async**（Python asyncio / Node.js / Rust tokio）。**分散式系統 / 高並發服務用 Go**（goroutine 太強）。**純運算密集用 thread / process**（Python multiprocessing / Rust rayon）。新手別跳過這章—寫不好 async 是 production 大魔王、整個服務卡死的根源。先學**單線程 → thread → async** 三階段、別跳級。\n\n  \n\n  \n    \n      ⚡\n      學習加速器\n    \n    把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。",
+      "tip": {
+        "type": "practical",
+        "text": "把這節學到的馬上應用到一個小東西—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "async 的核心想法"
+        },
+        {
+          "level": 3,
+          "text": "async 在各語言"
+        },
+        {
+          "level": 3,
+          "text": "Event Loop：async 的引擎"
+        },
+        {
+          "level": 3,
+          "text": "async 陷阱：阻塞 event loop"
+        },
+        {
+          "level": 3,
+          "text": "什麼時候用 async vs thread"
+        },
+        {
+          "level": 3,
+          "text": "Promise / Future：async 的回傳值"
+        },
+        {
+          "level": 3,
+          "text": "Go：channel + goroutine"
+        }
+      ]
+    },
+    {
+      "id": "7.22",
+      "number": "LESSON 7.22",
+      "title": "並發 3：訊息傳遞（actor model / channel）",
+      "oneLineSummary": "Test：「寫 code 驗證 code」—unit / integration / e2e 三層。",
+      "analogy": "像食譜試做後寫筆記—下次按筆記做不會失敗。Test 一樣：寫一次測試、之後改 code 自動驗證—防止改 A 弄壞 B。",
+      "content": "Thread + lock 容易出 bug。**訊息傳遞**是另一條路—不共享記憶體、靠「**傳訊息**」溝通。\n\n  \n### 兩個哲學\n\n```text\nShared Memory（共享記憶體）：\n- 多 thread 共用變數\n- 用 lock 保護\n- C / Java / C# / Python 主流\n\nMessage Passing（訊息傳遞）：\n- 每個 actor 自己的狀態\n- 互相送訊息溝通\n- 沒共享 = 沒鎖 = 沒 race condition\n- Erlang / Elixir / Go / Akka（Scala）\n\nGo 名言：\n「不要靠共享記憶體溝通、用溝通共享記憶體」\n```\n\n  \n### Channel：Go 的 message passing\n\n```text\nChannel = 「傳訊息的管子」：\n\n// Go\nfunc main() {\n    ch := make(chan string)  // 建一個 channel\n    \n    go func() {\n        ch  loop(0) end)\n  end\n  \n  defp loop(count) do\n    receive do\n      :increment -> loop(count + 1)\n      {:get, caller} ->\n        send(caller, count)\n        loop(count)\n    end\n  end\nend\n\n# 用\ncounter = Counter.start()\nsend(counter, :increment)\nsend(counter, :increment)\nsend(counter, {:get, self()})\nreceive do\n  count -> IO.puts(count)   # 2\nend\n\n→ Discord 後端用 Elixir\n→ WhatsApp 用 Erlang（同源）\n→ 2 百萬同時連線、 1 台 server 撐\n```\n\n  \n### 為什麼 message passing 強\n\n```text\n1. 沒共享 = 沒 race condition\n   每個 actor 自己玩自己的、安全\n\n2. 容易分散式\n   訊息能跨機器送（不只 thread）\n   橫向擴展容易\n\n3. 容易容錯\n   actor 死了不影響別人（隔離）\n   重啟就好\n\n4. 邏輯清楚\n   訊息往來 = 業務流程\n   像狀態機\n\n5. 高並發\n   Erlang VM：百萬 actor 都 OK\n   thread 1 萬就累\n```\n\n  \n### 2026 各語言 message passing\n\n  \n| 語言 | 方式 | 特色 |\n| --- | --- | --- |\n| Go | Channel | 內建、最 idiomatic |\n| Erlang / Elixir | Actor | 純訊息、超強容錯 |\n| Rust | std::sync::mpsc / async channel | 類 Go |\n| Scala | Akka actors | JVM 上的 Erlang |\n| JS / TS | Web Worker / postMessage | 瀏覽器並發 |\n| Python | multiprocessing.Queue | 多 process 間 |\n\n  \n### 實戰選擇\n\n```text\n什麼時候用 shared memory（thread + lock）？\n- 簡單、單機、效能極致\n- C / Rust 系統程式\n- 共享狀態必要時\n\n什麼時候用 message passing？\n- 分散式系統\n- 高並發 server\n- 容錯要求高\n- 多核擴展\n\nGo vs Elixir：\n- Go：goroutine + channel、中庸\n- Elixir：純 actor、極致\n\n新手建議：\n1. 先學 thread（最普及）\n2. 學 async（modern 主流）\n3. 學 channel / actor（架構級）\n```\n\n  \n    **☕ 用人話講**\n    \nMessage passing 比 thread + lock 安全：(1) 每個 actor 自己玩、不共享 = 沒 race condition (2) 訊息往來看得到 = 好除錯 (3) 容易跨機器擴展。新手不用立刻學、知道有這條路就好—當你做**聊天系統 / 高並發 server / 分散式服務**會用到。Go channel 是最容易入門的、其次 Elixir Actor 是最強的（Discord 證明）。\n\n  \n\n  \n    \n      🚀\n      2026 趨勢\n    \n    這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。",
+      "tip": {
+        "type": "trend",
+        "text": "這個技術 2026 還在主流、未來 5 年不會過時。但工具會更新—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "兩個哲學"
+        },
+        {
+          "level": 3,
+          "text": "Channel：Go 的 message passing"
+        },
+        {
+          "level": 3,
+          "text": "為什麼 message passing 強"
+        },
+        {
+          "level": 3,
+          "text": "2026 各語言 message passing"
+        },
+        {
+          "level": 3,
+          "text": "實戰選擇"
+        }
+      ]
+    },
+    {
+      "id": "7.23",
+      "number": "LESSON 7.23",
+      "title": "演算法基礎：時間 / 空間複雜度、Big O",
+      "oneLineSummary": "Design Pattern：「常見問題的標準解法」—Singleton / Factory / Observer / MVC。",
+      "analogy": "像建築工法—蓋房子有經典工法、不用每次重新發明。Design Pattern 一樣：23 個經典模式、解決過去工程師遇過的問題、用過會少踩很多坑。",
+      "content": "你寫的 code 為什麼跑得快或慢？**演算法的選擇 = 速度差 1000 倍**。Big O 是「估算速度」的標準語言。\n\n  \n### 同個問題、不同寫法\n\n```text\n問題：找陣列裡有沒有某數字\n\n寫法 1：linear search（一個一個找）\ndef find(arr, target):\n    for x in arr:\n        if x == target:\n            return True\n    return False\n\n# 1000 個元素 → 平均比 500 次\n# 100 萬個 → 平均 50 萬次\n\n寫法 2：binary search（二分搜尋）\ndef find(sorted_arr, target):\n    left, right = 0, len(sorted_arr) - 1\n    while left 翻倍\n- 例：好的排序演算法（merge sort、quick sort）\n\nO(n²)：平方時間\n- 輸入翻倍、時間 4 倍\n- 例：兩層巢狀迴圈、bubble sort\n- 1 萬資料就慢、10 萬資料卡死\n\nO(2ⁿ)：指數時間\n- 輸入 +1、時間翻倍\n- 例：暴力解迷宮、暴力解 NP-hard\n- 30 個輸入就跑 1 天\n\nO(n!)：階乘時間\n- 例：旅行推銷員暴力解\n- 20 個城市跑到下輩子\n\n→ Big O 越小越好\n```\n\n  \n### 實際感受\n\n```text\n1 秒能跑 10 億次基本操作的電腦：\n\nn=100 萬：\n- O(1)：瞬間\n- O(log n)：瞬間（20 次）\n- O(n)：1 毫秒\n- O(n log n)：20 毫秒\n- O(n²)：1000 秒 = 17 分鐘 ❌\n- O(2ⁿ)：不可能（宇宙年齡也跑不完）\n\n→ 寫到 O(n²) 通常已經太慢\n→ 大資料要 O(n log n) 以下\n```\n\n  \n### 常見演算法複雜度\n\n  \n| 動作 | 陣列 | 字典 | 樹 | 圖 |\n| --- | --- | --- | --- | --- |\n| 找元素 | O(n) | O(1) | O(log n) | O(V+E) |\n| 新增 | O(1) / O(n) | O(1) | O(log n) | — |\n| 刪除 | O(n) | O(1) | O(log n) | — |\n| 排序 | O(n log n) | — | — | — |\n\n  \n### 陣列 vs 字典：常見錯誤\n\n```text\n# 慢（O(n)）\ndef has_user(users_list, target_id):\n    for user in users_list:\n        if user.id == target_id:\n            return True\n    return False\n\n# 快（O(1)）\ndef has_user(users_dict, target_id):\n    return target_id in users_dict\n\n# 1 萬 user 找 1 次：\n# list：平均 5000 次比較\n# dict：1 次\n\n→ 大資料用「id 為 key 的字典」、不要「list 一個一個找」\n```\n\n  \n### 空間複雜度\n\n```text\n「用多少記憶體」、同樣 Big O 表示：\n\nO(1)：固定、不隨輸入變\ndef sum(nums):\n    total = 0\n    for n in nums:\n        total += n\n    return total\n# 只 1 個變數、O(1) 空間\n\nO(n)：跟輸入成正比\ndef double_all(nums):\n    result = []\n    for n in nums:\n        result.append(n * 2)\n    return result\n# 額外建 1 個 list、O(n)\n\nO(n²)：平方\ndef all_pairs(nums):\n    pairs = []\n    for a in nums:\n        for b in nums:\n            pairs.append((a, b))\n    return pairs\n# n × n 個 pair、O(n²)\n\n→ 時間 vs 空間 trade-off\n→ 多花記憶體換速度（cache）\n→ 多花時間省記憶體（stream）\n```\n\n  \n### 實戰：怎麼分析複雜度\n\n```text\n步驟：\n1. 數有幾層迴圈\n2. 每層迴圈跑幾次\n3. 相乘\n\n例 1：\ndef f(arr):\n    for x in arr:           # n 次\n        print(x)            # O(1)\n# 總：O(n)\n\n例 2：\ndef f(arr):\n    for x in arr:           # n 次\n        for y in arr:       # n 次\n            print(x, y)     # O(1)\n# 總：O(n × n) = O(n²)\n\n例 3：\ndef f(arr):\n    for x in arr:           # n 次\n        for y in range(10): # 10 次（固定）\n            print(x, y)\n# 總：O(n × 10) = O(10n) = O(n)\n# 常數丟掉\n\n例 4：\ndef f(arr):\n    for x in arr:           # n 次\n        binary_search(arr, x)  # log n\n# 總：O(n × log n) = O(n log n)\n```\n\n  \n    **☕ 用人話講**\n    \nBig O 不用變專家、知道**幾個常見的**就夠：(1) O(1) 字典找 = 瞬間 (2) O(n) 跑陣列 = 還行 (3) O(n²) 兩層迴圈跑同陣列 = **大資料會卡死**。寫 code 看到「兩層 for 跑同個 list」想一下能不能用字典 / set 優化。**1 萬資料的 O(n²) = 1 億次運算 = 卡頓明顯**—大資料時這 1 句心法救你。\n\n  \n\n  \n    \n      🛠️\n      工具推薦\n    \n    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。",
+      "tip": {
+        "type": "practical",
+        "text": "配合這節用的工具：(1) VS Code（編輯器、免費）(2) Chrome DevTools（F12 開啟、除錯神器）(3) Live Server（VS Code 擴充、即時預覽）(4) GitHub Copilot / Cursor（AI 寫程式、學習加速 2-10x）。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "同個問題、不同寫法"
+        },
+        {
+          "level": 3,
+          "text": "實際感受"
+        },
+        {
+          "level": 3,
+          "text": "常見演算法複雜度"
+        },
+        {
+          "level": 3,
+          "text": "陣列 vs 字典：常見錯誤"
+        },
+        {
+          "level": 3,
+          "text": "空間複雜度"
+        },
+        {
+          "level": 3,
+          "text": "實戰：怎麼分析複雜度"
+        }
+      ]
+    },
+    {
+      "id": "7.24",
+      "number": "LESSON 7.24",
+      "title": "常見演算法：排序、搜尋、遞迴、DP",
+      "oneLineSummary": "SOLID 原則：「OOP 的 5 大寫 code 守則」—讓你的 code 不會越寫越亂。",
+      "analogy": "像家居整理的「斷捨離」原則—5 條規則讓家不亂。SOLID 一樣：Single Responsibility / Open-Closed / Liskov / Interface Segregation / Dependency Inversion—長期專案的健康指南。",
+      "content": "實戰用到的演算法不多—會這 4 大類就 80% 場景搞定。\n\n  \n### 排序\n\n```text\n所有語言都有內建排序—別自己寫：\n\n# Python\nsorted_nums = sorted(nums)              # 升冪\nsorted_nums = sorted(nums, reverse=True) # 降冪\nsorted_users = sorted(users, key=lambda u: u.age)  # 依屬性\n\n# JS\nnums.sort((a, b) => a - b);            # 升冪\nnums.sort((a, b) => b - a);            // 降冪\nusers.sort((a, b) => a.age - b.age);\n\n# Go\nsort.Ints(nums)\nsort.Slice(users, func(i, j int) bool {\n    return users[i].Age \n    **☕ 用人話講**\n    \n大部分 indie / 工作 90% 不用自己寫演算法—內建跟 library 都搞定。但要知道**什麼演算法存在、解什麼問題**—遇到時 Google 找到對的工具。Senior 工程師的 mark 不是「能手寫 Quick Sort」、是「**知道用什麼資料結構解問題**」。\n\n  \n\n  \n    \n      ⚠️\n      新手常見錯誤\n    \n    新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。",
+      "tip": {
+        "type": "warning",
+        "text": "新手 3 大坑：(1) 不看 console—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) 不存檔就 F5—改完忘記儲存以為「程式沒效果」 (3) 抄 code 不理解—複製貼上能跑、但下次要改就崩潰。記得：先看懂、再寫。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
+        "hint": "從最小可運作版開始（HelloWorld 級）、確認能跑、再慢慢加東西。一次只加一個 feature。",
+        "answer": "MVP 心法：能跑通 > 寫得漂亮。先有最簡單的版本（10 行就好）、確認 input → 預期 output、再開始重構 / 加錯誤處理 / 加 UI。先求有、再求好。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "排序"
+        }
+      ]
+    },
+    {
+      "id": "7.25",
+      "number": "LESSON 7.25",
+      "title": "字串處理 + 正則表達式",
+      "oneLineSummary": "Refactoring（重構）：「不改功能、只改結構」—把舊 code 變漂亮。",
+      "analogy": "像整理房間—不換家具、只換位置擺放。Refactoring 一樣：bug 沒新、功能沒少、但 code 變好讀好維護—大專案維持健康的方法。",
+      "content": "「**處理文字**」是程式最常做的事—爬資料、清資料、表單驗證、log 分析—全是字串處理。\n\n  \n### 常用字串操作\n\n```text\n所有語言類似：\n\n# 長度\nlen(\"hello\")             # Python: 5\n\"hello\".length           // JS: 5\nlen(\"hello\")             // Go: 5\n\"hello\".len()            // Rust: 5\n\n# 大小寫\n\"hello\".upper()          # Python: \"HELLO\"\n\"hello\".toUpperCase()    // JS\nstrings.ToUpper(\"hello\") // Go\n\n# 切割\n\"a,b,c\".split(\",\")       # [\"a\", \"b\", \"c\"]（多語言通用）\n\n# 拼接\n\",\".join([\"a\", \"b\", \"c\"])   # Python\n[\"a\", \"b\", \"c\"].join(\",\")   // JS\nstrings.Join([]string{\"a\",\"b\"}, \",\")  // Go\n\n# 替換\n\"hello\".replace(\"l\", \"L\")    # 多語言通用 \"heLLo\"\n\n# 包含\n\"hello\" in \"hello world\"     # Python: True\n\"hello world\".includes(\"hello\")  // JS: true\n\"hello world\".contains(\"hello\")  // Java / Kotlin\n\n# 開頭 / 結尾\n\"hello.py\".endswith(\".py\")        # Python\n\"hello.py\".endsWith(\".py\")         // JS / Java\nstrings.HasSuffix(\"hello.py\", \".py\") // Go\n\n# 去前後空白\n\"  hello  \".strip()              # Python: \"hello\"\n\"  hello  \".trim()               // JS / Java\nstrings.TrimSpace(\"  hello  \")   // Go\n\n# 子字串\n\"hello\"[1:4]             # Python: \"ell\"\n\"hello\".substring(1, 4)  // JS\n\"hello\"[1..4]            // Rust\n```\n\n  \n### 字串內插（Template）\n\n```text\n# Python（f-string）\nname = \"Alice\"\nage = 30\nprint(f\"{name} is {age} years old\")\n# \"Alice is 30 years old\"\n\n# JS（template literal）\nconst greeting = `${name} is ${age} years old`;\n\n# Go（fmt.Sprintf）\nfmt.Sprintf(\"%s is %d years old\", name, age)\n\n# Rust（format!）\nformat!(\"{} is {} years old\", name, age)\n\n# Java（String.format / \"+\"）\nString.format(\"%s is %d years old\", name, age)\nname + \" is \" + age + \" years old\"\n\n# C#\n$\"{name} is {age} years old\"\n\n# Kotlin\n\"$name is $age years old\"\n\n# Swift\n\"\\(name) is \\(age) years old\"\n\n# PHP\n\"$name is $age years old\"\n\"{$name} is {$age} years old\"\n\n# Ruby\n\"#{name} is #{age} years old\"\n\n→ 大多 2020+ 語言支援內插\n→ 比 + 拼接好讀 10 倍\n```\n\n  \n### 正則表達式（Regex）：文字模式匹配\n\n```text\n正則 = 「用 pattern 找 / 替換文字」：\n\n# Python\nimport re\n\n# 抓 Email\ntext = \"聯絡 alice@example.com 或 bob@test.org\"\nemails = re.findall(r'\\S+@\\S+', text)\n# ['alice@example.com', 'bob@test.org']\n\n# 替換\nclean = re.sub(r'\\d+', '[數字]', \"我 25 歲、有 3 隻狗\")\n# \"我 [數字] 歲、有 [數字] 隻狗\"\n\n# 檢查格式\ndef is_valid_email(s):\n    pattern = r'^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$'\n    return re.match(pattern, s) is not None\n\n# JS\nconst text = \"聯絡 alice@example.com\";\nconst emails = text.match(/\\S+@\\S+/g);\n\nconst isEmail = (s) => /^[\\w.-]+@[\\w.-]+\\.\\w+$/.test(s);\n\n# Go\nimport \"regexp\"\n\nre := regexp.MustCompile(`\\S+@\\S+`)\nmatches := re.FindAllString(text, -1)\n\n# Java\nPattern p = Pattern.compile(\"\\\\S+@\\\\S+\");\nMatcher m = p.matcher(text);\n```\n\n  \n### 正則基本語法\n\n```text\n字元類：\n.       任何字（除換行）\n\\d      數字 0-9\n\\D      非數字\n\\w      字、數字、底線\n\\W      非字\n\\s      空白（space、tab、換行）\n\\S      非空白\n[abc]   a 或 b 或 c\n[^abc]  不是 abc\n[a-z]   a 到 z\n\n量詞：\n*       0 次或多次\n+       1 次或多次\n?       0 或 1 次\n{3}     正好 3 次\n{2,5}   2 到 5 次\n{3,}    至少 3 次\n\n位置：\n^       開頭\n$       結尾\n\\b      字邊界\n\n群組：\n(abc)   抓取群組\n(?:abc) 不抓取群組\na|b     a 或 b\n\n例子：\n^\\d{4}-\\d{2}-\\d{2}$        # 日期 YYYY-MM-DD\n\\b\\d{10}\\b                  # 10 位數電話\n[A-Z][a-z]+                 # 開頭大寫的字\n\\d+\\.\\d+                    # 浮點數\n```\n\n  \n### 常用正則範例\n\n```text\n# Email\n^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$\n\n# 台灣手機（09xx-xxx-xxx 或 09xxxxxxxx）\n^09\\d{2}-?\\d{3}-?\\d{3}$\n\n# 台灣身分證\n^[A-Z][12]\\d{8}$\n\n# 強密碼（8+、含大小寫、數字、特殊符號）\n^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*]).{8,}$\n\n# URL\n^https?://[\\w.-]+(?:\\.[\\w]+)+[/\\w\\-._?=&%]*$\n\n# 抓 HTML 標籤（不建議！HTML 用 parser）\n]+)>\n\n# 抓 hashtag\n#\\w+\n\n# 抓 mention\n@\\w+\n```\n\n  \n### 正則陷阱\n\n```text\n1. 貪婪 vs 非貪婪\n   .*    貪婪、能多吃就多吃\n   .*?   非貪婪、最少匹配\n\ntext = \"hello world\"\nre.findall(r'.*', text)\n# ['hello world']  ❌ 一口吞\n\nre.findall(r'.*?', text)\n# ['hello', 'world']  ✓ 各自匹配\n\n2. 跳脫字元\n   . 是「任何字」、想找真的 . 要 \\.\n   \\. 是「真的 .」\n\n3. 效能\n   複雜正則跑大文字會慢\n   常用 pattern 預編譯（regex.compile）\n\n4. ReDoS（正則 DoS 攻擊）\n   壞 pattern 遇特殊輸入無限迴圈\n   例：(a+)+ 遇 \"aaaaa...\" 爆炸\n   生產環境用 timeout 保護\n```\n\n  \n### 2026 進階：用 AI 寫正則\n\n```text\n正則學起來痛苦—2026 直接讓 AI 寫：\n\n問 ChatGPT / Claude：\n「給我抓所有 LINE Pay 訂單號的 regex、\n訂單號格式：LINE-2026-XXXXXX-X\n其中 X 是英數」\n\n→ AI 給：r'LINE-\\d{4}-[A-Z0-9]{6}-[A-Z0-9]'\n\n→ 你 review 確認、然後用\n→ 不用背語法\n→ 但要看懂、不能亂用\n```\n\n  \n    **☕ 用人話講**\n    \n字串處理是 80% 工作。基本操作（split / replace / contains）一定會。**正則**看起來像火星文、但寫一次能解 100 個問題—Email 驗證、文字抓取、format 檢查。新手 3 步：(1) 學會基本字串操作 (2) 認得正則基本符號（. * + \\d \\w） (3) 複雜正則讓 AI 寫、自己看懂改。**不用全記、需要時查 regexr.com 或問 AI**。\n\n  \n\n  \n    \n      💼\n      接案小知識\n    \n    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「程式邏輯」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。",
+      "tip": {
+        "type": "practical",
+        "text": "剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「程式邏輯」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（\\S+@\\S+, ${name} is ${age} years old）寫一段小 code 解決一個實際問題。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "常用字串操作"
+        },
+        {
+          "level": 3,
+          "text": "字串內插（Template）"
+        },
+        {
+          "level": 3,
+          "text": "正則表達式（Regex）：文字模式匹配"
+        },
+        {
+          "level": 3,
+          "text": "正則基本語法"
+        },
+        {
+          "level": 3,
+          "text": "常用正則範例"
+        },
+        {
+          "level": 3,
+          "text": "正則陷阱"
+        },
+        {
+          "level": 3,
+          "text": "2026 進階：用 AI 寫正則"
+        }
+      ]
+    },
+    {
+      "id": "7.26",
+      "number": "LESSON 7.26",
+      "title": "I/O：檔案、網路、資料庫",
+      "oneLineSummary": "Debug 技巧：console.log / debugger / Chrome DevTools—工程師 80% 時間在 debug。",
+      "analogy": "像偵探查案—收集線索、提假設、驗證、找出真凶。Debug 一樣：看 error message、加 log、跑斷點、最後找到 bug。會 debug 才算學會程式。",
+      "content": "I/O = Input / Output。所有程式都跟外面世界互動—讀檔案、發網路請求、存資料庫。\n\n  \n### 檔案 I/O\n\n```text\n# Python\n# 讀檔案\nwith open(\"data.txt\", \"r\") as f:\n    content = f.read()\n    \n# 寫檔案\nwith open(\"output.txt\", \"w\") as f:\n    f.write(\"Hello\")\n\n# 一行行讀\nwith open(\"data.txt\") as f:\n    for line in f:\n        print(line.strip())\n\n# JSON 檔案\nimport json\nwith open(\"config.json\") as f:\n    config = json.load(f)\n\n# JS / Node.js\nimport fs from 'fs';\nconst content = fs.readFileSync('data.txt', 'utf-8');\nfs.writeFileSync('output.txt', 'Hello');\n\n// async 版\nconst content = await fs.promises.readFile('data.txt', 'utf-8');\n\n# Go\nimport \"os\"\ndata, err := os.ReadFile(\"data.txt\")\nerr = os.WriteFile(\"output.txt\", []byte(\"Hello\"), 0644)\n\n# Rust\nuse std::fs;\nlet contents = fs::read_to_string(\"data.txt\").unwrap();\nfs::write(\"output.txt\", \"Hello\").unwrap();\n\n# Java\nString content = Files.readString(Paths.get(\"data.txt\"));\nFiles.writeString(Paths.get(\"output.txt\"), \"Hello\");\n\n# C#\nstring content = File.ReadAllText(\"data.txt\");\nFile.WriteAllText(\"output.txt\", \"Hello\");\n```\n\n  \n### 讀寫模式\n\n```text\n# Python open() 第二個參數\n\"r\"    讀（預設）\n\"w\"    寫（蓋掉原本）\n\"a\"    追加（接在後面）\n\"r+\"   讀+寫\n\"rb\"   讀 binary（圖片、壓縮檔）\n\"wb\"   寫 binary\n\n# 例：圖片\nwith open(\"photo.jpg\", \"rb\") as f:\n    image_bytes = f.read()\n```\n\n  \n### 網路 I/O：HTTP 請求\n\n```text\n「從 API 拿資料」是現代 app 必備：\n\n# Python（requests 套件）\nimport requests\n\n# GET\nr = requests.get(\"https://api.example.com/users\")\ndata = r.json()\n\n# POST\nr = requests.post(\n    \"https://api.example.com/users\",\n    json={\"name\": \"Alice\", \"age\": 30}\n)\n\n# 帶 header（如 API key）\nheaders = {\"Authorization\": \"Bearer YOUR_TOKEN\"}\nr = requests.get(\"https://api.example.com/me\", headers=headers)\n\n# Python async（aiohttp / httpx）\nimport httpx\n\nasync with httpx.AsyncClient() as client:\n    r = await client.get(\"https://api.example.com/users\")\n    data = r.json()\n\n# JS（fetch、內建）\nconst response = await fetch(\"https://api.example.com/users\");\nconst data = await response.json();\n\n// POST\nawait fetch(\"https://api.example.com/users\", {\n    method: \"POST\",\n    headers: {\"Content-Type\": \"application/json\"},\n    body: JSON.stringify({name: \"Alice\", age: 30})\n});\n\n# Go\nimport \"net/http\"\nresp, err := http.Get(\"https://api.example.com/users\")\ndefer resp.Body.Close()\n\nbody, _ := io.ReadAll(resp.Body)\n\n# Rust（reqwest）\nlet body = reqwest::get(\"https://api.example.com/users\")\n    .await?\n    .text()\n    .await?;\n\n# Java\nHttpClient client = HttpClient.newHttpClient();\nHttpRequest request = HttpRequest.newBuilder()\n    .uri(URI.create(\"https://api.example.com/users\"))\n    .build();\nHttpResponse response = client.send(request, BodyHandlers.ofString());\n```\n\n  \n### HTTP method 速記\n\n```text\nGET     讀資料（不改變）\nPOST    建立新資料\nPUT     完整更新（替換）\nPATCH   部分更新\nDELETE  刪除\n\n# RESTful 慣例：\nGET    /users          → 列所有 user\nGET    /users/123      → 拿 user 123\nPOST   /users          → 建新 user\nPUT    /users/123      → 完整更新 user 123\nPATCH  /users/123      → 改 user 123 的某欄\nDELETE /users/123      → 刪 user 123\n```\n\n  \n### 狀態碼（Status Code）\n\n```text\n2xx 成功：\n200  OK（一般成功）\n201  Created（建立成功）\n204  No Content（成功、沒內容）\n\n3xx 重新導向：\n301  永久重定向\n302  暫時重定向\n304  Not Modified（用快取）\n\n4xx 用戶端錯：\n400  Bad Request（請求格式錯）\n401  Unauthorized（沒登入）\n403  Forbidden（沒權限）\n404  Not Found（找不到）\n422  Unprocessable Entity（驗證失敗）\n429  Too Many Requests（rate limit）\n\n5xx 伺服器錯：\n500  Internal Server Error（內部錯）\n502  Bad Gateway\n503  Service Unavailable\n504  Gateway Timeout\n\n→ 看狀態碼知問題在哪\n→ 4xx 你的鍋、5xx 對方的鍋\n```\n\n  \n### 資料庫 I/O\n\n```text\n# Python（用 ORM、SQLAlchemy）\nfrom sqlalchemy import create_engine, Column, Integer, String\nfrom sqlalchemy.orm import declarative_base, sessionmaker\n\nengine = create_engine(\"postgresql://user:pass@localhost/db\")\nBase = declarative_base()\n\nclass User(Base):\n    __tablename__ = \"users\"\n    id = Column(Integer, primary_key=True)\n    name = Column(String)\n\nSession = sessionmaker(bind=engine)\nsession = Session()\n\n# 查\nusers = session.query(User).all()\nuser = session.query(User).filter_by(id=1).first()\n\n# 新增\nnew_user = User(name=\"Alice\")\nsession.add(new_user)\nsession.commit()\n\n# 改\nuser.name = \"Bob\"\nsession.commit()\n\n# 刪\nsession.delete(user)\nsession.commit()\n\n# JS / Node.js（Prisma）\nimport { PrismaClient } from '@prisma/client';\nconst prisma = new PrismaClient();\n\n// 查\nconst users = await prisma.user.findMany();\nconst user = await prisma.user.findUnique({where: {id: 1}});\n\n// 新增\nawait prisma.user.create({\n    data: {name: \"Alice\"}\n});\n\n# Go（GORM）\ndb, _ := gorm.Open(postgres.Open(dsn), &gorm.Config{})\n\nvar users []User\ndb.Find(&users)\ndb.Create(&User{Name: \"Alice\"})\n\n# Rust（sqlx）\nlet users: Vec = sqlx::query_as!(User, \"SELECT * FROM users\")\n    .fetch_all(&pool).await?;\n```\n\n  \n### SQL vs NoSQL\n\n```text\nSQL（關聯式）：\n- PostgreSQL、MySQL、SQLite\n- 強結構（schema）\n- ACID 保證\n- 用 JOIN\n- 適合：交易、金融、結構化資料\n\nNoSQL：\n- MongoDB（文件）\n- Redis（key-value）\n- DynamoDB（key-value）\n- Cassandra（columnar）\n- Neo4j（graph）\n- 適合：彈性 schema、大規模、特殊資料\n\n2026 主流：\n- PostgreSQL（最通用）+ Redis（快取）\n- 90% indie 用 PostgreSQL 就夠\n```\n\n  \n    **☕ 用人話講**\n    \nI/O = 跟外面世界互動。新手 3 個必會：(1) **檔案 I/O**—讀寫 .txt / .json (2) **HTTP API**—呼叫別人的 API（用 requests / fetch） (3) **資料庫**—存資料（PostgreSQL + ORM）。**I/O 比 CPU 慢 1000-1000000 倍**—所以 async 才那麼重要。寫 backend / API client 必懂這 3 個 + async 配合。\n\n  \n\n  \n    \n      🎯\n      面試考點\n    \n    台灣科技公司面試 90% 會問「程式邏輯」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。",
+      "tip": {
+        "type": "pro",
+        "text": "台灣科技公司面試 90% 會問「程式邏輯」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "檔案 I/O"
+        },
+        {
+          "level": 3,
+          "text": "讀寫模式"
+        },
+        {
+          "level": 3,
+          "text": "網路 I/O：HTTP 請求"
+        },
+        {
+          "level": 3,
+          "text": "HTTP method 速記"
+        },
+        {
+          "level": 3,
+          "text": "狀態碼（Status Code）"
+        },
+        {
+          "level": 3,
+          "text": "資料庫 I/O"
+        },
+        {
+          "level": 3,
+          "text": "SQL vs NoSQL"
+        }
+      ]
+    },
+    {
+      "id": "7.27",
+      "number": "LESSON 7.27",
+      "title": "測試：單元 / 整合 / E2E / TDD",
+      "oneLineSummary": "讀文件：「能看官方文件比會寫 code 重要」—2026 AI 寫 code 太強、讀文件是最後護城河。",
+      "analogy": "像會查字典 vs 死背單字—字典查得到的不用背、查不到的才要學。文件一樣：API spec / 框架文件 / 套件 README—會讀的人能用任何工具、不會的只能用熟悉的。",
+      "content": "「**你怎麼知道 code 對？**」靠測試。沒測試的 code 跑得了一次是運氣、能跑一年是測試。\n\n  \n### 3 種測試層級\n\n```text\n1. 單元測試（Unit Test）\n   - 測 1 個函數 / 1 個 class\n   - 快、多\n   - 占整體 70%\n   \n2. 整合測試（Integration Test）\n   - 測「多個元件一起動」\n   - DB + API + 業務邏輯\n   - 占 20%\n\n3. End-to-End 測試（E2E）\n   - 模擬使用者操作\n   - 整個 app（前端 + 後端 + DB）\n   - 慢、少\n   - 占 10%\n\n測試金字塔：底厚（unit 多）、頂窄（E2E 少）\n```\n\n  \n### 單元測試實例\n\n```text\n# Python（pytest、最主流）\n# math_utils.py\ndef add(a, b):\n    return a + b\n\ndef divide(a, b):\n    if b == 0:\n        raise ValueError(\"不能除以 0\")\n    return a / b\n\n# test_math.py\nimport pytest\nfrom math_utils import add, divide\n\ndef test_add():\n    assert add(2, 3) == 5\n    assert add(-1, 1) == 0\n    assert add(0, 0) == 0\n\ndef test_divide():\n    assert divide(10, 2) == 5\n    assert divide(9, 3) == 3\n\ndef test_divide_by_zero():\n    with pytest.raises(ValueError):\n        divide(10, 0)\n\n# 跑測試\n$ pytest\n======== 3 passed ========\n\n# JavaScript（Jest / Vitest）\n// math.test.js\nimport { add, divide } from './math';\n\ndescribe('add', () => {\n    test('adds two numbers', () => {\n        expect(add(2, 3)).toBe(5);\n        expect(add(-1, 1)).toBe(0);\n    });\n});\n\ndescribe('divide', () => {\n    test('divides two numbers', () => {\n        expect(divide(10, 2)).toBe(5);\n    });\n    \n    test('throws on divide by zero', () => {\n        expect(() => divide(10, 0)).toThrow('不能除以 0');\n    });\n});\n\n# Go（內建 testing）\n// math_test.go\nfunc TestAdd(t *testing.T) {\n    result := Add(2, 3)\n    if result != 5 {\n        t.Errorf(\"Expected 5, got %d\", result)\n    }\n}\n\n# 跑\n$ go test\n\n# Rust（內建）\n#[cfg(test)]\nmod tests {\n    #[test]\n    fn test_add() {\n        assert_eq!(add(2, 3), 5);\n    }\n}\n\n$ cargo test\n```\n\n  \n### AAA 模式：Arrange / Act / Assert\n\n```text\n每個測試 3 步：\n\ndef test_create_user():\n    # Arrange（準備）\n    db = create_test_db()\n    user_service = UserService(db)\n    \n    # Act（執行）\n    user = user_service.create(\"Alice\", 30)\n    \n    # Assert（斷言結果）\n    assert user.id is not None\n    assert user.name == \"Alice\"\n    assert user.age == 30\n\n→ 結構清楚、好讀\n→ 一個測試只測一件事\n```\n\n  \n### Mock：假的依賴\n\n```text\n測試函數時、不想真的呼叫 DB / API：\n\n# Python\nfrom unittest.mock import Mock, patch\n\ndef send_welcome_email(user):\n    email_service = EmailService()\n    email_service.send(user.email, \"Welcome!\")\n    return True\n\n# 測試時 mock email_service\n@patch('EmailService')\ndef test_welcome_email(mock_email_class):\n    mock_email = Mock()\n    mock_email_class.return_value = mock_email\n    \n    user = User(email=\"alice@x.com\")\n    result = send_welcome_email(user)\n    \n    assert result is True\n    mock_email.send.assert_called_with(\"alice@x.com\", \"Welcome!\")\n    # 沒真的寄信、只檢查呼叫了\n\n# JS（jest.mock）\njest.mock('./emailService');\n\ntest('sends welcome email', () => {\n    const result = sendWelcomeEmail({email: \"alice@x.com\"});\n    expect(emailService.send).toHaveBeenCalledWith(\"alice@x.com\", \"Welcome!\");\n});\n```\n\n  \n### E2E 測試\n\n```text\n# Playwright（最主流、2026）\nimport { test, expect } from '@playwright/test';\n\ntest('user can login', async ({ page }) => {\n    await page.goto('https://myapp.com/login');\n    await page.fill('input[name=email]', 'alice@example.com');\n    await page.fill('input[name=password]', 'secret');\n    await page.click('button[type=submit]');\n    \n    await expect(page).toHaveURL('https://myapp.com/dashboard');\n    await expect(page.locator('h1')).toHaveText('Welcome, Alice');\n});\n\n# 跑\n$ npx playwright test\n\n→ 在真實瀏覽器跑\n→ 模擬使用者點擊 / 輸入\n→ 慢（每個 test 幾秒）、但抓得到整合 bug\n```\n\n  \n### TDD：Test-Driven Development\n\n```text\n「先寫測試、後寫 code」：\n\n步驟：\n1. Red：寫一個失敗的測試\n2. Green：寫最少 code 讓測試通過\n3. Refactor：整理 code、測試還是綠\n\n例：寫個 Calculator\n\nStep 1：寫測試\ndef test_add():\n    calc = Calculator()\n    assert calc.add(2, 3) == 5\n\n# 跑 → red（沒 Calculator class）\n\nStep 2：寫 minimal code\nclass Calculator:\n    def add(self, a, b):\n        return a + b\n\n# 跑 → green\n\nStep 3：加新功能、先寫測試\ndef test_subtract():\n    calc = Calculator()\n    assert calc.subtract(5, 3) == 2\n\n# red\n\nStep 4：實作\nclass Calculator:\n    def add(self, a, b):\n        return a + b\n    def subtract(self, a, b):\n        return a - b\n\n# green\n\n→ TDD 的好處：\n- 你 100% 確定 code 對\n- 設計強迫變好（先想介面）\n- 重構不怕\n\n→ TDD 的缺點：\n- 慢（每行都要先寫測試）\n- 過度設計風險\n\n→ 2026 主流：「不是 strict TDD、但所有 code 都有測試」\n```\n\n  \n### 測試覆蓋率（Coverage）\n\n```text\n「測試跑過幾 % 的 code」：\n\n# Python\npip install pytest-cov\n$ pytest --cov=myapp\n# 顯示：myapp/user.py 85%、myapp/order.py 60%\n\n# JS\n$ jest --coverage\n\n# Go\n$ go test -cover\n\n目標：\n-  量\n```\n\n  \n### 2026 測試最佳實踐\n\n  \n- **核心邏輯 100%**—錢相關、安全相關必測\n- **UI 50-70%**—快速變化、不用 100%\n- **CI 跑全部測試**—不過 reject PR\n- **Snapshot test**—UI 自動偵測變化\n- **Property-based test**—隨機輸入 + 屬性驗證（高階）\n- **AI 助寫測試**—Cursor / Claude 自動生 unit test\n\n  \n    **☕ 用人話講**\n    \n沒測試的 code = 危樓。新手藉口：「我手動測過」「以後再寫」—永遠沒「以後」。**3 個習慣養成 = 從業餘變專業**：(1) 寫新 function 同時寫 unit test (2) 修 bug 前先寫個重現 bug 的測試 (3) CI 強制跑測試、不過 reject。剛開始慢、3 個月後快—因為不再「改 A 壞 B」。\n\n  \n\n  \n    \n      ⚡\n      學習加速器\n    \n    把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。",
+      "tip": {
+        "type": "practical",
+        "text": "把這節學到的馬上應用到一個小東西—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
+        "hint": "工具的學習曲線通常卡在「環境設定」這關。Node 版本、Python 版本、權限、PATH 變數、port 衝突——遇到一個解一個。",
+        "answer": "踩坑筆記範本：『遇到：[錯誤訊息] → 原因：[根本原因] → 解：[具體指令]』。整理在自己的 GitHub gist 或 Notion、下次遇到同樣坑直接複製貼上 = 把痛苦變資產。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "3 種測試層級"
+        },
+        {
+          "level": 3,
+          "text": "單元測試實例"
+        },
+        {
+          "level": 3,
+          "text": "AAA 模式：Arrange / Act / Assert"
+        },
+        {
+          "level": 3,
+          "text": "Mock：假的依賴"
+        },
+        {
+          "level": 3,
+          "text": "E2E 測試"
+        },
+        {
+          "level": 3,
+          "text": "TDD：Test-Driven Development"
+        },
+        {
+          "level": 3,
+          "text": "測試覆蓋率（Coverage）"
+        },
+        {
+          "level": 3,
+          "text": "2026 測試最佳實踐"
+        }
+      ]
+    },
+    {
+      "id": "7.28",
+      "number": "LESSON 7.28",
+      "title": "Debug 思維 / 常見錯誤類型 / log 哲學",
+      "oneLineSummary": "整章總複習：用任何語言寫一個小工具—把所有概念實作一遍。",
+      "analogy": "像畢業考—變數 / 函式 / 迴圈 / class / 測試 / Git—全用上。學會後寫 Python / JS / Go / Rust 都能上手、因為核心邏輯都一樣。",
+      "content": "「**寫 code 50% 時間在 debug**」。會 debug 比會寫 code 更重要—因為你會寫一輩子的 bug。\n\n  \n### 5 大常見 bug 類型\n\n  \n#### 1. Off-by-one Error\n\n```text\n差 1 的錯：\n\n# 錯\nfor i in range(len(arr) - 1):  # 漏最後一個\n    print(arr[i])\n\nfor i in range(1, len(arr) + 1):  # 超界\n    print(arr[i])\n\n# 對\nfor i in range(len(arr)):\n    print(arr[i])\n\n→ 邊界條件最易錯\n→ 寫測試時測 0 個 / 1 個 / 邊界\n```\n\n  \n#### 2. Null Pointer\n\n```text\n# 沒檢查 null\nuser = find_user(id)\nprint(user.name)  # ❌ 如果 user 是 None\n\n# 對策\nuser = find_user(id)\nif user:\n    print(user.name)\n\n# 或 optional chaining\nuser?.name        # Swift / Kotlin / TS\n```\n\n  \n#### 3. 競爭條件\n\n```text\n多 thread 同時改變數、結果不可預期\n(10.20 lesson 講過)\n```\n\n  \n#### 4. 記憶體洩漏\n\n```text\n分配記憶體沒釋放、累積爆炸\n- Python / JS：GC 通常處理\n- C / C++：手動忘了 free\n- 即使有 GC、「保留參考」也會洩漏\n```\n\n  \n#### 5. 邏輯錯\n\n```text\n# 條件寫錯\nif user.age > 18:  # 應該 >=\n    is_adult = True\n\n# 算錯\ndiscount = price * 0.8  # 應該是 20% off = price * (1 - 0.2)\n\n→ 沒 syntax 錯、執行也不爆\n→ 但結果錯\n→ 最難 debug\n```\n\n  \n### Debug 5 步法\n\n```text\nStep 1：重現\n- 確定能穩定重現 bug\n- 不能重現 = 不能修\n\nStep 2：縮小範圍\n- 是哪段 code 出問題？\n- 用 print / log / debugger 找\n\nStep 3：假設\n- 「我覺得 bug 在這、因為 X」\n- 寫下假設\n\nStep 4：驗證\n- 加 print 證明假設\n- 真錯就修、不對就回 Step 3\n\nStep 5：修 + 寫測試\n- 修 bug\n- 加測試防止再發生\n```\n\n  \n### Debug 工具\n\n```text\n1. Print debugging（最常見）\n   print(f\"x = {x}, type = {type(x)}\")\n   print(f\"reached line 42\")\n   \n   優：簡單、立刻看\n   缺：要改 code、要刪\n\n2. Debugger（IDE 內建）\n   - 設斷點（breakpoint）\n   - 一行行跑、看變數\n   \n   Python：\n   import pdb; pdb.set_trace()\n   # 跑到這停、進入互動模式\n   \n   或 IDE 點行號設斷點\n   \n   優：可看變數、能改流程\n   缺：要學工具\n\n3. Log\n   import logging\n   logger = logging.getLogger(__name__)\n   \n   logger.debug(\"詳細追蹤\")\n   logger.info(\"一般訊息\")\n   logger.warning(\"警告\")\n   logger.error(\"錯誤\")\n   logger.critical(\"嚴重\")\n\n4. 二分法\n   程式 1000 行、bug 在哪？\n   - 加 print 在中間\n   - 看 bug 在前半還後半\n   - 那半再切半\n   - 10 次切完找到\n```\n\n  \n### Log 哲學：production debug 之本\n\n```text\n5 個 log 等級：\n- DEBUG：開發時細節（生產關掉）\n- INFO：流程訊息（正常運作）\n- WARNING：可能有問題（不影響）\n- ERROR：出錯了（但繼續跑）\n- CRITICAL：嚴重、要立刻處理\n\n什麼該 log：\n✓ 重要操作（user 登入、付款）\n✓ 錯誤 + context（不只「失敗」、是「user 123 付款失敗、因 X」）\n✓ 慢操作（DB query > 1s）\n✓ 外部 API 呼叫（response 太慢 / fail）\n\n什麼不該 log：\n✗ 密碼、credit card、PII\n✗ 每行 code（噪音太多）\n✗ 大物件（log 爆）\n\n格式：\n[時間] [等級] [來源] 訊息 [extra context]\n2026-05-13 14:30:25 INFO app.user User 123 logged in from IP 1.2.3.4\n\n工具：\n- 開發：terminal print / file\n- production：Sentry / Datadog / Logtail / CloudWatch\n```\n\n  \n### Structured Logging\n\n```text\n不是字串 log、是 JSON：\n\n# 普通\nlogger.info(f\"User {user_id} bought {product_id} for ${amount}\")\n# 字串、難搜尋\n\n# Structured\nlogger.info(\"purchase\", user_id=user_id, product_id=product_id, amount=amount)\n# JSON：{\"event\": \"purchase\", \"user_id\": 123, ...}\n\n優：\n- 能 query（找所有 user_id=123 的 log）\n- 能 aggregate（總和、平均）\n- 工具友善\n\n2026 主流\n```\n\n  \n### Stack Trace：錯誤的「事發過程」\n\n```text\nPython 錯誤訊息：\nTraceback (most recent call last):\n  File \"main.py\", line 42, in \n    result = process_user(123)\n  File \"main.py\", line 30, in process_user\n    user = db.get_user(user_id)\n  File \"db.py\", line 15, in get_user\n    return self.query(f\"SELECT * FROM users WHERE id={id}\")\n  File \"db.py\", line 5, in query\n    self.conn.execute(sql)\nConnectionError: Database not available\n\n讀法：從下往上：\n1. 最底是錯誤本身（ConnectionError）\n2. 往上看怎麼到的（execute → query → get_user → process_user）\n3. 找你寫的 code 那行（不是 library 的）\n\n→ Stack trace 是你最好的朋友\n→ 別截圖、複製貼到 Google / AI\n```\n\n  \n### 用 AI Debug（2026 主流）\n\n```text\n遇 bug 把這 3 樣丟給 Claude / Cursor：\n1. Error 訊息（完整 stack trace）\n2. 相關 code\n3. 你已經試過什麼\n\n例：\n「我的 Python code 跑這個 error：[error]\n這是 code：[code]\n我已經試過：[嘗試]\n為什麼？怎麼修？」\n\nAI 通常能：\n- 解釋 error 意思\n- 找出原因\n- 給修正\n\n但要 review：\n- AI 可能猜錯\n- 自己看修正合理嗎\n- 不要無腦複製\n\n→ AI 是副駕、不是取代你\n→ Debug skill 還是要練\n```\n\n  \n### Debug 心態\n\n```text\n1. 別怒、別怪電腦\n   電腦永遠對的、bug 一定在你 code\n\n2. 假設你錯、不是 library 錯\n   99% 是你 code 問題\n   別亂罵 framework\n\n3. 一次只改一件事\n   改 5 件、不知道哪個有效\n\n4. 寫測試重現 bug\n   修完 bug 留測試永久防護\n\n5. 休息\n   卡 1 小時 = 出門走 5 分鐘\n   常常回來秒解\n\n6. 問人\n   1 小時還沒解 = 拍照 + 問同事 / 社群\n   不要 ego 卡死\n```\n\n  \n    **☕ 用人話講**\n    \nDebug 是寫程式的「核心技能」—不是 bug 出現的次數、是**處理 bug 的速度**。新手卡 bug 1 天、senior 30 分鐘搞定—差別不是天才、是**方法**：(1) 重現 (2) 縮小 (3) 假設 (4) 驗證 (5) 修。**log 是你未來的眼睛**—production 出問題、沒 log 你看不見發生什麼。AI 是 2026 神器、但要先有 debug 思維、不然 AI 也救不了你。\n\n  \n\n  \n    \n      🚀\n      2026 趨勢\n    \n    這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。",
+      "tip": {
+        "type": "trend",
+        "text": "這個技術 2026 還在主流、未來 5 年不會過時。但工具會更新—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
+        "hint": "心法 ≠ 知識、心法要落地。「我從今天起、每天 ___」這種格式。",
+        "answer": "好行動 = 小（5-10 分鐘以內）+ 具體（不模糊）+ 可量化（有沒有做得出來）。例：『每天起床先列 3 件最重要的事再開電腦』比『更專注』可執行 100 倍。配合 streak（連續紀錄）讓自己上癮。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "5 大常見 bug 類型"
+        },
+        {
+          "level": 3,
+          "text": "Debug 5 步法"
+        },
+        {
+          "level": 3,
+          "text": "Debug 工具"
+        },
+        {
+          "level": 3,
+          "text": "Log 哲學：production debug 之本"
+        },
+        {
+          "level": 3,
+          "text": "Structured Logging"
+        },
+        {
+          "level": 3,
+          "text": "Stack Trace：錯誤的「事發過程」"
+        },
+        {
+          "level": 3,
+          "text": "用 AI Debug（2026 主流）"
+        },
+        {
+          "level": 3,
+          "text": "Debug 心態"
+        }
+      ]
+    }
+  ],
+  "boss": {
+    "name": "迴圈幻獸",
+    "hp": 120,
+    "emoji": "♾️",
+    "description": "在無窮中跳躍、需 break 才能離開"
+  },
+  "quiz": {
+    "id": "ch07-quiz",
+    "questions": [],
+    "xpReward": 50,
+    "perfectBonus": 50
+  }
+}

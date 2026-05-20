@@ -1,0 +1,438 @@
+{
+  "id": 58,
+  "slug": "ai-career",
+  "stage": 6,
+  "title": "AI 時代職涯",
+  "subtitle": "技能轉型 / 自我品牌",
+  "icon": "trending-up",
+  "description": "AI 時代職涯：技能轉型 / 自我品牌",
+  "status": "published",
+  "difficulty": "beginner",
+  "prerequisites": [],
+  "estimatedHours": 8,
+  "outcomes": [
+    "理解核心概念",
+    "實作主流工具",
+    "整章實戰可發佈作品",
+    "知道生態 / 接案行情",
+    "對齊 2026 業界主流"
+  ],
+  "lessons": [
+    {
+      "title": "AI 時代的職涯策略",
+      "oneLineSummary": "不是被 AI 取代、是被「會用 AI 的人」取代",
+      "analogy": "2026 職涯：適應 or 落後。",
+      "content": "## 現實\n- AI 不會取代「所有」工作\n- 但會取代「不適應」的工作者\n- 同樣領域、學會 AI 的人效率 5-10x\n\n## 哪些工作影響最大\n\n### 高度受影響（50%+ 任務可 AI）\n- 客服\n- 翻譯\n- 行政\n- 初級會計\n- 初級程式設計\n- 基本設計\n- 內容寫作（基礎）\n- 資料分析（基礎）\n\n### 中度（部分自動化）\n- 行銷\n- 業務\n- 設計（進階）\n- 工程師（middle）\n- 律師（部分）\n- 醫師（診斷部分）\n\n### 低度（人類為主）\n- 高階主管\n- 創意 / 藝術\n- 諮商 / 治療\n- 教育（一對一）\n- 體力勞動\n- 高階研發\n\n## 你的策略\n\n### 1. 學會用 AI\n- 不是「會說 ChatGPT」\n- 是「整合進工作流」\n- 每個 task 都想：「AI 能幫嗎？」\n\n### 2. T 字型專業\n- 一個深度（你的 expertise）\n- 多個廣度（跨領域知識）\n- 中央連結點（你獨特組合）\n\n### 3. 創造 vs 執行\n- 執行：AI 強\n- 創造 / 判斷：人類強\n- 移到 stack 上層\n\n### 4. 軟實力\n- 溝通\n- 領導\n- 同理心\n- 創意\n- 跨文化\n\nAI 仍弱在這些。\n\n### 5. 持續學習\n- 每 6 個月 review\n- 看趨勢\n- 試新工具\n- 不要 stuck 在 stack\n\n## Indie / 自由工作\n\n### 為什麼適合 AI 時代\n- 你決定 stack\n- 不被裁員影響\n- 多元收入\n\n### 但要小心\n- 紅海競爭（人人都能做）\n- 客戶開始用 AI（不需要你）\n- 漲價空間有限\n\n### 升級路線\n- 從「執行」到「策略」\n- 從「接案」到「產品」\n- 從「個人」到「團隊」\n\n## 接案 vs 全職 vs SaaS\n\n### AI 時代適合度\n- **SaaS / Product**：⭐⭐⭐⭐⭐（成長最快）\n- **顧問**：⭐⭐⭐⭐（高價值）\n- **接案**：⭐⭐⭐（漲價空間有限）\n- **全職**：⭐⭐⭐（看公司）\n\n## 中年職涯轉型\n\n### 30 歲後仍可\n- 學 AI 工具：不需 coding 也可\n- 跨進產品設計 / PM\n- 用領域經驗 + AI\n\n### 案例\n- 醫師 → AI 醫療 SaaS\n- 律師 → Legal Tech\n- 老師 → 教育 SaaS\n- 行銷 → AI 行銷顧問\n\n## 心法\n- 不要怕 AI、要怕「不學 AI 的自己」\n- 持續好奇\n- 多元收入\n- 領域 + AI = 1+1 > 2\n- 軟實力是長期 moat",
+      "tip": {
+        "type": "milestone",
+        "text": "2026 職涯：學 AI 是「氧氣」、不是「加分項」。"
+      },
+      "id": "58.1",
+      "number": "LESSON 58.1",
+      "xp": 10,
+      "exercise": {
+        "question": "把本節「AI 時代的職涯策略」的核心心法、轉成一個具體的「我今天 / 這週要做」的小行動。",
+        "hint": "心法 ≠ 知識、心法要落地。「我從今天起、每天 ___」這種格式。",
+        "answer": "好行動 = 小（5-10 分鐘以內）+ 具體（不模糊）+ 可量化（有沒有做得出來）。例：『每天起床先列 3 件最重要的事再開電腦』比『更專注』可執行 100 倍。配合 streak（連續紀錄）讓自己上癮。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "現實"
+        },
+        {
+          "level": 2,
+          "text": "哪些工作影響最大"
+        },
+        {
+          "level": 3,
+          "text": "高度受影響（50%+ 任務可 AI）"
+        },
+        {
+          "level": 3,
+          "text": "中度（部分自動化）"
+        },
+        {
+          "level": 3,
+          "text": "低度（人類為主）"
+        },
+        {
+          "level": 2,
+          "text": "你的策略"
+        },
+        {
+          "level": 3,
+          "text": "1. 學會用 AI"
+        },
+        {
+          "level": 3,
+          "text": "2. T 字型專業"
+        },
+        {
+          "level": 3,
+          "text": "3. 創造 vs 執行"
+        },
+        {
+          "level": 3,
+          "text": "4. 軟實力"
+        },
+        {
+          "level": 3,
+          "text": "5. 持續學習"
+        },
+        {
+          "level": 2,
+          "text": "Indie / 自由工作"
+        },
+        {
+          "level": 3,
+          "text": "為什麼適合 AI 時代"
+        },
+        {
+          "level": 3,
+          "text": "但要小心"
+        },
+        {
+          "level": 3,
+          "text": "升級路線"
+        },
+        {
+          "level": 2,
+          "text": "接案 vs 全職 vs SaaS"
+        },
+        {
+          "level": 3,
+          "text": "AI 時代適合度"
+        },
+        {
+          "level": 2,
+          "text": "中年職涯轉型"
+        },
+        {
+          "level": 3,
+          "text": "30 歲後仍可"
+        },
+        {
+          "level": 3,
+          "text": "案例"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "AI 時代學習路徑 + 職業選擇",
+      "oneLineSummary": "不同階段 / 背景的建議",
+      "analogy": "挑你的路、不要被一致建議綁。",
+      "content": "## 學生 / 新手\n\n### 推薦 stack\n- TS + Next.js（全棧）\n- Python（資料 / AI）\n- 學一個就好、別貪心\n\n### 必裝技能\n- Git + GitHub\n- Claude / ChatGPT 熟練\n- Cursor / Copilot\n- 基本 prompt engineering\n\n### 第一份工作\n- Junior Frontend / Backend\n- 不要追名牌（要學習機會）\n- 帶 mentor 的小公司 > 沒帶的大公司\n\n## 工作 1-3 年\n\n### 升級重點\n- 深度（你的 stack）\n- 廣度（試 AI 工具）\n- 軟實力（溝通 / 文件）\n\n### 副業準備\n- 開始 side project\n- 寫 blog / 經營社群\n- 累積 portfolio\n\n## 工作 3-5 年\n\n### 選擇\n- A. 走 senior（深度）\n- B. 走 lead（領導）\n- C. 走 PM（產品）\n- D. 走 founder（創業）\n\n### AI 工具熟練\n- 整合 AI 進工作流\n- 提案 AI 解決方案\n- 領導團隊用 AI\n\n## 工作 5+ 年\n\n### 路線\n- Tech Lead / Staff\n- Engineering Manager\n- VP / CTO\n- Indie / Founder\n\n### 全職 vs 接案 vs SaaS\n- 全職：穩定 + 學新 stack\n- 接案：自由 + 多元\n- SaaS：高風險 + 高報酬\n\n## AI 工程師路線\n\n### Junior（0-2 年）\n- LLM API call\n- Prompt engineering\n- RAG 基礎\n- 月薪：NT$ 60-100k\n\n### Mid（2-5 年）\n- Agent 系統\n- Fine-tuning\n- 多 model 整合\n- 月薪：NT$ 100-180k\n\n### Senior（5+ 年）\n- 系統架構\n- ML / DL 深度\n- Open source AI\n- 月薪：NT$ 180-400k\n\n### Research（學術 / 大廠）\n- PhD 級\n- OpenAI / Anthropic / Google\n- $300k-500k USD/年\n\n## 跨領域職業\n\n### AI + 醫療\n- Medical AI / 健康 SaaS\n- 月薪 NT$ 120-300k\n\n### AI + 法律\n- Legal Tech\n- 月薪 NT$ 100-200k\n\n### AI + 教育\n- EdTech / 個人化學習\n- 月薪 NT$ 80-200k\n\n### AI + 金融\n- Fintech / 量化交易\n- 月薪 NT$ 150-400k\n\n### AI + 創意\n- 設計 / 影音 / 內容\n- 月薪 NT$ 60-150k\n\n## 不適合 AI 工作\n\n### 仍有市場（且漲）\n- 高階創意（藝術 / 設計）\n- 銷售（人對人）\n- 諮商 / 心理\n- 教育（一對一）\n- 領導 / 管理\n- 物理服務（醫療技師 / 工程師）\n\n## 給 30+ 中年人\n\n### 你的優勢\n- 領域知識\n- 人脈\n- 經驗判斷\n\n### 你的劣勢\n- 學習速度\n- 體力\n- 包袱\n\n### 策略\n- 用領域 + AI、不是純 AI\n- 顧問 > 從 0 開始 coding\n- 用 AI 加速既有技能\n\n## 心法\n- 沒有「最佳職涯」、只有「最適合你」\n- AI 是放大器、放大你的好 + 壞\n- 持續學 = 永遠不被淘汰\n- 多元 = 安全感\n- 你的「人」性 = 長期 moat\n\n## 學習資源\n\n### 入門\n- AI 島（這個！）\n- ChatGPT / Claude 直接問\n- YouTube：3Blue1Brown / Two Minute Papers\n\n### 進階\n- Hugging Face course\n- DeepLearning.AI\n- Fast.ai\n\n### 趨勢\n- Sequoia AI ascent\n- Latent Space podcast\n- The Information\n\n## 終極心法\n- 不是「跟 AI 競爭」、是「跟 AI 合作」\n- 你 + AI > AI、你 + AI > 你\n- 持續好奇 > 任何技能\n- 健康 + 心理 > 任何成就",
+      "tip": {
+        "type": "milestone",
+        "text": "你的職涯是「你 + AI」、不是「你 vs AI」。"
+      },
+      "id": "58.2",
+      "number": "LESSON 58.2",
+      "xp": 10,
+      "exercise": {
+        "question": "找一個你身邊的例子、用「AI 時代學習路徑 + 職業選擇」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "學生 / 新手"
+        },
+        {
+          "level": 3,
+          "text": "推薦 stack"
+        },
+        {
+          "level": 3,
+          "text": "必裝技能"
+        },
+        {
+          "level": 3,
+          "text": "第一份工作"
+        },
+        {
+          "level": 2,
+          "text": "工作 1-3 年"
+        },
+        {
+          "level": 3,
+          "text": "升級重點"
+        },
+        {
+          "level": 3,
+          "text": "副業準備"
+        },
+        {
+          "level": 2,
+          "text": "工作 3-5 年"
+        },
+        {
+          "level": 3,
+          "text": "選擇"
+        },
+        {
+          "level": 3,
+          "text": "AI 工具熟練"
+        },
+        {
+          "level": 2,
+          "text": "工作 5+ 年"
+        },
+        {
+          "level": 3,
+          "text": "路線"
+        },
+        {
+          "level": 3,
+          "text": "全職 vs 接案 vs SaaS"
+        },
+        {
+          "level": 2,
+          "text": "AI 工程師路線"
+        },
+        {
+          "level": 3,
+          "text": "Junior（0-2 年）"
+        },
+        {
+          "level": 3,
+          "text": "Mid（2-5 年）"
+        },
+        {
+          "level": 3,
+          "text": "Senior（5+ 年）"
+        },
+        {
+          "level": 3,
+          "text": "Research（學術 / 大廠）"
+        },
+        {
+          "level": 2,
+          "text": "跨領域職業"
+        },
+        {
+          "level": 3,
+          "text": "AI + 醫療"
+        },
+        {
+          "level": 3,
+          "text": "AI + 法律"
+        },
+        {
+          "level": 3,
+          "text": "AI + 教育"
+        },
+        {
+          "level": 3,
+          "text": "AI + 金融"
+        },
+        {
+          "level": 3,
+          "text": "AI + 創意"
+        },
+        {
+          "level": 2,
+          "text": "不適合 AI 工作"
+        },
+        {
+          "level": 3,
+          "text": "仍有市場（且漲）"
+        },
+        {
+          "level": 2,
+          "text": "給 30+ 中年人"
+        },
+        {
+          "level": 3,
+          "text": "你的優勢"
+        },
+        {
+          "level": 3,
+          "text": "你的劣勢"
+        },
+        {
+          "level": 3,
+          "text": "策略"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        },
+        {
+          "level": 2,
+          "text": "學習資源"
+        },
+        {
+          "level": 3,
+          "text": "入門"
+        },
+        {
+          "level": 3,
+          "text": "進階"
+        },
+        {
+          "level": 3,
+          "text": "趨勢"
+        },
+        {
+          "level": 2,
+          "text": "終極心法"
+        }
+      ]
+    },
+    {
+      "title": "AI 不會取代誰、誰會被取代",
+      "oneLineSummary": "不是「都會」、是「分化」",
+      "analogy": "看誰能跟 AI 合作。",
+      "content": "## 容易被取代（commodity）\n- 純翻譯（基本級）\n- 簡單 copywriting\n- 基本客服\n- Data entry\n- 簡單 design（套模板）\n- 基本 CRUD coding\n- 簡單 video editing\n\n特徵：Routine / 規則明確 / 不需「人」判斷。\n**5 年消失 30-50%**。\n\n## 不會被取代\n1. **高 stake 決策**：醫療 / 法律 / 投資\n2. **創意 + 品味**：art direction / brand / 深度寫作\n3. **人際 + 情感**：心理治療 / 教學 / 銷售\n4. **物理 + 手作**：修水電 / 廚師 / 工匠\n5. **跨域整合**：PM / 創業者\n\n## AI 時代分化\n- **Top 20%**：會 AI + 跨域、月 NT$ 150k-1M+\n- **Middle 60%**：壓力大、慢慢替代\n- **Bottom 20%**：被取代、收入下降\n\n## 不同職業前景\n- **工程師**：初級危險（Cursor 抓 80%）、中高級機會\n- **設計師**：logo commodity 化、brand strategy 仍值\n- **行銷**：寫文案不漲、strategy / 數據贏\n- **寫作**：內容農場死、深度報導贏\n- **客服**：簡單死、複雜 + VIP 仍要人\n- **老師**：知識傳遞死、啟發 + mentor 贏\n\n## 5 個不被取代技能\n1. **學習能力**（meta-skill）\n2. **跨域思考**\n3. **客戶理解**\n4. **創造性問題解決**\n5. **領導 + 溝通**\n\n## 心法\n- 不是「AI vs 人」、是「會 AI 的人 vs 不會的人」\n- 持續學\n- 找獨特 angle\n- 結合 AI 不取代你",
+      "tip": {
+        "type": "milestone",
+        "text": "2026+ 職涯：會 AI 是基本、跨域是 USP。"
+      },
+      "exercise": {
+        "question": "找一個你身邊的例子、用「AI 不會取代誰、誰會被取代」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "id": "58.3",
+      "number": "LESSON 58.3",
+      "xp": 10,
+      "outline": [
+        {
+          "level": 2,
+          "text": "容易被取代（commodity）"
+        },
+        {
+          "level": 2,
+          "text": "不會被取代"
+        },
+        {
+          "level": 2,
+          "text": "AI 時代分化"
+        },
+        {
+          "level": 2,
+          "text": "不同職業前景"
+        },
+        {
+          "level": 2,
+          "text": "5 個不被取代技能"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "副業 → Indie：轉型 SOP",
+      "oneLineSummary": "不要裸辭、要漸進",
+      "analogy": "90% 失敗 = 沒 cash flow。",
+      "content": "## 4 階段\n- **P1 副業萌芽**（M1-6）：上班 + 晚上週末 2-3 hr、月 NT$ 0-30k\n- **P2 副業成長**（M6-18）：月 NT$ 30-80k、開始 conflict\n- **P3 過渡**（M18-24）：副業 ≥ 主業 50%、part-time 或辭職\n- **P4 全職 Indie**（Y2+）：月 NT$ 50-200k+\n\n## P1 起步\n- **選什麼**：你已有 unfair advantage 的（不追熱潮）\n- **時間**：早 1 hr + 晚 1 hr + 週末 4 hr = 12-15 hr/週\n- **Setup**：工作室登記、帳戶分開、簡單記帳\n- **第 1 case**：朋友介紹 / LinkedIn outreach / 平台\n\n## P2 擴大\n- 漲價（20-50%）\n- 系統化（SOP / template）\n- 第 2 條腿（接案 + product）\n- Cash flow（3 月 runway）\n\n## P3 過渡\n**觸發**：副業 ≥ 主業 50%。\n\n**選項**：\n- A. 跟主管 part-time（風險低）\n- B. 辭職 + 6 月 runway（風險中）\n- C. 直接辭（不推薦）\n\n## P4 全職\n- M1：適應、不立刻 hire / 投資\n- M3：確認月入穩定\n- M6：第 1 hire / VA\n- Y1：月 NT$ 100k+\n- Y3-5：月 NT$ 200-500k\n\n## 風險管理\n- 不要 1 客戶 > 30% 收入\n- Professional liability insurance\n- 健保自己買\n- 退休自己存\n- 找 Indie community\n\n## 心法\n- 不要裸辭\n- 副業 12+ 月驗證再全職\n- Cash flow > 一切\n- 健康 > 收入\n- 慢 + 穩 > 快 + 死",
+      "tip": {
+        "type": "milestone",
+        "text": "副業 12+ 月驗證、不裸辭。"
+      },
+      "exercise": {
+        "question": "找一個你身邊的例子、用「副業 → Indie：轉型 SOP」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "id": "58.4",
+      "number": "LESSON 58.4",
+      "xp": 10,
+      "outline": [
+        {
+          "level": 2,
+          "text": "4 階段"
+        },
+        {
+          "level": 2,
+          "text": "P1 起步"
+        },
+        {
+          "level": 2,
+          "text": "P2 擴大"
+        },
+        {
+          "level": 2,
+          "text": "P3 過渡"
+        },
+        {
+          "level": 2,
+          "text": "P4 全職"
+        },
+        {
+          "level": 2,
+          "text": "風險管理"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "AI 時代學習方法",
+      "oneLineSummary": "不是「學什麼」、是「怎麼學」",
+      "analogy": "5 年後值錢的技能、現在還沒出現。",
+      "content": "## 為什麼學習變了\n- 過去：學 1 次用 10 年\n- 現在：用 2-5 年\n- 未來：「會學」比「會什麼」重要\n\n## 學習金字塔\n```\nMeta-learning（最重要）\nCritical Thinking\nDomain Knowledge\nSkills（會淘汰）\nInformation（AI 都有）\n```\n從上往下：上層永遠值錢、下層 commodity 化。\n\n## 學習方法\n1. **Project-based**：邊做邊學、1-3 月有 portfolio\n2. **Teaching others**：寫 blog / YT / mentor\n3. **AI as tutor**：Claude 個別教、卡住給 hint\n4. **Active recall**：自己重述 / Anki\n5. **Public learning**：學就 share\n\n## 學什麼\n- **永遠值錢**：邏輯 / 寫作 / 跨域 / 同理 / meta\n- **中期值錢（5-10 年）**：AI / 系統設計 / 創業 / 領導\n- **短期紅利（2-5 年）**：特定工具 / 框架 / 趨勢\n\n不要追短期紅利、忽略上層。\n\n## 時間管理\n- Deep work：每天 2-4 hr\n- Learning sprint：1-3 月 focused\n- 不要 spread（1 個深 > 5 個淺）\n\n## 心法\n- 學習 > 工作（長期）\n- AI 是教練、不是答案\n- 動手 > 看書\n- 教人 > 自己學\n- 5 年複利 = 別人 10x",
+      "tip": {
+        "type": "milestone",
+        "text": "Meta-learning > 任何單一技能。"
+      },
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "id": "58.5",
+      "number": "LESSON 58.5",
+      "xp": 10,
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼學習變了"
+        },
+        {
+          "level": 2,
+          "text": "學習金字塔"
+        },
+        {
+          "level": 2,
+          "text": "學習方法"
+        },
+        {
+          "level": 2,
+          "text": "學什麼"
+        },
+        {
+          "level": 2,
+          "text": "時間管理"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    }
+  ],
+  "boss": {
+    "name": "職涯導航者",
+    "hp": 240,
+    "emoji": "🧭",
+    "description": "技能 / 品牌 / 學習 三條路徑"
+  },
+  "quiz": {
+    "id": "ch58-quiz",
+    "questions": [],
+    "xpReward": 50,
+    "perfectBonus": 50
+  }
+}

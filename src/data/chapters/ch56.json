@@ -1,0 +1,534 @@
+{
+  "id": 56,
+  "slug": "ai-ip",
+  "stage": 6,
+  "title": "AI 虛擬 IP",
+  "subtitle": "VTuber / VRM / 分身",
+  "icon": "user-circle",
+  "description": "AI 虛擬 IP：VTuber / VRM / 分身",
+  "status": "published",
+  "difficulty": "intermediate",
+  "prerequisites": [],
+  "estimatedHours": 12,
+  "outcomes": [
+    "理解核心概念",
+    "實作主流工具",
+    "整章實戰可發佈作品",
+    "知道生態 / 接案行情",
+    "對齊 2026 業界主流"
+  ],
+  "lessons": [
+    {
+      "title": "AI 虛擬 IP 總圖",
+      "oneLineSummary": "不露臉、不出聲、做百萬粉絲品牌",
+      "analogy": "2026 新興賽道、台灣機會大。",
+      "content": "## 虛擬 IP 類型\n\n### 1. 動漫 V-tuber\n- 真人 + 虛擬角色\n- 直播 / 短片\n- 大紅：Hololive / Nijisanji\n\n### 2. AI Influencer\n- 完全 AI 生成\n- IG / TikTok\n- 大紅：Lil Miquela、Aitana\n\n### 3. Brand Mascot\n- 公司吉祥物\n- LINE 貼圖 + 社群\n- 大紅：Pusheen / Molang\n\n### 4. 虛擬代言人\n- 企業用 AI 主播\n- 多語言 / 24h\n- 大紅：日本電視台 AI 主播\n\n### 5. AI 角色（個人 IP）\n- AI 寫的小說角色\n- 漫畫 / 動畫衍生\n- 出周邊\n\n## 台灣機會\n- LINE 貼圖（個人變現極佳）\n- IG / TikTok（年輕 user 多）\n- YT（不露臉 niche）\n- 自製內容 + AI 代言\n\n## SnowRealm 已做\n- 雪凜（Yuki）+ 凜空（Riku）：VRM 角色\n- 招財：金倉鼠吉祥物\n- 完整 AI 助理 + 內容生態\n\n是個極好的範例。\n\n## 變現\n\n### 1. 周邊\n- 貼圖 / T-shirt / 抱枕\n- 抽 10-20%\n\n### 2. 內容\n- 廣告分潤\n- 業配\n\n### 3. 課程 / 教學\n- 透過 IP 推自己產品\n\n### 4. NFT / 數位收藏（風險）\n- 2026 仍灰色\n\n### 5. 授權\n- 大紅了授權給品牌\n\n## 工具棧\n\n### 角色設計\n- Midjourney + character ref\n- VRoid Studio（VRM）\n- ZBrush（高階 3D）\n\n### 動畫\n- Live2D（2D 動畫）\n- VRoid + VSeeFace（VTuber）\n- Cascadeur（3D 動畫）\n\n### 配音\n- ElevenLabs（自己聲音 → 角色）\n\n### 對嘴\n- HeyGen\n- Hedra\n\n## 一致性挑戰\n\n### 角色保持一致\n- Midjourney `--cref`\n- Stable Diffusion + LoRA（訓練自己角色）\n- ComfyUI 工作流\n\n### 不一致 = 失敗\n讀者要認得「就是這個角色」。\n\n## 學習資源\n- VTuber 教學頻道\n- Live2D Cubism docs\n- VRoid Studio docs\n\n## 心法\n- IP 是長期累積\n- 一致性 > 數量\n- 故事 > 視覺\n- 真實感情連結（即使虛擬）\n- 變現多元化",
+      "tip": {
+        "type": "milestone",
+        "text": "AI 虛擬 IP = Indie 2026 新出路。"
+      },
+      "id": "56.1",
+      "number": "LESSON 56.1",
+      "xp": 10,
+      "exercise": {
+        "question": "用一張紙、把「AI 虛擬 IP 總圖」的核心概念畫成心智圖。中心是這節的主題、第一圈放 3-5 個關鍵詞（如 --cref）、第二圈延伸細節。",
+        "hint": "關鍵概念可以從 lesson 內出現的這些關鍵字入手：--cref。畫完不要光放著、試著用自己的話講一次。",
+        "answer": "心智圖三步：(1) 中心 = lesson 主題 (2) 第一圈 = 主要分類（通常 3-5 個）(3) 第二圈 = 具體例子或工具。畫完拿給朋友看、能講通 = 真懂。常見錯誤：抄關鍵字當分類、應該用自己理解後的歸納。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "虛擬 IP 類型"
+        },
+        {
+          "level": 3,
+          "text": "1. 動漫 V-tuber"
+        },
+        {
+          "level": 3,
+          "text": "2. AI Influencer"
+        },
+        {
+          "level": 3,
+          "text": "3. Brand Mascot"
+        },
+        {
+          "level": 3,
+          "text": "4. 虛擬代言人"
+        },
+        {
+          "level": 3,
+          "text": "5. AI 角色（個人 IP）"
+        },
+        {
+          "level": 2,
+          "text": "台灣機會"
+        },
+        {
+          "level": 2,
+          "text": "SnowRealm 已做"
+        },
+        {
+          "level": 2,
+          "text": "變現"
+        },
+        {
+          "level": 3,
+          "text": "1. 周邊"
+        },
+        {
+          "level": 3,
+          "text": "2. 內容"
+        },
+        {
+          "level": 3,
+          "text": "3. 課程 / 教學"
+        },
+        {
+          "level": 3,
+          "text": "4. NFT / 數位收藏（風險）"
+        },
+        {
+          "level": 3,
+          "text": "5. 授權"
+        },
+        {
+          "level": 2,
+          "text": "工具棧"
+        },
+        {
+          "level": 3,
+          "text": "角色設計"
+        },
+        {
+          "level": 3,
+          "text": "動畫"
+        },
+        {
+          "level": 3,
+          "text": "配音"
+        },
+        {
+          "level": 3,
+          "text": "對嘴"
+        },
+        {
+          "level": 2,
+          "text": "一致性挑戰"
+        },
+        {
+          "level": 3,
+          "text": "角色保持一致"
+        },
+        {
+          "level": 3,
+          "text": "不一致 = 失敗"
+        },
+        {
+          "level": 2,
+          "text": "學習資源"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "VTuber + AI 主播實作",
+      "oneLineSummary": "一個人經營頻道、不露臉、月入 NT$ 30-300k",
+      "analogy": "門檻 vs 報酬比例最好的內容類型。",
+      "content": "## VTuber 入門\n\n### 設備\n- 一台不錯的 PC（M1 Mac 或 RTX 3060+）\n- 麥克風（NT$ 1500-5000）\n- Webcam（追蹤臉部）\n- 環形燈\n\n### 軟體\n\n#### 角色製作\n- **VRoid Studio**（免費）：3D VTuber 角色\n- **Live2D Cubism**（付費）：2D 動畫\n- **Charat**（免費）：簡單 2D\n\n#### 追蹤 + 直播\n- **VSeeFace**：3D 角色 + 臉部追蹤\n- **VTube Studio**：2D Live2D\n- **OBS**：直播軟體\n\n## 角色設計 SOP\n\n### 1. 概念\n- 性別 / 年齡 / 個性\n- 風格（cute / cool / mature）\n- 顏色（主 + 副 + accent）\n- 設定（種族 / 職業 / 故事）\n\n### 2. 設計\n- 自己畫 / 接案請繪師\n- Midjourney 起草\n- 細化 details\n\n### 3. 3D 製作\n- VRoid Studio：快、有限制\n- 接案請 3D modeler：完整、貴（NT$ 30-200k）\n\n### 4. 配音\n- 自己錄（變聲器）\n- ElevenLabs（AI 自己聲）\n- 用接案配音員\n\n## 內容策略\n\n### 直播\n- 遊戲實況\n- 雜談\n- 唱歌\n- 才藝（畫圖 / 烹飪）\n\n### 短片\n- 精華\n- 迷因\n- 知識型\n\n### 平台\n- **Twitch**：直播\n- **YouTube**：影片 + 直播\n- **Niconico**：日本市場\n\n## 變現\n\n### 1. SuperChat / 抖內\n- YT / Twitch\n- 觀眾贊助\n- 抽成 30%\n\n### 2. 訂閱 / 會員\n- 月費 NT$ 100-1000\n- 專屬內容\n\n### 3. 業配\n- 中型（10k 訂閱）：NT$ 5-20k/支\n- 大型（100k）：NT$ 30-100k/支\n\n### 4. 周邊\n- 貼圖\n- T-shirt / 公仔\n- 自己上架 / 找代工\n\n### 5. 演出\n- 線下活動\n- 對嘴演唱\n\n## 純 AI 不露臉頻道\n\n### 流程\n1. AI 角色（Midjourney + LoRA）\n2. AI 腳本（Claude）\n3. AI 配音（ElevenLabs）\n4. AI 動畫（Hedra / D-ID）\n5. AI 剪輯（CapCut + AI features）\n6. 上傳 YT / TikTok\n\n### 完全不露臉\n- 不用設備\n- 不用講話\n- 全 AI\n\n### 月成本\n- Midjourney $30\n- ElevenLabs $22\n- HeyGen $29\n- 總：< NT$ 3000/月\n\n### 月入潛力\n- 起步：NT$ 0\n- 1 萬訂閱：NT$ 10-30k\n- 10 萬訂閱：NT$ 100-500k\n- 100 萬：NT$ 1M+\n\n## 案例\n\n### 台灣\n- 鹿乃（VTuber）\n- 八奈見杏奈（漫畫帳號）\n- 各種 IG 漫畫家\n\n### 國際\n- Lil Miquela（IG、3M 粉、estimated 月 $400k）\n- Aitana Lopez（西班牙、AI 模特兒）\n\n## 風險\n- 演算法依賴\n- 平台政策變\n- 競爭增加\n- IP 風險（被抄）\n\n## 心法\n- 第一年沒人看、累積就是贏\n- 一致 = 識別度\n- 互動 = 黏著度\n- 變現多元化\n- 把角色當「真的人」對待\n\n## 學習路徑\n1. 學基本繪圖 / AI 生圖（1 月）\n2. 角色設計 + 設定（2 週）\n3. 角色製作（1-2 月）\n4. 試做 5 支短片（1 月）\n5. 上線 + 觀察（持續）\n6. 累積 100 支 = 開始有粉\n\n6-12 個月起步、2-3 年穩定變現。",
+      "tip": {
+        "type": "practical",
+        "text": "純 AI 不露臉頻道 = 成本低 + 上限高。"
+      },
+      "id": "56.2",
+      "number": "LESSON 56.2",
+      "xp": 10,
+      "exercise": {
+        "question": "挑 lesson 內某一個小節（VTuber 入門）、自己動手做一個對應的小範例。",
+        "hint": "從最小可運作版開始（HelloWorld 級）、確認能跑、再慢慢加東西。一次只加一個 feature。",
+        "answer": "MVP 心法：能跑通 > 寫得漂亮。先有最簡單的版本（10 行就好）、確認 input → 預期 output、再開始重構 / 加錯誤處理 / 加 UI。先求有、再求好。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "VTuber 入門"
+        },
+        {
+          "level": 3,
+          "text": "設備"
+        },
+        {
+          "level": 3,
+          "text": "軟體"
+        },
+        {
+          "level": 2,
+          "text": "角色設計 SOP"
+        },
+        {
+          "level": 3,
+          "text": "1. 概念"
+        },
+        {
+          "level": 3,
+          "text": "2. 設計"
+        },
+        {
+          "level": 3,
+          "text": "3. 3D 製作"
+        },
+        {
+          "level": 3,
+          "text": "4. 配音"
+        },
+        {
+          "level": 2,
+          "text": "內容策略"
+        },
+        {
+          "level": 3,
+          "text": "直播"
+        },
+        {
+          "level": 3,
+          "text": "短片"
+        },
+        {
+          "level": 3,
+          "text": "平台"
+        },
+        {
+          "level": 2,
+          "text": "變現"
+        },
+        {
+          "level": 3,
+          "text": "1. SuperChat / 抖內"
+        },
+        {
+          "level": 3,
+          "text": "2. 訂閱 / 會員"
+        },
+        {
+          "level": 3,
+          "text": "3. 業配"
+        },
+        {
+          "level": 3,
+          "text": "4. 周邊"
+        },
+        {
+          "level": 3,
+          "text": "5. 演出"
+        },
+        {
+          "level": 2,
+          "text": "純 AI 不露臉頻道"
+        },
+        {
+          "level": 3,
+          "text": "流程"
+        },
+        {
+          "level": 3,
+          "text": "完全不露臉"
+        },
+        {
+          "level": 3,
+          "text": "月成本"
+        },
+        {
+          "level": 3,
+          "text": "月入潛力"
+        },
+        {
+          "level": 2,
+          "text": "案例"
+        },
+        {
+          "level": 3,
+          "text": "台灣"
+        },
+        {
+          "level": 3,
+          "text": "國際"
+        },
+        {
+          "level": 2,
+          "text": "風險"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        },
+        {
+          "level": 2,
+          "text": "學習路徑"
+        }
+      ]
+    },
+    {
+      "title": "LINE 貼圖 + 數位 IP 變現",
+      "oneLineSummary": "台灣 IP 變現最直接的入門路線",
+      "analogy": "一套貼圖月被動 NT$ 1-30k 不難。",
+      "content": "## LINE 貼圖\n\n### 申請\n1. LINE Creators Market 註冊\n2. 上傳貼圖\n3. 審核（1-2 週）\n4. 上架\n5. 抽 35% 給創作者\n\n### 規格\n- 8 / 16 / 24 / 32 / 40 張一套\n- 370 x 320 px\n- PNG 透明背景\n- 統一風格\n\n### AI 加速\n1. Midjourney 生角色（保持一致）\n2. 加表情（畫 / Photoshop）\n3. 去背\n4. 上架\n\n時間：傳統 1 個月 → AI 1 週。\n\n### 定價\n- 30 元 / 60 元\n- 多賣 30 元（普及）\n- 商業可 60-90 元\n\n### 變現潛力\n- 大紅貼圖：月 NT$ 100k+\n- 中等：月 NT$ 5-30k\n- 普通：月 NT$ 500-3000\n\n每個都是被動收入、累積 50 套 = 月入 NT$ 30k+。\n\n### 暢銷類型\n- 治癒型（暖男 / 軟妹）\n- 搞笑（迷因）\n- 動物（貓 / 狗 / 倉鼠）\n- 上班族日常\n- 戀人 / 親子\n\n## 動態貼圖 / Emoji\n- 動態貼圖更貴（60 元）\n- LINE Emoji 跨應用程式\n- 更難做\n\n## LINE 主題\n- 換 LINE 整套 UI\n- 80-180 元\n- 抽成同樣 35%\n\n## 周邊變現\n\n### Pinkoi\n- 設計師平台\n- 賣手機殼 / 文具 / T-shirt\n- 抽 15-20%\n\n### Etsy\n- 國際\n- 賣數位產品（icon / 模板 / 字型）\n\n### Patreon\n- 月訂閱\n- 進階內容\n\n## 跨平台 IP 擴張\n\n```\nLINE 貼圖（入口、低門檻）\n  ↓\nIG 漫畫（建立粉絲）\n  ↓\nYT / TikTok 短片（擴大）\n  ↓\n出書 / 周邊 / 授權\n```\n\n## 案例\n\n### 台灣\n- **馬來貘 Cherng**：從插畫到天王\n- **Duncan**：圖文作家、書籍 + 周邊\n- **保溫冰**：插畫師 IP\n\n每個從一套貼圖 / 一個帳號起步。\n\n## 數位產品\n\n### Notion 模板\n- 個人 / 商業\n- $5-50 一份\n- 多平台賣（Gumroad / Notion Marketplace）\n\n### Figma 模板\n- UI kit / wireframe\n- $20-200\n\n### Lightroom Preset\n- 攝影師訂購\n- $5-30\n\n### Icon Pack\n- $10-50\n\n### 字型\n- 中文字型市場大\n- $50-500\n\n## 心法\n- LINE 貼圖是「最低門檻 IP 變現」\n- 一致風格 = 識別\n- 持續上架 = 累積資產\n- IP 不是一夕、是 5-10 年累積\n- 你的「風格」就是 IP\n\n## 時間表\n- Month 1-2：第一套 LINE 貼圖\n- Month 3-6：累積 5-10 套\n- Year 1：建立 IG + 跨平台\n- Year 2-3：周邊 / 課程 / 授權\n- Year 5+：個人 IP 公司\n\n收入：副業 → 主業 → 公司化。",
+      "tip": {
+        "type": "milestone",
+        "text": "LINE 貼圖是 IP 變現最低門檻。"
+      },
+      "id": "56.3",
+      "number": "LESSON 56.3",
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "LINE 貼圖"
+        },
+        {
+          "level": 3,
+          "text": "申請"
+        },
+        {
+          "level": 3,
+          "text": "規格"
+        },
+        {
+          "level": 3,
+          "text": "AI 加速"
+        },
+        {
+          "level": 3,
+          "text": "定價"
+        },
+        {
+          "level": 3,
+          "text": "變現潛力"
+        },
+        {
+          "level": 3,
+          "text": "暢銷類型"
+        },
+        {
+          "level": 2,
+          "text": "動態貼圖 / Emoji"
+        },
+        {
+          "level": 2,
+          "text": "LINE 主題"
+        },
+        {
+          "level": 2,
+          "text": "周邊變現"
+        },
+        {
+          "level": 3,
+          "text": "Pinkoi"
+        },
+        {
+          "level": 3,
+          "text": "Etsy"
+        },
+        {
+          "level": 3,
+          "text": "Patreon"
+        },
+        {
+          "level": 2,
+          "text": "跨平台 IP 擴張"
+        },
+        {
+          "level": 2,
+          "text": "案例"
+        },
+        {
+          "level": 3,
+          "text": "台灣"
+        },
+        {
+          "level": 2,
+          "text": "數位產品"
+        },
+        {
+          "level": 3,
+          "text": "Notion 模板"
+        },
+        {
+          "level": 3,
+          "text": "Figma 模板"
+        },
+        {
+          "level": 3,
+          "text": "Lightroom Preset"
+        },
+        {
+          "level": 3,
+          "text": "Icon Pack"
+        },
+        {
+          "level": 3,
+          "text": "字型"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        },
+        {
+          "level": 2,
+          "text": "時間表"
+        }
+      ]
+    },
+    {
+      "title": "虛擬 IP：2026 起飛",
+      "oneLineSummary": "VTuber / AI 主播 / 虛擬偶像",
+      "analogy": "人設 + AI = 24/7 內容。",
+      "content": "## 為什麼 2026 起飛\n- AI 圖 / 影片 / 聲音都成熟\n- Live2D / VRM 普及\n- Gen Z 接受高\n- 全球 VTuber 30 億美元市場\n\n## 類型\n1. **VTuber**：真人配音 + 虛擬形象（Hololive）\n2. **AI 主播**：全自動 GPT + ElevenLabs\n3. **虛擬偶像**：唱歌跳舞 MV\n4. **AI Companion**：1對1 陪伴（Character.AI）\n5. **品牌 mascot**\n\n## SnowRealm 案例\n- **雪凜**：開朗 / 主動 / 短句 LINE 風\n- **凜空**：冷酷溫柔 / 極簡「...」\n- **招財**：金倉鼠 / Z-coin 守護\n- 跨產品出現、累積粉絲\n\n## 變現\n- 直播 sub / donate\n- 廣告分潤\n- Sponsor / 業配\n- Merch（T-shirt / 玩偶）\n- 貼圖\n- Patreon 訂閱\n- NFT（謹慎）\n- 自家產品\n\n## 進入門檻\n- Live2D：NT$ 30-200k\n- VRM：NT$ 10-50k\n- 設備：NT$ 30-100k\n\n## 心法\n- IP > Product\n- 累積粉絲 = 護城河\n- 連貫人設 + 故事\n- 5-10 年才爆",
+      "tip": {
+        "type": "trend",
+        "text": "虛擬 IP 是 2026-2030 最大內容紅利。"
+      },
+      "exercise": {
+        "question": "找一個你身邊的例子、用「虛擬 IP：2026 起飛」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "id": "56.4",
+      "number": "LESSON 56.4",
+      "xp": 10,
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼 2026 起飛"
+        },
+        {
+          "level": 2,
+          "text": "類型"
+        },
+        {
+          "level": 2,
+          "text": "SnowRealm 案例"
+        },
+        {
+          "level": 2,
+          "text": "變現"
+        },
+        {
+          "level": 2,
+          "text": "進入門檻"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "VTuber 技術門檻",
+      "oneLineSummary": "從零做虛擬形象、月內可上線",
+      "analogy": "Path 多元、看預算。",
+      "content": "## 兩大技術\n- **VRM**（3D）：全身 / 360 度、適合直播 / VR\n- **Live2D**（2D）：平面但細膩、適合對話頭像\n\n## 製作流程\n1. 角色設定（Reference sheet）\n2. 設計（Midjourney 多角度多表情）\n3. 細化（Photoshop / Clip Studio 拆 layer）\n4. Rigging（Live2D Cubism）\n5. 上線（VTube Studio / VSeeFace）\n\n## 軟體\n- 設計：Photoshop / Clip Studio / Krita（免費）\n- Rigging：Live2D Cubism Pro $30/月\n- VRM：VRoid Studio（免費）\n- 直播：VTube Studio / VSeeFace / OBS\n\n## 動作 capture\n- iPhone（ARKit、最簡）\n- Leap Motion（手部）\n- Vive Trackers（全身）\n\n## 接案\n- Live2D 簡易：NT$ 30-80k\n- Live2D 完整：NT$ 100-300k\n- VRM：NT$ 50-200k\n\n## 商業模式\n- **Solo**：自己當 / 朋友配\n- **經紀**：簽 Hololive / Nijisanji、抽 50-70%\n- **自家 talent**：養多角色\n\n## 心法\n- 角色魅力 > 技術完美\n- 故事 > 視覺\n- 跟粉絲互動 > 演算法",
+      "tip": {
+        "type": "milestone",
+        "text": "VTuber 是 2026 個人創業最大機會之一。"
+      },
+      "exercise": {
+        "question": "找一個你身邊的例子、用「VTuber 技術門檻」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "id": "56.5",
+      "number": "LESSON 56.5",
+      "xp": 10,
+      "outline": [
+        {
+          "level": 2,
+          "text": "兩大技術"
+        },
+        {
+          "level": 2,
+          "text": "製作流程"
+        },
+        {
+          "level": 2,
+          "text": "軟體"
+        },
+        {
+          "level": 2,
+          "text": "動作 capture"
+        },
+        {
+          "level": 2,
+          "text": "接案"
+        },
+        {
+          "level": 2,
+          "text": "商業模式"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "IP 變現：5000 鐵粉月入 NT$ 50k",
+      "oneLineSummary": "多元變現 = 穩定",
+      "analogy": "訂閱 + 商品 + 業配 + 自家產品。",
+      "content": "## 5 種變現\n1. **訂閱**（Patreon / Fanbox）：3-10% 鐵粉、月 $5-100\n2. **商品**：T-shirt / 玩偶、margin 30-50%\n3. **業配**：每支 NT$ 100-30000\n4. **直播 sub / donate**\n5. **自家產品**：course / app / tool\n\n## Mix 範例（5000 鐵粉達月 NT$ 50k）\n\n**Mix 1：訂閱為主**\n- Patreon 3% × $10 = $1500 = NT$ 45k\n- + Sponsor NT$ 10k\n- = NT$ 55k ✓\n\n**Mix 2：商品為主**\n- 月新品 1-2、1% buy × NT$ 500 = NT$ 25k\n- + 貼圖 NT$ 5k\n- + 廣告 NT$ 10k\n- + 業配 NT$ 15k\n- = NT$ 55k ✓\n\n**Mix 3：自家產品（推薦 AI Island）**\n- Premium 訂閱 NT$ 299 × 5% × 5000 = NT$ 75k\n- + 周邊 NT$ 10k\n- + 業配 NT$ 10k\n- = NT$ 95k ✓\n\n**Mix 4：直播為主**\n- 月 8 場 × 100 viewer × NT$ 100 = NT$ 80k\n- + Sub NT$ 30k\n- = NT$ 110k ✓（但累）\n\n## 漏斗\n```\n廣告 / 演算法 → 免費 → 訂閱 → 鐵粉\n```\n每層 conversion 5-10%。\n\n## 風險\n- Burnout：set 邊界\n- Brand 跌：避免出包\n- 平台依賴：多 channel\n\n## 心法\n- 多元 > 單一\n- 鐵粉 1000 > 路人 100000\n- 5 年累積 LTV 100x",
+      "tip": {
+        "type": "milestone",
+        "text": "5000 鐵粉 = 開始有 leverage。"
+      },
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "id": "56.6",
+      "number": "LESSON 56.6",
+      "xp": 10,
+      "outline": [
+        {
+          "level": 2,
+          "text": "5 種變現"
+        },
+        {
+          "level": 2,
+          "text": "Mix 範例（5000 鐵粉達月 NT$ 50k）"
+        },
+        {
+          "level": 2,
+          "text": "漏斗"
+        },
+        {
+          "level": 2,
+          "text": "風險"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    }
+  ],
+  "boss": {
+    "name": "IP 賦魂者",
+    "hp": 260,
+    "emoji": "👤",
+    "description": "VTuber / VRM / 數位分身 三化身"
+  },
+  "quiz": {
+    "id": "ch56-quiz",
+    "questions": [],
+    "xpReward": 50,
+    "perfectBonus": 50
+  }
+}

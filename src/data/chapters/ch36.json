@@ -1,0 +1,558 @@
+{
+  "id": 36,
+  "slug": "php",
+  "stage": 5,
+  "title": "PHP + Laravel",
+  "subtitle": "70% 網站 / WordPress 必懂",
+  "icon": "code",
+  "description": "PHP + Laravel：70% 網站 / WordPress 必懂",
+  "status": "published",
+  "difficulty": "intermediate",
+  "prerequisites": [
+    16
+  ],
+  "estimatedHours": 12,
+  "outcomes": [
+    "理解核心概念",
+    "實作主流工具",
+    "整章實戰可發佈作品",
+    "知道生態 / 接案行情",
+    "對齊 2026 業界主流"
+  ],
+  "lessons": [
+    {
+      "title": "PHP 在 2026 仍重要",
+      "oneLineSummary": "WordPress 占 43% 網站、Laravel 是現代化",
+      "analogy": "不時髦但有市場。",
+      "content": "## PHP 現狀\n- WordPress：43% 全網\n- Laravel：現代 PHP 框架\n- 衰退中但仍大量 legacy\n- 求職市場存在\n\n## PHP 8.3 特性\n不再是 2010 的 PHP：\n- 強型別\n- Enum\n- Readonly properties\n- First-class callable\n- 性能進步\n\n```php\nenum Status: string {\n    case Active = 'active';\n    case Inactive = 'inactive';\n}\n\nclass User {\n    public function __construct(\n        public readonly string $email,\n        public readonly Status $status\n    ) {}\n}\n```\n\n## Laravel vs Symfony\n\n### Laravel\n- 簡單、易用\n- 文件好\n- 中小型專案首選\n- 生態完整\n\n### Symfony\n- 企業級\n- 模組化\n- Drupal 用\n- 學習曲線陡\n\n99% 場景 Laravel。\n\n## 為什麼選 PHP\n\n### ✅ 適合\n- WordPress 接案（大市場）\n- Laravel SaaS\n- 維護 legacy\n- 小團隊 / Indie 快速 ship\n\n### ❌ 不適合\n- 重 realtime\n- 高並發（不如 Go）\n- 全棧 TS 一致\n\n## 跟 Node 比\n\n| 面向 | PHP / Laravel | Node |\n|---|---|---|\n| 學習 | 平 | 平 |\n| 生態 | 大 | 巨 |\n| 招募 | 多但跌 | 多且增 |\n| 全棧 | PHP 後端 + JS 前端 | 全 JS |\n| 部署 | 簡單（傳統 hosting）| 中 |\n| 性能 | 中 | 中-高 |\n\n## 心法\n- WordPress 是另一個世界（看 Ch37）\n- Laravel 是現代 PHP 的代表\n- 不要為時髦放棄、市場需求大\n- Indie 接案 = WordPress 飯碗",
+      "tip": {
+        "type": "practical",
+        "text": "PHP 不時髦但有飯吃。WordPress 是最大市場。"
+      },
+      "id": "36.1",
+      "number": "LESSON 36.1",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "36.1.auto",
+          "language": "php",
+          "title": "試試看",
+          "initialCode": "enum Status: string {\n    case Active = 'active';\n    case Inactive = 'inactive';\n}\n\nclass User {\n    public function __construct(\n        public readonly string $email,\n        public readonly Status $status\n    ) {}\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "PHP 現狀"
+        },
+        {
+          "level": 2,
+          "text": "PHP 8.3 特性"
+        },
+        {
+          "level": 2,
+          "text": "Laravel vs Symfony"
+        },
+        {
+          "level": 3,
+          "text": "Laravel"
+        },
+        {
+          "level": 3,
+          "text": "Symfony"
+        },
+        {
+          "level": 2,
+          "text": "為什麼選 PHP"
+        },
+        {
+          "level": 3,
+          "text": "✅ 適合"
+        },
+        {
+          "level": 3,
+          "text": "❌ 不適合"
+        },
+        {
+          "level": 2,
+          "text": "跟 Node 比"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Laravel 起步 + Eloquent ORM",
+      "oneLineSummary": "寫起來像 Ruby on Rails、convention over configuration",
+      "analogy": "5 分鐘上線一個 CRUD app。",
+      "content": "## 安裝\n```bash\ncomposer create-project laravel/laravel my-app\ncd my-app\nphp artisan serve\n```\n\n## Migration\n```bash\nphp artisan make:migration create_posts_table\n```\n\n```php\npublic function up()\n{\n    Schema::create('posts', function (Blueprint $table) {\n        $table->id();\n        $table->string('title');\n        $table->text('content');\n        $table->foreignId('user_id')->constrained();\n        $table->timestamps();\n    });\n}\n```\n\n```bash\nphp artisan migrate\n```\n\n## Model（Eloquent）\n```php\nclass Post extends Model\n{\n    protected $fillable = ['title', 'content', 'user_id'];\n    \n    public function user()\n    {\n        return $this->belongsTo(User::class);\n    }\n    \n    public function comments()\n    {\n        return $this->hasMany(Comment::class);\n    }\n}\n```\n\n## Eloquent 查詢\n```php\n// CRUD\n$post = Post::create(['title' => '...', 'content' => '...']);\n$post = Post::find(1);\n$post->update(['title' => 'New title']);\n$post->delete();\n\n// Query\n$posts = Post::where('user_id', $user->id)\n    ->orderBy('created_at', 'desc')\n    ->limit(10)\n    ->get();\n\n// Relations\n$posts = Post::with('user', 'comments')->get();\n\n// Aggregates\n$count = Post::where('published', true)->count();\n$total = Order::sum('amount');\n```\n\n## Controller\n```bash\nphp artisan make:controller PostController --resource\n```\n\n```php\nclass PostController extends Controller\n{\n    public function index()\n    {\n        return Post::with('user')->paginate(20);\n    }\n    \n    public function store(Request $request)\n    {\n        $validated = $request->validate([\n            'title' => 'required|string|max:255',\n            'content' => 'required'\n        ]);\n        \n        $post = $request->user()->posts()->create($validated);\n        return response()->json($post, 201);\n    }\n    \n    public function show(Post $post)\n    {\n        return $post->load('user', 'comments');\n    }\n    \n    public function update(Request $request, Post $post)\n    {\n        $this->authorize('update', $post);\n        $post->update($request->validated());\n        return $post;\n    }\n    \n    public function destroy(Post $post)\n    {\n        $this->authorize('delete', $post);\n        $post->delete();\n        return response()->noContent();\n    }\n}\n```\n\n## Routes\n```php\n// routes/api.php\nRoute::middleware('auth:sanctum')->group(function () {\n    Route::apiResource('posts', PostController::class);\n});\n```\n\n## Validation\n```php\n$request->validate([\n    'email' => 'required|email|unique:users',\n    'password' => 'required|min:8|confirmed',\n    'age' => 'required|integer|min:18'\n]);\n```\n\n## Auth（Sanctum）\n```bash\ncomposer require laravel/sanctum\nphp artisan migrate\n```\n\n```php\n// Login\npublic function login(Request $request)\n{\n    $request->validate(['email' => 'required|email', 'password' => 'required']);\n    \n    if (!Auth::attempt($request->only('email', 'password'))) {\n        return response()->json(['error' => 'Invalid credentials'], 401);\n    }\n    \n    $token = $request->user()->createToken('api')->plainTextToken;\n    return ['token' => $token];\n}\n```\n\n## Queue（背景任務）\n```bash\nphp artisan make:job SendWelcomeEmail\n```\n\n```php\nclass SendWelcomeEmail implements ShouldQueue\n{\n    public function handle()\n    {\n        // 寄信\n    }\n}\n\n// 派\nSendWelcomeEmail::dispatch($user);\n```\n\n跑 worker：\n```bash\nphp artisan queue:work\n```\n\n## 心法\n- Laravel 是 PHP 的 Rails\n- Eloquent 寫得超爽\n- artisan CLI 神器\n- 生態完整、社群大\n- 快、容易 ship MVP",
+      "tip": {
+        "type": "milestone",
+        "text": "Laravel 寫起來比 Express 簡單 + 完整。"
+      },
+      "id": "36.2",
+      "number": "LESSON 36.2",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "36.2.auto",
+          "language": "php",
+          "title": "試試看",
+          "initialCode": "public function up()\n{\n    Schema::create('posts', function (Blueprint $table) {\n        $table->id();\n        $table->string('title');\n        $table->text('content');\n        $table->foreignId('user_id')->constrained();\n        $table->timestamps();\n    });\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 15 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "安裝"
+        },
+        {
+          "level": 2,
+          "text": "Migration"
+        },
+        {
+          "level": 2,
+          "text": "Model（Eloquent）"
+        },
+        {
+          "level": 2,
+          "text": "Eloquent 查詢"
+        },
+        {
+          "level": 2,
+          "text": "Controller"
+        },
+        {
+          "level": 2,
+          "text": "Routes"
+        },
+        {
+          "level": 2,
+          "text": "Validation"
+        },
+        {
+          "level": 2,
+          "text": "Auth（Sanctum）"
+        },
+        {
+          "level": 2,
+          "text": "Queue（背景任務）"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Laravel 進階 + 接案變現",
+      "oneLineSummary": "Livewire / Inertia / 部署 / 接案",
+      "analogy": "台灣 PHP 接案仍有需求。",
+      "content": "## Livewire（PHP 寫 SPA）\n不用 JS、用 PHP 寫互動 UI：\n```php\nclass Counter extends Component\n{\n    public $count = 0;\n    \n    public function increment()\n    {\n        $this->count++;\n    }\n    \n    public function render()\n    {\n        return view('livewire.counter');\n    }\n}\n```\n\n```blade\n<div>\n    <h1>{{ $count }}</h1>\n    <button wire:click=\"increment\">+</button>\n</div>\n```\n\n點 button → server roundtrip → 自動更新 UI。\n適合：admin / 表單、不適合：高互動。\n\n## Inertia.js（Vue / React + Laravel）\nSPA 體驗、Laravel 後端：\n```php\npublic function index()\n{\n    return Inertia::render('Posts/Index', [\n        'posts' => Post::all()\n    ]);\n}\n```\n\n```vue\n<template>\n  <Layout>\n    <h1>Posts</h1>\n    <div v-for=\"post in posts\">{{ post.title }}</div>\n  </Layout>\n</template>\n\n<script setup>\ndefineProps({ posts: Array });\n</script>\n```\n\n最佳組合：Laravel + Inertia + Vue / React。\n\n## Laravel Octane\n用 Swoole / RoadRunner 跑：\n```bash\ncomposer require laravel/octane\nphp artisan octane:install\nphp artisan octane:start\n```\n\n性能快 10 倍、適合 high-traffic。\n\n## Filament（admin panel）\n1 行裝 admin 後台：\n```bash\ncomposer require filament/filament\nphp artisan filament:install --panels\nphp artisan make:filament-resource Post\n```\n\n得到完整 CRUD admin、超快。\n\n## 部署\n\n### 傳統（虛擬主機）\n- cPanel / Plesk\n- SFTP 上傳\n- 每月 NT$ 200-500\n- 適合：小流量\n\n### VPS\n- DigitalOcean / Linode\n- 自己裝 Nginx / PHP-FPM\n- 月 $5-20\n\n### Laravel Forge\n- 自動化 VPS 設定\n- 月 $12\n- Push to deploy\n\n### Vapor\n- Laravel 出的 serverless\n- AWS Lambda\n- 自動 scale\n\n### Railway / Fly.io\n也支援 PHP。\n\n## 接案市場（台灣 2026）\n\n### WordPress\n- 小型網站：NT$ 10-100k\n- 客製：NT$ 100-500k\n- 月維護：NT$ 1-10k\n\n### Laravel\n- SaaS 從 0：NT$ 200k-2M\n- 客製 ERP：NT$ 500k-5M\n- 維護：NT$ 10-50k/月\n\n### 招募\n- Junior PHP：NT$ 50-80k\n- Mid：NT$ 70-100k\n- Senior：NT$ 100-150k\n\nPHP 工程師比 Node 便宜（市場供給多）。\n\n## Indie SaaS\n\n### 用 Laravel 適合\n- B2B SaaS\n- 內部工具\n- 中小企業客戶\n- 快速 MVP\n\n### 不適合\n- 高互動 SPA\n- 行動 App backend\n- 即時 / WebSocket-heavy\n\n## 名作品 Laravel\n- Laracasts（教學平台）\n- Statamic（CMS）\n- Beam（client portal）\n- October CMS\n\n## 心法\n- WordPress 是飯碗、Laravel 是進階\n- 接案：WordPress 多、Laravel 大案\n- Indie SaaS：Laravel 比 Node 簡單\n- Filament + Livewire = Indie 神器\n\n## 學習路徑\n1. PHP 基礎\n2. Laravel\n3. Eloquent + Migration\n4. Auth (Sanctum)\n5. Queue / Job\n6. Filament（admin）\n7. 部署（Forge / VPS）\n8. 接案 / SaaS",
+      "tip": {
+        "type": "milestone",
+        "text": "Laravel + Filament = Indie SaaS 快速 ship。"
+      },
+      "id": "36.3",
+      "number": "LESSON 36.3",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "36.3.auto",
+          "language": "php",
+          "title": "試試看",
+          "initialCode": "class Counter extends Component\n{\n    public $count = 0;\n    \n    public function increment()\n    {\n        $this->count++;\n    }\n    \n    public function render()\n    {\n        return view('livewire.counter');\n    }\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "挑一個你做過的舊專案、用本節「Laravel 進階 + 接案變現」介紹的進階技術重構它。",
+        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
+        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "Livewire（PHP 寫 SPA）"
+        },
+        {
+          "level": 2,
+          "text": "Inertia.js（Vue / React + Laravel）"
+        },
+        {
+          "level": 2,
+          "text": "Laravel Octane"
+        },
+        {
+          "level": 2,
+          "text": "Filament（admin panel）"
+        },
+        {
+          "level": 2,
+          "text": "部署"
+        },
+        {
+          "level": 3,
+          "text": "傳統（虛擬主機）"
+        },
+        {
+          "level": 3,
+          "text": "VPS"
+        },
+        {
+          "level": 3,
+          "text": "Laravel Forge"
+        },
+        {
+          "level": 3,
+          "text": "Vapor"
+        },
+        {
+          "level": 3,
+          "text": "Railway / Fly.io"
+        },
+        {
+          "level": 2,
+          "text": "接案市場（台灣 2026）"
+        },
+        {
+          "level": 3,
+          "text": "WordPress"
+        },
+        {
+          "level": 3,
+          "text": "Laravel"
+        },
+        {
+          "level": 3,
+          "text": "招募"
+        },
+        {
+          "level": 2,
+          "text": "Indie SaaS"
+        },
+        {
+          "level": 3,
+          "text": "用 Laravel 適合"
+        },
+        {
+          "level": 3,
+          "text": "不適合"
+        },
+        {
+          "level": 2,
+          "text": "名作品 Laravel"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        },
+        {
+          "level": 2,
+          "text": "學習路徑"
+        }
+      ]
+    },
+    {
+      "title": "Laravel：PHP 框架王者",
+      "oneLineSummary": "PHP 還活著、Laravel 是現代代表",
+      "analogy": "台灣接案 PHP 主流、企業 / 中小公司多。",
+      "content": "## PHP 仍重要\n\n### 為什麼\n- WordPress 全球 40% 網站\n- 共享主機便宜 / 廣\n- 老系統維護\n- Laravel 現代化\n\n### Laravel\n- PHP 最熱框架\n- 設計優雅\n- Eloquent ORM 棒\n- 生態完整\n\n## Hello Laravel\n\n```bash\ncomposer create-project laravel/laravel myapp\ncd myapp\nphp artisan serve\n```\n\n### Route\n```php\n// routes/web.php\nRoute::get('/hello', function () {\n    return 'Hello, World!';\n});\n\n// routes/api.php\nRoute::get('/users/{id}', [UserController::class, 'show']);\n```\n\n### Controller\n```php\nclass UserController extends Controller\n{\n    public function show($id) {\n        $user = User::findOrFail($id);\n        return response()->json($user);\n    }\n}\n```\n\n### Eloquent Model\n```php\nclass User extends Model\n{\n    protected $fillable = ['email', 'name'];\n    \n    public function posts() {\n        return $this->hasMany(Post::class);\n    }\n}\n\n// 用\n$user = User::find(1);\n$posts = $user->posts;\n```\n\n### Migration\n```bash\nphp artisan make:migration create_users_table\n```\n\n```php\npublic function up()\n{\n    Schema::create('users', function (Blueprint $table) {\n        $table->id();\n        $table->string('email')->unique();\n        $table->string('name');\n        $table->timestamps();\n    });\n}\n```\n\n```bash\nphp artisan migrate\n```\n\n## Laravel 全套\n\n### Auth\n```bash\ncomposer require laravel/breeze\nphp artisan breeze:install\n```\n登入 / 註冊 / 重設密碼 全有。\n\n### Queue\n```php\ndispatch(new SendEmailJob($user));  // 排隊處理\n```\n\n### Scheduler（cron）\n```php\n$schedule->command('reports:generate')->dailyAt('00:00');\n```\n\n### Notifications\n```php\n$user->notify(new InvoicePaid($invoice));\n```\n\n### 多 channel：Email / SMS / Slack / DB\n\n## 心法\n- Laravel 是 PHP 接案神器\n- 5 倍速度做完事\n- 適合：中型 SaaS / 接案\n- WordPress 仍主流但 Laravel 接案更賺\n- 學習曲線中（PHP 熟 → 1 個月上手）",
+      "tip": {
+        "type": "practical",
+        "text": "PHP 接案 = Laravel + WordPress 兩條路。"
+      },
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 11 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "id": "36.4",
+      "number": "LESSON 36.4",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "36.4.auto",
+          "language": "php",
+          "title": "試試看",
+          "initialCode": "// routes/web.php\nRoute::get('/hello', function () {\n    return 'Hello, World!';\n});\n\n// routes/api.php\nRoute::get('/users/{id}', [UserController::class, 'show']);",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "outline": [
+        {
+          "level": 2,
+          "text": "PHP 仍重要"
+        },
+        {
+          "level": 3,
+          "text": "為什麼"
+        },
+        {
+          "level": 3,
+          "text": "Laravel"
+        },
+        {
+          "level": 2,
+          "text": "Hello Laravel"
+        },
+        {
+          "level": 3,
+          "text": "Route"
+        },
+        {
+          "level": 3,
+          "text": "Controller"
+        },
+        {
+          "level": 3,
+          "text": "Eloquent Model"
+        },
+        {
+          "level": 3,
+          "text": "Migration"
+        },
+        {
+          "level": 2,
+          "text": "Laravel 全套"
+        },
+        {
+          "level": 3,
+          "text": "Auth"
+        },
+        {
+          "level": 3,
+          "text": "Queue"
+        },
+        {
+          "level": 3,
+          "text": "Scheduler（cron）"
+        },
+        {
+          "level": 3,
+          "text": "Notifications"
+        },
+        {
+          "level": 3,
+          "text": "多 channel：Email / SMS / Slack / DB"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Laravel 進階：Livewire + Filament + 部署",
+      "oneLineSummary": "不寫 JS 也能做互動 UI",
+      "analogy": "加速 SaaS 開發。",
+      "content": "## Livewire（不寫 JS）\n\nPHP 全棧、像 Blazor：\n\n```php\n// app/Livewire/Counter.php\nclass Counter extends Component\n{\n    public $count = 0;\n    \n    public function increment() {\n        $this->count++;\n    }\n    \n    public function render() {\n        return view('livewire.counter');\n    }\n}\n```\n\n```blade\n<!-- resources/views/livewire/counter.blade.php -->\n<div>\n    Count: {{ $count }}\n    <button wire:click=\"increment\">+</button>\n</div>\n```\n\n點按鈕 → AJAX → 後端 increment → 自動更新 UI、不寫 JS。\n\n## Filament（後台神器）\n\n```bash\ncomposer require filament/filament\nphp artisan filament:install --panels\n```\n\n定義 Resource：\n```php\nclass UserResource extends Resource\n{\n    public static function form(Form $form): Form\n    {\n        return $form->schema([\n            TextInput::make('name')->required(),\n            TextInput::make('email')->email(),\n        ]);\n    }\n    \n    public static function table(Table $table): Table\n    {\n        return $table->columns([\n            TextColumn::make('name'),\n            TextColumn::make('email'),\n        ]);\n    }\n}\n```\n\n**5 分鐘有完整 admin UI**：CRUD / search / filter / export 全自動。\n\n## 部署選擇\n\n### Laravel Forge\n- $19/月 起\n- 一鍵部署\n- DigitalOcean / AWS / Linode\n- Laravel 友善\n\n### Laravel Vapor\n- AWS serverless\n- 自動 scale\n- $39/月 起\n\n### Ploi.io\n- Forge 替代\n- 便宜\n\n### 自架\n- Nginx + PHP-FPM\n- 麻煩、但便宜\n\n### 共享主機（Bluehost）\n- 適合：學習 / WordPress\n- 不適合：Laravel 認真做\n\n### Cloudways / DigitalOcean 1-click\n- 中價、簡單\n\n## 性能優化\n\n### OPcache（必開）\n```ini\nopcache.enable=1\nopcache.memory_consumption=256\n```\n\n### Route cache\n```bash\nphp artisan route:cache\nphp artisan config:cache\nphp artisan view:cache\n```\n\n### Octane（10x performance）\n```bash\nphp artisan octane:install\nphp artisan octane:start --server=swoole\n```\n\nPHP 不退、保 hot state。\n\n## 心法\n- Filament = 5 分鐘 admin\n- Livewire = 不寫 JS 全棧\n- Laravel Forge = 5 分鐘部署\n- Indie 接案：Laravel + Filament 神組合",
+      "tip": {
+        "type": "milestone",
+        "text": "Laravel + Filament + Forge = Indie 接案神器。"
+      },
+      "exercise": {
+        "question": "挑一個你做過的舊專案、用本節「Laravel 進階：Livewire + Filament + 部署」介紹的進階技術重構它。",
+        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
+        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+      },
+      "id": "36.5",
+      "number": "LESSON 36.5",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "36.5.auto",
+          "language": "php",
+          "title": "試試看",
+          "initialCode": "// app/Livewire/Counter.php\nclass Counter extends Component\n{\n    public $count = 0;\n    \n    public function increment() {\n        $this->count++;\n    }\n    \n    public function render() {\n        return view('livewire.counter');\n    }\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "outline": [
+        {
+          "level": 2,
+          "text": "Livewire（不寫 JS）"
+        },
+        {
+          "level": 2,
+          "text": "Filament（後台神器）"
+        },
+        {
+          "level": 2,
+          "text": "部署選擇"
+        },
+        {
+          "level": 3,
+          "text": "Laravel Forge"
+        },
+        {
+          "level": 3,
+          "text": "Laravel Vapor"
+        },
+        {
+          "level": 3,
+          "text": "Ploi.io"
+        },
+        {
+          "level": 3,
+          "text": "自架"
+        },
+        {
+          "level": 3,
+          "text": "共享主機（Bluehost）"
+        },
+        {
+          "level": 3,
+          "text": "Cloudways / DigitalOcean 1-click"
+        },
+        {
+          "level": 2,
+          "text": "性能優化"
+        },
+        {
+          "level": 3,
+          "text": "OPcache（必開）"
+        },
+        {
+          "level": 3,
+          "text": "Route cache"
+        },
+        {
+          "level": 3,
+          "text": "Octane（10x performance）"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "PHP 安全 + 反 pattern",
+      "oneLineSummary": "老 PHP 一堆坑、新代碼別重蹈",
+      "analogy": "SQL injection / XSS / RCE 大宗。",
+      "content": "## PHP 常見漏洞\n\n### SQL Injection\n```php\n// ❌\n$user = mysqli_query($db, \"SELECT * FROM users WHERE id = $_GET[id]\");\n\n// ✅ Prepared statement\n$stmt = $db->prepare(\"SELECT * FROM users WHERE id = ?\");\n$stmt->bind_param(\"i\", $_GET['id']);\n\n// ✅ Laravel Eloquent（自動處理）\nUser::find($request->id);\n```\n\n### XSS\n```php\n// ❌\necho \"Welcome, $_GET[name]\";\n\n// ✅\necho htmlspecialchars($_GET['name']);\n\n// ✅ Blade（自動 escape）\n{{ $name }}\n\n// ❌ Blade 不 escape\n{!! $name !!}  // 只用於信任的 HTML\n```\n\n### CSRF\n```html\n<!-- Laravel 自動 -->\n<form method=\"POST\">\n  @csrf  <!-- 加 hidden token -->\n  ...\n</form>\n```\n\n### File Upload\n```php\n// ❌ 信任 client extension\nmove_uploaded_file($_FILES['file']['tmp_name'], \"uploads/\" . $_FILES['file']['name']);\n\n// ✅ 檢查 MIME + size + rename\n$file = $request->file('photo');\n$valid = $file->isValid() && $file->getMimeType() === 'image/jpeg';\nif (!$valid) abort(400);\n$name = Str::random(40) . '.' . $file->extension();\n$file->storeAs('uploads', $name);\n```\n\n### RCE（Remote Code Execution）\n```php\n// ❌❌❌ 永遠不要\neval($_GET['code']);\ninclude $_GET['file'];\nsystem($_GET['cmd']);\n\n// ❌ unserialize() 也危險\nunserialize($_POST['data']);\n```\n\n## .env / 密鑰\n\n### 不要 commit\n```\n.env           # ✓ .gitignore\n.env.example   # ✓ 可 commit（無 value）\n```\n\n### 不要在 production 暴露\n```php\n// ❌ APP_DEBUG=true production\n// 出錯時顯示完整 stack trace + .env content\n```\n\n## SQL 慢查 + N+1\n```php\n// ❌ N+1\n$users = User::all();\nforeach ($users as $user) {\n    echo $user->posts->count();  // 每個 user 多 1 query\n}\n\n// ✅ Eager loading\n$users = User::with('posts')->get();\n```\n\n## 常見災難（老 PHP）\n\n### 1. register_globals\nPHP 4 時代、`$_GET[user]` 變 `$user`。\n完全災難、PHP 5.4+ 移除。\n\n### 2. magic_quotes\n自動 escape 但有 bug。\nPHP 5.4+ 移除。\n\n### 3. 全域變數\n舊 code 大量用、難 debug。\n\n### 4. eval / preg_replace 含 e modifier\n動態 execute、災難。\n\n## 升級 PHP\n\n### 從舊 PHP 升 8.x\n- 性能 +2-5x\n- 新語法（typed properties / enum）\n- 安全修補\n\n舊 code 不升 = 找死。\n\n## 心法\n- 用 Laravel = 99% 自動防護\n- 不要直接寫 PHP（裸寫）\n- prepared statement 永遠用\n- escape output 永遠做\n- .env 鎖好\n- APP_DEBUG=false production\n- PHP 8.x+",
+      "tip": {
+        "type": "security",
+        "text": "舊 PHP 是漏洞庫、升 8.x + Laravel 一勞永逸。"
+      },
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "id": "36.6",
+      "number": "LESSON 36.6",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "36.6.auto",
+          "language": "php",
+          "title": "試試看",
+          "initialCode": "// ❌\n$user = mysqli_query($db, \"SELECT * FROM users WHERE id = $_GET[id]\");\n\n// ✅ Prepared statement\n$stmt = $db->prepare(\"SELECT * FROM users WHERE id = ?\");\n$stmt->bind_param(\"i\", $_GET['id']);\n\n// ✅ Laravel Eloquent（自動處理）\nUser::find($request->id);",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "outline": [
+        {
+          "level": 2,
+          "text": "PHP 常見漏洞"
+        },
+        {
+          "level": 3,
+          "text": "SQL Injection"
+        },
+        {
+          "level": 3,
+          "text": "XSS"
+        },
+        {
+          "level": 3,
+          "text": "CSRF"
+        },
+        {
+          "level": 3,
+          "text": "File Upload"
+        },
+        {
+          "level": 3,
+          "text": "RCE（Remote Code Execution）"
+        },
+        {
+          "level": 2,
+          "text": ".env / 密鑰"
+        },
+        {
+          "level": 3,
+          "text": "不要 commit"
+        },
+        {
+          "level": 3,
+          "text": "不要在 production 暴露"
+        },
+        {
+          "level": 2,
+          "text": "SQL 慢查 + N+1"
+        },
+        {
+          "level": 2,
+          "text": "常見災難（老 PHP）"
+        },
+        {
+          "level": 3,
+          "text": "1. registerglobals"
+        },
+        {
+          "level": 3,
+          "text": "2. magicquotes"
+        },
+        {
+          "level": 3,
+          "text": "3. 全域變數"
+        },
+        {
+          "level": 3,
+          "text": "4. eval / pregreplace 含 e modifier"
+        },
+        {
+          "level": 2,
+          "text": "升級 PHP"
+        },
+        {
+          "level": 3,
+          "text": "從舊 PHP 升 8.x"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    }
+  ],
+  "boss": {
+    "name": "PHP 老酋長",
+    "hp": 180,
+    "emoji": "🐘",
+    "description": "WordPress 是它的城堡、Laravel 是它的長矛"
+  },
+  "quiz": {
+    "id": "ch36-quiz",
+    "questions": [],
+    "xpReward": 50,
+    "perfectBonus": 50
+  }
+}

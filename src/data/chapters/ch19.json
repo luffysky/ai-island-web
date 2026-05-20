@@ -1,0 +1,1215 @@
+{
+  "id": 19,
+  "slug": "db-advanced",
+  "stage": 3,
+  "title": "DB 進階",
+  "subtitle": "ORM / 索引 / 效能",
+  "icon": "table-properties",
+  "description": "DB 進階：ORM / 索引 / 效能",
+  "status": "published",
+  "difficulty": "advanced",
+  "prerequisites": [
+    17,
+    18
+  ],
+  "estimatedHours": 10,
+  "outcomes": [
+    "理解核心概念",
+    "實作主流工具",
+    "整章實戰可發佈作品",
+    "知道生態 / 接案行情",
+    "對齊 2026 業界主流"
+  ],
+  "lessons": [
+    {
+      "title": "DB 進階總圖",
+      "oneLineSummary": "不只 CRUD、要會「快、穩、scale」",
+      "analogy": "Senior backend 必懂。",
+      "content": "## 進階主題\n1. Indexing 深入\n2. Query optimization\n3. Transaction + Isolation\n4. Replication\n5. Sharding / Partitioning\n6. Connection pooling\n7. Cache 策略\n8. 監控 + slow query\n9. Backup + DR\n10. Migration\n\n## 三個目標\n- **快**：response < 100ms\n- **穩**：99.9% uptime\n- **省**：cost-effective\n\n## 學習路線\n- Year 1：SQL + Index 熟練\n- Year 2：EXPLAIN ANALYZE、Transaction\n- Year 3：Replication、效能調優\n- Year 4：分散式、HA",
+      "tip": {
+        "type": "milestone",
+        "text": "DB 是 backend 命脈、學透 PG 可以走天下。"
+      },
+      "id": "19.1",
+      "number": "LESSON 19.1",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "19.1.auto",
+          "language": "sql",
+          "title": "試試看",
+          "initialCode": "-- 建表 + 插資料 + 查詢\nCREATE TABLE users (\n  id INTEGER PRIMARY KEY,\n  name TEXT,\n  xp INTEGER\n);\n\nINSERT INTO users VALUES (1, 'Luffysky', 1500);\nINSERT INTO users VALUES (2, 'Nami', 1200);\nINSERT INTO users VALUES (3, 'Sanji', 800);\n\nSELECT name, xp FROM users\nWHERE xp > 1000\nORDER BY xp DESC;",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "挑一個你做過的舊專案、用本節「DB 進階總圖」介紹的進階技術重構它。",
+        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
+        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "進階主題"
+        },
+        {
+          "level": 2,
+          "text": "三個目標"
+        },
+        {
+          "level": 2,
+          "text": "學習路線"
+        }
+      ]
+    },
+    {
+      "title": "Index 深入：B-tree / GIN / GiST",
+      "oneLineSummary": "不同 index 適合不同 query",
+      "analogy": "加錯 index = 慢、佔空間、寫入更慢。",
+      "content": "## B-tree（預設）\n最常用、`=`、`<`、`>`、`BETWEEN`、`ORDER BY`：\n```sql\nCREATE INDEX idx_users_email ON users (email);\nCREATE INDEX idx_posts_user_created ON posts (user_id, created_at DESC);\n```\n\n## Composite Index 順序很重要\n```sql\nCREATE INDEX idx ON orders (user_id, status, created_at);\n```\n\n可加速：\n- `WHERE user_id = ?`\n- `WHERE user_id = ? AND status = ?`\n- `WHERE user_id = ? AND status = ? AND created_at > ?`\n\n無效：\n- `WHERE status = ?`（跳過第一個欄位）\n\n## GIN（陣列、JSONB、全文搜尋）\n```sql\nCREATE INDEX idx_posts_tags ON posts USING GIN (tags);\nCREATE INDEX idx_users_meta ON users USING GIN (metadata);\n\n-- 用\nSELECT * FROM posts WHERE tags @> ARRAY['python'];\nSELECT * FROM users WHERE metadata->>'plan' = 'pro';\n```\n\n## GiST（geometry、range）\n```sql\nCREATE INDEX idx_events_during ON events USING GIST (during);\nCREATE INDEX idx_places ON places USING GIST (location);\n```\n\n## Partial Index\n只 index 部分資料、超省空間：\n```sql\nCREATE INDEX idx_active_users ON users (email)\nWHERE is_active = true;\n```\n\n## Expression Index\n```sql\nCREATE INDEX idx_users_lower_email ON users (LOWER(email));\n\n-- 用\nSELECT * FROM users WHERE LOWER(email) = 'alice@example.com';\n```\n\n## Unique Index\n```sql\nCREATE UNIQUE INDEX idx_users_email ON users (email);\n```\n\n## 何時不該 index\n- 表太小（< 1000 rows）\n- 寫多讀少\n- 欄位值分布不均（如布林）\n- 已經有其他 index 涵蓋\n\n## 監控 unused index\n```sql\nSELECT schemaname, tablename, indexname, idx_scan\nFROM pg_stat_user_indexes\nWHERE idx_scan = 0\nORDER BY pg_relation_size(indexrelid) DESC;\n```\n\n## 心法\n- WHERE / JOIN / ORDER BY 欄位加 index\n- 不要 over-indexing（寫入變慢）\n- composite 順序看 query\n- 定期清 unused",
+      "tip": {
+        "type": "performance",
+        "text": "99% 慢 query 加對 index 就快。"
+      },
+      "id": "19.2",
+      "number": "LESSON 19.2",
+      "xp": 15,
+      "playgrounds": [
+        {
+          "key": "19.2.auto",
+          "language": "sql",
+          "title": "試試看",
+          "initialCode": "CREATE INDEX idx_users_email ON users (email);\nCREATE INDEX idx_posts_user_created ON posts (user_id, created_at DESC);",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "挑一個你做過的舊專案、用本節「Index 深入：B-tree / GIN / GiST」介紹的進階技術重構它。",
+        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（BETWEEN、ORDER BY、WHERE user_id = ?、WHERE user_id = ? AND status = ?）通常在效能 / 維護性 / 擴展性卡住時才登場。",
+        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "B-tree（預設）"
+        },
+        {
+          "level": 2,
+          "text": "Composite Index 順序很重要"
+        },
+        {
+          "level": 2,
+          "text": "GIN（陣列、JSONB、全文搜尋）"
+        },
+        {
+          "level": 2,
+          "text": "GiST（geometry、range）"
+        },
+        {
+          "level": 2,
+          "text": "Partial Index"
+        },
+        {
+          "level": 2,
+          "text": "Expression Index"
+        },
+        {
+          "level": 2,
+          "text": "Unique Index"
+        },
+        {
+          "level": 2,
+          "text": "何時不該 index"
+        },
+        {
+          "level": 2,
+          "text": "監控 unused index"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "EXPLAIN ANALYZE：找慢 query",
+      "oneLineSummary": "Query plan = DB 怎麼跑你的 SQL",
+      "analogy": "不會看 EXPLAIN = 不會調效能。",
+      "content": "## 基本\n```sql\nEXPLAIN ANALYZE\nSELECT * FROM orders WHERE user_id = 'u1';\n```\n\n輸出：\n```\nIndex Scan using idx_orders_user_id on orders\n  (cost=0.42..8.44 rows=1 width=64)\n  (actual time=0.025..0.027 rows=2 loops=1)\nPlanning Time: 0.123 ms\nExecution Time: 0.045 ms\n```\n\n## 看什麼\n\n### Seq Scan（紅旗）\n全表掃描、表大就慢：\n```\nSeq Scan on orders (cost=0..100 rows=10000)\n```\n→ 加 index。\n\n### Index Scan（好）\n```\nIndex Scan using idx_orders_user_id on orders\n```\n\n### Index Only Scan（最好）\n只讀 index、不碰 table：\n```\nIndex Only Scan\n```\n\n### Bitmap Index Scan\n多 index 組合。\n\n### Nested Loop / Hash Join / Merge Join\nJOIN 演算法、看資料量自動選。\n\n## cost vs actual\n- `cost=0..100` 估計\n- `actual time=0.025..0.027` 實際\n\n若 estimate 跟 actual 差很多 → ANALYZE 表（更新統計）：\n```sql\nANALYZE orders;\n```\n\n## rows\n估計回幾筆。\n若估錯 → query planner 選錯 index。\n\n## 找慢 query\n\n### PG slow query log\n```\nlog_min_duration_statement = 1000  # 超過 1 秒記\n```\n\n### pg_stat_statements\n```sql\nCREATE EXTENSION pg_stat_statements;\n\nSELECT query, calls, total_exec_time, mean_exec_time\nFROM pg_stat_statements\nORDER BY total_exec_time DESC\nLIMIT 20;\n```\n\n## 工具\n- pgAdmin（圖形化 EXPLAIN）\n- explain.dalibo.com（線上）\n- pgMustard（AI 建議）\n\n## 優化步驟\n1. EXPLAIN ANALYZE 看 plan\n2. 找 Seq Scan / 高 cost\n3. 加對的 index\n4. 重跑 EXPLAIN ANALYZE\n5. 確認改善\n\n## 常見 anti-pattern\n```sql\n-- ❌ Function on indexed column（index 失效）\nWHERE LOWER(email) = '...'\n\n-- ✅\nCREATE INDEX idx ON users (LOWER(email));\n\n-- ❌ LIKE %x%（無法用 index）\nWHERE name LIKE '%alice%'\n\n-- ✅ 用全文搜尋\nWHERE to_tsvector('english', name) @@ to_tsquery('alice');\n\n-- ❌ OR\nWHERE id = 1 OR id = 2\n\n-- ✅ IN\nWHERE id IN (1, 2)\n```",
+      "tip": {
+        "type": "performance",
+        "text": "EXPLAIN ANALYZE 是 DB 工程師命脈。"
+      },
+      "id": "19.3",
+      "number": "LESSON 19.3",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "19.3.auto",
+          "language": "sql",
+          "title": "試試看",
+          "initialCode": "EXPLAIN ANALYZE\nSELECT * FROM orders WHERE user_id = 'u1';",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 9 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "基本"
+        },
+        {
+          "level": 2,
+          "text": "看什麼"
+        },
+        {
+          "level": 3,
+          "text": "Seq Scan（紅旗）"
+        },
+        {
+          "level": 3,
+          "text": "Index Scan（好）"
+        },
+        {
+          "level": 3,
+          "text": "Index Only Scan（最好）"
+        },
+        {
+          "level": 3,
+          "text": "Bitmap Index Scan"
+        },
+        {
+          "level": 3,
+          "text": "Nested Loop / Hash Join / Merge Join"
+        },
+        {
+          "level": 2,
+          "text": "cost vs actual"
+        },
+        {
+          "level": 2,
+          "text": "rows"
+        },
+        {
+          "level": 2,
+          "text": "找慢 query"
+        },
+        {
+          "level": 3,
+          "text": "PG slow query log"
+        },
+        {
+          "level": 3,
+          "text": "pgstatstatements"
+        },
+        {
+          "level": 2,
+          "text": "工具"
+        },
+        {
+          "level": 2,
+          "text": "優化步驟"
+        },
+        {
+          "level": 2,
+          "text": "常見 anti-pattern"
+        }
+      ]
+    },
+    {
+      "title": "Transaction + Isolation Levels",
+      "oneLineSummary": "多筆操作要嘛全成、要嘛全敗",
+      "analogy": "金流 / 庫存必懂。",
+      "content": "## ACID\n- **Atomicity**：原子性（全成或全敗）\n- **Consistency**：一致性\n- **Isolation**：隔離性（並發不互相影響）\n- **Durability**：持久性\n\n## 基本\n```sql\nBEGIN;\nUPDATE accounts SET balance = balance - 100 WHERE id = 1;\nUPDATE accounts SET balance = balance + 100 WHERE id = 2;\nCOMMIT;\n\n-- 出錯\nROLLBACK;\n```\n\n## Node + PG\n```javascript\nawait pool.query(\"BEGIN\");\ntry {\n  await pool.query(\"UPDATE accounts SET balance = balance - $1 WHERE id = $2\", [100, 1]);\n  await pool.query(\"UPDATE accounts SET balance = balance + $1 WHERE id = $2\", [100, 2]);\n  await pool.query(\"COMMIT\");\n} catch (err) {\n  await pool.query(\"ROLLBACK\");\n  throw err;\n}\n```\n\n## Prisma Transaction\n```typescript\nawait prisma.$transaction(async (tx) => {\n  await tx.account.update({ where: { id: 1 }, data: { balance: { decrement: 100 } } });\n  await tx.account.update({ where: { id: 2 }, data: { balance: { increment: 100 } } });\n});\n```\n\n## Isolation Levels\n\n### Read Uncommitted（最弱、不要）\n看到未 commit 的資料（dirty read）。\n\n### Read Committed（PG 預設）\n只看到 committed。\n仍有 non-repeatable read（同 transaction 內讀兩次不同）。\n\n### Repeatable Read\n同 transaction 多次讀一致。\n仍有 phantom read（範圍查詢看到新 row）。\n\n### Serializable（最強）\n完全序列化、像 transaction 一個一個跑。\n慢、可能 conflict。\n\n## 設定\n```sql\nBEGIN ISOLATION LEVEL REPEATABLE READ;\n-- ...\nCOMMIT;\n```\n\n## 並發問題\n\n### Lost Update\n```\nT1: SELECT balance → 100\nT2: SELECT balance → 100\nT1: UPDATE balance = 100 + 50\nT2: UPDATE balance = 100 + 30\n最終：130（T1 的 50 不見）\n```\n\n解法：\n- `SELECT ... FOR UPDATE`（鎖）\n- Optimistic locking（version 欄位）\n\n### Deadlock\nT1 等 T2、T2 等 T1。\nPG 自動偵測、kill 一個。\n\n## SELECT FOR UPDATE\n```sql\nBEGIN;\nSELECT balance FROM accounts WHERE id = 1 FOR UPDATE;\n-- 鎖住 row、其他 transaction 等\nUPDATE accounts SET balance = balance - 100 WHERE id = 1;\nCOMMIT;\n```\n\n## Optimistic Locking\n```sql\nUPDATE posts SET content = '...', version = version + 1\nWHERE id = $1 AND version = $2;\n\n-- 影響 0 row = 別人改過、重試\n```\n\n## 心法\n- 短 transaction\n- 不在 transaction 內做 IO（call API / 等 user）\n- 高並發場景用 optimistic\n- 金融用 SELECT FOR UPDATE",
+      "tip": {
+        "type": "security",
+        "text": "金流 / 庫存沒 transaction = 必出事。"
+      },
+      "id": "19.4",
+      "number": "LESSON 19.4",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "19.4.auto",
+          "language": "sql",
+          "title": "試試看",
+          "initialCode": "BEGIN;\nUPDATE accounts SET balance = balance - 100 WHERE id = 1;\nUPDATE accounts SET balance = balance + 100 WHERE id = 2;\nCOMMIT;\n\n-- 出錯\nROLLBACK;",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "ACID"
+        },
+        {
+          "level": 2,
+          "text": "基本"
+        },
+        {
+          "level": 2,
+          "text": "Node + PG"
+        },
+        {
+          "level": 2,
+          "text": "Prisma Transaction"
+        },
+        {
+          "level": 2,
+          "text": "Isolation Levels"
+        },
+        {
+          "level": 3,
+          "text": "Read Uncommitted（最弱、不要）"
+        },
+        {
+          "level": 3,
+          "text": "Read Committed（PG 預設）"
+        },
+        {
+          "level": 3,
+          "text": "Repeatable Read"
+        },
+        {
+          "level": 3,
+          "text": "Serializable（最強）"
+        },
+        {
+          "level": 2,
+          "text": "設定"
+        },
+        {
+          "level": 2,
+          "text": "並發問題"
+        },
+        {
+          "level": 3,
+          "text": "Lost Update"
+        },
+        {
+          "level": 3,
+          "text": "Deadlock"
+        },
+        {
+          "level": 2,
+          "text": "SELECT FOR UPDATE"
+        },
+        {
+          "level": 2,
+          "text": "Optimistic Locking"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Replication：讀寫分離 + HA",
+      "oneLineSummary": "一台撐不住、用多台",
+      "analogy": "99.9% uptime 需要 replication。",
+      "content": "## 為什麼\n- **效能**：讀分散到 replica\n- **HA**：主掛了切 replica\n- **備份**：replica 就是即時備份\n- **跨地區**：低延遲\n\n## Master-Slave（Primary-Replica）\n```\nWrite → Primary → Replicate → Replica 1\n                            → Replica 2\nRead  → Primary / Replica\n```\n\n## PG 設定\n`postgresql.conf`（primary）：\n```\nwal_level = replica\nmax_wal_senders = 10\n```\n\n`pg_hba.conf`：\n```\nhost replication replicator 10.0.0.0/24 md5\n```\n\nReplica 上：\n```bash\npg_basebackup -h primary -U replicator -D /var/lib/postgresql/data -R\n```\n\n## 程式分流\n```typescript\nconst primary = new Pool({ host: \"primary.db\" });\nconst replica = new Pool({ host: \"replica.db\" });\n\n// 寫\nawait primary.query(\"INSERT INTO ...\");\n\n// 讀\nawait replica.query(\"SELECT * FROM ...\");\n```\n\n⚠️ Replica lag：剛寫的可能 replica 還沒同步、讀不到。\n\n## Lag 處理\n```typescript\n// 寫完立刻讀 → 用 primary\nawait primary.query(\"INSERT INTO posts ...\");\nconst posts = await primary.query(\"SELECT * FROM posts WHERE id = ?\");\n\n// 不在意一致性 → 用 replica\nconst allPosts = await replica.query(\"SELECT * FROM posts\");\n```\n\n## Failover\nPrimary 掛了：\n1. 偵測（health check）\n2. Promote replica 變 primary\n3. 改 DNS / connection string\n4. App 重連\n\n工具：\n- **Patroni**（PG HA）\n- **pgPool-II**\n- **AWS RDS Multi-AZ**（自動）\n- **Supabase**（內建）\n\n## Multi-Master（雙寫）\n進階、複雜：\n- BDR\n- Galera Cluster\n- CockroachDB / YugabyteDB\n\n99% 不需要。\n\n## 雲端方案\n\n### AWS RDS\n- Multi-AZ：自動 failover\n- Read Replicas：5 個\n- Cross-region replica\n\n### Cloud SQL（GCP）\n- HA 自動\n- Read replicas\n\n### Supabase\n- 自動 backup\n- Read replicas（Pro 以上）\n\n## 監控 lag\n```sql\nSELECT\n  pg_last_wal_receive_lsn() - pg_last_wal_replay_lsn() AS lag_bytes,\n  EXTRACT(EPOCH FROM now() - pg_last_xact_replay_timestamp()) AS lag_seconds;\n```\n\n警報：lag > 5s。\n\n## 心法\n- 小 SaaS：單 primary + daily backup 夠\n- 中型：Primary + 1 Replica\n- 大型：Multi-region\n- 不要過早 over-engineering",
+      "tip": {
+        "type": "milestone",
+        "text": "Indie 用 Supabase / RDS、replication 託管。"
+      },
+      "id": "19.5",
+      "number": "LESSON 19.5",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "19.5.auto",
+          "language": "sql",
+          "title": "試試看",
+          "initialCode": "SELECT\n  pg_last_wal_receive_lsn() - pg_last_wal_replay_lsn() AS lag_bytes,\n  EXTRACT(EPOCH FROM now() - pg_last_xact_replay_timestamp()) AS lag_seconds;",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼"
+        },
+        {
+          "level": 2,
+          "text": "Master-Slave（Primary-Replica）"
+        },
+        {
+          "level": 2,
+          "text": "PG 設定"
+        },
+        {
+          "level": 2,
+          "text": "程式分流"
+        },
+        {
+          "level": 2,
+          "text": "Lag 處理"
+        },
+        {
+          "level": 2,
+          "text": "Failover"
+        },
+        {
+          "level": 2,
+          "text": "Multi-Master（雙寫）"
+        },
+        {
+          "level": 2,
+          "text": "雲端方案"
+        },
+        {
+          "level": 3,
+          "text": "AWS RDS"
+        },
+        {
+          "level": 3,
+          "text": "Cloud SQL（GCP）"
+        },
+        {
+          "level": 3,
+          "text": "Supabase"
+        },
+        {
+          "level": 2,
+          "text": "監控 lag"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Sharding / Partitioning",
+      "oneLineSummary": "一個表 1 億筆 → 切多塊",
+      "analogy": "巨大 SaaS 才需要、Indie 用不到。",
+      "content": "## Partitioning（同 DB）\nPG 內建、自動分 partition：\n\n### Range Partition\n```sql\nCREATE TABLE logs (\n  id BIGSERIAL,\n  created_at TIMESTAMPTZ\n) PARTITION BY RANGE (created_at);\n\nCREATE TABLE logs_2026_01 PARTITION OF logs\nFOR VALUES FROM ('2026-01-01') TO ('2026-02-01');\n\nCREATE TABLE logs_2026_02 PARTITION OF logs\nFOR VALUES FROM ('2026-02-01') TO ('2026-03-01');\n```\n\n查詢自動只掃對應 partition。\n\n### List Partition\n```sql\nCREATE TABLE users PARTITION BY LIST (country);\n\nCREATE TABLE users_tw PARTITION OF users FOR VALUES IN ('TW');\nCREATE TABLE users_us PARTITION OF users FOR VALUES IN ('US');\n```\n\n### Hash Partition\n```sql\nCREATE TABLE orders PARTITION BY HASH (user_id);\n\nCREATE TABLE orders_0 PARTITION OF orders FOR VALUES WITH (modulus 4, remainder 0);\n-- ... orders_1, orders_2, orders_3\n```\n\n### 自動 partition（pg_partman）\n```sql\nSELECT partman.create_parent(\n  'public.logs',\n  'created_at',\n  'native',\n  'monthly'\n);\n```\n\n每月自動建新 partition。\n\n## Sharding（跨 DB）\n資料分到不同 server。\n\n### 手動\n```typescript\nfunction getShardId(userId) {\n  return hash(userId) % NUM_SHARDS;\n}\n\nconst shardDb = shards[getShardId(userId)];\nawait shardDb.query(\"...\");\n```\n\n### Citus（PG extension）\n分散式 PG：\n```sql\nSELECT create_distributed_table('users', 'user_id');\n```\n\n### CockroachDB\n分散式 SQL、自動 shard。\n\n### Vitess（MySQL）\nYouTube / Slack / GitHub 用。\n\n## 何時 partition / shard\n\n### Partition\n- 單表 > 10GB\n- 按時間 / 地區 / 客戶查\n- 想要刪舊資料快\n\n### Shard\n- 單 DB 撐不住\n- 100M+ users\n- 巨大 SaaS\n\n## 取捨\n- Sharding 複雜度爆增（JOIN 跨 shard 難）\n- 永遠先 vertical scale（升 server）\n- 再 partition\n- 最後 shard\n\n## Indie 何時碰\n- 永遠別碰 sharding\n- Partition 表 > 10GB 才考慮\n- 90% Indie 永遠不需要\n\n## 心法\n- 你不是 FB / Google、別過早優化\n- PG 一台撐 100k DAU 沒問題\n- 撞牆再考慮",
+      "tip": {
+        "type": "practical",
+        "text": "99% Indie 永遠不需要 sharding。"
+      },
+      "id": "19.6",
+      "number": "LESSON 19.6",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "19.6.auto",
+          "language": "sql",
+          "title": "試試看",
+          "initialCode": "CREATE TABLE logs (\n  id BIGSERIAL,\n  created_at TIMESTAMPTZ\n) PARTITION BY RANGE (created_at);\n\nCREATE TABLE logs_2026_01 PARTITION OF logs\nFOR VALUES FROM ('2026-01-01') TO ('2026-02-01');\n\nCREATE TABLE logs_2026_02 PARTITION OF logs\nFOR VALUES FROM ('2026-02-01') TO ('2026-03-01');",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "Partitioning（同 DB）"
+        },
+        {
+          "level": 3,
+          "text": "Range Partition"
+        },
+        {
+          "level": 3,
+          "text": "List Partition"
+        },
+        {
+          "level": 3,
+          "text": "Hash Partition"
+        },
+        {
+          "level": 3,
+          "text": "自動 partition（pgpartman）"
+        },
+        {
+          "level": 2,
+          "text": "Sharding（跨 DB）"
+        },
+        {
+          "level": 3,
+          "text": "手動"
+        },
+        {
+          "level": 3,
+          "text": "Citus（PG extension）"
+        },
+        {
+          "level": 3,
+          "text": "CockroachDB"
+        },
+        {
+          "level": 3,
+          "text": "Vitess（MySQL）"
+        },
+        {
+          "level": 2,
+          "text": "何時 partition / shard"
+        },
+        {
+          "level": 3,
+          "text": "Partition"
+        },
+        {
+          "level": 3,
+          "text": "Shard"
+        },
+        {
+          "level": 2,
+          "text": "取捨"
+        },
+        {
+          "level": 2,
+          "text": "Indie 何時碰"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Connection Pooling",
+      "oneLineSummary": "每次 new connection 巨慢、Pool 重用快 100 倍",
+      "analogy": "不設 pool = 撐不過 100 並發。",
+      "content": "## 為什麼\n- TCP handshake 慢\n- DB 建 process 慢\n- PG max_connections 有限（預設 100）\n\n## Node + PG\n```javascript\nimport pg from \"pg\";\n\nconst pool = new pg.Pool({\n  host: \"...\",\n  database: \"...\",\n  max: 20,\n  idleTimeoutMillis: 30000,\n  connectionTimeoutMillis: 2000\n});\n\nconst result = await pool.query(\"SELECT * FROM users WHERE id = $1\", [1]);\n```\n\n## Pool size 公式\n`((core_count * 2) + effective_spindle_count)`\n\n實務：\n- 小 app：10-20\n- 中型：50-100\n- 大型：100-500\n\n## Serverless 痛點\nLambda / Vercel 每次 cold start 新 pool = 浪費。\n\n解：**PgBouncer / Supabase pooler**（port 6543）。\n\n## PgBouncer\n```ini\n# pgbouncer.ini\n[databases]\nmydb = host=localhost port=5432 dbname=mydb\n\n[pgbouncer]\nlisten_port = 6432\npool_mode = transaction  # 或 session / statement\nmax_client_conn = 1000\ndefault_pool_size = 20\n```\n\nApp 連 PgBouncer（不直接連 PG）：\n```\nDATABASE_URL=postgresql://user:pass@pgbouncer:6432/mydb\n```\n\nPgBouncer 維護 20 個真連線、給 1000 個 app 用。\n\n## Pool Mode\n- **session**：1 client = 1 server connection（連著到 client 斷）\n- **transaction**：1 transaction = 1 connection（不能用 prepared statement、session var）\n- **statement**：每 statement 一個（最省、限制最多）\n\nServerless 通常 transaction mode。\n\n## Prisma + PgBouncer\n```env\nDATABASE_URL=postgresql://...?pgbouncer=true&connection_limit=1\n```\n\nPrisma 偵測 pgbouncer 不用 prepared statement。\n\n## Supabase 內建\n- Port 5432：direct（不 pool）\n- Port 6543：pooler\n\nServerless 用 6543。\n\n## Monitor\n```sql\nSELECT count(*) FROM pg_stat_activity;\n```\n\n看：\n- 多少連線\n- 多少 active / idle\n- 哪個 query 阻塞\n\n## 心法\n- Indie：max 20-50 OK\n- Serverless：必用 PgBouncer / pooler\n- 永遠 connectionTimeout（避免無限等）\n- 監控連線數",
+      "tip": {
+        "type": "performance",
+        "text": "Production 沒 connection pool = 撐不過 100 並發。"
+      },
+      "id": "19.7",
+      "number": "LESSON 19.7",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "19.7.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "import pg from \"pg\";\n\nconst pool = new pg.Pool({\n  host: \"...\",\n  database: \"...\",\n  max: 20,\n  idleTimeoutMillis: 30000,\n  connectionTimeoutMillis: 2000\n});\n\nconst result = await pool.query(\"SELECT * FROM users WHERE id = $1\", [1]);",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼"
+        },
+        {
+          "level": 2,
+          "text": "Node + PG"
+        },
+        {
+          "level": 2,
+          "text": "Pool size 公式"
+        },
+        {
+          "level": 2,
+          "text": "Serverless 痛點"
+        },
+        {
+          "level": 2,
+          "text": "PgBouncer"
+        },
+        {
+          "level": 2,
+          "text": "Pool Mode"
+        },
+        {
+          "level": 2,
+          "text": "Prisma + PgBouncer"
+        },
+        {
+          "level": 2,
+          "text": "Supabase 內建"
+        },
+        {
+          "level": 2,
+          "text": "Monitor"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Cache 策略：Redis + 多層",
+      "oneLineSummary": "DB 慢、cache 快 100 倍",
+      "analogy": "正確設計 cache 是效能關鍵。",
+      "content": "## Cache 層級\n\n### 1. Browser cache\nHTTP header：`Cache-Control: max-age=3600`\n\n### 2. CDN cache\nCloudflare / Vercel Edge。\n\n### 3. App cache\nin-memory（Map / LRU）。\n\n### 4. Redis（共享）\n跨 instance 共享。\n\n### 5. DB cache\nPG shared_buffers。\n\n## Redis 基本\n```javascript\nimport Redis from \"ioredis\";\nconst redis = new Redis(process.env.REDIS_URL);\n\nawait redis.set(\"user:1\", JSON.stringify(user), \"EX\", 3600);\nconst data = await redis.get(\"user:1\");\nawait redis.del(\"user:1\");\n```\n\n## Cache Aside（最常用）\n```typescript\nasync function getUser(id) {\n  // 1. 試 cache\n  const cached = await redis.get(`user:${id}`);\n  if (cached) return JSON.parse(cached);\n  \n  // 2. 沒 → DB\n  const user = await db.user.findUnique({ where: { id } });\n  \n  // 3. 寫 cache\n  await redis.set(`user:${id}`, JSON.stringify(user), \"EX\", 3600);\n  \n  return user;\n}\n```\n\n## Write Through\n寫 DB 同時寫 cache：\n```typescript\nasync function updateUser(id, data) {\n  await db.user.update({ where: { id }, data });\n  await redis.set(`user:${id}`, JSON.stringify({ id, ...data }), \"EX\", 3600);\n}\n```\n\n## Write Behind\n先寫 cache、背景 flush DB（複雜、有遺失風險）。\n\n## Invalidation\n寫入後刪 cache：\n```typescript\nasync function updateUser(id, data) {\n  await db.user.update({ where: { id }, data });\n  await redis.del(`user:${id}`);\n}\n```\n\n## TTL 策略\n- 不變資料：1 天 (86400)\n- 用戶設定：1 小時\n- API response：5 分鐘\n- 即時資料：10 秒\n\n## Stampede（重複 fetch）\n1000 個 user 同時找 cache miss → 1000 個 DB query。\n\n解：\n```typescript\nconst locks = new Map();\n\nasync function getCached(key, fetcher) {\n  const cached = await redis.get(key);\n  if (cached) return JSON.parse(cached);\n  \n  // 同 key 只 1 個 fetch\n  if (locks.has(key)) return locks.get(key);\n  \n  const promise = fetcher().then(data => {\n    redis.set(key, JSON.stringify(data), \"EX\", 3600);\n    locks.delete(key);\n    return data;\n  });\n  \n  locks.set(key, promise);\n  return promise;\n}\n```\n\n## Cache key 設計\n```\nuser:123\nuser:123:posts\nposts:hot:2026-05-17\n```\n\n清晰、可預期、易 invalidate。\n\n## Tag-based invalidation\n```typescript\nawait redis.set(`post:123`, data);\nawait redis.sadd(`user:1:posts`, 123);\n\n// 刪 user 所有 posts cache\nconst ids = await redis.smembers(`user:1:posts`);\nawait redis.del(...ids.map(id => `post:${id}`));\n```\n\n## React Query（前端 cache）\n```typescript\nconst queryClient = new QueryClient({\n  defaultOptions: {\n    queries: {\n      staleTime: 5 * 60 * 1000,\n      gcTime: 60 * 60 * 1000\n    }\n  }\n});\n```\n\n## 心法\n- 不是所有東西都要 cache\n- 算「cache hit ratio」、目標 > 80%\n- TTL 短一點（資料新）\n- Invalidation 是難題（多想想）",
+      "tip": {
+        "type": "performance",
+        "text": "正確的 cache = DB 負擔降 90%。"
+      },
+      "id": "19.8",
+      "number": "LESSON 19.8",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "19.8.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "import Redis from \"ioredis\";\nconst redis = new Redis(process.env.REDIS_URL);\n\nawait redis.set(\"user:1\", JSON.stringify(user), \"EX\", 3600);\nconst data = await redis.get(\"user:1\");\nawait redis.del(\"user:1\");",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "把本節「Cache 策略：Redis + 多層」的核心心法、轉成一個具體的「我今天 / 這週要做」的小行動。",
+        "hint": "心法 ≠ 知識、心法要落地。「我從今天起、每天 ___」這種格式。",
+        "answer": "好行動 = 小（5-10 分鐘以內）+ 具體（不模糊）+ 可量化（有沒有做得出來）。例：『每天起床先列 3 件最重要的事再開電腦』比『更專注』可執行 100 倍。配合 streak（連續紀錄）讓自己上癮。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "Cache 層級"
+        },
+        {
+          "level": 3,
+          "text": "1. Browser cache"
+        },
+        {
+          "level": 3,
+          "text": "2. CDN cache"
+        },
+        {
+          "level": 3,
+          "text": "3. App cache"
+        },
+        {
+          "level": 3,
+          "text": "4. Redis（共享）"
+        },
+        {
+          "level": 3,
+          "text": "5. DB cache"
+        },
+        {
+          "level": 2,
+          "text": "Redis 基本"
+        },
+        {
+          "level": 2,
+          "text": "Cache Aside（最常用）"
+        },
+        {
+          "level": 2,
+          "text": "Write Through"
+        },
+        {
+          "level": 2,
+          "text": "Write Behind"
+        },
+        {
+          "level": 2,
+          "text": "Invalidation"
+        },
+        {
+          "level": 2,
+          "text": "TTL 策略"
+        },
+        {
+          "level": 2,
+          "text": "Stampede（重複 fetch）"
+        },
+        {
+          "level": 2,
+          "text": "Cache key 設計"
+        },
+        {
+          "level": 2,
+          "text": "Tag-based invalidation"
+        },
+        {
+          "level": 2,
+          "text": "React Query（前端 cache）"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "慢查詢監控 + 調優",
+      "oneLineSummary": "上線後找慢 query、優化",
+      "analogy": "別等用戶抱怨。",
+      "content": "## 啟用 slow query log\nPG `postgresql.conf`：\n```\nlog_min_duration_statement = 1000  # 超過 1 秒記\nlog_statement = 'mod'\nlog_duration = on\n```\n\n重啟生效。\n\n## pg_stat_statements\n```sql\nCREATE EXTENSION pg_stat_statements;\n\nSELECT \n  query,\n  calls,\n  total_exec_time,\n  mean_exec_time,\n  rows\nFROM pg_stat_statements\nORDER BY total_exec_time DESC\nLIMIT 20;\n```\n\n看：\n- 哪些 query 總時間最長\n- 哪些 query 跑最多次\n- 哪些 query 慢\n\n## 找出慢 query\n\n### Top time consumers\n```sql\nSELECT\n  query,\n  total_exec_time::numeric(10,2) AS total_ms,\n  calls,\n  mean_exec_time::numeric(10,2) AS mean_ms\nFROM pg_stat_statements\nORDER BY total_exec_time DESC\nLIMIT 10;\n```\n\n### 高 mean time（單次慢）\n```sql\nSELECT ...\nFROM pg_stat_statements\nWHERE calls > 100\nORDER BY mean_exec_time DESC;\n```\n\n### 高 calls（call 太多次）\n```sql\nSELECT ...\nFROM pg_stat_statements\nORDER BY calls DESC;\n```\n通常 N+1 problem。\n\n## 監控工具\n- **pganalyze**（PG 專業）\n- **Datadog DB Monitoring**\n- **AWS RDS Performance Insights**\n- **Better Stack DB**\n\n自動找慢 query + 給建議。\n\n## 常見問題\n\n### 1. Missing index\n```sql\nEXPLAIN ANALYZE SELECT * FROM orders WHERE user_id = 'u1';\n-- Seq Scan → 加 index\nCREATE INDEX idx_orders_user_id ON orders (user_id);\n```\n\n### 2. N+1\n```javascript\n// ❌\nfor (const user of users) {\n  user.posts = await db.posts.findMany({ where: { userId: user.id } });\n}\n\n// ✅\nconst users = await prisma.user.findMany({ include: { posts: true } });\n```\n\n### 3. SELECT *\n```sql\n-- ❌\nSELECT * FROM posts;\n\n-- ✅\nSELECT id, title FROM posts;\n```\n\n### 4. OR\n```sql\n-- ❌ index 可能不用\nSELECT * FROM users WHERE email = ? OR phone = ?;\n\n-- ✅ UNION\nSELECT * FROM users WHERE email = ?\nUNION\nSELECT * FROM users WHERE phone = ?;\n```\n\n### 5. OFFSET 大\n```sql\n-- ❌\nSELECT * FROM posts ORDER BY id LIMIT 20 OFFSET 100000;\n\n-- ✅ Cursor\nSELECT * FROM posts WHERE id > $lastId ORDER BY id LIMIT 20;\n```\n\n### 6. ANALYZE 過期\n```sql\nANALYZE orders;  -- 更新 query planner 統計\n```\n\n## Vacuum\n```sql\nVACUUM ANALYZE orders;  -- 清死 row + 更新統計\n```\n\nAutovacuum 預設開、可調 aggressive。\n\n## 心法\n- 上線 Day 1 開 slow query log\n- 月看 pg_stat_statements\n- 找 top 10 慢 query 優化\n- 不要等用戶抱怨",
+      "tip": {
+        "type": "milestone",
+        "text": "Slow query log + pg_stat_statements = DB 工程師日常。"
+      },
+      "id": "19.9",
+      "number": "LESSON 19.9",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "19.9.auto",
+          "language": "sql",
+          "title": "試試看",
+          "initialCode": "CREATE EXTENSION pg_stat_statements;\n\nSELECT \n  query,\n  calls,\n  total_exec_time,\n  mean_exec_time,\n  rows\nFROM pg_stat_statements\nORDER BY total_exec_time DESC\nLIMIT 20;",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 12 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "啟用 slow query log"
+        },
+        {
+          "level": 2,
+          "text": "pgstatstatements"
+        },
+        {
+          "level": 2,
+          "text": "找出慢 query"
+        },
+        {
+          "level": 3,
+          "text": "Top time consumers"
+        },
+        {
+          "level": 3,
+          "text": "高 mean time（單次慢）"
+        },
+        {
+          "level": 3,
+          "text": "高 calls（call 太多次）"
+        },
+        {
+          "level": 2,
+          "text": "監控工具"
+        },
+        {
+          "level": 2,
+          "text": "常見問題"
+        },
+        {
+          "level": 3,
+          "text": "1. Missing index"
+        },
+        {
+          "level": 3,
+          "text": "2. N+1"
+        },
+        {
+          "level": 3,
+          "text": "3. SELECT "
+        },
+        {
+          "level": 3,
+          "text": "4. OR"
+        },
+        {
+          "level": 3,
+          "text": "5. OFFSET 大"
+        },
+        {
+          "level": 3,
+          "text": "6. ANALYZE 過期"
+        },
+        {
+          "level": 2,
+          "text": "Vacuum"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Database Migration 策略",
+      "oneLineSummary": "不只 schema 改、要 zero-downtime",
+      "analogy": "Production migration 出錯 = 災難。",
+      "content": "## Migration 工具\n\n### Prisma Migrate\n```bash\nnpx prisma migrate dev --name add_user_role\nnpx prisma migrate deploy  # prod\n```\n\n### Drizzle Kit\n```bash\nnpx drizzle-kit generate\nnpx drizzle-kit migrate\n```\n\n### Flyway / Liquibase（Java / 多語言）\n\n### TypeORM / Sequelize\nJS 老牌、各有 migration CLI。\n\n## Migration 寫法\n\n### Auto-generated（推薦）\n工具 diff 你的 schema 跟 DB、自動產生 SQL。\n\n### Manual\n```sql\n-- migrations/20260517_add_user_role.sql\nBEGIN;\nALTER TABLE users ADD COLUMN role TEXT DEFAULT 'member';\nCREATE INDEX idx_users_role ON users(role);\nCOMMIT;\n```\n\n## Zero-Downtime Migration\n\n### 危險動作\n- ❌ DROP COLUMN（舊 code 還在跑）\n- ❌ RENAME COLUMN\n- ❌ Add NOT NULL constraint without default\n- ❌ Change column type\n\n### 安全 pattern：Expand-Migrate-Contract\n\n#### 改 column 名（user_name → username）\n\n**Phase 1: Expand**\n```sql\nALTER TABLE users ADD COLUMN username TEXT;\nUPDATE users SET username = user_name;\n-- 兩個 column 共存\n```\n\n**Phase 2: Migrate**\n- 改 code 寫兩個 column\n- Deploy\n- 等舊 code instance 全死\n\n**Phase 3: Contract**\n- 改 code 只用 username\n- Deploy\n- 刪掉舊 column\n```sql\nALTER TABLE users DROP COLUMN user_name;\n```\n\n需 3 次 deploy、但 zero downtime。\n\n## 大表 migration\n\n### 加 NOT NULL\n```sql\n-- ❌ 鎖表\nALTER TABLE users ADD COLUMN email TEXT NOT NULL;\n\n-- ✅ 分段\nALTER TABLE users ADD COLUMN email TEXT;  -- 1. 允許 NULL\nUPDATE users SET email = '' WHERE email IS NULL;  -- 2. 補\nALTER TABLE users ALTER COLUMN email SET NOT NULL;  -- 3. 加 constraint\n```\n\n### 加 Index\n```sql\n-- ❌ 鎖\nCREATE INDEX idx_users_email ON users(email);\n\n-- ✅ Postgres 不鎖\nCREATE INDEX CONCURRENTLY idx_users_email ON users(email);\n```\n\n## Rollback 計畫\n每個 migration 都有 down script：\n```sql\n-- Up\nALTER TABLE users ADD COLUMN role TEXT;\n\n-- Down\nALTER TABLE users DROP COLUMN role;\n```\n\n## 心法\n- Production migration 必先 staging 跑\n- 大表加 NOT NULL / Index 必分段\n- Expand-Migrate-Contract 是 zero-downtime 公式\n- 永遠 backup before migration",
+      "tip": {
+        "type": "warning",
+        "text": "DROP COLUMN production = 災難。永遠 expand-migrate-contract。"
+      },
+      "exercise": {
+        "question": "把本節「Database Migration 策略」的核心心法、轉成一個具體的「我今天 / 這週要做」的小行動。",
+        "hint": "心法 ≠ 知識、心法要落地。「我從今天起、每天 ___」這種格式。",
+        "answer": "好行動 = 小（5-10 分鐘以內）+ 具體（不模糊）+ 可量化（有沒有做得出來）。例：『每天起床先列 3 件最重要的事再開電腦』比『更專注』可執行 100 倍。配合 streak（連續紀錄）讓自己上癮。"
+      },
+      "id": "19.10",
+      "number": "LESSON 19.10",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "19.10.auto",
+          "language": "sql",
+          "title": "試試看",
+          "initialCode": "-- migrations/20260517_add_user_role.sql\nBEGIN;\nALTER TABLE users ADD COLUMN role TEXT DEFAULT 'member';\nCREATE INDEX idx_users_role ON users(role);\nCOMMIT;",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "outline": [
+        {
+          "level": 2,
+          "text": "Migration 工具"
+        },
+        {
+          "level": 3,
+          "text": "Prisma Migrate"
+        },
+        {
+          "level": 3,
+          "text": "Drizzle Kit"
+        },
+        {
+          "level": 3,
+          "text": "Flyway / Liquibase（Java / 多語言）"
+        },
+        {
+          "level": 3,
+          "text": "TypeORM / Sequelize"
+        },
+        {
+          "level": 2,
+          "text": "Migration 寫法"
+        },
+        {
+          "level": 3,
+          "text": "Auto-generated（推薦）"
+        },
+        {
+          "level": 3,
+          "text": "Manual"
+        },
+        {
+          "level": 2,
+          "text": "Zero-Downtime Migration"
+        },
+        {
+          "level": 3,
+          "text": "危險動作"
+        },
+        {
+          "level": 3,
+          "text": "安全 pattern：Expand-Migrate-Contract"
+        },
+        {
+          "level": 2,
+          "text": "大表 migration"
+        },
+        {
+          "level": 3,
+          "text": "加 NOT NULL"
+        },
+        {
+          "level": 3,
+          "text": "加 Index"
+        },
+        {
+          "level": 2,
+          "text": "Rollback 計畫"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Backup + Disaster Recovery",
+      "oneLineSummary": "備份不是「有」就好、要可還原 + 演練",
+      "analogy": "70% 公司「有備份但還不了」。",
+      "content": "## 備份類型\n\n### Full\n完整 snapshot。\n適合：每週、長期保留。\n\n### Incremental\n只備自上次以來的變動。\n適合：每日、節省空間。\n\n### WAL / Logical replication\n即時、可 point-in-time recovery。\n\n## Postgres 備份\n\n### pg_dump（邏輯）\n```bash\npg_dump -U postgres mydb > backup.sql\npg_dump -Fc mydb > backup.dump  # custom format\n```\n\n還原：\n```bash\npsql mydb < backup.sql\npg_restore -d mydb backup.dump\n```\n\n### pg_basebackup（物理）\n```bash\npg_basebackup -D /backup -Ft -P\n```\n\n### PITR（Point-In-Time Recovery）\n搭配 WAL archiving、可還原到任意秒。\n\n## 雲端託管（推薦 Indie）\n\n### Supabase\n- 每日自動 backup（Pro: 7 天保留 / Team: 14 天 / Enterprise: 30 天）\n- PITR（Pro+）\n\n### Neon / PlanetScale\n- Branching = 自動備份\n- 一鍵 fork\n\n### AWS RDS\n- 自動 snapshot\n- Multi-AZ\n- 7-35 天保留\n\n## 3-2-1 規則\n- **3** 份備份\n- **2** 種媒介\n- **1** 份異地\n\n範例：\n- Supabase 自動（雲）\n- 自己 nightly export 到 R2（雲、不同 vendor）\n- 月一次 download 本地（外接 disk）\n\n## 演練\n\n**沒演練 = 沒備份**。\n\n### 月一次\n- 從 backup 還原到 staging\n- 跑 smoke test\n- 確認資料完整\n\n很多公司發現「備份壞了」是在出事時、才知道沒用。\n\n## RPO / RTO\n\n### RPO (Recovery Point Objective)\n能接受丟多少資料？\n- 1 小時 = 每小時備\n- 1 天 = 每日備\n- 0 秒 = streaming replication\n\n### RTO (Recovery Time Objective)\n多久要恢復？\n- 5 分鐘 = hot standby\n- 1 小時 = warm standby\n- 1 天 = cold backup\n\nIndie SaaS 通常 RPO 1 天 / RTO 4 小時 OK。\n\n## 心法\n- Day 1 設好 backup\n- 月一次演練還原\n- 異地 + 多 vendor（雲端服務商也會掛）\n- 設 monitor：backup 失敗立刻 alert",
+      "tip": {
+        "type": "warning",
+        "text": "70% 公司「有備份但還不了」。月一次演練還原。"
+      },
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "id": "19.11",
+      "number": "LESSON 19.11",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "19.11.auto",
+          "language": "bash",
+          "title": "試試看",
+          "initialCode": "pg_dump -U postgres mydb > backup.sql\npg_dump -Fc mydb > backup.dump  # custom format",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "outline": [
+        {
+          "level": 2,
+          "text": "備份類型"
+        },
+        {
+          "level": 3,
+          "text": "Full"
+        },
+        {
+          "level": 3,
+          "text": "Incremental"
+        },
+        {
+          "level": 3,
+          "text": "WAL / Logical replication"
+        },
+        {
+          "level": 2,
+          "text": "Postgres 備份"
+        },
+        {
+          "level": 3,
+          "text": "pgdump（邏輯）"
+        },
+        {
+          "level": 3,
+          "text": "pgbasebackup（物理）"
+        },
+        {
+          "level": 3,
+          "text": "PITR（Point-In-Time Recovery）"
+        },
+        {
+          "level": 2,
+          "text": "雲端託管（推薦 Indie）"
+        },
+        {
+          "level": 3,
+          "text": "Supabase"
+        },
+        {
+          "level": 3,
+          "text": "Neon / PlanetScale"
+        },
+        {
+          "level": 3,
+          "text": "AWS RDS"
+        },
+        {
+          "level": 2,
+          "text": "3-2-1 規則"
+        },
+        {
+          "level": 2,
+          "text": "演練"
+        },
+        {
+          "level": 3,
+          "text": "月一次"
+        },
+        {
+          "level": 2,
+          "text": "RPO / RTO"
+        },
+        {
+          "level": 3,
+          "text": "RPO (Recovery Point Objective)"
+        },
+        {
+          "level": 3,
+          "text": "RTO (Recovery Time Objective)"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Multi-tenant 架構",
+      "oneLineSummary": "一個 DB 服務多個 tenant、3 種模式",
+      "analogy": "SaaS 必懂。",
+      "content": "## 3 大模式\n\n### 1. Pool（Shared DB + tenant_id）\n所有 tenant 同個 DB、用 column 區隔：\n```sql\nCREATE TABLE posts (\n  id UUID,\n  tenant_id UUID NOT NULL,  -- 區隔\n  ...\n);\n```\n\n優：簡單、便宜、易維護\n劣：noisy neighbor、難客製、隔離弱\n\n**適合 80% SaaS**。\n\n### 2. Bridge（Schema per tenant）\n每 tenant 一個 schema：\n```\npublic.users\ntenant_a.posts\ntenant_b.posts\n```\n\n優：隔離較好、可客製\n劣：管理複雜、migration 麻煩\n\n### 3. Silo（DB per tenant）\n每 tenant 一個 DB：\n\n優：最強隔離、客製化彈性、合規友善\n劣：成本高、運維重\n\n適合：企業 / 醫療 / 金融\n\n## Pool 模式實作\n\n### Row Level Security（PG）\n```sql\nALTER TABLE posts ENABLE ROW LEVEL SECURITY;\n\nCREATE POLICY tenant_isolation ON posts\nUSING (tenant_id = current_setting('app.tenant_id')::uuid);\n```\n\n每 request 設：\n```typescript\nawait db.query(\"SET app.tenant_id = $1\", [user.tenantId]);\n// 接下來所有 query 自動只看到該 tenant\n```\n\n### Middleware\n```typescript\napp.use((req, res, next) => {\n  req.tenantId = getTenantFromRequest(req);  // subdomain / JWT\n  next();\n});\n\napp.get(\"/posts\", async (req, res) => {\n  const posts = await db.posts.findMany({\n    where: { tenantId: req.tenantId }\n  });\n});\n```\n\n⚠️ 漏掉 `tenantId` filter = 跨 tenant 資料外洩！\n用 RLS 雙保險。\n\n## Tenant 識別\n\n### Subdomain\n- `tenant-a.app.com`\n- `tenant-b.app.com`\n\n### Path\n- `app.com/tenant-a`\n\n### Custom domain\n- `mycompany.com` → 對應到 tenant\n\n### Header / JWT\n- 從 JWT 解出 tenant_id\n\n## Limits / Quota\n\n按 tenant 限流：\n```typescript\nconst usage = await redis.incr(`tenant:${tenantId}:requests`);\nif (usage > tenant.plan.rateLimit) {\n  return res.status(429).end();\n}\n```\n\n## 心法\n- 99% SaaS 用 Pool 模式\n- 必 RLS + middleware 雙保險\n- 永遠不要 query 沒帶 tenant_id\n- 大客戶可獨立給 Silo",
+      "tip": {
+        "type": "milestone",
+        "text": "Multi-tenant Pool + RLS = SaaS 標配。"
+      },
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "id": "19.12",
+      "number": "LESSON 19.12",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "19.12.auto",
+          "language": "sql",
+          "title": "試試看",
+          "initialCode": "CREATE TABLE posts (\n  id UUID,\n  tenant_id UUID NOT NULL,  -- 區隔\n  ...\n);",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "outline": [
+        {
+          "level": 2,
+          "text": "3 大模式"
+        },
+        {
+          "level": 3,
+          "text": "1. Pool（Shared DB + tenantid）"
+        },
+        {
+          "level": 3,
+          "text": "2. Bridge（Schema per tenant）"
+        },
+        {
+          "level": 3,
+          "text": "3. Silo（DB per tenant）"
+        },
+        {
+          "level": 2,
+          "text": "Pool 模式實作"
+        },
+        {
+          "level": 3,
+          "text": "Row Level Security（PG）"
+        },
+        {
+          "level": 3,
+          "text": "Middleware"
+        },
+        {
+          "level": 2,
+          "text": "Tenant 識別"
+        },
+        {
+          "level": 3,
+          "text": "Subdomain"
+        },
+        {
+          "level": 3,
+          "text": "Path"
+        },
+        {
+          "level": 3,
+          "text": "Custom domain"
+        },
+        {
+          "level": 3,
+          "text": "Header / JWT"
+        },
+        {
+          "level": 2,
+          "text": "Limits / Quota"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "CDC + Event Sourcing",
+      "oneLineSummary": "不只存「現在狀態」、存所有變動",
+      "analogy": "審計 / 分析 / 同步必懂。",
+      "content": "## CDC（Change Data Capture）\n\n### 是什麼\n監聽 DB 變動、串到別處：\n- Kafka / Redis Streams\n- 搜尋（Elasticsearch / Meilisearch）\n- Data warehouse（BigQuery / Snowflake）\n- Real-time analytics\n\n### 工具\n- **Debezium**：開源、connect Postgres / MySQL\n- **Supabase Realtime**：內建\n- **Aiven**：託管\n\n### Postgres LISTEN/NOTIFY\n```sql\n-- Trigger\nCREATE OR REPLACE FUNCTION notify_post_change()\nRETURNS TRIGGER AS $$\nBEGIN\n  PERFORM pg_notify('post_change', json_build_object('id', NEW.id, 'op', TG_OP)::text);\n  RETURN NEW;\nEND;\n$$ LANGUAGE plpgsql;\n\nCREATE TRIGGER post_change_trigger\nAFTER INSERT OR UPDATE OR DELETE ON posts\nFOR EACH ROW EXECUTE FUNCTION notify_post_change();\n```\n\nNode:\n```typescript\nconst client = await pool.connect();\nawait client.query(\"LISTEN post_change\");\n\nclient.on(\"notification\", (msg) => {\n  console.log(\"Post changed:\", msg.payload);\n  // Sync to Elasticsearch / send webhook / ...\n});\n```\n\n## Event Sourcing\n\n### 傳統 vs Event Sourcing\n\n#### 傳統\n```\nposts table:\n| id | title | content | status |\n|  1 | Hello | Hi      | pub    |\n```\n只看到「現在」。\n\n#### Event Sourcing\n```\nevents table:\n| id | type        | payload                    | ts  |\n|  1 | PostCreated | {id:1, title:\"H\"}          | t1  |\n|  2 | PostUpdated | {id:1, content:\"Hi\"}       | t2  |\n|  3 | PostPublished| {id:1}                    | t3  |\n```\n\n每個變動是 immutable event。\n「現在狀態」是所有 event 重播出來的。\n\n### 優\n- 完整歷史（合規友善）\n- Time travel（看 7 天前狀態）\n- 可重建（壞了重播 events）\n- Audit log 內建\n\n### 劣\n- 複雜\n- 查詢慢（需 projection）\n- 不適合大部分 CRUD\n\n## Event Sourcing 適合的場景\n- 金融 / 會計（必有 audit trail）\n- 訂單系統（狀態變動多）\n- 醫療紀錄（不可改）\n- 遊戲 replay\n\n不適合：\n- 簡單 CRUD\n- Indie MVP\n- 不需要歷史\n\n## CQRS（搭配 Event Sourcing 常用）\n- Command：寫（Event）\n- Query：讀（Projection / view）\n- 讀寫分離\n\n## Indie 折衷方案\n\n### Audit Table\n```sql\nCREATE TABLE audit_log (\n  id BIGSERIAL,\n  table_name TEXT,\n  record_id TEXT,\n  action TEXT,  -- INSERT / UPDATE / DELETE\n  old_data JSONB,\n  new_data JSONB,\n  user_id UUID,\n  created_at TIMESTAMPTZ DEFAULT NOW()\n);\n```\n\nTrigger 自動寫：\n```sql\nCREATE OR REPLACE FUNCTION log_audit() RETURNS TRIGGER AS $$\nBEGIN\n  INSERT INTO audit_log(table_name, record_id, action, old_data, new_data)\n  VALUES (TG_TABLE_NAME, NEW.id::text, TG_OP, row_to_json(OLD), row_to_json(NEW));\n  RETURN NEW;\nEND;\n$$ LANGUAGE plpgsql;\n```\n\n得到 audit trail 但不用 full Event Sourcing。\n\n## 心法\n- CDC 用在「同步外部系統」\n- Event Sourcing 是大鎚、慎用\n- Indie 用 audit table 已 80% 解決\n- 一致性 > 「酷」",
+      "tip": {
+        "type": "milestone",
+        "text": "Audit log + CDC = Indie 80% 場景夠。"
+      },
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "id": "19.13",
+      "number": "LESSON 19.13",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "19.13.auto",
+          "language": "sql",
+          "title": "試試看",
+          "initialCode": "-- Trigger\nCREATE OR REPLACE FUNCTION notify_post_change()\nRETURNS TRIGGER AS $$\nBEGIN\n  PERFORM pg_notify('post_change', json_build_object('id', NEW.id, 'op', TG_OP)::text);\n  RETURN NEW;\nEND;\n$$ LANGUAGE plpgsql;\n\nCREATE TRIGGER post_change_trigger\nAFTER INSERT OR UPDATE OR DELETE ON posts\nFOR EACH ROW EXECUTE FUNCTION notify_post_change();",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "outline": [
+        {
+          "level": 2,
+          "text": "CDC（Change Data Capture）"
+        },
+        {
+          "level": 3,
+          "text": "是什麼"
+        },
+        {
+          "level": 3,
+          "text": "工具"
+        },
+        {
+          "level": 3,
+          "text": "Postgres LISTEN/NOTIFY"
+        },
+        {
+          "level": 2,
+          "text": "Event Sourcing"
+        },
+        {
+          "level": 3,
+          "text": "傳統 vs Event Sourcing"
+        },
+        {
+          "level": 3,
+          "text": "優"
+        },
+        {
+          "level": 3,
+          "text": "劣"
+        },
+        {
+          "level": 2,
+          "text": "Event Sourcing 適合的場景"
+        },
+        {
+          "level": 2,
+          "text": "CQRS（搭配 Event Sourcing 常用）"
+        },
+        {
+          "level": 2,
+          "text": "Indie 折衷方案"
+        },
+        {
+          "level": 3,
+          "text": "Audit Table"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    },
+    {
+      "title": "Search：Postgres FTS / Meilisearch / Algolia",
+      "oneLineSummary": "`LIKE %x%` 不夠用、要全文搜尋",
+      "analogy": "搜尋差 = user 找不到 = 流失。",
+      "content": "## 為什麼不能 LIKE\n```sql\nSELECT * FROM posts WHERE content LIKE '%python%';\n```\n- 不用 index = 慢\n- 不支援多語言\n- 不會排序相關度\n- 不支援 typo\n\n## 方案\n\n### 1. Postgres FTS（內建、免費）\n```sql\n-- 加 column\nALTER TABLE posts ADD COLUMN search_vector tsvector\nGENERATED ALWAYS AS (\n  setweight(to_tsvector('simple', coalesce(title, '')), 'A') ||\n  setweight(to_tsvector('simple', coalesce(content, '')), 'B')\n) STORED;\n\nCREATE INDEX idx_posts_search ON posts USING GIN(search_vector);\n\n-- 查\nSELECT title, ts_rank(search_vector, query) AS rank\nFROM posts, websearch_to_tsquery('simple', 'python tutorial') query\nWHERE search_vector @@ query\nORDER BY rank DESC\nLIMIT 10;\n```\n\n優：免費、跟 DB 同步、沒額外 service\n劣：中文支援差、不支援 typo\n\n### 2. Meilisearch（推薦 Indie）\n```bash\ndocker run -p 7700:7700 getmeili/meilisearch\n```\n\n```typescript\nimport { MeiliSearch } from \"meilisearch\";\nconst client = new MeiliSearch({ host: \"http://localhost:7700\" });\n\n// Index 資料\nawait client.index(\"posts\").addDocuments([\n  { id: 1, title: \"Python tutorial\", content: \"...\" }\n]);\n\n// 搜\nconst results = await client.index(\"posts\").search(\"pyhton\");  // typo OK\n// 自動容忍 typo、回 highlighted results\n```\n\n優：\n- typo tolerance\n- < 50ms 響應\n- 中文好（用 `tokenSeparators`）\n- 開源、可自架\n\n劣：要另一個 service 跑\n\n### 3. Algolia（商業、最強）\n- 全球 CDN\n- < 20ms\n- 業界第一\n- 貴（$50+/月、按 search 計費）\n\n### 4. Elasticsearch\n- 重型武器\n- 複雜（操作運維）\n- 大公司用\n\n### 5. Typesense（類 Meilisearch）\n開源、輕量。\n\n## 中文搜尋\n\n### Postgres FTS + jieba\n```sql\nCREATE EXTENSION zhparser;\nCREATE TEXT SEARCH CONFIGURATION zh (PARSER = zhparser);\nALTER TEXT SEARCH CONFIGURATION zh ADD MAPPING FOR n,v,a,i,e,l WITH simple;\n```\n\n### Meilisearch\n中文支援不錯、設定 `tokenSeparators`。\n\n### Algolia\n原生支援中文 + 多語言。\n\n## Sync 策略\n\n### DB → Search engine\n\n#### 1. App 層雙寫\n```typescript\nawait db.posts.create({ data });\nawait meili.index(\"posts\").addDocuments([data]);\n```\n簡單、但可能不一致（一個成功一個失敗）。\n\n#### 2. Trigger + queue\nDB trigger → message queue → worker → search index\n解耦、可靠。\n\n#### 3. CDC\nDebezium 監聽 → 自動 sync。\n\n## Indie 推薦\n- 小規模 + 英文：Postgres FTS\n- 中等 + 中文：Meilisearch（自架 $5 VPS）\n- 大規模 + 全球：Algolia\n- 預算無上限：Elasticsearch\n\n## 心法\n- LIKE 永遠不夠\n- 搜尋是 UX 關鍵、不要省\n- 開始用 Meilisearch 最 cost-effective\n- Sync 策略提早決定",
+      "tip": {
+        "type": "milestone",
+        "text": "Indie 中文搜尋 = Meilisearch。"
+      },
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "id": "19.14",
+      "number": "LESSON 19.14",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "19.14.auto",
+          "language": "sql",
+          "title": "試試看",
+          "initialCode": "SELECT * FROM posts WHERE content LIKE '%python%';",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "outline": [
+        {
+          "level": 2,
+          "text": "為什麼不能 LIKE"
+        },
+        {
+          "level": 2,
+          "text": "方案"
+        },
+        {
+          "level": 3,
+          "text": "1. Postgres FTS（內建、免費）"
+        },
+        {
+          "level": 3,
+          "text": "2. Meilisearch（推薦 Indie）"
+        },
+        {
+          "level": 3,
+          "text": "3. Algolia（商業、最強）"
+        },
+        {
+          "level": 3,
+          "text": "4. Elasticsearch"
+        },
+        {
+          "level": 3,
+          "text": "5. Typesense（類 Meilisearch）"
+        },
+        {
+          "level": 2,
+          "text": "中文搜尋"
+        },
+        {
+          "level": 3,
+          "text": "Postgres FTS + jieba"
+        },
+        {
+          "level": 3,
+          "text": "Meilisearch"
+        },
+        {
+          "level": 3,
+          "text": "Algolia"
+        },
+        {
+          "level": 2,
+          "text": "Sync 策略"
+        },
+        {
+          "level": 3,
+          "text": "DB → Search engine"
+        },
+        {
+          "level": 2,
+          "text": "Indie 推薦"
+        },
+        {
+          "level": 2,
+          "text": "心法"
+        }
+      ]
+    }
+  ],
+  "boss": {
+    "name": "索引獵豹",
+    "hp": 210,
+    "emoji": "🐆",
+    "description": "無索引者一律慢吞吞被它吃掉"
+  },
+  "quiz": {
+    "id": "ch19-quiz",
+    "questions": [],
+    "xpReward": 50,
+    "perfectBonus": 50
+  }
+}

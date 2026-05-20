@@ -1,0 +1,1492 @@
+{
+  "id": 3,
+  "slug": "ui-ux",
+  "stage": 1,
+  "title": "UI/UX 設計原理",
+  "subtitle": "學 CSS 同時學審美",
+  "icon": "layout",
+  "description": "UI/UX 設計原理：學 CSS 同時學審美",
+  "status": "published",
+  "difficulty": "beginner",
+  "prerequisites": [
+    1,
+    2
+  ],
+  "estimatedHours": 10,
+  "outcomes": [
+    "理解核心概念",
+    "實作主流工具",
+    "整章實戰可發佈作品",
+    "知道生態 / 接案行情",
+    "對齊 2026 業界主流"
+  ],
+  "lessons": [
+    {
+      "id": "3.1",
+      "number": "LESSON 3.1",
+      "title": "UI ≠ UX：別再混用",
+      "oneLineSummary": "UI 跟 UX 不一樣—UI 是「看起來好看」、UX 是「用起來順手」。兩個都要。",
+      "analogy": "像一家餐廳—UI 是裝潢漂亮、UX 是菜好吃 + 服務好 + 等位不久。漂亮但難吃沒人去、好吃但裝潢醜會被嫌。UI 服務 UX、UX 決定成敗。",
+      "content": "很多工程師講 UI 跟 UX 像同義字—其實差很多。理解差別、之後設計就不會卡。\n\n  \n### 定義\n\n```text\nUI = User Interface（使用者介面）\n- 看得到、摸得到的東西\n- 顏色、字體、按鈕、版面\n- 視覺 + 互動元件\n\nUX = User Experience（使用者體驗）\n- 整體感受\n- 從進站到完成任務的全過程\n- 包含：UI + 流程 + 性能 + 內容 + 情緒\n\n比喻：\n- UI = 餐廳的裝潢 + 餐具\n- UX = 整個吃飯體驗（停車、進門、點餐、上菜、結帳）\n\nUI 漂亮、UX 不一定好\nUX 好、UI 不一定漂亮\n```\n\n  \n### 實例對比\n\n```text\n網站 A：好看 UI、爛 UX\n- 用了潮流 glassmorphism\n- 字體配色全到位\n- 但...\n  - 結帳要 5 步、不能跳過\n  - 表單 1 個錯就全部清空\n  - 載入 8 秒\n- → 用戶第一次驚豔、第二次怒\n\n網站 B：簡陋 UI、好 UX\n- Craigslist、Hacker News\n- 80 年代風格\n- 但...\n  - 1 秒載入\n  - 找東西超快\n  - 流程簡單\n- → 用戶 10 年都用\n```\n\n  \n### 工程師常踩的坑\n\n```text\n❌ 「我會 CSS = 我會 UI」\n   - CSS 是工具、UI 是判斷\n   - 知道怎麼做 ≠ 知道該做什麼\n\n❌ 「先做完功能、UI 之後再修」\n   - 功能跟 UI 是一起的\n   - UI 影響功能設計\n\n❌ 「設計師說了算、不質疑」\n   - 工程師懂 runtime 限制\n   - 該對話、不該全聽\n\n❌ 「Material Design 套上去就好」\n   - 是預設、不是答案\n   - 看你的 brand / 用戶 / 場景\n```\n\n  \n### 工程師該學什麼程度？\n\n```text\n不需要：\n- 變 Figma 大師\n- 學畫 illustration\n- 取代 Designer\n\n需要：\n- 看得懂 design system\n- 知道為什麼這樣設計\n- 能 ship 「不醜」的 indie SaaS\n- 跟 Designer 有效溝通\n- 知道何時該找 Designer\n\n2026 indie 工程師現實：\n- 50% indie 沒 Designer\n- 學會基本 UI/UX = 能 ship product\n- 不會 = 永遠卡在 prototype\n```\n\n  \n### 本章重點預告\n\n```text\n學完這 20 lessons 你能：\n\nUI 面：\n✓ 用系統做選色 / 字體 / 間距\n✓ 設計常見元件（Button / Form / Modal）\n✓ 響應式（mobile-first）\n✓ 微互動（hover / transition）\n\nUX 面：\n✓ 用 Nielsen 10 原則檢查設計\n✓ 設計 Empty State / Loading / Error\n✓ 無障礙基礎（a11y）\n✓ 流程設計（少點擊、少輸入）\n\n工具面：\n✓ Figma 基礎\n✓ Tailwind + shadcn/ui（業界主流）\n✓ Design Tokens\n✓ Mini Design System\n```\n\n  \n    **☕ 用人話講**\n    \nUI ≠ UX：**UI 是長相**、UX 是**感受**。UI 漂亮可能 UX 爛（潮但難用）、UI 醜可能 UX 好（Craigslist、HN）。**工程師目標**：不變 Designer、但能 ship「**不醜 + 順手**」的 indie SaaS。**2026 真相**：50% indie 沒 Designer—你會 UI/UX 就贏一半。\n\n  \n\n  \n    \n      💼\n      接案小知識\n    \n    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「UI/UX」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。",
+      "tip": {
+        "type": "practical",
+        "text": "剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「UI/UX」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。"
+      },
+      "xp": 10,
+      "miniQuiz": {
+        "question": "Mobile 觸控按鈕、最小可點擊面積建議多少？",
+        "options": [
+          {
+            "label": "24x24 px",
+            "value": "a"
+          },
+          {
+            "label": "32x32 px",
+            "value": "b"
+          },
+          {
+            "label": "44x44 px",
+            "value": "c"
+          },
+          {
+            "label": "60x60 px",
+            "value": "d"
+          }
+        ],
+        "answer": "c",
+        "explanation": "Apple HIG 建議 44x44 pt、Material 建議 48x48 dp。手指平均寬度 1cm。"
+      },
+      "playgrounds": [
+        {
+          "key": "3.1.auto",
+          "language": "html",
+          "title": "試試看",
+          "initialCode": "<!DOCTYPE html>\n<html>\n<body>\n  <h1>Hello AI 島</h1>\n  <p>改改看吧</p>\n</body>\n</html>",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "定義"
+        },
+        {
+          "level": 3,
+          "text": "實例對比"
+        },
+        {
+          "level": 3,
+          "text": "工程師常踩的坑"
+        },
+        {
+          "level": 3,
+          "text": "工程師該學什麼程度？"
+        },
+        {
+          "level": 3,
+          "text": "本章重點預告"
+        }
+      ]
+    },
+    {
+      "id": "3.2",
+      "number": "LESSON 3.2",
+      "title": "Nielsen 10 大可用性原則",
+      "oneLineSummary": "視覺層次（hierarchy）就是「讓眼睛知道先看哪、再看哪」—大小 / 顏色 / 對比決定。",
+      "analogy": "像報紙頭版—大標題 → 副標 → 內文 → 廣告。眼睛自然從大看到小、從深色看到淺色。網頁設計沒做好層次、使用者進來不知道該看哪、3 秒就跳走。",
+      "content": "UX 不靠感覺—靠原則。Jakob Nielsen 1990 年提出的 10 大原則、30 多年仍是業界 bible。\n\n  \n### 10 大原則\n\n```text\n1. 系統狀態可見\n   - 用戶永遠知道現在發生什麼\n   - 例：loading spinner、進度條、success toast\n\n2. 符合真實世界\n   - 用用戶懂的詞、不用 jargon\n   - 例：「結帳」不寫「Initiate Payment Process」\n\n3. 用戶控制 + 自由\n   - 隨時能取消、回上一步、退出\n   - 例：Undo、麵包屑、Cancel 按鈕\n\n4. 一致 + 標準\n   - 同個 action 永遠同樣方式\n   - 例：右上角 X 永遠關閉\n\n5. 防止錯誤\n   - 設計上避免錯誤、不只是錯後處理\n   - 例：危險操作要 confirm、表單即時驗證\n\n6. 識別優於回憶\n   - 顯示選項、不要用戶記\n   - 例：下拉選單比輸入框好、autocomplete\n\n7. 彈性 + 效率\n   - 新手能用、老手能快\n   - 例：快捷鍵、自訂 dashboard\n\n8. 美學 + 簡約\n   - 不要塞太多\n   - 例：「Less is More」\n\n9. 幫用戶辨識 + 修復錯誤\n   - 錯誤訊息要清楚、不寫 stack trace\n   - 例：「密碼至少 8 字」、不寫「ValidationError」\n\n10. 幫助文件\n    - 不要靠 RTFM\n    - 例：tooltip、inline help、FAQ\n```\n\n  \n### 實例分析：常見錯誤\n\n```text\n違反原則 1（狀態不可見）：\n❌ 按下「提交」、沒任何反應\n✓ Spinner + button disabled + \"處理中...\" 文字\n\n違反原則 3（沒退路）：\n❌ 點進設定、不能 cancel、只能改完保存\n✓ Cancel 按鈕、Esc 取消、modal 點外面關\n\n違反原則 4（不一致）：\n❌ 設定頁用「儲存」、個資頁用「保存」\n✓ 整站統一用詞\n\n違反原則 6（要回憶）：\n❌ 輸入國家用文字欄、要記英文\n✓ 下拉選單 + autocomplete\n\n違反原則 9（錯誤訊息差）：\n❌ \"Error: undefined is not a function\"\n✓ \"密碼太短、至少 8 字\"\n```\n\n  \n### 實戰 checklist\n\n```text\n每次 ship 新 feature 前檢查：\n\n□ 載入時用戶看得到 loading？\n□ 用戶能隨時取消 / 回上一步？\n□ 危險操作有 confirm？\n□ 用詞是用戶懂的？\n□ 同類 action 一致？\n□ 表單錯誤訊息具體？\n□ 必填欄位有標 *？\n□ 鍵盤能操作（Tab / Enter / Esc）？\n□ 錯誤時不會丟失用戶輸入？\n□ 空狀態有設計？\n\n如果 9 個以上都做到 = 已超越 80% 網站\n```\n\n  \n### 2026 補充原則\n\n```text\nNielsen 原則 + 2026 補充：\n\n11. 性能 = UX\n    - 載入 > 3 秒、50% 用戶離開\n    - LCP / FID / CLS 是 UX 指標\n\n12. 行動優先\n    - 全球 60%+ 流量來自手機\n    - 設計優先考慮手機體驗\n\n13. 無障礙\n    - 15% 人口有某種障礙\n    - 對比、鍵盤、ARIA\n\n14. 隱私尊重\n    - 不問就不要、收集前說清楚\n    - 不用 dark pattern\n\n15. AI 透明（2024+ 新興）\n    - 用了 AI 要說\n    - AI 出錯給回饋管道\n```\n\n  \n    **☕ 用人話講**\n    \nNielsen 10 原則是 30 年驗證的**檢查清單**—不靠靈感、靠原則。記不住全部？至少記 4 個：(1) **狀態可見**—loading / progress (2) **有退路**—Cancel / Undo (3) **一致性**—同 action 同寫法 (4) **錯誤清楚**—具體訊息。\n\n  \n\n  \n    \n      🎯\n      面試考點\n    \n    台灣科技公司面試 90% 會問「UI/UX」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。",
+      "tip": {
+        "type": "pro",
+        "text": "台灣科技公司面試 90% 會問「UI/UX」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "3.2.auto",
+          "language": "html",
+          "title": "試試看",
+          "initialCode": "<!DOCTYPE html>\n<html>\n<body>\n  <h1>Hello AI 島</h1>\n  <p>改改看吧</p>\n</body>\n</html>",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "10 大原則"
+        },
+        {
+          "level": 3,
+          "text": "實例分析：常見錯誤"
+        },
+        {
+          "level": 3,
+          "text": "實戰 checklist"
+        },
+        {
+          "level": 3,
+          "text": "2026 補充原則"
+        }
+      ]
+    },
+    {
+      "id": "3.3",
+      "number": "LESSON 3.3",
+      "title": "視覺層次：眼睛要往哪看",
+      "oneLineSummary": "色彩理論：主色 / 輔助色 / 強調色—3 色搞定 80% 場景。",
+      "analogy": "像穿搭—主色（外套）、輔助色（內搭）、強調色（帽子 / 包）。網站一樣：主色（品牌色）佔 60%、輔助色 30%、強調色 10%（CTA 按鈕用、超級搶眼）。",
+      "content": "畫面上一堆東西、用戶第一秒看哪？答案不是隨機—是**視覺層次**設計的結果。\n\n  \n### 視覺層次的 6 個工具\n\n```text\n1. 大小（Size）\n   - 大 = 重要\n   - 標題 > 內文 > 註腳\n\n2. 重量（Weight / Bold）\n   - 粗體吸引注意\n   - 「點這裡」用粗、敘述用普通\n\n3. 顏色（Color）\n   - 高對比吸引、低對比退後\n   - CTA 用品牌色、輔助用灰\n\n4. 對比（Contrast）\n   - 跟周圍差越多越突出\n\n5. 空間（Spacing / Whitespace）\n   - 周圍空越多越重要\n   - 留白是設計、不是浪費\n\n6. 位置（Position）\n   - 上 > 下、左 > 右（西方閱讀）\n   - F 型 / Z 型閱讀路徑\n```\n\n  \n### 實例：landing page hero\n\n```text\n典型 SaaS landing：\n\n[ Logo                    Menu Items     Sign in ]\n                                            ↑\n                            不重要、所以小、淡\n\n         你的 SaaS 標題在這裡          ← 最大、粗、置中\n                                       眼睛第一個看\n        副標 / value proposition       ← 中、灰\n                                       第二個看\n            [    Start free     ]      ← 對比色 CTA\n                                       第三個看（行動）\n              No credit card needed    ← 小、淡（消除疑慮）\n\n排版：F 型\n1. 上面（眼睛先看上）\n2. 中間（最大、最對比）\n3. 行動按鈕（吸引點擊）\n```\n\n  \n### 對比實驗：壞 vs 好\n\n```html\n<!-- 此處原本為 HTML 範例\n     程式碼已在內容修正中、稍後將補回完整範例 -->\n```\n\n  \n### F 型 vs Z 型閱讀\n\n```text\nF 型（內容多）：\n- Blog 文章、Email、長表格\n- 重要 info 放前面、subhead 拉眼睛\n\nZ 型（內容少、視覺重）：\n- Landing page、海報、廣告\n- CTA 放右下、logo 左上\n```\n\n  \n### 實戰：dashboard 設計\n\n```text\nSaaS dashboard 視覺層次：\n\n頁面結構：\n┌─────────────────────────────────┐\n│ Logo | Search        | Avatar    │  ← Top bar（小、固定）\n├─────┬───────────────────────────┤\n│     │ Page title                 │  ← H1 大\n│  N  │ Subtitle / description     │  ← 灰、中\n│  A  │                            │\n│  V  │ ┌─────┐ ┌─────┐ ┌─────┐    │  ← 統計卡（粗體大數字）\n│     │ │ 89% │ │ 1.2k│ │ $4k │    │\n│     │ └─────┘ └─────┘ └─────┘    │\n│     │                            │\n│     │ Chart                      │  ← 主視覺、大區塊\n│     │                            │\n│     │ Recent activity (table)    │  ← 次要 info、列表\n└─────┴───────────────────────────┘\n\n層次規則：\n1. 數字最大（第一眼）\n2. 標題第二大\n3. 圖表佔大區\n4. 列表細節最後\n```\n\n  \n### 常見錯誤\n\n  \n- **所有元素一樣重要**—沒層次、用戶迷失\n- **太多顏色搶戲**—1-2 個強調色就夠\n- **沒留白**—擠在一起看不出哪個重要\n- **3 個一樣大 CTA**—永遠 1 個主、其他次\n- **標題跟內文太接近**—字級差至少 1.5 倍\n- **對比不夠**—淺灰背景 + 中灰文字 = 看不到\n\n  \n    **☕ 用人話講**\n    \n視覺層次 = **告訴眼睛該看哪**。6 個工具：(1) 大小 (2) 重量 (3) 顏色 (4) 對比 (5) 空間 (6) 位置。**每個畫面只有 1 個「最重要」**—其他都是輔助。**新手規則**：(a) CTA 最對比 (b) 標題 2x 內文大 (c) 留白比你想的多。\n\n  \n\n  \n    \n      ⚡\n      學習加速器\n    \n    把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。",
+      "tip": {
+        "type": "practical",
+        "text": "把這節學到的馬上應用到一個小東西—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "3.3.auto",
+          "language": "html",
+          "title": "試試看",
+          "initialCode": "<!DOCTYPE html>\n<html>\n<body>\n  <h1>Hello AI 島</h1>\n  <p>改改看吧</p>\n</body>\n</html>",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "視覺層次的 6 個工具"
+        },
+        {
+          "level": 3,
+          "text": "實例：landing page hero"
+        },
+        {
+          "level": 3,
+          "text": "對比實驗：壞 vs 好"
+        },
+        {
+          "level": 3,
+          "text": "F 型 vs Z 型閱讀"
+        },
+        {
+          "level": 3,
+          "text": "實戰：dashboard 設計"
+        },
+        {
+          "level": 3,
+          "text": "常見錯誤"
+        }
+      ]
+    },
+    {
+      "id": "3.4",
+      "number": "LESSON 3.4",
+      "title": "色彩：選色 + 情緒 + 對比",
+      "oneLineSummary": "字體選擇：標題粗、內文細、等寬字給程式碼—別用太多種。",
+      "analogy": "像選 PPT 字體—標題粗體吸睛、內文細體好讀、太多字體像「字體大雜燴」很亂。2 種字體就夠—Inter（無襯線、現代）+ Noto Serif TC（有襯線、有質感）—台灣網頁主流組合。",
+      "content": "顏色不是「**挑你喜歡的**」—是有**系統**。學完這節能用 5 分鐘配出專業色票。\n\n  \n### 3 個色彩系統\n\n```text\n1. HSL（業界主流、好理解）\n   - Hue：色相（紅 0、綠 120、藍 240）\n   - Saturation：飽和度（0% 灰、100% 鮮豔）\n   - Lightness：明度（0% 黑、100% 白）\n\n   hsl(220, 70%, 50%)  → 飽和藍\n\n2. HEX（CSS 傳統）\n   #0066ff\n\n3. RGB（很少手寫）\n   rgb(0, 102, 255)\n\n2026 新興：OKLCH（CSS color-4）\n   - 視覺一致（人眼看的等差才是等差）\n   - Tailwind v4 開始用\n```\n\n  \n### 色彩心理學（簡）\n\n```text\n紅：危險、緊急、激情\n- 用：警告、del button\n- 例：YouTube、Netflix\n\n橘：溫暖、活力、便宜\n- 用：促銷、CTA\n- 例：Amazon、Fanta\n\n黃：注意、樂觀\n- 用：警告、童趣、提示\n- 例：McDonald's、Snapchat\n\n綠：成長、自然、安全、金錢\n- 用：success、金融、健康\n- 例：WhatsApp、Spotify、Starbucks\n\n藍：信任、專業、冷靜\n- 用：科技、金融、生產力\n- 例：Facebook、LinkedIn、PayPal\n\n紫：高級、創意、神祕\n- 用：奢侈、創意工具\n- 例：Twitch、Yahoo\n\n灰 / 黑：高級、嚴肅、極簡\n- 用：奢侈品、科技\n- 例：Apple、Tesla、Chanel\n\n→ 不要照心理學選色、看 brand\n→ 但要知道用戶會感受什麼\n```\n\n  \n### 怎麼選色（3 種方法）\n\n```text\n方法 1：Brand 主色 → 套色票工具\n- 從你 brand 拿主色（如 logo）\n- 用 Coolors.co / Adobe Color\n- 自動生 5-6 色 palette\n\n方法 2：用 Tailwind palette（最快）\n- Tailwind 內建 22 種顏色 + 11 階\n- 不用想、直接套\n- 2026 60% indie SaaS 用 Tailwind 預設色\n\n方法 3：抄 brand 表現好的\n- Stripe / Linear / Vercel / Apple\n- 看他們怎麼用色\n\n新手最簡單：\n1. 1 個品牌色（深藍、紫、綠任選）\n2. 1 個強調 / CTA 色\n3. 灰階 11 階\n4. Success 綠 / Warning 黃 / Error 紅\n```\n\n  \n### 實戰：完整色票\n\n```css\n/* CSS variables（業界主流） */\n:root {\n    /* Brand */\n    --color-primary: hsl(220, 90%, 50%);\n    --color-primary-hover: hsl(220, 90%, 45%);\n    --color-primary-light: hsl(220, 90%, 95%);\n    \n    /* Neutral（灰階） */\n    --color-gray-50: hsl(220, 10%, 98%);\n    --color-gray-100: hsl(220, 10%, 95%);\n    --color-gray-200: hsl(220, 10%, 90%);\n    --color-gray-300: hsl(220, 10%, 80%);\n    --color-gray-400: hsl(220, 10%, 60%);\n    --color-gray-500: hsl(220, 10%, 50%);\n    --color-gray-600: hsl(220, 10%, 40%);\n    --color-gray-700: hsl(220, 10%, 30%);\n    --color-gray-800: hsl(220, 10%, 20%);\n    --color-gray-900: hsl(220, 10%, 10%);\n    \n    /* Semantic */\n    --color-success: hsl(142, 76%, 36%);\n    --color-warning: hsl(38, 92%, 50%);\n    --color-error: hsl(0, 84%, 60%);\n    \n    /* Surface */\n    --color-bg: white;\n    --color-bg-alt: var(--color-gray-50);\n    --color-text: var(--color-gray-900);\n    --color-text-muted: var(--color-gray-500);\n    --color-border: var(--color-gray-200);\n}\n\n/* Dark mode */\n[data-theme=\"dark\"] {\n    --color-bg: hsl(220, 10%, 10%);\n    --color-text: hsl(220, 10%, 95%);\n    --color-border: hsl(220, 10%, 20%);\n}\n```\n\n  \n### WCAG 對比規範（必懂！）\n\n```text\n對比比例：背景跟文字顏色差多少\n\nWCAG AA（最低標準）：\n- 正常文字：4.5:1\n- 大文字（18pt+ 或 14pt 粗體）：3:1\n\nWCAG AAA（高標）：\n- 正常文字：7:1\n- 大文字：4.5:1\n\n工具：\n- WebAIM contrast checker\n- Chrome DevTools 內建\n- Figma plugin \"Contrast\"\n\n常見錯誤：\n❌ 淺灰背景 + 中灰文字（#f0f0f0 + #999）\n   = 2.85:1（過不了 AA）\n   \n✓ 白背景 + 深灰文字（white + #333）\n   = 12.6:1（AAA 沒問題）\n\n實戰：\n- 內文用 #333 或 #444（不用純黑）\n- 註腳最淺用 #888（極限）\n- 別用 #ccc + 白色文字 = 看不到\n```\n\n  \n### 色盲友善\n\n```text\n全球 8% 男性 / 0.5% 女性是色盲\n最常見：紅綠色盲\n\n設計建議：\n1. 不只靠顏色傳達資訊\n   ❌ 紅字 = 錯誤、綠字 = 正確\n   ✓ 紅字 + ❌ icon、綠字 + ✓ icon\n\n2. 同類資訊用不同明度\n   ❌ 5 條折線、5 種顏色\n   ✓ 5 條折線、不同樣式（實線 / 虛線 / 點）\n\n3. 工具：Stark（Figma plugin）模擬色盲\n```\n\n  \n### 2026 趨勢\n\n```text\n1. Dark mode 標配\n   - 70%+ 用戶切換看\n   - 用 CSS variables 切\n\n2. OKLCH 取代 HSL\n   - 視覺一致性\n   - 漸進採用\n\n3. System color preference\n   - 用 prefers-color-scheme\n   - 跟 OS 設定走\n\n4. AI 配色工具\n   - Khroma、Huemint\n   - 訓練過你 brand、生 palette\n\n5. 極簡 + 高對比\n   - 簡單 brand 色\n   - 強對比\n```\n\n  \n    **☕ 用人話講**\n    \n色彩 3 心法：(1) **不要超過 3 個主色**—1 brand + 1 CTA + 灰階 (2) **WCAG 4.5:1 是底線**—內文用深色 (3) **不只靠顏色**—配合 icon / text。**新手**：抄 Tailwind 預設色票（22 色 x 11 階）= 1 小時完成 color system。\n\n  \n\n  \n    \n      🚀\n      2026 趨勢\n    \n    這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。",
+      "tip": {
+        "type": "trend",
+        "text": "這個技術 2026 還在主流、未來 5 年不會過時。但工具會更新—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "3.4.color-system",
+          "language": "css",
+          "title": "顏色系統 - CSS variables",
+          "initialCode": ":root {\n  --primary: #0066ff;\n  --primary-dark: #0052cc;\n  --accent: #50fa7b;\n  --bg: #1e1e2e;\n  --bg-card: #2d2d44;\n  --fg: #e0e0e0;\n  --fg-muted: #999;\n  --border: #444;\n}\n\nbody { background: var(--bg); color: var(--fg); padding: 20px; font-family: sans-serif; }\n.card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin: 8px 0; }\n.btn-primary { background: var(--primary); color: white; padding: 10px 20px; border: 0; border-radius: 6px; cursor: pointer; }\n.btn-primary:hover { background: var(--primary-dark); }\n.btn-accent { background: var(--accent); color: black; padding: 10px 20px; border: 0; border-radius: 6px; cursor: pointer; }\n.muted { color: var(--fg-muted); }",
+          "hint": "改 --primary 的色碼、整個網站主色一秒變"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "3 個色彩系統"
+        },
+        {
+          "level": 3,
+          "text": "色彩心理學（簡）"
+        },
+        {
+          "level": 3,
+          "text": "怎麼選色（3 種方法）"
+        },
+        {
+          "level": 3,
+          "text": "實戰：完整色票"
+        },
+        {
+          "level": 3,
+          "text": "WCAG 對比規範（必懂！）"
+        },
+        {
+          "level": 3,
+          "text": "色盲友善"
+        },
+        {
+          "level": 3,
+          "text": "2026 趨勢"
+        }
+      ]
+    },
+    {
+      "id": "3.5",
+      "number": "LESSON 3.5",
+      "title": "字體系統：hierarchy + scale",
+      "oneLineSummary": "Spacing（間距）是「設計裡看不見但最重要的東西」—亂塞東西的網頁讓人窒息。",
+      "analogy": "像地鐵尖峰時間 vs 凌晨空車—擠到肩貼肩 vs 一個人坐三個位。網頁間距太小看起來「便宜」、間距太大「太空」。8px 系統（所有間距是 8 的倍數）是業界標準。",
+      "content": "字體選好、佔了 50% 的「**看起來專業**」。學完這節能用 30 分鐘配出 modern 字體系統。\n\n  \n### 字體分類\n\n```text\n1. Serif（襯線）\n   - 末端有小裝飾\n   - 例：Times New Roman、Georgia\n   - 感覺：傳統、權威、學術\n\n2. Sans-serif（無襯線）\n   - 末端乾淨\n   - 例：Helvetica、Inter、SF Pro\n   - 感覺：現代、乾淨、科技\n   - 用：99% web、SaaS\n\n3. Mono（等寬）\n   - 每字寬度一樣\n   - 例：JetBrains Mono、Fira Code\n   - 用：code、技術內容\n\n4. Display\n   - 大標題用、不適合內文\n   - 例：Playfair、Anton\n\n2026 web 99% 用 sans-serif、選 1-2 種\n```\n\n  \n### 業界常用字體（免費）\n\n```text\nSans-serif（推薦選 1-2 個）：\n- Inter（最普及、Stripe / GitHub）\n- Geist（Vercel 出、最新）\n- SF Pro（Apple、Mac 預設）\n- Manrope（modern、圓潤）\n- Plus Jakarta Sans\n- Outfit\n- DM Sans\n\n中文字體：\n- 思源黑體（Noto Sans CJK）\n- 思源宋體（Noto Serif CJK）\n- Inter + Noto Sans CJK = 中英搭配神\n\nMono：\n- JetBrains Mono（最強 code font）\n- Fira Code（ligature 強）\n- IBM Plex Mono\n- Geist Mono\n\n哪裡找：\n- Google Fonts（免費、CDN）\n- Bunny Fonts（GDPR 友善）\n- Fontshare（高質量免費）\n\n2026 indie 主流：\nInter + Noto Sans CJK + JetBrains Mono\n```\n\n  \n### 字體載入\n\n```html\n<!-- 此處原本為 HTML 範例\n     程式碼已在內容修正中、稍後將補回完整範例 -->\n```\n\n  \n### Type Scale（字級階層）\n\n```text\n不要 1 個個指定字級—用系統\n\n常用 ratio：\n- 1.125（Major Second）：保守\n- 1.2（Minor Third）：平衡\n- 1.25（Major Third）：modern、Tailwind 用\n- 1.333（Perfect Fourth）：對比強\n\nTailwind type scale：\ntext-xs: 12px\ntext-sm: 14px\ntext-base: 16px\ntext-lg: 18px\ntext-xl: 20px\ntext-2xl: 24px\ntext-3xl: 30px\ntext-4xl: 36px\ntext-5xl: 48px\ntext-6xl: 60px\ntext-7xl: 72px\ntext-8xl: 96px\ntext-9xl: 128px\n\n→ 直接用 Tailwind 不用想\n```\n\n  \n### 實戰 type system\n\n```css\n:root {\n    /* Font families */\n    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;\n    --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;\n    \n    /* Font sizes */\n    --text-xs: 0.75rem;       /* 12px */\n    --text-sm: 0.875rem;      /* 14px */\n    --text-base: 1rem;        /* 16px */\n    --text-lg: 1.125rem;      /* 18px */\n    --text-xl: 1.25rem;       /* 20px */\n    --text-2xl: 1.5rem;       /* 24px */\n    --text-3xl: 1.875rem;     /* 30px */\n    --text-4xl: 2.25rem;      /* 36px */\n    --text-5xl: 3rem;         /* 48px */\n    \n    /* Weights */\n    --font-normal: 400;\n    --font-medium: 500;\n    --font-semibold: 600;\n    --font-bold: 700;\n    \n    /* Line height */\n    --leading-tight: 1.25;\n    --leading-normal: 1.5;\n    --leading-relaxed: 1.625;\n}\n\n/* 用法 */\nh1 {\n    font-size: var(--text-4xl);\n    font-weight: var(--font-bold);\n    line-height: var(--leading-tight);\n}\n\np {\n    font-size: var(--text-base);\n    font-weight: var(--font-normal);\n    line-height: var(--leading-relaxed);\n}\n\ncode {\n    font-family: var(--font-mono);\n    font-size: 0.95em;\n}\n```\n\n  \n### Line-height（行高）\n\n```text\n不寫 line-height 是致命錯誤\n\n預設行高（瀏覽器）：\n- 普通字 1.2 → 太擠\n\n理想行高：\n- 大標題：1.1-1.2（緊）\n- 副標題：1.3-1.4\n- 內文：1.5-1.7（最舒服）\n- 小字 / 註腳：1.4-1.5\n\n中文比英文需要更鬆（1.7-1.8）\n\n實例：\n❌ p { font-size: 16px; line-height: 1; }   /* 擠 */\n✓ p { font-size: 16px; line-height: 1.6; } /* 26px */\n```\n\n  \n### 行寬（Reading width）\n\n```text\n內文一行幾個字最舒服？\n\n英文：60-80 字符（含空格）\n中文：35-45 字\n\n太短：眼睛常跳行、累\n太長：找下行起點、累\n\nCSS：\n.content {\n    max-width: 65ch;   /* 65 character、神奇單位 */\n    margin: 0 auto;\n}\n\n.article {\n    max-width: 700px;\n}\n\n實戰：\n- 內文文章 max-width: 700-800px\n- 不要全螢幕鋪滿\n- Medium、Substack 都這樣\n```\n\n  \n### 常見字體錯誤\n\n  \n- **用 3-4 種字體**—1-2 種就好\n- **沒設 line-height**—預設太擠\n- **內文 14px 以下**—手機看吃力\n- **整段粗體**—粗體只 emphasize 關鍵字\n- **沒 fallback font**—字體沒載入空白\n- **沒 font-display: swap**—白屏等字體\n- **標題跟內文一樣大**—沒層次\n- **行寬全螢幕鋪滿**—太寬看不舒服\n\n  \n    **🚀 進階技巧**\n    \n2026 字體 stack 模板：(1) **Sans-serif 主**—Inter / Geist / Manrope 三選一 (2) **中文配 Noto Sans CJK** (3) **Mono 用 JetBrains Mono** (4) **type scale 用 1.25 ratio**—Tailwind 預設 (5) **line-height 1.6 for 內文**、1.1 for 大標 (6) **max-width 65ch / 700px**。**用 Tailwind 直接寫 `text-xl font-semibold leading-tight`**—不用記 px 值。\n\n  \n\n  \n    \n      🛠️\n      工具推薦\n    \n    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。",
+      "tip": {
+        "type": "practical",
+        "text": "配合這節用的工具：(1) VS Code（編輯器、免費）(2) Chrome DevTools（F12 開啟、除錯神器）(3) Live Server（VS Code 擴充、即時預覽）(4) GitHub Copilot / Cursor（AI 寫程式、學習加速 2-10x）。"
+      },
+      "xp": 15,
+      "playgrounds": [
+        {
+          "key": "3.5.auto",
+          "language": "css",
+          "title": "試試看",
+          "initialCode": ":root {\n    /* Font families */\n    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;\n    --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;\n    \n    /* Font sizes */\n    --text-xs: 0.75rem;       /* 12px */\n    --text-sm: 0.875rem;      /* 14px */\n    --text-base: 1rem;        /* 16px */\n    --text-lg: 1.125rem;      /* 18px */\n    --text-xl: 1.25rem;       /* 20px */\n    --text-2xl: 1.5rem;       /* 24px */\n    --text-3xl: 1.875rem;     /* 30px */\n    --text-4xl: 2.25rem;      /* 36px */\n    --text-5xl: 3rem;         /* 48px */\n    \n    /* Weights */\n    --font-normal: 400;\n    --font-medium: 500;\n    --font-semibold: 600;\n    --font-bold: 700;\n    \n    /* Line height */\n    --leading-tight: 1.25;\n    --leading-normal: 1.5;\n    --leading-relaxed: 1.625;\n}\n\n/* 用法 */\nh1 {\n    font-size: var(--text-4xl);\n    font-weight: var(--font-bold);\n    line-height: var(--leading-tight);\n}\n\np {\n    font-size: var(--text-base);\n    font-weight: var(--font-normal);\n    line-height: var(--leading-relaxed);\n}\n\ncode {\n    font-family: var(--font-mono);\n    font-size: 0.95em;\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "字體分類"
+        },
+        {
+          "level": 3,
+          "text": "業界常用字體（免費）"
+        },
+        {
+          "level": 3,
+          "text": "字體載入"
+        },
+        {
+          "level": 3,
+          "text": "Type Scale（字級階層）"
+        },
+        {
+          "level": 3,
+          "text": "實戰 type system"
+        },
+        {
+          "level": 3,
+          "text": "Line-height（行高）"
+        },
+        {
+          "level": 3,
+          "text": "行寬（Reading width）"
+        },
+        {
+          "level": 3,
+          "text": "常見字體錯誤"
+        }
+      ]
+    },
+    {
+      "id": "3.6",
+      "number": "LESSON 3.6",
+      "title": "間距 + 對齊：8pt grid",
+      "oneLineSummary": "對齊：「東西要排得整齊」—左對齊或置中或右對齊、混著用就亂。",
+      "analogy": "像排桌椅—亂歪一邊看起來「沒整理」、整齊排好「有秩序」。網頁設計同一區塊文字要同樣的對齊方式、視覺立刻清爽 10 倍。",
+      "content": "同樣內容、間距亂的看起來「**業餘**」、間距好的看起來「**專業**」。學會 8pt grid = 半個 designer。\n\n  \n### 為什麼用 grid？\n\n```text\n沒系統：\n- margin-top: 13px、padding: 17px、gap: 22px\n- 隨意指定、視覺亂\n\n有系統（8pt grid）：\n- 所有間距是 8 的倍數\n- 8, 16, 24, 32, 40, 48, 64, 80...\n- 視覺一致、看起來專業\n\n為什麼是 8？\n1. 大多螢幕 1x 縮放 8 都能整除\n2. 8 / 16 / 24 / 32 比 5 / 10 / 15 更模組化\n3. Material Design / Apple HIG 都用\n4. 算起來簡單\n\n例外：\n- 字級內間距偶爾用 4px\n- 大區塊跳 8 → 16 → 24 → 40 → 64\n```\n\n  \n### 實戰 spacing scale\n\n```css\n:root {\n    /* 4-based scale */\n    --space-1: 0.25rem;    /* 4px */\n    --space-2: 0.5rem;     /* 8px */\n    --space-3: 0.75rem;    /* 12px */\n    --space-4: 1rem;       /* 16px */\n    --space-5: 1.25rem;    /* 20px */\n    --space-6: 1.5rem;     /* 24px */\n    --space-8: 2rem;       /* 32px */\n    --space-10: 2.5rem;    /* 40px */\n    --space-12: 3rem;      /* 48px */\n    --space-16: 4rem;      /* 64px */\n    --space-20: 5rem;      /* 80px */\n    --space-24: 6rem;      /* 96px */\n}\n\n/* Tailwind 預設用這個 scale */\n\n/* 用 */\n.card {\n    padding: var(--space-6);      /* 24px */\n    gap: var(--space-4);           /* 16px */\n    margin-bottom: var(--space-8); /* 32px */\n}\n\n.button {\n    padding: var(--space-3) var(--space-6);   /* 12px 24px */\n}\n\n.section {\n    padding: var(--space-16) var(--space-8);  /* 64px 32px */\n}\n```\n\n  \n### 4 種常見間距用途\n\n```text\n1. 元件內間距（padding）\n   - Button: 12px × 24px\n   - Card: 24-32px\n   - Input: 12px × 16px\n\n2. 元件間間距（margin / gap）\n   - 相關元素：8-16px（接近）\n   - 分組之間：24-32px\n   - 大區塊：48-80px\n   - Hero 區：80-160px\n\n3. 文字間間距\n   - h1 → 副標：8px\n   - 副標 → 內文：24-32px\n   - 段落間：16-24px\n\n4. Grid / Flex gap\n   - 緊密 grid：8-16px\n   - 一般：24px\n   - 寬鬆：32-48px\n\n規則：相關的近、不相關的遠\n（Gestalt 群聚原則）\n```\n\n  \n### 對齊 4 原則\n\n```text\n1. 左對齊（內文）\n   - 99% 內文用\n   - 跟閱讀方向一致\n   - 不要 center 一大段文字\n\n2. 居中（標題 / 短文）\n   - Hero / CTA 區\n   - 不超過 3 行\n   - 對稱布局\n\n3. 右對齊（數字、表格）\n   - 金額、統計數字\n   - 對齊小數點\n   - 容易比較\n\n4. 兩端對齊（justify）\n   - 罕用、不推薦\n   - 中文沒空格、看起來怪\n\n常見錯誤：\n❌ 整段內文居中（讀起來累）\n❌ 數字左對齊（不好比較）\n❌ 元素互不對齊（看起來亂）\n```\n\n  \n### 網格系統（Grid System）\n\n```text\n12 column 是業界標準\n\nDesktop：\n[1][2][3][4][5][6][7][8][9][10][11][12]\n\n組合：\n- 6+6（兩等分）\n- 4+4+4（三等分）\n- 3+3+3+3（四等分）\n- 8+4（主要+側邊）\n- 4+8（側邊+主要）\n\nTailwind：\n\n    Main\n    Sidebar\n\nMobile：\n- 改 1 column 或 2 column\n- \n```\n\n  \n### 實戰：卡片 grid\n\n```html\n<!-- 此處原本為 HTML 範例\n     程式碼已在內容修正中、稍後將補回完整範例 -->\n```\n\n  \n### 留白（Whitespace）\n\n```text\n留白不是浪費—是設計\n\n新手：怕浪費、塞滿\n專業：知道留白 = 高級\n\n例：Apple、Stripe 用大量留白\n- Hero 區 padding 80-160px\n- 元素間 64-96px\n- 看起來高級\n\n但留白要「對的地方」：\n- 重要 CTA 周圍留白多 → 吸引\n- 相關內容近 → 群聚\n- 不要每個元素都浮在大空白裡\n\n平衡公式：\n- 重要元素 → 周圍留白\n- 內容多 → 適度緊湊\n- 行動指引明確 → 顯眼\n```\n\n  \n### 常見間距錯誤\n\n  \n- **隨意指定 padding**—13px / 17px / 23px、看起來亂\n- **標題跟內文太近**—一坨\n- **邊框緊貼內容**—padding 至少 16-24px\n- **所有間距一樣**—沒群聚感\n- **行間 padding 不對稱**—左 16 右 12 看起來歪\n- **手機沒調間距**—desktop 80px hero 手機應該 40px\n\n  \n    **☕ 用人話講**\n    \n間距系統 3 心法：(1) **8pt grid**—間距永遠是 8 的倍數（4, 8, 16, 24, 32, 48, 64...） (2) **相關近、不相關遠**（Gestalt 群聚） (3) **留白是高級**—怕浪費 = 看起來業餘。**新手**：用 Tailwind p-4 / gap-6 / mb-8 直接套、不用記 px 值。\n\n  \n\n  \n    \n      ⚠️\n      新手常見錯誤\n    \n    新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。",
+      "tip": {
+        "type": "warning",
+        "text": "新手 3 大坑：(1) 不看 console—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) 不存檔就 F5—改完忘記儲存以為「程式沒效果」 (3) 抄 code 不理解—複製貼上能跑、但下次要改就崩潰。記得：先看懂、再寫。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "3.6.auto",
+          "language": "css",
+          "title": "試試看",
+          "initialCode": ":root {\n    /* 4-based scale */\n    --space-1: 0.25rem;    /* 4px */\n    --space-2: 0.5rem;     /* 8px */\n    --space-3: 0.75rem;    /* 12px */\n    --space-4: 1rem;       /* 16px */\n    --space-5: 1.25rem;    /* 20px */\n    --space-6: 1.5rem;     /* 24px */\n    --space-8: 2rem;       /* 32px */\n    --space-10: 2.5rem;    /* 40px */\n    --space-12: 3rem;      /* 48px */\n    --space-16: 4rem;      /* 64px */\n    --space-20: 5rem;      /* 80px */\n    --space-24: 6rem;      /* 96px */\n}\n\n/* Tailwind 預設用這個 scale */\n\n/* 用 */\n.card {\n    padding: var(--space-6);      /* 24px */\n    gap: var(--space-4);           /* 16px */\n    margin-bottom: var(--space-8); /* 32px */\n}\n\n.button {\n    padding: var(--space-3) var(--space-6);   /* 12px 24px */\n}\n\n.section {\n    padding: var(--space-16) var(--space-8);  /* 64px 32px */\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "為什麼用 grid？"
+        },
+        {
+          "level": 3,
+          "text": "實戰 spacing scale"
+        },
+        {
+          "level": 3,
+          "text": "4 種常見間距用途"
+        },
+        {
+          "level": 3,
+          "text": "對齊 4 原則"
+        },
+        {
+          "level": 3,
+          "text": "網格系統（Grid System）"
+        },
+        {
+          "level": 3,
+          "text": "實戰：卡片 grid"
+        },
+        {
+          "level": 3,
+          "text": "留白（Whitespace）"
+        },
+        {
+          "level": 3,
+          "text": "常見間距錯誤"
+        }
+      ]
+    },
+    {
+      "id": "3.7",
+      "number": "LESSON 3.7",
+      "title": "Button：5 種狀態 + 階層",
+      "oneLineSummary": "Grid System 是「網頁排版的隱形格線」—12 欄式是業界主流。",
+      "analogy": "像畫畫的格子紙—不是要畫格子、是讓東西對齊更準。設計系統都用 12 欄 grid—因為 12 可以被 2/3/4/6 整除、做 1/2/1/3 等分版面都行。",
+      "content": "Button 是最基本元件—但 80% 工程師寫的 button 只有 1 種狀態。學完這節 button 設計贏 80% 網站。\n\n  \n### Button 必備的 5 種狀態\n\n```text\n1. Default（預設）\n   - 基本樣子、靜止\n\n2. Hover（滑鼠懸停）\n   - 顏色變化、提示「能點」\n   - 不只變指標 cursor\n\n3. Active / Pressed（按下）\n   - 顏色更深、有「按進去」感\n   - 視覺回饋\n\n4. Focus（鍵盤聚焦）\n   - 鍵盤 Tab 過來的視覺\n   - outline 或 ring\n   - a11y 必須\n\n5. Disabled（不可點）\n   - 半透明、灰色\n   - cursor: not-allowed\n\n進階：\n6. Loading（載入中）\n   - Spinner 取代 icon\n   - 文字改「處理中...」\n   - 防止重複點擊\n```\n\n  \n### 實戰 Button CSS\n\n```css\n.button {\n    /* Default */\n    background: #0066ff;\n    color: white;\n    padding: 12px 24px;\n    border-radius: 8px;\n    font-weight: 600;\n    border: none;\n    cursor: pointer;\n    transition: all 0.15s ease;\n}\n\n.button:hover {\n    background: #0052cc;\n    transform: translateY(-1px);\n    box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);\n}\n\n.button:active {\n    background: #003d99;\n    transform: translateY(0);\n    box-shadow: 0 2px 4px rgba(0, 102, 255, 0.3);\n}\n\n.button:focus-visible {\n    outline: 2px solid #0066ff;\n    outline-offset: 2px;\n}\n\n.button:disabled {\n    background: #ccc;\n    color: #999;\n    cursor: not-allowed;\n    transform: none;\n    box-shadow: none;\n}\n\n/* Loading */\n.button.loading {\n    pointer-events: none;\n}\n.button.loading::before {\n    content: '';\n    display: inline-block;\n    width: 14px;\n    height: 14px;\n    border: 2px solid white;\n    border-top-color: transparent;\n    border-radius: 50%;\n    animation: spin 0.6s linear infinite;\n    margin-right: 8px;\n}\n\n@keyframes spin {\n    to { transform: rotate(360deg); }\n}\n```\n\n  \n### Button 階層（Hierarchy）\n\n```text\n同一個畫面有多個 button、要分主次\n\n1. Primary（主要）\n   - 用品牌色實心\n   - 1 個畫面只有 1 個！\n   - 例：「Submit」「Buy」「Sign Up」\n\n2. Secondary（次要）\n   - 灰色或品牌色 outline\n   - 可有多個\n   - 例：「Cancel」「Back」\n\n3. Tertiary / Ghost（第三層）\n   - 純文字、無背景\n   - 偶爾用\n   - 例：「Learn more」「Skip」\n\n4. Destructive（破壞性）\n   - 紅色\n   - 危險動作\n   - 例：「Delete」「Remove」\n\n5. Icon-only\n   - 只有 icon、沒文字\n   - 配 tooltip\n   - 例：toolbar、close (×)\n\n實例：\n[ Save ]   [ Cancel ]   [ Delete ]\n Primary    Secondary    Destructive\n```\n\n  \n### Button 尺寸\n\n```text\n3 個尺寸夠用：\n\nSmall（小）：\n- 32px 高\n- padding: 8px 12px\n- font-size: 14px\n- 用：toolbar、密集介面\n\nMedium（預設）：\n- 40px 高\n- padding: 12px 16px\n- font-size: 16px\n- 用：大多場景\n\nLarge（大）：\n- 48px+ 高\n- padding: 16px 32px\n- font-size: 18px\n- 用：Hero CTA、行動裝置\n\niOS / Apple HIG 建議：\n- Mobile touch target 最少 44px × 44px\n- 避免「點不到」\n\n實戰：\n- Mobile button 用 Large\n- Desktop 用 Medium\n- 1 個 SaaS 不要超過 3 種尺寸\n```\n\n  \n### Button + Icon\n\n```html\n<!-- 此處原本為 HTML 範例\n     程式碼已在內容修正中、稍後將補回完整範例 -->\n```\n\n  \n### 2026 推薦：shadcn/ui Button\n\n```tsx\n// shadcn/ui 是 2026 React + Tailwind 主流元件庫\n// 不是 npm install、是 copy code（你擁有）\n\n// components/ui/button.tsx\nimport { cva } from \"class-variance-authority\";\n\nconst buttonVariants = cva(\n    \"inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50\",\n    {\n        variants: {\n            variant: {\n                default: \"bg-primary text-primary-foreground hover:bg-primary/90\",\n                destructive: \"bg-destructive text-destructive-foreground hover:bg-destructive/90\",\n                outline: \"border border-input bg-background hover:bg-accent\",\n                secondary: \"bg-secondary text-secondary-foreground hover:bg-secondary/80\",\n                ghost: \"hover:bg-accent\",\n                link: \"text-primary underline-offset-4 hover:underline\"\n            },\n            size: {\n                default: \"h-10 px-4 py-2\",\n                sm: \"h-9 rounded-md px-3\",\n                lg: \"h-11 rounded-md px-8\",\n                icon: \"h-10 w-10\"\n            }\n        },\n        defaultVariants: {\n            variant: \"default\",\n            size: \"default\"\n        }\n    }\n);\n\n// 用\nSign Up\nCancel\nDelete\n\n```\n\n  \n### 常見 Button 錯誤\n\n  \n- **只有 1 種狀態**—沒 hover / active / focus\n- **3 個 primary 在一起**—用戶不知點哪\n- **用「Click here」**—動詞太弱、用「Save」「Submit」\n- **太小 button**—mobile 點不到（\n    **🚀 進階技巧**\n    \nButton 6 心法：(1) **5 種狀態完整**—default / hover / active / focus / disabled (2) **1 個畫面 1 個 primary**—其他 secondary (3) **動詞文字**—Save 不寫 Click here (4) **mobile 44px+**—touch target (5) **focus-visible 不可拿**—鍵盤友善 (6) **用 shadcn/ui**—業界主流、5 分鐘搞定。\n\n  \n\n  \n    \n      💼\n      接案小知識\n    \n    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「UI/UX」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。",
+      "tip": {
+        "type": "practical",
+        "text": "剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「UI/UX」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "3.7.auto",
+          "language": "css",
+          "title": "試試看",
+          "initialCode": ".button {\n    /* Default */\n    background: #0066ff;\n    color: white;\n    padding: 12px 24px;\n    border-radius: 8px;\n    font-weight: 600;\n    border: none;\n    cursor: pointer;\n    transition: all 0.15s ease;\n}\n\n.button:hover {\n    background: #0052cc;\n    transform: translateY(-1px);\n    box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);\n}\n\n.button:active {\n    background: #003d99;\n    transform: translateY(0);\n    box-shadow: 0 2px 4px rgba(0, 102, 255, 0.3);\n}\n\n.button:focus-visible {\n    outline: 2px solid #0066ff;\n    outline-offset: 2px;\n}\n\n.button:disabled {\n    background: #ccc;\n    color: #999;\n    cursor: not-allowed;\n    transform: none;\n    box-shadow: none;\n}\n\n/* Loading */\n.button.loading {\n    pointer-events: none;\n}\n.button.loading::before {\n    content: '';\n    display: inline-block;\n    width: 14px;\n    height: 14px;\n    border: 2px solid white;\n    border-top-color: transparent;\n    border-radius: 50%;\n    animation: spin 0.6s linear infinite;\n    margin-right: 8px;\n}\n\n@keyframes spin {\n    to { transform: rotate(360deg); }\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "Button 必備的 5 種狀態"
+        },
+        {
+          "level": 3,
+          "text": "實戰 Button CSS"
+        },
+        {
+          "level": 3,
+          "text": "Button 階層（Hierarchy）"
+        },
+        {
+          "level": 3,
+          "text": "Button 尺寸"
+        },
+        {
+          "level": 3,
+          "text": "Button + Icon"
+        },
+        {
+          "level": 3,
+          "text": "2026 推薦：shadcn/ui Button"
+        },
+        {
+          "level": 3,
+          "text": "常見 Button 錯誤"
+        }
+      ]
+    },
+    {
+      "id": "3.8",
+      "number": "LESSON 3.8",
+      "title": "Form：完整表單流程",
+      "oneLineSummary": "Nielsen 10 大可用性原則—UX 界的「10 誡」、做產品時拿來檢查。",
+      "analogy": "像料理的 SOP—菜要好吃有共通原則（火候 / 調味 / 食材新鮮）。UX 也有：給回饋、可逆操作、減少記憶負擔、錯誤防範—違反這 10 條就是「難用的產品」。",
+      "content": "表單是 SaaS 最常見元件—設計爛用戶轉換率掉一半。學完這節能設計 conversion-friendly 表單。\n\n  \n### 表單 6 個必懂元素\n\n```text\n1. Label（標籤）\n   - 永遠在 input 上方或左邊\n   - 不要 placeholder 當 label！\n   - 必填加 *\n\n2. Input（輸入欄）\n   - 高度至少 44px\n   - 對齊 + padding 一致\n   - focus 狀態明顯\n\n3. Helper text（提示）\n   - 規則說明（密碼至少 8 字）\n   - 字小、灰色\n\n4. Error message（錯誤訊息）\n   - 紅色、清楚\n   - 出現在 input 下方\n   - 即時 / 送出時顯示\n\n5. Submit button\n   - Primary 樣式\n   - 文字明確（Save、不是 OK）\n\n6. Cancel / Back（退路）\n   - Secondary 樣式\n   - 永遠提供\n```\n\n  \n### 實戰：完整 form HTML\n\n```html\n<!-- 此處原本為 HTML 範例\n     程式碼已在內容修正中、稍後將補回完整範例 -->\n```\n\n  \n### Validation 策略\n\n```text\n3 種 validation 時機：\n\n1. 即時驗證（onChange）\n   - 輸入時驗證\n   - 例：密碼長度\n   - 太煩用戶：每打 1 字就紅\n   - 好：等 onBlur（離開欄位）才驗\n\n2. 離開欄位（onBlur）\n   - 用戶填完跳下個欄位才驗\n   - 業界主流\n   - 不打擾、即時\n\n3. 送出時（onSubmit）\n   - 點 submit 才全部驗\n   - 不夠即時\n   - 用戶要重看整個 form\n\n2026 推薦混合：\n- onBlur：欄位離開驗一次\n- onChange：錯誤時即時 re-validate\n- onSubmit：全部最終驗證\n\n工具：\n- React Hook Form（最普及）\n- Zod（schema validation）\n- React Hook Form + Zod 是 2026 主流\n```\n\n  \n### Error 訊息設計\n\n```text\n好的錯誤訊息：\n\n❌ \"Invalid input\"\n✓ \"Email format incorrect (e.g. you@example.com)\"\n\n❌ \"Error\"\n✓ \"Password must be at least 8 characters\"\n\n❌ \"Required field\"\n✓ \"Please enter your email\"\n\n3 原則：\n1. 告訴用戶什麼錯\n2. 告訴為什麼錯\n3. 告訴怎麼修\n\n位置：input 下方、近 error 的地方\n顏色：紅 + icon\n動畫：可以 subtle 抖動提示\n```\n\n  \n### 進階：Input 類型\n\n```html\n\n       \n          \n       \n          \n       \n         \n         \n     \n         \n\n       \n       \n\n```\n\n  \n### 大表單 UX\n\n```text\n長表單怎麼設計：\n\n1. 拆步驟（Multi-step）\n   - 一次顯示 3-5 欄位\n   - 進度條 / Stepper\n   - 例：[1] [2] [3] - You are here\n\n2. 分組（Group）\n   - 個資 / 帳戶 / 偏好\n   - 視覺分隔\n\n3. 收合（Collapsible）\n   - 進階選項收起\n   - 預設不顯示\n\n4. 自動儲存（Auto-save）\n   - 不要用戶填一半丟失\n   - 每隔 30 秒存 localStorage / DB\n\n5. 上下文驗證\n   - 填到哪驗到哪\n   - 不要送出才一次報所有錯\n\n6. 鍵盤友善\n   - Tab 順序對\n   - Enter 送出\n   - Esc 取消\n\n業界經典：Stripe 的 checkout\n- 看 stripe.com/checkout\n- 短、清楚、即時驗證\n```\n\n  \n### 2026 推薦：React Hook Form + Zod\n\n```tsx\nimport { useForm } from \"react-hook-form\";\nimport { zodResolver } from \"@hookform/resolvers/zod\";\nimport { z } from \"zod\";\n\nconst SignupSchema = z.object({\n    email: z.string().email(\"Invalid email\"),\n    password: z.string().min(8, \"At least 8 characters\"),\n    name: z.string().min(2, \"Name too short\")\n});\n\ntype SignupForm = z.infer;\n\nfunction SignupForm() {\n    const { register, handleSubmit, formState: { errors, isSubmitting } } =\n        useForm({\n            resolver: zodResolver(SignupSchema)\n        });\n    \n    const onSubmit = async (data: SignupForm) => {\n        await signup(data);\n    };\n    \n    return (\n        \n            \n                Email\n                \n                {errors.email && \n{errors.email.message}\n}\n            \n            \n            \n                Password\n                \n                {errors.password && \n{errors.password.message}\n}\n            \n            \n            \n                {isSubmitting ? \"Signing up...\" : \"Sign Up\"}\n            \n        \n    );\n}\n```\n\n  \n### 常見 form 錯誤\n\n  \n- **placeholder 當 label**—用戶開始輸入就消失\n- **沒 autocomplete**—瀏覽器自動填功能失效\n- **送出後清空**—錯了一個欄位全重來\n- **error 訊息太模糊**—「invalid」不告訴怎麼修\n- **沒 disable submit button**—點兩次送兩次\n- **mobile input 跳到大寫**—autocapitalize=\"none\"\n- **iOS 點 input 自動 zoom**—font-size 設 16px+\n- **Tab 順序亂**—鍵盤用戶痛苦\n\n  \n    **☕ 用人話講**\n    \nForm 5 心法：(1) **label 在上、不要當 placeholder** (2) **onBlur 驗證**—離開欄位才驗、不要每打字就紅 (3) **error 訊息具體**—告訴怎麼修 (4) **autocomplete + 正確 input type**—讓 mobile 鍵盤對 (5) **2026 用 React Hook Form + Zod**—標配。\n\n  \n\n  \n    \n      🎯\n      面試考點\n    \n    台灣科技公司面試 90% 會問「UI/UX」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。",
+      "tip": {
+        "type": "pro",
+        "text": "台灣科技公司面試 90% 會問「UI/UX」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "3.8.auto",
+          "language": "tsx",
+          "title": "試試看",
+          "initialCode": "import { useForm } from \"react-hook-form\";\nimport { zodResolver } from \"@hookform/resolvers/zod\";\nimport { z } from \"zod\";\n\nconst SignupSchema = z.object({\n    email: z.string().email(\"Invalid email\"),\n    password: z.string().min(8, \"At least 8 characters\"),\n    name: z.string().min(2, \"Name too short\")\n});\n\ntype SignupForm = z.infer;\n\nfunction SignupForm() {\n    const { register, handleSubmit, formState: { errors, isSubmitting } } =\n        useForm({\n            resolver: zodResolver(SignupSchema)\n        });\n    \n    const onSubmit = async (data: SignupForm) => {\n        await signup(data);\n    };\n    \n    return (\n        \n            \n                Email\n                \n                {errors.email && \n{errors.email.message}\n}\n            \n            \n            \n                Password\n                \n                {errors.password && \n{errors.password.message}\n}\n            \n            \n            \n                {isSubmitting ? \"Signing up...\" : \"Sign Up\"}\n            \n        \n    );\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "表單 6 個必懂元素"
+        },
+        {
+          "level": 3,
+          "text": "實戰：完整 form HTML"
+        },
+        {
+          "level": 3,
+          "text": "Validation 策略"
+        },
+        {
+          "level": 3,
+          "text": "Error 訊息設計"
+        },
+        {
+          "level": 3,
+          "text": "進階：Input 類型"
+        },
+        {
+          "level": 3,
+          "text": "大表單 UX"
+        },
+        {
+          "level": 3,
+          "text": "2026 推薦：React Hook Form + Zod"
+        },
+        {
+          "level": 3,
+          "text": "常見 form 錯誤"
+        }
+      ]
+    },
+    {
+      "id": "3.9",
+      "number": "LESSON 3.9",
+      "title": "Card：最常用元件設計",
+      "oneLineSummary": "Mobile First：「先設計手機版、再放大成電腦版」—2026 起這是主流。",
+      "analogy": "像「窄空間先收納、再搬到大房子」vs 反過來—小空間設計好搬大也好、大空間擠進小屋會崩潰。Mobile First 確保你的內容在最嚴苛的螢幕上能用。",
+      "content": "Card 是 modern web 最常用元件—列表、grid、profile、product 全用 card。設計得好整個介面變專業。\n\n  \n### Card 結構\n\n```text\n標準 card 5 部分：\n\n1. Image / Media（可選）\n   - 頂部視覺\n   - aspect ratio 固定（16:9 或 1:1）\n\n2. Header\n   - 標題 + meta（時間 / 作者）\n\n3. Body\n   - 主要內容 / 描述\n\n4. Tags / Meta（可選）\n   - 分類、標籤\n\n5. Actions / Footer\n   - 按鈕、連結\n   - 或 hover 才顯示\n```\n\n  \n### 實戰：完整 card CSS\n\n```html\n<!-- 此處原本為 HTML 範例\n     程式碼已在內容修正中、稍後將補回完整範例 -->\n```\n\n  \n### Card 設計模式\n\n```text\n5 種常見 card 模式：\n\n1. Article card（部落格 / 新聞）\n   - 圖 + 標題 + 描述 + meta\n\n2. Product card（電商）\n   - 圖 + 名 + 價格 + Add 按鈕\n   - hover 顯示快速操作\n\n3. Profile card（用戶）\n   - 頭像 + 名 + 職位 + bio\n\n4. Stats card（dashboard）\n   - 大數字 + label + 趨勢\n\n5. Empty card（empty state）\n   - icon + 標題 + 描述 + CTA\n```\n\n  \n### Card hover 效果\n\n```css\n/* 微妙的 hover（推薦） */\n.card {\n    transition: all 0.2s ease;\n}\n.card:hover {\n    transform: translateY(-2px);   /* 浮起 */\n    box-shadow: 0 12px 24px rgba(0,0,0,0.08);\n}\n\n/* 邊框變化 */\n.card:hover {\n    border-color: var(--color-primary);\n}\n\n/* 圖片放大 */\n.card-image {\n    transition: transform 0.3s ease;\n}\n.card:hover .card-image {\n    transform: scale(1.05);\n}\n\n/* 漸進顯示 actions */\n.card-actions {\n    opacity: 0;\n    transition: opacity 0.2s ease;\n}\n.card:hover .card-actions {\n    opacity: 1;\n}\n\n/* 不要太誇張 */\n❌ rotate(5deg) scale(1.1)   /* 太花 */\n❌ box-shadow 0 30px 60px      /* 太重 */\n```\n\n  \n### Card 邊框 vs 陰影\n\n```text\n2 種視覺風格：\n\n1. 邊框（border）\n   - 例：Linear、GitHub\n   - 乾淨、modern\n   - 適合資訊密集介面\n   - border: 1px solid #e5e7eb\n\n2. 陰影（shadow）\n   - 例：Material Design、Stripe\n   - 立體、層次感\n   - 適合 marketing 頁\n   - box-shadow: 0 1px 3px rgba(0,0,0,0.1)\n\n3. 兩個都有（適度）\n   - 微弱陰影 + 細邊框\n   - 最常見、2026 主流\n\n選擇：\n- 內容多、緊密 → border\n- 視覺強、稀疏 → shadow\n- 都可用 → 看 brand 風格\n\n不要：\n❌ 又深陰影又粗邊框（重複）\n❌ 1 個畫面多種 card 風格\n```\n\n  \n### Card grid 響應式\n\n```html\n<!-- 此處原本為 HTML 範例\n     程式碼已在內容修正中、稍後將補回完整範例 -->\n```\n\n  \n### Skeleton card（loading）\n\n```css\n/* 假 card 在 data 載入時用 */\n\n.card-skeleton {\n    background: white;\n    border-radius: 12px;\n    padding: 20px;\n    border: 1px solid #e5e7eb;\n}\n\n.skeleton-line {\n    background: linear-gradient(\n        90deg,\n        #f3f4f6 25%,\n        #e5e7eb 50%,\n        #f3f4f6 75%\n    );\n    background-size: 200% 100%;\n    animation: skeleton 1.5s infinite;\n    border-radius: 4px;\n    height: 16px;\n    margin-bottom: 12px;\n}\n\n.skeleton-line.short { width: 60%; }\n.skeleton-line.title { height: 24px; }\n.skeleton-image {\n    aspect-ratio: 16/9;\n    /* 同樣動畫 */\n}\n\n@keyframes skeleton {\n    0% { background-position: 200% 0; }\n    100% { background-position: -200% 0; }\n}\n\n/* 用戶看到「東西要來了」、不是空白 */\n```\n\n  \n### 常見 Card 錯誤\n\n  \n- **圖片 aspect ratio 不一**—grid 看起來亂\n- **card 高度不一**—標題長短不同造成、用 flex-1 撐\n- **沒 hover 狀態**—不知道能點\n- **整個 card 不是 link**—只有「Read more」可點\n- **card 內太多元素**—亂、無重點\n- **陰影太重**—老氣（2010 年代風）\n- **沒 loading skeleton**—空白白屏\n\n  \n    **☕ 用人話講**\n    \nCard 4 心法：(1) **固定 aspect-ratio**—圖片不會亂 (2) **border 或 shadow 二選一**—不要都重 (3) **整個 card 是 link**—用戶到處點都行 (4) **用 skeleton loading**—不要空白白屏。**2026 趨勢**：subtle border + 輕微 hover transform + 微弱 shadow。\n\n  \n\n  \n    \n      ⚡\n      學習加速器\n    \n    把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。",
+      "tip": {
+        "type": "practical",
+        "text": "把這節學到的馬上應用到一個小東西—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "3.9.auto",
+          "language": "css",
+          "title": "試試看",
+          "initialCode": "/* 微妙的 hover（推薦） */\n.card {\n    transition: all 0.2s ease;\n}\n.card:hover {\n    transform: translateY(-2px);   /* 浮起 */\n    box-shadow: 0 12px 24px rgba(0,0,0,0.08);\n}\n\n/* 邊框變化 */\n.card:hover {\n    border-color: var(--color-primary);\n}\n\n/* 圖片放大 */\n.card-image {\n    transition: transform 0.3s ease;\n}\n.card:hover .card-image {\n    transform: scale(1.05);\n}\n\n/* 漸進顯示 actions */\n.card-actions {\n    opacity: 0;\n    transition: opacity 0.2s ease;\n}\n.card:hover .card-actions {\n    opacity: 1;\n}\n\n/* 不要太誇張 */\n❌ rotate(5deg) scale(1.1)   /* 太花 */\n❌ box-shadow 0 30px 60px      /* 太重 */",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "Card 結構"
+        },
+        {
+          "level": 3,
+          "text": "實戰：完整 card CSS"
+        },
+        {
+          "level": 3,
+          "text": "Card 設計模式"
+        },
+        {
+          "level": 3,
+          "text": "Card hover 效果"
+        },
+        {
+          "level": 3,
+          "text": "Card 邊框 vs 陰影"
+        },
+        {
+          "level": 3,
+          "text": "Card grid 響應式"
+        },
+        {
+          "level": 3,
+          "text": "Skeleton card（loading）"
+        },
+        {
+          "level": 3,
+          "text": "常見 Card 錯誤"
+        }
+      ]
+    },
+    {
+      "id": "3.10",
+      "number": "LESSON 3.10",
+      "title": "Modal / Dialog：對話框設計",
+      "oneLineSummary": "Touch Target：「按鈕大小至少 44×44px」—不然手指按不到。",
+      "analogy": "像大姆指按麻將—太小的牌按不準、會誤按隔壁。手指尖大概 7-10mm、按鈕 44px 是 iOS 規定的最小值。違反的網頁手機很難用。",
+      "content": "Modal 是 web 最容易做爛的元件之一—鎖捲動、focus trap、ESC 關閉、a11y 都要處理。\n\n  \n### Modal 何時用、何時不用\n\n```text\n適合 Modal：\n✓ 重要 confirm（刪除確認）\n✓ 短表單（登入、新增）\n✓ 圖片放大 / lightbox\n✓ 簡短 onboarding 步驟\n\n不適合：\n✗ 長表單（用獨立頁）\n✗ 主要 navigation（不該需要關閉）\n✗ Marketing popup（吵到用戶）\n✗ Cookie 同意（用 banner）\n✗ 一次性訊息（用 toast）\n\n替代：\n- Toast / Snackbar（小提示）\n- Drawer / Side panel（侧滑）\n- Inline edit（直接編輯）\n- 獨立頁面（複雜流程）\n```\n\n  \n### Modal 完整結構\n\n```html\n<!-- 此處原本為 HTML 範例\n     程式碼已在內容修正中、稍後將補回完整範例 -->\n```\n\n  \n### Modal CSS\n\n```css\n.modal-overlay {\n    position: fixed;\n    inset: 0;\n    background: rgba(0, 0, 0, 0.5);\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    z-index: 1000;\n    padding: 20px;\n    /* 動畫 */\n    animation: fadeIn 0.2s ease;\n}\n\n.modal {\n    background: white;\n    border-radius: 12px;\n    max-width: 500px;\n    width: 100%;\n    max-height: 90vh;\n    overflow-y: auto;\n    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);\n    animation: scaleIn 0.2s ease;\n}\n\n.modal-header {\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n    padding: 20px 24px;\n    border-bottom: 1px solid #e5e7eb;\n}\n\n.modal-body {\n    padding: 24px;\n}\n\n.modal-footer {\n    padding: 16px 24px;\n    border-top: 1px solid #e5e7eb;\n    display: flex;\n    justify-content: flex-end;\n    gap: 12px;\n}\n\n.modal-close {\n    background: none;\n    border: none;\n    cursor: pointer;\n    padding: 8px;\n    border-radius: 6px;\n    transition: background 0.15s;\n}\n.modal-close:hover {\n    background: #f3f4f6;\n}\n\n@keyframes fadeIn {\n    from { opacity: 0; }\n    to { opacity: 1; }\n}\n@keyframes scaleIn {\n    from { transform: scale(0.95); opacity: 0; }\n    to { transform: scale(1); opacity: 1; }\n}\n```\n\n  \n### 5 個必做行為\n\n```text\n1. 鎖背景捲動\n   - 用戶開 modal 不該滾背景\n   - 加 body.style.overflow = \"hidden\"\n\n2. ESC 關閉\n   - 鍵盤用戶必須\n   - addEventListener(\"keydown\", e => e.key === \"Escape\")\n\n3. 點外面關閉\n   - 點 overlay 關閉\n   - 點 modal 本體不關\n\n4. Focus trap\n   - Tab 只在 modal 內循環\n   - 不能 Tab 跳出去到背景\n\n5. 開啟時 focus 第一個元素\n   - close button 或第一個 input\n   - 用戶能立刻操作\n```\n\n  \n### React 完整實作\n\n```tsx\nimport { useEffect, useRef } from \"react\";\n\ninterface ModalProps {\n    isOpen: boolean;\n    onClose: () => void;\n    title: string;\n    children: React.ReactNode;\n}\n\nfunction Modal({ isOpen, onClose, title, children }: ModalProps) {\n    const modalRef = useRef(null);\n    \n    useEffect(() => {\n        if (!isOpen) return;\n        \n        // 鎖捲動\n        document.body.style.overflow = \"hidden\";\n        \n        // ESC 關\n        const handleKey = (e: KeyboardEvent) => {\n            if (e.key === \"Escape\") onClose();\n        };\n        window.addEventListener(\"keydown\", handleKey);\n        \n        // Focus modal\n        modalRef.current?.focus();\n        \n        return () => {\n            document.body.style.overflow = \"\";\n            window.removeEventListener(\"keydown\", handleKey);\n        };\n    }, [isOpen, onClose]);\n    \n    if (!isOpen) return null;\n    \n    return (\n        \n             e.stopPropagation()}\n                tabIndex={-1}\n            >\n                \n                    \n## {title}\n\n                    ×\n                \n                {children}\n            \n        \n    );\n}\n\n// 2026 推薦：用 shadcn/ui Dialog 或 Radix Dialog\n// 處理好 a11y、不用自己造輪\n```\n\n  \n### 2026 推薦：Radix UI / shadcn Dialog\n\n```tsx\n// shadcn/ui Dialog（基於 Radix）\n// a11y 全處理好、focus trap / portal / animation\n\nimport {\n    Dialog,\n    DialogContent,\n    DialogHeader,\n    DialogTitle,\n    DialogDescription,\n    DialogFooter\n} from \"@/components/ui/dialog\";\n\n    \n        \n            Delete Item\n            \n                Are you sure? This cannot be undone.\n            \n        \n        \n        \n             setIsOpen(false)}>\n                Cancel\n            \n            \n                Delete\n            \n        \n    \n\n// 全部 a11y 行為自動：\n// - ESC 關\n// - 點外面關\n// - Focus trap\n// - 鎖捲動\n// - Portal（不在 component tree 內）\n// - 動畫\n```\n\n  \n### Drawer / Sheet（modal 變種）\n\n```text\n從邊側滑入、不是中間彈出\n\n適合：\n- Mobile menu\n- 設定 panel\n- Filter sidebar\n- Cart preview\n- AI chat side panel\n\n優點：\n- 不擋主內容\n- 動畫自然\n- 適合連續操作\n\nCSS：\n.drawer {\n    position: fixed;\n    top: 0;\n    right: -400px;\n    width: 400px;\n    height: 100vh;\n    background: white;\n    transition: right 0.3s ease;\n}\n.drawer.open {\n    right: 0;\n}\n\nshadcn/ui 也有 Sheet 元件\n```\n\n  \n### 常見 Modal 錯誤\n\n  \n- **沒鎖背景捲動**—背景跟著滾\n- **ESC 不能關**—鍵盤用戶卡住\n- **沒 focus trap**—Tab 跳到背景\n- **沒 z-index**—被其他元素蓋\n- **點外面不能關**—用戶習慣被破壞\n- **動畫太重**—彈跳、旋轉看起來廉價\n- **太多 nested modal**—modal 內開 modal、UX 災難\n- **mobile 沒適配**—覆蓋 fixed header\n\n  \n    **⚠ 踩雷警告**\n    \nModal 是「**看起來簡單、做好很難**」的元件—鎖捲動、focus trap、a11y 都要對。**2026 推薦**：直接用 shadcn/ui Dialog 或 Radix UI、別自己造輪—a11y 細節太多。**3 個禁忌**：(1) 沒 ESC 關閉 (2) 沒 focus trap (3) modal 內開 modal。\n\n  \n\n  \n    \n      🚀\n      2026 趨勢\n    \n    這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。",
+      "tip": {
+        "type": "trend",
+        "text": "這個技術 2026 還在主流、未來 5 年不會過時。但工具會更新—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "3.10.auto",
+          "language": "css",
+          "title": "試試看",
+          "initialCode": ".modal-overlay {\n    position: fixed;\n    inset: 0;\n    background: rgba(0, 0, 0, 0.5);\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    z-index: 1000;\n    padding: 20px;\n    /* 動畫 */\n    animation: fadeIn 0.2s ease;\n}\n\n.modal {\n    background: white;\n    border-radius: 12px;\n    max-width: 500px;\n    width: 100%;\n    max-height: 90vh;\n    overflow-y: auto;\n    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);\n    animation: scaleIn 0.2s ease;\n}\n\n.modal-header {\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n    padding: 20px 24px;\n    border-bottom: 1px solid #e5e7eb;\n}\n\n.modal-body {\n    padding: 24px;\n}\n\n.modal-footer {\n    padding: 16px 24px;\n    border-top: 1px solid #e5e7eb;\n    display: flex;\n    justify-content: flex-end;\n    gap: 12px;\n}\n\n.modal-close {\n    background: none;\n    border: none;\n    cursor: pointer;\n    padding: 8px;\n    border-radius: 6px;\n    transition: background 0.15s;\n}\n.modal-close:hover {\n    background: #f3f4f6;\n}\n\n@keyframes fadeIn {\n    from { opacity: 0; }\n    to { opacity: 1; }\n}\n@keyframes scaleIn {\n    from { transform: scale(0.95); opacity: 0; }\n    to { transform: scale(1); opacity: 1; }\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "Modal 何時用、何時不用"
+        },
+        {
+          "level": 3,
+          "text": "Modal 完整結構"
+        },
+        {
+          "level": 3,
+          "text": "Modal CSS"
+        },
+        {
+          "level": 3,
+          "text": "5 個必做行為"
+        },
+        {
+          "level": 3,
+          "text": "React 完整實作"
+        },
+        {
+          "level": 3,
+          "text": "2026 推薦：Radix UI / shadcn Dialog"
+        },
+        {
+          "level": 3,
+          "text": "Drawer / Sheet（modal 變種）"
+        },
+        {
+          "level": 3,
+          "text": "常見 Modal 錯誤"
+        }
+      ]
+    },
+    {
+      "id": "3.11",
+      "number": "LESSON 3.11",
+      "title": "Navigation：選單 + 麵包屑",
+      "oneLineSummary": "Accessibility（a11y）：「讓所有人都能用」—色盲 / 視障 / 老人 / 手抖也能用你的網站。",
+      "analogy": "像無障礙坡道—不是只有輪椅族需要、推娃娃車也方便。a11y 一樣：色盲友善的顏色 / 鍵盤可操作 / 字夠大 / alt 文字、所有人都受惠。政府網站法定要求。",
+      "content": "Navigation 是用戶**找東西**的地方—設計爛用戶迷失、轉換率掉。\n\n  \n### 4 種主流 navigation 模式\n\n```text\n1. Top nav（最常見）\n   - 水平、頂部\n   - 適合 5-7 個主選項\n   - Mobile 變漢堡選單\n   - 例：Stripe、Vercel\n\n2. Side nav（dashboard）\n   - 垂直、左邊\n   - 適合多層級\n   - SaaS dashboard 主流\n   - 例：Linear、Notion、Slack\n\n3. Bottom nav（mobile）\n   - 底部 tab bar\n   - 適合 3-5 個主功能\n   - 例：Instagram、Twitter mobile\n\n4. Hybrid\n   - Top + Side 組合\n   - 大型 app\n   - 例：GitHub、Figma\n\n選擇：\n- \n    [Snow SaaS](/)\n    \n    \n        [Features](/features)\n        [Pricing](/pricing)\n        [Docs](/docs)\n        [Blog](/blog)\n    \n    \n    \n        [Log in](/login)\n        [Sign up](/signup)\n    \n    \n    ☰\n\n.top-nav {\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n    padding: 16px 32px;\n    border-bottom: 1px solid #e5e7eb;\n    background: white;\n    position: sticky;\n    top: 0;\n    z-index: 100;\n}\n\n.logo { font-weight: 700; font-size: 20px; }\n\n.nav-links {\n    display: flex;\n    gap: 32px;\n    list-style: none;\n}\n\n.nav-links a {\n    color: #4b5563;\n    text-decoration: none;\n    transition: color 0.15s;\n}\n.nav-links a:hover {\n    color: #111827;\n}\n\n.nav-actions {\n    display: flex;\n    gap: 12px;\n    align-items: center;\n}\n\n.mobile-menu-toggle {\n    display: none;\n}\n\n/* Mobile */\n@media (max-width: 768px) {\n    .nav-links, .nav-actions { display: none; }\n    .mobile-menu-toggle { display: block; }\n    /* 點開漢堡顯示 drawer */\n}\n\n```\n\n  \n### Side nav 實戰\n\n```html\n<!-- 此處原本為 HTML 範例\n     程式碼已在內容修正中、稍後將補回完整範例 -->\n```\n\n  \n### Active state（當前頁）\n\n```text\n用戶必須知道「我在哪頁」\n\n視覺方式：\n1. 背景變色\n   .nav-item.active { background: #f3f4f6; }\n\n2. 文字粗 / 顏色變\n   .nav-item.active { font-weight: 600; color: blue; }\n\n3. 左邊框條\n   .nav-item.active { border-left: 3px solid blue; }\n\n4. 圖示改變\n   - 預設 outline、active 用 fill\n\n組合：背景 + 文字加深 + icon fill\n\naria-current=\"page\" 給螢幕閱讀器\n\n```\n\n  \n### 麵包屑（Breadcrumb）\n\n```text\n麵包屑 = 顯示「你現在在 site map 哪」\n\n何時用：\n✓ 多層級頁面（Settings > Team > Member）\n✓ E-commerce 分類（Home > Electronics > Phones）\n✓ 文件系統（Folder > Subfolder > File）\n\n何時不用：\n✗ 扁平結構（只有 1 層）\n✗ Landing page\n\nHTML：\n\n    \n1. Home\n2. Settings\n\nCSS：\nnav[aria-label=\"Breadcrumb\"] ol {\n    display: flex;\n    gap: 8px;\n    list-style: none;\n}\nnav[aria-label=\"Breadcrumb\"] li:not(:last-child)::after {\n    content: \"/\";\n    color: #ccc;\n    margin-left: 8px;\n}\n```\n\n  \n### Mobile navigation\n\n```text\nDesktop top nav → Mobile 怎麼變？\n\n方法 1：漢堡選單（最普及）\n☰\n點開 drawer 從邊滑入\n\n方法 2：Bottom tab bar\n- 3-5 個主要 action\n- iOS / Android app 風格\n\n方法 3：Bottom sheet\n- 從底部滑出\n- Material Design 風\n\n選擇：\n- Marketing 網站 → 漢堡\n- Mobile-first app → Bottom tab\n- 偶爾用 → Bottom sheet\n\n漢堡的爭議：\n- 「隱藏 navigation = 用戶看不到」\n- 但 7+ items mobile 真的擠不下\n- 折衷：重要 1-2 個放外面、其他塞漢堡\n```\n\n  \n### Dropdown / Mega menu\n\n```text\nDropdown：1 個 nav item 點下去有子選單\n適合：Settings → 帳戶 / 通知 / 隱私\n\nMega menu：大型展開的多列子選單\n適合：電商分類、新聞網站\n- 看 Apple、Best Buy\n\n設計：\n- hover 開（desktop）\n- 點開 + close button（mobile）\n- 用 chevron 表示「能展開」\n- 留 buffer zone 避免不小心關閉\n```\n\n  \n### 常見 nav 錯誤\n\n  \n- **太多 nav item**—超過 7 個塞不下\n- **沒 active state**—用戶不知道在哪\n- **mobile 沒適配**—desktop nav 擠到變形\n- **logo 不能點回首頁**—用戶習慣 / 違反\n- **麵包屑跟 nav 重複**—兩個都顯示反而混亂\n- **hover 才顯示 sub-menu**—touch 設備無法觸發\n- **dropdown 太多層**—超過 2 層難找\n\n  \n    **☕ 用人話講**\n    \nNav 4 心法：(1) **選對模式**—Top（marketing）/ Side（SaaS）/ Bottom（mobile app） (2) **active state 必做**—用戶要知道在哪 (3) **mobile 用漢堡或 bottom tab**—不要硬塞 (4) **logo 永遠連首頁**—universal 期待。\n\n  \n\n  \n    \n      🛠️\n      工具推薦\n    \n    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。",
+      "tip": {
+        "type": "practical",
+        "text": "配合這節用的工具：(1) VS Code（編輯器、免費）(2) Chrome DevTools（F12 開啟、除錯神器）(3) Live Server（VS Code 擴充、即時預覽）(4) GitHub Copilot / Cursor（AI 寫程式、學習加速 2-10x）。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "4 種主流 navigation 模式"
+        },
+        {
+          "level": 3,
+          "text": "Side nav 實戰"
+        },
+        {
+          "level": 3,
+          "text": "Active state（當前頁）"
+        },
+        {
+          "level": 3,
+          "text": "麵包屑（Breadcrumb）"
+        },
+        {
+          "level": 3,
+          "text": "Mobile navigation"
+        },
+        {
+          "level": 3,
+          "text": "Dropdown / Mega menu"
+        },
+        {
+          "level": 3,
+          "text": "常見 nav 錯誤"
+        }
+      ]
+    },
+    {
+      "id": "3.12",
+      "number": "LESSON 3.12",
+      "title": "Empty State：3 種狀態必設",
+      "oneLineSummary": "Loading States：「等待時要給回饋」—不能讓使用者懷疑「壞了嗎」。",
+      "analogy": "像麥當勞拿到取餐號碼牌—雖然要等、但你知道進度。網頁載入也要：skeleton / spinner / progress bar—讓使用者知道「在處理、別關掉」。",
+      "content": "UI 不只有「**有資料**」狀態—還有 Empty / Loading / Error 三大狀態。99% 工程師忽略、結果用戶看到空白白屏。\n\n  \n### 3 種必設狀態\n\n```text\n1. Loading（載入中）\n   - 第一次進、抓 data\n   - 用 spinner 或 skeleton\n   - 不要白屏！\n\n2. Empty（沒資料）\n   - 用戶剛註冊、還沒建任何東西\n   - 不要顯示空 table\n   - 要有 CTA 指引\n\n3. Error（錯誤）\n   - API 失敗 / 網路斷\n   - 不要 stack trace\n   - 友善訊息 + 重試\n\n進階：\n4. Partial（部分載入）\n   - 一些 data 來、一些還沒\n   - 比 all-or-nothing 好\n\n5. Stale（過期）\n   - 顯示舊資料 + 重新整理提示\n   - 比 spinner 好\n```\n\n  \n### Empty State 設計\n\n```html\n<!-- 此處原本為 HTML 範例\n     程式碼已在內容修正中、稍後將補回完整範例 -->\n```\n\n  \n### Empty State 4 元素\n\n```text\n1. 視覺（icon / illustration）\n   - 不要照片\n   - 簡單線條 icon\n\n2. 標題（為什麼空）\n   - \"No projects yet\"\n   - 不寫 \"Empty\"（生硬）\n\n3. 描述（怎麼填）\n   - 指引下一步\n   - 用對話式語氣\n\n4. 行動（CTA）\n   - 主要按鈕：建第一個\n   - 次要連結：看 demo / 教學\n\n語氣：\n✓ \"Let's get started!\"\n✓ \"Your inbox is empty—nice work!\"\n❌ \"No data\" \"Empty\"\n```\n\n  \n### Loading State 設計\n\n```text\n4 種 loading 樣式：\n\n1. Spinner（最常見）\n   - 簡單轉圈\n   - 適合  10 秒：progress + 「正在處理...」\n\n避免：\n❌ 整個畫面遮住\n❌ 沒任何視覺指引（白屏）\n❌ 載入動畫太花\n```\n\n  \n### Skeleton 實作\n\n```html\n<!-- 此處原本為 HTML 範例\n     程式碼已在內容修正中、稍後將補回完整範例 -->\n```\n\n  \n### Error State 設計\n\n```html\n<!-- 此處原本為 HTML 範例\n     程式碼已在內容修正中、稍後將補回完整範例 -->\n```\n\n  \n### Error 訊息原則\n\n```text\n好的錯誤訊息：\n\n❌ \"Error 500\"\n❌ \"TypeError: undefined is not a function\"\n❌ \"Something went wrong\" （太籠統）\n\n✓ \"We could not save your changes. Please try again.\"\n✓ \"Network error. Check your connection.\"\n✓ \"Item not found. It may have been deleted.\"\n\n3 個 W：\n1. What 出了什麼錯\n2. Why 為什麼錯（如果知道）\n3. What now 怎麼辦（明確 next step）\n\n不要怪用戶：\n❌ \"You entered an invalid email\"\n✓ \"Email format seems incorrect (e.g. you@example.com)\"\n\n不要 over-promise：\n❌ \"Don't worry, we will fix it shortly\"\n✓ \"Please try again or contact support\"\n```\n\n  \n### 狀態切換 React 範例\n\n```tsx\nfunction ProjectList() {\n    const { data, loading, error } = useFetch(\"/api/projects\");\n    \n    // Loading\n    if (loading) {\n        return (\n            \n                {[1, 2, 3].map(i => (\n                    \n                ))}\n            \n        );\n    }\n    \n    // Error\n    if (error) {\n        return (\n            \n        );\n    }\n    \n    // Empty\n    if (!data || data.length === 0) {\n        return (\n            }\n                title=\"No projects yet\"\n                description=\"Create your first project to get started\"\n                action={\n                    \n                        + New Project\n                    \n                }\n            />\n        );\n    }\n    \n    // Success\n    return (\n        \n            {data.map(p => )}\n        \n    );\n}\n```\n\n  \n### 常見錯誤\n\n  \n- **只設計 success state**—忘了 empty / loading / error\n- **error 訊息技術化**—stack trace 給用戶看\n- **empty 顯示空 table**—沒指引\n- **loading 用全屏 modal**—阻擋整個介面\n- **沒重試按鈕**—error 後沒救\n- **spinner 顯示太快**—\n    **🚀 進階技巧**\n    \nEmpty / Loading / Error 是**UI 完整度的標誌**—1 個 feature 必須設計 4 個狀態（含 success）。**2026 心法**：(1) **Skeleton > Spinner**—用戶心理預期 (2) **Empty 有 CTA**—指引下一步 (3) **Error 給重試 + 聯絡支援**—不留死路 (4) **用 React Query / SWR**—內建處理 4 個狀態。\n\n  \n\n  \n    \n      ⚠️\n      新手常見錯誤\n    \n    新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。",
+      "tip": {
+        "type": "warning",
+        "text": "新手 3 大坑：(1) 不看 console—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) 不存檔就 F5—改完忘記儲存以為「程式沒效果」 (3) 抄 code 不理解—複製貼上能跑、但下次要改就崩潰。記得：先看懂、再寫。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "3.12.auto",
+          "language": "tsx",
+          "title": "試試看",
+          "initialCode": "function ProjectList() {\n    const { data, loading, error } = useFetch(\"/api/projects\");\n    \n    // Loading\n    if (loading) {\n        return (\n            \n                {[1, 2, 3].map(i => (\n                    \n                ))}\n            \n        );\n    }\n    \n    // Error\n    if (error) {\n        return (\n            \n        );\n    }\n    \n    // Empty\n    if (!data || data.length === 0) {\n        return (\n            }\n                title=\"No projects yet\"\n                description=\"Create your first project to get started\"\n                action={\n                    \n                        + New Project\n                    \n                }\n            />\n        );\n    }\n    \n    // Success\n    return (\n        \n            {data.map(p => )}\n        \n    );\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "3 種必設狀態"
+        },
+        {
+          "level": 3,
+          "text": "Empty State 設計"
+        },
+        {
+          "level": 3,
+          "text": "Empty State 4 元素"
+        },
+        {
+          "level": 3,
+          "text": "Loading State 設計"
+        },
+        {
+          "level": 3,
+          "text": "Skeleton 實作"
+        },
+        {
+          "level": 3,
+          "text": "Error State 設計"
+        },
+        {
+          "level": 3,
+          "text": "Error 訊息原則"
+        },
+        {
+          "level": 3,
+          "text": "狀態切換 React 範例"
+        },
+        {
+          "level": 3,
+          "text": "常見錯誤"
+        }
+      ]
+    },
+    {
+      "id": "3.13",
+      "number": "LESSON 3.13",
+      "title": "Toast / Notification：即時回饋",
+      "oneLineSummary": "Error States：「出錯時要好好說、別嚇人」—錯誤訊息也是 UX。",
+      "analogy": "像客服回應—「您的訂單因庫存不足無法處理」 vs 「Error 500: NULL POINTER EXCEPTION」。好的錯誤訊息：告訴使用者哪錯了 + 怎麼修—不是丟一串技術鬼話。",
+      "content": "Toast 是「**低打擾**」的提示—成功了、失敗了、操作完。學完設計順手的提示系統。\n\n  \n### Toast vs Modal vs Banner\n\n```text\nToast（最常用）：\n- 短訊息、自動消失\n- 不擋操作\n- 例：「Saved successfully」\n- 位置：右上 / 右下 / 底部中\n\nModal：\n- 強制 attention\n- 必須回應才繼續\n- 例：刪除確認\n- 用戶痛苦\n\nBanner / Alert：\n- 持續顯示在頁面頂\n- 不消失\n- 例：「系統維護中」「升級你的方案」\n```\n\n  \n### Toast 4 種類\n\n```text\n1. Success（綠）\n   - 操作成功\n   - ✓ icon\n   - 「Saved」「Created」「Sent」\n\n2. Error（紅）\n   - 操作失敗\n   - ✗ icon\n   - 「Failed to save」「Please try again」\n\n3. Warning（黃 / 橘）\n   - 警告\n   - ⚠ icon\n   - 「Unsaved changes」「Limited quota」\n\n4. Info（藍 / 灰）\n   - 一般訊息\n   - i icon\n   - 「New version available」\n```\n\n  \n### Toast 設計\n\n```html\n<!-- 此處原本為 HTML 範例\n     程式碼已在內容修正中、稍後將補回完整範例 -->\n```\n\n  \n### Toast 行為規則\n\n```text\n1. 自動消失\n   - Success：3-5 秒\n   - Info：5 秒\n   - Error / Warning：手動關 or 7-10 秒\n\n2. 可手動關閉\n   - X 按鈕\n   - 點擊外面（少用）\n\n3. 多個 toast 處理\n   - 由下往上堆疊\n   - 太多時、舊的先消\n   - 最多顯示 3-5 個\n\n4. 不擋住操作\n   - 角落顯示\n   - 不擋核心按鈕\n\n5. 位置一致\n   - 右上 / 右下 / 底部中三選一\n   - 整個 app 一致\n\n6. 防重複\n   - 連續操作不要 spam\n   - 同個訊息合併或忽略\n```\n\n  \n### 2026 推薦：sonner（React）\n\n```tsx\n// sonner 是 2026 React toast 主流\n// 設計精美、API 簡單\n\n$ npm install sonner\n\n// app.tsx\nimport { Toaster, toast } from \"sonner\";\n\nfunction App() {\n    return (\n        <>\n            \n            \n        \n    );\n}\n\n// 用\ntoast.success(\"Saved successfully\");\ntoast.error(\"Failed to save\");\ntoast.warning(\"Unsaved changes\");\ntoast.info(\"New version available\");\n\n// 進階\ntoast.success(\"Saved!\", {\n    description: \"Your changes are live\",\n    action: {\n        label: \"Undo\",\n        onClick: () => undo()\n    },\n    duration: 5000\n});\n\n// Promise toast（自動處理 loading / success / error）\ntoast.promise(\n    saveData(),\n    {\n        loading: \"Saving...\",\n        success: \"Saved!\",\n        error: \"Failed to save\"\n    }\n);\n\n// 自訂\ntoast.custom(t => (\n    Custom toast: {t}\n));\n```\n\n  \n### Optimistic UI（先樂觀）\n\n```text\n傳統流程：\n1. 用戶點「Like」\n2. 顯示 spinner\n3. 送 API\n4. 回 success\n5. UI 更新 ❤️\n6. 顯示 toast\n\n慢、卡頓\n\nOptimistic 流程：\n1. 用戶點「Like」\n2. UI 立刻變 ❤️（樂觀）\n3. 背景送 API\n4. 失敗才 revert + 顯示 error toast\n\n快、順\n但要處理失敗 case\n\nReact Query / SWR 內建 optimistic update\n- 寫一行設定\n- 自動處理 rollback\n```\n\n  \n### Inline feedback（不用 Toast）\n\n```text\n有些場景比 toast 好：\n\n1. Inline success\n   表單送出後、欄位旁邊顯示 ✓\n   不用 toast 打擾\n\n2. Button state\n   點 Save → 按鈕變「Saving...」→ 變 ✓ Saved\n   1 秒後恢復\n\n3. Progress in place\n   檔案上傳、就在上傳區顯示 progress\n   不用 toast\n\n4. Status badge\n   狀態欄即時更新\n   不用每次 toast\n\n選擇：\n- 跨頁面操作 → toast\n- 局部操作 → inline\n- 持續資訊 → badge / status\n```\n\n  \n### Notification 中心\n\n```text\n進階：notification center\n\n何時用：\n- 異步通知（其他人留言、提及）\n- 系統訊息（更新、維護）\n- 歷史記錄\n\n設計：\n- 頂部鈴鐺 icon + 紅點\n- 點開 dropdown 列表\n- 區分已讀 / 未讀\n- 全部標記已讀\n- 連到設定頁\n\n例：Slack、Notion、GitHub 的 notification\n\n關鍵：\n- 不要 spam（用戶會關通知）\n- 重要 + 個人化\n- 可控（用戶能設定要哪些）\n```\n\n  \n### 常見 Toast 錯誤\n\n  \n- **不自動消失**—堆滿畫面\n- **太短消失**—1 秒沒看到內容\n- **位置亂跳**—一下右上一下底部\n- **蓋住重要按鈕**—位置選錯\n- **spam 連發**—點 Save 5 次跳 5 個\n- **error 用 success 綠**—顏色語義錯\n- **沒 close 按鈕**—用戶不能主動關\n- **mobile 沒適配**—蓋住底部 tab bar\n\n  \n    **☕ 用人話講**\n    \nToast 5 心法：(1) **自動消失**—3-5 秒 (2) **不擋操作**—角落顯示 (3) **顏色語義對**—綠 success / 紅 error / 黃 warning / 藍 info (4) **不 spam**—合併重複 (5) **2026 用 sonner**—React 主流。**進階**：Optimistic UI + Inline feedback = 體驗順 100 倍。\n\n  \n\n  \n    \n      💼\n      接案小知識\n    \n    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「UI/UX」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。",
+      "tip": {
+        "type": "practical",
+        "text": "剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「UI/UX」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "3.13.auto",
+          "language": "tsx",
+          "title": "試試看",
+          "initialCode": "// sonner 是 2026 React toast 主流\n// 設計精美、API 簡單\n\n$ npm install sonner\n\n// app.tsx\nimport { Toaster, toast } from \"sonner\";\n\nfunction App() {\n    return (\n        <>\n            \n            \n        \n    );\n}\n\n// 用\ntoast.success(\"Saved successfully\");\ntoast.error(\"Failed to save\");\ntoast.warning(\"Unsaved changes\");\ntoast.info(\"New version available\");\n\n// 進階\ntoast.success(\"Saved!\", {\n    description: \"Your changes are live\",\n    action: {\n        label: \"Undo\",\n        onClick: () => undo()\n    },\n    duration: 5000\n});\n\n// Promise toast（自動處理 loading / success / error）\ntoast.promise(\n    saveData(),\n    {\n        loading: \"Saving...\",\n        success: \"Saved!\",\n        error: \"Failed to save\"\n    }\n);\n\n// 自訂\ntoast.custom(t => (\n    Custom toast: {t}\n));",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "Toast vs Modal vs Banner"
+        },
+        {
+          "level": 3,
+          "text": "Toast 4 種類"
+        },
+        {
+          "level": 3,
+          "text": "Toast 設計"
+        },
+        {
+          "level": 3,
+          "text": "Toast 行為規則"
+        },
+        {
+          "level": 3,
+          "text": "2026 推薦：sonner（React）"
+        },
+        {
+          "level": 3,
+          "text": "Optimistic UI（先樂觀）"
+        },
+        {
+          "level": 3,
+          "text": "Inline feedback（不用 Toast）"
+        },
+        {
+          "level": 3,
+          "text": "Notification 中心"
+        },
+        {
+          "level": 3,
+          "text": "常見 Toast 錯誤"
+        }
+      ]
+    },
+    {
+      "id": "3.14",
+      "number": "LESSON 3.14",
+      "title": "A11y 無障礙：15% 人口看不見你的設計",
+      "oneLineSummary": "Empty States：「沒資料時也要漂亮」—第一次用的人看到的就是空狀態。",
+      "analogy": "像新搬家的客廳—家具還沒進來、但要擺個小盆栽不會空蕩蕩。Empty state 一樣：「您還沒有訂單—來逛逛吧 + 推薦商品」、不是丟個「No data」就完。",
+      "content": "全球 15% 人口有某種障礙—視覺、聽覺、動作、認知。a11y 不只是「**道德**」、是**法律要求**（歐盟 EAA / 美國 ADA）+ SEO 加分。\n\n  \n### 4 大障礙類型\n\n```text\n1. 視覺\n   - 全盲（用螢幕閱讀器）\n   - 色盲（紅綠看不出）\n   - 弱視（要放大字）\n   - 老花（普遍 40+）\n\n2. 聽覺\n   - 全聾 / 重聽\n   - 影片需要字幕\n\n3. 動作\n   - 不能用滑鼠（用鍵盤）\n   - 手抖（按鈕要大）\n   - 臨時情況（手受傷）\n\n4. 認知\n   - 閱讀障礙（dyslexia）\n   - 注意力（ADHD）\n   - 記憶力（老人）\n\n設計時想：\n你媽 60 歲用得了嗎？\n盲人朋友能買東西嗎？\n```\n\n  \n### WCAG 標準\n\n```text\nWCAG（Web Content Accessibility Guidelines）\n\n4 大原則 POUR：\n1. Perceivable（可感知）\n   - 視覺 + 聽覺 + 觸覺都能用\n   - 例：alt text、字幕、對比\n\n2. Operable（可操作）\n   - 鍵盤能用\n   - 給足夠時間\n   - 不會引發癲癇\n\n3. Understandable（可理解）\n   - 文字清楚\n   - 操作可預測\n   - 有錯誤幫助\n\n4. Robust（穩定）\n   - 不同瀏覽器 / 工具都能用\n   - 用 semantic HTML\n\n級別：\n- A：最低（基本）\n- AA：標準（業界目標）\n- AAA：最高（罕見）\n\n2026 業界目標：WCAG 2.2 AA\n```\n\n  \n### 鍵盤友善（必做）\n\n```text\n規則：所有功能鍵盤都能用\n\n測試：拿掉滑鼠、只用鍵盤試你的網站\n\n必要鍵：\n- Tab：跳下個元素\n- Shift+Tab：跳上個\n- Enter / Space：點擊\n- Esc：關閉 modal / cancel\n- 方向鍵：tab / list 內移動\n\n實作：\n1. 用 semantic HTML（、）\n   - 不要 ！\n\n2. tabindex 控順序\n   - tabindex=\"0\"：能被 tab 到\n   - tabindex=\"-1\"：能被 focus、不在 tab 順序\n   - tabindex=\"1+\"：自訂順序（不推薦）\n\n3. Focus visible\n   - 鍵盤 tab 過去要看得到 outline\n   - 不要 outline: none!\n\n4. Focus trap（modal）\n   - Tab 只在 modal 內循環\n   - 不跳到背景\n\n5. Skip link\n   - 第一個 tab 跳「Skip to content」\n   - 螢幕閱讀器用戶不用每次聽 nav\n\n[Skip to content](#main)\n...\n...\n```\n\n  \n### ARIA labels\n\n```html\n<!-- 此處原本為 HTML 範例\n     程式碼已在內容修正中、稍後將補回完整範例 -->\n```\n\n  \n### Semantic HTML（最重要）\n\n```text\n用對 tag = 90% a11y 完成\n\n❌ 全用 div：\n...\n...\n...\n\n✓ 用語義 tag：\n...\n...\n\n    ...\n    ...\n\n...\n\n其他關鍵：\n-  vs \n-  vs \n-  配對 input\n-  →  有層次\n- \n- **outline: none 全拿掉**—鍵盤用戶看不到 focus\n- **div onclick 取代 button**—鍵盤 / 螢幕閱讀器掛掉\n- **沒 alt text**—盲人聽不到圖\n- **只靠顏色傳資訊**—色盲看不出\n- **對比 \n    **🚀 進階技巧**\n    \nA11y 5 必做（80/20）：(1) **用 semantic HTML**—90% a11y 自動 (2) **label + alt + aria-label**—螢幕閱讀器懂 (3) **focus 看得到**—不要 outline: none (4) **對比 4.5:1+**—WCAG AA (5) **鍵盤完整可用**—Tab / Enter / Esc 都 work。**2026 真實**：a11y 不只道德、是 SEO 加分 + 歐美法律要求。\n\n  \n\n  \n    \n      🎯\n      面試考點\n    \n    台灣科技公司面試 90% 會問「UI/UX」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。",
+      "tip": {
+        "type": "pro",
+        "text": "台灣科技公司面試 90% 會問「UI/UX」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "4 大障礙類型"
+        },
+        {
+          "level": 3,
+          "text": "WCAG 標準"
+        },
+        {
+          "level": 3,
+          "text": "鍵盤友善（必做）"
+        },
+        {
+          "level": 3,
+          "text": "ARIA labels"
+        },
+        {
+          "level": 3,
+          "text": "Semantic HTML（最重要）"
+        }
+      ]
+    },
+    {
+      "id": "3.15",
+      "number": "LESSON 3.15",
+      "title": "響應式設計（mobile-first）",
+      "oneLineSummary": "Form Design：表單做不好、轉換率掉 50%—輸入框 / 標籤 / 驗證 / 提交全都關鍵。",
+      "analogy": "像政府辦事大廳—填表流程設計差會放棄、設計好 5 分鐘搞定。註冊頁 / 結帳頁 / 訂閱頁—UX 細節決定使用者撐不撐到最後一步。",
+      "content": "2026 全球 60%+ 流量來自手機—mobile-first 不是建議、是**必須**。\n\n  \n### Mobile-first 心法\n\n```text\n傳統 desktop-first：\n- 先設計 desktop（最複雜）\n- 媒體查詢縮給 mobile\n- 結果：mobile 像 desktop 縮小、不順手\n\nMobile-first（推薦）：\n- 先設計 mobile（最簡單）\n- 媒體查詢放大給 desktop\n- 結果：mobile 自然、desktop 加複雜\n\n為什麼 mobile-first 好：\n1. 強迫聚焦核心功能（小螢幕沒空間塞）\n2. 性能優（mobile 預設、不載 desktop 額外）\n3. SEO 加分（Google mobile-first index）\n4. 60%+ 用戶體驗優先\n```\n\n  \n### 常用斷點\n\n```text\nTailwind 預設（2026 主流）：\n- sm: 640px   /* tablet portrait */\n- md: 768px   /* tablet landscape */\n- lg: 1024px  /* desktop small */\n- xl: 1280px  /* desktop */\n- 2xl: 1536px /* desktop large */\n\n寫法：mobile-first 用 min-width\n@media (min-width: 768px) { ... }\n\n不是 max-width：\n❌ @media (max-width: 768px)\n✓ @media (min-width: 768px)\n\nTailwind：\n\n```\n\n  \n### 實戰：mobile-first CSS\n\n```css\n/* Mobile 預設 */\n.hero {\n    padding: 40px 16px;       /* 小 padding */\n    text-align: center;\n}\n\n.hero h1 {\n    font-size: 32px;          /* 小標題 */\n    line-height: 1.2;\n}\n\n.hero-grid {\n    display: flex;\n    flex-direction: column;\n    gap: 24px;\n}\n\n/* Tablet+ 加大 */\n@media (min-width: 768px) {\n    .hero {\n        padding: 64px 32px;\n    }\n    \n    .hero h1 {\n        font-size: 48px;\n    }\n    \n    .hero-grid {\n        flex-direction: row;\n        gap: 48px;\n    }\n}\n\n/* Desktop+ 更大 */\n@media (min-width: 1024px) {\n    .hero {\n        padding: 120px 80px;\n    }\n    \n    .hero h1 {\n        font-size: 64px;\n    }\n}\n```\n\n  \n### 關鍵響應式 patterns\n\n```text\n1. Column drop\n   Mobile: 1 column\n   Tablet: 2 column\n   Desktop: 3-4 column\n\n2. Mostly fluid\n   Mobile: stack\n   Desktop: side-by-side、grid 流動\n   \n3. Layout shifter\n   Mobile / Desktop 完全不同 layout\n   不只 column 數變\n\n4. Off canvas（drawer）\n   Mobile: sidebar 從邊滑入\n   Desktop: sidebar 永遠顯示\n\n5. Tiny tweaks\n   只改字級、間距、不改結構\n   適合內容簡單的頁\n\n選擇：看你的 content\n```\n\n  \n### 關鍵元素的響應式\n\n```text\n1. Navigation\n   Desktop: top horizontal\n   Mobile: hamburger drawer / bottom tab\n\n2. Hero\n   Desktop: 圖左文右 split\n   Mobile: stack 上下\n\n3. Cards grid\n   Desktop: 3-4 column\n   Tablet: 2 column\n   Mobile: 1 column\n\n4. Tables\n   Desktop: 完整 table\n   Mobile: 改 card view 或橫向 scroll\n\n5. Form\n   Desktop: 多欄\n   Mobile: 1 欄 + 大 input\n\n6. Modal\n   Desktop: 中央 popup\n   Mobile: full screen 或 bottom sheet\n\n7. Image\n   Desktop: hero 大圖\n   Mobile: 較小 / 不顯示\n```\n\n  \n### Container query（2024+ 新興）\n\n```css\n/* Media query 看 viewport\n   Container query 看 parent container */\n\n.card-container {\n    container-type: inline-size;\n    container-name: card;\n}\n\n@container card (min-width: 400px) {\n    .card {\n        display: grid;\n        grid-template-columns: 1fr 2fr;\n    }\n}\n\n/* 卡片在窄區用 stack、寬區用 grid */\n/* 不管 viewport 多大、看 container */\n\n/* 2026 主流瀏覽器都支援 */\n/* 適合：reusable component */\n```\n\n  \n### Touch-friendly\n\n```text\nMobile 用手指、不是滑鼠\n\n規則：\n1. Touch target 最少 44 × 44 px\n   - Apple HIG / Google Material 都要求\n   - button、link、checkbox 都適用\n\n2. 間距夠\n   - 元素間至少 8px\n   - 避免誤觸\n\n3. 不靠 hover\n   - mobile 沒 hover\n   - hover 效果改 active\n\n4. Swipe / pinch / pull-to-refresh\n   - 用 native 行為\n   - 不要自己實作\n\n5. 鍵盤類型\n   - input type=\"email\" → email 鍵盤\n   - input inputmode=\"numeric\" → 數字鍵盤\n\n6. iOS 怪癖\n   - input font-size \n\n    \n    \n    \n\n    \n    \n    \n\n component -->\nimport Image from \"next/image\";\n\n{/* 自動產生 srcset、優化、lazy load */}\n```\n\n  \n### 常見響應式錯誤\n\n  \n- **Desktop-first 設計**—mobile 像縮小版、不順手\n- **用 px 不用 rem**—用戶無法放大字\n- **圖片沒 srcset**—mobile 載 2MB 大圖\n- **Hover-only 互動**—mobile 沒 hover\n- **Touch target \n    **☕ 用人話講**\n    \nMobile-first 4 心法：(1) **先設計 mobile**—小螢幕強迫聚焦 (2) **用 min-width 媒體查詢**—從小到大加 (3) **Touch target 44px+**—mobile 用手指 (4) **Next/Image 或 srcset**—不要 mobile 載 desktop 大圖。**2026 真實**：mobile 60%+ 流量、設計爛轉換率掉 50%。\n\n  \n\n  \n    \n      ⚡\n      學習加速器\n    \n    把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。",
+      "tip": {
+        "type": "practical",
+        "text": "把這節學到的馬上應用到一個小東西—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "3.15.auto",
+          "language": "css",
+          "title": "試試看",
+          "initialCode": "/* Mobile 預設 */\n.hero {\n    padding: 40px 16px;       /* 小 padding */\n    text-align: center;\n}\n\n.hero h1 {\n    font-size: 32px;          /* 小標題 */\n    line-height: 1.2;\n}\n\n.hero-grid {\n    display: flex;\n    flex-direction: column;\n    gap: 24px;\n}\n\n/* Tablet+ 加大 */\n@media (min-width: 768px) {\n    .hero {\n        padding: 64px 32px;\n    }\n    \n    .hero h1 {\n        font-size: 48px;\n    }\n    \n    .hero-grid {\n        flex-direction: row;\n        gap: 48px;\n    }\n}\n\n/* Desktop+ 更大 */\n@media (min-width: 1024px) {\n    .hero {\n        padding: 120px 80px;\n    }\n    \n    .hero h1 {\n        font-size: 64px;\n    }\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "Mobile-first 心法"
+        },
+        {
+          "level": 3,
+          "text": "常用斷點"
+        },
+        {
+          "level": 3,
+          "text": "實戰：mobile-first CSS"
+        },
+        {
+          "level": 3,
+          "text": "關鍵響應式 patterns"
+        },
+        {
+          "level": 3,
+          "text": "關鍵元素的響應式"
+        },
+        {
+          "level": 3,
+          "text": "Container query（2024+ 新興）"
+        },
+        {
+          "level": 3,
+          "text": "Touch-friendly"
+        },
+        {
+          "level": 3,
+          "text": "常見響應式錯誤"
+        }
+      ]
+    },
+    {
+      "id": "3.16",
+      "number": "LESSON 3.16",
+      "title": "微互動（hover / transition / animation）",
+      "oneLineSummary": "Design System：「設計師 + 工程師共用的字典」—一致性的根本。",
+      "analogy": "像樂高的零件目錄—每塊積木有編號、設計師說「A123」工程師立刻拿出對的零件。Design System 一樣：定義一套顏色 / 字體 / 元件、之後做新頁面快 5 倍。",
+      "content": "微互動是「**感覺品質**」的細節—讓網站感覺「**順手**」、不是死板。學完設計能讓網站質感 +30%。\n\n  \n### 3 個層次的互動\n\n```text\n1. State transition（狀態切換）\n   - hover、active、focus\n   - transition 屬性\n   - 150-300ms\n\n2. Micro-animation（微動畫）\n   - 按鈕點下回饋\n   - 卡片浮起\n   - 200-500ms\n\n3. Choreographed（編排式）\n   - 多元素配合\n   - 進入動畫、轉場\n   - 500ms-1s+\n\n原則：越基本越快、越特別越慢\n不要：所有動畫都 1 秒\n```\n\n  \n### CSS Transition 基礎\n\n```css\n/* 基本 */\n.button {\n    background: blue;\n    transition: background 0.2s ease;\n}\n.button:hover {\n    background: darkblue;\n}\n\n/* 多屬性 */\n.card {\n    transform: translateY(0);\n    box-shadow: 0 1px 3px rgba(0,0,0,0.1);\n    transition: \n        transform 0.2s ease,\n        box-shadow 0.2s ease;\n}\n.card:hover {\n    transform: translateY(-2px);\n    box-shadow: 0 8px 16px rgba(0,0,0,0.1);\n}\n\n/* 全部 */\n.element {\n    transition: all 0.2s ease;\n}\n/* 簡單但 performance 較差（瀏覽器追蹤所有屬性） */\n\n/* easing 函式 */\n.element {\n    transition: transform 0.3s ease;            /* 預設 */\n    transition: transform 0.3s ease-in;         /* 慢→快 */\n    transition: transform 0.3s ease-out;        /* 快→慢 */\n    transition: transform 0.3s ease-in-out;     /* 慢→快→慢 */\n    transition: transform 0.3s linear;          /* 等速 */\n    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);  /* 自訂 */\n}\n\n/* Material Design 推薦 */\n/* Standard：cubic-bezier(0.4, 0, 0.2, 1) */\n/* Decelerated：cubic-bezier(0, 0, 0.2, 1)（進入） */\n/* Accelerated：cubic-bezier(0.4, 0, 1, 1)（退出） */\n```\n\n  \n### 動畫時長指南\n\n```text\n太快：感覺不到\n太慢：拖延感\n\n建議：\n\n小變化（顏色、透明度）\n- 100-150ms\n- hover、focus\n\n中變化（移動、縮放）\n- 200-300ms\n- card hover、button press\n\n大變化（modal、page transition）\n- 300-500ms\n- 進入動畫\n\n複雜編排\n- 500-800ms\n- onboarding 動畫\n\n不要 > 1 秒（除非 illustration）\n\nmobile 動畫稍快（200ms）：\n- 手指快、不耐等\n```\n\n  \n### CSS Animation（keyframe）\n\n```css\n/* @keyframes 定義 */\n@keyframes fadeIn {\n    from { opacity: 0; transform: translateY(20px); }\n    to { opacity: 1; transform: translateY(0); }\n}\n\n@keyframes spin {\n    to { transform: rotate(360deg); }\n}\n\n@keyframes pulse {\n    0%, 100% { transform: scale(1); }\n    50% { transform: scale(1.05); }\n}\n\n/* 用 */\n.element {\n    animation: fadeIn 0.4s ease-out;\n}\n\n.spinner {\n    animation: spin 1s linear infinite;\n}\n\n.heart {\n    animation: pulse 2s ease-in-out infinite;\n}\n\n/* 完整 animation */\n.element {\n    animation: \n        fadeIn        /* 名字 */\n        0.4s          /* 時長 */\n        ease-out      /* easing */\n        0.1s          /* delay */\n        1             /* 次數（infinite 永遠） */\n        forwards      /* 結束保持狀態 */;\n}\n```\n\n  \n### 有意義的微互動\n\n```text\n1. 確認動作\n   - 按 like → 心跳一下\n   - Save → 按鈕變綠 ✓ 1 秒\n\n2. 引導注意\n   - 新通知 → 鈴鐺擺動\n   - 表單錯誤 → 紅框輕微 shake\n\n3. 表達進度\n   - upload progress bar\n   - skeleton shimmer\n\n4. 連結狀態\n   - hover 漸進變色\n   - active 立刻變\n\n5. 解釋變化\n   - sort table → row 重新排\n   - filter → 不符的 fade out\n\n不要動畫：\n❌ 純炫技（用戶看 1 次就煩）\n❌ 阻擋操作（必須等動畫完）\n❌ 持續轉動（用戶以為 loading）\n```\n\n  \n### 2026 推薦：Framer Motion（React）\n\n```tsx\n// Framer Motion 是 2026 React 動畫主流\n$ npm install framer-motion\n\nimport { motion, AnimatePresence } from \"framer-motion\";\n\n// 簡單動畫\n\n    Hello\n\n// Hover + tap\n\n    Click me\n\n// List 動畫\n{items.map((item, i) => (\n    \n        {item.name}\n    \n))}\n\n// Modal 進出\n\n    {isOpen && (\n        \n            Modal content\n        \n    )}\n\n// Layout 動畫（神奇）\n\n    {/* 換位置自動補動畫 */}\n\n```\n\n  \n### 性能優化\n\n```text\n哪些屬性動畫便宜（用 GPU）：\n✓ transform（translate / scale / rotate）\n✓ opacity\n✓ filter\n\n哪些貴（觸發 layout）：\n❌ width / height\n❌ top / left / right / bottom\n❌ margin / padding\n❌ font-size\n\n例：\n❌ .card:hover { left: 10px; }     /* 慢 */\n✓ .card:hover { transform: translateX(10px); }  /* 快 */\n\n❌ .modal { transition: height 0.3s; }    /* layout shift */\n✓ .modal { transition: transform 0.3s; }  /* GPU */\n\nwill-change（hint 給瀏覽器）：\n.card { will-change: transform; }\n/* 但別濫用、影響記憶體 */\n```\n\n  \n### Respect prefers-reduced-motion\n\n```css\n/* 用戶 OS 設定「減少動畫」、必須遵守 */\n\n@media (prefers-reduced-motion: reduce) {\n    *,\n    *::before,\n    *::after {\n        animation-duration: 0.01ms !important;\n        animation-iteration-count: 1 !important;\n        transition-duration: 0.01ms !important;\n        scroll-behavior: auto !important;\n    }\n}\n\n/* 某些用戶看動畫會頭暈 / 癲癇 */\n/* 一定要尊重設定 */\n```\n\n  \n### 常見微互動錯誤\n\n  \n- **所有元素都 transition**—亂、性能差\n- **動畫太慢（> 500ms）**—拖延感\n- **動畫太快（\n    **☕ 用人話講**\n    \n微互動 4 心法：(1) **150-300ms 是甜蜜點**—太快感覺不到、太慢拖延 (2) **用 transform / opacity**—GPU 加速、不會卡頓 (3) **有意義 > 炫技**—每個動畫要解決問題 (4) **reduced-motion**—尊重用戶設定。**2026 React 用 Framer Motion**—API 直覺、效果好。\n\n  \n\n  \n    \n      🚀\n      2026 趨勢\n    \n    這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。",
+      "tip": {
+        "type": "trend",
+        "text": "這個技術 2026 還在主流、未來 5 年不會過時。但工具會更新—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "3.16.auto",
+          "language": "css",
+          "title": "試試看",
+          "initialCode": "/* 基本 */\n.button {\n    background: blue;\n    transition: background 0.2s ease;\n}\n.button:hover {\n    background: darkblue;\n}\n\n/* 多屬性 */\n.card {\n    transform: translateY(0);\n    box-shadow: 0 1px 3px rgba(0,0,0,0.1);\n    transition: \n        transform 0.2s ease,\n        box-shadow 0.2s ease;\n}\n.card:hover {\n    transform: translateY(-2px);\n    box-shadow: 0 8px 16px rgba(0,0,0,0.1);\n}\n\n/* 全部 */\n.element {\n    transition: all 0.2s ease;\n}\n/* 簡單但 performance 較差（瀏覽器追蹤所有屬性） */\n\n/* easing 函式 */\n.element {\n    transition: transform 0.3s ease;            /* 預設 */\n    transition: transform 0.3s ease-in;         /* 慢→快 */\n    transition: transform 0.3s ease-out;        /* 快→慢 */\n    transition: transform 0.3s ease-in-out;     /* 慢→快→慢 */\n    transition: transform 0.3s linear;          /* 等速 */\n    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);  /* 自訂 */\n}\n\n/* Material Design 推薦 */\n/* Standard：cubic-bezier(0.4, 0, 0.2, 1) */\n/* Decelerated：cubic-bezier(0, 0, 0.2, 1)（進入） */\n/* Accelerated：cubic-bezier(0.4, 0, 1, 1)（退出） */",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "3 個層次的互動"
+        },
+        {
+          "level": 3,
+          "text": "CSS Transition 基礎"
+        },
+        {
+          "level": 3,
+          "text": "動畫時長指南"
+        },
+        {
+          "level": 3,
+          "text": "CSS Animation（keyframe）"
+        },
+        {
+          "level": 3,
+          "text": "有意義的微互動"
+        },
+        {
+          "level": 3,
+          "text": "2026 推薦：Framer Motion（React）"
+        },
+        {
+          "level": 3,
+          "text": "性能優化"
+        },
+        {
+          "level": 3,
+          "text": "Respect prefers-reduced-motion"
+        },
+        {
+          "level": 3,
+          "text": "常見微互動錯誤"
+        }
+      ]
+    },
+    {
+      "id": "3.17",
+      "number": "LESSON 3.17",
+      "title": "Design Tokens：設計變數化",
+      "oneLineSummary": "Figma 基礎：2026 設計界的「Word 等級」工具—工程師也要會看 Figma 圖。",
+      "analogy": "像看建築圖紙—工程師不一定要會畫、但要會看。Figma 工程師最少要會：看尺寸 / 抓顏色色碼 / 匯出資源—跟設計師對話的基本能力。",
+      "content": "Design Tokens 是**設計的變數**—把顏色、字級、間距變成 CSS variables、整個 app 一致。\n\n  \n### 什麼是 Design Tokens\n\n```text\n傳統：\n.button { background: #0066ff; }\n.link { color: #0066ff; }\n.highlight { border-color: #0066ff; }\n/* 想換顏色？改 50 個地方 */\n\nDesign Tokens：\n:root {\n    --color-primary: #0066ff;\n}\n.button { background: var(--color-primary); }\n.link { color: var(--color-primary); }\n.highlight { border-color: var(--color-primary); }\n/* 想換顏色？改 1 個地方 */\n\n優點：\n1. 一致性（不會 1 個藍 #0066ff、1 個 #0067ff）\n2. 主題切換（dark mode）\n3. 共用（多 app / 跨平台）\n4. 設計師工程師同步\n```\n\n  \n### Token 3 個層級\n\n```text\n1. Primitive Tokens（原始）\n   - 純值、no semantic\n   --blue-500: #0066ff;\n   --gray-100: #f3f4f6;\n   --space-4: 16px;\n\n2. Semantic Tokens（語意）\n   - 描述用途\n   --color-primary: var(--blue-500);\n   --color-bg: var(--gray-100);\n   --color-text: var(--gray-900);\n\n3. Component Tokens（元件）\n   - 特定元件用\n   --button-bg: var(--color-primary);\n   --button-text: white;\n   --button-radius: 8px;\n\n層級：primitive ← semantic ← component\n改 primitive、整個 app 變\n改 component、只影響該元件\n```\n\n  \n### 實戰：完整 token 系統\n\n```css\n:root {\n    /* ===== Primitive ===== */\n    /* Colors */\n    --blue-50:  #eff6ff;\n    --blue-100: #dbeafe;\n    --blue-500: #0066ff;\n    --blue-900: #1e3a8a;\n    \n    --gray-50:  #f9fafb;\n    --gray-100: #f3f4f6;\n    --gray-500: #6b7280;\n    --gray-900: #111827;\n    \n    /* Spacing */\n    --space-1: 4px;\n    --space-2: 8px;\n    --space-3: 12px;\n    --space-4: 16px;\n    --space-6: 24px;\n    --space-8: 32px;\n    \n    /* Typography */\n    --text-sm: 14px;\n    --text-base: 16px;\n    --text-lg: 18px;\n    --text-xl: 20px;\n    --text-2xl: 24px;\n    \n    /* Border radius */\n    --radius-sm: 4px;\n    --radius-md: 8px;\n    --radius-lg: 12px;\n    --radius-full: 9999px;\n    \n    /* Shadows */\n    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);\n    --shadow-md: 0 4px 6px rgba(0,0,0,0.1);\n    --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);\n    \n    /* ===== Semantic ===== */\n    --color-primary: var(--blue-500);\n    --color-primary-hover: var(--blue-900);\n    --color-bg: white;\n    --color-bg-alt: var(--gray-50);\n    --color-text: var(--gray-900);\n    --color-text-muted: var(--gray-500);\n    --color-border: var(--gray-100);\n    \n    /* ===== Component ===== */\n    --button-bg: var(--color-primary);\n    --button-text: white;\n    --button-padding: var(--space-3) var(--space-6);\n    --button-radius: var(--radius-md);\n    \n    --card-bg: var(--color-bg);\n    --card-padding: var(--space-6);\n    --card-radius: var(--radius-lg);\n    --card-shadow: var(--shadow-sm);\n}\n\n/* Dark mode */\n[data-theme=\"dark\"] {\n    --color-bg: var(--gray-900);\n    --color-bg-alt: var(--gray-800);\n    --color-text: var(--gray-50);\n    --color-text-muted: var(--gray-400);\n    --color-border: var(--gray-700);\n}\n\n/* 用 */\n.button {\n    background: var(--button-bg);\n    color: var(--button-text);\n    padding: var(--button-padding);\n    border-radius: var(--button-radius);\n}\n\n.card {\n    background: var(--card-bg);\n    padding: var(--card-padding);\n    border-radius: var(--card-radius);\n    box-shadow: var(--card-shadow);\n}\n```\n\n  \n### Dark mode 切換\n\n```javascript\n// JS 切換 theme\nfunction toggleTheme() {\n    const current = document.documentElement.dataset.theme;\n    const next = current === \"dark\" ? \"light\" : \"dark\";\n    document.documentElement.dataset.theme = next;\n    localStorage.setItem(\"theme\", next);\n}\n\n// 初始化（從 localStorage 或 OS 偏好）\nfunction initTheme() {\n    const saved = localStorage.getItem(\"theme\");\n    const prefersDark = window.matchMedia(\"(prefers-color-scheme: dark)\").matches;\n    \n    const theme = saved || (prefersDark ? \"dark\" : \"light\");\n    document.documentElement.dataset.theme = theme;\n}\n\n// 跟 OS 同步\nwindow.matchMedia(\"(prefers-color-scheme: dark)\")\n    .addEventListener(\"change\", e => {\n        if (!localStorage.getItem(\"theme\")) {\n            document.documentElement.dataset.theme = e.matches ? \"dark\" : \"light\";\n        }\n    });\n```\n\n  \n### Tailwind 用 tokens\n\n```js\n// tailwind.config.ts\nimport type { Config } from \"tailwindcss\";\n\nexport default {\n    theme: {\n        extend: {\n            colors: {\n                primary: {\n                    DEFAULT: \"var(--color-primary)\",\n                    hover: \"var(--color-primary-hover)\",\n                },\n                background: \"var(--color-bg)\",\n                foreground: \"var(--color-text)\",\n                muted: \"var(--color-text-muted)\",\n                border: \"var(--color-border)\",\n            },\n            spacing: {\n                /* 預設 Tailwind 已包 */\n            },\n            borderRadius: {\n                /* 預設已包 */\n            }\n        }\n    }\n} satisfies Config;\n\n// 用\n\n    Click me\n\n// dark mode 自動切（用 [data-theme]）\n```\n\n  \n### Figma + Token 同步（進階）\n\n```text\n2026 趨勢：Figma 跟 code 同步 tokens\n\n工具：\n1. Figma Variables（內建）\n   - 在 Figma 設 token\n   - export 成 JSON\n\n2. Tokens Studio plugin\n   - 強大 token 管理\n   - 同步多平台\n\n3. Style Dictionary（Amazon）\n   - JSON → CSS / iOS / Android\n   - 一個 source、多平台\n\n工作流：\nDesigner 在 Figma 改 token\n→ Export JSON\n→ CI/CD 同步到 code\n→ 整個 app 更新\n\n範例 JSON：\n{\n    \"color\": {\n        \"primary\": { \"value\": \"#0066ff\" },\n        \"danger\": { \"value\": \"#ef4444\" }\n    },\n    \"spacing\": {\n        \"sm\": { \"value\": \"8px\" },\n        \"md\": { \"value\": \"16px\" }\n    }\n}\n```\n\n  \n### 2026 推薦：shadcn/ui token system\n\n```css\n/* shadcn/ui 用 HSL channel 拆 */\n\n:root {\n    --background: 0 0% 100%;          /* 不寫 hsl()、純 channel */\n    --foreground: 240 10% 3.9%;\n    --primary: 240 5.9% 10%;\n    --primary-foreground: 0 0% 98%;\n    --muted: 240 4.8% 95.9%;\n    --muted-foreground: 240 3.8% 46.1%;\n    --border: 240 5.9% 90%;\n}\n\n.dark {\n    --background: 240 10% 3.9%;\n    --foreground: 0 0% 98%;\n    --primary: 0 0% 98%;\n    /* ... */\n}\n\n/* 用 */\n.element {\n    background: hsl(var(--background));\n    color: hsl(var(--foreground));\n    /* 用 hsl() wrap */\n}\n\n/* Tailwind config */\n{\n    colors: {\n        background: \"hsl(var(--background))\",\n        foreground: \"hsl(var(--foreground))\",\n        /* ... */\n    }\n}\n\n/* 好處：\n   1. 能調 opacity：hsl(var(--primary) / 0.5)\n   2. dark mode 切換乾淨\n   3. 2026 主流 React + Tailwind 寫法\n*/\n```\n\n  \n### 常見 token 錯誤\n\n  \n- **沒分層**—全 primitive、沒 semantic、改主題痛苦\n- **命名混亂**—blue-1 / blue-primary / blue-button\n- **太多 token**—一個 token 用 1 次、沒意義\n- **沒 dark mode 對應**—白色硬寫死\n- **token 跟 code 不同步**—Figma 改了 code 沒改\n- **過早抽象**—10 個元件就建 token 系統、複雜化\n\n  \n    **🚀 進階技巧**\n    \nDesign Tokens 心法：(1) **3 層級**—primitive / semantic / component (2) **命名語意化**—`--color-primary` 比 `--blue-500` 好用 (3) **dark mode**—只切 semantic、primitive 不變 (4) **用 Tailwind**—config 直接配 CSS variables (5) **shadcn/ui pattern**—HSL channel 拆、能調 opacity。\n\n  \n\n  \n    \n      🛠️\n      工具推薦\n    \n    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。",
+      "tip": {
+        "type": "practical",
+        "text": "配合這節用的工具：(1) VS Code（編輯器、免費）(2) Chrome DevTools（F12 開啟、除錯神器）(3) Live Server（VS Code 擴充、即時預覽）(4) GitHub Copilot / Cursor（AI 寫程式、學習加速 2-10x）。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "3.17.auto",
+          "language": "css",
+          "title": "試試看",
+          "initialCode": ":root {\n    /* ===== Primitive ===== */\n    /* Colors */\n    --blue-50:  #eff6ff;\n    --blue-100: #dbeafe;\n    --blue-500: #0066ff;\n    --blue-900: #1e3a8a;\n    \n    --gray-50:  #f9fafb;\n    --gray-100: #f3f4f6;\n    --gray-500: #6b7280;\n    --gray-900: #111827;\n    \n    /* Spacing */\n    --space-1: 4px;\n    --space-2: 8px;\n    --space-3: 12px;\n    --space-4: 16px;\n    --space-6: 24px;\n    --space-8: 32px;\n    \n    /* Typography */\n    --text-sm: 14px;\n    --text-base: 16px;\n    --text-lg: 18px;\n    --text-xl: 20px;\n    --text-2xl: 24px;\n    \n    /* Border radius */\n    --radius-sm: 4px;\n    --radius-md: 8px;\n    --radius-lg: 12px;\n    --radius-full: 9999px;\n    \n    /* Shadows */\n    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);\n    --shadow-md: 0 4px 6px rgba(0,0,0,0.1);\n    --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);\n    \n    /* ===== Semantic ===== */\n    --color-primary: var(--blue-500);\n    --color-primary-hover: var(--blue-900);\n    --color-bg: white;\n    --color-bg-alt: var(--gray-50);\n    --color-text: var(--gray-900);\n    --color-text-muted: var(--gray-500);\n    --color-border: var(--gray-100);\n    \n    /* ===== Component ===== */\n    --button-bg: var(--color-primary);\n    --button-text: white;\n    --button-padding: var(--space-3) var(--space-6);\n    --button-radius: var(--radius-md);\n    \n    --card-bg: var(--color-bg);\n    --card-padding: var(--space-6);\n    --card-radius: var(--radius-lg);\n    --card-shadow: var(--shadow-sm);\n}\n\n/* Dark mode */\n[data-theme=\"dark\"] {\n    --color-bg: var(--gray-900);\n    --color-bg-alt: var(--gray-800);\n    --color-text: var(--gray-50);\n    --color-text-muted: var(--gray-400);\n    --color-border: var(--gray-700);\n}\n\n/* 用 */\n.button {\n    background: var(--button-bg);\n    color: var(--button-text);\n    padding: var(--button-padding);\n    border-radius: var(--button-radius);\n}\n\n.card {\n    background: var(--card-bg);\n    padding: var(--card-padding);\n    border-radius: var(--card-radius);\n    box-shadow: var(--card-shadow);\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "什麼是 Design Tokens"
+        },
+        {
+          "level": 3,
+          "text": "Token 3 個層級"
+        },
+        {
+          "level": 3,
+          "text": "實戰：完整 token 系統"
+        },
+        {
+          "level": 3,
+          "text": "Dark mode 切換"
+        },
+        {
+          "level": 3,
+          "text": "Tailwind 用 tokens"
+        },
+        {
+          "level": 3,
+          "text": "Figma + Token 同步（進階）"
+        },
+        {
+          "level": 3,
+          "text": "2026 推薦：shadcn/ui token system"
+        },
+        {
+          "level": 3,
+          "text": "常見 token 錯誤"
+        }
+      ]
+    },
+    {
+      "id": "3.18",
+      "number": "LESSON 3.18",
+      "title": "Mini Design System：從零搭建",
+      "oneLineSummary": "User Research：「真的去問使用者」—不要憑你 / 老闆 / 設計師的直覺。",
+      "analogy": "像開餐廳前先試菜給朋友—自己覺得好吃別人不一定。User Research 一樣：訪問 5-10 個目標使用者、看他們怎麼用你的產品—會推翻很多假設。",
+      "content": "Design System 不是大公司專利—indie SaaS 也該有 mini 版本。學完能 1 週內搭出自己的 design system。\n\n  \n### Design System 包什麼\n\n```text\n完整 design system：\n\n1. Foundations（基礎）\n   - Color tokens\n   - Typography\n   - Spacing\n   - Border radius\n   - Shadows\n   - Motion / animation\n   - Icons\n\n2. Components（元件）\n   - Button、Input、Select\n   - Card、Modal、Toast\n   - Table、Pagination\n   - 大公司 50-100 個元件\n   - Indie 20-30 個夠\n\n3. Patterns（模式）\n   - Form layout\n   - Empty state\n   - Error handling\n   - 整合多個元件的模式\n\n4. Guidelines（指南）\n   - 用法說明\n   - Do / Don't 範例\n   - Accessibility 要求\n   - Voice + tone（用詞）\n\n5. Documentation（文件）\n   - Storybook 展示\n   - Code 範例\n   - Token reference\n```\n\n  \n### Indie 版 mini design system\n\n```text\nWeek 1：Tokens\n- 顏色（主色 + 灰階 + semantic）\n- 字體（2 family + 8 sizes + 4 weights）\n- 間距（8pt scale）\n- Radius（3 sizes）\n- Shadows（3 levels）\n\nWeek 2：核心元件（10 個）\n1. Button（3 variants）\n2. Input\n3. Select\n4. Checkbox + Radio\n5. Card\n6. Modal / Dialog\n7. Toast\n8. Badge / Tag\n9. Avatar\n10. Spinner\n\nWeek 3：實用元件\n1. Form layout\n2. Table\n3. Tabs\n4. Pagination\n5. Dropdown\n6. Tooltip\n7. Empty state\n8. Loading skeleton\n\nWeek 4：整合 + 文件\n- 寫 Storybook\n- Token reference\n- Component API doc\n\n完成後：你的 SaaS UI 一致 100%\n```\n\n  \n### 2026 最快：shadcn/ui\n\n```text\n不要自己造輪—用 shadcn/ui\n\n特色：\n- 不是 npm install、是 copy code\n- 你擁有元件（能改）\n- 基於 Radix UI（a11y 處理好）\n- Tailwind 整合\n- TypeScript 完整\n- React Server Components 友好\n\n裝：\n$ npx shadcn@latest init\n\n加元件：\n$ npx shadcn@latest add button\n$ npx shadcn@latest add dialog\n$ npx shadcn@latest add toast\n\n裝完是 copy 進你 project 的 code：\nsrc/components/ui/button.tsx\nsrc/components/ui/dialog.tsx\n...\n\n你能改、能擴展、不依賴 npm 版本\n\n業界 2026 主流：\n- Vercel、Linear、indie SaaS 大多用\n- 比 Material UI / Chakra 更彈性\n- 比自己造輪更快\n```\n\n  \n### shadcn/ui + 客製化\n\n```text\nshadcn 預設好看、但要你的 brand\n\n步驟 1：改 tokens\n編輯 globals.css 的 :root variables\n- --primary 改 brand 色\n- --radius 改圓角偏好\n- 字體改你選的\n\n步驟 2：改元件\nsrc/components/ui/button.tsx\n- 改 variants\n- 加新 size\n- 改 hover 效果\n\n步驟 3：建自己的 wrapper\nsrc/components/Button.tsx\nimport { Button as BaseButton } from \"@/components/ui/button\";\n\nexport function Button({ variant, ...props }) {\n    return ;\n}\n\n步驟 4：建擴展元件\nshadcn 沒的（如 Stats Card、Feature Card）\n- 自己寫\n- 用 shadcn tokens\n- 維持一致風格\n```\n\n  \n### Component 設計原則\n\n```text\n1. Composable（可組合）\n   不要：\n   \n   \n   要：\n   \n       \n       \n           ...\n           ...\n       \n       ...\n   \n   \n   彈性 + 可讀\n\n2. Variants（變體）\n   用 cva（class-variance-authority）\n   const variants = cva(\"...\", {\n       variants: {\n           variant: { primary, secondary, ghost },\n           size: { sm, md, lg }\n       }\n   });\n\n3. asChild pattern\n   元件可變身其他元素\n   \n       Home\n   \n   /* 跑 button 樣式、行為是 link */\n\n4. Forward ref\n   元件要能拿到底層 DOM\n   const Button = forwardRef(...)\n\n5. Default + override\n   合理 default、能 override\n    /* 預設 */\n    /* override */\n```\n\n  \n### Storybook（元件展示）\n\n```text\nStorybook = 元件的 demo page\n\n裝：\n$ npx storybook@latest init\n\n每個元件寫 story：\n// Button.stories.tsx\nexport default {\n    title: \"UI/Button\",\n    component: Button\n};\n\nexport const Primary = {\n    args: {\n        variant: \"primary\",\n        children: \"Click me\"\n    }\n};\n\nexport const Sizes = {\n    render: () => (\n        \n            Small\n            Medium\n            Large\n        \n    )\n};\n\n跑：\n$ npm run storybook\n\n好處：\n1. 元件文件 + demo\n2. 視覺 regression 測試\n3. 設計師看不用看 code\n4. 元件獨立開發\n5. 自動產生 a11y 報告\n\n業界 2026：Storybook 9.x 是 React 元件文件主流\n```\n\n  \n### 文件 + Style Guide\n\n```text\n每個元件文件包含：\n\n1. Description（這是什麼、何時用）\n2. Anatomy（解剖：標題、icon、actions...）\n3. Examples（多個 variant）\n4. Props API（type、default、description）\n5. Do / Don't（範例對比）\n6. Accessibility（鍵盤、ARIA、對比）\n7. Related（相關元件）\n\n範例：Linear、Stripe、Vercel 的 design system 都公開\n\n2026 趨勢：\n- 用 mdx（Markdown + JSX）寫文件\n- 嵌 live demo\n- 跟元件 code 同 repo\n```\n\n  \n### 實際案例\n\n```text\n業界經典 design system（看得到）：\n\n公司級：\n- Material Design（Google）\n- Apple HIG（Apple）\n- Carbon Design（IBM）\n- Polaris（Shopify）\n- Lightning（Salesforce）\n\n開源 / Indie：\n- shadcn/ui（最熱）\n- Radix UI（underlying）\n- Tailwind UI（付費、範例）\n- daisyUI（Tailwind 元件）\n- Magic UI（動畫元件）\n- Aceternity UI（高級動畫）\n\n學習：\n1. 抄 shadcn/ui 結構\n2. 看 Material Design tokens\n3. 學 Stripe / Linear UI（最 indie 友好）\n```\n\n  \n### 常見錯誤\n\n  \n- **過早建 design system**—10 個 page 才開始\n- **太多元件**—50 個元件用不到 10 個\n- **沒文件**—自己寫的隔週忘了\n- **不同步**—Figma 跟 code 不一致\n- **不維護**—1 年後過時\n- **過度抽象**—1 個 Button 100 個 prop\n- **自己造輪**—shadcn/ui 早有了\n\n  \n    **🚀 進階技巧**\n    \nDesign System 4 心法：(1) **從 shadcn/ui 開始**—2026 標配、不要造輪 (2) **token-first**—color / spacing / typography 先定 (3) **10-20 個元件夠**—不要追求大而全 (4) **Storybook 文件**—未來的你會感謝。**Indie 真實**：1 週搭好 mini design system、整個 SaaS UI 一致 = 看起來像 50 人團隊。\n\n  \n\n  \n    \n      ⚠️\n      新手常見錯誤\n    \n    新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。",
+      "tip": {
+        "type": "warning",
+        "text": "新手 3 大坑：(1) 不看 console—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) 不存檔就 F5—改完忘記儲存以為「程式沒效果」 (3) 抄 code 不理解—複製貼上能跑、但下次要改就崩潰。記得：先看懂、再寫。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "Design System 包什麼"
+        },
+        {
+          "level": 3,
+          "text": "Indie 版 mini design system"
+        },
+        {
+          "level": 3,
+          "text": "2026 最快：shadcn/ui"
+        },
+        {
+          "level": 3,
+          "text": "shadcn/ui + 客製化"
+        },
+        {
+          "level": 3,
+          "text": "Component 設計原則"
+        },
+        {
+          "level": 3,
+          "text": "Storybook（元件展示）"
+        },
+        {
+          "level": 3,
+          "text": "文件 + Style Guide"
+        },
+        {
+          "level": 3,
+          "text": "實際案例"
+        },
+        {
+          "level": 3,
+          "text": "常見錯誤"
+        }
+      ]
+    },
+    {
+      "id": "3.19",
+      "number": "LESSON 3.19",
+      "title": "2026 AI 時代 UI 趨勢",
+      "oneLineSummary": "A/B Testing：「同時上兩個版本、看哪個好」—用數據說話、不靠主觀。",
+      "analogy": "像飲料店推新口味、限定 1 個月看銷量。A/B test 一樣：50% 看 A、50% 看 B、轉換率哪個高就用哪個。Booking / Airbnb 一天跑 1000 個 A/B test。",
+      "content": "2024+ AI 改變了 UI 設計—chatbot、agent、generative UI 是新模式。學完知道方向、不會被淘汰。\n\n  \n### 5 個 AI 時代 UI 趨勢\n\n```text\n1. Chat-first interface\n   - ChatGPT、Claude、Perplexity 普及\n   - 「跟 AI 對話」變主流 UI\n   - 取代部分傳統 form + button\n\n2. Streaming UI\n   - AI 回應一字字 typed in\n   - 不是等全部完才顯示\n   - 心理上感覺更快\n\n3. Generative UI\n   - AI 動態產生 UI（不只文字）\n   - 例：顯示圖表、卡片、按鈕\n   - Vercel AI SDK 推這方向\n\n4. Agent / Tool calling\n   - AI 自動執行任務\n   - UI 顯示「AI 正在做什麼」\n   - Progress + confirm + result\n\n5. Multimodal\n   - 不只文字、能丟圖 / 音訊 / 檔\n   - 設計支援拖拉、貼上\n   - 例：ChatGPT、Claude image\n```\n\n  \n### Chat UI 設計\n\n```text\n基本結構：\n┌─────────────────────┐\n│   Header / Title    │  ← 對話標題\n├─────────────────────┤\n│                     │\n│  AI: Hello          │  ← Assistant message\n│                     │\n│  User: Hi           │  ← User message（右對齊）\n│                     │\n│  AI: How can I...   │  ← Streaming（typing）\n│  █                  │     游標閃爍\n│                     │\n├─────────────────────┤\n│ [Input...        ]  │  ← Input + Send\n└─────────────────────┘\n\n設計要點：\n1. 區分 user vs AI 視覺\n   - User：右邊 + 主色背景\n   - AI：左邊 + 中性背景 + 頭像 / icon\n\n2. Streaming 動畫\n   - 文字一字字出現\n   - 末端閃爍游標\n   - 給「思考中」感覺\n\n3. Auto-scroll\n   - 新訊息自動捲到底\n   - 用戶往上看時暫停\n\n4. Markdown 支援\n   - AI 常回 markdown\n   - 渲染 heading、list、code\n\n5. Code block\n   - syntax highlighting\n   - copy button\n   - 等寬字\n```\n\n  \n### Streaming UI（讓 AI 感覺快）\n\n```tsx\n// 用 Vercel AI SDK（2026 主流）\n$ npm install ai\n\nimport { useChat } from \"ai/react\";\n\nfunction ChatUI() {\n    const { messages, input, handleInputChange, handleSubmit } = useChat({\n        api: \"/api/chat\"\n    });\n    \n    return (\n        \n            {messages.map(m => (\n                \n                    {m.content}\n                \n            ))}\n            \n            \n                \n                Send\n            \n        \n    );\n}\n\n// Server side（streaming）\nimport { OpenAIStream, StreamingTextResponse } from \"ai\";\nimport OpenAI from \"openai\";\n\nexport async function POST(req: Request) {\n    const { messages } = await req.json();\n    \n    const openai = new OpenAI();\n    const response = await openai.chat.completions.create({\n        model: \"gpt-5\",\n        stream: true,\n        messages\n    });\n    \n    const stream = OpenAIStream(response);\n    return new StreamingTextResponse(stream);\n}\n\n// 自動處理 streaming、UI 一字字顯示\n```\n\n  \n### Suggested actions / Quick replies\n\n```text\n幫用戶起頭：\n\n新對話顯示：\n- \"Help me write...\"\n- \"Summarize this...\"\n- \"Generate a...\"\n\n點了自動填到 input 或直接送\n\n回應後給 follow-up：\nAI: \"I created your component\"\n[ Explain code ] [ Add tests ] [ Deploy ]\n\n3 個賣點：\n1. 降低 user input 成本\n2. 教用戶「能問什麼」\n3. 增加 engagement\n\n設計：\n- chip / pill 樣式\n- 1-2 行高\n- 點完該 hide\n- 3-5 個夠\n```\n\n  \n### Generative UI（動態元件）\n\n```text\n傳統 chat：AI 回文字\nGenerative UI：AI 回元件\n\n例：\nUser: \"Show me the weather\"\nAI 回 \n// 不是文字、是真實元件\n\nUser: \"List my top 3 sales\"\nAI 回 \n// 真實 chart\n\n實作：Vercel AI SDK Tool Calling\n- Server 定義 tools\n- AI 決定要 call 哪個 tool\n- Tool 回 JSON\n- Frontend 渲染對應元件\n\n範例：\nconst tools = {\n    showWeather: {\n        parameters: z.object({\n            city: z.string()\n        }),\n        execute: async ({ city }) => {\n            return { city, temp: 26, condition: \"sunny\" };\n        },\n        component: (data) => \n    }\n};\n\n2026 主流：\n- ChatGPT canvas\n- Claude artifacts\n- Vercel AI SDK ui\n- 都用這 pattern\n```\n\n  \n### AI agent UI\n\n```text\nAgent = AI 自動執行多步任務\n\n例：「幫我訂下週五到大阪的便宜機票」\n\nUI 顯示：\n1. 「正在搜尋航班...」（loading）\n2. 「找到 5 個選項」\n3. 「篩選經濟艙、直飛...」\n4. 「找到最便宜 ¥45,000」\n5. 「需要你確認 [ Confirm ] [ Cancel ]」\n\n設計要點：\n1. 進度可見\n   - 每步驟顯示\n   - 像 git log 一樣\n\n2. 中斷點\n   - 危險動作要 confirm\n   - 用戶能 cancel\n\n3. Tool 透明\n   - 顯示 AI 在用什麼工具\n   - 「Using search tool...」\n\n4. Error recovery\n   - AI 卡住要救\n   - 用戶能介入\n\n範例：\n- Manus AI（多步驟 task）\n- AutoGPT\n- Claude Code（agentic coding）\n- Cursor compose\n- v0（generative UI）\n```\n\n  \n### Multimodal input\n\n```text\n不只文字輸入：\n\n1. 圖片上傳\n   - 拖拉 / 貼上 / 點按上傳\n   - preview + remove\n\n2. 音訊\n   - Voice input button\n   - 錄音 + 即時轉文字\n\n3. 檔案\n   - PDF、CSV、code\n   - 拖到 chat 區\n\n4. Screenshot\n   - 按鍵截圖直接貼\n\n設計：\n\n    \n    \n    \n        \n        ×\n    \n    \n    \n        📎\n        🎙\n        →\n    \n\n技術：\n- @use-gesture/react（拖拉）\n- react-dropzone\n- Web Speech API（voice）\n```\n\n  \n### 避免的 AI UI 反模式\n\n```text\n1. Chatbot for everything\n   - 不是所有都該 chat\n   - 簡單篩選用 select 比 chat 好\n   - 「點 3 下 vs 打 1 句話」？看場景\n\n2. 過度 streaming\n   - 短訊息不用 streaming\n   - 「OK」「Done」沒必要逐字\n\n3. 假 AI（fake AI）\n   - 假裝有 AI、其實是 if-else\n   - 用戶很快發現、信任崩盤\n\n4. AI 無限循環\n   - Agent 跑無限、user 不知何時結束\n   - 一定要有 max steps\n\n5. 沒給 user override\n   - AI 決定都對的？\n   - 永遠給 「Take over」 / Cancel 按鈕\n\n6. Token / cost 不透明\n   - 用戶不知道用了多少\n   - 一個對話 $5、沒提示\n\n7. 沒 error 處理\n   - AI hallucinate / timeout / quota 滿\n   - 都要友善訊息\n```\n\n  \n### 2026 UI 工具生態\n\n```text\nAI UI 開發 stack：\n\nFramework：\n- Next.js + Vercel AI SDK（主流）\n- Vercel v0（生 UI）\n\nComponent library：\n- shadcn/ui（基礎）\n- AssistantUI（AI chat 專用）\n- Vercel AI Chat Templates\n\nState：\n- Vercel AI SDK（內建 streaming）\n- TanStack Query（cache + retry）\n\nVisual：\n- Aceternity UI（AI-style 動畫）\n- Magic UI\n- shadcn/ui Charts\n\nMultimodal：\n- react-dropzone\n- @use-gesture/react\n\nCode rendering：\n- React Markdown\n- Shiki（syntax highlighting）\n\n業界 2026 例子：\n- v0.dev（Vercel）\n- bolt.new\n- claude.ai\n- ChatGPT Canvas\n```\n\n  \n    **🚀 進階技巧**\n    \nAI UI 5 心法：(1) **Streaming = 體驗**—字逐字出感覺快 (2) **Suggested actions**—降低用戶 input 成本 (3) **Generative UI**—AI 回元件不只文字（Vercel AI SDK） (4) **Agent 進度可見**—別讓 AI 黑箱跑 (5) **Multimodal input**—2026 不只文字。**2026 stack**：Next.js + Vercel AI SDK + shadcn/ui + AssistantUI。\n\n  \n\n  \n    \n      💼\n      接案小知識\n    \n    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「UI/UX」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。",
+      "tip": {
+        "type": "practical",
+        "text": "剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「UI/UX」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "3.19.auto",
+          "language": "tsx",
+          "title": "試試看",
+          "initialCode": "// 用 Vercel AI SDK（2026 主流）\n$ npm install ai\n\nimport { useChat } from \"ai/react\";\n\nfunction ChatUI() {\n    const { messages, input, handleInputChange, handleSubmit } = useChat({\n        api: \"/api/chat\"\n    });\n    \n    return (\n        \n            {messages.map(m => (\n                \n                    {m.content}\n                \n            ))}\n            \n            \n                \n                Send\n            \n        \n    );\n}\n\n// Server side（streaming）\nimport { OpenAIStream, StreamingTextResponse } from \"ai\";\nimport OpenAI from \"openai\";\n\nexport async function POST(req: Request) {\n    const { messages } = await req.json();\n    \n    const openai = new OpenAI();\n    const response = await openai.chat.completions.create({\n        model: \"gpt-5\",\n        stream: true,\n        messages\n    });\n    \n    const stream = OpenAIStream(response);\n    return new StreamingTextResponse(stream);\n}\n\n// 自動處理 streaming、UI 一字字顯示",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 9 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "5 個 AI 時代 UI 趨勢"
+        },
+        {
+          "level": 3,
+          "text": "Chat UI 設計"
+        },
+        {
+          "level": 3,
+          "text": "Streaming UI（讓 AI 感覺快）"
+        },
+        {
+          "level": 3,
+          "text": "Suggested actions / Quick replies"
+        },
+        {
+          "level": 3,
+          "text": "Generative UI（動態元件）"
+        },
+        {
+          "level": 3,
+          "text": "AI agent UI"
+        },
+        {
+          "level": 3,
+          "text": "Multimodal input"
+        },
+        {
+          "level": 3,
+          "text": "避免的 AI UI 反模式"
+        },
+        {
+          "level": 3,
+          "text": "2026 UI 工具生態"
+        }
+      ]
+    },
+    {
+      "id": "3.20",
+      "number": "LESSON 3.20",
+      "title": "工具總結 + 怎麼變強",
+      "oneLineSummary": "整章實戰：幫一個現有醜網站做 UX 改造—從問題分析到重新設計。",
+      "analogy": "像幫朋友家改造—不是全部拆掉重建、是找問題（光線差 / 動線不順 / 收納亂）、針對性改進。學完這節你能看任何網站說出 5 個 UX 問題。",
+      "content": "學完 20 lessons 是**起點**—怎麼持續精進、有哪些工具該掌握。\n\n  \n### 2026 indie UI/UX 工具 stack\n\n```text\n設計工具：\n1. Figma（免費 / 付費）\n   - 業界標配\n   - design + prototype + collab\n   - Variables（design tokens）\n\n2. Penpot（開源 Figma alternative）\n   - 完全免費\n   - 自 host\n   - 較簡單\n\n3. Excalidraw（白板）\n   - 手繪風\n   - wireframe / 流程圖\n\n開發框架：\n1. Next.js + TypeScript + Tailwind（90% indie）\n2. Vue + Vite（小團隊）\n3. SvelteKit（追求簡單）\n4. Astro（內容站）\n\nUI library：\n1. shadcn/ui（2026 主流）\n2. Radix UI（headless）\n3. Tailwind UI（付費）\n4. Mantine（comprehensive）\n5. Chakra UI（簡單）\n\nAnimation：\n1. Framer Motion（React）\n2. AutoAnimate（簡單）\n3. GSAP（複雜）\n4. Lottie（After Effects 匯出）\n\nIcons：\n1. Lucide（2026 主流、shadcn 預設）\n2. Heroicons（Tailwind 出品）\n3. Phosphor Icons\n4. Iconify（聚合）\n\n字體：\n1. Google Fonts（CDN）\n2. Bunny Fonts（GDPR 友善）\n3. Fontshare（高品質免費）\n4. 本地自 host（最快）\n\n圖片：\n1. Unsplash（免費商用照片）\n2. Pexels（免費照片 + 影片）\n3. unDraw（免費 SVG illustration）\n4. Cloudinary（圖片 CDN + 處理）\n5. ImageKit（同樣）\n\nColor：\n1. Coolors.co\n2. Realtime Colors\n3. Adobe Color\n4. Tints & Shades（color scale）\n\nCode visual：\n1. Carbon.now.sh（code → 美圖）\n2. ray.so\n3. Shiki（code highlighting）\n```\n\n  \n### 學習路徑\n\n```text\n第 1 個月：基礎\n- 學會這 20 lessons\n- 用 shadcn/ui ship 1 個 SaaS\n- 看 Stripe / Linear / Vercel UI\n\n第 2-3 個月：實踐\n- Refine 你的 SaaS UI\n- 設計 5 個 landing page（不同 brand）\n- 學 Figma 基礎\n\n第 4-6 個月：進階\n- 學 motion design（Framer Motion）\n- 學 micro-interactions\n- 建自己的 design system\n\n第 7-12 個月：精通\n- 看 design system 公開文件\n- 設計 mobile app（不只 web）\n- 開始有「審美」（看到 UI 知道好壞）\n\n1 年後：\n- 能 ship 像 100k MRR 看起來的 SaaS\n- 不再被嫌「工程師 UI」\n- 跟 Designer 對等溝通\n```\n\n  \n### 必看資源\n\n```text\n1. 部落格 / 文章\n- Refactoring UI（Adam Wathan）\n  - Tailwind 創辦人寫的 UI 入門\n  - 工程師寫給工程師、最對味\n  \n- Smashing Magazine\n- CSS-Tricks（已不更新但 archive 寶藏）\n- web.dev（Google 出品）\n\n2. YouTube\n- Jonas Schmedtmann\n- Designcourse\n- Theo - t3.gg（React + design）\n- DesignCourse\n\n3. 公司 design system 文件\n- Material Design（Google）\n- Apple HIG\n- Stripe（看 stripe.com）\n- Linear（看 linear.app）\n- Vercel（看 vercel.com）\n- Polaris（Shopify）\n\n4. 書\n- Refactoring UI（Adam Wathan + Steve Schoger）\n- Don't Make Me Think（Steve Krug）\n- The Design of Everyday Things（Don Norman）\n- Universal Principles of Design\n\n5. 課程\n- Refactoring UI（線上、$200+）\n- Frontend Masters（多位老師）\n- Total TypeScript（順便學 TS + UI）\n\n免費資源最重要：每天看好 UI\n```\n\n  \n### 怎麼培養審美\n\n```text\n1. 每天看 5 個 SaaS landing page\n   - SaaSPages.com\n   - Land-book.com\n   - Page Flows\n\n2. 收藏 inspiration\n   - Mobbin（mobile app screens）\n   - Refero（web screenshots）\n   - Dribbble（concept、不全 production）\n\n3. 拆解你愛的 UI\n   - 「為什麼這個按鈕看起來好？」\n   - 顏色 / 字 / 間距 / 動畫\n   - 用 DevTools 看 CSS\n\n4. 抄優秀的（fair use）\n   - 看 Stripe checkout 怎麼設計\n   - 用同 pattern 在你的 product\n   - 不是抄圖、是抄思路\n\n5. 給人看作品 + 拿 feedback\n   - Twitter / Threads / Designer Hangout\n   - Build in public\n   - 別怕被嫌\n\n6. 1 個月做 1 個小設計練習\n   - 「重新設計 X 公司的 product page」\n   - 「替老阿嬤設計 e-commerce」\n   - 強迫思考\n```\n\n  \n### 2026 趨勢預測\n\n```text\n1. AI 取代部分 UI 工作\n   - v0 / Vercel AI 自動生 UI\n   - Designer 變「策略 + AI 校對」\n\n2. Mobile-first 變 mobile-only\n   - 60% → 75% mobile 流量\n   - Desktop 越來越像「補丁」\n\n3. Voice + AI interface\n   - Chat 已普及\n   - Voice agent 興起（不只 chatbot）\n\n4. 真實感 + 質感\n   - 過去 5 年的 flat / minimal 退潮\n   - subtle gradient、texture 回歸\n   - 但不是 skeuomorphism\n\n5. Accessibility 強制\n   - 歐美法規越來越嚴\n   - 不做會被告\n\n6. Performance = 設計\n   - LCP / FID / CLS 變設計考量\n   - Server Components / streaming 主流\n\n7. Design system as code\n   - Figma 跟 code 即時同步\n   - Token JSON 標準化\n```\n\n  \n### 給 indie 的最後建議\n\n```text\n1. 不追求完美\n   - ship 80 分 UI > 不 ship\n   - shadcn/ui + 你的 brand 色 = 80 分\n\n2. 抄 + iterate\n   - 不要從零想\n   - 抄 Linear / Stripe 結構、加你的內容\n\n3. 真用戶 feedback\n   - 你覺得好不重要\n   - 5 個用戶試 = 知道哪卡\n\n4. 一致 > 漂亮\n   - 整站一致的 80 分 > 1 頁完美 99 分\n\n5. 投資 design 時間 = 投資轉換率\n   - 同 product、UI 好 conversion 2x\n   - 花時間設計 = 賺 ROI\n\n6. 學 1 個工具就好\n   - 不要 Figma + Sketch + Penpot + XD\n   - Figma 一個就夠\n\n7. 你不是 designer\n   - 接受極限\n   - 找 designer 合作或外包\n   - Fiverr / Dribbble / Twitter 都能找\n```\n\n  \n    **☕ 用人話講**\n    \nUI/UX 變強 3 條路：(1) **每天看好 UI**—Stripe / Linear / Vercel / Apple、累積 visual library (2) **每月 ship 1 個產品 / 改版**—實作累積經驗 (3) **拿 feedback**—真用戶 + Designer 朋友。**2026 indie 標配**：Next.js + Tailwind + shadcn/ui + Lucide + Inter + Framer Motion。**1 年後**你能 ship 看起來像 100k MRR 的 indie SaaS。\n\n  \n\n  \n    \n      🎯\n      面試考點\n    \n    台灣科技公司面試 90% 會問「UI/UX」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。",
+      "tip": {
+        "type": "pro",
+        "text": "台灣科技公司面試 90% 會問「UI/UX」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "安裝 lesson 內介紹的工具、用官方的 quick start 跑一次 hello world。記錄安裝過程踩了哪些坑。",
+        "hint": "工具的學習曲線通常卡在「環境設定」這關。Node 版本、Python 版本、權限、PATH 變數、port 衝突——遇到一個解一個。",
+        "answer": "踩坑筆記範本：『遇到：[錯誤訊息] → 原因：[根本原因] → 解：[具體指令]』。整理在自己的 GitHub gist 或 Notion、下次遇到同樣坑直接複製貼上 = 把痛苦變資產。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "2026 indie UI/UX 工具 stack"
+        },
+        {
+          "level": 3,
+          "text": "學習路徑"
+        },
+        {
+          "level": 3,
+          "text": "必看資源"
+        },
+        {
+          "level": 3,
+          "text": "怎麼培養審美"
+        },
+        {
+          "level": 3,
+          "text": "2026 趨勢預測"
+        },
+        {
+          "level": 3,
+          "text": "給 indie 的最後建議"
+        }
+      ]
+    },
+    {
+      "title": "5 大設計原則：Hick / Fitts / Miller / Jakob / Aesthetic-Usability",
+      "oneLineSummary": "不只「畫得漂亮」、UI 設計有公式：減少選擇、加大目標、限制記憶",
+      "analogy": "iPhone 為什麼比 Android 順手？不是只有美感、是套了 5 個經典設計法則。",
+      "content": "## 1. Hick's Law（選擇越多、決策越慢）\n公式：T = a + b·log₂(n)\n\n**應用**：\n- 主選單最多 7 項\n- 設定頁分群、不要全攤開\n- 按鈕只給 1 個主要 CTA（次要設低調）\n\n## 2. Fitts's Law（目標越遠越小、越難點）\n公式：T = a + b·log₂(D/W + 1)\n\n**應用**：\n- CTA 按鈕要大（最少 44×44 px、Apple 標準）\n- 重要按鈕放邊角（手指能停的位置）\n- 表單欄位夠寬、不要超細\n\n## 3. Miller's Law（短期記憶 7±2）\n**應用**：\n- 一頁不要超 7 個區塊\n- 表單分步驟、每步最多 5-7 欄\n- 電話 / 信用卡分組顯示：1234-5678 而不是 12345678\n\n## 4. Jakob's Law（用戶帶過去經驗來）\n**核心**：別創新奇怪 UX、用既有 pattern。\n- 漢堡選單 = ☰\n- 設定 = ⚙️\n- 紅色 = 警告 / 刪除\n- 綠色 = 確認 / 成功\n\n## 5. Aesthetic-Usability Effect（美的看起來更好用）\n研究：使用者覺得漂亮的介面、就算實際難用、也會說「好用」。\n**但別只追美**—好看 + 好用、兩個都要。\n\n## 設計師工作流\n1. 先畫線框（不要先選色）\n2. 確認資訊架構\n3. 設計組件\n4. 上色 + 字體\n5. 加互動 + 動畫\n6. 找真人測試\n\n## 真人測試（cheap & fast）\n找 3-5 個目標用戶、看他們用、不要幫他解釋。\n- 找不到按鈕 → 改位置 / 變大\n- 看不懂文字 → 改用詞\n- 卡在哪步 → 那步重設計",
+      "tip": {
+        "type": "pro",
+        "text": "5 大原則寫在便條紙貼螢幕、每次設計前看一遍。比看 100 個 Dribbble 案例還有用。"
+      },
+      "id": "3.21",
+      "number": "LESSON 3.21",
+      "xp": 10,
+      "exercise": {
+        "question": "找一個你身邊的例子、用「5 大設計原則：Hick / Fitts / Miller / Jakob / Aesthetic-Usability」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "1. Hick's Law（選擇越多、決策越慢）"
+        },
+        {
+          "level": 2,
+          "text": "2. Fitts's Law（目標越遠越小、越難點）"
+        },
+        {
+          "level": 2,
+          "text": "3. Miller's Law（短期記憶 7±2）"
+        },
+        {
+          "level": 2,
+          "text": "4. Jakob's Law（用戶帶過去經驗來）"
+        },
+        {
+          "level": 2,
+          "text": "5. Aesthetic-Usability Effect（美的看起來更好用）"
+        },
+        {
+          "level": 2,
+          "text": "設計師工作流"
+        },
+        {
+          "level": 2,
+          "text": "真人測試（cheap & fast）"
+        }
+      ]
+    },
+    {
+      "title": "顏色理論：色票系統 + 對比度",
+      "oneLineSummary": "不是「我喜歡這個顏色」、設計師用色票 + WCAG 對比度規範",
+      "analogy": "為什麼 Apple / Notion 顏色看起來舒服？因為有系統—主色 / 灰階 / 警告色 / 成功色、每個都有 11 階。",
+      "content": "## 色票系統（Token System）\n不要每個顏色 hardcode，建立 token：\n\n```css\n:root {\n  /* 主色（品牌）*/\n  --color-primary: #50fa7b;\n  --color-primary-hover: #3ee066;\n  --color-primary-active: #2dc953;\n\n  /* 灰階 11 階 */\n  --gray-50: #f9fafb;\n  --gray-100: #f3f4f6;\n  --gray-200: #e5e7eb;\n  --gray-300: #d1d5db;\n  --gray-500: #6b7280;\n  --gray-700: #374151;\n  --gray-900: #111827;\n\n  /* 語意色 */\n  --color-success: #10b981;\n  --color-warning: #f59e0b;\n  --color-danger: #ef4444;\n  --color-info: #3b82f6;\n}\n```\n\n## WCAG 對比度規範\n文字 vs 背景的對比比例：\n- **AA 級**（最低）：4.5:1（一般文字）/ 3:1（大字 18pt+）\n- **AAA 級**（最佳）：7:1 / 4.5:1\n\n灰色文字 `#888` 在白底是 3.5:1 → **不過 AA**！\n要 `#666` 才安全。\n\n工具：\n- **WebAIM Contrast Checker**\n- Chrome DevTools 內建檢測\n\n## 暗黑模式\n不要只「反相」、要重新調：\n```css\n@media (prefers-color-scheme: dark) {\n  :root {\n    --color-bg: #0a0e14;\n    --color-text: #e6edf3;\n    --color-primary: #50fa7b;  /* 主色通常不變 */\n  }\n}\n```\n\n## 60-30-10 法則\n- **60%** 主背景色\n- **30%** 次要色（卡片、區塊）\n- **10%** 強調色（CTA、連結）\n\n## 推薦色票工具\n- **Tailwind palette**（直接用）\n- **Radix Colors**（為暗模式優化）\n- **uicolors.app**（自製色階）\n- **Coolors.co**（探索組合）",
+      "tip": {
+        "type": "practical",
+        "text": "不會配色就抄 Tailwind 預設色 / Radix Colors，永遠不會難看。Indie 沒設計師、直接用就贏 80% 業餘設計。"
+      },
+      "id": "3.22",
+      "number": "LESSON 3.22",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "3.22.auto",
+          "language": "css",
+          "title": "試試看",
+          "initialCode": ":root {\n  /* 主色（品牌）*/\n  --color-primary: #50fa7b;\n  --color-primary-hover: #3ee066;\n  --color-primary-active: #2dc953;\n\n  /* 灰階 11 階 */\n  --gray-50: #f9fafb;\n  --gray-100: #f3f4f6;\n  --gray-200: #e5e7eb;\n  --gray-300: #d1d5db;\n  --gray-500: #6b7280;\n  --gray-700: #374151;\n  --gray-900: #111827;\n\n  /* 語意色 */\n  --color-success: #10b981;\n  --color-warning: #f59e0b;\n  --color-danger: #ef4444;\n  --color-info: #3b82f6;\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "色票系統（Token System）"
+        },
+        {
+          "level": 2,
+          "text": "WCAG 對比度規範"
+        },
+        {
+          "level": 2,
+          "text": "暗黑模式"
+        },
+        {
+          "level": 2,
+          "text": "60-30-10 法則"
+        },
+        {
+          "level": 2,
+          "text": "推薦色票工具"
+        }
+      ]
+    },
+    {
+      "title": "字體與排版（Typography）",
+      "oneLineSummary": "一個字體選對、整個網頁氣質升 3 級",
+      "analogy": "為什麼 Vercel / Linear / Stripe 的字體看起來「就是不一樣」？挑對字體、級距、行距、就贏一半。",
+      "content": "## 字體分類\n\n### Sans-serif（無襯線、現代）\n- **Inter**（最主流、Github 在用）\n- **Geist**（Vercel）\n- **SF Pro**（Apple）\n- **Noto Sans TC**（中文標配）\n\n### Serif（襯線、優雅）\n- **Fraunces**（GLACÉRA 用）\n- **Playfair Display**\n- **Noto Serif TC**\n\n### Mono（等寬、程式碼）\n- **JetBrains Mono**\n- **Fira Code**（連字漂亮）\n- **Geist Mono**\n\n## 字體 stack\n保證 fallback：\n```css\nfont-family:\n  \"Inter\",\n  -apple-system,         /* macOS */\n  BlinkMacSystemFont,\n  \"Segoe UI\",            /* Windows */\n  \"Noto Sans TC\",        /* 中文 */\n  sans-serif;\n```\n\n## 級距（Type Scale）\n**1.25 黃金比例**：\n- 12px / 14px / 16px / 20px / 24px / 32px / 40px / 56px\n\n或用 Tailwind 預設（也是 1.25）：\n- text-xs / sm / base / lg / xl / 2xl / 3xl / 4xl\n\n## 行距（Line Height）\n- **內文**：1.5-1.75（讀起來舒服）\n- **標題**：1.1-1.3（緊湊）\n- **按鈕**：1（單行）\n\n```css\nbody { line-height: 1.6; }\nh1 { line-height: 1.2; }\n```\n\n## 字距（Letter Spacing）\n- **大標題**：稍微負（-0.02em）顯緊湊\n- **內文**：0\n- **小標 + 大寫**：正 0.05em\n- **中文**：別動\n\n## 易讀的中文字\n中文字級至少 16px（手機 14px+）。\n段落寬度 30-40 字（過寬讀起來累）。\n\n## Google Fonts 加速\n```html\n<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n<link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap\"\n      rel=\"stylesheet\">\n```\n\n只載入需要的 weight（不要全載、慢）。\n中文字體巨大，建議 self-host + 分子字型。",
+      "tip": {
+        "type": "milestone",
+        "text": "字體 + 級距是「設計師肌肉記憶」。看到任何美的網站、開 Devtools 看 font-family / font-size、抄下來、自己用。"
+      },
+      "id": "3.23",
+      "number": "LESSON 3.23",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "3.23.auto",
+          "language": "html",
+          "title": "試試看",
+          "initialCode": "<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n<link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap\"\n      rel=\"stylesheet\">",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "字體分類"
+        },
+        {
+          "level": 3,
+          "text": "Sans-serif（無襯線、現代）"
+        },
+        {
+          "level": 3,
+          "text": "Serif（襯線、優雅）"
+        },
+        {
+          "level": 3,
+          "text": "Mono（等寬、程式碼）"
+        },
+        {
+          "level": 2,
+          "text": "字體 stack"
+        },
+        {
+          "level": 2,
+          "text": "級距（Type Scale）"
+        },
+        {
+          "level": 2,
+          "text": "行距（Line Height）"
+        },
+        {
+          "level": 2,
+          "text": "字距（Letter Spacing）"
+        },
+        {
+          "level": 2,
+          "text": "易讀的中文字"
+        },
+        {
+          "level": 2,
+          "text": "Google Fonts 加速"
+        }
+      ]
+    },
+    {
+      "title": "佈局原則：8 點網格 + 留白",
+      "oneLineSummary": "間距亂的 UI 永遠廉價、整齊的 UI 永遠專業",
+      "analogy": "為什麼有些 UI 看起來「就是不對勁」？間距亂跳：8px、13px、22px、5px。對齊 8 點網格、整個世界整齊。",
+      "content": "## 8 點網格系統\n所有間距、尺寸都是 8 的倍數：\n- 4 / 8 / 12 / 16 / 24 / 32 / 48 / 64 / 96\n\nTailwind 預設就是這套：\n- `p-1`（4px）/ `p-2`（8px）/ `p-3`（12px）/ `p-4`（16px）\n\n## 為什麼\n- 視覺一致：所有元件用同一套間距\n- 易記：4 / 8 / 16 / 24 比 5 / 13 / 22 / 7 好記\n- Designer ↔ Developer 同語言\n\n## 留白（Whitespace）\n**新手最常見錯誤**：太擠。\n**進階特色**：敢留白。\n\n- 區塊之間：48-96px\n- 卡片內間距：24-32px\n- 文字段落：16-24px\n- 按鈕內邊距：上下 12-16px、左右 24-32px\n\n## Container 寬度\n- **內文**：最寬 720px（避免閱讀疲勞）\n- **網頁**：最寬 1280-1440px\n- **儀表板**：可全寬\n\n```css\n.container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }\n.prose { max-width: 65ch; }  /* 內文最大 65 字寬 */\n```\n\n## 響應式斷點\n- **mobile**：< 640px\n- **tablet**：640-1024px\n- **desktop**：> 1024px\n\n```css\n@media (min-width: 640px) { /* sm */ }\n@media (min-width: 1024px) { /* lg */ }\n```\n\n## 對齊\n**Z 字型** vs **F 字型** 視覺動線：\n- Z：簡單頁面、Landing page\n- F：內容多的頁面、Blog / Docs\n\n## Card 設計\n```css\n.card {\n  background: white;\n  border-radius: 12px;   /* 8 的倍數 */\n  padding: 24px;\n  box-shadow: 0 1px 3px rgba(0,0,0,0.05),\n              0 4px 12px rgba(0,0,0,0.05);\n}\n```\n\n## 工具\n- **Figma 8pt grid plugin**\n- Tailwind 預設（直接用）\n- **Browser ruler**（Chrome 外掛）量間距",
+      "tip": {
+        "type": "pro",
+        "text": "兩個按鈕間距該 16px 還是 12px？看設計稿說的。沒設計稿就用 Tailwind 預設、絕對不會錯。"
+      },
+      "id": "3.24",
+      "number": "LESSON 3.24",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "3.24.auto",
+          "language": "css",
+          "title": "試試看",
+          "initialCode": ".container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }\n.prose { max-width: 65ch; }  /* 內文最大 65 字寬 */",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "8 點網格系統"
+        },
+        {
+          "level": 2,
+          "text": "為什麼"
+        },
+        {
+          "level": 2,
+          "text": "留白（Whitespace）"
+        },
+        {
+          "level": 2,
+          "text": "Container 寬度"
+        },
+        {
+          "level": 2,
+          "text": "響應式斷點"
+        },
+        {
+          "level": 2,
+          "text": "對齊"
+        },
+        {
+          "level": 2,
+          "text": "Card 設計"
+        },
+        {
+          "level": 2,
+          "text": "工具"
+        }
+      ]
+    },
+    {
+      "title": "微互動（Microinteractions）：細節決定質感",
+      "oneLineSummary": "hover 變色、按下凹陷、滑入動畫—這些細節讓 UI 「活起來」",
+      "analogy": "Apple / Stripe / Linear 為什麼感覺貴？因為每個互動都有「微回饋」—hover 變色、按下凹陷、loading 動畫，使用者潛意識感受「有用心」。",
+      "content": "## 5 種必加微互動\n\n### 1. Hover 回饋\n```css\nbutton {\n  transition: all 0.2s ease;\n}\nbutton:hover {\n  background: #3ee066;\n  transform: translateY(-1px);  /* 微浮起 */\n  box-shadow: 0 4px 12px rgba(80,250,123,0.4);\n}\n```\n\n### 2. Active 按下\n```css\nbutton:active {\n  transform: translateY(0);\n  box-shadow: none;\n  /* 凹下去的感覺 */\n}\n```\n\n### 3. Loading 狀態\n```css\nbutton.loading {\n  pointer-events: none;\n  opacity: 0.7;\n}\nbutton.loading::after {\n  content: \"\";\n  width: 14px; height: 14px;\n  border: 2px solid white;\n  border-top-color: transparent;\n  border-radius: 50%;\n  animation: spin 0.6s linear infinite;\n}\n@keyframes spin { to { transform: rotate(360deg); } }\n```\n\n### 4. 滑入 / 淡入\n```css\n.card {\n  opacity: 0;\n  transform: translateY(20px);\n  animation: slide-in 0.4s ease-out forwards;\n}\n@keyframes slide-in {\n  to { opacity: 1; transform: translateY(0); }\n}\n```\n\n### 5. Skeleton（內容載入中）\n```html\n<div class=\"skeleton h-4 w-48\"></div>\n```\n```css\n.skeleton {\n  background: linear-gradient(\n    90deg, #eee 0%, #f5f5f5 50%, #eee 100%\n  );\n  background-size: 200% 100%;\n  animation: shimmer 1.5s infinite;\n}\n@keyframes shimmer { to { background-position: -200% 0; } }\n```\n\n## 動畫的「Easing」（速度曲線）\n**不要用 linear**（機械感）：\n- `ease-out`：開始快結束慢（推薦給 enter）\n- `ease-in`：開始慢結束快（推薦給 exit）\n- `ease-in-out`：兩端慢（推薦給移動）\n- `cubic-bezier(0.4, 0, 0.2, 1)`（Material 標準）\n\n## 時長準則\n- **<100ms**：感覺即時\n- **100-300ms**：適合 hover / 小動畫\n- **300-500ms**：頁面切換 / 大區塊\n- **>500ms**：感覺慢\n\n## 進階：Framer Motion（React）\n```tsx\nimport { motion } from \"framer-motion\";\n\n<motion.div\n  initial={{ opacity: 0, y: 20 }}\n  animate={{ opacity: 1, y: 0 }}\n  transition={{ duration: 0.4, ease: \"easeOut\" }}\n>\n  Hello\n</motion.div>\n```\n\n## 別過頭\n- 動畫不該打斷使用者\n- 重要動作（點按鈕）回饋要 <100ms\n- 加 `prefers-reduced-motion` 尊重使用者設定：\n\n```css\n@media (prefers-reduced-motion: reduce) {\n  *, *::before, *::after {\n    animation-duration: 0.01ms !important;\n    transition-duration: 0.01ms !important;\n  }\n}\n```",
+      "tip": {
+        "type": "milestone",
+        "text": "微互動是「業餘 vs 專業」的分水嶺。寫對的 hover / loading / skeleton、客戶會說「天阿你的網站感覺好高級」。"
+      },
+      "id": "3.25",
+      "number": "LESSON 3.25",
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "3.25.auto",
+          "language": "css",
+          "title": "試試看",
+          "initialCode": "button {\n  transition: all 0.2s ease;\n}\nbutton:hover {\n  background: #3ee066;\n  transform: translateY(-1px);  /* 微浮起 */\n  box-shadow: 0 4px 12px rgba(80,250,123,0.4);\n}",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
+        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "5 種必加微互動"
+        },
+        {
+          "level": 3,
+          "text": "1. Hover 回饋"
+        },
+        {
+          "level": 3,
+          "text": "2. Active 按下"
+        },
+        {
+          "level": 3,
+          "text": "3. Loading 狀態"
+        },
+        {
+          "level": 3,
+          "text": "4. 滑入 / 淡入"
+        },
+        {
+          "level": 3,
+          "text": "5. Skeleton（內容載入中）"
+        },
+        {
+          "level": 2,
+          "text": "動畫的「Easing」（速度曲線）"
+        },
+        {
+          "level": 2,
+          "text": "時長準則"
+        },
+        {
+          "level": 2,
+          "text": "進階：Framer Motion（React）"
+        },
+        {
+          "level": 2,
+          "text": "別過頭"
+        }
+      ]
+    }
+  ],
+  "boss": {
+    "name": "鏡像化身",
+    "hp": 100,
+    "emoji": "🪞",
+    "description": "反射所有設計、看似真實卻無法觸碰"
+  },
+  "quiz": {
+    "id": "ch03-quiz",
+    "questions": [],
+    "xpReward": 50,
+    "perfectBonus": 50
+  }
+}

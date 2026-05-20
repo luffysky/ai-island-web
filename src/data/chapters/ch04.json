@@ -1,0 +1,1114 @@
+{
+  "id": 4,
+  "slug": "javascript",
+  "stage": 1,
+  "title": "JavaScript 完整",
+  "subtitle": "讓畫面有生命",
+  "icon": "zap",
+  "description": "JavaScript 完整：讓畫面有生命",
+  "status": "published",
+  "difficulty": "beginner",
+  "prerequisites": [
+    1
+  ],
+  "estimatedHours": 14,
+  "outcomes": [
+    "理解核心概念",
+    "實作主流工具",
+    "整章實戰可發佈作品",
+    "知道生態 / 接案行情",
+    "對齊 2026 業界主流"
+  ],
+  "lessons": [
+    {
+      "id": "4.1",
+      "number": "LESSON 4.1",
+      "title": "JavaScript 是什麼？為什麼長這樣？",
+      "oneLineSummary": "JavaScript 就是「讓網頁活起來」的程式語言—按鈕按下去有反應、表單能驗證、畫面會動。",
+      "analogy": "HTML 是靜態的雜誌（看得到摸不到）、CSS 是裝潢的雜誌封面、JS 是會跟你說話的 AI 雜誌—點哪裡有反應、滑哪裡會變色、輸入會即時驗證。沒 JS 的網站像沒電池的玩具。",
+      "content": "1995 年，Netscape 工程師 Brendan Eich 在 **10 天內**趕出來的腳本語言，原本叫 LiveScript。為了蹭當時最紅的 Java，改名 JavaScript（兩者沒關係，像「雷神」跟「雷神咖啡」）。\n\n  \n結果這個趕工出來的小玩具，30 年後變成**全世界使用最廣的程式語言**。每個瀏覽器、每台伺服器、手機 App、桌面軟體（VS Code、Discord、Slack 都是 JS）、嵌入式裝置都跑著 JS。\n\n  \n    \nJS 像當年隨手做的 prototype，意外變成全公司的核心系統。一堆奇怪的設計（`typeof null === \"object\"`、`0.1 + 0.2 !== 0.3`）就是當年趕工的遺產，現在拆不掉了。\n\n  \n\n  \n### JS 跑在哪？\n\n  \n- **瀏覽器**：Chrome（V8）、Firefox（SpiderMonkey）、Safari（JavaScriptCore）\n- **後端**：Node.js（V8）、Bun（JavaScriptCore）、Deno（V8）\n- **邊緣運算**：Cloudflare Workers、Vercel Edge、Deno Deploy\n- **桌面**：Electron（Chrome + Node）、Tauri（用系統 webview）\n- **手機**：React Native、Capacitor、Ionic\n- **嵌入式**：MQTT、IoT 裝置（透過 Espruino、Moddable）\n\n  \n### ECMAScript vs JavaScript\n\n  \nJavaScript 是**實作**，ECMAScript（ES）是**規範**。就像 USB 是規範、不同廠商做的 USB 線是實作。每年發布一版（ES2015、ES2016、...、ES2026）。\n\n  \n### 嚴格模式\n\n```js\n\"use strict\"; // 檔案頂端\n\n// ES Module 自動嚴格模式（不用寫）\n```\n\n  \n嚴格模式禁止 sloppy 行為（隨手宣告全域變數、重複參數名、八進位字面量）。**所有新專案都應該用**。\n\n  \n### 怎麼把 JS 放進 HTML？三種方式\n\n  \n跟 CSS 一樣，JS 有**內聯（inline）、內部（internal）、外部（external）**三種寫法。\n\n```html\n<!-- 此處原本為 HTML 範例\n     程式碼已在內容修正中、稍後將補回完整範例 -->\n```\n\n  \n三種怎麼選？\n\n  \n| 方式 | 場景 | 2026 推薦 |\n| --- | --- | --- |\n| inline | 絕對不要 | ✗ |\n| internal | 頁面內小工具、analytics 程式碼 | △ |\n| external | 所有正式專案 | ✓ |\n\n  \n為什麼 inline 不行？(1) HTML 跟邏輯混在一起、難維護 (2) 違反 CSP（資安政策） (3) 沒辦法 minify、cache。**從第一行 code 開始就用 external**。\n\n  \n### script 標籤放哪？header / body 結尾 / async / defer\n\n  \n同樣的 `` 標籤、放不同位置行為完全不同：\n\n```html\n<!-- 此處原本為 HTML 範例\n     程式碼已在內容修正中、稍後將補回完整範例 -->\n```\n\n  \n    **🚀 進階技巧**\n    \n**2026 建議**：(1) 應用主程式：``（自帶 defer + ESM） (2) 第三方追蹤碼（GA、Pixel）：`async` (3) 不需要動 DOM 的 polyfill：`defer`。**絕對不要**放 `` 又沒 defer / async—會阻塞渲染、Lighthouse 評分直接掛。\n\n  \n\n  \n    \n      💼\n      接案小知識\n    \n    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「JavaScript」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。",
+      "tip": {
+        "type": "practical",
+        "text": "剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「JavaScript」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "4.1.hello-js",
+          "language": "js",
+          "title": "第一個 JS：印出來看看",
+          "initialCode": "// 試試改數字、按執行看 console\nconsole.log(\"Hello AI 島！\");\n\nconst name = \"Luffysky\";\nconst age = 30;\n\nconsole.log(`我是 ${name}、今年 ${age} 歲`);\n\n// 簡單運算\nconsole.log(\"1 + 1 =\", 1 + 1);\nconsole.log(\"100 / 3 =\", 100 / 3);",
+          "hint": "改 name / age、按執行"
+        }
+      ],
+      "miniQuiz": {
+        "question": "想宣告「不會改變的常數」用哪個？",
+        "options": [
+          {
+            "label": "var",
+            "value": "a"
+          },
+          {
+            "label": "let",
+            "value": "b"
+          },
+          {
+            "label": "const",
+            "value": "c"
+          },
+          {
+            "label": "static",
+            "value": "d"
+          }
+        ],
+        "answer": "c",
+        "explanation": "const = 常數（指向不變）、let = 可變區塊變數、var 舊式不推薦。"
+      },
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（typeof null === \"object\", 。**絕對不要**放 ,  (3) 不需要動 DOM 的 polyfill：, 0.1 + 0.2 !== 0.3, （自帶 defer + ESM） (2) 第三方追蹤碼（GA、Pixel）：）寫一段小 code 解決一個實際問題。",
+        "hint": "關鍵概念可以從 lesson 內出現的這些關鍵字入手：typeof null === \"object\"、0.1 + 0.2 !== 0.3、（自帶 defer + ESM） (2) 第三方追蹤碼（GA、Pixel）：、 (3) 不需要動 DOM 的 polyfill：。畫完不要光放著、試著用自己的話講一次。",
+        "answer": "心智圖三步：(1) 中心 = lesson 主題 (2) 第一圈 = 主要分類（通常 3-5 個）(3) 第二圈 = 具體例子或工具。畫完拿給朋友看、能講通 = 真懂。常見錯誤：抄關鍵字當分類、應該用自己理解後的歸納。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "JS 跑在哪？"
+        },
+        {
+          "level": 3,
+          "text": "ECMAScript vs JavaScript"
+        },
+        {
+          "level": 3,
+          "text": "嚴格模式"
+        },
+        {
+          "level": 3,
+          "text": "怎麼把 JS 放進 HTML？三種方式"
+        },
+        {
+          "level": 3,
+          "text": "script 標籤放哪？header / body 結尾 / async / defer"
+        }
+      ]
+    },
+    {
+      "id": "4.2",
+      "number": "LESSON 4.2",
+      "title": "變數：var / let / const 的三世恩怨",
+      "oneLineSummary": "變數就是「給資料取名字、之後重複用」—像幫你的東西貼便利貼。",
+      "analogy": "想像你媽說「把那個拿過來」—哪個？東西沒名字很麻煩。變數就是給東西取名：const name = \"小明\"、之後想用「小明」就喊 name、想換人改一個地方就好。",
+      "content": "```js\n// var：函式作用域（function scope），可重複宣告，會 hoist\nvar name = \"招財\";\nvar name = \"小白\"; // 沒事\n\n// let：區塊作用域（block scope），不可重複宣告\nlet age = 3;\n// let age = 5;  // ✗ 重複宣告\n\n// const：宣告後不能重新指派（但物件內容還是可改）\nconst pet = { name: \"招財\" };\n// pet = {};       // ✗\npet.name = \"小白\";   // ✓ 物件內容可改\n```\n\n  \n### 2026 的選擇\n\n  \n- **const**：預設用這個（90% 場景）\n- **let**：需要重新指派時（迴圈計數、累加器）\n- **var**：永遠別用。除非維護 1990 年代的舊 code。\n\n  \n### Hoisting（變數提升）— 經典考題\n\n```js\nconsole.log(a); // undefined（不是 ReferenceError）\nvar a = 10;\n\n// 等同於\nvar a;\nconsole.log(a);\na = 10;\n\n// let / const 也會 hoist，但有「暫時死區（TDZ）」\nconsole.log(b); // ReferenceError: Cannot access 'b' before initialization\nlet b = 20;\n```\n\n  \n    **⚠ 踩雷警告**\n    \n「JS 沒有 block scope」是 var 害的傳說。2015 後 let/const 是 block scope。**新 code 不要寫 var**，所有可疑行為都會消失。\n\n  \n\n  \n### 作用域鏈（Scope Chain）\n\n```js\nconst a = 1;\n\nfunction outer() {\n  const b = 2;\n  \n  function inner() {\n    const c = 3;\n    console.log(a, b, c); // 1, 2, 3\n    // inner 找不到時往外找 outer，outer 找不到再往外找全域\n  }\n  \n  inner();\n}\n```\n\n  \n### 閉包（Closure）— 最重要的概念\n\n```js\nfunction makeCounter() {\n  let count = 0;\n  return function() {\n    count++;\n    return count;\n  };\n}\n\nconst counter = makeCounter();\ncounter(); // 1\ncounter(); // 2\ncounter(); // 3\n// count 變數明明 makeCounter 結束就該消失，卻被內部函式「記住」\n```\n\n  \n閉包 = 函式「記住」它**定義時的環境**。是 JS 最強的特性之一，也是面試最愛考的。\n\n  \n    \n      🎯\n      面試考點\n    \n    台灣科技公司面試 90% 會問「JavaScript」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。",
+      "tip": {
+        "type": "pro",
+        "text": "台灣科技公司面試 90% 會問「JavaScript」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "4.2.types",
+          "language": "js",
+          "title": "型別判斷",
+          "initialCode": "const arr = [1, 2, 3];\nconst obj = { name: \"Alice\" };\nconst num = 42;\nconst str = \"hi\";\nconst bool = true;\nconst nothing = null;\n\nconsole.log(typeof num);     // 'number'\nconsole.log(typeof str);     // 'string'\nconsole.log(typeof bool);    // 'boolean'\nconsole.log(typeof arr);     // 'object'（陣列也是物件）\nconsole.log(typeof obj);     // 'object'\nconsole.log(typeof nothing); // 'object'（JS bug）\n\n// 判斷陣列要用：\nconsole.log(Array.isArray(arr));  // true\nconsole.log(Array.isArray(obj));  // false"
+        }
+      ],
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "2026 的選擇"
+        },
+        {
+          "level": 3,
+          "text": "Hoisting（變數提升）— 經典考題"
+        },
+        {
+          "level": 3,
+          "text": "作用域鏈（Scope Chain）"
+        },
+        {
+          "level": 3,
+          "text": "閉包（Closure）— 最重要的概念"
+        }
+      ]
+    },
+    {
+      "id": "4.3",
+      "number": "LESSON 4.3",
+      "title": "原始型別與物件型別",
+      "oneLineSummary": "資料型別有 7 種—字串 / 數字 / 布林 / 陣列 / 物件 / null / undefined，搞清楚才不會出錯。",
+      "analogy": "想像超商架上的不同包裝—罐裝飲料（數字）、袋裝零食（字串）、是 / 否的折扣標籤（布林）、整盒巧克力（陣列）、組合餐盒（物件）。JS 自動判斷你給的是哪種、但偶爾會猜錯—學會型別就學會控制它。",
+      "content": "### 7 種原始型別（Primitive）\n\n```js\n// 1. string\nconst a = \"hello\";\nconst b = 'hello';\nconst c = `hello, ${name}`; // template literal\n\n// 2. number（IEEE 754 雙精度浮點）\nconst d = 42;\nconst e = 3.14;\nconst f = Infinity;\nconst g = NaN;\nconst h = 0xff;     // 16 進位\nconst i = 0b101;    // 2 進位\nconst j = 1_000_000; // 分隔符（ES2021）\n\n// 3. boolean\nconst k = true;\nconst l = false;\n\n// 4. undefined（沒給值）\nlet m;\nconsole.log(m); // undefined\n\n// 5. null（明確說「沒有」）\nconst n = null;\n\n// 6. bigint（任意精度整數，ES2020）\nconst o = 9007199254740993n;\n\n// 7. symbol（唯一識別符，ES2015）\nconst p = Symbol(\"id\");\nSymbol(\"id\") === Symbol(\"id\"); // false，每個 symbol 都是獨一無二\n```\n\n  \n### 物件型別（Object）\n\n```js\n// 物件 / 陣列 / 函式 / Date / Map / Set / Regex... 全是 object\nconst obj = { name: \"招財\", age: 3 };\nconst arr = [1, 2, 3];\nconst fn = () => {};\nconst dt = new Date();\nconst mp = new Map();\nconst st = new Set();\nconst re = /abc/g;\n\ntypeof obj; // \"object\"\ntypeof arr; // \"object\"（看不出是陣列！）\ntypeof fn;  // \"function\"\ntypeof null; // \"object\"（傳奇 bug，1995 年留下來的）\n\n// 判斷陣列的正確姿勢\nArray.isArray(arr); // true\n```\n\n  \n### 值傳遞 vs 引用傳遞\n\n```js\n// 原始型別：值傳遞（複製一份）\nlet a = 5;\nlet b = a;\nb = 10;\nconsole.log(a); // 5（a 不變）\n\n// 物件型別：引用傳遞（同一個東西的兩個名字）\nconst o1 = { name: \"A\" };\nconst o2 = o1;\no2.name = \"B\";\nconsole.log(o1.name); // \"B\"（兩個都變）\n```\n\n  \n### 真假值（Truthy / Falsy）\n\n```js\n// 7 個 falsy 值\nfalse, 0, -0, 0n, \"\", null, undefined, NaN;\n\n// 其他全部都 truthy（包括 \"0\"、[]、{}）\nif ([]) console.log(\"yes\"); // yes（空陣列是真！）\nif ({}) console.log(\"yes\"); // yes\nif (\"0\") console.log(\"yes\"); // yes（字串 \"0\" 是真！）\n```\n\n  \n    **⚠ 踩雷警告**\n    \n新手常踩：`if (count)` 想檢查「count 有東西」，但 `count = 0` 也會被當 falsy。改寫 `if (count != null)` 或 `if (count !== undefined)`。\n\n  \n\n  \n    \n      ⚡\n      學習加速器\n    \n    把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。",
+      "tip": {
+        "type": "practical",
+        "text": "把這節學到的馬上應用到一個小東西—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "4.3.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// 1. string\nconst a = \"hello\";\nconst b = 'hello';\nconst c = `hello, ${name}`; // template literal\n\n// 2. number（IEEE 754 雙精度浮點）\nconst d = 42;\nconst e = 3.14;\nconst f = Infinity;\nconst g = NaN;\nconst h = 0xff;     // 16 進位\nconst i = 0b101;    // 2 進位\nconst j = 1_000_000; // 分隔符（ES2021）\n\n// 3. boolean\nconst k = true;\nconst l = false;\n\n// 4. undefined（沒給值）\nlet m;\nconsole.log(m); // undefined\n\n// 5. null（明確說「沒有」）\nconst n = null;\n\n// 6. bigint（任意精度整數，ES2020）\nconst o = 9007199254740993n;\n\n// 7. symbol（唯一識別符，ES2015）\nconst p = Symbol(\"id\");\nSymbol(\"id\") === Symbol(\"id\"); // false，每個 symbol 都是獨一無二",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（if (count !== undefined), count = 0, if (count), hello, ${name}, if (count != null)）寫一段小 code 解決一個實際問題。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "7 種原始型別（Primitive）"
+        },
+        {
+          "level": 3,
+          "text": "物件型別（Object）"
+        },
+        {
+          "level": 3,
+          "text": "值傳遞 vs 引用傳遞"
+        },
+        {
+          "level": 3,
+          "text": "真假值（Truthy / Falsy）"
+        }
+      ]
+    },
+    {
+      "id": "4.4",
+      "number": "LESSON 4.4",
+      "title": "運算符：== 跟 === 的世紀大戰",
+      "oneLineSummary": "運算子（+ - * / === && ||）是「算數學跟做比較的工具」。",
+      "analogy": "像計算機上的按鈕—加減乘除做運算、大於小於做比較、且或非做條件判斷。JS 全部用同樣的符號、加上一個重要例外：用 ===（三個等號）比較才安全、== 兩個有時會出怪事。",
+      "content": "### 嚴格 vs 寬鬆相等\n\n```js\n// == 會做型別轉換（坑很多）\n0 == \"\";        // true\n0 == \"0\";       // true\n\"\" == \"0\";      // false（沒邏輯吧！）\nnull == undefined; // true\nnull == 0;     // false（沒邏輯×2）\n[] == false;    // true\n[0] == false;   // true\n\n// === 嚴格相等（型別跟值都要一樣）\n0 === \"\";       // false\nnull === undefined; // false\n```\n\n  \n**永遠用 ===**，除非你在檢查 `x == null`（這是「null 或 undefined」的習慣寫法）。\n\n  \n### 邏輯運算符\n\n```js\n// && 短路：左邊 truthy 就回右邊，否則回左邊\ntrue && \"yes\";   // \"yes\"\nfalse && \"yes\";  // false\n0 && \"yes\";      // 0\n\n// || 短路：左邊 truthy 就回左邊，否則回右邊\n\"hello\" || \"x\"; // \"hello\"\n\"\" || \"default\";  // \"default\"\n0 || \"default\";   // \"default\"（但你想要 0 的話這就壞了）\n\n// ?? Nullish Coalescing（ES2020）：只有 null/undefined 才用預設\n0 ?? \"default\";   // 0 ✓\n\"\" ?? \"default\";  // \"\" ✓\nnull ?? \"default\"; // \"default\"\n```\n\n  \n### Optional Chaining（ES2020）\n\n```js\nconst user = { profile: { name: \"招財\" } };\n\n// 過去要這樣寫，超痛苦\nconst name = user && user.profile && user.profile.name;\n\n// 現在\nconst name = user?.profile?.name; // \"招財\"\nconst miss = user?.missing?.deep; // undefined（不爆）\n\n// 陣列、函式也能用\narr?.[0];\ncallback?.();\n```\n\n  \n### 展開運算符（spread）跟其餘參數（rest）\n\n```js\n// 展開陣列\nconst a = [1, 2, 3];\nconst b = [...a, 4, 5]; // [1,2,3,4,5]\n\n// 展開物件\nconst o1 = { a: 1, b: 2 };\nconst o2 = { ...o1, c: 3 }; // { a:1, b:2, c:3 }\n\n// 函式的其餘參數\nfunction sum(...nums) {\n  return nums.reduce((a, b) => a + b, 0);\n}\nsum(1, 2, 3); // 6\n\n// 解構搭配\nconst [first, ...rest] = [1, 2, 3, 4];\n// first=1, rest=[2,3,4]\n\nconst { name, ...others } = { name: \"A\", age: 3, city: \"TP\" };\n// name=\"A\", others={age:3, city:\"TP\"}\n```\n\n  \n    \n      🚀\n      2026 趨勢\n    \n    這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。",
+      "tip": {
+        "type": "trend",
+        "text": "這個技術 2026 還在主流、未來 5 年不會過時。但工具會更新—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "4.4.functions",
+          "language": "js",
+          "title": "函式三種寫法",
+          "initialCode": "// 1. function declaration\nfunction greet1(name) {\n  return `Hi, ${name}`;\n}\n\n// 2. function expression\nconst greet2 = function(name) {\n  return `Hello, ${name}`;\n};\n\n// 3. arrow function（最常用）\nconst greet3 = (name) => `嗨, ${name}`;\nconst add = (a, b) => a + b;\nconst square = x => x * x;\n\nconsole.log(greet1(\"Alice\"));\nconsole.log(greet2(\"Bob\"));\nconsole.log(greet3(\"Charlie\"));\nconsole.log(\"3 + 5 =\", add(3, 5));\nconsole.log(\"4^2 =\", square(4));",
+          "hint": "Arrow function 是現代 JS 標配"
+        }
+      ],
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（x == null）寫一段小 code 解決一個實際問題。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "嚴格 vs 寬鬆相等"
+        },
+        {
+          "level": 3,
+          "text": "邏輯運算符"
+        },
+        {
+          "level": 3,
+          "text": "Optional Chaining（ES2020）"
+        },
+        {
+          "level": 3,
+          "text": "展開運算符（spread）跟其餘參數（rest）"
+        }
+      ]
+    },
+    {
+      "id": "4.5",
+      "number": "LESSON 4.5",
+      "title": "函式：JS 的靈魂",
+      "oneLineSummary": "條件判斷（if / else）是「程式的分岔路口」—符合條件走 A、不然走 B。",
+      "analogy": "像出門前你看天氣決定穿什麼—下雨拿傘、晴天戴墨鏡、陰天兩個都備。if 就是程式做這種決定：「如果使用者沒登入 → 跳轉登入頁」「如果購物車 &gt; 1000 → 免運」。",
+      "content": "### 三種寫法\n\n```js\n// 1. 函式宣告（會 hoist）\nfunction add(a, b) { return a + b; }\n\n// 2. 函式表達式\nconst add = function(a, b) { return a + b; };\n\n// 3. 箭頭函式（ES2015，最常用）\nconst add = (a, b) => a + b;\n```\n\n  \n### 箭頭函式的特殊性\n\n```js\n// 1. 沒有自己的 this（用外層的）\nclass Timer {\n  constructor() {\n    this.count = 0;\n    \n    // ✗ 一般函式：this 變 setInterval 的\n    setInterval(function() {\n      this.count++; // undefined.count++ 爆\n    }, 1000);\n    \n    // ✓ 箭頭函式：保留外層 this\n    setInterval(() => {\n      this.count++; // OK\n    }, 1000);\n  }\n}\n\n// 2. 沒有 arguments\nconst fn = () => arguments; // ReferenceError\n// 用 rest 參數代替：(...args) => args\n\n// 3. 不能當建構子\nconst Foo = () => {};\nnew Foo(); // TypeError\n```\n\n  \n### 預設參數 / 解構參數 / 命名參數\n\n```js\n// 預設值\nfunction greet(name = \"訪客\", hour = new Date().getHours()) {\n  return `${hour} 時, 哈囉 ${name}`;\n}\n\n// 解構參數（模擬命名參數）\nfunction createUser({ name, age = 0, role = \"user\" } = {}) {\n  return { name, age, role };\n}\n\ncreateUser({ name: \"招財\", age: 3 });\n// 比起 createUser(\"招財\", 3, \"user\") 清楚多了\n```\n\n  \n### this：JS 最坑的概念\n\n  \n`this` 的值**取決於怎麼呼叫**，不是定義時：\n\n```js\nconst obj = {\n  name: \"招財\",\n  greet() { return this.name; }\n};\n\nobj.greet();              // \"招財\"（this = obj）\n\nconst g = obj.greet;\ng();                     // undefined（this = 全域或 undefined）\n\nobj.greet.call({ name: \"小白\" }); // \"小白\"（手動指定 this）\nobj.greet.bind({ name: \"小黑\" })(); // \"小黑\"（綁定後新函式）\n```\n\n  \n4 種 this 規則：\n\n  \n1. **new** 呼叫 → this = 新建的物件\n2. **obj.fn()** → this = obj\n3. **fn.call/apply/bind(x)** → this = x\n4. **裸呼叫 fn()** → this = 全域 / undefined（嚴格模式）\n\n  \n箭頭函式不在這 4 條規則內，它**沒有自己的 this**。\n\n  \n### 高階函式（Higher-Order Function）\n\n```js\n// 函式可以當參數、當回傳值\nfunction debounce(fn, delay) {\n  let timer;\n  return function(...args) {\n    clearTimeout(timer);\n    timer = setTimeout(() => fn(...args), delay);\n  };\n}\n\nconst handleScroll = debounce(() => {\n  console.log(\"scrolled\");\n}, 300);\n\nwindow.addEventListener(\"scroll\", handleScroll);\n```\n\n  \n    \n      🛠️\n      工具推薦\n    \n    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。",
+      "tip": {
+        "type": "practical",
+        "text": "配合這節用的工具：(1) VS Code（編輯器、免費）(2) Chrome DevTools（F12 開啟、除錯神器）(3) Live Server（VS Code 擴充、即時預覽）(4) GitHub Copilot / Cursor（AI 寫程式、學習加速 2-10x）。"
+      },
+      "xp": 15,
+      "playgrounds": [
+        {
+          "key": "4.5.arrays",
+          "language": "js",
+          "title": "陣列方法：map / filter / reduce",
+          "initialCode": "const nums = [1, 2, 3, 4, 5];\n\n// map：每個轉換\nconst doubled = nums.map(n => n * 2);\nconsole.log(\"doubled:\", doubled);\n\n// filter：篩選\nconst evens = nums.filter(n => n % 2 === 0);\nconsole.log(\"evens:\", evens);\n\n// reduce：聚合\nconst sum = nums.reduce((acc, n) => acc + n, 0);\nconsole.log(\"sum:\", sum);\n\n// 鏈式\nconst result = nums\n  .filter(n => n > 2)\n  .map(n => n * 10)\n  .reduce((a, b) => a + b, 0);\nconsole.log(\"filter > map > reduce:\", result);",
+          "hint": "map/filter/reduce 是現代 JS 最重要的三個 method"
+        }
+      ],
+      "miniQuiz": {
+        "question": "想從 [1,2,3,4,5] 拿到 [2,4,6,8,10]、用哪個？",
+        "options": [
+          {
+            "label": "filter",
+            "value": "a"
+          },
+          {
+            "label": "reduce",
+            "value": "b"
+          },
+          {
+            "label": "map",
+            "value": "c"
+          },
+          {
+            "label": "forEach",
+            "value": "d"
+          }
+        ],
+        "answer": "c",
+        "explanation": "map = 每個元素做轉換、回傳新陣列。"
+      },
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（this, ${hour} 時, 哈囉 ${name}）寫一段小 code 解決一個實際問題。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "三種寫法"
+        },
+        {
+          "level": 3,
+          "text": "箭頭函式的特殊性"
+        },
+        {
+          "level": 3,
+          "text": "預設參數 / 解構參數 / 命名參數"
+        },
+        {
+          "level": 3,
+          "text": "this：JS 最坑的概念"
+        },
+        {
+          "level": 3,
+          "text": "高階函式（Higher-Order Function）"
+        }
+      ]
+    },
+    {
+      "id": "4.6",
+      "number": "LESSON 4.6",
+      "title": "陣列：最常用的資料結構",
+      "oneLineSummary": "迴圈（for / while）是「重複做同一件事 N 次」—不用複製貼上 100 行。",
+      "analogy": "想像你檢查 100 個學生有沒有交作業—一個一個翻 100 次。迴圈就是程式版：「對每一個學生、做 X 動作」。一行代碼處理 100 件事、不用 ctrl+c ctrl+v。",
+      "content": "```js\nconst arr = [1, 2, 3, 4, 5];\n\n// 基本操作\narr.length;              // 5\narr[0];                  // 1\narr.at(-1);              // 5（負數索引，ES2022）\n\n// 修改（會改原陣列）\narr.push(6);              // 加到尾巴，回傳新長度\narr.pop();                // 移除尾巴，回傳被移除的\narr.unshift(0);           // 加到頭\narr.shift();              // 移除頭\narr.splice(1, 2);         // 從 index 1 刪 2 個\narr.reverse();\narr.sort();\n```\n\n  \n### 函式式操作（不改原陣列，回新陣列）\n\n```js\nconst nums = [1, 2, 3, 4, 5];\n\n// map：每個元素套用函式\nnums.map(n => n * 2); // [2,4,6,8,10]\n\n// filter：篩選\nnums.filter(n => n > 2); // [3,4,5]\n\n// reduce：累加\nnums.reduce((acc, n) => acc + n, 0); // 15\n\n// find / findIndex\nnums.find(n => n > 3); // 4\nnums.findIndex(n => n > 3); // 3\n\n// some / every\nnums.some(n => n > 4);  // true（有至少一個 > 4）\nnums.every(n => n > 0); // true（全部 > 0）\n\n// includes / indexOf\nnums.includes(3); // true\nnums.indexOf(3);  // 2\n\n// flat / flatMap（ES2019）\n[[1, 2], [3, 4]].flat(); // [1,2,3,4]\n[1, 2].flatMap(n => [n, n * 2]); // [1,2,2,4]\n\n// 新方法（ES2023）：不改原陣列\nnums.toSorted();    // 新排序陣列\nnums.toReversed();  // 新反轉陣列\nnums.toSpliced(1, 2); // 新版 splice\nnums.with(0, 99);   // 取代 index 0 的值，回新陣列\n```\n\n  \n### 實戰範例：資料處理 pipeline\n\n```js\nconst orders = [\n  { id: 1, total: 100, paid: true },\n  { id: 2, total: 200, paid: false },\n  { id: 3, total: 300, paid: true }\n];\n\n// 算已付款訂單總金額\nconst total = orders\n  .filter(o => o.paid)\n  .map(o => o.total)\n  .reduce((sum, n) => sum + n, 0);\n\n// = 400\n```\n\n  \n### 陣列建立技巧\n\n```js\n// 建立指定長度陣列\nArray.from({ length: 5 }, (_, i) => i); // [0,1,2,3,4]\nArray(5).fill(0);                       // [0,0,0,0,0]\n\n// 從 Set 轉\nconst unique = [...new Set([1, 2, 2, 3])]; // [1,2,3] 去重\n\n// 從字串\n[...\"hello\"]; // ['h','e','l','l','o']\n```\n\n  \n    \n      ⚠️\n      新手常見錯誤\n    \n    新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。",
+      "tip": {
+        "type": "warning",
+        "text": "新手 3 大坑：(1) 不看 console—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) 不存檔就 F5—改完忘記儲存以為「程式沒效果」 (3) 抄 code 不理解—複製貼上能跑、但下次要改就崩潰。記得：先看懂、再寫。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "4.6.objects",
+          "language": "js",
+          "title": "物件 + 解構 + spread",
+          "initialCode": "const user = {\n  name: \"Alice\",\n  age: 28,\n  city: \"Taipei\",\n  hobbies: [\"coding\", \"reading\"],\n};\n\n// 解構\nconst { name, age } = user;\nconsole.log(name, age);\n\n// rest（剩下的）\nconst { name: n, ...rest } = user;\nconsole.log(\"rest:\", rest);\n\n// spread（複製 + 更新）\nconst updated = { ...user, age: 29, city: \"Yingge\" };\nconsole.log(\"updated:\", updated);\n\n// 動態 key\nconst key = \"city\";\nconsole.log(\"city:\", user[key]);"
+        }
+      ],
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "函式式操作（不改原陣列，回新陣列）"
+        },
+        {
+          "level": 3,
+          "text": "實戰範例：資料處理 pipeline"
+        },
+        {
+          "level": 3,
+          "text": "陣列建立技巧"
+        }
+      ]
+    },
+    {
+      "id": "4.7",
+      "number": "LESSON 4.7",
+      "title": "物件、Map、Set、WeakMap、WeakSet",
+      "oneLineSummary": "函式（function）就是「把一段程式包起來、取個名」—之後想用呼叫名字即可。",
+      "analogy": "像你媽教你的「煮泡麵 SOP」—煮水 / 撕料包 / 倒進去 / 等 3 分鐘。每次想吃只要喊「煮泡麵」、不用每次想步驟。函式一樣：寫一次 function greet(name) {...}、之後喊 greet(\"小明\") 就跑那串邏輯。",
+      "content": "### 物件操作\n\n```js\nconst user = { name: \"招財\", age: 3, role: \"hamster\" };\n\n// 取所有 keys / values / entries\nObject.keys(user);    // [\"name\", \"age\", \"role\"]\nObject.values(user);  // [\"招財\", 3, \"hamster\"]\nObject.entries(user); // [[\"name\",\"招財\"], [\"age\",3], ...]\n\n// 從 entries 還原\nObject.fromEntries([[\"a\", 1], [\"b\", 2]]); // { a:1, b:2 }\n\n// 複製（淺）\nconst copy = { ...user };\nconst copy2 = Object.assign({}, user);\n\n// 深複製（ES2022）\nconst deep = structuredClone(user);\n\n// 凍結（不可改）\nObject.freeze(user);\nuser.age = 5; // 嚴格模式會報錯，否則無聲失敗\n\n// 動態屬性\nconst key = \"name\";\nconst obj = { [key]: \"招財\" }; // { name: \"招財\" }\n\n// 簡寫\nconst name = \"招財\", age = 3;\nconst u = { name, age }; // 等於 { name: name, age: age }\n```\n\n  \n### Map：比 Object 更好的 key-value 容器\n\n```js\nconst map = new Map();\n\nmap.set(\"name\", \"招財\");\nmap.set(42, \"answer\");           // key 可以是任何型別！\nmap.set({ a: 1 }, \"obj key\");     // 物件也行\n\nmap.get(\"name\");    // \"招財\"\nmap.has(\"name\");    // true\nmap.delete(\"name\");\nmap.size;            // 2\n\n// 迭代（保留插入順序，物件不保證）\nfor (const [k, v] of map) {\n  console.log(k, v);\n}\n```\n\n  \n### Set：唯一值集合\n\n```js\nconst set = new Set([1, 2, 2, 3]);\nset.size; // 3（自動去重）\n\nset.add(4);\nset.has(1);\nset.delete(2);\n\n// 集合運算（ES2025）\nconst a = new Set([1, 2, 3]);\nconst b = new Set([2, 3, 4]);\na.union(b);              // {1,2,3,4}\na.intersection(b);       // {2,3}\na.difference(b);         // {1}\na.symmetricDifference(b); // {1,4}\na.isSubsetOf(b);\na.isSupersetOf(b);\na.isDisjointFrom(b);\n```\n\n  \n### WeakMap / WeakSet：垃圾回收友善\n\n```js\nconst wm = new WeakMap();\nlet obj = { x: 1 };\nwm.set(obj, \"data\");\n\nobj = null; // obj 被回收後，wm 裡的這對自動清掉\n\n// 用途：給物件附加 metadata 而不阻止回收\n// DOM 節點的快取、私有屬性模擬\n```\n\n  \n    \n      💼\n      接案小知識\n    \n    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「JavaScript」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。",
+      "tip": {
+        "type": "practical",
+        "text": "剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「JavaScript」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "4.7.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "const user = { name: \"招財\", age: 3, role: \"hamster\" };\n\n// 取所有 keys / values / entries\nObject.keys(user);    // [\"name\", \"age\", \"role\"]\nObject.values(user);  // [\"招財\", 3, \"hamster\"]\nObject.entries(user); // [[\"name\",\"招財\"], [\"age\",3], ...]\n\n// 從 entries 還原\nObject.fromEntries([[\"a\", 1], [\"b\", 2]]); // { a:1, b:2 }\n\n// 複製（淺）\nconst copy = { ...user };\nconst copy2 = Object.assign({}, user);\n\n// 深複製（ES2022）\nconst deep = structuredClone(user);\n\n// 凍結（不可改）\nObject.freeze(user);\nuser.age = 5; // 嚴格模式會報錯，否則無聲失敗\n\n// 動態屬性\nconst key = \"name\";\nconst obj = { [key]: \"招財\" }; // { name: \"招財\" }\n\n// 簡寫\nconst name = \"招財\", age = 3;\nconst u = { name, age }; // 等於 { name: name, age: age }",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "物件操作"
+        },
+        {
+          "level": 3,
+          "text": "Map：比 Object 更好的 key-value 容器"
+        },
+        {
+          "level": 3,
+          "text": "Set：唯一值集合"
+        },
+        {
+          "level": 3,
+          "text": "WeakMap / WeakSet：垃圾回收友善"
+        }
+      ]
+    },
+    {
+      "id": "4.8",
+      "number": "LESSON 4.8",
+      "title": "類別（Class）：ES2015 的物件導向",
+      "oneLineSummary": "陣列（Array）是「一排東西的有序列表」—索引從 0 開始（不是 1）。",
+      "analogy": "想像火車車廂—第 0 節（不是第 1 節）、第 1 節、第 2 節...。陣列一樣：arr[0] 是第一個。看 IG 限動的順序、播放清單的歌、購物車的商品—全部都是陣列。",
+      "content": "```js\nclass Animal {\n  // 公開欄位\n  name;\n  \n  // 私有欄位（ES2022）\n  #secret = \"hidden\";\n  \n  // 靜態欄位\n  static kingdom = \"Animalia\";\n  \n  constructor(name) {\n    this.name = name;\n  }\n  \n  // 一般方法\n  greet() {\n    return `Hello, I'm ${this.name}`;\n  }\n  \n  // getter / setter\n  get upperName() { return this.name.toUpperCase(); }\n  set upperName(v) { this.name = v.toLowerCase(); }\n  \n  // 靜態方法\n  static create(name) {\n    return new Animal(name);\n  }\n}\n\nconst a = new Animal(\"招財\");\na.greet();          // \"Hello, I'm 招財\"\na.upperName;       // \"招財\"（getter）\nAnimal.kingdom;    // 直接從類別取靜態\nAnimal.create(\"小白\"); // 靜態方法\n```\n\n  \n### 繼承\n\n```js\nclass Dog extends Animal {\n  constructor(name, breed) {\n    super(name); // 必須先呼叫 super\n    this.breed = breed;\n  }\n  \n  bark() { return \"汪\"; }\n  \n  // 覆寫父類方法\n  greet() {\n    return super.greet() + \", I'm a \" + this.breed;\n  }\n}\n```\n\n  \n### 2026 的觀點\n\n  \nJS 的 class 是 prototype-based 的**語法糖**，不是真的物件導向。實戰大量使用 class 的場景：\n\n  \n- Web Components（自訂元素必須繼承 HTMLElement）\n- ORM 模型（Prisma、TypeORM）\n- 遊戲開發（實體系統）\n- 狀態機 / 複雜事件處理\n\n  \n大部分 React/Vue 元件、純函式邏輯、API client，現在偏向用**函式**而非 class。\n\n  \n    \n      🎯\n      面試考點\n    \n    台灣科技公司面試 90% 會問「JavaScript」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。",
+      "tip": {
+        "type": "pro",
+        "text": "台灣科技公司面試 90% 會問「JavaScript」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "4.8.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "class Animal {\n  // 公開欄位\n  name;\n  \n  // 私有欄位（ES2022）\n  #secret = \"hidden\";\n  \n  // 靜態欄位\n  static kingdom = \"Animalia\";\n  \n  constructor(name) {\n    this.name = name;\n  }\n  \n  // 一般方法\n  greet() {\n    return `Hello, I'm ${this.name}`;\n  }\n  \n  // getter / setter\n  get upperName() { return this.name.toUpperCase(); }\n  set upperName(v) { this.name = v.toLowerCase(); }\n  \n  // 靜態方法\n  static create(name) {\n    return new Animal(name);\n  }\n}\n\nconst a = new Animal(\"招財\");\na.greet();          // \"Hello, I'm 招財\"\na.upperName;       // \"招財\"（getter）\nAnimal.kingdom;    // 直接從類別取靜態\nAnimal.create(\"小白\"); // 靜態方法",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（Hello, I'm ${this.name}）寫一段小 code 解決一個實際問題。",
+        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "繼承"
+        },
+        {
+          "level": 3,
+          "text": "2026 的觀點"
+        }
+      ]
+    },
+    {
+      "id": "4.9",
+      "number": "LESSON 4.9",
+      "title": "原型鏈（Prototype）：JS 真正的繼承機制",
+      "oneLineSummary": "物件（Object）是「鑰匙 + 值的組合」—像詞典：鍵 → 值。",
+      "analogy": "想像身份證—姓名「王小明」、生日「2008/5/17」、地址「台北市」。每個欄位有名字跟內容。JS 物件一樣：{ name: \"小明\", age: 17 }。JS 整個世界都用物件溝通。",
+      "content": "class 是包裝，內部還是 prototype。看懂這層才看得懂奇怪 bug。\n\n```js\nconst arr = [1, 2, 3];\n\n// arr 沒有 push 方法，為什麼可以 arr.push()？\narr.push(4); // 從哪來？\n\n// 答案：JS 沿著 __proto__ 鏈找\narr.__proto__ === Array.prototype;           // true\nArray.prototype.__proto__ === Object.prototype; // true\nObject.prototype.__proto__ === null;         // 終點\n\n// 所以 arr.push 實際是從 Array.prototype.push 找到\n```\n\n  \n### 原型鏈圖\n\n```text\narr → Array.prototype → Object.prototype → null\n       (有 push, map...)  (有 toString...)\n```\n\n  \n### 手動建立原型\n\n```js\nconst animalProto = {\n  greet() { return `Hi, I'm ${this.name}`; }\n};\n\nconst dog = Object.create(animalProto);\ndog.name = \"小白\";\ndog.greet(); // \"Hi, I'm 小白\"（從 prototype 來）\n```\n\n  \n### 檢查原型\n\n```js\narr instanceof Array;     // true\nArray.prototype.isPrototypeOf(arr); // true\nObject.getPrototypeOf(arr) === Array.prototype; // true\n```\n\n  \n    **🚨 資安警報**\n    \n**Prototype Pollution** 是真實漏洞。攻擊者改 `Object.prototype` 就能影響全部物件。防：(1) 不要 deep merge 不可信資料 (2) 用 `Object.create(null)` 建純物件 (3) 凍結 Object.prototype。lodash、jQuery 都被打過。\n\n  \n\n  \n    \n      ⚡\n      學習加速器\n    \n    把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。",
+      "tip": {
+        "type": "practical",
+        "text": "把這節學到的馬上應用到一個小東西—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "4.9.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "const arr = [1, 2, 3];\n\n// arr 沒有 push 方法，為什麼可以 arr.push()？\narr.push(4); // 從哪來？\n\n// 答案：JS 沿著 __proto__ 鏈找\narr.__proto__ === Array.prototype;           // true\nArray.prototype.__proto__ === Object.prototype; // true\nObject.prototype.__proto__ === null;         // 終點\n\n// 所以 arr.push 實際是從 Array.prototype.push 找到",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（Object.create(null), Object.prototype, Hi, I'm ${this.name}）寫一段小 code 解決一個實際問題。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "原型鏈圖"
+        },
+        {
+          "level": 3,
+          "text": "手動建立原型"
+        },
+        {
+          "level": 3,
+          "text": "檢查原型"
+        }
+      ]
+    },
+    {
+      "id": "4.10",
+      "number": "LESSON 4.10",
+      "title": "事件迴圈：JS 是單執行緒的秘密",
+      "oneLineSummary": "陣列方法（map / filter / reduce）是「處理一群資料的瑞士刀」—10 行代碼變 1 行。",
+      "analogy": "想像你有50 個學生的成績單—想「全部 +5 分」（map）、想「找出 60 分以上的」（filter）、想「算全班平均」（reduce）。傳統要寫迴圈、用陣列方法一行搞定。學會這 3 個你的 JS 程度立刻 +50%。",
+      "content": "JS 只有一個執行緒。怎麼處理「同時」做事？答案：**事件迴圈（Event Loop）**。\n\n  \n### 架構\n\n```text\n┌─────────────────┐\n│ Call Stack      │  ← 同步程式碼在這跑\n├─────────────────┤\n│ Microtask Queue │  ← Promise.then, queueMicrotask\n├─────────────────┤\n│ Task Queue      │  ← setTimeout, click, fetch...\n└─────────────────┘\n       ↓\n   Event Loop\n（不停地：Stack 空了 → 跑完所有 microtasks → 取一個 task）\n```\n\n  \n### 經典考題\n\n```js\nconsole.log(\"1\");\n\nsetTimeout(() => console.log(\"2\"), 0);\n\nPromise.resolve().then(() => console.log(\"3\"));\n\nconsole.log(\"4\");\n\n// 輸出順序：1, 4, 3, 2\n// 因為：\n// 1. 同步「1」\n// 2. setTimeout 進 task queue\n// 3. Promise.then 進 microtask queue\n// 4. 同步「4」\n// 5. Stack 空了，先清 microtask → 「3」\n// 6. 再取一個 task → 「2」\n```\n\n  \n### 實戰意義\n\n  \n知道事件迴圈你能：\n\n  \n- debug「奇怪的執行順序」\n- 解開「為什麼 await 後的 console.log 沒執行」\n- 寫出不會卡頁面的程式\n- 面試大廠必考\n\n  \n### 長任務優化\n\n```js\n// ✗ 大迴圈卡頁面\nfunction processBig(arr) {\n  for (const item of arr) heavy(item);\n}\n\n// ✓ 拆批處理，讓事件迴圈喘氣\nasync function processBig(arr) {\n  const CHUNK = 100;\n  for (let i = 0; i  setTimeout(r));\n  }\n}\n\n// 更新版（2024+）：scheduler.yield()\nasync function processBig2(arr) {\n  for (const item of arr) {\n    heavy(item);\n    await scheduler.yield(); // 把控制權讓給瀏覽器\n  }\n}\n```\n\n  \n    \n      🚀\n      2026 趨勢\n    \n    這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。",
+      "tip": {
+        "type": "trend",
+        "text": "這個技術 2026 還在主流、未來 5 年不會過時。但工具會更新—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "4.10.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "console.log(\"1\");\n\nsetTimeout(() => console.log(\"2\"), 0);\n\nPromise.resolve().then(() => console.log(\"3\"));\n\nconsole.log(\"4\");\n\n// 輸出順序：1, 4, 3, 2\n// 因為：\n// 1. 同步「1」\n// 2. setTimeout 進 task queue\n// 3. Promise.then 進 microtask queue\n// 4. 同步「4」\n// 5. Stack 空了，先清 microtask → 「3」\n// 6. 再取一個 task → 「2」",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "架構"
+        },
+        {
+          "level": 3,
+          "text": "經典考題"
+        },
+        {
+          "level": 3,
+          "text": "實戰意義"
+        },
+        {
+          "level": 3,
+          "text": "長任務優化"
+        }
+      ]
+    },
+    {
+      "id": "4.11",
+      "number": "LESSON 4.11",
+      "title": "Promise：非同步的現代答案",
+      "oneLineSummary": "解構（destructuring）是「一次從物件拿好幾個值」—寫 React 必用、超省事。",
+      "analogy": "想像從袋子拿東西—傳統一個一個拿（name = obj.name; age = obj.age）、解構一次拿一堆（const { name, age } = obj）。寫 React component 收 props 全用這招。",
+      "content": "```js\n// 建立 Promise\nconst p = new Promise((resolve, reject) => {\n  setTimeout(() => resolve(\"done\"), 1000);\n});\n\n// 三態：pending → fulfilled / rejected\np.then(value => console.log(value))\n .catch(err => console.error(err))\n .finally(() => console.log(\"完成\"));\n```\n\n  \n### async / await（ES2017）\n\n```js\n// 不用 Promise.then，可以像同步那樣寫\nasync function loadUser(id) {\n  try {\n    const resp = await fetch(`/api/users/${id}`);\n    const user = await resp.json();\n    return user;\n  } catch (err) {\n    console.error(\"failed:\", err);\n    throw err;\n  }\n}\n\n// 呼叫 async function 永遠回 Promise\nloadUser(42).then(u => console.log(u));\n```\n\n  \n### Promise 組合招式\n\n```js\n// Promise.all：全部成功才繼續（任何一個失敗整體失敗）\nconst [a, b, c] = await Promise.all([\n  fetch(\"/api/a\"),\n  fetch(\"/api/b\"),\n  fetch(\"/api/c\")\n]);\n\n// Promise.allSettled：全部完成就回（不管成敗）\nconst results = await Promise.allSettled(promises);\nresults.forEach(r => {\n  if (r.status === \"fulfilled\") console.log(r.value);\n  else console.error(r.reason);\n});\n\n// Promise.race：誰先完成就用誰\nconst winner = await Promise.race([\n  fetch(\"/api/slow\"),\n  new Promise((_, rej) => setTimeout(() => rej(\"timeout\"), 3000))\n]); // 3 秒沒回就視為 timeout\n\n// Promise.any：有任何一個成功就回（全失敗才整體失敗）\nconst first = await Promise.any([\n  fetch(\"/api/server1\"),\n  fetch(\"/api/server2\"),\n  fetch(\"/api/server3\")\n]); // 哪個 server 先回就用哪個\n```\n\n  \n### 進階：可取消的 Promise\n\n```js\nconst ctrl = new AbortController();\n\nfetch(\"/api/big\", { signal: ctrl.signal })\n  .then(r => r.json())\n  .catch(err => {\n    if (err.name === \"AbortError\") console.log(\"取消\");\n  });\n\n// 5 秒後取消\nsetTimeout(() => ctrl.abort(), 5000);\n```\n\n  \n### 並行 vs 序列\n\n```js\n// ✗ 序列（慢）\nconst a = await fetchA();\nconst b = await fetchB();\n// 總時間 = A + B\n\n// ✓ 並行（快）\nconst [a, b] = await Promise.all([fetchA(), fetchB()]);\n// 總時間 = max(A, B)\n```\n\n  \n    **🚀 進階技巧**\n    \n新手最常見錯：在 forEach 內用 await，結果根本沒等。改用 for...of（會等）或 Promise.all（並行）。`arr.forEach(async fn)` 是個 anti-pattern。\n\n  \n\n  \n    \n      🛠️\n      工具推薦\n    \n    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。",
+      "tip": {
+        "type": "practical",
+        "text": "配合這節用的工具：(1) VS Code（編輯器、免費）(2) Chrome DevTools（F12 開啟、除錯神器）(3) Live Server（VS Code 擴充、即時預覽）(4) GitHub Copilot / Cursor（AI 寫程式、學習加速 2-10x）。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "4.11.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// 建立 Promise\nconst p = new Promise((resolve, reject) => {\n  setTimeout(() => resolve(\"done\"), 1000);\n});\n\n// 三態：pending → fulfilled / rejected\np.then(value => console.log(value))\n .catch(err => console.error(err))\n .finally(() => console.log(\"完成\"));",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（/api/users/${id}, arr.forEach(async fn)）寫一段小 code 解決一個實際問題。",
+        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "async / await（ES2017）"
+        },
+        {
+          "level": 3,
+          "text": "Promise 組合招式"
+        },
+        {
+          "level": 3,
+          "text": "進階：可取消的 Promise"
+        },
+        {
+          "level": 3,
+          "text": "並行 vs 序列"
+        }
+      ]
+    },
+    {
+      "id": "4.12",
+      "number": "LESSON 4.12",
+      "title": "Iterator / Generator：自製迭代邏輯",
+      "oneLineSummary": "Spread / Rest（...）是「展開或收合一堆東西」—複製陣列 / 合併物件超快。",
+      "analogy": "想像你媽「全部都給我吃光」—一句話包多件事。... 一樣：[...arr1, ...arr2]（把兩個陣列展開合一個）、{ ...obj, name: \"new\" }（複製物件、改一個欄位）。React 寫 state 一直用。",
+      "content": "### Iterator 協議\n\n```js\n// 任何有 [Symbol.iterator] 方法的物件都是 iterable\nconst myIter = {\n  [Symbol.iterator]() {\n    let i = 0;\n    return {\n      next() {\n        return i \n    \n      ⚠️\n      新手常見錯誤\n    \n    新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。",
+      "tip": {
+        "type": "warning",
+        "text": "新手 3 大坑：(1) 不看 console—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) 不存檔就 F5—改完忘記儲存以為「程式沒效果」 (3) 抄 code 不理解—複製貼上能跑、但下次要改就崩潰。記得：先看懂、再寫。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
+        "hint": "從最小可運作版開始（HelloWorld 級）、確認能跑、再慢慢加東西。一次只加一個 feature。",
+        "answer": "MVP 心法：能跑通 > 寫得漂亮。先有最簡單的版本（10 行就好）、確認 input → 預期 output、再開始重構 / 加錯誤處理 / 加 UI。先求有、再求好。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "Iterator 協議"
+        }
+      ]
+    },
+    {
+      "id": "4.13",
+      "number": "LESSON 4.13",
+      "title": "DOM 操作：跟 HTML 對話",
+      "oneLineSummary": "DOM 操作就是「用 JS 改 HTML 內容」—讓網頁變動態。",
+      "analogy": "想像用遙控器操控電視—不用走過去按按鈕、按一下就換頻道。DOM 就是「網頁的遙控器」—document.querySelector('h1').textContent = \"新標題\"—1 行改網頁、不用重整。",
+      "content": "```js\n// 選元素\ndocument.getElementById(\"main\");\ndocument.querySelector(\".card\");\ndocument.querySelectorAll(\"li\"); // NodeList\n\n// 修改\nel.textContent = \"hello\";       // 純文字\nel.innerHTML = \"粗體\";  // HTML（注意 XSS！）\nel.setAttribute(\"data-id\", \"42\");\nel.dataset.userId = \"42\";        // 等同 data-user-id\n\n// class 操作\nel.classList.add(\"active\");\nel.classList.remove(\"active\");\nel.classList.toggle(\"active\");\nel.classList.contains(\"active\");\n\n// 樣式\nel.style.color = \"red\";\nel.style.cssText = \"color: red; font-size: 20px;\";\nel.style.setProperty(\"--my-var\", \"blue\"); // CSS 變數\n\n// 新增/移除元素\nconst div = document.createElement(\"div\");\ndiv.textContent = \"hi\";\nparent.appendChild(div);\nparent.prepend(div);     // 加到開頭\ntarget.before(div);     // 加到 target 之前\ntarget.after(div);      // 之後\ntarget.replaceWith(div);\nel.remove();\n\n// 走訪\nel.parentElement;\nel.children;            // HTMLCollection（只 Element）\nel.childNodes;          // NodeList（含 text node）\nel.firstElementChild;\nel.nextElementSibling;\nel.closest(\".card\");    // 往上找最近的祖先\n```\n\n  \n### 事件處理\n\n```js\nbtn.addEventListener(\"click\", e => {\n  e.preventDefault();        // 阻止預設行為\n  e.stopPropagation();      // 阻止冒泡\n  console.log(e.target);    // 觸發元素\n  console.log(e.currentTarget); // 綁定元素\n});\n\n// 事件委派：在父元素監聽，靠 e.target 判斷\nlist.addEventListener(\"click\", e => {\n  if (e.target.matches(\"button.delete\")) {\n    handleDelete(e.target);\n  }\n});\n// 一個 listener 處理所有子按鈕，效能好\n\n// 移除（必須用同一個函式參考）\nfunction onClick(e) { /*...*/ }\nbtn.addEventListener(\"click\", onClick);\nbtn.removeEventListener(\"click\", onClick);\n\n// 選項：once / passive / capture\nel.addEventListener(\"click\", fn, { once: true }); // 只觸發一次\nel.addEventListener(\"scroll\", fn, { passive: true }); // 不會 preventDefault，效能好\n```\n\n  \n### 自訂事件\n\n```js\nconst event = new CustomEvent(\"my-event\", {\n  detail: { msg: \"hello\" },\n  bubbles: true\n});\nel.dispatchEvent(event);\n\nother.addEventListener(\"my-event\", e => {\n  console.log(e.detail.msg);\n});\n```\n\n  \n### 觀察 API\n\n```js\n// IntersectionObserver：元素進入視窗時觸發（lazy load 用）\nconst io = new IntersectionObserver(entries => {\n  entries.forEach(e => {\n    if (e.isIntersecting) {\n      console.log(\"進視窗了\");\n    }\n  });\n}, { threshold: 0.5 });\nio.observe(el);\n\n// MutationObserver：監聽 DOM 變化\nconst mo = new MutationObserver(mutations => {\n  mutations.forEach(m => console.log(m.type));\n});\nmo.observe(el, { childList: true, subtree: true });\n\n// ResizeObserver：監聽大小變化\nconst ro = new ResizeObserver(entries => {\n  entries.forEach(e => console.log(e.contentRect));\n});\nro.observe(el);\n```\n\n  \n    \n      💼\n      接案小知識\n    \n    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「JavaScript」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。",
+      "tip": {
+        "type": "practical",
+        "text": "剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「JavaScript」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "4.13.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// 選元素\ndocument.getElementById(\"main\");\ndocument.querySelector(\".card\");\ndocument.querySelectorAll(\"li\"); // NodeList\n\n// 修改\nel.textContent = \"hello\";       // 純文字\nel.innerHTML = \"粗體\";  // HTML（注意 XSS！）\nel.setAttribute(\"data-id\", \"42\");\nel.dataset.userId = \"42\";        // 等同 data-user-id\n\n// class 操作\nel.classList.add(\"active\");\nel.classList.remove(\"active\");\nel.classList.toggle(\"active\");\nel.classList.contains(\"active\");\n\n// 樣式\nel.style.color = \"red\";\nel.style.cssText = \"color: red; font-size: 20px;\";\nel.style.setProperty(\"--my-var\", \"blue\"); // CSS 變數\n\n// 新增/移除元素\nconst div = document.createElement(\"div\");\ndiv.textContent = \"hi\";\nparent.appendChild(div);\nparent.prepend(div);     // 加到開頭\ntarget.before(div);     // 加到 target 之前\ntarget.after(div);      // 之後\ntarget.replaceWith(div);\nel.remove();\n\n// 走訪\nel.parentElement;\nel.children;            // HTMLCollection（只 Element）\nel.childNodes;          // NodeList（含 text node）\nel.firstElementChild;\nel.nextElementSibling;\nel.closest(\".card\");    // 往上找最近的祖先",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "事件處理"
+        },
+        {
+          "level": 3,
+          "text": "自訂事件"
+        },
+        {
+          "level": 3,
+          "text": "觀察 API"
+        }
+      ]
+    },
+    {
+      "id": "4.14",
+      "number": "LESSON 4.14",
+      "title": "Fetch API 與網路請求",
+      "oneLineSummary": "事件監聽（addEventListener）是「等使用者做動作再執行」—點擊 / 輸入 / 滾動。",
+      "analogy": "像門鈴—你不會一直開門看誰來、是等響了才反應。addEventListener 就是裝門鈴：「使用者點這顆按鈕 → 跑這段程式」。所有互動的起點。",
+      "content": "```js\n// GET\nconst r = await fetch(\"/api/users\");\nif (!r.ok) throw new Error(`HTTP ${r.status}`);\nconst data = await r.json();\n\n// POST JSON\nconst r = await fetch(\"/api/users\", {\n  method: \"POST\",\n  headers: { \"Content-Type\": \"application/json\" },\n  body: JSON.stringify({ name: \"招財\" })\n});\n\n// 上傳檔案\nconst fd = new FormData();\nfd.append(\"file\", fileInput.files[0]);\nfd.append(\"caption\", \"我的圖\");\nawait fetch(\"/api/upload\", { method: \"POST\", body: fd });\n\n// 超時 + 取消\nconst ctrl = AbortSignal.timeout(5000);\nawait fetch(url, { signal: ctrl });\n```\n\n  \n### 串流回應\n\n```js\n// 處理大型回應（檔案下載、AI 串流）\nconst r = await fetch(\"/api/ai-stream\");\nconst reader = r.body.getReader();\nconst decoder = new TextDecoder();\n\nwhile (true) {\n  const { value, done } = await reader.read();\n  if (done) break;\n  const chunk = decoder.decode(value);\n  console.log(chunk); // AI 回應一塊塊出來\n}\n```\n\n  \n### 實戰：穩健的 API client\n\n```js\nasync function apiCall(url, opts = {}, retries = 3) {\n  for (let i = 0; i = 500) throw new Error(\"server error\");\n        return { ok: false, error: await r.text() };\n      }\n      return { ok: true, data: await r.json() };\n    } catch (err) {\n      if (i === retries - 1) throw err;\n      await new Promise(r => setTimeout(r, 2 ** i * 1000)); // 指數退避\n    }\n  }\n}\n```\n\n  \n### 其他連線方式\n\n```js\n// WebSocket（雙向長連線）\nconst ws = new WebSocket(\"wss://api.example.com\");\nws.addEventListener(\"open\", () => ws.send(\"hello\"));\nws.addEventListener(\"message\", e => console.log(e.data));\n\n// SSE（Server-Sent Events，伺服器單向推）\nconst es = new EventSource(\"/api/events\");\nes.addEventListener(\"message\", e => console.log(e.data));\n// 適合：通知、AI 串流、即時更新\n\n// WebRTC（P2P 視訊 / 語音 / 資料）\nconst pc = new RTCPeerConnection();\n// 複雜，但能做視訊通話、檔案傳輸不經伺服器\n```\n\n  \n    \n      🎯\n      面試考點\n    \n    台灣科技公司面試 90% 會問「JavaScript」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。",
+      "tip": {
+        "type": "pro",
+        "text": "台灣科技公司面試 90% 會問「JavaScript」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "4.14.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// GET\nconst r = await fetch(\"/api/users\");\nif (!r.ok) throw new Error(`HTTP ${r.status}`);\nconst data = await r.json();\n\n// POST JSON\nconst r = await fetch(\"/api/users\", {\n  method: \"POST\",\n  headers: { \"Content-Type\": \"application/json\" },\n  body: JSON.stringify({ name: \"招財\" })\n});\n\n// 上傳檔案\nconst fd = new FormData();\nfd.append(\"file\", fileInput.files[0]);\nfd.append(\"caption\", \"我的圖\");\nawait fetch(\"/api/upload\", { method: \"POST\", body: fd });\n\n// 超時 + 取消\nconst ctrl = AbortSignal.timeout(5000);\nawait fetch(url, { signal: ctrl });",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（HTTP ${r.status}）寫一段小 code 解決一個實際問題。",
+        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "串流回應"
+        },
+        {
+          "level": 3,
+          "text": "實戰：穩健的 API client"
+        },
+        {
+          "level": 3,
+          "text": "其他連線方式"
+        }
+      ]
+    },
+    {
+      "id": "4.15",
+      "number": "LESSON 4.15",
+      "title": "儲存：把資料留在瀏覽器",
+      "oneLineSummary": "Closure（閉包）是「函式記住它出生時周圍的變數」—JS 最強功能之一、也是面試愛問。",
+      "analogy": "想像童年的回憶—不管你長大走多遠、那些記憶還在腦子裡。Closure 就是函式長大後還記得自己「出生時」周圍有什麼變數。聽起來抽象、但寫 React hook 全靠它。",
+      "content": "```js\n// localStorage：永久保存（除非清快取），5–10MB\nlocalStorage.setItem(\"token\", \"abc123\");\nlocalStorage.getItem(\"token\");\nlocalStorage.removeItem(\"token\");\nlocalStorage.clear();\n\n// 注意：只能存字串\nlocalStorage.setItem(\"user\", JSON.stringify(user));\nconst u = JSON.parse(localStorage.getItem(\"user\"));\n\n// sessionStorage：分頁關閉就消失\nsessionStorage.setItem(\"tmp\", \"value\");\n\n// IndexedDB：大量結構化資料（百 MB 等級）\nconst req = indexedDB.open(\"myDB\", 1);\nreq.onupgradeneeded = e => {\n  const db = e.target.result;\n  db.createObjectStore(\"users\", { keyPath: \"id\" });\n};\n\n// 簡化版：用 idb-keyval（小套件）\nimport { set, get } from \"idb-keyval\";\nawait set(\"user\", { name: \"招財\" });\nconst u = await get(\"user\");\n\n// Cookies（給後端用）\ndocument.cookie = \"token=abc; max-age=3600; path=/; secure; samesite=strict\";\n```\n\n  \n    **🚨 資安警報**\n    \n**不要在 localStorage 存敏感 token**。任何 XSS 都能讀到。改用 `httpOnly cookie`（JS 看不到，只跟 HTTP 走）。session token 一律走 cookie。\n\n  \n\n  \n### Cache API（給 Service Worker 用）\n\n```js\nconst cache = await caches.open(\"v1\");\nawait cache.add(\"/api/data\");\nconst resp = await cache.match(\"/api/data\");\n```\n\n  \n    \n      ⚡\n      學習加速器\n    \n    把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。",
+      "tip": {
+        "type": "practical",
+        "text": "把這節學到的馬上應用到一個小東西—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "4.15.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// localStorage：永久保存（除非清快取），5–10MB\nlocalStorage.setItem(\"token\", \"abc123\");\nlocalStorage.getItem(\"token\");\nlocalStorage.removeItem(\"token\");\nlocalStorage.clear();\n\n// 注意：只能存字串\nlocalStorage.setItem(\"user\", JSON.stringify(user));\nconst u = JSON.parse(localStorage.getItem(\"user\"));\n\n// sessionStorage：分頁關閉就消失\nsessionStorage.setItem(\"tmp\", \"value\");\n\n// IndexedDB：大量結構化資料（百 MB 等級）\nconst req = indexedDB.open(\"myDB\", 1);\nreq.onupgradeneeded = e => {\n  const db = e.target.result;\n  db.createObjectStore(\"users\", { keyPath: \"id\" });\n};\n\n// 簡化版：用 idb-keyval（小套件）\nimport { set, get } from \"idb-keyval\";\nawait set(\"user\", { name: \"招財\" });\nconst u = await get(\"user\");\n\n// Cookies（給後端用）\ndocument.cookie = \"token=abc; max-age=3600; path=/; secure; samesite=strict\";",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（httpOnly cookie）寫一段小 code 解決一個實際問題。",
+        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "Cache API（給 Service Worker 用）"
+        }
+      ]
+    },
+    {
+      "id": "4.16",
+      "number": "LESSON 4.16",
+      "title": "Web Worker：真正的多執行緒",
+      "oneLineSummary": "this 是「指這段程式現在屬於誰」—JS 最容易混淆的概念之一。",
+      "analogy": "想像在 LINE 群組裡有人喊「我」—「我」指誰？看誰說的。this 一樣：同樣的程式碼、在不同地方執行、this 指不同東西。學會看上下文判斷 this 是 JS 中級工程師的入場券。",
+      "content": "JS 是單執行緒，但 Worker 可以開「另一個」執行緒。重運算丟過去，主執行緒不卡。\n\n```js\n// main.js\nconst worker = new Worker(\"worker.js\");\n\nworker.postMessage({ cmd: \"compute\", data: bigArray });\n\nworker.addEventListener(\"message\", e => {\n  console.log(\"結果：\", e.data);\n});\n\n// worker.js\naddEventListener(\"message\", e => {\n  const { cmd, data } = e.data;\n  if (cmd === \"compute\") {\n    const result = heavy(data); // 不卡主執行緒\n    postMessage(result);\n  }\n});\n```\n\n  \n### 三種 Worker\n\n  \n- **Worker**（Dedicated）：跟某個分頁綁定\n- **SharedWorker**：多個分頁共用（同網域）\n- **ServiceWorker**：攔截網路請求 → 離線、PWA、快取\n\n  \n### Service Worker：PWA 核心\n\n```js\n// register\nif (\"serviceWorker\" in navigator) {\n  navigator.serviceWorker.register(\"/sw.js\");\n}\n\n// sw.js\naddEventListener(\"install\", e => {\n  e.waitUntil(\n    caches.open(\"v1\").then(c => \n      c.addAll([\"/\", \"/style.css\", \"/app.js\"])\n    )\n  );\n});\n\naddEventListener(\"fetch\", e => {\n  e.respondWith(\n    caches.match(e.request).then(r => r || fetch(e.request))\n  );\n});\n// 離線也能用！\n```\n\n  \n### Worker 通訊：SharedArrayBuffer\n\n```js\n// 同記憶體（不用複製，速度極快）\nconst sab = new SharedArrayBuffer(1024);\nconst arr = new Int32Array(sab);\n\nworker.postMessage(sab); // 不複製，共用記憶體\n\n// 但要注意：\n// 1. 需要正確的 COOP/COEP HTTP headers\n// 2. 競爭條件要用 Atomics 處理\nAtomics.add(arr, 0, 1); // 原子操作\n```\n\n  \n    \n      🚀\n      2026 趨勢\n    \n    這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。",
+      "tip": {
+        "type": "trend",
+        "text": "這個技術 2026 還在主流、未來 5 年不會過時。但工具會更新—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "4.16.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// main.js\nconst worker = new Worker(\"worker.js\");\n\nworker.postMessage({ cmd: \"compute\", data: bigArray });\n\nworker.addEventListener(\"message\", e => {\n  console.log(\"結果：\", e.data);\n});\n\n// worker.js\naddEventListener(\"message\", e => {\n  const { cmd, data } = e.data;\n  if (cmd === \"compute\") {\n    const result = heavy(data); // 不卡主執行緒\n    postMessage(result);\n  }\n});",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "三種 Worker"
+        },
+        {
+          "level": 3,
+          "text": "Service Worker：PWA 核心"
+        },
+        {
+          "level": 3,
+          "text": "Worker 通訊：SharedArrayBuffer"
+        }
+      ]
+    },
+    {
+      "id": "4.17",
+      "number": "LESSON 4.17",
+      "title": "WebAssembly：JS 之外的超速引擎",
+      "oneLineSummary": "async / await 是「等久一點的事情怎麼寫得好看」—等 API、等檔案、等使用者輸入。",
+      "analogy": "像你叫 UberEats—下單後不會傻等、可以滑手機、外送到了通知你。async/await 就是這種「下單→繼續其他事→送到再處理」的寫法。JS 整個現代生態都靠它。",
+      "content": "WebAssembly（WASM）讓 C / C++ / Rust 程式碼能在瀏覽器跑，速度**接近原生**。影片編解碼、CAD、遊戲、AI 推論用得多。\n\n```js\n// 載入 WASM 模組\nconst resp = await fetch(\"/math.wasm\");\nconst { instance } = await WebAssembly.instantiateStreaming(resp);\n\n// 呼叫匯出的函式\nconst result = instance.exports.fibonacci(40);\n// 比 JS 版快 10–100 倍\n```\n\n  \n### 常見 WASM 套件\n\n  \n- **ffmpeg.wasm**：瀏覽器內處理影片\n- **sql.js / wasm-sqlite**：瀏覽器內跑 SQLite\n- **onnxruntime-web**：瀏覽器內跑 AI 模型\n- **pdf-lib**（部分用 WASM）：PDF 處理\n- **simd-wasm**：向量計算\n\n  \n2026 的趨勢：**WASI**（WebAssembly System Interface）讓 WASM 變「跨語言、跨平台」標準，Cloudflare Workers、Vercel Edge 都接受 WASM 部署。\n\n  \n### 什麼時候用 WASM？\n\n  \n- CPU-bound 密集運算（影像處理、加密、編解碼）\n- 已有的 C/C++/Rust 程式碼想搬到 Web\n- 遊戲引擎、CAD、模擬\n- 需要極致效能的演算法\n\n  \n**不要**用在：簡單邏輯、DOM 操作、API 串接 — JS 已經夠好。\n\n  \n    \n      🛠️\n      工具推薦\n    \n    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。",
+      "tip": {
+        "type": "practical",
+        "text": "配合這節用的工具：(1) VS Code（編輯器、免費）(2) Chrome DevTools（F12 開啟、除錯神器）(3) Live Server（VS Code 擴充、即時預覽）(4) GitHub Copilot / Cursor（AI 寫程式、學習加速 2-10x）。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "4.17.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// 載入 WASM 模組\nconst resp = await fetch(\"/math.wasm\");\nconst { instance } = await WebAssembly.instantiateStreaming(resp);\n\n// 呼叫匯出的函式\nconst result = instance.exports.fibonacci(40);\n// 比 JS 版快 10–100 倍",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
+        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "常見 WASM 套件"
+        },
+        {
+          "level": 3,
+          "text": "什麼時候用 WASM？"
+        }
+      ]
+    },
+    {
+      "id": "4.18",
+      "number": "LESSON 4.18",
+      "title": "模組系統 ESM vs CommonJS",
+      "oneLineSummary": "Promise 是「未來會給你結果的合約」—async/await 背後的機制。",
+      "analogy": "像網購預購—下單時老闆說「3 天後到貨」、給你一張「預訂單」（Promise）—你可以拿這張單等東西到（resolve）或退款（reject）。async/await 是這張單的好看寫法。",
+      "content": "```js\n// ES Module（瀏覽器 + 現代 Node）\n// math.js\nexport function add(a, b) { return a + b; }\nexport const PI = 3.14;\nexport default class Calculator {}\n\n// main.js\nimport Calc, { add, PI } from \"./math.js\";\nimport * as math from \"./math.js\";\nimport \"./side-effect.js\"; // 只執行不取值\n\n// 動態 import（lazy load）\nconst { add } = await import(\"./math.js\");\n```\n\n```js\n// CommonJS（Node 傳統）\n// math.js\nfunction add(a, b) { return a + b; }\nmodule.exports = { add, PI: 3.14 };\n\n// main.js\nconst { add } = require(\"./math\");\n```\n\n  \n### 差別\n\n  \n| 項目 | ESM | CommonJS |\n| --- | --- | --- |\n| 語法 | import / export | require / module.exports |\n| 載入 | 非同步（靜態解析） | 同步 |\n| Tree-shaking | 可以（dead code 移除） | 不行 |\n| 瀏覽器 | 原生支援 | 不支援（要 bundler） |\n| 2026 預設 | ✓ | 逐漸退場 |\n\n  \n### 瀏覽器使用 ESM\n\n```html\n<!-- 此處原本為 HTML 範例\n     程式碼已在內容修正中、稍後將補回完整範例 -->\n```\n\n  \n    \n      ⚠️\n      新手常見錯誤\n    \n    新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。",
+      "tip": {
+        "type": "warning",
+        "text": "新手 3 大坑：(1) 不看 console—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) 不存檔就 F5—改完忘記儲存以為「程式沒效果」 (3) 抄 code 不理解—複製貼上能跑、但下次要改就崩潰。記得：先看懂、再寫。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "4.18.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// ES Module（瀏覽器 + 現代 Node）\n// math.js\nexport function add(a, b) { return a + b; }\nexport const PI = 3.14;\nexport default class Calculator {}\n\n// main.js\nimport Calc, { add, PI } from \"./math.js\";\nimport * as math from \"./math.js\";\nimport \"./side-effect.js\"; // 只執行不取值\n\n// 動態 import（lazy load）\nconst { add } = await import(\"./math.js\");",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
+        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
+        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "差別"
+        },
+        {
+          "level": 3,
+          "text": "瀏覽器使用 ESM"
+        }
+      ]
+    },
+    {
+      "id": "4.19",
+      "number": "LESSON 4.19",
+      "title": "設計模式：JS 實戰版",
+      "oneLineSummary": "Fetch API 是「跟伺服器要資料」—2026 寫 web 必會。",
+      "analogy": "想像叫外送—你跟店家說「我要珍奶」（fetch request）、店家準備（async）、外送送到（response）、你拿到喝（json）。Fetch 就是 JS 跟外面世界拿資料的方式—API / 圖片 / JSON 都靠它。",
+      "content": "### Singleton（單例）\n\n```js\nclass Logger {\n  static #instance;\n  \n  static getInstance() {\n    if (!Logger.#instance) Logger.#instance = new Logger();\n    return Logger.#instance;\n  }\n  \n  log(msg) { console.log(msg); }\n}\n\n// 全局只有一個 Logger\nconst a = Logger.getInstance();\nconst b = Logger.getInstance();\na === b; // true\n```\n\n  \n### Factory（工廠）\n\n```js\nfunction createButton(type) {\n  switch (type) {\n    case \"primary\": return { color: \"blue\", click: () => {} };\n    case \"danger\":  return { color: \"red\", click: () => {} };\n    default:        return { color: \"gray\", click: () => {} };\n  }\n}\n```\n\n  \n### Observer（觀察者）\n\n```js\nclass EventBus {\n  #listeners = new Map();\n  \n  on(event, fn) {\n    if (!this.#listeners.has(event)) this.#listeners.set(event, []);\n    this.#listeners.get(event).push(fn);\n  }\n  \n  emit(event, data) {\n    this.#listeners.get(event)?.forEach(fn => fn(data));\n  }\n  \n  off(event, fn) {\n    const arr = this.#listeners.get(event);\n    if (arr) arr.splice(arr.indexOf(fn), 1);\n  }\n}\n\nconst bus = new EventBus();\nbus.on(\"login\", user => console.log(\"hi\", user.name));\nbus.emit(\"login\", { name: \"招財\" });\n```\n\n  \n### State Machine（狀態機）\n\n```js\nconst states = {\n  idle:    { start: \"loading\" },\n  loading: { success: \"done\", fail: \"error\" },\n  done:    { reset: \"idle\" },\n  error:   { retry: \"loading\", reset: \"idle\" }\n};\n\nfunction transition(current, action) {\n  return states[current][action] ?? current;\n}\n\nlet state = \"idle\";\nstate = transition(state, \"start\");    // \"loading\"\nstate = transition(state, \"success\");  // \"done\"\nstate = transition(state, \"reset\");    // \"idle\"\n```\n\n  \n### Module Pattern\n\n```js\nconst Counter = (() => {\n  let count = 0; // 私有\n  \n  return {\n    inc() { count++; },\n    get() { return count; }\n  };\n})();\n\nCounter.inc();\nCounter.get(); // 1\n// count 無法從外部存取\n```\n\n  \n### Proxy：metaprogramming\n\n```js\nconst reactive = new Proxy({ count: 0 }, {\n  get(target, key) {\n    console.log(\"get\", key);\n    return target[key];\n  },\n  set(target, key, value) {\n    console.log(\"set\", key, value);\n    target[key] = value;\n    render(); // 自動重新渲染\n    return true;\n  }\n});\n\nreactive.count++;\n// Vue 3 的響應系統就是用這個\n```\n\n  \n    \n      💼\n      接案小知識\n    \n    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「JavaScript」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。",
+      "tip": {
+        "type": "practical",
+        "text": "剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「JavaScript」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。"
+      },
+      "xp": 15,
+      "playgrounds": [
+        {
+          "key": "4.19.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "class Logger {\n  static #instance;\n  \n  static getInstance() {\n    if (!Logger.#instance) Logger.#instance = new Logger();\n    return Logger.#instance;\n  }\n  \n  log(msg) { console.log(msg); }\n}\n\n// 全局只有一個 Logger\nconst a = Logger.getInstance();\nconst b = Logger.getInstance();\na === b; // true",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
+        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "Singleton（單例）"
+        },
+        {
+          "level": 3,
+          "text": "Factory（工廠）"
+        },
+        {
+          "level": 3,
+          "text": "Observer（觀察者）"
+        },
+        {
+          "level": 3,
+          "text": "State Machine（狀態機）"
+        },
+        {
+          "level": 3,
+          "text": "Module Pattern"
+        },
+        {
+          "level": 3,
+          "text": "Proxy：metaprogramming"
+        }
+      ]
+    },
+    {
+      "id": "4.20",
+      "number": "LESSON 4.20",
+      "title": "效能優化",
+      "oneLineSummary": "Error Handling（try / catch）是「程式出錯時怎麼不整個崩潰」。",
+      "analogy": "像有保險的旅行—飛機沒延誤皆大歡喜、延誤了至少有理賠不至於滯留機場睡覺。try/catch 一樣：正常跑（try）、出錯了有備案（catch）、不會整個網頁白屏。",
+      "content": "### 測量：Performance API\n\n```js\nperformance.mark(\"start\");\nheavyTask();\nperformance.mark(\"end\");\nperformance.measure(\"task\", \"start\", \"end\");\n\nconst entries = performance.getEntriesByName(\"task\");\nconsole.log(entries[0].duration); // 毫秒\n\n// Core Web Vitals\nnew PerformanceObserver(list => {\n  list.getEntries().forEach(e => console.log(e.name, e.value));\n}).observe({ type: \"largest-contentful-paint\", buffered: true });\n```\n\n  \n### 常見優化招式\n\n```js\n// 1. Debounce：等使用者停手再執行\nfunction debounce(fn, delay) {\n  let timer;\n  return (...args) => {\n    clearTimeout(timer);\n    timer = setTimeout(() => fn(...args), delay);\n  };\n}\n\n// 2. Throttle：固定間隔最多執行一次\nfunction throttle(fn, interval) {\n  let last = 0;\n  return (...args) => {\n    const now = Date.now();\n    if (now - last >= interval) {\n      fn(...args);\n      last = now;\n    }\n  };\n}\n\n// 3. Memoize：快取函式結果\nfunction memoize(fn) {\n  const cache = new Map();\n  return (...args) => {\n    const key = JSON.stringify(args);\n    if (!cache.has(key)) cache.set(key, fn(...args));\n    return cache.get(key);\n  };\n}\n\n// 4. requestAnimationFrame：跟瀏覽器繪製同步\nfunction animate() {\n  // ... 更新位置\n  requestAnimationFrame(animate);\n}\n\n// 5. requestIdleCallback：空閒時做不重要的事\nrequestIdleCallback(() => {\n  analytics.flush();\n});\n```\n\n  \n### 常見效能地雷\n\n  \n- **過度 DOM 操作**：批次操作，用 DocumentFragment\n- **大型物件深複製**：用 structuredClone 或 immer\n- **沒清乾淨的 listener**：記憶體洩漏\n- **同步重運算**：搬到 Web Worker\n- **大量資料 sort/filter**：考慮分頁 / 虛擬列表\n\n  \n### 虛擬列表（Virtual List）\n\n  \n1000+ 筆資料硬渲染會卡，只渲染「視窗內看得到」的：\n\n```js\n// 用套件：react-virtual / tanstack-virtual\nconst rowVirtualizer = useVirtualizer({\n  count: 10000,\n  getScrollElement: () => ref.current,\n  estimateSize: () => 50\n});\n// 只渲染可視 + 預載一點，幾萬筆也順\n```\n\n  \n    \n      🎯\n      面試考點\n    \n    台灣科技公司面試 90% 會問「JavaScript」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。",
+      "tip": {
+        "type": "pro",
+        "text": "台灣科技公司面試 90% 會問「JavaScript」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "4.20.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "performance.mark(\"start\");\nheavyTask();\nperformance.mark(\"end\");\nperformance.measure(\"task\", \"start\", \"end\");\n\nconst entries = performance.getEntriesByName(\"task\");\nconsole.log(entries[0].duration); // 毫秒\n\n// Core Web Vitals\nnew PerformanceObserver(list => {\n  list.getEntries().forEach(e => console.log(e.name, e.value));\n}).observe({ type: \"largest-contentful-paint\", buffered: true });",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
+        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
+        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "測量：Performance API"
+        },
+        {
+          "level": 3,
+          "text": "常見優化招式"
+        },
+        {
+          "level": 3,
+          "text": "常見效能地雷"
+        },
+        {
+          "level": 3,
+          "text": "虛擬列表（Virtual List）"
+        }
+      ]
+    },
+    {
+      "id": "4.21",
+      "number": "LESSON 4.21",
+      "title": "資安：XSS / CSRF / Prototype Pollution",
+      "oneLineSummary": "Modules（import / export）是「把程式拆成多個檔案、互相 import」—大專案必用。",
+      "analogy": "像樂高分箱裝—輪子在這箱、車身在那箱、要組裝時各拿一塊。Modules 一樣：每個檔案管自己的事（utils / api / components）、用 import 串起來。大專案少了它根本沒法維護。",
+      "content": "### XSS（跨站腳本攻擊）\n\n```js\n// ✗ 危險：把使用者輸入直接塞進 HTML\ndiv.innerHTML = userInput;\n// 如果 userInput = \"\"\n// 攻擊者可以執行任何 JS\n\n// ✓ 安全：用 textContent（只當文字）\ndiv.textContent = userInput;\n\n// ✓ 必須用 HTML 時 sanitize\nimport DOMPurify from \"dompurify\";\ndiv.innerHTML = DOMPurify.sanitize(userInput);\n```\n\n  \n### CSP（Content Security Policy）\n\n```html\n\n```\n\n  \n### CSRF（跨站請求偽造）\n\n  \n使用者已登入 A 網站，攻擊者讓使用者在 B 網站點連結，自動帶 cookie 發請求到 A。\n\n  \n防禦：\n\n  \n- CSRF token（每個敏感操作要驗證 token）\n- SameSite cookie（`Set-Cookie: token=xxx; SameSite=Strict`）\n- 檢查 Origin / Referer header\n\n  \n### Prototype Pollution\n\n```js\n// 危險：deep merge 來自使用者的物件\nfunction merge(target, source) {\n  for (const key in source) {\n    if (typeof source[key] === \"object\") {\n      merge(target[key] = target[key] || {}, source[key]);\n    } else {\n      target[key] = source[key];\n    }\n  }\n}\n\nconst attack = JSON.parse('{\"__proto__\": {\"isAdmin\": true}}');\nmerge({}, attack);\nconst u = {};\nu.isAdmin; // true ← 所有物件都被污染！\n```\n\n  \n防禦：\n\n  \n- 禁止 key 為 `__proto__`、`constructor`、`prototype`\n- 用 `Object.create(null)` 建純物件（沒有 prototype）\n- 用 Map 而非物件當 key-value\n- 用 schema validation（Zod）\n\n  \n    \n      ⚡\n      學習加速器\n    \n    把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。",
+      "tip": {
+        "type": "practical",
+        "text": "把這節學到的馬上應用到一個小東西—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "4.21.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// ✗ 危險：把使用者輸入直接塞進 HTML\ndiv.innerHTML = userInput;\n// 如果 userInput = \"\"\n// 攻擊者可以執行任何 JS\n\n// ✓ 安全：用 textContent（只當文字）\ndiv.textContent = userInput;\n\n// ✓ 必須用 HTML 時 sanitize\nimport DOMPurify from \"dompurify\";\ndiv.innerHTML = DOMPurify.sanitize(userInput);",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（constructor, Set-Cookie: token=xxx; SameSite=Strict, prototype, __proto__, Object.create(null)）寫一段小 code 解決一個實際問題。",
+        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "XSS（跨站腳本攻擊）"
+        },
+        {
+          "level": 3,
+          "text": "CSP（Content Security Policy）"
+        },
+        {
+          "level": 3,
+          "text": "CSRF（跨站請求偽造）"
+        },
+        {
+          "level": 3,
+          "text": "Prototype Pollution"
+        }
+      ]
+    },
+    {
+      "id": "4.22",
+      "number": "LESSON 4.22",
+      "title": "測試：單元 / 整合 / E2E",
+      "oneLineSummary": "Localstorage / Cookie 是「在使用者瀏覽器存東西」—關掉重開還在。",
+      "analogy": "想像網站「下次自動登入」—關掉再開不用重登。靠的就是 localStorage 或 Cookie 存了你的登入 token。差別：Cookie 每次請求都會送出去（後端用）、localStorage 純前端存（前端用）。",
+      "content": "### Vitest（單元測試，2026 主流）\n\n```bash\npnpm add -D vitest\n```\n\n```js\n// math.test.js\nimport { describe, it, expect } from \"vitest\";\nimport { add } from \"./math\";\n\ndescribe(\"add\", () => {\n  it(\"adds two numbers\", () => {\n    expect(add(1, 2)).toBe(3);\n  });\n  \n  it(\"handles negative\", () => {\n    expect(add(-1, 1)).toBe(0);\n  });\n});\n```\n\n  \n### 常用斷言\n\n```js\nexpect(value).toBe(3);                   // ===\nexpect(obj).toEqual({ a: 1 });           // 深度相等\nexpect(arr).toContain(2);\nexpect(fn).toThrow();\nexpect(fn).toHaveBeenCalled();\nexpect(promise).resolves.toBe(42);\nexpect(promise).rejects.toThrow();\n```\n\n  \n### Mock\n\n```js\nimport { vi } from \"vitest\";\n\nconst fn = vi.fn().mockReturnValue(42);\nfn(); // 42\nexpect(fn).toHaveBeenCalledTimes(1);\n\n// Mock 模組\nvi.mock(\"./api\", () => ({\n  fetchUser: vi.fn().mockResolvedValue({ id: 1 })\n}));\n```\n\n  \n### E2E：Playwright（取代 Cypress 成為主流）\n\n```js\nimport { test, expect } from \"@playwright/test\";\n\ntest(\"login flow\", async ({ page }) => {\n  await page.goto(\"/login\");\n  await page.fill('input[name=\"email\"]', \"a@b.com\");\n  await page.fill('input[name=\"password\"]', \"pw\");\n  await page.click(\"button[type=submit]\");\n  await expect(page).toHaveURL(\"/dashboard\");\n});\n```\n\n  \n### 測試金字塔\n\n  \n- **70% 單元測試**：快、多、覆蓋邊角案例\n- **20% 整合測試**：模組間互動\n- **10% E2E 測試**：關鍵流程（登入、結帳、發文）\n\n  \n    **🚀 進階技巧**\n    \n2026 業界主流：Vitest（單元）+ Testing Library（元件）+ Playwright（E2E）。Jest 在新專案漸退（Vitest 更快、更現代）。Cypress 還能用但 Playwright 已大幅超越（速度、API、跨瀏覽器支援）。\n\n  \n\n  \n    \n      🚀\n      2026 趨勢\n    \n    這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。",
+      "tip": {
+        "type": "trend",
+        "text": "這個技術 2026 還在主流、未來 5 年不會過時。但工具會更新—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "4.22.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// math.test.js\nimport { describe, it, expect } from \"vitest\";\nimport { add } from \"./math\";\n\ndescribe(\"add\", () => {\n  it(\"adds two numbers\", () => {\n    expect(add(1, 2)).toBe(3);\n  });\n  \n  it(\"handles negative\", () => {\n    expect(add(-1, 1)).toBe(0);\n  });\n});",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
+        "hint": "工具的學習曲線通常卡在「環境設定」這關。Node 版本、Python 版本、權限、PATH 變數、port 衝突——遇到一個解一個。",
+        "answer": "踩坑筆記範本：『遇到：[錯誤訊息] → 原因：[根本原因] → 解：[具體指令]』。整理在自己的 GitHub gist 或 Notion、下次遇到同樣坑直接複製貼上 = 把痛苦變資產。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "Vitest（單元測試，2026 主流）"
+        },
+        {
+          "level": 3,
+          "text": "常用斷言"
+        },
+        {
+          "level": 3,
+          "text": "Mock"
+        },
+        {
+          "level": 3,
+          "text": "E2E：Playwright（取代 Cypress 成為主流）"
+        },
+        {
+          "level": 3,
+          "text": "測試金字塔"
+        }
+      ]
+    },
+    {
+      "id": "4.23",
+      "number": "LESSON 4.23",
+      "title": "記憶體管理與垃圾回收",
+      "oneLineSummary": "RegExp（正規表達式）是「找符合 pattern 的文字」—驗證 Email / 解析資料神器。",
+      "analogy": "像地毯式搜尋「所有像電話號碼的東西」—不是搜特定號碼、是搜「格式像電話的所有東西」。RegExp 寫起來像鬼畫符、但學會驗證 / 替換 / 解析 都是 1 行。",
+      "content": "JS 自動回收記憶體，但**還是會洩漏**。記憶體洩漏 = 用不到但回收不掉。\n\n  \n### 常見洩漏\n\n```js\n// 1. 沒清的 listener\nbtn.addEventListener(\"click\", handler);\n// 元素移除時 listener 還在 → 內存留著\n\n// 2. 沒清的 timer\nsetInterval(() => heavy(), 1000);\n// 元件 unmount 後還在跑\n\n// 3. 閉包持有大資料\nfunction attach() {\n  const huge = new Array(1e7);\n  return () => console.log(huge[0]);\n}\n// 回傳的小函式持有 huge，huge 永遠不回收\n\n// 4. 全域變數\nwindow.cache = bigData;\n// 寫了就一直在\n\n// 5. 沒釋放的 DOM 引用\nconst ref = document.getElementById(\"x\");\nx.remove();\n// ref 還持有 → DOM 節點留在記憶體\n```\n\n  \n### WeakRef（ES2021）\n\n```js\nconst obj = { huge: new Array(1e7) };\nconst weakRef = new WeakRef(obj);\n\n// 當 obj 沒人用時，WeakRef 不會阻止回收\nconst got = weakRef.deref();\nif (got) console.log(got.huge);\nelse console.log(\"已被回收\");\n```\n\n  \n### 檢測：Chrome Memory tab\n\n  \n- Heap Snapshot：當下記憶體狀態\n- Allocation timeline：誰在分配記憶體\n- Detached DOM tree：脫離但沒清的元素\n\n  \n    \n      🛠️\n      工具推薦\n    \n    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。",
+      "tip": {
+        "type": "practical",
+        "text": "配合這節用的工具：(1) VS Code（編輯器、免費）(2) Chrome DevTools（F12 開啟、除錯神器）(3) Live Server（VS Code 擴充、即時預覽）(4) GitHub Copilot / Cursor（AI 寫程式、學習加速 2-10x）。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "4.23.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// 1. 沒清的 listener\nbtn.addEventListener(\"click\", handler);\n// 元素移除時 listener 還在 → 內存留著\n\n// 2. 沒清的 timer\nsetInterval(() => heavy(), 1000);\n// 元件 unmount 後還在跑\n\n// 3. 閉包持有大資料\nfunction attach() {\n  const huge = new Array(1e7);\n  return () => console.log(huge[0]);\n}\n// 回傳的小函式持有 huge，huge 永遠不回收\n\n// 4. 全域變數\nwindow.cache = bigData;\n// 寫了就一直在\n\n// 5. 沒釋放的 DOM 引用\nconst ref = document.getElementById(\"x\");\nx.remove();\n// ref 還持有 → DOM 節點留在記憶體",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
+        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "常見洩漏"
+        },
+        {
+          "level": 3,
+          "text": "WeakRef（ES2021）"
+        },
+        {
+          "level": 3,
+          "text": "檢測：Chrome Memory tab"
+        }
+      ]
+    },
+    {
+      "id": "4.24",
+      "number": "LESSON 4.24",
+      "title": "正規表示式（RegExp）",
+      "oneLineSummary": "ES2026 新功能（top-level await / pipe / pattern matching 等）是JS 持續進化的證明—2026 起主流。",
+      "analogy": "像Switch 從 v1 到 OLED 版—一樣的機型、但細節進化讓體驗變好。ES2026 一樣：你之前要寫 5 行、新語法 1 行。瀏覽器跟上、可以放心用。",
+      "content": "```js\n// 兩種建立方式\nconst r1 = /hello/i;\nconst r2 = new RegExp(\"hello\", \"i\");\n\n// 旗標\n// g - 全局（找所有）\n// i - 忽略大小寫\n// m - 多行\n// s - dotAll（. 可以匹配換行）\n// u - Unicode\n// y - sticky\n// d - 帶 indices\n\n// 常用方法\n\"hello\".match(/l+/g);            // ['ll']\n\"hello\".replace(/l/g, \"L\");       // \"heLLo\"\n\"a,b,c\".split(/,/);              // ['a','b','c']\n/^\\d+$/.test(\"123\");              // true\n\"hello\".matchAll(/l/g);          // iterator\n```\n\n  \n### 實戰範例\n\n```js\n// Email 驗證\nconst emailRe = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;\n\n// 手機（台灣）\nconst phoneRe = /^09\\d{8}$/;\n\n// 從文字抓網址\nconst urlRe = /https?:\\/\\/[^\\s]+/g;\ntext.match(urlRe);\n\n// 命名群組（ES2018）\nconst dateRe = /(?\\d{4})-(?\\d{2})-(?\\d{2})/;\nconst m = \"2026-05-11\".match(dateRe);\nconsole.log(m.groups.year);  // \"2026\"\n```\n\n  \n    \n      ⚠️\n      新手常見錯誤\n    \n    新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。",
+      "tip": {
+        "type": "warning",
+        "text": "新手 3 大坑：(1) 不看 console—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) 不存檔就 F5—改完忘記儲存以為「程式沒效果」 (3) 抄 code 不理解—複製貼上能跑、但下次要改就崩潰。記得：先看懂、再寫。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "4.24.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// 兩種建立方式\nconst r1 = /hello/i;\nconst r2 = new RegExp(\"hello\", \"i\");\n\n// 旗標\n// g - 全局（找所有）\n// i - 忽略大小寫\n// m - 多行\n// s - dotAll（. 可以匹配換行）\n// u - Unicode\n// y - sticky\n// d - 帶 indices\n\n// 常用方法\n\"hello\".match(/l+/g);            // ['ll']\n\"hello\".replace(/l/g, \"L\");       // \"heLLo\"\n\"a,b,c\".split(/,/);              // ['a','b','c']\n/^\\d+$/.test(\"123\");              // true\n\"hello\".matchAll(/l/g);          // iterator",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
+        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "實戰範例"
+        }
+      ]
+    },
+    {
+      "id": "4.25",
+      "number": "LESSON 4.25",
+      "title": "2026 必懂的新特性",
+      "oneLineSummary": "整章總複習 + 實戰：用 JS 做一個完整的待辦清單 App—變數 / 函式 / DOM / 事件 / localStorage 全用上。",
+      "analogy": "像你學完所有食材跟刀工、最後做一頓飯。前面 24 節是練功、這節是真的做出東西—一個能用、能存資料、能新增刪除的小 App。Portfolio 第 1 號作品就靠這個。",
+      "content": "```js\n// 1. Top-level await（不用 IIFE 包）\nconst data = await fetch(\"/api/data\").then(r => r.json());\n\n// 2. Object.hasOwn（取代 hasOwnProperty）\nObject.hasOwn(obj, \"key\"); // 不會被 prototype 影響\n\n// 3. Array.fromAsync（ES2024）\nconst arr = await Array.fromAsync(asyncIterable);\n\n// 4. Promise.withResolvers（ES2024）\nconst { promise, resolve, reject } = Promise.withResolvers();\n// 不用包 new Promise 就能取得 resolve / reject\n\n// 5. Iterator helpers（2026）\nfunction* naturals() { let i = 1; while(true) yield i++; }\nconst first10Even = naturals()\n  .filter(n => n % 2 === 0)\n  .take(10)\n  .toArray();\n// 對 generator 直接用 array-like 方法！\n\n// 6. RegExp 命名群組 + d 旗標\nconst re = /(?\\d{4})/d;\nconst m = \"2026\".match(re);\nm.indices.groups.y; // 知道每個 group 的位置\n\n// 7. Pipe operator（提案中，stage 2）\n// value |> double |> add(1) |> format\n// 寫資料處理鏈會超漂亮\n\n// 8. Temporal API（取代 Date，提案中）\n// Temporal.Now.plainDateISO()\n// 終於有不爛的日期 API\n```\n\n  \n    \n      💼\n      接案小知識\n    \n    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「JavaScript」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。",
+      "tip": {
+        "type": "practical",
+        "text": "剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「JavaScript」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "4.25.auto",
+          "language": "javascript",
+          "title": "試試看",
+          "initialCode": "// 1. Top-level await（不用 IIFE 包）\nconst data = await fetch(\"/api/data\").then(r => r.json());\n\n// 2. Object.hasOwn（取代 hasOwnProperty）\nObject.hasOwn(obj, \"key\"); // 不會被 prototype 影響\n\n// 3. Array.fromAsync（ES2024）\nconst arr = await Array.fromAsync(asyncIterable);\n\n// 4. Promise.withResolvers（ES2024）\nconst { promise, resolve, reject } = Promise.withResolvers();\n// 不用包 new Promise 就能取得 resolve / reject\n\n// 5. Iterator helpers（2026）\nfunction* naturals() { let i = 1; while(true) yield i++; }\nconst first10Even = naturals()\n  .filter(n => n % 2 === 0)\n  .take(10)\n  .toArray();\n// 對 generator 直接用 array-like 方法！\n\n// 6. RegExp 命名群組 + d 旗標\nconst re = /(?\\d{4})/d;\nconst m = \"2026\".match(re);\nm.indices.groups.y; // 知道每個 group 的位置\n\n// 7. Pipe operator（提案中，stage 2）\n// value |> double |> add(1) |> format\n// 寫資料處理鏈會超漂亮\n\n// 8. Temporal API（取代 Date，提案中）\n// Temporal.Now.plainDateISO()\n// 終於有不爛的日期 API",
+          "hint": "改 code、按執行看結果"
+        }
+      ],
+      "exercise": {
+        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
+        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
+        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      }
+    }
+  ],
+  "boss": {
+    "name": "動態幽靈",
+    "hp": 110,
+    "emoji": "⚡",
+    "description": "在 DOM 中飄忽、需用 event 困住"
+  },
+  "quiz": {
+    "id": "ch04-quiz",
+    "questions": [],
+    "xpReward": 50,
+    "perfectBonus": 50
+  }
+}
