@@ -194,6 +194,19 @@ export async function GET(req: NextRequest) {
 
     const sessionData = await sessionRes.json();
     const actionLink = sessionData.action_link || sessionData.properties?.action_link;
+    const hashedToken = sessionData.hashed_token || sessionData.properties?.hashed_token;
+
+    if (!sessionRes.ok) {
+      console.error("Supabase generate link error:", sessionData);
+      return NextResponse.redirect(`${origin}/login?error=session_failed`);
+    }
+
+    if (hashedToken) {
+      const callback = new URL(`${origin}/auth/callback`);
+      callback.searchParams.set("token_hash", hashedToken);
+      callback.searchParams.set("type", "magiclink");
+      return NextResponse.redirect(callback);
+    }
 
     if (actionLink) {
       // Redirect 去 magic link、會自動 sign-in

@@ -9,6 +9,7 @@ const AUTH_ERROR_LABELS: Record<string, string> = {
   line_create_user: "LINE 登入建立會員失敗，請稍後再試或改用 Email 登入。",
   line_not_configured: "LINE 登入尚未設定完成，請檢查 LINE channel 環境變數。",
   line_profile: "LINE 登入取得個人資料失敗，請重新授權一次。",
+  line_exception: "LINE 登入流程發生例外，請稍後再試。",
   line_token: "LINE token 交換失敗，請檢查 LINE Callback URL 是否和目前網域完全一致。",
   no_code: "LINE 沒有回傳授權碼，請重新登入一次。",
   no_token: "LINE 登入沒有取得 access token，請重新登入一次。",

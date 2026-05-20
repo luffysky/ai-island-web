@@ -18,6 +18,8 @@ export function CallbackHashHandler() {
       const callbackError = searchParams.get("error");
       const errorDescription = searchParams.get("error_description");
       const code = searchParams.get("code");
+      const tokenHash = searchParams.get("token_hash");
+      const otpType = searchParams.get("type") || "magiclink";
 
       if (callbackError) {
         setStatus(errorDescription || callbackError);
@@ -32,6 +34,35 @@ export function CallbackHashHandler() {
         if (exchangeError) {
           console.error("[Callback] exchangeCodeForSession FAILED:", exchangeError);
           setStatus("登入失敗：" + exchangeError.message);
+          return;
+        }
+
+        setStatus("建立會員資料...");
+        const res = await fetch("/api/auth/ensure-profile", { method: "POST" });
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          setStatus("建立會員資料失敗：" + (data.error || res.statusText));
+          return;
+        }
+
+        setStatus("登入成功、跳轉中...");
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 300);
+        return;
+      }
+
+      if (tokenHash) {
+        setStatus("驗證登入 token...");
+        const { error: verifyError } = await supabase.auth.verifyOtp({
+          token_hash: tokenHash,
+          type: otpType as any,
+        });
+
+        if (verifyError) {
+          console.error("[Callback] verifyOtp FAILED:", verifyError);
+          setStatus("登入失敗：" + verifyError.message);
+          setTimeout(() => (window.location.href = "/login?error=session_failed"), 2000);
           return;
         }
 

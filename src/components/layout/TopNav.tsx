@@ -8,6 +8,7 @@ export function TopNav() {
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [open, setOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const supabase = createSupabaseBrowser();
   const displayProfile = profile ?? {
@@ -55,9 +56,27 @@ export function TopNav() {
   }, []);
 
   async function handleLogout() {
-    await supabase.auth.signOut();
+    if (loggingOut) return;
+    setLoggingOut(true);
     setOpen(false);
-    window.location.href = "/";
+    setUser(null);
+    setProfile(null);
+
+    try {
+      await Promise.race([
+        supabase.auth.signOut({ scope: "local" }),
+        new Promise((resolve) => setTimeout(resolve, 1500)),
+      ]);
+      const res = await fetch("/api/auth/logout", { method: "POST" });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        console.error("[Logout] server signOut failed:", body);
+      }
+    } catch (error) {
+      console.error("[Logout] failed:", error);
+    } finally {
+      window.location.replace("/");
+    }
   }
 
   return (
@@ -171,10 +190,11 @@ export function TopNav() {
                     <div className="border-t border-[var(--color-border)] mt-1 pt-1">
                       <button
                         onClick={handleLogout}
+                        disabled={loggingOut}
                         className="w-full flex items-center gap-3 px-4 py-2 hover:bg-[var(--color-bg-elevated)] transition text-red-400"
                       >
                         <LogOut size={16} />
-                        <span>登出</span>
+                        <span>{loggingOut ? "登出中..." : "登出"}</span>
                       </button>
                     </div>
                   </div>
