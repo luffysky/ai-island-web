@@ -15,23 +15,23 @@ export function CallbackHashHandler() {
   useEffect(() => {
     (async () => {
       const supabase = createSupabaseBrowser();
-      const error = searchParams.get("error");
+      const callbackError = searchParams.get("error");
       const errorDescription = searchParams.get("error_description");
       const code = searchParams.get("code");
 
-      if (error) {
-        setStatus(errorDescription || error);
-        setTimeout(() => (window.location.href = `/login?error=${encodeURIComponent(error)}`), 2000);
+      if (callbackError) {
+        setStatus(errorDescription || callbackError);
+        setTimeout(() => (window.location.href = `/login?error=${encodeURIComponent(callbackError)}`), 2000);
         return;
       }
 
       if (code) {
         setStatus("交換登入 session...");
-        const { error } = await supabase.auth.exchangeCodeForSession(code);
+        const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
 
-        if (error) {
-          console.error("[Callback] exchangeCodeForSession FAILED:", error);
-          setStatus("登入失敗：" + error.message);
+        if (exchangeError) {
+          console.error("[Callback] exchangeCodeForSession FAILED:", exchangeError);
+          setStatus("登入失敗：" + exchangeError.message);
           return;
         }
 
@@ -72,11 +72,11 @@ export function CallbackHashHandler() {
       setStatus("寫入 session...");
       console.log("[Callback] calling setSession");
 
-      const { data, error } = await supabase.auth.setSession({ access_token, refresh_token });
+      const { data, error: sessionError } = await supabase.auth.setSession({ access_token, refresh_token });
 
-      if (error) {
-        console.error("[Callback] setSession FAILED:", error);
-        setStatus("登入失敗：" + error.message);
+      if (sessionError) {
+        console.error("[Callback] setSession FAILED:", sessionError);
+        setStatus("登入失敗：" + sessionError.message);
         return;
       }
 
