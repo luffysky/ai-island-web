@@ -6,6 +6,9 @@ import Link from "next/link";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
+const ADMIN_SLUG = process.env.ADMIN_SLUG || process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2";
+const ADMIN_BASE = `/${ADMIN_SLUG}/admin`;
+
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createSupabaseServer();
 
@@ -13,7 +16,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const { data: { user }, error } = await supabase.auth.getUser();
 
   if (error || !user) {
-    redirect("/login?next=/admin");
+    redirect(`/login?next=${encodeURIComponent(ADMIN_BASE)}`);
   }
 
   const { data: profile } = await supabase
@@ -99,9 +102,11 @@ function NavGroup({ title, children }: { title: string; children: React.ReactNod
 }
 
 function AdminLink({ href, children }: { href: string; children: React.ReactNode }) {
+  const publicHref = href === "/admin" ? ADMIN_BASE : href.replace(/^\/admin/, ADMIN_BASE);
+
   return (
     <Link
-      href={href as any}
+      href={publicHref as any}
       className="block px-3 py-1.5 rounded-lg hover:bg-[var(--color-bg-card)] hover:text-[var(--color-accent)] transition"
     >
       {children}

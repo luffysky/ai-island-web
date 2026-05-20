@@ -1,14 +1,16 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
-const ADMIN_SLUG = process.env.ADMIN_SLUG || 'console-x7k2';
+const ADMIN_SLUG = process.env.ADMIN_SLUG || process.env.NEXT_PUBLIC_ADMIN_SLUG || 'console-x7k2';
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // 1. /[ADMIN_SLUG]/* → internal rewrite 到 /admin/*
-  if (pathname === `/${ADMIN_SLUG}` || pathname.startsWith(`/${ADMIN_SLUG}/`)) {
-    const newPath = pathname.replace(`/${ADMIN_SLUG}`, '/admin') || '/admin';
+  // 1. /[ADMIN_SLUG]/admin/* → internal rewrite 到 /admin/*
+  const adminBase = `/${ADMIN_SLUG}/admin`;
+  if (pathname === adminBase || pathname.startsWith(`${adminBase}/`)) {
+    const rest = pathname.slice(adminBase.length);
+    const newPath = `/admin${rest}`;
     const url = request.nextUrl.clone();
     url.pathname = newPath;
     return NextResponse.rewrite(url);
