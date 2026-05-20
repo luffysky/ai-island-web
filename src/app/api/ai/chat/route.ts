@@ -26,7 +26,8 @@ export async function POST(req: NextRequest) {
   const admin = createSupabaseAdmin();
 
   // 1. 取模型
-  const { data: model } = await admin.from("ai_models").select("*").eq("id", modelId).single();
+  const { data: model, error: modelError } = await admin.from("ai_models").select("*").eq("id", modelId).single();
+  if (modelError) return errorResponse("model_lookup_failed", 500, modelError.message);
   if (!model || !model.is_active) return errorResponse("model_unavailable", 400);
 
   // 2. 取 API key
@@ -48,19 +49,30 @@ export async function POST(req: NextRequest) {
     }
   } else {
     // 扣免費 quota
-    const { data: quotaOk } = await admin.rpc("consume_ai_quota", { p_user_id: user.id, p_amount: 1 });
+    const { data: quotaOk, error: quotaError } = await admin.rpc("consume_ai_quota", { p_user_id: user.id, p_amount: 1 });
+    if (quotaError) {
+      console.error("[AI chat] consume_ai_quota failed:", quotaError);
+      return errorResponse("quota_rpc_failed", 500, "AI 額度系統尚未設定完成，請確認 ai_migration.sql 已執行");
+    }
     if (quotaOk === false) {
       return errorResponse("quota_exceeded", 429, "今天的免費額度用完了、可升級 Premium 或自帶 API key（設定 → AI Key）");
     }
-    const { data: sysKey } = await admin
+    const { data: sysKey, error: sysKeyError } = await admin
       .from("ai_api_keys")
       .select("api_key_encrypted, enabled, monthly_budget_usd, used_this_month_usd")
       .eq("provider", model.provider)
-      .single();
+      .maybeSingle();
+    if (sysKeyError) {
+      console.error("[AI chat] system key lookup failed:", sysKeyError);
+      return errorResponse("system_key_lookup_failed", 500, "AI 系統 key 查詢失敗");
+    }
     if (!sysKey || !sysKey.enabled) {
       return errorResponse("system_key_unavailable", 503, `${model.provider} 暫時無法使用`);
     }
-    if (sysKey.used_this_month_usd >= sysKey.monthly_budget_usd) {
+    if (Number(sysKey.monthly_budget_usd ?? 0) <= 0) {
+      return errorResponse("budget_not_configured", 503, `${model.provider} 月預算尚未設定`);
+    }
+    if (Number(sysKey.used_this_month_usd ?? 0) >= Number(sysKey.monthly_budget_usd ?? 0)) {
       return errorResponse("budget_exceeded", 429, "本月系統額度已用完、請自帶 API key");
     }
     try {
@@ -73,7 +85,7 @@ export async function POST(req: NextRequest) {
   // 3. 取 / 建 conversation
   let convId = conversationId;
   if (!convId) {
-    const { data: newConv } = await admin
+    const { data: newConv, error: convError } = await admin
       .from("ai_conversations")
       .insert({
         user_id: user.id,
@@ -86,6 +98,10 @@ export async function POST(req: NextRequest) {
       })
       .select("id")
       .single();
+    if (convError) {
+      console.error("[AI chat] conversation create failed:", convError);
+      return errorResponse("conv_create_failed", 500, convError.message);
+    }
     convId = newConv?.id;
   }
 
@@ -113,11 +129,15 @@ export async function POST(req: NextRequest) {
   ];
 
   // 6. 存 user message
-  await admin.from("ai_messages").insert({
+  const { error: userMessageError } = await admin.from("ai_messages").insert({
     conversation_id: convId,
     role: "user",
     content: message,
   });
+  if (userMessageError) {
+    console.error("[AI chat] user message insert failed:", userMessageError);
+    return errorResponse("message_create_failed", 500, userMessageError.message);
+  }
 
   // 7. Stream AI 回應
   const t0 = Date.now();
@@ -131,6 +151,7 @@ export async function POST(req: NextRequest) {
       let fullText = "";
       let tokensInput = 0;
       let tokensOutput = 0;
+      let streamError = "";
 
       try {
         for await (const chunk of streamAI({
@@ -147,8 +168,21 @@ export async function POST(req: NextRequest) {
             tokensInput = chunk.tokensInput ?? 0;
             tokensOutput = chunk.tokensOutput ?? 0;
           } else if (chunk.type === "error") {
-            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "error", error: chunk.error })}\n\n`));
+            streamError = chunk.error || "AI provider error";
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "error", error: streamError })}\n\n`));
           }
+        }
+
+        if (streamError) {
+          await admin.from("ai_messages").insert({
+            conversation_id: convId,
+            role: "assistant",
+            content: "",
+            model_used: `${model.provider}/${model.model_name}`,
+            error: streamError,
+            latency_ms: Date.now() - t0,
+          });
+          return;
         }
 
         const cost = estimateCost(

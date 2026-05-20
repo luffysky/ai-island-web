@@ -64,26 +64,36 @@ export function AITutorWidget({
       const { data: { user } } = await supabase.auth.getUser();
       setIsLoggedIn(!!user);
 
-      const { data } = await supabase
+      const { data, error: modelsError } = await supabase
         .from("ai_models")
         .select("*")
         .eq("is_active", true)
         .order("sort_order");
+      if (modelsError) {
+        console.error("[AI tutor] load models failed:", modelsError);
+        setError("AI 模型清單載入失敗，請確認 ai_migration.sql 已執行");
+      }
       if (data) {
         setModels(data);
         const def = data.find((m: any) => m.is_default) || data[0];
         if (def) setSelectedModelId(def.id);
+        if (data.length === 0) {
+          setError("目前沒有可用 AI 模型，請到後台啟用至少一個模型");
+        }
       }
 
       if (user) {
         // 取今天 quota
         const today = new Date().toISOString().slice(0, 10);
-        const { data: q } = await supabase
+        const { data: q, error: quotaError } = await supabase
           .from("ai_daily_quota")
           .select("free_used")
           .eq("user_id", user.id)
           .eq("date", today)
           .maybeSingle();
+        if (quotaError) {
+          console.error("[AI tutor] load quota failed:", quotaError);
+        }
         const def = data?.find((m: any) => m.is_default);
         setQuotaUsed({ used: q?.free_used ?? 0, limit: def?.free_tier_daily_limit ?? 10 });
       }
@@ -96,9 +106,13 @@ export function AITutorWidget({
   }, [messages]);
 
   const send = async () => {
-    if (!input.trim() || sending || !selectedModelId) return;
+    if (!input.trim() || sending) return;
     if (!isLoggedIn) {
       setError("請先登入才能使用 AI 導師");
+      return;
+    }
+    if (!selectedModelId) {
+      setError("目前沒有可用 AI 模型，請稍後再試");
       return;
     }
 
@@ -172,6 +186,11 @@ export function AITutorWidget({
               }
             } else if (json.type === "error") {
               setError(json.error);
+              setMessages((prev) => {
+                const copy = [...prev];
+                copy[copy.length - 1] = { role: "assistant", content: `❌ ${json.error}` };
+                return copy;
+              });
             }
           } catch {}
         }
