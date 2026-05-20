@@ -100,7 +100,7 @@ export interface Chapter {
   summary?: string[];
   faq?: { q: string; a: string }[];
   // Boss 戰
-  boss: {
+  boss?: {
     name: string;
     hp: number;
     emoji: string;

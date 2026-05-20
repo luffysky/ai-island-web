@@ -6,16 +6,18 @@ import { Heart, Swords } from "lucide-react";
 
 export function BossBattle({ chapter, engine, isLoggedIn }: { chapter: Chapter; engine: any; isLoggedIn: boolean }) {
   const quiz = chapter.quiz!;
+  const boss = chapter.boss;
   const [started, setStarted] = useState(false);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
   const [result, setResult] = useState<any>(null);
-  const [bossHp, setBossHp] = useState(chapter.boss.hp);
+  const [bossHp, setBossHp] = useState(boss?.hp ?? 0);
   const [hearts, setHearts] = useState(5);
   const [currentQ, setCurrentQ] = useState(0);
   const [shake, setShake] = useState(false);
 
   const q = quiz.questions[currentQ];
+  if (!boss) return null;
   if (!q) return null;
 
   const handleAnswer = (val: string) => {
@@ -23,7 +25,7 @@ export function BossBattle({ chapter, engine, isLoggedIn }: { chapter: Chapter; 
     setAnswers(prev => ({ ...prev, [q.id]: val }));
     const isCorrect = val === q.answer;
     if (isCorrect) {
-      const dmg = Math.floor(chapter.boss.hp / quiz.questions.length);
+      const dmg = Math.floor(boss.hp / quiz.questions.length);
       setBossHp(p => Math.max(0, p - dmg));
     } else {
       setHearts(p => Math.max(0, p - 1));
@@ -56,11 +58,11 @@ export function BossBattle({ chapter, engine, isLoggedIn }: { chapter: Chapter; 
         animate={{ opacity: 1, scale: 1 }}
         className="p-8 rounded-2xl bg-gradient-to-br from-red-950/40 to-purple-950/40 border-2 border-red-500/40 text-center"
       >
-        <div className="text-6xl mb-4 animate-pulse-glow inline-block rounded-full">{chapter.boss.emoji}</div>
-        <h2 className="text-3xl font-bold mb-2 text-red-400">⚔️ Boss 戰：{chapter.boss.name}</h2>
-        <p className="text-[var(--color-fg-muted)] mb-1">{chapter.boss.description}</p>
+        <div className="text-6xl mb-4 animate-pulse-glow inline-block rounded-full">{boss.emoji}</div>
+        <h2 className="text-3xl font-bold mb-2 text-red-400">⚔️ Boss 戰：{boss.name}</h2>
+        <p className="text-[var(--color-fg-muted)] mb-1">{boss.description}</p>
         <div className="flex justify-center gap-6 my-6 text-sm">
-          <span>HP <span className="text-red-400 font-bold">{chapter.boss.hp}</span></span>
+          <span>HP <span className="text-red-400 font-bold">{boss.hp}</span></span>
           <span>題數 <span className="font-bold">{quiz.questions.length}</span></span>
           <span>勝利獎勵 <span className="text-yellow-400 font-bold">+{quiz.xpReward} XP</span></span>
         </div>
@@ -116,7 +118,7 @@ export function BossBattle({ chapter, engine, isLoggedIn }: { chapter: Chapter; 
         </div>
 
         <button
-          onClick={() => { setStarted(false); setSubmitted(false); setAnswers({}); setCurrentQ(0); setBossHp(chapter.boss.hp); setHearts(5); setResult(null); }}
+          onClick={() => { setStarted(false); setSubmitted(false); setAnswers({}); setCurrentQ(0); setBossHp(boss.hp); setHearts(5); setResult(null); }}
           className="mt-6 px-6 py-2 bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-lg hover:border-[var(--color-accent)]"
         >
           🔁 再戰一次
@@ -130,8 +132,8 @@ export function BossBattle({ chapter, engine, isLoggedIn }: { chapter: Chapter; 
       <div className="p-8 rounded-2xl bg-red-950/40 border-2 border-red-500/40 text-center animate-fade-in">
         <div className="text-6xl mb-4">💀</div>
         <h2 className="text-2xl font-bold mb-2 text-red-400">敗北⋯</h2>
-        <p className="text-[var(--color-fg-muted)] mb-4">你被 {chapter.boss.name} 擊倒了</p>
-        <button onClick={() => { setStarted(false); setAnswers({}); setCurrentQ(0); setBossHp(chapter.boss.hp); setHearts(5); }} className="px-6 py-2 bg-[var(--color-accent)] text-black rounded-lg font-bold">捲土重來</button>
+        <p className="text-[var(--color-fg-muted)] mb-4">你被 {boss.name} 擊倒了</p>
+        <button onClick={() => { setStarted(false); setAnswers({}); setCurrentQ(0); setBossHp(boss.hp); setHearts(5); }} className="px-6 py-2 bg-[var(--color-accent)] text-black rounded-lg font-bold">捲土重來</button>
       </div>
     );
   }
@@ -141,13 +143,13 @@ export function BossBattle({ chapter, engine, isLoggedIn }: { chapter: Chapter; 
     <div className={`p-6 rounded-2xl bg-gradient-to-br from-red-950/20 to-purple-950/20 border-2 border-red-500/30 ${shake ? "animate-shake" : ""}`}>
       {/* Boss + HP */}
       <div className="text-center mb-6">
-        <div className="text-5xl mb-2">{chapter.boss.emoji}</div>
-        <div className="font-bold mb-2">{chapter.boss.name}</div>
+        <div className="text-5xl mb-2">{boss.emoji}</div>
+        <div className="font-bold mb-2">{boss.name}</div>
         <div className="max-w-md mx-auto">
           <div className="h-3 bg-black/30 rounded-full overflow-hidden border border-red-500/30">
-            <div className="h-full bg-gradient-to-r from-red-500 to-orange-500 transition-all duration-500" style={{ width: `${(bossHp / chapter.boss.hp) * 100}%` }} />
+            <div className="h-full bg-gradient-to-r from-red-500 to-orange-500 transition-all duration-500" style={{ width: `${(bossHp / boss.hp) * 100}%` }} />
           </div>
-          <div className="text-xs text-red-400 mt-1">HP {bossHp} / {chapter.boss.hp}</div>
+          <div className="text-xs text-red-400 mt-1">HP {bossHp} / {boss.hp}</div>
         </div>
       </div>
 

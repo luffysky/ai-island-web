@@ -17,7 +17,8 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
   const [toast, setToast] = useState<any>(null);
   const [levelUp, setLevelUp] = useState<number | null>(null);
   const supabase = createSupabaseBrowser();
-  const stageColor = STAGE_COLORS[Number(chapter.stage)] ?? STAGE_COLORS[1];
+  const stageKey = chapter.stage === "appendix" ? 7 : Number(chapter.stage);
+  const stageColor = STAGE_COLORS[stageKey] ?? STAGE_COLORS[1];
 
   const engine = new GamificationEngine({
     onAchievementUnlocked: (ach) => setToast(ach),
@@ -83,7 +84,16 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
           </div>
           <div className="p-3 rounded-lg bg-[var(--color-bg-card)] border border-[var(--color-border)]">
             <div className="text-xs text-[var(--color-fg-muted)] flex items-center gap-1"><Trophy size={12} /> Boss</div>
-            <div className="font-bold mt-1 flex items-center gap-1"><span>{chapter.boss.emoji}</span><span className="text-sm truncate">{chapter.boss.name}</span></div>
+            <div className="font-bold mt-1 flex items-center gap-1">
+              {chapter.boss ? (
+                <>
+                  <span>{chapter.boss.emoji}</span>
+                  <span className="text-sm truncate">{chapter.boss.name}</span>
+                </>
+              ) : (
+                <span className="text-sm truncate">速查章節</span>
+              )}
+            </div>
           </div>
         </div>
 
@@ -132,7 +142,7 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
       </div>
 
       {/* Boss Battle */}
-      {chapter.quiz && chapter.quiz.questions.length > 0 && (
+      {chapter.quiz && chapter.quiz.questions.length > 0 && chapter.boss && (
         <div className="mt-12">
           <BossBattle chapter={chapter} engine={engine} isLoggedIn={!!user} />
         </div>
