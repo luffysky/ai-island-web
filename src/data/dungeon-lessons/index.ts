@@ -1,7 +1,9 @@
 // 彙整所有副本的模組教學內文
-// 之後其他副本的內文檔做好、在這裡 import 並加進 map
-
 import { aiWritingLessons } from "./ai-writing";
+import { aiDesignLessons } from "./ai-design";
+import { aiVideoLessons } from "./ai-video";
+import { aiAutomationLessons } from "./ai-automation";
+import { aiCodingLessons } from "./ai-coding";
 
 type ModuleLesson = {
   content: string;
@@ -11,10 +13,10 @@ type ModuleLesson = {
 // slug → { moduleIndex → lesson }
 export const DUNGEON_LESSONS: Record<string, Record<number, ModuleLesson>> = {
   "ai-writing": aiWritingLessons,
-  // "ai-design": aiDesignLessons,      // 待製作
-  // "ai-video": aiVideoLessons,        // 待製作
-  // "ai-automation": aiAutomationLessons, // 待製作
-  // "ai-coding": aiCodingLessons,      // 待製作
+  "ai-design": aiDesignLessons,
+  "ai-video": aiVideoLessons,
+  "ai-automation": aiAutomationLessons,
+  "ai-coding": aiCodingLessons,
 };
 
 export function getDungeonLesson(slug: string, moduleIndex: number): ModuleLesson | undefined {

@@ -1,6 +1,12 @@
 import Link from "next/link";
 
-export function Hero() {
+type HeroProps = {
+  totalChapters: number;
+  totalLessons: number;
+  stageCount: number;
+};
+
+export function Hero({ totalChapters, totalLessons, stageCount }: HeroProps) {
   return (
     <section className="relative overflow-hidden border-b border-[var(--color-border)]">
       {/* 背景模糊光暈 */}
@@ -23,7 +29,7 @@ export function Hero() {
               學會<span className="bg-gradient-to-r from-[var(--color-accent)] to-[var(--color-accent-2)] bg-clip-text text-transparent">最難</span>的<span className="bg-gradient-to-r from-[var(--color-accent-2)] to-[var(--color-accent-3)] bg-clip-text text-transparent">技術</span>
             </h1>
             <p className="text-lg text-[var(--color-fg-muted)] mb-7 leading-relaxed">
-              67 章 × 1097+ lesson · HTML 到 AI Agent 全端養成
+              {totalChapters} 章 × {totalLessons}+ lesson · HTML 到 AI Agent 全端養成
               <br />
               像玩 RPG 一樣升級、打 boss、組隊、成為 AI 高玩
             </p>
@@ -44,16 +50,16 @@ export function Hero() {
 
             <div className="grid grid-cols-3 gap-6 mt-10 text-center md:text-left">
               <div>
-                <div className="text-3xl font-bold text-[var(--color-accent)]">67</div>
+                <div className="text-3xl font-bold text-[var(--color-accent)]">{totalChapters}</div>
                 <div className="text-xs text-[var(--color-fg-muted)] mt-1">章節 + 附錄</div>
               </div>
               <div>
-                <div className="text-3xl font-bold text-[var(--color-accent-2)]">1097+</div>
+                <div className="text-3xl font-bold text-[var(--color-accent-2)]">{totalLessons}+</div>
                 <div className="text-xs text-[var(--color-fg-muted)] mt-1">完整 lesson</div>
               </div>
               <div>
-                <div className="text-3xl font-bold text-[var(--color-accent-3)]">6</div>
-                <div className="text-xs text-[var(--color-fg-muted)] mt-1">關卡 / Lv.1~6</div>
+                <div className="text-3xl font-bold text-[var(--color-accent-3)]">{stageCount}</div>
+                <div className="text-xs text-[var(--color-fg-muted)] mt-1">技術區域</div>
               </div>
             </div>
           </div>
