@@ -27,6 +27,7 @@ export async function generateMetadata({
   if (!d) return { title: "找不到副本 | AI 島" };
 
   const title = `${d.name}：${d.subtitle} | AI 島`;
+  const ogImage = `${SITE_URL}/api/og/dungeon/${d.slug}`;
   return {
     title,
     description: `${d.tagline}。${d.intro.slice(0, 80)}`,
@@ -35,7 +36,16 @@ export async function generateMetadata({
       title,
       description: d.tagline,
       url: `${SITE_URL}/courses/${d.slug}`,
-      images: [`${SITE_URL}/api/og?title=${encodeURIComponent(d.name)}&subtitle=${encodeURIComponent(d.subtitle)}`],
+      siteName: "AI 島",
+      type: "article",
+      locale: "zh_TW",
+      images: [{ url: ogImage, width: 1200, height: 630, alt: d.name }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description: d.tagline,
+      images: [ogImage],
     },
   };
 }

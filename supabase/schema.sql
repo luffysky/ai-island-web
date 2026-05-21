@@ -63,7 +63,7 @@ CREATE INDEX idx_lp_chapter ON public.lesson_progress(chapter_id);
 CREATE TABLE IF NOT EXISTS public.quiz_attempts (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
-  chapter_id INT NOT NULL,
+  chapter_id INT,
   quiz_id TEXT NOT NULL,
   score INT NOT NULL,       -- 0-100
   total_questions INT NOT NULL,

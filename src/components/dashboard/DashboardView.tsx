@@ -2,6 +2,7 @@
 import { xpForNextLevel, CAREER_PATHS } from "@/lib/types";
 import { Flame, Coins, Heart, Trophy, Calendar, Award, TrendingUp } from "lucide-react";
 import Link from "next/link";
+import { DailyCheckin } from "@/components/gamification/DailyCheckin";
 
 export function DashboardView({ profile, progress, achievements, quests }: any) {
   const xpInfo = xpForNextLevel(profile.xp ?? 0);
@@ -49,6 +50,11 @@ export function DashboardView({ profile, progress, achievements, quests }: any) 
         <StatCard icon={<Coins className="text-yellow-400" />} label="Z-coin" value={profile.z_coin} />
         <StatCard icon={<Heart className="text-red-400" />} label="生命" value={`${profile.hearts}/5`} />
         <StatCard icon={<Trophy className="text-purple-400" />} label="成就" value={achievements.length} />
+      </div>
+
+      {/* 每日簽到 */}
+      <div className="mb-6">
+        <DailyCheckin />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

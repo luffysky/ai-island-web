@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   ChevronRight, ChevronLeft, ChevronDown, BookOpen, Bookmark, FileText,
-  Menu, X, Search, History, Star,
+  Menu, X, Search, History, Star, Plus, Trash2,
 } from "lucide-react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 
@@ -45,6 +45,9 @@ export function SideNav() {
   const [notes, setNotes] = useState<any[]>([]);
   const [history, setHistory] = useState<any[]>([]);
   const [user, setUser] = useState<any>(null);
+  const [noteDraftOpen, setNoteDraftOpen] = useState(false);
+  const [noteDraft, setNoteDraft] = useState("");
+  const [savingNote, setSavingNote] = useState(false);
 
   // 從 URL 自動展開當前 chapter
   useEffect(() => {
@@ -97,6 +100,43 @@ export function SideNav() {
     });
   };
 
+  const saveNote = async () => {
+    const content = noteDraft.trim();
+    if (!user || !content || savingNote) return;
+    setSavingNote(true);
+    const supabase = createSupabaseBrowser();
+    const { data, error } = await supabase
+      .from("notes")
+      .insert({
+        user_id: user.id,
+        chapter_id: null,
+        lesson_id: null,
+        content,
+        is_public: false,
+      })
+      .select("*")
+      .single();
+    setSavingNote(false);
+    if (error) {
+      alert(error.message);
+      return;
+    }
+    setNotes((current) => [data, ...current]);
+    setNoteDraft("");
+    setNoteDraftOpen(false);
+  };
+
+  const deleteNote = async (id: string) => {
+    if (!user || !confirm("刪除這則筆記？")) return;
+    const supabase = createSupabaseBrowser();
+    const { error } = await supabase.from("notes").delete().eq("id", id).eq("user_id", user.id);
+    if (error) {
+      alert(error.message);
+      return;
+    }
+    setNotes((current) => current.filter((note) => note.id !== id));
+  };
+
   // 搜尋過濾
   const filtered = search
     ? chapters
@@ -130,12 +170,12 @@ export function SideNav() {
 
       {/* Side panel */}
       <aside
-        className={`fixed top-0 left-0 h-full w-[85vw] max-w-sm z-50 bg-[var(--color-bg-card)] border-r border-[var(--color-border)] transform transition-transform duration-200 flex flex-col ${
+        className={`fixed top-0 left-0 h-screen overflow-hidden w-[85vw] max-w-sm z-50 bg-[var(--color-bg-card)] border-r border-[var(--color-border)] transform transition-transform duration-200 flex flex-col ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-3 border-b border-[var(--color-border)]">
+        <div className="flex flex-shrink-0 items-center justify-between p-3 border-b border-[var(--color-border)]">
           <div className="font-bold flex items-center gap-2">
             🏝️ <span>AI 島導覽</span>
           </div>
@@ -149,7 +189,7 @@ export function SideNav() {
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-[var(--color-border)] text-xs">
+        <div className="flex flex-shrink-0 overflow-x-auto border-b border-[var(--color-border)] text-xs">
           {[
             { key: "chapters" as const, label: "章節", icon: BookOpen },
             { key: "bookmarks" as const, label: "收藏", icon: Bookmark },
@@ -159,7 +199,7 @@ export function SideNav() {
             <button
               key={key}
               onClick={() => setTab(key)}
-              className={`flex-1 flex flex-col items-center gap-1 py-2 transition ${
+              className={`min-w-[72px] flex-1 flex flex-col items-center gap-1 py-2 transition ${
                 tab === key
                   ? "bg-[var(--color-bg-elevated)] border-b-2 border-[var(--color-accent)] text-[var(--color-accent)]"
                   : "text-[var(--color-fg-muted)] hover:bg-[var(--color-bg-elevated)]"
@@ -312,27 +352,78 @@ export function SideNav() {
           <div className="flex-1 overflow-y-auto p-2">
             {!user ? (
               <EmptyHint icon={FileText} message="登入後可以記筆記" />
-            ) : notes.length === 0 ? (
-              <EmptyHint icon={FileText} message="還沒筆記、開始寫吧" />
             ) : (
-              <ul className="space-y-1">
-                {notes.map((n) => (
-                  <li key={n.id}>
-                    <Link
-                      href={`/chapters/${n.chapter_id}#lesson-${n.lesson_id}`}
-                      onClick={() => setOpen(false)}
-                      className="block px-3 py-2 hover:bg-[var(--color-bg-elevated)] rounded transition"
-                    >
-                      <div className="text-xs text-[var(--color-fg-muted)] font-mono">
-                        {n.lesson_id}
-                      </div>
-                      <div className="text-sm mt-1 line-clamp-3 whitespace-pre-wrap">
-                        {n.content}
-                      </div>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+              <div className="space-y-2">
+                <button
+                  onClick={() => setNoteDraftOpen((value) => !value)}
+                  className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm hover:bg-[var(--color-bg-elevated)]"
+                >
+                  <Plus size={14} />
+                  新增筆記
+                </button>
+
+                {noteDraftOpen && (
+                  <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] p-2">
+                    <textarea
+                      value={noteDraft}
+                      onChange={(e) => setNoteDraft(e.target.value)}
+                      rows={4}
+                      placeholder="寫一則自由筆記..."
+                      className="w-full resize-none rounded border border-[var(--color-border)] bg-[var(--color-bg-elevated)] p-2 text-sm outline-none focus:border-[var(--color-accent)]"
+                    />
+                    <div className="mt-2 flex items-center justify-between">
+                      <span className="text-[10px] text-[var(--color-fg-muted)]">{noteDraft.length} 字</span>
+                      <button
+                        onClick={saveNote}
+                        disabled={!noteDraft.trim() || savingNote}
+                        className="rounded bg-[var(--color-accent)] px-3 py-1 text-xs font-semibold text-black disabled:opacity-50"
+                      >
+                        {savingNote ? "儲存中..." : "儲存"}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {notes.length === 0 ? (
+                  <EmptyHint icon={FileText} message="還沒筆記、開始寫吧" />
+                ) : (
+                  <ul className="space-y-1">
+                    {notes.map((n) => {
+                      const isFreeNote = !n.chapter_id;
+                      return (
+                        <li
+                          key={n.id}
+                          className="rounded px-3 py-2 hover:bg-[var(--color-bg-elevated)] transition"
+                        >
+                          <div className="mb-1 flex items-center justify-between gap-2">
+                            {isFreeNote ? (
+                              <div className="text-xs text-[var(--color-fg-muted)]">自由筆記</div>
+                            ) : (
+                              <Link
+                                href={`/chapters/${n.chapter_id}#lesson-${n.lesson_id}`}
+                                onClick={() => setOpen(false)}
+                                className="text-xs text-[var(--color-fg-muted)] font-mono hover:text-[var(--color-accent)]"
+                              >
+                                {n.lesson_id}
+                              </Link>
+                            )}
+                            <button
+                              onClick={() => deleteNote(n.id)}
+                              className="rounded p-1 text-[var(--color-fg-muted)] hover:bg-red-500/10 hover:text-red-300"
+                              aria-label="刪除筆記"
+                            >
+                              <Trash2 size={12} />
+                            </button>
+                          </div>
+                          <div className="text-sm line-clamp-3 whitespace-pre-wrap">
+                            {n.content}
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </div>
             )}
           </div>
         )}
@@ -366,7 +457,7 @@ export function SideNav() {
         )}
 
         {/* Footer */}
-        <div className="p-2 border-t border-[var(--color-border)] text-[10px] text-[var(--color-fg-muted)] text-center">
+        <div className="flex-shrink-0 p-2 border-t border-[var(--color-border)] text-[10px] text-[var(--color-fg-muted)] text-center">
           🐹 招財 Z-coin 守護
         </div>
       </aside>

@@ -5,6 +5,7 @@ import { TopNav } from "@/components/layout/TopNav";
 import { AITutorAutoContext } from "@/components/AITutorAutoContext";
 import { CookieBanner } from "@/components/CookieBanner";
 import { SideNav } from "@/components/SideNav";
+import { InteractionTracker } from "@/components/analytics/InteractionTracker";
 
 export const metadata: Metadata = {
   title: "AI 島：60 章全端養成班",
@@ -42,6 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </footer>
         <AITutorAutoContext />
         <CookieBanner />
+        <InteractionTracker />
       </body>
     </html>
   );

@@ -1,10 +1,35 @@
 "use client";
 import { useState } from "react";
-import { ShieldCheck, Shield, Ban } from "lucide-react";
+import { ShieldCheck, Shield, Ban, Sparkles } from "lucide-react";
 
 export function UserRow({ user }: { user: any }) {
   const [role, setRole] = useState(user.role);
   const [busy, setBusy] = useState(false);
+  const [aiUnlimited, setAiUnlimited] = useState(!!user.ai_unlimited);
+  const [aiBusy, setAiBusy] = useState(false);
+
+  const toggleAiUnlimited = async () => {
+    const next = !aiUnlimited;
+    if (!confirm(next
+      ? `開啟 ${user.username} 的 AI 無限額度特權？（可免費無限制使用 AI）`
+      : `關閉 ${user.username} 的 AI 特權？（回到一般額度限制）`)) return;
+    setAiBusy(true);
+    try {
+      const res = await fetch("/api/admin/users/ai-unlimited", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user.id, enabled: next }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        alert(`失敗：${data.error}`);
+      } else {
+        setAiUnlimited(next);
+      }
+    } finally {
+      setAiBusy(false);
+    }
+  };
 
   const updateRole = async (newRole: string) => {
     if (role === newRole) return;
@@ -66,13 +91,28 @@ export function UserRow({ user }: { user: any }) {
         {new Date(user.created_at).toLocaleDateString("zh-TW")}
       </td>
       <td className="px-4 py-3">
-        <button
-          onClick={banUser}
-          className="text-xs text-red-400 hover:underline flex items-center gap-1"
-          title="封鎖"
-        >
-          <Ban size={12} /> 封鎖
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={toggleAiUnlimited}
+            disabled={aiBusy}
+            className={`text-xs flex items-center gap-1 disabled:opacity-50 ${
+              aiUnlimited
+                ? "text-[var(--color-accent)] font-semibold"
+                : "text-[var(--color-fg-muted)] hover:text-[var(--color-accent)]"
+            }`}
+            title={aiUnlimited ? "AI 無限特權：開啟中（點擊關閉）" : "AI 無限特權：關閉（點擊開啟）"}
+          >
+            <Sparkles size={12} className={aiUnlimited ? "fill-current" : ""} />
+            {aiUnlimited ? "AI 特權 ✓" : "AI 特權"}
+          </button>
+          <button
+            onClick={banUser}
+            className="text-xs text-red-400 hover:underline flex items-center gap-1"
+            title="封鎖"
+          >
+            <Ban size={12} /> 封鎖
+          </button>
+        </div>
       </td>
     </tr>
   );

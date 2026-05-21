@@ -1,0 +1,156 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import { createSupabaseAdmin } from "@/lib/supabase";
+import { resolveBlog } from "@/lib/blog-resolve";
+import { Eye, Calendar, ArrowLeft } from "lucide-react";
+import { BlogViewTracker } from "@/components/blog/BlogViewTracker";
+import { ReactionBar } from "@/components/blog/ReactionBar";
+import { CommentSection } from "@/components/blog/CommentSection";
+import { sanitizeRichHtml } from "@/lib/rich-html";
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
+
+async function getArticle(userSlug: string, articleSlug: string) {
+  const blog = await resolveBlog(userSlug);
+  if (!blog) return null;
+  const admin = createSupabaseAdmin();
+  const { data: article } = await admin
+    .from("user_blog_articles")
+    .select("*")
+    .eq("user_id", blog.settings.user_id)
+    .eq("slug", articleSlug)
+    .eq("is_public", true)
+    .maybeSingle();
+  if (!article) return null;
+  return { blog, article };
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ userSlug: string; articleSlug: string }>;
+}): Promise<Metadata> {
+  const { userSlug, articleSlug } = await params;
+  const res = await getArticle(userSlug, articleSlug);
+  if (!res) return { title: "找不到文章 | AI 島" };
+
+  const { article } = res;
+  const title = article.seo_title || article.title;
+  const desc = article.seo_desc || article.summary || "";
+  return {
+    title: `${title} | AI 島部落格`,
+    description: desc,
+    alternates: { canonical: `${SITE_URL}/blogs/${userSlug}/${articleSlug}` },
+    openGraph: {
+      title,
+      description: desc,
+      images: article.cover_image ? [article.cover_image] : undefined,
+      type: "article",
+    },
+  };
+}
+
+export default async function ArticlePage({
+  params,
+}: {
+  params: Promise<{ userSlug: string; articleSlug: string }>;
+}) {
+  const { userSlug, articleSlug } = await params;
+  const res = await getArticle(userSlug, articleSlug);
+  if (!res) notFound();
+
+  const { blog, article } = res;
+  const name = blog.profile?.display_name || blog.profile?.username || "用戶";
+
+  return (
+    <article className="max-w-3xl mx-auto px-4 sm:px-6 py-10 min-w-0 overflow-hidden">
+      {/* 瀏覽數 +1（client、只跑一次）*/}
+      <BlogViewTracker articleId={article.id} />
+
+      {/* 麵包屑 */}
+      <Link
+        href={`/blogs/${userSlug}`}
+        className="text-sm text-[var(--color-fg-muted)] hover:text-[var(--color-fg)] flex items-center gap-1 mb-6"
+      >
+        <ArrowLeft size={14} /> {blog.settings.blog_title || `${name} 的部落格`}
+      </Link>
+
+      {/* 封面 */}
+      {article.cover_image && (
+        <img
+          src={article.cover_image}
+          alt=""
+          className="w-full h-60 sm:h-80 object-cover rounded-2xl mb-6"
+          style={{ objectPosition: article.cover_image_position || "center center" }}
+        />
+      )}
+
+      {/* 標題區 */}
+      <header className="mb-8">
+        {article.category && (
+          <span className="text-sm text-[var(--color-accent)] font-medium">{article.category}</span>
+        )}
+        <h1 className="text-3xl sm:text-4xl font-bold mt-1 mb-3">{article.title}</h1>
+        {article.summary && (
+          <p className="text-lg text-[var(--color-fg-muted)] mb-4">{article.summary}</p>
+        )}
+        <div className="flex items-center gap-3 text-sm text-[var(--color-fg-muted)] flex-wrap">
+          <span className="flex items-center gap-1">
+            {blog.profile?.avatar_url ? (
+              <img src={blog.profile.avatar_url} alt="" className="w-5 h-5 rounded-full" />
+            ) : null}
+            {name}
+          </span>
+          <span className="flex items-center gap-1">
+            <Calendar size={13} />
+            {new Date(article.published_at).toLocaleDateString("zh-TW")}
+          </span>
+          <span className="flex items-center gap-1">
+            <Eye size={13} /> {article.view_count}
+          </span>
+        </div>
+      </header>
+
+      {/* 內文 */}
+      <div
+        className="prose-custom max-w-none"
+        dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(article.content) }}
+      />
+
+      {/* emoji 反應 */}
+      <ReactionBar userSlug={userSlug} articleSlug={articleSlug} />
+
+      {/* 標籤 */}
+      {article.tags?.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 mt-8 pt-6 border-t border-[var(--color-border)]">
+          {article.tags.map((t: string) => (
+            <span key={t} className="text-xs px-2 py-1 rounded-full bg-[var(--color-bg-elevated)] text-[var(--color-fg-muted)]">
+              #{t}
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* 作者卡 */}
+      <div className="mt-8 p-5 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border)] flex items-center gap-4">
+        {blog.profile?.avatar_url ? (
+          <img src={blog.profile.avatar_url} alt="" className="w-12 h-12 rounded-full" />
+        ) : (
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-accent-2)] flex items-center justify-center font-bold text-black">
+            {name[0]}
+          </div>
+        )}
+        <div className="min-w-0">
+          <div className="font-bold">{name}</div>
+          <Link href={`/blogs/${userSlug}`} className="text-sm text-[var(--color-accent)]">
+            看更多文章 →
+          </Link>
+        </div>
+      </div>
+
+      {/* 留言區 */}
+      <CommentSection userSlug={userSlug} articleSlug={articleSlug} />
+    </article>
+  );
+}

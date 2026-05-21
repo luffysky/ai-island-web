@@ -8,6 +8,7 @@ import { LessonCard } from "./LessonCard";
 import { BossBattle } from "./BossBattle";
 import { AchievementToast } from "../gamification/AchievementToast";
 import { LevelUpModal } from "../gamification/LevelUpModal";
+import { XpToast, type XpToastData } from "../gamification/XpToast";
 import { ChevronLeft, ChevronRight, Clock, Trophy } from "lucide-react";
 import Link from "next/link";
 
@@ -16,6 +17,7 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
   const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
   const [toast, setToast] = useState<any>(null);
   const [levelUp, setLevelUp] = useState<number | null>(null);
+  const [xpToast, setXpToast] = useState<XpToastData | null>(null);
   const supabase = createSupabaseBrowser();
   const stageKey = chapter.stage === "appendix" ? 7 : Number(chapter.stage);
   const stageColor = STAGE_COLORS[stageKey] ?? STAGE_COLORS[1];
@@ -45,9 +47,19 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
       alert("請先登入才能記錄進度");
       return;
     }
+    // 已完成過的不重複給獎勵動畫
+    const alreadyDone = completedIds.has(lessonId);
     const res = await engine.completeLesson(chapter.id, lessonId, xp);
     if ((res as any).success) {
       setCompletedIds(prev => new Set([...prev, lessonId]));
+      if (!alreadyDone) {
+        const r = res as any;
+        setXpToast({
+          xp,
+          levelUp: r.level && levelUp === r.level ? r.level : undefined,
+          key: Date.now(),
+        });
+      }
     }
   };
 
@@ -190,6 +202,7 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
       </nav>
 
       {toast && <AchievementToast achievement={toast} onClose={() => setToast(null)} />}
+      <XpToast data={xpToast} />
       {levelUp && <LevelUpModal level={levelUp} onClose={() => setLevelUp(null)} />}
     </div>
   );

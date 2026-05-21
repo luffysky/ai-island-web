@@ -202,10 +202,12 @@ export class GamificationEngine {
    * 慶祝特效
    */
   private celebrateXp(amount: number) {
-    if (amount < 50) return;
+    // 任何 XP 都給一點慶祝、量越大越熱鬧
+    const count = amount >= 50 ? 50 : amount >= 20 ? 25 : 14;
     confetti({
-      particleCount: 30, spread: 50, origin: { y: 0.7 },
-      colors: ['#50fa7b', '#8be9fd'],
+      particleCount: count, spread: amount >= 50 ? 60 : 45, origin: { y: 0.7 },
+      colors: ['#50fa7b', '#8be9fd', '#ffd700'],
+      scalar: 0.9,
     });
   }
 

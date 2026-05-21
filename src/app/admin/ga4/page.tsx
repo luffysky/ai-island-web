@@ -1,6 +1,7 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { GA4Charts } from "./GA4Charts";
 import { GA4SyncButton } from "./GA4SyncButton";
+import { InteractionPanels } from "./InteractionPanels";
 
 export default async function GA4Page() {
   const supabase = createSupabaseAdmin();
@@ -28,6 +29,20 @@ export default async function GA4Page() {
   const topCountries: any[] = latest?.top_countries ?? [];
 
   const gaProperty = process.env.NEXT_PUBLIC_GA_ID || "未設定";
+  const activeSince = new Date(Date.now() - 5 * 60_000).toISOString();
+  const dayAgo = new Date(Date.now() - 24 * 60 * 60_000).toISOString();
+  const { data: activeSessions } = await supabase
+    .from("analytics_sessions")
+    .select("*, profile:profiles(username, display_name, avatar_url, level, role, last_active_at)")
+    .gte("last_seen_at", activeSince)
+    .order("last_seen_at", { ascending: false })
+    .limit(100);
+  const { data: recentPageViews } = await supabase
+    .from("analytics_page_views")
+    .select("*, profile:profiles(username, display_name, avatar_url, level, role, last_active_at)")
+    .gte("started_at", dayAgo)
+    .order("started_at", { ascending: false })
+    .limit(300);
 
   return (
     <div className="space-y-6">
@@ -88,6 +103,11 @@ export default async function GA4Page() {
         <TopTable title="🔗 引薦來源" items={topReferrers} valueKey="visits" labelKey="source" />
         <TopTable title="🌍 國家" items={topCountries} valueKey="users" labelKey="country" />
       </div>
+
+      <InteractionPanels
+        activeSessions={activeSessions ?? []}
+        recentPageViews={recentPageViews ?? []}
+      />
 
       {/* GA4 iframe（user 在 GA 後台分享的 dashboard 嵌進來）*/}
       <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-5">

@@ -4,6 +4,7 @@ import { streamAI, estimateCost } from "@/lib/ai-providers";
 import { buildTutorSystemPrompt } from "@/lib/ai-tutor-prompt";
 import { decryptKey } from "@/lib/ai-crypto";
 import { rateLimit } from "@/lib/rate-limit";
+import { hasAiUnlimited } from "@/lib/ai-privilege";
 
 export const maxDuration = 60;
 
@@ -48,14 +49,18 @@ export async function POST(req: NextRequest) {
       return errorResponse("key_decrypt_failed", 500);
     }
   } else {
-    // 扣免費 quota
-    const { data: quotaOk, error: quotaError } = await admin.rpc("consume_ai_quota", { p_user_id: user.id, p_amount: 1 });
-    if (quotaError) {
-      console.error("[AI chat] consume_ai_quota failed:", quotaError);
-      return errorResponse("quota_rpc_failed", 500, "AI 額度系統尚未設定完成，請確認 ai_migration.sql 已執行");
-    }
-    if (quotaOk === false) {
-      return errorResponse("quota_exceeded", 429, "今天的免費額度用完了、可升級 Premium 或自帶 API key（設定 → AI Key）");
+    // 特權帳號（ai_unlimited 或 admin）跳過扣免費 quota、直接用系統 key
+    const unlimited = await hasAiUnlimited(user.id);
+    if (!unlimited) {
+      // 扣免費 quota
+      const { data: quotaOk, error: quotaError } = await admin.rpc("consume_ai_quota", { p_user_id: user.id, p_amount: 1 });
+      if (quotaError) {
+        console.error("[AI chat] consume_ai_quota failed:", quotaError);
+        return errorResponse("quota_rpc_failed", 500, "AI 額度系統尚未設定完成，請確認 ai_migration.sql 已執行");
+      }
+      if (quotaOk === false) {
+        return errorResponse("quota_exceeded", 429, "今天的免費額度用完了、可升級 Premium 或自帶 API key（設定 → AI Key）");
+      }
     }
     const { data: sysKey, error: sysKeyError } = await admin
       .from("ai_api_keys")

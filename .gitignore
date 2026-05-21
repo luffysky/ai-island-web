@@ -10,3 +10,13 @@ out/
 .vercel
 __pycache__/
 *.pyc
+
+# Codex zip handoff artifacts — never commit
+ai_island_v3.zip
+.codex_zip_extract_*/
+
+# Supabase CLI local cache
+supabase/.temp/
+
+# Claude Code local config
+.claude/

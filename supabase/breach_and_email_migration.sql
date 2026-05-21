@@ -43,11 +43,17 @@ CREATE TABLE IF NOT EXISTS public.breach_incidents (
 CREATE INDEX IF NOT EXISTS idx_breach_incidents_status ON public.breach_incidents(status);
 CREATE INDEX IF NOT EXISTS idx_breach_incidents_discovered_at ON public.breach_incidents(discovered_at DESC);
 
+ALTER TABLE public.breach_incidents
+  ADD COLUMN IF NOT EXISTS occurred_at TIMESTAMPTZ,
+  ADD COLUMN IF NOT EXISTS reported_to_authority BOOLEAN DEFAULT false;
+
 ALTER TABLE public.breach_incidents ENABLE ROW LEVEL SECURITY;
 
 -- 只有 admin 看得到
+DROP POLICY IF EXISTS "breach_incidents_admin_all" ON public.breach_incidents;
 CREATE POLICY "breach_incidents_admin_all"
   ON public.breach_incidents
+  FOR ALL
   USING (
     EXISTS (
       SELECT 1 FROM public.profiles
@@ -106,14 +112,18 @@ CREATE INDEX IF NOT EXISTS idx_email_subs_token ON public.email_subscriptions(un
 ALTER TABLE public.email_subscriptions ENABLE ROW LEVEL SECURITY;
 
 -- 用戶可以看自己的、改自己的
+DROP POLICY IF EXISTS "email_subs_own" ON public.email_subscriptions;
 CREATE POLICY "email_subs_own" ON public.email_subscriptions
   FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "email_subs_own_update" ON public.email_subscriptions;
 CREATE POLICY "email_subs_own_update" ON public.email_subscriptions
   FOR UPDATE USING (auth.uid() = user_id);
 
 -- Admin 看全部
+DROP POLICY IF EXISTS "email_subs_admin" ON public.email_subscriptions;
 CREATE POLICY "email_subs_admin" ON public.email_subscriptions
+  FOR ALL
   USING (
     EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin')
   );

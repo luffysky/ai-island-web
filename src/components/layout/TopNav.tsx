@@ -2,12 +2,21 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
-import { Flame, Coins, Heart, LogOut, Settings, Trophy, User as UserIcon, ChevronDown } from "lucide-react";
+import { Flame, Coins, Heart, LogOut, Settings, Trophy, User as UserIcon, ChevronDown, Menu, X } from "lucide-react";
+
+const NAV_LINKS = [
+  { href: "/chapters", label: "章節" },
+  { href: "/courses", label: "副本" },
+  { href: "/forum", label: "討論區" },
+  { href: "/leaderboard", label: "排行榜" },
+  { href: "/career", label: "職業路線" },
+];
 
 export function TopNav() {
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [open, setOpen] = useState(false);
+  const [mobileMenu, setMobileMenu] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const supabase = createSupabaseBrowser();
@@ -59,6 +68,7 @@ export function TopNav() {
     if (loggingOut) return;
     setLoggingOut(true);
     setOpen(false);
+    setMobileMenu(false);
     setUser(null);
     setProfile(null);
 
@@ -81,17 +91,29 @@ export function TopNav() {
 
   return (
     <nav className="sticky top-0 z-40 bg-[var(--color-bg)]/90 backdrop-blur border-b border-[var(--color-border)]">
-      <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 font-bold text-lg">
-          <span>🏝️</span>
-          <span className="bg-gradient-to-r from-[var(--color-accent)] to-[var(--color-accent-2)] bg-clip-text text-transparent">AI 島</span>
-        </Link>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setMobileMenu((value) => !value)}
+            className="md:hidden p-2 -ml-2 rounded-lg hover:bg-[var(--color-bg-card)]"
+            aria-label={mobileMenu ? "關閉導覽選單" : "開啟導覽選單"}
+          >
+            {mobileMenu ? <X size={18} /> : <Menu size={18} />}
+          </button>
+          <Link href="/" className="flex items-center gap-2 font-bold text-lg" onClick={() => setMobileMenu(false)}>
+            <span>🏝️</span>
+            <span className="bg-gradient-to-r from-[var(--color-accent)] to-[var(--color-accent-2)] bg-clip-text text-transparent">AI 島</span>
+          </Link>
+        </div>
 
         <div className="flex items-center gap-4 text-sm">
-          <Link href="/chapters" className="hover:text-[var(--color-accent)]">章節</Link>
-          <Link href="/courses" className="hover:text-[var(--color-accent)]">副本</Link>
-          <Link href="/leaderboard" className="hover:text-[var(--color-accent)]">排行榜</Link>
-          <Link href="/career" className="hover:text-[var(--color-accent)]">職業路線</Link>
+          <div className="hidden md:flex items-center gap-4">
+            {NAV_LINKS.map((item) => (
+              <Link key={item.href} href={item.href as any} className="hover:text-[var(--color-accent)]">
+                {item.label}
+              </Link>
+            ))}
+          </div>
 
           {user ? (
             <>
@@ -209,6 +231,23 @@ export function TopNav() {
           )}
         </div>
       </div>
+
+      {mobileMenu && (
+        <div className="md:hidden border-t border-[var(--color-border)] bg-[var(--color-bg)] px-4 py-3">
+          <div className="flex flex-col gap-1 text-sm">
+            {NAV_LINKS.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href as any}
+                className="rounded-lg px-3 py-2 hover:bg-[var(--color-bg-card)] hover:text-[var(--color-accent)]"
+                onClick={() => setMobileMenu(false)}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
     </nav>
   );
 }

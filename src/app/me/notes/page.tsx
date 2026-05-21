@@ -29,18 +29,19 @@ export default async function NotesPage() {
           {notes?.map((n: any) => {
             const ch = chapters.find((c) => c.id === n.chapter_id);
             const lesson = ch?.lessons.find((l) => l.id === n.lesson_id);
+            const href = n.chapter_id ? `/chapters/${n.chapter_id}` : "/me/notes";
             return (
               <Link
                 key={n.id}
-                href={`/chapters/${n.chapter_id}` as any}
+                href={href as any}
                 className="block bg-[var(--color-bg-card)] border border-[var(--color-border)] hover:border-[var(--color-accent)]/50 rounded-xl p-4 transition"
               >
                 <div className="flex items-start justify-between mb-2 gap-2">
                   <div className="min-w-0 flex-1">
                     <div className="text-xs text-[var(--color-fg-muted)] mb-1">
-                      Ch {String(n.chapter_id).padStart(2, "0")} · {ch?.title}
+                      {n.chapter_id ? `Ch ${String(n.chapter_id).padStart(2, "0")} · ${ch?.title ?? ""}` : "自由筆記"}
                     </div>
-                    <div className="font-semibold truncate">{lesson?.title ?? n.lesson_id}</div>
+                    <div className="font-semibold truncate">{lesson?.title ?? n.lesson_id ?? "未綁定 lesson"}</div>
                   </div>
                   {n.is_public && (
                     <span className="text-xs px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 flex-shrink-0">公開</span>

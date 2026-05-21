@@ -1,7 +1,7 @@
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { LayoutDashboard, StickyNote, Bookmark, Code2, History, Award } from "lucide-react";
+import { LayoutDashboard, StickyNote, Bookmark, Code2, History, Award, PenLine } from "lucide-react";
 
 export default async function MeLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createSupabaseServer();
@@ -50,6 +50,7 @@ export default async function MeLayout({ children }: { children: React.ReactNode
             <MeLink href="/me/notes" icon={<StickyNote size={16} />}>我的筆記</MeLink>
             <MeLink href="/me/bookmarks" icon={<Bookmark size={16} />}>我的書籤</MeLink>
             <MeLink href="/me/playgrounds" icon={<Code2 size={16} />}>我的程式碼</MeLink>
+            <MeLink href="/me/blog" icon={<PenLine size={16} />}>我的部落格</MeLink>
             <MeLink href="/me/history" icon={<History size={16} />}>學習紀錄</MeLink>
             <MeLink href="/me/certificates" icon={<Award size={16} />}>證書</MeLink>
           </nav>
