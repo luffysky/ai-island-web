@@ -20,3 +20,6 @@ supabase/.temp/
 
 # Claude Code local config
 .claude/
+
+# Bug screenshots / debug captures
+bugpic/
