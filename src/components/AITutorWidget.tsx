@@ -55,16 +55,31 @@ export function AITutorWidget({
   const [showHistory, setShowHistory] = useState(false);
   const [showModelMenu, setShowModelMenu] = useState(false);
   const [history, setHistory] = useState<Array<{ id: string; title: string; updated_at: string }>>([]);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [authState, setAuthState] = useState<"loading" | "in" | "out">("loading");
+  const isLoggedIn = authState === "in";
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const supabase = createSupabaseBrowser();
 
-  // 載入模型 + 檢查登入
+  // 監聽登入狀態：初始 getUser + 之後的 onAuthStateChange
+  useEffect(() => {
+    let mounted = true;
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!mounted) return;
+      setAuthState(user ? "in" : "out");
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!mounted) return;
+      setAuthState(session?.user ? "in" : "out");
+    });
+    return () => {
+      mounted = false;
+      sub.subscription.unsubscribe();
+    };
+  }, []);
+
+  // 載入模型清單（不依賴登入狀態；anon 也讀得到 is_active=true）
   useEffect(() => {
     (async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setIsLoggedIn(!!user);
-
       const { data, error: modelsError } = await supabase
         .from("ai_models")
         .select("*")
@@ -72,7 +87,8 @@ export function AITutorWidget({
         .order("sort_order");
       if (modelsError) {
         console.error("[AI tutor] load models failed:", modelsError);
-        setError("AI 模型清單載入失敗，請確認 ai_migration.sql 已執行");
+        setError("AI 模型清單載入失敗");
+        return;
       }
       if (data) {
         setModels(data);
@@ -82,24 +98,32 @@ export function AITutorWidget({
           setError("目前沒有可用 AI 模型，請到後台啟用至少一個模型");
         }
       }
-
-      if (user) {
-        // 取今天 quota
-        const today = new Date().toISOString().slice(0, 10);
-        const { data: q, error: quotaError } = await supabase
-          .from("ai_daily_quota")
-          .select("free_used")
-          .eq("user_id", user.id)
-          .eq("date", today)
-          .maybeSingle();
-        if (quotaError) {
-          console.error("[AI tutor] load quota failed:", quotaError);
-        }
-        const def = data?.find((m: any) => m.is_default);
-        setQuotaUsed({ used: q?.free_used ?? 0, limit: def?.free_tier_daily_limit ?? 10 });
-      }
     })();
   }, []);
+
+  // 登入後（或登入狀態切換時）載入今日 quota
+  useEffect(() => {
+    if (authState !== "in") {
+      setQuotaUsed(null);
+      return;
+    }
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const today = new Date().toISOString().slice(0, 10);
+      const { data: q, error: quotaError } = await supabase
+        .from("ai_daily_quota")
+        .select("free_used")
+        .eq("user_id", user.id)
+        .eq("date", today)
+        .maybeSingle();
+      if (quotaError) {
+        console.error("[AI tutor] load quota failed:", quotaError);
+      }
+      const def = models.find((m: any) => m.is_default);
+      setQuotaUsed({ used: q?.free_used ?? 0, limit: def?.free_tier_daily_limit ?? 10 });
+    })();
+  }, [authState, models]);
 
   // 自動 scroll
   useEffect(() => {
@@ -505,15 +529,21 @@ export function AITutorWidget({
                     send();
                   }
                 }}
-                placeholder={isLoggedIn ? "問點什麼..." : "請先登入"}
-                disabled={!isLoggedIn || sending}
+                placeholder={
+                  authState === "loading"
+                    ? "載入中..."
+                    : authState === "in"
+                    ? "問點什麼..."
+                    : "請先登入"
+                }
+                disabled={authState !== "in" || sending}
                 rows={1}
                 className="flex-1 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg p-2 text-sm outline-none focus:border-[var(--color-accent)] resize-none"
                 style={{ maxHeight: "120px" }}
               />
               <button
                 onClick={send}
-                disabled={!input.trim() || sending || !isLoggedIn}
+                disabled={!input.trim() || sending || authState !== "in"}
                 className="p-2 bg-[var(--color-accent)] text-black rounded-lg hover:scale-105 transition disabled:opacity-30 disabled:hover:scale-100"
               >
                 <Send size={16} />
