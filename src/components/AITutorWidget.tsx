@@ -61,15 +61,23 @@ export function AITutorWidget({
   const supabase = createSupabaseBrowser();
 
   // 監聽登入狀態：初始 getUser + 之後的 onAuthStateChange
+  // 注意：INITIAL_SESSION 可能帶 null session（SDK 還在 init）、不能視為登出，
+  // 否則會把初始 getUser 設好的 "in" 蓋成 "out"。
   useEffect(() => {
     let mounted = true;
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!mounted) return;
       setAuthState(user ? "in" : "out");
     });
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
       if (!mounted) return;
-      setAuthState(session?.user ? "in" : "out");
+      if (event === "SIGNED_OUT") {
+        setAuthState("out");
+        return;
+      }
+      if (session?.user) {
+        setAuthState("in");
+      }
     });
     return () => {
       mounted = false;

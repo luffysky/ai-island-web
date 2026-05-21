@@ -67,14 +67,21 @@ export function TopNav() {
       if (user) await loadProfile(user.id);
     })();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!mounted) return;
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        await loadProfile(session.user.id);
-      } else {
+      // 只在「明確登出」時清掉 profile/user。
+      // INITIAL_SESSION 帶 null 不能視為登出（那只是 SDK 還在 init），
+      // 否則會把同時間 loadProfile 已寫入的資料蓋掉。
+      if (event === "SIGNED_OUT") {
+        setUser(null);
         setProfile(null);
+        return;
       }
+      if (session?.user) {
+        setUser(session.user);
+        await loadProfile(session.user.id);
+      }
+      // 其他 event 帶 null session：忽略、保留現有 state
     });
 
     return () => {
