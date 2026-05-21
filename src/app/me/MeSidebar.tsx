@@ -1,0 +1,190 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import {
+  LayoutDashboard,
+  StickyNote,
+  Bookmark,
+  Code2,
+  History,
+  Award,
+  PenLine,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
+
+type Profile = {
+  username?: string | null;
+  display_name?: string | null;
+  avatar_url?: string | null;
+  xp?: number | null;
+  level?: number | null;
+  z_coin?: number | null;
+  streak_days?: number | null;
+};
+
+const STORAGE_KEY = "me_sidebar_collapsed";
+
+export function MeSidebar({ profile }: { profile: Profile | null }) {
+  const [collapsed, setCollapsed] = useState(false);
+
+  useEffect(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved === "1") setCollapsed(true);
+  }, []);
+
+  const toggle = () => {
+    setCollapsed((c) => {
+      const next = !c;
+      localStorage.setItem(STORAGE_KEY, next ? "1" : "0");
+      return next;
+    });
+  };
+
+  return (
+    <aside
+      className={`flex-shrink-0 transition-all duration-200 ${
+        collapsed ? "w-10" : "w-56"
+      }`}
+    >
+      {/* Toggle */}
+      <button
+        type="button"
+        onClick={toggle}
+        aria-label={collapsed ? "展開側欄" : "收合側欄"}
+        className="w-full flex items-center justify-end mb-2 p-1.5 text-[var(--color-fg-muted)] hover:text-[var(--color-accent)] transition"
+      >
+        {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+      </button>
+
+      {/* Profile card */}
+      {!collapsed && (
+        <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-4 mb-4">
+          <div className="flex items-center gap-3">
+            {profile?.avatar_url ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={profile.avatar_url}
+                className="w-12 h-12 rounded-full"
+                alt=""
+              />
+            ) : (
+              <div className="w-12 h-12 rounded-full bg-[var(--color-accent)] flex items-center justify-center text-black font-bold text-lg">
+                {profile?.display_name?.[0] || profile?.username?.[0] || "?"}
+              </div>
+            )}
+            <div className="min-w-0 flex-1">
+              <div className="font-bold truncate">
+                {profile?.display_name || profile?.username}
+              </div>
+              <div className="text-xs text-[var(--color-fg-muted)]">
+                Lv {profile?.level ?? 1} · {profile?.xp ?? 0} XP
+              </div>
+            </div>
+          </div>
+          <div className="mt-3 grid grid-cols-2 gap-2 text-center text-xs">
+            <div className="bg-[var(--color-bg)] rounded p-2">
+              <div className="text-yellow-400 font-bold">
+                🪙 {profile?.z_coin ?? 0}
+              </div>
+              <div className="text-[var(--color-fg-muted)]">Z-coin</div>
+            </div>
+            <div className="bg-[var(--color-bg)] rounded p-2">
+              <div className="text-orange-400 font-bold">
+                🔥 {profile?.streak_days ?? 0}
+              </div>
+              <div className="text-[var(--color-fg-muted)]">連續天</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <nav className="space-y-0.5 text-sm">
+        <MeLink
+          href="/me"
+          icon={<LayoutDashboard size={16} />}
+          collapsed={collapsed}
+        >
+          學習總覽
+        </MeLink>
+        <MeLink
+          href="/me/notes"
+          icon={<StickyNote size={16} />}
+          collapsed={collapsed}
+        >
+          我的筆記
+        </MeLink>
+        <MeLink
+          href="/me/bookmarks"
+          icon={<Bookmark size={16} />}
+          collapsed={collapsed}
+        >
+          我的書籤
+        </MeLink>
+        <MeLink
+          href="/me/playgrounds"
+          icon={<Code2 size={16} />}
+          collapsed={collapsed}
+        >
+          我的程式碼
+        </MeLink>
+        <MeLink
+          href="/me/blog"
+          icon={<PenLine size={16} />}
+          collapsed={collapsed}
+        >
+          我的部落格
+        </MeLink>
+        <MeLink
+          href="/me/history"
+          icon={<History size={16} />}
+          collapsed={collapsed}
+        >
+          學習紀錄
+        </MeLink>
+        <MeLink
+          href="/me/certificates"
+          icon={<Award size={16} />}
+          collapsed={collapsed}
+        >
+          證書
+        </MeLink>
+      </nav>
+
+      <div className="mt-4 pt-4 border-t border-[var(--color-border)] space-y-0.5 text-sm">
+        <MeLink href="/profile" collapsed={collapsed}>
+          {collapsed ? "👤" : "👤 個人檔案"}
+        </MeLink>
+        <MeLink href="/settings" collapsed={collapsed}>
+          {collapsed ? "⚙️" : "⚙️ 設定"}
+        </MeLink>
+      </div>
+    </aside>
+  );
+}
+
+function MeLink({
+  href,
+  icon,
+  collapsed,
+  children,
+}: {
+  href: string;
+  icon?: React.ReactNode;
+  collapsed: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <Link
+      href={href as any}
+      title={collapsed && typeof children === "string" ? children : undefined}
+      className={`flex items-center gap-2 rounded-lg hover:bg-[var(--color-bg-card)] hover:text-[var(--color-accent)] transition ${
+        collapsed ? "justify-center p-2" : "px-3 py-2"
+      }`}
+    >
+      {icon}
+      {!collapsed && <span>{children}</span>}
+    </Link>
+  );
+}
