@@ -33,25 +33,48 @@ export function TopNav() {
   };
 
   useEffect(() => {
-    (async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-      if (user) {
-        const { data } = await supabase.from("profiles").select("*").eq("id", user.id).single();
-        setProfile(data);
+    let mounted = true;
+
+    const loadProfile = async (uid: string) => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("id, username, display_name, avatar_url, role, level, xp, z_coin, streak_days, hearts")
+        .eq("id", uid)
+        .maybeSingle();
+      if (!mounted) return;
+      if (error) {
+        console.error("[TopNav] profile fetch failed:", error);
+        return;
       }
+      if (!data) {
+        console.warn("[TopNav] profile row missing for user", uid);
+        return;
+      }
+      setProfile(data);
+    };
+
+    (async () => {
+      const { data: { user }, error } = await supabase.auth.getUser();
+      if (error) console.error("[TopNav] auth.getUser failed:", error);
+      if (!mounted) return;
+      setUser(user);
+      if (user) await loadProfile(user.id);
     })();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (!mounted) return;
       setUser(session?.user ?? null);
       if (session?.user) {
-        const { data } = await supabase.from("profiles").select("*").eq("id", session.user.id).single();
-        setProfile(data);
+        await loadProfile(session.user.id);
       } else {
         setProfile(null);
       }
     });
-    return () => subscription.unsubscribe();
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   // 點外面關閉 dropdown

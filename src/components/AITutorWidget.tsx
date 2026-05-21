@@ -370,6 +370,11 @@ export function AITutorWidget({
                   </span>
                   <ChevronDown size={14} className={`shrink-0 transition ${showModelMenu ? "rotate-180" : ""}`} />
                 </button>
+                {models.length === 0 && (
+                  <p className="text-xs text-red-400 mt-1">
+                    沒有可用模型。請強制刷新（Ctrl+Shift+R）；若仍無、檢查瀏覽器 console 是否有錯誤
+                  </p>
+                )}
                 {showModelMenu && (
                   <ul className="absolute left-0 right-0 top-[calc(100%+4px)] z-[80] max-h-56 overflow-y-auto rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-card)] shadow-2xl">
                     {models.length === 0 ? (
