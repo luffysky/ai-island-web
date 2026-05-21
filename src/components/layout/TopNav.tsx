@@ -8,6 +8,7 @@ const NAV_LINKS = [
   { href: "/chapters", label: "章節" },
   { href: "/courses", label: "副本" },
   { href: "/forum", label: "討論區" },
+  { href: "/blogs", label: "部落格" },
   { href: "/leaderboard", label: "排行榜" },
   { href: "/career", label: "職業路線" },
 ];
