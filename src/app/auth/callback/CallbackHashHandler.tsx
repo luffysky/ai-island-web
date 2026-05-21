@@ -45,10 +45,20 @@ export function CallbackHashHandler() {
       go("/");
     };
 
-    // 8 秒總時限、超時放棄
-    const timeout = setTimeout(() => {
-      if (!done) failGeneric("callback_timeout");
-    }, 8000);
+    // 15 秒總時限。超時前先檢查 session 是否其實已建立、有就直接放行；
+    // 沒有才算失敗。處理 exchangeCodeForSession 真的跑很慢但 session
+    // 已寫入 cookie 的情況（之前 8s timeout 會在這時誤判）。
+    const timeout = setTimeout(async () => {
+      if (done) return;
+      try {
+        const { data } = await supabase.auth.getUser();
+        if (data.user) {
+          console.warn("[Callback] exchange slow but session present, proceeding");
+          return succeed();
+        }
+      } catch {}
+      failGeneric("callback_timeout");
+    }, 15000);
 
     (async () => {
       try {
