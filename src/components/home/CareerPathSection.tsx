@@ -1,11 +1,12 @@
 import { CAREER_PATHS } from "@/lib/types";
+import { SITE_STATS } from "@/lib/site-stats";
 import Link from "next/link";
 
 export function CareerPathSection() {
   return (
     <section className="max-w-6xl mx-auto px-6 py-16">
       <h2 className="text-3xl font-bold mb-2 text-center">🎯 選一條職業路線</h2>
-      <p className="text-center text-[var(--color-fg-muted)] mb-10">不用全 60 章—鎖定目標、走最短路徑、最快上場</p>
+      <p className="text-center text-[var(--color-fg-muted)] mb-10">不用全 {SITE_STATS.chapterCount} 章—鎖定目標、走最短路徑、最快上場</p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {Object.values(CAREER_PATHS).map((path) => (

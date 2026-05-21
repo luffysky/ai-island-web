@@ -196,19 +196,6 @@ export function TopNav() {
                         <div className="flex-1 min-w-0">
                           <div className="font-semibold truncate">{displayProfile.display_name || displayProfile.username}</div>
                           <div className="text-xs text-[var(--color-fg-muted)] truncate">{user.email}</div>
-                          <div className="text-[10px] mt-0.5">
-                            <span className={`px-1.5 py-0.5 rounded ${
-                              displayProfile.role === "admin"
-                                ? "bg-red-500/20 text-red-300"
-                                : displayProfile.role === "editor"
-                                ? "bg-blue-500/20 text-blue-300"
-                                : profile
-                                ? "bg-gray-500/20 text-gray-300"
-                                : "bg-yellow-500/20 text-yellow-300"
-                            }`}>
-                              {profile ? `role: ${displayProfile.role}` : "profile 未載入"}
-                            </span>
-                          </div>
                         </div>
                       </div>
                     </div>

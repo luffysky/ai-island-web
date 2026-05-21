@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { DUNGEONS } from "@/data/dungeons";
+import { SITE_STATS } from "@/lib/site-stats";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
 
@@ -26,7 +27,7 @@ export default function CoursesPage() {
         </div>
         <h1 className="text-4xl font-bold mb-3">AI 任務副本</h1>
         <p className="text-[var(--color-fg-muted)] max-w-2xl mx-auto leading-relaxed">
-          60 章主課程打底、5 大副本實戰。每個副本鎖定一個 AI 應用方向、
+          {SITE_STATS.chapterCount} 章主課程打底、5 大副本實戰。每個副本鎖定一個 AI 應用方向、
           打敗副本 boss、你就掌握了一項能變現的技能。
         </p>
       </div>

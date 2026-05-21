@@ -1,12 +1,14 @@
 import { ImageResponse } from "next/og";
 import { NextRequest } from "next/server";
+import { SITE_STATS } from "@/lib/site-stats";
 
 export const runtime = "edge";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const title = searchParams.get("title") ?? "AI 島";
-  const subtitle = searchParams.get("subtitle") ?? "60 章全端養成班";
+  const subtitle =
+    searchParams.get("subtitle") ?? `${SITE_STATS.chapterCount} 章全端養成班`;
 
   return new ImageResponse(
     (
@@ -86,7 +88,7 @@ export async function GET(req: NextRequest) {
         >
           <div>🎮 遊戲化學習</div>
           <div>🤖 AI 導師</div>
-          <div>📚 67 章 1067+ lessons</div>
+          <div>📚 {SITE_STATS.chapterCount} 章 {SITE_STATS.lessonCount}+ lessons</div>
         </div>
       </div>
     ),

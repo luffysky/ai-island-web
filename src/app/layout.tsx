@@ -6,18 +6,23 @@ import { AITutorAutoContext } from "@/components/AITutorAutoContext";
 import { CookieBanner } from "@/components/CookieBanner";
 import { SideNav } from "@/components/SideNav";
 import { InteractionTracker } from "@/components/analytics/InteractionTracker";
+import { SITE_STATS } from "@/lib/site-stats";
+
+const TITLE = `AI 島：${SITE_STATS.chapterCount} 章全端養成班`;
+const DESCRIPTION = `用最簡單的方式學會最難的技術—HTML 到 AI Agent ${SITE_STATS.chapterCount} 章全端 + 遊戲化學習。`;
+const OG_DESCRIPTION = `${SITE_STATS.chapterCount} 章 × ${SITE_STATS.lessonCount}+ 高品質 lesson、遊戲化學習、SnowRealm 生態整合`;
 
 export const metadata: Metadata = {
-  title: "AI 島：60 章全端養成班",
-  description: "用最簡單的方式學會最難的技術—HTML 到 AI Agent 67 章全端 + 遊戲化學習。",
+  title: TITLE,
+  description: DESCRIPTION,
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://aiisland.tw"),
   icons: {
     icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
     apple: "/favicon.svg",
   },
   openGraph: {
-    title: "AI 島：60 章全端養成班",
-    description: "60 章 × 1500+ 高品質 lesson、遊戲化學習、SnowRealm 生態整合",
+    title: TITLE,
+    description: OG_DESCRIPTION,
     images: ["/og.png"],
   },
 };

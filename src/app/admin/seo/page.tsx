@@ -1,5 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { chapters } from "@/data/chapters";
+import { SEO_PLACEHOLDERS, SITE_STATS } from "@/lib/site-stats";
 import { SEOManagerClient } from "./SEOManagerClient";
 
 export default async function SEOAdminPage() {
@@ -18,9 +19,12 @@ export default async function SEOAdminPage() {
     );
   }
 
-  // 列出預設 routes（讓 admin 可以新增 override）
   const defaultRoutes = [
-    { path: "/", title: "AI 島：60 章全端養成班", isCore: true },
+    {
+      path: "/",
+      title: `AI 島：${SITE_STATS.chapterCount} 章全端養成班`,
+      isCore: true,
+    },
     { path: "/chapters", title: "章節列表", isCore: true },
     { path: "/leaderboard", title: "排行榜", isCore: true },
     { path: "/career", title: "職業路線", isCore: true },
@@ -41,6 +45,31 @@ export default async function SEOAdminPage() {
           管每個頁面的 title / description / OG / 結構化資料 / GEO 設定
         </p>
       </div>
+
+      <section className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-4 text-sm">
+        <div className="font-bold mb-2">🪄 動態數據佔位符</div>
+        <p className="text-xs text-[var(--color-fg-muted)] mb-3">
+          在任何 SEO 欄位（title / description / og_title / og_description / schema_jsonld）寫下方 token，網站渲染時會即時換成最新數字。內容更新後不用手改 SEO。
+        </p>
+        <ul className="space-y-1.5 text-xs font-mono">
+          {SEO_PLACEHOLDERS.map((p) => (
+            <li key={p.token} className="flex items-center gap-3">
+              <code className="px-2 py-0.5 bg-[var(--color-bg)] rounded border border-[var(--color-border)] flex-shrink-0">
+                {p.token}
+              </code>
+              <span className="text-[var(--color-accent)] font-bold w-12 text-right">
+                {p.value}
+              </span>
+              <span className="text-[var(--color-fg-muted)] font-sans">
+                {p.desc}
+              </span>
+            </li>
+          ))}
+        </ul>
+        <p className="text-[11px] text-[var(--color-fg-muted)] mt-3">
+          範例：<code>AI 島 {"{{chapter_count}}"} 章 / {"{{lesson_count}}"}+ lesson</code>
+        </p>
+      </section>
 
       <SEOManagerClient
         defaultRoutes={defaultRoutes}
