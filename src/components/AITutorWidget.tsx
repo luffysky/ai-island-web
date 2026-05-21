@@ -90,6 +90,7 @@ export function AITutorWidget({
         setError("AI 模型清單載入失敗");
         return;
       }
+      console.log("[AI tutor] models loaded:", data?.length ?? 0, "rows");
       if (data) {
         setModels(data);
         const def = data.find((m: any) => m.is_default) || data[0];

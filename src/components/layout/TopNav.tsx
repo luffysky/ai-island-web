@@ -50,6 +50,12 @@ export function TopNav() {
         console.warn("[TopNav] profile row missing for user", uid);
         return;
       }
+      console.log("[TopNav] profile loaded:", {
+        id: data.id,
+        username: data.username,
+        role: data.role,
+        level: data.level,
+      });
       setProfile(data);
     };
 
