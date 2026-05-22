@@ -9,6 +9,7 @@ import { InteractionTracker } from "@/components/analytics/InteractionTracker";
 import { AuthProvider } from "@/lib/auth-context";
 import { AdminFloatingToolbar } from "@/components/admin/AdminFloatingToolbar";
 import { Marquee } from "@/components/Marquee";
+import { Pet } from "@/components/pet/Pet";
 import { SITE_STATS } from "@/lib/site-stats";
 
 const TITLE = `AI 島：${SITE_STATS.chapterCount} 章全端養成班`;
@@ -55,6 +56,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <CookieBanner />
           <InteractionTracker />
           <AdminFloatingToolbar />
+          <Pet />
         </AuthProvider>
       </body>
     </html>

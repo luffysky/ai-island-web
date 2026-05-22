@@ -65,6 +65,11 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
           levelUp: r.level && levelUp === r.level ? r.level : undefined,
           key: Date.now(),
         });
+        // 通知寵物
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("pet:lesson-complete", { detail: { chapterId: chapter.id, lessonId, xp } }));
+          window.dispatchEvent(new CustomEvent("pet:xp-earned", { detail: { xp } }));
+        }
       }
     }
   };

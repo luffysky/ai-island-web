@@ -10,6 +10,7 @@ import {
   History,
   Award,
   PenLine,
+  Cat,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
@@ -135,6 +136,13 @@ export function MeSidebar({ profile }: { profile: Profile | null }) {
           collapsed={collapsed}
         >
           我的部落格
+        </MeLink>
+        <MeLink
+          href="/me/pet"
+          icon={<Cat size={16} />}
+          collapsed={collapsed}
+        >
+          我的寵物
         </MeLink>
         <MeLink
           href="/me/history"
