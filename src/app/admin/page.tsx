@@ -1,5 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import Link from "next/link";
+import { adminHref } from "@/lib/admin-href";
 import { DashboardCharts } from "./DashboardCharts";
 
 export default async function AdminOverviewPage() {
@@ -139,7 +140,7 @@ export default async function AdminOverviewPage() {
         <h2 className="text-sm uppercase tracking-wider text-[var(--color-fg-muted)] mb-3 flex items-center gap-2">
           <span className="inline-block w-2 h-2 rounded-full bg-green-400 animate-pulse" />
           即時在線（近 5 分鐘）
-          <Link href={"/admin/ga4" as any} className="ml-auto text-[10px] text-[var(--color-fg-muted)] hover:text-[var(--color-accent)] normal-case tracking-normal">
+          <Link href={adminHref("/admin/ga4") as any} className="ml-auto text-[10px] text-[var(--color-fg-muted)] hover:text-[var(--color-accent)] normal-case tracking-normal">
             站台分析 →
           </Link>
         </h2>
@@ -200,7 +201,7 @@ export default async function AdminOverviewPage() {
           <h2 className="font-bold mb-3">🏆 Top 10 玩家</h2>
           <div className="space-y-1.5">
             {topUsers?.map((u: any, i: number) => (
-              <Link href={`/admin/users?q=${u.username}`} key={u.username} className="flex items-center justify-between text-sm py-1 hover:text-[var(--color-accent)]">
+              <Link href={adminHref(`/admin/users?q=${u.username}`) as any} key={u.username} className="flex items-center justify-between text-sm py-1 hover:text-[var(--color-accent)]">
                 <span><span className="text-[var(--color-fg-muted)] mr-2">#{i + 1}</span>{u.username}</span>
                 <span><span className="text-[var(--color-accent)]">Lv {u.level}</span> <span className="text-[var(--color-fg-muted)] ml-2">{u.xp} XP</span></span>
               </Link>
@@ -212,7 +213,7 @@ export default async function AdminOverviewPage() {
           <h2 className="font-bold mb-3">🆕 最近註冊</h2>
           <div className="space-y-1.5">
             {recentSignups?.map((u: any) => (
-              <Link href={`/admin/users?q=${u.username}`} key={u.username} className="flex items-center justify-between text-sm py-1 hover:text-[var(--color-accent)]">
+              <Link href={adminHref(`/admin/users?q=${u.username}`) as any} key={u.username} className="flex items-center justify-between text-sm py-1 hover:text-[var(--color-accent)]">
                 <span>{u.username}</span>
                 <span className="text-[var(--color-fg-muted)] text-xs">{new Date(u.created_at).toLocaleString('zh-TW', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}</span>
               </Link>
@@ -236,7 +237,7 @@ function Stat({ label, value, hint, color }: { label: string; value: any; hint?:
 
 function QuickAction({ href, label }: { href: string; label: string }) {
   return (
-    <Link href={href as any} className="px-3 py-2 bg-[var(--color-bg-elevated)] rounded-lg hover:bg-[var(--color-border)] hover:text-[var(--color-accent)] text-center transition">
+    <Link href={adminHref(href) as any} className="px-3 py-2 bg-[var(--color-bg-elevated)] rounded-lg hover:bg-[var(--color-border)] hover:text-[var(--color-accent)] text-center transition">
       {label}
     </Link>
   );

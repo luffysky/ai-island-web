@@ -1,5 +1,6 @@
 import { getChapterMetas } from "@/lib/content";
 import Link from "next/link";
+import { adminHref } from "@/lib/admin-href";
 
 export default async function AdminChaptersPage() {
   const chapters = await getChapterMetas();
@@ -12,7 +13,7 @@ export default async function AdminChaptersPage() {
       </p>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
         {chapters.map((c) => (
-          <Link key={c.id} href={`/admin/chapters/${c.id}`} className="p-4 rounded-lg bg-[var(--color-bg-card)] border border-[var(--color-border)] hover:border-[var(--color-accent)]">
+          <Link key={c.id} href={adminHref(`/admin/chapters/${c.id}`) as any} className="p-4 rounded-lg bg-[var(--color-bg-card)] border border-[var(--color-border)] hover:border-[var(--color-accent)]">
             <div className="text-xs text-[var(--color-fg-muted)]">Ch {String(c.id).padStart(2, "0")}</div>
             <div className="font-semibold">{c.title}</div>
             <div className="text-xs mt-2 flex justify-between text-[var(--color-fg-muted)]">

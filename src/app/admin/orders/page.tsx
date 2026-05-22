@@ -104,7 +104,7 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
 
 function FilterLink({ href, active, children }: { href: string; active?: boolean; children: React.ReactNode }) {
   return (
-    <Link href={href as any} className={`px-3 py-1.5 rounded-lg ${active ? "bg-[var(--color-accent)] text-black" : "bg-[var(--color-bg-card)] hover:bg-[var(--color-bg-elevated)]"}`}>
+    <Link href={(href.startsWith("/admin") ? href.replace(/^\/admin/, `/${process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2"}/admin`) : href) as any} className={`px-3 py-1.5 rounded-lg ${active ? "bg-[var(--color-accent)] text-black" : "bg-[var(--color-bg-card)] hover:bg-[var(--color-bg-elevated)]"}`}>
       {children}
     </Link>
   );
