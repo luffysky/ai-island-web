@@ -133,22 +133,113 @@ export default async function AdminOverviewPage() {
   const liveMembers = liveSessions?.filter((s: any) => s.user_id).length ?? 0;
   const liveGuests = liveTotal - liveMembers;
 
+  // === 即將逾期 breach（urgent + 未通報）===
+  const { data: urgentBreaches } = await supabase
+    .from("breach_incidents")
+    .select("id, incident_type, severity, discovered_at, affected_user_count, status, reported_to_authority")
+    .eq("reported_to_authority", false)
+    .neq("status", "resolved")
+    .order("discovered_at", { ascending: true })
+    .limit(5);
+  const overdueBreaches = (urgentBreaches ?? []).map((b: any) => {
+    const hours = (Date.now() - new Date(b.discovered_at).getTime()) / 3600_000;
+    return { ...b, hoursSinceDiscovered: hours, isOverdue: hours >= 72, isUrgent: hours >= 48 };
+  }).filter((b: any) => b.isUrgent);
+
+  // === 近 5 筆 audit log ===
+  const { data: recentAudit } = await supabase
+    .from("audit_logs")
+    .select("id, created_at, actor_username, action, target_type")
+    .order("created_at", { ascending: false })
+    .limit(5);
+
+  // === AI 預算進度（enabled keys 各一條進度條）===
+  const { data: aiKeys } = await supabase
+    .from("ai_api_keys")
+    .select("provider, enabled, monthly_budget_usd, used_this_month_usd, reset_date")
+    .eq("enabled", true);
+  const budgetView = (aiKeys ?? []).map((k: any) => {
+    const used = Number(k.used_this_month_usd ?? 0);
+    const budget = Number(k.monthly_budget_usd ?? 0);
+    const pct = budget > 0 ? Math.min(100, (used / budget) * 100) : 0;
+    return {
+      provider: k.provider,
+      used: used.toFixed(2),
+      budget: budget.toFixed(2),
+      pct: pct.toFixed(1),
+      level: pct >= 100 ? "critical" : pct >= 80 ? "warning" : "ok",
+    };
+  });
+
   return (
     <div className="space-y-6">
-      {/* 即時在線 */}
-      <div>
-        <h2 className="text-sm uppercase tracking-wider text-[var(--color-fg-muted)] mb-3 flex items-center gap-2">
-          <span className="inline-block w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-          即時在線（近 5 分鐘）
-          <Link href={adminHref("/admin/ga4") as any} className="ml-auto text-[10px] text-[var(--color-fg-muted)] hover:text-[var(--color-accent)] normal-case tracking-normal">
-            站台分析 →
-          </Link>
-        </h2>
-        <div className="grid grid-cols-3 gap-3">
-          <Stat label="🟢 在線總數" value={liveTotal} color="text-green-400" />
-          <Stat label="會員" value={liveMembers} color="text-[var(--color-accent)]" />
-          <Stat label="訪客" value={liveGuests} color="text-[var(--color-fg-muted)]" />
-        </div>
+      {/* 即時 4 widget grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
+        {/* 即時在線 */}
+        <Link href={adminHref("/admin/ga4") as any} className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-4 hover:border-[var(--color-accent)] transition">
+          <div className="text-[10px] uppercase tracking-wider text-[var(--color-fg-muted)] flex items-center gap-1.5">
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+            即時在線
+          </div>
+          <div className="text-2xl font-bold mt-1 text-green-400">{liveTotal}</div>
+          <div className="text-[10px] text-[var(--color-fg-muted)] mt-1">
+            {liveMembers} 會員 / {liveGuests} 訪客
+          </div>
+        </Link>
+
+        {/* 即將逾期 breach */}
+        <Link href={adminHref("/admin/breach") as any} className={`bg-[var(--color-bg-card)] border rounded-xl p-4 transition ${overdueBreaches.length > 0 ? "border-red-500/40 hover:border-red-500" : "border-[var(--color-border)] hover:border-[var(--color-accent)]"}`}>
+          <div className="text-[10px] uppercase tracking-wider text-[var(--color-fg-muted)]">
+            {overdueBreaches.length > 0 ? "⚠ 即將/已逾期 breach" : "✅ 無 breach 風險"}
+          </div>
+          <div className={`text-2xl font-bold mt-1 ${overdueBreaches.length > 0 ? "text-red-400" : "text-emerald-400"}`}>
+            {overdueBreaches.length}
+          </div>
+          <div className="text-[10px] text-[var(--color-fg-muted)] mt-1">
+            {overdueBreaches.length > 0
+              ? `最久 ${Math.round(overdueBreaches[0].hoursSinceDiscovered)}h`
+              : "近 72h 內無未通報事件"}
+          </div>
+        </Link>
+
+        {/* 近期 audit */}
+        <Link href={adminHref("/admin/audit") as any} className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-4 hover:border-[var(--color-accent)] transition">
+          <div className="text-[10px] uppercase tracking-wider text-[var(--color-fg-muted)]">近期 audit</div>
+          {recentAudit && recentAudit.length > 0 ? (
+            <>
+              <div className="text-sm font-bold mt-1 truncate">{recentAudit[0].actor_username}</div>
+              <div className="text-[10px] text-[var(--color-fg-muted)] truncate font-mono">{recentAudit[0].action}</div>
+              <div className="text-[10px] text-[var(--color-fg-muted)] mt-0.5">
+                {recentAudit.length} 筆於 ↗
+              </div>
+            </>
+          ) : (
+            <div className="text-2xl font-bold mt-1 text-[var(--color-fg-muted)]">—</div>
+          )}
+        </Link>
+
+        {/* AI 預算 */}
+        <Link href={adminHref("/admin/ai/models") as any} className={`bg-[var(--color-bg-card)] border rounded-xl p-4 transition ${budgetView.some((b: any) => b.level === "critical") ? "border-red-500/40" : budgetView.some((b: any) => b.level === "warning") ? "border-orange-500/40" : "border-[var(--color-border)] hover:border-[var(--color-accent)]"}`}>
+          <div className="text-[10px] uppercase tracking-wider text-[var(--color-fg-muted)]">AI 預算</div>
+          <div className="text-sm font-bold mt-1">
+            {budgetView.length === 0 ? "—" : `${budgetView.length} 把 key`}
+          </div>
+          <div className="mt-1 space-y-0.5">
+            {budgetView.slice(0, 3).map((b: any) => (
+              <div key={b.provider} className="flex items-center gap-1.5">
+                <div className="flex-1 h-1 bg-[var(--color-bg-elevated)] rounded-full overflow-hidden">
+                  <div
+                    className={`h-full ${b.level === "critical" ? "bg-red-500" : b.level === "warning" ? "bg-orange-400" : "bg-emerald-400"}`}
+                    style={{ width: `${b.pct}%` }}
+                  />
+                </div>
+                <span className="text-[9px] text-[var(--color-fg-muted)] w-12 text-right">
+                  {b.pct}%
+                </span>
+              </div>
+            ))}
+          </div>
+        </Link>
       </div>
 
       {/* 核心指標 */}
