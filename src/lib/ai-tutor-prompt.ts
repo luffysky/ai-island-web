@@ -41,14 +41,18 @@ function buildCourseSummary(): string {
   return cachedCourseSummary;
 }
 
+import { getPersona } from "./ai-personas";
+
 export function buildTutorSystemPrompt(options: {
   tone?: string;
   contextChapterId?: number;
   contextLessonId?: string;
   userName?: string;
+  personaId?: string;
 }): string {
   const tone = options.tone ?? "friendly";
   const toneInstruction = TONE_STYLES[tone] ?? TONE_STYLES.friendly;
+  const persona = getPersona(options.personaId);
 
   // 如果有 lesson context、把該 lesson 內容塞進去
   let contextInfo = "";
@@ -85,6 +89,8 @@ export function buildTutorSystemPrompt(options: {
 - 用戶問問題時、你會引用 AI 島的章節（「這在 Ch08 React 完整有教」）
 - 鼓勵實作、不只解釋
 - 如果用戶問跟課程無關、也要友善回答（你是 general assistant + 課程專家雙重身份）
+
+${persona.promptBlock}
 
 # 對話語氣
 ${toneInstruction}

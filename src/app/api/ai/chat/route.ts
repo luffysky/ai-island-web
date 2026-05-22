@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { conversationId, modelId, message, tone, contextChapterId, contextLessonId, useBYOK } = body;
+  const { conversationId, modelId, message, tone, contextChapterId, contextLessonId, useBYOK, personaId } = body;
 
   if (!message || !modelId) return errorResponse("missing_params", 400);
 
@@ -125,6 +125,7 @@ export async function POST(req: NextRequest) {
     tone: tone ?? "friendly",
     contextChapterId,
     contextLessonId,
+    personaId,
   });
 
   const messages = [

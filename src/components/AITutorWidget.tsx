@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Sparkles, Send, X, ChevronDown, Settings as SettingsIcon, Plus, Loader2, History, MessageSquare } from "lucide-react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
+import { PERSONA_LIST, getPersona, type PersonaId } from "@/lib/ai-personas";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
@@ -44,6 +45,8 @@ export function AITutorWidget({
   const [models, setModels] = useState<AIModel[]>([]);
   const [selectedModelId, setSelectedModelId] = useState<string>("");
   const [tone, setTone] = useState("friendly");
+  const [personaId, setPersonaId] = useState<PersonaId>("green");
+  const persona = getPersona(personaId);
   const [useBYOK, setUseBYOK] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -168,6 +171,7 @@ export function AITutorWidget({
           contextChapterId,
           contextLessonId,
           useBYOK,
+          personaId,
         }),
       });
 
@@ -274,7 +278,7 @@ export function AITutorWidget({
               </div>
               <div className="min-w-0">
                 <div className="font-bold text-sm flex items-center gap-1">
-                  綠寶導師
+                  {persona.emoji} {persona.name}
                   {contextChapterId && (
                     <span className="text-xs px-1.5 py-0.5 bg-blue-500/20 text-blue-400 rounded-full ml-1">
                       📚 Ch{String(contextChapterId).padStart(2, "0")}
@@ -367,6 +371,36 @@ export function AITutorWidget({
           {/* Settings panel */}
           {showSettings && (
             <div className="relative z-20 p-3 border-b border-[var(--color-border)] bg-[var(--color-bg)] space-y-3 text-sm overflow-visible">
+              <div>
+                <label className="text-xs text-[var(--color-fg-muted)] mb-1 block">夥伴</label>
+                <div className="grid grid-cols-3 gap-1.5">
+                  {PERSONA_LIST.map((p) => {
+                    const active = personaId === p.id;
+                    return (
+                      <button
+                        key={p.id}
+                        type="button"
+                        onClick={() => setPersonaId(p.id)}
+                        className={`p-2 rounded-lg border text-left transition ${
+                          active
+                            ? "border-[var(--color-accent)] bg-[var(--color-accent)]/10"
+                            : "border-[var(--color-border)] bg-[var(--color-bg-card)] hover:border-[var(--color-accent)]/50"
+                        }`}
+                      >
+                        <div className="text-lg leading-none">{p.emoji}</div>
+                        <div className="font-bold text-xs mt-1">{p.name}</div>
+                        <div className="text-[10px] text-[var(--color-fg-muted)] leading-tight mt-0.5 line-clamp-2">
+                          {p.role}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="text-[10px] text-[var(--color-fg-muted)] mt-1.5 leading-snug">
+                  {persona.short}
+                </p>
+              </div>
+
               <div className="relative z-30">
                 <label className="text-xs text-[var(--color-fg-muted)] mb-1 block">AI 模型</label>
                 <button
