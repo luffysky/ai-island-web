@@ -255,3 +255,194 @@
   1. 前台強制刷新 → 綠寶 settings 下拉應看到 7 個模型
   2. 已登入狀態 → 綠寶 placeholder 直接顯示「問點什麼...」、不會閃過「請先登入」
 - Phase 1 五個 quick win 待董事長下令動工
+
+---
+
+## 後續工作（2026-05-22 下半起 ~ 持續）
+
+`b1be011 docs: daily work log for 2026-05-22` 提交之後、雪鑰持續推進。本段紀錄該 commit 之後到今天的所有事項、依主題分組（commit 順序非時序、可交叉）。
+
+### A. 認證 / 載入流再穩固（前期）
+
+| commit | 內容 |
+|---|---|
+| `78f7f1a` | refactor: AuthProvider 收斂為 client auth state 唯一源（解多元件各自 onAuthStateChange 時序錯亂）|
+| `68bc82e` | fix: stop INITIAL_SESSION wiping out freshly-loaded auth state |
+| `70b4aa5` | fix: 停止 callback 二次 exchange PKCE code（同 code 用兩次永遠 hang）|
+| `2e49712` | fix: callback timeout 前先查 session、避免假性失敗 |
+| `d307d55` | fix: silent auth callback with timeout + unconditional redirect |
+| `2ec521c` | feat/fix: 精確 district geo (Nominatim) + 強化 auth race for tracker/widgets |
+| `278e7ad` | fix: race-resilient profile + always-clickable bookmark/note |
+| `1548d36` | fix: PWA 登入 resilience + note save error reporting |
+| `1371875` | debug: 在 user dropdown 顯示 loaded role（觀測用）|
+| `f4be100` / `63ca93a` | debug: profile 與 model 載入紀錄、無模型時可見提示 |
+
+### B. 內容 / SEO / Blog 路由改造
+
+| commit | 內容 |
+|---|---|
+| `26858cf` | feat: dynamic chapter/lesson stats + admin SEO placeholder docs |
+| `d82deb6` | feat: SEO render layer 接 DB overrides + placeholder substitution |
+| `95dce6b` | feat: blog reading polish from Insight Engine port |
+| `febc5e8` | fix: TopNav 加 /blogs 連結 |
+| `3ccb3ca` | feat: 重建 /blogs landing 為 per-author 列表 + URL-driven 搜尋 |
+| `0f2b4d9` | docs: 重寫 README 為 v3 現況 |
+| `88982c2` | feat: /me layout 可收合 sidebar |
+
+### C. AI Tutor 多人設
+
+| commit | 內容 |
+|---|---|
+| `b509df6` | feat: AI tutor 支援 3 個人設（綠寶 / 肥仔 / 菇寶）|
+
+### D. Analytics 政策收斂
+
+| commit | 內容 |
+|---|---|
+| `8cbf230` | feat: site analytics 整合（decision A — 放棄 GA4 sync、走自家 interaction_analytics）|
+| `197d2db` | chore: 排除 bug screenshot capture 目錄 |
+
+### E. Admin 介面大改版
+
+| commit | 內容 |
+|---|---|
+| `0f8e373` | feat: admin 主題改為輕粉色 cute via CSS cascade |
+| `b5f5882` | security: 鎖定敏感 profile 欄位（trigger）+ admin sidebar 可收合 |
+| `0c4acf5` | feat: admin floating toolbar + 手動發放 XP/Z-coin/成就（QW-02 部分前置）|
+| `49c6287` | fix: admin 內部 href 加 slug 前綴避免 404 |
+| `469f76c` | feat: admin user detail page — 單一使用者 360° 視圖 |
+| `0084b74` | feat: 完整 broadcasts CRUD + 前台跑馬燈 |
+| `e05e3bf` | feat: friendly settings editor + blog comment moderation queue (MED-07) |
+
+### F. Admin Phase 1 全包（5/5 完成、Quick Wins）
+
+| ID | commit | 內容 |
+|---|---|---|
+| QW-01 | `bc8618b` | user list 搜尋 + 分頁 + role/status filter |
+| QW-02 | `0c4acf5` | 手動發放 XP / Z-coin / 成就 |
+| QW-03 | `bc8618b` | Audit log filter + CSV 匯出 |
+| QW-04 | `9e01975` | Email 訂閱戶清單頁 |
+| QW-05 | `e2aae99` | Dashboard 即時 widgets（4 panels）|
+
+### G. Admin Phase 2 七包（6/7 完成、Medium）
+
+| ID | commit | 內容 |
+|---|---|---|
+| MED-06 | — | Impersonate 使用者（故意 deferred）|
+| MED-07 | `e05e3bf` | Blog 留言審核佇列 |
+| MED-08 | `dfcff73` | 論壇 thread + reply moderation |
+| MED-09 | `26662a7` | Z-coin airdrop batch tool |
+| MED-10 | `0277cbf` | Learning events viewer + CSV 匯出 |
+| MED-11 | `7d5d233` | Breach incident 詳細編輯頁 |
+| MED-12 | `7d5d233` | AI cost 警示閾值 |
+
+### H. 章末 Quiz 系統
+
+| commit | 內容 |
+|---|---|
+| `4a144d0` | feat: AI quiz builder 章末 20 題複習產生器 |
+| `dc497b7` | feat: chapter-end quiz player + admin toolbar drag |
+
+### I. AI 寵物（FEATURE-01 plan B 全包）
+
+| commit | 內容 |
+|---|---|
+| `db29a42` | docs: 完整實作計畫 (FEATURE-01 plan B) |
+| `984a63f` | feat: PR1 — schema + walking pet + 4 種物種 + 設定 |
+| `4ccdb38` | feat: PR2-4 — 對話 / 心跳 / 拖曳 / 避鼠標 / 事件 hook |
+| `1b28355` | build: .npmrc 加 retry 撐過 Zeabur ECONNRESET |
+| `2275ad1` | feat: scripted chatter 470+ 條 × 40+ 類別 × 4 物種 voice + VIP 驚喜（luffy/nami 專屬 cute bubble、aura、condition praise、隱藏密語）+ AI tutor 國中生講解風格寫進 prompt |
+| `04f83ce` | fix: luffy 姓林、不是盧 — chatter / honorific / secret keyword 全套對齊 |
+| `1a93d3b` | feat: milestone 30/60/100（lesson-complete 後查總數 dispatch 事件、Pet.tsx 4.5s CSS 粒子 burst）+ season-* x4 / holiday-* x11 / streak-boost-* x3 / weather-* x4 = 25 新 chatter key、季節 / 節日當天 force say、寵物頭飾（聖誕帽 / 南瓜 / 國旗 / 愛心 / 慶祝）|
+
+### J. UX 健檢與全站 UX-S1 起跑
+
+| commit | 內容 |
+|---|---|
+| `8daf5cf` | docs: UX-AUDIT.md 完整健檢、4 個系統性 anti-pattern：39 次 alert/confirm / 29 次 `<img>` 直用 / 21+ 次阻塞 setLoading / 0 個 loading.tsx；分 6 sprint 修法（~33 hr）|
+| `9a5f95a` | feat: UX-S1a — 全站 Toast + ConfirmDialog 元件（framer-motion 11、spring 進場、4s 自動 dismiss、destructive 500ms 防誤點、a11y）+ ThreadReplies 示範改造（optimistic submit / 5 秒 undo 刪除 / optimistic markAnswer / active:scale-95 微互動）|
+
+### K. TODO list（董事長 2026-05-22 交辦、L4 範圍）
+
+| commit | 內容 |
+|---|---|
+| `8a4ae7a` | feat: TODO backend — `todos` 表（id/parent_id/title/notes/completed/due_date/priority 1-3/sort_order double/recur_rule daily\|weekly:N,M\|monthly:N）+ RLS + updated_at trigger（已套上線上 Supabase）+ types-todo / todo-recur parser / 3 個 API route（GET POST PATCH DELETE reorder）|
+
+### L. 待辦盤點與路線圖
+
+| commit | 內容 |
+|---|---|
+| `b21ffac` | docs: Phase 4+ admin backlog — 林董加碼 5 區 21 項（內容 / 用戶 / 監控 / 行銷 / 教師），~17-18 週 |
+| `ad0d10d` | docs: master BACKLOG — 所有未做事項單一入口（運維 6 / UX 6 sprint / TODO UI / Phase 3 LT-13~18 / Phase 4+ 21 項 / MED-06）合計 ~40 項、~21-22 週 |
+
+### M. memory 紀錄補強
+
+| 檔 | 內容 |
+|---|---|
+| `memory/user_luffy_name.md` | 董事長姓林（Luffy Lin）、稱謂用林董/林老闆/林總 |
+| `memory/feedback_ux_first.md` | UX 優先、不卡頓的全局原則 |
+
+---
+
+## 總結
+
+### 完成的大塊
+
+| 區塊 | 項目數 |
+|---|---|
+| Admin Phase 1 Quick Wins | 5/5 |
+| Admin Phase 2 Medium | 6/7（MED-06 deferred）|
+| AI 寵物系統（plan B） | PR1-4 + chatter + VIP + milestone + season/holiday |
+| 章末 Quiz 系統 | builder + player |
+| 認證 / 載入流穩定 | 10+ commit |
+| Blog / SEO / Analytics 改造 | 7 commit |
+| UX 健檢 + UX-S1 起跑 | 元件 + 1 示範檔 |
+| TODO list backend | 100% |
+| 全範圍 backlog 文件 | 3 份（UX-AUDIT / Phase 4+ / Master BACKLOG）|
+
+### 還沒做的（已在 `docs/BACKLOG.md` 集中）
+
+- 林董親自驗證 6 項
+- UX-S1b 後續 38 處 alert/confirm 清替
+- UX-S2 ~ S6（optimistic / skeleton / image / mobile / 細節）
+- TODO list UI（TopNav dropdown / 拖曳 / 編輯 modal / 寵物 hook）
+- Phase 3 LT-13 ~ LT-18 全 6 項（含 LT-14 GDPR 合規剛需）
+- Phase 4+ P4-01 ~ P4-21 全 21 項
+- MED-06 Impersonate（待解 defer）
+
+### 重要決策 / 紅線
+
+| 決策 | 理由 |
+|---|---|
+| 所有功能 UX 優先、不卡頓 | 林董 2026-05-22 明示、寫進 memory `feedback_ux_first.md` |
+| TODO list 走 L4 範圍 | 含子任務 / 拖曳 / 重複規則、跨 6 hr UI |
+| schema 動之前先給林董看 sql、線上 DB 雖授權但刪除動作必須再確認 | `project_handoff_2026-05-22.md` |
+| commit message 維持中文標題 + 英文 / 中混 body + Co-Authored-By trailer | 對齊 `b1be011` 之後既有風格 |
+| 未動 auth / session / Supabase client 任何高敏感區 | `AI_ISLAND_COLLAB_RULE.md` 紅線守住 |
+
+### 連線確認
+
+- 線上 Supabase REST API HTTP 200（profiles 表 query OK、anon key 正確）
+- TypeScript `tsc --noEmit` 各階段全綠
+- git remote `origin/main` 已對齊本地、所有 commit 全 push
+
+### 接下來
+
+依 `docs/BACKLOG.md §8` 雪鑰建議順序：
+
+1. UX-S1b（38 處 alert/confirm 清完）
+2. TODO list UI 收尾
+3. UX-S3 loading.tsx skeleton
+4. UX-S4 圖片全換 next/image
+5. UX-S2 全站 optimistic
+6. P4-10 錯誤日誌 + P4-14 rate limit（剛需止血）
+7. LT-14 GDPR
+8. P4-01 + P4-02 章節後台編輯
+9+. 其餘依 BACKLOG 順序
+
+---
+
+**備註**：
+- 所有 commit 標 `2026-05-22`、實際工作跨多個 session、依 commit 順序 ≈ 時間順序
+- 玄樞（Codex）於 daily_works_0522 上半段「Codex 額度耗盡退場」後未再回場、本段全部由雪鑰執行
+- 桌面 Claude（最早 zip 交付者）本段內無動作
