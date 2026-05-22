@@ -57,12 +57,16 @@ export async function PATCH(req: NextRequest) {
   const me = await requireAdmin();
   if (!me) return NextResponse.json({ error: "forbidden" }, { status: 403 });
 
-  const { provider, monthly_budget_usd, enabled } = await req.json();
+  const { provider, monthly_budget_usd, enabled, alert_threshold_pct } = await req.json();
   if (!provider) return NextResponse.json({ error: "missing" }, { status: 400 });
 
   const update: any = { updated_at: new Date().toISOString() };
   if (monthly_budget_usd !== undefined) update.monthly_budget_usd = monthly_budget_usd;
   if (enabled !== undefined) update.enabled = enabled;
+  if (alert_threshold_pct !== undefined) {
+    const t = Number(alert_threshold_pct);
+    if (Number.isFinite(t) && t >= 0 && t <= 100) update.alert_threshold_pct = Math.round(t);
+  }
   update.updated_by = me.id;
 
   const admin = createSupabaseAdmin();
