@@ -4,6 +4,7 @@ import { Chapter } from "@/lib/types";
 import { STAGE_COLORS, DIFFICULTY_LABELS, TIP_LABELS } from "@/lib/utils";
 import { GamificationEngine } from "@/lib/gamification";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
+import { useAuth } from "@/lib/auth-context";
 import { LessonCard } from "./LessonCard";
 import { BossBattle } from "./BossBattle";
 import { AchievementToast } from "../gamification/AchievementToast";
@@ -13,7 +14,7 @@ import { ChevronLeft, ChevronRight, Clock, Trophy } from "lucide-react";
 import Link from "next/link";
 
 export function ChapterView({ chapter }: { chapter: Chapter }) {
-  const [user, setUser] = useState<any>(null);
+  const { user } = useAuth();
   const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
   const [toast, setToast] = useState<any>(null);
   const [levelUp, setLevelUp] = useState<number | null>(null);
@@ -28,39 +29,24 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
   });
 
   useEffect(() => {
+    if (!user) {
+      setCompletedIds(new Set());
+      return;
+    }
     let mounted = true;
-    const load = async (uid: string) => {
+    (async () => {
       const { data } = await supabase
         .from("lesson_progress")
         .select("lesson_id")
-        .eq("user_id", uid)
+        .eq("user_id", user.id)
         .eq("chapter_id", chapter.id);
       if (!mounted) return;
       setCompletedIds(new Set((data ?? []).map((p: any) => p.lesson_id)));
-    };
-    // 用 getSession 而非 getUser：cache、不會 race、不丟錯誤
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!mounted) return;
-      setUser(session?.user ?? null);
-      if (session?.user) load(session.user.id);
-    });
-    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
-      if (!mounted) return;
-      if (event === "SIGNED_OUT") {
-        setUser(null);
-        setCompletedIds(new Set());
-        return;
-      }
-      if (session?.user) {
-        setUser(session.user);
-        load(session.user.id);
-      }
-    });
+    })();
     return () => {
       mounted = false;
-      sub.subscription.unsubscribe();
     };
-  }, [chapter.id]);
+  }, [chapter.id, user?.id]);
 
   const handleComplete = async (lessonId: string, xp: number) => {
     if (!user) {

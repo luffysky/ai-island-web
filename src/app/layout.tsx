@@ -6,6 +6,7 @@ import { AITutorAutoContext } from "@/components/AITutorAutoContext";
 import { CookieBanner } from "@/components/CookieBanner";
 import { SideNav } from "@/components/SideNav";
 import { InteractionTracker } from "@/components/analytics/InteractionTracker";
+import { AuthProvider } from "@/lib/auth-context";
 import { SITE_STATS } from "@/lib/site-stats";
 
 const TITLE = `AI 島：${SITE_STATS.chapterCount} 章全端養成班`;
@@ -31,24 +32,26 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="zh-Hant">
       <body className="min-h-screen flex flex-col">
-        <TopNav />
-        <SideNav />
-        <main className="flex-1">{children}</main>
-        <footer className="border-t border-[var(--color-border)] py-8 mt-16">
-          <div className="max-w-6xl mx-auto px-6">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-[var(--color-fg-muted)]">
-              <div>© 2026 AI 島 · 由 SnowRealm 製作 · 招財 🐹 守護</div>
-              <nav className="flex gap-4">
-                <Link href="/privacy" className="hover:text-[var(--color-fg)] transition">隱私權政策</Link>
-                <Link href="/terms" className="hover:text-[var(--color-fg)] transition">使用條款</Link>
-                <Link href="/cookies" className="hover:text-[var(--color-fg)] transition">Cookie 政策</Link>
-              </nav>
+        <AuthProvider>
+          <TopNav />
+          <SideNav />
+          <main className="flex-1">{children}</main>
+          <footer className="border-t border-[var(--color-border)] py-8 mt-16">
+            <div className="max-w-6xl mx-auto px-6">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-[var(--color-fg-muted)]">
+                <div>© 2026 AI 島 · 由 SnowRealm 製作 · 招財 🐹 守護</div>
+                <nav className="flex gap-4">
+                  <Link href="/privacy" className="hover:text-[var(--color-fg)] transition">隱私權政策</Link>
+                  <Link href="/terms" className="hover:text-[var(--color-fg)] transition">使用條款</Link>
+                  <Link href="/cookies" className="hover:text-[var(--color-fg)] transition">Cookie 政策</Link>
+                </nav>
+              </div>
             </div>
-          </div>
-        </footer>
-        <AITutorAutoContext />
-        <CookieBanner />
-        <InteractionTracker />
+          </footer>
+          <AITutorAutoContext />
+          <CookieBanner />
+          <InteractionTracker />
+        </AuthProvider>
       </body>
     </html>
   );

@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
+import { useAuth } from "@/lib/auth-context";
 import { Flame, Coins, Heart, LogOut, Settings, Trophy, User as UserIcon, ChevronDown, Menu, X } from "lucide-react";
 
 const NAV_LINKS = [
@@ -14,8 +15,8 @@ const NAV_LINKS = [
 ];
 
 export function TopNav() {
-  const [user, setUser] = useState<any>(null);
-  const [profile, setProfile] = useState<any>(null);
+  // 用全站 AuthContext、不再各自 race
+  const { user, profile } = useAuth();
   const [open, setOpen] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
@@ -31,73 +32,6 @@ export function TopNav() {
     level: 1,
     role: "member",
   };
-
-  // 啟動時先用 localStorage 內上次載過的 profile 立刻渲染、避免
-  // 下拉打開時還在等網路、admin link 一下有一下沒有的閃爍。
-  useEffect(() => {
-    try {
-      const cached = localStorage.getItem("ai-island-profile-cache");
-      if (cached) setProfile(JSON.parse(cached));
-    } catch {}
-  }, []);
-
-  useEffect(() => {
-    let mounted = true;
-
-    const loadProfile = async (uid: string) => {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("id, username, display_name, avatar_url, role, level, xp, z_coin, streak_days, hearts")
-        .eq("id", uid)
-        .maybeSingle();
-      if (!mounted) return;
-      if (error) {
-        console.error("[TopNav] profile fetch failed:", error);
-        return;
-      }
-      if (!data) {
-        console.warn("[TopNav] profile row missing for user", uid);
-        return;
-      }
-      setProfile(data);
-      try {
-        localStorage.setItem("ai-island-profile-cache", JSON.stringify(data));
-      } catch {}
-    };
-
-    (async () => {
-      // 用 getSession 而非 getUser：cookie cache、不會 race。
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!mounted) return;
-      setUser(session?.user ?? null);
-      if (session?.user) await loadProfile(session.user.id);
-    })();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (!mounted) return;
-      // 只在「明確登出」時清掉 profile/user。
-      // INITIAL_SESSION 帶 null 不能視為登出（那只是 SDK 還在 init），
-      // 否則會把同時間 loadProfile 已寫入的資料蓋掉。
-      if (event === "SIGNED_OUT") {
-        setUser(null);
-        setProfile(null);
-        try {
-          localStorage.removeItem("ai-island-profile-cache");
-        } catch {}
-        return;
-      }
-      if (session?.user) {
-        setUser(session.user);
-        await loadProfile(session.user.id);
-      }
-      // 其他 event 帶 null session：忽略、保留現有 state
-    });
-
-    return () => {
-      mounted = false;
-      subscription.unsubscribe();
-    };
-  }, []);
 
   // 點外面關閉 dropdown
   useEffect(() => {
@@ -115,8 +49,7 @@ export function TopNav() {
     setLoggingOut(true);
     setOpen(false);
     setMobileMenu(false);
-    setUser(null);
-    setProfile(null);
+    // AuthContext 會收到 SIGNED_OUT event 自動清掉 user/profile
 
     try {
       await Promise.race([

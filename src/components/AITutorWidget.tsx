@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Sparkles, Send, X, ChevronDown, Settings as SettingsIcon, Plus, Loader2, History, MessageSquare } from "lucide-react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
+import { useAuth } from "@/lib/auth-context";
 import { PERSONA_LIST, getPersona, type PersonaId } from "@/lib/ai-personas";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -58,38 +59,11 @@ export function AITutorWidget({
   const [showHistory, setShowHistory] = useState(false);
   const [showModelMenu, setShowModelMenu] = useState(false);
   const [history, setHistory] = useState<Array<{ id: string; title: string; updated_at: string }>>([]);
-  const [authState, setAuthState] = useState<"loading" | "in" | "out">("loading");
+  // 用全站 AuthContext、不再自己 race
+  const { status: authState } = useAuth();
   const isLoggedIn = authState === "in";
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const supabase = createSupabaseBrowser();
-
-  // 監聽登入狀態：初始 getUser + 之後的 onAuthStateChange
-  // 注意：INITIAL_SESSION 可能帶 null session（SDK 還在 init）、不能視為登出，
-  // 否則會把初始 getUser 設好的 "in" 蓋成 "out"。
-  useEffect(() => {
-    let mounted = true;
-    // getSession 是同步從 cookie / localStorage 拿 cached session、
-    // 不會丟 AuthSessionMissingError、也不打網路。
-    // 比 getUser 適合「初始判斷登入狀態」、避免 race。
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!mounted) return;
-      setAuthState(session?.user ? "in" : "out");
-    });
-    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
-      if (!mounted) return;
-      if (event === "SIGNED_OUT") {
-        setAuthState("out");
-        return;
-      }
-      if (session?.user) {
-        setAuthState("in");
-      }
-    });
-    return () => {
-      mounted = false;
-      sub.subscription.unsubscribe();
-    };
-  }, []);
 
   // 載入模型清單（不依賴登入狀態；anon 也讀得到 is_active=true）
   useEffect(() => {
