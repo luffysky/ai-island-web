@@ -28,7 +28,7 @@ export function hasVipAura(tier: VipTier): boolean {
 export function honorificsFor(tier: VipTier, displayName?: string | null): string[] {
   switch (tier) {
     case "luffy":
-      return ["董事長", "老闆", "luffy", "盧老闆", "頭家"];
+      return ["董事長", "老闆", "luffy", "林董", "頭家", "林老闆", "林總"];
     case "nami":
       return ["Nami 姊", "Nami 大人", "Nami", "Nami 教練", "親愛的 Nami"];
     case "admin":

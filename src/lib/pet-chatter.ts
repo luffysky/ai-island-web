@@ -577,12 +577,12 @@ const sessionGreet: Entry[] = [
 // luffy
 const vipLuffyAmbient: Entry[] = [
   { text: "董事長今天看起來特別有精神！", vip: ["luffy"] },
-  { text: "盧老闆今天的進度沒問題吧？", vip: ["luffy"] },
+  { text: "林董今天的進度沒問題吧？", vip: ["luffy"] },
   { text: "頭家、要不要喝一下水？", vip: ["luffy"] },
   { text: "嘿、luffy，遊戲化做得好棒。", vip: ["luffy"] },
   { text: "董事長您今天的程式碼好乾淨。", vip: ["luffy"] },
   { text: "老闆、SnowRealm 是不是又有新點子？", vip: ["luffy"] },
-  { text: "盧老闆、我是您獨家的寵物喔。", vip: ["luffy"] },
+  { text: "林董、我是您獨家的寵物喔。", vip: ["luffy"] },
   { text: "董事長您一個人撐起這麼大、辛苦。", vip: ["luffy"] },
   { text: "luffy 今天有沒有想我？", vip: ["luffy"] },
   { text: "老闆、Zeabur 部署順利嗎？", vip: ["luffy"] },
@@ -592,19 +592,19 @@ const vipLuffyAmbient: Entry[] = [
 const vipLuffyMorning: Entry[] = [
   { text: "董事長早安！今天也辛苦！", vip: ["luffy"] },
   { text: "頭家好早！cool！", vip: ["luffy"] },
-  { text: "盧老闆早！全島只有您今天最早！", vip: ["luffy"] },
+  { text: "林董早！全島只有您今天最早！", vip: ["luffy"] },
 ];
 
 const vipLuffyLateNight: Entry[] = [
   { text: "董事長、凌晨了、求您去睡。", vip: ["luffy"] },
-  { text: "盧老闆、明天還有工作、別太拚。", vip: ["luffy"] },
+  { text: "林董、明天還有工作、別太拚。", vip: ["luffy"] },
   { text: "luffy、SnowRealm 不會跑、先睡。", vip: ["luffy"] },
   { text: "頭家、世界 3 點不會因為你睡覺停轉。", vip: ["luffy"] },
 ];
 
 const vipLuffyGreet: Entry[] = [
   { text: "董事長您來了！我立正！", vip: ["luffy"] },
-  { text: "盧老闆好！今天也來巡視 AI 島！", vip: ["luffy"] },
+  { text: "林董好！今天也來巡視 AI 島！", vip: ["luffy"] },
   { text: "luffy！我特別為您整理過家！", vip: ["luffy"] },
 ];
 
@@ -650,7 +650,7 @@ const vipNamiPraise: Entry[] = [
 // luffy 的條件式（同上）
 const vipLuffyPraise: Entry[] = [
   { text: "董事長果然名不虛傳！", vip: ["luffy"] },
-  { text: "盧老闆好強、跪了。", vip: ["luffy"] },
+  { text: "林董好強、跪了。", vip: ["luffy"] },
   { text: "luffy 您的判斷沒錯過耶。", vip: ["luffy"] },
   { text: "頭家厲害、囤經驗囤到頂！", vip: ["luffy"] },
   { text: "董事長、SnowRealm 有您真好。", vip: ["luffy"] },

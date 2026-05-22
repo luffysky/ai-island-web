@@ -9,7 +9,7 @@ import { pickChatter, type ChatterCtx } from "@/lib/pet-chatter";
 
 type Message = { role: "user" | "pet"; content: string };
 
-const SECRET_LUFFY = /^(董事長|盧老闆|頭家|luffy)[!！。.?？\s]*$/i;
+const SECRET_LUFFY = /^(董事長|林董|林老闆|林總|頭家|luffy)[!！。.?？\s]*$/i;
 const SECRET_NAMI = /^(nami|nami\s*姊|nami\s*大人|親愛的\s*nami)[!！。.?？\s]*$/i;
 
 export function PetChatPanel({
