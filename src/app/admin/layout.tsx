@@ -73,6 +73,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               <AdminLink href="/admin/orders">💰 訂單</AdminLink>
               <AdminLink href="/admin/subscriptions">💎 訂閱</AdminLink>
               <AdminLink href="/admin/zcoin">🪙 Z-coin 流水</AdminLink>
+              <AdminLink href="/admin/zcoin/airdrop">💸 Z-coin Airdrop</AdminLink>
             </NavGroup>
 
             <NavGroup title="AI">
