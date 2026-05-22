@@ -39,17 +39,18 @@ export function CallbackHashHandler() {
 
     const succeed = async () => {
       if (done) return;
-      try {
-        const res = await fetch("/api/auth/ensure-profile", { method: "POST" });
-        if (!res.ok) {
-          const body = await res.json().catch(() => ({} as any));
-          return failGeneric(body.error || "ensure_profile_failed", body);
-        }
-      } catch (e) {
-        console.error("[Callback] ensure-profile threw:", e);
-        // profile 補不上不擋登入、之後有機會再補
-      }
-      go("/");
+      done = true;
+      // ensure-profile 永不擋登入：最多等 2.5s、失敗 / 慢都直接進首頁。
+      // profile 沒補到也沒關係、AuthProvider 之後會 load、首次 page query
+      // 沒命中就重 load 一次。
+      await Promise.race([
+        fetch("/api/auth/ensure-profile", { method: "POST" }).catch((e) => {
+          console.warn("[Callback] ensure-profile fail:", e);
+          return null;
+        }),
+        new Promise((r) => setTimeout(r, 2500)),
+      ]);
+      window.location.replace("/");
     };
 
     // 1. Provider 端帶錯誤就直接放棄
@@ -92,7 +93,7 @@ export function CallbackHashHandler() {
       })
       .catch(() => {});
 
-    // 12 秒總時限。前先再檢查一次 session、避免 SDK 慢但其實成功的誤判
+    // 20 秒總時限。行動網路要留 buffer。前先再檢查一次 session、避免 SDK 慢但成功的誤判
     const timeout = setTimeout(async () => {
       if (done) return;
       try {
@@ -103,7 +104,7 @@ export function CallbackHashHandler() {
         }
       } catch {}
       failGeneric("callback_timeout");
-    }, 12000);
+    }, 20000);
 
     return () => {
       clearTimeout(timeout);

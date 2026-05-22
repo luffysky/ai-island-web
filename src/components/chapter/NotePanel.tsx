@@ -17,6 +17,7 @@ export function NotePanel({
   const [noteId, setNoteId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const supabase = createSupabaseBrowser();
 
   useEffect(() => {
@@ -24,13 +25,20 @@ export function NotePanel({
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      const { data } = await supabase
+      // 用最新一筆、避免歷史 duplicate 把 maybeSingle 炸掉
+      const { data, error: loadErr } = await supabase
         .from("notes")
         .select("id, content")
         .eq("user_id", user.id)
         .eq("lesson_id", lessonId)
         .eq("is_public", false)
+        .order("updated_at", { ascending: false })
+        .limit(1)
         .maybeSingle();
+      if (loadErr) {
+        console.warn("[NotePanel] load failed:", loadErr.message);
+        return;
+      }
       if (data) {
         setNote(data.content);
         setNoteId(data.id);
@@ -39,7 +47,14 @@ export function NotePanel({
   }, [open, lessonId]);
 
   const save = async () => {
+    const trimmed = note.trim();
+    if (!trimmed) {
+      setError("筆記內容不能空白");
+      return;
+    }
     setSaving(true);
+    setError(null);
+
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       setSaving(false);
@@ -49,23 +64,37 @@ export function NotePanel({
       return;
     }
 
-    if (noteId) {
-      await supabase.from("notes")
-        .update({ content: note, updated_at: new Date().toISOString() })
-        .eq("id", noteId);
-    } else {
-      const { data } = await supabase.from("notes").insert({
-        user_id: user.id,
-        chapter_id: chapterId,
-        lesson_id: lessonId,
-        content: note,
-        is_public: false,
-      }).select("id").single();
-      if (data) setNoteId(data.id);
+    try {
+      if (noteId) {
+        const { error: upErr } = await supabase
+          .from("notes")
+          .update({ content: trimmed, updated_at: new Date().toISOString() })
+          .eq("id", noteId)
+          .eq("user_id", user.id);
+        if (upErr) throw upErr;
+      } else {
+        const { data, error: inErr } = await supabase
+          .from("notes")
+          .insert({
+            user_id: user.id,
+            chapter_id: chapterId,
+            lesson_id: lessonId,
+            content: trimmed,
+            is_public: false,
+          })
+          .select("id")
+          .single();
+        if (inErr) throw inErr;
+        if (data) setNoteId(data.id);
+      }
+      setSaved(true);
+      setTimeout(() => setSaved(false), 1500);
+    } catch (e: any) {
+      console.error("[NotePanel] save failed:", e);
+      setError(e?.message || "儲存失敗、請再試一次");
+    } finally {
+      setSaving(false);
     }
-    setSaved(true);
-    setSaving(false);
-    setTimeout(() => setSaved(false), 1500);
   };
 
   const handleOpen = async () => {
@@ -112,9 +141,14 @@ export function NotePanel({
               disabled={saving}
               className="flex items-center gap-1 px-3 py-1 bg-[var(--color-accent)] text-black text-xs font-semibold rounded hover:scale-105 transition disabled:opacity-50"
             >
-              {saved ? <><Check size={12} /> 已存</> : <><Save size={12} /> 儲存</>}
+              {saving ? "儲存中…" : saved ? <><Check size={12} /> 已存</> : <><Save size={12} /> 儲存</>}
             </button>
           </div>
+          {error && (
+            <div className="mt-2 px-2 py-1.5 text-xs text-red-400 bg-red-500/10 border border-red-500/30 rounded">
+              {error}
+            </div>
+          )}
         </div>
       )}
     </>
