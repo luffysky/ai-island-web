@@ -8,6 +8,7 @@ import { SideNav } from "@/components/SideNav";
 import { InteractionTracker } from "@/components/analytics/InteractionTracker";
 import { AuthProvider } from "@/lib/auth-context";
 import { AdminFloatingToolbar } from "@/components/admin/AdminFloatingToolbar";
+import { Marquee } from "@/components/Marquee";
 import { SITE_STATS } from "@/lib/site-stats";
 
 const TITLE = `AI 島：${SITE_STATS.chapterCount} 章全端養成班`;
@@ -34,6 +35,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="zh-Hant">
       <body className="min-h-screen flex flex-col">
         <AuthProvider>
+          <Marquee />
           <TopNav />
           <SideNav />
           <main className="flex-1">{children}</main>
