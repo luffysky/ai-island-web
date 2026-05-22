@@ -48,13 +48,20 @@ export function BookmarkButton({
       await supabase.from("bookmarks").delete().eq("user_id", user.id).eq("lesson_id", lessonId);
       setBookmarked(false);
     } else {
-      await supabase.from("bookmarks").insert({
+      const { error } = await supabase.from("bookmarks").insert({
         user_id: user.id,
         chapter_id: chapterId,
         lesson_id: lessonId,
         lesson_title: lessonTitle,
       });
-      setBookmarked(true);
+      if (!error) {
+        setBookmarked(true);
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(
+            new CustomEvent("pet:bookmark-added", { detail: { chapterId, lessonId } }),
+          );
+        }
+      }
     }
     setLoading(false);
   };

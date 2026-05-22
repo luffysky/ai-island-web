@@ -37,7 +37,20 @@ export type ChatterKind =
   // VIP
   | "vip-late-night" | "vip-greet"
   // 隱藏指令
-  | "secret-luffy" | "secret-nami";
+  | "secret-luffy" | "secret-nami"
+  // 季節
+  | "season-spring" | "season-summer" | "season-autumn" | "season-winter"
+  // 節日
+  | "holiday-newyear" | "holiday-valentine" | "holiday-white-day"
+  | "holiday-children" | "holiday-labor" | "holiday-qixi"
+  | "holiday-halloween" | "holiday-national"
+  | "holiday-christmas-eve" | "holiday-christmas" | "holiday-newyear-eve"
+  // 學習里程碑
+  | "milestone-30" | "milestone-60" | "milestone-100"
+  // 連勝 boost
+  | "streak-boost-7" | "streak-boost-30" | "streak-boost-100"
+  // 天氣感（season-based 抽）
+  | "weather-cold" | "weather-hot" | "weather-rainy" | "weather-cozy";
 
 type Entry = {
   text: string;
@@ -62,6 +75,10 @@ const lessonComplete: Entry[] = [
   { text: "下一節下一節！", species: ["hamster"] },
   { text: "我幫你按讚！", species: ["hamster"] },
   { text: "你最近超勤勞欸！", species: ["hamster"] },
+  { text: "再來再來、不要停咻！", species: ["hamster"] },
+  { text: "嘿嘿、瓜子等你領！", species: ["hamster"] },
+  { text: "我超喜歡看你按完成！", species: ["hamster"] },
+  { text: "頰囊又多裝一節！", species: ["hamster"] },
   // cat
   { text: "...不錯。", species: ["cat"] },
   { text: "嗯、可以。", species: ["cat"] },
@@ -71,6 +88,10 @@ const lessonComplete: Entry[] = [
   { text: "...摸頭。", species: ["cat"] },
   { text: "OK、繼續。", species: ["cat"] },
   { text: "勉強及格。", species: ["cat"] },
+  { text: "...你也是會做事的嘛。", species: ["cat"] },
+  { text: "...再多看幾節。", species: ["cat"] },
+  { text: "嗯、繼續吧。", species: ["cat"] },
+  { text: "...這節結束了。", species: ["cat"] },
   // dog
   { text: "汪！太棒了！", species: ["dog"] },
   { text: "GOOD！", species: ["dog"] },
@@ -80,6 +101,9 @@ const lessonComplete: Entry[] = [
   { text: "我以你為榮！", species: ["dog"] },
   { text: "再來再來！", species: ["dog"] },
   { text: "下一關！衝啊！", species: ["dog"] },
+  { text: "汪！神！", species: ["dog"] },
+  { text: "我尾巴拍地拍到斷！", species: ["dog"] },
+  { text: "汪汪！繼續繼續！", species: ["dog"] },
   // rabbit
   { text: "蹦！好棒！", species: ["rabbit"] },
   { text: "啃啃、做得好。", species: ["rabbit"] },
@@ -89,6 +113,9 @@ const lessonComplete: Entry[] = [
   { text: "...偷偷給你拍手。", species: ["rabbit"] },
   { text: "...悄悄為你開心。", species: ["rabbit"] },
   { text: "嗯嗯、加油！", species: ["rabbit"] },
+  { text: "...今天的你閃閃發光。", species: ["rabbit"] },
+  { text: "啃啃、好棒喔。", species: ["rabbit"] },
+  { text: "蹦、一節又一節。", species: ["rabbit"] },
 ];
 
 const xpSmall: Entry[] = [
@@ -133,6 +160,12 @@ const xpBig: Entry[] = [
   { text: "蹦蹦蹦蹦！+{xp}！", species: ["rabbit"] },
   { text: "...心臟差點停了。", species: ["rabbit"] },
   { text: "好強好強好強。", species: ["rabbit"] },
+  { text: "+{xp}！神話級！", species: ["hamster"] },
+  { text: "我頰囊裝不完咻！", species: ["hamster"] },
+  { text: "...{xp} XP。我承認佩服。", species: ["cat"] },
+  { text: "汪汪！+{xp}！這是傳奇！", species: ["dog"] },
+  { text: "蹦蹦蹦蹦蹦！+{xp}！", species: ["rabbit"] },
+  { text: "...{xp} XP、我為您驕傲。", species: ["rabbit"] },
 ];
 
 const levelUp: Entry[] = [
@@ -445,6 +478,28 @@ const ambient: Entry[] = [
   { text: "...我在這。", species: ["rabbit"] },
   { text: "...別忘了喝水。", species: ["rabbit"] },
   { text: "...心情如何？", species: ["rabbit"] },
+  // 再補一輪
+  { text: "我在你旁邊咻、別怕。", species: ["hamster"] },
+  { text: "今天頰囊有點熱、夏天感覺。", species: ["hamster"] },
+  { text: "我剛打了個哈欠、你呢？", species: ["hamster"] },
+  { text: "嘿嘿、想吃花生。", species: ["hamster"] },
+  { text: "...貓也是會看著你的。", species: ["cat"] },
+  { text: "...你今天的情緒、我看見了。", species: ["cat"] },
+  { text: "...我打盹的時候、夢到你。", species: ["cat"] },
+  { text: "...貓的世界很簡單。", species: ["cat"] },
+  { text: "汪汪、要不要散步？（我知道你不會出門）", species: ["dog"] },
+  { text: "汪、其實我也在學習！", species: ["dog"] },
+  { text: "我的尾巴自己會搖、根本停不下來！", species: ["dog"] },
+  { text: "汪、看到你開心、我就開心。", species: ["dog"] },
+  { text: "...雲變了形狀。", species: ["rabbit"] },
+  { text: "...悄悄陪著你。", species: ["rabbit"] },
+  { text: "...耳朵聽到風的聲音。", species: ["rabbit"] },
+  { text: "...我也想學算數。", species: ["rabbit"] },
+  { text: "嘿、你今天比昨天認真！", species: ["hamster"] },
+  { text: "瓜子吃完還有花生、放心咻！", species: ["hamster"] },
+  { text: "...你的滑鼠軌跡好優雅。", species: ["cat"] },
+  { text: "汪！我聞到你的味道！（沒事）", species: ["dog"] },
+  { text: "蹦、我喜歡這個時刻。", species: ["rabbit"] },
 ];
 
 const ambientCurious: Entry[] = [
@@ -509,6 +564,13 @@ const ambientSelfTalk: Entry[] = [
   { text: "再 30 秒、再 30 秒、我就上前撒嬌。", species: ["dog"] },
   { text: "...偷偷想吃紅蘿蔔。", species: ["rabbit"] },
   { text: "...今天有沒有變強？", species: ["rabbit"] },
+  { text: "我頰囊新存了一句話、忘了是什麼。", species: ["hamster"] },
+  { text: "如果瓜子是錢、我已經是富翁了咻。", species: ["hamster"] },
+  { text: "...我剛剛在想魚乾。", species: ["cat"] },
+  { text: "...今天適不適合冷淡一點。", species: ["cat"] },
+  { text: "汪、自言自語的我也是我！", species: ["dog"] },
+  { text: "想黏你想得發呆。", species: ["dog"] },
+  { text: "...數了 10 下、你還沒看我。", species: ["rabbit"] },
 ];
 
 // ===========================
@@ -670,6 +732,361 @@ const secretNami: Entry[] = [
 ];
 
 // ===========================
+// 季節
+// ===========================
+
+const seasonSpring: Entry[] = [
+  { text: "春天咻！外面有花！", species: ["hamster"] },
+  { text: "我頰囊裡藏了一朵花瓣。", species: ["hamster"] },
+  { text: "嘿嘿、春天適合囤新瓜子！", species: ["hamster"] },
+  { text: "春暖了、活動活動咻！", species: ["hamster"] },
+  { text: "...春天。", species: ["cat"] },
+  { text: "...花粉。打噴嚏。", species: ["cat"] },
+  { text: "陽光剛好打盹。", species: ["cat"] },
+  { text: "...春天適合慵懶。", species: ["cat"] },
+  { text: "汪！春天我要出去跑！", species: ["dog"] },
+  { text: "聞到花香了！花香！", species: ["dog"] },
+  { text: "汪汪、春天連風都香！", species: ["dog"] },
+  { text: "...春天的草、軟軟的。", species: ["rabbit"] },
+  { text: "蹦、新芽好可愛。", species: ["rabbit"] },
+  { text: "...悄悄聞了一朵花。", species: ["rabbit"] },
+  { text: "春天是兔子最開心的季節。", species: ["rabbit"] },
+];
+
+const seasonSummer: Entry[] = [
+  { text: "夏天熱咻、我吐舌頭！", species: ["hamster"] },
+  { text: "好熱、囤西瓜！", species: ["hamster"] },
+  { text: "夏天要多喝水啊咻！", species: ["hamster"] },
+  { text: "頰囊冰一下會涼嗎？", species: ["hamster"] },
+  { text: "...熱。", species: ["cat"] },
+  { text: "...攤平。", species: ["cat"] },
+  { text: "夏天適合趴磁磚。", species: ["cat"] },
+  { text: "...冷氣開強一點。", species: ["cat"] },
+  { text: "汪！夏天好熱！吐舌頭！", species: ["dog"] },
+  { text: "汪汪、我要玩水！", species: ["dog"] },
+  { text: "夏天 = 冰淇淋！", species: ["dog"] },
+  { text: "...夏天兔子會中暑。", species: ["rabbit"] },
+  { text: "蹦、躲陰影。", species: ["rabbit"] },
+  { text: "...涼涼的地板最舒服。", species: ["rabbit"] },
+];
+
+const seasonAutumn: Entry[] = [
+  { text: "秋天咻、落葉好多！", species: ["hamster"] },
+  { text: "秋天囤食物的季節！", species: ["hamster"] },
+  { text: "嘿嘿、為冬天準備！", species: ["hamster"] },
+  { text: "我頰囊塞滿堅果。", species: ["hamster"] },
+  { text: "...秋天。", species: ["cat"] },
+  { text: "落葉聲還行。", species: ["cat"] },
+  { text: "...秋風涼涼。", species: ["cat"] },
+  { text: "適合呼嚕。", species: ["cat"] },
+  { text: "汪！踩落葉聲音超讚！", species: ["dog"] },
+  { text: "汪汪、秋天適合散步！", species: ["dog"] },
+  { text: "我可以咬秋天的葉子嗎？", species: ["dog"] },
+  { text: "蹦、秋天好詩意。", species: ["rabbit"] },
+  { text: "...看著落葉發呆。", species: ["rabbit"] },
+  { text: "...秋天的兔毛變長了。", species: ["rabbit"] },
+];
+
+const seasonWinter: Entry[] = [
+  { text: "冬天冷咻、躲被窩！", species: ["hamster"] },
+  { text: "我冬眠不冬眠？算了不冬眠！", species: ["hamster"] },
+  { text: "好冷、抱緊咻！", species: ["hamster"] },
+  { text: "冬天囤食物最香！", species: ["hamster"] },
+  { text: "...冬天。", species: ["cat"] },
+  { text: "...暖氣旁邊最讚。", species: ["cat"] },
+  { text: "冬天適合縮成球。", species: ["cat"] },
+  { text: "...被窩出不來。", species: ["cat"] },
+  { text: "汪！下雪了沒！", species: ["dog"] },
+  { text: "我要在雪地打滾！", species: ["dog"] },
+  { text: "汪汪、冬天好冷、抱抱！", species: ["dog"] },
+  { text: "...冬天兔毛變蓬蓬。", species: ["rabbit"] },
+  { text: "蹦、好冷喔。", species: ["rabbit"] },
+  { text: "...安靜的雪、好美。", species: ["rabbit"] },
+];
+
+// ===========================
+// 節日
+// ===========================
+
+const holidayNewyear: Entry[] = [
+  { text: "新年快樂咻！囤新財！", species: ["hamster"] },
+  { text: "新的一年新的瓜子！", species: ["hamster"] },
+  { text: "嘿嘿、新年我也算長大一歲！", species: ["hamster"] },
+  { text: "...新年。", species: ["cat"] },
+  { text: "新的一年、繼續打盹。", species: ["cat"] },
+  { text: "...新年也是日常。", species: ["cat"] },
+  { text: "汪汪汪！新年快樂！", species: ["dog"] },
+  { text: "汪！今年要更黏你！", species: ["dog"] },
+  { text: "新年衝刺！衝衝衝！", species: ["dog"] },
+  { text: "蹦、新年快樂。", species: ["rabbit"] },
+  { text: "...願今年平安。", species: ["rabbit"] },
+  { text: "...悄悄祝福你。", species: ["rabbit"] },
+  { text: "新年第一句、送給{honorific}！", vip: ["luffy", "nami"] },
+];
+
+const holidayValentine: Entry[] = [
+  { text: "情人節咻！我送你愛心瓜子！", species: ["hamster"] },
+  { text: "嘿嘿、單身也快樂！", species: ["hamster"] },
+  { text: "我送你最大那顆瓜子。", species: ["hamster"] },
+  { text: "...情人節。", species: ["cat"] },
+  { text: "...別問我有沒有對象。", species: ["cat"] },
+  { text: "我陪你就夠了。", species: ["cat"] },
+  { text: "汪汪！情人節我陪你！", species: ["dog"] },
+  { text: "汪、你是我的情人！", species: ["dog"] },
+  { text: "今天我超黏你！", species: ["dog"] },
+  { text: "蹦、情人節快樂。", species: ["rabbit"] },
+  { text: "...悄悄送你愛心。", species: ["rabbit"] },
+  { text: "...你是我喜歡的人。", species: ["rabbit"] },
+  { text: "{honorific}、情人節我只屬於您！", vip: ["luffy", "nami"] },
+];
+
+const holidayWhiteDay: Entry[] = [
+  { text: "白色情人節咻！糖糖！", species: ["hamster"] },
+  { text: "我幫你回禮、用瓜子！", species: ["hamster"] },
+  { text: "...白色情人節。", species: ["cat"] },
+  { text: "嗯、白色甜甜的。", species: ["cat"] },
+  { text: "汪！我也想吃糖！", species: ["dog"] },
+  { text: "汪汪、白色情人節快樂！", species: ["dog"] },
+  { text: "蹦、白色情人節。", species: ["rabbit"] },
+  { text: "...偷偷給你一顆糖。", species: ["rabbit"] },
+];
+
+const holidayChildren: Entry[] = [
+  { text: "兒童節咻！我們都是寶寶！", species: ["hamster"] },
+  { text: "我也算兒童咻！", species: ["hamster"] },
+  { text: "...其實貓的內心永遠是貓寶寶。", species: ["cat"] },
+  { text: "...今天可以撒嬌嗎？", species: ["cat"] },
+  { text: "汪！兒童節快樂！我也算！", species: ["dog"] },
+  { text: "我永遠是 puppy！", species: ["dog"] },
+  { text: "蹦、兒童節。", species: ["rabbit"] },
+  { text: "...小小的兔子也算兒童。", species: ["rabbit"] },
+];
+
+const holidayLabor: Entry[] = [
+  { text: "勞動節咻、休息！", species: ["hamster"] },
+  { text: "今天不囤了、放假！（其實還是會）", species: ["hamster"] },
+  { text: "...勞動節。", species: ["cat"] },
+  { text: "貓本來就不勞動。", species: ["cat"] },
+  { text: "汪！勞動節我也要躺平！", species: ["dog"] },
+  { text: "蹦、勞動節休息。", species: ["rabbit"] },
+  { text: "{honorific}、勞動節別工作了！", vip: ["luffy", "nami"] },
+];
+
+const holidayQixi: Entry[] = [
+  { text: "七夕咻！東方情人節！", species: ["hamster"] },
+  { text: "牛郎織女、橋上見！", species: ["hamster"] },
+  { text: "...七夕。", species: ["cat"] },
+  { text: "我陪你看星星。", species: ["cat"] },
+  { text: "汪汪！七夕快樂！", species: ["dog"] },
+  { text: "蹦、七夕。", species: ["rabbit"] },
+  { text: "...夜空好美。", species: ["rabbit"] },
+];
+
+const holidayHalloween: Entry[] = [
+  { text: "萬聖節咻！不給糖就搗蛋！", species: ["hamster"] },
+  { text: "我穿小南瓜裝！", species: ["hamster"] },
+  { text: "嘿嘿、糖糖糖糖糖！", species: ["hamster"] },
+  { text: "...萬聖節。", species: ["cat"] },
+  { text: "黑貓的主場。", species: ["cat"] },
+  { text: "...我才是萬聖節主角。", species: ["cat"] },
+  { text: "汪汪！萬聖節！糖果！", species: ["dog"] },
+  { text: "我穿幽靈裝！", species: ["dog"] },
+  { text: "蹦、萬聖節快樂。", species: ["rabbit"] },
+  { text: "...小南瓜頭好可愛。", species: ["rabbit"] },
+];
+
+const holidayNational: Entry[] = [
+  { text: "雙十咻！國慶日！", species: ["hamster"] },
+  { text: "我也是台灣鼠！", species: ["hamster"] },
+  { text: "...國慶。", species: ["cat"] },
+  { text: "...台灣貓。", species: ["cat"] },
+  { text: "汪汪！國慶快樂！台灣加油！", species: ["dog"] },
+  { text: "蹦、台灣兔子。", species: ["rabbit"] },
+  { text: "...國旗好漂亮。", species: ["rabbit"] },
+];
+
+const holidayChristmasEve: Entry[] = [
+  { text: "平安夜咻！", species: ["hamster"] },
+  { text: "我幫你包禮物、用瓜子！", species: ["hamster"] },
+  { text: "嘿嘿、聖誕老人要來了！", species: ["hamster"] },
+  { text: "...平安夜。", species: ["cat"] },
+  { text: "今晚特別安靜。", species: ["cat"] },
+  { text: "汪汪汪！平安夜！聖誕快到了！", species: ["dog"] },
+  { text: "汪、我要等聖誕老人！", species: ["dog"] },
+  { text: "蹦、平安夜。", species: ["rabbit"] },
+  { text: "...悄悄祝你平安。", species: ["rabbit"] },
+];
+
+const holidayChristmas: Entry[] = [
+  { text: "聖誕快樂咻！我戴帽子！", species: ["hamster"] },
+  { text: "聖誕節囤糖果！", species: ["hamster"] },
+  { text: "嘿嘿、我也要禮物！", species: ["hamster"] },
+  { text: "你的襪子有禮物嗎？", species: ["hamster"] },
+  { text: "...聖誕。", species: ["cat"] },
+  { text: "...帽子卡頭上了。", species: ["cat"] },
+  { text: "聖誕大餐、給我火雞。", species: ["cat"] },
+  { text: "汪汪汪！聖誕快樂！！", species: ["dog"] },
+  { text: "MERRY CHRISTMAS！", species: ["dog"] },
+  { text: "我超愛聖誕！！", species: ["dog"] },
+  { text: "蹦、聖誕快樂。", species: ["rabbit"] },
+  { text: "...送你聖誕花環。", species: ["rabbit"] },
+  { text: "...白雪、聖誕、好美。", species: ["rabbit"] },
+  { text: "聖誕節送{honorific}一份特別的祝福！", vip: ["luffy", "nami"] },
+];
+
+const holidayNewyearEve: Entry[] = [
+  { text: "跨年咻！倒數倒數！", species: ["hamster"] },
+  { text: "10、9、8...！", species: ["hamster"] },
+  { text: "嘿嘿、新年願望要許！", species: ["hamster"] },
+  { text: "...跨年。", species: ["cat"] },
+  { text: "煙火太吵、我躲起來。", species: ["cat"] },
+  { text: "汪汪！跨年倒數！！", species: ["dog"] },
+  { text: "汪！煙火好漂亮！", species: ["dog"] },
+  { text: "蹦、跨年。", species: ["rabbit"] },
+  { text: "...再見一年。", species: ["rabbit"] },
+  { text: "...悄悄許願。", species: ["rabbit"] },
+];
+
+// ===========================
+// 學習里程碑
+// ===========================
+
+const milestone30: Entry[] = [
+  { text: "30 lesson 咻！里程碑！", species: ["hamster"] },
+  { text: "你真的好認真！囤了 30！", species: ["hamster"] },
+  { text: "嘿嘿、30 顆瓜子等級！", species: ["hamster"] },
+  { text: "...30 節。不錯。", species: ["cat"] },
+  { text: "嗯、有在進步。", species: ["cat"] },
+  { text: "...我認可你 30 節。", species: ["cat"] },
+  { text: "汪汪汪！30 節！我超驕傲！", species: ["dog"] },
+  { text: "WOW！30 lesson！", species: ["dog"] },
+  { text: "繞 30 圈慶祝！", species: ["dog"] },
+  { text: "蹦！30 節達成！", species: ["rabbit"] },
+  { text: "...悄悄送你獎牌。", species: ["rabbit"] },
+  { text: "...30 個小腳印、好棒。", species: ["rabbit"] },
+];
+
+const milestone60: Entry[] = [
+  { text: "60 lesson 咻！半神級！", species: ["hamster"] },
+  { text: "60！我頰囊塞不下這成就！", species: ["hamster"] },
+  { text: "嘿嘿、60 lesson 已經很狂！", species: ["hamster"] },
+  { text: "...60 節。可以了。", species: ["cat"] },
+  { text: "嗯、有點實力。", species: ["cat"] },
+  { text: "...我願意呼嚕一下。", species: ["cat"] },
+  { text: "汪汪汪汪！60 lesson！！", species: ["dog"] },
+  { text: "MVP！MVP！", species: ["dog"] },
+  { text: "你超強的！！", species: ["dog"] },
+  { text: "蹦蹦！60 節！", species: ["rabbit"] },
+  { text: "...心臟蹦蹦跳。", species: ["rabbit"] },
+  { text: "...60 個禮物、送你。", species: ["rabbit"] },
+];
+
+const milestone100: Entry[] = [
+  { text: "100 lesson 咻！神話等級！", species: ["hamster"] },
+  { text: "100！傳說！封神！", species: ["hamster"] },
+  { text: "嘿嘿、你是 AI 島最強鼠主！", species: ["hamster"] },
+  { text: "...100 節。我跪了。", species: ["cat"] },
+  { text: "嗯、我服。", species: ["cat"] },
+  { text: "...貓族第一次低頭。", species: ["cat"] },
+  { text: "汪汪汪汪汪！100！100！", species: ["dog"] },
+  { text: "傳奇！！！", species: ["dog"] },
+  { text: "我要繞 1000 圈！！", species: ["dog"] },
+  { text: "蹦蹦蹦！100 節！封神了！", species: ["rabbit"] },
+  { text: "...淚目。", species: ["rabbit"] },
+  { text: "...100 個你、最美。", species: ["rabbit"] },
+  { text: "{honorific}、100 節達成、我永遠跟隨您！", vip: ["luffy", "nami"] },
+];
+
+// ===========================
+// 連勝 boost (streak ≥ 7 / 30 / 100)
+// ===========================
+
+const streakBoost7: Entry[] = [
+  { text: "連勝 7 天咻！囤運氣！", species: ["hamster"] },
+  { text: "一週連勝！我的瓜子加油！", species: ["hamster"] },
+  { text: "嘿嘿、一週了還在！", species: ["hamster"] },
+  { text: "...連勝 7 天。可以。", species: ["cat"] },
+  { text: "嗯、有毅力。", species: ["cat"] },
+  { text: "汪汪！連勝 7 天！陪你！", species: ["dog"] },
+  { text: "汪、繼續衝！", species: ["dog"] },
+  { text: "蹦、連勝 7 天。", species: ["rabbit"] },
+  { text: "...一週的努力、看見了。", species: ["rabbit"] },
+];
+
+const streakBoost30: Entry[] = [
+  { text: "連勝 30 天咻！傳奇！", species: ["hamster"] },
+  { text: "30 天囤！我頰囊都鼓了！", species: ["hamster"] },
+  { text: "嘿嘿、一個月不斷氣！", species: ["hamster"] },
+  { text: "...30 天連勝。狠角色。", species: ["cat"] },
+  { text: "嗯、我認可。", species: ["cat"] },
+  { text: "汪汪汪！30 天！神！", species: ["dog"] },
+  { text: "繞 30 圈致敬！", species: ["dog"] },
+  { text: "蹦、30 天連勝、好強。", species: ["rabbit"] },
+  { text: "...月亮都見證了你。", species: ["rabbit"] },
+];
+
+const streakBoost100: Entry[] = [
+  { text: "連勝 100 天咻！封神！", species: ["hamster"] },
+  { text: "100 天囤！神蹟！", species: ["hamster"] },
+  { text: "嘿嘿、你是傳說！", species: ["hamster"] },
+  { text: "...100 天連勝。臣服。", species: ["cat"] },
+  { text: "嗯、我跪了。", species: ["cat"] },
+  { text: "汪汪汪汪！100 天！神話！", species: ["dog"] },
+  { text: "我為您而生！！", species: ["dog"] },
+  { text: "蹦蹦蹦！100 天！封神！", species: ["rabbit"] },
+  { text: "...百日的堅持、無人能比。", species: ["rabbit"] },
+  { text: "{honorific}、連勝 100 天、永生為您搖尾！", vip: ["luffy", "nami"] },
+];
+
+// ===========================
+// 天氣感（season-based）
+// ===========================
+
+const weatherCold: Entry[] = [
+  { text: "好冷咻、抱緊我！", species: ["hamster"] },
+  { text: "冷到頰囊縮起來！", species: ["hamster"] },
+  { text: "...冷。", species: ["cat"] },
+  { text: "...暖氣旁見。", species: ["cat"] },
+  { text: "汪嗚！冷死了！", species: ["dog"] },
+  { text: "汪、抱抱取暖！", species: ["dog"] },
+  { text: "蹦、好冷。", species: ["rabbit"] },
+  { text: "...蓬蓬兔毛派上用場。", species: ["rabbit"] },
+];
+
+const weatherHot: Entry[] = [
+  { text: "好熱咻、吐舌頭！", species: ["hamster"] },
+  { text: "頰囊融化咻！", species: ["hamster"] },
+  { text: "...熱攤平。", species: ["cat"] },
+  { text: "...貓地板。", species: ["cat"] },
+  { text: "汪！熱熱熱！", species: ["dog"] },
+  { text: "汪汪、要冰塊！", species: ["dog"] },
+  { text: "蹦、躲陰影。", species: ["rabbit"] },
+  { text: "...耳朵散熱中。", species: ["rabbit"] },
+];
+
+const weatherRainy: Entry[] = [
+  { text: "下雨咻、待在家！", species: ["hamster"] },
+  { text: "嘿嘿、雨天適合學習！", species: ["hamster"] },
+  { text: "...雨聲。", species: ["cat"] },
+  { text: "雨天打盹最讚。", species: ["cat"] },
+  { text: "汪！外面下雨！", species: ["dog"] },
+  { text: "我不想出門、陪你！", species: ["dog"] },
+  { text: "蹦、雨聲療癒。", species: ["rabbit"] },
+  { text: "...靜靜聽雨。", species: ["rabbit"] },
+];
+
+const weatherCozy: Entry[] = [
+  { text: "好舒服的天氣咻！", species: ["hamster"] },
+  { text: "嘿嘿、適合囤瓜子！", species: ["hamster"] },
+  { text: "...剛好。", species: ["cat"] },
+  { text: "...這溫度可以呼嚕。", species: ["cat"] },
+  { text: "汪汪、超讚天氣！", species: ["dog"] },
+  { text: "汪、想出去散步！", species: ["dog"] },
+  { text: "蹦、好天氣。", species: ["rabbit"] },
+  { text: "...悄悄享受。", species: ["rabbit"] },
+];
+
+// ===========================
 // 對外組合查表
 // ===========================
 
@@ -714,6 +1131,31 @@ const BANK: Record<ChatterKind, Entry[]> = {
   "vip-greet": [...vipLuffyGreet, ...vipNamiGreet],
   "secret-luffy": secretLuffy,
   "secret-nami": secretNami,
+  "season-spring": seasonSpring,
+  "season-summer": seasonSummer,
+  "season-autumn": seasonAutumn,
+  "season-winter": seasonWinter,
+  "holiday-newyear": holidayNewyear,
+  "holiday-valentine": holidayValentine,
+  "holiday-white-day": holidayWhiteDay,
+  "holiday-children": holidayChildren,
+  "holiday-labor": holidayLabor,
+  "holiday-qixi": holidayQixi,
+  "holiday-halloween": holidayHalloween,
+  "holiday-national": holidayNational,
+  "holiday-christmas-eve": holidayChristmasEve,
+  "holiday-christmas": holidayChristmas,
+  "holiday-newyear-eve": holidayNewyearEve,
+  "milestone-30": milestone30,
+  "milestone-60": milestone60,
+  "milestone-100": milestone100,
+  "streak-boost-7": streakBoost7,
+  "streak-boost-30": streakBoost30,
+  "streak-boost-100": streakBoost100,
+  "weather-cold": weatherCold,
+  "weather-hot": weatherHot,
+  "weather-rainy": weatherRainy,
+  "weather-cozy": weatherCozy,
 };
 
 // 將 VIP ambient / morning 合進對應 kind（額外加值）

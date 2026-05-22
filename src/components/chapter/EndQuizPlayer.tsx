@@ -145,7 +145,9 @@ export function EndQuizPlayer({ chapterId }: { chapterId: number }) {
       if (typeof window !== "undefined") {
         if (data.perfect) {
           window.dispatchEvent(new CustomEvent("pet:quiz-perfect", { detail: { chapterId } }));
-        } else if (!data.passed) {
+        } else if (data.passed) {
+          window.dispatchEvent(new CustomEvent("pet:quiz-passed", { detail: { chapterId } }));
+        } else {
           window.dispatchEvent(new CustomEvent("pet:quiz-failed", { detail: { chapterId } }));
         }
         if (data.xpAwarded > 0) {

@@ -89,6 +89,11 @@ export function NotePanel({
       }
       setSaved(true);
       setTimeout(() => setSaved(false), 1500);
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("pet:note-saved", { detail: { chapterId, lessonId } }),
+        );
+      }
     } catch (e: any) {
       console.error("[NotePanel] save failed:", e);
       setError(e?.message || "儲存失敗、請再試一次");

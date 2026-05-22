@@ -12,6 +12,7 @@ import {
   type ChatterCtx,
   type ChatterKind,
 } from "@/lib/pet-chatter";
+import { getSeason, getHoliday, getHeadDecoration } from "@/lib/pet-season";
 import { PlainBubble, CuteBubble } from "./PetBubble";
 import { PetChatPanel } from "./PetChatPanel";
 
@@ -41,6 +42,7 @@ export function Pet() {
   const [hidden, setHidden] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
   const [dragging, setDragging] = useState(false);
+  const [milestoneBurst, setMilestoneBurst] = useState<30 | 60 | 100 | null>(null);
 
   const dragOffset = useRef<{ dx: number; dy: number } | null>(null);
   const moodTimer = useRef<any>(null);
@@ -50,6 +52,8 @@ export function Pet() {
   const lastActiveAt = useRef<number>(Date.now());
   const sessionGreetedRef = useRef<boolean>(false);
   const recentChatterRef = useRef<Set<string>>(new Set());
+  const holidayGreetedRef = useRef<string | null>(null);
+  const burstTimerRef = useRef<any>(null);
 
   const vipTier = getVipTier(profile);
   const cuteMode = usesCuteBubble(vipTier);
@@ -201,6 +205,15 @@ export function Pet() {
     const onStreakBroken = () => fire("streak-broken", undefined, { force: true, mood: "sad" });
     const onBookmark = () => fire("bookmark-added", undefined, { force: true });
     const onNote = () => fire("note-saved", undefined, { force: true });
+    const onMilestone = (e: any) => {
+      const count = e?.detail?.count;
+      if (count !== 30 && count !== 60 && count !== 100) return;
+      const kind = `milestone-${count}` as ChatterKind;
+      fire(kind, undefined, { force: true, mood: "proud" });
+      setMilestoneBurst(count);
+      if (burstTimerRef.current) clearTimeout(burstTimerRef.current);
+      burstTimerRef.current = setTimeout(() => setMilestoneBurst(null), 4500);
+    };
 
     window.addEventListener("pet:lesson-complete", onLesson);
     window.addEventListener("pet:xp-earned", onXp);
@@ -211,6 +224,7 @@ export function Pet() {
     window.addEventListener("pet:streak-broken", onStreakBroken);
     window.addEventListener("pet:bookmark-added", onBookmark);
     window.addEventListener("pet:note-saved", onNote);
+    window.addEventListener("pet:milestone-reached", onMilestone);
     return () => {
       window.removeEventListener("pet:lesson-complete", onLesson);
       window.removeEventListener("pet:xp-earned", onXp);
@@ -221,6 +235,7 @@ export function Pet() {
       window.removeEventListener("pet:streak-broken", onStreakBroken);
       window.removeEventListener("pet:bookmark-added", onBookmark);
       window.removeEventListener("pet:note-saved", onNote);
+      window.removeEventListener("pet:milestone-reached", onMilestone);
     };
     // ctx 依賴會 trigger re-bind、但因為 listener id 不同也沒事
   }, [pet, ctx]);
@@ -281,6 +296,9 @@ export function Pet() {
   useEffect(() => {
     if (!pet || !ctx || !pet.proactive_enabled || hideRoute) return;
     let cancelled = false;
+    const streak = ctx.streak ?? 0;
+    const season = getSeason();
+    const seasonKind: ChatterKind = `season-${season}` as ChatterKind;
     const schedule = () => {
       const delay = 90_000 + Math.random() * 90_000; // 90-180s
       const id = window.setTimeout(() => {
@@ -295,7 +313,12 @@ export function Pet() {
             "ambient-self-talk",
             "ambient-philosophical",
             "ambient-complain",
+            seasonKind, // 季節感
           ];
+          // streak boost — 長連勝偶爾打卡
+          if (streak >= 100) pool.push("streak-boost-100");
+          else if (streak >= 30) pool.push("streak-boost-30");
+          else if (streak >= 7) pool.push("streak-boost-7");
           const kind = pool[Math.floor(Math.random() * pool.length)];
           fire(kind);
         }
@@ -308,6 +331,20 @@ export function Pet() {
       cancelled = true;
       window.clearTimeout(id);
     };
+  }, [pet, ctx, hideRoute]);
+
+  // ---------- 節日 daily once ----------
+  useEffect(() => {
+    if (!pet || !ctx || hideRoute) return;
+    const today = new Date();
+    const holiday = getHoliday(today);
+    if (!holiday) return;
+    const key = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}-${holiday}`;
+    if (holidayGreetedRef.current === key) return;
+    holidayGreetedRef.current = key;
+    const kind = `holiday-${holiday}` as ChatterKind;
+    const t = setTimeout(() => fire(kind, undefined, { force: true, mood: "happy" }), 3000);
+    return () => clearTimeout(t);
   }, [pet, ctx, hideRoute]);
 
   // ---------- 心跳：AI tick ----------
@@ -366,6 +403,7 @@ export function Pet() {
   const moodFx = moodClass(mood);
   const Bubble = cuteMode ? CuteBubble : PlainBubble;
   const auraColor = vipTier === "nami" ? "#ff9ec0" : vipTier === "luffy" ? "#ffd700" : null;
+  const headDeco = getHeadDecoration();
 
   return (
     <>
@@ -399,6 +437,36 @@ export function Pet() {
             }}
             className="vip-aura"
           />
+        )}
+
+        {/* milestone burst — 30/60/100 達成時 4.5s 粒子噴發 */}
+        {milestoneBurst && (
+          <div
+            className={`milestone-burst milestone-burst-${milestoneBurst}`}
+            style={{
+              position: "absolute",
+              left: "50%",
+              top: "50%",
+              transform: "translate(-50%, -50%)",
+              width: 120,
+              height: 120,
+              pointerEvents: "none",
+              zIndex: 0,
+            }}
+          >
+            {Array.from({ length: milestoneBurst === 100 ? 12 : 8 }).map((_, i) => (
+              <span
+                key={i}
+                className="burst-particle"
+                style={{
+                  ["--i" as any]: i,
+                  ["--total" as any]: milestoneBurst === 100 ? 12 : 8,
+                }}
+              >
+                {milestoneBurst === 100 ? "🌈" : milestoneBurst === 60 ? "✨" : "⭐"}
+              </span>
+            ))}
+          </div>
         )}
 
         <button
@@ -440,6 +508,23 @@ export function Pet() {
           title={`${pet.name}（${species.name}）— 點開聊天、拖曳移位`}
           aria-label={`${pet.name} pet companion`}
         >
+          {/* 頭頂裝飾（節日/聖誕等） */}
+          {headDeco && (
+            <span
+              style={{
+                position: "absolute",
+                left: "50%",
+                top: -8,
+                transform: "translateX(-50%) rotate(-12deg)",
+                fontSize: 22,
+                pointerEvents: "none",
+                filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.25))",
+              }}
+              aria-hidden
+            >
+              {headDeco}
+            </span>
+          )}
           {species.emoji}
         </button>
 
@@ -497,6 +582,29 @@ export function Pet() {
             0%, 100% { opacity: 0.55; transform: translate(-50%, -50%) scale(1); }
             50% { opacity: 0.9; transform: translate(-50%, -50%) scale(1.1); }
           }
+          @keyframes burst-out {
+            0% {
+              opacity: 0;
+              transform: translate(-50%, -50%) translate(0, 0) scale(0.4);
+            }
+            20% {
+              opacity: 1;
+            }
+            100% {
+              opacity: 0;
+              transform:
+                translate(-50%, -50%)
+                translate(
+                  calc(cos(calc(var(--i) * 360deg / var(--total))) * 70px),
+                  calc(sin(calc(var(--i) * 360deg / var(--total))) * 70px)
+                )
+                scale(1.3);
+            }
+          }
+          @keyframes burst-rotate {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to   { transform: translate(-50%, -50%) rotate(360deg); }
+          }
           .mood-idle { animation: pet-bob 3s ease-in-out infinite; }
           .mood-happy { animation: pet-bob 0.6s ease-in-out infinite; }
           .mood-cheering { animation: pet-jump 0.5s ease-in-out 4; }
@@ -506,6 +614,27 @@ export function Pet() {
           .mood-concerned { animation: pet-shake 0.4s ease-in-out 3; }
           .mood-sad { animation: pet-droop 1.5s ease-in-out infinite; }
           :global(.vip-aura) { animation: vip-pulse 2.6s ease-in-out infinite; }
+          :global(.milestone-burst) {
+            animation: burst-rotate 4.5s linear 1;
+          }
+          :global(.milestone-burst .burst-particle) {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            font-size: 22px;
+            animation: burst-out 1.4s ease-out infinite;
+            animation-delay: calc(var(--i) * 0.06s);
+          }
+          :global(.milestone-burst-100 .burst-particle) {
+            font-size: 28px;
+            filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.8));
+          }
+          :global(.milestone-burst-60 .burst-particle) {
+            filter: drop-shadow(0 0 4px rgba(255, 200, 100, 0.7));
+          }
+          :global(.milestone-burst-30 .burst-particle) {
+            filter: drop-shadow(0 0 3px rgba(255, 215, 0, 0.6));
+          }
         `}</style>
       </div>
 
