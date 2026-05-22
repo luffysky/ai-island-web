@@ -41,6 +41,63 @@ html, body {
 ::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 5px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--color-border-hover); }
 
+/* ============================================================
+   Admin skin — light pink cute theme
+   套用方式：<div className="admin-skin">…</div>
+   覆寫 CSS 變數、整套後台元件不用改 className 就能換主題
+   ============================================================ */
+.admin-skin {
+  --color-bg: #fdf4f8;
+  --color-bg-elevated: #fce4ef;
+  --color-bg-card: #ffffff;
+  --color-border: #fbcfe8;
+  --color-border-hover: #f9a8d4;
+
+  --color-fg: #4a1d3a;
+  --color-fg-muted: #a05780;
+  --color-fg-dim: #c98ab1;
+
+  --color-accent: #ec4899;
+  --color-accent-2: #c084fc;
+  --color-accent-3: #f9a8d4;
+  --color-warning: #f59e0b;
+  --color-danger: #f43f5e;
+  --color-pink: #ec4899;
+  --color-gold: #f59e0b;
+
+  background:
+    radial-gradient(at 0% 0%, #fce4ef 0%, transparent 50%),
+    radial-gradient(at 100% 0%, #f3e8ff 0%, transparent 50%),
+    var(--color-bg);
+  color: var(--color-fg);
+  min-height: 100vh;
+}
+
+/* 卡片柔光 / 圓角 */
+.admin-skin .bg-\[var\(--color-bg-card\)\] {
+  box-shadow: 0 1px 3px rgba(236, 72, 153, 0.06), 0 4px 14px rgba(236, 72, 153, 0.04);
+}
+.admin-skin .rounded-xl,
+.admin-skin .rounded-lg {
+  border-radius: 1rem;
+}
+
+/* selection / scrollbar 用粉色 */
+.admin-skin ::selection { background: var(--color-accent); color: #fff; }
+.admin-skin ::-webkit-scrollbar-track { background: #fff5fa; }
+.admin-skin ::-webkit-scrollbar-thumb { background: #fbcfe8; }
+.admin-skin ::-webkit-scrollbar-thumb:hover { background: #f9a8d4; }
+
+/* 標題稍微小一點 / 圓潤 */
+.admin-skin h1, .admin-skin h2, .admin-skin h3 {
+  letter-spacing: -0.01em;
+}
+
+/* 強調按鈕：保留粉色立體感 */
+.admin-skin button[class*="bg-[var(--color-accent)]"] {
+  box-shadow: 0 4px 14px rgba(236, 72, 153, 0.25);
+}
+
 /* Markdown content */
 .prose-custom { @apply break-words; min-width: 0; }
 .prose-custom h2 { @apply text-2xl font-bold mt-8 mb-4 text-[var(--color-accent)]; }

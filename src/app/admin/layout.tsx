@@ -30,18 +30,27 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-6">
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">🛠️ AI 島 後台</h1>
-          <p className="text-xs text-[var(--color-fg-muted)]">
-            管理員：{profile?.display_name || profile?.username}
-          </p>
+    <div className="admin-skin">
+      <div className="max-w-7xl mx-auto px-6 py-6">
+        <div className="mb-6 flex items-center justify-between bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-2xl p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-accent-2)] flex items-center justify-center text-white text-lg shadow-lg">
+              🌸
+            </div>
+            <div>
+              <h1 className="text-xl font-bold">AI 島 · 後台</h1>
+              <p className="text-xs text-[var(--color-fg-muted)]">
+                哈囉 {profile?.display_name || profile?.username} ✨
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/"
+            className="text-sm text-[var(--color-fg-muted)] hover:text-[var(--color-accent)] transition px-3 py-1.5 rounded-full hover:bg-[var(--color-bg-elevated)]"
+          >
+            ← 回前台
+          </Link>
         </div>
-        <Link href="/" className="text-sm text-[var(--color-fg-muted)] hover:text-[var(--color-accent)]">
-          ← 回前台
-        </Link>
-      </div>
 
       <div className="flex gap-6">
         <aside className="w-52 flex-shrink-0">
@@ -88,6 +97,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </aside>
         <div className="flex-1 min-w-0">{children}</div>
       </div>
+      </div>
     </div>
   );
 }
@@ -107,7 +117,7 @@ function AdminLink({ href, children }: { href: string; children: React.ReactNode
   return (
     <Link
       href={publicHref as any}
-      className="block px-3 py-1.5 rounded-lg hover:bg-[var(--color-bg-card)] hover:text-[var(--color-accent)] transition"
+      className="block px-3 py-2 rounded-full hover:bg-[var(--color-bg-elevated)] hover:text-[var(--color-accent)] hover:translate-x-0.5 transition-all"
     >
       {children}
     </Link>
