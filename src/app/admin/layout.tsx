@@ -70,7 +70,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             </NavGroup>
 
             <NavGroup title="SEO / 流量">
-              <AdminLink href="/admin/ga4">📈 GA4 儀表板</AdminLink>
+              <AdminLink href="/admin/ga4">📈 站台分析</AdminLink>
               <AdminLink href="/admin/seo">🔍 SEO 管理</AdminLink>
               <AdminLink href="/admin/seo/redirects">↪️ 轉址</AdminLink>
             </NavGroup>

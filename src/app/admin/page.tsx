@@ -122,8 +122,34 @@ export default async function AdminOverviewPage() {
   });
   const hourlyActivityData = Object.entries(hourlyMap).map(([h, users]) => ({ hour: Number(h), users }));
 
+  // === 即時在線（站內 tracker、近 5 分鐘 last_seen_at）===
+  const fiveMinAgo = new Date(Date.now() - 5 * 60_000).toISOString();
+  const { data: liveSessions } = await supabase
+    .from("analytics_sessions")
+    .select("user_id, current_path")
+    .gte("last_seen_at", fiveMinAgo);
+  const liveTotal = liveSessions?.length ?? 0;
+  const liveMembers = liveSessions?.filter((s: any) => s.user_id).length ?? 0;
+  const liveGuests = liveTotal - liveMembers;
+
   return (
     <div className="space-y-6">
+      {/* 即時在線 */}
+      <div>
+        <h2 className="text-sm uppercase tracking-wider text-[var(--color-fg-muted)] mb-3 flex items-center gap-2">
+          <span className="inline-block w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+          即時在線（近 5 分鐘）
+          <Link href={"/admin/ga4" as any} className="ml-auto text-[10px] text-[var(--color-fg-muted)] hover:text-[var(--color-accent)] normal-case tracking-normal">
+            站台分析 →
+          </Link>
+        </h2>
+        <div className="grid grid-cols-3 gap-3">
+          <Stat label="🟢 在線總數" value={liveTotal} color="text-green-400" />
+          <Stat label="會員" value={liveMembers} color="text-[var(--color-accent)]" />
+          <Stat label="訪客" value={liveGuests} color="text-[var(--color-fg-muted)]" />
+        </div>
+      </div>
+
       {/* 核心指標 */}
       <div>
         <h2 className="text-sm uppercase tracking-wider text-[var(--color-fg-muted)] mb-3">核心指標</h2>

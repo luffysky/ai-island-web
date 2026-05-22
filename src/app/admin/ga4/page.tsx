@@ -44,89 +44,77 @@ export default async function GA4Page() {
     .order("started_at", { ascending: false })
     .limit(300);
 
+  const hasGa4 = snapshots && snapshots.length > 0;
+
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold">📈 GA4 儀表板</h2>
+        <h2 className="text-xl font-bold">📊 站台分析</h2>
         <p className="text-sm text-[var(--color-fg-muted)] mt-1">
-          GA Property: <code className="bg-[var(--color-bg-elevated)] px-1.5 py-0.5 rounded text-xs">{gaProperty}</code>
+          站內第一方追蹤（即時 + 24h 歷史）為主數據源。
+          {hasGa4 && (
+            <>
+              {" "}
+              · GA4 補充：<code className="bg-[var(--color-bg-elevated)] px-1.5 py-0.5 rounded text-xs">{gaProperty}</code>
+            </>
+          )}
         </p>
       </div>
 
-      {!snapshots || snapshots.length === 0 ? (
-        <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-6">
-          <div className="font-bold mb-2">📊 GA4 整合說明</div>
-          <p className="text-sm text-[var(--color-fg-muted)] mb-3">
-            目前 analytics_snapshots 是空的、有 3 種接 GA 的方式：
-          </p>
-          <ol className="text-sm space-y-2 list-decimal list-inside text-[var(--color-fg-muted)]">
-            <li>
-              <strong>嵌入 GA4 Dashboard iframe</strong>（最快）
-              <p className="ml-5 text-xs mt-1">Google Analytics → Admin → Reporting → 嵌入式報告</p>
-            </li>
-            <li>
-              <strong>用 GA4 Data API</strong>（推薦）
-              <p className="ml-5 text-xs mt-1">每天 cron 跑、把數據存到 analytics_snapshots、這個頁面就活了</p>
-            </li>
-            <li>
-              <strong>用 PostHog / Plausible</strong>（替代）
-              <p className="ml-5 text-xs mt-1">完整自架 + 隱私友善</p>
-            </li>
-          </ol>
-          <div className="mt-4 p-3 bg-[var(--color-bg)] rounded text-xs">
-            <strong>整合 Step：</strong>
-            <ol className="mt-2 ml-4 list-decimal space-y-1">
-              <li>到 Google Cloud Console 開 Analytics Data API</li>
-              <li>建 Service Account、下載 JSON key</li>
-              <li>在 GA 加 Service Account 為 viewer</li>
-              <li>設 env：GA4_PROPERTY_ID、GA4_SA_CREDENTIALS</li>
-              <li>跑 cron：<code className="bg-[var(--color-bg-elevated)] px-1 rounded">/api/admin/ga4/sync</code> 每天更新</li>
-            </ol>
-          </div>
-        </div>
-      ) : null}
-
-      {/* 即使沒數據、也顯示框架 */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <Stat label="總瀏覽" value={totalPV.toLocaleString()} color="text-blue-400" />
-        <Stat label="不重複訪客" value={totalVisitors.toLocaleString()} color="text-green-400" />
-        <Stat label="平均停留" value={`${Math.floor(avgEngagement / 60)}m ${avgEngagement % 60}s`} color="text-purple-400" />
-        <Stat label="跳出率" value={`${avgBounce.toFixed(1)}%`} color="text-yellow-400" />
-      </div>
-
-      {/* 圖表 */}
-      {snapshots && snapshots.length > 0 && <GA4Charts data={snapshots} />}
-
-      {/* Tables */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <TopTable title="🏆 熱門頁面" items={topPages} valueKey="views" labelKey="path" />
-        <TopTable title="🔗 引薦來源" items={topReferrers} valueKey="visits" labelKey="source" />
-        <TopTable title="🌍 國家" items={topCountries} valueKey="users" labelKey="country" />
-      </div>
-
+      {/* 站內互動分析（即時 + 24h 歷史）— 主要區塊 */}
       <InteractionPanels
         activeSessions={activeSessions ?? []}
         recentPageViews={recentPageViews ?? []}
       />
 
-      {/* GA4 iframe（user 在 GA 後台分享的 dashboard 嵌進來）*/}
-      <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-5">
-        <h3 className="font-bold mb-3">🔗 GA4 整合</h3>
-        <div className="flex flex-wrap gap-2">
-          <GA4SyncButton />
-          <a
-            href="https://analytics.google.com/analytics/web/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--color-bg-elevated)] text-[var(--color-fg)] rounded-lg text-sm font-semibold hover:bg-[var(--color-border)] transition"
-          >
-            🔗 開啟 Google Analytics
-          </a>
+      {/* GA4 區塊：有資料才秀 */}
+      {hasGa4 && (
+        <>
+          <div className="pt-4 border-t border-[var(--color-border)]">
+            <h3 className="text-lg font-bold mb-1">GA4 補充 30 天</h3>
+            <p className="text-xs text-[var(--color-fg-muted)] mb-4">
+              來自 Google Analytics、與站內分析互為佐證。
+            </p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <Stat label="總瀏覽" value={totalPV.toLocaleString()} color="text-blue-400" />
+              <Stat label="不重複訪客" value={totalVisitors.toLocaleString()} color="text-green-400" />
+              <Stat label="平均停留" value={`${Math.floor(avgEngagement / 60)}m ${avgEngagement % 60}s`} color="text-purple-400" />
+              <Stat label="跳出率" value={`${avgBounce.toFixed(1)}%`} color="text-yellow-400" />
+            </div>
+          </div>
+          <GA4Charts data={snapshots} />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <TopTable title="🏆 熱門頁面" items={topPages} valueKey="views" labelKey="path" />
+            <TopTable title="🔗 引薦來源" items={topReferrers} valueKey="visits" labelKey="source" />
+            <TopTable title="🌍 國家" items={topCountries} valueKey="users" labelKey="country" />
+          </div>
+        </>
+      )}
+
+      {/* GA4 設定 / 同步：collapse 在最下方、不影響主畫面 */}
+      <details className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl">
+        <summary className="cursor-pointer px-4 py-3 text-sm font-semibold">
+          ⚙️ GA4 設定（選用）
+        </summary>
+        <div className="px-4 pb-4 text-sm space-y-3">
+          <p className="text-xs text-[var(--color-fg-muted)]">
+            站內第一方分析已涵蓋主要指標。GA4 是補充、非必要。
+            若仍想接、需在 Zeabur 設 <code>GA4_PROPERTY_ID</code>、<code>GA4_SA_CREDENTIALS</code>、<code>CRON_SECRET</code>。
+            注意：Google 對 service account email 採嚴格驗證、加入 GA4 可能被擋。
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <GA4SyncButton />
+            <a
+              href="https://analytics.google.com/analytics/web/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--color-bg-elevated)] text-[var(--color-fg)] rounded-lg text-sm font-semibold hover:bg-[var(--color-border)] transition"
+            >
+              🔗 開啟 Google Analytics
+            </a>
+          </div>
         </div>
-        <p className="text-xs text-[var(--color-fg-muted)] mt-3">
-          推薦設 Zeabur Cron Job 每天自動同步：<code className="bg-[var(--color-bg)] px-1 rounded">curl -H "x-cron-secret: $CRON_SECRET" /api/admin/ga4/sync</code>
-        </p>
-      </div>
+      </details>
     </div>
   );
 }
