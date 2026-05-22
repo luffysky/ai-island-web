@@ -1,5 +1,7 @@
+import type { Metadata } from "next";
 import { getChapterMetas } from "@/lib/content";
 import { getSiteStats } from "@/lib/stats";
+import { getSeoForPath } from "@/lib/seo-render";
 import { ChapterMap } from "@/components/home/ChapterMap";
 import { Hero } from "@/components/home/Hero";
 import { CareerPathSection } from "@/components/home/CareerPathSection";
@@ -7,6 +9,13 @@ import { MascotIntro } from "@/components/home/MascotIntro";
 import { StageMap } from "@/components/home/StageMap";
 import { MissionDungeons } from "@/components/home/MissionDungeons";
 import { TrapBosses } from "@/components/home/TrapBosses";
+
+export async function generateMetadata(): Promise<Metadata> {
+  // 後台 seo_pages 有 "/" override 就用 override（含 placeholder 渲染）；
+  // 沒有就走 layout.tsx 的預設 metadata。
+  const override = await getSeoForPath("/");
+  return override ?? {};
+}
 
 export default async function HomePage() {
   const chapters = await getChapterMetas();

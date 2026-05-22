@@ -1,6 +1,7 @@
 import { getChapter } from "@/lib/content";
 import { notFound } from "next/navigation";
 import { ChapterView } from "@/components/chapter/ChapterView";
+import { mergeSeoForPath } from "@/lib/seo-render";
 import type { Metadata } from "next";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
@@ -24,7 +25,7 @@ export async function generateMetadata({
   const url = `${SITE_URL}/chapters/${chapter.id}`;
   const ogImage = `${SITE_URL}/api/og/chapter/${chapter.id}`;
 
-  return {
+  const fallback: Metadata = {
     title,
     description: desc,
     keywords: [
@@ -60,6 +61,10 @@ export async function generateMetadata({
       images: [ogImage],
     },
   };
+
+  // 後台 seo_pages 對 /chapters/<id> 有 override 就以 override 蓋掉
+  // 對應欄位（title/description/og/canonical/keywords），placeholder 也會替換。
+  return mergeSeoForPath(`/chapters/${chapter.id}`, fallback);
 }
 
 export default async function ChapterPage({ params }: { params: Promise<{ id: string }> }) {
