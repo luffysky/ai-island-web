@@ -1,9 +1,18 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { getSpecies, type SpeciesId } from "@/lib/pet-species";
+import { getVipTier, pickHonorific, usesCuteBubble, hasVipAura } from "@/lib/pet-vip";
+import {
+  pickChatter,
+  pathToPageKind,
+  timeKind,
+  type ChatterCtx,
+  type ChatterKind,
+} from "@/lib/pet-chatter";
+import { PlainBubble, CuteBubble } from "./PetBubble";
 import { PetChatPanel } from "./PetChatPanel";
 
 type PetState = {
@@ -16,11 +25,12 @@ type PetState = {
 
 type Pos = { x: number; y: number };
 
-const AUTO_MSG_CAP = 3; // 每 session 最多 3 條主動訊息
+const AUTO_MSG_CAP = 3;
 const TICK_INTERVAL_MS = 60_000;
+const LINE_DURATION_MS = 4500;
 
 export function Pet() {
-  const { status, user } = useAuth();
+  const { status, user, profile } = useAuth();
   const pathname = usePathname() || "/";
 
   const [pet, setPet] = useState<PetState | null>(null);
@@ -37,6 +47,13 @@ export function Pet() {
   const lineTimer = useRef<any>(null);
   const autoMsgCount = useRef<number>(0);
   const lastTickAt = useRef<number>(0);
+  const lastActiveAt = useRef<number>(Date.now());
+  const sessionGreetedRef = useRef<boolean>(false);
+  const recentChatterRef = useRef<Set<string>>(new Set());
+
+  const vipTier = getVipTier(profile);
+  const cuteMode = usesCuteBubble(vipTier);
+  const auraOn = hasVipAura(vipTier);
 
   const hideRoute =
     pathname.startsWith("/admin") ||
@@ -44,10 +61,12 @@ export function Pet() {
     pathname.startsWith("/login") ||
     pathname.startsWith("/signup");
 
-  // 載入寵物
+  // 載寵物
   useEffect(() => {
     if (status !== "in") {
       setPet(null);
+      sessionGreetedRef.current = false;
+      autoMsgCount.current = 0;
       return;
     }
     fetch("/api/pet/load")
@@ -58,6 +77,43 @@ export function Pet() {
       .catch(() => {});
   }, [status, user?.id]);
 
+  // 建 ChatterCtx（每次 pet/profile/pathname 變動重建）
+  const ctx: ChatterCtx | null = useMemo(() => {
+    if (!pet || !profile) return null;
+    return {
+      species: pet.species,
+      vip: vipTier,
+      hour: new Date().getHours(),
+      recent: recentChatterRef.current,
+      honorific: pickHonorific(vipTier, profile.display_name),
+      level: profile.level ?? 1,
+      xp: profile.xp ?? 0,
+      streak: profile.streak_days ?? 0,
+      petName: pet.name,
+    };
+  }, [pet, profile, vipTier]);
+
+  // 安全 say：尊重「正在說話」、避免覆蓋未播完的事件台詞（除非 force）
+  const say = (text: string | null, opts?: { force?: boolean; mood?: string; duration?: number }) => {
+    if (!text) return;
+    if (line && !opts?.force) return;
+    setLine(text);
+    if (lineTimer.current) clearTimeout(lineTimer.current);
+    lineTimer.current = setTimeout(() => setLine(null), opts?.duration ?? LINE_DURATION_MS);
+    if (opts?.mood) {
+      setMood(opts.mood);
+      if (moodTimer.current) clearTimeout(moodTimer.current);
+      moodTimer.current = setTimeout(() => setMood("idle"), (opts.duration ?? LINE_DURATION_MS) - 500);
+    }
+  };
+
+  // 隨機抽 chatter（kind → say）
+  const fire = (kind: ChatterKind, extra?: Record<string, string | number>, opts?: { force?: boolean; mood?: string }) => {
+    if (!ctx) return;
+    const text = pickChatter(kind, ctx, extra);
+    if (text) say(text, opts);
+  };
+
   // 初始位置
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -66,7 +122,22 @@ export function Pet() {
     setTarget(init);
   }, []);
 
-  // 走動：每 8 秒挑新目標
+  // session greet（一次性、登入後 1.5s 觸發）
+  useEffect(() => {
+    if (!pet || !ctx || sessionGreetedRef.current || hideRoute) return;
+    sessionGreetedRef.current = true;
+    const t = setTimeout(() => {
+      // VIP 用 vip-greet、其他用 session-greet
+      if (vipTier === "luffy" || vipTier === "nami") {
+        fire("vip-greet", undefined, { force: true });
+      } else {
+        fire("session-greet", undefined, { force: true });
+      }
+    }, 1500);
+    return () => clearTimeout(t);
+  }, [pet, ctx, hideRoute, vipTier]);
+
+  // 走動
   useEffect(() => {
     if (!pet?.walk_enabled || hideRoute || hidden || dragging || chatOpen) return;
     const tick = () => setTarget(pickPosition());
@@ -74,7 +145,7 @@ export function Pet() {
     return () => window.clearInterval(id);
   }, [pet?.walk_enabled, hideRoute, hidden, dragging, chatOpen]);
 
-  // 動畫：朝 target 移動
+  // 動畫
   useEffect(() => {
     if (typeof window === "undefined" || dragging) return;
     let frame = 0;
@@ -91,7 +162,7 @@ export function Pet() {
     return () => window.cancelAnimationFrame(frame);
   }, [target, dragging]);
 
-  // 避開鼠標：cursor 接近 → 跑開
+  // 避開鼠標
   useEffect(() => {
     if (!pet?.walk_enabled || dragging || chatOpen) return;
     const onMove = (e: MouseEvent) => {
@@ -99,7 +170,6 @@ export function Pet() {
       const dy = pos.y - e.clientY;
       const dist = Math.hypot(dx, dy);
       if (dist < 80) {
-        // 往遠離 cursor 方向跑
         const angle = Math.atan2(dy, dx);
         const fleeDistance = 200;
         const nx = pos.x + Math.cos(angle) * fleeDistance;
@@ -111,41 +181,33 @@ export function Pet() {
     return () => window.removeEventListener("mousemove", onMove);
   }, [pet?.walk_enabled, pos.x, pos.y, dragging, chatOpen]);
 
-  // 監聽事件 → mood
+  // ---------- 事件監聽 ----------
   useEffect(() => {
-    if (!pet) return;
-    const setTempMood = (m: string, duration: number, lineText?: string) => {
-      setMood(m);
-      if (lineText) {
-        setLine(lineText);
-        if (lineTimer.current) clearTimeout(lineTimer.current);
-        lineTimer.current = setTimeout(() => setLine(null), duration);
-      }
-      if (moodTimer.current) clearTimeout(moodTimer.current);
-      moodTimer.current = setTimeout(() => setMood("idle"), duration);
-    };
+    if (!pet || !ctx) return;
 
-    const onLesson = () => setTempMood("cheering", 2500, randomLine("cheer", pet.species));
+    const onLesson = () => fire("lesson-complete", undefined, { force: true, mood: "cheering" });
     const onXp = (e: any) => {
       const xp = e?.detail?.xp ?? 0;
-      if (xp >= 50) setTempMood("proud", 3000, `+${xp} XP！`);
-      else setTempMood("happy", 2000, `+${xp} XP！`);
+      const kind: ChatterKind = xp >= 100 ? "xp-big" : xp >= 30 ? "xp-medium" : "xp-small";
+      fire(kind, { xp }, { force: true, mood: xp >= 50 ? "proud" : "happy" });
     };
-    const onLevelUp = (e: any) =>
-      setTempMood("proud", 4000, `升 Lv ${e?.detail?.level ?? "??"}！`);
-    const onQuizFail = () =>
-      setTempMood("concerned", 3500, randomLine("comfort", pet.species));
-    const onStreakBroken = () =>
-      setTempMood("sad", 5000, randomLine("sad", pet.species));
-    const onBookmark = () =>
-      setTempMood("curious", 1500, "標起來囉～");
-    const onNote = () =>
-      setTempMood("happy", 1800, "好認真！");
+    const onLevelUp = (e: any) => {
+      const level = e?.detail?.level ?? 1;
+      fire("level-up", { level }, { force: true, mood: "proud" });
+    };
+    const onQuizPerfect = () => fire("quiz-perfect", undefined, { force: true, mood: "proud" });
+    const onQuizFail = () => fire("quiz-fail", undefined, { force: true, mood: "concerned" });
+    const onQuizPass = () => fire("quiz-pass", undefined, { force: true, mood: "happy" });
+    const onStreakBroken = () => fire("streak-broken", undefined, { force: true, mood: "sad" });
+    const onBookmark = () => fire("bookmark-added", undefined, { force: true });
+    const onNote = () => fire("note-saved", undefined, { force: true });
 
     window.addEventListener("pet:lesson-complete", onLesson);
     window.addEventListener("pet:xp-earned", onXp);
     window.addEventListener("pet:level-up", onLevelUp);
+    window.addEventListener("pet:quiz-perfect", onQuizPerfect);
     window.addEventListener("pet:quiz-failed", onQuizFail);
+    window.addEventListener("pet:quiz-passed", onQuizPass);
     window.addEventListener("pet:streak-broken", onStreakBroken);
     window.addEventListener("pet:bookmark-added", onBookmark);
     window.addEventListener("pet:note-saved", onNote);
@@ -153,22 +215,102 @@ export function Pet() {
       window.removeEventListener("pet:lesson-complete", onLesson);
       window.removeEventListener("pet:xp-earned", onXp);
       window.removeEventListener("pet:level-up", onLevelUp);
+      window.removeEventListener("pet:quiz-perfect", onQuizPerfect);
       window.removeEventListener("pet:quiz-failed", onQuizFail);
+      window.removeEventListener("pet:quiz-passed", onQuizPass);
       window.removeEventListener("pet:streak-broken", onStreakBroken);
       window.removeEventListener("pet:bookmark-added", onBookmark);
       window.removeEventListener("pet:note-saved", onNote);
     };
-  }, [pet]);
+    // ctx 依賴會 trigger re-bind、但因為 listener id 不同也沒事
+  }, [pet, ctx]);
 
-  // 路徑變動 → curious
+  // ---------- 路徑變化 ----------
   useEffect(() => {
-    if (!pet) return;
+    if (!pet || !ctx) return;
+    lastActiveAt.current = Date.now();
     setMood("curious");
     if (moodTimer.current) clearTimeout(moodTimer.current);
     moodTimer.current = setTimeout(() => setMood("idle"), 1200);
-  }, [pathname, pet]);
 
-  // 心跳：每 60s ping /api/pet/tick；可能拿到 auto message
+    // 35% 機率說頁面相關台詞（不要太吵）
+    if (Math.random() < 0.35) {
+      const kind = pathToPageKind(pathname);
+      if (kind) {
+        // 等 mood 動畫過再說
+        setTimeout(() => fire(kind), 800);
+      }
+    }
+  }, [pathname, pet?.name]);
+
+  // ---------- Tab visibility ----------
+  useEffect(() => {
+    if (!pet || !ctx || !pet.proactive_enabled) return;
+    let leftAt = 0;
+    const onVisibility = () => {
+      if (document.hidden) {
+        leftAt = Date.now();
+      } else {
+        const away = Date.now() - leftAt;
+        lastActiveAt.current = Date.now();
+        if (away > 30_000) {
+          setTimeout(() => fire("tab-return", undefined, { force: true }), 500);
+        }
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => document.removeEventListener("visibilitychange", onVisibility);
+  }, [pet, ctx]);
+
+  // ---------- 時段 chatter（每小時打一次卡）----------
+  useEffect(() => {
+    if (!pet || !ctx || !pet.proactive_enabled) return;
+    const t = setTimeout(() => {
+      const k = timeKind();
+      // 凌晨對 VIP 特別關懷
+      if (k === "late-night" && (vipTier === "luffy" || vipTier === "nami") && Math.random() < 0.65) {
+        fire("vip-late-night", undefined, { force: true });
+      } else if (Math.random() < 0.55) {
+        fire(k);
+      }
+    }, 6000);
+    return () => clearTimeout(t);
+  }, [pet?.name, ctx, vipTier]);
+
+  // ---------- 隨機 ambient ----------
+  useEffect(() => {
+    if (!pet || !ctx || !pet.proactive_enabled || hideRoute) return;
+    let cancelled = false;
+    const schedule = () => {
+      const delay = 90_000 + Math.random() * 90_000; // 90-180s
+      const id = window.setTimeout(() => {
+        if (cancelled) return;
+        // 35% 機率說話
+        if (Math.random() < 0.35) {
+          const pool: ChatterKind[] = [
+            "ambient",
+            "ambient",
+            "ambient",
+            "ambient-curious",
+            "ambient-self-talk",
+            "ambient-philosophical",
+            "ambient-complain",
+          ];
+          const kind = pool[Math.floor(Math.random() * pool.length)];
+          fire(kind);
+        }
+        schedule();
+      }, delay);
+      return id;
+    };
+    const id = schedule();
+    return () => {
+      cancelled = true;
+      window.clearTimeout(id);
+    };
+  }, [pet, ctx, hideRoute]);
+
+  // ---------- 心跳：AI tick ----------
   useEffect(() => {
     if (!pet || hideRoute || hidden || !pet.proactive_enabled) return;
     const tick = async () => {
@@ -176,7 +318,6 @@ export function Pet() {
       const now = Date.now();
       if (now - lastTickAt.current < TICK_INTERVAL_MS - 1000) return;
       lastTickAt.current = now;
-
       try {
         const res = await fetch("/api/pet/tick", {
           method: "POST",
@@ -188,19 +329,16 @@ export function Pet() {
         if (data.mood && data.mood !== mood) setMood(data.mood);
         if (data.autoMessage) {
           autoMsgCount.current += 1;
-          setLine(data.autoMessage);
-          if (lineTimer.current) clearTimeout(lineTimer.current);
-          lineTimer.current = setTimeout(() => setLine(null), 5000);
+          say(data.autoMessage, { force: true, duration: 6000 });
         }
       } catch {}
     };
-    // 立即跑一次 + 之後每分鐘
     tick();
     const id = window.setInterval(tick, TICK_INTERVAL_MS);
     return () => window.clearInterval(id);
   }, [pet, hideRoute, hidden, pathname]);
 
-  // 拖曳
+  // ---------- 拖曳 ----------
   useEffect(() => {
     if (!dragging) return;
     const onMove = (e: MouseEvent) => {
@@ -212,7 +350,7 @@ export function Pet() {
     };
     const onUp = () => {
       setDragging(false);
-      setTarget(pos); // 放開後新位置成為新 target
+      setTarget(pos);
     };
     window.addEventListener("mousemove", onMove);
     window.addEventListener("mouseup", onUp);
@@ -226,6 +364,8 @@ export function Pet() {
 
   const species = getSpecies(pet.species);
   const moodFx = moodClass(mood);
+  const Bubble = cuteMode ? CuteBubble : PlainBubble;
+  const auraColor = vipTier === "nami" ? "#ff9ec0" : vipTier === "luffy" ? "#ffd700" : null;
 
   return (
     <>
@@ -240,30 +380,30 @@ export function Pet() {
           userSelect: "none",
         }}
       >
-        {line && (
+        {line && <Bubble text={line} />}
+
+        {/* VIP aura */}
+        {auraOn && auraColor && (
           <div
             style={{
               position: "absolute",
               left: "50%",
-              bottom: "115%",
-              transform: "translateX(-50%)",
-              background: "var(--color-bg-card)",
-              border: "1px solid var(--color-border)",
-              borderRadius: 10,
-              padding: "4px 10px",
-              fontSize: 12,
-              whiteSpace: "nowrap",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+              top: "50%",
+              transform: "translate(-50%, -50%)",
+              width: 72,
+              height: 72,
+              borderRadius: "50%",
+              background: `radial-gradient(circle, ${auraColor}55 0%, ${auraColor}22 40%, transparent 70%)`,
+              filter: "blur(4px)",
+              pointerEvents: "none",
             }}
-          >
-            {line}
-          </div>
+            className="vip-aura"
+          />
         )}
 
         <button
           type="button"
           onMouseDown={(e) => {
-            // 純單擊 vs 拖曳：先記偏移、若移動超過 5px 視為拖曳
             const startX = e.clientX;
             const startY = e.clientY;
             const offset = { dx: pos.x - e.clientX, dy: pos.y - e.clientY };
@@ -280,7 +420,6 @@ export function Pet() {
               window.removeEventListener("mousemove", onMoveCheck);
               window.removeEventListener("mouseup", onUpCheck);
               if (!moved) {
-                // 純單擊 → 開聊天
                 setChatOpen(true);
               }
             };
@@ -294,6 +433,8 @@ export function Pet() {
             cursor: dragging ? "grabbing" : "grab",
             padding: 4,
             pointerEvents: "auto",
+            position: "relative",
+            zIndex: 1,
           }}
           className={moodFx}
           title={`${pet.name}（${species.name}）— 點開聊天、拖曳移位`}
@@ -352,6 +493,10 @@ export function Pet() {
             0%, 100% { transform: translateY(2px) rotate(0deg); opacity: 0.8; }
             50% { transform: translateY(4px) rotate(0deg); opacity: 0.7; }
           }
+          @keyframes vip-pulse {
+            0%, 100% { opacity: 0.55; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.9; transform: translate(-50%, -50%) scale(1.1); }
+          }
           .mood-idle { animation: pet-bob 3s ease-in-out infinite; }
           .mood-happy { animation: pet-bob 0.6s ease-in-out infinite; }
           .mood-cheering { animation: pet-jump 0.5s ease-in-out 4; }
@@ -360,6 +505,7 @@ export function Pet() {
           .mood-sleepy { animation: pet-zzz 2s ease-in-out infinite; }
           .mood-concerned { animation: pet-shake 0.4s ease-in-out 3; }
           .mood-sad { animation: pet-droop 1.5s ease-in-out infinite; }
+          :global(.vip-aura) { animation: vip-pulse 2.6s ease-in-out infinite; }
         `}</style>
       </div>
 
@@ -368,9 +514,7 @@ export function Pet() {
           pet={pet}
           onClose={() => setChatOpen(false)}
           onMessageSent={(text) => {
-            setLine(text);
-            if (lineTimer.current) clearTimeout(lineTimer.current);
-            lineTimer.current = setTimeout(() => setLine(null), 6000);
+            say(text, { force: true, duration: 6000 });
           }}
         />
       )}
@@ -410,30 +554,4 @@ function moodClass(mood: string): string {
     case "sad": return "mood-sad";
     default: return "mood-idle";
   }
-}
-
-const LINES: Record<string, Record<string, string[]>> = {
-  cheer: {
-    hamster: ["太棒！囤！", "做到了！", "厲害咻！"],
-    cat: ["不錯。", "...呼。", "嗯、可以。"],
-    dog: ["太棒了！！", "WOOOF！", "你最強！"],
-    rabbit: ["跳跳！", "好棒…", "...耶！"],
-  },
-  comfort: {
-    hamster: ["沒事再來一次咻！", "囤經驗、囤經驗！", "差一點！"],
-    cat: ["...再試一次。", "嗯、沒關係。", "別在意。"],
-    dog: ["不要哭！再來！", "你可以的！汪！", "我陪你！"],
-    rabbit: ["啃啃...沒事的", "下次會更好…", "...再來。"],
-  },
-  sad: {
-    hamster: ["連勝斷了QQ", "...再從頭咻", "明天回來繼續！"],
-    cat: ["...斷了。", "...沒辦法。", "..."],
-    dog: ["嗚...連勝...", "..沒關係、再衝！", "汪嗚..."],
-    rabbit: ["...斷了。", "蹲下來休息一下。", "..."],
-  },
-};
-
-function randomLine(kind: "cheer" | "comfort" | "sad", speciesId: string): string {
-  const pool = LINES[kind][speciesId] ?? LINES[kind].hamster;
-  return pool[Math.floor(Math.random() * pool.length)];
 }

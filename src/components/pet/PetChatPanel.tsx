@@ -3,8 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import { X, Send } from "lucide-react";
 import { getSpecies, type SpeciesId } from "@/lib/pet-species";
+import { useAuth } from "@/lib/auth-context";
+import { getVipTier, pickHonorific } from "@/lib/pet-vip";
+import { pickChatter, type ChatterCtx } from "@/lib/pet-chatter";
 
 type Message = { role: "user" | "pet"; content: string };
+
+const SECRET_LUFFY = /^(董事長|盧老闆|頭家|luffy)[!！。.?？\s]*$/i;
+const SECRET_NAMI = /^(nami|nami\s*姊|nami\s*大人|親愛的\s*nami)[!！。.?？\s]*$/i;
 
 export function PetChatPanel({
   pet,
@@ -16,11 +22,27 @@ export function PetChatPanel({
   onMessageSent?: (text: string) => void;
 }) {
   const species = getSpecies(pet.species);
+  const { profile } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
+  const recentRef = useRef<Set<string>>(new Set());
+
+  const ctx: ChatterCtx | null = profile
+    ? {
+        species: pet.species,
+        vip: getVipTier(profile),
+        hour: new Date().getHours(),
+        recent: recentRef.current,
+        honorific: pickHonorific(getVipTier(profile), profile.display_name),
+        level: profile.level ?? 1,
+        xp: profile.xp ?? 0,
+        streak: profile.streak_days ?? 0,
+        petName: pet.name,
+      }
+    : null;
 
   // 載入歷史
   useEffect(() => {
@@ -41,6 +63,24 @@ export function PetChatPanel({
     const userMsg = input.trim();
     setInput("");
     setError(null);
+
+    // 隱藏指令：不打 API、純本地腳本回應、不耗 AI 配額
+    if (ctx) {
+      let secretKind: "secret-luffy" | "secret-nami" | null = null;
+      if (SECRET_LUFFY.test(userMsg)) secretKind = "secret-luffy";
+      else if (SECRET_NAMI.test(userMsg)) secretKind = "secret-nami";
+      if (secretKind) {
+        const reply = pickChatter(secretKind, ctx) ?? "♡";
+        setMessages((m) => [
+          ...m,
+          { role: "user", content: userMsg },
+          { role: "pet", content: reply },
+        ]);
+        onMessageSent?.(reply);
+        return;
+      }
+    }
+
     setMessages((m) => [...m, { role: "user", content: userMsg }, { role: "pet", content: "" }]);
     setSending(true);
 
