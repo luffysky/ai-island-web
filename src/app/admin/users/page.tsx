@@ -1,17 +1,137 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import Link from "next/link";
+import { adminHref } from "@/lib/admin-href";
 import { UserRow } from "./UserRow";
 
-export default async function AdminUsersPage() {
+export const dynamic = "force-dynamic";
+
+const PAGE_SIZE = 50;
+
+export default async function AdminUsersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{
+    q?: string;
+    role?: string;
+    status?: string;
+    sort?: string;
+    dir?: string;
+    page?: string;
+  }>;
+}) {
+  const sp = await searchParams;
+  const q = (sp.q ?? "").trim();
+  const role = sp.role ?? "all";
+  const status = sp.status ?? "all";
+  const sort = ["created_at", "xp", "last_active_at", "z_coin"].includes(sp.sort ?? "")
+    ? (sp.sort as string)
+    : "created_at";
+  const dir = sp.dir === "asc" ? "asc" : "desc";
+  const page = Math.max(1, parseInt(sp.page ?? "1", 10) || 1);
+  const from = (page - 1) * PAGE_SIZE;
+  const to = from + PAGE_SIZE - 1;
+
   const supabase = createSupabaseAdmin();
-  const { data: users } = await supabase
+  let query = supabase
     .from("profiles")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .limit(100);
+    .select("*", { count: "exact" });
+
+  if (q) {
+    const safe = q.replace(/[%,*()\\]/g, "");
+    query = query.or(
+      `username.ilike.%${safe}%,display_name.ilike.%${safe}%`
+    );
+  }
+  if (role !== "all") query = query.eq("role", role);
+  if (status === "banned") query = query.not("banned_at", "is", null);
+  if (status === "active") query = query.is("banned_at", null);
+
+  const { data: users, count } = await query
+    .order(sort, { ascending: dir === "asc" })
+    .range(from, to);
+
+  const totalPages = Math.max(1, Math.ceil((count ?? 0) / PAGE_SIZE));
+
+  const buildHref = (overrides: Record<string, string | undefined>) => {
+    const params = new URLSearchParams();
+    const merged = { q, role, status, sort, dir, page: String(page), ...overrides };
+    for (const [k, v] of Object.entries(merged)) {
+      if (v && v !== "all" && !(k === "page" && v === "1")) params.set(k, v);
+    }
+    const qs = params.toString();
+    return adminHref(`/admin/users${qs ? "?" + qs : ""}`);
+  };
 
   return (
     <div>
-      <h2 className="text-xl font-bold mb-4">👥 使用者管理</h2>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-bold">👥 使用者管理</h2>
+        <div className="text-xs text-[var(--color-fg-muted)]">
+          共 {(count ?? 0).toLocaleString()} 人 · 第 {page}/{totalPages} 頁
+        </div>
+      </div>
+
+      {/* Filter bar */}
+      <form action={adminHref("/admin/users")} className="mb-4 flex flex-wrap items-center gap-2 bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-3">
+        <input
+          name="q"
+          defaultValue={q}
+          placeholder="🔍 搜尋 username / display name"
+          className="flex-1 min-w-[200px] bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg px-3 py-1.5 text-sm outline-none focus:border-[var(--color-accent)]"
+        />
+        <select
+          name="role"
+          defaultValue={role}
+          className="bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg px-2 py-1.5 text-sm"
+        >
+          <option value="all">所有角色</option>
+          <option value="member">member</option>
+          <option value="editor">editor</option>
+          <option value="admin">admin</option>
+        </select>
+        <select
+          name="status"
+          defaultValue={status}
+          className="bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg px-2 py-1.5 text-sm"
+        >
+          <option value="all">全部狀態</option>
+          <option value="active">在用</option>
+          <option value="banned">已封鎖</option>
+        </select>
+        <select
+          name="sort"
+          defaultValue={sort}
+          className="bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg px-2 py-1.5 text-sm"
+        >
+          <option value="created_at">建立時間</option>
+          <option value="xp">XP</option>
+          <option value="last_active_at">最後活躍</option>
+          <option value="z_coin">Z-coin</option>
+        </select>
+        <select
+          name="dir"
+          defaultValue={dir}
+          className="bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg px-2 py-1.5 text-sm"
+        >
+          <option value="desc">由高到低</option>
+          <option value="asc">由低到高</option>
+        </select>
+        <button
+          type="submit"
+          className="px-4 py-1.5 text-sm rounded-lg bg-[var(--color-accent)] text-black font-bold"
+        >
+          套用
+        </button>
+        {(q || role !== "all" || status !== "all") && (
+          <Link
+            href={adminHref("/admin/users") as any}
+            className="px-3 py-1.5 text-sm rounded-lg border border-[var(--color-border)]"
+          >
+            清除
+          </Link>
+        )}
+      </form>
+
       <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl overflow-hidden">
         <table className="w-full text-sm">
           <thead className="bg-[var(--color-bg-elevated)] text-xs text-[var(--color-fg-muted)]">
@@ -27,10 +147,39 @@ export default async function AdminUsersPage() {
             </tr>
           </thead>
           <tbody>
-            {users?.map((u: any) => <UserRow key={u.id} user={u} />)}
+            {users?.length === 0 ? (
+              <tr>
+                <td colSpan={8} className="px-4 py-12 text-center text-[var(--color-fg-muted)] text-sm">
+                  沒有符合條件的使用者
+                </td>
+              </tr>
+            ) : (
+              users?.map((u: any) => <UserRow key={u.id} user={u} />)
+            )}
           </tbody>
         </table>
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 mt-4 text-sm">
+          <Link
+            href={page > 1 ? (buildHref({ page: String(page - 1) }) as any) : "#"}
+            className={`px-3 py-1.5 rounded-lg border border-[var(--color-border)] ${page <= 1 ? "opacity-40 pointer-events-none" : "hover:bg-[var(--color-bg-elevated)]"}`}
+          >
+            ← 上一頁
+          </Link>
+          <span className="text-xs text-[var(--color-fg-muted)] px-3">
+            {page} / {totalPages}
+          </span>
+          <Link
+            href={page < totalPages ? (buildHref({ page: String(page + 1) }) as any) : "#"}
+            className={`px-3 py-1.5 rounded-lg border border-[var(--color-border)] ${page >= totalPages ? "opacity-40 pointer-events-none" : "hover:bg-[var(--color-bg-elevated)]"}`}
+          >
+            下一頁 →
+          </Link>
+        </div>
+      )}
     </div>
   );
 }
