@@ -1,6 +1,7 @@
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { CollapsibleAside } from "./CollapsibleAside";
 
 // 強制每次都 server-side render、不 cache
 export const dynamic = "force-dynamic";
@@ -53,7 +54,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </div>
 
       <div className="flex gap-6">
-        <aside className="w-52 flex-shrink-0">
+        <CollapsibleAside>
           <nav className="space-y-4 text-sm">
             <NavGroup title="總覽">
               <AdminLink href="/admin">📊 Dashboard</AdminLink>
@@ -94,7 +95,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               <AdminLink href="/admin/settings">⚙️ 系統設定</AdminLink>
             </NavGroup>
           </nav>
-        </aside>
+        </CollapsibleAside>
         <div className="flex-1 min-w-0">{children}</div>
       </div>
       </div>
