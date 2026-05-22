@@ -20,7 +20,7 @@ export function NotePanel({
   const supabase = createSupabaseBrowser();
 
   useEffect(() => {
-    if (!isLoggedIn || !open) return;
+    if (!open) return;
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
@@ -36,13 +36,18 @@ export function NotePanel({
         setNoteId(data.id);
       }
     })();
-  }, [isLoggedIn, open, lessonId]);
+  }, [open, lessonId]);
 
   const save = async () => {
-    if (!isLoggedIn) return;
     setSaving(true);
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { setSaving(false); return; }
+    if (!user) {
+      setSaving(false);
+      if (typeof window !== "undefined") {
+        window.location.href = `/login?next=${encodeURIComponent(window.location.pathname)}`;
+      }
+      return;
+    }
 
     if (noteId) {
       await supabase.from("notes")
@@ -63,18 +68,22 @@ export function NotePanel({
     setTimeout(() => setSaved(false), 1500);
   };
 
-  if (!isLoggedIn) {
-    return (
-      <button disabled className="p-1.5 rounded opacity-30" title="登入後可寫筆記">
-        <StickyNote size={16} />
-      </button>
-    );
-  }
+  const handleOpen = async () => {
+    // 點下去再驗 session、不依賴 prop（prop 在剛登入時可能還沒同步）
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      if (typeof window !== "undefined") {
+        window.location.href = `/login?next=${encodeURIComponent(window.location.pathname)}`;
+      }
+      return;
+    }
+    setOpen(!open);
+  };
 
   return (
     <>
       <button
-        onClick={() => setOpen(!open)}
+        onClick={handleOpen}
         className={`p-1.5 rounded transition hover:bg-[var(--color-bg-elevated)] ${
           note ? "text-[var(--color-accent)]" : "text-[var(--color-fg-muted)]"
         }`}

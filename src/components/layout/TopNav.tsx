@@ -32,6 +32,15 @@ export function TopNav() {
     role: "member",
   };
 
+  // 啟動時先用 localStorage 內上次載過的 profile 立刻渲染、避免
+  // 下拉打開時還在等網路、admin link 一下有一下沒有的閃爍。
+  useEffect(() => {
+    try {
+      const cached = localStorage.getItem("ai-island-profile-cache");
+      if (cached) setProfile(JSON.parse(cached));
+    } catch {}
+  }, []);
+
   useEffect(() => {
     let mounted = true;
 
@@ -50,13 +59,10 @@ export function TopNav() {
         console.warn("[TopNav] profile row missing for user", uid);
         return;
       }
-      console.log("[TopNav] profile loaded:", {
-        id: data.id,
-        username: data.username,
-        role: data.role,
-        level: data.level,
-      });
       setProfile(data);
+      try {
+        localStorage.setItem("ai-island-profile-cache", JSON.stringify(data));
+      } catch {}
     };
 
     (async () => {
@@ -75,6 +81,9 @@ export function TopNav() {
       if (event === "SIGNED_OUT") {
         setUser(null);
         setProfile(null);
+        try {
+          localStorage.removeItem("ai-island-profile-cache");
+        } catch {}
         return;
       }
       if (session?.user) {
@@ -196,6 +205,19 @@ export function TopNav() {
                         <div className="flex-1 min-w-0">
                           <div className="font-semibold truncate">{displayProfile.display_name || displayProfile.username}</div>
                           <div className="text-xs text-[var(--color-fg-muted)] truncate">{user.email}</div>
+                          <div className="text-[10px] mt-0.5">
+                            <span
+                              className={`px-1.5 py-0.5 rounded ${
+                                displayProfile.role === "admin"
+                                  ? "bg-red-500/20 text-red-300"
+                                  : displayProfile.role === "editor"
+                                  ? "bg-blue-500/20 text-blue-300"
+                                  : "bg-gray-500/20 text-gray-300"
+                              }`}
+                            >
+                              {displayProfile.role || "member"}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>

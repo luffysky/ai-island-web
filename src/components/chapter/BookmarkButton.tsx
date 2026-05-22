@@ -19,7 +19,6 @@ export function BookmarkButton({
   const supabase = createSupabaseBrowser();
 
   useEffect(() => {
-    if (!isLoggedIn) return;
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
@@ -31,13 +30,19 @@ export function BookmarkButton({
         .maybeSingle();
       setBookmarked(!!data);
     })();
-  }, [isLoggedIn, lessonId]);
+  }, [lessonId]);
 
   const toggle = async () => {
-    if (!isLoggedIn || loading) return;
+    if (loading) return;
     setLoading(true);
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { setLoading(false); return; }
+    if (!user) {
+      setLoading(false);
+      if (typeof window !== "undefined") {
+        window.location.href = `/login?next=${encodeURIComponent(window.location.pathname)}`;
+      }
+      return;
+    }
 
     if (bookmarked) {
       await supabase.from("bookmarks").delete().eq("user_id", user.id).eq("lesson_id", lessonId);
@@ -57,7 +62,7 @@ export function BookmarkButton({
   return (
     <button
       onClick={toggle}
-      disabled={!isLoggedIn || loading}
+      disabled={loading}
       className="p-1.5 hover:bg-[var(--color-bg-elevated)] rounded transition disabled:opacity-30"
       title={bookmarked ? "取消書籤" : "加入書籤"}
     >
