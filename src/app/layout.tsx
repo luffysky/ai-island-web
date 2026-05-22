@@ -7,6 +7,7 @@ import { CookieBanner } from "@/components/CookieBanner";
 import { SideNav } from "@/components/SideNav";
 import { InteractionTracker } from "@/components/analytics/InteractionTracker";
 import { AuthProvider } from "@/lib/auth-context";
+import { AdminFloatingToolbar } from "@/components/admin/AdminFloatingToolbar";
 import { SITE_STATS } from "@/lib/site-stats";
 
 const TITLE = `AI 島：${SITE_STATS.chapterCount} 章全端養成班`;
@@ -51,6 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <AITutorAutoContext />
           <CookieBanner />
           <InteractionTracker />
+          <AdminFloatingToolbar />
         </AuthProvider>
       </body>
     </html>
