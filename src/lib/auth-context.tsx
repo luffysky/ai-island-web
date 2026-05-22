@@ -102,6 +102,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setStatus("in");
         loadProfile(session.user.id);
       } else {
+        // 沒 session 就清 cache、避免登出後 cached profile 還在
+        // （例如 cookie 過期但 localStorage 沒清）讓 AdminFloatingToolbar 之類
+        // 仰賴 role 的 UI 誤判
+        setProfile(null);
+        writeCachedProfile(null);
         setStatus("out");
       }
     });

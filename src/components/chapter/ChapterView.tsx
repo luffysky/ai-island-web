@@ -7,6 +7,7 @@ import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { useAuth } from "@/lib/auth-context";
 import { LessonCard } from "./LessonCard";
 import { BossBattle } from "./BossBattle";
+import { EndQuizPlayer } from "./EndQuizPlayer";
 import { AchievementToast } from "../gamification/AchievementToast";
 import { LevelUpModal } from "../gamification/LevelUpModal";
 import { XpToast, type XpToastData } from "../gamification/XpToast";
@@ -170,6 +171,9 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
           <BossBattle chapter={chapter} engine={engine} isLoggedIn={!!user} />
         </div>
       )}
+
+      {/* 章末綜合測驗（admin AI 出題） */}
+      <EndQuizPlayer chapterId={chapter.id} />
 
       {/* Summary */}
       {chapter.summary && chapter.summary.length > 0 && (
