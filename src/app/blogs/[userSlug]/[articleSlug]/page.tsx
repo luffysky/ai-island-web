@@ -7,6 +7,9 @@ import { Eye, Calendar, ArrowLeft } from "lucide-react";
 import { BlogViewTracker } from "@/components/blog/BlogViewTracker";
 import { ReactionBar } from "@/components/blog/ReactionBar";
 import { CommentSection } from "@/components/blog/CommentSection";
+import { ShareArticleButton } from "@/components/blog/ShareArticleButton";
+import { ReadingProgress } from "@/components/blog/ReadingProgress";
+import { TableOfContents } from "@/components/blog/TableOfContents";
 import { sanitizeRichHtml } from "@/lib/rich-html";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
@@ -62,9 +65,12 @@ export default async function ArticlePage({
 
   const { blog, article } = res;
   const name = blog.profile?.display_name || blog.profile?.username || "用戶";
+  const articleUrl = `${SITE_URL}/blogs/${userSlug}/${articleSlug}`;
 
   return (
     <article className="max-w-3xl mx-auto px-4 sm:px-6 py-10 min-w-0 overflow-hidden">
+      <ReadingProgress />
+      <TableOfContents containerSelector=".prose-custom" />
       {/* 瀏覽數 +1（client、只跑一次）*/}
       <BlogViewTracker articleId={article.id} />
 
@@ -118,8 +124,16 @@ export default async function ArticlePage({
         dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(article.content) }}
       />
 
-      {/* emoji 反應 */}
-      <ReactionBar userSlug={userSlug} articleSlug={articleSlug} />
+      {/* emoji 反應 + 分享 */}
+      <div className="flex flex-wrap items-center gap-3 mt-8">
+        <ReactionBar userSlug={userSlug} articleSlug={articleSlug} />
+        <ShareArticleButton
+          title={article.title}
+          summary={article.summary}
+          author={name}
+          url={articleUrl}
+        />
+      </div>
 
       {/* 標籤 */}
       {article.tags?.length > 0 && (
