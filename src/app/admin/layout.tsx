@@ -59,6 +59,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             <NavGroup title="總覽">
               <AdminLink href="/admin">📊 Dashboard</AdminLink>
               <AdminLink href="/admin/analytics">📈 數據分析</AdminLink>
+              <AdminLink href="/admin/analytics/learning-events">🧪 學習行為事件</AdminLink>
             </NavGroup>
 
             <NavGroup title="用戶">
