@@ -90,6 +90,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             <NavGroup title="內容">
               <AdminLink href="/admin/chapters">📚 章節管理</AdminLink>
               <AdminLink href="/admin/achievements">🏆 成就管理</AdminLink>
+              <AdminLink href="/admin/moderation/comments">💬 留言審核</AdminLink>
+              <AdminLink href="/admin/moderation/forum">🗣️ 論壇審核</AdminLink>
             </NavGroup>
 
             <NavGroup title="系統">
