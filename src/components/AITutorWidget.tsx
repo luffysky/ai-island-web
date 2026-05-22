@@ -68,9 +68,12 @@ export function AITutorWidget({
   // 否則會把初始 getUser 設好的 "in" 蓋成 "out"。
   useEffect(() => {
     let mounted = true;
-    supabase.auth.getUser().then(({ data: { user } }) => {
+    // getSession 是同步從 cookie / localStorage 拿 cached session、
+    // 不會丟 AuthSessionMissingError、也不打網路。
+    // 比 getUser 適合「初始判斷登入狀態」、避免 race。
+    supabase.auth.getSession().then(({ data: { session } }) => {
       if (!mounted) return;
-      setAuthState(user ? "in" : "out");
+      setAuthState(session?.user ? "in" : "out");
     });
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
       if (!mounted) return;

@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useRef } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
+import { getPreciseLocation } from "@/lib/geo-precise";
 
 function id(prefix: string) {
   const value = typeof crypto !== "undefined" && "randomUUID" in crypto
@@ -48,6 +49,7 @@ function InteractionTrackerInner() {
   const pageViewId = useRef<string>("");
   const startedAt = useRef<number>(Date.now());
   const maxScroll = useRef<number>(0);
+  const districtRef = useRef<string | null>(null);
 
   useEffect(() => {
     const query = searchParams?.toString();
@@ -57,6 +59,13 @@ function InteractionTrackerInner() {
     pageViewId.current = id("page");
     startedAt.current = Date.now();
     maxScroll.current = maxScrollPct();
+
+    // 精準位置：opt-in 才查、結果 session 內共用
+    getPreciseLocation()
+      .then((geo) => {
+        if (geo?.district) districtRef.current = geo.district;
+      })
+      .catch(() => {});
 
     const payload = (eventType: string, exitReason?: string) => {
       const durationSec = Math.max(0, Math.round((Date.now() - startedAt.current) / 1000));
@@ -75,6 +84,7 @@ function InteractionTrackerInner() {
         viewport: { width: window.innerWidth, height: window.innerHeight },
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         locale: navigator.language,
+        district: districtRef.current,
         exitReason,
       };
     };

@@ -66,11 +66,11 @@ export function TopNav() {
     };
 
     (async () => {
-      const { data: { user }, error } = await supabase.auth.getUser();
-      if (error) console.error("[TopNav] auth.getUser failed:", error);
+      // 用 getSession 而非 getUser：cookie cache、不會 race。
+      const { data: { session } } = await supabase.auth.getSession();
       if (!mounted) return;
-      setUser(user);
-      if (user) await loadProfile(user.id);
+      setUser(session?.user ?? null);
+      if (session?.user) await loadProfile(session.user.id);
     })();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {

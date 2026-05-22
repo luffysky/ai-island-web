@@ -28,18 +28,38 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
   });
 
   useEffect(() => {
-    (async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-      if (user) {
-        const { data } = await supabase
-          .from("lesson_progress")
-          .select("lesson_id")
-          .eq("user_id", user.id)
-          .eq("chapter_id", chapter.id);
-        setCompletedIds(new Set((data ?? []).map((p: any) => p.lesson_id)));
+    let mounted = true;
+    const load = async (uid: string) => {
+      const { data } = await supabase
+        .from("lesson_progress")
+        .select("lesson_id")
+        .eq("user_id", uid)
+        .eq("chapter_id", chapter.id);
+      if (!mounted) return;
+      setCompletedIds(new Set((data ?? []).map((p: any) => p.lesson_id)));
+    };
+    // 用 getSession 而非 getUser：cache、不會 race、不丟錯誤
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!mounted) return;
+      setUser(session?.user ?? null);
+      if (session?.user) load(session.user.id);
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!mounted) return;
+      if (event === "SIGNED_OUT") {
+        setUser(null);
+        setCompletedIds(new Set());
+        return;
       }
-    })();
+      if (session?.user) {
+        setUser(session.user);
+        load(session.user.id);
+      }
+    });
+    return () => {
+      mounted = false;
+      sub.subscription.unsubscribe();
+    };
   }, [chapter.id]);
 
   const handleComplete = async (lessonId: string, xp: number) => {

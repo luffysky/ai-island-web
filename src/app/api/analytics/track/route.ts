@@ -20,6 +20,7 @@ type TrackBody = {
   timezone?: string;
   locale?: string;
   exitReason?: string;
+  district?: string | null;
   metadata?: Record<string, unknown>;
 };
 
@@ -70,6 +71,7 @@ export async function POST(req: NextRequest) {
     referrer: body.referrer ?? null,
     ...device,
     ...location,
+    district: body.district ?? null,
     timezone: body.timezone ?? null,
     locale: body.locale ?? null,
     viewport_width,
@@ -109,6 +111,7 @@ export async function POST(req: NextRequest) {
     viewport_height,
     ...device,
     ...location,
+    district: body.district ?? null,
     exit_reason: body.exitReason ?? null,
     metadata: body.metadata ?? {},
   };
