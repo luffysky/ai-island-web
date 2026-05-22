@@ -148,6 +148,7 @@
 | 2 | Phase 2 拆兩 sprint | MED-06 (Impersonate) + MED-07 (Blog 審核) + MED-11 (Breach 詳細) | ~1 週 |
 |   |   | MED-08 (論壇審核) + MED-09 (Z-coin airdrop) + MED-10 (Learning events) + MED-12 (AI cost alert) | ~1 週 |
 | 3 | Phase 3 挑優先 | LT-14 (GDPR)、LT-15 (Cohort 分析) 先；LT-16/17/18 後 | 各 1-2 週 |
+| 4+ | **Phase 4+ 擴充 backlog** | 詳見 [`PHASE-4-PLUS-BACKLOG.md`](./PHASE-4-PLUS-BACKLOG.md)（5 區 21 項、~17-18 週） | — |
 
 **為什麼先做 Phase 1 全包**：5 個都 < 1 天、共用同一套 admin API pattern、沒有交互依賴；一次做完比拆開做總成本低（context 不用重切），又能立刻解決 5 個獨立痛點。
 
