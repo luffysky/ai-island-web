@@ -60,13 +60,27 @@ export default async function AdminUserDetailPage({
 
   return (
     <div className="space-y-6">
-      <div>
+      <div className="flex items-center justify-between flex-wrap gap-2">
         <Link
           href={adminHref("/admin/users") as any}
           className="inline-flex items-center gap-1 text-sm text-fg-muted hover:text-accent"
         >
           <ArrowLeft size={14} /> 回使用者列表
         </Link>
+        <div className="flex gap-2">
+          <Link
+            href={adminHref(`/admin/users/${id}/timeline`) as any}
+            className="text-xs px-3 py-1.5 rounded-lg border border-border hover:border-accent hover:text-accent"
+          >
+            🕐 活動時間軸
+          </Link>
+          <Link
+            href={adminHref(`/admin/impersonate/${id}`) as any}
+            className="text-xs px-3 py-1.5 rounded-lg border border-yellow-400/40 text-yellow-400 hover:bg-yellow-500/10"
+          >
+            🕵️ Impersonate
+          </Link>
+        </div>
       </div>
 
       {/* Profile header */}

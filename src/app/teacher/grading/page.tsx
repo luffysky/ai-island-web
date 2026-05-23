@@ -29,9 +29,17 @@ export default async function TeacherGradingPage({
 
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="text-2xl font-bold">✏️ 作業批改</h1>
-        <p className="text-sm text-fg-muted mt-1">給分 + 寫回饋、學員會在 /me/assignments 看到。</p>
+      <header className="flex items-center justify-between flex-wrap gap-2">
+        <div>
+          <h1 className="text-2xl font-bold">✏️ 作業批改</h1>
+          <p className="text-sm text-fg-muted mt-1">給分 + 寫回饋、學員會在 /me/assignments 看到。</p>
+        </div>
+        <a
+          href="/api/teacher/grading/export"
+          className="text-xs px-3 py-1.5 rounded-lg border border-border hover:border-accent flex items-center gap-1"
+        >
+          📥 匯出 CSV
+        </a>
       </header>
       <GradingClient initial={(data ?? []) as any} filterStatus={status} />
     </div>
