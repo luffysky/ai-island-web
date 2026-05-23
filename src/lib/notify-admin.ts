@@ -53,10 +53,16 @@ export async function notifyAdmin(opts: NotifyOptions): Promise<void> {
   }
 
   const lineChannel = process.env.ADMIN_LINE_CHANNEL_TOKEN;
-  const lineUser = process.env.ADMIN_LINE_USER_ID;
-  if (lineChannel && lineUser) {
-    promises.push(sendLineMessaging(lineChannel, lineUser, text));
-    if (!all) return await Promise.allSettled(promises).then(() => {});
+  if (lineChannel) {
+    // 多 admin：從 admin-line-users helper 取所有設定的 admin、各推一份
+    const { getAdminLineUsers } = await import("./admin-line-users");
+    const users = getAdminLineUsers().filter((u) => u.id);
+    if (users.length > 0) {
+      for (const u of users) {
+        promises.push(sendLineMessaging(lineChannel, u.id, text));
+      }
+      if (!all) return await Promise.allSettled(promises).then(() => {});
+    }
   }
 
   const tgBot = process.env.ADMIN_TELEGRAM_BOT_TOKEN;

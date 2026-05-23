@@ -61,8 +61,9 @@ export async function logError(input: LogErrorInput): Promise<void> {
     }
 
     const admin = createSupabaseAdmin();
+    const lvl = input.level ?? "error";
     await admin.from("error_logs").insert({
-      level: input.level ?? "error",
+      level: lvl,
       source: input.source,
       message: message.slice(0, 2000),
       stack: stack?.slice(0, 8000),
@@ -74,8 +75,18 @@ export async function logError(input: LogErrorInput): Promise<void> {
       ip,
       extra: input.extra ? sanitizeExtra(input.extra) : null,
     });
+
+    // 系統錯誤推 admin LINE（限 error / fatal、避免 spam）
+    if (lvl === "error" || lvl === "fatal") {
+      import("./notify-admin").then((m) =>
+        m.notifyAdmin({
+          kind: lvl === "fatal" ? "fatal" : "error",
+          dedupeKey: `${input.source}:${message.slice(0, 60)}`,
+          text: `🛡️ [${lvl}] ${input.source}\n${message.slice(0, 200)}${path ? `\nat ${path}` : ""}`,
+        }),
+      ).catch(() => {});
+    }
   } catch (e) {
-    // log 失敗只在 server console 留 trace、不影響原本 flow
     console.error("[logError] failed to persist:", e);
   }
 }

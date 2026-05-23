@@ -68,6 +68,12 @@ export class GamificationEngine {
     if (after && after.level > oldLevel) {
       this.celebrateLevelUp(after.level);
       this.onLevelUp?.(after.level);
+      // 升等 → admin + user 通知（fire-and-forget client-side）
+      fetch('/api/me/notify-levelup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ newLevel: after.level }),
+      }).catch(() => {});
     } else {
       this.celebrateXp(xp);
     }
@@ -210,6 +216,12 @@ export class GamificationEngine {
       details?.forEach(ach => {
         this.celebrateAchievement(ach);
         this.onAchievementUnlocked?.(ach);
+        // 通知 server：in-app notif + admin LINE
+        fetch('/api/me/notify-achievement', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ achievement_id: ach.id, title: ach.title ?? ach.name ?? ach.id }),
+        }).catch(() => {});
       });
     }
   }
