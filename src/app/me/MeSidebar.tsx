@@ -162,6 +162,13 @@ export function MeSidebar({ profile }: { profile: Profile | null }) {
           證書
         </MeLink>
         <MeLink
+          href="/me/quiz"
+          icon={<span>🧠</span>}
+          collapsed={collapsed}
+        >
+          每日測驗
+        </MeLink>
+        <MeLink
           href="/me/referrals"
           icon={<span>🎁</span>}
           collapsed={collapsed}
