@@ -47,30 +47,65 @@ export function CommentSection({
   );
 
   const submit = async (content: string, parentId: string | null) => {
-    if (!content.trim() || sending) return;
-    setSending(true);
-    const res = await fetch(apiBase, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        content,
-        parent_id: parentId,
-        author_name: currentUserId ? undefined : (guestName || "匿名訪客"),
-      }),
-    });
-    setSending(false);
-    const json = await res.json();
-    if (!res.ok) {
-      toast.error("留言失敗：" + (json.error ?? ""));
-      return;
+    const trimmed = content.trim();
+    if (!trimmed || sending) return;
+
+    // optimistic：立刻 push 暫時項
+    const tempId = `temp_${Date.now()}`;
+    const authorName = currentUserId ? "你" : (guestName || "匿名訪客");
+    const temp: BlogComment = {
+      id: tempId,
+      user_id: currentUserId ?? null,
+      author_name: authorName,
+      author_avatar: null,
+      content: trimmed,
+      parent_id: parentId,
+      created_at: new Date().toISOString(),
+      replies: [],
+      _pending: true,
+    } as any;
+
+    if (parentId) {
+      setComments((list) =>
+        list.map((c) =>
+          c.id === parentId ? { ...c, replies: [...(c.replies ?? []), temp] } : c,
+        ),
+      );
+      setReplyInput("");
+      setReplyTo(null);
+    } else {
+      setComments((list) => [...list, temp]);
+      setInput("");
     }
-    // 重新抓（簡單可靠）
-    const refresh = await fetch(apiBase);
-    setComments((await refresh.json()).comments ?? []);
-    setInput("");
-    setReplyInput("");
-    setReplyTo(null);
-    toast.success("已送出留言");
+
+    setSending(true);
+    try {
+      const res = await fetch(apiBase, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          content: trimmed,
+          parent_id: parentId,
+          author_name: currentUserId ? undefined : (guestName || "匿名訪客"),
+        }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "留言失敗");
+
+      // 拉新一次取代暫時項
+      const refresh = await fetch(apiBase);
+      setComments((await refresh.json()).comments ?? []);
+    } catch (e: any) {
+      // 回滾：移除暫時項
+      const dropTemp = (c: BlogComment): BlogComment => ({
+        ...c,
+        replies: c.replies?.filter((r) => r.id !== tempId).map(dropTemp),
+      });
+      setComments((list) => list.filter((c) => c.id !== tempId).map(dropTemp));
+      toast.error("留言失敗：" + (e?.message || ""));
+    } finally {
+      setSending(false);
+    }
   };
 
   const remove = async (id: string) => {

@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { StickyNote, Save, Check } from "lucide-react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
+import { useToast } from "@/components/ui/Toast";
 
 export function NotePanel({
   lessonId,
@@ -12,6 +13,7 @@ export function NotePanel({
   chapterId: number;
   isLoggedIn: boolean;
 }) {
+  const toast = useToast();
   const [open, setOpen] = useState(false);
   const [note, setNote] = useState("");
   const [noteId, setNoteId] = useState<string | null>(null);
@@ -52,17 +54,25 @@ export function NotePanel({
       setError("筆記內容不能空白");
       return;
     }
-    setSaving(true);
     setError(null);
 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      setSaving(false);
       if (typeof window !== "undefined") {
         window.location.href = `/login?next=${encodeURIComponent(window.location.pathname)}`;
       }
       return;
     }
+
+    // optimistic：立刻顯示「已存」+ 通知寵物、背景 sync
+    setSaved(true);
+    setTimeout(() => setSaved(false), 1500);
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("pet:note-saved", { detail: { chapterId, lessonId } }),
+      );
+    }
+    setSaving(true);
 
     try {
       if (noteId) {
@@ -87,16 +97,11 @@ export function NotePanel({
         if (inErr) throw inErr;
         if (data) setNoteId(data.id);
       }
-      setSaved(true);
-      setTimeout(() => setSaved(false), 1500);
-      if (typeof window !== "undefined") {
-        window.dispatchEvent(
-          new CustomEvent("pet:note-saved", { detail: { chapterId, lessonId } }),
-        );
-      }
     } catch (e: any) {
       console.error("[NotePanel] save failed:", e);
+      setSaved(false);
       setError(e?.message || "儲存失敗、請再試一次");
+      toast.error("筆記儲存失敗、內容已保留");
     } finally {
       setSaving(false);
     }

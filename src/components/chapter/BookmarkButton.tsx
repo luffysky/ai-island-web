@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { Bookmark, BookmarkCheck } from "lucide-react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
+import { useToast } from "@/components/ui/Toast";
 
 export function BookmarkButton({
   lessonId,
@@ -14,8 +15,8 @@ export function BookmarkButton({
   lessonTitle: string;
   isLoggedIn: boolean;
 }) {
+  const toast = useToast();
   const [bookmarked, setBookmarked] = useState(false);
-  const [loading, setLoading] = useState(false);
   const supabase = createSupabaseBrowser();
 
   useEffect(() => {
@@ -33,44 +34,51 @@ export function BookmarkButton({
   }, [lessonId]);
 
   const toggle = async () => {
-    if (loading) return;
-    setLoading(true);
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      setLoading(false);
       if (typeof window !== "undefined") {
         window.location.href = `/login?next=${encodeURIComponent(window.location.pathname)}`;
       }
       return;
     }
 
-    if (bookmarked) {
-      await supabase.from("bookmarks").delete().eq("user_id", user.id).eq("lesson_id", lessonId);
-      setBookmarked(false);
-    } else {
-      const { error } = await supabase.from("bookmarks").insert({
-        user_id: user.id,
-        chapter_id: chapterId,
-        lesson_id: lessonId,
-        lesson_title: lessonTitle,
-      });
-      if (!error) {
-        setBookmarked(true);
-        if (typeof window !== "undefined") {
-          window.dispatchEvent(
-            new CustomEvent("pet:bookmark-added", { detail: { chapterId, lessonId } }),
-          );
-        }
-      }
+    // optimistic：立刻切換、失敗回滾
+    const prev = bookmarked;
+    const next = !prev;
+    setBookmarked(next);
+    if (next && typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("pet:bookmark-added", { detail: { chapterId, lessonId } }),
+      );
     }
-    setLoading(false);
+
+    try {
+      if (prev) {
+        const { error } = await supabase
+          .from("bookmarks")
+          .delete()
+          .eq("user_id", user.id)
+          .eq("lesson_id", lessonId);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from("bookmarks").insert({
+          user_id: user.id,
+          chapter_id: chapterId,
+          lesson_id: lessonId,
+          lesson_title: lessonTitle,
+        });
+        if (error) throw error;
+      }
+    } catch (e: any) {
+      setBookmarked(prev);
+      toast.error(`書籤操作失敗：${e?.message || "請稍後再試"}`);
+    }
   };
 
   return (
     <button
       onClick={toggle}
-      disabled={loading}
-      className="p-1.5 hover:bg-[var(--color-bg-elevated)] rounded transition disabled:opacity-30"
+      className="p-1.5 hover:bg-[var(--color-bg-elevated)] rounded transition active:scale-90"
       title={bookmarked ? "取消書籤" : "加入書籤"}
     >
       {bookmarked
