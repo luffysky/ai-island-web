@@ -39,20 +39,25 @@ function parseDevice(ua: string): string {
   return `${browser} on ${os}`;
 }
 
-async function fetchGeo(ip: string): Promise<string> {
+async function fetchGeo(ip: string): Promise<{ text: string; mapsUrl?: string }> {
   if (!ip || ip === "0.0.0.0" || ip.startsWith("127.") || ip.startsWith("10.") || ip.startsWith("192.168.")) {
-    return "本機";
+    return { text: "本機" };
   }
   const token = process.env.IPINFO_TOKEN;
   try {
     const url = token ? `https://ipinfo.io/${ip}/json?token=${token}` : `https://ipinfo.io/${ip}/json`;
     const r = await fetch(url, { signal: AbortSignal.timeout(3000), headers: { "User-Agent": "ai-island" } });
-    if (!r.ok) return "?";
+    if (!r.ok) return { text: "?" };
     const d = await r.json() as any;
-    const parts = [d.country, d.region, d.city].filter(Boolean);
-    return parts.length ? parts.join(" ") : "?";
+    // 國家 / 城市 / 郵遞區號（縮到區概念）/ ISP / IP
+    const parts = [d.country, d.city, d.postal].filter(Boolean);
+    let text = parts.length ? parts.join(" · ") : "?";
+    if (d.org) text += `\n📡 ${String(d.org).slice(0, 50)}`;
+    text += `\n🌐 ${ip}`;
+    const mapsUrl = d.loc ? `https://www.google.com/maps?q=${d.loc}` : undefined;
+    return { text, mapsUrl };
   } catch {
-    return "?";
+    return { text: "?" };
   }
 }
 
@@ -107,11 +112,12 @@ export async function POST(req: NextRequest) {
   const device = parseDevice(ua);
   const geo = await fetchGeo(ip);
   const refTxt = referrer ? ` ← ${new URL(referrer).pathname}` : "";
+  const mapsLine = geo.mapsUrl ? `\n📍 點看地圖：${geo.mapsUrl}` : "";
 
   notifyAdmin({
     kind: userTag.startsWith("👀") ? "visit" : userTag.includes("👑") ? "admin_login" : "user_login",
     dedupeKey: key,
-    text: `${userTag} 看 ${path}${refTxt}${lastSeenText}\n📍 ${geo} · ${device}`,
+    text: `${userTag} 看 ${path}${refTxt}${lastSeenText}\n📍 ${geo.text}\n💻 ${device}${mapsLine}`,
   }).catch(() => {});
 
   return NextResponse.json({ ok: true });
