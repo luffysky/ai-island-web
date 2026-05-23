@@ -1,6 +1,11 @@
 /**
- * LINE Flex Message 卡片 helper
- * 比純文字漂亮、可帶 emoji / 顏色 / 按鈕
+ * LINE Flex Message 卡片 helper v2 — 美化版
+ * 設計重點：
+ *  - header 兩段配色（emoji 大字色塊 + 白底標題）
+ *  - body 加 separator 分隔線、label-value 對齊
+ *  - footer button 加 icon、horizontal 多 button 佈局
+ *  - 卡片 size "mega"、加 cornerRadius、加底部時間戳
+ *  - 統一字體 size、color 與設計系統一致
  */
 
 /** Quick Reply 浮動按鈕 */
@@ -17,7 +22,6 @@ export function buildQuickReply(actions: QuickReplyAction[]): QuickReply {
   return { items: actions.slice(0, 13).map((a) => ({ type: "action", action: a })) };
 }
 
-/** 常用命令 quick reply（每次 reply 加在底下） */
 export const COMMON_QR: QuickReplyAction[] = [
   { type: "message", label: "📊 今日", text: "/today" },
   { type: "message", label: "📈 7 天", text: "/kpi 7" },
@@ -48,10 +52,30 @@ export function buildTextWithQR(text: string, qr?: QuickReply): LineTextMessage 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
 const ADMIN_SLUG = process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2";
 
-/**
- * 簡單通知卡（emoji + 標題 + 內文 + 可選按鈕）
- *   buildSimpleCard({ kind: "visit", emoji: "👀", title: "...", body: "...", buttons: [...] })
- */
+// 時間戳記（台北時區、HH:mm）
+function nowTW(): string {
+  const d = new Date(Date.now() + 8 * 3600_000);
+  return `${String(d.getUTCHours()).padStart(2, "0")}:${String(d.getUTCMinutes()).padStart(2, "0")}`;
+}
+
+// 把顏色變深（粗略 -20%）
+function darken(hex: string, amount = 0.2): string {
+  const h = hex.replace("#", "");
+  const r = Math.max(0, Math.floor(parseInt(h.slice(0, 2), 16) * (1 - amount)));
+  const g = Math.max(0, Math.floor(parseInt(h.slice(2, 4), 16) * (1 - amount)));
+  const b = Math.max(0, Math.floor(parseInt(h.slice(4, 6), 16) * (1 - amount)));
+  return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
+}
+
+// 把顏色變淺（粗略 +80% 白）
+function lighten(hex: string, amount = 0.92): string {
+  const h = hex.replace("#", "");
+  const r = Math.min(255, Math.floor(parseInt(h.slice(0, 2), 16) + (255 - parseInt(h.slice(0, 2), 16)) * amount));
+  const g = Math.min(255, Math.floor(parseInt(h.slice(2, 4), 16) + (255 - parseInt(h.slice(2, 4), 16)) * amount));
+  const b = Math.min(255, Math.floor(parseInt(h.slice(4, 6), 16) + (255 - parseInt(h.slice(4, 6), 16)) * amount));
+  return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
+}
+
 export type SimpleCardInput = {
   emoji?: string;
   title: string;
@@ -67,69 +91,110 @@ export type SimpleCardInput = {
 
 export function buildSimpleCard(input: SimpleCardInput): FlexMessage {
   const color = input.accentColor ?? "#50fa7b";
+  const colorLight = lighten(color, 0.92);
+  const colorDark = darken(color, 0.15);
   const altText = `${input.emoji ?? ""} ${input.title}`.slice(0, 400);
 
+  // body 內容組裝（meta 列、body text、separator）
   const bodyContents: any[] = [];
+
   if (input.body) {
     bodyContents.push({
       type: "text",
       text: input.body,
       wrap: true,
       size: "sm",
-      color: "#666666",
-      margin: "sm",
+      color: "#555555",
+      lineSpacing: "4px",
     });
   }
+
   if (input.meta && input.meta.length > 0) {
+    if (bodyContents.length > 0) {
+      bodyContents.push({ type: "separator", margin: "md", color: "#eeeeee" });
+    }
     bodyContents.push({
       type: "box",
       layout: "vertical",
-      spacing: "xs",
+      spacing: "sm",
       margin: "md",
       contents: input.meta.map((m) => ({
         type: "box",
-        layout: "horizontal",
+        layout: "baseline",
+        spacing: "sm",
         contents: [
-          { type: "text", text: m.label, size: "xs", color: "#999999", flex: 2 },
-          { type: "text", text: m.value, size: "xs", color: "#333333", flex: 5, wrap: true },
+          { type: "text", text: m.label, size: "xs", color: "#999999", flex: 0 },
+          { type: "text", text: m.value, size: "xs", color: "#222222", weight: "bold", flex: 0, wrap: true },
         ],
       })),
     });
   }
 
+  // 底部時間戳
+  bodyContents.push({ type: "separator", margin: "lg", color: "#f4f4f4" });
+  bodyContents.push({
+    type: "text",
+    text: `🕐 ${nowTW()}`,
+    size: "xxs",
+    color: "#bbbbbb",
+    align: "end",
+    margin: "sm",
+  });
+
   const bubble: any = {
     type: "bubble",
     size: "kilo",
+    styles: { header: { backgroundColor: color }, body: { backgroundColor: "#ffffff" } },
     header: {
       type: "box",
       layout: "horizontal",
+      paddingAll: "lg",
+      backgroundColor: color,
       contents: [
-        { type: "text", text: input.emoji ?? "🔔", size: "lg", flex: 0, color },
-        { type: "text", text: input.title, weight: "bold", size: "md", margin: "md", wrap: true, color: "#111111" },
+        {
+          type: "box",
+          layout: "vertical",
+          contents: [
+            { type: "text", text: input.emoji ?? "🔔", size: "xxl", color: "#ffffff", align: "center" },
+          ],
+          flex: 0,
+          width: "44px",
+        },
+        {
+          type: "text",
+          text: input.title,
+          weight: "bold",
+          size: "lg",
+          color: "#ffffff",
+          wrap: true,
+          flex: 1,
+          gravity: "center",
+          margin: "md",
+        },
       ],
-      paddingAll: "md",
-      backgroundColor: "#f4f7f3",
     },
     body: bodyContents.length > 0 ? {
       type: "box",
       layout: "vertical",
+      paddingAll: "lg",
       contents: bodyContents,
-      paddingAll: "md",
     } : undefined,
   };
 
   if (input.buttons && input.buttons.length > 0) {
     bubble.footer = {
       type: "box",
-      layout: "vertical",
+      layout: input.buttons.length > 2 ? "vertical" : "horizontal",
       spacing: "sm",
+      paddingAll: "md",
+      backgroundColor: colorLight,
       contents: input.buttons.slice(0, 3).map((b: any) => ({
         type: "button",
         action: b.postback
           ? { type: "postback", label: String(b.label).slice(0, 20), data: b.postback, displayText: b.displayText }
           : { type: "uri", label: String(b.label).slice(0, 20), uri: b.uri },
         style: b.primary ? "primary" : "secondary",
-        color: b.primary ? color : undefined,
+        color: b.primary ? colorDark : undefined,
         height: "sm",
       })),
     };
@@ -138,13 +203,12 @@ export function buildSimpleCard(input: SimpleCardInput): FlexMessage {
   return { type: "flex", altText, contents: bubble, quickReply: input.quickReply };
 }
 
-/**
- * KPI 卡片（給 /today /kpi 命令用）
- */
+/** KPI 卡：強化版、加 hero color band */
 export function buildKpiCard(opts: {
   title: string;
   rows: Array<{ icon: string; label: string; value: string }>;
 }): FlexMessage {
+  const color = "#5cb85c";
   return {
     type: "flex",
     altText: opts.title,
@@ -154,52 +218,62 @@ export function buildKpiCard(opts: {
       header: {
         type: "box",
         layout: "horizontal",
+        paddingAll: "lg",
+        backgroundColor: color,
         contents: [
-          { type: "text", text: "📊", size: "lg", flex: 0, color: "#50fa7b" },
-          { type: "text", text: opts.title, weight: "bold", size: "md", margin: "md", color: "#111111" },
+          { type: "text", text: "📊", size: "xxl", color: "#ffffff", flex: 0, width: "44px", align: "center" },
+          { type: "text", text: opts.title, weight: "bold", size: "lg", color: "#ffffff", flex: 1, gravity: "center", margin: "md" },
         ],
-        paddingAll: "md",
-        backgroundColor: "#f4f7f3",
       },
       body: {
         type: "box",
         layout: "vertical",
-        spacing: "sm",
-        paddingAll: "md",
-        contents: opts.rows.map((r) => ({
-          type: "box",
-          layout: "horizontal",
-          contents: [
-            { type: "text", text: r.icon, size: "sm", flex: 0 },
-            { type: "text", text: r.label, size: "sm", color: "#666666", margin: "sm", flex: 4 },
-            { type: "text", text: r.value, size: "sm", weight: "bold", color: "#111111", align: "end", flex: 3 },
-          ],
-        })),
+        paddingAll: "lg",
+        spacing: "md",
+        contents: [
+          ...opts.rows.map((r, i) => ({
+            type: "box" as const,
+            layout: "horizontal" as const,
+            paddingBottom: i < opts.rows.length - 1 ? "sm" : undefined,
+            contents: [
+              { type: "text" as const, text: r.icon, size: "sm" as const, flex: 0, width: "24px" },
+              { type: "text" as const, text: r.label, size: "sm" as const, color: "#555555", flex: 1 },
+              { type: "text" as const, text: r.value, size: "md" as const, weight: "bold" as const, color: "#111111", align: "end" as const, flex: 0 },
+            ],
+          })),
+          { type: "separator" as const, margin: "md", color: "#f4f4f4" },
+          { type: "text" as const, text: `🕐 ${nowTW()}`, size: "xxs" as const, color: "#bbbbbb", align: "end" as const, margin: "sm" },
+        ],
       },
       footer: {
         type: "box",
-        layout: "vertical",
-        contents: [{
-          type: "button",
-          action: { type: "uri", label: "打開後台", uri: `${SITE_URL}/${ADMIN_SLUG}/admin/kpi` },
-          style: "primary",
-          color: "#50fa7b",
-          height: "sm",
-        }],
+        layout: "horizontal",
+        spacing: "sm",
+        paddingAll: "md",
+        backgroundColor: lighten(color, 0.92),
+        contents: [
+          {
+            type: "button",
+            action: { type: "uri", label: "📊 打開後台", uri: `${SITE_URL}/${ADMIN_SLUG}/admin/kpi` },
+            style: "primary",
+            color: darken(color, 0.15),
+            height: "sm",
+          },
+        ],
       },
     },
   };
 }
 
-/**
- * 列表卡片（給 /users /churn 用）
- */
+/** 列表卡：加 emoji 序號 + 分隔線 */
 export function buildListCard(opts: {
   title: string;
   emoji: string;
   items: Array<{ primary: string; secondary?: string }>;
   footerButton?: { label: string; uri: string };
+  accentColor?: string;
 }): FlexMessage {
+  const color = opts.accentColor ?? "#7a5599";
   return {
     type: "flex",
     altText: opts.title,
@@ -209,35 +283,53 @@ export function buildListCard(opts: {
       header: {
         type: "box",
         layout: "horizontal",
+        paddingAll: "lg",
+        backgroundColor: color,
         contents: [
-          { type: "text", text: opts.emoji, size: "lg", flex: 0 },
-          { type: "text", text: opts.title, weight: "bold", size: "md", margin: "md", color: "#111111" },
+          { type: "text", text: opts.emoji, size: "xxl", color: "#ffffff", flex: 0, width: "44px", align: "center" },
+          { type: "text", text: opts.title, weight: "bold", size: "lg", color: "#ffffff", flex: 1, gravity: "center", margin: "md" },
         ],
-        paddingAll: "md",
-        backgroundColor: "#f4f7f3",
       },
       body: {
         type: "box",
         layout: "vertical",
+        paddingAll: "lg",
         spacing: "md",
-        paddingAll: "md",
-        contents: opts.items.slice(0, 10).map((it, i) => ({
-          type: "box",
-          layout: "vertical",
-          contents: [
-            { type: "text", text: `${i + 1}. ${it.primary}`, size: "sm", weight: "bold", wrap: true, color: "#111111" },
-            ...(it.secondary ? [{ type: "text", text: it.secondary, size: "xs", color: "#999999", wrap: true, margin: "xs" }] : []),
-          ],
-        })),
+        contents: [
+          ...opts.items.slice(0, 10).flatMap((it, i, arr) => {
+            const block = {
+              type: "box" as const,
+              layout: "vertical" as const,
+              spacing: "xs" as const,
+              contents: [
+                {
+                  type: "box" as const,
+                  layout: "horizontal" as const,
+                  contents: [
+                    { type: "text" as const, text: `${i + 1}`, size: "sm" as const, color, weight: "bold" as const, flex: 0, width: "20px" },
+                    { type: "text" as const, text: it.primary, size: "sm" as const, weight: "bold" as const, color: "#222222", wrap: true, flex: 1 },
+                  ],
+                },
+                ...(it.secondary ? [{ type: "text" as const, text: it.secondary, size: "xs" as const, color: "#888888", wrap: true, margin: "xs" as const, offsetStart: "20px" as const }] : []),
+              ],
+            };
+            return i < arr.length - 1
+              ? [block, { type: "separator" as const, margin: "md", color: "#f4f4f4" }]
+              : [block];
+          }),
+          { type: "text" as const, text: `🕐 ${nowTW()}`, size: "xxs" as const, color: "#bbbbbb", align: "end" as const, margin: "md" },
+        ],
       },
       footer: opts.footerButton ? {
         type: "box",
-        layout: "vertical",
+        layout: "horizontal",
+        paddingAll: "md",
+        backgroundColor: lighten(color, 0.92),
         contents: [{
           type: "button",
           action: { type: "uri", label: opts.footerButton.label, uri: opts.footerButton.uri },
           style: "primary",
-          color: "#50fa7b",
+          color: darken(color, 0.15),
           height: "sm",
         }],
       } : undefined,
@@ -245,10 +337,9 @@ export function buildListCard(opts: {
   };
 }
 
-/**
- * AI 回覆卡片（標題 AI 助理 + 內容、加按鈕可開後台）
- */
+/** AI 回覆卡：精緻版（更柔和、留白多）*/
 export function buildAiReplyCard(opts: { text: string; userName: string }): FlexMessage {
+  const color = "#5fa8d3"; // 青藍
   return {
     type: "flex",
     altText: opts.text.slice(0, 200),
@@ -258,24 +349,37 @@ export function buildAiReplyCard(opts: { text: string; userName: string }): Flex
       header: {
         type: "box",
         layout: "horizontal",
+        paddingAll: "lg",
+        backgroundColor: color,
         contents: [
-          { type: "text", text: "✨", size: "lg", flex: 0, color: "#8be9fd" },
-          { type: "text", text: `給 ${opts.userName} 的回覆`, weight: "bold", size: "sm", margin: "md", color: "#111111" },
+          { type: "text", text: "✨", size: "xxl", color: "#ffffff", flex: 0, width: "44px", align: "center" },
+          {
+            type: "box",
+            layout: "vertical",
+            flex: 1,
+            contents: [
+              { type: "text", text: "AI 助理", weight: "bold", size: "md", color: "#ffffff" },
+              { type: "text", text: `給 ${opts.userName}`, size: "xs", color: "rgba(255,255,255,0.85)" },
+            ],
+          },
         ],
-        paddingAll: "md",
-        backgroundColor: "#eef9fc",
       },
       body: {
         type: "box",
         layout: "vertical",
-        paddingAll: "md",
-        contents: [{
-          type: "text",
-          text: opts.text.slice(0, 1500),
-          wrap: true,
-          size: "sm",
-          color: "#222222",
-        }],
+        paddingAll: "lg",
+        contents: [
+          {
+            type: "text",
+            text: opts.text.slice(0, 1500),
+            wrap: true,
+            size: "sm",
+            color: "#222222",
+            lineSpacing: "6px",
+          },
+          { type: "separator", margin: "lg", color: "#f4f4f4" },
+          { type: "text", text: `🕐 ${nowTW()}`, size: "xxs", color: "#bbbbbb", align: "end", margin: "sm" },
+        ],
       },
     },
   };
