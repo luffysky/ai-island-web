@@ -183,6 +183,13 @@ export function MeSidebar({ profile }: { profile: Profile | null }) {
           作業
         </MeLink>
         <MeLink
+          href="/me/support"
+          icon={<span>💬</span>}
+          collapsed={collapsed}
+        >
+          客服中心
+        </MeLink>
+        <MeLink
           href="/me/referrals"
           icon={<span>🎁</span>}
           collapsed={collapsed}

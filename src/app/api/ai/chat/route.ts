@@ -50,9 +50,14 @@ export async function POST(req: NextRequest) {
       return errorResponse("key_decrypt_failed", 500);
     }
   } else {
-    // 特權帳號（ai_unlimited 或 admin）跳過扣免費 quota、直接用系統 key
+    // 特權帳號（ai_unlimited 或 admin）或訂閱中 → 跳過扣免費 quota
     const unlimited = await hasAiUnlimited(user.id);
+    let isPremium = false;
     if (!unlimited) {
+      const { data: premiumOk } = await admin.rpc("has_active_subscription", { p_user_id: user.id });
+      isPremium = !!premiumOk;
+    }
+    if (!unlimited && !isPremium) {
       // 扣免費 quota
       const { data: quotaOk, error: quotaError } = await admin.rpc("consume_ai_quota", { p_user_id: user.id, p_amount: 1 });
       if (quotaError) {
