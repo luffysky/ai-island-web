@@ -229,7 +229,7 @@ export function TopNav() {
                     </Link>
 
                     <Link
-                      href="/dashboard"
+                      href="/me/history"
                       className="flex items-center gap-3 px-4 py-2 hover:bg-bg-elevated transition text-sm text-fg-muted"
                       onClick={() => setOpen(false)}
                     >

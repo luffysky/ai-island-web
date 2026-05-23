@@ -434,15 +434,24 @@ export function Pet() {
   const auraColor = vipTier === "nami" ? "#ff9ec0" : vipTier === "luffy" ? "#ffd700" : null;
   const headDeco = getHeadDecoration();
 
+  // 手機強制固定右下角（不用 px 算座標、避免 viewport 變動跑出視窗 + iOS 安全區）
+  const positionStyle: React.CSSProperties = isMobile
+    ? {
+        right: 16,
+        bottom: "max(16px, env(safe-area-inset-bottom))",
+        left: "auto",
+        top: "auto",
+        transform: "none",
+      }
+    : { left: pos.x, top: pos.y, transform: "translate(-50%, -50%)" };
+
   return (
     <>
       <div
         style={{
           position: "fixed",
-          left: pos.x,
-          top: pos.y,
-          zIndex: 35,
-          transform: "translate(-50%, -50%)",
+          ...positionStyle,
+          zIndex: 39,
           pointerEvents: "none",
           userSelect: "none",
         }}

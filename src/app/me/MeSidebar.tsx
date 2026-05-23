@@ -176,6 +176,13 @@ export function MeSidebar({ profile }: { profile: Profile | null }) {
           AI 對話紀錄
         </MeLink>
         <MeLink
+          href="/me/assistant"
+          icon={<span>🤝</span>}
+          collapsed={collapsed}
+        >
+          AI 助教
+        </MeLink>
+        <MeLink
           href="/me/quiz"
           icon={<span>🧠</span>}
           collapsed={collapsed}
