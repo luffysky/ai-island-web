@@ -10,7 +10,7 @@ const PAGE_SIZE = 20;
 
 export function ThreadList({ boardSlug }: { boardSlug?: string }) {
   const [threads, setThreads] = useState<ForumThread[]>([]);
-  const [sort, setSort] = useState<"recent" | "new" | "hot">("recent");
+  const [sort, setSort] = useState<"recent" | "new" | "hot" | "trending">("recent");
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(false);
@@ -77,8 +77,9 @@ export function ThreadList({ boardSlug }: { boardSlug?: string }) {
   return (
     <div>
       {/* 排序 */}
-      <div className="flex gap-1 mb-3">
+      <div className="flex gap-1 mb-3 flex-wrap">
         {[
+          { key: "trending" as const, label: "🔥 熱門演算法" },
           { key: "recent" as const, label: "最新回覆" },
           { key: "new" as const, label: "最新發表" },
           { key: "hot" as const, label: "最多回覆" },

@@ -34,6 +34,10 @@ import {
   emitBagToggle,
   addToInventory,
   subscribeChests,
+  emitFishing,
+  emitHouseOpen,
+  readHouseState,
+  subscribeHouse,
 } from "./island-bus";
 /**
  * S7-S8 3D 島嶼 v0 — 批 1：能站上去的島
@@ -108,7 +112,7 @@ function Glb({ src, scale = 1, rotY = 0 }: { src: string; scale?: number; rotY?:
   return <primitive object={clone} scale={scale} rotation={[0, rotY, 0]} />;
 }
 
-enum K { forward, back, left, right, run, interact, bag }
+enum K { forward, back, left, right, run, interact, bag, fish }
 
 type Node = {
   id: IslandNodeId;
@@ -189,6 +193,7 @@ export default function IslandV0({
         { name: K[K.run], keys: ["ShiftLeft", "ShiftRight"] },
         { name: K[K.interact], keys: ["KeyE", "Enter"] },
         { name: K[K.bag], keys: ["KeyB", "KeyI"] },
+        { name: K[K.fish], keys: ["KeyF"] },
       ]}
     >
       <Canvas
@@ -223,6 +228,7 @@ function Scene({
       <SkyIsland />
       <Resources />
       <Chests />
+      <PlayerHouse />
       <Village completed={completedChapterIds} />
       {level >= 5 && <Lighthouse />}
       {NODES.map((n) => (
@@ -386,6 +392,68 @@ function CentralTower() {
   );
 }
 
+// 玩家小屋位置（島嶼東南、跟其他物件不撞）
+const HOUSE_POS: [number, number] = [-6, 18];
+
+function PlayerHouse() {
+  const [house, setHouse] = useState(() => readHouseState());
+  useEffect(() => subscribeHouse(setHouse), []);
+  if (!house.builtAt) {
+    // 還沒蓋：顯示木牌「我的家」
+    return (
+      <group position={[HOUSE_POS[0], 0.6, HOUSE_POS[1]]}>
+        <mesh position={[0, 0.6, 0]} castShadow>
+          <boxGeometry args={[0.15, 1.2, 0.15]} />
+          <meshStandardMaterial color="#6b3f1e" />
+        </mesh>
+        <mesh position={[0, 1.3, 0]} castShadow>
+          <boxGeometry args={[1.4, 0.5, 0.1]} />
+          <meshStandardMaterial color="#c89a5a" />
+        </mesh>
+        <Text position={[0, 1.3, 0.06]} fontSize={0.22} color="#222" anchorX="center" anchorY="middle">
+          🏠 我的家
+        </Text>
+        <Text position={[0, 0.95, 0.06]} fontSize={0.13} color="#7a5599" anchorX="center" anchorY="middle">
+          按 E 蓋
+        </Text>
+      </group>
+    );
+  }
+  // 已蓋：顯示小屋 mesh
+  return (
+    <group position={[HOUSE_POS[0], 0, HOUSE_POS[1]]}>
+      <mesh position={[0, 0.9, 0]} castShadow>
+        <boxGeometry args={[2.4, 1.8, 2.4]} />
+        <meshStandardMaterial color="#e6c7a6" />
+      </mesh>
+      <mesh position={[0, 2.2, 0]} rotation={[0, Math.PI / 4, 0]} castShadow>
+        <coneGeometry args={[1.9, 1.2, 4]} />
+        <meshStandardMaterial color="#9c4f3a" />
+      </mesh>
+      {/* 門 */}
+      <mesh position={[0, 0.7, 1.21]}>
+        <boxGeometry args={[0.5, 1, 0.05]} />
+        <meshStandardMaterial color="#3a2715" />
+      </mesh>
+      {/* 窗 */}
+      <mesh position={[-0.8, 1.1, 1.21]}>
+        <boxGeometry args={[0.4, 0.4, 0.05]} />
+        <meshStandardMaterial color="#8be9fd" emissive="#8be9fd" emissiveIntensity={0.5} />
+      </mesh>
+      <mesh position={[0.8, 1.1, 1.21]}>
+        <boxGeometry args={[0.4, 0.4, 0.05]} />
+        <meshStandardMaterial color="#8be9fd" emissive="#8be9fd" emissiveIntensity={0.5} />
+      </mesh>
+      <Text position={[0, 3.2, 0]} fontSize={0.25} color="#fff" outlineWidth={0.02} outlineColor="#000">
+        🏠 我的家
+      </Text>
+      <Text position={[0, 2.9, 0]} fontSize={0.16} color="#ffd700" outlineWidth={0.01} outlineColor="#000">
+        按 E 進入
+      </Text>
+    </group>
+  );
+}
+
 // 北方漂浮天空之巔
 function SkyIsland() {
   return (
@@ -459,8 +527,20 @@ function WeatherFx() {
       setWeather(w);
     };
     tick();
-    const i = setInterval(tick, WEATHER_PERIOD_MS);
-    return () => clearInterval(i);
+    let id: ReturnType<typeof setInterval> | null = setInterval(tick, WEATHER_PERIOD_MS);
+    // tab 隱藏時 pause、回來再 resume（省電）
+    const onVis = () => {
+      if (document.hidden) {
+        if (id) { clearInterval(id); id = null; }
+      } else {
+        if (!id) id = setInterval(tick, WEATHER_PERIOD_MS);
+      }
+    };
+    document.addEventListener("visibilitychange", onVis);
+    return () => {
+      if (id) clearInterval(id);
+      document.removeEventListener("visibilitychange", onVis);
+    };
   }, []);
   return null;
 }
@@ -650,15 +730,21 @@ function Chests() {
 }
 
 function Resources() {
-  const [, setTick] = useState(0);
-  useEffect(() => {
-    const t = setInterval(() => setTick((v) => v + 1), 1000);
-    return () => clearInterval(t);
-  }, []);
+  // 用 useFrame 取代 1 秒 setInterval、只在 availability 真的變了才 setState
+  const [availability, setAvailability] = useState<boolean[]>(() => RESOURCES.map(() => true));
+  const lastRef = useRef<boolean[]>(availability);
+  useFrame(() => {
+    const next = RESOURCES.map((r) => isResourceAvailable(r.id));
+    const prev = lastRef.current;
+    if (next.length !== prev.length || next.some((v, i) => v !== prev[i])) {
+      lastRef.current = next;
+      setAvailability(next);
+    }
+  });
   return (
     <group>
-      {RESOURCES.map((r) => (
-        <ResourceMesh key={r.id} spawn={r} available={isResourceAvailable(r.id)} />
+      {RESOURCES.map((r, i) => (
+        <ResourceMesh key={r.id} spawn={r} available={availability[i] ?? true} />
       ))}
     </group>
   );
@@ -732,6 +818,7 @@ function Player({ petName }: { petName: string | null }) {
   const { camera } = useThree();
   const eDownRef = useRef(false);
   const bDownRef = useRef(false);
+  const fDownRef = useRef(false);
   const stepAccumRef = useRef(0);
   const lastPosRef = useRef<{ x: number; z: number } | null>(null);
 
@@ -860,6 +947,21 @@ function Player({ petName }: { petName: string | null }) {
         }
       }
     }
+    // 我的家
+    let nearestHouse = false;
+    {
+      const dx = HOUSE_POS[0] - g.position.x;
+      const dz = HOUSE_POS[1] - g.position.z;
+      const d2 = dx * dx + dz * dz;
+      if (d2 < nearestD2) {
+        nearestD2 = d2;
+        nearestHouse = true;
+        nearestNode = null;
+        nearestResource = null;
+        nearestChest = null;
+        nearestNpc = null;
+      }
+    }
     // 寵物近 → 也可互動
     let nearestPet = false;
     if (petRef.current && petName) {
@@ -882,6 +984,7 @@ function Player({ petName }: { petName: string | null }) {
       if (nearestNode) emitOpen(nearestNode.id);
       else if (nearestResource) harvest(nearestResource.id, nearestResource.kind);
       else if (nearestChest) openChestById(nearestChest.id, nearestChest.rewardCoin, readOpenedChests());
+      else if (nearestHouse) emitHouseOpen();
       else if (nearestNpc) {
         emitNpc(nearestNpc);
         noteNpcTalked(nearestNpc);
@@ -894,6 +997,14 @@ function Player({ petName }: { petName: string | null }) {
     const bPressed = !!keys[K[K.bag]];
     if (bPressed && !bDownRef.current) emitBagToggle();
     bDownRef.current = bPressed;
+
+    // 釣魚鍵 F — 在沙岸範圍才生效
+    const fPressed = !!keys[K[K.fish]];
+    if (fPressed && !fDownRef.current) {
+      const r = Math.sqrt(g.position.x ** 2 + g.position.z ** 2);
+      if (r > ISLAND_RADIUS - 4 && r < ISLAND_RADIUS) emitFishing();
+    }
+    fDownRef.current = fPressed;
 
     // 寵物跟隨：lerp 到玩家後方
     const pet = petRef.current;

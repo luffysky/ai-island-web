@@ -2,11 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer, createSupabaseAdmin } from "@/lib/supabase";
 import { awardForumXp } from "@/lib/forum-xp";
 import { sanitizeRichHtml } from "@/lib/rich-html";
+import { sortByHnScore } from "@/lib/forum-rank";
 
 // GET /api/forum/threads?board=slug&sort=recent&offset=0&limit=20 — 主題串列表（分頁）
 export async function GET(req: NextRequest) {
   const boardSlug = req.nextUrl.searchParams.get("board");
-  const sort = req.nextUrl.searchParams.get("sort") ?? "recent"; // recent | new | hot
+  const sort = req.nextUrl.searchParams.get("sort") ?? "recent"; // recent | new | hot | trending
   const offset = Math.max(0, parseInt(req.nextUrl.searchParams.get("offset") ?? "0", 10) || 0);
   const limit = Math.max(1, Math.min(50, parseInt(req.nextUrl.searchParams.get("limit") ?? "20", 10) || 20));
   const admin = createSupabaseAdmin();
@@ -26,14 +27,33 @@ export async function GET(req: NextRequest) {
     .from("forum_threads")
     .select(`
       id, board_id, user_id, title, tags, is_pinned, is_featured, is_locked,
-      view_count, reply_count, last_reply_at, created_at,
+      view_count, reply_count, like_count, last_reply_at, created_at,
       author:profiles!forum_threads_user_id_fkey(username, display_name, avatar_url, level),
       board:forum_boards!forum_threads_board_id_fkey(name, slug, emoji)
     `);
 
   if (boardId) query = query.eq("board_id", boardId);
 
-  // 排序：置頂永遠在前
+  if (sort === "trending") {
+    // Hacker News 排序：撈最近 7 天的 100~200 筆、在 server 端用 hnScore 排
+    const since = new Date(Date.now() - 7 * 86400_000).toISOString();
+    query = query.gte("created_at", since).order("created_at", { ascending: false }).limit(200);
+    const { data, error } = await query;
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    const ranked = sortByHnScore((data as any[]) ?? []);
+    const slice = ranked.slice(offset, offset + limit + 1);
+    const hasMore = slice.length > limit;
+    const page = hasMore ? slice.slice(0, limit) : slice;
+    const threads = offset === 0
+      ? page.sort((a: any, b: any) => {
+          if (a.is_pinned !== b.is_pinned) return a.is_pinned ? -1 : 1;
+          return 0;
+        })
+      : page;
+    return NextResponse.json({ threads, hasMore });
+  }
+
+  // 一般排序：置頂永遠在前
   if (sort === "new") query = query.order("created_at", { ascending: false });
   else if (sort === "hot") query = query.order("reply_count", { ascending: false });
   else query = query.order("last_reply_at", { ascending: false });

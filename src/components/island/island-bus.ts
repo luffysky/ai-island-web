@@ -67,6 +67,131 @@ export function resetInventory(): Record<ResourceKind, number> {
   return empty;
 }
 
+// ============ 我的家系統 ============
+export type FurnitureKind = "bed" | "rug" | "lamp" | "shelf" | "plant" | "table";
+
+export const FURNITURE_META: Record<FurnitureKind, { label: string; emoji: string; cost: Partial<Record<ResourceKind, number>>; effect?: string }> = {
+  bed:    { label: "床",   emoji: "🛏️", cost: { wood: 8 },               effect: "睡覺補 +1 ❤️（每日一次）" },
+  rug:    { label: "地毯", emoji: "🟫", cost: { wood: 3, shell: 2 } },
+  lamp:   { label: "燈",   emoji: "💡", cost: { crystal: 1 } },
+  shelf:  { label: "書架", emoji: "📚", cost: { wood: 5 } },
+  plant:  { label: "盆栽", emoji: "🪴", cost: { wood: 2, shell: 3 } },
+  table:  { label: "桌子", emoji: "🪑", cost: { wood: 4 } },
+};
+
+type HouseState = {
+  builtAt: string | null; // 蓋好時間 ISO（null = 還沒蓋）
+  furniture: FurnitureKind[];
+  lastSleepDate: string | null; // YYYY-MM-DD
+};
+
+const HOUSE_KEY = "ai_island_house_v1";
+const HOUSE_BUILD_COST: Partial<Record<ResourceKind, number>> = { wood: 20, crystal: 1 };
+export function getHouseBuildCost() { return { ...HOUSE_BUILD_COST }; }
+
+export function readHouseState(): HouseState {
+  if (typeof window === "undefined") return { builtAt: null, furniture: [], lastSleepDate: null };
+  try {
+    const raw = localStorage.getItem(HOUSE_KEY);
+    if (raw) {
+      const s = JSON.parse(raw);
+      return { builtAt: s.builtAt ?? null, furniture: s.furniture ?? [], lastSleepDate: s.lastSleepDate ?? null };
+    }
+  } catch {}
+  return { builtAt: null, furniture: [], lastSleepDate: null };
+}
+
+function writeHouseState(s: HouseState) {
+  try { localStorage.setItem(HOUSE_KEY, JSON.stringify(s)); } catch {}
+  for (const f of houseSubs) f(s);
+}
+
+const houseSubs = new Set<(s: HouseState) => void>();
+export function subscribeHouse(fn: (s: HouseState) => void) {
+  houseSubs.add(fn);
+  return () => { houseSubs.delete(fn); };
+}
+
+export function buildHouse(): HouseState {
+  const s = readHouseState();
+  if (s.builtAt) return s;
+  s.builtAt = new Date().toISOString();
+  writeHouseState(s);
+  return s;
+}
+
+export function addFurniture(kind: FurnitureKind): HouseState {
+  const s = readHouseState();
+  s.furniture = [...(s.furniture ?? []), kind];
+  writeHouseState(s);
+  return s;
+}
+
+export function markSlept(date: string): HouseState {
+  const s = readHouseState();
+  s.lastSleepDate = date;
+  writeHouseState(s);
+  return s;
+}
+
+// 開家門板事件
+const houseOpenSubs = new Set<() => void>();
+export function emitHouseOpen() { for (const f of houseOpenSubs) f(); }
+export function subscribeHouseOpen(fn: () => void) {
+  houseOpenSubs.add(fn);
+  return () => { houseOpenSubs.delete(fn); };
+}
+
+// ============ 釣魚系統 ============
+export type FishKind = "minnow" | "carp" | "tuna" | "golden" | "dragon";
+
+export const FISH_META: Record<FishKind, { label: string; emoji: string; rarity: number; coinReward: number; minSeconds: number; maxSeconds: number }> = {
+  minnow:  { label: "鯽魚",   emoji: "🐟", rarity: 0.45, coinReward: 3,  minSeconds: 2, maxSeconds: 4 },
+  carp:    { label: "鯉魚",   emoji: "🐠", rarity: 0.30, coinReward: 8,  minSeconds: 3, maxSeconds: 6 },
+  tuna:    { label: "鮪魚",   emoji: "🐡", rarity: 0.15, coinReward: 15, minSeconds: 4, maxSeconds: 7 },
+  golden:  { label: "金魚",   emoji: "🥇", rarity: 0.08, coinReward: 30, minSeconds: 5, maxSeconds: 9 },
+  dragon:  { label: "龍魚",   emoji: "🐲", rarity: 0.02, coinReward: 100, minSeconds: 6, maxSeconds: 10 },
+};
+
+const FISH_KEY = "ai_island_fish_v1";
+export function readFishCounts(): Record<FishKind, number> {
+  if (typeof window === "undefined") return { minnow: 0, carp: 0, tuna: 0, golden: 0, dragon: 0 };
+  try {
+    const raw = localStorage.getItem(FISH_KEY);
+    return { minnow: 0, carp: 0, tuna: 0, golden: 0, dragon: 0, ...JSON.parse(raw ?? "{}") };
+  } catch { return { minnow: 0, carp: 0, tuna: 0, golden: 0, dragon: 0 }; }
+}
+export function addFish(kind: FishKind, n = 1): Record<FishKind, number> {
+  const c = readFishCounts();
+  c[kind] = (c[kind] ?? 0) + n;
+  try { localStorage.setItem(FISH_KEY, JSON.stringify(c)); } catch {}
+  for (const f of fishSubs) f(c);
+  return c;
+}
+const fishSubs = new Set<(c: Record<FishKind, number>) => void>();
+export function subscribeFish(fn: (c: Record<FishKind, number>) => void) {
+  fishSubs.add(fn);
+  return () => { fishSubs.delete(fn); };
+}
+
+export function rollFish(): FishKind {
+  const r = Math.random();
+  let acc = 0;
+  for (const k of Object.keys(FISH_META) as FishKind[]) {
+    acc += FISH_META[k].rarity;
+    if (r < acc) return k;
+  }
+  return "minnow";
+}
+
+// 釣魚 trigger（F 鍵、走到沙岸）
+const fishingSubs = new Set<() => void>();
+export function emitFishing() { for (const f of fishingSubs) f(); }
+export function subscribeFishing(fn: () => void) {
+  fishingSubs.add(fn);
+  return () => { fishingSubs.delete(fn); };
+}
+
 // ============ NPC 互動 ============
 export type NpcId = "elder" | "merchant" | "seer";
 
