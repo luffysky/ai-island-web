@@ -6,6 +6,7 @@ import { BlogEditor } from "@/components/blog/BlogEditor";
 import { AiWriteHelper } from "@/components/blog/AiWriteHelper";
 import { Save, Globe, Lock, ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useToast } from "@/components/ui/Toast";
 
 interface ArticleFormData {
   id?: string;
@@ -24,6 +25,7 @@ interface ArticleFormData {
 
 export function ArticleEditorForm({ initial }: { initial?: Partial<ArticleFormData> }) {
   const router = useRouter();
+  const toast = useToast();
   const isEdit = !!initial?.id;
   const [data, setData] = useState<ArticleFormData>({
     id: initial?.id,
@@ -62,7 +64,7 @@ export function ArticleEditorForm({ initial }: { initial?: Partial<ArticleFormDa
 
   const save = async (publish?: boolean) => {
     if (!data.title.trim()) {
-      alert("請先填標題");
+      toast.warning("請先填標題");
       return;
     }
     setSaving(true);
@@ -86,9 +88,10 @@ export function ArticleEditorForm({ initial }: { initial?: Partial<ArticleFormDa
     setSaving(false);
     const json = await res.json();
     if (!res.ok) {
-      alert("儲存失敗：" + (json.message || json.error));
+      toast.error("儲存失敗：" + (json.message || json.error));
       return;
     }
+    toast.success(publish ? "已發佈文章" : "已存成草稿");
     router.push("/me/blog");
   };
 

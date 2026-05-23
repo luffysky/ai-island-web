@@ -8,6 +8,8 @@ import {
   Menu, X, Search, History, Star, Plus, Trash2,
 } from "lucide-react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
+import { useToast } from "@/components/ui/Toast";
+import { useConfirm } from "@/components/ui/ConfirmDialog";
 
 type NavLesson = {
   id: string;
@@ -34,6 +36,8 @@ type Tab = "chapters" | "bookmarks" | "notes" | "history";
 
 export function SideNav() {
   const pathname = usePathname();
+  const toast = useToast();
+  const confirm = useConfirm();
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState<Tab>("chapters");
   const [chapters, setChapters] = useState<NavChapter[]>([]);
@@ -118,23 +122,45 @@ export function SideNav() {
       .single();
     setSavingNote(false);
     if (error) {
-      alert(error.message);
+      toast.error(error.message);
       return;
     }
     setNotes((current) => [data, ...current]);
     setNoteDraft("");
     setNoteDraftOpen(false);
+    toast.success("已儲存筆記");
   };
 
   const deleteNote = async (id: string) => {
-    if (!user || !confirm("刪除這則筆記？")) return;
-    const supabase = createSupabaseBrowser();
-    const { error } = await supabase.from("notes").delete().eq("id", id).eq("user_id", user.id);
-    if (error) {
-      alert(error.message);
-      return;
-    }
+    if (!user) return;
+    const snapshot = notes;
+    const target = notes.find((n) => n.id === id);
+    if (!target) return;
+
+    // optimistic：立刻消失、5 秒 undo
     setNotes((current) => current.filter((note) => note.id !== id));
+
+    let undone = false;
+    toast.warning("已刪除一則筆記", {
+      duration: 5000,
+      action: {
+        label: "撤銷",
+        onClick: () => {
+          undone = true;
+          setNotes(snapshot);
+        },
+      },
+    });
+
+    setTimeout(async () => {
+      if (undone) return;
+      const supabase = createSupabaseBrowser();
+      const { error } = await supabase.from("notes").delete().eq("id", id).eq("user_id", user.id);
+      if (error) {
+        setNotes(snapshot);
+        toast.error(`刪除失敗、已恢復：${error.message}`);
+      }
+    }, 5000);
   };
 
   // 搜尋過濾

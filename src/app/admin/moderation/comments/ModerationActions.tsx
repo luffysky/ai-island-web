@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Check, Trash2, X } from "lucide-react";
+import { useToast } from "@/components/ui/Toast";
+import { useConfirm } from "@/components/ui/ConfirmDialog";
 
 export function ModerationActions({
   commentId,
@@ -12,6 +14,8 @@ export function ModerationActions({
   approved: boolean;
 }) {
   const router = useRouter();
+  const toast = useToast();
+  const confirm = useConfirm();
   const [busy, setBusy] = useState(false);
 
   const act = async (action: "approve" | "reject" | "delete") => {
@@ -23,11 +27,20 @@ export function ModerationActions({
         body: JSON.stringify({ id: commentId, action }),
       });
       const data = await res.json();
-      if (!res.ok) alert(`失敗：${data.error}`);
+      if (!res.ok) toast.error(`失敗：${data.error}`);
       else router.refresh();
     } finally {
       setBusy(false);
     }
+  };
+
+  const handleDelete = async () => {
+    const ok = await confirm({
+      title: "確定刪除這則留言？",
+      confirmLabel: "刪除",
+      destructive: true,
+    });
+    if (ok) act("delete");
   };
 
   return (
@@ -51,9 +64,7 @@ export function ModerationActions({
         </button>
       )}
       <button
-        onClick={() => {
-          if (confirm("確定刪除這則留言？")) act("delete");
-        }}
+        onClick={handleDelete}
         disabled={busy}
         className="text-xs flex items-center gap-1 px-3 py-1 rounded-full bg-red-500/15 text-red-500 hover:bg-red-500/25 disabled:opacity-50"
       >

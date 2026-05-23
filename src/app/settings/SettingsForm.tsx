@@ -2,6 +2,8 @@
 import { useState } from "react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/Toast";
+import { useConfirm } from "@/components/ui/ConfirmDialog";
 
 const CAREER_PATHS = [
   { id: "frontend", label: "🌱 前端工匠" },
@@ -22,6 +24,8 @@ export function SettingsForm({ profile, email }: { profile: any; email: string }
 
   const router = useRouter();
   const supabase = createSupabaseBrowser();
+  const toast = useToast();
+  const confirm = useConfirm();
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
@@ -48,12 +52,25 @@ export function SettingsForm({ profile, email }: { profile: any; email: string }
   }
 
   async function handleDeleteAccount() {
-    if (!confirm("確定要刪除帳號？這個動作不可逆。")) return;
-    if (!confirm("最後確認：所有進度、成就、筆記都會刪除。")) return;
+    const ok1 = await confirm({
+      title: "確定要刪除帳號？",
+      description: "這個動作不可逆、所有資料都會被永久移除。",
+      confirmLabel: "下一步",
+      destructive: true,
+    });
+    if (!ok1) return;
+
+    const ok2 = await confirm({
+      title: "最後確認",
+      description: "所有進度、成就、筆記、文章都會一起刪除。確定繼續？",
+      confirmLabel: "永久刪除",
+      destructive: true,
+    });
+    if (!ok2) return;
 
     const { error } = await supabase.rpc("delete_user_account");
     if (error) {
-      alert(`刪除失敗：${error.message}\n請聯絡客服`);
+      toast.error(`刪除失敗：${error.message}、請聯絡客服`);
       return;
     }
     await supabase.auth.signOut();

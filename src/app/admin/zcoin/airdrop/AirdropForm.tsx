@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useConfirm } from "@/components/ui/ConfirmDialog";
 
 type Kind = "all" | "members" | "premium" | "xp_gte" | "level_gte";
 
 export function AirdropForm() {
+  const confirm = useConfirm();
   const [kind, setKind] = useState<Kind>("all");
   const [value, setValue] = useState(100);
   const [amount, setAmount] = useState(50);
@@ -41,9 +43,13 @@ export function AirdropForm() {
       setResult("理由至少 5 字");
       return;
     }
-    if (!confirm(`確認對 ${preview.count} 人發放 ${amount > 0 ? "+" : ""}${amount} Z-coin？此操作無法撤銷。`)) {
-      return;
-    }
+    const ok = await confirm({
+      title: `確認對 ${preview.count} 人發放 ${amount > 0 ? "+" : ""}${amount} Z-coin？`,
+      description: "此操作無法撤銷、會直接寫入用戶餘額並記入 audit log。",
+      confirmLabel: amount >= 0 ? "確認發放" : "確認扣除",
+      destructive: amount < 0,
+    });
+    if (!ok) return;
     setExecuting(true);
     setResult(null);
     try {

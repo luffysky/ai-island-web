@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import confetti from "canvas-confetti";
 import { Check, Flame, Gift } from "lucide-react";
+import { useToast } from "@/components/ui/Toast";
 
 // 7 天一輪的 XP 表（跟 checkin_migration.sql 的 do_checkin 一致）
 const CYCLE_XP = [10, 15, 20, 25, 30, 40, 60];
@@ -15,6 +16,7 @@ interface CheckinStatus {
 }
 
 export function DailyCheckin() {
+  const toast = useToast();
   const [status, setStatus] = useState<CheckinStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [claiming, setClaiming] = useState(false);
@@ -43,7 +45,7 @@ export function DailyCheckin() {
     const { data, error } = await supabase.rpc("do_checkin");
     setClaiming(false);
     if (error || !data?.ok) {
-      alert("簽到失敗：" + (error?.message || data?.error || "未知錯誤"));
+      toast.error("簽到失敗：" + (error?.message || data?.error || "未知錯誤"));
       return;
     }
     if (data.already) {

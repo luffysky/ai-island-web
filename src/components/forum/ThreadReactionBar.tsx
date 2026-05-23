@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useToast } from "@/components/ui/Toast";
 
 const EMOJIS = ["👍", "❤️", "🔥", "🎉", "🤔", "👀"];
 
 export function ThreadReactionBar({ threadId }: { threadId: string }) {
+  const toast = useToast();
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [mine, setMine] = useState<Set<string>>(new Set());
   const api = `/api/forum/threads/${threadId}/reactions`;
@@ -41,7 +43,7 @@ export function ThreadReactionBar({ threadId }: { threadId: string }) {
         return next;
       });
       setCounts((c) => ({ ...c, [emoji]: Math.max(0, (c[emoji] ?? 0) + (had ? 1 : -1)) }));
-      if (res.status === 401) alert("請先登入才能反應");
+      if (res.status === 401) toast.warning("請先登入才能反應");
     }
   };
 

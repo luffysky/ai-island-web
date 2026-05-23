@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { ThumbsUp } from "lucide-react";
+import { useToast } from "@/components/ui/Toast";
 
 /**
  * 留言 / 回覆 按讚按鈕（部落格留言 + 討論區回覆共用）
@@ -15,6 +16,7 @@ export function LikeButton({
   kind: "blog" | "forum";
   targetId: string;
 }) {
+  const toast = useToast();
   const [count, setCount] = useState(0);
   const [liked, setLiked] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -70,7 +72,7 @@ export function LikeButton({
       // 失敗回滾
       setLiked(!optimisticLiked);
       setCount((c) => c + (optimisticLiked ? -1 : 1));
-      if (res.status === 401) alert("請先登入才能按讚");
+      if (res.status === 401) toast.warning("請先登入才能按讚");
       return;
     }
     // 用伺服器回的真實數字校正

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Plus, Trash2, Sparkles, Save } from "lucide-react";
+import { useConfirm } from "@/components/ui/ConfirmDialog";
 
 type Question = {
   id?: string;
@@ -29,6 +30,7 @@ export function QuizBuilder({
   chapterId: number;
   initialQuiz: Quiz | null;
 }) {
+  const confirm = useConfirm();
   const [quiz, setQuiz] = useState<Quiz>(
     initialQuiz ?? {
       title: `Ch${String(chapterId).padStart(2, "0")} 全章測驗`,
@@ -45,7 +47,13 @@ export function QuizBuilder({
 
   const generate = async () => {
     if (quiz.questions && quiz.questions.length > 0) {
-      if (!confirm("會覆蓋現有題目、確定？")) return;
+      const ok = await confirm({
+        title: "會覆蓋現有題目、確定？",
+        description: `目前有 ${quiz.questions.length} 題、AI 重新出題會全部蓋掉。`,
+        confirmLabel: "覆蓋",
+        destructive: true,
+      });
+      if (!ok) return;
     }
     setGenerating(true);
     setMsg("AI 出題中、可能需要 30-60 秒…");

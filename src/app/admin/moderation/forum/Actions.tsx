@@ -2,13 +2,25 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/Toast";
+import { useConfirm } from "@/components/ui/ConfirmDialog";
 
 export function ThreadActions({ thread }: { thread: any }) {
   const router = useRouter();
+  const toast = useToast();
+  const confirm = useConfirm();
   const [busy, setBusy] = useState(false);
 
   const act = async (action: string) => {
-    if (action === "delete" && !confirm("確定刪除主題？所有回覆會一起刪")) return;
+    if (action === "delete") {
+      const ok = await confirm({
+        title: "確定刪除主題？",
+        description: "所有回覆都會一起刪、無法復原。",
+        confirmLabel: "刪除",
+        destructive: true,
+      });
+      if (!ok) return;
+    }
     setBusy(true);
     try {
       const res = await fetch("/api/admin/moderation/forum-thread", {
@@ -17,7 +29,7 @@ export function ThreadActions({ thread }: { thread: any }) {
         body: JSON.stringify({ id: thread.id, action }),
       });
       const data = await res.json();
-      if (!res.ok) alert(`失敗：${data.error}`);
+      if (!res.ok) toast.error(`失敗：${data.error}`);
       else router.refresh();
     } finally {
       setBusy(false);
@@ -51,10 +63,19 @@ export function ThreadActions({ thread }: { thread: any }) {
 
 export function ReplyActions({ reply }: { reply: any }) {
   const router = useRouter();
+  const toast = useToast();
+  const confirm = useConfirm();
   const [busy, setBusy] = useState(false);
 
   const act = async (action: string) => {
-    if (action === "delete" && !confirm("刪除這則回覆？")) return;
+    if (action === "delete") {
+      const ok = await confirm({
+        title: "刪除這則回覆？",
+        confirmLabel: "刪除",
+        destructive: true,
+      });
+      if (!ok) return;
+    }
     setBusy(true);
     try {
       const res = await fetch("/api/admin/moderation/forum-reply", {
@@ -63,7 +84,7 @@ export function ReplyActions({ reply }: { reply: any }) {
         body: JSON.stringify({ id: reply.id, action }),
       });
       const data = await res.json();
-      if (!res.ok) alert(`失敗：${data.error}`);
+      if (!res.ok) toast.error(`失敗：${data.error}`);
       else router.refresh();
     } finally {
       setBusy(false);

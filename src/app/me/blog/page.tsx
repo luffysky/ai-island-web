@@ -4,8 +4,12 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { PenLine, Plus, Eye, Settings, Trash2, ExternalLink, Globe, Lock } from "lucide-react";
+import { useToast } from "@/components/ui/Toast";
+import { useConfirm } from "@/components/ui/ConfirmDialog";
 
 export default function MyBlogPage() {
+  const toast = useToast();
+  const confirm = useConfirm();
   const [articles, setArticles] = useState<any[]>([]);
   const [settings, setSettings] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -26,10 +30,39 @@ export default function MyBlogPage() {
   }, []);
 
   const deleteArticle = async (id: string) => {
-    if (!confirm("確定刪除這篇文章？無法復原。")) return;
-    const res = await fetch(`/api/blog/articles/${id}`, { method: "DELETE" });
-    if (res.ok) setArticles((prev) => prev.filter((a) => a.id !== id));
-    else alert("刪除失敗");
+    const target = articles.find((a) => a.id === id);
+    if (!target) return;
+    const ok = await confirm({
+      title: `刪除「${target.title}」？`,
+      description: "5 秒內可在右下方提示中撤銷。",
+      confirmLabel: "刪除",
+      destructive: true,
+    });
+    if (!ok) return;
+
+    const snapshot = articles;
+    setArticles((prev) => prev.filter((a) => a.id !== id));
+
+    let undone = false;
+    toast.warning("已刪除一篇文章", {
+      duration: 5000,
+      action: {
+        label: "撤銷",
+        onClick: () => {
+          undone = true;
+          setArticles(snapshot);
+        },
+      },
+    });
+
+    setTimeout(async () => {
+      if (undone) return;
+      const res = await fetch(`/api/blog/articles/${id}`, { method: "DELETE" });
+      if (!res.ok) {
+        setArticles(snapshot);
+        toast.error("刪除失敗、已恢復");
+      }
+    }, 5000);
   };
 
   const blogUrl = settings?.blog_slug

@@ -2,6 +2,8 @@
 import { useState } from "react";
 import { Trash2, Plus, ExternalLink } from "lucide-react";
 import Link from "next/link";
+import { useToast } from "@/components/ui/Toast";
+import { useConfirm } from "@/components/ui/ConfirmDialog";
 
 interface UserKey {
   id: string;
@@ -20,6 +22,8 @@ const PROVIDERS = [
 ];
 
 export function AIKeysClient({ initialKeys }: { initialKeys: UserKey[] }) {
+  const toast = useToast();
+  const confirm = useConfirm();
   const [keys, setKeys] = useState(initialKeys);
   const [adding, setAdding] = useState(false);
   const [provider, setProvider] = useState("anthropic");
@@ -58,9 +62,20 @@ export function AIKeysClient({ initialKeys }: { initialKeys: UserKey[] }) {
   };
 
   const remove = async (p: string) => {
-    if (!confirm(`確定要刪除 ${p} key？`)) return;
-    await fetch(`/api/user/ai-keys?provider=${p}`, { method: "DELETE" });
-    setKeys(keys.filter((k) => k.provider !== p));
+    const ok = await confirm({
+      title: `刪除 ${p} key？`,
+      description: "刪除後此 provider 將無法使用、需重新輸入。",
+      confirmLabel: "刪除",
+      destructive: true,
+    });
+    if (!ok) return;
+    const res = await fetch(`/api/user/ai-keys?provider=${p}`, { method: "DELETE" });
+    if (res.ok) {
+      setKeys(keys.filter((k) => k.provider !== p));
+      toast.success(`已刪除 ${p} key`);
+    } else {
+      toast.error("刪除失敗");
+    }
   };
 
   return (

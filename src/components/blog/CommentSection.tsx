@@ -5,6 +5,8 @@ import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { MessageSquare, Send, Trash2, CornerDownRight } from "lucide-react";
 import type { BlogComment } from "@/lib/blog-types";
 import { LikeButton } from "./LikeButton";
+import { useToast } from "@/components/ui/Toast";
+import { useConfirm } from "@/components/ui/ConfirmDialog";
 
 export function CommentSection({
   userSlug,
@@ -13,6 +15,8 @@ export function CommentSection({
   userSlug: string;
   articleSlug: string;
 }) {
+  const toast = useToast();
+  const confirm = useConfirm();
   const [comments, setComments] = useState<BlogComment[]>([]);
   const [loading, setLoading] = useState(true);
   const [input, setInput] = useState("");
@@ -56,7 +60,7 @@ export function CommentSection({
     setSending(false);
     const json = await res.json();
     if (!res.ok) {
-      alert("留言失敗：" + (json.error ?? ""));
+      toast.error("留言失敗：" + (json.error ?? ""));
       return;
     }
     // 重新抓（簡單可靠）
@@ -65,14 +69,23 @@ export function CommentSection({
     setInput("");
     setReplyInput("");
     setReplyTo(null);
+    toast.success("已送出留言");
   };
 
   const remove = async (id: string) => {
-    if (!confirm("刪除這則留言？")) return;
+    const ok = await confirm({
+      title: "刪除這則留言？",
+      confirmLabel: "刪除",
+      destructive: true,
+    });
+    if (!ok) return;
     const res = await fetch(`${apiBase}?id=${id}`, { method: "DELETE" });
     if (res.ok) {
       const refresh = await fetch(apiBase);
       setComments((await refresh.json()).comments ?? []);
+      toast.success("已刪除留言");
+    } else {
+      toast.error("刪除失敗");
     }
   };
 

@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Check, Eye, EyeOff, Power, Save, Trash2, X } from "lucide-react";
+import { useConfirm } from "@/components/ui/ConfirmDialog";
 
 interface Model {
   id: string;
@@ -52,6 +53,7 @@ export function ModelsManagerClient({
   initialModels: Model[];
   initialKeys: ApiKey[];
 }) {
+  const confirm = useConfirm();
   const [models, setModels] = useState(initialModels);
   const [keys, setKeys] = useState(initialKeys);
   const [keyInputs, setKeyInputs] = useState<Record<string, string>>({});
@@ -152,7 +154,13 @@ export function ModelsManagerClient({
   };
 
   const deleteKey = async (provider: string) => {
-    if (!window.confirm(`確定刪除 ${provider} 的 API key？刪除後前台將無法使用這個 provider。`)) return;
+    const ok = await confirm({
+      title: `刪除 ${provider} 的 API key？`,
+      description: "刪除後前台將無法使用這個 provider。",
+      confirmLabel: "刪除",
+      destructive: true,
+    });
+    if (!ok) return;
 
     try {
       await requestJson("/api/admin/ai/keys", {

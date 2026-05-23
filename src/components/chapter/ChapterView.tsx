@@ -13,9 +13,11 @@ import { LevelUpModal } from "../gamification/LevelUpModal";
 import { XpToast, type XpToastData } from "../gamification/XpToast";
 import { ChevronLeft, ChevronRight, Clock, Trophy } from "lucide-react";
 import Link from "next/link";
+import { useToast } from "@/components/ui/Toast";
 
 export function ChapterView({ chapter }: { chapter: Chapter }) {
   const { user } = useAuth();
+  const notify = useToast();
   const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
   const [toast, setToast] = useState<any>(null);
   const [levelUp, setLevelUp] = useState<number | null>(null);
@@ -51,7 +53,7 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
 
   const handleComplete = async (lessonId: string, xp: number) => {
     if (!user) {
-      alert("請先登入才能記錄進度");
+      notify.warning("請先登入才能記錄進度");
       return;
     }
     // 已完成過的不重複給獎勵動畫

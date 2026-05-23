@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { adminHref } from "@/lib/admin-href";
+import { useToast } from "@/components/ui/Toast";
+import { useConfirm } from "@/components/ui/ConfirmDialog";
 
 export function BroadcastForm({
   mode,
@@ -12,6 +14,8 @@ export function BroadcastForm({
   broadcast?: any;
 }) {
   const router = useRouter();
+  const toast = useToast();
+  const confirm = useConfirm();
   const [form, setForm] = useState({
     title: broadcast?.title ?? "",
     content: broadcast?.content ?? "",
@@ -61,13 +65,20 @@ export function BroadcastForm({
 
   const del = async () => {
     if (!broadcast?.id) return;
-    if (!confirm("確定刪除這則公告？刪除後不可復原")) return;
+    const ok = await confirm({
+      title: "確定刪除這則公告？",
+      description: "刪除後不可復原。",
+      confirmLabel: "刪除",
+      destructive: true,
+    });
+    if (!ok) return;
     const res = await fetch(`/api/admin/broadcasts/${broadcast.id}`, { method: "DELETE" });
     if (res.ok) {
+      toast.success("已刪除公告");
       router.push(adminHref("/admin/broadcasts") as any);
     } else {
       const d = await res.json();
-      alert(`刪除失敗：${d.error}`);
+      toast.error(`刪除失敗：${d.error}`);
     }
   };
 
