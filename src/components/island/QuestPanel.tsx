@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { X, Trophy, Check, Coins, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
+import { useOverlayRegister } from "@/lib/overlay-stack";
 import {
   TODAY_QUESTS,
   readQuestState,
@@ -19,6 +20,7 @@ import {
  */
 export function QuestPanel() {
   const [open, setOpen] = useState(false);
+  useOverlayRegister(open);
   const [state, setState] = useState(() => readQuestState());
   const [busy, setBusy] = useState<string | null>(null);
   const toast = useToast();

@@ -10,9 +10,11 @@ import {
   markGreetedToday,
 } from "./island-bus";
 import { useToast } from "@/components/ui/Toast";
+import { useOverlayRegister } from "@/lib/overlay-stack";
 
 export function VillagerTalk() {
   const [open, setOpen] = useState<VillagerId | null>(null);
+  useOverlayRegister(open !== null);
   const [line, setLine] = useState("");
   const [claimed, setClaimed] = useState(false);
   const [busy, setBusy] = useState(false);

@@ -26,8 +26,10 @@ export function emitSettingsToggle() {
 }
 export function subscribeSettingsToggle(fn: () => void) { settingsSubs.add(fn); return () => { settingsSubs.delete(fn); }; }
 
+import { useOverlayRegister } from "@/lib/overlay-stack";
 export function SettingsPanel() {
   const [open, setOpen] = useState(false);
+  useOverlayRegister(open);
   const [sound, setSound] = useState(true);
   const [quality, setQuality] = useState<"low" | "med" | "high">("med");
   const [fx, setFx] = useState(true);

@@ -12,8 +12,10 @@ import {
   subscribeCollect,
 } from "./island-bus";
 
+import { useOverlayRegister } from "@/lib/overlay-stack";
 export function MerchantPanel() {
   const [open, setOpen] = useState(false);
+  useOverlayRegister(open);
   const [inv, setInv] = useState<Record<ResourceKind, number>>({ wood: 0, crystal: 0, shell: 0 });
   const [flash, setFlash] = useState<string | null>(null);
   const flashTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);

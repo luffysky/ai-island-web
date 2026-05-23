@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import { formatTWRelative } from "@/lib/format-date";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 type FeedItem = {
   kind: string;
@@ -46,7 +47,7 @@ export function FriendsFeed() {
           <Loader2 size={14} className="animate-spin inline mr-1" /> 載入中
         </div>
       ) : items.length === 0 ? (
-        <div className="text-center py-6 text-fg-muted text-sm">最近沒人動、來搶第一個吧</div>
+        <EmptyState emoji="🌱" title="最近沒人動" desc="去章節學一課、變成第一個" action={{ label: "看章節", href: "/chapters" }} compact />
       ) : (
         <ul className="space-y-2 max-h-96 overflow-y-auto">
           {items.map((it, i) => (

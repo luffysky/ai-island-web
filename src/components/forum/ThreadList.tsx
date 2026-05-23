@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { MessageSquare, Eye, Pin, Star, Lock, Flame, Loader2 } from "lucide-react";
 import type { ForumThread } from "@/lib/forum-types";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 const PAGE_SIZE = 20;
 
@@ -103,9 +104,7 @@ export function ThreadList({ boardSlug }: { boardSlug?: string }) {
           {[1, 2, 3].map((i) => <div key={i} className="h-16 rounded-lg bg-bg-card animate-pulse" />)}
         </div>
       ) : threads.length === 0 ? (
-        <div className="text-center py-12 text-fg-muted">
-          這裡還沒有討論、來發第一篇吧
-        </div>
+        <EmptyState emoji="💭" title="還沒有討論" desc="想到什麼就問一句、開啟對話吧" action={{ label: "發第一篇", href: `/forum/new${boardSlug ? `?board=${boardSlug}` : ""}` }} />
       ) : (
         <div className="space-y-2">
           {threads.map((t) => (

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { X, Anchor, Loader2 } from "lucide-react";
 import { subscribeFishing, rollFish, addFish, FISH_META, type FishKind } from "./island-bus";
 import { useToast } from "@/components/ui/Toast";
+import { useOverlayRegister } from "@/lib/overlay-stack";
 
 type Phase = "idle" | "waiting" | "bite" | "result";
 
@@ -15,6 +16,7 @@ type Phase = "idle" | "waiting" | "bite" | "result";
  */
 export function FishingMinigame() {
   const [open, setOpen] = useState(false);
+  useOverlayRegister(open);
   const [phase, setPhase] = useState<Phase>("idle");
   const [fish, setFish] = useState<FishKind | null>(null);
   const [coins, setCoins] = useState(0);

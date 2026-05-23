@@ -32,7 +32,27 @@ html, body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
-  transition: background-color 200ms ease, color 200ms ease;
+  transition: background-color 300ms cubic-bezier(0.4, 0, 0.2, 1),
+              color 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 主題切換時、用 CSS var 的色彩元件一起 fade、視覺更平順 */
+html[data-theme] *,
+html[data-theme] *::before,
+html[data-theme] *::after {
+  transition: background-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+              color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+              fill 200ms cubic-bezier(0.4, 0, 0.2, 1),
+              stroke 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 尊重系統 reduce-motion */
+@media (prefers-reduced-motion: reduce) {
+  html, body, html[data-theme] *, html[data-theme] *::before, html[data-theme] *::after {
+    transition-duration: 0ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }
 
 /* ============================================================

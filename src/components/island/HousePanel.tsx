@@ -25,8 +25,10 @@ import { useToast } from "@/components/ui/Toast";
  * - 未蓋：花 20 木 + 1 水晶蓋一棟
  * - 已蓋：可放家具（消耗資源）、可睡覺（每日一次補 +1 ❤️）
  */
+import { useOverlayRegister } from "@/lib/overlay-stack";
 export function HousePanel() {
   const [open, setOpen] = useState(false);
+  useOverlayRegister(open);
   const [house, setHouse] = useState(() => readHouseState());
   const [inv, setInv] = useState<Record<ResourceKind, number>>({ wood: 0, crystal: 0, shell: 0 });
   const [busy, setBusy] = useState(false);

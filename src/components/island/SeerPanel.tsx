@@ -13,8 +13,10 @@ const TIER_COLOR: Record<Fortune["tier"], string> = {
   "大凶": "from-pink-300 to-red-500",
 };
 
+import { useOverlayRegister } from "@/lib/overlay-stack";
 export function SeerPanel() {
   const [open, setOpen] = useState(false);
+  useOverlayRegister(open);
   const [today, setToday] = useState(readFortuneToday());
   const [busy, setBusy] = useState(false);
   const toast = useToast();

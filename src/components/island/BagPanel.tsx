@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { X, Package, Trophy, Clock } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
+import { useOverlayRegister } from "@/lib/overlay-stack";
 import {
   type ResourceKind,
   RESOURCE_META,
@@ -23,6 +24,7 @@ import {
  */
 export function BagPanel() {
   const [open, setOpen] = useState(false);
+  useOverlayRegister(open);
   const [tab, setTab] = useState<"items" | "achievements">("items");
   const [inv, setInv] = useState<Record<ResourceKind, number>>({ wood: 0, crystal: 0, shell: 0 });
   const [ach, setAch] = useState(() => readAchState());

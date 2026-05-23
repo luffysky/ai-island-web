@@ -7,6 +7,7 @@ import { useAuth } from "@/lib/auth-context";
 import { Flame, Coins, Heart, LogOut, Settings, Trophy, User as UserIcon, ChevronDown, Menu, X, CheckSquare } from "lucide-react";
 import { TodoDropdown, useTodoShortcut } from "@/components/todo/TodoDropdown";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { NotificationsDropdown } from "@/components/layout/NotificationsDropdown";
 
 const NAV_LINKS = [
   { href: "/chapters", label: "章節" },
@@ -149,6 +150,9 @@ export function TopNav() {
 
               {/* 主題切換 */}
               <div className="hidden md:block"><ThemeToggle /></div>
+
+              {/* 通知中心 */}
+              <NotificationsDropdown />
 
               {/* TODO list 入口 */}
               <div className="relative" ref={todoBtnRef}>

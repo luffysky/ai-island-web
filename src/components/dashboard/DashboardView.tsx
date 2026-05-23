@@ -101,7 +101,7 @@ export function DashboardView({ profile, progress, achievements, quests }: any) 
             </div>
           )}
           {achievements.length > 0 && (
-            <Link href="/achievements" className="block mt-3 text-xs text-accent hover:underline">查看全部 →</Link>
+            <Link href="/me/history" className="block mt-3 text-xs text-accent hover:underline">查看全部 →</Link>
           )}
         </div>
       </div>
