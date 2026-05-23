@@ -4,6 +4,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { adminHref } from "@/lib/admin-href";
 import { ArrowLeft } from "lucide-react";
+import { formatTW, formatTWDate, formatTWRelative } from "@/lib/format-date";
 
 export const dynamic = "force-dynamic";
 
@@ -105,8 +106,8 @@ export default async function AdminUserDetailPage({
             @{profile.username} · {profile.id}
           </div>
           <div className="text-xs text-fg-muted">
-            建立於 {new Date(profile.created_at).toLocaleDateString("zh-TW")}
-            {profile.last_active_at && ` · 最後活躍 ${new Date(profile.last_active_at).toLocaleString("zh-TW")}`}
+            建立於 {formatTWDate(profile.created_at)}
+            {profile.last_active_at && ` · 最後活躍 ${formatTW(profile.last_active_at)}（${formatTWRelative(profile.last_active_at)}）`}
           </div>
           {lastSession?.current_path && (
             <div className="text-[11px] text-fg-muted mt-1">
@@ -140,7 +141,7 @@ export default async function AdminUserDetailPage({
               left={`${e.amount > 0 ? "+" : ""}${e.amount}`}
               leftClass={e.amount > 0 ? "text-green-400" : "text-red-400"}
               mid={e.reason || "—"}
-              right={new Date(e.created_at).toLocaleString("zh-TW")}
+              right={formatTW(e.created_at)}
             />
           ))}
         </Panel>
@@ -151,7 +152,7 @@ export default async function AdminUserDetailPage({
               left={`${e.amount > 0 ? "+" : ""}${e.amount}`}
               leftClass={e.amount > 0 ? "text-yellow-400" : "text-red-400"}
               mid={`${e.type} · ${e.reason || ""}`}
-              right={new Date(e.created_at).toLocaleString("zh-TW")}
+              right={formatTW(e.created_at)}
             />
           ))}
         </Panel>
@@ -161,7 +162,7 @@ export default async function AdminUserDetailPage({
               key={i}
               left={`Ch ${String(p.chapter_id).padStart(2, "0")}`}
               mid={p.lesson_id}
-              right={new Date(p.created_at).toLocaleString("zh-TW")}
+              right={formatTW(p.created_at)}
             />
           ))}
         </Panel>
@@ -171,7 +172,7 @@ export default async function AdminUserDetailPage({
               key={i}
               left="🏆"
               mid={a.achievement_id}
-              right={new Date(a.unlocked_at).toLocaleDateString("zh-TW")}
+              right={formatTWDate(a.unlocked_at)}
             />
           ))}
         </Panel>
@@ -181,7 +182,7 @@ export default async function AdminUserDetailPage({
               key={c.id}
               left="💬"
               mid={c.title || "(無標題)"}
-              right={new Date(c.updated_at).toLocaleDateString("zh-TW")}
+              right={formatTWDate(c.updated_at)}
             />
           ))}
         </Panel>
@@ -191,7 +192,7 @@ export default async function AdminUserDetailPage({
               key={n.id}
               left="📝"
               mid={(n.content || "").slice(0, 50)}
-              right={new Date(n.updated_at).toLocaleDateString("zh-TW")}
+              right={formatTWDate(n.updated_at)}
             />
           ))}
         </Panel>
@@ -212,7 +213,7 @@ export default async function AdminUserDetailPage({
               left={`NT$ ${o.amount}`}
               leftClass={o.status === "paid" ? "text-green-400" : "text-orange-400"}
               mid={o.product_name || o.order_no}
-              right={new Date(o.created_at).toLocaleDateString("zh-TW")}
+              right={formatTWDate(o.created_at)}
             />
           ))}
         </Panel>
@@ -222,7 +223,7 @@ export default async function AdminUserDetailPage({
               key={s.id}
               left={s.status}
               mid={s.plan_name || `NT$ ${s.plan_price}`}
-              right={s.expires_at ? new Date(s.expires_at).toLocaleDateString("zh-TW") : "—"}
+              right={s.expires_at ? formatTWDate(s.expires_at) : "—"}
             />
           ))}
         </Panel>
@@ -232,7 +233,7 @@ export default async function AdminUserDetailPage({
               key={b.id}
               left={`Ch ${b.chapter_id}`}
               mid={b.lesson_title || b.lesson_id}
-              right={new Date(b.created_at).toLocaleDateString("zh-TW")}
+              right={formatTWDate(b.created_at)}
             />
           ))}
         </Panel>

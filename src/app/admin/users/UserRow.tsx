@@ -5,6 +5,7 @@ import Link from "next/link";
 import { GrantModal } from "./GrantModal";
 import { useToast } from "@/components/ui/Toast";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
+import { formatTWDate, formatTWRelative } from "@/lib/format-date";
 
 const ADMIN_SLUG = process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2";
 
@@ -130,7 +131,12 @@ export function UserRow({ user }: { user: any }) {
           </select>
         </td>
         <td className="px-4 py-3 text-xs text-fg-muted">
-          {new Date(user.created_at).toLocaleDateString("zh-TW")}
+          <div title={`註冊：${formatTWDate(user.created_at)}（台北）`}>{formatTWDate(user.created_at)}</div>
+          {user.last_active_at && (
+            <div className="text-[10px] opacity-70" title={`最後活躍：${formatTWRelative(user.last_active_at)}`}>
+              活躍 {formatTWRelative(user.last_active_at)}
+            </div>
+          )}
         </td>
         <td className="px-4 py-3">
           <div className="flex items-center gap-3 flex-wrap">

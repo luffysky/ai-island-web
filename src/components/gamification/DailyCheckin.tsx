@@ -9,6 +9,9 @@ import { useToast } from "@/components/ui/Toast";
 // 7 天一輪的 XP 表（跟 checkin_migration.sql 的 do_checkin 一致）
 const CYCLE_XP = [10, 15, 20, 25, 30, 40, 60];
 
+// z 幣連續簽到獎勵：streak=1 → 5、+1 / 天、上限 15（從第 11 天起）
+const zForStreak = (streak: number) => Math.min(15, 4 + streak);
+
 interface CheckinStatus {
   checked_today: boolean;
   streak: number;
@@ -21,6 +24,7 @@ export function DailyCheckin() {
   const [loading, setLoading] = useState(true);
   const [claiming, setClaiming] = useState(false);
   const [justGotXp, setJustGotXp] = useState<number | null>(null);
+  const [justGotZ, setJustGotZ] = useState<number | null>(null);
   const supabase = createSupabaseBrowser();
 
   useEffect(() => {
@@ -59,13 +63,17 @@ export function DailyCheckin() {
       day_in_cycle: data.day_in_cycle,
     });
     setJustGotXp(data.xp_awarded);
+    if (data.z_awarded) setJustGotZ(data.z_awarded);
     confetti({
       particleCount: data.day_in_cycle >= 7 ? 80 : 35,
       spread: data.day_in_cycle >= 7 ? 70 : 50,
       origin: { y: 0.7 },
       colors: ["#50fa7b", "#8be9fd", "#ffd700"],
     });
-    setTimeout(() => setJustGotXp(null), 2500);
+    setTimeout(() => {
+      setJustGotXp(null);
+      setJustGotZ(null);
+    }, 2800);
   };
 
   if (loading) {
@@ -147,7 +155,7 @@ export function DailyCheckin() {
           ? "✓ 今天已簽到"
           : claiming
           ? "簽到中..."
-          : `📅 立即簽到 (+${CYCLE_XP[(today - 1) % 7]} XP)`}
+          : `📅 立即簽到 (+${CYCLE_XP[(today - 1) % 7]} XP · +${zForStreak(status.streak + (status.checked_today ? 0 : 1))} 🪙)`}
       </button>
 
       {/* +XP 飄出 */}
@@ -159,9 +167,22 @@ export function DailyCheckin() {
         </div>
       )}
 
+      {/* +Z-coin 飄出（略晚於 XP）*/}
+      {justGotZ !== null && (
+        <div className="absolute inset-x-0 top-[44%] flex justify-center pointer-events-none">
+          <div className="checkin-z-pop px-3 py-1.5 rounded-xl bg-gradient-to-br from-yellow-400 to-amber-500 text-black font-extrabold text-lg shadow-2xl">
+            🪙 +{justGotZ} Z-coin
+          </div>
+        </div>
+      )}
+
       <style jsx>{`
         .checkin-xp-pop {
           animation: checkinPop 2.5s ease-out forwards;
+        }
+        .checkin-z-pop {
+          animation: checkinPop 2.8s ease-out 0.4s forwards;
+          opacity: 0;
         }
         @keyframes checkinPop {
           0% { opacity: 0; transform: translateY(20px) scale(0.6); }

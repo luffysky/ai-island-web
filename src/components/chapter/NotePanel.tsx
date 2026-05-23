@@ -71,6 +71,7 @@ export function NotePanel({
       window.dispatchEvent(
         new CustomEvent("pet:note-saved", { detail: { chapterId, lessonId } }),
       );
+      window.dispatchEvent(new CustomEvent("sync:notes"));
     }
     setSaving(true);
 

@@ -69,6 +69,10 @@ export function BookmarkButton({
         });
         if (error) throw error;
       }
+      // 通知 SideNav 重抓
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("sync:bookmarks"));
+      }
     } catch (e: any) {
       setBookmarked(prev);
       toast.error(`書籤操作失敗：${e?.message || "請稍後再試"}`);

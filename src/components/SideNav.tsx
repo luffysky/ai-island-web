@@ -73,21 +73,52 @@ export function SideNav() {
   // 載使用者狀態 + 個人資料
   useEffect(() => {
     const supabase = createSupabaseBrowser();
-    supabase.auth.getUser().then(async ({ data }) => {
-      if (!data.user) return;
-      setUser(data.user);
+    let cancelled = false;
 
-      // 平行載 bookmarks / notes / history
+    const loadAll = async (userId: string) => {
       const [bm, nt, hi] = await Promise.all([
-        supabase.from("bookmarks").select("*").order("created_at", { ascending: false }).limit(50),
-        supabase.from("notes").select("*").order("updated_at", { ascending: false }).limit(50),
-        supabase.from("learning_events").select("*").order("created_at", { ascending: false }).limit(30),
+        supabase.from("bookmarks").select("*").eq("user_id", userId).order("created_at", { ascending: false }).limit(50),
+        supabase.from("notes").select("*").eq("user_id", userId).order("updated_at", { ascending: false }).limit(50),
+        supabase.from("learning_events").select("*").eq("user_id", userId).order("created_at", { ascending: false }).limit(30),
       ]);
+      if (cancelled) return;
       setBookmarks(bm.data || []);
       setNotes(nt.data || []);
       setHistory(hi.data || []);
+    };
+
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user || cancelled) return;
+      setUser(data.user);
+      await loadAll(data.user.id);
     });
-  }, []);
+
+    // 同步監聽：BookmarkButton / NotePanel / SideNav 自己刪除 都會 dispatch
+    const reload = () => {
+      if (user?.id) {
+        loadAll(user.id);
+      } else {
+        supabase.auth.getUser().then(({ data }) => {
+          if (data.user?.id) loadAll(data.user.id);
+        });
+      }
+    };
+    const onBookmarkChange = reload;
+    const onNoteChange = reload;
+
+    window.addEventListener("pet:bookmark-added", onBookmarkChange);
+    window.addEventListener("sync:bookmarks", onBookmarkChange);
+    window.addEventListener("pet:note-saved", onNoteChange);
+    window.addEventListener("sync:notes", onNoteChange);
+    return () => {
+      cancelled = true;
+      window.removeEventListener("pet:bookmark-added", onBookmarkChange);
+      window.removeEventListener("sync:bookmarks", onBookmarkChange);
+      window.removeEventListener("pet:note-saved", onNoteChange);
+      window.removeEventListener("sync:notes", onNoteChange);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
 
   const toggleCh = (id: number) => {
     setExpandedCh((prev) => {
@@ -129,6 +160,7 @@ export function SideNav() {
     setNoteDraft("");
     setNoteDraftOpen(false);
     toast.success("已儲存筆記");
+    if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("sync:notes"));
   };
 
   const deleteNote = async (id: string) => {
@@ -159,6 +191,8 @@ export function SideNav() {
       if (error) {
         setNotes(snapshot);
         toast.error(`刪除失敗、已恢復：${error.message}`);
+      } else if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("sync:notes"));
       }
     }, 5000);
   };

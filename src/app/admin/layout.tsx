@@ -32,7 +32,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   return (
     <div className="admin-skin">
-      <div className="max-w-7xl mx-auto px-6 py-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
         <div className="mb-6 flex items-center justify-between bg-bg-card border border-border rounded-2xl p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent to-accent-2 flex items-center justify-center text-white text-lg shadow-lg">
@@ -104,7 +104,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             </NavGroup>
           </nav>
         </CollapsibleAside>
-        <div className="flex-1 min-w-0">{children}</div>
+        <div className="flex-1 min-w-0 overflow-x-auto">{children}</div>
       </div>
       </div>
     </div>
