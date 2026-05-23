@@ -11,6 +11,7 @@
 export function PlainBubble({ text }: { text: string }) {
   return (
     <div
+      data-pet-bubble
       style={{
         position: "absolute",
         left: "50%",
@@ -39,6 +40,7 @@ export function PlainBubble({ text }: { text: string }) {
 export function CuteBubble({ text }: { text: string }) {
   return (
     <div
+      data-pet-bubble
       style={{
         position: "absolute",
         left: "50%",

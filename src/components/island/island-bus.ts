@@ -26,6 +26,17 @@ export const touchInput = { x: 0, y: 0, interact: false, run: false };
 // 手機右側拖視角累積（FPV）— Player useFrame 讀後 reset
 export const touchLook = { dx: 0, dy: 0 };
 
+// 手機 tap-to-move（點地圖、角色 walk to）
+export const walkTarget = { active: false, x: 0, z: 0 };
+export function setWalkTarget(x: number, z: number) {
+  walkTarget.active = true;
+  walkTarget.x = x;
+  walkTarget.z = z;
+}
+export function clearWalkTarget() {
+  walkTarget.active = false;
+}
+
 // modal 開關計數：>0 表示有 modal、islandV0 用來決定要不要 exitPointerLock
 let modalOpenCount = 0;
 const modalSubs = new Set<(open: boolean) => void>();

@@ -47,6 +47,7 @@ export function Pet() {
   const [hidden, setHidden] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
   const [dragging, setDragging] = useState(false);
+  const [userMoved, setUserMoved] = useState(false); // 用戶拖過後、不再強制右下角
   const [milestoneBurst, setMilestoneBurst] = useState<30 | 60 | 100 | null>(null);
 
   const dragOffset = useRef<{ dx: number; dy: number } | null>(null);
@@ -397,6 +398,7 @@ export function Pet() {
     if (!dragging) return;
     const onMove = (e: MouseEvent) => {
       if (!dragOffset.current) return;
+      setUserMoved(true);
       setPos({
         x: e.clientX + dragOffset.current.dx,
         y: e.clientY + dragOffset.current.dy,
@@ -407,6 +409,7 @@ export function Pet() {
       const t = e.touches[0];
       if (!t) return;
       e.preventDefault();
+      setUserMoved(true);
       setPos({
         x: t.clientX + dragOffset.current.dx,
         y: t.clientY + dragOffset.current.dy,
@@ -438,8 +441,8 @@ export function Pet() {
   const auraColor = vipTier === "nami" ? "#ff9ec0" : vipTier === "luffy" ? "#ffd700" : null;
   const headDeco = getHeadDecoration();
 
-  // 手機強制固定右下角（不用 px 算座標、避免 viewport 變動跑出視窗 + iOS 安全區）
-  const positionStyle: React.CSSProperties = isMobile
+  // 手機：預設右下角；但用戶拖過後改用 pos x/y（讓手機也能拖到任意位置）
+  const positionStyle: React.CSSProperties = isMobile && !userMoved
     ? {
         right: 16,
         bottom: "max(16px, env(safe-area-inset-bottom))",

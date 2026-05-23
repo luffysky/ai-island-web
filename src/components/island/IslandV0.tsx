@@ -39,6 +39,9 @@ import {
   readHouseState,
   subscribeHouse,
   touchLook,
+  walkTarget,
+  setWalkTarget,
+  clearWalkTarget,
   VILLAGERS,
   emitVillager,
   type VillagerId,
@@ -252,6 +255,7 @@ function Scene({
       <ambientLight intensity={0.35} />
       <Ocean />
       <Island />
+      <TapToMoveGround />
       <CentralTower />
       <SkyIsland />
       <Resources />
@@ -413,6 +417,28 @@ function CentralTower() {
         🏛️ 任務大廳
       </Text>
     </group>
+  );
+}
+
+// 透明 ground plane、接 onPointerDown → setWalkTarget（手機 tap-to-move）
+function TapToMoveGround() {
+  return (
+    <mesh
+      position={[0, 0.06, 0]}
+      rotation={[-Math.PI / 2, 0, 0]}
+      onPointerDown={(e) => {
+        // 只在 primary button + 點到島嶼範圍內才接
+        e.stopPropagation();
+        const x = e.point.x;
+        const z = e.point.z;
+        const r = Math.sqrt(x * x + z * z);
+        if (r > ISLAND_RADIUS - 0.5) return;
+        setWalkTarget(x, z);
+      }}
+    >
+      <circleGeometry args={[ISLAND_RADIUS + 1, 48]} />
+      <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+    </mesh>
   );
 }
 
@@ -834,6 +860,27 @@ function Player({ petName }: { petName: string | null }) {
       inX = touchInput.x;
       inY = touchInput.y;
     }
+
+    // Tap-to-move（手機點地圖、角色自動朝目標走、世界座標）
+    let movedByTap = false;
+    if (walkTarget.active) {
+      const dx = walkTarget.x - g.position.x;
+      const dz = walkTarget.z - g.position.z;
+      const dist = Math.sqrt(dx * dx + dz * dz);
+      if (dist < 0.6) {
+        clearWalkTarget();
+      } else {
+        const wx = dx / dist;
+        const wz = dz / dist;
+        const speed = PLAYER_SPEED * (hasBuff("speed") ? 1.5 : 1);
+        g.position.x += wx * speed * dt;
+        g.position.z += wz * speed * dt;
+        g.rotation.y = Math.atan2(wx, wz);
+        movedByTap = true;
+      }
+    }
+    // 若 tap-to-move 接管、就忽略 keyboard/joystick movement（下方會 skip）
+    if (movedByTap) { inX = 0; inY = 0; }
 
     if (inX !== 0 || inY !== 0) {
       // 相機正前方（投影到 XZ 平面）
