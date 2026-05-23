@@ -190,6 +190,13 @@ export function MeSidebar({ profile }: { profile: Profile | null }) {
           作業
         </MeLink>
         <MeLink
+          href="/me/portfolios"
+          icon={<span>🎨</span>}
+          collapsed={collapsed}
+        >
+          作品集
+        </MeLink>
+        <MeLink
           href="/me/support"
           icon={<span>💬</span>}
           collapsed={collapsed}
