@@ -40,25 +40,22 @@ function parseDevice(ua: string): string {
   return `${browser} on ${os}`;
 }
 
-async function fetchGeo(ip: string): Promise<{ text: string; mapsUrl?: string }> {
+async function fetchGeo(ip: string): Promise<{ location: string; org?: string; ipText: string; mapsUrl?: string }> {
   if (!ip || ip === "0.0.0.0" || ip.startsWith("127.") || ip.startsWith("10.") || ip.startsWith("192.168.")) {
-    return { text: "本機" };
+    return { location: "本機", ipText: ip };
   }
   const token = process.env.IPINFO_TOKEN;
   try {
     const url = token ? `https://ipinfo.io/${ip}/json?token=${token}` : `https://ipinfo.io/${ip}/json`;
     const r = await fetch(url, { signal: AbortSignal.timeout(3000), headers: { "User-Agent": "ai-island" } });
-    if (!r.ok) return { text: "?" };
+    if (!r.ok) return { location: "?", ipText: ip };
     const d = await r.json() as any;
-    // 國家 / 城市 / 郵遞區號（縮到區概念）/ ISP / IP
     const parts = [d.country, d.city, d.postal].filter(Boolean);
-    let text = parts.length ? parts.join(" · ") : "?";
-    if (d.org) text += `\n📡 ${String(d.org).slice(0, 50)}`;
-    text += `\n🌐 ${ip}`;
+    const location = parts.length ? parts.join(" · ") : "?";
     const mapsUrl = d.loc ? `https://www.google.com/maps?q=${d.loc}` : undefined;
-    return { text, mapsUrl };
+    return { location, org: d.org ? String(d.org).slice(0, 60) : undefined, ipText: ip, mapsUrl };
   } catch {
-    return { text: "?" };
+    return { location: "?", ipText: ip };
   }
 }
 
@@ -123,7 +120,9 @@ export async function POST(req: NextRequest) {
     meta: [
       { label: "📄 路徑", value: path },
       ...(refTxt ? [{ label: "← 來自", value: refTxt }] : []),
-      { label: "📍 位置", value: geo.text.split("\n")[0] },
+      { label: "📍 位置", value: geo.location },
+      ...(geo.org ? [{ label: "📡 ISP", value: geo.org }] : []),
+      { label: "🌐 IP", value: geo.ipText },
       { label: "💻 裝置", value: device },
       ...(lastSeenText ? [{ label: "⏱️ 上次", value: lastSeenText.replace(/[（）]/g, "") }] : []),
     ],
@@ -133,7 +132,7 @@ export async function POST(req: NextRequest) {
   notifyAdmin({
     kind: isVisitor ? "visit" : isAdmin ? "admin_login" : "user_login",
     dedupeKey: key,
-    text: `${userTag} 看 ${path}${refTxt ? ` ← ${refTxt}` : ""}${lastSeenText}\n📍 ${geo.text}\n💻 ${device}${geo.mapsUrl ? `\n📍 ${geo.mapsUrl}` : ""}`,
+    text: `${userTag} 看 ${path}${refTxt ? ` ← ${refTxt}` : ""}${lastSeenText}\n📍 ${geo.location}${geo.org ? `\n📡 ${geo.org}` : ""}\n🌐 ${geo.ipText}\n💻 ${device}${geo.mapsUrl ? `\n📍 ${geo.mapsUrl}` : ""}`,
     flex,
   }).catch(() => {});
 
