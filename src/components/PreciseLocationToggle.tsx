@@ -53,6 +53,24 @@ export function PreciseLocationToggle() {
         每個 session 只查一次。
       </p>
 
+      {/* 8 條好處（透明告知） */}
+      <details className="text-xs text-fg-muted">
+        <summary className="cursor-pointer text-accent hover:underline mb-2">📋 為什麼我們需要精準位置？（8 條好處）</summary>
+        <ul className="space-y-1.5 pl-3">
+          <li>🔒 <b>異常登入警告</b>：從陌生城市登入立刻寄 email、防帳號被盜</li>
+          <li>🕒 <b>時間在地化</b>：課程截止 / 提醒用你的時區、不用設定</li>
+          <li>🌏 <b>語系自動</b>：繁中 / 簡中 / 英文依國家自動帶</li>
+          <li>👥 <b>找附近同學</b>：推薦同城市學員、組讀書會</li>
+          <li>📅 <b>線下活動</b>：你的城市有 meetup / 工作坊立刻通知</li>
+          <li>🇪🇺 <b>GDPR 合規</b>：歐盟用戶自動顯示 cookie banner</li>
+          <li>⚡ <b>效能</b>：走最近 CDN、頁面 / 影片 / AI 載入更快</li>
+          <li>💳 <b>支付幣別</b>：NTD / USD / JPY 自動帶、信用卡風控更準</li>
+        </ul>
+        <p className="mt-2 text-fg">
+          🔐 承諾：只存大致縣市、不存原始 GPS、不對外販售、隨時可關。
+        </p>
+      </details>
+
       {enabled ? (
         <div className="space-y-2">
           <div className="flex items-center gap-2 text-sm text-emerald-300">
