@@ -98,7 +98,7 @@ export default async function SubscribersPage({
       </div>
 
       {/* 概覽 */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="bg-bg-card border border-border rounded-xl p-4">
           <div className="text-xs text-fg-muted">總訂閱數</div>
           <div className="text-xl font-bold mt-0.5">{((totalActive ?? 0) + (totalUnsub ?? 0)).toLocaleString()}</div>

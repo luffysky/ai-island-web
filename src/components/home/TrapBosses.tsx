@@ -66,7 +66,7 @@ export function TrapBosses() {
           />
         </div>
 
-        <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-3">
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
           {TRAP_BOSSES.map((b) => (
             <div key={b.no} className={`rounded-xl border ${b.color} p-4`}>
               <div className="flex items-center gap-2 mb-2">

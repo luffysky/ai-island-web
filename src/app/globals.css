@@ -36,15 +36,63 @@ html, body {
               color 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* iOS / Android 觸控 horizontal scroll 順滑 + 避免容器 cut off */
+/* ============================================================
+   全站 scroll 預設規則（避免內容被切）
+   ============================================================ */
+
+/* iOS / Android 觸控 horizontal scroll 順滑 */
 [class*="overflow-x-auto"],
-[class*="overflow-auto"] {
+[class*="overflow-auto"],
+[class*="overflow-y-auto"] {
   -webkit-overflow-scrolling: touch;
 }
 
-/* 全站 root 不能 overflow-x: hidden（會破壞 sticky / fixed 子元素）*/
+/* body 防整頁橫滑（手機 bounce）*/
 body {
-  overflow-x: hidden; /* 避免手機橫向滾動 */
+  overflow-x: hidden;
+}
+
+/* code block 全自動 horizontal scroll（避免 long line 破版）*/
+pre {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+}
+
+/* 任何 table 預設外層 scroll（避免 table 寬度超出容器破版）
+   注意：要看得到 scroll、要讓 table 真的寬於 viewport */
+table {
+  max-width: 100%;
+}
+
+/* 自動讓 markdown / prose 內的 table 包 horizontal scroll wrapper */
+.prose-custom table,
+.prose table,
+article table {
+  display: block;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  white-space: nowrap;
+}
+
+/* 自訂 scrollbar 樣式（細、不擋畫面）*/
+.scrollbar-thin::-webkit-scrollbar { height: 6px; width: 6px; }
+.scrollbar-thin::-webkit-scrollbar-thumb { background: var(--color-border-hover); border-radius: 3px; }
+.scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+
+/* 自動給 horizontal scroll 容器加 scrollbar-thin 樣式 */
+[class*="overflow-x-auto"]::-webkit-scrollbar,
+[class*="overflow-auto"]::-webkit-scrollbar {
+  height: 6px;
+}
+[class*="overflow-x-auto"]::-webkit-scrollbar-thumb,
+[class*="overflow-auto"]::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+[class*="overflow-x-auto"]::-webkit-scrollbar-thumb:hover,
+[class*="overflow-auto"]::-webkit-scrollbar-thumb:hover {
+  background: var(--color-border-hover);
 }
 
 /* 主題切換時、用 CSS var 的色彩元件一起 fade、視覺更平順 */

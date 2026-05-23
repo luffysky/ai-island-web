@@ -92,7 +92,7 @@ export function DashboardView({ profile, progress, achievements, quests }: any) 
           {achievements.length === 0 ? (
             <p className="text-sm text-fg-muted">完成第一個 lesson 解鎖第一個成就</p>
           ) : (
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {achievements.slice(0, 8).map((ua: any) => (
                 <div key={ua.achievement_id} title={ua.achievements.name} className="aspect-square rounded-lg bg-bg-elevated border border-border flex items-center justify-center text-2xl hover:scale-110 transition-transform cursor-help">
                   {ua.achievements.icon}

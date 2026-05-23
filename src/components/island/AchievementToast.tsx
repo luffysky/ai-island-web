@@ -21,7 +21,7 @@ export function AchievementToast() {
 
   return (
     <div className="absolute top-20 left-1/2 -translate-x-1/2 z-40 pointer-events-none">
-      <div className="bg-gradient-to-br from-yellow-400 to-orange-500 text-black rounded-xl shadow-2xl px-5 py-3 animate-[ach-pop_400ms_ease-out] flex items-center gap-3 min-w-[280px]">
+      <div className="bg-gradient-to-br from-yellow-400 to-orange-500 text-black rounded-xl shadow-2xl px-5 py-3 animate-[ach-pop_400ms_ease-out] flex items-center gap-3 min-w-0 w-[calc(100vw-2rem)] sm:min-w-[280px] sm:w-auto">
         <Trophy size={24} className="flex-shrink-0" />
         <div className="flex-1">
           <div className="text-[10px] uppercase font-bold tracking-wider opacity-70">成就解鎖</div>

@@ -31,7 +31,7 @@ export default async function TeacherOverviewPage() {
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">📊 教師總覽</h1>
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <Stat label="作業總數" value={assignmentsCount ?? 0} href="/teacher/assignments" />
         <Stat label="提交數" value={submissionsCount ?? 0} />
         <Stat label="待批改" value={ungradedCount ?? 0} href="/teacher/grading" tone="warning" />

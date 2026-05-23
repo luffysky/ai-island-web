@@ -24,7 +24,7 @@ export default async function SubscriptionsPage({ searchParams }: { searchParams
     <div className="space-y-4">
       <h2 className="text-xl font-bold">💎 訂閱管理</h2>
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <Stat label="MRR" value={`NT$ ${mrr.toLocaleString()}`} color="text-yellow-400" />
         <Stat label="活躍訂閱" value={activeSubsAll.length} color="text-green-400" />
         <Stat label="已取消（總）" value={churned} color="text-red-400" />

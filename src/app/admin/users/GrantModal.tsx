@@ -88,7 +88,7 @@ export function GrantModal({
         <div className="p-4 space-y-3">
           <div>
             <label className="text-xs text-fg-muted block mb-1">類型</label>
-            <div className="grid grid-cols-3 gap-1.5">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
               {([
                 { v: "xp", label: "⚡ XP" },
                 { v: "zcoin", label: "🪙 Z-coin" },

@@ -33,7 +33,7 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
       </div>
 
       {/* 統計 */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="bg-bg-card border border-border rounded-xl p-4">
           <div className="text-xs text-fg-muted">本月總收入</div>
           <div className="text-2xl font-bold text-green-400 mt-1">NT$ {monthRevenue.toLocaleString()}</div>

@@ -91,7 +91,7 @@ export function MissionDungeons() {
         </div>
 
         {/* 副本卡片 */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {DUNGEONS.map((d) => (
             <Link
               key={d.id}

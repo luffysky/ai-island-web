@@ -62,7 +62,7 @@ export function Hero({ totalChapters, totalLessons, stageCount }: HeroProps) {
               </Link>
             </div>
 
-            <div className="grid grid-cols-3 gap-6 mt-10 text-center md:text-left">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-10 text-center md:text-left">
               <div>
                 <div className="text-3xl font-bold text-accent">{totalChapters}</div>
                 <div className="text-xs text-fg-muted mt-1">章節 + 附錄</div>

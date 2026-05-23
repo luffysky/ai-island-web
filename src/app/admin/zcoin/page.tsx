@@ -30,7 +30,7 @@ export default async function ZcoinPage() {
     <div className="space-y-4">
       <h2 className="text-xl font-bold">🪙 Z-coin 流水</h2>
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <Stat label="總流通量" value={totalCirculating.toLocaleString()} color="text-yellow-400" hint="所有 user 帳戶總和" />
         <Stat label="本月發放" value={`+${inflow.toLocaleString()}`} color="text-green-400" />
         <Stat label="本月消耗" value={`-${outflow.toLocaleString()}`} color="text-red-400" />

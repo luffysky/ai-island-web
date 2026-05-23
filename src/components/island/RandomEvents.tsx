@@ -48,7 +48,7 @@ export function RandomEvents() {
   return (
     <div className="absolute top-32 left-1/2 -translate-x-1/2 z-40 pointer-events-none flex flex-col gap-2">
       {floats.map((f) => (
-        <div key={f.id} className="bg-gradient-to-br from-violet-500 to-fuchsia-600 text-white rounded-xl shadow-2xl px-4 py-2 animate-[event-pop_400ms_ease-out] flex items-center gap-3 min-w-[260px]">
+        <div key={f.id} className="bg-gradient-to-br from-violet-500 to-fuchsia-600 text-white rounded-xl shadow-2xl px-4 py-2 animate-[event-pop_400ms_ease-out] flex items-center gap-3 min-w-0 w-[calc(100vw-2rem)] sm:min-w-[260px] sm:w-auto">
           <Sparkles size={18} className="flex-shrink-0" />
           <div className="flex-1">
             <div className="text-sm font-bold">{f.text}</div>

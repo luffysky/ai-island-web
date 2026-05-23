@@ -55,7 +55,7 @@ export function PetSettings({ initial }: { initial: any }) {
 
         <div>
           <label className="text-xs text-fg-muted block mb-2">物種</label>
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {SPECIES_LIST.map((s) => {
               const active = pet.species === s.id;
               return (

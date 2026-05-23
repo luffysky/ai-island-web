@@ -26,7 +26,7 @@ export default async function CRMPage({ searchParams }: { searchParams: Promise<
         <h2 className="text-xl font-bold">💬 客服 (CRM)</h2>
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <Stat label="待處理" value={open} color="text-red-400" />
         <Stat label="等待回覆" value={pending} color="text-yellow-400" />
         <Stat label="緊急" value={urgent} color="text-red-500" />
