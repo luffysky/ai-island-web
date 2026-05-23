@@ -42,7 +42,7 @@ export function ShareArticleButton({
     <>
       <button
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border)] text-sm text-[var(--color-fg-muted)] hover:text-[var(--color-fg)] hover:border-[var(--color-accent)]/50 transition"
+        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-bg-card border border-border text-sm text-fg-muted hover:text-fg hover:border-accent/50 transition"
       >
         <Link2 size={14} />
         分享文章
@@ -54,16 +54,16 @@ export function ShareArticleButton({
           onClick={() => setOpen(false)}
         >
           <div
-            className="w-full max-w-sm bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-3xl overflow-hidden shadow-2xl"
+            className="w-full max-w-sm bg-bg-card border border-border rounded-3xl overflow-hidden shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="p-6 bg-gradient-to-br from-[var(--color-accent)]/8 via-[var(--color-accent-2)]/5 to-[var(--color-bg-card)] border-b border-[var(--color-border)]">
-              <div className="bg-[var(--color-bg)] rounded-2xl p-5 border border-[var(--color-border)] space-y-3">
+            <div className="p-6 bg-gradient-to-br from-accent/8 via-accent-2/5 to-bg-card border-b border-border">
+              <div className="bg-bg rounded-2xl p-5 border border-border space-y-3">
                 <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-full bg-[var(--color-accent)]/20 flex items-center justify-center text-sm">
+                  <div className="w-7 h-7 rounded-full bg-accent/20 flex items-center justify-center text-sm">
                     ✍️
                   </div>
-                  <span className="text-xs text-[var(--color-fg-muted)]">
+                  <span className="text-xs text-fg-muted">
                     {author}
                   </span>
                 </div>
@@ -71,16 +71,16 @@ export function ShareArticleButton({
                   {title}
                 </h3>
                 {summary && (
-                  <p className="text-xs text-[var(--color-fg-muted)] leading-relaxed line-clamp-3">
+                  <p className="text-xs text-fg-muted leading-relaxed line-clamp-3">
                     {summary}
                   </p>
                 )}
-                <p className="text-[10px] text-[var(--color-fg-muted)]/60">{host}</p>
+                <p className="text-[10px] text-fg-muted/60">{host}</p>
               </div>
             </div>
 
             <div className="p-5 space-y-3">
-              <h4 className="text-sm font-medium text-[var(--color-fg-muted)] mb-1">
+              <h4 className="text-sm font-medium text-fg-muted mb-1">
                 分享到
               </h4>
               <a
@@ -94,14 +94,14 @@ export function ShareArticleButton({
               </a>
               <button
                 onClick={copyLink}
-                className="flex items-center gap-3 w-full px-4 py-3 rounded-xl bg-[var(--color-bg-elevated)] border border-[var(--color-border)] text-sm hover:border-[var(--color-accent)]/40 transition-colors"
+                className="flex items-center gap-3 w-full px-4 py-3 rounded-xl bg-bg-elevated border border-border text-sm hover:border-accent/40 transition-colors"
               >
                 {copied ? <Check size={18} /> : <Link2 size={18} />}
                 <span>{copied ? "已複製連結！" : "複製連結"}</span>
               </button>
               <button
                 onClick={() => setOpen(false)}
-                className="w-full text-xs text-[var(--color-fg-muted)] py-2 hover:text-[var(--color-fg)] transition-colors"
+                className="w-full text-xs text-fg-muted py-2 hover:text-fg transition-colors"
               >
                 關閉
               </button>

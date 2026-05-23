@@ -16,7 +16,7 @@ export default async function AIKeysSettingsPage() {
     <div className="max-w-3xl mx-auto px-6 py-8 space-y-6">
       <div>
         <h1 className="text-2xl font-bold">🔑 AI API Keys（BYOK）</h1>
-        <p className="text-sm text-[var(--color-fg-muted)] mt-2">
+        <p className="text-sm text-fg-muted mt-2">
           自帶 API key、跳過每日免費額度限制、用多少付多少給原廠。
           AI 島不收手續費、key 在 DB 加密存放。
         </p>

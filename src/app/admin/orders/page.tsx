@@ -34,16 +34,16 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
 
       {/* 統計 */}
       <div className="grid grid-cols-3 gap-3">
-        <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-4">
-          <div className="text-xs text-[var(--color-fg-muted)]">本月總收入</div>
+        <div className="bg-bg-card border border-border rounded-xl p-4">
+          <div className="text-xs text-fg-muted">本月總收入</div>
           <div className="text-2xl font-bold text-green-400 mt-1">NT$ {monthRevenue.toLocaleString()}</div>
         </div>
-        <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-4">
-          <div className="text-xs text-[var(--color-fg-muted)]">本月退款</div>
+        <div className="bg-bg-card border border-border rounded-xl p-4">
+          <div className="text-xs text-fg-muted">本月退款</div>
           <div className="text-2xl font-bold text-red-400 mt-1">NT$ {monthRefunded.toLocaleString()}</div>
         </div>
-        <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-4">
-          <div className="text-xs text-[var(--color-fg-muted)]">本月訂單數</div>
+        <div className="bg-bg-card border border-border rounded-xl p-4">
+          <div className="text-xs text-fg-muted">本月訂單數</div>
           <div className="text-2xl font-bold text-blue-400 mt-1">{monthOrders?.length ?? 0}</div>
         </div>
       </div>
@@ -61,9 +61,9 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
       {error?.message?.includes("does not exist") ? (
         <SchemaNeeded />
       ) : (
-        <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl overflow-hidden">
+        <div className="bg-bg-card border border-border rounded-xl overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-[var(--color-bg-elevated)] text-left text-xs text-[var(--color-fg-muted)] uppercase">
+            <thead className="bg-bg-elevated text-left text-xs text-fg-muted uppercase">
               <tr>
                 <th className="px-4 py-3">訂單號</th>
                 <th className="px-4 py-3">用戶</th>
@@ -76,21 +76,21 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
             </thead>
             <tbody>
               {orders?.length === 0 ? (
-                <tr><td colSpan={7} className="px-4 py-8 text-center text-[var(--color-fg-muted)]">目前沒有訂單</td></tr>
+                <tr><td colSpan={7} className="px-4 py-8 text-center text-fg-muted">目前沒有訂單</td></tr>
               ) : (
                 orders?.map((o: any) => (
-                  <tr key={o.id} className="border-t border-[var(--color-border)] hover:bg-[var(--color-bg-elevated)]">
+                  <tr key={o.id} className="border-t border-border hover:bg-bg-elevated">
                     <td className="px-4 py-3 font-mono text-xs">{o.order_no}</td>
                     <td className="px-4 py-3">
-                      <Link href={`/admin/users?q=${o.profiles?.username}`} className="hover:text-[var(--color-accent)]">
+                      <Link href={`/admin/users?q=${o.profiles?.username}`} className="hover:text-accent">
                         {o.profiles?.display_name || o.profiles?.username || "—"}
                       </Link>
                     </td>
                     <td className="px-4 py-3">{o.product_name}</td>
                     <td className="px-4 py-3 font-semibold">NT$ {o.amount.toLocaleString()}</td>
                     <td className="px-4 py-3"><StatusBadge status={o.status} /></td>
-                    <td className="px-4 py-3 text-xs text-[var(--color-fg-muted)]">{o.payment_method ?? "—"}</td>
-                    <td className="px-4 py-3 text-xs text-[var(--color-fg-muted)]">{new Date(o.created_at).toLocaleString('zh-TW')}</td>
+                    <td className="px-4 py-3 text-xs text-fg-muted">{o.payment_method ?? "—"}</td>
+                    <td className="px-4 py-3 text-xs text-fg-muted">{new Date(o.created_at).toLocaleString('zh-TW')}</td>
                   </tr>
                 ))
               )}
@@ -104,7 +104,7 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
 
 function FilterLink({ href, active, children }: { href: string; active?: boolean; children: React.ReactNode }) {
   return (
-    <Link href={(href.startsWith("/admin") ? href.replace(/^\/admin/, `/${process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2"}/admin`) : href) as any} className={`px-3 py-1.5 rounded-lg ${active ? "bg-[var(--color-accent)] text-black" : "bg-[var(--color-bg-card)] hover:bg-[var(--color-bg-elevated)]"}`}>
+    <Link href={(href.startsWith("/admin") ? href.replace(/^\/admin/, `/${process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2"}/admin`) : href) as any} className={`px-3 py-1.5 rounded-lg ${active ? "bg-accent text-black" : "bg-bg-card hover:bg-bg-elevated"}`}>
       {children}
     </Link>
   );
@@ -132,10 +132,10 @@ function SchemaNeeded() {
   return (
     <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-6 text-sm">
       <div className="font-bold mb-2">⚠️ 需要先跑 admin migration</div>
-      <p className="mb-3 text-[var(--color-fg-muted)]">
+      <p className="mb-3 text-fg-muted">
         訂單功能需要的 table 還沒建立。請去 Supabase Dashboard → SQL Editor、跑：
       </p>
-      <code className="block bg-[var(--color-bg)] p-3 rounded text-xs">supabase/admin_migration.sql</code>
+      <code className="block bg-bg p-3 rounded text-xs">supabase/admin_migration.sql</code>
     </div>
   );
 }

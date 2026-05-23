@@ -7,7 +7,7 @@ export default function PrivacyPage() {
   return (
     <div className="max-w-3xl mx-auto px-6 py-12 prose-custom">
       <h1>隱私權政策</h1>
-      <p className="text-sm text-[var(--color-fg-muted)]">
+      <p className="text-sm text-fg-muted">
         最後更新：2026 年 5 月 19 日
       </p>
 
@@ -107,7 +107,7 @@ export default function PrivacyPage() {
       </p>
 
       <hr />
-      <p className="text-sm text-[var(--color-fg-muted)]">
+      <p className="text-sm text-fg-muted">
         相關政策：<a href="/terms">使用條款</a> · <a href="/cookies">Cookie 政策</a>
       </p>
     </div>

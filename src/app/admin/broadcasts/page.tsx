@@ -14,7 +14,7 @@ export default async function BroadcastsPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold">📣 公告 / 群發訊息</h2>
-        <Link href={`/${process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2"}/admin/broadcasts/new` as any} className="px-4 py-2 bg-[var(--color-accent)] text-black rounded-lg font-bold hover:scale-105 transition-transform">
+        <Link href={`/${process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2"}/admin/broadcasts/new` as any} className="px-4 py-2 bg-accent text-black rounded-lg font-bold hover:scale-105 transition-transform">
           + 新建
         </Link>
       </div>
@@ -22,14 +22,14 @@ export default async function BroadcastsPage() {
       {error?.message?.includes("does not exist") ? (
         <SchemaNeeded />
       ) : broadcasts?.length === 0 ? (
-        <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-12 text-center text-[var(--color-fg-muted)]">
+        <div className="bg-bg-card border border-border rounded-xl p-12 text-center text-fg-muted">
           <p className="mb-2">還沒發過任何公告</p>
           <p className="text-xs">支援：站內訊息 / Email / LINE / Push Notification</p>
         </div>
       ) : (
         <div className="space-y-2">
           {broadcasts?.map((b: any) => (
-            <div key={b.id} className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-4 hover:border-[var(--color-accent)]/50 transition">
+            <div key={b.id} className="bg-bg-card border border-border rounded-xl p-4 hover:border-accent/50 transition">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
@@ -37,9 +37,9 @@ export default async function BroadcastsPage() {
                     <ChannelBadge channel={b.channel} />
                     <StatusBadge status={b.status} />
                   </div>
-                  <p className="text-sm text-[var(--color-fg-muted)] line-clamp-2">{b.content}</p>
+                  <p className="text-sm text-fg-muted line-clamp-2">{b.content}</p>
                 </div>
-                <div className="text-right text-xs text-[var(--color-fg-muted)] flex-shrink-0">
+                <div className="text-right text-xs text-fg-muted flex-shrink-0">
                   {b.sent_at && <div>📤 {new Date(b.sent_at).toLocaleDateString('zh-TW')}</div>}
                   {b.sent_count > 0 && (
                     <div className="mt-1">
@@ -58,7 +58,7 @@ export default async function BroadcastsPage() {
 
 function ChannelBadge({ channel }: { channel: string }) {
   const labels: Record<string, string> = { in_app: "📱 站內", email: "📧 Email", line: "💚 LINE", push: "🔔 Push" };
-  return <span className="text-xs px-2 py-0.5 rounded bg-[var(--color-bg-elevated)]">{labels[channel] ?? channel}</span>;
+  return <span className="text-xs px-2 py-0.5 rounded bg-bg-elevated">{labels[channel] ?? channel}</span>;
 }
 
 function StatusBadge({ status }: { status: string }) {
@@ -77,7 +77,7 @@ function SchemaNeeded() {
   return (
     <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-6 text-sm">
       <div className="font-bold mb-2">⚠️ 需要先跑 admin migration</div>
-      <code className="block bg-[var(--color-bg)] p-3 rounded text-xs">supabase/admin_migration.sql</code>
+      <code className="block bg-bg p-3 rounded text-xs">supabase/admin_migration.sql</code>
     </div>
   );
 }

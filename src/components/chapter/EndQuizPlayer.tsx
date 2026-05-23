@@ -164,42 +164,42 @@ export function EndQuizPlayer({ chapterId }: { chapterId: number }) {
   // ─── Preview ───
   if (stage === "preview") {
     return (
-      <section className="mt-12 rounded-2xl border-2 border-[var(--color-accent)]/30 bg-gradient-to-br from-[var(--color-bg-card)] to-[var(--color-bg-elevated)] p-6">
+      <section className="mt-12 rounded-2xl border-2 border-accent/30 bg-gradient-to-br from-bg-card to-bg-elevated p-6">
         <div className="flex items-start gap-4">
-          <div className="flex-shrink-0 w-12 h-12 rounded-full bg-[var(--color-accent)]/15 flex items-center justify-center">
-            <Sparkles className="text-[var(--color-accent)]" size={20} />
+          <div className="flex-shrink-0 w-12 h-12 rounded-full bg-accent/15 flex items-center justify-center">
+            <Sparkles className="text-accent" size={20} />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-xs text-[var(--color-fg-muted)] mb-1">章末綜合測驗</div>
+            <div className="text-xs text-fg-muted mb-1">章末綜合測驗</div>
             <h2 className="text-xl font-bold mb-1">{quiz.title || `Ch${String(chapterId).padStart(2, "0")} 全章測驗`}</h2>
             {quiz.description && (
-              <p className="text-sm text-[var(--color-fg-muted)] mb-3">{quiz.description}</p>
+              <p className="text-sm text-fg-muted mb-3">{quiz.description}</p>
             )}
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs mb-4">
-              <div className="p-2 rounded bg-[var(--color-bg)]">
-                <div className="text-[var(--color-fg-muted)]">題數</div>
+              <div className="p-2 rounded bg-bg">
+                <div className="text-fg-muted">題數</div>
                 <div className="font-bold mt-0.5">{total} 題</div>
               </div>
-              <div className="p-2 rounded bg-[var(--color-bg)]">
-                <div className="text-[var(--color-fg-muted)]">每題</div>
+              <div className="p-2 rounded bg-bg">
+                <div className="text-fg-muted">每題</div>
                 <div className="font-bold mt-0.5">+{quiz.xp_per_correct} XP</div>
               </div>
-              <div className="p-2 rounded bg-[var(--color-bg)]">
-                <div className="text-[var(--color-fg-muted)]">通過</div>
+              <div className="p-2 rounded bg-bg">
+                <div className="text-fg-muted">通過</div>
                 <div className="font-bold mt-0.5">{quiz.passing_score} 題</div>
               </div>
-              <div className="p-2 rounded bg-[var(--color-bg)]">
-                <div className="text-[var(--color-fg-muted)]">滿分</div>
-                <div className="font-bold mt-0.5 text-[var(--color-accent)]">{maxXp} XP</div>
+              <div className="p-2 rounded bg-bg">
+                <div className="text-fg-muted">滿分</div>
+                <div className="font-bold mt-0.5 text-accent">{maxXp} XP</div>
               </div>
             </div>
 
             {bestScore !== null && (
-              <div className="mb-4 p-3 rounded-lg bg-[var(--color-bg)] border border-[var(--color-border)] text-sm">
-                <div className="flex items-center gap-2 text-[var(--color-fg-muted)]">
+              <div className="mb-4 p-3 rounded-lg bg-bg border border-border text-sm">
+                <div className="flex items-center gap-2 text-fg-muted">
                   <Trophy size={14} className="text-yellow-400" />
-                  你之前最佳成績：<span className="font-bold text-[var(--color-fg)]">{bestScore} / 100</span>
+                  你之前最佳成績：<span className="font-bold text-fg">{bestScore} / 100</span>
                   <span className="text-xs ml-auto">重新挑戰不會再發 XP、純練習</span>
                 </div>
               </div>
@@ -207,13 +207,13 @@ export function EndQuizPlayer({ chapterId }: { chapterId: number }) {
 
             <button
               onClick={start}
-              className="px-5 py-2 bg-[var(--color-accent)] text-black font-bold rounded-lg hover:scale-[1.02] transition-transform flex items-center gap-2"
+              className="px-5 py-2 bg-accent text-black font-bold rounded-lg hover:scale-[1.02] transition-transform flex items-center gap-2"
             >
               <Sparkles size={16} />
               {bestScore !== null ? "再挑戰一次" : "開始測驗"}
             </button>
             {!user && (
-              <div className="mt-2 text-xs text-[var(--color-fg-muted)] flex items-center gap-1">
+              <div className="mt-2 text-xs text-fg-muted flex items-center gap-1">
                 <Lock size={12} /> 請先登入才能計分
               </div>
             )}
@@ -227,10 +227,10 @@ export function EndQuizPlayer({ chapterId }: { chapterId: number }) {
   if (stage === "playing") {
     const allAnswered = Object.keys(answers).length === total;
     return (
-      <section className="mt-12 rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-card)] p-6">
+      <section className="mt-12 rounded-2xl border border-border bg-bg-card p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold">{quiz.title}</h2>
-          <span className="text-sm text-[var(--color-fg-muted)]">
+          <span className="text-sm text-fg-muted">
             已答 {Object.keys(answers).length} / {total}
           </span>
         </div>
@@ -241,10 +241,10 @@ export function EndQuizPlayer({ chapterId }: { chapterId: number }) {
             return (
               <div
                 key={idx}
-                className="p-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg)]"
+                className="p-4 rounded-xl border border-border bg-bg"
               >
                 <div className="flex items-start gap-3 mb-3">
-                  <span className="flex-shrink-0 w-7 h-7 rounded-full bg-[var(--color-accent)]/15 text-[var(--color-accent)] font-bold flex items-center justify-center text-sm">
+                  <span className="flex-shrink-0 w-7 h-7 rounded-full bg-accent/15 text-accent font-bold flex items-center justify-center text-sm">
                     {idx + 1}
                   </span>
                   <p className="font-medium flex-1 whitespace-pre-wrap">{q.question}</p>
@@ -259,15 +259,15 @@ export function EndQuizPlayer({ chapterId }: { chapterId: number }) {
                         onClick={() => setAnswers((a) => ({ ...a, [idx]: oi }))}
                         className={`w-full text-left flex items-start gap-2 px-3 py-2 rounded-lg border text-sm transition ${
                           active
-                            ? "bg-[var(--color-accent)]/15 border-[var(--color-accent)] text-[var(--color-fg)]"
-                            : "border-[var(--color-border)] hover:border-[var(--color-accent)]/60"
+                            ? "bg-accent/15 border-accent text-fg"
+                            : "border-border hover:border-accent/60"
                         }`}
                       >
                         <span
                           className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
                             active
-                              ? "bg-[var(--color-accent)] text-black"
-                              : "bg-[var(--color-bg-elevated)] text-[var(--color-fg-muted)]"
+                              ? "bg-accent text-black"
+                              : "bg-bg-elevated text-fg-muted"
                           }`}
                         >
                           {String.fromCharCode(65 + oi)}
@@ -278,7 +278,7 @@ export function EndQuizPlayer({ chapterId }: { chapterId: number }) {
                   })}
                 </div>
                 {q.hint && selected === undefined && (
-                  <details className="mt-2 pl-10 text-xs text-[var(--color-fg-muted)]">
+                  <details className="mt-2 pl-10 text-xs text-fg-muted">
                     <summary className="cursor-pointer">💡 提示</summary>
                     <p className="mt-1">{q.hint}</p>
                   </details>
@@ -297,14 +297,14 @@ export function EndQuizPlayer({ chapterId }: { chapterId: number }) {
         <div className="mt-6 flex items-center justify-between gap-3">
           <button
             onClick={() => setStage("preview")}
-            className="px-4 py-2 text-sm border border-[var(--color-border)] rounded-lg hover:bg-[var(--color-bg-elevated)]"
+            className="px-4 py-2 text-sm border border-border rounded-lg hover:bg-bg-elevated"
           >
             放棄
           </button>
           <button
             onClick={submit}
             disabled={!allAnswered || submitting}
-            className="px-6 py-2 bg-[var(--color-accent)] text-black font-bold rounded-lg disabled:opacity-40 disabled:cursor-not-allowed hover:scale-[1.02] transition-transform"
+            className="px-6 py-2 bg-accent text-black font-bold rounded-lg disabled:opacity-40 disabled:cursor-not-allowed hover:scale-[1.02] transition-transform"
           >
             {submitting ? "送出中…" : allAnswered ? "送出答案" : `還剩 ${total - Object.keys(answers).length} 題`}
           </button>
@@ -316,7 +316,7 @@ export function EndQuizPlayer({ chapterId }: { chapterId: number }) {
   // ─── Result ───
   if (!result) return null;
   return (
-    <section className="mt-12 rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-card)] p-6">
+    <section className="mt-12 rounded-2xl border border-border bg-bg-card p-6">
       <div className="text-center mb-6">
         <div className="text-5xl mb-2">
           {result.perfect ? "🏆" : result.passed ? "🎉" : "💪"}
@@ -328,14 +328,14 @@ export function EndQuizPlayer({ chapterId }: { chapterId: number }) {
               ? "通過！"
               : "再加油、複習一下"}
         </h2>
-        <div className="text-sm text-[var(--color-fg-muted)]">
+        <div className="text-sm text-fg-muted">
           {result.correct} / {result.total} 題（{result.score} 分）
         </div>
         {(result.xpAwarded > 0 || result.zCoinAwarded > 0) && (
-          <div className="mt-4 inline-flex items-center gap-3 px-4 py-2 rounded-full bg-[var(--color-accent)]/15 text-sm">
+          <div className="mt-4 inline-flex items-center gap-3 px-4 py-2 rounded-full bg-accent/15 text-sm">
             {result.xpAwarded > 0 && (
               <span>
-                ⚡ <span className="font-bold text-[var(--color-accent)]">+{result.xpAwarded} XP</span>
+                ⚡ <span className="font-bold text-accent">+{result.xpAwarded} XP</span>
               </span>
             )}
             {result.zCoinAwarded > 0 && (
@@ -346,19 +346,19 @@ export function EndQuizPlayer({ chapterId }: { chapterId: number }) {
           </div>
         )}
         {!result.isFirstAttempt && result.xpAwarded === 0 && (
-          <div className="mt-3 text-xs text-[var(--color-fg-muted)]">
+          <div className="mt-3 text-xs text-fg-muted">
             重複挑戰、僅供練習、不發 XP
           </div>
         )}
       </div>
 
-      <details className="rounded-xl border border-[var(--color-border)] p-4 bg-[var(--color-bg)]">
+      <details className="rounded-xl border border-border p-4 bg-bg">
         <summary className="cursor-pointer font-semibold text-sm">逐題檢討（{result.perQuestion.filter((p) => !p.ok).length} 題答錯）</summary>
         <div className="mt-3 space-y-3">
           {result.perQuestion.map((p) => {
             const q = quiz.questions[p.questionIndex];
             return (
-              <div key={p.questionIndex} className="text-sm border-t border-[var(--color-border)] pt-3 first:border-0 first:pt-0">
+              <div key={p.questionIndex} className="text-sm border-t border-border pt-3 first:border-0 first:pt-0">
                 <div className="flex items-start gap-2 mb-1.5">
                   {p.ok ? (
                     <Check size={14} className="mt-0.5 text-emerald-400 flex-shrink-0" />
@@ -385,7 +385,7 @@ export function EndQuizPlayer({ chapterId }: { chapterId: number }) {
                     </div>
                   )}
                   {p.explanation && (
-                    <div className="mt-1 text-[var(--color-fg-muted)]">💡 {p.explanation}</div>
+                    <div className="mt-1 text-fg-muted">💡 {p.explanation}</div>
                   )}
                 </div>
               </div>
@@ -400,7 +400,7 @@ export function EndQuizPlayer({ chapterId }: { chapterId: number }) {
             setResult(null);
             setStage("preview");
           }}
-          className="px-4 py-2 text-sm border border-[var(--color-border)] rounded-lg hover:bg-[var(--color-bg-elevated)] flex items-center gap-1.5"
+          className="px-4 py-2 text-sm border border-border rounded-lg hover:bg-bg-elevated flex items-center gap-1.5"
         >
           <RotateCw size={14} /> 再來一次
         </button>

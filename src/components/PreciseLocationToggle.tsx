@@ -42,12 +42,12 @@ export function PreciseLocationToggle() {
   };
 
   return (
-    <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-5 space-y-3">
+    <div className="bg-bg-card border border-border rounded-xl p-5 space-y-3">
       <div className="flex items-center gap-2">
-        <MapPin size={18} className="text-[var(--color-accent)]" />
+        <MapPin size={18} className="text-accent" />
         <h3 className="font-bold">精準位置（區級）</h3>
       </div>
-      <p className="text-sm text-[var(--color-fg-muted)] leading-relaxed">
+      <p className="text-sm text-fg-muted leading-relaxed">
         預設站台只用 IP 看到城市級。啟用後瀏覽器會請你授權 GPS、用
         OpenStreetMap 把座標轉成「○○區」、寫入站內分析（不會給第三方）。
         每個 session 只查一次。
@@ -69,7 +69,7 @@ export function PreciseLocationToggle() {
           )}
           <button
             onClick={disable}
-            className="px-4 py-1.5 text-sm rounded-lg border border-[var(--color-border)] hover:bg-[var(--color-bg-elevated)]"
+            className="px-4 py-1.5 text-sm rounded-lg border border-border hover:bg-bg-elevated"
           >
             停用
           </button>
@@ -78,7 +78,7 @@ export function PreciseLocationToggle() {
         <button
           onClick={enable}
           disabled={busy}
-          className="px-4 py-2 text-sm rounded-lg bg-[var(--color-accent)] text-black font-semibold hover:scale-105 transition disabled:opacity-50"
+          className="px-4 py-2 text-sm rounded-lg bg-accent text-black font-semibold hover:scale-105 transition disabled:opacity-50"
         >
           {busy ? "請允許瀏覽器位置授權..." : "啟用精準位置"}
         </button>

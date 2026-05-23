@@ -24,18 +24,18 @@ export default async function AchievementsAdminPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {achievements?.map((a: any) => (
-          <div key={a.id} className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-4">
+          <div key={a.id} className="bg-bg-card border border-border rounded-xl p-4">
             <div className="flex items-start gap-3">
               <div className="text-3xl">{a.icon}</div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <h3 className="font-bold">{a.name}</h3>
-                  <span className="text-xs px-2 py-0.5 rounded bg-[var(--color-bg-elevated)] text-[var(--color-warning)]">
+                  <span className="text-xs px-2 py-0.5 rounded bg-bg-elevated text-warning">
                     +{a.xp_reward} XP
                   </span>
                 </div>
-                <p className="text-sm text-[var(--color-fg-muted)] mt-1">{a.description}</p>
-                <div className="text-xs text-[var(--color-fg-muted)] mt-2">
+                <p className="text-sm text-fg-muted mt-1">{a.description}</p>
+                <div className="text-xs text-fg-muted mt-2">
                   已解鎖：{unlockCount[a.id] ?? 0} 人
                 </div>
               </div>

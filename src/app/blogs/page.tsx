@@ -171,7 +171,7 @@ export default async function BlogsPage({
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-2xl sm:text-3xl font-bold">📝 部落格</h1>
-          <p className="text-sm text-[var(--color-fg-muted)] mt-1.5">
+          <p className="text-sm text-fg-muted mt-1.5">
             探索 AI 島社群創作者的公開文章與部落格
           </p>
         </div>
@@ -181,18 +181,18 @@ export default async function BlogsPage({
           <div className="flex-1 relative">
             <Search
               size={16}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-fg-muted)]"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-fg-muted"
             />
             <input
               name="q"
               defaultValue={q}
               placeholder="搜尋文章（標題、摘要、標籤）"
-              className="w-full bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-lg pl-9 pr-3 py-2.5 text-sm outline-none focus:border-[var(--color-accent)]"
+              className="w-full bg-bg-card border border-border rounded-lg pl-9 pr-3 py-2.5 text-sm outline-none focus:border-accent"
             />
           </div>
           <button
             type="submit"
-            className="px-5 py-2.5 rounded-lg bg-[var(--color-accent)] text-black font-semibold text-sm flex items-center gap-1"
+            className="px-5 py-2.5 rounded-lg bg-accent text-black font-semibold text-sm flex items-center gap-1"
           >
             <Search size={16} />
             搜尋
@@ -200,7 +200,7 @@ export default async function BlogsPage({
           {q && (
             <Link
               href="/blogs"
-              className="px-4 py-2.5 rounded-lg bg-[var(--color-bg-card)] border border-[var(--color-border)] text-sm flex items-center"
+              className="px-4 py-2.5 rounded-lg bg-bg-card border border-border text-sm flex items-center"
             >
               清除
             </Link>
@@ -210,11 +210,11 @@ export default async function BlogsPage({
         {/* Search results */}
         {q && (
           <section className="mb-12">
-            <h2 className="text-sm text-[var(--color-fg-muted)] mb-3">
+            <h2 className="text-sm text-fg-muted mb-3">
               「{q}」的搜尋結果（{searchResults.length} 篇）
             </h2>
             {searchResults.length === 0 ? (
-              <div className="text-center py-16 text-[var(--color-fg-muted)] bg-[var(--color-bg-card)] rounded-xl border border-[var(--color-border)]">
+              <div className="text-center py-16 text-fg-muted bg-bg-card rounded-xl border border-border">
                 <div className="text-4xl mb-3">🔍</div>
                 <p className="text-sm">找不到符合的文章</p>
               </div>
@@ -224,7 +224,7 @@ export default async function BlogsPage({
                   <Link
                     key={a.id}
                     href={`/blogs/${a.blogSlug}/${a.slug}`}
-                    className="block rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-card)] p-4 hover:border-[var(--color-accent)] transition group flex gap-4"
+                    className="block rounded-xl border border-border bg-bg-card p-4 hover:border-accent transition group flex gap-4"
                   >
                     {a.cover_image && (
                       <Image
@@ -237,15 +237,15 @@ export default async function BlogsPage({
                       />
                     )}
                     <div className="min-w-0 flex-1">
-                      <h3 className="font-bold group-hover:text-[var(--color-accent)] transition line-clamp-1">
+                      <h3 className="font-bold group-hover:text-accent transition line-clamp-1">
                         {a.title}
                       </h3>
                       {a.summary && (
-                        <p className="text-sm text-[var(--color-fg-muted)] line-clamp-2 mt-0.5">
+                        <p className="text-sm text-fg-muted line-clamp-2 mt-0.5">
                           {a.summary}
                         </p>
                       )}
-                      <div className="flex items-center gap-3 text-xs text-[var(--color-fg-muted)] mt-1.5">
+                      <div className="flex items-center gap-3 text-xs text-fg-muted mt-1.5">
                         {a.authorName && <span>{a.authorName}</span>}
                         <span className="flex items-center gap-1">
                           <Eye size={11} /> {a.view_count}
@@ -268,7 +268,7 @@ export default async function BlogsPage({
         {!q && (
           <section className="mb-12">
             {blogs.length === 0 ? (
-              <div className="text-center py-24 text-[var(--color-fg-muted)] bg-[var(--color-bg-card)] rounded-xl border border-[var(--color-border)]">
+              <div className="text-center py-24 text-fg-muted bg-bg-card rounded-xl border border-border">
                 <div className="text-5xl mb-4">📝</div>
                 <p className="text-sm">目前還沒有公開部落格</p>
                 <p className="text-xs mt-1">成為第一位作者吧</p>
@@ -279,7 +279,7 @@ export default async function BlogsPage({
                   <Link
                     key={blog.userSlug}
                     href={`/blogs/${blog.userSlug}`}
-                    className="group flex items-start gap-4 p-4 sm:p-5 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-card)] hover:border-[var(--color-accent)] transition relative overflow-hidden"
+                    className="group flex items-start gap-4 p-4 sm:p-5 rounded-xl border border-border bg-bg-card hover:border-accent transition relative overflow-hidden"
                   >
                     {/* Avatar */}
                     {blog.authorAvatar ? (
@@ -289,31 +289,31 @@ export default async function BlogsPage({
                         width={56}
                         height={56}
                         unoptimized
-                        className="w-13 h-13 sm:w-14 sm:h-14 rounded-full object-cover ring-2 ring-[var(--color-border)] flex-shrink-0"
+                        className="w-13 h-13 sm:w-14 sm:h-14 rounded-full object-cover ring-2 ring-border flex-shrink-0"
                       />
                     ) : (
-                      <div className="w-13 h-13 sm:w-14 sm:h-14 flex-shrink-0 rounded-full bg-[var(--color-bg-elevated)] flex items-center justify-center text-xl">
+                      <div className="w-13 h-13 sm:w-14 sm:h-14 flex-shrink-0 rounded-full bg-bg-elevated flex items-center justify-center text-xl">
                         ✍️
                       </div>
                     )}
 
                     {/* Info */}
                     <div className="flex-1 min-w-0">
-                      <h2 className="font-semibold group-hover:text-[var(--color-accent)] transition line-clamp-1">
+                      <h2 className="font-semibold group-hover:text-accent transition line-clamp-1">
                         {blog.blogTitle ??
                           `${blog.authorName ?? blog.userSlug} 的部落格`}
                       </h2>
                       {blog.authorName && (
-                        <p className="text-xs text-[var(--color-fg-muted)] mt-0.5">
+                        <p className="text-xs text-fg-muted mt-0.5">
                           {blog.authorName}
                         </p>
                       )}
                       {blog.blogDesc && (
-                        <p className="text-sm text-[var(--color-fg-muted)] mt-1.5 line-clamp-2 leading-relaxed">
+                        <p className="text-sm text-fg-muted mt-1.5 line-clamp-2 leading-relaxed">
                           {blog.blogDesc}
                         </p>
                       )}
-                      <div className="flex items-center gap-3 mt-2.5 text-[11px] text-[var(--color-fg-muted)]">
+                      <div className="flex items-center gap-3 mt-2.5 text-[11px] text-fg-muted">
                         <span>📝 {blog.articleCount} 篇文章</span>
                         {blog.latestPublishedAt && (
                           <>
@@ -337,15 +337,15 @@ export default async function BlogsPage({
 
         {/* CTA */}
         <div className="mt-14">
-          <div className="relative overflow-hidden rounded-3xl border border-[var(--color-border)] bg-gradient-to-br from-[var(--color-accent)]/10 via-[var(--color-accent-2)]/5 to-[var(--color-bg-card)] px-6 py-8 sm:px-10 sm:py-10 text-center">
-            <div className="absolute -top-10 -left-10 w-40 h-40 bg-[var(--color-accent)]/15 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[var(--color-accent-2)]/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="relative overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-accent/10 via-accent-2/5 to-bg-card px-6 py-8 sm:px-10 sm:py-10 text-center">
+            <div className="absolute -top-10 -left-10 w-40 h-40 bg-accent/15 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-accent-2/15 rounded-full blur-3xl pointer-events-none" />
             <div className="relative">
               <div className="text-3xl mb-3">✍️</div>
               <h2 className="text-lg sm:text-xl font-bold mb-2">
                 開始你自己的部落格
               </h2>
-              <p className="text-sm text-[var(--color-fg-muted)] leading-relaxed max-w-md mx-auto mb-6">
+              <p className="text-sm text-fg-muted leading-relaxed max-w-md mx-auto mb-6">
                 AI 輔助寫作、系列文章、讀者互動、RSS 訂閱，
                 <br />
                 所有功能 AI 島都幫你準備好了。
@@ -353,7 +353,7 @@ export default async function BlogsPage({
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                 <Link
                   href="/me/blog"
-                  className="inline-flex items-center gap-2 px-6 py-2.5 bg-[var(--color-accent)] hover:bg-[var(--color-accent-2)] text-black font-semibold text-sm rounded-2xl transition-colors"
+                  className="inline-flex items-center gap-2 px-6 py-2.5 bg-accent hover:bg-accent-2 text-black font-semibold text-sm rounded-2xl transition-colors"
                 >
                   <PenLine size={16} />
                   免費開始寫作 →

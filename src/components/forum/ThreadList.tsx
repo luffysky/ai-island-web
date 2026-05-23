@@ -38,8 +38,8 @@ export function ThreadList({ boardSlug }: { boardSlug?: string }) {
             onClick={() => setSort(s.key)}
             className={`text-xs px-3 py-1.5 rounded-lg transition ${
               sort === s.key
-                ? "bg-[var(--color-accent)] text-black font-semibold"
-                : "bg-[var(--color-bg-card)] text-[var(--color-fg-muted)] hover:bg-[var(--color-bg-elevated)]"
+                ? "bg-accent text-black font-semibold"
+                : "bg-bg-card text-fg-muted hover:bg-bg-elevated"
             }`}
           >
             {s.label}
@@ -49,10 +49,10 @@ export function ThreadList({ boardSlug }: { boardSlug?: string }) {
 
       {loading ? (
         <div className="space-y-2">
-          {[1, 2, 3].map((i) => <div key={i} className="h-16 rounded-lg bg-[var(--color-bg-card)] animate-pulse" />)}
+          {[1, 2, 3].map((i) => <div key={i} className="h-16 rounded-lg bg-bg-card animate-pulse" />)}
         </div>
       ) : threads.length === 0 ? (
-        <div className="text-center py-12 text-[var(--color-fg-muted)]">
+        <div className="text-center py-12 text-fg-muted">
           這裡還沒有討論、來發第一篇吧
         </div>
       ) : (
@@ -61,7 +61,7 @@ export function ThreadList({ boardSlug }: { boardSlug?: string }) {
             <Link
               key={t.id}
               href={`/forum/thread/${t.id}`}
-              className="block rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-card)] p-4 hover:border-[var(--color-accent)] transition"
+              className="block rounded-xl border border-border bg-bg-card p-4 hover:border-accent transition"
             >
               <div className="flex items-start gap-3">
                 {/* 作者頭像 */}
@@ -75,33 +75,33 @@ export function ThreadList({ boardSlug }: { boardSlug?: string }) {
                     className="w-9 h-9 rounded-full flex-shrink-0 object-cover"
                   />
                 ) : (
-                  <div className="w-9 h-9 rounded-full bg-[var(--color-bg-elevated)] flex items-center justify-center text-sm flex-shrink-0">
+                  <div className="w-9 h-9 rounded-full bg-bg-elevated flex items-center justify-center text-sm flex-shrink-0">
                     {(t.author?.display_name || t.author?.username || "?")[0]}
                   </div>
                 )}
                 <div className="min-w-0 flex-1">
                   {/* 標題 + 標記 */}
                   <div className="flex items-center gap-1.5 flex-wrap">
-                    {t.is_pinned && <Pin size={13} className="text-[var(--color-accent)]" />}
+                    {t.is_pinned && <Pin size={13} className="text-accent" />}
                     {t.is_featured && <Star size={13} className="text-yellow-400" />}
-                    {t.is_locked && <Lock size={13} className="text-[var(--color-fg-muted)]" />}
+                    {t.is_locked && <Lock size={13} className="text-fg-muted" />}
                     <h3 className="font-bold truncate">{t.title}</h3>
                   </div>
                   {/* 標籤 */}
                   {t.tags?.length > 0 && (
                     <div className="flex gap-1 mt-1">
                       {t.tags.slice(0, 3).map((tag) => (
-                        <span key={tag} className="text-[10px] px-1.5 py-0.5 rounded-full bg-[var(--color-bg-elevated)] text-[var(--color-fg-muted)]">
+                        <span key={tag} className="text-[10px] px-1.5 py-0.5 rounded-full bg-bg-elevated text-fg-muted">
                           #{tag}
                         </span>
                       ))}
                     </div>
                   )}
                   {/* meta */}
-                  <div className="flex items-center gap-3 text-[11px] text-[var(--color-fg-muted)] mt-1.5">
+                  <div className="flex items-center gap-3 text-[11px] text-fg-muted mt-1.5">
                     <span className="flex items-center gap-0.5">
                       {t.author?.display_name || t.author?.username}
-                      <span className="px-1 py-px rounded bg-[var(--color-bg-elevated)] text-[9px] font-bold ml-0.5">
+                      <span className="px-1 py-px rounded bg-bg-elevated text-[9px] font-bold ml-0.5">
                         Lv{t.author?.level ?? 1}
                       </span>
                     </span>
@@ -113,7 +113,7 @@ export function ThreadList({ boardSlug }: { boardSlug?: string }) {
                   </div>
                 </div>
                 {/* 最後回覆時間 */}
-                <div className="text-[10px] text-[var(--color-fg-muted)] flex-shrink-0">
+                <div className="text-[10px] text-fg-muted flex-shrink-0">
                   {new Date(t.last_reply_at).toLocaleDateString("zh-TW", { month: "2-digit", day: "2-digit" })}
                 </div>
               </div>

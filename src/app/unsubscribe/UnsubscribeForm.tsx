@@ -47,9 +47,9 @@ export function UnsubscribeForm({
 
   if (done) {
     return (
-      <div className="p-6 bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-lg text-center">
+      <div className="p-6 bg-bg-card border border-border rounded-lg text-center">
         <h2 className="text-xl font-bold mb-2">✅ 已更新</h2>
-        <p className="text-sm text-[var(--color-fg-muted)]">
+        <p className="text-sm text-fg-muted">
           Email 偏好已儲存、感謝你的回饋。
         </p>
       </div>
@@ -58,7 +58,7 @@ export function UnsubscribeForm({
 
   return (
     <div className="space-y-6">
-      <div className="p-5 bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-lg">
+      <div className="p-5 bg-bg-card border border-border rounded-lg">
         <h2 className="font-bold mb-3">選擇要收的通知</h2>
         <div className="space-y-2 text-sm">
           {[
@@ -67,16 +67,16 @@ export function UnsubscribeForm({
             { key: "course_announcements" as const, label: "課程上線通知", desc: "新章節 / 課程開放" },
             { key: "weekly_digest" as const, label: "每週學習摘要", desc: "你的學習進度回顧" },
           ].map(({ key, label, desc }) => (
-            <label key={key} className="flex items-start gap-3 p-2 hover:bg-[var(--color-bg-elevated)] rounded cursor-pointer">
+            <label key={key} className="flex items-start gap-3 p-2 hover:bg-bg-elevated rounded cursor-pointer">
               <input
                 type="checkbox"
                 checked={prefs[key]}
                 onChange={() => updatePref(key)}
-                className="mt-1 accent-[var(--color-accent)]"
+                className="mt-1 accent-accent"
               />
               <div className="flex-1">
                 <div className="font-medium">{label}</div>
-                <div className="text-xs text-[var(--color-fg-muted)]">{desc}</div>
+                <div className="text-xs text-fg-muted">{desc}</div>
               </div>
             </label>
           ))}
@@ -85,21 +85,21 @@ export function UnsubscribeForm({
         <button
           onClick={savePrefs}
           disabled={loading}
-          className="w-full mt-4 px-4 py-2 bg-[var(--color-accent)] text-black rounded-lg font-bold hover:scale-[1.02] transition disabled:opacity-50"
+          className="w-full mt-4 px-4 py-2 bg-accent text-black rounded-lg font-bold hover:scale-[1.02] transition disabled:opacity-50"
         >
           儲存偏好
         </button>
       </div>
 
-      <div className="p-5 bg-[var(--color-bg-card)] border border-red-500/30 rounded-lg">
+      <div className="p-5 bg-bg-card border border-red-500/30 rounded-lg">
         <h2 className="font-bold mb-3 text-red-500">退訂全部</h2>
-        <p className="text-sm text-[var(--color-fg-muted)] mb-3">
+        <p className="text-sm text-fg-muted mb-3">
           我們很可惜失去你、但尊重你的選擇。可以告訴我們原因嗎？（選填）
         </p>
         <select
           value={reason}
           onChange={(e) => setReason(e.target.value)}
-          className="w-full mb-3 px-3 py-2 bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded text-sm"
+          className="w-full mb-3 px-3 py-2 bg-bg-elevated border border-border rounded text-sm"
         >
           <option value="">不告知</option>
           <option value="too_frequent">通知太頻繁</option>

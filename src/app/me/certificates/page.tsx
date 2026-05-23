@@ -31,7 +31,7 @@ export default async function CertificatesPage() {
   return (
     <div className="space-y-4">
       <h1 className="text-2xl font-bold">🏅 我的證書</h1>
-      <p className="text-sm text-[var(--color-fg-muted)]">
+      <p className="text-sm text-fg-muted">
         完成整章可獲得章節證書 · 已獲得 {earnedCount} 張
       </p>
 
@@ -44,11 +44,11 @@ export default async function CertificatesPage() {
               <div key={c.id} className="relative bg-gradient-to-br from-yellow-500/20 to-orange-500/20 border-2 border-yellow-500/50 rounded-xl p-5">
                 <Award size={32} className="text-yellow-400 mb-2" />
                 <h3 className="font-bold text-lg">{c.title}</h3>
-                <div className="text-xs text-[var(--color-fg-muted)] mt-1">
+                <div className="text-xs text-fg-muted mt-1">
                   發出於 {new Date(c.issued_at).toLocaleDateString('zh-TW')}
                 </div>
                 {c.verification_code && (
-                  <div className="text-xs font-mono text-[var(--color-fg-muted)] mt-2">
+                  <div className="text-xs font-mono text-fg-muted mt-2">
                     驗證碼：{c.verification_code}
                   </div>
                 )}
@@ -67,10 +67,10 @@ export default async function CertificatesPage() {
               const alreadyEarned = certs?.some((c: any) => c.cert_key === `ch${String(ch.id).padStart(2, "0")}`);
               if (alreadyEarned) return null;
               return (
-                <div key={ch.id} className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-4">
-                  <div className="text-xs text-[var(--color-fg-muted)] mb-1">Ch {String(ch.id).padStart(2, "0")}</div>
+                <div key={ch.id} className="bg-bg-card border border-border rounded-xl p-4">
+                  <div className="text-xs text-fg-muted mb-1">Ch {String(ch.id).padStart(2, "0")}</div>
                   <h3 className="font-bold mb-2">{ch.title}</h3>
-                  <button disabled className="text-xs px-3 py-1.5 bg-[var(--color-accent)]/20 text-[var(--color-accent)] rounded">
+                  <button disabled className="text-xs px-3 py-1.5 bg-accent/20 text-accent rounded">
                     🎓 領取證書（自動發放中）
                   </button>
                 </div>
@@ -90,15 +90,15 @@ export default async function CertificatesPage() {
             .map(({ ch, done, total }) => {
               const pct = Math.round(done / total * 100);
               return (
-                <div key={ch.id} className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-4">
+                <div key={ch.id} className="bg-bg-card border border-border rounded-xl p-4">
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="font-bold truncate">{ch.title}</h3>
-                    <span className="text-sm text-[var(--color-fg-muted)]">{pct}%</span>
+                    <span className="text-sm text-fg-muted">{pct}%</span>
                   </div>
-                  <div className="h-1.5 bg-[var(--color-bg)] rounded-full overflow-hidden">
-                    <div className="h-full bg-[var(--color-accent)]" style={{ width: `${pct}%` }} />
+                  <div className="h-1.5 bg-bg rounded-full overflow-hidden">
+                    <div className="h-full bg-accent" style={{ width: `${pct}%` }} />
                   </div>
-                  <div className="text-xs text-[var(--color-fg-muted)] mt-2">{done} / {total} lessons</div>
+                  <div className="text-xs text-fg-muted mt-2">{done} / {total} lessons</div>
                 </div>
               );
             })}

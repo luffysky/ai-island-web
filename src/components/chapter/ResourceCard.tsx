@@ -93,17 +93,17 @@ export function ResourceCard({ res }: { res: Resource }) {
               </span>
             )}
             {res.level && res.level !== "all" && (
-              <span className="text-[10px] text-[var(--color-fg-muted)]">
+              <span className="text-[10px] text-fg-muted">
                 {LEVEL_LABEL[res.level]}
               </span>
             )}
           </div>
-          <h3 className="font-bold text-sm leading-tight group-hover:text-[var(--color-accent)] transition flex items-start gap-1">
+          <h3 className="font-bold text-sm leading-tight group-hover:text-accent transition flex items-start gap-1">
             <span className="flex-1">{res.title}</span>
             <ExternalLink size={12} className="shrink-0 mt-1 opacity-50 group-hover:opacity-100" />
           </h3>
           {res.author && (
-            <div className="text-xs text-[var(--color-fg-muted)] mt-0.5">
+            <div className="text-xs text-fg-muted mt-0.5">
               by {res.author}
             </div>
           )}
@@ -111,7 +111,7 @@ export function ResourceCard({ res }: { res: Resource }) {
       </div>
 
       {res.desc && (
-        <p className="text-xs text-[var(--color-fg)]/80 leading-relaxed mt-2 line-clamp-3">
+        <p className="text-xs text-fg/80 leading-relaxed mt-2 line-clamp-3">
           {res.desc}
         </p>
       )}
@@ -121,7 +121,7 @@ export function ResourceCard({ res }: { res: Resource }) {
           {res.tags.map((tag) => (
             <span
               key={tag}
-              className="text-[10px] px-1.5 py-0.5 rounded-full bg-[var(--color-bg-elevated)] text-[var(--color-fg-muted)]"
+              className="text-[10px] px-1.5 py-0.5 rounded-full bg-bg-elevated text-fg-muted"
             >
               #{tag}
             </span>
@@ -149,7 +149,7 @@ export function ResourceGroup({
       <div className="mb-4">
         <h2 className="text-xl font-bold mb-1">{title}</h2>
         {description && (
-          <p className="text-sm text-[var(--color-fg-muted)]">{description}</p>
+          <p className="text-sm text-fg-muted">{description}</p>
         )}
       </div>
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">

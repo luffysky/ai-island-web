@@ -58,10 +58,10 @@ export function BreachDetailForm({ incident }: { incident: any }) {
     }
   };
 
-  const fld = "w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm focus:border-[var(--color-accent)] outline-none";
+  const fld = "w-full bg-bg border border-border rounded-lg px-3 py-2 text-sm focus:border-accent outline-none";
 
   return (
-    <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-2xl p-5 space-y-4">
+    <div className="bg-bg-card border border-border rounded-2xl p-5 space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <Field label="事件類型">
           <select className={fld} value={form.incident_type} onChange={(e) => set("incident_type", e.target.value)}>
@@ -109,7 +109,7 @@ export function BreachDetailForm({ incident }: { incident: any }) {
         <textarea className={fld} rows={3} value={form.remediation_plan} onChange={(e) => set("remediation_plan", e.target.value)} />
       </Field>
 
-      <hr className="border-[var(--color-border)]" />
+      <hr className="border-border" />
 
       <h3 className="font-bold text-sm">通報主管機關</h3>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -149,12 +149,12 @@ export function BreachDetailForm({ incident }: { incident: any }) {
         <input type="datetime-local" className={fld} value={form.resolved_at?.slice(0, 16) ?? ""} onChange={(e) => set("resolved_at", e.target.value ? new Date(e.target.value).toISOString() : "")} />
       </Field>
 
-      <div className="flex items-center justify-between pt-3 border-t border-[var(--color-border)]">
+      <div className="flex items-center justify-between pt-3 border-t border-border">
         {msg && <span className="text-xs">{msg}</span>}
         <button
           onClick={save}
           disabled={saving}
-          className="ml-auto px-5 py-2 rounded-lg bg-[var(--color-accent)] text-black font-bold text-sm disabled:opacity-50"
+          className="ml-auto px-5 py-2 rounded-lg bg-accent text-black font-bold text-sm disabled:opacity-50"
         >
           {saving ? "儲存中..." : "💾 儲存"}
         </button>
@@ -166,7 +166,7 @@ export function BreachDetailForm({ incident }: { incident: any }) {
 function Field({ label, children, full }: { label: string; children: React.ReactNode; full?: boolean }) {
   return (
     <div className={full ? "md:col-span-3" : ""}>
-      <label className="text-xs text-[var(--color-fg-muted)] block mb-1">{label}</label>
+      <label className="text-xs text-fg-muted block mb-1">{label}</label>
       {children}
     </div>
   );

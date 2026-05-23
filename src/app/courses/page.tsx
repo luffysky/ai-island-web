@@ -22,11 +22,11 @@ export default function CoursesPage() {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
       {/* Header */}
       <div className="text-center mb-12">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs bg-[var(--color-bg-card)] border border-[var(--color-border)] mb-4">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs bg-bg-card border border-border mb-4">
           ⚔️ <span>實戰應用區</span>
         </div>
         <h1 className="text-4xl font-bold mb-3">AI 任務副本</h1>
-        <p className="text-[var(--color-fg-muted)] max-w-2xl mx-auto leading-relaxed">
+        <p className="text-fg-muted max-w-2xl mx-auto leading-relaxed">
           {SITE_STATS.chapterCount} 章主課程打底、5 大副本實戰。每個副本鎖定一個 AI 應用方向、
           打敗副本 boss、你就掌握了一項能變現的技能。
         </p>
@@ -57,12 +57,12 @@ export default function CoursesPage() {
 
             {/* Title */}
             <h2 className="text-xl font-bold mb-1">{d.name}</h2>
-            <div className="text-sm text-[var(--color-fg-muted)] mb-3">{d.subtitle}</div>
+            <div className="text-sm text-fg-muted mb-3">{d.subtitle}</div>
             <p className="text-sm leading-relaxed mb-4 flex-1">{d.tagline}</p>
 
             {/* Boss */}
-            <div className="border-t border-[var(--color-border)] pt-3 mb-3">
-              <div className="text-xs text-[var(--color-fg-muted)] mb-1">副本 BOSS</div>
+            <div className="border-t border-border pt-3 mb-3">
+              <div className="text-xs text-fg-muted mb-1">副本 BOSS</div>
               <div className="font-semibold text-sm flex items-center gap-1">
                 👹 {d.boss.name}
               </div>
@@ -73,13 +73,13 @@ export default function CoursesPage() {
               {d.tools.slice(0, 3).map((t) => (
                 <span
                   key={t.name}
-                  className="text-[10px] px-2 py-0.5 rounded-full bg-[var(--color-bg-elevated)] border border-[var(--color-border)]"
+                  className="text-[10px] px-2 py-0.5 rounded-full bg-bg-elevated border border-border"
                 >
                   {t.name}
                 </span>
               ))}
               {d.tools.length > 3 && (
-                <span className="text-[10px] px-2 py-0.5 text-[var(--color-fg-muted)]">
+                <span className="text-[10px] px-2 py-0.5 text-fg-muted">
                   +{d.tools.length - 3}
                 </span>
               )}
@@ -96,9 +96,9 @@ export default function CoursesPage() {
       </div>
 
       {/* 底部說明 */}
-      <div className="mt-12 p-6 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border)] text-center">
+      <div className="mt-12 p-6 rounded-xl bg-bg-card border border-border text-center">
         <h3 className="font-bold mb-2">🗺️ 副本怎麼玩？</h3>
-        <p className="text-sm text-[var(--color-fg-muted)] leading-relaxed max-w-2xl mx-auto">
+        <p className="text-sm text-fg-muted leading-relaxed max-w-2xl mx-auto">
           每個副本都有一隻 boss——代表你在這個領域最容易卡住的問題。
           副本內容教你打敗它的方法、推薦工具、以及對應的主課程章節。
           不用全部都打、選你最想要的能力開始。

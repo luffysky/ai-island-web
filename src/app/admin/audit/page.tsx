@@ -77,7 +77,7 @@ export default async function AuditPage({
     <div className="space-y-4">
       <div className="flex items-center justify-between flex-wrap gap-2">
         <h2 className="text-xl font-bold">📝 操作紀錄</h2>
-        <div className="text-xs text-[var(--color-fg-muted)]">
+        <div className="text-xs text-fg-muted">
           匹配 {(count ?? 0).toLocaleString()} 筆 · 第 {page}/{totalPages} 頁
         </div>
       </div>
@@ -85,30 +85,30 @@ export default async function AuditPage({
       {error?.message?.includes("does not exist") && (
         <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-6 text-sm">
           <div className="font-bold mb-2">⚠️ 需要先跑 admin migration</div>
-          <code className="block bg-[var(--color-bg)] p-3 rounded text-xs">supabase/admin_migration.sql</code>
+          <code className="block bg-bg p-3 rounded text-xs">supabase/admin_migration.sql</code>
         </div>
       )}
 
-      <form action={adminHref("/admin/audit")} className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-3">
+      <form action={adminHref("/admin/audit")} className="bg-bg-card border border-border rounded-xl p-3">
         <div className="flex flex-wrap items-center gap-2 text-sm">
-          <label className="text-xs text-[var(--color-fg-muted)]">日期</label>
+          <label className="text-xs text-fg-muted">日期</label>
           <input
             type="date"
             name="from"
             defaultValue={from}
-            className="bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg px-2 py-1 text-xs"
+            className="bg-bg border border-border rounded-lg px-2 py-1 text-xs"
           />
-          <span className="text-[var(--color-fg-muted)]">→</span>
+          <span className="text-fg-muted">→</span>
           <input
             type="date"
             name="to"
             defaultValue={to}
-            className="bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg px-2 py-1 text-xs"
+            className="bg-bg border border-border rounded-lg px-2 py-1 text-xs"
           />
           <select
             name="action"
             defaultValue={action}
-            className="bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg px-2 py-1 text-xs"
+            className="bg-bg border border-border rounded-lg px-2 py-1 text-xs"
           >
             <option value="all">所有動作</option>
             {distinctActions.map((a) => (
@@ -118,7 +118,7 @@ export default async function AuditPage({
           <select
             name="target_type"
             defaultValue={targetType}
-            className="bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg px-2 py-1 text-xs"
+            className="bg-bg border border-border rounded-lg px-2 py-1 text-xs"
           >
             <option value="all">所有目標</option>
             {distinctTargets.map((t) => (
@@ -130,32 +130,32 @@ export default async function AuditPage({
             name="actor"
             defaultValue={actor}
             placeholder="operator username"
-            className="bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg px-2 py-1 text-xs"
+            className="bg-bg border border-border rounded-lg px-2 py-1 text-xs"
           />
-          <button type="submit" className="px-3 py-1 text-xs bg-[var(--color-accent)] text-black font-bold rounded-lg">
+          <button type="submit" className="px-3 py-1 text-xs bg-accent text-black font-bold rounded-lg">
             套用
           </button>
           <a
             href={exportHref}
-            className="px-3 py-1 text-xs border border-[var(--color-border)] rounded-lg hover:bg-[var(--color-bg-elevated)]"
+            className="px-3 py-1 text-xs border border-border rounded-lg hover:bg-bg-elevated"
             title="下載目前 filter 結果為 CSV"
           >
             ⬇ 匯出 CSV
           </a>
-          <Link href={adminHref("/admin/audit") as any} className="text-xs text-[var(--color-fg-muted)] hover:text-[var(--color-fg)] ml-auto">
+          <Link href={adminHref("/admin/audit") as any} className="text-xs text-fg-muted hover:text-fg ml-auto">
             清除
           </Link>
         </div>
       </form>
 
       {logs?.length === 0 ? (
-        <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-12 text-center text-[var(--color-fg-muted)]">
+        <div className="bg-bg-card border border-border rounded-xl p-12 text-center text-fg-muted">
           目前條件下沒有 audit log
         </div>
       ) : (
-        <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl overflow-hidden">
+        <div className="bg-bg-card border border-border rounded-xl overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-[var(--color-bg-elevated)] text-left text-xs text-[var(--color-fg-muted)] uppercase">
+            <thead className="bg-bg-elevated text-left text-xs text-fg-muted uppercase">
               <tr>
                 <th className="px-4 py-3">時間</th>
                 <th className="px-4 py-3">操作者</th>
@@ -167,28 +167,28 @@ export default async function AuditPage({
             </thead>
             <tbody>
               {logs?.map((log: any) => (
-                <tr key={log.id} className="border-t border-[var(--color-border)] hover:bg-[var(--color-bg-elevated)]">
-                  <td className="px-4 py-3 text-xs text-[var(--color-fg-muted)] whitespace-nowrap">
+                <tr key={log.id} className="border-t border-border hover:bg-bg-elevated">
+                  <td className="px-4 py-3 text-xs text-fg-muted whitespace-nowrap">
                     {new Date(log.created_at).toLocaleString("zh-TW")}
                   </td>
                   <td className="px-4 py-3 font-medium">{log.actor_username ?? "—"}</td>
                   <td className="px-4 py-3">
-                    <span className="font-mono text-xs px-2 py-0.5 rounded bg-[var(--color-bg-elevated)]">{log.action}</span>
+                    <span className="font-mono text-xs px-2 py-0.5 rounded bg-bg-elevated">{log.action}</span>
                   </td>
                   <td className="px-4 py-3 text-xs">
                     {log.target_type && (
-                      <span className="text-[var(--color-fg-muted)]">{log.target_type}:</span>
+                      <span className="text-fg-muted">{log.target_type}:</span>
                     )}
                     <span className="ml-1 font-mono">{log.target_id?.slice?.(0, 8) ?? "—"}</span>
                   </td>
-                  <td className="px-4 py-3 text-[10px] text-[var(--color-fg-muted)] max-w-xs">
+                  <td className="px-4 py-3 text-[10px] text-fg-muted max-w-xs">
                     {log.changes && (
                       <code className="block truncate" title={JSON.stringify(log.changes)}>
                         {JSON.stringify(log.changes).slice(0, 80)}
                       </code>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-xs text-[var(--color-fg-muted)]">{log.ip ?? "—"}</td>
+                  <td className="px-4 py-3 text-xs text-fg-muted">{log.ip ?? "—"}</td>
                 </tr>
               ))}
             </tbody>
@@ -200,14 +200,14 @@ export default async function AuditPage({
         <div className="flex items-center justify-center gap-2 text-sm">
           <Link
             href={page > 1 ? (buildHref({ page: String(page - 1) }) as any) : "#"}
-            className={`px-3 py-1.5 rounded-lg border border-[var(--color-border)] ${page <= 1 ? "opacity-40 pointer-events-none" : "hover:bg-[var(--color-bg-elevated)]"}`}
+            className={`px-3 py-1.5 rounded-lg border border-border ${page <= 1 ? "opacity-40 pointer-events-none" : "hover:bg-bg-elevated"}`}
           >
             ← 上一頁
           </Link>
-          <span className="text-xs text-[var(--color-fg-muted)] px-3">{page} / {totalPages}</span>
+          <span className="text-xs text-fg-muted px-3">{page} / {totalPages}</span>
           <Link
             href={page < totalPages ? (buildHref({ page: String(page + 1) }) as any) : "#"}
-            className={`px-3 py-1.5 rounded-lg border border-[var(--color-border)] ${page >= totalPages ? "opacity-40 pointer-events-none" : "hover:bg-[var(--color-bg-elevated)]"}`}
+            className={`px-3 py-1.5 rounded-lg border border-border ${page >= totalPages ? "opacity-40 pointer-events-none" : "hover:bg-bg-elevated"}`}
           >
             下一頁 →
           </Link>

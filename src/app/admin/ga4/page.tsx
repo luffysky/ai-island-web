@@ -50,12 +50,12 @@ export default async function GA4Page() {
     <div className="space-y-6">
       <div>
         <h2 className="text-xl font-bold">📊 站台分析</h2>
-        <p className="text-sm text-[var(--color-fg-muted)] mt-1">
+        <p className="text-sm text-fg-muted mt-1">
           站內第一方追蹤（即時 + 24h 歷史）為主數據源。
           {hasGa4 && (
             <>
               {" "}
-              · GA4 補充：<code className="bg-[var(--color-bg-elevated)] px-1.5 py-0.5 rounded text-xs">{gaProperty}</code>
+              · GA4 補充：<code className="bg-bg-elevated px-1.5 py-0.5 rounded text-xs">{gaProperty}</code>
             </>
           )}
         </p>
@@ -70,9 +70,9 @@ export default async function GA4Page() {
       {/* GA4 區塊：有資料才秀 */}
       {hasGa4 && (
         <>
-          <div className="pt-4 border-t border-[var(--color-border)]">
+          <div className="pt-4 border-t border-border">
             <h3 className="text-lg font-bold mb-1">GA4 補充 30 天</h3>
-            <p className="text-xs text-[var(--color-fg-muted)] mb-4">
+            <p className="text-xs text-fg-muted mb-4">
               來自 Google Analytics、與站內分析互為佐證。
             </p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -92,12 +92,12 @@ export default async function GA4Page() {
       )}
 
       {/* GA4 設定 / 同步：collapse 在最下方、不影響主畫面 */}
-      <details className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl">
+      <details className="bg-bg-card border border-border rounded-xl">
         <summary className="cursor-pointer px-4 py-3 text-sm font-semibold">
           ⚙️ GA4 設定（選用）
         </summary>
         <div className="px-4 pb-4 text-sm space-y-3">
-          <p className="text-xs text-[var(--color-fg-muted)]">
+          <p className="text-xs text-fg-muted">
             站內第一方分析已涵蓋主要指標。GA4 是補充、非必要。
             若仍想接、需在 Zeabur 設 <code>GA4_PROPERTY_ID</code>、<code>GA4_SA_CREDENTIALS</code>、<code>CRON_SECRET</code>。
             注意：Google 對 service account email 採嚴格驗證、加入 GA4 可能被擋。
@@ -108,7 +108,7 @@ export default async function GA4Page() {
               href="https://analytics.google.com/analytics/web/"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--color-bg-elevated)] text-[var(--color-fg)] rounded-lg text-sm font-semibold hover:bg-[var(--color-border)] transition"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-bg-elevated text-fg rounded-lg text-sm font-semibold hover:bg-border transition"
             >
               🔗 開啟 Google Analytics
             </a>
@@ -121,8 +121,8 @@ export default async function GA4Page() {
 
 function Stat({ label, value, color }: { label: string; value: any; color: string }) {
   return (
-    <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-4">
-      <div className="text-xs text-[var(--color-fg-muted)]">{label}</div>
+    <div className="bg-bg-card border border-border rounded-xl p-4">
+      <div className="text-xs text-fg-muted">{label}</div>
       <div className={`text-2xl font-bold mt-1 ${color}`}>{value}</div>
     </div>
   );
@@ -130,16 +130,16 @@ function Stat({ label, value, color }: { label: string; value: any; color: strin
 
 function TopTable({ title, items, valueKey, labelKey }: { title: string; items: any[]; valueKey: string; labelKey: string }) {
   return (
-    <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-4">
+    <div className="bg-bg-card border border-border rounded-xl p-4">
       <h4 className="font-bold mb-2 text-sm">{title}</h4>
       {items.length === 0 ? (
-        <p className="text-xs text-[var(--color-fg-muted)] py-4 text-center">尚無數據</p>
+        <p className="text-xs text-fg-muted py-4 text-center">尚無數據</p>
       ) : (
         <div className="space-y-1">
           {items.slice(0, 10).map((item, i) => (
             <div key={i} className="flex items-center justify-between text-xs py-1">
               <span className="truncate flex-1">{item[labelKey] ?? "—"}</span>
-              <span className="text-[var(--color-fg-muted)] flex-shrink-0 ml-2">{item[valueKey]?.toLocaleString() ?? 0}</span>
+              <span className="text-fg-muted flex-shrink-0 ml-2">{item[valueKey]?.toLocaleString() ?? 0}</span>
             </div>
           ))}
         </div>

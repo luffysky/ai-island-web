@@ -78,7 +78,7 @@ export default async function ArticlePage({
       {/* 麵包屑 */}
       <Link
         href={`/blogs/${userSlug}`}
-        className="text-sm text-[var(--color-fg-muted)] hover:text-[var(--color-fg)] flex items-center gap-1 mb-6"
+        className="text-sm text-fg-muted hover:text-fg flex items-center gap-1 mb-6"
       >
         <ArrowLeft size={14} /> {blog.settings.blog_title || `${name} 的部落格`}
       </Link>
@@ -102,13 +102,13 @@ export default async function ArticlePage({
       {/* 標題區 */}
       <header className="mb-8">
         {article.category && (
-          <span className="text-sm text-[var(--color-accent)] font-medium">{article.category}</span>
+          <span className="text-sm text-accent font-medium">{article.category}</span>
         )}
         <h1 className="text-3xl sm:text-4xl font-bold mt-1 mb-3">{article.title}</h1>
         {article.summary && (
-          <p className="text-lg text-[var(--color-fg-muted)] mb-4">{article.summary}</p>
+          <p className="text-lg text-fg-muted mb-4">{article.summary}</p>
         )}
-        <div className="flex items-center gap-3 text-sm text-[var(--color-fg-muted)] flex-wrap">
+        <div className="flex items-center gap-3 text-sm text-fg-muted flex-wrap">
           <span className="flex items-center gap-1">
             {blog.profile?.avatar_url ? (
               <Image
@@ -151,9 +151,9 @@ export default async function ArticlePage({
 
       {/* 標籤 */}
       {article.tags?.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 mt-8 pt-6 border-t border-[var(--color-border)]">
+        <div className="flex flex-wrap gap-1.5 mt-8 pt-6 border-t border-border">
           {article.tags.map((t: string) => (
-            <span key={t} className="text-xs px-2 py-1 rounded-full bg-[var(--color-bg-elevated)] text-[var(--color-fg-muted)]">
+            <span key={t} className="text-xs px-2 py-1 rounded-full bg-bg-elevated text-fg-muted">
               #{t}
             </span>
           ))}
@@ -161,7 +161,7 @@ export default async function ArticlePage({
       )}
 
       {/* 作者卡 */}
-      <div className="mt-8 p-5 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border)] flex items-center gap-4">
+      <div className="mt-8 p-5 rounded-xl bg-bg-card border border-border flex items-center gap-4">
         {blog.profile?.avatar_url ? (
           <Image
             src={blog.profile.avatar_url}
@@ -172,13 +172,13 @@ export default async function ArticlePage({
             className="w-12 h-12 rounded-full object-cover"
           />
         ) : (
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-accent-2)] flex items-center justify-center font-bold text-black">
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-accent to-accent-2 flex items-center justify-center font-bold text-black">
             {name[0]}
           </div>
         )}
         <div className="min-w-0">
           <div className="font-bold">{name}</div>
-          <Link href={`/blogs/${userSlug}`} className="text-sm text-[var(--color-accent)]">
+          <Link href={`/blogs/${userSlug}`} className="text-sm text-accent">
             看更多文章 →
           </Link>
         </div>

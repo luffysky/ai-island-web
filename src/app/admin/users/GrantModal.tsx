@@ -72,22 +72,22 @@ export function GrantModal({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-2xl shadow-2xl"
+        className="w-full max-w-md bg-bg-card border border-border rounded-2xl shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between p-4 border-b border-[var(--color-border)]">
+        <div className="flex items-center justify-between p-4 border-b border-border">
           <div className="flex items-center gap-2">
-            <Gift size={18} className="text-[var(--color-accent)]" />
+            <Gift size={18} className="text-accent" />
             <h3 className="font-bold">補帳：{user.display_name || user.username}</h3>
           </div>
-          <button onClick={onClose} className="text-[var(--color-fg-muted)] hover:text-[var(--color-fg)]">
+          <button onClick={onClose} className="text-fg-muted hover:text-fg">
             <X size={16} />
           </button>
         </div>
 
         <div className="p-4 space-y-3">
           <div>
-            <label className="text-xs text-[var(--color-fg-muted)] block mb-1">類型</label>
+            <label className="text-xs text-fg-muted block mb-1">類型</label>
             <div className="grid grid-cols-3 gap-1.5">
               {([
                 { v: "xp", label: "⚡ XP" },
@@ -99,8 +99,8 @@ export function GrantModal({
                   onClick={() => setType(t.v as GrantType)}
                   className={`text-xs px-2 py-1.5 rounded-lg border transition ${
                     type === t.v
-                      ? "border-[var(--color-accent)] bg-[var(--color-accent)]/10 text-[var(--color-accent)] font-bold"
-                      : "border-[var(--color-border)] hover:border-[var(--color-accent)]/50"
+                      ? "border-accent bg-accent/10 text-accent font-bold"
+                      : "border-border hover:border-accent/50"
                   }`}
                 >
                   {t.label}
@@ -111,16 +111,16 @@ export function GrantModal({
 
           {(type === "xp" || type === "zcoin") && (
             <div>
-              <label className="text-xs text-[var(--color-fg-muted)] block mb-1">
+              <label className="text-xs text-fg-muted block mb-1">
                 數值（正數=發放、負數=扣除、目前餘額 {type === "xp" ? user.xp ?? 0 : user.z_coin ?? 0}）
               </label>
               <input
                 type="number"
                 value={amount}
                 onChange={(e) => setAmount(Number(e.target.value))}
-                className="w-full px-3 py-2 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg text-sm focus:border-[var(--color-accent)] outline-none"
+                className="w-full px-3 py-2 bg-bg border border-border rounded-lg text-sm focus:border-accent outline-none"
               />
-              <p className="text-[10px] text-[var(--color-fg-muted)] mt-1">
+              <p className="text-[10px] text-fg-muted mt-1">
                 {type === "xp" ? "單次上限 ±10000" : "單次上限 ±5000"}
               </p>
             </div>
@@ -128,7 +128,7 @@ export function GrantModal({
 
           {type === "achievement" && (
             <div>
-              <label className="text-xs text-[var(--color-fg-muted)] block mb-1">
+              <label className="text-xs text-fg-muted block mb-1">
                 Achievement ID（在 /admin/achievements 看代號）
               </label>
               <input
@@ -136,13 +136,13 @@ export function GrantModal({
                 value={achievementId}
                 onChange={(e) => setAchievementId(e.target.value)}
                 placeholder="first-lesson"
-                className="w-full px-3 py-2 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg text-sm focus:border-[var(--color-accent)] outline-none"
+                className="w-full px-3 py-2 bg-bg border border-border rounded-lg text-sm focus:border-accent outline-none"
               />
             </div>
           )}
 
           <div>
-            <label className="text-xs text-[var(--color-fg-muted)] block mb-1">
+            <label className="text-xs text-fg-muted block mb-1">
               理由（必填、≥ 5 字、會寫進 audit log）
             </label>
             <textarea
@@ -150,25 +150,25 @@ export function GrantModal({
               onChange={(e) => setReason(e.target.value)}
               rows={2}
               placeholder="例：4/1 活動補償、客服案件修復"
-              className="w-full px-3 py-2 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg text-sm focus:border-[var(--color-accent)] outline-none resize-none"
+              className="w-full px-3 py-2 bg-bg border border-border rounded-lg text-sm focus:border-accent outline-none resize-none"
             />
           </div>
 
           {msg && (
-            <p className="text-xs text-[var(--color-accent)]">{msg}</p>
+            <p className="text-xs text-accent">{msg}</p>
           )}
 
           <div className="flex justify-end gap-2 pt-2">
             <button
               onClick={onClose}
-              className="px-4 py-1.5 text-sm rounded-lg border border-[var(--color-border)]"
+              className="px-4 py-1.5 text-sm rounded-lg border border-border"
             >
               取消
             </button>
             <button
               onClick={submit}
               disabled={busy}
-              className="px-4 py-1.5 text-sm rounded-lg bg-[var(--color-accent)] text-black font-bold disabled:opacity-50"
+              className="px-4 py-1.5 text-sm rounded-lg bg-accent text-black font-bold disabled:opacity-50"
             >
               {busy ? "處理中..." : "確認發放"}
             </button>

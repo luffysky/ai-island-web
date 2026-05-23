@@ -36,14 +36,14 @@ export function ChapterEditor({ chapter }: { chapter: Chapter }) {
           <Link
             href={`/chapters/${chapter.id}`}
             target="_blank"
-            className="px-3 py-1.5 rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-border)] text-sm hover:border-[var(--color-accent)]"
+            className="px-3 py-1.5 rounded-lg bg-bg-elevated border border-border text-sm hover:border-accent"
           >
             🔗 預覽
           </Link>
           <button
             onClick={save}
             disabled={saving}
-            className="px-4 py-1.5 rounded-lg bg-[var(--color-accent)] text-black font-bold text-sm disabled:opacity-50"
+            className="px-4 py-1.5 rounded-lg bg-accent text-black font-bold text-sm disabled:opacity-50"
           >
             {saving ? "儲存中..." : "💾 儲存"}
           </button>
@@ -51,7 +51,7 @@ export function ChapterEditor({ chapter }: { chapter: Chapter }) {
       </div>
 
       {message && (
-        <div className="mb-3 p-3 rounded-lg bg-[var(--color-bg-card)] border border-[var(--color-border)] text-sm">
+        <div className="mb-3 p-3 rounded-lg bg-bg-card border border-border text-sm">
           {message}
         </div>
       )}
@@ -59,10 +59,10 @@ export function ChapterEditor({ chapter }: { chapter: Chapter }) {
       <textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        className="w-full h-[600px] p-4 bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-xl font-mono text-xs leading-relaxed focus:border-[var(--color-accent)] outline-none"
+        className="w-full h-[600px] p-4 bg-bg-elevated border border-border rounded-xl font-mono text-xs leading-relaxed focus:border-accent outline-none"
       />
 
-      <div className="mt-3 text-xs text-[var(--color-fg-muted)]">
+      <div className="mt-3 text-xs text-fg-muted">
         💡 此處直接編輯 JSON。
         Production 上線後應改成豐富表單編輯器 + 寫回 Supabase content 表（避免直接改 file system）。
       </div>

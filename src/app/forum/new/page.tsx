@@ -60,7 +60,7 @@ function NewThreadForm() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
-      <Link href="/forum" className="text-sm text-[var(--color-fg-muted)] hover:text-[var(--color-fg)] flex items-center gap-1 mb-4">
+      <Link href="/forum" className="text-sm text-fg-muted hover:text-fg flex items-center gap-1 mb-4">
         <ArrowLeft size={14} /> 討論區
       </Link>
       <h1 className="text-2xl font-bold mb-6">發表主題</h1>
@@ -72,7 +72,7 @@ function NewThreadForm() {
           <select
             value={boardSlug}
             onChange={(e) => setBoardSlug(e.target.value)}
-            className="w-full bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-lg p-2.5 text-sm outline-none focus:border-[var(--color-accent)]"
+            className="w-full bg-bg-card border border-border rounded-lg p-2.5 text-sm outline-none focus:border-accent"
           >
             <option value="">選擇版塊...</option>
             {boards
@@ -90,7 +90,7 @@ function NewThreadForm() {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="主題標題"
-          className="w-full bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-lg p-2.5 text-lg font-bold outline-none focus:border-[var(--color-accent)]"
+          className="w-full bg-bg-card border border-border rounded-lg p-2.5 text-lg font-bold outline-none focus:border-accent"
         />
 
         {/* 內文編輯器 */}
@@ -101,9 +101,9 @@ function NewThreadForm() {
           <label className="text-sm font-medium mb-1.5 block">標籤（最多 5 個）</label>
           <div className="flex flex-wrap gap-1.5 mb-2">
             {tags.map((t) => (
-              <span key={t} className="text-xs px-2 py-1 rounded-full bg-[var(--color-bg-elevated)] flex items-center gap-1">
+              <span key={t} className="text-xs px-2 py-1 rounded-full bg-bg-elevated flex items-center gap-1">
                 #{t}
-                <button onClick={() => setTags(tags.filter((x) => x !== t))} className="text-[var(--color-fg-muted)] hover:text-red-400">×</button>
+                <button onClick={() => setTags(tags.filter((x) => x !== t))} className="text-fg-muted hover:text-red-400">×</button>
               </span>
             ))}
           </div>
@@ -113,7 +113,7 @@ function NewThreadForm() {
               onChange={(e) => setTagInput(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addTag(); } }}
               placeholder="輸入標籤後按 Enter"
-              className="w-full bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-lg p-2 text-sm outline-none focus:border-[var(--color-accent)]"
+              className="w-full bg-bg-card border border-border rounded-lg p-2 text-sm outline-none focus:border-accent"
             />
           )}
         </div>
@@ -124,7 +124,7 @@ function NewThreadForm() {
           <button
             onClick={submit}
             disabled={!title.trim() || !boardSlug || saving}
-            className="px-6 py-2.5 rounded-lg bg-[var(--color-accent)] text-black font-bold text-sm hover:scale-105 transition flex items-center gap-1 disabled:opacity-40"
+            className="px-6 py-2.5 rounded-lg bg-accent text-black font-bold text-sm hover:scale-105 transition flex items-center gap-1 disabled:opacity-40"
           >
             {saving ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
             發表
@@ -137,7 +137,7 @@ function NewThreadForm() {
 
 export default function NewThreadPage() {
   return (
-    <Suspense fallback={<div className="py-20 text-center text-[var(--color-fg-muted)]">載入中...</div>}>
+    <Suspense fallback={<div className="py-20 text-center text-fg-muted">載入中...</div>}>
       <NewThreadForm />
     </Suspense>
   );

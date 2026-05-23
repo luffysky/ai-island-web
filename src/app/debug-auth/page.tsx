@@ -43,7 +43,7 @@ export default async function DebugAuthPage() {
     <div className="max-w-4xl mx-auto p-8">
       <h1 className="text-3xl font-bold mb-6">Auth Debug</h1>
 
-      <section className="mb-8 p-6 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-card)]">
+      <section className="mb-8 p-6 rounded-lg border border-border bg-bg-card">
         <h2 className="text-xl font-bold mb-3">
           {user ? "✅ 已登入" : "❌ 未登入"}
         </h2>
@@ -59,7 +59,7 @@ export default async function DebugAuthPage() {
         )}
       </section>
 
-      <section className="mb-8 p-6 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-card)]">
+      <section className="mb-8 p-6 rounded-lg border border-border bg-bg-card">
         <h2 className="text-xl font-bold mb-3">Session</h2>
         <div>有 session: {session ? "✅" : "❌"}</div>
         {sessionError && <div className="text-red-500">Error: {sessionError}</div>}
@@ -75,7 +75,7 @@ export default async function DebugAuthPage() {
         )}
       </section>
 
-      <section className="mb-8 p-6 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-card)]">
+      <section className="mb-8 p-6 rounded-lg border border-border bg-bg-card">
         <h2 className="text-xl font-bold mb-3">Profile</h2>
         <div>有 profile 紀錄: {profile ? "✅" : "❌"}</div>
         {profileError && <div className="text-red-500">Error: {profileError}</div>}
@@ -86,7 +86,7 @@ export default async function DebugAuthPage() {
         )}
       </section>
 
-      <section className="mb-8 p-6 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-card)]">
+      <section className="mb-8 p-6 rounded-lg border border-border bg-bg-card">
         <h2 className="text-xl font-bold mb-3">Cookies（{allCookies.length} 個）</h2>
         <pre className="text-xs overflow-auto bg-black p-3 rounded">
           {JSON.stringify(
@@ -99,12 +99,12 @@ export default async function DebugAuthPage() {
             2
           )}
         </pre>
-        <div className="mt-3 text-sm text-[var(--color-fg-muted)]">
+        <div className="mt-3 text-sm text-fg-muted">
           🎯 預期看到：<code className="bg-black px-2 py-1 rounded">sb-XXX-auth-token</code> 開頭的 cookie
         </div>
       </section>
 
-      <section className="p-6 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-card)]">
+      <section className="p-6 rounded-lg border border-border bg-bg-card">
         <h2 className="text-xl font-bold mb-3">環境變數</h2>
         <pre className="text-xs overflow-auto bg-black p-3 rounded">
           {JSON.stringify({
@@ -116,7 +116,7 @@ export default async function DebugAuthPage() {
         </pre>
       </section>
 
-      <div className="mt-6 text-sm text-[var(--color-fg-muted)]">
+      <div className="mt-6 text-sm text-fg-muted">
         重新整理這頁、即時看狀態。如果這頁說「已登入」、表示 server 端 OK、是 client/middleware 哪邊把它弄丟了。
       </div>
     </div>

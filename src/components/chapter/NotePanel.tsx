@@ -123,8 +123,8 @@ export function NotePanel({
     <>
       <button
         onClick={handleOpen}
-        className={`p-1.5 rounded transition hover:bg-[var(--color-bg-elevated)] ${
-          note ? "text-[var(--color-accent)]" : "text-[var(--color-fg-muted)]"
+        className={`p-1.5 rounded transition hover:bg-bg-elevated ${
+          note ? "text-accent" : "text-fg-muted"
         }`}
         title={note ? "已有筆記" : "新增筆記"}
       >
@@ -132,24 +132,24 @@ export function NotePanel({
       </button>
 
       {open && (
-        <div className="absolute right-0 top-10 z-20 w-80 bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl shadow-2xl p-3">
+        <div className="absolute right-0 top-10 z-20 w-80 bg-bg-card border border-border rounded-xl shadow-2xl p-3">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-semibold">📝 我的筆記</span>
-            <button onClick={() => setOpen(false)} className="text-xs text-[var(--color-fg-muted)]">關閉</button>
+            <button onClick={() => setOpen(false)} className="text-xs text-fg-muted">關閉</button>
           </div>
           <textarea
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="紀錄你對這個 lesson 的想法、重點..."
             rows={6}
-            className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg p-2 text-sm outline-none focus:border-[var(--color-accent)] resize-none"
+            className="w-full bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent resize-none"
           />
           <div className="flex items-center justify-between mt-2">
-            <span className="text-xs text-[var(--color-fg-muted)]">{note.length} 字</span>
+            <span className="text-xs text-fg-muted">{note.length} 字</span>
             <button
               onClick={save}
               disabled={saving}
-              className="flex items-center gap-1 px-3 py-1 bg-[var(--color-accent)] text-black text-xs font-semibold rounded hover:scale-105 transition disabled:opacity-50"
+              className="flex items-center gap-1 px-3 py-1 bg-accent text-black text-xs font-semibold rounded hover:scale-105 transition disabled:opacity-50"
             >
               {saving ? "儲存中…" : saved ? <><Check size={12} /> 已存</> : <><Save size={12} /> 儲存</>}
             </button>

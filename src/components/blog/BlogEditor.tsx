@@ -40,7 +40,7 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
     extensions: [
       StarterKit.configure({ codeBlock: false }),
       Placeholder.configure({ placeholder: placeholder ?? "開始寫你的文章..." }),
-      Link.configure({ openOnClick: false, HTMLAttributes: { class: "text-[var(--color-accent)] underline" } }),
+      Link.configure({ openOnClick: false, HTMLAttributes: { class: "text-accent underline" } }),
       Image.configure({ HTMLAttributes: { class: "rounded-lg max-w-full" } }),
       Underline,
       Highlight.configure({ multicolor: false }),
@@ -70,14 +70,14 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
   }, [editor]);
 
   if (!editor) {
-    return <div className="h-[460px] rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-card)] animate-pulse" />;
+    return <div className="h-[460px] rounded-xl border border-border bg-bg-card animate-pulse" />;
   }
 
   return (
-    <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-card)] overflow-hidden">
+    <div className="rounded-xl border border-border bg-bg-card overflow-hidden">
       <Toolbar editor={editor} />
       <EditorContent editor={editor} />
-      <div className="px-4 py-2 border-t border-[var(--color-border)] text-xs text-[var(--color-fg-muted)] flex justify-between">
+      <div className="px-4 py-2 border-t border-border text-xs text-fg-muted flex justify-between">
         <span>{editor.storage.characterCount.characters()} 字</span>
         <span>{editor.storage.characterCount.words()} 詞</span>
       </div>
@@ -89,8 +89,8 @@ function Toolbar({ editor }: { editor: Editor }) {
   const btn = (active: boolean) =>
     `p-1.5 rounded transition ${
       active
-        ? "bg-[var(--color-accent)] text-black"
-        : "hover:bg-[var(--color-bg-elevated)] text-[var(--color-fg)]"
+        ? "bg-accent text-black"
+        : "hover:bg-bg-elevated text-fg"
     }`;
 
   const addLink = () => {
@@ -107,7 +107,7 @@ function Toolbar({ editor }: { editor: Editor }) {
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-0.5 p-2 border-b border-[var(--color-border)] sticky top-0 bg-[var(--color-bg-card)] z-10 overflow-x-auto">
+    <div className="flex flex-wrap items-center gap-0.5 p-2 border-b border-border sticky top-0 bg-bg-card z-10 overflow-x-auto">
       <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} className={btn(editor.isActive("heading", { level: 1 }))} title="標題 1"><Heading1 size={16} /></button>
       <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} className={btn(editor.isActive("heading", { level: 2 }))} title="標題 2"><Heading2 size={16} /></button>
       <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} className={btn(editor.isActive("heading", { level: 3 }))} title="標題 3"><Heading3 size={16} /></button>
@@ -142,5 +142,5 @@ function Toolbar({ editor }: { editor: Editor }) {
 }
 
 function Sep() {
-  return <div className="w-px h-5 bg-[var(--color-border)] mx-1" />;
+  return <div className="w-px h-5 bg-border mx-1" />;
 }

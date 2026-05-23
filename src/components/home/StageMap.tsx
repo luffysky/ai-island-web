@@ -13,11 +13,11 @@ const STAGES = [
 
 export function StageMap() {
   return (
-    <section className="border-b border-[var(--color-border)] py-16 bg-gradient-to-b from-transparent to-[var(--color-bg-elevated)]/20">
+    <section className="border-b border-border py-16 bg-gradient-to-b from-transparent to-bg-elevated/20">
       <div className="max-w-6xl mx-auto px-6">
         <div className="text-center mb-10">
           <h2 className="text-3xl font-bold mb-2">🗺️ AI 島技術地圖</h2>
-          <p className="text-[var(--color-fg-muted)]">從網頁基礎到 AI 整合、六大技術區域串起完整學習路線</p>
+          <p className="text-fg-muted">從網頁基礎到 AI 整合、六大技術區域串起完整學習路線</p>
         </div>
 
         {/* 地圖總覽圖 */}
@@ -28,7 +28,7 @@ export function StageMap() {
             width={1200}
             height={700}
             sizes="(max-width: 768px) 100vw, 896px"
-            className="w-full max-w-4xl mx-auto h-auto rounded-2xl shadow-xl border border-[var(--color-border)]"
+            className="w-full max-w-4xl mx-auto h-auto rounded-2xl shadow-xl border border-border"
           />
         </div>
 
@@ -40,7 +40,7 @@ export function StageMap() {
               <Link
                 key={item.stage}
                 href={`/chapters#stage-${item.stage}`}
-                className="group relative overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-card)] p-5 hover:border-[var(--color-accent)] transition-all hover:scale-[1.02]"
+                className="group relative overflow-hidden rounded-xl border border-border bg-bg-card p-5 hover:border-accent transition-all hover:scale-[1.02]"
               >
                 <div
                   className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${item.color}`}
@@ -50,15 +50,15 @@ export function StageMap() {
                     {stage.emoji}
                   </div>
                   <div>
-                    <div className="text-xs font-mono text-[var(--color-fg-muted)]">STAGE {item.stage}</div>
+                    <div className="text-xs font-mono text-fg-muted">STAGE {item.stage}</div>
                     <h3 className="text-lg font-bold">{stage.name}</h3>
                   </div>
                 </div>
                 <div className="text-sm font-medium mb-2">{item.subtitle}</div>
-                <p className="text-xs text-[var(--color-fg-muted)] leading-relaxed mb-3">
+                <p className="text-xs text-fg-muted leading-relaxed mb-3">
                   {item.desc}
                 </p>
-                <div className="text-xs font-mono text-[var(--color-accent)]">
+                <div className="text-xs font-mono text-accent">
                   📚 {item.chapters}
                 </div>
               </Link>
@@ -66,7 +66,7 @@ export function StageMap() {
           })}
         </div>
 
-        <div className="text-center mt-8 text-sm text-[var(--color-fg-muted)]">
+        <div className="text-center mt-8 text-sm text-fg-muted">
           ✨ 基礎 × 前端 × 後端 × 多語言 × 商業 × AI ✨
         </div>
       </div>

@@ -82,21 +82,21 @@ export function BroadcastForm({
     }
   };
 
-  const fld = "w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm focus:border-[var(--color-accent)] outline-none";
+  const fld = "w-full bg-bg border border-border rounded-lg px-3 py-2 text-sm focus:border-accent outline-none";
 
   return (
-    <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-2xl p-5 space-y-4">
+    <div className="bg-bg-card border border-border rounded-2xl p-5 space-y-4">
       <div>
-        <label className="text-xs text-[var(--color-fg-muted)] block mb-1">標題</label>
+        <label className="text-xs text-fg-muted block mb-1">標題</label>
         <input type="text" className={fld} value={form.title} onChange={(e) => set("title", e.target.value)} />
       </div>
       <div>
-        <label className="text-xs text-[var(--color-fg-muted)] block mb-1">內容（站內 marquee 會顯示這段）</label>
+        <label className="text-xs text-fg-muted block mb-1">內容（站內 marquee 會顯示這段）</label>
         <textarea rows={4} className={fld} value={form.content} onChange={(e) => set("content", e.target.value)} />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
         <div>
-          <label className="text-xs text-[var(--color-fg-muted)] block mb-1">通道</label>
+          <label className="text-xs text-fg-muted block mb-1">通道</label>
           <select className={fld} value={form.channel} onChange={(e) => set("channel", e.target.value)}>
             <option value="in_app">📢 in_app（站內 marquee）</option>
             <option value="email">📧 email</option>
@@ -105,7 +105,7 @@ export function BroadcastForm({
           </select>
         </div>
         <div>
-          <label className="text-xs text-[var(--color-fg-muted)] block mb-1">對象</label>
+          <label className="text-xs text-fg-muted block mb-1">對象</label>
           <select className={fld} value={form.target} onChange={(e) => set("target", e.target.value)}>
             <option value="all">所有人</option>
             <option value="members">會員</option>
@@ -114,7 +114,7 @@ export function BroadcastForm({
           </select>
         </div>
         <div>
-          <label className="text-xs text-[var(--color-fg-muted)] block mb-1">狀態</label>
+          <label className="text-xs text-fg-muted block mb-1">狀態</label>
           <select className={fld} value={form.status} onChange={(e) => set("status", e.target.value)}>
             <option value="draft">📝 草稿</option>
             <option value="scheduled">⏰ 排程中</option>
@@ -123,12 +123,12 @@ export function BroadcastForm({
           </select>
         </div>
         <div>
-          <label className="text-xs text-[var(--color-fg-muted)] block mb-1">排程時間（選）</label>
+          <label className="text-xs text-fg-muted block mb-1">排程時間（選）</label>
           <input type="datetime-local" className={fld} value={form.scheduled_at} onChange={(e) => set("scheduled_at", e.target.value)} />
         </div>
       </div>
 
-      <div className="flex items-center justify-between pt-3 border-t border-[var(--color-border)]">
+      <div className="flex items-center justify-between pt-3 border-t border-border">
         <div className="text-xs">
           {msg}
           {form.status === "sent" && form.channel === "in_app" && (
@@ -141,7 +141,7 @@ export function BroadcastForm({
               刪除
             </button>
           )}
-          <button onClick={save} disabled={saving} className="px-5 py-1.5 text-sm bg-[var(--color-accent)] text-black font-bold rounded-lg disabled:opacity-50">
+          <button onClick={save} disabled={saving} className="px-5 py-1.5 text-sm bg-accent text-black font-bold rounded-lg disabled:opacity-50">
             {saving ? "儲存中..." : "💾 儲存"}
           </button>
         </div>

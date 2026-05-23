@@ -36,9 +36,9 @@ export default async function ZcoinPage() {
         <Stat label="本月消耗" value={`-${outflow.toLocaleString()}`} color="text-red-400" />
       </div>
 
-      <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl overflow-hidden">
+      <div className="bg-bg-card border border-border rounded-xl overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-[var(--color-bg-elevated)] text-left text-xs text-[var(--color-fg-muted)] uppercase">
+          <thead className="bg-bg-elevated text-left text-xs text-fg-muted uppercase">
             <tr>
               <th className="px-4 py-3">用戶</th>
               <th className="px-4 py-3">類型</th>
@@ -49,23 +49,23 @@ export default async function ZcoinPage() {
           </thead>
           <tbody>
             {txs?.length === 0 ? (
-              <tr><td colSpan={5} className="px-4 py-8 text-center text-[var(--color-fg-muted)]">沒有交易紀錄</td></tr>
+              <tr><td colSpan={5} className="px-4 py-8 text-center text-fg-muted">沒有交易紀錄</td></tr>
             ) : (
               txs?.map((t: any) => (
-                <tr key={t.id} className="border-t border-[var(--color-border)] hover:bg-[var(--color-bg-elevated)]">
+                <tr key={t.id} className="border-t border-border hover:bg-bg-elevated">
                   <td className="px-4 py-3">
-                    <Link href={`/admin/users?q=${t.profiles?.username}`} className="hover:text-[var(--color-accent)]">
+                    <Link href={`/admin/users?q=${t.profiles?.username}`} className="hover:text-accent">
                       {t.profiles?.display_name || t.profiles?.username || "—"}
                     </Link>
                   </td>
                   <td className="px-4 py-3">
-                    <span className="px-2 py-0.5 rounded text-xs bg-[var(--color-bg-elevated)]">{t.type}</span>
+                    <span className="px-2 py-0.5 rounded text-xs bg-bg-elevated">{t.type}</span>
                   </td>
                   <td className={`px-4 py-3 font-semibold ${t.amount > 0 ? "text-green-400" : "text-red-400"}`}>
                     {t.amount > 0 ? "+" : ""}{t.amount}
                   </td>
-                  <td className="px-4 py-3 text-[var(--color-fg-muted)]">{t.reason ?? "—"}</td>
-                  <td className="px-4 py-3 text-xs text-[var(--color-fg-muted)]">{new Date(t.created_at).toLocaleString('zh-TW')}</td>
+                  <td className="px-4 py-3 text-fg-muted">{t.reason ?? "—"}</td>
+                  <td className="px-4 py-3 text-xs text-fg-muted">{new Date(t.created_at).toLocaleString('zh-TW')}</td>
                 </tr>
               ))
             )}
@@ -78,10 +78,10 @@ export default async function ZcoinPage() {
 
 function Stat({ label, value, color, hint }: { label: string; value: any; color: string; hint?: string }) {
   return (
-    <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-4">
-      <div className="text-xs text-[var(--color-fg-muted)]">{label}</div>
+    <div className="bg-bg-card border border-border rounded-xl p-4">
+      <div className="text-xs text-fg-muted">{label}</div>
       <div className={`text-2xl font-bold mt-1 ${color}`}>{value}</div>
-      {hint && <div className="text-xs text-[var(--color-fg-muted)] mt-1">{hint}</div>}
+      {hint && <div className="text-xs text-fg-muted mt-1">{hint}</div>}
     </div>
   );
 }

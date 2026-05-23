@@ -96,31 +96,31 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 min-w-0 overflow-hidden">
       {/* Header */}
       <header className="mb-10">
-        <div className="text-xs text-[var(--color-fg-muted)] mb-2">
+        <div className="text-xs text-fg-muted mb-2">
           CHAPTER {String(chapter.id).padStart(2, "0")} · {stageColor.emoji} {stageColor.name}
         </div>
         <h1 className="text-4xl font-bold mb-3">
           {chapter.title}
-          <span className="block text-xl text-[var(--color-fg-muted)] mt-2">{chapter.subtitle}</span>
+          <span className="block text-xl text-fg-muted mt-2">{chapter.subtitle}</span>
         </h1>
-        <p className="text-[var(--color-fg-muted)] leading-relaxed mb-6">{chapter.description}</p>
+        <p className="text-fg-muted leading-relaxed mb-6">{chapter.description}</p>
 
         {/* Stats bar */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-          <div className="p-3 rounded-lg bg-[var(--color-bg-card)] border border-[var(--color-border)]">
-            <div className="text-xs text-[var(--color-fg-muted)]">難度</div>
+          <div className="p-3 rounded-lg bg-bg-card border border-border">
+            <div className="text-xs text-fg-muted">難度</div>
             <div className="font-bold mt-1">{DIFFICULTY_LABELS[chapter.difficulty]}</div>
           </div>
-          <div className="p-3 rounded-lg bg-[var(--color-bg-card)] border border-[var(--color-border)]">
-            <div className="text-xs text-[var(--color-fg-muted)] flex items-center gap-1"><Clock size={12} /> 時間</div>
+          <div className="p-3 rounded-lg bg-bg-card border border-border">
+            <div className="text-xs text-fg-muted flex items-center gap-1"><Clock size={12} /> 時間</div>
             <div className="font-bold mt-1">{chapter.estimatedHours} 小時</div>
           </div>
-          <div className="p-3 rounded-lg bg-[var(--color-bg-card)] border border-[var(--color-border)]">
-            <div className="text-xs text-[var(--color-fg-muted)]">Lesson</div>
+          <div className="p-3 rounded-lg bg-bg-card border border-border">
+            <div className="text-xs text-fg-muted">Lesson</div>
             <div className="font-bold mt-1">{totalLessons} 節</div>
           </div>
-          <div className="p-3 rounded-lg bg-[var(--color-bg-card)] border border-[var(--color-border)]">
-            <div className="text-xs text-[var(--color-fg-muted)] flex items-center gap-1"><Trophy size={12} /> Boss</div>
+          <div className="p-3 rounded-lg bg-bg-card border border-border">
+            <div className="text-xs text-fg-muted flex items-center gap-1"><Trophy size={12} /> Boss</div>
             <div className="font-bold mt-1 flex items-center gap-1">
               {chapter.boss ? (
                 <>
@@ -136,14 +136,14 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
 
         {/* Progress */}
         {user && (
-          <div className="p-4 rounded-lg bg-[var(--color-bg-card)] border border-[var(--color-border)] mb-6">
+          <div className="p-4 rounded-lg bg-bg-card border border-border mb-6">
             <div className="flex items-center justify-between mb-2 text-sm">
               <span>📊 章節進度</span>
               <span className="font-bold">{completedCount} / {totalLessons}</span>
             </div>
-            <div className="h-2 bg-[var(--color-bg)] rounded-full overflow-hidden">
+            <div className="h-2 bg-bg rounded-full overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-[var(--color-accent)] to-[var(--color-accent-2)] transition-all duration-500"
+                className="h-full bg-gradient-to-r from-accent to-accent-2 transition-all duration-500"
                 style={{ width: `${progress * 100}%` }}
               />
             </div>
@@ -152,11 +152,11 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
 
         {/* Outcomes */}
         {chapter.outcomes && chapter.outcomes.length > 0 && (
-          <div className="p-5 rounded-lg bg-[var(--color-bg-card)] border border-[var(--color-border)]">
+          <div className="p-5 rounded-lg bg-bg-card border border-border">
             <h3 className="font-bold mb-3">🎯 完成後你會：</h3>
             <ul className="space-y-1 text-sm">
               {chapter.outcomes.map((o, i) => (
-                <li key={i} className="flex gap-2"><span className="text-[var(--color-accent)]">✓</span>{o}</li>
+                <li key={i} className="flex gap-2"><span className="text-accent">✓</span>{o}</li>
               ))}
             </ul>
           </div>
@@ -190,11 +190,11 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
 
       {/* Summary */}
       {chapter.summary && chapter.summary.length > 0 && (
-        <section className="mt-12 p-6 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border)]">
+        <section className="mt-12 p-6 rounded-xl bg-bg-card border border-border">
           <h2 className="text-2xl font-bold mb-4">📚 章節總結</h2>
           <ul className="space-y-2 text-sm">
             {chapter.summary.map((s, i) => (
-              <li key={i} className="flex gap-2"><span className="text-[var(--color-accent)]">→</span>{s}</li>
+              <li key={i} className="flex gap-2"><span className="text-accent">→</span>{s}</li>
             ))}
           </ul>
         </section>
@@ -206,9 +206,9 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
           <h2 className="text-2xl font-bold mb-4">❓ 常見 FAQ</h2>
           <div className="space-y-2">
             {chapter.faq.map((f, i) => (
-              <details key={i} className="p-4 rounded-lg bg-[var(--color-bg-card)] border border-[var(--color-border)] cursor-pointer">
+              <details key={i} className="p-4 rounded-lg bg-bg-card border border-border cursor-pointer">
                 <summary className="font-semibold">{f.q}</summary>
-                <p className="mt-2 text-sm text-[var(--color-fg-muted)] leading-relaxed">{f.a}</p>
+                <p className="mt-2 text-sm text-fg-muted leading-relaxed">{f.a}</p>
               </details>
             ))}
           </div>
@@ -218,12 +218,12 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
       {/* Nav */}
       <nav className="mt-12 flex justify-between">
         {chapter.id > 1 ? (
-          <Link href={`/chapters/${chapter.id - 1}`} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--color-bg-card)] border border-[var(--color-border)] hover:border-[var(--color-accent)]">
+          <Link href={`/chapters/${chapter.id - 1}`} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-bg-card border border-border hover:border-accent">
             <ChevronLeft size={16} /> Ch {chapter.id - 1}
           </Link>
         ) : <div />}
         {chapter.id < 70 && (
-          <Link href={`/chapters/${chapter.id + 1}`} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--color-bg-card)] border border-[var(--color-border)] hover:border-[var(--color-accent)]">
+          <Link href={`/chapters/${chapter.id + 1}`} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-bg-card border border-border hover:border-accent">
             Ch {chapter.id + 1} <ChevronRight size={16} />
           </Link>
         )}

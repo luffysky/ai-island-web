@@ -37,7 +37,7 @@ export default async function CRMPage({ searchParams }: { searchParams: Promise<
         <FilterLink href="/admin/crm?status=open" active={params.status === "open"}>待處理</FilterLink>
         <FilterLink href="/admin/crm?status=pending" active={params.status === "pending"}>等回覆</FilterLink>
         <FilterLink href="/admin/crm?status=resolved" active={params.status === "resolved"}>已解決</FilterLink>
-        <div className="border-l border-[var(--color-border)] mx-1" />
+        <div className="border-l border-border mx-1" />
         <FilterLink href="/admin/crm?priority=urgent" active={params.priority === "urgent"}>🔥 緊急</FilterLink>
         <FilterLink href="/admin/crm?priority=high" active={params.priority === "high"}>高</FilterLink>
       </div>
@@ -45,9 +45,9 @@ export default async function CRMPage({ searchParams }: { searchParams: Promise<
       {error?.message?.includes("does not exist") ? (
         <SchemaNeeded />
       ) : (
-        <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl overflow-hidden">
+        <div className="bg-bg-card border border-border rounded-xl overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-[var(--color-bg-elevated)] text-left text-xs text-[var(--color-fg-muted)] uppercase">
+            <thead className="bg-bg-elevated text-left text-xs text-fg-muted uppercase">
               <tr>
                 <th className="px-4 py-3">主旨</th>
                 <th className="px-4 py-3">用戶</th>
@@ -59,20 +59,20 @@ export default async function CRMPage({ searchParams }: { searchParams: Promise<
             </thead>
             <tbody>
               {tickets?.length === 0 ? (
-                <tr><td colSpan={6} className="px-4 py-8 text-center text-[var(--color-fg-muted)]">沒有 ticket</td></tr>
+                <tr><td colSpan={6} className="px-4 py-8 text-center text-fg-muted">沒有 ticket</td></tr>
               ) : (
                 tickets?.map((t: any) => (
-                  <tr key={t.id} className="border-t border-[var(--color-border)] hover:bg-[var(--color-bg-elevated)]">
+                  <tr key={t.id} className="border-t border-border hover:bg-bg-elevated">
                     <td className="px-4 py-3">
-                      <Link href={`/admin/crm/${t.id}` as any} className="hover:text-[var(--color-accent)] font-medium">
+                      <Link href={`/admin/crm/${t.id}` as any} className="hover:text-accent font-medium">
                         {t.subject}
                       </Link>
                     </td>
-                    <td className="px-4 py-3 text-[var(--color-fg-muted)]">{t.profiles?.username ?? "—"}</td>
+                    <td className="px-4 py-3 text-fg-muted">{t.profiles?.username ?? "—"}</td>
                     <td className="px-4 py-3"><CategoryBadge cat={t.category} /></td>
                     <td className="px-4 py-3"><PriorityBadge p={t.priority} /></td>
                     <td className="px-4 py-3"><StatusBadge status={t.status} /></td>
-                    <td className="px-4 py-3 text-xs text-[var(--color-fg-muted)]">
+                    <td className="px-4 py-3 text-xs text-fg-muted">
                       {t.last_replied_at ? new Date(t.last_replied_at).toLocaleString('zh-TW') : "—"}
                     </td>
                   </tr>
@@ -88,7 +88,7 @@ export default async function CRMPage({ searchParams }: { searchParams: Promise<
 
 function FilterLink({ href, active, children }: { href: string; active?: boolean; children: React.ReactNode }) {
   return (
-    <Link href={(href.startsWith("/admin") ? href.replace(/^\/admin/, `/${process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2"}/admin`) : href) as any} className={`px-3 py-1.5 rounded-lg ${active ? "bg-[var(--color-accent)] text-black" : "bg-[var(--color-bg-card)] hover:bg-[var(--color-bg-elevated)]"}`}>
+    <Link href={(href.startsWith("/admin") ? href.replace(/^\/admin/, `/${process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2"}/admin`) : href) as any} className={`px-3 py-1.5 rounded-lg ${active ? "bg-accent text-black" : "bg-bg-card hover:bg-bg-elevated"}`}>
       {children}
     </Link>
   );
@@ -96,15 +96,15 @@ function FilterLink({ href, active, children }: { href: string; active?: boolean
 
 function Stat({ label, value, color }: { label: string; value: any; color: string }) {
   return (
-    <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-4">
-      <div className="text-xs text-[var(--color-fg-muted)]">{label}</div>
+    <div className="bg-bg-card border border-border rounded-xl p-4">
+      <div className="text-xs text-fg-muted">{label}</div>
       <div className={`text-2xl font-bold mt-1 ${color}`}>{value}</div>
     </div>
   );
 }
 
 function CategoryBadge({ cat }: { cat: string | null }) {
-  if (!cat) return <span className="text-[var(--color-fg-muted)] text-xs">—</span>;
+  if (!cat) return <span className="text-fg-muted text-xs">—</span>;
   const labels: Record<string, string> = { bug: "🐛 Bug", feature: "💡 功能", billing: "💰 帳務", content: "📚 內容", other: "其他" };
   return <span className="text-xs">{labels[cat] ?? cat}</span>;
 }
@@ -135,7 +135,7 @@ function SchemaNeeded() {
   return (
     <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-6 text-sm">
       <div className="font-bold mb-2">⚠️ 需要先跑 admin migration</div>
-      <code className="block bg-[var(--color-bg)] p-3 rounded text-xs">supabase/admin_migration.sql</code>
+      <code className="block bg-bg p-3 rounded text-xs">supabase/admin_migration.sql</code>
     </div>
   );
 }

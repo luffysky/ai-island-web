@@ -181,7 +181,7 @@ export function SideNav() {
       <button
         onClick={() => setOpen(true)}
         aria-label="開啟導覽"
-        className="fixed left-3 top-20 z-30 p-2 rounded-lg bg-[var(--color-bg-card)] border border-[var(--color-border)] hover:bg-[var(--color-bg-elevated)] transition shadow-lg lg:hidden"
+        className="fixed left-3 top-20 z-30 p-2 rounded-lg bg-bg-card border border-border hover:bg-bg-elevated transition shadow-lg lg:hidden"
       >
         <Menu size={18} />
       </button>
@@ -196,26 +196,26 @@ export function SideNav() {
 
       {/* Side panel */}
       <aside
-        className={`fixed top-0 left-0 h-screen overflow-hidden w-[85vw] max-w-sm z-50 bg-[var(--color-bg-card)] border-r border-[var(--color-border)] transform transition-transform duration-200 flex flex-col ${
+        className={`fixed top-0 left-0 h-screen overflow-hidden w-[85vw] max-w-sm z-50 bg-bg-card border-r border-border transform transition-transform duration-200 flex flex-col ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         {/* Header */}
-        <div className="flex flex-shrink-0 items-center justify-between p-3 border-b border-[var(--color-border)]">
+        <div className="flex flex-shrink-0 items-center justify-between p-3 border-b border-border">
           <div className="font-bold flex items-center gap-2">
             🏝️ <span>AI 島導覽</span>
           </div>
           <button
             onClick={() => setOpen(false)}
             aria-label="關閉"
-            className="p-1 rounded hover:bg-[var(--color-bg-elevated)]"
+            className="p-1 rounded hover:bg-bg-elevated"
           >
             <X size={18} />
           </button>
         </div>
 
         {/* Tabs */}
-        <div className="flex flex-shrink-0 overflow-x-auto border-b border-[var(--color-border)] text-xs">
+        <div className="flex flex-shrink-0 overflow-x-auto border-b border-border text-xs">
           {[
             { key: "chapters" as const, label: "章節", icon: BookOpen },
             { key: "bookmarks" as const, label: "收藏", icon: Bookmark },
@@ -227,8 +227,8 @@ export function SideNav() {
               onClick={() => setTab(key)}
               className={`min-w-[72px] flex-1 flex flex-col items-center gap-1 py-2 transition ${
                 tab === key
-                  ? "bg-[var(--color-bg-elevated)] border-b-2 border-[var(--color-accent)] text-[var(--color-accent)]"
-                  : "text-[var(--color-fg-muted)] hover:bg-[var(--color-bg-elevated)]"
+                  ? "bg-bg-elevated border-b-2 border-accent text-accent"
+                  : "text-fg-muted hover:bg-bg-elevated"
               }`}
             >
               <Icon size={14} />
@@ -240,15 +240,15 @@ export function SideNav() {
         {/* === Chapters Tab === */}
         {tab === "chapters" && (
           <>
-            <div className="p-2 border-b border-[var(--color-border)]">
+            <div className="p-2 border-b border-border">
               <div className="relative">
-                <Search size={14} className="absolute left-2 top-1/2 -translate-y-1/2 text-[var(--color-fg-muted)]" />
+                <Search size={14} className="absolute left-2 top-1/2 -translate-y-1/2 text-fg-muted" />
                 <input
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="搜尋章節 / lesson..."
-                  className="w-full pl-7 pr-2 py-1.5 text-sm bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded outline-none focus:border-[var(--color-accent)]"
+                  className="w-full pl-7 pr-2 py-1.5 text-sm bg-bg-elevated border border-border rounded outline-none focus:border-accent"
                 />
               </div>
             </div>
@@ -260,11 +260,11 @@ export function SideNav() {
                 const isCurrent = pathname?.includes(`/chapters/${ch.id}`);
 
                 return (
-                  <div key={ch.id} className="border-b border-[var(--color-border)]/30">
+                  <div key={ch.id} className="border-b border-border/30">
                     <button
                       onClick={() => toggleCh(ch.id)}
-                      className={`w-full flex items-center gap-2 px-3 py-2 hover:bg-[var(--color-bg-elevated)] transition text-left ${
-                        isCurrent ? "bg-[var(--color-bg-elevated)]" : ""
+                      className={`w-full flex items-center gap-2 px-3 py-2 hover:bg-bg-elevated transition text-left ${
+                        isCurrent ? "bg-bg-elevated" : ""
                       }`}
                     >
                       <div
@@ -275,11 +275,11 @@ export function SideNav() {
                         size={14}
                         className={`shrink-0 transition-transform ${isOpenCh ? "" : "-rotate-90"}`}
                       />
-                      <span className="text-xs text-[var(--color-fg-muted)] font-mono shrink-0">
+                      <span className="text-xs text-fg-muted font-mono shrink-0">
                         Ch{String(ch.id).padStart(2, "0")}
                       </span>
                       <span className="text-sm flex-1 truncate font-medium">{ch.title}</span>
-                      <span className="text-[10px] text-[var(--color-fg-muted)] shrink-0">
+                      <span className="text-[10px] text-fg-muted shrink-0">
                         {ch.lessons.length}
                       </span>
                     </button>
@@ -289,14 +289,14 @@ export function SideNav() {
                         const isOpenLs = expandedLs.has(l.id);
                         const hasOutline = l.outline && l.outline.length > 0;
                         return (
-                          <div key={l.id} className="bg-[var(--color-bg)]/40">
+                          <div key={l.id} className="bg-bg/40">
                             <div className="flex items-stretch">
                               <Link
                                 href={`/chapters/${ch.id}#lesson-${l.id}`}
                                 onClick={() => setOpen(false)}
-                                className="flex-1 flex items-center gap-2 px-3 py-1.5 pl-9 text-xs hover:bg-[var(--color-bg-elevated)] transition min-w-0"
+                                className="flex-1 flex items-center gap-2 px-3 py-1.5 pl-9 text-xs hover:bg-bg-elevated transition min-w-0"
                               >
-                                <span className="text-[var(--color-fg-muted)] font-mono shrink-0">
+                                <span className="text-fg-muted font-mono shrink-0">
                                   {l.number}
                                 </span>
                                 <span className="truncate">{l.title}</span>
@@ -305,7 +305,7 @@ export function SideNav() {
                                 <button
                                   onClick={() => toggleLs(l.id)}
                                   aria-label="展開大綱"
-                                  className="px-2 hover:bg-[var(--color-bg-elevated)] transition shrink-0"
+                                  className="px-2 hover:bg-bg-elevated transition shrink-0"
                                 >
                                   <ChevronDown
                                     size={12}
@@ -316,14 +316,14 @@ export function SideNav() {
                             </div>
 
                             {isOpenLs && hasOutline && (
-                              <ul className="pl-14 pr-3 py-1 bg-[var(--color-bg)]/60 space-y-0.5">
+                              <ul className="pl-14 pr-3 py-1 bg-bg/60 space-y-0.5">
                                 {l.outline!.map((item, i) => (
                                   <li
                                     key={i}
                                     className={`text-[11px] py-0.5 truncate ${
                                       item.level >= 3
-                                        ? "text-[var(--color-fg-muted)] pl-3"
-                                        : "text-[var(--color-fg)]"
+                                        ? "text-fg-muted pl-3"
+                                        : "text-fg"
                                     }`}
                                   >
                                     {item.level === 2 ? "▸ " : "・"}
@@ -356,11 +356,11 @@ export function SideNav() {
                     <Link
                       href={`/chapters/${b.chapter_id}#lesson-${b.lesson_id}`}
                       onClick={() => setOpen(false)}
-                      className="block px-3 py-2 text-sm hover:bg-[var(--color-bg-elevated)] rounded transition"
+                      className="block px-3 py-2 text-sm hover:bg-bg-elevated rounded transition"
                     >
                       <div className="flex items-center gap-2">
-                        <Star size={12} className="text-[var(--color-warning)] shrink-0" fill="currentColor" />
-                        <span className="text-xs text-[var(--color-fg-muted)] font-mono shrink-0">
+                        <Star size={12} className="text-warning shrink-0" fill="currentColor" />
+                        <span className="text-xs text-fg-muted font-mono shrink-0">
                           {b.lesson_id}
                         </span>
                       </div>
@@ -382,27 +382,27 @@ export function SideNav() {
               <div className="space-y-2">
                 <button
                   onClick={() => setNoteDraftOpen((value) => !value)}
-                  className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm hover:bg-[var(--color-bg-elevated)]"
+                  className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm hover:bg-bg-elevated"
                 >
                   <Plus size={14} />
                   新增筆記
                 </button>
 
                 {noteDraftOpen && (
-                  <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] p-2">
+                  <div className="rounded-lg border border-border bg-bg p-2">
                     <textarea
                       value={noteDraft}
                       onChange={(e) => setNoteDraft(e.target.value)}
                       rows={4}
                       placeholder="寫一則自由筆記..."
-                      className="w-full resize-none rounded border border-[var(--color-border)] bg-[var(--color-bg-elevated)] p-2 text-sm outline-none focus:border-[var(--color-accent)]"
+                      className="w-full resize-none rounded border border-border bg-bg-elevated p-2 text-sm outline-none focus:border-accent"
                     />
                     <div className="mt-2 flex items-center justify-between">
-                      <span className="text-[10px] text-[var(--color-fg-muted)]">{noteDraft.length} 字</span>
+                      <span className="text-[10px] text-fg-muted">{noteDraft.length} 字</span>
                       <button
                         onClick={saveNote}
                         disabled={!noteDraft.trim() || savingNote}
-                        className="rounded bg-[var(--color-accent)] px-3 py-1 text-xs font-semibold text-black disabled:opacity-50"
+                        className="rounded bg-accent px-3 py-1 text-xs font-semibold text-black disabled:opacity-50"
                       >
                         {savingNote ? "儲存中..." : "儲存"}
                       </button>
@@ -419,23 +419,23 @@ export function SideNav() {
                       return (
                         <li
                           key={n.id}
-                          className="rounded px-3 py-2 hover:bg-[var(--color-bg-elevated)] transition"
+                          className="rounded px-3 py-2 hover:bg-bg-elevated transition"
                         >
                           <div className="mb-1 flex items-center justify-between gap-2">
                             {isFreeNote ? (
-                              <div className="text-xs text-[var(--color-fg-muted)]">自由筆記</div>
+                              <div className="text-xs text-fg-muted">自由筆記</div>
                             ) : (
                               <Link
                                 href={`/chapters/${n.chapter_id}#lesson-${n.lesson_id}`}
                                 onClick={() => setOpen(false)}
-                                className="text-xs text-[var(--color-fg-muted)] font-mono hover:text-[var(--color-accent)]"
+                                className="text-xs text-fg-muted font-mono hover:text-accent"
                               >
                                 {n.lesson_id}
                               </Link>
                             )}
                             <button
                               onClick={() => deleteNote(n.id)}
-                              className="rounded p-1 text-[var(--color-fg-muted)] hover:bg-red-500/10 hover:text-red-300"
+                              className="rounded p-1 text-fg-muted hover:bg-red-500/10 hover:text-red-300"
                               aria-label="刪除筆記"
                             >
                               <Trash2 size={12} />
@@ -466,13 +466,13 @@ export function SideNav() {
                 {history.map((h) => (
                   <li
                     key={h.id}
-                    className="px-3 py-2 text-xs border-l-2 border-[var(--color-accent)]/30"
+                    className="px-3 py-2 text-xs border-l-2 border-accent/30"
                   >
-                    <div className="text-[var(--color-fg-muted)]">
+                    <div className="text-fg-muted">
                       {h.event_type}
                     </div>
                     <div className="font-mono">{h.lesson_id ?? `Ch${h.chapter_id}`}</div>
-                    <div className="text-[10px] text-[var(--color-fg-muted)] mt-1">
+                    <div className="text-[10px] text-fg-muted mt-1">
                       {new Date(h.created_at).toLocaleString("zh-TW", { hour12: false })}
                     </div>
                   </li>
@@ -483,7 +483,7 @@ export function SideNav() {
         )}
 
         {/* Footer */}
-        <div className="flex-shrink-0 p-2 border-t border-[var(--color-border)] text-[10px] text-[var(--color-fg-muted)] text-center">
+        <div className="flex-shrink-0 p-2 border-t border-border text-[10px] text-fg-muted text-center">
           🐹 招財 Z-coin 守護
         </div>
       </aside>
@@ -493,7 +493,7 @@ export function SideNav() {
 
 function EmptyHint({ icon: Icon, message }: { icon: any; message: string }) {
   return (
-    <div className="flex flex-col items-center justify-center py-12 text-[var(--color-fg-muted)]">
+    <div className="flex flex-col items-center justify-center py-12 text-fg-muted">
       <Icon size={32} className="mb-3 opacity-50" />
       <p className="text-sm text-center">{message}</p>
     </div>

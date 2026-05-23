@@ -22,7 +22,7 @@ export default async function BreachPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold">🚨 個資外洩通報管理</h1>
-          <p className="text-sm text-[var(--color-fg-muted)] mt-1">
+          <p className="text-sm text-fg-muted mt-1">
             依個資法、發現外洩 72 小時內必須通報主管機關並通知當事人
           </p>
         </div>
@@ -48,7 +48,7 @@ export default async function BreachPage() {
       <section className="mb-8">
         <h2 className="text-lg font-bold mb-3">進行中的事件</h2>
         {!incidents || incidents.length === 0 ? (
-          <div className="p-8 text-center text-[var(--color-fg-muted)] bg-[var(--color-bg-card)] rounded-lg border border-[var(--color-border)]">
+          <div className="p-8 text-center text-fg-muted bg-bg-card rounded-lg border border-border">
             ✅ 目前沒有未處理的外洩事件
           </div>
         ) : (
@@ -56,10 +56,10 @@ export default async function BreachPage() {
             {incidents.map((inc: any) => (
               <div
                 key={inc.id}
-                className={`p-4 rounded-lg border-2 bg-[var(--color-bg-card)] ${
+                className={`p-4 rounded-lg border-2 bg-bg-card ${
                   inc.time_status === "overdue" ? "border-red-500" :
                   inc.time_status === "urgent" ? "border-yellow-500" :
-                  "border-[var(--color-border)]"
+                  "border-border"
                 }`}
               >
                 <div className="flex items-start justify-between">
@@ -73,7 +73,7 @@ export default async function BreachPage() {
                       }`}>
                         {inc.severity.toUpperCase()}
                       </span>
-                      <span className="text-xs text-[var(--color-fg-muted)]">
+                      <span className="text-xs text-fg-muted">
                         #{inc.id} · {inc.incident_type}
                       </span>
                       {inc.time_status === "overdue" && (
@@ -88,7 +88,7 @@ export default async function BreachPage() {
                       )}
                     </div>
                     <p className="text-sm mb-2">{inc.description}</p>
-                    <div className="text-xs text-[var(--color-fg-muted)] flex gap-4">
+                    <div className="text-xs text-fg-muted flex gap-4">
                       <span>發現於：{new Date(inc.discovered_at).toLocaleString("zh-TW")}</span>
                       <span>影響 {inc.affected_user_count ?? "?"} 用戶</span>
                       <span>已過 {Math.floor(inc.hours_since_discovered)} 小時</span>
@@ -96,7 +96,7 @@ export default async function BreachPage() {
                   </div>
                   <Link
                     href={`./breach/${inc.id}` as any}
-                    className="text-[var(--color-accent)] text-sm hover:underline shrink-0"
+                    className="text-accent text-sm hover:underline shrink-0"
                   >
                     處理 →
                   </Link>
@@ -108,7 +108,7 @@ export default async function BreachPage() {
       </section>
 
       {/* SOP 速查 */}
-      <section className="p-5 rounded-lg bg-[var(--color-bg-card)] border border-[var(--color-border)]">
+      <section className="p-5 rounded-lg bg-bg-card border border-border">
         <h2 className="text-lg font-bold mb-3">📋 外洩應變 SOP</h2>
         <ol className="space-y-2 text-sm">
           <li><strong>1. 圍堵（0-1 小時）</strong>：立即停止資料外流、修補漏洞</li>
@@ -117,8 +117,8 @@ export default async function BreachPage() {
           <li><strong>4. 通知當事人（72 小時內）</strong>：Email + 站內通知、說明：發生什麼、影響為何、如何補救</li>
           <li><strong>5. 後續</strong>：根本原因分析、補救措施、強化監控</li>
         </ol>
-        <div className="mt-4 pt-4 border-t border-[var(--color-border)] text-xs">
-          <p className="text-[var(--color-fg-muted)]">
+        <div className="mt-4 pt-4 border-t border-border text-xs">
+          <p className="text-fg-muted">
             <strong>主管機關</strong>：個人資料保護委員會（pdpc.gov.tw）·
             電話：02-3356-8015
           </p>

@@ -48,7 +48,7 @@ export function ThreadReactionBar({ threadId }: { threadId: string }) {
   };
 
   return (
-    <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-[var(--color-border)]">
+    <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-border">
       {EMOJIS.map((emoji) => {
         const count = counts[emoji] ?? 0;
         const active = mine.has(emoji);
@@ -58,8 +58,8 @@ export function ThreadReactionBar({ threadId }: { threadId: string }) {
             onClick={() => toggle(emoji)}
             className={`px-2.5 py-1 rounded-full border text-sm transition flex items-center gap-1 ${
               active
-                ? "border-[var(--color-accent)] bg-[var(--color-accent)]/15"
-                : "border-[var(--color-border)] bg-[var(--color-bg)] hover:border-[var(--color-accent)]"
+                ? "border-accent bg-accent/15"
+                : "border-border bg-bg hover:border-accent"
             }`}
           >
             <span>{emoji}</span>

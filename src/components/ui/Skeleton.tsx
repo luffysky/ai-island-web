@@ -23,7 +23,7 @@ export function Skeleton({
   };
   return (
     <div
-      className={`bg-[var(--color-bg-card)] ${roundedMap[rounded]} animate-pulse ${className}`}
+      className={`bg-bg-card ${roundedMap[rounded]} animate-pulse ${className}`}
       style={{ width, height, ...style }}
     />
   );
@@ -45,7 +45,7 @@ export function SkeletonText({ lines = 1, className = "" }: { lines?: number; cl
 
 export function SkeletonCard({ className = "" }: { className?: string }) {
   return (
-    <div className={`rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-card)] p-4 ${className}`}>
+    <div className={`rounded-xl border border-border bg-bg-card p-4 ${className}`}>
       <div className="flex items-center gap-3 mb-3">
         <Skeleton width={40} height={40} rounded="full" />
         <div className="flex-1 space-y-2">

@@ -82,14 +82,14 @@ export function AIKeysClient({ initialKeys }: { initialKeys: UserKey[] }) {
     <div className="space-y-4">
       {/* 現有 keys */}
       {keys.length > 0 && (
-        <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl divide-y divide-[var(--color-border)]">
+        <div className="bg-bg-card border border-border rounded-xl divide-y divide-border">
           {keys.map((k) => {
             const meta = PROVIDERS.find((p) => p.value === k.provider);
             return (
               <div key={k.id} className="flex items-center justify-between p-4">
                 <div>
                   <div className="font-semibold">{meta?.label ?? k.provider}</div>
-                  <div className="text-xs text-[var(--color-fg-muted)]">
+                  <div className="text-xs text-fg-muted">
                     {k.label} · 建立於 {new Date(k.created_at).toLocaleDateString("zh-TW")}
                     {k.last_used_at && ` · 最後使用 ${new Date(k.last_used_at).toLocaleDateString("zh-TW")}`}
                   </div>
@@ -110,18 +110,18 @@ export function AIKeysClient({ initialKeys }: { initialKeys: UserKey[] }) {
       {!adding ? (
         <button
           onClick={() => setAdding(true)}
-          className="w-full p-4 border border-dashed border-[var(--color-border)] rounded-xl hover:border-[var(--color-accent)] hover:bg-[var(--color-bg-card)] transition flex items-center justify-center gap-2 text-sm"
+          className="w-full p-4 border border-dashed border-border rounded-xl hover:border-accent hover:bg-bg-card transition flex items-center justify-center gap-2 text-sm"
         >
           <Plus size={16} /> 新增 API Key
         </button>
       ) : (
-        <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-4 space-y-3">
+        <div className="bg-bg-card border border-border rounded-xl p-4 space-y-3">
           <div>
-            <label className="text-xs text-[var(--color-fg-muted)] mb-1 block">Provider</label>
+            <label className="text-xs text-fg-muted mb-1 block">Provider</label>
             <select
               value={provider}
               onChange={(e) => setProvider(e.target.value)}
-              className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded p-2 text-sm"
+              className="w-full bg-bg border border-border rounded p-2 text-sm"
             >
               {PROVIDERS.map((p) => (
                 <option key={p.value} value={p.value}>{p.label}</option>
@@ -131,31 +131,31 @@ export function AIKeysClient({ initialKeys }: { initialKeys: UserKey[] }) {
               href={PROVIDERS.find((p) => p.value === provider)?.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs text-[var(--color-accent)] hover:underline mt-1 inline-flex items-center gap-1"
+              className="text-xs text-accent hover:underline mt-1 inline-flex items-center gap-1"
             >
               <ExternalLink size={12} /> 取得 {provider} API key
             </a>
           </div>
 
           <div>
-            <label className="text-xs text-[var(--color-fg-muted)] mb-1 block">API Key</label>
+            <label className="text-xs text-fg-muted mb-1 block">API Key</label>
             <input
               type="password"
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
               placeholder="sk-... / sk-ant-... / etc"
-              className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded p-2 text-sm font-mono"
+              className="w-full bg-bg border border-border rounded p-2 text-sm font-mono"
             />
           </div>
 
           <div>
-            <label className="text-xs text-[var(--color-fg-muted)] mb-1 block">標籤（選填）</label>
+            <label className="text-xs text-fg-muted mb-1 block">標籤（選填）</label>
             <input
               type="text"
               value={label}
               onChange={(e) => setLabel(e.target.value)}
               placeholder="例：個人 Claude key"
-              className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded p-2 text-sm"
+              className="w-full bg-bg border border-border rounded p-2 text-sm"
             />
           </div>
 
@@ -165,25 +165,25 @@ export function AIKeysClient({ initialKeys }: { initialKeys: UserKey[] }) {
             <button
               onClick={save}
               disabled={saving || !apiKey}
-              className="px-4 py-2 bg-[var(--color-accent)] text-black rounded font-semibold disabled:opacity-50"
+              className="px-4 py-2 bg-accent text-black rounded font-semibold disabled:opacity-50"
             >
               {saving ? "儲存中..." : "儲存"}
             </button>
             <button
               onClick={() => { setAdding(false); setApiKey(""); setLabel(""); setError(""); }}
-              className="px-4 py-2 border border-[var(--color-border)] rounded text-sm"
+              className="px-4 py-2 border border-border rounded text-sm"
             >
               取消
             </button>
           </div>
 
-          <p className="text-xs text-[var(--color-fg-muted)]">
+          <p className="text-xs text-fg-muted">
             🔒 你的 key 用 AES-256-GCM 加密、僅在你要求 AI 對話時解密、不會被其他人看到。
           </p>
         </div>
       )}
 
-      <Link href="/settings" className="block text-sm text-[var(--color-fg-muted)] hover:text-[var(--color-accent)]">
+      <Link href="/settings" className="block text-sm text-fg-muted hover:text-accent">
         ← 回設定
       </Link>
     </div>

@@ -93,7 +93,7 @@ export default async function LearningEventsPage({
     return (
       <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-6 text-sm">
         <div className="font-bold mb-2">⚠️ learning_events table 不存在</div>
-        <p className="text-xs text-[var(--color-fg-muted)]">需先建表（schema.sql 應有）</p>
+        <p className="text-xs text-fg-muted">需先建表（schema.sql 應有）</p>
       </div>
     );
   }
@@ -103,27 +103,27 @@ export default async function LearningEventsPage({
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div>
           <h2 className="text-xl font-bold">📊 學習行為事件</h2>
-          <p className="text-xs text-[var(--color-fg-muted)] mt-0.5">
+          <p className="text-xs text-fg-muted mt-0.5">
             站內 lesson 完成 / quiz 嘗試 / 章節進入 等行為的原始 event 流
           </p>
         </div>
-        <div className="text-xs text-[var(--color-fg-muted)]">
+        <div className="text-xs text-fg-muted">
           匹配 {(count ?? 0).toLocaleString()} 筆 · 第 {page}/{totalPages} 頁
         </div>
       </div>
 
-      <form action={adminHref("/admin/analytics/learning-events")} className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-3 flex flex-wrap items-center gap-2">
-        <input type="date" name="from" defaultValue={from} className="bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg px-2 py-1 text-xs" />
-        <span className="text-[var(--color-fg-muted)]">→</span>
-        <input type="date" name="to" defaultValue={to} className="bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg px-2 py-1 text-xs" />
-        <select name="event_type" defaultValue={eventType} className="bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg px-2 py-1 text-xs">
+      <form action={adminHref("/admin/analytics/learning-events")} className="bg-bg-card border border-border rounded-xl p-3 flex flex-wrap items-center gap-2">
+        <input type="date" name="from" defaultValue={from} className="bg-bg border border-border rounded-lg px-2 py-1 text-xs" />
+        <span className="text-fg-muted">→</span>
+        <input type="date" name="to" defaultValue={to} className="bg-bg border border-border rounded-lg px-2 py-1 text-xs" />
+        <select name="event_type" defaultValue={eventType} className="bg-bg border border-border rounded-lg px-2 py-1 text-xs">
           <option value="all">所有事件</option>
           {distinctTypes.map((t) => <option key={t} value={t}>{t}</option>)}
         </select>
-        <input type="text" name="chapter_id" defaultValue={chapterId === "all" ? "" : chapterId} placeholder="章節 id" className="w-20 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg px-2 py-1 text-xs" />
-        <input type="text" name="user" defaultValue={userSearch} placeholder="user (username)" className="bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg px-2 py-1 text-xs" />
-        <button type="submit" className="px-3 py-1 text-xs bg-[var(--color-accent)] text-black font-bold rounded-lg">套用</button>
-        <a href={`/api/admin/learning-events/export?${exportParams.toString()}`} className="px-3 py-1 text-xs border border-[var(--color-border)] rounded-lg hover:bg-[var(--color-bg-elevated)]">
+        <input type="text" name="chapter_id" defaultValue={chapterId === "all" ? "" : chapterId} placeholder="章節 id" className="w-20 bg-bg border border-border rounded-lg px-2 py-1 text-xs" />
+        <input type="text" name="user" defaultValue={userSearch} placeholder="user (username)" className="bg-bg border border-border rounded-lg px-2 py-1 text-xs" />
+        <button type="submit" className="px-3 py-1 text-xs bg-accent text-black font-bold rounded-lg">套用</button>
+        <a href={`/api/admin/learning-events/export?${exportParams.toString()}`} className="px-3 py-1 text-xs border border-border rounded-lg hover:bg-bg-elevated">
           ⬇ 匯出 CSV
         </a>
       </form>
@@ -132,9 +132,9 @@ export default async function LearningEventsPage({
         <div className="text-xs text-orange-500">找不到使用者「{userSearch}」、列出未過濾結果</div>
       )}
 
-      <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl overflow-hidden">
+      <div className="bg-bg-card border border-border rounded-xl overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-[var(--color-bg-elevated)] text-left text-xs text-[var(--color-fg-muted)] uppercase">
+          <thead className="bg-bg-elevated text-left text-xs text-fg-muted uppercase">
             <tr>
               <th className="px-4 py-3">時間</th>
               <th className="px-4 py-3">使用者</th>
@@ -147,7 +147,7 @@ export default async function LearningEventsPage({
           <tbody>
             {events?.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-4 py-12 text-center text-[var(--color-fg-muted)]">
+                <td colSpan={6} className="px-4 py-12 text-center text-fg-muted">
                   目前條件下沒有事件
                 </td>
               </tr>
@@ -155,13 +155,13 @@ export default async function LearningEventsPage({
               events?.map((e: any) => {
                 const u = userMap.get(e.user_id);
                 return (
-                  <tr key={e.id} className="border-t border-[var(--color-border)] hover:bg-[var(--color-bg-elevated)]">
-                    <td className="px-4 py-2 text-xs text-[var(--color-fg-muted)] whitespace-nowrap">
+                  <tr key={e.id} className="border-t border-border hover:bg-bg-elevated">
+                    <td className="px-4 py-2 text-xs text-fg-muted whitespace-nowrap">
                       {new Date(e.created_at).toLocaleString("zh-TW")}
                     </td>
                     <td className="px-4 py-2 text-xs">
                       {u ? (
-                        <Link href={adminHref(`/admin/users/${e.user_id}`) as any} className="hover:text-[var(--color-accent)]">
+                        <Link href={adminHref(`/admin/users/${e.user_id}`) as any} className="hover:text-accent">
                           {u.display_name || u.username}
                         </Link>
                       ) : (
@@ -169,11 +169,11 @@ export default async function LearningEventsPage({
                       )}
                     </td>
                     <td className="px-4 py-2">
-                      <span className="font-mono text-xs px-2 py-0.5 rounded bg-[var(--color-bg-elevated)]">{e.event_type}</span>
+                      <span className="font-mono text-xs px-2 py-0.5 rounded bg-bg-elevated">{e.event_type}</span>
                     </td>
                     <td className="px-4 py-2 text-xs">{e.chapter_id != null ? `Ch ${String(e.chapter_id).padStart(2, "0")}` : "—"}</td>
                     <td className="px-4 py-2 text-xs">{e.lesson_id ?? "—"}</td>
-                    <td className="px-4 py-2 text-[10px] text-[var(--color-fg-muted)] max-w-xs">
+                    <td className="px-4 py-2 text-[10px] text-fg-muted max-w-xs">
                       {e.metadata && (
                         <code className="block truncate" title={JSON.stringify(e.metadata)}>
                           {JSON.stringify(e.metadata).slice(0, 60)}
@@ -190,11 +190,11 @@ export default async function LearningEventsPage({
 
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-2 text-sm">
-          <Link href={page > 1 ? (buildHref({ page: String(page - 1) }) as any) : "#"} className={`px-3 py-1.5 rounded-lg border border-[var(--color-border)] ${page <= 1 ? "opacity-40 pointer-events-none" : "hover:bg-[var(--color-bg-elevated)]"}`}>
+          <Link href={page > 1 ? (buildHref({ page: String(page - 1) }) as any) : "#"} className={`px-3 py-1.5 rounded-lg border border-border ${page <= 1 ? "opacity-40 pointer-events-none" : "hover:bg-bg-elevated"}`}>
             ← 上一頁
           </Link>
-          <span className="text-xs text-[var(--color-fg-muted)] px-3">{page} / {totalPages}</span>
-          <Link href={page < totalPages ? (buildHref({ page: String(page + 1) }) as any) : "#"} className={`px-3 py-1.5 rounded-lg border border-[var(--color-border)] ${page >= totalPages ? "opacity-40 pointer-events-none" : "hover:bg-[var(--color-bg-elevated)]"}`}>
+          <span className="text-xs text-fg-muted px-3">{page} / {totalPages}</span>
+          <Link href={page < totalPages ? (buildHref({ page: String(page + 1) }) as any) : "#"} className={`px-3 py-1.5 rounded-lg border border-border ${page >= totalPages ? "opacity-40 pointer-events-none" : "hover:bg-bg-elevated"}`}>
             下一頁 →
           </Link>
         </div>

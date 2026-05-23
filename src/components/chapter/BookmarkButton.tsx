@@ -78,12 +78,12 @@ export function BookmarkButton({
   return (
     <button
       onClick={toggle}
-      className="p-1.5 hover:bg-[var(--color-bg-elevated)] rounded transition active:scale-90"
+      className="p-1.5 hover:bg-bg-elevated rounded transition active:scale-90"
       title={bookmarked ? "取消書籤" : "加入書籤"}
     >
       {bookmarked
         ? <BookmarkCheck size={16} className="text-yellow-400 fill-yellow-400" />
-        : <Bookmark size={16} className="text-[var(--color-fg-muted)]" />}
+        : <Bookmark size={16} className="text-fg-muted" />}
     </button>
   );
 }

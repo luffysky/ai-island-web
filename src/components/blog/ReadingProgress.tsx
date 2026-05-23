@@ -31,7 +31,7 @@ export function ReadingProgress() {
       className="fixed top-0 left-0 right-0 h-0.5 z-50 bg-transparent pointer-events-none"
     >
       <div
-        className="h-full bg-gradient-to-r from-[var(--color-accent)] to-[var(--color-accent-2)] transition-[width] duration-100"
+        className="h-full bg-gradient-to-r from-accent to-accent-2 transition-[width] duration-100"
         style={{ width: `${pct}%` }}
       />
     </div>

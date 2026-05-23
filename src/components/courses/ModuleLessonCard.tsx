@@ -19,12 +19,12 @@ export function ModuleLessonCard({ module, index, colorClass, accentHex }: Modul
   const hasContent = !!module.lessonContent;
 
   return (
-    <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-card)] overflow-hidden">
+    <div className="rounded-xl border border-border bg-bg-card overflow-hidden">
       {/* Header - 可點擊展開 */}
       <button
         onClick={() => hasContent && setOpen((v) => !v)}
         className={`w-full flex items-start gap-4 p-5 text-left ${
-          hasContent ? "hover:bg-[var(--color-bg-elevated)] cursor-pointer" : "cursor-default"
+          hasContent ? "hover:bg-bg-elevated cursor-pointer" : "cursor-default"
         } transition`}
       >
         <div
@@ -36,14 +36,14 @@ export function ModuleLessonCard({ module, index, colorClass, accentHex }: Modul
           <h3 className="font-bold mb-1 flex items-center gap-2">
             {module.title}
           </h3>
-          <p className="text-sm text-[var(--color-fg-muted)] leading-relaxed mb-2">
+          <p className="text-sm text-fg-muted leading-relaxed mb-2">
             {module.desc}
           </p>
           <div className="flex flex-wrap gap-1">
             {module.skills.map((s) => (
               <span
                 key={s}
-                className="text-[10px] px-2 py-0.5 rounded-full bg-[var(--color-bg-elevated)] text-[var(--color-fg-muted)]"
+                className="text-[10px] px-2 py-0.5 rounded-full bg-bg-elevated text-fg-muted"
               >
                 {s}
               </span>
@@ -57,13 +57,13 @@ export function ModuleLessonCard({ module, index, colorClass, accentHex }: Modul
             style={{ color: accentHex }}
           />
         ) : (
-          <Lock size={14} className="shrink-0 mt-1.5 text-[var(--color-fg-muted)]" />
+          <Lock size={14} className="shrink-0 mt-1.5 text-fg-muted" />
         )}
       </button>
 
       {/* 展開的教學內文 */}
       {open && hasContent && (
-        <div className="border-t border-[var(--color-border)] p-5 sm:p-6 min-w-0 overflow-hidden">
+        <div className="border-t border-border p-5 sm:p-6 min-w-0 overflow-hidden">
           <div className="prose-custom max-w-full overflow-hidden">
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
@@ -77,7 +77,7 @@ export function ModuleLessonCard({ module, index, colorClass, accentHex }: Modul
                   if (isInline) {
                     return (
                       <code
-                        className="px-1.5 py-0.5 rounded bg-[var(--color-bg-elevated)] text-[var(--color-accent)] text-[0.9em] font-mono"
+                        className="px-1.5 py-0.5 rounded bg-bg-elevated text-accent text-[0.9em] font-mono"
                         {...props}
                       >
                         {children}
@@ -108,10 +108,10 @@ export function ModuleLessonCard({ module, index, colorClass, accentHex }: Modul
               </div>
               <p className="text-sm leading-relaxed mb-3">{module.practice.task}</p>
               <details className="text-sm">
-                <summary className="cursor-pointer text-[var(--color-fg-muted)] hover:text-[var(--color-fg)]">
+                <summary className="cursor-pointer text-fg-muted hover:text-fg">
                   💡 看提示
                 </summary>
-                <p className="mt-2 text-[var(--color-fg-muted)] leading-relaxed">
+                <p className="mt-2 text-fg-muted leading-relaxed">
                   {module.practice.hint}
                 </p>
               </details>

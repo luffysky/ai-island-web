@@ -35,7 +35,7 @@ export default function Loading() {
       <Skeleton height={18} width="20%" className="mb-3" />
       <div className="space-y-3">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-card)] p-3">
+          <div key={i} className="rounded-lg border border-border bg-bg-card p-3">
             <div className="flex items-center gap-2 mb-2">
               <Skeleton width={28} height={28} rounded="full" />
               <Skeleton height={10} width={100} />

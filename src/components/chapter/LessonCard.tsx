@@ -56,40 +56,40 @@ export function LessonCard({
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: Math.min(index * 0.05, 0.3) }}
       viewport={{ once: true }}
-      className={`relative rounded-xl border ${completed ? "border-[var(--color-accent)]/40 bg-[var(--color-accent)]/5" : "border-[var(--color-border)] bg-[var(--color-bg-card)]"} p-4 sm:p-6 min-w-0 overflow-hidden`}
+      className={`relative rounded-xl border ${completed ? "border-accent/40 bg-accent/5" : "border-border bg-bg-card"} p-4 sm:p-6 min-w-0 overflow-hidden`}
     >
       <header className="flex items-start justify-between mb-3">
         <div>
-          <div className="text-xs text-[var(--color-fg-muted)] mb-1">{lesson.number}</div>
+          <div className="text-xs text-fg-muted mb-1">{lesson.number}</div>
           <h3 className="text-xl font-bold">{lesson.title}</h3>
         </div>
         <div className="flex items-center gap-1 relative">
-          <span className="text-xs px-2 py-1 rounded bg-[var(--color-bg-elevated)] text-[var(--color-warning)] mr-1">+{lesson.xp} XP</span>
+          <span className="text-xs px-2 py-1 rounded bg-bg-elevated text-warning mr-1">+{lesson.xp} XP</span>
           <BookmarkButton lessonId={lesson.id} chapterId={chapterId} lessonTitle={lesson.title} isLoggedIn={isLoggedIn} />
           <NotePanel lessonId={lesson.id} chapterId={chapterId} isLoggedIn={isLoggedIn} />
-          {completed && <span className="w-7 h-7 rounded-full bg-[var(--color-accent)] flex items-center justify-center ml-1"><Check size={16} className="text-black" /></span>}
+          {completed && <span className="w-7 h-7 rounded-full bg-accent flex items-center justify-center ml-1"><Check size={16} className="text-black" /></span>}
         </div>
       </header>
 
       {/* Simple intro */}
       {lesson.oneLineSummary && (
-        <div className="bg-[var(--color-bg-elevated)] p-4 rounded-lg mb-4">
+        <div className="bg-bg-elevated p-4 rounded-lg mb-4">
           <p className="text-base mb-2 leading-relaxed">{lesson.oneLineSummary}</p>
-          {lesson.analogy && <p className="text-sm text-[var(--color-fg-muted)] leading-relaxed">{lesson.analogy}</p>}
+          {lesson.analogy && <p className="text-sm text-fg-muted leading-relaxed">{lesson.analogy}</p>}
         </div>
       )}
 
       {/* Outline 大綱 */}
       {outline.length > 0 && (
-        <div className="bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-lg p-3 mb-4">
-          <div className="text-xs text-[var(--color-fg-muted)] mb-2 flex items-center gap-1.5">
+        <div className="bg-bg-elevated border border-border rounded-lg p-3 mb-4">
+          <div className="text-xs text-fg-muted mb-2 flex items-center gap-1.5">
             <List size={12} /> 本節大綱（{outline.length} 個重點）
           </div>
           <ul className="space-y-1 text-sm">
             {outline.map((item, i) => (
               <li
                 key={i}
-                className={item.level >= 3 ? "ml-3 text-[var(--color-fg-muted)]" : "font-medium"}
+                className={item.level >= 3 ? "ml-3 text-fg-muted" : "font-medium"}
               >
                 {item.level === 2 ? "▸ " : "・"}{item.text}
               </li>
@@ -103,7 +103,7 @@ export function LessonCard({
         <>
           <button
             onClick={() => setExpanded(!expanded)}
-            className="text-sm text-[var(--color-accent)] hover:underline mb-3 inline-flex items-center gap-1"
+            className="text-sm text-accent hover:underline mb-3 inline-flex items-center gap-1"
           >
             {expanded ? "▲ 收起完整說明" : "▼ 展開完整說明"}
           </button>
@@ -126,7 +126,7 @@ export function LessonCard({
                     if (isInline) {
                       return (
                         <code
-                          className="px-1.5 py-0.5 rounded bg-[var(--color-bg-elevated)] text-[var(--color-accent)] text-[0.9em] font-mono"
+                          className="px-1.5 py-0.5 rounded bg-bg-elevated text-accent text-[0.9em] font-mono"
                           {...props}
                         >
                           {children}
@@ -165,7 +165,7 @@ export function LessonCard({
           )}
         </>
       ) : (
-        <div className="flex items-center gap-2 text-sm text-[var(--color-fg-muted)] my-4">
+        <div className="flex items-center gap-2 text-sm text-fg-muted my-4">
           <Lock size={14} /> 完整內容撰寫中
         </div>
       )}
@@ -215,17 +215,17 @@ export function LessonCard({
 
       {/* Exercise */}
       {lesson.exercise && (
-        <div className="border-t border-[var(--color-border)] mt-4 pt-4">
+        <div className="border-t border-border mt-4 pt-4">
           <div className="text-sm font-semibold mb-2 flex items-center gap-2">
             ✏️ <span>動手練習</span>
           </div>
           <p className="text-sm mb-2">{lesson.exercise.question}</p>
           {lesson.exercise.hint && (
-            <p className="text-xs text-[var(--color-fg-muted)] mb-2">💡 提示：{lesson.exercise.hint}</p>
+            <p className="text-xs text-fg-muted mb-2">💡 提示：{lesson.exercise.hint}</p>
           )}
           <details className="text-xs">
-            <summary className="cursor-pointer text-[var(--color-accent)]">查看建議解答</summary>
-            <p className="mt-2 text-[var(--color-fg-muted)] leading-relaxed">{lesson.exercise.answer}</p>
+            <summary className="cursor-pointer text-accent">查看建議解答</summary>
+            <p className="mt-2 text-fg-muted leading-relaxed">{lesson.exercise.answer}</p>
           </details>
         </div>
       )}
@@ -234,7 +234,7 @@ export function LessonCard({
       {isLoggedIn && !completed && (
         <button
           onClick={() => onComplete(lesson.id, lesson.xp)}
-          className="mt-4 w-full px-4 py-2 bg-[var(--color-accent)] text-black rounded-lg font-bold hover:scale-[1.02] transition"
+          className="mt-4 w-full px-4 py-2 bg-accent text-black rounded-lg font-bold hover:scale-[1.02] transition"
         >
           ✓ 標記完成 (+{lesson.xp} XP)
         </button>

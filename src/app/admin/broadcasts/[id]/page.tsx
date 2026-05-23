@@ -24,13 +24,13 @@ export default async function EditBroadcastPage({
     <div className="space-y-4">
       <Link
         href={adminHref("/admin/broadcasts") as any}
-        className="text-sm text-[var(--color-fg-muted)] hover:text-[var(--color-accent)]"
+        className="text-sm text-fg-muted hover:text-accent"
       >
         ← 回公告列表
       </Link>
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold">📣 編輯公告 #{broadcast.id.slice(0, 8)}</h2>
-        <div className="text-xs text-[var(--color-fg-muted)]">
+        <div className="text-xs text-fg-muted">
           {broadcast.sent_count ?? 0} 已寄 · {broadcast.open_count ?? 0} 開信 · {broadcast.click_count ?? 0} 點擊
         </div>
       </div>

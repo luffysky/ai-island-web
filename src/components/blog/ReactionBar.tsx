@@ -71,8 +71,8 @@ export function ReactionBar({
             onClick={() => toggle(emoji)}
             className={`px-3 py-1.5 rounded-full border text-sm transition flex items-center gap-1.5 ${
               active
-                ? "border-[var(--color-accent)] bg-[var(--color-accent)]/15"
-                : "border-[var(--color-border)] bg-[var(--color-bg-card)] hover:border-[var(--color-accent)]"
+                ? "border-accent bg-accent/15"
+                : "border-border bg-bg-card hover:border-accent"
             }`}
           >
             <span className="text-base">{emoji}</span>

@@ -70,20 +70,20 @@ export function Marquee() {
   };
 
   return (
-    <div className="relative border-b border-[var(--color-border)] bg-gradient-to-r from-[var(--color-accent)]/15 via-[var(--color-accent-2)]/10 to-[var(--color-accent)]/15">
+    <div className="relative border-b border-border bg-gradient-to-r from-accent/15 via-accent-2/10 to-accent/15">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-2 flex items-center gap-3">
-        <Megaphone size={14} className="flex-shrink-0 text-[var(--color-accent)]" />
+        <Megaphone size={14} className="flex-shrink-0 text-accent" />
         <div key={current.id} className="flex-1 min-w-0 text-xs sm:text-sm animate-fade-in">
           <span className="font-bold mr-2">{current.title}</span>
-          <span className="text-[var(--color-fg-muted)]">{current.content}</span>
+          <span className="text-fg-muted">{current.content}</span>
         </div>
         {visible.length > 1 && (
-          <div className="hidden sm:flex items-center gap-1 text-[10px] text-[var(--color-fg-muted)]">
+          <div className="hidden sm:flex items-center gap-1 text-[10px] text-fg-muted">
             {visible.map((_, i) => (
               <span
                 key={i}
                 className={`w-1.5 h-1.5 rounded-full transition ${
-                  i === idx ? "bg-[var(--color-accent)]" : "bg-[var(--color-fg-muted)]/30"
+                  i === idx ? "bg-accent" : "bg-fg-muted/30"
                 }`}
               />
             ))}
@@ -91,7 +91,7 @@ export function Marquee() {
         )}
         <button
           onClick={dismissAll}
-          className="flex-shrink-0 text-[var(--color-fg-muted)] hover:text-[var(--color-fg)] transition p-0.5"
+          className="flex-shrink-0 text-fg-muted hover:text-fg transition p-0.5"
           aria-label="關閉公告"
           title="不再顯示這些公告"
         >

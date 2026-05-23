@@ -33,7 +33,7 @@ export default async function CommentsModerationPage({
     <div className="space-y-4">
       <div className="flex items-center justify-between flex-wrap gap-2">
         <h2 className="text-xl font-bold">📝 部落格留言審核</h2>
-        <div className="text-xs text-[var(--color-fg-muted)]">
+        <div className="text-xs text-fg-muted">
           {filter === "pending" ? "待審核" : filter === "approved" ? "已通過" : "全部"} {(count ?? 0).toLocaleString()} 筆
         </div>
       </div>
@@ -45,8 +45,8 @@ export default async function CommentsModerationPage({
             href={adminHref(`/admin/moderation/comments?filter=${f}`) as any}
             className={`px-3 py-1.5 text-xs rounded-full transition ${
               filter === f
-                ? "bg-[var(--color-accent)] text-black font-bold"
-                : "bg-[var(--color-bg-card)] border border-[var(--color-border)]"
+                ? "bg-accent text-black font-bold"
+                : "bg-bg-card border border-border"
             }`}
           >
             {f === "pending" ? "🟡 待審核" : f === "approved" ? "✅ 已通過" : "📋 全部"}
@@ -55,16 +55,16 @@ export default async function CommentsModerationPage({
       </div>
 
       {comments?.length === 0 ? (
-        <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-12 text-center text-[var(--color-fg-muted)]">
+        <div className="bg-bg-card border border-border rounded-xl p-12 text-center text-fg-muted">
           {filter === "pending" ? "✅ 沒有待審留言" : "—"}
         </div>
       ) : (
         <div className="space-y-3">
           {comments?.map((c: any) => (
-            <div key={c.id} className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-4">
+            <div key={c.id} className="bg-bg-card border border-border rounded-xl p-4">
               <div className="flex items-start justify-between gap-3 mb-2">
-                <div className="text-xs text-[var(--color-fg-muted)]">
-                  <span className="font-bold text-[var(--color-fg)]">
+                <div className="text-xs text-fg-muted">
+                  <span className="font-bold text-fg">
                     {c.commenter?.display_name || c.commenter?.username || c.author_name || "匿名"}
                   </span>
                   {c.author_email && <span className="ml-2">{c.author_email}</span>}
@@ -78,7 +78,7 @@ export default async function CommentsModerationPage({
               </div>
               <div className="text-sm whitespace-pre-wrap mb-2 break-words">{c.content}</div>
               {c.article && (
-                <div className="text-[10px] text-[var(--color-fg-muted)]">
+                <div className="text-[10px] text-fg-muted">
                   ↳ 文章：{c.article.title}
                 </div>
               )}
@@ -92,14 +92,14 @@ export default async function CommentsModerationPage({
         <div className="flex items-center justify-center gap-2 text-sm">
           <Link
             href={page > 1 ? (adminHref(`/admin/moderation/comments?filter=${filter}&page=${page - 1}`) as any) : "#"}
-            className={`px-3 py-1.5 rounded-lg border border-[var(--color-border)] ${page <= 1 ? "opacity-40 pointer-events-none" : "hover:bg-[var(--color-bg-elevated)]"}`}
+            className={`px-3 py-1.5 rounded-lg border border-border ${page <= 1 ? "opacity-40 pointer-events-none" : "hover:bg-bg-elevated"}`}
           >
             ← 上一頁
           </Link>
-          <span className="text-xs text-[var(--color-fg-muted)] px-3">{page} / {totalPages}</span>
+          <span className="text-xs text-fg-muted px-3">{page} / {totalPages}</span>
           <Link
             href={page < totalPages ? (adminHref(`/admin/moderation/comments?filter=${filter}&page=${page + 1}`) as any) : "#"}
-            className={`px-3 py-1.5 rounded-lg border border-[var(--color-border)] ${page >= totalPages ? "opacity-40 pointer-events-none" : "hover:bg-[var(--color-bg-elevated)]"}`}
+            className={`px-3 py-1.5 rounded-lg border border-border ${page >= totalPages ? "opacity-40 pointer-events-none" : "hover:bg-bg-elevated"}`}
           >
             下一頁 →
           </Link>

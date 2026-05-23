@@ -15,7 +15,7 @@ export default function Loading() {
       {/* Article cards */}
       <div className="space-y-4">
         {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-card)] p-5">
+          <div key={i} className="rounded-xl border border-border bg-bg-card p-5">
             <div className="flex gap-4">
               <Skeleton width={120} height={80} className="flex-shrink-0" />
               <div className="flex-1 space-y-2">

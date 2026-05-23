@@ -66,23 +66,23 @@ export default async function AdminUsersPage({
     <div>
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-bold">👥 使用者管理</h2>
-        <div className="text-xs text-[var(--color-fg-muted)]">
+        <div className="text-xs text-fg-muted">
           共 {(count ?? 0).toLocaleString()} 人 · 第 {page}/{totalPages} 頁
         </div>
       </div>
 
       {/* Filter bar */}
-      <form action={adminHref("/admin/users")} className="mb-4 flex flex-wrap items-center gap-2 bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-3">
+      <form action={adminHref("/admin/users")} className="mb-4 flex flex-wrap items-center gap-2 bg-bg-card border border-border rounded-xl p-3">
         <input
           name="q"
           defaultValue={q}
           placeholder="🔍 搜尋 username / display name"
-          className="flex-1 min-w-[200px] bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg px-3 py-1.5 text-sm outline-none focus:border-[var(--color-accent)]"
+          className="flex-1 min-w-[200px] bg-bg border border-border rounded-lg px-3 py-1.5 text-sm outline-none focus:border-accent"
         />
         <select
           name="role"
           defaultValue={role}
-          className="bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg px-2 py-1.5 text-sm"
+          className="bg-bg border border-border rounded-lg px-2 py-1.5 text-sm"
         >
           <option value="all">所有角色</option>
           <option value="member">member</option>
@@ -92,7 +92,7 @@ export default async function AdminUsersPage({
         <select
           name="status"
           defaultValue={status}
-          className="bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg px-2 py-1.5 text-sm"
+          className="bg-bg border border-border rounded-lg px-2 py-1.5 text-sm"
         >
           <option value="all">全部狀態</option>
           <option value="active">在用</option>
@@ -101,7 +101,7 @@ export default async function AdminUsersPage({
         <select
           name="sort"
           defaultValue={sort}
-          className="bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg px-2 py-1.5 text-sm"
+          className="bg-bg border border-border rounded-lg px-2 py-1.5 text-sm"
         >
           <option value="created_at">建立時間</option>
           <option value="xp">XP</option>
@@ -111,30 +111,30 @@ export default async function AdminUsersPage({
         <select
           name="dir"
           defaultValue={dir}
-          className="bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg px-2 py-1.5 text-sm"
+          className="bg-bg border border-border rounded-lg px-2 py-1.5 text-sm"
         >
           <option value="desc">由高到低</option>
           <option value="asc">由低到高</option>
         </select>
         <button
           type="submit"
-          className="px-4 py-1.5 text-sm rounded-lg bg-[var(--color-accent)] text-black font-bold"
+          className="px-4 py-1.5 text-sm rounded-lg bg-accent text-black font-bold"
         >
           套用
         </button>
         {(q || role !== "all" || status !== "all") && (
           <Link
             href={adminHref("/admin/users") as any}
-            className="px-3 py-1.5 text-sm rounded-lg border border-[var(--color-border)]"
+            className="px-3 py-1.5 text-sm rounded-lg border border-border"
           >
             清除
           </Link>
         )}
       </form>
 
-      <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl overflow-hidden">
+      <div className="bg-bg-card border border-border rounded-xl overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-[var(--color-bg-elevated)] text-xs text-[var(--color-fg-muted)]">
+          <thead className="bg-bg-elevated text-xs text-fg-muted">
             <tr>
               <th className="text-left px-4 py-3">使用者</th>
               <th className="text-left px-4 py-3">等級</th>
@@ -149,7 +149,7 @@ export default async function AdminUsersPage({
           <tbody>
             {users?.length === 0 ? (
               <tr>
-                <td colSpan={8} className="px-4 py-12 text-center text-[var(--color-fg-muted)] text-sm">
+                <td colSpan={8} className="px-4 py-12 text-center text-fg-muted text-sm">
                   沒有符合條件的使用者
                 </td>
               </tr>
@@ -165,16 +165,16 @@ export default async function AdminUsersPage({
         <div className="flex items-center justify-center gap-2 mt-4 text-sm">
           <Link
             href={page > 1 ? (buildHref({ page: String(page - 1) }) as any) : "#"}
-            className={`px-3 py-1.5 rounded-lg border border-[var(--color-border)] ${page <= 1 ? "opacity-40 pointer-events-none" : "hover:bg-[var(--color-bg-elevated)]"}`}
+            className={`px-3 py-1.5 rounded-lg border border-border ${page <= 1 ? "opacity-40 pointer-events-none" : "hover:bg-bg-elevated"}`}
           >
             ← 上一頁
           </Link>
-          <span className="text-xs text-[var(--color-fg-muted)] px-3">
+          <span className="text-xs text-fg-muted px-3">
             {page} / {totalPages}
           </span>
           <Link
             href={page < totalPages ? (buildHref({ page: String(page + 1) }) as any) : "#"}
-            className={`px-3 py-1.5 rounded-lg border border-[var(--color-border)] ${page >= totalPages ? "opacity-40 pointer-events-none" : "hover:bg-[var(--color-bg-elevated)]"}`}
+            className={`px-3 py-1.5 rounded-lg border border-border ${page >= totalPages ? "opacity-40 pointer-events-none" : "hover:bg-bg-elevated"}`}
           >
             下一頁 →
           </Link>

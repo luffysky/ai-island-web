@@ -194,7 +194,7 @@ export function AdminFloatingToolbar() {
       }}
       className="select-none"
     >
-      <div className="bg-[var(--color-bg-card)] border-2 border-pink-500/40 rounded-2xl shadow-2xl shadow-pink-500/20 p-2 min-w-[220px]">
+      <div className="bg-bg-card border-2 border-pink-500/40 rounded-2xl shadow-2xl shadow-pink-500/20 p-2 min-w-[220px]">
         {/* drag header */}
         <div
           onPointerDown={onPointerDown}
@@ -216,14 +216,14 @@ export function AdminFloatingToolbar() {
           <div className="flex items-center gap-1" data-no-drag>
             <button
               onClick={() => setOpen(false)}
-              className="text-[var(--color-fg-muted)] hover:text-[var(--color-fg)] p-0.5"
+              className="text-fg-muted hover:text-fg p-0.5"
               aria-label="收起"
             >
               <X size={12} />
             </button>
             <button
               onClick={() => setHidden(true)}
-              className="text-[var(--color-fg-muted)] hover:text-[var(--color-fg)] text-[10px] px-1"
+              className="text-fg-muted hover:text-fg text-[10px] px-1"
               title="本次瀏覽不再顯示"
             >
               隱藏
@@ -242,8 +242,8 @@ export function AdminFloatingToolbar() {
             </Link>
           ))}
         </div>
-        <div className="border-t border-[var(--color-border)] mt-1 pt-1 px-2">
-          <p className="text-[9px] text-[var(--color-fg-muted)] leading-snug">
+        <div className="border-t border-border mt-1 pt-1 px-2">
+          <p className="text-[9px] text-fg-muted leading-snug">
             路徑：<code>{pathname}</code>
           </p>
         </div>

@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
  */
 export default function CallbackPage() {
   return (
-    <div className="min-h-[40vh] flex items-center justify-center text-sm text-[var(--color-fg-muted)]">
+    <div className="min-h-[40vh] flex items-center justify-center text-sm text-fg-muted">
       <Suspense>
         <CallbackHashHandler />
       </Suspense>

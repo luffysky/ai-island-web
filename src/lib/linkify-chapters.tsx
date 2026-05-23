@@ -77,7 +77,7 @@ export function linkifyChapterRefs(text: string): React.ReactNode[] {
       <Link
         key={`${m.start}-${i}`}
         href={m.url as any}
-        className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-[var(--color-accent)]/15 text-[var(--color-accent)] hover:bg-[var(--color-accent)]/25 text-xs font-mono no-underline"
+        className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-accent/15 text-accent hover:bg-accent/25 text-xs font-mono no-underline"
       >
         📖 {m.label}
       </Link>

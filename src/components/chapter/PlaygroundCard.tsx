@@ -9,7 +9,7 @@ import { createSupabaseBrowser } from "@/lib/supabase-browser";
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
   ssr: false,
   loading: () => (
-    <div className="flex items-center justify-center text-xs text-[var(--color-fg-muted)]" style={{ minHeight: 320 }}>
+    <div className="flex items-center justify-center text-xs text-fg-muted" style={{ minHeight: 320 }}>
       載入編輯器...
     </div>
   ),
@@ -275,27 +275,27 @@ export function PlaygroundCard({
   ];
 
   const containerClass = fullscreen
-    ? "fixed inset-0 z-50 bg-[var(--color-bg)]"
-    : "rounded-xl border border-[var(--color-border)] bg-[var(--color-bg)] my-4";
+    ? "fixed inset-0 z-50 bg-bg"
+    : "rounded-xl border border-border bg-bg my-4";
 
   const innerHeight = fullscreen ? "h-screen" : "";
 
   return (
     <div className={containerClass + " overflow-hidden flex flex-col"}>
       {/* Header */}
-      <div className="flex items-center justify-between px-3 py-2 bg-[var(--color-bg-elevated)] border-b border-[var(--color-border)] flex-shrink-0">
+      <div className="flex items-center justify-between px-3 py-2 bg-bg-elevated border-b border-border flex-shrink-0">
         <div className="flex items-center gap-2 min-w-0">
           {/* 語言下拉 */}
           <select
             value={lang}
             onChange={(e) => setLang(e.target.value as any)}
-            className="text-xs font-mono uppercase px-2 py-1 rounded bg-[var(--color-accent)]/20 text-[var(--color-accent)] border-0 outline-none cursor-pointer"
+            className="text-xs font-mono uppercase px-2 py-1 rounded bg-accent/20 text-accent border-0 outline-none cursor-pointer"
           >
             {allLangs.map((l) => (
               <option key={l} value={l}>{LANG_LABELS[l] ?? l}</option>
             ))}
           </select>
-          <span className="text-xs text-[var(--color-fg-muted)] truncate">
+          <span className="text-xs text-fg-muted truncate">
             {playground.title ?? "編輯左邊、按 ▶ 執行"}
           </span>
         </div>
@@ -303,30 +303,30 @@ export function PlaygroundCard({
           {isSandbox && (
             <button
               onClick={() => setShowStdin(!showStdin)}
-              className={`p-1.5 rounded text-xs ${showStdin ? "bg-[var(--color-bg-card)]" : "hover:bg-[var(--color-bg-card)]"}`}
+              className={`p-1.5 rounded text-xs ${showStdin ? "bg-bg-card" : "hover:bg-bg-card"}`}
               title="stdin 輸入"
             >
               📥
             </button>
           )}
-          <button onClick={copy} className="p-1.5 hover:bg-[var(--color-bg-card)] rounded" title="複製">
-            {copied ? <Check size={14} className="text-[var(--color-accent)]" /> : <Copy size={14} />}
+          <button onClick={copy} className="p-1.5 hover:bg-bg-card rounded" title="複製">
+            {copied ? <Check size={14} className="text-accent" /> : <Copy size={14} />}
           </button>
           {isLoggedIn && (
-            <button onClick={save} className="p-1.5 hover:bg-[var(--color-bg-card)] rounded" title="存到雲端">
-              {saved ? <Check size={14} className="text-[var(--color-accent)]" /> : <Save size={14} />}
+            <button onClick={save} className="p-1.5 hover:bg-bg-card rounded" title="存到雲端">
+              {saved ? <Check size={14} className="text-accent" /> : <Save size={14} />}
             </button>
           )}
-          <button onClick={reset} className="p-1.5 hover:bg-[var(--color-bg-card)] rounded" title="重置">
+          <button onClick={reset} className="p-1.5 hover:bg-bg-card rounded" title="重置">
             <RotateCcw size={14} />
           </button>
-          <button onClick={() => setFullscreen(!fullscreen)} className="p-1.5 hover:bg-[var(--color-bg-card)] rounded" title="全螢幕">
+          <button onClick={() => setFullscreen(!fullscreen)} className="p-1.5 hover:bg-bg-card rounded" title="全螢幕">
             {fullscreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
           </button>
           <button
             onClick={run}
             disabled={running}
-            className="ml-1 flex items-center gap-1 px-3 py-1 bg-[var(--color-accent)] text-black text-xs font-semibold rounded hover:scale-105 transition disabled:opacity-50"
+            className="ml-1 flex items-center gap-1 px-3 py-1 bg-accent text-black text-xs font-semibold rounded hover:scale-105 transition disabled:opacity-50"
           >
             {running ? <Loader2 size={12} className="animate-spin" /> : <Play size={12} fill="currentColor" />}
             執行
@@ -336,14 +336,14 @@ export function PlaygroundCard({
 
       {/* stdin */}
       {showStdin && isSandbox && (
-        <div className="px-3 py-2 border-b border-[var(--color-border)] bg-[var(--color-bg)] flex-shrink-0">
-          <div className="text-xs text-[var(--color-fg-muted)] mb-1">📥 標準輸入（stdin）：</div>
+        <div className="px-3 py-2 border-b border-border bg-bg flex-shrink-0">
+          <div className="text-xs text-fg-muted mb-1">📥 標準輸入（stdin）：</div>
           <textarea
             value={stdin}
             onChange={(e) => setStdin(e.target.value)}
             placeholder="輸入給程式的資料、會傳到 stdin"
             rows={2}
-            className="w-full font-mono text-xs p-2 bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded outline-none"
+            className="w-full font-mono text-xs p-2 bg-bg-card border border-border rounded outline-none"
           />
         </div>
       )}
@@ -351,7 +351,7 @@ export function PlaygroundCard({
       {/* Editor + Preview/Output */}
       <div className={`flex-1 grid ${showPreview ? "md:grid-cols-2" : "grid-cols-1"} ${innerHeight}`} style={{ minHeight: fullscreen ? undefined : (playground.height ?? 320) }}>
         <div
-          className={showPreview ? "border-r border-[var(--color-border)]" : ""}
+          className={showPreview ? "border-r border-border" : ""}
           style={{ minHeight: fullscreen ? undefined : (playground.height ?? 320) }}
         >
           <MonacoEditor
@@ -406,8 +406,8 @@ export function PlaygroundCard({
 
       {/* Output console */}
       {!showPreview && (
-        <div className="border-t border-[var(--color-border)] p-3 bg-[var(--color-bg-elevated)] flex-shrink-0 max-h-[300px] overflow-auto">
-          <div className="text-xs text-[var(--color-fg-muted)] mb-1 font-mono flex items-center justify-between">
+        <div className="border-t border-border p-3 bg-bg-elevated flex-shrink-0 max-h-[300px] overflow-auto">
+          <div className="text-xs text-fg-muted mb-1 font-mono flex items-center justify-between">
             <span>▶ 輸出</span>
             <div className="flex items-center gap-2">
               {isSandbox && <span className="text-xs">⚡ 遠端沙盒 (Piston)</span>}
@@ -424,7 +424,7 @@ export function PlaygroundCard({
               )}
             </div>
           </div>
-          <pre className="text-xs font-mono whitespace-pre-wrap text-[var(--color-fg)] overflow-x-auto">
+          <pre className="text-xs font-mono whitespace-pre-wrap text-fg overflow-x-auto">
             {output || (running ? "執行中..." : "點 ▶ 執行")}
           </pre>
         </div>
@@ -432,7 +432,7 @@ export function PlaygroundCard({
 
       {/* Hint */}
       {playground.hint && !fullscreen && (
-        <div className="border-t border-[var(--color-border)] p-3 text-xs text-[var(--color-fg-muted)] bg-yellow-500/5 flex-shrink-0">
+        <div className="border-t border-border p-3 text-xs text-fg-muted bg-yellow-500/5 flex-shrink-0">
           💡 {playground.hint}
         </div>
       )}

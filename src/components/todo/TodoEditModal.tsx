@@ -109,56 +109,56 @@ export function TodoEditModal({
           exit={{ opacity: 0, scale: 0.96 }}
           transition={{ type: "spring", stiffness: 360, damping: 28 }}
           onClick={(e) => e.stopPropagation()}
-          className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-2xl p-5 w-full max-w-md shadow-2xl"
+          className="bg-bg-card border border-border rounded-2xl p-5 w-full max-w-md shadow-2xl"
         >
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-base">編輯待辦</h3>
-            <button onClick={onClose} className="p-1 rounded hover:bg-[var(--color-bg-elevated)]" aria-label="關閉">
+            <button onClick={onClose} className="p-1 rounded hover:bg-bg-elevated" aria-label="關閉">
               <X size={16} />
             </button>
           </div>
 
           <div className="space-y-3">
             <div>
-              <label className="text-xs text-[var(--color-fg-muted)] block mb-1">標題</label>
+              <label className="text-xs text-fg-muted block mb-1">標題</label>
               <input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 maxLength={200}
-                className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg p-2 text-sm outline-none focus:border-[var(--color-accent)]"
+                className="w-full bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent"
               />
             </div>
 
             <div>
-              <label className="text-xs text-[var(--color-fg-muted)] block mb-1">備註（選）</label>
+              <label className="text-xs text-fg-muted block mb-1">備註（選）</label>
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 rows={2}
-                className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg p-2 text-sm outline-none focus:border-[var(--color-accent)] resize-none"
+                className="w-full bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent resize-none"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs text-[var(--color-fg-muted)] mb-1 flex items-center gap-1">
+                <label className="text-xs text-fg-muted mb-1 flex items-center gap-1">
                   <Calendar size={11} /> 截止日
                 </label>
                 <input
                   type="date"
                   value={dueDate}
                   onChange={(e) => setDueDate(e.target.value)}
-                  className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg p-2 text-sm outline-none focus:border-[var(--color-accent)]"
+                  className="w-full bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent"
                 />
               </div>
               <div>
-                <label className="text-xs text-[var(--color-fg-muted)] mb-1 flex items-center gap-1">
+                <label className="text-xs text-fg-muted mb-1 flex items-center gap-1">
                   <Flag size={11} /> 優先度
                 </label>
                 <select
                   value={priority}
                   onChange={(e) => setPriority(Number(e.target.value) as TodoPriority)}
-                  className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg p-2 text-sm outline-none focus:border-[var(--color-accent)]"
+                  className="w-full bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent"
                 >
                   <option value={1}>🔴 高</option>
                   <option value={2}>🟡 中</option>
@@ -168,7 +168,7 @@ export function TodoEditModal({
             </div>
 
             <div>
-              <label className="text-xs text-[var(--color-fg-muted)] mb-1 flex items-center gap-1">
+              <label className="text-xs text-fg-muted mb-1 flex items-center gap-1">
                 <Repeat size={11} /> 重複
               </label>
               <div className="flex flex-wrap gap-1.5 mb-2">
@@ -179,8 +179,8 @@ export function TodoEditModal({
                     onClick={() => setRecurKind(k)}
                     className={`px-3 py-1 rounded-full text-xs border transition ${
                       recurKind === k
-                        ? "bg-[var(--color-accent)] text-black border-[var(--color-accent)] font-semibold"
-                        : "bg-[var(--color-bg)] border-[var(--color-border)] hover:border-[var(--color-accent)]"
+                        ? "bg-accent text-black border-accent font-semibold"
+                        : "bg-bg border-border hover:border-accent"
                     }`}
                   >
                     {k === "none" ? "不重複" : k === "daily" ? "每日" : k === "weekly" ? "每週" : "每月"}
@@ -196,8 +196,8 @@ export function TodoEditModal({
                       onClick={() => toggleWeekday(d)}
                       className={`w-8 h-8 text-xs rounded-full border transition ${
                         weekdays.includes(d)
-                          ? "bg-[var(--color-accent)] text-black border-[var(--color-accent)] font-bold"
-                          : "bg-[var(--color-bg)] border-[var(--color-border)]"
+                          ? "bg-accent text-black border-accent font-bold"
+                          : "bg-bg border-border"
                       }`}
                     >
                       {label}
@@ -212,25 +212,25 @@ export function TodoEditModal({
                   max={31}
                   value={monthDay}
                   onChange={(e) => setMonthDay(Math.max(1, Math.min(31, Number(e.target.value) || 1)))}
-                  className="w-24 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg p-2 text-sm outline-none focus:border-[var(--color-accent)]"
+                  className="w-24 bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent"
                 />
               )}
-              <div className="text-[10px] text-[var(--color-fg-muted)] mt-1">
+              <div className="text-[10px] text-fg-muted mt-1">
                 {recurLabel(buildRecur())}
               </div>
             </div>
           </div>
 
-          <div className="flex justify-end gap-2 mt-5 pt-3 border-t border-[var(--color-border)]">
+          <div className="flex justify-end gap-2 mt-5 pt-3 border-t border-border">
             <button
               onClick={onClose}
-              className="px-3 py-1.5 text-sm rounded-lg border border-[var(--color-border)] hover:bg-[var(--color-bg-elevated)]"
+              className="px-3 py-1.5 text-sm rounded-lg border border-border hover:bg-bg-elevated"
             >
               取消
             </button>
             <button
               onClick={handleSave}
-              className="px-4 py-1.5 text-sm rounded-lg bg-[var(--color-accent)] text-black font-bold flex items-center gap-1 active:scale-95 transition-transform"
+              className="px-4 py-1.5 text-sm rounded-lg bg-accent text-black font-bold flex items-center gap-1 active:scale-95 transition-transform"
             >
               <Save size={13} /> 儲存
             </button>

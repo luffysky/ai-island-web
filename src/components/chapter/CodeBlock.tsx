@@ -35,17 +35,17 @@ export function CodeBlock({ children, className }: CodeBlockProps) {
 
   return (
     <div
-      className="my-3 rounded-lg border border-[var(--color-border)] bg-[#1a1a1a]"
+      className="my-3 rounded-lg border border-border bg-[#1a1a1a]"
       style={{ maxWidth: "100%", overflow: "hidden" }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-3 py-1.5 bg-[#0a0a0a] border-b border-[var(--color-border)]">
-        <span className="text-xs text-[var(--color-fg-muted)] font-mono">
+      <div className="flex items-center justify-between px-3 py-1.5 bg-[#0a0a0a] border-b border-border">
+        <span className="text-xs text-fg-muted font-mono">
           {lang || "code"}
         </span>
         <button
           onClick={handleCopy}
-          className="flex items-center gap-1 px-2 py-1 text-xs rounded hover:bg-white/10 transition text-[var(--color-fg-muted)] shrink-0"
+          className="flex items-center gap-1 px-2 py-1 text-xs rounded hover:bg-white/10 transition text-fg-muted shrink-0"
           aria-label="複製"
         >
           {copied ? (

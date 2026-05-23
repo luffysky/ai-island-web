@@ -54,7 +54,7 @@ export function AiWriteHelper({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="fixed bottom-24 right-6 z-40 px-4 py-2.5 rounded-full bg-gradient-to-r from-[var(--color-accent)] to-[var(--color-accent-2)] text-black font-bold text-sm shadow-xl hover:scale-105 transition flex items-center gap-1.5"
+        className="fixed bottom-24 right-6 z-40 px-4 py-2.5 rounded-full bg-gradient-to-r from-accent to-accent-2 text-black font-bold text-sm shadow-xl hover:scale-105 transition flex items-center gap-1.5"
       >
         <Sparkles size={16} /> AI 寫作助手
       </button>
@@ -62,13 +62,13 @@ export function AiWriteHelper({
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 w-[380px] max-w-[calc(100vw-2rem)] bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-2xl shadow-2xl flex flex-col max-h-[80vh]">
+    <div className="fixed bottom-6 right-6 z-50 w-[380px] max-w-[calc(100vw-2rem)] bg-bg-card border border-border rounded-2xl shadow-2xl flex flex-col max-h-[80vh]">
       {/* Header */}
-      <div className="flex items-center justify-between p-3 border-b border-[var(--color-border)]">
+      <div className="flex items-center justify-between p-3 border-b border-border">
         <div className="font-bold flex items-center gap-1.5">
-          <Sparkles size={16} className="text-[var(--color-accent)]" /> AI 寫作助手
+          <Sparkles size={16} className="text-accent" /> AI 寫作助手
         </div>
-        <button onClick={() => setOpen(false)} className="p-1 rounded hover:bg-[var(--color-bg-elevated)]">
+        <button onClick={() => setOpen(false)} className="p-1 rounded hover:bg-bg-elevated">
           <X size={16} />
         </button>
       </div>
@@ -82,15 +82,15 @@ export function AiWriteHelper({
               onClick={() => setMode(m.key)}
               className={`text-xs px-2.5 py-1 rounded-full transition ${
                 mode === m.key
-                  ? "bg-[var(--color-accent)] text-black font-semibold"
-                  : "bg-[var(--color-bg-elevated)] hover:bg-[var(--color-border)]"
+                  ? "bg-accent text-black font-semibold"
+                  : "bg-bg-elevated hover:bg-border"
               }`}
             >
               {m.label}
             </button>
           ))}
         </div>
-        <p className="text-xs text-[var(--color-fg-muted)]">
+        <p className="text-xs text-fg-muted">
           {MODES.find((m) => m.key === mode)?.hint}
         </p>
 
@@ -100,12 +100,12 @@ export function AiWriteHelper({
           onChange={(e) => setInput(e.target.value)}
           placeholder={mode === "outline" ? "輸入文章主題..." : "貼上要處理的文字..."}
           rows={4}
-          className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg p-2 text-sm outline-none focus:border-[var(--color-accent)] resize-none"
+          className="w-full bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent resize-none"
         />
         <button
           onClick={run}
           disabled={!input.trim() || loading}
-          className="w-full py-2 rounded-lg bg-[var(--color-accent)] text-black text-sm font-bold disabled:opacity-40 flex items-center justify-center gap-1"
+          className="w-full py-2 rounded-lg bg-accent text-black text-sm font-bold disabled:opacity-40 flex items-center justify-center gap-1"
         >
           {loading ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
           {loading ? "生成中..." : "開始"}
@@ -115,12 +115,12 @@ export function AiWriteHelper({
 
         {/* 輸出 */}
         {output && (
-          <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] p-2">
+          <div className="rounded-lg border border-border bg-bg p-2">
             <div className="text-sm whitespace-pre-wrap max-h-48 overflow-y-auto">{output}</div>
-            <div className="flex gap-2 mt-2 pt-2 border-t border-[var(--color-border)]">
+            <div className="flex gap-2 mt-2 pt-2 border-t border-border">
               <button
                 onClick={copy}
-                className="flex-1 text-xs py-1.5 rounded bg-[var(--color-bg-elevated)] hover:bg-[var(--color-border)] flex items-center justify-center gap-1"
+                className="flex-1 text-xs py-1.5 rounded bg-bg-elevated hover:bg-border flex items-center justify-center gap-1"
               >
                 {copied ? <Check size={12} /> : <Copy size={12} />}
                 {copied ? "已複製" : "複製"}
@@ -128,7 +128,7 @@ export function AiWriteHelper({
               {onInsert && (
                 <button
                   onClick={() => { onInsert(output); setOpen(false); }}
-                  className="flex-1 text-xs py-1.5 rounded bg-[var(--color-accent)] text-black font-semibold"
+                  className="flex-1 text-xs py-1.5 rounded bg-accent text-black font-semibold"
                 >
                   插入文章
                 </button>

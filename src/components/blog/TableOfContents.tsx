@@ -72,8 +72,8 @@ export function TableOfContents({
 
   return (
     <aside className="hidden xl:block fixed top-24 right-6 w-56 z-30">
-      <div className="bg-[var(--color-bg-card)]/80 backdrop-blur border border-[var(--color-border)] rounded-xl p-3 text-sm max-h-[70vh] overflow-y-auto">
-        <div className="flex items-center gap-1.5 mb-2 text-xs text-[var(--color-fg-muted)] sticky top-0 bg-[var(--color-bg-card)]/95 -mt-1 pt-1 pb-1">
+      <div className="bg-bg-card/80 backdrop-blur border border-border rounded-xl p-3 text-sm max-h-[70vh] overflow-y-auto">
+        <div className="flex items-center gap-1.5 mb-2 text-xs text-fg-muted sticky top-0 bg-bg-card/95 -mt-1 pt-1 pb-1">
           <List size={12} />
           目錄
         </div>
@@ -87,8 +87,8 @@ export function TableOfContents({
                 href={`#${h.id}`}
                 className={`block py-1 text-xs leading-snug transition truncate ${
                   activeId === h.id
-                    ? "text-[var(--color-accent)] font-medium"
-                    : "text-[var(--color-fg-muted)] hover:text-[var(--color-fg)]"
+                    ? "text-accent font-medium"
+                    : "text-fg-muted hover:text-fg"
                 }`}
               >
                 {h.text}

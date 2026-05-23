@@ -79,7 +79,7 @@ export function TodoItem({
       }}
     >
       <div
-        className={`group flex items-center gap-1 py-1.5 px-2 rounded-lg hover:bg-[var(--color-bg-elevated)] transition ${
+        className={`group flex items-center gap-1 py-1.5 px-2 rounded-lg hover:bg-bg-elevated transition ${
           todo.completed ? "opacity-55" : ""
         }`}
         style={{ paddingLeft: depth * 16 + 4 }}
@@ -87,7 +87,7 @@ export function TodoItem({
         <button
           {...attributes}
           {...listeners}
-          className="cursor-grab active:cursor-grabbing text-[var(--color-fg-muted)] opacity-0 group-hover:opacity-100 transition"
+          className="cursor-grab active:cursor-grabbing text-fg-muted opacity-0 group-hover:opacity-100 transition"
           aria-label="拖曳排序"
           title="拖曳排序"
         >
@@ -97,7 +97,7 @@ export function TodoItem({
         {hasChildren && (
           <button
             onClick={() => setExpanded((v) => !v)}
-            className="text-[var(--color-fg-muted)] hover:text-[var(--color-fg)] p-0.5"
+            className="text-fg-muted hover:text-fg p-0.5"
             aria-label={expanded ? "收合子任務" : "展開子任務"}
           >
             <ChevronRight size={12} className={`transition-transform ${expanded ? "rotate-90" : ""}`} />
@@ -108,8 +108,8 @@ export function TodoItem({
           onClick={() => onToggle(todo.id, !todo.completed)}
           className={`w-4 h-4 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition ${
             todo.completed
-              ? "bg-[var(--color-accent)] border-[var(--color-accent)]"
-              : "border-[var(--color-border)] hover:border-[var(--color-accent)]"
+              ? "bg-accent border-accent"
+              : "border-border hover:border-accent"
           }`}
           aria-label={todo.completed ? "取消完成" : "標記完成"}
         >
@@ -139,7 +139,7 @@ export function TodoItem({
                 setEditing(false);
               }
             }}
-            className="flex-1 bg-transparent text-sm outline-none border-b border-[var(--color-accent)]"
+            className="flex-1 bg-transparent text-sm outline-none border-b border-accent"
           />
         ) : (
           <span
@@ -161,7 +161,7 @@ export function TodoItem({
         )}
         {todo.recur_rule && (
           <span
-            className="text-[10px] px-1.5 py-0.5 rounded-full bg-[var(--color-accent)]/15 text-[var(--color-accent)] font-semibold flex items-center gap-0.5 flex-shrink-0"
+            className="text-[10px] px-1.5 py-0.5 rounded-full bg-accent/15 text-accent font-semibold flex items-center gap-0.5 flex-shrink-0"
             title={recurLabel(todo.recur_rule)}
           >
             <Repeat size={9} />
@@ -172,7 +172,7 @@ export function TodoItem({
           {onAddChild && depth === 0 && (
             <button
               onClick={() => onAddChild(todo.id)}
-              className="p-1 rounded text-[var(--color-fg-muted)] hover:text-[var(--color-accent)]"
+              className="p-1 rounded text-fg-muted hover:text-accent"
               title="新增子任務"
               aria-label="新增子任務"
             >
@@ -181,7 +181,7 @@ export function TodoItem({
           )}
           <button
             onClick={() => onEditDetails(todo)}
-            className="p-1 rounded text-[var(--color-fg-muted)] hover:text-[var(--color-fg)]"
+            className="p-1 rounded text-fg-muted hover:text-fg"
             title="詳細編輯"
             aria-label="詳細編輯"
           >
@@ -189,7 +189,7 @@ export function TodoItem({
           </button>
           <button
             onClick={() => onDelete(todo.id)}
-            className="p-1 rounded text-[var(--color-fg-muted)] hover:text-red-400"
+            className="p-1 rounded text-fg-muted hover:text-red-400"
             title="刪除"
             aria-label="刪除"
           >
@@ -199,7 +199,7 @@ export function TodoItem({
       </div>
 
       {hasChildren && expanded && children && (
-        <div className="border-l border-[var(--color-border)] ml-4">
+        <div className="border-l border-border ml-4">
           {children.map((c) => (
             <TodoItem
               key={c.id}

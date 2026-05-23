@@ -60,7 +60,7 @@ export function BossBattle({ chapter, engine, isLoggedIn }: { chapter: Chapter; 
       >
         <div className="text-6xl mb-4 animate-pulse-glow inline-block rounded-full">{boss.emoji}</div>
         <h2 className="text-3xl font-bold mb-2 text-red-400">⚔️ Boss 戰：{boss.name}</h2>
-        <p className="text-[var(--color-fg-muted)] mb-1">{boss.description}</p>
+        <p className="text-fg-muted mb-1">{boss.description}</p>
         <div className="flex justify-center gap-6 my-6 text-sm">
           <span>HP <span className="text-red-400 font-bold">{boss.hp}</span></span>
           <span>題數 <span className="font-bold">{quiz.questions.length}</span></span>
@@ -81,14 +81,14 @@ export function BossBattle({ chapter, engine, isLoggedIn }: { chapter: Chapter; 
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="p-8 rounded-2xl bg-[var(--color-bg-card)] border border-[var(--color-border)] text-center"
+        className="p-8 rounded-2xl bg-bg-card border border-border text-center"
       >
         <div className="text-6xl mb-4">{result.perfect ? "🏆" : result.correct >= quiz.questions.length / 2 ? "✨" : "💀"}</div>
         <h2 className="text-3xl font-bold mb-2">
           {result.perfect ? "完美勝利！" : result.correct >= quiz.questions.length / 2 ? "戰勝 boss！" : "敗北⋯再試一次"}
         </h2>
         <p className="text-xl mb-4">{result.correct} / {quiz.questions.length} 答對</p>
-        {result.xpAwarded > 0 && <p className="text-[var(--color-warning)]">+{result.xpAwarded} XP　+{result.zCoinAwarded} Z-coin</p>}
+        {result.xpAwarded > 0 && <p className="text-warning">+{result.xpAwarded} XP　+{result.zCoinAwarded} Z-coin</p>}
 
         {/* Show all questions + correct answers */}
         <div className="mt-8 space-y-4 text-left">
@@ -103,7 +103,7 @@ export function BossBattle({ chapter, engine, isLoggedIn }: { chapter: Chapter; 
                     <div key={o.value} className={
                       o.value === q.answer ? "text-green-400" :
                       o.value === userAns ? "text-red-400" :
-                      "text-[var(--color-fg-muted)]"
+                      "text-fg-muted"
                     }>
                       {o.value === q.answer && "✓ "}
                       {o.value === userAns && o.value !== q.answer && "✗ "}
@@ -111,7 +111,7 @@ export function BossBattle({ chapter, engine, isLoggedIn }: { chapter: Chapter; 
                     </div>
                   ))}
                 </div>
-                <div className="mt-2 text-xs text-[var(--color-fg-muted)] leading-relaxed">{q.explanation}</div>
+                <div className="mt-2 text-xs text-fg-muted leading-relaxed">{q.explanation}</div>
               </div>
             );
           })}
@@ -119,7 +119,7 @@ export function BossBattle({ chapter, engine, isLoggedIn }: { chapter: Chapter; 
 
         <button
           onClick={() => { setStarted(false); setSubmitted(false); setAnswers({}); setCurrentQ(0); setBossHp(boss.hp); setHearts(5); setResult(null); }}
-          className="mt-6 px-6 py-2 bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-lg hover:border-[var(--color-accent)]"
+          className="mt-6 px-6 py-2 bg-bg-elevated border border-border rounded-lg hover:border-accent"
         >
           🔁 再戰一次
         </button>
@@ -132,8 +132,8 @@ export function BossBattle({ chapter, engine, isLoggedIn }: { chapter: Chapter; 
       <div className="p-8 rounded-2xl bg-red-950/40 border-2 border-red-500/40 text-center animate-fade-in">
         <div className="text-6xl mb-4">💀</div>
         <h2 className="text-2xl font-bold mb-2 text-red-400">敗北⋯</h2>
-        <p className="text-[var(--color-fg-muted)] mb-4">你被 {boss.name} 擊倒了</p>
-        <button onClick={() => { setStarted(false); setAnswers({}); setCurrentQ(0); setBossHp(boss.hp); setHearts(5); }} className="px-6 py-2 bg-[var(--color-accent)] text-black rounded-lg font-bold">捲土重來</button>
+        <p className="text-fg-muted mb-4">你被 {boss.name} 擊倒了</p>
+        <button onClick={() => { setStarted(false); setAnswers({}); setCurrentQ(0); setBossHp(boss.hp); setHearts(5); }} className="px-6 py-2 bg-accent text-black rounded-lg font-bold">捲土重來</button>
       </div>
     );
   }
@@ -160,7 +160,7 @@ export function BossBattle({ chapter, engine, isLoggedIn }: { chapter: Chapter; 
             <Heart key={i} size={20} className={i < hearts ? "text-red-500 fill-red-500" : "text-gray-700"} />
           ))}
         </div>
-        <div className="text-[var(--color-fg-muted)]">Q {currentQ + 1} / {quiz.questions.length}</div>
+        <div className="text-fg-muted">Q {currentQ + 1} / {quiz.questions.length}</div>
       </div>
 
       {/* Question */}
@@ -178,11 +178,11 @@ export function BossBattle({ chapter, engine, isLoggedIn }: { chapter: Chapter; 
               const isAnswered = !!ans;
               const isCorrect = o.value === q.answer;
               const isUser = o.value === ans;
-              let cls = "border-[var(--color-border)] hover:border-[var(--color-accent)] bg-[var(--color-bg-card)]";
+              let cls = "border-border hover:border-accent bg-bg-card";
               if (isAnswered) {
                 if (isCorrect) cls = "border-green-500 bg-green-500/10";
                 else if (isUser) cls = "border-red-500 bg-red-500/10";
-                else cls = "border-[var(--color-border)] bg-[var(--color-bg-card)] opacity-50";
+                else cls = "border-border bg-bg-card opacity-50";
               }
               return (
                 <button

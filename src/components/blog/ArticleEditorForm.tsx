@@ -99,14 +99,14 @@ export function ArticleEditorForm({ initial }: { initial?: Partial<ArticleFormDa
     <div>
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
-        <Link href="/me/blog" className="text-sm text-[var(--color-fg-muted)] hover:text-[var(--color-fg)] flex items-center gap-1">
+        <Link href="/me/blog" className="text-sm text-fg-muted hover:text-fg flex items-center gap-1">
           <ArrowLeft size={14} /> 回部落格
         </Link>
         <div className="flex gap-2">
           <button
             onClick={() => save(false)}
             disabled={saving}
-            className="px-4 py-2 rounded-lg bg-[var(--color-bg-card)] border border-[var(--color-border)] text-sm font-medium hover:border-[var(--color-accent)] transition flex items-center gap-1 disabled:opacity-50"
+            className="px-4 py-2 rounded-lg bg-bg-card border border-border text-sm font-medium hover:border-accent transition flex items-center gap-1 disabled:opacity-50"
           >
             {saving ? <Loader2 size={14} className="animate-spin" /> : <Lock size={14} />}
             存成草稿
@@ -114,7 +114,7 @@ export function ArticleEditorForm({ initial }: { initial?: Partial<ArticleFormDa
           <button
             onClick={() => save(true)}
             disabled={saving}
-            className="px-4 py-2 rounded-lg bg-[var(--color-accent)] text-black text-sm font-bold hover:scale-105 transition flex items-center gap-1 disabled:opacity-50"
+            className="px-4 py-2 rounded-lg bg-accent text-black text-sm font-bold hover:scale-105 transition flex items-center gap-1 disabled:opacity-50"
           >
             {saving ? <Loader2 size={14} className="animate-spin" /> : <Globe size={14} />}
             發佈
@@ -127,7 +127,7 @@ export function ArticleEditorForm({ initial }: { initial?: Partial<ArticleFormDa
         value={data.title}
         onChange={(e) => set("title", e.target.value)}
         placeholder="文章標題"
-        className="w-full bg-transparent text-3xl font-bold mb-3 outline-none placeholder:text-[var(--color-fg-muted)]/40"
+        className="w-full bg-transparent text-3xl font-bold mb-3 outline-none placeholder:text-fg-muted/40"
       />
 
       {/* 摘要 */}
@@ -136,7 +136,7 @@ export function ArticleEditorForm({ initial }: { initial?: Partial<ArticleFormDa
         onChange={(e) => set("summary", e.target.value)}
         placeholder="一句話摘要（會顯示在文章列表、搜尋結果）"
         rows={2}
-        className="w-full bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-lg p-3 text-sm mb-4 outline-none focus:border-[var(--color-accent)] resize-none"
+        className="w-full bg-bg-card border border-border rounded-lg p-3 text-sm mb-4 outline-none focus:border-accent resize-none"
       />
 
       {/* TipTap 編輯器 */}
@@ -147,9 +147,9 @@ export function ArticleEditorForm({ initial }: { initial?: Partial<ArticleFormDa
         <label className="text-sm font-medium mb-1.5 block">標籤</label>
         <div className="flex flex-wrap gap-1.5 mb-2">
           {data.tags.map((t) => (
-            <span key={t} className="text-xs px-2 py-1 rounded-full bg-[var(--color-bg-elevated)] flex items-center gap-1">
+            <span key={t} className="text-xs px-2 py-1 rounded-full bg-bg-elevated flex items-center gap-1">
               #{t}
-              <button onClick={() => set("tags", data.tags.filter((x) => x !== t))} className="text-[var(--color-fg-muted)] hover:text-red-400">×</button>
+              <button onClick={() => set("tags", data.tags.filter((x) => x !== t))} className="text-fg-muted hover:text-red-400">×</button>
             </span>
           ))}
         </div>
@@ -158,7 +158,7 @@ export function ArticleEditorForm({ initial }: { initial?: Partial<ArticleFormDa
           onChange={(e) => setTagInput(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addTag(); } }}
           placeholder="輸入標籤後按 Enter"
-          className="w-full bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-lg p-2 text-sm outline-none focus:border-[var(--color-accent)]"
+          className="w-full bg-bg-card border border-border rounded-lg p-2 text-sm outline-none focus:border-accent"
         />
       </div>
 
@@ -166,19 +166,19 @@ export function ArticleEditorForm({ initial }: { initial?: Partial<ArticleFormDa
       <div className="mt-4">
         <button
           onClick={() => setShowMeta(!showMeta)}
-          className="text-sm text-[var(--color-fg-muted)] hover:text-[var(--color-fg)]"
+          className="text-sm text-fg-muted hover:text-fg"
         >
           {showMeta ? "▲ 收起" : "▼ 進階設定（封面圖、分類、SEO）"}
         </button>
         {showMeta && (
-          <div className="mt-3 space-y-3 p-4 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border)]">
+          <div className="mt-3 space-y-3 p-4 rounded-xl bg-bg-card border border-border">
             <div>
               <label className="text-sm font-medium mb-1 block">封面圖片網址</label>
               <input
                 value={data.cover_image}
                 onChange={(e) => set("cover_image", e.target.value)}
                 placeholder="https://..."
-                className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg p-2 text-sm outline-none focus:border-[var(--color-accent)]"
+                className="w-full bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent"
               />
             </div>
             <div>
@@ -187,7 +187,7 @@ export function ArticleEditorForm({ initial }: { initial?: Partial<ArticleFormDa
                 value={data.category}
                 onChange={(e) => set("category", e.target.value)}
                 placeholder="例如：技術筆記、生活雜記"
-                className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg p-2 text-sm outline-none focus:border-[var(--color-accent)]"
+                className="w-full bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent"
               />
             </div>
             {seriesList.length > 0 && (
@@ -197,7 +197,7 @@ export function ArticleEditorForm({ initial }: { initial?: Partial<ArticleFormDa
                   <select
                     value={data.series_id}
                     onChange={(e) => set("series_id", e.target.value)}
-                    className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg p-2 text-sm outline-none focus:border-[var(--color-accent)]"
+                    className="w-full bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent"
                   >
                     <option value="">不屬於任何系列</option>
                     {seriesList.map((s) => (
@@ -212,7 +212,7 @@ export function ArticleEditorForm({ initial }: { initial?: Partial<ArticleFormDa
                     value={data.series_order}
                     onChange={(e) => set("series_order", e.target.value)}
                     placeholder="例如 1"
-                    className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg p-2 text-sm outline-none focus:border-[var(--color-accent)]"
+                    className="w-full bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent"
                   />
                 </div>
               </div>
@@ -222,7 +222,7 @@ export function ArticleEditorForm({ initial }: { initial?: Partial<ArticleFormDa
               <input
                 value={data.seo_title}
                 onChange={(e) => set("seo_title", e.target.value)}
-                className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg p-2 text-sm outline-none focus:border-[var(--color-accent)]"
+                className="w-full bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent"
               />
             </div>
             <div>
@@ -231,7 +231,7 @@ export function ArticleEditorForm({ initial }: { initial?: Partial<ArticleFormDa
                 value={data.seo_desc}
                 onChange={(e) => set("seo_desc", e.target.value)}
                 rows={2}
-                className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg p-2 text-sm outline-none focus:border-[var(--color-accent)] resize-none"
+                className="w-full bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent resize-none"
               />
             </div>
           </div>

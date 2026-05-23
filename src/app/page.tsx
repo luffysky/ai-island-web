@@ -30,9 +30,9 @@ export default async function HomePage() {
       />
       <MascotIntro />
       <StageMap />
-      <section className="max-w-7xl mx-auto px-6 py-16 border-b border-[var(--color-border)]">
+      <section className="max-w-7xl mx-auto px-6 py-16 border-b border-border">
         <h2 className="text-3xl font-bold mb-2 text-center">🗺️ 完整章節地圖</h2>
-        <p className="text-center text-[var(--color-fg-muted)] mb-8">{stats.totalChapters} 章 × {stats.totalLessons}+ lesson — 點亮整片島嶼</p>
+        <p className="text-center text-fg-muted mb-8">{stats.totalChapters} 章 × {stats.totalLessons}+ lesson — 點亮整片島嶼</p>
         <ChapterMap chapters={chapters} />
       </section>
       <MissionDungeons />

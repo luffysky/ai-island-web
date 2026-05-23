@@ -60,7 +60,7 @@ export function SettingsEditor({ initial }: { initial: Setting[] }) {
         />
       ))}
       {rows.length === 0 && (
-        <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-12 text-center text-[var(--color-fg-muted)] text-sm">
+        <div className="bg-bg-card border border-border rounded-xl p-12 text-center text-fg-muted text-sm">
           目前沒有設定
         </div>
       )}
@@ -82,15 +82,15 @@ function SettingCard({
   msg: string | null;
 }) {
   return (
-    <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-4">
+    <div className="bg-bg-card border border-border rounded-xl p-4">
       <div className="flex items-start justify-between gap-3 mb-3">
         <div className="flex-1 min-w-0">
           <div className="font-bold flex items-center gap-2">
             {labelFor(setting.key)}
-            <code className="text-[10px] text-[var(--color-fg-muted)] font-mono">{setting.key}</code>
+            <code className="text-[10px] text-fg-muted font-mono">{setting.key}</code>
           </div>
           {setting.description && (
-            <p className="text-xs text-[var(--color-fg-muted)] mt-0.5">{setting.description}</p>
+            <p className="text-xs text-fg-muted mt-0.5">{setting.description}</p>
           )}
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
@@ -98,7 +98,7 @@ function SettingCard({
           <button
             onClick={onSave}
             disabled={saving}
-            className="text-xs px-3 py-1 bg-[var(--color-accent)] text-black font-bold rounded-lg disabled:opacity-50"
+            className="text-xs px-3 py-1 bg-accent text-black font-bold rounded-lg disabled:opacity-50"
           >
             {saving ? "儲存中..." : "💾 儲存"}
           </button>
@@ -108,7 +108,7 @@ function SettingCard({
       <SettingEditor settingKey={setting.key} value={setting.value} onChange={onChange} />
 
       {setting.updated_at && (
-        <div className="text-[10px] text-[var(--color-fg-muted)] mt-2">
+        <div className="text-[10px] text-fg-muted mt-2">
           最後修改：{new Date(setting.updated_at).toLocaleString("zh-TW")}
         </div>
       )}
@@ -223,7 +223,7 @@ function SettingEditor({ settingKey, value, onChange }: { settingKey: string; va
               help={featureHelp(k)}
             />
           ))}
-          <p className="text-[10px] text-[var(--color-fg-muted)]">
+          <p className="text-[10px] text-fg-muted">
             新增 flag 請到 Supabase Studio 直接編輯 JSON
           </p>
         </div>
@@ -255,14 +255,14 @@ function ToggleRow({
           onChange={(e) => onChange(e.target.checked)}
           className="sr-only peer"
         />
-        <span className="w-9 h-5 bg-[var(--color-bg-elevated)] rounded-full peer-checked:bg-[var(--color-accent)] transition" />
+        <span className="w-9 h-5 bg-bg-elevated rounded-full peer-checked:bg-accent transition" />
         <span className="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4 shadow" />
       </span>
       <span className="flex-1 text-sm">
         <span className="font-medium">{label}</span>
-        {help && <p className="text-[10px] text-[var(--color-fg-muted)] mt-0.5">{help}</p>}
+        {help && <p className="text-[10px] text-fg-muted mt-0.5">{help}</p>}
       </span>
-      <span className={`text-[10px] font-bold flex-shrink-0 ${value ? "text-emerald-500" : "text-[var(--color-fg-muted)]"}`}>
+      <span className={`text-[10px] font-bold flex-shrink-0 ${value ? "text-emerald-500" : "text-fg-muted"}`}>
         {value ? "ON" : "OFF"}
       </span>
     </label>
@@ -272,7 +272,7 @@ function ToggleRow({
 function FieldRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="text-xs text-[var(--color-fg-muted)] block mb-1">{label}</span>
+      <span className="text-xs text-fg-muted block mb-1">{label}</span>
       {children}
     </label>
   );
@@ -296,7 +296,7 @@ function JsonFallback({ value, onChange }: { value: any; onChange: (v: any) => v
           }
         }}
         rows={4}
-        className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg p-2 text-xs font-mono"
+        className="w-full bg-bg border border-border rounded-lg p-2 text-xs font-mono"
       />
       {err && <p className="text-xs text-red-400 mt-1">JSON 格式錯誤：{err}</p>}
     </div>
@@ -304,7 +304,7 @@ function JsonFallback({ value, onChange }: { value: any; onChange: (v: any) => v
 }
 
 const fldCls =
-  "w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg px-3 py-1.5 text-sm focus:border-[var(--color-accent)] outline-none";
+  "w-full bg-bg border border-border rounded-lg px-3 py-1.5 text-sm focus:border-accent outline-none";
 
 function labelFor(key: string): string {
   const map: Record<string, string> = {

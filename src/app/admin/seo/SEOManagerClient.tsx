@@ -63,24 +63,24 @@ export function SEOManagerClient({
       {/* 列表 */}
       <div className="space-y-2">
         <div className="relative">
-          <Search size={16} className="absolute left-3 top-2.5 text-[var(--color-fg-muted)]" />
+          <Search size={16} className="absolute left-3 top-2.5 text-fg-muted" />
           <input
             type="text"
             placeholder="搜尋路徑..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg pl-9 pr-3 py-2 text-sm"
+            className="w-full bg-bg border border-border rounded-lg pl-9 pr-3 py-2 text-sm"
           />
         </div>
-        <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl max-h-[600px] overflow-y-auto">
+        <div className="bg-bg-card border border-border rounded-xl max-h-[600px] overflow-y-auto">
           {filtered.map((p) => {
             const hasOverride = existingPages.some((e) => e.path === p.path);
             return (
               <button
                 key={p.path}
                 onClick={() => setEditing(p)}
-                className={`w-full text-left p-3 border-b border-[var(--color-border)] hover:bg-[var(--color-bg-elevated)] ${
-                  editing?.path === p.path ? "bg-[var(--color-bg-elevated)]" : ""
+                className={`w-full text-left p-3 border-b border-border hover:bg-bg-elevated ${
+                  editing?.path === p.path ? "bg-bg-elevated" : ""
                 }`}
               >
                 <div className="flex items-center justify-between">
@@ -95,9 +95,9 @@ export function SEOManagerClient({
       </div>
 
       {/* 編輯 */}
-      <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-5">
+      <div className="bg-bg-card border border-border rounded-xl p-5">
         {!editing ? (
-          <div className="text-center text-[var(--color-fg-muted)] py-12">
+          <div className="text-center text-fg-muted py-12">
             <Search size={32} className="mx-auto mb-2 opacity-50" />
             <p className="text-sm">選一個頁面開始編輯</p>
           </div>
@@ -112,7 +112,7 @@ export function SEOManagerClient({
                 type="text"
                 value={editing.title ?? ""}
                 onChange={(e) => setEditing({ ...editing, title: e.target.value })}
-                className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded p-2 text-sm"
+                className="w-full bg-bg border border-border rounded p-2 text-sm"
                 placeholder="頁面標題 - AI 島"
               />
               <CharCount value={editing.title} max={60} />
@@ -123,7 +123,7 @@ export function SEOManagerClient({
                 value={editing.description ?? ""}
                 onChange={(e) => setEditing({ ...editing, description: e.target.value })}
                 rows={2}
-                className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded p-2 text-sm"
+                className="w-full bg-bg border border-border rounded p-2 text-sm"
                 placeholder="簡短說明這個頁面"
               />
               <CharCount value={editing.description} max={160} />
@@ -137,7 +137,7 @@ export function SEOManagerClient({
                   ...editing,
                   keywords: e.target.value.split(",").map((k) => k.trim()).filter(Boolean),
                 })}
-                className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded p-2 text-sm"
+                className="w-full bg-bg border border-border rounded p-2 text-sm"
                 placeholder="HTML, CSS, 教學, 全端"
               />
             </Field>
@@ -147,7 +147,7 @@ export function SEOManagerClient({
                 type="text"
                 value={editing.og_image ?? ""}
                 onChange={(e) => setEditing({ ...editing, og_image: e.target.value })}
-                className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded p-2 text-sm font-mono"
+                className="w-full bg-bg border border-border rounded p-2 text-sm font-mono"
                 placeholder="/og.png 或 https://..."
               />
             </Field>
@@ -157,7 +157,7 @@ export function SEOManagerClient({
                 type="text"
                 value={editing.canonical_url ?? ""}
                 onChange={(e) => setEditing({ ...editing, canonical_url: e.target.value })}
-                className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded p-2 text-sm font-mono"
+                className="w-full bg-bg border border-border rounded p-2 text-sm font-mono"
               />
             </Field>
 
@@ -166,7 +166,7 @@ export function SEOManagerClient({
                 <select
                   value={editing.robots ?? "index,follow"}
                   onChange={(e) => setEditing({ ...editing, robots: e.target.value })}
-                  className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded p-2 text-sm"
+                  className="w-full bg-bg border border-border rounded p-2 text-sm"
                 >
                   <option value="index,follow">index, follow</option>
                   <option value="noindex,follow">noindex, follow</option>
@@ -182,7 +182,7 @@ export function SEOManagerClient({
                   max="1"
                   value={editing.priority ?? 0.5}
                   onChange={(e) => setEditing({ ...editing, priority: Number(e.target.value) })}
-                  className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded p-2 text-sm"
+                  className="w-full bg-bg border border-border rounded p-2 text-sm"
                 />
               </Field>
             </div>
@@ -191,7 +191,7 @@ export function SEOManagerClient({
               <select
                 value={editing.geo_target ?? "TW"}
                 onChange={(e) => setEditing({ ...editing, geo_target: e.target.value })}
-                className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded p-2 text-sm"
+                className="w-full bg-bg border border-border rounded p-2 text-sm"
               >
                 <option value="global">Global</option>
                 <option value="TW">台灣 (TW)</option>
@@ -211,7 +211,7 @@ export function SEOManagerClient({
                   } catch {}
                 }}
                 rows={3}
-                className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded p-2 text-xs font-mono"
+                className="w-full bg-bg border border-border rounded p-2 text-xs font-mono"
               />
             </Field>
 
@@ -224,7 +224,7 @@ export function SEOManagerClient({
                   } catch {}
                 }}
                 rows={4}
-                className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded p-2 text-xs font-mono"
+                className="w-full bg-bg border border-border rounded p-2 text-xs font-mono"
               />
             </Field>
 
@@ -233,13 +233,13 @@ export function SEOManagerClient({
                 value={editing.custom_head_html ?? ""}
                 onChange={(e) => setEditing({ ...editing, custom_head_html: e.target.value })}
                 rows={3}
-                className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded p-2 text-xs font-mono"
+                className="w-full bg-bg border border-border rounded p-2 text-xs font-mono"
               />
             </Field>
 
             <button
               onClick={save}
-              className="w-full px-4 py-2 bg-[var(--color-accent)] text-black rounded-lg font-semibold flex items-center justify-center gap-2"
+              className="w-full px-4 py-2 bg-accent text-black rounded-lg font-semibold flex items-center justify-center gap-2"
             >
               {saved ? <><Check size={16} /> 已存</> : <><Save size={16} /> 儲存</>}
             </button>
@@ -254,8 +254,8 @@ function Field({ label, hint, children }: { label: string; hint?: string; childr
   return (
     <div>
       <div className="flex items-baseline justify-between mb-1">
-        <label className="text-xs text-[var(--color-fg-muted)] font-medium">{label}</label>
-        {hint && <span className="text-xs text-[var(--color-fg-muted)]">{hint}</span>}
+        <label className="text-xs text-fg-muted font-medium">{label}</label>
+        {hint && <span className="text-xs text-fg-muted">{hint}</span>}
       </div>
       {children}
     </div>
@@ -266,7 +266,7 @@ function CharCount({ value, max }: { value?: string; max: number }) {
   const len = value?.length ?? 0;
   const over = len > max;
   return (
-    <div className={`text-xs mt-0.5 text-right ${over ? "text-red-400" : "text-[var(--color-fg-muted)]"}`}>
+    <div className={`text-xs mt-0.5 text-right ${over ? "text-red-400" : "text-fg-muted"}`}>
       {len} / {max}
     </div>
   );

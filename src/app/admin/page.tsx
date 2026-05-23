@@ -176,26 +176,26 @@ export default async function AdminOverviewPage() {
       {/* 即時 4 widget grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
         {/* 即時在線 */}
-        <Link href={adminHref("/admin/ga4") as any} className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-4 hover:border-[var(--color-accent)] transition">
-          <div className="text-[10px] uppercase tracking-wider text-[var(--color-fg-muted)] flex items-center gap-1.5">
+        <Link href={adminHref("/admin/ga4") as any} className="bg-bg-card border border-border rounded-xl p-4 hover:border-accent transition">
+          <div className="text-[10px] uppercase tracking-wider text-fg-muted flex items-center gap-1.5">
             <span className="inline-block w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
             即時在線
           </div>
           <div className="text-2xl font-bold mt-1 text-green-400">{liveTotal}</div>
-          <div className="text-[10px] text-[var(--color-fg-muted)] mt-1">
+          <div className="text-[10px] text-fg-muted mt-1">
             {liveMembers} 會員 / {liveGuests} 訪客
           </div>
         </Link>
 
         {/* 即將逾期 breach */}
-        <Link href={adminHref("/admin/breach") as any} className={`bg-[var(--color-bg-card)] border rounded-xl p-4 transition ${overdueBreaches.length > 0 ? "border-red-500/40 hover:border-red-500" : "border-[var(--color-border)] hover:border-[var(--color-accent)]"}`}>
-          <div className="text-[10px] uppercase tracking-wider text-[var(--color-fg-muted)]">
+        <Link href={adminHref("/admin/breach") as any} className={`bg-bg-card border rounded-xl p-4 transition ${overdueBreaches.length > 0 ? "border-red-500/40 hover:border-red-500" : "border-border hover:border-accent"}`}>
+          <div className="text-[10px] uppercase tracking-wider text-fg-muted">
             {overdueBreaches.length > 0 ? "⚠ 即將/已逾期 breach" : "✅ 無 breach 風險"}
           </div>
           <div className={`text-2xl font-bold mt-1 ${overdueBreaches.length > 0 ? "text-red-400" : "text-emerald-400"}`}>
             {overdueBreaches.length}
           </div>
-          <div className="text-[10px] text-[var(--color-fg-muted)] mt-1">
+          <div className="text-[10px] text-fg-muted mt-1">
             {overdueBreaches.length > 0
               ? `最久 ${Math.round(overdueBreaches[0].hoursSinceDiscovered)}h`
               : "近 72h 內無未通報事件"}
@@ -203,37 +203,37 @@ export default async function AdminOverviewPage() {
         </Link>
 
         {/* 近期 audit */}
-        <Link href={adminHref("/admin/audit") as any} className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-4 hover:border-[var(--color-accent)] transition">
-          <div className="text-[10px] uppercase tracking-wider text-[var(--color-fg-muted)]">近期 audit</div>
+        <Link href={adminHref("/admin/audit") as any} className="bg-bg-card border border-border rounded-xl p-4 hover:border-accent transition">
+          <div className="text-[10px] uppercase tracking-wider text-fg-muted">近期 audit</div>
           {recentAudit && recentAudit.length > 0 ? (
             <>
               <div className="text-sm font-bold mt-1 truncate">{recentAudit[0].actor_username}</div>
-              <div className="text-[10px] text-[var(--color-fg-muted)] truncate font-mono">{recentAudit[0].action}</div>
-              <div className="text-[10px] text-[var(--color-fg-muted)] mt-0.5">
+              <div className="text-[10px] text-fg-muted truncate font-mono">{recentAudit[0].action}</div>
+              <div className="text-[10px] text-fg-muted mt-0.5">
                 {recentAudit.length} 筆於 ↗
               </div>
             </>
           ) : (
-            <div className="text-2xl font-bold mt-1 text-[var(--color-fg-muted)]">—</div>
+            <div className="text-2xl font-bold mt-1 text-fg-muted">—</div>
           )}
         </Link>
 
         {/* AI 預算 */}
-        <Link href={adminHref("/admin/ai/models") as any} className={`bg-[var(--color-bg-card)] border rounded-xl p-4 transition ${budgetView.some((b: any) => b.level === "critical") ? "border-red-500/40" : budgetView.some((b: any) => b.level === "warning") ? "border-orange-500/40" : "border-[var(--color-border)] hover:border-[var(--color-accent)]"}`}>
-          <div className="text-[10px] uppercase tracking-wider text-[var(--color-fg-muted)]">AI 預算</div>
+        <Link href={adminHref("/admin/ai/models") as any} className={`bg-bg-card border rounded-xl p-4 transition ${budgetView.some((b: any) => b.level === "critical") ? "border-red-500/40" : budgetView.some((b: any) => b.level === "warning") ? "border-orange-500/40" : "border-border hover:border-accent"}`}>
+          <div className="text-[10px] uppercase tracking-wider text-fg-muted">AI 預算</div>
           <div className="text-sm font-bold mt-1">
             {budgetView.length === 0 ? "—" : `${budgetView.length} 把 key`}
           </div>
           <div className="mt-1 space-y-0.5">
             {budgetView.slice(0, 3).map((b: any) => (
               <div key={b.provider} className="flex items-center gap-1.5">
-                <div className="flex-1 h-1 bg-[var(--color-bg-elevated)] rounded-full overflow-hidden">
+                <div className="flex-1 h-1 bg-bg-elevated rounded-full overflow-hidden">
                   <div
                     className={`h-full ${b.level === "critical" ? "bg-red-500" : b.level === "warning" ? "bg-orange-400" : "bg-emerald-400"}`}
                     style={{ width: `${b.pct}%` }}
                   />
                 </div>
-                <span className="text-[9px] text-[var(--color-fg-muted)] w-12 text-right">
+                <span className="text-[9px] text-fg-muted w-12 text-right">
                   {b.pct}%
                 </span>
               </div>
@@ -244,9 +244,9 @@ export default async function AdminOverviewPage() {
 
       {/* 核心指標 */}
       <div>
-        <h2 className="text-sm uppercase tracking-wider text-[var(--color-fg-muted)] mb-3">核心指標</h2>
+        <h2 className="text-sm uppercase tracking-wider text-fg-muted mb-3">核心指標</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <Stat label="總用戶" value={userCount ?? 0} hint={`+${newUsersThisMonth ?? 0} 本月`} color="text-[var(--color-accent)]" />
+          <Stat label="總用戶" value={userCount ?? 0} hint={`+${newUsersThisMonth ?? 0} 本月`} color="text-accent" />
           <Stat label="今日新註冊" value={newUsersToday ?? 0} color="text-blue-400" />
           <Stat label="近 7 日活躍" value={dauCount ?? 0} hint={`${userCount ? Math.round((dauCount ?? 0) / userCount * 100) : 0}% retention`} color="text-green-400" />
           <Stat label="MRR" value={`NT$ ${mrr.toLocaleString()}`} hint={`${activeSubs ?? 0} 訂閱`} color="text-yellow-400" />
@@ -264,9 +264,9 @@ export default async function AdminOverviewPage() {
 
       {/* 第二排 */}
       <div>
-        <h2 className="text-sm uppercase tracking-wider text-[var(--color-fg-muted)] mb-3">學習 / 商務 / 客服</h2>
+        <h2 className="text-sm uppercase tracking-wider text-fg-muted mb-3">學習 / 商務 / 客服</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <Stat label="完成 lessons" value={lessonCount ?? 0} color="text-[var(--color-accent-2)]" />
+          <Stat label="完成 lessons" value={lessonCount ?? 0} color="text-accent-2" />
           <Stat label="Quiz 嘗試" value={quizCount ?? 0} color="text-purple-400" />
           <Stat label="本月訂單" value={ordersThisMonth ?? 0} color="text-cyan-400" />
           <Stat label="待處理客服" value={openTickets ?? 0} color="text-red-400" />
@@ -274,7 +274,7 @@ export default async function AdminOverviewPage() {
       </div>
 
       {/* 快速操作 */}
-      <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-5">
+      <div className="bg-bg-card border border-border rounded-xl p-5">
         <h2 className="font-bold mb-3">⚡ 快速操作</h2>
         <div className="grid grid-cols-2 md:grid-cols-6 gap-2 text-sm">
           <QuickAction href="/admin/broadcasts" label="📣 發公告" />
@@ -288,25 +288,25 @@ export default async function AdminOverviewPage() {
 
       {/* 雙欄 */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-5">
+        <div className="bg-bg-card border border-border rounded-xl p-5">
           <h2 className="font-bold mb-3">🏆 Top 10 玩家</h2>
           <div className="space-y-1.5">
             {topUsers?.map((u: any, i: number) => (
-              <Link href={adminHref(`/admin/users?q=${u.username}`) as any} key={u.username} className="flex items-center justify-between text-sm py-1 hover:text-[var(--color-accent)]">
-                <span><span className="text-[var(--color-fg-muted)] mr-2">#{i + 1}</span>{u.username}</span>
-                <span><span className="text-[var(--color-accent)]">Lv {u.level}</span> <span className="text-[var(--color-fg-muted)] ml-2">{u.xp} XP</span></span>
+              <Link href={adminHref(`/admin/users?q=${u.username}`) as any} key={u.username} className="flex items-center justify-between text-sm py-1 hover:text-accent">
+                <span><span className="text-fg-muted mr-2">#{i + 1}</span>{u.username}</span>
+                <span><span className="text-accent">Lv {u.level}</span> <span className="text-fg-muted ml-2">{u.xp} XP</span></span>
               </Link>
             ))}
           </div>
         </div>
 
-        <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-5">
+        <div className="bg-bg-card border border-border rounded-xl p-5">
           <h2 className="font-bold mb-3">🆕 最近註冊</h2>
           <div className="space-y-1.5">
             {recentSignups?.map((u: any) => (
-              <Link href={adminHref(`/admin/users?q=${u.username}`) as any} key={u.username} className="flex items-center justify-between text-sm py-1 hover:text-[var(--color-accent)]">
+              <Link href={adminHref(`/admin/users?q=${u.username}`) as any} key={u.username} className="flex items-center justify-between text-sm py-1 hover:text-accent">
                 <span>{u.username}</span>
-                <span className="text-[var(--color-fg-muted)] text-xs">{new Date(u.created_at).toLocaleString('zh-TW', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}</span>
+                <span className="text-fg-muted text-xs">{new Date(u.created_at).toLocaleString('zh-TW', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}</span>
               </Link>
             ))}
           </div>
@@ -318,17 +318,17 @@ export default async function AdminOverviewPage() {
 
 function Stat({ label, value, hint, color }: { label: string; value: any; hint?: string; color: string }) {
   return (
-    <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-4">
-      <div className="text-xs text-[var(--color-fg-muted)]">{label}</div>
+    <div className="bg-bg-card border border-border rounded-xl p-4">
+      <div className="text-xs text-fg-muted">{label}</div>
       <div className={`text-2xl font-bold mt-1 ${color}`}>{value}</div>
-      {hint && <div className="text-xs text-[var(--color-fg-muted)] mt-1">{hint}</div>}
+      {hint && <div className="text-xs text-fg-muted mt-1">{hint}</div>}
     </div>
   );
 }
 
 function QuickAction({ href, label }: { href: string; label: string }) {
   return (
-    <Link href={adminHref(href) as any} className="px-3 py-2 bg-[var(--color-bg-elevated)] rounded-lg hover:bg-[var(--color-border)] hover:text-[var(--color-accent)] text-center transition">
+    <Link href={adminHref(href) as any} className="px-3 py-2 bg-bg-elevated rounded-lg hover:bg-border hover:text-accent text-center transition">
       {label}
     </Link>
   );

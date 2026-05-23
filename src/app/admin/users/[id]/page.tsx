@@ -62,14 +62,14 @@ export default async function AdminUserDetailPage({
       <div>
         <Link
           href={adminHref("/admin/users") as any}
-          className="inline-flex items-center gap-1 text-sm text-[var(--color-fg-muted)] hover:text-[var(--color-accent)]"
+          className="inline-flex items-center gap-1 text-sm text-fg-muted hover:text-accent"
         >
           <ArrowLeft size={14} /> 回使用者列表
         </Link>
       </div>
 
       {/* Profile header */}
-      <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-2xl p-5 flex items-center gap-4">
+      <div className="bg-bg-card border border-border rounded-2xl p-5 flex items-center gap-4">
         {profile.avatar_url ? (
           <Image
             src={profile.avatar_url}
@@ -80,7 +80,7 @@ export default async function AdminUserDetailPage({
             className="w-16 h-16 rounded-full object-cover"
           />
         ) : (
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-accent-2)] flex items-center justify-center text-2xl font-bold text-white">
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-accent to-accent-2 flex items-center justify-center text-2xl font-bold text-white">
             {(profile.display_name || profile.username || "?")[0]}
           </div>
         )}
@@ -101,15 +101,15 @@ export default async function AdminUserDetailPage({
               <span className="text-[10px] px-2 py-0.5 rounded bg-red-600/30 text-red-400">🚫 BANNED</span>
             )}
           </div>
-          <div className="text-xs text-[var(--color-fg-muted)] mt-0.5">
+          <div className="text-xs text-fg-muted mt-0.5">
             @{profile.username} · {profile.id}
           </div>
-          <div className="text-xs text-[var(--color-fg-muted)]">
+          <div className="text-xs text-fg-muted">
             建立於 {new Date(profile.created_at).toLocaleDateString("zh-TW")}
             {profile.last_active_at && ` · 最後活躍 ${new Date(profile.last_active_at).toLocaleString("zh-TW")}`}
           </div>
           {lastSession?.current_path && (
-            <div className="text-[11px] text-[var(--color-fg-muted)] mt-1">
+            <div className="text-[11px] text-fg-muted mt-1">
               最後足跡：{lastSession.current_path} · {[lastSession.country, lastSession.city, lastSession.district].filter(Boolean).join(" / ")} · {lastSession.device_type}
             </div>
           )}
@@ -243,10 +243,10 @@ export default async function AdminUserDetailPage({
 
 function Stat({ label, value, hint }: { label: string; value: any; hint?: string }) {
   return (
-    <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-3">
-      <div className="text-[10px] text-[var(--color-fg-muted)] uppercase tracking-wider">{label}</div>
+    <div className="bg-bg-card border border-border rounded-xl p-3">
+      <div className="text-[10px] text-fg-muted uppercase tracking-wider">{label}</div>
       <div className="text-xl font-bold mt-0.5">{value}</div>
-      {hint && <div className="text-[10px] text-[var(--color-fg-muted)] mt-0.5">{hint}</div>}
+      {hint && <div className="text-[10px] text-fg-muted mt-0.5">{hint}</div>}
     </div>
   );
 }
@@ -255,10 +255,10 @@ function Panel({ title, children, empty }: { title: string; children: React.Reac
   const arr = Array.isArray(children) ? children : [children];
   const filtered = arr.filter(Boolean);
   return (
-    <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-4">
+    <div className="bg-bg-card border border-border rounded-xl p-4">
       <h3 className="text-sm font-bold mb-2">{title}</h3>
       {filtered.length === 0 ? (
-        <p className="text-xs text-[var(--color-fg-muted)] py-4 text-center">{empty}</p>
+        <p className="text-xs text-fg-muted py-4 text-center">{empty}</p>
       ) : (
         <div className="space-y-0.5">{children}</div>
       )}
@@ -278,10 +278,10 @@ function Row({
   right: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center justify-between gap-2 text-xs py-1.5 border-t border-[var(--color-border)] first:border-t-0">
+    <div className="flex items-center justify-between gap-2 text-xs py-1.5 border-t border-border first:border-t-0">
       <span className={`flex-shrink-0 font-bold ${leftClass ?? ""}`}>{left}</span>
-      <span className="flex-1 truncate text-[var(--color-fg)]">{mid}</span>
-      <span className="flex-shrink-0 text-[var(--color-fg-muted)] text-[10px]">{right}</span>
+      <span className="flex-1 truncate text-fg">{mid}</span>
+      <span className="flex-shrink-0 text-fg-muted text-[10px]">{right}</span>
     </div>
   );
 }

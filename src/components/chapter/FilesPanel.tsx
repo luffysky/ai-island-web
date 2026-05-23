@@ -36,7 +36,7 @@ export function FilesPanel({ files }: { files: FileResource[] }) {
   };
 
   return (
-    <div className="my-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-card)] p-4">
+    <div className="my-4 rounded-xl border border-border bg-bg-card p-4">
       <div className="flex items-center gap-2 mb-3 font-semibold text-sm">
         📎 <span>檔案範例</span>
       </div>
@@ -46,23 +46,23 @@ export function FilesPanel({ files }: { files: FileResource[] }) {
           return (
             <div
               key={i}
-              className="flex items-center justify-between p-3 rounded-lg bg-[var(--color-bg)] hover:bg-[var(--color-bg-elevated)] transition"
+              className="flex items-center justify-between p-3 rounded-lg bg-bg hover:bg-bg-elevated transition"
             >
               <div className="flex items-center gap-3 min-w-0 flex-1">
-                <div className="text-[var(--color-fg-muted)] flex-shrink-0">{getIcon(f.filename)}</div>
+                <div className="text-fg-muted flex-shrink-0">{getIcon(f.filename)}</div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-medium text-sm truncate">{f.name}</span>
                     <span className={`text-xs px-2 py-0.5 rounded ${meta.color}`}>{meta.label}</span>
                   </div>
-                  <div className="text-xs text-[var(--color-fg-muted)] mt-0.5 truncate">
+                  <div className="text-xs text-fg-muted mt-0.5 truncate">
                     {f.filename}{f.size && ` · ${f.size}`}
                   </div>
                 </div>
               </div>
               <button
                 onClick={() => handleDownload(f)}
-                className="ml-2 flex items-center gap-1 px-3 py-1.5 bg-[var(--color-accent)] text-black text-xs font-semibold rounded hover:scale-105 transition flex-shrink-0"
+                className="ml-2 flex items-center gap-1 px-3 py-1.5 bg-accent text-black text-xs font-semibold rounded hover:scale-105 transition flex-shrink-0"
               >
                 <Download size={14} /> 下載
               </button>

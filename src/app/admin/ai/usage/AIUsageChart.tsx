@@ -6,7 +6,7 @@ export function AIUsageChart({ dailyData }: { dailyData: any[] }) {
   const [metric, setMetric] = useState<"cost" | "tokens" | "calls">("cost");
 
   return (
-    <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-5">
+    <div className="bg-bg-card border border-border rounded-xl p-5">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-bold">📈 趨勢圖（近 30 天）</h3>
         <div className="flex gap-1 text-xs">
@@ -36,7 +36,7 @@ function Tab({ active, onClick, children }: { active: boolean; onClick: () => vo
   return (
     <button
       onClick={onClick}
-      className={`px-3 py-1 rounded ${active ? "bg-[var(--color-accent)] text-black font-semibold" : "bg-[var(--color-bg-elevated)] hover:bg-[var(--color-border)]"}`}
+      className={`px-3 py-1 rounded ${active ? "bg-accent text-black font-semibold" : "bg-bg-elevated hover:bg-border"}`}
     >
       {children}
     </button>

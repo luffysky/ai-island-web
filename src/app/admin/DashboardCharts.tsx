@@ -202,11 +202,11 @@ function ChartCard({
   title, subtitle, actions, children,
 }: { title: string; subtitle?: string; actions?: React.ReactNode; children: React.ReactNode }) {
   return (
-    <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-5">
+    <div className="bg-bg-card border border-border rounded-xl p-5">
       <div className="flex items-start justify-between mb-3">
         <div>
           <h3 className="font-bold text-sm">{title}</h3>
-          {subtitle && <p className="text-xs text-[var(--color-fg-muted)] mt-0.5">{subtitle}</p>}
+          {subtitle && <p className="text-xs text-fg-muted mt-0.5">{subtitle}</p>}
         </div>
         {actions}
       </div>
@@ -220,7 +220,7 @@ function Tab({ active, onClick, children }: { active: boolean; onClick: () => vo
     <button
       onClick={onClick}
       className={`px-2 py-0.5 rounded ${
-        active ? "bg-[var(--color-accent)] text-black font-semibold" : "bg-[var(--color-bg-elevated)] hover:bg-[var(--color-border)]"
+        active ? "bg-accent text-black font-semibold" : "bg-bg-elevated hover:bg-border"
       }`}
     >
       {children}
@@ -230,7 +230,7 @@ function Tab({ active, onClick, children }: { active: boolean; onClick: () => vo
 
 function Empty() {
   return (
-    <div className="h-[200px] flex items-center justify-center text-xs text-[var(--color-fg-muted)]">
+    <div className="h-[200px] flex items-center justify-center text-xs text-fg-muted">
       尚無數據
     </div>
   );

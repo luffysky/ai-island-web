@@ -88,7 +88,7 @@ export function InteractionPanels({
     <div className="space-y-4">
       <div>
         <h3 className="text-lg font-bold">即時互動</h3>
-        <p className="text-xs text-[var(--color-fg-muted)] mt-1">站內第一方追蹤，約 15 秒 heartbeat；5 分鐘內有心跳視為在線。</p>
+        <p className="text-xs text-fg-muted mt-1">站內第一方追蹤，約 15 秒 heartbeat；5 分鐘內有心跳視為在線。</p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -103,7 +103,7 @@ export function InteractionPanels({
           {activeSessions.length === 0 ? <Empty /> : (
             <div className="overflow-x-auto">
               <table className="w-full min-w-[760px] text-xs">
-                <thead className="text-[var(--color-fg-muted)]">
+                <thead className="text-fg-muted">
                   <tr>
                     <th className="text-left py-2">使用者</th>
                     <th className="text-left py-2">目前頁面</th>
@@ -114,14 +114,14 @@ export function InteractionPanels({
                 </thead>
                 <tbody>
                   {activeSessions.map((row) => (
-                    <tr key={row.id} className="border-t border-[var(--color-border)]">
+                    <tr key={row.id} className="border-t border-border">
                       <td className="py-2">
                         <div className="font-medium">{displayUser(row)}</div>
-                        <div className="text-[10px] text-[var(--color-fg-muted)]">{row.user_id ? row.profile?.role ?? "member" : "guest"}</div>
+                        <div className="text-[10px] text-fg-muted">{row.user_id ? row.profile?.role ?? "member" : "guest"}</div>
                       </td>
                       <td className="py-2 max-w-xs">
                         <div className="truncate">{row.current_title || row.current_path || "—"}</div>
-                        <div className="truncate text-[10px] text-[var(--color-fg-muted)]">{row.current_path}</div>
+                        <div className="truncate text-[10px] text-fg-muted">{row.current_path}</div>
                       </td>
                       <td className="py-2">{row.device_type} · {row.browser} · {row.os}</td>
                       <td className="py-2">{[row.country, row.city].filter(Boolean).join(" / ") || "—"}</td>
@@ -138,13 +138,13 @@ export function InteractionPanels({
           {recentPageViews.length === 0 ? <Empty /> : (
             <div className="space-y-2">
               {recentPageViews.slice(0, 12).map((row) => (
-                <div key={row.id} className="rounded border border-[var(--color-border)] bg-[var(--color-bg)] p-2 text-xs">
+                <div key={row.id} className="rounded border border-border bg-bg p-2 text-xs">
                   <div className="flex items-center justify-between gap-3">
                     <div className="min-w-0">
                       <div className="truncate font-medium">{row.title || row.path}</div>
-                      <div className="truncate text-[var(--color-fg-muted)]">{displayUser(row)} · {row.path}</div>
+                      <div className="truncate text-fg-muted">{displayUser(row)} · {row.path}</div>
                     </div>
-                    <div className="text-right text-[var(--color-fg-muted)] flex-shrink-0">
+                    <div className="text-right text-fg-muted flex-shrink-0">
                       <div>{seconds(row.duration_sec)}</div>
                       <div>{row.scroll_max_pct}% {row.read_complete ? "看完" : ""}</div>
                     </div>
@@ -158,7 +158,7 @@ export function InteractionPanels({
 
       <div>
         <h3 className="text-lg font-bold">歷史互動</h3>
-        <p className="text-xs text-[var(--color-fg-muted)] mt-1">近 24 小時頁面、裝置、區域、停留時間與看完狀態。</p>
+        <p className="text-xs text-fg-muted mt-1">近 24 小時頁面、裝置、區域、停留時間與看完狀態。</p>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
@@ -189,7 +189,7 @@ export function InteractionPanels({
 
 function Panel({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-4">
+    <section className="bg-bg-card border border-border rounded-xl p-4">
       <h4 className="font-bold text-sm mb-3">{title}</h4>
       {children}
     </section>
@@ -198,8 +198,8 @@ function Panel({ title, children }: { title: string; children: React.ReactNode }
 
 function MiniStat({ label, value }: { label: string; value: string | number }) {
   return (
-    <div className="bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg p-3">
-      <div className="text-xs text-[var(--color-fg-muted)]">{label}</div>
+    <div className="bg-bg border border-border rounded-lg p-3">
+      <div className="text-xs text-fg-muted">{label}</div>
       <div className="text-xl font-bold mt-1">{value}</div>
     </div>
   );
@@ -207,13 +207,13 @@ function MiniStat({ label, value }: { label: string; value: string | number }) {
 
 function MetricLine({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between gap-3 border-t border-[var(--color-border)] py-2 text-xs first:border-t-0">
+    <div className="flex items-center justify-between gap-3 border-t border-border py-2 text-xs first:border-t-0">
       <span className="truncate">{label}</span>
-      <span className="text-[var(--color-fg-muted)] flex-shrink-0">{value}</span>
+      <span className="text-fg-muted flex-shrink-0">{value}</span>
     </div>
   );
 }
 
 function Empty() {
-  return <div className="py-8 text-center text-xs text-[var(--color-fg-muted)]">尚無資料</div>;
+  return <div className="py-8 text-center text-xs text-fg-muted">尚無資料</div>;
 }

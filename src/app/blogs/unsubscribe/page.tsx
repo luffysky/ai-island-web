@@ -34,20 +34,20 @@ function UnsubscribeContent() {
     <div className="max-w-md mx-auto px-6 py-20 text-center">
       {status === "loading" && (
         <>
-          <Loader2 size={32} className="mx-auto mb-3 animate-spin text-[var(--color-fg-muted)]" />
-          <p className="text-[var(--color-fg-muted)]">處理中...</p>
+          <Loader2 size={32} className="mx-auto mb-3 animate-spin text-fg-muted" />
+          <p className="text-fg-muted">處理中...</p>
         </>
       )}
       {status === "done" && (
         <>
-          <div className="w-14 h-14 rounded-full bg-[var(--color-accent)]/15 flex items-center justify-center mx-auto mb-4">
-            <Check size={28} className="text-[var(--color-accent)]" />
+          <div className="w-14 h-14 rounded-full bg-accent/15 flex items-center justify-center mx-auto mb-4">
+            <Check size={28} className="text-accent" />
           </div>
           <h1 className="text-xl font-bold mb-2">已取消訂閱</h1>
-          <p className="text-sm text-[var(--color-fg-muted)] mb-6">
+          <p className="text-sm text-fg-muted mb-6">
             {email && `${email} `}不會再收到這個部落格的通知。
           </p>
-          <Link href="/" className="text-sm text-[var(--color-accent)]">回 AI 島首頁</Link>
+          <Link href="/" className="text-sm text-accent">回 AI 島首頁</Link>
         </>
       )}
       {status === "error" && (
@@ -56,10 +56,10 @@ function UnsubscribeContent() {
             <X size={28} className="text-red-400" />
           </div>
           <h1 className="text-xl font-bold mb-2">連結無效</h1>
-          <p className="text-sm text-[var(--color-fg-muted)] mb-6">
+          <p className="text-sm text-fg-muted mb-6">
             這個退訂連結可能已失效、或你已經取消過訂閱了。
           </p>
-          <Link href="/" className="text-sm text-[var(--color-accent)]">回 AI 島首頁</Link>
+          <Link href="/" className="text-sm text-accent">回 AI 島首頁</Link>
         </>
       )}
     </div>
@@ -68,7 +68,7 @@ function UnsubscribeContent() {
 
 export default function UnsubscribePage() {
   return (
-    <Suspense fallback={<div className="py-20 text-center text-[var(--color-fg-muted)]">載入中...</div>}>
+    <Suspense fallback={<div className="py-20 text-center text-fg-muted">載入中...</div>}>
       <UnsubscribeContent />
     </Suspense>
   );

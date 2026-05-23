@@ -19,7 +19,7 @@ export default async function UnsubscribePage({
     return (
       <div className="max-w-md mx-auto p-8 text-center mt-16">
         <h1 className="text-2xl font-bold mb-4">無效連結</h1>
-        <p className="text-[var(--color-fg-muted)]">
+        <p className="text-fg-muted">
           這個退訂連結不完整、請從你收到的 email 直接點連結。
         </p>
       </div>
@@ -37,7 +37,7 @@ export default async function UnsubscribePage({
     return (
       <div className="max-w-md mx-auto p-8 text-center mt-16">
         <h1 className="text-2xl font-bold mb-4">連結已失效</h1>
-        <p className="text-[var(--color-fg-muted)]">
+        <p className="text-fg-muted">
           這個退訂連結無效或已過期。
         </p>
       </div>
@@ -48,7 +48,7 @@ export default async function UnsubscribePage({
     return (
       <div className="max-w-md mx-auto p-8 text-center mt-16">
         <h1 className="text-2xl font-bold mb-4">已退訂</h1>
-        <p className="text-[var(--color-fg-muted)]">
+        <p className="text-fg-muted">
           {sub.email} 已退訂於 {new Date(sub.unsubscribed_at).toLocaleDateString("zh-TW")}
         </p>
         <p className="text-sm mt-4">
@@ -61,7 +61,7 @@ export default async function UnsubscribePage({
   return (
     <div className="max-w-md mx-auto p-8 mt-16">
       <h1 className="text-2xl font-bold mb-2">退訂通知</h1>
-      <p className="text-sm text-[var(--color-fg-muted)] mb-6">
+      <p className="text-sm text-fg-muted mb-6">
         Email: <strong>{sub.email}</strong>
       </p>
 
@@ -75,7 +75,7 @@ export default async function UnsubscribePage({
         }}
       />
 
-      <p className="text-xs text-[var(--color-fg-muted)] mt-6">
+      <p className="text-xs text-fg-muted mt-6">
         💡 注意：系統必要的交易型通知（訂單確認、密碼重設等）無法退訂、
         以確保你的帳號安全。
       </p>

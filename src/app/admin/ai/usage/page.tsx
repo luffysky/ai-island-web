@@ -86,9 +86,9 @@ export default async function AIUsagePage() {
       {/* Provider 統計 */}
       <div>
         <h3 className="font-bold mb-3">Provider 使用統計</h3>
-        <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl overflow-hidden">
+        <div className="bg-bg-card border border-border rounded-xl overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-[var(--color-bg-elevated)] text-left text-xs text-[var(--color-fg-muted)] uppercase">
+            <thead className="bg-bg-elevated text-left text-xs text-fg-muted uppercase">
               <tr>
                 <th className="px-4 py-3">Provider</th>
                 <th className="px-4 py-3 text-right">對話數</th>
@@ -99,7 +99,7 @@ export default async function AIUsagePage() {
             </thead>
             <tbody>
               {Object.entries(byProvider).map(([prov, stats]) => (
-                <tr key={prov} className="border-t border-[var(--color-border)]">
+                <tr key={prov} className="border-t border-border">
                   <td className="px-4 py-3 font-medium uppercase">{prov}</td>
                   <td className="px-4 py-3 text-right">{stats.count}</td>
                   <td className="px-4 py-3 text-right">{stats.input.toLocaleString()}</td>
@@ -115,9 +115,9 @@ export default async function AIUsagePage() {
       {/* Top users */}
       <div>
         <h3 className="font-bold mb-3">Top 10 使用者</h3>
-        <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl overflow-hidden">
+        <div className="bg-bg-card border border-border rounded-xl overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-[var(--color-bg-elevated)] text-left text-xs text-[var(--color-fg-muted)] uppercase">
+            <thead className="bg-bg-elevated text-left text-xs text-fg-muted uppercase">
               <tr>
                 <th className="px-4 py-3">用戶</th>
                 <th className="px-4 py-3 text-right">對話數</th>
@@ -127,7 +127,7 @@ export default async function AIUsagePage() {
             </thead>
             <tbody>
               {topUsersSorted.map((u: any) => (
-                <tr key={u.user_id} className="border-t border-[var(--color-border)]">
+                <tr key={u.user_id} className="border-t border-border">
                   <td className="px-4 py-3">{u.display_name || u.username}</td>
                   <td className="px-4 py-3 text-right">{u.calls}</td>
                   <td className="px-4 py-3 text-right">{u.tokens.toLocaleString()}</td>
@@ -144,8 +144,8 @@ export default async function AIUsagePage() {
 
 function Stat({ label, value, color }: { label: string; value: any; color: string }) {
   return (
-    <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-4">
-      <div className="text-xs text-[var(--color-fg-muted)]">{label}</div>
+    <div className="bg-bg-card border border-border rounded-xl p-4">
+      <div className="text-xs text-fg-muted">{label}</div>
       <div className={`text-2xl font-bold mt-1 ${color}`}>{value}</div>
     </div>
   );

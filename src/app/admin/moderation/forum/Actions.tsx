@@ -117,7 +117,7 @@ function ActionBtn({
   const tone =
     variant === "danger" ? "bg-red-500/15 text-red-400 hover:bg-red-500/25" :
     variant === "warning" ? "bg-orange-500/15 text-orange-400 hover:bg-orange-500/25" :
-    "bg-[var(--color-bg-elevated)] hover:bg-[var(--color-border)]";
+    "bg-bg-elevated hover:bg-border";
   return (
     <button
       onClick={onClick}

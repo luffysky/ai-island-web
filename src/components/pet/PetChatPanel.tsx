@@ -141,23 +141,23 @@ export function PetChatPanel({
   };
 
   return (
-    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[360px] max-w-[calc(100vw-2rem)] h-[440px] bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-2xl shadow-2xl flex flex-col">
-      <div className="flex items-center justify-between p-3 border-b border-[var(--color-border)]">
+    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[360px] max-w-[calc(100vw-2rem)] h-[440px] bg-bg-card border border-border rounded-2xl shadow-2xl flex flex-col">
+      <div className="flex items-center justify-between p-3 border-b border-border">
         <div className="flex items-center gap-2">
           <div className="text-2xl">{species.emoji}</div>
           <div>
             <div className="text-sm font-bold">{pet.name}</div>
-            <div className="text-[10px] text-[var(--color-fg-muted)]">{species.name} · {species.voiceHint.slice(0, 16)}…</div>
+            <div className="text-[10px] text-fg-muted">{species.name} · {species.voiceHint.slice(0, 16)}…</div>
           </div>
         </div>
-        <button onClick={onClose} className="text-[var(--color-fg-muted)] hover:text-[var(--color-fg)]">
+        <button onClick={onClose} className="text-fg-muted hover:text-fg">
           <X size={16} />
         </button>
       </div>
 
       <div className="flex-1 overflow-y-auto p-3 space-y-2">
         {messages.length === 0 ? (
-          <div className="text-center text-xs text-[var(--color-fg-muted)] mt-12">
+          <div className="text-center text-xs text-fg-muted mt-12">
             跟 {pet.name} 聊聊。會記得你的學習狀態。
           </div>
         ) : null}
@@ -166,8 +166,8 @@ export function PetChatPanel({
             <div
               className={`max-w-[80%] rounded-2xl px-3 py-1.5 text-sm whitespace-pre-wrap ${
                 m.role === "user"
-                  ? "bg-[var(--color-accent)] text-black"
-                  : "bg-[var(--color-bg-elevated)]"
+                  ? "bg-accent text-black"
+                  : "bg-bg-elevated"
               }`}
             >
               {m.content || (sending && i === messages.length - 1 ? "..." : "")}
@@ -183,7 +183,7 @@ export function PetChatPanel({
         </div>
       )}
 
-      <div className="p-3 border-t border-[var(--color-border)] flex gap-2">
+      <div className="p-3 border-t border-border flex gap-2">
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -195,12 +195,12 @@ export function PetChatPanel({
           }}
           placeholder={`跟 ${pet.name} 說...`}
           disabled={sending}
-          className="flex-1 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg px-3 py-1.5 text-sm outline-none focus:border-[var(--color-accent)]"
+          className="flex-1 bg-bg border border-border rounded-lg px-3 py-1.5 text-sm outline-none focus:border-accent"
         />
         <button
           onClick={send}
           disabled={!input.trim() || sending}
-          className="p-2 bg-[var(--color-accent)] text-black rounded-lg disabled:opacity-30"
+          className="p-2 bg-accent text-black rounded-lg disabled:opacity-30"
         >
           <Send size={14} />
         </button>

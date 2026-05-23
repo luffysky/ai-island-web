@@ -57,26 +57,26 @@ export function EmailPrefsForm({ initial }: { initial: Prefs }) {
 
   return (
     <div className="space-y-4">
-      <div className="p-5 bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-lg space-y-2">
+      <div className="p-5 bg-bg-card border border-border rounded-lg space-y-2">
         {items.map(({ key, label, desc }) => (
-          <label key={key} className="flex items-start gap-3 p-3 hover:bg-[var(--color-bg-elevated)] rounded cursor-pointer">
+          <label key={key} className="flex items-start gap-3 p-3 hover:bg-bg-elevated rounded cursor-pointer">
             <input
               type="checkbox"
               checked={prefs[key]}
               onChange={() => update(key)}
-              className="mt-1 accent-[var(--color-accent)]"
+              className="mt-1 accent-accent"
             />
             <div className="flex-1">
               <div className="font-medium">{label}</div>
-              <div className="text-sm text-[var(--color-fg-muted)]">{desc}</div>
+              <div className="text-sm text-fg-muted">{desc}</div>
             </div>
           </label>
         ))}
       </div>
 
-      <div className="p-4 bg-[var(--color-bg-elevated)] rounded-lg text-sm">
+      <div className="p-4 bg-bg-elevated rounded-lg text-sm">
         <strong>🔒 必要通知</strong>（不可關閉）
-        <div className="text-xs text-[var(--color-fg-muted)] mt-1">
+        <div className="text-xs text-fg-muted mt-1">
           訂單確認、密碼重設、帳號安全等系統通知會持續發送、以保護你的帳號。
         </div>
       </div>
@@ -84,7 +84,7 @@ export function EmailPrefsForm({ initial }: { initial: Prefs }) {
       <button
         onClick={save}
         disabled={saving}
-        className="w-full px-4 py-3 bg-[var(--color-accent)] text-black rounded-lg font-bold hover:scale-[1.01] transition disabled:opacity-50"
+        className="w-full px-4 py-3 bg-accent text-black rounded-lg font-bold hover:scale-[1.01] transition disabled:opacity-50"
       >
         {saving ? "儲存中..." : saved ? "✅ 已儲存" : "儲存設定"}
       </button>

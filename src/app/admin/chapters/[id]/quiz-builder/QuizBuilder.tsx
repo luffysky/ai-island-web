@@ -140,32 +140,32 @@ export function QuizBuilder({
     }));
   };
 
-  const fld = "w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg px-3 py-1.5 text-sm focus:border-[var(--color-accent)] outline-none";
+  const fld = "w-full bg-bg border border-border rounded-lg px-3 py-1.5 text-sm focus:border-accent outline-none";
 
   return (
     <div className="space-y-4">
       {/* Header controls */}
-      <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-2xl p-4">
+      <div className="bg-bg-card border border-border rounded-2xl p-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
           <div>
-            <label className="text-xs text-[var(--color-fg-muted)] block mb-1">標題</label>
+            <label className="text-xs text-fg-muted block mb-1">標題</label>
             <input className={fld} value={quiz.title ?? ""} onChange={(e) => setQuiz((q) => ({ ...q, title: e.target.value }))} />
           </div>
           <div>
-            <label className="text-xs text-[var(--color-fg-muted)] block mb-1">描述</label>
+            <label className="text-xs text-fg-muted block mb-1">描述</label>
             <input className={fld} value={quiz.description ?? ""} onChange={(e) => setQuiz((q) => ({ ...q, description: e.target.value }))} />
           </div>
           <div>
-            <label className="text-xs text-[var(--color-fg-muted)] block mb-1">每題 XP</label>
+            <label className="text-xs text-fg-muted block mb-1">每題 XP</label>
             <input type="number" className={fld} value={quiz.xp_per_correct ?? 5} onChange={(e) => setQuiz((q) => ({ ...q, xp_per_correct: Number(e.target.value) }))} />
           </div>
           <div>
-            <label className="text-xs text-[var(--color-fg-muted)] block mb-1">通過門檻（答對 N 題以上）</label>
+            <label className="text-xs text-fg-muted block mb-1">通過門檻（答對 N 題以上）</label>
             <input type="number" className={fld} value={quiz.passing_score ?? 16} onChange={(e) => setQuiz((q) => ({ ...q, passing_score: Number(e.target.value) }))} />
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-[var(--color-border)]">
+        <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-border">
           <button
             onClick={generate}
             disabled={generating || saving}
@@ -176,7 +176,7 @@ export function QuizBuilder({
           </button>
           <button
             onClick={addQuestion}
-            className="px-3 py-1.5 text-sm border border-[var(--color-border)] rounded-lg hover:bg-[var(--color-bg-elevated)] flex items-center gap-1"
+            className="px-3 py-1.5 text-sm border border-border rounded-lg hover:bg-bg-elevated flex items-center gap-1"
           >
             <Plus size={14} /> 手動新增 1 題
           </button>
@@ -191,7 +191,7 @@ export function QuizBuilder({
           <button
             onClick={save}
             disabled={saving || generating}
-            className="ml-auto px-5 py-1.5 text-sm bg-[var(--color-accent)] text-black font-bold rounded-lg disabled:opacity-50 flex items-center gap-1.5"
+            className="ml-auto px-5 py-1.5 text-sm bg-accent text-black font-bold rounded-lg disabled:opacity-50 flex items-center gap-1.5"
           >
             <Save size={14} />
             {saving ? "儲存中..." : "儲存"}
@@ -199,21 +199,21 @@ export function QuizBuilder({
         </div>
 
         {msg && (
-          <pre className="text-xs text-[var(--color-fg-muted)] mt-3 whitespace-pre-wrap">{msg}</pre>
+          <pre className="text-xs text-fg-muted mt-3 whitespace-pre-wrap">{msg}</pre>
         )}
       </div>
 
       {/* Questions */}
       <div className="space-y-3">
         {(quiz.questions ?? []).length === 0 && (
-          <div className="bg-[var(--color-bg-card)] border border-dashed border-[var(--color-border)] rounded-xl p-8 text-center text-sm text-[var(--color-fg-muted)]">
+          <div className="bg-bg-card border border-dashed border-border rounded-xl p-8 text-center text-sm text-fg-muted">
             還沒有題目。按上面「🤖 AI 自動出 20 題」或「手動新增 1 題」開始。
           </div>
         )}
         {(quiz.questions ?? []).map((q, idx) => (
-          <div key={idx} className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-4">
+          <div key={idx} className="bg-bg-card border border-border rounded-xl p-4">
             <div className="flex items-start gap-3 mb-3">
-              <span className="flex-shrink-0 w-7 h-7 rounded-full bg-[var(--color-accent)]/15 text-[var(--color-accent)] font-bold flex items-center justify-center text-sm">
+              <span className="flex-shrink-0 w-7 h-7 rounded-full bg-accent/15 text-accent font-bold flex items-center justify-center text-sm">
                 {idx + 1}
               </span>
               <input
@@ -224,7 +224,7 @@ export function QuizBuilder({
               />
               <button
                 onClick={() => removeQuestion(idx)}
-                className="text-[var(--color-fg-muted)] hover:text-red-400 flex-shrink-0"
+                className="text-fg-muted hover:text-red-400 flex-shrink-0"
               >
                 <Trash2 size={14} />
               </button>
@@ -235,7 +235,7 @@ export function QuizBuilder({
                   <button
                     onClick={() => setQ(idx, { answer: oi })}
                     className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
-                      q.answer === oi ? "bg-emerald-500 text-white" : "bg-[var(--color-bg-elevated)] text-[var(--color-fg-muted)]"
+                      q.answer === oi ? "bg-emerald-500 text-white" : "bg-bg-elevated text-fg-muted"
                     }`}
                     title="設為正解"
                   >

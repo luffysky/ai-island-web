@@ -126,19 +126,19 @@ export function CommentSection({
   };
 
   return (
-    <section className="mt-10 pt-8 border-t border-[var(--color-border)]">
+    <section className="mt-10 pt-8 border-t border-border">
       <h2 className="text-xl font-bold mb-5 flex items-center gap-2">
         <MessageSquare size={20} /> 留言 {totalCount > 0 && `(${totalCount})`}
       </h2>
 
       {/* 發表留言 */}
-      <div className="mb-6 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-card)] p-3">
+      <div className="mb-6 rounded-xl border border-border bg-bg-card p-3">
         {!currentUserId && (
           <input
             value={guestName}
             onChange={(e) => setGuestName(e.target.value)}
             placeholder="你的名字（選填）"
-            className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg p-2 text-sm mb-2 outline-none focus:border-[var(--color-accent)]"
+            className="w-full bg-bg border border-border rounded-lg p-2 text-sm mb-2 outline-none focus:border-accent"
           />
         )}
         <textarea
@@ -146,13 +146,13 @@ export function CommentSection({
           onChange={(e) => setInput(e.target.value)}
           placeholder="留個言吧..."
           rows={3}
-          className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg p-2 text-sm outline-none focus:border-[var(--color-accent)] resize-none"
+          className="w-full bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent resize-none"
         />
         <div className="flex justify-end mt-2">
           <button
             onClick={() => submit(input, null)}
             disabled={!input.trim() || sending}
-            className="px-4 py-1.5 rounded-lg bg-[var(--color-accent)] text-black text-sm font-semibold disabled:opacity-40 flex items-center gap-1"
+            className="px-4 py-1.5 rounded-lg bg-accent text-black text-sm font-semibold disabled:opacity-40 flex items-center gap-1"
           >
             <Send size={14} /> 送出
           </button>
@@ -161,9 +161,9 @@ export function CommentSection({
 
       {/* 留言列表 */}
       {loading ? (
-        <div className="space-y-3">{[1, 2].map((i) => <div key={i} className="h-16 rounded-lg bg-[var(--color-bg-card)] animate-pulse" />)}</div>
+        <div className="space-y-3">{[1, 2].map((i) => <div key={i} className="h-16 rounded-lg bg-bg-card animate-pulse" />)}</div>
       ) : comments.length === 0 ? (
-        <p className="text-sm text-[var(--color-fg-muted)] text-center py-6">還沒有留言、當第一個吧</p>
+        <p className="text-sm text-fg-muted text-center py-6">還沒有留言、當第一個吧</p>
       ) : (
         <div className="space-y-4">
           {comments.map((c) => (
@@ -177,12 +177,12 @@ export function CommentSection({
                     onChange={(e) => setReplyInput(e.target.value)}
                     placeholder="回覆..."
                     onKeyDown={(e) => { if (e.key === "Enter") submit(replyInput, c.id); }}
-                    className="flex-1 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg p-2 text-sm outline-none focus:border-[var(--color-accent)]"
+                    className="flex-1 bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent"
                   />
                   <button
                     onClick={() => submit(replyInput, c.id)}
                     disabled={!replyInput.trim() || sending}
-                    className="px-3 py-1.5 rounded-lg bg-[var(--color-accent)] text-black text-sm font-semibold disabled:opacity-40"
+                    className="px-3 py-1.5 rounded-lg bg-accent text-black text-sm font-semibold disabled:opacity-40"
                   >
                     送出
                   </button>
@@ -190,7 +190,7 @@ export function CommentSection({
               )}
               {/* 巢狀回覆 */}
               {c.replies && c.replies.length > 0 && (
-                <div className="ml-8 mt-2 space-y-2 border-l-2 border-[var(--color-border)] pl-3">
+                <div className="ml-8 mt-2 space-y-2 border-l-2 border-border pl-3">
                   {c.replies.map((r) => (
                     <CommentItem key={r.id} comment={r} currentUserId={currentUserId} onDelete={remove} isReply />
                   ))}
@@ -219,7 +219,7 @@ function CommentItem({
 }) {
   const isOwn = currentUserId && comment.user_id === currentUserId;
   return (
-    <div className="rounded-lg bg-[var(--color-bg-card)] border border-[var(--color-border)] p-3">
+    <div className="rounded-lg bg-bg-card border border-border p-3">
       <div className="flex items-start gap-2">
         {comment.author_avatar ? (
           <Image
@@ -231,14 +231,14 @@ function CommentItem({
             className="w-7 h-7 rounded-full flex-shrink-0 object-cover"
           />
         ) : (
-          <div className="w-7 h-7 rounded-full bg-[var(--color-bg-elevated)] flex items-center justify-center text-xs flex-shrink-0">
+          <div className="w-7 h-7 rounded-full bg-bg-elevated flex items-center justify-center text-xs flex-shrink-0">
             {comment.author_name[0]}
           </div>
         )}
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <span className="font-semibold text-sm">{comment.author_name}</span>
-            <span className="text-[10px] text-[var(--color-fg-muted)]">
+            <span className="text-[10px] text-fg-muted">
               {new Date(comment.created_at).toLocaleDateString("zh-TW")}
             </span>
           </div>
@@ -246,12 +246,12 @@ function CommentItem({
           <div className="flex items-center gap-3 mt-1">
             <LikeButton kind="blog" targetId={comment.id} />
             {!isReply && onReply && (
-              <button onClick={onReply} className="text-xs text-[var(--color-fg-muted)] hover:text-[var(--color-accent)] flex items-center gap-0.5">
+              <button onClick={onReply} className="text-xs text-fg-muted hover:text-accent flex items-center gap-0.5">
                 <CornerDownRight size={11} /> 回覆
               </button>
             )}
             {isOwn && (
-              <button onClick={() => onDelete(comment.id)} className="text-xs text-[var(--color-fg-muted)] hover:text-red-400 flex items-center gap-0.5">
+              <button onClick={() => onDelete(comment.id)} className="text-xs text-fg-muted hover:text-red-400 flex items-center gap-0.5">
                 <Trash2 size={11} /> 刪除
               </button>
             )}

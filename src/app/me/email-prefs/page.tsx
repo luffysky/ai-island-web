@@ -27,7 +27,7 @@ export default async function EmailPrefsPage() {
   return (
     <div className="max-w-2xl mx-auto p-6">
       <h1 className="text-2xl font-bold mb-2">Email 通知偏好</h1>
-      <p className="text-sm text-[var(--color-fg-muted)] mb-6">
+      <p className="text-sm text-fg-muted mb-6">
         管理你想從 AI 島收到的 email 類型。
       </p>
 

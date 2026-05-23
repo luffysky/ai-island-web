@@ -74,7 +74,7 @@ html, body {
 }
 
 /* 卡片柔光 / 圓角 */
-.admin-skin .bg-\[var\(--color-bg-card\)\] {
+.admin-skin .bg-bg-card {
   box-shadow: 0 1px 3px rgba(236, 72, 153, 0.06), 0 4px 14px rgba(236, 72, 153, 0.04);
 }
 .admin-skin .rounded-xl,
@@ -94,13 +94,13 @@ html, body {
 }
 
 /* 強調按鈕：保留粉色立體感 */
-.admin-skin button[class*="bg-[var(--color-accent)]"] {
+.admin-skin button[class*="bg-accent"] {
   box-shadow: 0 4px 14px rgba(236, 72, 153, 0.25);
 }
 
 /* Markdown content */
 .prose-custom { @apply break-words; min-width: 0; }
-.prose-custom h2 { @apply text-2xl font-bold mt-8 mb-4 text-[var(--color-accent)]; }
+.prose-custom h2 { @apply text-2xl font-bold mt-8 mb-4 text-accent; }
 .prose-custom h3 { @apply text-xl font-semibold mt-6 mb-3; }
 .prose-custom h4 { @apply text-lg font-semibold mt-4 mb-2; }
 .prose-custom p { @apply my-3 leading-relaxed; word-break: break-word; overflow-wrap: anywhere; }
@@ -108,20 +108,20 @@ html, body {
 .prose-custom ul li { @apply list-disc; word-break: break-word; }
 .prose-custom ol li { @apply list-decimal; word-break: break-word; }
 .prose-custom code:not(pre code) {
-  @apply bg-[var(--color-bg-card)] px-1.5 py-0.5 rounded text-sm text-[var(--color-warning)];
+  @apply bg-bg-card px-1.5 py-0.5 rounded text-sm text-warning;
 }
 .prose-custom pre {
-  @apply bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-lg p-4 my-4 overflow-x-auto text-sm;
+  @apply bg-bg-elevated border border-border rounded-lg p-4 my-4 overflow-x-auto text-sm;
 }
 .prose-custom table { @apply w-full border-collapse my-4; }
 .prose-custom th, .prose-custom td {
-  @apply border border-[var(--color-border)] px-3 py-2 text-left;
+  @apply border border-border px-3 py-2 text-left;
 }
-.prose-custom th { @apply bg-[var(--color-bg-elevated)] font-semibold; }
-.prose-custom strong { @apply text-[var(--color-accent)] font-semibold; }
-.prose-custom a { @apply text-[var(--color-accent-2)] underline hover:text-[var(--color-accent)]; }
+.prose-custom th { @apply bg-bg-elevated font-semibold; }
+.prose-custom strong { @apply text-accent font-semibold; }
+.prose-custom a { @apply text-accent-2 underline hover:text-accent; }
 .prose-custom blockquote {
-  @apply border-l-4 border-[var(--color-accent)] pl-4 my-4 italic text-[var(--color-fg-muted)];
+  @apply border-l-4 border-accent pl-4 my-4 italic text-fg-muted;
 }
 
 /* Tip card */

@@ -71,11 +71,11 @@ const DUNGEONS = [
 
 export function MissionDungeons() {
   return (
-    <section className="border-b border-[var(--color-border)] py-16">
+    <section className="border-b border-border py-16">
       <div className="max-w-6xl mx-auto px-6">
         <div className="text-center mb-10">
           <h2 className="text-3xl font-bold mb-2">⚔️ AI 任務副本系統</h2>
-          <p className="text-[var(--color-fg-muted)]">5 大任務副本、挑戰你的 AI 實戰力</p>
+          <p className="text-fg-muted">5 大任務副本、挑戰你的 AI 實戰力</p>
         </div>
 
         {/* 副本總覽圖 */}
@@ -86,7 +86,7 @@ export function MissionDungeons() {
             width={1200}
             height={700}
             sizes="(max-width: 768px) 100vw, 896px"
-            className="w-full max-w-4xl mx-auto h-auto rounded-2xl shadow-xl border border-[var(--color-border)]"
+            className="w-full max-w-4xl mx-auto h-auto rounded-2xl shadow-xl border border-border"
           />
         </div>
 
@@ -112,22 +112,22 @@ export function MissionDungeons() {
                 </span>
               </div>
               <h3 className="text-lg font-bold mb-1">{d.name}</h3>
-              <div className="text-xs text-[var(--color-fg-muted)] mb-3">{d.subtitle}</div>
+              <div className="text-xs text-fg-muted mb-3">{d.subtitle}</div>
 
               <div className="text-sm mb-3">
                 <div className="font-semibold mb-1">👹 {d.boss}</div>
-                <p className="text-xs text-[var(--color-fg-muted)] leading-relaxed">
+                <p className="text-xs text-fg-muted leading-relaxed">
                   {d.bossDesc}
                 </p>
               </div>
 
-              <div className="border-t border-[var(--color-border)] pt-3">
-                <div className="text-[10px] text-[var(--color-fg-muted)] mb-1">推薦工具</div>
+              <div className="border-t border-border pt-3">
+                <div className="text-[10px] text-fg-muted mb-1">推薦工具</div>
                 <div className="flex flex-wrap gap-1">
                   {d.tools.map((t) => (
                     <span
                       key={t}
-                      className="text-[10px] px-2 py-0.5 rounded-full bg-[var(--color-bg-elevated)] border border-[var(--color-border)]"
+                      className="text-[10px] px-2 py-0.5 rounded-full bg-bg-elevated border border-border"
                     >
                       {t}
                     </span>
@@ -138,7 +138,7 @@ export function MissionDungeons() {
           ))}
         </div>
 
-        <div className="text-center mt-8 text-sm text-[var(--color-fg-muted)]">
+        <div className="text-center mt-8 text-sm text-fg-muted">
           不同的任務、搭配最強 AI 組合、通關效率翻倍！
         </div>
       </div>

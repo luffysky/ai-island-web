@@ -81,7 +81,7 @@ export function LikeButton({
   };
 
   if (loading) {
-    return <span className="text-xs text-[var(--color-fg-muted)] opacity-50">⋯</span>;
+    return <span className="text-xs text-fg-muted opacity-50">⋯</span>;
   }
 
   return (
@@ -90,8 +90,8 @@ export function LikeButton({
       disabled={busy}
       className={`text-xs flex items-center gap-0.5 transition ${
         liked
-          ? "text-[var(--color-accent)] font-semibold"
-          : "text-[var(--color-fg-muted)] hover:text-[var(--color-accent)]"
+          ? "text-accent font-semibold"
+          : "text-fg-muted hover:text-accent"
       }`}
     >
       <ThumbsUp size={12} className={liked ? "fill-current" : ""} />

@@ -70,7 +70,7 @@ export function DailyCheckin() {
 
   if (loading) {
     return (
-      <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-card)] p-4 animate-pulse h-32" />
+      <div className="rounded-xl border border-border bg-bg-card p-4 animate-pulse h-32" />
     );
   }
 
@@ -82,16 +82,16 @@ export function DailyCheckin() {
     : (((status.streak) % 7) + 1);
 
   return (
-    <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-card)] p-4 relative overflow-hidden">
+    <div className="rounded-xl border border-border bg-bg-card p-4 relative overflow-hidden">
       <div className="flex items-center justify-between mb-3">
         <h3 className="font-bold flex items-center gap-2">
-          <Gift size={18} className="text-[var(--color-accent)]" />
+          <Gift size={18} className="text-accent" />
           每日簽到
         </h3>
         <div className="flex items-center gap-1 text-sm text-orange-400">
           <Flame size={14} />
           <span className="font-bold">{status.streak}</span>
-          <span className="text-xs text-[var(--color-fg-muted)]">天連續</span>
+          <span className="text-xs text-fg-muted">天連續</span>
         </div>
       </div>
 
@@ -109,23 +109,23 @@ export function DailyCheckin() {
               key={day}
               className={`rounded-lg p-1.5 text-center border transition ${
                 isDone
-                  ? "bg-[var(--color-accent)]/15 border-[var(--color-accent)]/40"
+                  ? "bg-accent/15 border-accent/40"
                   : isToday && !status.checked_today
-                  ? "bg-[var(--color-accent)]/10 border-[var(--color-accent)] ring-1 ring-[var(--color-accent)]"
-                  : "bg-[var(--color-bg-elevated)] border-[var(--color-border)]"
+                  ? "bg-accent/10 border-accent ring-1 ring-accent"
+                  : "bg-bg-elevated border-border"
               }`}
             >
-              <div className="text-[9px] text-[var(--color-fg-muted)]">D{day}</div>
+              <div className="text-[9px] text-fg-muted">D{day}</div>
               <div className="my-0.5 flex items-center justify-center h-5">
                 {isDone ? (
-                  <Check size={14} className="text-[var(--color-accent)]" />
+                  <Check size={14} className="text-accent" />
                 ) : (
                   <span className={isBig ? "text-sm" : "text-xs"}>
                     {isBig ? "🎁" : "⚡"}
                   </span>
                 )}
               </div>
-              <div className={`text-[9px] font-bold ${isBig ? "text-[var(--color-accent-3)]" : "text-[var(--color-fg-muted)]"}`}>
+              <div className={`text-[9px] font-bold ${isBig ? "text-accent-3" : "text-fg-muted"}`}>
                 {xp}
               </div>
             </div>
@@ -139,8 +139,8 @@ export function DailyCheckin() {
         disabled={status.checked_today || claiming}
         className={`w-full py-2.5 rounded-lg font-bold text-sm transition ${
           status.checked_today
-            ? "bg-[var(--color-bg-elevated)] text-[var(--color-fg-muted)] cursor-default"
-            : "bg-gradient-to-r from-[var(--color-accent)] to-[var(--color-accent-2)] text-black hover:scale-[1.02]"
+            ? "bg-bg-elevated text-fg-muted cursor-default"
+            : "bg-gradient-to-r from-accent to-accent-2 text-black hover:scale-[1.02]"
         }`}
       >
         {status.checked_today
@@ -153,7 +153,7 @@ export function DailyCheckin() {
       {/* +XP 飄出 */}
       {justGotXp !== null && (
         <div className="absolute inset-x-0 top-1/3 flex justify-center pointer-events-none">
-          <div className="checkin-xp-pop px-4 py-2 rounded-xl bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-accent-2)] text-black font-extrabold text-xl shadow-2xl">
+          <div className="checkin-xp-pop px-4 py-2 rounded-xl bg-gradient-to-br from-accent to-accent-2 text-black font-extrabold text-xl shadow-2xl">
             ⚡ +{justGotXp} XP
           </div>
         </div>

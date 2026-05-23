@@ -24,19 +24,19 @@ export function ForumSearch() {
     <div className="mb-8">
       <div className="flex gap-2">
         <div className="flex-1 relative">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-fg-muted)]" />
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-fg-muted" />
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter") run(); }}
             placeholder="搜尋討論主題..."
-            className="w-full bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-lg pl-9 pr-3 py-2 text-sm outline-none focus:border-[var(--color-accent)]"
+            className="w-full bg-bg-card border border-border rounded-lg pl-9 pr-3 py-2 text-sm outline-none focus:border-accent"
           />
         </div>
         <button
           onClick={run}
           disabled={q.trim().length < 2 || loading}
-          className="px-4 py-2 rounded-lg bg-[var(--color-bg-card)] border border-[var(--color-border)] text-sm disabled:opacity-40 flex items-center gap-1 hover:border-[var(--color-accent)]"
+          className="px-4 py-2 rounded-lg bg-bg-card border border-border text-sm disabled:opacity-40 flex items-center gap-1 hover:border-accent"
         >
           {loading ? <Loader2 size={14} className="animate-spin" /> : <Search size={14} />}
           搜尋
@@ -47,20 +47,20 @@ export function ForumSearch() {
       {searched && (
         <div className="mt-3">
           {results.length === 0 ? (
-            <p className="text-sm text-[var(--color-fg-muted)] text-center py-4">
+            <p className="text-sm text-fg-muted text-center py-4">
               找不到「{q}」相關的討論
             </p>
           ) : (
             <div className="space-y-2">
-              <p className="text-xs text-[var(--color-fg-muted)]">找到 {results.length} 筆</p>
+              <p className="text-xs text-fg-muted">找到 {results.length} 筆</p>
               {results.map((t) => (
                 <Link
                   key={t.id}
                   href={`/forum/thread/${t.id}`}
-                  className="block rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-card)] p-3 hover:border-[var(--color-accent)] transition"
+                  className="block rounded-lg border border-border bg-bg-card p-3 hover:border-accent transition"
                 >
                   <h3 className="font-semibold text-sm">{t.title}</h3>
-                  <div className="flex items-center gap-3 text-[11px] text-[var(--color-fg-muted)] mt-1">
+                  <div className="flex items-center gap-3 text-[11px] text-fg-muted mt-1">
                     {t.board && <span>{t.board.emoji} {t.board.name}</span>}
                     <span className="flex items-center gap-0.5"><MessageSquare size={10} /> {t.reply_count}</span>
                     <span className="flex items-center gap-0.5"><Eye size={10} /> {t.view_count}</span>

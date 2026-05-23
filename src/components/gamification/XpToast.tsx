@@ -32,14 +32,14 @@ export function XpToast({ data }: { data: XpToastData | null }) {
         className="xp-toast-float flex flex-col items-center"
       >
         {/* +XP 數字 */}
-        <div className="flex items-center gap-1.5 px-5 py-3 rounded-2xl bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-accent-2)] text-black font-extrabold text-2xl shadow-2xl">
+        <div className="flex items-center gap-1.5 px-5 py-3 rounded-2xl bg-gradient-to-br from-accent to-accent-2 text-black font-extrabold text-2xl shadow-2xl">
           <span className="text-xl">⚡</span>
           <span>+{data.xp}</span>
           <span className="text-sm font-bold mt-1">XP</span>
         </div>
         {/* 升級訊息 */}
         {data.levelUp && (
-          <div className="mt-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-[var(--color-accent-3)] to-[var(--color-accent)] text-black font-bold text-sm shadow-xl animate-pulse">
+          <div className="mt-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-accent-3 to-accent text-black font-bold text-sm shadow-xl animate-pulse">
             🎉 升到 Lv.{data.levelUp}！
           </div>
         )}

@@ -29,20 +29,20 @@ export function SubscribeForm({ userSlug }: { userSlug: string }) {
 
   if (status === "done") {
     return (
-      <div className="rounded-xl border border-[var(--color-accent)]/40 bg-[var(--color-accent)]/10 p-5 text-center">
-        <Check size={24} className="mx-auto mb-2 text-[var(--color-accent)]" />
+      <div className="rounded-xl border border-accent/40 bg-accent/10 p-5 text-center">
+        <Check size={24} className="mx-auto mb-2 text-accent" />
         <p className="font-semibold">訂閱成功！</p>
-        <p className="text-sm text-[var(--color-fg-muted)]">有新文章會通知你</p>
+        <p className="text-sm text-fg-muted">有新文章會通知你</p>
       </div>
     );
   }
 
   return (
-    <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-card)] p-5">
+    <div className="rounded-xl border border-border bg-bg-card p-5">
       <h3 className="font-bold flex items-center gap-2 mb-1">
-        <Mail size={18} className="text-[var(--color-accent)]" /> 訂閱這個部落格
+        <Mail size={18} className="text-accent" /> 訂閱這個部落格
       </h3>
-      <p className="text-sm text-[var(--color-fg-muted)] mb-3">
+      <p className="text-sm text-fg-muted mb-3">
         有新文章第一時間收到通知
       </p>
       <div className="space-y-2">
@@ -50,7 +50,7 @@ export function SubscribeForm({ userSlug }: { userSlug: string }) {
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="你的名字（選填）"
-          className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg p-2 text-sm outline-none focus:border-[var(--color-accent)]"
+          className="w-full bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent"
         />
         <div className="flex gap-2">
           <input
@@ -59,12 +59,12 @@ export function SubscribeForm({ userSlug }: { userSlug: string }) {
             onChange={(e) => setEmail(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter") submit(); }}
             placeholder="你的 email"
-            className="flex-1 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg p-2 text-sm outline-none focus:border-[var(--color-accent)]"
+            className="flex-1 bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent"
           />
           <button
             onClick={submit}
             disabled={!email.trim() || status === "sending"}
-            className="px-4 py-2 rounded-lg bg-[var(--color-accent)] text-black text-sm font-semibold disabled:opacity-40 flex items-center gap-1"
+            className="px-4 py-2 rounded-lg bg-accent text-black text-sm font-semibold disabled:opacity-40 flex items-center gap-1"
           >
             {status === "sending" ? <Loader2 size={14} className="animate-spin" /> : null}
             訂閱

@@ -65,20 +65,20 @@ export default async function BlogHomePage({
             className="w-20 h-20 rounded-full mx-auto mb-3 object-cover"
           />
         ) : (
-          <div className="w-20 h-20 rounded-full mx-auto mb-3 bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-accent-2)] flex items-center justify-center text-3xl font-bold text-black">
+          <div className="w-20 h-20 rounded-full mx-auto mb-3 bg-gradient-to-br from-accent to-accent-2 flex items-center justify-center text-3xl font-bold text-black">
             {name[0]}
           </div>
         )}
         <h1 className="text-3xl font-bold mb-2">{title}</h1>
         {blog.settings.blog_desc && (
-          <p className="text-[var(--color-fg-muted)] max-w-xl mx-auto">{blog.settings.blog_desc}</p>
+          <p className="text-fg-muted max-w-xl mx-auto">{blog.settings.blog_desc}</p>
         )}
-        <p className="text-xs text-[var(--color-fg-muted)] mt-2">by {name}</p>
+        <p className="text-xs text-fg-muted mt-2">by {name}</p>
         {/* RSS 連結 */}
         <a
           href={`/blogs/${userSlug}/feed.xml`}
           target="_blank"
-          className="inline-flex items-center gap-1 text-xs text-[var(--color-fg-muted)] hover:text-[var(--color-accent)] mt-2"
+          className="inline-flex items-center gap-1 text-xs text-fg-muted hover:text-accent mt-2"
         >
           <Rss size={12} /> RSS 訂閱源
         </a>
@@ -91,7 +91,7 @@ export default async function BlogHomePage({
 
       {/* 文章列表 */}
       {!articles || articles.length === 0 ? (
-        <div className="text-center py-16 text-[var(--color-fg-muted)]">
+        <div className="text-center py-16 text-fg-muted">
           這個部落格還沒有公開的文章
         </div>
       ) : (
@@ -100,7 +100,7 @@ export default async function BlogHomePage({
             <Link
               key={a.id}
               href={`/blogs/${userSlug}/${a.slug}`}
-              className="block rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-card)] overflow-hidden hover:border-[var(--color-accent)] transition group"
+              className="block rounded-xl border border-border bg-bg-card overflow-hidden hover:border-accent transition group"
             >
               {a.cover_image && (
                 <div className="relative w-full h-44">
@@ -116,15 +116,15 @@ export default async function BlogHomePage({
               )}
               <div className="p-5">
                 {a.category && (
-                  <span className="text-xs text-[var(--color-accent)] font-medium">{a.category}</span>
+                  <span className="text-xs text-accent font-medium">{a.category}</span>
                 )}
-                <h2 className="text-xl font-bold mt-1 mb-2 group-hover:text-[var(--color-accent)] transition">
+                <h2 className="text-xl font-bold mt-1 mb-2 group-hover:text-accent transition">
                   {a.title}
                 </h2>
                 {a.summary && (
-                  <p className="text-sm text-[var(--color-fg-muted)] line-clamp-2 mb-3">{a.summary}</p>
+                  <p className="text-sm text-fg-muted line-clamp-2 mb-3">{a.summary}</p>
                 )}
-                <div className="flex items-center gap-3 text-xs text-[var(--color-fg-muted)]">
+                <div className="flex items-center gap-3 text-xs text-fg-muted">
                   <span className="flex items-center gap-1">
                     <Calendar size={12} />
                     {new Date(a.published_at).toLocaleDateString("zh-TW")}
@@ -135,7 +135,7 @@ export default async function BlogHomePage({
                   {a.tags?.length > 0 && (
                     <span className="flex gap-1">
                       {a.tags.slice(0, 3).map((t: string) => (
-                        <span key={t} className="px-1.5 py-0.5 rounded-full bg-[var(--color-bg-elevated)]">#{t}</span>
+                        <span key={t} className="px-1.5 py-0.5 rounded-full bg-bg-elevated">#{t}</span>
                       ))}
                     </span>
                   )}

@@ -83,7 +83,7 @@ export default async function SubscribersPage({
     return (
       <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-6 text-sm">
         <div className="font-bold mb-2">⚠️ 需要先跑 migration</div>
-        <code className="block bg-[var(--color-bg)] p-3 rounded text-xs">supabase/breach_and_email_migration.sql</code>
+        <code className="block bg-bg p-3 rounded text-xs">supabase/breach_and_email_migration.sql</code>
       </div>
     );
   }
@@ -92,27 +92,27 @@ export default async function SubscribersPage({
     <div className="space-y-4">
       <div className="flex items-center justify-between flex-wrap gap-2">
         <h2 className="text-xl font-bold">📧 Email 訂閱戶</h2>
-        <div className="text-xs text-[var(--color-fg-muted)]">
+        <div className="text-xs text-fg-muted">
           匹配 {(count ?? 0).toLocaleString()} 筆 · 第 {page}/{totalPages} 頁
         </div>
       </div>
 
       {/* 概覽 */}
       <div className="grid grid-cols-3 gap-3">
-        <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-4">
-          <div className="text-xs text-[var(--color-fg-muted)]">總訂閱數</div>
+        <div className="bg-bg-card border border-border rounded-xl p-4">
+          <div className="text-xs text-fg-muted">總訂閱數</div>
           <div className="text-xl font-bold mt-0.5">{((totalActive ?? 0) + (totalUnsub ?? 0)).toLocaleString()}</div>
         </div>
-        <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-4">
-          <div className="text-xs text-[var(--color-fg-muted)]">在訂閱</div>
+        <div className="bg-bg-card border border-border rounded-xl p-4">
+          <div className="text-xs text-fg-muted">在訂閱</div>
           <div className="text-xl font-bold mt-0.5 text-emerald-500">{(totalActive ?? 0).toLocaleString()}</div>
         </div>
-        <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-4">
-          <div className="text-xs text-[var(--color-fg-muted)]">已退訂</div>
+        <div className="bg-bg-card border border-border rounded-xl p-4">
+          <div className="text-xs text-fg-muted">已退訂</div>
           <div className="text-xl font-bold mt-0.5 text-orange-500">
             {(totalUnsub ?? 0).toLocaleString()}
             {(totalActive ?? 0) + (totalUnsub ?? 0) > 0 && (
-              <span className="text-[10px] text-[var(--color-fg-muted)] ml-1">
+              <span className="text-[10px] text-fg-muted ml-1">
                 ({(((totalUnsub ?? 0) / ((totalActive ?? 0) + (totalUnsub ?? 0))) * 100).toFixed(1)}%)
               </span>
             )}
@@ -121,30 +121,30 @@ export default async function SubscribersPage({
       </div>
 
       {topReasons.length > 0 && (
-        <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-4">
+        <div className="bg-bg-card border border-border rounded-xl p-4">
           <h3 className="text-sm font-bold mb-2">退訂原因 Top 5</h3>
           <ul className="space-y-1 text-xs">
             {topReasons.map(([reason, n]) => (
               <li key={reason} className="flex items-center gap-2">
                 <span className="flex-1 truncate">{reason}</span>
-                <span className="text-[var(--color-fg-muted)]">{n}</span>
+                <span className="text-fg-muted">{n}</span>
               </li>
             ))}
           </ul>
         </div>
       )}
 
-      <form action={adminHref("/admin/email/subscribers")} className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-3 flex flex-wrap items-center gap-2">
+      <form action={adminHref("/admin/email/subscribers")} className="bg-bg-card border border-border rounded-xl p-3 flex flex-wrap items-center gap-2">
         <input
           name="q"
           defaultValue={q}
           placeholder="🔍 搜尋 email"
-          className="flex-1 min-w-[200px] bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg px-3 py-1.5 text-sm"
+          className="flex-1 min-w-[200px] bg-bg border border-border rounded-lg px-3 py-1.5 text-sm"
         />
         <select
           name="type"
           defaultValue={type}
-          className="bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg px-2 py-1.5 text-sm"
+          className="bg-bg border border-border rounded-lg px-2 py-1.5 text-sm"
         >
           <option value="all">所有類型</option>
           <option value="newsletter">📰 newsletter</option>
@@ -155,20 +155,20 @@ export default async function SubscribersPage({
         <select
           name="status"
           defaultValue={status}
-          className="bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg px-2 py-1.5 text-sm"
+          className="bg-bg border border-border rounded-lg px-2 py-1.5 text-sm"
         >
           <option value="all">全部</option>
           <option value="subscribed">在訂閱</option>
           <option value="unsubscribed">已退訂</option>
         </select>
-        <button type="submit" className="px-4 py-1.5 text-sm rounded-lg bg-[var(--color-accent)] text-black font-bold">
+        <button type="submit" className="px-4 py-1.5 text-sm rounded-lg bg-accent text-black font-bold">
           套用
         </button>
       </form>
 
-      <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl overflow-hidden">
+      <div className="bg-bg-card border border-border rounded-xl overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-[var(--color-bg-elevated)] text-left text-xs text-[var(--color-fg-muted)] uppercase">
+          <thead className="bg-bg-elevated text-left text-xs text-fg-muted uppercase">
             <tr>
               <th className="px-4 py-3">Email</th>
               <th className="px-4 py-3">訂閱中</th>
@@ -181,13 +181,13 @@ export default async function SubscribersPage({
           <tbody>
             {subs?.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-4 py-12 text-center text-[var(--color-fg-muted)]">
+                <td colSpan={6} className="px-4 py-12 text-center text-fg-muted">
                   目前條件下沒有訂閱戶
                 </td>
               </tr>
             ) : (
               subs?.map((s: any) => (
-                <tr key={s.id} className="border-t border-[var(--color-border)] hover:bg-[var(--color-bg-elevated)]">
+                <tr key={s.id} className="border-t border-border hover:bg-bg-elevated">
                   <td className="px-4 py-2 text-xs font-mono" title={s.email}>{maskEmail(s.email)}</td>
                   <td className="px-4 py-2 text-xs">
                     {s.newsletter && "📰 "}
@@ -196,7 +196,7 @@ export default async function SubscribersPage({
                     {s.weekly_digest && "📅 "}
                     {!(s.newsletter || s.product_updates || s.course_announcements || s.weekly_digest) && "—"}
                   </td>
-                  <td className="px-4 py-2 text-xs text-[var(--color-fg-muted)]">
+                  <td className="px-4 py-2 text-xs text-fg-muted">
                     {s.last_email_at ? new Date(s.last_email_at).toLocaleDateString("zh-TW") : "—"}
                   </td>
                   <td className="px-4 py-2 text-xs">
@@ -204,10 +204,10 @@ export default async function SubscribersPage({
                       ? <span className="text-orange-500">{new Date(s.unsubscribed_at).toLocaleDateString("zh-TW")}</span>
                       : <span className="text-emerald-500">在訂閱</span>}
                   </td>
-                  <td className="px-4 py-2 text-xs text-[var(--color-fg-muted)] truncate max-w-[200px]" title={s.unsubscribe_reason}>
+                  <td className="px-4 py-2 text-xs text-fg-muted truncate max-w-[200px]" title={s.unsubscribe_reason}>
                     {s.unsubscribe_reason || ""}
                   </td>
-                  <td className="px-4 py-2 text-xs text-[var(--color-fg-muted)]">
+                  <td className="px-4 py-2 text-xs text-fg-muted">
                     {new Date(s.created_at).toLocaleDateString("zh-TW")}
                   </td>
                 </tr>
@@ -219,11 +219,11 @@ export default async function SubscribersPage({
 
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-2 text-sm">
-          <Link href={page > 1 ? (buildHref({ page: String(page - 1) }) as any) : "#"} className={`px-3 py-1.5 rounded-lg border border-[var(--color-border)] ${page <= 1 ? "opacity-40 pointer-events-none" : "hover:bg-[var(--color-bg-elevated)]"}`}>
+          <Link href={page > 1 ? (buildHref({ page: String(page - 1) }) as any) : "#"} className={`px-3 py-1.5 rounded-lg border border-border ${page <= 1 ? "opacity-40 pointer-events-none" : "hover:bg-bg-elevated"}`}>
             ← 上一頁
           </Link>
-          <span className="text-xs text-[var(--color-fg-muted)] px-3">{page} / {totalPages}</span>
-          <Link href={page < totalPages ? (buildHref({ page: String(page + 1) }) as any) : "#"} className={`px-3 py-1.5 rounded-lg border border-[var(--color-border)] ${page >= totalPages ? "opacity-40 pointer-events-none" : "hover:bg-[var(--color-bg-elevated)]"}`}>
+          <span className="text-xs text-fg-muted px-3">{page} / {totalPages}</span>
+          <Link href={page < totalPages ? (buildHref({ page: String(page + 1) }) as any) : "#"} className={`px-3 py-1.5 rounded-lg border border-border ${page >= totalPages ? "opacity-40 pointer-events-none" : "hover:bg-bg-elevated"}`}>
             下一頁 →
           </Link>
         </div>

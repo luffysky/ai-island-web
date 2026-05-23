@@ -264,32 +264,32 @@ export function TodoDropdown({ open, onClose }: { open: boolean; onClose: () => 
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -6, scale: 0.98 }}
           transition={{ type: "spring", stiffness: 380, damping: 28 }}
-          className="absolute right-0 top-12 z-50 w-[min(420px,calc(100vw-1rem))] max-h-[70vh] bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl shadow-2xl flex flex-col overflow-hidden"
+          className="absolute right-0 top-12 z-50 w-[min(420px,calc(100vw-1rem))] max-h-[70vh] bg-bg-card border border-border rounded-xl shadow-2xl flex flex-col overflow-hidden"
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-2.5 border-b border-[var(--color-border)]">
+          <div className="flex items-center justify-between px-4 py-2.5 border-b border-border">
             <div className="flex items-center gap-2">
-              <CheckSquare size={15} className="text-[var(--color-accent)]" />
+              <CheckSquare size={15} className="text-accent" />
               <h3 className="font-bold text-sm">待辦清單</h3>
-              <span className="text-[10px] text-[var(--color-fg-muted)]">{remaining} 未完</span>
+              <span className="text-[10px] text-fg-muted">{remaining} 未完</span>
             </div>
             <div className="flex items-center gap-1">
               {completedCount > 0 && (
                 <button
                   onClick={() => setShowCompleted((v) => !v)}
-                  className="text-[10px] text-[var(--color-fg-muted)] hover:text-[var(--color-accent)] px-2 py-0.5 rounded"
+                  className="text-[10px] text-fg-muted hover:text-accent px-2 py-0.5 rounded"
                 >
                   {showCompleted ? "隱藏已完成" : `顯示已完成 (${completedCount})`}
                 </button>
               )}
-              <button onClick={onClose} aria-label="關閉" className="p-1 rounded hover:bg-[var(--color-bg-elevated)]">
+              <button onClick={onClose} aria-label="關閉" className="p-1 rounded hover:bg-bg-elevated">
                 <X size={14} />
               </button>
             </div>
           </div>
 
           {/* Add input */}
-          <div className="px-3 py-2 border-b border-[var(--color-border)]">
+          <div className="px-3 py-2 border-b border-border">
             <div className="flex gap-2">
               <input
                 value={input}
@@ -298,13 +298,13 @@ export function TodoDropdown({ open, onClose }: { open: boolean; onClose: () => 
                   if (e.key === "Enter") addTodo(null);
                 }}
                 placeholder="加個待辦、Enter 送出"
-                className="flex-1 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg px-3 py-1.5 text-sm outline-none focus:border-[var(--color-accent)]"
+                className="flex-1 bg-bg border border-border rounded-lg px-3 py-1.5 text-sm outline-none focus:border-accent"
                 maxLength={200}
               />
               <button
                 onClick={() => addTodo(null)}
                 disabled={!input.trim() || adding}
-                className="px-2.5 py-1.5 rounded-lg bg-[var(--color-accent)] text-black text-sm font-semibold disabled:opacity-40 active:scale-95 transition-transform flex items-center"
+                className="px-2.5 py-1.5 rounded-lg bg-accent text-black text-sm font-semibold disabled:opacity-40 active:scale-95 transition-transform flex items-center"
                 aria-label="新增"
               >
                 {adding ? <Loader2 size={13} className="animate-spin" /> : <Plus size={13} />}
@@ -315,11 +315,11 @@ export function TodoDropdown({ open, onClose }: { open: boolean; onClose: () => 
           {/* List */}
           <div className="flex-1 overflow-y-auto px-1 py-1">
             {loading ? (
-              <div className="px-4 py-6 text-center text-sm text-[var(--color-fg-muted)]">
+              <div className="px-4 py-6 text-center text-sm text-fg-muted">
                 <Loader2 size={16} className="animate-spin inline mr-1" /> 載入中...
               </div>
             ) : rootIds.length === 0 ? (
-              <div className="px-4 py-8 text-center text-sm text-[var(--color-fg-muted)]">
+              <div className="px-4 py-8 text-center text-sm text-fg-muted">
                 目前沒有待辦事項。
                 <br />
                 上面輸入框寫一條開始吧 ✨
@@ -353,9 +353,9 @@ export function TodoDropdown({ open, onClose }: { open: boolean; onClose: () => 
           </div>
 
           {/* Footer hint */}
-          <div className="px-3 py-1.5 border-t border-[var(--color-border)] text-[10px] text-[var(--color-fg-muted)] flex items-center justify-between">
+          <div className="px-3 py-1.5 border-t border-border text-[10px] text-fg-muted flex items-center justify-between">
             <span>雙擊標題可編輯 · 拖曳排序</span>
-            <kbd className="px-1 py-0.5 rounded bg-[var(--color-bg-elevated)] font-mono text-[9px]">
+            <kbd className="px-1 py-0.5 rounded bg-bg-elevated font-mono text-[9px]">
               ⌘⇧T
             </kbd>
           </div>

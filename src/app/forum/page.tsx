@@ -43,15 +43,15 @@ export default async function ForumHomePage() {
       <div className="flex items-center justify-between flex-wrap gap-3 mb-8">
         <div>
           <h1 className="text-3xl font-bold flex items-center gap-2">
-            <MessageSquare size={28} className="text-[var(--color-accent)]" /> 討論區
+            <MessageSquare size={28} className="text-accent" /> 討論區
           </h1>
-          <p className="text-[var(--color-fg-muted)] mt-1">
+          <p className="text-fg-muted mt-1">
             提問、分享、交流——AI 島的學習社群
           </p>
         </div>
         <Link
           href="/forum/new"
-          className="px-4 py-2 rounded-lg bg-[var(--color-accent)] text-black font-semibold text-sm hover:scale-105 transition flex items-center gap-1"
+          className="px-4 py-2 rounded-lg bg-accent text-black font-semibold text-sm hover:scale-105 transition flex items-center gap-1"
         >
           <Plus size={16} /> 發表主題
         </Link>
@@ -67,7 +67,7 @@ export default async function ForumHomePage() {
           if (!list || list.length === 0) return null;
           return (
             <section key={cat}>
-              <h2 className="text-sm font-bold text-[var(--color-fg-muted)] uppercase tracking-wider mb-3">
+              <h2 className="text-sm font-bold text-fg-muted uppercase tracking-wider mb-3">
                 {cat}
               </h2>
               <div className="grid sm:grid-cols-2 gap-3">
@@ -75,15 +75,15 @@ export default async function ForumHomePage() {
                   <Link
                     key={b.id}
                     href={`/forum/${b.slug}`}
-                    className="rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-card)] p-4 hover:border-[var(--color-accent)] transition flex items-start gap-3"
+                    className="rounded-xl border border-border bg-bg-card p-4 hover:border-accent transition flex items-start gap-3"
                   >
                     <span className="text-2xl">{b.emoji}</span>
                     <div className="min-w-0 flex-1">
                       <h3 className="font-bold">{b.name}</h3>
-                      <p className="text-xs text-[var(--color-fg-muted)] line-clamp-1 mt-0.5">
+                      <p className="text-xs text-fg-muted line-clamp-1 mt-0.5">
                         {b.description}
                       </p>
-                      <div className="text-[11px] text-[var(--color-fg-muted)] mt-1">
+                      <div className="text-[11px] text-fg-muted mt-1">
                         {countByBoard[b.id] ?? 0} 則討論
                         {b.post_role === "admin" && " · 🔒 限管理員發文"}
                       </div>

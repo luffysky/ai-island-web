@@ -33,13 +33,13 @@ export function GA4SyncButton() {
       <button
         onClick={sync}
         disabled={syncing}
-        className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--color-accent)] text-black rounded-lg text-sm font-semibold hover:scale-105 transition disabled:opacity-50"
+        className="inline-flex items-center gap-2 px-4 py-2 bg-accent text-black rounded-lg text-sm font-semibold hover:scale-105 transition disabled:opacity-50"
       >
         {syncing ? <RefreshCw size={14} className="animate-spin" /> : <RefreshCw size={14} />}
         {syncing ? "同步中..." : "立即同步"}
       </button>
       {result && (
-        <span className="inline-flex items-center gap-1 text-xs px-3 py-1 bg-[var(--color-bg-elevated)] rounded">
+        <span className="inline-flex items-center gap-1 text-xs px-3 py-1 bg-bg-elevated rounded">
           {result.startsWith("✓") && <Check size={12} className="text-green-400" />}
           {result}
         </span>

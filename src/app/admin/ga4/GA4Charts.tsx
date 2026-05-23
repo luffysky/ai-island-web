@@ -4,7 +4,7 @@ import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
 export function GA4Charts({ data }: { data: any[] }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-5">
+      <div className="bg-bg-card border border-border rounded-xl p-5">
         <h3 className="font-bold mb-3 text-sm">📊 每日瀏覽 / 訪客</h3>
         <ResponsiveContainer width="100%" height={250}>
           <AreaChart data={data}>
@@ -29,7 +29,7 @@ export function GA4Charts({ data }: { data: any[] }) {
         </ResponsiveContainer>
       </div>
 
-      <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-5">
+      <div className="bg-bg-card border border-border rounded-xl p-5">
         <h3 className="font-bold mb-3 text-sm">⏱️ 平均停留時間（秒）</h3>
         <ResponsiveContainer width="100%" height={250}>
           <LineChart data={data}>

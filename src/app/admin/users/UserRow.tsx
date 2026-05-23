@@ -104,16 +104,16 @@ export function UserRow({ user }: { user: any }) {
 
   return (
     <>
-      <tr className="border-b border-[var(--color-border)] hover:bg-[var(--color-bg-elevated)]">
+      <tr className="border-b border-border hover:bg-bg-elevated">
         <td className="px-4 py-3">
-          <Link href={detailHref as any} className="font-semibold flex items-center gap-1 hover:text-[var(--color-accent)] transition">
+          <Link href={detailHref as any} className="font-semibold flex items-center gap-1 hover:text-accent transition">
             {user.display_name || user.username}
             {role === "admin" && <ShieldCheck size={14} className="text-yellow-400" />}
             {role === "editor" && <Shield size={14} className="text-blue-400" />}
           </Link>
-          <div className="text-xs text-[var(--color-fg-muted)]">@{user.username}</div>
+          <div className="text-xs text-fg-muted">@{user.username}</div>
         </td>
-        <td className="px-4 py-3 text-[var(--color-accent)] font-bold">Lv {localLevel}</td>
+        <td className="px-4 py-3 text-accent font-bold">Lv {localLevel}</td>
         <td className="px-4 py-3">{localXp.toLocaleString()}</td>
         <td className="px-4 py-3 text-yellow-400">{localCoin}</td>
         <td className="px-4 py-3">🔥 {user.streak_days ?? 0}</td>
@@ -122,21 +122,21 @@ export function UserRow({ user }: { user: any }) {
             value={role}
             onChange={(e) => updateRole(e.target.value)}
             disabled={busy}
-            className="bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded px-2 py-1 text-xs disabled:opacity-50"
+            className="bg-bg-elevated border border-border rounded px-2 py-1 text-xs disabled:opacity-50"
           >
             <option value="member">member</option>
             <option value="editor">editor</option>
             <option value="admin">admin</option>
           </select>
         </td>
-        <td className="px-4 py-3 text-xs text-[var(--color-fg-muted)]">
+        <td className="px-4 py-3 text-xs text-fg-muted">
           {new Date(user.created_at).toLocaleDateString("zh-TW")}
         </td>
         <td className="px-4 py-3">
           <div className="flex items-center gap-3 flex-wrap">
             <button
               onClick={() => setGrantOpen(true)}
-              className="text-xs text-[var(--color-accent)] hover:underline flex items-center gap-1"
+              className="text-xs text-accent hover:underline flex items-center gap-1"
               title="發放 XP / Z-coin / 成就"
             >
               <Gift size={12} /> 補帳
@@ -146,8 +146,8 @@ export function UserRow({ user }: { user: any }) {
               disabled={aiBusy}
               className={`text-xs flex items-center gap-1 disabled:opacity-50 ${
                 aiUnlimited
-                  ? "text-[var(--color-accent)] font-semibold"
-                  : "text-[var(--color-fg-muted)] hover:text-[var(--color-accent)]"
+                  ? "text-accent font-semibold"
+                  : "text-fg-muted hover:text-accent"
               }`}
               title={aiUnlimited ? "AI 無限特權：開啟中（點擊關閉）" : "AI 無限特權：關閉（點擊開啟）"}
             >

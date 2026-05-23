@@ -39,21 +39,21 @@ export default async function MeOverviewPage() {
 
       {/* 統計 */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <Stat label="完成 lesson" value={`${completedLessons} / ${totalLessons}`} color="text-[var(--color-accent)]" />
+        <Stat label="完成 lesson" value={`${completedLessons} / ${totalLessons}`} color="text-accent" />
         <Stat label="總進度" value={`${pct}%`} color="text-yellow-400" />
         <Stat label="我的筆記" value={notesCount ?? 0} color="text-blue-400" />
         <Stat label="書籤" value={bookmarksCount ?? 0} color="text-pink-400" />
       </div>
 
       {/* 進度條 */}
-      <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-5">
+      <div className="bg-bg-card border border-border rounded-xl p-5">
         <div className="flex items-center justify-between mb-3">
           <h2 className="font-bold">📈 整體進度</h2>
-          <span className="text-sm text-[var(--color-fg-muted)]">{completedLessons} / {totalLessons}</span>
+          <span className="text-sm text-fg-muted">{completedLessons} / {totalLessons}</span>
         </div>
-        <div className="h-3 bg-[var(--color-bg)] rounded-full overflow-hidden">
+        <div className="h-3 bg-bg rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-[var(--color-accent)] to-yellow-400 transition-all"
+            className="h-full bg-gradient-to-r from-accent to-yellow-400 transition-all"
             style={{ width: `${pct}%` }}
           />
         </div>
@@ -68,19 +68,19 @@ export default async function MeOverviewPage() {
               <Link
                 key={ch.id}
                 href={`/chapters/${ch.id}` as any}
-                className="bg-[var(--color-bg-card)] border border-[var(--color-border)] hover:border-[var(--color-accent)]/50 rounded-xl p-4 transition"
+                className="bg-bg-card border border-border hover:border-accent/50 rounded-xl p-4 transition"
               >
                 <div className="flex items-start justify-between mb-2">
                   <div className="min-w-0 flex-1">
-                    <div className="text-xs text-[var(--color-fg-muted)]">Ch {String(ch.id).padStart(2, "0")}</div>
+                    <div className="text-xs text-fg-muted">Ch {String(ch.id).padStart(2, "0")}</div>
                     <h3 className="font-bold truncate">{ch.title}</h3>
                   </div>
                   <div className="text-2xl ml-2">{ch.pct}%</div>
                 </div>
-                <div className="h-1.5 bg-[var(--color-bg)] rounded-full overflow-hidden">
-                  <div className="h-full bg-[var(--color-accent)]" style={{ width: `${ch.pct}%` }} />
+                <div className="h-1.5 bg-bg rounded-full overflow-hidden">
+                  <div className="h-full bg-accent" style={{ width: `${ch.pct}%` }} />
                 </div>
-                <div className="text-xs text-[var(--color-fg-muted)] mt-2">{ch.done} / {ch.total} lessons</div>
+                <div className="text-xs text-fg-muted mt-2">{ch.done} / {ch.total} lessons</div>
               </Link>
             ))}
           </div>
@@ -91,7 +91,7 @@ export default async function MeOverviewPage() {
       {recentLessons && recentLessons.length > 0 && (
         <div>
           <h2 className="font-bold mb-3">⏱️ 最近完成</h2>
-          <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl divide-y divide-[var(--color-border)]">
+          <div className="bg-bg-card border border-border rounded-xl divide-y divide-border">
             {recentLessons.map((p: any) => {
               const ch = chapters.find((c) => c.id === p.chapter_id);
               const lesson = ch?.lessons.find((l) => l.id === p.lesson_id);
@@ -99,18 +99,18 @@ export default async function MeOverviewPage() {
                 <Link
                   key={p.id}
                   href={`/chapters/${p.chapter_id}` as any}
-                  className="flex items-center justify-between p-3 hover:bg-[var(--color-bg-elevated)] transition"
+                  className="flex items-center justify-between p-3 hover:bg-bg-elevated transition"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-8 h-8 rounded-full bg-[var(--color-accent)]/20 flex items-center justify-center text-[var(--color-accent)] flex-shrink-0">
+                    <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center text-accent flex-shrink-0">
                       ✓
                     </div>
                     <div className="min-w-0">
                       <div className="font-medium truncate">{lesson?.title ?? p.lesson_id}</div>
-                      <div className="text-xs text-[var(--color-fg-muted)]">{ch?.title} · +{p.xp_earned ?? 0} XP</div>
+                      <div className="text-xs text-fg-muted">{ch?.title} · +{p.xp_earned ?? 0} XP</div>
                     </div>
                   </div>
-                  <div className="text-xs text-[var(--color-fg-muted)] flex-shrink-0">
+                  <div className="text-xs text-fg-muted flex-shrink-0">
                     {new Date(p.completed_at).toLocaleDateString('zh-TW')}
                   </div>
                 </Link>
@@ -125,8 +125,8 @@ export default async function MeOverviewPage() {
 
 function Stat({ label, value, color }: { label: string; value: any; color: string }) {
   return (
-    <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-4">
-      <div className="text-xs text-[var(--color-fg-muted)]">{label}</div>
+    <div className="bg-bg-card border border-border rounded-xl p-4">
+      <div className="text-xs text-fg-muted">{label}</div>
       <div className={`text-2xl font-bold mt-1 ${color}`}>{value}</div>
     </div>
   );

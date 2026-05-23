@@ -17,7 +17,7 @@ export default async function ModelsAdminPage() {
     return (
       <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-6 text-sm">
         <div className="font-bold mb-2">⚠️ 需要先跑 ai_migration.sql</div>
-        <code className="block bg-[var(--color-bg)] p-3 rounded text-xs">supabase/ai_migration.sql</code>
+        <code className="block bg-bg p-3 rounded text-xs">supabase/ai_migration.sql</code>
       </div>
     );
   }
@@ -26,7 +26,7 @@ export default async function ModelsAdminPage() {
     <div className="space-y-6">
       <div>
         <h2 className="text-xl font-bold">🤖 AI 模型管理</h2>
-        <p className="text-sm text-[var(--color-fg-muted)] mt-1">
+        <p className="text-sm text-fg-muted mt-1">
           設定每個 provider 的 API key、月預算、模型可用性、免費 quota。
         </p>
       </div>

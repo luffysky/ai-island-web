@@ -22,11 +22,11 @@ export function MiniQuizCard({ quiz }: { quiz: MiniQuiz }) {
         {quiz.options.map((opt) => {
           const isThisAnswer = opt.value === quiz.answer;
           const isSelected = selected === opt.value;
-          let style = "border-[var(--color-border)] bg-[var(--color-bg)] hover:border-blue-400";
+          let style = "border-border bg-bg hover:border-blue-400";
           if (submitted) {
             if (isThisAnswer) style = "border-green-500 bg-green-500/10 text-green-400";
             else if (isSelected) style = "border-red-500 bg-red-500/10 text-red-400";
-            else style = "border-[var(--color-border)] bg-[var(--color-bg)] opacity-50";
+            else style = "border-border bg-bg opacity-50";
           } else if (isSelected) {
             style = "border-blue-500 bg-blue-500/10";
           }
@@ -62,7 +62,7 @@ export function MiniQuizCard({ quiz }: { quiz: MiniQuiz }) {
             {isCorrect ? "✓ 答對了！" : "✗ 再想想..."}
           </div>
           {quiz.explanation && (
-            <div className="text-xs text-[var(--color-fg-muted)] p-3 bg-[var(--color-bg)] rounded-lg">
+            <div className="text-xs text-fg-muted p-3 bg-bg rounded-lg">
               💡 {quiz.explanation}
             </div>
           )}

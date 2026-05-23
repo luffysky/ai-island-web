@@ -44,7 +44,7 @@ export default async function BoardPage({
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
-      <Link href="/forum" className="text-sm text-[var(--color-fg-muted)] hover:text-[var(--color-fg)] flex items-center gap-1 mb-4">
+      <Link href="/forum" className="text-sm text-fg-muted hover:text-fg flex items-center gap-1 mb-4">
         <ArrowLeft size={14} /> 討論區
       </Link>
 
@@ -54,20 +54,20 @@ export default async function BoardPage({
           <span className="text-4xl">{board.emoji}</span>
           <div>
             <h1 className="text-2xl font-bold">{board.name}</h1>
-            <p className="text-sm text-[var(--color-fg-muted)]">{board.description}</p>
-            <span className="text-xs text-[var(--color-fg-muted)]">{board.category}</span>
+            <p className="text-sm text-fg-muted">{board.description}</p>
+            <span className="text-xs text-fg-muted">{board.category}</span>
           </div>
         </div>
         <Link
           href={`/forum/new?board=${board.slug}`}
-          className="px-4 py-2 rounded-lg bg-[var(--color-accent)] text-black font-semibold text-sm hover:scale-105 transition flex items-center gap-1"
+          className="px-4 py-2 rounded-lg bg-accent text-black font-semibold text-sm hover:scale-105 transition flex items-center gap-1"
         >
           <Plus size={16} /> 發表主題
         </Link>
       </div>
 
       {board.post_role === "admin" && (
-        <div className="mb-4 text-xs text-[var(--color-fg-muted)] bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-lg p-2">
+        <div className="mb-4 text-xs text-fg-muted bg-bg-card border border-border rounded-lg p-2">
           🔒 這個版塊只有管理員能發表主題
         </div>
       )}

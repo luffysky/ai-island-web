@@ -37,7 +37,7 @@ export function CollapsibleAside({ children }: { children: React.ReactNode }) {
         type="button"
         onClick={toggle}
         aria-label={collapsed ? "展開側欄" : "收合側欄"}
-        className="w-full flex items-center justify-end mb-3 p-1.5 text-[var(--color-fg-muted)] hover:text-[var(--color-accent)] transition"
+        className="w-full flex items-center justify-end mb-3 p-1.5 text-fg-muted hover:text-accent transition"
       >
         {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
       </button>

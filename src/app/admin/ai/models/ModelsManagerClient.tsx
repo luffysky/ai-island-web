@@ -249,11 +249,11 @@ export function ModelsManagerClient({
         const hasSecret = keyHasSecret(key);
 
         return (
-          <div key={provider} className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-5">
+          <div key={provider} className="bg-bg-card border border-border rounded-xl p-5">
             <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
               <div>
                 <h3 className="font-bold text-lg uppercase">{provider}</h3>
-                <div className="text-xs text-[var(--color-fg-muted)] mt-1">
+                <div className="text-xs text-fg-muted mt-1">
                   最後更新：{formatUpdatedAt(key?.updated_at)}
                 </div>
               </div>
@@ -272,19 +272,19 @@ export function ModelsManagerClient({
             </div>
 
             {/* API key */}
-            <div className="mb-4 p-3 bg-[var(--color-bg)] rounded-lg space-y-3">
-              <div className="text-xs text-[var(--color-fg-muted)]">API Key（加密儲存，不顯示原文）</div>
+            <div className="mb-4 p-3 bg-bg rounded-lg space-y-3">
+              <div className="text-xs text-fg-muted">API Key（加密儲存，不顯示原文）</div>
               <div className="flex gap-2">
                 <input
                   type={showKey[provider] ? "text" : "password"}
                   value={keyInputs[provider] ?? ""}
                   onChange={(e) => setKeyInputs({ ...keyInputs, [provider]: e.target.value })}
                   placeholder={hasSecret ? "✓ 已設定（輸入新 key 會覆蓋）" : "貼上 API key"}
-                  className="flex-1 bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded p-2 text-sm font-mono"
+                  className="flex-1 bg-bg-elevated border border-border rounded p-2 text-sm font-mono"
                 />
                 <button
                   onClick={() => setShowKey({ ...showKey, [provider]: !showKey[provider] })}
-                  className="p-2 hover:bg-[var(--color-bg-elevated)] rounded"
+                  className="p-2 hover:bg-bg-elevated rounded"
                   title={showKey[provider] ? "隱藏輸入內容" : "顯示輸入內容"}
                 >
                   {showKey[provider] ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -292,7 +292,7 @@ export function ModelsManagerClient({
                 <button
                   onClick={() => saveKey(provider)}
                   disabled={!keyInputs[provider] || savingKey === provider}
-                  className="px-3 py-2 bg-[var(--color-accent)] text-black text-sm font-semibold rounded disabled:opacity-50"
+                  className="px-3 py-2 bg-accent text-black text-sm font-semibold rounded disabled:opacity-50"
                   title="儲存 API key"
                 >
                   {keySaved === provider ? <Check size={14} /> : <Save size={14} />}
@@ -303,7 +303,7 @@ export function ModelsManagerClient({
                 <button
                   onClick={() => toggleKeyEnabled(provider, !key?.enabled)}
                   disabled={!key || !hasSecret}
-                  className="inline-flex items-center gap-1 rounded border border-[var(--color-border)] px-3 py-1.5 text-xs hover:bg-[var(--color-bg-elevated)] disabled:opacity-50"
+                  className="inline-flex items-center gap-1 rounded border border-border px-3 py-1.5 text-xs hover:bg-bg-elevated disabled:opacity-50"
                 >
                   <Power size={14} />
                   {key?.enabled ? "停用" : "啟用"}
@@ -320,7 +320,7 @@ export function ModelsManagerClient({
 
               {/* 月預算 */}
               <div className="flex items-center gap-3 mt-2">
-                <span className="text-xs text-[var(--color-fg-muted)]">月預算</span>
+                <span className="text-xs text-fg-muted">月預算</span>
                 <input
                   type="number"
                   min={0}
@@ -330,14 +330,14 @@ export function ModelsManagerClient({
                   onKeyDown={(e) => {
                     if (e.key === "Enter") updateBudget(provider, Number(e.currentTarget.value));
                   }}
-                  className="w-24 bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded p-1 text-sm"
+                  className="w-24 bg-bg-elevated border border-border rounded p-1 text-sm"
                 />
                 <span className="text-xs">USD</span>
-                <span className="text-xs text-[var(--color-fg-muted)] ml-auto">
+                <span className="text-xs text-fg-muted ml-auto">
                   已用 ${used.toFixed(2)} / ${budget}（{pct.toFixed(1)}%）
                 </span>
               </div>
-              <div className="h-1 bg-[var(--color-bg-elevated)] rounded-full overflow-hidden">
+              <div className="h-1 bg-bg-elevated rounded-full overflow-hidden">
                 <div
                   className={`h-full transition-all ${pct > 90 ? "bg-red-400" : pct > 70 ? "bg-yellow-400" : "bg-green-400"}`}
                   style={{ width: `${pct}%` }}
@@ -348,7 +348,7 @@ export function ModelsManagerClient({
             {/* 模型列表 */}
             <div className="space-y-2">
               {providerModels.map((m) => (
-                <div key={m.id} className="flex items-center gap-3 p-3 bg-[var(--color-bg)] rounded-lg">
+                <div key={m.id} className="flex items-center gap-3 p-3 bg-bg rounded-lg">
                   <input
                     type="checkbox"
                     checked={m.is_active}
@@ -359,24 +359,24 @@ export function ModelsManagerClient({
                       {m.display_name}
                       {m.is_default && <span className="text-xs px-1.5 py-0.5 bg-yellow-500/20 text-yellow-400 rounded">預設</span>}
                     </div>
-                    <div className="text-xs text-[var(--color-fg-muted)]">
+                    <div className="text-xs text-fg-muted">
                       {m.model_name} · ${m.cost_input_per_1m}/${m.cost_output_per_1m}/1M tokens
                     </div>
                   </div>
                   <div className="flex items-center gap-2 text-xs">
-                    <span className="text-[var(--color-fg-muted)]">免費/日</span>
+                    <span className="text-fg-muted">免費/日</span>
                     <input
                       type="number"
                       min={0}
                       value={m.free_tier_daily_limit}
                       onChange={(e) => updateLimit(m.id, Number(e.target.value))}
-                      className="w-16 bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded p-1"
+                      className="w-16 bg-bg-elevated border border-border rounded p-1"
                     />
                   </div>
                   {!m.is_default && (
                     <button
                       onClick={() => setDefault(m.id)}
-                      className="text-xs px-2 py-1 hover:bg-[var(--color-bg-elevated)] rounded"
+                      className="text-xs px-2 py-1 hover:bg-bg-elevated rounded"
                     >
                       設預設
                     </button>

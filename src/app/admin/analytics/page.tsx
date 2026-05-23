@@ -32,14 +32,14 @@ export default async function AdminAnalyticsPage() {
     <div className="space-y-6">
       <h2 className="text-xl font-bold">📈 數據分析</h2>
 
-      <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-5">
+      <div className="bg-bg-card border border-border rounded-xl p-5">
         <h3 className="font-bold mb-4">🔥 Top 10 最熱門章節（完成 lesson 數）</h3>
         <div className="space-y-2">
           {sortedChapters.map(([cid, count]) => (
             <div key={cid} className="flex items-center gap-3">
               <span className="w-16 text-sm">Ch {String(cid).padStart(2, "0")}</span>
-              <div className="flex-1 h-6 bg-[var(--color-bg)] rounded overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-[var(--color-accent)] to-[var(--color-accent-2)]" style={{ width: `${(count / (sortedChapters[0]?.[1] || 1)) * 100}%` }} />
+              <div className="flex-1 h-6 bg-bg rounded overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-accent to-accent-2" style={{ width: `${(count / (sortedChapters[0]?.[1] || 1)) * 100}%` }} />
               </div>
               <span className="w-16 text-right text-sm font-bold">{count}</span>
             </div>
@@ -47,14 +47,14 @@ export default async function AdminAnalyticsPage() {
         </div>
       </div>
 
-      <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-5">
+      <div className="bg-bg-card border border-border rounded-xl p-5">
         <h3 className="font-bold mb-4">🏆 Top 10 最常解鎖的成就</h3>
         <div className="space-y-2">
           {sortedAch.map(([aid, info]) => (
             <div key={aid} className="flex items-center gap-3">
               <span className="text-2xl">{info.icon}</span>
               <span className="flex-1 text-sm">{info.name}</span>
-              <span className="text-xs px-2 py-0.5 rounded bg-[var(--color-bg-elevated)]">{info.rarity}</span>
+              <span className="text-xs px-2 py-0.5 rounded bg-bg-elevated">{info.rarity}</span>
               <span className="w-12 text-right font-bold">{info.count}</span>
             </div>
           ))}

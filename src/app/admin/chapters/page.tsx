@@ -8,18 +8,18 @@ export default async function AdminChaptersPage() {
   return (
     <div>
       <h2 className="text-xl font-bold mb-4">📚 章節管理</h2>
-      <p className="text-sm text-[var(--color-fg-muted)] mb-4">
+      <p className="text-sm text-fg-muted mb-4">
         點章節進入編輯。每章右上「📝 出題」按鈕、可叫 AI 生 20 題章末測驗。
       </p>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
         {chapters.map((c) => (
-          <div key={c.id} className="p-4 rounded-lg bg-[var(--color-bg-card)] border border-[var(--color-border)] hover:border-[var(--color-accent)] transition relative group">
+          <div key={c.id} className="p-4 rounded-lg bg-bg-card border border-border hover:border-accent transition relative group">
             <Link href={adminHref(`/admin/chapters/${c.id}`) as any} className="block">
-              <div className="text-xs text-[var(--color-fg-muted)]">Ch {String(c.id).padStart(2, "0")}</div>
+              <div className="text-xs text-fg-muted">Ch {String(c.id).padStart(2, "0")}</div>
               <div className="font-semibold pr-12">{c.title}</div>
-              <div className="text-xs mt-2 flex justify-between text-[var(--color-fg-muted)]">
+              <div className="text-xs mt-2 flex justify-between text-fg-muted">
                 <span>{c.lessonCount} lessons</span>
-                <span className={c.status === "published" ? "text-[var(--color-accent)]" : "text-orange-400"}>
+                <span className={c.status === "published" ? "text-accent" : "text-orange-400"}>
                   {c.status === "published" ? "✓ 已發布" : "撰寫中"}
                 </span>
               </div>

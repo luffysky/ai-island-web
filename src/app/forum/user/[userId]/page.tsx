@@ -77,7 +77,7 @@ export default async function ForumUserPage({
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
-      <Link href="/forum" className="text-sm text-[var(--color-fg-muted)] hover:text-[var(--color-fg)] flex items-center gap-1 mb-4">
+      <Link href="/forum" className="text-sm text-fg-muted hover:text-fg flex items-center gap-1 mb-4">
         <ArrowLeft size={14} /> 討論區
       </Link>
 
@@ -93,18 +93,18 @@ export default async function ForumUserPage({
             className="w-16 h-16 rounded-full object-cover"
           />
         ) : (
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-accent-2)] flex items-center justify-center text-2xl font-bold text-black">
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-accent to-accent-2 flex items-center justify-center text-2xl font-bold text-black">
             {name[0]}
           </div>
         )}
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
             {name}
-            <span className="text-xs px-1.5 py-0.5 rounded bg-[var(--color-bg-elevated)] font-bold">
+            <span className="text-xs px-1.5 py-0.5 rounded bg-bg-elevated font-bold">
               Lv {profile.level ?? 1}
             </span>
           </h1>
-          <p className="text-sm text-[var(--color-fg-muted)]">{profile.xp ?? 0} XP</p>
+          <p className="text-sm text-fg-muted">{profile.xp ?? 0} XP</p>
         </div>
       </div>
 
@@ -119,20 +119,20 @@ export default async function ForumUserPage({
       <section className="mb-8">
         <h2 className="font-bold mb-3">發表的主題</h2>
         {threads.length === 0 ? (
-          <p className="text-sm text-[var(--color-fg-muted)]">還沒有發表主題</p>
+          <p className="text-sm text-fg-muted">還沒有發表主題</p>
         ) : (
           <div className="space-y-2">
             {threads.map((t: any) => (
               <Link
                 key={t.id}
                 href={`/forum/thread/${t.id}`}
-                className="block rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-card)] p-3 hover:border-[var(--color-accent)] transition"
+                className="block rounded-lg border border-border bg-bg-card p-3 hover:border-accent transition"
               >
                 <div className="flex items-center gap-1.5">
                   {t.is_featured && <Star size={12} className="text-yellow-400" />}
                   <h3 className="font-semibold text-sm">{t.title}</h3>
                 </div>
-                <div className="flex items-center gap-3 text-[11px] text-[var(--color-fg-muted)] mt-1">
+                <div className="flex items-center gap-3 text-[11px] text-fg-muted mt-1">
                   {t.board && <span>{t.board.emoji} {t.board.name}</span>}
                   <span className="flex items-center gap-0.5"><MessageSquare size={10} /> {t.reply_count}</span>
                   <span className="flex items-center gap-0.5"><Eye size={10} /> {t.view_count}</span>
@@ -148,20 +148,20 @@ export default async function ForumUserPage({
       <section>
         <h2 className="font-bold mb-3">最近的回覆</h2>
         {replies.length === 0 ? (
-          <p className="text-sm text-[var(--color-fg-muted)]">還沒有回覆</p>
+          <p className="text-sm text-fg-muted">還沒有回覆</p>
         ) : (
           <div className="space-y-2">
             {replies.map((r: any) => (
               <Link
                 key={r.id}
                 href={`/forum/thread/${r.thread_id}`}
-                className="block rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-card)] p-3 hover:border-[var(--color-accent)] transition"
+                className="block rounded-lg border border-border bg-bg-card p-3 hover:border-accent transition"
               >
                 {r.is_answer && (
-                  <span className="text-[10px] text-[var(--color-accent)] font-bold">✓ 已採納為解答</span>
+                  <span className="text-[10px] text-accent font-bold">✓ 已採納為解答</span>
                 )}
                 <p className="text-sm line-clamp-2">{r.content}</p>
-                <p className="text-[11px] text-[var(--color-fg-muted)] mt-1">
+                <p className="text-[11px] text-fg-muted mt-1">
                   回覆於「{r.thread?.title ?? "（已刪除）"}」· {new Date(r.created_at).toLocaleDateString("zh-TW")}
                 </p>
               </Link>
@@ -175,10 +175,10 @@ export default async function ForumUserPage({
 
 function Stat({ icon, label, value }: { icon: React.ReactNode; label: string; value: number }) {
   return (
-    <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-card)] p-3 text-center">
-      <div className="flex justify-center text-[var(--color-accent)] mb-1">{icon}</div>
+    <div className="rounded-xl border border-border bg-bg-card p-3 text-center">
+      <div className="flex justify-center text-accent mb-1">{icon}</div>
       <div className="text-xl font-bold">{value}</div>
-      <div className="text-xs text-[var(--color-fg-muted)]">{label}</div>
+      <div className="text-xs text-fg-muted">{label}</div>
     </div>
   );
 }

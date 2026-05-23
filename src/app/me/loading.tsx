@@ -13,7 +13,7 @@ export default function Loading() {
       {/* Main */}
       <div className="space-y-6">
         {/* Hero card */}
-        <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-card)] p-5">
+        <div className="rounded-2xl border border-border bg-bg-card p-5">
           <div className="flex items-center gap-4">
             <Skeleton width={64} height={64} rounded="full" />
             <div className="flex-1 space-y-2">

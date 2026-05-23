@@ -81,19 +81,19 @@ export function SettingsForm({ profile, email }: { profile: any; email: string }
   return (
     <form onSubmit={handleSave} className="space-y-6">
       {/* 基本資料 */}
-      <section className="bg-[var(--color-bg-card)] rounded-xl p-6 space-y-4">
+      <section className="bg-bg-card rounded-xl p-6 space-y-4">
         <h2 className="font-bold text-lg">基本資料</h2>
 
         <div>
           <label className="block text-sm mb-1">Email</label>
-          <input type="email" value={email} disabled className="w-full bg-[var(--color-bg-elevated)] rounded-lg px-3 py-2 opacity-60" />
-          <p className="text-xs text-[var(--color-fg-muted)] mt-1">無法修改</p>
+          <input type="email" value={email} disabled className="w-full bg-bg-elevated rounded-lg px-3 py-2 opacity-60" />
+          <p className="text-xs text-fg-muted mt-1">無法修改</p>
         </div>
 
         <div>
           <label className="block text-sm mb-1">Username（公開、@xxxxx）</label>
-          <input type="text" value={profile.username} disabled className="w-full bg-[var(--color-bg-elevated)] rounded-lg px-3 py-2 opacity-60" />
-          <p className="text-xs text-[var(--color-fg-muted)] mt-1">無法修改</p>
+          <input type="text" value={profile.username} disabled className="w-full bg-bg-elevated rounded-lg px-3 py-2 opacity-60" />
+          <p className="text-xs text-fg-muted mt-1">無法修改</p>
         </div>
 
         <div>
@@ -102,7 +102,7 @@ export function SettingsForm({ profile, email }: { profile: any; email: string }
             type="text"
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
-            className="w-full bg-[var(--color-bg-elevated)] rounded-lg px-3 py-2"
+            className="w-full bg-bg-elevated rounded-lg px-3 py-2"
             placeholder="想被叫什麼？"
             maxLength={50}
           />
@@ -114,7 +114,7 @@ export function SettingsForm({ profile, email }: { profile: any; email: string }
             type="url"
             value={avatarUrl}
             onChange={(e) => setAvatarUrl(e.target.value)}
-            className="w-full bg-[var(--color-bg-elevated)] rounded-lg px-3 py-2"
+            className="w-full bg-bg-elevated rounded-lg px-3 py-2"
             placeholder="https://..."
           />
           {avatarUrl && (
@@ -134,11 +134,11 @@ export function SettingsForm({ profile, email }: { profile: any; email: string }
           <textarea
             value={bio}
             onChange={(e) => setBio(e.target.value)}
-            className="w-full bg-[var(--color-bg-elevated)] rounded-lg px-3 py-2 min-h-[80px]"
+            className="w-full bg-bg-elevated rounded-lg px-3 py-2 min-h-[80px]"
             placeholder="跟大家介紹一下..."
             maxLength={200}
           />
-          <p className="text-xs text-[var(--color-fg-muted)] mt-1">{bio.length} / 200</p>
+          <p className="text-xs text-fg-muted mt-1">{bio.length} / 200</p>
         </div>
 
         <div>
@@ -146,7 +146,7 @@ export function SettingsForm({ profile, email }: { profile: any; email: string }
           <select
             value={careerPath}
             onChange={(e) => setCareerPath(e.target.value)}
-            className="w-full bg-[var(--color-bg-elevated)] rounded-lg px-3 py-2"
+            className="w-full bg-bg-elevated rounded-lg px-3 py-2"
           >
             <option value="">未選擇</option>
             {CAREER_PATHS.map((p) => (
@@ -161,7 +161,7 @@ export function SettingsForm({ profile, email }: { profile: any; email: string }
         <button
           type="submit"
           disabled={saving}
-          className="px-6 py-2 bg-[var(--color-accent)] text-black rounded-lg font-semibold hover:bg-[var(--color-accent-2)] disabled:opacity-50 transition"
+          className="px-6 py-2 bg-accent text-black rounded-lg font-semibold hover:bg-accent-2 disabled:opacity-50 transition"
         >
           {saving ? "儲存中..." : "儲存"}
         </button>
@@ -171,7 +171,7 @@ export function SettingsForm({ profile, email }: { profile: any; email: string }
       {/* 危險區 */}
       <section className="bg-red-950/30 border border-red-900/50 rounded-xl p-6 mt-12">
         <h2 className="font-bold text-lg text-red-400 mb-2">⚠️ 危險區</h2>
-        <p className="text-sm text-[var(--color-fg-muted)] mb-4">
+        <p className="text-sm text-fg-muted mb-4">
           刪除帳號會永久移除所有資料、且不可恢復。
         </p>
         <button

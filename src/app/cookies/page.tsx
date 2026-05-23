@@ -7,7 +7,7 @@ export default function CookiesPage() {
   return (
     <div className="max-w-3xl mx-auto px-6 py-12 prose-custom">
       <h1>Cookie 政策</h1>
-      <p className="text-sm text-[var(--color-fg-muted)]">
+      <p className="text-sm text-fg-muted">
         最後更新：2026 年 5 月 19 日
       </p>
 
@@ -106,7 +106,7 @@ export default function CookiesPage() {
       <p>本政策可能不時更新、請定期查閱。重大變更會以站內通知告知。</p>
 
       <hr />
-      <p className="text-sm text-[var(--color-fg-muted)]">
+      <p className="text-sm text-fg-muted">
         相關政策：<a href="/privacy">隱私權政策</a> · <a href="/terms">使用條款</a>
       </p>
     </div>

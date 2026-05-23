@@ -46,12 +46,12 @@ export default function BlogSettingsPage() {
   };
 
   if (loading) {
-    return <div className="h-64 rounded-xl bg-[var(--color-bg-card)] animate-pulse" />;
+    return <div className="h-64 rounded-xl bg-bg-card animate-pulse" />;
   }
 
   return (
     <div className="max-w-2xl">
-      <Link href="/me/blog" className="text-sm text-[var(--color-fg-muted)] hover:text-[var(--color-fg)] flex items-center gap-1 mb-4">
+      <Link href="/me/blog" className="text-sm text-fg-muted hover:text-fg flex items-center gap-1 mb-4">
         <ArrowLeft size={14} /> 回部落格
       </Link>
       <h1 className="text-2xl font-bold mb-6">部落格設定</h1>
@@ -63,7 +63,7 @@ export default function BlogSettingsPage() {
             value={settings?.blog_title ?? ""}
             onChange={(e) => set("blog_title", e.target.value)}
             placeholder="例如：Luffy 的程式日記"
-            className="w-full bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-lg p-2.5 text-sm outline-none focus:border-[var(--color-accent)]"
+            className="w-full bg-bg-card border border-border rounded-lg p-2.5 text-sm outline-none focus:border-accent"
           />
         </div>
 
@@ -74,22 +74,22 @@ export default function BlogSettingsPage() {
             onChange={(e) => set("blog_desc", e.target.value)}
             rows={3}
             placeholder="介紹一下你的部落格"
-            className="w-full bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-lg p-2.5 text-sm outline-none focus:border-[var(--color-accent)] resize-none"
+            className="w-full bg-bg-card border border-border rounded-lg p-2.5 text-sm outline-none focus:border-accent resize-none"
           />
         </div>
 
         <div>
           <label className="text-sm font-medium mb-1.5 block">自訂網址</label>
           <div className="flex items-center gap-1 text-sm">
-            <span className="text-[var(--color-fg-muted)]">/blogs/</span>
+            <span className="text-fg-muted">/blogs/</span>
             <input
               value={settings?.blog_slug ?? ""}
               onChange={(e) => set("blog_slug", e.target.value)}
               placeholder="your-name"
-              className="flex-1 bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-lg p-2.5 outline-none focus:border-[var(--color-accent)]"
+              className="flex-1 bg-bg-card border border-border rounded-lg p-2.5 outline-none focus:border-accent"
             />
           </div>
-          <p className="text-xs text-[var(--color-fg-muted)] mt-1">
+          <p className="text-xs text-fg-muted mt-1">
             留空的話、網址會用你的帳號 ID。只能用英數字和連字號。
           </p>
         </div>
@@ -107,7 +107,7 @@ export default function BlogSettingsPage() {
           <button
             onClick={save}
             disabled={saving}
-            className="px-5 py-2.5 rounded-lg bg-[var(--color-accent)] text-black font-bold text-sm hover:scale-105 transition flex items-center gap-1 disabled:opacity-50"
+            className="px-5 py-2.5 rounded-lg bg-accent text-black font-bold text-sm hover:scale-105 transition flex items-center gap-1 disabled:opacity-50"
           >
             {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
             儲存設定

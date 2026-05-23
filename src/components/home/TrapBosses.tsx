@@ -45,14 +45,14 @@ const TRAP_BOSSES = [
 
 export function TrapBosses() {
   return (
-    <section className="border-b border-[var(--color-border)] py-16 bg-gradient-to-b from-transparent via-[var(--color-bg-elevated)]/10 to-transparent">
+    <section className="border-b border-border py-16 bg-gradient-to-b from-transparent via-bg-elevated/10 to-transparent">
       <div className="max-w-6xl mx-auto px-6">
         <div className="text-center mb-10">
           <div className="inline-block px-3 py-1 rounded-full text-xs bg-red-500/10 border border-red-500/30 text-red-400 mb-3">
             ⚠️ 90% 的新手都會中招
           </div>
           <h2 className="text-3xl font-bold mb-2">👹 新手最容易踩的 5 大坑</h2>
-          <p className="text-[var(--color-fg-muted)]">五大陷阱魔王、打敗它們才能真正升級！</p>
+          <p className="text-fg-muted">五大陷阱魔王、打敗它們才能真正升級！</p>
         </div>
 
         <div className="mb-12">
@@ -62,7 +62,7 @@ export function TrapBosses() {
             width={1200}
             height={700}
             sizes="(max-width: 768px) 100vw, 896px"
-            className="w-full max-w-4xl mx-auto h-auto rounded-2xl shadow-xl border border-[var(--color-border)]"
+            className="w-full max-w-4xl mx-auto h-auto rounded-2xl shadow-xl border border-border"
           />
         </div>
 
@@ -81,7 +81,7 @@ export function TrapBosses() {
               <div className="space-y-2 text-xs">
                 <div>
                   <div className="text-red-400/80 font-semibold mb-0.5">症狀</div>
-                  <p className="text-[var(--color-fg-muted)] leading-relaxed">{b.symptom}</p>
+                  <p className="text-fg-muted leading-relaxed">{b.symptom}</p>
                 </div>
                 <div>
                   <div className="text-yellow-400/80 font-semibold mb-0.5">弱點</div>
@@ -89,7 +89,7 @@ export function TrapBosses() {
                 </div>
                 <div>
                   <div className="text-green-400/80 font-semibold mb-0.5">破解方式</div>
-                  <p className="text-[var(--color-fg-muted)] leading-relaxed">{b.solve}</p>
+                  <p className="text-fg-muted leading-relaxed">{b.solve}</p>
                 </div>
               </div>
             </div>

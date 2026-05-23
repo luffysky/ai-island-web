@@ -72,13 +72,13 @@ export function AirdropForm() {
     }
   };
 
-  const fld = "w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm";
+  const fld = "w-full bg-bg border border-border rounded-lg px-3 py-2 text-sm";
 
   return (
-    <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-2xl p-5 space-y-4">
+    <div className="bg-bg-card border border-border rounded-2xl p-5 space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <div>
-          <label className="text-xs text-[var(--color-fg-muted)] block mb-1">對象 segment</label>
+          <label className="text-xs text-fg-muted block mb-1">對象 segment</label>
           <select className={fld} value={kind} onChange={(e) => { setKind(e.target.value as Kind); setPreview(null); }}>
             <option value="all">🌐 所有未封鎖用戶</option>
             <option value="members">👥 一般 member（不含 admin / editor）</option>
@@ -89,7 +89,7 @@ export function AirdropForm() {
         </div>
         {(kind === "xp_gte" || kind === "level_gte") && (
           <div>
-            <label className="text-xs text-[var(--color-fg-muted)] block mb-1">門檻值 N</label>
+            <label className="text-xs text-fg-muted block mb-1">門檻值 N</label>
             <input
               type="number"
               className={fld}
@@ -99,17 +99,17 @@ export function AirdropForm() {
           </div>
         )}
         <div>
-          <label className="text-xs text-[var(--color-fg-muted)] block mb-1">每人發放 Z-coin（負數=扣除）</label>
+          <label className="text-xs text-fg-muted block mb-1">每人發放 Z-coin（負數=扣除）</label>
           <input
             type="number"
             className={fld}
             value={amount}
             onChange={(e) => setAmount(Number(e.target.value))}
           />
-          <p className="text-[10px] text-[var(--color-fg-muted)] mt-0.5">單次上限 ±5000、扣除若會超扣餘額會跳過該用戶</p>
+          <p className="text-[10px] text-fg-muted mt-0.5">單次上限 ±5000、扣除若會超扣餘額會跳過該用戶</p>
         </div>
         <div className="md:col-span-2">
-          <label className="text-xs text-[var(--color-fg-muted)] block mb-1">理由（必填、至少 5 字、寫入 audit log）</label>
+          <label className="text-xs text-fg-muted block mb-1">理由（必填、至少 5 字、寫入 audit log）</label>
           <input
             type="text"
             className={fld}
@@ -120,17 +120,17 @@ export function AirdropForm() {
         </div>
       </div>
 
-      <div className="flex items-center gap-2 pt-3 border-t border-[var(--color-border)]">
+      <div className="flex items-center gap-2 pt-3 border-t border-border">
         <button
           onClick={doPreview}
           disabled={previewing}
-          className="px-4 py-1.5 text-sm rounded-lg border border-[var(--color-border)] hover:bg-[var(--color-bg-elevated)] disabled:opacity-50"
+          className="px-4 py-1.5 text-sm rounded-lg border border-border hover:bg-bg-elevated disabled:opacity-50"
         >
           {previewing ? "計算中..." : "🔍 預覽人數"}
         </button>
         {preview && (
           <div className="text-sm">
-            匹配 <span className="font-bold text-[var(--color-accent)]">{preview.count}</span> 位用戶
+            匹配 <span className="font-bold text-accent">{preview.count}</span> 位用戶
             {preview.capped && <span className="text-orange-500 ml-2">（已被上限切到 5000）</span>}
             、總發放 <span className="font-bold">{(preview.count * amount).toLocaleString()}</span> Z-coin
           </div>
@@ -145,7 +145,7 @@ export function AirdropForm() {
       </div>
 
       {result && (
-        <div className="p-3 rounded-lg bg-[var(--color-bg-elevated)] text-sm">
+        <div className="p-3 rounded-lg bg-bg-elevated text-sm">
           {result}
         </div>
       )}

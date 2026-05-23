@@ -30,7 +30,7 @@ export default async function PetSettingsPage() {
     <div className="max-w-2xl space-y-6">
       <div>
         <h1 className="text-2xl font-bold">🐾 我的寵物</h1>
-        <p className="text-sm text-[var(--color-fg-muted)] mt-1">
+        <p className="text-sm text-fg-muted mt-1">
           選一隻陪你學習的小夥伴。會在前台跟著你走動、完成 lesson 時跳起來。
           PR 1 預設：走動 + 反應事件；之後升級加 AI 對話、心跳主動互動。
         </p>

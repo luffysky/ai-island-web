@@ -7,7 +7,7 @@ export default function Loading() {
       <Skeleton height={14} width="55%" className="mb-8" />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {Array.from({ length: 9 }).map((_, i) => (
-          <div key={i} className="rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-card)] p-4">
+          <div key={i} className="rounded-xl border border-border bg-bg-card p-4">
             <div className="flex items-center gap-3 mb-3">
               <Skeleton width={36} height={36} rounded="full" />
               <div className="flex-1 space-y-2">

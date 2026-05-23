@@ -32,20 +32,20 @@ export default async function HistoryPage() {
   return (
     <div className="space-y-4">
       <h1 className="text-2xl font-bold">📅 學習紀錄</h1>
-      <p className="text-sm text-[var(--color-fg-muted)]">最近 100 筆完成的 lesson</p>
+      <p className="text-sm text-fg-muted">最近 100 筆完成的 lesson</p>
 
       {!progress || progress.length === 0 ? (
-        <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-12 text-center text-[var(--color-fg-muted)]">
+        <div className="bg-bg-card border border-border rounded-xl p-12 text-center text-fg-muted">
           <p>還沒有學習紀錄</p>
         </div>
       ) : (
         <div className="space-y-4">
           {Object.entries(grouped).map(([date, items]) => (
             <div key={date}>
-              <div className="text-sm font-bold text-[var(--color-fg-muted)] mb-2 sticky top-0 bg-[var(--color-bg)] py-1">
+              <div className="text-sm font-bold text-fg-muted mb-2 sticky top-0 bg-bg py-1">
                 {date}（完成 {items.length} 個）
               </div>
-              <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl divide-y divide-[var(--color-border)]">
+              <div className="bg-bg-card border border-border rounded-xl divide-y divide-border">
                 {items.map((p) => {
                   const ch = chapters.find((c) => c.id === p.chapter_id);
                   const lesson = ch?.lessons.find((l) => l.id === p.lesson_id);
@@ -53,13 +53,13 @@ export default async function HistoryPage() {
                     <Link
                       key={p.id}
                       href={`/chapters/${p.chapter_id}` as any}
-                      className="flex items-center justify-between p-3 hover:bg-[var(--color-bg-elevated)] text-sm"
+                      className="flex items-center justify-between p-3 hover:bg-bg-elevated text-sm"
                     >
                       <div className="flex items-center gap-3 min-w-0">
-                        <span className="text-[var(--color-accent)]">✓</span>
+                        <span className="text-accent">✓</span>
                         <span className="truncate">{lesson?.title ?? p.lesson_id}</span>
                       </div>
-                      <div className="text-xs text-[var(--color-fg-muted)] flex-shrink-0">
+                      <div className="text-xs text-fg-muted flex-shrink-0">
                         +{p.xp_earned ?? 0} XP · {new Date(p.completed_at).toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' })}
                       </div>
                     </Link>

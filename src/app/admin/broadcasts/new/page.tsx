@@ -9,7 +9,7 @@ export default function NewBroadcastPage() {
     <div className="space-y-4">
       <Link
         href={adminHref("/admin/broadcasts") as any}
-        className="text-sm text-[var(--color-fg-muted)] hover:text-[var(--color-accent)]"
+        className="text-sm text-fg-muted hover:text-accent"
       >
         ← 回公告列表
       </Link>

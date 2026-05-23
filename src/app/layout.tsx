@@ -57,14 +57,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <TopNav />
               <SideNav />
               <main className="flex-1">{children}</main>
-              <footer className="border-t border-[var(--color-border)] py-8 mt-16">
+              <footer className="border-t border-border py-8 mt-16">
                 <div className="max-w-6xl mx-auto px-6">
-                  <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-[var(--color-fg-muted)]">
+                  <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-fg-muted">
                     <div>© 2026 AI 島 · 由 SnowRealm 製作 · 招財 🐹 守護</div>
                     <nav className="flex gap-4">
-                      <Link href="/privacy" className="hover:text-[var(--color-fg)] transition">隱私權政策</Link>
-                      <Link href="/terms" className="hover:text-[var(--color-fg)] transition">使用條款</Link>
-                      <Link href="/cookies" className="hover:text-[var(--color-fg)] transition">Cookie 政策</Link>
+                      <Link href="/privacy" className="hover:text-fg transition">隱私權政策</Link>
+                      <Link href="/terms" className="hover:text-fg transition">使用條款</Link>
+                      <Link href="/cookies" className="hover:text-fg transition">Cookie 政策</Link>
                     </nav>
                   </div>
                 </div>

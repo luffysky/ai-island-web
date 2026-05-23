@@ -27,15 +27,15 @@ export default async function QuizBuilderPage({
     <div className="space-y-4">
       <Link
         href={adminHref(`/admin/chapters/${id}`) as any}
-        className="text-sm text-[var(--color-fg-muted)] hover:text-[var(--color-accent)]"
+        className="text-sm text-fg-muted hover:text-accent"
       >
         ← 回章節編輯
       </Link>
       <div>
         <h2 className="text-xl font-bold">📝 Ch{String(chapter.id).padStart(2, "0")} 章末測驗</h2>
-        <p className="text-sm text-[var(--color-fg-muted)] mt-1">
+        <p className="text-sm text-fg-muted mt-1">
           {chapter.title}{" "}
-          · <span className="text-[var(--color-accent)]">AI 出題助手</span> 會吃整章 lesson 內容自動產 20 題草稿、admin 校稿後存檔。
+          · <span className="text-accent">AI 出題助手</span> 會吃整章 lesson 內容自動產 20 題草稿、admin 校稿後存檔。
         </p>
       </div>
       <QuizBuilder chapterId={Number(id)} initialQuiz={existing} />

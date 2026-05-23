@@ -77,10 +77,10 @@ export default function LoginPage() {
       <div className="text-center mb-8">
         <div className="text-5xl mb-2">🏝️</div>
         <h1 className="text-3xl font-bold mb-2">登入 AI 島</h1>
-        <p className="text-sm text-[var(--color-fg-muted)]">繼續你的冒險之旅</p>
+        <p className="text-sm text-fg-muted">繼續你的冒險之旅</p>
       </div>
 
-      <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-6">
+      <div className="bg-bg-card border border-border rounded-xl p-6">
         <div className="space-y-2 mb-4">
           <button
             onClick={googleLogin}
@@ -105,29 +105,29 @@ export default function LoginPage() {
           </button>
         </div>
 
-        <div className="text-center text-xs text-[var(--color-fg-muted)] my-4">— 或 —</div>
+        <div className="text-center text-xs text-fg-muted my-4">— 或 —</div>
 
         <form onSubmit={submit} className="space-y-3">
-          <input type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" className="w-full px-3 py-2 bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-lg focus:border-[var(--color-accent)] outline-none" />
-          <input type="password" required value={password} onChange={e => setPassword(e.target.value)} placeholder="密碼" className="w-full px-3 py-2 bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-lg focus:border-[var(--color-accent)] outline-none" />
+          <input type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg focus:border-accent outline-none" />
+          <input type="password" required value={password} onChange={e => setPassword(e.target.value)} placeholder="密碼" className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg focus:border-accent outline-none" />
           {error && <p className="text-sm text-red-400">{error}</p>}
-          <button type="submit" disabled={loading} className="w-full px-4 py-2 bg-[var(--color-accent)] text-black rounded-lg font-bold hover:scale-[1.02] transition-transform disabled:opacity-50">
+          <button type="submit" disabled={loading} className="w-full px-4 py-2 bg-accent text-black rounded-lg font-bold hover:scale-[1.02] transition-transform disabled:opacity-50">
             {loading ? "登入中..." : "登入"}
           </button>
         </form>
 
-        <p className="text-center text-sm mt-4 text-[var(--color-fg-muted)]">
-          還沒帳號？<Link href="/signup" className="text-[var(--color-accent)] hover:underline">立即註冊</Link>
+        <p className="text-center text-sm mt-4 text-fg-muted">
+          還沒帳號？<Link href="/signup" className="text-accent hover:underline">立即註冊</Link>
         </p>
 
-        <p className="text-center text-xs mt-4 pt-4 border-t border-[var(--color-border)] text-[var(--color-fg-muted)] leading-relaxed">
+        <p className="text-center text-xs mt-4 pt-4 border-t border-border text-fg-muted leading-relaxed">
           登入即表示您同意 AI 島的
           {" "}
-          <Link href="/terms" className="text-[var(--color-accent)] hover:underline">使用條款</Link>
+          <Link href="/terms" className="text-accent hover:underline">使用條款</Link>
           、
-          <Link href="/privacy" className="text-[var(--color-accent)] hover:underline">隱私權政策</Link>
+          <Link href="/privacy" className="text-accent hover:underline">隱私權政策</Link>
           、
-          <Link href="/cookies" className="text-[var(--color-accent)] hover:underline">Cookie 政策</Link>
+          <Link href="/cookies" className="text-accent hover:underline">Cookie 政策</Link>
         </p>
       </div>
     </div>

@@ -246,9 +246,9 @@ export function AITutorWidget({
 
       {/* Chat panel */}
       {open && (
-        <div className="fixed bottom-6 right-6 z-50 w-[400px] max-w-[calc(100vw-2rem)] h-[600px] max-h-[calc(100vh-3rem)] bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-2xl shadow-2xl flex flex-col">
+        <div className="fixed bottom-6 right-6 z-50 w-[400px] max-w-[calc(100vw-2rem)] h-[600px] max-h-[calc(100vh-3rem)] bg-bg-card border border-border rounded-2xl shadow-2xl flex flex-col">
           {/* Header */}
-          <div className="flex items-center justify-between p-3 border-b border-[var(--color-border)]">
+          <div className="flex items-center justify-between p-3 border-b border-border">
             <div className="flex items-center gap-2 min-w-0">
               <div className="w-7 h-7 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center text-base flex-shrink-0">
                 ✨
@@ -263,7 +263,7 @@ export function AITutorWidget({
                   )}
                 </div>
                 {selectedModel && (
-                  <div className="text-xs text-[var(--color-fg-muted)] truncate">{selectedModel.display_name}</div>
+                  <div className="text-xs text-fg-muted truncate">{selectedModel.display_name}</div>
                 )}
               </div>
             </div>
@@ -284,12 +284,12 @@ export function AITutorWidget({
                     }
                   }
                 }}
-                className={`p-1.5 rounded ${showHistory ? "bg-[var(--color-bg-elevated)]" : "hover:bg-[var(--color-bg-elevated)]"}`}
+                className={`p-1.5 rounded ${showHistory ? "bg-bg-elevated" : "hover:bg-bg-elevated"}`}
                 title="對話紀錄"
               >
                 <History size={16} />
               </button>
-              <button onClick={newChat} className="p-1.5 hover:bg-[var(--color-bg-elevated)] rounded" title="新對話">
+              <button onClick={newChat} className="p-1.5 hover:bg-bg-elevated rounded" title="新對話">
                 <Plus size={16} />
               </button>
               <button
@@ -297,11 +297,11 @@ export function AITutorWidget({
                   setShowSettings(!showSettings);
                   setShowModelMenu(false);
                 }}
-                className={`p-1.5 rounded ${showSettings ? "bg-[var(--color-bg-elevated)]" : "hover:bg-[var(--color-bg-elevated)]"}`}
+                className={`p-1.5 rounded ${showSettings ? "bg-bg-elevated" : "hover:bg-bg-elevated"}`}
               >
                 <SettingsIcon size={16} />
               </button>
-              <button onClick={() => setOpen(false)} className="p-1.5 hover:bg-[var(--color-bg-elevated)] rounded">
+              <button onClick={() => setOpen(false)} className="p-1.5 hover:bg-bg-elevated rounded">
                 <X size={16} />
               </button>
             </div>
@@ -309,12 +309,12 @@ export function AITutorWidget({
 
           {/* History panel */}
           {showHistory && (
-            <div className="border-b border-[var(--color-border)] bg-[var(--color-bg)] max-h-[300px] overflow-y-auto">
-              <div className="p-2 text-xs text-[var(--color-fg-muted)] sticky top-0 bg-[var(--color-bg)]">
+            <div className="border-b border-border bg-bg max-h-[300px] overflow-y-auto">
+              <div className="p-2 text-xs text-fg-muted sticky top-0 bg-bg">
                 最近 20 個對話
               </div>
               {history.length === 0 ? (
-                <div className="p-4 text-center text-xs text-[var(--color-fg-muted)]">沒有對話紀錄</div>
+                <div className="p-4 text-center text-xs text-fg-muted">沒有對話紀錄</div>
               ) : (
                 history.map((h) => (
                   <button
@@ -330,13 +330,13 @@ export function AITutorWidget({
                       setConversationId(h.id);
                       setShowHistory(false);
                     }}
-                    className="w-full text-left p-2 hover:bg-[var(--color-bg-elevated)] text-sm border-t border-[var(--color-border)]"
+                    className="w-full text-left p-2 hover:bg-bg-elevated text-sm border-t border-border"
                   >
                     <div className="truncate flex items-center gap-1">
-                      <MessageSquare size={12} className="text-[var(--color-fg-muted)] flex-shrink-0" />
+                      <MessageSquare size={12} className="text-fg-muted flex-shrink-0" />
                       <span className="truncate">{h.title || "(無標題)"}</span>
                     </div>
-                    <div className="text-xs text-[var(--color-fg-muted)] mt-0.5">
+                    <div className="text-xs text-fg-muted mt-0.5">
                       {new Date(h.updated_at).toLocaleString("zh-TW", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })}
                     </div>
                   </button>
@@ -347,9 +347,9 @@ export function AITutorWidget({
 
           {/* Settings panel */}
           {showSettings && (
-            <div className="relative z-20 p-3 border-b border-[var(--color-border)] bg-[var(--color-bg)] space-y-3 text-sm overflow-visible">
+            <div className="relative z-20 p-3 border-b border-border bg-bg space-y-3 text-sm overflow-visible">
               <div>
-                <label className="text-xs text-[var(--color-fg-muted)] mb-1 block">夥伴</label>
+                <label className="text-xs text-fg-muted mb-1 block">夥伴</label>
                 <div className="grid grid-cols-3 gap-1.5">
                   {PERSONA_LIST.map((p) => {
                     const active = personaId === p.id;
@@ -360,30 +360,30 @@ export function AITutorWidget({
                         onClick={() => setPersonaId(p.id)}
                         className={`p-2 rounded-lg border text-left transition ${
                           active
-                            ? "border-[var(--color-accent)] bg-[var(--color-accent)]/10"
-                            : "border-[var(--color-border)] bg-[var(--color-bg-card)] hover:border-[var(--color-accent)]/50"
+                            ? "border-accent bg-accent/10"
+                            : "border-border bg-bg-card hover:border-accent/50"
                         }`}
                       >
                         <div className="text-lg leading-none">{p.emoji}</div>
                         <div className="font-bold text-xs mt-1">{p.name}</div>
-                        <div className="text-[10px] text-[var(--color-fg-muted)] leading-tight mt-0.5 line-clamp-2">
+                        <div className="text-[10px] text-fg-muted leading-tight mt-0.5 line-clamp-2">
                           {p.role}
                         </div>
                       </button>
                     );
                   })}
                 </div>
-                <p className="text-[10px] text-[var(--color-fg-muted)] mt-1.5 leading-snug">
+                <p className="text-[10px] text-fg-muted mt-1.5 leading-snug">
                   {persona.short}
                 </p>
               </div>
 
               <div className="relative z-30">
-                <label className="text-xs text-[var(--color-fg-muted)] mb-1 block">AI 模型</label>
+                <label className="text-xs text-fg-muted mb-1 block">AI 模型</label>
                 <button
                   type="button"
                   onClick={() => setShowModelMenu(!showModelMenu)}
-                  className="w-full flex items-center justify-between gap-2 bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded p-2 text-sm text-left"
+                  className="w-full flex items-center justify-between gap-2 bg-bg-card border border-border rounded p-2 text-sm text-left"
                 >
                   <span className="truncate">
                     {selectedModel ? `${selectedModel.display_name} (${selectedModel.provider})` : "選擇 AI 模型"}
@@ -396,9 +396,9 @@ export function AITutorWidget({
                   </p>
                 )}
                 {showModelMenu && (
-                  <ul className="absolute left-0 right-0 top-[calc(100%+4px)] z-[80] max-h-56 overflow-y-auto rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-card)] shadow-2xl">
+                  <ul className="absolute left-0 right-0 top-[calc(100%+4px)] z-[80] max-h-56 overflow-y-auto rounded-lg border border-border bg-bg-card shadow-2xl">
                     {models.length === 0 ? (
-                      <li className="px-3 py-2 text-xs text-[var(--color-fg-muted)]">沒有可用模型</li>
+                      <li className="px-3 py-2 text-xs text-fg-muted">沒有可用模型</li>
                     ) : (
                       models.map((m) => (
                         <li key={m.id}>
@@ -408,12 +408,12 @@ export function AITutorWidget({
                               setSelectedModelId(m.id);
                               setShowModelMenu(false);
                             }}
-                            className={`w-full px-3 py-2 text-left text-sm hover:bg-[var(--color-bg-elevated)] ${
-                              selectedModelId === m.id ? "text-[var(--color-accent)]" : ""
+                            className={`w-full px-3 py-2 text-left text-sm hover:bg-bg-elevated ${
+                              selectedModelId === m.id ? "text-accent" : ""
                             }`}
                           >
                             <div className="font-medium">{m.display_name}</div>
-                            <div className="text-xs text-[var(--color-fg-muted)]">{m.provider} / {m.model_name}</div>
+                            <div className="text-xs text-fg-muted">{m.provider} / {m.model_name}</div>
                           </button>
                         </li>
                       ))
@@ -421,18 +421,18 @@ export function AITutorWidget({
                   </ul>
                 )}
                 {selectedModel?.description && (
-                  <p className="text-xs text-[var(--color-fg-muted)] mt-1">{selectedModel.description}</p>
+                  <p className="text-xs text-fg-muted mt-1">{selectedModel.description}</p>
                 )}
               </div>
 
               <div>
-                <label className="text-xs text-[var(--color-fg-muted)] mb-1 block">語氣</label>
+                <label className="text-xs text-fg-muted mb-1 block">語氣</label>
                 <div className="grid grid-cols-3 gap-1">
                   {TONE_OPTIONS.map((t) => (
                     <button
                       key={t.value}
                       onClick={() => setTone(t.value)}
-                      className={`text-xs px-2 py-1 rounded ${tone === t.value ? "bg-[var(--color-accent)] text-black font-semibold" : "bg-[var(--color-bg-card)] hover:bg-[var(--color-bg-elevated)]"}`}
+                      className={`text-xs px-2 py-1 rounded ${tone === t.value ? "bg-accent text-black font-semibold" : "bg-bg-card hover:bg-bg-elevated"}`}
                     >
                       {t.label}
                     </button>
@@ -448,11 +448,11 @@ export function AITutorWidget({
               </div>
 
               {!useBYOK && quotaUsed && (
-                <div className="text-xs text-[var(--color-fg-muted)]">
+                <div className="text-xs text-fg-muted">
                   今日免費額度：{quotaUsed.used} / {quotaUsed.limit}
-                  <div className="h-1 bg-[var(--color-bg-card)] rounded-full mt-1 overflow-hidden">
+                  <div className="h-1 bg-bg-card rounded-full mt-1 overflow-hidden">
                     <div
-                      className="h-full bg-[var(--color-accent)]"
+                      className="h-full bg-accent"
                       style={{ width: `${(quotaUsed.used / Math.max(quotaUsed.limit, 1)) * 100}%` }}
                     />
                   </div>
@@ -464,7 +464,7 @@ export function AITutorWidget({
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-3 space-y-3">
             {messages.length === 0 && (
-              <div className="text-center text-[var(--color-fg-muted)] text-sm py-8">
+              <div className="text-center text-fg-muted text-sm py-8">
                 <Sparkles size={32} className="mx-auto mb-2 opacity-50" />
                 <p className="font-medium mb-1">AI 學習導師</p>
                 <p className="text-xs">問我任何 AI 島課程的問題</p>
@@ -479,8 +479,8 @@ export function AITutorWidget({
               <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
                 <div className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm ${
                   m.role === "user"
-                    ? "bg-[var(--color-accent)] text-black"
-                    : "bg-[var(--color-bg-elevated)] text-[var(--color-fg)]"
+                    ? "bg-accent text-black"
+                    : "bg-bg-elevated text-fg"
                 }`}>
                   {m.role === "assistant" ? (
                     <div className="prose-custom prose-sm min-w-0">
@@ -503,7 +503,7 @@ export function AITutorWidget({
                             if (isInline) {
                               return (
                                 <code
-                                  className="px-1.5 py-0.5 rounded bg-black/30 text-[var(--color-warning)] text-[0.9em] font-mono"
+                                  className="px-1.5 py-0.5 rounded bg-black/30 text-warning text-[0.9em] font-mono"
                                   {...props}
                                 >
                                   {children}
@@ -517,7 +517,7 @@ export function AITutorWidget({
                         {m.content}
                       </ReactMarkdown>
                       {m.role === "assistant" && !m.content && sending && (
-                        <span className="inline-block w-2 h-4 bg-[var(--color-accent)] animate-pulse ml-0.5"></span>
+                        <span className="inline-block w-2 h-4 bg-accent animate-pulse ml-0.5"></span>
                       )}
                     </div>
                   ) : (
@@ -528,7 +528,7 @@ export function AITutorWidget({
             ))}
             {sending && (
               <div className="flex justify-start">
-                <div className="bg-[var(--color-bg-elevated)] rounded-2xl px-3 py-2">
+                <div className="bg-bg-elevated rounded-2xl px-3 py-2">
                   <Loader2 size={16} className="animate-spin" />
                 </div>
               </div>
@@ -543,7 +543,7 @@ export function AITutorWidget({
           )}
 
           {/* Input */}
-          <div className="p-3 border-t border-[var(--color-border)]">
+          <div className="p-3 border-t border-border">
             <div className="flex gap-2">
               <textarea
                 value={input}
@@ -563,13 +563,13 @@ export function AITutorWidget({
                 }
                 disabled={authState !== "in" || sending}
                 rows={1}
-                className="flex-1 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg p-2 text-sm outline-none focus:border-[var(--color-accent)] resize-none"
+                className="flex-1 bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent resize-none"
                 style={{ maxHeight: "120px" }}
               />
               <button
                 onClick={send}
                 disabled={!input.trim() || sending || authState !== "in"}
-                className="p-2 bg-[var(--color-accent)] text-black rounded-lg hover:scale-105 transition disabled:opacity-30 disabled:hover:scale-100"
+                className="p-2 bg-accent text-black rounded-lg hover:scale-105 transition disabled:opacity-30 disabled:hover:scale-100"
               >
                 <Send size={16} />
               </button>
@@ -585,7 +585,7 @@ function SuggestedQ({ onPick, children }: { onPick: (q: string) => void; childre
   return (
     <button
       onClick={() => onPick(children)}
-      className="block w-full text-left px-3 py-1.5 bg-[var(--color-bg-elevated)] hover:bg-[var(--color-bg-card)] rounded-lg text-xs"
+      className="block w-full text-left px-3 py-1.5 bg-bg-elevated hover:bg-bg-card rounded-lg text-xs"
     >
       💬 {children}
     </button>

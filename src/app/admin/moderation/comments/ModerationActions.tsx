@@ -44,7 +44,7 @@ export function ModerationActions({
   };
 
   return (
-    <div className="flex items-center gap-2 mt-2 pt-2 border-t border-[var(--color-border)]">
+    <div className="flex items-center gap-2 mt-2 pt-2 border-t border-border">
       {!approved && (
         <button
           onClick={() => act("approve")}

@@ -41,7 +41,7 @@ export default async function BreachDetailPage({
         <div>
           <Link
             href={adminHref("/admin/breach") as any}
-            className="text-sm text-[var(--color-fg-muted)] hover:text-[var(--color-accent)]"
+            className="text-sm text-fg-muted hover:text-accent"
           >
             ← 回事件列表
           </Link>

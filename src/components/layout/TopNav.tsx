@@ -104,26 +104,26 @@ export function TopNav() {
   }
 
   return (
-    <nav className="sticky top-0 z-40 bg-[var(--color-bg)]/90 backdrop-blur border-b border-[var(--color-border)]">
+    <nav className="sticky top-0 z-40 bg-bg/90 backdrop-blur border-b border-border">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <button
             onClick={() => setMobileMenu((value) => !value)}
-            className="md:hidden p-2 -ml-2 rounded-lg hover:bg-[var(--color-bg-card)]"
+            className="md:hidden p-2 -ml-2 rounded-lg hover:bg-bg-card"
             aria-label={mobileMenu ? "關閉導覽選單" : "開啟導覽選單"}
           >
             {mobileMenu ? <X size={18} /> : <Menu size={18} />}
           </button>
           <Link href="/" className="flex items-center gap-2 font-bold text-lg" onClick={() => setMobileMenu(false)}>
             <span>🏝️</span>
-            <span className="bg-gradient-to-r from-[var(--color-accent)] to-[var(--color-accent-2)] bg-clip-text text-transparent">AI 島</span>
+            <span className="bg-gradient-to-r from-accent to-accent-2 bg-clip-text text-transparent">AI 島</span>
           </Link>
         </div>
 
         <div className="flex items-center gap-4 text-sm">
           <div className="hidden md:flex items-center gap-4">
             {NAV_LINKS.map((item) => (
-              <Link key={item.href} href={item.href as any} className="hover:text-[var(--color-accent)]">
+              <Link key={item.href} href={item.href as any} className="hover:text-accent">
                 {item.label}
               </Link>
             ))}
@@ -152,9 +152,9 @@ export function TopNav() {
                   onClick={() => setTodoOpen((v) => !v)}
                   aria-label="開啟待辦清單"
                   title="待辦清單（⌘⇧T / Ctrl+Shift+T）"
-                  className="relative flex items-center p-1.5 rounded-lg hover:bg-[var(--color-bg-card)] transition active:scale-95"
+                  className="relative flex items-center p-1.5 rounded-lg hover:bg-bg-card transition active:scale-95"
                 >
-                  <CheckSquare size={17} className={todoCount > 0 ? "text-[var(--color-accent)]" : ""} />
+                  <CheckSquare size={17} className={todoCount > 0 ? "text-accent" : ""} />
                   {todoCount > 0 && (
                     <span className="absolute -top-0.5 -right-0.5 min-w-[14px] h-[14px] px-1 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center pointer-events-none">
                       {todoCount > 99 ? "99+" : todoCount}
@@ -167,9 +167,9 @@ export function TopNav() {
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setOpen(!open)}
-                  className="flex items-center gap-2 px-3 py-1.5 bg-[var(--color-bg-card)] rounded-lg hover:bg-[var(--color-border)] transition"
+                  className="flex items-center gap-2 px-3 py-1.5 bg-bg-card rounded-lg hover:bg-border transition"
                 >
-                  <span className="text-xs px-1.5 py-0.5 rounded bg-gradient-to-r from-[var(--color-accent)] to-[var(--color-accent-2)] text-black font-bold">
+                  <span className="text-xs px-1.5 py-0.5 rounded bg-gradient-to-r from-accent to-accent-2 text-black font-bold">
                     Lv {displayProfile.level ?? 1}
                   </span>
                   <span className="hidden md:inline">{displayProfile.display_name || displayProfile.username}</span>
@@ -177,9 +177,9 @@ export function TopNav() {
                 </button>
 
                 {open && (
-                  <div className="absolute right-0 mt-2 w-56 bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-lg shadow-xl py-1 z-50">
+                  <div className="absolute right-0 mt-2 w-56 bg-bg-card border border-border rounded-lg shadow-xl py-1 z-50">
                     {/* 顯示頭像 + 資訊 */}
-                    <div className="px-4 py-3 border-b border-[var(--color-border)]">
+                    <div className="px-4 py-3 border-b border-border">
                       <div className="flex items-center gap-3">
                         {displayProfile.avatar_url ? (
                           <Image
@@ -191,13 +191,13 @@ export function TopNav() {
                             className="w-10 h-10 rounded-full object-cover"
                           />
                         ) : (
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-accent-2)] flex items-center justify-center font-bold text-black">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent to-accent-2 flex items-center justify-center font-bold text-black">
                             {(displayProfile.display_name || displayProfile.username || "U")[0].toUpperCase()}
                           </div>
                         )}
                         <div className="flex-1 min-w-0">
                           <div className="font-semibold truncate">{displayProfile.display_name || displayProfile.username}</div>
-                          <div className="text-xs text-[var(--color-fg-muted)] truncate">{user.email}</div>
+                          <div className="text-xs text-fg-muted truncate">{user.email}</div>
                           <div className="text-[10px] mt-0.5">
                             <span
                               className={`px-1.5 py-0.5 rounded ${
@@ -217,16 +217,16 @@ export function TopNav() {
 
                     <Link
                       href="/me"
-                      className="flex items-center gap-3 px-4 py-2 hover:bg-[var(--color-bg-elevated)] transition"
+                      className="flex items-center gap-3 px-4 py-2 hover:bg-bg-elevated transition"
                       onClick={() => setOpen(false)}
                     >
-                      <Trophy size={16} className="text-[var(--color-accent)]" />
+                      <Trophy size={16} className="text-accent" />
                       <span>我的學習後台</span>
                     </Link>
 
                     <Link
                       href="/dashboard"
-                      className="flex items-center gap-3 px-4 py-2 hover:bg-[var(--color-bg-elevated)] transition text-sm text-[var(--color-fg-muted)]"
+                      className="flex items-center gap-3 px-4 py-2 hover:bg-bg-elevated transition text-sm text-fg-muted"
                       onClick={() => setOpen(false)}
                     >
                       <span className="ml-7">📊 學習進度</span>
@@ -234,7 +234,7 @@ export function TopNav() {
 
                     <Link
                       href="/profile"
-                      className="flex items-center gap-3 px-4 py-2 hover:bg-[var(--color-bg-elevated)] transition"
+                      className="flex items-center gap-3 px-4 py-2 hover:bg-bg-elevated transition"
                       onClick={() => setOpen(false)}
                     >
                       <UserIcon size={16} />
@@ -243,7 +243,7 @@ export function TopNav() {
 
                     <Link
                       href="/settings"
-                      className="flex items-center gap-3 px-4 py-2 hover:bg-[var(--color-bg-elevated)] transition"
+                      className="flex items-center gap-3 px-4 py-2 hover:bg-bg-elevated transition"
                       onClick={() => setOpen(false)}
                     >
                       <Settings size={16} />
@@ -253,7 +253,7 @@ export function TopNav() {
                     {displayProfile.role === "admin" && (
                       <Link
                         href={`/${process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2"}/admin` as any}
-                        className="flex items-center gap-3 px-4 py-2 hover:bg-[var(--color-bg-elevated)] transition text-[var(--color-warning)]"
+                        className="flex items-center gap-3 px-4 py-2 hover:bg-bg-elevated transition text-warning"
                         onClick={() => setOpen(false)}
                       >
                         <Settings size={16} />
@@ -261,11 +261,11 @@ export function TopNav() {
                       </Link>
                     )}
 
-                    <div className="border-t border-[var(--color-border)] mt-1 pt-1">
+                    <div className="border-t border-border mt-1 pt-1">
                       <button
                         onClick={handleLogout}
                         disabled={loggingOut}
-                        className="w-full flex items-center gap-3 px-4 py-2 hover:bg-[var(--color-bg-elevated)] transition text-red-400"
+                        className="w-full flex items-center gap-3 px-4 py-2 hover:bg-bg-elevated transition text-red-400"
                       >
                         <LogOut size={16} />
                         <span>{loggingOut ? "登出中..." : "登出"}</span>
@@ -277,21 +277,21 @@ export function TopNav() {
             </>
           ) : (
             <>
-              <Link href="/login" className="text-[var(--color-fg-muted)] hover:text-[var(--color-accent)]">登入</Link>
-              <Link href="/signup" className="px-4 py-1.5 bg-[var(--color-accent)] text-black rounded-lg font-semibold hover:bg-[var(--color-accent-2)]">註冊</Link>
+              <Link href="/login" className="text-fg-muted hover:text-accent">登入</Link>
+              <Link href="/signup" className="px-4 py-1.5 bg-accent text-black rounded-lg font-semibold hover:bg-accent-2">註冊</Link>
             </>
           )}
         </div>
       </div>
 
       {mobileMenu && (
-        <div className="md:hidden border-t border-[var(--color-border)] bg-[var(--color-bg)] px-4 py-3">
+        <div className="md:hidden border-t border-border bg-bg px-4 py-3">
           <div className="flex flex-col gap-1 text-sm">
             {NAV_LINKS.map((item) => (
               <Link
                 key={item.href}
                 href={item.href as any}
-                className="rounded-lg px-3 py-2 hover:bg-[var(--color-bg-card)] hover:text-[var(--color-accent)]"
+                className="rounded-lg px-3 py-2 hover:bg-bg-card hover:text-accent"
                 onClick={() => setMobileMenu(false)}
               >
                 {item.label}

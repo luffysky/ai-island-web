@@ -82,11 +82,11 @@ export default async function SeriesPage({
   return (
     <div className="min-h-screen">
       {/* Header */}
-      <div className="border-b border-[var(--color-border)]">
+      <div className="border-b border-border">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
           <Link
             href={`/blogs/${userSlug}`}
-            className="inline-flex items-center gap-1.5 text-sm text-[var(--color-fg-muted)] hover:text-[var(--color-fg)] transition mb-6"
+            className="inline-flex items-center gap-1.5 text-sm text-fg-muted hover:text-fg transition mb-6"
           >
             <ArrowLeft size={14} />
             回到 {blog.settings.blog_title || `${name} 的部落格`}
@@ -105,7 +105,7 @@ export default async function SeriesPage({
             )}
             <div className="min-w-0">
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-[var(--color-accent)] text-sm">
+                <span className="text-accent text-sm">
                   📖 系列文章
                 </span>
                 {series.is_completed && (
@@ -116,11 +116,11 @@ export default async function SeriesPage({
               </div>
               <h1 className="text-2xl font-bold">{series.title}</h1>
               {series.description && (
-                <p className="text-sm text-[var(--color-fg-muted)] mt-2 leading-relaxed">
+                <p className="text-sm text-fg-muted mt-2 leading-relaxed">
                   {series.description}
                 </p>
               )}
-              <p className="text-xs text-[var(--color-fg-muted)] mt-2">
+              <p className="text-xs text-fg-muted mt-2">
                 共 {articles.length} 篇文章
               </p>
             </div>
@@ -131,7 +131,7 @@ export default async function SeriesPage({
       {/* Article list */}
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
         {articles.length === 0 ? (
-          <div className="text-center py-16 text-[var(--color-fg-muted)]">
+          <div className="text-center py-16 text-fg-muted">
             <div className="text-4xl mb-3">📭</div>
             <p className="text-sm">此系列尚無公開文章</p>
           </div>
@@ -141,9 +141,9 @@ export default async function SeriesPage({
               <Link
                 key={article.id}
                 href={`/blogs/${userSlug}/${article.slug}`}
-                className="group flex gap-4 p-4 sm:p-5 rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-card)] hover:border-[var(--color-accent)] transition"
+                className="group flex gap-4 p-4 sm:p-5 rounded-2xl border border-border bg-bg-card hover:border-accent transition"
               >
-                <div className="shrink-0 w-8 h-8 rounded-full bg-[var(--color-accent)]/15 flex items-center justify-center text-[var(--color-accent)] text-sm font-bold">
+                <div className="shrink-0 w-8 h-8 rounded-full bg-accent/15 flex items-center justify-center text-accent text-sm font-bold">
                   {article.series_order ?? index + 1}
                 </div>
 
@@ -165,15 +165,15 @@ export default async function SeriesPage({
                 )}
 
                 <div className="flex-1 min-w-0">
-                  <h2 className="text-base font-semibold group-hover:text-[var(--color-accent)] transition line-clamp-2">
+                  <h2 className="text-base font-semibold group-hover:text-accent transition line-clamp-2">
                     {article.title}
                   </h2>
                   {article.summary && (
-                    <p className="text-sm text-[var(--color-fg-muted)] mt-1 line-clamp-1 leading-relaxed">
+                    <p className="text-sm text-fg-muted mt-1 line-clamp-1 leading-relaxed">
                       {article.summary}
                     </p>
                   )}
-                  <div className="flex items-center gap-2.5 mt-2 text-[11px] text-[var(--color-fg-muted)]">
+                  <div className="flex items-center gap-2.5 mt-2 text-[11px] text-fg-muted">
                     <span>
                       {new Date(article.published_at).toLocaleDateString(
                         "zh-TW",
@@ -191,7 +191,7 @@ export default async function SeriesPage({
         )}
 
         {/* Author info */}
-        <div className="mt-12 pt-8 border-t border-[var(--color-border)] flex items-center gap-3">
+        <div className="mt-12 pt-8 border-t border-border flex items-center gap-3">
           {blog.profile?.avatar_url ? (
             <Image
               src={blog.profile.avatar_url}
@@ -202,18 +202,18 @@ export default async function SeriesPage({
               className="w-10 h-10 rounded-full object-cover"
             />
           ) : (
-            <div className="w-10 h-10 rounded-full bg-[var(--color-bg-elevated)] flex items-center justify-center text-lg">
+            <div className="w-10 h-10 rounded-full bg-bg-elevated flex items-center justify-center text-lg">
               ✍️
             </div>
           )}
           <div>
             <Link
               href={`/blogs/${userSlug}`}
-              className="text-sm font-medium hover:text-[var(--color-accent)] transition"
+              className="text-sm font-medium hover:text-accent transition"
             >
               {name}
             </Link>
-            <p className="text-xs text-[var(--color-fg-muted)]">
+            <p className="text-xs text-fg-muted">
               {blog.settings.blog_title ?? "部落格"}
             </p>
           </div>

@@ -55,14 +55,14 @@ export function MeSidebar({ profile }: { profile: Profile | null }) {
         type="button"
         onClick={toggle}
         aria-label={collapsed ? "展開側欄" : "收合側欄"}
-        className="w-full flex items-center justify-end mb-2 p-1.5 text-[var(--color-fg-muted)] hover:text-[var(--color-accent)] transition"
+        className="w-full flex items-center justify-end mb-2 p-1.5 text-fg-muted hover:text-accent transition"
       >
         {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
       </button>
 
       {/* Profile card */}
       {!collapsed && (
-        <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-4 mb-4">
+        <div className="bg-bg-card border border-border rounded-xl p-4 mb-4">
           <div className="flex items-center gap-3">
             {profile?.avatar_url ? (
               <Image
@@ -74,7 +74,7 @@ export function MeSidebar({ profile }: { profile: Profile | null }) {
                 alt=""
               />
             ) : (
-              <div className="w-12 h-12 rounded-full bg-[var(--color-accent)] flex items-center justify-center text-black font-bold text-lg">
+              <div className="w-12 h-12 rounded-full bg-accent flex items-center justify-center text-black font-bold text-lg">
                 {profile?.display_name?.[0] || profile?.username?.[0] || "?"}
               </div>
             )}
@@ -82,23 +82,23 @@ export function MeSidebar({ profile }: { profile: Profile | null }) {
               <div className="font-bold truncate">
                 {profile?.display_name || profile?.username}
               </div>
-              <div className="text-xs text-[var(--color-fg-muted)]">
+              <div className="text-xs text-fg-muted">
                 Lv {profile?.level ?? 1} · {profile?.xp ?? 0} XP
               </div>
             </div>
           </div>
           <div className="mt-3 grid grid-cols-2 gap-2 text-center text-xs">
-            <div className="bg-[var(--color-bg)] rounded p-2">
+            <div className="bg-bg rounded p-2">
               <div className="text-yellow-400 font-bold">
                 🪙 {profile?.z_coin ?? 0}
               </div>
-              <div className="text-[var(--color-fg-muted)]">Z-coin</div>
+              <div className="text-fg-muted">Z-coin</div>
             </div>
-            <div className="bg-[var(--color-bg)] rounded p-2">
+            <div className="bg-bg rounded p-2">
               <div className="text-orange-400 font-bold">
                 🔥 {profile?.streak_days ?? 0}
               </div>
-              <div className="text-[var(--color-fg-muted)]">連續天</div>
+              <div className="text-fg-muted">連續天</div>
             </div>
           </div>
         </div>
@@ -163,7 +163,7 @@ export function MeSidebar({ profile }: { profile: Profile | null }) {
         </MeLink>
       </nav>
 
-      <div className="mt-4 pt-4 border-t border-[var(--color-border)] space-y-0.5 text-sm">
+      <div className="mt-4 pt-4 border-t border-border space-y-0.5 text-sm">
         <MeLink href="/profile" collapsed={collapsed}>
           {collapsed ? "👤" : "👤 個人檔案"}
         </MeLink>
@@ -190,7 +190,7 @@ function MeLink({
     <Link
       href={href as any}
       title={collapsed && typeof children === "string" ? children : undefined}
-      className={`flex items-center gap-2 rounded-lg hover:bg-[var(--color-bg-card)] hover:text-[var(--color-accent)] transition ${
+      className={`flex items-center gap-2 rounded-lg hover:bg-bg-card hover:text-accent transition ${
         collapsed ? "justify-center p-2" : "px-3 py-2"
       }`}
     >
