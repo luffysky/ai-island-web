@@ -8,6 +8,7 @@ import {
   type IslandNodeId,
   type ResourceKind,
   type Weather,
+  type NpcId,
   subscribeOpen as _sub,
   emitOpen,
   touchInput,
@@ -20,6 +21,7 @@ import {
   getWeather,
   setWeather,
   emitPetTalk,
+  hasBuff,
 } from "./island-bus";
 /**
  * S7-S8 3D 島嶼 v0 — 批 1：能站上去的島
@@ -374,14 +376,19 @@ function isResourceAvailable(id: number): boolean {
 
 function harvest(id: number, kind: ResourceKind) {
   const meta = RESOURCE_META[kind];
-  resourceDownUntil.set(id, performance.now() + meta.respawnSec * 1000);
+  const mult = hasBuff("fast_respawn") ? 0.3 : 1;
+  resourceDownUntil.set(id, performance.now() + meta.respawnSec * 1000 * mult);
   emitCollect({ kind, count: 1 });
-  // 任務進度
   bumpQuest(kind, 1);
 }
 
-// 漁夫長老互動位置（要跟 NpcElder 渲染位置一致）
-const ELDER_POS: [number, number] = [16, 14];
+// NPC 位置（XZ 座標）
+const NPC_POS: Record<NpcId, [number, number]> = {
+  elder: [16, 14],
+  merchant: [-14, 14],
+  seer: [0, 4],
+};
+const ELDER_POS = NPC_POS.elder;
 
 function Resources() {
   const [, setTick] = useState(0);
@@ -526,7 +533,8 @@ function Player({ petName }: { petName: string | null }) {
       move.normalize();
 
       const fast = keys[K[K.run]] || touchInput.run;
-      const speed = fast ? PLAYER_SPEED * RUN_MULT : PLAYER_SPEED;
+      const buffMult = hasBuff("speed") ? 1.5 : 1;
+      const speed = (fast ? PLAYER_SPEED * RUN_MULT : PLAYER_SPEED) * buffMult;
       g.position.addScaledVector(move, speed * dt);
 
       const radial = Math.sqrt(g.position.x ** 2 + g.position.z ** 2);
@@ -555,7 +563,7 @@ function Player({ petName }: { petName: string | null }) {
     // 找最近的「可互動」物件：節點 OR 採集物 OR NPC
     let nearestNode: Node | null = null;
     let nearestResource: ResourceSpawn | null = null;
-    let nearestNpc: "elder" | null = null;
+    let nearestNpc: NpcId | null = null;
     let nearestD2 = INTERACT_RADIUS * INTERACT_RADIUS;
     for (const n of NODES) {
       const dx = n.position[0] - g.position.x;
@@ -580,12 +588,14 @@ function Player({ petName }: { petName: string | null }) {
         nearestNpc = null;
       }
     }
-    {
-      const dx = ELDER_POS[0] - g.position.x;
-      const dz = ELDER_POS[1] - g.position.z;
+    for (const npc of Object.keys(NPC_POS) as NpcId[]) {
+      const [nx, nz] = NPC_POS[npc];
+      const dx = nx - g.position.x;
+      const dz = nz - g.position.z;
       const d2 = dx * dx + dz * dz;
       if (d2 < nearestD2) {
-        nearestNpc = "elder";
+        nearestD2 = d2;
+        nearestNpc = npc;
         nearestNode = null;
         nearestResource = null;
       }
@@ -675,9 +685,71 @@ function Player({ petName }: { petName: string | null }) {
         </group>
       )}
 
-      {/* 簡易 NPC — 海岸老人 */}
+      {/* NPCs */}
       <NpcElder />
+      <NpcMerchant />
+      <NpcSeer />
     </>
+  );
+}
+
+function NpcMerchant() {
+  const [x, z] = NPC_POS.merchant;
+  return (
+    <group position={[x, 0.4, z]}>
+      <mesh castShadow position={[0, 0.5, 0]}>
+        <capsuleGeometry args={[0.32, 0.7, 6, 12]} />
+        <meshStandardMaterial color="#8b5a2b" />
+      </mesh>
+      <mesh castShadow position={[0, 1.3, 0]}>
+        <sphereGeometry args={[0.3, 16, 16]} />
+        <meshStandardMaterial color="#f5dcc4" />
+      </mesh>
+      {/* 帽子 */}
+      <mesh castShadow position={[0, 1.55, 0]}>
+        <coneGeometry args={[0.4, 0.4, 8]} />
+        <meshStandardMaterial color="#5a2d0c" />
+      </mesh>
+      <Text position={[0, 2.0, 0]} fontSize={0.18} color="#fff" outlineWidth={0.01} outlineColor="#000">
+        🧙 神秘商人
+      </Text>
+      <Text position={[0, 1.75, 0]} fontSize={0.13} color="#8be9fd" outlineWidth={0.01} outlineColor="#000">
+        賣道具、按 E
+      </Text>
+      <Text position={[0, 2.4, 0]} fontSize={0.35} color="#8be9fd" outlineWidth={0.02} outlineColor="#000">
+        $
+      </Text>
+    </group>
+  );
+}
+
+function NpcSeer() {
+  const [x, z] = NPC_POS.seer;
+  return (
+    <group position={[x, 0.4, z]}>
+      <mesh castShadow position={[0, 0.5, 0]}>
+        <capsuleGeometry args={[0.3, 0.7, 6, 12]} />
+        <meshStandardMaterial color="#7a5599" />
+      </mesh>
+      <mesh castShadow position={[0, 1.3, 0]}>
+        <sphereGeometry args={[0.3, 16, 16]} />
+        <meshStandardMaterial color="#f5dcc4" />
+      </mesh>
+      {/* 水晶球 */}
+      <mesh position={[0.45, 0.6, 0]}>
+        <sphereGeometry args={[0.2, 16, 16]} />
+        <meshStandardMaterial color="#bd93f9" transparent opacity={0.6} emissive="#bd93f9" emissiveIntensity={0.5} />
+      </mesh>
+      <Text position={[0, 1.95, 0]} fontSize={0.18} color="#fff" outlineWidth={0.01} outlineColor="#000">
+        🔮 占卜師
+      </Text>
+      <Text position={[0, 1.7, 0]} fontSize={0.13} color="#ff79c6" outlineWidth={0.01} outlineColor="#000">
+        每日運勢、按 E
+      </Text>
+      <Text position={[0, 2.35, 0]} fontSize={0.35} color="#ff79c6" outlineWidth={0.02} outlineColor="#000">
+        ?
+      </Text>
+    </group>
   );
 }
 

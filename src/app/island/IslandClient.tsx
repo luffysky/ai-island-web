@@ -12,6 +12,9 @@ import { QuestPanel } from "@/components/island/QuestPanel";
 import { AmbientSound } from "@/components/island/AmbientSound";
 import { PetTalk } from "@/components/island/PetTalk";
 import { WeatherChip } from "@/components/island/WeatherChip";
+import { MerchantPanel } from "@/components/island/MerchantPanel";
+import { SeerPanel } from "@/components/island/SeerPanel";
+import { BuffBar } from "@/components/island/BuffBar";
 import { formatTWRelative } from "@/lib/format-date";
 
 const IslandV0 = dynamic(() => import("@/components/island/IslandV0"), {
@@ -77,6 +80,9 @@ export default function IslandClient({
       <WeatherChip />
       <AmbientSound />
       <QuestPanel />
+      <MerchantPanel />
+      <SeerPanel />
+      <BuffBar />
       <PetTalk petName={petName} />
 
       <div className="absolute top-3 left-3 pointer-events-auto z-10 flex items-center gap-2">

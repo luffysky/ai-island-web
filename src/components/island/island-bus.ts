@@ -68,7 +68,7 @@ export function resetInventory(): Record<ResourceKind, number> {
 }
 
 // ============ NPC 互動 ============
-export type NpcId = "elder";
+export type NpcId = "elder" | "merchant" | "seer";
 
 const npcSubs = new Set<(id: NpcId) => void>();
 export function subscribeNpc(fn: (id: NpcId) => void) {
@@ -77,6 +77,121 @@ export function subscribeNpc(fn: (id: NpcId) => void) {
 }
 export function emitNpc(id: NpcId) {
   for (const f of npcSubs) f(id);
+}
+
+// ============ Buff 系統 ============
+export type BuffKind = "speed" | "double_coin" | "fast_respawn";
+
+type Buff = { kind: BuffKind; until: number };
+let activeBuffs: Buff[] = [];
+const buffSubs = new Set<(b: Buff[]) => void>();
+
+export function applyBuff(kind: BuffKind, durationSec: number) {
+  const until = performance.now() + durationSec * 1000;
+  activeBuffs = activeBuffs.filter((b) => b.kind !== kind || b.until > until);
+  activeBuffs.push({ kind, until });
+  for (const f of buffSubs) f([...activeBuffs]);
+}
+
+export function getActiveBuffs(): Buff[] {
+  const now = performance.now();
+  const pruned = activeBuffs.filter((b) => b.until > now);
+  if (pruned.length !== activeBuffs.length) {
+    activeBuffs = pruned;
+    for (const f of buffSubs) f([...activeBuffs]);
+  }
+  return [...activeBuffs];
+}
+
+export function hasBuff(kind: BuffKind): boolean {
+  return getActiveBuffs().some((b) => b.kind === kind);
+}
+
+export function subscribeBuffs(fn: (b: Buff[]) => void) {
+  buffSubs.add(fn);
+  return () => { buffSubs.delete(fn); };
+}
+
+// ============ 商人物品 ============
+export type ShopItem = {
+  id: string;
+  emoji: string;
+  label: string;
+  desc: string;
+  cost: Partial<Record<ResourceKind, number>>;
+  apply: () => void;
+};
+
+// 在 island-bus 內無法 import 寵物 / quest helpers? 已經都在這個檔，直接用。
+export const SHOP_ITEMS: ShopItem[] = [
+  {
+    id: "speed_potion",
+    emoji: "⚡",
+    label: "加速藥水",
+    desc: "30 秒內跑速 ×1.5",
+    cost: { wood: 5 },
+    apply: () => applyBuff("speed", 30),
+  },
+  {
+    id: "pet_treat",
+    emoji: "🍖",
+    label: "寵物零食",
+    desc: "親密度 +5",
+    cost: { shell: 3 },
+    apply: () => bumpBond(5),
+  },
+  {
+    id: "respawn_rush",
+    emoji: "🌱",
+    label: "豐收符咒",
+    desc: "60 秒內採集冷卻 ×0.3",
+    cost: { crystal: 1 },
+    apply: () => applyBuff("fast_respawn", 60),
+  },
+  {
+    id: "double_coin",
+    emoji: "💰",
+    label: "雙倍幸運",
+    desc: "下次兌換 z 幣 ×2",
+    cost: { wood: 3, crystal: 1 },
+    apply: () => applyBuff("double_coin", 600),
+  },
+];
+
+// ============ 占卜（每日一次） ============
+export type Fortune = { tier: "大吉" | "吉" | "平" | "凶" | "大凶"; reward: number; rewardKind: "coin" | "bond" | "crystal"; emoji: string; message: string };
+const FORTUNE_KEY = "ai_island_fortune_v1";
+
+export function readFortuneToday(): { date: string; result: Fortune | null } {
+  const today = todayKey();
+  if (typeof window === "undefined") return { date: today, result: null };
+  try {
+    const raw = localStorage.getItem(FORTUNE_KEY);
+    if (raw) {
+      const s = JSON.parse(raw);
+      if (s.date === today) return s;
+    }
+  } catch {}
+  return { date: today, result: null };
+}
+
+export function rollFortune(): Fortune {
+  const r = Math.random();
+  let f: Fortune;
+  if (r < 0.1) f = { tier: "大吉", reward: 50, rewardKind: "coin", emoji: "🎊", message: "今日天運在你、放手去做！" };
+  else if (r < 0.4) f = { tier: "吉", reward: 20, rewardKind: "coin", emoji: "🎁", message: "穩穩走、就是穩穩贏" };
+  else if (r < 0.7) f = { tier: "平", reward: 5, rewardKind: "coin", emoji: "🍀", message: "平凡的日子也很美" };
+  else if (r < 0.9) f = { tier: "凶", reward: 5, rewardKind: "bond", emoji: "🌧️", message: "今天累了、跟寵物說說話吧（+5 親密度安慰）" };
+  else f = { tier: "大凶", reward: 1, rewardKind: "crystal", emoji: "🆘", message: "上天給你一顆水晶當補償（+1 水晶）" };
+
+  const today = todayKey();
+  try { localStorage.setItem(FORTUNE_KEY, JSON.stringify({ date: today, result: f })); } catch {}
+
+  // 套用獎勵
+  if (f.rewardKind === "bond") bumpBond(f.reward);
+  if (f.rewardKind === "crystal") addToInventory("crystal", f.reward);
+  // coin 留給 server claim（避免被 client 偽造）
+  return f;
 }
 
 // ============ 每日任務 ============
