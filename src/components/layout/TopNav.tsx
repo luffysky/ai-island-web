@@ -6,6 +6,7 @@ import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { useAuth } from "@/lib/auth-context";
 import { Flame, Coins, Heart, LogOut, Settings, Trophy, User as UserIcon, ChevronDown, Menu, X, CheckSquare } from "lucide-react";
 import { TodoDropdown, useTodoShortcut } from "@/components/todo/TodoDropdown";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 const NAV_LINKS = [
   { href: "/chapters", label: "章節" },
@@ -145,6 +146,9 @@ export function TopNav() {
                   {displayProfile.hearts ?? 5}
                 </span>
               </div>
+
+              {/* 主題切換 */}
+              <div className="hidden md:block"><ThemeToggle /></div>
 
               {/* TODO list 入口 */}
               <div className="relative" ref={todoBtnRef}>

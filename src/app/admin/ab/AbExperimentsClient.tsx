@@ -6,6 +6,7 @@ import { Plus, Play, Pause, Square, Trash2 } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { formatTW } from "@/lib/format-date";
+import { twoProportionZTest } from "@/lib/ab-stats";
 
 type Experiment = {
   id: string;
@@ -149,10 +150,25 @@ export function AbExperimentsClient({ initial, stats }: { initial: Experiment[];
               {e.description && <p className="text-sm text-fg-muted mb-3">{e.description}</p>}
 
               <div className="space-y-1.5 mb-3">
-                {(e.variants ?? []).map((v) => {
+                {(e.variants ?? []).map((v, idx) => {
                   const count = s.byVariant[v.key] ?? 0;
                   const conv = s.conversions[v.key] ?? 0;
                   const rate = count > 0 ? ((conv / count) * 100).toFixed(1) : "—";
+                  // 第一個變體當 control、其餘跟它比 p-value
+                  let pTag: React.ReactNode = null;
+                  if (idx > 0 && (e.variants?.[0])) {
+                    const ctrl = e.variants[0];
+                    const ctrlCount = s.byVariant[ctrl.key] ?? 0;
+                    const ctrlConv = s.conversions[ctrl.key] ?? 0;
+                    const { p, significant, uplift } = twoProportionZTest(ctrlConv, ctrlCount, conv, count);
+                    if (ctrlCount > 0 && count > 0) {
+                      pTag = (
+                        <span className={`text-[10px] px-1.5 py-0.5 rounded font-mono ${significant ? "bg-emerald-500/20 text-emerald-300" : "bg-bg-elevated text-fg-muted"}`}>
+                          p={p.toFixed(3)} · {uplift >= 0 ? "+" : ""}{(uplift * 100).toFixed(1)}%
+                        </span>
+                      );
+                    }
+                  }
                   return (
                     <div key={v.key} className="flex items-center gap-2 text-sm p-2 rounded-lg bg-bg">
                       <span className="font-mono w-20 truncate">{v.key}</span>
@@ -161,6 +177,7 @@ export function AbExperimentsClient({ initial, stats }: { initial: Experiment[];
                         <div className="h-full bg-accent" style={{ width: `${s.total > 0 ? (count / s.total) * 100 : 0}%` }} />
                       </div>
                       <span className="text-xs text-fg-muted">{count} assigns · {conv} conv · {rate}%</span>
+                      {pTag}
                     </div>
                   );
                 })}

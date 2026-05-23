@@ -4,6 +4,7 @@ import Link from "next/link";
 import { CareerProgress } from "@/components/me/CareerProgress";
 import { QuestsPanel } from "@/components/me/QuestsPanel";
 import { StreakHeatmap } from "@/components/me/StreakHeatmap";
+import { FriendsFeed } from "@/components/me/FriendsFeed";
 import { formatTWDate } from "@/lib/format-date";
 
 export default async function MeOverviewPage() {
@@ -72,6 +73,9 @@ export default async function MeOverviewPage() {
 
       {/* 解鎖工作力 */}
       <CareerProgress completedSet={completedSet} />
+
+      {/* 全站動態 feed */}
+      <FriendsFeed />
 
       {/* 進行中的章節 */}
       {inProgress.length > 0 && (

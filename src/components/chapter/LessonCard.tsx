@@ -6,7 +6,8 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import rehypeRaw from "rehype-raw";
-import { Check, Lock, List } from "lucide-react";
+import { Check, Lock, List, Clock } from "lucide-react";
+import { estimateReadingTime, formatReadingTime } from "@/lib/reading-time";
 import { motion } from "framer-motion";
 import { PlaygroundCard } from "./PlaygroundCard";
 import { MiniQuizCard } from "./MiniQuizCard";
@@ -48,6 +49,7 @@ export function LessonCard({
   const [expanded, setExpanded] = useState(true);
   const hasContent = lesson.content && lesson.content.trim().length > 50 && !lesson.content.includes("撰寫中") && !lesson.content.includes("稍後將補回");
   const outline = hasContent ? extractOutline(lesson.content!) : [];
+  const readingMinutes = hasContent ? estimateReadingTime(lesson.content!) : 0;
 
   return (
     <motion.div
@@ -64,6 +66,11 @@ export function LessonCard({
           <h3 className="text-xl font-bold">{lesson.title}</h3>
         </div>
         <div className="flex items-center gap-1 relative">
+          {readingMinutes > 0 && (
+            <span className="text-[10px] px-1.5 py-1 rounded bg-bg-elevated text-fg-muted mr-1 flex items-center gap-1" title="預估閱讀時間">
+              <Clock size={10} /> {formatReadingTime(readingMinutes)}
+            </span>
+          )}
           <span className="text-xs px-2 py-1 rounded bg-bg-elevated text-warning mr-1">+{lesson.xp} XP</span>
           <BookmarkButton lessonId={lesson.id} chapterId={chapterId} lessonTitle={lesson.title} isLoggedIn={isLoggedIn} />
           <NotePanel lessonId={lesson.id} chapterId={chapterId} isLoggedIn={isLoggedIn} />
