@@ -99,6 +99,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               <AdminLink href="/admin/audit">📝 操作紀錄</AdminLink>
               <AdminLink href="/admin/errors">🛡️ 錯誤日誌</AdminLink>
               <AdminLink href="/admin/rate-limits">🚦 Rate Limit</AdminLink>
+              <AdminLink href="/admin/gdpr">🔐 GDPR 請求</AdminLink>
               <AdminLink href="/admin/settings">⚙️ 系統設定</AdminLink>
             </NavGroup>
           </nav>

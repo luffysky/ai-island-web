@@ -2,6 +2,7 @@ import { createSupabaseServer } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import { SettingsForm } from "./SettingsForm";
 import { PreciseLocationToggle } from "@/components/PreciseLocationToggle";
+import { GdprSection } from "./GdprSection";
 
 export default async function SettingsPage() {
   const supabase = await createSupabaseServer();
@@ -17,6 +18,7 @@ export default async function SettingsPage() {
       <h1 className="text-2xl font-bold">設定</h1>
       <SettingsForm profile={profile} email={user.email!} />
       <PreciseLocationToggle />
+      <GdprSection initialDeletedAt={profile.deleted_at ?? null} />
     </div>
   );
 }
