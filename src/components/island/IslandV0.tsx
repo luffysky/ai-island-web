@@ -47,6 +47,12 @@ function emitOpen(id: IslandNodeId) {
   for (const f of openSubs) f(id);
 }
 
+// 手機虛擬搖桿輸入（IslandClient 寫進、Player 讀）
+export const touchInput = { x: 0, y: 0, interact: false, run: false };
+let interactPulse = false;
+export function touchInteract() { interactPulse = true; }
+function consumeInteractPulse() { const v = interactPulse; interactPulse = false; return v; }
+
 // 用 ref 暫存 player 位置、避免 React state 60fps re-render
 const playerPos = { x: 0, y: 1.1, z: 6 };
 let activeNodeId: string | null = null;
@@ -278,26 +284,45 @@ function Player({ petName }: { petName: string | null }) {
     const g = ref.current;
     if (!g) return;
     const keys = getKeys() as Record<string, boolean>;
-    const dir = new THREE.Vector3();
-    if (keys[K[K.forward]]) dir.z -= 1;
-    if (keys[K[K.back]]) dir.z += 1;
-    if (keys[K[K.left]]) dir.x -= 1;
-    if (keys[K[K.right]]) dir.x += 1;
-    if (dir.lengthSq() > 0) {
-      dir.normalize();
-      const yaw = Math.atan2(camera.position.x - g.position.x, camera.position.z - g.position.z);
-      const rot = new THREE.Matrix4().makeRotationY(yaw + Math.PI);
-      dir.applyMatrix4(rot);
-      const speed = keys[K[K.run]] ? PLAYER_SPEED * RUN_MULT : PLAYER_SPEED;
-      g.position.x += dir.x * speed * dt;
-      g.position.z += dir.z * speed * dt;
+
+    // 鍵盤輸入（W = +1 = 螢幕內、forward）
+    let inX = 0, inY = 0;
+    if (keys[K[K.forward]]) inY += 1;
+    if (keys[K[K.back]]) inY -= 1;
+    if (keys[K[K.left]]) inX -= 1;
+    if (keys[K[K.right]]) inX += 1;
+
+    // 手機搖桿輸入（覆蓋鍵盤、若有搖桿值）
+    if (touchInput.x !== 0 || touchInput.y !== 0) {
+      inX = touchInput.x;
+      inY = touchInput.y;
+    }
+
+    if (inX !== 0 || inY !== 0) {
+      // 相機正前方（投影到 XZ 平面）
+      const fwd = new THREE.Vector3();
+      camera.getWorldDirection(fwd);
+      fwd.y = 0;
+      const fl = fwd.length();
+      if (fl < 0.001) { fwd.set(0, 0, -1); } else { fwd.divideScalar(fl); }
+      const right = new THREE.Vector3(-fwd.z, 0, fwd.x);
+
+      const move = new THREE.Vector3();
+      move.addScaledVector(fwd, inY);
+      move.addScaledVector(right, inX);
+      move.normalize();
+
+      const fast = keys[K[K.run]] || touchInput.run;
+      const speed = fast ? PLAYER_SPEED * RUN_MULT : PLAYER_SPEED;
+      g.position.addScaledVector(move, speed * dt);
+
       const radial = Math.sqrt(g.position.x ** 2 + g.position.z ** 2);
       if (radial > ISLAND_RADIUS - 1.5) {
         const k = (ISLAND_RADIUS - 1.5) / radial;
         g.position.x *= k;
         g.position.z *= k;
       }
-      g.rotation.y = Math.atan2(dir.x, dir.z);
+      g.rotation.y = Math.atan2(move.x, move.z);
     }
     playerPos.x = g.position.x;
     playerPos.z = g.position.z;
@@ -318,7 +343,8 @@ function Player({ petName }: { petName: string | null }) {
 
     // 互動鍵（edge trigger）— 不跳走、廣播開島內 modal
     const ePressed = !!keys[K[K.interact]];
-    if (ePressed && !eDownRef.current && nearest) {
+    const eEdge = (ePressed && !eDownRef.current) || consumeInteractPulse();
+    if (eEdge && nearest) {
       emitOpen(nearest.id);
     }
     eDownRef.current = ePressed;
