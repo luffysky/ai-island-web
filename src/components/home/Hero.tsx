@@ -34,18 +34,31 @@ export function Hero({ totalChapters, totalLessons, stageCount }: HeroProps) {
               <br />
               像玩 RPG 一樣升級、打 boss、組隊、成為 AI 高玩
             </p>
-            <div className="flex gap-3 justify-center md:justify-start flex-wrap">
+            {/* 雙模式入口（依 3D 島嶼 spec 附錄 B） */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Link
-                href="/signup"
-                className="px-6 py-3 bg-accent text-black rounded-lg font-bold hover:scale-105 transition-transform"
+                href={"/island" as any}
+                className="group relative overflow-hidden rounded-xl border-2 border-accent/40 p-5 bg-gradient-to-br from-accent/15 to-accent-2/10 hover:border-accent transition-all hover:scale-[1.02]"
               >
-                🚀 開始冒險
+                <div className="absolute -top-4 -right-4 text-5xl opacity-30 group-hover:opacity-50 transition">🏝️</div>
+                <div className="text-2xl mb-1">🏝️ 島嶼模式</div>
+                <div className="font-bold text-lg mb-1">進入 AI 島</div>
+                <p className="text-xs text-fg-muted leading-relaxed">
+                  3D 沉浸式探索、有 AI 夥伴陪你闖關。
+                </p>
+                <span className="text-[10px] text-accent mt-2 inline-block">v0 / coming soon →</span>
               </Link>
               <Link
                 href="/chapters"
-                className="px-6 py-3 bg-bg-card border border-border rounded-lg hover:border-accent"
+                className="group relative overflow-hidden rounded-xl border-2 border-border p-5 bg-bg-card hover:border-accent transition-all hover:scale-[1.02]"
               >
-                📚 探索地圖
+                <div className="absolute -top-4 -right-4 text-5xl opacity-30 group-hover:opacity-50 transition">📋</div>
+                <div className="text-2xl mb-1">📋 經典模式</div>
+                <div className="font-bold text-lg mb-1">快速開始學習</div>
+                <p className="text-xs text-fg-muted leading-relaxed">
+                  清單式、直接看章節、高效率。
+                </p>
+                <span className="text-[10px] text-fg-muted mt-2 inline-block">推薦給想快速學的人 →</span>
               </Link>
             </div>
 

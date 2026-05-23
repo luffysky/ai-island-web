@@ -3,6 +3,7 @@ import { chapters } from "@/data/chapters";
 import Link from "next/link";
 import { CareerProgress } from "@/components/me/CareerProgress";
 import { QuestsPanel } from "@/components/me/QuestsPanel";
+import { StreakHeatmap } from "@/components/me/StreakHeatmap";
 import { formatTWDate } from "@/lib/format-date";
 
 export default async function MeOverviewPage() {
@@ -62,6 +63,9 @@ export default async function MeOverviewPage() {
           />
         </div>
       </div>
+
+      {/* 學習熱力圖 */}
+      <StreakHeatmap />
 
       {/* 今日任務 */}
       <QuestsPanel />
