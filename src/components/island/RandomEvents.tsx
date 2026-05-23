@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Sparkles } from "lucide-react";
 import { applyBuff, addToInventory, type ResourceKind, RESOURCE_META, setWeather } from "./island-bus";
 
@@ -17,21 +17,31 @@ type EventKind =
  */
 export function RandomEvents() {
   const [floats, setFloats] = useState<Array<{ id: number; text: string; sub: string }>>([]);
+  const timersRef = useRef<Set<ReturnType<typeof setTimeout>>>(new Set());
 
   useEffect(() => {
     let alive = true;
+    const timers = timersRef.current;
+    const schedule = (fn: () => void, ms: number) => {
+      const t = setTimeout(() => { timers.delete(t); fn(); }, ms);
+      timers.add(t);
+      return t;
+    };
     const tick = () => {
       if (!alive) return;
       const ev = rollEvent();
       applyEvent(ev);
       const fid = Math.random();
       setFloats((f) => [...f, { id: fid, text: ev.label, sub: ev.reward }]);
-      setTimeout(() => setFloats((f) => f.filter((x) => x.id !== fid)), 4500);
-      // 下一次：90~180 秒
-      setTimeout(tick, 90_000 + Math.random() * 90_000);
+      schedule(() => setFloats((f) => f.filter((x) => x.id !== fid)), 4500);
+      schedule(tick, 90_000 + Math.random() * 90_000);
     };
-    const t = setTimeout(tick, 45_000); // 進場 45 秒後第一次
-    return () => { alive = false; clearTimeout(t); };
+    schedule(tick, 45_000);
+    return () => {
+      alive = false;
+      timers.forEach((t) => clearTimeout(t));
+      timers.clear();
+    };
   }, []);
 
   if (floats.length === 0) return null;

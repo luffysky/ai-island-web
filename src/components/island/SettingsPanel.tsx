@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { X, Volume2, Sparkles, Eraser, Image as ImgIcon } from "lucide-react";
 import { isSoundOn, setSoundOn, resetInventory } from "./island-bus";
+import { useConfirm } from "@/components/ui/ConfirmDialog";
 
 const QUALITY_KEY = "ai_island_quality";
 const FX_KEY = "ai_island_fx";
@@ -25,6 +26,7 @@ export function SettingsPanel() {
   const [sound, setSound] = useState(true);
   const [quality, setQuality] = useState<"low" | "med" | "high">("med");
   const [fx, setFx] = useState(true);
+  const confirm = useConfirm();
 
   useEffect(() => subscribeSettingsToggle(() => setOpen((v) => !v)), []);
   useEffect(() => { setSound(isSoundOn()); setQuality(readQuality()); setFx(readFx()); }, []);
@@ -54,8 +56,14 @@ export function SettingsPanel() {
     setSound(next);
     setSoundOn(next);
   };
-  const clearAll = () => {
-    if (!confirm("清掉所有島嶼進度（背包/任務/成就/寶箱/親密度）？\n注意：z 幣已入帳的不會退回。")) return;
+  const clearAll = async () => {
+    const ok = await confirm({
+      title: "清掉所有島嶼進度？",
+      description: "包含背包 / 任務 / 成就 / 寶箱 / 親密度。z 幣已入帳的不會退回。",
+      destructive: true,
+      confirmLabel: "清除",
+    });
+    if (!ok) return;
     resetInventory();
     ["ai_island_quests_v1", "ai_island_chests_v1", "ai_island_ach_v1", "ai_island_pet_bond_v1", "ai_island_fortune_v1"]
       .forEach((k) => { try { localStorage.removeItem(k); } catch {} });

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { X, Check } from "lucide-react";
 import {
   SHOP_ITEMS,
@@ -16,6 +16,8 @@ export function MerchantPanel() {
   const [open, setOpen] = useState(false);
   const [inv, setInv] = useState<Record<ResourceKind, number>>({ wood: 0, crystal: 0, shell: 0 });
   const [flash, setFlash] = useState<string | null>(null);
+  const flashTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => { if (flashTimerRef.current) clearTimeout(flashTimerRef.current); }, []);
 
   useEffect(() => subscribeNpc((id) => {
     if (id === "merchant") {
@@ -51,7 +53,8 @@ export function MerchantPanel() {
     setInv(readInventory());
     item.apply();
     setFlash(item.id);
-    setTimeout(() => setFlash(null), 900);
+    if (flashTimerRef.current) clearTimeout(flashTimerRef.current);
+    flashTimerRef.current = setTimeout(() => setFlash(null), 900);
   };
 
   return (

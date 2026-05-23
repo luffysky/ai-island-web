@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { X, Sparkles, Loader2 } from "lucide-react";
-import { subscribeNpc, readFortuneToday, rollFortune, type Fortune } from "./island-bus";
+import { subscribeNpc, readFortuneToday, saveFortuneResult, type Fortune } from "./island-bus";
+import { useToast } from "@/components/ui/Toast";
 
 const TIER_COLOR: Record<Fortune["tier"], string> = {
   "大吉": "from-yellow-300 to-orange-400",
@@ -16,6 +17,7 @@ export function SeerPanel() {
   const [open, setOpen] = useState(false);
   const [today, setToday] = useState(readFortuneToday());
   const [busy, setBusy] = useState(false);
+  const toast = useToast();
 
   useEffect(() => subscribeNpc((id) => {
     if (id === "seer") {
@@ -36,19 +38,28 @@ export function SeerPanel() {
   const roll = async () => {
     if (today.result || busy) return;
     setBusy(true);
-    const f = rollFortune();
-    setToday({ date: today.date, result: f });
-    // 若獎勵是 coin、打 server 領
-    if (f.rewardKind === "coin") {
-      try {
-        await fetch("/api/island/claim-fortune", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ date: today.date, tier: f.tier, reward: f.reward }),
-        });
-      } catch {}
+    try {
+      // server 決定 tier + 發獎、回傳完整 Fortune（防 client 改大吉）
+      const res = await fetch("/api/island/claim-fortune", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ date: today.date }),
+      });
+      const j = await res.json();
+      if (res.ok && j.fortune) {
+        const f: Fortune = j.fortune;
+        saveFortuneResult(f);
+        setToday({ date: today.date, result: f });
+      } else if (j.error === "already_claimed") {
+        toast.info("今天已經翻過牌了、明早再來");
+      } else {
+        toast.error(j.error ?? "占卜失敗、稍後再試");
+      }
+    } catch {
+      toast.error("網路錯誤、稍後再試");
+    } finally {
+      setBusy(false);
     }
-    setBusy(false);
   };
 
   const r = today.result;

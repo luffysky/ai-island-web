@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Coins, Package } from "lucide-react";
+import { useToast } from "@/components/ui/Toast";
 import {
   type ResourceKind,
   RESOURCE_META,
@@ -21,6 +22,7 @@ export function InventoryBag() {
   const [inv, setInv] = useState<Record<ResourceKind, number>>({ wood: 0, crystal: 0, shell: 0 });
   const [floats, setFloats] = useState<Array<{ id: number; text: string }>>([]);
   const [busy, setBusy] = useState(false);
+  const toast = useToast();
 
   useEffect(() => {
     setInv(readInventory());
@@ -58,10 +60,10 @@ export function InventoryBag() {
         setFloats((f) => [...f, { id, text: `+${j.coins ?? totalReward} 🪙 已入帳` }]);
         setTimeout(() => setFloats((f) => f.filter((x) => x.id !== id)), 2400);
       } else {
-        alert(j.error ?? "兌換失敗");
+        toast.error(j.error ?? "兌換失敗");
       }
     } catch {
-      alert("網路錯誤");
+      toast.error("網路錯誤、稍後再試");
     } finally {
       setBusy(false);
     }

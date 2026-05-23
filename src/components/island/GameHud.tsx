@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { emitBagToggle } from "./island-bus";
 import { emitSettingsToggle } from "./SettingsPanel";
+import { useToast } from "@/components/ui/Toast";
 
 /**
  * 底部 HUD chip nav（參考 07.png 風格）
@@ -28,6 +29,7 @@ type Profile = {
 
 export function GameHud({ profile }: { profile: Profile | null }) {
   const [showHello, setShowHello] = useState(true);
+  const toast = useToast();
   useEffect(() => {
     const t = setTimeout(() => setShowHello(false), 4000);
     return () => clearTimeout(t);
@@ -85,9 +87,9 @@ export function GameHud({ profile }: { profile: Profile | null }) {
       <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-30 pointer-events-auto hidden md:flex items-center gap-1 bg-black/55 backdrop-blur rounded-full px-2 py-1.5">
         <HudChip icon={<MapIcon size={16} />} label="地圖" onClick={scrollMinimap} />
         <HudChip icon={<Backpack size={16} />} label="背包" onClick={emitBagToggle} hotkey="B" />
-        <HudChip icon={<ClipboardList size={16} />} label="任務" onClick={() => alert("走到漁夫長老身邊按 E 開任務")} />
+        <HudChip icon={<ClipboardList size={16} />} label="任務" onClick={() => toast.info("走到漁夫長老身邊按 E 開任務")} />
         <HudChip icon={<Trophy size={16} />} label="成就" onClick={emitBagToggle} />
-        <HudChip icon={<Users size={16} />} label="排行" onClick={() => alert("走到 🏆 牌子按 E")} />
+        <HudChip icon={<Users size={16} />} label="排行" onClick={() => toast.info("走到 🏆 牌子按 E")} />
         <HudChip icon={<Settings size={16} />} label="設定" onClick={emitSettingsToggle} />
       </div>
 

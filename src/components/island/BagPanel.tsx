@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { X, Package, Trophy, Clock } from "lucide-react";
+import { useToast } from "@/components/ui/Toast";
 import {
   type ResourceKind,
   RESOURCE_META,
@@ -26,6 +27,7 @@ export function BagPanel() {
   const [inv, setInv] = useState<Record<ResourceKind, number>>({ wood: 0, crystal: 0, shell: 0 });
   const [ach, setAch] = useState(() => readAchState());
   const [busy, setBusy] = useState<string | null>(null);
+  const toast = useToast();
 
   useEffect(() => subscribeBagToggle(() => {
     setInv(readInventory());
@@ -55,10 +57,15 @@ export function BagPanel() {
         body: JSON.stringify({ achievement_id: id, reward: meta.reward }),
       });
       const j = await res.json();
-      if (res.ok || j.error === "already_claimed") setAch(markAchClaimed(id));
-      else alert(j.error ?? "領取失敗");
-    } catch { alert("網路錯誤"); }
-    finally { setBusy(null); }
+      if (res.ok || j.error === "already_claimed") {
+        setAch(markAchClaimed(id));
+        if (res.ok) toast.success(`+${meta.reward} z 幣已入帳`);
+      } else {
+        toast.error(j.error ?? "領取失敗");
+      }
+    } catch {
+      toast.error("網路錯誤、稍後再試");
+    } finally { setBusy(null); }
   };
 
   return (

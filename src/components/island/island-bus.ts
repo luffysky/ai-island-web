@@ -175,23 +175,13 @@ export function readFortuneToday(): { date: string; result: Fortune | null } {
   return { date: today, result: null };
 }
 
-export function rollFortune(): Fortune {
-  const r = Math.random();
-  let f: Fortune;
-  if (r < 0.1) f = { tier: "大吉", reward: 50, rewardKind: "coin", emoji: "🎊", message: "今日天運在你、放手去做！" };
-  else if (r < 0.4) f = { tier: "吉", reward: 20, rewardKind: "coin", emoji: "🎁", message: "穩穩走、就是穩穩贏" };
-  else if (r < 0.7) f = { tier: "平", reward: 5, rewardKind: "coin", emoji: "🍀", message: "平凡的日子也很美" };
-  else if (r < 0.9) f = { tier: "凶", reward: 5, rewardKind: "bond", emoji: "🌧️", message: "今天累了、跟寵物說說話吧（+5 親密度安慰）" };
-  else f = { tier: "大凶", reward: 1, rewardKind: "crystal", emoji: "🆘", message: "上天給你一顆水晶當補償（+1 水晶）" };
-
+// tier 由 server 決定（避免 client 偽造大吉領 50 z）
+// client 只負責存結果到 localStorage 防重抽
+export function saveFortuneResult(f: Fortune) {
   const today = todayKey();
   try { localStorage.setItem(FORTUNE_KEY, JSON.stringify({ date: today, result: f })); } catch {}
-
-  // 套用獎勵
   if (f.rewardKind === "bond") bumpBond(f.reward);
   if (f.rewardKind === "crystal") addToInventory("crystal", f.reward);
-  // coin 留給 server claim（避免被 client 偽造）
-  return f;
 }
 
 // ============ 每日任務 ============
@@ -324,6 +314,13 @@ export function readOpenedChests(): Set<number> {
 export function markChestOpen(id: number): Set<number> {
   const s = readOpenedChests();
   s.add(id);
+  try { localStorage.setItem(CHEST_OPEN_KEY, JSON.stringify(Array.from(s))); } catch {}
+  for (const f of chestSubs) f(s);
+  return s;
+}
+export function unmarkChestOpen(id: number): Set<number> {
+  const s = readOpenedChests();
+  s.delete(id);
   try { localStorage.setItem(CHEST_OPEN_KEY, JSON.stringify(Array.from(s))); } catch {}
   for (const f of chestSubs) f(s);
   return s;

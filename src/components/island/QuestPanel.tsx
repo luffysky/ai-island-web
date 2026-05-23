@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { X, Trophy, Check, Coins, Loader2 } from "lucide-react";
+import { useToast } from "@/components/ui/Toast";
 import {
   TODAY_QUESTS,
   readQuestState,
@@ -20,6 +21,7 @@ export function QuestPanel() {
   const [open, setOpen] = useState(false);
   const [state, setState] = useState(() => readQuestState());
   const [busy, setBusy] = useState<string | null>(null);
+  const toast = useToast();
 
   useEffect(() => {
     return subscribeNpc((id) => {
@@ -52,13 +54,14 @@ export function QuestPanel() {
         body: JSON.stringify({ quest_id: id, reward: q.reward, date: state.date }),
       });
       const j = await res.json();
-      if (res.ok) {
+      if (res.ok || j.error === "already_claimed") {
         setState(markClaimed(id));
+        if (res.ok) toast.success(`+${q.reward} z 幣已入帳`);
       } else {
-        alert(j.error ?? "領取失敗");
+        toast.error(j.error ?? "領取失敗");
       }
     } catch {
-      alert("網路錯誤");
+      toast.error("網路錯誤、稍後再試");
     } finally {
       setBusy(null);
     }

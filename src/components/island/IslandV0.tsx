@@ -27,10 +27,13 @@ import {
   CHESTS,
   readOpenedChests,
   markChestOpen,
+  unmarkChestOpen,
   bumpAch,
   noteNpcTalked,
   playerWorldPos,
   emitBagToggle,
+  addToInventory,
+  subscribeChests,
 } from "./island-bus";
 /**
  * S7-S8 3D 島嶼 v0 — 批 1：能站上去的島
@@ -585,17 +588,29 @@ function harvest(id: number, kind: ResourceKind) {
   if (Math.sin(t * Math.PI * 2) < 0) bumpAch("night_owl", 1);
 }
 
-function openChestById(id: number, rewardCoin: number, opened: Set<number>) {
+async function openChestById(id: number, rewardCoin: number, opened: Set<number>) {
   if (opened.has(id)) return;
+  // 樂觀更新：先標 + 加水晶（UI 立刻有反應）
   markChestOpen(id);
+  addToInventory("crystal", 1);
   bumpAch("treasure_hunter", 1);
-  // 寶箱獎勵 = inventory +1 水晶 + z 幣（client + server）
-  import("./island-bus").then((m) => m.addToInventory("crystal", 1));
-  fetch("/api/island/open-chest", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ chest_id: id, reward: rewardCoin }),
-  }).catch(() => {});
+  // server 寫入失敗就 rollback（避免 client 已開但 z 幣沒入帳）
+  try {
+    const res = await fetch("/api/island/open-chest", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chest_id: id, reward: rewardCoin }),
+    });
+    const j = await res.json().catch(() => ({}));
+    if (!res.ok && j.error !== "already_claimed") {
+      // rollback
+      unmarkChestOpen(id);
+      addToInventory("crystal", -1);
+    }
+  } catch {
+    unmarkChestOpen(id);
+    addToInventory("crystal", -1);
+  }
 }
 
 // NPC 位置（XZ 座標）
@@ -610,7 +625,7 @@ function Chests() {
   const [opened, setOpened] = useState<Set<number>>(new Set());
   useEffect(() => {
     setOpened(readOpenedChests());
-    return import("./island-bus").then((m) => m.subscribeChests(setOpened)) as any;
+    return subscribeChests(setOpened);
   }, []);
   return (
     <group>
@@ -965,8 +980,9 @@ function NpcElder() {
 function Hud() {
   const [showHint, setShowHint] = useState(true);
   useEffect(() => {
-    const t = setTimeout(() => setShowHint(false), 6000);
-    return () => clearTimeout(t);
+    let alive = true;
+    const t = setTimeout(() => { if (alive) setShowHint(false); }, 6000);
+    return () => { alive = false; clearTimeout(t); };
   }, []);
   return (
     <div className="pointer-events-none absolute inset-x-0 bottom-4 hidden md:flex justify-center">

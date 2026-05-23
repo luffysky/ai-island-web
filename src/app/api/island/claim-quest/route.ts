@@ -20,6 +20,8 @@ export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({} as any));
   const questId = String(body.quest_id ?? "");
   const date = String(body.date ?? "");
+  // 嚴格 YYYY-MM-DD（防止 reason 偽造繞 dedupe）
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return NextResponse.json({ error: "invalid_date" }, { status: 400 });
   const reward = REWARD[questId];
   if (!reward) return NextResponse.json({ error: "invalid_quest" }, { status: 400 });
 
