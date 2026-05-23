@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { calcAffinity, addForumAffinity, rankFeed } from "@/lib/fof-feed";
 
 export const dynamic = "force-dynamic";
 
@@ -107,8 +108,28 @@ export async function GET() {
     at: r.created_at,
   });
 
-  // 排序
-  items.sort((a, b) => new Date(b.at).getTime() - new Date(a.at).getTime());
+  // 計算 affinity（同學 / 對話過的人加權）
+  const [{ data: myLessons }, { data: othersLessons }, { data: myReplies }] = await Promise.all([
+    admin.from("lesson_progress").select("lesson_id").eq("user_id", user.id),
+    admin.from("lesson_progress").select("user_id, lesson_id").gte("created_at", sevenAgo).neq("user_id", user.id),
+    admin.from("forum_replies").select("thread_id").eq("user_id", user.id).limit(200),
+  ] as any);
+  const myLessonIds = new Set((myLessons as any[] ?? []).map((r: any) => r.lesson_id));
+  const affinity = calcAffinity(myLessonIds, (othersLessons as any[]) ?? []);
+  // forum：對方有回過我發起的主題 → +2
+  const myThreadIds = (myReplies as any[] ?? []).map((r: any) => r.thread_id);
+  if (myThreadIds.length > 0) {
+    const { data: pairs } = await admin
+      .from("forum_replies")
+      .select("user_id")
+      .in("thread_id", myThreadIds)
+      .neq("user_id", user.id)
+      .limit(500);
+    const forumPairs = ((pairs as any[]) ?? []).map((p: any) => ({ user_id: p.user_id, weight: 2 }));
+    addForumAffinity(affinity, forumPairs);
+  }
 
-  return NextResponse.json({ items: items.slice(0, 50) });
+  // FoF feed 排序（affinity + 時間衰減）
+  const ranked = rankFeed(items as any, affinity);
+  return NextResponse.json({ items: ranked.slice(0, 50) });
 }

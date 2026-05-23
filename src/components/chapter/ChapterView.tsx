@@ -79,6 +79,9 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
             body: JSON.stringify({ type: "complete_lessons", delta: 1 }),
           }).catch(() => {});
 
+          // 島嶼每日學習任務（純客戶端 localStorage）
+          import("@/components/island/island-bus").then((m) => m.bumpQuest("lessons", 1)).catch(() => {});
+
           // milestone check：跨章節總完成數命中 30/60/100 → dispatch
           const { count } = await supabase
             .from("lesson_progress")

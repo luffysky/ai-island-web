@@ -2,7 +2,7 @@
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
-import { Sky, OrbitControls, KeyboardControls, useKeyboardControls, Text, Html, useGLTF } from "@react-three/drei";
+import { Sky, PointerLockControls, KeyboardControls, useKeyboardControls, Text, Html, useGLTF } from "@react-three/drei";
 import { EffectComposer, Bloom, Vignette, ToneMapping } from "@react-three/postprocessing";
 import { ToneMappingMode } from "postprocessing";
 import * as THREE from "three";
@@ -197,7 +197,7 @@ export default function IslandV0({
       ]}
     >
       <Canvas
-        camera={{ position: [22, 22, 30], fov: 42 }}
+        camera={{ position: [0, 1.6, 8], fov: 70 }}
         shadows
         style={{ width: "100%", height: "100%" }}
       >
@@ -238,20 +238,13 @@ function Scene({
       <Player petName={petName} />
       <DayNightCycle />
       <WeatherFx />
-      <Rain />
       <EffectComposer>
         <Bloom intensity={0.6} luminanceThreshold={0.7} luminanceSmoothing={0.4} mipmapBlur />
         <Vignette eskil={false} offset={0.15} darkness={0.7} />
         <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
       </EffectComposer>
-      <OrbitControls
-        enablePan={false}
-        enableZoom
-        maxPolarAngle={Math.PI / 2.4}
-        minPolarAngle={Math.PI / 5}
-        minDistance={10}
-        maxDistance={60}
-      />
+      {/* 第一人稱：點畫面 lock pointer、ESC 解鎖；手機改用 nipplejs 右側拖視角 */}
+      <PointerLockControls makeDefault />
     </>
   );
 }
@@ -518,7 +511,7 @@ function ZoneMarkers() {
 
 // 天氣 — 每 5 分鐘隨機切換、Sky uniform + 光照強度跟著變。
 const WEATHER_PERIOD_MS = 5 * 60 * 1000;
-const WEATHER_POOL: Weather[] = ["sunny", "sunny", "sunny", "cloudy", "cloudy", "rainy"];
+const WEATHER_POOL: Weather[] = ["sunny", "sunny", "sunny", "cloudy", "cloudy", "rainy", "snowy", "foggy"];
 
 function WeatherFx() {
   useEffect(() => {
@@ -545,54 +538,7 @@ function WeatherFx() {
   return null;
 }
 
-const RAIN_COUNT = 800;
-function Rain() {
-  const meshRef = useRef<THREE.InstancedMesh>(null);
-  const [weather, setW] = useState<Weather>(getWeather());
-  useEffect(() => subscribeWeather(setW), []);
-
-  // 初始化雨滴位置
-  useEffect(() => {
-    const mesh = meshRef.current;
-    if (!mesh) return;
-    const m = new THREE.Matrix4();
-    for (let i = 0; i < RAIN_COUNT; i++) {
-      const x = (Math.random() - 0.5) * 60;
-      const y = Math.random() * 30 + 5;
-      const z = (Math.random() - 0.5) * 60;
-      m.setPosition(x, y, z);
-      mesh.setMatrixAt(i, m);
-    }
-    mesh.instanceMatrix.needsUpdate = true;
-  }, []);
-
-  useFrame((_, dt) => {
-    if (weather !== "rainy") return;
-    const mesh = meshRef.current;
-    if (!mesh) return;
-    const m = new THREE.Matrix4();
-    for (let i = 0; i < RAIN_COUNT; i++) {
-      mesh.getMatrixAt(i, m);
-      const pos = new THREE.Vector3().setFromMatrixPosition(m);
-      pos.y -= dt * 25;
-      if (pos.y < 0) {
-        pos.x = (Math.random() - 0.5) * 60;
-        pos.y = 30;
-        pos.z = (Math.random() - 0.5) * 60;
-      }
-      m.setPosition(pos);
-      mesh.setMatrixAt(i, m);
-    }
-    mesh.instanceMatrix.needsUpdate = true;
-  });
-
-  return (
-    <instancedMesh ref={meshRef} args={[undefined as any, undefined as any, RAIN_COUNT]} visible={weather === "rainy"}>
-      <boxGeometry args={[0.025, 0.4, 0.025]} />
-      <meshBasicMaterial color="#9ec6ff" transparent opacity={0.7} />
-    </instancedMesh>
-  );
-}
+// （3D Rain 已移除、改 CSS overlay 在 WeatherOverlay 元件、零 GPU 開銷）
 
 // 晝夜循環 — 一天 = 8 分鐘。0 = 日出、0.5 = 日落、1 = 夜晚。
 const DAY_LENGTH_MS = 8 * 60 * 1000;
@@ -603,7 +549,7 @@ function DayNightCycle() {
   const dirLightRef = useRef<THREE.DirectionalLight>(null);
   const weatherRef = useRef<Weather>(getWeather());
 
-  useEffect(() => subscribeWeather((w) => { weatherRef.current = w; }), []);
+  useEffect(() => subscribeWeather((s) => { weatherRef.current = s.kind; }), []);
 
   useFrame(() => {
     const t = (performance.now() % DAY_LENGTH_MS) / DAY_LENGTH_MS;
@@ -614,12 +560,16 @@ function DayNightCycle() {
     const sunZ = 50;
     sunRef.current.set(sunX, sunY, sunZ);
 
-    // 天氣影響：cloudy → turbidity 18 + rayleigh 0.5；rainy → turbidity 20 + rayleigh 0.3 + 整體更暗
+    // 天氣影響 Sky uniform
     const w = weatherRef.current;
     const isDay = sunHeight > 0;
     const turbBase = isDay ? 6 : 2;
     const rayBase = isDay ? 2 : 0.2;
-    const turb = w === "cloudy" ? Math.max(turbBase, 18) : w === "rainy" ? Math.max(turbBase, 20) : turbBase;
+    const turb = w === "cloudy" ? Math.max(turbBase, 18)
+               : w === "rainy" ? Math.max(turbBase, 20)
+               : w === "snowy" ? Math.max(turbBase, 12)
+               : w === "foggy" ? Math.max(turbBase, 25)
+               : turbBase;
     const ray = w === "sunny" ? rayBase : rayBase * 0.3;
     if (skyRef.current) {
       skyRef.current.material.uniforms.sunPosition.value.copy(sunRef.current);
@@ -627,7 +577,7 @@ function DayNightCycle() {
       skyRef.current.material.uniforms.turbidity.value = turb;
     }
     if (dirLightRef.current) {
-      const weatherMult = w === "sunny" ? 1 : w === "cloudy" ? 0.55 : 0.35;
+      const weatherMult = w === "sunny" ? 1 : w === "cloudy" ? 0.55 : w === "snowy" ? 0.65 : w === "foggy" ? 0.4 : 0.35;
       dirLightRef.current.intensity = Math.max(0, sunHeight) * 1.2 * weatherMult;
       dirLightRef.current.position.set(sunX * 0.3, Math.max(5, sunY * 0.5), sunZ * 0.3);
     }
@@ -867,6 +817,11 @@ function Player({ petName }: { petName: string | null }) {
       }
       g.rotation.y = Math.atan2(move.x, move.z);
     }
+
+    // FPV：相機跟玩家頭部（眼睛高度 1.6m）
+    camera.position.x = g.position.x;
+    camera.position.y = 1.6;
+    camera.position.z = g.position.z;
     // 累積走路距離（公尺、整數）→ 每 1m 上報一次 steps quest + 成就
     if (lastPosRef.current) {
       const ddx = g.position.x - lastPosRef.current.x;
@@ -1025,9 +980,8 @@ function Player({ petName }: { petName: string | null }) {
 
   return (
     <>
-      <group ref={ref} position={[0, 0, 6]}>
-        <Glb src={M.charPlayer} scale={1.1} />
-      </group>
+      {/* 玩家身體不渲染（第一人稱看不到自己）、但保留 ref 控制位置與旋轉 */}
+      <group ref={ref} position={[0, 0, 6]} visible={false} />
 
       {/* 寵物 */}
       {petName && (

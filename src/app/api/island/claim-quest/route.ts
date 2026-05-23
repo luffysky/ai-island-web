@@ -6,7 +6,11 @@ import { rateLimit } from "@/lib/rate-limit";
 export const dynamic = "force-dynamic";
 
 // 跟 island-bus.TODAY_QUESTS 對齊（不從 client 拿、避免被改 reward）
-const REWARD: Record<string, number> = { wood: 30, crystal: 30, shell: 20, steps: 20 };
+// 對齊 island-bus.TODAY_QUESTS reward（server 端不從 client 拿）
+const REWARD: Record<string, number> = {
+  lessons: 80, quiz: 50, ai_chat: 40,
+  wood: 20, crystal: 20, shell: 20, steps: 10,
+};
 
 export async function POST(req: NextRequest) {
   const supabase = await createSupabaseServer();

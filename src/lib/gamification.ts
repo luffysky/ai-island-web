@@ -25,29 +25,46 @@ export class GamificationEngine {
   }
 
   /**
-   * 完成 lesson —送 XP、更新 streak、可能解鎖成就
+   * 完成 lesson —送 XP（動態調整）、更新 streak、可能解鎖成就
    */
-  async completeLesson(chapterId: number, lessonId: string, xp = 10) {
+  async completeLesson(chapterId: number, lessonId: string, baseXp = 10) {
     const { data: { user } } = await this.supabase.auth.getUser();
     if (!user) return { error: 'not_logged_in' };
 
-    // 1. 取目前 level
-    const { data: before } = await this.supabase
-      .from('profiles').select('level, xp, streak_days').eq('id', user.id).single();
-    const oldLevel = before?.level ?? 1;
+    // 1. 取目前 level / streak / last_active / 完成數
+    const [{ data: before }, { count: totalLessons }] = await Promise.all([
+      this.supabase.from('profiles').select('level, xp, streak_days, last_active_at').eq('id', user.id).single(),
+      this.supabase.from('lesson_progress').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
+    ] as any);
+    const oldLevel = (before as any)?.level ?? 1;
 
-    // 2. 寫進度（trigger 會自動加 XP + 更新 streak）
+    // 2. 動態 XP — 用 dynamic-xp 演算法 #4 算最終獎勵
+    const { calcXp, isTaipeiWeekend } = await import('./dynamic-xp');
+    const daysSinceLastActive = (before as any)?.last_active_at
+      ? Math.max(0, Math.floor((Date.now() - new Date((before as any).last_active_at).getTime()) / 86400_000))
+      : 0;
+    const decision = calcXp({
+      baseXp,
+      streakDays: (before as any)?.streak_days ?? 0,
+      daysSinceLastActive,
+      totalLessonsDone: (totalLessons as number) ?? 0,
+      isWeekend: isTaipeiWeekend(),
+      isBirthday: false,
+      hasDoubleCoinBuff: false,
+    });
+    const xp = decision.finalXp;
+
+    // 3. 寫進度（trigger 會自動加 XP + 更新 streak）
     const { error } = await this.supabase
       .from('lesson_progress')
       .upsert({ user_id: user.id, chapter_id: chapterId, lesson_id: lessonId, xp_awarded: xp });
 
     if (error) return { error: error.message };
 
-    // 3. 取更新後狀態
+    // 4. 取更新後狀態
     const { data: after } = await this.supabase
       .from('profiles').select('level, xp, streak_days').eq('id', user.id).single();
 
-    // 4. 升級慶祝
     if (after && after.level > oldLevel) {
       this.celebrateLevelUp(after.level);
       this.onLevelUp?.(after.level);
@@ -55,10 +72,9 @@ export class GamificationEngine {
       this.celebrateXp(xp);
     }
 
-    // 5. 檢查成就
     await this.checkAchievements(user.id, { type: 'lesson_complete', chapterId, lessonId });
 
-    return { success: true, level: after?.level, xp: after?.xp, streak: after?.streak_days };
+    return { success: true, level: after?.level, xp: after?.xp, streak: after?.streak_days, awardedXp: xp, baseXp, multiplier: decision.multiplier };
   }
 
   /**

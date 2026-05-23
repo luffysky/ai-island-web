@@ -35,6 +35,16 @@ export function Minimap() {
   const rafRef = useRef<number | null>(null);
   const [opened, setOpened] = useState<Set<number>>(new Set());
   const [mapSize, setMapSize] = useState<number>(130);
+  const [big, setBig] = useState(false);
+
+  // M 鍵切換大地圖
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.key === "m" || e.key === "M") && !e.altKey && !e.ctrlKey && !e.metaKey) setBig((v) => !v);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   useEffect(() => {
     setMapSize(getMapSize());
@@ -134,10 +144,81 @@ export function Minimap() {
   }, [opened, mapSize]);
 
   return (
-    <div className="absolute top-3 left-3 z-30 pointer-events-none mt-12 md:mt-0" data-island-minimap>
-      <div className="relative bg-black/40 backdrop-blur p-1.5 rounded-xl shadow-lg">
-        <canvas ref={canvasRef} width={mapSize} height={mapSize} className="rounded-lg" />
-        <div className="absolute -bottom-4 right-0 text-[8px] md:text-[9px] text-white/70 select-none hidden sm:block">⬤ 你 · ⬤ NPC · ⬤ 寶箱</div>
+    <>
+      <button
+        onClick={() => setBig(true)}
+        className="absolute top-3 left-3 z-30 pointer-events-auto mt-12 md:mt-0 hover:scale-105 transition"
+        data-island-minimap
+        title="點開全螢幕地圖"
+      >
+        <div className="relative bg-black/40 backdrop-blur p-1.5 rounded-xl shadow-lg cursor-pointer">
+          <canvas ref={canvasRef} width={mapSize} height={mapSize} className="rounded-lg" />
+          <div className="absolute -bottom-4 right-0 text-[8px] md:text-[9px] text-white/70 select-none hidden sm:block">點開大地圖</div>
+        </div>
+      </button>
+      {big && <BigMap onClose={() => setBig(false)} opened={opened} />}
+    </>
+  );
+}
+
+function BigMap({ onClose, opened }: { onClose: () => void; opened: Set<number> }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const rafRef = useRef<number | null>(null);
+  const size = typeof window !== "undefined" ? Math.min(window.innerWidth - 40, window.innerHeight - 80, 600) : 480;
+  const SCALE = (size / 2) / (ISLAND_RADIUS + 3);
+
+  useEffect(() => {
+    const draw = () => {
+      const cv = canvasRef.current; if (!cv) return;
+      const ctx = cv.getContext("2d"); if (!ctx) return;
+      ctx.clearRect(0, 0, size, size);
+      ctx.fillStyle = "rgba(31,111,180,0.85)"; ctx.fillRect(0, 0, size, size);
+      const cx = size / 2, cy = size / 2;
+      ctx.fillStyle = "#3ea05a";
+      ctx.beginPath(); ctx.arc(cx, cy, ISLAND_RADIUS * SCALE, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = "rgba(230,212,154,0.6)"; ctx.lineWidth = 4; ctx.stroke();
+      for (const n of NODES) {
+        ctx.fillStyle = n.color;
+        ctx.beginPath(); ctx.arc(cx + n.x * SCALE, cy + n.z * SCALE, 8, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#fff"; ctx.font = "bold 12px sans-serif"; ctx.textAlign = "center";
+        ctx.fillText(n.label, cx + n.x * SCALE, cy + n.z * SCALE - 12);
+      }
+      for (const n of NPCS) {
+        ctx.fillStyle = n.color;
+        ctx.beginPath(); ctx.arc(cx + n.x * SCALE, cy + n.z * SCALE, 9, 0, Math.PI * 2); ctx.fill();
+        ctx.font = "16px sans-serif"; ctx.textAlign = "center";
+        ctx.fillText(n.label, cx + n.x * SCALE, cy + n.z * SCALE + 5);
+      }
+      for (const c of CHESTS) {
+        const isOpen = opened.has(c.id);
+        ctx.fillStyle = isOpen ? "#5a4a3a" : "#ffd700";
+        ctx.beginPath(); ctx.arc(cx + c.pos[0] * SCALE, cy + c.pos[1] * SCALE, isOpen ? 6 : 10, 0, Math.PI * 2); ctx.fill();
+        if (!isOpen) { ctx.strokeStyle = "rgba(255,215,0,0.7)"; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(cx + c.pos[0] * SCALE, cy + c.pos[1] * SCALE, 14, 0, Math.PI * 2); ctx.stroke(); }
+      }
+      const px = cx + playerWorldPos.x * SCALE;
+      const py = cy + playerWorldPos.z * SCALE;
+      ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(px, py, 10, 0, Math.PI * 2); ctx.fill();
+      ctx.save(); ctx.translate(px, py); ctx.rotate(playerWorldPos.rot);
+      ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-7, -18); ctx.lineTo(7, -18); ctx.closePath(); ctx.fill();
+      ctx.restore();
+      rafRef.current = requestAnimationFrame(draw);
+    };
+    rafRef.current = requestAnimationFrame(draw);
+    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
+  }, [opened, size]);
+
+  useEffect(() => {
+    const onEsc = (e: KeyboardEvent) => { if (e.key === "Escape" || e.key === "m" || e.key === "M") onClose(); };
+    window.addEventListener("keydown", onEsc);
+    return () => window.removeEventListener("keydown", onEsc);
+  }, [onClose]);
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm pointer-events-auto" onClick={onClose}>
+      <div className="relative" onClick={(e) => e.stopPropagation()}>
+        <canvas ref={canvasRef} width={size} height={size} className="rounded-2xl shadow-2xl" />
+        <button onClick={onClose} className="absolute -top-10 right-0 text-white/80 hover:text-white text-sm px-3 py-1 rounded-full bg-black/50">關閉（M / ESC）</button>
+        <div className="absolute -bottom-8 left-0 right-0 text-center text-[10px] text-white/70">⬤ 你 · ⬤ 節點 · ⬤ NPC · ⬤ 寶箱</div>
       </div>
     </div>
   );

@@ -82,6 +82,8 @@ export function DailyQuizClient() {
       if (!res.ok) throw new Error(j.error || "失敗");
       setResult({ correct: j.correct, total: j.total, pass: j.pass, reward_xp: j.reward_xp, reward_z: j.reward_z });
       toast.success(`${j.correct}/${j.total} 答對 · +${j.reward_xp} XP · +${j.reward_z} 🪙`);
+      // 島嶼每日學習任務 — 做完一次每日測驗
+      import("@/components/island/island-bus").then((m) => m.bumpQuest("quiz", 1)).catch(() => {});
     } catch (e: any) {
       toast.error(`送出失敗：${e?.message || ""}`);
     } finally {

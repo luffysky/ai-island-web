@@ -137,6 +137,8 @@ export function AITutorWidget({
     setSending(true);
 
     try {
+      // 島嶼每日學習任務（client-only）
+      import("@/components/island/island-bus").then((m) => m.bumpQuest("ai_chat", 1)).catch(() => {});
       const res = await fetch("/api/ai/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

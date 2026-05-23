@@ -319,10 +319,14 @@ export type DailyQuest = {
 };
 
 export const TODAY_QUESTS: DailyQuest[] = [
-  { id: "wood",     label: "砍 5 棵樹",     target: 5,    reward: 30,  emoji: "🪵" },
-  { id: "crystal",  label: "採 1 顆水晶",   target: 1,    reward: 30,  emoji: "💎" },
-  { id: "shell",    label: "撿 3 個貝殼",   target: 3,    reward: 20,  emoji: "🐚" },
-  { id: "steps",    label: "走 200 公尺",   target: 200,  reward: 20,  emoji: "👣" },
+  // 📚 學習任務（reward 高、推回學習）
+  { id: "lessons",   label: "完成 3 個 lesson", target: 3,  reward: 80,  emoji: "📚" },
+  { id: "quiz",      label: "做 1 次每日測驗",  target: 1,  reward: 50,  emoji: "🧠" },
+  { id: "ai_chat",   label: "跟綠寶 AI 對話 3 次", target: 3, reward: 40, emoji: "🤖" },
+  // 🎮 遊戲化任務（reward 低、純休閒）
+  { id: "wood",      label: "砍 5 棵樹",      target: 5,    reward: 20,  emoji: "🪵" },
+  { id: "crystal",   label: "採 1 顆水晶",    target: 1,    reward: 20,  emoji: "💎" },
+  { id: "steps",     label: "走 200 公尺",   target: 200,  reward: 10,  emoji: "👣" },
 ];
 
 type QuestState = {
@@ -381,17 +385,21 @@ export function subscribeQuest(fn: (s: QuestState) => void) {
 }
 
 // ============ 動態天氣 ============
-export type Weather = "sunny" | "cloudy" | "rainy";
+export type Weather = "sunny" | "cloudy" | "rainy" | "snowy" | "foggy";
 
-let currentWeather: Weather = "sunny";
-const weatherSubs = new Set<(w: Weather) => void>();
-export function getWeather(): Weather { return currentWeather; }
-export function setWeather(w: Weather) {
-  if (currentWeather === w) return;
-  currentWeather = w;
-  for (const f of weatherSubs) f(w);
+type WeatherState = { kind: Weather; windDeg: number; windSpeed: number /* 0-1 */ };
+let currentWeather: WeatherState = { kind: "sunny", windDeg: 90, windSpeed: 0.2 };
+const weatherSubs = new Set<(s: WeatherState) => void>();
+export function getWeather(): Weather { return currentWeather.kind; }
+export function getWeatherState(): WeatherState { return { ...currentWeather }; }
+export function setWeather(kind: Weather, opts?: { windDeg?: number; windSpeed?: number }) {
+  const windDeg = opts?.windDeg ?? Math.floor(Math.random() * 360);
+  const windSpeed = opts?.windSpeed ?? (0.2 + Math.random() * 0.8);
+  if (currentWeather.kind === kind && opts === undefined) return;
+  currentWeather = { kind, windDeg, windSpeed };
+  for (const f of weatherSubs) f({ ...currentWeather });
 }
-export function subscribeWeather(fn: (w: Weather) => void) {
+export function subscribeWeather(fn: (s: WeatherState) => void) {
   weatherSubs.add(fn);
   return () => { weatherSubs.delete(fn); };
 }
