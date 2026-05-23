@@ -15,6 +15,9 @@ import { WeatherChip } from "@/components/island/WeatherChip";
 import { MerchantPanel } from "@/components/island/MerchantPanel";
 import { SeerPanel } from "@/components/island/SeerPanel";
 import { BuffBar } from "@/components/island/BuffBar";
+import { Minimap } from "@/components/island/Minimap";
+import { BagPanel } from "@/components/island/BagPanel";
+import { AchievementToast } from "@/components/island/AchievementToast";
 import { formatTWRelative } from "@/lib/format-date";
 
 const IslandV0 = dynamic(() => import("@/components/island/IslandV0"), {
@@ -83,6 +86,9 @@ export default function IslandClient({
       <MerchantPanel />
       <SeerPanel />
       <BuffBar />
+      <Minimap />
+      <BagPanel />
+      <AchievementToast />
       <PetTalk petName={petName} />
 
       <div className="absolute top-3 left-3 pointer-events-auto z-10 flex items-center gap-2">

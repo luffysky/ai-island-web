@@ -22,6 +22,13 @@ import {
   setWeather,
   emitPetTalk,
   hasBuff,
+  CHESTS,
+  readOpenedChests,
+  markChestOpen,
+  bumpAch,
+  noteNpcTalked,
+  playerWorldPos,
+  emitBagToggle,
 } from "./island-bus";
 /**
  * S7-S8 3D 島嶼 v0 — 批 1：能站上去的島
@@ -38,7 +45,7 @@ const PLAYER_SPEED = 4;
 const RUN_MULT = 2.2;
 const INTERACT_RADIUS = 2.6;
 
-enum K { forward, back, left, right, run, interact }
+enum K { forward, back, left, right, run, interact, bag }
 
 type Node = {
   id: IslandNodeId;
@@ -118,6 +125,7 @@ export default function IslandV0({
         { name: K[K.right], keys: ["KeyD", "ArrowRight"] },
         { name: K[K.run], keys: ["ShiftLeft", "ShiftRight"] },
         { name: K[K.interact], keys: ["KeyE", "Enter"] },
+        { name: K[K.bag], keys: ["KeyB", "KeyI"] },
       ]}
     >
       <Canvas
@@ -149,6 +157,7 @@ function Scene({
       <Ocean />
       <Island />
       <Resources />
+      <Chests />
       <Village completed={completedChapterIds} />
       {level >= 5 && <Lighthouse />}
       {NODES.map((n) => (
@@ -380,6 +389,27 @@ function harvest(id: number, kind: ResourceKind) {
   resourceDownUntil.set(id, performance.now() + meta.respawnSec * 1000 * mult);
   emitCollect({ kind, count: 1 });
   bumpQuest(kind, 1);
+  // 成就進度
+  if (kind === "wood") bumpAch("tree_lover", 1);
+  if (kind === "crystal") bumpAch("crystal_hunter", 1);
+  if (kind === "shell") bumpAch("shell_collector", 1);
+  bumpAch("rich", RESOURCE_META[kind].rewardCoin);
+  // 夜間採集（晝夜循環 sin angle < 0 = 夜）
+  const t = (performance.now() % DAY_LENGTH_MS) / DAY_LENGTH_MS;
+  if (Math.sin(t * Math.PI * 2) < 0) bumpAch("night_owl", 1);
+}
+
+function openChestById(id: number, rewardCoin: number, opened: Set<number>) {
+  if (opened.has(id)) return;
+  markChestOpen(id);
+  bumpAch("treasure_hunter", 1);
+  // 寶箱獎勵 = inventory +1 水晶 + z 幣（client + server）
+  import("./island-bus").then((m) => m.addToInventory("crystal", 1));
+  fetch("/api/island/open-chest", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ chest_id: id, reward: rewardCoin }),
+  }).catch(() => {});
 }
 
 // NPC 位置（XZ 座標）
@@ -389,6 +419,40 @@ const NPC_POS: Record<NpcId, [number, number]> = {
   seer: [0, 4],
 };
 const ELDER_POS = NPC_POS.elder;
+
+function Chests() {
+  const [opened, setOpened] = useState<Set<number>>(new Set());
+  useEffect(() => {
+    setOpened(readOpenedChests());
+    return import("./island-bus").then((m) => m.subscribeChests(setOpened)) as any;
+  }, []);
+  return (
+    <group>
+      {CHESTS.map((c) => {
+        const isOpen = opened.has(c.id);
+        return (
+          <group key={c.id} position={[c.pos[0], 0.4, c.pos[1]]}>
+            <mesh castShadow position={[0, 0.2, 0]}>
+              <boxGeometry args={[0.7, 0.4, 0.5]} />
+              <meshStandardMaterial color={isOpen ? "#5a4a3a" : "#a87b3f"} />
+            </mesh>
+            {/* 蓋子 */}
+            <mesh castShadow position={[0, 0.5, 0]} rotation={[isOpen ? -Math.PI / 3 : 0, 0, 0]}>
+              <boxGeometry args={[0.72, 0.15, 0.52]} />
+              <meshStandardMaterial color={isOpen ? "#3a2e1a" : "#8b5a2b"} />
+            </mesh>
+            {!isOpen && (
+              <pointLight position={[0, 1.2, 0]} color="#ffd700" intensity={0.5} distance={2.5} />
+            )}
+            <Text position={[0, 1.2, 0]} fontSize={0.2} color={isOpen ? "#555" : "#ffd700"} outlineWidth={0.01} outlineColor="#000">
+              {isOpen ? "" : "🪅"}
+            </Text>
+          </group>
+        );
+      })}
+    </group>
+  );
+}
 
 function Resources() {
   const [, setTick] = useState(0);
@@ -497,6 +561,7 @@ function Player({ petName }: { petName: string | null }) {
   const [, getKeys] = useKeyboardControls<string>();
   const { camera } = useThree();
   const eDownRef = useRef(false);
+  const bDownRef = useRef(false);
   const stepAccumRef = useRef(0);
   const lastPosRef = useRef<{ x: number; z: number } | null>(null);
 
@@ -545,7 +610,7 @@ function Player({ petName }: { petName: string | null }) {
       }
       g.rotation.y = Math.atan2(move.x, move.z);
     }
-    // 累積走路距離（公尺、整數）→ 每 1m 上報一次 steps quest
+    // 累積走路距離（公尺、整數）→ 每 1m 上報一次 steps quest + 成就
     if (lastPosRef.current) {
       const ddx = g.position.x - lastPosRef.current.x;
       const ddz = g.position.z - lastPosRef.current.z;
@@ -553,12 +618,19 @@ function Player({ petName }: { petName: string | null }) {
       if (stepAccumRef.current >= 1) {
         const whole = Math.floor(stepAccumRef.current);
         bumpQuest("steps", whole);
+        bumpAch("first_step", whole);
+        bumpAch("marathon", whole);
+        if (getWeather() === "rainy") bumpAch("storm_walker", whole);
         stepAccumRef.current -= whole;
       }
     }
     lastPosRef.current = { x: g.position.x, z: g.position.z };
     playerPos.x = g.position.x;
     playerPos.z = g.position.z;
+    // 共享 world 位置給 Minimap
+    playerWorldPos.x = g.position.x;
+    playerWorldPos.z = g.position.z;
+    playerWorldPos.rot = g.rotation.y;
 
     // 找最近的「可互動」物件：節點 OR 採集物 OR NPC
     let nearestNode: Node | null = null;
@@ -600,6 +672,24 @@ function Player({ petName }: { petName: string | null }) {
         nearestResource = null;
       }
     }
+    // 寶箱（未開的）
+    let nearestChest: { id: number; rewardCoin: number } | null = null;
+    {
+      const opened = readOpenedChests();
+      for (const c of CHESTS) {
+        if (opened.has(c.id)) continue;
+        const dx = c.pos[0] - g.position.x;
+        const dz = c.pos[1] - g.position.z;
+        const d2 = dx * dx + dz * dz;
+        if (d2 < nearestD2) {
+          nearestD2 = d2;
+          nearestChest = c;
+          nearestNode = null;
+          nearestResource = null;
+          nearestNpc = null;
+        }
+      }
+    }
     // 寵物近 → 也可互動
     let nearestPet = false;
     if (petRef.current && petName) {
@@ -621,10 +711,19 @@ function Player({ petName }: { petName: string | null }) {
     if (eEdge) {
       if (nearestNode) emitOpen(nearestNode.id);
       else if (nearestResource) harvest(nearestResource.id, nearestResource.kind);
-      else if (nearestNpc) emitNpc(nearestNpc);
+      else if (nearestChest) openChestById(nearestChest.id, nearestChest.rewardCoin, readOpenedChests());
+      else if (nearestNpc) {
+        emitNpc(nearestNpc);
+        noteNpcTalked(nearestNpc);
+      }
       else if (nearestPet) emitPetTalk();
     }
     eDownRef.current = ePressed;
+
+    // 背包鍵 B / I（edge trigger）
+    const bPressed = !!keys[K[K.bag]];
+    if (bPressed && !bDownRef.current) emitBagToggle();
+    bDownRef.current = bPressed;
 
     // 寵物跟隨：lerp 到玩家後方
     const pet = petRef.current;

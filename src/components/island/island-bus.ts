@@ -300,6 +300,134 @@ export function bumpBond(n = 1): number {
   return next;
 }
 
+// ============ 玩家位置共享（給 Minimap / 寶箱用） ============
+export const playerWorldPos = { x: 0, z: 6, rot: 0 };
+
+// ============ 寶箱 ============
+export type ChestSpawn = { id: number; pos: [number, number]; rewardCoin: number };
+export const CHESTS: ChestSpawn[] = [
+  { id: 901, pos: [27, 16], rewardCoin: 30 },
+  { id: 902, pos: [-26, 18], rewardCoin: 30 },
+  { id: 903, pos: [22, -22], rewardCoin: 50 },
+  { id: 904, pos: [-22, -22], rewardCoin: 50 },
+  { id: 905, pos: [0, 27], rewardCoin: 100 },
+];
+
+const CHEST_OPEN_KEY = "ai_island_chests_v1";
+export function readOpenedChests(): Set<number> {
+  if (typeof window === "undefined") return new Set();
+  try {
+    const raw = localStorage.getItem(CHEST_OPEN_KEY);
+    return new Set(raw ? JSON.parse(raw) : []);
+  } catch { return new Set(); }
+}
+export function markChestOpen(id: number): Set<number> {
+  const s = readOpenedChests();
+  s.add(id);
+  try { localStorage.setItem(CHEST_OPEN_KEY, JSON.stringify(Array.from(s))); } catch {}
+  for (const f of chestSubs) f(s);
+  return s;
+}
+const chestSubs = new Set<(s: Set<number>) => void>();
+export function subscribeChests(fn: (s: Set<number>) => void) {
+  chestSubs.add(fn);
+  return () => { chestSubs.delete(fn); };
+}
+
+// ============ 島嶼成就 ============
+export type AchievementId =
+  | "first_step" | "tree_lover" | "crystal_hunter" | "shell_collector"
+  | "marathon" | "talker" | "rich" | "treasure_hunter"
+  | "night_owl" | "storm_walker";
+
+export const ACHIEVEMENTS: Record<AchievementId, { label: string; desc: string; emoji: string; reward: number; target: number }> = {
+  first_step:      { label: "踏出第一步", desc: "在島上走 10 公尺", emoji: "👣", reward: 10, target: 10 },
+  tree_lover:      { label: "樹之友",     desc: "累計砍 10 棵樹", emoji: "🌳", reward: 50, target: 10 },
+  crystal_hunter:  { label: "尋晶人",     desc: "累計採 5 顆水晶", emoji: "💎", reward: 80, target: 5 },
+  shell_collector: { label: "拾貝者",     desc: "累計撿 10 個貝殼", emoji: "🐚", reward: 50, target: 10 },
+  marathon:        { label: "島嶼馬拉松", desc: "累計走 1000 公尺", emoji: "🏃", reward: 100, target: 1000 },
+  talker:          { label: "島民之友",   desc: "跟 3 個 NPC 都說過話", emoji: "🗣️", reward: 60, target: 3 },
+  rich:            { label: "小富翁",     desc: "從島嶼累計賺 200 z 幣", emoji: "🪙", reward: 80, target: 200 },
+  treasure_hunter: { label: "尋寶高手",   desc: "打開全部 5 個寶箱", emoji: "🪅", reward: 200, target: 5 },
+  night_owl:       { label: "夜行者",     desc: "在夜晚採集 5 次", emoji: "🌙", reward: 50, target: 5 },
+  storm_walker:    { label: "雨中漫步",   desc: "在雨天走 100 公尺", emoji: "🌧️", reward: 50, target: 100 },
+};
+
+type AchState = { progress: Record<string, number>; unlocked: Record<string, boolean>; claimed: Record<string, boolean>; talkedNpcs: string[] };
+const ACH_KEY = "ai_island_ach_v1";
+
+export function readAchState(): AchState {
+  if (typeof window === "undefined") return { progress: {}, unlocked: {}, claimed: {}, talkedNpcs: [] };
+  try {
+    const raw = localStorage.getItem(ACH_KEY);
+    if (raw) {
+      const s = JSON.parse(raw);
+      return { progress: s.progress ?? {}, unlocked: s.unlocked ?? {}, claimed: s.claimed ?? {}, talkedNpcs: s.talkedNpcs ?? [] };
+    }
+  } catch {}
+  return { progress: {}, unlocked: {}, claimed: {}, talkedNpcs: [] };
+}
+
+function writeAchState(s: AchState) {
+  try { localStorage.setItem(ACH_KEY, JSON.stringify(s)); } catch {}
+  for (const f of achSubs) f(s);
+}
+
+const achSubs = new Set<(s: AchState) => void>();
+export function subscribeAch(fn: (s: AchState) => void) {
+  achSubs.add(fn);
+  return () => { achSubs.delete(fn); };
+}
+
+export function bumpAch(id: AchievementId, n = 1): AchState {
+  const s = readAchState();
+  const meta = ACHIEVEMENTS[id];
+  if (!meta) return s;
+  s.progress[id] = Math.min(meta.target, (s.progress[id] ?? 0) + n);
+  if (s.progress[id] >= meta.target && !s.unlocked[id]) {
+    s.unlocked[id] = true;
+    // 派發解鎖事件給 toast
+    for (const f of achUnlockSubs) f(id);
+  }
+  writeAchState(s);
+  return s;
+}
+
+export function noteNpcTalked(id: NpcId): AchState {
+  const s = readAchState();
+  if (!s.talkedNpcs.includes(id)) {
+    s.talkedNpcs.push(id);
+    s.progress["talker"] = s.talkedNpcs.length;
+    if (s.talkedNpcs.length >= ACHIEVEMENTS.talker.target && !s.unlocked.talker) {
+      s.unlocked.talker = true;
+      for (const f of achUnlockSubs) f("talker");
+    }
+  }
+  writeAchState(s);
+  return s;
+}
+
+export function markAchClaimed(id: AchievementId): AchState {
+  const s = readAchState();
+  s.claimed[id] = true;
+  writeAchState(s);
+  return s;
+}
+
+const achUnlockSubs = new Set<(id: AchievementId) => void>();
+export function subscribeAchUnlock(fn: (id: AchievementId) => void) {
+  achUnlockSubs.add(fn);
+  return () => { achUnlockSubs.delete(fn); };
+}
+
+// ============ 背包打開事件（B 鍵） ============
+const bagSubs = new Set<() => void>();
+export function emitBagToggle() { for (const f of bagSubs) f(); }
+export function subscribeBagToggle(fn: () => void) {
+  bagSubs.add(fn);
+  return () => { bagSubs.delete(fn); };
+}
+
 // ============ 音效開關 ============
 const SOUND_KEY = "ai_island_sound";
 export function isSoundOn(): boolean {
