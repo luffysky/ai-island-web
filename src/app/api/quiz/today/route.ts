@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { chapters } from "@/data/chapters";
+import { pickQuestions, ELO_DEFAULT } from "@/lib/elo";
 
 export const dynamic = "force-dynamic";
 
@@ -79,22 +80,25 @@ export async function GET() {
 
   const chapterQs = pickFromChapters(completedSet, chapterCount);
 
-  // 從 leetcode_questions 隨機取
+  // ELO 自適應出題：拿用戶 elo_rating、用 pickQuestions 在 ±80 範圍內挑
+  const { data: profileRow } = await supabase.from("profiles").select("elo_rating").eq("id", user.id).single();
+  const userR = (profileRow as any)?.elo_rating ?? ELO_DEFAULT;
+
   const { data: leetcode } = await supabase
     .from("leetcode_questions")
-    .select("id, slug, title, body_md, options, answer, explanation, difficulty")
+    .select("id, slug, title, body_md, options, answer, explanation, difficulty, rating, attempts")
     .eq("active", true)
-    .limit(100); // 先抓 100、JS 隨機 shuffle 取 leetcodeCount
-  const leetcodeQs: QuizQuestion[] = shuffle((leetcode ?? []) as any[])
-    .slice(0, leetcodeCount)
-    .map((l: any) => ({
-      q: `[${(l.difficulty ?? "easy").toUpperCase()}] ${l.title}\n\n${l.body_md}`,
-      options: l.options,
-      answer: l.answer,
-      source: "leetcode",
-      source_id: l.id,
-      explanation: l.explanation,
-    }));
+    .limit(300); // 抓多一點讓 ELO 範圍篩有空間
+
+  const eloPicked = pickQuestions((leetcode as any[]) ?? [], userR, leetcodeCount);
+  const leetcodeQs: QuizQuestion[] = eloPicked.map((l: any) => ({
+    q: `[${(l.difficulty ?? "easy").toUpperCase()}] ${l.title}\n\n${l.body_md}`,
+    options: l.options,
+    answer: l.answer,
+    source: "leetcode",
+    source_id: l.id,
+    explanation: l.explanation,
+  }));
 
   const questions = shuffle([...chapterQs, ...leetcodeQs]);
 

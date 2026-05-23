@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
+import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { updateElo, dynamicK, ELO_DEFAULT } from "@/lib/elo";
 
 export const dynamic = "force-dynamic";
 
@@ -75,6 +77,39 @@ export async function POST(req: NextRequest) {
 
   // quest 推進
   await supabase.rpc("increment_quest_progress", { p_quest_type: "daily_quiz", p_delta: 1 });
+
+  // ELO 演算法 #7：對 leetcode source 題目做 rating 更新
+  // user_rating ± 動態 K、leetcode_questions.rating / attempts 對稱調
+  try {
+    const admin = createSupabaseAdmin();
+    const { data: profileRow } = await admin.from("profiles").select("elo_rating").eq("id", user.id).single();
+    let userR: number = (profileRow as any)?.elo_rating ?? ELO_DEFAULT;
+    const leetcodeAnswered: Array<{ id: string; correct: boolean }> = [];
+    for (let i = 0; i < questions.length; i++) {
+      const q = questions[i];
+      if (q.source !== "leetcode" || !q.source_id) continue;
+      const won = answers[i] && String(answers[i]) === String(q.answer);
+      leetcodeAnswered.push({ id: q.source_id, correct: !!won });
+    }
+    if (leetcodeAnswered.length > 0) {
+      const ids = leetcodeAnswered.map((x) => x.id);
+      const { data: qRows } = await admin.from("leetcode_questions").select("id, rating, attempts").in("id", ids);
+      const qMap = new Map((qRows as any[] ?? []).map((r: any) => [r.id, { rating: r.rating ?? ELO_DEFAULT, attempts: r.attempts ?? 0 }]));
+      for (const a of leetcodeAnswered) {
+        const qInfo = qMap.get(a.id);
+        if (!qInfo) continue;
+        const k = dynamicK(qInfo.attempts);
+        const { userR: newU, qR: newQ } = updateElo(userR, qInfo.rating, a.correct, k);
+        userR = newU;
+        // 更新題目 rating + attempts
+        await admin.from("leetcode_questions").update({ rating: newQ, attempts: qInfo.attempts + 1 }).eq("id", a.id);
+      }
+      // 更新用戶 ELO（單筆）
+      await admin.from("profiles").update({ elo_rating: userR }).eq("id", user.id);
+    }
+  } catch (e) {
+    console.warn("[quiz/submit] elo update failed:", (e as any)?.message);
+  }
 
   return NextResponse.json({ ok: true, correct, total, pass, reward_xp, reward_z });
 }

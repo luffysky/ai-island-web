@@ -183,6 +183,13 @@ export function MeSidebar({ profile }: { profile: Profile | null }) {
           每日測驗
         </MeLink>
         <MeLink
+          href="/me/leetcode"
+          icon={<span>💻</span>}
+          collapsed={collapsed}
+        >
+          Leetcode 推薦
+        </MeLink>
+        <MeLink
           href="/me/assignments"
           icon={<span>📋</span>}
           collapsed={collapsed}

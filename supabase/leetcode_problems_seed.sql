@@ -1,0 +1,35 @@
+-- 30 個熱門 Leetcode 題（純 metadata + 連結、不存題目本文、避免侵權）
+-- 在 algo_integration_migration.sql 之後執行
+
+INSERT INTO public.leetcode_problems (number, slug, title, difficulty, tags, url) VALUES
+  (1,    'two-sum',                       'Two Sum',                          'easy',   ARRAY['array','hash-table'],                'https://leetcode.com/problems/two-sum/'),
+  (2,    'add-two-numbers',               'Add Two Numbers',                  'medium', ARRAY['linked-list','math'],                'https://leetcode.com/problems/add-two-numbers/'),
+  (3,    'longest-substring-without-repeating-characters', 'Longest Substring Without Repeating Characters', 'medium', ARRAY['hash-table','string','sliding-window'], 'https://leetcode.com/problems/longest-substring-without-repeating-characters/'),
+  (5,    'longest-palindromic-substring', 'Longest Palindromic Substring',    'medium', ARRAY['string','dp'],                        'https://leetcode.com/problems/longest-palindromic-substring/'),
+  (15,   '3sum',                          '3Sum',                              'medium', ARRAY['array','two-pointers','sorting'],     'https://leetcode.com/problems/3sum/'),
+  (20,   'valid-parentheses',             'Valid Parentheses',                'easy',   ARRAY['string','stack'],                     'https://leetcode.com/problems/valid-parentheses/'),
+  (21,   'merge-two-sorted-lists',        'Merge Two Sorted Lists',           'easy',   ARRAY['linked-list','recursion'],            'https://leetcode.com/problems/merge-two-sorted-lists/'),
+  (53,   'maximum-subarray',              'Maximum Subarray',                 'medium', ARRAY['array','dp'],                         'https://leetcode.com/problems/maximum-subarray/'),
+  (70,   'climbing-stairs',               'Climbing Stairs',                  'easy',   ARRAY['math','dp'],                          'https://leetcode.com/problems/climbing-stairs/'),
+  (94,   'binary-tree-inorder-traversal', 'Binary Tree Inorder Traversal',    'easy',   ARRAY['stack','tree','dfs'],                 'https://leetcode.com/problems/binary-tree-inorder-traversal/'),
+  (98,   'validate-binary-search-tree',   'Validate Binary Search Tree',      'medium', ARRAY['tree','dfs','bst'],                   'https://leetcode.com/problems/validate-binary-search-tree/'),
+  (102,  'binary-tree-level-order-traversal', 'Binary Tree Level Order Traversal', 'medium', ARRAY['tree','bfs'],                  'https://leetcode.com/problems/binary-tree-level-order-traversal/'),
+  (121,  'best-time-to-buy-and-sell-stock', 'Best Time to Buy and Sell Stock', 'easy',  ARRAY['array','dp'],                         'https://leetcode.com/problems/best-time-to-buy-and-sell-stock/'),
+  (125,  'valid-palindrome',              'Valid Palindrome',                 'easy',   ARRAY['two-pointers','string'],              'https://leetcode.com/problems/valid-palindrome/'),
+  (136,  'single-number',                 'Single Number',                    'easy',   ARRAY['array','bit-manipulation'],           'https://leetcode.com/problems/single-number/'),
+  (141,  'linked-list-cycle',             'Linked List Cycle',                'easy',   ARRAY['hash-table','linked-list','two-pointers'], 'https://leetcode.com/problems/linked-list-cycle/'),
+  (146,  'lru-cache',                     'LRU Cache',                        'medium', ARRAY['hash-table','linked-list','design'],  'https://leetcode.com/problems/lru-cache/'),
+  (200,  'number-of-islands',             'Number of Islands',                'medium', ARRAY['array','dfs','bfs','union-find'],     'https://leetcode.com/problems/number-of-islands/'),
+  (206,  'reverse-linked-list',           'Reverse Linked List',              'easy',   ARRAY['linked-list','recursion'],            'https://leetcode.com/problems/reverse-linked-list/'),
+  (215,  'kth-largest-element-in-an-array', 'Kth Largest Element in an Array', 'medium', ARRAY['array','divide-and-conquer','sorting','heap'], 'https://leetcode.com/problems/kth-largest-element-in-an-array/'),
+  (217,  'contains-duplicate',            'Contains Duplicate',               'easy',   ARRAY['array','hash-table','sorting'],       'https://leetcode.com/problems/contains-duplicate/'),
+  (226,  'invert-binary-tree',            'Invert Binary Tree',               'easy',   ARRAY['tree','dfs','bfs'],                   'https://leetcode.com/problems/invert-binary-tree/'),
+  (236,  'lowest-common-ancestor-of-a-binary-tree', 'Lowest Common Ancestor of a Binary Tree', 'medium', ARRAY['tree','dfs'],     'https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/'),
+  (238,  'product-of-array-except-self',  'Product of Array Except Self',     'medium', ARRAY['array','prefix-sum'],                 'https://leetcode.com/problems/product-of-array-except-self/'),
+  (242,  'valid-anagram',                 'Valid Anagram',                    'easy',   ARRAY['hash-table','string','sorting'],      'https://leetcode.com/problems/valid-anagram/'),
+  (300,  'longest-increasing-subsequence','Longest Increasing Subsequence',   'medium', ARRAY['array','binary-search','dp'],         'https://leetcode.com/problems/longest-increasing-subsequence/'),
+  (322,  'coin-change',                   'Coin Change',                      'medium', ARRAY['array','dp','bfs'],                   'https://leetcode.com/problems/coin-change/'),
+  (347,  'top-k-frequent-elements',       'Top K Frequent Elements',          'medium', ARRAY['array','hash-table','sorting','heap','bucket-sort'], 'https://leetcode.com/problems/top-k-frequent-elements/'),
+  (438,  'find-all-anagrams-in-a-string', 'Find All Anagrams in a String',    'medium', ARRAY['hash-table','string','sliding-window'], 'https://leetcode.com/problems/find-all-anagrams-in-a-string/'),
+  (704,  'binary-search',                 'Binary Search',                    'easy',   ARRAY['array','binary-search'],              'https://leetcode.com/problems/binary-search/')
+ON CONFLICT (slug) DO NOTHING;
