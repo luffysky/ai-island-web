@@ -19,16 +19,14 @@ export async function POST(req: NextRequest) {
   if (durationMs < 5000) return NextResponse.json({ ok: true, skipped: "too_short" }); // 不到 5 秒不報
 
   const ip = (req.headers.get("x-forwarded-for")?.split(",")[0]?.trim()) || req.headers.get("x-real-ip") || "0.0.0.0";
-  const key = `${ip}|${path}|leave`;
-  const now = Date.now();
-  if ((recent.get(key) ?? 0) > now - 60_000) return NextResponse.json({ ok: true, skipped: "dedupe" });
-  recent.set(key, now);
 
   let userTag = "👀 訪客";
+  let userKey = "anon";
   try {
     const supabase = await createSupabaseServer();
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
+      userKey = user.id.slice(0, 8);
       const { data: p } = await supabase.from("profiles").select("display_name, username, role").eq("id", user.id).single();
       const name = (p as any)?.display_name || (p as any)?.username || user.email?.split("@")[0] || "user";
       const role = (p as any)?.role;
@@ -36,6 +34,12 @@ export async function POST(req: NextRequest) {
       userTag = `🔑 ${name}${roleTag}`;
     }
   } catch {}
+
+  // dedupe key 含 userKey、不同帳號獨立
+  const key = `${userKey}|${ip}|${path}|leave`;
+  const now = Date.now();
+  if ((recent.get(key) ?? 0) > now - 60_000) return NextResponse.json({ ok: true, skipped: "dedupe" });
+  recent.set(key, now);
 
   const sec = Math.round(durationMs / 1000);
   const human = sec < 60 ? `${sec} 秒` : sec < 3600 ? `${Math.round(sec / 60)} 分鐘` : `${(sec / 3600).toFixed(1)} 小時`;
