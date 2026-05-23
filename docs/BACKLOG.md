@@ -179,19 +179,55 @@
 
 ---
 
-## 10. 🔴 2026-05-24 後剩餘待辦（按優先序）
+## 10. 🔴 2026-05-24 之後剩餘待辦（v3、按優先序）
 
-| 優先 | 項目 | 估時 | 備註 |
+### 🔴 林董要做（我沒辦法代）
+
+| # | 項目 | 估時 | 備註 |
 |---|---|---|---|
-| 1 | 林董 Zeabur 加 LINE / Telegram / Discord env | 0.5 hr | 之後通知才生效、見 `daily_works_0524.md` |
-| 2 | LINE Webhook URL 設 + Channel 建立 | 1 hr | LINE Developers Console |
-| 3 | 後端發 in-app notif 接更多 hook | 1 day | 已接 lesson / forum_reply、待接 成就解鎖 / 升等 / 訂閱 |
-| 4 | EmptyState 擴 admin 後台空白頁 | 0.5 day | 用戶面已套 5 處、admin 待補 |
-| 5 | 演算法 #8 — chapter 推薦 | 1 day | content-based + collaborative filter |
-| 6 | 演算法 #9 — 全站搜尋語意化 | 2 day | embeddings 存 vector column |
-| 7 | LINE bot 升級多輪對話 + 操作命令 | 1 day | 例如 `/today` 看今日 KPI、`/users` 列最近註冊 |
-| 8 | A/B 後台加 thompson allocation 切換 UI | 0.5 day | server 已支援、admin 後台 chip 待加 |
-| 9 | 整理 docs/specs 過時 spec 標 `[obsolete]` | 0.5 day | 配 v2.0 重整 |
+| 1 | Rich Menu PNG 上傳 + setup | 0.5 hr | 自製 2500×1686、傳 imgur、設 `RICH_MENU_IMAGE_URL` env → GET `/api/admin/line/setup-richmenu` |
+| 2 | CRON_SECRET + 外部 cron 排程 | 0.5 hr | GitHub Actions 或 cron-job.org 每日 9:00 觸發 `/api/cron/line-daily?period=daily` |
+| 3 | Nami userId 拿到後加 ADMIN_LINE_USERS | 5 min | 等她加 bot 後 reply 她 userId |
+| 4 | GOOGLE_MAPS_API_KEY（選填） | 5 min | 精準位置反查到縣市才用 |
+
+### 🟢 高 ROI 短期（1-3 天）
+
+| # | 項目 | 估時 |
+|---|---|---|
+| 5 | **insight-engine 社群 5 抄**：追蹤 / 書籤 / 留言按讚 + 巢狀回覆 / 檢舉封鎖 / 部落格全文搜尋 + 分類 | 2-3 天 |
+| 6 | **A/B 後台加 thompson allocation 切換 UI** | 0.5 天 |
+| 7 | **EmptyState 擴 admin 後台空白頁**（用戶面已 5 處、admin 還沒）| 0.5 天 |
+| 8 | **user opt-out 我的訪問被通知 admin** | 0.5 天 |
+| 9 | **隱私權頁更新**（含定位收集、IP 用途說明）| 0.5 天 |
+
+### 🟡 中期（3-7 天）
+
+| # | 項目 | 估時 |
+|---|---|---|
+| 10 | **演算法 #8 Chapter 推薦** | 1 天 |
+| 11 | **演算法 #9 全站語意搜尋**（embeddings + vector）| 2 天 |
+| 12 | **user 端綁 LINE**（用戶綁了 → 個人通知同步推他 LINE）| 1 天 |
+| 13 | **島嶼寵物對話 AI 化**（hardcoded 10 句改 AI 動態生）| 0.5 天 |
+| 14 | **ELO progress 顯示**（/me 加「你的解題等級 1450」+ 進度條）| 0.5 天 |
+
+### 🔵 長期 / 較重（1 週+）
+
+| # | 項目 | 估時 |
+|---|---|---|
+| 15 | **島嶼 v1 deepen**（多島 / 公會 / boss 戰 / coop 副本）| 1-2 週 |
+| 16 | **多人 ghost**（島上看其他玩家位置軌跡）| 3 天 |
+| 17 | **PWA 升級**（offline-first lesson、push notif）| 5 天 |
+| 18 | **整理 docs/specs 過時 spec 標 [obsolete]** | 0.5 天 |
+
+### ⚠️ 已知但暫不做
+
+| 項目 | 為什麼 |
+|---|---|
+| LINE DM messages 表照抄 | insight-engine 綁 LIFF session、要重寫 |
+| Stories 限時動態 | 要 R2 storage + cron 過期、ROI 低 |
+| TipTap 編輯器照抄 | bundle 大、可能跟現有衝突 |
+| zcoin 從 insight 抄 | insight 有自己經濟系統、要剝離 |
+| Three.js yukirin 角色 | 依賴 insight 專案資產 |
 | 10 | 新 spec：島嶼 v1 deepen 設計（多島 / 公會 / boss 戰） | 1 week+ | 大件 |
 
 ## 9. 動工流程
