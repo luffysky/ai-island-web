@@ -2,8 +2,9 @@
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Suspense, useEffect, useRef, useState } from "react";
-import { Sky, OrbitControls, KeyboardControls, useKeyboardControls, Text } from "@react-three/drei";
+import { Sky, OrbitControls, KeyboardControls, useKeyboardControls, Text, Html } from "@react-three/drei";
 import * as THREE from "three";
+import { useRouter } from "next/navigation";
 
 /**
  * S7-S8 3D 島嶼 v0 — 批 1：能站上去的島
@@ -18,8 +19,42 @@ import * as THREE from "three";
 const ISLAND_RADIUS = 30;
 const PLAYER_SPEED = 4;
 const RUN_MULT = 2.2;
+const INTERACT_RADIUS = 2.6;
 
-enum K { forward, back, left, right, run }
+enum K { forward, back, left, right, run, interact }
+
+type Node = {
+  id: string;
+  position: [number, number, number];
+  label: string;
+  href: string;
+};
+
+const NODES: Node[] = [
+  { id: "chapters", position: [8, 0, -4], label: "📚 章節", href: "/chapters" },
+  { id: "courses", position: [-7, 0, 6], label: "🎮 副本", href: "/courses" },
+  { id: "leaderboard", position: [0, 0, -12], label: "🏆 排行榜", href: "/leaderboard" },
+  { id: "forum", position: [14, 0, 12], label: "🗣️ 討論區", href: "/forum" },
+  { id: "blogs", position: [-15, 0, -10], label: "✍️ 部落格", href: "/blogs" },
+];
+
+// 用 ref 暫存 player 位置、避免 React state 60fps re-render
+const playerPos = { x: 0, y: 1.1, z: 6 };
+let activeNodeId: string | null = null;
+const subscribers = new Set<(id: string | null) => void>();
+function setActiveNode(id: string | null) {
+  if (activeNodeId === id) return;
+  activeNodeId = id;
+  for (const s of subscribers) s(id);
+}
+function useActiveNode() {
+  const [id, setId] = useState<string | null>(null);
+  useEffect(() => {
+    subscribers.add(setId);
+    return () => { subscribers.delete(setId); };
+  }, []);
+  return id;
+}
 
 export default function IslandV0() {
   return (
@@ -30,6 +65,7 @@ export default function IslandV0() {
         { name: K[K.left], keys: ["KeyA", "ArrowLeft"] },
         { name: K[K.right], keys: ["KeyD", "ArrowRight"] },
         { name: K[K.run], keys: ["ShiftLeft", "ShiftRight"] },
+        { name: K[K.interact], keys: ["KeyE", "Enter"] },
       ]}
     >
       <Canvas
@@ -60,9 +96,9 @@ function Scene() {
       <Ocean />
       <Island />
       <Trees />
-      <Signpost position={[8, 0, -4]} label="📚 章節" />
-      <Signpost position={[-7, 0, 6]} label="🎮 副本" />
-      <Signpost position={[0, 0, -12]} label="🏆 排行榜" />
+      {NODES.map((n) => (
+        <Signpost key={n.id} node={n} />
+      ))}
       <Player />
       <OrbitControls enablePan={false} enableZoom maxPolarAngle={Math.PI / 2.1} minDistance={6} maxDistance={30} />
     </>
@@ -117,20 +153,28 @@ function Trees() {
   );
 }
 
-function Signpost({ position, label }: { position: [number, number, number]; label: string }) {
+function Signpost({ node }: { node: Node }) {
+  const active = useActiveNode() === node.id;
   return (
-    <group position={position}>
+    <group position={node.position}>
       <mesh position={[0, 1, 0]} castShadow>
         <boxGeometry args={[0.2, 2, 0.2]} />
         <meshStandardMaterial color="#6b3f1e" />
       </mesh>
       <mesh position={[0, 1.7, 0]} castShadow>
         <boxGeometry args={[1.6, 0.6, 0.12]} />
-        <meshStandardMaterial color="#c89a5a" />
+        <meshStandardMaterial color={active ? "#ffd700" : "#c89a5a"} emissive={active ? "#ff9900" : "#000"} emissiveIntensity={active ? 0.4 : 0} />
       </mesh>
       <Text position={[0, 1.7, 0.07]} fontSize={0.3} color="#222" anchorX="center" anchorY="middle">
-        {label}
+        {node.label}
       </Text>
+      {active && (
+        <Html position={[0, 2.6, 0]} center distanceFactor={10}>
+          <div className="bg-black/80 text-white text-[10px] px-2 py-1 rounded whitespace-nowrap select-none">
+            按 <kbd className="px-1 bg-white/20 rounded">E</kbd> 進入
+          </div>
+        </Html>
+      )}
     </group>
   );
 }
@@ -139,6 +183,8 @@ function Player() {
   const ref = useRef<THREE.Group>(null);
   const [, getKeys] = useKeyboardControls<string>();
   const { camera } = useThree();
+  const router = useRouter();
+  const eDownRef = useRef(false);
 
   useFrame((_, dt) => {
     const g = ref.current;
@@ -151,23 +197,43 @@ function Player() {
     if (keys[K[K.right]]) dir.x += 1;
     if (dir.lengthSq() > 0) {
       dir.normalize();
-      // 跟相機方向對齊（讓 W 永遠向相機前方）
       const yaw = Math.atan2(camera.position.x - g.position.x, camera.position.z - g.position.z);
       const rot = new THREE.Matrix4().makeRotationY(yaw + Math.PI);
       dir.applyMatrix4(rot);
       const speed = keys[K[K.run]] ? PLAYER_SPEED * RUN_MULT : PLAYER_SPEED;
       g.position.x += dir.x * speed * dt;
       g.position.z += dir.z * speed * dt;
-      // clamp 在島內
       const radial = Math.sqrt(g.position.x ** 2 + g.position.z ** 2);
       if (radial > ISLAND_RADIUS - 1.5) {
         const k = (ISLAND_RADIUS - 1.5) / radial;
         g.position.x *= k;
         g.position.z *= k;
       }
-      // 朝向移動方向
       g.rotation.y = Math.atan2(dir.x, dir.z);
     }
+    playerPos.x = g.position.x;
+    playerPos.z = g.position.z;
+
+    // 找最近的節點（在互動半徑內）
+    let nearest: Node | null = null;
+    let nearestD2 = INTERACT_RADIUS * INTERACT_RADIUS;
+    for (const n of NODES) {
+      const dx = n.position[0] - g.position.x;
+      const dz = n.position[2] - g.position.z;
+      const d2 = dx * dx + dz * dz;
+      if (d2 < nearestD2) {
+        nearestD2 = d2;
+        nearest = n;
+      }
+    }
+    setActiveNode(nearest?.id ?? null);
+
+    // 互動鍵（edge trigger）
+    const ePressed = !!keys[K[K.interact]];
+    if (ePressed && !eDownRef.current && nearest) {
+      router.push(nearest.href as any);
+    }
+    eDownRef.current = ePressed;
   });
 
   return (
@@ -200,12 +266,14 @@ function Hud() {
   return (
     <div className="pointer-events-none absolute inset-x-0 bottom-4 flex justify-center">
       <div className="pointer-events-auto rounded-xl bg-black/60 backdrop-blur text-white text-xs px-3 py-2 flex gap-3 items-center">
-        <span>WASD / 方向鍵 走動</span>
+        <span>WASD 走動</span>
         <span className="opacity-50">·</span>
         <span>Shift 加速</span>
         <span className="opacity-50">·</span>
-        <span>滑鼠拖曳轉視角 / 滾輪縮放</span>
-        {showHint && <span className="ml-2 text-yellow-300">← 試試走到牌子下面</span>}
+        <span>E 進入</span>
+        <span className="opacity-50">·</span>
+        <span>滑鼠拖曳轉視角</span>
+        {showHint && <span className="ml-2 text-yellow-300">← 走到牌子下、按 E 進章節</span>}
       </div>
     </div>
   );
