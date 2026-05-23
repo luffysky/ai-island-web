@@ -2,6 +2,7 @@ import { createSupabaseServer } from "@/lib/supabase-server";
 import { chapters } from "@/data/chapters";
 import Link from "next/link";
 import { Code2 } from "lucide-react";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 export default async function MyPlaygroundsPage() {
   const supabase = await createSupabaseServer();
@@ -22,11 +23,7 @@ export default async function MyPlaygroundsPage() {
       </p>
 
       {!playgrounds || playgrounds.length === 0 ? (
-        <div className="bg-bg-card border border-border rounded-xl p-12 text-center text-fg-muted">
-          <Code2 size={48} className="mx-auto mb-3 opacity-50" />
-          <p>還沒存過任何 code</p>
-          <p className="text-xs mt-1">在學習園地改完 code 按 💾 圖示存到雲端</p>
-        </div>
+        <EmptyState emoji="💻" title="還沒存過任何 code" desc="在學習園地改完 code 按 💾 存到雲端" action={{ label: "看章節", href: "/chapters" }} />
       ) : (
         <div className="space-y-3">
           {playgrounds.map((p: any) => {

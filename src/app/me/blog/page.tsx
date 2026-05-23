@@ -7,6 +7,7 @@ import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { PenLine, Plus, Eye, Settings, Trash2, ExternalLink, Globe, Lock } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 export default function MyBlogPage() {
   const toast = useToast();
@@ -113,16 +114,7 @@ export default function MyBlogPage() {
 
       {/* 文章列表 */}
       {articles.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-border p-12 text-center">
-          <PenLine size={40} className="mx-auto mb-3 text-fg-muted opacity-50" />
-          <p className="text-fg-muted mb-4">還沒有文章、寫第一篇吧</p>
-          <Link
-            href="/me/blog/new"
-            className="inline-flex items-center gap-1 px-4 py-2 rounded-lg bg-accent text-black font-semibold text-sm"
-          >
-            <Plus size={16} /> 開始寫作
-          </Link>
-        </div>
+        <EmptyState emoji="✍️" title="還沒有文章" desc="寫第一篇分享學習心得" action={{ label: "開始寫作", href: "/me/blog/new" }} />
       ) : (
         <div className="space-y-2">
           {articles.map((a) => (

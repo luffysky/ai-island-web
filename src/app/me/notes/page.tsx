@@ -3,6 +3,7 @@ import { chapters } from "@/data/chapters";
 import Link from "next/link";
 import { NotesExportButton } from "./NotesExportButton";
 import { formatTW } from "@/lib/format-date";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 export default async function NotesPage() {
   const supabase = await createSupabaseServer();
@@ -26,11 +27,12 @@ export default async function NotesPage() {
       </div>
 
       {notes?.length === 0 ? (
-        <div className="bg-bg-card border border-border rounded-xl p-12 text-center text-fg-muted">
-          <div className="text-4xl mb-3">📭</div>
-          <p>還沒有筆記</p>
-          <p className="text-xs mt-1">在 lesson 頁面點 📝 圖示開始記筆記</p>
-        </div>
+        <EmptyState
+          emoji="📝"
+          title="還沒有筆記"
+          desc="在 lesson 頁面點 📝 圖示開始記筆記"
+          action={{ label: "看章節", href: "/chapters" }}
+        />
       ) : (
         <div className="space-y-3">
           {notes?.map((n: any) => {

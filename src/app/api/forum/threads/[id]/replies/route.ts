@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer, createSupabaseAdmin } from "@/lib/supabase";
 import { awardForumXp, revokeForumXp } from "@/lib/forum-xp";
+import { notifyForumReply } from "@/lib/notify-helpers";
 
 // POST /api/forum/threads/[id]/replies — 回覆主題串
 export async function POST(
@@ -49,6 +50,24 @@ export async function POST(
 
   // 回覆 +5 XP
   await awardForumXp(user.id, "reply_create", data.id);
+
+  // 通知主題作者 + admin LINE（fire-and-forget）
+  try {
+    const { data: thread } = await admin
+      .from("forum_threads")
+      .select("user_id, title")
+      .eq("id", threadId)
+      .maybeSingle();
+    if (thread && (thread as any).user_id !== user.id) {
+      const replierName = (data as any).author?.display_name || (data as any).author?.username || "某人";
+      notifyForumReply({
+        threadAuthorId: (thread as any).user_id,
+        replierUsername: replierName,
+        threadTitle: (thread as any).title ?? "",
+        threadId,
+      }).catch(() => {});
+    }
+  } catch {}
 
   return NextResponse.json({ reply: { ...data, replies: [] } });
 }

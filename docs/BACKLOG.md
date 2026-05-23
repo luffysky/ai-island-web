@@ -1,9 +1,22 @@
 # AI Island v3 — Master Backlog
 
-**版本**：v1.0
-**日期**：2026-05-22
+**版本**：v2.0
+**日期**：2026-05-24（重大更新、已完成 95% Phase 1-4 + 演算法藍圖 7 點 + 3D 島嶼）
 **Owner**：雪鑰
 **目的**：所有未完成事項的單一入口。動工前在這找、做完在這劃掉。
+
+## ✨ 2026-05-24 重大里程碑（v2.0）
+
+| 大塊 | 項數 | 狀態 |
+|---|---|---|
+| **演算法藍圖** | 7 / 7 | ✅ RFM / AI路由 / HN / 動態XP / Thompson / FoF / ELO 全做 |
+| **3D 島嶼系統** | 40 個互動點 | ✅ FPV / 採集 / 寶箱 / 6 動物村民 / 3 NPC / 寵物 / 家 / 釣魚 / 5 天氣 |
+| **AI 系統** | 5 大 | ✅ 導師（綠寶）/ 助教（4 mode）/ 模型路由 / 對話審核 / 學習規劃 |
+| **通知系統** | 三層 | ✅ in-app 鈴鐺 / LINE 直推 admin / 訪客追蹤 + 地理 |
+| **後台 Phase 1-4** | 95% | ✅ KPI / Cohort / Churn / ERP / 教師 / Email / A/B / GDPR / Web Vitals 等 |
+| **UI/UX 大改** | 4 件 | ✅ Command Palette / Mobile Bottom Nav / Overlay Stack / EmptyState |
+
+剩下少量散件參見下面 §10。
 
 ---
 
@@ -165,6 +178,21 @@
 | 10+ | 其餘 Phase 3 / Phase 4+ 依本檔 §4 §5 順序 | 大件事擺後 |
 
 ---
+
+## 10. 🔴 2026-05-24 後剩餘待辦（按優先序）
+
+| 優先 | 項目 | 估時 | 備註 |
+|---|---|---|---|
+| 1 | 林董 Zeabur 加 LINE / Telegram / Discord env | 0.5 hr | 之後通知才生效、見 `daily_works_0524.md` |
+| 2 | LINE Webhook URL 設 + Channel 建立 | 1 hr | LINE Developers Console |
+| 3 | 後端發 in-app notif 接更多 hook | 1 day | 已接 lesson / forum_reply、待接 成就解鎖 / 升等 / 訂閱 |
+| 4 | EmptyState 擴 admin 後台空白頁 | 0.5 day | 用戶面已套 5 處、admin 待補 |
+| 5 | 演算法 #8 — chapter 推薦 | 1 day | content-based + collaborative filter |
+| 6 | 演算法 #9 — 全站搜尋語意化 | 2 day | embeddings 存 vector column |
+| 7 | LINE bot 升級多輪對話 + 操作命令 | 1 day | 例如 `/today` 看今日 KPI、`/users` 列最近註冊 |
+| 8 | A/B 後台加 thompson allocation 切換 UI | 0.5 day | server 已支援、admin 後台 chip 待加 |
+| 9 | 整理 docs/specs 過時 spec 標 `[obsolete]` | 0.5 day | 配 v2.0 重整 |
+| 10 | 新 spec：島嶼 v1 deepen 設計（多島 / 公會 / boss 戰） | 1 week+ | 大件 |
 
 ## 9. 動工流程
 

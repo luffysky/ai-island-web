@@ -7,6 +7,7 @@ import { Plus, Trash2, Edit, ExternalLink, Eye, Globe, Lock } from "lucide-react
 import { useToast } from "@/components/ui/Toast";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { formatTWDate } from "@/lib/format-date";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 type Portfolio = {
   id: string;
@@ -146,8 +147,8 @@ export function PortfoliosClient({
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {list.length === 0 ? (
-          <div className="md:col-span-2 text-center py-12 text-fg-muted text-sm rounded-xl bg-bg-card border border-border">
-            還沒有作品集、按上面新增一個吧
+          <div className="md:col-span-2">
+            <EmptyState emoji="🎨" title="還沒有作品集" desc="把你寫過的 code / 作品集中放一處、做個對外展示" />
           </div>
         ) : list.map((p) => (
           <div key={p.id} className="rounded-xl bg-bg-card border border-border p-4">
