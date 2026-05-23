@@ -5,6 +5,7 @@ import { decryptKey } from "@/lib/ai-crypto";
 import { callAI } from "@/lib/ai-providers";
 import { getAdminLineUser, type AdminLineUser } from "@/lib/admin-line-users";
 import { runBotCommand, isCommand } from "@/lib/line-bot-commands";
+import { buildAiReplyCard, type FlexMessage } from "@/lib/line-flex";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -25,12 +26,15 @@ function verifySignature(body: string, signature: string | null, secret: string)
   return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature));
 }
 
-async function lineReply(replyToken: string, text: string, token: string) {
+async function lineReply(replyToken: string, payload: string | FlexMessage, token: string) {
   try {
+    const messages = typeof payload === "string"
+      ? [{ type: "text", text: payload.slice(0, 4900) }]
+      : [payload];
     await fetch(`${ENDPOINT}/message/reply`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ replyToken, messages: [{ type: "text", text: text.slice(0, 4900) }] }),
+      body: JSON.stringify({ replyToken, messages }),
       signal: AbortSignal.timeout(5000),
     });
   } catch (e) {
@@ -136,12 +140,15 @@ export async function POST(req: NextRequest) {
 
       if (isCommand(text)) {
         const reply = await runBotCommand(text, adminUser);
-        await lineReply(replyToken, reply, token);
+        // 有 flex 用 flex、否則 text fallback
+        await lineReply(replyToken, reply.flex ?? reply.text, token);
         continue;
       }
 
       const answer = await askAI(text, adminUser);
-      await lineReply(replyToken, answer, token);
+      // AI 回覆包 Flex 卡（更美觀、有發送者識別）
+      const aiCard = buildAiReplyCard({ text: answer, userName: adminUser.name });
+      await lineReply(replyToken, aiCard, token);
     }
   }
 

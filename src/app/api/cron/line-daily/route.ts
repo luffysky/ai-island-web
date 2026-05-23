@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { notifyAdmin } from "@/lib/notify-admin";
+import { buildKpiCard } from "@/lib/line-flex";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -54,10 +55,24 @@ export async function GET(req: NextRequest) {
     `🔍 想看更細：LINE 對 bot 傳 /kpi ${days}`,
   ].join("\n");
 
+  const flex = buildKpiCard({
+    title: `${label}報表（${period === "weekly" ? "近 7 天" : "昨日"}）`,
+    rows: [
+      { icon: "👤", label: "新註冊", value: String(signups ?? 0) },
+      { icon: "🟢", label: "DAU", value: String(dau ?? 0) },
+      { icon: "🟦", label: "WAU", value: String(wau ?? 0) },
+      { icon: "💎", label: "活躍訂閱", value: String(subs ?? 0) },
+      { icon: "📚", label: "完成 lesson", value: `${lessonCount} 次` },
+      { icon: "👥", label: "活躍學員", value: `${activeUsers} 人` },
+      { icon: "💰", label: "收入", value: `NT$ ${revenue.toLocaleString()}` },
+    ],
+  });
+
   await notifyAdmin({
     kind: `cron_${period}`,
     dedupeKey: `cron:${period}:${new Date().toISOString().slice(0, 10)}`,
     text,
+    flex,
   });
 
   return NextResponse.json({ ok: true, period, sent_text: text });

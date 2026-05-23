@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { pushUserNotif } from "@/lib/notify-helpers";
 import { notifyAdmin } from "@/lib/notify-admin";
+import { buildSimpleCard } from "@/lib/line-flex";
 
 export const dynamic = "force-dynamic";
 
@@ -23,10 +24,18 @@ export async function POST(req: NextRequest) {
     body: "繼續努力、下個關卡更精彩",
     link: "/me",
   });
+  const flex = buildSimpleCard({
+    emoji: "🎉",
+    title: `${name} 升等了`,
+    accentColor: "#bd93f9",
+    body: `恭喜達到 Lv ${newLevel}！`,
+    meta: [{ label: "📈 等級", value: `Lv ${newLevel}` }],
+  });
   notifyAdmin({
     kind: "level_up",
     dedupeKey: `lvup:${user.id}:${newLevel}`,
     text: `🎉 ${name} 升等到 Lv ${newLevel}`,
+    flex,
   }).catch(() => {});
 
   return NextResponse.json({ ok: true });

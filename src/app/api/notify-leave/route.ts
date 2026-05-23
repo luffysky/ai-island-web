@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { notifyAdmin } from "@/lib/notify-admin";
+import { buildSimpleCard } from "@/lib/line-flex";
 
 export const dynamic = "force-dynamic";
 
@@ -39,10 +40,21 @@ export async function POST(req: NextRequest) {
   const sec = Math.round(durationMs / 1000);
   const human = sec < 60 ? `${sec} 秒` : sec < 3600 ? `${Math.round(sec / 60)} 分鐘` : `${(sec / 3600).toFixed(1)} 小時`;
 
+  const flex = buildSimpleCard({
+    emoji: "🚪",
+    title: `${userTag.replace(/^[👀🔑] /, "")} 離開`,
+    accentColor: "#bd93f9",
+    meta: [
+      { label: "📄 頁面", value: path },
+      { label: "⏱️ 停留", value: human },
+    ],
+  });
+
   notifyAdmin({
     kind: "leave",
     dedupeKey: key,
     text: `${userTag} 離開 ${path}（停留 ${human}）`,
+    flex,
   }).catch(() => {});
 
   return NextResponse.json({ ok: true });

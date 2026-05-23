@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { notifyAdmin } from "@/lib/notify-admin";
+import { buildSimpleCard } from "@/lib/line-flex";
 
 export const dynamic = "force-dynamic";
 
@@ -111,13 +112,29 @@ export async function POST(req: NextRequest) {
 
   const device = parseDevice(ua);
   const geo = await fetchGeo(ip);
-  const refTxt = referrer ? ` ← ${new URL(referrer).pathname}` : "";
-  const mapsLine = geo.mapsUrl ? `\n📍 點看地圖：${geo.mapsUrl}` : "";
+  const refTxt = referrer ? new URL(referrer).pathname : "";
+  const isVisitor = userTag.startsWith("👀");
+  const isAdmin = userTag.includes("👑");
+
+  const flex = buildSimpleCard({
+    emoji: isAdmin ? "👑" : isVisitor ? "👀" : "🔑",
+    title: `${userTag.replace(/^[👀🔑] /, "").replace(/ [👑✏️]$/, "")} 來看了`,
+    accentColor: isAdmin ? "#ffd700" : isVisitor ? "#8be9fd" : "#50fa7b",
+    meta: [
+      { label: "📄 路徑", value: path },
+      ...(refTxt ? [{ label: "← 來自", value: refTxt }] : []),
+      { label: "📍 位置", value: geo.text.split("\n")[0] },
+      { label: "💻 裝置", value: device },
+      ...(lastSeenText ? [{ label: "⏱️ 上次", value: lastSeenText.replace(/[（）]/g, "") }] : []),
+    ],
+    buttons: geo.mapsUrl ? [{ label: "📍 看地圖", uri: geo.mapsUrl }] : undefined,
+  });
 
   notifyAdmin({
-    kind: userTag.startsWith("👀") ? "visit" : userTag.includes("👑") ? "admin_login" : "user_login",
+    kind: isVisitor ? "visit" : isAdmin ? "admin_login" : "user_login",
     dedupeKey: key,
-    text: `${userTag} 看 ${path}${refTxt}${lastSeenText}\n📍 ${geo.text}\n💻 ${device}${mapsLine}`,
+    text: `${userTag} 看 ${path}${refTxt ? ` ← ${refTxt}` : ""}${lastSeenText}\n📍 ${geo.text}\n💻 ${device}${geo.mapsUrl ? `\n📍 ${geo.mapsUrl}` : ""}`,
+    flex,
   }).catch(() => {});
 
   return NextResponse.json({ ok: true });

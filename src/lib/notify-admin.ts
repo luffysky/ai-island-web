@@ -32,7 +32,8 @@ function shouldPush(kind: string, dedupeKey: string): boolean {
 export type NotifyOptions = {
   kind: string;       // 'login' / 'chapter_view' / 'lesson_complete' / 'admin_login' / 'order' / etc
   dedupeKey?: string; // 防 spam、預設 = kind+text 第 80 字
-  text: string;       // 訊息本文
+  text: string;       // 訊息本文（純文字 fallback、給 Telegram / Discord / LINE Notify 用）
+  flex?: any;         // LINE Flex Message（給 LINE Messaging API 用、有設就用 flex 替代 text）
   silent?: boolean;   // true = 不推送
 };
 
@@ -54,12 +55,11 @@ export async function notifyAdmin(opts: NotifyOptions): Promise<void> {
 
   const lineChannel = process.env.ADMIN_LINE_CHANNEL_TOKEN;
   if (lineChannel) {
-    // 多 admin：從 admin-line-users helper 取所有設定的 admin、各推一份
     const { getAdminLineUsers } = await import("./admin-line-users");
     const users = getAdminLineUsers().filter((u) => u.id);
     if (users.length > 0) {
       for (const u of users) {
-        promises.push(sendLineMessaging(lineChannel, u.id, text));
+        promises.push(sendLineMessaging(lineChannel, u.id, text, opts.flex));
       }
       if (!all) return await Promise.allSettled(promises).then(() => {});
     }
@@ -97,15 +97,18 @@ async function sendLineNotify(token: string, text: string) {
   }
 }
 
-async function sendLineMessaging(token: string, userId: string, text: string) {
+async function sendLineMessaging(token: string, userId: string, text: string, flex?: any) {
   try {
+    const messages = flex
+      ? [flex] // Flex Message bubble / carousel
+      : [{ type: "text", text: text.slice(0, 5000) }];
     await fetch("https://api.line.me/v2/bot/message/push", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ to: userId, messages: [{ type: "text", text: text.slice(0, 5000) }] }),
+      body: JSON.stringify({ to: userId, messages }),
       signal: AbortSignal.timeout(5000),
     });
   } catch (e) {
