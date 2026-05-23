@@ -132,7 +132,7 @@ export default async function LearningEventsPage({
         <div className="text-xs text-orange-500">找不到使用者「{userSearch}」、列出未過濾結果</div>
       )}
 
-      <div className="bg-bg-card border border-border rounded-xl overflow-hidden">
+      <div className="bg-bg-card border border-border rounded-xl overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-bg-elevated text-left text-xs text-fg-muted uppercase">
             <tr>

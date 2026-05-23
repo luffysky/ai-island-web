@@ -153,7 +153,7 @@ export default async function AuditPage({
           目前條件下沒有 audit log
         </div>
       ) : (
-        <div className="bg-bg-card border border-border rounded-xl overflow-hidden">
+        <div className="bg-bg-card border border-border rounded-xl overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-bg-elevated text-left text-xs text-fg-muted uppercase">
               <tr>

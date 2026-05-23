@@ -23,7 +23,7 @@ export default async function ConversationsPage() {
       <h2 className="text-xl font-bold">💬 AI 對話紀錄</h2>
       <p className="text-sm text-fg-muted">最近 100 個對話、用來 audit user 跟 AI 怎麼互動</p>
 
-      <div className="bg-bg-card border border-border rounded-xl overflow-hidden">
+      <div className="bg-bg-card border border-border rounded-xl overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-bg-elevated text-left text-xs text-fg-muted uppercase">
             <tr>

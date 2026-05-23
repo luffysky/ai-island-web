@@ -140,7 +140,7 @@ export default async function AdminUsersPage({
         )}
       </form>
 
-      <div className="bg-bg-card border border-border rounded-xl overflow-hidden">
+      <div className="bg-bg-card border border-border rounded-xl overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-bg-elevated text-xs text-fg-muted">
             <tr>

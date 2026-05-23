@@ -121,7 +121,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             </NavGroup>
           </nav>
         </CollapsibleAside>
-        <div className="flex-1 min-w-0 overflow-x-auto">{children}</div>
+        <div className="flex-1 min-w-0">{children}</div>
       </div>
       </div>
     </div>
