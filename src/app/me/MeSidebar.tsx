@@ -161,6 +161,13 @@ export function MeSidebar({ profile }: { profile: Profile | null }) {
         >
           證書
         </MeLink>
+        <MeLink
+          href="/me/referrals"
+          icon={<span>🎁</span>}
+          collapsed={collapsed}
+        >
+          邀請碼
+        </MeLink>
       </nav>
 
       <div className="mt-4 pt-4 border-t border-border space-y-0.5 text-sm">

@@ -80,6 +80,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               <AdminLink href="/admin/ai/models">🤖 模型管理</AdminLink>
               <AdminLink href="/admin/ai/usage">📊 Token 用量</AdminLink>
               <AdminLink href="/admin/ai/conversations">💬 對話紀錄</AdminLink>
+              <AdminLink href="/admin/ai/moderation">🛡️ 對話審核</AdminLink>
             </NavGroup>
 
             <NavGroup title="SEO / 流量">
