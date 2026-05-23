@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useMemo } from "react";
+import { useOverlayRegister } from "@/lib/overlay-stack";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   DndContext,
@@ -25,6 +26,7 @@ import { useToast } from "@/components/ui/Toast";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 
 export function TodoDropdown({ open, onClose }: { open: boolean; onClose: () => void }) {
+  useOverlayRegister(open);
   const toast = useToast();
   const confirm = useConfirm();
   const [todos, setTodos] = useState<Todo[]>([]);

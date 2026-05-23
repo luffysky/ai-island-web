@@ -8,6 +8,8 @@ import { SideNav } from "@/components/SideNav";
 import { InteractionTracker } from "@/components/analytics/InteractionTracker";
 import { AuthProvider } from "@/lib/auth-context";
 import { AdminFloatingToolbar } from "@/components/admin/AdminFloatingToolbar";
+import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
+import { CommandPalette } from "@/components/ui/CommandPalette";
 import { Marquee } from "@/components/Marquee";
 import { Pet } from "@/components/pet/Pet";
 import { ToastProvider } from "@/components/ui/Toast";
@@ -76,6 +78,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <WebVitalsReporter />
               <AdminFloatingToolbar />
               <Pet />
+              <MobileBottomNav />
+              <CommandPalette />
             </ConfirmProvider>
           </ToastProvider>
         </AuthProvider>

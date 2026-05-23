@@ -14,6 +14,7 @@ import {
   GripVertical,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
+import { useOverlayCount } from "@/lib/overlay-stack";
 
 const ADMIN_SLUG =
   process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2";
@@ -78,13 +79,14 @@ export function AdminFloatingToolbar() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
+  const overlayCount = useOverlayCount();
   if (profile?.role !== "admin") return null;
   if (pathname.startsWith(`${ADMIN_BASE}`)) return null;
   if (pathname.startsWith("/admin")) return null;
-  // 全螢幕互動場景（島嶼）不顯示、不然會蓋住操作鍵 + 搖桿
   if (pathname.startsWith("/island")) return null;
   if (hidden) return null;
   if (!pos) return null;
+  if (overlayCount > 0) return null;
 
   const chapterMatch = pathname.match(/^\/chapters\/(\d+)/);
   const blogMatch = pathname.match(/^\/blogs\/([^/]+)\/([^/]+)/);

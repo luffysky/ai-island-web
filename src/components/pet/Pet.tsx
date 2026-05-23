@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
+import { useOverlayCount } from "@/lib/overlay-stack";
 import { getSpecies, type SpeciesId } from "@/lib/pet-species";
 import { getVipTier, pickHonorific, usesCuteBubble, hasVipAura } from "@/lib/pet-vip";
 import {
@@ -35,6 +36,7 @@ const MOBILE_SCALE = 0.7;
 export function Pet() {
   const { status, user, profile } = useAuth();
   const pathname = usePathname() || "/";
+  const overlayCount = useOverlayCount();
 
   const [pet, setPet] = useState<PetState | null>(null);
   const [pos, setPos] = useState<Pos>({ x: 200, y: 400 });
@@ -427,6 +429,8 @@ export function Pet() {
   }, [dragging, pos]);
 
   if (!pet || hideRoute || hidden) return null;
+  // modal 開時暫時隱藏（避免擋 dropdown / TODO）
+  if (overlayCount > 0) return null;
 
   const species = getSpecies(pet.species);
   const moodFx = moodClass(mood);

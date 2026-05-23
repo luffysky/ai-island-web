@@ -1,6 +1,102 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Sparkles, Send, X, ChevronDown, Settings as SettingsIcon, Plus, Loader2, History, MessageSquare } from "lucide-react";
+import { useOverlayCount, useOverlayRegister } from "@/lib/overlay-stack";
+
+const TUTOR_POS_KEY = "ai_tutor_ball_pos";
+const DRAG_THRESHOLD_PX = 5;
+
+function DraggableTutorBall({ onOpen }: { onOpen: () => void }) {
+  const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
+  const ref = useRef<HTMLButtonElement | null>(null);
+  const dragRef = useRef<{ sx: number; sy: number; ex: number; ey: number; moved: boolean } | null>(null);
+  const [dragging, setDragging] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const raw = localStorage.getItem(TUTOR_POS_KEY);
+      if (raw) {
+        const p = JSON.parse(raw);
+        if (typeof p.x === "number" && typeof p.y === "number") {
+          setPos(clamp(p));
+          return;
+        }
+      }
+    } catch {}
+    setPos({ x: window.innerWidth - 88, y: window.innerHeight - 88 });
+  }, []);
+
+  useEffect(() => {
+    const onResize = () => setPos((p) => p ? clamp(p) : p);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  const clamp = (p: { x: number; y: number }) => {
+    if (typeof window === "undefined") return p;
+    const W = window.innerWidth, H = window.innerHeight;
+    return { x: Math.max(8, Math.min(W - 72, p.x)), y: Math.max(8, Math.min(H - 72, p.y)) };
+  };
+
+  const onPointerDown = useCallback((e: React.PointerEvent) => {
+    if (!ref.current || !pos) return;
+    e.preventDefault();
+    ref.current.setPointerCapture(e.pointerId);
+    dragRef.current = { sx: e.clientX, sy: e.clientY, ex: pos.x, ey: pos.y, moved: false };
+  }, [pos]);
+
+  const onPointerMove = useCallback((e: React.PointerEvent) => {
+    const d = dragRef.current;
+    if (!d) return;
+    const dx = e.clientX - d.sx;
+    const dy = e.clientY - d.sy;
+    if (!d.moved && Math.hypot(dx, dy) < DRAG_THRESHOLD_PX) return;
+    d.moved = true;
+    setDragging(true);
+    setPos(clamp({ x: d.ex + dx, y: d.ey + dy }));
+  }, []);
+
+  const onPointerUp = useCallback((e: React.PointerEvent) => {
+    const d = dragRef.current;
+    if (!d) return;
+    if (ref.current?.hasPointerCapture(e.pointerId)) ref.current.releasePointerCapture(e.pointerId);
+    if (d.moved) {
+      const final = clamp({ x: d.ex + (e.clientX - d.sx), y: d.ey + (e.clientY - d.sy) });
+      setPos(final);
+      try { localStorage.setItem(TUTOR_POS_KEY, JSON.stringify(final)); } catch {}
+    } else {
+      // 純點擊
+      onOpen();
+    }
+    setDragging(false);
+    dragRef.current = null;
+  }, [onOpen]);
+
+  // modal 開時隱藏（避免擋 dropdown / TODO panel）
+  const overlayCount = useOverlayCount();
+  if (!pos || overlayCount > 0) return null;
+
+  return (
+    <button
+      ref={ref}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerCancel={() => { dragRef.current = null; setDragging(false); }}
+      style={{ position: "fixed", left: pos.x, top: pos.y, zIndex: 30, touchAction: "none", cursor: dragging ? "grabbing" : "grab" }}
+      className="w-16 h-16 rounded-full bg-gradient-to-br from-green-400 via-emerald-400 to-cyan-400 text-black shadow-2xl hover:scale-110 transition flex items-center justify-center group select-none"
+      title="綠寶 — 你的 AI 學習導師（可拖曳）"
+      aria-label="開啟 AI 導師"
+    >
+      <span className="text-2xl group-hover:scale-110 transition" aria-hidden>✨</span>
+      <span className="absolute -bottom-1 right-0 text-[8px] bg-black text-white px-1.5 py-0.5 rounded-full whitespace-nowrap pointer-events-none">
+        綠寶 🐹
+      </span>
+    </button>
+  );
+}
+
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { useAuth } from "@/lib/auth-context";
 import { PERSONA_LIST, getPersona, type PersonaId } from "@/lib/ai-personas";
@@ -43,6 +139,7 @@ export function AITutorWidget({
   contextLessonId?: string;
 }) {
   const [open, setOpen] = useState(false);
+  useOverlayRegister(open);
   const [models, setModels] = useState<AIModel[]>([]);
   const [selectedModelId, setSelectedModelId] = useState<string>("");
   const [tone, setTone] = useState("friendly");
@@ -235,22 +332,8 @@ export function AITutorWidget({
 
   return (
     <>
-      {/* Floating button - 綠寶導師 */}
-      {!open && (
-        <button
-          onClick={() => setOpen(true)}
-          className="fixed bottom-6 right-6 z-50 w-16 h-16 rounded-full bg-gradient-to-br from-green-400 via-emerald-400 to-cyan-400 text-black shadow-2xl hover:scale-110 transition flex items-center justify-center group"
-          title="綠寶 — 你的 AI 學習導師"
-          aria-label="開啟 AI 導師"
-        >
-          <span className="text-2xl group-hover:scale-110 transition" aria-hidden>
-            ✨
-          </span>
-          <span className="absolute -bottom-1 right-0 text-[8px] bg-black text-white px-1.5 py-0.5 rounded-full whitespace-nowrap">
-            綠寶 🐹
-          </span>
-        </button>
-      )}
+      {/* Floating button - 綠寶導師（可拖曳） */}
+      {!open && <DraggableTutorBall onOpen={() => setOpen(true)} />}
 
       {/* Chat panel */}
       {open && (
