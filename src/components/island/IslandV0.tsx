@@ -4,8 +4,6 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { Sky, OrbitControls, KeyboardControls, useKeyboardControls, Text, Html } from "@react-three/drei";
 import * as THREE from "three";
-import { useRouter } from "next/navigation";
-
 /**
  * S7-S8 3D 島嶼 v0 — 批 1：能站上去的島
  * - 一座島（圓盤地形 + 海平面）
@@ -23,20 +21,31 @@ const INTERACT_RADIUS = 2.6;
 
 enum K { forward, back, left, right, run, interact }
 
+export type IslandNodeId = "chapters" | "courses" | "leaderboard" | "forum" | "blogs";
+
 type Node = {
-  id: string;
+  id: IslandNodeId;
   position: [number, number, number];
   label: string;
-  href: string;
 };
 
 const NODES: Node[] = [
-  { id: "chapters", position: [8, 0, -4], label: "📚 章節", href: "/chapters" },
-  { id: "courses", position: [-7, 0, 6], label: "🎮 副本", href: "/courses" },
-  { id: "leaderboard", position: [0, 0, -12], label: "🏆 排行榜", href: "/leaderboard" },
-  { id: "forum", position: [14, 0, 12], label: "🗣️ 討論區", href: "/forum" },
-  { id: "blogs", position: [-15, 0, -10], label: "✍️ 部落格", href: "/blogs" },
+  { id: "chapters", position: [8, 0, -4], label: "📚 章節" },
+  { id: "courses", position: [-7, 0, 6], label: "🎮 副本" },
+  { id: "leaderboard", position: [0, 0, -12], label: "🏆 排行榜" },
+  { id: "forum", position: [14, 0, 12], label: "🗣️ 討論區" },
+  { id: "blogs", position: [-15, 0, -10], label: "✍️ 部落格" },
 ];
+
+// 廣播：玩家想開啟的節點 modal（IslandClient 接收）
+const openSubs = new Set<(id: IslandNodeId) => void>();
+export function subscribeOpen(fn: (id: IslandNodeId) => void) {
+  openSubs.add(fn);
+  return () => { openSubs.delete(fn); };
+}
+function emitOpen(id: IslandNodeId) {
+  for (const f of openSubs) f(id);
+}
 
 // 用 ref 暫存 player 位置、避免 React state 60fps re-render
 const playerPos = { x: 0, y: 1.1, z: 6 };
@@ -263,7 +272,6 @@ function Player({ petName }: { petName: string | null }) {
   const petRef = useRef<THREE.Group>(null);
   const [, getKeys] = useKeyboardControls<string>();
   const { camera } = useThree();
-  const router = useRouter();
   const eDownRef = useRef(false);
 
   useFrame((_, dt) => {
@@ -308,10 +316,10 @@ function Player({ petName }: { petName: string | null }) {
     }
     setActiveNode(nearest?.id ?? null);
 
-    // 互動鍵（edge trigger）
+    // 互動鍵（edge trigger）— 不跳走、廣播開島內 modal
     const ePressed = !!keys[K[K.interact]];
     if (ePressed && !eDownRef.current && nearest) {
-      router.push(nearest.href as any);
+      emitOpen(nearest.id);
     }
     eDownRef.current = ePressed;
 
