@@ -150,6 +150,41 @@ export function subscribeQuest(fn: (s: QuestState) => void) {
   return () => { questSubs.delete(fn); };
 }
 
+// ============ 動態天氣 ============
+export type Weather = "sunny" | "cloudy" | "rainy";
+
+let currentWeather: Weather = "sunny";
+const weatherSubs = new Set<(w: Weather) => void>();
+export function getWeather(): Weather { return currentWeather; }
+export function setWeather(w: Weather) {
+  if (currentWeather === w) return;
+  currentWeather = w;
+  for (const f of weatherSubs) f(w);
+}
+export function subscribeWeather(fn: (w: Weather) => void) {
+  weatherSubs.add(fn);
+  return () => { weatherSubs.delete(fn); };
+}
+
+// ============ 寵物互動 ============
+const petSubs = new Set<() => void>();
+export function emitPetTalk() { for (const f of petSubs) f(); }
+export function subscribePetTalk(fn: () => void) {
+  petSubs.add(fn);
+  return () => { petSubs.delete(fn); };
+}
+
+const BOND_KEY = "ai_island_pet_bond_v1";
+export function readBond(): number {
+  if (typeof window === "undefined") return 0;
+  try { return Number(localStorage.getItem(BOND_KEY) ?? 0) || 0; } catch { return 0; }
+}
+export function bumpBond(n = 1): number {
+  const next = Math.min(100, readBond() + n);
+  try { localStorage.setItem(BOND_KEY, String(next)); } catch {}
+  return next;
+}
+
 // ============ 音效開關 ============
 const SOUND_KEY = "ai_island_sound";
 export function isSoundOn(): boolean {

@@ -10,6 +10,8 @@ import { TouchControls } from "@/components/island/TouchControls";
 import { InventoryBag } from "@/components/island/InventoryBag";
 import { QuestPanel } from "@/components/island/QuestPanel";
 import { AmbientSound } from "@/components/island/AmbientSound";
+import { PetTalk } from "@/components/island/PetTalk";
+import { WeatherChip } from "@/components/island/WeatherChip";
 import { formatTWRelative } from "@/lib/format-date";
 
 const IslandV0 = dynamic(() => import("@/components/island/IslandV0"), {
@@ -72,8 +74,10 @@ export default function IslandClient({
       <IslandV0 completedChapterIds={completedChapterIds} level={level} petName={petName} />
       <TouchControls />
       <InventoryBag />
+      <WeatherChip />
       <AmbientSound />
       <QuestPanel />
+      <PetTalk petName={petName} />
 
       <div className="absolute top-3 left-3 pointer-events-auto z-10 flex items-center gap-2">
         <Link href="/" className="text-xs text-white/70 hover:text-white px-3 py-1.5 rounded-full bg-black/40 backdrop-blur">

@@ -7,6 +7,7 @@ import * as THREE from "three";
 import {
   type IslandNodeId,
   type ResourceKind,
+  type Weather,
   subscribeOpen as _sub,
   emitOpen,
   touchInput,
@@ -15,6 +16,10 @@ import {
   RESOURCE_META,
   emitNpc,
   bumpQuest,
+  subscribeWeather,
+  getWeather,
+  setWeather,
+  emitPetTalk,
 } from "./island-bus";
 /**
  * S7-S8 3D 島嶼 v0 — 批 1：能站上去的島
@@ -149,6 +154,8 @@ function Scene({
       ))}
       <Player petName={petName} />
       <DayNightCycle />
+      <WeatherFx />
+      <Rain />
       <OrbitControls enablePan={false} enableZoom maxPolarAngle={Math.PI / 2.1} minDistance={6} maxDistance={30} />
     </>
   );
@@ -241,6 +248,72 @@ function Island() {
   );
 }
 
+// 天氣 — 每 5 分鐘隨機切換、Sky uniform + 光照強度跟著變。
+const WEATHER_PERIOD_MS = 5 * 60 * 1000;
+const WEATHER_POOL: Weather[] = ["sunny", "sunny", "sunny", "cloudy", "cloudy", "rainy"];
+
+function WeatherFx() {
+  useEffect(() => {
+    const tick = () => {
+      const w = WEATHER_POOL[Math.floor(Math.random() * WEATHER_POOL.length)];
+      setWeather(w);
+    };
+    tick();
+    const i = setInterval(tick, WEATHER_PERIOD_MS);
+    return () => clearInterval(i);
+  }, []);
+  return null;
+}
+
+const RAIN_COUNT = 800;
+function Rain() {
+  const meshRef = useRef<THREE.InstancedMesh>(null);
+  const [weather, setW] = useState<Weather>(getWeather());
+  useEffect(() => subscribeWeather(setW), []);
+
+  // 初始化雨滴位置
+  useEffect(() => {
+    const mesh = meshRef.current;
+    if (!mesh) return;
+    const m = new THREE.Matrix4();
+    for (let i = 0; i < RAIN_COUNT; i++) {
+      const x = (Math.random() - 0.5) * 60;
+      const y = Math.random() * 30 + 5;
+      const z = (Math.random() - 0.5) * 60;
+      m.setPosition(x, y, z);
+      mesh.setMatrixAt(i, m);
+    }
+    mesh.instanceMatrix.needsUpdate = true;
+  }, []);
+
+  useFrame((_, dt) => {
+    if (weather !== "rainy") return;
+    const mesh = meshRef.current;
+    if (!mesh) return;
+    const m = new THREE.Matrix4();
+    for (let i = 0; i < RAIN_COUNT; i++) {
+      mesh.getMatrixAt(i, m);
+      const pos = new THREE.Vector3().setFromMatrixPosition(m);
+      pos.y -= dt * 25;
+      if (pos.y < 0) {
+        pos.x = (Math.random() - 0.5) * 60;
+        pos.y = 30;
+        pos.z = (Math.random() - 0.5) * 60;
+      }
+      m.setPosition(pos);
+      mesh.setMatrixAt(i, m);
+    }
+    mesh.instanceMatrix.needsUpdate = true;
+  });
+
+  return (
+    <instancedMesh ref={meshRef} args={[undefined as any, undefined as any, RAIN_COUNT]} visible={weather === "rainy"}>
+      <boxGeometry args={[0.025, 0.4, 0.025]} />
+      <meshBasicMaterial color="#9ec6ff" transparent opacity={0.7} />
+    </instancedMesh>
+  );
+}
+
 // 晝夜循環 — 一天 = 8 分鐘。0 = 日出、0.5 = 日落、1 = 夜晚。
 const DAY_LENGTH_MS = 8 * 60 * 1000;
 
@@ -248,23 +321,34 @@ function DayNightCycle() {
   const skyRef = useRef<any>(null);
   const sunRef = useRef<THREE.Vector3>(new THREE.Vector3(100, 30, 100));
   const dirLightRef = useRef<THREE.DirectionalLight>(null);
+  const weatherRef = useRef<Weather>(getWeather());
+
+  useEffect(() => subscribeWeather((w) => { weatherRef.current = w; }), []);
 
   useFrame(() => {
     const t = (performance.now() % DAY_LENGTH_MS) / DAY_LENGTH_MS;
-    // 太陽角度：0..π 是白天、π..2π 是夜晚
     const angle = t * Math.PI * 2;
-    const sunHeight = Math.sin(angle); // -1..1
+    const sunHeight = Math.sin(angle);
     const sunX = Math.cos(angle) * 100;
     const sunY = sunHeight * 80;
     const sunZ = 50;
     sunRef.current.set(sunX, sunY, sunZ);
+
+    // 天氣影響：cloudy → turbidity 18 + rayleigh 0.5；rainy → turbidity 20 + rayleigh 0.3 + 整體更暗
+    const w = weatherRef.current;
+    const isDay = sunHeight > 0;
+    const turbBase = isDay ? 6 : 2;
+    const rayBase = isDay ? 2 : 0.2;
+    const turb = w === "cloudy" ? Math.max(turbBase, 18) : w === "rainy" ? Math.max(turbBase, 20) : turbBase;
+    const ray = w === "sunny" ? rayBase : rayBase * 0.3;
     if (skyRef.current) {
       skyRef.current.material.uniforms.sunPosition.value.copy(sunRef.current);
-      skyRef.current.material.uniforms.rayleigh.value = sunHeight > 0 ? 2 : 0.2;
-      skyRef.current.material.uniforms.turbidity.value = sunHeight > 0 ? 6 : 2;
+      skyRef.current.material.uniforms.rayleigh.value = ray;
+      skyRef.current.material.uniforms.turbidity.value = turb;
     }
     if (dirLightRef.current) {
-      dirLightRef.current.intensity = Math.max(0, sunHeight) * 1.2;
+      const weatherMult = w === "sunny" ? 1 : w === "cloudy" ? 0.55 : 0.35;
+      dirLightRef.current.intensity = Math.max(0, sunHeight) * 1.2 * weatherMult;
       dirLightRef.current.position.set(sunX * 0.3, Math.max(5, sunY * 0.5), sunZ * 0.3);
     }
   });
@@ -506,6 +590,19 @@ function Player({ petName }: { petName: string | null }) {
         nearestResource = null;
       }
     }
+    // 寵物近 → 也可互動
+    let nearestPet = false;
+    if (petRef.current && petName) {
+      const dx = petRef.current.position.x - g.position.x;
+      const dz = petRef.current.position.z - g.position.z;
+      const d2 = dx * dx + dz * dz;
+      if (d2 < nearestD2) {
+        nearestPet = true;
+        nearestNpc = null;
+        nearestNode = null;
+        nearestResource = null;
+      }
+    }
     setActiveNode(nearestNode?.id ?? null);
 
     // 互動鍵（edge trigger）
@@ -515,6 +612,7 @@ function Player({ petName }: { petName: string | null }) {
       if (nearestNode) emitOpen(nearestNode.id);
       else if (nearestResource) harvest(nearestResource.id, nearestResource.kind);
       else if (nearestNpc) emitNpc(nearestNpc);
+      else if (nearestPet) emitPetTalk();
     }
     eDownRef.current = ePressed;
 
