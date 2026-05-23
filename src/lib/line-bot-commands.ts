@@ -29,6 +29,10 @@ export async function runBotCommand(text: string, user: AdminLineUser): Promise<
       case "churn": return await cmdChurn();
       case "errors": return await cmdErrors();
       case "who": return cmdWho(user);
+      case "prefs": {
+        const { runPostback } = await import("./line-postback");
+        return await runPostback("action=prefs_list", user);
+      }
       default: return { text: `❓ 未知命令 /${cmd}、輸入 /help 看清單` };
     }
   } catch (e: any) {

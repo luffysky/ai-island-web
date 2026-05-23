@@ -5,7 +5,8 @@ import { decryptKey } from "@/lib/ai-crypto";
 import { callAI } from "@/lib/ai-providers";
 import { getAdminLineUser, type AdminLineUser } from "@/lib/admin-line-users";
 import { runBotCommand, isCommand } from "@/lib/line-bot-commands";
-import { buildAiReplyCard, type FlexMessage } from "@/lib/line-flex";
+import { buildAiReplyCard, buildQuickReply, COMMON_QR, type FlexMessage, type LineTextMessage } from "@/lib/line-flex";
+import { runPostback } from "@/lib/line-postback";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -13,7 +14,6 @@ export const runtime = "nodejs";
 const ENDPOINT = "https://api.line.me/v2/bot";
 
 type Msg = { role: "user" | "assistant"; content: string };
-// 每個 admin 獨立 history（in-memory、單實例、保留 20 輪）
 const historyByUser = new Map<string, Msg[]>();
 function getHistory(uid: string): Msg[] {
   if (!historyByUser.has(uid)) historyByUser.set(uid, []);
@@ -26,15 +26,21 @@ function verifySignature(body: string, signature: string | null, secret: string)
   return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature));
 }
 
-async function lineReply(replyToken: string, payload: string | FlexMessage, token: string) {
+async function lineReply(replyToken: string, payload: string | FlexMessage | LineTextMessage, token: string) {
   try {
-    const messages = typeof payload === "string"
-      ? [{ type: "text", text: payload.slice(0, 4900) }]
-      : [payload];
+    let msg: any;
+    if (typeof payload === "string") {
+      msg = { type: "text", text: payload.slice(0, 4900) };
+    } else {
+      msg = { ...payload };
+    }
+    // 補預設 Quick Reply（如果還沒設）
+    if (!msg.quickReply) msg.quickReply = buildQuickReply(COMMON_QR);
+
     await fetch(`${ENDPOINT}/message/reply`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ replyToken, messages }),
+      body: JSON.stringify({ replyToken, messages: [msg] }),
       signal: AbortSignal.timeout(5000),
     });
   } catch (e) {
@@ -67,7 +73,7 @@ async function askAI(message: string, adminUser: AdminLineUser): Promise<string>
 - 用繁中、語氣簡潔、像對信任的同事
 - ${adminUser.role.includes("董事") ? "你是他的事業助手、幫忙決策 / 看報表 / 整理思緒" : "你是後台助理、協助處理日常運維"}
 - 主動意識：他在 LINE 問問題、可能在外面忙、給簡潔可執行的答覆
-- 可用命令：/help（列所有命令）/today /kpi 7 /users /churn /errors`;
+- 可用命令：/help（列所有命令）/today /kpi 7 /users /churn /errors /prefs`;
 
   try {
     const resp = await callAI({
@@ -111,12 +117,23 @@ export async function POST(req: NextRequest) {
       if (replyToken && userId) {
         await lineReply(
           replyToken,
-          `🏝️ AI 島 admin bot 已啟動！\n\n` +
-          `你的 userId：\n${userId}\n\n` +
-          `把這個貼進 Zeabur 環境變數 ADMIN_LINE_USER_ID（或 ADMIN_LINE_USERS JSON）、之後就會收到通知、也能直接跟我聊。`,
+          `🏝️ AI 島 admin bot 已啟動！\n\n你的 userId：\n${userId}\n\n把這個貼進 Zeabur 環境變數 ADMIN_LINE_USER_ID（或 ADMIN_LINE_USERS JSON）、之後就會收到通知、也能直接跟我聊。`,
           token,
         );
       }
+      continue;
+    }
+
+    // PostBack（卡片按鈕 / Rich Menu）
+    if (ev.type === "postback") {
+      if (!replyToken || !userId) continue;
+      const adminUser = getAdminLineUser(userId);
+      if (!adminUser) {
+        await lineReply(replyToken, "🤖 非授權 admin、忽略 postback", token);
+        continue;
+      }
+      const reply = await runPostback(ev.postback?.data ?? "", adminUser);
+      await lineReply(replyToken, reply.flex ?? reply.text, token);
       continue;
     }
 
@@ -140,13 +157,11 @@ export async function POST(req: NextRequest) {
 
       if (isCommand(text)) {
         const reply = await runBotCommand(text, adminUser);
-        // 有 flex 用 flex、否則 text fallback
         await lineReply(replyToken, reply.flex ?? reply.text, token);
         continue;
       }
 
       const answer = await askAI(text, adminUser);
-      // AI 回覆包 Flex 卡（更美觀、有發送者識別）
       const aiCard = buildAiReplyCard({ text: answer, userName: adminUser.name });
       await lineReply(replyToken, aiCard, token);
     }

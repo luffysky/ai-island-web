@@ -56,12 +56,16 @@ export async function notifyAdmin(opts: NotifyOptions): Promise<void> {
   const lineChannel = process.env.ADMIN_LINE_CHANNEL_TOKEN;
   if (lineChannel) {
     const { getAdminLineUsers } = await import("./admin-line-users");
+    const { shouldUserReceive } = await import("./admin-line-prefs");
     const users = getAdminLineUsers().filter((u) => u.id);
     if (users.length > 0) {
       for (const u of users) {
+        // 過濾：用戶有把這個 kind 設成 disabled 就跳過
+        const ok = await shouldUserReceive(u.id, opts.kind);
+        if (!ok) continue;
         promises.push(sendLineMessaging(lineChannel, u.id, text, opts.flex));
       }
-      if (!all) return await Promise.allSettled(promises).then(() => {});
+      if (!all && promises.length > 0) return await Promise.allSettled(promises).then(() => {});
     }
   }
 

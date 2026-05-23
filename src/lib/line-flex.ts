@@ -3,11 +3,47 @@
  * 比純文字漂亮、可帶 emoji / 顏色 / 按鈕
  */
 
+/** Quick Reply 浮動按鈕 */
+export type QuickReplyAction =
+  | { type: "message"; label: string; text: string }
+  | { type: "postback"; label: string; data: string; displayText?: string }
+  | { type: "uri"; label: string; uri: string };
+
+export type QuickReply = {
+  items: Array<{ type: "action"; action: QuickReplyAction }>;
+};
+
+export function buildQuickReply(actions: QuickReplyAction[]): QuickReply {
+  return { items: actions.slice(0, 13).map((a) => ({ type: "action", action: a })) };
+}
+
+/** 常用命令 quick reply（每次 reply 加在底下） */
+export const COMMON_QR: QuickReplyAction[] = [
+  { type: "message", label: "📊 今日", text: "/today" },
+  { type: "message", label: "📈 7 天", text: "/kpi 7" },
+  { type: "message", label: "👥 用戶", text: "/users" },
+  { type: "message", label: "🚨 流失", text: "/churn" },
+  { type: "message", label: "🛡️ 錯誤", text: "/errors" },
+  { type: "message", label: "❓ 幫助", text: "/help" },
+  { type: "message", label: "⚙️ 偏好", text: "/prefs" },
+];
+
 export type FlexMessage = {
   type: "flex";
   altText: string;
   contents: any;
+  quickReply?: QuickReply;
 };
+
+export type LineTextMessage = {
+  type: "text";
+  text: string;
+  quickReply?: QuickReply;
+};
+
+export function buildTextWithQR(text: string, qr?: QuickReply): LineTextMessage {
+  return { type: "text", text: text.slice(0, 4900), quickReply: qr };
+}
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
 const ADMIN_SLUG = process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2";
@@ -21,8 +57,12 @@ export type SimpleCardInput = {
   title: string;
   body?: string;
   meta?: Array<{ label: string; value: string }>;
-  accentColor?: string; // hex、預設綠
-  buttons?: Array<{ label: string; uri: string; primary?: boolean }>;
+  accentColor?: string;
+  buttons?: Array<
+    | { label: string; uri: string; primary?: boolean }
+    | { label: string; postback: string; primary?: boolean; displayText?: string }
+  >;
+  quickReply?: QuickReply;
 };
 
 export function buildSimpleCard(input: SimpleCardInput): FlexMessage {
@@ -83,9 +123,11 @@ export function buildSimpleCard(input: SimpleCardInput): FlexMessage {
       type: "box",
       layout: "vertical",
       spacing: "sm",
-      contents: input.buttons.slice(0, 3).map((b) => ({
+      contents: input.buttons.slice(0, 3).map((b: any) => ({
         type: "button",
-        action: { type: "uri", label: b.label.slice(0, 20), uri: b.uri },
+        action: b.postback
+          ? { type: "postback", label: String(b.label).slice(0, 20), data: b.postback, displayText: b.displayText }
+          : { type: "uri", label: String(b.label).slice(0, 20), uri: b.uri },
         style: b.primary ? "primary" : "secondary",
         color: b.primary ? color : undefined,
         height: "sm",
@@ -93,7 +135,7 @@ export function buildSimpleCard(input: SimpleCardInput): FlexMessage {
     };
   }
 
-  return { type: "flex", altText, contents: bubble };
+  return { type: "flex", altText, contents: bubble, quickReply: input.quickReply };
 }
 
 /**
