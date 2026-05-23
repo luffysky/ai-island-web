@@ -60,6 +60,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               <AdminLink href="/admin">📊 Dashboard</AdminLink>
               <AdminLink href="/admin/analytics">📈 數據分析</AdminLink>
               <AdminLink href="/admin/analytics/learning-events">🧪 學習行為事件</AdminLink>
+              <AdminLink href="/admin/web-vitals">⚡ Web Vitals</AdminLink>
+              <AdminLink href="/admin/ab">🧪 A/B 測試</AdminLink>
             </NavGroup>
 
             <NavGroup title="用戶">
@@ -92,6 +94,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             <NavGroup title="內容">
               <AdminLink href="/admin/chapters">📚 章節管理</AdminLink>
               <AdminLink href="/admin/achievements">🏆 成就管理</AdminLink>
+              <AdminLink href="/admin/gamification">🎮 遊戲化規則</AdminLink>
               <AdminLink href="/admin/changelog">📜 更新日誌</AdminLink>
               <AdminLink href="/admin/moderation/comments">💬 留言審核</AdminLink>
               <AdminLink href="/admin/moderation/forum">🗣️ 論壇審核</AdminLink>
