@@ -10,20 +10,38 @@ export const dynamic = "force-dynamic";
  * - lat/lng 用 ipinfo 反查 city、存 profile.geo_city + geo_country
  * - 也記 consent_at / revoked_at
  */
-async function reverseGeo(lat: number, lng: number): Promise<{ city?: string; country?: string }> {
+async function reverseGeo(lat: number, lng: number): Promise<{ city?: string; country?: string; district?: string }> {
+  // 優先用 Google Maps（如有 API key）
+  const key = process.env.GOOGLE_MAPS_API_KEY;
+  if (key) {
+    try {
+      const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${key}&language=zh-TW`;
+      const r = await fetch(url, { signal: AbortSignal.timeout(3000) });
+      if (r.ok) {
+        const d = await r.json() as any;
+        const comps = d.results?.[0]?.address_components ?? [];
+        const country = comps.find((c: any) => c.types?.includes("country"))?.long_name;
+        const city = comps.find((c: any) => c.types?.includes("administrative_area_level_1"))?.long_name;
+        const district = comps.find((c: any) => c.types?.includes("administrative_area_level_3"))?.long_name;
+        return { country, city, district };
+      }
+    } catch {}
+  }
+  // Fallback：OpenStreetMap Nominatim（免費、不需 key、有 rate limit 1 req/s）
   try {
-    // 用 IPinfo 反向（其實該用 Google Maps Geocoding、但 IPinfo 不支援；先簡單存原值）
-    // 若有 GOOGLE_MAPS_API_KEY env 才反查
-    const key = process.env.GOOGLE_MAPS_API_KEY;
-    if (!key) return {};
-    const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${key}&language=zh-TW`;
-    const r = await fetch(url, { signal: AbortSignal.timeout(3000) });
+    const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=zh-TW&zoom=12`;
+    const r = await fetch(url, {
+      signal: AbortSignal.timeout(5000),
+      headers: { "User-Agent": "ai-island/1.0 (snowrealm.pet)" },
+    });
     if (!r.ok) return {};
     const d = await r.json() as any;
-    const comps = d.results?.[0]?.address_components ?? [];
-    const country = comps.find((c: any) => c.types?.includes("country"))?.long_name;
-    const city = comps.find((c: any) => c.types?.includes("administrative_area_level_1"))?.long_name;
-    return { country, city };
+    const a = d.address ?? {};
+    return {
+      country: a.country,
+      city: a.state ?? a.city ?? a.county ?? a.region,
+      district: a.suburb ?? a.city_district ?? a.town ?? a.village,
+    };
   } catch { return {}; }
 }
 
@@ -37,12 +55,13 @@ export async function POST(req: NextRequest) {
   if (Number.isNaN(lat) || Number.isNaN(lng)) return NextResponse.json({ error: "invalid_coords" }, { status: 400 });
 
   const admin = createSupabaseAdmin();
-  const { city, country } = await reverseGeo(lat, lng);
+  const { city, country, district } = await reverseGeo(lat, lng);
+  // 存到「縣市 + 區」（例：新北市 板橋區）
+  const fullCity = [city, district].filter(Boolean).join(" ");
 
-  // 只存大致縣市 + 同意時間（隱私承諾、不存 lat/lng）
   try {
     await admin.from("profiles").update({
-      geo_city: city ?? null,
+      geo_city: fullCity || null,
       geo_country: country ?? null,
       geo_consent_at: new Date().toISOString(),
       geo_revoked_at: null,
@@ -50,7 +69,7 @@ export async function POST(req: NextRequest) {
   } catch (e) {
     return NextResponse.json({ error: "save_failed", message: (e as any)?.message }, { status: 500 });
   }
-  return NextResponse.json({ ok: true, city, country });
+  return NextResponse.json({ ok: true, city: fullCity, country, district });
 }
 
 export async function DELETE() {

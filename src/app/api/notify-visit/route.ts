@@ -69,16 +69,17 @@ export async function POST(req: NextRequest) {
 
   if (!shouldNotify(path)) return NextResponse.json({ ok: true, skipped: "path" });
 
-  // 判別登入狀態（先抓 user 才能 build 正確 dedupe key）
+  // 判別登入狀態（先抓 user 才能 build 正確 dedupe key + 精準位置）
   let userTag = "👀 訪客";
   let userKey = "anon";
   let lastSeenText = "";
+  let preciseLocation: string | null = null; // GPS 精準縣市/區
   try {
     const supabase = await createSupabaseServer();
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
       userKey = user.id.slice(0, 8);
-      const { data: p } = await supabase.from("profiles").select("display_name, username, role, last_active_at").eq("id", user.id).single();
+      const { data: p } = await supabase.from("profiles").select("display_name, username, role, last_active_at, geo_country, geo_city").eq("id", user.id).single();
       const name = (p as any)?.display_name || (p as any)?.username || user.email?.split("@")[0] || "user";
       const role = (p as any)?.role;
       const roleTag = role === "admin" ? " 👑" : role === "editor" ? " ✏️" : "";
@@ -93,6 +94,12 @@ export async function POST(req: NextRequest) {
         else lastSeenText = `（距上次 ${Math.round(diffMin / 1440)} 天）`;
       } else {
         lastSeenText = "（首次訪問）";
+      }
+      // 用戶有授權 GPS 精準位置 → 優先用這個
+      const geoCity = (p as any)?.geo_city;
+      const geoCountry = (p as any)?.geo_country;
+      if (geoCity) {
+        preciseLocation = [geoCountry, geoCity].filter(Boolean).join(" · ");
       }
     }
   } catch {}
@@ -114,6 +121,11 @@ export async function POST(req: NextRequest) {
   const isVisitor = userTag.startsWith("👀");
   const isAdmin = userTag.includes("👑");
 
+  // GPS 精準位置 vs IP 推算位置區分清楚
+  const locationMeta = preciseLocation
+    ? [{ label: "🎯 GPS", value: preciseLocation }, { label: "📡 IP 推算", value: geo.location }]
+    : [{ label: "📡 IP 推算", value: geo.location }];
+
   const flex = buildSimpleCard({
     emoji: isAdmin ? "👑" : isVisitor ? "👀" : "🔑",
     title: `${userTag.replace(/^[👀🔑] /, "").replace(/ [👑✏️]$/, "")} 來看了`,
@@ -121,19 +133,23 @@ export async function POST(req: NextRequest) {
     meta: [
       { label: "📄 路徑", value: path },
       ...(refTxt ? [{ label: "← 來自", value: refTxt }] : []),
-      { label: "📍 位置", value: geo.location },
-      ...(geo.org ? [{ label: "📡 ISP", value: geo.org }] : []),
+      ...locationMeta,
+      ...(geo.org ? [{ label: "🏢 ISP", value: geo.org }] : []),
       { label: "🌐 IP", value: geo.ipText },
       { label: "💻 裝置", value: device },
       ...(lastSeenText ? [{ label: "⏱️ 上次", value: lastSeenText.replace(/[（）]/g, "") }] : []),
     ],
-    buttons: geo.mapsUrl ? [{ label: "📍 看地圖", uri: geo.mapsUrl }] : undefined,
+    buttons: geo.mapsUrl ? [{ label: "📍 看 IP 大概", uri: geo.mapsUrl }] : undefined,
   });
+
+  const locText = preciseLocation
+    ? `🎯 GPS ${preciseLocation}\n📡 IP 推算 ${geo.location}`
+    : `📡 IP 推算 ${geo.location}`;
 
   notifyAdmin({
     kind: isVisitor ? "visit" : isAdmin ? "admin_login" : "user_login",
     dedupeKey: key,
-    text: `${userTag} 看 ${path}${refTxt ? ` ← ${refTxt}` : ""}${lastSeenText}\n📍 ${geo.location}${geo.org ? `\n📡 ${geo.org}` : ""}\n🌐 ${geo.ipText}\n💻 ${device}${geo.mapsUrl ? `\n📍 ${geo.mapsUrl}` : ""}`,
+    text: `${userTag} 看 ${path}${refTxt ? ` ← ${refTxt}` : ""}${lastSeenText}\n${locText}${geo.org ? `\n🏢 ${geo.org}` : ""}\n🌐 ${geo.ipText}\n💻 ${device}`,
     flex,
   }).catch(() => {});
 
