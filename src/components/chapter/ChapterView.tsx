@@ -72,6 +72,12 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
         if (typeof window !== "undefined") {
           window.dispatchEvent(new CustomEvent("pet:lesson-complete", { detail: { chapterId: chapter.id, lessonId, xp } }));
           window.dispatchEvent(new CustomEvent("pet:xp-earned", { detail: { xp } }));
+          // quest 任務
+          fetch("/api/quests/progress", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ type: "complete_lessons", delta: 1 }),
+          }).catch(() => {});
 
           // milestone check：跨章節總完成數命中 30/60/100 → dispatch
           const { count } = await supabase

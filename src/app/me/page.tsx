@@ -1,6 +1,9 @@
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { chapters } from "@/data/chapters";
 import Link from "next/link";
+import { CareerProgress } from "@/components/me/CareerProgress";
+import { QuestsPanel } from "@/components/me/QuestsPanel";
+import { formatTWDate } from "@/lib/format-date";
 
 export default async function MeOverviewPage() {
   const supabase = await createSupabaseServer();
@@ -24,6 +27,7 @@ export default async function MeOverviewPage() {
   const completedLessons = progress?.length ?? 0;
   const totalLessons = chapters.reduce((sum, c) => sum + c.lessons.length, 0);
   const pct = totalLessons > 0 ? Math.round(completedLessons / totalLessons * 100) : 0;
+  const completedSet = new Set<string>((progress ?? []).map((p: any) => p.lesson_id as string));
 
   // 章節進度
   const chapterProgress = chapters.map((ch) => {
@@ -58,6 +62,12 @@ export default async function MeOverviewPage() {
           />
         </div>
       </div>
+
+      {/* 今日任務 */}
+      <QuestsPanel />
+
+      {/* 解鎖工作力 */}
+      <CareerProgress completedSet={completedSet} />
 
       {/* 進行中的章節 */}
       {inProgress.length > 0 && (
@@ -111,7 +121,7 @@ export default async function MeOverviewPage() {
                     </div>
                   </div>
                   <div className="text-xs text-fg-muted flex-shrink-0">
-                    {new Date(p.completed_at).toLocaleDateString('zh-TW')}
+                    {formatTWDate(p.completed_at)}
                   </div>
                 </Link>
               );

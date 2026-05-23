@@ -64,6 +64,12 @@ export function DailyCheckin() {
     });
     setJustGotXp(data.xp_awarded);
     if (data.z_awarded) setJustGotZ(data.z_awarded);
+    // 推進任務進度
+    fetch("/api/quests/progress", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "daily_checkin", delta: 1 }),
+    }).catch(() => {});
     confetti({
       particleCount: data.day_in_cycle >= 7 ? 80 : 35,
       spread: data.day_in_cycle >= 7 ? 70 : 50,
