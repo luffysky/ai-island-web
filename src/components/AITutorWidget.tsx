@@ -199,6 +199,12 @@ export function AITutorWidget({
               if (!useBYOK && quotaUsed) {
                 setQuotaUsed({ ...quotaUsed, used: quotaUsed.used + 1 });
               }
+              // quest 進度
+              fetch("/api/quests/progress", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ type: "ai_chat", delta: 1 }),
+              }).catch(() => {});
             } else if (json.type === "error") {
               setError(json.error);
               setMessages((prev) => {
