@@ -39,6 +39,10 @@ import {
   readHouseState,
   subscribeHouse,
   touchLook,
+  VILLAGERS,
+  emitVillager,
+  type VillagerId,
+  type VillagerSpec,
 } from "./island-bus";
 /**
  * S7-S8 3D 島嶼 v0 — 批 1：能站上去的島
@@ -259,6 +263,7 @@ function Scene({
         <Signpost key={n.id} node={n} />
       ))}
       <ZoneMarkers />
+      <Villagers />
       <Player petName={petName} />
       <DayNightCycle />
       <WeatherFx />
@@ -269,8 +274,8 @@ function Scene({
           <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
         </EffectComposer>
       )}
-      {/* 第一人稱：點畫面 lock pointer、ESC 解鎖；手機改用 nipplejs 右側拖視角 */}
-      <PointerLockControls makeDefault />
+      {/* 第一人稱：只在桌機 lock pointer；手機完全靠 LookPad 拖動 */}
+      <DesktopOnlyPointerLock />
     </>
   );
 }
@@ -565,6 +570,18 @@ function WeatherFx() {
 }
 
 // （3D Rain 已移除、改 CSS overlay 在 WeatherOverlay 元件、零 GPU 開銷）
+
+// 桌機才掛 PointerLockControls、手機跳過避免攔截 touch
+function DesktopOnlyPointerLock() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsMobile(window.matchMedia("(pointer: coarse), (max-width: 768px)").matches);
+    }
+  }, []);
+  if (isMobile) return null;
+  return <PointerLockControls makeDefault />;
+}
 
 // 晝夜循環 — 一天 = 8 分鐘。0 = 日出、0.5 = 日落、1 = 夜晚。
 const DAY_LENGTH_MS = 8 * 60 * 1000;
@@ -923,6 +940,20 @@ function Player({ petName }: { petName: string | null }) {
         nearestResource = null;
       }
     }
+    // 動物村民
+    let nearestVillager: VillagerId | null = null;
+    for (const v of VILLAGERS) {
+      const dx = v.pos[0] - g.position.x;
+      const dz = v.pos[1] - g.position.z;
+      const d2 = dx * dx + dz * dz;
+      if (d2 < nearestD2) {
+        nearestD2 = d2;
+        nearestVillager = v.id;
+        nearestNpc = null;
+        nearestNode = null;
+        nearestResource = null;
+      }
+    }
     // 寶箱（未開的）
     let nearestChest: { id: number; rewardCoin: number } | null = null;
     {
@@ -983,6 +1014,7 @@ function Player({ petName }: { petName: string | null }) {
         emitNpc(nearestNpc);
         noteNpcTalked(nearestNpc);
       }
+      else if (nearestVillager) emitVillager(nearestVillager);
       else if (nearestPet) emitPetTalk();
     }
     eDownRef.current = ePressed;
@@ -1000,11 +1032,12 @@ function Player({ petName }: { petName: string | null }) {
     }
     fDownRef.current = fPressed;
 
-    // 寵物跟隨：lerp 到玩家後方
+    // 寵物跟隨：lerp 到玩家右前方（FPV 看得到、不擋視線中央）
     const pet = petRef.current;
     if (pet) {
-      const targetX = g.position.x - Math.sin(g.rotation.y) * 1.5;
-      const targetZ = g.position.z - Math.cos(g.rotation.y) * 1.5;
+      const angle = g.rotation.y - 0.6; // 右前方 ~35°
+      const targetX = g.position.x + Math.sin(angle) * 2;
+      const targetZ = g.position.z + Math.cos(angle) * 2;
       pet.position.x += (targetX - pet.position.x) * Math.min(1, dt * 3);
       pet.position.z += (targetZ - pet.position.z) * Math.min(1, dt * 3);
       const dx = g.position.x - pet.position.x;
@@ -1037,6 +1070,27 @@ function Player({ petName }: { petName: string | null }) {
       <NpcMerchant />
       <NpcSeer />
     </>
+  );
+}
+
+function Villagers() {
+  return (
+    <group>
+      {VILLAGERS.map((v) => <Villager key={v.id} v={v} />)}
+    </group>
+  );
+}
+function Villager({ v }: { v: VillagerSpec }) {
+  return (
+    <group position={[v.pos[0], 0.05, v.pos[1]]}>
+      <Glb src={v.glb} scale={0.8} />
+      <Text position={[0, 1.4, 0]} fontSize={0.16} color="#fff" outlineWidth={0.02} outlineColor="#000">
+        {v.emoji} {v.name}
+      </Text>
+      <Text position={[0, 1.18, 0]} fontSize={0.11} color="#a8e6cf" outlineWidth={0.01} outlineColor="#000">
+        按 E 對話
+      </Text>
+    </group>
   );
 }
 

@@ -18,7 +18,12 @@ export function readFx(): boolean {
 }
 
 const settingsSubs = new Set<() => void>();
-export function emitSettingsToggle() { for (const f of settingsSubs) f(); }
+export function emitSettingsToggle() {
+  if (typeof document !== "undefined" && document.pointerLockElement) {
+    try { document.exitPointerLock(); } catch {}
+  }
+  for (const f of settingsSubs) f();
+}
 export function subscribeSettingsToggle(fn: () => void) { settingsSubs.add(fn); return () => { settingsSubs.delete(fn); }; }
 
 export function SettingsPanel() {

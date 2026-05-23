@@ -72,10 +72,17 @@ export function TouchControls() {
 
 function LookPad() {
   const lastRef = useRef<{ x: number; y: number } | null>(null);
+  // 只佔右下角 60% × 60%、避開頂部 HUD（minimap、buff bar、weather chip）
   return (
     <div
-      className="fixed top-0 right-0 bottom-0 w-1/2 z-40 touch-none select-none"
-      style={{ touchAction: "none" }}
+      className="fixed right-0 z-10 touch-none select-none"
+      style={{
+        top: "20%",
+        bottom: "20%",
+        width: "50%",
+        touchAction: "none",
+        pointerEvents: "auto",
+      }}
       onTouchStart={(e) => {
         const t = e.touches[0];
         if (t) lastRef.current = { x: t.clientX, y: t.clientY };

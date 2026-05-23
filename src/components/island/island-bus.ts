@@ -10,7 +10,14 @@ export function subscribeOpen(fn: (id: IslandNodeId) => void) {
   return () => { openSubs.delete(fn); };
 }
 
+function exitPointerLockIfAny() {
+  if (typeof document !== "undefined" && document.pointerLockElement) {
+    try { document.exitPointerLock(); } catch {}
+  }
+}
+
 export function emitOpen(id: IslandNodeId) {
+  exitPointerLockIfAny();
   for (const f of openSubs) f(id);
 }
 
@@ -18,6 +25,27 @@ export function emitOpen(id: IslandNodeId) {
 export const touchInput = { x: 0, y: 0, interact: false, run: false };
 // 手機右側拖視角累積（FPV）— Player useFrame 讀後 reset
 export const touchLook = { dx: 0, dy: 0 };
+
+// modal 開關計數：>0 表示有 modal、islandV0 用來決定要不要 exitPointerLock
+let modalOpenCount = 0;
+const modalSubs = new Set<(open: boolean) => void>();
+export function pushModalOpen() {
+  modalOpenCount++;
+  if (modalOpenCount === 1) {
+    if (typeof document !== "undefined" && document.pointerLockElement) {
+      try { document.exitPointerLock(); } catch {}
+    }
+    for (const f of modalSubs) f(true);
+  }
+}
+export function popModalOpen() {
+  modalOpenCount = Math.max(0, modalOpenCount - 1);
+  if (modalOpenCount === 0) for (const f of modalSubs) f(false);
+}
+export function subscribeModal(fn: (open: boolean) => void) {
+  modalSubs.add(fn);
+  return () => { modalSubs.delete(fn); };
+}
 
 let interactPulse = false;
 export function touchInteract() { interactPulse = true; }
@@ -138,7 +166,7 @@ export function markSlept(date: string): HouseState {
 
 // 開家門板事件
 const houseOpenSubs = new Set<() => void>();
-export function emitHouseOpen() { for (const f of houseOpenSubs) f(); }
+export function emitHouseOpen() { exitPointerLockIfAny(); for (const f of houseOpenSubs) f(); }
 export function subscribeHouseOpen(fn: () => void) {
   houseOpenSubs.add(fn);
   return () => { houseOpenSubs.delete(fn); };
@@ -188,7 +216,7 @@ export function rollFish(): FishKind {
 
 // 釣魚 trigger（F 鍵、走到沙岸）
 const fishingSubs = new Set<() => void>();
-export function emitFishing() { for (const f of fishingSubs) f(); }
+export function emitFishing() { exitPointerLockIfAny(); for (const f of fishingSubs) f(); }
 export function subscribeFishing(fn: () => void) {
   fishingSubs.add(fn);
   return () => { fishingSubs.delete(fn); };
@@ -203,6 +231,7 @@ export function subscribeNpc(fn: (id: NpcId) => void) {
   return () => { npcSubs.delete(fn); };
 }
 export function emitNpc(id: NpcId) {
+  exitPointerLockIfAny();
   for (const f of npcSubs) f(id);
 }
 
@@ -408,7 +437,57 @@ export function subscribeWeather(fn: (s: WeatherState) => void) {
 
 // ============ 寵物互動 ============
 const petSubs = new Set<() => void>();
-export function emitPetTalk() { for (const f of petSubs) f(); }
+export function emitPetTalk() { exitPointerLockIfAny(); for (const f of petSubs) f(); }
+
+// ============ 動物村民 ============
+export type VillagerId = "bunny" | "fox" | "panda" | "cat" | "deer" | "tiger";
+export type VillagerSpec = {
+  id: VillagerId;
+  emoji: string;
+  name: string;
+  role: string;
+  glb: string;
+  pos: [number, number];
+  greeting: string[];
+  dailyReward: number; // z 幣
+};
+export const VILLAGERS: VillagerSpec[] = [
+  { id: "bunny", emoji: "🐰", name: "兔兒書呆",   role: "圖書管理員", glb: "/models/pets/animal-bunny.glb", pos: [10, 7],   greeting: ["今天讀新章節了嗎？", "📚 圖書館永遠歡迎你"], dailyReward: 5 },
+  { id: "fox",   emoji: "🦊", name: "狐商隊長",   role: "情報商",     glb: "/models/pets/animal-fox.glb",   pos: [-12, -10], greeting: ["聽說北邊浮島有寶藏喔", "🪅 寶箱要趁早找"], dailyReward: 5 },
+  { id: "panda", emoji: "🐼", name: "熊貓老師",   role: "學習導師",   glb: "/models/pets/animal-panda.glb", pos: [6, -12],   greeting: ["連勝越長、XP 加成越多", "🧠 別忘了每日測驗"], dailyReward: 8 },
+  { id: "cat",   emoji: "🐱", name: "貓咪占星師", role: "命運使者",   glb: "/models/pets/animal-cat.glb",   pos: [-18, 0],   greeting: ["占卜師可比我準喔", "🔮 去島中央找他翻牌"], dailyReward: 5 },
+  { id: "deer",  emoji: "🦌", name: "鹿守林人",   role: "森林守護",   glb: "/models/pets/animal-deer.glb",  pos: [20, -4],   greeting: ["樹木砍了會再長、別擔心", "🪵 60 秒後 respawn"], dailyReward: 6 },
+  { id: "tiger", emoji: "🐯", name: "虎武師",     role: "挑戰守關",   glb: "/models/pets/animal-tiger.glb", pos: [4, 20],    greeting: ["副本都解了嗎？", "🎮 跟我來練功"], dailyReward: 8 },
+];
+
+const villagerSubs = new Set<(id: VillagerId) => void>();
+export function emitVillager(id: VillagerId) { exitPointerLockIfAny(); for (const f of villagerSubs) f(id); }
+export function subscribeVillager(fn: (id: VillagerId) => void) {
+  villagerSubs.add(fn);
+  return () => { villagerSubs.delete(fn); };
+}
+
+// localStorage 鎖每日領一次小獎勵
+const VG_KEY = "ai_island_villager_greet_v1";
+function todayKeyVg() {
+  return new Date(Date.now() + 8 * 3600_000).toISOString().slice(0, 10);
+}
+export function hasGreetedToday(id: VillagerId): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    const raw = localStorage.getItem(VG_KEY);
+    const s = raw ? JSON.parse(raw) : {};
+    return s[id] === todayKeyVg();
+  } catch { return false; }
+}
+export function markGreetedToday(id: VillagerId) {
+  try {
+    const raw = localStorage.getItem(VG_KEY);
+    const s = raw ? JSON.parse(raw) : {};
+    s[id] = todayKeyVg();
+    localStorage.setItem(VG_KEY, JSON.stringify(s));
+  } catch {}
+}
 export function subscribePetTalk(fn: () => void) {
   petSubs.add(fn);
   return () => { petSubs.delete(fn); };
@@ -554,7 +633,7 @@ export function subscribeAchUnlock(fn: (id: AchievementId) => void) {
 
 // ============ 背包打開事件（B 鍵） ============
 const bagSubs = new Set<() => void>();
-export function emitBagToggle() { for (const f of bagSubs) f(); }
+export function emitBagToggle() { exitPointerLockIfAny(); for (const f of bagSubs) f(); }
 export function subscribeBagToggle(fn: () => void) {
   bagSubs.add(fn);
   return () => { bagSubs.delete(fn); };

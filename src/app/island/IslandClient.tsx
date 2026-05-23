@@ -25,6 +25,7 @@ import { FishingMinigame } from "@/components/island/FishingMinigame";
 import { HousePanel } from "@/components/island/HousePanel";
 import { WeatherOverlay } from "@/components/island/WeatherOverlay";
 import { WelcomeOverlay } from "@/components/island/WelcomeOverlay";
+import { VillagerTalk } from "@/components/island/VillagerTalk";
 import { formatTWRelative } from "@/lib/format-date";
 
 const IslandV0 = dynamic(() => import("@/components/island/IslandV0"), {
@@ -107,6 +108,7 @@ export default function IslandClient({
       <HousePanel />
       <WeatherOverlay />
       <WelcomeOverlay />
+      <VillagerTalk />
       <PetTalk petName={petName} />
 
       <div className="absolute top-3 left-3 pointer-events-auto z-10 flex items-center gap-2">
