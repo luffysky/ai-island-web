@@ -120,7 +120,7 @@ export function Minimap() {
   }, [opened]);
 
   return (
-    <div className="absolute top-3 left-3 z-30 pointer-events-none mt-12 md:mt-0">
+    <div className="absolute top-3 left-3 z-30 pointer-events-none mt-12 md:mt-0" data-island-minimap>
       <div className="relative bg-black/40 backdrop-blur p-1.5 rounded-xl shadow-lg">
         <canvas ref={canvasRef} width={MAP_SIZE} height={MAP_SIZE} className="rounded-lg" />
         <div className="absolute -bottom-4 right-0 text-[9px] text-white/70 select-none">⬤ 你 · ⬤ 節點 · ⬤ NPC · ⬤ 寶箱</div>

@@ -3,6 +3,8 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { Sky, OrbitControls, KeyboardControls, useKeyboardControls, Text, Html } from "@react-three/drei";
+import { EffectComposer, Bloom, Vignette, ToneMapping } from "@react-three/postprocessing";
+import { ToneMappingMode } from "postprocessing";
 import * as THREE from "three";
 import {
   type IslandNodeId,
@@ -129,7 +131,7 @@ export default function IslandV0({
       ]}
     >
       <Canvas
-        camera={{ position: [0, 8, 14], fov: 55 }}
+        camera={{ position: [22, 22, 30], fov: 42 }}
         shadows
         style={{ width: "100%", height: "100%" }}
       >
@@ -156,6 +158,8 @@ function Scene({
       <ambientLight intensity={0.35} />
       <Ocean />
       <Island />
+      <CentralTower />
+      <SkyIsland />
       <Resources />
       <Chests />
       <Village completed={completedChapterIds} />
@@ -163,11 +167,24 @@ function Scene({
       {NODES.map((n) => (
         <Signpost key={n.id} node={n} />
       ))}
+      <ZoneMarkers />
       <Player petName={petName} />
       <DayNightCycle />
       <WeatherFx />
       <Rain />
-      <OrbitControls enablePan={false} enableZoom maxPolarAngle={Math.PI / 2.1} minDistance={6} maxDistance={30} />
+      <EffectComposer>
+        <Bloom intensity={0.6} luminanceThreshold={0.7} luminanceSmoothing={0.4} mipmapBlur />
+        <Vignette eskil={false} offset={0.15} darkness={0.7} />
+        <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
+      </EffectComposer>
+      <OrbitControls
+        enablePan={false}
+        enableZoom
+        maxPolarAngle={Math.PI / 2.4}
+        minPolarAngle={Math.PI / 5}
+        minDistance={10}
+        maxDistance={60}
+      />
     </>
   );
 }
@@ -255,6 +272,117 @@ function Island() {
         <cylinderGeometry args={[ISLAND_RADIUS + 1.5, ISLAND_RADIUS + 0.5, 0.5, 48]} />
         <meshStandardMaterial color="#e6d49a" />
       </mesh>
+      {/* 中央高地（任務大廳基座） */}
+      <mesh position={[0, 0.6, 0]} receiveShadow>
+        <cylinderGeometry args={[7, 8, 1.2, 24]} />
+        <meshStandardMaterial color="#4a8b48" />
+      </mesh>
+      {/* 4 個分區的階梯路徑（從中央往外 8 方向） */}
+      {[0, 1, 2, 3].map((i) => {
+        const ang = i * Math.PI / 2 + Math.PI / 4;
+        const len = ISLAND_RADIUS - 8;
+        return (
+          <mesh key={i} position={[Math.cos(ang) * (8 + len / 2), 0.55, Math.sin(ang) * (8 + len / 2)]} rotation={[0, -ang, 0]} receiveShadow>
+            <boxGeometry args={[len, 0.05, 1.6]} />
+            <meshStandardMaterial color="#c8b58a" />
+          </mesh>
+        );
+      })}
+    </group>
+  );
+}
+
+// 中央水晶高塔（任務大廳）
+function CentralTower() {
+  return (
+    <group position={[0, 1.2, 0]}>
+      {/* 塔基 */}
+      <mesh castShadow position={[0, 1, 0]}>
+        <cylinderGeometry args={[2.2, 3, 2, 8]} />
+        <meshStandardMaterial color="#d0d5dd" />
+      </mesh>
+      {/* 中段 */}
+      <mesh castShadow position={[0, 3.2, 0]}>
+        <cylinderGeometry args={[1.7, 2, 2.4, 8]} />
+        <meshStandardMaterial color="#e8edf3" />
+      </mesh>
+      {/* 上段 */}
+      <mesh castShadow position={[0, 5, 0]}>
+        <cylinderGeometry args={[1.2, 1.7, 1.6, 8]} />
+        <meshStandardMaterial color="#f5f7fa" />
+      </mesh>
+      {/* 水晶尖頂 */}
+      <mesh castShadow position={[0, 7, 0]} rotation={[0, performance.now() / 6000, 0]}>
+        <octahedronGeometry args={[1.1, 0]} />
+        <meshStandardMaterial color="#8be9fd" emissive="#22d3ee" emissiveIntensity={1.2} metalness={0.8} roughness={0.05} transparent opacity={0.85} />
+      </mesh>
+      <pointLight position={[0, 7, 0]} color="#8be9fd" intensity={2.5} distance={18} />
+      {/* 塔頂浮空文字 */}
+      <Text position={[0, 9, 0]} fontSize={0.5} color="#fff" outlineWidth={0.04} outlineColor="#000">
+        🏛️ 任務大廳
+      </Text>
+    </group>
+  );
+}
+
+// 北方漂浮天空之巔
+function SkyIsland() {
+  return (
+    <group position={[0, 14, -32]}>
+      {/* 漂浮島基 */}
+      <mesh castShadow>
+        <coneGeometry args={[5, 4, 8]} />
+        <meshStandardMaterial color="#7a9bc8" />
+      </mesh>
+      {/* 頂層草地 */}
+      <mesh position={[0, 2, 0]} castShadow>
+        <cylinderGeometry args={[4, 5, 1, 12]} />
+        <meshStandardMaterial color="#5fb360" />
+      </mesh>
+      {/* 天空塔 */}
+      <mesh position={[0, 3.5, 0]} castShadow>
+        <cylinderGeometry args={[0.8, 1.2, 3, 8]} />
+        <meshStandardMaterial color="#fff" />
+      </mesh>
+      <mesh position={[0, 5.5, 0]} castShadow rotation={[0, performance.now() / 5000, 0]}>
+        <octahedronGeometry args={[0.6, 0]} />
+        <meshStandardMaterial color="#bd93f9" emissive="#9333ea" emissiveIntensity={1} />
+      </mesh>
+      <pointLight position={[0, 5.5, 0]} color="#bd93f9" intensity={1.5} distance={12} />
+      <Text position={[0, 8, 0]} fontSize={0.6} color="#fff" outlineWidth={0.04} outlineColor="#000">
+        ⛰️ 天穹之巔
+      </Text>
+      <Text position={[0, 7.2, 0]} fontSize={0.25} color="#bd93f9" outlineWidth={0.02} outlineColor="#000">
+        AI 大師挑戰
+      </Text>
+    </group>
+  );
+}
+
+// 區域編號標記（朝向參考圖的 1-10 概念）
+function ZoneMarkers() {
+  const zones = [
+    { num: 1, label: "📚 章節 · 學習區",   pos: [12, 6, -8] as [number, number, number],   color: "#50fa7b" },
+    { num: 2, label: "🎮 副本 · 任務區",   pos: [-12, 6, 2] as [number, number, number],   color: "#ff79c6" },
+    { num: 3, label: "🏆 排行 · 競技區",   pos: [0, 6, -16] as [number, number, number],   color: "#ffd700" },
+    { num: 4, label: "🗣️ 討論 · 社交區",   pos: [18, 6, 14] as [number, number, number],   color: "#8be9fd" },
+    { num: 5, label: "✍️ 部落格 · 創作區", pos: [-20, 6, -12] as [number, number, number], color: "#bd93f9" },
+    { num: 6, label: "🧙 商人 · 道具",     pos: [-14, 5, 18] as [number, number, number],  color: "#ffb86c" },
+    { num: 7, label: "👴 任務 · 漁夫",     pos: [16, 5, 18] as [number, number, number],   color: "#fbbf24" },
+    { num: 8, label: "🔮 占卜 · 運勢",     pos: [0, 5, 8] as [number, number, number],     color: "#ec4899" },
+  ];
+  return (
+    <group>
+      {zones.map((z) => (
+        <group key={z.num} position={z.pos}>
+          <Text fontSize={0.6} color={z.color} outlineWidth={0.05} outlineColor="#000">
+            {z.num}
+          </Text>
+          <Text position={[0, -0.5, 0]} fontSize={0.22} color="#fff" outlineWidth={0.02} outlineColor="#000">
+            {z.label}
+          </Text>
+        </group>
+      ))}
     </group>
   );
 }

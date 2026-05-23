@@ -19,6 +19,7 @@
     "@monaco-editor/react": "^4.6.0",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.5.0",
+    "@react-three/postprocessing": "^3.0.4",
     "@supabase/ssr": "0.5.2",
     "@supabase/supabase-js": "2.90.1",
     "@tiptap/extension-character-count": "^3.23.5",

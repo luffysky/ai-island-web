@@ -13,12 +13,14 @@ export default async function IslandPage() {
   let chapterPctMap: Record<number, number> = {};
   let level = 1;
   let petName: string | null = null;
+  let userProfile: any = null;
   if (user) {
     const [{ data: progress }, { data: profile }, { data: pet }] = await Promise.all([
       supabase.from("lesson_progress").select("chapter_id, lesson_id").eq("user_id", user.id),
-      supabase.from("profiles").select("level").eq("id", user.id).single(),
+      supabase.from("profiles").select("username, display_name, avatar_url, level, xp, z_coin").eq("id", user.id).single(),
       supabase.from("pets").select("name").eq("user_id", user.id).maybeSingle(),
     ] as any);
+    userProfile = profile;
     const set = new Set<number>();
     const counts = new Map<number, number>();
     for (const p of (progress as any[]) ?? []) {
@@ -59,6 +61,7 @@ export default async function IslandPage() {
       completedChapterIds={completedChapterIds}
       level={level}
       petName={petName}
+      profile={userProfile}
       chapters={chapters.map((c) => ({ id: c.id, title: c.title, emoji: (c as any).emoji ?? "📘", pct: chapterPctMap[c.id] ?? 0 }))}
       topUsers={(topUsers as any) ?? []}
       threads={(latestThreads as any) ?? []}

@@ -18,6 +18,7 @@ import { BuffBar } from "@/components/island/BuffBar";
 import { Minimap } from "@/components/island/Minimap";
 import { BagPanel } from "@/components/island/BagPanel";
 import { AchievementToast } from "@/components/island/AchievementToast";
+import { GameHud } from "@/components/island/GameHud";
 import { formatTWRelative } from "@/lib/format-date";
 
 const IslandV0 = dynamic(() => import("@/components/island/IslandV0"), {
@@ -43,10 +44,13 @@ const NODE_TITLE: Record<IslandNodeId, string> = {
   blogs: "✍️ 部落格牆",
 };
 
+type ProfileLite = { username?: string | null; display_name?: string | null; avatar_url?: string | null; level?: number | null; xp?: number | null; z_coin?: number | null };
+
 export default function IslandClient({
   completedChapterIds,
   level,
   petName,
+  profile,
   chapters,
   topUsers,
   threads,
@@ -56,6 +60,7 @@ export default function IslandClient({
   completedChapterIds: number[];
   level: number;
   petName: string | null;
+  profile?: ProfileLite | null;
   chapters: ChapterRow[];
   topUsers: TopUser[];
   threads: Thread[];
@@ -89,6 +94,7 @@ export default function IslandClient({
       <Minimap />
       <BagPanel />
       <AchievementToast />
+      <GameHud profile={profile ?? null} />
       <PetTalk petName={petName} />
 
       <div className="absolute top-3 left-3 pointer-events-auto z-10 flex items-center gap-2">
