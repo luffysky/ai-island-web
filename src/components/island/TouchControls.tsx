@@ -52,15 +52,15 @@ export function TouchControls() {
     <>
       <div
         ref={joyRef}
-        className="absolute left-0 bottom-0 w-40 h-40 z-30 touch-none select-none"
-        style={{ touchAction: "none" }}
+        className="fixed left-0 bottom-0 w-44 h-44 touch-none select-none"
+        style={{ touchAction: "none", zIndex: 60 }}
       />
       <button
         type="button"
         onTouchStart={(e) => { e.preventDefault(); touchInteract(); }}
         onClick={touchInteract}
-        className="absolute right-6 bottom-10 z-30 w-16 h-16 rounded-full bg-yellow-400/90 text-black font-bold text-lg shadow-lg active:scale-90 active:bg-yellow-500"
-        style={{ touchAction: "none" }}
+        className="fixed right-6 bottom-10 w-16 h-16 rounded-full bg-yellow-400/90 text-black font-bold text-lg shadow-lg active:scale-90 active:bg-yellow-500"
+        style={{ touchAction: "none", zIndex: 60 }}
       >
         E
       </button>

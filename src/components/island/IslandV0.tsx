@@ -6,10 +6,13 @@ import { Sky, OrbitControls, KeyboardControls, useKeyboardControls, Text, Html }
 import * as THREE from "three";
 import {
   type IslandNodeId,
+  type ResourceKind,
   subscribeOpen as _sub,
   emitOpen,
   touchInput,
   consumeInteractPulse,
+  emitCollect,
+  RESOURCE_META,
 } from "./island-bus";
 /**
  * S7-S8 3D 島嶼 v0 — 批 1：能站上去的島
@@ -40,6 +43,32 @@ const NODES: Node[] = [
   { id: "leaderboard", position: [0, 0, -12], label: "🏆 排行榜" },
   { id: "forum", position: [14, 0, 12], label: "🗣️ 討論區" },
   { id: "blogs", position: [-15, 0, -10], label: "✍️ 部落格" },
+];
+
+// 採集物（位置 + 種類）
+type ResourceSpawn = { id: number; kind: ResourceKind; pos: [number, number] };
+const RESOURCES: ResourceSpawn[] = [
+  // 樹（島嶼中內）
+  { id: 1, kind: "wood", pos: [12, -8] },
+  { id: 2, kind: "wood", pos: [16, 2] },
+  { id: 3, kind: "wood", pos: [-14, -6] },
+  { id: 4, kind: "wood", pos: [-10, 10] },
+  { id: 5, kind: "wood", pos: [4, 14] },
+  { id: 6, kind: "wood", pos: [-4, -16] },
+  { id: 7, kind: "wood", pos: [18, 8] },
+  { id: 8, kind: "wood", pos: [-18, 4] },
+  // 水晶（島中心 / 燈塔附近）
+  { id: 20, kind: "crystal", pos: [-22, -18] },
+  { id: 21, kind: "crystal", pos: [22, -16] },
+  { id: 22, kind: "crystal", pos: [0, 22] },
+  { id: 23, kind: "crystal", pos: [-2, -22] },
+  // 貝殼（靠海邊、半徑接近 island radius）
+  { id: 40, kind: "shell", pos: [26, 8] },
+  { id: 41, kind: "shell", pos: [-26, 6] },
+  { id: 42, kind: "shell", pos: [10, 26] },
+  { id: 43, kind: "shell", pos: [-12, -24] },
+  { id: 44, kind: "shell", pos: [24, -14] },
+  { id: 45, kind: "shell", pos: [-22, 18] },
 ];
 
 // subscribeOpen / emitOpen / touchInput / consumeInteractPulse 從 ./island-bus import
@@ -107,23 +136,17 @@ function Scene({
 }) {
   return (
     <>
-      <Sky sunPosition={[100, 30, 100]} turbidity={6} rayleigh={2} />
-      <ambientLight intensity={0.6} />
-      <directionalLight
-        position={[20, 30, 10]}
-        intensity={1.2}
-        castShadow
-        shadow-mapSize={[1024, 1024]}
-      />
+      <ambientLight intensity={0.35} />
       <Ocean />
       <Island />
-      <Trees />
+      <Resources />
       <Village completed={completedChapterIds} />
       {level >= 5 && <Lighthouse />}
       {NODES.map((n) => (
         <Signpost key={n.id} node={n} />
       ))}
       <Player petName={petName} />
+      <DayNightCycle />
       <OrbitControls enablePan={false} enableZoom maxPolarAngle={Math.PI / 2.1} minDistance={6} maxDistance={30} />
     </>
   );
@@ -216,24 +239,130 @@ function Island() {
   );
 }
 
-function Trees() {
-  const positions: [number, number][] = [
-    [12, -8], [16, 2], [-14, -6], [-10, 10], [4, 14], [-4, -16], [18, 8], [-18, 4],
-  ];
+// 晝夜循環 — 一天 = 8 分鐘。0 = 日出、0.5 = 日落、1 = 夜晚。
+const DAY_LENGTH_MS = 8 * 60 * 1000;
+
+function DayNightCycle() {
+  const skyRef = useRef<any>(null);
+  const sunRef = useRef<THREE.Vector3>(new THREE.Vector3(100, 30, 100));
+  const dirLightRef = useRef<THREE.DirectionalLight>(null);
+
+  useFrame(() => {
+    const t = (performance.now() % DAY_LENGTH_MS) / DAY_LENGTH_MS;
+    // 太陽角度：0..π 是白天、π..2π 是夜晚
+    const angle = t * Math.PI * 2;
+    const sunHeight = Math.sin(angle); // -1..1
+    const sunX = Math.cos(angle) * 100;
+    const sunY = sunHeight * 80;
+    const sunZ = 50;
+    sunRef.current.set(sunX, sunY, sunZ);
+    if (skyRef.current) {
+      skyRef.current.material.uniforms.sunPosition.value.copy(sunRef.current);
+      skyRef.current.material.uniforms.rayleigh.value = sunHeight > 0 ? 2 : 0.2;
+      skyRef.current.material.uniforms.turbidity.value = sunHeight > 0 ? 6 : 2;
+    }
+    if (dirLightRef.current) {
+      dirLightRef.current.intensity = Math.max(0, sunHeight) * 1.2;
+      dirLightRef.current.position.set(sunX * 0.3, Math.max(5, sunY * 0.5), sunZ * 0.3);
+    }
+  });
+
+  return (
+    <>
+      <Sky ref={skyRef as any} sunPosition={[100, 30, 50]} turbidity={6} rayleigh={2} />
+      <directionalLight ref={dirLightRef} position={[20, 30, 10]} intensity={1.2} castShadow shadow-mapSize={[1024, 1024]} color="#fff5e1" />
+      <hemisphereLight args={["#aacfff", "#3a2e1a", 0.3]} />
+    </>
+  );
+}
+
+// 採集物 — 樹 / 水晶 / 貝殼。每個有 cooldown、被採後消失、cooldown 結束後重生。
+// availableUntil 用 module-level Map 跨 component 共享、player useFrame 直接讀寫。
+const resourceDownUntil = new Map<number, number>(); // id → epoch ms
+
+function isResourceAvailable(id: number): boolean {
+  const until = resourceDownUntil.get(id);
+  if (!until) return true;
+  return performance.now() > until;
+}
+
+function harvest(id: number, kind: ResourceKind) {
+  const meta = RESOURCE_META[kind];
+  resourceDownUntil.set(id, performance.now() + meta.respawnSec * 1000);
+  emitCollect({ kind, count: 1 });
+}
+
+function Resources() {
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setTick((v) => v + 1), 1000);
+    return () => clearInterval(t);
+  }, []);
   return (
     <group>
-      {positions.map(([x, z], i) => (
-        <group key={i} position={[x, 0.5, z]} castShadow>
-          <mesh position={[0, 0.7, 0]}>
-            <cylinderGeometry args={[0.25, 0.3, 1.4]} />
-            <meshStandardMaterial color="#7b4a1f" />
-          </mesh>
-          <mesh position={[0, 2, 0]} castShadow>
-            <coneGeometry args={[1.1, 2.4, 8]} />
-            <meshStandardMaterial color="#2d6a3a" />
-          </mesh>
-        </group>
+      {RESOURCES.map((r) => (
+        <ResourceMesh key={r.id} spawn={r} available={isResourceAvailable(r.id)} />
       ))}
+    </group>
+  );
+}
+
+function ResourceMesh({ spawn, available }: { spawn: ResourceSpawn; available: boolean }) {
+  const [x, z] = spawn.pos;
+  if (spawn.kind === "wood") {
+    return (
+      <group position={[x, 0.5, z]}>
+        {available ? (
+          <>
+            <mesh position={[0, 0.7, 0]} castShadow>
+              <cylinderGeometry args={[0.25, 0.3, 1.4]} />
+              <meshStandardMaterial color="#7b4a1f" />
+            </mesh>
+            <mesh position={[0, 2, 0]} castShadow>
+              <coneGeometry args={[1.1, 2.4, 8]} />
+              <meshStandardMaterial color="#2d6a3a" />
+            </mesh>
+          </>
+        ) : (
+          <mesh position={[0, 0.1, 0]}>
+            <cylinderGeometry args={[0.3, 0.3, 0.2]} />
+            <meshStandardMaterial color="#4a2f1a" />
+          </mesh>
+        )}
+      </group>
+    );
+  }
+  if (spawn.kind === "crystal") {
+    return (
+      <group position={[x, 0.4, z]}>
+        {available ? (
+          <mesh castShadow rotation={[0, performance.now() / 4000, 0]}>
+            <octahedronGeometry args={[0.5, 0]} />
+            <meshStandardMaterial color="#8be9fd" emissive="#22d3ee" emissiveIntensity={0.4} metalness={0.6} roughness={0.1} />
+          </mesh>
+        ) : (
+          <mesh position={[0, -0.3, 0]}>
+            <boxGeometry args={[0.6, 0.1, 0.6]} />
+            <meshStandardMaterial color="#5a6a7a" />
+          </mesh>
+        )}
+      </group>
+    );
+  }
+  // shell
+  return (
+    <group position={[x, 0.05, z]}>
+      {available ? (
+        <mesh castShadow rotation={[Math.PI / 6, 0, 0]}>
+          <sphereGeometry args={[0.28, 12, 8, 0, Math.PI]} />
+          <meshStandardMaterial color="#ffe1c4" roughness={0.5} side={2} />
+        </mesh>
+      ) : (
+        <mesh position={[0, -0.05, 0]}>
+          <circleGeometry args={[0.3, 12]} />
+          <meshStandardMaterial color="#a89070" />
+        </mesh>
+      )}
     </group>
   );
 }
@@ -318,8 +447,9 @@ function Player({ petName }: { petName: string | null }) {
     playerPos.x = g.position.x;
     playerPos.z = g.position.z;
 
-    // 找最近的節點（在互動半徑內）
-    let nearest: Node | null = null;
+    // 找最近的「可互動」物件：節點 OR 採集物
+    let nearestNode: Node | null = null;
+    let nearestResource: ResourceSpawn | null = null;
     let nearestD2 = INTERACT_RADIUS * INTERACT_RADIUS;
     for (const n of NODES) {
       const dx = n.position[0] - g.position.x;
@@ -327,16 +457,29 @@ function Player({ petName }: { petName: string | null }) {
       const d2 = dx * dx + dz * dz;
       if (d2 < nearestD2) {
         nearestD2 = d2;
-        nearest = n;
+        nearestNode = n;
+        nearestResource = null;
       }
     }
-    setActiveNode(nearest?.id ?? null);
+    for (const r of RESOURCES) {
+      if (!isResourceAvailable(r.id)) continue;
+      const dx = r.pos[0] - g.position.x;
+      const dz = r.pos[1] - g.position.z;
+      const d2 = dx * dx + dz * dz;
+      if (d2 < nearestD2) {
+        nearestD2 = d2;
+        nearestResource = r;
+        nearestNode = null;
+      }
+    }
+    setActiveNode(nearestNode?.id ?? null);
 
-    // 互動鍵（edge trigger）— 不跳走、廣播開島內 modal
+    // 互動鍵（edge trigger）
     const ePressed = !!keys[K[K.interact]];
     const eEdge = (ePressed && !eDownRef.current) || consumeInteractPulse();
-    if (eEdge && nearest) {
-      emitOpen(nearest.id);
+    if (eEdge) {
+      if (nearestNode) emitOpen(nearestNode.id);
+      else if (nearestResource) harvest(nearestResource.id, nearestResource.kind);
     }
     eDownRef.current = ePressed;
 
@@ -433,7 +576,7 @@ function Hud() {
     return () => clearTimeout(t);
   }, []);
   return (
-    <div className="pointer-events-none absolute inset-x-0 bottom-4 flex justify-center">
+    <div className="pointer-events-none absolute inset-x-0 bottom-4 hidden md:flex justify-center">
       <div className="pointer-events-auto rounded-xl bg-black/60 backdrop-blur text-white text-xs px-3 py-2 flex gap-3 items-center">
         <span>WASD 走動</span>
         <span className="opacity-50">·</span>

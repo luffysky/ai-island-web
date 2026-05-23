@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { subscribeOpen, type IslandNodeId } from "@/components/island/island-bus";
 import { TouchControls } from "@/components/island/TouchControls";
+import { InventoryBag } from "@/components/island/InventoryBag";
 import { formatTWRelative } from "@/lib/format-date";
 
 const IslandV0 = dynamic(() => import("@/components/island/IslandV0"), {
@@ -68,6 +69,7 @@ export default function IslandClient({
     <div className="fixed inset-0 top-14 bg-black">
       <IslandV0 completedChapterIds={completedChapterIds} level={level} petName={petName} />
       <TouchControls />
+      <InventoryBag />
 
       <div className="absolute top-3 left-3 pointer-events-auto z-10 flex items-center gap-2">
         <Link href="/" className="text-xs text-white/70 hover:text-white px-3 py-1.5 rounded-full bg-black/40 backdrop-blur">

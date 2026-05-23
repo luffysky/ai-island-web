@@ -70,6 +70,8 @@ export function AdminFloatingToolbar() {
   if (profile?.role !== "admin") return null;
   if (pathname.startsWith(`${ADMIN_BASE}`)) return null;
   if (pathname.startsWith("/admin")) return null;
+  // 全螢幕互動場景（島嶼）不顯示、不然會蓋住操作鍵 + 搖桿
+  if (pathname.startsWith("/island")) return null;
   if (hidden) return null;
   if (!pos) return null;
 
@@ -140,8 +142,14 @@ export function AdminFloatingToolbar() {
       rootRef.current.releasePointerCapture(e.pointerId);
     }
     if (d.moved) {
+      // 用 delta 直接算最終 pos、不依賴 React state（closure 可能拿到舊 pos）
+      const finalPos = clampToViewport({
+        x: d.elX + (e.clientX - d.startX),
+        y: d.elY + (e.clientY - d.startY),
+      });
+      setPos(finalPos);
       try {
-        localStorage.setItem(POS_KEY, JSON.stringify(pos));
+        localStorage.setItem(POS_KEY, JSON.stringify(finalPos));
       } catch {}
     } else {
       // 純點擊、開／關面板
