@@ -56,7 +56,15 @@ function useActiveNode() {
   return id;
 }
 
-export default function IslandV0() {
+export default function IslandV0({
+  completedChapterIds = [],
+  level = 1,
+  petName,
+}: {
+  completedChapterIds?: number[];
+  level?: number;
+  petName?: string | null;
+}) {
   return (
     <KeyboardControls
       map={[
@@ -74,7 +82,7 @@ export default function IslandV0() {
         style={{ width: "100%", height: "100%" }}
       >
         <Suspense fallback={null}>
-          <Scene />
+          <Scene completedChapterIds={completedChapterIds} level={level} petName={petName ?? null} />
         </Suspense>
       </Canvas>
       <Hud />
@@ -82,7 +90,15 @@ export default function IslandV0() {
   );
 }
 
-function Scene() {
+function Scene({
+  completedChapterIds,
+  level,
+  petName,
+}: {
+  completedChapterIds: number[];
+  level: number;
+  petName: string | null;
+}) {
   return (
     <>
       <Sky sunPosition={[100, 30, 100]} turbidity={6} rayleigh={2} />
@@ -96,12 +112,75 @@ function Scene() {
       <Ocean />
       <Island />
       <Trees />
+      <Village completed={completedChapterIds} />
+      {level >= 5 && <Lighthouse />}
       {NODES.map((n) => (
         <Signpost key={n.id} node={n} />
       ))}
-      <Player />
+      <Player petName={petName} />
       <OrbitControls enablePan={false} enableZoom maxPolarAngle={Math.PI / 2.1} minDistance={6} maxDistance={30} />
     </>
+  );
+}
+
+function Village({ completed }: { completed: number[] }) {
+  // 用螺旋排列、每完成一個章節升一棟房；最多顯示 30 棟
+  const houses = completed.slice(0, 30).map((chId, i) => {
+    const angle = i * 0.55;
+    const r = 4 + i * 0.6;
+    const x = Math.cos(angle) * r;
+    const z = Math.sin(angle) * r + 18;
+    const variant = chId % 3;
+    return { key: chId, x, z, variant };
+  });
+  return (
+    <group>
+      {houses.map((h) => (
+        <House key={h.key} position={[h.x, 0, h.z]} variant={h.variant} />
+      ))}
+    </group>
+  );
+}
+
+function House({ position, variant }: { position: [number, number, number]; variant: number }) {
+  const wallColor = ["#d9c2a3", "#cfb89e", "#e6c7a6"][variant];
+  const roofColor = ["#9c4f3a", "#7d5a2d", "#5c8a4a"][variant];
+  return (
+    <group position={position}>
+      <mesh position={[0, 0.6, 0]} castShadow>
+        <boxGeometry args={[1.4, 1.2, 1.4]} />
+        <meshStandardMaterial color={wallColor} />
+      </mesh>
+      <mesh position={[0, 1.5, 0]} rotation={[0, Math.PI / 4, 0]} castShadow>
+        <coneGeometry args={[1.1, 0.8, 4]} />
+        <meshStandardMaterial color={roofColor} />
+      </mesh>
+      {/* 門 */}
+      <mesh position={[0, 0.45, 0.71]}>
+        <boxGeometry args={[0.3, 0.6, 0.02]} />
+        <meshStandardMaterial color="#3a2715" />
+      </mesh>
+    </group>
+  );
+}
+
+function Lighthouse() {
+  return (
+    <group position={[-22, 0, -22]}>
+      <mesh position={[0, 2, 0]} castShadow>
+        <cylinderGeometry args={[0.6, 0.8, 4]} />
+        <meshStandardMaterial color="#fff" />
+      </mesh>
+      <mesh position={[0, 4.4, 0]} castShadow>
+        <cylinderGeometry args={[0.8, 0.8, 0.8]} />
+        <meshStandardMaterial color="#d23" />
+      </mesh>
+      <mesh position={[0, 5.0, 0]} castShadow>
+        <coneGeometry args={[0.9, 0.6, 8]} />
+        <meshStandardMaterial color="#444" />
+      </mesh>
+      <pointLight position={[0, 4.4, 0]} color="#ffd700" intensity={2} distance={20} />
+    </group>
   );
 }
 
@@ -179,8 +258,9 @@ function Signpost({ node }: { node: Node }) {
   );
 }
 
-function Player() {
+function Player({ petName }: { petName: string | null }) {
   const ref = useRef<THREE.Group>(null);
+  const petRef = useRef<THREE.Group>(null);
   const [, getKeys] = useKeyboardControls<string>();
   const { camera } = useThree();
   const router = useRouter();
@@ -234,25 +314,89 @@ function Player() {
       router.push(nearest.href as any);
     }
     eDownRef.current = ePressed;
+
+    // 寵物跟隨：lerp 到玩家後方
+    const pet = petRef.current;
+    if (pet) {
+      const targetX = g.position.x - Math.sin(g.rotation.y) * 1.5;
+      const targetZ = g.position.z - Math.cos(g.rotation.y) * 1.5;
+      pet.position.x += (targetX - pet.position.x) * Math.min(1, dt * 3);
+      pet.position.z += (targetZ - pet.position.z) * Math.min(1, dt * 3);
+      const dx = g.position.x - pet.position.x;
+      const dz = g.position.z - pet.position.z;
+      if (dx * dx + dz * dz > 0.05) {
+        pet.rotation.y = Math.atan2(dx, dz);
+      }
+      // 跳動
+      pet.position.y = 0.4 + Math.abs(Math.sin(performance.now() / 200)) * 0.1;
+    }
   });
 
   return (
-    <group ref={ref} position={[0, 1.1, 6]}>
-      {/* 身體 */}
+    <>
+      <group ref={ref} position={[0, 1.1, 6]}>
+        {/* 身體 */}
+        <mesh castShadow position={[0, 0.5, 0]}>
+          <capsuleGeometry args={[0.35, 0.8, 6, 12]} />
+          <meshStandardMaterial color="#50fa7b" />
+        </mesh>
+        {/* 頭 */}
+        <mesh castShadow position={[0, 1.4, 0]}>
+          <sphereGeometry args={[0.32, 16, 16]} />
+          <meshStandardMaterial color="#ffd9a8" />
+        </mesh>
+        {/* 朝向小錐 */}
+        <mesh position={[0, 1.4, 0.4]}>
+          <coneGeometry args={[0.06, 0.18, 8]} />
+          <meshStandardMaterial color="#222" />
+        </mesh>
+      </group>
+
+      {/* 寵物 */}
+      {petName && (
+        <group ref={petRef} position={[0, 0.4, 8]}>
+          <mesh castShadow>
+            <sphereGeometry args={[0.32, 16, 16]} />
+            <meshStandardMaterial color="#ff79c6" />
+          </mesh>
+          {/* 眼 */}
+          <mesh position={[0.12, 0.1, 0.28]}>
+            <sphereGeometry args={[0.04, 8, 8]} />
+            <meshStandardMaterial color="#222" />
+          </mesh>
+          <mesh position={[-0.12, 0.1, 0.28]}>
+            <sphereGeometry args={[0.04, 8, 8]} />
+            <meshStandardMaterial color="#222" />
+          </mesh>
+          <Text position={[0, 0.7, 0]} fontSize={0.18} color="#fff" outlineWidth={0.01} outlineColor="#000">
+            {petName}
+          </Text>
+        </group>
+      )}
+
+      {/* 簡易 NPC — 海岸老人 */}
+      <NpcElder />
+    </>
+  );
+}
+
+function NpcElder() {
+  return (
+    <group position={[16, 0.4, 14]}>
       <mesh castShadow position={[0, 0.5, 0]}>
-        <capsuleGeometry args={[0.35, 0.8, 6, 12]} />
-        <meshStandardMaterial color="#50fa7b" />
+        <capsuleGeometry args={[0.3, 0.6, 6, 12]} />
+        <meshStandardMaterial color="#a8b9d0" />
       </mesh>
-      {/* 頭 */}
-      <mesh castShadow position={[0, 1.4, 0]}>
-        <sphereGeometry args={[0.32, 16, 16]} />
-        <meshStandardMaterial color="#ffd9a8" />
+      <mesh castShadow position={[0, 1.25, 0]}>
+        <sphereGeometry args={[0.28, 16, 16]} />
+        <meshStandardMaterial color="#f5dcc4" />
       </mesh>
-      {/* 朝向小錐 */}
-      <mesh position={[0, 1.4, 0.4]}>
-        <coneGeometry args={[0.06, 0.18, 8]} />
-        <meshStandardMaterial color="#222" />
-      </mesh>
+      <Text position={[0, 1.9, 0]} fontSize={0.18} color="#fff" outlineWidth={0.01} outlineColor="#000">
+        👴 漁夫長老
+      </Text>
+      <Text position={[0, 1.65, 0]} fontSize={0.13} color="#ffd700" outlineWidth={0.01} outlineColor="#000">
+        歡迎來島上，新手
+      </Text>
     </group>
   );
 }

@@ -1,30 +1,28 @@
-"use client";
+import { createSupabaseServer } from "@/lib/supabase-server";
+import IslandClient from "./IslandClient";
 
-import dynamic from "next/dynamic";
-import Link from "next/link";
+export const dynamic = "force-dynamic";
 
-const IslandV0 = dynamic(() => import("@/components/island/IslandV0"), {
-  ssr: false,
-  loading: () => (
-    <div className="min-h-[80vh] flex items-center justify-center">
-      <div className="text-fg-muted">🏝️ 載入島嶼中…</div>
-    </div>
-  ),
-});
+export default async function IslandPage() {
+  const supabase = await createSupabaseServer();
+  const { data: { user } } = await supabase.auth.getUser();
 
-/**
- * S7-S8 批 1：能站上去的島。
- * 之後批次會加進入節點、進度連動村莊、NPC、寵物跟隨。
- */
-export default function IslandPage() {
-  return (
-    <div className="fixed inset-0 top-14 bg-black">
-      <IslandV0 />
-      <div className="absolute top-3 left-3 pointer-events-auto">
-        <Link href="/" className="text-xs text-white/70 hover:text-white px-3 py-1.5 rounded-full bg-black/40 backdrop-blur">
-          ← 離開島嶼
-        </Link>
-      </div>
-    </div>
-  );
+  let completedChapterIds: number[] = [];
+  let level = 1;
+  let petName: string | null = null;
+  if (user) {
+    const [{ data: progress }, { data: profile }, { data: pet }] = await Promise.all([
+      supabase.from("lesson_progress").select("chapter_id").eq("user_id", user.id),
+      supabase.from("profiles").select("level").eq("id", user.id).single(),
+      supabase.from("pets").select("name").eq("user_id", user.id).maybeSingle(),
+    ] as any);
+    // 章節完成定義：該 chapter 至少完成一個 lesson（簡單版）
+    const set = new Set<number>();
+    for (const p of (progress as any[]) ?? []) if (p.chapter_id) set.add(Number(p.chapter_id));
+    completedChapterIds = Array.from(set).sort((a, b) => a - b);
+    level = (profile as any)?.level ?? 1;
+    petName = (pet as any)?.name ?? null;
+  }
+
+  return <IslandClient completedChapterIds={completedChapterIds} level={level} petName={petName} />;
 }
