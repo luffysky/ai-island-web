@@ -38,6 +38,7 @@ import {
   emitHouseOpen,
   readHouseState,
   subscribeHouse,
+  touchLook,
 } from "./island-bus";
 /**
  * S7-S8 3D 島嶼 v0 — 批 1：能站上去的島
@@ -849,6 +850,17 @@ function Player({ petName }: { petName: string | null }) {
     camera.position.x = g.position.x;
     camera.position.y = 1.6;
     camera.position.z = g.position.z;
+
+    // 手機右側拖視角：把 touchLook delta 加到 camera rotation（emulate PointerLock）
+    if (touchLook.dx !== 0 || touchLook.dy !== 0) {
+      const sens = 0.003;
+      camera.rotation.order = "YXZ"; // yaw → pitch、避免 roll
+      camera.rotation.y -= touchLook.dx * sens;
+      camera.rotation.x -= touchLook.dy * sens;
+      camera.rotation.x = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, camera.rotation.x));
+      touchLook.dx = 0;
+      touchLook.dy = 0;
+    }
     // 累積走路距離（公尺、整數）→ 每 1m 上報一次 steps quest + 成就
     if (lastPosRef.current) {
       const ddx = g.position.x - lastPosRef.current.x;

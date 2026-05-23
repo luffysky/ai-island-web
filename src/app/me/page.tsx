@@ -5,6 +5,7 @@ import { CareerProgress } from "@/components/me/CareerProgress";
 import { QuestsPanel } from "@/components/me/QuestsPanel";
 import { StreakHeatmap } from "@/components/me/StreakHeatmap";
 import { FriendsFeed } from "@/components/me/FriendsFeed";
+import { LeetcodeCard } from "@/components/me/LeetcodeCard";
 import { formatTWDate } from "@/lib/format-date";
 
 export default async function MeOverviewPage() {
@@ -73,6 +74,9 @@ export default async function MeOverviewPage() {
 
       {/* 解鎖工作力 */}
       <CareerProgress completedSet={completedSet} />
+
+      {/* Leetcode 解題進度 */}
+      <LeetcodeCard />
 
       {/* 全站動態 feed */}
       <FriendsFeed />

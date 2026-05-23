@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { touchInput, touchInteract } from "./island-bus";
+import { touchInput, touchInteract, touchLook } from "./island-bus";
 
 /**
  * 手機版虛擬搖桿（左下） + 互動鈕（右下）。
@@ -64,6 +64,31 @@ export function TouchControls() {
       >
         E
       </button>
+      {/* 右側拖視角區（透明、handle touchmove dx/dy 累積） */}
+      <LookPad />
     </>
+  );
+}
+
+function LookPad() {
+  const lastRef = useRef<{ x: number; y: number } | null>(null);
+  return (
+    <div
+      className="fixed top-0 right-0 bottom-0 w-1/2 z-40 touch-none select-none"
+      style={{ touchAction: "none" }}
+      onTouchStart={(e) => {
+        const t = e.touches[0];
+        if (t) lastRef.current = { x: t.clientX, y: t.clientY };
+      }}
+      onTouchMove={(e) => {
+        const t = e.touches[0];
+        if (!t || !lastRef.current) return;
+        touchLook.dx += t.clientX - lastRef.current.x;
+        touchLook.dy += t.clientY - lastRef.current.y;
+        lastRef.current = { x: t.clientX, y: t.clientY };
+      }}
+      onTouchEnd={() => { lastRef.current = null; }}
+      onTouchCancel={() => { lastRef.current = null; }}
+    />
   );
 }

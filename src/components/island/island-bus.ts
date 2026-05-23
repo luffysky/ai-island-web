@@ -16,6 +16,8 @@ export function emitOpen(id: IslandNodeId) {
 
 // 手機虛擬搖桿輸入（TouchControls 寫進、Player useFrame 讀）
 export const touchInput = { x: 0, y: 0, interact: false, run: false };
+// 手機右側拖視角累積（FPV）— Player useFrame 讀後 reset
+export const touchLook = { dx: 0, dy: 0 };
 
 let interactPulse = false;
 export function touchInteract() { interactPulse = true; }
