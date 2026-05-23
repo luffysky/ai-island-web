@@ -1,6 +1,8 @@
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { chapters } from "@/data/chapters";
 import Link from "next/link";
+import { NotesExportButton } from "./NotesExportButton";
+import { formatTW } from "@/lib/format-date";
 
 export default async function NotesPage() {
   const supabase = await createSupabaseServer();
@@ -15,8 +17,13 @@ export default async function NotesPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold">📝 我的筆記</h1>
-      <p className="text-sm text-fg-muted">共 {notes?.length ?? 0} 則筆記</p>
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <div>
+          <h1 className="text-2xl font-bold">📝 我的筆記</h1>
+          <p className="text-sm text-fg-muted">共 {notes?.length ?? 0} 則筆記</p>
+        </div>
+        {(notes?.length ?? 0) > 0 && <NotesExportButton />}
+      </div>
 
       {notes?.length === 0 ? (
         <div className="bg-bg-card border border-border rounded-xl p-12 text-center text-fg-muted">
@@ -49,7 +56,7 @@ export default async function NotesPage() {
                 </div>
                 <p className="text-sm text-fg-muted whitespace-pre-wrap line-clamp-3">{n.content}</p>
                 <div className="text-xs text-fg-muted mt-2">
-                  {new Date(n.updated_at).toLocaleString('zh-TW')}
+                  {formatTW(n.updated_at)}
                   {n.likes > 0 && <span className="ml-2">👍 {n.likes}</span>}
                 </div>
               </Link>
