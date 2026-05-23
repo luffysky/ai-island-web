@@ -62,6 +62,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               <AdminLink href="/admin/analytics/learning-events">🧪 學習行為事件</AdminLink>
               <AdminLink href="/admin/web-vitals">⚡ Web Vitals</AdminLink>
               <AdminLink href="/admin/ab">🧪 A/B 測試</AdminLink>
+              <AdminLink href="/admin/cohort">📈 Cohort 留存</AdminLink>
             </NavGroup>
 
             <NavGroup title="用戶">
