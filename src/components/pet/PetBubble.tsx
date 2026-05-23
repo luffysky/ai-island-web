@@ -21,7 +21,9 @@ export function PlainBubble({ text }: { text: string }) {
         borderRadius: 10,
         padding: "4px 10px",
         fontSize: 12,
-        whiteSpace: "nowrap",
+        maxWidth: "min(80vw, 320px)",
+        wordBreak: "break-word",
+        textAlign: "center",
         boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
       }}
     >
@@ -44,7 +46,9 @@ export function CuteBubble({ text }: { text: string }) {
         borderRadius: 14,
         padding: "5px 14px 5px 12px",
         fontSize: 12,
-        whiteSpace: "nowrap",
+        maxWidth: "min(80vw, 320px)",
+        wordBreak: "break-word",
+        textAlign: "center",
         color: "#7a1d3d",
         fontWeight: 500,
         boxShadow:

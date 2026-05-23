@@ -29,6 +29,8 @@ type Pos = { x: number; y: number };
 const AUTO_MSG_CAP = 3;
 const TICK_INTERVAL_MS = 60_000;
 const LINE_DURATION_MS = 4500;
+const MOBILE_BREAKPOINT = 768; // < 768px 視為手機
+const MOBILE_SCALE = 0.7;
 
 export function Pet() {
   const { status, user, profile } = useAuth();
@@ -37,6 +39,7 @@ export function Pet() {
   const [pet, setPet] = useState<PetState | null>(null);
   const [pos, setPos] = useState<Pos>({ x: 200, y: 400 });
   const [target, setTarget] = useState<Pos>({ x: 200, y: 400 });
+  const [isMobile, setIsMobile] = useState(false);
   const [mood, setMood] = useState<string>("idle");
   const [line, setLine] = useState<string | null>(null);
   const [hidden, setHidden] = useState(false);
@@ -118,13 +121,22 @@ export function Pet() {
     if (text) say(text, opts);
   };
 
-  // 初始位置
+  // 偵測手機
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const init = pickPosition();
+    const update = () => setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
+  // 初始位置（手機放右下角安全區、不擋閱讀）
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const init = isMobile ? pickMobileCorner() : pickPosition();
     setPos(init);
     setTarget(init);
-  }, []);
+  }, [isMobile]);
 
   // session greet（一次性、登入後 1.5s 觸發）
   useEffect(() => {
@@ -141,13 +153,13 @@ export function Pet() {
     return () => clearTimeout(t);
   }, [pet, ctx, hideRoute, vipTier]);
 
-  // 走動
+  // 走動（手機停在角落、不亂跑、避免覆蓋學員閱讀區）
   useEffect(() => {
-    if (!pet?.walk_enabled || hideRoute || hidden || dragging || chatOpen) return;
+    if (!pet?.walk_enabled || hideRoute || hidden || dragging || chatOpen || isMobile) return;
     const tick = () => setTarget(pickPosition());
     const id = window.setInterval(tick, 8000);
     return () => window.clearInterval(id);
-  }, [pet?.walk_enabled, hideRoute, hidden, dragging, chatOpen]);
+  }, [pet?.walk_enabled, hideRoute, hidden, dragging, chatOpen, isMobile]);
 
   // 動畫
   useEffect(() => {
@@ -166,9 +178,9 @@ export function Pet() {
     return () => window.cancelAnimationFrame(frame);
   }, [target, dragging]);
 
-  // 避開鼠標
+  // 避開鼠標（手機沒鼠標、關閉）
   useEffect(() => {
-    if (!pet?.walk_enabled || dragging || chatOpen) return;
+    if (!pet?.walk_enabled || dragging || chatOpen || isMobile) return;
     const onMove = (e: MouseEvent) => {
       const dx = pos.x - e.clientX;
       const dy = pos.y - e.clientY;
@@ -183,7 +195,7 @@ export function Pet() {
     };
     window.addEventListener("mousemove", onMove);
     return () => window.removeEventListener("mousemove", onMove);
-  }, [pet?.walk_enabled, pos.x, pos.y, dragging, chatOpen]);
+  }, [pet?.walk_enabled, pos.x, pos.y, dragging, chatOpen, isMobile]);
 
   // ---------- 事件監聽 ----------
   useEffect(() => {
@@ -378,7 +390,7 @@ export function Pet() {
     return () => window.clearInterval(id);
   }, [pet, hideRoute, hidden, pathname]);
 
-  // ---------- 拖曳 ----------
+  // ---------- 拖曳（mouse + touch） ----------
   useEffect(() => {
     if (!dragging) return;
     const onMove = (e: MouseEvent) => {
@@ -388,15 +400,29 @@ export function Pet() {
         y: e.clientY + dragOffset.current.dy,
       });
     };
+    const onTouchMove = (e: TouchEvent) => {
+      if (!dragOffset.current) return;
+      const t = e.touches[0];
+      if (!t) return;
+      e.preventDefault();
+      setPos({
+        x: t.clientX + dragOffset.current.dx,
+        y: t.clientY + dragOffset.current.dy,
+      });
+    };
     const onUp = () => {
       setDragging(false);
       setTarget(pos);
     };
     window.addEventListener("mousemove", onMove);
     window.addEventListener("mouseup", onUp);
+    window.addEventListener("touchmove", onTouchMove, { passive: false });
+    window.addEventListener("touchend", onUp);
     return () => {
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mouseup", onUp);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("touchend", onUp);
     };
   }, [dragging, pos]);
 
@@ -497,8 +523,33 @@ export function Pet() {
             window.addEventListener("mousemove", onMoveCheck);
             window.addEventListener("mouseup", onUpCheck);
           }}
+          onTouchStart={(e) => {
+            const t = e.touches[0];
+            if (!t) return;
+            const startX = t.clientX;
+            const startY = t.clientY;
+            const offset = { dx: pos.x - t.clientX, dy: pos.y - t.clientY };
+            let moved = false;
+            const onTouchMoveCheck = (ev: TouchEvent) => {
+              const tt = ev.touches[0];
+              if (!tt) return;
+              if (Math.hypot(tt.clientX - startX, tt.clientY - startY) > 8) {
+                moved = true;
+                dragOffset.current = offset;
+                setDragging(true);
+                window.removeEventListener("touchmove", onTouchMoveCheck);
+              }
+            };
+            const onTouchEndCheck = () => {
+              window.removeEventListener("touchmove", onTouchMoveCheck);
+              window.removeEventListener("touchend", onTouchEndCheck);
+              if (!moved) setChatOpen(true);
+            };
+            window.addEventListener("touchmove", onTouchMoveCheck, { passive: true });
+            window.addEventListener("touchend", onTouchEndCheck);
+          }}
           style={{
-            fontSize: 40,
+            fontSize: isMobile ? Math.round(40 * MOBILE_SCALE) : 40,
             background: "transparent",
             border: "none",
             cursor: dragging ? "grabbing" : "grab",
@@ -506,6 +557,7 @@ export function Pet() {
             pointerEvents: "auto",
             position: "relative",
             zIndex: 1,
+            touchAction: "none",
           }}
           className={moodFx}
           title={`${pet.name}（${species.name}）— 點開聊天、拖曳移位`}
@@ -665,6 +717,17 @@ function pickPosition(): Pos {
   const x = xMin + Math.random() * (xMax - xMin);
   const y = yMin + Math.random() * (yMax - yMin);
   return { x, y };
+}
+
+// 手機：固定放右下角安全區、避免擋閱讀內容
+function pickMobileCorner(): Pos {
+  if (typeof window === "undefined") return { x: 280, y: 600 };
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  // 用 env(safe-area-inset-*) 估算（iPhone 瀏海 / 底部 home bar）
+  const safeBottom = 24; // 底部留白 + safe-area
+  const safeRight = 24;
+  return { x: w - 36 - safeRight, y: h - 36 - safeBottom };
 }
 
 function clampToViewport(p: Pos): Pos {
