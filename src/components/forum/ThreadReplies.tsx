@@ -8,6 +8,7 @@ import type { ForumReply } from "@/lib/forum-types";
 import { LikeButton } from "@/components/blog/LikeButton";
 import { useToast } from "@/components/ui/Toast";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
+import { ReportButton } from "@/components/ui/ReportButton";
 
 export function ThreadReplies({
   threadId,
@@ -346,6 +347,9 @@ function ReplyItem({
               <button onClick={() => onDelete(reply.id)} className="text-xs text-fg-muted hover:text-red-400 flex items-center gap-0.5">
                 <Trash2 size={11} /> 刪除
               </button>
+            )}
+            {!isOwn && !reply._pending && (
+              <ReportButton targetType="reply" targetId={reply.id} targetOwnerId={reply.user_id} />
             )}
           </div>
         </div>
