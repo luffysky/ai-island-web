@@ -70,6 +70,7 @@ import ch67 from "./chapters/ch67.json";
 import ch68 from "./chapters/ch68.json";
 import ch69 from "./chapters/ch69.json";
 import ch70 from "./chapters/ch70.json";
+import ch71 from "./chapters/ch71.json";
 
 export const chapters: Chapter[] = [
   ch01 as unknown as Chapter,
@@ -142,6 +143,7 @@ export const chapters: Chapter[] = [
   ch68 as unknown as Chapter,
   ch69 as unknown as Chapter,
   ch70 as unknown as Chapter,
+  ch71 as unknown as Chapter,
 ];
 
 export function getChapter(id: number): Chapter | undefined {
