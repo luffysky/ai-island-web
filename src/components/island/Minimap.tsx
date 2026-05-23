@@ -60,7 +60,16 @@ export function Minimap() {
 
   useEffect(() => {
     const SCALE = (mapSize / 2) / (ISLAND_RADIUS + 3);
-    const draw = () => {
+    let lastDraw = 0;
+    const FPS = 10; // 降頻 10fps、minimap 不需要 60fps
+    const frameMs = 1000 / FPS;
+    const draw = (t?: number) => {
+      const now = t ?? performance.now();
+      if (now - lastDraw < frameMs || (typeof document !== "undefined" && document.hidden)) {
+        rafRef.current = requestAnimationFrame(draw);
+        return;
+      }
+      lastDraw = now;
       const cv = canvasRef.current;
       if (!cv) return;
       const ctx = cv.getContext("2d");

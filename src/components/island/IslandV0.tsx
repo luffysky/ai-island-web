@@ -174,6 +174,16 @@ function useActiveNode() {
   return id;
 }
 
+type Quality = "low" | "med" | "high";
+function readQualityLite(): Quality {
+  if (typeof window === "undefined") return "med";
+  try { return (localStorage.getItem("ai_island_quality") as Quality) || "med"; } catch { return "med"; }
+}
+function readFxLite(): boolean {
+  if (typeof window === "undefined") return true;
+  try { return localStorage.getItem("ai_island_fx") !== "0"; } catch { return true; }
+}
+
 export default function IslandV0({
   completedChapterIds = [],
   level = 1,
@@ -183,6 +193,13 @@ export default function IslandV0({
   level?: number;
   petName?: string | null;
 }) {
+  const quality = readQualityLite();
+  const fxOn = readFxLite();
+  // dpr 上限影響 fillrate（最省電 lever）
+  const dpr: [number, number] = quality === "low" ? [0.6, 1] : quality === "med" ? [1, 1.5] : [1, 2];
+  const useShadows = quality !== "low";
+  const enablePost = fxOn && quality !== "low";
+
   return (
     <KeyboardControls
       map={[
@@ -198,11 +215,13 @@ export default function IslandV0({
     >
       <Canvas
         camera={{ position: [0, 1.6, 8], fov: 70 }}
-        shadows
+        shadows={useShadows}
+        dpr={dpr}
         style={{ width: "100%", height: "100%" }}
+        gl={{ antialias: quality !== "low", powerPreference: "low-power" }}
       >
         <Suspense fallback={null}>
-          <Scene completedChapterIds={completedChapterIds} level={level} petName={petName ?? null} />
+          <Scene completedChapterIds={completedChapterIds} level={level} petName={petName ?? null} enablePost={enablePost} quality={quality} />
         </Suspense>
       </Canvas>
       <Hud />
@@ -214,10 +233,14 @@ function Scene({
   completedChapterIds,
   level,
   petName,
+  enablePost,
+  quality,
 }: {
   completedChapterIds: number[];
   level: number;
   petName: string | null;
+  enablePost: boolean;
+  quality: Quality;
 }) {
   return (
     <>
@@ -238,11 +261,13 @@ function Scene({
       <Player petName={petName} />
       <DayNightCycle />
       <WeatherFx />
-      <EffectComposer>
-        <Bloom intensity={0.6} luminanceThreshold={0.7} luminanceSmoothing={0.4} mipmapBlur />
-        <Vignette eskil={false} offset={0.15} darkness={0.7} />
-        <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
-      </EffectComposer>
+      {enablePost && (
+        <EffectComposer>
+          <Bloom intensity={0.6} luminanceThreshold={0.7} luminanceSmoothing={0.4} mipmapBlur />
+          <Vignette eskil={false} offset={0.15} darkness={0.7} />
+          <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
+        </EffectComposer>
+      )}
       {/* 第一人稱：點畫面 lock pointer、ESC 解鎖；手機改用 nipplejs 右側拖視角 */}
       <PointerLockControls makeDefault />
     </>
@@ -586,7 +611,7 @@ function DayNightCycle() {
   return (
     <>
       <Sky ref={skyRef as any} sunPosition={[100, 30, 50]} turbidity={6} rayleigh={2} />
-      <directionalLight ref={dirLightRef} position={[20, 30, 10]} intensity={1.2} castShadow shadow-mapSize={[1024, 1024]} color="#fff5e1" />
+      <directionalLight ref={dirLightRef} position={[20, 30, 10]} intensity={1.2} castShadow shadow-mapSize={[512, 512]} color="#fff5e1" />
       <hemisphereLight args={["#aacfff", "#3a2e1a", 0.3]} />
     </>
   );
@@ -775,6 +800,8 @@ function Player({ petName }: { petName: string | null }) {
   useFrame((_, dt) => {
     const g = ref.current;
     if (!g) return;
+    // tab 隱藏時不做 heavy work（瀏覽器本身會降到 1fps、但這層更保險）
+    if (typeof document !== "undefined" && document.hidden) return;
     const keys = getKeys() as Record<string, boolean>;
 
     // 鍵盤輸入（W = +1 = 螢幕內、forward）

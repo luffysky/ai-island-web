@@ -20,7 +20,10 @@ const ADMIN_SLUG =
 const ADMIN_BASE = `/${ADMIN_SLUG}/admin`;
 
 const POS_KEY = "admin-toolbar-pos";
+const HIDDEN_KEY = "admin-toolbar-hidden";
 const DRAG_THRESHOLD = 5;
+const PILL_W = 110, PILL_H = 38;
+const PANEL_W = 240, PANEL_H = 260;
 
 type Pos = { x: number; y: number };
 
@@ -44,7 +47,7 @@ export function AdminFloatingToolbar() {
   } | null>(null);
   const rootRef = useRef<HTMLDivElement | null>(null);
 
-  // 初始位置：localStorage 或預設 bottom-left
+  // 初始位置：localStorage 或預設 bottom-left（往上推 PANEL_H + 16 避免展開撞底）
   useEffect(() => {
     if (typeof window === "undefined") return;
     try {
@@ -52,17 +55,25 @@ export function AdminFloatingToolbar() {
       if (raw) {
         const p = JSON.parse(raw) as Pos;
         if (typeof p.x === "number" && typeof p.y === "number") {
-          setPos(clampToViewport(p));
+          setPos(clampToViewport(p, PILL_W, PILL_H));
           return;
         }
       }
     } catch {}
-    setPos({ x: 24, y: window.innerHeight - 64 });
+    setPos({ x: 16, y: Math.max(16, window.innerHeight - PANEL_H - 24) });
+  }, []);
+
+  // 載入 hidden 記憶
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      if (sessionStorage.getItem(HIDDEN_KEY) === "1") setHidden(true);
+    } catch {}
   }, []);
 
   // window resize 時保持在可視範圍內
   useEffect(() => {
-    const onResize = () => setPos((p) => (p ? clampToViewport(p) : p));
+    const onResize = () => setPos((p) => (p ? clampToViewport(p, PILL_W, PILL_H) : p));
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
@@ -132,7 +143,8 @@ export function AdminFloatingToolbar() {
     if (!d.moved && Math.hypot(dx, dy) < DRAG_THRESHOLD) return;
     d.moved = true;
     setDragging(true);
-    setPos(clampToViewport({ x: d.elX + dx, y: d.elY + dy }));
+    // 拖移時也用 pill 尺寸 clamp
+    setPos(clampToViewport({ x: d.elX + dx, y: d.elY + dy }, PILL_W, PILL_H));
   };
 
   const onPointerUp = (e: React.PointerEvent) => {
@@ -142,11 +154,10 @@ export function AdminFloatingToolbar() {
       rootRef.current.releasePointerCapture(e.pointerId);
     }
     if (d.moved) {
-      // 用 delta 直接算最終 pos、不依賴 React state（closure 可能拿到舊 pos）
       const finalPos = clampToViewport({
         x: d.elX + (e.clientX - d.startX),
         y: d.elY + (e.clientY - d.startY),
-      });
+      }, PILL_W, PILL_H);
       setPos(finalPos);
       try {
         localStorage.setItem(POS_KEY, JSON.stringify(finalPos));
@@ -157,6 +168,25 @@ export function AdminFloatingToolbar() {
     }
     setDragging(false);
     dragRef.current = null;
+  };
+
+  // 展開面板位置：把 PANEL 朝視窗中心方向擺、避免超出視窗
+  const panelStyle = (() => {
+    if (typeof window === "undefined") return { left: pos.x, top: pos.y };
+    const W = window.innerWidth, H = window.innerHeight;
+    // 預設從 pos 開始往右下展、若會超出就翻轉成往上 / 左展
+    let left = pos.x;
+    let top = pos.y;
+    if (left + PANEL_W > W - 8) left = Math.max(8, W - PANEL_W - 8);
+    if (top + PANEL_H > H - 8) top = Math.max(8, H - PANEL_H - 8);
+    if (left < 8) left = 8;
+    if (top < 8) top = 8;
+    return { left, top };
+  })();
+
+  const hide = () => {
+    setHidden(true);
+    try { sessionStorage.setItem(HIDDEN_KEY, "1"); } catch {}
   };
 
   // pill 折疊狀態
@@ -195,14 +225,16 @@ export function AdminFloatingToolbar() {
       ref={rootRef}
       style={{
         position: "fixed",
-        left: pos.x,
-        top: pos.y,
+        left: panelStyle.left,
+        top: panelStyle.top,
         zIndex: 40,
         touchAction: "none",
+        maxHeight: "calc(100vh - 16px)",
+        overflowY: "auto",
       }}
       className="select-none"
     >
-      <div className="bg-bg-card border-2 border-pink-500/40 rounded-2xl shadow-2xl shadow-pink-500/20 p-2 min-w-[220px]">
+      <div className="bg-bg-card border-2 border-pink-500/40 rounded-2xl shadow-2xl shadow-pink-500/20 p-2 w-[240px]">
         {/* drag header */}
         <div
           onPointerDown={onPointerDown}
@@ -230,9 +262,9 @@ export function AdminFloatingToolbar() {
               <X size={12} />
             </button>
             <button
-              onClick={() => setHidden(true)}
+              onClick={hide}
               className="text-fg-muted hover:text-fg text-[10px] px-1"
-              title="本次瀏覽不再顯示"
+              title="本次瀏覽不再顯示（sessionStorage 記憶、關 tab 後重置）"
             >
               隱藏
             </button>
@@ -260,14 +292,11 @@ export function AdminFloatingToolbar() {
   );
 }
 
-function clampToViewport(p: Pos): Pos {
+function clampToViewport(p: Pos, w = PILL_W, h = PILL_H): Pos {
   if (typeof window === "undefined") return p;
   const pad = 8;
-  // 預留按鈕大小、保守抓 200x60
-  const w = 220;
-  const h = 60;
   return {
-    x: Math.min(Math.max(pad, p.x), window.innerWidth - w - pad),
-    y: Math.min(Math.max(pad, p.y), window.innerHeight - h - pad),
+    x: Math.min(Math.max(pad, p.x), Math.max(pad, window.innerWidth - w - pad)),
+    y: Math.min(Math.max(pad, p.y), Math.max(pad, window.innerHeight - h - pad)),
   };
 }
