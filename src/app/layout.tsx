@@ -10,6 +10,7 @@ import { AuthProvider } from "@/lib/auth-context";
 import { AdminFloatingToolbar } from "@/components/admin/AdminFloatingToolbar";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { CommandPalette } from "@/components/ui/CommandPalette";
+import { VisitTracker } from "@/components/layout/VisitTracker";
 import { Marquee } from "@/components/Marquee";
 import { Pet } from "@/components/pet/Pet";
 import { ToastProvider } from "@/components/ui/Toast";
@@ -80,6 +81,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Pet />
               <MobileBottomNav />
               <CommandPalette />
+              <VisitTracker />
             </ConfirmProvider>
           </ToastProvider>
         </AuthProvider>
