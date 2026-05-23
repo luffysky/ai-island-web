@@ -5,6 +5,7 @@ import { buildTutorSystemPrompt } from "@/lib/ai-tutor-prompt";
 import { decryptKey } from "@/lib/ai-crypto";
 import { rateLimit } from "@/lib/rate-limit";
 import { hasAiUnlimited } from "@/lib/ai-privilege";
+import { lookupCache, writeCache, bumpHit } from "@/lib/ai-cache";
 
 export const maxDuration = 60;
 
@@ -134,6 +135,16 @@ export async function POST(req: NextRequest) {
     { role: "user" as const, content: message },
   ];
 
+  // 5.5 快取查詢（只在「對話第一則訊息」時查）
+  const isFirstMessage = !history || history.length === 0;
+  const cacheKey = {
+    tone: tone ?? null,
+    personaId: personaId ?? null,
+    contextChapterId: contextChapterId ?? null,
+    contextLessonId: contextLessonId ?? null,
+  };
+  const cached = isFirstMessage ? await lookupCache(message, cacheKey) : null;
+
   // 6. 存 user message
   const { error: userMessageError } = await admin.from("ai_messages").insert({
     conversation_id: convId,
@@ -143,6 +154,49 @@ export async function POST(req: NextRequest) {
   if (userMessageError) {
     console.error("[AI chat] user message insert failed:", userMessageError);
     return errorResponse("message_create_failed", 500, userMessageError.message);
+  }
+
+  // 6.5 快取命中 → SSE 回放、不呼叫 AI、不扣 quota
+  if (cached) {
+    const encoder = new TextEncoder();
+    const cachedStream = new ReadableStream({
+      async start(controller) {
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "init", conversationId: convId })}\n\n`));
+        const chunkSize = 24;
+        for (let i = 0; i < cached.answer.length; i += chunkSize) {
+          const piece = cached.answer.slice(i, i + chunkSize);
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "text", text: piece })}\n\n`));
+          await new Promise((r) => setTimeout(r, 30));
+        }
+        try {
+          await admin.from("ai_messages").insert({
+            conversation_id: convId,
+            role: "assistant",
+            content: cached.answer,
+            model_used: "cache",
+            tokens_input: 0,
+            tokens_output: 0,
+            cost_usd: 0,
+            latency_ms: 0,
+          });
+          await admin.from("ai_conversations").update({ updated_at: new Date().toISOString() }).eq("id", convId);
+          await bumpHit(cached.id);
+        } catch (e) {
+          console.warn("[ai chat] cache flow followup failed:", e);
+        }
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify({
+          type: "done", tokensInput: 0, tokensOutput: 0, cost: 0, fromCache: true,
+        })}\n\n`));
+        controller.close();
+      },
+    });
+    return new Response(cachedStream, {
+      headers: {
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache, no-transform",
+        "X-Accel-Buffering": "no",
+      },
+    });
   }
 
   // 7. Stream AI 回應
@@ -209,6 +263,11 @@ export async function POST(req: NextRequest) {
           cost_usd: cost,
           latency_ms: Date.now() - t0,
         });
+
+        // 寫快取：只在「第一則訊息 + 有內容」時
+        if (isFirstMessage && fullText) {
+          writeCache(message, fullText, `${model.provider}/${model.model_name}`, cacheKey);
+        }
 
         // 更新對話時間
         await admin
