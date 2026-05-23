@@ -6,6 +6,7 @@ import { decryptKey } from "@/lib/ai-crypto";
 import { rateLimit } from "@/lib/rate-limit";
 import { hasAiUnlimited } from "@/lib/ai-privilege";
 import { lookupCache, writeCache, bumpHit } from "@/lib/ai-cache";
+import { scanContent, flagContent } from "@/lib/moderation";
 
 export const maxDuration = 60;
 
@@ -156,6 +157,17 @@ export async function POST(req: NextRequest) {
     role: "user",
     content: message,
   });
+
+  // 6.1 L1 keyword 審核（user 訊息、fail-soft、不阻斷）
+  scanContent(message).then((hit) => {
+    if (hit) flagContent({
+      userId: user.id,
+      role: "user",
+      content: message,
+      conversationId: convId,
+      hit,
+    });
+  }).catch(() => {});
   if (userMessageError) {
     console.error("[AI chat] user message insert failed:", userMessageError);
     return errorResponse("message_create_failed", 500, userMessageError.message);

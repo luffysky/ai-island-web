@@ -89,6 +89,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               <AdminLink href="/admin/ai/cache">💾 回應快取</AdminLink>
               <AdminLink href="/admin/ai/conversations">💬 對話紀錄</AdminLink>
               <AdminLink href="/admin/ai/moderation">🛡️ 對話審核</AdminLink>
+              <AdminLink href="/admin/ai/moderation-keywords">🔍 審核關鍵字</AdminLink>
             </NavGroup>
 
             <NavGroup title="SEO / 流量">
