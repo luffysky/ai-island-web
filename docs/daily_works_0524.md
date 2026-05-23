@@ -11,6 +11,15 @@
 ## Commit 列表（時間倒序）
 
 ```
+e313174 LINE Flex Message v2 美化（色塊 header + emoji 大字 + separator + 時間戳）
+3c60346 手機 tap-to-move + 全站視口防溢出 + 寵物 bubble 右對齊
+78c9670 GPS 精準位置整合 LINE + OSM 反查（不需 API key）
+a264367 LINE 通知 dedupe key 加 userId（修不同帳號被吃掉）
+31d1698 手機虛擬搖桿改 nipplejs semi mode（後續被 tap-to-move 取代）
+825bc82 全站 RWD 修補（14 處 grid-cols 補 sm 斷點 + min-w fallback）
+d05845c admin 11 列表頁 overflow 修 + 手機 horizontal scroll 順滑
+5212003 docs: BACKLOG.md v3
+7df5f8f docs: daily_works 跟 BACKLOG v3
 316e0aa 批 29-1 LINE 命令擴 13 個 + /grant 雙重確認 + /settings 8 條好處
 e08a56b 修 ISP/IP 訊息消失 + 精準定位同意 UI
 3b9376d 批 27 LINE 進階四件（Quick Reply + Rich Menu + 多 admin prefs + PostBack）
@@ -91,6 +100,19 @@ d2a580d S12 polish
 - 📋 Rich Menu 6 格 setup endpoint（要圖 url）
 - 🔘 PostBack actions（prefs_toggle / ban_user / grant_coin / ack_error）
 - ⚙️ 個人通知偏好（admin_line_prefs 表 + /prefs 命令）
+
+### 🆕 2026-05-24 晚場批 30-32（RWD + bug fix + LINE 美化）
+
+| 項目 | 內容 |
+|---|---|
+| Admin overflow | 11 列表頁 wrapper overflow-hidden → overflow-x-auto |
+| 全站 RWD | 14 處 grid-cols 補 sm 斷點 / min-w fallback |
+| LINE dedupe bug | dedupe key 加 userId、不同帳號登入立刻收新通知 |
+| GPS 位置 | 改 OpenStreetMap Nominatim（不需 key、含區）/ LINE 卡標明 GPS vs IP |
+| 手機 tap-to-move | 移除虛擬搖桿、改點地面走過去（walkTarget bus） |
+| 全站視口防溢 | fixed/absolute max-width 100vw、寵物 bubble 手機右對齊 |
+| LINE Flex v2 | 色塊 header / emoji 大字 / separator / lighten-darken accent / 時間戳 |
+| Pet 拖曳 | 手機也能拖（加 userMoved 切換 position 模式） |
 
 ### 🤖 LINE bot 命令 19 個
 - **報表類**：/today /kpi N /online /sub /orders N /ai-cost N /quiz /island
