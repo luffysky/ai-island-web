@@ -66,3 +66,96 @@ export function resetInventory(): Record<ResourceKind, number> {
   try { localStorage.setItem(INV_KEY, JSON.stringify(empty)); } catch {}
   return empty;
 }
+
+// ============ NPC 互動 ============
+export type NpcId = "elder";
+
+const npcSubs = new Set<(id: NpcId) => void>();
+export function subscribeNpc(fn: (id: NpcId) => void) {
+  npcSubs.add(fn);
+  return () => { npcSubs.delete(fn); };
+}
+export function emitNpc(id: NpcId) {
+  for (const f of npcSubs) f(id);
+}
+
+// ============ 每日任務 ============
+export type DailyQuest = {
+  id: string;
+  label: string;
+  target: number;
+  reward: number; // z 幣
+  emoji: string;
+};
+
+export const TODAY_QUESTS: DailyQuest[] = [
+  { id: "wood",     label: "砍 5 棵樹",     target: 5,    reward: 30,  emoji: "🪵" },
+  { id: "crystal",  label: "採 1 顆水晶",   target: 1,    reward: 30,  emoji: "💎" },
+  { id: "shell",    label: "撿 3 個貝殼",   target: 3,    reward: 20,  emoji: "🐚" },
+  { id: "steps",    label: "走 200 公尺",   target: 200,  reward: 20,  emoji: "👣" },
+];
+
+type QuestState = {
+  date: string;            // YYYY-MM-DD（台北日）
+  progress: Record<string, number>;
+  claimed: Record<string, boolean>;
+};
+
+const QUEST_KEY = "ai_island_quests_v1";
+
+function todayKey(): string {
+  const d = new Date(Date.now() + 8 * 3600_000); // 台北時區
+  return d.toISOString().slice(0, 10);
+}
+
+export function readQuestState(): QuestState {
+  const today = todayKey();
+  if (typeof window === "undefined") return { date: today, progress: {}, claimed: {} };
+  try {
+    const raw = localStorage.getItem(QUEST_KEY);
+    if (raw) {
+      const s = JSON.parse(raw) as QuestState;
+      if (s.date === today) return s;
+    }
+  } catch {}
+  // 新一天或無資料 → 重設
+  const fresh: QuestState = { date: today, progress: {}, claimed: {} };
+  try { localStorage.setItem(QUEST_KEY, JSON.stringify(fresh)); } catch {}
+  return fresh;
+}
+
+export function bumpQuest(id: string, n = 1): QuestState {
+  const s = readQuestState();
+  s.progress[id] = Math.min((s.progress[id] ?? 0) + n, getTarget(id));
+  try { localStorage.setItem(QUEST_KEY, JSON.stringify(s)); } catch {}
+  questSubs.forEach((f) => f(s));
+  return s;
+}
+
+export function markClaimed(id: string): QuestState {
+  const s = readQuestState();
+  s.claimed[id] = true;
+  try { localStorage.setItem(QUEST_KEY, JSON.stringify(s)); } catch {}
+  questSubs.forEach((f) => f(s));
+  return s;
+}
+
+function getTarget(id: string): number {
+  return TODAY_QUESTS.find((q) => q.id === id)?.target ?? 0;
+}
+
+const questSubs = new Set<(s: QuestState) => void>();
+export function subscribeQuest(fn: (s: QuestState) => void) {
+  questSubs.add(fn);
+  return () => { questSubs.delete(fn); };
+}
+
+// ============ 音效開關 ============
+const SOUND_KEY = "ai_island_sound";
+export function isSoundOn(): boolean {
+  if (typeof window === "undefined") return true;
+  try { return localStorage.getItem(SOUND_KEY) !== "0"; } catch { return true; }
+}
+export function setSoundOn(on: boolean) {
+  try { localStorage.setItem(SOUND_KEY, on ? "1" : "0"); } catch {}
+}

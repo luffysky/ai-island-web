@@ -13,6 +13,8 @@ import {
   consumeInteractPulse,
   emitCollect,
   RESOURCE_META,
+  emitNpc,
+  bumpQuest,
 } from "./island-bus";
 /**
  * S7-S8 3D 島嶼 v0 — 批 1：能站上去的島
@@ -290,7 +292,12 @@ function harvest(id: number, kind: ResourceKind) {
   const meta = RESOURCE_META[kind];
   resourceDownUntil.set(id, performance.now() + meta.respawnSec * 1000);
   emitCollect({ kind, count: 1 });
+  // 任務進度
+  bumpQuest(kind, 1);
 }
+
+// 漁夫長老互動位置（要跟 NpcElder 渲染位置一致）
+const ELDER_POS: [number, number] = [16, 14];
 
 function Resources() {
   const [, setTick] = useState(0);
@@ -399,6 +406,8 @@ function Player({ petName }: { petName: string | null }) {
   const [, getKeys] = useKeyboardControls<string>();
   const { camera } = useThree();
   const eDownRef = useRef(false);
+  const stepAccumRef = useRef(0);
+  const lastPosRef = useRef<{ x: number; z: number } | null>(null);
 
   useFrame((_, dt) => {
     const g = ref.current;
@@ -444,12 +453,25 @@ function Player({ petName }: { petName: string | null }) {
       }
       g.rotation.y = Math.atan2(move.x, move.z);
     }
+    // 累積走路距離（公尺、整數）→ 每 1m 上報一次 steps quest
+    if (lastPosRef.current) {
+      const ddx = g.position.x - lastPosRef.current.x;
+      const ddz = g.position.z - lastPosRef.current.z;
+      stepAccumRef.current += Math.sqrt(ddx * ddx + ddz * ddz);
+      if (stepAccumRef.current >= 1) {
+        const whole = Math.floor(stepAccumRef.current);
+        bumpQuest("steps", whole);
+        stepAccumRef.current -= whole;
+      }
+    }
+    lastPosRef.current = { x: g.position.x, z: g.position.z };
     playerPos.x = g.position.x;
     playerPos.z = g.position.z;
 
-    // 找最近的「可互動」物件：節點 OR 採集物
+    // 找最近的「可互動」物件：節點 OR 採集物 OR NPC
     let nearestNode: Node | null = null;
     let nearestResource: ResourceSpawn | null = null;
+    let nearestNpc: "elder" | null = null;
     let nearestD2 = INTERACT_RADIUS * INTERACT_RADIUS;
     for (const n of NODES) {
       const dx = n.position[0] - g.position.x;
@@ -459,6 +481,7 @@ function Player({ petName }: { petName: string | null }) {
         nearestD2 = d2;
         nearestNode = n;
         nearestResource = null;
+        nearestNpc = null;
       }
     }
     for (const r of RESOURCES) {
@@ -470,6 +493,17 @@ function Player({ petName }: { petName: string | null }) {
         nearestD2 = d2;
         nearestResource = r;
         nearestNode = null;
+        nearestNpc = null;
+      }
+    }
+    {
+      const dx = ELDER_POS[0] - g.position.x;
+      const dz = ELDER_POS[1] - g.position.z;
+      const d2 = dx * dx + dz * dz;
+      if (d2 < nearestD2) {
+        nearestNpc = "elder";
+        nearestNode = null;
+        nearestResource = null;
       }
     }
     setActiveNode(nearestNode?.id ?? null);
@@ -480,6 +514,7 @@ function Player({ petName }: { petName: string | null }) {
     if (eEdge) {
       if (nearestNode) emitOpen(nearestNode.id);
       else if (nearestResource) harvest(nearestResource.id, nearestResource.kind);
+      else if (nearestNpc) emitNpc(nearestNpc);
     }
     eDownRef.current = ePressed;
 
@@ -550,7 +585,7 @@ function Player({ petName }: { petName: string | null }) {
 
 function NpcElder() {
   return (
-    <group position={[16, 0.4, 14]}>
+    <group position={[ELDER_POS[0], 0.4, ELDER_POS[1]]}>
       <mesh castShadow position={[0, 0.5, 0]}>
         <capsuleGeometry args={[0.3, 0.6, 6, 12]} />
         <meshStandardMaterial color="#a8b9d0" />
@@ -563,7 +598,11 @@ function NpcElder() {
         👴 漁夫長老
       </Text>
       <Text position={[0, 1.65, 0]} fontSize={0.13} color="#ffd700" outlineWidth={0.01} outlineColor="#000">
-        歡迎來島上，新手
+        今日有任務、按 E
+      </Text>
+      {/* 頭頂 ! 提示 */}
+      <Text position={[0, 2.2, 0]} fontSize={0.35} color="#ffd700" outlineWidth={0.02} outlineColor="#000">
+        !
       </Text>
     </group>
   );
