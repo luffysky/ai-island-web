@@ -31,7 +31,7 @@ export function BuffBar() {
   if (buffs.length === 0) return null;
 
   return (
-    <div className="absolute top-14 right-3 z-30 pointer-events-none flex flex-col items-end gap-1">
+    <div className="absolute top-28 right-3 z-30 pointer-events-none flex flex-col items-end gap-1">
       {buffs.map((b) => {
         const M = META[b.kind];
         if (!M) return null;

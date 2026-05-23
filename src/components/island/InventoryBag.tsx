@@ -68,7 +68,7 @@ export function InventoryBag() {
   };
 
   return (
-    <div className="absolute top-3 right-3 z-30 flex flex-col items-end gap-2 pointer-events-auto">
+    <div className="absolute top-3 right-3 z-30 flex flex-col items-end gap-2 pointer-events-auto" data-hud-right-anchor>
       <div className="bg-black/60 backdrop-blur rounded-xl px-3 py-2 text-white text-xs flex items-center gap-3">
         <Package size={13} className="text-yellow-300" />
         {(Object.keys(RESOURCE_META) as ResourceKind[]).map((k) => (

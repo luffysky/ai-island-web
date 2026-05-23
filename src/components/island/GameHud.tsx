@@ -11,6 +11,7 @@ import {
   Settings,
 } from "lucide-react";
 import { emitBagToggle } from "./island-bus";
+import { emitSettingsToggle } from "./SettingsPanel";
 
 /**
  * 底部 HUD chip nav（參考 07.png 風格）
@@ -39,13 +40,13 @@ export function GameHud({ profile }: { profile: Profile | null }) {
 
   return (
     <>
-      {/* 大標題進場 fade-in */}
+      {/* 大標題進場 fade-in（手機更小） */}
       {showHello && (
-        <div className="absolute top-20 left-0 right-0 z-30 pointer-events-none text-center animate-[fade-out_4s_ease-in-out_forwards]">
-          <h1 className="text-5xl md:text-7xl font-black tracking-wide text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+        <div className="absolute top-16 md:top-20 left-0 right-0 z-30 pointer-events-none text-center animate-[fade-out_4s_ease-in-out_forwards] px-4">
+          <h1 className="text-3xl sm:text-5xl md:text-7xl font-black tracking-wide text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
             AI Island
           </h1>
-          <p className="text-base md:text-xl text-white/85 font-bold tracking-[0.3em] mt-2 drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
+          <p className="text-xs sm:text-base md:text-xl text-white/85 font-bold tracking-[0.2em] md:tracking-[0.3em] mt-2 drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
             學習・探索・創造・連結
           </p>
         </div>
@@ -80,14 +81,20 @@ export function GameHud({ profile }: { profile: Profile | null }) {
         </div>
       </div>
 
-      {/* 底部 HUD chip nav（中央） */}
+      {/* 底部 HUD chip nav — 桌機 / 筆電全功能（中央） */}
       <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-30 pointer-events-auto hidden md:flex items-center gap-1 bg-black/55 backdrop-blur rounded-full px-2 py-1.5">
-        <HudChip icon={<MapIcon size={16} />} label="地圖" onClick={() => scrollMinimap()} />
+        <HudChip icon={<MapIcon size={16} />} label="地圖" onClick={scrollMinimap} />
         <HudChip icon={<Backpack size={16} />} label="背包" onClick={emitBagToggle} hotkey="B" />
         <HudChip icon={<ClipboardList size={16} />} label="任務" onClick={() => alert("走到漁夫長老身邊按 E 開任務")} />
         <HudChip icon={<Trophy size={16} />} label="成就" onClick={emitBagToggle} />
         <HudChip icon={<Users size={16} />} label="排行" onClick={() => alert("走到 🏆 牌子按 E")} />
-        <HudChip icon={<Settings size={16} />} label="設定" onClick={() => alert("設定面板待加（音量/畫質/控制）")} />
+        <HudChip icon={<Settings size={16} />} label="設定" onClick={emitSettingsToggle} />
+      </div>
+
+      {/* 手機版精簡 chip nav — 放底部 E 鈕左側 */}
+      <div className="fixed right-24 bottom-12 z-50 pointer-events-auto flex md:hidden items-center gap-1 bg-black/55 backdrop-blur rounded-full px-1.5 py-1">
+        <MobileChip icon={<Backpack size={14} />} onClick={emitBagToggle} />
+        <MobileChip icon={<Settings size={14} />} onClick={emitSettingsToggle} />
       </div>
 
       <style>{`@keyframes fade-out{0%{opacity:0;transform:translateY(-20px)}15%{opacity:1;transform:translateY(0)}80%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-10px)}}`}</style>
@@ -105,6 +112,14 @@ function HudChip({ icon, label, onClick, hotkey }: { icon: React.ReactNode; labe
       {icon}
       <span>{label}</span>
       {hotkey && <kbd className="text-[8px] bg-white/15 rounded px-1 py-0.5 font-mono">{hotkey}</kbd>}
+    </button>
+  );
+}
+
+function MobileChip({ icon, onClick }: { icon: React.ReactNode; onClick: () => void }) {
+  return (
+    <button onClick={onClick} className="w-8 h-8 rounded-full text-white flex items-center justify-center hover:bg-white/15 active:scale-90">
+      {icon}
     </button>
   );
 }

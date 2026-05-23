@@ -105,7 +105,7 @@ export function AmbientSound() {
     <button
       onClick={toggle}
       title={on ? "靜音" : "開聲音"}
-      className="absolute top-3 right-44 z-30 pointer-events-auto w-9 h-9 rounded-full bg-black/60 backdrop-blur text-white flex items-center justify-center hover:bg-black/80"
+      className="absolute top-14 right-16 z-30 pointer-events-auto w-9 h-9 rounded-full bg-black/60 backdrop-blur text-white flex items-center justify-center hover:bg-black/80"
     >
       {on ? <Volume2 size={14} /> : <VolumeX size={14} className="text-fg-muted" />}
       {!initialized && on && (

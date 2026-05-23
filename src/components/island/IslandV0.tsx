@@ -1,8 +1,8 @@
 "use client";
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Suspense, useEffect, useRef, useState } from "react";
-import { Sky, OrbitControls, KeyboardControls, useKeyboardControls, Text, Html } from "@react-three/drei";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { Sky, OrbitControls, KeyboardControls, useKeyboardControls, Text, Html, useGLTF } from "@react-three/drei";
 import { EffectComposer, Bloom, Vignette, ToneMapping } from "@react-three/postprocessing";
 import { ToneMappingMode } from "postprocessing";
 import * as THREE from "three";
@@ -46,6 +46,64 @@ const ISLAND_RADIUS = 30;
 const PLAYER_SPEED = 4;
 const RUN_MULT = 2.2;
 const INTERACT_RADIUS = 2.6;
+
+// Kenney 模型路徑（cc0、放 public/models/）
+const M = {
+  treePine:  "/models/platformer/tree-pine.glb",
+  treePineSmall: "/models/platformer/tree-pine-small.glb",
+  tree:      "/models/platformer/tree.glb",
+  chest:     "/models/platformer/chest.glb",
+  sign:      "/models/platformer/sign.glb",
+  flag:      "/models/platformer/flag.glb",
+  coinGold:  "/models/platformer/coin-gold.glb",
+  key:       "/models/platformer/key.glb",
+  rocks:     "/models/platformer/rocks.glb",
+  crate:     "/models/platformer/crate.glb",
+  barrel:    "/models/platformer/barrel.glb",
+  ladder:    "/models/platformer/ladder.glb",
+  charPlayer:    "/models/platformer/character-oobi.glb",
+  charMerchant:  "/models/platformer/character-oodi.glb",
+  charSeer:      "/models/platformer/character-oopi.glb",
+  charElder:     "/models/platformer/character-oozi.glb",
+};
+
+// 寵物 name → glb（簡單關鍵字對應、預設 fox）
+const PET_GLB: Record<string, string> = {
+  dog: "/models/pets/animal-dog.glb",
+  cat: "/models/pets/animal-cat.glb",
+  fox: "/models/pets/animal-fox.glb",
+  bunny: "/models/pets/animal-bunny.glb",
+  rabbit: "/models/pets/animal-bunny.glb",
+  fish: "/models/pets/animal-fish.glb",
+  bee: "/models/pets/animal-bee.glb",
+  deer: "/models/pets/animal-deer.glb",
+  panda: "/models/pets/animal-panda.glb",
+  chick: "/models/pets/animal-chick.glb",
+  tiger: "/models/pets/animal-tiger.glb",
+  lion: "/models/pets/animal-lion.glb",
+  monkey: "/models/pets/animal-monkey.glb",
+  pig: "/models/pets/animal-pig.glb",
+  cow: "/models/pets/animal-cow.glb",
+};
+function petGlbFor(name: string | null): string {
+  if (!name) return "/models/pets/animal-fox.glb";
+  const k = Object.keys(PET_GLB).find((x) => name.toLowerCase().includes(x));
+  return k ? PET_GLB[k] : "/models/pets/animal-fox.glb";
+}
+
+// preload 所有常用
+Object.values(M).forEach((p) => useGLTF.preload(p));
+Object.values(PET_GLB).forEach((p) => useGLTF.preload(p));
+
+function Glb({ src, scale = 1, rotY = 0 }: { src: string; scale?: number; rotY?: number }) {
+  const { scene } = useGLTF(src);
+  const clone = useMemo(() => scene.clone(true), [scene]);
+  // 開啟陰影
+  useEffect(() => {
+    clone.traverse((o: any) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+  }, [clone]);
+  return <primitive object={clone} scale={scale} rotation={[0, rotY, 0]} />;
+}
 
 enum K { forward, back, left, right, run, interact, bag }
 
@@ -560,21 +618,15 @@ function Chests() {
         const isOpen = opened.has(c.id);
         return (
           <group key={c.id} position={[c.pos[0], 0.4, c.pos[1]]}>
-            <mesh castShadow position={[0, 0.2, 0]}>
-              <boxGeometry args={[0.7, 0.4, 0.5]} />
-              <meshStandardMaterial color={isOpen ? "#5a4a3a" : "#a87b3f"} />
-            </mesh>
-            {/* 蓋子 */}
-            <mesh castShadow position={[0, 0.5, 0]} rotation={[isOpen ? -Math.PI / 3 : 0, 0, 0]}>
-              <boxGeometry args={[0.72, 0.15, 0.52]} />
-              <meshStandardMaterial color={isOpen ? "#3a2e1a" : "#8b5a2b"} />
-            </mesh>
+            <Glb src={M.chest} scale={1.2} />
             {!isOpen && (
-              <pointLight position={[0, 1.2, 0]} color="#ffd700" intensity={0.5} distance={2.5} />
+              <>
+                <pointLight position={[0, 1.2, 0]} color="#ffd700" intensity={0.7} distance={3} />
+                <Text position={[0, 1.5, 0]} fontSize={0.3} color="#ffd700" outlineWidth={0.02} outlineColor="#000">
+                  🪅
+                </Text>
+              </>
             )}
-            <Text position={[0, 1.2, 0]} fontSize={0.2} color={isOpen ? "#555" : "#ffd700"} outlineWidth={0.01} outlineColor="#000">
-              {isOpen ? "" : "🪅"}
-            </Text>
           </group>
         );
       })}
@@ -602,22 +654,8 @@ function ResourceMesh({ spawn, available }: { spawn: ResourceSpawn; available: b
   if (spawn.kind === "wood") {
     return (
       <group position={[x, 0.5, z]}>
-        {available ? (
-          <>
-            <mesh position={[0, 0.7, 0]} castShadow>
-              <cylinderGeometry args={[0.25, 0.3, 1.4]} />
-              <meshStandardMaterial color="#7b4a1f" />
-            </mesh>
-            <mesh position={[0, 2, 0]} castShadow>
-              <coneGeometry args={[1.1, 2.4, 8]} />
-              <meshStandardMaterial color="#2d6a3a" />
-            </mesh>
-          </>
-        ) : (
-          <mesh position={[0, 0.1, 0]}>
-            <cylinderGeometry args={[0.3, 0.3, 0.2]} />
-            <meshStandardMaterial color="#4a2f1a" />
-          </mesh>
+        {available ? <Glb src={M.treePine} scale={1.4} /> : (
+          <mesh position={[0, 0.1, 0]}><cylinderGeometry args={[0.3, 0.3, 0.2]} /><meshStandardMaterial color="#4a2f1a" /></mesh>
         )}
       </group>
     );
@@ -626,32 +664,21 @@ function ResourceMesh({ spawn, available }: { spawn: ResourceSpawn; available: b
     return (
       <group position={[x, 0.4, z]}>
         {available ? (
-          <mesh castShadow rotation={[0, performance.now() / 4000, 0]}>
-            <octahedronGeometry args={[0.5, 0]} />
-            <meshStandardMaterial color="#8be9fd" emissive="#22d3ee" emissiveIntensity={0.4} metalness={0.6} roughness={0.1} />
-          </mesh>
+          <group rotation={[0, performance.now() / 4000, 0]}>
+            <Glb src={M.coinGold} scale={1.2} />
+            <pointLight position={[0, 0.4, 0]} color="#8be9fd" intensity={0.4} distance={2.5} />
+          </group>
         ) : (
-          <mesh position={[0, -0.3, 0]}>
-            <boxGeometry args={[0.6, 0.1, 0.6]} />
-            <meshStandardMaterial color="#5a6a7a" />
-          </mesh>
+          <mesh position={[0, -0.3, 0]}><boxGeometry args={[0.6, 0.1, 0.6]} /><meshStandardMaterial color="#5a6a7a" /></mesh>
         )}
       </group>
     );
   }
-  // shell
+  // shell — 用 rocks.glb（沒專屬貝殼）+ 小尺寸
   return (
     <group position={[x, 0.05, z]}>
-      {available ? (
-        <mesh castShadow rotation={[Math.PI / 6, 0, 0]}>
-          <sphereGeometry args={[0.28, 12, 8, 0, Math.PI]} />
-          <meshStandardMaterial color="#ffe1c4" roughness={0.5} side={2} />
-        </mesh>
-      ) : (
-        <mesh position={[0, -0.05, 0]}>
-          <circleGeometry args={[0.3, 12]} />
-          <meshStandardMaterial color="#a89070" />
-        </mesh>
+      {available ? <Glb src={M.rocks} scale={0.5} /> : (
+        <mesh position={[0, -0.05, 0]}><circleGeometry args={[0.3, 12]} /><meshStandardMaterial color="#a89070" /></mesh>
       )}
     </group>
   );
@@ -872,41 +899,15 @@ function Player({ petName }: { petName: string | null }) {
 
   return (
     <>
-      <group ref={ref} position={[0, 1.1, 6]}>
-        {/* 身體 */}
-        <mesh castShadow position={[0, 0.5, 0]}>
-          <capsuleGeometry args={[0.35, 0.8, 6, 12]} />
-          <meshStandardMaterial color="#50fa7b" />
-        </mesh>
-        {/* 頭 */}
-        <mesh castShadow position={[0, 1.4, 0]}>
-          <sphereGeometry args={[0.32, 16, 16]} />
-          <meshStandardMaterial color="#ffd9a8" />
-        </mesh>
-        {/* 朝向小錐 */}
-        <mesh position={[0, 1.4, 0.4]}>
-          <coneGeometry args={[0.06, 0.18, 8]} />
-          <meshStandardMaterial color="#222" />
-        </mesh>
+      <group ref={ref} position={[0, 0, 6]}>
+        <Glb src={M.charPlayer} scale={1.1} />
       </group>
 
       {/* 寵物 */}
       {petName && (
-        <group ref={petRef} position={[0, 0.4, 8]}>
-          <mesh castShadow>
-            <sphereGeometry args={[0.32, 16, 16]} />
-            <meshStandardMaterial color="#ff79c6" />
-          </mesh>
-          {/* 眼 */}
-          <mesh position={[0.12, 0.1, 0.28]}>
-            <sphereGeometry args={[0.04, 8, 8]} />
-            <meshStandardMaterial color="#222" />
-          </mesh>
-          <mesh position={[-0.12, 0.1, 0.28]}>
-            <sphereGeometry args={[0.04, 8, 8]} />
-            <meshStandardMaterial color="#222" />
-          </mesh>
-          <Text position={[0, 0.7, 0]} fontSize={0.18} color="#fff" outlineWidth={0.01} outlineColor="#000">
+        <group ref={petRef} position={[0, 0.1, 8]}>
+          <Glb src={petGlbFor(petName)} scale={0.85} />
+          <Text position={[0, 1.2, 0]} fontSize={0.18} color="#fff" outlineWidth={0.01} outlineColor="#000">
             {petName}
           </Text>
         </group>
@@ -923,29 +924,11 @@ function Player({ petName }: { petName: string | null }) {
 function NpcMerchant() {
   const [x, z] = NPC_POS.merchant;
   return (
-    <group position={[x, 0.4, z]}>
-      <mesh castShadow position={[0, 0.5, 0]}>
-        <capsuleGeometry args={[0.32, 0.7, 6, 12]} />
-        <meshStandardMaterial color="#8b5a2b" />
-      </mesh>
-      <mesh castShadow position={[0, 1.3, 0]}>
-        <sphereGeometry args={[0.3, 16, 16]} />
-        <meshStandardMaterial color="#f5dcc4" />
-      </mesh>
-      {/* 帽子 */}
-      <mesh castShadow position={[0, 1.55, 0]}>
-        <coneGeometry args={[0.4, 0.4, 8]} />
-        <meshStandardMaterial color="#5a2d0c" />
-      </mesh>
-      <Text position={[0, 2.0, 0]} fontSize={0.18} color="#fff" outlineWidth={0.01} outlineColor="#000">
-        🧙 神秘商人
-      </Text>
-      <Text position={[0, 1.75, 0]} fontSize={0.13} color="#8be9fd" outlineWidth={0.01} outlineColor="#000">
-        賣道具、按 E
-      </Text>
-      <Text position={[0, 2.4, 0]} fontSize={0.35} color="#8be9fd" outlineWidth={0.02} outlineColor="#000">
-        $
-      </Text>
+    <group position={[x, 0, z]}>
+      <Glb src={M.charMerchant} scale={1.1} />
+      <Text position={[0, 2.4, 0]} fontSize={0.2} color="#fff" outlineWidth={0.02} outlineColor="#000">🧙 神秘商人</Text>
+      <Text position={[0, 2.15, 0]} fontSize={0.14} color="#8be9fd" outlineWidth={0.01} outlineColor="#000">賣道具、按 E</Text>
+      <Text position={[0, 2.8, 0]} fontSize={0.4} color="#8be9fd" outlineWidth={0.02} outlineColor="#000">$</Text>
     </group>
   );
 }
@@ -953,54 +936,28 @@ function NpcMerchant() {
 function NpcSeer() {
   const [x, z] = NPC_POS.seer;
   return (
-    <group position={[x, 0.4, z]}>
-      <mesh castShadow position={[0, 0.5, 0]}>
-        <capsuleGeometry args={[0.3, 0.7, 6, 12]} />
-        <meshStandardMaterial color="#7a5599" />
-      </mesh>
-      <mesh castShadow position={[0, 1.3, 0]}>
-        <sphereGeometry args={[0.3, 16, 16]} />
-        <meshStandardMaterial color="#f5dcc4" />
-      </mesh>
-      {/* 水晶球 */}
-      <mesh position={[0.45, 0.6, 0]}>
+    <group position={[x, 0, z]}>
+      <Glb src={M.charSeer} scale={1.1} />
+      {/* 水晶球漂浮在身旁 */}
+      <mesh position={[0.55, 0.7, 0]}>
         <sphereGeometry args={[0.2, 16, 16]} />
-        <meshStandardMaterial color="#bd93f9" transparent opacity={0.6} emissive="#bd93f9" emissiveIntensity={0.5} />
+        <meshStandardMaterial color="#bd93f9" transparent opacity={0.7} emissive="#bd93f9" emissiveIntensity={0.8} />
       </mesh>
-      <Text position={[0, 1.95, 0]} fontSize={0.18} color="#fff" outlineWidth={0.01} outlineColor="#000">
-        🔮 占卜師
-      </Text>
-      <Text position={[0, 1.7, 0]} fontSize={0.13} color="#ff79c6" outlineWidth={0.01} outlineColor="#000">
-        每日運勢、按 E
-      </Text>
-      <Text position={[0, 2.35, 0]} fontSize={0.35} color="#ff79c6" outlineWidth={0.02} outlineColor="#000">
-        ?
-      </Text>
+      <pointLight position={[0.55, 0.7, 0]} color="#bd93f9" intensity={1} distance={3} />
+      <Text position={[0, 2.4, 0]} fontSize={0.2} color="#fff" outlineWidth={0.02} outlineColor="#000">🔮 占卜師</Text>
+      <Text position={[0, 2.15, 0]} fontSize={0.14} color="#ff79c6" outlineWidth={0.01} outlineColor="#000">每日運勢、按 E</Text>
+      <Text position={[0, 2.8, 0]} fontSize={0.4} color="#ff79c6" outlineWidth={0.02} outlineColor="#000">?</Text>
     </group>
   );
 }
 
 function NpcElder() {
   return (
-    <group position={[ELDER_POS[0], 0.4, ELDER_POS[1]]}>
-      <mesh castShadow position={[0, 0.5, 0]}>
-        <capsuleGeometry args={[0.3, 0.6, 6, 12]} />
-        <meshStandardMaterial color="#a8b9d0" />
-      </mesh>
-      <mesh castShadow position={[0, 1.25, 0]}>
-        <sphereGeometry args={[0.28, 16, 16]} />
-        <meshStandardMaterial color="#f5dcc4" />
-      </mesh>
-      <Text position={[0, 1.9, 0]} fontSize={0.18} color="#fff" outlineWidth={0.01} outlineColor="#000">
-        👴 漁夫長老
-      </Text>
-      <Text position={[0, 1.65, 0]} fontSize={0.13} color="#ffd700" outlineWidth={0.01} outlineColor="#000">
-        今日有任務、按 E
-      </Text>
-      {/* 頭頂 ! 提示 */}
-      <Text position={[0, 2.2, 0]} fontSize={0.35} color="#ffd700" outlineWidth={0.02} outlineColor="#000">
-        !
-      </Text>
+    <group position={[ELDER_POS[0], 0, ELDER_POS[1]]}>
+      <Glb src={M.charElder} scale={1.1} />
+      <Text position={[0, 2.4, 0]} fontSize={0.2} color="#fff" outlineWidth={0.02} outlineColor="#000">👴 漁夫長老</Text>
+      <Text position={[0, 2.15, 0]} fontSize={0.14} color="#ffd700" outlineWidth={0.01} outlineColor="#000">今日有任務、按 E</Text>
+      <Text position={[0, 2.8, 0]} fontSize={0.4} color="#ffd700" outlineWidth={0.02} outlineColor="#000">!</Text>
     </group>
   );
 }

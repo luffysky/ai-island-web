@@ -19,6 +19,8 @@ import { Minimap } from "@/components/island/Minimap";
 import { BagPanel } from "@/components/island/BagPanel";
 import { AchievementToast } from "@/components/island/AchievementToast";
 import { GameHud } from "@/components/island/GameHud";
+import { SettingsPanel } from "@/components/island/SettingsPanel";
+import { RandomEvents } from "@/components/island/RandomEvents";
 import { formatTWRelative } from "@/lib/format-date";
 
 const IslandV0 = dynamic(() => import("@/components/island/IslandV0"), {
@@ -95,6 +97,8 @@ export default function IslandClient({
       <BagPanel />
       <AchievementToast />
       <GameHud profile={profile ?? null} />
+      <SettingsPanel />
+      <RandomEvents />
       <PetTalk petName={petName} />
 
       <div className="absolute top-3 left-3 pointer-events-auto z-10 flex items-center gap-2">

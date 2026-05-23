@@ -24,7 +24,7 @@ export function WeatherChip() {
     <button
       onClick={cycle}
       title={`目前 ${M.label}、點切換`}
-      className="absolute top-3 right-32 z-30 pointer-events-auto h-9 px-2.5 rounded-full bg-black/60 backdrop-blur text-white text-xs flex items-center gap-1.5 hover:bg-black/80"
+      className="absolute top-14 right-3 z-30 pointer-events-auto h-9 px-2.5 rounded-full bg-black/60 backdrop-blur text-white text-xs flex items-center gap-1.5 hover:bg-black/80"
     >
       <Icon size={14} className={M.color} />
       <span>{M.label}</span>

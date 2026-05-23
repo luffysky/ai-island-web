@@ -9,8 +9,13 @@ import {
 } from "./island-bus";
 
 const ISLAND_RADIUS = 30;
-const MAP_SIZE = 150;
-const SCALE = (MAP_SIZE / 2) / (ISLAND_RADIUS + 3); // 邊緣留 3 公尺 padding
+function getMapSize(): number {
+  if (typeof window === "undefined") return 130;
+  const w = window.innerWidth;
+  if (w < 640) return 90;     // 手機
+  if (w < 1024) return 120;   // 筆電
+  return 150;                 // 桌機
+}
 
 const NODES: Array<{ x: number; z: number; color: string; label: string }> = [
   { x: 8, z: -4, color: "#50fa7b", label: "章" },
@@ -29,6 +34,14 @@ export function Minimap() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef = useRef<number | null>(null);
   const [opened, setOpened] = useState<Set<number>>(new Set());
+  const [mapSize, setMapSize] = useState<number>(130);
+
+  useEffect(() => {
+    setMapSize(getMapSize());
+    const onResize = () => setMapSize(getMapSize());
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   useEffect(() => {
     setOpened(readOpenedChests());
@@ -36,21 +49,22 @@ export function Minimap() {
   }, []);
 
   useEffect(() => {
+    const SCALE = (mapSize / 2) / (ISLAND_RADIUS + 3);
     const draw = () => {
       const cv = canvasRef.current;
       if (!cv) return;
       const ctx = cv.getContext("2d");
       if (!ctx) return;
 
-      ctx.clearRect(0, 0, MAP_SIZE, MAP_SIZE);
+      ctx.clearRect(0, 0, mapSize, mapSize);
 
       // 海背景
       ctx.fillStyle = "rgba(31,111,180,0.7)";
-      ctx.fillRect(0, 0, MAP_SIZE, MAP_SIZE);
+      ctx.fillRect(0, 0, mapSize, mapSize);
 
       // 島嶼圓盤
-      const cx = MAP_SIZE / 2;
-      const cy = MAP_SIZE / 2;
+      const cx = mapSize / 2;
+      const cy = mapSize / 2;
       ctx.fillStyle = "#3ea05a";
       ctx.beginPath();
       ctx.arc(cx, cy, ISLAND_RADIUS * SCALE, 0, Math.PI * 2);
@@ -117,13 +131,13 @@ export function Minimap() {
     };
     rafRef.current = requestAnimationFrame(draw);
     return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
-  }, [opened]);
+  }, [opened, mapSize]);
 
   return (
     <div className="absolute top-3 left-3 z-30 pointer-events-none mt-12 md:mt-0" data-island-minimap>
       <div className="relative bg-black/40 backdrop-blur p-1.5 rounded-xl shadow-lg">
-        <canvas ref={canvasRef} width={MAP_SIZE} height={MAP_SIZE} className="rounded-lg" />
-        <div className="absolute -bottom-4 right-0 text-[9px] text-white/70 select-none">⬤ 你 · ⬤ 節點 · ⬤ NPC · ⬤ 寶箱</div>
+        <canvas ref={canvasRef} width={mapSize} height={mapSize} className="rounded-lg" />
+        <div className="absolute -bottom-4 right-0 text-[8px] md:text-[9px] text-white/70 select-none hidden sm:block">⬤ 你 · ⬤ NPC · ⬤ 寶箱</div>
       </div>
     </div>
   );
