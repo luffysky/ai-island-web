@@ -70,6 +70,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               <AdminLink href="/admin/crm">💬 客服 (CRM)</AdminLink>
               <AdminLink href="/admin/broadcasts">📣 公告 / Email</AdminLink>
               <AdminLink href="/admin/email/subscribers">📧 Email 訂閱戶</AdminLink>
+              <AdminLink href="/admin/email/campaigns">✉️ Email Campaigns</AdminLink>
+              <AdminLink href="/admin/segments">🎯 Segments</AdminLink>
             </NavGroup>
 
             <NavGroup title="商務 (ERP)">
@@ -98,6 +100,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               <AdminLink href="/admin/achievements">🏆 成就管理</AdminLink>
               <AdminLink href="/admin/gamification">🎮 遊戲化規則</AdminLink>
               <AdminLink href="/admin/changelog">📜 更新日誌</AdminLink>
+              <AdminLink href="/admin/scheduled">⏰ 排程隊列</AdminLink>
               <AdminLink href="/admin/moderation/comments">💬 留言審核</AdminLink>
               <AdminLink href="/admin/moderation/forum">🗣️ 論壇審核</AdminLink>
               <AdminLink href="/admin/reports">🚨 檢舉收件箱</AdminLink>

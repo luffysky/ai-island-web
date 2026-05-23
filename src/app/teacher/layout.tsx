@@ -24,6 +24,7 @@ export default async function TeacherLayout({ children }: { children: React.Reac
             <Link href="/teacher" className="px-3 py-1.5 rounded-lg hover:bg-bg-elevated">總覽</Link>
             <Link href="/teacher/assignments" className="px-3 py-1.5 rounded-lg hover:bg-bg-elevated">📋 作業</Link>
             <Link href="/teacher/grading" className="px-3 py-1.5 rounded-lg hover:bg-bg-elevated">✏️ 批改</Link>
+            <Link href="/teacher/stats" className="px-3 py-1.5 rounded-lg hover:bg-bg-elevated">📊 業績</Link>
             <Link href="/" className="px-3 py-1.5 rounded-lg text-fg-muted hover:bg-bg-elevated">← 回前台</Link>
           </nav>
         </div>
