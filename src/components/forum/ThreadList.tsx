@@ -1,28 +1,78 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { MessageSquare, Eye, Pin, Star, Lock, Flame } from "lucide-react";
+import { MessageSquare, Eye, Pin, Star, Lock, Flame, Loader2 } from "lucide-react";
 import type { ForumThread } from "@/lib/forum-types";
+
+const PAGE_SIZE = 20;
 
 export function ThreadList({ boardSlug }: { boardSlug?: string }) {
   const [threads, setThreads] = useState<ForumThread[]>([]);
   const [sort, setSort] = useState<"recent" | "new" | "hot">("recent");
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
 
+  // 換 board / sort 重抓
   useEffect(() => {
+    let cancelled = false;
     setLoading(true);
+    setHasMore(false);
     const qs = new URLSearchParams();
     if (boardSlug) qs.set("board", boardSlug);
     qs.set("sort", sort);
+    qs.set("offset", "0");
+    qs.set("limit", String(PAGE_SIZE));
     fetch(`/api/forum/threads?${qs}`)
       .then((r) => r.json())
       .then((j) => {
+        if (cancelled) return;
         setThreads(j.threads ?? []);
+        setHasMore(!!j.hasMore);
         setLoading(false);
-      });
+      })
+      .catch(() => !cancelled && setLoading(false));
+    return () => {
+      cancelled = true;
+    };
   }, [boardSlug, sort]);
+
+  // 無限滾動：IntersectionObserver 監看 sentinel
+  useEffect(() => {
+    if (!hasMore || loading || loadingMore) return;
+    const node = sentinelRef.current;
+    if (!node) return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) loadMore();
+      },
+      { rootMargin: "200px" },
+    );
+    obs.observe(node);
+    return () => obs.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasMore, loading, loadingMore, threads.length]);
+
+  const loadMore = async () => {
+    if (loadingMore || !hasMore) return;
+    setLoadingMore(true);
+    try {
+      const qs = new URLSearchParams();
+      if (boardSlug) qs.set("board", boardSlug);
+      qs.set("sort", sort);
+      qs.set("offset", String(threads.length));
+      qs.set("limit", String(PAGE_SIZE));
+      const res = await fetch(`/api/forum/threads?${qs}`);
+      const j = await res.json();
+      setThreads((prev) => [...prev, ...(j.threads ?? [])]);
+      setHasMore(!!j.hasMore);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
 
   return (
     <div>
@@ -60,7 +110,7 @@ export function ThreadList({ boardSlug }: { boardSlug?: string }) {
           {threads.map((t) => (
             <Link
               key={t.id}
-              href={`/forum/thread/${t.id}`}
+              href={`/forum/thread/${t.id}` as any}
               className="block rounded-xl border border-border bg-bg-card p-4 hover:border-accent transition"
             >
               <div className="flex items-start gap-3">
@@ -119,6 +169,22 @@ export function ThreadList({ boardSlug }: { boardSlug?: string }) {
               </div>
             </Link>
           ))}
+
+          {/* 無限滾動 sentinel + 載入指示 */}
+          {hasMore && (
+            <div ref={sentinelRef} className="py-4 flex items-center justify-center text-xs text-fg-muted">
+              {loadingMore ? (
+                <span className="flex items-center gap-1">
+                  <Loader2 size={12} className="animate-spin" /> 載入更多...
+                </span>
+              ) : (
+                <span>↓ 滾動載入更多</span>
+              )}
+            </div>
+          )}
+          {!hasMore && threads.length >= PAGE_SIZE && (
+            <div className="py-4 text-center text-xs text-fg-muted">已經到底了 🏝️</div>
+          )}
         </div>
       )}
     </div>

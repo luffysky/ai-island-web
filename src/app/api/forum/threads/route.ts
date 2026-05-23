@@ -3,10 +3,12 @@ import { createSupabaseServer, createSupabaseAdmin } from "@/lib/supabase";
 import { awardForumXp } from "@/lib/forum-xp";
 import { sanitizeRichHtml } from "@/lib/rich-html";
 
-// GET /api/forum/threads?board=slug&sort=recent — 主題串列表
+// GET /api/forum/threads?board=slug&sort=recent&offset=0&limit=20 — 主題串列表（分頁）
 export async function GET(req: NextRequest) {
   const boardSlug = req.nextUrl.searchParams.get("board");
   const sort = req.nextUrl.searchParams.get("sort") ?? "recent"; // recent | new | hot
+  const offset = Math.max(0, parseInt(req.nextUrl.searchParams.get("offset") ?? "0", 10) || 0);
+  const limit = Math.max(1, Math.min(50, parseInt(req.nextUrl.searchParams.get("limit") ?? "20", 10) || 20));
   const admin = createSupabaseAdmin();
 
   let boardId: string | null = null;
@@ -16,7 +18,7 @@ export async function GET(req: NextRequest) {
       .select("id")
       .eq("slug", boardSlug)
       .maybeSingle();
-    if (!board) return NextResponse.json({ threads: [] });
+    if (!board) return NextResponse.json({ threads: [], hasMore: false });
     boardId = board.id;
   }
 
@@ -36,16 +38,23 @@ export async function GET(req: NextRequest) {
   else if (sort === "hot") query = query.order("reply_count", { ascending: false });
   else query = query.order("last_reply_at", { ascending: false });
 
-  const { data, error } = await query.limit(50);
+  // 多抓一筆判斷 hasMore
+  const { data, error } = await query.range(offset, offset + limit);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  // 置頂排前面
-  const threads = (data ?? []).sort((a: any, b: any) => {
-    if (a.is_pinned !== b.is_pinned) return a.is_pinned ? -1 : 1;
-    return 0;
-  });
+  const rows = data ?? [];
+  const hasMore = rows.length > limit;
+  const page = hasMore ? rows.slice(0, limit) : rows;
 
-  return NextResponse.json({ threads });
+  // 置頂排前面（只在第一頁）
+  const threads = offset === 0
+    ? page.sort((a: any, b: any) => {
+        if (a.is_pinned !== b.is_pinned) return a.is_pinned ? -1 : 1;
+        return 0;
+      })
+    : page;
+
+  return NextResponse.json({ threads, hasMore });
 }
 
 // POST /api/forum/threads — 發新主題串
