@@ -23,3 +23,6 @@ supabase/.temp/
 
 # Bug screenshots / debug captures
 bugpic/
+
+# Kenney / asset source packs（複製需要的 GLB 到 public/models/、原始包不進 repo）
+asset/
