@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
-import { subscribeOpen, type IslandNodeId } from "@/components/island/IslandV0";
+import { subscribeOpen, type IslandNodeId } from "@/components/island/island-bus";
 import { TouchControls } from "@/components/island/TouchControls";
 import { formatTWRelative } from "@/lib/format-date";
 

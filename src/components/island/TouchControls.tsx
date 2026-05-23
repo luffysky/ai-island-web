@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { touchInput, touchInteract } from "./IslandV0";
+import { touchInput, touchInteract } from "./island-bus";
 
 /**
  * 手機版虛擬搖桿（左下） + 互動鈕（右下）。

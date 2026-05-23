@@ -4,6 +4,13 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { Sky, OrbitControls, KeyboardControls, useKeyboardControls, Text, Html } from "@react-three/drei";
 import * as THREE from "three";
+import {
+  type IslandNodeId,
+  subscribeOpen as _sub,
+  emitOpen,
+  touchInput,
+  consumeInteractPulse,
+} from "./island-bus";
 /**
  * S7-S8 3D 島嶼 v0 — 批 1：能站上去的島
  * - 一座島（圓盤地形 + 海平面）
@@ -21,8 +28,6 @@ const INTERACT_RADIUS = 2.6;
 
 enum K { forward, back, left, right, run, interact }
 
-export type IslandNodeId = "chapters" | "courses" | "leaderboard" | "forum" | "blogs";
-
 type Node = {
   id: IslandNodeId;
   position: [number, number, number];
@@ -37,21 +42,7 @@ const NODES: Node[] = [
   { id: "blogs", position: [-15, 0, -10], label: "✍️ 部落格" },
 ];
 
-// 廣播：玩家想開啟的節點 modal（IslandClient 接收）
-const openSubs = new Set<(id: IslandNodeId) => void>();
-export function subscribeOpen(fn: (id: IslandNodeId) => void) {
-  openSubs.add(fn);
-  return () => { openSubs.delete(fn); };
-}
-function emitOpen(id: IslandNodeId) {
-  for (const f of openSubs) f(id);
-}
-
-// 手機虛擬搖桿輸入（IslandClient 寫進、Player 讀）
-export const touchInput = { x: 0, y: 0, interact: false, run: false };
-let interactPulse = false;
-export function touchInteract() { interactPulse = true; }
-function consumeInteractPulse() { const v = interactPulse; interactPulse = false; return v; }
+// subscribeOpen / emitOpen / touchInput / consumeInteractPulse 從 ./island-bus import
 
 // 用 ref 暫存 player 位置、避免 React state 60fps re-render
 const playerPos = { x: 0, y: 1.1, z: 6 };
