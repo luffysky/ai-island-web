@@ -2,6 +2,7 @@ import { createSupabaseServer } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import { Trophy, Flame, Coins, Heart, Award, BookOpen } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default async function ProfilePage() {
   const supabase = await createSupabaseServer();
@@ -30,7 +31,14 @@ export default async function ProfilePage() {
       <div className="bg-[var(--color-bg-card)] rounded-xl p-6 mb-6">
         <div className="flex items-center gap-6">
           {profile.avatar_url ? (
-            <img src={profile.avatar_url} alt="" className="w-24 h-24 rounded-full" />
+            <Image
+              src={profile.avatar_url}
+              alt=""
+              width={96}
+              height={96}
+              unoptimized
+              className="w-24 h-24 rounded-full object-cover"
+            />
           ) : (
             <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-accent-2)] flex items-center justify-center text-3xl font-bold text-black">
               {(profile.display_name || profile.username || "U")[0].toUpperCase()}

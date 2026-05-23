@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 const DUNGEONS = [
   {
@@ -79,12 +80,13 @@ export function MissionDungeons() {
 
         {/* 副本總覽圖 */}
         <div className="mb-12">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image
             src="/mascot/mission-dungeons.png"
             alt="AI 任務副本系統：5 大副本挑戰"
-            className="w-full max-w-4xl mx-auto rounded-2xl shadow-xl border border-[var(--color-border)]"
-            loading="lazy"
+            width={1200}
+            height={700}
+            sizes="(max-width: 768px) 100vw, 896px"
+            className="w-full max-w-4xl mx-auto h-auto rounded-2xl shadow-xl border border-[var(--color-border)]"
           />
         </div>
 

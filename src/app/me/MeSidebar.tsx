@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   LayoutDashboard,
   StickyNote,
@@ -64,10 +65,12 @@ export function MeSidebar({ profile }: { profile: Profile | null }) {
         <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-4 mb-4">
           <div className="flex items-center gap-3">
             {profile?.avatar_url ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
+              <Image
                 src={profile.avatar_url}
-                className="w-12 h-12 rounded-full"
+                width={48}
+                height={48}
+                unoptimized
+                className="w-12 h-12 rounded-full object-cover"
                 alt=""
               />
             ) : (

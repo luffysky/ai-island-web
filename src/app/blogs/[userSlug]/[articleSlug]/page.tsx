@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { createSupabaseAdmin } from "@/lib/supabase";
@@ -84,12 +85,18 @@ export default async function ArticlePage({
 
       {/* 封面 */}
       {article.cover_image && (
-        <img
-          src={article.cover_image}
-          alt=""
-          className="w-full h-60 sm:h-80 object-cover rounded-2xl mb-6"
-          style={{ objectPosition: article.cover_image_position || "center center" }}
-        />
+        <div className="relative w-full h-60 sm:h-80 mb-6 rounded-2xl overflow-hidden">
+          <Image
+            src={article.cover_image}
+            alt=""
+            fill
+            unoptimized
+            priority
+            sizes="(max-width: 768px) 100vw, 768px"
+            className="object-cover"
+            style={{ objectPosition: article.cover_image_position || "center center" }}
+          />
+        </div>
       )}
 
       {/* 標題區 */}
@@ -104,7 +111,14 @@ export default async function ArticlePage({
         <div className="flex items-center gap-3 text-sm text-[var(--color-fg-muted)] flex-wrap">
           <span className="flex items-center gap-1">
             {blog.profile?.avatar_url ? (
-              <img src={blog.profile.avatar_url} alt="" className="w-5 h-5 rounded-full" />
+              <Image
+                src={blog.profile.avatar_url}
+                alt=""
+                width={20}
+                height={20}
+                unoptimized
+                className="w-5 h-5 rounded-full object-cover"
+              />
             ) : null}
             {name}
           </span>
@@ -149,7 +163,14 @@ export default async function ArticlePage({
       {/* 作者卡 */}
       <div className="mt-8 p-5 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border)] flex items-center gap-4">
         {blog.profile?.avatar_url ? (
-          <img src={blog.profile.avatar_url} alt="" className="w-12 h-12 rounded-full" />
+          <Image
+            src={blog.profile.avatar_url}
+            alt=""
+            width={48}
+            height={48}
+            unoptimized
+            className="w-12 h-12 rounded-full object-cover"
+          />
         ) : (
           <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-accent-2)] flex items-center justify-center font-bold text-black">
             {name[0]}

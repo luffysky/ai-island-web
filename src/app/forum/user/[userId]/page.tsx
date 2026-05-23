@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { createSupabaseAdmin } from "@/lib/supabase";
@@ -83,7 +84,14 @@ export default async function ForumUserPage({
       {/* 用戶 Header */}
       <div className="flex items-center gap-4 mb-6">
         {profile.avatar_url ? (
-          <img src={profile.avatar_url} alt="" className="w-16 h-16 rounded-full" />
+          <Image
+            src={profile.avatar_url}
+            alt=""
+            width={64}
+            height={64}
+            unoptimized
+            className="w-16 h-16 rounded-full object-cover"
+          />
         ) : (
           <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-accent-2)] flex items-center justify-center text-2xl font-bold text-black">
             {name[0]}

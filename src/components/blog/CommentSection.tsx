@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { MessageSquare, Send, Trash2, CornerDownRight } from "lucide-react";
 import type { BlogComment } from "@/lib/blog-types";
@@ -186,7 +187,14 @@ function CommentItem({
     <div className="rounded-lg bg-[var(--color-bg-card)] border border-[var(--color-border)] p-3">
       <div className="flex items-start gap-2">
         {comment.author_avatar ? (
-          <img src={comment.author_avatar} alt="" className="w-7 h-7 rounded-full flex-shrink-0" />
+          <Image
+            src={comment.author_avatar}
+            alt=""
+            width={28}
+            height={28}
+            unoptimized
+            className="w-7 h-7 rounded-full flex-shrink-0 object-cover"
+          />
         ) : (
           <div className="w-7 h-7 rounded-full bg-[var(--color-bg-elevated)] flex items-center justify-center text-xs flex-shrink-0">
             {comment.author_name[0]}

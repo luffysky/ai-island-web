@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { createSupabaseAdmin } from "@/lib/supabase";
@@ -98,7 +99,14 @@ export default async function ThreadPage({
         {/* 作者 meta */}
         <div className="flex items-center gap-2 text-sm text-[var(--color-fg-muted)] mb-4 pb-4 border-b border-[var(--color-border)]">
           {thread.author?.avatar_url ? (
-            <img src={thread.author.avatar_url} alt="" className="w-7 h-7 rounded-full" />
+            <Image
+              src={thread.author.avatar_url}
+              alt=""
+              width={28}
+              height={28}
+              unoptimized
+              className="w-7 h-7 rounded-full object-cover"
+            />
           ) : (
             <div className="w-7 h-7 rounded-full bg-[var(--color-bg-elevated)] flex items-center justify-center text-xs">
               {name[0]}

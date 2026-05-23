@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { Search, Eye, PenLine } from "lucide-react";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 
@@ -226,9 +227,12 @@ export default async function BlogsPage({
                     className="block rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-card)] p-4 hover:border-[var(--color-accent)] transition group flex gap-4"
                   >
                     {a.cover_image && (
-                      <img
+                      <Image
                         src={a.cover_image}
                         alt=""
+                        width={80}
+                        height={80}
+                        unoptimized
                         className="w-20 h-20 rounded-lg object-cover flex-shrink-0"
                       />
                     )}
@@ -279,9 +283,12 @@ export default async function BlogsPage({
                   >
                     {/* Avatar */}
                     {blog.authorAvatar ? (
-                      <img
+                      <Image
                         src={blog.authorAvatar}
                         alt={blog.authorName ?? ""}
+                        width={56}
+                        height={56}
+                        unoptimized
                         className="w-13 h-13 sm:w-14 sm:h-14 rounded-full object-cover ring-2 ring-[var(--color-border)] flex-shrink-0"
                       />
                     ) : (

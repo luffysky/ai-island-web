@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 export function MascotIntro() {
   return (
     <section className="border-b border-[var(--color-border)] py-16">
@@ -8,12 +10,13 @@ export function MascotIntro() {
         </div>
 
         <div className="relative mb-10">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image
             src="/mascot/trio.png"
             alt="肥仔、菇寶、綠寶 — AI 島核心夥伴"
-            className="w-full max-w-4xl mx-auto rounded-2xl shadow-xl border border-[var(--color-border)]"
-            loading="lazy"
+            width={1200}
+            height={700}
+            sizes="(max-width: 768px) 100vw, 896px"
+            className="w-full max-w-4xl mx-auto h-auto rounded-2xl shadow-xl border border-[var(--color-border)]"
           />
         </div>
 

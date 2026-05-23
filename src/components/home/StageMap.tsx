@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { STAGE_COLORS } from "@/lib/utils";
 
 const STAGES = [
@@ -21,12 +22,13 @@ export function StageMap() {
 
         {/* 地圖總覽圖 */}
         <div className="mb-12">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image
             src="/mascot/upgrade-map.png"
             alt="AI 島技術地圖：6 大技術區域"
-            className="w-full max-w-4xl mx-auto rounded-2xl shadow-xl border border-[var(--color-border)]"
-            loading="lazy"
+            width={1200}
+            height={700}
+            sizes="(max-width: 768px) 100vw, 896px"
+            className="w-full max-w-4xl mx-auto h-auto rounded-2xl shadow-xl border border-[var(--color-border)]"
           />
         </div>
 

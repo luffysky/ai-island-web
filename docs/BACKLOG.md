@@ -41,7 +41,7 @@
 | **UX-S1b** | 剩 38 處 alert/confirm 跨 19 檔逐檔替換（清單見下） | ~3 hr | ✅ |
 | **UX-S2** | 全站 optimistic update（BookmarkButton / NotePanel / blog comment / etc）| ~10 hr | ❌ |
 | **UX-S3** | 加 `loading.tsx` skeleton（首頁 / chapters / blogs / me / forum 等 8 個熱路徑）| ~4 hr | ✅ |
-| **UX-S4** | `<img>` → `<Image>`（29 處 20 檔）| ~4 hr | ❌ |
+| **UX-S4** | `<img>` → `<Image>`（29 處 20 檔）| ~4 hr | ✅ |
 | **UX-S5** | Pet.tsx 行動裝置（@media + safe-area-inset） | ~2 hr | ❌ |
 | **UX-S6** | callback loading + 微互動（button active scale）+ 無限滾動 | ~7 hr | ❌ |
 

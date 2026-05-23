@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 type HeroProps = {
   totalChapters: number;
@@ -66,12 +67,14 @@ export function Hero({ totalChapters, totalLessons, stageCount }: HeroProps) {
 
           {/* 右側：英雄地圖 */}
           <div className="relative">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src="/mascot/hero-map.png"
               alt="AI 島高玩養成地圖：跟肥仔、菇寶、綠寶一起踏上 AI 冒險"
+              width={1200}
+              height={800}
+              priority
+              sizes="(max-width: 768px) 100vw, 600px"
               className="w-full h-auto rounded-2xl shadow-2xl border border-[var(--color-border)]"
-              loading="eager"
             />
             {/* 角色 label */}
             <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 flex gap-2">

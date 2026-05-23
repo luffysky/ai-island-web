@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { createSupabaseAdmin } from "@/lib/supabase";
@@ -55,7 +56,14 @@ export default async function BlogHomePage({
       {/* 部落格 Header */}
       <header className="mb-10 text-center">
         {blog.profile?.avatar_url ? (
-          <img src={blog.profile.avatar_url} alt="" className="w-20 h-20 rounded-full mx-auto mb-3" />
+          <Image
+            src={blog.profile.avatar_url}
+            alt=""
+            width={80}
+            height={80}
+            unoptimized
+            className="w-20 h-20 rounded-full mx-auto mb-3 object-cover"
+          />
         ) : (
           <div className="w-20 h-20 rounded-full mx-auto mb-3 bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-accent-2)] flex items-center justify-center text-3xl font-bold text-black">
             {name[0]}
@@ -95,7 +103,16 @@ export default async function BlogHomePage({
               className="block rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-card)] overflow-hidden hover:border-[var(--color-accent)] transition group"
             >
               {a.cover_image && (
-                <img src={a.cover_image} alt="" className="w-full h-44 object-cover" />
+                <div className="relative w-full h-44">
+                  <Image
+                    src={a.cover_image}
+                    alt=""
+                    fill
+                    unoptimized
+                    sizes="(max-width: 768px) 100vw, 768px"
+                    className="object-cover"
+                  />
+                </div>
               )}
               <div className="p-5">
                 {a.category && (

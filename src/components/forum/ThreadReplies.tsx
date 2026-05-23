@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { Send, Trash2, CornerDownRight, Loader2, Check } from "lucide-react";
 import type { ForumReply } from "@/lib/forum-types";
@@ -295,7 +296,14 @@ function ReplyItem({
       )}
       <div className="flex items-start gap-2">
         {reply.author?.avatar_url ? (
-          <img src={reply.author.avatar_url} alt="" className="w-8 h-8 rounded-full flex-shrink-0" loading="lazy" />
+          <Image
+            src={reply.author.avatar_url}
+            alt=""
+            width={32}
+            height={32}
+            unoptimized
+            className="w-8 h-8 rounded-full flex-shrink-0 object-cover"
+          />
         ) : (
           <div className="w-8 h-8 rounded-full bg-[var(--color-bg-elevated)] flex items-center justify-center text-xs flex-shrink-0">
             {name[0]}

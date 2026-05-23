@@ -145,10 +145,17 @@ export function LessonCard({
                       <table className="min-w-full text-sm">{children}</table>
                     </div>
                   ),
-                  // image 限制最大寬
+                  // image 限制最大寬。markdown 來的 img 尺寸不可預測、
+                  // 不走 next/image、改加 loading=lazy + decoding=async 拿 lazy load。
                   img: ({ src, alt }) => (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={src as string} alt={alt ?? ""} className="max-w-full h-auto rounded my-2" />
+                    <img
+                      src={src as string}
+                      alt={alt ?? ""}
+                      loading="lazy"
+                      decoding="async"
+                      className="max-w-full h-auto rounded my-2"
+                    />
                   ),
                 }}
               >

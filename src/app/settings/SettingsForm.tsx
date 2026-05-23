@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Image from "next/image";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/Toast";
@@ -116,7 +117,16 @@ export function SettingsForm({ profile, email }: { profile: any; email: string }
             className="w-full bg-[var(--color-bg-elevated)] rounded-lg px-3 py-2"
             placeholder="https://..."
           />
-          {avatarUrl && <img src={avatarUrl} alt="" className="w-16 h-16 rounded-full mt-2" />}
+          {avatarUrl && (
+            <Image
+              src={avatarUrl}
+              alt=""
+              width={64}
+              height={64}
+              unoptimized
+              className="w-16 h-16 rounded-full mt-2 object-cover"
+            />
+          )}
         </div>
 
         <div>

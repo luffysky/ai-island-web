@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { useAuth } from "@/lib/auth-context";
@@ -181,7 +182,14 @@ export function TopNav() {
                     <div className="px-4 py-3 border-b border-[var(--color-border)]">
                       <div className="flex items-center gap-3">
                         {displayProfile.avatar_url ? (
-                          <img src={displayProfile.avatar_url} alt="" className="w-10 h-10 rounded-full" />
+                          <Image
+                            src={displayProfile.avatar_url}
+                            alt=""
+                            width={40}
+                            height={40}
+                            unoptimized
+                            className="w-10 h-10 rounded-full object-cover"
+                          />
                         ) : (
                           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-accent-2)] flex items-center justify-center font-bold text-black">
                             {(displayProfile.display_name || displayProfile.username || "U")[0].toUpperCase()}

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { MessageSquare, Eye, Pin, Star, Lock, Flame } from "lucide-react";
 import type { ForumThread } from "@/lib/forum-types";
 
@@ -65,7 +66,14 @@ export function ThreadList({ boardSlug }: { boardSlug?: string }) {
               <div className="flex items-start gap-3">
                 {/* 作者頭像 */}
                 {t.author?.avatar_url ? (
-                  <img src={t.author.avatar_url} alt="" className="w-9 h-9 rounded-full flex-shrink-0" />
+                  <Image
+                    src={t.author.avatar_url}
+                    alt=""
+                    width={36}
+                    height={36}
+                    unoptimized
+                    className="w-9 h-9 rounded-full flex-shrink-0 object-cover"
+                  />
                 ) : (
                   <div className="w-9 h-9 rounded-full bg-[var(--color-bg-elevated)] flex items-center justify-center text-sm flex-shrink-0">
                     {(t.author?.display_name || t.author?.username || "?")[0]}

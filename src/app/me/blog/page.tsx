@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { PenLine, Plus, Eye, Settings, Trash2, ExternalLink, Globe, Lock } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
@@ -130,7 +131,14 @@ export default function MyBlogPage() {
               className="rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-card)] p-4 flex items-center gap-4"
             >
               {a.cover_image && (
-                <img src={a.cover_image} alt="" className="w-16 h-16 rounded-lg object-cover flex-shrink-0" />
+                <Image
+                  src={a.cover_image}
+                  alt=""
+                  width={64}
+                  height={64}
+                  unoptimized
+                  className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
+                />
               )}
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2 mb-1">

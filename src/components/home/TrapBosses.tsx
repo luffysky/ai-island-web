@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 const TRAP_BOSSES = [
   {
     no: 1,
@@ -54,12 +56,13 @@ export function TrapBosses() {
         </div>
 
         <div className="mb-12">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image
             src="/mascot/boss-pits.png"
             alt="新手最容易踩的 5 大坑"
-            className="w-full max-w-4xl mx-auto rounded-2xl shadow-xl border border-[var(--color-border)]"
-            loading="lazy"
+            width={1200}
+            height={700}
+            sizes="(max-width: 768px) 100vw, 896px"
+            className="w-full max-w-4xl mx-auto h-auto rounded-2xl shadow-xl border border-[var(--color-border)]"
           />
         </div>
 

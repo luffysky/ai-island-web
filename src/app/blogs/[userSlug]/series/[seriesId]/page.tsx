@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { Eye, ArrowLeft } from "lucide-react";
@@ -93,10 +94,12 @@ export default async function SeriesPage({
 
           <div className="flex items-start gap-4">
             {series.cover_image && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
+              <Image
                 src={series.cover_image}
                 alt={series.title}
+                width={80}
+                height={80}
+                unoptimized
                 className="w-20 h-20 rounded-xl object-cover flex-shrink-0"
               />
             )}
@@ -145,12 +148,14 @@ export default async function SeriesPage({
                 </div>
 
                 {article.cover_image && (
-                  <div className="shrink-0 w-20 h-14 rounded-lg overflow-hidden hidden sm:block">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                  <div className="relative shrink-0 w-20 h-14 rounded-lg overflow-hidden hidden sm:block">
+                    <Image
                       src={article.cover_image}
                       alt={article.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      fill
+                      unoptimized
+                      sizes="80px"
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
                       style={{
                         objectPosition:
                           article.cover_image_position ?? "center center",
@@ -188,10 +193,12 @@ export default async function SeriesPage({
         {/* Author info */}
         <div className="mt-12 pt-8 border-t border-[var(--color-border)] flex items-center gap-3">
           {blog.profile?.avatar_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               src={blog.profile.avatar_url}
               alt={name}
+              width={40}
+              height={40}
+              unoptimized
               className="w-10 h-10 rounded-full object-cover"
             />
           ) : (

@@ -1,5 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { adminHref } from "@/lib/admin-href";
 import { ArrowLeft } from "lucide-react";
@@ -70,8 +71,14 @@ export default async function AdminUserDetailPage({
       {/* Profile header */}
       <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-2xl p-5 flex items-center gap-4">
         {profile.avatar_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={profile.avatar_url} alt="" className="w-16 h-16 rounded-full" />
+          <Image
+            src={profile.avatar_url}
+            alt=""
+            width={64}
+            height={64}
+            unoptimized
+            className="w-16 h-16 rounded-full object-cover"
+          />
         ) : (
           <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-accent-2)] flex items-center justify-center text-2xl font-bold text-white">
             {(profile.display_name || profile.username || "?")[0]}
