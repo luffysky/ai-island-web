@@ -17,6 +17,7 @@ export type ChatterKind =
   | "quiz-perfect" | "quiz-fail" | "quiz-pass"
   | "streak-broken"
   | "bookmark-added" | "note-saved"
+  | "todo-completed"
   // 頁面
   | "page-chapter" | "page-lesson"
   | "page-forum" | "page-blog"
@@ -257,6 +258,23 @@ const noteSaved: Entry[] = [
   { text: "嗯、用功。", species: ["cat"] },
   { text: "汪！我也想記！", species: ["dog"] },
   { text: "蹦、寫得真好。", species: ["rabbit"] },
+];
+
+const todoCompleted: Entry[] = [
+  // hamster
+  { text: "勾掉一格囤囤囤！", species: ["hamster"] },
+  { text: "待辦少一條、瓜子多一顆！", species: ["hamster"] },
+  { text: "嘿嘿、效率咻！", species: ["hamster"] },
+  // cat
+  { text: "...嗯、處理完了。", species: ["cat"] },
+  { text: "勉強及格。", species: ["cat"] },
+  { text: "...這條結束。", species: ["cat"] },
+  // dog
+  { text: "汪！清掉一條啦！", species: ["dog"] },
+  { text: "GOOD JOB！下一個！", species: ["dog"] },
+  // rabbit
+  { text: "蹦、收工一項。", species: ["rabbit"] },
+  { text: "...完成了、好棒。", species: ["rabbit"] },
 ];
 
 // ===========================
@@ -1102,6 +1120,7 @@ const BANK: Record<ChatterKind, Entry[]> = {
   "streak-broken": streakBroken,
   "bookmark-added": bookmarkAdded,
   "note-saved": noteSaved,
+  "todo-completed": todoCompleted,
   "page-chapter": pageChapter,
   "page-lesson": pageLesson,
   "page-forum": pageForum,

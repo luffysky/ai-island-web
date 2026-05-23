@@ -3,7 +3,8 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { useAuth } from "@/lib/auth-context";
-import { Flame, Coins, Heart, LogOut, Settings, Trophy, User as UserIcon, ChevronDown, Menu, X } from "lucide-react";
+import { Flame, Coins, Heart, LogOut, Settings, Trophy, User as UserIcon, ChevronDown, Menu, X, CheckSquare } from "lucide-react";
+import { TodoDropdown, useTodoShortcut } from "@/components/todo/TodoDropdown";
 
 const NAV_LINKS = [
   { href: "/chapters", label: "章節" },
@@ -20,8 +21,41 @@ export function TopNav() {
   const [open, setOpen] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [todoOpen, setTodoOpen] = useState(false);
+  const [todoCount, setTodoCount] = useState<number>(0);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const todoBtnRef = useRef<HTMLDivElement>(null);
   const supabase = createSupabaseBrowser();
+
+  useTodoShortcut(() => setTodoOpen((v) => !v));
+
+  // 載未完成待辦數
+  useEffect(() => {
+    if (!user) {
+      setTodoCount(0);
+      return;
+    }
+    const load = () => {
+      fetch("/api/todo")
+        .then((r) => r.json())
+        .then((j) => setTodoCount((j.todos ?? []).filter((t: any) => !t.completed).length))
+        .catch(() => {});
+    };
+    load();
+    // 完成事件 → 重新整理 badge
+    const onTodoEvent = () => load();
+    window.addEventListener("pet:todo-completed", onTodoEvent);
+    return () => window.removeEventListener("pet:todo-completed", onTodoEvent);
+  }, [user?.id]);
+
+  // dropdown 關閉時也 refresh badge（涵蓋新增 / 刪除）
+  useEffect(() => {
+    if (todoOpen || !user) return;
+    fetch("/api/todo")
+      .then((r) => r.json())
+      .then((j) => setTodoCount((j.todos ?? []).filter((t: any) => !t.completed).length))
+      .catch(() => {});
+  }, [todoOpen, user?.id]);
   const displayProfile = profile ?? {
     username: user?.email?.split("@")[0] ?? "AI 島民",
     display_name: user?.user_metadata?.display_name || user?.user_metadata?.full_name || user?.user_metadata?.name,
@@ -109,6 +143,24 @@ export function TopNav() {
                   <Heart size={14} className="text-red-400" />
                   {displayProfile.hearts ?? 5}
                 </span>
+              </div>
+
+              {/* TODO list 入口 */}
+              <div className="relative" ref={todoBtnRef}>
+                <button
+                  onClick={() => setTodoOpen((v) => !v)}
+                  aria-label="開啟待辦清單"
+                  title="待辦清單（⌘⇧T / Ctrl+Shift+T）"
+                  className="relative flex items-center p-1.5 rounded-lg hover:bg-[var(--color-bg-card)] transition active:scale-95"
+                >
+                  <CheckSquare size={17} className={todoCount > 0 ? "text-[var(--color-accent)]" : ""} />
+                  {todoCount > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 min-w-[14px] h-[14px] px-1 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center pointer-events-none">
+                      {todoCount > 99 ? "99+" : todoCount}
+                    </span>
+                  )}
+                </button>
+                <TodoDropdown open={todoOpen} onClose={() => setTodoOpen(false)} />
               </div>
 
               <div className="relative" ref={dropdownRef}>

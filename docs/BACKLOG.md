@@ -74,13 +74,13 @@
 | 階段 | 內容 | 狀態 |
 |---|---|---|
 | Backend | migration / types / recur parser / 3 API route | ✅ commit `8a4ae7a` |
-| UI | TopNav dropdown 入口（counter badge / Cmd+Shift+T 快捷） | ❌ |
-| UI | TodoItem + 縮排子任務 + inline title edit | ❌ |
-| UI | dnd-kit 拖曳排序（含跨父） | ❌ |
-| UI | TodoEditModal（截止日 / 優先 / recur picker） | ❌ |
-| 寵物 | `pet:todo-completed` event + chatter `todo-completed` key + ~10 條台詞 | ❌ |
+| UI | TopNav dropdown 入口（counter badge / Cmd+Shift+T 快捷） | ✅ |
+| UI | TodoItem + 縮排子任務 + inline title edit | ✅ |
+| UI | dnd-kit 拖曳排序（同層 reorder） | ✅ |
+| UI | TodoEditModal（截止日 / 優先 / recur picker） | ✅ |
+| 寵物 | `pet:todo-completed` event + chatter `todo-completed` key + 10 條台詞 | ✅ |
 
-**新依賴待裝**：`@dnd-kit/core` + `@dnd-kit/sortable`
+**新依賴**：`@dnd-kit/core` + `@dnd-kit/sortable` + `@dnd-kit/utilities` ✅ 已裝
 
 ---
 

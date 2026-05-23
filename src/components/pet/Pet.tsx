@@ -205,6 +205,7 @@ export function Pet() {
     const onStreakBroken = () => fire("streak-broken", undefined, { force: true, mood: "sad" });
     const onBookmark = () => fire("bookmark-added", undefined, { force: true });
     const onNote = () => fire("note-saved", undefined, { force: true });
+    const onTodoDone = () => fire("todo-completed", undefined, { force: true, mood: "happy" });
     const onMilestone = (e: any) => {
       const count = e?.detail?.count;
       if (count !== 30 && count !== 60 && count !== 100) return;
@@ -224,6 +225,7 @@ export function Pet() {
     window.addEventListener("pet:streak-broken", onStreakBroken);
     window.addEventListener("pet:bookmark-added", onBookmark);
     window.addEventListener("pet:note-saved", onNote);
+    window.addEventListener("pet:todo-completed", onTodoDone);
     window.addEventListener("pet:milestone-reached", onMilestone);
     return () => {
       window.removeEventListener("pet:lesson-complete", onLesson);
@@ -235,6 +237,7 @@ export function Pet() {
       window.removeEventListener("pet:streak-broken", onStreakBroken);
       window.removeEventListener("pet:bookmark-added", onBookmark);
       window.removeEventListener("pet:note-saved", onNote);
+      window.removeEventListener("pet:todo-completed", onTodoDone);
       window.removeEventListener("pet:milestone-reached", onMilestone);
     };
     // ctx 依賴會 trigger re-bind、但因為 listener id 不同也沒事
