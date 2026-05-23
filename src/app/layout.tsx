@@ -12,6 +12,7 @@ import { Marquee } from "@/components/Marquee";
 import { Pet } from "@/components/pet/Pet";
 import { ToastProvider } from "@/components/ui/Toast";
 import { ConfirmProvider } from "@/components/ui/ConfirmDialog";
+import { WebVitalsReporter } from "@/components/WebVitalsReporter";
 import { SITE_STATS } from "@/lib/site-stats";
 
 const TITLE = `AI 島：${SITE_STATS.chapterCount} 章全端養成班`;
@@ -72,6 +73,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <AITutorAutoContext />
               <CookieBanner />
               <InteractionTracker />
+              <WebVitalsReporter />
               <AdminFloatingToolbar />
               <Pet />
             </ConfirmProvider>

@@ -64,10 +64,18 @@ export default async function AdminUsersPage({
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
         <h2 className="text-xl font-bold">👥 使用者管理</h2>
-        <div className="text-xs text-fg-muted">
-          共 {(count ?? 0).toLocaleString()} 人 · 第 {page}/{totalPages} 頁
+        <div className="flex items-center gap-3">
+          <Link
+            href={adminHref("/admin/users/batch") as any}
+            className="text-xs px-3 py-1.5 rounded-lg border border-border hover:border-accent hover:text-accent"
+          >
+            🔄 批次操作
+          </Link>
+          <span className="text-xs text-fg-muted">
+            共 {(count ?? 0).toLocaleString()} 人 · 第 {page}/{totalPages} 頁
+          </span>
         </div>
       </div>
 
