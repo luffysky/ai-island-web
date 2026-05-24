@@ -2,12 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { decryptKey } from "@/lib/ai-crypto";
-import { callAI } from "@/lib/ai-providers";
 import { getAdminLineUser, type AdminLineUser } from "@/lib/admin-line-users";
 import { runBotCommand, isCommand } from "@/lib/line-bot-commands";
 import { buildAiReplyCard, buildQuickReply, COMMON_QR, type FlexMessage, type LineTextMessage } from "@/lib/line-flex";
 import { runPostback } from "@/lib/line-postback";
 import { getLiveSnapshot } from "@/lib/site-status-snapshot";
+import { askAIWithTools } from "@/lib/line-ai-tools";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -52,6 +52,7 @@ async function lineReply(replyToken: string, payload: string | FlexMessage | Lin
 async function askAI(message: string, adminUser: AdminLineUser): Promise<string> {
   const admin = createSupabaseAdmin();
   const { data: models } = await admin.from("ai_models").select("*").eq("is_active", true).limit(20);
+  // 優先用 Anthropic（支援 tool use）
   const model = (models as any[])?.find((m) => m.provider === "anthropic") ?? (models as any[])?.[0];
   if (!model) return "❌ AI 模型未設定";
   const { data: sysKey } = await admin
@@ -78,30 +79,32 @@ async function askAI(message: string, adminUser: AdminLineUser): Promise<string>
 - 用繁中、語氣簡潔、像對信任的同事
 - ${adminUser.role.includes("董事") ? "你是他的事業助手、幫忙決策 / 看報表 / 整理思緒" : "你是後台助理、協助處理日常運維"}
 - 主動意識：他在 LINE 問問題、可能在外面忙、給簡潔可執行的答覆
-- 可用命令：/help（列所有命令）/today /kpi 7 /users /churn /errors /prefs
+
+你有工具可以「直接執行」、不要叫使用者自己打命令：
+- 報表類問題（今日 / 7 天 KPI / 用戶 / 訂單 / 流失）→ 用 run_command tool（command=today/kpi/users/churn/errors/orders/sub/ai-cost/online/quiz/island/leetcode）
+- 「某個使用者最近怎樣」→ 用 get_user_detail
+- 「最近錯誤 / 那個錯是什麼」→ 用 get_recent_errors / get_error_detail
+- 「某筆訂單詳情」→ 用 get_order_detail
+- 一般狀態問題、答案在下面快照裡就直接用快照、不必呼叫 tool
 
 下面是「現在這一刻」的網站即時狀態（30 秒快取、台灣時區）。
-回答時優先用這份資料、不要叫他「自己去後台看」、也不要說「我不知道」這種東西這裡明明就有。
-如果他問的東西不在這份快照、再請他用對應 / 命令查或進後台。
+不要叫他「自己去後台看」、也不要說「我不知道」這裡明明就有。
+拿到 tool 結果後用自然語言整理重點、不要原樣貼。
 
 ────────── 即時狀態 ──────────
 ${snapshot}
 ──────────────────────────────`;
 
   try {
-    const resp = await callAI({
-      provider: model.provider,
-      model: model.model_name,
+    const reply = await askAIWithTools({
       apiKey,
-      messages: [
-        { role: "system", content: systemPrompt },
-        ...hist.map((h) => ({ role: h.role, content: h.content })),
-      ],
-      temperature: 0.7,
-      maxTokens: 800,
+      model: model.model_name,
+      systemPrompt,
+      history: hist,
+      user: adminUser,
     });
-    hist.push({ role: "assistant", content: resp.text });
-    return resp.text;
+    hist.push({ role: "assistant", content: reply });
+    return reply;
   } catch (e: any) {
     return `❌ AI 呼叫失敗：${e?.message ?? "未知錯誤"}`;
   }
