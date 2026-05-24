@@ -8,7 +8,7 @@ export default async function CRMPage({ searchParams }: { searchParams: Promise<
 
   let query = supabase
     .from("tickets")
-    .select("*, profiles(username, display_name)")
+    .select("*, profiles(username, display_name, avatar_url)")
     .order("updated_at", { ascending: false })
     .limit(100);
 
@@ -25,6 +25,14 @@ export default async function CRMPage({ searchParams }: { searchParams: Promise<
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold">💬 客服 (CRM)</h2>
+      </div>
+
+      <div className="rounded-xl bg-blue-500/5 border border-blue-500/30 p-3 text-xs text-fg-muted">
+        這頁是<b className="text-fg"> 對話客服 </b>：點 ticket 進去聊天 + 套罐頭 + 自動推 LINE。
+        要批次改狀態 / 派單 / SLA、請去{" "}
+        <Link href={(`/${process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2"}/admin/tickets`) as any} className="text-accent hover:underline font-bold">
+          /admin/tickets 工單管理
+        </Link>。
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -66,14 +74,18 @@ export default async function CRMPage({ searchParams }: { searchParams: Promise<
                   </td>
                 </tr>
               ) : (
-                tickets?.map((t: any) => (
+                tickets?.map((t: any) => {
+                  const isLine = t.meta?.source === "user_line_bot";
+                  const senderName = t.profiles?.display_name || t.profiles?.username || t.meta?.sender_name || "LINE訪客";
+                  return (
                   <tr key={t.id} className="border-t border-border hover:bg-bg-elevated">
                     <td className="px-4 py-3">
-                      <Link href={`/admin/crm/${t.id}` as any} className="hover:text-accent font-medium">
+                      <Link href={`/${process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2"}/admin/crm/${t.id}` as any} className="hover:text-accent font-medium inline-flex items-center gap-1.5">
+                        {isLine && <span className="text-[10px] px-1 rounded bg-green-500/15 text-green-400">💚 LINE</span>}
                         {t.subject}
                       </Link>
                     </td>
-                    <td className="px-4 py-3 text-fg-muted">{t.profiles?.username ?? "—"}</td>
+                    <td className="px-4 py-3 text-fg-muted text-sm">{senderName}</td>
                     <td className="px-4 py-3"><CategoryBadge cat={t.category} /></td>
                     <td className="px-4 py-3"><PriorityBadge p={t.priority} /></td>
                     <td className="px-4 py-3"><StatusBadge status={t.status} /></td>
@@ -81,7 +93,8 @@ export default async function CRMPage({ searchParams }: { searchParams: Promise<
                       {t.last_replied_at ? new Date(t.last_replied_at).toLocaleString('zh-TW') : "—"}
                     </td>
                   </tr>
-                ))
+                  );
+                })
               )}
             </tbody>
           </table>
