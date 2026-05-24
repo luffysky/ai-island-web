@@ -1,5 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import Link from "next/link";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 export default async function BroadcastsPage() {
   const supabase = createSupabaseAdmin();
@@ -22,9 +23,13 @@ export default async function BroadcastsPage() {
       {error?.message?.includes("does not exist") ? (
         <SchemaNeeded />
       ) : broadcasts?.length === 0 ? (
-        <div className="bg-bg-card border border-border rounded-xl p-12 text-center text-fg-muted">
-          <p className="mb-2">還沒發過任何公告</p>
-          <p className="text-xs">支援：站內訊息 / Email / LINE / Push Notification</p>
+        <div className="bg-bg-card border border-border rounded-xl">
+          <EmptyState
+            emoji="📣"
+            title="還沒發過任何公告"
+            desc="支援站內訊息 / Email / LINE / Push Notification、點右上「+ 新建」開始"
+            action={{ label: "+ 新建公告", href: `/${process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2"}/admin/broadcasts/new` }}
+          />
         </div>
       ) : (
         <div className="space-y-2">

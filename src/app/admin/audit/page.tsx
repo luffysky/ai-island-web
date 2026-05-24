@@ -1,6 +1,7 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 export const dynamic = "force-dynamic";
 
@@ -149,8 +150,8 @@ export default async function AuditPage({
       </form>
 
       {logs?.length === 0 ? (
-        <div className="bg-bg-card border border-border rounded-xl p-12 text-center text-fg-muted">
-          目前條件下沒有 audit log
+        <div className="bg-bg-card border border-border rounded-xl">
+          <EmptyState emoji="🪵" title="沒有 audit log" desc="目前條件下沒有任何紀錄。試試清掉篩選或拉長時間區間。" />
         </div>
       ) : (
         <div className="bg-bg-card border border-border rounded-xl overflow-x-auto">

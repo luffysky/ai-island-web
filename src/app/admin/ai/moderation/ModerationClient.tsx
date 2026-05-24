@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Check, X, ArrowUp } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import { formatTW } from "@/lib/format-date";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 type Flag = {
   id: string;
@@ -76,7 +77,7 @@ export function ModerationClient({ initial, filters }: { initial: Flag[]; filter
 
       <div className="rounded-xl bg-bg-card border border-border divide-y divide-border">
         {rows.length === 0 ? (
-          <div className="text-center py-12 text-fg-muted text-sm">🎉 沒有待處理的 flag</div>
+          <EmptyState emoji="🎉" title="沒有待處理的 flag" desc="AI 對話審核全部清乾淨了。新進來的會自動列上" />
         ) : rows.map((r) => (
           <div key={r.id} className="p-3">
             <div className="flex items-center gap-2 mb-2">

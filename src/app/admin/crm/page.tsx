@@ -1,5 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import Link from "next/link";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 export default async function CRMPage({ searchParams }: { searchParams: Promise<{ status?: string; priority?: string }> }) {
   const params = await searchParams;
@@ -59,7 +60,11 @@ export default async function CRMPage({ searchParams }: { searchParams: Promise<
             </thead>
             <tbody>
               {tickets?.length === 0 ? (
-                <tr><td colSpan={6} className="px-4 py-8 text-center text-fg-muted">沒有 ticket</td></tr>
+                <tr>
+                  <td colSpan={6} className="px-4 py-2">
+                    <EmptyState emoji="💌" title="目前沒有客服 ticket" desc="使用者從 /support 開單後會出現在這" />
+                  </td>
+                </tr>
               ) : (
                 tickets?.map((t: any) => (
                   <tr key={t.id} className="border-t border-border hover:bg-bg-elevated">

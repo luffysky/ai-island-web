@@ -1,5 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { formatTW } from "@/lib/format-date";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 export const dynamic = "force-dynamic";
 
@@ -40,11 +41,7 @@ export default async function AdminAiCachePage() {
       <section className="rounded-xl bg-bg-card border border-border">
         <div className="px-4 py-3 border-b border-border font-bold text-sm">🔥 最常被命中的問題 Top 20</div>
         {(topHits ?? []).length === 0 ? (
-          <div className="text-center py-12 text-fg-muted text-sm">
-            目前還沒有任何快取資料。
-            <br />
-            <span className="text-[10px]">第一次有人問問題就會寫進來、第二次起命中。</span>
-          </div>
+          <EmptyState emoji="💾" title="還沒有任何快取資料" desc="第一次有人問問題就會寫進來、第二次起命中" />
         ) : (
           <table className="w-full text-sm">
             <thead className="bg-bg-elevated text-fg-muted text-xs">

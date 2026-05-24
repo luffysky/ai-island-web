@@ -111,12 +111,14 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             </NavGroup>
 
             <NavGroup title="系統">
+              <AdminLink href="/admin/health">💓 系統健康</AdminLink>
+              <AdminLink href="/admin/env">🔐 環境變數</AdminLink>
               <AdminLink href="/admin/audit">📝 操作紀錄</AdminLink>
               <AdminLink href="/admin/errors">🛡️ 錯誤日誌</AdminLink>
               <AdminLink href="/admin/rate-limits">🚦 Rate Limit</AdminLink>
               <AdminLink href="/admin/gdpr">🔐 GDPR 請求</AdminLink>
               <AdminLink href="/admin/impersonate">🕵️ Impersonate</AdminLink>
-              <AdminLink href="/admin/ops">🛠️ Ops（DB / 快取 / Env）</AdminLink>
+              <AdminLink href="/admin/ops">🛠️ Ops（DB / 快取）</AdminLink>
               <AdminLink href="/admin/settings">⚙️ 系統設定</AdminLink>
             </NavGroup>
           </nav>
