@@ -14,8 +14,9 @@ import type { AdminLineUser } from "./admin-line-users";
 import { formatTW, formatTWRelative } from "./format-date";
 import { getPeriodReport } from "./site-period-report";
 
-const TIMEOUT_MS = 60_000;
-const MAX_TOOL_ROUNDS = 5;
+const TIMEOUT_MS = 12_000;       // 單一 Anthropic call 超過 12 秒就 abort
+const MAX_TOOL_ROUNDS = 3;       // 最多 3 輪、防多輪拖到 LINE replyToken 30s 失效
+const HARD_TIMEOUT_MS = 22_000;  // askAIWithTools 整段最多 22 秒、留 8 秒給 LINE reply
 
 // ─── tool schema ───
 const TOOLS = [
@@ -229,7 +230,24 @@ export async function askAIWithTools(opts: {
   history: Array<{ role: "user" | "assistant"; content: string }>;
   user: AdminLineUser;
 }): Promise<string> {
-  // Anthropic messages：第一條 user 訊息已經在 history 最後一條
+  // Hard timeout：整個 askAIWithTools 最多跑 22 秒
+  // 避免多輪 tool 拖到 LINE replyToken (30s) 失效、user 看不到任何回覆
+  const racePromise = Promise.race([
+    runToolLoop(opts),
+    new Promise<string>((resolve) =>
+      setTimeout(() => resolve("讓我想一下、不過你可以再問一次嗎？（剛剛思考超時了）"), HARD_TIMEOUT_MS),
+    ),
+  ]);
+  return racePromise;
+}
+
+async function runToolLoop(opts: {
+  apiKey: string;
+  model: string;
+  systemPrompt: string;
+  history: Array<{ role: "user" | "assistant"; content: string }>;
+  user: AdminLineUser;
+}): Promise<string> {
   const messages: any[] = opts.history.map((h) => ({ role: h.role, content: h.content }));
   let roundsLeft = MAX_TOOL_ROUNDS;
 
