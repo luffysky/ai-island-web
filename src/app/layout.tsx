@@ -16,6 +16,7 @@ import { Pet } from "@/components/pet/Pet";
 import { ToastProvider } from "@/components/ui/Toast";
 import { ConfirmProvider } from "@/components/ui/ConfirmDialog";
 import { WebVitalsReporter } from "@/components/WebVitalsReporter";
+import { PWAInstall } from "@/components/PWAInstall";
 import { SITE_STATS } from "@/lib/site-stats";
 import { organizationSchema, websiteSchema, jsonLdScript } from "@/lib/seo-jsonld";
 
@@ -105,6 +106,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <CookieBanner />
               <InteractionTracker />
               <WebVitalsReporter />
+              <PWAInstall />
               <AdminFloatingToolbar />
               <Pet />
               <MobileBottomNav />
