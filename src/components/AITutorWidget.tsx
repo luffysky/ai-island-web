@@ -340,7 +340,15 @@ export function AITutorWidget({
 
       {/* Chat panel */}
       {open && (
-        <div ref={panelRef} className="fixed bottom-6 right-6 z-50 w-[400px] max-w-[calc(100vw-3rem)] h-[600px] max-h-[calc(100vh-1rem)] bg-bg-card border border-border rounded-2xl shadow-2xl flex flex-col">
+        <div
+          ref={panelRef}
+          style={{
+            // 用 inline CSS min() 保證寬高永遠不超視口、避開 Tailwind JIT 對 calc 任意值的 quirk
+            width: "min(400px, calc(100vw - 1rem))",
+            height: "min(600px, calc(100vh - 5rem))",
+          }}
+          className="fixed bottom-2 right-2 z-50 bg-bg-card border border-border rounded-2xl shadow-2xl flex flex-col"
+        >
           {/* Header */}
           <div className="flex items-center justify-between p-3 border-b border-border">
             <div className="flex items-center gap-2 min-w-0">

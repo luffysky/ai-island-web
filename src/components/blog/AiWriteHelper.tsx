@@ -65,7 +65,11 @@ export function AiWriteHelper({
   }
 
   return (
-    <div ref={panelRef} className="fixed bottom-6 right-6 z-50 w-[380px] max-w-[calc(100vw-3rem)] bg-bg-card border border-border rounded-2xl shadow-2xl flex flex-col max-h-[80vh]">
+    <div
+      ref={panelRef}
+      style={{ width: "min(380px, calc(100vw - 1rem))", maxHeight: "calc(100vh - 5rem)" }}
+      className="fixed bottom-2 right-2 z-50 bg-bg-card border border-border rounded-2xl shadow-2xl flex flex-col"
+    >
       {/* Header */}
       <div className="flex items-center justify-between p-3 border-b border-border">
         <div className="font-bold flex items-center gap-1.5">
