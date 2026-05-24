@@ -1,7 +1,18 @@
-import { Check, X, Lock } from "lucide-react";
+import { Check, X, Lock, Database } from "lucide-react";
+import Link from "next/link";
 import { EnvRequestsPanel } from "./EnvRequestsPanel";
+import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { adminHref } from "@/lib/admin-href";
 
 export const dynamic = "force-dynamic";
+
+// env key 對應 ai_api_keys.provider
+const AI_KEY_TO_PROVIDER: Record<string, string> = {
+  ANTHROPIC_API_KEY: "anthropic",
+  OPENAI_API_KEY: "openai",
+  GOOGLE_AI_API_KEY: "google",
+  GROQ_API_KEY: "groq",
+};
 
 /**
  * 環境變數面板 — read-only mask
@@ -135,10 +146,36 @@ function publicValue(key: string): string | undefined {
   return v;
 }
 
-export default function AdminEnvPage() {
+export default async function AdminEnvPage() {
+  // 從 DB 撈 ai_api_keys（admin 端設定、不是 env 的 fallback 來源）
+  const dbProviderSet = new Set<string>();
+  try {
+    const admin = createSupabaseAdmin();
+    const { data: keys } = await admin.from("ai_api_keys").select("provider, enabled");
+    for (const k of (keys as any[]) ?? []) {
+      if (k.enabled) dbProviderSet.add(String(k.provider).toLowerCase());
+    }
+  } catch {
+    // table 不存在 / 連不上、忽略
+  }
+
+  // 用 hybrid status：DB 有 OR env 有 都算「設定 OK」
+  const isAiKeyOk = (envKey: string): boolean => {
+    if (status(envKey) === "set") return true;
+    const prov = AI_KEY_TO_PROVIDER[envKey];
+    return !!(prov && dbProviderSet.has(prov));
+  };
+
   const totalSecret = SECRET_GROUPS.flatMap((g) => g.vars).length;
-  const setSecret = SECRET_GROUPS.flatMap((g) => g.vars).filter((v) => status(v.key) === "set").length;
-  const missingRequired = SECRET_GROUPS.flatMap((g) => g.vars).filter((v) => v.required && status(v.key) === "unset");
+  const setSecret = SECRET_GROUPS.flatMap((g) => g.vars).filter((v) => {
+    if (AI_KEY_TO_PROVIDER[v.key]) return isAiKeyOk(v.key);
+    return status(v.key) === "set";
+  }).length;
+  const missingRequired = SECRET_GROUPS.flatMap((g) => g.vars).filter((v) => {
+    if (!v.required) return false;
+    if (AI_KEY_TO_PROVIDER[v.key]) return !isAiKeyOk(v.key);
+    return status(v.key) === "unset";
+  });
 
   return (
     <div className="space-y-6">
@@ -193,28 +230,74 @@ export default function AdminEnvPage() {
       ))}
 
       {/* Server secret */}
-      {SECRET_GROUPS.map((g) => (
-        <Section key={g.title} group={g}>
-          {g.vars.map((v) => {
-            const s = status(v.key);
-            return (
-              <Row key={v.key} entry={v}>
-                {s === "set" ? (
-                  <span className="inline-flex items-center gap-1 text-xs text-green-400">
-                    <Check size={12} /> 已設定
-                    <Lock size={10} className="text-fg-muted ml-1" />
-                    <span className="text-fg-muted text-[10px]">值已 mask</span>
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center gap-1 text-xs text-fg-muted">
-                    <X size={12} /> 未設定
-                  </span>
-                )}
-              </Row>
-            );
-          })}
-        </Section>
-      ))}
+      {SECRET_GROUPS.map((g) => {
+        const isAiGroup = g.title.includes("AI Provider");
+        return (
+          <Section key={g.title} group={g}>
+            {isAiGroup && (
+              <li className="px-4 py-2.5 bg-blue-500/5 border-b border-border text-xs text-fg-muted">
+                💡 這幾個 key 也可以從{" "}
+                <Link href={adminHref("/admin/ai/models") as any} className="text-accent hover:underline">
+                  /admin/ai/models
+                </Link>{" "}
+                直接設、會存 DB（AES 加密）。DB 設定的優先級高於 env。
+              </li>
+            )}
+            {g.vars.map((v) => {
+              const envSet = status(v.key) === "set";
+              const dbProv = AI_KEY_TO_PROVIDER[v.key];
+              const dbSet = !!(dbProv && dbProviderSet.has(dbProv));
+              const ok = envSet || dbSet;
+
+              return (
+                <Row key={v.key} entry={v}>
+                  {dbProv ? (
+                    <span className="inline-flex items-center gap-2 text-xs">
+                      {envSet ? (
+                        <span className="inline-flex items-center gap-1 text-green-400">
+                          <Check size={12} /> env
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-fg-muted/60">
+                          <X size={12} /> env
+                        </span>
+                      )}
+                      {dbSet ? (
+                        <span className="inline-flex items-center gap-1 text-blue-400">
+                          <Database size={11} /> DB
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-fg-muted/60">
+                          <X size={12} /> DB
+                        </span>
+                      )}
+                      {ok ? (
+                        <span className="ml-1 inline-flex items-center gap-1 text-green-400 text-[10px] px-1.5 py-0.5 rounded-full bg-green-500/10">
+                          ✓ 可用
+                        </span>
+                      ) : (
+                        <span className="ml-1 inline-flex items-center gap-1 text-red-400 text-[10px] px-1.5 py-0.5 rounded-full bg-red-500/10">
+                          ✗ 缺
+                        </span>
+                      )}
+                    </span>
+                  ) : envSet ? (
+                    <span className="inline-flex items-center gap-1 text-xs text-green-400">
+                      <Check size={12} /> 已設定
+                      <Lock size={10} className="text-fg-muted ml-1" />
+                      <span className="text-fg-muted text-[10px]">值已 mask</span>
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 text-xs text-fg-muted">
+                      <X size={12} /> 未設定
+                    </span>
+                  )}
+                </Row>
+              );
+            })}
+          </Section>
+        );
+      })}
 
       {/* 申請流程 */}
       <EnvRequestsPanel />
