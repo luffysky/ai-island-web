@@ -12,6 +12,7 @@ import { createSupabaseAdmin } from "./supabase-admin";
 import { runBotCommand } from "./line-bot-commands";
 import type { AdminLineUser } from "./admin-line-users";
 import { formatTW, formatTWRelative } from "./format-date";
+import { getPeriodReport } from "./site-period-report";
 
 const TIMEOUT_MS = 60_000;
 const MAX_TOOL_ROUNDS = 5;
@@ -78,6 +79,20 @@ const TOOLS = [
       required: ["order_id"],
     },
   },
+  {
+    name: "get_period_report",
+    description:
+      "拿一段時間（7 / 30 / 自訂天數）的指標 + 跟上一期比較變化、用來寫週報 / 月報敘事。" +
+      "使用者問「給我這週重點」「這個月成長」「最近 14 天怎樣」時用。" +
+      "拿到資料後不要原樣貼、用自然語言寫 200-300 字敘事報告、強調 >50% 變化的數字。",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        days: { type: "integer", description: "天數、7 = 週報、30 = 月報、最大 90" },
+      },
+      required: ["days"],
+    },
+  },
 ];
 
 type ToolUse = { id: string; name: string; input: any };
@@ -101,6 +116,8 @@ async function dispatchTool(name: string, input: any, user: AdminLineUser): Prom
         return await getRecentErrors(input.n ?? 5, input.level, input.source);
       case "get_order_detail":
         return await getOrderDetail(input.order_id);
+      case "get_period_report":
+        return await getPeriodReport(input.days ?? 7);
       default:
         return `❌ unknown tool: ${name}`;
     }
