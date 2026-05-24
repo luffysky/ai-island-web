@@ -189,11 +189,7 @@ export function buildSimpleCard(input: SimpleCardInput): FlexMessage {
   const bubble: any = {
     type: "bubble",
     size: "kilo",
-    styles: {
-      header: { backgroundColor: lighten(color, 0.5) },
-      body: { backgroundColor: "#F8F9FC" },
-      footer: { backgroundColor: lighten(color, 0.9) },
-    },
+    // 不設 bubble.styles — 會覆蓋 box 的 linearGradient（LINE iOS bug）
     header: {
       type: "box",
       layout: "horizontal",
@@ -274,11 +270,7 @@ export function buildKpiCard(opts: {
     contents: {
       type: "bubble",
       size: "kilo",
-      styles: {
-        header: { backgroundColor: lighten(color, 0.5) },
-        body: { backgroundColor: "#F8F9FC" },
-        footer: { backgroundColor: lighten(color, 0.9) },
-      },
+      // 不設 bubble.styles — 會覆蓋 box 的 linearGradient（LINE iOS bug）
       header: {
         type: "box",
         layout: "horizontal",
@@ -354,11 +346,7 @@ export function buildListCard(opts: {
     contents: {
       type: "bubble",
       size: "kilo",
-      styles: {
-        header: { backgroundColor: lighten(color, 0.5) },
-        body: { backgroundColor: "#F8F9FC" },
-        footer: { backgroundColor: lighten(color, 0.9) },
-      },
+      // 不設 bubble.styles — 會覆蓋 box 的 linearGradient（LINE iOS bug）
       header: {
         type: "box",
         layout: "horizontal",
@@ -435,10 +423,7 @@ export function buildAiReplyCard(opts: { text: string; userName: string }): Flex
     contents: {
       type: "bubble",
       size: "kilo",
-      styles: {
-        header: { backgroundColor: lighten(color, 0.5) },
-        body: { backgroundColor: "#F8F9FC" },
-      },
+      // 不設 bubble.styles — 會覆蓋 box 的 linearGradient（LINE iOS bug）
       header: {
         type: "box",
         layout: "horizontal",
