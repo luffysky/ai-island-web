@@ -189,7 +189,13 @@ export function buildSimpleCard(input: SimpleCardInput): FlexMessage {
   const bubble: any = {
     type: "bubble",
     size: "kilo",
-    // 不設 bubble.styles — 會覆蓋 box 的 linearGradient（LINE iOS bug）
+    // bubble.styles 是「底層純色」、box.background linearGradient 疊在上面、
+    // 不設的話 LINE 預設整片白底（會從漸層邊緣 / footer 缺漏處露出來）
+    styles: {
+      header: { backgroundColor: lighten(color, 0.35) },
+      body: { backgroundColor: lighten(color, 0.92) },
+      footer: { backgroundColor: lighten(color, 0.86) },
+    },
     header: {
       type: "box",
       layout: "horizontal",
@@ -270,7 +276,13 @@ export function buildKpiCard(opts: {
     contents: {
       type: "bubble",
       size: "kilo",
-      // 不設 bubble.styles — 會覆蓋 box 的 linearGradient（LINE iOS bug）
+      // bubble.styles 是「底層純色」、box.background linearGradient 疊在上面、
+    // 不設的話 LINE 預設整片白底（會從漸層邊緣 / footer 缺漏處露出來）
+    styles: {
+      header: { backgroundColor: lighten(color, 0.35) },
+      body: { backgroundColor: lighten(color, 0.92) },
+      footer: { backgroundColor: lighten(color, 0.86) },
+    },
       header: {
         type: "box",
         layout: "horizontal",
@@ -346,7 +358,13 @@ export function buildListCard(opts: {
     contents: {
       type: "bubble",
       size: "kilo",
-      // 不設 bubble.styles — 會覆蓋 box 的 linearGradient（LINE iOS bug）
+      // bubble.styles 是「底層純色」、box.background linearGradient 疊在上面、
+    // 不設的話 LINE 預設整片白底（會從漸層邊緣 / footer 缺漏處露出來）
+    styles: {
+      header: { backgroundColor: lighten(color, 0.35) },
+      body: { backgroundColor: lighten(color, 0.92) },
+      footer: { backgroundColor: lighten(color, 0.86) },
+    },
       header: {
         type: "box",
         layout: "horizontal",
@@ -423,7 +441,13 @@ export function buildAiReplyCard(opts: { text: string; userName: string }): Flex
     contents: {
       type: "bubble",
       size: "kilo",
-      // 不設 bubble.styles — 會覆蓋 box 的 linearGradient（LINE iOS bug）
+      // bubble.styles 是「底層純色」、box.background linearGradient 疊在上面、
+    // 不設的話 LINE 預設整片白底（會從漸層邊緣 / footer 缺漏處露出來）
+    styles: {
+      header: { backgroundColor: lighten(color, 0.35) },
+      body: { backgroundColor: lighten(color, 0.92) },
+      footer: { backgroundColor: lighten(color, 0.86) },
+    },
       header: {
         type: "box",
         layout: "horizontal",

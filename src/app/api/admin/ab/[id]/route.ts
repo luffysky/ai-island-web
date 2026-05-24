@@ -19,8 +19,11 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const { id } = await params;
   const body = await req.json().catch(() => ({} as any));
   const patch: Record<string, any> = {};
-  for (const k of ["description", "status", "variants", "goal_event"]) {
+  for (const k of ["description", "status", "variants", "goal_event", "allocation"]) {
     if (k in body) patch[k] = body[k];
+  }
+  if ("allocation" in patch && !["weighted", "thompson"].includes(patch.allocation)) {
+    return NextResponse.json({ error: "invalid_allocation" }, { status: 400 });
   }
   if (patch.status === "running" && !("started_at" in patch)) patch.started_at = new Date().toISOString();
   if (patch.status === "completed" && !("ended_at" in patch)) patch.ended_at = new Date().toISOString();
