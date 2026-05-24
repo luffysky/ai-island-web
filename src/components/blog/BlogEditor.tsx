@@ -17,14 +17,15 @@ import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import { common, createLowlight } from "lowlight";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Bold, Italic, Underline as UnderlineIcon, Strikethrough, Code,
   List as ListIcon, ListOrdered, Quote, Heading1, Heading2, Heading3,
   Link as LinkIcon, Image as ImageIcon, Table as TableIcon, Undo, Redo,
   Highlighter, AlignLeft, AlignCenter, AlignRight,
-  FileCode, Minus, CheckSquare,
+  FileCode, Minus, CheckSquare, Upload, Loader2,
 } from "lucide-react";
+import { useToast } from "@/components/ui/Toast";
 
 const lowlight = createLowlight(common);
 
@@ -93,15 +94,75 @@ function Toolbar({ editor }: { editor: Editor }) {
         : "hover:bg-bg-elevated text-fg"
     }`;
 
+  const toast = useToast();
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [uploading, setUploading] = useState(false);
+
   const addLink = () => {
     const url = window.prompt("連結網址：");
     if (url) editor.chain().focus().setLink({ href: url }).run();
     else editor.chain().focus().unsetLink().run();
   };
-  const addImage = () => {
-    const url = window.prompt("圖片網址：");
+  const addImageByUrl = () => {
+    const url = window.prompt("圖片網址（或直接點右邊上傳）：");
     if (url) editor.chain().focus().setImage({ src: url }).run();
   };
+  const uploadAndInsert = async (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      toast.error("只支援圖片");
+      return;
+    }
+    if (file.size > 8 * 1024 * 1024) {
+      toast.error("檔案不可超過 8 MB");
+      return;
+    }
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("folder", "blog");
+      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      const j = await res.json();
+      if (!res.ok) throw new Error(j.message || j.error || "上傳失敗");
+      editor.chain().focus().setImage({ src: j.url }).run();
+      toast.success("已插入");
+    } catch (e: any) {
+      toast.error(e?.message || "上傳失敗");
+    } finally {
+      setUploading(false);
+    }
+  };
+  const onPickImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (f) uploadAndInsert(f);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+  // 拖放 / 貼上圖片到編輯器 → 自動上傳
+  useEffect(() => {
+    const el = (editor.view.dom as HTMLElement);
+    const onDrop = (e: DragEvent) => {
+      const f = e.dataTransfer?.files?.[0];
+      if (f && f.type.startsWith("image/")) {
+        e.preventDefault();
+        uploadAndInsert(f);
+      }
+    };
+    const onPaste = (e: ClipboardEvent) => {
+      const f = e.clipboardData?.files?.[0];
+      if (f && f.type.startsWith("image/")) {
+        e.preventDefault();
+        uploadAndInsert(f);
+      }
+    };
+    el.addEventListener("drop", onDrop);
+    el.addEventListener("paste", onPaste);
+    return () => {
+      el.removeEventListener("drop", onDrop);
+      el.removeEventListener("paste", onPaste);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editor]);
+
   const addTable = () => {
     editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
   };
@@ -132,7 +193,23 @@ function Toolbar({ editor }: { editor: Editor }) {
       <button type="button" onClick={() => editor.chain().focus().setTextAlign("right").run()} className={btn(editor.isActive({ textAlign: "right" }))} title="靠右"><AlignRight size={16} /></button>
       <Sep />
       <button type="button" onClick={addLink} className={btn(editor.isActive("link"))} title="連結"><LinkIcon size={16} /></button>
-      <button type="button" onClick={addImage} className={btn(false)} title="圖片"><ImageIcon size={16} /></button>
+      <button type="button" onClick={addImageByUrl} className={btn(false)} title="圖片網址（或拖放 / 貼上 / 按下面上傳）"><ImageIcon size={16} /></button>
+      <button
+        type="button"
+        onClick={() => fileInputRef.current?.click()}
+        disabled={uploading}
+        className={btn(false)}
+        title="從電腦上傳圖片"
+      >
+        {uploading ? <Loader2 size={16} className="animate-spin" /> : <Upload size={16} />}
+      </button>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp,image/gif"
+        className="hidden"
+        onChange={onPickImage}
+      />
       <button type="button" onClick={addTable} className={btn(false)} title="表格"><TableIcon size={16} /></button>
       <Sep />
       <button type="button" onClick={() => editor.chain().focus().undo().run()} className={btn(false)} title="復原"><Undo size={16} /></button>
