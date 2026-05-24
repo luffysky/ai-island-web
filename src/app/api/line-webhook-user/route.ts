@@ -156,7 +156,7 @@ export async function POST(req: NextRequest) {
         `LINE訪客${userId.slice(0, 6)}`;
 
       // 寫進 tickets 表
-      const { data: ticket } = await admin
+      const { data: ticket, error: ticketErr } = await admin
         .from("tickets")
         .insert({
           user_id: (profile as any)?.id ?? null,
@@ -173,15 +173,38 @@ export async function POST(req: NextRequest) {
         .select("id")
         .single();
 
+      if (ticketErr) {
+        console.error("[line-webhook-user] ticket insert failed:", ticketErr.message);
+        await admin.from("error_logs").insert({
+          source: "line-webhook-user",
+          level: "error",
+          message: `ticket insert failed: ${ticketErr.message}`,
+          meta: { line_user_id: userId, text: text.slice(0, 200) },
+        }).catch(() => {});
+      }
+
       // ticket_messages 寫一筆
       if (ticket?.id) {
-        await admin.from("ticket_messages").insert({
+        const { error: msgErr } = await admin.from("ticket_messages").insert({
           ticket_id: ticket.id,
           author_type: "user",
           author_id: (profile as any)?.id ?? null,
+          sender_type: "user",
+          sender_id: (profile as any)?.id ?? null,
           body: text.slice(0, 4000),
+          content: text.slice(0, 4000),
+          is_staff: false,
           meta: { source: "line_user_bot", line_user_id: userId },
         });
+        if (msgErr) {
+          console.error("[line-webhook-user] ticket_messages insert failed:", msgErr.message);
+          await admin.from("error_logs").insert({
+            source: "line-webhook-user",
+            level: "error",
+            message: `ticket_messages insert failed: ${msgErr.message}`,
+            meta: { ticket_id: ticket.id, line_user_id: userId },
+          }).catch(() => {});
+        }
       }
 
       // 通知 admin LINE

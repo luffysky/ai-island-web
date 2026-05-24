@@ -25,10 +25,17 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   const { error } = await admin.from("ticket_messages").insert({
     ticket_id: id,
     author_id: user.id,
+    sender_id: user.id,
+    author_type: "admin",
+    sender_type: "admin",
     is_staff: true,
     body: text.slice(0, 5000),
+    content: text.slice(0, 5000),
   });
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error("[ticket reply] insert failed:", error.message);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
 
   await admin.from("tickets").update({
     status: "waiting_user",
