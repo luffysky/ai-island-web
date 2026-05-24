@@ -1,4 +1,5 @@
-import { Check, X, Lock, Globe } from "lucide-react";
+import { Check, X, Lock } from "lucide-react";
+import { EnvRequestsPanel } from "./EnvRequestsPanel";
 
 export const dynamic = "force-dynamic";
 
@@ -203,10 +204,24 @@ export default function AdminEnvPage() {
         </Section>
       ))}
 
-      <p className="text-[11px] text-fg-muted leading-relaxed">
-        🛡️ <b>安全</b>：本頁僅 admin 可看（middleware 已強制驗 role）。Server secret 永不從 server 送回 client、
-        value 不會出現在 HTML / API response / 瀏覽器 DevTools。
-      </p>
+      {/* 申請流程 */}
+      <EnvRequestsPanel />
+
+      <div className="rounded-xl bg-bg-elevated/30 border border-border p-4 text-[11px] text-fg-muted leading-relaxed space-y-2">
+        <div>
+          🛡️ <b>安全</b>：本頁僅 admin 可看（middleware 強制驗 role）。Server secret 永不從 server 送回 client、
+          value 不會出現在 HTML / API response / 瀏覽器 DevTools。
+        </div>
+        <div>
+          ⚠️ <b>線上要生效一定要去 Zeabur dashboard 設</b>：本地 <code className="font-mono text-fg">.env.local</code> 只影響
+          <code className="font-mono text-fg"> npm run dev</code>、不會被 deploy。線上正式環境的 ENV 是 Zeabur 進程環境變數、要在
+          <a href="https://zeabur.com/dashboard" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline mx-1">Zeabur dashboard → Service → Variables</a>
+          手動加、儲存後自動 redeploy 才生效。
+        </div>
+        <div>
+          📨 <b>不是 owner 的 admin 想加變數</b>：點上面「申請新增變數」按鈕送單、owner 會收到 LINE 通知。
+        </div>
+      </div>
     </div>
   );
 }
