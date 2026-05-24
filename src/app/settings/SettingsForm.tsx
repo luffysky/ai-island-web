@@ -161,9 +161,9 @@ export function SettingsForm({ profile, email }: { profile: any; email: string }
 
       {/* 隱私 / 通知偏好 */}
       <section className="bg-bg-card border border-border rounded-xl p-6">
-        <h2 className="font-bold mb-1">🛡️ 隱私偏好</h2>
+        <h2 className="font-bold mb-1">🌙 低調模式</h2>
         <p className="text-xs text-fg-muted mb-4">
-          這些不影響你的學習資料、只影響 admin 是否會「即時」看到你的活動。
+          影響平台運營端是否會「即時」感知到你的學習動態。學習進度 / XP / 排行榜照常記錄、不受影響。
         </p>
 
         <label className="flex items-start gap-3 cursor-pointer">
@@ -178,11 +178,14 @@ export function SettingsForm({ profile, email }: { profile: any; email: string }
             <span className="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4 shadow" />
           </span>
           <span className="flex-1 text-sm">
-            <span className="font-medium">關閉「即時通知 admin」</span>
+            <span className="font-medium">啟用低調模式（預設開）</span>
             <p className="text-xs text-fg-muted mt-0.5 leading-relaxed">
-              預設關閉（admin 會即時收到 LINE 通知：你登入 / 完課 / 升等 / 論壇回覆 / 解鎖成就等）。
+              你的個人學習動態（登入 / 完課 / 升等 / 解鎖成就 / 論壇互動）
+              <strong>不會即時推播</strong>到平台運營端（用於監看平台健康狀態的內部通道）。
               <br />
-              <strong>開啟此選項後</strong>：admin 不會被你的活動即時通知打擾、但你的學習資料仍正常儲存（XP / 進度 / 排行榜全部不受影響）。
+              <strong>關閉此選項</strong>後、你的活動會即時讓平台運營端收到通知、有助於我們發現異常或第一時間替你慶祝里程碑。
+              <br />
+              <span className="text-fg-muted">兩種模式下、你的學習資料儲存 / 排行榜 / 統計都完全一樣、不會差。</span>
             </p>
           </span>
         </label>
