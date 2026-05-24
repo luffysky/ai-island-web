@@ -92,27 +92,70 @@ export async function sendEmail(opts: SendEmailOptions): Promise<{ ok: boolean; 
  *   const resend = new Resend(process.env.RESEND_API_KEY);
  *   await resend.emails.send({ from: '...', to, subject, html, text, headers });
  */
-async function actualSend(_msg: {
+async function actualSend(msg: {
   to: string;
   subject: string;
   html: string;
   text: string;
   headers: Record<string, string>;
 }) {
-  if (process.env.NODE_ENV === "development") {
-    console.log("[Email] DEV mode、不實際發送", { to: _msg.to, subject: _msg.subject });
-    return;
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.EMAIL_FROM || "AI 島 <noreply@ai-island-web.snowrealm.pet>";
+
+  if (!apiKey) {
+    if (process.env.NODE_ENV === "development") {
+      console.log("[Email] DEV mode、無 RESEND_API_KEY、不實際發送", { to: msg.to, subject: msg.subject });
+      return { id: "dev-mock" };
+    }
+    throw new Error("RESEND_API_KEY not set");
   }
 
-  // TODO: 接 email service
-  // 例：
-  // const resend = new Resend(process.env.RESEND_API_KEY);
-  // await resend.emails.send({
-  //   from: "AI 島 <hello@aiisland.tw>",
-  //   ..._msg,
-  // });
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from,
+      to: msg.to,
+      subject: msg.subject,
+      html: msg.html,
+      text: msg.text,
+      headers: msg.headers,
+    }),
+    signal: AbortSignal.timeout(10_000),
+  });
 
-  throw new Error("Email service not configured. Add Resend/SendGrid/SES integration.");
+  if (!res.ok) {
+    const body = await res.text().catch(() => "");
+    throw new Error(`Resend ${res.status}: ${body.slice(0, 300)}`);
+  }
+  return (await res.json()) as { id: string };
+}
+
+/**
+ * 一鍵測試 — 不走訂閱檢查、不加 footer、純 raw send。
+ * 給 /admin/email/test 用、確認 Resend / DKIM / EMAIL_FROM 接得通。
+ */
+export async function sendEmailRaw(opts: {
+  to: string;
+  subject: string;
+  html: string;
+  text?: string;
+}): Promise<{ ok: true; id: string } | { ok: false; error: string }> {
+  try {
+    const r = await actualSend({
+      to: opts.to,
+      subject: opts.subject,
+      html: opts.html,
+      text: opts.text ?? "",
+      headers: {},
+    });
+    return { ok: true, id: (r as any)?.id ?? "ok" };
+  } catch (e: any) {
+    return { ok: false, error: e?.message ?? "unknown" };
+  }
 }
 
 function emailFooter(email: string, unsubUrl: string, category: EmailCategory): string {
