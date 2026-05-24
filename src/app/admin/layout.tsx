@@ -93,6 +93,13 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               <AdminLink href="/admin/ai/moderation-keywords">🔍 審核關鍵字</AdminLink>
             </NavGroup>
 
+            <NavGroup title="LINE 💚">
+              <AdminLink href="/admin/line">🏠 LINE 控制台</AdminLink>
+              <AdminLink href="/admin/line/users">👥 綁定用戶 / 推訊息</AdminLink>
+              <AdminLink href="/admin/line/broadcast">📣 群發訊息</AdminLink>
+              <AdminLink href="/admin/crm">💬 客服對話 (CRM)</AdminLink>
+            </NavGroup>
+
             <NavGroup title="SEO / 流量">
               <AdminLink href="/admin/ga4">📈 站台分析</AdminLink>
               <AdminLink href="/admin/seo">🔍 SEO 管理</AdminLink>
