@@ -51,15 +51,19 @@ export async function POST(req: NextRequest) {
     }, { status: 422 });
   }
 
+  // coin_transactions schema: id / user_id / amount / balance_after / reason / meta / created_at
+  // 沒 type 欄位、tx 類型放 meta.tx_type
   const { error: txErr } = await admin.from("coin_transactions").insert({
     user_id: userId,
-    type: amt > 0 ? "admin_grant" : "admin_deduct",
     amount: amt,
+    balance_after: newBalance,
     reason: `admin_grant:${reason.trim().slice(0, 200)}`,
     meta: {
       source: "admin_grant",
+      tx_type: amt > 0 ? "admin_grant" : "admin_deduct",
       actor_id: user.id,
       actor_username: me.username,
+      ...(isSelf ? { self_grant: true } : {}),
     },
   });
   if (txErr) return NextResponse.json({ error: txErr.message }, { status: 500 });
