@@ -140,10 +140,62 @@ export async function POST(req: NextRequest) {
         continue;
       }
 
-      // 4. 其他 — 友善導引
+      // 4. 其他訊息 — 自動建 ticket + 通知 admin、user 不會找不到人
+      const admin = createSupabaseAdmin();
+
+      // 看 LINE userId 對應哪個 profile（若已綁定）
+      const { data: profile } = await admin
+        .from("profiles")
+        .select("id, username, display_name")
+        .eq("line_user_id", userId)
+        .maybeSingle();
+
+      const senderName =
+        (profile as any)?.display_name ||
+        (profile as any)?.username ||
+        `LINE訪客${userId.slice(0, 6)}`;
+
+      // 寫進 tickets 表
+      const { data: ticket } = await admin
+        .from("tickets")
+        .insert({
+          user_id: (profile as any)?.id ?? null,
+          subject: `LINE 訊息：${text.slice(0, 40)}`,
+          category: "support",
+          priority: "normal",
+          status: "open",
+          meta: {
+            source: "user_line_bot",
+            line_user_id: userId,
+            sender_name: senderName,
+          },
+        })
+        .select("id")
+        .single();
+
+      // ticket_messages 寫一筆
+      if (ticket?.id) {
+        await admin.from("ticket_messages").insert({
+          ticket_id: ticket.id,
+          author_type: "user",
+          author_id: (profile as any)?.id ?? null,
+          body: text.slice(0, 4000),
+          meta: { source: "line_user_bot", line_user_id: userId },
+        });
+      }
+
+      // 通知 admin LINE
+      const { notifyAdmin } = await import("@/lib/notify-admin");
+      notifyAdmin({
+        kind: "user_ticket",
+        dedupeKey: `ticket:${ticket?.id ?? userId}:${Date.now()}`,
+        text: `💌 ${senderName} 透過 LINE 提問：\n「${text.slice(0, 200)}」\n\n回覆：${SITE_URL}/${process.env.NEXT_PUBLIC_ADMIN_SLUG ?? "console-x7k2"}/admin/crm${ticket?.id ? `/${ticket.id}` : ""}`,
+      }).catch(() => {});
+
+      // 回 user：已收到
       await lineReply(
         replyToken,
-        `嗨～我是 AI 島學習通知 bot 🌱\n\n我只負責推學習通知、不會閒聊。\n\n常用：\n• 綁帳號：「/bind 123456」\n• 解除：「/unbind」\n• 看說明：「/help」\n\n打開網站：${SITE_URL}`,
+        `📩 已收到你的訊息、admin 會在 24 小時內回覆～\n\n（系統自動建 ticket #${ticket?.id?.toString().slice(0, 8) ?? "-"}、回覆會推到這個 LINE 對話）\n\n想自助：\n• 綁帳號：「/bind 123456」\n• 看說明：「/help」`,
         token, QUICK_REPLY,
       );
     }
