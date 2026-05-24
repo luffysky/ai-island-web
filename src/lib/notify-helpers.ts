@@ -69,7 +69,9 @@ export async function notifyChapterView(userId: string, chapterId: number, chapt
   });
 }
 
-/** 用戶完成 lesson → admin LINE + 用戶 in-app */
+import { notifyUserLine } from "./notify-user-line";
+
+/** 用戶完成 lesson → admin LINE + 用戶 in-app + 用戶 LINE（若有綁） */
 export async function notifyLessonComplete(opts: { userId: string; chapterId: number; lessonId: string; xp?: number }) {
   const name = await brief(opts.userId);
   const flex = buildSimpleCard({
@@ -96,6 +98,11 @@ export async function notifyLessonComplete(opts: { userId: string; chapterId: nu
     body: `+${opts.xp ?? 10} XP`,
     link: `/chapters/${opts.chapterId}`,
   });
+  // 推 user 自己的 LINE（綁定了才會送、未綁靜默 skip）
+  notifyUserLine({
+    userId: opts.userId,
+    text: `✅ 完成 Ch${opts.chapterId} · ${opts.lessonId}（+${opts.xp ?? 10} XP）`,
+  }).catch(() => {});
 }
 
 /** 成就解鎖 → in-app + admin */
@@ -122,6 +129,10 @@ export async function notifyAchievement(opts: { userId: string; achievementId: s
     title: `🏆 解鎖成就：${opts.title}`,
     link: `/me/history`,
   });
+  notifyUserLine({
+    userId: opts.userId,
+    text: `🏆 解鎖成就：${opts.title}`,
+  }).catch(() => {});
 }
 
 /** 論壇回覆 → 通知主題作者 + admin */
@@ -141,6 +152,10 @@ export async function notifyForumReply(opts: { threadAuthorId: string; replierUs
     body: opts.threadTitle.slice(0, 80),
     link: `/forum/thread/${opts.threadId}`,
   });
+  notifyUserLine({
+    userId: opts.threadAuthorId,
+    text: `💭 ${opts.replierUsername} 回覆「${opts.threadTitle.slice(0, 40)}」`,
+  }).catch(() => {});
   // 注意：forum_reply 的 subject 是「回覆者」、不是主題作者（隱私 opt-out 看回覆者意願）
   await notifyAdmin({
     kind: "forum_reply",

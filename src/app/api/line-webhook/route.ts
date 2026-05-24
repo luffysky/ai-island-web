@@ -141,11 +141,11 @@ export async function POST(req: NextRequest) {
 
     if (ev.type === "follow") {
       if (replyToken && userId) {
-        await lineReply(
-          replyToken,
-          `🏝️ AI 島 admin bot 已啟動！\n\n你的 userId：\n${userId}\n\n把這個貼進 Zeabur 環境變數 ADMIN_LINE_USER_ID（或 ADMIN_LINE_USERS JSON）、之後就會收到通知、也能直接跟我聊。`,
-          token,
-        );
+        const isAdmin = getAdminLineUser(userId);
+        const msg = isAdmin
+          ? `🏝️ AI 島 admin bot 已啟動！\n\n你的 userId：\n${userId}\n\n把這個貼進 Zeabur 環境變數 ADMIN_LINE_USER_ID（或 ADMIN_LINE_USERS JSON）、之後就會收到通知、也能直接跟我聊。`
+          : `🏝️ 歡迎加入 AI 島！\n\n要綁定帳號讓我推學習通知給你：\n1. 到 ${process.env.NEXT_PUBLIC_SITE_URL ?? "https://aiisland.tw"}/settings 拿 6 位綁定 code\n2. 傳給我「/bind 123456」\n\n綁定後完課 / 升等 / 論壇回覆 / 解鎖成就都會推到你的 LINE。`;
+        await lineReply(replyToken, msg, token);
       }
       continue;
     }
@@ -169,9 +169,54 @@ export async function POST(req: NextRequest) {
 
       const adminUser = getAdminLineUser(userId);
       if (!adminUser) {
-        await lineReply(replyToken,
-          `🤖 這是 admin 專用 bot、無法閒聊。\n你的 userId: ${userId}\n\n要綁定請把這個 ID 給管理員、加進 ADMIN_LINE_USERS env`,
-          token);
+        // 非 admin user — 檢查是否是綁定 code
+        const bindMatch = text.match(/^\/?bind\s+(\d{6})$/i);
+        if (bindMatch) {
+          const { consumeBindCode } = await import("@/lib/notify-user-line");
+          const result = await consumeBindCode(bindMatch[1], userId);
+          if (result.ok) {
+            await lineReply(
+              replyToken,
+              `✅ 綁定成功！\n\n之後你的學習動態會通知你：\n• 完成 lesson\n• 升等\n• 解鎖成就\n• 論壇被回覆\n\n要關通知到「設定 → LINE 通知」改、或傳「/unbind」解除。`,
+              token,
+            );
+          } else {
+            const reasonMap: Record<string, string> = {
+              invalid_format: "code 格式不對、應該是 6 位數字",
+              code_not_found: "code 找不到、可能輸入錯或過期",
+              code_expired: "code 過期了、請到網站重拿（5 分鐘有效）",
+              line_already_bound_to_another: "這個 LINE 已綁過別的帳號、先到網站解除原綁定",
+            };
+            await lineReply(
+              replyToken,
+              `❌ 綁定失敗：${reasonMap[result.reason ?? ""] ?? result.reason}\n\n到 ${process.env.NEXT_PUBLIC_SITE_URL ?? "https://aiisland.tw"}/settings 重拿 code。`,
+              token,
+            );
+          }
+          continue;
+        }
+
+        // 檢查是否是 /unbind
+        if (text === "/unbind" || text === "解除") {
+          const supabase = createSupabaseAdmin();
+          await supabase
+            .from("profiles")
+            .update({
+              line_user_id: null,
+              line_bound_at: null,
+              line_notify_enabled: false,
+            })
+            .eq("line_user_id", userId);
+          await lineReply(replyToken, "✅ 已解除綁定、不再推通知給你。要重綁、到網站設定再拿 code。", token);
+          continue;
+        }
+
+        // 不是綁定指令、提示綁定流程
+        await lineReply(
+          replyToken,
+          `🤖 嗨～還沒綁定帳號\n\n要綁定請：\n1. 到 ${process.env.NEXT_PUBLIC_SITE_URL ?? "https://aiisland.tw"}/settings 拿 6 位 code\n2. 在這裡傳「/bind 123456」\n\n你的 LINE userId: ${userId}`,
+          token,
+        );
         continue;
       }
 
