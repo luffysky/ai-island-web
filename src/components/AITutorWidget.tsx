@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Sparkles, Send, X, ChevronDown, Settings as SettingsIcon, Plus, Loader2, History, MessageSquare } from "lucide-react";
 import { useOverlayCount, useOverlayRegister } from "@/lib/overlay-stack";
+import { useEdgeSafe } from "@/lib/use-edge-safe";
 
 const TUTOR_POS_KEY = "ai_tutor_ball_pos";
 const DRAG_THRESHOLD_PX = 5;
@@ -160,6 +161,8 @@ export function AITutorWidget({
   const { status: authState } = useAuth();
   const isLoggedIn = authState === "in";
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  useEdgeSafe(panelRef);
   const supabase = createSupabaseBrowser();
 
   // 載入模型清單（不依賴登入狀態；anon 也讀得到 is_active=true）
@@ -175,7 +178,6 @@ export function AITutorWidget({
         setError("AI 模型清單載入失敗");
         return;
       }
-      console.log("[AI tutor] models loaded:", data?.length ?? 0, "rows");
       if (data) {
         setModels(data);
         const def = data.find((m: any) => m.is_default) || data[0];
@@ -337,11 +339,11 @@ export function AITutorWidget({
 
       {/* Chat panel */}
       {open && (
-        <div className="fixed bottom-6 right-6 z-50 w-[400px] max-w-[calc(100vw-2rem)] h-[600px] max-h-[calc(100vh-3rem)] bg-bg-card border border-border rounded-2xl shadow-2xl flex flex-col">
+        <div ref={panelRef} className="fixed bottom-6 right-6 z-50 w-[400px] max-w-[calc(100vw-1rem)] h-[600px] max-h-[calc(100vh-1rem)] bg-bg-card border border-border rounded-2xl shadow-2xl flex flex-col">
           {/* Header */}
           <div className="flex items-center justify-between p-3 border-b border-border">
             <div className="flex items-center gap-2 min-w-0">
-              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center text-base flex-shrink-0">
+              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center text-base shrink-0">
                 ✨
               </div>
               <div className="min-w-0">
@@ -358,7 +360,7 @@ export function AITutorWidget({
                 )}
               </div>
             </div>
-            <div className="flex items-center gap-1 flex-shrink-0">
+            <div className="flex items-center gap-1 shrink-0">
               <button
                 onClick={async () => {
                   setShowHistory(!showHistory);
@@ -424,7 +426,7 @@ export function AITutorWidget({
                     className="w-full text-left p-2 hover:bg-bg-elevated text-sm border-t border-border"
                   >
                     <div className="truncate flex items-center gap-1">
-                      <MessageSquare size={12} className="text-fg-muted flex-shrink-0" />
+                      <MessageSquare size={12} className="text-fg-muted shrink-0" />
                       <span className="truncate">{h.title || "(無標題)"}</span>
                     </div>
                     <div className="text-xs text-fg-muted mt-0.5">

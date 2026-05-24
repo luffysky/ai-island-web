@@ -100,7 +100,7 @@ export default async function SeriesPage({
                 width={80}
                 height={80}
                 unoptimized
-                className="w-20 h-20 rounded-xl object-cover flex-shrink-0"
+                className="w-20 h-20 rounded-xl object-cover shrink-0"
               />
             )}
             <div className="min-w-0">

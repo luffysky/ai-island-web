@@ -144,7 +144,7 @@ export function InteractionPanels({
                       <div className="truncate font-medium">{row.title || row.path}</div>
                       <div className="truncate text-fg-muted">{displayUser(row)} · {row.path}</div>
                     </div>
-                    <div className="text-right text-fg-muted flex-shrink-0">
+                    <div className="text-right text-fg-muted shrink-0">
                       <div>{seconds(row.duration_sec)}</div>
                       <div>{row.scroll_max_pct}% {row.read_complete ? "看完" : ""}</div>
                     </div>
@@ -209,7 +209,7 @@ function MetricLine({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between gap-3 border-t border-border py-2 text-xs first:border-t-0">
       <span className="truncate">{label}</span>
-      <span className="text-fg-muted flex-shrink-0">{value}</span>
+      <span className="text-fg-muted shrink-0">{value}</span>
     </div>
   );
 }

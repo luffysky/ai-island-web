@@ -49,7 +49,7 @@ export function FilesPanel({ files }: { files: FileResource[] }) {
               className="flex items-center justify-between p-3 rounded-lg bg-bg hover:bg-bg-elevated transition"
             >
               <div className="flex items-center gap-3 min-w-0 flex-1">
-                <div className="text-fg-muted flex-shrink-0">{getIcon(f.filename)}</div>
+                <div className="text-fg-muted shrink-0">{getIcon(f.filename)}</div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-medium text-sm truncate">{f.name}</span>
@@ -62,7 +62,7 @@ export function FilesPanel({ files }: { files: FileResource[] }) {
               </div>
               <button
                 onClick={() => handleDownload(f)}
-                className="ml-2 flex items-center gap-1 px-3 py-1.5 bg-accent text-black text-xs font-semibold rounded hover:scale-105 transition flex-shrink-0"
+                className="ml-2 flex items-center gap-1 px-3 py-1.5 bg-accent text-black text-xs font-semibold rounded hover:scale-105 transition shrink-0"
               >
                 <Download size={14} /> 下載
               </button>

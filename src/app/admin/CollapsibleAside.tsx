@@ -29,7 +29,7 @@ export function CollapsibleAside({ children }: { children: React.ReactNode }) {
 
   return (
     <aside
-      className={`flex-shrink-0 transition-all duration-200 ${
+      className={`shrink-0 transition-all duration-200 ${
         collapsed ? "w-12" : "w-52"
       }`}
     >

@@ -3,18 +3,19 @@ import { useEffect, useState } from "react";
 import { StickyNote, Save, Check } from "lucide-react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { useToast } from "@/components/ui/Toast";
+import { usePopover, PopoverPanel } from "@/components/ui/Popover";
 
 export function NotePanel({
   lessonId,
   chapterId,
-  isLoggedIn,
 }: {
   lessonId: string;
   chapterId: number;
-  isLoggedIn: boolean;
+  isLoggedIn?: boolean;
 }) {
   const toast = useToast();
-  const [open, setOpen] = useState(false);
+  const popover = usePopover({ placement: "bottom-end", maxWidth: 360 });
+  const { open, setOpen } = popover;
   const [note, setNote] = useState("");
   const [noteId, setNoteId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -27,7 +28,6 @@ export function NotePanel({
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      // 用最新一筆、避免歷史 duplicate 把 maybeSingle 炸掉
       const { data, error: loadErr } = await supabase
         .from("notes")
         .select("id, content")
@@ -64,7 +64,6 @@ export function NotePanel({
       return;
     }
 
-    // optimistic：立刻顯示「已存」+ 通知寵物、背景 sync
     setSaved(true);
     setTimeout(() => setSaved(false), 1500);
     if (typeof window !== "undefined") {
@@ -108,22 +107,24 @@ export function NotePanel({
     }
   };
 
-  const handleOpen = async () => {
-    // 點下去再驗 session、不依賴 prop（prop 在剛登入時可能還沒同步）
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      if (typeof window !== "undefined") {
-        window.location.href = `/login?next=${encodeURIComponent(window.location.pathname)}`;
-      }
-      return;
-    }
-    setOpen(!open);
-  };
-
   return (
     <>
       <button
-        onClick={handleOpen}
+        ref={popover.refs.setReference}
+        {...popover.getReferenceProps({
+          onClick: async (e) => {
+            if (open) return;
+            e.preventDefault();
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+              if (typeof window !== "undefined") {
+                window.location.href = `/login?next=${encodeURIComponent(window.location.pathname)}`;
+              }
+              return;
+            }
+            setOpen(true);
+          },
+        })}
         className={`p-1.5 rounded transition hover:bg-bg-elevated ${
           note ? "text-accent" : "text-fg-muted"
         }`}
@@ -132,36 +133,34 @@ export function NotePanel({
         <StickyNote size={16} className={note ? "fill-current" : ""} />
       </button>
 
-      {open && (
-        <div className="absolute right-0 top-10 z-20 w-80 bg-bg-card border border-border rounded-xl shadow-2xl p-3">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-semibold">📝 我的筆記</span>
-            <button onClick={() => setOpen(false)} className="text-xs text-fg-muted">關閉</button>
-          </div>
-          <textarea
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            placeholder="紀錄你對這個 lesson 的想法、重點..."
-            rows={6}
-            className="w-full bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent resize-none"
-          />
-          <div className="flex items-center justify-between mt-2">
-            <span className="text-xs text-fg-muted">{note.length} 字</span>
-            <button
-              onClick={save}
-              disabled={saving}
-              className="flex items-center gap-1 px-3 py-1 bg-accent text-black text-xs font-semibold rounded hover:scale-105 transition disabled:opacity-50"
-            >
-              {saving ? "儲存中…" : saved ? <><Check size={12} /> 已存</> : <><Save size={12} /> 儲存</>}
-            </button>
-          </div>
-          {error && (
-            <div className="mt-2 px-2 py-1.5 text-xs text-red-400 bg-red-500/10 border border-red-500/30 rounded">
-              {error}
-            </div>
-          )}
+      <PopoverPanel api={popover} className="w-80 p-3">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-sm font-semibold">📝 我的筆記</span>
+          <button onClick={() => setOpen(false)} className="text-xs text-fg-muted">關閉</button>
         </div>
-      )}
+        <textarea
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          placeholder="紀錄你對這個 lesson 的想法、重點..."
+          rows={6}
+          className="w-full bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent resize-none"
+        />
+        <div className="flex items-center justify-between mt-2">
+          <span className="text-xs text-fg-muted">{note.length} 字</span>
+          <button
+            onClick={save}
+            disabled={saving}
+            className="flex items-center gap-1 px-3 py-1 bg-accent text-black text-xs font-semibold rounded hover:scale-105 transition disabled:opacity-50"
+          >
+            {saving ? "儲存中…" : saved ? <><Check size={12} /> 已存</> : <><Save size={12} /> 儲存</>}
+          </button>
+        </div>
+        {error && (
+          <div className="mt-2 px-2 py-1.5 text-xs text-red-400 bg-red-500/10 border border-red-500/30 rounded">
+            {error}
+          </div>
+        )}
+      </PopoverPanel>
     </>
   );
 }

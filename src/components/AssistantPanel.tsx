@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Bot, X, Loader2, Sparkles } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import { ASSISTANT_LABEL, type AssistantMode } from "@/lib/ai-assistant";
+import { useEdgeSafe } from "@/lib/use-edge-safe";
 
 /**
  * 通用 AI 助教面板（小卡片浮層）
@@ -28,6 +29,8 @@ export function AssistantPanel({
   const meta = ASSISTANT_LABEL[mode];
   const [open, setOpen] = useState(inline);
   const [input, setInput] = useState(initialPrompt);
+  const panelRef = useRef<HTMLDivElement>(null);
+  useEdgeSafe(panelRef);
   const [reply, setReply] = useState("");
   const [busy, setBusy] = useState(false);
   const toast = useToast();
@@ -97,7 +100,7 @@ export function AssistantPanel({
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-40 w-80 max-w-[calc(100vw-32px)] bg-bg-card border border-border rounded-2xl shadow-2xl">
+    <div ref={panelRef} className="fixed bottom-4 right-4 z-40 w-80 max-w-[calc(100vw-1rem)] bg-bg-card border border-border rounded-2xl shadow-2xl">
       <header className="px-4 py-2 border-b border-border flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span>{meta.emoji}</span>

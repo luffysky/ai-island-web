@@ -228,10 +228,10 @@ function CommentItem({
             width={28}
             height={28}
             unoptimized
-            className="w-7 h-7 rounded-full flex-shrink-0 object-cover"
+            className="w-7 h-7 rounded-full shrink-0 object-cover"
           />
         ) : (
-          <div className="w-7 h-7 rounded-full bg-bg-elevated flex items-center justify-center text-xs flex-shrink-0">
+          <div className="w-7 h-7 rounded-full bg-bg-elevated flex items-center justify-center text-xs shrink-0">
             {comment.author_name[0]}
           </div>
         )}

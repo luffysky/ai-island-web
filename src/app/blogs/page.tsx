@@ -233,7 +233,7 @@ export default async function BlogsPage({
                         width={80}
                         height={80}
                         unoptimized
-                        className="w-20 h-20 rounded-lg object-cover flex-shrink-0"
+                        className="w-20 h-20 rounded-lg object-cover shrink-0"
                       />
                     )}
                     <div className="min-w-0 flex-1">
@@ -289,10 +289,10 @@ export default async function BlogsPage({
                         width={56}
                         height={56}
                         unoptimized
-                        className="w-13 h-13 sm:w-14 sm:h-14 rounded-full object-cover ring-2 ring-border flex-shrink-0"
+                        className="w-13 h-13 sm:w-14 sm:h-14 rounded-full object-cover ring-2 ring-border shrink-0"
                       />
                     ) : (
-                      <div className="w-13 h-13 sm:w-14 sm:h-14 flex-shrink-0 rounded-full bg-bg-elevated flex items-center justify-center text-xl">
+                      <div className="w-13 h-13 sm:w-14 sm:h-14 shrink-0 rounded-full bg-bg-elevated flex items-center justify-center text-xl">
                         ✍️
                       </div>
                     )}

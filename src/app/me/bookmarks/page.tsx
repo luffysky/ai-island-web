@@ -45,14 +45,14 @@ export default async function BookmarksPage() {
                       href={`/chapters/${b.chapter_id}` as any}
                       className="flex items-center gap-3 p-3 hover:bg-bg-elevated transition"
                     >
-                      <BookmarkCheck size={18} className="text-yellow-400 fill-yellow-400 flex-shrink-0" />
+                      <BookmarkCheck size={18} className="text-yellow-400 fill-yellow-400 shrink-0" />
                       <div className="min-w-0 flex-1">
                         <div className="font-medium truncate">{b.lesson_title}</div>
                         {b.note && (
                           <div className="text-xs text-fg-muted truncate">{b.note}</div>
                         )}
                       </div>
-                      <div className="text-xs text-fg-muted flex-shrink-0">
+                      <div className="text-xs text-fg-muted shrink-0">
                         {new Date(b.created_at).toLocaleDateString('zh-TW')}
                       </div>
                     </Link>

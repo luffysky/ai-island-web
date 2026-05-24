@@ -2,6 +2,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
 import { UserRow } from "./UserRow";
+import { UserCard } from "./UserCard";
 
 export const dynamic = "force-dynamic";
 
@@ -140,7 +141,8 @@ export default async function AdminUsersPage({
         )}
       </form>
 
-      <div className="bg-bg-card border border-border rounded-xl overflow-x-auto">
+      {/* 桌面 — table 模式 */}
+      <div className="hidden md:block bg-bg-card border border-border rounded-xl overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-bg-elevated text-xs text-fg-muted">
             <tr>
@@ -166,6 +168,17 @@ export default async function AdminUsersPage({
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* 手機 — 卡片 list、每張卡內部獨立 scroll */}
+      <div className="md:hidden space-y-2">
+        {users?.length === 0 ? (
+          <div className="bg-bg-card border border-border rounded-xl px-4 py-12 text-center text-fg-muted text-sm">
+            沒有符合條件的使用者
+          </div>
+        ) : (
+          users?.map((u: any) => <UserCard key={u.id} user={u} />)
+        )}
       </div>
 
       {/* Pagination */}

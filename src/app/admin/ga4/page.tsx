@@ -139,7 +139,7 @@ function TopTable({ title, items, valueKey, labelKey }: { title: string; items: 
           {items.slice(0, 10).map((item, i) => (
             <div key={i} className="flex items-center justify-between text-xs py-1">
               <span className="truncate flex-1">{item[labelKey] ?? "—"}</span>
-              <span className="text-fg-muted flex-shrink-0 ml-2">{item[valueKey]?.toLocaleString() ?? 0}</span>
+              <span className="text-fg-muted shrink-0 ml-2">{item[valueKey]?.toLocaleString() ?? 0}</span>
             </div>
           ))}
         </div>

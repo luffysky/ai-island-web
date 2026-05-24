@@ -283,7 +283,7 @@ export function PlaygroundCard({
   return (
     <div className={containerClass + " overflow-hidden flex flex-col"}>
       {/* Header */}
-      <div className="flex items-center justify-between px-3 py-2 bg-bg-elevated border-b border-border flex-shrink-0">
+      <div className="flex items-center justify-between px-3 py-2 bg-bg-elevated border-b border-border shrink-0">
         <div className="flex items-center gap-2 min-w-0">
           {/* 語言下拉 */}
           <select
@@ -299,7 +299,7 @@ export function PlaygroundCard({
             {playground.title ?? "編輯左邊、按 ▶ 執行"}
           </span>
         </div>
-        <div className="flex items-center gap-1 flex-shrink-0">
+        <div className="flex items-center gap-1 shrink-0">
           {isSandbox && (
             <button
               onClick={() => setShowStdin(!showStdin)}
@@ -336,7 +336,7 @@ export function PlaygroundCard({
 
       {/* stdin */}
       {showStdin && isSandbox && (
-        <div className="px-3 py-2 border-b border-border bg-bg flex-shrink-0">
+        <div className="px-3 py-2 border-b border-border bg-bg shrink-0">
           <div className="text-xs text-fg-muted mb-1">📥 標準輸入（stdin）：</div>
           <textarea
             value={stdin}
@@ -406,7 +406,7 @@ export function PlaygroundCard({
 
       {/* Output console */}
       {!showPreview && (
-        <div className="border-t border-border p-3 bg-bg-elevated flex-shrink-0 max-h-[300px] overflow-auto">
+        <div className="border-t border-border p-3 bg-bg-elevated shrink-0 max-h-[300px] overflow-auto">
           <div className="text-xs text-fg-muted mb-1 font-mono flex items-center justify-between">
             <span>▶ 輸出</span>
             <div className="flex items-center gap-2">
@@ -432,7 +432,7 @@ export function PlaygroundCard({
 
       {/* Hint */}
       {playground.hint && !fullscreen && (
-        <div className="border-t border-border p-3 text-xs text-fg-muted bg-yellow-500/5 flex-shrink-0">
+        <div className="border-t border-border p-3 text-xs text-fg-muted bg-yellow-500/5 shrink-0">
           💡 {playground.hint}
         </div>
       )}

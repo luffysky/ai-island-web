@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Sparkles, Loader2, Copy, Check, X } from "lucide-react";
+import { useEdgeSafe } from "@/lib/use-edge-safe";
 
 const MODES = [
   { key: "outline", label: "產生大綱", hint: "輸入主題、AI 給文章大綱" },
@@ -23,6 +24,8 @@ export function AiWriteHelper({
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
   const [copied, setCopied] = useState(false);
+  const panelRef = useRef<HTMLDivElement>(null);
+  useEdgeSafe(panelRef);
 
   const run = async () => {
     if (!input.trim() || loading) return;
@@ -62,7 +65,7 @@ export function AiWriteHelper({
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 w-[380px] max-w-[calc(100vw-2rem)] bg-bg-card border border-border rounded-2xl shadow-2xl flex flex-col max-h-[80vh]">
+    <div ref={panelRef} className="fixed bottom-6 right-6 z-50 w-[380px] max-w-[calc(100vw-1rem)] bg-bg-card border border-border rounded-2xl shadow-2xl flex flex-col max-h-[80vh]">
       {/* Header */}
       <div className="flex items-center justify-between p-3 border-b border-border">
         <div className="font-bold flex items-center gap-1.5">

@@ -106,7 +106,7 @@ function Row({ label, time, due, extra, link }: { label: string; time: string | 
         <div className="text-sm font-medium truncate">{label}</div>
         {extra && <div className="text-[10px] text-fg-muted">{extra}</div>}
       </div>
-      <div className="text-xs text-fg-muted flex-shrink-0">{time ? formatTW(time) : "—"}</div>
+      <div className="text-xs text-fg-muted shrink-0">{time ? formatTW(time) : "—"}</div>
     </div>
   );
   return link ? <Link href={link as any} className="block hover:bg-bg-elevated transition">{Inner}</Link> : Inner;

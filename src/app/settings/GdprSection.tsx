@@ -97,7 +97,7 @@ export function GdprSection({ initialDeletedAt }: { initialDeletedAt: string | n
       {deletedAt && (
         <div className="rounded-xl border border-red-500/40 bg-red-500/10 p-4">
           <div className="flex items-start gap-2">
-            <AlertTriangle size={18} className="text-red-400 flex-shrink-0 mt-0.5" />
+            <AlertTriangle size={18} className="text-red-400 shrink-0 mt-0.5" />
             <div className="flex-1">
               <div className="font-bold text-red-400 mb-1">您的帳號已排程刪除</div>
               <p className="text-sm text-fg-muted">

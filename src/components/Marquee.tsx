@@ -72,7 +72,7 @@ export function Marquee() {
   return (
     <div className="relative border-b border-border bg-gradient-to-r from-accent/15 via-accent-2/10 to-accent/15">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-2 flex items-center gap-3">
-        <Megaphone size={14} className="flex-shrink-0 text-accent" />
+        <Megaphone size={14} className="shrink-0 text-accent" />
         <div key={current.id} className="flex-1 min-w-0 text-xs sm:text-sm animate-fade-in">
           <span className="font-bold mr-2">{current.title}</span>
           <span className="text-fg-muted">{current.content}</span>
@@ -91,7 +91,7 @@ export function Marquee() {
         )}
         <button
           onClick={dismissAll}
-          className="flex-shrink-0 text-fg-muted hover:text-fg transition p-0.5"
+          className="shrink-0 text-fg-muted hover:text-fg transition p-0.5"
           aria-label="關閉公告"
           title="不再顯示這些公告"
         >

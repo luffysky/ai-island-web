@@ -235,7 +235,7 @@ export function SideNav() {
         }`}
       >
         {/* Header */}
-        <div className="flex flex-shrink-0 items-center justify-between p-3 border-b border-border">
+        <div className="flex shrink-0 items-center justify-between p-3 border-b border-border">
           <div className="font-bold flex items-center gap-2">
             🏝️ <span>AI 島導覽</span>
           </div>
@@ -249,7 +249,7 @@ export function SideNav() {
         </div>
 
         {/* Tabs */}
-        <div className="flex flex-shrink-0 overflow-x-auto border-b border-border text-xs">
+        <div className="flex shrink-0 overflow-x-auto border-b border-border text-xs">
           {[
             { key: "chapters" as const, label: "章節", icon: BookOpen },
             { key: "bookmarks" as const, label: "收藏", icon: Bookmark },
@@ -517,7 +517,7 @@ export function SideNav() {
         )}
 
         {/* Footer */}
-        <div className="flex-shrink-0 p-2 border-t border-border text-[10px] text-fg-muted text-center">
+        <div className="shrink-0 p-2 border-t border-border text-[10px] text-fg-muted text-center">
           🐹 招財 Z-coin 守護
         </div>
       </aside>

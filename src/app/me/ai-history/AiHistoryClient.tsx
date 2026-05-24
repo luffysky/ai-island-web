@@ -71,7 +71,7 @@ export function AiHistoryClient({ initial }: { initial: Conv[] }) {
                 className={`w-full text-left p-3 hover:bg-bg-elevated transition ${selected?.id === c.id ? "bg-accent/10 border-l-2 border-accent" : ""}`}
               >
                 <div className="flex items-start gap-2">
-                  <div className="text-base flex-shrink-0">
+                  <div className="text-base shrink-0">
                     {c.persona_id ? PERSONA_ICON[c.persona_id]?.split(" ")[0] : "🤖"}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -81,7 +81,7 @@ export function AiHistoryClient({ initial }: { initial: Conv[] }) {
                       {c.context_chapter_id && ` · Ch ${c.context_chapter_id}`}
                     </div>
                   </div>
-                  <ChevronRight size={12} className="text-fg-muted flex-shrink-0 mt-1" />
+                  <ChevronRight size={12} className="text-fg-muted shrink-0 mt-1" />
                 </div>
               </button>
             ))

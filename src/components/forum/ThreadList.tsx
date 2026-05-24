@@ -122,10 +122,10 @@ export function ThreadList({ boardSlug }: { boardSlug?: string }) {
                     width={36}
                     height={36}
                     unoptimized
-                    className="w-9 h-9 rounded-full flex-shrink-0 object-cover"
+                    className="w-9 h-9 rounded-full shrink-0 object-cover"
                   />
                 ) : (
-                  <div className="w-9 h-9 rounded-full bg-bg-elevated flex items-center justify-center text-sm flex-shrink-0">
+                  <div className="w-9 h-9 rounded-full bg-bg-elevated flex items-center justify-center text-sm shrink-0">
                     {(t.author?.display_name || t.author?.username || "?")[0]}
                   </div>
                 )}
@@ -163,7 +163,7 @@ export function ThreadList({ boardSlug }: { boardSlug?: string }) {
                   </div>
                 </div>
                 {/* 最後回覆時間 */}
-                <div className="text-[10px] text-fg-muted flex-shrink-0">
+                <div className="text-[10px] text-fg-muted shrink-0">
                   {new Date(t.last_reply_at).toLocaleDateString("zh-TW", { month: "2-digit", day: "2-digit" })}
                 </div>
               </div>

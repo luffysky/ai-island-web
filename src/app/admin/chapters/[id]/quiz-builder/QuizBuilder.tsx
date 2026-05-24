@@ -213,7 +213,7 @@ export function QuizBuilder({
         {(quiz.questions ?? []).map((q, idx) => (
           <div key={idx} className="bg-bg-card border border-border rounded-xl p-4">
             <div className="flex items-start gap-3 mb-3">
-              <span className="flex-shrink-0 w-7 h-7 rounded-full bg-accent/15 text-accent font-bold flex items-center justify-center text-sm">
+              <span className="shrink-0 w-7 h-7 rounded-full bg-accent/15 text-accent font-bold flex items-center justify-center text-sm">
                 {idx + 1}
               </span>
               <input
@@ -224,7 +224,7 @@ export function QuizBuilder({
               />
               <button
                 onClick={() => removeQuestion(idx)}
-                className="text-fg-muted hover:text-red-400 flex-shrink-0"
+                className="text-fg-muted hover:text-red-400 shrink-0"
               >
                 <Trash2 size={14} />
               </button>
@@ -234,7 +234,7 @@ export function QuizBuilder({
                 <div key={oi} className="flex items-center gap-2">
                   <button
                     onClick={() => setQ(idx, { answer: oi })}
-                    className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
+                    className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
                       q.answer === oi ? "bg-emerald-500 text-white" : "bg-bg-elevated text-fg-muted"
                     }`}
                     title="設為正解"

@@ -93,7 +93,7 @@ export function QuestsPanel() {
             const pct = q.target > 0 ? Math.min(100, Math.round((q.progress / q.target) * 100)) : 0;
             return (
               <li key={q.id} className="flex items-center gap-3 p-2 rounded-lg bg-bg">
-                <span className="text-2xl flex-shrink-0">{meta.icon}</span>
+                <span className="text-2xl shrink-0">{meta.icon}</span>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">{meta.label} ({q.progress}/{q.target})</span>
@@ -107,19 +107,19 @@ export function QuestsPanel() {
                   </div>
                 </div>
                 {q.claimed ? (
-                  <span className="text-xs text-fg-muted px-2 py-1 flex items-center gap-0.5 flex-shrink-0">
+                  <span className="text-xs text-fg-muted px-2 py-1 flex items-center gap-0.5 shrink-0">
                     <Check size={12} className="text-emerald-400" /> 已領
                   </span>
                 ) : q.completed ? (
                   <button
                     onClick={() => claim(q.id)}
                     disabled={claiming === q.id}
-                    className="text-xs px-3 py-1.5 rounded-lg bg-accent text-black font-bold flex-shrink-0 disabled:opacity-50 active:scale-95 transition"
+                    className="text-xs px-3 py-1.5 rounded-lg bg-accent text-black font-bold shrink-0 disabled:opacity-50 active:scale-95 transition"
                   >
                     {claiming === q.id ? "領取中…" : "🎁 領取"}
                   </button>
                 ) : (
-                  <span className="text-[10px] text-fg-muted px-2 py-1 flex-shrink-0">{pct}%</span>
+                  <span className="text-[10px] text-fg-muted px-2 py-1 shrink-0">{pct}%</span>
                 )}
               </li>
             );

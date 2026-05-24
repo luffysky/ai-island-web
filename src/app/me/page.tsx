@@ -124,7 +124,7 @@ export default async function MeOverviewPage() {
                   className="flex items-center justify-between p-3 hover:bg-bg-elevated transition"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center text-accent flex-shrink-0">
+                    <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center text-accent shrink-0">
                       ✓
                     </div>
                     <div className="min-w-0">
@@ -132,7 +132,7 @@ export default async function MeOverviewPage() {
                       <div className="text-xs text-fg-muted">{ch?.title} · +{p.xp_earned ?? 0} XP</div>
                     </div>
                   </div>
-                  <div className="text-xs text-fg-muted flex-shrink-0">
+                  <div className="text-xs text-fg-muted shrink-0">
                     {formatTWDate(p.completed_at)}
                   </div>
                 </Link>

@@ -53,7 +53,7 @@ export default async function NotesPage() {
                     <div className="font-semibold truncate">{lesson?.title ?? n.lesson_id ?? "未綁定 lesson"}</div>
                   </div>
                   {n.is_public && (
-                    <span className="text-xs px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 flex-shrink-0">公開</span>
+                    <span className="text-xs px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 shrink-0">公開</span>
                   )}
                 </div>
                 <p className="text-sm text-fg-muted whitespace-pre-wrap line-clamp-3">{n.content}</p>

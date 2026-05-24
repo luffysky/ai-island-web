@@ -155,9 +155,9 @@ export function PortfoliosClient({
             <div className="flex items-start justify-between mb-2">
               <h3 className="font-bold truncate flex-1">{p.title}</h3>
               {p.is_public ? (
-                <Globe size={14} className="text-emerald-400 flex-shrink-0" />
+                <Globe size={14} className="text-emerald-400 shrink-0" />
               ) : (
-                <Lock size={14} className="text-fg-muted flex-shrink-0" />
+                <Lock size={14} className="text-fg-muted shrink-0" />
               )}
             </div>
             {p.description && <p className="text-xs text-fg-muted line-clamp-2 mb-2">{p.description}</p>}

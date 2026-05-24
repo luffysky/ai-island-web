@@ -39,7 +39,7 @@ export default async function BroadcastsPage() {
                   </div>
                   <p className="text-sm text-fg-muted line-clamp-2">{b.content}</p>
                 </div>
-                <div className="text-right text-xs text-fg-muted flex-shrink-0">
+                <div className="text-right text-xs text-fg-muted shrink-0">
                   {b.sent_at && <div>📤 {new Date(b.sent_at).toLocaleDateString('zh-TW')}</div>}
                   {b.sent_count > 0 && (
                     <div className="mt-1">

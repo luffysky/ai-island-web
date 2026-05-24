@@ -166,7 +166,7 @@ export function EndQuizPlayer({ chapterId }: { chapterId: number }) {
     return (
       <section className="mt-12 rounded-2xl border-2 border-accent/30 bg-gradient-to-br from-bg-card to-bg-elevated p-6">
         <div className="flex items-start gap-4">
-          <div className="flex-shrink-0 w-12 h-12 rounded-full bg-accent/15 flex items-center justify-center">
+          <div className="shrink-0 w-12 h-12 rounded-full bg-accent/15 flex items-center justify-center">
             <Sparkles className="text-accent" size={20} />
           </div>
           <div className="flex-1 min-w-0">
@@ -244,7 +244,7 @@ export function EndQuizPlayer({ chapterId }: { chapterId: number }) {
                 className="p-4 rounded-xl border border-border bg-bg"
               >
                 <div className="flex items-start gap-3 mb-3">
-                  <span className="flex-shrink-0 w-7 h-7 rounded-full bg-accent/15 text-accent font-bold flex items-center justify-center text-sm">
+                  <span className="shrink-0 w-7 h-7 rounded-full bg-accent/15 text-accent font-bold flex items-center justify-center text-sm">
                     {idx + 1}
                   </span>
                   <p className="font-medium flex-1 whitespace-pre-wrap">{q.question}</p>
@@ -264,7 +264,7 @@ export function EndQuizPlayer({ chapterId }: { chapterId: number }) {
                         }`}
                       >
                         <span
-                          className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                          className={`shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
                             active
                               ? "bg-accent text-black"
                               : "bg-bg-elevated text-fg-muted"
@@ -361,9 +361,9 @@ export function EndQuizPlayer({ chapterId }: { chapterId: number }) {
               <div key={p.questionIndex} className="text-sm border-t border-border pt-3 first:border-0 first:pt-0">
                 <div className="flex items-start gap-2 mb-1.5">
                   {p.ok ? (
-                    <Check size={14} className="mt-0.5 text-emerald-400 flex-shrink-0" />
+                    <Check size={14} className="mt-0.5 text-emerald-400 shrink-0" />
                   ) : (
-                    <X size={14} className="mt-0.5 text-red-400 flex-shrink-0" />
+                    <X size={14} className="mt-0.5 text-red-400 shrink-0" />
                   )}
                   <span className="font-medium flex-1">
                     {p.questionIndex + 1}. {q.question}

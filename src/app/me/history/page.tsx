@@ -59,7 +59,7 @@ export default async function HistoryPage() {
                         <span className="text-accent">✓</span>
                         <span className="truncate">{lesson?.title ?? p.lesson_id}</span>
                       </div>
-                      <div className="text-xs text-fg-muted flex-shrink-0">
+                      <div className="text-xs text-fg-muted shrink-0">
                         +{p.xp_earned ?? 0} XP · {new Date(p.completed_at).toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' })}
                       </div>
                     </Link>

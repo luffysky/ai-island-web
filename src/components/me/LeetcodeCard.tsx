@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Code2, ExternalLink, RefreshCcw, Link2Off, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
+import { useConfirm } from "@/components/ui/ConfirmDialog";
 
 type Stats = {
   username: string;
@@ -21,6 +22,7 @@ type Stats = {
 
 export function LeetcodeCard() {
   const toast = useToast();
+  const confirm = useConfirm();
   const [username, setUsername] = useState<string | null>(null);
   const [stats, setStats] = useState<Stats | null>(null);
   const [input, setInput] = useState("");
@@ -66,7 +68,8 @@ export function LeetcodeCard() {
   };
 
   const unbind = async () => {
-    if (!confirm("解除 leetcode 綁定？")) return;
+    const ok = await confirm({ title: "解除 Leetcode 綁定？", description: "之後可重新綁定。", confirmLabel: "解除", destructive: true });
+    if (!ok) return;
     await fetch("/api/me/leetcode", { method: "DELETE" });
     setUsername(null); setStats(null);
     toast.info("已解除綁定");

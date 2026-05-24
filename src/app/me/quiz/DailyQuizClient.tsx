@@ -137,7 +137,7 @@ export function DailyQuizClient() {
           return (
             <div key={i} className="rounded-xl bg-bg-card border border-border p-4">
               <div className="flex items-start gap-2 mb-3">
-                <span className="flex-shrink-0 w-7 h-7 rounded-full bg-accent/15 text-accent flex items-center justify-center text-sm font-bold">
+                <span className="shrink-0 w-7 h-7 rounded-full bg-accent/15 text-accent flex items-center justify-center text-sm font-bold">
                   {i + 1}
                 </span>
                 <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-bg-elevated text-fg-muted">

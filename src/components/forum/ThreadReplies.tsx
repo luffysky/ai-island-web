@@ -303,10 +303,10 @@ function ReplyItem({
             width={32}
             height={32}
             unoptimized
-            className="w-8 h-8 rounded-full flex-shrink-0 object-cover"
+            className="w-8 h-8 rounded-full shrink-0 object-cover"
           />
         ) : (
-          <div className="w-8 h-8 rounded-full bg-bg-elevated flex items-center justify-center text-xs flex-shrink-0">
+          <div className="w-8 h-8 rounded-full bg-bg-elevated flex items-center justify-center text-xs shrink-0">
             {name[0]}
           </div>
         )}

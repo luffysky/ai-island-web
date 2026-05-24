@@ -294,9 +294,9 @@ function Row({
 }) {
   return (
     <div className="flex items-center justify-between gap-2 text-xs py-1.5 border-t border-border first:border-t-0">
-      <span className={`flex-shrink-0 font-bold ${leftClass ?? ""}`}>{left}</span>
+      <span className={`shrink-0 font-bold ${leftClass ?? ""}`}>{left}</span>
       <span className="flex-1 truncate text-fg">{mid}</span>
-      <span className="flex-shrink-0 text-fg-muted text-[10px]">{right}</span>
+      <span className="shrink-0 text-fg-muted text-[10px]">{right}</span>
     </div>
   );
 }

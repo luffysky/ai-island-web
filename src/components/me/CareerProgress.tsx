@@ -56,7 +56,7 @@ export function CareerProgress({
               className="bg-bg-card border border-border hover:border-accent/50 rounded-xl p-4 transition group"
             >
               <div className="flex items-start gap-3 mb-2">
-                <span className="text-2xl flex-shrink-0">{p.emoji}</span>
+                <span className="text-2xl shrink-0">{p.emoji}</span>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
                     <h3 className="font-bold truncate">{p.name}</h3>
@@ -64,7 +64,7 @@ export function CareerProgress({
                   </div>
                   <p className="text-xs text-fg-muted mt-0.5 line-clamp-1">{p.title}</p>
                 </div>
-                <div className="text-right flex-shrink-0">
+                <div className="text-right shrink-0">
                   <div className="text-2xl font-extrabold text-accent">{p.pct}%</div>
                   <div className="text-[10px] text-fg-muted">{p.done}/{p.total}</div>
                 </div>

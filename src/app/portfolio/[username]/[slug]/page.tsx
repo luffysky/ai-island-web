@@ -105,7 +105,7 @@ export default async function PortfolioPage({ params }: { params: Promise<{ user
           <div className="text-xs text-fg-muted">@{profile.username} · Lv {profile.level} · {profile.xp} XP</div>
           {profile.bio && <p className="text-xs text-fg-muted mt-1 line-clamp-2">{profile.bio}</p>}
         </div>
-        <Link href={`/blogs/${username}` as any} className="text-xs text-accent hover:underline flex-shrink-0">
+        <Link href={`/blogs/${username}` as any} className="text-xs text-accent hover:underline shrink-0">
           看部落格 →
         </Link>
       </div>

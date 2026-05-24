@@ -182,7 +182,7 @@ export function ChangelogEditor({ initial }: { initial: Entry[] }) {
                 </div>
                 <div className="text-[10px] text-fg-muted mt-0.5">{formatTWDate(e.published_at)}</div>
               </div>
-              <div className="flex items-center gap-1 flex-shrink-0">
+              <div className="flex items-center gap-1 shrink-0">
                 <button
                   onClick={() => togglePublish(e)}
                   className="p-1.5 rounded hover:bg-bg-elevated"

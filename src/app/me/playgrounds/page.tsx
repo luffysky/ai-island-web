@@ -48,7 +48,7 @@ export default async function MyPlaygroundsPage() {
                     </div>
                     <div className="font-semibold">{p.title ?? p.playground_key}</div>
                   </div>
-                  <div className="text-xs text-fg-muted flex-shrink-0">
+                  <div className="text-xs text-fg-muted shrink-0">
                     {new Date(p.updated_at).toLocaleDateString('zh-TW')}
                   </div>
                 </div>

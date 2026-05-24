@@ -99,7 +99,7 @@ export function ChapterEditor({ chapter }: { chapter: Chapter }) {
 
       {/* 變更說明（選填）*/}
       <div className="mb-3 flex items-center gap-2">
-        <label className="text-xs text-fg-muted flex-shrink-0">變更說明（選）：</label>
+        <label className="text-xs text-fg-muted shrink-0">變更說明（選）：</label>
         <input
           value={note}
           onChange={(e) => setNote(e.target.value)}

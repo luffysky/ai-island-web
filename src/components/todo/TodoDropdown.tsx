@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useOverlayRegister } from "@/lib/overlay-stack";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   DndContext,
   PointerSensor,
@@ -24,9 +23,82 @@ import { TodoItem } from "./TodoItem";
 import { TodoEditModal } from "./TodoEditModal";
 import { useToast } from "@/components/ui/Toast";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
+import { useAuth } from "@/lib/auth-context";
+import { usePopover, PopoverPanel } from "@/components/ui/Popover";
 
-export function TodoDropdown({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function TodoDropdownButton() {
+  const { user } = useAuth();
+  const popover = usePopover({ placement: "bottom-end", maxWidth: 420 });
+  const { open, setOpen } = popover;
+  const [todoCount, setTodoCount] = useState(0);
   useOverlayRegister(open);
+
+  // shortcut: ⌘⇧T / Ctrl+Shift+T
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const isCmdShiftT = (e.metaKey || e.ctrlKey) && e.shiftKey && (e.key === "T" || e.key === "t");
+      if (isCmdShiftT) {
+        e.preventDefault();
+        setOpen(!open);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, setOpen]);
+
+  // todoCount badge
+  useEffect(() => {
+    if (!user) {
+      setTodoCount(0);
+      return;
+    }
+    const load = () => {
+      fetch("/api/todo")
+        .then((r) => r.json())
+        .then((j) => setTodoCount((j.todos ?? []).filter((t: any) => !t.completed).length))
+        .catch(() => {});
+    };
+    load();
+    const onTodoEvent = () => load();
+    window.addEventListener("pet:todo-completed", onTodoEvent);
+    return () => window.removeEventListener("pet:todo-completed", onTodoEvent);
+  }, [user?.id]);
+
+  // 關閉後 refresh badge
+  useEffect(() => {
+    if (open || !user) return;
+    fetch("/api/todo")
+      .then((r) => r.json())
+      .then((j) => setTodoCount((j.todos ?? []).filter((t: any) => !t.completed).length))
+      .catch(() => {});
+  }, [open, user?.id]);
+
+  if (!user) return null;
+
+  return (
+    <>
+      <button
+        ref={popover.refs.setReference}
+        {...popover.getReferenceProps()}
+        aria-label="開啟待辦清單"
+        title="待辦清單（⌘⇧T / Ctrl+Shift+T）"
+        className="relative flex items-center p-1.5 rounded-lg hover:bg-bg-card transition active:scale-95"
+      >
+        <CheckSquare size={17} className={todoCount > 0 ? "text-accent" : ""} />
+        {todoCount > 0 && (
+          <span className="absolute -top-0.5 -right-0.5 min-w-3.5 h-3.5 px-1 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center pointer-events-none">
+            {todoCount > 99 ? "99+" : todoCount}
+          </span>
+        )}
+      </button>
+      <PopoverPanel api={popover} className="w-[420px] max-w-[calc(100vw-1rem)] flex flex-col">
+        <TodoPanelBody onClose={() => setOpen(false)} />
+      </PopoverPanel>
+    </>
+  );
+}
+
+function TodoPanelBody({ onClose }: { onClose: () => void }) {
   const toast = useToast();
   const confirm = useConfirm();
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -35,28 +107,8 @@ export function TodoDropdown({ open, onClose }: { open: boolean; onClose: () => 
   const [adding, setAdding] = useState(false);
   const [showCompleted, setShowCompleted] = useState(false);
   const [editTarget, setEditTarget] = useState<Todo | null>(null);
-  const panelRef = useRef<HTMLDivElement>(null);
 
-  // 點外面關閉
   useEffect(() => {
-    if (!open) return;
-    const onMouseDown = (e: MouseEvent) => {
-      if (panelRef.current && !panelRef.current.contains(e.target as Node)) onClose();
-    };
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    document.addEventListener("mousedown", onMouseDown);
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("mousedown", onMouseDown);
-      document.removeEventListener("keydown", onKey);
-    };
-  }, [open, onClose]);
-
-  // 載清單
-  useEffect(() => {
-    if (!open) return;
     let cancelled = false;
     setLoading(true);
     fetch("/api/todo")
@@ -74,14 +126,13 @@ export function TodoDropdown({ open, onClose }: { open: boolean; onClose: () => 
     return () => {
       cancelled = true;
     };
-  }, [open]);
+  }, []);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
 
-  // 樹狀整理
   const { rootIds, childrenById } = useMemo(() => {
     const childrenById: Record<string, Todo[]> = {};
     const rootIds: string[] = [];
@@ -94,7 +145,6 @@ export function TodoDropdown({ open, onClose }: { open: boolean; onClose: () => 
         rootIds.push(t.id);
       }
     }
-    // 排序：sort_order 升序、相同則 created_at 新的在前
     for (const arr of Object.values(childrenById)) {
       arr.sort((a, b) => a.sort_order - b.sort_order);
     }
@@ -109,7 +159,6 @@ export function TodoDropdown({ open, onClose }: { open: boolean; onClose: () => 
     return m;
   }, [todos]);
 
-  // 新增
   const addTodo = async (parentId: string | null = null, title?: string) => {
     const t = (title ?? input).trim();
     if (!t || adding) return;
@@ -217,7 +266,6 @@ export function TodoDropdown({ open, onClose }: { open: boolean; onClose: () => 
     }, 5000);
   };
 
-  // 拖曳排序 — 只在 root 層之間 reorder（子任務內部 reorder 也走相同 SortableContext per parent）
   const handleDragEnd = async (e: DragEndEvent) => {
     const { active, over } = e;
     if (!over || active.id === over.id) return;
@@ -225,7 +273,7 @@ export function TodoDropdown({ open, onClose }: { open: boolean; onClose: () => 
     const activeTodo = byId.get(active.id as string);
     const overTodo = byId.get(over.id as string);
     if (!activeTodo || !overTodo) return;
-    if (activeTodo.parent_id !== overTodo.parent_id) return; // 只同層 reorder
+    if (activeTodo.parent_id !== overTodo.parent_id) return;
 
     const siblings = todos
       .filter((t) => t.parent_id === activeTodo.parent_id && !t.completed)
@@ -235,7 +283,6 @@ export function TodoDropdown({ open, onClose }: { open: boolean; onClose: () => 
     if (oldIdx < 0 || newIdx < 0) return;
     const reordered = arrayMove(siblings, oldIdx, newIdx);
 
-    // 重新分配 sort_order（簡單做：1000 為單位）
     const updates = reordered.map((t, i) => ({ id: t.id, sort_order: (i + 1) * 1000 }));
     const updateMap = new Map(updates.map((u) => [u.id, u.sort_order]));
     setTodos((prev) =>
@@ -258,111 +305,96 @@ export function TodoDropdown({ open, onClose }: { open: boolean; onClose: () => 
   const completedCount = todos.filter((t) => t.completed).length;
 
   return (
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          ref={panelRef}
-          initial={{ opacity: 0, y: -8, scale: 0.98 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: -6, scale: 0.98 }}
-          transition={{ type: "spring", stiffness: 380, damping: 28 }}
-          className="absolute right-0 top-12 z-50 w-[min(420px,calc(100vw-1rem))] max-h-[70vh] bg-bg-card border border-border rounded-xl shadow-2xl flex flex-col overflow-hidden"
-        >
-          {/* Header */}
-          <div className="flex items-center justify-between px-4 py-2.5 border-b border-border">
-            <div className="flex items-center gap-2">
-              <CheckSquare size={15} className="text-accent" />
-              <h3 className="font-bold text-sm">待辦清單</h3>
-              <span className="text-[10px] text-fg-muted">{remaining} 未完</span>
-            </div>
-            <div className="flex items-center gap-1">
-              {completedCount > 0 && (
-                <button
-                  onClick={() => setShowCompleted((v) => !v)}
-                  className="text-[10px] text-fg-muted hover:text-accent px-2 py-0.5 rounded"
-                >
-                  {showCompleted ? "隱藏已完成" : `顯示已完成 (${completedCount})`}
-                </button>
-              )}
-              <button onClick={onClose} aria-label="關閉" className="p-1 rounded hover:bg-bg-elevated">
-                <X size={14} />
-              </button>
-            </div>
+    <>
+      <div className="flex items-center justify-between px-4 py-2.5 border-b border-border">
+          <div className="flex items-center gap-2">
+            <CheckSquare size={15} className="text-accent" />
+            <h3 className="font-bold text-sm">待辦清單</h3>
+            <span className="text-[10px] text-fg-muted">{remaining} 未完</span>
           </div>
-
-          {/* Add input */}
-          <div className="px-3 py-2 border-b border-border">
-            <div className="flex gap-2">
-              <input
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") addTodo(null);
-                }}
-                placeholder="加個待辦、Enter 送出"
-                className="flex-1 bg-bg border border-border rounded-lg px-3 py-1.5 text-sm outline-none focus:border-accent"
-                maxLength={200}
-              />
+          <div className="flex items-center gap-1">
+            {completedCount > 0 && (
               <button
-                onClick={() => addTodo(null)}
-                disabled={!input.trim() || adding}
-                className="px-2.5 py-1.5 rounded-lg bg-accent text-black text-sm font-semibold disabled:opacity-40 active:scale-95 transition-transform flex items-center"
-                aria-label="新增"
+                onClick={() => setShowCompleted((v) => !v)}
+                className="text-[10px] text-fg-muted hover:text-accent px-2 py-0.5 rounded"
               >
-                {adding ? <Loader2 size={13} className="animate-spin" /> : <Plus size={13} />}
+                {showCompleted ? "隱藏已完成" : `顯示已完成 (${completedCount})`}
               </button>
-            </div>
-          </div>
-
-          {/* List */}
-          <div className="flex-1 overflow-y-auto px-1 py-1">
-            {loading ? (
-              <div className="px-4 py-6 text-center text-sm text-fg-muted">
-                <Loader2 size={16} className="animate-spin inline mr-1" /> 載入中...
-              </div>
-            ) : rootIds.length === 0 ? (
-              <div className="px-4 py-8 text-center text-sm text-fg-muted">
-                目前沒有待辦事項。
-                <br />
-                上面輸入框寫一條開始吧 ✨
-              </div>
-            ) : (
-              <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                <SortableContext items={rootIds} strategy={verticalListSortingStrategy}>
-                  {rootIds.map((id) => {
-                    const todo = byId.get(id);
-                    if (!todo) return null;
-                    const children = childrenById[id];
-                    return (
-                      <TodoItem
-                        key={id}
-                        todo={todo}
-                        children={children}
-                        onToggle={toggle}
-                        onDelete={remove}
-                        onTitleChange={(id, title) => patchTodo(id, { title })}
-                        onEditDetails={(t) => setEditTarget(t)}
-                        onAddChild={(parentId) => {
-                          const t = window.prompt("子任務內容：");
-                          if (t && t.trim()) addTodo(parentId, t.trim());
-                        }}
-                      />
-                    );
-                  })}
-                </SortableContext>
-              </DndContext>
             )}
+            <button onClick={onClose} aria-label="關閉" className="p-1 rounded hover:bg-bg-elevated">
+              <X size={14} />
+            </button>
           </div>
+        </div>
 
-          {/* Footer hint */}
-          <div className="px-3 py-1.5 border-t border-border text-[10px] text-fg-muted flex items-center justify-between">
-            <span>雙擊標題可編輯 · 拖曳排序</span>
-            <kbd className="px-1 py-0.5 rounded bg-bg-elevated font-mono text-[9px]">
-              ⌘⇧T
-            </kbd>
+        <div className="px-3 py-2 border-b border-border">
+          <div className="flex gap-2">
+            <input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") addTodo(null);
+              }}
+              placeholder="加個待辦、Enter 送出"
+              className="flex-1 bg-bg border border-border rounded-lg px-3 py-1.5 text-sm outline-none focus:border-accent"
+              maxLength={200}
+            />
+            <button
+              onClick={() => addTodo(null)}
+              disabled={!input.trim() || adding}
+              className="px-2.5 py-1.5 rounded-lg bg-accent text-black text-sm font-semibold disabled:opacity-40 active:scale-95 transition-transform flex items-center"
+              aria-label="新增"
+            >
+              {adding ? <Loader2 size={13} className="animate-spin" /> : <Plus size={13} />}
+            </button>
           </div>
-        </motion.div>
-      )}
+        </div>
+
+        <div className="flex-1 overflow-y-auto px-1 py-1 max-h-[60vh]">
+          {loading ? (
+            <div className="px-4 py-6 text-center text-sm text-fg-muted">
+              <Loader2 size={16} className="animate-spin inline mr-1" /> 載入中...
+            </div>
+          ) : rootIds.length === 0 ? (
+            <div className="px-4 py-8 text-center text-sm text-fg-muted">
+              目前沒有待辦事項。
+              <br />
+              上面輸入框寫一條開始吧 ✨
+            </div>
+          ) : (
+            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+              <SortableContext items={rootIds} strategy={verticalListSortingStrategy}>
+                {rootIds.map((id) => {
+                  const todo = byId.get(id);
+                  if (!todo) return null;
+                  const children = childrenById[id];
+                  return (
+                    <TodoItem
+                      key={id}
+                      todo={todo}
+                      children={children}
+                      onToggle={toggle}
+                      onDelete={remove}
+                      onTitleChange={(id, title) => patchTodo(id, { title })}
+                      onEditDetails={(t) => setEditTarget(t)}
+                      onAddChild={(parentId) => {
+                        const t = window.prompt("子任務內容：");
+                        if (t && t.trim()) addTodo(parentId, t.trim());
+                      }}
+                    />
+                  );
+                })}
+              </SortableContext>
+            </DndContext>
+          )}
+        </div>
+
+        <div className="px-3 py-1.5 border-t border-border text-[10px] text-fg-muted flex items-center justify-between">
+          <span>雙擊標題可編輯 · 拖曳排序</span>
+          <kbd className="px-1 py-0.5 rounded bg-bg-elevated font-mono text-[9px]">
+            ⌘⇧T
+          </kbd>
+        </div>
 
       {editTarget && (
         <TodoEditModal
@@ -371,20 +403,6 @@ export function TodoDropdown({ open, onClose }: { open: boolean; onClose: () => 
           onSave={(patch) => patchTodo(editTarget.id, patch)}
         />
       )}
-    </AnimatePresence>
+    </>
   );
-}
-
-export function useTodoShortcut(onToggle: () => void) {
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      const isCmdShiftT = (e.metaKey || e.ctrlKey) && e.shiftKey && (e.key === "T" || e.key === "t");
-      if (isCmdShiftT) {
-        e.preventDefault();
-        onToggle();
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onToggle]);
 }

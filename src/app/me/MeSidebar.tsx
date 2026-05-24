@@ -46,7 +46,7 @@ export function MeSidebar({ profile }: { profile: Profile | null }) {
 
   return (
     <aside
-      className={`flex-shrink-0 transition-all duration-200 ${
+      className={`shrink-0 transition-all duration-200 ${
         collapsed ? "w-10" : "w-56"
       }`}
     >

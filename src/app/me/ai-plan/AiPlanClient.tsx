@@ -122,7 +122,7 @@ export function AiPlanClient({ initialPlan, defaultCareer }: { initialPlan: Plan
             <ol className="space-y-2">
               {plan.weekly_chapters.map((w) => (
                 <li key={w.week} className="flex items-start gap-3 p-2 rounded-lg bg-bg">
-                  <span className="flex-shrink-0 w-12 text-center font-bold text-accent">W{w.week}</span>
+                  <span className="shrink-0 w-12 text-center font-bold text-accent">W{w.week}</span>
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium">{w.focus ?? "—"}</div>
                     <div className="text-[10px] text-fg-muted">

@@ -1,13 +1,14 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { useAuth } from "@/lib/auth-context";
-import { Flame, Coins, Heart, LogOut, Settings, Trophy, User as UserIcon, ChevronDown, Menu, X, CheckSquare } from "lucide-react";
-import { TodoDropdown, useTodoShortcut } from "@/components/todo/TodoDropdown";
+import { Flame, Coins, Heart, LogOut, Settings, Trophy, User as UserIcon, ChevronDown, Menu, X } from "lucide-react";
+import { TodoDropdownButton } from "@/components/todo/TodoDropdown";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { NotificationsDropdown } from "@/components/layout/NotificationsDropdown";
+import { usePopover, PopoverPanel } from "@/components/ui/Popover";
 
 const NAV_LINKS = [
   { href: "/chapters", label: "章節" },
@@ -21,44 +22,12 @@ const NAV_LINKS = [
 export function TopNav() {
   // 用全站 AuthContext、不再各自 race
   const { user, profile } = useAuth();
-  const [open, setOpen] = useState(false);
+  const userMenu = usePopover({ placement: "bottom-end", maxWidth: 280 });
+  const { open, setOpen } = userMenu;
   const [mobileMenu, setMobileMenu] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
-  const [todoOpen, setTodoOpen] = useState(false);
-  const [todoCount, setTodoCount] = useState<number>(0);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const todoBtnRef = useRef<HTMLDivElement>(null);
   const supabase = createSupabaseBrowser();
 
-  useTodoShortcut(() => setTodoOpen((v) => !v));
-
-  // 載未完成待辦數
-  useEffect(() => {
-    if (!user) {
-      setTodoCount(0);
-      return;
-    }
-    const load = () => {
-      fetch("/api/todo")
-        .then((r) => r.json())
-        .then((j) => setTodoCount((j.todos ?? []).filter((t: any) => !t.completed).length))
-        .catch(() => {});
-    };
-    load();
-    // 完成事件 → 重新整理 badge
-    const onTodoEvent = () => load();
-    window.addEventListener("pet:todo-completed", onTodoEvent);
-    return () => window.removeEventListener("pet:todo-completed", onTodoEvent);
-  }, [user?.id]);
-
-  // dropdown 關閉時也 refresh badge（涵蓋新增 / 刪除）
-  useEffect(() => {
-    if (todoOpen || !user) return;
-    fetch("/api/todo")
-      .then((r) => r.json())
-      .then((j) => setTodoCount((j.todos ?? []).filter((t: any) => !t.completed).length))
-      .catch(() => {});
-  }, [todoOpen, user?.id]);
   const displayProfile = profile ?? {
     username: user?.email?.split("@")[0] ?? "AI 島民",
     display_name: user?.user_metadata?.display_name || user?.user_metadata?.full_name || user?.user_metadata?.name,
@@ -69,17 +38,6 @@ export function TopNav() {
     level: 1,
     role: "member",
   };
-
-  // 點外面關閉 dropdown
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   async function handleLogout() {
     if (loggingOut) return;
@@ -155,26 +113,12 @@ export function TopNav() {
               <NotificationsDropdown />
 
               {/* TODO list 入口 */}
-              <div className="relative" ref={todoBtnRef}>
-                <button
-                  onClick={() => setTodoOpen((v) => !v)}
-                  aria-label="開啟待辦清單"
-                  title="待辦清單（⌘⇧T / Ctrl+Shift+T）"
-                  className="relative flex items-center p-1.5 rounded-lg hover:bg-bg-card transition active:scale-95"
-                >
-                  <CheckSquare size={17} className={todoCount > 0 ? "text-accent" : ""} />
-                  {todoCount > 0 && (
-                    <span className="absolute -top-0.5 -right-0.5 min-w-[14px] h-[14px] px-1 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center pointer-events-none">
-                      {todoCount > 99 ? "99+" : todoCount}
-                    </span>
-                  )}
-                </button>
-                <TodoDropdown open={todoOpen} onClose={() => setTodoOpen(false)} />
-              </div>
+              <TodoDropdownButton />
 
-              <div className="relative" ref={dropdownRef}>
+              <div>
                 <button
-                  onClick={() => setOpen(!open)}
+                  ref={userMenu.refs.setReference}
+                  {...userMenu.getReferenceProps()}
                   className="flex items-center gap-2 px-3 py-1.5 bg-bg-card rounded-lg hover:bg-border transition"
                 >
                   <span className="text-xs px-1.5 py-0.5 rounded bg-gradient-to-r from-accent to-accent-2 text-black font-bold">
@@ -184,8 +128,7 @@ export function TopNav() {
                   <ChevronDown size={14} className={`transition ${open ? 'rotate-180' : ''}`} />
                 </button>
 
-                {open && (
-                  <div className="absolute right-0 mt-2 w-56 bg-bg-card border border-border rounded-lg shadow-xl py-1 z-50">
+                <PopoverPanel api={userMenu} className="w-56 py-1">
                     {/* 顯示頭像 + 資訊 */}
                     <div className="px-4 py-3 border-b border-border">
                       <div className="flex items-center gap-3">
@@ -279,8 +222,7 @@ export function TopNav() {
                         <span>{loggingOut ? "登出中..." : "登出"}</span>
                       </button>
                     </div>
-                  </div>
-                )}
+                </PopoverPanel>
               </div>
             </>
           ) : (

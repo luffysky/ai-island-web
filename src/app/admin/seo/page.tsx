@@ -54,7 +54,7 @@ export default async function SEOAdminPage() {
         <ul className="space-y-1.5 text-xs font-mono">
           {SEO_PLACEHOLDERS.map((p) => (
             <li key={p.token} className="flex items-center gap-3">
-              <code className="px-2 py-0.5 bg-bg rounded border border-border flex-shrink-0">
+              <code className="px-2 py-0.5 bg-bg rounded border border-border shrink-0">
                 {p.token}
               </code>
               <span className="text-accent font-bold w-12 text-right">

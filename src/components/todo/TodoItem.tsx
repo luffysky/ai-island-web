@@ -106,7 +106,7 @@ export function TodoItem({
 
         <button
           onClick={() => onToggle(todo.id, !todo.completed)}
-          className={`w-4 h-4 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition ${
+          className={`w-4 h-4 rounded-full border-2 shrink-0 flex items-center justify-center transition ${
             todo.completed
               ? "bg-accent border-accent"
               : "border-border hover:border-accent"
@@ -121,7 +121,7 @@ export function TodoItem({
         </button>
 
         <span
-          className="w-1 h-4 rounded-full flex-shrink-0"
+          className="w-1 h-4 rounded-full shrink-0"
           style={{ background: PRIORITY_COLOR[todo.priority] }}
           title={`優先 ${todo.priority === 1 ? "高" : todo.priority === 2 ? "中" : "低"}`}
         />
@@ -153,7 +153,7 @@ export function TodoItem({
 
         {due && (
           <span
-            className="text-[10px] px-1.5 py-0.5 rounded-full font-semibold flex items-center gap-0.5 flex-shrink-0"
+            className="text-[10px] px-1.5 py-0.5 rounded-full font-semibold flex items-center gap-0.5 shrink-0"
             style={{ background: `${due.tone}22`, color: due.tone }}
           >
             <Calendar size={9} /> {due.text}
@@ -161,14 +161,14 @@ export function TodoItem({
         )}
         {todo.recur_rule && (
           <span
-            className="text-[10px] px-1.5 py-0.5 rounded-full bg-accent/15 text-accent font-semibold flex items-center gap-0.5 flex-shrink-0"
+            className="text-[10px] px-1.5 py-0.5 rounded-full bg-accent/15 text-accent font-semibold flex items-center gap-0.5 shrink-0"
             title={recurLabel(todo.recur_rule)}
           >
             <Repeat size={9} />
           </span>
         )}
 
-        <div className="flex items-center opacity-0 group-hover:opacity-100 transition gap-0.5 flex-shrink-0">
+        <div className="flex items-center opacity-0 group-hover:opacity-100 transition gap-0.5 shrink-0">
           {onAddChild && depth === 0 && (
             <button
               onClick={() => onAddChild(todo.id)}

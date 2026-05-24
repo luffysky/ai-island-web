@@ -93,7 +93,7 @@ function SettingCard({
             <p className="text-xs text-fg-muted mt-0.5">{setting.description}</p>
           )}
         </div>
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <div className="flex items-center gap-2 shrink-0">
           {msg && <span className="text-xs">{msg}</span>}
           <button
             onClick={onSave}
@@ -272,7 +272,7 @@ function ToggleRow({
         <span className="font-medium">{label}</span>
         {help && <p className="text-[10px] text-fg-muted mt-0.5">{help}</p>}
       </span>
-      <span className={`text-[10px] font-bold flex-shrink-0 ${value ? "text-emerald-500" : "text-fg-muted"}`}>
+      <span className={`text-[10px] font-bold shrink-0 ${value ? "text-emerald-500" : "text-fg-muted"}`}>
         {value ? "ON" : "OFF"}
       </span>
     </label>

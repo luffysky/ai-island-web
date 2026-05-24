@@ -162,7 +162,7 @@ function ProblemCard({ p, solved, onMark, compact }: { p: Problem; solved: boole
         <a href={p.url} target="_blank" rel="noopener" className="font-bold text-sm flex-1 hover:text-accent truncate">
           {p.title}
         </a>
-        {solved && <Check size={14} className="text-emerald-400 flex-shrink-0" />}
+        {solved && <Check size={14} className="text-emerald-400 shrink-0" />}
       </div>
       <div className="flex items-center gap-1 flex-wrap mb-2">
         <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${DIFF_COLOR[p.difficulty]}`}>{p.difficulty}</span>

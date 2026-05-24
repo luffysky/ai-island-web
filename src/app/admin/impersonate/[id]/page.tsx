@@ -135,9 +135,9 @@ function Panel({ title, icon, children }: { title: string; icon?: React.ReactNod
 function Row({ left, mid, right }: { left: React.ReactNode; mid: React.ReactNode; right: React.ReactNode }) {
   return (
     <div className="flex items-center gap-2 py-1.5 text-xs">
-      <span className="text-fg-muted flex-shrink-0 w-16 truncate">{left}</span>
+      <span className="text-fg-muted shrink-0 w-16 truncate">{left}</span>
       <span className="flex-1 truncate">{mid}</span>
-      <span className="text-fg-muted flex-shrink-0">{right}</span>
+      <span className="text-fg-muted shrink-0">{right}</span>
     </div>
   );
 }

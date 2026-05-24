@@ -37,7 +37,7 @@ export function ThreadActions({ thread }: { thread: any }) {
   };
 
   return (
-    <div className="flex flex-col items-end gap-1 flex-shrink-0">
+    <div className="flex flex-col items-end gap-1 shrink-0">
       <div className="flex gap-1">
         <ActionBtn onClick={() => act(thread.is_pinned ? "unpin" : "pin")} busy={busy}>
           {thread.is_pinned ? "解釘" : "釘文"}
@@ -92,7 +92,7 @@ export function ReplyActions({ reply }: { reply: any }) {
   };
 
   return (
-    <div className="flex gap-1 flex-shrink-0">
+    <div className="flex gap-1 shrink-0">
       <ActionBtn onClick={() => act(reply.is_hidden ? "show" : "hide")} busy={busy} variant="warning">
         {reply.is_hidden ? "顯示" : "隱藏"}
       </ActionBtn>

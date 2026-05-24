@@ -134,7 +134,7 @@ export function AssignmentsClient({ initial, submissionCounts }: { initial: Assi
           const counts = submissionCounts[a.id] ?? { total: 0, graded: 0 };
           return (
             <div key={a.id} className="p-3 flex items-center gap-3">
-              <FileText size={16} className="text-accent flex-shrink-0" />
+              <FileText size={16} className="text-accent shrink-0" />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <h3 className="font-bold truncate">{a.title}</h3>
@@ -147,7 +147,7 @@ export function AssignmentsClient({ initial, submissionCounts }: { initial: Assi
                   · 滿分 {a.max_score}
                 </div>
               </div>
-              <div className="text-xs text-fg-muted flex-shrink-0">
+              <div className="text-xs text-fg-muted shrink-0">
                 {counts.graded}/{counts.total} 已批改
               </div>
               <button onClick={() => setEditing(a)} className="p-1.5 text-fg-muted hover:text-accent">

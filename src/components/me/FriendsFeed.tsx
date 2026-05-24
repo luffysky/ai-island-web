@@ -53,9 +53,9 @@ export function FriendsFeed() {
           {items.map((it, i) => (
             <li key={i} className="flex items-center gap-2 p-2 rounded-lg hover:bg-bg-elevated text-sm">
               {it.avatar_url ? (
-                <Image src={it.avatar_url} alt="" width={24} height={24} unoptimized className="w-6 h-6 rounded-full flex-shrink-0 object-cover" />
+                <Image src={it.avatar_url} alt="" width={24} height={24} unoptimized className="w-6 h-6 rounded-full shrink-0 object-cover" />
               ) : (
-                <div className="w-6 h-6 rounded-full bg-bg-elevated flex items-center justify-center text-[10px] flex-shrink-0">
+                <div className="w-6 h-6 rounded-full bg-bg-elevated flex items-center justify-center text-[10px] shrink-0">
                   {(it.display_name || it.username || "?")[0]}
                 </div>
               )}
@@ -70,7 +70,7 @@ export function FriendsFeed() {
                   <span className="text-xs text-fg-muted ml-1 truncate inline-block max-w-xs align-middle">{it.title}</span>
                 )}
               </div>
-              <span className="text-[10px] text-fg-muted flex-shrink-0">{formatTWRelative(it.at)}</span>
+              <span className="text-[10px] text-fg-muted shrink-0">{formatTWRelative(it.at)}</span>
             </li>
           ))}
         </ul>

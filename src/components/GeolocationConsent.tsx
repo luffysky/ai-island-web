@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { X, MapPin, Loader2, Shield, Check, AlertCircle } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
+import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { useOverlayRegister } from "@/lib/overlay-stack";
 
 const STORAGE_KEY = "ai_island_geo_consent";
@@ -31,6 +32,7 @@ export function GeolocationConsent({ trigger }: { trigger?: React.ReactNode }) {
   const [state, setState] = useState<ConsentState>("unset");
   const [busy, setBusy] = useState(false);
   const toast = useToast();
+  const confirm = useConfirm();
   useOverlayRegister(open);
 
   useEffect(() => { setState(readConsent()); }, []);
@@ -80,7 +82,8 @@ export function GeolocationConsent({ trigger }: { trigger?: React.ReactNode }) {
   };
 
   const revoke = async () => {
-    if (!confirm("確定關閉精準位置嗎？")) return;
+    const ok = await confirm({ title: "關閉精準位置？", description: "之後可從設定再次啟用。", confirmLabel: "關閉", destructive: true });
+    if (!ok) return;
     await fetch("/api/me/geolocation", { method: "DELETE" });
     writeConsent("denied");
     setState("denied");
@@ -120,7 +123,7 @@ export function GeolocationConsent({ trigger }: { trigger?: React.ReactNode }) {
               </ul>
 
               <div className="mt-4 p-3 rounded-lg bg-bg-elevated text-xs text-fg-muted flex gap-2">
-                <Shield size={14} className="flex-shrink-0 mt-0.5 text-emerald-400" />
+                <Shield size={14} className="shrink-0 mt-0.5 text-emerald-400" />
                 <div>
                   <div className="font-bold text-fg mb-1">承諾</div>
                   <p className="leading-relaxed">
@@ -134,7 +137,7 @@ export function GeolocationConsent({ trigger }: { trigger?: React.ReactNode }) {
 
               {state === "denied" && (
                 <div className="mt-3 p-3 rounded-lg bg-yellow-500/10 text-xs text-yellow-300 flex gap-2">
-                  <AlertCircle size={14} className="flex-shrink-0 mt-0.5" />
+                  <AlertCircle size={14} className="shrink-0 mt-0.5" />
                   <span>你目前已關閉。重新啟用、瀏覽器可能會再問一次。</span>
                 </div>
               )}
@@ -165,7 +168,7 @@ export function GeolocationConsent({ trigger }: { trigger?: React.ReactNode }) {
 function Benefit({ icon, title, desc }: { icon: string; title: string; desc: string }) {
   return (
     <li className="flex gap-2">
-      <span className="text-base flex-shrink-0">{icon}</span>
+      <span className="text-base shrink-0">{icon}</span>
       <div>
         <div className="font-medium text-sm">{title}</div>
         <div className="text-xs text-fg-muted leading-relaxed">{desc}</div>

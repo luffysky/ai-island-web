@@ -129,18 +129,18 @@ export default function MyBlogPage() {
                   width={64}
                   height={64}
                   unoptimized
-                  className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
+                  className="w-16 h-16 rounded-lg object-cover shrink-0"
                 />
               )}
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2 mb-1">
                   <h3 className="font-bold truncate">{a.title}</h3>
                   {a.is_public ? (
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-green-500/20 text-green-400 flex items-center gap-0.5 flex-shrink-0">
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-green-500/20 text-green-400 flex items-center gap-0.5 shrink-0">
                       <Globe size={9} /> 公開
                     </span>
                   ) : (
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-bg-elevated text-fg-muted flex items-center gap-0.5 flex-shrink-0">
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-bg-elevated text-fg-muted flex items-center gap-0.5 shrink-0">
                       <Lock size={9} /> 草稿
                     </span>
                   )}
@@ -153,7 +153,7 @@ export default function MyBlogPage() {
                   <span>{new Date(a.updated_at).toLocaleDateString("zh-TW")}</span>
                 </div>
               </div>
-              <div className="flex gap-1 flex-shrink-0">
+              <div className="flex gap-1 shrink-0">
                 <Link
                   href={`/me/blog/edit/${a.id}`}
                   className="px-3 py-1.5 rounded-lg bg-bg-elevated text-sm hover:text-accent transition"

@@ -39,7 +39,7 @@ export function NextLesson() {
       className="block rounded-xl bg-gradient-to-br from-accent/15 via-accent-2/10 to-accent-3/5 border-2 border-accent/30 p-5 hover:border-accent transition group"
     >
       <div className="flex items-start gap-3">
-        <div className="text-3xl flex-shrink-0">📚</div>
+        <div className="text-3xl shrink-0">📚</div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1 text-xs text-accent font-bold mb-1">
             <Sparkles size={11} /> 今日推薦
@@ -50,7 +50,7 @@ export function NextLesson() {
           </div>
           <p className="text-[11px] text-fg-muted mt-2 italic">💡 {rec.reason}</p>
         </div>
-        <ArrowRight size={18} className="text-accent group-hover:translate-x-1 transition flex-shrink-0" />
+        <ArrowRight size={18} className="text-accent group-hover:translate-x-1 transition shrink-0" />
       </div>
     </Link>
   );
