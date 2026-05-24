@@ -175,12 +175,14 @@ export async function POST(req: NextRequest) {
 
       if (ticketErr) {
         console.error("[line-webhook-user] ticket insert failed:", ticketErr.message);
-        await admin.from("error_logs").insert({
-          source: "line-webhook-user",
-          level: "error",
-          message: `ticket insert failed: ${ticketErr.message}`,
-          meta: { line_user_id: userId, text: text.slice(0, 200) },
-        }).catch(() => {});
+        try {
+          await admin.from("error_logs").insert({
+            source: "line-webhook-user",
+            level: "error",
+            message: `ticket insert failed: ${ticketErr.message}`,
+            meta: { line_user_id: userId, text: text.slice(0, 200) },
+          });
+        } catch {}
       }
 
       // ticket_messages 寫一筆
@@ -198,12 +200,14 @@ export async function POST(req: NextRequest) {
         });
         if (msgErr) {
           console.error("[line-webhook-user] ticket_messages insert failed:", msgErr.message);
-          await admin.from("error_logs").insert({
-            source: "line-webhook-user",
-            level: "error",
-            message: `ticket_messages insert failed: ${msgErr.message}`,
-            meta: { ticket_id: ticket.id, line_user_id: userId },
-          }).catch(() => {});
+          try {
+            await admin.from("error_logs").insert({
+              source: "line-webhook-user",
+              level: "error",
+              message: `ticket_messages insert failed: ${msgErr.message}`,
+              meta: { ticket_id: ticket.id, line_user_id: userId },
+            });
+          } catch {}
         }
       }
 
