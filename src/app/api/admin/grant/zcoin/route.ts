@@ -29,9 +29,8 @@ export async function POST(req: NextRequest) {
   if (!reason || typeof reason !== "string" || reason.trim().length < MIN_REASON_LEN) {
     return NextResponse.json({ error: "reason_required", minLen: MIN_REASON_LEN }, { status: 400 });
   }
-  if (userId === user.id) {
-    return NextResponse.json({ error: "cannot_target_self" }, { status: 400 });
-  }
+  // 允許 admin 補自己（owner 同時也是 user 的情境）、但 audit 標記
+  const isSelf = userId === user.id;
 
   const admin = createSupabaseAdmin();
 
@@ -81,6 +80,7 @@ export async function POST(req: NextRequest) {
       before: { z_coin: target.z_coin },
       after: { z_coin: newBalance },
       reason: reason.trim(),
+      ...(isSelf ? { self_grant: true } : {}),
     },
     ip: req.headers.get("x-forwarded-for") || null,
     user_agent: req.headers.get("user-agent") || null,

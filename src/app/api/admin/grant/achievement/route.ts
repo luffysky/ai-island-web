@@ -24,9 +24,8 @@ export async function POST(req: NextRequest) {
   if (!reason || typeof reason !== "string" || reason.trim().length < MIN_REASON_LEN) {
     return NextResponse.json({ error: "reason_required", minLen: MIN_REASON_LEN }, { status: 400 });
   }
-  if (userId === user.id) {
-    return NextResponse.json({ error: "cannot_target_self" }, { status: 400 });
-  }
+  // 允許 admin 自己補（owner 也是 user）
+  const isSelf = userId === user.id;
 
   const admin = createSupabaseAdmin();
 
@@ -75,6 +74,7 @@ export async function POST(req: NextRequest) {
       achievement_id: achievementId,
       achievement_name: ach.name,
       reason: reason.trim(),
+      ...(isSelf ? { self_grant: true } : {}),
     },
     ip: req.headers.get("x-forwarded-for") || null,
     user_agent: req.headers.get("user-agent") || null,
