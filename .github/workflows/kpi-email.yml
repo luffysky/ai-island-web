@@ -1,0 +1,43 @@
+name: KPI Email Report
+
+# 每日台灣 09:00 (UTC 01:00) 寄 KPI email 給 admin
+# 每週一台灣 09:00 多寄一份週報
+
+on:
+  schedule:
+    - cron: '5 1 * * *'    # 每日 daily (錯開 line-daily 5 分鐘)
+    - cron: '10 1 * * 1'   # 週一 weekly
+  workflow_dispatch:
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Determine period
+        id: p
+        run: |
+          # 週一 + 跑兩 cron 時：weekly 那次帶 period=weekly
+          # 簡化：用 day-of-week 判斷
+          if [ "$(date -u +%u)" = "1" ] && [ "$(date -u +%M)" = "10" ]; then
+            echo "period=weekly" >> "$GITHUB_OUTPUT"
+          else
+            echo "period=daily" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Call /api/cron/kpi-email
+        env:
+          SITE_URL: ${{ secrets.SITE_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          PERIOD: ${{ steps.p.outputs.period }}
+        run: |
+          if [ -z "$SITE_URL" ] || [ -z "$CRON_SECRET" ]; then
+            echo "::error::missing secrets"; exit 1
+          fi
+          response=$(curl -sS -w "\n%{http_code}" \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            "$SITE_URL/api/cron/kpi-email?period=$PERIOD")
+          code=$(echo "$response" | tail -n 1)
+          body=$(echo "$response" | head -n -1)
+          echo "HTTP $code | period=$PERIOD"
+          echo "$body"
+          [ "$code" -eq 200 ] || { echo "::error::endpoint $code"; exit 1; }
