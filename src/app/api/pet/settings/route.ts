@@ -34,6 +34,18 @@ export async function POST(req: NextRequest) {
   if (typeof body.walk_enabled === "boolean") {
     patch.walk_enabled = body.walk_enabled;
   }
+  // AI 客製化：model / 自訂 prompt / BYOK
+  if (body.ai_model_id === null || (typeof body.ai_model_id === "string" && body.ai_model_id.length === 36)) {
+    patch.ai_model_id = body.ai_model_id;
+  }
+  if (typeof body.custom_prompt === "string") {
+    patch.custom_prompt = body.custom_prompt.trim().slice(0, 2000) || null;
+  } else if (body.custom_prompt === null) {
+    patch.custom_prompt = null;
+  }
+  if (typeof body.use_byok === "boolean") {
+    patch.use_byok = body.use_byok;
+  }
 
   const admin = createSupabaseAdmin();
   // 用 service_role 寫、避免 profile 欄位 trigger（pets 表沒有 trigger、這裡其實 own update 也行、但跨表保守起見）
