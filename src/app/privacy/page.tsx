@@ -62,7 +62,7 @@ export default function PrivacyPage() {
         <li>
           <strong>用戶里程碑事件（可關閉）</strong>：登入、完課、升等、論壇互動、解鎖成就。
           <br />
-          您可在「<a href="/settings">設定 → 🌙 低調模式</a>」一鍵開關、<strong>預設啟用低調</strong>（不會即時播報）。
+          預設會即時通知平台運營端、您可在「<a href="/settings">設定 → 🌙 低調模式</a>」一鍵啟用低調、之後不再即時播報。
         </li>
       </ul>
       <p>

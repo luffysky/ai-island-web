@@ -20,8 +20,8 @@ export function SettingsForm({ profile, email }: { profile: any; email: string }
   const [bio, setBio] = useState(profile.bio ?? "");
   const [careerPath, setCareerPath] = useState(profile.career_path ?? "");
   const [avatarUrl, setAvatarUrl] = useState(profile.avatar_url ?? "");
-  // 預設 true（低調模式啟用）— 既有 user 也在 DB 一刀切設 true
-  const [notifyOptout, setNotifyOptout] = useState(profile.notify_admin_optout !== false);
+  // 預設 false（不啟用低調）— admin 預設收到通知、user 想要再主動開
+  const [notifyOptout, setNotifyOptout] = useState(profile.notify_admin_optout === true);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState("");
 
@@ -178,12 +178,11 @@ export function SettingsForm({ profile, email }: { profile: any; email: string }
             <span className="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4 shadow" />
           </span>
           <span className="flex-1 text-sm">
-            <span className="font-medium">啟用低調模式（預設開）</span>
+            <span className="font-medium">啟用低調模式</span>
             <p className="text-xs text-fg-muted mt-0.5 leading-relaxed">
-              你的個人學習動態（登入 / 完課 / 升等 / 解鎖成就 / 論壇互動）
-              <strong>不會即時推播</strong>到平台運營端（用於監看平台健康狀態的內部通道）。
+              預設關閉。平台運營端會收到你的個人學習動態（登入 / 完課 / 升等 / 解鎖成就 / 論壇互動）即時通知、用於監看平台健康 + 第一時間替你慶祝里程碑。
               <br />
-              <strong>關閉此選項</strong>後、你的活動會即時讓平台運營端收到通知、有助於我們發現異常或第一時間替你慶祝里程碑。
+              <strong>啟用此選項</strong>後、你的活動<strong>不會即時推播</strong>到平台運營端。
               <br />
               <span className="text-fg-muted">兩種模式下、你的學習資料儲存 / 排行榜 / 統計都完全一樣、不會差。</span>
             </p>
