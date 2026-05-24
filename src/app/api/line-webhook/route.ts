@@ -7,6 +7,7 @@ import { getAdminLineUser, type AdminLineUser } from "@/lib/admin-line-users";
 import { runBotCommand, isCommand } from "@/lib/line-bot-commands";
 import { buildAiReplyCard, buildQuickReply, COMMON_QR, type FlexMessage, type LineTextMessage } from "@/lib/line-flex";
 import { runPostback } from "@/lib/line-postback";
+import { getLiveSnapshot } from "@/lib/site-status-snapshot";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -67,13 +68,25 @@ async function askAI(message: string, adminUser: AdminLineUser): Promise<string>
   hist.push({ role: "user", content: message });
   if (hist.length > 20) hist.splice(0, hist.length - 20);
 
+  // 30 秒快取的站台即時狀態（規模 / 健康 / 商務 / 現在誰在用 / 訪客足跡 / 最新 audit / error）
+  const snapshot = await getLiveSnapshot().catch(() => "");
+
   const systemPrompt = `你是 AI 島的管理員 AI 助理。
 目前對話者：${adminUser.name}（${adminUser.role}）。
+
 要點：
 - 用繁中、語氣簡潔、像對信任的同事
 - ${adminUser.role.includes("董事") ? "你是他的事業助手、幫忙決策 / 看報表 / 整理思緒" : "你是後台助理、協助處理日常運維"}
 - 主動意識：他在 LINE 問問題、可能在外面忙、給簡潔可執行的答覆
-- 可用命令：/help（列所有命令）/today /kpi 7 /users /churn /errors /prefs`;
+- 可用命令：/help（列所有命令）/today /kpi 7 /users /churn /errors /prefs
+
+下面是「現在這一刻」的網站即時狀態（30 秒快取、台灣時區）。
+回答時優先用這份資料、不要叫他「自己去後台看」、也不要說「我不知道」這種東西這裡明明就有。
+如果他問的東西不在這份快照、再請他用對應 / 命令查或進後台。
+
+────────── 即時狀態 ──────────
+${snapshot}
+──────────────────────────────`;
 
   try {
     const resp = await callAI({
