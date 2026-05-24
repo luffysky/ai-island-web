@@ -340,7 +340,7 @@ export function AITutorWidget({
 
       {/* Chat panel */}
       {open && (
-        <div ref={panelRef} className="fixed bottom-6 right-6 z-50 w-[400px] max-w-[calc(100vw-1rem)] h-[600px] max-h-[calc(100vh-1rem)] bg-bg-card border border-border rounded-2xl shadow-2xl flex flex-col">
+        <div ref={panelRef} className="fixed bottom-6 right-6 z-50 w-[400px] max-w-[calc(100vw-3rem)] h-[600px] max-h-[calc(100vh-1rem)] bg-bg-card border border-border rounded-2xl shadow-2xl flex flex-col">
           {/* Header */}
           <div className="flex items-center justify-between p-3 border-b border-border">
             <div className="flex items-center gap-2 min-w-0">

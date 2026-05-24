@@ -100,7 +100,7 @@ export function AssistantPanel({
   }
 
   return (
-    <div ref={panelRef} className="fixed bottom-4 right-4 z-40 w-80 max-w-[calc(100vw-1rem)] bg-bg-card border border-border rounded-2xl shadow-2xl">
+    <div ref={panelRef} className="fixed bottom-4 right-4 z-40 w-80 max-w-[calc(100vw-2rem)] bg-bg-card border border-border rounded-2xl shadow-2xl">
       <header className="px-4 py-2 border-b border-border flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span>{meta.emoji}</span>

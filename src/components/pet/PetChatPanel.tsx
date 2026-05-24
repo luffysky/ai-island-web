@@ -144,7 +144,7 @@ export function PetChatPanel({
   };
 
   return (
-    <div ref={panelRef} className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[360px] max-w-[calc(100vw-1rem)] h-[440px] max-h-[calc(100vh-1rem)] bg-bg-card border border-border rounded-2xl shadow-2xl flex flex-col">
+    <div ref={panelRef} className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[360px] max-w-[calc(100vw-2rem)] h-[440px] max-h-[calc(100vh-1rem)] bg-bg-card border border-border rounded-2xl shadow-2xl flex flex-col">
       <div className="flex items-center justify-between p-3 border-b border-border">
         <div className="flex items-center gap-2">
           <div className="text-2xl">{species.emoji}</div>
