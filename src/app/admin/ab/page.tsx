@@ -7,7 +7,7 @@ export default async function AdminAbPage() {
   const admin = createSupabaseAdmin();
   const { data: experiments } = await admin
     .from("ab_experiments")
-    .select(`id, key, description, status, variants, goal_event, started_at, ended_at, created_at`)
+    .select(`id, key, description, status, variants, goal_event, allocation, started_at, ended_at, created_at`)
     .order("created_at", { ascending: false });
 
   // 每個實驗的 assignment 統計（簡單版：總人數 + by variant）

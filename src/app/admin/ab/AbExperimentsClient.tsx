@@ -15,6 +15,7 @@ type Experiment = {
   status: string;
   variants: Array<{ key: string; weight: number }>;
   goal_event: string | null;
+  allocation: "weighted" | "thompson" | null;
   started_at: string | null;
   created_at: string;
 };
@@ -92,6 +93,26 @@ export function AbExperimentsClient({ initial, stats }: { initial: Experiment[];
     } else toast.success(`狀態：${status}`);
   };
 
+  const setAllocation = async (id: string, allocation: "weighted" | "thompson") => {
+    const before = exps;
+    setExps((es) => es.map((e) => e.id === id ? { ...e, allocation } : e));
+    const res = await fetch(`/api/admin/ab/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ allocation }),
+    });
+    if (!res.ok) {
+      setExps(before);
+      toast.error("切換配置失敗");
+    } else {
+      toast.success(
+        allocation === "thompson"
+          ? "已切換到 Thompson Sampling 自動探索"
+          : "已切換到固定 weight 分配",
+      );
+    }
+  };
+
   const remove = async (id: string, key: string) => {
     const ok = await confirm({ title: `刪除實驗「${key}」？`, description: "會連同 assignments 一起刪除。", destructive: true, confirmLabel: "刪除" });
     if (!ok) return;
@@ -142,9 +163,32 @@ export function AbExperimentsClient({ initial, stats }: { initial: Experiment[];
           const s = stats[e.id] ?? { total: 0, byVariant: {}, conversions: {} };
           return (
             <div key={e.id} className="rounded-xl bg-bg-card border border-border p-4">
-              <div className="flex items-start gap-2 mb-3">
+              <div className="flex items-start gap-2 mb-3 flex-wrap">
                 <code className="text-sm font-bold text-accent">{e.key}</code>
                 <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${STATUS_COLOR[e.status]}`}>{e.status}</span>
+                {/* allocation 切換 */}
+                <div className="inline-flex rounded-full bg-bg-elevated p-0.5 text-[10px]" title="Allocation 演算法：weighted 固定權重 / thompson 自動依轉換率調整">
+                  <button
+                    onClick={() => setAllocation(e.id, "weighted")}
+                    className={`px-2 py-0.5 rounded-full transition ${
+                      (e.allocation ?? "weighted") === "weighted"
+                        ? "bg-accent text-black font-bold"
+                        : "text-fg-muted hover:text-fg"
+                    }`}
+                  >
+                    ⚖️ weighted
+                  </button>
+                  <button
+                    onClick={() => setAllocation(e.id, "thompson")}
+                    className={`px-2 py-0.5 rounded-full transition ${
+                      e.allocation === "thompson"
+                        ? "bg-accent text-black font-bold"
+                        : "text-fg-muted hover:text-fg"
+                    }`}
+                  >
+                    🧠 thompson
+                  </button>
+                </div>
                 <span className="text-[10px] text-fg-muted ml-auto">{formatTW(e.created_at)}</span>
               </div>
               {e.description && <p className="text-sm text-fg-muted mb-3">{e.description}</p>}
