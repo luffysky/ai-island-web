@@ -276,7 +276,10 @@ export async function askAIWithTools(opts: {
         .map((c: any) => c.text)
         .join("\n")
         .trim();
-      return text || "(AI 沒有產生文字回覆)";
+      if (text) return text;
+      // Anthropic 偶爾 end_turn 但 content 全 tool_use 沒 text
+      // → 補一輪、不帶 tools、強迫它用文字回
+      return await fallbackPlainText(opts, messages);
     }
 
     // tool 互動
@@ -301,8 +304,50 @@ export async function askAIWithTools(opts: {
 
     // 其他 stop_reason（max_tokens / refusal）→ fallback 取 text
     const fallback = content.filter((c: any) => c.type === "text").map((c: any) => c.text).join("\n").trim();
-    return fallback || `(AI 異常停止：${stopReason})`;
+    if (fallback) return fallback;
+    return await fallbackPlainText(opts, messages);
   }
 
-  return "（tool 互動超過 5 輪、AI 還沒結束、可能是死循環）";
+  return await fallbackPlainText(opts, messages);
+}
+
+/**
+ * 強迫 Claude 用純文字回答（不給 tools）、處理 end_turn 但無 text block 的 edge case。
+ */
+async function fallbackPlainText(
+  opts: Parameters<typeof askAIWithTools>[0],
+  messages: any[],
+): Promise<string> {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": opts.apiKey,
+        "anthropic-version": "2023-06-01",
+      },
+      signal: ctrl.signal,
+      body: JSON.stringify({
+        model: opts.model,
+        system: opts.systemPrompt + "\n\n注意：這一輪不要呼叫 tool、用純文字回答。",
+        messages,
+        max_tokens: 1000,
+        temperature: 0.8,
+      }),
+    });
+    if (!res.ok) return "嗯？剛剛沒抓到、再說一次？";
+    const data = await res.json();
+    const text = (data.content ?? [])
+      .filter((c: any) => c.type === "text")
+      .map((c: any) => c.text)
+      .join("\n")
+      .trim();
+    return text || "嗯？剛剛沒抓到、再說一次？";
+  } catch {
+    return "嗯？剛剛沒抓到、再說一次？";
+  } finally {
+    clearTimeout(timer);
+  }
 }
