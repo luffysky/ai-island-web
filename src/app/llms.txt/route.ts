@@ -61,7 +61,7 @@ export async function GET() {
   lines.push("## 副本（主題式短課）");
   lines.push("");
   for (const d of DUNGEONS) {
-    lines.push(`- [${d.title}](${SITE_URL}/courses/${d.slug})${d.subtitle ? ` — ${d.subtitle}` : ""}`);
+    lines.push(`- [${d.emoji} ${d.name}](${SITE_URL}/courses/${d.slug})${d.subtitle ? ` — ${d.subtitle}` : ""}`);
   }
   lines.push("");
 
