@@ -6,6 +6,7 @@ import { QuestsPanel } from "@/components/me/QuestsPanel";
 import { StreakHeatmap } from "@/components/me/StreakHeatmap";
 import { FriendsFeed } from "@/components/me/FriendsFeed";
 import { LeetcodeCard } from "@/components/me/LeetcodeCard";
+import { DailyCheckin } from "@/components/gamification/DailyCheckin";
 import { formatTWDate } from "@/lib/format-date";
 
 export default async function MeOverviewPage() {
@@ -43,6 +44,9 @@ export default async function MeOverviewPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">📊 學習總覽</h1>
+
+      {/* 每日簽到 */}
+      <DailyCheckin />
 
       {/* 統計 */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
