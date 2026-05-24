@@ -343,9 +343,13 @@ export function AITutorWidget({
         <div
           ref={panelRef}
           style={{
-            // 用 inline CSS min() 保證寬高永遠不超視口、避開 Tailwind JIT 對 calc 任意值的 quirk
-            width: "min(400px, calc(100vw - 1rem))",
-            height: "min(600px, calc(100vh - 5rem))",
+            // clamp(最小, 動態, 最大)
+            //   - 最小 280px：panel 太窄塞不下內容、體驗更差
+            //   - 動態 calc(100vw - 1rem)：跟視口跑、所有裝置都不超出
+            //   - 最大 480px：桌面太大也不該佔半個螢幕
+            // useEdgeSafe hook 是第二層保險：ResizeObserver 即時偵測異常溢出再 translate 回視口
+            width: "clamp(280px, calc(100vw - 1rem), 480px)",
+            height: "clamp(420px, calc(100vh - 5rem), 700px)",
           }}
           className="fixed bottom-2 right-2 z-50 bg-bg-card border border-border rounded-2xl shadow-2xl flex flex-col"
         >

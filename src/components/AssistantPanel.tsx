@@ -102,7 +102,7 @@ export function AssistantPanel({
   return (
     <div
       ref={panelRef}
-      style={{ width: "min(20rem, calc(100vw - 1rem))" }}
+      style={{ width: "clamp(280px, calc(100vw - 1rem), 420px)" }}
       className="fixed bottom-2 right-2 z-40 bg-bg-card border border-border rounded-2xl shadow-2xl"
     >
       <header className="px-4 py-2 border-b border-border flex items-center justify-between">

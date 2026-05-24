@@ -147,8 +147,8 @@ export function PetChatPanel({
     <div
       ref={panelRef}
       style={{
-        width: "min(360px, calc(100vw - 1rem))",
-        height: "min(440px, calc(100vh - 5rem))",
+        width: "clamp(280px, calc(100vw - 1rem), 440px)",
+        height: "clamp(360px, calc(100vh - 5rem), 560px)",
       }}
       className="fixed bottom-2 left-1/2 -translate-x-1/2 z-50 bg-bg-card border border-border rounded-2xl shadow-2xl flex flex-col"
     >
