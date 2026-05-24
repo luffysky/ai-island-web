@@ -1,6 +1,7 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { formatTW } from "@/lib/format-date";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ClearCacheButtons } from "./ClearCacheButtons";
 
 export const dynamic = "force-dynamic";
 
@@ -24,11 +25,14 @@ export default async function AdminAiCachePage() {
 
   return (
     <div>
-      <header className="mb-6">
-        <h1 className="text-2xl font-bold flex items-center gap-2">💾 AI 回應快取</h1>
-        <p className="text-sm text-fg-muted mt-1">
-          相同問題第二次秒回、不燒 token。依 greenbao_ai_cost_spec v0。
-        </p>
+      <header className="mb-6 flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <h1 className="text-2xl font-bold flex items-center gap-2">💾 AI 回應快取</h1>
+          <p className="text-sm text-fg-muted mt-1">
+            相同問題第二次秒回、不燒 token。依 greenbao_ai_cost_spec v0。
+          </p>
+        </div>
+        <ClearCacheButtons />
       </header>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
