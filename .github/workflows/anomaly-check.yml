@@ -1,0 +1,35 @@
+name: Anomaly Check
+
+# 每 30 分鐘觸發系統異常偵測、有事就 LINE 通知 admin。
+# GitHub Actions schedule 高 load 時可能延遲 1-5 分鐘、能接受。
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'   # 每 30 分鐘（UTC）
+  workflow_dispatch:          # 允許手動觸發測試
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Call /api/cron/anomaly-check
+        env:
+          SITE_URL: ${{ secrets.SITE_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$SITE_URL" ] || [ -z "$CRON_SECRET" ]; then
+            echo "::error::SITE_URL or CRON_SECRET secret missing"
+            exit 1
+          fi
+          response=$(curl -sS -w "\n%{http_code}" \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            "$SITE_URL/api/cron/anomaly-check")
+          body=$(echo "$response" | head -n -1)
+          code=$(echo "$response" | tail -n 1)
+          echo "HTTP $code"
+          echo "$body"
+          if [ "$code" -ne 200 ]; then
+            echo "::error::endpoint returned $code"
+            exit 1
+          fi
