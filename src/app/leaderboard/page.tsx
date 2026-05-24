@@ -1,4 +1,16 @@
 import { createSupabaseServer } from "@/lib/supabase";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "全島排行榜 — 每天 00:00 更新 | AI 島",
+  description: "看誰連勝最久、誰 XP 最高、誰 z-coin 最多。每天 00:00 更新、努力者上榜。",
+  alternates: { canonical: "/leaderboard" },
+  openGraph: {
+    title: "全島排行榜 | AI 島",
+    description: "每天 00:00 更新、看誰學最多、誰連勝最久。",
+    type: "website",
+  },
+};
 
 export default async function LeaderboardPage() {
   const supabase = await createSupabaseServer();

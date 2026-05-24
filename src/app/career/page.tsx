@@ -1,4 +1,16 @@
 import { CareerPathSection } from "@/components/home/CareerPathSection";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "6 大職業路線 — 前端 / 全端 / AI / 資料 / 接案 / 創業 | AI 島",
+  description: "選一條最短路徑學程式：前端工匠 / 全端戰士 / AI 馴獸師 / 資料煉金 / 接案傭兵 / 島民創業家、客製學習地圖。",
+  alternates: { canonical: "/career" },
+  openGraph: {
+    title: "6 大職業路線 | AI 島",
+    description: "選一條最符合你目標的職業路線、客製學習地圖。",
+    type: "website",
+  },
+};
 
 export default function CareerIndexPage() {
   return (
