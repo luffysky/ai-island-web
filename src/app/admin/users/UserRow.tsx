@@ -1,6 +1,7 @@
 "use client";
 import { ShieldCheck, Shield, Ban, Sparkles, Gift } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { GrantModal } from "./GrantModal";
 import { formatTWDate, formatTWRelative } from "@/lib/format-date";
 import { useUserActions } from "./_useUserActions";
@@ -15,12 +16,19 @@ export function UserRow({ user }: { user: any }) {
     <>
       <tr className="border-b border-border hover:bg-bg-elevated">
         <td className="px-4 py-3">
-          <Link href={detailHref as any} className="font-semibold flex items-center gap-1 hover:text-accent transition">
-            {user.display_name || user.username}
-            {a.role === "admin" && <ShieldCheck size={14} className="text-yellow-400" />}
-            {a.role === "editor" && <Shield size={14} className="text-blue-400" />}
-          </Link>
-          <div className="text-xs text-fg-muted">@{user.username}</div>
+          <div className="flex items-center gap-3">
+            <Link href={detailHref as any} className="shrink-0">
+              <RowAvatar src={user.avatar_url} name={user.display_name || user.username} />
+            </Link>
+            <div className="min-w-0">
+              <Link href={detailHref as any} className="font-semibold flex items-center gap-1 hover:text-accent transition">
+                {user.display_name || user.username}
+                {a.role === "admin" && <ShieldCheck size={14} className="text-yellow-400" />}
+                {a.role === "editor" && <Shield size={14} className="text-blue-400" />}
+              </Link>
+              <div className="text-xs text-fg-muted">@{user.username}</div>
+            </div>
+          </div>
         </td>
         <td className="px-4 py-3 text-accent font-bold">Lv {a.localLevel}</td>
         <td className="px-4 py-3">{a.localXp.toLocaleString()}</td>
@@ -86,5 +94,26 @@ export function UserRow({ user }: { user: any }) {
         />
       )}
     </>
+  );
+}
+
+function RowAvatar({ src, name }: { src?: string | null; name: string }) {
+  if (src) {
+    return (
+      <Image
+        src={src}
+        alt={name}
+        width={32}
+        height={32}
+        unoptimized
+        className="w-8 h-8 rounded-full object-cover ring-1 ring-border"
+      />
+    );
+  }
+  const initial = (name || "?").trim()[0]?.toUpperCase() || "?";
+  return (
+    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-accent to-accent-2 flex items-center justify-center font-bold text-black text-sm">
+      {initial}
+    </div>
   );
 }

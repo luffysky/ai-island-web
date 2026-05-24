@@ -1,11 +1,37 @@
 "use client";
 import { ShieldCheck, Shield, Ban, Sparkles, Gift, Flame, Coins } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { GrantModal } from "./GrantModal";
 import { formatTWDate, formatTWRelative } from "@/lib/format-date";
 import { useUserActions } from "./_useUserActions";
 
 const ADMIN_SLUG = process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2";
+
+function Avatar({ src, name, size = 40 }: { src?: string | null; name: string; size?: number }) {
+  if (src) {
+    return (
+      <Image
+        src={src}
+        alt={name}
+        width={size}
+        height={size}
+        unoptimized
+        className="rounded-full object-cover ring-1 ring-border"
+        style={{ width: size, height: size }}
+      />
+    );
+  }
+  const initial = (name || "?").trim()[0]?.toUpperCase() || "?";
+  return (
+    <div
+      className="rounded-full bg-gradient-to-br from-accent to-accent-2 flex items-center justify-center font-bold text-black"
+      style={{ width: size, height: size, fontSize: size * 0.45 }}
+    >
+      {initial}
+    </div>
+  );
+}
 
 export function UserCard({ user }: { user: any }) {
   const a = useUserActions(user);
@@ -15,7 +41,10 @@ export function UserCard({ user }: { user: any }) {
     <>
       <article className="bg-bg-card border border-border rounded-xl overflow-hidden">
         {/* Header */}
-        <header className="px-4 py-3 border-b border-border flex items-start justify-between gap-2">
+        <header className="px-4 py-3 border-b border-border flex items-center gap-3">
+          <Link href={detailHref as any} className="shrink-0">
+            <Avatar src={user.avatar_url} name={user.display_name || user.username} size={40} />
+          </Link>
           <Link
             href={detailHref as any}
             className="flex-1 min-w-0 hover:text-accent transition"
