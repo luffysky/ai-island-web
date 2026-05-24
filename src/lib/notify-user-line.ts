@@ -20,7 +20,8 @@ export type UserLineNotify = {
 };
 
 export async function notifyUserLine(opts: UserLineNotify): Promise<{ ok: boolean; reason?: string }> {
-  const token = process.env.ADMIN_LINE_CHANNEL_TOKEN;
+  // 優先用 USER bot（給 user 加好友的）、沒設就 fallback admin bot（兩個都沒設才放棄）
+  const token = process.env.USER_LINE_CHANNEL_TOKEN || process.env.ADMIN_LINE_CHANNEL_TOKEN;
   if (!token) return { ok: false, reason: "no_channel_token" };
 
   const admin = createSupabaseAdmin();

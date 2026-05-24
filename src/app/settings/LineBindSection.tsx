@@ -5,7 +5,11 @@ import { Loader2, Copy, Check, Unlink, MessageCircle } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 
-const BOT_BASIC_ID = process.env.NEXT_PUBLIC_LINE_BOT_BASIC_ID || "";
+// 優先 user bot（給使用者加好友）、退 fallback 顯示一般 LINE 連結
+const USER_BOT_BASIC_ID =
+  process.env.NEXT_PUBLIC_USER_LINE_BOT_BASIC_ID ||
+  process.env.NEXT_PUBLIC_LINE_BOT_BASIC_ID ||
+  "";
 
 export function LineBindSection({
   initialBound,
@@ -81,7 +85,7 @@ export function LineBindSection({
     await supabase.from("profiles").update({ line_notify_enabled: next }).eq("id", user.id);
   };
 
-  const lineAddUrl = BOT_BASIC_ID ? `https://line.me/R/ti/p/${BOT_BASIC_ID}` : "";
+  const lineAddUrl = USER_BOT_BASIC_ID ? `https://line.me/R/ti/p/${USER_BOT_BASIC_ID}` : "";
 
   return (
     <section className="bg-bg-card border border-border rounded-xl p-6">
