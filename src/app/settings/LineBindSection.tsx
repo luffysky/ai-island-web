@@ -5,11 +5,8 @@ import { Loader2, Copy, Check, Unlink, MessageCircle } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 
-// 優先 user bot（給使用者加好友）、退 fallback 顯示一般 LINE 連結
-const USER_BOT_BASIC_ID =
-  process.env.NEXT_PUBLIC_USER_LINE_BOT_BASIC_ID ||
-  process.env.NEXT_PUBLIC_LINE_BOT_BASIC_ID ||
-  "";
+// user bot @basicId、給 /settings 加好友 deeplink 用
+const USER_BOT_BASIC_ID = process.env.NEXT_PUBLIC_USER_LINE_BOT_BASIC_ID || "";
 
 export function LineBindSection({
   initialBound,
@@ -144,7 +141,7 @@ export function LineBindSection({
               >
                 加 AI 島 bot 為好友
               </a>
-              {!lineAddUrl && <span className="text-[10px] ml-1">（管理員尚未設 BOT_BASIC_ID）</span>}
+              {!lineAddUrl && <span className="text-[10px] ml-1">（管理員尚未設 NEXT_PUBLIC_USER_LINE_BOT_BASIC_ID）</span>}
             </li>
             <li>點下面「取得 6 位 code」</li>
             <li>傳「<code className="font-mono text-fg">/bind 123456</code>」給 bot</li>
