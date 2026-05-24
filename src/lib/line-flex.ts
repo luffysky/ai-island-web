@@ -76,6 +76,46 @@ function lighten(hex: string, amount = 0.92): string {
   return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
 }
 
+/**
+ * 霧面玻璃漸層 helper — LINE Flex 沒 backdrop-filter:blur，
+ * 用「主色半透明 → 淺色半透明」漸層 + alpha hex 模擬玻璃感。
+ */
+function glassHeader(color: string) {
+  return {
+    type: "linearGradient" as const,
+    angle: "135deg",
+    startColor: `${color}FA`,
+    centerColor: `${darken(color, 0.08)}F2`,
+    centerPosition: "50%",
+    endColor: `${lighten(color, 0.25)}E8`,
+  };
+}
+
+/** body 帶一點 accent 色微染、不只灰白 */
+function glassBody(color: string) {
+  return {
+    type: "linearGradient" as const,
+    angle: "180deg",
+    startColor: `${lighten(color, 0.97)}FA`,
+    centerColor: "#FFFFFFFA",
+    centerPosition: "50%",
+    endColor: `${lighten(color, 0.92)}FA`,
+  };
+}
+
+function glassFooter(color: string) {
+  return {
+    type: "linearGradient" as const,
+    angle: "180deg",
+    startColor: `${lighten(color, 0.9)}F5`,
+    endColor: `${lighten(color, 0.78)}F0`,
+  };
+}
+
+// 霧面玻璃的細邊 / 分隔線 / 高亮邊
+const GLASS_BORDER = "#E5E8EE";
+const GLASS_SEPARATOR = "#EDEFF3";
+
 export type SimpleCardInput = {
   emoji?: string;
   title: string;
@@ -104,14 +144,14 @@ export function buildSimpleCard(input: SimpleCardInput): FlexMessage {
       text: input.body,
       wrap: true,
       size: "sm",
-      color: "#555555",
+      color: "#444851",
       lineSpacing: "4px",
     });
   }
 
   if (input.meta && input.meta.length > 0) {
     if (bodyContents.length > 0) {
-      bodyContents.push({ type: "separator", margin: "md", color: "#eeeeee" });
+      bodyContents.push({ type: "separator", margin: "md", color: GLASS_SEPARATOR });
     }
     bodyContents.push({
       type: "box",
@@ -123,20 +163,20 @@ export function buildSimpleCard(input: SimpleCardInput): FlexMessage {
         layout: "baseline",
         spacing: "sm",
         contents: [
-          { type: "text", text: m.label, size: "xs", color: "#999999", flex: 0 },
-          { type: "text", text: m.value, size: "xs", color: "#222222", weight: "bold", flex: 0, wrap: true },
+          { type: "text", text: m.label, size: "xs", color: "#8a8f99", flex: 0 },
+          { type: "text", text: m.value, size: "xs", color: "#1a1d24", weight: "bold", flex: 0, wrap: true },
         ],
       })),
     });
   }
 
   // 底部時間戳
-  bodyContents.push({ type: "separator", margin: "lg", color: "#f4f4f4" });
+  bodyContents.push({ type: "separator", margin: "lg", color: GLASS_SEPARATOR });
   bodyContents.push({
     type: "text",
     text: `🕐 ${nowTW()}`,
     size: "xxs",
-    color: "#bbbbbb",
+    color: "#a8aab2",
     align: "end",
     margin: "sm",
   });
@@ -144,12 +184,19 @@ export function buildSimpleCard(input: SimpleCardInput): FlexMessage {
   const bubble: any = {
     type: "bubble",
     size: "kilo",
-    styles: { header: { backgroundColor: color }, body: { backgroundColor: "#ffffff" } },
+    styles: {
+      header: { backgroundColor: lighten(color, 0.5) },
+      body: { backgroundColor: "#F8F9FC" },
+      footer: { backgroundColor: lighten(color, 0.9) },
+    },
     header: {
       type: "box",
       layout: "horizontal",
       paddingAll: "lg",
-      backgroundColor: color,
+      background: glassHeader(color),
+      borderWidth: "1px",
+      borderColor: `${lighten(color, 0.3)}40`,
+      cornerRadius: "12px",
       contents: [
         {
           type: "box",
@@ -177,6 +224,10 @@ export function buildSimpleCard(input: SimpleCardInput): FlexMessage {
       type: "box",
       layout: "vertical",
       paddingAll: "lg",
+      background: glassBody(color),
+      borderWidth: "1px",
+      borderColor: GLASS_BORDER,
+      cornerRadius: "12px",
       contents: bodyContents,
     } : undefined,
   };
@@ -187,7 +238,10 @@ export function buildSimpleCard(input: SimpleCardInput): FlexMessage {
       layout: input.buttons.length > 2 ? "vertical" : "horizontal",
       spacing: "sm",
       paddingAll: "md",
-      backgroundColor: colorLight,
+      background: glassFooter(color),
+      borderWidth: "1px",
+      borderColor: GLASS_BORDER,
+      cornerRadius: "12px",
       contents: input.buttons.slice(0, 3).map((b: any) => ({
         type: "button",
         action: b.postback
@@ -215,11 +269,19 @@ export function buildKpiCard(opts: {
     contents: {
       type: "bubble",
       size: "kilo",
+      styles: {
+        header: { backgroundColor: lighten(color, 0.5) },
+        body: { backgroundColor: "#F8F9FC" },
+        footer: { backgroundColor: lighten(color, 0.9) },
+      },
       header: {
         type: "box",
         layout: "horizontal",
         paddingAll: "lg",
-        backgroundColor: color,
+        background: glassHeader(color),
+        borderWidth: "1px",
+        borderColor: `${lighten(color, 0.3)}40`,
+        cornerRadius: "12px",
         contents: [
           { type: "text", text: "📊", size: "xxl", color: "#ffffff", flex: 0, width: "44px", align: "center" },
           { type: "text", text: opts.title, weight: "bold", size: "lg", color: "#ffffff", flex: 1, gravity: "center", margin: "md" },
@@ -230,6 +292,10 @@ export function buildKpiCard(opts: {
         layout: "vertical",
         paddingAll: "lg",
         spacing: "md",
+        background: glassBody(color),
+        borderWidth: "1px",
+        borderColor: GLASS_BORDER,
+        cornerRadius: "12px",
         contents: [
           ...opts.rows.map((r, i) => ({
             type: "box" as const,
@@ -237,12 +303,12 @@ export function buildKpiCard(opts: {
             paddingBottom: i < opts.rows.length - 1 ? "sm" : undefined,
             contents: [
               { type: "text" as const, text: r.icon, size: "sm" as const, flex: 0, width: "24px" },
-              { type: "text" as const, text: r.label, size: "sm" as const, color: "#555555", flex: 1 },
-              { type: "text" as const, text: r.value, size: "md" as const, weight: "bold" as const, color: "#111111", align: "end" as const, flex: 0 },
+              { type: "text" as const, text: r.label, size: "sm" as const, color: "#444851", flex: 1 },
+              { type: "text" as const, text: r.value, size: "md" as const, weight: "bold" as const, color: "#0d1117", align: "end" as const, flex: 0 },
             ],
           })),
-          { type: "separator" as const, margin: "md", color: "#f4f4f4" },
-          { type: "text" as const, text: `🕐 ${nowTW()}`, size: "xxs" as const, color: "#bbbbbb", align: "end" as const, margin: "sm" },
+          { type: "separator" as const, margin: "md", color: GLASS_SEPARATOR },
+          { type: "text" as const, text: `🕐 ${nowTW()}`, size: "xxs" as const, color: "#a8aab2", align: "end" as const, margin: "sm" },
         ],
       },
       footer: {
@@ -250,7 +316,10 @@ export function buildKpiCard(opts: {
         layout: "horizontal",
         spacing: "sm",
         paddingAll: "md",
-        backgroundColor: lighten(color, 0.92),
+        background: glassFooter(color),
+        borderWidth: "1px",
+        borderColor: GLASS_BORDER,
+        cornerRadius: "12px",
         contents: [
           {
             type: "button",
@@ -280,11 +349,19 @@ export function buildListCard(opts: {
     contents: {
       type: "bubble",
       size: "kilo",
+      styles: {
+        header: { backgroundColor: lighten(color, 0.5) },
+        body: { backgroundColor: "#F8F9FC" },
+        footer: { backgroundColor: lighten(color, 0.9) },
+      },
       header: {
         type: "box",
         layout: "horizontal",
         paddingAll: "lg",
-        backgroundColor: color,
+        background: glassHeader(color),
+        borderWidth: "1px",
+        borderColor: `${lighten(color, 0.3)}40`,
+        cornerRadius: "12px",
         contents: [
           { type: "text", text: opts.emoji, size: "xxl", color: "#ffffff", flex: 0, width: "44px", align: "center" },
           { type: "text", text: opts.title, weight: "bold", size: "lg", color: "#ffffff", flex: 1, gravity: "center", margin: "md" },
@@ -295,6 +372,10 @@ export function buildListCard(opts: {
         layout: "vertical",
         paddingAll: "lg",
         spacing: "md",
+        background: glassBody(color),
+        borderWidth: "1px",
+        borderColor: GLASS_BORDER,
+        cornerRadius: "12px",
         contents: [
           ...opts.items.slice(0, 10).flatMap((it, i, arr) => {
             const block = {
@@ -307,24 +388,27 @@ export function buildListCard(opts: {
                   layout: "horizontal" as const,
                   contents: [
                     { type: "text" as const, text: `${i + 1}`, size: "sm" as const, color, weight: "bold" as const, flex: 0, width: "20px" },
-                    { type: "text" as const, text: it.primary, size: "sm" as const, weight: "bold" as const, color: "#222222", wrap: true, flex: 1 },
+                    { type: "text" as const, text: it.primary, size: "sm" as const, weight: "bold" as const, color: "#1a1d24", wrap: true, flex: 1 },
                   ],
                 },
-                ...(it.secondary ? [{ type: "text" as const, text: it.secondary, size: "xs" as const, color: "#888888", wrap: true, margin: "xs" as const, offsetStart: "20px" as const }] : []),
+                ...(it.secondary ? [{ type: "text" as const, text: it.secondary, size: "xs" as const, color: "#6a6f7a", wrap: true, margin: "xs" as const, offsetStart: "20px" as const }] : []),
               ],
             };
             return i < arr.length - 1
-              ? [block, { type: "separator" as const, margin: "md", color: "#f4f4f4" }]
+              ? [block, { type: "separator" as const, margin: "md", color: GLASS_SEPARATOR }]
               : [block];
           }),
-          { type: "text" as const, text: `🕐 ${nowTW()}`, size: "xxs" as const, color: "#bbbbbb", align: "end" as const, margin: "md" },
+          { type: "text" as const, text: `🕐 ${nowTW()}`, size: "xxs" as const, color: "#a8aab2", align: "end" as const, margin: "md" },
         ],
       },
       footer: opts.footerButton ? {
         type: "box",
         layout: "horizontal",
         paddingAll: "md",
-        backgroundColor: lighten(color, 0.92),
+        background: glassFooter(color),
+        borderWidth: "1px",
+        borderColor: GLASS_BORDER,
+        cornerRadius: "12px",
         contents: [{
           type: "button",
           action: { type: "uri", label: opts.footerButton.label, uri: opts.footerButton.uri },
@@ -346,11 +430,18 @@ export function buildAiReplyCard(opts: { text: string; userName: string }): Flex
     contents: {
       type: "bubble",
       size: "kilo",
+      styles: {
+        header: { backgroundColor: lighten(color, 0.5) },
+        body: { backgroundColor: "#F8F9FC" },
+      },
       header: {
         type: "box",
         layout: "horizontal",
         paddingAll: "lg",
-        backgroundColor: color,
+        background: glassHeader(color),
+        borderWidth: "1px",
+        borderColor: `${lighten(color, 0.3)}40`,
+        cornerRadius: "12px",
         contents: [
           { type: "text", text: "✨", size: "xxl", color: "#ffffff", flex: 0, width: "44px", align: "center" },
           {
@@ -359,7 +450,7 @@ export function buildAiReplyCard(opts: { text: string; userName: string }): Flex
             flex: 1,
             contents: [
               { type: "text", text: "AI 助理", weight: "bold", size: "md", color: "#ffffff" },
-              { type: "text", text: `給 ${opts.userName}`, size: "xs", color: "rgba(255,255,255,0.85)" },
+              { type: "text", text: `給 ${opts.userName}`, size: "xs", color: "#FFFFFFD9" },
             ],
           },
         ],
@@ -368,17 +459,21 @@ export function buildAiReplyCard(opts: { text: string; userName: string }): Flex
         type: "box",
         layout: "vertical",
         paddingAll: "lg",
+        background: glassBody(color),
+        borderWidth: "1px",
+        borderColor: GLASS_BORDER,
+        cornerRadius: "12px",
         contents: [
           {
             type: "text",
             text: opts.text.slice(0, 1500),
             wrap: true,
             size: "sm",
-            color: "#222222",
+            color: "#1a1d24",
             lineSpacing: "6px",
           },
-          { type: "separator", margin: "lg", color: "#f4f4f4" },
-          { type: "text", text: `🕐 ${nowTW()}`, size: "xxs", color: "#bbbbbb", align: "end", margin: "sm" },
+          { type: "separator", margin: "lg", color: GLASS_SEPARATOR },
+          { type: "text", text: `🕐 ${nowTW()}`, size: "xxs", color: "#a8aab2", align: "end", margin: "sm" },
         ],
       },
     },
