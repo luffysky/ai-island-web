@@ -20,7 +20,8 @@ export function SettingsForm({ profile, email }: { profile: any; email: string }
   const [bio, setBio] = useState(profile.bio ?? "");
   const [careerPath, setCareerPath] = useState(profile.career_path ?? "");
   const [avatarUrl, setAvatarUrl] = useState(profile.avatar_url ?? "");
-  const [notifyOptout, setNotifyOptout] = useState(!!profile.notify_admin_optout);
+  // 預設 true（低調模式啟用）— 既有 user 也在 DB 一刀切設 true
+  const [notifyOptout, setNotifyOptout] = useState(profile.notify_admin_optout !== false);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState("");
 
