@@ -8,6 +8,7 @@ import { FriendsFeed } from "@/components/me/FriendsFeed";
 import { LeetcodeCard } from "@/components/me/LeetcodeCard";
 import { DailyCheckin } from "@/components/gamification/DailyCheckin";
 import { EloProgress } from "@/components/me/EloProgress";
+import { RecommendedChapters } from "@/components/me/RecommendedChapters";
 import { formatTWDate } from "@/lib/format-date";
 import { ELO_DEFAULT } from "@/lib/elo";
 
@@ -98,6 +99,9 @@ export default async function MeOverviewPage() {
 
       {/* 全站動態 feed */}
       <FriendsFeed />
+
+      {/* 為你推薦（演算法 #8）*/}
+      <RecommendedChapters userId={user.id} />
 
       {/* 進行中的章節 */}
       {inProgress.length > 0 && (
