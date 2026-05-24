@@ -1,25 +1,134 @@
-// 這個 sw.js 只負責「自我卸載」、不做任何其他事
-// 為什麼：之前的版本會在 activate 時 navigate 所有 client、
-// 結果把 OAuth callback 的 #access_token 切掉、登入失敗
-self.addEventListener("install", () => {
-  self.skipWaiting();
+/**
+ * AI 島 Service Worker v3
+ *
+ * 策略：
+ *   - 靜態 (/_next/static, /favicon, /og.png 等)：Cache First、永久（檔名帶 hash 自然 invalidate）
+ *   - 章節 / 副本 / 部落格 GET：Network First、失敗 fallback cache
+ *   - 其他 GET：Network First
+ *   - /api/* /auth/* /island/* /admin/*：永遠不快取（API / OAuth / 3D 不適合）
+ *   - 離線時 navigate fallback → /offline
+ *   - 不主動 navigate clients、避免破 OAuth callback (#access_token)
+ */
+
+const VERSION = "v3-2026-05-25";
+const STATIC_CACHE = `static-${VERSION}`;
+const PAGES_CACHE = `pages-${VERSION}`;
+const OFFLINE_URL = "/offline";
+
+// 不攔截 / 不快取的路徑
+const SKIP_PATHS = [
+  "/api/",
+  "/auth/",
+  "/island", // 3D 場景 + cookie state
+  "/admin",
+  "/_next/data",
+  "/me/",
+];
+
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    (async () => {
+      const cache = await caches.open(STATIC_CACHE);
+      await cache.addAll([OFFLINE_URL, "/favicon.svg", "/manifest.webmanifest"]).catch(() => {});
+      self.skipWaiting();
+    })(),
+  );
 });
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     (async () => {
-      // 取消所有 cache
-      try {
-        const keys = await caches.keys();
-        await Promise.all(keys.map((k) => caches.delete(k)));
-      } catch {}
-      // unregister 自己（但不 navigate clients、避免破壞 hash）
-      try {
-        await self.registration.unregister();
-      } catch {}
-    })()
+      // 清掉舊版 cache
+      const keys = await caches.keys();
+      await Promise.all(
+        keys.filter((k) => !k.endsWith(VERSION)).map((k) => caches.delete(k)),
+      );
+      await self.clients.claim();
+    })(),
   );
 });
 
-// 不攔截任何 fetch
-self.addEventListener("fetch", () => {});
+function shouldSkip(url) {
+  if (url.origin !== self.location.origin) return true;
+  return SKIP_PATHS.some((p) => url.pathname.startsWith(p));
+}
+
+self.addEventListener("fetch", (event) => {
+  const req = event.request;
+  if (req.method !== "GET") return;
+
+  const url = new URL(req.url);
+  if (shouldSkip(url)) return;
+
+  // 靜態檔（_next/static + 圖片字體）— Cache First
+  if (url.pathname.startsWith("/_next/static") || /\.(woff2?|ttf|otf|png|jpg|jpeg|gif|webp|svg|ico)$/i.test(url.pathname)) {
+    event.respondWith(cacheFirst(req, STATIC_CACHE));
+    return;
+  }
+
+  // HTML navigation — Network First、失敗 fallback cache、再失敗 → offline page
+  if (req.mode === "navigate") {
+    event.respondWith(networkFirst(req, PAGES_CACHE));
+    return;
+  }
+});
+
+async function cacheFirst(req, cacheName) {
+  const cache = await caches.open(cacheName);
+  const cached = await cache.match(req);
+  if (cached) return cached;
+  try {
+    const res = await fetch(req);
+    if (res.ok && res.status === 200) cache.put(req, res.clone()).catch(() => {});
+    return res;
+  } catch {
+    return cached || Response.error();
+  }
+}
+
+async function networkFirst(req, cacheName) {
+  const cache = await caches.open(cacheName);
+  try {
+    const res = await fetch(req);
+    if (res.ok && res.status === 200) cache.put(req, res.clone()).catch(() => {});
+    return res;
+  } catch {
+    const cached = await cache.match(req);
+    if (cached) return cached;
+    // 離線 + 沒 cache → 給 offline 頁
+    const offline = await cache.match(OFFLINE_URL);
+    if (offline) return offline;
+    return Response.error();
+  }
+}
+
+// 留給將來 Web Push
+self.addEventListener("push", (event) => {
+  if (!event.data) return;
+  let payload = { title: "AI 島", body: "你有一則通知" };
+  try {
+    payload = event.data.json();
+  } catch {}
+  event.waitUntil(
+    self.registration.showNotification(payload.title || "AI 島", {
+      body: payload.body || "",
+      icon: payload.icon || "/favicon.svg",
+      badge: "/favicon.svg",
+      data: { url: payload.url || "/" },
+      tag: payload.tag || "ai-island",
+    }),
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const url = event.notification.data?.url || "/";
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((list) => {
+      for (const c of list) {
+        if (c.url === url && "focus" in c) return c.focus();
+      }
+      return self.clients.openWindow(url);
+    }),
+  );
+});
