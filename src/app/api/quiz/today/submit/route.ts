@@ -83,7 +83,8 @@ export async function POST(req: NextRequest) {
   try {
     const admin = createSupabaseAdmin();
     const { data: profileRow } = await admin.from("profiles").select("elo_rating").eq("id", user.id).single();
-    let userR: number = (profileRow as any)?.elo_rating ?? ELO_DEFAULT;
+    const startingR: number = (profileRow as any)?.elo_rating ?? ELO_DEFAULT;
+    let userR = startingR;
     const leetcodeAnswered: Array<{ id: string; correct: boolean }> = [];
     for (let i = 0; i < questions.length; i++) {
       const q = questions[i];
@@ -101,11 +102,12 @@ export async function POST(req: NextRequest) {
         const k = dynamicK(qInfo.attempts);
         const { userR: newU, qR: newQ } = updateElo(userR, qInfo.rating, a.correct, k);
         userR = newU;
-        // 更新題目 rating + attempts
         await admin.from("leetcode_questions").update({ rating: newQ, attempts: qInfo.attempts + 1 }).eq("id", a.id);
       }
-      // 更新用戶 ELO（單筆）
+      // 更新用戶 ELO + 記這場 ELO 變化（給 /me 段位卡 sparkline 用）
+      const eloDelta = userR - startingR;
       await admin.from("profiles").update({ elo_rating: userR }).eq("id", user.id);
+      await admin.from("daily_quiz_attempts").update({ elo_delta: eloDelta }).eq("id", attempt.id);
     }
   } catch (e) {
     console.warn("[quiz/submit] elo update failed:", (e as any)?.message);

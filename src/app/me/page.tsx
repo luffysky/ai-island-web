@@ -7,7 +7,9 @@ import { StreakHeatmap } from "@/components/me/StreakHeatmap";
 import { FriendsFeed } from "@/components/me/FriendsFeed";
 import { LeetcodeCard } from "@/components/me/LeetcodeCard";
 import { DailyCheckin } from "@/components/gamification/DailyCheckin";
+import { EloProgress } from "@/components/me/EloProgress";
 import { formatTWDate } from "@/lib/format-date";
+import { ELO_DEFAULT } from "@/lib/elo";
 
 export default async function MeOverviewPage() {
   const supabase = await createSupabaseServer();
@@ -20,13 +22,22 @@ export default async function MeOverviewPage() {
     { count: bookmarksCount },
     { count: playgroundsCount },
     { data: recentLessons },
+    { data: profileRow },
+    { data: recentQuiz },
   ] = await Promise.all([
     supabase.from("lesson_progress").select("chapter_id, lesson_id").eq("user_id", user.id),
     supabase.from("notes").select("*", { count: "exact", head: true }).eq("user_id", user.id),
     supabase.from("bookmarks").select("*", { count: "exact", head: true }).eq("user_id", user.id),
     supabase.from("playgrounds").select("*", { count: "exact", head: true }).eq("user_id", user.id),
     supabase.from("lesson_progress").select("*").eq("user_id", user.id).order("completed_at", { ascending: false }).limit(5),
+    supabase.from("profiles").select("elo_rating").eq("id", user.id).maybeSingle(),
+    supabase.from("daily_quiz_attempts").select("elo_delta, created_at").eq("user_id", user.id).order("created_at", { ascending: false }).limit(5),
   ] as any);
+
+  const eloRating = (profileRow as any)?.elo_rating ?? ELO_DEFAULT;
+  const recentDeltas = ((recentQuiz as any[]) ?? [])
+    .filter((q) => typeof q.elo_delta === "number")
+    .map((q) => ({ delta: Math.round(q.elo_delta), at: q.created_at }));
 
   const completedLessons = progress?.length ?? 0;
   const totalLessons = chapters.reduce((sum, c) => sum + c.lessons.length, 0);
@@ -47,6 +58,9 @@ export default async function MeOverviewPage() {
 
       {/* 每日簽到 */}
       <DailyCheckin />
+
+      {/* 解題段位 (ELO) */}
+      <EloProgress rating={eloRating} recentDeltas={recentDeltas} />
 
       {/* 統計 */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
