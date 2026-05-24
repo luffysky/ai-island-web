@@ -48,7 +48,7 @@ export function AdminFloatingToolbar() {
   } | null>(null);
   const rootRef = useRef<HTMLDivElement | null>(null);
 
-  // 初始位置：localStorage 或預設 bottom-left（往上推 PANEL_H + 16 避免展開撞底）
+  // 初始位置：localStorage 或預設「右側中段」（避開左側 MeSidebar / SideNav、避開右下綠寶）
   useEffect(() => {
     if (typeof window === "undefined") return;
     try {
@@ -61,7 +61,11 @@ export function AdminFloatingToolbar() {
         }
       }
     } catch {}
-    setPos({ x: 16, y: Math.max(16, window.innerHeight - PANEL_H - 24) });
+    // 預設右側中段：x 從右邊算、y 從上 40%（避開底部 mobile bottom nav + 綠寶 + admin pill 衝突）
+    setPos({
+      x: Math.max(16, window.innerWidth - PILL_W - 16),
+      y: Math.max(16, Math.floor(window.innerHeight * 0.4)),
+    });
   }, []);
 
   // 載入 hidden 記憶

@@ -10,6 +10,7 @@ import {
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { useToast } from "@/components/ui/Toast";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
+import { useOverlayRegister } from "@/lib/overlay-stack";
 
 type NavLesson = {
   id: string;
@@ -39,6 +40,8 @@ export function SideNav() {
   const toast = useToast();
   const confirm = useConfirm();
   const [open, setOpen] = useState(false);
+  // 通知 overlay-stack: 開啟時 AdminFloatingToolbar / 綠寶會自動隱藏、不撞列表
+  useOverlayRegister(open);
   const [tab, setTab] = useState<Tab>("chapters");
   const [chapters, setChapters] = useState<NavChapter[]>([]);
   const [expandedCh, setExpandedCh] = useState<Set<number>>(new Set());
