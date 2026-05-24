@@ -35,10 +35,28 @@ export type NotifyOptions = {
   text: string;       // 訊息本文（純文字 fallback、給 Telegram / Discord / LINE Notify 用）
   flex?: any;         // LINE Flex Message（給 LINE Messaging API 用、有設就用 flex 替代 text）
   silent?: boolean;   // true = 不推送
+  subjectUserId?: string; // 此通知是「關於」哪個 user 的活動、用來查他是否關了即時通知
 };
 
 export async function notifyAdmin(opts: NotifyOptions): Promise<void> {
   if (opts.silent) return;
+
+  // user 即時通知 opt-out 檢查：DB 仍照常寫入（統計不受影響）、只是不推 LINE
+  if (opts.subjectUserId) {
+    try {
+      const { createSupabaseAdmin } = await import("./supabase-admin");
+      const admin = createSupabaseAdmin();
+      const { data } = await admin
+        .from("profiles")
+        .select("notify_admin_optout")
+        .eq("id", opts.subjectUserId)
+        .maybeSingle();
+      if (data && (data as any).notify_admin_optout === true) return;
+    } catch {
+      // 查不到當沒設 opt-out、繼續推
+    }
+  }
+
   const dedupe = opts.dedupeKey ?? opts.text.slice(0, 80);
   if (!shouldPush(opts.kind, dedupe)) return;
 

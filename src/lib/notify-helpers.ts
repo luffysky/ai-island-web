@@ -54,6 +54,7 @@ export async function notifyLogin(userId: string, opts?: { device?: string; ip?:
     kind: isAdmin ? "admin_login" : "login",
     dedupeKey: `login:${userId}:${new Date().toISOString().slice(0, 10)}`, // 一天一次同 user
     text: `${name} 登入${opts?.device ? `（${opts.device}）` : ""}`,
+    subjectUserId: userId,
   });
 }
 
@@ -64,6 +65,7 @@ export async function notifyChapterView(userId: string, chapterId: number, chapt
     kind: "chapter_view",
     dedupeKey: `chapter:${userId}:${chapterId}:${new Date().toISOString().slice(0, 10)}`, // 一天一次
     text: `${name} 看了 Ch${String(chapterId).padStart(2, "0")}${chapterTitle ? ` ${chapterTitle}` : ""}`,
+    subjectUserId: userId,
   });
 }
 
@@ -85,6 +87,7 @@ export async function notifyLessonComplete(opts: { userId: string; chapterId: nu
     dedupeKey: `lesson:${opts.userId}:${opts.lessonId}`,
     text: `${name} 完成 Ch${opts.chapterId} · ${opts.lessonId}（+${opts.xp ?? 10} XP）`,
     flex,
+    subjectUserId: opts.userId,
   });
   await pushUserNotif({
     userId: opts.userId,
@@ -111,6 +114,7 @@ export async function notifyAchievement(opts: { userId: string; achievementId: s
     dedupeKey: `ach:${opts.userId}:${opts.achievementId}`,
     text: `🏆 ${name} 解鎖「${opts.title}」`,
     flex,
+    subjectUserId: opts.userId,
   });
   await pushUserNotif({
     userId: opts.userId,
@@ -137,6 +141,7 @@ export async function notifyForumReply(opts: { threadAuthorId: string; replierUs
     body: opts.threadTitle.slice(0, 80),
     link: `/forum/thread/${opts.threadId}`,
   });
+  // 注意：forum_reply 的 subject 是「回覆者」、不是主題作者（隱私 opt-out 看回覆者意願）
   await notifyAdmin({
     kind: "forum_reply",
     dedupeKey: `reply:${opts.threadId}:${opts.replierUsername}`,
@@ -158,6 +163,7 @@ export async function notifyOrderPaid(opts: { userId: string; amountTwd: number;
     ],
     buttons: [{ label: "看訂單", uri: `${SITE_URL}/${ADMIN_SLUG}/admin/orders`, primary: true }],
   });
+  // 注意：訂單通知不接 opt-out（金流是運營剛需、user 不能關）
   await notifyAdmin({
     kind: "order",
     dedupeKey: `order:${opts.userId}:${Date.now()}`,

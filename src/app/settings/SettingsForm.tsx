@@ -20,6 +20,7 @@ export function SettingsForm({ profile, email }: { profile: any; email: string }
   const [bio, setBio] = useState(profile.bio ?? "");
   const [careerPath, setCareerPath] = useState(profile.career_path ?? "");
   const [avatarUrl, setAvatarUrl] = useState(profile.avatar_url ?? "");
+  const [notifyOptout, setNotifyOptout] = useState(!!profile.notify_admin_optout);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState("");
 
@@ -40,6 +41,7 @@ export function SettingsForm({ profile, email }: { profile: any; email: string }
         bio: bio || null,
         career_path: careerPath || null,
         avatar_url: avatarUrl || null,
+        notify_admin_optout: notifyOptout,
       })
       .eq("id", profile.id);
 
@@ -154,6 +156,35 @@ export function SettingsForm({ profile, email }: { profile: any; email: string }
             ))}
           </select>
         </div>
+      </section>
+
+      {/* 隱私 / 通知偏好 */}
+      <section className="bg-bg-card border border-border rounded-xl p-6">
+        <h2 className="font-bold mb-1">🛡️ 隱私偏好</h2>
+        <p className="text-xs text-fg-muted mb-4">
+          這些不影響你的學習資料、只影響 admin 是否會「即時」看到你的活動。
+        </p>
+
+        <label className="flex items-start gap-3 cursor-pointer">
+          <span className="relative inline-flex items-center mt-0.5">
+            <input
+              type="checkbox"
+              checked={notifyOptout}
+              onChange={(e) => setNotifyOptout(e.target.checked)}
+              className="sr-only peer"
+            />
+            <span className="w-9 h-5 bg-bg-elevated rounded-full peer-checked:bg-accent transition" />
+            <span className="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4 shadow" />
+          </span>
+          <span className="flex-1 text-sm">
+            <span className="font-medium">關閉「即時通知 admin」</span>
+            <p className="text-xs text-fg-muted mt-0.5 leading-relaxed">
+              預設關閉（admin 會即時收到 LINE 通知：你登入 / 完課 / 升等 / 論壇回覆 / 解鎖成就等）。
+              <br />
+              <strong>開啟此選項後</strong>：admin 不會被你的活動即時通知打擾、但你的學習資料仍正常儲存（XP / 進度 / 排行榜全部不受影響）。
+            </p>
+          </span>
+        </label>
       </section>
 
       {/* 儲存按鈕 */}
