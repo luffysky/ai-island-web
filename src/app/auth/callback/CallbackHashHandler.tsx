@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
+import { devLog } from "@/lib/dev-log";
 
 /**
  * /auth/callback 處理：
@@ -33,7 +34,7 @@ export function CallbackHashHandler() {
     };
 
     const failGeneric = (reason: string, raw?: unknown) => {
-      console.error("[Callback] failed:", reason, raw);
+      devLog.error("[Callback] failed:", reason, raw);
       go(`/login?error=${encodeURIComponent(reason)}`);
     };
 
@@ -45,7 +46,7 @@ export function CallbackHashHandler() {
       // 沒命中就重 load 一次。
       await Promise.race([
         fetch("/api/auth/ensure-profile", { method: "POST" }).catch((e) => {
-          console.warn("[Callback] ensure-profile fail:", e);
+          devLog.warn("[Callback] ensure-profile fail:", e);
           return null;
         }),
         new Promise((r) => setTimeout(r, 2500)),
@@ -99,7 +100,7 @@ export function CallbackHashHandler() {
       try {
         const { data } = await supabase.auth.getUser();
         if (data.user) {
-          console.warn("[Callback] timeout but session present, proceed");
+          devLog.warn("[Callback] timeout but session present, proceed");
           return succeed();
         }
       } catch {}

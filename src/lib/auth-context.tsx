@@ -8,6 +8,7 @@ import {
   useState,
 } from "react";
 import type { User } from "@supabase/supabase-js";
+import { devLog } from "@/lib/dev-log";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 
 /**
@@ -83,7 +84,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       .eq("id", uid)
       .maybeSingle();
     if (error) {
-      console.warn("[auth] profile load failed:", error.message);
+      devLog.warn("[auth] profile load failed:", error.message);
       return;
     }
     if (data) {

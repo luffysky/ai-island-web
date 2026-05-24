@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Check, Eye, EyeOff, Power, Save, Trash2, X } from "lucide-react";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
+import { devLog } from "@/lib/dev-log";
 
 interface Model {
   id: string;
@@ -76,7 +77,7 @@ export function ModelsManagerClient({
     const res = await fetch(url, init);
     const data = await readJson(res);
     if (!res.ok) {
-      console.error("[AI admin save failed]", data);
+      devLog.error("[AI admin save failed]", data);
       throw new Error(data.message || data.error || "儲存失敗");
     }
     return data;

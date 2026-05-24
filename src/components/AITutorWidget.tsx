@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Sparkles, Send, X, ChevronDown, Settings as SettingsIcon, Plus, Loader2, History, MessageSquare } from "lucide-react";
 import { useOverlayCount, useOverlayRegister } from "@/lib/overlay-stack";
 import { useEdgeSafe } from "@/lib/use-edge-safe";
+import { devLog } from "@/lib/dev-log";
 
 const TUTOR_POS_KEY = "ai_tutor_ball_pos";
 const DRAG_THRESHOLD_PX = 5;
@@ -174,7 +175,7 @@ export function AITutorWidget({
         .eq("is_active", true)
         .order("sort_order");
       if (modelsError) {
-        console.error("[AI tutor] load models failed:", modelsError);
+        devLog.error("[AI tutor] load models failed:", modelsError);
         setError("AI 模型清單載入失敗");
         return;
       }
@@ -206,7 +207,7 @@ export function AITutorWidget({
         .eq("date", today)
         .maybeSingle();
       if (quotaError) {
-        console.error("[AI tutor] load quota failed:", quotaError);
+        devLog.error("[AI tutor] load quota failed:", quotaError);
       }
       const def = models.find((m: any) => m.is_default);
       setQuotaUsed({ used: q?.free_used ?? 0, limit: def?.free_tier_daily_limit ?? 10 });

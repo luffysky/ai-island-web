@@ -4,6 +4,7 @@ import { StickyNote, Save, Check } from "lucide-react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { useToast } from "@/components/ui/Toast";
 import { usePopover, PopoverPanel } from "@/components/ui/Popover";
+import { devLog } from "@/lib/dev-log";
 
 export function NotePanel({
   lessonId,
@@ -38,7 +39,7 @@ export function NotePanel({
         .limit(1)
         .maybeSingle();
       if (loadErr) {
-        console.warn("[NotePanel] load failed:", loadErr.message);
+        devLog.warn("[NotePanel] load failed:", loadErr.message);
         return;
       }
       if (data) {
@@ -98,7 +99,7 @@ export function NotePanel({
         if (data) setNoteId(data.id);
       }
     } catch (e: any) {
-      console.error("[NotePanel] save failed:", e);
+      devLog.error("[NotePanel] save failed:", e);
       setSaved(false);
       setError(e?.message || "儲存失敗、請再試一次");
       toast.error("筆記儲存失敗、內容已保留");

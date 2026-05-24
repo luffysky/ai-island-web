@@ -9,6 +9,7 @@ import { TodoDropdownButton } from "@/components/todo/TodoDropdown";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { NotificationsDropdown } from "@/components/layout/NotificationsDropdown";
 import { usePopover, PopoverPanel } from "@/components/ui/Popover";
+import { devLog } from "@/lib/dev-log";
 
 const NAV_LINKS = [
   { href: "/chapters", label: "章節" },
@@ -54,10 +55,10 @@ export function TopNav() {
       const res = await fetch("/api/auth/logout", { method: "POST" });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
-        console.error("[Logout] server signOut failed:", body);
+        devLog.error("[Logout] server signOut failed:", body);
       }
     } catch (error) {
-      console.error("[Logout] failed:", error);
+      devLog.error("[Logout] failed:", error);
     } finally {
       window.location.replace("/");
     }
