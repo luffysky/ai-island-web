@@ -17,6 +17,7 @@ import { ToastProvider } from "@/components/ui/Toast";
 import { ConfirmProvider } from "@/components/ui/ConfirmDialog";
 import { WebVitalsReporter } from "@/components/WebVitalsReporter";
 import { SITE_STATS } from "@/lib/site-stats";
+import { organizationSchema, websiteSchema, jsonLdScript } from "@/lib/seo-jsonld";
 
 const TITLE = `AI 島：${SITE_STATS.chapterCount} 章全端養成班`;
 const DESCRIPTION = `用最簡單的方式學會最難的技術—HTML 到 AI Agent ${SITE_STATS.chapterCount} 章全端 + 遊戲化學習。`;
@@ -73,6 +74,13 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="zh-Hant-TW">
+      <head>
+        {/* JSON-LD 全站結構化資料：Organization + WebSite */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={jsonLdScript([organizationSchema(), websiteSchema()])}
+        />
+      </head>
       <body className="min-h-screen flex flex-col">
         <AuthProvider>
           <ToastProvider>

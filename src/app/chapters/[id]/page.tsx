@@ -2,6 +2,7 @@ import { getChapter } from "@/lib/content";
 import { notFound } from "next/navigation";
 import { ChapterView } from "@/components/chapter/ChapterView";
 import { mergeSeoForPath } from "@/lib/seo-render";
+import { courseSchema, breadcrumbSchema, jsonLdScript } from "@/lib/seo-jsonld";
 import type { Metadata } from "next";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
@@ -72,31 +73,29 @@ export default async function ChapterPage({ params }: { params: Promise<{ id: st
   const chapter = await getChapter(Number(id));
   if (!chapter) notFound();
 
-  // JSON-LD Schema.org Course
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Course",
-    name: chapter.title,
-    description: chapter.description || chapter.subtitle,
-    provider: {
-      "@type": "Organization",
-      name: "AI 島",
-      url: SITE_URL,
-    },
-    educationalLevel: chapter.difficulty,
-    timeRequired: `PT${chapter.estimatedHours ?? 1}H`,
-    hasCourseInstance: {
-      "@type": "CourseInstance",
-      courseMode: "online",
-      inLanguage: "zh-TW",
-    },
-  };
+  // JSON-LD：Course + BreadcrumbList
+  const chapterUrl = `${SITE_URL}/chapters/${chapter.id}`;
+  const ld = [
+    courseSchema({
+      name: `Ch${String(chapter.id).padStart(2, "0")}：${chapter.title}`,
+      description: chapter.description || chapter.subtitle || chapter.title,
+      url: chapterUrl,
+      lessons: chapter.lessons?.length,
+      difficulty: chapter.difficulty,
+      updatedAt: (chapter as any).updated_at,
+    }),
+    breadcrumbSchema([
+      { name: "首頁", url: SITE_URL },
+      { name: "章節", url: `${SITE_URL}/chapters` },
+      { name: chapter.title, url: chapterUrl },
+    ]),
+  ];
 
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={jsonLdScript(ld)}
       />
       <ChapterView chapter={chapter} />
     </>

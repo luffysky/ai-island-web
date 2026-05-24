@@ -12,6 +12,7 @@ import { ShareArticleButton } from "@/components/blog/ShareArticleButton";
 import { ReadingProgress } from "@/components/blog/ReadingProgress";
 import { TableOfContents } from "@/components/blog/TableOfContents";
 import { sanitizeRichHtml } from "@/lib/rich-html";
+import { articleSchema, breadcrumbSchema, jsonLdScript } from "@/lib/seo-jsonld";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
 
@@ -68,8 +69,32 @@ export default async function ArticlePage({
   const name = blog.profile?.display_name || blog.profile?.username || "用戶";
   const articleUrl = `${SITE_URL}/blogs/${userSlug}/${articleSlug}`;
 
+  // JSON-LD: Article + BreadcrumbList
+  const ld = [
+    articleSchema({
+      headline: article.title,
+      description: article.seo_desc || article.summary || article.title,
+      url: articleUrl,
+      imageUrl: article.cover_image || `${SITE_URL}/og.png`,
+      authorName: name,
+      authorUrl: `${SITE_URL}/blogs/${userSlug}`,
+      publishedAt: article.published_at || article.created_at,
+      updatedAt: article.updated_at,
+    }),
+    breadcrumbSchema([
+      { name: "首頁", url: SITE_URL },
+      { name: "部落格", url: `${SITE_URL}/blogs` },
+      { name: name, url: `${SITE_URL}/blogs/${userSlug}` },
+      { name: article.title, url: articleUrl },
+    ]),
+  ];
+
   return (
     <article className="max-w-3xl mx-auto px-4 sm:px-6 py-10 min-w-0 overflow-hidden">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={jsonLdScript(ld)}
+      />
       <ReadingProgress />
       <TableOfContents containerSelector=".prose-custom" />
       {/* 瀏覽數 +1（client、只跑一次）*/}
