@@ -1,8 +1,29 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Check, Eye, EyeOff, Power, Save, Trash2, X } from "lucide-react";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { devLog } from "@/lib/dev-log";
+import { useEdgeSafe } from "@/lib/use-edge-safe";
+
+function NoticeToast({ notice, onClose }: { notice: { type: "success" | "error"; message: string }; onClose: () => void }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEdgeSafe(ref);
+  return (
+    <div
+      ref={ref}
+      className={`fixed right-4 top-4 z-50 max-w-[calc(100vw-1rem)] flex items-center gap-2 rounded-lg border px-4 py-3 text-sm shadow-lg ${
+        notice.type === "success"
+          ? "border-green-500/30 bg-green-500/15 text-green-300"
+          : "border-red-500/30 bg-red-500/15 text-red-300"
+      }`}
+    >
+      <span>{notice.message}</span>
+      <button onClick={onClose} className="rounded p-1 hover:bg-white/10">
+        <X size={14} />
+      </button>
+    </div>
+  );
+}
 
 interface Model {
   id: string;
@@ -227,18 +248,7 @@ export function ModelsManagerClient({
 
   return (
     <div className="space-y-8">
-      {notice && (
-        <div className={`fixed right-4 top-4 z-50 flex items-center gap-2 rounded-lg border px-4 py-3 text-sm shadow-lg ${
-          notice.type === "success"
-            ? "border-green-500/30 bg-green-500/15 text-green-300"
-            : "border-red-500/30 bg-red-500/15 text-red-300"
-        }`}>
-          <span>{notice.message}</span>
-          <button onClick={() => setNotice(null)} className="rounded p-1 hover:bg-white/10">
-            <X size={14} />
-          </button>
-        </div>
-      )}
+      {notice && <NoticeToast notice={notice} onClose={() => setNotice(null)} />}
 
       {PROVIDERS.map((provider) => {
         const key = keys.find((k) => k.provider === provider);

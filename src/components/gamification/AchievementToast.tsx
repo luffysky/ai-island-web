@@ -1,6 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { useEdgeSafe } from "@/lib/use-edge-safe";
 
 const RARITY_COLORS: Record<string, string> = {
   common: "from-gray-500 to-gray-600",
@@ -10,6 +11,8 @@ const RARITY_COLORS: Record<string, string> = {
 };
 
 export function AchievementToast({ achievement, onClose }: { achievement: any; onClose: () => void }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEdgeSafe(ref);
   useEffect(() => {
     const t = setTimeout(onClose, 5000);
     return () => clearTimeout(t);
@@ -17,6 +20,7 @@ export function AchievementToast({ achievement, onClose }: { achievement: any; o
 
   return (
     <motion.div
+      ref={ref}
       initial={{ opacity: 0, y: -30, scale: 0.9 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -30 }}

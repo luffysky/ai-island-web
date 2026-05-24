@@ -141,8 +141,8 @@ export default async function AdminUsersPage({
         )}
       </form>
 
-      {/* 桌面 — table 模式 */}
-      <div className="hidden md:block bg-bg-card border border-border rounded-xl overflow-x-auto">
+      {/* 筆電 / 桌機 — table 模式 (≥1024px) */}
+      <div className="hidden lg:block bg-bg-card border border-border rounded-xl overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-bg-elevated text-xs text-fg-muted">
             <tr>
@@ -170,8 +170,8 @@ export default async function AdminUsersPage({
         </table>
       </div>
 
-      {/* 手機 — 卡片 list、每張卡內部獨立 scroll */}
-      <div className="md:hidden space-y-2">
+      {/* 手機 + 平板 — 卡片 list、每張卡內部獨立 scroll (<1024px) */}
+      <div className="lg:hidden space-y-2">
         {users?.length === 0 ? (
           <div className="bg-bg-card border border-border rounded-xl px-4 py-12 text-center text-fg-muted text-sm">
             沒有符合條件的使用者
