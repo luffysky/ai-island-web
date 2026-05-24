@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer, createSupabaseAdmin } from "@/lib/supabase";
+import { invalidateAppSettings } from "@/lib/app-settings";
 
 export async function POST(req: NextRequest) {
   const supabase = await createSupabaseServer();
@@ -37,6 +38,8 @@ export async function POST(req: NextRequest) {
     changes: { before: before?.value ?? null, after: value },
     ip: req.headers.get("x-forwarded-for") || null,
   });
+
+  invalidateAppSettings();
 
   return NextResponse.json({ ok: true });
 }

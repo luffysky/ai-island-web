@@ -1,13 +1,26 @@
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { chapters } from "@/data/chapters";
+import { isIslandEnabled } from "@/lib/app-settings";
 import IslandClient from "./IslandClient";
+import IslandClosed from "./IslandClosed";
 
 export const dynamic = "force-dynamic";
 
 export default async function IslandPage() {
   const supabase = await createSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
+
+  // 島嶼開關：關閉時、非 admin 顯示「敬請期待」
+  const enabled = await isIslandEnabled();
+  let isAdmin = false;
+  if (user) {
+    const { data: meRole } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+    isAdmin = (meRole as any)?.role === "admin";
+  }
+  if (!enabled && !isAdmin) {
+    return <IslandClosed />;
+  }
 
   let completedChapterIds: number[] = [];
   let chapterPctMap: Record<number, number> = {};

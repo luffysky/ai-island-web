@@ -30,6 +30,13 @@ export function CommandPalette() {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const { user, profile } = useAuth();
+  const [islandEnabled, setIslandEnabled] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/public/flags").then((r) => r.json()).then((d) => {
+      setIslandEnabled(!!d.islandEnabled);
+    }).catch(() => {});
+  }, []);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -54,7 +61,9 @@ export function CommandPalette() {
       // 導覽
       { id: "home", label: "首頁", icon: <Home size={14} />, href: "/", group: "導覽" },
       { id: "chapters", label: "章節", icon: <BookOpen size={14} />, href: "/chapters", group: "導覽", keywords: ["lesson", "課"] },
-      { id: "island", label: "AI 島嶼（3D）", icon: <MapIcon size={14} />, href: "/island", group: "導覽" },
+      ...(islandEnabled || profile?.role === "admin"
+        ? [{ id: "island", label: "AI 島嶼（3D）", icon: <MapIcon size={14} />, href: "/island", group: "導覽" } as CmdItem]
+        : []),
       { id: "courses", label: "副本", icon: <Sparkles size={14} />, href: "/courses", group: "導覽" },
       { id: "forum", label: "討論區", icon: <MessageSquare size={14} />, href: "/forum", group: "導覽" },
       { id: "blogs", label: "部落格", icon: <PenLine size={14} />, href: "/blogs", group: "導覽" },
@@ -90,7 +99,7 @@ export function CommandPalette() {
       );
     }
     return list;
-  }, [user, profile?.role]);
+  }, [user, profile?.role, islandEnabled]);
 
   const filtered = useMemo(() => {
     if (!query.trim()) return items.slice(0, 30);

@@ -5,9 +5,10 @@ type HeroProps = {
   totalChapters: number;
   totalLessons: number;
   stageCount: number;
+  islandEnabled?: boolean;
 };
 
-export function Hero({ totalChapters, totalLessons, stageCount }: HeroProps) {
+export function Hero({ totalChapters, totalLessons, stageCount, islandEnabled = true }: HeroProps) {
   return (
     <section className="relative overflow-hidden border-b border-border">
       {/* 背景模糊光暈 */}
@@ -35,19 +36,21 @@ export function Hero({ totalChapters, totalLessons, stageCount }: HeroProps) {
               像玩 RPG 一樣升級、打 boss、組隊、成為 AI 高玩
             </p>
             {/* 雙模式入口（依 3D 島嶼 spec 附錄 B） */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <Link
-                href={"/island" as any}
-                className="group relative overflow-hidden rounded-xl border-2 border-accent/40 p-5 bg-gradient-to-br from-accent/15 to-accent-2/10 hover:border-accent transition-all hover:scale-[1.02]"
-              >
-                <div className="absolute -top-4 -right-4 text-5xl opacity-30 group-hover:opacity-50 transition">🏝️</div>
-                <div className="text-2xl mb-1">🏝️ 島嶼模式</div>
-                <div className="font-bold text-lg mb-1">進入 AI 島</div>
-                <p className="text-xs text-fg-muted leading-relaxed">
-                  3D 沉浸式探索、有 AI 夥伴陪你闖關。
-                </p>
-                <span className="text-[10px] text-accent mt-2 inline-block">v0 / coming soon →</span>
-              </Link>
+            <div className={`grid grid-cols-1 ${islandEnabled ? "sm:grid-cols-2" : ""} gap-3`}>
+              {islandEnabled && (
+                <Link
+                  href={"/island" as any}
+                  className="group relative overflow-hidden rounded-xl border-2 border-accent/40 p-5 bg-gradient-to-br from-accent/15 to-accent-2/10 hover:border-accent transition-all hover:scale-[1.02]"
+                >
+                  <div className="absolute -top-4 -right-4 text-5xl opacity-30 group-hover:opacity-50 transition">🏝️</div>
+                  <div className="text-2xl mb-1">🏝️ 島嶼模式</div>
+                  <div className="font-bold text-lg mb-1">進入 AI 島</div>
+                  <p className="text-xs text-fg-muted leading-relaxed">
+                    3D 沉浸式探索、有 AI 夥伴陪你闖關。
+                  </p>
+                  <span className="text-[10px] text-accent mt-2 inline-block">v0 / coming soon →</span>
+                </Link>
+              )}
               <Link
                 href="/chapters"
                 className="group relative overflow-hidden rounded-xl border-2 border-border p-5 bg-bg-card hover:border-accent transition-all hover:scale-[1.02]"

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getChapterMetas } from "@/lib/content";
 import { getSiteStats } from "@/lib/stats";
 import { getSeoForPath } from "@/lib/seo-render";
+import { isIslandEnabled } from "@/lib/app-settings";
 import { ChapterMap } from "@/components/home/ChapterMap";
 import { Hero } from "@/components/home/Hero";
 import { CareerPathSection } from "@/components/home/CareerPathSection";
@@ -20,6 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function HomePage() {
   const chapters = await getChapterMetas();
   const stats = getSiteStats();
+  const islandEnabled = await isIslandEnabled();
 
   return (
     <div>
@@ -27,6 +29,7 @@ export default async function HomePage() {
         totalChapters={stats.totalChapters}
         totalLessons={stats.totalLessons}
         stageCount={stats.stageCount}
+        islandEnabled={islandEnabled}
       />
       <MascotIntro />
       <StageMap />

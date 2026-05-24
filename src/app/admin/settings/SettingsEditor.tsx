@@ -129,6 +129,16 @@ function SettingEditor({ settingKey, value, onChange }: { settingKey: string; va
         />
       );
 
+    case "island_enabled":
+      return (
+        <ToggleRow
+          label="開放 AI 島嶼 /island"
+          value={parseBool(value)}
+          onChange={onChange}
+          help="關閉後、/island 顯示「敬請期待」、首頁/導覽列入口隱藏（admin 仍可進）"
+        />
+      );
+
     case "maintenance_mode":
       return (
         <div className="space-y-2">
@@ -309,12 +319,20 @@ const fldCls =
 function labelFor(key: string): string {
   const map: Record<string, string> = {
     signup_enabled: "🔓 開放註冊",
+    island_enabled: "🏝️ AI 島嶼開關",
     maintenance_mode: "🛠️ 維護模式",
     site_announcement: "📢 全站公告 banner",
     premium_price: "💎 Premium 定價",
     feature_flags: "🚦 功能開關",
   };
   return map[key] ?? key;
+}
+
+function parseBool(v: any): boolean {
+  if (typeof v === "boolean") return v;
+  if (typeof v === "string") return v === "true";
+  if (v && typeof v === "object" && "enabled" in v) return !!v.enabled;
+  return false;
 }
 
 function featureLabel(k: string): string {
