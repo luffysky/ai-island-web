@@ -21,12 +21,22 @@ import { SITE_STATS } from "@/lib/site-stats";
 const TITLE = `AI 島：${SITE_STATS.chapterCount} 章全端養成班`;
 const DESCRIPTION = `用最簡單的方式學會最難的技術—HTML 到 AI Agent ${SITE_STATS.chapterCount} 章全端 + 遊戲化學習。`;
 const OG_DESCRIPTION = `${SITE_STATS.chapterCount} 章 × ${SITE_STATS.lessonCount}+ 高品質 lesson、遊戲化學習、SnowRealm 生態整合`;
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://aiisland.tw";
 
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://aiisland.tw"),
+  metadataBase: new URL(SITE_URL),
   manifest: "/manifest.webmanifest",
+  // 預設 canonical：自己（每個頁面可在自己 generateMetadata 覆寫）
+  alternates: {
+    canonical: "/",
+    languages: {
+      "zh-Hant": SITE_URL,
+      "zh-Hant-TW": SITE_URL,
+      "x-default": SITE_URL,
+    },
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
@@ -37,6 +47,16 @@ export const metadata: Metadata = {
     apple: "/favicon.svg",
   },
   openGraph: {
+    title: TITLE,
+    description: OG_DESCRIPTION,
+    images: ["/og.png"],
+    locale: "zh_TW",
+    type: "website",
+    siteName: "AI 島",
+    url: SITE_URL,
+  },
+  twitter: {
+    card: "summary_large_image",
     title: TITLE,
     description: OG_DESCRIPTION,
     images: ["/og.png"],
@@ -52,7 +72,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="zh-Hant">
+    <html lang="zh-Hant-TW">
       <body className="min-h-screen flex flex-col">
         <AuthProvider>
           <ToastProvider>
