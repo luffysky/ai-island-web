@@ -80,14 +80,19 @@ function lighten(hex: string, amount = 0.92): string {
  * 霧面玻璃漸層 helper — LINE Flex 沒 backdrop-filter:blur，
  * 用「主色半透明 → 淺色半透明」漸層 + alpha hex 模擬玻璃感。
  */
+/**
+ * LINE Flex linearGradient 的 startColor/endColor 只吃 6-digit hex (#RRGGBB)、
+ * 不吃 8-digit alpha (#RRGGBBAA) — 加 alpha 會被 LINE reject、整則 reply 不送出。
+ * 所以「透明感」改用 lighten 變淺、不用 alpha。
+ */
 function glassHeader(color: string) {
   return {
     type: "linearGradient" as const,
     angle: "135deg",
-    startColor: `${color}FA`,
-    centerColor: `${darken(color, 0.08)}F2`,
+    startColor: color,
+    centerColor: darken(color, 0.05),
     centerPosition: "50%",
-    endColor: `${lighten(color, 0.25)}E8`,
+    endColor: lighten(color, 0.2),
   };
 }
 
@@ -96,10 +101,10 @@ function glassBody(color: string) {
   return {
     type: "linearGradient" as const,
     angle: "180deg",
-    startColor: `${lighten(color, 0.97)}FA`,
-    centerColor: "#FFFFFFFA",
+    startColor: lighten(color, 0.96),
+    centerColor: "#FFFFFF",
     centerPosition: "50%",
-    endColor: `${lighten(color, 0.92)}FA`,
+    endColor: lighten(color, 0.9),
   };
 }
 
@@ -107,8 +112,8 @@ function glassFooter(color: string) {
   return {
     type: "linearGradient" as const,
     angle: "180deg",
-    startColor: `${lighten(color, 0.9)}F5`,
-    endColor: `${lighten(color, 0.78)}F0`,
+    startColor: lighten(color, 0.88),
+    endColor: lighten(color, 0.78),
   };
 }
 
@@ -280,7 +285,7 @@ export function buildKpiCard(opts: {
         paddingAll: "lg",
         background: glassHeader(color),
         borderWidth: "1px",
-        borderColor: `${lighten(color, 0.3)}40`,
+        borderColor: lighten(color, 0.65),
         cornerRadius: "12px",
         contents: [
           { type: "text", text: "📊", size: "xxl", color: "#ffffff", flex: 0, width: "44px", align: "center" },
@@ -360,7 +365,7 @@ export function buildListCard(opts: {
         paddingAll: "lg",
         background: glassHeader(color),
         borderWidth: "1px",
-        borderColor: `${lighten(color, 0.3)}40`,
+        borderColor: lighten(color, 0.65),
         cornerRadius: "12px",
         contents: [
           { type: "text", text: opts.emoji, size: "xxl", color: "#ffffff", flex: 0, width: "44px", align: "center" },
@@ -440,7 +445,7 @@ export function buildAiReplyCard(opts: { text: string; userName: string }): Flex
         paddingAll: "lg",
         background: glassHeader(color),
         borderWidth: "1px",
-        borderColor: `${lighten(color, 0.3)}40`,
+        borderColor: lighten(color, 0.65),
         cornerRadius: "12px",
         contents: [
           { type: "text", text: "✨", size: "xxl", color: "#ffffff", flex: 0, width: "44px", align: "center" },
@@ -450,7 +455,7 @@ export function buildAiReplyCard(opts: { text: string; userName: string }): Flex
             flex: 1,
             contents: [
               { type: "text", text: "AI 助理", weight: "bold", size: "md", color: "#ffffff" },
-              { type: "text", text: `給 ${opts.userName}`, size: "xs", color: "#FFFFFFD9" },
+              { type: "text", text: `給 ${opts.userName}`, size: "xs", color: "#E8F0F8" },
             ],
           },
         ],
