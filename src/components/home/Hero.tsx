@@ -30,10 +30,16 @@ export function Hero({ totalChapters, totalLessons, stageCount, islandEnabled = 
               <br />
               學會<span className="bg-gradient-to-r from-accent to-accent-2 bg-clip-text text-transparent">最難</span>的<span className="bg-gradient-to-r from-accent-2 to-accent-3 bg-clip-text text-transparent">技術</span>
             </h1>
-            <p className="text-lg text-fg-muted mb-7 leading-relaxed">
+            <p className="text-lg text-fg-muted mb-3 leading-relaxed">
               {totalChapters} 章 × {totalLessons}+ lesson · HTML 到 AI Agent 全端養成
               <br />
               像玩 RPG 一樣升級、打 boss、組隊、成為 AI 高玩
+            </p>
+            <p className="text-sm text-fg-muted mb-7 leading-relaxed">
+              <strong className="text-fg">繁體中文程式自學平台</strong>：
+              學 HTML / CSS / JavaScript / TypeScript / React / Vue / Next.js /
+              Node.js / Python / AI Agent / Prompt Engineering、
+              <strong className="text-fg">從零基礎到能接案 / 找全端工作</strong>。
             </p>
             {/* 雙模式入口（依 3D 島嶼 spec 附錄 B） */}
             <div className={`grid grid-cols-1 ${islandEnabled ? "sm:grid-cols-2" : ""} gap-3`}>
@@ -85,7 +91,7 @@ export function Hero({ totalChapters, totalLessons, stageCount, islandEnabled = 
           <div className="relative">
             <Image
               src="/mascot/hero-map.png"
-              alt="AI 島高玩養成地圖：跟肥仔、菇寶、綠寶一起踏上 AI 冒險"
+              alt="AI 島 — 繁體中文程式自學平台、HTML / React / Next.js / AI Agent 71 章全端養成、跟肥仔菇寶綠寶 AI 導師冒險"
               width={1200}
               height={800}
               priority
