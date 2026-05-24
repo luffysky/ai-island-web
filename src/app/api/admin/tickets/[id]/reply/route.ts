@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { notifyUserLine } from "@/lib/notify-user-line";
 
 export const dynamic = "force-dynamic";
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://aiisland.tw";
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const supabase = await createSupabaseServer();
@@ -32,6 +35,42 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     assigned_to: user.id,
     updated_at: new Date().toISOString(),
   }).eq("id", id);
+
+  // 拿 ticket 完整資訊、決定要不要推 LINE 通知 user
+  const { data: ticket } = await admin
+    .from("tickets")
+    .select("id, user_id, subject, meta")
+    .eq("id", id)
+    .single();
+
+  const meta = (ticket as any)?.meta ?? {};
+  const replyText = `💬 客服回覆 ticket #${String((ticket as any)?.id ?? id).slice(0, 8)}\n\n${text.slice(0, 1500)}\n\n看完整對話：${SITE_URL}/me/support`;
+
+  // 路徑 A：已綁定 user → 走 notifyUserLine（會 check line_user_id + line_notify_enabled）
+  if ((ticket as any)?.user_id) {
+    notifyUserLine({
+      userId: (ticket as any).user_id,
+      text: replyText,
+    }).catch(() => {});
+  }
+
+  // 路徑 B：未綁定但 ticket 從 LINE 訪客來（只有 lineUserId、profile.user_id null）
+  // → 直接用 USER bot push 那個 LINE userId
+  const lineUid = meta.line_user_id as string | undefined;
+  if (!(ticket as any)?.user_id && lineUid && meta.source === "user_line_bot") {
+    const userToken = process.env.USER_LINE_CHANNEL_TOKEN;
+    if (userToken) {
+      fetch("https://api.line.me/v2/bot/message/push", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${userToken}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          to: lineUid,
+          messages: [{ type: "text", text: replyText.slice(0, 4900) }],
+        }),
+        signal: AbortSignal.timeout(5000),
+      }).catch(() => {});
+    }
+  }
 
   return NextResponse.json({ ok: true });
 }
