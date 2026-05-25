@@ -126,12 +126,28 @@ ${ownerTone}
     return reply;
   } catch (e: any) {
     console.warn("[line-webhook-user] AI failed:", e?.message);
+    // 也寫 error_logs (之前只 console.warn、Zeabur log 翻不到)
+    try {
+      await admin.from("error_logs").insert({
+        source: "line-webhook-user",
+        level: "error",
+        message: `[user_ai_failed] ${e?.message ?? "unknown"}`,
+        extra: {
+          model: model?.model_name,
+          provider: model?.provider,
+          line_user_id: lineUserId,
+          stack: e?.stack?.slice(0, 1000),
+        },
+      });
+    } catch {}
     return null;
   }
 }
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
+// AI call 偶爾 5-15 秒、預設 10s 會被 kill 導致 silent fail
+export const maxDuration = 60;
 
 const ENDPOINT = "https://api.line.me/v2/bot";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://aiisland.tw";
