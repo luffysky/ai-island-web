@@ -44,13 +44,22 @@ export function AuditClient({ routes }: { routes: RouteEntry[] }) {
     });
   }, [routes, results, filter, search]);
 
-  const pingOne = async (path: string, type: "page" | "api"): Promise<PingResult> => {
-    if (/\[[^\]]+\]/.test(path)) {
-      return { ok: false, error: "dynamic_skipped" };
-    }
+  // 動態路徑代入 sample 值（粗糙、但能驗 endpoint 是否會 500）
+  const fillDynamic = (path: string): string => {
+    return path
+      .replace(/\[\.{3}[^\]]+\]/g, "sample")  // [...slug]
+      .replace(/\[id\]/gi, "00000000-0000-0000-0000-000000000000")
+      .replace(/\[[^\]]*[Ss]lug[^\]]*\]/g, "sample-slug")
+      .replace(/\[[^\]]*[Uu]ser[^\]]*\]/g, "sample")
+      .replace(/\[[^\]]*[Kk]ey[^\]]*\]/g, "sample_key")
+      .replace(/\[[^\]]+\]/g, "1");
+  };
+
+  const pingOne = async (path: string, type: "page" | "api", _isDynamic = false): Promise<PingResult> => {
+    const realPath = /\[[^\]]+\]/.test(path) ? fillDynamic(path) : path;
     const start = Date.now();
     try {
-      const res = await fetch(path, {
+      const res = await fetch(realPath, {
         method: "GET",
         redirect: "manual",
         credentials: "same-origin",
@@ -60,10 +69,10 @@ export function AuditClient({ routes }: { routes: RouteEntry[] }) {
       if (status >= 300 && status < 400) {
         return { status, ok: false, redirect: true, redirectTo: res.headers.get("location") ?? undefined, ms };
       }
-      // 真的通：200/2xx + 401/403 (guard 正常擋下、邏輯確實跑了)
-      const ok = res.ok || status === 401 || status === 403;
-      // endpoint 存在但 GET 沒辦法測：405 (POST-only)、400 (缺 query param)、422 (validation 失敗)
-      const partial = !ok && type === "api" && [400, 405, 422].includes(status);
+      // ✅ 真的通：只給 200/2xx
+      const ok = res.ok;
+      // 🟡 需手動驗：401/403 (要登入)、405 (POST-only)、400/422 (缺參數或 body)
+      const partial = !ok && [400, 401, 403, 405, 422].includes(status);
       return { status, ok, partial, ms };
     } catch (e: any) {
       return { ok: false, error: e?.message ?? "fetch_failed", ms: Date.now() - start };
@@ -266,7 +275,7 @@ function RouteRow({ route, result, onPing }: { route: RouteEntry; result?: PingR
     <tr className="border-t border-border hover:bg-bg-elevated/50">
       <td className="px-3 py-2 font-mono text-xs">
         <code className={isDynamic ? "text-fg-muted" : "text-fg"}>{route.path}</code>
-        {isDynamic && <span className="ml-1.5 text-[9px] text-fg-muted">動態</span>}
+        {isDynamic && <span className="ml-1.5 text-[9px] text-yellow-400" title="會用假 id 代入測">[id→1]</span>}
       </td>
       <td className="px-3 py-2 text-xs text-fg-muted">{route.type === "page" ? "📄 page" : "🔌 api"}</td>
       <td className="px-3 py-2 text-xs">
@@ -285,9 +294,11 @@ function RouteRow({ route, result, onPing }: { route: RouteEntry; result?: PingR
         ) : result.partial ? (
           <span className="inline-flex items-center gap-1 text-yellow-400">
             <AlertCircle size={11} /> {result.status}
-            {result.status === 405 && <span className="text-[10px] text-fg-muted">POST-only、GET 沒辦法測</span>}
-            {result.status === 400 && <span className="text-[10px] text-fg-muted">缺參數、GET 沒辦法測</span>}
-            {result.status === 422 && <span className="text-[10px] text-fg-muted">需 body、GET 沒辦法測</span>}
+            {result.status === 401 && <span className="text-[10px] text-fg-muted">需登入</span>}
+            {result.status === 403 && <span className="text-[10px] text-fg-muted">需 admin / 權限</span>}
+            {result.status === 405 && <span className="text-[10px] text-fg-muted">POST-only</span>}
+            {result.status === 400 && <span className="text-[10px] text-fg-muted">缺參數</span>}
+            {result.status === 422 && <span className="text-[10px] text-fg-muted">需 body</span>}
             {result.ms && <span className="text-[10px] text-fg-muted">{result.ms}ms</span>}
           </span>
         ) : result.redirect ? (
