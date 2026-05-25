@@ -1,18 +1,17 @@
 /**
- * 多通道 admin 即時通知（林董手機）
+ * 多通道 admin 即時通知
  *
  * 通道：
- *   ADMIN_LINE_CHANNEL_TOKEN + ADMIN_LINE_USER_ID — LINE Messaging API (200/月、留給 VIP)
- *   ADMIN_TELEGRAM_BOT_TOKEN + ADMIN_TELEGRAM_CHAT_ID — Telegram (無限免費、預設一般事件走這)
+ *   ADMIN_LINE_CHANNEL_TOKEN + ADMIN_LINE_USER_ID — LINE Messaging API (200/月)
+ *   ADMIN_TELEGRAM_BOT_TOKEN + ADMIN_TELEGRAM_CHAT_ID — Telegram (無限免費)
  *   ADMIN_DISCORD_WEBHOOK_URL — Discord Webhook (無限免費)
  *
- * Routing (省 LINE push 額度)：
+ * Routing 規則 (由上而下、第一個 match 為準):
  *   1. opts.routing = "line"/"telegram" → 強制
- *   2. kind 在 NOTIFY_LINE_PRIORITY_KINDS (預設 order,refund,breach,ticket) → LINE
- *   3. subjectUserId 對應的 user.username 在 NOTIFY_LINE_VIP_USERNAMES → LINE
- *   4. subjectUserId 在 NOTIFY_LINE_VIP_USER_IDS → LINE
- *   5. owner 自己的活動 → LINE
- *   6. 其他 → Telegram (沒設 TG → Discord → 最後才 LINE)
+ *   2. user 在 NOTIFY_DUAL_USERNAMES / NOTIFY_DUAL_USER_IDS → ★ 雙通知 LINE + Telegram ★
+ *   3. user 是 owner (is_owner=true) / 在 NOTIFY_LINE_VIP_USERNAMES / NOTIFY_LINE_VIP_USER_IDS → LINE
+ *   4. kind 在 NOTIFY_LINE_PRIORITY_KINDS (預設 order,refund,breach,ticket,user_ticket,admin_login) → LINE
+ *   5. 其他 → Telegram (沒設 TG → Discord → 最後才 LINE)
  *
  *   ADMIN_NOTIFY_ALL=1 → 全部通道都送 (debug)
  *
@@ -55,52 +54,82 @@ function parseEnvList(name: string): Set<string> {
   return new Set(v.split(",").map((s) => s.trim().toLowerCase()).filter(Boolean));
 }
 
-async function pickChannel(opts: NotifyOptions): Promise<"line" | "telegram" | "discord"> {
+type Channel = "line" | "telegram" | "discord";
+
+/**
+ * 決定一筆通知要送去哪些通道、可以多個 (例如 DUAL = LINE + Telegram)
+ *
+ * routing 規則：
+ *  1. opts.routing 顯式指定
+ *  2. subjectUserId 對應 user.username ∈ NOTIFY_DUAL_USERNAMES (或 uuid ∈ NOTIFY_DUAL_USER_IDS)
+ *     → LINE + Telegram 雙通知
+ *  3. kind ∈ NOTIFY_LINE_PRIORITY_KINDS (預設 order/refund/breach/ticket/user_ticket/admin_login)
+ *     → LINE only
+ *  4. subjectUserId 對應 owner / VIP → LINE only
+ *  5. 其他 → Telegram only (TG 沒設 → Discord → LINE fallback)
+ */
+async function pickChannels(opts: NotifyOptions): Promise<Channel[]> {
   // 1. 顯式指定
-  if (opts.routing === "line") return "line";
-  if (opts.routing === "telegram") return "telegram";
+  if (opts.routing === "line") return ["line"];
+  if (opts.routing === "telegram") return ["telegram"];
 
   const hasTg = !!(process.env.ADMIN_TELEGRAM_BOT_TOKEN && process.env.ADMIN_TELEGRAM_CHAT_ID);
   const hasDiscord = !!process.env.ADMIN_DISCORD_WEBHOOK_URL;
   const hasLine = !!process.env.ADMIN_LINE_CHANNEL_TOKEN;
 
   // 沒設 TG/Discord → 只剩 LINE (向後相容)
-  if (!hasTg && !hasDiscord) return "line";
+  if (!hasTg && !hasDiscord) return ["line"];
 
-  // 2. 重要 kind
-  const priorityKinds = parseEnvList("NOTIFY_LINE_PRIORITY_KINDS");
-  const kindSet = priorityKinds.size > 0 ? priorityKinds : new Set(DEFAULT_LINE_PRIORITY_KINDS);
-  if (kindSet.has(opts.kind.toLowerCase())) return hasLine ? "line" : (hasTg ? "telegram" : "discord");
-
-  // 3. VIP user (uuid 或 username) — 不查 DB 也算（純 env 比對）
+  // 2 & 4. user-based routing (DUAL / VIP / owner)
+  let isDual = false;
+  let isVipOrOwner = false;
   if (opts.subjectUserId) {
+    const dualIds = parseEnvList("NOTIFY_DUAL_USER_IDS");
     const vipIds = parseEnvList("NOTIFY_LINE_VIP_USER_IDS");
-    if (vipIds.has(opts.subjectUserId.toLowerCase())) return hasLine ? "line" : "telegram";
+    if (dualIds.has(opts.subjectUserId.toLowerCase())) isDual = true;
+    else if (vipIds.has(opts.subjectUserId.toLowerCase())) isVipOrOwner = true;
 
+    const dualNames = parseEnvList("NOTIFY_DUAL_USERNAMES");
     const vipNames = parseEnvList("NOTIFY_LINE_VIP_USERNAMES");
-    if (vipNames.size > 0) {
+    if (!isDual && !isVipOrOwner && (dualNames.size > 0 || vipNames.size > 0)) {
       try {
         const { createSupabaseAdmin } = await import("./supabase-admin");
         const admin = createSupabaseAdmin();
         const { data } = await admin
           .from("profiles")
-          .select("username, is_owner, role")
+          .select("username, is_owner")
           .eq("id", opts.subjectUserId)
           .maybeSingle();
         const p = data as any;
         if (p) {
-          // owner 自己永遠走 LINE
-          if (p.is_owner === true) return hasLine ? "line" : "telegram";
-          if (p.username && vipNames.has(String(p.username).toLowerCase())) return hasLine ? "line" : "telegram";
+          const uname = String(p.username ?? "").toLowerCase();
+          if (uname && dualNames.has(uname)) isDual = true;
+          else if (p.is_owner === true) isVipOrOwner = true;
+          else if (uname && vipNames.has(uname)) isVipOrOwner = true;
         }
       } catch {}
     }
   }
 
-  // 4. 預設一般事件 → TG (省 LINE 額度)、TG 沒設 → Discord → LINE
-  if (hasTg) return "telegram";
-  if (hasDiscord) return "discord";
-  return "line";
+  if (isDual) {
+    // 雙通知 — LINE + Telegram (LINE 沒設則只 TG、TG 沒設則只 LINE)
+    const channels: Channel[] = [];
+    if (hasLine) channels.push("line");
+    if (hasTg) channels.push("telegram");
+    if (channels.length === 0 && hasDiscord) channels.push("discord");
+    return channels;
+  }
+  if (isVipOrOwner) return [hasLine ? "line" : (hasTg ? "telegram" : "discord")];
+
+  // 3. 重要 kind
+  const priorityKinds = parseEnvList("NOTIFY_LINE_PRIORITY_KINDS");
+  const kindSet = priorityKinds.size > 0 ? priorityKinds : new Set(DEFAULT_LINE_PRIORITY_KINDS);
+  if (kindSet.has(opts.kind.toLowerCase())) return [hasLine ? "line" : (hasTg ? "telegram" : "discord")];
+
+  // 5. 預設一般事件 → TG (省 LINE 額度)、TG 沒設 → Discord → LINE
+  if (hasTg) return ["telegram"];
+  if (hasDiscord) return ["discord"];
+  return ["line"];
 }
 
 export async function notifyAdmin(opts: NotifyOptions): Promise<void> {
@@ -150,30 +179,27 @@ export async function notifyAdmin(opts: NotifyOptions): Promise<void> {
     return;
   }
 
-  // 正常模式 — 用 routing 選一個通道
-  const channel = await pickChannel(opts);
-  try {
+  // 正常模式 — 用 routing 選一個或多個通道 (DUAL user = LINE + TG)
+  const channels = await pickChannels(opts);
+  const ps: Promise<unknown>[] = [];
+  for (const channel of channels) {
     if (channel === "line") {
       const lineChannel = process.env.ADMIN_LINE_CHANNEL_TOKEN;
-      if (!lineChannel) return;
+      if (!lineChannel) continue;
       const { getAdminLineUsers } = await import("./admin-line-users");
       const { shouldUserReceive } = await import("./admin-line-prefs");
-      const users = getAdminLineUsers().filter((u) => u.id);
-      const ps: Promise<unknown>[] = [];
-      for (const u of users) {
+      for (const u of getAdminLineUsers().filter((u) => u.id)) {
         if (await shouldUserReceive(u.id, opts.kind)) {
           ps.push(sendLineMessaging(lineChannel, u.id, text, opts.flex));
         }
       }
-      await Promise.allSettled(ps);
     } else if (channel === "telegram") {
-      await sendTelegram(process.env.ADMIN_TELEGRAM_BOT_TOKEN!, process.env.ADMIN_TELEGRAM_CHAT_ID!, text);
+      ps.push(sendTelegram(process.env.ADMIN_TELEGRAM_BOT_TOKEN!, process.env.ADMIN_TELEGRAM_CHAT_ID!, text));
     } else {
-      await sendDiscord(process.env.ADMIN_DISCORD_WEBHOOK_URL!, text);
+      ps.push(sendDiscord(process.env.ADMIN_DISCORD_WEBHOOK_URL!, text));
     }
-  } catch (e) {
-    console.warn(`[notify-admin] ${channel} failed:`, (e as any)?.message);
   }
+  await Promise.allSettled(ps);
 }
 
 async function sendLineMessaging(token: string, userId: string, text: string, flex?: any) {
