@@ -50,6 +50,13 @@ self.addEventListener("activate", (event) => {
   );
 });
 
+// 收到 SKIP_WAITING 訊息 → 立刻接手 (PWAInstall update banner 觸發)
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
+});
+
 function shouldSkip(url) {
   if (url.origin !== self.location.origin) return true;
   return SKIP_PATHS.some((p) => url.pathname.startsWith(p));
