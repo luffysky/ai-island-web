@@ -266,6 +266,21 @@ export async function POST(req: NextRequest) {
         continue;
       }
 
+      // 3.4. /whoami — debug 用、回 LINE userId + 綁定狀態
+      if (text === "/whoami" || text === "我是誰" || text === "whoami") {
+        const admin = createSupabaseAdmin();
+        const { data: bound } = await admin
+          .from("profiles")
+          .select("username, display_name, role")
+          .eq("line_user_id", userId)
+          .maybeSingle();
+        const msg = bound
+          ? `🆔 你的 LINE userId：\n${userId}\n\n✅ 已綁到帳號：\n• username: ${(bound as any).username}\n• 名稱: ${(bound as any).display_name ?? "(未設)"}\n• 角色: ${(bound as any).role}\n\n如果 AI 還不回 → ai_api_keys 或 model 問題、不是綁定問題。`
+          : `🆔 你的 LINE userId：\n${userId}\n\n❌ DB 找不到 line_user_id = 這個 userId 的 profile。\n\n意思：你雖然「自己以為綁了」、但 DB 沒這筆。可能原因：\n1. 你用站內 LINE Login 登入過、但那個 userId 跟這個 Bot 拿的 userId 不一樣 (兩個 channel)\n2. /bind 失敗沒成功寫\n3. 站內按了「綁定」但實際走錯流程\n\n正解：到 ${SITE_URL}/settings 拿 6 位 code、回來傳「/bind 123456」、用這個 channel 的 userId 寫進去。`;
+        await lineReply(replyToken, msg, token, QUICK_REPLY);
+        continue;
+      }
+
       // 3.5. 綁定 / 登入 自然語言引導
       const bindHints = ["綁定", "我要綁", "我要登入", "登入", "怎麼綁", "怎麼登入", "綁帳號", "綁帳戶", "bind", "login", "register", "註冊"];
       if (bindHints.some((k) => text.toLowerCase().includes(k.toLowerCase()))) {
@@ -301,10 +316,10 @@ export async function POST(req: NextRequest) {
         }
         // AI 失敗、fallback 到 ticket
       } else {
-        // 未綁定提示綁定
+        // 未綁定提示綁定 (附上 LINE userId 給 user 自己對)
         await lineReply(
           replyToken,
-          `🤖 嗨～看到你訊息了。\n\n要跟 AI 學員導師對話請先綁定帳號：\n1. 註冊 / 登入 ${SITE_URL}\n2. ${SITE_URL}/settings 拿 6 位 code\n3. 傳「/bind 123456」綁定\n\n之後在這就能直接問 AI 學程式。`,
+          `🤖 嗨～看到你訊息了。\n\n你的 LINE userId：${userId.slice(0, 8)}...${userId.slice(-4)}\n\nDB 找不到綁過的帳號。可能你以為綁了但實際 DB 沒寫成功。\n\n正解：\n1. 登入 ${SITE_URL}\n2. 到 ${SITE_URL}/settings\n3. 找「LINE 通知綁定」拿 6 位 code\n4. 回來傳「/bind 123456」\n\n想看你完整 LINE userId、傳「/whoami」`,
           token, QUICK_REPLY,
         );
         continue;
