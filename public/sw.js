@@ -24,6 +24,7 @@ const SKIP_PATHS = [
   "/admin",
   "/_next/data",
   "/me/",
+  "/pyodide-worker.js",  // worker file 自己處理、不快取
 ];
 
 self.addEventListener("install", (event) => {
