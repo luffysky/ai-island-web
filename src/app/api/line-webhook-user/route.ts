@@ -184,11 +184,33 @@ export async function POST(req: NextRequest) {
   const secret = process.env.USER_LINE_CHANNEL_SECRET;
   const token = process.env.USER_LINE_CHANNEL_TOKEN;
   if (!secret || !token) {
+    console.warn("[line-webhook:user] no_env");
     return NextResponse.json({ ok: false, error: "no_user_bot_env" });
   }
 
   const raw = await req.text();
-  if (!verifySignature(raw, req.headers.get("x-line-signature"), secret)) {
+  const sigHeader = req.headers.get("x-line-signature");
+  const sigOk = verifySignature(raw, sigHeader, secret);
+
+  const expected = crypto.createHmac("sha256", secret).update(raw).digest("base64");
+  console.log(`[line-webhook:user] sig_received=${sigHeader?.slice(0,12)}... expected=${expected.slice(0,12)}... ok=${sigOk} body_len=${raw.length}`);
+
+  if (!sigOk) {
+    try {
+      const admin = createSupabaseAdmin();
+      await admin.from("error_logs").insert({
+        source: "line-webhook-user",
+        level: "error",
+        message: "[invalid_signature] webhook 簽章驗失敗、USER_LINE_CHANNEL_SECRET 對不上",
+        extra: {
+          received_sig_prefix: sigHeader?.slice(0, 16) ?? null,
+          expected_sig_prefix: expected.slice(0, 16),
+          body_len: raw.length,
+          secret_length: secret.length,
+          hint: "LINE Console → user channel → Channel secret 整段對 Zeabur env USER_LINE_CHANNEL_SECRET",
+        },
+      });
+    } catch {}
     return NextResponse.json({ error: "invalid_signature" }, { status: 401 });
   }
 
