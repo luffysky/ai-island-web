@@ -68,6 +68,7 @@ async function runPollinations(prompt: string, w: number, h: number, seed: strin
 }
 
 // 2. Cloudflare Workers AI — env: CF_ACCOUNT_ID + CF_AI_TOKEN
+// ⚠️ flux-1-schnell 原生只吐 1024×1024、API 不接 width/height 參數
 async function runCloudflare(prompt: string, w: number, h: number, seed: string, model: string) {
   const accountId = process.env.CF_ACCOUNT_ID;
   const token = process.env.CF_AI_TOKEN;
@@ -79,6 +80,11 @@ async function runCloudflare(prompt: string, w: number, h: number, seed: string,
     });
   }
   const apiUrl = `https://api.cloudflare.com/client/v4/accounts/${accountId}/ai/run/${model}`;
+  // Cloudflare flux-1-schnell input schema:
+  //   prompt (required)
+  //   num_steps (default 4, max 8)
+  //   seed (optional)
+  // 不傳 width/height、CF 永遠回 1024×1024 PNG (base64 encoded)
   const res = await fetch(apiUrl, {
     method: "POST",
     headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" },
@@ -96,26 +102,43 @@ async function runCloudflare(prompt: string, w: number, h: number, seed: string,
         : "看 msg 內 Cloudflare 回的錯誤",
     });
   }
-  const buf = await res.arrayBuffer();
-  // 偵測過小 (< 3KB)= 全黑/破圖 / 不是真正 PNG
-  if (buf.byteLength < 3000) {
+  // Cloudflare flux-1-schnell 回的是 JSON { result: { image: base64 } }、不是直接 PNG binary
+  const ctype = res.headers.get("content-type") ?? "";
+  let pngBuf: Buffer;
+  if (ctype.includes("application/json")) {
+    // JSON 模式 — base64 解出來
+    const j = await res.json().catch(() => null);
+    if (!j?.result?.image) {
+      return errJson("cloudflare", "no_image_in_json", 502, {
+        api_status: res.status,
+        raw: JSON.stringify(j).slice(0, 400),
+        hint: "Cloudflare 回 JSON 但沒 result.image、可能 model schema 變了",
+      });
+    }
+    pngBuf = Buffer.from(j.result.image, "base64");
+  } else {
+    // 舊 SD model 直接回 PNG binary
+    pngBuf = Buffer.from(await res.arrayBuffer());
+  }
+
+  // sanity check
+  if (pngBuf.length < 3000) {
     return errJson("cloudflare", "image_too_small", 502, {
       api_status: res.status,
-      bytes: buf.byteLength,
-      hint: "回的圖太小可能 NSFW filter 全黑、或 model 出錯。建議換 flux-1-schnell、它最穩",
+      bytes: pngBuf.length,
+      hint: "回的圖太小可能 NSFW filter 全黑、或 model 出錯",
     });
   }
-  // 偵測 PNG 簽名 (89 50 4E 47)、不是的話也回 error
-  const head = new Uint8Array(buf.slice(0, 4));
-  if (!(head[0] === 0x89 && head[1] === 0x50 && head[2] === 0x4e && head[3] === 0x47)) {
+  // 偵測 PNG signature 89 50 4E 47
+  if (!(pngBuf[0] === 0x89 && pngBuf[1] === 0x50 && pngBuf[2] === 0x4e && pngBuf[3] === 0x47)) {
     return errJson("cloudflare", "not_png", 502, {
       api_status: res.status,
-      bytes: buf.byteLength,
-      first_bytes: Array.from(head).map((b) => b.toString(16).padStart(2, "0")).join(" "),
-      hint: "回的不是 PNG、可能該 model 暫時掛。換 flux-1-schnell",
+      bytes: pngBuf.length,
+      first_bytes: Array.from(pngBuf.slice(0, 4)).map((b) => b.toString(16).padStart(2, "0")).join(" "),
+      hint: "base64 解出來不是 PNG、檢查 Cloudflare 是否切了 response format",
     });
   }
-  return new NextResponse(buf, {
+  return new NextResponse(new Uint8Array(pngBuf), {
     status: 200,
     headers: { "Content-Type": "image/png", "Cache-Control": "public, max-age=86400, s-maxage=604800" },
   });
@@ -129,11 +152,15 @@ async function runTogether(prompt: string, w: number, h: number, seed: string, m
       msg: "缺 TOGETHER_API_KEY、見 /admin/og-preview 設定步驟",
     });
   }
+  // FLUX schnell 系列要求 width/height 必須 16 整數倍、不然會生破圖
+  // 1200×630 → 1200×624 (630 round 到最近 16 倍)
+  const w16 = Math.floor(w / 16) * 16;
+  const h16 = Math.floor(h / 16) * 16;
   // 新 domain api.together.ai (rebrand 後、舊 api.together.xyz 仍可用但建議新版)
   const apiUrl = "https://api.together.ai/v1/images/generations";
   const body = {
     model, prompt,
-    width: w, height: h,
+    width: w16, height: h16,
     steps: 4, n: 1,
     seed: parseInt(seed, 10) || 42,
     response_format: "url",
