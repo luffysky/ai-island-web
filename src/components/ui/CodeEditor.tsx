@@ -6,11 +6,21 @@ import { javascript } from "@codemirror/lang-javascript";
 import { html } from "@codemirror/lang-html";
 import { css } from "@codemirror/lang-css";
 import { sql } from "@codemirror/lang-sql";
+import { json } from "@codemirror/lang-json";
+import { markdown } from "@codemirror/lang-markdown";
+import { yaml } from "@codemirror/lang-yaml";
+import { rust } from "@codemirror/lang-rust";
+import { go } from "@codemirror/lang-go";
+import { java } from "@codemirror/lang-java";
+import { cpp } from "@codemirror/lang-cpp";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { EditorView, keymap } from "@codemirror/view";
 import { useEffect, useMemo } from "react";
 
-export type CodeLang = "python" | "javascript" | "typescript" | "jsx" | "tsx" | "html" | "css" | "sql";
+export type CodeLang =
+  | "python" | "javascript" | "typescript" | "jsx" | "tsx"
+  | "html" | "css" | "sql" | "json" | "markdown" | "yaml"
+  | "rust" | "go" | "java" | "cpp" | "c" | "text";
 
 /**
  * 統一 code 編輯器 — CodeMirror 6
@@ -62,6 +72,14 @@ export function CodeEditor({
       case "html": return [html({ autoCloseTags: true })];
       case "css": return [css()];
       case "sql": return [sql()];
+      case "json": return [json()];
+      case "markdown": return [markdown()];
+      case "yaml": return [yaml()];
+      case "rust": return [rust()];
+      case "go": return [go()];
+      case "java": return [java()];
+      case "cpp":
+      case "c": return [cpp()];
       default: return [];
     }
   }, [lang]);

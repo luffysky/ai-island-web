@@ -177,45 +177,23 @@ async def nami_fetch(url, as_json=False):
 _b.nami_fetch = nami_fetch
 `);
 
-      // 預載：只裝最常用的、其他 lazy load 避免瀏覽器卡住
-      setProgress("預載 numpy（~3MB）...");
-      try {
-        await py.loadPackage(["numpy"]);
-      } catch (e) {
-        console.warn("[pyodide] numpy 預載失敗", e);
-      }
-
+      // 完全 lazy：不預載任何套件、加速 ready
+      // user 跑到 import numpy 時、Pyodide 會自動 micropip.install
+      // 這樣首次 ready 從 ~30s → ~5s
       window.__pyodide = py;
       pyodideRef.current = py;
       setProgress("");
 
-      // 背景慢慢裝其他重套件 (requestIdleCallback、不阻塞 UI)
-      const bgLoad = async () => {
-        const batches = [
-          ["pandas"],
-          ["matplotlib"],
-          ["sqlite3", "regex"],
-          ["beautifulsoup4", "lxml"],
-          ["pillow"],
-          // 不預載 scikit-learn / scipy (太大 ~20MB)、用到再 micropip.install
-        ];
-        for (const batch of batches) {
-          try {
-            // 用 idle callback 確保不卡 UI
-            await new Promise<void>((r) => {
-              if ((globalThis as any).requestIdleCallback) {
-                (globalThis as any).requestIdleCallback(() => r(), { timeout: 5000 });
-              } else {
-                setTimeout(r, 300);
-              }
-            });
-            await py.loadPackage(batch);
-          } catch (e) {
-            console.warn("[pyodide bg] batch failed", batch, e);
-          }
-        }
-      };
-      bgLoad();
+      // 超低優先級：page idle 5 秒後再背景預載最常用的 numpy
+      // 不阻塞 ready、不影響 user 即時操作
+      if (typeof (globalThis as any).requestIdleCallback !== "undefined") {
+        setTimeout(() => {
+          (globalThis as any).requestIdleCallback(
+            () => { py.loadPackage(["numpy", "pandas"]).catch(() => {}); },
+            { timeout: 30000 }
+          );
+        }, 5000);
+      }
 
       return py;
     })();
