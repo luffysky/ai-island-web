@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { Play, Loader2, Database, FileText, TrendingUp, BarChart3, Brain, Download } from "lucide-react";
 import { usePyodide } from "@/hooks/usePyodide";
 import { CodeEditor } from "@/components/ui/CodeEditor";
+import { AskAI } from "@/components/nami/AskAI";
 
 const EXERCISES = [
   {
@@ -424,14 +425,17 @@ export function DataLab() {
           {status === "ready" && <span className="text-emerald-400">● Python ready · numpy/pandas 已預載完可秒跑</span>}
           {status === "error" && <span className="text-red-400">⚠️ {error}</span>}
         </div>
-        <button
-          onClick={execute}
-          disabled={running || status !== "ready"}
-          className="px-4 py-1.5 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 text-black font-bold text-xs inline-flex items-center gap-1 disabled:opacity-50"
-        >
-          {running ? <Loader2 size={11} className="animate-spin" /> : <Play size={11} />}
-          跑分析
-        </button>
+        <div className="flex items-center gap-2">
+          <AskAI code={code} error={stderr} lang="python" context={`Data Lab · ${selected.name}`} />
+          <button
+            onClick={execute}
+            disabled={running || status !== "ready"}
+            className="px-4 py-1.5 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 text-black font-bold text-xs inline-flex items-center gap-1 disabled:opacity-50"
+          >
+            {running ? <Loader2 size={11} className="animate-spin" /> : <Play size={11} />}
+            跑分析
+          </button>
+        </div>
       </div>
 
       {/* Editor + Output split */}
