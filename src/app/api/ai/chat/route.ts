@@ -132,13 +132,14 @@ export async function POST(req: NextRequest) {
   const learningState = await getUserLearningState(user.id);
   const userContext = learningState ? formatLearningStateForPrompt(learningState) : undefined;
 
-  // 拿 user role + email 給 AI 認得董事長
+  // 拿 user role + username + email 給 AI 認得董事長 (多 signal 識別)
   const { data: profileForRole } = await admin
     .from("profiles")
-    .select("role")
+    .select("role, username")
     .eq("id", user.id)
     .maybeSingle();
   const userRole = (profileForRole as any)?.role ?? null;
+  const userUsername = (profileForRole as any)?.username ?? null;
   const userEmail = user.email ?? null;
 
   const systemPrompt = buildTutorSystemPrompt({
@@ -147,6 +148,8 @@ export async function POST(req: NextRequest) {
     contextLessonId,
     personaId,
     userContext,
+    userId: user.id,
+    userUsername,
     userRole,
     userEmail,
   });

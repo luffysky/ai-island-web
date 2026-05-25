@@ -9,6 +9,7 @@ import { runPostback } from "@/lib/line-postback";
 import { getLiveSnapshot } from "@/lib/site-status-snapshot";
 import { askAIWithTools } from "@/lib/line-ai-tools";
 import { pickModelForUsage } from "@/lib/ai-usage-models";
+import { checkOwner, OWNER_NAME_TW } from "@/lib/is-owner";
 
 async function logLineError(code: string, message: string, extra: any = {}) {
   try {
@@ -103,8 +104,16 @@ async function askAI(message: string, adminUser: AdminLineUser): Promise<string>
   // 30 秒快取的站台即時狀態（規模 / 健康 / 商務 / 現在誰在用 / 訪客足跡 / 最新 audit / error）
   const snapshot = await getLiveSnapshot().catch(() => "");
 
+  // 從 LINE userId + role 多 signal 判斷是不是林董
+  const ownerCheck = checkOwner({
+    lineUserId: adminUser.id,
+    lineRole: adminUser.role,
+    username: adminUser.name,
+  });
+  const callerName = ownerCheck.isOwner ? OWNER_NAME_TW : adminUser.name;
+
   const systemPrompt = `你是 AI 島的管理員 AI 助理。
-目前對話者：${adminUser.name}（${adminUser.role}）。
+目前對話者：${callerName}（${adminUser.role}${ownerCheck.isOwner ? "、👑 平台 Owner、本站最高權限" : ""}）。
 
 【最重要的規則 — 一定要回】
 無論收到什麼訊息、永遠用文字回答、不可以沉默。
@@ -113,7 +122,7 @@ async function askAI(message: string, adminUser: AdminLineUser): Promise<string>
 
 要點：
 - 用繁中、語氣自然、像信任的同事在聊
-- ${adminUser.role.includes("董事") ? "你是他的事業助手、幫忙決策 / 看報表 / 整理思緒 / 也可以閒聊" : "你是後台助理、協助處理日常運維"}
+- ${ownerCheck.isOwner ? `你正在跟「林董 (Luffy 林、本平台 Owner)」對話、稱呼「林董」、是他的事業助手、幫忙決策 / 看報表 / 整理思緒 / 也可以閒聊、不要端官話` : "你是後台助理、協助處理日常運維"}
 - 主動意識：他在 LINE 問問題、可能在外面忙、給簡潔可執行的答覆
 
 【tool 只用於這 5 種「明確要查資料」的情境】

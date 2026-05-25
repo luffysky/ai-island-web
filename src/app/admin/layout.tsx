@@ -4,6 +4,7 @@ import Link from "next/link";
 import { CollapsibleAside } from "./CollapsibleAside";
 import { LottieBackground } from "@/components/admin/LottieBackground";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { checkOwner, OWNER_NAME_TW } from "@/lib/is-owner";
 
 // 強制每次都 server-side render、不 cache
 export const dynamic = "force-dynamic";
@@ -28,11 +29,19 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     .eq("id", user.id)
     .single();
 
-  // owner = 林董 / 平台主、可進後台；admin = 一般管理員、也可
-  if (!profile || !["admin", "owner"].includes(profile.role)) {
+  // 用中央 isOwner helper 多重 signal 判斷 (role / username / email / userId)
+  const ownerCheck = checkOwner({
+    id: user.id,
+    username: profile?.username ?? null,
+    role: profile?.role ?? null,
+    email: user.email ?? null,
+  });
+  const isOwner = ownerCheck.isOwner;
+
+  // owner = 林董；admin = 一般管理員、都可進後台
+  if (!profile || !(isOwner || profile.role === "admin")) {
     redirect("/");
   }
-  const isOwner = profile.role === "owner";
 
   // 後台 Lottie 背景設定 (從 app_settings 撈、林董可在「應用設定 CRUD」調)
   let lottieSrc: string | null = null;
@@ -61,10 +70,17 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             <div>
               <h1 className="text-xl font-bold flex items-center gap-2">
                 AI 島 · 後台
-                {isOwner && <span className="text-[10px] px-2 py-0.5 rounded-full bg-gradient-to-r from-yellow-400 to-pink-400 text-black font-bold">👑 OWNER</span>}
+                {isOwner && (
+                  <span
+                    className="text-[10px] px-2 py-0.5 rounded-full bg-gradient-to-r from-yellow-400 to-pink-400 text-black font-bold cursor-help"
+                    title={`👑 Owner 識別命中: ${ownerCheck.reasons.join(" / ") || "(無、可能 bug)"}`}
+                  >
+                    👑 OWNER
+                  </span>
+                )}
               </h1>
               <p className="text-xs text-fg-muted">
-                哈囉 {isOwner ? "林董" : (profile?.display_name || profile?.username)} ✨
+                哈囉 {isOwner ? OWNER_NAME_TW : (profile?.display_name || profile?.username)} ✨
               </p>
             </div>
           </div>

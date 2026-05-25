@@ -6,6 +6,7 @@ import { buildQuickReply, type FlexMessage, type LineTextMessage } from "@/lib/l
 import { decryptKey } from "@/lib/ai-crypto";
 import { callAI } from "@/lib/ai-providers";
 import { SITE_STATS } from "@/lib/site-stats";
+import { checkOwner } from "@/lib/is-owner";
 
 // in-memory 對話歷史 (user webhook、跟 admin 分開)
 type Msg = { role: "user" | "assistant"; content: string };
@@ -25,15 +26,6 @@ type UserProfileLite = {
   level: number | null;
 };
 
-const OWNER_EMAILS = new Set(["luffysky00@gmail.com"]);
-
-function isOwner(p: UserProfileLite | null): boolean {
-  if (!p) return false;
-  if (p.role === "owner") return true;
-  if (p.email && OWNER_EMAILS.has(p.email.toLowerCase())) return true;
-  return false;
-}
-
 async function askUserAI(text: string, profile: UserProfileLite | null, lineUserId: string): Promise<string | null> {
   const admin = createSupabaseAdmin();
   const { data: models } = await admin.from("ai_models").select("*").eq("is_active", true).limit(20);
@@ -50,7 +42,13 @@ async function askUserAI(text: string, profile: UserProfileLite | null, lineUser
   let apiKey: string;
   try { apiKey = decryptKey((sysKey as any).api_key_encrypted); } catch { return null; }
 
-  const owner = isOwner(profile);
+  const owner = checkOwner({
+    id: profile?.id ?? null,
+    username: profile?.username ?? null,
+    role: profile?.role ?? null,
+    email: profile?.email ?? null,
+    lineUserId,
+  }).isOwner;
   const name = profile?.display_name || profile?.username || `LINE 學員${lineUserId.slice(0, 6)}`;
   const userMeta = profile
     ? `身份：${owner ? "🌟 平台董事長 / Owner (林董 / Luffy 林)" : `學員 (${profile.role}、Lv.${profile.level ?? 1}、${profile.xp ?? 0} XP)`}`

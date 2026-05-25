@@ -46,12 +46,7 @@ function buildCourseSummary(): string {
 
 import { getPersona } from "./ai-personas";
 
-const OWNER_EMAILS = new Set(["luffysky00@gmail.com"]);
-function userIsOwner(u: { role?: string | null; email?: string | null }): boolean {
-  if (u.role === "owner") return true;
-  if (u.email && OWNER_EMAILS.has(u.email.toLowerCase())) return true;
-  return false;
-}
+import { checkOwner } from "./is-owner";
 
 export function buildTutorSystemPrompt(options: {
   tone?: string;
@@ -62,11 +57,19 @@ export function buildTutorSystemPrompt(options: {
   userContext?: string;  // 從 formatLearningStateForPrompt() 來的整段學員背景
   userRole?: string | null;
   userEmail?: string | null;
+  userId?: string | null;
+  userUsername?: string | null;
 }): string {
   const tone = options.tone ?? "friendly";
   const toneInstruction = TONE_STYLES[tone] ?? TONE_STYLES.friendly;
   const persona = getPersona(options.personaId);
-  const isOwner = userIsOwner({ role: options.userRole, email: options.userEmail });
+  const ownerCheck = checkOwner({
+    id: options.userId ?? null,
+    username: options.userUsername ?? null,
+    role: options.userRole ?? null,
+    email: options.userEmail ?? null,
+  });
+  const isOwner = ownerCheck.isOwner;
 
   // 如果有 lesson context、把該 lesson 內容塞進去
   let contextInfo = "";

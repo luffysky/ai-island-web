@@ -1,10 +1,27 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { createSupabaseServer } from "@/lib/supabase-server";
 import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
 import { DashboardCharts } from "./DashboardCharts";
+import { checkOwner } from "@/lib/is-owner";
 
 export default async function AdminOverviewPage() {
   const supabase = createSupabaseAdmin();
+
+  // 拿當前 user 做 owner identity check (給 dashboard 顯示)
+  const serverSb = await createSupabaseServer();
+  const { data: { user: currentUser } } = await serverSb.auth.getUser();
+  const { data: currentProfile } = currentUser ? await supabase
+    .from("profiles")
+    .select("username, role")
+    .eq("id", currentUser.id)
+    .maybeSingle() : { data: null };
+  const ownerCheck = currentUser ? checkOwner({
+    id: currentUser.id,
+    username: (currentProfile as any)?.username ?? null,
+    role: (currentProfile as any)?.role ?? null,
+    email: currentUser.email ?? null,
+  }) : null;
 
   const today = new Date();
   const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate()).toISOString();
@@ -224,6 +241,49 @@ export default async function AdminOverviewPage() {
 
   return (
     <div className="space-y-6">
+      {/* Owner identity card — 顯示 AI 為什麼判你 owner */}
+      {ownerCheck?.isOwner && (
+        <div className="bg-gradient-to-r from-yellow-500/10 via-pink-500/10 to-purple-500/10 border border-yellow-500/30 rounded-2xl p-4">
+          <div className="flex items-start gap-3 flex-wrap">
+            <span className="text-2xl">👑</span>
+            <div className="flex-1 min-w-0">
+              <div className="font-bold text-sm flex items-center gap-2 flex-wrap">
+                Owner 身份識別已生效
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-300 border border-yellow-500/30">
+                  {ownerCheck.signals.role && "role"}
+                  {ownerCheck.signals.username && " · username"}
+                  {ownerCheck.signals.email && " · email"}
+                  {ownerCheck.signals.userId && " · userId"}
+                </span>
+              </div>
+              <p className="text-[11px] text-fg-muted mt-1 leading-relaxed">
+                AI 判 owner 用 5 個 signal 任一命中 (role / username / userId / email / LINE role)。當前你命中：
+              </p>
+              <ul className="text-[11px] text-fg-muted mt-1 space-y-0.5">
+                {ownerCheck.reasons.map((r, i) => (
+                  <li key={i} className="font-mono">✓ {r}</li>
+                ))}
+                {ownerCheck.reasons.length === 0 && <li className="text-orange-400">⚠️ 沒命中任何 signal、但 owner=true (代表 caller 強制傳了)</li>}
+              </ul>
+              <details className="mt-2 text-[10px]">
+                <summary className="cursor-pointer text-fg-muted hover:text-fg">所有 signal 狀態</summary>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-1 mt-2 font-mono">
+                  <span className={ownerCheck.signals.role ? "text-emerald-400" : "text-fg-muted/50"}>{ownerCheck.signals.role ? "✓" : "·"} role = owner</span>
+                  <span className={ownerCheck.signals.username ? "text-emerald-400" : "text-fg-muted/50"}>{ownerCheck.signals.username ? "✓" : "·"} username 在白名單</span>
+                  <span className={ownerCheck.signals.userId ? "text-emerald-400" : "text-fg-muted/50"}>{ownerCheck.signals.userId ? "✓" : "·"} userId 在 OWNER_USER_IDS</span>
+                  <span className={ownerCheck.signals.email ? "text-emerald-400" : "text-fg-muted/50"}>{ownerCheck.signals.email ? "✓" : "·"} email 在 OWNER_EMAILS</span>
+                  <span className={ownerCheck.signals.lineRole ? "text-emerald-400" : "text-fg-muted/50"}>{ownerCheck.signals.lineRole ? "✓" : "·"} LINE role 含「董事」</span>
+                </div>
+                <p className="mt-2 text-fg-muted/70">
+                  env 可調：<code className="text-purple-300">OWNER_USERNAMES</code>、<code className="text-purple-300">OWNER_USER_IDS</code>、<code className="text-purple-300">OWNER_EMAILS</code> (逗號分隔)。
+                  沒設也有預設 (username startsWith luffysky00 / email luffysky00@gmail.com)。
+                </p>
+              </details>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* 即時 4 widget grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
         {/* 即時在線 */}
