@@ -92,14 +92,17 @@ async function runCloudflare(prompt: string, w: number, h: number, seed: string,
   });
   if (!res.ok) {
     const txt = await res.text().catch(() => "");
-    return errJson("cloudflare", "api_failed", res.status === 401 ? 401 : 502, {
+    console.log(`[og/ai/cloudflare] ${apiUrl} → ${res.status} ${txt.slice(0, 300)}`);
+    // 真實 status forward
+    return errJson("cloudflare", "api_failed", res.status, {
       api_status: res.status,
       msg: txt.slice(0, 600),
       api_url: apiUrl,
-      hint: res.status === 401 ? "Token 無效、重拿 Workers AI template token"
+      hint: res.status === 401 ? "Token 無效。重點：必須用「Workers AI」範本建 token (不是 Read All)、且不要勾 IP filter"
+        : res.status === 403 ? "Token 有效但缺 Workers AI permission、重建 token 選對範本"
         : res.status === 404 ? "Model 名稱錯、用 @cf/black-forest-labs/flux-1-schnell"
         : res.status === 429 ? "今日 quota 用完 (10k neurons/day)"
-        : "看 msg 內 Cloudflare 回的錯誤",
+        : `Cloudflare 真實 status ${res.status}、看 msg`,
     });
   }
   // Cloudflare flux-1-schnell 回的是 JSON { result: { image: base64 } }、不是直接 PNG binary
@@ -171,17 +174,21 @@ async function runTogether(prompt: string, w: number, h: number, seed: string, m
     body: JSON.stringify(body),
   });
   const txt = await res.text();
+  console.log(`[og/ai/together] POST ${apiUrl} → ${res.status} ${txt.slice(0, 200)}`);
   if (!res.ok) {
-    return errJson("together", "api_failed", res.status === 401 ? 401 : res.status === 422 ? 422 : 502, {
+    // 真實 status forward、不再 wrap 502
+    return errJson("together", "api_failed", res.status, {
       api_status: res.status,
       msg: txt.slice(0, 600),
       api_url: apiUrl,
-      hint: res.status === 401 ? "Token 無效"
-        : res.status === 404 ? "Model 名稱錯、試 'black-forest-labs/FLUX.1-schnell-Free' 或 'black-forest-labs/FLUX.1-schnell'"
-        : res.status === 422 ? "參數錯、body 看 msg"
-        : res.status === 403 ? "Model 需要 Build Tier 2+ ($5 spend)、試 schnell-Free 不需要 tier"
-        : res.status === 429 ? "rate limited"
-        : "看 msg 內 Together 回的錯誤",
+      hint: res.status === 401 ? "Token 無效或過期、去 https://api.together.ai/settings/api-keys 重拿"
+        : res.status === 403 ? "Model 需要 Build Tier 2+ ($5 spend)、改用 FLUX.1-schnell-Free (永久免費、不需 tier)"
+        : res.status === 404 ? "Model 名稱錯、用 'black-forest-labs/FLUX.1-schnell-Free'"
+        : res.status === 422 ? "參數錯、看 msg — 常見：width/height 不是 16 整數倍 (FLUX 限制)"
+        : res.status === 429 ? "free tier rate limited、等一分鐘再試"
+        : res.status === 500 ? "Together server 端錯、稍後再試"
+        : res.status === 502 ? "Together 上游 gateway 錯、稍後再試"
+        : `Together 真實 status ${res.status}、看 msg`,
     });
   }
   let j: any;
@@ -217,15 +224,17 @@ async function runHuggingFace(prompt: string, w: number, h: number, model: strin
   });
   if (!res.ok) {
     const txt = await res.text().catch(() => "");
-    return errJson("huggingface", "api_failed", res.status === 401 ? 401 : 502, {
+    console.log(`[og/ai/huggingface] ${apiUrl} → ${res.status} ${txt.slice(0, 300)}`);
+    // 真實 status forward
+    return errJson("huggingface", "api_failed", res.status, {
       api_status: res.status,
       msg: txt.slice(0, 600),
       api_url: apiUrl,
       hint: res.status === 401 ? "Token 無效或無 Read 權限"
-        : res.status === 404 ? "Model 名稱錯、或不在 HF serverless inference (試 'black-forest-labs/FLUX.1-schnell' 或 'stabilityai/stable-diffusion-xl-base-1.0')"
+        : res.status === 404 ? "Model 名稱錯、或不在 HF serverless inference"
         : res.status === 503 ? "Model cold start、等 30 秒再試"
-        : res.status === 429 ? "Free tier rate limited"
-        : "HF 整個 inference 服務這幾個月不穩、建議改用 Together AI 或 Cloudflare",
+        : res.status === 429 ? "Free tier rate limited (canPay:false 帳號限制嚴)"
+        : `HF 真實 status ${res.status}、看 msg`,
     });
   }
   const ct = res.headers.get("content-type") ?? "";
