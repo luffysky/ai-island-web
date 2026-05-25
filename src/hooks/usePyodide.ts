@@ -3,7 +3,13 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 
 const PYODIDE_VERSION = "0.26.4";
-const PYODIDE_CDN = `https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full/`;
+// 多 CDN fallback：jsdelivr 慢 / 掛時自動換 unpkg / cloudflare
+const PYODIDE_CDNS = [
+  `https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full/`,
+  `https://unpkg.com/pyodide@${PYODIDE_VERSION}/full/`,
+  `https://pyodide-cdn2.iodide.io/v${PYODIDE_VERSION}/full/`,
+];
+const PYODIDE_CDN = PYODIDE_CDNS[0]; // 預設用 jsdelivr (sw cache 用此)
 
 const MAX_STDOUT_LINES = 2000;       // 超過自動截斷、避免瀏覽器卡
 const MAX_STDOUT_CHARS = 200_000;    // 200KB 上限
@@ -97,19 +103,38 @@ export function usePyodide(autoLoad = false) {
     setError(null);
 
     const promise = (async () => {
+      // 多 CDN fallback、自動切換
+      let activeCdn: string | null = null;
       if (!window.loadPyodide) {
-        await new Promise<void>((resolve, reject) => {
-          const s = document.createElement("script");
-          s.src = `${PYODIDE_CDN}pyodide.js`;
-          s.async = true;
-          s.onload = () => resolve();
-          s.onerror = () => reject(new Error("Pyodide script 載入失敗"));
-          document.head.appendChild(s);
-        });
+        for (let i = 0; i < PYODIDE_CDNS.length; i++) {
+          const cdn = PYODIDE_CDNS[i];
+          setProgress(`從 ${new URL(cdn).hostname} 載入 pyodide.js...`);
+          try {
+            await new Promise<void>((resolve, reject) => {
+              const s = document.createElement("script");
+              s.src = `${cdn}pyodide.js`;
+              s.async = true;
+              s.onload = () => resolve();
+              s.onerror = () => reject(new Error(`CDN ${cdn} 載入失敗`));
+              document.head.appendChild(s);
+              // 8 秒超時、自動 fallback
+              setTimeout(() => reject(new Error(`CDN ${cdn} 超時`)), 8000);
+            });
+            activeCdn = cdn;
+            break;
+          } catch (e: any) {
+            console.warn(`[pyodide] CDN ${i + 1}/${PYODIDE_CDNS.length} 失敗:`, e?.message);
+            if (i === PYODIDE_CDNS.length - 1) {
+              throw new Error("所有 Pyodide CDN 都失敗、檢查網路");
+            }
+          }
+        }
+      } else {
+        activeCdn = PYODIDE_CDN;
       }
       setProgress("啟動 Python runtime (~5MB)...");
       const py = await window.loadPyodide({
-        indexURL: PYODIDE_CDN,
+        indexURL: activeCdn!,
         stdout: () => {},
       });
       setProgress("預載 micropip + patch input...");
