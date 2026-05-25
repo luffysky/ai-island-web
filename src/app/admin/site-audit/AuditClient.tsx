@@ -6,7 +6,8 @@ import type { RouteEntry } from "./page";
 
 type PingResult = {
   status?: number;
-  ok: boolean;
+  ok: boolean;          // 真的通了 (200 / 401 / 403)
+  partial?: boolean;    // endpoint 存在但 GET 無法完全驗證 (405 POST-only / 400 缺參數)
   redirect?: boolean;
   redirectTo?: string;
   error?: string;
@@ -25,7 +26,7 @@ const AREA_META: Record<RouteEntry["area"], { label: string; emoji: string; tone
 export function AuditClient({ routes }: { routes: RouteEntry[] }) {
   const [results, setResults] = useState<Map<string, PingResult>>(new Map());
   const [pingingAll, setPingingAll] = useState(false);
-  const [filter, setFilter] = useState<"all" | "broken" | "redirect" | "untested" | RouteEntry["area"]>("all");
+  const [filter, setFilter] = useState<"all" | "broken" | "partial" | "redirect" | "untested" | RouteEntry["area"]>("all");
   const [search, setSearch] = useState("");
   const [skipDynamic, setSkipDynamic] = useState(true);
   const [, startTransition] = useTransition();
@@ -34,7 +35,8 @@ export function AuditClient({ routes }: { routes: RouteEntry[] }) {
     return routes.filter((r) => {
       if (search && !r.path.toLowerCase().includes(search.toLowerCase())) return false;
       const res = results.get(r.path);
-      if (filter === "broken") return res && !res.ok && !res.redirect;
+      if (filter === "broken") return res && !res.ok && !res.partial && !res.redirect;
+      if (filter === "partial") return res && res.partial;
       if (filter === "redirect") return res && res.redirect;
       if (filter === "untested") return !res;
       if (filter !== "all" && r.area !== filter) return false;
@@ -58,11 +60,11 @@ export function AuditClient({ routes }: { routes: RouteEntry[] }) {
       if (status >= 300 && status < 400) {
         return { status, ok: false, redirect: true, redirectTo: res.headers.get("location") ?? undefined, ms };
       }
-      // API：405 / 400 / 401 / 403 / 422 都算「endpoint 存在、正常擋下」
-      if (type === "api") {
-        return { status, ok: res.ok || [400, 401, 403, 405, 422].includes(status), ms };
-      }
-      return { status, ok: res.ok || status === 401 || status === 403, ms };
+      // 真的通：200/2xx + 401/403 (guard 正常擋下、邏輯確實跑了)
+      const ok = res.ok || status === 401 || status === 403;
+      // endpoint 存在但 GET 沒辦法測：405 (POST-only)、400 (缺 query param)、422 (validation 失敗)
+      const partial = !ok && type === "api" && [400, 405, 422].includes(status);
+      return { status, ok, partial, ms };
     } catch (e: any) {
       return { ok: false, error: e?.message ?? "fetch_failed", ms: Date.now() - start };
     }
@@ -110,16 +112,17 @@ export function AuditClient({ routes }: { routes: RouteEntry[] }) {
   }, [filtered]);
 
   const summary = useMemo(() => {
-    let ok = 0, broken = 0, redirect = 0, untested = 0, dynamic = 0;
+    let ok = 0, partial = 0, broken = 0, redirect = 0, untested = 0, dynamic = 0;
     for (const r of routes) {
       if (r.is_dynamic) { dynamic++; continue; }
       const res = results.get(r.path);
       if (!res) untested++;
       else if (res.ok) ok++;
+      else if (res.partial) partial++;
       else if (res.redirect) redirect++;
       else broken++;
     }
-    return { ok, broken, redirect, untested, dynamic };
+    return { ok, partial, broken, redirect, untested, dynamic };
   }, [routes, results]);
 
   return (
@@ -150,6 +153,7 @@ export function AuditClient({ routes }: { routes: RouteEntry[] }) {
           <Filter size={12} className="text-fg-muted" />
           <FilterChip current={filter} value="all" onClick={setFilter}>全部</FilterChip>
           <FilterChip current={filter} value="broken" onClick={setFilter} tone="danger">❌ 壞掉 ({summary.broken})</FilterChip>
+          <FilterChip current={filter} value="partial" onClick={setFilter} tone="warning">🟡 需手動驗 ({summary.partial})</FilterChip>
           <FilterChip current={filter} value="redirect" onClick={setFilter} tone="warning">↪️ 轉址 ({summary.redirect})</FilterChip>
           <FilterChip current={filter} value="untested" onClick={setFilter}>未測 ({summary.untested})</FilterChip>
           <span className="text-fg-muted">|</span>
@@ -170,10 +174,11 @@ export function AuditClient({ routes }: { routes: RouteEntry[] }) {
 
       {/* summary banner */}
       {Object.keys(results).length > 0 && (
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-2 text-center text-xs">
-          <SummaryCard label="✅ 正常" value={summary.ok} color="text-green-400" />
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-2 text-center text-xs">
+          <SummaryCard label="✅ 通了" value={summary.ok} color="text-green-400" />
+          <SummaryCard label="🟡 需手動驗" value={summary.partial} color="text-yellow-400" />
           <SummaryCard label="❌ 壞掉" value={summary.broken} color="text-red-400" />
-          <SummaryCard label="↪️ 轉址" value={summary.redirect} color="text-yellow-400" />
+          <SummaryCard label="↪️ 轉址" value={summary.redirect} color="text-orange-400" />
           <SummaryCard label="未測" value={summary.untested} color="text-fg-muted" />
           <SummaryCard label="動態跳過" value={summary.dynamic} color="text-fg-muted" />
         </div>
@@ -275,8 +280,14 @@ function RouteRow({ route, result, onPing }: { route: RouteEntry; result?: PingR
           <span className="inline-flex items-center gap-1 text-green-400">
             <CheckCircle2 size={11} /> {result.status}
             {(result.status === 401 || result.status === 403) && <span className="text-[10px] text-fg-muted">(guard ok)</span>}
-            {result.status === 405 && <span className="text-[10px] text-fg-muted">(POST-only)</span>}
-            {result.status === 400 && <span className="text-[10px] text-fg-muted">(缺參數、正常)</span>}
+            {result.ms && <span className="text-[10px] text-fg-muted">{result.ms}ms</span>}
+          </span>
+        ) : result.partial ? (
+          <span className="inline-flex items-center gap-1 text-yellow-400">
+            <AlertCircle size={11} /> {result.status}
+            {result.status === 405 && <span className="text-[10px] text-fg-muted">POST-only、GET 沒辦法測</span>}
+            {result.status === 400 && <span className="text-[10px] text-fg-muted">缺參數、GET 沒辦法測</span>}
+            {result.status === 422 && <span className="text-[10px] text-fg-muted">需 body、GET 沒辦法測</span>}
             {result.ms && <span className="text-[10px] text-fg-muted">{result.ms}ms</span>}
           </span>
         ) : result.redirect ? (
