@@ -15,6 +15,7 @@ import { WebLab } from "./tabs/WebLab";
 import { FrameworkLab } from "./tabs/FrameworkLab";
 import { ChallengeMode } from "./tabs/ChallengeMode";
 import { MiniIDE } from "./tabs/MiniIDE";
+import { DatabaseLab } from "./tabs/DatabaseLab";
 
 const TABS = [
   { id: "repl", label: "Python REPL", emoji: "🐍", icon: Terminal, desc: "互動式 Python、一次跑一段" },
@@ -25,6 +26,7 @@ const TABS = [
   { id: "web", label: "Web Lab", emoji: "🌐", icon: Globe, desc: "HTML / CSS / JS 即時預覽" },
   { id: "framework", label: "Frameworks", emoji: "⚛️", icon: Atom, desc: "React / Vue / Next / Nest" },
   { id: "datalab", label: "Data Lab", emoji: "📊", icon: Database, desc: "真實數據分析、業界題型" },
+  { id: "dblab", label: "Database Lab", emoji: "🗄️", icon: Database, desc: "SQLite live + Postgres/MySQL/Mongo/Supabase" },
   { id: "exercises", label: "練習題", emoji: "📝", icon: GraduationCap, desc: "出題 + 解答 (隱藏)" },
   { id: "challenges", label: "挑戰模式", emoji: "🏆", icon: Trophy, desc: "通過題目拿 XP、進度存 DB" },
   { id: "charts", label: "Charts Gallery", emoji: "📈", icon: BarChart3, desc: "matplotlib / recharts 圖表" },
@@ -161,6 +163,7 @@ export function NamiPlayground({
           {active === "web" && <WebLab />}
           {active === "framework" && <FrameworkLab />}
           {active === "datalab" && <DataLab />}
+          {active === "dblab" && <DatabaseLab />}
           {active === "exercises" && <Exercises />}
           {active === "challenges" && <ChallengeMode />}
           {active === "ide" && <MiniIDE />}
