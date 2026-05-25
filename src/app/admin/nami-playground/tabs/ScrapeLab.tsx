@@ -4,7 +4,157 @@ import { useState } from "react";
 import { Play, Loader2, Globe, ExternalLink, Download } from "lucide-react";
 import { usePyodide } from "@/hooks/usePyodide";
 
+// 業界常用 API + 練習站、全部合法
 const PRESET_SITES = [
+  // ============ JSON API（最容易上手）============
+  {
+    name: "💰 CoinGecko 加密貨幣價格",
+    url: "https://api.coingecko.com/api/v3/coins/markets",
+    note: "業界用：金融儀表板、追蹤幣價",
+    code: `# 抓 CoinGecko 加密貨幣 top 20 + 24hr 漲跌
+import json
+from js import fetch, encodeURIComponent
+
+url = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=20"
+resp = await fetch("/api/admin/playground/scrape?url=" + encodeURIComponent(url))
+data = await resp.json()
+coins = json.loads(data["body"])
+
+print(f"{'排名':<4} {'符號':<8} {'價格 USD':<14} {'24hr':<10} {'市值'}")
+print("-" * 60)
+for c in coins:
+    chg = c.get("price_change_percentage_24h", 0) or 0
+    arrow = "📈" if chg >= 0 else "📉"
+    mcap = c.get("market_cap", 0)
+    mcap_b = mcap / 1_000_000_000
+    print(f"{c['market_cap_rank']:<4} {c['symbol'].upper():<8} \${c['current_price']:<13,.2f} {arrow}{chg:+6.2f}% {mcap_b:>8,.1f}B")
+`,
+  },
+  {
+    name: "💱 ExchangeRate 匯率",
+    url: "https://open.er-api.com/v6/latest/USD",
+    note: "業界用：跨幣別計算、財報換算",
+    code: `# 抓即時匯率、計算 TWD/JPY/CNY/EUR vs USD
+import json
+from js import fetch, encodeURIComponent
+url = "https://open.er-api.com/v6/latest/USD"
+resp = await fetch("/api/admin/playground/scrape?url=" + encodeURIComponent(url))
+data = await resp.json()
+rates = json.loads(data["body"])["rates"]
+
+print(f"基準：1 USD = ?\\n")
+for code in ["TWD", "JPY", "CNY", "EUR", "GBP", "HKD", "KRW", "SGD"]:
+    if code in rates:
+        print(f"  {code}: {rates[code]:>10,.4f}")
+
+# 業界常見題：「100 美金值多少台幣 / 日圓 / 歐元」
+amount = 100
+print(f"\\n\\n試算：{amount} USD =")
+print(f"  TWD: NT$ {amount * rates['TWD']:,.0f}")
+print(f"  JPY: ¥  {amount * rates['JPY']:,.0f}")
+print(f"  EUR: €  {amount * rates['EUR']:,.2f}")
+`,
+  },
+  {
+    name: "🐙 GitHub Trending API",
+    url: "https://api.github.com/search/repositories",
+    note: "業界用：技術趨勢分析、競品研究",
+    code: `# 抓 GitHub 上週新增 star 最多的 Python repo
+import json
+from datetime import datetime, timedelta
+from js import fetch, encodeURIComponent
+
+last_week = (datetime.utcnow() - timedelta(days=7)).strftime("%Y-%m-%d")
+url = f"https://api.github.com/search/repositories?q=language:python+created:>{last_week}&sort=stars&order=desc&per_page=10"
+resp = await fetch("/api/admin/playground/scrape?url=" + encodeURIComponent(url))
+data = await resp.json()
+result = json.loads(data["body"])
+
+print(f"📊 上週 (從 {last_week}) star 最多的 Python repo top 10：\\n")
+for i, r in enumerate(result["items"], 1):
+    desc = (r.get("description") or "")[:60]
+    print(f"{i:2}. ⭐ {r['stargazers_count']:>6,} | {r['full_name']}")
+    if desc:
+        print(f"      {desc}")
+    print()
+`,
+  },
+  {
+    name: "📦 NPM package 統計",
+    url: "https://registry.npmjs.org/react",
+    note: "業界用：技術棧分析、套件比較",
+    code: `# 比較 React / Vue / Svelte 的下載統計
+import json
+from js import fetch, encodeURIComponent
+
+packages = ["react", "vue", "svelte", "next", "nuxt"]
+results = []
+for pkg in packages:
+    url = f"https://registry.npmjs.org/{pkg}"
+    resp = await fetch("/api/admin/playground/scrape?url=" + encodeURIComponent(url))
+    data = await resp.json()
+    info = json.loads(data["body"])
+    versions = info.get("versions", {})
+    latest = info.get("dist-tags", {}).get("latest", "?")
+    results.append({
+        "name": pkg,
+        "latest": latest,
+        "versions_count": len(versions),
+        "description": info.get("description", "")[:50],
+    })
+
+print(f"{'package':<10} {'latest':<10} {'total versions':<16}")
+print("-" * 50)
+for r in results:
+    print(f"{r['name']:<10} {r['latest']:<10} {r['versions_count']:<16}")
+    print(f"  → {r['description']}\\n")
+`,
+  },
+  {
+    name: "📡 SpaceX / 太空新聞 API",
+    url: "https://api.spaceflightnewsapi.net/v4/articles",
+    note: "業界用：新聞聚合、輿情分析",
+    code: `# 抓最新 10 篇太空新聞
+import json
+from js import fetch, encodeURIComponent
+url = "https://api.spaceflightnewsapi.net/v4/articles?limit=10"
+resp = await fetch("/api/admin/playground/scrape?url=" + encodeURIComponent(url))
+data = await resp.json()
+result = json.loads(data["body"])
+
+print(f"📡 最新 10 篇太空新聞：\\n")
+for i, a in enumerate(result["results"], 1):
+    print(f"{i:2}. {a['title']}")
+    print(f"    {a['news_site']} | {a['published_at'][:10]}")
+    print(f"    {a['summary'][:80]}...\\n")
+`,
+  },
+  {
+    name: "🌍 國家資料庫 RESTCountries",
+    url: "https://restcountries.com/v3.1/all",
+    note: "業界用：地理資料、人口統計分析",
+    code: `# 抓全世界國家、找人口最多的 10 個
+import json
+from js import fetch, encodeURIComponent
+url = "https://restcountries.com/v3.1/all?fields=name,population,area,capital,region,languages,currencies"
+resp = await fetch("/api/admin/playground/scrape?url=" + encodeURIComponent(url))
+data = await resp.json()
+countries = json.loads(data["body"])
+
+# 排序找人口 top 10
+sorted_pop = sorted(countries, key=lambda c: c.get("population", 0), reverse=True)[:10]
+
+print(f"🌍 全球人口 top 10：\\n")
+print(f"{'排名':<4} {'國家':<25} {'人口':<15} {'面積 km²':<12} {'首都'}")
+print("-" * 70)
+for i, c in enumerate(sorted_pop, 1):
+    name = c.get("name", {}).get("common", "?")
+    pop = c.get("population", 0)
+    area = c.get("area", 0)
+    cap = ", ".join(c.get("capital", ["—"]))
+    print(f"{i:<4} {name:<25} {pop:>13,}  {area:>10,.0f}  {cap}")
+`,
+  },
   {
     name: "🏝️ AI 島本站 chapters",
     url: "/chapters",

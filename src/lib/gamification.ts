@@ -57,9 +57,22 @@ export class GamificationEngine {
     // 3. 寫進度（trigger 會自動加 XP + 更新 streak）
     const { error } = await this.supabase
       .from('lesson_progress')
-      .upsert({ user_id: user.id, chapter_id: chapterId, lesson_id: lessonId, xp_awarded: xp });
+      .upsert(
+        {
+          user_id: user.id,
+          chapter_id: chapterId,
+          lesson_id: lessonId,
+          xp_awarded: xp,
+          completed: true,
+          completed_at: new Date().toISOString(),
+        },
+        { onConflict: 'user_id,lesson_id' },
+      );
 
-    if (error) return { error: error.message };
+    if (error) {
+      console.error('[completeLesson] upsert failed:', error);
+      return { error: error.message };
+    }
 
     // 4. 取更新後狀態
     const { data: after } = await this.supabase
