@@ -141,38 +141,81 @@ async def install(pkgs, *args, **kwargs):
 _micropip.install = install
 `);
 
-      // 預載資料科學核心 (Pyodide 內建 wheel、~40MB、第一次慢、之後 cache)
-      setProgress("預載 numpy / pandas（~10MB、首次慢）...");
+      // 注入 nami_fetch helper — 全域可用、自動帶 admin proxy + 友善 error
+      await py.runPythonAsync(`
+import builtins as _b
+import json as _json
+
+async def nami_fetch(url, as_json=False):
+    """爬一個 URL、走 admin proxy、自動 .to_py() + error handling
+    用法：
+        text = await nami_fetch("https://books.toscrape.com")
+        data = await nami_fetch("https://api.github.com/users/octocat", as_json=True)
+    """
+    from js import fetch as _fetch, encodeURIComponent as _enc
+    resp = await _fetch("/api/admin/playground/scrape?url=" + _enc(url))
+    raw = (await resp.json()).to_py()
+    if not raw.get("body"):
+        err = raw.get("error", "unknown")
+        msg = raw.get("message", "")
+        hint = ""
+        if err == "host_not_allowed":
+            hint = "\\n💡 此網址 host 不在 allowlist、見 ScrapeLab 預設站清單"
+        elif err == "rate_limited":
+            hint = "\\n💡 每小時 100 次限制、稍等再試"
+        elif err == "timeout":
+            hint = "\\n💡 對方 server 慢 / 沒回應、換別的 URL"
+        raise RuntimeError(f"❌ nami_fetch 失敗 [{err}]: {msg}{hint}")
+    body = raw["body"]
+    if as_json:
+        try:
+            return _json.loads(body)
+        except _json.JSONDecodeError as e:
+            raise RuntimeError(f"❌ 拿到的不是合法 JSON: {str(e)[:100]}")
+    return body
+
+_b.nami_fetch = nami_fetch
+`);
+
+      // 預載：只裝最常用的、其他 lazy load 避免瀏覽器卡住
+      setProgress("預載 numpy（~3MB）...");
       try {
-        await py.loadPackage(["numpy", "pandas"]);
-        setProgress("預載 matplotlib / scikit-learn / scipy（~30MB）...");
-        await py.loadPackage(["matplotlib", "scikit-learn", "scipy"]);
-        setProgress("預載 sqlite3 / pillow / lxml...");
-        await py.loadPackage(["sqlite3", "pillow", "lxml", "regex", "beautifulsoup4"]);
+        await py.loadPackage(["numpy"]);
       } catch (e) {
-        console.warn("[pyodide] 部分核心套件載入失敗、後續可手動 micropip.install", e);
+        console.warn("[pyodide] numpy 預載失敗", e);
       }
 
       window.__pyodide = py;
       pyodideRef.current = py;
       setProgress("");
 
-      // 背景繼續裝 PyPI 套件 (不阻塞 ready 狀態)
-      setTimeout(() => {
-        py.runPythonAsync(`
-import micropip
-# 業界常用、background install
-async def _bg():
-    pkgs = ["fastapi", "httpx", "flask", "openpyxl", "pytz", "python-dateutil", "plotly"]
-    for p in pkgs:
-        try:
-            await _original_install(p)
-        except Exception as e:
-            pass
-import asyncio
-asyncio.ensure_future(_bg())
-`).catch(() => {});
-      }, 1000);
+      // 背景慢慢裝其他重套件 (requestIdleCallback、不阻塞 UI)
+      const bgLoad = async () => {
+        const batches = [
+          ["pandas"],
+          ["matplotlib"],
+          ["sqlite3", "regex"],
+          ["beautifulsoup4", "lxml"],
+          ["pillow"],
+          // 不預載 scikit-learn / scipy (太大 ~20MB)、用到再 micropip.install
+        ];
+        for (const batch of batches) {
+          try {
+            // 用 idle callback 確保不卡 UI
+            await new Promise<void>((r) => {
+              if ((globalThis as any).requestIdleCallback) {
+                (globalThis as any).requestIdleCallback(() => r(), { timeout: 5000 });
+              } else {
+                setTimeout(r, 300);
+              }
+            });
+            await py.loadPackage(batch);
+          } catch (e) {
+            console.warn("[pyodide bg] batch failed", batch, e);
+          }
+        }
+      };
+      bgLoad();
 
       return py;
     })();

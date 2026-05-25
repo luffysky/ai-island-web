@@ -54,7 +54,7 @@ export async function GET(req: NextRequest) {
   if (!rl.ok) return NextResponse.json({ error: "rate_limited", retry_after: rl.retryAfter }, { status: 429 });
 
   const target = req.nextUrl.searchParams.get("url");
-  if (!target) return NextResponse.json({ error: "missing_url" }, { status: 400 });
+  if (!target) return NextResponse.json({ error: "missing_url", body: "" }, { status: 400 });
 
   // 相對路徑 → 本站
   let url: URL;
@@ -66,7 +66,7 @@ export async function GET(req: NextRequest) {
       url = new URL(target);
     }
   } catch {
-    return NextResponse.json({ error: "invalid_url" }, { status: 400 });
+    return NextResponse.json({ error: "invalid_url", body: "" }, { status: 400 });
   }
 
   if (!ALLOWED_HOSTS.some((h) => url.hostname === h || url.hostname.endsWith("." + h))) {
@@ -74,6 +74,7 @@ export async function GET(req: NextRequest) {
       error: "host_not_allowed",
       message: `${url.hostname} 不在允許清單。允許：${ALLOWED_HOSTS.join(", ")}`,
       allowed_hosts: ALLOWED_HOSTS,
+      body: "",
     }, { status: 403 });
   }
 
@@ -88,7 +89,7 @@ export async function GET(req: NextRequest) {
     });
     const contentType = res.headers.get("content-type") ?? "text/plain";
     const reader = res.body?.getReader();
-    if (!reader) return NextResponse.json({ error: "no_body" }, { status: 500 });
+    if (!reader) return NextResponse.json({ error: "no_body", body: "" }, { status: 500 });
 
     let total = 0;
     const chunks: Uint8Array[] = [];
@@ -97,7 +98,7 @@ export async function GET(req: NextRequest) {
       if (done) break;
       total += value.byteLength;
       if (total > MAX_BYTES) {
-        return NextResponse.json({ error: "too_large", message: `> ${MAX_BYTES / 1024 / 1024}MB` }, { status: 413 });
+        return NextResponse.json({ error: "too_large", message: `> ${MAX_BYTES / 1024 / 1024}MB`, body: "" }, { status: 413 });
       }
       chunks.push(value);
     }
@@ -119,8 +120,8 @@ export async function GET(req: NextRequest) {
     });
   } catch (e: any) {
     if (e?.name === "TimeoutError") {
-      return NextResponse.json({ error: "timeout", message: "10 秒沒回應" }, { status: 504 });
+      return NextResponse.json({ error: "timeout", message: "10 秒沒回應", body: "" }, { status: 504 });
     }
-    return NextResponse.json({ error: "fetch_failed", message: e?.message ?? String(e) }, { status: 500 });
+    return NextResponse.json({ error: "fetch_failed", message: e?.message ?? String(e), body: "" }, { status: 500 });
   }
 }
