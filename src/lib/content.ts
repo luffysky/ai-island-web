@@ -69,6 +69,7 @@ function rowToChapter(chRow: any, lessonRows: any[]): Chapter {
     id: chRow.id,
     slug: chRow.slug ?? undefined,
     stage: chRow.stage,
+    sortIndex: chRow.sort_index ?? undefined,
     title: chRow.title,
     subtitle: chRow.subtitle ?? undefined,
     icon: chRow.icon ?? undefined,
@@ -83,6 +84,15 @@ function rowToChapter(chRow: any, lessonRows: any[]): Chapter {
     faq: chRow.faq ?? [],
     lessons,
   } as any;
+}
+
+// chapter 顯示排序：sortIndex 優先、無則回退 id (新章節用 8.5 / 9.5 插入既有 stage)
+function sortChapters(list: Chapter[]): Chapter[] {
+  return [...list].sort((a, b) => {
+    const ai = (a as any).sortIndex ?? a.id;
+    const bi = (b as any).sortIndex ?? b.id;
+    return ai - bi;
+  });
 }
 
 // ============ Public API ============
@@ -116,7 +126,7 @@ export async function getAllChapters(): Promise<Chapter[]> {
   if (!FORCE_FILE) {
     try {
       const admin = createSupabaseAdmin();
-      const { data: chRows } = await admin.from('chapters').select('*').order('id', { ascending: true });
+      const { data: chRows } = await admin.from('chapters').select('*');
       const { data: allLessons } = await admin.from('lessons').select('*');
       if (chRows && chRows.length > 0) {
         const byCh = new Map<number, any[]>();
@@ -132,6 +142,7 @@ export async function getAllChapters(): Promise<Chapter[]> {
   }
   if (chapters.length === 0) chapters = readAllFromFile();
 
+  chapters = sortChapters(chapters);
   allCache = { at: Date.now(), data: chapters };
   return chapters;
 }
@@ -141,6 +152,7 @@ function toMetas(chapters: Chapter[]) {
     id: c.id,
     slug: c.slug,
     stage: c.stage,
+    sortIndex: (c as any).sortIndex,
     title: c.title,
     subtitle: c.subtitle,
     icon: c.icon,

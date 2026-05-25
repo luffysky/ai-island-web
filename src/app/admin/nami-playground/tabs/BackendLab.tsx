@@ -25,11 +25,13 @@ const EXAMPLES: BackendExample[] = [
     name: "FastAPI Hello + path / query 參數",
     desc: "業界最熱門的 Python web framework、async 原生支援",
     code: `# FastAPI 最簡單範例：3 個 endpoint + path/query 參數
+# Pyodide 限制：用 httpx.AsyncClient + ASGITransport 走純 ASGI 模擬請求
+# 業界正式做法：TestClient(app) (但 TestClient 內部依賴 wasm 跑不順的 sync httpx)
 import micropip
 await micropip.install(["fastapi==0.99.1", "pydantic<2", "httpx"], keep_going=True)
 
 from fastapi import FastAPI
-from fastapi.testclient import TestClient
+from httpx import AsyncClient, ASGITransport
 
 app = FastAPI(title="Nami's API")
 
@@ -45,20 +47,20 @@ def get_user(user_id: int):
 def search(q: str = "", limit: int = 10):
     return {"query": q, "limit": limit, "results": [f"result_{i}" for i in range(limit)]}
 
-# 用 TestClient 模擬 HTTP request、不需要真實 server
-client = TestClient(app)
+# 用 ASGITransport 走純 ASGI 不開 socket、Pyodide / wasm 都能跑
+transport = ASGITransport(app=app)
+async with AsyncClient(transport=transport, base_url="http://test") as client:
+    # 測試 1: 根 endpoint
+    r1 = await client.get("/")
+    print(f"GET /  → {r1.status_code}  {r1.json()}")
 
-# 測試 1: 根 endpoint
-r1 = client.get("/")
-print(f"GET /  → {r1.status_code}  {r1.json()}")
+    # 測試 2: path 參數
+    r2 = await client.get("/users/42")
+    print(f"GET /users/42  → {r2.status_code}  {r2.json()}")
 
-# 測試 2: path 參數
-r2 = client.get("/users/42")
-print(f"GET /users/42  → {r2.status_code}  {r2.json()}")
-
-# 測試 3: query 參數
-r3 = client.get("/search?q=python&limit=3")
-print(f"GET /search?q=python  → {r3.status_code}  {r3.json()}")
+    # 測試 3: query 參數
+    r3 = await client.get("/search?q=python&limit=3")
+    print(f"GET /search?q=python  → {r3.status_code}  {r3.json()}")
 `,
   },
   {
@@ -67,12 +69,13 @@ print(f"GET /search?q=python  → {r3.status_code}  {r3.json()}")
     icon: Zap,
     name: "Pydantic 資料驗證 + POST 收 body",
     desc: "業界寫 API 必用：型別檢查 + 自動 422 錯誤回應",
-    code: `import micropip
+    code: `# Pyodide 用 httpx.AsyncClient + ASGITransport 取代 TestClient
+import micropip
 await micropip.install(["fastapi==0.99.1", "pydantic<2", "httpx"], keep_going=True)
 
 from fastapi import FastAPI
-from fastapi.testclient import TestClient
-from pydantic import BaseModel, Field, EmailStr
+from httpx import AsyncClient, ASGITransport
+from pydantic import BaseModel, Field
 from typing import Optional
 
 app = FastAPI()
@@ -88,31 +91,31 @@ class User(BaseModel):
 def create_user(user: User):
     return {"created": True, "user": user.dict()}  # pydantic v1: .dict() / v2: .model_dump()
 
-client = TestClient(app)
+transport = ASGITransport(app=app)
+async with AsyncClient(transport=transport, base_url="http://test") as client:
+    # 1. 正常資料 → 200
+    r1 = await client.post("/users", json={
+        "name": "Nami",
+        "age": 25,
+        "email": "nami@example.com",
+        "bio": "Loves Python"
+    })
+    print(f"正常 → {r1.status_code}")
+    print(f"  {r1.json()}\\n")
 
-# 1. 正常資料 → 200
-r1 = client.post("/users", json={
-    "name": "Nami",
-    "age": 25,
-    "email": "nami@example.com",
-    "bio": "Loves Python"
-})
-print(f"正常 → {r1.status_code}")
-print(f"  {r1.json()}\\n")
+    # 2. age=-5 違反 ge=0 → 422 (自動驗證錯誤)
+    r2 = await client.post("/users", json={
+        "name": "X",
+        "age": -5,
+        "email": "x@x.com"
+    })
+    print(f"age=-5 違反 ge=0 → {r2.status_code}")
+    print(f"  錯誤訊息：{r2.json()['detail'][0]['msg']}\\n")
 
-# 2. age=-5 違反 ge=0 → 422 (自動驗證錯誤)
-r2 = client.post("/users", json={
-    "name": "X",
-    "age": -5,
-    "email": "x@x.com"
-})
-print(f"age=-5 違反 ge=0 → {r2.status_code}")
-print(f"  錯誤訊息：{r2.json()['detail'][0]['msg']}\\n")
-
-# 3. 缺欄位 → 422
-r3 = client.post("/users", json={"name": "X"})
-print(f"缺 age/email → {r3.status_code}")
-print(f"  錯誤訊息：{[e['msg'] for e in r3.json()['detail']]}")
+    # 3. 缺欄位 → 422
+    r3 = await client.post("/users", json={"name": "X"})
+    print(f"缺 age/email → {r3.status_code}")
+    print(f"  錯誤訊息：{[e['msg'] for e in r3.json()['detail']]}")
 `,
   },
   {
@@ -121,11 +124,12 @@ print(f"  錯誤訊息：{[e['msg'] for e in r3.json()['detail']]}")
     icon: Zap,
     name: "Dependency Injection — auth + DB",
     desc: "業界用：複用 auth 邏輯、單元測試容易 mock",
-    code: `import micropip
+    code: `# Pyodide 用 httpx.AsyncClient + ASGITransport 走純 ASGI
+import micropip
 await micropip.install(["fastapi==0.99.1", "pydantic<2", "httpx"], keep_going=True)
 
 from fastapi import FastAPI, Depends, HTTPException, Header
-from fastapi.testclient import TestClient
+from httpx import AsyncClient, ASGITransport
 from typing import Annotated
 
 app = FastAPI()
@@ -158,23 +162,23 @@ def me(user: Annotated[dict, Depends(get_current_user)]):
 def delete_user(user_id: int, admin: Annotated[dict, Depends(require_admin)]):
     return {"deleted": user_id, "by_admin": admin["name"]}
 
-client = TestClient(app)
+transport = ASGITransport(app=app)
+async with AsyncClient(transport=transport, base_url="http://test") as client:
+    # 1. 沒 token → 401
+    r1 = await client.get("/me")
+    print(f"沒 token → {r1.status_code}  {r1.json()}\\n")
 
-# 1. 沒 token → 401
-r1 = client.get("/me")
-print(f"沒 token → {r1.status_code}  {r1.json()}\\n")
+    # 2. admin token → 200
+    r2 = await client.get("/me", headers={"Authorization": "Bearer tok-abc"})
+    print(f"admin token → {r2.status_code}  {r2.json()}\\n")
 
-# 2. admin token → 200
-r2 = client.get("/me", headers={"Authorization": "Bearer tok-abc"})
-print(f"admin token → {r2.status_code}  {r2.json()}\\n")
+    # 3. user 試刪別人 → 403
+    r3 = await client.delete("/users/99", headers={"Authorization": "Bearer tok-xyz"})
+    print(f"非 admin 試刪 → {r3.status_code}  {r3.json()}\\n")
 
-# 3. user 試刪別人 → 403
-r3 = client.delete("/users/99", headers={"Authorization": "Bearer tok-xyz"})
-print(f"非 admin 試刪 → {r3.status_code}  {r3.json()}\\n")
-
-# 4. admin 刪 → 200
-r4 = client.delete("/users/99", headers={"Authorization": "Bearer tok-abc"})
-print(f"admin 刪 → {r4.status_code}  {r4.json()}")
+    # 4. admin 刪 → 200
+    r4 = await client.delete("/users/99", headers={"Authorization": "Bearer tok-abc"})
+    print(f"admin 刪 → {r4.status_code}  {r4.json()}")
 `,
   },
 

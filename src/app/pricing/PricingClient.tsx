@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Check, Crown, Sparkles, TrendingUp } from "lucide-react";
 import { BackgroundBeams } from "@/components/ui/BackgroundBeams";
 import { Sparkles as SparklesParticles } from "@/components/ui/Sparkles";
+import { SITE_STATS } from "@/lib/site-stats";
 
 type Plan = {
   id: string;
@@ -58,7 +59,7 @@ export function PricingClient({ plans }: { plans: Plan[] }) {
           {/* 社會證明 */}
           <div className="mt-6 inline-flex items-center gap-4 text-xs text-fg-muted flex-wrap justify-center">
             <span className="inline-flex items-center gap-1">
-              <Sparkles size={12} className="text-yellow-400" /> 71 章 1100+ lesson
+              <Sparkles size={12} className="text-yellow-400" /> {SITE_STATS.chapterCount} 章 {SITE_STATS.lessonCount}+ lesson
             </span>
             <span className="inline-flex items-center gap-1">
               <TrendingUp size={12} className="text-emerald-400" /> 每月更新新內容

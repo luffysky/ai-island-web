@@ -71,8 +71,11 @@ import ch68 from "./chapters/ch68.json";
 import ch69 from "./chapters/ch69.json";
 import ch70 from "./chapters/ch70.json";
 import ch71 from "./chapters/ch71.json";
+import ch72 from "./chapters/ch72.json";
+import ch73 from "./chapters/ch73.json";
+import ch74 from "./chapters/ch74.json";
 
-export const chapters: Chapter[] = [
+const RAW_CHAPTERS: any[] = [
   ch01 as unknown as Chapter,
   ch02 as unknown as Chapter,
   ch03 as unknown as Chapter,
@@ -144,7 +147,18 @@ export const chapters: Chapter[] = [
   ch69 as unknown as Chapter,
   ch70 as unknown as Chapter,
   ch71 as unknown as Chapter,
+  ch72 as unknown as Chapter,
+  ch73 as unknown as Chapter,
+  ch74 as unknown as Chapter,
 ];
+
+// 用 sortIndex 排顯示順序 (新章節插入既有 stage 中間)
+// 沒 sortIndex 就用 id (向後兼容、既有章節都 fallback)
+export const chapters: Chapter[] = [...RAW_CHAPTERS].sort((a, b) => {
+  const aOrder = (a as any).sortIndex ?? a.id;
+  const bOrder = (b as any).sortIndex ?? b.id;
+  return aOrder - bOrder;
+}) as Chapter[];
 
 export function getChapter(id: number): Chapter | undefined {
   return chapters.find((c) => c.id === id);

@@ -1,17 +1,23 @@
 import { getChapterMetas } from "@/lib/content";
 import { ChapterMap } from "@/components/home/ChapterMap";
+import { SITE_STATS } from "@/lib/site-stats";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "所有章節 — 71 章 1136+ lesson | AI 島",
-  description: "HTML / CSS / JavaScript / TypeScript / React / Vue / Next.js / Node / AI Agent — 71 章完整全端養成路線、遊戲化學習、AI 導師陪你練。",
-  alternates: { canonical: "/chapters" },
-  openGraph: {
-    title: "所有章節 — 71 章 1136+ lesson | AI 島",
-    description: "前端到 AI Agent 完整路線、71 章 1136+ lesson、遊戲化學習。",
-    type: "website",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const chCount = SITE_STATS.chapterCount;
+  const lsCount = SITE_STATS.lessonCount;
+  const title = `所有章節 — ${chCount} 章 ${lsCount}+ lesson | AI 島`;
+  return {
+    title,
+    description: `HTML / CSS / JavaScript / TypeScript / React / Vue / Next.js / Node / AI Agent — ${chCount} 章完整全端養成路線、遊戲化學習、AI 導師陪你練。`,
+    alternates: { canonical: "/chapters" },
+    openGraph: {
+      title,
+      description: `前端到 AI Agent 完整路線、${chCount} 章 ${lsCount}+ lesson、遊戲化學習。`,
+      type: "website",
+    },
+  };
+}
 
 export default async function ChaptersPage() {
   const chapters = await getChapterMetas();

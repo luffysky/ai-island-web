@@ -102,7 +102,7 @@ const TOOLS = [
     input_schema: {
       type: "object" as const,
       properties: {
-        chapter_id: { type: "integer", description: "章節 id (1~71)、不給 = 列全站 + 最卡的 5 章" },
+        chapter_id: { type: "integer", description: "章節 id (chapter 表 id 欄)、不給 = 列全站 + 最卡的 5 章" },
       },
     },
   },

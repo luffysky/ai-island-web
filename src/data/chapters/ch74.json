@@ -1,0 +1,56 @@
+{
+  "id": 74,
+  "slug": "vite",
+  "stage": 2,
+  "sortIndex": 9.7,
+  "title": "Vite — 現代前端 build 工具",
+  "subtitle": "為什麼 Vite 取代 Webpack、Dev / Build / Plugin 完整指南",
+  "icon": "zap",
+  "description": "Vite 是 React / Vue / Svelte 等現代前端的 build 工具、2026 業界 90% 新專案用。學完知道 dev server / production build / config / plugin 怎麼用。",
+  "status": "published",
+  "difficulty": "intermediate",
+  "prerequisites": [8, 9],
+  "estimatedHours": 4,
+  "outcomes": [
+    "理解 Vite 跟 Webpack 的本質差異、為什麼快 10x",
+    "建立 React / Vue / vanilla 專案、配 dev server",
+    "production build、output 分析、調 chunk size",
+    "寫 / 用 Vite plugin (PWA / inspect / 自動 import)",
+    "整合 Tailwind / TypeScript / 環境變數"
+  ],
+  "lessons": [
+    {
+      "id": "74.1",
+      "number": "LESSON 74.1",
+      "title": "為什麼 Vite — 跟 Webpack 的本質差異",
+      "oneLineSummary": "Webpack 啟動 dev server 要 30 秒、Vite 只要 1 秒。原因：Vite 用瀏覽器原生 ES Module、不用打包就能跑。",
+      "analogy": "Webpack 像「把所有食材先做成便當再吃」—要等廚師全處理完才能開飯。Vite 像「點菜、廚師現做現上」—1 道菜就 1 道菜的時間、不用等其他菜。",
+      "content": "## 核心差異\n\n```text\nWebpack 流程（dev）：\n1. 讀 entry (index.js)\n2. 跟蹤所有 import\n3. 全部 bundle 成幾個檔\n4. 啟動 dev server\n→ 大專案首啟 30s+、HMR 5-10s\n\nVite 流程（dev）：\n1. 啟動 dev server (< 1s)\n2. 瀏覽器請求 / index.html\n3. 解析 <script type='module' src='/main.js'>\n4. 用 native ESM、瀏覽器自己抓 import\n5. 改檔只 invalidate 那 1 個檔\n→ 首啟 1s、HMR < 100ms\n```\n\n## Vite 的關鍵技術\n\n1. **ESM (ECMAScript Module)**：瀏覽器原生支援 `import / export`、不用打包\n2. **esbuild (Go 寫的)**：比 Webpack (JS 寫的) 編譯快 10-100x\n3. **production 用 Rollup**：dev 用 esbuild 快、build 用 Rollup 優化\n4. **Pre-bundle node_modules**：第三方 lib 仍 bundle（避免太多 HTTP request）\n\n## 2026 業界狀況\n\n- **Vite 90% 新專案**：React / Vue / Svelte / Solid / Qwik 都推 Vite\n- **Webpack 10% 老專案**：CRA 已停更、Next.js 用 Turbopack（Vercel 自家）\n- **rsbuild / rspack**：字節跳動出的 Rust Webpack 替代、跟 Vite 競爭",
+      "xp": 15
+    },
+    {
+      "id": "74.2",
+      "number": "LESSON 74.2",
+      "title": "建立 React / Vue 專案 — 3 分鐘上手",
+      "oneLineSummary": "`npm create vite@latest` 一行指令、選 framework、進去 npm i 完就能跑。",
+      "content": "## 建立專案\n\n```bash\nnpm create vite@latest my-app\n# 選：\n#   Framework: React / Vue / Svelte / Vanilla\n#   Variant: TypeScript / JavaScript (建議 TS)\n\ncd my-app\nnpm install\nnpm run dev    # 啟動 dev server (localhost:5173)\nnpm run build  # production build → dist/\nnpm run preview # 本地預覽 build 結果\n```\n\n## 專案結構\n\n```text\nmy-app/\n├── index.html          # entry HTML (重要！Vite 從這讀入)\n├── package.json\n├── vite.config.ts      # Vite 設定\n├── tsconfig.json\n├── public/             # 靜態檔 (favicon / robots / og.png)\n└── src/\n    ├── main.tsx        # JS entry\n    ├── App.tsx\n    └── components/\n```\n\n注意：**index.html 在根目錄、不是 src/**。Vite 把它當 entry、其他資源從這抓。\n\n## 基本 vite.config.ts\n\n```ts\nimport { defineConfig } from 'vite';\nimport react from '@vitejs/plugin-react';\nimport path from 'path';\n\nexport default defineConfig({\n  plugins: [react()],\n  resolve: {\n    alias: {\n      '@': path.resolve(__dirname, './src'),\n    },\n  },\n  server: {\n    port: 3000,\n    proxy: {\n      '/api': 'http://localhost:8000',  // dev 代理到後端\n    },\n  },\n});\n```\n\n## 環境變數\n\n```bash\n# .env\nVITE_API_URL=https://api.example.com\nVITE_SUPABASE_KEY=eyJ...\n```\n\n```ts\n// 程式碼\nimport.meta.env.VITE_API_URL  // 必須 VITE_ 開頭、才會 expose 給 client\n```",
+      "xp": 15
+    },
+    {
+      "id": "74.3",
+      "number": "LESSON 74.3",
+      "title": "Production Build + Chunk 分析",
+      "oneLineSummary": "`npm run build` 後看 dist/、Vite 自動 minify / tree-shake / code split、可用 rollup-plugin-visualizer 看哪個 chunk 太肥。",
+      "content": "## 基本 build\n\n```bash\nnpm run build\n# → dist/\n#   index.html\n#   assets/\n#     index-Abc123.js   (entry chunk)\n#     vendor-Xyz789.js  (node_modules)\n#     style-Def456.css\n```\n\nVite 自動：\n- minify (esbuild)\n- tree-shake 沒用的 code\n- code split (動態 import 自動拆 chunk)\n- 加 content hash 給 long-term cache\n\n## 分析 bundle\n\n```bash\nnpm i -D rollup-plugin-visualizer\n```\n\n```ts\n// vite.config.ts\nimport { visualizer } from 'rollup-plugin-visualizer';\n\nexport default defineConfig({\n  plugins: [\n    react(),\n    visualizer({ open: true, gzipSize: true }),\n  ],\n});\n```\n\n`npm run build` 後會跳網頁顯示 chunk treemap、看哪個套件最肥。\n\n## 手動 chunk 切分\n\n```ts\nbuild: {\n  rollupOptions: {\n    output: {\n      manualChunks: {\n        'react-vendor': ['react', 'react-dom'],\n        'ui-vendor': ['framer-motion', 'lucide-react'],\n      },\n    },\n  },\n}\n```\n\n讓 React 跟 framer-motion 各自獨立 chunk、cache 命中率高（react 半年不更新、framer-motion 常更新）。\n\n## 動態 import (lazy load)\n\n```tsx\nconst HeavyChart = lazy(() => import('./HeavyChart'));\n\n<Suspense fallback={<Loading />}>\n  <HeavyChart />\n</Suspense>\n```\n\nHeavyChart 自動拆 chunk、user 進這頁才下載。",
+      "xp": 20
+    },
+    {
+      "id": "74.4",
+      "number": "LESSON 74.4",
+      "title": "業界 Vite Plugin 必裝清單",
+      "oneLineSummary": "10 個業界用爆的 Vite plugin、從 PWA / 自動 import / SVG 處理到 inspect / lint。",
+      "content": "## 1. vite-plugin-pwa — 一行變 PWA\n\n```ts\nimport { VitePWA } from 'vite-plugin-pwa';\n\nplugins: [\n  VitePWA({\n    registerType: 'autoUpdate',\n    manifest: { name: 'My App', icons: [...] },\n  }),\n]\n```\n\n## 2. unplugin-auto-import — 自動 import React / Vue\n\n```ts\nimport AutoImport from 'unplugin-auto-import/vite';\n\nplugins: [\n  AutoImport({\n    imports: ['react', 'react-router-dom'],\n    dts: 'src/auto-imports.d.ts',\n  }),\n]\n```\n\n寫 `useState(0)` 不用 `import { useState } from 'react'`。\n\n## 3. unplugin-vue-components — Vue component 自動 import\n\n```ts\nplugins: [\n  Components({ resolvers: [ElementPlusResolver()] }),\n]\n```\n\n## 4. vite-plugin-svgr — SVG 當 React component\n\n```tsx\nimport { ReactComponent as Logo } from './logo.svg';\n<Logo width={32} />\n```\n\n## 5. vite-plugin-inspect — 看 plugin 處理流程\n\n## 6. @vitejs/plugin-legacy — 支援 IE / 舊 browser\n\n## 7. vite-plugin-checker — TypeScript 即時錯誤檢查\n\n## 8. vite-tsconfig-paths — 自動讀 tsconfig 的 paths alias\n\n## 9. unocss / tailwind — atomic CSS\n\n## 10. vite-plugin-mock — dev mock API",
+      "xp": 20
+    }
+  ]
+}

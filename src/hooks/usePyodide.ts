@@ -20,6 +20,7 @@ export type RunResult = {
   result: string | null;
   ok: boolean;
   truncated?: boolean;
+  images: string[];  // matplotlib PNG base64 list、用 print(f"__IMAGE__{b64}") 觸發
 };
 
 export type LoadPhase = {
@@ -47,7 +48,9 @@ type PendingRequest = {
   reject: (e: any) => void;
   stdout: string;
   stderr: string;
+  images: string[];
   onStdout?: (s: string) => void;
+  onImage?: (b64: string) => void;
 };
 
 const pendingRequests = new Map<string, PendingRequest>();
@@ -78,6 +81,9 @@ function ensureWorker(): Worker {
       if (rest.kind === "stdout") {
         req.stdout += rest.text + "\n";
         req.onStdout?.(rest.text);
+      } else if (rest.kind === "image") {
+        req.images.push(rest.b64);
+        req.onImage?.(rest.b64);
       } else {
         req.stderr += rest.text + "\n";
       }
@@ -91,6 +97,7 @@ function ensureWorker(): Worker {
         stderr: rest.stderr ?? req.stderr,
         result: rest.result ?? null,
         ok: rest.ok ?? false,
+        images: rest.images ?? req.images,
       });
       return;
     }
@@ -105,11 +112,20 @@ function ensureWorker(): Worker {
   return w;
 }
 
-function sendToWorker(type: string, payload?: any, onStdout?: (s: string) => void): Promise<any> {
+function sendToWorker(
+  type: string,
+  payload?: any,
+  callbacks?: { onStdout?: (s: string) => void; onImage?: (b64: string) => void },
+): Promise<any> {
   const w = ensureWorker();
   return new Promise((resolve, reject) => {
     const id = crypto.randomUUID();
-    pendingRequests.set(id, { resolve, reject, stdout: "", stderr: "", onStdout });
+    pendingRequests.set(id, {
+      resolve, reject,
+      stdout: "", stderr: "", images: [],
+      onStdout: callbacks?.onStdout,
+      onImage: callbacks?.onImage,
+    });
     w.postMessage({ id, type, payload });
   });
 }
@@ -204,21 +220,25 @@ export function usePyodide(autoLoad = false) {
   }, [autoLoad, status, load]);
 
   const run = useCallback(
-    async (code: string, onStdout?: (chunk: string) => void): Promise<RunResult> => {
+    async (
+      code: string,
+      callbacks?: { onStdout?: (chunk: string) => void; onImage?: (b64: string) => void },
+    ): Promise<RunResult> => {
       if (!window.__pyodideWorkerReady) {
         const ok = await load();
-        if (!ok) return { stdout: "", stderr: error ?? "Pyodide 沒載入成功", result: null, ok: false };
+        if (!ok) return { stdout: "", stderr: error ?? "Pyodide 沒載入成功", result: null, ok: false, images: [] };
       }
       try {
-        const r = await sendToWorker("run", { code }, onStdout);
+        const r = await sendToWorker("run", { code }, callbacks);
         return {
           stdout: r.stdout ?? "",
           stderr: r.stderr ?? "",
           result: r.result ?? null,
           ok: !!r.ok,
+          images: r.images ?? [],
         };
       } catch (e: any) {
-        return { stdout: "", stderr: e?.message ?? "worker run failed", result: null, ok: false };
+        return { stdout: "", stderr: e?.message ?? "worker run failed", result: null, ok: false, images: [] };
       }
     },
     [load, error],

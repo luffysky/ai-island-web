@@ -547,6 +547,7 @@ export function Exercises() {
   const [code, setCode] = useState(ex.starter);
   const [output, setOutput] = useState("");
   const [stderr, setStderr] = useState("");
+  const [images, setImages] = useState<string[]>([]);
   const [running, setRunning] = useState(false);
   const [showHints, setShowHints] = useState(false);
   const [showSolution, setShowSolution] = useState(false);
@@ -558,6 +559,7 @@ export function Exercises() {
     setCode(next.starter);
     setOutput("");
     setStderr("");
+    setImages([]);
     setShowHints(false);
     setShowSolution(false);
     setShowExplain(false);
@@ -568,9 +570,11 @@ export function Exercises() {
     setRunning(true);
     setOutput("");
     setStderr("");
+    setImages([]);
     const r = await run(code);
     setOutput(r.stdout);
     setStderr(r.stderr);
+    setImages(r.images);
     setRunning(false);
   };
 
@@ -732,8 +736,13 @@ export function Exercises() {
           <div className="px-3 py-2 border-b border-border bg-bg-elevated text-xs font-mono text-fg-muted">💬 你的結果</div>
           <div className="flex-1 min-h-[400px] p-3 bg-[#0d1117] overflow-y-auto font-mono text-xs">
             {output && <pre className="whitespace-pre-wrap text-[#e6edf3]">{output}</pre>}
+            {images.map((b64, i) => (
+              <div key={i} className="my-2 bg-[#0d1117] rounded">
+                <img src={`data:image/png;base64,${b64}`} alt={`output-${i}`} className="max-w-full rounded" />
+              </div>
+            ))}
             {stderr && <pre className="whitespace-pre-wrap text-red-400 mt-2">{stderr}</pre>}
-            {!output && !stderr && <span className="text-fg-muted/60">// 寫完 code 點「試跑」</span>}
+            {!output && !stderr && images.length === 0 && <span className="text-fg-muted/60">// 寫完 code 點「試跑」</span>}
           </div>
         </div>
       </div>

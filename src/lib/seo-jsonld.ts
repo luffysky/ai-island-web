@@ -8,9 +8,11 @@
  * Next.js 14+ App Router 支援這樣做、Google 抓得到。
  */
 
+import { SITE_STATS } from "./site-stats";
+
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://aiisland.tw";
 const SITE_NAME = "AI 島";
-const SITE_DESC = "用遊戲化方式學程式：HTML 到 AI Agent 71 章 1136+ lesson、3D 島嶼 + AI 導師陪你練。";
+const SITE_DESC = `用遊戲化方式學程式：HTML 到 AI Agent ${SITE_STATS.chapterCount} 章 ${SITE_STATS.lessonCount}+ lesson、3D 島嶼 + AI 導師陪你練。`;
 
 /** 全站通用：組織資訊（給 Google 知道是誰營運） */
 export function organizationSchema() {

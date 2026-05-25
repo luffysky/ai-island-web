@@ -22,7 +22,9 @@ export type LearningState = {
   recent_active_chapters: number[]; // 7 天內有 lesson_progress 的章節
 };
 
-const CHAPTERS_TOTAL = 71;
+// 章節總數從 chapters JSON 算（chapters/page.tsx 也用同一份）
+import { SITE_STATS } from "./site-stats";
+const CHAPTERS_TOTAL = SITE_STATS.chapterCount;
 
 /**
  * 撈某個 user 的學習狀態聚合

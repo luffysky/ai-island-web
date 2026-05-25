@@ -143,12 +143,20 @@ self.onmessage = async (e) => {
 
     if (type === "run") {
       let stdout = "", stderr = "";
-      pyodide.setStdout({
-        batched: (s) => {
-          stdout += s + "\n";
-          self.postMessage({ id, type: "chunk", kind: "stdout", text: s });
-        },
-      });
+      const images = [];
+      // 偵測 __IMAGE__<base64>、單獨抽出來不混 stdout (避免 200KB cap 把 image 截掉)
+      const handleStdoutLine = (s) => {
+        const m = /^__IMAGE__([A-Za-z0-9+/=]+)$/.exec(s.trim());
+        if (m) {
+          const b64 = m[1];
+          images.push(b64);
+          self.postMessage({ id, type: "chunk", kind: "image", b64 });
+          return;
+        }
+        stdout += s + "\n";
+        self.postMessage({ id, type: "chunk", kind: "stdout", text: s });
+      };
+      pyodide.setStdout({ batched: handleStdoutLine });
       pyodide.setStderr({
         batched: (s) => {
           stderr += s + "\n";
@@ -161,9 +169,9 @@ self.onmessage = async (e) => {
         if (result !== undefined && result !== null) {
           try { resultStr = result.toString(); } catch { resultStr = String(result); }
         }
-        // truncate
-        if (stdout.length > 200000) stdout = stdout.substring(0, 200000) + "\n\n... (省略 " + (stdout.length - 200000) + " 字元)";
-        self.postMessage({ id, type: "done", ok: !stderr, stdout, stderr, result: resultStr });
+        // truncate stdout only (images 已單獨送)
+        if (stdout.length > 500000) stdout = stdout.substring(0, 500000) + "\n\n... (省略 " + (stdout.length - 500000) + " 字元)";
+        self.postMessage({ id, type: "done", ok: !stderr, stdout, stderr, result: resultStr, images });
       } catch (err) {
         self.postMessage({
           id,
@@ -172,6 +180,7 @@ self.onmessage = async (e) => {
           stdout,
           stderr: stderr + (err?.message ?? String(err)),
           result: null,
+          images,
         });
       }
       return;

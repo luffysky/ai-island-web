@@ -45,6 +45,7 @@ export function ChallengeMode() {
   const [selected, setSelected] = useState<Challenge | null>(null);
   const [code, setCode] = useState("");
   const [output, setOutput] = useState("");
+  const [images, setImages] = useState<string[]>([]);
   const [running, setRunning] = useState(false);
   const [result, setResult] = useState<{ passed: boolean; msg: string; xp?: number; firstPass?: boolean } | null>(null);
   const [showHints, setShowHints] = useState(false);
@@ -93,11 +94,13 @@ export function ChallengeMode() {
     if (!selected || running) return;
     setRunning(true);
     setOutput("");
+    setImages([]);
     setResult(null);
     // 在 Pyodide 跑 user code + test code
     const combined = `${code}\n\n# === 測試 (你看不到、由系統評分) ===\n${selected.test_code}`;
     const r = await run(combined);
     setOutput(r.stdout);
+    setImages(r.images);
     const passed = !r.stderr && r.ok;
     // 寫 server
     try {
@@ -302,7 +305,12 @@ export function ChallengeMode() {
                     </motion.div>
                   )}
                   {output && <pre className="whitespace-pre-wrap text-[#e6edf3]">{output}</pre>}
-                  {!output && !result && <span className="text-fg-muted/60">// 寫完點「提交挑戰」、跑 user code + 隱藏 test、看 PASS / FAIL</span>}
+                  {images.map((b64, i) => (
+                    <div key={i} className="my-2 bg-[#0d1117] rounded">
+                      <img src={`data:image/png;base64,${b64}`} alt={`output-${i}`} className="max-w-full rounded" />
+                    </div>
+                  ))}
+                  {!output && !result && images.length === 0 && <span className="text-fg-muted/60">// 寫完點「提交挑戰」、跑 user code + 隱藏 test、看 PASS / FAIL</span>}
                 </div>
               </div>
             </div>

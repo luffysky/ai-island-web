@@ -705,33 +705,33 @@ function DbContent({ db }: { db: DB }) {
                 <p className="font-bold text-purple-300">🔧 怎麼在你本機跑：</p>
                 {db === "postgresql" && (
                   <div className="space-y-1.5">
-                    <p>1. <code className="bg-bg-elevated px-1 rounded">docker run --name pg -e POSTGRES_PASSWORD=pass -p 5432:5432 -d postgres</code></p>
-                    <p>2. <code className="bg-bg-elevated px-1 rounded">psql -h localhost -U postgres</code> 進 shell</p>
+                    <p>1. <code className="bg-bg-elevated px-1 rounded text-emerald-300">docker run --name pg -e POSTGRES_PASSWORD=pass -p 5432:5432 -d postgres</code></p>
+                    <p>2. <code className="bg-bg-elevated px-1 rounded text-emerald-300">psql -h localhost -U postgres</code> 進 shell</p>
                     <p>3. 貼左邊 SQL、按 Enter</p>
-                    <p>4. Python 連線：<code className="bg-bg-elevated px-1 rounded">psycopg2.connect(...)</code></p>
+                    <p>4. Python 連線：<code className="bg-bg-elevated px-1 rounded text-emerald-300">psycopg2.connect(...)</code></p>
                   </div>
                 )}
                 {db === "mysql" && (
                   <div className="space-y-1.5">
-                    <p>1. <code className="bg-bg-elevated px-1 rounded">docker run --name mysql -e MYSQL_ROOT_PASSWORD=pass -p 3306:3306 -d mysql:8</code></p>
-                    <p>2. <code className="bg-bg-elevated px-1 rounded">mysql -h 127.0.0.1 -u root -p</code></p>
-                    <p>3. Python 連線：<code className="bg-bg-elevated px-1 rounded">PyMySQL</code> 或 <code className="bg-bg-elevated px-1 rounded">mysql-connector-python</code></p>
+                    <p>1. <code className="bg-bg-elevated px-1 rounded text-cyan-300">docker run --name mysql -e MYSQL_ROOT_PASSWORD=pass -p 3306:3306 -d mysql:8</code></p>
+                    <p>2. <code className="bg-bg-elevated px-1 rounded text-cyan-300">mysql -h 127.0.0.1 -u root -p</code></p>
+                    <p>3. Python 連線：<code className="bg-bg-elevated px-1 rounded text-cyan-300">PyMySQL</code> 或 <code className="bg-bg-elevated px-1 rounded text-cyan-300">mysql-connector-python</code></p>
                   </div>
                 )}
                 {db === "supabase" && (
                   <div className="space-y-1.5">
                     <p>1. 到 <a href="https://supabase.com" target="_blank" className="text-accent underline">supabase.com</a> 開帳號（免費）</p>
                     <p>2. Create Project → 拿 URL + anon key</p>
-                    <p>3. 在你 Next.js 專案 <code className="bg-bg-elevated px-1 rounded">npm i @supabase/supabase-js</code></p>
+                    <p>3. 在你 Next.js 專案 <code className="bg-bg-elevated px-1 rounded text-purple-300">npm i @supabase/supabase-js</code></p>
                     <p>4. 用左邊 code 寫 query</p>
-                    <p className="text-fg-muted">本站後端就是 Supabase！打開 <code className="bg-bg-elevated px-1 rounded">/admin/db-check</code> 看實際 schema</p>
+                    <p className="text-fg-muted">本站後端就是 Supabase！打開 <code className="bg-bg-elevated px-1 rounded text-purple-300">/admin/db-check</code> 看實際 schema</p>
                   </div>
                 )}
                 {db === "mongodb" && (
                   <div className="space-y-1.5">
-                    <p>1. <code className="bg-bg-elevated px-1 rounded">docker run --name mongo -p 27017:27017 -d mongo</code></p>
-                    <p>2. <code className="bg-bg-elevated px-1 rounded">mongosh</code> 進 shell</p>
-                    <p>3. Python 連線：<code className="bg-bg-elevated px-1 rounded">pip install pymongo</code></p>
+                    <p>1. <code className="bg-bg-elevated px-1 rounded text-emerald-300">docker run --name mongo -p 27017:27017 -d mongo</code></p>
+                    <p>2. <code className="bg-bg-elevated px-1 rounded text-emerald-300">mongosh</code> 進 shell</p>
+                    <p>3. Python 連線：<code className="bg-bg-elevated px-1 rounded text-emerald-300">pip install pymongo</code></p>
                     <p>4. 或用 MongoDB Atlas (雲端、免費 tier)</p>
                   </div>
                 )}

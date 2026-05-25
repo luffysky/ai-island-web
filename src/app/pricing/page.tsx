@@ -1,9 +1,12 @@
 import { Crown } from "lucide-react";
 import { PricingClient } from "./PricingClient";
+import { SITE_STATS } from "@/lib/site-stats";
+
+const CH = SITE_STATS.chapterCount;
 
 export const metadata = {
   title: "💎 訂閱方案 · AI 島",
-  description: "解鎖全部 71 章、無限 AI 對話、教材常更新",
+  description: `解鎖全部 ${CH} 章、無限 AI 對話、教材常更新`,
 };
 
 const PLANS = [
@@ -24,7 +27,7 @@ const PLANS = [
     price: 299,
     period: "/ 月",
     desc: "新手與想快速試試的人",
-    features: ["全部 71 章內容", "AI 對話無限制", "綠寶 / 肥仔 / 菇寶導師", "每月新章節更新", "教師批改作業", "可隨時取消"],
+    features: [`全部 ${CH} 章內容`, "AI 對話無限制", "綠寶 / 肥仔 / 菇寶導師", "每月新章節更新", "教師批改作業", "可隨時取消"],
     cta: "立即訂閱",
     highlight: true,
     badge: "🔥 最熱門",

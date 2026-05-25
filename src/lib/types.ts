@@ -86,6 +86,7 @@ export interface Chapter {
   id: number;              // 1-60 + 61+ appendix
   slug?: string;           // 'sql', 'nosql'
   stage: 1 | 2 | 3 | 4 | 5 | 6 | 7 | string;  // 7 = appendix
+  sortIndex?: number;      // 顯示順序、無填回退 id (用來插入新章節在既有章節中間，例如 8.5)
   title: string;
   subtitle: string;
   icon: string;

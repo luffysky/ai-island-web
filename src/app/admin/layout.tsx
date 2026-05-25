@@ -123,6 +123,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
             <NavGroup title="🌊 Nami 練習用">
               <AdminLink href="/admin/nami-playground">🐍 Python Playground</AdminLink>
+              <AdminLink href="/admin/nami-ide">💻 Nami IDE</AdminLink>
             </NavGroup>
 
             <NavGroup title="系統">

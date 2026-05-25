@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Lock, Crown, ArrowRight } from "lucide-react";
+import { SITE_STATS } from "@/lib/site-stats";
 
 /**
  * Premium 章節未訂閱 user 看到的遮罩。
@@ -14,11 +15,11 @@ export function PaywallOverlay({ chapterId, chapterTitle }: { chapterId: number;
         Premium 內容
       </h2>
       <p className="text-fg-muted mb-6">
-        《{chapterTitle}》是付費章節。升級訂閱解鎖全部 71 章、無限 AI 對話、教材常更新。
+        《{chapterTitle}》是付費章節。升級訂閱解鎖全部 {SITE_STATS.chapterCount} 章、無限 AI 對話、教材常更新。
       </p>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-2xl mx-auto mb-6">
         <Plan title="單章購買" price="NT$ 99" desc="只買這一章" cta="/pricing#single" highlight={false} />
-        <Plan title="月訂閱" price="NT$ 299" desc="71 章 + AI 無限" cta="/pricing#monthly" highlight={true} />
+        <Plan title="月訂閱" price="NT$ 299" desc={`${SITE_STATS.chapterCount} 章 + AI 無限`} cta="/pricing#monthly" highlight={true} />
         <Plan title="年訂閱" price="NT$ 2,999" desc="省 NT$ 589" cta="/pricing#yearly" highlight={false} />
       </div>
       <Link

@@ -7,7 +7,7 @@ import { join } from "node:path";
 import pg from "pg";
 
 const MIGRATIONS = [
-  "learning_state_view_migration.sql",
+  "chapter_sort_index_migration.sql",
 ];
 
 // 從 .env.local 讀（不依賴 dotenv pkg）

@@ -1,0 +1,64 @@
+{
+  "id": 73,
+  "slug": "vue-advanced",
+  "stage": 2,
+  "sortIndex": 9.5,
+  "title": "Vue 進階",
+  "subtitle": "Composition API / Pinia / 進階 SFC / 性能優化",
+  "icon": "leaf",
+  "description": "Vue 學完基礎進階階段、配合 Pinia + Composition API 是 2026 業界主流。",
+  "status": "published",
+  "difficulty": "intermediate",
+  "prerequisites": [9],
+  "estimatedHours": 8,
+  "outcomes": [
+    "完整掌握 Composition API (setup / ref / reactive / computed / watch)",
+    "用 Pinia 做狀態管理、知道 vs Vuex 差異",
+    "Composables (Vue 的 Custom Hook) 抽共用邏輯",
+    "Vue 3 SFC 進階：v-model / slots / Teleport / Suspense",
+    "Vue 性能優化：v-memo / shallowRef / 大列表 virtual scroll"
+  ],
+  "lessons": [
+    {
+      "id": "73.1",
+      "number": "LESSON 73.1",
+      "title": "Composition API 完全指南",
+      "oneLineSummary": "Composition API 把組件邏輯放進 setup() 函式裡、ref / reactive / computed / watch 全部 export from Vue。比 Options API 更靈活、TypeScript 推導更好。",
+      "analogy": "Options API 像「填表格」(data / methods / computed 各填一格)、Composition API 像「寫散文」(setup() 內想怎麼寫就怎麼寫)。靈活度高、但需要自己控制結構。",
+      "content": "## ref vs reactive\n\n```ts\n// ref：可包任何值、用 .value 拿\nconst count = ref(0);\nconst name = ref('Nami');\nconsole.log(count.value);  // 0\ncount.value++;\n\n// reactive：只能包 object、不用 .value\nconst user = reactive({ name: 'Nami', age: 25 });\nuser.age++;\n\n// 選用：primitive 用 ref、object 用 reactive\n// 業界：reactive 比 ref 少坑（不用記 .value）\n```\n\n## computed — 自動算 derived state\n\n```ts\nconst count = ref(0);\nconst doubled = computed(() => count.value * 2);\n// doubled.value 自動更新\n```\n\n## watch — 監聽變化\n\n```ts\nwatch(count, (newVal, oldVal) => {\n  console.log(`count 從 ${oldVal} 變 ${newVal}`);\n});\n\n// 監聽多個\nwatch([count, name], ([newCount, newName]) => { ... });\n\n// 深度監聽 reactive object\nwatch(user, (n) => { ... }, { deep: true });\n```\n\n## lifecycle hooks\n\n```ts\nonMounted(() => { /* component 掛載 */ });\nonUnmounted(() => { /* 清理 */ });\nonUpdated(() => { /* 每次 re-render */ });\n```\n\n## script setup syntax (Vue 3.2+)\n\n```vue\n<script setup lang='ts'>\nimport { ref, computed } from 'vue';\nimport ChildComp from './ChildComp.vue';\n\nconst count = ref(0);\nconst doubled = computed(() => count.value * 2);\n\n// props\ndefineProps<{ title: string }>();\n\n// emit\nconst emit = defineEmits<{ change: [value: number] }>();\n</script>\n```\n\n2026 業界：所有新 Vue 專案都用 `<script setup>` + TS。",
+      "xp": 20
+    },
+    {
+      "id": "73.2",
+      "number": "LESSON 73.2",
+      "title": "Pinia — Vue 官方狀態管理 (取代 Vuex)",
+      "oneLineSummary": "Pinia 是 Vue 3 官方推薦的狀態管理、比 Vuex 簡單 90%、TypeScript 支援好、是 2026 業界標配。",
+      "content": "## Pinia 核心\n\n```ts\n// stores/user.ts\nimport { defineStore } from 'pinia';\n\nexport const useUserStore = defineStore('user', {\n  state: () => ({\n    name: '',\n    age: 0,\n    isLoggedIn: false,\n  }),\n  getters: {\n    displayName: (state) => state.name || '訪客',\n    isAdult: (state) => state.age >= 18,\n  },\n  actions: {\n    async login(email: string, password: string) {\n      const user = await fetch('/api/login', {\n        method: 'POST',\n        body: JSON.stringify({ email, password })\n      }).then(r => r.json());\n      this.name = user.name;\n      this.age = user.age;\n      this.isLoggedIn = true;\n    },\n    logout() {\n      this.$reset();  // 內建 reset 到初始 state\n    },\n  },\n});\n```\n\n## 用 Composition API 寫 Pinia (推薦)\n\n```ts\nexport const useCounterStore = defineStore('counter', () => {\n  const count = ref(0);\n  const doubled = computed(() => count.value * 2);\n  function increment() { count.value++; }\n  return { count, doubled, increment };\n});\n```\n\n## 在 component 內用\n\n```vue\n<script setup>\nimport { useUserStore } from '@/stores/user';\nimport { storeToRefs } from 'pinia';\n\nconst userStore = useUserStore();\nconst { name, age } = storeToRefs(userStore);  // 保持 reactive\nconst { login, logout } = userStore;  // actions 直接拿\n</script>\n```\n\n## vs Vuex\n\n- ❌ Vuex 5 種概念（state / getters / mutations / actions / modules）\n- ✅ Pinia 3 種（state / getters / actions）— 拿掉 mutations、actions 直接改 state\n- ✅ TypeScript 自動推導、不用寫一堆 interface\n- ✅ DevTools 支援、time-travel debug",
+      "xp": 20
+    },
+    {
+      "id": "73.3",
+      "number": "LESSON 73.3",
+      "title": "Composables — Vue 的 Custom Hook",
+      "oneLineSummary": "Composables 是把 ref / watch / lifecycle 組合抽成獨立函式、其他 component 一行 import 用。Vue 版的 React Custom Hook。",
+      "content": "## 業界常用 5 個 Composables\n\n```ts\n// 1. useLocalStorage\nimport { ref, watch } from 'vue';\nexport function useLocalStorage<T>(key: string, initial: T) {\n  const stored = localStorage.getItem(key);\n  const value = ref<T>(stored ? JSON.parse(stored) : initial);\n  watch(value, (v) => localStorage.setItem(key, JSON.stringify(v)), { deep: true });\n  return value;\n}\n\n// 2. useDebounce\nexport function useDebounce<T>(value: Ref<T>, delay = 300) {\n  const debounced = ref(value.value);\n  let timer: any;\n  watch(value, (v) => {\n    clearTimeout(timer);\n    timer = setTimeout(() => debounced.value = v, delay);\n  });\n  return debounced;\n}\n\n// 3. useFetch (參考 vueuse 套件)\nexport function useFetch<T>(url: string) {\n  const data = ref<T | null>(null);\n  const error = ref<Error | null>(null);\n  const loading = ref(true);\n  fetch(url).then(r => r.json()).then(d => data.value = d).catch(e => error.value = e).finally(() => loading.value = false);\n  return { data, error, loading };\n}\n\n// 4. useMediaQuery\nexport function useMediaQuery(query: string) {\n  const matches = ref(window.matchMedia(query).matches);\n  const handler = (e: MediaQueryListEvent) => matches.value = e.matches;\n  onMounted(() => window.matchMedia(query).addEventListener('change', handler));\n  onUnmounted(() => window.matchMedia(query).removeEventListener('change', handler));\n  return matches;\n}\n\n// 5. useClickOutside\nexport function useClickOutside(target: Ref<HTMLElement | null>, callback: () => void) {\n  const handler = (e: MouseEvent) => {\n    if (target.value && !target.value.contains(e.target as Node)) callback();\n  };\n  onMounted(() => document.addEventListener('click', handler));\n  onUnmounted(() => document.removeEventListener('click', handler));\n}\n```\n\n**推薦套件**：`@vueuse/core` — 200+ 預製 composables、業界標配。",
+      "xp": 15
+    },
+    {
+      "id": "73.4",
+      "number": "LESSON 73.4",
+      "title": "進階 SFC — Teleport / Suspense / v-memo",
+      "oneLineSummary": "進階 Vue 三大武器：Teleport (跨 DOM 樹移動 modal)、Suspense (處理 async component loading)、v-memo (列表性能優化)。",
+      "content": "## Teleport — 把 modal 傳送到 body 末尾\n\n```vue\n<template>\n  <button @click='open = true'>開啟</button>\n  <Teleport to='body'>\n    <div v-if='open' class='modal-overlay'>\n      <div class='modal'>Modal 內容</div>\n    </div>\n  </Teleport>\n</template>\n```\n\n避免 modal 被父容器的 `overflow: hidden` 切到、或被 `z-index` 蓋住。\n\n## Suspense — 處理 async component\n\n```vue\n<template>\n  <Suspense>\n    <template #default>\n      <UserProfile />  <!-- 內部有 async setup -->\n    </template>\n    <template #fallback>\n      <div>載入中...</div>\n    </template>\n  </Suspense>\n</template>\n```\n\n## v-memo — 列表性能優化\n\n```vue\n<div v-for='item in list' :key='item.id' v-memo='[item.selected]'>\n  <!-- 只在 item.selected 改變時 re-render -->\n</div>\n```\n\n大列表（1000+）+ 部分項目偶爾變、v-memo 能省 80% render 時間。",
+      "xp": 20
+    },
+    {
+      "id": "73.5",
+      "number": "LESSON 73.5",
+      "title": "Vue 性能優化清單",
+      "oneLineSummary": "10 個業界 Vue 性能技巧、從 v-show vs v-if 到 shallowRef、列表虛擬滾動、code splitting。",
+      "content": "## Top 10 Vue 性能優化\n\n1. **v-show vs v-if**：頻繁切換用 v-show（CSS display）、條件渲染用 v-if（會 unmount）\n\n2. **shallowRef / shallowReactive**：大物件不需要深度監聽時、用 shallow 系列省 80% 比較成本\n\n```ts\nconst bigData = shallowRef(largeObject);  // 只比較 reference、不深入\n```\n\n3. **defineAsyncComponent + Suspense**：路由 / modal 內的大 component lazy load\n\n```ts\nconst HeavyChart = defineAsyncComponent(() => import('./HeavyChart.vue'));\n```\n\n4. **v-memo 用在大列表**：見上一課\n\n5. **避免內聯 function**：每 render 都新建、用 method / computed\n\n6. **大列表 virtual scrolling**：用 `vue-virtual-scroller` 套件、render 視窗內 row\n\n7. **圖片 lazy load**：`<img loading='lazy'>` + intersection observer\n\n8. **route lazy load**：`const About = () => import('./About.vue')`\n\n9. **避免 watch 太多 / 太深**：用 computed 替代部分 watch\n\n10. **production build**：Vite 預設 tree-shake + minify、確認 `npm run build` 跑過再部署",
+      "xp": 25
+    }
+  ]
+}

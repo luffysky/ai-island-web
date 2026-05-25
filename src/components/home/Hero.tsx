@@ -146,7 +146,7 @@ export function Hero({ totalChapters, totalLessons, stageCount, islandEnabled = 
             <div className="absolute -inset-4 bg-gradient-to-br from-accent/20 via-accent-2/10 to-accent-3/20 rounded-3xl blur-2xl animate-pulse" style={{ animationDuration: "4s" }} />
             <Image
               src="/mascot/hero-map.png"
-              alt="AI 島 — 繁體中文程式自學平台、HTML / React / Next.js / AI Agent 71 章全端養成、跟肥仔菇寶綠寶 AI 導師冒險"
+              alt="AI 島 — 繁體中文程式自學平台、HTML / React / Next.js / AI Agent 全端養成、跟肥仔菇寶綠寶 AI 導師冒險"
               width={1200}
               height={800}
               priority

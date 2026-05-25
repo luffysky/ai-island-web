@@ -347,7 +347,7 @@ export function DataLab() {
   const [code, setCode] = useState(EXERCISES[0].code);
   const [output, setOutput] = useState<string>("");
   const [stderr, setStderr] = useState<string>("");
-  const [imageData, setImageData] = useState<string | null>(null);
+  const [images, setImages] = useState<string[]>([]);
   const [running, setRunning] = useState(false);
   const outputRef = useRef<HTMLDivElement | null>(null);
 
@@ -360,7 +360,7 @@ export function DataLab() {
     setCode(ex.code);
     setOutput("");
     setStderr("");
-    setImageData(null);
+    setImages([]);
   };
 
   const execute = async () => {
@@ -368,16 +368,10 @@ export function DataLab() {
     setRunning(true);
     setOutput("");
     setStderr("");
-    setImageData(null);
+    setImages([]);
     const r = await run(code);
-    // 抓 __IMAGE__ marker (matplotlib output)
-    const m = r.stdout.match(/__IMAGE__([A-Za-z0-9+/=]+)/);
-    if (m) {
-      setImageData(`data:image/png;base64,${m[1]}`);
-      setOutput(r.stdout.replace(/__IMAGE__[A-Za-z0-9+/=]+/, "(圖表已產生 ↓)"));
-    } else {
-      setOutput(r.stdout);
-    }
+    setOutput(r.stdout);
+    setImages(r.images);
     setStderr(r.stderr);
     setRunning(false);
   };
@@ -454,15 +448,15 @@ export function DataLab() {
             💬 結果 / 圖表
           </div>
           <div ref={outputRef} className="flex-1 min-h-[450px] overflow-y-auto bg-[#0d1117] p-3 font-mono text-xs">
-            {!output && !stderr && !imageData && (
+            {!output && !stderr && images.length === 0 && (
               <div className="text-fg-muted/60">// 選一題、點「跑分析」</div>
             )}
             {output && <pre className="whitespace-pre-wrap text-[#e6edf3] mb-2">{output}</pre>}
-            {imageData && (
-              <div className="my-2 bg-[#0d1117] rounded">
-                <img src={imageData} alt="output" className="max-w-full rounded" />
+            {images.map((b64, i) => (
+              <div key={i} className="my-2 bg-[#0d1117] rounded">
+                <img src={`data:image/png;base64,${b64}`} alt={`output-${i}`} className="max-w-full rounded" />
               </div>
-            )}
+            ))}
             {stderr && <pre className="whitespace-pre-wrap text-red-400 mt-2">{stderr}</pre>}
           </div>
         </div>

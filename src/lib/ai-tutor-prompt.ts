@@ -1,7 +1,10 @@
 // AI 學習導師系統提示
-// 把 60 章內容壓縮成 system prompt、讓模型像「上過 AI 島完整課程」
+// 把全站章節內容壓縮成 system prompt、讓模型像「上過 AI 島完整課程」
+// 章節數動態算 (chapters.length)、新增章節 prompt 自動更新
 
 import { chapters } from "@/data/chapters";
+
+const CHAPTER_COUNT = chapters.length;
 
 const TONE_STYLES: Record<string, string> = {
   friendly: "親切、耐心、像鄰家學長解釋。多用 emoji 偶爾。",
@@ -18,7 +21,7 @@ function buildCourseSummary(): string {
   if (cachedCourseSummary) return cachedCourseSummary;
 
   const lines: string[] = [];
-  lines.push("=== AI 島 60 章完整課程結構 ===\n");
+  lines.push(`=== AI 島 ${CHAPTER_COUNT} 章完整課程結構 ===\n`);
 
   for (const ch of chapters) {
     const stage = ch.stage;
@@ -86,7 +89,7 @@ export function buildTutorSystemPrompt(options: {
 
 # 你的角色
 - 教 Indie 創業者、開發者、設計師、自學者
-- 你「上過」AI 島完整 60 章課程、熟悉每個主題
+- 你「上過」AI 島完整 ${CHAPTER_COUNT} 章課程 (目前最新一章 Ch${chapters[chapters.length-1]?.id ?? CHAPTER_COUNT} ${chapters[chapters.length-1]?.title ?? ""})、熟悉每個主題
 - 用戶問問題時、你會引用 AI 島的章節（「這在 Ch08 React 完整有教」）
 - 鼓勵實作、不只解釋
 - 如果用戶問跟課程無關、也要友善回答（你是 general assistant + 課程專家雙重身份）
@@ -118,7 +121,7 @@ ${toneInstruction}
 - **避免「顯然」「很簡單」「應該都知道」這種讓學生覺得自己笨的詞**
 - 學生問深技術問題時、也是先用國中生能懂的方式講「這在做什麼」、再放正式名詞
 
-# 我的知識來源（AI 島 60 章課程結構）
+# 我的知識來源（AI 島 ${CHAPTER_COUNT} 章課程結構）
 
 ${summary}
 

@@ -83,32 +83,36 @@ for i, r in enumerate(result["items"], 1):
   },
   {
     name: "📦 NPM package 統計",
-    url: "https://registry.npmjs.org/react",
-    note: "業界用：技術棧分析、套件比較",
-    code: `# 比較 React / Vue / Svelte 的下載統計
+    url: "https://registry.npmjs.org/react/latest",
+    note: "業界用：技術棧分析、套件比較 (用 /latest endpoint 避免 30MB 全量 JSON)",
+    code: `# 比較 React / Vue / Svelte 主流框架 latest 資訊
+# 用 /{pkg}/latest 端點 (回 < 5KB)、不抓 /{pkg} (含全部 version 歷史、可能 30MB)
 import json
 from js import fetch, encodeURIComponent
 
 packages = ["react", "vue", "svelte", "next", "nuxt"]
 results = []
 for pkg in packages:
-    url = f"https://registry.npmjs.org/{pkg}"
+    url = f"https://registry.npmjs.org/{pkg}/latest"
     resp = await fetch("/api/admin/playground/scrape?url=" + encodeURIComponent(url))
     data = (await resp.json()).to_py()
-    info = json.loads(data["body"])
-    versions = info.get("versions", {})
-    latest = info.get("dist-tags", {}).get("latest", "?")
+    body = data.get("body", "")
+    if not body:
+        print(f"❌ {pkg}: {data.get('error', '無 body')}")
+        continue
+    info = json.loads(body)
     results.append({
         "name": pkg,
-        "latest": latest,
-        "versions_count": len(versions),
-        "description": info.get("description", "")[:50],
+        "latest": info.get("version", "?"),
+        "homepage": info.get("homepage", "")[:50],
+        "description": (info.get("description") or "")[:60],
+        "license": info.get("license", "?"),
     })
 
-print(f"{'package':<10} {'latest':<10} {'total versions':<16}")
-print("-" * 50)
+print(f"{'package':<10} {'latest':<10} {'license':<10}")
+print("-" * 60)
 for r in results:
-    print(f"{r['name']:<10} {r['latest']:<10} {r['versions_count']:<16}")
+    print(f"{r['name']:<10} {r['latest']:<10} {r['license']:<10}")
     print(f"  → {r['description']}\\n")
 `,
   },
@@ -214,20 +218,30 @@ for r in results:
     url: "https://quotes.toscrape.com",
     note: "經典練習站、抓名言佳句",
     code: `# 抓 quotes.toscrape.com 首頁名言 + 作者 + tag
+# 注意：實際 HTML 是 <div class="quote" itemscope ...> 不是純 <div class="quote">
+# regex 用 [^>]* 容納額外屬性才會 match
 import re
 from js import fetch
 resp = await fetch("/api/admin/playground/scrape?url=" + encodeURIComponent("https://quotes.toscrape.com"))
 data = (await resp.json()).to_py()
 html = data["body"]
 
-quotes = re.findall(r'<div class="quote">(.*?)</div>\\s*</div>', html, re.S)
+# 用 article 風格切塊 (<div class="quote" itemscope...> ... </div>)
+quotes = re.findall(r'<div class="quote"[^>]*>(.*?)</div>\\s*</div>', html, re.S)
 print(f"找到 {len(quotes)} 句名言\\n")
-for i, q in enumerate(quotes[:5], 1):
-    text_m = re.search(r'<span class="text"[^>]*>([^<]+)</span>', q)
+
+for i, q in enumerate(quotes[:8], 1):
+    text_m = re.search(r'<span class="text"[^>]*>(.*?)</span>', q, re.S)
     author_m = re.search(r'<small class="author"[^>]*>([^<]+)</small>', q)
+    tags = re.findall(r'<a class="tag"[^>]*>([^<]+)</a>', q)
     if text_m and author_m:
-        print(f"{i}. {text_m.group(1)[:80]}")
-        print(f"   — {author_m.group(1)}\\n")
+        # 解 HTML entities
+        text = text_m.group(1).replace("&ldquo;", "「").replace("&rdquo;", "」").replace("&quot;", '"')
+        print(f"{i}. {text[:90]}")
+        print(f"   — {author_m.group(1)}")
+        if tags:
+            print(f"   #{' #'.join(tags)}")
+        print()
 `,
   },
   {
@@ -259,17 +273,24 @@ for i, story_id in enumerate(ids, 1):
     note: "Wikipedia 官方 API、各種主題搜尋",
     code: `# 用 Wikipedia API 搜「Taiwan」前 5 個結果
 import json
-from js import fetch
+from js import fetch, encodeURIComponent
+import re
 
 url = "https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=Taiwan&format=json&srlimit=5"
 resp = await fetch("/api/admin/playground/scrape?url=" + encodeURIComponent(url))
 data = (await resp.json()).to_py()
-result = json.loads(data["body"])
-
-for i, item in enumerate(result["query"]["search"], 1):
-    print(f"{i}. {item['title']}")
-    snippet = item['snippet'].replace('<span class="searchmatch">', '').replace('</span>', '')
-    print(f"   {snippet[:100]}...\\n")
+body = data.get("body", "")
+if not body:
+    print(f"❌ Wikipedia API 失敗：{data.get('error', '無 body')}")
+else:
+    result = json.loads(body)
+    search = result.get("query", {}).get("search", [])
+    print(f"找到 {len(search)} 個結果\\n")
+    for i, item in enumerate(search, 1):
+        print(f"{i}. {item['title']}")
+        # 移除 wiki 的 highlight HTML
+        snippet = re.sub(r'<[^>]+>', '', item.get('snippet', ''))
+        print(f"   {snippet[:120]}...\\n")
 `,
   },
 ];
