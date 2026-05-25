@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
 import { QuizBuilder } from "./QuizBuilder";
+import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
@@ -31,13 +32,13 @@ export default async function QuizBuilderPage({
       >
         ← 回章節編輯
       </Link>
-      <div>
-        <h2 className="text-xl font-bold">📝 Ch{String(chapter.id).padStart(2, "0")} 章末測驗</h2>
-        <p className="text-sm text-fg-muted mt-1">
-          {chapter.title}{" "}
-          · <span className="text-accent">AI 出題助手</span> 會吃整章 lesson 內容自動產 20 題草稿、admin 校稿後存檔。
-        </p>
-      </div>
+      <PageHero
+        emoji="📝"
+        title={`Ch${String(chapter.id).padStart(2, "0")} 章末測驗`}
+        desc={`${chapter.title} · AI 出題助手會吃整章 lesson 內容自動產 20 題草稿、admin 校稿後存檔。`}
+        gradient="from-purple-500/10 via-fuchsia-500/10 to-pink-500/10"
+        borderColor="border-purple-500/30"
+      />
       <QuizBuilder chapterId={Number(id)} initialQuiz={existing} />
     </div>
   );
