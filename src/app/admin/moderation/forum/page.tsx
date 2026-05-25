@@ -2,6 +2,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
 import { ThreadActions, ReplyActions } from "./Actions";
+import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
@@ -35,12 +36,13 @@ export default async function ForumModerationPage({
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-xl font-bold">🗣️ 論壇審核</h2>
-        <p className="text-sm text-fg-muted mt-1">
-          釘文、鎖串、隱藏、刪除。所有操作寫進 audit log。
-        </p>
-      </div>
+      <PageHero
+        emoji="🗣️"
+        title="論壇審核"
+        desc="釘文、鎖串、隱藏、刪除。所有操作寫進 audit log。"
+        gradient="from-indigo-500/10 via-blue-500/10 to-sky-500/10"
+        borderColor="border-indigo-500/30"
+      />
 
       <div className="flex gap-2 flex-wrap">
         {(["all", "hidden", "locked", "pinned"] as const).map((f) => (

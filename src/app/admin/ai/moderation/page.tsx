@@ -1,5 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { ModerationClient } from "./ModerationClient";
+import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
@@ -34,12 +35,13 @@ export default async function AdminAIModerationPage({
 
   return (
     <div>
-      <header className="mb-6">
-        <h1 className="text-2xl font-bold flex items-center gap-2">🛡️ AI 對話審核</h1>
-        <p className="text-sm text-fg-muted mt-1">
-          AI / 使用者訊息被 flag 後待處理。可由 keyword / user_report / classifier / manual 觸發。
-        </p>
-      </header>
+      <PageHero
+        emoji="🛡️"
+        title="AI 對話審核"
+        desc="AI / 使用者訊息被 flag 後待處理。可由 keyword / user_report / classifier / manual 觸發。"
+        gradient="from-red-500/10 via-rose-500/10 to-pink-500/10"
+        borderColor="border-red-500/30"
+      />
 
       <div className="grid grid-cols-3 gap-3 mb-6">
         <Stat label="待處理" value={pendingCount ?? 0} tone="warning" />

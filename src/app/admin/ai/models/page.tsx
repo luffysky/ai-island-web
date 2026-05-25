@@ -1,5 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { ModelsManagerClient } from "./ModelsManagerClient";
+import { PageHero } from "@/components/admin/PageHero";
 
 export default async function ModelsAdminPage() {
   const supabase = createSupabaseAdmin();
@@ -24,12 +25,13 @@ export default async function ModelsAdminPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-xl font-bold">🤖 AI 模型管理</h2>
-        <p className="text-sm text-fg-muted mt-1">
-          設定每個 provider 的 API key、月預算、模型可用性、免費 quota。
-        </p>
-      </div>
+      <PageHero
+        emoji="🤖"
+        title="AI 模型管理"
+        desc="設定每個 provider 的 API key、月預算、模型可用性、免費 quota。配合 /admin/ai/usage-models 細分用途。"
+        gradient="from-purple-500/10 via-fuchsia-500/10 to-pink-500/10"
+        borderColor="border-purple-500/30"
+      />
 
       <ModelsManagerClient
         initialModels={models ?? []}

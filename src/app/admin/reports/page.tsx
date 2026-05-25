@@ -1,5 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { ReportsClient } from "./ReportsClient";
+import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
@@ -37,10 +38,13 @@ export default async function AdminReportsPage({
 
   return (
     <div>
-      <header className="mb-6">
-        <h1 className="text-2xl font-bold flex items-center gap-2">🚨 檢舉收件箱</h1>
-        <p className="text-sm text-fg-muted mt-1">使用者送出的檢舉、按時序處理。</p>
-      </header>
+      <PageHero
+        emoji="🚨"
+        title="檢舉收件箱"
+        desc="使用者送出的檢舉、按時序處理。所有處置寫進 audit log。"
+        gradient="from-red-500/10 via-orange-500/10 to-amber-500/10"
+        borderColor="border-red-500/30"
+      />
 
       <div className="grid grid-cols-3 gap-3 mb-6">
         <Stat label="待處理" value={pendingCount ?? 0} tone="warning" />

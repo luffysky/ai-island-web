@@ -1,5 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { KeywordsClient } from "./KeywordsClient";
+import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
@@ -13,12 +14,13 @@ export default async function AdminAiKeywordsPage() {
 
   return (
     <div>
-      <header className="mb-6">
-        <h1 className="text-2xl font-bold flex items-center gap-2">🔍 AI 審核關鍵字</h1>
-        <p className="text-sm text-fg-muted mt-1">
-          L1 keyword 過濾（最便宜層）。觸發後寫 ai_moderation_flags 給 admin 看。
-        </p>
-      </header>
+      <PageHero
+        emoji="🔤"
+        title="AI 審核關鍵字"
+        desc="L1 keyword 過濾 (最便宜層)。觸發後寫 ai_moderation_flags 給 admin 看、avoid LLM moderation 太貴。"
+        gradient="from-rose-500/10 via-red-500/10 to-orange-500/10"
+        borderColor="border-rose-500/30"
+      />
       <KeywordsClient initial={(keywords ?? []) as any} />
     </div>
   );

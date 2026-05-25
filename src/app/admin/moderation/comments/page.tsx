@@ -2,6 +2,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { ModerationActions } from "./ModerationActions";
 import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
+import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
@@ -31,12 +32,13 @@ export default async function CommentsModerationPage({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between flex-wrap gap-2">
-        <h2 className="text-xl font-bold">📝 部落格留言審核</h2>
-        <div className="text-xs text-fg-muted">
-          {filter === "pending" ? "待審核" : filter === "approved" ? "已通過" : "全部"} {(count ?? 0).toLocaleString()} 筆
-        </div>
-      </div>
+      <PageHero
+        emoji="📝"
+        title="部落格留言審核"
+        desc={`${filter === "pending" ? "待審核" : filter === "approved" ? "已通過" : "全部"} ${(count ?? 0).toLocaleString()} 筆。先檢查 spam / NSFW、再批准。`}
+        gradient="from-blue-500/10 via-sky-500/10 to-cyan-500/10"
+        borderColor="border-blue-500/30"
+      />
 
       <div className="flex gap-2">
         {(["pending", "approved", "all"] as const).map((f) => (

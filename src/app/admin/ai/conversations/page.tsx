@@ -1,5 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import Link from "next/link";
+import { PageHero } from "@/components/admin/PageHero";
 
 export default async function ConversationsPage() {
   const supabase = createSupabaseAdmin();
@@ -20,8 +21,13 @@ export default async function ConversationsPage() {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-bold">💬 AI 對話紀錄</h2>
-      <p className="text-sm text-fg-muted">最近 100 個對話、用來 audit user 跟 AI 怎麼互動</p>
+      <PageHero
+        emoji="💬"
+        title="AI 對話紀錄"
+        desc="最近 100 個對話、用來 audit user 跟 AI 怎麼互動。發現異常 prompt / 燒 token 大戶必查。"
+        gradient="from-violet-500/10 via-purple-500/10 to-fuchsia-500/10"
+        borderColor="border-violet-500/30"
+      />
 
       <div className="bg-bg-card border border-border rounded-xl overflow-x-auto">
         <table className="w-full text-sm">

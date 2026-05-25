@@ -2,6 +2,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { formatTW } from "@/lib/format-date";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ClearCacheButtons } from "./ClearCacheButtons";
+import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
@@ -25,15 +26,15 @@ export default async function AdminAiCachePage() {
 
   return (
     <div>
-      <header className="mb-6 flex items-start justify-between gap-3 flex-wrap">
-        <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">💾 AI 回應快取</h1>
-          <p className="text-sm text-fg-muted mt-1">
-            相同問題第二次秒回、不燒 token。依 greenbao_ai_cost_spec v0。
-          </p>
-        </div>
+      <PageHero
+        emoji="💾"
+        title="AI 回應快取"
+        desc="相同問題第二次秒回、不燒 token。依 greenbao_ai_cost_spec v0。命中率高省 AI 費用、命中低代表 prompt 太多樣。"
+        gradient="from-emerald-500/10 via-green-500/10 to-lime-500/10"
+        borderColor="border-emerald-500/30"
+      >
         <ClearCacheButtons />
-      </header>
+      </PageHero>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
         <Stat label="快取條目數" value={(totalEntries ?? 0).toLocaleString()} />

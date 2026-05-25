@@ -1,6 +1,7 @@
 import { readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { AuditClient } from "./AuditClient";
+import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
@@ -91,14 +92,13 @@ export default function AdminSiteAuditPage() {
 
   return (
     <div className="space-y-4">
-      <header>
-        <h1 className="text-2xl font-bold flex items-center gap-2">🩺 全站體檢</h1>
-        <p className="text-sm text-fg-muted mt-1 leading-relaxed">
-          自動掃描全站所有頁面 + API、即時 ping 確認是否回應正常。<br/>
-          動態路徑（含 <code className="bg-bg px-1 rounded text-xs">[id]</code>）會跳過、需手動測。
-          後台 / API_admin 路徑會回 200 或 401/403（401/403 也算 OK、代表 guard 正常擋未登入）。
-        </p>
-      </header>
+      <PageHero
+        emoji="🩺"
+        title="全站體檢"
+        desc="自動掃描全站所有頁面 + API、即時 ping。動態路徑 [id] 會跳過、需手動測。401/403 也算 OK、代表 guard 正常擋未登入。"
+        gradient="from-teal-500/10 via-cyan-500/10 to-sky-500/10"
+        borderColor="border-teal-500/30"
+      />
 
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2">
         <Stat label="總數" value={stats.total} tone="accent" />

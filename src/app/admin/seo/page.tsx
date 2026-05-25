@@ -2,6 +2,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { chapters } from "@/data/chapters";
 import { SEO_PLACEHOLDERS, SITE_STATS } from "@/lib/site-stats";
 import { SEOManagerClient } from "./SEOManagerClient";
+import { PageHero } from "@/components/admin/PageHero";
 
 export default async function SEOAdminPage() {
   const supabase = createSupabaseAdmin();
@@ -39,12 +40,13 @@ export default async function SEOAdminPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-xl font-bold">🔍 SEO 管理</h2>
-        <p className="text-sm text-fg-muted mt-1">
-          管每個頁面的 title / description / OG / 結構化資料 / GEO 設定
-        </p>
-      </div>
+      <PageHero
+        emoji="🔍"
+        title="SEO 管理"
+        desc="管每個頁面的 title / description / OG / 結構化資料 / GEO 設定。用 token 動態套站內統計、不用手改。"
+        gradient="from-green-500/10 via-emerald-500/10 to-teal-500/10"
+        borderColor="border-green-500/30"
+      />
 
       <section className="bg-bg-card border border-border rounded-xl p-4 text-sm">
         <div className="font-bold mb-2">🪄 動態數據佔位符</div>

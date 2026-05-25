@@ -1,5 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { AIUsageChart } from "./AIUsageChart";
+import { PageHero } from "@/components/admin/PageHero";
 
 export default async function AIUsagePage() {
   const supabase = createSupabaseAdmin();
@@ -71,7 +72,13 @@ export default async function AIUsagePage() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-bold">📊 AI Token 使用量（近 30 天）</h2>
+      <PageHero
+        emoji="📊"
+        title="AI Token 使用量"
+        desc="近 30 天各 provider / model 用了多少 token / 多少錢。月底對帳用、超預算 alert。"
+        gradient="from-yellow-500/10 via-amber-500/10 to-orange-500/10"
+        borderColor="border-yellow-500/30"
+      />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Stat label="總費用" value={`$${totalCost.toFixed(2)}`} color="text-yellow-400" />
