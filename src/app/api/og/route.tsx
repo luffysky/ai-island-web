@@ -2,7 +2,8 @@ import { ImageResponse } from "next/og";
 import { NextRequest, NextResponse } from "next/server";
 import { SITE_STATS } from "@/lib/site-stats";
 
-export const runtime = "nodejs";
+// edge runtime — Satori 在 edge 跑遠快過 nodejs (修 Zeabur 上 502 timeout)
+export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
@@ -48,9 +49,10 @@ export async function GET(req: NextRequest) {
               fontWeight: 700,
             }}
           >
-            🏝️ AI 島
+            AI 島
           </div>
 
+          {/* 避免 backgroundClip: text + transparent (Satori 不完整支援、Zeabur 上 timeout) */}
           <div
             style={{
               fontSize: 96,
@@ -58,9 +60,8 @@ export async function GET(req: NextRequest) {
               lineHeight: 1.1,
               marginTop: 50,
               maxWidth: "85%",
-              background: "linear-gradient(135deg, #50fa7b 0%, #8be9fd 100%)",
-              backgroundClip: "text",
-              color: "transparent",
+              color: "#50fa7b",
+              display: "flex",
             }}
           >
             {title}
@@ -88,9 +89,9 @@ export async function GET(req: NextRequest) {
               color: "#888",
             }}
           >
-            <div>🎮 遊戲化學習</div>
-            <div>🤖 AI 導師</div>
-            <div>📚 {SITE_STATS.chapterCount} 章 {SITE_STATS.lessonCount}+ lessons</div>
+            <div style={{ display: "flex" }}>遊戲化學習</div>
+            <div style={{ display: "flex" }}>AI 導師</div>
+            <div style={{ display: "flex" }}>{SITE_STATS.chapterCount} 章 {SITE_STATS.lessonCount}+ lessons</div>
           </div>
         </div>
       ),
