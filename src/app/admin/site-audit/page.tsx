@@ -5,12 +5,15 @@ import { AuditClient } from "./AuditClient";
 export const dynamic = "force-dynamic";
 
 export type RouteEntry = {
-  path: string;
+  path: string;            // 顯示用 (內部 pattern e.g. /admin/users)
+  fetchPath: string;       // 實際打 fetch 用 (含 admin slug e.g. /console-x7k2/admin/users)
   file: string;
   type: "page" | "api";
   area: "public" | "auth" | "admin" | "api_public" | "api_admin" | "api_auth";
   is_dynamic: boolean;
 };
+
+const ADMIN_SLUG = process.env.ADMIN_SLUG || process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2";
 
 function scanRoutes(dir: string, urlPrefix = ""): RouteEntry[] {
   const out: RouteEntry[] = [];
@@ -57,8 +60,14 @@ function makeEntry(urlPattern: string, file: string, type: "page" | "api"): Rout
     else if (urlPattern.match(/^\/(me|settings|account|onboarding|admin)/)) area = "auth";
     else area = "public";
   }
+  // 後台頁面：實際 URL 要加 admin slug prefix（API endpoint 不用、middleware rewrite 就好）
+  const fetchPath = (area === "admin" && type === "page")
+    ? `/${ADMIN_SLUG}${urlPattern}`
+    : urlPattern;
+
   return {
     path: urlPattern,
+    fetchPath,
     file: file.replace(/.*[\\/]src[\\/]app[\\/]/, "src/app/").replace(/\\/g, "/"),
     type,
     area,

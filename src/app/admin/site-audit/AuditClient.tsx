@@ -42,7 +42,7 @@ export function AuditClient({ routes }: { routes: RouteEntry[] }) {
     });
   }, [routes, results, filter, search]);
 
-  const pingOne = async (path: string): Promise<PingResult> => {
+  const pingOne = async (path: string, type: "page" | "api"): Promise<PingResult> => {
     if (/\[[^\]]+\]/.test(path)) {
       return { ok: false, error: "dynamic_skipped" };
     }
@@ -57,6 +57,10 @@ export function AuditClient({ routes }: { routes: RouteEntry[] }) {
       const status = res.status;
       if (status >= 300 && status < 400) {
         return { status, ok: false, redirect: true, redirectTo: res.headers.get("location") ?? undefined, ms };
+      }
+      // API：405 / 400 / 401 / 403 / 422 都算「endpoint 存在、正常擋下」
+      if (type === "api") {
+        return { status, ok: res.ok || [400, 401, 403, 405, 422].includes(status), ms };
       }
       return { status, ok: res.ok || status === 401 || status === 403, ms };
     } catch (e: any) {
@@ -83,7 +87,7 @@ export function AuditClient({ routes }: { routes: RouteEntry[] }) {
       const batch = toPing.slice(i, i + 5);
       await Promise.all(
         batch.map(async (r) => {
-          const result = await pingOne(r.path);
+          const result = await pingOne(r.fetchPath, r.type);
           setResult(r.path, result);
         }),
       );
@@ -91,10 +95,10 @@ export function AuditClient({ routes }: { routes: RouteEntry[] }) {
     setPingingAll(false);
   };
 
-  const pingSingle = async (path: string) => {
-    setResult(path, { ok: false, error: "...", ms: 0 });
-    const r = await pingOne(path);
-    setResult(path, r);
+  const pingSingle = async (route: RouteEntry) => {
+    setResult(route.path, { ok: false, error: "...", ms: 0 });
+    const r = await pingOne(route.fetchPath, route.type);
+    setResult(route.path, r);
   };
 
   const grouped = useMemo(() => {
@@ -201,7 +205,7 @@ export function AuditClient({ routes }: { routes: RouteEntry[] }) {
                       key={r.path + r.file}
                       route={r}
                       result={results.get(r.path)}
-                      onPing={() => pingSingle(r.path)}
+                      onPing={() => pingSingle(r)}
                     />
                   ))}
                 </tbody>
@@ -269,7 +273,10 @@ function RouteRow({ route, result, onPing }: { route: RouteEntry; result?: PingR
           <span className="text-fg-muted text-[10px]">跳過</span>
         ) : result.ok ? (
           <span className="inline-flex items-center gap-1 text-green-400">
-            <CheckCircle2 size={11} /> {result.status} {result.status === 401 || result.status === 403 ? "(需登入)" : ""}
+            <CheckCircle2 size={11} /> {result.status}
+            {(result.status === 401 || result.status === 403) && <span className="text-[10px] text-fg-muted">(guard ok)</span>}
+            {result.status === 405 && <span className="text-[10px] text-fg-muted">(POST-only)</span>}
+            {result.status === 400 && <span className="text-[10px] text-fg-muted">(缺參數、正常)</span>}
             {result.ms && <span className="text-[10px] text-fg-muted">{result.ms}ms</span>}
           </span>
         ) : result.redirect ? (
@@ -295,7 +302,7 @@ function RouteRow({ route, result, onPing }: { route: RouteEntry; result?: PingR
             </button>
           )}
           <a
-            href={route.path}
+            href={route.fetchPath}
             target="_blank"
             rel="noopener noreferrer"
             className="text-[10px] px-2 py-1 rounded border border-border hover:border-accent hover:text-accent inline-flex items-center gap-0.5"
