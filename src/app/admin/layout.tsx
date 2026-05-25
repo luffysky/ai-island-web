@@ -194,6 +194,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               <AdminLink href="/admin/nami-playground">🐍 Python Playground</AdminLink>
               <AdminLink href="/admin/nami-ide">💻 Nami IDE (多語言)</AdminLink>
               <AdminLink href="/admin/lottie-settings">🎨 Lottie 動畫設定</AdminLink>
+              <AdminLink href="/admin/og-preview">🖼️ AI OG 圖預覽 (5 model)</AdminLink>
             </NavGroup>
 
             {/* 11. 🔐 系統設定 */}
