@@ -22,7 +22,6 @@ type UserProfileLite = {
   username: string | null;
   display_name: string | null;
   role: string;
-  email: string | null;
   xp: number | null;
   level: number | null;
 };
@@ -63,7 +62,7 @@ async function askUserAI(text: string, profile: UserProfileLite | null, lineUser
     id: profile?.id ?? null,
     username: profile?.username ?? null,
     role: profile?.role ?? null,
-    email: profile?.email ?? null,
+    email: null, // profiles 表無 email、用 lineUserId + role + username 判斷已足夠
     lineUserId,
   }).isOwner;
   const name = profile?.display_name || profile?.username || `LINE 學員${lineUserId.slice(0, 6)}`;
@@ -334,9 +333,10 @@ export async function POST(req: NextRequest) {
       const admin = createSupabaseAdmin();
 
       // 看 LINE userId 對應哪個 profile（若已綁定）
+      // ⚠️ profiles 表沒 email 欄位、不能 select 進來 (否則 Supabase 拒回、data=null、所有人被誤判為未綁定)
       const { data: profile } = await admin
         .from("profiles")
-        .select("id, username, display_name, role, email, xp, level")
+        .select("id, username, display_name, role, xp, level")
         .eq("line_user_id", userId)
         .maybeSingle();
 
