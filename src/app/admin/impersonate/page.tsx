@@ -2,6 +2,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import Link from "next/link";
 import { formatTW } from "@/lib/format-date";
 import { ImpersonateForm } from "./ImpersonateForm";
+import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
@@ -19,12 +20,13 @@ export default async function ImpersonateLogPage() {
 
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="text-2xl font-bold">🕵️ Impersonate 紀錄</h1>
-        <p className="text-sm text-fg-muted mt-1">
-          以使用者身份檢視（read-only）。所有 session 都會紀錄；被 impersonate 的人也能看見。
-        </p>
-      </header>
+      <PageHero
+        emoji="🕵️"
+        title="Impersonate 紀錄"
+        desc="以使用者身份檢視 (read-only)。所有 session 都會紀錄、被 impersonate 的人也能看見。客服 debug 用。"
+        gradient="from-fuchsia-500/10 via-purple-500/10 to-indigo-500/10"
+        borderColor="border-fuchsia-500/30"
+      />
 
       <ImpersonateForm />
 

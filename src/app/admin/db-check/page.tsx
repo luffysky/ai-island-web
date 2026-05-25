@@ -1,6 +1,7 @@
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { redirect } from "next/navigation";
+import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
@@ -62,12 +63,13 @@ export default async function AdminDbCheckPage() {
 
   return (
     <div className="space-y-4">
-      <header>
-        <h1 className="text-2xl font-bold flex items-center gap-2">🩺 DB 狀態檢查</h1>
-        <p className="text-sm text-fg-muted mt-1">
-          一次列出所有表 / 關鍵欄位是否存在、紅色那行就是 migration 還沒跑。
-        </p>
-      </header>
+      <PageHero
+        emoji="🩺"
+        title="DB 狀態檢查"
+        desc="一次列出所有表 / 關鍵欄位是否存在、紅色那行就是 migration 還沒跑。"
+        gradient="from-cyan-500/10 via-blue-500/10 to-purple-500/10"
+        borderColor={pending.length > 0 ? "border-red-500/40" : "border-emerald-500/30"}
+      />
 
       {pending.length > 0 ? (
         <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4">

@@ -1,5 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import Link from "next/link";
+import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
@@ -19,28 +20,29 @@ export default async function AdminKpiPage({ searchParams }: { searchParams: Pro
 
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="text-2xl font-bold flex items-center gap-2">📊 KPI 報表（P4-05）</h1>
-        <p className="text-sm text-fg-muted mt-1">當前期間：{days} 天 · 期末對齊今日（台北日）</p>
-      </header>
-
-      <div className="flex gap-2">
+      <PageHero
+        emoji="📊"
+        title="KPI 報表"
+        desc={`當前期間：${days} 天 · 期末對齊今日 (台北日)。三段切換看趨勢、可匯出 CSV 給高層看。`}
+        gradient="from-yellow-500/10 via-amber-500/10 to-pink-500/10"
+        borderColor="border-yellow-500/30"
+      >
         {segments.map((d) => (
           <Link
             key={d}
             href={`?days=${d}` as any}
-            className={`text-sm px-3 py-1.5 rounded-full ${days === d ? "bg-accent text-black font-bold" : "border border-border hover:border-accent"}`}
+            className={`text-xs px-3 py-1.5 rounded-full ${days === d ? "bg-accent text-black font-bold" : "border border-border hover:border-accent"}`}
           >
-            最近 {d} 天
+            {d} 天
           </Link>
         ))}
         <a
           href={`/api/admin/kpi.csv?days=${days}`}
-          className="ml-auto text-sm px-3 py-1.5 rounded-full border border-border hover:border-accent"
+          className="text-xs px-3 py-1.5 rounded-full border border-border hover:border-accent"
         >
           ⬇ CSV
         </a>
-      </div>
+      </PageHero>
 
       <section className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Kpi label="新註冊" value={data.signups} unit="人" />

@@ -1,5 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { GdprRequestsClient } from "./GdprRequestsClient";
+import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
@@ -27,12 +28,13 @@ export default async function AdminGdprPage() {
 
   return (
     <div>
-      <header className="mb-6">
-        <h1 className="text-2xl font-bold flex items-center gap-2">🔐 GDPR 請求</h1>
-        <p className="text-sm text-fg-muted mt-1">
-          匯出（Art.15）/ 刪除（Art.17）請求佇列。軟刪後超過 7 天可手動硬刪。
-        </p>
-      </header>
+      <PageHero
+        emoji="🔐"
+        title="GDPR 請求"
+        desc="匯出 (Art.15) / 刪除 (Art.17) 請求佇列。軟刪後超過 7 天可手動硬刪。法規時程必須遵守。"
+        gradient="from-slate-500/10 via-gray-500/10 to-zinc-500/10"
+        borderColor="border-slate-500/30"
+      />
 
       <div className="grid grid-cols-3 gap-3 mb-6">
         <div className="rounded-xl bg-bg-card border border-border p-4">

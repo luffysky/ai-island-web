@@ -1,4 +1,5 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { PageHero } from "@/components/admin/PageHero";
 import { scoreRfm, SEGMENT_LABEL, SEGMENT_COLOR, type RfmSegment } from "@/lib/rfm";
 import { ChurnClient } from "./ChurnClient";
 
@@ -93,13 +94,13 @@ export default async function AdminChurnPage({
 
   return (
     <div>
-      <header className="mb-6">
-        <h1 className="text-2xl font-bold flex items-center gap-2">🚨 RFM 流失預警</h1>
-        <p className="text-sm text-fg-muted mt-1">
-          Recency × Frequency × Monetary 三維評分（每維 1-5 分）、自動分 8 個 segment。
-          預設聚焦四個高風險 segment：at_risk / cant_lose / hibernating / lost。
-        </p>
-      </header>
+      <PageHero
+        emoji="🚨"
+        title="RFM 流失預警"
+        desc="Recency × Frequency × Monetary 三維評分 (每維 1-5 分)、自動分 8 個 segment。聚焦四高風險：at_risk / cant_lose / hibernating / lost。"
+        gradient="from-red-500/10 via-orange-500/10 to-yellow-500/10"
+        borderColor="border-red-500/30"
+      />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
         {(Object.keys(SEGMENT_LABEL) as RfmSegment[]).map((seg) => {

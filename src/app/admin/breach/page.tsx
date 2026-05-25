@@ -1,6 +1,7 @@
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
@@ -18,21 +19,21 @@ export default async function BreachPage() {
     .limit(50);
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold">🚨 個資外洩通報管理</h1>
-          <p className="text-sm text-fg-muted mt-1">
-            依個資法、發現外洩 72 小時內必須通報主管機關並通知當事人
-          </p>
-        </div>
+    <div className="space-y-4">
+      <PageHero
+        emoji="🚨"
+        title="個資外洩通報管理"
+        desc="依個資法、發現外洩 72 小時內必須通報主管機關並通知當事人。逾期 dashboard 會紅色提醒。"
+        gradient="from-red-500/10 via-orange-500/10 to-yellow-500/10"
+        borderColor="border-red-500/40"
+      >
         <Link
           href="./breach/new"
-          className="px-4 py-2 bg-red-500 text-white rounded-lg font-bold hover:bg-red-600 transition"
+          className="px-4 py-2 bg-red-500 text-white rounded-lg font-bold hover:bg-red-600 transition text-xs"
         >
           + 通報新事件
         </Link>
-      </div>
+      </PageHero>
 
       {/* 緊急提醒 */}
       {incidents && incidents.some((i: any) => i.time_status === "overdue") && (

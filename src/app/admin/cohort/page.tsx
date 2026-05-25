@@ -1,4 +1,5 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
@@ -98,12 +99,13 @@ export default async function AdminCohortPage() {
 
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="text-2xl font-bold flex items-center gap-2">📈 Cohort 留存 + Funnel（LT-15）</h1>
-        <p className="text-sm text-fg-muted mt-1">
-          依註冊週分組看 N 週後留存率；轉換漏斗顯示用戶從註冊到付費的流失點。
-        </p>
-      </header>
+      <PageHero
+        emoji="📈"
+        title="Cohort 留存 + Funnel"
+        desc="依註冊週分組看 N 週後留存率、轉換漏斗顯示用戶從註冊到付費的流失點。低留存的 cohort 立刻 follow up。"
+        gradient="from-purple-500/10 via-pink-500/10 to-blue-500/10"
+        borderColor="border-purple-500/30"
+      />
 
       {/* Funnel */}
       <section className="rounded-xl bg-bg-card border border-border p-4">
