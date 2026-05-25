@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Play, Loader2, Trash2, BookOpen, Download } from "lucide-react";
 import { usePyodide } from "@/hooks/usePyodide";
+import { CodeEditor, loadEditorValue } from "@/components/ui/CodeEditor";
 
 const EXAMPLES = [
   {
@@ -64,7 +65,7 @@ print(r'''
 
 export function PythonREPL() {
   const { status, progress, error, load, run } = usePyodide();
-  const [code, setCode] = useState(EXAMPLES[0].code);
+  const [code, setCode] = useState(() => loadEditorValue("repl-code", EXAMPLES[0].code));
   const [output, setOutput] = useState<{ kind: "stdout" | "stderr" | "result" | "system"; text: string }[]>([]);
   const [running, setRunning] = useState(false);
   const outputRef = useRef<HTMLDivElement | null>(null);
@@ -135,20 +136,18 @@ export function PythonREPL() {
               <span className="text-[9px] ml-1 opacity-70">⌘↵</span>
             </button>
           </div>
-          <textarea
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            onKeyDown={(e) => {
-              if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
-                e.preventDefault();
-                execute();
-              }
-            }}
-            spellCheck={false}
-            className="flex-1 min-h-[300px] p-3 bg-[#0d1117] text-[#e6edf3] font-mono text-xs resize-none outline-none border-0 leading-relaxed"
-            style={{ tabSize: 4 }}
-            placeholder="# 在這寫 Python..."
-          />
+          <div className="flex-1 min-h-[300px]">
+            <CodeEditor
+              value={code}
+              onChange={setCode}
+              onRun={execute}
+              lang="python"
+              storageKey="repl-code"
+              height="100%"
+              minHeight="300px"
+              placeholder="# 在這寫 Python..."
+            />
+          </div>
         </div>
 
         {/* Output */}

@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Play, Pause, RefreshCw, Download, FileCode, FileBadge, Braces, ExternalLink } from "lucide-react";
-import { CodeArea, loadCodeAreaValue } from "@/components/ui/CodeArea";
+import { CodeEditor, loadEditorValue } from "@/components/ui/CodeEditor";
 
 const PRESETS = [
   {
@@ -248,9 +248,9 @@ const PANEL_META = {
 
 export function WebLab() {
   const [preset, setPreset] = useState(PRESETS[0]);
-  const [html, setHtml] = useState(() => loadCodeAreaValue("web-html", PRESETS[0].html));
-  const [css, setCss] = useState(() => loadCodeAreaValue("web-css", PRESETS[0].css));
-  const [js, setJs] = useState(() => loadCodeAreaValue("web-js", PRESETS[0].js));
+  const [html, setHtml] = useState(() => loadEditorValue("web-html", PRESETS[0].html));
+  const [css, setCss] = useState(() => loadEditorValue("web-css", PRESETS[0].css));
+  const [js, setJs] = useState(() => loadEditorValue("web-js", PRESETS[0].js));
   const [auto, setAuto] = useState(true);
   const [running, setRunning] = useState(true);
   const [iframeKey, setIframeKey] = useState(0);
@@ -364,17 +364,21 @@ try { ${js} } catch (e) { document.body.innerHTML += '<pre style="color:red;padd
               {activePanel === "html" ? html.split("\n").length : activePanel === "css" ? css.split("\n").length : js.split("\n").length} 行
             </span>
           </div>
-          <CodeArea
-            value={activePanel === "html" ? html : activePanel === "css" ? css : js}
-            onChange={(v) => {
-              if (activePanel === "html") setHtml(v);
-              else if (activePanel === "css") setCss(v);
-              else setJs(v);
-              if (auto) setIframeKey(k => k + 1);
-            }}
-            storageKey={`web-${activePanel}`}
-            className="flex-1 min-h-[500px] p-3"
-          />
+          <div className="flex-1 min-h-[500px]">
+            <CodeEditor
+              value={activePanel === "html" ? html : activePanel === "css" ? css : js}
+              onChange={(v) => {
+                if (activePanel === "html") setHtml(v);
+                else if (activePanel === "css") setCss(v);
+                else setJs(v);
+                if (auto) setIframeKey(k => k + 1);
+              }}
+              lang={activePanel === "html" ? "html" : activePanel === "css" ? "css" : "javascript"}
+              storageKey={`web-${activePanel}`}
+              height="100%"
+              minHeight="500px"
+            />
+          </div>
         </div>
 
         {/* Preview */}
