@@ -104,13 +104,13 @@ export default async function AdminUserDetailPage({
             <h2 className="text-xl font-bold">{profile.display_name || profile.username}</h2>
             <span className={`text-[10px] px-2 py-0.5 rounded ${
               profile.role === "admin"
-                ? "bg-red-500/20 text-red-500"
+                ? "bg-red-500/15 text-red-300"
                 : profile.role === "editor"
-                ? "bg-blue-500/20 text-blue-500"
-                : "bg-gray-500/20 text-gray-500"
+                ? "bg-blue-500/15 text-blue-300"
+                : "bg-gray-500/20 text-gray-300"
             }`}>{profile.role}</span>
             {profile.ai_unlimited && (
-              <span className="text-[10px] px-2 py-0.5 rounded bg-yellow-500/20 text-yellow-500">✨ AI 特權</span>
+              <span className="text-[10px] px-2 py-0.5 rounded bg-yellow-500/15 text-yellow-300">✨ AI 特權</span>
             )}
             {profile.banned_at && (
               <span className="text-[10px] px-2 py-0.5 rounded bg-red-600/30 text-red-400">🚫 BANNED</span>

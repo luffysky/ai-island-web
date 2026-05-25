@@ -24,7 +24,7 @@ const LEVEL_COLOR: Record<string, string> = {
   info: "bg-blue-500/15 text-blue-400",
   warn: "bg-yellow-500/15 text-yellow-400",
   error: "bg-red-500/15 text-red-400",
-  fatal: "bg-red-600/20 text-red-500",
+  fatal: "bg-red-500/15 text-red-300",
 };
 
 export function ErrorLogsClient({

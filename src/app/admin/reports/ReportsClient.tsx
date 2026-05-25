@@ -27,7 +27,7 @@ const REASON_COLOR: Record<string, string> = {
   hate_speech: "bg-red-500/15 text-red-400",
   sexual: "bg-pink-500/15 text-pink-400",
   illegal: "bg-purple-500/15 text-purple-400",
-  self_harm: "bg-red-600/20 text-red-500",
+  self_harm: "bg-red-500/15 text-red-300",
   other: "bg-blue-500/15 text-blue-400",
 };
 

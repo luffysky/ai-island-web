@@ -25,7 +25,7 @@ const SEV_COLOR: Record<string, string> = {
   info: "bg-blue-500/15 text-blue-400",
   warn: "bg-yellow-500/15 text-yellow-400",
   high: "bg-orange-500/15 text-orange-400",
-  critical: "bg-red-600/20 text-red-500",
+  critical: "bg-red-500/15 text-red-300",
 };
 
 export function ModerationClient({ initial, filters }: { initial: Flag[]; filters: { status: string; severity: string } }) {
