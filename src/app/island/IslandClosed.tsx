@@ -32,7 +32,7 @@ export default function IslandClosed() {
         </div>
         <p className="text-[10px] text-fg-muted mt-8">
           想第一時間知道開放消息？
-          <Link href="/account/notifications" className="text-accent underline ml-1">
+          <Link href="/settings" className="text-accent underline ml-1">
             開啟通知
           </Link>
         </p>
