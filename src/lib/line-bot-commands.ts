@@ -50,7 +50,21 @@ export async function runBotCommand(text: string, user: AdminLineUser): Promise<
       default: return { text: `❓ 未知命令 /${cmd}、輸入 /help 看清單` };
     }
   } catch (e: any) {
-    return { text: `❌ 命令失敗：${e?.message ?? "未知錯誤"}` };
+    // 寫 error_logs、林董到 /admin/errors 看真實 stack
+    try {
+      const admin = createSupabaseAdmin();
+      await admin.from("error_logs").insert({
+        source: "line-bot-commands",
+        level: "error",
+        message: `[cmd_${cmd}_failed] ${e?.message ?? "unknown"}`,
+        extra: {
+          cmd, args,
+          line_user_id: user.id,
+          stack: e?.stack?.slice(0, 1000),
+        },
+      });
+    } catch {}
+    return { text: `❌ /${cmd} 失敗：${e?.message ?? "未知錯誤"}\n(已寫 error_logs、可去 /admin/errors 看 stack)` };
   }
 }
 
