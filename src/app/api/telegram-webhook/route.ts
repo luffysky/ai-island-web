@@ -27,22 +27,92 @@ function ownerAllowed(userId: number, username?: string): boolean {
   return ids.length === 0 && names.length === 0 ? false : false;
 }
 
-async function tgSend(token: string, chatId: number, text: string, replyTo?: number) {
+// Telegram MarkdownV2 escape (保留我們刻意加的 markdown)
+// HTML 模式比較好用：只 escape < > & 三個、其他自由
+function escapeHTML(s: string): string {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+async function tgSend(
+  token: string,
+  chatId: number,
+  text: string,
+  options?: {
+    replyTo?: number;
+    keyboard?: Array<Array<{ text: string; url?: string; callback_data?: string }>>;
+    parseMode?: "HTML" | "Markdown" | "MarkdownV2";
+  },
+) {
   try {
+    const body: any = {
+      chat_id: chatId,
+      text: text.slice(0, 4000),
+      disable_web_page_preview: true,
+    };
+    if (options?.replyTo) body.reply_to_message_id = options.replyTo;
+    if (options?.parseMode) body.parse_mode = options.parseMode;
+    else body.parse_mode = "Markdown";
+    if (options?.keyboard) body.reply_markup = { inline_keyboard: options.keyboard };
+
     await fetch(`${TG}${token}/sendMessage`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text: text.slice(0, 4000),
-        reply_to_message_id: replyTo,
-        parse_mode: "Markdown",
-      }),
+      body: JSON.stringify(body),
       signal: AbortSignal.timeout(8000),
     });
   } catch (e) {
     console.warn("[telegram-webhook] send failed:", (e as any)?.message);
   }
+}
+
+// LINE 指令 → Telegram 美化
+function adminConsoleUrl(): string {
+  const site = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
+  const slug = process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2";
+  return `${site}/${slug}/admin`;
+}
+
+// 把 BotReply.text 包成 Telegram HTML 美化版
+function dressUpAdminReply(rawText: string, cmd: string): { html: string; keyboard?: any[][] } {
+  // 標題列 (第一行通常是「📊 今日 KPI」之類) — 包成 <b>
+  const lines = rawText.split("\n");
+  const titleIdx = lines.findIndex((l) => l.trim() && !l.trim().startsWith("/"));
+  if (titleIdx >= 0) {
+    lines[titleIdx] = `<b>${escapeHTML(lines[titleIdx])}</b>`;
+    // 之後行 escape
+    for (let i = 0; i < lines.length; i++) {
+      if (i !== titleIdx) lines[i] = escapeHTML(lines[i]);
+    }
+  } else {
+    for (let i = 0; i < lines.length; i++) lines[i] = escapeHTML(lines[i]);
+  }
+  const html = lines.join("\n");
+
+  // 按指令類型加 inline keyboard 按鈕
+  const cmdToPath: Record<string, string> = {
+    today: "",
+    kpi: "/kpi",
+    users: "/users",
+    churn: "/churn",
+    errors: "/errors",
+    online: "/analytics",
+    sub: "/subscriptions",
+    orders: "/orders",
+    "ai-cost": "/ai/usage",
+    ai_cost: "/ai/usage",
+    quiz: "/analytics/learning-events",
+    island: "/analytics",
+    leetcode: "/users",
+  };
+  const path = cmdToPath[cmd];
+  if (path !== undefined) {
+    const url = adminConsoleUrl() + path;
+    return {
+      html,
+      keyboard: [[{ text: `📊 打開後台 /admin${path}`, url }]],
+    };
+  }
+  return { html };
 }
 
 export async function POST(req: NextRequest) {
@@ -84,12 +154,34 @@ export async function POST(req: NextRequest) {
       await tgSend(token, chatId,
         "👋 *AI 島 Telegram bot*\n\n" +
         "直接傳訊息 → 跟 AI 對話\n\n" +
-        "*指令*\n" +
-        "/model — 看可用 model 清單 + 當前選擇\n" +
-        "/model <name> — 切換 model\n" +
-        "/clear — 清對話歷史\n" +
-        "/whoami — 看你 chat_id / user_id\n" +
-        "/help — 看這份",
+        "*🤖 AI 對話*\n" +
+        "`/model` — 看可用 model 清單 + 當前選擇\n" +
+        "`/model <name>` — 切換 model\n" +
+        "`/clear` — 清對話歷史\n" +
+        "`/whoami` — 看 chat_id / user_id\n\n" +
+        "*📊 報表*\n" +
+        "`/today` — 今日 KPI\n" +
+        "`/kpi 7` — N 天 KPI\n" +
+        "`/online` — 線上人數\n" +
+        "`/sub` — 訂閱概覽\n" +
+        "`/orders [N]` — 最近訂單\n" +
+        "`/ai-cost [天數]` — AI 用量\n" +
+        "`/quiz` — 今日測驗\n" +
+        "`/island` — 島嶼統計\n\n" +
+        "*👤 用戶*\n" +
+        "`/users` — 最近註冊\n" +
+        "`/churn` — 流失預警\n" +
+        "`/leetcode [user]` — leetcode 進度\n\n" +
+        "*⚙️ 動作*\n" +
+        "`/notify [訊息]` — 全站廣播\n" +
+        "`/maint on|off` — 維護模式\n" +
+        "`/feature key on|off` — feature flag\n" +
+        "`/email [user] [內容]`\n" +
+        "`/refund [order_id]`\n" +
+        "`/grant [user] [amount]`（雙重確認）\n\n" +
+        "*🛠️ 系統*\n" +
+        "`/errors` — 最近錯誤\n" +
+        "`/prefs` — 個人通知偏好",
       );
       return NextResponse.json({ ok: true });
     }
@@ -127,6 +219,34 @@ export async function POST(req: NextRequest) {
           state.model_name = found.model_name;
           await tgSend(token, chatId, `✅ 已切到 \`${found.provider}/${found.model_name}\``);
         }
+      }
+      return NextResponse.json({ ok: true });
+    }
+
+    // 嘗試把 LINE bot 指令也接過來
+    const LINE_CMDS = new Set([
+      "today", "kpi", "users", "churn", "errors", "who",
+      "online", "sub", "orders", "ai-cost", "ai_cost",
+      "notify", "maint", "leetcode", "island", "quiz",
+      "refund", "feature", "email", "grant", "prefs",
+    ]);
+    if (LINE_CMDS.has(cmd)) {
+      try {
+        const { runBotCommand } = await import("@/lib/line-bot-commands");
+        const fakeAdminLineUser = {
+          id: `tg:${tgUserId}`,
+          name: tgUsername ?? "Telegram user",
+          role: "owner",
+        };
+        const reply = await runBotCommand(text, fakeAdminLineUser);
+        const { html, keyboard } = dressUpAdminReply(reply.text, cmd);
+        await tgSend(token, chatId, html, {
+          replyTo: msg.message_id,
+          parseMode: "HTML",
+          keyboard,
+        });
+      } catch (e: any) {
+        await tgSend(token, chatId, `❌ /${cmd} 失敗：${escapeHTML(e?.message ?? "unknown")}`, { parseMode: "HTML" });
       }
       return NextResponse.json({ ok: true });
     }

@@ -194,7 +194,7 @@ export async function notifyAdmin(opts: NotifyOptions): Promise<void> {
         }
       }
     } else if (channel === "telegram") {
-      ps.push(sendTelegram(process.env.ADMIN_TELEGRAM_BOT_TOKEN!, process.env.ADMIN_TELEGRAM_CHAT_ID!, text));
+      ps.push(sendTelegram(process.env.ADMIN_TELEGRAM_BOT_TOKEN!, process.env.ADMIN_TELEGRAM_CHAT_ID!, text, opts.kind));
     } else {
       ps.push(sendDiscord(process.env.ADMIN_DISCORD_WEBHOOK_URL!, text));
     }
@@ -221,12 +221,68 @@ async function sendLineMessaging(token: string, userId: string, text: string, fl
   }
 }
 
-async function sendTelegram(botToken: string, chatId: string, text: string) {
+// 根據 kind 推斷後台對應路徑、產生「打開後台」按鈕
+function kindToAdminPath(kind: string): string | null {
+  const map: Record<string, string> = {
+    order: "/orders",
+    refund: "/orders",
+    breach: "/breach",
+    ticket: "/tickets",
+    user_ticket: "/crm",
+    admin_login: "/audit",
+    new_signup: "/users",
+    new_user: "/users",
+    error: "/errors",
+    error_log: "/errors",
+    ai_cost: "/ai/usage",
+    chapter_view: "/analytics",
+    lesson_complete: "/analytics",
+    level_up: "/users",
+    achievement: "/achievements",
+  };
+  return map[kind.toLowerCase()] ?? null;
+}
+
+// Telegram MarkdownV2 escape (保護重要字符)
+function tgEscape(s: string): string {
+  return s.replace(/([_*[\]()~`>#+=|{}.!\\-])/g, "\\$1");
+}
+
+async function sendTelegram(botToken: string, chatId: string, text: string, kind?: string) {
   try {
+    // 解析 text: 第一行是 [kind] xxx、後面是內容
+    const m = text.match(/^\[(\w+)\]\s*(.+?)\n?([\s\S]*)$/);
+    let formatted: string;
+    if (m) {
+      const [, k, summary, rest] = m;
+      formatted = `*🔔 [${tgEscape(k)}]*\n${tgEscape(summary)}`;
+      if (rest.trim()) formatted += `\n\n${tgEscape(rest.trim())}`;
+    } else {
+      formatted = tgEscape(text);
+    }
+
+    const path = kind ? kindToAdminPath(kind) : null;
+    const body: any = {
+      chat_id: chatId,
+      text: formatted.slice(0, 4000),
+      parse_mode: "MarkdownV2",
+      disable_web_page_preview: true,
+    };
+
+    if (path) {
+      const site = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
+      const slug = process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2";
+      body.reply_markup = {
+        inline_keyboard: [[
+          { text: `📊 打開後台 ${path}`, url: `${site}/${slug}/admin${path}` },
+        ]],
+      };
+    }
+
     await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chat_id: chatId, text, disable_web_page_preview: true }),
+      body: JSON.stringify(body),
       signal: AbortSignal.timeout(5000),
     });
   } catch (e) {
