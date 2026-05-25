@@ -15,7 +15,10 @@ import { java } from "@codemirror/lang-java";
 import { cpp } from "@codemirror/lang-cpp";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { EditorView, keymap } from "@codemirror/view";
+import { autocompletion } from "@codemirror/autocomplete";
 import { useEffect, useMemo } from "react";
+import { snippetsForLang } from "./code-snippets";
+import { emmetTabKeymap } from "./emmet-tab";
 
 export type CodeLang =
   | "python" | "javascript" | "typescript" | "jsx" | "tsx"
@@ -108,8 +111,23 @@ export function CodeEditor({
       ".cm-line": { padding: "0 12px" },
       "&.cm-focused": { outline: "none" },
     });
-    return [...langExt, baseTheme, runKey].filter(Boolean) as Extension[];
-  }, [langExt, onRun]);
+    // 各語言 snippet autocomplete (Python / JS / HTML / CSS / SQL / JSON / Markdown 10 種)
+    const snipExt = autocompletion({
+      override: [(ctx) => {
+        const before = ctx.matchBefore(/[a-zA-Z!]+/);
+        if (!before || (before.from === before.to && !ctx.explicit)) return null;
+        return {
+          from: before.from,
+          options: snippetsForLang(lang),
+          validFor: /^[a-zA-Z!]*$/,
+        };
+      }],
+      defaultKeymap: true,
+    });
+    // Tab 鍵 Emmet 展開 (HTML / JSX / TSX) + fallback autocomplete + indent
+    const emmetExt = emmetTabKeymap(lang);
+    return [emmetExt, ...langExt, snipExt, baseTheme, runKey].filter(Boolean) as Extension[];
+  }, [langExt, onRun, lang]);
 
   return (
     <CodeMirror
