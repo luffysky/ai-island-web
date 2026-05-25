@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
       const hint = res.status === 400 ? "to 可能不是這個 bot 的好友、或 LINE userId 錯"
         : res.status === 401 ? "Token 無效、重新拿"
         : res.status === 403 ? "Token 沒 push 權限、或 channel 設定有問題"
-        : res.status === 429 ? "rate limited"
+        : res.status === 429 ? "月度 push 額度用完 (免費 OA=200 則/月、Premium $88/月=500 則) 或瞬時限速。去 manager.line.biz → Insights → Messages 查用量、等 10 分鐘可重試"
         : "看 line_body";
       return NextResponse.json({
         ok: false,
