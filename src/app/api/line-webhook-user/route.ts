@@ -266,6 +266,17 @@ export async function POST(req: NextRequest) {
         continue;
       }
 
+      // 3.5. 綁定 / 登入 自然語言引導
+      const bindHints = ["綁定", "我要綁", "我要登入", "登入", "怎麼綁", "怎麼登入", "綁帳號", "綁帳戶", "bind", "login", "register", "註冊"];
+      if (bindHints.some((k) => text.toLowerCase().includes(k.toLowerCase()))) {
+        await lineReply(
+          replyToken,
+          `🔗 怎麼綁定 AI 島帳號到 LINE：\n\n1. 登入網站 ${SITE_URL}\n2. 進 ${SITE_URL}/settings\n3. 找「LINE 通知綁定」、按一下拿 6 位 code\n4. 回到這裡傳：「/bind 123456」（換成你的 code）\n\n綁完就能用 AI 學員導師 + 收學習通知。`,
+          token, QUICK_REPLY,
+        );
+        continue;
+      }
+
       // 4. 其他訊息 — 已綁定 user 走 AI 學員導師、未綁定提示綁定
       const admin = createSupabaseAdmin();
 
