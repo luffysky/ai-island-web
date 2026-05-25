@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { createSupabaseServer, createSupabaseAdmin } from "@/lib/supabase";
 import { streamAI, estimateCost } from "@/lib/ai-providers";
 import { buildTutorSystemPrompt } from "@/lib/ai-tutor-prompt";
+import { getUserLearningState, formatLearningStateForPrompt } from "@/lib/user-learning-state";
 import { decryptKey } from "@/lib/ai-crypto";
 import { rateLimit } from "@/lib/rate-limit";
 import { hasAiUnlimited } from "@/lib/ai-privilege";
@@ -127,12 +128,16 @@ export async function POST(req: NextRequest) {
     .order("created_at", { ascending: true })
     .limit(20);
 
-  // 5. 組 messages
+  // 5. 組 messages — 注入學員學習狀態 (AI 導師知道在跟誰對話、能個人化)
+  const learningState = await getUserLearningState(user.id);
+  const userContext = learningState ? formatLearningStateForPrompt(learningState) : undefined;
+
   const systemPrompt = buildTutorSystemPrompt({
     tone: tone ?? "friendly",
     contextChapterId,
     contextLessonId,
     personaId,
+    userContext,
   });
 
   const messages = [

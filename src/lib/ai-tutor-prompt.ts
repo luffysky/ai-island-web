@@ -49,6 +49,7 @@ export function buildTutorSystemPrompt(options: {
   contextLessonId?: string;
   userName?: string;
   personaId?: string;
+  userContext?: string;  // 從 formatLearningStateForPrompt() 來的整段學員背景
 }): string {
   const tone = options.tone ?? "friendly";
   const toneInstruction = TONE_STYLES[tone] ?? TONE_STYLES.friendly;
@@ -89,6 +90,8 @@ export function buildTutorSystemPrompt(options: {
 - 用戶問問題時、你會引用 AI 島的章節（「這在 Ch08 React 完整有教」）
 - 鼓勵實作、不只解釋
 - 如果用戶問跟課程無關、也要友善回答（你是 general assistant + 課程專家雙重身份）
+
+${options.userContext ?? ""}
 
 ${persona.promptBlock}
 
