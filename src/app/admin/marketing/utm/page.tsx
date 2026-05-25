@@ -1,5 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { UtmBuilderClient } from "./UtmBuilderClient";
+import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
@@ -16,13 +17,13 @@ export default async function UtmPage() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="text-xl font-bold flex items-center gap-2">🔗 UTM Builder</h1>
-        <p className="text-xs text-fg-muted mt-1 leading-relaxed">
-          建短連結 + UTM 參數、追蹤每個 campaign / source / medium 的點擊跟轉換。<br />
-          產出短碼 <code className="text-purple-300">{SITE_URL}/s/&lt;code&gt;</code>、貼到社群 / 廣告 / Email、自動 redirect 帶 UTM 到目標頁。
-        </p>
-      </div>
+      <PageHero
+        emoji="🔗"
+        title="UTM Builder"
+        desc={`建短連結 + UTM 參數、追蹤每個 campaign / source / medium 的點擊跟轉換。產出短碼 ${SITE_URL}/s/<code>、貼到社群 / 廣告 / Email、自動 redirect 帶 UTM。`}
+        gradient="from-purple-500/10 via-violet-500/10 to-indigo-500/10"
+        borderColor="border-purple-500/30"
+      />
       <UtmBuilderClient initialLinks={(links as any[]) ?? []} siteUrl={SITE_URL} />
     </div>
   );

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
+import { PageHero } from "@/components/admin/PageHero";
 
 export default function PublishPage() {
   const platforms = [
@@ -15,13 +16,13 @@ export default function PublishPage() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="text-xl font-bold flex items-center gap-2">📤 多平台一鍵發佈</h1>
-        <p className="text-xs text-fg-muted mt-1 leading-relaxed">
-          排程到期或手動觸發、把同一草稿一次推到多平台。各平台需要先設好 OAuth / API token。
-          已配好的可立即用、未配好的會顯示「需要設定環境變數」。
-        </p>
-      </div>
+      <PageHero
+        emoji="📤"
+        title="多平台一鍵發佈"
+        desc="排程到期或手動觸發、把同一草稿推到多平台。各平台需先設 OAuth / API token、已配好可立即用。"
+        gradient="from-emerald-500/10 via-green-500/10 to-lime-500/10"
+        borderColor="border-emerald-500/30"
+      />
 
       <div className="bg-yellow-500/5 border border-yellow-500/30 rounded-2xl p-4 text-xs leading-relaxed">
         <div className="font-bold text-yellow-300 mb-2">⚠️ 一鍵發佈現狀 / 接 OAuth 路線圖</div>

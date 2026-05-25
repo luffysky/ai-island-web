@@ -1,4 +1,5 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
@@ -17,13 +18,13 @@ export default async function AffiliatesPage() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="text-xl font-bold flex items-center gap-2">🤝 推薦碼 / Affiliate</h1>
-        <p className="text-xs text-fg-muted mt-1 leading-relaxed">
-          KOL / 員工 / 學員 推薦碼系統。每個碼可獨立設折扣 % 跟佣金 %、追蹤點擊 / 轉換 / 收益 / 已付佣金。
-          建表 + RLS 已就緒、UI CRUD 排下輪迭代。
-        </p>
-      </div>
+      <PageHero
+        emoji="🤝"
+        title="推薦碼 / Affiliate"
+        desc="KOL / 員工 / 學員 推薦碼。每碼可設折扣 % 跟佣金 %、追蹤點擊 / 轉換 / 收益 / 已付佣金。"
+        gradient="from-cyan-500/10 via-teal-500/10 to-emerald-500/10"
+        borderColor="border-cyan-500/30"
+      />
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="bg-bg-card border border-border rounded-2xl p-3">

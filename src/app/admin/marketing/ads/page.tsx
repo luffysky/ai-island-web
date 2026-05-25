@@ -1,4 +1,5 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
@@ -14,13 +15,13 @@ export default async function AdsPage() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="text-xl font-bold flex items-center gap-2">🎯 廣告 Copy 產生</h1>
-        <p className="text-xs text-fg-muted mt-1 leading-relaxed">
-          AI 為 Meta Ads / Google Ads / TikTok / LINE Ads 生 A/B 版廣告文案 (Headline / Primary Text / Description / CTA)、
-          含預估字數限制檢查、配合 brand voice。投放出去後手動回填 performance 數據。
-        </p>
-      </div>
+      <PageHero
+        emoji="🎯"
+        title="廣告 Copy 產生"
+        desc="AI 為 Meta / Google / TikTok / LINE Ads 生 A/B 版廣告文案 (Headline / Primary / Description / CTA)、含字數檢查、套 brand voice。"
+        gradient="from-red-500/10 via-pink-500/10 to-fuchsia-500/10"
+        borderColor="border-red-500/30"
+      />
 
       <div className="bg-purple-500/5 border border-purple-500/30 rounded-2xl p-4 text-sm">
         <div className="font-bold text-purple-300 mb-2">📋 已建廣告 ({rows.length})</div>

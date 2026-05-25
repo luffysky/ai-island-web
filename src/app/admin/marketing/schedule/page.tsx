@@ -1,5 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { ScheduleClient } from "./ScheduleClient";
+import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
@@ -15,12 +16,13 @@ export default async function SchedulePage() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="text-xl font-bold flex items-center gap-2">📅 內容日曆 / 排程</h1>
-        <p className="text-xs text-fg-muted mt-1 leading-relaxed">
-          管理所有 marketing 草稿、設排程時間、預覽各平台版本。cron job 每分鐘掃排程到期的草稿、自動觸發發佈 (待接 OAuth)。
-        </p>
-      </div>
+      <PageHero
+        emoji="📅"
+        title="內容日曆 / 排程"
+        desc="管理所有 marketing 草稿、設排程時間、預覽各平台版本。cron job 每分鐘掃到期草稿、自動觸發發佈 (待接 OAuth)。"
+        gradient="from-blue-500/10 via-sky-500/10 to-cyan-500/10"
+        borderColor="border-blue-500/30"
+      />
       <ScheduleClient initialDrafts={(data as any[]) ?? []} />
     </div>
   );

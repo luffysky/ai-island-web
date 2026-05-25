@@ -1,4 +1,5 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
@@ -14,12 +15,13 @@ export default async function CompetitorPage() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="text-xl font-bold flex items-center gap-2">🔍 競品 / 關鍵字</h1>
-        <p className="text-xs text-fg-muted mt-1 leading-relaxed">
-          紀錄主要競品的價格 / 功能 / 威脅程度。AI 可抓取競品網站做 snapshot + 自動摘要、定期回顧調整定位。
-        </p>
-      </div>
+      <PageHero
+        emoji="🔍"
+        title="競品 / 關鍵字"
+        desc="紀錄主要競品的價格 / 功能 / 威脅程度。AI 可抓取競品網站做 snapshot + 自動摘要、定期回顧調整定位。"
+        gradient="from-orange-500/10 via-amber-500/10 to-yellow-500/10"
+        borderColor="border-orange-500/30"
+      />
 
       <div className="bg-purple-500/5 border border-purple-500/30 rounded-2xl p-4 text-xs">
         <div className="font-bold text-purple-300 mb-2">📋 已記錄競品 ({rows.length})</div>
