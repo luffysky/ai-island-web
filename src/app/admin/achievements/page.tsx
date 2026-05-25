@@ -1,4 +1,5 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { PageHero } from "@/components/admin/PageHero";
 
 export default async function AchievementsAdminPage() {
   const supabase = createSupabaseAdmin();
@@ -20,7 +21,13 @@ export default async function AchievementsAdminPage() {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-bold">🏆 成就管理</h2>
+      <PageHero
+        emoji="🏆"
+        title="成就管理"
+        desc="所有可解鎖成就的條件 / XP / Z-coin 獎勵 / 圖示。改完用戶下次達成條件會用新規則。"
+        gradient="from-yellow-500/10 via-amber-500/10 to-pink-500/10"
+        borderColor="border-yellow-500/30"
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {achievements?.map((a: any) => (

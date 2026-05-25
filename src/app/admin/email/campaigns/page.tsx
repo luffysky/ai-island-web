@@ -1,5 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { CampaignsClient } from "./CampaignsClient";
+import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
@@ -12,12 +13,13 @@ export default async function AdminEmailCampaignsPage() {
 
   return (
     <div>
-      <header className="mb-6">
-        <h1 className="text-2xl font-bold flex items-center gap-2">📧 Email Campaigns</h1>
-        <p className="text-sm text-fg-muted mt-1">
-          建立 / 排程 / 發送 email 行銷活動、追蹤開信率 + 點擊率。實際 SMTP 待接 Resend。
-        </p>
-      </header>
+      <PageHero
+        emoji="✉️"
+        title="Email Campaigns"
+        desc="建立 / 排程 / 發送 email 行銷活動、追蹤開信率 + 點擊率。實際 SMTP 走 Resend。"
+        gradient="from-indigo-500/10 via-purple-500/10 to-pink-500/10"
+        borderColor="border-indigo-500/30"
+      />
       <CampaignsClient initial={(campaigns ?? []) as any} segments={(segments ?? []) as any} />
     </div>
   );

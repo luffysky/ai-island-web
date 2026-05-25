@@ -1,6 +1,7 @@
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import { EmailTestForm } from "./EmailTestForm";
+import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
@@ -16,12 +17,13 @@ export default async function AdminEmailTestPage() {
 
   return (
     <div className="space-y-4 max-w-3xl">
-      <header>
-        <h1 className="text-2xl font-bold flex items-center gap-2">✉️ Email 發送測試</h1>
-        <p className="text-sm text-fg-muted mt-1">
-          確認 Resend API key、EMAIL_FROM、DKIM 設定是否都接得通。
-        </p>
-      </header>
+      <PageHero
+        emoji="🧪"
+        title="Email 發送測試"
+        desc="確認 Resend API key、EMAIL_FROM、DKIM 設定是否都接得通。本機 dev / Zeabur prod 都該過。"
+        gradient="from-yellow-500/10 via-amber-500/10 to-orange-500/10"
+        borderColor="border-yellow-500/30"
+      />
 
       <section className="rounded-xl bg-bg-card border border-border p-4 text-sm space-y-1">
         <h2 className="font-bold flex items-center gap-2">🔍 環境狀態</h2>

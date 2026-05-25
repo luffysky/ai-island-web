@@ -2,6 +2,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import Link from "next/link";
 import { formatTW } from "@/lib/format-date";
 import { adminHref } from "@/lib/admin-href";
+import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
@@ -27,12 +28,13 @@ export default async function AdminScheduledPage() {
 
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="text-2xl font-bold flex items-center gap-2">⏰ 排程發布隊列</h1>
-        <p className="text-sm text-fg-muted mt-1">
-          所有「未來會自動上線」的內容。需 cron job 在到期時間 publish（spec：Sprint S12）。
-        </p>
-      </header>
+      <PageHero
+        emoji="⏰"
+        title="排程發布隊列"
+        desc="所有「未來會自動上線」的內容。cron job 每分鐘掃到期項目觸發 publish。"
+        gradient="from-cyan-500/10 via-teal-500/10 to-emerald-500/10"
+        borderColor="border-cyan-500/30"
+      />
 
       <Section title="章節（chapters）">
         {(chapters ?? []).length === 0 ? <Empty /> : (chapters ?? []).map((c: any) => (

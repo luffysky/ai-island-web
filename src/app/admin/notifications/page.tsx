@@ -1,6 +1,7 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { NotificationMatrix } from "./NotificationMatrix";
 import { Hint } from "@/components/ui/Hint";
+import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
@@ -26,7 +27,14 @@ export default async function AdminNotificationsPage() {
 
   return (
     <div className="space-y-4">
-      <header>
+      <PageHero
+        emoji="🔔"
+        title="通知設定"
+        desc="每個事件分別設定走哪個 channel (站內鈴鐺 / Email / LINE / PWA 推播)、改完 60 秒 cache 後生效。"
+        gradient="from-cyan-500/10 via-sky-500/10 to-blue-500/10"
+        borderColor="border-cyan-500/30"
+      />
+      <header className="hidden">
         <h1 className="text-2xl font-bold flex items-center gap-2">🔔 通知設定</h1>
         <p className="text-sm text-fg-muted mt-1">
           每個事件可分別設定走哪個{" "}

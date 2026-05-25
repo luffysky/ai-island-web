@@ -1,6 +1,7 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import Link from "next/link";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { PageHero } from "@/components/admin/PageHero";
 
 export default async function BroadcastsPage() {
   const supabase = createSupabaseAdmin();
@@ -13,12 +14,17 @@ export default async function BroadcastsPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold">📣 公告 / 群發訊息</h2>
-        <Link href={`/${process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2"}/admin/broadcasts/new` as any} className="px-4 py-2 bg-accent text-black rounded-lg font-bold hover:scale-105 transition-transform">
+      <PageHero
+        emoji="📣"
+        title="公告 / 群發訊息"
+        desc="站內公告 + Email 群發。發出去後所有用戶 in-app bell 跟 newsletter 都會收到。"
+        gradient="from-rose-500/10 via-pink-500/10 to-fuchsia-500/10"
+        borderColor="border-rose-500/30"
+      >
+        <Link href={`/${process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2"}/admin/broadcasts/new` as any} className="px-3 py-1.5 bg-accent text-black rounded-full font-bold text-xs hover:scale-105 transition-transform">
           + 新建
         </Link>
-      </div>
+      </PageHero>
 
       {error?.message?.includes("does not exist") ? (
         <SchemaNeeded />

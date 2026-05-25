@@ -1,4 +1,5 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { PageHero } from "@/components/admin/PageHero";
 import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
 
@@ -90,12 +91,13 @@ export default async function SubscribersPage({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between flex-wrap gap-2">
-        <h2 className="text-xl font-bold">📧 Email 訂閱戶</h2>
-        <div className="text-xs text-fg-muted">
-          匹配 {(count ?? 0).toLocaleString()} 筆 · 第 {page}/{totalPages} 頁
-        </div>
-      </div>
+      <PageHero
+        emoji="📧"
+        title="Email 訂閱戶"
+        desc={`管理所有 newsletter 訂閱戶。匹配 ${(count ?? 0).toLocaleString()} 筆、第 ${page}/${totalPages} 頁。可批次取消訂閱。`}
+        gradient="from-indigo-500/10 via-blue-500/10 to-cyan-500/10"
+        borderColor="border-indigo-500/30"
+      />
 
       {/* 概覽 */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">

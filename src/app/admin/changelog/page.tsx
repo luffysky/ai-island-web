@@ -1,5 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { ChangelogEditor } from "./ChangelogEditor";
+import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
@@ -13,12 +14,13 @@ export default async function AdminChangelogPage() {
 
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="text-2xl font-bold">📜 更新日誌管理</h1>
-        <p className="text-sm text-fg-muted mt-1">
-          管理 /changelog 公開頁面的內容。tags 用 feature / fix / improvement / breaking / security。
-        </p>
-      </header>
+      <PageHero
+        emoji="📜"
+        title="更新日誌管理"
+        desc="管理 /changelog 公開頁面的內容。tags 用 feature / fix / improvement / breaking / security。"
+        gradient="from-slate-500/10 via-blue-500/10 to-indigo-500/10"
+        borderColor="border-slate-500/30"
+      />
       <ChangelogEditor initial={(entries ?? []) as any} />
     </div>
   );
