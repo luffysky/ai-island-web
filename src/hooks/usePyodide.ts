@@ -25,6 +25,27 @@ declare global {
 
 export type PyodideStatus = "idle" | "loading" | "ready" | "error";
 
+export type LoadPhase = {
+  id: string;
+  name: string;
+  weight: number;          // 相對權重 (預估時間比例)
+  estSecondsFirst: number; // 首次預估秒數
+};
+
+// 全部要預載完才標 ready (林董要求：「所有 tab 跟範例都確認真正可以跑才能變綠色」)
+const LOAD_PHASES: LoadPhase[] = [
+  { id: "script",   name: "下載 pyodide.js",                weight: 2, estSecondsFirst: 3 },
+  { id: "vm",       name: "啟動 Python VM",                 weight: 2, estSecondsFirst: 2 },
+  { id: "micropip", name: "預載 micropip + patch input",    weight: 1, estSecondsFirst: 1 },
+  { id: "core",     name: "預載 numpy / pandas",            weight: 4, estSecondsFirst: 6 },
+  { id: "viz",      name: "預載 matplotlib",                weight: 4, estSecondsFirst: 6 },
+  { id: "scrape",   name: "預載 lxml / bs4 / regex / pillow", weight: 3, estSecondsFirst: 5 },
+  { id: "ml",       name: "預載 scikit-learn / scipy",      weight: 5, estSecondsFirst: 10 },
+  { id: "web",      name: "預載 fastapi / flask / httpx",   weight: 5, estSecondsFirst: 12 },
+];
+const TOTAL_WEIGHT = LOAD_PHASES.reduce((s, p) => s + p.weight, 0);
+const TOTAL_EST_FIRST = LOAD_PHASES.reduce((s, p) => s + p.estSecondsFirst, 0);
+
 export type RunResult = {
   stdout: string;
   stderr: string;
@@ -75,8 +96,29 @@ export function usePyodide(autoLoad = false) {
     typeof window !== "undefined" && window.__pyodide ? "ready" : "idle",
   );
   const [progress, setProgress] = useState<string>("");
+  const [phaseIdx, setPhaseIdx] = useState(-1);            // 當前階段 index (-1 = 還沒開始)
+  const [elapsedSec, setElapsedSec] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const pyodideRef = useRef<any>(typeof window !== "undefined" ? window.__pyodide : null);
+  const startTimeRef = useRef<number>(0);
+  const tickRef = useRef<number | null>(null);
+
+  const startTimer = useCallback(() => {
+    if (tickRef.current) return;
+    startTimeRef.current = Date.now();
+    tickRef.current = window.setInterval(() => {
+      setElapsedSec(Math.floor((Date.now() - startTimeRef.current) / 1000));
+    }, 250);
+  }, []);
+
+  const stopTimer = useCallback(() => {
+    if (tickRef.current) {
+      clearInterval(tickRef.current);
+      tickRef.current = null;
+    }
+  }, []);
+
+  useEffect(() => () => stopTimer(), [stopTimer]);
 
   const load = useCallback(async () => {
     if (typeof window === "undefined") return null;
@@ -101,14 +143,21 @@ export function usePyodide(autoLoad = false) {
     setStatus("loading");
     setProgress("注入 pyodide.js...");
     setError(null);
+    startTimer();
+    const advancePhase = (idx: number, label?: string) => {
+      setPhaseIdx(idx);
+      const phase = LOAD_PHASES[idx];
+      if (phase) setProgress(label ?? phase.name);
+    };
 
     const promise = (async () => {
-      // 多 CDN fallback、自動切換
+      // === Phase 0: 載 pyodide.js (多 CDN fallback) ===
+      advancePhase(0);
       let activeCdn: string | null = null;
       if (!window.loadPyodide) {
         for (let i = 0; i < PYODIDE_CDNS.length; i++) {
           const cdn = PYODIDE_CDNS[i];
-          setProgress(`從 ${new URL(cdn).hostname} 載入 pyodide.js...`);
+          advancePhase(0, `下載 pyodide.js（${new URL(cdn).hostname}）`);
           try {
             await new Promise<void>((resolve, reject) => {
               const s = document.createElement("script");
@@ -132,12 +181,16 @@ export function usePyodide(autoLoad = false) {
       } else {
         activeCdn = PYODIDE_CDN;
       }
-      setProgress("啟動 Python runtime (~5MB)...");
+
+      // === Phase 1: 啟動 VM ===
+      advancePhase(1);
       const py = await window.loadPyodide({
         indexURL: activeCdn!,
         stdout: () => {},
       });
-      setProgress("預載 micropip + patch input...");
+
+      // === Phase 2: micropip + helpers ===
+      advancePhase(2);
       await py.loadPackage("micropip");
 
       // patch input() 避免卡死
@@ -223,24 +276,43 @@ async def nami_fetch(url, as_json=False):
 _b.nami_fetch = nami_fetch
 `);
 
-      // 完全 lazy：不預載任何套件、加速 ready
-      // user 跑到 import numpy 時、Pyodide 會自動 micropip.install
-      // 這樣首次 ready 從 ~30s → ~5s
+      // === Phase 3: 預載 numpy + pandas (數據核心) ===
+      advancePhase(3);
+      try { await py.loadPackage(["numpy", "pandas"]); } catch (e) { console.warn("[pyodide] numpy/pandas 失敗", e); }
+
+      // === Phase 4: matplotlib (視覺化) ===
+      advancePhase(4);
+      try { await py.loadPackage(["matplotlib"]); } catch (e) { console.warn("[pyodide] matplotlib 失敗", e); }
+
+      // === Phase 5: 爬蟲 / 圖片 ===
+      advancePhase(5);
+      try { await py.loadPackage(["lxml", "beautifulsoup4", "regex", "pillow", "sqlite3"]); } catch (e) { console.warn("[pyodide] scrape pkg 失敗", e); }
+
+      // === Phase 6: ML ===
+      advancePhase(6);
+      try { await py.loadPackage(["scikit-learn", "scipy"]); } catch (e) { console.warn("[pyodide] sklearn/scipy 失敗", e); }
+
+      // === Phase 7: Web backend (PyPI、要 keep_going) ===
+      advancePhase(7);
+      try {
+        await py.runPythonAsync(`
+import micropip
+# 用 v1 pydantic + 0.99 FastAPI (Pyodide 不支援 pydantic-core C 擴展)
+try:
+    await micropip.install(["fastapi==0.99.1", "pydantic<2", "httpx", "starlette<0.28"], keep_going=True)
+except Exception as e:
+    print(f"⚠️ fastapi 部分失敗: {str(e)[:200]}", flush=True)
+try:
+    await micropip.install(["flask"], keep_going=True)
+except Exception as e:
+    print(f"⚠️ flask 失敗: {str(e)[:200]}", flush=True)
+`);
+      } catch (e) { console.warn("[pyodide] web pkg 失敗", e); }
+
       window.__pyodide = py;
       pyodideRef.current = py;
       setProgress("");
-
-      // 超低優先級：page idle 5 秒後再背景預載最常用的 numpy
-      // 不阻塞 ready、不影響 user 即時操作
-      if (typeof (globalThis as any).requestIdleCallback !== "undefined") {
-        setTimeout(() => {
-          (globalThis as any).requestIdleCallback(
-            () => { py.loadPackage(["numpy", "pandas"]).catch(() => {}); },
-            { timeout: 30000 }
-          );
-        }, 5000);
-      }
-
+      stopTimer();
       return py;
     })();
 
@@ -362,5 +434,21 @@ print("✨ Python kernel 已重設、變數清空 (已裝套件保留)")
 `);
   }, []);
 
-  return { status, progress, error, load, run, reset };
+  // 進度 % (基於 phase weight)
+  const progressPct = phaseIdx < 0 ? 0 :
+    Math.min(99, Math.round(
+      (LOAD_PHASES.slice(0, phaseIdx + 1).reduce((s, p) => s + p.weight, 0) / TOTAL_WEIGHT) * 100
+    ));
+  const estTotalSec = TOTAL_EST_FIRST;
+  const estRemainSec = Math.max(0, estTotalSec - elapsedSec);
+
+  return {
+    status, progress, error, load, run, reset,
+    phaseIdx, phaseTotal: LOAD_PHASES.length,
+    phaseName: phaseIdx >= 0 ? LOAD_PHASES[phaseIdx].name : "",
+    progressPct,
+    elapsedSec,
+    estTotalSec,
+    estRemainSec,
+  };
 }

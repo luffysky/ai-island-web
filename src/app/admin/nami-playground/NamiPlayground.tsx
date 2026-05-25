@@ -44,8 +44,9 @@ export function NamiPlayground({
   avatarUrl: string | null;
 }) {
   const [active, setActive] = useState<TabId>("repl");
-  // 一進入就背景預載 Pyodide、避免用戶按 Run 卡 5-10 秒
-  const { status: pyStatus, progress: pyProgress, reset: pyReset } = usePyodide(true);
+  // 一進入預載所有套件 (numpy/pandas/matplotlib/sklearn/fastapi/...)、ready 後保證可跑
+  const py = usePyodide(true);
+  const { status: pyStatus, progress: pyProgress, reset: pyReset } = py;
   const [resetMsg, setResetMsg] = useState("");
 
   const handleReset = async () => {
@@ -86,35 +87,53 @@ export function NamiPlayground({
               爬蟲 / 數據 / 視覺化 / 後端 / 前端 — 全在瀏覽器跑、不打 server
               <span className="hidden md:inline">· 你好 @{username}</span>
             </p>
-            <div className="mt-2 text-[10px] inline-flex items-center gap-1">
+            <div className="mt-2 relative">
               {pyStatus === "loading" && (
-                <span className="text-yellow-400 inline-flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse" />
-                  Python runtime 載入中（{pyProgress || "首次 ~5MB"}）...
-                </span>
+                <div className="bg-bg p-2.5 rounded-lg border border-yellow-500/30 space-y-1.5 max-w-xl">
+                  <div className="flex items-center justify-between gap-2 text-[11px]">
+                    <span className="text-fg-muted font-mono">
+                      <span className="inline-block w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse mr-1" />
+                      ({py.phaseIdx + 1}/{py.phaseTotal}) <b className="text-yellow-300">{py.phaseName}</b>
+                    </span>
+                    <span className="text-fg-muted font-mono whitespace-nowrap">
+                      {py.elapsedSec}s / 約 {py.estTotalSec}s
+                    </span>
+                  </div>
+                  <div className="h-1.5 bg-bg-elevated rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-400 transition-all duration-300"
+                      style={{ width: `${py.progressPct}%` }}
+                    />
+                  </div>
+                  <div className="text-[10px] text-fg-muted">
+                    剩約 {py.estRemainSec}s · 第一次慢、之後重整有 cache 秒進 · 全套件預載後保證所有 Tab 可跑
+                  </div>
+                </div>
               )}
               {pyStatus === "ready" && (
-                <span className="text-emerald-400 inline-flex items-center gap-1">
+                <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-2 inline-flex items-center gap-2 flex-wrap max-w-fit">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                  Python ready · 按 Run 立刻跑
-                </span>
+                  <span className="text-emerald-300 text-[11px] font-bold">
+                    Python ready · 全套件就緒
+                  </span>
+                  {py.elapsedSec > 0 && <span className="text-[10px] text-fg-muted">首載 {py.elapsedSec}s</span>}
+                  <button
+                    onClick={handleReset}
+                    className="text-[10px] px-2 py-0.5 rounded-full border border-orange-400/30 text-orange-400 hover:bg-orange-400/10"
+                  >
+                    🔄 重設 kernel
+                  </button>
+                  {resetMsg && <span className="text-emerald-400 text-[10px]">{resetMsg}</span>}
+                </div>
               )}
               {pyStatus === "idle" && (
-                <span className="text-fg-muted">Python runtime 待載入（按 Run 自動觸發）</span>
+                <span className="text-[10px] text-fg-muted">Python runtime 待載入...</span>
               )}
               {pyStatus === "error" && (
-                <span className="text-red-400">⚠️ Python 載入失敗、重新整理頁面</span>
+                <span className="text-[10px] text-red-300 bg-red-500/10 border border-red-500/30 rounded px-2 py-1">
+                  ⚠️ Python 載入失敗、重新整理頁面再試
+                </span>
               )}
-              {pyStatus === "ready" && (
-                <button
-                  onClick={handleReset}
-                  className="ml-3 text-[10px] px-2 py-0.5 rounded-full border border-orange-400/30 text-orange-400 hover:bg-orange-400/10"
-                  title="清空所有變數、保留已裝套件"
-                >
-                  🔄 重設 kernel
-                </button>
-              )}
-              {resetMsg && <span className="ml-2 text-emerald-400 text-[10px]">{resetMsg}</span>}
             </div>
           </div>
         </div>
