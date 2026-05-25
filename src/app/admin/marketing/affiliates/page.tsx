@@ -1,65 +1,30 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { PageHero } from "@/components/admin/PageHero";
+import { AffiliatesClient } from "./AffiliatesClient";
 
 export const dynamic = "force-dynamic";
 
 export default async function AffiliatesPage() {
   const admin = createSupabaseAdmin();
+  // 列全部、enabled / disabled 都看得到 (UI 上灰掉的就是停用)
   const { data } = await admin
     .from("affiliate_codes")
     .select("*")
-    .eq("enabled", true)
+    .order("enabled", { ascending: false })
     .order("created_at", { ascending: false })
-    .limit(100);
-
-  const rows = (data as any[]) ?? [];
-  const totalRevenue = rows.reduce((s, r) => s + Number(r.revenue ?? 0), 0);
-  const totalCommission = rows.reduce((s, r) => s + Number(r.commission_paid ?? 0), 0);
+    .limit(200);
 
   return (
     <div className="space-y-4">
       <PageHero
         emoji="🤝"
         title="推薦碼 / Affiliate"
-        desc="KOL / 員工 / 學員 推薦碼。每碼可設折扣 % 跟佣金 %、追蹤點擊 / 轉換 / 收益 / 已付佣金。"
+        desc="KOL / 員工 / 學員 推薦碼。每碼可設折扣 % 跟佣金 %、追蹤點擊 / 轉換 / 收益 / 已付佣金。停用後該碼不再接受新使用、歷史保留。"
         gradient="from-cyan-500/10 via-teal-500/10 to-emerald-500/10"
         borderColor="border-cyan-500/30"
       />
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <div className="bg-bg-card border border-border rounded-2xl p-3">
-          <div className="text-[10px] text-fg-muted">有效推薦碼</div>
-          <div className="text-2xl font-bold">{rows.length}</div>
-        </div>
-        <div className="bg-bg-card border border-border rounded-2xl p-3">
-          <div className="text-[10px] text-fg-muted">累積帶來營收</div>
-          <div className="text-2xl font-bold">NT$ {totalRevenue.toLocaleString()}</div>
-        </div>
-        <div className="bg-bg-card border border-border rounded-2xl p-3">
-          <div className="text-[10px] text-fg-muted">已付佣金</div>
-          <div className="text-2xl font-bold">NT$ {totalCommission.toLocaleString()}</div>
-        </div>
-      </div>
-
-      <div className="bg-bg-card border border-border rounded-2xl overflow-hidden">
-        <div className="grid grid-cols-12 gap-2 px-3 py-2 bg-bg-elevated text-[10px] font-bold text-fg-muted border-b border-border">
-          <div className="col-span-2">代碼</div>
-          <div className="col-span-3">推薦人</div>
-          <div className="col-span-2 text-center">折扣 / 佣金</div>
-          <div className="col-span-2 text-right">點擊 / 轉換</div>
-          <div className="col-span-3 text-right">營收 / 佣金</div>
-        </div>
-        {rows.length === 0 && <div className="p-4 text-center text-fg-muted text-xs">還沒有推薦碼</div>}
-        {rows.map((r) => (
-          <div key={r.id} className="grid grid-cols-12 gap-2 px-3 py-2 border-b border-border last:border-0 text-xs">
-            <div className="col-span-2 font-mono text-purple-300">{r.code}</div>
-            <div className="col-span-3 truncate">{r.owner_name ?? "-"}</div>
-            <div className="col-span-2 text-center text-fg-muted">{r.discount_pct}% / {r.commission_pct}%</div>
-            <div className="col-span-2 text-right">{r.click_count} / {r.conversion}</div>
-            <div className="col-span-3 text-right text-fg-muted">NT$ {Number(r.revenue).toLocaleString()} / {Number(r.commission_paid).toLocaleString()}</div>
-          </div>
-        ))}
-      </div>
+      <AffiliatesClient initial={(data as any[]) ?? []} />
     </div>
   );
 }
