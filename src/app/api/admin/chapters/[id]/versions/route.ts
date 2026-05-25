@@ -13,6 +13,11 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
   if (profile?.role !== "admin") return NextResponse.json({ error: "forbidden" }, { status: 403 });
 
+  const chapterId = Number(id);
+  if (!Number.isFinite(chapterId)) {
+    return NextResponse.json({ error: "invalid_chapter_id", message: "chapter_id 必須是數字" }, { status: 400 });
+  }
+
   const admin = createSupabaseAdmin();
   const { data, error } = await admin
     .from("chapter_versions")
@@ -20,7 +25,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
       id, version, saved_at, byte_size, note,
       saved_by_user:profiles!chapter_versions_saved_by_fkey(username, display_name)
     `)
-    .eq("chapter_id", Number(id))
+    .eq("chapter_id", chapterId)
     .order("version", { ascending: false })
     .limit(100);
 

@@ -9,6 +9,7 @@ import { LeetcodeCard } from "@/components/me/LeetcodeCard";
 import { DailyCheckin } from "@/components/gamification/DailyCheckin";
 import { EloProgress } from "@/components/me/EloProgress";
 import { RecommendedChapters } from "@/components/me/RecommendedChapters";
+import { MeHero } from "@/components/me/MeHero";
 import { formatTWDate } from "@/lib/format-date";
 import { ELO_DEFAULT } from "@/lib/elo";
 
@@ -25,17 +26,27 @@ export default async function MeOverviewPage() {
     { data: recentLessons },
     { data: profileRow },
     { data: recentQuiz },
+    { data: latestCheckin },
   ] = await Promise.all([
     supabase.from("lesson_progress").select("chapter_id, lesson_id").eq("user_id", user.id),
     supabase.from("notes").select("*", { count: "exact", head: true }).eq("user_id", user.id),
     supabase.from("bookmarks").select("*", { count: "exact", head: true }).eq("user_id", user.id),
     supabase.from("playgrounds").select("*", { count: "exact", head: true }).eq("user_id", user.id),
     supabase.from("lesson_progress").select("*").eq("user_id", user.id).order("completed_at", { ascending: false }).limit(5),
-    supabase.from("profiles").select("elo_rating").eq("id", user.id).maybeSingle(),
+    supabase.from("profiles").select("elo_rating, username, display_name, avatar_url, level, xp").eq("id", user.id).maybeSingle(),
     supabase.from("daily_quiz_attempts").select("elo_delta, created_at").eq("user_id", user.id).order("created_at", { ascending: false }).limit(5),
+    supabase.from("daily_checkins").select("streak_count, checkin_date").eq("user_id", user.id).order("checkin_date", { ascending: false }).limit(1).maybeSingle(),
   ] as any);
 
   const eloRating = (profileRow as any)?.elo_rating ?? ELO_DEFAULT;
+  const pr = profileRow as any;
+  // current streak: 最新 checkin 是今 / 昨天才算
+  const latestCi = latestCheckin as any;
+  let currentStreak = 0;
+  if (latestCi?.checkin_date) {
+    const dayDiff = Math.floor((Date.now() - new Date(latestCi.checkin_date).getTime()) / 86400_000);
+    if (dayDiff <= 1) currentStreak = latestCi.streak_count ?? 0;
+  }
   const recentDeltas = ((recentQuiz as any[]) ?? [])
     .filter((q) => typeof q.elo_delta === "number")
     .map((q) => ({ delta: Math.round(q.elo_delta), at: q.created_at }));
@@ -55,7 +66,17 @@ export default async function MeOverviewPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">📊 學習總覽</h1>
+      {/* Hero Welcome */}
+      <MeHero
+        displayName={pr?.display_name ?? ""}
+        username={pr?.username ?? "user"}
+        avatarUrl={pr?.avatar_url}
+        level={pr?.level ?? 1}
+        xp={pr?.xp ?? 0}
+        streak={currentStreak}
+        completedLessons={completedLessons}
+        totalLessons={totalLessons}
+      />
 
       {/* 每日簽到 */}
       <DailyCheckin />
