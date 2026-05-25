@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { Play, Plus, Trash2, ChevronUp, ChevronDown, Loader2, Download } from "lucide-react";
 import { usePyodide } from "@/hooks/usePyodide";
+import { CodeEditor } from "@/components/ui/CodeEditor";
 
 type Cell = {
   id: string;
@@ -187,19 +188,7 @@ function CellView({
 
         {/* Editor */}
         {cell.type === "code" ? (
-          <textarea
-            value={cell.source}
-            onChange={(e) => onUpdate(e.target.value)}
-            onKeyDown={(e) => {
-              if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
-                e.preventDefault();
-                onRun();
-              }
-            }}
-            spellCheck={false}
-            className="w-full bg-[#0d1117] text-[#e6edf3] font-mono text-xs p-3 outline-none border-0 resize-y min-h-[80px]"
-            style={{ tabSize: 4 }}
-          />
+          <CodeEditor value={cell.source} onChange={onUpdate} onRun={onRun} lang="python" height="auto" minHeight="80px" />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 divide-x divide-border">
             <textarea

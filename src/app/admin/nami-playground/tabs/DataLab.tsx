@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Play, Loader2, Database, FileText, TrendingUp, BarChart3, Brain, Download } from "lucide-react";
 import { usePyodide } from "@/hooks/usePyodide";
+import { CodeEditor } from "@/components/ui/CodeEditor";
 
 const EXERCISES = [
   {
@@ -439,19 +440,9 @@ export function DataLab() {
           <div className="px-3 py-2 border-b border-border bg-bg-elevated text-xs font-mono text-fg-muted">
             📝 編輯器（隨意改 code、再 Run）
           </div>
-          <textarea
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            onKeyDown={(e) => {
-              if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
-                e.preventDefault();
-                execute();
-              }
-            }}
-            spellCheck={false}
-            className="flex-1 min-h-[450px] p-3 bg-[#0d1117] text-[#e6edf3] font-mono text-xs resize-none outline-none border-0 leading-relaxed"
-            style={{ tabSize: 4 }}
-          />
+          <div className="flex-1 min-h-[450px]">
+            <CodeEditor value={code} onChange={setCode} onRun={execute} lang="python" storageKey={`datalab-${selected.name}`} height="100%" minHeight="450px" />
+          </div>
         </div>
 
         <div className="bg-bg-card border border-border rounded-2xl overflow-hidden flex flex-col">

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Play, Loader2, Globe, ExternalLink, Download } from "lucide-react";
 import { usePyodide } from "@/hooks/usePyodide";
+import { CodeEditor } from "@/components/ui/CodeEditor";
 
 // 業界常用 API + 練習站、全部合法
 const PRESET_SITES = [
@@ -360,19 +361,7 @@ export function ScrapeLab() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         <div className="bg-bg-card border border-border rounded-2xl overflow-hidden">
           <div className="px-3 py-2 border-b border-border bg-bg-elevated text-xs font-mono text-fg-muted">📝 爬蟲 code</div>
-          <textarea
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            onKeyDown={(e) => {
-              if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
-                e.preventDefault();
-                execute();
-              }
-            }}
-            spellCheck={false}
-            className="w-full bg-[#0d1117] text-[#e6edf3] font-mono text-xs p-3 outline-none border-0 resize-y min-h-[400px] leading-relaxed"
-            style={{ tabSize: 4 }}
-          />
+          <CodeEditor value={code} onChange={setCode} onRun={execute} lang="python" storageKey="scrape-code" height="400px" minHeight="400px" />
         </div>
         <div className="bg-bg-card border border-border rounded-2xl overflow-hidden flex flex-col">
           <div className="px-3 py-2 border-b border-border bg-bg-elevated text-xs font-mono text-fg-muted">💬 結果</div>

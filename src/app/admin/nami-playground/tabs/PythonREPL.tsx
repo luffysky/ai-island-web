@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { Play, Loader2, Trash2, BookOpen, Download } from "lucide-react";
 import { usePyodide } from "@/hooks/usePyodide";
 import { CodeEditor, loadEditorValue } from "@/components/ui/CodeEditor";
+import { AskAI } from "@/components/nami/AskAI";
 
 const EXAMPLES = [
   {
@@ -124,8 +125,10 @@ export function PythonREPL() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         {/* Editor */}
         <div className="bg-bg-card border border-border rounded-2xl overflow-hidden flex flex-col">
-          <div className="flex items-center justify-between px-3 py-2 border-b border-border bg-bg-elevated">
+          <div className="flex items-center justify-between px-3 py-2 border-b border-border bg-bg-elevated gap-2">
             <span className="text-xs font-mono text-fg-muted">📝 編輯器</span>
+            <div className="flex items-center gap-2">
+              <AskAI code={code} error={output.find(o => o.kind === "stderr")?.text} lang="python" context="Python REPL" />
             <button
               onClick={execute}
               disabled={running || status === "loading"}
@@ -135,6 +138,7 @@ export function PythonREPL() {
               Run
               <span className="text-[9px] ml-1 opacity-70">⌘↵</span>
             </button>
+            </div>
           </div>
           <div className="flex-1 min-h-[300px]">
             <CodeEditor
