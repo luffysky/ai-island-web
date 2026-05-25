@@ -4,12 +4,15 @@ import { useState } from "react";
 import { Sparkles, Loader2, Copy, Check, ExternalLink, AlertCircle, Settings } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 
+type ModelStatus = "ok" | "flaky" | "paid" | "broken";
+type ModelEntry = { id: string; label: string; status: ModelStatus; note?: string };
+
 type Provider = {
   key: "pollinations" | "cloudflare" | "together" | "huggingface" | "replicate";
   name: string;
   emoji: string;
   desc: string;
-  models: { id: string; label: string }[];
+  models: ModelEntry[];
   setupSteps: string[];
   envVars: string[];
   signupUrl: string;
@@ -19,6 +22,13 @@ type Provider = {
   color: string;
 };
 
+const STATUS_BADGE: Record<ModelStatus, { label: string; cls: string }> = {
+  ok: { label: "✅ 穩", cls: "text-emerald-300 bg-emerald-500/15 border-emerald-500/30" },
+  flaky: { label: "⚠️ 不穩", cls: "text-yellow-300 bg-yellow-500/15 border-yellow-500/30" },
+  paid: { label: "💰 需付費", cls: "text-orange-300 bg-orange-500/15 border-orange-500/30" },
+  broken: { label: "❌ 目前掛", cls: "text-red-300 bg-red-500/15 border-red-500/30" },
+};
+
 const PROVIDERS: Provider[] = [
   {
     key: "pollinations",
@@ -26,11 +36,11 @@ const PROVIDERS: Provider[] = [
     emoji: "🌸",
     desc: "完全免費、無 key、URL 模式、用了就走",
     models: [
-      { id: "flux", label: "Flux (平衡)" },
-      { id: "flux-anime", label: "Flux Anime (動漫風) 🌸" },
-      { id: "flux-realism", label: "Flux Realism (寫實)" },
-      { id: "flux-3d", label: "Flux 3D" },
-      { id: "turbo", label: "Turbo (最快)" },
+      { id: "flux", label: "Flux (平衡)", status: "ok" },
+      { id: "flux-anime", label: "Flux Anime (動漫風) 🌸", status: "ok" },
+      { id: "flux-realism", label: "Flux Realism (寫實)", status: "ok" },
+      { id: "flux-3d", label: "Flux 3D", status: "ok" },
+      { id: "turbo", label: "Turbo (最快)", status: "ok" },
     ],
     setupSteps: ["✅ 無需設定、直接能用"],
     envVars: [],
@@ -46,9 +56,9 @@ const PROVIDERS: Provider[] = [
     emoji: "☁️",
     desc: "每天 10,000 neurons 免費、量大最划算",
     models: [
-      { id: "@cf/black-forest-labs/flux-1-schnell", label: "Flux Schnell" },
-      { id: "@cf/bytedance/stable-diffusion-xl-lightning", label: "SDXL Lightning" },
-      { id: "@cf/lykon/dreamshaper-8-lcm", label: "DreamShaper 8 LCM" },
+      { id: "@cf/black-forest-labs/flux-1-schnell", label: "Flux Schnell", status: "ok", note: "唯一推薦、品質最穩" },
+      { id: "@cf/bytedance/stable-diffusion-xl-lightning", label: "SDXL Lightning", status: "flaky", note: "常破圖" },
+      { id: "@cf/lykon/dreamshaper-8-lcm", label: "DreamShaper 8 LCM", status: "flaky", note: "全黑機率高" },
     ],
     setupSteps: [
       "1. 去 https://dash.cloudflare.com 註冊 (有 GitHub 直接登)",
@@ -71,9 +81,9 @@ const PROVIDERS: Provider[] = [
     emoji: "🤝",
     desc: "FLUX schnell 品質最好、新註冊 $25 free credit",
     models: [
-      { id: "black-forest-labs/FLUX.1-schnell-Free", label: "FLUX.1 Schnell Free (永久免費)" },
-      { id: "black-forest-labs/FLUX.1-schnell", label: "FLUX.1 Schnell ($0.0027/MP)" },
-      { id: "black-forest-labs/FLUX.1-dev", label: "FLUX.1 Dev (頂級、$0.025/MP)" },
+      { id: "black-forest-labs/FLUX.1-schnell-Free", label: "FLUX.1 Schnell Free", status: "ok", note: "永久免費、唯一推薦" },
+      { id: "black-forest-labs/FLUX.1-schnell", label: "FLUX.1 Schnell ($0.0027/MP)", status: "paid", note: "需 Build Tier 2+" },
+      { id: "black-forest-labs/FLUX.1-dev", label: "FLUX.1 Dev ($0.025/MP)", status: "paid", note: "需 Build Tier 2+" },
     ],
     setupSteps: [
       "1. 去 https://api.together.xyz 註冊 (Google / Email)",
@@ -96,10 +106,10 @@ const PROVIDERS: Provider[] = [
     emoji: "🤗",
     desc: "免費 rate-limited、上千 model 任挑、cold start 慢",
     models: [
-      { id: "black-forest-labs/FLUX.1-schnell", label: "FLUX.1 Schnell" },
-      { id: "stabilityai/stable-diffusion-xl-base-1.0", label: "SDXL 1.0" },
-      { id: "runwayml/stable-diffusion-v1-5", label: "SD 1.5 (老但快)" },
-      { id: "ByteDance/SDXL-Lightning", label: "SDXL Lightning (快)" },
+      { id: "black-forest-labs/FLUX.1-schnell", label: "FLUX.1 Schnell", status: "ok", note: "router 唯一還可走的" },
+      { id: "stabilityai/stable-diffusion-xl-base-1.0", label: "SDXL 1.0", status: "broken", note: "router 已下架" },
+      { id: "runwayml/stable-diffusion-v1-5", label: "SD 1.5", status: "broken", note: "router 已下架" },
+      { id: "ByteDance/SDXL-Lightning", label: "SDXL Lightning", status: "broken", note: "router 已下架" },
     ],
     setupSteps: [
       "1. 去 https://huggingface.co 註冊 (免費)",
@@ -122,10 +132,10 @@ const PROVIDERS: Provider[] = [
     emoji: "🔁",
     desc: "Pay-per-use、新註冊有 trial credits、各種 SOTA 模型",
     models: [
-      { id: "black-forest-labs/flux-schnell", label: "Flux Schnell ($0.003/圖)" },
-      { id: "black-forest-labs/flux-dev", label: "Flux Dev ($0.03/圖)" },
-      { id: "stability-ai/stable-diffusion-3.5-large", label: "SD 3.5 Large" },
-      { id: "ideogram-ai/ideogram-v2", label: "Ideogram v2 (文字渲染強)" },
+      { id: "black-forest-labs/flux-schnell", label: "Flux Schnell ($0.003/圖)", status: "paid", note: "Trial credit 用完需綁卡" },
+      { id: "black-forest-labs/flux-dev", label: "Flux Dev ($0.03/圖)", status: "paid", note: "Trial credit 用完需綁卡" },
+      { id: "stability-ai/stable-diffusion-3.5-large", label: "SD 3.5 Large", status: "paid", note: "需綁卡" },
+      { id: "ideogram-ai/ideogram-v2", label: "Ideogram v2", status: "paid", note: "需綁卡" },
     ],
     setupSteps: [
       "1. 去 https://replicate.com 註冊 (GitHub / Email)",
@@ -296,9 +306,22 @@ export function OgPreviewClient() {
               className="w-full mt-0.5 bg-bg border border-border rounded-lg px-2 py-1.5 text-xs"
             >
               {provider.models.map((m) => (
-                <option key={m.id} value={m.id}>{m.label}</option>
+                <option key={m.id} value={m.id}>
+                  {STATUS_BADGE[m.status].label.replace(/^\S+ /, "")} {m.label}{m.note ? ` — ${m.note}` : ""}
+                </option>
               ))}
             </select>
+            {/* 當前 model 狀態徽章 */}
+            {(() => {
+              const cur = provider.models.find((m) => m.id === model);
+              if (!cur) return null;
+              const b = STATUS_BADGE[cur.status];
+              return (
+                <div className={`mt-1 inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full border ${b.cls}`}>
+                  {b.label}{cur.note ? ` · ${cur.note}` : ""}
+                </div>
+              );
+            })()}
           </div>
           <div>
             <label className="text-[10px] text-fg-muted">Seed</label>

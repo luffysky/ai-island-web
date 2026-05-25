@@ -97,6 +97,24 @@ async function runCloudflare(prompt: string, w: number, h: number, seed: string,
     });
   }
   const buf = await res.arrayBuffer();
+  // 偵測過小 (< 3KB)= 全黑/破圖 / 不是真正 PNG
+  if (buf.byteLength < 3000) {
+    return errJson("cloudflare", "image_too_small", 502, {
+      api_status: res.status,
+      bytes: buf.byteLength,
+      hint: "回的圖太小可能 NSFW filter 全黑、或 model 出錯。建議換 flux-1-schnell、它最穩",
+    });
+  }
+  // 偵測 PNG 簽名 (89 50 4E 47)、不是的話也回 error
+  const head = new Uint8Array(buf.slice(0, 4));
+  if (!(head[0] === 0x89 && head[1] === 0x50 && head[2] === 0x4e && head[3] === 0x47)) {
+    return errJson("cloudflare", "not_png", 502, {
+      api_status: res.status,
+      bytes: buf.byteLength,
+      first_bytes: Array.from(head).map((b) => b.toString(16).padStart(2, "0")).join(" "),
+      hint: "回的不是 PNG、可能該 model 暫時掛。換 flux-1-schnell",
+    });
+  }
   return new NextResponse(buf, {
     status: 200,
     headers: { "Content-Type": "image/png", "Cache-Control": "public, max-age=86400, s-maxage=604800" },
