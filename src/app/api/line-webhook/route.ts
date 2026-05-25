@@ -55,14 +55,25 @@ async function lineReply(replyToken: string, payload: string | FlexMessage | Lin
     // 補預設 Quick Reply（如果還沒設）
     if (!msg.quickReply) msg.quickReply = buildQuickReply(COMMON_QR);
 
-    await fetch(`${ENDPOINT}/message/reply`, {
+    const res = await fetch(`${ENDPOINT}/message/reply`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
       body: JSON.stringify({ replyToken, messages: [msg] }),
       signal: AbortSignal.timeout(5000),
     });
+    if (!res.ok) {
+      const body = await res.text().catch(() => "");
+      await logLineError("reply_api_failed", `LINE reply API ${res.status}: ${body.slice(0, 200)}`, {
+        status: res.status,
+        body: body.slice(0, 500),
+        replyToken_prefix: replyToken.slice(0, 12) + "...",
+        hint: res.status === 400 && body.includes("Invalid reply token") ? "reply token 過期 / 已用過、訊息處理太慢、看 maxDuration 是否夠" : "看 body",
+      });
+    }
   } catch (e) {
-    console.warn("[line-webhook] reply failed:", (e as any)?.message);
+    await logLineError("reply_fetch_failed", (e as any)?.message ?? "unknown", {
+      error: String(e).slice(0, 300),
+    });
   }
 }
 
