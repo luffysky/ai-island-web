@@ -10,9 +10,10 @@
  *   - 不主動 navigate clients、避免破 OAuth callback (#access_token)
  */
 
-const VERSION = "v3-2026-05-25";
+const VERSION = "v4-2026-05-25";
 const STATIC_CACHE = `static-${VERSION}`;
 const PAGES_CACHE = `pages-${VERSION}`;
+const PYODIDE_CACHE = `pyodide-v0.26.4`;  // 跟 Pyodide 版本綁定、版本沒變就不換 cache
 const OFFLINE_URL = "/offline";
 
 // 不攔截 / 不快取的路徑
@@ -53,11 +54,29 @@ function shouldSkip(url) {
   return SKIP_PATHS.some((p) => url.pathname.startsWith(p));
 }
 
+// Pyodide CDN cache: 載一次永遠 local、重整不再下載
+function isPyodideAsset(url) {
+  return url.hostname === "cdn.jsdelivr.net" && url.pathname.includes("/pyodide/");
+}
+
+// CDN library cache (React / Vue / Babel)
+function isCdnLibrary(url) {
+  if (url.hostname !== "unpkg.com") return false;
+  return /\b(react|react-dom|vue|@babel\/standalone)\b/.test(url.pathname);
+}
+
 self.addEventListener("fetch", (event) => {
   const req = event.request;
   if (req.method !== "GET") return;
 
   const url = new URL(req.url);
+
+  // Pyodide / CDN library：Cache First、永久 (避免重整 30s)
+  if (isPyodideAsset(url) || isCdnLibrary(url)) {
+    event.respondWith(cacheFirst(req, PYODIDE_CACHE));
+    return;
+  }
+
   if (shouldSkip(url)) return;
 
   // 靜態檔（_next/static + 圖片字體）— Cache First
