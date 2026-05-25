@@ -2,6 +2,8 @@ import { createSupabaseServer } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { CollapsibleAside } from "./CollapsibleAside";
+import { LottieBackground } from "@/components/admin/LottieBackground";
+import { createSupabaseAdmin } from "@/lib/supabase-admin";
 
 // 強制每次都 server-side render、不 cache
 export const dynamic = "force-dynamic";
@@ -32,9 +34,25 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   }
   const isOwner = profile.role === "owner";
 
+  // 後台 Lottie 背景設定 (從 app_settings 撈、林董可在「應用設定 CRUD」調)
+  let lottieSrc: string | null = null;
+  let lottieOpacity = 0.12;
+  try {
+    const admin = createSupabaseAdmin();
+    const { data: settings } = await admin
+      .from("app_settings")
+      .select("key, value")
+      .in("key", ["admin_lottie_url", "admin_lottie_opacity"]);
+    for (const s of (settings as any[]) ?? []) {
+      if (s.key === "admin_lottie_url" && s.value) lottieSrc = String(s.value);
+      if (s.key === "admin_lottie_opacity" && s.value) lottieOpacity = Number(s.value);
+    }
+  } catch {}
+
   return (
-    <div className="admin-skin">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+    <div className="admin-skin relative">
+      <LottieBackground src={lottieSrc ?? undefined} opacity={lottieOpacity} blur={1} speed={0.4} />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 relative z-10">
         <div className="mb-6 flex items-center justify-between bg-bg-card border border-border rounded-2xl p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent to-accent-2 flex items-center justify-center text-white text-lg shadow-lg">

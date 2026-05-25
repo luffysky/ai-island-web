@@ -139,9 +139,129 @@ export function breadcrumbSchema(items: Array<{ name: string; url: string }>) {
   };
 }
 
+/** FAQ schema：給有 FAQ 區塊的頁 (章節頁尾 / 訂閱頁 / 副本) */
+export function faqSchema(items: Array<{ q: string; a: string }>) {
+  if (!items || items.length === 0) return null;
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: items.map((it) => ({
+      "@type": "Question",
+      name: it.q,
+      acceptedAnswer: { "@type": "Answer", text: it.a },
+    })),
+  };
+}
+
+/** HowTo schema：給 step-by-step lesson 用 */
+export function howToSchema(opts: {
+  name: string;
+  description: string;
+  url: string;
+  totalTimeMinutes?: number;
+  steps: Array<{ name: string; text: string; url?: string }>;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: opts.name,
+    description: opts.description,
+    url: opts.url,
+    inLanguage: "zh-Hant-TW",
+    ...(opts.totalTimeMinutes ? { totalTime: `PT${opts.totalTimeMinutes}M` } : {}),
+    step: opts.steps.map((s, i) => ({
+      "@type": "HowToStep",
+      position: i + 1,
+      name: s.name,
+      text: s.text,
+      ...(s.url ? { url: s.url } : {}),
+    })),
+  };
+}
+
+/** LearningResource schema：給單一 lesson 頁用 (比 Course 細) */
+export function learningResourceSchema(opts: {
+  name: string;
+  description: string;
+  url: string;
+  chapterName: string;
+  chapterUrl: string;
+  difficulty?: string;
+  timeMinutes?: number;
+  imageUrl?: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "LearningResource",
+    name: opts.name,
+    description: opts.description,
+    url: opts.url,
+    inLanguage: "zh-Hant-TW",
+    isAccessibleForFree: true,
+    learningResourceType: "lesson",
+    isPartOf: {
+      "@type": "Course",
+      name: opts.chapterName,
+      url: opts.chapterUrl,
+    },
+    ...(opts.difficulty ? { educationalLevel: opts.difficulty } : {}),
+    ...(opts.timeMinutes ? { timeRequired: `PT${opts.timeMinutes}M` } : {}),
+    ...(opts.imageUrl ? { image: opts.imageUrl } : {}),
+    provider: {
+      "@type": "Organization",
+      name: SITE_NAME,
+      url: SITE_URL,
+    },
+  };
+}
+
+/**
+ * 給 Course / Article 等 schema 加 author + reviewer (內容信任度)
+ * 預設 author = AI 島團隊、reviewer = 林董
+ */
+export function withAuthorAndReviewer<T extends object>(schema: T, opts?: {
+  authorName?: string;
+  authorUrl?: string;
+  reviewerName?: string;
+  reviewerUrl?: string;
+}): T {
+  return {
+    ...schema,
+    author: {
+      "@type": "Organization",
+      name: opts?.authorName ?? "AI 島團隊 (SnowRealm)",
+      url: opts?.authorUrl ?? SITE_URL,
+    },
+    creator: {
+      "@type": "Organization",
+      name: "AI 島 (SnowRealm)",
+      url: SITE_URL,
+    },
+    reviewedBy: {
+      "@type": "Person",
+      name: opts?.reviewerName ?? "Luffy Lin (林董 / 平台主)",
+      ...(opts?.reviewerUrl ? { url: opts.reviewerUrl } : {}),
+    },
+  } as T;
+}
+
+/** ItemList schema：給章節列表頁用 (Google 顯示 list rich snippet) */
+export function itemListSchema(items: Array<{ name: string; url: string }>) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    itemListElement: items.map((it, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: it.name,
+      url: it.url,
+    })),
+  };
+}
+
 /** 把 schema 物件渲染成 <script type="application/ld+json"> 注入頁面 */
-export function jsonLdScript(data: object | object[]) {
-  const arr = Array.isArray(data) ? data : [data];
+export function jsonLdScript(data: (object | null | undefined) | Array<object | null | undefined>) {
+  const arr = (Array.isArray(data) ? data : [data]).filter((x): x is object => x != null);
   return {
     __html: arr.map((d) => JSON.stringify(d)).join("\n"),
   };

@@ -1,7 +1,10 @@
 import { getChapterMetas } from "@/lib/content";
 import { ChapterMap } from "@/components/home/ChapterMap";
 import { SITE_STATS } from "@/lib/site-stats";
+import { itemListSchema, breadcrumbSchema, jsonLdScript } from "@/lib/seo-jsonld";
 import type { Metadata } from "next";
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://aiisland.tw";
 
 export async function generateMetadata(): Promise<Metadata> {
   const chCount = SITE_STATS.chapterCount;
@@ -23,8 +26,23 @@ export default async function ChaptersPage() {
   const chapters = await getChapterMetas();
   const lessonCount = chapters.reduce((s, c) => s + c.lessonCount, 0);
 
+  // JSON-LD: ItemList (整章列表) + Breadcrumb
+  const ld = [
+    itemListSchema(
+      chapters.map((c) => ({
+        name: `Ch${String(c.id).padStart(2, "0")} ${c.title}`,
+        url: `${SITE_URL}/chapters/${c.id}`,
+      }))
+    ),
+    breadcrumbSchema([
+      { name: "首頁", url: SITE_URL },
+      { name: "所有章節", url: `${SITE_URL}/chapters` },
+    ]),
+  ];
+
   return (
     <div className="max-w-7xl mx-auto px-6 py-8">
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdScript(ld)} />
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold mb-2">📚 所有章節</h1>
         <p className="text-sm text-fg-muted">{chapters.length} 章 × 7 大區域、共 {lessonCount} 個 lesson</p>

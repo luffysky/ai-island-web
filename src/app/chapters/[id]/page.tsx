@@ -1,8 +1,13 @@
-import { getChapter } from "@/lib/content";
+import { getChapter, getAllChapters } from "@/lib/content";
 import { notFound } from "next/navigation";
 import { ChapterView } from "@/components/chapter/ChapterView";
+import { AiSummaryBlock } from "@/components/chapter/AiSummaryBlock";
+import { RelatedChapters } from "@/components/chapter/RelatedChapters";
 import { mergeSeoForPath } from "@/lib/seo-render";
-import { courseSchema, breadcrumbSchema, jsonLdScript } from "@/lib/seo-jsonld";
+import {
+  courseSchema, breadcrumbSchema, faqSchema, itemListSchema,
+  withAuthorAndReviewer, jsonLdScript,
+} from "@/lib/seo-jsonld";
 import type { Metadata } from "next";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
@@ -73,22 +78,29 @@ export default async function ChapterPage({ params }: { params: Promise<{ id: st
   const chapter = await getChapter(Number(id));
   if (!chapter) notFound();
 
-  // JSON-LD：Course + BreadcrumbList
+  // JSON-LD：Course (含 author+reviewer) + Breadcrumb + ItemList(lessons) + FAQ
   const chapterUrl = `${SITE_URL}/chapters/${chapter.id}`;
   const ld = [
-    courseSchema({
+    withAuthorAndReviewer(courseSchema({
       name: `Ch${String(chapter.id).padStart(2, "0")}：${chapter.title}`,
       description: chapter.description || chapter.subtitle || chapter.title,
       url: chapterUrl,
       lessons: chapter.lessons?.length,
       difficulty: chapter.difficulty,
       updatedAt: (chapter as any).updated_at,
-    }),
+    })),
     breadcrumbSchema([
       { name: "首頁", url: SITE_URL },
       { name: "章節", url: `${SITE_URL}/chapters` },
       { name: chapter.title, url: chapterUrl },
     ]),
+    itemListSchema(
+      (chapter.lessons ?? []).slice(0, 30).map((l: any) => ({
+        name: l.title,
+        url: `${chapterUrl}#${l.id}`,
+      }))
+    ),
+    faqSchema(chapter.faq ?? []),
   ];
 
   return (
@@ -97,11 +109,15 @@ export default async function ChapterPage({ params }: { params: Promise<{ id: st
         type="application/ld+json"
         dangerouslySetInnerHTML={jsonLdScript(ld)}
       />
+      <AiSummaryBlock chapter={chapter} />
       <ChapterView chapter={chapter} />
+      <RelatedChapters chapter={chapter} />
     </>
   );
 }
 
 export async function generateStaticParams() {
-  return Array.from({ length: 70 }, (_, i) => ({ id: String(i + 1) }));
+  // 動態抓所有章節 id (而非 hardcode 70) — 加新章後 build 自動 cover
+  const chapters = await getAllChapters();
+  return chapters.map((c) => ({ id: String(c.id) }));
 }
