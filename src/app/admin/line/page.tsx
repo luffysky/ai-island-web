@@ -3,6 +3,7 @@ import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
 import { Users, Send, MessageCircle, MessageSquareText, ImageIcon, Settings, Activity, AlertCircle } from "lucide-react";
 import { PageHero } from "@/components/admin/PageHero";
+import { LineDiagnosticPanel } from "./LineDiagnosticPanel";
 
 export const dynamic = "force-dynamic";
 
@@ -71,6 +72,9 @@ export default async function AdminLinePage() {
           webhookPath="/api/line-webhook-user"
         />
       </section>
+
+      {/* 診斷工具 */}
+      <LineDiagnosticPanel />
 
       {/* 統計 */}
       <section className="grid grid-cols-2 md:grid-cols-4 gap-3">

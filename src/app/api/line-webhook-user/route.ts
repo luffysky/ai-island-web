@@ -7,6 +7,7 @@ import { decryptKey } from "@/lib/ai-crypto";
 import { callAI } from "@/lib/ai-providers";
 import { SITE_STATS } from "@/lib/site-stats";
 import { checkOwner } from "@/lib/is-owner";
+import { pickModelForUsage } from "@/lib/ai-usage-models";
 
 // in-memory 對話歷史 (user webhook、跟 admin 分開)
 type Msg = { role: "user" | "assistant"; content: string };
@@ -29,18 +30,34 @@ type UserProfileLite = {
 async function askUserAI(text: string, profile: UserProfileLite | null, lineUserId: string): Promise<string | null> {
   const admin = createSupabaseAdmin();
   const { data: models } = await admin.from("ai_models").select("*").eq("is_active", true).limit(20);
-  const model = (models as any[])?.find((m) => m.provider === "anthropic") ?? (models as any[])?.[0];
-  if (!model) return null;
+  const activeModels = (models as any[]) ?? [];
+  // 先讀後台「LINE user bot 學員導師」用途的對應、沒設再 fallback
+  const usageModel = await pickModelForUsage("line_user", activeModels).catch(() => null);
+  const model = usageModel
+    ?? activeModels.find((m) => m.provider === "anthropic")
+    ?? activeModels[0];
+  if (!model) {
+    console.warn("[line-webhook-user] no active model in ai_models");
+    return null;
+  }
 
   const { data: sysKey } = await admin
     .from("ai_api_keys")
     .select("api_key_encrypted, enabled")
     .eq("provider", model.provider)
     .maybeSingle();
-  if (!sysKey || !(sysKey as any).enabled) return null;
+  if (!sysKey || !(sysKey as any).enabled) {
+    console.warn(`[line-webhook-user] no enabled api key for provider=${model.provider}`);
+    return null;
+  }
 
   let apiKey: string;
-  try { apiKey = decryptKey((sysKey as any).api_key_encrypted); } catch { return null; }
+  try {
+    apiKey = decryptKey((sysKey as any).api_key_encrypted);
+  } catch (e: any) {
+    console.warn(`[line-webhook-user] decrypt failed for ${model.provider}:`, e?.message);
+    return null;
+  }
 
   const owner = checkOwner({
     id: profile?.id ?? null,

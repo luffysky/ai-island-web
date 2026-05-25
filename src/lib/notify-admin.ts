@@ -1,12 +1,14 @@
 /**
  * 多通道 admin 即時通知（林董手機）
  *
- * env 任一有設定就推（依序 LINE → Telegram → Discord → 全送）：
- *   ADMIN_LINE_NOTIFY_TOKEN     — LINE Notify 第三方相容（如 LineNotify Plus、notify-bot.line.me 替代）
- *   ADMIN_LINE_CHANNEL_TOKEN + ADMIN_LINE_USER_ID — LINE Messaging API（官方）
+ * env 任一有設定就推（依序 LINE → Telegram → Discord）：
+ *   ADMIN_LINE_CHANNEL_TOKEN + ADMIN_LINE_USER_ID — LINE Messaging API（主推、官方）
  *   ADMIN_TELEGRAM_BOT_TOKEN + ADMIN_TELEGRAM_CHAT_ID — Telegram Bot
  *   ADMIN_DISCORD_WEBHOOK_URL   — Discord Webhook（最簡單）
  *   ADMIN_NOTIFY_ALL=1          — 同時送所有設定好的通道（debug 用）
+ *
+ * 註：LINE Notify 已於 2025-04 終止服務、ADMIN_LINE_NOTIFY_TOKEN 已不支援。
+ * 改用 Messaging API + Channel Token + LINE userId 即可。
  *
  * Rate limit：同一 kind+key 同 minute 內最多一次（in-memory、單實例）
  * 失敗 silent、不影響主流程
@@ -65,12 +67,6 @@ export async function notifyAdmin(opts: NotifyOptions): Promise<void> {
 
   const promises: Promise<unknown>[] = [];
 
-  const lineNotifyToken = process.env.ADMIN_LINE_NOTIFY_TOKEN;
-  if (lineNotifyToken) {
-    promises.push(sendLineNotify(lineNotifyToken, text));
-    if (!all) return await Promise.allSettled(promises).then(() => {});
-  }
-
   const lineChannel = process.env.ADMIN_LINE_CHANNEL_TOKEN;
   if (lineChannel) {
     const { getAdminLineUsers } = await import("./admin-line-users");
@@ -101,22 +97,6 @@ export async function notifyAdmin(opts: NotifyOptions): Promise<void> {
   }
 
   await Promise.allSettled(promises);
-}
-
-async function sendLineNotify(token: string, text: string) {
-  try {
-    await fetch("https://notify-api.line.me/api/notify", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: `message=${encodeURIComponent(text)}`,
-      signal: AbortSignal.timeout(5000),
-    });
-  } catch (e) {
-    console.warn("[notify-admin] line-notify failed:", (e as any)?.message);
-  }
 }
 
 async function sendLineMessaging(token: string, userId: string, text: string, flex?: any) {

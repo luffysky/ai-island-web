@@ -94,7 +94,7 @@ const SECRET_GROUPS: EnvGroup[] = [
       { key: "ADMIN_LINE_CHANNEL_TOKEN", description: "Admin bot Messaging API token" },
       { key: "ADMIN_LINE_CHANNEL_SECRET", description: "Admin bot Messaging API secret" },
       { key: "ADMIN_LINE_BOT_BASIC_ID", description: "Admin bot @basicId（紀錄）" },
-      { key: "ADMIN_LINE_NOTIFY_TOKEN", description: "舊版 LINE Notify (deprecated 2025-03)" },
+      { key: "ADMIN_LINE_NOTIFY_TOKEN", description: "⚠️ LINE Notify 已於 2025-04 終止、本平台已停用、可從 env 移除" },
       { key: "RICH_MENU_IMAGE_URL", description: "Rich Menu PNG (2500×1686)" },
     ],
   },
