@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePyodide } from "@/hooks/usePyodide";
-import { Terminal, BookOpen, Bug, BarChart3, Sparkles, Database, GraduationCap, Zap, Globe, Atom } from "lucide-react";
+import { Terminal, BookOpen, Bug, BarChart3, Sparkles, Database, GraduationCap, Zap, Globe, Atom, Trophy, FolderOpen } from "lucide-react";
 import { PythonREPL } from "./tabs/PythonREPL";
 import { NotebookTab } from "./tabs/NotebookTab";
 import { ScrapeLab } from "./tabs/ScrapeLab";
@@ -13,16 +13,20 @@ import { Exercises } from "./tabs/Exercises";
 import { BackendLab } from "./tabs/BackendLab";
 import { WebLab } from "./tabs/WebLab";
 import { FrameworkLab } from "./tabs/FrameworkLab";
+import { ChallengeMode } from "./tabs/ChallengeMode";
+import { MiniIDE } from "./tabs/MiniIDE";
 
 const TABS = [
   { id: "repl", label: "Python REPL", emoji: "🐍", icon: Terminal, desc: "互動式 Python、一次跑一段" },
   { id: "notebook", label: "Jupyter Notebook", emoji: "📓", icon: BookOpen, desc: "多 cell 編寫、變數共享" },
+  { id: "ide", label: "Mini IDE", emoji: "💻", icon: FolderOpen, desc: "多檔案、main.py 可 import" },
   { id: "scrape", label: "Scrape Lab", emoji: "🕷️", icon: Bug, desc: "爬蟲練習場、業界資料源" },
   { id: "backend", label: "Backend Lab", emoji: "⚡", icon: Zap, desc: "FastAPI / Flask / SQLite / asyncio" },
   { id: "web", label: "Web Lab", emoji: "🌐", icon: Globe, desc: "HTML / CSS / JS 即時預覽" },
   { id: "framework", label: "Frameworks", emoji: "⚛️", icon: Atom, desc: "React / Vue / Next / Nest" },
   { id: "datalab", label: "Data Lab", emoji: "📊", icon: Database, desc: "真實數據分析、業界題型" },
   { id: "exercises", label: "練習題", emoji: "📝", icon: GraduationCap, desc: "出題 + 解答 (隱藏)" },
+  { id: "challenges", label: "挑戰模式", emoji: "🏆", icon: Trophy, desc: "通過題目拿 XP、進度存 DB" },
   { id: "charts", label: "Charts Gallery", emoji: "📈", icon: BarChart3, desc: "matplotlib / recharts 圖表" },
 ] as const;
 
@@ -158,6 +162,8 @@ export function NamiPlayground({
           {active === "framework" && <FrameworkLab />}
           {active === "datalab" && <DataLab />}
           {active === "exercises" && <Exercises />}
+          {active === "challenges" && <ChallengeMode />}
+          {active === "ide" && <MiniIDE />}
           {active === "charts" && <ChartsGallery />}
         </motion.div>
       </AnimatePresence>
