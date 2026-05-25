@@ -8,6 +8,20 @@ import { buildAiReplyCard, buildQuickReply, COMMON_QR, type FlexMessage, type Li
 import { runPostback } from "@/lib/line-postback";
 import { getLiveSnapshot } from "@/lib/site-status-snapshot";
 import { askAIWithTools } from "@/lib/line-ai-tools";
+import { pickModelForUsage } from "@/lib/ai-usage-models";
+
+async function logLineError(code: string, message: string, extra: any = {}) {
+  try {
+    const admin = createSupabaseAdmin();
+    await admin.from("error_logs").insert({
+      source: "line-webhook",
+      level: "error",
+      message: `[${code}] ${message}`,
+      extra,
+    });
+  } catch {}
+  console.warn(`[line-webhook] ${code}:`, message, extra);
+}
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -51,19 +65,36 @@ async function lineReply(replyToken: string, payload: string | FlexMessage | Lin
 
 async function askAI(message: string, adminUser: AdminLineUser): Promise<string> {
   const admin = createSupabaseAdmin();
-  const { data: models } = await admin.from("ai_models").select("*").eq("is_active", true).limit(20);
-  // 優先用 Anthropic（支援 tool use）
-  const model = (models as any[])?.find((m) => m.provider === "anthropic") ?? (models as any[])?.[0];
-  if (!model) return "❌ AI 模型未設定";
-  const { data: sysKey } = await admin
+  const { data: models, error: modelsErr } = await admin.from("ai_models").select("*").eq("is_active", true).limit(20);
+  if (modelsErr) {
+    await logLineError("ai_models_query_failed", modelsErr.message, { adminUserId: adminUser.id });
+    return `❌ AI 模型表查詢失敗：${modelsErr.message}\n(已寫入 error_logs、林董到 /admin/errors 查)`;
+  }
+  if (!models || models.length === 0) {
+    return "❌ AI 模型未設定 — 到後台「AI 模型管理」啟用 1 個 model。";
+  }
+  // 看後台 AI 用途設定 (新功能) — 找 line_admin 對應 model
+  const usage = await pickModelForUsage("line_admin", models as any[]);
+  const model = usage ?? (models as any[])?.find((m) => m.provider === "anthropic") ?? (models as any[])?.[0];
+
+  const { data: sysKey, error: keyErr } = await admin
     .from("ai_api_keys")
     .select("api_key_encrypted, enabled")
     .eq("provider", model.provider)
     .maybeSingle();
-  if (!sysKey || !(sysKey as any).enabled) return "❌ AI key 未設定";
+  if (keyErr) {
+    await logLineError("ai_keys_query_failed", keyErr.message, { adminUserId: adminUser.id, provider: model.provider });
+    return `❌ AI key 表查詢失敗：${keyErr.message}`;
+  }
+  if (!sysKey) return `❌ 沒設定 ${model.provider} 的 API key — 到後台「AI 模型管理」加`;
+  if (!(sysKey as any).enabled) return `❌ ${model.provider} API key 已停用 — 到後台「AI 模型管理」啟用`;
+
   let apiKey: string;
   try { apiKey = decryptKey((sysKey as any).api_key_encrypted); }
-  catch { return "❌ AI key 解密失敗"; }
+  catch (e: any) {
+    await logLineError("ai_key_decrypt_failed", e?.message ?? "decrypt failed", { provider: model.provider });
+    return `❌ AI key 解密失敗 (AI_KEY_SECRET 環境變數可能不對)`;
+  }
 
   const hist = getHistory(adminUser.id);
   hist.push({ role: "user", content: message });
@@ -116,7 +147,8 @@ ${snapshot}
     hist.push({ role: "assistant", content: reply });
     return reply;
   } catch (e: any) {
-    return `❌ AI 呼叫失敗：${e?.message ?? "未知錯誤"}`;
+    await logLineError("askAIWithTools_failed", e?.message ?? "unknown", { adminUserId: adminUser.id, model: model.model_name });
+    return `❌ AI 呼叫失敗 (${model.model_name})：${e?.message ?? "未知錯誤"}\n(已寫 error_logs、可到 /admin/errors 看 stack)`;
   }
 }
 

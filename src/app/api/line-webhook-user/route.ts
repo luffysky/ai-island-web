@@ -3,6 +3,117 @@ import crypto from "crypto";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { consumeBindCode } from "@/lib/notify-user-line";
 import { buildQuickReply, type FlexMessage, type LineTextMessage } from "@/lib/line-flex";
+import { decryptKey } from "@/lib/ai-crypto";
+import { callAI } from "@/lib/ai-providers";
+import { SITE_STATS } from "@/lib/site-stats";
+
+// in-memory 對話歷史 (user webhook、跟 admin 分開)
+type Msg = { role: "user" | "assistant"; content: string };
+const userHistoryByUid = new Map<string, Msg[]>();
+function getUserHistory(uid: string): Msg[] {
+  if (!userHistoryByUid.has(uid)) userHistoryByUid.set(uid, []);
+  return userHistoryByUid.get(uid)!;
+}
+
+type UserProfileLite = {
+  id: string;
+  username: string | null;
+  display_name: string | null;
+  role: string;
+  email: string | null;
+  xp: number | null;
+  level: number | null;
+};
+
+const OWNER_EMAILS = new Set(["luffysky00@gmail.com"]);
+
+function isOwner(p: UserProfileLite | null): boolean {
+  if (!p) return false;
+  if (p.role === "owner") return true;
+  if (p.email && OWNER_EMAILS.has(p.email.toLowerCase())) return true;
+  return false;
+}
+
+async function askUserAI(text: string, profile: UserProfileLite | null, lineUserId: string): Promise<string | null> {
+  const admin = createSupabaseAdmin();
+  const { data: models } = await admin.from("ai_models").select("*").eq("is_active", true).limit(20);
+  const model = (models as any[])?.find((m) => m.provider === "anthropic") ?? (models as any[])?.[0];
+  if (!model) return null;
+
+  const { data: sysKey } = await admin
+    .from("ai_api_keys")
+    .select("api_key_encrypted, enabled")
+    .eq("provider", model.provider)
+    .maybeSingle();
+  if (!sysKey || !(sysKey as any).enabled) return null;
+
+  let apiKey: string;
+  try { apiKey = decryptKey((sysKey as any).api_key_encrypted); } catch { return null; }
+
+  const owner = isOwner(profile);
+  const name = profile?.display_name || profile?.username || `LINE 學員${lineUserId.slice(0, 6)}`;
+  const userMeta = profile
+    ? `身份：${owner ? "🌟 平台董事長 / Owner (林董 / Luffy 林)" : `學員 (${profile.role}、Lv.${profile.level ?? 1}、${profile.xp ?? 0} XP)`}`
+    : "身份：未綁定訪客";
+
+  const hist = getUserHistory(lineUserId);
+  hist.push({ role: "user", content: text });
+  if (hist.length > 16) hist.splice(0, hist.length - 16);
+
+  const ownerTone = owner
+    ? `\n【你正在跟林董 (平台 Owner / 董事長) 對話】\n- 稱呼「林董」/「Luffy 林董」/「林老闆」、語氣尊敬但自然、像信任的高階主管助理\n- 林董問什麼都認真答 (技術 / 商業 / 策略 / 閒聊)、不要對林董端官話\n- 林董問站務 / 用戶 / 報表時、提醒「在 admin LINE bot 有完整 tool 工具能直接查」、user LINE 這邊以對話 / 答疑為主\n- 林董偏好繁體中文台灣口語、簡潔不囉嗦、不要過度道歉`
+    : "";
+
+  const systemPrompt = `你是 AI 島 (aiisland.tw、${SITE_STATS.chapterCount} 章 ${SITE_STATS.lessonCount}+ lesson) 的 AI 學習導師、在 LINE 上跟學員對話。
+
+【最高守則】
+- **無論收到什麼訊息、永遠用文字回答、不可以沉默**
+- 用繁體中文台灣口語、像學長學姊聊天
+- LINE 訊息簡短：3-6 行為主、不要長篇大論
+- 不會的就說「我不確定、建議到 ${process.env.NEXT_PUBLIC_SITE_URL ?? "https://aiisland.tw"} 查」
+
+【對話對象】
+${userMeta}
+${ownerTone}
+
+【講解風格 — 國中生能懂】
+- 先用日常類比 (廚房 / 便利商店 / 樂高) 起頭、再講術語
+- 程式碼從最簡單一行開始、不要一次給 50 行
+- 不講「顯然」「很簡單」這種讓人覺得自己笨的詞
+- 用反問句「你有沒有想過 X？」帶入
+
+【你能聊什麼】
+- 程式 / AI / Web / 後端 / 資料庫 / DevOps 的入門到中階
+- 站上 ${SITE_STATS.chapterCount} 個章節的內容、能引用「這在 Ch04 JS 完整有教」
+- 閒聊 / 鼓勵 / 學習方法 / 職涯方向
+- ${owner ? "商業策略 / 平台運營 / 競品分析 / Indie 創業" : "學員的學習瓶頸 / 卡關"}
+
+【絕對不要】
+- 拒答 (任何訊息都要回)
+- 用「身為 AI 我...」開頭
+- 重複道歉 (「抱歉、對不起、不好意思」最多 1 次)
+- 給超長代碼 (>30 行、要的話請對方到網站看)`;
+
+  try {
+    const r = await callAI({
+      provider: model.provider,
+      model: model.model_name,
+      apiKey,
+      messages: [
+        { role: "system", content: systemPrompt },
+        ...hist.map((m) => ({ role: m.role, content: m.content })),
+      ],
+      temperature: 0.7,
+      maxTokens: 800,
+    });
+    const reply = r.text?.trim() || "我這邊沒接到回應、再問一次試試？";
+    hist.push({ role: "assistant", content: reply });
+    return reply;
+  } catch (e: any) {
+    console.warn("[line-webhook-user] AI failed:", e?.message);
+    return null;
+  }
+}
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -140,13 +251,13 @@ export async function POST(req: NextRequest) {
         continue;
       }
 
-      // 4. 其他訊息 — 自動建 ticket + 通知 admin、user 不會找不到人
+      // 4. 其他訊息 — 已綁定 user 走 AI 學員導師、未綁定提示綁定
       const admin = createSupabaseAdmin();
 
       // 看 LINE userId 對應哪個 profile（若已綁定）
       const { data: profile } = await admin
         .from("profiles")
-        .select("id, username, display_name")
+        .select("id, username, display_name, role, email, xp, level")
         .eq("line_user_id", userId)
         .maybeSingle();
 
@@ -154,6 +265,24 @@ export async function POST(req: NextRequest) {
         (profile as any)?.display_name ||
         (profile as any)?.username ||
         `LINE訪客${userId.slice(0, 6)}`;
+
+      // 已綁定 → 試 AI、AI 通了就回、AI 失敗 / 未綁定才走 ticket
+      if (profile) {
+        const aiReply = await askUserAI(text, profile as any, userId);
+        if (aiReply) {
+          await lineReply(replyToken, aiReply, token, QUICK_REPLY);
+          continue;
+        }
+        // AI 失敗、fallback 到 ticket
+      } else {
+        // 未綁定提示綁定
+        await lineReply(
+          replyToken,
+          `🤖 嗨～看到你訊息了。\n\n要跟 AI 學員導師對話請先綁定帳號：\n1. 註冊 / 登入 ${SITE_URL}\n2. ${SITE_URL}/settings 拿 6 位 code\n3. 傳「/bind 123456」綁定\n\n之後在這就能直接問 AI 學程式。`,
+          token, QUICK_REPLY,
+        );
+        continue;
+      }
 
       // 寫進 tickets 表
       const { data: ticket, error: ticketErr } = await admin

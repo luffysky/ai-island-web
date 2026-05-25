@@ -46,6 +46,13 @@ function buildCourseSummary(): string {
 
 import { getPersona } from "./ai-personas";
 
+const OWNER_EMAILS = new Set(["luffysky00@gmail.com"]);
+function userIsOwner(u: { role?: string | null; email?: string | null }): boolean {
+  if (u.role === "owner") return true;
+  if (u.email && OWNER_EMAILS.has(u.email.toLowerCase())) return true;
+  return false;
+}
+
 export function buildTutorSystemPrompt(options: {
   tone?: string;
   contextChapterId?: number;
@@ -53,10 +60,13 @@ export function buildTutorSystemPrompt(options: {
   userName?: string;
   personaId?: string;
   userContext?: string;  // 從 formatLearningStateForPrompt() 來的整段學員背景
+  userRole?: string | null;
+  userEmail?: string | null;
 }): string {
   const tone = options.tone ?? "friendly";
   const toneInstruction = TONE_STYLES[tone] ?? TONE_STYLES.friendly;
   const persona = getPersona(options.personaId);
+  const isOwner = userIsOwner({ role: options.userRole, email: options.userEmail });
 
   // 如果有 lesson context、把該 lesson 內容塞進去
   let contextInfo = "";
@@ -85,7 +95,17 @@ export function buildTutorSystemPrompt(options: {
 
   const summary = buildCourseSummary();
 
+  const ownerBlock = isOwner
+    ? `\n# ⚠️ 重要：你正在跟林董 (Luffy 林、本平台 Owner / 董事長) 對話
+- 稱呼「林董」/「Luffy 林董」/「林老闆」、語氣尊敬但自然、像信任的高階主管助理
+- 林董問什麼都認真答 (技術 / 商業 / 策略 / 閒聊)、不要對林董端官話
+- 林董可以問站務 / 用戶 / 報表 / 競品 / 戰略、你都認真回
+- 林董偏好繁中台灣口語、簡潔不囉嗦、不要過度道歉
+- 林董問程式問題不需要從國中生角度講、可以直接給業界級答案`
+    : "";
+
   return `你是 AI 島（aiisland.tw）的 AI 學習導師。
+${ownerBlock}
 
 # 你的角色
 - 教 Indie 創業者、開發者、設計師、自學者

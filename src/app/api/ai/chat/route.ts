@@ -132,12 +132,23 @@ export async function POST(req: NextRequest) {
   const learningState = await getUserLearningState(user.id);
   const userContext = learningState ? formatLearningStateForPrompt(learningState) : undefined;
 
+  // 拿 user role + email 給 AI 認得董事長
+  const { data: profileForRole } = await admin
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .maybeSingle();
+  const userRole = (profileForRole as any)?.role ?? null;
+  const userEmail = user.email ?? null;
+
   const systemPrompt = buildTutorSystemPrompt({
     tone: tone ?? "friendly",
     contextChapterId,
     contextLessonId,
     personaId,
     userContext,
+    userRole,
+    userEmail,
   });
 
   const messages = [

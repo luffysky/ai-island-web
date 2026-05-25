@@ -126,6 +126,14 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               <AdminLink href="/admin/nami-ide">💻 Nami IDE</AdminLink>
             </NavGroup>
 
+            <NavGroup title="🤖 AI 管理">
+              <AdminLink href="/admin/ai/models">🎛️ AI 模型管理</AdminLink>
+              <AdminLink href="/admin/ai/usage-models">🔌 AI 用途 ↔ 模型對應</AdminLink>
+              <AdminLink href="/admin/ai/cache">🗄️ AI 快取</AdminLink>
+              <AdminLink href="/admin/ai/moderation">🛡️ AI 審核</AdminLink>
+              <AdminLink href="/admin/ai/moderation-keywords">🔤 審核關鍵字</AdminLink>
+            </NavGroup>
+
             <NavGroup title="系統">
               <AdminLink href="/admin/health">💓 系統健康</AdminLink>
               <AdminLink href="/admin/db-check">🩺 DB 狀態檢查</AdminLink>

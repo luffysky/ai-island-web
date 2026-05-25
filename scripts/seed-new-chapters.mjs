@@ -10,7 +10,7 @@ import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import pg from "pg";
 
-const NEW_CHAPTERS = ["ch72.json", "ch73.json", "ch74.json"];
+const NEW_CHAPTERS = ["ch72.json", "ch73.json", "ch74.json", "ch75.json"];
 
 function loadEnv() {
   const path = ".env.local";
