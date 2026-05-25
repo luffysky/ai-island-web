@@ -87,10 +87,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AuthProvider>
           <ToastProvider>
             <ConfirmProvider>
+              {/* a11y: skip-to-main 連結、tab 第一站、screen reader 用 */}
+              <a
+                href="#main-content"
+                className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-3 focus:py-2 focus:rounded-lg focus:bg-accent focus:text-black focus:font-bold focus:text-sm"
+              >
+                跳到主內容
+              </a>
               <Marquee />
               <TopNav />
               <SideNav />
-              <main className="flex-1">{children}</main>
+              <main id="main-content" className="flex-1" tabIndex={-1}>{children}</main>
               <footer className="border-t border-border py-8 mt-16">
                 <div className="max-w-6xl mx-auto px-6">
                   <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-fg-muted">
