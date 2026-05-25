@@ -174,13 +174,30 @@ export function OgPreviewClient() {
     setImageUrl(null);
     const url = `/api/og/ai?provider=${provider.key}&prompt=${encodeURIComponent(prompt)}&model=${encodeURIComponent(model)}&seed=${seed}&w=1200&h=630&_t=${Date.now()}`;
     try {
+      // 用 fetch 抓 image binary 而不是 <img src=url> — 因為 <img> 拿不到 server 回的 JSON error msg
       const res = await fetch(url);
       if (!res.ok) {
         const j = await res.json().catch(() => ({}));
-        throw new Error(j.msg || j.error || `HTTP ${res.status}`);
+        // 完整顯示 server 回的 hint / msg / status (不只 generic 訊息)
+        const detail = [
+          `📡 HTTP ${res.status}`,
+          j.api_status ? `API status: ${j.api_status}` : null,
+          j.msg ? `訊息: ${j.msg}` : null,
+          j.hint ? `💡 ${j.hint}` : null,
+          j.api_url ? `URL: ${j.api_url}` : null,
+        ].filter(Boolean).join("\n");
+        throw new Error(detail || `HTTP ${res.status}`);
       }
-      // 直接用 endpoint URL 給 <img>、瀏覽器 follow redirect / 渲 binary
-      setImageUrl(url);
+      // 成功 — image binary 或 redirect 到 image URL
+      const ct = res.headers.get("content-type") ?? "";
+      if (ct.startsWith("image/")) {
+        // binary、轉成 blob URL
+        const blob = await res.blob();
+        setImageUrl(URL.createObjectURL(blob));
+      } else {
+        // 不是 image (redirect 已 follow、應該不會到這)、直接用 endpoint URL 給 <img>
+        setImageUrl(url);
+      }
     } catch (e: any) {
       setError(e.message || "失敗");
     } finally {
