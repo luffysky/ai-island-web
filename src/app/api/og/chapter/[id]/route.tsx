@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og";
 import { getChapter } from "@/lib/content";
 import { NextRequest } from "next/server";
+import { chapterDisplayNumber } from "@/lib/chapter-display";
 
 export const runtime = "nodejs";
 
@@ -34,7 +35,7 @@ export async function GET(
 
   const s = STAGE[Number(chapter.stage)] ?? STAGE[1];
   const lessonCount = chapter.lessons?.length ?? 0;
-  const chNum = String(chapter.id).padStart(2, "0");
+  const chNum = chapterDisplayNumber(chapter as any);
 
   return new ImageResponse(
     (

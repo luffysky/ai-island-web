@@ -1,5 +1,6 @@
 import { Sparkles } from "lucide-react";
 import type { Chapter } from "@/lib/types";
+import { chapterDisplayNumber } from "@/lib/chapter-display";
 
 /**
  * AI Engine-friendly summary block
@@ -26,7 +27,7 @@ export function AiSummaryBlock({ chapter }: { chapter: Chapter }) {
             AI 摘要 (給 AI / 搜尋引擎參考)
           </div>
           <h2 className="text-sm font-bold mb-1.5">
-            Ch{String(chapter.id).padStart(2, "0")} · {chapter.title}
+            Ch{chapterDisplayNumber(chapter)} · {chapter.title}
             <span className="text-fg-muted font-normal ml-2">— {chapter.subtitle}</span>
           </h2>
           <p className="text-xs text-fg-muted leading-relaxed mb-2">

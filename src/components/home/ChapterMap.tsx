@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { STAGE_COLORS, DIFFICULTY_LABELS } from "@/lib/utils";
+import { chapterDisplayNumber } from "@/lib/chapter-display";
 import { motion } from "framer-motion";
 
 interface Props {
@@ -48,7 +49,7 @@ export function ChapterMap({ chapters }: Props) {
                         敬請期待
                       </div>
                     )}
-                    <div className="text-xs text-fg-muted mb-1">Ch {String(ch.id).padStart(2, "0")}</div>
+                    <div className="text-xs text-fg-muted mb-1">Ch {chapterDisplayNumber(ch)}</div>
                     <div className="font-semibold mb-1 text-sm">{ch.title}</div>
                     <div className="text-xs text-fg-muted mb-3 line-clamp-1">{ch.subtitle}</div>
                     <div className="flex items-center justify-between text-[10px] text-fg-dim">

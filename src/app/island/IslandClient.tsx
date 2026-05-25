@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { chapterDisplayNumber } from "@/lib/chapter-display";
 import { X } from "lucide-react";
 import { subscribeOpen, type IslandNodeId } from "@/components/island/island-bus";
 import { TouchControls } from "@/components/island/TouchControls";
@@ -164,7 +165,7 @@ function ChaptersGrid({ chapters }: { chapters: ChapterRow[] }) {
         >
           <div className="flex items-center gap-1 mb-1">
             <span className="text-base">{c.emoji}</span>
-            <span className="text-[10px] text-fg-muted">Ch {String(c.id).padStart(2, "0")}</span>
+            <span className="text-[10px] text-fg-muted">Ch {chapterDisplayNumber(c)}</span>
           </div>
           <div className="font-medium truncate" title={c.title}>{c.title}</div>
           <div className="mt-1.5 h-1 bg-bg-elevated rounded-full overflow-hidden">

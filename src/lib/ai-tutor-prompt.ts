@@ -3,6 +3,7 @@
 // 章節數動態算 (chapters.length)、新增章節 prompt 自動更新
 
 import { chapters } from "@/data/chapters";
+import { chapterDisplayNumber } from "./chapter-display";
 
 const CHAPTER_COUNT = chapters.length;
 
@@ -25,7 +26,7 @@ function buildCourseSummary(): string {
 
   for (const ch of chapters) {
     const stage = ch.stage;
-    lines.push(`\n## Ch${String(ch.id).padStart(2, "0")}：${ch.title}（Stage ${stage}、${ch.difficulty}、${ch.estimatedHours}h）`);
+    lines.push(`\n## Ch${chapterDisplayNumber(ch)}：${ch.title}（Stage ${stage}、${ch.difficulty}、${ch.estimatedHours}h）`);
     lines.push(`副標：${ch.subtitle}`);
     lines.push(`學習成果：${(ch.outcomes ?? []).slice(0, 3).join(" / ")}`);
 

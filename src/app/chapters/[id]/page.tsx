@@ -8,6 +8,7 @@ import {
   courseSchema, breadcrumbSchema, faqSchema, itemListSchema,
   withAuthorAndReviewer, jsonLdScript,
 } from "@/lib/seo-jsonld";
+import { chapterDisplayNumber } from "@/lib/chapter-display";
 import type { Metadata } from "next";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
@@ -82,7 +83,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ id: st
   const chapterUrl = `${SITE_URL}/chapters/${chapter.id}`;
   const ld = [
     withAuthorAndReviewer(courseSchema({
-      name: `Ch${String(chapter.id).padStart(2, "0")}：${chapter.title}`,
+      name: `Ch${chapterDisplayNumber(chapter)}：${chapter.title}`,
       description: chapter.description || chapter.subtitle || chapter.title,
       url: chapterUrl,
       lessons: chapter.lessons?.length,

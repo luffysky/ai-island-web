@@ -1,6 +1,7 @@
 import { getChapterMetas } from "@/lib/content";
 import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
+import { chapterDisplayNumber } from "@/lib/chapter-display";
 
 export default async function AdminChaptersPage() {
   const chapters = await getChapterMetas();
@@ -15,7 +16,7 @@ export default async function AdminChaptersPage() {
         {chapters.map((c) => (
           <div key={c.id} className="p-4 rounded-lg bg-bg-card border border-border hover:border-accent transition relative group">
             <Link href={adminHref(`/admin/chapters/${c.id}`) as any} className="block">
-              <div className="text-xs text-fg-muted">Ch {String(c.id).padStart(2, "0")}</div>
+              <div className="text-xs text-fg-muted">Ch {chapterDisplayNumber(c)}</div>
               <div className="font-semibold pr-12">{c.title}</div>
               <div className="text-xs mt-2 flex justify-between text-fg-muted">
                 <span>{c.lessonCount} lessons</span>

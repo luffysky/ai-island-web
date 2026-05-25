@@ -1,5 +1,6 @@
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { chapters } from "@/data/chapters";
+import { chapterDisplayNumber } from "@/lib/chapter-display";
 import Link from "next/link";
 import { CareerProgress } from "@/components/me/CareerProgress";
 import { QuestsPanel } from "@/components/me/QuestsPanel";
@@ -137,7 +138,7 @@ export default async function MeOverviewPage() {
               >
                 <div className="flex items-start justify-between mb-2">
                   <div className="min-w-0 flex-1">
-                    <div className="text-xs text-fg-muted">Ch {String(ch.id).padStart(2, "0")}</div>
+                    <div className="text-xs text-fg-muted">Ch {chapterDisplayNumber(ch)}</div>
                     <h3 className="font-bold truncate">{ch.title}</h3>
                   </div>
                   <div className="text-2xl ml-2">{ch.pct}%</div>

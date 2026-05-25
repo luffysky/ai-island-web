@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getChapterMetas } from "@/lib/content";
 import { DUNGEONS } from "@/data/dungeons";
 import { SITE_STATS } from "@/lib/site-stats";
+import { chapterDisplayNumber } from "@/lib/chapter-display";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://aiisland.tw";
 
@@ -54,7 +55,7 @@ export async function GET() {
   lines.push(`## 章節清單（${chCount} 章、繁體中文）`);
   lines.push("");
   for (const c of chapters) {
-    const num = String(c.id).padStart(2, "0");
+    const num = chapterDisplayNumber(c as any);
     const sub = (c as any).subtitle ? ` — ${(c as any).subtitle}` : "";
     lines.push(`- [Ch${num} ${c.title}${sub}](${SITE_URL}/chapters/${c.id})`);
   }

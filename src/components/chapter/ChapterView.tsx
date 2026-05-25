@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { Chapter } from "@/lib/types";
 import { STAGE_COLORS, DIFFICULTY_LABELS, TIP_LABELS } from "@/lib/utils";
+import { chapterDisplayNumber } from "@/lib/chapter-display";
 import { GamificationEngine } from "@/lib/gamification";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { useAuth } from "@/lib/auth-context";
@@ -112,7 +113,7 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
       {/* Header */}
       <header className="mb-10">
         <div className="text-xs text-fg-muted mb-2">
-          CHAPTER {String(chapter.id).padStart(2, "0")} · {stageColor.emoji} {stageColor.name}
+          CHAPTER {chapterDisplayNumber(chapter)} · {stageColor.emoji} {stageColor.name}
         </div>
         <h1 className="text-4xl font-bold mb-3">
           {chapter.title}

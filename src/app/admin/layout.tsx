@@ -5,6 +5,7 @@ import { CollapsibleAside } from "./CollapsibleAside";
 import { LottieBackground } from "@/components/admin/LottieBackground";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { checkOwner, OWNER_NAME_TW } from "@/lib/is-owner";
+import { NavGroup } from "./NavGroup";
 
 // 強制每次都 server-side render、不 cache
 export const dynamic = "force-dynamic";
@@ -219,14 +220,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   );
 }
 
-function NavGroup({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <div className="text-xs text-fg-muted uppercase tracking-wider px-3 mb-1">{title}</div>
-      <div className="space-y-0.5">{children}</div>
-    </div>
-  );
-}
+// NavGroup 抽到 ./NavGroup.tsx (client component、可折疊 + localStorage 記憶)
 
 function AdminLink({ href, children }: { href: string; children: React.ReactNode }) {
   const publicHref = href === "/admin" ? ADMIN_BASE : href.replace(/^\/admin/, ADMIN_BASE);
