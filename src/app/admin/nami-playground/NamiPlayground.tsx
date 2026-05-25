@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePyodide } from "@/hooks/usePyodide";
 import { Terminal, BookOpen, Bug, BarChart3, Sparkles, Database, GraduationCap, Zap, Globe, Atom, Trophy, FolderOpen, GripVertical } from "lucide-react";
@@ -142,7 +143,7 @@ export function NamiPlayground({
         <div className="relative flex items-center gap-3 flex-wrap">
           <div className="relative">
             {avatarUrl ? (
-              <img src={avatarUrl} alt={username} className="w-14 h-14 rounded-full object-cover ring-4 ring-bg-card shadow-xl" />
+              <Image src={avatarUrl} alt={username} width={56} height={56} className="w-14 h-14 rounded-full object-cover ring-4 ring-bg-card shadow-xl" unoptimized />
             ) : (
               <div className="w-14 h-14 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center text-2xl font-bold text-black ring-4 ring-bg-card shadow-xl">
                 🌊
