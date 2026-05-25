@@ -71,8 +71,14 @@ export function AuditClient({ routes }: { routes: RouteEntry[] }) {
       }
       // ✅ 真的通：只給 200/2xx
       const ok = res.ok;
-      // 🟡 需手動驗：401/403 (要登入)、405 (POST-only)、400/422 (缺參數或 body)
-      const partial = !ok && [400, 401, 403, 405, 422].includes(status);
+      // 🟡 需手動驗 / 合理回應：
+      //   401/403 (要登入 / 權限)、405 (POST-only)、400/422 (缺參數或 body)
+      //   404 對動態路徑來說是合理 (代假 id 找不到資料、不是 endpoint 壞)
+      const isDynamicPath = /\[[^\]]+\]/.test(path);
+      const partial = !ok && (
+        [400, 401, 403, 405, 422].includes(status) ||
+        (isDynamicPath && status === 404)
+      );
       return { status, ok, partial, ms };
     } catch (e: any) {
       return { ok: false, error: e?.message ?? "fetch_failed", ms: Date.now() - start };
@@ -299,6 +305,7 @@ function RouteRow({ route, result, onPing }: { route: RouteEntry; result?: PingR
             {result.status === 405 && <span className="text-[10px] text-fg-muted">POST-only</span>}
             {result.status === 400 && <span className="text-[10px] text-fg-muted">缺參數</span>}
             {result.status === 422 && <span className="text-[10px] text-fg-muted">需 body</span>}
+            {result.status === 404 && <span className="text-[10px] text-fg-muted">假 id 找不到</span>}
             {result.ms && <span className="text-[10px] text-fg-muted">{result.ms}ms</span>}
           </span>
         ) : result.redirect ? (
