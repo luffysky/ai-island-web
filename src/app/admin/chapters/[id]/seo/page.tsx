@@ -39,6 +39,7 @@ export default async function ChapterSeoPreviewPage({ params }: { params: Promis
 
       <SeoPreviewClient
         chapterId={id}
+        chapterTitle={chapter.title}
         defaults={defaults}
         override={(override ?? {}) as any}
         siteUrl={SITE_URL}

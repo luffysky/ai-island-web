@@ -3,19 +3,29 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Save, RotateCcw, ExternalLink } from "lucide-react";
+import { Save, RotateCcw, ExternalLink, Sparkles } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 
 type Defaults = { title: string; description: string; og_image: string };
 type Override = { title?: string; description?: string; og_image?: string };
 
+const AI_PRESETS: { key: string; label: string; promptSuffix: string; provider: string; model: string }[] = [
+  { key: "anime", label: "🌸 動漫風", promptSuffix: "anime style, sakura petals, vibrant colors, learning platform poster", provider: "pollinations", model: "flux-anime" },
+  { key: "cyberpunk", label: "🌃 賽博龐克", promptSuffix: "cyberpunk neon, futuristic city, deep blue purple, holographic", provider: "pollinations", model: "flux" },
+  { key: "realistic", label: "📷 寫實", promptSuffix: "cinematic realistic photography, dramatic lighting, 4k", provider: "pollinations", model: "flux-realism" },
+  { key: "minimal", label: "✨ 簡約", promptSuffix: "minimal flat design, pastel colors, geometric shapes, clean", provider: "pollinations", model: "flux" },
+  { key: "cf-flux", label: "☁️ Cloudflare Flux (高品質)", promptSuffix: "anime poster, vibrant, learning platform", provider: "cloudflare", model: "@cf/black-forest-labs/flux-1-schnell" },
+];
+
 export function SeoPreviewClient({
   chapterId,
+  chapterTitle,
   defaults,
   override,
   siteUrl,
 }: {
   chapterId: number;
+  chapterTitle: string;
   defaults: Defaults;
   override: Override;
   siteUrl: string;
@@ -87,13 +97,33 @@ export function SeoPreviewClient({
           <div className="text-[10px] text-fg-muted mt-0.5">{desc.length} / 160 字</div>
         </div>
         <div>
-          <label className="text-xs text-fg-muted block mb-1">OG Image URL（預設用自動生圖）</label>
+          <label className="text-xs text-fg-muted block mb-1">OG Image URL（預設用 Satori 自動生圖、可改成 AI 圖）</label>
           <input
             value={og}
             onChange={(e) => setOg(e.target.value)}
             placeholder={defaults.og_image}
             className="w-full bg-bg border border-border rounded-lg px-2 py-1.5 text-sm font-mono"
           />
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            <span className="text-[10px] text-fg-muted self-center mr-1">
+              <Sparkles size={11} className="inline mb-0.5" /> 一鍵套 AI 圖：
+            </span>
+            {AI_PRESETS.map((p) => (
+              <button
+                key={p.key}
+                onClick={() => {
+                  const prompt = `${chapterTitle}, ${p.promptSuffix}`;
+                  const url = `${siteUrl}/api/og/ai?provider=${p.provider}&prompt=${encodeURIComponent(prompt)}&model=${encodeURIComponent(p.model)}&seed=${chapterId}&w=1200&h=630`;
+                  setOg(url);
+                  toast.info(`已套 ${p.label}、按儲存才生效`);
+                }}
+                type="button"
+                className="text-[10px] px-2 py-1 rounded-full border border-border hover:border-purple-400 hover:bg-purple-500/10 transition"
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
         </div>
         <div className="flex gap-2 pt-2 border-t border-border">
           <button onClick={save} className="px-4 py-1.5 rounded-lg bg-accent text-black font-bold text-sm flex items-center gap-1">
