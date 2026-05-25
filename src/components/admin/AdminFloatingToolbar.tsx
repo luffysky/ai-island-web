@@ -84,7 +84,7 @@ export function AdminFloatingToolbar() {
   }, []);
 
   const overlayCount = useOverlayCount();
-  if (profile?.role !== "admin") return null;
+  if (profile?.role !== "admin" && profile?.role !== "owner") return null;
   if (pathname.startsWith(`${ADMIN_BASE}`)) return null;
   if (pathname.startsWith("/admin")) return null;
   if (pathname.startsWith("/island")) return null;

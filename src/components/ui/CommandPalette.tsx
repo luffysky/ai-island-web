@@ -61,7 +61,7 @@ export function CommandPalette() {
       // 導覽
       { id: "home", label: "首頁", icon: <Home size={14} />, href: "/", group: "導覽" },
       { id: "chapters", label: "章節", icon: <BookOpen size={14} />, href: "/chapters", group: "導覽", keywords: ["lesson", "課"] },
-      ...(islandEnabled || profile?.role === "admin"
+      ...(islandEnabled || profile?.role === "admin" || profile?.role === "owner"
         ? [{ id: "island", label: "AI 島嶼（3D）", icon: <MapIcon size={14} />, href: "/island", group: "導覽" } as CmdItem]
         : []),
       { id: "courses", label: "副本", icon: <Sparkles size={14} />, href: "/courses", group: "導覽" },
@@ -91,11 +91,14 @@ export function CommandPalette() {
         keywords: [`chapter${i}`, `章節${i}`],
       });
     }
-    if (profile?.role === "admin") {
+    if (profile?.role === "admin" || profile?.role === "owner") {
+      const slug = process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2";
       list.push(
-        { id: "admin", label: "後台首頁", icon: <Settings size={14} />, href: "/console-x7k2/admin", group: "管理" },
-        { id: "admin-kpi", label: "KPI 報表", icon: <Trophy size={14} />, href: "/console-x7k2/admin/kpi", group: "管理" },
-        { id: "admin-users", label: "使用者", icon: <Users size={14} />, href: "/console-x7k2/admin/users", group: "管理" },
+        { id: "admin", label: profile?.role === "owner" ? "👑 平台後台 (林董)" : "後台首頁", icon: <Settings size={14} />, href: `/${slug}/admin`, group: "管理" },
+        { id: "admin-kpi", label: "KPI 報表", icon: <Trophy size={14} />, href: `/${slug}/admin/kpi`, group: "管理" },
+        { id: "admin-users", label: "使用者", icon: <Users size={14} />, href: `/${slug}/admin/users`, group: "管理" },
+        { id: "admin-marketing", label: "🚀 行銷主控台", icon: <Sparkles size={14} />, href: `/${slug}/admin/marketing`, group: "管理" },
+        { id: "admin-ai", label: "AI 模型管理", icon: <Hash size={14} />, href: `/${slug}/admin/ai/models`, group: "管理" },
       );
     }
     return list;

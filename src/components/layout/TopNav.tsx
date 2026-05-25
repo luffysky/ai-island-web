@@ -153,14 +153,16 @@ export function TopNav() {
                           <div className="text-[10px] mt-0.5">
                             <span
                               className={`px-1.5 py-0.5 rounded ${
-                                displayProfile.role === "admin"
+                                displayProfile.role === "owner"
+                                  ? "bg-gradient-to-r from-yellow-400 to-pink-400 text-black font-bold"
+                                  : displayProfile.role === "admin"
                                   ? "bg-red-500/20 text-red-300"
                                   : displayProfile.role === "editor"
                                   ? "bg-blue-500/20 text-blue-300"
                                   : "bg-gray-500/20 text-gray-300"
                               }`}
                             >
-                              {displayProfile.role || "member"}
+                              {displayProfile.role === "owner" ? "👑 owner" : (displayProfile.role || "member")}
                             </span>
                           </div>
                         </div>
@@ -202,14 +204,14 @@ export function TopNav() {
                       <span>設定</span>
                     </Link>
 
-                    {displayProfile.role === "admin" && (
+                    {(displayProfile.role === "admin" || displayProfile.role === "owner") && (
                       <Link
                         href={`/${process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2"}/admin` as any}
                         className="flex items-center gap-3 px-4 py-2 hover:bg-bg-elevated transition text-warning"
                         onClick={() => setOpen(false)}
                       >
                         <Settings size={16} />
-                        <span>後台管理</span>
+                        <span>{displayProfile.role === "owner" ? "👑 平台後台 (林董)" : "後台管理"}</span>
                       </Link>
                     )}
 

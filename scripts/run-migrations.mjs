@@ -7,7 +7,7 @@ import { join } from "node:path";
 import pg from "pg";
 
 const MIGRATIONS = [
-  "marketing_migration.sql",
+  "lottie_settings_migration.sql",
 ];
 
 // 從 .env.local 讀（不依賴 dotenv pkg）
