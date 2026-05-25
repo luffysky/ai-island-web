@@ -2,6 +2,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
 import { Users, Send, MessageCircle, MessageSquareText, ImageIcon, Settings, Activity, AlertCircle } from "lucide-react";
+import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
@@ -45,12 +46,13 @@ export default async function AdminLinePage() {
 
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="text-2xl font-bold flex items-center gap-2">💚 LINE 控制台</h1>
-        <p className="text-sm text-fg-muted mt-1">
-          兩個 bot、群發、罐頭、客服對話、Rich Menu 都在這。
-        </p>
-      </header>
+      <PageHero
+        emoji="💚"
+        title="LINE 控制台"
+        desc="兩個 bot (admin + user)、群發、罐頭、客服對話、Rich Menu 都在這。"
+        gradient="from-green-500/10 via-lime-500/10 to-emerald-500/10"
+        borderColor="border-green-500/30"
+      />
 
       {/* Bot 狀態 */}
       <section className="grid grid-cols-1 md:grid-cols-2 gap-3">

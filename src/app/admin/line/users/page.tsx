@@ -6,6 +6,7 @@ import { formatTWRelative } from "@/lib/format-date";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { PushUserButton } from "./PushUserButton";
 import { ArrowLeft } from "lucide-react";
+import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
@@ -29,12 +30,13 @@ export default async function AdminLineUsersPage() {
         <ArrowLeft size={14} /> 回 LINE 控制台
       </Link>
 
-      <header>
-        <h1 className="text-2xl font-bold flex items-center gap-2">👥 LINE 綁定用戶</h1>
-        <p className="text-sm text-fg-muted mt-1">
-          共 {list.length} 人綁定、點「推訊息」直接送 LINE。
-        </p>
-      </header>
+      <PageHero
+        emoji="👥"
+        title="LINE 綁定用戶"
+        desc={`共 ${list.length} 人綁定、點「推訊息」直接送 LINE。`}
+        gradient="from-green-500/10 via-emerald-500/10 to-teal-500/10"
+        borderColor="border-green-500/30"
+      />
 
       {list.length === 0 ? (
         <EmptyState

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
 import { ArrowLeft, Send } from "lucide-react";
 import { BroadcastForm } from "./BroadcastForm";
+import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
@@ -27,14 +28,13 @@ export default async function AdminLineBroadcastPage() {
         <ArrowLeft size={14} /> 回 LINE 控制台
       </Link>
 
-      <header>
-        <h1 className="text-2xl font-bold flex items-center gap-2">
-          <Send size={20} /> 群發訊息
-        </h1>
-        <p className="text-sm text-fg-muted mt-1">
-          推給綁定 LINE 的用戶、依「收通知」狀態自動過濾。LINE multicast 限制 500 人 / 次、會自動分批。
-        </p>
-      </header>
+      <PageHero
+        emoji="📣"
+        title="群發訊息"
+        desc="推給綁定 LINE 的用戶、依「收通知」狀態自動過濾。LINE multicast 限制 500 人 / 次、會自動分批。"
+        gradient="from-amber-500/10 via-orange-500/10 to-red-500/10"
+        borderColor="border-amber-500/30"
+      />
 
       <BroadcastForm totalBound={total ?? 0} notifyOnCount={notifyOn ?? 0} />
     </div>

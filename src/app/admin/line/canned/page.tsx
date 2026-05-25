@@ -5,6 +5,7 @@ import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
 import { ArrowLeft } from "lucide-react";
 import { CannedClient } from "./CannedClient";
+import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
@@ -32,16 +33,13 @@ export default async function AdminCannedPage() {
         <ArrowLeft size={14} /> 回 LINE 控制台
       </Link>
 
-      <header>
-        <h1 className="text-2xl font-bold flex items-center gap-2">💬 罐頭訊息管理</h1>
-        <p className="text-sm text-fg-muted mt-1 leading-relaxed">
-          常用客服回覆模板、CRM 回覆 ticket / LINE 推 user 訊息時可一鍵套用。
-          <br />
-          支援變數：<code className="bg-bg px-1 rounded text-xs">{`{{username}}`}</code>{" "}
-          <code className="bg-bg px-1 rounded text-xs">{`{{ticket_id}}`}</code>{" "}
-          <code className="bg-bg px-1 rounded text-xs">{`{{ticket_subject}}`}</code>
-        </p>
-      </header>
+      <PageHero
+        emoji="💬"
+        title="罐頭訊息管理"
+        desc="常用客服回覆模板、CRM 回覆 ticket / LINE 推 user 訊息時一鍵套用。支援變數 {{username}} / {{ticket_id}} / {{ticket_subject}}。"
+        gradient="from-blue-500/10 via-cyan-500/10 to-green-500/10"
+        borderColor="border-blue-500/30"
+      />
 
       <CannedClient initial={(replies as any) ?? []} currentUserId={user.id} />
     </div>

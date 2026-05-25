@@ -4,6 +4,7 @@ import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
 import { ArrowLeft } from "lucide-react";
 import { RichMenuClient } from "./RichMenuClient";
+import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
@@ -26,14 +27,13 @@ export default async function AdminRichMenuPage() {
         <ArrowLeft size={14} /> 回 LINE 控制台
       </Link>
 
-      <header>
-        <h1 className="text-2xl font-bold flex items-center gap-2">🎴 Rich Menu</h1>
-        <p className="text-sm text-fg-muted mt-1 leading-relaxed">
-          LINE bot 對話框下方那塊大圖選單。點圖上不同區域 → 跳到網站不同頁面。
-          <br />
-          <span className="text-yellow-400 text-xs">⚠️ 需要 <b>2500×1686</b> 的 PNG / JPEG 圖、≤ 1 MB</span>
-        </p>
-      </header>
+      <PageHero
+        emoji="🎴"
+        title="Rich Menu"
+        desc="LINE bot 對話框下方那塊大圖選單。點圖上不同區域跳到網站不同頁面。⚠️ 需要 2500×1686 的 PNG / JPEG 圖、≤ 1 MB"
+        gradient="from-pink-500/10 via-rose-500/10 to-purple-500/10"
+        borderColor="border-pink-500/30"
+      />
 
       <RichMenuClient currentImageUrl={currentImageUrl} hasUserBot={hasUserBot} />
     </div>
