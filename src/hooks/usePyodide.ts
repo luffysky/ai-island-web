@@ -141,13 +141,27 @@ async def install(pkgs, *args, **kwargs):
 _micropip.install = install
 `);
 
-      // 注入 nami_fetch helper — 全域可用、自動帶 admin proxy + 友善 error
+      // 注入 nami_fetch + safe_install helper — 全域可用
       await py.runPythonAsync(`
 import builtins as _b
 import json as _json
 
+# safe_install: 跳過裝不起的子套件 (例：pydantic-core 沒 pure-python wheel)
+async def safe_install(pkgs):
+    """裝 PyPI 套件、自動 fallback 用 keep_going (失敗子件跳過、不擋主件)"""
+    import micropip as _m
+    if isinstance(pkgs, str):
+        pkgs = [pkgs]
+    print(f"📦 安裝 {', '.join(pkgs)} (容錯模式)...", flush=True)
+    try:
+        await _m.install(pkgs, keep_going=True)
+        print(f"✅ 完成", flush=True)
+    except Exception as e:
+        print(f"⚠️ 部分失敗: {e}", flush=True)
+_b.safe_install = safe_install
+
 async def nami_fetch(url, as_json=False):
-    """爬一個 URL、走 admin proxy、自動 .to_py() + error handling
+    """爬 URL、走 admin proxy、自動 error handling
     用法：
         text = await nami_fetch("https://books.toscrape.com")
         data = await nami_fetch("https://api.github.com/users/octocat", as_json=True)

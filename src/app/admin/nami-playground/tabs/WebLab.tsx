@@ -394,7 +394,7 @@ try { ${js} } catch (e) { document.body.innerHTML += '<pre style="color:red;padd
               key={iframeKey}
               title="web-lab-preview"
               srcDoc={srcDoc}
-              sandbox="allow-scripts allow-modals allow-forms"
+              sandbox="allow-scripts allow-modals allow-forms allow-same-origin allow-popups"
               className="w-full h-full border-0"
               style={{ minHeight: 500 }}
             />

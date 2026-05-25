@@ -474,7 +474,7 @@ ${code}
         </div>
         <div className="bg-bg-card border border-border rounded-2xl overflow-hidden flex flex-col">
           <div className="px-3 py-2 border-b border-border bg-bg-elevated text-xs font-mono text-fg-muted">🖥️ 即時預覽</div>
-          <iframe key={iframeKey} srcDoc={srcDoc} sandbox="allow-scripts allow-modals" className="w-full h-full border-0 bg-white" style={{ minHeight: 500 }} />
+          <iframe key={iframeKey} srcDoc={srcDoc} sandbox="allow-scripts allow-modals allow-same-origin" className="w-full h-full border-0 bg-white" style={{ minHeight: 500 }} />
         </div>
       </div>
     </div>
@@ -549,7 +549,7 @@ ${code}
         </div>
         <div className="bg-bg-card border border-border rounded-2xl overflow-hidden flex flex-col">
           <div className="px-3 py-2 border-b border-border bg-bg-elevated text-xs font-mono text-fg-muted">🖥️ 即時預覽</div>
-          <iframe key={iframeKey} srcDoc={srcDoc} sandbox="allow-scripts allow-modals" className="w-full h-full border-0 bg-white" style={{ minHeight: 500 }} />
+          <iframe key={iframeKey} srcDoc={srcDoc} sandbox="allow-scripts allow-modals allow-same-origin" className="w-full h-full border-0 bg-white" style={{ minHeight: 500 }} />
         </div>
       </div>
     </div>

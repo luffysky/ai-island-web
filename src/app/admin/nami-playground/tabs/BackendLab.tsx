@@ -26,7 +26,7 @@ const EXAMPLES: BackendExample[] = [
     desc: "業界最熱門的 Python web framework、async 原生支援",
     code: `# FastAPI 最簡單範例：3 個 endpoint + path/query 參數
 import micropip
-await micropip.install(["fastapi", "httpx"])
+await micropip.install(["fastapi==0.99.1", "pydantic<2", "httpx"], keep_going=True)
 
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
@@ -68,7 +68,7 @@ print(f"GET /search?q=python  → {r3.status_code}  {r3.json()}")
     name: "Pydantic 資料驗證 + POST 收 body",
     desc: "業界寫 API 必用：型別檢查 + 自動 422 錯誤回應",
     code: `import micropip
-await micropip.install(["fastapi", "httpx", "pydantic"])
+await micropip.install(["fastapi==0.99.1", "pydantic<2", "httpx"], keep_going=True)
 
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
@@ -86,7 +86,7 @@ class User(BaseModel):
 
 @app.post("/users")
 def create_user(user: User):
-    return {"created": True, "user": user.model_dump()}
+    return {"created": True, "user": user.dict()}  # pydantic v1: .dict() / v2: .model_dump()
 
 client = TestClient(app)
 
@@ -122,7 +122,7 @@ print(f"  錯誤訊息：{[e['msg'] for e in r3.json()['detail']]}")
     name: "Dependency Injection — auth + DB",
     desc: "業界用：複用 auth 邏輯、單元測試容易 mock",
     code: `import micropip
-await micropip.install(["fastapi", "httpx"])
+await micropip.install(["fastapi==0.99.1", "pydantic<2", "httpx"], keep_going=True)
 
 from fastapi import FastAPI, Depends, HTTPException, Header
 from fastapi.testclient import TestClient
