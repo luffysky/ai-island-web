@@ -124,7 +124,7 @@ builtins.input = _nami_input
 del _nami_input
 `);
 
-      // patch micropip.install 顯示進度
+      // patch micropip.install：預設 keep_going=True (子件失敗不擋主件)、自動顯示進度
       await py.runPythonAsync(`
 import micropip as _micropip
 _original_install = _micropip.install
@@ -135,9 +135,16 @@ async def install(pkgs, *args, **kwargs):
         pkgs_list = list(pkgs)
     for p in pkgs_list:
         print(f"📦 安裝 {p}...", flush=True)
-    result = await _original_install(pkgs, *args, **kwargs)
-    print(f"✅ 安裝完成: {', '.join(pkgs_list)}", flush=True)
-    return result
+    # 強制 keep_going=True、避免 pydantic-core 之類非 pure-python wheel 擋住整個 install
+    kwargs.setdefault("keep_going", True)
+    try:
+        result = await _original_install(pkgs, *args, **kwargs)
+        print(f"✅ 安裝完成: {', '.join(pkgs_list)}", flush=True)
+        return result
+    except Exception as e:
+        msg = str(e)[:300]
+        print(f"⚠️ 部分失敗 (keep_going 已跳過子件): {msg}", flush=True)
+        # 不 re-raise、讓 user code 繼續跑
 _micropip.install = install
 `);
 
