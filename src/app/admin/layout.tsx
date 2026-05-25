@@ -26,9 +26,11 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     .eq("id", user.id)
     .single();
 
-  if (profile?.role !== "admin") {
+  // owner = 林董 / 平台主、可進後台；admin = 一般管理員、也可
+  if (!profile || !["admin", "owner"].includes(profile.role)) {
     redirect("/");
   }
+  const isOwner = profile.role === "owner";
 
   return (
     <div className="admin-skin">
@@ -39,9 +41,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               🌸
             </div>
             <div>
-              <h1 className="text-xl font-bold">AI 島 · 後台</h1>
+              <h1 className="text-xl font-bold flex items-center gap-2">
+                AI 島 · 後台
+                {isOwner && <span className="text-[10px] px-2 py-0.5 rounded-full bg-gradient-to-r from-yellow-400 to-pink-400 text-black font-bold">👑 OWNER</span>}
+              </h1>
               <p className="text-xs text-fg-muted">
-                哈囉 {profile?.display_name || profile?.username} ✨
+                哈囉 {isOwner ? "林董" : (profile?.display_name || profile?.username)} ✨
               </p>
             </div>
           </div>
@@ -56,98 +61,119 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <div className="flex gap-6">
         <CollapsibleAside>
           <nav className="space-y-4 text-sm">
-            <NavGroup title="總覽">
+
+            {/* 1. 🏝️ 總覽 */}
+            <NavGroup title="🏝️ 總覽 (Overview)">
               <AdminLink href="/admin">📊 Dashboard</AdminLink>
-              <AdminLink href="/admin/analytics">📈 數據分析</AdminLink>
-              <AdminLink href="/admin/analytics/learning-events">🧪 學習行為事件</AdminLink>
-              <AdminLink href="/admin/web-vitals">⚡ Web Vitals</AdminLink>
               <AdminLink href="/admin/kpi">📊 KPI 報表</AdminLink>
-              <AdminLink href="/admin/ab">🧪 A/B 測試</AdminLink>
+              <AdminLink href="/admin/analytics">📈 站內數據</AdminLink>
+              <AdminLink href="/admin/analytics/learning-events">🧪 學習行為事件</AdminLink>
               <AdminLink href="/admin/cohort">📈 Cohort 留存</AdminLink>
+              <AdminLink href="/admin/ab">🧪 A/B 測試</AdminLink>
+              <AdminLink href="/admin/web-vitals">⚡ Web Vitals</AdminLink>
             </NavGroup>
 
-            <NavGroup title="用戶">
+            {/* 2. 👥 用戶 & CRM */}
+            <NavGroup title="👥 用戶 & CRM">
               <AdminLink href="/admin/users">👥 使用者</AdminLink>
+              <AdminLink href="/admin/segments">🎯 Segments</AdminLink>
               <AdminLink href="/admin/churn">🚨 流失預警</AdminLink>
               <AdminLink href="/admin/crm">💬 客服 (CRM)</AdminLink>
-              <AdminLink href="/admin/broadcasts">📣 公告 / Email</AdminLink>
-              <AdminLink href="/admin/notifications">🔔 通知規則</AdminLink>
-              <AdminLink href="/admin/email/subscribers">📧 Email 訂閱戶</AdminLink>
-              <AdminLink href="/admin/email/campaigns">✉️ Email Campaigns</AdminLink>
-              <AdminLink href="/admin/email/test">🧪 Email 測試發送</AdminLink>
-              <AdminLink href="/admin/segments">🎯 Segments</AdminLink>
               <AdminLink href="/admin/tickets">🎫 客訴工單</AdminLink>
+              <AdminLink href="/admin/impersonate">🕵️ Impersonate</AdminLink>
             </NavGroup>
 
-            <NavGroup title="商務 (ERP)">
+            {/* 3. 📚 內容 */}
+            <NavGroup title="📚 內容 (Content)">
+              <AdminLink href="/admin/chapters">📚 章節管理</AdminLink>
+              <AdminLink href="/admin/achievements">🏆 成就管理</AdminLink>
+              <AdminLink href="/admin/gamification">🎮 遊戲化規則</AdminLink>
+              <AdminLink href="/admin/changelog">📜 更新日誌</AdminLink>
+              <AdminLink href="/admin/scheduled">⏰ 排程隊列</AdminLink>
+            </NavGroup>
+
+            {/* 4. 📣 行銷 (新) */}
+            <NavGroup title="📣 行銷 (Marketing)">
+              <AdminLink href="/admin/marketing">🚀 行銷主控台</AdminLink>
+              <AdminLink href="/admin/marketing/copy">📝 AI 文案產生器</AdminLink>
+              <AdminLink href="/admin/marketing/schedule">📅 內容日曆 / 排程</AdminLink>
+              <AdminLink href="/admin/marketing/publish">📤 多平台一鍵發佈</AdminLink>
+              <AdminLink href="/admin/marketing/ads">🎯 廣告 Copy 產生</AdminLink>
+              <AdminLink href="/admin/marketing/utm">🔗 UTM Builder</AdminLink>
+              <AdminLink href="/admin/marketing/brand">🎨 品牌風格庫</AdminLink>
+              <AdminLink href="/admin/marketing/affiliates">🤝 推薦碼 / Affiliate</AdminLink>
+              <AdminLink href="/admin/marketing/competitor">🔍 競品 / 關鍵字</AdminLink>
+            </NavGroup>
+
+            {/* 5. 💰 商務 (ERP) */}
+            <NavGroup title="💰 商務 (ERP)">
               <AdminLink href="/admin/orders">💰 訂單</AdminLink>
               <AdminLink href="/admin/subscriptions">💎 訂閱</AdminLink>
               <AdminLink href="/admin/zcoin">🪙 Z-coin 流水</AdminLink>
               <AdminLink href="/admin/zcoin/airdrop">💸 Z-coin Airdrop</AdminLink>
             </NavGroup>
 
-            <NavGroup title="AI">
-              <AdminLink href="/admin/ai/models">🤖 模型管理</AdminLink>
-              <AdminLink href="/admin/ai/usage">📊 Token 用量</AdminLink>
-              <AdminLink href="/admin/ai/cache">💾 回應快取</AdminLink>
-              <AdminLink href="/admin/ai/conversations">💬 對話紀錄</AdminLink>
-              <AdminLink href="/admin/ai/moderation">🛡️ 對話審核</AdminLink>
-              <AdminLink href="/admin/ai/moderation-keywords">🔍 審核關鍵字</AdminLink>
-            </NavGroup>
-
-            <NavGroup title="LINE 💚">
+            {/* 6. 💬 通訊 & 客服 */}
+            <NavGroup title="💬 通訊 (LINE / Email)">
               <AdminLink href="/admin/line">🏠 LINE 控制台</AdminLink>
-              <AdminLink href="/admin/line/users">👥 綁定用戶 / 推訊息</AdminLink>
-              <AdminLink href="/admin/line/broadcast">📣 群發訊息</AdminLink>
-              <AdminLink href="/admin/crm">💬 客服對話 (CRM)</AdminLink>
-              <AdminLink href="/admin/line/canned">💌 罐頭訊息管理</AdminLink>
+              <AdminLink href="/admin/line/users">👥 LINE 綁定用戶</AdminLink>
+              <AdminLink href="/admin/line/broadcast">📣 LINE 群發</AdminLink>
+              <AdminLink href="/admin/line/canned">💌 罐頭訊息</AdminLink>
               <AdminLink href="/admin/line/rich-menu">🎴 Rich Menu</AdminLink>
+              <AdminLink href="/admin/broadcasts">📢 站內公告</AdminLink>
+              <AdminLink href="/admin/notifications">🔔 通知規則</AdminLink>
+              <AdminLink href="/admin/email/subscribers">📧 Email 訂閱戶</AdminLink>
+              <AdminLink href="/admin/email/campaigns">✉️ Email Campaigns</AdminLink>
+              <AdminLink href="/admin/email/test">🧪 Email 測試發送</AdminLink>
             </NavGroup>
 
-            <NavGroup title="SEO / 流量">
-              <AdminLink href="/admin/ga4">📈 站台分析</AdminLink>
-              <AdminLink href="/admin/seo">🔍 SEO 管理</AdminLink>
-              <AdminLink href="/admin/seo/redirects">↪️ 轉址</AdminLink>
-            </NavGroup>
-
-            <NavGroup title="內容">
-              <AdminLink href="/admin/chapters">📚 章節管理</AdminLink>
-              <AdminLink href="/admin/achievements">🏆 成就管理</AdminLink>
-              <AdminLink href="/admin/gamification">🎮 遊戲化規則</AdminLink>
-              <AdminLink href="/admin/changelog">📜 更新日誌</AdminLink>
-              <AdminLink href="/admin/scheduled">⏰ 排程隊列</AdminLink>
-              <AdminLink href="/admin/moderation/comments">💬 留言審核</AdminLink>
-              <AdminLink href="/admin/moderation/forum">🗣️ 論壇審核</AdminLink>
-              <AdminLink href="/admin/reports">🚨 檢舉收件箱</AdminLink>
-            </NavGroup>
-
-            <NavGroup title="🌊 Nami 練習用">
-              <AdminLink href="/admin/nami-playground">🐍 Python Playground</AdminLink>
-              <AdminLink href="/admin/nami-ide">💻 Nami IDE</AdminLink>
-            </NavGroup>
-
+            {/* 7. 🤖 AI 管理 */}
             <NavGroup title="🤖 AI 管理">
               <AdminLink href="/admin/ai/models">🎛️ AI 模型管理</AdminLink>
-              <AdminLink href="/admin/ai/usage-models">🔌 AI 用途 ↔ 模型對應</AdminLink>
-              <AdminLink href="/admin/ai/cache">🗄️ AI 快取</AdminLink>
+              <AdminLink href="/admin/ai/usage-models">🔌 用途 ↔ 模型對應</AdminLink>
+              <AdminLink href="/admin/ai/usage">📊 Token 用量</AdminLink>
+              <AdminLink href="/admin/ai/cache">🗄️ 回應快取</AdminLink>
+              <AdminLink href="/admin/ai/conversations">💬 對話紀錄</AdminLink>
               <AdminLink href="/admin/ai/moderation">🛡️ AI 審核</AdminLink>
               <AdminLink href="/admin/ai/moderation-keywords">🔤 審核關鍵字</AdminLink>
             </NavGroup>
 
-            <NavGroup title="系統">
+            {/* 8. 📈 SEO & 流量 */}
+            <NavGroup title="📈 SEO & 流量">
+              <AdminLink href="/admin/ga4">📈 GA4 / 站台分析</AdminLink>
+              <AdminLink href="/admin/seo">🔍 SEO 管理</AdminLink>
+              <AdminLink href="/admin/seo/redirects">↪️ 轉址 (301/302)</AdminLink>
+            </NavGroup>
+
+            {/* 9. 🛡️ 風控 & 審核 */}
+            <NavGroup title="🛡️ 風控 & 審核">
+              <AdminLink href="/admin/moderation/comments">💬 留言審核</AdminLink>
+              <AdminLink href="/admin/moderation/forum">🗣️ 論壇審核</AdminLink>
+              <AdminLink href="/admin/reports">🚨 檢舉收件箱</AdminLink>
+              <AdminLink href="/admin/breach">⚠️ 安全事件</AdminLink>
+            </NavGroup>
+
+            {/* 10. 🌊 Nami 工具 */}
+            <NavGroup title="🌊 Nami 工具">
+              <AdminLink href="/admin/nami-playground">🐍 Python Playground</AdminLink>
+              <AdminLink href="/admin/nami-ide">💻 Nami IDE (多語言)</AdminLink>
+            </NavGroup>
+
+            {/* 11. 🔐 系統設定 */}
+            <NavGroup title="🔐 系統設定">
               <AdminLink href="/admin/health">💓 系統健康</AdminLink>
               <AdminLink href="/admin/db-check">🩺 DB 狀態檢查</AdminLink>
-              <AdminLink href="/admin/site-audit">🔍 全站體檢 (URL / API)</AdminLink>
+              <AdminLink href="/admin/site-audit">🔍 全站體檢</AdminLink>
               <AdminLink href="/admin/env">🔐 環境變數</AdminLink>
               <AdminLink href="/admin/audit">📝 操作紀錄</AdminLink>
               <AdminLink href="/admin/errors">🛡️ 錯誤日誌</AdminLink>
               <AdminLink href="/admin/rate-limits">🚦 Rate Limit</AdminLink>
               <AdminLink href="/admin/gdpr">🔐 GDPR 請求</AdminLink>
-              <AdminLink href="/admin/impersonate">🕵️ Impersonate</AdminLink>
-              <AdminLink href="/admin/ops">🛠️ Ops（DB / 快取）</AdminLink>
+              <AdminLink href="/admin/ops">🛠️ Ops (DB / 快取)</AdminLink>
               <AdminLink href="/admin/settings">⚙️ 系統設定</AdminLink>
               <AdminLink href="/admin/app-settings">🎛️ 應用設定 CRUD</AdminLink>
             </NavGroup>
+
           </nav>
         </CollapsibleAside>
         <div className="flex-1 min-w-0">{children}</div>
