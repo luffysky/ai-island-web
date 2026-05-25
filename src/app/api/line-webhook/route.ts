@@ -164,10 +164,25 @@ ${snapshot}
 export async function POST(req: NextRequest) {
   const secret = process.env.ADMIN_LINE_CHANNEL_SECRET;
   const token = process.env.ADMIN_LINE_CHANNEL_TOKEN;
-  if (!secret || !token) return NextResponse.json({ ok: false, error: "no_env" });
+  if (!secret || !token) {
+    console.warn("[line-webhook:admin] no_env");
+    return NextResponse.json({ ok: false, error: "no_env" });
+  }
 
   const raw = await req.text();
-  if (!verifySignature(raw, req.headers.get("x-line-signature"), secret)) {
+  const sigHeader = req.headers.get("x-line-signature");
+  const sigOk = verifySignature(raw, sigHeader, secret);
+  const expected = crypto.createHmac("sha256", secret).update(raw).digest("base64");
+  console.log(`[line-webhook:admin] sig_received=${sigHeader?.slice(0,12)}... expected=${expected.slice(0,12)}... ok=${sigOk} body_len=${raw.length}`);
+
+  if (!sigOk) {
+    await logLineError("invalid_signature", "簽章驗證失敗 — ADMIN_LINE_CHANNEL_SECRET 跟 LINE 算的對不上", {
+      received_sig_prefix: sigHeader?.slice(0, 16) ?? null,
+      expected_sig_prefix: expected.slice(0, 16),
+      body_len: raw.length,
+      secret_length: secret.length,
+      hint: "去 LINE Developer Console → admin channel → Basic settings → Channel secret、整段複製對 Zeabur env、一字不差",
+    });
     return NextResponse.json({ error: "invalid_signature" }, { status: 401 });
   }
 
