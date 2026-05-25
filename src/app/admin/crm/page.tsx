@@ -1,6 +1,7 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import Link from "next/link";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { PageHero, AdminStatCard } from "@/components/admin/PageHero";
 
 export default async function CRMPage({ searchParams }: { searchParams: Promise<{ status?: string; priority?: string }> }) {
   const params = await searchParams;
@@ -23,22 +24,22 @@ export default async function CRMPage({ searchParams }: { searchParams: Promise<
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold">💬 客服 (CRM)</h2>
-      </div>
-
-      <div className="rounded-xl bg-blue-500/5 border border-blue-500/30 p-3 text-xs text-fg-muted">
-        這頁是<b className="text-fg"> 對話客服 </b>：點 ticket 進去聊天 + 套罐頭 + 自動推 LINE。
-        要批次改狀態 / 派單 / SLA、請去{" "}
-        <Link href={(`/${process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2"}/admin/tickets`) as any} className="text-accent hover:underline font-bold">
-          /admin/tickets 工單管理
-        </Link>。
-      </div>
+      <PageHero
+        emoji="💬"
+        title="客服 (CRM)"
+        desc="對話客服：點 ticket 進去聊天 + 套罐頭 + 自動推 LINE。批次改狀態 / 派單 / SLA 請去工單管理。"
+        gradient="from-blue-500/10 via-cyan-500/10 to-purple-500/10"
+        borderColor="border-blue-500/30"
+      >
+        <Link href={(`/${process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2"}/admin/tickets`) as any} className="text-xs px-3 py-1.5 rounded-full border border-border hover:border-accent hover:text-accent">
+          → 去工單管理
+        </Link>
+      </PageHero>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <Stat label="待處理" value={open} color="text-red-400" />
-        <Stat label="等待回覆" value={pending} color="text-yellow-400" />
-        <Stat label="緊急" value={urgent} color="text-red-500" />
+        <AdminStatCard label="待處理" value={open} color="text-red-400" hint={open > 5 ? "⚠️ 偏多" : undefined} />
+        <AdminStatCard label="等待回覆" value={pending} color="text-yellow-400" />
+        <AdminStatCard label="緊急" value={urgent} color="text-red-500" hint={urgent > 0 ? "🔥 馬上看" : undefined} />
       </div>
 
       <div className="flex gap-2 text-sm flex-wrap">

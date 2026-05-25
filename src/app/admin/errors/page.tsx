@@ -1,5 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { ErrorLogsClient } from "./ErrorLogsClient";
+import { PageHero, AdminStatCard } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
@@ -42,19 +43,20 @@ export default async function AdminErrorLogsPage({
   ]);
 
   return (
-    <div>
-      <header className="mb-6">
-        <h1 className="text-2xl font-bold flex items-center gap-2">🛡️ 錯誤日誌</h1>
-        <p className="text-sm text-fg-muted mt-1">
-          server-side / API 失敗的紀錄。任何 fail-soft 都會落到這、可逐筆解決。
-        </p>
-      </header>
+    <div className="space-y-4">
+      <PageHero
+        emoji="🛡️"
+        title="錯誤日誌"
+        desc="server-side / API 失敗的紀錄。任何 fail-soft 都會落到這、可逐筆解決、看 stack / context。"
+        gradient="from-red-500/10 via-orange-500/10 to-yellow-500/10"
+        borderColor="border-red-500/30"
+      />
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-        <Stat label="待解決" value={openCount ?? 0} tone="warning" />
-        <Stat label="今日新增" value={todayCount ?? 0} />
-        <Stat label="本週累計" value={weekCount ?? 0} />
-        <Stat label="目前篩選" value={count ?? 0} tone="muted" />
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <AdminStatCard label="待解決" value={openCount ?? 0} color="text-orange-400" hint={openCount && openCount > 20 ? "⚠️ 偏多" : undefined} />
+        <AdminStatCard label="今日新增" value={todayCount ?? 0} color="text-blue-400" />
+        <AdminStatCard label="本週累計" value={weekCount ?? 0} color="text-purple-400" />
+        <AdminStatCard label="目前篩選" value={count ?? 0} color="text-fg-muted" />
       </div>
 
       <ErrorLogsClient

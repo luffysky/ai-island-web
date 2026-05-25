@@ -3,6 +3,7 @@ import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
 import { formatTW, formatTWRelative } from "@/lib/format-date";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
@@ -70,12 +71,13 @@ export default async function AdminHealthPage() {
 
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="text-2xl font-bold flex items-center gap-2">💓 系統健康</h1>
-        <p className="text-sm text-fg-muted mt-1">
-          一目了然系統狀態。10 秒整理完今天有沒有出狀況。
-        </p>
-      </header>
+      <PageHero
+        emoji="💓"
+        title="系統健康"
+        desc="一目了然系統狀態。10 秒整理完今天有沒有出狀況、session / error / AI 用量 / audit 一頁全包。"
+        gradient="from-emerald-500/10 via-cyan-500/10 to-blue-500/10"
+        borderColor="border-emerald-500/30"
+      />
 
       {/* 核心指標 */}
       <section className="grid grid-cols-2 md:grid-cols-4 gap-3">

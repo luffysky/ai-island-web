@@ -1,5 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import Link from "next/link";
+import { PageHero, AdminStatCard } from "@/components/admin/PageHero";
 
 export default async function OrdersPage({ searchParams }: { searchParams: Promise<{ status?: string; q?: string }> }) {
   const params = await searchParams;
@@ -28,24 +29,29 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold">💰 訂單管理</h2>
-      </div>
+      <PageHero
+        emoji="💰"
+        title="訂單管理"
+        desc={`近 100 筆訂單、依狀態 / 關鍵字 搜尋。本月 ${monthOrders?.length ?? 0} 筆訂單。`}
+        gradient="from-emerald-500/10 via-yellow-500/10 to-amber-500/10"
+        borderColor="border-emerald-500/30"
+      />
 
       {/* 統計 */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <div className="bg-bg-card border border-border rounded-xl p-4">
-          <div className="text-xs text-fg-muted">本月總收入</div>
-          <div className="text-2xl font-bold text-green-400 mt-1">NT$ {monthRevenue.toLocaleString()}</div>
-        </div>
-        <div className="bg-bg-card border border-border rounded-xl p-4">
-          <div className="text-xs text-fg-muted">本月退款</div>
-          <div className="text-2xl font-bold text-red-400 mt-1">NT$ {monthRefunded.toLocaleString()}</div>
-        </div>
-        <div className="bg-bg-card border border-border rounded-xl p-4">
-          <div className="text-xs text-fg-muted">本月訂單數</div>
-          <div className="text-2xl font-bold text-blue-400 mt-1">{monthOrders?.length ?? 0}</div>
-        </div>
+        <AdminStatCard label="本月總收入" value={`NT$ ${monthRevenue.toLocaleString()}`} color="text-emerald-400" />
+        <AdminStatCard
+          label="本月退款"
+          value={`NT$ ${monthRefunded.toLocaleString()}`}
+          color="text-red-400"
+          hint={monthRevenue > 0 ? `退款率 ${(monthRefunded/monthRevenue*100).toFixed(1)}%` : undefined}
+        />
+        <AdminStatCard
+          label="本月訂單數"
+          value={monthOrders?.length ?? 0}
+          color="text-blue-400"
+          hint={monthOrders?.length ? `平均單價 NT$ ${Math.round(monthRevenue/(monthOrders.filter((o:any)=>o.status==="paid").length || 1)).toLocaleString()}` : undefined}
+        />
       </div>
 
       {/* 過濾 */}

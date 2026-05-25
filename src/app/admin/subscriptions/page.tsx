@@ -1,5 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import Link from "next/link";
+import { PageHero, AdminStatCard } from "@/components/admin/PageHero";
 
 export default async function SubscriptionsPage({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
   const params = await searchParams;
@@ -22,12 +23,18 @@ export default async function SubscriptionsPage({ searchParams }: { searchParams
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-bold">💎 訂閱管理</h2>
+      <PageHero
+        emoji="💎"
+        title="訂閱管理"
+        desc="所有月訂 / 年訂 / 終身訂閱、可看狀態 / 升降級 / 流失。MRR 跟活躍訂閱數即時計算。"
+        gradient="from-yellow-500/10 via-amber-500/10 to-pink-500/10"
+        borderColor="border-yellow-500/30"
+      />
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <Stat label="MRR" value={`NT$ ${mrr.toLocaleString()}`} color="text-yellow-400" />
-        <Stat label="活躍訂閱" value={activeSubsAll.length} color="text-green-400" />
-        <Stat label="已取消（總）" value={churned} color="text-red-400" />
+        <AdminStatCard label="MRR" value={`NT$ ${mrr.toLocaleString()}`} color="text-yellow-400" hint={`${activeSubsAll.length} 個有效訂閱`} />
+        <AdminStatCard label="活躍訂閱" value={activeSubsAll.length} color="text-emerald-400" />
+        <AdminStatCard label="已取消 (總)" value={churned} color="text-red-400" hint={activeSubsAll.length > 0 ? `流失率 ${(churned/(churned+activeSubsAll.length)*100).toFixed(1)}%` : undefined} />
       </div>
 
       <div className="flex gap-2 text-sm">

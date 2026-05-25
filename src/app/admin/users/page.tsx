@@ -3,6 +3,7 @@ import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
 import { UserRow } from "./UserRow";
 import { UserCard } from "./UserCard";
+import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
@@ -64,16 +65,24 @@ export default async function AdminUsersPage({
   };
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-        <h2 className="text-xl font-bold">👥 使用者管理</h2>
+    <div className="space-y-4">
+      <PageHero
+        emoji="👥"
+        title="使用者管理"
+        desc="搜尋、過濾、批次操作所有使用者。可看 XP / Z-coin / 等級 / 簽到 / 寵物等學習狀態。"
+        gradient="from-blue-500/10 via-cyan-500/10 to-purple-500/10"
+        borderColor="border-blue-500/30"
+      >
+        <Link
+          href={adminHref("/admin/users/batch") as any}
+          className="text-xs px-3 py-1.5 rounded-full border border-border hover:border-accent hover:text-accent"
+        >
+          🔄 批次操作
+        </Link>
+      </PageHero>
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <div />
         <div className="flex items-center gap-3">
-          <Link
-            href={adminHref("/admin/users/batch") as any}
-            className="text-xs px-3 py-1.5 rounded-lg border border-border hover:border-accent hover:text-accent"
-          >
-            🔄 批次操作
-          </Link>
           <span className="text-xs text-fg-muted">
             共 {(count ?? 0).toLocaleString()} 人 · 第 {page}/{totalPages} 頁
           </span>
