@@ -7,7 +7,8 @@ import { join } from "node:path";
 import pg from "pg";
 
 const MIGRATIONS = [
-  "profile_is_owner_migration.sql",
+  "error_log_migration.sql",
+  "error_logs_meta_migration.sql",
 ];
 
 // 從 .env.local 讀（不依賴 dotenv pkg）
