@@ -26,6 +26,18 @@
 
 * { box-sizing: border-box; }
 
+/* a11y: 尊重用戶 OS 的「減少動態」偏好 (iOS Settings → Accessibility → Motion) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* a11y: 鍵盤聚焦時統一綠色 ring、滑鼠點不出現 (focus-visible) */
 :focus { outline: none; }
 :focus-visible {
