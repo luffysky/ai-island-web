@@ -222,38 +222,30 @@ async function runReplicate(prompt: string, w: number, h: number, model: string)
       msg: "缺 REPLICATE_API_TOKEN、見 /admin/og-preview 設定步驟",
     });
   }
-  // Replicate 兩種 API:
-  //   - /v1/models/{owner}/{name}/predictions  (用 latest version、適合官方 model)
-  //   - /v1/predictions + body.version (用特定 version hash)
-  // 先試 model API、加 Prefer: wait 等到完成
+  // 改 standard fire-and-poll pattern、不用 Prefer: wait (對某些 model 直接 422)
+  // input 只給最小組合 (prompt) — Replicate 不同 model input schema 不同、多給易撞 422
   const apiUrl = `https://api.replicate.com/v1/models/${model}/predictions`;
   const res = await fetch(apiUrl, {
     method: "POST",
     headers: {
       "Authorization": `Bearer ${token}`,
       "Content-Type": "application/json",
-      "Prefer": "wait=60",
     },
     body: JSON.stringify({
-      input: {
-        prompt,
-        aspect_ratio: "16:9",
-        num_outputs: 1,
-        output_format: "png",
-        num_inference_steps: 4,
-      },
+      input: { prompt },
     }),
   });
   const txt = await res.text();
   if (!res.ok) {
-    return errJson("replicate", "api_failed", res.status === 401 ? 401 : 502, {
+    return errJson("replicate", "api_failed", res.status === 401 ? 401 : res.status === 402 ? 402 : res.status === 422 ? 422 : 502, {
       api_status: res.status,
       msg: txt.slice(0, 600),
       api_url: apiUrl,
-      hint: res.status === 401 ? "Token 無效"
-        : res.status === 402 ? "Trial credits 用完、需要綁信用卡"
+      hint: res.status === 401 ? "Token 無效、去 https://replicate.com/account/api-tokens 重拿、格式 r8_xxx"
+        : res.status === 402 ? "需要綁信用卡 — Replicate 雖然有 trial credit、但部分 model (含 flux-schnell) 強制要先綁卡才能 access。去 https://replicate.com/account/billing 設定"
         : res.status === 404 ? "Model 名稱錯、用 black-forest-labs/flux-schnell"
-        : res.status === 422 ? "input 參數錯"
+        : res.status === 422 ? "input 參數錯、看 msg 內 Replicate detail"
+        : res.status === 429 ? "rate limited"
         : "看 msg 內 Replicate 回的錯誤",
     });
   }
@@ -261,7 +253,7 @@ async function runReplicate(prompt: string, w: number, h: number, model: string)
   try { pred = JSON.parse(txt); } catch {
     return errJson("replicate", "parse_failed", 502, { raw: txt.slice(0, 400) });
   }
-  // wait=60 後若還沒完成、output 是 null、要 poll
+  // standard polling: 必 poll、最多 30 秒
   let out = Array.isArray(pred.output) ? pred.output[0] : pred.output;
   if (!out && pred.urls?.get) {
     // poll 一下 (最多 30 秒)

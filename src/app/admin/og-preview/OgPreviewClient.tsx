@@ -56,9 +56,7 @@ const PROVIDERS: Provider[] = [
     emoji: "☁️",
     desc: "每天 10,000 neurons 免費、量大最划算",
     models: [
-      { id: "@cf/black-forest-labs/flux-1-schnell", label: "Flux Schnell", status: "ok", note: "唯一推薦、品質最穩" },
-      { id: "@cf/bytedance/stable-diffusion-xl-lightning", label: "SDXL Lightning", status: "flaky", note: "常破圖" },
-      { id: "@cf/lykon/dreamshaper-8-lcm", label: "DreamShaper 8 LCM", status: "flaky", note: "全黑機率高" },
+      { id: "@cf/black-forest-labs/flux-1-schnell", label: "Flux Schnell", status: "ok", note: "穩定推薦" },
     ],
     setupSteps: [
       "1. 去 https://dash.cloudflare.com 註冊 (有 GitHub 直接登)",
@@ -81,9 +79,7 @@ const PROVIDERS: Provider[] = [
     emoji: "🤝",
     desc: "FLUX schnell 品質最好、新註冊 $25 free credit",
     models: [
-      { id: "black-forest-labs/FLUX.1-schnell-Free", label: "FLUX.1 Schnell Free", status: "ok", note: "永久免費、唯一推薦" },
-      { id: "black-forest-labs/FLUX.1-schnell", label: "FLUX.1 Schnell ($0.0027/MP)", status: "paid", note: "需 Build Tier 2+" },
-      { id: "black-forest-labs/FLUX.1-dev", label: "FLUX.1 Dev ($0.025/MP)", status: "paid", note: "需 Build Tier 2+" },
+      { id: "black-forest-labs/FLUX.1-schnell-Free", label: "FLUX.1 Schnell Free", status: "ok", note: "永久免費" },
     ],
     setupSteps: [
       "1. 去 https://api.together.xyz 註冊 (Google / Email)",
@@ -107,9 +103,6 @@ const PROVIDERS: Provider[] = [
     desc: "免費 rate-limited、上千 model 任挑、cold start 慢",
     models: [
       { id: "black-forest-labs/FLUX.1-schnell", label: "FLUX.1 Schnell", status: "ok", note: "router 唯一還可走的" },
-      { id: "stabilityai/stable-diffusion-xl-base-1.0", label: "SDXL 1.0", status: "broken", note: "router 已下架" },
-      { id: "runwayml/stable-diffusion-v1-5", label: "SD 1.5", status: "broken", note: "router 已下架" },
-      { id: "ByteDance/SDXL-Lightning", label: "SDXL Lightning", status: "broken", note: "router 已下架" },
     ],
     setupSteps: [
       "1. 去 https://huggingface.co 註冊 (免費)",
@@ -132,10 +125,7 @@ const PROVIDERS: Provider[] = [
     emoji: "🔁",
     desc: "Pay-per-use、新註冊有 trial credits、各種 SOTA 模型",
     models: [
-      { id: "black-forest-labs/flux-schnell", label: "Flux Schnell ($0.003/圖)", status: "paid", note: "Trial credit 用完需綁卡" },
-      { id: "black-forest-labs/flux-dev", label: "Flux Dev ($0.03/圖)", status: "paid", note: "Trial credit 用完需綁卡" },
-      { id: "stability-ai/stable-diffusion-3.5-large", label: "SD 3.5 Large", status: "paid", note: "需綁卡" },
-      { id: "ideogram-ai/ideogram-v2", label: "Ideogram v2", status: "paid", note: "需綁卡" },
+      { id: "black-forest-labs/flux-schnell", label: "Flux Schnell", status: "ok", note: "$0.003/圖、需綁信用卡" },
     ],
     setupSteps: [
       "1. 去 https://replicate.com 註冊 (GitHub / Email)",
