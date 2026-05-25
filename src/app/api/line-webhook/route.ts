@@ -26,6 +26,8 @@ async function logLineError(code: string, message: string, extra: any = {}) {
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
+// LINE bot tool use 偶爾跑 15-25 秒、預設 10s 會被 kill → 拉到 60s
+export const maxDuration = 60;
 
 const ENDPOINT = "https://api.line.me/v2/bot";
 
