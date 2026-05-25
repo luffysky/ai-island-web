@@ -9,7 +9,9 @@ export default async function AdminOverviewPage() {
   const today = new Date();
   const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate()).toISOString();
   const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1).toISOString();
+  const startOfLastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1).toISOString();
   const sevenDaysAgo = new Date(Date.now() - 7 * 86400_000).toISOString();
+  const fourteenDaysAgo = new Date(Date.now() - 14 * 86400_000).toISOString();
   const thirtyDaysAgo = new Date(Date.now() - 30 * 86400_000).toISOString();
   const thirtyDaysAgoStr = thirtyDaysAgo.slice(0, 10);
 
@@ -46,6 +48,55 @@ export default async function AdminOverviewPage() {
   // 計算 MRR
   const { data: subs } = await supabase.from("subscriptions").select("plan_price").eq("status", "active");
   const mrr = subs?.reduce((sum: number, s: any) => sum + (s.plan_price ?? 0), 0) ?? 0;
+
+  // === 趨勢比較 (本週 vs 上週、找 trend arrow 用) ===
+  const [
+    { count: usersThisWeek },
+    { count: usersLastWeek },
+    { data: revenue14d },
+  ] = await Promise.all([
+    supabase.from("profiles").select("*", { count: "exact", head: true }).gte("created_at", sevenDaysAgo),
+    supabase.from("profiles").select("*", { count: "exact", head: true }).gte("created_at", fourteenDaysAgo).lt("created_at", sevenDaysAgo),
+    supabase.from("orders").select("amount, status, created_at").gte("created_at", fourteenDaysAgo).eq("status", "paid"),
+  ] as any);
+
+  const rev14d = (revenue14d as any[]) ?? [];
+  const revThisWeek = rev14d.filter((o) => o.created_at >= sevenDaysAgo).reduce((s, o) => s + Number(o.amount), 0);
+  const revLastWeek = rev14d.filter((o) => o.created_at < sevenDaysAgo).reduce((s, o) => s + Number(o.amount), 0);
+
+  // 算 trend %
+  const calcTrend = (cur: number, prev: number): { pct: number; dir: "up" | "down" | "flat" } => {
+    if (prev === 0) return { pct: cur > 0 ? 100 : 0, dir: cur > 0 ? "up" : "flat" };
+    const pct = ((cur - prev) / prev) * 100;
+    return { pct, dir: pct > 1 ? "up" : pct < -1 ? "down" : "flat" };
+  };
+
+  const userTrend = calcTrend(usersThisWeek ?? 0, usersLastWeek ?? 0);
+  const revTrend = calcTrend(revThisWeek, revLastWeek);
+
+  // === 行銷數據 (新) === — 用 try-catch 包、某張表不存在不要整頁炸
+  let utmStats: any[] = [];
+  let emailSubs = 0, marketingDrafts = 0, activeAffiliates = 0;
+  try {
+    const r = await supabase.from("utm_links").select("click_count, conversion, revenue").is("archived_at", null);
+    utmStats = (r.data as any[]) ?? [];
+  } catch {}
+  try {
+    const r = await supabase.from("email_subscribers").select("*", { count: "exact", head: true });
+    emailSubs = r.count ?? 0;
+  } catch {}
+  try {
+    const r = await supabase.from("marketing_drafts").select("*", { count: "exact", head: true }).in("status", ["draft", "scheduled"]);
+    marketingDrafts = r.count ?? 0;
+  } catch {}
+  try {
+    const r = await supabase.from("affiliate_codes").select("*", { count: "exact", head: true }).eq("enabled", true);
+    activeAffiliates = r.count ?? 0;
+  } catch {}
+
+  const utmRows = utmStats;
+  const totalUtmClicks = utmRows.reduce((s, r) => s + (r.click_count ?? 0), 0);
+  const totalUtmRevenue = utmRows.reduce((s, r) => s + Number(r.revenue ?? 0), 0);
 
   // 註冊趨勢（按日）
   const signupByDate: Record<string, number> = {};
@@ -246,10 +297,24 @@ export default async function AdminOverviewPage() {
       <div>
         <h2 className="text-sm uppercase tracking-wider text-fg-muted mb-3">核心指標</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <Stat label="總用戶" value={userCount ?? 0} hint={`+${newUsersThisMonth ?? 0} 本月`} color="text-accent" />
-          <Stat label="今日新註冊" value={newUsersToday ?? 0} color="text-blue-400" />
-          <Stat label="近 7 日活躍" value={dauCount ?? 0} hint={`${userCount ? Math.round((dauCount ?? 0) / userCount * 100) : 0}% retention`} color="text-green-400" />
-          <Stat label="MRR" value={`NT$ ${mrr.toLocaleString()}`} hint={`${activeSubs ?? 0} 訂閱`} color="text-yellow-400" />
+          <Stat label="總用戶" value={userCount ?? 0} hint={`+${newUsersThisMonth ?? 0} 本月`} color="text-accent" trend={userTrend} />
+          <Stat label="今日新註冊" value={newUsersToday ?? 0} color="text-blue-400" hint={`本週 ${usersThisWeek ?? 0}`} />
+          <Stat label="近 7 日活躍" value={dauCount ?? 0} hint={`${userCount ? Math.round((dauCount ?? 0) / userCount * 100) : 0}% 整體留存`} color="text-green-400" />
+          <Stat label="MRR" value={`NT$ ${mrr.toLocaleString()}`} hint={`${activeSubs ?? 0} 訂閱、本週收入 NT$ ${revThisWeek.toLocaleString()}`} color="text-yellow-400" trend={revTrend} />
+        </div>
+      </div>
+
+      {/* 📣 行銷快覽 (新) */}
+      <div>
+        <h2 className="text-sm uppercase tracking-wider text-fg-muted mb-3 flex items-center gap-2">
+          📣 行銷快覽
+          <Link href={adminHref("/admin/marketing") as any} className="text-[10px] text-accent hover:underline">→ 主控台</Link>
+        </h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <Stat label="行銷草稿" value={marketingDrafts ?? 0} hint="待發佈 / 排程" color="text-pink-400" />
+          <Stat label="UTM 累積點擊" value={totalUtmClicks.toLocaleString()} hint={`${utmRows.length} 條短連結`} color="text-purple-400" />
+          <Stat label="UTM 帶來營收" value={`NT$ ${totalUtmRevenue.toLocaleString()}`} hint="所有 campaign 累計" color="text-emerald-400" />
+          <Stat label="Email 訂閱戶" value={(emailSubs ?? 0).toLocaleString()} hint={`${activeAffiliates ?? 0} 個有效推薦碼`} color="text-cyan-400" />
         </div>
       </div>
 
@@ -316,12 +381,32 @@ export default async function AdminOverviewPage() {
   );
 }
 
-function Stat({ label, value, hint, color }: { label: string; value: any; hint?: string; color: string }) {
+function Stat({
+  label, value, hint, color, trend,
+}: {
+  label: string;
+  value: any;
+  hint?: string;
+  color: string;
+  trend?: { pct: number; dir: "up" | "down" | "flat" };
+}) {
   return (
-    <div className="bg-bg-card border border-border rounded-xl p-4">
-      <div className="text-xs text-fg-muted">{label}</div>
-      <div className={`text-2xl font-bold mt-1 ${color}`}>{value}</div>
-      {hint && <div className="text-xs text-fg-muted mt-1">{hint}</div>}
+    <div className="bg-bg-card border border-border rounded-xl p-4 hover:border-accent/40 transition relative overflow-hidden group">
+      <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-accent/[0.03] opacity-0 group-hover:opacity-100 transition" />
+      <div className="relative">
+        <div className="flex items-center justify-between">
+          <div className="text-xs text-fg-muted">{label}</div>
+          {trend && trend.dir !== "flat" && (
+            <span className={`text-[10px] font-bold inline-flex items-center gap-0.5 ${
+              trend.dir === "up" ? "text-emerald-400" : "text-red-400"
+            }`}>
+              {trend.dir === "up" ? "▲" : "▼"} {Math.abs(trend.pct).toFixed(1)}%
+            </span>
+          )}
+        </div>
+        <div className={`text-2xl font-bold mt-1 ${color}`}>{value}</div>
+        {hint && <div className="text-[11px] text-fg-muted mt-1 leading-tight">{hint}</div>}
+      </div>
     </div>
   );
 }
