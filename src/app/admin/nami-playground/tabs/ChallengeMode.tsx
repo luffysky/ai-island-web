@@ -6,6 +6,7 @@ import { Trophy, Loader2, Play, CheckCircle2, XCircle, ChevronDown, ChevronRight
 import { usePyodide } from "@/hooks/usePyodide";
 import { CodeEditor, loadEditorValue } from "@/components/ui/CodeEditor";
 import { AskAI } from "@/components/nami/AskAI";
+import { ChallengeGenerator } from "./ChallengeGenerator";
 
 type Challenge = {
   id: string;
@@ -51,28 +52,30 @@ export function ChallengeMode() {
   const [filterLevel, setFilterLevel] = useState<"all" | "easy" | "medium" | "hard">("all");
   const [loadingList, setLoadingList] = useState(true);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const [cRes, pRes] = await Promise.all([
-          fetch("/api/admin/playground/challenges"),
-          fetch("/api/admin/playground/challenges/progress"),
-        ]);
-        const c = await cRes.json();
-        const p = await pRes.json();
-        setChallenges(c.challenges ?? []);
-        const map: Record<string, Progress> = {};
-        for (const pp of (p.progress ?? []) as Progress[]) map[pp.challenge_id] = pp;
-        setProgressMap(map);
-        if (c.challenges?.length && !selected) {
-          pick(c.challenges[0], map);
-        }
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setLoadingList(false);
+  const refresh = async () => {
+    try {
+      const [cRes, pRes] = await Promise.all([
+        fetch("/api/admin/playground/challenges"),
+        fetch("/api/admin/playground/challenges/progress"),
+      ]);
+      const c = await cRes.json();
+      const p = await pRes.json();
+      setChallenges(c.challenges ?? []);
+      const map: Record<string, Progress> = {};
+      for (const pp of (p.progress ?? []) as Progress[]) map[pp.challenge_id] = pp;
+      setProgressMap(map);
+      if (c.challenges?.length && !selected) {
+        pick(c.challenges[0], map);
       }
-    })();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoadingList(false);
+    }
+  };
+
+  useEffect(() => {
+    refresh();
   }, []);
 
   const pick = (ch: Challenge, map?: Record<string, Progress>) => {
@@ -167,7 +170,7 @@ export function ChallengeMode() {
           <div className="font-bold text-sm">挑戰進度</div>
           <div className="text-xs text-fg-muted">{passedCount} / {challenges.length} 已通過 · 累積 {totalXp} XP</div>
         </div>
-        <div className="flex gap-2 text-xs">
+        <div className="flex gap-2 text-xs flex-wrap items-center">
           {(["all", "easy", "medium", "hard"] as const).map((l) => (
             <button
               key={l}
@@ -177,6 +180,7 @@ export function ChallengeMode() {
               {l === "all" ? "全部" : LEVEL_META[l].label}
             </button>
           ))}
+          <ChallengeGenerator onInserted={refresh} />
         </div>
       </div>
 
