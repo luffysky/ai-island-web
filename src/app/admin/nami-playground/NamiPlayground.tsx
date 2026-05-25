@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePyodide } from "@/hooks/usePyodide";
-import { Terminal, BookOpen, Bug, BarChart3, Sparkles, Database, GraduationCap, Zap, Globe, Atom, Trophy, FolderOpen } from "lucide-react";
+import { Terminal, BookOpen, Bug, BarChart3, Sparkles, Database, GraduationCap, Zap, Globe, Atom, Trophy, FolderOpen, GripVertical } from "lucide-react";
 import { PythonREPL } from "./tabs/PythonREPL";
 import { NotebookTab } from "./tabs/NotebookTab";
 import { ScrapeLab } from "./tabs/ScrapeLab";
@@ -16,6 +16,78 @@ import { FrameworkLab } from "./tabs/FrameworkLab";
 import { ChallengeMode } from "./tabs/ChallengeMode";
 import { MiniIDE } from "./tabs/MiniIDE";
 import { DatabaseLab } from "./tabs/DatabaseLab";
+
+/** Tab 列 drag-to-scroll wrapper — 滑鼠按住拖 / touch swipe / 滑鼠滾輪橫向 */
+function DraggableTabs({ children }: { children: React.ReactNode }) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const drag = useRef<{ down: boolean; startX: number; scrollLeft: number; moved: boolean } | null>(null);
+
+  // 滑鼠滾輪 vertical → 橫向 scroll
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+        el.scrollLeft += e.deltaY;
+        e.preventDefault();
+      }
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, []);
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    const el = ref.current;
+    if (!el) return;
+    drag.current = { down: true, startX: e.pageX, scrollLeft: el.scrollLeft, moved: false };
+    el.setPointerCapture(e.pointerId);
+    el.style.cursor = "grabbing";
+    el.style.userSelect = "none";
+  };
+  const onPointerMove = (e: React.PointerEvent) => {
+    const d = drag.current;
+    const el = ref.current;
+    if (!d || !d.down || !el) return;
+    const dx = e.pageX - d.startX;
+    if (Math.abs(dx) > 3) d.moved = true;
+    el.scrollLeft = d.scrollLeft - dx;
+  };
+  const onPointerUp = (e: React.PointerEvent) => {
+    const d = drag.current;
+    const el = ref.current;
+    if (!el) return;
+    if (d?.moved) {
+      // 防點擊 (剛剛是 drag)
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    drag.current = null;
+    el.style.cursor = "grab";
+    el.style.userSelect = "";
+    try { el.releasePointerCapture(e.pointerId); } catch {}
+  };
+
+  return (
+    <nav
+      ref={ref}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerCancel={onPointerUp}
+      className="flex gap-1 overflow-x-auto overflow-y-hidden bg-bg-card border border-border rounded-2xl p-1.5 sticky top-0 z-10 backdrop-blur-md scrollbar-hide cursor-grab select-none"
+      style={{ scrollbarWidth: "thin" }}
+      title="按住拖曳切換、或滑鼠滾輪左右滾"
+    >
+      <span className="flex items-center px-1 text-fg-muted/50 pointer-events-none">
+        <GripVertical size={12} />
+      </span>
+      {children}
+      <span className="flex items-center px-1 text-fg-muted/50 pointer-events-none">
+        <GripVertical size={12} />
+      </span>
+    </nav>
+  );
+}
 
 const TABS = [
   { id: "repl", label: "Python REPL", emoji: "🐍", icon: Terminal, desc: "互動式 Python、一次跑一段" },
@@ -139,8 +211,8 @@ export function NamiPlayground({
         </div>
       </motion.header>
 
-      {/* Tabs */}
-      <nav className="flex gap-1 overflow-x-auto bg-bg-card border border-border rounded-2xl p-1.5 sticky top-0 z-10 backdrop-blur-md">
+      {/* Tabs — drag to scroll (滑鼠按住拖、touch swipe) */}
+      <DraggableTabs>
         {TABS.map((t) => {
           const isActive = active === t.id;
           const Icon = t.icon;
@@ -164,7 +236,7 @@ export function NamiPlayground({
             </button>
           );
         })}
-      </nav>
+      </DraggableTabs>
 
       {/* Tab content */}
       <AnimatePresence mode="wait">
