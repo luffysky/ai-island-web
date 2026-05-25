@@ -8,7 +8,7 @@ export default async function AdminEmailTestPage() {
   const supabase = await createSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
-  const { data: profile } = await supabase.from("profiles").select("role, email, display_name").eq("id", user.id).single();
+  const { data: profile } = await supabase.from("profiles").select("role, display_name").eq("id", user.id).single();
   if (profile?.role !== "admin") redirect("/");
 
   const hasResend = !!process.env.RESEND_API_KEY;
@@ -48,7 +48,7 @@ export default async function AdminEmailTestPage() {
         </section>
       )}
 
-      <EmailTestForm defaultTo={profile?.email ?? user.email ?? ""} hasResend={hasResend} />
+      <EmailTestForm defaultTo={user.email ?? ""} hasResend={hasResend} />
     </div>
   );
 }

@@ -180,7 +180,7 @@ export async function POST(req: NextRequest) {
             source: "line-webhook-user",
             level: "error",
             message: `ticket insert failed: ${ticketErr.message}`,
-            meta: { line_user_id: userId, text: text.slice(0, 200) },
+            extra: { line_user_id: userId, text: text.slice(0, 200) },
           });
         } catch {}
       }
@@ -205,7 +205,7 @@ export async function POST(req: NextRequest) {
               source: "line-webhook-user",
               level: "error",
               message: `ticket_messages insert failed: ${msgErr.message}`,
-              meta: { ticket_id: ticket.id, line_user_id: userId },
+              extra: { ticket_id: ticket.id, line_user_id: userId },
             });
           } catch {}
         }

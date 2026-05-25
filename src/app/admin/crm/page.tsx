@@ -8,7 +8,7 @@ export default async function CRMPage({ searchParams }: { searchParams: Promise<
 
   let query = supabase
     .from("tickets")
-    .select("*, profiles(username, display_name, avatar_url)")
+    .select("*, profiles:profiles!tickets_user_id_fkey(username, display_name, avatar_url)")
     .order("updated_at", { ascending: false })
     .limit(100);
 

@@ -7,11 +7,8 @@ import { join } from "node:path";
 import pg from "pg";
 
 const MIGRATIONS = [
-  "tickets_meta_migration.sql",
-  "notification_settings_migration.sql",
-  "app_settings_extend_migration.sql",
-  // 之前若沒跑、補一下
-  "notify_optout_default_false_migration.sql",
+  "user_line_bind_migration.sql",
+  "error_logs_meta_migration.sql",
 ];
 
 // 從 .env.local 讀（不依賴 dotenv pkg）
