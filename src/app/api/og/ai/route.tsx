@@ -245,7 +245,7 @@ async function runReplicate(prompt: string, w: number, h: number, model: string)
       msg: txt.slice(0, 800),
       api_url: apiUrl,
       hint: res.status === 401 ? "Token 無效或過期、去 https://replicate.com/account/api-tokens 重拿"
-        : res.status === 402 ? "Replicate 帳號需綁卡才能 push prediction"
+        : res.status === 402 ? "Credit 不足 — Replicate 是預付儲值制、綁卡 ≠ 自動扣款。去 https://replicate.com/account/billing#billing 按 Purchase credit 儲 $10、等 1-2 分鐘再試"
         : res.status === 404 ? `Model "${model}" 不存在、去 https://replicate.com/${model} 確認 owner/name 正確`
         : res.status === 422 ? "input 參數錯、看 msg 內 Replicate 回的 detail (通常是缺必要 input 或值不合)"
         : res.status === 429 ? "rate limited、Replicate 帳號限速、等一下再試"
