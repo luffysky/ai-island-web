@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePyodide } from "@/hooks/usePyodide";
-import { Terminal, BookOpen, Bug, BarChart3, Sparkles, Database, GraduationCap, Zap, Globe } from "lucide-react";
+import { Terminal, BookOpen, Bug, BarChart3, Sparkles, Database, GraduationCap, Zap, Globe, Atom } from "lucide-react";
 import { PythonREPL } from "./tabs/PythonREPL";
 import { NotebookTab } from "./tabs/NotebookTab";
 import { ScrapeLab } from "./tabs/ScrapeLab";
@@ -12,6 +12,7 @@ import { DataLab } from "./tabs/DataLab";
 import { Exercises } from "./tabs/Exercises";
 import { BackendLab } from "./tabs/BackendLab";
 import { WebLab } from "./tabs/WebLab";
+import { FrameworkLab } from "./tabs/FrameworkLab";
 
 const TABS = [
   { id: "repl", label: "Python REPL", emoji: "🐍", icon: Terminal, desc: "互動式 Python、一次跑一段" },
@@ -19,6 +20,7 @@ const TABS = [
   { id: "scrape", label: "Scrape Lab", emoji: "🕷️", icon: Bug, desc: "爬蟲練習場、業界資料源" },
   { id: "backend", label: "Backend Lab", emoji: "⚡", icon: Zap, desc: "FastAPI / Flask / SQLite / asyncio" },
   { id: "web", label: "Web Lab", emoji: "🌐", icon: Globe, desc: "HTML / CSS / JS 即時預覽" },
+  { id: "framework", label: "Frameworks", emoji: "⚛️", icon: Atom, desc: "React / Vue / Next / Nest" },
   { id: "datalab", label: "Data Lab", emoji: "📊", icon: Database, desc: "真實數據分析、業界題型" },
   { id: "exercises", label: "練習題", emoji: "📝", icon: GraduationCap, desc: "出題 + 解答 (隱藏)" },
   { id: "charts", label: "Charts Gallery", emoji: "📈", icon: BarChart3, desc: "matplotlib / recharts 圖表" },
@@ -153,6 +155,7 @@ export function NamiPlayground({
           {active === "scrape" && <ScrapeLab />}
           {active === "backend" && <BackendLab />}
           {active === "web" && <WebLab />}
+          {active === "framework" && <FrameworkLab />}
           {active === "datalab" && <DataLab />}
           {active === "exercises" && <Exercises />}
           {active === "charts" && <ChartsGallery />}
