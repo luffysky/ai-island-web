@@ -225,6 +225,7 @@ async function runReplicate(prompt: string, w: number, h: number, model: string)
   // 改 standard fire-and-poll pattern、不用 Prefer: wait (對某些 model 直接 422)
   // input 只給最小組合 (prompt) — Replicate 不同 model input schema 不同、多給易撞 422
   const apiUrl = `https://api.replicate.com/v1/models/${model}/predictions`;
+  console.log(`[og/ai/replicate] POST ${apiUrl} prompt="${prompt.slice(0, 60)}..."`);
   const res = await fetch(apiUrl, {
     method: "POST",
     headers: {
@@ -236,41 +237,70 @@ async function runReplicate(prompt: string, w: number, h: number, model: string)
     }),
   });
   const txt = await res.text();
+  console.log(`[og/ai/replicate] POST response ${res.status} ${txt.slice(0, 200)}`);
   if (!res.ok) {
-    return errJson("replicate", "api_failed", res.status === 401 ? 401 : res.status === 402 ? 402 : res.status === 422 ? 422 : 502, {
+    // 全部真實 status 直接 forward、不再 wrap 502
+    return errJson("replicate", "api_failed", res.status, {
       api_status: res.status,
-      msg: txt.slice(0, 600),
+      msg: txt.slice(0, 800),
       api_url: apiUrl,
-      hint: res.status === 401 ? "Token 無效、去 https://replicate.com/account/api-tokens 重拿、格式 r8_xxx"
-        : res.status === 402 ? "需要綁信用卡 — Replicate 雖然有 trial credit、但部分 model (含 flux-schnell) 強制要先綁卡才能 access。去 https://replicate.com/account/billing 設定"
-        : res.status === 404 ? "Model 名稱錯、用 black-forest-labs/flux-schnell"
-        : res.status === 422 ? "input 參數錯、看 msg 內 Replicate detail"
-        : res.status === 429 ? "rate limited"
-        : "看 msg 內 Replicate 回的錯誤",
+      hint: res.status === 401 ? "Token 無效或過期、去 https://replicate.com/account/api-tokens 重拿"
+        : res.status === 402 ? "Replicate 帳號需綁卡才能 push prediction"
+        : res.status === 404 ? `Model "${model}" 不存在、去 https://replicate.com/${model} 確認 owner/name 正確`
+        : res.status === 422 ? "input 參數錯、看 msg 內 Replicate 回的 detail (通常是缺必要 input 或值不合)"
+        : res.status === 429 ? "rate limited、Replicate 帳號限速、等一下再試"
+        : res.status === 500 ? "Replicate server 端錯、不是你的問題、稍後再試"
+        : `Replicate 真實 status ${res.status}、看 msg`,
     });
   }
   let pred: any;
   try { pred = JSON.parse(txt); } catch {
     return errJson("replicate", "parse_failed", 502, { raw: txt.slice(0, 400) });
   }
-  // standard polling: 必 poll、最多 30 秒
+  console.log(`[og/ai/replicate] prediction id=${pred.id} status=${pred.status}`);
+  // standard polling: 必 poll、最多 ~50 秒 (Zeabur maxDuration 60s、留 10s buffer)
+  // 25 × 2s = 50s、比原本 30s 多容 cold start
   let out = Array.isArray(pred.output) ? pred.output[0] : pred.output;
   if (!out && pred.urls?.get) {
-    // poll 一下 (最多 30 秒)
-    for (let i = 0; i < 15; i++) {
+    // poll (最多 25 × 2s = 50s、Zeabur maxDuration 60s)
+    let lastStatus = pred.status;
+    for (let i = 0; i < 25; i++) {
       await new Promise((r) => setTimeout(r, 2000));
       const pollRes = await fetch(pred.urls.get, { headers: { "Authorization": `Bearer ${token}` } });
-      if (!pollRes.ok) break;
+      if (!pollRes.ok) {
+        console.warn(`[og/ai/replicate] poll #${i} HTTP ${pollRes.status}、break`);
+        break;
+      }
       const p = await pollRes.json();
+      lastStatus = p.status;
       if (p.status === "succeeded") {
+        console.log(`[og/ai/replicate] succeeded after ${(i + 1) * 2}s`);
         out = Array.isArray(p.output) ? p.output[0] : p.output;
         break;
       }
       if (p.status === "failed" || p.status === "canceled") {
-        return errJson("replicate", "prediction_failed", 502, { status: p.status, error: p.error });
+        console.warn(`[og/ai/replicate] ${p.status}: ${p.error ?? "(no error msg)"}`);
+        return errJson("replicate", "prediction_failed", 502, {
+          status: p.status,
+          error: p.error,
+          logs: typeof p.logs === "string" ? p.logs.slice(-500) : undefined,
+          hint: p.error?.includes?.("safety") ? "prompt 觸發 Replicate safety filter、換不含敏感字眼"
+            : p.error?.includes?.("NSFW") ? "圖被 NSFW filter 擋下"
+            : "看 error / logs 找 model 內部錯誤",
+        });
       }
+      // 還在 starting / processing 繼續等
+    }
+    if (!out) {
+      console.warn(`[og/ai/replicate] timeout、最後 status=${lastStatus}`);
+      return errJson("replicate", "poll_timeout", 504, {
+        last_status: lastStatus,
+        hint: lastStatus === "starting"
+          ? "Replicate model cold start 太慢 (> 50s)、再按一次生成、第二次通常秒回"
+          : "等了 50 秒還沒完成、可能 Replicate 端壅塞、稍後再試",
+      });
     }
   }
-  if (!out) return errJson("replicate", "no_output", 502, { raw: txt.slice(0, 400), hint: "等了 30 秒 model 還沒回、Replicate cold start 太慢" });
+  if (!out) return errJson("replicate", "no_output", 502, { raw: txt.slice(0, 400), hint: "Replicate 沒回 output 也沒 polling URL、API 行為異常" });
   return NextResponse.redirect(out, { status: 302, headers: { "Cache-Control": "public, max-age=86400, s-maxage=604800" } });
 }

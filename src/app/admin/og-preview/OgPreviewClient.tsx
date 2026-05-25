@@ -125,7 +125,7 @@ const PROVIDERS: Provider[] = [
     emoji: "🔁",
     desc: "Pay-per-use、新註冊有 trial credits、各種 SOTA 模型",
     models: [
-      { id: "black-forest-labs/flux-schnell", label: "Flux Schnell", status: "ok", note: "$0.003/圖、需綁信用卡" },
+      { id: "black-forest-labs/flux-schnell", label: "Flux Schnell", status: "ok", note: "$0.003/圖 (Replicate 一定要綁卡才給 token)" },
     ],
     setupSteps: [
       "1. 去 https://replicate.com 註冊 (GitHub / Email)",
