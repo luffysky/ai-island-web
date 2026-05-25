@@ -72,11 +72,12 @@ export async function GET() {
     })());
   }
 
-  // Cloudflare — verify token
+  // Cloudflare — 直接打 AI 真實 namespace (列 model)、確認 ai:read 權限
+  // /accounts/{id}/tokens/verify 對 Workers AI scoped token 會誤判 401、不可靠
   if (process.env.CF_ACCOUNT_ID && process.env.CF_AI_TOKEN) {
     pings.push((async () => {
       result.pings.cloudflare = await pingProvider("cloudflare", () =>
-        fetch(`https://api.cloudflare.com/client/v4/accounts/${process.env.CF_ACCOUNT_ID}/tokens/verify`, {
+        fetch(`https://api.cloudflare.com/client/v4/accounts/${process.env.CF_ACCOUNT_ID}/ai/models/search?per_page=1`, {
           headers: { "Authorization": `Bearer ${process.env.CF_AI_TOKEN}` },
         }),
       );
