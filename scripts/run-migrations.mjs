@@ -6,9 +6,39 @@ import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import pg from "pg";
 
+// 今天 (2026-05-25) 新加 / 改的所有 migration、按 commit 時間順序
+// 全部冪等 (IF NOT EXISTS / ADD COLUMN IF NOT EXISTS / CREATE OR REPLACE)、重跑安全
 const MIGRATIONS = [
+  // 早上 03–05
+  "env_change_requests_migration.sql",
+  "pets_ai_customization_migration.sql",
+  "notify_optout_migration.sql",
+  "notify_optout_default_true_migration.sql",
+  "notify_optout_default_false_migration.sql",
+  "quiz_elo_delta_migration.sql",
+  "user_line_bind_migration.sql",          // ← LINE 綁定流程依賴 (line_user_id 欄位)
+  "media_assets_migration.sql",
+  // 早上 06–08
+  "canned_replies_migration.sql",          // ← CRM 罐頭訊息
+  "semantic_search_migration.sql",
+  "tickets_meta_migration.sql",            // ← LINE ticket source 欄位
+  "notification_settings_migration.sql",
+  "app_settings_extend_migration.sql",
   "error_log_migration.sql",
-  "error_logs_meta_migration.sql",
+  "error_logs_meta_migration.sql",         // ← webhook sig debug 用
+  // 上午 08–11
+  "forum_like_count_migration.sql",
+  "learning_state_view_migration.sql",
+  "rls_with_check_migration.sql",
+  "lesson_progress_check_fix_migration.sql",
+  "nami_challenges_migration.sql",
+  // 下午 13–14
+  "chapter_sort_index_migration.sql",
+  "ai_usage_models_migration.sql",         // ← LINE bot 抓 model 對應依賴
+  "profile_owner_role_migration.sql",
+  "marketing_migration.sql",               // ← affiliate / competitor / ads CRUD 依賴
+  "lottie_settings_migration.sql",
+  "profile_is_owner_migration.sql",
 ];
 
 // 從 .env.local 讀（不依賴 dotenv pkg）
