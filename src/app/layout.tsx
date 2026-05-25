@@ -17,6 +17,7 @@ import { ToastProvider } from "@/components/ui/Toast";
 import { ConfirmProvider } from "@/components/ui/ConfirmDialog";
 import { WebVitalsReporter } from "@/components/WebVitalsReporter";
 import { PWAInstall } from "@/components/PWAInstall";
+import { LineBindBanner } from "@/components/LineBindBanner";
 import { SITE_STATS } from "@/lib/site-stats";
 import { organizationSchema, websiteSchema, jsonLdScript } from "@/lib/seo-jsonld";
 
@@ -107,6 +108,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <InteractionTracker />
               <WebVitalsReporter />
               <PWAInstall />
+              <LineBindBanner />
               <AdminFloatingToolbar />
               <Pet />
               <MobileBottomNav />

@@ -100,6 +100,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               <AdminLink href="/admin/line/users">👥 綁定用戶 / 推訊息</AdminLink>
               <AdminLink href="/admin/line/broadcast">📣 群發訊息</AdminLink>
               <AdminLink href="/admin/crm">💬 客服對話 (CRM)</AdminLink>
+              <AdminLink href="/admin/line/canned">💌 罐頭訊息管理</AdminLink>
+              <AdminLink href="/admin/line/rich-menu">🎴 Rich Menu</AdminLink>
             </NavGroup>
 
             <NavGroup title="SEO / 流量">
