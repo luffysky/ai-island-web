@@ -3,9 +3,9 @@
   "slug": "backend",
   "stage": 3,
   "title": "後端世界全圖",
-  "subtitle": "HTTP / REST / GraphQL",
+  "subtitle": "Request 生命週期 / REST / GraphQL / 微服務",
   "icon": "server",
-  "description": "後端世界全圖：HTTP / REST / GraphQL",
+  "description": "後端世界全圖：請求 / 回應 / API 設計 / 後端架構 (HTTP 基礎已獨立成 Ch75)",
   "status": "published",
   "difficulty": "intermediate",
   "prerequisites": [
