@@ -267,6 +267,16 @@ export async function POST(req: NextRequest) {
         continue;
       }
 
+      // /whoami — debug 用、admin 看自己 userId + 角色
+      if (text === "/whoami" || text === "我是誰" || text === "whoami") {
+        await lineReply(
+          replyToken,
+          `🆔 你的 LINE userId：\n${userId}\n\n✅ 已驗證為 admin：\n• 名稱: ${adminUser.name}\n• 角色: ${adminUser.role}\n\nuserId 跟 env ADMIN_LINE_USER_ID 一致才會走 admin 流程、不一致會被當訪客。`,
+          token,
+        );
+        continue;
+      }
+
       if (isCommand(text)) {
         const reply = await runBotCommand(text, adminUser);
         await lineReply(replyToken, reply.flex ?? reply.text, token);
