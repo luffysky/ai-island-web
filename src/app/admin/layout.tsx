@@ -25,15 +25,16 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role, username, avatar_url, display_name")
+    .select("role, username, avatar_url, display_name, is_owner")
     .eq("id", user.id)
     .single();
 
-  // 用中央 isOwner helper 多重 signal 判斷 (role / username / email / userId)
+  // 用中央 isOwner helper 多重 signal 判斷 (is_owner 旗標優先、再 fallback role/username/email)
   const ownerCheck = checkOwner({
     id: user.id,
     username: profile?.username ?? null,
     role: profile?.role ?? null,
+    isOwner: (profile as any)?.is_owner ?? null,
     email: user.email ?? null,
   });
   const isOwner = ownerCheck.isOwner;

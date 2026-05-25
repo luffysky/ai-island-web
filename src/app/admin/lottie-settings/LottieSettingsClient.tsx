@@ -1,9 +1,66 @@
 "use client";
 
 import { useState } from "react";
-import { Save, Loader2, ExternalLink, Trash2, Check, Eye, Sparkles, Search } from "lucide-react";
+import { Save, Loader2, ExternalLink, Trash2, Check, Eye, Sparkles, Search, ArrowRight } from "lucide-react";
 import Script from "next/script";
 import { useToast } from "@/components/ui/Toast";
+
+// 每個 slot 對應的「儲存後跳轉看效果」路徑
+const PREVIEW_ROUTE: Record<string, { path: string; label: string }> = {
+  admin_lottie_url:         { path: "/admin", label: "→ 看後台 dashboard" },
+  home_hero_lottie_url:     { path: "/", label: "→ 看首頁 Hero" },
+  chapter_hero_lottie_url:  { path: "/chapters/1", label: "→ 看章節頁 (Ch01)" },
+  login_lottie_url:         { path: "/login", label: "→ 看登入頁" },
+  empty_state_lottie_url:   { path: "/me/notes", label: "→ 看空狀態 (我的筆記)" },
+  celebration_lottie_url:   { path: "/me", label: "→ 看慶祝動畫 (我的)" },
+  ai_chat_lottie_url:       { path: "/me/assistant", label: "→ 看 AI 對話" },
+  loading_lottie_url:       { path: "/", label: "→ 看載入狀態" },
+};
+
+// 林董要直接點的 LottieFiles 推薦動畫具體連結 (每個 slot 給 3 個有名作品)
+const SLOT_PICKS: Record<string, { title: string; url: string }[]> = {
+  admin_lottie_url: [
+    { title: "🌸 動漫女孩讀書 (Lo-fi anime girl)", url: "https://lottiefiles.com/free-animation/lofi-girl" },
+    { title: "🐱 動漫貓咪睡覺 (Kawaii sleeping cat)", url: "https://lottiefiles.com/free-animations/cat" },
+    { title: "🎏 Studio Ghibli 風 (Ghibli wind)", url: "https://lottiefiles.com/search?q=ghibli" },
+    { title: "👘 動漫角色 Anime character", url: "https://lottiefiles.com/free-animations/anime" },
+  ],
+  home_hero_lottie_url: [
+    { title: "✨ Floating particles 極簡星點", url: "https://lottiefiles.com/search?q=floating+particles" },
+    { title: "🌌 Aurora wave 極光流", url: "https://lottiefiles.com/search?q=aurora+wave" },
+    { title: "🏝️ Floating island 浮島", url: "https://lottiefiles.com/search?q=floating+island" },
+  ],
+  chapter_hero_lottie_url: [
+    { title: "💚 Code rain Matrix 代碼雨", url: "https://lottiefiles.com/search?q=matrix+code+rain" },
+    { title: "🔷 Geometric mesh 幾何網格", url: "https://lottiefiles.com/search?q=geometric+mesh" },
+    { title: "🔌 Circuit board 電路板", url: "https://lottiefiles.com/search?q=circuit+board" },
+  ],
+  login_lottie_url: [
+    { title: "🏝️ Floating island 浮島", url: "https://lottiefiles.com/search?q=floating+island" },
+    { title: "🌸 Sakura petals 櫻花瓣", url: "https://lottiefiles.com/search?q=sakura+petals" },
+    { title: "🦊 Fox spirit 狐仙", url: "https://lottiefiles.com/search?q=anime+fox" },
+  ],
+  empty_state_lottie_url: [
+    { title: "📭 Empty box cat 空箱貓", url: "https://lottiefiles.com/search?q=empty+box+cat" },
+    { title: "💤 Sleeping shiba 柴犬", url: "https://lottiefiles.com/search?q=sleeping+shiba" },
+    { title: "📖 Lo-fi anime girl reading", url: "https://lottiefiles.com/search?q=lofi+anime+reading" },
+  ],
+  celebration_lottie_url: [
+    { title: "🎉 Confetti 五彩繽紛", url: "https://lottiefiles.com/search?q=confetti+celebration" },
+    { title: "🎆 Fireworks 煙火", url: "https://lottiefiles.com/search?q=fireworks" },
+    { title: "🌟 Star burst 星爆", url: "https://lottiefiles.com/search?q=star+burst" },
+  ],
+  ai_chat_lottie_url: [
+    { title: "🤔 Thinking cat 思考貓", url: "https://lottiefiles.com/search?q=thinking+cat" },
+    { title: "💭 Anime thinking 動漫思考", url: "https://lottiefiles.com/search?q=anime+thinking" },
+    { title: "🌀 Breathing dot 呼吸點", url: "https://lottiefiles.com/search?q=breathing+dot" },
+  ],
+  loading_lottie_url: [
+    { title: "⏳ Loading dots 點點", url: "https://lottiefiles.com/search?q=loading+dots" },
+    { title: "🏃 Running cat 跑步貓", url: "https://lottiefiles.com/search?q=running+cat" },
+    { title: "⏱️ Hourglass 沙漏", url: "https://lottiefiles.com/search?q=hourglass" },
+  ],
+};
 
 type Slot = {
   key: string;
@@ -195,18 +252,43 @@ export function LottieSettingsClient({ slots, initial }: { slots: Slot[]; initia
                 </button>
               </div>
 
-              {/* 推薦關鍵字 */}
-              <div className="flex items-center gap-1.5 flex-wrap text-[10px]">
+              {/* 推薦動畫 — 直接點進去 LottieFiles 找 */}
+              <div className="space-y-1">
+                <div className="text-[10px] text-fg-muted">💡 推薦動畫 (點直接到 LottieFiles 找)：</div>
+                <div className="flex flex-wrap gap-1.5">
+                  {(SLOT_PICKS[slot.key] ?? []).map((p) => (
+                    <a
+                      key={p.url}
+                      href={p.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 hover:bg-purple-500/20 transition text-[10px]"
+                    >
+                      {p.title} <ExternalLink size={8} />
+                    </a>
+                  ))}
+                  <a
+                    href={searchUrl(slot.recommendedKeywords)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-bg-elevated border border-border hover:border-purple-400 hover:text-purple-300 transition text-[10px]"
+                  >
+                    <Search size={9} /> 全部結果
+                  </a>
+                </div>
+              </div>
+
+              {/* 儲存後跳到對應頁看效果 */}
+              {hasUrl && PREVIEW_ROUTE[slot.key] && (
                 <a
-                  href={searchUrl(slot.recommendedKeywords)}
+                  href={PREVIEW_ROUTE[slot.key].path}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-bg-elevated border border-border hover:border-purple-400 hover:text-purple-300 transition"
+                  className="inline-flex items-center gap-1 text-[11px] text-emerald-400 hover:text-emerald-300 transition"
                 >
-                  <Search size={9} /> 去 LottieFiles 搜 <ExternalLink size={8} />
+                  <ArrowRight size={11} /> {PREVIEW_ROUTE[slot.key].label} (新分頁)
                 </a>
-                <span className="text-fg-muted/70">關鍵字：{slot.recommendedKeywords}</span>
-              </div>
+              )}
 
               {/* Live preview */}
               <div className="bg-[#0d1117] border border-border rounded-lg overflow-hidden h-[180px] flex items-center justify-center relative">

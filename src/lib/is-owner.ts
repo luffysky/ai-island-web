@@ -19,6 +19,7 @@
 
 export type OwnerCheckInput = {
   role?: string | null;
+  isOwner?: boolean | null;    // profiles.is_owner — DB 旗標、最權威
   username?: string | null;
   id?: string | null;          // profile.id (UUID)
   email?: string | null;       // auth.users.email
@@ -29,6 +30,7 @@ export type OwnerCheckInput = {
 export type OwnerCheckResult = {
   isOwner: boolean;
   signals: {
+    dbFlag: boolean;             // profiles.is_owner = true (最權威)
     role: boolean;
     username: boolean;
     userId: boolean;
@@ -66,6 +68,7 @@ export function checkOwner(input: OwnerCheckInput): OwnerCheckResult {
     cfg.defaultUsernames.some((u) => usernameLower === u || usernameLower.startsWith(u + "_"));
 
   const signals = {
+    dbFlag: input.isOwner === true,
     role: input.role === "owner",
     username: !!usernameLower && usernameInList,
     userId: !!userIdLower && cfg.userIds.includes(userIdLower),
@@ -82,6 +85,7 @@ export function checkOwner(input: OwnerCheckInput): OwnerCheckResult {
 
   // lineUser 單獨不算 owner (一般 admin 也在白名單)、要配 lineRole
   const reasons: string[] = [];
+  if (signals.dbFlag) reasons.push("profile.is_owner = true (DB 旗標)");
   if (signals.role) reasons.push("profile.role = 'owner'");
   if (signals.username) reasons.push(`profile.username = ${input.username}`);
   if (signals.userId) reasons.push(`profile.id 在 OWNER_USER_IDS env list`);
@@ -90,6 +94,7 @@ export function checkOwner(input: OwnerCheckInput): OwnerCheckResult {
 
   // 任一命中即為 owner — 但 lineUser 單獨不算
   const isOwner =
+    signals.dbFlag ||
     signals.role ||
     signals.username ||
     signals.userId ||
@@ -113,7 +118,7 @@ export async function checkOwnerByProfileId(
 ): Promise<OwnerCheckResult> {
   const { data: profile } = await supabase
     .from("profiles")
-    .select("id, username, role")
+    .select("id, username, role, is_owner")
     .eq("id", profileId)
     .maybeSingle();
 
@@ -130,12 +135,13 @@ export async function checkOwnerByProfileId(
     id: profile.id,
     username: profile.username,
     role: profile.role,
+    isOwner: (profile as any).is_owner,
     email,
   });
 }
 
 function emptySignals() {
-  return { role: false, username: false, userId: false, email: false, lineUser: false, lineRole: false };
+  return { dbFlag: false, role: false, username: false, userId: false, email: false, lineUser: false, lineRole: false };
 }
 
 /** 林董稱呼 — UI / AI 用 */
