@@ -17,7 +17,7 @@ from js import fetch, encodeURIComponent
 
 url = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=20"
 resp = await fetch("/api/admin/playground/scrape?url=" + encodeURIComponent(url))
-data = await resp.json()
+data = (await resp.json()).to_py()
 coins = json.loads(data["body"])
 
 print(f"{'排名':<4} {'符號':<8} {'價格 USD':<14} {'24hr':<10} {'市值'}")
@@ -39,7 +39,7 @@ import json
 from js import fetch, encodeURIComponent
 url = "https://open.er-api.com/v6/latest/USD"
 resp = await fetch("/api/admin/playground/scrape?url=" + encodeURIComponent(url))
-data = await resp.json()
+data = (await resp.json()).to_py()
 rates = json.loads(data["body"])["rates"]
 
 print(f"基準：1 USD = ?\\n")
@@ -67,7 +67,7 @@ from js import fetch, encodeURIComponent
 last_week = (datetime.utcnow() - timedelta(days=7)).strftime("%Y-%m-%d")
 url = f"https://api.github.com/search/repositories?q=language:python+created:>{last_week}&sort=stars&order=desc&per_page=10"
 resp = await fetch("/api/admin/playground/scrape?url=" + encodeURIComponent(url))
-data = await resp.json()
+data = (await resp.json()).to_py()
 result = json.loads(data["body"])
 
 print(f"📊 上週 (從 {last_week}) star 最多的 Python repo top 10：\\n")
@@ -92,7 +92,7 @@ results = []
 for pkg in packages:
     url = f"https://registry.npmjs.org/{pkg}"
     resp = await fetch("/api/admin/playground/scrape?url=" + encodeURIComponent(url))
-    data = await resp.json()
+    data = (await resp.json()).to_py()
     info = json.loads(data["body"])
     versions = info.get("versions", {})
     latest = info.get("dist-tags", {}).get("latest", "?")
@@ -119,7 +119,7 @@ import json
 from js import fetch, encodeURIComponent
 url = "https://api.spaceflightnewsapi.net/v4/articles?limit=10"
 resp = await fetch("/api/admin/playground/scrape?url=" + encodeURIComponent(url))
-data = await resp.json()
+data = (await resp.json()).to_py()
 result = json.loads(data["body"])
 
 print(f"📡 最新 10 篇太空新聞：\\n")
@@ -138,7 +138,7 @@ import json
 from js import fetch, encodeURIComponent
 url = "https://restcountries.com/v3.1/all?fields=name,population,area,capital,region,languages,currencies"
 resp = await fetch("/api/admin/playground/scrape?url=" + encodeURIComponent(url))
-data = await resp.json()
+data = (await resp.json()).to_py()
 countries = json.loads(data["body"])
 
 # 排序找人口 top 10
@@ -165,7 +165,7 @@ from js import fetch, console
 
 # 透過後端 proxy 爬 (admin only)
 resp = await fetch("/api/admin/playground/scrape?url=" + encodeURIComponent("/chapters"))
-data = await resp.json()
+data = (await resp.json()).to_py()
 html = data["body"]
 
 # 簡單抓 <h3 class="..."> 找章節標題
@@ -184,7 +184,7 @@ for i, t in enumerate(titles[:20], 1):
 import re
 from js import fetch
 resp = await fetch("/api/admin/playground/scrape?url=" + encodeURIComponent("https://books.toscrape.com"))
-data = await resp.json()
+data = (await resp.json()).to_py()
 html = data["body"]
 
 # 找 <article class="product_pod">
@@ -215,7 +215,7 @@ for r in results:
 import re
 from js import fetch
 resp = await fetch("/api/admin/playground/scrape?url=" + encodeURIComponent("https://quotes.toscrape.com"))
-data = await resp.json()
+data = (await resp.json()).to_py()
 html = data["body"]
 
 quotes = re.findall(r'<div class="quote">(.*?)</div>\\s*</div>', html, re.S)
@@ -238,7 +238,7 @@ from js import fetch
 
 # 先抓 id 列表
 resp = await fetch("/api/admin/playground/scrape?url=" + encodeURIComponent("https://hacker-news.firebaseio.com/v0/topstories.json"))
-data = await resp.json()
+data = (await resp.json()).to_py()
 import json
 ids = json.loads(data["body"])[:10]
 print(f"前 10 篇熱門 ID：{ids}\\n")
@@ -246,7 +246,7 @@ print(f"前 10 篇熱門 ID：{ids}\\n")
 # 依次拿每篇詳情
 for i, story_id in enumerate(ids, 1):
     r = await fetch(f"/api/admin/playground/scrape?url=" + encodeURIComponent(f"https://hacker-news.firebaseio.com/v0/item/{story_id}.json"))
-    d = await r.json()
+    d = (await r.json()).to_py()
     story = json.loads(d["body"])
     print(f"{i:2}. [{story.get('score', 0):4}↑] {story.get('title', '')[:70]}")
 `,
@@ -261,7 +261,7 @@ from js import fetch
 
 url = "https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=Taiwan&format=json&srlimit=5"
 resp = await fetch("/api/admin/playground/scrape?url=" + encodeURIComponent(url))
-data = await resp.json()
+data = (await resp.json()).to_py()
 result = json.loads(data["body"])
 
 for i, item in enumerate(result["query"]["search"], 1):

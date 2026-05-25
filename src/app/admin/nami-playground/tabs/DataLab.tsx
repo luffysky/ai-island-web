@@ -241,7 +241,7 @@ from js import fetch, encodeURIComponent
 # 抓某個熱門 user 的 repo
 url = "https://api.github.com/users/vercel/repos?per_page=100&sort=updated"
 resp = await fetch("/api/admin/playground/scrape?url=" + encodeURIComponent(url))
-data = await resp.json()
+data = (await resp.json()).to_py()
 repos = json.loads(data["body"])
 
 df = pd.DataFrame([{

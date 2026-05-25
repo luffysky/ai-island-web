@@ -147,7 +147,7 @@ results = []
 for city in cities:
     url = f"https://wttr.in/{city}?format=j1"
     resp = await fetch("/api/admin/playground/scrape?url=" + encodeURIComponent(url))
-    data = await resp.json()
+    data = (await resp.json()).to_py()
     weather = json.loads(data["body"])
     cur = weather["current_condition"][0]
     results.append({
@@ -265,7 +265,7 @@ import re
 from js import fetch, encodeURIComponent
 
 resp = await fetch("/api/admin/playground/scrape?url=" + encodeURIComponent("https://books.toscrape.com"))
-data = await resp.json()
+data = (await resp.json()).to_py()
 html = data["body"]
 
 # 任務：用 regex 找出
@@ -282,7 +282,7 @@ html = data["body"]
 from js import fetch, encodeURIComponent
 
 resp = await fetch("/api/admin/playground/scrape?url=" + encodeURIComponent("https://books.toscrape.com"))
-data = await resp.json()
+data = (await resp.json()).to_py()
 html = data["body"]
 
 # 1. 用 article 區塊分塊（避免亂配）
