@@ -1,5 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { AppSettingsClient } from "./AppSettingsClient";
+import { Hint } from "@/components/ui/Hint";
 
 export const dynamic = "force-dynamic";
 
@@ -26,14 +27,29 @@ export default async function AdminAppSettingsPage() {
   return (
     <div className="space-y-4">
       <header>
-        <h1 className="text-2xl font-bold flex items-center gap-2">⚙️ 應用設定 CRUD</h1>
+        <h1 className="text-2xl font-bold flex items-center gap-2">
+          ⚙️ 應用設定
+          <span className="inline-flex items-center text-base">
+            CRUD
+            <Hint title="CRUD">
+              Create / Read / Update / Delete — 新增、讀取、修改、刪除四種操作的縮寫。簡單講：這頁可以增、改、刪設定值。
+            </Hint>
+          </span>
+        </h1>
         <p className="text-sm text-fg-muted mt-1 leading-relaxed">
-          DB-backed runtime config、改完即時生效（60 秒 cache）、不用 Zeabur redeploy。
+          這頁設定值<b>存在資料庫裡</b>、改完
+          <span className="inline-flex items-center">
+            即時生效（60 秒 cache）
+            <Hint title="60 秒 cache">
+              系統每 60 秒重新讀一次設定值。意思：你改完之後、最多 60 秒內全站都會用新值、不用重新部署網站。
+            </Hint>
+          </span>
+          、不用 Zeabur redeploy。
           <br />
           <span className="text-yellow-400 text-xs">
-            ⚠️ 系統 secret (SUPABASE_*, AI_KEY_SECRET, AI Provider keys) 仍須走{" "}
-            <a href="/admin/env" className="underline">/admin/env</a>{" "}
-            (Zeabur env)、不放這。
+            ⚠️ 系統 <span className="inline-flex items-center">secret<Hint title="Secret（機密）">不能讓公眾看到的設定值、例如資料庫密碼、API 金鑰。這類值必須存在 Zeabur env、不放這頁。</Hint></span>
+            （SUPABASE_*, AI_KEY_SECRET, AI Provider keys）仍須走{" "}
+            <a href="/admin/env" className="underline">/admin/env</a>（Zeabur env）、不放這。
           </span>
         </p>
       </header>

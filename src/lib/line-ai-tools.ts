@@ -81,6 +81,32 @@ const TOOLS = [
     },
   },
   {
+    name: "get_student_learning_state",
+    description:
+      "查單一學員學習狀態：等級 / XP / 完成章節數 / 弱項章節 / 連續簽到 / 30 天 quiz 平均 / 正在學的章節。" +
+      "admin 問「@xxx 學得怎樣」「他卡在哪」「進度如何」時用。",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        username: { type: "string", description: "username 不含 @" },
+      },
+      required: ["username"],
+    },
+  },
+  {
+    name: "get_chapter_stats",
+    description:
+      "查章節整體學習狀態：多少人開始 / 多少人完成 / 平均 quiz 分數。" +
+      "admin 問「Ch12 大家學得怎樣」「哪幾章卡關率高」「教程哪邊要改」時用。" +
+      "不指定 chapter_id 會回所有章節的彙整 + 列出最卡的前 5 章。",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        chapter_id: { type: "integer", description: "章節 id (1~71)、不給 = 列全站 + 最卡的 5 章" },
+      },
+    },
+  },
+  {
     name: "get_period_report",
     description:
       "拿一段時間（7 / 30 / 自訂天數）的指標 + 跟上一期比較變化、用來寫週報 / 月報敘事。" +
@@ -119,6 +145,10 @@ async function dispatchTool(name: string, input: any, user: AdminLineUser): Prom
         return await getOrderDetail(input.order_id);
       case "get_period_report":
         return await getPeriodReport(input.days ?? 7);
+      case "get_student_learning_state":
+        return await getStudentLearningState(input.username);
+      case "get_chapter_stats":
+        return await getChapterStats(input.chapter_id);
       default:
         return `❌ unknown tool: ${name}`;
     }
@@ -219,6 +249,108 @@ async function getOrderDetail(orderId: string): Promise<string> {
     `- 章節：${(o as any).chapter_id ?? "—"}`,
     `- 建立：${formatTW((o as any).created_at)}`,
   ];
+  return lines.join("\n");
+}
+
+async function getStudentLearningState(username: string): Promise<string> {
+  if (!username) return "❌ 沒給 username";
+  const admin = createSupabaseAdmin();
+  const { data: row, error } = await admin
+    .from("learning_state_summary")
+    .select("*")
+    .ilike("username", username.replace(/^@/, ""))
+    .maybeSingle();
+  if (error) return `❌ view 查詢失敗：${error.message}`;
+  if (!row) return `🔍 找不到 @${username}`;
+
+  const r = row as any;
+  const lines = [
+    `## ${r.display_name || r.username}（@${r.username}）學習狀態`,
+    `- 等級 Lv${r.level ?? 1} · ${r.xp?.toLocaleString() ?? 0} XP · 角色 ${r.role ?? 'user'}`,
+    `- 加入 ${r.joined_days_ago ?? '-'} 天${r.last_active_days_ago !== null ? `、上次活動 ${r.last_active_days_ago} 天前` : ''}`,
+    "",
+    `### 進度`,
+    `- 完成 ${r.lessons_completed ?? 0} 個 lesson、觸碰過 ${r.chapters_touched ?? 0} 章`,
+    r.current_chapter_id ? `- 目前在學：Ch${r.current_chapter_id} ${r.current_chapter_title ?? ''}（lesson ${r.current_lesson_id ?? '-'}）` : `- 還沒開始任何 lesson`,
+    "",
+    `### 簽到`,
+    `- 目前連續 ${r.current_streak ?? 0} 天${r.last_checkin_date ? `、最後簽到 ${r.last_checkin_date}` : ''}`,
+    "",
+    `### Quiz 表現（30 天）`,
+    r.quiz_total_30d > 0
+      ? `- 平均 ${Number(r.quiz_avg_30d ?? 0).toFixed(1)} 分 / ${r.quiz_total_30d} 次測驗`
+      : `- 30 天內沒做過 quiz`,
+  ];
+
+  // 弱項章節
+  const { data: weak } = await admin
+    .from("user_weak_chapters")
+    .select("chapter_id, avg_pct, attempt_count")
+    .eq("user_id", r.id)
+    .order("avg_pct", { ascending: true })
+    .limit(5);
+  if (weak && weak.length > 0) {
+    lines.push("", "### ⚠️ 弱項章節（30 天 quiz 平均 < 60、>= 2 次）");
+    for (const w of weak as any[]) {
+      lines.push(`- Ch${w.chapter_id}：${Number(w.avg_pct).toFixed(1)} 分（${w.attempt_count} 次）`);
+    }
+  }
+
+  return lines.join("\n");
+}
+
+async function getChapterStats(chapterId?: number): Promise<string> {
+  const admin = createSupabaseAdmin();
+  if (chapterId) {
+    const { data: row, error } = await admin
+      .from("chapter_stats_summary")
+      .select("*")
+      .eq("chapter_id", chapterId)
+      .maybeSingle();
+    if (error) return `❌ view 查詢失敗：${error.message}`;
+    if (!row) return `🔍 找不到 Ch${chapterId}`;
+    const r = row as any;
+    const rate = r.users_started > 0 ? ((r.users_completed / r.users_started) * 100).toFixed(1) : "-";
+    return [
+      `## Ch${r.chapter_id} ${r.chapter_title}`,
+      `- 開始學的人：${r.users_started}`,
+      `- 完成的人：${r.users_completed}（完成率 ${rate}%）`,
+      `- Quiz 平均：${r.quiz_attempts_count > 0 ? Number(r.quiz_avg_pct).toFixed(1) + " 分（" + r.quiz_attempts_count + " 次嘗試）" : "沒人做過"}`,
+    ].join("\n");
+  }
+
+  // 全站
+  const { data } = await admin
+    .from("chapter_stats_summary")
+    .select("*")
+    .order("chapter_id", { ascending: true });
+  const rows = (data as any[]) ?? [];
+  if (rows.length === 0) return "🎉 還沒有任何章節資料";
+
+  const totalStarted = rows.reduce((s, r) => s + (r.users_started ?? 0), 0);
+  const totalCompleted = rows.reduce((s, r) => s + (r.users_completed ?? 0), 0);
+  const avgQuiz = rows.filter(r => r.quiz_attempts_count > 0).map(r => Number(r.quiz_avg_pct));
+  const overallQuizAvg = avgQuiz.length > 0 ? (avgQuiz.reduce((a, b) => a + b, 0) / avgQuiz.length).toFixed(1) : "-";
+
+  // 卡關章節（quiz 平均最低、且 >= 5 次嘗試）
+  const stuck = rows
+    .filter(r => (r.quiz_attempts_count ?? 0) >= 5)
+    .sort((a, b) => Number(a.quiz_avg_pct) - Number(b.quiz_avg_pct))
+    .slice(0, 5);
+
+  const lines = [
+    `## 全站章節學習狀態`,
+    `- 章節數：${rows.length}`,
+    `- 累計開始學人次：${totalStarted}`,
+    `- 累計完成人次：${totalCompleted}`,
+    `- 全站 quiz 平均：${overallQuizAvg} 分`,
+    "",
+    `### 🔥 最卡關的 5 章（quiz 平均最低、>= 5 次嘗試）`,
+  ];
+  for (const s of stuck) {
+    lines.push(`- Ch${s.chapter_id} ${s.chapter_title}：${Number(s.quiz_avg_pct).toFixed(1)} 分（${s.users_started} 人開始 / ${s.users_completed} 完成）`);
+  }
+  if (stuck.length === 0) lines.push("- 目前沒有 >= 5 次嘗試的章節");
   return lines.join("\n");
 }
 

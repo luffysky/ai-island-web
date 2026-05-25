@@ -1,5 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { NotificationMatrix } from "./NotificationMatrix";
+import { Hint } from "@/components/ui/Hint";
 
 export const dynamic = "force-dynamic";
 
@@ -28,7 +29,14 @@ export default async function AdminNotificationsPage() {
       <header>
         <h1 className="text-2xl font-bold flex items-center gap-2">🔔 通知設定</h1>
         <p className="text-sm text-fg-muted mt-1">
-          每個事件可分別設定走哪個 channel。改完即時生效（60 秒 cache）。
+          每個事件可分別設定走哪個{" "}
+          <span className="inline-flex items-center">
+            channel
+            <Hint title="Channel（通知管道）">
+              用什麼方式通知 user。一個事件可以同時走多個 channel：站內鈴鐺、Email、LINE、PWA 推播。例如「客服回覆」可以同時站內 + LINE。
+            </Hint>
+          </span>
+          。改完即時生效（60 秒 cache、就是 60 秒內後台會記住設定、之後第一筆通知會用新的）。
           <br />
           <span className="text-yellow-400 text-xs">
             ⚠️ 標 v2 的事件還沒實際接上、設定先存著、之後 module 接上會讀此表。

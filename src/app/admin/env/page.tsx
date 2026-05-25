@@ -3,6 +3,7 @@ import Link from "next/link";
 import { EnvRequestsPanel } from "./EnvRequestsPanel";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { adminHref } from "@/lib/admin-href";
+import { Hint } from "@/components/ui/Hint";
 
 export const dynamic = "force-dynamic";
 
@@ -180,9 +181,21 @@ export default async function AdminEnvPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-bold flex items-center gap-2">🔐 環境變數面板</h1>
+        <h1 className="text-2xl font-bold flex items-center gap-2">
+          🔐 環境變數面板
+          <Hint title="環境變數（Environment Variable / ENV）">
+            程式跑的時候、需要從外面塞給它的設定值。例如資料庫網址、第三方 API 金鑰、寄信地址等。我們把這些設在 Zeabur dashboard、網站才能讀到。
+          </Hint>
+        </h1>
         <p className="text-sm text-fg-muted mt-1 leading-relaxed">
-          所有 ENV 一覽。Server secret 只顯示「已設 / 未設」、永不外漏值。
+          所有 ENV 一覽。
+          <span className="inline-flex items-center">
+            Server secret
+            <Hint title="Server secret（伺服器機密）">
+              只在伺服器內部用的機密值（資料庫密碼、API 金鑰等）、絕對不能讓瀏覽器看到。這頁只顯示「有沒有設」、不會印出實際值、確保安全。
+            </Hint>
+          </span>
+          只顯示「已設 / 未設」、永不外漏值。
           <br />
           這頁用來：(1) 排查線上問題時確認 ENV 有沒有設、(2) 部署新環境時對照清單。
         </p>
@@ -304,8 +317,22 @@ export default async function AdminEnvPage() {
 
       <div className="rounded-xl bg-bg-elevated/30 border border-border p-4 text-[11px] text-fg-muted leading-relaxed space-y-2">
         <div>
-          🛡️ <b>安全</b>：本頁僅 admin 可看（middleware 強制驗 role）。Server secret 永不從 server 送回 client、
-          value 不會出現在 HTML / API response / 瀏覽器 DevTools。
+          🛡️ <b>安全</b>：本頁僅 admin 可看（
+          <span className="inline-flex items-center">
+            middleware
+            <Hint title="Middleware（中介層）">
+              每個請求進來時、在路由之前先檢查的一層程式。例如「這個請求有沒有登入？是不是 admin？」。我們的 admin 頁面靠它擋住非 admin。
+            </Hint>
+          </span>
+          強制驗 role）。Server secret 永不從 server 送回 client、
+          value 不會出現在 HTML /{" "}
+          <span className="inline-flex items-center">
+            API response
+            <Hint title="API response">
+              網站後端回給瀏覽器的資料。意思：機密值不會藏在後端回傳的資料裡（不會被駭客攔下來看到）。
+            </Hint>
+          </span>
+          / 瀏覽器 DevTools。
         </div>
         <div>
           ⚠️ <b>線上要生效一定要去 Zeabur dashboard 設</b>：本地 <code className="font-mono text-fg">.env.local</code> 只影響

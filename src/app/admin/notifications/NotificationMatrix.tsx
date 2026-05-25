@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { useToast } from "@/components/ui/Toast";
 import { Bell, Mail, MessageCircle, BellRing, Power, Loader2 } from "lucide-react";
+import { Hint } from "@/components/ui/Hint";
 
 type Setting = {
   event_key: string;
@@ -103,7 +104,14 @@ export function NotificationMatrix({ initial }: { initial: Setting[] }) {
                         </span>
                       </th>
                     ))}
-                    <th className="px-3 py-2 text-center">總開關</th>
+                    <th className="px-3 py-2 text-center">
+                      <span className="inline-flex items-center">
+                        總開關
+                        <Hint title="總開關">
+                          整個事件的開關。關掉 = 不管 channel 怎麼勾、都不發通知。例如維護期間想暫停某類通知、就關這個。
+                        </Hint>
+                      </span>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
