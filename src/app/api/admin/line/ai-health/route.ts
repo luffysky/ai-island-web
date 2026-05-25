@@ -61,15 +61,6 @@ export async function GET(_req: NextRequest) {
       : "❌ 沒設 admin LINE userId、通知無法推給任何人",
   });
 
-  // LINE Notify 已停服、env 設了也忽略
-  if (process.env.ADMIN_LINE_NOTIFY_TOKEN) {
-    checks.push({
-      step: "3d. ADMIN_LINE_NOTIFY_TOKEN (已忽略)",
-      status: "warn",
-      detail: "⚠️ LINE Notify 已於 2025-04 終止服務、程式已停止支援。建議從 .env.local 移除這行、避免混淆。",
-    });
-  }
-
   // ── AI 部分 (USER + ADMIN bot 共用) ──
   const admin = createSupabaseAdmin();
   const { data: models, error: modelsErr } = await admin
