@@ -1,6 +1,7 @@
 import { BroadcastForm } from "../BroadcastForm";
 import { adminHref } from "@/lib/admin-href";
 import Link from "next/link";
+import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
@@ -13,7 +14,13 @@ export default function NewBroadcastPage() {
       >
         ← 回公告列表
       </Link>
-      <h2 className="text-xl font-bold">📣 新增公告</h2>
+      <PageHero
+        emoji="📣"
+        title="新增公告"
+        desc="站內公告 / Email / LINE 三通路一鍵發。先設受眾、Email subject、內容。可預覽再送、不可撤回（已寄者無法收回）。"
+        gradient="from-orange-500/10 via-red-500/10 to-pink-500/10"
+        borderColor="border-orange-500/30"
+      />
       <BroadcastForm mode="new" />
     </div>
   );

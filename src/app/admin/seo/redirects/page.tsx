@@ -1,4 +1,5 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { PageHero } from "@/components/admin/PageHero";
 
 export default async function RedirectsPage() {
   const supabase = createSupabaseAdmin();
@@ -18,13 +19,17 @@ export default async function RedirectsPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold">↪️ 轉址管理</h2>
+      <PageHero
+        emoji="↪️"
+        title="轉址管理"
+        desc="301 / 302 轉址、避免 404 影響 SEO。從舊網址 redirect 到新位置、保留 Google 連結權重。"
+        gradient="from-lime-500/10 via-green-500/10 to-emerald-500/10"
+        borderColor="border-lime-500/30"
+      >
         <button className="px-4 py-2 bg-accent text-black rounded-lg font-semibold text-sm">
           + 新增轉址
         </button>
-      </div>
-      <p className="text-sm text-fg-muted">301 / 302 轉址、避免 404 影響 SEO</p>
+      </PageHero>
 
       {!redirects || redirects.length === 0 ? (
         <div className="bg-bg-card border border-border rounded-xl p-12 text-center text-fg-muted">

@@ -3,6 +3,7 @@ import { createSupabaseServer } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import { USAGE_LABELS } from "@/lib/ai-usage-models";
 import { UsageModelsClient } from "./UsageModelsClient";
+import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
@@ -42,15 +43,13 @@ export default async function UsageModelsPage() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h2 className="text-xl font-bold flex items-center gap-2">
-          🎛️ AI 用途 ↔ 模型對應
-        </h2>
-        <p className="text-xs text-fg-muted mt-1 leading-relaxed">
-          每個 AI 場景可獨立指定 model。例：LINE bot 用 Sonnet、Nami 出題用 Opus、留言審核用 Haiku 省錢。<br />
-          沒勾「啟用」→ caller 走 fallback (預設 model)。改完按「儲存全部」、各 webhook / endpoint 1 分鐘內生效 (in-memory cache)。
-        </p>
-      </div>
+      <PageHero
+        emoji="🎛️"
+        title="AI 用途 ↔ 模型對應"
+        desc="每個 AI 場景可獨立指定 model：LINE bot 用 Sonnet、Nami 出題用 Opus、留言審核用 Haiku 省錢。改完 1 分鐘內生效（in-memory cache）。"
+        gradient="from-indigo-500/10 via-violet-500/10 to-purple-500/10"
+        borderColor="border-indigo-500/30"
+      />
 
       <UsageModelsClient initialRows={rows} models={(models as any[]) ?? []} />
     </div>

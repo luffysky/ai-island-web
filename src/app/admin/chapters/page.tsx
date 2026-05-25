@@ -2,16 +2,20 @@ import { getChapterMetas } from "@/lib/content";
 import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
 import { chapterDisplayNumber } from "@/lib/chapter-display";
+import { PageHero } from "@/components/admin/PageHero";
 
 export default async function AdminChaptersPage() {
   const chapters = await getChapterMetas();
 
   return (
-    <div>
-      <h2 className="text-xl font-bold mb-4">📚 章節管理</h2>
-      <p className="text-sm text-fg-muted mb-4">
-        點章節進入編輯。每章右上「📝 出題」按鈕、可叫 AI 生 20 題章末測驗。
-      </p>
+    <div className="space-y-4">
+      <PageHero
+        emoji="📚"
+        title="章節管理"
+        desc="點章節進入編輯。每章右上「📝 出題」按鈕、可叫 AI 生 20 題章末測驗。published / draft 狀態即時切換。"
+        gradient="from-indigo-500/10 via-blue-500/10 to-cyan-500/10"
+        borderColor="border-indigo-500/30"
+      />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
         {chapters.map((c) => (
           <div key={c.id} className="p-4 rounded-lg bg-bg-card border border-border hover:border-accent transition relative group">

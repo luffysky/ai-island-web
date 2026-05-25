@@ -1,6 +1,7 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
+import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
@@ -100,17 +101,13 @@ export default async function LearningEventsPage({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between flex-wrap gap-2">
-        <div>
-          <h2 className="text-xl font-bold">📊 學習行為事件</h2>
-          <p className="text-xs text-fg-muted mt-0.5">
-            站內 lesson 完成 / quiz 嘗試 / 章節進入 等行為的原始 event 流
-          </p>
-        </div>
-        <div className="text-xs text-fg-muted">
-          匹配 {(count ?? 0).toLocaleString()} 筆 · 第 {page}/{totalPages} 頁
-        </div>
-      </div>
+      <PageHero
+        emoji="📊"
+        title="學習行為事件"
+        desc={`站內 lesson 完成 / quiz 嘗試 / 章節進入 等行為的原始 event 流。匹配 ${(count ?? 0).toLocaleString()} 筆 · 第 ${page}/${totalPages} 頁`}
+        gradient="from-blue-500/10 via-cyan-500/10 to-teal-500/10"
+        borderColor="border-blue-500/30"
+      />
 
       <form action={adminHref("/admin/analytics/learning-events")} className="bg-bg-card border border-border rounded-xl p-3 flex flex-wrap items-center gap-2">
         <input type="date" name="from" defaultValue={from} className="bg-bg border border-border rounded-lg px-2 py-1 text-xs" />

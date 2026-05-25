@@ -1,6 +1,7 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { LottieSettingsClient } from "./LottieSettingsClient";
 import { LOTTIE_SLOTS } from "./slots";
+import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
@@ -18,14 +19,13 @@ export default async function LottieSettingsPage() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="text-xl font-bold flex items-center gap-2">🎨 Lottie 動畫設定</h1>
-        <p className="text-xs text-fg-muted mt-1 leading-relaxed">
-          幫每個用途 paste 一個 LottieFiles 的 <code className="text-purple-300 bg-bg-elevated px-1 rounded">.lottie</code> URL、
-          右側即時 preview、滿意按「儲存」就上線、不用動 code。
-          推薦關鍵字在每個欄位下方、點關鍵字直接去 LottieFiles 搜尋。
-        </p>
-      </div>
+      <PageHero
+        emoji="🎨"
+        title="Lottie 動畫設定"
+        desc="幫每個用途 paste 一個 LottieFiles .lottie URL、右側即時 preview、按「儲存」就上線、不用改 code。推薦關鍵字在每個欄位下方。"
+        gradient="from-pink-500/10 via-purple-500/10 to-violet-500/10"
+        borderColor="border-pink-500/30"
+      />
       <LottieSettingsClient slots={LOTTIE_SLOTS} initial={settings} />
     </div>
   );
