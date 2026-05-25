@@ -2,6 +2,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { GA4Charts } from "./GA4Charts";
 import { GA4SyncButton } from "./GA4SyncButton";
 import { InteractionPanels } from "./InteractionPanels";
+import { PageHero } from "@/components/admin/PageHero";
 
 export default async function GA4Page() {
   const supabase = createSupabaseAdmin();
@@ -48,8 +49,14 @@ export default async function GA4Page() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-xl font-bold">📊 站台分析</h2>
+      <PageHero
+        emoji="📊"
+        title="站台分析"
+        desc="站內第一方追蹤 (即時 + 24h 歷史) 為主數據源、GA4 可選同步當二次驗證。"
+        gradient="from-green-500/10 via-emerald-500/10 to-teal-500/10"
+        borderColor="border-green-500/30"
+      />
+      <div className="hidden">
         <p className="text-sm text-fg-muted mt-1">
           站內第一方追蹤（即時 + 24h 歷史）為主數據源。
           {hasGa4 && (

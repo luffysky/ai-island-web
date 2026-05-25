@@ -1,5 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { RateLimitRulesClient } from "./RateLimitRulesClient";
+import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
@@ -34,12 +35,13 @@ export default async function RateLimitsAdminPage() {
 
   return (
     <div>
-      <header className="mb-6">
-        <h1 className="text-2xl font-bold flex items-center gap-2">🚦 API Rate Limit</h1>
-        <p className="text-sm text-fg-muted mt-1">
-          每 user + scope 滑動視窗限流。沒對應規則 = 不限。anon 請求 = 不限。
-        </p>
-      </header>
+      <PageHero
+        emoji="🚦"
+        title="API Rate Limit"
+        desc="每 user + scope 滑動視窗限流。沒對應規則 = 不限。anon 請求 = 不限。防 AI key 燒過頭必設。"
+        gradient="from-orange-500/10 via-red-500/10 to-pink-500/10"
+        borderColor="border-orange-500/30"
+      />
 
       <RateLimitRulesClient rules={(rules ?? []) as Rule[]} hitCount={hitCount} />
     </div>

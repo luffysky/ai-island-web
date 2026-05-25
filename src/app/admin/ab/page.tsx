@@ -1,5 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { AbExperimentsClient } from "./AbExperimentsClient";
+import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
@@ -36,13 +37,13 @@ export default async function AdminAbPage() {
 
   return (
     <div>
-      <header className="mb-6">
-        <h1 className="text-2xl font-bold flex items-center gap-2">🧪 A/B 測試</h1>
-        <p className="text-sm text-fg-muted mt-1">
-          建立 / 啟動 / 暫停實驗、看 variant assignment 數 + conversion rate。<br/>
-          開發者使用：在程式碼中呼叫 <code className="bg-bg-elevated px-1 rounded">useAbVariant("experiment-key")</code> 取得 variant。
-        </p>
-      </header>
+      <PageHero
+        emoji="🧪"
+        title="A/B 測試"
+        desc="建立 / 啟動 / 暫停實驗、看 variant assignment 數 + conversion rate。code 呼叫 useAbVariant('key')。"
+        gradient="from-violet-500/10 via-purple-500/10 to-pink-500/10"
+        borderColor="border-violet-500/30"
+      />
       <AbExperimentsClient initial={(experiments ?? []) as any} stats={stats} />
     </div>
   );

@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { ClearCacheButton } from "./ClearCacheButton";
+import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
@@ -54,10 +55,13 @@ export default async function OpsAdminPage() {
 
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="text-2xl font-bold">⚙️ 系統 Ops</h1>
-        <p className="text-sm text-fg-muted mt-1">DB 健康 + 快取 + 環境變數（運維剛需 P4-11/12/13）</p>
-      </header>
+      <PageHero
+        emoji="⚙️"
+        title="系統 Ops"
+        desc="DB 健康 + 快取 + 環境變數 (運維剛需)。看 connection pool / 清快取 / DB 表大小都在這。"
+        gradient="from-slate-500/10 via-gray-500/10 to-zinc-500/10"
+        borderColor="border-slate-500/30"
+      />
 
       {/* DB Health */}
       <section className="rounded-xl bg-bg-card border border-border p-4">

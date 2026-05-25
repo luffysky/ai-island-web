@@ -1,5 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { SettingsEditor } from "./SettingsEditor";
+import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
@@ -22,12 +23,13 @@ export default async function SettingsPage() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h2 className="text-xl font-bold">⚙️ 系統設定</h2>
-        <p className="text-sm text-fg-muted mt-1">
-          全站設定、功能開關、定價、維護模式等。改完按「儲存」即時生效、所有設定變動都會寫進 audit log。
-        </p>
-      </div>
+      <PageHero
+        emoji="⚙️"
+        title="系統設定"
+        desc="全站設定、功能開關、定價、維護模式。改完按「儲存」即時生效、所有變動都會寫 audit log。"
+        gradient="from-slate-500/10 via-zinc-500/10 to-stone-500/10"
+        borderColor="border-slate-500/30"
+      />
       <SettingsEditor initial={settings ?? []} />
     </div>
   );

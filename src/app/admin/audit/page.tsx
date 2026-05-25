@@ -2,6 +2,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
@@ -76,12 +77,13 @@ export default async function AuditPage({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between flex-wrap gap-2">
-        <h2 className="text-xl font-bold">📝 操作紀錄</h2>
-        <div className="text-xs text-fg-muted">
-          匹配 {(count ?? 0).toLocaleString()} 筆 · 第 {page}/{totalPages} 頁
-        </div>
-      </div>
+      <PageHero
+        emoji="📝"
+        title="操作紀錄"
+        desc={`所有 admin 動作會寫到 audit_logs、可依 actor / target / action 過濾。匹配 ${(count ?? 0).toLocaleString()} 筆、第 ${page}/${totalPages} 頁。`}
+        gradient="from-stone-500/10 via-zinc-500/10 to-slate-500/10"
+        borderColor="border-stone-500/30"
+      />
 
       {error?.message?.includes("does not exist") && (
         <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-6 text-sm">

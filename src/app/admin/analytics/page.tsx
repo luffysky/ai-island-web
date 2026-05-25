@@ -1,4 +1,5 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { PageHero } from "@/components/admin/PageHero";
 
 export default async function AdminAnalyticsPage() {
   const supabase = createSupabaseAdmin();
@@ -30,7 +31,13 @@ export default async function AdminAnalyticsPage() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-bold">📈 數據分析</h2>
+      <PageHero
+        emoji="📈"
+        title="數據分析"
+        desc="Top 10 熱門章節 / 成就解鎖排行、看用戶最愛玩什麼、定產品方向。"
+        gradient="from-pink-500/10 via-purple-500/10 to-blue-500/10"
+        borderColor="border-pink-500/30"
+      />
 
       <div className="bg-bg-card border border-border rounded-xl p-5">
         <h3 className="font-bold mb-4">🔥 Top 10 最熱門章節（完成 lesson 數）</h3>
