@@ -14,7 +14,11 @@ import { NextRequest, NextResponse } from "next/server";
  * 共用參數：&w=1200&h=630&seed=42&model=<provider-specific>
  * 各 provider 設定 / 註冊在 /admin/og-preview 介面有完整說明。
  */
-export const runtime = "edge";
+// nodejs runtime — Zeabur / Docker 上 edge runtime 對 process.env 行為不一致、
+// 非 NEXT_PUBLIC_ prefix 的 env 可能 build-time 變 undefined。
+// 改 nodejs 確保 CF_ACCOUNT_ID / TOGETHER_API_KEY 等 runtime 一定讀得到。
+// (本 route 只 fetch 外部 API、不渲染圖、nodejs vs edge 速度差 < 100ms 無感)
+export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
