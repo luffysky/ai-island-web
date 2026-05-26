@@ -6,6 +6,8 @@ import type { Metadata } from "next";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://aiisland.tw";
 
+export const revalidate = 60;
+
 export async function generateMetadata(): Promise<Metadata> {
   const chCount = SITE_STATS.chapterCount;
   const lsCount = SITE_STATS.lessonCount;

@@ -13,6 +13,8 @@ import type { Metadata } from "next";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
 
+export const revalidate = 60;
+
 export async function generateMetadata({
   params,
 }: {
