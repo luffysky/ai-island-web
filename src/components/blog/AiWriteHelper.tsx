@@ -33,6 +33,7 @@ export function AiWriteHelper({
     setErr("");
     setOutput("");
     const res = await fetch("/api/blog/ai-write", {
+      credentials: "include",
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ mode, text: input.trim() }),

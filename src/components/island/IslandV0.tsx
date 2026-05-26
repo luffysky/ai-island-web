@@ -696,6 +696,7 @@ async function openChestById(id: number, rewardCoin: number, opened: Set<number>
   // server 寫入失敗就 rollback（避免 client 已開但 z 幣沒入帳）
   try {
     const res = await fetch("/api/island/open-chest", {
+      credentials: "include",
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ chest_id: id, reward: rewardCoin }),

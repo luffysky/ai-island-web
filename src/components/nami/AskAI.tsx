@@ -34,6 +34,7 @@ export function AskAI({
     setErr("");
     try {
       const res = await fetch("/api/admin/playground/ai-help", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code, error, question: q ?? question, lang, context }),

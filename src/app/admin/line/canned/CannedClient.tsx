@@ -43,7 +43,8 @@ export function CannedClient({ initial, currentUserId }: { initial: Reply[]; cur
     });
     if (!ok) return;
     try {
-      const res = await fetch(`/api/admin/canned-replies/${r.id}`, { method: "DELETE" });
+      const res = await fetch(`/api/admin/canned-replies/${r.id}`, {
+      credentials: "include", method: "DELETE" });
       if (!res.ok) throw new Error((await res.json()).error);
       setReplies((p) => p.filter((x) => x.id !== r.id));
       toast.success("已刪除");

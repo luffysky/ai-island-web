@@ -18,7 +18,8 @@ export function ClearCacheButton() {
   const revalidate = async (path: string) => {
     setBusy(path);
     try {
-      const res = await fetch(`/api/admin/ops/revalidate?path=${encodeURIComponent(path)}`, { method: "POST" });
+      const res = await fetch(`/api/admin/ops/revalidate?path=${encodeURIComponent(path)}`, {
+      credentials: "include", method: "POST" });
       if (!res.ok) throw new Error();
       toast.success(`已清 ${path}`);
     } catch {

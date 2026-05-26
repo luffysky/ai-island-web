@@ -30,6 +30,7 @@ export function SegmentsClient({ initial }: { initial: Segment[] }) {
     if (!newName.trim()) return toast.warning("name 必填");
     try {
       const res = await fetch("/api/admin/segments", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: newName.trim(), description: newDesc.trim() || null, filter_json: parsed }),
@@ -46,6 +47,7 @@ export function SegmentsClient({ initial }: { initial: Segment[] }) {
   const preview = async (filter: any) => {
     try {
       const res = await fetch("/api/admin/segments/preview", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ filter_json: filter }),
@@ -60,7 +62,8 @@ export function SegmentsClient({ initial }: { initial: Segment[] }) {
   const del = async (id: string) => {
     const ok = await confirm({ title: "刪除這個 segment？", destructive: true, confirmLabel: "刪除" });
     if (!ok) return;
-    const res = await fetch(`/api/admin/segments/${id}`, { method: "DELETE" });
+    const res = await fetch(`/api/admin/segments/${id}`, {
+      credentials: "include", method: "DELETE" });
     if (res.ok) {
       setList((l) => l.filter((s) => s.id !== id));
       toast.success("已刪除");

@@ -38,6 +38,7 @@ export function AIKeysClient({ initialKeys }: { initialKeys: UserKey[] }) {
     setError("");
     try {
       const res = await fetch("/api/user/ai-keys", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ provider, apiKey, label: label || `${provider} key` }),
@@ -69,7 +70,8 @@ export function AIKeysClient({ initialKeys }: { initialKeys: UserKey[] }) {
       destructive: true,
     });
     if (!ok) return;
-    const res = await fetch(`/api/user/ai-keys?provider=${p}`, { method: "DELETE" });
+    const res = await fetch(`/api/user/ai-keys?provider=${p}`, {
+      credentials: "include", method: "DELETE" });
     if (res.ok) {
       setKeys(keys.filter((k) => k.provider !== p));
       toast.success(`已刪除 ${p} key`);

@@ -51,6 +51,7 @@ export function QuestPanel() {
     setBusy(id);
     try {
       const res = await fetch("/api/island/claim-quest", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ quest_id: id, reward: q.reward, date: state.date }),

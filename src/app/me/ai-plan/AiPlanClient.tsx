@@ -68,6 +68,7 @@ export function AiPlanClient({ initialPlan, defaultCareer }: { initialPlan: Plan
     setGenerating(true);
     try {
       const res = await fetch("/api/me/learning-plan/generate", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ depth, career_path: career, goal, schedule }),

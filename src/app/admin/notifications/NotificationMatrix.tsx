@@ -52,6 +52,7 @@ export function NotificationMatrix({ initial }: { initial: Setting[] }) {
     );
     try {
       const res = await fetch(`/api/admin/notifications/${key}`, {
+      credentials: "include",
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(patch),

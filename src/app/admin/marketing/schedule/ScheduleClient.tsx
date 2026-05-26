@@ -54,6 +54,7 @@ export function ScheduleClient({ initialDrafts }: { initialDrafts: Draft[] }) {
     try {
       const iso = scheduleDate ? new Date(scheduleDate).toISOString() : null;
       const res = await fetch("/api/admin/marketing/drafts", {
+      credentials: "include",
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, scheduled_at: iso, status: iso ? "scheduled" : "draft" }),

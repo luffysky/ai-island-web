@@ -40,6 +40,7 @@ export function GradingClient({ initial, filterStatus }: { initial: Submission[]
     setBusy(s.id);
     try {
       const res = await fetch(`/api/teacher/submissions/${s.id}/grade`, {
+      credentials: "include",
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ score, feedback_md: d.feedback }),

@@ -50,6 +50,7 @@ export function SEOManagerClient({
   const save = async () => {
     if (!editing) return;
     await fetch("/api/admin/seo", {
+      credentials: "include",
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(editing),

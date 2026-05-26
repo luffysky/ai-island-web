@@ -41,7 +41,8 @@ export default function LoginPage() {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) setError(error.message);
     else {
-      const res = await fetch("/api/auth/ensure-profile", { method: "POST" });
+      const res = await fetch("/api/auth/ensure-profile", {
+      credentials: "include", method: "POST" });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         setError(data.error || "登入成功，但建立會員資料失敗");

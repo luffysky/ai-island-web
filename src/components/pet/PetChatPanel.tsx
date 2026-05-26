@@ -89,6 +89,7 @@ export function PetChatPanel({
 
     try {
       const res = await fetch("/api/pet/chat", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: userMsg, path: window.location.pathname }),

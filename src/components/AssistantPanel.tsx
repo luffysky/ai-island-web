@@ -42,6 +42,7 @@ export function AssistantPanel({
     setReply("");
     try {
       const res = await fetch("/api/ai/assistant", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ mode, message: msg, context }),

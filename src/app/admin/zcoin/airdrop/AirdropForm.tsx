@@ -56,6 +56,7 @@ export function AirdropForm() {
       const segment: any = { kind };
       if (kind === "xp_gte" || kind === "level_gte") segment.value = value;
       const res = await fetch("/api/admin/zcoin/airdrop", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ segment, amount, reason: reason.trim() }),

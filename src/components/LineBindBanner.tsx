@@ -48,7 +48,8 @@ export function LineBindBanner() {
   const getCode = async () => {
     setLoadingCode(true);
     try {
-      const res = await fetch("/api/me/line/bind-code", { method: "POST" });
+      const res = await fetch("/api/me/line/bind-code", {
+      credentials: "include", method: "POST" });
       const j = await res.json();
       if (!res.ok) throw new Error(j.error || j.message);
       setCode(j.code);

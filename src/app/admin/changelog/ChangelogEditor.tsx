@@ -62,7 +62,8 @@ export function ChangelogEditor({ initial }: { initial: Entry[] }) {
   const del = async (id: string) => {
     const ok = await confirm({ title: "刪除這則更新日誌？", destructive: true, confirmLabel: "刪除" });
     if (!ok) return;
-    const res = await fetch(`/api/admin/changelog/${id}`, { method: "DELETE" });
+    const res = await fetch(`/api/admin/changelog/${id}`, {
+      credentials: "include", method: "DELETE" });
     if (res.ok) {
       setEntries((es) => es.filter((e) => e.id !== id));
       toast.success("已刪除");
@@ -73,6 +74,7 @@ export function ChangelogEditor({ initial }: { initial: Entry[] }) {
     const next = !e.published;
     setEntries((es) => es.map((x) => (x.id === e.id ? { ...x, published: next } : x)));
     const res = await fetch(`/api/admin/changelog/${e.id}`, {
+      credentials: "include",
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ published: next }),

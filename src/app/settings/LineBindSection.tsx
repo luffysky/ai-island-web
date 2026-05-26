@@ -27,7 +27,8 @@ export function LineBindSection({
   const generate = async () => {
     setGenerating(true);
     try {
-      const res = await fetch("/api/me/line/bind-code", { method: "POST" });
+      const res = await fetch("/api/me/line/bind-code", {
+      credentials: "include", method: "POST" });
       const j = await res.json();
       if (!res.ok) throw new Error(j.error || "產生失敗");
       setCode(j.code);
@@ -60,7 +61,8 @@ export function LineBindSection({
     if (!ok) return;
     setBusy(true);
     try {
-      const res = await fetch("/api/me/line/unbind", { method: "POST" });
+      const res = await fetch("/api/me/line/unbind", {
+      credentials: "include", method: "POST" });
       if (!res.ok) throw new Error("解除失敗");
       setBound(false);
       setCode("");

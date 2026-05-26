@@ -50,6 +50,7 @@ export function GamificationRulesClient({ initial }: { initial: Rule[] }) {
     }
     try {
       const res = await fetch("/api/admin/gamification", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ kind: newKind, key: newKey.trim(), value: parsedValue }),
@@ -70,6 +71,7 @@ export function GamificationRulesClient({ initial }: { initial: Rule[] }) {
     setRules((rs) => rs.map((r) => (r.id === id ? { ...r, ...patch } : r)));
     try {
       const res = await fetch(`/api/admin/gamification/${id}`, {
+      credentials: "include",
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(patch),
@@ -85,7 +87,8 @@ export function GamificationRulesClient({ initial }: { initial: Rule[] }) {
   const remove = async (id: string, key: string) => {
     const ok = await confirm({ title: `刪除規則「${key}」？`, destructive: true, confirmLabel: "刪除" });
     if (!ok) return;
-    const res = await fetch(`/api/admin/gamification/${id}`, { method: "DELETE" });
+    const res = await fetch(`/api/admin/gamification/${id}`, {
+      credentials: "include", method: "DELETE" });
     if (res.ok) {
       setRules((rs) => rs.filter((r) => r.id !== id));
       toast.success("已刪除");

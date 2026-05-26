@@ -45,7 +45,8 @@ export function CallbackHashHandler() {
       // profile 沒補到也沒關係、AuthProvider 之後會 load、首次 page query
       // 沒命中就重 load 一次。
       await Promise.race([
-        fetch("/api/auth/ensure-profile", { method: "POST" }).catch((e) => {
+        fetch("/api/auth/ensure-profile", {
+      credentials: "include", method: "POST" }).catch((e) => {
           devLog.warn("[Callback] ensure-profile fail:", e);
           return null;
         }),

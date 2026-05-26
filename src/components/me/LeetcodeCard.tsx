@@ -42,6 +42,7 @@ export function LeetcodeCard() {
     setBusy(true);
     try {
       const res = await fetch("/api/me/leetcode", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username: u }),
@@ -70,7 +71,8 @@ export function LeetcodeCard() {
   const unbind = async () => {
     const ok = await confirm({ title: "解除 Leetcode 綁定？", description: "之後可重新綁定。", confirmLabel: "解除", destructive: true });
     if (!ok) return;
-    await fetch("/api/me/leetcode", { method: "DELETE" });
+    await fetch("/api/me/leetcode", {
+      credentials: "include", method: "DELETE" });
     setUsername(null); setStats(null);
     toast.info("已解除綁定");
   };

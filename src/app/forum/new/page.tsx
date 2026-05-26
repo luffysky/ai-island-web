@@ -45,6 +45,7 @@ function NewThreadForm() {
     setSaving(true);
     setErr("");
     const res = await fetch("/api/forum/threads", {
+      credentials: "include",
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title: title.trim(), content, tags, board_slug: boardSlug }),

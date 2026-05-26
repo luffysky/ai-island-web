@@ -44,6 +44,7 @@ export function VillagerTalk() {
     setBusy(true);
     try {
       const res = await fetch("/api/island/villager-greet", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ villager_id: v.id }),

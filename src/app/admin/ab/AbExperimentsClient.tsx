@@ -61,6 +61,7 @@ export function AbExperimentsClient({ initial, stats }: { initial: Experiment[];
     setCreating(true);
     try {
       const res = await fetch("/api/admin/ab", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ key: newKey.trim(), description: newDesc.trim() || null, variants }),
@@ -83,6 +84,7 @@ export function AbExperimentsClient({ initial, stats }: { initial: Experiment[];
     const before = exps;
     setExps((es) => es.map((e) => e.id === id ? { ...e, status } : e));
     const res = await fetch(`/api/admin/ab/${id}`, {
+      credentials: "include",
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status }),
@@ -97,6 +99,7 @@ export function AbExperimentsClient({ initial, stats }: { initial: Experiment[];
     const before = exps;
     setExps((es) => es.map((e) => e.id === id ? { ...e, allocation } : e));
     const res = await fetch(`/api/admin/ab/${id}`, {
+      credentials: "include",
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ allocation }),
@@ -116,7 +119,8 @@ export function AbExperimentsClient({ initial, stats }: { initial: Experiment[];
   const remove = async (id: string, key: string) => {
     const ok = await confirm({ title: `刪除實驗「${key}」？`, description: "會連同 assignments 一起刪除。", destructive: true, confirmLabel: "刪除" });
     if (!ok) return;
-    const res = await fetch(`/api/admin/ab/${id}`, { method: "DELETE" });
+    const res = await fetch(`/api/admin/ab/${id}`, {
+      credentials: "include", method: "DELETE" });
     if (res.ok) {
       setExps((es) => es.filter((e) => e.id !== id));
       toast.success("已刪除");

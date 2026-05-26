@@ -76,11 +76,13 @@ export function ArticleEditorForm({ initial }: { initial?: Partial<ArticleFormDa
     };
     const res = isEdit
       ? await fetch(`/api/blog/articles/${data.id}`, {
+      credentials: "include",
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         })
       : await fetch("/api/blog/articles", {
+      credentials: "include",
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),

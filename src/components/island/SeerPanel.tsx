@@ -43,6 +43,7 @@ export function SeerPanel() {
     try {
       // server 決定 tier + 發獎、回傳完整 Fortune（防 client 改大吉）
       const res = await fetch("/api/island/claim-fortune", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ date: today.date }),

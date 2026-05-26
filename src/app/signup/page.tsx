@@ -36,7 +36,8 @@ export default function SignupPage() {
     if (error) { setError(error.message); setLoading(false); return; }
 
     if (data.session) {
-      const res = await fetch("/api/auth/ensure-profile", { method: "POST" });
+      const res = await fetch("/api/auth/ensure-profile", {
+      credentials: "include", method: "POST" });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         setError(body.error || "註冊成功，但建立會員資料失敗");

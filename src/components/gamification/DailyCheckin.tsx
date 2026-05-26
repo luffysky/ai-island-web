@@ -66,6 +66,7 @@ export function DailyCheckin() {
     if (data.z_awarded) setJustGotZ(data.z_awarded);
     // 推進任務進度
     fetch("/api/quests/progress", {
+      credentials: "include",
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ type: "daily_checkin", delta: 1 }),

@@ -27,6 +27,7 @@ export function useUserActions(user: any) {
     setAiBusy(true);
     try {
       const res = await fetch("/api/admin/users/ai-unlimited", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId: user.id, enabled: next }),
@@ -55,6 +56,7 @@ export function useUserActions(user: any) {
     setBusy(true);
     try {
       const res = await fetch("/api/admin/users/role", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId: user.id, role: newRole }),
@@ -81,6 +83,7 @@ export function useUserActions(user: any) {
     if (!ok) return;
     try {
       const res = await fetch(`/api/admin/ban-user`, {
+      credentials: "include",
         method: "POST",
         body: JSON.stringify({ userId: user.id }),
       });

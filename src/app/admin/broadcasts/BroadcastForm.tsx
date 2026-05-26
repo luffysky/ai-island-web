@@ -72,7 +72,8 @@ export function BroadcastForm({
       destructive: true,
     });
     if (!ok) return;
-    const res = await fetch(`/api/admin/broadcasts/${broadcast.id}`, { method: "DELETE" });
+    const res = await fetch(`/api/admin/broadcasts/${broadcast.id}`, {
+      credentials: "include", method: "DELETE" });
     if (res.ok) {
       toast.success("已刪除公告");
       router.push(adminHref("/admin/broadcasts") as any);

@@ -26,6 +26,7 @@ export function UnsubscribeForm({
   const unsubscribeAll = async () => {
     setLoading(true);
     const res = await fetch("/api/email/unsubscribe", {
+      credentials: "include",
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ token, all: true, reason }),
@@ -37,6 +38,7 @@ export function UnsubscribeForm({
   const savePrefs = async () => {
     setLoading(true);
     const res = await fetch("/api/email/unsubscribe", {
+      credentials: "include",
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ token, prefs, reason }),

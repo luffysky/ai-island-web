@@ -38,6 +38,7 @@ export function UsageModelsClient({
     setSaving(true);
     try {
       const res = await fetch("/api/admin/ai/usage-models", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ rows }),

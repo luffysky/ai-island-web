@@ -65,7 +65,8 @@ export function NotificationsDropdown() {
   }, [open, user?.id]);
 
   const markAllRead = async () => {
-    await fetch("/api/me/notifications/mark-all-read", { method: "POST" });
+    await fetch("/api/me/notifications/mark-all-read", {
+      credentials: "include", method: "POST" });
     setItems((arr) => arr.map((n) => ({ ...n, read_at: n.read_at ?? new Date().toISOString() })));
     setUnread(0);
   };

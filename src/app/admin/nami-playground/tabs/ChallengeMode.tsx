@@ -105,6 +105,7 @@ export function ChallengeMode() {
     // 寫 server
     try {
       const res = await fetch("/api/admin/playground/challenge/submit", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ challenge_id: selected.id, code, passed, error: r.stderr }),

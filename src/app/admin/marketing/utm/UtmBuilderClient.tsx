@@ -65,6 +65,7 @@ export function UtmBuilderClient({ initialLinks, siteUrl }: { initialLinks: UtmR
     setSaving(true);
     try {
       const res = await fetch("/api/admin/marketing/utm", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),

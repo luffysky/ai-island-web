@@ -113,6 +113,7 @@ export function LottieSettingsClient({ slots, initial }: { slots: Slot[]; initia
     setSaving(key);
     try {
       const res = await fetch("/api/admin/app-settings", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ key, value: value === "" ? null : value }),

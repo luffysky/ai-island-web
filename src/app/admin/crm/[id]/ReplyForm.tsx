@@ -76,6 +76,7 @@ export function ReplyForm({
     setShowCanned(false);
     // 統計用一次
     fetch(`/api/admin/canned-replies/${c.id}`, {
+      credentials: "include",
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ use_count_increment: 1 }),
@@ -89,6 +90,7 @@ export function ReplyForm({
     setSending(true);
     try {
       const res = await fetch(`/api/admin/tickets/${ticketId}/reply`, {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ body }),

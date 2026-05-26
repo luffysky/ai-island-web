@@ -76,6 +76,7 @@ export function ErrorLogsClient({
 
     try {
       const res = await fetch(`/api/admin/errors/${id}/resolve`, {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ note: note || null }),
@@ -96,7 +97,8 @@ export function ErrorLogsClient({
       destructive: true,
     });
     if (!ok) return;
-    const res = await fetch("/api/admin/errors/cleanup", { method: "POST" });
+    const res = await fetch("/api/admin/errors/cleanup", {
+      credentials: "include", method: "POST" });
     const j = await res.json().catch(() => ({}));
     if (res.ok) {
       toast.success(`已刪除 ${j.deleted ?? "?"} 筆`);

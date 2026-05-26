@@ -46,6 +46,7 @@ export function PetSettings({ initial }: { initial: any }) {
     setMsg(null);
     try {
       const res = await fetch("/api/pet/settings", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(pet),

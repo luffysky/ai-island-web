@@ -54,7 +54,8 @@ export function GdprRequestsClient({ initial }: { initial: GdprRow[] }) {
     }
 
     try {
-      const res = await fetch(`/api/admin/gdpr/${row.id}/hard-delete`, { method: "POST" });
+      const res = await fetch(`/api/admin/gdpr/${row.id}/hard-delete`, {
+      credentials: "include", method: "POST" });
       const j = await res.json();
       if (!res.ok) throw new Error(j.error || "失敗");
       toast.success("已硬刪");

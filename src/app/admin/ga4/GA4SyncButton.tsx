@@ -12,7 +12,8 @@ export function GA4SyncButton() {
     setSyncing(true);
     setResult(null);
     try {
-      const res = await fetch("/api/admin/ga4/sync", { method: "POST" });
+      const res = await fetch("/api/admin/ga4/sync", {
+      credentials: "include", method: "POST" });
       const data = await res.json();
       if (data.ok) {
         setResult(`✓ 已同步 ${data.upserted} 天的數據`);

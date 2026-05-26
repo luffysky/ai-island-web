@@ -96,6 +96,7 @@ function InteractionTrackerInner() {
         return;
       }
       fetch("/api/analytics/track", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body,

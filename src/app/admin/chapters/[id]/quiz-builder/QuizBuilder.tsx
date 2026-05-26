@@ -59,6 +59,7 @@ export function QuizBuilder({
     setMsg("AI 出題中、可能需要 30-60 秒…");
     try {
       const res = await fetch("/api/admin/quiz/generate", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ chapterId }),
@@ -86,6 +87,7 @@ export function QuizBuilder({
     setMsg(null);
     try {
       const res = await fetch("/api/admin/quiz/save", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ chapterId, quiz }),

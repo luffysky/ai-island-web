@@ -34,6 +34,7 @@ export function RateLimitRulesClient({
     setRules((rs) => rs.map((r) => (r.scope === scope ? { ...r, ...patch } : r)));
     try {
       const res = await fetch("/api/admin/rate-limits", {
+      credentials: "include",
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ scope, ...patch }),
@@ -58,6 +59,7 @@ export function RateLimitRulesClient({
     setRules((rs) => rs.filter((r) => r.scope !== scope));
     try {
       const res = await fetch(`/api/admin/rate-limits?scope=${encodeURIComponent(scope)}`, {
+      credentials: "include",
         method: "DELETE",
       });
       if (!res.ok) throw new Error();
@@ -74,6 +76,7 @@ export function RateLimitRulesClient({
     setCreating(true);
     try {
       const res = await fetch("/api/admin/rate-limits", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ scope: s, limit_count: 30, window_seconds: 60 }),

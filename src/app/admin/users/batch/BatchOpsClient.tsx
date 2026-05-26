@@ -71,6 +71,7 @@ export function BatchOpsClient() {
     setResult(null);
     try {
       const res = await fetch("/api/admin/users/batch", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_ids: ids, action }),

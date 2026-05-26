@@ -33,6 +33,7 @@ export function BreachDetailForm({ incident }: { incident: any }) {
     setMsg(null);
     try {
       const res = await fetch(`/api/admin/breach/${incident.id}`, {
+      credentials: "include",
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

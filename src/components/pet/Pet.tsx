@@ -375,6 +375,7 @@ export function Pet() {
       lastTickAt.current = now;
       try {
         const res = await fetch("/api/pet/tick", {
+      credentials: "include",
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ path: pathname }),

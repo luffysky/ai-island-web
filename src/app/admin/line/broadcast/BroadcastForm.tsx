@@ -36,6 +36,7 @@ export function BroadcastForm({
     setSending(true);
     try {
       const res = await fetch("/api/admin/line/broadcast", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: body, respect_optout: audience === "respecting_optout" }),

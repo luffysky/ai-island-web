@@ -46,6 +46,7 @@ export function ThreadActions({ thread }: { thread: any }) {
       if (action === "delete") setDeleted(true);
       try {
         const res = await fetch("/api/admin/moderation/forum-thread", {
+      credentials: "include",
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ id: thread.id, action }),
@@ -123,6 +124,7 @@ export function ReplyActions({ reply }: { reply: any }) {
       if (action === "delete") setDeleted(true);
       try {
         const res = await fetch("/api/admin/moderation/forum-reply", {
+      credentials: "include",
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ id: reply.id, action }),

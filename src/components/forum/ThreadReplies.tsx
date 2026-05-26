@@ -85,6 +85,7 @@ export function ThreadReplies({
     setSending(true);
     try {
       const res = await fetch(`/api/forum/threads/${threadId}/replies`, {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content: trimmed, parent_id: parentId }),
@@ -150,7 +151,8 @@ export function ThreadReplies({
       try {
         const res = await fetch(
           `/api/forum/threads/${threadId}/replies?reply=${replyId}`,
-          { method: "DELETE" },
+          {
+      credentials: "include", method: "DELETE" },
         );
         if (!res.ok) throw new Error();
       } catch {
@@ -172,6 +174,7 @@ export function ThreadReplies({
       const res = await fetch(
         `/api/forum/threads/${threadId}/replies?reply=${replyId}`,
         {
+      credentials: "include",
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ is_answer: isAnswer }),

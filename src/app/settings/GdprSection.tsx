@@ -59,7 +59,8 @@ export function GdprSection({ initialDeletedAt }: { initialDeletedAt: string | n
 
     setDeleting(true);
     try {
-      const res = await fetch("/api/user/gdpr/delete", { method: "POST" });
+      const res = await fetch("/api/user/gdpr/delete", {
+      credentials: "include", method: "POST" });
       const j = await res.json();
       if (!res.ok) throw new Error(j.error || "刪除失敗");
       toast.success("已標記刪除、3 秒後登出");
@@ -82,7 +83,8 @@ export function GdprSection({ initialDeletedAt }: { initialDeletedAt: string | n
     });
     if (!ok) return;
     try {
-      const res = await fetch("/api/user/gdpr/cancel", { method: "POST" });
+      const res = await fetch("/api/user/gdpr/cancel", {
+      credentials: "include", method: "POST" });
       if (!res.ok) throw new Error();
       setDeletedAt(null);
       toast.success("已取消刪除、帳號恢復");

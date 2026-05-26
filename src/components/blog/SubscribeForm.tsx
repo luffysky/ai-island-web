@@ -14,6 +14,7 @@ export function SubscribeForm({ userSlug }: { userSlug: string }) {
     setStatus("sending");
     setErrMsg("");
     const res = await fetch(`/api/blog/${userSlug}/subscribe`, {
+      credentials: "include",
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: email.trim(), name: name.trim() || null }),

@@ -34,6 +34,7 @@ export function KeywordsClient({ initial }: { initial: Keyword[] }) {
     if (!newKw.trim()) return;
     try {
       const res = await fetch("/api/admin/ai-keywords", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ keyword: newKw.trim().toLowerCase(), severity: newSev, category: newCat }),
@@ -51,6 +52,7 @@ export function KeywordsClient({ initial }: { initial: Keyword[] }) {
   const toggle = async (k: Keyword) => {
     setList((l) => l.map((x) => x.id === k.id ? { ...x, enabled: !x.enabled } : x));
     await fetch(`/api/admin/ai-keywords/${k.id}`, {
+      credentials: "include",
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ enabled: !k.enabled }),
@@ -61,7 +63,8 @@ export function KeywordsClient({ initial }: { initial: Keyword[] }) {
   const del = async (k: Keyword) => {
     const ok = await confirm({ title: `刪除關鍵字「${k.keyword}」？`, destructive: true, confirmLabel: "刪除" });
     if (!ok) return;
-    const res = await fetch(`/api/admin/ai-keywords/${k.id}`, { method: "DELETE" });
+    const res = await fetch(`/api/admin/ai-keywords/${k.id}`, {
+      credentials: "include", method: "DELETE" });
     if (res.ok) {
       setList((l) => l.filter((x) => x.id !== k.id));
       toast.success("已刪除");

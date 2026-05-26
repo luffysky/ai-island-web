@@ -83,6 +83,7 @@ export class GamificationEngine {
       this.onLevelUp?.(after.level);
       // 升等 → admin + user 通知（fire-and-forget client-side）
       fetch('/api/me/notify-levelup', {
+      credentials: "include",
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ newLevel: after.level }),
@@ -231,6 +232,7 @@ export class GamificationEngine {
         this.onAchievementUnlocked?.(ach);
         // 通知 server：in-app notif + admin LINE
         fetch('/api/me/notify-achievement', {
+      credentials: "include",
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ achievement_id: ach.id, title: ach.title ?? ach.name ?? ach.id }),

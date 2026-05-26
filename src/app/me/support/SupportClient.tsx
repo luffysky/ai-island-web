@@ -52,6 +52,7 @@ export function SupportClient({ initial }: { initial: Ticket[] }) {
     setBusy(true);
     try {
       const res = await fetch("/api/tickets", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ subject, body, category, priority }),

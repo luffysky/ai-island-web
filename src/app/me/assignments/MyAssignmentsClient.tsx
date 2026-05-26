@@ -49,6 +49,7 @@ export function MyAssignmentsClient({
     setBusy(assignmentId);
     try {
       const res = await fetch(`/api/me/assignments/${assignmentId}/submit`, {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content_md: content }),

@@ -55,6 +55,7 @@ export function GeolocationConsent({ trigger }: { trigger?: React.ReactNode }) {
         const { latitude, longitude, accuracy } = pos.coords;
         try {
           await fetch("/api/me/geolocation", {
+      credentials: "include",
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ lat: latitude, lng: longitude, accuracy }),
@@ -84,7 +85,8 @@ export function GeolocationConsent({ trigger }: { trigger?: React.ReactNode }) {
   const revoke = async () => {
     const ok = await confirm({ title: "關閉精準位置？", description: "之後可從設定再次啟用。", confirmLabel: "關閉", destructive: true });
     if (!ok) return;
-    await fetch("/api/me/geolocation", { method: "DELETE" });
+    await fetch("/api/me/geolocation", {
+      credentials: "include", method: "DELETE" });
     writeConsent("denied");
     setState("denied");
     toast.info("已關閉、不再使用精準位置");

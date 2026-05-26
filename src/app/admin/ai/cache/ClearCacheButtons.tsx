@@ -21,6 +21,7 @@ export function ClearCacheButtons() {
     setBusy(mode);
     try {
       const res = await fetch("/api/admin/ai/cache/clear", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ mode }),

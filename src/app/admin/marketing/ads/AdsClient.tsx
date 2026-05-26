@@ -65,6 +65,7 @@ export function AdsClient({ initial }: { initial: Row[] }) {
     startTransition(async () => {
       try {
         const res = await fetch("/api/admin/marketing/ads", {
+      credentials: "include",
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -97,6 +98,7 @@ export function AdsClient({ initial }: { initial: Row[] }) {
     startTransition(async () => {
       try {
         const res = await fetch("/api/admin/marketing/ads", {
+      credentials: "include",
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ id: row.id, status }),
@@ -120,7 +122,8 @@ export function AdsClient({ initial }: { initial: Row[] }) {
     setRows((rs) => rs.filter((r) => r.id !== row.id));
     startTransition(async () => {
       try {
-        const res = await fetch(`/api/admin/marketing/ads?id=${row.id}`, { method: "DELETE" });
+        const res = await fetch(`/api/admin/marketing/ads?id=${row.id}`, {
+      credentials: "include", method: "DELETE" });
         if (!res.ok) throw new Error();
         toast.success("已封存");
       } catch {

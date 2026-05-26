@@ -57,6 +57,7 @@ export function EnvRequestsPanel() {
 
     try {
       const r = await fetch(`/api/admin/env-requests/${id}`, {
+      credentials: "include",
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status }),
@@ -204,6 +205,7 @@ function RequestModal({
     setBusy(true);
     try {
       const r = await fetch("/api/admin/env-requests", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ key_name: keyName.trim().toUpperCase(), purpose: purpose.trim() }),

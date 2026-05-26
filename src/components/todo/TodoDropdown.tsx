@@ -184,6 +184,7 @@ function TodoPanelBody({ onClose }: { onClose: () => void }) {
 
     try {
       const res = await fetch("/api/todo", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title: t, parent_id: parentId }),
@@ -205,6 +206,7 @@ function TodoPanelBody({ onClose }: { onClose: () => void }) {
     setTodos((prev) => prev.map((t) => (t.id === id ? { ...t, ...patch } : t)));
     try {
       const res = await fetch(`/api/todo/${id}`, {
+      credentials: "include",
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(patch),
@@ -258,7 +260,8 @@ function TodoPanelBody({ onClose }: { onClose: () => void }) {
 
     setTimeout(async () => {
       if (undone) return;
-      const res = await fetch(`/api/todo/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/todo/${id}`, {
+      credentials: "include", method: "DELETE" });
       if (!res.ok) {
         setTodos(snapshot);
         toast.error("刪除失敗、已恢復");
@@ -291,6 +294,7 @@ function TodoPanelBody({ onClose }: { onClose: () => void }) {
 
     try {
       const res = await fetch("/api/todo/reorder", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ items: updates }),

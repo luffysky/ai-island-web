@@ -74,6 +74,7 @@ export function LeetcodeListClient({
     setSolved(next);
     try {
       await fetch("/api/me/leetcode/solve", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ problem_id: id }),
@@ -86,7 +87,8 @@ export function LeetcodeListClient({
     if (!leetcodeUsername) { toast.warning("先在主後台綁定 leetcode username"); return; }
     setBusy(true);
     try {
-      const res = await fetch("/api/me/leetcode/sync", { method: "POST" });
+      const res = await fetch("/api/me/leetcode/sync", {
+      credentials: "include", method: "POST" });
       const j = await res.json();
       if (res.ok) {
         toast.success(`同步 ${j.added} 題已解`);

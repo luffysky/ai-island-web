@@ -46,6 +46,7 @@ export function CompetitorClient({ initial }: { initial: Row[] }) {
     startTransition(async () => {
       try {
         const res = await fetch("/api/admin/marketing/competitor", {
+      credentials: "include",
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(form),
@@ -75,7 +76,8 @@ export function CompetitorClient({ initial }: { initial: Row[] }) {
     setRows((rs) => rs.filter((r) => r.id !== row.id));
     startTransition(async () => {
       try {
-        const res = await fetch(`/api/admin/marketing/competitor?id=${row.id}`, { method: "DELETE" });
+        const res = await fetch(`/api/admin/marketing/competitor?id=${row.id}`, {
+      credentials: "include", method: "DELETE" });
         if (!res.ok) throw new Error();
         toast.success("已刪除");
       } catch {
@@ -91,6 +93,7 @@ export function CompetitorClient({ initial }: { initial: Row[] }) {
     startTransition(async () => {
       try {
         const res = await fetch("/api/admin/marketing/competitor", {
+      credentials: "include",
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ id: row.id, threat_level: level }),

@@ -52,6 +52,7 @@ export function ChallengeGenerator({ onInserted }: { onInserted: () => void }) {
     reset();
     try {
       const res = await fetch("/api/admin/playground/challenge/generate", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ level, count, category, hint }),
@@ -91,6 +92,7 @@ export function ChallengeGenerator({ onInserted }: { onInserted: () => void }) {
     setInserting(true);
     try {
       const res = await fetch("/api/admin/playground/challenge/bulk-insert", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ challenges: toInsert }),

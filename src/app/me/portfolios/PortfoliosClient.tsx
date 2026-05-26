@@ -77,7 +77,8 @@ export function PortfoliosClient({
   const del = async (id: string) => {
     const ok = await confirm({ title: "刪除這個作品集？", destructive: true, confirmLabel: "刪除" });
     if (!ok) return;
-    const res = await fetch(`/api/me/portfolios/${id}`, { method: "DELETE" });
+    const res = await fetch(`/api/me/portfolios/${id}`, {
+      credentials: "include", method: "DELETE" });
     if (res.ok) {
       setList((l) => l.filter((p) => p.id !== id));
       toast.success("已刪除");

@@ -52,7 +52,8 @@ export function TopNav() {
         supabase.auth.signOut({ scope: "local" }),
         new Promise((resolve) => setTimeout(resolve, 1500)),
       ]);
-      const res = await fetch("/api/auth/logout", { method: "POST" });
+      const res = await fetch("/api/auth/logout", {
+      credentials: "include", method: "POST" });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         devLog.error("[Logout] server signOut failed:", body);

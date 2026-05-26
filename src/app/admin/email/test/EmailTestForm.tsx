@@ -20,6 +20,7 @@ export function EmailTestForm({ defaultTo, hasResend }: { defaultTo: string; has
     setResult(null);
     try {
       const res = await fetch("/api/admin/email/test", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ to: to.trim(), subject, text: body }),

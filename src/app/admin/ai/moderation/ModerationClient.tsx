@@ -44,6 +44,7 @@ export function ModerationClient({ initial, filters }: { initial: Flag[]; filter
     setRows((rs) => rs.map((r) => r.id === id ? { ...r, status } : r));
     try {
       const res = await fetch(`/api/admin/ai-moderation/${id}`, {
+      credentials: "include",
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status }),

@@ -44,6 +44,7 @@ export function SeoPreviewClient({
   const save = async () => {
     try {
       const res = await fetch("/api/admin/seo-overrides", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

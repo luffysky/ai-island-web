@@ -53,7 +53,8 @@ export function AssignmentsClient({ initial, submissionCounts }: { initial: Assi
   const del = async (id: string) => {
     const ok = await confirm({ title: "刪除這個作業？", description: "會連同提交一起刪除、不可復原。", destructive: true, confirmLabel: "刪除" });
     if (!ok) return;
-    const res = await fetch(`/api/teacher/assignments/${id}`, { method: "DELETE" });
+    const res = await fetch(`/api/teacher/assignments/${id}`, {
+      credentials: "include", method: "DELETE" });
     if (res.ok) {
       setList((l) => l.filter((a) => a.id !== id));
       toast.success("已刪除");

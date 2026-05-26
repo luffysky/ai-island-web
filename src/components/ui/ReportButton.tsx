@@ -45,6 +45,7 @@ export function ReportButton({
     setBusy(true);
     try {
       const res = await fetch("/api/reports", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ target_type: targetType, target_id: targetId, target_owner_id: targetOwnerId, reason, note }),

@@ -31,6 +31,7 @@ export function useAbVariant(experimentKey: string): string | null {
   useEffect(() => {
     let cancelled = false;
     fetch("/api/ab/assign", {
+      credentials: "include",
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ key: experimentKey, anonId: getAnonId() }),
@@ -50,6 +51,7 @@ export function useAbVariant(experimentKey: string): string | null {
 export async function reportAbConversion(experimentKey: string, variant: string, meta?: Record<string, unknown>) {
   try {
     await fetch("/api/ab/event", {
+      credentials: "include",
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

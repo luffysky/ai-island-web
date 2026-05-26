@@ -75,6 +75,7 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
           window.dispatchEvent(new CustomEvent("pet:xp-earned", { detail: { xp } }));
           // quest 任務
           fetch("/api/quests/progress", {
+      credentials: "include",
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ type: "complete_lessons", delta: 1 }),
@@ -84,6 +85,7 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
           import("@/components/island/island-bus").then((m) => m.bumpQuest("lessons", 1)).catch(() => {});
           // 後端發 in-app 通知 + admin LINE
           fetch("/api/me/notify-lesson", {
+      credentials: "include",
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ chapter_id: chapter.id, lesson_id: lessonId, xp }),

@@ -33,6 +33,7 @@ export function BrandVoiceClient({ initial }: { initial: Brand | null }) {
     setSaving(true);
     try {
       const res = await fetch("/api/admin/marketing/brand", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(b),

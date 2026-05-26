@@ -62,6 +62,7 @@ export function FishingMinigame() {
     // server 發 z 幣
     try {
       const res = await fetch("/api/island/catch-fish", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ fish: f }),

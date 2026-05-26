@@ -240,6 +240,7 @@ export function AITutorWidget({
       // 島嶼每日學習任務（client-only）
       import("@/components/island/island-bus").then((m) => m.bumpQuest("ai_chat", 1)).catch(() => {});
       const res = await fetch("/api/ai/chat", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -303,6 +304,7 @@ export function AITutorWidget({
               }
               // quest 進度
               fetch("/api/quests/progress", {
+      credentials: "include",
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ type: "ai_chat", delta: 1 }),

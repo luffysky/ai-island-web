@@ -26,7 +26,8 @@ export function RichMenuClient({ currentImageUrl, hasUserBot }: { currentImageUr
     try {
       const fd = new FormData();
       fd.append("file", file);
-      const res = await fetch("/api/upload?folder=rich-menu", { method: "POST", body: fd });
+      const res = await fetch("/api/upload?folder=rich-menu", {
+      credentials: "include", method: "POST", body: fd });
       const j = await res.json();
       if (!res.ok) throw new Error(j.error || j.message);
       setImageUrl(j.url);
@@ -47,6 +48,7 @@ export function RichMenuClient({ currentImageUrl, hasUserBot }: { currentImageUr
     setResult(null);
     try {
       const res = await fetch("/api/admin/line/setup-richmenu", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ imageUrl, areas }),

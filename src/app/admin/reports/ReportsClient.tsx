@@ -78,6 +78,7 @@ export function ReportsClient({
     setRows((rs) => rs.map((r) => r.id === id ? { ...r, status: action === "escalate" ? "escalated" : action === "resolve" ? "resolved" : "dismissed" } : r));
     try {
       const res = await fetch(`/api/admin/reports/${id}`, {
+      credentials: "include",
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action, note }),

@@ -121,7 +121,8 @@ function Toolbar({ editor }: { editor: Editor }) {
       const fd = new FormData();
       fd.append("file", file);
       fd.append("folder", "blog");
-      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      const res = await fetch("/api/upload", {
+      credentials: "include", method: "POST", body: fd });
       const j = await res.json();
       if (!res.ok) throw new Error(j.message || j.error || "上傳失敗");
       editor.chain().focus().setImage({ src: j.url }).run();

@@ -94,7 +94,8 @@ export function HousePanel() {
     }
     setBusy(true);
     try {
-      const res = await fetch("/api/island/sleep", { method: "POST" });
+      const res = await fetch("/api/island/sleep", {
+      credentials: "include", method: "POST" });
       const j = await res.json();
       if (res.ok) {
         markSlept(today);

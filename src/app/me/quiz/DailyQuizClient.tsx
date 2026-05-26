@@ -74,6 +74,7 @@ export function DailyQuizClient() {
     setSubmitting(true);
     try {
       const res = await fetch("/api/quiz/today/submit", {
+      credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ answers }),

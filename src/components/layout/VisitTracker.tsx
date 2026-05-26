@@ -21,6 +21,7 @@ export function VisitTracker() {
     } catch {}
     // fire-and-forget
     fetch("/api/notify-visit", {
+      credentials: "include",
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ path: pathname, referrer: document.referrer || "" }),

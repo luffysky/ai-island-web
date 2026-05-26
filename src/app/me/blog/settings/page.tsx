@@ -25,6 +25,7 @@ export default function BlogSettingsPage() {
     setSaving(true);
     setMsg("");
     const res = await fetch("/api/blog/settings", {
+      credentials: "include",
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

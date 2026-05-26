@@ -29,6 +29,7 @@ export function WebVitalsReporter() {
             navigator.sendBeacon("/api/analytics/web-vitals", new Blob([body], { type: "application/json" }));
           } else {
             fetch("/api/analytics/web-vitals", {
+      credentials: "include",
               method: "POST",
               body,
               headers: { "Content-Type": "application/json" },

@@ -75,7 +75,8 @@ export function AppSettingsClient({ initial }: { initial: Setting[] }) {
     });
     if (!ok) return;
     try {
-      const res = await fetch(`/api/admin/app-settings/${encodeURIComponent(row.key)}`, { method: "DELETE" });
+      const res = await fetch(`/api/admin/app-settings/${encodeURIComponent(row.key)}`, {
+      credentials: "include", method: "DELETE" });
       if (!res.ok) throw new Error((await res.json()).error);
       setRows((p) => p.filter((r) => r.key !== row.key));
       toast.success("已刪除");

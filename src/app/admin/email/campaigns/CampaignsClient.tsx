@@ -70,7 +70,8 @@ export function CampaignsClient({ initial, segments }: { initial: Campaign[]; se
     });
     if (!ok) return;
     try {
-      const res = await fetch(`/api/admin/email-campaigns/${id}/send`, { method: "POST" });
+      const res = await fetch(`/api/admin/email-campaigns/${id}/send`, {
+      credentials: "include", method: "POST" });
       const j = await res.json();
       if (!res.ok) throw new Error(j.error);
       toast.success(`已寫入發送佇列、${j.recipient_count} 位收件人`);
@@ -83,7 +84,8 @@ export function CampaignsClient({ initial, segments }: { initial: Campaign[]; se
   const del = async (id: string) => {
     const ok = await confirm({ title: "刪除這個 campaign？", destructive: true, confirmLabel: "刪除" });
     if (!ok) return;
-    const res = await fetch(`/api/admin/email-campaigns/${id}`, { method: "DELETE" });
+    const res = await fetch(`/api/admin/email-campaigns/${id}`, {
+      credentials: "include", method: "DELETE" });
     if (res.ok) {
       setList((l) => l.filter((c) => c.id !== id));
       toast.success("已刪除");

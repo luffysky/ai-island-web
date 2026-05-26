@@ -39,6 +39,7 @@ export function TicketsClient({ initial, filterStatus }: { initial: Ticket[]; fi
     setTickets((ts) => ts.map((t) => t.id === id ? { ...t, status } : t));
     try {
       const res = await fetch(`/api/admin/tickets/${id}`, {
+      credentials: "include",
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status }),
@@ -79,6 +80,7 @@ export function TicketsClient({ initial, filterStatus }: { initial: Ticket[]; fi
       ids.map(async (id) => {
         try {
           const res = await fetch(`/api/admin/tickets/${id}`, {
+      credentials: "include",
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ status }),

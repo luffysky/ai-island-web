@@ -59,7 +59,8 @@ export default function MyBlogPage() {
 
     setTimeout(async () => {
       if (undone) return;
-      const res = await fetch(`/api/blog/articles/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/blog/articles/${id}`, {
+      credentials: "include", method: "DELETE" });
       if (!res.ok) {
         setArticles(snapshot);
         toast.error("刪除失敗、已恢復");
