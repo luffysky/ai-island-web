@@ -1,11 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, X, Loader2, Send, RefreshCw, Copy, Check } from "lucide-react";
+import { Sparkles, X, Loader2, Send, RefreshCw, Copy, Check, ImagePlus } from "lucide-react";
+
+type UploadedImage = {
+  id: string;
+  base64: string;       // 不含 data: prefix
+  mediaType: string;    // image/png / image/jpeg
+  previewUrl: string;   // 帶 data: prefix（給 <img> 用）
+};
 
 /**
- * Nami AI 助教浮動按鈕
+ * Nami AI 助教浮動按鈕（支援截圖上傳）
  * 用法：在每個 Tab 加 <AskAI code={code} error={stderr} lang="python" context="Scrape Lab" />
  */
 export function AskAI({
@@ -27,6 +34,8 @@ export function AskAI({
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
   const [copied, setCopied] = useState(false);
+  const [images, setImages] = useState<UploadedImage[]>([]);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const ask = async (q?: string) => {
     setLoading(true);
@@ -34,10 +43,17 @@ export function AskAI({
     setErr("");
     try {
       const res = await fetch("/api/admin/playground/ai-help", {
-      credentials: "include",
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code, error, question: q ?? question, lang, context }),
+        body: JSON.stringify({
+          code,
+          error,
+          question: q ?? question,
+          lang,
+          context,
+          images: images.map((img) => ({ base64: img.base64, mediaType: img.mediaType })),
+        }),
       });
       const j = await res.json();
       if (!res.ok) throw new Error(j.error === "no_api_key" ? j.message : (j.message || j.error || "AI 失敗"));
@@ -46,6 +62,55 @@ export function AskAI({
       setErr(e?.message ?? "AI 失敗");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleFiles = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    const list = Array.from(files).slice(0, 5 - images.length);
+    const newImages: UploadedImage[] = [];
+    for (const file of list) {
+      if (!file.type.startsWith("image/")) continue;
+      if (file.size > 4 * 1024 * 1024) {
+        setErr(`圖片 ${file.name} 超過 4MB、跳過`);
+        continue;
+      }
+      try {
+        const base64 = await fileToBase64(file);
+        newImages.push({
+          id: crypto.randomUUID(),
+          base64: base64.split(",")[1] ?? base64,    // 去掉 data:image/...;base64, prefix
+          mediaType: file.type,
+          previewUrl: base64,                          // 完整 data URL 給 <img>
+        });
+      } catch (e) {
+        console.warn("[AskAI] read file failed:", e);
+      }
+    }
+    setImages((prev) => [...prev, ...newImages].slice(0, 5));
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const removeImage = (id: string) => {
+    setImages((prev) => prev.filter((img) => img.id !== id));
+  };
+
+  // 支援貼上（Ctrl/Cmd + V）
+  const handlePaste = async (e: React.ClipboardEvent) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    const files: File[] = [];
+    for (const item of items) {
+      if (item.type.startsWith("image/")) {
+        const f = item.getAsFile();
+        if (f) files.push(f);
+      }
+    }
+    if (files.length > 0) {
+      e.preventDefault();
+      const dt = new DataTransfer();
+      files.forEach((f) => dt.items.add(f));
+      handleFiles(dt.files);
     }
   };
 
@@ -134,6 +199,31 @@ export function AskAI({
                   </details>
                 )}
 
+                {/* Uploaded images 預覽 */}
+                {images.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {images.map((img) => (
+                      <div key={img.id} className="relative group">
+                        <img
+                          src={img.previewUrl}
+                          alt="upload"
+                          className="w-20 h-20 object-cover rounded-lg border border-border"
+                        />
+                        <button
+                          onClick={() => removeImage(img.id)}
+                          className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center opacity-90 hover:opacity-100"
+                          title="移除"
+                        >
+                          <X size={10} />
+                        </button>
+                      </div>
+                    ))}
+                    <div className="text-[10px] text-fg-muted w-full">
+                      已選 {images.length}/5 張圖、AI 會看到一起回答
+                    </div>
+                  </div>
+                )}
+
                 {/* Quick prompts */}
                 {!response && !loading && (
                   <div className="space-y-1.5">
@@ -143,6 +233,7 @@ export function AskAI({
                       { q: "解釋這段 code 在做什麼", icon: "📖" },
                       { q: "怎麼讓它更好？", icon: "✨" },
                       { q: "下一步可以試什麼？", icon: "🎯" },
+                      ...(images.length > 0 ? [{ q: "看截圖、告訴我這是什麼問題", icon: "🔍" }] : []),
                     ].map((p) => (
                       <button
                         key={p.q}
@@ -184,17 +275,34 @@ export function AskAI({
               <div className="border-t border-border p-3 bg-bg-card">
                 <div className="flex items-center gap-2">
                   <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    onChange={(e) => handleFiles(e.target.files)}
+                  />
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={loading || images.length >= 5}
+                    className="p-2 rounded-lg border border-border hover:border-purple-400 hover:bg-purple-500/5 transition disabled:opacity-50"
+                    title={images.length >= 5 ? "最多 5 張" : "上傳截圖（也可 Ctrl+V 貼上）"}
+                  >
+                    <ImagePlus size={14} />
+                  </button>
+                  <input
                     type="text"
                     value={question}
                     onChange={(e) => setQuestion(e.target.value)}
-                    placeholder="自己問問題..."
-                    onKeyDown={(e) => { if (e.key === "Enter" && question.trim()) ask(); }}
+                    onPaste={handlePaste}
+                    placeholder={images.length > 0 ? "問截圖相關問題..." : "自己問問題（可 Ctrl+V 貼截圖）..."}
+                    onKeyDown={(e) => { if (e.key === "Enter" && (question.trim() || images.length > 0)) ask(); }}
                     className="flex-1 bg-bg border border-border rounded-lg px-3 py-2 text-sm outline-none focus:border-purple-400"
                     disabled={loading}
                   />
                   <button
                     onClick={() => ask()}
-                    disabled={loading || !question.trim()}
+                    disabled={loading || (!question.trim() && images.length === 0)}
                     className="px-3 py-2 rounded-lg bg-gradient-to-r from-purple-400 to-pink-400 text-black font-bold text-xs inline-flex items-center gap-1 disabled:opacity-50"
                   >
                     {loading ? <Loader2 size={11} className="animate-spin" /> : <Send size={11} />}
@@ -202,16 +310,16 @@ export function AskAI({
                   </button>
                   {response && (
                     <button
-                      onClick={() => { setResponse(""); setErr(""); }}
+                      onClick={() => { setResponse(""); setErr(""); setImages([]); }}
                       className="px-3 py-2 rounded-lg border border-border text-xs"
-                      title="再問一次"
+                      title="再問一次（清空圖片）"
                     >
                       <RefreshCw size={11} />
                     </button>
                   )}
                 </div>
                 <div className="text-[10px] text-fg-muted mt-1.5">
-                  限 30 次 / 小時 · 用 system Anthropic / OpenAI key
+                  限 30 次 / 小時 · 用 system Anthropic / OpenAI key · 支援截圖（最多 5 張 / 單張 4MB）
                 </div>
               </div>
             </motion.div>
@@ -220,4 +328,13 @@ export function AskAI({
       </AnimatePresence>
     </>
   );
+}
+
+function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
 }

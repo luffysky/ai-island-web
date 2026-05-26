@@ -292,7 +292,7 @@ export function buildKpiCard(opts: {
         borderColor: lighten(color, 0.65),
         cornerRadius: "12px",
         contents: [
-          { type: "text", text: "📊", size: "xxl", color: "#ffffff", flex: 0, width: "44px", align: "center" },
+          { type: "text", text: "📊", size: "xxl", color: "#ffffff", flex: 0, align: "center" },
           { type: "text", text: opts.title, weight: "bold", size: "lg", color: "#ffffff", flex: 1, gravity: "center", margin: "md" },
         ],
       },
@@ -311,7 +311,7 @@ export function buildKpiCard(opts: {
             layout: "horizontal" as const,
             paddingBottom: i < opts.rows.length - 1 ? "sm" : undefined,
             contents: [
-              { type: "text" as const, text: r.icon, size: "sm" as const, flex: 0, width: "24px" },
+              { type: "text" as const, text: r.icon, size: "sm" as const, flex: 0 },
               { type: "text" as const, text: r.label, size: "sm" as const, color: "#444851", flex: 1 },
               { type: "text" as const, text: r.value, size: "md" as const, weight: "bold" as const, color: "#0d1117", align: "end" as const, flex: 0 },
             ],
@@ -374,7 +374,7 @@ export function buildListCard(opts: {
         borderColor: lighten(color, 0.65),
         cornerRadius: "12px",
         contents: [
-          { type: "text", text: opts.emoji, size: "xxl", color: "#ffffff", flex: 0, width: "44px", align: "center" },
+          { type: "text", text: opts.emoji, size: "xxl", color: "#ffffff", flex: 0, align: "center" },
           { type: "text", text: opts.title, weight: "bold", size: "lg", color: "#ffffff", flex: 1, gravity: "center", margin: "md" },
         ],
       },
@@ -398,7 +398,7 @@ export function buildListCard(opts: {
                   type: "box" as const,
                   layout: "horizontal" as const,
                   contents: [
-                    { type: "text" as const, text: `${i + 1}`, size: "sm" as const, color, weight: "bold" as const, flex: 0, width: "20px" },
+                    { type: "text" as const, text: `${i + 1}`, size: "sm" as const, color, weight: "bold" as const, flex: 0 },
                     { type: "text" as const, text: it.primary, size: "sm" as const, weight: "bold" as const, color: "#1a1d24", wrap: true, flex: 1 },
                   ],
                 },
@@ -457,7 +457,7 @@ export function buildAiReplyCard(opts: { text: string; userName: string }): Flex
         borderColor: lighten(color, 0.65),
         cornerRadius: "12px",
         contents: [
-          { type: "text", text: "✨", size: "xxl", color: "#ffffff", flex: 0, width: "44px", align: "center" },
+          { type: "text", text: "✨", size: "xxl", color: "#ffffff", flex: 0, align: "center" },
           {
             type: "box",
             layout: "vertical",

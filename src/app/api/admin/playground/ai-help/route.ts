@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
-import { callAI } from "@/lib/ai-providers";
+import { callAI, type AIContentBlock } from "@/lib/ai-providers";
 import { decryptKey } from "@/lib/ai-crypto";
 import { rateLimit } from "@/lib/rate-limit";
 
@@ -11,10 +11,10 @@ export const maxDuration = 60;
 
 /**
  * Nami Playground AI 助教
- *   POST { code, error, question, lang?, context? }
+ *   POST { code, error, question, lang?, context?, images?: [{base64, mediaType}] }
  *   → { text: "AI 建議..." }
  *
- * 用法：寫完 code → 點「💡 問 AI」→ AI 看 code + 錯誤、給提示 / 修法
+ * 用法：寫完 code → 點「💡 問 AI」→ AI 看 code + 錯誤 + 截圖、給提示 / 修法
  */
 export async function POST(req: NextRequest) {
   const supabase = await createSupabaseServer();
@@ -33,21 +33,38 @@ export async function POST(req: NextRequest) {
   const question = String(body.question ?? "").slice(0, 500);
   const lang = String(body.lang ?? "python");
   const context = String(body.context ?? "").slice(0, 200);
+  // 上傳的圖片（base64 不含 data: prefix、mediaType 如 'image/png'）
+  const images: Array<{ base64: string; mediaType: string }> = Array.isArray(body.images)
+    ? body.images.slice(0, 5).map((img: any) => ({
+        base64: String(img?.base64 ?? "").slice(0, 8_000_000),  // 單張上限 ~6MB base64（4MB 原檔）
+        mediaType: String(img?.mediaType ?? "image/png"),
+      })).filter((img: any) => img.base64)
+    : [];
 
-  if (!code && !question) {
-    return NextResponse.json({ error: "no_input", message: "至少要給 code 或 question" }, { status: 400 });
+  if (!code && !question && images.length === 0) {
+    return NextResponse.json({ error: "no_input", message: "至少要給 code / question / 圖片" }, { status: 400 });
   }
 
-  // 找一個 Anthropic / OpenAI 可用 model
+  // 找一個 Anthropic / OpenAI 可用 model（有圖片時必須 vision 支援）
   const admin = createSupabaseAdmin();
   const { data: models } = await admin
     .from("ai_models")
     .select("id, provider, model_name, is_active")
     .eq("is_active", true);
-  const model = (models as any[])?.find((m) => m.provider === "anthropic")
-    ?? (models as any[])?.find((m) => m.provider === "openai")
-    ?? (models as any[])?.[0];
-  if (!model) return NextResponse.json({ error: "no_model" }, { status: 503 });
+  const visionProviders = ["anthropic", "openai", "google"];  // 這 3 家有 vision
+  const allModels = (models as any[]) ?? [];
+  const model = images.length > 0
+    ? allModels.find((m) => visionProviders.includes(m.provider) && (m.provider === "anthropic" || m.provider === "openai" || m.provider === "google"))
+    : (allModels.find((m) => m.provider === "anthropic") ?? allModels.find((m) => m.provider === "openai") ?? allModels[0]);
+  if (!model) {
+    if (images.length > 0) {
+      return NextResponse.json({
+        error: "no_vision_model",
+        message: "沒有支援圖片的 AI model（要 Anthropic / OpenAI / Gemini）、到 /admin/ai/models 啟用",
+      }, { status: 503 });
+    }
+    return NextResponse.json({ error: "no_model" }, { status: 503 });
+  }
 
   const { data: sysKey } = await admin
     .from("ai_api_keys")
@@ -64,16 +81,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "decrypt_failed" }, { status: 500 });
   }
 
-  const system = `你是 Nami 的 Python / Web 學習助教。她在 AI 島後台 Playground 練習${context ? "（${context}）" : ""}。
+  const system = `你是 Nami 的 Python / Web 學習助教。她在 AI 島後台 Playground 練習${context ? `（${context}）` : ""}。
 
 回答原則：
 1. **極簡** — 最多 5-7 句、直接給答案
-2. **針對她的 code** — 不要泛談、指出她 code 哪行有問題
+2. **針對她的 code / 截圖** — 不要泛談、指出她哪行有問題
 3. 若有 error：先用一句白話解釋 error 意思、再給修法
 4. 寫程式碼用 markdown code block、標語言
 5. **不誇大、不鼓動式語氣**（避免「太棒了！」「很簡單！」）
 6. 用繁體中文、語氣像學長給建議
 7. 若 code 看起來正確、就稱讚並建議下一步可試什麼
+8. **有附圖時**：直接看圖回答她的問題（截圖通常是錯誤畫面、UI bug、或想參考的設計）
 
 絕對不要：
 - 大段重複她的 code
@@ -82,12 +100,13 @@ export async function POST(req: NextRequest) {
 
   const userMsg = `語言：${lang}
 
-我的 code：
-\`\`\`${lang}
-${code}
-\`\`\`
+${code ? `我的 code：\n\`\`\`${lang}\n${code}\n\`\`\`\n` : ""}${errorText ? `錯誤訊息：\n\`\`\`\n${errorText}\n\`\`\`\n` : ""}${images.length > 0 ? `（含 ${images.length} 張截圖、請一起看）\n` : ""}${question ? `我的問題：${question}` : "請看一下、給我提示或建議。"}`;
 
-${errorText ? `錯誤訊息：\n\`\`\`\n${errorText}\n\`\`\`\n` : ""}${question ? `我的問題：${question}` : "請看一下、給我提示或建議。"}`;
+  // multimodal user content：text + 圖片 block
+  const userContent: AIContentBlock[] = [
+    { type: "text", text: userMsg },
+    ...images.map((img) => ({ type: "image" as const, mediaType: img.mediaType, data: img.base64 })),
+  ];
 
   try {
     const r = await callAI({
@@ -96,10 +115,10 @@ ${errorText ? `錯誤訊息：\n\`\`\`\n${errorText}\n\`\`\`\n` : ""}${question 
       apiKey,
       messages: [
         { role: "system", content: system },
-        { role: "user", content: userMsg },
+        { role: "user", content: images.length > 0 ? userContent : userMsg },
       ],
       temperature: 0.5,
-      maxTokens: 600,
+      maxTokens: 800,
     });
     return NextResponse.json({ ok: true, text: r.text, tokens: r.tokensInput + r.tokensOutput });
   } catch (e: any) {

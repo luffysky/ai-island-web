@@ -112,11 +112,11 @@ async function pickChannels(opts: NotifyOptions): Promise<Channel[]> {
   }
 
   if (isDual) {
-    // 雙通知 — LINE + Telegram (LINE 沒設則只 TG、TG 沒設則只 LINE)
+    // DUAL（實際是 TRIPLE）— LINE + Telegram + Discord 全送（林董要求 3 邊都通知）
     const channels: Channel[] = [];
     if (hasLine) channels.push("line");
     if (hasTg) channels.push("telegram");
-    if (channels.length === 0 && hasDiscord) channels.push("discord");
+    if (hasDiscord) channels.push("discord");
     return channels;
   }
   if (isVipOrOwner) return [hasLine ? "line" : (hasTg ? "telegram" : "discord")];
@@ -293,10 +293,13 @@ async function sendTelegram(botToken: string, chatId: string, text: string, kind
       };
     }
 
+    // 強制 UTF-8 + 移除非配對 surrogate（避免 "text must be encoded in UTF-8" 400）
+    const jsonStr = JSON.stringify(body).replace(/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g, "");
+    const utf8Body = Buffer.from(jsonStr, "utf8");
     const res = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
+      headers: { "Content-Type": "application/json; charset=utf-8" },
+      body: utf8Body,
       signal: AbortSignal.timeout(5000),
     });
     if (!res.ok) {

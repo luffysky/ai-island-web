@@ -2,9 +2,26 @@
 // 支援：OpenAI / Anthropic / Google Gemini / Groq (Llama)
 // + streaming（SSE 格式給前端）
 
+// 多模態內容 block（Anthropic + OpenAI 都支援、Gemini / Groq 純文字 fallback）
+export type AIContentBlock =
+  | { type: "text"; text: string }
+  | { type: "image"; mediaType: string; data: string };  // data = base64 (不含 data:image/... prefix)
+
 export interface AIMessage {
   role: "system" | "user" | "assistant";
-  content: string;
+  content: string | AIContentBlock[];
+}
+
+// 內部 helper：把 string | AIContentBlock[] 轉純文字（Gemini / Groq 用、image 忽略）
+function contentToText(content: string | AIContentBlock[]): string {
+  if (typeof content === "string") return content;
+  return content.filter((b) => b.type === "text").map((b) => (b as any).text).join("\n");
+}
+
+// 內部 helper：判斷 content 有沒有 image
+function hasImage(content: string | AIContentBlock[]): boolean {
+  if (typeof content === "string") return false;
+  return content.some((b) => b.type === "image");
 }
 
 export interface AICompletionRequest {
@@ -46,6 +63,21 @@ async function fetchWithTimeout(url: string, opts: RequestInit, timeout = TIMEOU
 }
 
 // ============ OpenAI ============
+function toOpenAIMessages(messages: AIMessage[]): any[] {
+  return messages.map((m) => {
+    if (typeof m.content === "string") return { role: m.role, content: m.content };
+    // multimodal: 轉 OpenAI 格式
+    return {
+      role: m.role,
+      content: m.content.map((b) =>
+        b.type === "text"
+          ? { type: "text", text: b.text }
+          : { type: "image_url", image_url: { url: `data:${b.mediaType};base64,${b.data}` } },
+      ),
+    };
+  });
+}
+
 async function callOpenAI(req: AICompletionRequest): Promise<AICompletionResponse> {
   const t0 = Date.now();
   const res = await fetchWithTimeout("https://api.openai.com/v1/chat/completions", {
@@ -56,7 +88,7 @@ async function callOpenAI(req: AICompletionRequest): Promise<AICompletionRespons
     },
     body: JSON.stringify({
       model: req.model,
-      messages: req.messages,
+      messages: toOpenAIMessages(req.messages),
       temperature: req.temperature ?? 0.7,
       max_tokens: req.maxTokens ?? 2000,
     }),
@@ -78,6 +110,21 @@ async function callOpenAI(req: AICompletionRequest): Promise<AICompletionRespons
 }
 
 // ============ Anthropic Claude ============
+function toAnthropicMessages(messages: AIMessage[]): any[] {
+  return messages.map((m) => {
+    if (typeof m.content === "string") return { role: m.role, content: m.content };
+    // multimodal: 轉 Anthropic 格式
+    return {
+      role: m.role,
+      content: m.content.map((b) =>
+        b.type === "text"
+          ? { type: "text", text: b.text }
+          : { type: "image", source: { type: "base64", media_type: b.mediaType, data: b.data } },
+      ),
+    };
+  });
+}
+
 async function callAnthropic(req: AICompletionRequest): Promise<AICompletionResponse> {
   const t0 = Date.now();
 
@@ -94,8 +141,8 @@ async function callAnthropic(req: AICompletionRequest): Promise<AICompletionResp
     },
     body: JSON.stringify({
       model: req.model,
-      messages: nonSystem,
-      system: systemMsg?.content,
+      messages: toAnthropicMessages(nonSystem),
+      system: typeof systemMsg?.content === "string" ? systemMsg.content : contentToText(systemMsg?.content ?? ""),
       max_tokens: req.maxTokens ?? 2000,
       temperature: req.temperature ?? 0.7,
     }),
@@ -128,11 +175,21 @@ async function callGoogle(req: AICompletionRequest): Promise<AICompletionRespons
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      contents: nonSystem.map((m) => ({
-        role: m.role === "assistant" ? "model" : "user",
-        parts: [{ text: m.content }],
-      })),
-      systemInstruction: systemMsg ? { parts: [{ text: systemMsg.content }] } : undefined,
+      contents: nonSystem.map((m) => {
+        // Gemini multimodal: parts 可含 text + inline_data (image)
+        if (typeof m.content === "string") {
+          return { role: m.role === "assistant" ? "model" : "user", parts: [{ text: m.content }] };
+        }
+        return {
+          role: m.role === "assistant" ? "model" : "user",
+          parts: m.content.map((b) =>
+            b.type === "text"
+              ? { text: b.text }
+              : { inline_data: { mime_type: b.mediaType, data: b.data } },
+          ),
+        };
+      }),
+      systemInstruction: systemMsg ? { parts: [{ text: contentToText(systemMsg.content) }] } : undefined,
       generationConfig: {
         temperature: req.temperature ?? 0.7,
         maxOutputTokens: req.maxTokens ?? 2000,
@@ -159,6 +216,11 @@ async function callGoogle(req: AICompletionRequest): Promise<AICompletionRespons
 // ============ Groq (Llama) ============
 async function callGroq(req: AICompletionRequest): Promise<AICompletionResponse> {
   const t0 = Date.now();
+  // Groq 大部分 model 不支援 image、強制轉純文字 + 警告
+  const messages = req.messages.map((m) => ({ role: m.role, content: contentToText(m.content) }));
+  if (req.messages.some((m) => hasImage(m.content))) {
+    console.warn("[ai-providers] Groq 不支援 image、已忽略");
+  }
   const res = await fetchWithTimeout("https://api.groq.com/openai/v1/chat/completions", {
     method: "POST",
     headers: {
@@ -167,7 +229,7 @@ async function callGroq(req: AICompletionRequest): Promise<AICompletionResponse>
     },
     body: JSON.stringify({
       model: req.model,
-      messages: req.messages,
+      messages,
       temperature: req.temperature ?? 0.7,
       max_tokens: req.maxTokens ?? 2000,
     }),
@@ -240,7 +302,10 @@ async function* streamOpenAILike(req: AICompletionRequest): AsyncGenerator<Strea
     },
     body: JSON.stringify({
       model: req.model,
-      messages: req.messages,
+      // groq 不支援 image、強制純文字；openai 用 multimodal 格式
+      messages: req.provider === "openai"
+        ? toOpenAIMessages(req.messages)
+        : req.messages.map((m) => ({ role: m.role, content: contentToText(m.content) })),
       temperature: req.temperature ?? 0.7,
       max_tokens: req.maxTokens ?? 2000,
       stream: true,
@@ -300,8 +365,8 @@ async function* streamAnthropic(req: AICompletionRequest): AsyncGenerator<Stream
     },
     body: JSON.stringify({
       model: req.model,
-      messages: nonSystem,
-      system: systemMsg?.content,
+      messages: toAnthropicMessages(nonSystem),
+      system: typeof systemMsg?.content === "string" ? systemMsg.content : contentToText(systemMsg?.content ?? ""),
       max_tokens: req.maxTokens ?? 2000,
       temperature: req.temperature ?? 0.7,
       stream: true,
@@ -359,11 +424,20 @@ async function* streamGoogle(req: AICompletionRequest): AsyncGenerator<StreamChu
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      contents: nonSystem.map((m) => ({
-        role: m.role === "assistant" ? "model" : "user",
-        parts: [{ text: m.content }],
-      })),
-      systemInstruction: systemMsg ? { parts: [{ text: systemMsg.content }] } : undefined,
+      contents: nonSystem.map((m) => {
+        if (typeof m.content === "string") {
+          return { role: m.role === "assistant" ? "model" : "user", parts: [{ text: m.content }] };
+        }
+        return {
+          role: m.role === "assistant" ? "model" : "user",
+          parts: m.content.map((b) =>
+            b.type === "text"
+              ? { text: b.text }
+              : { inline_data: { mime_type: b.mediaType, data: b.data } },
+          ),
+        };
+      }),
+      systemInstruction: systemMsg ? { parts: [{ text: contentToText(systemMsg.content) }] } : undefined,
       generationConfig: {
         temperature: req.temperature ?? 0.7,
         maxOutputTokens: req.maxTokens ?? 2000,
