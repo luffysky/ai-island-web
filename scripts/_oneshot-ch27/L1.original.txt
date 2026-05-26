@@ -1,0 +1,25 @@
+### Python 為什麼贏 R / SAS / SPSS
+
+      
+- 📚 生態豐富：NumPy / Pandas / Scikit-learn / TensorFlow 全在 Python
+- 🌍 通用：分析完直接接 API / 自動化
+- 💰 開源免費：SAS 一年 $10 萬美金、Python $0
+- 🤖 AI 時代：90% AI 框架 Python first
+
+      
+### 核心 4 大套件（這章重點）
+
+      
+- **NumPy**：數值計算底層、所有套件基礎
+- **Pandas**：90% 時間用、處理表格
+- **matplotlib**：畫圖底層
+- **seaborn**：基於 matplotlib 的美化版
+
+      
+### 2026 進階套件
+
+      
+- **Polars**：Rust 寫的 Pandas 替代、快 5-10 倍
+- **Plotly**：互動式圖表
+- **Streamlit**：1 小時把分析變網頁 dashboard
+- **DuckDB**：Python 內跑 SQL、超快

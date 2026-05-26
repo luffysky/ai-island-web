@@ -1,0 +1,37 @@
+### 3 種使用方式
+
+      
+- **Jupyter Lab**（本地、推薦）：完整環境
+- **Google Colab**：雲端免費 + 免費 GPU
+- **VS Code + Jupyter**：在 VS Code 寫 .ipynb
+
+      
+### 安裝 + 啟動
+
+```bash
+pip install jupyterlab pandas numpy matplotlib seaborn
+jupyter lab
+# → http://localhost:8888
+```
+
+      
+### 必背快捷鍵
+
+      
+- `Shift + Enter`：執行 + 跳下一格
+- `Ctrl + Enter`：執行 + 留原處
+- `A`/`B`：上 / 下加新 cell
+- `DD`：刪 cell
+- `M`/`Y`：轉 Markdown / Code
+- `Shift + Tab`：看函式說明
+
+      
+### Magic Commands
+
+```python
+%%time              # 計時這格
+%whos               # 看變數列表
+!pip install plotly # 跑 shell
+%load_ext autoreload
+%autoreload 2       # 自動 reload 模組
+```

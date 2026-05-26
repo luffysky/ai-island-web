@@ -1,0 +1,80 @@
+### 建陣列
+
+```python
+import numpy as np
+
+arr = np.array([1, 2, 3, 4, 5])
+mat = np.array([[1, 2, 3], [4, 5, 6]])  # 2D 矩陣
+
+# 常用初始化
+np.zeros(10)              # 10 個 0
+np.ones((3, 3))           # 3x3 全 1
+np.arange(0, 10, 2)       # [0, 2, 4, 6, 8]
+np.linspace(0, 1, 11)     # 0-1 平均切 11 點
+np.random.rand(3, 3)      # 3x3 隨機 [0, 1)
+np.random.randn(1000)     # 常態分布
+np.random.randint(1, 100, 10)  # 10 個整數
+```
+
+      
+### 向量化運算（核心！）
+
+```python
+# 純 Python（慢）
+result = [x * 2 + 1 for x in arr]
+
+# NumPy（快 100 倍）
+result = arr * 2 + 1
+
+# 數學函數
+np.sqrt(arr); np.exp(arr); np.log(arr); np.sin(arr)
+
+# 統計
+arr.mean(); arr.std(); arr.sum()
+arr.max(); arr.min(); arr.argmax()
+
+# 矩陣運算
+A @ B               # 矩陣乘法
+A.T                 # 轉置
+np.linalg.inv(A)    # 反矩陣
+```
+
+      
+### 布林索引（超強）
+
+```python
+arr = np.array([10, 20, 30, 40, 50])
+arr[arr > 25]                  # [30, 40, 50]
+arr[(arr > 15) & (arr < 45)]   # [20, 30, 40]
+```
+
+      
+### Broadcasting（廣播）
+
+```python
+# 不同形狀的陣列也能運算
+arr = np.array([[1, 2, 3], [4, 5, 6]])
+arr + 10                          # 每個元素 +10
+arr * np.array([1, 2, 3])         # 每行乘 [1,2,3]
+
+# 範例：標準化資料
+data = np.random.rand(100, 5)
+normalized = (data - data.mean(axis=0)) / data.std(axis=0)
+```
+
+      
+### 實戰：考試成績分析
+
+```python
+scores = np.array([
+    [85, 92, 78],
+    [73, 88, 91],
+    [65, 70, 82],
+    [95, 87, 93],
+    [78, 80, 75]
+])
+
+print('各科平均：', scores.mean(axis=0))
+print('各生平均：', scores.mean(axis=1))
+print('最高分學生：', scores.sum(axis=1).argmax())
+```
