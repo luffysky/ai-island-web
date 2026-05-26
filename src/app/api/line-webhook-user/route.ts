@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { consumeBindCode } from "@/lib/notify-user-line";
-import { buildQuickReply, type FlexMessage, type LineTextMessage } from "@/lib/line-flex";
+import { buildQuickReply, buildSimpleCard, type FlexMessage, type LineTextMessage } from "@/lib/line-flex";
 import { decryptKey } from "@/lib/ai-crypto";
 import { callAI } from "@/lib/ai-providers";
 import { SITE_STATS } from "@/lib/site-stats";
@@ -157,19 +157,204 @@ function verifySignature(body: string, signature: string | null, secret: string)
   return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature));
 }
 
-async function lineReply(replyToken: string, text: string, token: string, quickReply?: any) {
+async function logUserLineError(code: string, message: string, extra: any = {}) {
   try {
-    const msg: any = { type: "text", text: text.slice(0, 4900) };
-    if (quickReply) msg.quickReply = quickReply;
-    await fetch(`${ENDPOINT}/message/reply`, {
+    const admin = createSupabaseAdmin();
+    await admin.from("error_logs").insert({
+      source: "line-webhook-user",
+      level: "error",
+      message: `[${code}] ${message}`,
+      extra,
+    });
+  } catch {}
+  console.warn(`[line-webhook-user] ${code}:`, message);
+}
+
+// 接 string（純文字）或 FlexMessage（包好的 flex）；text 自動套 Quick Reply
+async function lineReply(replyToken: string, payload: string | FlexMessage | LineTextMessage, token: string, quickReply?: any) {
+  try {
+    let msg: any;
+    if (typeof payload === "string") {
+      msg = { type: "text", text: payload.slice(0, 4900) };
+    } else {
+      msg = { ...payload };
+    }
+    if (quickReply && !msg.quickReply) msg.quickReply = quickReply;
+    const res = await fetch(`${ENDPOINT}/message/reply`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
       body: JSON.stringify({ replyToken, messages: [msg] }),
       signal: AbortSignal.timeout(5000),
     });
-  } catch {
-    // silent
+    if (!res.ok) {
+      const body = await res.text().catch(() => "");
+      await logUserLineError("reply_api_failed", `LINE reply ${res.status}: ${body.slice(0, 200)}`, {
+        status: res.status,
+        body: body.slice(0, 500),
+        replyToken_prefix: replyToken.slice(0, 12) + "...",
+        hint: res.status === 400 && body.includes("Invalid reply token") ? "reply token 過期 / 已用過"
+            : res.status === 400 ? "Flex schema 錯（看 body 的 property field）"
+            : "看 body",
+      });
+    }
+  } catch (e) {
+    await logUserLineError("reply_fetch_failed", (e as any)?.message ?? "unknown", {
+      error: String(e).slice(0, 300),
+    });
   }
+}
+
+// 學員紫色配色（區別 admin 綠 / 黃 / 紅系）
+const USER_ACCENT = "#a78bfa";
+
+function cardWelcome(): FlexMessage {
+  return buildSimpleCard({
+    emoji: "🏝️",
+    title: "歡迎加入 AI 島！",
+    accentColor: USER_ACCENT,
+    body: "綁定帳號後、完課 / 升等 / 成就解鎖 / 論壇被回覆都會推到你的 LINE。",
+    meta: [
+      { label: "📋 Step 1", value: "去網站拿 6 位 code" },
+      { label: "💬 Step 2", value: "傳給我「/bind 123456」" },
+    ],
+    buttons: [
+      { label: "拿綁定 code", uri: `${SITE_URL}/settings`, primary: true },
+      { label: "看章節", uri: `${SITE_URL}/chapters` },
+    ],
+  });
+}
+
+function cardBindSuccess(): FlexMessage {
+  return buildSimpleCard({
+    emoji: "✅",
+    title: "綁定成功！",
+    accentColor: "#50fa7b",
+    body: "之後完成 lesson / 升等 / 解鎖成就 / 論壇被回覆都會推給你。",
+    meta: [
+      { label: "🔕 想關通知", value: "傳「/unbind」" },
+      { label: "⚙️ 細部設定", value: "去網站「設定」頁" },
+    ],
+    buttons: [
+      { label: "去學習", uri: `${SITE_URL}/chapters`, primary: true },
+      { label: "設定通知", uri: `${SITE_URL}/settings` },
+    ],
+  });
+}
+
+function cardBindFail(reason: string): FlexMessage {
+  return buildSimpleCard({
+    emoji: "❌",
+    title: "綁定失敗",
+    accentColor: "#ff5555",
+    body: reason,
+    buttons: [
+      { label: "重新拿 code", uri: `${SITE_URL}/settings`, primary: true },
+    ],
+  });
+}
+
+function cardUnbind(success: boolean): FlexMessage {
+  return success
+    ? buildSimpleCard({
+        emoji: "🔕",
+        title: "已解除綁定",
+        accentColor: "#6272a4",
+        body: "之後不再推通知。要重綁去網站重拿 code。",
+        buttons: [{ label: "重綁", uri: `${SITE_URL}/settings` }],
+      })
+    : buildSimpleCard({
+        emoji: "🤔",
+        title: "還沒綁定",
+        accentColor: "#6272a4",
+        body: "或已經解除過了。要綁去網站拿 code。",
+        buttons: [{ label: "拿綁定 code", uri: `${SITE_URL}/settings`, primary: true }],
+      });
+}
+
+function cardHelp(): FlexMessage {
+  return buildSimpleCard({
+    emoji: "📖",
+    title: "AI 島 LINE bot",
+    accentColor: USER_ACCENT,
+    body: "我能做的事",
+    meta: [
+      { label: "💬", value: "聊天問 AI 學員導師（綁定後）" },
+      { label: "/bind 123456", value: "綁帳號" },
+      { label: "/unbind", value: "解除綁定" },
+      { label: "/whoami", value: "看綁定狀態" },
+      { label: "/help", value: "看這份" },
+    ],
+    buttons: [
+      { label: "打開網站", uri: SITE_URL, primary: true },
+      { label: "設定", uri: `${SITE_URL}/settings` },
+    ],
+  });
+}
+
+function cardWhoami(userId: string, bound: any | null): FlexMessage {
+  if (bound) {
+    return buildSimpleCard({
+      emoji: "🆔",
+      title: "已綁定",
+      accentColor: "#50fa7b",
+      body: "你的 LINE 已綁到此 AI 島帳號。",
+      meta: [
+        { label: "username", value: String(bound.username ?? "(未設)") },
+        { label: "名稱", value: String(bound.display_name ?? "(未設)") },
+        { label: "角色", value: String(bound.role ?? "user") },
+        { label: "LINE userId", value: userId.slice(0, 12) + "..." },
+      ],
+      buttons: [{ label: "去學習", uri: `${SITE_URL}/chapters`, primary: true }],
+    });
+  }
+  return buildSimpleCard({
+    emoji: "🆔",
+    title: "未綁定",
+    accentColor: "#ffb86c",
+    body: "DB 找不到綁過的帳號。可能你以為綁了但 DB 沒寫成功。",
+    meta: [
+      { label: "LINE userId", value: userId.slice(0, 12) + "..." },
+      { label: "正解", value: "去設定拿 code、傳 /bind XXXXXX" },
+    ],
+    buttons: [{ label: "拿綁定 code", uri: `${SITE_URL}/settings`, primary: true }],
+  });
+}
+
+function cardUnbound(userId: string): FlexMessage {
+  return buildSimpleCard({
+    emoji: "🤖",
+    title: "嗨～看到你訊息了",
+    accentColor: USER_ACCENT,
+    body: "你目前沒綁定 AI 島帳號、所以還不能用 AI 學員導師。",
+    meta: [
+      { label: "Step 1", value: "登入網站" },
+      { label: "Step 2", value: "去「設定」拿 6 位 code" },
+      { label: "Step 3", value: "回來傳「/bind 123456」" },
+    ],
+    buttons: [
+      { label: "去拿 code", uri: `${SITE_URL}/settings`, primary: true },
+      { label: "登入", uri: `${SITE_URL}/login` },
+    ],
+  });
+}
+
+function cardBindHint(): FlexMessage {
+  return buildSimpleCard({
+    emoji: "🔗",
+    title: "怎麼綁定 AI 島",
+    accentColor: USER_ACCENT,
+    body: "4 步搞定、之後能用 AI 導師 + 收學習通知。",
+    meta: [
+      { label: "1", value: "登入網站" },
+      { label: "2", value: "進「設定」" },
+      { label: "3", value: "按「LINE 通知綁定」拿 6 位 code" },
+      { label: "4", value: "回來傳「/bind 123456」" },
+    ],
+    buttons: [
+      { label: "去拿 code", uri: `${SITE_URL}/settings`, primary: true },
+      { label: "登入", uri: `${SITE_URL}/login` },
+    ],
+  });
 }
 
 const QUICK_REPLY = buildQuickReply([
@@ -237,12 +422,7 @@ export async function POST(req: NextRequest) {
     const userId = ev.source?.userId as string | undefined;
 
     if (ev.type === "follow" && replyToken && userId) {
-      await lineReply(
-        replyToken,
-        `🏝️ 歡迎加入 AI 島！\n\n要綁定帳號讓我推學習通知給你：\n1. 到 ${SITE_URL}/settings 拿 6 位綁定 code\n2. 傳給我「/bind 123456」\n\n綁定後完課 / 升等 / 解鎖成就 / 論壇被回覆都會推到你的 LINE。`,
-        token,
-        QUICK_REPLY,
-      );
+      await lineReply(replyToken, cardWelcome(), token, QUICK_REPLY);
       continue;
     }
 
@@ -254,11 +434,7 @@ export async function POST(req: NextRequest) {
       if (bindMatch) {
         const result = await consumeBindCode(bindMatch[1], userId);
         if (result.ok) {
-          await lineReply(
-            replyToken,
-            `✅ 綁定成功！\n\n之後會推給你：\n• 完成 lesson\n• 升等\n• 解鎖成就\n• 論壇被回覆\n\n關通知 → 「設定 → LINE 通知」、或傳「/unbind」解除。`,
-            token, QUICK_REPLY,
-          );
+          await lineReply(replyToken, cardBindSuccess(), token, QUICK_REPLY);
         } else {
           const reasonMap: Record<string, string> = {
             invalid_format: "code 格式不對、應該是 6 位數字",
@@ -266,11 +442,7 @@ export async function POST(req: NextRequest) {
             code_expired: "code 過期了、請到網站重拿（5 分鐘有效）",
             line_already_bound_to_another: "這個 LINE 已綁過別的帳號、先到網站解除原綁定",
           };
-          await lineReply(
-            replyToken,
-            `❌ 綁定失敗：${reasonMap[result.reason ?? ""] ?? result.reason}\n\n到 ${SITE_URL}/settings 重拿 code。`,
-            token, QUICK_REPLY,
-          );
+          await lineReply(replyToken, cardBindFail(reasonMap[result.reason ?? ""] ?? result.reason ?? "未知錯誤"), token, QUICK_REPLY);
         }
         continue;
       }
@@ -286,20 +458,13 @@ export async function POST(req: NextRequest) {
             line_notify_enabled: false,
           }, { count: "exact" })
           .eq("line_user_id", userId);
-        const msg = error || !count
-          ? "🤔 你還沒綁定、或已經解除過了"
-          : "✅ 已解除綁定、不再推通知。要重綁、到網站重拿 code。";
-        await lineReply(replyToken, msg, token, QUICK_REPLY);
+        await lineReply(replyToken, cardUnbind(!(error || !count)), token, QUICK_REPLY);
         continue;
       }
 
       // 3. /help
       if (text === "/help" || text === "help" || text === "說明" || text === "?") {
-        await lineReply(
-          replyToken,
-          `📖 AI 島 LINE 通知 bot\n\n指令：\n• /bind 123456 — 綁帳號\n• /unbind — 解除綁定\n• /help — 看這份\n\n網站：${SITE_URL}\n設定 / 拿 code：${SITE_URL}/settings`,
-          token, QUICK_REPLY,
-        );
+        await lineReply(replyToken, cardHelp(), token, QUICK_REPLY);
         continue;
       }
 
@@ -311,21 +476,14 @@ export async function POST(req: NextRequest) {
           .select("username, display_name, role")
           .eq("line_user_id", userId)
           .maybeSingle();
-        const msg = bound
-          ? `🆔 你的 LINE userId：\n${userId}\n\n✅ 已綁到帳號：\n• username: ${(bound as any).username}\n• 名稱: ${(bound as any).display_name ?? "(未設)"}\n• 角色: ${(bound as any).role}\n\n如果 AI 還不回 → ai_api_keys 或 model 問題、不是綁定問題。`
-          : `🆔 你的 LINE userId：\n${userId}\n\n❌ DB 找不到 line_user_id = 這個 userId 的 profile。\n\n意思：你雖然「自己以為綁了」、但 DB 沒這筆。可能原因：\n1. 你用站內 LINE Login 登入過、但那個 userId 跟這個 Bot 拿的 userId 不一樣 (兩個 channel)\n2. /bind 失敗沒成功寫\n3. 站內按了「綁定」但實際走錯流程\n\n正解：到 ${SITE_URL}/settings 拿 6 位 code、回來傳「/bind 123456」、用這個 channel 的 userId 寫進去。`;
-        await lineReply(replyToken, msg, token, QUICK_REPLY);
+        await lineReply(replyToken, cardWhoami(userId, bound), token, QUICK_REPLY);
         continue;
       }
 
       // 3.5. 綁定 / 登入 自然語言引導
       const bindHints = ["綁定", "我要綁", "我要登入", "登入", "怎麼綁", "怎麼登入", "綁帳號", "綁帳戶", "bind", "login", "register", "註冊"];
       if (bindHints.some((k) => text.toLowerCase().includes(k.toLowerCase()))) {
-        await lineReply(
-          replyToken,
-          `🔗 怎麼綁定 AI 島帳號到 LINE：\n\n1. 登入網站 ${SITE_URL}\n2. 進 ${SITE_URL}/settings\n3. 找「LINE 通知綁定」、按一下拿 6 位 code\n4. 回到這裡傳：「/bind 123456」（換成你的 code）\n\n綁完就能用 AI 學員導師 + 收學習通知。`,
-          token, QUICK_REPLY,
-        );
+        await lineReply(replyToken, cardBindHint(), token, QUICK_REPLY);
         continue;
       }
 
@@ -354,12 +512,8 @@ export async function POST(req: NextRequest) {
         }
         // AI 失敗、fallback 到 ticket
       } else {
-        // 未綁定提示綁定 (附上 LINE userId 給 user 自己對)
-        await lineReply(
-          replyToken,
-          `🤖 嗨～看到你訊息了。\n\n你的 LINE userId：${userId.slice(0, 8)}...${userId.slice(-4)}\n\nDB 找不到綁過的帳號。可能你以為綁了但實際 DB 沒寫成功。\n\n正解：\n1. 登入 ${SITE_URL}\n2. 到 ${SITE_URL}/settings\n3. 找「LINE 通知綁定」拿 6 位 code\n4. 回來傳「/bind 123456」\n\n想看你完整 LINE userId、傳「/whoami」`,
-          token, QUICK_REPLY,
-        );
+        // 未綁定提示綁定
+        await lineReply(replyToken, cardUnbound(userId), token, QUICK_REPLY);
         continue;
       }
 
