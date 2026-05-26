@@ -170,6 +170,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               <AdminLink href="/admin/ai/usage">📊 Token 用量</AdminLink>
               <AdminLink href="/admin/ai/cache">🗄️ 回應快取</AdminLink>
               <AdminLink href="/admin/ai/embeddings">🧠 語意搜尋 / RAG</AdminLink>
+              <AdminLink href="/admin/ai/rewrite-lessons">✍️ 章節友善化改寫</AdminLink>
               <AdminLink href="/admin/ai/conversations">💬 對話紀錄</AdminLink>
               <AdminLink href="/admin/ai/moderation">🛡️ AI 審核</AdminLink>
               <AdminLink href="/admin/ai/moderation-keywords">🔤 審核關鍵字</AdminLink>
