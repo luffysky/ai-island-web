@@ -1,0 +1,252 @@
+LLM 寫程式碼用 → 要**能 parse 的結構化資料**，不是自然語言。
+
+  
+### 傳統做法的痛苦
+
+```text
+Prompt：「請列 3 個 Python 框架，用 JSON 格式」
+
+LLM 可能回（每次不一樣）：
+
+版本 1（OK）：
+{"frameworks": ["Django", "Flask", "FastAPI"]}
+
+版本 2（多了 markdown）：
+```json
+{"frameworks": ["Django", "Flask", "FastAPI"]}
+```
+
+版本 3（多解釋）：
+這裡是 3 個框架：
+
+```json
+{"frameworks": ["Django", "Flask", "FastAPI"]}
+```
+
+希望對你有幫助！
+
+版本 4（純文字）：
+[Django, Flask, FastAPI]
+
+版本 5（缺括號）：
+{"frameworks": ["Django", "Flask", "FastAPI"]
+
+→ 你的程式碼要處理各種變形 = 維護地獄
+```
+
+  
+### 2024+ 結構化輸出（強制 JSON）
+
+  
+各家 API 都加了「**保證 JSON 輸出**」功能。
+
+  
+#### OpenAI Structured Outputs（2024.8+）
+
+```python
+from pydantic import BaseModel
+from openai import OpenAI
+
+class Framework(BaseModel):
+    name: str
+    pros: list[str]
+    cons: list[str]
+    stars: int
+    license: str
+
+class Result(BaseModel):
+    frameworks: list[Framework]
+    summary: str
+
+client = OpenAI()
+response = client.beta.chat.completions.parse(
+    model="gpt-4o",
+    messages=[{
+        "role": "user",
+        "content": "列 3 個 Python web 框架"
+    }],
+    response_format=Result
+)
+
+# 直接拿到 typed object
+result: Result = response.choices[0].message.parsed
+for fw in result.frameworks:
+    print(fw.name, fw.stars)
+
+# 100% 保證 schema 正確（OpenAI 用 constrained decoding）
+```
+
+  
+#### Anthropic：用 Tool Use 達成
+
+  
+Claude 沒有專門的「JSON mode」，但用 Tool Use 可達成同樣效果：
+
+```python
+tools = [{
+    "name": "output_result",
+    "description": "輸出結果（請務必使用此工具）",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "frameworks": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "name": {"type": "string"},
+                        "stars": {"type": "integer"}
+                    },
+                    "required": ["name", "stars"]
+                }
+            }
+        },
+        "required": ["frameworks"]
+    }
+}]
+
+response = client.messages.create(
+    model="claude-sonnet-4-6",
+    max_tokens=1024,
+    tools=tools,
+    tool_choice={"type": "tool", "name": "output_result"},
+    messages=[{"role": "user", "content": "列 3 個 Python 框架"}]
+)
+
+result = response.content[0].input
+# 拿到結構化 dict，schema 跟你定義的一樣
+```
+
+  
+#### Gemini Structured Output
+
+```python
+from google import genai
+from pydantic import BaseModel
+
+class Framework(BaseModel):
+    name: str
+    stars: int
+
+client = genai.Client()
+response = client.models.generate_content(
+    model="gemini-2.5-pro",
+    contents="列 3 個 Python 框架",
+    config={
+        "response_mime_type": "application/json",
+        "response_schema": list[Framework]
+    }
+)
+frameworks = response.parsed  # 直接拿到 list[Framework]
+```
+
+  
+#### TypeScript：Zod + Vercel AI SDK
+
+```ts
+import { z } from "zod";
+import { generateObject } from "ai";
+import { openai } from "@ai-sdk/openai";
+
+const { object } = await generateObject({
+  model: openai("gpt-4o"),
+  schema: z.object({
+    frameworks: z.array(z.object({
+      name: z.string(),
+      pros: z.array(z.string()),
+      stars: z.number(),
+      license: z.enum(["MIT", "Apache", "GPL", "Other"])
+    }))
+  }),
+  prompt: "列 3 個 Python web 框架"
+});
+
+// 完全 type-safe
+object.frameworks[0].name;       // TypeScript 知道是 string
+object.frameworks[0].stars;      // number
+object.frameworks[0].license;    // "MIT" | "Apache" | "GPL" | "Other"
+```
+
+  
+### 為什麼結構化輸出重要？
+
+  
+- **跟程式碼整合**：直接 `.name` 而非 regex 抓
+- **Type safety**：用 Pydantic / Zod 驗證
+- **產品化**：穩定 = 可信賴
+- **多步驟流程**：上一步 JSON 給下一步當輸入
+- **Tool Use 基礎**：tool 的參數本質就是結構化
+- **Eval 容易**：能寫測試
+
+  
+### 常見場景
+
+  
+#### 1. 分類任務
+
+```python
+from typing import Literal
+
+class Classification(BaseModel):
+    sentiment: Literal["positive", "negative", "neutral"]
+    confidence: float  # 0-1
+    reasoning: str
+    topics: list[str]  # 最多 3 個主題
+
+# 強制 sentiment 只能三選一，永遠不會出現怪值
+```
+
+  
+#### 2. 資料抽取
+
+```python
+from datetime import date
+
+class Item(BaseModel):
+    name: str
+    quantity: int
+    unit_price: float
+
+class Invoice(BaseModel):
+    invoice_number: str
+    date: date
+    customer_name: str
+    items: list[Item]
+    subtotal: float
+    tax: float
+    total: float
+
+# 從 PDF 文字抽出結構化發票資料
+# 100% schema 對應，能直接存進 DB
+```
+
+  
+#### 3. 表單填寫
+
+```python
+class Lead(BaseModel):
+    name: str
+    email: str
+    phone: str | None
+    company: str | None
+    interest: list[str]
+    budget_range: Literal[" 3 層 LLM 容易亂）
+- **給 Optional 預設值**，避免空值
+- **用 enum / Literal 比 string 描述更可靠**
+
+  
+### 常見坑
+
+  
+- **太複雜 schema**：超過 20 個欄位 LLM 容易混亂
+- **欄位名衝突**：「name」可能指公司、人、產品—改具體
+- **沒寫 description**：LLM 不知道欄位意義
+- **沒測 edge case**：空陣列、特殊字元、超長文字
+- **LLM 偷懶**：陣列回 1 個就停，要明確「至少 3 個」
+
+  
+    
+      🛠️
+      工具推薦
+    
+    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。

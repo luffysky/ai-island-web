@@ -1,0 +1,233 @@
+使用者問「請寫 1000 字文章」：
+
+  
+- **非串流**：等 30 秒 → 一次全部出現
+- **串流**：1 秒後開始一個字一個字出現
+
+  
+體感差別**巨大**—串流像 ChatGPT、非串流像「請稍候」。
+
+  
+### 為什麼能串流？
+
+  
+LLM **本來就是一個 token 一個 token 產的**（自回歸）。傳統 API 等全部產完才送你，串流 API 邊產邊送。
+
+  
+### Python 實作
+
+```python
+# Anthropic 串流
+from anthropic import Anthropic
+client = Anthropic()
+
+with client.messages.stream(
+    model="claude-sonnet-4-6",
+    max_tokens=1024,
+    messages=[{"role": "user", "content": "請寫一首詩"}]
+) as stream:
+    for text in stream.text_stream:
+        print(text, end="", flush=True)
+    
+    # 結束後拿完整訊息
+    final_message = stream.get_final_message()
+    print(f"\nUsage: {final_message.usage}")
+
+# OpenAI 串流
+from openai import OpenAI
+client = OpenAI()
+
+stream = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[{"role": "user", "content": "請寫一首詩"}],
+    stream=True
+)
+
+for chunk in stream:
+    if chunk.choices[0].delta.content:
+        print(chunk.choices[0].delta.content, end="", flush=True)
+```
+
+  
+### SSE：後端串給前端（標準做法）
+
+  
+Server-Sent Events 是 HTTP-based 的單向串流，**2026 LLM API 標準做法**。
+
+```python
+# FastAPI 後端
+from fastapi import FastAPI
+from fastapi.responses import StreamingResponse
+from anthropic import Anthropic
+
+app = FastAPI()
+client = Anthropic()
+
+@app.post("/chat")
+async def chat(req: ChatRequest):
+    async def generate():
+        with client.messages.stream(
+            model="claude-sonnet-4-6",
+            max_tokens=1024,
+            messages=req.messages
+        ) as stream:
+            for text in stream.text_stream:
+                yield f"data: {text}\n\n"
+        yield "data: [DONE]\n\n"
+    
+    return StreamingResponse(
+        generate(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no"  # nginx 不要 buffer
+        }
+    )
+```
+
+```ts
+// 前端 fetch
+const response = await fetch("/chat", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ messages })
+});
+
+const reader = response.body.getReader();
+const decoder = new TextDecoder();
+let buffer = "";
+
+while (true) {
+  const { done, value } = await reader.read();
+  if (done) break;
+  
+  buffer += decoder.decode(value, { stream: true });
+  
+  const lines = buffer.split("\n");
+  buffer = lines.pop() || "";  // 留下不完整的
+  
+  for (const line of lines) {
+    if (line.startsWith("data: ")) {
+      const text = line.slice(6);
+      if (text === "[DONE]") return;
+      appendToUI(text);
+    }
+  }
+}
+```
+
+  
+### Vercel AI SDK（2026 最簡單）
+
+```ts
+// app/api/chat/route.ts
+import { streamText } from "ai";
+import { anthropic } from "@ai-sdk/anthropic";
+
+export async function POST(req: Request) {
+  const { messages } = await req.json();
+  
+  const result = await streamText({
+    model: anthropic("claude-sonnet-4-6"),
+    messages
+  });
+  
+  return result.toDataStreamResponse();
+}
+
+// 前端
+import { useChat } from "@ai-sdk/react";
+
+export default function Chat() {
+  const { 
+    messages, 
+    input, 
+    handleSubmit, 
+    handleInputChange,
+    isLoading,
+    stop  // 中斷生成
+  } = useChat();
+  
+  return (
+    
+      {messages.map(m => (
+        
+          **{m.role}**: {m.content}
+        
+      ))}
+      
+        
+        Send
+        {isLoading && Stop}
+      
+    
+  );
+}
+
+// 全自動處理串流、state、UI 更新
+```
+
+  
+### SSE vs WebSocket
+
+  
+|  | SSE | WebSocket |
+| --- | --- | --- |
+| 方向 | server → client（單向） | 雙向 |
+| 底層 | HTTP | 升級協議 |
+| 重連 | 瀏覽器自動 | 要自己處理 |
+| 狀態 | stateless | stateful |
+| 適合 | LLM 回覆、通知 | 聊天室、多人協作 |
+
+  
+LLM streaming 用 **SSE 就夠**—WebSocket 是 overkill，除非要雙向溝通。
+
+  
+### 串流 + Tool Use（複雜場景）
+
+  
+2024+ 模型支援「**串流期間呼叫工具**」：
+
+```text
+使用者：「台北天氣 + 寫一首詩」
+
+LLM 開始串流：
+"正在查台北天氣..."
+[串流中暫停]
+[工具呼叫：get_weather("台北")]
+[拿到結果：26°C 晴]
+[串流繼續]
+"台北現在 26°C，晴朗。為這樣的天氣寫首詩：
+
+藍天無雲似畫卷
+微風拂面送清涼
+..."
+
+→ 中間有工具呼叫但使用者體驗順暢
+```
+
+  
+### 串流的注意事項
+
+  
+- **錯誤處理**：中間斷了怎麼辦？保存已收到部分
+- **使用者中斷**：fetch 帶 AbortController
+- **計費**：中斷時已產的 token 還是算錢
+- **Buffering**：太細不要每個字都 setState（用 requestAnimationFrame）
+- **Markdown 即時渲染**：部分 markdown 直到結束才完整（用 streaming markdown parser）
+- **程式碼區塊**：用 ```python 開頭，串到中間還沒完整—UX 處理
+
+  
+### 2026 推薦 stack
+
+  
+- **Next.js / React + Vercel AI SDK**：最簡單
+- **FastAPI + Sveltekit / Vue**：自己處理 SSE
+- **Python 後端 + 純 React**：用 `@microsoft/fetch-event-source`
+
+  
+
+⚠️
+新手常見錯誤
+
+新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。
