@@ -1,0 +1,119 @@
+### 安裝 + 第一個爬蟲
+
+```python
+# pip install requests beautifulsoup4 lxml
+import requests
+from bs4 import BeautifulSoup
+
+# 1. 抓網頁
+url = 'https://example.com'
+res = requests.get(url)
+print(res.status_code)  # 200 = OK
+print(res.text[:500])   # 看前 500 字
+
+# 2. 解析 HTML
+soup = BeautifulSoup(res.text, 'lxml')
+
+# 3. 找資料（CSS selector）
+title = soup.select_one('h1').text
+links = [a['href'] for a in soup.select('a')]
+prices = [p.text for p in soup.select('.price')]
+```
+
+
+### Requests 常用功能
+
+```python
+# 加 User-Agent（假裝是瀏覽器）
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'
+}
+res = requests.get(url, headers=headers)
+
+# Query 參數
+params = {'q': 'python', 'page': 2}
+res = requests.get('https://example.com/search', params=params)
+
+# POST 請求（送表單）
+data = {'username': 'alice', 'password': 'secret'}
+res = requests.post('https://example.com/login', data=data)
+
+# Cookie / Session
+session = requests.Session()
+session.post('/login', data=data)
+res = session.get('/profile')  # 自動帶 cookie
+
+# Timeout（必設、不然會 hang）
+res = requests.get(url, timeout=10)
+
+# 處理錯誤
+try:
+    res = requests.get(url, timeout=10)
+    res.raise_for_status()  # 4xx/5xx 會 raise
+except requests.RequestException as e:
+    print(f'錯誤：{e}')
+```
+
+
+### BeautifulSoup 找資料方法
+
+```python
+# CSS Selector（推薦、跟前端一致）
+soup.select('div.product .title')
+soup.select_one('#main > h1')
+soup.select('a[href^="/product/"]')  # 開頭是 /product/
+
+# find / find_all（傳統方法）
+soup.find('h1')
+soup.find_all('div', class_='product')
+soup.find('a', attrs={'data-id': '123'})
+
+# 取資料
+el.text                # 文字內容
+el.get_text(strip=True)  # 去除空白
+el['href']            # 屬性值
+el.attrs               # 全部屬性
+```
+
+
+### 實戰：爬 PTT 八卦版標題
+
+```python
+import requests
+from bs4 import BeautifulSoup
+
+url = 'https://www.ptt.cc/bbs/Gossiping/index.html'
+cookies = {'over18': '1'}  # PTT 八卦版要這個
+headers = {'User-Agent': 'Mozilla/5.0'}
+
+res = requests.get(url, headers=headers, cookies=cookies)
+soup = BeautifulSoup(res.text, 'lxml')
+
+for post in soup.select('.r-ent'):
+    title_el = post.select_one('.title a')
+    if title_el:
+        title = title_el.text.strip()
+        link = 'https://www.ptt.cc' + title_el['href']
+        push = post.select_one('.nrec').text  # 推文數
+        author = post.select_one('.author').text
+        print(f'{push} {title} by {author}')
+```
+
+
+### 儲存到 CSV / DB
+
+```python
+import pandas as pd
+
+results = []
+for post in soup.select('.r-ent'):
+    results.append({
+        'title': post.select_one('.title a').text,
+        'author': post.select_one('.author').text,
+        'push': post.select_one('.nrec').text,
+    })
+
+df = pd.DataFrame(results)
+df.to_csv('ptt_titles.csv', index=False, encoding='utf-8-sig')
+# utf-8-sig 讓 Excel 直接開不亂碼
+```

@@ -1,0 +1,152 @@
+### 安裝
+
+```bash
+pip install playwright
+playwright install chromium  # 裝瀏覽器
+```
+
+
+### 基本使用
+
+```python
+from playwright.sync_api import sync_playwright
+
+with sync_playwright() as p:
+    # 開無頭瀏覽器（headless）
+    browser = p.chromium.launch(headless=True)
+    # 開發時用 headless=False、能看畫面
+
+    page = browser.new_page()
+    page.goto('https://example.com')
+
+    # 等元素出現
+    page.wait_for_selector('.product')
+
+    # 取資料
+    title = page.locator('h1').inner_text()
+    products = page.locator('.product').all()
+
+    for p in products:
+        name = p.locator('.name').inner_text()
+        price = p.locator('.price').inner_text()
+        print(name, price)
+
+    browser.close()
+```
+
+
+### 互動：點擊 / 輸入 / 捲動
+
+```python
+# 點按鈕
+page.click('button.load-more')
+
+# 填表單
+page.fill('input[name="email"]', 'a@b.com')
+page.fill('input[name="password"]', 'secret')
+page.click('button[type="submit"]')
+
+# 等待跳轉
+page.wait_for_url('**/dashboard')
+
+# 捲動到底（觸發 lazy load）
+page.evaluate('window.scrollTo(0, document.body.scrollHeight)')
+
+# 等 N 毫秒
+page.wait_for_timeout(2000)  # 2 秒
+
+# 等網路 idle（最穩）
+page.wait_for_load_state('networkidle')
+
+# 截圖
+page.screenshot(path='shot.png', full_page=True)
+```
+
+
+### 無限捲動：抓所有商品
+
+```python
+from playwright.sync_api import sync_playwright
+
+def scrape_infinite_scroll(url, max_scrolls=20):
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
+        page.goto(url)
+
+        previous_height = 0
+        for _ in range(max_scrolls):
+            page.evaluate('window.scrollTo(0, document.body.scrollHeight)')
+            page.wait_for_timeout(1500)
+            current_height = page.evaluate('document.body.scrollHeight')
+            if current_height == previous_height:
+                break  # 沒新內容就停
+            previous_height = current_height
+
+        # 抓所有商品
+        products = page.locator('.product-card').all()
+        results = []
+        for prod in products:
+            results.append({
+                'name': prod.locator('.name').inner_text(),
+                'price': prod.locator('.price').inner_text(),
+            })
+
+        browser.close()
+        return results
+```
+
+
+### 處理彈窗 / 對話框
+
+```python
+# 自動處理 alert / confirm
+page.on('dialog', lambda d: d.accept())
+
+# 關閉 Cookie 同意彈窗
+try:
+    page.click('button:has-text("同意")', timeout=3000)
+except:
+    pass  # 沒彈窗也不錯
+```
+
+
+### 截攔 API 回應（超強技巧）
+
+```python
+# 很多 SPA 後面打 JSON API、直接攔截比解析 HTML 快
+api_data = []
+
+def handle_response(response):
+    if '/api/products' in response.url:
+        api_data.append(response.json())
+
+page.on('response', handle_response)
+page.goto('https://shop.example.com')
+# api_data 自動填入後端 JSON
+```
+
+
+### async 版本（高速）
+
+```python
+import asyncio
+from playwright.async_api import async_playwright
+
+async def scrape(url):
+    async with async_playwright() as p:
+        browser = await p.chromium.launch()
+        page = await browser.new_page()
+        await page.goto(url)
+        text = await page.inner_text('h1')
+        await browser.close()
+        return text
+
+# 同時跑 10 個
+async def main():
+    urls = [f'https://example.com/page/{i}' for i in range(10)]
+    results = await asyncio.gather(*[scrape(u) for u in urls])
+    print(results)
+
+asyncio.run(main())
+```
