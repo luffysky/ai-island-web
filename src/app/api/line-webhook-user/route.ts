@@ -8,6 +8,7 @@ import { callAI } from "@/lib/ai-providers";
 import { pickModelForUsage } from "@/lib/ai-usage-models";
 import { buildTutorSystemPrompt } from "@/lib/ai-tutor-prompt";
 import { getUserLearningState, formatLearningStateForPrompt } from "@/lib/user-learning-state";
+import { checkOwner } from "@/lib/is-owner";
 
 // in-memory fallback：未綁定 user（profile=null）沒法存 DB、暫存 in-memory
 type Msg = { role: "user" | "assistant"; content: string };
@@ -81,7 +82,9 @@ type UserProfileLite = {
   level: number | null;
 };
 
-async function askUserAI(text: string, profile: UserProfileLite | null, lineUserId: string): Promise<string | null> {
+export type AskUserAIResult = { reply: string; displayName: string; ownerMode: boolean };
+
+async function askUserAI(text: string, profile: UserProfileLite | null, lineUserId: string): Promise<AskUserAIResult | null> {
   const admin = createSupabaseAdmin();
   const { data: models } = await admin.from("ai_models").select("*").eq("is_active", true).limit(20);
   const activeModels = (models as any[]) ?? [];
@@ -175,7 +178,14 @@ async function askUserAI(text: string, profile: UserProfileLite | null, lineUser
       mem.push({ role: "assistant", content: reply });
       if (mem.length > 16) mem.splice(0, mem.length - 16);
     }
-    return reply;
+    const ownerMode = checkOwner({
+      id: profile?.id ?? null,
+      username: profile?.username ?? null,
+      role: profile?.role ?? null,
+      email: null,
+      lineUserId,
+    }).isOwner;
+    return { reply, displayName, ownerMode };
   } catch (e: any) {
     console.warn("[line-webhook-user] AI failed:", e?.message);
     // 也寫 error_logs (之前只 console.warn、Zeabur log 翻不到)
@@ -223,20 +233,25 @@ async function logUserLineError(code: string, message: string, extra: any = {}) 
   console.warn(`[line-webhook-user] ${code}:`, message);
 }
 
-// 接 string（純文字）或 FlexMessage（包好的 flex）；text 自動套 Quick Reply
-async function lineReply(replyToken: string, payload: string | FlexMessage | LineTextMessage, token: string, quickReply?: any) {
+// 接 string（純文字）/ FlexMessage / 多則訊息 array；text 自動套 Quick Reply、最多 5 則（LINE 上限）
+async function lineReply(
+  replyToken: string,
+  payload: string | FlexMessage | LineTextMessage | Array<string | FlexMessage | LineTextMessage>,
+  token: string,
+  quickReply?: any,
+) {
   try {
-    let msg: any;
-    if (typeof payload === "string") {
-      msg = { type: "text", text: payload.slice(0, 4900) };
-    } else {
-      msg = { ...payload };
-    }
-    if (quickReply && !msg.quickReply) msg.quickReply = quickReply;
+    const rawList = Array.isArray(payload) ? payload : [payload];
+    const messages = rawList.slice(0, 5).map((p, idx, arr) => {
+      const m: any = typeof p === "string" ? { type: "text", text: p.slice(0, 4900) } : { ...p };
+      // Quick Reply 只掛在最後一則（LINE 只認最後一則的 quickReply）
+      if (quickReply && idx === arr.length - 1 && !m.quickReply) m.quickReply = quickReply;
+      return m;
+    });
     const res = await fetch(`${ENDPOINT}/message/reply`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ replyToken, messages: [msg] }),
+      body: JSON.stringify({ replyToken, messages }),
       signal: AbortSignal.timeout(5000),
     });
     if (!res.ok) {
@@ -417,6 +432,54 @@ const QUICK_REPLY = buildQuickReply([
   { type: "message", label: "❓ 說明", text: "/help" },
 ]);
 
+// AI 學員導師回覆美化卡 — 短回答（< 220 字、無 code）整段包進 Flex bubble、長回答跟一張小卡 footer
+// header 紫色 "🤖 AI 學員導師 · 雪鑰"、footer 3 個按鈕
+function cardAITutorReply(opts: { reply: string; displayName: string; ownerMode: boolean }): FlexMessage {
+  const headerColor = opts.ownerMode ? "#ffd700" : USER_ACCENT; // 林董金色、學員紫色
+  const headerLabel = opts.ownerMode ? "🤖 雪鑰 · 給林董" : "🤖 AI 學員導師 · 雪鑰";
+  return buildSimpleCard({
+    emoji: "🎓",
+    title: headerLabel,
+    accentColor: headerColor,
+    body: opts.reply.slice(0, 1900), // Flex text 上限保守抓 1900
+    meta: [{ label: "👤 對象", value: opts.displayName }],
+    buttons: [
+      { label: "📚 看章節", uri: `${SITE_URL}/chapters`, primary: true },
+      { label: "🌐 完整對話", uri: `${SITE_URL}/ai-tutor` },
+    ],
+  });
+}
+
+// 長回答 / 含 code → 純文字 + 一張小 footer 卡（不打斷對話 readability）
+function cardAITutorFooter(opts: { displayName: string; ownerMode: boolean }): FlexMessage {
+  const headerColor = opts.ownerMode ? "#ffd700" : USER_ACCENT;
+  return buildSimpleCard({
+    emoji: opts.ownerMode ? "👑" : "🎓",
+    title: opts.ownerMode ? "雪鑰回給林董" : "AI 學員導師 · 雪鑰",
+    accentColor: headerColor,
+    body: "想問下一題？或到網站看完整內容",
+    meta: [{ label: "👤", value: opts.displayName }],
+    buttons: [
+      { label: "📚 看章節", uri: `${SITE_URL}/chapters`, primary: true },
+      { label: "🌐 完整對話", uri: `${SITE_URL}/ai-tutor` },
+      { label: "⚙️ 設定", uri: `${SITE_URL}/settings` },
+    ],
+  });
+}
+
+// 把 AI reply 包成美化訊息：短的 → Flex 一張、長/含 code → 純文字 + Flex footer
+function buildAITutorMessages(reply: string, displayName: string, ownerMode: boolean): Array<FlexMessage | LineTextMessage> {
+  const hasCode = /```/.test(reply);
+  const isShort = reply.length <= 220 && !hasCode;
+  if (isShort) {
+    return [cardAITutorReply({ reply, displayName, ownerMode })];
+  }
+  return [
+    { type: "text", text: reply.slice(0, 4900) } as LineTextMessage,
+    cardAITutorFooter({ displayName, ownerMode }),
+  ];
+}
+
 /**
  * USER LINE bot webhook
  *
@@ -558,9 +621,10 @@ export async function POST(req: NextRequest) {
 
       // 已綁定 → 試 AI、AI 通了就回、AI 失敗 / 未綁定才走 ticket
       if (profile) {
-        const aiReply = await askUserAI(text, profile as any, userId);
-        if (aiReply) {
-          await lineReply(replyToken, aiReply, token, QUICK_REPLY);
+        const aiResult = await askUserAI(text, profile as any, userId);
+        if (aiResult) {
+          const msgs = buildAITutorMessages(aiResult.reply, aiResult.displayName, aiResult.ownerMode);
+          await lineReply(replyToken, msgs, token, QUICK_REPLY);
           continue;
         }
         // AI 失敗、fallback 到 ticket
