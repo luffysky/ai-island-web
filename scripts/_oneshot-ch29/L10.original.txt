@@ -1,0 +1,74 @@
+## 為什麼
+- ✅ 整合 Cheerio / Puppeteer / Playwright
+- ✅ 內建 Queue、代理、重試
+- ✅ 自動 storage
+- ✅ TypeScript first
+
+## 安裝
+```bash
+npm install crawlee
+```
+
+## CheerioCrawler
+```typescript
+import { CheerioCrawler, Dataset } from "crawlee";
+
+const crawler = new CheerioCrawler({
+  async requestHandler({ $, request, enqueueLinks }) {
+    const products = $(".product").map((i, el) => ({
+      name: $(el).find(".name").text(),
+      price: $(el).find(".price").text()
+    })).get();
+    
+    await Dataset.pushData({ products, url: request.url });
+    await enqueueLinks({ selector: "a.product-link" });
+  },
+  maxRequestsPerCrawl: 100
+});
+
+await crawler.run(["https://example.com"]);
+```
+
+## PlaywrightCrawler
+```typescript
+import { PlaywrightCrawler, Dataset } from "crawlee";
+
+const crawler = new PlaywrightCrawler({
+  async requestHandler({ page, request, enqueueLinks }) {
+    await page.waitForSelector(".product");
+    
+    const products = await page.locator(".product").evaluateAll(els =>
+      els.map(el => ({
+        name: el.querySelector(".name")?.textContent,
+        price: el.querySelector(".price")?.textContent
+      }))
+    );
+    
+    await Dataset.pushData(products);
+    await enqueueLinks({ selector: "a.next-page" });
+  }
+});
+
+await crawler.run(["https://example.com"]);
+```
+
+## 代理
+```typescript
+import { ProxyConfiguration } from "crawlee";
+
+const proxy = new ProxyConfiguration({
+  proxyUrls: ["http://user:pass@proxy1.com:8080"]
+});
+
+const crawler = new PlaywrightCrawler({
+  proxyConfiguration: proxy
+});
+```
+
+## Crawlee vs Scrapy
+
+| 面向 | Crawlee | Scrapy |
+|---|---|---|
+| 語言 | TS/JS | Python |
+| 動態 | 內建 | 要加 Splash |
+| 學習 | 平 | 中 |

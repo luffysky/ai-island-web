@@ -1,0 +1,72 @@
+## 安裝
+```bash
+npm install playwright
+npx playwright install chromium
+```
+
+## 基本
+```javascript
+import { chromium } from "playwright";
+
+const browser = await chromium.launch({ headless: true });
+const page = await browser.newPage();
+await page.goto("https://example.com");
+
+const title = await page.locator("h1").textContent();
+await page.screenshot({ path: "screenshot.png" });
+
+await browser.close();
+```
+
+## 互動
+```javascript
+await page.fill("input[name='email']", "user@example.com");
+await page.click("button[type='submit']");
+await page.waitForURL("**/dashboard");
+```
+
+## 抓資料
+```javascript
+const products = await page.locator("div.product").evaluateAll(elements =>
+  elements.map(el => ({
+    name: el.querySelector(".name")?.textContent?.trim(),
+    price: el.querySelector(".price")?.textContent
+  }))
+);
+```
+
+## 並發
+```javascript
+async function scrapePage(url) {
+  const context = await browser.newContext();
+  const page = await context.newPage();
+  await page.goto(url);
+  const data = await page.locator("h1").textContent();
+  await context.close();
+  return data;
+}
+
+const results = await Promise.all(urls.map(scrapePage));
+```
+
+## 攔截 API
+```javascript
+page.on("response", async response => {
+  if (response.url().includes("/api/products")) {
+    const data = await response.json();
+    console.log(data);
+  }
+});
+```
+
+## 反偵測
+```bash
+npm install playwright-extra puppeteer-extra-plugin-stealth
+```
+
+```javascript
+import { chromium } from "playwright-extra";
+import StealthPlugin from "puppeteer-extra-plugin-stealth";
+
+chromium.use(StealthPlugin());
+```

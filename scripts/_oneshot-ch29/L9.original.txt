@@ -1,0 +1,61 @@
+## vs Playwright
+- ⚠️ 只支援 Chromium
+- ✅ Google 官方
+- ✅ CDP 最完整
+
+## 用法
+```bash
+npm install puppeteer
+```
+
+```javascript
+import puppeteer from "puppeteer";
+
+const browser = await puppeteer.launch({ headless: true });
+const page = await browser.newPage();
+await page.goto("https://example.com");
+
+const title = await page.$eval("h1", el => el.textContent);
+await browser.close();
+```
+
+## puppeteer-extra + stealth
+```javascript
+import puppeteer from "puppeteer-extra";
+import StealthPlugin from "puppeteer-extra-plugin-stealth";
+
+puppeteer.use(StealthPlugin());
+const browser = await puppeteer.launch();
+```
+
+## CDP（Chrome DevTools Protocol）
+```javascript
+const client = await page.target().createCDPSession();
+
+await client.send("Network.enable");
+client.on("Network.requestWillBeSent", e => {
+  console.log(e.request.url);
+});
+
+await client.send("Network.emulateNetworkConditions", {
+  offline: false,
+  downloadThroughput: 50 * 1024,
+  uploadThroughput: 20 * 1024,
+  latency: 500
+});
+```
+
+## Generate PDF
+```javascript
+await page.pdf({ path: "page.pdf", format: "A4" });
+```
+
+## 對比
+
+| 面向 | Puppeteer | Playwright |
+|---|---|---|
+| 公司 | Google | Microsoft |
+| 瀏覽器 | Chromium | 全 |
+| API | 老 | 新 |
+
+新專案直接 Playwright。

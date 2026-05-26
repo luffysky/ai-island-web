@@ -1,0 +1,65 @@
+## 為什麼 Bun
+- ⚡ 快 3 倍
+- 📦 內建 TS
+- 🌐 內建 fetch / SQLite
+- 💾 內建 .env
+
+## 寫 TS 直接跑
+```typescript
+import * as cheerio from "cheerio";
+
+const res = await fetch("https://example.com");
+const html = await res.text();
+const $ = cheerio.load(html);
+
+const products = $("div.product").map((i, el) => ({
+  name: $(el).find(".name").text()
+})).get();
+
+import { Database } from "bun:sqlite";
+const db = new Database("data.db");
+db.exec(`CREATE TABLE IF NOT EXISTS products (name TEXT)`);
+
+for (const p of products) {
+  db.run("INSERT INTO products VALUES (?)", [p.name]);
+}
+```
+
+```bash
+bun run scrape.ts
+```
+
+## 內建 SQLite
+```typescript
+import { Database } from "bun:sqlite";
+
+const db = new Database("data.db", { create: true });
+db.exec(`
+  CREATE TABLE IF NOT EXISTS products (
+    id INTEGER PRIMARY KEY,
+    name TEXT, price REAL, link TEXT UNIQUE
+  )
+`);
+
+const insert = db.prepare("INSERT OR IGNORE INTO products (name, price, link) VALUES (?, ?, ?)");
+for (const p of products) {
+  insert.run(p.name, p.price, p.link);
+}
+
+const all = db.query("SELECT * FROM products WHERE price < ?").all(1000);
+```
+
+## Worker
+```typescript
+const worker = new Worker("./worker.ts");
+worker.postMessage({ url: "https://example.com" });
+worker.onmessage = (msg) => console.log(msg.data);
+```
+
+## vs Node
+
+| 面向 | Bun | Node |
+|---|---|---|
+| TS | 內建 | 要 tsx |
+| 速度 | 快 3 倍 | 慢 |
+| SQLite | 內建 | 套件 |
