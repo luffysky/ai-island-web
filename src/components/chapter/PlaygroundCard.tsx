@@ -207,6 +207,23 @@ export function PlaygroundCard({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ language: lang, code, stdin }),
         });
+
+        // 先檢查 Content-Type：server-side 偶爾因為超時 / Piston down 回 HTML error page、
+        // 直接 res.json() 會 throw 「Unexpected token '<'」、顯示給用戶超技術性
+        const contentType = res.headers.get("content-type") || "";
+        if (!contentType.includes("application/json")) {
+          if (res.status === 401 || res.status === 403) {
+            setOutput("❌ 請先登入才能執行程式（沙盒避免被當免費 codepen）");
+          } else if (res.status === 429) {
+            setOutput("❌ 太頻繁、請稍等幾秒再試");
+          } else if (res.status >= 500) {
+            setOutput("❌ 沙盒服務暫時無法使用（Piston API 可能在維護）、請稍後再試。\n或先用本機 Python 跑這段 code。");
+          } else {
+            setOutput(`❌ 服務異常（HTTP ${res.status}）、請稍後再試`);
+          }
+          return;
+        }
+
         const data = await res.json();
         if (data.error) {
           setOutput(`❌ ${data.error}`);
@@ -217,7 +234,8 @@ export function PlaygroundCard({
           setOutput(`${stdout}${stderr ? `\n\n--- stderr ---\n${stderr}` : ""}${exitCode}`);
         }
       } catch (e: any) {
-        setOutput(`❌ 沙盒錯誤：${e.message}`);
+        // 真的 catch 到 exception（網路斷 / 解析錯）的最後 fallback
+        setOutput(`❌ 沙盒錯誤：${e.message}\n（請檢查網路或稍後再試）`);
       }
     } else {
       setOutput(`⚠️ ${lang} 目前不支援即時執行`);
