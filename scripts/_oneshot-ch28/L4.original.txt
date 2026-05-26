@@ -1,0 +1,137 @@
+### 安裝 + 建專案
+
+```bash
+pip install scrapy
+
+scrapy startproject myspider
+cd myspider
+scrapy genspider books books.toscrape.com  # 練習網站
+```
+
+
+### 第一個 Spider
+
+```python
+# myspider/spiders/books.py
+import scrapy
+
+class BooksSpider(scrapy.Spider):
+    name = 'books'
+    start_urls = ['http://books.toscrape.com']
+
+    def parse(self, response):
+        # 抓書名 + 價格
+        for book in response.css('article.product_pod'):
+            yield {
+                'title': book.css('h3 a::attr(title)').get(),
+                'price': book.css('.price_color::text').get(),
+                'stock': book.css('.availability::text').get().strip(),
+            }
+
+        # 找下一頁、繼續爬
+        next_page = response.css('li.next a::attr(href)').get()
+        if next_page:
+            yield response.follow(next_page, callback=self.parse)
+```
+
+
+### 執行
+
+```bash
+# 跑爬蟲 + 輸出 JSON
+scrapy crawl books -o books.json
+
+# 輸出 CSV
+scrapy crawl books -o books.csv
+
+# 限制爬幾頁（測試用）
+scrapy crawl books -s CLOSESPIDER_ITEMCOUNT=20
+```
+
+
+### settings.py 重要設定
+
+```python
+# 自動遵守 robots.txt
+ROBOTSTXT_OBEY = True
+
+# 並發數（同時幾個請求）
+CONCURRENT_REQUESTS = 16
+CONCURRENT_REQUESTS_PER_DOMAIN = 8
+
+# 每個請求間隔
+DOWNLOAD_DELAY = 1  # 1 秒
+RANDOMIZE_DOWNLOAD_DELAY = True  # 0.5-1.5 倍隨機
+
+# 自動 throttle（智慧調速）
+AUTOTHROTTLE_ENABLED = True
+AUTOTHROTTLE_START_DELAY = 1
+AUTOTHROTTLE_MAX_DELAY = 10
+
+# User-Agent
+USER_AGENT = 'Mozilla/5.0 (compatible; MyBot/1.0)'
+
+# Retry
+RETRY_ENABLED = True
+RETRY_TIMES = 3
+RETRY_HTTP_CODES = [500, 502, 503, 504, 408, 429]
+```
+
+
+### Item Pipeline（資料處理 / 儲存）
+
+```python
+# pipelines.py
+import pymongo
+
+class MongoDBPipeline:
+    def open_spider(self, spider):
+        self.client = pymongo.MongoClient('mongodb://localhost:27017')
+        self.db = self.client['scrapy']
+
+    def process_item(self, item, spider):
+        # 去重、清洗、儲存
+        if self.db.books.find_one({'title': item['title']}):
+            raise scrapy.exceptions.DropItem('重複')
+
+        # 清洗價格
+        item['price'] = float(item['price'].replace('£', ''))
+
+        self.db.books.insert_one(dict(item))
+        return item
+
+    def close_spider(self, spider):
+        self.client.close()
+
+# settings.py 啟用
+ITEM_PIPELINES = {
+    'myspider.pipelines.MongoDBPipeline': 300,
+}
+```
+
+
+### Scrapy + Playwright（最強組合）
+
+```bash
+pip install scrapy-playwright
+playwright install chromium
+```
+
+```python
+# settings.py
+DOWNLOAD_HANDLERS = {
+    'http': 'scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler',
+    'https': 'scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler',
+}
+TWISTED_REACTOR = 'twisted.internet.asyncioreactor.AsyncioSelectorReactor'
+
+# spider 裡用
+def start_requests(self):
+    yield scrapy.Request(url, meta={'playwright': True})
+```
+
+
+### 分散式 Scrapy（Scrapy-Redis）
+
+
+多台機器一起爬、共用 queue + 去重—爬全網規模時用。中型公司用這個架構爬百萬商品。
