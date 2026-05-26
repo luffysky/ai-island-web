@@ -1,0 +1,36 @@
+```python
+# 1. 把欄位變 datetime
+df['date'] = pd.to_datetime(df['date'])
+df.set_index('date', inplace=True)
+
+# 2. 時間範圍切片
+df['2026-01']          # 1 月所有資料
+df['2026']              # 整年
+df['2026-01-01':'2026-03-31']  # Q1
+
+# 3. Resample（重採樣聚合）
+df['sales'].resample('D').sum()   # 每日總和
+df['sales'].resample('W').mean()  # 每週平均
+df['sales'].resample('M').sum()   # 每月總和
+df['sales'].resample('Q').sum()   # 每季
+df['sales'].resample('Y').sum()   # 每年
+
+# 4. 滾動視窗（移動平均、技術指標）
+df['ma7'] = df['price'].rolling(7).mean()    # 7 日均線
+df['ma30'] = df['price'].rolling(30).mean()  # 30 日
+df['std30'] = df['price'].rolling(30).std()   # 30 日標準差
+
+# 5. 變化率
+df['pct_change'] = df['price'].pct_change()  # 日報酬率
+df['cumulative'] = (1 + df['pct_change']).cumprod()  # 累積
+
+# 6. 時間欄位提取
+df['year'] = df.index.year
+df['month'] = df.index.month
+df['weekday'] = df.index.day_name()  # Monday/Tuesday...
+df['is_weekend'] = df.index.dayofweek >= 5
+
+# 7. Shift（位移）—用昨天的值
+df['prev_price'] = df['price'].shift(1)
+df['change'] = df['price'] - df['prev_price']
+```

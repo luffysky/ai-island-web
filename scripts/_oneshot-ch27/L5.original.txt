@@ -1,0 +1,77 @@
+### 基本設定（中文 + 美化）
+
+```python
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Mac/Linux 中文
+plt.rcParams['font.family'] = ['PingFang TC', 'Noto Sans CJK TC']
+# Windows：['Microsoft JhengHei']
+
+plt.rcParams['axes.unicode_minus'] = False  # 負號顯示
+
+sns.set_theme(style='whitegrid', palette='Set2')
+```
+
+      
+### 8 種主流圖表
+
+```python
+# 1. 折線圖（時序）
+plt.figure(figsize=(10, 6))
+plt.plot(df['date'], df['sales'], marker='o')
+plt.title('銷售趨勢'); plt.show()
+
+# 2. 長條圖（分類比較）
+sns.barplot(data=df, x='category', y='sales', hue='region')
+
+# 3. 散點圖（兩個變量關係）
+sns.scatterplot(data=df, x='age', y='salary', hue='gender')
+
+# 4. 直方圖（分布）
+sns.histplot(df['age'], bins=30, kde=True)
+
+# 5. 盒鬚圖（分布 + 離群值）
+sns.boxplot(data=df, x='department', y='salary')
+
+# 6. 熱力圖（相關性）
+sns.heatmap(df.corr(), annot=True, cmap='coolwarm')
+
+# 7. 圓餅圖
+df['category'].value_counts().plot(kind='pie', autopct='%1.1f%%')
+
+# 8. Pair Plot（多變量）
+sns.pairplot(df, hue='species')
+```
+
+      
+### 子圖（多 chart 一張圖）
+
+```python
+fig, axes = plt.subplots(2, 2, figsize=(12, 8))
+axes[0, 0].plot(x, y1); axes[0, 0].set_title('圖 1')
+axes[0, 1].bar(cats, vals)
+sns.boxplot(data=df, ax=axes[1, 0])
+sns.heatmap(corr_mat, ax=axes[1, 1])
+plt.tight_layout(); plt.show()
+```
+
+      
+### 儲存
+
+```python
+plt.savefig('chart.png', dpi=300, bbox_inches='tight')
+plt.savefig('chart.svg')  # 向量、網頁用
+```
+
+      
+### Plotly：互動圖表
+
+```python
+import plotly.express as px
+
+fig = px.scatter(df, x='age', y='salary', color='dept',
+                  hover_data=['name'], size='experience')
+fig.show()
+fig.write_html('chart.html')  # 嵌入網頁
+```
