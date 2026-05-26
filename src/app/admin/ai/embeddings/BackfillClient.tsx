@@ -62,21 +62,21 @@ export function BackfillClient({ lessonNeedBackfill, forumNeedBackfill }: {
         <button
           disabled={!!busy}
           onClick={() => run("lessons", false)}
-          className="px-4 py-3 rounded-lg bg-cyan-500/20 border border-cyan-500/40 hover:bg-cyan-500/30 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-semibold text-cyan-300 transition"
+          className="px-4 py-3 rounded-lg bg-cyan-500/20 border border-cyan-500/40 hover:bg-cyan-500/30 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-bold text-cyan-900 dark:text-cyan-100 transition"
         >
           {busy === "lessons" ? "⏳ 跑中…" : `⚡ backfill 缺的 lessons（${lessonNeedBackfill} 個）`}
         </button>
         <button
           disabled={!!busy}
           onClick={() => run("forum", false)}
-          className="px-4 py-3 rounded-lg bg-blue-500/20 border border-blue-500/40 hover:bg-blue-500/30 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-semibold text-blue-300 transition"
+          className="px-4 py-3 rounded-lg bg-blue-500/20 border border-blue-500/40 hover:bg-blue-500/30 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-bold text-blue-900 dark:text-blue-100 transition"
         >
           {busy === "forum" ? "⏳ 跑中…" : `⚡ backfill 缺的 forum (${forumNeedBackfill} 個)`}
         </button>
         <button
           disabled={!!busy}
           onClick={() => run("all", false)}
-          className="px-4 py-3 rounded-lg bg-indigo-500/20 border border-indigo-500/40 hover:bg-indigo-500/30 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-semibold text-indigo-300 transition"
+          className="px-4 py-3 rounded-lg bg-indigo-500/20 border border-indigo-500/40 hover:bg-indigo-500/30 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-bold text-indigo-900 dark:text-indigo-100 transition"
         >
           {busy === "all" ? "⏳ 跑中…" : `⚡ backfill 全部缺的（lessons + forum）`}
         </button>
@@ -86,7 +86,7 @@ export function BackfillClient({ lessonNeedBackfill, forumNeedBackfill }: {
             if (!confirm("確定要重算全部 embedding？這會覆蓋已有的、要花 1-3 分鐘 + 多花一次 token 錢")) return;
             run("all", true);
           }}
-          className="px-4 py-3 rounded-lg bg-red-500/15 border border-red-500/40 hover:bg-red-500/25 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-semibold text-red-300 transition"
+          className="px-4 py-3 rounded-lg bg-red-500/15 border border-red-500/40 hover:bg-red-500/25 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-bold text-red-900 dark:text-red-100 transition"
         >
           ⚠️ 強制重算全部 (force=true)
         </button>

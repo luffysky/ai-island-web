@@ -56,7 +56,7 @@ export function RewriteClient({ targetChapters }: { targetChapters: number[] }) 
         <button
           disabled={!!busy}
           onClick={() => run("sample")}
-          className="px-4 py-3 rounded-lg bg-cyan-500/20 border border-cyan-500/40 hover:bg-cyan-500/30 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-semibold text-cyan-300 transition"
+          className="px-4 py-3 rounded-lg bg-cyan-500/20 border border-cyan-500/40 hover:bg-cyan-500/30 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-bold text-cyan-900 dark:text-cyan-100 transition"
         >
           {busy === "sample" ? "⏳ 跑中…" : "🔍 dry-run sample（3 個）"}
         </button>
@@ -66,7 +66,7 @@ export function RewriteClient({ targetChapters }: { targetChapters: number[] }) 
             if (!confirm("確定 apply？會寫進 lessons.analogy 欄位、3 章全部短 analogy 都會被改")) return;
             run("apply");
           }}
-          className="px-4 py-3 rounded-lg bg-fuchsia-500/20 border border-fuchsia-500/40 hover:bg-fuchsia-500/30 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-semibold text-fuchsia-300 transition"
+          className="px-4 py-3 rounded-lg bg-fuchsia-500/20 border border-fuchsia-500/40 hover:bg-fuchsia-500/30 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-bold text-fuchsia-900 dark:text-fuchsia-100 transition"
         >
           {busy === "apply" ? "⏳ 跑中…" : "✍️ apply：跑 3 章全部"}
         </button>
