@@ -1,0 +1,153 @@
+### 安裝 + 建專案
+
+```bash
+cargo new my-scraper
+cd my-scraper
+
+# Cargo.toml 加依賴
+cargo add reqwest --features json
+cargo add scraper
+cargo add tokio --features full
+cargo add serde --features derive
+cargo add serde_json
+```
+
+
+### 基本爬蟲
+
+```rust
+use reqwest;
+use scraper::{Html, Selector};
+
+#[tokio::main]
+async fn main() -> Result> {
+    // 抓 HTML
+    let body = reqwest::get("https://books.toscrape.com")
+        .await?
+        .text()
+        .await?;
+
+    // 解析
+    let document = Html::parse_document(&body);
+    let book_sel = Selector::parse("article.product_pod").unwrap();
+    let title_sel = Selector::parse("h3 a").unwrap();
+    let price_sel = Selector::parse(".price_color").unwrap();
+
+    for book in document.select(&book_sel) {
+        let title = book.select(&title_sel)
+            .next()
+            .and_then(|e| e.value().attr("title"))
+            .unwrap_or("");
+        let price = book.select(&price_sel)
+            .next()
+            .map(|e| e.text().collect::())
+            .unwrap_or_default();
+        println!("{} | {}", title, price);
+    }
+
+    Ok(())
+}
+```
+
+
+### 並發爬多頁（Tokio）
+
+```rust
+use futures::stream::{self, StreamExt};
+use reqwest::Client;
+
+#[tokio::main]
+async fn main() {
+    let client = Client::new();
+    let urls: Vec = (1..=100)
+        .map(|i| format!("https://example.com/page/{}", i))
+        .collect();
+
+    // 並發 10、處理 100 URL
+    let bodies: Vec = stream::iter(urls)
+        .map(|url| {
+            let client = client.clone();
+            async move {
+                let resp = client.get(&url).send().await;
+                resp?.text().await
+            }
+        })
+        .buffer_unordered(10)
+        .collect()
+        .await;
+
+    println!("Fetched {} pages", bodies.len());
+}
+```
+
+
+### 結構化資料（Serde）
+
+```rust
+use serde::Serialize;
+
+#[derive(Serialize, Debug)]
+struct Book {
+    title: String,
+    price: f64,
+    available: bool,
+}
+
+let books: Vec = parse_books(&document);
+
+// 存 JSON
+let json = serde_json::to_string_pretty(&books)?;
+std::fs::write("books.json", json)?;
+```
+
+
+### Rust + Playwright（fantoccini）
+
+```rust
+// 需要 JS 渲染時用 fantoccini（WebDriver）
+// 或 chromiumoxide（直連 CDP）
+use chromiumoxide::{Browser, BrowserConfig};
+
+let (browser, mut handler) = Browser::launch(
+    BrowserConfig::builder().build()?
+).await?;
+
+// handler 在背景跑
+tokio::task::spawn(async move {
+    while let Some(_) = handler.next().await {}
+});
+
+let page = browser.new_page("https://example.com").await?;
+let title = page.get_title().await?;
+```
+
+
+### Cargo 編譯部署
+
+```bash
+# Release 編譯（最佳化、極快）
+cargo build --release
+
+# 跨編譯（從 Mac 編 Linux）
+rustup target add x86_64-unknown-linux-musl
+cargo build --release --target x86_64-unknown-linux-musl
+
+# 部署
+scp target/x86_64-unknown-linux-musl/release/scraper server:/usr/local/bin/
+
+# Docker（極小、5MB）
+FROM alpine:latest
+COPY target/.../scraper /scraper
+CMD ["/scraper"]
+```
+
+
+### Rust 爬蟲生產級套件
+
+
+- **reqwest**：HTTP client（最熱門）
+- **scraper**：HTML 解析（基於 html5ever）
+- **tokio**：async runtime
+- **serde**：JSON 序列化
+- **chromiumoxide**：CDP 控 Chrome
+- **fantoccini**：WebDriver 控瀏覽器

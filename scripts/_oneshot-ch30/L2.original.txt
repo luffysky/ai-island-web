@@ -1,0 +1,168 @@
+### 安裝
+
+```bash
+go mod init my-scraper
+go get github.com/gocolly/colly/v2
+```
+
+
+### 第一個 colly 爬蟲
+
+```go
+package main
+
+import (
+    "fmt"
+    "github.com/gocolly/colly/v2"
+)
+
+func main() {
+    c := colly.NewCollector(
+        colly.AllowedDomains("books.toscrape.com"),
+        colly.MaxDepth(3),
+    )
+
+    // 找書名 + 價格
+    c.OnHTML("article.product_pod", func(e *colly.HTMLElement) {
+        title := e.ChildAttr("h3 a", "title")
+        price := e.ChildText(".price_color")
+        fmt.Printf("%s | %s\n", title, price)
+    })
+
+    // 找下一頁、繼續爬
+    c.OnHTML("li.next a", func(e *colly.HTMLElement) {
+        e.Request.Visit(e.Attr("href"))
+    })
+
+    // 錯誤處理
+    c.OnError(func(r *colly.Response, err error) {
+        fmt.Printf("Error: %s\n", err)
+    })
+
+    c.Visit("http://books.toscrape.com")
+}
+```
+
+
+### 並發控制
+
+```go
+// 限制每個 domain 並發數
+c.Limit(&colly.LimitRule{
+    DomainGlob:  "*",
+    Parallelism: 10,                // 同時 10 個
+    Delay:       1 * time.Second,    // 每次間隔 1 秒
+    RandomDelay: 2 * time.Second,    // 額外隨機 0-2 秒
+})
+
+// async 模式（要記得 c.Wait()）
+c2 := c.Clone()
+c2.Async = true
+c2.Visit("https://example.com")
+c2.Wait()  // 等所有 goroutine 完成
+```
+
+
+### 處理 cookies / sessions / proxy
+
+```go
+// User-Agent
+c.UserAgent = "Mozilla/5.0 ..."
+
+// 自動處理 cookies
+c.SetCookieJar(...)
+
+// Proxy
+c.SetProxy("http://proxy.io:8080")
+
+// IP 池輪換
+import "github.com/gocolly/colly/v2/proxy"
+rp, _ := proxy.RoundRobinProxySwitcher(
+    "http://proxy1.io:8080",
+    "http://proxy2.io:8080",
+)
+c.SetProxyFunc(rp)
+```
+
+
+### 儲存到資料庫 / CSV
+
+```go
+import (
+    "encoding/csv"
+    "os"
+    "sync"
+)
+
+type Book struct {
+    Title string
+    Price string
+}
+
+var (
+    books []Book
+    mu    sync.Mutex  // 多 goroutine 寫入要 lock
+)
+
+c.OnHTML("article.product_pod", func(e *colly.HTMLElement) {
+    book := Book{
+        Title: e.ChildAttr("h3 a", "title"),
+        Price: e.ChildText(".price_color"),
+    }
+    mu.Lock()
+    books = append(books, book)
+    mu.Unlock()
+})
+
+c.Visit(url)
+c.Wait()
+
+// 寫 CSV
+file, _ := os.Create("books.csv")
+defer file.Close()
+w := csv.NewWriter(file)
+w.Write([]string{"Title", "Price"})
+for _, b := range books {
+    w.Write([]string{b.Title, b.Price})
+}
+w.Flush()
+```
+
+
+### 分散式 colly（Redis backend）
+
+```go
+import "github.com/gocolly/redisstorage"
+
+storage := &redisstorage.Storage{
+    Address:  "localhost:6379",
+    Password: "",
+    DB:       0,
+    Prefix:   "my-scraper",
+}
+c.SetStorage(storage)
+
+// → 多台機器跑同一個 collector、共用 queue + 去重
+```
+
+
+### colly 編譯部署
+
+```bash
+# 編譯成單檔 Linux binary（10MB）
+GOOS=linux GOARCH=amd64 go build -o scraper main.go
+
+# 上傳 server
+scp scraper user@server:/usr/local/bin/
+ssh user@server './scraper'
+
+# Docker 部署
+FROM golang:1.22-alpine AS builder
+COPY . /app
+WORKDIR /app
+RUN go build -o scraper
+
+FROM alpine
+COPY --from=builder /app/scraper /scraper
+CMD ["/scraper"]
+```

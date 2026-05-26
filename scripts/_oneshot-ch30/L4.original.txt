@@ -1,0 +1,152 @@
+### 1. Linux cron（最傳統）
+
+```bash
+# 編輯 crontab
+crontab -e
+
+# 每天早上 8 點跑
+0 8 * * * /usr/bin/python3 /home/user/scraper.py >> /var/log/scraper.log 2>&1
+
+# 每小時
+0 * * * * /usr/bin/node /home/user/scraper.js
+
+# 每 5 分鐘
+*/5 * * * * /scrape.sh
+
+# 每週一 9 點
+0 9 * * 1 /weekly-report.py
+
+# 看 cron 是否在跑
+sudo systemctl status cron
+tail -f /var/log/cron
+```
+
+
+### cron 語法（5 個欄位）
+
+```text
+* * * * * command
+│ │ │ │ │
+│ │ │ │ └─ 星期幾 (0-6, 0=Sun)
+│ │ │ └─── 月份 (1-12)
+│ │ └───── 日 (1-31)
+│ └─────── 小時 (0-23)
+└───────── 分鐘 (0-59)
+```
+
+
+### 2. GitHub Actions（免費、推薦小型）
+
+```yaml
+# .github/workflows/scrape.yml
+name: Daily Scraper
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # UTC 0:00 = 台北 8:00
+  workflow_dispatch:  # 也能手動觸發
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - run: pip install -r requirements.txt
+
+      - run: python scraper.py
+        env:
+          API_KEY: ${{ secrets.API_KEY }}
+
+      - name: Commit results
+        run: |
+          git config user.name github-actions
+          git config user.email actions@github.com
+          git add data/
+          git commit -m "chore: daily scrape $(date +%Y-%m-%d)"
+          git push
+```
+
+
+優點：免費（公開 repo 無限、私 repo 每月 2000 分鐘）、版本控制、不用自己架 server。
+
+
+### 3. Vercel Cron（Next.js 友善）
+
+```json
+// vercel.json
+{
+  "crons": [{
+    "path": "/api/cron/scrape",
+    "schedule": "0 0 * * *"
+  }]
+}
+```
+
+```javascript
+// app/api/cron/scrape/route.ts
+export async function GET(req: Request) {
+  // 驗證是 Vercel 來的
+  const auth = req.headers.get('authorization');
+  if (auth !== `Bearer ${process.env.CRON_SECRET}`) {
+    return new Response('Unauthorized', { status: 401 });
+  }
+
+  const data = await scrapeWebsite();
+  await saveToDatabase(data);
+
+  return new Response('OK');
+}
+```
+
+
+### 4. Temporal / Inngest（工作流引擎、Production 級）
+
+```javascript
+// Inngest（serverless workflow）
+import { inngest } from './client';
+
+export const dailyScrape = inngest.createFunction(
+  { id: 'daily-scrape' },
+  { cron: '0 0 * * *' },
+  async ({ step }) => {
+    // step 1：抓商品列表（失敗自動重試）
+    const products = await step.run('fetch-products', async () => {
+      return await scrapeProducts();
+    });
+
+    // step 2：併發抓細節（fan-out）
+    await step.run('fetch-details', async () => {
+      await Promise.all(
+        products.map(p => fetchDetail(p.id))
+      );
+    });
+
+    // step 3：存入 DB
+    await step.run('save-to-db', async () => {
+      await db.products.bulkInsert(products);
+    });
+
+    // step 4：通知
+    await step.run('notify', async () => {
+      await sendLineMessage(`Today: ${products.length} products`);
+    });
+  }
+);
+```
+
+
+優點：失敗自動 retry、可觀測、支援複雜 workflow、上 production 必備。
+
+
+### 排程選擇指南
+
+
+- **個人 / 學習**：Linux cron（最簡單）
+- **小型 SaaS**：GitHub Actions（免費、版本控制）
+- **Vercel / Next.js 專案**：Vercel Cron（整合好）
+- **商業級 / 複雜 workflow**：Inngest / Temporal
