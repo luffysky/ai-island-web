@@ -99,9 +99,24 @@ export async function notifyLessonComplete(opts: { userId: string; chapterId: nu
     link: `/chapters/${opts.chapterId}`,
   });
   // 推 user 自己的 LINE（綁定了才會送、未綁靜默 skip）
+  const userFlex = buildSimpleCard({
+    emoji: "✅",
+    title: "完成 lesson！",
+    accentColor: "#50fa7b",
+    body: `你完成了 Ch${opts.chapterId} · ${opts.lessonId}`,
+    meta: [
+      { label: "⚡ XP", value: `+${opts.xp ?? 10}` },
+      { label: "📚 章節", value: `Ch${opts.chapterId}` },
+    ],
+    buttons: [
+      { label: "繼續學習", uri: `${SITE_URL}/chapters/${opts.chapterId}`, primary: true },
+      { label: "看我的進度", uri: `${SITE_URL}/me` },
+    ],
+  });
   notifyUserLine({
     userId: opts.userId,
     text: `✅ 完成 Ch${opts.chapterId} · ${opts.lessonId}（+${opts.xp ?? 10} XP）`,
+    flex: userFlex,
   }).catch(() => {});
 }
 
@@ -129,9 +144,21 @@ export async function notifyAchievement(opts: { userId: string; achievementId: s
     title: `🏆 解鎖成就：${opts.title}`,
     link: `/me/history`,
   });
+  const userAchFlex = buildSimpleCard({
+    emoji: "🏆",
+    title: "解鎖新成就！",
+    accentColor: "#ffd700",
+    body: `「${opts.title}」`,
+    meta: [{ label: "🎖️ ID", value: opts.achievementId }],
+    buttons: [
+      { label: "看我的成就", uri: `${SITE_URL}/me`, primary: true },
+      { label: "繼續學", uri: `${SITE_URL}/chapters` },
+    ],
+  });
   notifyUserLine({
     userId: opts.userId,
     text: `🏆 解鎖成就：${opts.title}`,
+    flex: userAchFlex,
   }).catch(() => {});
 }
 
@@ -152,9 +179,20 @@ export async function notifyForumReply(opts: { threadAuthorId: string; replierUs
     body: opts.threadTitle.slice(0, 80),
     link: `/forum/thread/${opts.threadId}`,
   });
+  const userReplyFlex = buildSimpleCard({
+    emoji: "💭",
+    title: "有人回覆你的主題",
+    accentColor: "#8be9fd",
+    body: opts.threadTitle.slice(0, 80),
+    meta: [{ label: "👤 回覆者", value: opts.replierUsername }],
+    buttons: [
+      { label: "去看回覆", uri: `${SITE_URL}/forum/thread/${opts.threadId}`, primary: true },
+    ],
+  });
   notifyUserLine({
     userId: opts.threadAuthorId,
     text: `💭 ${opts.replierUsername} 回覆「${opts.threadTitle.slice(0, 40)}」`,
+    flex: userReplyFlex,
   }).catch(() => {});
   // 注意：forum_reply 的 subject 是「回覆者」、不是主題作者（隱私 opt-out 看回覆者意願）
   await notifyAdmin({

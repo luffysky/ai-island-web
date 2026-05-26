@@ -24,8 +24,15 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json();
   const { conversationId, modelId, message, tone, contextChapterId, contextLessonId, useBYOK, personaId } = body;
+  // 上傳的圖片（base64 + mediaType）— 跟 message 一起送、AI 看圖回答
+  const images: Array<{ base64: string; mediaType: string }> = Array.isArray(body.images)
+    ? body.images.slice(0, 5).map((img: any) => ({
+        base64: String(img?.base64 ?? "").slice(0, 8_000_000),
+        mediaType: String(img?.mediaType ?? "image/png"),
+      })).filter((img: any) => img.base64)
+    : [];
 
-  if (!message || !modelId) return errorResponse("missing_params", 400);
+  if ((!message && images.length === 0) || !modelId) return errorResponse("missing_params", 400);
 
   const admin = createSupabaseAdmin();
 
@@ -154,10 +161,18 @@ export async function POST(req: NextRequest) {
     userEmail,
   });
 
+  // user message：有圖片時用 multimodal content array、純文字保持 string
+  const userContent: any = images.length > 0
+    ? [
+        { type: "text", text: message || "（看圖回答）" },
+        ...images.map((img) => ({ type: "image", mediaType: img.mediaType, data: img.base64 })),
+      ]
+    : message;
+
   const messages = [
     { role: "system" as const, content: systemPrompt },
     ...(history || []).map((m: any) => ({ role: m.role as any, content: m.content })),
-    { role: "user" as const, content: message },
+    { role: "user" as const, content: userContent },
   ];
 
   // 5.5 快取查詢（只在「對話第一則訊息」時查）

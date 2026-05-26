@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Sparkles, Send, X, ChevronDown, Settings as SettingsIcon, Plus, Loader2, History, MessageSquare } from "lucide-react";
+import { Sparkles, Send, X, ChevronDown, Settings as SettingsIcon, Plus, Loader2, History, MessageSquare, ImagePlus } from "lucide-react";
 import { useOverlayCount, useOverlayRegister } from "@/lib/overlay-stack";
 import { useEdgeSafe } from "@/lib/use-edge-safe";
 import { devLog } from "@/lib/dev-log";
@@ -151,6 +151,9 @@ export function AITutorWidget({
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
+  // 上傳的圖片（截圖 / 相簿 / 拍照）— 跟 user message 一起送
+  const [images, setImages] = useState<Array<{ id: string; base64: string; mediaType: string; previewUrl: string }>>([]);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [quotaUsed, setQuotaUsed] = useState<{ used: number; limit: number } | null>(null);
@@ -219,8 +222,53 @@ export function AITutorWidget({
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  const handleFiles = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    const list = Array.from(files).slice(0, 5 - images.length);
+    const newImages: typeof images = [];
+    for (const file of list) {
+      if (!file.type.startsWith("image/")) continue;
+      if (file.size > 4 * 1024 * 1024) {
+        setError(`圖片 ${file.name} 超過 4MB、跳過`);
+        continue;
+      }
+      try {
+        const base64 = await fileToBase64(file);
+        newImages.push({
+          id: crypto.randomUUID(),
+          base64: base64.split(",")[1] ?? base64,
+          mediaType: file.type,
+          previewUrl: base64,
+        });
+      } catch {}
+    }
+    setImages((prev) => [...prev, ...newImages].slice(0, 5));
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const removeImage = (id: string) => setImages((prev) => prev.filter((i) => i.id !== id));
+
+  // 貼上（Ctrl/Cmd + V）— 桌面版方便
+  const handlePaste = async (e: React.ClipboardEvent) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    const files: File[] = [];
+    for (const item of items) {
+      if (item.type.startsWith("image/")) {
+        const f = item.getAsFile();
+        if (f) files.push(f);
+      }
+    }
+    if (files.length > 0) {
+      e.preventDefault();
+      const dt = new DataTransfer();
+      files.forEach((f) => dt.items.add(f));
+      handleFiles(dt.files);
+    }
+  };
+
   const send = async () => {
-    if (!input.trim() || sending) return;
+    if ((!input.trim() && images.length === 0) || sending) return;
     if (!isLoggedIn) {
       setError("請先登入才能使用 AI 導師");
       return;
@@ -230,8 +278,10 @@ export function AITutorWidget({
       return;
     }
 
-    const userMsg = input.trim();
+    const userMsg = input.trim() || (images.length > 0 ? "（看圖回答）" : "");
+    const sendImages = images.map((img) => ({ base64: img.base64, mediaType: img.mediaType }));
     setInput("");
+    setImages([]);
     setError("");
     setMessages((prev) => [...prev, { role: "user", content: userMsg }, { role: "assistant", content: "" }]);
     setSending(true);
@@ -252,6 +302,7 @@ export function AITutorWidget({
           contextLessonId,
           useBYOK,
           personaId,
+          images: sendImages,
         }),
       });
 
@@ -650,12 +701,47 @@ export function AITutorWidget({
             </div>
           )}
 
+          {/* Image preview */}
+          {images.length > 0 && (
+            <div className="px-3 pt-2 flex flex-wrap gap-2">
+              {images.map((img) => (
+                <div key={img.id} className="relative group">
+                  <img src={img.previewUrl} alt="" className="w-16 h-16 object-cover rounded-md border border-border" />
+                  <button
+                    onClick={() => removeImage(img.id)}
+                    className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-[10px]"
+                    title="移除"
+                  >×</button>
+                </div>
+              ))}
+              <div className="text-[10px] text-fg-muted w-full">{images.length}/5 張</div>
+            </div>
+          )}
+
           {/* Input */}
           <div className="p-3 border-t border-border">
-            <div className="flex gap-2">
+            <div className="flex gap-2 items-end">
+              {/* 圖片上傳按鈕（手機點開會跳「相簿/拍照/檔案」選單）*/}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                onChange={(e) => handleFiles(e.target.files)}
+              />
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={authState !== "in" || sending || images.length >= 5}
+                className="p-2 border border-border rounded-lg hover:border-accent hover:bg-accent/5 transition disabled:opacity-30"
+                title={images.length >= 5 ? "最多 5 張" : "上傳截圖 / 相簿 / 拍照（也可 Ctrl+V 貼上）"}
+              >
+                <ImagePlus size={16} />
+              </button>
               <textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
+                onPaste={handlePaste}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();
@@ -665,9 +751,11 @@ export function AITutorWidget({
                 placeholder={
                   authState === "loading"
                     ? "載入中..."
-                    : authState === "in"
-                    ? "問點什麼..."
-                    : "請先登入"
+                    : authState !== "in"
+                    ? "請先登入"
+                    : images.length > 0
+                    ? "問圖片相關問題..."
+                    : "問點什麼（可 Ctrl+V 貼截圖）..."
                 }
                 disabled={authState !== "in" || sending}
                 rows={1}
@@ -676,7 +764,7 @@ export function AITutorWidget({
               />
               <button
                 onClick={send}
-                disabled={!input.trim() || sending || authState !== "in"}
+                disabled={(!input.trim() && images.length === 0) || sending || authState !== "in"}
                 className="p-2 bg-accent text-black rounded-lg hover:scale-105 transition disabled:opacity-30 disabled:hover:scale-100"
               >
                 <Send size={16} />
@@ -687,6 +775,15 @@ export function AITutorWidget({
       )}
     </>
   );
+}
+
+function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
 }
 
 function SuggestedQ({ onPick, children }: { onPick: (q: string) => void; children: string }) {
