@@ -1,0 +1,149 @@
+## 為什麼 DuckDB
+- ⚡ 比 pandas 快 5-20 倍（OLAP 場景）
+- 📦 In-process（不用起 server）
+- 🦆 完整 SQL 支援（90% PG 相容）
+- 🗂️ 直接讀 Parquet / CSV / JSON
+- 🐍 Python / R / JS 整合好
+
+## 安裝
+```bash
+pip install duckdb
+```
+
+## 基本
+```python
+import duckdb
+
+# 直接 SQL（in-memory）
+result = duckdb.sql("SELECT 42").fetchall()
+
+# 連到檔案
+conn = duckdb.connect("mydata.duckdb")
+conn.execute("CREATE TABLE users (id INT, name TEXT)")
+conn.execute("INSERT INTO users VALUES (1, 'Alice')")
+```
+
+## 殺手特色：直接 query 檔案
+```python
+# CSV
+duckdb.sql("SELECT * FROM 'data.csv' WHERE age > 18")
+
+# Parquet
+duckdb.sql("SELECT * FROM 'data.parquet'")
+
+# 多個檔案
+duckdb.sql("SELECT * FROM 'data/*.parquet'")
+
+# S3
+duckdb.sql("SELECT * FROM 's3://bucket/*.parquet'")
+```
+
+## pandas 整合
+```python
+import pandas as pd
+import duckdb
+
+df = pd.read_csv("data.csv")
+
+# 直接 query pandas DF
+result = duckdb.sql("""
+    SELECT category, SUM(amount) AS total
+    FROM df
+    WHERE year = 2026
+    GROUP BY category
+""").to_df()
+```
+
+## 速度比較
+```python
+# 100M rows
+# pandas: 30s
+# Polars: 5s
+# DuckDB: 3s
+```
+
+## 進階：JOIN 多檔
+```python
+result = duckdb.sql("""
+    SELECT o.id, u.name, o.amount
+    FROM 'orders.parquet' o
+    JOIN 'users.csv' u ON o.user_id = u.id
+    WHERE o.amount > 1000
+""").to_df()
+```
+
+## Window functions（pandas 沒）
+```python
+duckdb.sql("""
+    SELECT name, amount,
+           RANK() OVER (PARTITION BY country ORDER BY amount DESC) as rank,
+           SUM(amount) OVER (PARTITION BY country) as country_total
+    FROM 'orders.parquet'
+""")
+```
+
+## 寫出
+```python
+duckdb.sql("""
+    COPY (
+        SELECT * FROM 'data.csv' WHERE active = true
+    ) TO 'output.parquet' (FORMAT PARQUET, COMPRESSION ZSTD)
+""")
+```
+
+## Python API
+```python
+# 1. 直接 SQL
+duckdb.sql("...")
+
+# 2. 用 connection
+conn = duckdb.connect("db.duckdb")
+conn.execute("...")
+df = conn.execute("SELECT * FROM users").df()
+
+# 3. 從 pandas
+duckdb.from_df(pandas_df).query(...)
+```
+
+## Web 用：DuckDB-Wasm
+DuckDB 編譯成 WebAssembly、瀏覽器跑 SQL：
+```javascript
+import * as duckdb from '@duckdb/duckdb-wasm';
+const db = await duckdb.AsyncDuckDB.create(...);
+await db.query("SELECT * FROM 'data.parquet'");
+```
+適合：互動式 dashboard、不用後端。
+
+## 何時用 DuckDB
+- ✅ 分析查詢（OLAP）
+- ✅ 處理 Parquet / CSV
+- ✅ Notebook / ETL
+- ✅ 嵌入應用
+- ❌ Production transactional（用 PG）
+- ❌ Real-time inserts（用 SQL）
+
+## DuckDB vs SQLite vs PG
+
+| 面向 | DuckDB | SQLite | PG |
+|---|---|---|---|
+| 場景 | OLAP（分析）| OLTP（小型 app）| 通用 |
+| 列存 | ✅ | ❌ | ❌（extension）|
+| 並行 | 單 writer | 單 writer | 多 |
+| Server | No | No | Yes |
+| 速度（分析）| 最快 | 慢 | 中 |
+
+## 案例：取代 pandas
+```python
+# pandas 寫法
+df = pd.read_parquet("big.parquet")
+filtered = df[df["country"] == "TW"]
+result = filtered.groupby("category")["amount"].sum()
+
+# DuckDB 寫法（快 10 倍）
+result = duckdb.sql("""
+    SELECT category, SUM(amount) AS total
+    FROM 'big.parquet'
+    WHERE country = 'TW'
+    GROUP BY category
+""").to_df()
+```

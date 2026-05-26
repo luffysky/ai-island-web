@@ -1,0 +1,151 @@
+## 缺失值（Missing Data）
+
+### 偵測
+```python
+df.isna()                  # 每格 True/False
+df.isna().sum()            # 各欄缺多少
+df.isna().sum() / len(df)  # %
+
+# 視覺化
+import seaborn as sns
+sns.heatmap(df.isna(), cbar=False)
+```
+
+### 處理策略
+
+#### 1. 刪除
+```python
+df.dropna()                          # 任何欄 NaN 就刪
+df.dropna(subset=["email"])          # email NaN 才刪
+df.dropna(thresh=3)                  # 至少 3 個非 NaN 才留
+```
+
+#### 2. 填充
+```python
+df["age"].fillna(df["age"].mean())             # 平均
+df["age"].fillna(df["age"].median())           # 中位數（防 outlier）
+df["category"].fillna("unknown")               # 固定值
+df["score"].fillna(method="ffill")             # 用前一個
+df["score"].fillna(method="bfill")             # 用後一個
+df["age"].fillna(df.groupby("country")["age"].transform("mean"))  # 分組平均
+```
+
+#### 3. 插值
+```python
+df["temp"].interpolate(method="linear")
+df["temp"].interpolate(method="time")          # 時間插值
+```
+
+#### 4. ML imputation
+```python
+from sklearn.impute import KNNImputer
+imputer = KNNImputer(n_neighbors=5)
+df_imputed = pd.DataFrame(imputer.fit_transform(df), columns=df.columns)
+```
+
+## 重複資料
+
+```python
+# 找重複
+df.duplicated()                      # 完全相同
+df.duplicated(subset=["email"])      # email 重複
+
+# 刪除
+df.drop_duplicates()
+df.drop_duplicates(subset=["email"], keep="first")  # 留第一個
+df.drop_duplicates(subset=["email"], keep="last")
+df.drop_duplicates(subset=["email"], keep=False)    # 全刪
+```
+
+## 異常值（Outliers）
+
+### IQR 方法
+```python
+Q1 = df["amount"].quantile(0.25)
+Q3 = df["amount"].quantile(0.75)
+IQR = Q3 - Q1
+
+outliers = df[
+    (df["amount"] < Q1 - 1.5 * IQR) |
+    (df["amount"] > Q3 + 1.5 * IQR)
+]
+
+# 用 cap 處理
+df["amount"] = df["amount"].clip(
+    lower=Q1 - 1.5 * IQR,
+    upper=Q3 + 1.5 * IQR
+)
+```
+
+### Z-score 方法
+```python
+from scipy import stats
+df["z"] = stats.zscore(df["amount"])
+outliers = df[abs(df["z"]) > 3]
+```
+
+### Isolation Forest（ML）
+```python
+from sklearn.ensemble import IsolationForest
+iso = IsolationForest(contamination=0.05)
+df["is_outlier"] = iso.fit_predict(df[["amount"]])
+```
+
+## 資料型別
+
+```python
+df.dtypes                            # 看
+df["age"] = df["age"].astype(int)    # 轉
+df["date"] = pd.to_datetime(df["date"])
+df["amount"] = pd.to_numeric(df["amount"], errors="coerce")  # 失敗變 NaN
+```
+
+## 字串清理
+
+```python
+df["name"].str.strip()                # 去頭尾空白
+df["name"].str.lower()
+df["name"].str.replace(" ", "_")
+df["email"].str.contains("@")
+df["phone"].str.match(r"^09\d{8}$")  # 正規
+
+# 提取
+df["domain"] = df["email"].str.split("@").str[1]
+df["year"] = df["date"].str.extract(r"(\d{4})")
+```
+
+## 日期清理
+
+```python
+df["date"] = pd.to_datetime(df["date"], errors="coerce", format="%Y-%m-%d")
+
+# 找出無效日期
+df[df["date"].isna()]
+
+# 統一格式
+df["date_str"] = df["date"].dt.strftime("%Y-%m-%d")
+
+# 抽出特徵
+df["year"] = df["date"].dt.year
+df["month"] = df["date"].dt.month
+df["dayofweek"] = df["date"].dt.dayofweek
+df["is_weekend"] = df["date"].dt.dayofweek >= 5
+```
+
+## Pandas Profiling（一鍵 EDA 報告）
+```bash
+pip install ydata-profiling
+```
+```python
+from ydata_profiling import ProfileReport
+report = ProfileReport(df, title="資料分析報告")
+report.to_file("report.html")
+```
+→ 自動產生完整分析報告、所有欄位統計、相關矩陣、缺失模式。
+
+## 心法
+- 不要追完美、追「夠用」
+- 清理前先備份原始資料
+- 紀錄每個步驟（為什麼這樣清）
+- 異常值不一定要刪—可能是真實 outlier（VIP 大額交易）
+- 缺失值的「為什麼缺」比怎麼填重要
