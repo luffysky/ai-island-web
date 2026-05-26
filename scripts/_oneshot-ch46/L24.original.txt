@@ -1,0 +1,161 @@
+傳統測試：輸入 X 應輸出 Y。**AI 輸出不確定—怎麼測？**
+
+  
+### 為什麼需要 Eval
+
+  
+- 改 prompt 後不確定變好變壞
+- 換模型不知道效果差多少
+- 客戶說「答錯」但你不知道準確率多少
+- 無法量化迭代
+
+  
+### Eval 三大類型
+
+  
+#### 1. Code-based（程式可判斷）
+
+```text
+測試：「請回 JSON {name, age}」
+判斷：
+- 是否合法 JSON？
+- 有 name 跟 age 嗎？
+- type 對嗎？
+
+簡單、可自動化
+```
+
+  
+#### 2. LLM-as-Judge（LLM 評分）
+
+```text
+用更強的 LLM 評估：
+「以下是使用者問題、AI 回答、標準答案。
+請評分（1-5）：
+- 準確性
+- 完整性
+- 相關性
+
+問題：[...]
+AI 回答：[...]
+標準答案：[...]」
+
+GPT-4 / Claude Opus 當裁判
+比人類便宜、夠準
+```
+
+  
+#### 3. Human Eval
+
+  
+真人標記—最準但貴慢。重要場景做。
+
+  
+### Eval 維度
+
+  
+- **Accuracy**：對不對
+- **Relevance**：相關嗎
+- **Faithfulness**（RAG）：是否基於 context、無編造
+- **Coherence**：流暢嗎
+- **Safety**：有害內容？
+- **Tone**：符合品牌語氣
+- **Latency**：速度
+- **Cost**：每次成本
+
+  
+### 實戰 Eval 流程
+
+```text
+1. 準備 50-200 個測試 case
+   - 簡單問題
+   - 邊界情況
+   - 應拒絕的（傷害、無關）
+   - 真實使用者問過的
+
+2. 每次改 prompt / 模型 → 跑全部 case
+
+3. 算分數：
+   - Accuracy：85% → 88%（提升）
+
+4. 看 regression：之前對的現在錯了？
+
+5. 持續累積測試集
+```
+
+  
+### 2026 Eval 工具
+
+  
+- **LangSmith**（LangChain）
+- **Langfuse**：開源、self-hostable
+- **Helicone**：監控 + Eval
+- **Braintrust**：專注 Eval
+- **Promptfoo**：開源 CLI
+- **Weights & Biases**：ML 老牌
+
+  
+### Promptfoo 範例
+
+```yaml
+# promptfooconfig.yaml
+prompts:
+  - "請扼要回答：{{question}}"
+  - "請逐步思考後回答：{{question}}"
+
+providers:
+  - openai:gpt-4o
+  - anthropic:claude-sonnet-4-6
+
+tests:
+  - vars:
+      question: "台北的氣候？"
+    assert:
+      - type: contains
+        value: "亞熱帶"
+      - type: llm-rubric
+        value: "準確、完整"
+
+# 跑: npx promptfoo eval
+```
+
+  
+### RAG Eval（特殊）
+
+  
+- **Retrieval Precision**：找到的 5 個有幾個相關
+- **Retrieval Recall**：相關的有幾個被找到
+- **Answer Faithfulness**：答案是否基於 context
+- **Answer Relevance**：答案是否回答了問題
+
+  
+### 持續 Eval（生產）
+
+  
+不只 deploy 前測，**生產也要 sample 看**：
+
+```text
+每天從生產 log 抽 1% 樣本：
+- LLM-as-judge 打分
+- 異常案例告警
+- 累積成新測試集
+
+→ 持續迭代
+```
+
+  
+### 常見坑
+
+  
+- **測試集太小**：50 個不夠代表性
+- **測試集偏**：只測簡單，沒測 edge case
+- **沒 baseline**：不知道改了好還壞
+- **LLM-as-judge 偏好長答案**：要設計好 rubric
+- **測試集不更新**：使用者問新問題沒納入
+
+  
+
+⚠️
+新手常見錯誤
+
+新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。

@@ -1,0 +1,151 @@
+SaaS 紅了 = AI 帳單爆炸。**不控成本月底嚇到**。
+
+  
+### 典型成本爆炸場景
+
+  
+- 使用者激增 → API call 也激增
+- System prompt 太長 → 每次都付錢
+- 沒 cache 重複問題
+- 無限對話歷史
+- 用最貴模型做簡單事
+- 沒設用量上限
+- 被攻擊（abuse）
+
+  
+### 10 大省錢招
+
+  
+#### 1. 多模型路由
+
+```python
+def route_model(query: str) -> str:
+    if is_simple_question(query):
+        return "gemini-flash"      # $0.075/M
+    if is_code_related(query):
+        return "claude-sonnet"      # $3/M
+    if needs_reasoning(query):
+        return "o3"
+    return "gpt-4o-mini"           # 預設便宜
+```
+
+  
+#### 2. Prompt Caching
+
+```python
+# Anthropic prompt caching
+client.messages.create(
+    system=[{
+        "type": "text",
+        "text": long_system_prompt,
+        "cache_control": {"type": "ephemeral"}
+    }],
+    messages=[...]
+)
+# 5 分鐘內再用，cache hit = 10% 價格
+```
+
+  
+#### 3. Response Cache（Redis）
+
+```python
+def chat(query: str):
+    key = hash(query)
+    if cached := redis.get(f"chat:{key}"):
+        return cached
+    
+    response = llm.complete(query)
+    redis.setex(f"chat:{key}", 3600, response)
+    return response
+```
+
+  
+#### 4. Semantic Cache
+
+```text
+使用者 A：「請假規定是什麼？」 → 算過存 cache
+使用者 B：「請假怎麼請？」 → embedding 相似度 0.92 → 用 cache
+
+工具：GPTCache、LangChain Cache
+```
+
+  
+#### 5. 對話歷史壓縮
+
+  
+20 輪對話 → 自動摘要前 15 輪、保留最近 5 輪原文。省 70%+ token。
+
+  
+#### 6. 結構化輸出
+
+  
+JSON 比自然語言 token 少 30-50%。
+
+  
+#### 7. 串流 + 中斷
+
+  
+使用者中斷時省剩下的 token。
+
+  
+#### 8. Batch API（2024+）
+
+  
+OpenAI / Anthropic 都有 batch API（24h 內處理）：**價格 5 折**。適合非即時任務（摘要、分類）。
+
+```python
+# Anthropic Batch API
+batch = client.messages.batches.create(
+    requests=[
+        {"custom_id": "req-1", "params": {...}},
+        {"custom_id": "req-2", "params": {...}},
+        ...
+    ]
+)
+# 24h 內處理完、價格 5 折
+```
+
+  
+#### 9. 開源模型 fallback
+
+  
+簡單任務本機 Llama，難的才走 API。
+
+  
+#### 10. Rate Limit + 用量上限
+
+  
+每使用者每天上限、整服務每分鐘上限。防 abuse。
+
+  
+### 監控成本
+
+  
+- 各家 API dashboard 設 spending limit
+- Helicone / LangSmith / Langfuse 看每筆 request 成本
+- 用量異常告警
+- 每月初看 trend
+
+  
+### 真實案例：成本優化
+
+```text
+客服 SaaS 月 100 萬次 query：
+
+優化前（純 GPT-4o）：$5000/月
+優化後：
+- 70% 用 GPT-4o-mini（簡單問答）
+- 20% 用 Claude Sonnet（複雜）
+- 10% 用 o3（推理）
+- Cache hit 30%
+- Batch API 處理非即時
+
+結果：$1200/月（省 76%）
+```
+
+  
+
+🚀
+2026 趨勢
+
+這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。
