@@ -1,0 +1,177 @@
+Agent = **「能自己思考 + 用工具 + 達成目標」的 LLM 系統**。Ch20 會深入講，這節先看架構。
+
+  
+### 三大架構
+
+  
+#### 1. ReAct（最簡單、最常用）
+
+  
+Think → Act → Observe 不斷循環：
+
+```text
+使用者目標：「找出最新 iPhone 跟前一代的差別」
+
+Agent 內部：
+Thought: 我需要先查最新 iPhone 是哪代
+Action: web_search("最新 iPhone 2026")
+Observation: iPhone 17 是 2025 發布的最新...
+
+Thought: 那前一代是 iPhone 16，我需要查兩者規格
+Action: web_search("iPhone 17 vs iPhone 16 規格")
+Observation: [搜尋結果]
+
+Thought: 我已有足夠資訊
+Final Answer: iPhone 17 跟 16 主要差別...
+
+→ 直到達標
+```
+
+  
+#### 2. Plan-and-Execute（適合複雜任務）
+
+```text
+目標：「準備明天的會議簡報」
+
+Planner LLM 先列計畫：
+1. 看會議邀請知道主題
+2. 找相關歷史文件
+3. 統整重點
+4. 產出 10 張 slides
+5. 加圖表
+6. 寄給參與者
+
+Executor 一步一步做
+每步可能再生子計畫
+```
+
+  
+#### 3. Multi-Agent（多個 agent 協作）
+
+```text
+Researcher Agent：搜資料
+Writer Agent：寫初稿
+Editor Agent：改進
+Critic Agent：找問題
+
+每個 agent 專精一件事
+互相溝通完成複雜任務
+```
+
+  
+### Agent vs Tool Use 差別
+
+  
+- **單純 Tool Use**：使用者問一次、LLM 用工具一兩次、回答
+- **Agent**：使用者給目標、LLM 自己**多輪**用工具、規劃、執行
+
+  
+### Agent Loop 本質
+
+```python
+def agent_loop(goal: str, tools: list, max_steps: int = 10):
+    history = [{"role": "user", "content": goal}]
+    
+    for step in range(max_steps):
+        response = llm.complete(history, tools=tools)
+        
+        if response.is_tool_call():
+            result = execute_tool(response.tool_call)
+            history.append({"role": "tool", "content": result})
+        else:
+            return response.text
+    
+    return "超過最大步驟"
+```
+
+  
+### 2026 主流 Agent 框架
+
+  
+- **LangChain / LangGraph**：最完整、生態最大
+- **CrewAI**：multi-agent 專精
+- **AutoGen**（Microsoft）：對話式 multi-agent
+- **OpenAI Assistants API**：託管 agent
+- **Vercel AI SDK**：簡單 agent
+- **Anthropic Claude SDK**：原生 tool loop
+
+  
+### Agent 的挑戰
+
+  
+- **失控**：陷入無限迴圈
+- **誤判**：用錯工具、做錯事
+- **成本**：複雜任務 100 個 API call
+- **幻覺累積**：每輪都可能編造
+- **沒法回頭**：寄出去的信收不回
+
+  
+### 設計安全的 Agent
+
+  
+- 限制步驟數（max_steps = 10-20）
+- 限制工具範圍（最小權限）
+- 關鍵操作要使用者確認
+- 有 budget 上限（每次最多花 $X）
+- 能 audit 每步（log）
+- 能中斷 / rollback
+
+  
+### Computer Use（2024 Anthropic）
+
+  
+Claude 推出「能操控電腦」的能力：
+
+  
+- 看截圖 → 知道 UI 元素
+- 移動滑鼠、點擊、輸入
+- 切換視窗
+- 真的能**操作任何 App**
+
+  
+目前還在 beta，準確率 80%。2026 後期可能成熟。
+
+  
+### 真實 Agent 案例
+
+  
+#### Cursor / Claude Code（程式碼 Agent）
+
+  
+- 讀整個 codebase
+- 修改多個檔案
+- 跑測試
+- 看到失敗自己修
+- 提 PR
+
+  
+#### Browser Agent
+
+  
+- 使用者：「幫我訂下週的火車票」
+- Agent 開瀏覽器 → 上鐵路網 → 選日期 → 訂票
+- 遇到登入要求 → 跟使用者確認
+
+  
+#### Research Agent
+
+  
+- 使用者：「研究 AI 晶片市場」
+- Agent 搜 10 篇文章 → 整合 → 寫報告 → 加引用
+
+  
+### 2026 Agent 趨勢
+
+  
+- 從「**chatbot**」進化到「**doer**」（真的做事）
+- Computer Use 越來越成熟
+- Multi-agent 框架競爭
+- Long-horizon planning（長期規劃）
+- Memory 系統（Agent 記住歷史）
+
+  
+
+🚀
+2026 趨勢
+
+這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。

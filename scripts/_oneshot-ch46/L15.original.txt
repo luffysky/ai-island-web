@@ -1,0 +1,165 @@
+有 embedding，**要存哪裡 + 怎麼快速搜尋**？這就是向量 DB 的工作。
+
+  
+### 為什麼不能用 PostgreSQL（普通版）？
+
+  
+你**可以**用 SQL 算 cosine、但慢。10 萬筆向量、純 SQL 要 3-5 秒。專門向量 DB 用 ANN（近似最近鄰）演算法，**10ms 內找到**。
+
+  
+### 2026 向量 DB 選擇
+
+  
+| 方案 | 類型 | 價格 |
+| --- | --- | --- |
+| **pgvector** | PG extension | 免費 |
+| **Pinecone** | SaaS | $70/月起 |
+| **Qdrant** | 開源 + Cloud | 免費 / Cloud $25 |
+| **Weaviate** | 開源 + Cloud | 類似 |
+| **Chroma** | 本機 / 開源 | 免費 |
+| **Milvus** | 開源（重） | 免費 |
+| **Cloudflare Vectorize** | CF 整合 | 免費起 |
+| **Supabase** | 用 pgvector | 免費起 |
+
+  
+### 推薦選法
+
+  
+- **剛起步、用 PG**：pgvector（最簡單）
+- **用 Supabase**：內建 pgvector
+- **需要 1 億+ 向量**：Pinecone / Qdrant Cloud
+- **用 Cloudflare**：Vectorize
+- **本機開發 / 試水**：Chroma
+
+  
+### pgvector 完整實戰
+
+```sql
+-- 1. 開 extension
+CREATE EXTENSION IF NOT EXISTS vector;
+
+-- 2. 建表
+CREATE TABLE documents (
+    id SERIAL PRIMARY KEY,
+    content TEXT,
+    metadata JSONB,
+    embedding vector(1536),
+    user_id INT,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 3. 建索引（重要！沒索引慢 100 倍）
+CREATE INDEX ON documents 
+USING hnsw (embedding vector_cosine_ops);
+
+-- 加 metadata index 加速 filter
+CREATE INDEX ON documents (user_id);
+
+-- 4. 插入
+INSERT INTO documents (content, embedding, metadata, user_id)
+VALUES ('我喜歡咖啡', '[0.1, 0.2, ...]', '{"source": "blog"}', 123);
+
+-- 5. 搜尋（cosine similarity）
+--  是 cosine distance 運算子
+SELECT 
+    content, 
+    metadata,
+    1 - (embedding  '[0.1, 0.2, ...]'::vector) AS score
+FROM documents
+WHERE user_id = 123  -- metadata filter
+ORDER BY embedding  '[0.1, 0.2, ...]'::vector
+LIMIT 5;
+```
+
+  
+### Python 完整範例
+
+```python
+import psycopg
+import json
+from openai import OpenAI
+
+client = OpenAI()
+conn = psycopg.connect("postgresql://...")
+
+def add_doc(content: str, user_id: int, metadata: dict = {}):
+    emb = client.embeddings.create(
+        input=content, 
+        model="text-embedding-3-small"
+    ).data[0].embedding
+    
+    with conn.cursor() as cur:
+        cur.execute(
+            "INSERT INTO documents (content, embedding, metadata, user_id) "
+            "VALUES (%s, %s, %s, %s)",
+            (content, emb, json.dumps(metadata), user_id)
+        )
+    conn.commit()
+
+def search(query: str, user_id: int, top_k: int = 5):
+    emb = client.embeddings.create(
+        input=query, 
+        model="text-embedding-3-small"
+    ).data[0].embedding
+    
+    with conn.cursor() as cur:
+        cur.execute(
+            "SELECT content, metadata, "
+            "1 - (embedding  %s::vector) AS score "
+            "FROM documents WHERE user_id = %s "
+            "ORDER BY embedding  %s::vector LIMIT %s",
+            (emb, user_id, emb, top_k)
+        )
+        return cur.fetchall()
+```
+
+  
+### Pinecone 範例
+
+```python
+from pinecone import Pinecone
+
+pc = Pinecone(api_key="...")
+index = pc.Index("my-index")
+
+# 插入
+index.upsert([
+    ("id1", [0.1, 0.2, ...], {"text": "咖啡", "category": "drink"}),
+    ("id2", [0.3, 0.4, ...], {"text": "茶", "category": "drink"})
+])
+
+# 搜尋 + metadata filter
+results = index.query(
+    vector=[0.1, 0.2, ...],
+    top_k=5,
+    include_metadata=True,
+    filter={"category": "drink"}
+)
+```
+
+  
+### 關鍵設計：Metadata Filter
+
+```text
+不只搜向量，還可加條件：
+- user_id = 123（多租戶隔離）
+- category = "manuals"
+- date > "2024-01"
+- language = "zh-TW"
+
+→ 效能 + 隔離兼顧
+→ Pinecone / Qdrant / pgvector 都支援
+```
+
+  
+### 索引演算法
+
+  
+- **HNSW**（Hierarchical Navigable Small World）：2026 主流、快、準
+- **IVFFlat**：較舊、便宜
+- **Flat**：暴力搜尋、
+
+⚡
+學習加速器
+
+把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。
