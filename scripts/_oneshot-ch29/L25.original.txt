@@ -1,0 +1,75 @@
+## 學習路徑
+
+### Month 1：基礎
+- Node + TS
+- fetch + cheerio
+- 小案：靜態網站
+
+### Month 2：動態 + 框架
+- Playwright JS
+- Crawlee
+- 小案：動態網站
+
+### Month 3：規模
+- Async + 並發
+- 代理輪換
+- Database
+
+### Month 4：Production
+- Sentry / Healthchecks
+- Cron（GitHub Actions / Cloudflare Workers）
+
+### Month 5：接案
+- 履歷 / 作品集
+- 第一個付費客戶
+
+### Month 6+：進階
+- 自己刻 SaaS
+- 賣 Apify Actor
+
+## 資源
+- Crawlee Docs（必看）
+- Playwright Docs
+- **John Watson Rooney** YT
+- 練習：books.toscrape.com
+
+## JS vs Python 爬蟲
+
+| 面向 | JS / Node | Python |
+|---|---|---|
+| 框架 | Crawlee | Scrapy |
+| 動態 | 內建 | 要加 |
+| 生態 | npm | PyPI |
+| 招募 | 少 | 多 |
+
+兩個都會最強。
+
+## 接案市場
+- 簡單：NT$ 5-30k
+- 中等：NT$ 30-100k
+- 維護：NT$ 1-10k/月
+
+## 全職
+- Node 爬蟲：NT$ 60-120k
+- Data Engineer（Python）：NT$ 90-180k
+
+## Indie 路線
+- 賣 Apify Actor 被動收入
+- 接案 + SaaS 並行
+- Cloudflare Workers 免費跑
+
+## 心法
+- JS 不是 Python 的替代、是補充
+- 同 stack 全端寫爬蟲體驗最爽
+- 商業選 Python（生態完整）
+- 個人 / Indie 選 JS（已會 stack）
+
+## 給新手建議
+1. 學 Node + TS
+2. 學 fetch + cheerio
+3. 學 Playwright
+4. 學 Crawlee
+5. 做 3 個小爬蟲
+6. 接第 1 個客戶
+
+6 個月、會 JS 爬蟲。

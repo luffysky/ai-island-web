@@ -1,0 +1,80 @@
+## Tesseract
+```javascript
+import Tesseract from "tesseract.js";
+
+const { data: { text } } = await Tesseract.recognize(
+  "image.png",
+  "chi_tra+eng"
+);
+```
+
+## PaddleOCR（中文最強、Python）
+```bash
+pip install paddleocr paddlepaddle
+```
+
+```python
+from paddleocr import PaddleOCR
+
+ocr = PaddleOCR(use_angle_cls=True, lang="ch")
+result = ocr.ocr("image.png", cls=True)
+
+for line in result[0]:
+    print(line[1][0])
+```
+
+## Claude Vision（2024+ 主流）
+```javascript
+import Anthropic from "@anthropic-ai/sdk";
+
+const client = new Anthropic();
+
+const imgBase64 = fs.readFileSync("invoice.png").toString("base64");
+
+const response = await client.messages.create({
+  model: "claude-opus-4-7",
+  max_tokens: 1024,
+  messages: [{
+    role: "user",
+    content: [
+      { type: "image", source: { type: "base64", media_type: "image/png", data: imgBase64 } },
+      { type: "text", text: "抽出發票上：商家、日期、總金額、品項（JSON）" }
+    ]
+  }]
+});
+
+const data = JSON.parse(response.content[0].text);
+```
+比 OCR 強 100 倍。
+
+## 解 Captcha
+2Captcha / CapSolver：$0.5-2 / 1000 次
+
+```javascript
+const res = await fetch("http://2captcha.com/in.php", {
+  method: "POST",
+  body: formData
+});
+const captchaId = (await res.text()).split("|")[1];
+
+while (true) {
+  const r = await fetch(`http://2captcha.com/res.php?key=${KEY}&action=get&id=${captchaId}`);
+  const text = await r.text();
+  if (text.startsWith("OK")) {
+    const solution = text.split("|")[1];
+    break;
+  }
+  await new Promise(r => setTimeout(r, 2000));
+}
+```
+
+## 應用
+- 自動讀發票 → 記帳
+- 監視器 → 統計人流
+- 賽事資料
+- 政府公開資料（PDF）
+
+## 心法
+- 簡單文字：Tesseract / PaddleOCR
+- 結構化：Claude Vision
+- Captcha：付費服務

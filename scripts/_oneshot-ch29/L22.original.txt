@@ -1,0 +1,123 @@
+## 規格
+- 給商品名、自動爬蝦皮 + PChome + Momo
+- 每天 cron
+- 用戶訂閱「降價通知」
+- Dashboard 看歷史走勢
+
+## Stack
+- Bun（runtime）
+- Hono（API）
+- Playwright（動態）
+- Cheerio（解析）
+- Drizzle + PG
+- React + Recharts
+- Cloudflare Workers Cron
+
+## 架構
+```
+[Cron 6am]
+  ↓
+[Bun + Playwright 爬 3 網站]
+  ↓
+[Drizzle 寫 PG]
+  ↓
+[檢查訂閱、降價 → LINE Notify]
+  ↓
+[Next.js dashboard]
+```
+
+## DB Schema
+```typescript
+export const prices = pgTable("prices", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  product_id: uuid("product_id").references(() => products.id),
+  site: text("site").notNull(),
+  title: text("title").notNull(),
+  price: decimal("price").notNull(),
+  url: text("url").notNull(),
+  scraped_at: timestamp("scraped_at").defaultNow()
+});
+```
+
+## 爬蟲
+```typescript
+async function scrapeShopee(keyword) {
+  const browser = await chromium.launch();
+  const page = await browser.newPage();
+  await page.goto(`https://shopee.tw/search?keyword=${encodeURIComponent(keyword)}`);
+  await page.waitForSelector(".shopee-search-item-result__item");
+  
+  const items = await page.locator(".shopee-search-item-result__item").evaluateAll(els =>
+    els.slice(0, 20).map(el => ({
+      title: el.querySelector(".item-name")?.textContent ?? "",
+      price: parseFloat(el.querySelector(".item-price")?.textContent?.replace(/[^0-9]/g, "") ?? "0")
+    }))
+  );
+  
+  await browser.close();
+  return items;
+}
+
+async function scrapePChome(keyword) {
+  const res = await fetch(`https://ecshweb.pchome.com.tw/search/v3.3/?q=${encodeURIComponent(keyword)}`);
+  const data = await res.json();
+  return data.prods.slice(0, 20).map(p => ({
+    title: p.name, price: p.price
+  }));
+}
+```
+
+## Cron
+```typescript
+async function main() {
+  const allProducts = await db.select().from(products);
+  
+  for (const p of allProducts) {
+    const [shopee, pchome] = await Promise.all([
+      scrapeShopee(p.keyword),
+      scrapePChome(p.keyword)
+    ]);
+    
+    await db.insert(prices).values([
+      ...shopee.map(i => ({ ...i, site: "shopee", product_id: p.id })),
+      ...pchome.map(i => ({ ...i, site: "pchome", product_id: p.id }))
+    ]);
+    
+    await checkAndNotify(p.id);
+  }
+}
+```
+
+## 通知
+```typescript
+async function checkAndNotify(productId) {
+  const subs = await getSubscriptions(productId);
+  
+  for (const sub of subs) {
+    const minPrice = await getMinPriceToday(productId);
+    
+    if (minPrice < sub.target_price) {
+      await fetch("https://notify-api.line.me/api/notify", {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${sub.line_token}` },
+        body: new URLSearchParams({ message: `💰 降價了！${minPrice}` })
+      });
+    }
+  }
+}
+```
+
+## Dashboard
+```tsx
+<LineChart width={800} height={400} data={data}>
+  <XAxis dataKey="date" />
+  <YAxis />
+  <Line type="monotone" dataKey="shopee" stroke="#f97316" />
+  <Line type="monotone" dataKey="pchome" stroke="#3b82f6" />
+</LineChart>
+```
+
+## 變現
+- 個人版：免費（廣告）
+- 商家版：NT$ 500/月
+- 企業版：NT$ 5000/月

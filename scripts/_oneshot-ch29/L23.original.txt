@@ -1,0 +1,78 @@
+## 為什麼
+傳統爬蟲：每個網站要寫 selector、改版就壞
+AI 爬蟲：給目標、AI 自己找資料
+
+## browser-use（Python）
+```python
+import asyncio
+from browser_use import Agent
+from langchain_anthropic import ChatAnthropic
+
+async def main():
+    agent = Agent(
+        task="去蝦皮搜尋 iPhone 17 Pro、找前 10 個最低價、回 JSON",
+        llm=ChatAnthropic(model="claude-opus-4-7")
+    )
+    result = await agent.run()
+    print(result)
+
+asyncio.run(main())
+```
+
+## Magnitude（TS）
+```typescript
+import { Browser } from "magnitude";
+
+const browser = new Browser();
+const result = await browser.run({
+  task: "Find me the latest iPhone price on PChome",
+  url: "https://pchome.com.tw"
+});
+```
+
+## Claude Computer Use
+```python
+import anthropic
+
+response = client.messages.create(
+    model="claude-opus-4-7",
+    tools=[{ "type": "computer_20250124", "name": "computer" }],
+    messages=[{
+        "role": "user",
+        "content": "打開蝦皮、搜尋 iPhone、抓前 10 個價格"
+    }]
+)
+```
+
+## 結構化抽取
+```javascript
+const prompt = `從這個網頁抽出所有商品的：name, price, link、回 JSON：\n\n${html}`;
+
+const response = await anthropic.messages.create({
+  model: "claude-opus-4-7",
+  messages: [{ role: "user", content: prompt }]
+});
+
+const data = JSON.parse(response.content[0].text);
+```
+
+## 成本
+- Claude Opus：1k token 約 $0.003-0.015
+- 一頁約 NT$ 0.3-3
+- 比寫 code 慢、比代理便宜
+
+## 何時用
+- ✅ 改版頻繁的網站
+- ✅ 不規則資料
+- ✅ 多種網站同方法
+- ❌ 大量同一網站（traditional 便宜）
+- ❌ 結構化 API 已有
+
+## 限制
+- 慢（每頁 LLM 思考）
+- 貴（token 費）
+- 不確定性
+- 仍會被反爬擋
+
+## 未來
+2026+：AI 爬蟲 + 真瀏覽器 + 反偵測。傳統 Scrapy / Crawlee 仍主流、AI 爬蟲補空缺。
