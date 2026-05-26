@@ -1,0 +1,181 @@
+LangChain 是 swiss army knife，LlamaIndex **專做 RAG**。純 RAG 場景更乾淨。
+
+  
+### 為什麼選 LlamaIndex？
+
+  
+- **RAG 抽象更深**
+- **各種 retrieval 策略內建**
+- **多種資料來源**（PDF、Notion、Confluence、Slack）
+- **Eval 工具**（測 RAG 效果）
+- **支援 Agent**（雖然不是主打）
+
+  
+### 基本 RAG（3 行）
+
+```python
+from llama_index.core import VectorStoreIndex, SimpleDirectoryReader
+
+# 1. 載入
+documents = SimpleDirectoryReader("./data").load_data()
+
+# 2. 建索引（embedding + 存向量 DB）
+index = VectorStoreIndex.from_documents(documents)
+
+# 3. 查詢
+query_engine = index.as_query_engine()
+response = query_engine.query("請假規定？")
+print(response)
+```
+
+  
+三行 RAG 完成。**LangChain 同樣事要 30 行**。
+
+  
+### 進階：自訂 retriever
+
+```python
+from llama_index.core.retrievers import VectorIndexRetriever
+from llama_index.core.query_engine import RetrieverQueryEngine
+from llama_index.core.postprocessor import SimilarityPostprocessor
+
+retriever = VectorIndexRetriever(
+    index=index,
+    similarity_top_k=10,
+)
+
+postprocessor = SimilarityPostprocessor(similarity_cutoff=0.7)
+
+query_engine = RetrieverQueryEngine(
+    retriever=retriever,
+    node_postprocessors=[postprocessor]
+)
+```
+
+  
+### 多種 Index 策略
+
+  
+- **VectorStoreIndex**：標準向量搜尋
+- **SummaryIndex**：每文件先摘要
+- **TreeIndex**：階層式（適合長文件）
+- **KeywordTableIndex**：關鍵字 + 向量混合
+- **KnowledgeGraphIndex**：建知識圖譜
+
+  
+### 進階 RAG 模式
+
+  
+#### Hybrid Search
+
+```python
+from llama_index.retrievers.bm25 import BM25Retriever
+from llama_index.core.retrievers import QueryFusionRetriever
+
+vector_retriever = index.as_retriever(similarity_top_k=10)
+bm25_retriever = BM25Retriever.from_defaults(index=index)
+
+retriever = QueryFusionRetriever(
+    [vector_retriever, bm25_retriever],
+    similarity_top_k=10,
+    mode="reciprocal_rerank"
+)
+```
+
+  
+#### Reranking
+
+```python
+from llama_index.postprocessor.cohere_rerank import CohereRerank
+
+reranker = CohereRerank(top_n=5)
+query_engine = index.as_query_engine(
+    node_postprocessors=[reranker]
+)
+```
+
+  
+#### Sub-question（拆解複雜問題）
+
+```python
+from llama_index.core.query_engine import SubQuestionQueryEngine
+
+query_engine = SubQuestionQueryEngine.from_defaults(
+    query_engine_tools=[...]
+)
+
+response = query_engine.query(
+    "比較公司 A 跟 B 的 2024 收入跟員工數"
+)
+# 自動拆成 4 個子問題各自搜尋
+```
+
+  
+### 資料來源（200+ connector）
+
+  
+- 檔案：PDF、Word、Excel、CSV、Markdown
+- 網頁：BeautifulSoup、Trafilatura
+- SaaS：Notion、Confluence、Slack、Discord、Asana
+- DB：SQL、MongoDB、Elasticsearch
+- API：GitHub、Twitter、YouTube
+
+```python
+from llama_index.readers.web import SimpleWebPageReader
+from llama_index.readers.notion import NotionPageReader
+
+documents = SimpleWebPageReader().load_data([
+    "https://docs.example.com/manual"
+])
+
+documents = NotionPageReader(
+    integration_token="..."
+).load_data(page_ids=["..."])
+```
+
+  
+### Eval（測 RAG 效果）
+
+```python
+from llama_index.core.evaluation import FaithfulnessEvaluator, RelevancyEvaluator
+
+eval_llm = OpenAI(model="gpt-4o")
+
+# 答案是否基於 context（無幻覺）
+faithfulness = FaithfulnessEvaluator(llm=eval_llm)
+
+# 答案是否相關
+relevancy = RelevancyEvaluator(llm=eval_llm)
+
+response = query_engine.query("請假規定？")
+faith_result = faithfulness.evaluate_response(response=response)
+```
+
+  
+### LangChain vs LlamaIndex
+
+  
+|  | LangChain | LlamaIndex |
+| --- | --- | --- |
+| 定位 | 通用 AI 框架 | RAG 專家 |
+| 學習成本 | 高 | 低（RAG 場景） |
+| Agent | 強 | 弱 |
+| RAG | 有但繁瑣 | 簡潔有力 |
+| 資料來源 | 多 | 更多 |
+| 適合 | complex agent | 純 RAG 系統 |
+
+  
+### 2026 建議
+
+  
+- **純 RAG 系統**：LlamaIndex
+- **RAG + Agent**：LangChain / LangGraph
+- **TS 專案**：Vercel AI SDK + 自寫 RAG
+- **正式產品**：用框架做 prototype、然後可能改自寫
+
+  
+
+💼
+接案小知識
+
+剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「AI/ML」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。

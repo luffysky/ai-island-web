@@ -1,0 +1,178 @@
+2024 推出，**2026 TS 生態的 LangChain 替代**。專為前後端整合設計。
+
+  
+### 為什麼紅？
+
+  
+- **跨模型抽象**：換 OpenAI / Anthropic / Gemini 一行
+- **串流首選**：完整 React hook 支援
+- **Type-safe**：完整 TS 支援
+- **Tool calling 簡潔**
+- **結構化輸出** with Zod
+- **Multi-modal**：圖、音、影都支援
+- **跟 Next.js 完美整合**
+
+  
+### 基本使用
+
+```ts
+import { generateText } from "ai";
+import { openai } from "@ai-sdk/openai";
+
+const { text } = await generateText({
+  model: openai("gpt-4o"),
+  prompt: "哈囉"
+});
+
+// 換 Anthropic 只要改一行：
+import { anthropic } from "@ai-sdk/anthropic";
+const { text } = await generateText({
+  model: anthropic("claude-sonnet-4-6"),
+  prompt: "哈囉"
+});
+```
+
+  
+### 串流（前端）
+
+```ts
+// app/api/chat/route.ts
+import { streamText } from "ai";
+import { anthropic } from "@ai-sdk/anthropic";
+
+export async function POST(req: Request) {
+  const { messages } = await req.json();
+  
+  const result = await streamText({
+    model: anthropic("claude-sonnet-4-6"),
+    messages
+  });
+  
+  return result.toDataStreamResponse();
+}
+
+// 前端
+import { useChat } from "@ai-sdk/react";
+
+export default function Chat() {
+  const { messages, input, handleInputChange, handleSubmit } = useChat();
+  
+  return (
+    
+      {messages.map(m => (
+        
+          **{m.role}**: {m.content}
+        
+      ))}
+      
+        
+      
+    
+  );
+}
+
+// 自動處理串流、state 管理、UI 更新
+```
+
+  
+### 結構化輸出
+
+```ts
+import { generateObject } from "ai";
+import { z } from "zod";
+
+const { object } = await generateObject({
+  model: openai("gpt-4o"),
+  schema: z.object({
+    recipe: z.object({
+      name: z.string(),
+      ingredients: z.array(z.string()),
+      steps: z.array(z.string())
+    })
+  }),
+  prompt: "生成義大利麵食譜"
+});
+
+object.recipe.name;       // 完全 type-safe
+object.recipe.ingredients;
+```
+
+  
+### Tool Use
+
+```ts
+import { generateText, tool } from "ai";
+import { z } from "zod";
+
+const { text, toolCalls } = await generateText({
+  model: anthropic("claude-sonnet-4-6"),
+  tools: {
+    getWeather: tool({
+      description: "取得城市天氣",
+      parameters: z.object({
+        city: z.string()
+      }),
+      execute: async ({ city }) => {
+        const data = await fetch(`/weather/${city}`);
+        return await data.json();
+      }
+    })
+  },
+  prompt: "台北現在幾度？",
+  maxSteps: 5
+});
+```
+
+  
+### Multi-modal（圖片輸入）
+
+```ts
+const { text } = await generateText({
+  model: anthropic("claude-sonnet-4-6"),
+  messages: [{
+    role: "user",
+    content: [
+      { type: "text", text: "描述這張圖" },
+      { type: "image", image: imageUrl }
+    ]
+  }]
+});
+```
+
+  
+### 支援的 Provider
+
+  
+- OpenAI（GPT-4、o3）
+- Anthropic（Claude）
+- Google（Gemini）
+- Mistral
+- Cohere
+- xAI（Grok）
+- Groq（快速推論）
+- OpenRouter（一個 API key 接全部）
+- Ollama（本機）
+- 20+ 個其他
+
+  
+### 2026 TS 開發者建議
+
+  
+用 Next.js / TS 做 AI 產品：**直接 Vercel AI SDK**，不用糾結 LangChain。
+
+  
+原因：
+
+  
+- 更輕量、更乾淨
+- 完整串流支援
+- 跟前端整合最好
+- Vercel 投入大、更新快
+- 文件清楚
+
+  
+
+⚠️
+新手常見錯誤
+
+新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。

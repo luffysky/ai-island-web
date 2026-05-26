@@ -1,0 +1,151 @@
+LangChain 是 2022-2024 最紅的 AI 框架。**2026 仍主流、但有爭議**—太大、太抽象。
+
+  
+### LangChain 是什麼
+
+  
+整合 LLM、工具、資料庫的「**瑞士刀**」：
+
+  
+- LLM 抽象（換模型一行）
+- Prompt template
+- Vector DB 整合（30+ 種）
+- Document loaders（讀 PDF / Word / Web）
+- Agent 框架
+- Memory 管理
+
+  
+### 基本使用
+
+```python
+from langchain_anthropic import ChatAnthropic
+from langchain_core.prompts import ChatPromptTemplate
+
+llm = ChatAnthropic(model="claude-sonnet-4-6")
+
+prompt = ChatPromptTemplate.from_messages([
+    ("system", "你是專業翻譯"),
+    ("user", "把下面翻成 {language}：{text}")
+])
+
+chain = prompt | llm
+
+result = chain.invoke({
+    "language": "日文",
+    "text": "今天天氣很好"
+})
+print(result.content)
+```
+
+  
+### RAG with LangChain
+
+```python
+from langchain_community.document_loaders import WebBaseLoader
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_openai import OpenAIEmbeddings
+from langchain_chroma import Chroma
+
+# 1. 載入文件
+loader = WebBaseLoader("https://example.com/docs")
+docs = loader.load()
+
+# 2. 切段
+splitter = RecursiveCharacterTextSplitter(chunk_size=500)
+chunks = splitter.split_documents(docs)
+
+# 3. 存進向量 DB
+vectorstore = Chroma.from_documents(chunks, OpenAIEmbeddings())
+
+# 4. 建 RAG chain
+retriever = vectorstore.as_retriever()
+
+from langchain.chains import RetrievalQA
+qa = RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
+
+# 5. 用
+qa.invoke("請問請假規定？")
+```
+
+  
+### LangGraph：Stateful Agent
+
+  
+2024 LangChain 出的**狀態機框架**—解決 Agent 流程控制問題。
+
+```python
+from langgraph.graph import StateGraph, END
+from typing import TypedDict
+
+class State(TypedDict):
+    question: str
+    context: list
+    answer: str
+
+def retrieve(state):
+    docs = vectorstore.search(state["question"])
+    return {"context": docs}
+
+def generate(state):
+    answer = llm.invoke(build_prompt(state))
+    return {"answer": answer}
+
+def should_continue(state):
+    if not state["answer"]:
+        return "retrieve"
+    return END
+
+# 建狀態圖
+workflow = StateGraph(State)
+workflow.add_node("retrieve", retrieve)
+workflow.add_node("generate", generate)
+workflow.set_entry_point("retrieve")
+workflow.add_edge("retrieve", "generate")
+workflow.add_conditional_edges("generate", should_continue)
+
+app = workflow.compile()
+result = app.invoke({"question": "請假規定？"})
+```
+
+  
+### LangChain 的批評
+
+  
+2024 業界開始討論「不要用 LangChain」：
+
+  
+- **太抽象**：簡單事被包成複雜
+- **API 不穩**：頻繁 breaking change
+- **效能不好**：層層 wrapper
+- **debug 困難**：error stack 一堆 LangChain 內部
+- **文件混亂**：版本對不上
+
+  
+### 2026 替代方案
+
+  
+- **純 SDK**：用 anthropic / openai 官方 SDK，加自己的薄層
+- **LlamaIndex**：RAG 專精
+- **Haystack**：類似但乾淨
+- **Vercel AI SDK**：TypeScript 主流
+- **DSPy**：Stanford 出，用 ML 思維優化 prompt
+- **Pydantic AI**：型別友善
+
+  
+### 2026 建議
+
+  
+- **學習 / 快速 prototype**：LangChain（生態大）
+- **生產 / 正式產品**：純官方 SDK 或 Pydantic AI
+- **複雜 agent**：LangGraph 或自己用狀態機
+- **純 RAG**：LlamaIndex 或自寫
+
+  
+不要「非用 LangChain 不可」。**用對的工具，不是用熱門工具**。
+
+  
+
+🛠️
+工具推薦
+
+配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。
