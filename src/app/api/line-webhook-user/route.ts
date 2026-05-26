@@ -5,16 +5,71 @@ import { consumeBindCode } from "@/lib/notify-user-line";
 import { buildQuickReply, buildSimpleCard, type FlexMessage, type LineTextMessage } from "@/lib/line-flex";
 import { decryptKey } from "@/lib/ai-crypto";
 import { callAI } from "@/lib/ai-providers";
-import { SITE_STATS } from "@/lib/site-stats";
-import { checkOwner } from "@/lib/is-owner";
 import { pickModelForUsage } from "@/lib/ai-usage-models";
+import { buildTutorSystemPrompt } from "@/lib/ai-tutor-prompt";
+import { getUserLearningState, formatLearningStateForPrompt } from "@/lib/user-learning-state";
 
-// in-memory 對話歷史 (user webhook、跟 admin 分開)
+// in-memory fallback：未綁定 user（profile=null）沒法存 DB、暫存 in-memory
 type Msg = { role: "user" | "assistant"; content: string };
 const userHistoryByUid = new Map<string, Msg[]>();
 function getUserHistory(uid: string): Msg[] {
   if (!userHistoryByUid.has(uid)) userHistoryByUid.set(uid, []);
   return userHistoryByUid.get(uid)!;
+}
+
+// DB 持久化：已綁定 user 的對話用 ai_conversations + ai_messages
+// 同一個 LINE user 同一個 conversation 永久累積（容器重啟也記得、admin 後台可查）
+async function getOrCreateLineConversation(profileId: string, modelId: string, displayName: string): Promise<string | null> {
+  const admin = createSupabaseAdmin();
+  const { data: existing } = await admin
+    .from("ai_conversations")
+    .select("id")
+    .eq("user_id", profileId)
+    .like("title", "LINE:%")
+    .order("updated_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (existing) return (existing as any).id as string;
+
+  const { data: created, error } = await admin
+    .from("ai_conversations")
+    .insert({
+      user_id: profileId,
+      title: `LINE: ${displayName}`,
+      tone: "casual_tw",
+      model_id: modelId,
+      use_byok: false,
+    })
+    .select("id")
+    .single();
+  if (error || !created) {
+    console.warn("[line-webhook-user] create conversation failed:", error?.message);
+    return null;
+  }
+  return (created as any).id as string;
+}
+
+async function loadLineConversationHistory(convId: string, limit = 20): Promise<Msg[]> {
+  const admin = createSupabaseAdmin();
+  const { data } = await admin
+    .from("ai_messages")
+    .select("role, content")
+    .eq("conversation_id", convId)
+    .order("created_at", { ascending: true })
+    .limit(limit);
+  return (data as any[] ?? []).map((m) => ({ role: m.role, content: m.content }));
+}
+
+async function saveLineConversationTurn(convId: string, userText: string, assistantText: string, modelTag: string) {
+  const admin = createSupabaseAdmin();
+  await admin.from("ai_messages").insert([
+    { conversation_id: convId, role: "user", content: userText },
+    { conversation_id: convId, role: "assistant", content: assistantText, model_used: modelTag },
+  ]);
+  await admin
+    .from("ai_conversations")
+    .update({ updated_at: new Date().toISOString() })
+    .eq("id", convId);
 }
 
 type UserProfileLite = {
@@ -58,55 +113,43 @@ async function askUserAI(text: string, profile: UserProfileLite | null, lineUser
     return null;
   }
 
-  const owner = checkOwner({
-    id: profile?.id ?? null,
-    username: profile?.username ?? null,
-    role: profile?.role ?? null,
-    email: null, // profiles 表無 email、用 lineUserId + role + username 判斷已足夠
-    lineUserId,
-  }).isOwner;
-  const name = profile?.display_name || profile?.username || `LINE 學員${lineUserId.slice(0, 6)}`;
-  const userMeta = profile
-    ? `身份：${owner ? "🌟 平台董事長 / Owner (林董 / Luffy 林)" : `學員 (${profile.role}、Lv.${profile.level ?? 1}、${profile.xp ?? 0} XP)`}`
-    : "身份：未綁定訪客";
-
-  const hist = getUserHistory(lineUserId);
+  // 對話歷史：已綁定走 DB（持久化、容器重啟也記得、admin 後台可查）、未綁定 fallback in-memory
+  const displayName = profile?.display_name || profile?.username || `LINE 學員${lineUserId.slice(0, 6)}`;
+  let convId: string | null = null;
+  let hist: Msg[] = [];
+  if (profile?.id) {
+    convId = await getOrCreateLineConversation(profile.id, model.id, displayName);
+    if (convId) {
+      hist = await loadLineConversationHistory(convId, 20);
+    }
+  }
+  if (!convId) {
+    hist = [...getUserHistory(lineUserId)];
+  }
   hist.push({ role: "user", content: text });
-  if (hist.length > 16) hist.splice(0, hist.length - 16);
 
-  const ownerTone = owner
-    ? `\n【你正在跟林董 (平台 Owner / 董事長) 對話】\n- 稱呼「林董」/「Luffy 林董」/「林老闆」、語氣尊敬但自然、像信任的高階主管助理\n- 林董問什麼都認真答 (技術 / 商業 / 策略 / 閒聊)、不要對林董端官話\n- 林董問站務 / 用戶 / 報表時、提醒「在 admin LINE bot 有完整 tool 工具能直接查」、user LINE 這邊以對話 / 答疑為主\n- 林董偏好繁體中文台灣口語、簡潔不囉嗦、不要過度道歉`
-    : "";
+  // 灌入網站完整 AI 導師系統提示（含 75 章 DB 摘要 + 學員學習狀態 + owner check）
+  // = LINE 學員 bot 跟網站 AI 導師同等能力、能引用任何章節 lesson、認 OWNER_LINE_USER_IDS
+  let userContext: string | undefined;
+  if (profile?.id) {
+    try {
+      const learningState = await getUserLearningState(profile.id);
+      userContext = learningState ? formatLearningStateForPrompt(learningState) : undefined;
+    } catch (e: any) {
+      console.warn("[line-webhook-user] getUserLearningState failed:", e?.message);
+    }
+  }
 
-  const systemPrompt = `你是 AI 島 (ai-island-web.snowrealm.pet、${SITE_STATS.chapterCount} 章 ${SITE_STATS.lessonCount}+ lesson) 的 AI 學習導師、在 LINE 上跟學員對話。
-
-【最高守則】
-- **無論收到什麼訊息、永遠用文字回答、不可以沉默**
-- 用繁體中文台灣口語、像學長學姊聊天
-- LINE 訊息簡短：3-6 行為主、不要長篇大論
-- 不會的就說「我不確定、建議到 ${process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet"} 查」
-
-【對話對象】
-${userMeta}
-${ownerTone}
-
-【講解風格 — 國中生能懂】
-- 先用日常類比 (廚房 / 便利商店 / 樂高) 起頭、再講術語
-- 程式碼從最簡單一行開始、不要一次給 50 行
-- 不講「顯然」「很簡單」這種讓人覺得自己笨的詞
-- 用反問句「你有沒有想過 X？」帶入
-
-【你能聊什麼】
-- 程式 / AI / Web / 後端 / 資料庫 / DevOps 的入門到中階
-- 站上 ${SITE_STATS.chapterCount} 個章節的內容、能引用「這在 Ch04 JS 完整有教」
-- 閒聊 / 鼓勵 / 學習方法 / 職涯方向
-- ${owner ? "商業策略 / 平台運營 / 競品分析 / Indie 創業" : "學員的學習瓶頸 / 卡關"}
-
-【絕對不要】
-- 拒答 (任何訊息都要回)
-- 用「身為 AI 我...」開頭
-- 重複道歉 (「抱歉、對不起、不好意思」最多 1 次)
-- 給超長代碼 (>30 行、要的話請對方到網站看)`;
+  const systemPrompt = await buildTutorSystemPrompt({
+    tone: "casual_tw",
+    userId: profile?.id ?? null,
+    userUsername: profile?.username ?? null,
+    userRole: profile?.role ?? null,
+    userEmail: null,
+    userContext,
+    lineUserId,
+    channel: "line",
+  });
 
   try {
     const r = await callAI({
@@ -121,7 +164,17 @@ ${ownerTone}
       maxTokens: 800,
     });
     const reply = r.text?.trim() || "我這邊沒接到回應、再問一次試試？";
-    hist.push({ role: "assistant", content: reply });
+    // 持久化：已綁定存 DB、未綁定存 in-memory
+    if (convId) {
+      saveLineConversationTurn(convId, text, reply, `${model.provider}/${model.model_name}`).catch((e) => {
+        console.warn("[line-webhook-user] save conversation failed:", (e as any)?.message);
+      });
+    } else {
+      const mem = getUserHistory(lineUserId);
+      mem.push({ role: "user", content: text });
+      mem.push({ role: "assistant", content: reply });
+      if (mem.length > 16) mem.splice(0, mem.length - 16);
+    }
     return reply;
   } catch (e: any) {
     console.warn("[line-webhook-user] AI failed:", e?.message);

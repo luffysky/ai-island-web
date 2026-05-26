@@ -139,6 +139,8 @@ export async function buildTutorSystemPrompt(options: {
   userEmail?: string | null;
   userId?: string | null;
   userUsername?: string | null;
+  lineUserId?: string | null;       // LINE bot 認林董用（OWNER_LINE_USER_IDS env 配對）
+  channel?: "web" | "line";         // LINE 會 append 短訊息規範
 }): Promise<string> {
   const tone = options.tone ?? "friendly";
   const toneInstruction = TONE_STYLES[tone] ?? TONE_STYLES.friendly;
@@ -148,6 +150,7 @@ export async function buildTutorSystemPrompt(options: {
     username: options.userUsername ?? null,
     role: options.userRole ?? null,
     email: options.userEmail ?? null,
+    lineUserId: options.lineUserId ?? null,
   });
   const isOwner = ownerCheck.isOwner;
 
@@ -231,7 +234,15 @@ ${toneInstruction}
 ${summary}
 
 ${contextInfo}
-
+${options.channel === "line" ? `
+# 你現在在 LINE 上跟學員對話
+- 每則訊息 3-8 行為主、別長篇大論
+- 程式碼 ≤ 20 行、超過請學員到網站看完整版
+- 不能用 markdown 表格 / 標題（LINE 不渲染）、改條列「•」
+- code 用 \`\`\` 三個 backtick 框（LINE 會用等寬字顯示）
+- 引用章節用「📚 Ch26 第 3 節」+ 加超連結 https://ai-island-web.snowrealm.pet/chapters/26
+- 永遠回應、不沉默
+` : ""}
 # 開始
 用戶會問問題、依以上規則回答。`;
 }
