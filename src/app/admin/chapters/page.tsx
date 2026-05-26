@@ -31,7 +31,7 @@ export default async function AdminChaptersPage() {
             </Link>
             <Link
               href={adminHref(`/admin/chapters/${c.id}/quiz-builder`) as any}
-              className="absolute top-2 right-2 text-xs px-2 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 hover:bg-purple-500/30 opacity-70 hover:opacity-100 transition"
+              className="absolute top-2 right-2 text-xs px-2 py-1 rounded-full bg-purple-500/20 text-purple-900 dark:text-purple-100 border border-purple-500/30 hover:bg-purple-500/30 opacity-70 hover:opacity-100 transition"
               title="AI 出題助手"
             >
               📝 出題

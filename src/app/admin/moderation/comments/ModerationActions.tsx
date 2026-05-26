@@ -92,7 +92,7 @@ export function ModerationActions({
       <button
         onClick={handleDelete}
         disabled={pending}
-        className="text-xs flex items-center gap-1 px-3 py-1 rounded-full bg-red-500/15 text-red-300 hover:bg-red-500/25 hover:text-red-200 disabled:opacity-50"
+        className="text-xs flex items-center gap-1 px-3 py-1 rounded-full bg-red-500/15 text-red-900 dark:text-red-100 hover:bg-red-500/25 hover:text-red-200 disabled:opacity-50"
       >
         <Trash2 size={12} /> 刪除
       </button>

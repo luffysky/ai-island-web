@@ -67,7 +67,7 @@ export function LineDiagnosticPanel() {
         <button
           onClick={runHealth}
           disabled={checking}
-          className="px-3 py-1.5 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 text-xs inline-flex items-center gap-1 hover:bg-cyan-500/25 disabled:opacity-50"
+          className="px-3 py-1.5 rounded-full bg-cyan-500/15 text-cyan-900 dark:text-cyan-100 border border-cyan-500/30 text-xs inline-flex items-center gap-1 hover:bg-cyan-500/25 disabled:opacity-50"
         >
           {checking ? <Loader2 size={11} className="animate-spin" /> : <Stethoscope size={11} />}
           🩺 跑健檢 (檢 env + DB + 解密)
@@ -75,7 +75,7 @@ export function LineDiagnosticPanel() {
         <button
           onClick={() => push("admin")}
           disabled={pushing}
-          className="px-3 py-1.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 text-xs inline-flex items-center gap-1 hover:bg-emerald-500/25 disabled:opacity-50"
+          className="px-3 py-1.5 rounded-full bg-emerald-500/15 text-emerald-900 dark:text-emerald-100 border border-emerald-500/30 text-xs inline-flex items-center gap-1 hover:bg-emerald-500/25 disabled:opacity-50"
         >
           {pushing ? <Loader2 size={11} className="animate-spin" /> : <Send size={11} />}
           📤 推測試到我的 admin LINE
@@ -83,7 +83,7 @@ export function LineDiagnosticPanel() {
         <button
           onClick={() => push("user")}
           disabled={pushing}
-          className="px-3 py-1.5 rounded-full bg-purple-500/15 text-purple-300 border border-purple-500/30 text-xs inline-flex items-center gap-1 hover:bg-purple-500/25 disabled:opacity-50"
+          className="px-3 py-1.5 rounded-full bg-purple-500/15 text-purple-900 dark:text-purple-100 border border-purple-500/30 text-xs inline-flex items-center gap-1 hover:bg-purple-500/25 disabled:opacity-50"
         >
           {pushing ? <Loader2 size={11} className="animate-spin" /> : <Send size={11} />}
           📤 推測試到我的 user LINE

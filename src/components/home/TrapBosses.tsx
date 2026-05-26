@@ -73,7 +73,7 @@ export function TrapBosses() {
                 <span className="w-6 h-6 rounded-full bg-black/30 flex items-center justify-center text-xs font-bold">
                   {b.no}
                 </span>
-                <span className="text-[10px] px-2 py-0.5 rounded bg-red-500/20 text-red-400 font-bold">
+                <span className="text-[10px] px-2 py-0.5 rounded bg-red-500/20 text-red-900 dark:text-red-200 font-bold">
                   BOSS
                 </span>
               </div>

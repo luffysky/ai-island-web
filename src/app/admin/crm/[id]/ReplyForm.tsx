@@ -148,7 +148,7 @@ export function ReplyForm({
                               <code className="text-[10px] text-fg-muted">/{c.shortcut}</code>
                             )}
                             {c.owner_user_id === null && (
-                              <span className="text-[9px] px-1 rounded bg-blue-500/15 text-blue-400">共用</span>
+                              <span className="text-[9px] px-1 rounded bg-blue-500/15 text-blue-900 dark:text-blue-200">共用</span>
                             )}
                           </div>
                           <div className="text-[11px] text-fg-muted line-clamp-2">{c.body}</div>

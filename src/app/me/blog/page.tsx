@@ -137,7 +137,7 @@ export default function MyBlogPage() {
                 <div className="flex items-center gap-2 mb-1">
                   <h3 className="font-bold truncate">{a.title}</h3>
                   {a.is_public ? (
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-green-500/20 text-green-400 flex items-center gap-0.5 shrink-0">
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-green-500/20 text-green-900 dark:text-green-200 flex items-center gap-0.5 shrink-0">
                       <Globe size={9} /> 公開
                     </span>
                   ) : (

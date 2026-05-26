@@ -52,9 +52,9 @@ const LANG_LABEL: Record<string, string> = {
 };
 
 const PRICE_BADGE: Record<string, { label: string; color: string }> = {
-  free:     { label: "免費",   color: "bg-green-500/20 text-green-400" },
-  paid:     { label: "付費",   color: "bg-orange-500/20 text-orange-400" },
-  freemium: { label: "部分免費", color: "bg-blue-500/20 text-blue-400" },
+  free:     { label: "免費",   color: "bg-green-500/20 text-green-900 dark:text-green-200" },
+  paid:     { label: "付費",   color: "bg-orange-500/20 text-orange-900 dark:text-orange-200" },
+  freemium: { label: "部分免費", color: "bg-blue-500/20 text-blue-900 dark:text-blue-200" },
 };
 
 const LEVEL_LABEL: Record<string, string> = {

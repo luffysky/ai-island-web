@@ -139,7 +139,7 @@ export function AssignmentsClient({ initial, submissionCounts }: { initial: Assi
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <h3 className="font-bold truncate">{a.title}</h3>
-                  {a.is_required && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-red-500/15 text-red-400">必交</span>}
+                  {a.is_required && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-red-500/15 text-red-900 dark:text-red-200">必交</span>}
                 </div>
                 <div className="text-[10px] text-fg-muted">
                   {a.chapter_id ? `Ch ${a.chapter_id}` : "未綁章節"}

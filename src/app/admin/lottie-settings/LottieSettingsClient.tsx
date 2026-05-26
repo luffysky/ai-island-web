@@ -176,7 +176,7 @@ export function LottieSettingsClient({ slots, initial }: { slots: Slot[]; initia
               <button
                 onClick={() => save("admin_lottie_opacity", adminOpacity)}
                 disabled={saving === "admin_lottie_opacity"}
-                className="px-2 py-1 rounded bg-purple-500/20 border border-purple-500/40 text-purple-300 text-[10px]"
+                className="px-2 py-1 rounded bg-purple-500/20 border border-purple-500/40 text-purple-900 dark:text-purple-100 text-[10px]"
               >
                 {saving === "admin_lottie_opacity" ? <Loader2 size={10} className="animate-spin" /> : "存"}
               </button>
@@ -195,7 +195,7 @@ export function LottieSettingsClient({ slots, initial }: { slots: Slot[]; initia
               <button
                 onClick={() => save("home_hero_lottie_opacity", heroOpacity)}
                 disabled={saving === "home_hero_lottie_opacity"}
-                className="px-2 py-1 rounded bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-[10px]"
+                className="px-2 py-1 rounded bg-emerald-500/20 border border-emerald-500/40 text-emerald-900 dark:text-emerald-100 text-[10px]"
               >
                 {saving === "home_hero_lottie_opacity" ? <Loader2 size={10} className="animate-spin" /> : "存"}
               </button>
@@ -214,9 +214,9 @@ export function LottieSettingsClient({ slots, initial }: { slots: Slot[]; initia
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="font-bold text-sm">{slot.label}</span>
                 <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${
-                  slot.scope === "admin" ? "bg-purple-500/20 text-purple-300" :
-                  slot.scope === "frontend" ? "bg-emerald-500/20 text-emerald-300" :
-                  "bg-amber-500/20 text-amber-300"
+                  slot.scope === "admin" ? "bg-purple-500/20 text-purple-900 dark:text-purple-100" :
+                  slot.scope === "frontend" ? "bg-emerald-500/20 text-emerald-900 dark:text-emerald-100" :
+                  "bg-amber-500/20 text-amber-900 dark:text-amber-100"
                 }`}>
                   {slot.scope === "admin" ? "後台" : slot.scope === "frontend" ? "前台" : "共用"}
                 </span>

@@ -361,7 +361,7 @@ export function ScrapeLab() {
       <div className="flex items-center justify-between gap-2 flex-wrap text-xs">
         <div>
           {status === "idle" && (
-            <button onClick={load} className="px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/40 inline-flex items-center gap-1">
+            <button onClick={load} className="px-3 py-1 rounded-full bg-purple-500/20 text-purple-900 dark:text-purple-100 border border-purple-500/40 inline-flex items-center gap-1">
               <Download size={11} /> 載入 Python
             </button>
           )}

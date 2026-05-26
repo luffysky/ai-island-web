@@ -18,11 +18,11 @@ type Ticket = {
 };
 
 const STATUS_COLOR: Record<string, string> = {
-  open: "bg-blue-500/15 text-blue-400",
-  in_progress: "bg-yellow-500/15 text-yellow-400",
-  waiting_user: "bg-purple-500/15 text-purple-400",
-  resolved: "bg-emerald-500/15 text-emerald-400",
-  closed: "bg-gray-500/15 text-gray-400",
+  open: "bg-blue-500/15 text-blue-900 dark:text-blue-200",
+  in_progress: "bg-yellow-500/15 text-yellow-900 dark:text-yellow-200",
+  waiting_user: "bg-purple-500/15 text-purple-900 dark:text-purple-200",
+  resolved: "bg-emerald-500/15 text-emerald-900 dark:text-emerald-200",
+  closed: "bg-gray-500/15 text-gray-900 dark:text-gray-200",
 };
 
 const STATUS_LABEL: Record<string, string> = {

@@ -88,15 +88,15 @@ export function MyAssignmentsClient({
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <h3 className="font-bold truncate">{a.title}</h3>
-                  {a.is_required && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-red-500/15 text-red-400">必交</span>}
-                  {overdue && !my && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-orange-500/15 text-orange-400">逾期</span>}
+                  {a.is_required && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-red-500/15 text-red-900 dark:text-red-200">必交</span>}
+                  {overdue && !my && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-orange-500/15 text-orange-900 dark:text-orange-200">逾期</span>}
                   {my?.graded_at && (
-                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 font-bold">
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-900 dark:text-emerald-200 font-bold">
                       已批 {my.score}/{a.max_score}
                     </span>
                   )}
                   {my && !my.graded_at && (
-                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-blue-500/15 text-blue-400">已提交、待批</span>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-blue-500/15 text-blue-900 dark:text-blue-200">已提交、待批</span>
                   )}
                 </div>
                 <div className="text-[10px] text-fg-muted">

@@ -8,9 +8,9 @@ import { ModuleLessonCard } from "@/components/courses/ModuleLessonCard";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
 
 const PRICE_LABEL: Record<string, { label: string; color: string }> = {
-  free: { label: "免費", color: "bg-green-500/20 text-green-400" },
-  paid: { label: "付費", color: "bg-orange-500/20 text-orange-400" },
-  freemium: { label: "部分免費", color: "bg-blue-500/20 text-blue-400" },
+  free: { label: "免費", color: "bg-green-500/20 text-green-900 dark:text-green-200" },
+  paid: { label: "付費", color: "bg-orange-500/20 text-orange-900 dark:text-orange-200" },
+  freemium: { label: "部分免費", color: "bg-blue-500/20 text-blue-900 dark:text-blue-200" },
 };
 
 export function generateStaticParams() {
@@ -96,7 +96,7 @@ export default async function DungeonPage({
       <section className="mb-10">
         <div className="rounded-2xl border border-red-500/30 bg-red-500/5 p-6">
           <div className="flex items-center gap-2 mb-4">
-            <span className="text-[10px] px-2 py-0.5 rounded bg-red-500/20 text-red-400 font-bold">
+            <span className="text-[10px] px-2 py-0.5 rounded bg-red-500/20 text-red-900 dark:text-red-200 font-bold">
               副本 BOSS
             </span>
             <h2 className="text-2xl font-bold">👹 {d.boss.name}</h2>

@@ -27,10 +27,10 @@ type Stats = {
 };
 
 const STATUS_COLOR: Record<string, string> = {
-  draft: "bg-gray-500/15 text-gray-400",
-  running: "bg-emerald-500/15 text-emerald-400",
-  paused: "bg-yellow-500/15 text-yellow-400",
-  completed: "bg-blue-500/15 text-blue-400",
+  draft: "bg-gray-500/15 text-gray-900 dark:text-gray-200",
+  running: "bg-emerald-500/15 text-emerald-900 dark:text-emerald-200",
+  paused: "bg-yellow-500/15 text-yellow-900 dark:text-yellow-200",
+  completed: "bg-blue-500/15 text-blue-900 dark:text-blue-200",
 };
 
 export function AbExperimentsClient({ initial, stats }: { initial: Experiment[]; stats: Record<string, Stats> }) {
@@ -211,7 +211,7 @@ export function AbExperimentsClient({ initial, stats }: { initial: Experiment[];
                     const { p, significant, uplift } = twoProportionZTest(ctrlConv, ctrlCount, conv, count);
                     if (ctrlCount > 0 && count > 0) {
                       pTag = (
-                        <span className={`text-[10px] px-1.5 py-0.5 rounded font-mono ${significant ? "bg-emerald-500/20 text-emerald-300" : "bg-bg-elevated text-fg-muted"}`}>
+                        <span className={`text-[10px] px-1.5 py-0.5 rounded font-mono ${significant ? "bg-emerald-500/20 text-emerald-900 dark:text-emerald-100" : "bg-bg-elevated text-fg-muted"}`}>
                           p={p.toFixed(3)} · {uplift >= 0 ? "+" : ""}{(uplift * 100).toFixed(1)}%
                         </span>
                       );
@@ -233,17 +233,17 @@ export function AbExperimentsClient({ initial, stats }: { initial: Experiment[];
 
               <div className="flex gap-2">
                 {e.status === "draft" || e.status === "paused" ? (
-                  <button onClick={() => setStatus(e.id, "running")} className="text-xs px-3 py-1 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center gap-1">
+                  <button onClick={() => setStatus(e.id, "running")} className="text-xs px-3 py-1 rounded-lg bg-emerald-500/15 text-emerald-900 dark:text-emerald-200 flex items-center gap-1">
                     <Play size={11} /> 啟動
                   </button>
                 ) : null}
                 {e.status === "running" && (
-                  <button onClick={() => setStatus(e.id, "paused")} className="text-xs px-3 py-1 rounded-lg bg-yellow-500/15 text-yellow-400 flex items-center gap-1">
+                  <button onClick={() => setStatus(e.id, "paused")} className="text-xs px-3 py-1 rounded-lg bg-yellow-500/15 text-yellow-900 dark:text-yellow-200 flex items-center gap-1">
                     <Pause size={11} /> 暫停
                   </button>
                 )}
                 {(e.status === "running" || e.status === "paused") && (
-                  <button onClick={() => setStatus(e.id, "completed")} className="text-xs px-3 py-1 rounded-lg bg-blue-500/15 text-blue-400 flex items-center gap-1">
+                  <button onClick={() => setStatus(e.id, "completed")} className="text-xs px-3 py-1 rounded-lg bg-blue-500/15 text-blue-900 dark:text-blue-200 flex items-center gap-1">
                     <Square size={11} /> 結束
                   </button>
                 )}

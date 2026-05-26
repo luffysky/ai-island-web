@@ -354,7 +354,7 @@ conn.close()
             placeholder="新檔名.py"
             className="bg-bg border border-border rounded-lg px-2 py-1 text-xs w-32 outline-none focus:border-purple-400"
           />
-          <button onClick={addFile} className="px-2 py-1 rounded-lg bg-purple-500/20 border border-purple-500/40 text-purple-300 text-xs inline-flex items-center gap-0.5">
+          <button onClick={addFile} className="px-2 py-1 rounded-lg bg-purple-500/20 border border-purple-500/40 text-purple-900 dark:text-purple-100 text-xs inline-flex items-center gap-0.5">
             <Plus size={11} /> 加檔
           </button>
         </div>

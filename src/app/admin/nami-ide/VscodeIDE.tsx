@@ -332,7 +332,7 @@ ${activeFile.content}
         <div>
           <h2 className="text-xl font-bold flex items-center gap-2">
             💻 Nami IDE
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">VSCode 風</span>
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-900 dark:text-purple-100 border border-purple-500/30">VSCode 風</span>
           </h2>
           <p className="text-xs text-fg-muted mt-1">
             真正 file tree + 資料夾 + 多 tab、依檔名自動分流 .py (Pyodide) / .sql (SQLite) / .html+css+js (iframe sandbox)

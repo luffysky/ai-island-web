@@ -3,10 +3,10 @@ import { FileResource } from "@/lib/types";
 import { Download, FileCode, FileText, FileJson, Database } from "lucide-react";
 
 const typeLabels: Record<string, { label: string; color: string }> = {
-  starter: { label: "起手檔案", color: "bg-blue-500/20 text-blue-400" },
-  complete: { label: "完成版", color: "bg-green-500/20 text-green-400" },
-  reference: { label: "參考資料", color: "bg-purple-500/20 text-purple-400" },
-  data: { label: "範例資料", color: "bg-yellow-500/20 text-yellow-400" },
+  starter: { label: "起手檔案", color: "bg-blue-500/20 text-blue-900 dark:text-blue-200" },
+  complete: { label: "完成版", color: "bg-green-500/20 text-green-900 dark:text-green-200" },
+  reference: { label: "參考資料", color: "bg-purple-500/20 text-purple-900 dark:text-purple-200" },
+  data: { label: "範例資料", color: "bg-yellow-500/20 text-yellow-900 dark:text-yellow-200" },
 };
 
 function getIcon(filename: string) {
@@ -42,7 +42,7 @@ export function FilesPanel({ files }: { files: FileResource[] }) {
       </div>
       <div className="space-y-2">
         {files.map((f, i) => {
-          const meta = typeLabels[f.type] ?? { label: f.type, color: "bg-gray-500/20 text-gray-400" };
+          const meta = typeLabels[f.type] ?? { label: f.type, color: "bg-gray-500/20 text-gray-900 dark:text-gray-200" };
           return (
             <div
               key={i}

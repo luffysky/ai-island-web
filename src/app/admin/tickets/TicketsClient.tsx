@@ -22,10 +22,10 @@ type Ticket = {
 };
 
 const PRIORITY_COLOR: Record<string, string> = {
-  low: "bg-gray-500/15 text-gray-400",
-  normal: "bg-blue-500/15 text-blue-400",
-  high: "bg-orange-500/15 text-orange-400",
-  urgent: "bg-red-500/15 text-red-400",
+  low: "bg-gray-500/15 text-gray-900 dark:text-gray-200",
+  normal: "bg-blue-500/15 text-blue-900 dark:text-blue-200",
+  high: "bg-orange-500/15 text-orange-900 dark:text-orange-200",
+  urgent: "bg-red-500/15 text-red-900 dark:text-red-200",
 };
 
 export function TicketsClient({ initial, filterStatus }: { initial: Ticket[]; filterStatus: string }) {
@@ -134,8 +134,8 @@ export function TicketsClient({ initial, filterStatus }: { initial: Ticket[]; fi
           {selected.size > 0 && (
             <>
               <span className="text-fg-muted">→</span>
-              <button onClick={() => batchSetStatus("in_progress")} className="px-2 py-1 rounded bg-blue-500/15 text-blue-400">處理中</button>
-              <button onClick={() => batchSetStatus("resolved")} className="px-2 py-1 rounded bg-emerald-500/15 text-emerald-400">標解決</button>
+              <button onClick={() => batchSetStatus("in_progress")} className="px-2 py-1 rounded bg-blue-500/15 text-blue-900 dark:text-blue-200">處理中</button>
+              <button onClick={() => batchSetStatus("resolved")} className="px-2 py-1 rounded bg-emerald-500/15 text-emerald-900 dark:text-emerald-200">標解決</button>
               <button onClick={() => batchSetStatus("closed")} className="px-2 py-1 rounded bg-fg-muted/15 text-fg-muted">關閉</button>
             </>
           )}
@@ -181,7 +181,7 @@ export function TicketsClient({ initial, filterStatus }: { initial: Ticket[]; fi
                 </button>
               )}
               {t.status !== "resolved" && (
-                <button onClick={() => setStatus(t.id, "resolved")} className="text-xs px-3 py-1 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center gap-1">
+                <button onClick={() => setStatus(t.id, "resolved")} className="text-xs px-3 py-1 rounded-lg bg-emerald-500/15 text-emerald-900 dark:text-emerald-200 flex items-center gap-1">
                   <Check size={11} /> 解決
                 </button>
               )}

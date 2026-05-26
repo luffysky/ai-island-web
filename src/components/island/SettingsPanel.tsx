@@ -86,12 +86,12 @@ export function SettingsPanel() {
         </header>
         <div className="p-4 space-y-3">
           <Row icon={<Volume2 size={16} />} label="背景音 / 音效">
-            <button onClick={toggleSound} className={`text-xs px-3 py-1.5 rounded-full ${sound ? "bg-emerald-500/20 text-emerald-300" : "bg-bg-elevated text-fg-muted"}`}>
+            <button onClick={toggleSound} className={`text-xs px-3 py-1.5 rounded-full ${sound ? "bg-emerald-500/20 text-emerald-900 dark:text-emerald-100" : "bg-bg-elevated text-fg-muted"}`}>
               {sound ? "開" : "靜音"}
             </button>
           </Row>
           <Row icon={<Sparkles size={16} />} label="後製特效（Bloom / Vignette）">
-            <button onClick={toggleFx} className={`text-xs px-3 py-1.5 rounded-full ${fx ? "bg-emerald-500/20 text-emerald-300" : "bg-bg-elevated text-fg-muted"}`}>
+            <button onClick={toggleFx} className={`text-xs px-3 py-1.5 rounded-full ${fx ? "bg-emerald-500/20 text-emerald-900 dark:text-emerald-100" : "bg-bg-elevated text-fg-muted"}`}>
               {fx ? "開" : "關"}（reload 生效）
             </button>
           </Row>
@@ -106,7 +106,7 @@ export function SettingsPanel() {
           </Row>
           <hr className="border-border" />
           <Row icon={<Eraser size={16} />} label="清掉所有島嶼進度">
-            <button onClick={clearAll} className="text-xs px-3 py-1.5 rounded-full bg-red-500/15 text-red-400 hover:bg-red-500/25">
+            <button onClick={clearAll} className="text-xs px-3 py-1.5 rounded-full bg-red-500/15 text-red-900 dark:text-red-200 hover:bg-red-500/25">
               清除
             </button>
           </Row>

@@ -73,10 +73,10 @@ export default async function ForumModerationPage({
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5 mb-1 flex-wrap">
-                      {t.is_pinned && <span className="text-[10px] px-1.5 py-0.5 rounded bg-yellow-500/15 text-yellow-300">📌</span>}
-                      {t.is_locked && <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-500/15 text-red-300">🔒</span>}
-                      {t.is_featured && <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/15 text-purple-300">⭐</span>}
-                      {t.is_hidden && <span className="text-[10px] px-1.5 py-0.5 rounded bg-gray-500/15 text-gray-300">🚫</span>}
+                      {t.is_pinned && <span className="text-[10px] px-1.5 py-0.5 rounded bg-yellow-500/15 text-yellow-900 dark:text-yellow-100">📌</span>}
+                      {t.is_locked && <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-500/15 text-red-900 dark:text-red-100">🔒</span>}
+                      {t.is_featured && <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/15 text-purple-900 dark:text-purple-100">⭐</span>}
+                      {t.is_hidden && <span className="text-[10px] px-1.5 py-0.5 rounded bg-gray-500/15 text-gray-900 dark:text-gray-100">🚫</span>}
                       <span className="font-semibold truncate">{t.title}</span>
                     </div>
                     <div className="text-xs text-fg-muted">
@@ -104,7 +104,7 @@ export default async function ForumModerationPage({
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5 mb-1">
-                      {r.is_hidden && <span className="text-[10px] px-1.5 py-0.5 rounded bg-gray-500/20 text-gray-400">🚫</span>}
+                      {r.is_hidden && <span className="text-[10px] px-1.5 py-0.5 rounded bg-gray-500/20 text-gray-900 dark:text-gray-200">🚫</span>}
                       <span className="text-xs text-fg-muted">
                         {r.author?.display_name || r.author?.username || "—"} · {new Date(r.created_at).toLocaleString("zh-TW")}
                       </span>

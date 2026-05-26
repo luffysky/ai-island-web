@@ -184,8 +184,8 @@ function RequestRow({
 
 function StatusBadge({ status }: { status: Request["status"] }) {
   if (status === "pending") return <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-warning/20 text-warning font-bold">PENDING</span>;
-  if (status === "done") return <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-green-500/20 text-green-400 font-bold">DONE</span>;
-  return <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-red-500/20 text-red-400 font-bold">REJECTED</span>;
+  if (status === "done") return <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-green-500/20 text-green-900 dark:text-green-200 font-bold">DONE</span>;
+  return <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-red-500/20 text-red-900 dark:text-red-200 font-bold">REJECTED</span>;
 }
 
 function RequestModal({

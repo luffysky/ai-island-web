@@ -23,10 +23,10 @@ type Provider = {
 };
 
 const STATUS_BADGE: Record<ModelStatus, { label: string; cls: string }> = {
-  ok: { label: "✅ 穩", cls: "text-emerald-300 bg-emerald-500/15 border-emerald-500/30" },
-  flaky: { label: "⚠️ 不穩", cls: "text-yellow-300 bg-yellow-500/15 border-yellow-500/30" },
-  paid: { label: "💰 需付費", cls: "text-orange-300 bg-orange-500/15 border-orange-500/30" },
-  broken: { label: "❌ 目前掛", cls: "text-red-300 bg-red-500/15 border-red-500/30" },
+  ok: { label: "✅ 穩", cls: "text-emerald-900 dark:text-emerald-100 bg-emerald-500/15 border-emerald-500/30" },
+  flaky: { label: "⚠️ 不穩", cls: "text-yellow-900 dark:text-yellow-100 bg-yellow-500/15 border-yellow-500/30" },
+  paid: { label: "💰 需付費", cls: "text-orange-900 dark:text-orange-100 bg-orange-500/15 border-orange-500/30" },
+  broken: { label: "❌ 目前掛", cls: "text-red-900 dark:text-red-100 bg-red-500/15 border-red-500/30" },
 };
 
 const PROVIDERS: Provider[] = [

@@ -172,8 +172,8 @@ function ActionBtn({
   children: React.ReactNode;
 }) {
   const tone =
-    variant === "danger" ? "bg-red-500/15 text-red-400 hover:bg-red-500/25" :
-    variant === "warning" ? "bg-orange-500/15 text-orange-400 hover:bg-orange-500/25" :
+    variant === "danger" ? "bg-red-500/15 text-red-900 dark:text-red-200 hover:bg-red-500/25" :
+    variant === "warning" ? "bg-orange-500/15 text-orange-900 dark:text-orange-200 hover:bg-orange-500/25" :
     "bg-bg-elevated hover:bg-border";
   return (
     <button

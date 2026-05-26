@@ -175,7 +175,7 @@ export function AskAI({
                 <div className="flex items-center gap-2">
                   <Sparkles size={16} className="text-purple-400" />
                   <span className="font-bold">AI 助教</span>
-                  {context && <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300">{context}</span>}
+                  {context && <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-900 dark:text-purple-100">{context}</span>}
                 </div>
                 <button onClick={() => setOpen(false)} className="p-1 text-fg-muted hover:text-fg">
                   <X size={16} />

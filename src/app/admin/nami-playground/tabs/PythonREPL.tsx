@@ -93,7 +93,7 @@ export function PythonREPL() {
       {/* Status */}
       <div className="flex items-center gap-2 flex-wrap text-xs">
         {status === "idle" && (
-          <button onClick={load} className="px-3 py-1.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/40 inline-flex items-center gap-1">
+          <button onClick={load} className="px-3 py-1.5 rounded-full bg-purple-500/20 text-purple-900 dark:text-purple-100 border border-purple-500/40 inline-flex items-center gap-1">
             <Download size={11} /> 載入 Python runtime（首次 ~5MB）
           </button>
         )}

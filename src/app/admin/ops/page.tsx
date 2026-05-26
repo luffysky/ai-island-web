@@ -109,9 +109,9 @@ export default async function OpsAdminPage() {
                   </div>
                 </div>
                 <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold ${
-                  tone === "unset" ? "bg-red-500/15 text-red-400" :
-                  tone === "public" ? "bg-blue-500/15 text-blue-400" :
-                  "bg-emerald-500/15 text-emerald-400"
+                  tone === "unset" ? "bg-red-500/15 text-red-900 dark:text-red-200" :
+                  tone === "public" ? "bg-blue-500/15 text-blue-900 dark:text-blue-200" :
+                  "bg-emerald-500/15 text-emerald-900 dark:text-emerald-200"
                 }`}>
                   {tone === "unset" ? "MISSING" : tone === "public" ? "PUBLIC" : "SET"}
                 </span>

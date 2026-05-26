@@ -107,7 +107,7 @@ export function MissionDungeons() {
                   </div>
                   <span className="text-2xl">{d.emoji}</span>
                 </div>
-                <span className="text-[10px] px-2 py-0.5 rounded bg-red-500/20 text-red-400 font-bold">
+                <span className="text-[10px] px-2 py-0.5 rounded bg-red-500/20 text-red-900 dark:text-red-200 font-bold">
                   BOSS
                 </span>
               </div>

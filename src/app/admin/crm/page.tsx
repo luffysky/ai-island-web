@@ -82,7 +82,7 @@ export default async function CRMPage({ searchParams }: { searchParams: Promise<
                   <tr key={t.id} className="border-t border-border hover:bg-bg-elevated">
                     <td className="px-4 py-3">
                       <Link href={`/${process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2"}/admin/crm/${t.id}` as any} className="hover:text-accent font-medium inline-flex items-center gap-1.5">
-                        {isLine && <span className="text-[10px] px-1 rounded bg-green-500/15 text-green-400">💚 LINE</span>}
+                        {isLine && <span className="text-[10px] px-1 rounded bg-green-500/15 text-green-900 dark:text-green-200">💚 LINE</span>}
                         {t.subject}
                       </Link>
                     </td>
@@ -141,10 +141,10 @@ function PriorityBadge({ p }: { p: string }) {
 
 function StatusBadge({ status }: { status: string }) {
   const colors: Record<string, string> = {
-    open: "bg-red-500/20 text-red-400",
-    pending: "bg-yellow-500/20 text-yellow-400",
-    resolved: "bg-green-500/20 text-green-400",
-    closed: "bg-gray-500/20 text-gray-400",
+    open: "bg-red-500/20 text-red-900 dark:text-red-200",
+    pending: "bg-yellow-500/20 text-yellow-900 dark:text-yellow-200",
+    resolved: "bg-green-500/20 text-green-900 dark:text-green-200",
+    closed: "bg-gray-500/20 text-gray-900 dark:text-gray-200",
   };
   const labels: Record<string, string> = { open: "待處理", pending: "等回覆", resolved: "已解決", closed: "已關閉" };
   return <span className={`px-2 py-0.5 rounded text-xs ${colors[status] ?? ""}`}>{labels[status] ?? status}</span>;

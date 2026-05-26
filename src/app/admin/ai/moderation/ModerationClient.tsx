@@ -22,10 +22,10 @@ type Flag = {
 };
 
 const SEV_COLOR: Record<string, string> = {
-  info: "bg-blue-500/15 text-blue-400",
-  warn: "bg-yellow-500/15 text-yellow-400",
-  high: "bg-orange-500/15 text-orange-400",
-  critical: "bg-red-500/15 text-red-300",
+  info: "bg-blue-500/15 text-blue-900 dark:text-blue-200",
+  warn: "bg-yellow-500/15 text-yellow-900 dark:text-yellow-200",
+  high: "bg-orange-500/15 text-orange-900 dark:text-orange-200",
+  critical: "bg-red-500/15 text-red-900 dark:text-red-100",
 };
 
 export function ModerationClient({ initial, filters }: { initial: Flag[]; filters: { status: string; severity: string } }) {
@@ -96,13 +96,13 @@ export function ModerationClient({ initial, filters }: { initial: Flag[]; filter
             </div>
             {r.status === "pending" && (
               <div className="flex gap-2 mt-3 pt-2 border-t border-border">
-                <button onClick={() => act(r.id, "resolved")} className="text-xs px-3 py-1 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center gap-1">
+                <button onClick={() => act(r.id, "resolved")} className="text-xs px-3 py-1 rounded-lg bg-emerald-500/15 text-emerald-900 dark:text-emerald-200 flex items-center gap-1">
                   <Check size={11} /> 已處理
                 </button>
-                <button onClick={() => act(r.id, "dismissed")} className="text-xs px-3 py-1 rounded-lg bg-gray-500/15 text-gray-400 flex items-center gap-1">
+                <button onClick={() => act(r.id, "dismissed")} className="text-xs px-3 py-1 rounded-lg bg-gray-500/15 text-gray-900 dark:text-gray-200 flex items-center gap-1">
                   <X size={11} /> 駁回
                 </button>
-                <button onClick={() => act(r.id, "escalated")} className="text-xs px-3 py-1 rounded-lg bg-red-500/15 text-red-400 flex items-center gap-1">
+                <button onClick={() => act(r.id, "escalated")} className="text-xs px-3 py-1 rounded-lg bg-red-500/15 text-red-900 dark:text-red-200 flex items-center gap-1">
                   <ArrowUp size={11} /> 升級
                 </button>
               </div>

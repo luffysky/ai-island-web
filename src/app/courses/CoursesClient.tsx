@@ -79,7 +79,7 @@ export function CoursesClient({ dungeons, chapterCount }: { dungeons: any[]; cha
                         {d.emoji}
                       </motion.span>
                     </div>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 font-bold inline-flex items-center gap-0.5 self-start mt-1">
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-500/20 text-red-900 dark:text-red-200 font-bold inline-flex items-center gap-0.5 self-start mt-1">
                       ⚔️ BOSS 戰
                     </span>
                   </div>

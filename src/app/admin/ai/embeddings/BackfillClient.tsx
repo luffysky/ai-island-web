@@ -30,6 +30,17 @@ export function BackfillClient({ lessonNeedBackfill, forumNeedBackfill }: {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ target, force }),
       });
+      // 防 HTML 回應（404 page / build 中 / middleware redirect 回來不是 JSON）
+      const contentType = res.headers.get("content-type") ?? "";
+      if (!contentType.includes("application/json")) {
+        const body = await res.text().catch(() => "");
+        const looksLike404 = body.includes("<!DOCTYPE") && res.status === 404;
+        setLog(`❌ API 沒回 JSON（status ${res.status}）${looksLike404
+          ? "\n💡 Zeabur 可能還在 build 部署、等 1-2 分鐘重試"
+          : "\n💡 看 console 詳細：" + body.slice(0, 200)
+        }`);
+        return;
+      }
       const data = await res.json();
       if (!res.ok) {
         setLog(`❌ 失敗：${data.error}${data.hint ? `\n💡 ${data.hint}` : ""}`);

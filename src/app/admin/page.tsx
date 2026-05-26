@@ -261,7 +261,7 @@ export default async function AdminOverviewPage() {
             <div className="flex-1 min-w-0">
               <div className="font-bold text-sm flex items-center gap-2 flex-wrap">
                 Owner 身份識別已生效
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-300 border border-yellow-500/30">
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-900 dark:text-yellow-100 border border-yellow-500/30">
                   {ownerCheck.signals.role && "role"}
                   {ownerCheck.signals.username && " · username"}
                   {ownerCheck.signals.email && " · email"}

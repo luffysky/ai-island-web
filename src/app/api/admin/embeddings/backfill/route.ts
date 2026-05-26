@@ -13,8 +13,10 @@ async function requireAdmin() {
   const supabase = await createSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
-  const { data: p } = await supabase.from("profiles").select("role, id, username").eq("id", user.id).single();
-  if (p?.role !== "admin") return null;
+  const { data: p } = await supabase.from("profiles").select("role, id, username, is_owner").eq("id", user.id).maybeSingle();
+  if (!p) return null;
+  // admin role 或 owner role 或 is_owner=true（林董）都可
+  if (p.role !== "admin" && p.role !== "owner" && !(p as any).is_owner) return null;
   return p;
 }
 

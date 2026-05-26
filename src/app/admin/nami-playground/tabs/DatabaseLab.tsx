@@ -570,7 +570,7 @@ export function DatabaseLab() {
               )}
               <span className="relative inline-flex items-center gap-1.5">
                 <Icon size={13} /> {meta.name}
-                {meta.live && <span className="text-[8px] px-1 rounded bg-emerald-500/30 text-emerald-200">LIVE</span>}
+                {meta.live && <span className="text-[8px] px-1 rounded bg-emerald-500/30 text-emerald-900 dark:text-emerald-100">LIVE</span>}
               </span>
             </button>
           );

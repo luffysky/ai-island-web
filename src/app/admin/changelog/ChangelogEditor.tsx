@@ -176,7 +176,7 @@ export function ChangelogEditor({ initial }: { initial: Entry[] }) {
                   <h3 className="font-bold truncate">{e.title}</h3>
                   {e.version && <span className="text-[10px] font-mono text-fg-muted">{e.version}</span>}
                   {!e.published && (
-                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-yellow-500/15 text-yellow-400">草稿</span>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-yellow-500/15 text-yellow-900 dark:text-yellow-200">草稿</span>
                   )}
                   {(e.tags ?? []).map((t) => (
                     <span key={t} className="text-[10px] px-1.5 py-0.5 rounded-full bg-bg-elevated text-fg-muted">{t}</span>

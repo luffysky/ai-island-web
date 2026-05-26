@@ -416,7 +416,7 @@ export function AITutorWidget({
                 <div className="font-bold text-sm flex items-center gap-1">
                   {persona.emoji} {persona.name}
                   {contextChapterId && (
-                    <span className="text-xs px-1.5 py-0.5 bg-blue-500/20 text-blue-400 rounded-full ml-1">
+                    <span className="text-xs px-1.5 py-0.5 bg-blue-500/20 text-blue-900 dark:text-blue-200 rounded-full ml-1">
                       📚 Ch{String(contextChapterId).padStart(2, "0")}
                     </span>
                   )}

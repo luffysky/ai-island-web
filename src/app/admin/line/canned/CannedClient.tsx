@@ -89,11 +89,11 @@ export function CannedClient({ initial, currentUserId }: { initial: Reply[]; cur
               <div className="flex items-start gap-2 flex-wrap mb-1.5">
                 <span className="font-bold text-sm">{r.title}</span>
                 {r.owner_user_id === null ? (
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-400 inline-flex items-center gap-0.5">
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-900 dark:text-blue-200 inline-flex items-center gap-0.5">
                     <Users size={9} /> 共用
                   </span>
                 ) : (
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/15 text-purple-400 inline-flex items-center gap-0.5">
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/15 text-purple-900 dark:text-purple-200 inline-flex items-center gap-0.5">
                     <User size={9} /> 我的
                   </span>
                 )}

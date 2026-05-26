@@ -110,8 +110,8 @@ export function ReferralClient({
                 </div>
                 <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
                   r.reward_granted
-                    ? "bg-emerald-500/15 text-emerald-400"
-                    : "bg-yellow-500/15 text-yellow-400"
+                    ? "bg-emerald-500/15 text-emerald-900 dark:text-emerald-200"
+                    : "bg-yellow-500/15 text-yellow-900 dark:text-yellow-200"
                 }`}>
                   {r.reward_granted ? "✓ 已獎勵" : "等首 lesson"}
                 </span>

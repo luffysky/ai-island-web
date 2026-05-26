@@ -24,11 +24,11 @@ type Row = {
 
 const STATUS_STYLE: Record<string, string> = {
   draft: "bg-fg-muted/15 text-fg-muted",
-  ready: "bg-blue-500/15 text-blue-300",
-  running: "bg-emerald-500/15 text-emerald-300",
-  paused: "bg-yellow-500/15 text-yellow-300",
-  completed: "bg-purple-500/15 text-purple-300",
-  archived: "bg-red-500/15 text-red-300",
+  ready: "bg-blue-500/15 text-blue-900 dark:text-blue-100",
+  running: "bg-emerald-500/15 text-emerald-900 dark:text-emerald-100",
+  paused: "bg-yellow-500/15 text-yellow-900 dark:text-yellow-100",
+  completed: "bg-purple-500/15 text-purple-900 dark:text-purple-100",
+  archived: "bg-red-500/15 text-red-900 dark:text-red-100",
 };
 
 const PLATFORM_LABEL: Record<string, string> = {
@@ -143,7 +143,7 @@ export function AdsClient({ initial }: { initial: Row[] }) {
         </div>
         <button
           onClick={() => setShowAdd(!showAdd)}
-          className="px-4 py-2 rounded-full bg-red-500/15 text-red-300 border border-red-500/30 text-sm inline-flex items-center gap-1.5 hover:bg-red-500/25 transition"
+          className="px-4 py-2 rounded-full bg-red-500/15 text-red-900 dark:text-red-100 border border-red-500/30 text-sm inline-flex items-center gap-1.5 hover:bg-red-500/25 transition"
         >
           {showAdd ? <X size={13} /> : <Plus size={13} />}
           {showAdd ? "取消" : "新增 ad creative"}
@@ -253,7 +253,7 @@ export function AdsClient({ initial }: { initial: Row[] }) {
           <button
             onClick={create}
             disabled={pending || !form.campaign_name.trim()}
-            className="px-4 py-2 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 text-sm inline-flex items-center gap-1.5 hover:bg-emerald-500/25 transition disabled:opacity-50"
+            className="px-4 py-2 rounded-full bg-emerald-500/15 text-emerald-900 dark:text-emerald-100 border border-emerald-500/30 text-sm inline-flex items-center gap-1.5 hover:bg-emerald-500/25 transition disabled:opacity-50"
           >
             <Save size={13} /> 建立
           </button>
@@ -290,7 +290,7 @@ export function AdsClient({ initial }: { initial: Row[] }) {
                   <button
                     onClick={() => remove(r)}
                     disabled={pending}
-                    className="text-[10px] px-2 py-0.5 rounded-full bg-red-500/15 text-red-300 hover:bg-red-500/25 disabled:opacity-50 inline-flex items-center gap-0.5"
+                    className="text-[10px] px-2 py-0.5 rounded-full bg-red-500/15 text-red-900 dark:text-red-100 hover:bg-red-500/25 disabled:opacity-50 inline-flex items-center gap-0.5"
                   >
                     <Trash2 size={9} /> 封存
                   </button>

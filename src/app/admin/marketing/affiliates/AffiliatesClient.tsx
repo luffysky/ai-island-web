@@ -138,7 +138,7 @@ export function AffiliatesClient({ initial }: { initial: Row[] }) {
       <div className="flex justify-end">
         <button
           onClick={() => setShowAdd(!showAdd)}
-          className="px-4 py-2 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 text-sm inline-flex items-center gap-1.5 hover:bg-cyan-500/25 transition"
+          className="px-4 py-2 rounded-full bg-cyan-500/15 text-cyan-900 dark:text-cyan-100 border border-cyan-500/30 text-sm inline-flex items-center gap-1.5 hover:bg-cyan-500/25 transition"
         >
           {showAdd ? <X size={13} /> : <Plus size={13} />}
           {showAdd ? "取消" : "新增推薦碼"}
@@ -210,7 +210,7 @@ export function AffiliatesClient({ initial }: { initial: Row[] }) {
           <button
             onClick={create}
             disabled={pending || !form.code.trim()}
-            className="px-4 py-2 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 text-sm inline-flex items-center gap-1.5 hover:bg-emerald-500/25 transition disabled:opacity-50"
+            className="px-4 py-2 rounded-full bg-emerald-500/15 text-emerald-900 dark:text-emerald-100 border border-emerald-500/30 text-sm inline-flex items-center gap-1.5 hover:bg-emerald-500/25 transition disabled:opacity-50"
           >
             <Save size={13} /> 建立
           </button>
@@ -252,7 +252,7 @@ export function AffiliatesClient({ initial }: { initial: Row[] }) {
               <button
                 onClick={() => remove(r)}
                 disabled={pending}
-                className="text-[10px] px-2 py-0.5 rounded-full bg-red-500/15 text-red-300 hover:bg-red-500/25 disabled:opacity-50 inline-flex items-center gap-0.5"
+                className="text-[10px] px-2 py-0.5 rounded-full bg-red-500/15 text-red-900 dark:text-red-100 hover:bg-red-500/25 disabled:opacity-50 inline-flex items-center gap-0.5"
               >
                 <Trash2 size={9} />
               </button>

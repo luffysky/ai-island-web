@@ -12,11 +12,11 @@ export const metadata: Metadata = {
 };
 
 const TAG_COLOR: Record<string, string> = {
-  feature: "bg-emerald-500/15 text-emerald-400",
-  fix: "bg-blue-500/15 text-blue-400",
-  improvement: "bg-purple-500/15 text-purple-400",
-  breaking: "bg-red-500/15 text-red-400",
-  security: "bg-orange-500/15 text-orange-400",
+  feature: "bg-emerald-500/15 text-emerald-900 dark:text-emerald-200",
+  fix: "bg-blue-500/15 text-blue-900 dark:text-blue-200",
+  improvement: "bg-purple-500/15 text-purple-900 dark:text-purple-200",
+  breaking: "bg-red-500/15 text-red-900 dark:text-red-200",
+  security: "bg-orange-500/15 text-orange-900 dark:text-orange-200",
 };
 
 export default async function ChangelogPage() {

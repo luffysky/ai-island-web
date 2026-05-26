@@ -42,7 +42,7 @@ function TreeNode({
           else p.onSelect(path);
         }}
         className={`group flex items-center gap-1 px-2 py-1 cursor-pointer transition rounded ${
-          isActive ? "bg-purple-500/20 text-purple-200" : "hover:bg-bg-elevated"
+          isActive ? "bg-purple-500/20 text-purple-900 dark:text-purple-100" : "hover:bg-bg-elevated"
         }`}
         style={{ paddingLeft: `${depth * 12 + 6}px` }}
         title={path}

@@ -145,7 +145,7 @@ export function DailyQuizClient() {
                   {q.source === "chapter" ? "📚 章節" : "💻 leetcode"}
                 </span>
                 {showAnswer && (
-                  <span className={`ml-auto text-[10px] px-1.5 py-0.5 rounded-full font-bold ${isCorrect ? "bg-emerald-500/15 text-emerald-400" : "bg-red-500/15 text-red-400"}`}>
+                  <span className={`ml-auto text-[10px] px-1.5 py-0.5 rounded-full font-bold ${isCorrect ? "bg-emerald-500/15 text-emerald-900 dark:text-emerald-200" : "bg-red-500/15 text-red-900 dark:text-red-200"}`}>
                     {isCorrect ? "✓ 對" : "✕ 錯"}
                   </span>
                 )}

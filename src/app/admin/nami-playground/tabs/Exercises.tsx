@@ -673,7 +673,7 @@ export function Exercises() {
             <div className="px-3 pb-3 space-y-2">
               <button
                 onClick={loadSolution}
-                className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30"
+                className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-900 dark:text-emerald-100 hover:bg-emerald-500/30"
               >
                 <Download size={9} className="inline mr-0.5" />
                 把解答載入到上面編輯器
@@ -704,7 +704,7 @@ export function Exercises() {
       <div className="flex items-center justify-between gap-2 flex-wrap text-xs">
         <div>
           {status === "idle" && (
-            <button onClick={load} className="px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/40 inline-flex items-center gap-1">
+            <button onClick={load} className="px-3 py-1 rounded-full bg-purple-500/20 text-purple-900 dark:text-purple-100 border border-purple-500/40 inline-flex items-center gap-1">
               <Download size={11} /> 載入 Python
             </button>
           )}

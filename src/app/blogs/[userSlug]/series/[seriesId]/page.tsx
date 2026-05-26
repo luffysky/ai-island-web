@@ -109,7 +109,7 @@ export default async function SeriesPage({
                   📖 系列文章
                 </span>
                 {series.is_completed && (
-                  <span className="px-2 py-0.5 bg-emerald-500/15 text-emerald-300 text-[11px] rounded-full">
+                  <span className="px-2 py-0.5 bg-emerald-500/15 text-emerald-900 dark:text-emerald-100 text-[11px] rounded-full">
                     已完結
                   </span>
                 )}

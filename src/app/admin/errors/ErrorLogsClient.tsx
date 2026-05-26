@@ -20,11 +20,11 @@ type ErrorLog = {
 };
 
 const LEVEL_COLOR: Record<string, string> = {
-  debug: "bg-gray-500/15 text-gray-400",
-  info: "bg-blue-500/15 text-blue-400",
-  warn: "bg-yellow-500/15 text-yellow-400",
-  error: "bg-red-500/15 text-red-400",
-  fatal: "bg-red-500/15 text-red-300",
+  debug: "bg-gray-500/15 text-gray-900 dark:text-gray-200",
+  info: "bg-blue-500/15 text-blue-900 dark:text-blue-200",
+  warn: "bg-yellow-500/15 text-yellow-900 dark:text-yellow-200",
+  error: "bg-red-500/15 text-red-900 dark:text-red-200",
+  fatal: "bg-red-500/15 text-red-900 dark:text-red-100",
 };
 
 export function ErrorLogsClient({

@@ -18,10 +18,10 @@ type Draft = {
 
 const STATUS_COLOR: Record<string, string> = {
   draft: "bg-fg-muted/20 text-fg-muted border-fg-muted/30",
-  scheduled: "bg-purple-500/15 text-purple-300 border-purple-500/30",
-  publishing: "bg-yellow-500/15 text-yellow-300 border-yellow-500/30",
-  published: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
-  failed: "bg-red-500/15 text-red-300 border-red-500/30",
+  scheduled: "bg-purple-500/15 text-purple-900 dark:text-purple-100 border-purple-500/30",
+  publishing: "bg-yellow-500/15 text-yellow-900 dark:text-yellow-100 border-yellow-500/30",
+  published: "bg-emerald-500/15 text-emerald-900 dark:text-emerald-100 border-emerald-500/30",
+  failed: "bg-red-500/15 text-red-900 dark:text-red-100 border-red-500/30",
 };
 
 const PLATFORM_EMOJI: Record<string, string> = {
@@ -143,7 +143,7 @@ export function ScheduleClient({ initialDrafts }: { initialDrafts: Draft[] }) {
               <button
                 onClick={() => saveSchedule(d.id)}
                 disabled={saving === d.id}
-                className="px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/40 text-xs inline-flex items-center gap-1"
+                className="px-3 py-1 rounded-full bg-purple-500/20 text-purple-900 dark:text-purple-100 border border-purple-500/40 text-xs inline-flex items-center gap-1"
               >
                 {saving === d.id ? <Loader2 size={11} className="animate-spin" /> : <Save size={11} />}
                 設排程

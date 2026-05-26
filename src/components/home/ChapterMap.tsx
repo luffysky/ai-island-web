@@ -45,7 +45,7 @@ export function ChapterMap({ chapters }: Props) {
                     className="block p-4 rounded-lg bg-bg-card border border-border hover:border-accent transition-all hover:scale-[1.03] relative overflow-hidden group"
                   >
                     {ch.status === "coming-soon" && (
-                      <div className="absolute top-1 right-1 text-[10px] px-1.5 py-0.5 rounded bg-orange-500/20 text-orange-400">
+                      <div className="absolute top-1 right-1 text-[10px] px-1.5 py-0.5 rounded bg-orange-500/20 text-orange-900 dark:text-orange-200">
                         敬請期待
                       </div>
                     )}

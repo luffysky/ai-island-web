@@ -86,7 +86,7 @@ export function SEOManagerClient({
               >
                 <div className="flex items-center justify-between">
                   <code className="text-xs font-mono">{p.path}</code>
-                  {hasOverride && <span className="text-xs px-1.5 py-0.5 bg-green-500/20 text-green-400 rounded">✓ 已設定</span>}
+                  {hasOverride && <span className="text-xs px-1.5 py-0.5 bg-green-500/20 text-green-900 dark:text-green-200 rounded">✓ 已設定</span>}
                 </div>
                 <div className="text-sm mt-0.5 truncate">{p.title}</div>
               </button>

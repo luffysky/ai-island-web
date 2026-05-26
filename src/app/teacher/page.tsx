@@ -50,7 +50,7 @@ export default async function TeacherOverviewPage() {
                 {s.score !== null ? (
                   <span className="text-xs text-accent font-bold">{s.score}</span>
                 ) : (
-                  <Link href={`/teacher/grading?id=${s.id}` as any} className="text-xs px-2 py-1 rounded-lg bg-yellow-500/15 text-yellow-400">待批改</Link>
+                  <Link href={`/teacher/grading?id=${s.id}` as any} className="text-xs px-2 py-1 rounded-lg bg-yellow-500/15 text-yellow-900 dark:text-yellow-200">待批改</Link>
                 )}
               </li>
             ))}

@@ -13,8 +13,8 @@ function NoticeToast({ notice, onClose }: { notice: { type: "success" | "error";
       ref={ref}
       className={`fixed right-4 top-4 z-50 max-w-[calc(100vw-1rem)] flex items-center gap-2 rounded-lg border px-4 py-3 text-sm shadow-lg ${
         notice.type === "success"
-          ? "border-green-500/30 bg-green-500/15 text-green-300"
-          : "border-red-500/30 bg-red-500/15 text-red-300"
+          ? "border-green-500/30 bg-green-500/15 text-green-900 dark:text-green-100"
+          : "border-red-500/30 bg-red-500/15 text-red-900 dark:text-red-100"
       }`}
     >
       <span>{notice.message}</span>
@@ -270,12 +270,12 @@ export function ModelsManagerClient({
               </div>
               <div className="flex items-center gap-2">
                 <span className={`text-xs px-2 py-0.5 rounded ${
-                  hasSecret ? "bg-green-500/20 text-green-400" : "bg-gray-500/20 text-gray-400"
+                  hasSecret ? "bg-green-500/20 text-green-900 dark:text-green-200" : "bg-gray-500/20 text-gray-900 dark:text-gray-200"
                 }`}>
                   {hasSecret ? "✓ 已設定" : "未設定 key"}
                 </span>
                 <span className={`text-xs px-2 py-0.5 rounded ${
-                  key?.enabled ? "bg-sky-500/20 text-sky-300" : "bg-gray-500/20 text-gray-400"
+                  key?.enabled ? "bg-sky-500/20 text-sky-900 dark:text-sky-100" : "bg-gray-500/20 text-gray-900 dark:text-gray-200"
                 }`}>
                   {key?.enabled ? "啟用" : "停用"}
                 </span>
@@ -368,7 +368,7 @@ export function ModelsManagerClient({
                   <div className="flex-1 min-w-0">
                     <div className="font-medium text-sm flex items-center gap-2">
                       {m.display_name}
-                      {m.is_default && <span className="text-xs px-1.5 py-0.5 bg-yellow-500/20 text-yellow-400 rounded">預設</span>}
+                      {m.is_default && <span className="text-xs px-1.5 py-0.5 bg-yellow-500/20 text-yellow-900 dark:text-yellow-200 rounded">預設</span>}
                     </div>
                     <div className="text-xs text-fg-muted">
                       {m.model_name} · ${m.cost_input_per_1m}/${m.cost_output_per_1m}/1M tokens

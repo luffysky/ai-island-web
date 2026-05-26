@@ -40,7 +40,7 @@ export default function PublishPage() {
             <div className="flex items-center gap-2 mb-1.5">
               <span className="text-2xl">{p.emoji}</span>
               <h3 className="font-bold text-sm">{p.name}</h3>
-              {p.env.includes("✅") && <span className="ml-auto text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">已配</span>}
+              {p.env.includes("✅") && <span className="ml-auto text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-900 dark:text-emerald-100 border border-emerald-500/30">已配</span>}
             </div>
             <div className="text-[11px] text-fg-muted">{p.note}</div>
             <div className="text-[10px] text-fg-muted/70 mt-1 font-mono break-all">env: {p.env}</div>
@@ -53,7 +53,7 @@ export default function PublishPage() {
 
       <Link
         href={adminHref("/admin/marketing/schedule") as any}
-        className="inline-block px-4 py-2 rounded-full bg-purple-500/15 text-purple-300 border border-purple-500/30 text-sm"
+        className="inline-block px-4 py-2 rounded-full bg-purple-500/15 text-purple-900 dark:text-purple-100 border border-purple-500/30 text-sm"
       >
         ← 回排程列表
       </Link>

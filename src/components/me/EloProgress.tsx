@@ -96,9 +96,9 @@ function RecentSparkline({ deltas }: { deltas: Array<{ delta: number; at: string
           key={i}
           className={`px-1.5 py-0.5 rounded font-mono font-bold ${
             d.delta > 0
-              ? "bg-emerald-500/15 text-emerald-400"
+              ? "bg-emerald-500/15 text-emerald-900 dark:text-emerald-200"
               : d.delta < 0
-              ? "bg-red-500/15 text-red-400"
+              ? "bg-red-500/15 text-red-900 dark:text-red-200"
               : "bg-bg-elevated text-fg-muted"
           }`}
           title={new Date(d.at).toLocaleString("zh-TW")}

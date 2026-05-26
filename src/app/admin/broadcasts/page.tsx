@@ -74,11 +74,11 @@ function ChannelBadge({ channel }: { channel: string }) {
 
 function StatusBadge({ status }: { status: string }) {
   const colors: Record<string, string> = {
-    draft: "bg-gray-500/20 text-gray-400",
-    scheduled: "bg-blue-500/20 text-blue-400",
-    sending: "bg-yellow-500/20 text-yellow-400",
-    sent: "bg-green-500/20 text-green-400",
-    failed: "bg-red-500/20 text-red-400",
+    draft: "bg-gray-500/20 text-gray-900 dark:text-gray-200",
+    scheduled: "bg-blue-500/20 text-blue-900 dark:text-blue-200",
+    sending: "bg-yellow-500/20 text-yellow-900 dark:text-yellow-200",
+    sent: "bg-green-500/20 text-green-900 dark:text-green-200",
+    failed: "bg-red-500/20 text-red-900 dark:text-red-200",
   };
   const labels: Record<string, string> = { draft: "草稿", scheduled: "排程中", sending: "傳送中", sent: "已送出", failed: "失敗" };
   return <span className={`text-xs px-2 py-0.5 rounded ${colors[status]}`}>{labels[status] ?? status}</span>;

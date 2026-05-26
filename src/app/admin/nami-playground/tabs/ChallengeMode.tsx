@@ -179,7 +179,7 @@ export function ChallengeMode() {
             <button
               key={l}
               onClick={() => setFilterLevel(l)}
-              className={`px-2.5 py-1 rounded-full border ${filterLevel === l ? "bg-purple-500/20 border-purple-400 text-purple-300" : "border-border text-fg-muted"}`}
+              className={`px-2.5 py-1 rounded-full border ${filterLevel === l ? "bg-purple-500/20 border-purple-400 text-purple-900 dark:text-purple-100" : "border-border text-fg-muted"}`}
             >
               {l === "all" ? "全部" : LEVEL_META[l].label}
             </button>

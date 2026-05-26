@@ -150,7 +150,7 @@ export function ChallengeGenerator({ onInserted }: { onInserted: () => void }) {
                   <Sparkles size={18} className="text-yellow-400" />
                   <span className="font-bold">AI 出題機</span>
                   {generated.length > 0 && (
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-pink-500/20 text-pink-300">
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-pink-500/20 text-pink-900 dark:text-pink-100">
                       已生 {generated.length} 題、選 {selected.size}
                     </span>
                   )}

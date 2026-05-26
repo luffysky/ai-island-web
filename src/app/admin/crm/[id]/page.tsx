@@ -57,7 +57,7 @@ export default async function CRMTicketDetailPage({ params }: { params: Promise<
         <div className="flex flex-wrap items-center gap-2 text-xs text-fg-muted">
           <span>來自：<b className="text-fg">{senderName}</b></span>
           {isLineGuest && (
-            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-green-500/15 text-green-400">
+            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-green-500/15 text-green-900 dark:text-green-200">
               💚 LINE 訪客（未綁帳號）
             </span>
           )}
@@ -118,11 +118,11 @@ export default async function CRMTicketDetailPage({ params }: { params: Promise<
 
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, string> = {
-    open: "bg-red-500/20 text-red-300",
-    pending: "bg-yellow-500/20 text-yellow-300",
-    waiting_user: "bg-blue-500/20 text-blue-300",
-    resolved: "bg-green-500/20 text-green-300",
-    closed: "bg-gray-500/20 text-gray-300",
+    open: "bg-red-500/20 text-red-900 dark:text-red-100",
+    pending: "bg-yellow-500/20 text-yellow-900 dark:text-yellow-100",
+    waiting_user: "bg-blue-500/20 text-blue-900 dark:text-blue-100",
+    resolved: "bg-green-500/20 text-green-900 dark:text-green-100",
+    closed: "bg-gray-500/20 text-gray-900 dark:text-gray-100",
   };
   return (
     <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${map[status] ?? "bg-bg-elevated"}`}>

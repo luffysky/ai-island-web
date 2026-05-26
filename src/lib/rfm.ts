@@ -108,12 +108,12 @@ export const SEGMENT_LABEL: Record<RfmSegment, string> = {
 };
 
 export const SEGMENT_COLOR: Record<RfmSegment, string> = {
-  champion: "bg-emerald-500/20 text-emerald-300",
-  loyal: "bg-green-500/20 text-green-300",
-  potential: "bg-cyan-500/20 text-cyan-300",
-  new: "bg-blue-500/20 text-blue-300",
-  at_risk: "bg-yellow-500/20 text-yellow-300",
-  cant_lose: "bg-orange-500/20 text-orange-300",
-  hibernating: "bg-purple-500/20 text-purple-300",
-  lost: "bg-red-500/20 text-red-300",
+  champion: "bg-emerald-500/20 text-emerald-900 dark:text-emerald-100",
+  loyal: "bg-green-500/20 text-green-900 dark:text-green-100",
+  potential: "bg-cyan-500/20 text-cyan-900 dark:text-cyan-100",
+  new: "bg-blue-500/20 text-blue-900 dark:text-blue-100",
+  at_risk: "bg-yellow-500/20 text-yellow-900 dark:text-yellow-100",
+  cant_lose: "bg-orange-500/20 text-orange-900 dark:text-orange-100",
+  hibernating: "bg-purple-500/20 text-purple-900 dark:text-purple-100",
+  lost: "bg-red-500/20 text-red-900 dark:text-red-100",
 };

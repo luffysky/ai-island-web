@@ -88,7 +88,7 @@ export function NotebookTab() {
       {/* Toolbar */}
       <div className="flex items-center gap-2 bg-bg-card border border-border rounded-2xl px-3 py-2 flex-wrap">
         {status === "idle" && (
-          <button onClick={load} className="px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/40 text-xs inline-flex items-center gap-1">
+          <button onClick={load} className="px-3 py-1 rounded-full bg-purple-500/20 text-purple-900 dark:text-purple-100 border border-purple-500/40 text-xs inline-flex items-center gap-1">
             <Download size={11} /> 載入 Python
           </button>
         )}
@@ -161,13 +161,13 @@ function CellView({
           <div className="flex items-center gap-1">
             <button
               onClick={() => onSetType("code")}
-              className={`px-2 py-0.5 rounded ${cell.type === "code" ? "bg-cyan-500/20 text-cyan-300" : "text-fg-muted hover:text-fg"}`}
+              className={`px-2 py-0.5 rounded ${cell.type === "code" ? "bg-cyan-500/20 text-cyan-900 dark:text-cyan-100" : "text-fg-muted hover:text-fg"}`}
             >
               code
             </button>
             <button
               onClick={() => onSetType("markdown")}
-              className={`px-2 py-0.5 rounded ${cell.type === "markdown" ? "bg-pink-500/20 text-pink-300" : "text-fg-muted hover:text-fg"}`}
+              className={`px-2 py-0.5 rounded ${cell.type === "markdown" ? "bg-pink-500/20 text-pink-900 dark:text-pink-100" : "text-fg-muted hover:text-fg"}`}
             >
               markdown
             </button>

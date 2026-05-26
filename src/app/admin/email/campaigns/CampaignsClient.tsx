@@ -24,11 +24,11 @@ type Campaign = {
 type Segment = { id: string; name: string };
 
 const STATUS_COLOR: Record<string, string> = {
-  draft: "bg-gray-500/15 text-gray-400",
-  scheduled: "bg-yellow-500/15 text-yellow-400",
-  sending: "bg-blue-500/15 text-blue-400",
-  sent: "bg-emerald-500/15 text-emerald-400",
-  cancelled: "bg-red-500/15 text-red-400",
+  draft: "bg-gray-500/15 text-gray-900 dark:text-gray-200",
+  scheduled: "bg-yellow-500/15 text-yellow-900 dark:text-yellow-200",
+  sending: "bg-blue-500/15 text-blue-900 dark:text-blue-200",
+  sent: "bg-emerald-500/15 text-emerald-900 dark:text-emerald-200",
+  cancelled: "bg-red-500/15 text-red-900 dark:text-red-200",
 };
 
 export function CampaignsClient({ initial, segments }: { initial: Campaign[]; segments: Segment[] }) {
@@ -170,7 +170,7 @@ export function CampaignsClient({ initial, segments }: { initial: Campaign[]; se
                 </div>
               </div>
               {c.status === "draft" && (
-                <button onClick={() => send(c.id)} className="text-xs px-3 py-1 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center gap-1">
+                <button onClick={() => send(c.id)} className="text-xs px-3 py-1 rounded-lg bg-emerald-500/15 text-emerald-900 dark:text-emerald-200 flex items-center gap-1">
                   <Send size={11} /> 發送
                 </button>
               )}

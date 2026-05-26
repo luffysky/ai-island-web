@@ -124,7 +124,7 @@ export function CopyGeneratorClient() {
               key={t}
               onClick={() => setTone(t)}
               className={`px-3 py-1 rounded-full border transition ${
-                tone === t ? "border-purple-400 bg-purple-500/15 text-purple-300" : "border-border text-fg-muted hover:border-purple-400/50"
+                tone === t ? "border-purple-400 bg-purple-500/15 text-purple-900 dark:text-purple-100" : "border-border text-fg-muted hover:border-purple-400/50"
               }`}
             >
               {t === "casual" && "🌸 親切"}

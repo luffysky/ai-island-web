@@ -170,7 +170,7 @@ function SettingRow({
           {typeMeta.emoji} {typeMeta.label}
         </span>
         {row.is_secret && (
-          <span className="text-[10px] px-1.5 py-0.5 rounded bg-yellow-500/15 text-yellow-400 inline-flex items-center gap-0.5">
+          <span className="text-[10px] px-1.5 py-0.5 rounded bg-yellow-500/15 text-yellow-900 dark:text-yellow-200 inline-flex items-center gap-0.5">
             <AlertTriangle size={10} /> 敏感
           </span>
         )}

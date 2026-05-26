@@ -91,7 +91,7 @@ export default async function AdminHealthPage() {
       <section className="rounded-xl bg-bg-card border border-border p-5">
         <h2 className="font-bold mb-3 text-sm flex items-center gap-2">
           🚨 錯誤監看
-          {errorTone === "danger" && <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-500/20 text-red-400">高頻</span>}
+          {errorTone === "danger" && <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-500/20 text-red-900 dark:text-red-200">高頻</span>}
           {errorTone === "warning" && <span className="text-[10px] px-2 py-0.5 rounded-full bg-warning/20 text-warning">注意</span>}
         </h2>
         <div className="grid grid-cols-2 gap-3">
@@ -146,7 +146,7 @@ export default async function AdminHealthPage() {
               <li key={e.id} className="px-4 py-2.5 text-xs flex items-start gap-3">
                 <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase flex-shrink-0 ${
                   e.level === "error" || e.level === "fatal"
-                    ? "bg-red-500/20 text-red-400"
+                    ? "bg-red-500/20 text-red-900 dark:text-red-200"
                     : e.level === "warn"
                     ? "bg-warning/20 text-warning"
                     : "bg-bg-elevated text-fg-muted"

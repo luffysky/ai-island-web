@@ -101,7 +101,7 @@ function Empty() { return <div className="text-center py-6 text-fg-muted text-xs
 function Row({ label, time, due, extra, link }: { label: string; time: string | null; due: boolean | null | undefined; extra?: string; link?: string }) {
   const Inner = (
     <div className="px-4 py-2 flex items-center gap-3">
-      <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${due ? "bg-red-500/15 text-red-400" : "bg-yellow-500/15 text-yellow-400"}`}>
+      <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${due ? "bg-red-500/15 text-red-900 dark:text-red-200" : "bg-yellow-500/15 text-yellow-900 dark:text-yellow-200"}`}>
         {due ? "可發布" : "排程中"}
       </span>
       <div className="flex-1 min-w-0">

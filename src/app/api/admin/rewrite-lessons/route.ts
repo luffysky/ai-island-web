@@ -23,8 +23,9 @@ async function requireAdmin() {
   const supabase = await createSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
-  const { data: p } = await supabase.from("profiles").select("role, id, username").eq("id", user.id).single();
-  if (p?.role !== "admin") return null;
+  const { data: p } = await supabase.from("profiles").select("role, id, username, is_owner").eq("id", user.id).maybeSingle();
+  if (!p) return null;
+  if (p.role !== "admin" && p.role !== "owner" && !(p as any).is_owner) return null;
   return p;
 }
 

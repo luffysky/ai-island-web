@@ -106,19 +106,19 @@ function Stat({ label, value, color }: { label: string; value: any; color: strin
 function PlanBadge({ plan }: { plan: string }) {
   const labels: Record<string, string> = { free: "Free", premium: "Premium", lifetime: "Lifetime" };
   const colors: Record<string, string> = {
-    free: "bg-gray-500/20 text-gray-400",
+    free: "bg-gray-500/20 text-gray-900 dark:text-gray-200",
     premium: "bg-accent/20 text-accent",
-    lifetime: "bg-yellow-500/20 text-yellow-400",
+    lifetime: "bg-yellow-500/20 text-yellow-900 dark:text-yellow-200",
   };
   return <span className={`px-2 py-0.5 rounded text-xs ${colors[plan] ?? ""}`}>{labels[plan] ?? plan}</span>;
 }
 
 function StatusBadge({ status }: { status: string }) {
   const colors: Record<string, string> = {
-    active: "bg-green-500/20 text-green-400",
-    cancelled: "bg-gray-500/20 text-gray-400",
-    past_due: "bg-red-500/20 text-red-400",
-    expired: "bg-red-500/20 text-red-400",
+    active: "bg-green-500/20 text-green-900 dark:text-green-200",
+    cancelled: "bg-gray-500/20 text-gray-900 dark:text-gray-200",
+    past_due: "bg-red-500/20 text-red-900 dark:text-red-200",
+    expired: "bg-red-500/20 text-red-900 dark:text-red-200",
   };
   const labels: Record<string, string> = {
     active: "活躍",

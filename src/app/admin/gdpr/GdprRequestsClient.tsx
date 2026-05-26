@@ -19,10 +19,10 @@ type GdprRow = {
 };
 
 const STATUS_COLOR: Record<string, string> = {
-  pending: "bg-yellow-500/15 text-yellow-400",
-  completed: "bg-blue-500/15 text-blue-400",
-  cancelled: "bg-gray-500/15 text-gray-400",
-  hard_deleted: "bg-red-500/15 text-red-400",
+  pending: "bg-yellow-500/15 text-yellow-900 dark:text-yellow-200",
+  completed: "bg-blue-500/15 text-blue-900 dark:text-blue-200",
+  cancelled: "bg-gray-500/15 text-gray-900 dark:text-gray-200",
+  hard_deleted: "bg-red-500/15 text-red-900 dark:text-red-200",
 };
 
 export function GdprRequestsClient({ initial }: { initial: GdprRow[] }) {

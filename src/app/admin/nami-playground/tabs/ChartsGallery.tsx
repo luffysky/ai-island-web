@@ -200,7 +200,7 @@ function EditableChart({ presetKey, wide }: { presetKey: keyof typeof RECHARTS_P
           />
           {err && <div className="text-[11px] text-red-400">⚠️ {err}</div>}
           <div className="flex items-center gap-2">
-            <button onClick={apply} className="px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/40 text-[11px]">套用</button>
+            <button onClick={apply} className="px-3 py-1 rounded-full bg-purple-500/20 text-purple-900 dark:text-purple-100 border border-purple-500/40 text-[11px]">套用</button>
             <button onClick={() => setEditing(false)} className="px-3 py-1 text-[11px] text-fg-muted hover:text-fg">取消</button>
             <span className="text-[10px] text-fg-muted/70">data 必須是 array、欄位名要對</span>
           </div>
@@ -660,7 +660,7 @@ function MatplotlibView() {
       <div className="flex items-center justify-between gap-2 flex-wrap text-xs">
         <div>
           {status === "idle" && (
-            <button onClick={load} className="px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/40">載入 Python</button>
+            <button onClick={load} className="px-3 py-1 rounded-full bg-purple-500/20 text-purple-900 dark:text-purple-100 border border-purple-500/40">載入 Python</button>
           )}
           {status === "loading" && <span className="text-fg-muted inline-flex items-center gap-1"><Loader2 size={10} className="animate-spin" /> {progress}</span>}
           {status === "ready" && <span className="text-emerald-400">● Python ready (matplotlib 已預載)</span>}

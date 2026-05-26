@@ -140,7 +140,7 @@ function BotStatusCard({ name, ready, emoji, desc, webhookPath }: any) {
       <div className="flex items-center gap-2 mb-1">
         <span className="text-2xl">{emoji}</span>
         <span className="font-bold text-sm">{name}</span>
-        <span className={`ml-auto text-[10px] px-2 py-0.5 rounded-full font-bold ${ready ? "bg-emerald-500/20 text-emerald-400" : "bg-red-500/20 text-red-400"}`}>
+        <span className={`ml-auto text-[10px] px-2 py-0.5 rounded-full font-bold ${ready ? "bg-emerald-500/20 text-emerald-900 dark:text-emerald-200" : "bg-red-500/20 text-red-900 dark:text-red-200"}`}>
           {ready ? "● 已設定" : "○ 未設定"}
         </span>
       </div>
@@ -171,7 +171,7 @@ function ActionCard({ href, icon, title, desc, tone, badge }: any) {
         <span className={tone}>{icon}</span>
         <span className="font-bold text-sm">{title}</span>
         {badge && (
-          <span className="ml-auto text-[10px] px-1.5 py-0.5 rounded-full bg-red-500/20 text-red-400 font-bold">
+          <span className="ml-auto text-[10px] px-1.5 py-0.5 rounded-full bg-red-500/20 text-red-900 dark:text-red-200 font-bold">
             {badge}
           </span>
         )}

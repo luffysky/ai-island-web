@@ -118,11 +118,11 @@ function FilterLink({ href, active, children }: { href: string; active?: boolean
 
 function StatusBadge({ status }: { status: string }) {
   const colors: Record<string, string> = {
-    paid: "bg-green-500/20 text-green-400",
-    pending: "bg-yellow-500/20 text-yellow-400",
-    refunded: "bg-red-500/20 text-red-400",
-    cancelled: "bg-gray-500/20 text-gray-400",
-    failed: "bg-red-500/20 text-red-400",
+    paid: "bg-green-500/20 text-green-900 dark:text-green-200",
+    pending: "bg-yellow-500/20 text-yellow-900 dark:text-yellow-200",
+    refunded: "bg-red-500/20 text-red-900 dark:text-red-200",
+    cancelled: "bg-gray-500/20 text-gray-900 dark:text-gray-200",
+    failed: "bg-red-500/20 text-red-900 dark:text-red-200",
   };
   const labels: Record<string, string> = {
     paid: "已付款",

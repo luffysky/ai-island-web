@@ -176,10 +176,10 @@ export function TopNav() {
                                 displayProfile.role === "owner"
                                   ? "bg-gradient-to-r from-yellow-400 to-pink-400 text-black font-bold"
                                   : displayProfile.role === "admin"
-                                  ? "bg-red-500/20 text-red-300"
+                                  ? "bg-red-500/20 text-red-900 dark:text-red-100"
                                   : displayProfile.role === "editor"
-                                  ? "bg-blue-500/20 text-blue-300"
-                                  : "bg-gray-500/20 text-gray-300"
+                                  ? "bg-blue-500/20 text-blue-900 dark:text-blue-100"
+                                  : "bg-gray-500/20 text-gray-900 dark:text-gray-100"
                               }`}
                             >
                               {displayProfile.role === "owner" ? "👑 owner" : (displayProfile.role || "member")}

@@ -171,7 +171,7 @@ export function QuizBuilder({
           <button
             onClick={generate}
             disabled={generating || saving}
-            className="px-4 py-1.5 text-sm rounded-lg bg-purple-500/20 text-purple-300 border border-purple-500/30 hover:bg-purple-500/30 disabled:opacity-50 flex items-center gap-1.5"
+            className="px-4 py-1.5 text-sm rounded-lg bg-purple-500/20 text-purple-900 dark:text-purple-100 border border-purple-500/30 hover:bg-purple-500/30 disabled:opacity-50 flex items-center gap-1.5"
           >
             <Sparkles size={14} />
             {generating ? "AI 出題中..." : "🤖 AI 自動出 20 題"}

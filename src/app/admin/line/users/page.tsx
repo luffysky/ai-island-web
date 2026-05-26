@@ -54,7 +54,7 @@ export default async function AdminLineUsersPage() {
                 <div className="text-xs text-fg-muted truncate">
                   @{u.username} · Lv {u.level ?? 1}
                   {!u.line_notify_enabled && (
-                    <span className="ml-2 text-[10px] px-1 rounded bg-yellow-500/15 text-yellow-400">已關通知</span>
+                    <span className="ml-2 text-[10px] px-1 rounded bg-yellow-500/15 text-yellow-900 dark:text-yellow-200">已關通知</span>
                   )}
                 </div>
                 <div className="text-[10px] text-fg-muted mt-0.5">

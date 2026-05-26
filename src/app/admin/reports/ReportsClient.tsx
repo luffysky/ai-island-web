@@ -22,13 +22,13 @@ type Report = {
 };
 
 const REASON_COLOR: Record<string, string> = {
-  spam: "bg-gray-500/15 text-gray-400",
-  harassment: "bg-orange-500/15 text-orange-400",
-  hate_speech: "bg-red-500/15 text-red-400",
-  sexual: "bg-pink-500/15 text-pink-400",
-  illegal: "bg-purple-500/15 text-purple-400",
-  self_harm: "bg-red-500/15 text-red-300",
-  other: "bg-blue-500/15 text-blue-400",
+  spam: "bg-gray-500/15 text-gray-900 dark:text-gray-200",
+  harassment: "bg-orange-500/15 text-orange-900 dark:text-orange-200",
+  hate_speech: "bg-red-500/15 text-red-900 dark:text-red-200",
+  sexual: "bg-pink-500/15 text-pink-900 dark:text-pink-200",
+  illegal: "bg-purple-500/15 text-purple-900 dark:text-purple-200",
+  self_harm: "bg-red-500/15 text-red-900 dark:text-red-100",
+  other: "bg-blue-500/15 text-blue-900 dark:text-blue-200",
 };
 
 const TARGET_LABEL: Record<string, string> = {
@@ -152,13 +152,13 @@ export function ReportsClient({
               )}
               {r.status === "pending" && (
                 <div className="flex gap-2 mt-3 pt-2 border-t border-border">
-                  <button onClick={() => act(r.id, "resolve")} className="text-xs px-3 py-1 rounded-lg bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25 flex items-center gap-1">
+                  <button onClick={() => act(r.id, "resolve")} className="text-xs px-3 py-1 rounded-lg bg-emerald-500/15 text-emerald-900 dark:text-emerald-200 hover:bg-emerald-500/25 flex items-center gap-1">
                     <Check size={11} /> 解決
                   </button>
-                  <button onClick={() => act(r.id, "dismiss")} className="text-xs px-3 py-1 rounded-lg bg-gray-500/15 text-gray-400 hover:bg-gray-500/25 flex items-center gap-1">
+                  <button onClick={() => act(r.id, "dismiss")} className="text-xs px-3 py-1 rounded-lg bg-gray-500/15 text-gray-900 dark:text-gray-200 hover:bg-gray-500/25 flex items-center gap-1">
                     <X size={11} /> 駁回
                   </button>
-                  <button onClick={() => act(r.id, "escalate")} className="text-xs px-3 py-1 rounded-lg bg-red-500/15 text-red-400 hover:bg-red-500/25 flex items-center gap-1">
+                  <button onClick={() => act(r.id, "escalate")} className="text-xs px-3 py-1 rounded-lg bg-red-500/15 text-red-900 dark:text-red-200 hover:bg-red-500/25 flex items-center gap-1">
                     <AlertTriangle size={11} /> 升級
                   </button>
                 </div>
