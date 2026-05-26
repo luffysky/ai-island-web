@@ -1,0 +1,224 @@
+流程控制—條件 + 迴圈。Python 用**縮排**取代 `{}`、特別。
+
+  
+### if / elif / else
+
+```text
+age = 20
+
+if age = 18 and has_license:
+    print("能開車")
+
+if is_admin or is_owner:
+    print("有權限")
+
+if not is_active:
+    print("不活躍")
+
+# 三元運算（順序不同！）
+status = "成人" if age >= 18 else "未成年"
+
+# 對比：
+# JS: const status = age >= 18 ? "成人" : "未成年"
+# Python 沒 ? : 語法、用 if-else 表達式
+
+# Match-case（Python 3.10+ 才有）
+def describe(point):
+    match point:
+        case (0, 0):
+            return "原點"
+        case (x, 0):
+            return f"X 軸 x={x}"
+        case (0, y):
+            return f"Y 軸 y={y}"
+        case (x, y):
+            return f"在 ({x}, {y})"
+        case _:
+            return "不是點"
+
+describe((3, 0))    # X 軸 x=3
+describe((1, 2))    # 在 (1, 2)
+```
+
+  
+### for 迴圈
+
+```text
+# 跑 list
+for fruit in ["蘋果", "香蕉", "橘子"]:
+    print(fruit)
+
+# 跑 range
+for i in range(5):       # 0, 1, 2, 3, 4
+    print(i)
+
+for i in range(2, 8):    # 2, 3, 4, 5, 6, 7
+    print(i)
+
+for i in range(0, 10, 2):  # 0, 2, 4, 6, 8
+    print(i)
+
+# 跑 string（一個字一個字）
+for char in "Python":
+    print(char)
+
+# 同時要 index
+for i, fruit in enumerate(["蘋果", "香蕉"]):
+    print(f"{i}: {fruit}")
+# 0: 蘋果
+# 1: 香蕉
+
+# enumerate 從 1 開始
+for i, fruit in enumerate(fruits, start=1):
+    print(f"第 {i} 個：{fruit}")
+
+# 同時跑兩個 list
+names = ["Alice", "Bob", "Charlie"]
+ages = [30, 25, 35]
+
+for name, age in zip(names, ages):
+    print(f"{name}: {age}")
+
+# 反轉
+for fruit in reversed(["蘋果", "香蕉"]):
+    print(fruit)
+
+# 排序後跑
+for num in sorted([3, 1, 4, 1, 5]):
+    print(num)
+
+# 跑 dict
+user = {"name": "Alice", "age": 30}
+
+for key in user:
+    print(key)
+
+for key, value in user.items():
+    print(f"{key}: {value}")
+
+# break + continue
+for i in range(10):
+    if i == 3:
+        continue   # 跳過 3
+    if i == 7:
+        break      # 7 之後不跑
+    print(i)
+# 0, 1, 2, 4, 5, 6
+
+# for-else（特別！）
+for x in [1, 2, 3]:
+    if x == 5:
+        break
+else:
+    print("沒找到 5")   # 沒 break 才跑 else
+# 印 "沒找到 5"
+```
+
+  
+### while 迴圈
+
+```text
+count = 0
+while count  0:
+    n -= 1
+    if n == 0:
+        break
+else:
+    print("自然結束")
+
+# Python 沒 do-while
+# 用 while True + break 模擬
+while True:
+    do_stuff()
+    if condition:
+        break
+```
+
+  
+### Comprehension：4 種容器
+
+```text
+# List comprehension
+squares = [x ** 2 for x in range(10)]
+
+# Set comprehension
+unique_squares = {x ** 2 for x in [-1, 0, 1, 2, -2]}
+# {0, 1, 4}
+
+# Dict comprehension
+square_dict = {x: x ** 2 for x in range(5)}
+# {0: 0, 1: 1, 2: 4, 3: 9, 4: 16}
+
+# Generator expression（lazy）
+gen = (x ** 2 for x in range(10))
+# 不立刻算、用 next() 才算
+# 適合大資料、省記憶體
+
+# 加條件
+evens = [x for x in range(20) if x % 2 == 0]
+positives = {x for x in [-1, -2, 1, 2, 3] if x > 0}
+
+# 多層
+matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+flat = [x for row in matrix for x in row]
+# [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+# 條件 expression
+labels = ["odd" if x % 2 else "even" for x in range(5)]
+# ['even', 'odd', 'even', 'odd', 'even']
+
+→ Comprehension 是 Pythonic 寫法
+→ 比 for 迴圈 + append 簡潔
+→ 比 map/filter 自然
+```
+
+  
+### 常見 pattern
+
+```text
+# 1. 累積總和
+total = sum([1, 2, 3, 4, 5])    # 15
+# 不用寫 for 迴圈
+
+# 2. 找最大 / 最小
+max([3, 1, 4, 1, 5])             # 5
+min([3, 1, 4, 1, 5])             # 1
+
+# 自訂 key
+users = [{"name": "Alice", "age": 30}, {"name": "Bob", "age": 25}]
+oldest = max(users, key=lambda u: u["age"])
+
+# 3. 計數
+count = len([x for x in nums if x > 10])
+
+# 或 Counter
+from collections import Counter
+counts = Counter(words)
+
+# 4. 全部符合 / 至少一個
+all_active = all(u.is_active for u in users)    # True if 全 True
+any_admin = any(u.is_admin for u in users)      # True if 至少一個 True
+
+# 5. 找第一個符合
+first_admin = next((u for u in users if u.is_admin), None)
+# next 配 generator、找不到回 None
+
+# 6. 平面化巢狀 list
+nested = [[1, 2], [3, 4], [5, 6]]
+flat = [x for sub in nested for x in sub]
+# [1, 2, 3, 4, 5, 6]
+```
+
+  
+    **☕ 用人話講**
+    
+Python 流程控制重點：(1) 用**縮排**不用 `{}`—4 個 space (2) `if elif else`（不是 else if） (3) `for x in iterable`（不是 C-style for） (4) **list comprehension 是 Pythonic**—`[x * 2 for x in nums]` 寫熟才像 Python 工程師 (5) `range()` 不含尾—`range(5)` 是 0-4。**新手陷阱**：縮排混 tab 跟 space 會錯、設編輯器只用 space。
+
+  
+
+  
+    
+      🛠️
+      工具推薦
+    
+    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。

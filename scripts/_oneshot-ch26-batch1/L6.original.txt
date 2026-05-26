@@ -1,0 +1,276 @@
+函數是 Python 抽象的基本單位。學熟函數 = Python 進入中階。
+
+  
+### 基本函數
+
+```text
+def greet(name):
+    return f"Hello, {name}"
+
+print(greet("Alice"))    # Hello, Alice
+
+# 多參數
+def add(a, b):
+    return a + b
+
+print(add(3, 5))         # 8
+
+# 預設值
+def greet(name, greeting="Hello"):
+    return f"{greeting}, {name}"
+
+print(greet("Alice"))              # Hello, Alice
+print(greet("Bob", "Hi"))          # Hi, Bob
+
+# 關鍵字參數（位置不重要）
+def create_user(name, age, role="user", active=True):
+    return {"name": name, "age": age, "role": role, "active": active}
+
+# 全部位置
+create_user("Alice", 30)
+
+# 部分關鍵字
+create_user("Alice", 30, role="admin")
+
+# 全關鍵字（順序不重要）
+create_user(role="admin", name="Alice", age=30)
+
+# 多回傳值（用 tuple）
+def divide(a, b):
+    return a // b, a % b
+
+q, r = divide(10, 3)
+print(q, r)              # 3 1
+
+# 或 dict
+def get_user_stats():
+    return {"total": 100, "active": 80, "premium": 20}
+
+stats = get_user_stats()
+print(stats["total"])
+```
+
+  
+### *args 跟 **kwargs
+
+```text
+# *args：收所有位置參數
+def sum_all(*numbers):
+    return sum(numbers)
+
+sum_all(1, 2, 3)              # 6
+sum_all(1, 2, 3, 4, 5)        # 15
+
+# **kwargs：收所有關鍵字參數
+def create(**fields):
+    print(fields)
+
+create(name="Alice", age=30, role="admin")
+# {'name': 'Alice', 'age': 30, 'role': 'admin'}
+
+# 混合用
+def func(a, b, *args, **kwargs):
+    print(f"a={a}, b={b}, args={args}, kwargs={kwargs}")
+
+func(1, 2, 3, 4, 5, x=10, y=20)
+# a=1, b=2, args=(3, 4, 5), kwargs={'x': 10, 'y': 20}
+
+# 解包傳入（unpacking）
+nums = [1, 2, 3]
+sum_all(*nums)                # 等於 sum_all(1, 2, 3)
+
+data = {"name": "Alice", "age": 30}
+create(**data)                # 等於 create(name="Alice", age=30)
+
+# 常見 pattern：包一層
+def log_call(func):
+    def wrapper(*args, **kwargs):
+        print(f"Calling {func.__name__}")
+        return func(*args, **kwargs)
+    return wrapper
+```
+
+  
+### Lambda（匿名函數）
+
+```text
+# 簡單一行函數
+square = lambda x: x ** 2
+print(square(5))         # 25
+
+# 多參數
+add = lambda a, b: a + b
+
+# 常用在 map / filter / sorted
+nums = [3, 1, 4, 1, 5, 9, 2, 6]
+
+# 排序
+sorted(nums, key=lambda x: -x)
+# [9, 6, 5, 4, 3, 2, 1, 1]
+
+users = [
+    {"name": "Alice", "age": 30},
+    {"name": "Bob", "age": 25}
+]
+
+# 依 age 排序
+sorted(users, key=lambda u: u["age"])
+
+# map（變形）
+squared = list(map(lambda x: x ** 2, nums))
+# 但通常用 comprehension 更 pythonic
+squared = [x ** 2 for x in nums]
+
+# filter（篩選）
+evens = list(filter(lambda x: x % 2 == 0, nums))
+# 同樣 comprehension 更好
+evens = [x for x in nums if x % 2 == 0]
+
+# Lambda 限制：只能一個表達式
+# 複雜邏輯用 def
+# 多行 = 一定用 def
+
+# 不要用 lambda 取代 def！
+# ❌ 爛
+square = lambda x: x ** 2
+
+# ✓ 對
+def square(x):
+    return x ** 2
+# 命名 + 多行能加 docstring
+```
+
+  
+### Type Hints（2024+ 主流）
+
+```text
+# 沒 type hint
+def add(a, b):
+    return a + b
+
+# 有 type hint（推薦）
+def add(a: int, b: int) -> int:
+    return a + b
+
+# 複雜型別
+from typing import List, Dict, Optional, Union
+
+def get_user(id: int) -> Optional[Dict]:
+    """回傳 user 或 None。"""
+    return user_dict.get(id)
+
+def process_users(users: List[Dict]) -> int:
+    return len(users)
+
+# Python 3.9+ 可用內建（不用 import）
+def process(items: list[str]) -> dict[str, int]:
+    return {item: len(item) for item in items}
+
+# 3.10+ 用 | 替代 Union
+def parse(x: int | str) -> int:
+    return int(x)
+
+# Optional 等於 | None
+def find(id: int) -> User | None:
+    ...
+
+# Type hint 不影響執行
+# 只給：
+# 1. 自己 / 同事看
+# 2. IDE 補全
+# 3. mypy / pyright 靜態檢查
+
+# 跑 mypy 檢查
+$ uv add --dev mypy
+$ uv run mypy app.py
+
+# 找出 type 錯誤
+```
+
+  
+### Docstring：函數說明
+
+```text
+def calculate_tax(price: float, rate: float = 0.05) -> float:
+    """計算稅金。
+    
+    Args:
+        price: 商品原價
+        rate: 稅率、預設 5%
+    
+    Returns:
+        稅金金額
+    
+    Examples:
+        >>> calculate_tax(100)
+        5.0
+        >>> calculate_tax(100, 0.1)
+        10.0
+    """
+    return price * rate
+
+# 看說明
+help(calculate_tax)
+# 印出 docstring
+
+# 主流格式：Google / NumPy / Sphinx
+# Google 最普及（看上面）
+```
+
+  
+### Scope（作用域）
+
+```text
+x = 10   # 全域
+
+def func():
+    y = 20   # 區域
+    print(x)  # 看得到全域 → 10
+    print(y)  # 看得到區域 → 20
+
+func()
+print(x)      # 10
+print(y)      # ❌ NameError
+
+# 改全域要明確
+x = 10
+
+def modify():
+    global x
+    x = 99
+
+modify()
+print(x)      # 99（改了）
+
+# 沒 global 的話：
+def modify():
+    x = 99   # 變區域變數、不影響全域
+
+# Closure（函數內函數捕捉外面變數）
+def make_counter():
+    count = 0
+    def increment():
+        nonlocal count  # 跟 enclosing scope 連
+        count += 1
+        return count
+    return increment
+
+counter = make_counter()
+counter()     # 1
+counter()     # 2
+counter()     # 3
+```
+
+  
+    **🚀 進階技巧**
+    
+Python 函數 2026 寫法：(1) **加 type hint**—好讀好維護 (2) **寫 docstring**—help() 看得到 (3) **少用 lambda**—複雜邏輯用 def (4) **關鍵字參數 > 位置參數**—`create_user(name="Alice")` 比 `create_user("Alice")` 清楚 (5) **函數做一件事**—超過 20 行考慮拆。寫熟函數 = 寫好 Python 的關鍵。
+
+  
+
+  
+    
+      ⚠️
+      新手常見錯誤
+    
+    新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。

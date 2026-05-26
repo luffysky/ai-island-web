@@ -1,0 +1,208 @@
+Python 4 個基本型態—學熟 80% 程式都在處理它們。
+
+  
+### int（整數）
+
+```text
+age = 25
+big_num = 1_000_000        # 底線分位、好讀
+negative = -10
+zero = 0
+
+# 沒上限（Python 特色）
+huge = 10 ** 100           # 10 的 100 次方
+print(huge)
+# 10000000000000000000000000000000000000...
+
+# Java / Go 會 overflow、Python 不會
+
+# 運算
+a, b = 10, 3
+print(a + b)     # 13
+print(a - b)     # 7
+print(a * b)     # 30
+print(a / b)     # 3.333333... (永遠 float)
+print(a // b)    # 3（整數除）
+print(a % b)     # 1（餘數）
+print(a ** b)    # 1000（次方）
+
+# 進制
+binary = 0b1010      # 二進位 = 10
+octal = 0o12         # 八進位 = 10
+hex_num = 0xa        # 十六進位 = 10
+
+# 轉換
+int("42")            # 42（從 string）
+int("42", 16)        # 66（16 進位字串）
+int(3.9)             # 3（浮點數去小數、不是四捨五入）
+int(True)            # 1
+int(False)           # 0
+
+# Python 3 沒 long type、int 就好
+```
+
+  
+### float（浮點數）
+
+```text
+pi = 3.14159
+big = 1.5e10        # 1.5 × 10^10
+small = 1.5e-5      # 1.5 × 10^-5
+
+# 跟 int 混算 → 變 float
+print(10 + 1.5)     # 11.5（float）
+
+# 浮點陷阱（所有語言通病）
+print(0.1 + 0.2)    # 0.30000000000000004
+print(0.1 + 0.2 == 0.3)   # False!
+
+# 對策 1：math.isclose
+import math
+math.isclose(0.1 + 0.2, 0.3)   # True
+
+# 對策 2：用 Decimal（精確、給錢用）
+from decimal import Decimal
+a = Decimal("0.1")
+b = Decimal("0.2")
+print(a + b)        # 0.3（精確）
+
+# 對策 3：自己 round
+round(0.1 + 0.2, 2)   # 0.3
+
+# 特殊值
+inf = float('inf')      # 無限大
+neg_inf = float('-inf')
+nan = float('nan')      # Not a Number（除以 0 之類）
+
+print(inf > 1000000)    # True
+print(nan == nan)       # False!（nan 跟誰都不等）
+import math
+math.isnan(nan)         # True
+
+# 轉換
+float("3.14")           # 3.14
+float("inf")            # inf
+float(3)                # 3.0
+```
+
+  
+### str（字串）
+
+```text
+# 3 種寫法
+s1 = "Hello"
+s2 = 'Hello'             # 單雙引號都行
+s3 = """多行
+字串"""
+
+# 含特殊字元用 escape
+quote = "She said \"hi\""
+newline = "Line 1\nLine 2"
+tab = "col1\tcol2"
+
+# Raw string（不 escape）
+path = r"C:\Users\Alice\Documents"
+# 反斜線不 escape
+
+# Unicode（中文沒問題）
+greeting = "你好"
+emoji = "👋 hello"
+
+# 連接
+greeting = "Hello, " + name
+greeting = f"Hello, {name}"      # f-string 主流
+greeting = "Hello, {}".format(name)   # 老式
+
+# 重複
+"abc" * 3              # "abcabcabc"
+
+# 查長度
+len("Hello")           # 5
+len("你好")            # 2（不是 byte 數）
+
+# 索引（從 0 開始）
+s = "Python"
+s[0]                   # 'P'
+s[1]                   # 'y'
+s[-1]                  # 'n'（從後算）
+s[-2]                  # 'o'
+
+# Slice
+s[0:3]                 # 'Pyt'
+s[3:]                  # 'hon'
+s[:3]                  # 'Pyt'
+s[::2]                 # 'Pto'（每隔 1 個）
+s[::-1]                # 'nohtyP'（反轉）
+
+# 不可變！
+s[0] = 'J'             # ❌ TypeError
+# 要建新的
+s = "J" + s[1:]        # 'Jython'
+```
+
+  
+### 字串常用方法
+
+```text
+s = "  Hello World  "
+
+# 大小寫
+s.upper()              # '  HELLO WORLD  '
+s.lower()              # '  hello world  '
+s.title()              # '  Hello World  '
+s.capitalize()         # '  hello world  '
+
+# 去空白
+s.strip()              # 'Hello World'
+s.lstrip()             # 'Hello World  '
+s.rstrip()             # '  Hello World'
+
+# 找位置
+s.find("World")        # 8（找到位置）
+s.find("Python")       # -1（找不到）
+s.index("World")       # 8（找不到會 raise）
+
+# 包含
+"Hello" in s           # True
+"Python" in s          # False
+s.startswith("  H")    # True
+s.endswith("d  ")      # True
+
+# 替換
+s.replace("World", "Python")  # '  Hello Python  '
+
+# 切割
+"a,b,c".split(",")     # ['a', 'b', 'c']
+"line 1\nline 2".splitlines()   # ['line 1', 'line 2']
+
+# 拼接
+",".join(["a", "b", "c"])   # 'a,b,c'
+" ".join(["Hello", "World"])  # 'Hello World'
+
+# 判斷
+"abc".isalpha()        # True（全字母）
+"123".isdigit()        # True（全數字）
+"abc123".isalnum()     # True（字母+數字）
+"   ".isspace()        # True（全空白）
+
+# 格式
+"{:>10}".format("hi")   # '        hi'（右對齊）
+"{: 3                  # True
+5 == 5                 # True
+5 != 6                 # True
+5 >= 5                 # True
+
+# Python 連鎖比較（其他語言沒有）
+1 
+    **☕ 用人話講**
+    
+4 個基本型態學熟 = Python 入門 50%。**新手常犯**：(1) `input()` 永遠是 str—算數要 int() 轉 (2) 浮點數比較不能直接 `==` (3) 字串**不可變**—不能 `s[0] = 'x'` (4) Python 的 True / False / None **首字大寫**。**f-string**是 2026 寫 Python 必用：`f"hi {name}, you're {age}"`。
+
+  
+
+  
+    
+      ⚡
+      學習加速器
+    
+    把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。

@@ -69,6 +69,35 @@ if (!L2) throw new Error('L2 (26.2) not found');
 L2.content = L2_CONTENT;
 console.log('[ch26-batch1] L2 content updated, new length:', L2.content.length);
 
+// === batch2: L3, L4, L5, L6 改寫 ===
+const L3_CONTENT = fs.readFileSync(path.join(__dirname, 'L3.content.md'), 'utf8');
+const L4_CONTENT = fs.readFileSync(path.join(__dirname, 'L4.content.md'), 'utf8');
+const L5_CONTENT = fs.readFileSync(path.join(__dirname, 'L5.content.md'), 'utf8');
+const L6_CONTENT = fs.readFileSync(path.join(__dirname, 'L6.content.md'), 'utf8');
+
+const L3 = ch26.lessons.find((l) => l.id === '26.3');
+if (!L3) throw new Error('L3 (26.3) not found');
+L3.content = L3_CONTENT;
+console.log('[batch2] L3 content updated, new length:', L3.content.length);
+
+const L4 = ch26.lessons.find((l) => l.id === '26.4');
+if (!L4) throw new Error('L4 (26.4) not found');
+L4.content = L4_CONTENT;
+// 修 L4 原本 oneLineSummary / analogy 被誤植成 L2 字串操作課的內容
+L4.oneLineSummary = 'Python 4 個內建容器：list / tuple / set / dict——學熟就組合解 90% 資料問題。';
+L4.analogy = '像 4 種不同的收納盒——list 是可以重新排列的書架（有順序、可加減）、tuple 是封口的禮物盒（固定不能改）、set 是抽屜（隨手丟、不重複）、dict 是貼標籤的便當盒（用名字找東西）。';
+console.log('[batch2] L4 content + oneLineSummary + analogy updated, new length:', L4.content.length);
+
+const L5 = ch26.lessons.find((l) => l.id === '26.5');
+if (!L5) throw new Error('L5 (26.5) not found');
+L5.content = L5_CONTENT;
+console.log('[batch2] L5 content updated, new length:', L5.content.length);
+
+const L6 = ch26.lessons.find((l) => l.id === '26.6');
+if (!L6) throw new Error('L6 (26.6) not found');
+L6.content = L6_CONTENT;
+console.log('[batch2] L6 content updated, new length:', L6.content.length);
+
 // === 寫回 + 驗證 ===
 const out = JSON.stringify(ch26, null, 2) + '\n';
 fs.writeFileSync(CH26_PATH, out, 'utf8');

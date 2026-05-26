@@ -1,0 +1,323 @@
+Python 4 個內建容器、組合解 90% 資料問題。
+
+  
+### List：可變、有序
+
+```text
+# 建立
+fruits = ["蘋果", "香蕉", "橘子"]
+empty = []
+mixed = [1, "hello", True, [1, 2]]    # 能裝任何東西
+
+# 索引
+fruits[0]              # "蘋果"
+fruits[-1]             # "橘子"
+
+# Slice
+fruits[0:2]            # ["蘋果", "香蕉"]
+fruits[:2]             # 同上
+fruits[1:]             # ["香蕉", "橘子"]
+fruits[::-1]           # ["橘子", "香蕉", "蘋果"]（反轉）
+
+# 修改（可變）
+fruits[0] = "草莓"
+print(fruits)          # ["草莓", "香蕉", "橘子"]
+
+# 新增
+fruits.append("葡萄")              # 加最後
+fruits.insert(0, "西瓜")           # 加位置 0
+fruits.extend(["檸檬", "桃子"])    # 加多個
+# 或
+fruits += ["檸檬", "桃子"]
+
+# 刪除
+fruits.remove("香蕉")              # 依值刪（刪第一個遇到的）
+fruits.pop()                       # 刪最後、回傳被刪的
+fruits.pop(0)                      # 刪位置 0
+del fruits[0]                      # 刪位置 0
+fruits.clear()                     # 全清空
+
+# 查
+"蘋果" in fruits                   # True
+fruits.index("橘子")               # 2
+fruits.count("蘋果")               # 1
+
+# 長度
+len(fruits)                        # 3
+
+# 排序
+nums = [3, 1, 4, 1, 5, 9, 2, 6]
+nums.sort()                        # 原地排序、改 nums
+print(nums)                        # [1, 1, 2, 3, 4, 5, 6, 9]
+
+nums.sort(reverse=True)            # 降冪
+
+# 建新的、不改原本
+sorted_nums = sorted(nums)         # 新 list、原 nums 不變
+
+# 自訂排序
+users = [{"name": "Alice", "age": 30}, {"name": "Bob", "age": 25}]
+users.sort(key=lambda u: u["age"])
+
+# 反轉
+nums.reverse()             # 原地
+reversed_nums = nums[::-1]   # 新的
+
+# 操作
+nums + [10, 11]            # 串接（新 list）
+[0] * 5                    # [0, 0, 0, 0, 0]（重複）
+```
+
+  
+### List Comprehension（Python 特色）
+
+```text
+# 經典場景：建 list
+
+# 傳統寫法
+squares = []
+for x in range(10):
+    squares.append(x ** 2)
+
+# Comprehension（更簡潔）
+squares = [x ** 2 for x in range(10)]
+# [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
+
+# 加條件
+evens = [x for x in range(10) if x % 2 == 0]
+# [0, 2, 4, 6, 8]
+
+# 變形 + 條件
+squared_evens = [x ** 2 for x in range(10) if x % 2 == 0]
+# [0, 4, 16, 36, 64]
+
+# 巢狀
+matrix = [[i * j for j in range(3)] for i in range(3)]
+# [[0, 0, 0], [0, 1, 2], [0, 2, 4]]
+
+# 平面化
+matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+flat = [x for row in matrix for x in row]
+# [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+# 字串處理
+names = ["alice", "bob", "charlie"]
+upper_names = [n.upper() for n in names]
+# ['ALICE', 'BOB', 'CHARLIE']
+
+→ List comprehension 是 Python idiom
+→ 寫 Python 一定要熟練
+→ 比 map/filter 更 pythonic
+```
+
+  
+### Tuple：不可變、有序
+
+```text
+# 建立（用括號或不用）
+point = (3, 4)
+point = 3, 4          # 一樣
+empty = ()
+single = (5,)         # 注意逗號！
+single = 5,           # 也行
+
+# 索引、slice 同 list
+point[0]              # 3
+point[-1]             # 4
+
+# 不可變！
+point[0] = 99         # ❌ TypeError
+
+# 為什麼用 tuple？
+# 1. 表示「一組相關但不變」的資料
+person = ("Alice", 30, "Engineer")
+name, age, job = person   # 解包（unpack）
+
+# 2. 函數多回傳值
+def divide(a, b):
+    return a // b, a % b
+q, r = divide(10, 3)
+
+# 3. 當 dict 的 key（list 不能、tuple 能）
+locations = {
+    (25.04, 121.56): "Taipei",
+    (35.69, 139.69): "Tokyo",
+}
+
+# 4. 性能（比 list 快一點）
+
+# 操作
+len((1, 2, 3))         # 3
+(1, 2, 3) + (4, 5)     # (1, 2, 3, 4, 5)
+2 in (1, 2, 3)         # True
+
+# Named Tuple（更 readable）
+from collections import namedtuple
+
+Point = namedtuple("Point", ["x", "y"])
+p = Point(3, 4)
+print(p.x, p.y)        # 3 4
+
+# 2024+ 用 dataclass 或 NamedTuple from typing
+from typing import NamedTuple
+
+class Point(NamedTuple):
+    x: int
+    y: int
+
+p = Point(3, 4)
+print(p.x)             # 3
+```
+
+  
+### Set：不重複、無序
+
+```text
+# 建立
+fruits = {"蘋果", "香蕉", "橘子"}
+empty = set()           # 不能用 {}（那是 dict）
+
+# 自動去重
+nums = [1, 2, 3, 1, 2, 3]
+unique = set(nums)       # {1, 2, 3}
+
+# 操作
+fruits.add("葡萄")
+fruits.remove("香蕉")    # 不存在會 raise
+fruits.discard("xxx")    # 不存在不會 raise
+
+# 集合運算
+a = {1, 2, 3, 4}
+b = {3, 4, 5, 6}
+
+a | b           # 聯集 {1, 2, 3, 4, 5, 6}
+a & b           # 交集 {3, 4}
+a - b           # 差集 {1, 2}
+a ^ b           # 對稱差 {1, 2, 5, 6}
+
+# 子集
+{1, 2}.issubset({1, 2, 3})    # True
+{1, 2, 3}.issuperset({1, 2})  # True
+
+# 用途
+# 1. 去重
+items = ["a", "b", "a", "c", "b"]
+unique = list(set(items))   # ['a', 'b', 'c']（順序可能變）
+
+# 2. 快速查找（O(1)）
+banned_words = {"spam", "abuse", "scam"}
+if word in banned_words:    # 超快
+    block()
+
+# 3. 過濾共同 / 差異
+old_users = {"alice", "bob"}
+new_users = {"bob", "charlie"}
+left = old_users - new_users   # {"alice"}
+joined = new_users - old_users  # {"charlie"}
+
+# Set comprehension
+unique_lengths = {len(word) for word in ["hi", "hello", "world"]}
+# {2, 5}
+```
+
+  
+### Dict：鍵值對
+
+```text
+# 建立
+user = {
+    "name": "Alice",
+    "age": 30,
+    "email": "alice@x.com"
+}
+
+empty = {}
+
+# 訪問
+user["name"]            # "Alice"
+user.get("name")        # "Alice"
+user.get("phone")       # None（沒 key 不會 raise）
+user.get("phone", "N/A") # "N/A"（給預設）
+
+# 修改 / 新增
+user["age"] = 31
+user["phone"] = "0912-..."
+
+# 刪除
+del user["phone"]
+user.pop("phone")           # 也行、回傳被刪的值
+user.pop("xxx", None)        # 沒 key 不 raise
+
+# 檢查
+"name" in user              # True
+"phone" in user             # False
+
+# 迭代
+for key in user:            # 預設跑 key
+    print(key)
+
+for value in user.values():
+    print(value)
+
+for key, value in user.items():
+    print(f"{key}: {value}")
+
+# 長度
+len(user)                   # 3
+
+# 合併
+user.update({"city": "Taipei"})
+
+# 或 spread（Python 3.5+）
+combined = {**user, "city": "Taipei"}
+
+# 或 | （Python 3.9+）
+combined = user | {"city": "Taipei"}
+
+# Dict comprehension
+squares = {x: x ** 2 for x in range(5)}
+# {0: 0, 1: 1, 2: 4, 3: 9, 4: 16}
+
+# 反轉 key-value
+inverted = {v: k for k, v in user.items()}
+
+# 預設值（Python 3.7+ 保證插入順序）
+from collections import defaultdict
+
+counts = defaultdict(int)
+for word in ["a", "b", "a", "c", "a"]:
+    counts[word] += 1   # int() = 0 為預設
+# defaultdict(int, {'a': 3, 'b': 1, 'c': 1})
+
+# Counter（最常用）
+from collections import Counter
+
+words = ["a", "b", "a", "c", "a"]
+c = Counter(words)       # Counter({'a': 3, 'b': 1, 'c': 1})
+c.most_common(2)         # [('a', 3), ('b', 1)]
+```
+
+  
+### 4 個容器對比
+
+  
+| 容器 | 有序 | 可變 | 允許重複 | 用途 |
+| --- | --- | --- | --- | --- |
+| List | ✓ | ✓ | ✓ | 順序資料、最常用 |
+| Tuple | ✓ | ✗ | ✓ | 固定組合、多回傳值 |
+| Set | ✗ | ✓ | ✗ | 去重、快速查找 |
+| Dict | ✓ (3.7+) | ✓ | key 不重複 | 鍵值對、最強大 |
+
+  
+    **🚀 進階技巧**
+    
+Python 容器選擇心法：(1) **要順序 + 改** → list (2) **要當 dict key / 不變** → tuple (3) **要去重 / 快速 in 檢查** → set (4) **名字找東西** → dict。**2026 加分**：`collections.Counter` 算次數、`collections.defaultdict` 給預設值、`typing.NamedTuple` 替代 tuple。學完這 4 個 + comprehension = 寫 90% Python code 順手。
+
+  
+
+  
+    
+      🚀
+      2026 趨勢
+    
+    這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。
