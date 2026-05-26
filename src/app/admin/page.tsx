@@ -3,6 +3,7 @@ import { createSupabaseServer } from "@/lib/supabase-server";
 import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
 import { DashboardCharts } from "./DashboardCharts";
+import { AutoRefresh } from "./AutoRefresh";
 import { checkOwner } from "@/lib/is-owner";
 
 export default async function AdminOverviewPage() {
@@ -241,6 +242,11 @@ export default async function AdminOverviewPage() {
 
   return (
     <div className="space-y-6">
+      {/* Auto-refresh 控制列（dashboard 每 60 秒自動重抓資料、可暫停 / 立即更新）*/}
+      <div className="flex justify-end">
+        <AutoRefresh />
+      </div>
+
       {/* Owner identity card — 顯示 AI 為什麼判你 owner */}
       {ownerCheck?.isOwner && (
         <div className="bg-gradient-to-r from-yellow-500/10 via-pink-500/10 to-purple-500/10 border border-yellow-500/30 rounded-2xl p-4">
