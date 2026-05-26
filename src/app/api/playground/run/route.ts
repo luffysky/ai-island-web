@@ -2,11 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase";
 import { rateLimit } from "@/lib/rate-limit";
 
-// 用免費的 Piston API（emkc.org/piston）跑 30+ 語言
-// 限制：每秒 5 次、自動沙盒、3 秒 timeout
-// Self-host 版：https://github.com/engineer-man/piston
-
-const PISTON_URL = "https://emkc.org/api/v2/piston/execute";
+// Piston code execution sandbox（30+ 語言）
+// - 預設用免費 emkc.org/piston（限制 5 req/sec、共享資源、偶爾掛掉）
+// - 若 env PISTON_BASE_URL 有設、改用自架 Piston（建議部署到 Zeabur、無限制、穩定）
+//   self-host 教學：見 docs/piston-selfhost.md
+const PISTON_URL = (process.env.PISTON_BASE_URL?.replace(/\/$/, "") ?? "https://emkc.org/api/v2/piston")
+  + "/execute";
 
 // 語言版本對照（Piston 需要明確版本）
 const VERSIONS: Record<string, { piston: string; version: string }> = {
