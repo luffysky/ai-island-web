@@ -9,6 +9,7 @@ import { pickModelForUsage } from "@/lib/ai-usage-models";
 import { buildTutorSystemPrompt } from "@/lib/ai-tutor-prompt";
 import { getUserLearningState, formatLearningStateForPrompt } from "@/lib/user-learning-state";
 import { checkOwner } from "@/lib/is-owner";
+import { askStudentAIWithTools } from "@/lib/line-user-ai-tools";
 
 // in-memory fallback：未綁定 user（profile=null）沒法存 DB、暫存 in-memory
 type Msg = { role: "user" | "assistant"; content: string };
@@ -155,18 +156,31 @@ async function askUserAI(text: string, profile: UserProfileLite | null, lineUser
   });
 
   try {
-    const r = await callAI({
-      provider: model.provider,
-      model: model.model_name,
-      apiKey,
-      messages: [
-        { role: "system", content: systemPrompt },
-        ...hist.map((m) => ({ role: m.role, content: m.content })),
-      ],
-      temperature: 0.7,
-      maxTokens: 800,
-    });
-    const reply = r.text?.trim() || "我這邊沒接到回應、再問一次試試？";
+    // Anthropic（Claude）支援 tool use — 給學員 AI 4 個讀網站內容的 tool
+    // 其他 provider（openai / google / groq）暫無 tool use、退回純對話
+    let reply: string;
+    if (model.provider === "anthropic" && /claude/i.test(model.model_name)) {
+      reply = await askStudentAIWithTools({
+        apiKey,
+        model: model.model_name,
+        systemPrompt,
+        history: hist,
+      });
+      reply = reply.trim() || "我這邊沒接到回應、再問一次試試？";
+    } else {
+      const r = await callAI({
+        provider: model.provider,
+        model: model.model_name,
+        apiKey,
+        messages: [
+          { role: "system", content: systemPrompt },
+          ...hist.map((m) => ({ role: m.role, content: m.content })),
+        ],
+        temperature: 0.7,
+        maxTokens: 800,
+      });
+      reply = r.text?.trim() || "我這邊沒接到回應、再問一次試試？";
+    }
     // 持久化：已綁定存 DB、未綁定存 in-memory
     if (convId) {
       saveLineConversationTurn(convId, text, reply, `${model.provider}/${model.model_name}`).catch((e) => {

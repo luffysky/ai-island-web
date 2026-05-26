@@ -100,7 +100,7 @@ async function getLessonFull(lessonId: string): Promise<LessonFull | null> {
 async function buildCourseSummary(): Promise<{ summary: string; chapterCount: number; lastChapter: ChapterRow | undefined }> {
   const { chapters, lessonsByChapter } = await getChapterSummaries();
   const lines: string[] = [];
-  lines.push(`=== AI 島 ${chapters.length} 章完整課程結構 ===\n`);
+  lines.push(`=== AI 島 ${chapters.length} 章完整課程結構（全部 lesson 標題索引）===\n`);
 
   for (const ch of chapters) {
     lines.push(
@@ -110,14 +110,18 @@ async function buildCourseSummary(): Promise<{ summary: string; chapterCount: nu
     const outcomes = (ch.outcomes ?? []).slice(0, 3).join(" / ");
     if (outcomes) lines.push(`學習成果：${outcomes}`);
 
+    // 灌入全部 lesson 標題（不限制前 5）— AI 能精準引用「Ch26 L5 講變數」
+    // 前 3 lesson 多帶一句摘要（給 AI 抓章節 vibe）、後面只列標題（控制 prompt size）
     const allLessons = lessonsByChapter.get(ch.id) ?? [];
-    const previewLessons = allLessons.slice(0, 5);
-    previewLessons.forEach((l) => {
-      const summary = l.one_line_summary || l.title;
-      lines.push(`  • ${l.number} ${l.title}：${summary.slice(0, 60)}`);
+    allLessons.forEach((l, idx) => {
+      if (idx < 3 && l.one_line_summary) {
+        lines.push(`  • ${l.number} ${l.title} — ${l.one_line_summary.slice(0, 60)}`);
+      } else {
+        lines.push(`  • ${l.number} ${l.title}`);
+      }
     });
-    if (allLessons.length > 5) {
-      lines.push(`  ... 還有 ${allLessons.length - 5} 個 lesson`);
+    if (allLessons.length > 0) {
+      lines.push(`  📖 完整章節：https://ai-island-web.snowrealm.pet/chapters/${ch.id}`);
     }
   }
 

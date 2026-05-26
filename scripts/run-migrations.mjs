@@ -39,6 +39,8 @@ const MIGRATIONS = [
   "marketing_migration.sql",               // ← affiliate / competitor / ads CRUD 依賴
   "lottie_settings_migration.sql",
   "profile_is_owner_migration.sql",
+  // 2026-05-27 — AI embedding (學員 LINE AI 語意搜尋)
+  "ai_embeddings_migration.sql",
 ];
 
 // 從 .env.local 讀（不依賴 dotenv pkg）
