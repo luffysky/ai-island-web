@@ -58,6 +58,15 @@
           "level": 3,
           "text": "5. 遇到看不懂的英文術語怎麼辦？"
         }
+      ],
+      "playgrounds": [
+        {
+          "key": "26.0.welcome",
+          "language": "python",
+          "title": "哈囉、世界",
+          "initialCode": "# 歡迎！這是你的第一段 Python code\n# 按右上「執行」、看下方輸出\nprint(\"Hello, AI 島！\")\nprint(\"我準備好學 Python 了 🚀\")\n\n# 試試看：把名字改成你的\nname = \"新手\"\nprint(f\"我是 {name}、開始挑戰\")\n",
+          "hint": "改 name 變數、按執行看結果"
+        }
       ]
     },
     {
@@ -74,11 +83,11 @@
       "xp": 10,
       "playgrounds": [
         {
-          "key": "26.1.auto",
+          "key": "26.1.uv",
           "language": "python",
-          "title": "試試看",
-          "initialCode": "# Python 範例\ndef fibonacci(n):\n    a, b = 0, 1\n    for _ in range(n):\n        yield a\n        a, b = b, a + b\n\nprint(list(fibonacci(10)))\n\n# List comprehension\nsquares = [x**2 for x in range(1, 6)]\nprint(\"平方:\", squares)",
-          "hint": "改 code、按執行看結果"
+          "title": "Python 基本語法",
+          "initialCode": "# Python 是「直譯式」語言、寫了就能跑\n# 不用 compile、不用宣告型別\n\n# 變數\nname = \"AI 島\"\nyear = 2026\n\n# 字串組合（f-string、Python 3.6+ 標配）\nprint(f\"歡迎來到 {name} {year} 年版！\")\n\n# 簡單運算\ntotal_lessons = 33 + 25 + 25\nprint(f\"Python 系列共 {total_lessons} 課\")\n",
+          "hint": "改 name / year、看 f-string 怎麼變化"
         }
       ],
       "exercise": {
@@ -133,7 +142,15 @@
       "analogy": "就像買了食材要選廚房——編輯器 = 一般廚房、Jupyter = 開放式廚房（邊煮邊試吃）、Colab = 雲端共用廚房（免費食材庫）、REPL = 立飲區（站著快速吃）。",
       "content": "**編輯器 + Jupyter + Colab 工具大全**——L1 教你裝 Python 跟 uv、這課教你**用什麼工具寫 Python**。\n\n> 💡 **新手最常問**：「我裝完 Python 之後在哪寫 code？」答案 = **編輯器**。本課給你完整選項。\n\n  \n### 寫 Python 的 4 大方式\n\n```text\n1. 📝 編輯器（Editor）\n   → 寫成 .py 檔、終端機跑\n   → 最主流、業界標準\n\n2. 📓 Jupyter Notebook\n   → 一格一格寫 code + 看結果\n   → 資料分析 / ML 最愛\n\n3. ☁️ Google Colab\n   → 雲端 Jupyter、不用裝\n   → 免費 GPU、學習友善\n\n4. 🐢 REPL（互動模式）\n   → 一行一行試\n   → 學語法、快速測試\n```\n\n> 💡 **2026 推薦**：(1) 一般寫程式 → **VS Code + Cursor** (2) 資料分析 → **Jupyter** (3) 學習 / 試 GPU → **Colab**。\n\n  \n### 編輯器 5 大選擇\n\n| 編輯器 | 月費 | 適合 |\n|---|---|---|\n| **VS Code** | 免費 | ⭐ 業界標準、新手 |\n| **Cursor** | 免費 / $20 | ⭐ AI 寫程式神器 |\n| **PyCharm Community** | 免費 | 純 Python 專案 |\n| **JetBrains Fleet** | 免費 / $89/年 | JetBrains 派 |\n| **Vim / Neovim** | 免費 | 老手 / 終端機派 |\n\n  \n### 1. VS Code（最推薦新手）\n\n**為什麼**：免費 + 全平台（Mac / Windows / Linux）+ 業界最多人用 + 擴充強。\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n🖥️ **去網站下載 + 安裝**\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n```text\n1. 去 https://code.visualstudio.com 下載\n2. Mac：把 VS Code.app 拖進 Applications\n3. Windows：跑 installer、選「加入 PATH」\n4. Linux：apt install code（Ubuntu）\n```\n\n  \n**裝完必裝 5 個擴充：**\n\n```text\n🐍 Python（Microsoft 官方）\n   → 自動補完 + linter + debug\n   → 必裝\n\n📓 Jupyter（Microsoft 官方）\n   → VS Code 內跑 .ipynb\n   → 必裝\n\n🎨 Pylance\n   → Python 強化 type checker\n   → 跟 Python 一起裝\n\n🤖 GitHub Copilot（要訂閱 $10/月、學生免費）\n   → AI 自動寫 code\n   → 強烈推薦\n\n🎯 Ruff\n   → 超快 linter / formatter\n   → 取代 black / flake8 / isort\n```\n\n  \n**第一次設定：**\n\n```text\n1. 開 VS Code\n2. 開資料夾（Cmd/Ctrl + O）\n3. 新建 hello.py\n4. 寫 print(\"hello\")\n5. 右下角選 Python interpreter（uv 環境）\n6. 按 F5（或右上角 ▶）跑\n```\n\n  \n### 2. Cursor（AI 寫程式神器、2026 推薦）\n\n**為什麼**：VS Code fork、**內建 Claude / GPT** 寫 code、indie / 學生愛用。\n\n```text\n✅ 完全 fork VS Code\n   → 所有擴充能用\n\n✅ 內建 AI Chat\n   → Cmd+L 開 chat、問 code\n   → Cmd+K 直接改 code\n\n✅ Tab 自動補完\n   → 比 Copilot 智能\n\n✅ Agent 模式\n   → AI 自動跑多步驟（讀檔 / 改檔 / 跑測試）\n\n✅ 學生免費 1 年\n   → 用 .edu email 註冊\n```\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n🖥️ **下載 + 安裝**\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n```text\n去 https://cursor.com 下載\n裝完匯入 VS Code 設定（一鍵）\n```\n\n> 💡 **VS Code vs Cursor**：用 Cursor、回不去 VS Code。**2026 開發者標配**。\n\n  \n### 3. PyCharm（純 Python 派）\n\n```text\n✅ 純 Python IDE\n   → 比 VS Code 更深的 refactor / debug\n\n✅ Community 版免費\n   → 開源 + 商業可用\n\n❌ 比 VS Code 重\n❌ 啟動慢 5x\n❌ 只能寫 Python\n```\n\n**何時用**：(1) 純 Python 大專案 (2) 喜歡 IntelliJ 系列 IDE。\n\n  \n### 4. Jupyter Notebook（資料分析必裝）\n\n**Jupyter = 互動式筆記本**——一格一格寫 code、看結果、加 markdown 註解。\n\n**範例：**\n\n```text\n========================\n📝 Markdown cell\n========================\n# 我的第一個分析\n今天分析房價資料\n\n========================\n💻 Code cell\n========================\nimport pandas as pd\ndf = pd.read_csv(\"data.csv\")\ndf.head()\n\n========================\n📊 結果（自動顯示）\n========================\n[5 rows × 8 columns 的漂亮表格]\n\n========================\n💻 Code cell\n========================\ndf['price'].hist()\n\n========================\n📊 結果\n========================\n[直方圖、直接畫在 cell 下面]\n```\n\n  \n**安裝（用 uv）：**\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n🖥️ **在終端機輸入**\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n```text\nuv add jupyter notebook\nuv run jupyter notebook\n```\n\n**這 2 行做什麼？**\n- `uv add jupyter notebook` —— 裝 Jupyter（會自動加進 pyproject.toml）\n- `uv run jupyter notebook` —— 啟動本機 Jupyter server、自動開瀏覽器\n\n  \n**或者用 VS Code 內 Jupyter（推薦）：**\n\n```text\n1. VS Code 裝 Jupyter 擴充\n2. 新建 .ipynb 檔\n3. 右上角選 Python interpreter\n4. 寫 code、Shift+Enter 跑\n```\n\n> 💡 **2026 主流**：VS Code 內用 Jupyter > 純 Jupyter server。**統一 IDE、不用切換**。\n\n  \n### 5. Google Colab（雲端 Jupyter、新手最愛）\n\n**Colab = Google 提供的免費 Jupyter on cloud**。\n\n```text\n✅ 不用裝 Python\n   → 連網就能用\n\n✅ 免費 GPU / TPU\n   → 跑深度學習免費\n\n✅ 跟 Google Drive 整合\n   → 自動存\n\n✅ 分享簡單\n   → 給 link 就行\n\n✅ 預裝所有 ML 套件\n   → numpy / pandas / matplotlib / TensorFlow / PyTorch\n\n⚠️ 限制\n   - 12 小時自動斷線（免費版）\n   - 不適合長期專案\n   - 不能本機檔案直接操作\n```\n\n  \n**怎麼用：**\n\n```text\n1. 去 https://colab.research.google.com\n2. 用 Google 帳號登入\n3. 新建 notebook\n4. 寫 code + Shift+Enter 跑\n5. 可選「執行階段 → 變更執行階段類型」開 GPU\n```\n\n  \n### Colab vs Jupyter 對比\n\n| | Colab | Jupyter |\n|---|---|---|\n| **裝環境** | 不用 | 要 |\n| **免費 GPU** | ⭐ 有 | 沒 |\n| **跑大型專案** | ❌ 不行 | ✅ 行 |\n| **適合** | 學習 / 試 GPU / 分享 | 本機 / 大專案 |\n\n  \n### REPL（互動模式、最簡單）\n\n**REPL = Read-Eval-Print Loop**——「**邊讀邊跑邊印**」、終端機開個 Python 直接寫。\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n🖥️ **在終端機輸入**\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n```text\npython\n```\n\n**這行做什麼？** 進入 Python REPL（會看到 `>>>` 提示符）。\n\n```text\n>>> 1 + 1\n2\n>>> name = \"luffy\"\n>>> print(f\"hello {name}\")\nhello luffy\n>>> exit()\n```\n\n> 💡 **進階 REPL**：用 `ipython`（pip install ipython）—— 比預設 REPL 強 100x（自動補完 / 顏色 / magic commands）。\n\n  \n### IPython（升級版 REPL）\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n🖥️ **在終端機輸入**\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n```text\nuv add ipython\nuv run ipython\n```\n\n**這 2 行做什麼？**\n- `uv add ipython` —— 裝 IPython（互動式 Python shell 加強版）\n- `uv run ipython` —— 啟動 IPython\n\n**IPython 殺手特性：**\n\n```text\n✅ 自動補完（Tab）\n✅ 語法高亮\n✅ Magic commands\n   - %time 跑單行測時間\n   - %timeit 跑多次取平均\n   - %run script.py 跑檔案\n✅ 直接 paste 多行 code\n✅ 上下鍵翻歷史\n```\n\n  \n### 完整推薦 stack（2026 新手）\n\n```text\n=== 個人開發 / 學習 ===\n\n🖥️ 主力編輯器：Cursor（含 VS Code 全功能 + AI）\n🐍 Python：uv 管理（L1 教過）\n📓 Jupyter：VS Code 內 Jupyter 擴充\n☁️ GPU 跑 ML：Colab 免費版\n🐢 快速試 code：IPython\n🤖 AI 助手：Cursor 內建 + Claude.ai web\n\n=== 月成本 ===\n- Cursor Pro：$20/月（可不訂、用免費版）\n- Colab：$0\n- VS Code：$0\n- Python：$0\n\n→ 完全免費也能做完整開發\n```\n\n  \n### 編輯器 vs IDE 比較\n\n| | 編輯器（VS Code / Cursor） | IDE（PyCharm） |\n|---|---|---|\n| **重量** | ⭐ 輕 | 重 |\n| **啟動速度** | ⭐ 快 | 慢 |\n| **多語言** | ⭐ 全支援 | 主 Python |\n| **AI 整合** | ⭐ Cursor 強 | 中等 |\n| **Refactor** | 中 | ⭐ 最強 |\n| **Debug** | ✅ 完整 | ⭐ 最深 |\n| **學習曲線** | ⭐ 易 | 中 |\n| **2026 主流** | ⭐⭐⭐⭐⭐ | ⭐⭐ |\n\n  \n### 4 大常見坑\n\n```text\n1. ❌ 同時裝多個 Python interpreter 搞混\n   → VS Code 右下角永遠確認用哪個 interpreter\n   ✅ 用 uv 管理、每專案一個 .venv\n\n2. ❌ 在 VS Code 開新檔忘了選 interpreter\n   → 跑起來 import 找不到套件\n   ✅ 永遠先選 interpreter 再寫 code\n\n3. ❌ Jupyter cell 順序錯\n   → 上面 cell 改了沒重跑、下面用舊變數\n   ✅ 養成「Restart and Run All」習慣\n\n4. ❌ Colab 12 小時自動斷\n   → 重要訓練不要用免費版\n   ✅ 付 Colab Pro $10/月、12 小時 → 24 小時\n```\n\n  \n### 接下來\n\n```text\n✅ 你現在會了\n   → 用 VS Code / Cursor 寫 .py\n   → 用 Jupyter 做資料分析\n   → 用 Colab 跑 GPU\n   → 用 REPL / IPython 快速試 code\n\n▶ 下一課 L2\n   → 寫第一個變數 + Hello World\n   → 用你剛裝好的編輯器寫第一行 code\n```\n\n  \n    **☕ 用人話講**\n    \n寫 Python 工具 4 大方式：(1) **編輯器** 寫 .py 檔（VS Code / Cursor、業界標準） (2) **Jupyter** 互動筆記本（資料分析愛） (3) **Colab** 雲端免費 GPU（學習愛） (4) **REPL / IPython** 快速試。**2026 黃金組合**：Cursor + uv + Jupyter（VS Code 內）+ Colab GPU。**心法**：別糾結用哪個、先用 Cursor + uv 開始、之後場景需要再加 Jupyter / Colab。\n\n  \n\n  \n    \n      💼\n      接案小知識\n    \n    Indie / 接案工具選擇：(1) **Cursor + AI 助手** —— 開發效率 2-5x、月費 $20 投資報酬率超高 (2) **VS Code（免費）** —— 預算敏感、夠用 (3) **Colab GPU** —— 客戶要 ML demo、免費跑（不用買 GPU server） (4) **Jupyter notebook** —— 客戶交付資料分析報告、可互動、客戶愛。**心法**：工具值得花錢、別省、時間更貴。\n",
       "xp": 10,
-      "playgrounds": [],
+      "playgrounds": [
+        {
+          "key": "26.1.5.tools",
+          "language": "python",
+          "title": "檢查 Python 環境",
+          "initialCode": "# 確認 Python 環境\nimport sys\nimport platform\n\nprint(\"Python 版本:\", sys.version.split()[0])\nprint(\"作業系統:\", platform.system())\nprint(\"CPU 架構:\", platform.machine())\n\n# 列出已裝模組（前 5 個）\nimport pkgutil\nmodules = [m.name for m in pkgutil.iter_modules()][:5]\nprint(\"\\n已裝模組（前 5 個）:\", modules)\n",
+          "hint": "看你的 Python 版本 + OS 環境"
+        }
+      ],
       "exercise": null,
       "outline": [
         "4 大寫 Python 方式對比",
@@ -159,11 +176,11 @@
       "xp": 10,
       "playgrounds": [
         {
-          "key": "26.2.auto",
+          "key": "26.2.hello",
           "language": "python",
-          "title": "試試看",
-          "initialCode": "# Python 範例\ndef fibonacci(n):\n    a, b = 0, 1\n    for _ in range(n):\n        yield a\n        a, b = b, a + b\n\nprint(list(fibonacci(10)))\n\n# List comprehension\nsquares = [x**2 for x in range(1, 6)]\nprint(\"平方:\", squares)",
-          "hint": "改 code、按執行看結果"
+          "title": "第一個變數",
+          "initialCode": "# 變數 = 給資料取名字、之後用名字代表那筆資料\n\n# 數字\nage = 25\nheight = 175.5\n\n# 字串\nname = \"Luffy\"\ncity = \"Taipei\"\n\n# 布林（True / False）\nis_student = True\n\n# print 顯示\nprint(\"Name:\", name)\nprint(\"Age:\", age)\nprint(f\"Height: {height} cm\")\nprint(f\"Student? {is_student}\")\n\n# 變數可以「重新賦值」\nage = 26\nprint(f\"明年 {age} 歲\")\n",
+          "hint": "改 name / age、看輸出怎麼變"
         }
       ],
       "exercise": {
@@ -220,11 +237,11 @@
       "xp": 10,
       "playgrounds": [
         {
-          "key": "26.3.auto",
+          "key": "26.3.types",
           "language": "python",
-          "title": "試試看",
-          "initialCode": "# Python 範例\ndef fibonacci(n):\n    a, b = 0, 1\n    for _ in range(n):\n        yield a\n        a, b = b, a + b\n\nprint(list(fibonacci(10)))\n\n# List comprehension\nsquares = [x**2 for x in range(1, 6)]\nprint(\"平方:\", squares)",
-          "hint": "改 code、按執行看結果"
+          "title": "基本型態實驗",
+          "initialCode": "# Python 4 大基本型態\nint_val = 42                # 整數 int\nfloat_val = 3.14            # 浮點數 float\nstr_val = \"Hello\"           # 字串 str\nbool_val = True             # 布林 bool\n\n# 用 type() 查型態\nprint(\"int_val:\", type(int_val).__name__, \"=\", int_val)\nprint(\"float_val:\", type(float_val).__name__, \"=\", float_val)\nprint(\"str_val:\", type(str_val).__name__, \"=\", str_val)\nprint(\"bool_val:\", type(bool_val).__name__, \"=\", bool_val)\n\n# 型態轉換\nnum_str = \"123\"\nnum_int = int(num_str)\nprint(f\"\\n字串 '{num_str}' → 整數 {num_int}、相加 +1 = {num_int + 1}\")\n\n# 字串相乘（重複）\nprint(\"=\" * 20)\nprint(\"Python 太強了！\" * 3)\n",
+          "hint": "改數值、試 int(\"abc\") 看會發生什麼錯"
         }
       ],
       "exercise": {
@@ -265,11 +282,11 @@
       "xp": 10,
       "playgrounds": [
         {
-          "key": "26.4.auto",
+          "key": "26.4.containers",
           "language": "python",
-          "title": "試試看",
-          "initialCode": "# Python 範例\ndef fibonacci(n):\n    a, b = 0, 1\n    for _ in range(n):\n        yield a\n        a, b = b, a + b\n\nprint(list(fibonacci(10)))\n\n# List comprehension\nsquares = [x**2 for x in range(1, 6)]\nprint(\"平方:\", squares)",
-          "hint": "改 code、按執行看結果"
+          "title": "4 大容器",
+          "initialCode": "# Python 4 大容器：list / tuple / set / dict\n\n# === List：有順序、可改 ===\nfruits = [\"apple\", \"banana\", \"cherry\"]\nfruits.append(\"date\")          # 加一個\nprint(\"List:\", fruits)\nprint(\"第 1 個:\", fruits[0])\n\n# === Tuple：有順序、不可改（更輕量）===\ncoords = (25.033, 121.5654)\nprint(f\"\\nTuple 座標: 緯度 {coords[0]}, 經度 {coords[1]}\")\n\n# === Set：無序、自動去重 ===\ntags = {\"python\", \"ai\", \"indie\", \"python\"}   # 重複的 python 會去掉\nprint(\"\\nSet 去重:\", tags)\n\n# === Dict：key-value 配對 ===\nuser = {\"name\": \"Luffy\", \"age\": 30, \"city\": \"Taipei\"}\nprint(\"\\nDict:\", user)\nprint(\"Name:\", user[\"name\"])\nprint(\"Age:\", user.get(\"age\"))\n",
+          "hint": "加 / 改 / 刪 list 看效果、試 dict[\"不存在\"] 看會錯"
         }
       ],
       "exercise": {
@@ -318,11 +335,11 @@
       "xp": 15,
       "playgrounds": [
         {
-          "key": "26.5.auto",
+          "key": "26.5.flow",
           "language": "python",
-          "title": "試試看",
-          "initialCode": "# Python 範例\ndef fibonacci(n):\n    a, b = 0, 1\n    for _ in range(n):\n        yield a\n        a, b = b, a + b\n\nprint(list(fibonacci(10)))\n\n# List comprehension\nsquares = [x**2 for x in range(1, 6)]\nprint(\"平方:\", squares)",
-          "hint": "改 code、按執行看結果"
+          "title": "流程控制",
+          "initialCode": "# if / for / while + List Comprehension\n\n# === if / elif / else ===\nscore = 85\nif score >= 90:\n    grade = \"A\"\nelif score >= 80:\n    grade = \"B\"\nelif score >= 70:\n    grade = \"C\"\nelse:\n    grade = \"F\"\nprint(f\"分數 {score} → 等級 {grade}\")\n\n# === for loop ===\nprint(\"\\n=== for ===\")\nfor i in range(5):\n    print(f\"  第 {i+1} 次\")\n\n# === while loop ===\nprint(\"\\n=== while ===\")\ncount = 0\nwhile count < 3:\n    print(f\"  count = {count}\")\n    count += 1\n\n# === List Comprehension（最 Pythonic 寫法）===\nsquares = [x ** 2 for x in range(1, 6)]\nprint(\"\\n平方:\", squares)\n\n# 加條件\nevens = [x for x in range(1, 11) if x % 2 == 0]\nprint(\"偶數:\", evens)\n",
+          "hint": "改 score 看 grade、試不同 range 範圍"
         }
       ],
       "exercise": {
@@ -395,6 +412,15 @@
           "level": 3,
           "text": "Scope（作用域）"
         }
+      ],
+      "playgrounds": [
+        {
+          "key": "26.6.functions",
+          "language": "python",
+          "title": "def 函數",
+          "initialCode": "# Python 函數：def 定義、可重複用\n\n# === 基本函數 ===\ndef greet(name):\n    return f\"Hello, {name}!\"\n\nprint(greet(\"Luffy\"))\nprint(greet(\"AI 島\"))\n\n# === 預設值 ===\ndef power(base, exp=2):\n    return base ** exp\n\nprint(f\"\\n5 的平方 = {power(5)}\")\nprint(f\"5 的 3 次方 = {power(5, 3)}\")\n\n# === *args（不定數量參數）===\ndef sum_all(*numbers):\n    return sum(numbers)\n\nprint(f\"\\n1+2+3 = {sum_all(1, 2, 3)}\")\nprint(f\"1+2+3+4+5 = {sum_all(1, 2, 3, 4, 5)}\")\n\n# === lambda（匿名函數、一行函數）===\ndouble = lambda x: x * 2\nprint(f\"\\nlambda double(7) = {double(7)}\")\n\n# === 配 sorted 用 ===\npeople = [{\"name\": \"A\", \"age\": 30}, {\"name\": \"B\", \"age\": 25}, {\"name\": \"C\", \"age\": 35}]\nsorted_by_age = sorted(people, key=lambda p: p[\"age\"])\nprint(\"\\n按年齡排:\", [p[\"name\"] for p in sorted_by_age])\n",
+          "hint": "寫你自己的函數、用 *args 試試"
+        }
       ]
     },
     {
@@ -438,6 +464,15 @@
         {
           "level": 3,
           "text": "Virtual Environment（虛擬環境）"
+        }
+      ],
+      "playgrounds": [
+        {
+          "key": "26.7.modules",
+          "language": "python",
+          "title": "內建模組",
+          "initialCode": "# Python 內建模組：不用裝、直接 import\n\n# === 1. math：數學 ===\nimport math\nprint(\"π =\", math.pi)\nprint(\"sqrt(16) =\", math.sqrt(16))\nprint(\"sin(π/2) =\", math.sin(math.pi / 2))\n\n# === 2. random：隨機 ===\nimport random\nprint(\"\\n隨機 0-100:\", random.randint(0, 100))\nprint(\"隨機選一個:\", random.choice([\"apple\", \"banana\", \"cherry\"]))\n\n# === 3. datetime：時間 ===\nfrom datetime import datetime, timedelta\nnow = datetime.now()\nprint(f\"\\n現在: {now}\")\nprint(f\"7 天後: {now + timedelta(days=7)}\")\n\n# === 4. json：JSON 處理 ===\nimport json\ndata = {\"name\": \"Luffy\", \"tags\": [\"python\", \"ai\"]}\njson_str = json.dumps(data, ensure_ascii=False)\nprint(f\"\\nJSON: {json_str}\")\n\nparsed = json.loads(json_str)\nprint(f\"Parsed back: {parsed['name']}\")\n\n# === 5. os：作業系統 ===\nimport os\nprint(f\"\\n當前目錄: {os.getcwd()}\")\n",
+          "hint": "試其他內建模組：sys / time / re / collections"
         }
       ]
     },
@@ -483,6 +518,15 @@
           "level": 3,
           "text": "環境變數（.env）"
         }
+      ],
+      "playgrounds": [
+        {
+          "key": "26.8.io",
+          "language": "python",
+          "title": "檔案操作（記憶體模擬）",
+          "initialCode": "# 沙盒不能真的寫檔、但可以用 StringIO 模擬\nimport io\nimport csv\nimport json\n\n# === 用 StringIO 當虛擬檔案 ===\n\n# 1. 寫 + 讀 CSV\ncsv_buffer = io.StringIO()\nwriter = csv.writer(csv_buffer)\nwriter.writerow([\"name\", \"age\", \"city\"])\nwriter.writerow([\"Luffy\", 30, \"Taipei\"])\nwriter.writerow([\"Nami\", 28, \"Tokyo\"])\n\nprint(\"=== CSV 內容 ===\")\nprint(csv_buffer.getvalue())\n\n# 讀回來\ncsv_buffer.seek(0)\nreader = csv.DictReader(csv_buffer)\nprint(\"=== 讀回來 ===\")\nfor row in reader:\n    print(f\"  {row['name']} ({row['age']}歲) @ {row['city']}\")\n\n# 2. JSON\nprint(\"\\n=== JSON ===\")\ndata = {\"users\": [{\"name\": \"Luffy\", \"age\": 30}]}\njson_str = json.dumps(data, indent=2, ensure_ascii=False)\nprint(json_str)\n\n# === with 語法（自動關檔）===\n# 實際檔案：\n# with open(\"data.txt\", \"w\") as f:\n#     f.write(\"Hello\")\n# with open(\"data.txt\", \"r\") as f:\n#     print(f.read())\nprint(\"\\n（實際檔案操作要在本機 Python 環境跑）\")\n",
+          "hint": "改 CSV 內容、加更多 row"
+        }
       ]
     },
     {
@@ -518,6 +562,15 @@
         {
           "level": 3,
           "text": "自訂 Exception"
+        }
+      ],
+      "playgrounds": [
+        {
+          "key": "26.9.exceptions",
+          "language": "python",
+          "title": "錯誤處理 try / except",
+          "initialCode": "# try / except：抓錯不讓程式 crash\n\n# === 基本 try / except ===\ndef safe_divide(a, b):\n    try:\n        result = a / b\n        return f\"答案是 {result}\"\n    except ZeroDivisionError:\n        return \"❌ 不能除以 0\"\n    except TypeError:\n        return \"❌ 型別錯誤\"\n\nprint(safe_divide(10, 2))\nprint(safe_divide(10, 0))      # 觸發 ZeroDivisionError\nprint(safe_divide(10, \"abc\"))  # 觸發 TypeError\n\n# === try / except / else / finally ===\ndef read_data(value):\n    try:\n        num = int(value)\n    except ValueError as e:\n        print(f\"❌ 解析失敗：{e}\")\n    else:\n        print(f\"✓ 解析成功：{num}\")\n    finally:\n        print(f\"--- 處理 '{value}' 結束 ---\\n\")\n\nread_data(\"123\")\nread_data(\"abc\")\n\n# === 自訂 Exception ===\nclass AgeError(Exception):\n    pass\n\ndef check_age(age):\n    if age < 0:\n        raise AgeError(f\"年齡不能負數: {age}\")\n    if age > 150:\n        raise AgeError(f\"年齡太大: {age}\")\n    return age\n\ntry:\n    check_age(-5)\nexcept AgeError as e:\n    print(f\"自訂錯誤：{e}\")\n",
+          "hint": "改數字試不同錯誤、寫你自己的 Exception"
         }
       ]
     },
@@ -563,6 +616,15 @@
           "level": 3,
           "text": "Property（property decorator）"
         }
+      ],
+      "playgrounds": [
+        {
+          "key": "26.10.oop",
+          "language": "python",
+          "title": "class 物件導向",
+          "initialCode": "# Python OOP：class、繼承、dataclass\n\n# === 1. 基本 class ===\nclass Animal:\n    def __init__(self, name, sound):\n        self.name = name\n        self.sound = sound\n\n    def speak(self):\n        return f\"{self.name} says {self.sound}!\"\n\ndog = Animal(\"Rex\", \"Woof\")\ncat = Animal(\"Mimi\", \"Meow\")\nprint(dog.speak())\nprint(cat.speak())\n\n# === 2. 繼承 ===\nclass Dog(Animal):\n    def __init__(self, name, breed):\n        super().__init__(name, \"Woof\")\n        self.breed = breed\n\n    def fetch(self):\n        return f\"{self.name} ({self.breed}) is fetching the ball!\"\n\nrex = Dog(\"Rex\", \"柴犬\")\nprint(\"\\n\" + rex.speak())\nprint(rex.fetch())\n\n# === 3. dataclass（Python 3.7+ 推薦寫 class 方式）===\nfrom dataclasses import dataclass\n\n@dataclass\nclass Point:\n    x: float\n    y: float\n\n    def distance_to(self, other):\n        return ((self.x - other.x) ** 2 + (self.y - other.y) ** 2) ** 0.5\n\np1 = Point(0, 0)\np2 = Point(3, 4)\nprint(f\"\\n{p1} 到 {p2} 距離 = {p1.distance_to(p2)}\")\n",
+          "hint": "寫你自己的 class、加 method"
+        }
       ]
     },
     {
@@ -598,6 +660,15 @@
         {
           "level": 3,
           "text": "實戰：3 個進階組合"
+        }
+      ],
+      "playgrounds": [
+        {
+          "key": "26.11.advanced",
+          "language": "python",
+          "title": "Decorator + Generator",
+          "initialCode": "# Python 進階：decorator / generator / context manager\n\n# === 1. Decorator（裝飾器）===\nimport time\n\ndef timer(func):\n    \"\"\"計時 decorator\"\"\"\n    def wrapper(*args, **kwargs):\n        start = time.time()\n        result = func(*args, **kwargs)\n        elapsed = time.time() - start\n        print(f\"⏱️ {func.__name__} took {elapsed*1000:.2f}ms\")\n        return result\n    return wrapper\n\n@timer\ndef slow_function():\n    time.sleep(0.1)\n    return \"done\"\n\nslow_function()\n\n# === 2. Generator（用 yield 一筆一筆給）===\ndef fibonacci(n):\n    a, b = 0, 1\n    for _ in range(n):\n        yield a\n        a, b = b, a + b\n\nprint(\"\\nFibonacci:\", list(fibonacci(10)))\n\n# === 3. 配記憶體友善處理大數據 ===\ndef number_squares(n):\n    \"\"\"產生 n 個平方數、不全載入記憶體\"\"\"\n    for i in range(1, n + 1):\n        yield i * i\n\n# 用 generator expression（最簡寫法）\ntotal = sum(x * x for x in range(1, 1001))\nprint(f\"\\n1-1000 的平方和 = {total:,}\")\n\n# === 4. Context Manager（with 語法）===\nfrom contextlib import contextmanager\n\n@contextmanager\ndef section(name):\n    print(f\"\\n--- 開始 {name} ---\")\n    yield\n    print(f\"--- 結束 {name} ---\")\n\nwith section(\"我的區塊\"):\n    print(\"在區塊內做事\")\n",
+          "hint": "試寫你自己的 decorator"
         }
       ]
     },
@@ -650,6 +721,15 @@
         {
           "level": 3,
           "text": "實戰例子"
+        }
+      ],
+      "playgrounds": [
+        {
+          "key": "26.12.types",
+          "language": "python",
+          "title": "Type Hints",
+          "initialCode": "# Type Hints：給函數加型別提示\n\nfrom typing import Optional, Literal\n\n# === 基本 type hint ===\ndef greet(name: str, age: int) -> str:\n    return f\"{name} is {age} years old\"\n\nprint(greet(\"Luffy\", 30))\n\n# === Optional（可以是 None）===\ndef find_user(user_id: int) -> Optional[dict]:\n    users = {1: {\"name\": \"Luffy\"}, 2: {\"name\": \"Nami\"}}\n    return users.get(user_id)\n\nprint(find_user(1))   # 找到\nprint(find_user(99))  # None\n\n# === Literal（限定值）===\ndef set_status(status: Literal[\"pending\", \"active\", \"deleted\"]) -> str:\n    return f\"Status set to: {status}\"\n\nprint(set_status(\"active\"))\n# set_status(\"foo\")  # mypy 會告警\n\n# === list[str] / dict[str, int]（Python 3.9+）===\ndef process_items(items: list[str]) -> dict[str, int]:\n    return {item: len(item) for item in items}\n\nresult = process_items([\"apple\", \"banana\", \"cherry\"])\nprint(result)\n\n# === 自訂 type ===\nfrom typing import TypedDict\n\nclass User(TypedDict):\n    name: str\n    age: int\n    email: str\n\ndef show_user(user: User) -> None:\n    print(f\"{user['name']} ({user['age']}) - {user['email']}\")\n\nshow_user({\"name\": \"Luffy\", \"age\": 30, \"email\": \"luffy@example.com\"})\n",
+          "hint": "寫帶 type hint 的函數、體驗 IDE 自動補完"
         }
       ]
     },
