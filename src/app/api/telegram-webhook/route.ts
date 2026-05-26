@@ -72,6 +72,73 @@ function adminConsoleUrl(): string {
   return `${site}/${slug}/admin`;
 }
 
+function siteUrl(): string {
+  return process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
+}
+
+// AI 錯誤翻人話、不 dump raw JSON 給林董看醜訊息
+function friendlyTelegramAIError(provider: string, msg: string): { text: string; hint: string; fixUrl?: string } {
+  const lower = msg.toLowerCase();
+  if (/401|invalid.*api.*key|authentication/.test(lower)) {
+    return {
+      text: `${provider} API key 失效（401）`,
+      hint: "去後台貼新 key",
+      fixUrl: `${adminConsoleUrl()}/ai/models`,
+    };
+  }
+  if (/429|rate.*limit/.test(lower)) {
+    return { text: `${provider} 限流（429）`, hint: "等 1 分鐘再問、或升 API tier" };
+  }
+  if (/529|overloaded/.test(lower)) {
+    return { text: `${provider} 主機過載（529）`, hint: "等 10 秒重試、或換模型" };
+  }
+  if (/timeout|abort/.test(lower)) {
+    return { text: "AI 回應太慢、超過時限", hint: "再傳一次" };
+  }
+  if (/model.*not.*found|404/.test(lower)) {
+    return {
+      text: `模型不存在或無權限`,
+      hint: "去後台換 model",
+      fixUrl: `${adminConsoleUrl()}/ai/models`,
+    };
+  }
+  return { text: msg.slice(0, 100), hint: "看 /admin/errors 抓 stack" };
+}
+
+function buildAIErrorHTML(err: { text: string; hint: string; fixUrl?: string }, model: string): { html: string; keyboard?: any[][] } {
+  const html = [
+    "⚠️ <b>AI 暫時不能回</b>",
+    "",
+    `<i>${escapeHTML(err.text)}</i>`,
+    "",
+    `💡 <b>解法：</b>${escapeHTML(err.hint)}`,
+    "",
+    `<code>model: ${escapeHTML(model)}</code>`,
+  ].join("\n");
+  const keyboard: any[][] = [];
+  if (err.fixUrl) keyboard.push([{ text: "🔧 去後台修", url: err.fixUrl }]);
+  keyboard.push([{ text: "🛡️ 看 error log", url: `${adminConsoleUrl()}/errors` }]);
+  return { html, keyboard };
+}
+
+// 把 AI 回覆包成 Telegram HTML 美化卡（footer 帶 model / 時間 / 後台按鈕）
+function buildAIReplyHTML(reply: string, modelTag: string): { html: string; keyboard: any[][] } {
+  const escapedReply = escapeHTML(reply.slice(0, 3500));
+  const html = [
+    escapedReply,
+    "",
+    `━━━━━━━━━━`,
+    `🤖 <i>${escapeHTML(modelTag)}</i> · <code>${new Date().toLocaleTimeString("zh-TW", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Taipei" })}</code>`,
+  ].join("\n");
+  const keyboard: any[][] = [
+    [
+      { text: "📊 後台", url: adminConsoleUrl() },
+      { text: "🔁 切 model", callback_data: "switch_model" },
+    ],
+  ];
+  return { html, keyboard };
+}
+
 // 把 BotReply.text 包成 Telegram HTML 美化版
 function dressUpAdminReply(rawText: string, cmd: string): { html: string; keyboard?: any[][] } {
   // 標題列 (第一行通常是「📊 今日 KPI」之類) — 包成 <b>
@@ -151,49 +218,64 @@ export async function POST(req: NextRequest) {
     const state = getState(chatId);
 
     if (cmd === "start" || cmd === "help") {
-      await tgSend(token, chatId,
-        "👋 *AI 島 Telegram bot*\n\n" +
-        "直接傳訊息 → 跟 AI 對話\n\n" +
-        "*🤖 AI 對話*\n" +
-        "`/model` — 看可用 model 清單 + 當前選擇\n" +
-        "`/model <name>` — 切換 model\n" +
-        "`/clear` — 清對話歷史\n" +
-        "`/whoami` — 看 chat_id / user_id\n\n" +
-        "*📊 報表*\n" +
-        "`/today` — 今日 KPI\n" +
-        "`/kpi 7` — N 天 KPI\n" +
-        "`/online` — 線上人數\n" +
-        "`/sub` — 訂閱概覽\n" +
-        "`/orders [N]` — 最近訂單\n" +
-        "`/ai-cost [天數]` — AI 用量\n" +
-        "`/quiz` — 今日測驗\n" +
-        "`/island` — 島嶼統計\n\n" +
-        "*👤 用戶*\n" +
-        "`/users` — 最近註冊\n" +
-        "`/churn` — 流失預警\n" +
-        "`/leetcode [user]` — leetcode 進度\n\n" +
-        "*⚙️ 動作*\n" +
-        "`/notify [訊息]` — 全站廣播\n" +
-        "`/maint on|off` — 維護模式\n" +
-        "`/feature key on|off` — feature flag\n" +
-        "`/email [user] [內容]`\n" +
-        "`/refund [order_id]`\n" +
-        "`/grant [user] [amount]`（雙重確認）\n\n" +
-        "*🛠️ 系統*\n" +
-        "`/errors` — 最近錯誤\n" +
-        "`/prefs` — 個人通知偏好",
-      );
+      const html = [
+        "👋 <b>AI 島 Telegram bot</b>",
+        "<i>直接傳訊息 → 跟 AI 對話</i>",
+        "",
+        "🤖 <b>AI 對話</b>",
+        "<code>/model</code> 看 model 清單 / <code>/model &lt;name&gt;</code> 切換",
+        "<code>/clear</code> 清歷史 · <code>/whoami</code> 看身份",
+        "",
+        "📊 <b>報表</b>",
+        "<code>/today</code> · <code>/kpi 7</code> · <code>/online</code> · <code>/sub</code>",
+        "<code>/orders</code> · <code>/ai-cost</code> · <code>/quiz</code> · <code>/island</code>",
+        "",
+        "👤 <b>用戶</b>",
+        "<code>/users</code> · <code>/churn</code> · <code>/leetcode [user]</code>",
+        "",
+        "⚙️ <b>動作</b>",
+        "<code>/notify [訊息]</code> · <code>/maint on|off</code> · <code>/feature key on|off</code>",
+        "<code>/email [user] [內容]</code> · <code>/refund [id]</code> · <code>/grant [user] [amount]</code>",
+        "",
+        "🛡️ <b>系統</b>",
+        "<code>/errors</code> · <code>/prefs</code>",
+      ].join("\n");
+      await tgSend(token, chatId, html, {
+        parseMode: "HTML",
+        keyboard: [
+          [{ text: "📊 後台首頁", url: adminConsoleUrl() }],
+          [
+            { text: "📈 今日 KPI", callback_data: "cmd:today" },
+            { text: "🛡️ 錯誤監控", url: `${adminConsoleUrl()}/errors` },
+          ],
+        ],
+      });
       return NextResponse.json({ ok: true });
     }
 
     if (cmd === "whoami") {
-      await tgSend(token, chatId, `🆔 chat_id: \`${chatId}\`\nuser_id: \`${tgUserId}\`\nusername: ${tgUsername ?? "(none)"}\n當前 model: \`${state.model_name ?? "(預設)"}\``);
+      const html = [
+        "🆔 <b>你的 Telegram 身份</b>",
+        "",
+        `<code>chat_id: ${chatId}</code>`,
+        `<code>user_id: ${tgUserId}</code>`,
+        `<code>username: ${escapeHTML(tgUsername ?? "(none)")}</code>`,
+        `<code>model: ${escapeHTML(state.model_name ?? "(預設)")}</code>`,
+        "",
+        "✅ <i>已通過 owner 白名單驗證</i>",
+      ].join("\n");
+      await tgSend(token, chatId, html, {
+        parseMode: "HTML",
+        keyboard: [[{ text: "📊 後台", url: adminConsoleUrl() }]],
+      });
       return NextResponse.json({ ok: true });
     }
 
     if (cmd === "clear") {
       state.history = [];
-      await tgSend(token, chatId, "✨ 對話歷史已清空");
+      await tgSend(token, chatId, "✨ <b>對話歷史已清空</b>\n下一句重新開始。", {
+        parseMode: "HTML",
+      });
       return NextResponse.json({ ok: true });
     }
 
@@ -246,12 +328,15 @@ export async function POST(req: NextRequest) {
           keyboard,
         });
       } catch (e: any) {
-        await tgSend(token, chatId, `❌ /${cmd} 失敗：${escapeHTML(e?.message ?? "unknown")}`, { parseMode: "HTML" });
+        await tgSend(token, chatId, `❌ <b>/${escapeHTML(cmd)} 失敗</b>\n<i>${escapeHTML(e?.message ?? "unknown")}</i>`, { parseMode: "HTML" });
       }
       return NextResponse.json({ ok: true });
     }
 
-    await tgSend(token, chatId, `❓ 未知命令 /${cmd}、傳 /help 看清單`);
+    await tgSend(token, chatId, `❓ <b>未知命令 /${escapeHTML(cmd)}</b>\n傳 <code>/help</code> 看清單`, {
+      parseMode: "HTML",
+      keyboard: [[{ text: "📖 /help", callback_data: "cmd:help" }]],
+    });
     return NextResponse.json({ ok: true });
   }
 
@@ -319,9 +404,16 @@ export async function POST(req: NextRequest) {
     });
     const reply = r.text?.trim() || "(AI 沒回應、再試一次)";
     state.history.push({ role: "assistant", content: reply });
-    await tgSend(token, chatId, reply, msg.message_id);
+    const { html, keyboard } = buildAIReplyHTML(reply, `${model.provider}/${model.model_name}`);
+    await tgSend(token, chatId, html, {
+      parseMode: "HTML",
+      replyTo: msg.message_id,
+      keyboard,
+    });
   } catch (e: any) {
-    await tgSend(token, chatId, `❌ AI 失敗: ${e?.message ?? "unknown"}`);
+    const err = friendlyTelegramAIError(model.provider, e?.message ?? "unknown");
+    const { html, keyboard } = buildAIErrorHTML(err, `${model.provider}/${model.model_name}`);
+    await tgSend(token, chatId, html, { parseMode: "HTML", keyboard });
     try {
       await adminDb.from("error_logs").insert({
         source: "telegram-webhook",
