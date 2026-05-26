@@ -144,7 +144,7 @@ export function PlaygroundCard({
   lessonId: string;
   isLoggedIn: boolean;
 }) {
-  const [lang, setLang] = useState(playground.language);
+  const [lang, setLang] = useState<string>(playground.language);
   const [code, setCode] = useState(playground.initialCode);
   const [stdin, setStdin] = useState("");
   const [output, setOutput] = useState("");
