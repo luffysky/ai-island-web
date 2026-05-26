@@ -1,0 +1,122 @@
+### 整體架構
+
+```text
+┌────────────────────────────────────────────┐
+│            Scheduler (Go)                  │
+│   每天產生 1000 萬 URL 進 Redis Queue       │
+└─────────────────┬──────────────────────────┘
+                  ↓
+        ┌─────────┴─────────┐
+        │   Redis Cluster   │  (3 node, HA)
+        │  - urls (queue)   │
+        │  - seen (set, 去重) │
+        │  - results (list)  │
+        └─────────┬─────────┘
+                  ↓
+   ┌──────────────┴──────────────┐
+   ↓                              ↓
+┌──────────┐                ┌──────────┐
+│  Worker  │  × 50          │  Worker  │  (K8s HPA 自動擴展)
+│ (Go colly)│                │ (Go colly)│
+└────┬─────┘                └────┬─────┘
+     ↓                            ↓
+┌─────────────────────────────────────┐
+│       PostgreSQL Master + Replica    │
+│   - products (主表)                  │
+│   - prices (時序、按日期 partition)    │
+└──────────────────────────────────────┘
+     ↓
+┌─────────────────────────────────────┐
+│    S3 / Cloudflare R2（原始 HTML 備份）│
+└──────────────────────────────────────┘
+```
+
+
+### 關鍵設計決策
+
+
+#### 1. URL 去重（避免重複爬）
+
+```go
+// 用 Redis SET 存已爬 URL hash
+import "crypto/sha256"
+
+func isSeen(url string) bool {
+    hash := fmt.Sprintf("%x", sha256.Sum256([]byte(url)))
+    exists, _ := redis.SIsMember(ctx, "seen", hash).Result()
+    return exists
+}
+
+func markSeen(url string) {
+    hash := fmt.Sprintf("%x", sha256.Sum256([]byte(url)))
+    redis.SAdd(ctx, "seen", hash)
+    redis.Expire(ctx, "seen", 24*time.Hour)  // 24h 過期
+}
+```
+
+
+#### 2. Rate Limiting（不打爆對方）
+
+```go
+// 每個 domain 各自限流
+import "golang.org/x/time/rate"
+
+var limiters = make(map[string]*rate.Limiter)
+var mu sync.Mutex
+
+func getLimiter(domain string) *rate.Limiter {
+    mu.Lock()
+    defer mu.Unlock()
+    if l, ok := limiters[domain]; ok {
+        return l
+    }
+    // 每秒 5 個請求、burst 10
+    l := rate.NewLimiter(5, 10)
+    limiters[domain] = l
+    return l
+}
+
+// 使用
+limiter := getLimiter("example.com")
+limiter.Wait(ctx)  // block 直到 token 可用
+fetch(url)
+```
+
+
+#### 3. 錯誤分類 + 重試
+
+```go
+func shouldRetry(err error, statusCode int) bool {
+    // 4xx 不重試（資料問題）
+    if statusCode >= 400 && statusCode = 500 || isNetworkError(err) {
+        return true
+    }
+    return false
+}
+
+// Exponential backoff 重試
+for attempt := 0; attempt  10% → 立刻通知
+- Worker < 5 個活著 → 緊急通知
+- 24h 爬不到資料 → 半夜叫醒工程師
+```
+
+
+#### 5. 成本估算
+
+```text
+# 每天爬 1000 萬頁的成本（2026 報價）
+- 50 個 worker × $20/月 = $1000  (Hetzner)
+- Redis Cluster (3 node) = $60/月
+- PostgreSQL (managed) = $200/月
+- Residential Proxy (1TB/月) = $5000
+- S3 / R2 儲存 = $30/月
+- Cloudflare CDN = $20/月
+- Monitoring (Grafana Cloud) = $50/月
+─────────────────────────────────
+總計：~ $6360/月
+
+# 對比客戶價值
+- 月費 SaaS NT$ 5000 × 100 客戶 = NT$ 500K/月
+- 毛利率：60%+
+- 一人公司可運營
+```

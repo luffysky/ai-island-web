@@ -1,0 +1,45 @@
+## Python
+**強**：Scrapy 最強框架、BS4 解析強、pandas 一條龍、生態完整
+**弱**：跑得慢、並發要 async
+
+## Node / TS
+**強**：動態網站原生、同 stack、Cloudflare Workers 部署友善
+**弱**：沒 Scrapy 等級框架、資料分析弱
+
+## Go
+**強**：快、單一 binary、並發超強（goroutine）、適合大規模
+**弱**：生態小、解析弱（colly）
+
+## Rust
+**強**：最快、記憶體安全、適合 long-running
+**弱**：學習超陡、生態小
+
+## 對比
+
+| 面向 | Python | Node | Go | Rust |
+|---|---|---|---|---|
+| 速度 | 慢 | 中 | 快 | 最快 |
+| 學習 | 平 | 平 | 中 | 陡 |
+| 框架 | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ | - |
+| 招募 | 多 | 多 | 中 | 少 |
+
+## 怎麼選
+
+### 個人 / Indie
+- 已會 JS → Node
+- 已會 Python → Python
+- 都不會 → Python
+
+### 公司
+- 看技術 stack
+- Python 是萬用解
+
+### 規模化
+- 中等：Python / Node
+- 巨大：Go / Rust
+
+## 真實 stack
+- Indie：Python（90%）
+- 電商：Python + JS
+- 金融：Go / Rust
+- AI 訓練資料：Python

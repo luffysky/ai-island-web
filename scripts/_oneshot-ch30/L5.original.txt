@@ -1,0 +1,153 @@
+### 架構圖（概念）
+
+```text
+┌─────────────┐
+│  Scheduler  │ 產生 URL 任務丟進 Redis
+└──────┬──────┘
+       ↓
+┌─────────────┐
+│ Redis Queue │  URLs 待爬清單
+└──────┬──────┘
+       ↓ (多 worker 競爭拿任務)
+   ┌───┴───┬─────┬─────┐
+   ↓       ↓     ↓     ↓
+┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐
+│Worker│ │Worker│ │Worker│ │Worker│  ← 10 台機器
+└──┬───┘ └──┬───┘ └──┬───┘ └──┬───┘
+   ↓       ↓        ↓        ↓
+┌──────────────────────────────┐
+│         Database (PG)        │  結果寫入
+└──────────────────────────────┘
+```
+
+
+### Python 版（Redis Queue / RQ）
+
+```bash
+pip install rq redis
+```
+
+```python
+# tasks.py
+import requests
+from bs4 import BeautifulSoup
+
+def scrape_url(url):
+    res = requests.get(url, timeout=30)
+    soup = BeautifulSoup(res.text, 'lxml')
+    return {
+        'url': url,
+        'title': soup.select_one('h1').text,
+    }
+
+# scheduler.py（產生任務）
+from redis import Redis
+from rq import Queue
+from tasks import scrape_url
+
+q = Queue(connection=Redis())
+
+urls = [f'https://example.com/page/{i}' for i in range(1000)]
+for url in urls:
+    q.enqueue(scrape_url, url)
+
+# worker.py（多台機器跑）
+# bash: rq worker
+```
+
+
+### Node 版（BullMQ）
+
+```bash
+npm install bullmq
+```
+
+```javascript
+// queue.js
+import { Queue, Worker } from 'bullmq';
+
+const queue = new Queue('scraper', {
+  connection: { host: 'localhost', port: 6379 }
+});
+
+// 產生任務
+for (let i = 0; i  {
+  const { url } = job.data;
+  const res = await fetch(url);
+  const html = await res.text();
+  // ... 處理
+  return { url, scraped: true };
+}, {
+  connection: { host: 'localhost', port: 6379 },
+  concurrency: 10  // 每個 worker 並發 10
+});
+```
+
+
+### 部署到多台（Docker Swarm / Kubernetes）
+
+```yaml
+# docker-compose.yml
+version: '3.8'
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  scheduler:
+    build: .
+    command: node scheduler.js
+    depends_on:
+      - redis
+
+  worker:
+    build: .
+    command: node worker.js
+    depends_on:
+      - redis
+    deploy:
+      replicas: 10  # 10 個 worker
+```
+
+
+### Kubernetes（雲端 scaling）
+
+```yaml
+# k8s deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scraper-worker
+spec:
+  replicas: 50  # 50 個 worker pod
+  template:
+    spec:
+      containers:
+      - name: worker
+        image: my-scraper:latest
+        env:
+        - name: REDIS_URL
+          value: "redis://redis-service:6379"
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+```
+
+
+### 監控（Bull Board / Grafana）
+
+```javascript
+import { ExpressAdapter } from '@bull-board/express';
+import { createBullBoard } from '@bull-board/api';
+
+const serverAdapter = new ExpressAdapter();
+createBullBoard({
+  queues: [new BullMQAdapter(queue)],
+  serverAdapter,
+});
+
+app.use('/admin/queues', serverAdapter.getRouter());
+// → 開 /admin/queues 看任務進度
+```

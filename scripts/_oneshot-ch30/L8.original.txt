@@ -1,0 +1,89 @@
+## 為什麼 Go
+- ⚡ 快、編譯
+- 🚀 並發（goroutine）
+- 📦 單一 binary
+
+## 安裝
+```bash
+go get -u github.com/gocolly/colly/v2
+```
+
+## Hello World
+```go
+package main
+
+import (
+    "fmt"
+    "github.com/gocolly/colly/v2"
+)
+
+func main() {
+    c := colly.NewCollector(
+        colly.AllowedDomains("example.com"),
+        colly.UserAgent("Mozilla/5.0 ..."),
+    )
+
+    c.OnHTML("div.product", func(e *colly.HTMLElement) {
+        fmt.Println(e.ChildText(".name"), e.ChildText(".price"))
+    })
+
+    c.Visit("https://example.com/products")
+}
+```
+
+## 並發
+```go
+c.Limit(&colly.LimitRule{
+    DomainGlob:  "*",
+    Parallelism: 10,
+    RandomDelay: 1 * time.Second,
+})
+```
+
+## 跟連結
+```go
+c.OnHTML("a[href]", func(e *colly.HTMLElement) {
+    c.Visit(e.Request.AbsoluteURL(e.Attr("href")))
+})
+```
+
+## 儲存
+```go
+type Product struct {
+    Name, Link string
+    Price float64
+}
+
+var products []Product
+
+c.OnHTML("div.product", func(e *colly.HTMLElement) {
+    products = append(products, Product{
+        Name:  e.ChildText(".name"),
+        Link:  e.ChildAttr("a", "href"),
+    })
+})
+
+c.OnScraped(func(r *colly.Response) {
+    file, _ := os.Create("products.json")
+    json.NewEncoder(file).Encode(products)
+})
+```
+
+## chromedp（headless）
+```go
+import "github.com/chromedp/chromedp"
+
+ctx, cancel := chromedp.NewContext(context.Background())
+defer cancel()
+
+var html string
+chromedp.Run(ctx,
+    chromedp.Navigate("https://example.com"),
+    chromedp.OuterHTML("body", &html),
+)
+```
+
+## 何時用
+- ✅ 巨量並發
+- ✅ 已是 Go 團隊
+- ❌ 個人（Python 簡單）
