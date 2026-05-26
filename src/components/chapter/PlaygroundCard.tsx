@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { Playground } from "@/lib/types";
 import { Play, RotateCcw, Copy, Check, Save, Maximize2, Minimize2, Loader2 } from "lucide-react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
+import { usePyodide } from "@/hooks/usePyodide";
 
 // Monaco 動態載入（避免 SSR）
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
@@ -154,8 +155,10 @@ export function PlaygroundCard({
   const [showStdin, setShowStdin] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const supabase = createSupabaseBrowser();
+  const pyodide = usePyodide(false);
 
   const isLocal = LOCAL_LANGS.includes(lang);
+  const isPython = lang === "python" || lang === "py";
   const isSandbox = lang in SANDBOX_LANGS;
   const showPreview = lang === "html" || lang === "css";
 
@@ -178,6 +181,43 @@ export function PlaygroundCard({
     })();
   }, [isLoggedIn, playground.key]);
 
+  const runViaSandbox = async () => {
+    try {
+      const res = await fetch("/api/playground/run", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ language: lang, code, stdin }),
+      });
+
+      const contentType = res.headers.get("content-type") || "";
+      if (!contentType.includes("application/json")) {
+        if (res.status === 401 || res.status === 403) {
+          setOutput("❌ 請先登入才能執行程式（沙盒避免被當免費 codepen）");
+        } else if (res.status === 429) {
+          setOutput("❌ 太頻繁、請稍等幾秒再試");
+        } else if (res.status >= 500) {
+          setOutput("❌ 沙盒服務暫時無法使用（Piston API 可能在維護）、請稍後再試。\n或先用本機跑這段 code。");
+        } else {
+          setOutput(`❌ 服務異常（HTTP ${res.status}）、請稍後再試`);
+        }
+        return;
+      }
+
+      const data = await res.json();
+      if (data.error) {
+        setOutput(`❌ ${data.error}`);
+      } else {
+        const stdout = data.stdout || "";
+        const stderr = data.stderr || "";
+        const exitCode = data.exitCode !== undefined ? `\n[exit ${data.exitCode}]` : "";
+        setOutput(`${stdout}${stderr ? `\n\n--- stderr ---\n${stderr}` : ""}${exitCode}`);
+      }
+    } catch (e: any) {
+      setOutput(`❌ 沙盒錯誤：${e.message}\n（請檢查網路或稍後再試）`);
+    }
+  };
+
   const run = async () => {
     setRunning(true);
     setOutput("");
@@ -199,45 +239,24 @@ export function PlaygroundCard({
       } catch (e: any) {
         setOutput(`❌ ${e.message}`);
       }
-    } else if (isSandbox) {
-      // 遠端沙盒
+    } else if (isPython) {
+      // Python 優先用 Pyodide（瀏覽器內、不依賴 Piston）
       try {
-        const res = await fetch("/api/playground/run", {
-          method: "POST",
-          credentials: "include",  // 明確帶 cookie（Safari ITP / 跨子域名場景 same-origin 可能掉）
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ language: lang, code, stdin }),
-        });
-
-        // 先檢查 Content-Type：server-side 偶爾因為超時 / Piston down 回 HTML error page、
-        // 直接 res.json() 會 throw 「Unexpected token '<'」、顯示給用戶超技術性
-        const contentType = res.headers.get("content-type") || "";
-        if (!contentType.includes("application/json")) {
-          if (res.status === 401 || res.status === 403) {
-            setOutput("❌ 請先登入才能執行程式（沙盒避免被當免費 codepen）");
-          } else if (res.status === 429) {
-            setOutput("❌ 太頻繁、請稍等幾秒再試");
-          } else if (res.status >= 500) {
-            setOutput("❌ 沙盒服務暫時無法使用（Piston API 可能在維護）、請稍後再試。\n或先用本機 Python 跑這段 code。");
-          } else {
-            setOutput(`❌ 服務異常（HTTP ${res.status}）、請稍後再試`);
-          }
-          return;
-        }
-
-        const data = await res.json();
-        if (data.error) {
-          setOutput(`❌ ${data.error}`);
+        setOutput(pyodide.status === "ready" ? "執行中..." : "首次載入 Python 環境（約 5-15 秒）...");
+        const r = await pyodide.run(code);
+        const stdout = r.stdout || "";
+        const stderr = r.stderr || "";
+        if (!r.ok && stderr) {
+          setOutput(`${stdout}${stdout ? "\n\n" : ""}❌ ${stderr.trim()}`);
         } else {
-          const stdout = data.stdout || "";
-          const stderr = data.stderr || "";
-          const exitCode = data.exitCode !== undefined ? `\n[exit ${data.exitCode}]` : "";
-          setOutput(`${stdout}${stderr ? `\n\n--- stderr ---\n${stderr}` : ""}${exitCode}`);
+          setOutput(stdout || "(無輸出、加 print() 看結果)");
         }
       } catch (e: any) {
-        // 真的 catch 到 exception（網路斷 / 解析錯）的最後 fallback
-        setOutput(`❌ 沙盒錯誤：${e.message}\n（請檢查網路或稍後再試）`);
+        // Pyodide 載入失敗 → fallback 到 Piston
+        await runViaSandbox();
       }
+    } else if (isSandbox) {
+      await runViaSandbox();
     } else {
       setOutput(`⚠️ ${lang} 目前不支援即時執行`);
     }
@@ -429,7 +448,8 @@ export function PlaygroundCard({
           <div className="text-xs text-fg-muted mb-1 font-mono flex items-center justify-between">
             <span>▶ 輸出</span>
             <div className="flex items-center gap-2">
-              {isSandbox && <span className="text-xs">⚡ 遠端沙盒 (Piston)</span>}
+              {isPython && <span className="text-xs">🐍 瀏覽器內 Pyodide</span>}
+              {!isPython && isSandbox && <span className="text-xs">⚡ 遠端沙盒 (Piston)</span>}
               {output && (
                 <button
                   onClick={() => {
