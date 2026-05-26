@@ -1,0 +1,145 @@
+## pandas 時間索引
+```python
+import pandas as pd
+
+# 解析日期
+df = pd.read_csv("sales.csv", parse_dates=["date"])
+df = df.set_index("date").sort_index()
+
+# 切片
+df["2026"]                # 2026 全年
+df["2026-01"]             # 1 月
+df["2026-01":"2026-03"]   # 範圍
+
+# Resample（重採樣）
+daily = df["sales"].resample("D").sum()
+weekly = df["sales"].resample("W").sum()
+monthly = df["sales"].resample("ME").sum()
+
+# Rolling（滑動窗口）
+df["ma7"] = df["sales"].rolling(7).mean()
+df["ma30"] = df["sales"].rolling(30).mean()
+df["std30"] = df["sales"].rolling(30).std()
+
+# Diff（一階差分）
+df["change"] = df["sales"].diff()
+df["pct_change"] = df["sales"].pct_change() * 100
+
+# Shift（位移）
+df["yesterday"] = df["sales"].shift(1)
+df["last_week"] = df["sales"].shift(7)
+```
+
+## Decomposition（趨勢 / 季節 / 殘差分解）
+```python
+from statsmodels.tsa.seasonal import seasonal_decompose
+
+result = seasonal_decompose(df["sales"], model="additive", period=7)
+result.plot()
+```
+看出：
+- **Trend**：長期趨勢
+- **Seasonal**：週期性
+- **Residual**：剩下的噪音
+
+## Stationarity（平穩性）
+時間序列要先「平穩」才好預測：
+```python
+from statsmodels.tsa.stattools import adfuller
+
+result = adfuller(df["sales"])
+p_value = result[1]
+if p_value < 0.05:
+    print("平穩")
+else:
+    print("不平穩、需要 diff")
+```
+
+## ARIMA（傳統模型）
+```python
+from statsmodels.tsa.arima.model import ARIMA
+
+model = ARIMA(df["sales"], order=(1, 1, 1))  # p, d, q
+fitted = model.fit()
+forecast = fitted.forecast(steps=30)
+```
+
+學起來累、新手跳過。
+
+## Prophet（Facebook 出品、推薦）
+```bash
+pip install prophet
+```
+
+```python
+from prophet import Prophet
+import pandas as pd
+
+# 整理資料：必須 ds / y 兩欄
+data = df.reset_index().rename(columns={"date": "ds", "sales": "y"})
+
+# 訓練
+m = Prophet(
+    yearly_seasonality=True,
+    weekly_seasonality=True,
+    daily_seasonality=False,
+    seasonality_mode="multiplicative"
+)
+m.fit(data)
+
+# 預測未來 90 天
+future = m.make_future_dataframe(periods=90)
+forecast = m.predict(future)
+
+# 視覺化
+fig = m.plot(forecast)
+fig2 = m.plot_components(forecast)  # 看 trend / season / 假日
+```
+
+## Prophet 加假日效應
+```python
+# 台灣假日
+holidays = pd.DataFrame({
+    "holiday": "新年",
+    "ds": pd.to_datetime(["2026-01-01", "2027-01-01"]),
+    "lower_window": -1,
+    "upper_window": 3
+})
+
+m = Prophet(holidays=holidays)
+```
+
+## 異常偵測
+```python
+# 用 Prophet 的 confidence interval
+forecast["actual"] = data["y"]
+forecast["is_anomaly"] = (
+    (forecast["actual"] < forecast["yhat_lower"]) |
+    (forecast["actual"] > forecast["yhat_upper"])
+)
+```
+
+或用 statistical 方法：
+```python
+mean = df["sales"].mean()
+std = df["sales"].std()
+df["is_anomaly"] = abs(df["sales"] - mean) > 3 * std
+```
+
+## 真實應用
+- **銷售預測**：下個月、Q4 營收
+- **流量預測**：網站、伺服器需求
+- **庫存管理**：補貨時機
+- **異常偵測**：發現問題早
+- **金融**：股價、匯率（要小心、市場很雜）
+
+## 進階：神經網路（深度學習）
+- **LSTM / GRU**：經典 RNN
+- **Transformer**：最新
+- 適合複雜模式、但 ROI 不一定比 Prophet 好
+
+## 常見坑
+- **未來資訊洩漏**：訓練時用了未來資料（如用整年算 mean）
+- **過度擬合**：模型完美對訓練資料、預測爆掉
+- **沒看 baseline**：簡單 moving average 可能贏複雜模型
+- **忽略外部變數**：行銷活動、新聞事件影響

@@ -1,0 +1,151 @@
+## Magic Commands
+
+### % 行 magic
+```python
+%timeit df.sort_values("amount")  # 計時
+%pwd                                # 當前目錄
+%ls                                 # 列檔案
+%who                                # 列變數
+%matplotlib inline                  # 圖內嵌
+%load_ext autoreload                # 自動 reload
+%autoreload 2
+```
+
+### %% cell magic
+```python
+%%time
+# 整個 cell 計時
+result = expensive_computation()
+```
+
+```python
+%%writefile config.py
+# 把 cell 內容寫到檔案
+SECRET = "..."
+```
+
+```python
+%%sql
+SELECT * FROM users LIMIT 10
+```
+
+```python
+%%bash
+ls -la
+git status
+```
+
+## 鍵盤快捷鍵（必背）
+- **Shift + Enter**：跑 cell + 下一個
+- **Ctrl + Enter**：跑 cell + 留原地
+- **A**：上面加 cell
+- **B**：下面加 cell
+- **DD**：刪 cell
+- **M**：轉 markdown
+- **Y**：轉 code
+- **Esc**：command mode
+- **Enter**：edit mode
+
+## 互動 Widget
+```python
+from ipywidgets import interact
+
+@interact(country=df["country"].unique(), year=(2020, 2026))
+def show(country, year):
+    filtered = df[(df["country"] == country) & (df["year"] == year)]
+    print(filtered)
+```
+
+```python
+import ipywidgets as widgets
+
+slider = widgets.IntSlider(min=0, max=100)
+display(slider)
+print(slider.value)
+```
+
+## Plotly + Jupyter
+```python
+import plotly.express as px
+fig = px.scatter(df, x="age", y="income")
+fig  # 自動顯示、可互動
+```
+
+## 寫成 HTML 報告
+```bash
+jupyter nbconvert --to html notebook.ipynb
+```
+
+## 寫成 PDF（需 LaTeX）
+```bash
+jupyter nbconvert --to pdf notebook.ipynb
+```
+
+## 寫成 Python script
+```bash
+jupyter nbconvert --to script notebook.ipynb
+```
+
+## Notebook 好習慣
+
+### 1. 標題清楚
+```markdown
+# 2026 Q1 銷售分析
+- 作者：你的名字
+- 日期：2026-05-17
+- 目標：找出成長最快的品類
+
+## 1. 載入資料
+## 2. 清理
+## 3. 分析
+## 4. 結論
+```
+
+### 2. Import 集中
+所有 import 放第一個 cell。
+
+### 3. 用 markdown 解釋
+每個 section 加說明、不要只貼 code。
+
+### 4. 最後寫結論
+不要讓人讀 100 個 cell 後問「所以呢」。
+
+### 5. nbstripout 清 output
+```bash
+pip install nbstripout
+nbstripout --install
+```
+git commit 前自動清掉 output、diff 乾淨。
+
+## 部署 Jupyter
+
+### Voilà（變 dashboard）
+```bash
+pip install voila
+voila notebook.ipynb
+```
+notebook 變網頁、互動 widget 直接用、不用會前端。
+
+### Google Colab
+- 雲端 Jupyter、免費 GPU
+- 適合教學 / 實驗
+- 缺點：runtime 會斷
+
+### JupyterHub
+- 多人共用 Jupyter
+- 適合團隊 / 公司
+
+### Deepnote / Hex
+- Cloud 版本、團隊協作
+- 付費但好用
+
+## 跟 VS Code 整合
+VS Code 內建 Jupyter 支援：
+- `.ipynb` 直接打開
+- 可以混用 Python file 跟 cell
+- Git diff 友善
+
+## 替代品
+- **Pluto.jl**（Julia）：reactive notebook
+- **Observable**（JS）：reactive、適合視覺化
+- **Marimo**：Python reactive notebook

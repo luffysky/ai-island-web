@@ -1,0 +1,156 @@
+## 連 DB
+```python
+# pip install sqlalchemy psycopg2-binary pandas
+import pandas as pd
+from sqlalchemy import create_engine
+
+# PostgreSQL
+engine = create_engine("postgresql://user:pass@host:5432/db")
+
+# MySQL
+engine = create_engine("mysql+pymysql://user:pass@host/db")
+
+# SQLite
+engine = create_engine("sqlite:///local.db")
+```
+
+## SQL → pandas
+```python
+df = pd.read_sql("""
+    SELECT date, category, SUM(amount) AS revenue
+    FROM orders
+    WHERE date >= NOW() - INTERVAL '30 days'
+    GROUP BY date, category
+    ORDER BY date
+""", engine)
+
+# 或用 table 名稱
+df = pd.read_sql_table("orders", engine)
+
+# 帶參數（防 SQL injection）
+df = pd.read_sql("""
+    SELECT * FROM orders WHERE user_id = %(uid)s
+""", engine, params={"uid": 123})
+```
+
+## pandas → DB
+```python
+# 整個 df 寫進 DB
+df.to_sql("results", engine, if_exists="replace", index=False)
+
+# 選項
+if_exists="fail"     # 表存在就報錯
+if_exists="replace"  # 取代
+if_exists="append"   # 接後面
+
+# 大資料分批寫
+df.to_sql("big", engine, chunksize=10000, method="multi")
+```
+
+## 完整 ETL pipeline
+```python
+def daily_etl():
+    # Extract
+    df = pd.read_sql("""
+        SELECT order_id, user_id, amount, created_at
+        FROM orders
+        WHERE DATE(created_at) = CURRENT_DATE - 1
+    """, engine)
+    
+    # Transform
+    df["month"] = df["created_at"].dt.to_period("M")
+    summary = df.groupby(["month", "user_id"]).agg(
+        order_count=("order_id", "count"),
+        total_amount=("amount", "sum")
+    ).reset_index()
+    
+    # Load
+    summary.to_sql(
+        "daily_user_summary",
+        engine,
+        if_exists="append",
+        index=False
+    )
+    print(f"處理 {len(summary)} 筆")
+
+# 排程：每天凌晨 1 點
+# 用 cron / Airflow / Prefect
+```
+
+## SQLAlchemy ORM（進階）
+```python
+from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy import Column, Integer, String
+
+Base = declarative_base()
+
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+
+Session = sessionmaker(bind=engine)
+session = Session()
+
+users = session.query(User).filter(User.id > 10).all()
+```
+
+## 處理大資料
+
+### Chunking（分批讀）
+```python
+chunks = pd.read_sql("SELECT * FROM huge_table", engine, chunksize=10000)
+for chunk in chunks:
+    process(chunk)
+```
+
+### Lazy load
+```python
+import dask.dataframe as dd
+
+df = dd.read_sql_table("huge", engine, index_col="id")
+result = df.groupby("category").amount.sum().compute()
+```
+
+## Pandas + Parquet（比 CSV 快 10 倍）
+```python
+df.to_parquet("data.parquet", compression="snappy")
+df = pd.read_parquet("data.parquet")
+
+# 寫到 S3
+df.to_parquet("s3://bucket/data.parquet")
+```
+
+## 接 BigQuery / Snowflake
+```python
+# BigQuery
+from google.cloud import bigquery
+client = bigquery.Client()
+df = client.query("SELECT * FROM `project.dataset.table`").to_dataframe()
+
+# Snowflake
+import snowflake.connector
+import pandas as pd
+
+conn = snowflake.connector.connect(...)
+df = pd.read_sql("SELECT * FROM table", conn)
+```
+
+## 真實 ETL stack（2026）
+```
+資料源（PG / MySQL / API）
+    ↓
+Extract（SQLAlchemy / boto3）
+    ↓
+Transform（pandas / Polars / DuckDB）
+    ↓
+Load（BigQuery / Snowflake / S3）
+    ↓
+分析（pandas / Streamlit / BI 工具）
+```
+
+## 工具
+- **Apache Airflow**：排程 workflow
+- **Prefect / Dagster**：modern airflow
+- **dbt**：SQL transformation
+- **Great Expectations**：資料品質檢查
