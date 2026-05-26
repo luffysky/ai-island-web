@@ -1,0 +1,207 @@
+用 LLM API 前必懂這三個。沒搞清楚會付天價、或無謂被擋住。
+
+  
+### Token 是什麼
+
+  
+LLM 不看「字」、看 **token**。token 是「字的片段」—由 tokenizer 切。
+
+```text
+英文：1 token ≈ 4 個字元 ≈ 0.75 個英文單字
+"Hello world"        → ["Hello", " world"]              2 tokens
+"unbelievable"       → ["un", "believ", "able"]         3 tokens
+"Anthropic"          → ["Ant", "hrop", "ic"]            3 tokens
+
+中文：1 token ≈ 1-2 個字
+"我喜歡咖啡"          → ["我", "喜歡", "咖", "啡"]      4 tokens
+"今天天氣很好"        → ["今天", "天氣", "很", "好"]    4 tokens
+
+特殊符號 / 程式碼：較細碎
+"GPT-4"              → ["G", "PT", "-", "4"]            4 tokens
+"const x = 5"        → ["const", " x", " =", " 5"]      4 tokens
+
+JSON：很 token-hungry
+'{"name": "Luffy"}'  → 8 tokens（每個符號都算）
+```
+
+  
+### 實測自己的 token 數
+
+  
+- **OpenAI tokenizer**：`platform.openai.com/tokenizer`—可貼字
+- **Anthropic Console**：`console.anthropic.com` 有 token counter
+- **Python：tiktoken**（OpenAI）
+- **Python：anthropic.count_tokens()**
+
+```python
+# 用 tiktoken
+import tiktoken
+
+enc = tiktoken.encoding_for_model("gpt-4o")
+tokens = enc.encode("我喜歡咖啡，特別是肯亞 AA。")
+print(len(tokens))  # 約 10 tokens
+print([enc.decode([t]) for t in tokens])
+# 看實際切法
+```
+
+  
+### Context Window：模型一次能處理多少
+
+  
+每個模型有「最多能塞多少 token」的限制：
+
+  
+| 模型 | Context Window | 適合 |
+| --- | --- | --- |
+| GPT-3.5 | 16k | 已過時 |
+| GPT-4o | 128k | 一般用途 |
+| Claude 3.5 / 4 Sonnet | 200k | 長文處理 |
+| Gemini 1.5 / 2.5 Pro | 2M | 整本書 / 整影片 |
+| Llama 3.3 70B | 128k | 自架 |
+| Qwen 2.5 72B | 128k | 中文長文 |
+
+  
+**Context window 包括「輸入 + 輸出 + system prompt」**。給 Claude 200k input → 沒空間給 output 了。
+
+  
+### 多少 token 能裝多少？
+
+```text
+1k tokens   ≈ 750 英文字 / 1500 中文字 / 半頁書
+10k tokens  ≈ 7500 英文字 / 1.5 萬中文字 / 5 頁書
+50k tokens  ≈ 一篇技術論文 / 10 頁文件
+100k tokens ≈ 50 頁書 / 中型小說一章
+200k tokens ≈ 哈利波特第一集（整本）/ 中等程式專案 codebase
+1M tokens   ≈ 整套魔戒三部曲
+2M tokens   ≈ 整部電影對話 + 完整劇本 + 評論
+```
+
+  
+### 價格計算實例
+
+  
+API 都按 token 計費，**input 跟 output 不同價**。實際例子：
+
+```text
+用 Claude Sonnet（input $3/M、output $15/M）：
+
+例 1：簡單問答
+  使用者：「你好」（5 tokens）
+  Claude：「你好！我能幫你什麼？」（15 tokens）
+  成本：5/1M × $3 + 15/1M × $15 = $0.000240 = ~NT$0.008
+
+例 2：寫程式碼
+  Prompt：「寫一個 React 元件做按鈕」（20 tokens）
+  Claude：500 行程式碼（3000 tokens）
+  成本：20/1M × $3 + 3000/1M × $15 = $0.045 = ~NT$1.4
+
+例 3：總結長文
+  Prompt：「請摘要這篇」+ 50 頁文件（50,000 tokens）
+  Claude：摘要 500 字（750 tokens）
+  成本：50000/1M × $3 + 750/1M × $15 = $0.161 = ~NT$5
+
+例 4：對話 10 輪
+  每輪輸入累積增加（對話歷史）
+  10 輪後總 input ~50000 tokens、output 累積 ~10000 tokens
+  成本：50000/1M × $3 + 10000/1M × $15 = $0.30 = ~NT$9
+
+簡單聊天約 NT$0.01-3
+長文處理 NT$5-15
+複雜任務 NT$10-100
+```
+
+  
+### SaaS 成本估算
+
+```text
+場景 A：個人 AI 助手
+  每天 50 次對話、每次 5k tokens
+  月用量：50 × 30 × 5k = 7.5M tokens
+  - Claude Sonnet：~$30/月（input + output 平均）
+  - GPT-4o-mini：~$2/月
+  - Gemini Flash：~$1/月
+
+場景 B：SaaS 客服
+  10000 使用者、每人每天 5 次對話、每次 5k tokens
+  月用量：10000 × 30 × 5 × 5k = 7.5B tokens
+  - Claude Sonnet：~$30,000/月 ← 必須優化
+  - GPT-4o-mini：~$1,500/月
+  - Gemini Flash：~$750/月
+
+→ SaaS 規模一定要做模型路由 + cache
+```
+
+  
+### 省 token 的 10 招
+
+  
+1. **用便宜模型路由**：簡單問題用 Haiku / Flash / 4o-mini
+2. **Prompt Caching**：Anthropic / OpenAI 都有，重複 prompt 便宜 90%
+3. **Response Cache（Redis）**：相同問題之前問過直接拿 cache
+4. **Semantic Cache**：意思相近也算 hit（GPTCache）
+5. **System prompt 簡潔**：每次都送，越長越貴
+6. **歷史對話精簡 / 摘要**：別塞 20 輪原文
+7. **結構化輸出**：JSON 比自然語言短 30-50%
+8. **串流**：使用者中斷時省剩下 token
+9. **Batch API**：OpenAI / Anthropic 都有 batch（24h 內處理），5 折
+10. **能 regex 別用 LLM**：分類簡單字串、傳統方法更便宜
+
+  
+### Prompt Caching 實作
+
+```python
+# Anthropic prompt caching
+from anthropic import Anthropic
+client = Anthropic()
+
+# 第一次調用：付完整費用
+res = client.messages.create(
+    model="claude-sonnet-4-6",
+    max_tokens=1024,
+    system=[
+        {
+            "type": "text",
+            "text": long_system_prompt,  # 50000 tokens
+            "cache_control": {"type": "ephemeral"}
+        }
+    ],
+    messages=[{"role": "user", "content": "問題 1"}]
+)
+
+# 第二次調用（5 分鐘內、同樣 system）
+# → cache hit！system 部分只付 10%
+res2 = client.messages.create(
+    model="claude-sonnet-4-6",
+    max_tokens=1024,
+    system=[{...same...}],
+    messages=[{"role": "user", "content": "問題 2"}]
+)
+
+# 看 response.usage：
+# cache_creation_input_tokens（建立 cache 的成本，1.25x）
+# cache_read_input_tokens（命中 cache，0.1x 價格）
+```
+
+  
+### 監控成本的最佳實踐
+
+  
+- **各家 API dashboard 設 spending limit**—超過自動停（救命底線）
+- **Helicone / LangSmith / Langfuse** 看每筆 request 成本
+- **每月初看 trend**：突增表示 bug 或 abuse
+- **每位使用者用量上限**：rate limit + quota
+- **Budget alert**：超過 50% / 80% / 100% 發 Email
+
+  
+**🚨 資安警報**
+
+2024 真實案例：indie hacker API key 進 git → 駭客 bot 偷走 → 一晚燒掉 $5000 美金。**必做**：(1) API key 永遠不進 git，用環境變數 (2) dashboard 設 spending limit（OpenAI 必設、Anthropic 必設） (3) 用量異常告警 (4) 定期 rotate key。**每年都有 indie hacker 中招上熱搜**。
+
+  
+
+  
+
+💼
+接案小知識
+
+剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「AI/ML」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。

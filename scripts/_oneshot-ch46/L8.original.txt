@@ -1,0 +1,87 @@
+「**跟 AI 講話的藝術**」。同樣的問題、不同 prompt、答案天差地別。**2026 仍是 LLM 使用最重要的技能**。
+
+  
+### 5 個基本原則
+
+  
+#### 原則 1：明確（Be Specific）
+
+```text
+✗ 模糊：
+「幫我寫程式」
+→ AI 不知道要寫什麼、用什麼語言、目的、範圍
+
+✓ 明確：
+「用 Python + FastAPI 寫一個 GET /users/{id} endpoint，
+從 PostgreSQL 撈使用者資料，找不到回 404，
+返回 JSON 含 id / name / email，
+含完整 type hint 跟 docstring」
+→ AI 知道：語言、框架、行為、錯誤處理、格式、規範
+```
+
+  
+「明確」的反面是「丟給 AI 自己想」。AI 會「想」，但答案不一定是你要的。**你越精確、AI 越精確**。
+
+  
+#### 原則 2：給 Context
+
+```text
+✗ 沒 context：
+「幫我修這個 bug」
+（你以為 AI 知道、但 AI 沒看到你的 code）
+
+✓ 完整 context：
+「我有以下 Python 函式：
+
+```python
+def sum_list(items):
+total = 0
+for item in items:
+total + item
+return total
+```
+
+預期輸入 [1, 2, 3] 返回 6
+實際返回 0
+
+請找出問題並修正，並解釋為什麼。」
+→ AI 看 code 找出 `total + item` 沒賦值給 total，應該 `total += item`
+```
+
+  
+#### 原則 3：給角色（Role Prompting）
+
+```text
+「你是有 10 年經驗的資深 Python 後端工程師，
+熟悉效能優化跟資安。
+請 review 以下程式碼，依優先級指出：
+1. 安全漏洞
+2. 效能問題
+3. 可讀性問題
+
+[code]」
+
+→ AI 進入「工程師 review」模式
+→ 比沒角色精準、結構化
+```
+
+  
+2026 業界討論「role prompting 是否還有效」—新版模型可能不需要。但**對複雜任務仍有效**，特別是需要特定領域知識（醫療、法律、財務）。
+
+  
+#### 原則 4：給範例（Few-shot）
+
+```text
+「請把以下句子轉成 Twitter 適合的格式（
+    **🚀 進階技巧**
+    
+2026 Anthropic 推出 **Prompt Generator**（console.anthropic.com）—輸入你的任務描述，AI 自動產出優化的 prompt。比自己慢慢調快 10 倍。OpenAI 也有 **Prompt Engineer**。
+
+  
+
+  
+    
+      🎯
+      面試考點
+    
+    台灣科技公司面試 90% 會問「AI/ML」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。
