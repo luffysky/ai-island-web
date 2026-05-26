@@ -1,0 +1,76 @@
+## Cron
+```bash
+0 3 * * * cd /app && python3 scraper.py >> /var/log/scraper.log 2>&1
+```
+
+## APScheduler
+```python
+from apscheduler.schedulers.blocking import BlockingScheduler
+
+sched = BlockingScheduler()
+
+@sched.scheduled_job("cron", hour=3)
+def scheduled_scrape():
+    scrape_all()
+
+sched.start()
+```
+
+## Airflow
+```python
+from airflow import DAG
+from airflow.operators.python import PythonOperator
+
+dag = DAG(
+    "daily_scrape",
+    schedule="0 3 * * *",
+    start_date=datetime(2026, 1, 1)
+)
+
+PythonOperator(task_id="scrape", python_callable=scrape_all, dag=dag)
+```
+
+## Prefect
+```python
+from prefect import flow, task
+
+@task(retries=3)
+def scrape_url(url):
+    return requests.get(url).text
+
+@flow
+def daily_scrape():
+    urls = get_urls()
+    results = [scrape_url(u) for u in urls]
+    save_to_db(results)
+
+if __name__ == "__main__":
+    daily_scrape.serve(cron="0 3 * * *")
+```
+
+## GitHub Actions（免費）
+```yaml
+name: Scrape
+on:
+  schedule:
+    - cron: "0 3 * * *"
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+      - run: pip install -r requirements.txt
+      - run: python scraper.py
+```
+
+## 監控
+```python
+import requests
+
+try:
+    scrape_all()
+    requests.post(SLACK_WEBHOOK, json={"text": "✅ 爬蟲完成"})
+except Exception as e:
+    requests.post(SLACK_WEBHOOK, json={"text": f"❌ 失敗：{e}"})
+```

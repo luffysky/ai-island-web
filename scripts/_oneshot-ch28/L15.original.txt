@@ -1,0 +1,63 @@
+## requests Session
+```python
+session = requests.Session()
+
+# 1. 訪問登入頁、拿 CSRF token
+login_page = session.get("https://example.com/login")
+soup = BeautifulSoup(login_page.text, "lxml")
+csrf = soup.select_one("input[name='csrf_token']")["value"]
+
+# 2. 登入
+session.post("https://example.com/login", data={
+    "email": "user@example.com",
+    "password": "password",
+    "csrf_token": csrf
+})
+
+# 3. 之後自動帶 cookie
+res = session.get("https://example.com/dashboard")
+```
+
+## Playwright 自動化登入
+```python
+with sync_playwright() as p:
+    browser = p.chromium.launch(headless=False)
+    page = browser.new_page()
+    
+    page.goto("https://example.com/login")
+    page.fill("input[name='email']", "user@example.com")
+    page.fill("input[name='password']", "password")
+    page.click("button[type='submit']")
+    page.wait_for_url("**/dashboard")
+    
+    cookies = page.context.cookies()
+    browser.close()
+
+# 之後 requests 帶 cookie
+session = requests.Session()
+for cookie in cookies:
+    session.cookies.set(cookie["name"], cookie["value"])
+```
+
+## 儲存 cookie 重用
+```python
+import pickle
+
+with open("cookies.pkl", "wb") as f:
+    pickle.dump(session.cookies, f)
+
+with open("cookies.pkl", "rb") as f:
+    session.cookies.update(pickle.load(f))
+```
+
+## TOTP
+```python
+import pyotp
+totp = pyotp.TOTP("BASE32_SECRET")
+code = totp.now()
+```
+
+## 注意
+- 別爬太快（容易封 IP）
+- 用測試帳號、不要爬主帳號
+- 違反 ToS

@@ -1,0 +1,55 @@
+## 完整範例
+```python
+import pandas as pd
+import requests
+from bs4 import BeautifulSoup
+
+def scrape_products(pages=10):
+    products = []
+    for p in range(1, pages + 1):
+        res = requests.get(f"https://example.com/products?page={p}")
+        soup = BeautifulSoup(res.text, "lxml")
+        for card in soup.select("div.product"):
+            products.append({
+                "name": card.select_one(".name").get_text(strip=True),
+                "price": card.select_one(".price").get_text(strip=True),
+                "category": card.select_one(".category").get_text(strip=True)
+            })
+    return products
+
+df = pd.DataFrame(scrape_products())
+
+# 清理
+df["price"] = df["price"].str.replace("NT$", "").str.replace(",", "").astype(float)
+
+# 分析
+df.groupby("category")["price"].agg(["mean", "median", "count"])
+top10 = df.nlargest(10, "price")
+
+# 存
+df.to_csv("products.csv", index=False, encoding="utf-8-sig")
+df.to_parquet("products.parquet")
+```
+
+## 從 API 直接到 DataFrame
+```python
+res = requests.get("https://api.example.com/products")
+df = pd.DataFrame(res.json()["data"])
+```
+
+## HTML table
+```python
+tables = pd.read_html("https://example.com/stats")
+df = tables[0]
+```
+
+## 監控趨勢
+```python
+df["date"] = pd.Timestamp.today().date()
+
+history = pd.read_parquet("history.parquet")
+history = pd.concat([history, df], ignore_index=True)
+history.to_parquet("history.parquet")
+
+history.groupby(["product_id", "date"])["price"].mean().unstack()
+```

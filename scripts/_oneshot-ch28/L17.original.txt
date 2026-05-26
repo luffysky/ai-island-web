@@ -1,0 +1,73 @@
+## 找 API
+1. F12 開發者工具
+2. Network → Fetch/XHR
+3. 重新整理
+4. 看哪些 API 回 JSON
+5. Copy as cURL
+
+## 範例
+```python
+import requests
+
+headers = {
+    "User-Agent": "Mozilla/5.0 ...",
+    "Referer": "https://shopee.tw/"
+}
+
+res = requests.get(
+    "https://shopee.tw/api/v4/search/search_items",
+    params={"keyword": "iPhone", "limit": 60, "newest": 0},
+    headers=headers
+)
+
+data = res.json()
+for item in data["items"]:
+    print(item["item_basic"]["name"], item["item_basic"]["price"])
+```
+
+## 比解 HTML 強
+- ✅ 資料結構化
+- ✅ 不會因 UI 改版壞
+- ✅ 速度快 10 倍
+- ✅ 分頁明確
+
+## GraphQL
+```python
+res = requests.post(
+    "https://api.example.com/graphql",
+    json={
+        "query": """
+            query GetProducts($limit: Int) {
+                products(limit: $limit) { name price }
+            }
+        """,
+        "variables": {"limit": 20}
+    }
+)
+```
+
+## 分頁
+```python
+def fetch_all():
+    all_items = []
+    page = 1
+    while True:
+        res = requests.get(f"...?page={page}").json()
+        items = res["data"]
+        if not items: break
+        all_items.extend(items)
+        page += 1
+        time.sleep(1)
+    return all_items
+```
+
+## Cursor pagination
+```python
+cursor = None
+while True:
+    params = {"limit": 50}
+    if cursor: params["cursor"] = cursor
+    res = requests.get("...", params=params).json()
+    cursor = res.get("next_cursor")
+    if not cursor: break
+```
