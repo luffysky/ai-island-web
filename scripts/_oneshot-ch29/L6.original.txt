@@ -1,0 +1,82 @@
+```javascript
+import { chromium } from 'playwright';
+import fs from 'fs/promises';
+
+async function scrapeShopee(keyword, maxItems = 100) {
+  const browser = await chromium.launch({ headless: true });
+  const context = await browser.newContext({
+    userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'
+              + ' AppleWebKit/537.36 (KHTML, like Gecko)'
+              + ' Chrome/120.0.0.0 Safari/537.36',
+    locale: 'zh-TW',
+  });
+
+  const page = await context.newPage();
+  const apiResponses = [];
+
+  // 攔截後端 JSON API
+  page.on('response', async response => {
+    const url = response.url();
+    if (url.includes('/api/v4/search') || url.includes('/recommend')) {
+      try {
+        const data = await response.json();
+        apiResponses.push(data);
+      } catch {}
+    }
+  });
+
+  // 阻擋圖片 / CSS 加速
+  await page.route('**/*', route => {
+    if (['image', 'stylesheet', 'font'].includes(route.request().resourceType())) {
+      route.abort();
+    } else {
+      route.continue();
+    }
+  });
+
+  // 搜尋頁
+  const searchUrl = `https://shopee.tw/search?keyword=${encodeURIComponent(keyword)}`;
+  await page.goto(searchUrl, { waitUntil: 'networkidle' });
+
+  // 捲動觸發 lazy load
+  let totalItems = 0;
+  for (let i = 0; i  [p.id, p])).values());
+
+  await browser.close();
+  return unique.slice(0, maxItems);
+}
+
+// 使用
+const items = await scrapeShopee('AirPods Pro', 100);
+console.log(`抓到 ${items.length} 個商品`);
+
+// 存 JSON
+await fs.writeFile('shopee.json', JSON.stringify(items, null, 2));
+
+// 分析
+const avgPrice = items.reduce((s, i) => s + i.price, 0) / items.length;
+console.log(`平均價格 NT$ ${avgPrice.toFixed(0)}`);
+console.log(`最低 NT$ ${Math.min(...items.map(i => i.price))}`);
+console.log(`最高 NT$ ${Math.max(...items.map(i => i.price))}`);
+```
+
+
+### 進階：接 Next.js API Route（變 SaaS）
+
+```javascript
+// app/api/scrape/route.ts
+import { NextResponse } from 'next/server';
+import { scrapeShopee } from '@/lib/scraper';
+
+export async function POST(req: Request) {
+  const { keyword, max } = await req.json();
+  const items = await scrapeShopee(keyword, max);
+  return NextResponse.json({ items });
+}
+
+// 前端
+const res = await fetch('/api/scrape', {
+  method: 'POST',
+  body: JSON.stringify({ keyword: 'iPhone', max: 50 })
+});
+```

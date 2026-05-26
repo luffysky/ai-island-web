@@ -1,0 +1,117 @@
+### 安裝
+
+```bash
+npx crawlee create my-crawler
+cd my-crawler
+npm start
+```
+
+
+### 三種 Crawler
+
+
+- **CheerioCrawler**：純 HTML 解析（最快）
+- **PlaywrightCrawler**：需要 JS 渲染
+- **PuppeteerCrawler**：legacy 支援
+
+
+### CheerioCrawler 範例
+
+```javascript
+import { CheerioCrawler, Dataset } from 'crawlee';
+
+const crawler = new CheerioCrawler({
+  maxConcurrency: 10,        // 並發數
+  maxRequestsPerCrawl: 1000, // 最多 1000 頁
+  requestHandlerTimeoutSecs: 30,
+
+  async requestHandler({ request, $, enqueueLinks, log }) {
+    log.info(`Processing ${request.url}`);
+
+    // 抓資料
+    const title = $('h1').text();
+    const price = $('.price').text();
+
+    // 存進 Dataset（會自動寫 JSON）
+    await Dataset.pushData({
+      url: request.url,
+      title,
+      price,
+    });
+
+    // 找下一頁、加進 queue
+    await enqueueLinks({
+      selector: 'a.next-page',
+      label: 'LIST',
+    });
+
+    // 找商品連結
+    await enqueueLinks({
+      selector: 'a.product',
+      label: 'DETAIL',
+    });
+  },
+
+  // 失敗自動重試 3 次
+  maxRequestRetries: 3,
+});
+
+// 起跑點
+await crawler.run(['https://example.com/products']);
+
+// 自動產生 storage/datasets/default/*.json
+```
+
+
+### PlaywrightCrawler 範例
+
+```javascript
+import { PlaywrightCrawler, Dataset } from 'crawlee';
+
+const crawler = new PlaywrightCrawler({
+  launchContext: {
+    launchOptions: { headless: true },
+  },
+  maxConcurrency: 5,
+
+  async requestHandler({ page, request }) {
+    await page.goto(request.url);
+    await page.waitForSelector('.product');
+
+    const products = await page.$$eval('.product', els =>
+      els.map(el => ({
+        name: el.querySelector('.name')?.textContent,
+        price: el.querySelector('.price')?.textContent,
+      }))
+    );
+
+    await Dataset.pushData({ url: request.url, products });
+  },
+});
+
+await crawler.run(['https://shop.example.com']);
+```
+
+
+### Crawlee 核心功能（自動處理）
+
+
+- ✅ **Request Queue**：自動去重、進度持久化
+- ✅ **Auto-scaling**：依 CPU / Memory 自動調並發數
+- ✅ **Proxy Rotation**：自動換 IP
+- ✅ **Session 管理**：cookie / fingerprint 自動處理
+- ✅ **Retry / Error handling**：失敗自動重試
+- ✅ **Dataset**：自動存 JSON / CSV / Excel
+- ✅ **Key-Value Store**：跨 request 共享狀態
+
+
+### Apify 平台託管（賺錢用）
+
+
+Crawlee 是 Apify 開源、爬蟲可直接部署到 Apify 平台：
+
+
+- 每月免費 $5 credit
+- 自動 scale / 排程
+- 可上架賣（Apify Store、被動收入）
+- 有人寫的爬蟲、月入 $1000+ 美金（爬 Google Maps / Amazon）

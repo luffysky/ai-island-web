@@ -1,0 +1,71 @@
+## 為什麼
+- ✅ 同 stack
+- ✅ 動態網站原生支援
+- ✅ Cloudflare Workers / Vercel 部署友善
+- ❌ 沒 Scrapy 那麼完整框架
+
+## fetch（Node 22+ 內建）
+```javascript
+const res = await fetch("https://example.com", {
+  headers: { "User-Agent": "Mozilla/5.0 ..." }
+});
+const html = await res.text();
+```
+
+## cheerio
+```bash
+npm install cheerio
+```
+
+```javascript
+import * as cheerio from "cheerio";
+
+const $ = cheerio.load(html);
+
+$("h1").text();
+$("a").each((i, el) => {
+  console.log($(el).attr("href"));
+});
+
+$("div.product").map((i, el) => ({
+  name: $(el).find(".name").text().trim(),
+  price: $(el).find(".price").text(),
+  link: $(el).find("a").attr("href")
+})).get();
+```
+
+## 完整範例
+```javascript
+async function scrapeProducts(page) {
+  const res = await fetch(`https://example.com/products?page=${page}`, {
+    headers: { "User-Agent": "Mozilla/5.0 ..." }
+  });
+  const html = await res.text();
+  const $ = cheerio.load(html);
+  
+  const products = [];
+  $("div.product-card").each((i, el) => {
+    products.push({
+      name: $(el).find(".name").text().trim(),
+      price: $(el).find(".price").text(),
+      link: $(el).find("a").attr("href")
+    });
+  });
+  return products;
+}
+
+const all = [];
+for (let p = 1; p <= 10; p++) {
+  all.push(...(await scrapeProducts(p)));
+  await new Promise(r => setTimeout(r, 1000));
+}
+```
+
+## 並發
+```javascript
+import pLimit from "p-limit";
+const limit = pLimit(5);
+const results = await Promise.all(
+  urls.map(url => limit(() => scrapePage(url)))
+);
+```

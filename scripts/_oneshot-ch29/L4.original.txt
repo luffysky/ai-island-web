@@ -1,0 +1,110 @@
+### 安裝
+
+```bash
+npm install playwright
+npx playwright install chromium  # 或 firefox / webkit
+```
+
+
+### 基本使用
+
+```javascript
+import { chromium } from 'playwright';
+
+async function scrape(url) {
+  const browser = await chromium.launch();
+  const context = await browser.newContext({
+    userAgent: 'Mozilla/5.0 ...',
+    viewport: { width: 1920, height: 1080 },
+    locale: 'zh-TW',
+  });
+  const page = await context.newPage();
+
+  await page.goto(url);
+  await page.waitForLoadState('networkidle');
+
+  // Locator API（比 Puppeteer 強）
+  const title = await page.locator('h1').innerText();
+
+  // 多個元素
+  const items = await page.locator('.product').all();
+  const data = [];
+  for (const item of items) {
+    data.push({
+      name: await item.locator('.name').innerText(),
+      price: await item.locator('.price').innerText(),
+    });
+  }
+
+  await browser.close();
+  return data;
+}
+```
+
+
+### Playwright vs Puppeteer 差異
+
+
+- **多瀏覽器**：Playwright 支援 Chrome / Firefox / Safari、Puppeteer 只 Chromium
+- **Auto-wait**：Playwright 點按鈕自動等元素可見、Puppeteer 要手動 wait
+- **Locator**：Playwright 有 locator API 比較不容易破
+- **錄製器**：`npx playwright codegen` 自動產生 code
+- **多語言**：Python / Java / .NET 都有 SDK
+
+
+### codegen：錄製操作生 code
+
+```bash
+# 開瀏覽器、你手動操作、自動產生 code
+npx playwright codegen https://example.com
+
+# → 在右邊看到自動生成的爬蟲 code
+# → 複製貼上、微調即可用
+```
+
+
+### Stealth 模式（反偵測）
+
+```bash
+npm install playwright-extra puppeteer-extra-plugin-stealth
+```
+
+```javascript
+import { chromium } from 'playwright-extra';
+import stealth from 'puppeteer-extra-plugin-stealth';
+
+chromium.use(stealth());
+
+const browser = await chromium.launch();
+// → 自動偽裝、過大部分反爬偵測
+```
+
+
+### 並發爬多頁
+
+```javascript
+import { chromium } from 'playwright';
+import pLimit from 'p-limit';
+
+async function scrapeAll(urls) {
+  const browser = await chromium.launch();
+  const limit = pLimit(5);  // 同時 5 個 tab
+
+  const results = await Promise.all(
+    urls.map(url => limit(async () => {
+      const context = await browser.newContext();
+      const page = await context.newPage();
+      try {
+        await page.goto(url, { timeout: 30000 });
+        const title = await page.locator('h1').innerText();
+        return { url, title };
+      } finally {
+        await context.close();
+      }
+    }))
+  );
+
+  await browser.close();
+  return results;
+}
+```
