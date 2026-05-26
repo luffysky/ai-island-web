@@ -1,0 +1,62 @@
+## 為什麼
+- ⚡ 比 Python 快 50 倍
+- 🔒 記憶體安全
+- 適合 long-running service
+
+## reqwest + scraper
+```rust
+use reqwest;
+use scraper::{Html, Selector};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let res = reqwest::get("https://example.com").await?.text().await?;
+    let doc = Html::parse_document(&res);
+    let selector = Selector::parse("div.product").unwrap();
+    
+    for el in doc.select(&selector) {
+        let name = el.select(&Selector::parse(".name").unwrap()).next()
+            .map(|e| e.text().collect::<String>());
+        println!("{:?}", name);
+    }
+    Ok(())
+}
+```
+
+`Cargo.toml`：
+```toml
+[dependencies]
+reqwest = { version = "0.12", features = ["json"] }
+scraper = "0.17"
+tokio = { version = "1", features = ["full"] }
+```
+
+## 並發
+```rust
+use futures::future::join_all;
+
+let tasks: Vec<_> = urls.into_iter().map(|url| async move {
+    reqwest::get(url).await?.text().await
+}).collect();
+
+let results: Vec<_> = join_all(tasks).await;
+```
+
+## 為什麼少人用
+- 學習超陡
+- 生態小
+- 爬蟲是 IO bound、不需要極致
+
+## 何時用
+- 巨大 scale（每天億級 req）
+- 已是 Rust 團隊
+- ❌ 個人 / Indie
+
+## 案例
+- Cloudflare 內部
+- Discord backend
+- 少數高頻交易
+
+## 心法
+99% 場景不要 Rust 爬蟲。
+Python 慢但夠用、Rust 快但累。

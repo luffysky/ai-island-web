@@ -1,0 +1,77 @@
+## 基本
+```bash
+curl https://example.com
+curl -o output.html https://example.com
+curl -L https://example.com  # follow redirect
+curl -H "User-Agent: Mozilla/5.0" https://example.com
+```
+
+## POST
+```bash
+curl -X POST https://api.example.com \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Alice"}'
+```
+
+## 並發（xargs）
+```bash
+cat urls.txt | xargs -P 10 -I{} curl -s {} -o {}.html
+```
+
+## 解析 JSON（jq）
+```bash
+curl https://api.example.com/products | jq '.products[] | {name, price}'
+```
+
+## bash script
+```bash
+#!/bin/bash
+for page in {1..10}; do
+    curl -s "https://example.com/products?page=$page" \
+        -H "User-Agent: Mozilla/5.0 ..." \
+        > "page_$page.html"
+    sleep 1
+done
+```
+
+## htmlq（命令列 HTML 解析）
+```bash
+cargo install htmlq
+
+curl https://example.com | htmlq 'div.product .name' --text
+```
+
+## pup
+```bash
+curl https://example.com | pup 'div.product .name text{}'
+```
+
+## 完整 bash 爬蟲
+```bash
+#!/bin/bash
+for keyword in "iphone" "macbook" "ipad"; do
+    encoded=$(echo "$keyword" | jq -sRr @uri)
+    
+    curl -s "https://api.example.com/search?q=$encoded" \
+        -H "User-Agent: Mozilla/5.0 ..." \
+        | jq -r '.products[] | [.name, .price] | @csv' \
+        > "data/$keyword.csv"
+    
+    sleep 2
+done
+```
+
+## cron
+```bash
+0 3 * * * /home/user/scrape.sh >> /var/log/scrape.log 2>&1
+```
+
+## 限制
+- 不能跑 JS
+- 複雜邏輯難
+- 錯誤處理弱
+
+## 何時用
+- 一次性簡單爬
+- server / Docker 內
+- CI/CD pipeline

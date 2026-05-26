@@ -1,0 +1,68 @@
+## PHP - Guzzle
+```php
+use GuzzleHttp\Client;
+
+$client = new Client(['headers' => ['User-Agent' => 'Mozilla/5.0 ...']]);
+$res = $client->request('GET', 'https://example.com');
+$html = $res->getBody()->getContents();
+```
+
+## PHP - Symfony DomCrawler
+```php
+use Symfony\Component\DomCrawler\Crawler;
+
+$crawler = new Crawler($html);
+$products = $crawler->filter('div.product')->each(function ($node) {
+    return [
+        'name' => $node->filter('.name')->text(),
+        'price' => $node->filter('.price')->text()
+    ];
+});
+```
+
+## PHP - Goutte（合併以上）
+```php
+$client = new Goutte\Client();
+$crawler = $client->request('GET', 'https://example.com');
+$products = $crawler->filter('div.product')->each(function ($node) {
+    return ['name' => $node->filter('.name')->text()];
+});
+```
+
+## Ruby - Nokogiri
+```ruby
+require 'nokogiri'
+require 'open-uri'
+
+doc = Nokogiri::HTML(URI.open('https://example.com'))
+doc.css('div.product').each do |product|
+  name = product.css('.name').text
+  price = product.css('.price').text
+  puts "#{name} - #{price}"
+end
+```
+
+## Ruby - Mechanize（自動化）
+```ruby
+require 'mechanize'
+
+agent = Mechanize.new
+page = agent.get('https://example.com/login')
+form = page.forms.first
+form.email = 'user@example.com'
+form.password = 'pass'
+page = agent.submit(form)
+```
+
+## 為什麼少人用
+- 生態縮小
+- 沒 Scrapy 等級框架
+- Async 支援弱
+
+## 何時用
+- 已是 PHP / Ruby 團隊
+- WordPress / Laravel / Rails 整合
+- ❌ 新專案
+
+## 心法
+這兩個語言能用、不是最好。

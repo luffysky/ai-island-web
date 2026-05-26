@@ -1,0 +1,80 @@
+## 套件
+- **jsoup**：HTML 解析
+- **OkHttp**：HTTP client
+- **Selenium / Playwright Java**
+
+## jsoup（Java）
+```java
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
+Document doc = Jsoup.connect("https://example.com")
+    .userAgent("Mozilla/5.0 ...")
+    .timeout(10000)
+    .get();
+
+doc.select("div.product").forEach(p -> {
+    String name = p.select(".name").text();
+    String price = p.select(".price").text();
+    System.out.println(name + " - " + price);
+});
+```
+
+## OkHttp
+```java
+OkHttpClient client = new OkHttpClient();
+Request request = new Request.Builder()
+    .url("https://example.com")
+    .header("User-Agent", "Mozilla/5.0 ...")
+    .build();
+
+Response response = client.newCall(request).execute();
+String html = response.body().string();
+```
+
+## Kotlin（更簡潔）
+```kotlin
+import org.jsoup.Jsoup
+
+fun main() {
+    val doc = Jsoup.connect("https://example.com")
+        .userAgent("Mozilla/5.0 ...")
+        .get()
+    
+    doc.select("div.product").forEach { product ->
+        val name = product.select(".name").text()
+        val price = product.select(".price").text()
+        println("$name - $price")
+    }
+}
+```
+
+## Kotlin Coroutines（並發）
+```kotlin
+import kotlinx.coroutines.*
+
+fun main() = runBlocking {
+    val results = urls.map { url ->
+        async(Dispatchers.IO) { fetch(url) }
+    }.awaitAll()
+}
+```
+
+## Spring Boot
+```java
+@Service
+public class ScraperService {
+    @Scheduled(cron = "0 0 3 * * *")
+    public void dailyScrape() {
+        // ...
+    }
+}
+```
+
+## 何時用
+- ✅ Java / Spring 公司
+- ✅ Android（Kotlin）
+- ❌ 個人
+
+## 招募
+大企業 / 金融常用 Java、月薪 NT$ 80-150k。

@@ -1,0 +1,70 @@
+## Excel Power Query
+
+### 從網頁抓
+1. **資料** → **從網路**
+2. 貼 URL
+3. Excel 自動偵測表格
+
+抓 `<table>` 直接變 Excel。
+
+### M 語言
+```
+let
+    Source = Web.Page(Web.Contents("https://example.com")),
+    Data = Source{0}[Data]
+in
+    Data
+```
+
+## Google Sheets
+
+### IMPORTHTML
+```
+=IMPORTHTML("https://example.com", "table", 1)
+```
+
+### IMPORTXML（XPath）
+```
+=IMPORTXML("https://example.com", "//div[@class='price']")
+=IMPORTXML("https://example.com", "//a/@href")
+```
+
+### IMPORTDATA（CSV）
+```
+=IMPORTDATA("https://example.com/data.csv")
+```
+
+### IMPORTFEED（RSS）
+```
+=IMPORTFEED("https://example.com/rss")
+```
+
+## Google Apps Script
+```javascript
+function scrapeAndStore() {
+  const response = UrlFetchApp.fetch("https://api.example.com/products");
+  const data = JSON.parse(response.getContentText());
+  
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  data.products.forEach(p => {
+    sheet.appendRow([p.name, p.price, new Date()]);
+  });
+}
+```
+設 trigger 每天 9am 跑。
+
+## 限制
+- ❌ 不能跑 JS
+- ❌ 大量資料慢
+- ❌ 複雜邏輯難
+- ❌ 不能解 Cloudflare
+
+## 何時用
+- 表格資料
+- 每天小量更新
+- 給行政 / 業務看
+- 不會寫 code 的人
+
+## 案例
+- 業務每天抓對手商品 → IMPORTXML
+- 老闆要每日報表 → Apps Script + Gmail
