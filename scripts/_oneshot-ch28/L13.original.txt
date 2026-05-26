@@ -1,0 +1,59 @@
+## CSV
+```python
+import pandas as pd
+df = pd.DataFrame(items)
+df.to_csv("data.csv", index=False, encoding="utf-8-sig")
+```
+⚠️ Excel 中文用 `utf-8-sig`。
+
+## JSONL（大檔友善）
+```python
+with open("data.jsonl", "w", encoding="utf-8") as f:
+    for item in items:
+        f.write(json.dumps(item, ensure_ascii=False) + "\n")
+
+with open("data.jsonl", encoding="utf-8") as f:
+    for line in f:
+        item = json.loads(line)
+```
+
+## SQLite
+```python
+import sqlite3
+
+conn = sqlite3.connect("data.db")
+c = conn.cursor()
+c.execute("""
+CREATE TABLE IF NOT EXISTS products (
+  id INTEGER PRIMARY KEY,
+  name TEXT, price REAL, link TEXT UNIQUE
+)
+""")
+
+c.executemany(
+    "INSERT OR IGNORE INTO products (name, price, link) VALUES (?, ?, ?)",
+    [(p["name"], p["price"], p["link"]) for p in products]
+)
+conn.commit()
+```
+
+## PostgreSQL
+```python
+import psycopg2
+from psycopg2.extras import execute_values
+
+execute_values(
+    cur,
+    "INSERT INTO products (name, price, link) VALUES %s ON CONFLICT (link) DO NOTHING",
+    [(p["name"], p["price"], p["link"]) for p in products]
+)
+```
+
+## 選擇
+
+| 規模 | 推薦 |
+|---|---|
+| < 1 萬 | CSV / JSON |
+| 1 萬-1 百萬 | SQLite |
+| > 1 百萬 | PG |
+| 不規則 | MongoDB |

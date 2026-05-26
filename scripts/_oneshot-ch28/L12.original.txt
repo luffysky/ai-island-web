@@ -1,0 +1,57 @@
+## CSS Selector
+```
+.class、#id
+div > p          直接子
+div p            後代
+[attr^="abc"]    開頭
+[attr$="abc"]    結尾
+[attr*="abc"]    包含
+:nth-child(2)
+:not(.x)
+```
+
+## XPath（更強）
+```
+//div[@class="x"]
+//div[contains(@class, "abc")]
+//div[contains(text(), '優惠')]/following-sibling::div[1]
+```
+
+## 抓資料 6 招
+
+### 1. JSON-LD（金礦）
+```python
+import json
+script = soup.select_one("script[type='application/ld+json']")
+data = json.loads(script.string)
+```
+e-commerce 直接拿到結構化資料、不用解 HTML。
+
+### 2. data-* 屬性
+```python
+div = soup.select_one("div[data-product-id]")
+print(div["data-product-id"], div["data-price"])
+```
+
+### 3. 內嵌 JSON
+```python
+import re, json
+match = re.search(r'window\.__INITIAL_DATA__\s*=\s*({.*?});', html)
+data = json.loads(match.group(1))
+```
+
+### 4. 屬性
+```python
+img_url = soup.select_one("img")["src"]
+```
+
+### 5. 多個值
+```python
+tags = [t.get_text() for t in soup.select(".tag")]
+```
+
+### 6. 巢狀
+```python
+for card in soup.select("div.product"):
+    name = card.select_one(".name").get_text(strip=True)
+```
