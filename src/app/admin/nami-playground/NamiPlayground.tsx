@@ -231,7 +231,13 @@ export function NamiPlayground({
             <button
               key={t.id}
               onClick={() => setActive(t.id)}
-              className={`relative flex-1 min-w-fit px-3 py-2 rounded-xl text-xs md:text-sm font-bold transition-colors whitespace-nowrap ${isActive ? "text-black" : "text-fg-muted hover:text-fg"}`}
+              className={`relative flex-1 min-w-fit px-3 py-2 rounded-xl text-xs md:text-sm font-bold transition-colors whitespace-nowrap ${
+                isActive
+                  // ⚠️ button 自己也加 bg-gradient、不只依賴 motion.div 的絕對定位 bg、
+                  // motion 動畫滑動期間 button 沒 bg 時、text-black 直接秀在深色容器上 = 看不見
+                  ? "text-black bg-gradient-to-r from-purple-400 via-pink-400 to-amber-400"
+                  : "text-fg-muted hover:text-fg"
+              }`}
             >
               {isActive && (
                 <motion.div

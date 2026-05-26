@@ -378,7 +378,9 @@ export function FrameworkLab() {
               key={k}
               onClick={() => setFw(k)}
               className={`relative flex-1 min-w-fit px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap inline-flex items-center justify-center gap-1.5 transition ${
-                active ? "text-black" : "text-fg-muted hover:text-fg"
+                active
+                  ? "text-black bg-gradient-to-r from-cyan-400 to-emerald-400"
+                  : "text-fg-muted hover:text-fg"
               }`}
             >
               {active && (

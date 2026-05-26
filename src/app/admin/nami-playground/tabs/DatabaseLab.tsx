@@ -556,7 +556,9 @@ export function DatabaseLab() {
               key={k}
               onClick={() => setDb(k)}
               className={`relative flex-1 min-w-fit px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap inline-flex items-center gap-1.5 transition ${
-                active ? "text-black" : "text-fg-muted hover:text-fg"
+                active
+                  ? "text-black bg-gradient-to-r from-orange-400 to-purple-400"
+                  : "text-fg-muted hover:text-fg"
               }`}
             >
               {active && (

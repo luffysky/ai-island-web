@@ -126,10 +126,10 @@ export function AskAI({
                       📎 AI 會看到你的 code{error ? " + 錯誤訊息" : ""} (點開預覽)
                     </summary>
                     {code && (
-                      <pre className="text-[10px] bg-[#0d1117] p-2 m-0 max-h-32 overflow-y-auto font-mono">{code.slice(0, 600)}{code.length > 600 ? "\n..." : ""}</pre>
+                      <pre className="text-[10px] bg-[#0d1117] text-[#e6edf3] p-2 m-0 max-h-32 overflow-y-auto font-mono">{code.slice(0, 600)}{code.length > 600 ? "\n..." : ""}</pre>
                     )}
                     {error && (
-                      <pre className="text-[10px] bg-red-500/5 text-red-300 p-2 m-0 max-h-32 overflow-y-auto font-mono border-t border-border">{error.slice(0, 600)}</pre>
+                      <pre className="text-[10px] bg-red-950/30 text-red-200 p-2 m-0 max-h-32 overflow-y-auto font-mono border-t border-border">{error.slice(0, 600)}</pre>
                     )}
                   </details>
                 )}
@@ -167,7 +167,7 @@ export function AskAI({
                   </div>
                 )}
                 {response && (
-                  <div className="bg-bg-elevated rounded-lg p-3 text-sm leading-relaxed relative">
+                  <div className="bg-bg-elevated text-fg rounded-lg p-3 text-sm leading-relaxed relative">
                     <button
                       onClick={copy}
                       className="absolute top-2 right-2 p-1 text-fg-muted hover:text-accent transition"
