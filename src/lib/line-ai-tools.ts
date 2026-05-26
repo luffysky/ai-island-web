@@ -354,6 +354,33 @@ async function getChapterStats(chapterId?: number): Promise<string> {
   return lines.join("\n");
 }
 
+// 把 Anthropic HTTP error 翻成人話、絕對不 dump raw JSON 給林董看
+function friendlyAnthropicError(status: number, body: string, model: string): string {
+  let parsed: any = null;
+  try { parsed = JSON.parse(body); } catch {}
+  const errType = parsed?.error?.type ?? "";
+  const errMsg = parsed?.error?.message ?? "";
+  if (status === 401 || errType === "authentication_error" || /invalid x-api-key/i.test(errMsg)) {
+    return "Anthropic API key 失效（401）— 林董去 /admin/ai-keys 重貼一次 key";
+  }
+  if (status === 429 || errType === "rate_limit_error") {
+    return "Anthropic 限流（429）— 等 1 分鐘再問、或升 API tier";
+  }
+  if (status === 529 || /overloaded/i.test(errMsg)) {
+    return "Anthropic 主機過載（529）— 等 10 秒重試、或換模型";
+  }
+  if (status === 404 || /model.*not.*found/i.test(errMsg)) {
+    return `模型 ${model} 不存在或無權限 — 去 /admin/ai-models 換模型`;
+  }
+  if (status === 400 || errType === "invalid_request_error") {
+    return `請求格式錯誤：${errMsg.slice(0, 80) || "未知"}`;
+  }
+  if (status >= 500) {
+    return `Anthropic server 錯誤（${status}）— 過幾分鐘再試`;
+  }
+  return `AI 呼叫失敗（${status}）：${errMsg.slice(0, 80) || "未知錯誤"}`;
+}
+
 // ─── tool-use loop ───
 export async function askAIWithTools(opts: {
   apiKey: string;
@@ -407,11 +434,14 @@ async function runToolLoop(opts: {
       });
       if (!res.ok) {
         const err = await res.text();
-        return `❌ AI 呼叫失敗：${res.status} ${err.slice(0, 200)}`;
+        return `❌ ${friendlyAnthropicError(res.status, err, opts.model)}`;
       }
       data = await res.json();
     } catch (e: any) {
-      return `❌ AI 連線失敗：${e?.message ?? "timeout"}`;
+      const m = e?.name === "AbortError" || /timeout/i.test(e?.message ?? "")
+        ? "AI 回應太慢（超過 25 秒）、再傳一次"
+        : `AI 連線失敗：${e?.message ?? "unknown"}`;
+      return `❌ ${m}`;
     } finally {
       clearTimeout(timer);
     }

@@ -4,7 +4,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { decryptKey } from "@/lib/ai-crypto";
 import { getAdminLineUser, type AdminLineUser } from "@/lib/admin-line-users";
 import { runBotCommand, isCommand } from "@/lib/line-bot-commands";
-import { buildAiReplyCard, buildQuickReply, COMMON_QR, type FlexMessage, type LineTextMessage } from "@/lib/line-flex";
+import { buildAiReplyCard, buildAIErrorCard, buildQuickReply, COMMON_QR, type FlexMessage, type LineTextMessage } from "@/lib/line-flex";
 import { runPostback } from "@/lib/line-postback";
 import { getLiveSnapshot } from "@/lib/site-status-snapshot";
 import { askAIWithTools } from "@/lib/line-ai-tools";
@@ -312,8 +312,32 @@ export async function POST(req: NextRequest) {
       }
 
       const answer = await askAI(text, adminUser);
-      const aiCard = buildAiReplyCard({ text: answer, userName: adminUser.name });
-      await lineReply(replyToken, aiCard, token);
+      // AI 失敗的回覆都用 "❌ " 開頭、不要 dump 給林董看醜 JSON、改成友善錯誤卡 + 修復按鈕
+      if (answer.startsWith("❌ ")) {
+        const errMsg = answer.slice(2).trim();
+        const isAuthErr = /401|invalid x-api-key|key 失效|key.*disabled|key 已停用|沒設定.*key/i.test(errMsg);
+        const isModelErr = /模型.*不存在|model.*not.*found|沒設定|未設定/i.test(errMsg);
+        const isDecryptErr = /解密失敗|AI_KEY_SECRET/i.test(errMsg);
+        const fixUrl = isAuthErr || isModelErr || isDecryptErr
+          ? `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet"}/${process.env.NEXT_PUBLIC_ADMIN_SLUG ?? "console-x7k2"}/admin/ai-models`
+          : undefined;
+        const hint = isAuthErr ? "去後台貼新 API key（Anthropic Console 重發一支）"
+          : isModelErr ? "去後台 AI 模型管理啟用 / 換 model"
+          : isDecryptErr ? "Zeabur env AI_KEY_SECRET 跟當時加密的不一樣、用同一把"
+          : /限流|429/i.test(errMsg) ? "等 1 分鐘再問、或升 API tier"
+          : /超時|太慢|timeout/i.test(errMsg) ? "再傳一次（可能網路抖動）"
+          : "看 /admin/errors 抓 stack trace";
+        await lineReply(replyToken, buildAIErrorCard({
+          message: errMsg,
+          hint,
+          fixUrl,
+          fixLabel: fixUrl ? "去後台修" : undefined,
+          userName: adminUser.name,
+        }), token);
+      } else {
+        const aiCard = buildAiReplyCard({ text: answer, userName: adminUser.name });
+        await lineReply(replyToken, aiCard, token);
+      }
     }
   }
 

@@ -433,6 +433,36 @@ export function buildListCard(opts: {
 }
 
 /** AI 回覆卡：精緻版（更柔和、留白多）*/
+/**
+ * AI 失敗 / 系統錯誤友善卡 — 紅色 accent + 提示 + 按鈕跳對應後台頁
+ * 用來取代之前直接把 raw error JSON dump 給用戶的醜訊息
+ */
+export function buildAIErrorCard(opts: {
+  message: string;          // 友善中文訊息（不含 raw JSON）
+  hint?: string;            // 補充提示（怎麼修）
+  fixUrl?: string;          // 修復頁面 URL（例如 /admin/ai-keys）
+  fixLabel?: string;        // 修復按鈕文字
+  userName?: string;
+}): FlexMessage {
+  const color = "#ff5555";
+  return buildSimpleCard({
+    emoji: "⚠️",
+    title: "AI 暫時不能回",
+    accentColor: color,
+    body: opts.message,
+    meta: [
+      ...(opts.hint ? [{ label: "💡 解法", value: opts.hint }] : []),
+      ...(opts.userName ? [{ label: "👤 對象", value: opts.userName }] : []),
+    ],
+    buttons: opts.fixUrl
+      ? [
+          { label: opts.fixLabel ?? "去修", uri: opts.fixUrl, primary: true },
+          { label: "看 error log", uri: `${SITE_URL}/${ADMIN_SLUG}/admin/errors` },
+        ]
+      : [{ label: "看 error log", uri: `${SITE_URL}/${ADMIN_SLUG}/admin/errors`, primary: true }],
+  });
+}
+
 export function buildAiReplyCard(opts: { text: string; userName: string }): FlexMessage {
   const color = "#5fa8d3"; // 青藍
   return {
