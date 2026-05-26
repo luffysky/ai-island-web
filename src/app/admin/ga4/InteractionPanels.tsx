@@ -1,3 +1,6 @@
+"use client";
+import { useState, useMemo } from "react";
+
 type SessionRow = {
   id: string;
   visitor_id: string;
@@ -26,6 +29,7 @@ type SessionRow = {
 
 type PageViewRow = {
   id: string;
+  visitor_id?: string;
   user_id: string | null;
   path: string;
   title: string | null;
@@ -134,26 +138,7 @@ export function InteractionPanels({
           )}
         </Panel>
 
-        <Panel title="最新頁面停留">
-          {recentPageViews.length === 0 ? <Empty /> : (
-            <div className="space-y-2">
-              {recentPageViews.slice(0, 12).map((row) => (
-                <div key={row.id} className="rounded border border-border bg-bg p-2 text-xs">
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="min-w-0">
-                      <div className="truncate font-medium">{row.title || row.path}</div>
-                      <div className="truncate text-fg-muted">{displayUser(row)} · {row.path}</div>
-                    </div>
-                    <div className="text-right text-fg-muted shrink-0">
-                      <div>{seconds(row.duration_sec)}</div>
-                      <div>{row.scroll_max_pct}% {row.read_complete ? "看完" : ""}</div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </Panel>
+        <RecentPageViewsPanel recentPageViews={recentPageViews} />
       </div>
 
       <div>
@@ -184,6 +169,63 @@ export function InteractionPanels({
         </div>
       </Panel>
     </div>
+  );
+}
+
+function RecentPageViewsPanel({ recentPageViews }: { recentPageViews: PageViewRow[] }) {
+  const [showAll, setShowAll] = useState(false);
+
+  // 預設去重：每個 user_id（或訪客 visitor_id）只顯示最新 1 筆
+  const deduped = useMemo(() => {
+    const seen = new Set<string>();
+    const result: PageViewRow[] = [];
+    for (const row of recentPageViews) {
+      const key = row.user_id || `guest:${row.visitor_id || row.id}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      result.push(row);
+      if (result.length >= 20) break;
+    }
+    return result;
+  }, [recentPageViews]);
+
+  const displayList = showAll ? recentPageViews.slice(0, 50) : deduped;
+
+  return (
+    <section className="bg-bg-card border border-border rounded-xl p-4">
+      <div className="flex items-center justify-between mb-3 gap-2">
+        <h4 className="font-bold text-sm">
+          最新頁面停留
+          <span className="text-[10px] font-normal text-fg-muted ml-2">
+            {showAll ? `全部 ${displayList.length}/${recentPageViews.length} 筆` : `去重 ${deduped.length} 位使用者`}
+          </span>
+        </h4>
+        <button
+          onClick={() => setShowAll((s) => !s)}
+          className="text-[10px] px-2 py-1 rounded border border-border bg-bg-elevated hover:border-accent transition"
+        >
+          {showAll ? "去重模式" : "看全部"}
+        </button>
+      </div>
+      {displayList.length === 0 ? <Empty /> : (
+        <div className="space-y-2">
+          {displayList.map((row) => (
+            <div key={row.id} className="rounded border border-border bg-bg p-2 text-xs">
+              <div className="flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="truncate font-medium">{row.title || row.path}</div>
+                  <div className="truncate text-fg-muted">{displayUser(row)} · {row.path}</div>
+                </div>
+                <div className="text-right text-fg-muted shrink-0">
+                  <div>{seconds(row.duration_sec)}</div>
+                  <div>{row.scroll_max_pct}% {row.read_complete ? "看完" : ""}</div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
   );
 }
 
