@@ -90,7 +90,7 @@ ${((brand as any).hashtag_pool ?? []).length > 0 ? `- 預設 hashtag 池：${((b
     urgent: "急迫、限時、不要太誇張但要明顯促動",
   };
 
-  const systemPrompt = `你是 AI 島 (aiisland.tw) 的行銷文案 AI。任務：給一個主題、生 ${platforms.length} 個平台不同 copy。
+  const systemPrompt = `你是 AI 島 (ai-island-web.snowrealm.pet) 的行銷文案 AI。任務：給一個主題、生 ${platforms.length} 個平台不同 copy。
 
 ${brandBlock}
 

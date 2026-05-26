@@ -6,7 +6,7 @@ import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://aiisland.tw";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
 
 export default async function ChapterSeoPreviewPage({ params }: { params: Promise<{ id: string }> }) {
   const { id: idStr } = await params;

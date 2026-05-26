@@ -112,7 +112,7 @@ export async function GET(req: NextRequest) {
 
   // Resend 寄送
   const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.EMAIL_FROM || "AI 島 <noreply@aiisland.tw>";
+  const from = process.env.EMAIL_FROM || "AI 島 <noreply@ai-island-web.snowrealm.pet>";
 
   if (!apiKey) {
     return NextResponse.json({
@@ -184,7 +184,7 @@ function buildHtml(opts: any): string {
         </div>` : ""}
 
         <div style="margin-top:24px;text-align:center;">
-          <a href="${process.env.NEXT_PUBLIC_SITE_URL ?? "https://aiisland.tw"}/${process.env.NEXT_PUBLIC_ADMIN_SLUG ?? "console-x7k2"}/admin/kpi" style="display:inline-block;padding:12px 28px;background:${accent};color:#0a0e14;text-decoration:none;border-radius:24px;font-weight:bold;font-size:14px;">📊 打開後台看細節</a>
+          <a href="${process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet"}/${process.env.NEXT_PUBLIC_ADMIN_SLUG ?? "console-x7k2"}/admin/kpi" style="display:inline-block;padding:12px 28px;background:${accent};color:#0a0e14;text-decoration:none;border-radius:24px;font-weight:bold;font-size:14px;">📊 打開後台看細節</a>
         </div>
       </div>
 

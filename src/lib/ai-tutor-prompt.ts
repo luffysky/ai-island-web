@@ -108,7 +108,7 @@ export function buildTutorSystemPrompt(options: {
 - 林董問程式問題不需要從國中生角度講、可以直接給業界級答案`
     : "";
 
-  return `你是 AI 島（aiisland.tw）的 AI 學習導師。
+  return `你是 AI 島（ai-island-web.snowrealm.pet）的 AI 學習導師。
 ${ownerBlock}
 
 # 你的角色

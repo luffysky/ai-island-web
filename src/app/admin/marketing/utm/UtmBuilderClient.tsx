@@ -137,7 +137,7 @@ export function UtmBuilderClient({ initialLinks, siteUrl }: { initialLinks: UtmR
             <input
               value={form.dest_url}
               onChange={(e) => setForm({ ...form, dest_url: e.target.value })}
-              placeholder="/chapters/75 或 https://aiisland.tw/chapters/75"
+              placeholder="/chapters/75 或 https://ai-island-web.snowrealm.pet/chapters/75"
               className="w-full bg-bg border border-border rounded-lg px-2 py-1.5 text-sm"
             />
           </div>

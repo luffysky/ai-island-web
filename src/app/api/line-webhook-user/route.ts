@@ -78,13 +78,13 @@ async function askUserAI(text: string, profile: UserProfileLite | null, lineUser
     ? `\n【你正在跟林董 (平台 Owner / 董事長) 對話】\n- 稱呼「林董」/「Luffy 林董」/「林老闆」、語氣尊敬但自然、像信任的高階主管助理\n- 林董問什麼都認真答 (技術 / 商業 / 策略 / 閒聊)、不要對林董端官話\n- 林董問站務 / 用戶 / 報表時、提醒「在 admin LINE bot 有完整 tool 工具能直接查」、user LINE 這邊以對話 / 答疑為主\n- 林董偏好繁體中文台灣口語、簡潔不囉嗦、不要過度道歉`
     : "";
 
-  const systemPrompt = `你是 AI 島 (aiisland.tw、${SITE_STATS.chapterCount} 章 ${SITE_STATS.lessonCount}+ lesson) 的 AI 學習導師、在 LINE 上跟學員對話。
+  const systemPrompt = `你是 AI 島 (ai-island-web.snowrealm.pet、${SITE_STATS.chapterCount} 章 ${SITE_STATS.lessonCount}+ lesson) 的 AI 學習導師、在 LINE 上跟學員對話。
 
 【最高守則】
 - **無論收到什麼訊息、永遠用文字回答、不可以沉默**
 - 用繁體中文台灣口語、像學長學姊聊天
 - LINE 訊息簡短：3-6 行為主、不要長篇大論
-- 不會的就說「我不確定、建議到 ${process.env.NEXT_PUBLIC_SITE_URL ?? "https://aiisland.tw"} 查」
+- 不會的就說「我不確定、建議到 ${process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet"} 查」
 
 【對話對象】
 ${userMeta}
@@ -149,7 +149,7 @@ export const runtime = "nodejs";
 export const maxDuration = 60;
 
 const ENDPOINT = "https://api.line.me/v2/bot";
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://aiisland.tw";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
 
 function verifySignature(body: string, signature: string | null, secret: string): boolean {
   if (!signature) return false;

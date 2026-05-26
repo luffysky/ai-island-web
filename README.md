@@ -109,7 +109,7 @@ SUPABASE_DB_URL=postgresql://postgres.<ref>:<pwd>@aws-...pooler.supabase.com:654
 ADMIN_SLUG=console-x7k2
 
 # 站點 URL
-NEXT_PUBLIC_SITE_URL=https://aiisland.tw
+NEXT_PUBLIC_SITE_URL=https://ai-island-web.snowrealm.pet
 
 # GA4 sync（可選；未設則 sync route 回 503）
 GA4_PROPERTY_ID=

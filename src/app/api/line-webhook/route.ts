@@ -213,7 +213,7 @@ export async function POST(req: NextRequest) {
         const isAdmin = getAdminLineUser(userId);
         const msg = isAdmin
           ? `🏝️ AI 島 admin bot 已啟動！\n\n你的 userId：\n${userId}\n\n把這個貼進 Zeabur 環境變數 ADMIN_LINE_USER_ID（或 ADMIN_LINE_USERS JSON）、之後就會收到通知、也能直接跟我聊。`
-          : `🏝️ 歡迎加入 AI 島！\n\n要綁定帳號讓我推學習通知給你：\n1. 到 ${process.env.NEXT_PUBLIC_SITE_URL ?? "https://aiisland.tw"}/settings 拿 6 位綁定 code\n2. 傳給我「/bind 123456」\n\n綁定後完課 / 升等 / 論壇回覆 / 解鎖成就都會推到你的 LINE。`;
+          : `🏝️ 歡迎加入 AI 島！\n\n要綁定帳號讓我推學習通知給你：\n1. 到 ${process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet"}/settings 拿 6 位綁定 code\n2. 傳給我「/bind 123456」\n\n綁定後完課 / 升等 / 論壇回覆 / 解鎖成就都會推到你的 LINE。`;
         await lineReply(replyToken, msg, token);
       }
       continue;
@@ -258,7 +258,7 @@ export async function POST(req: NextRequest) {
             };
             await lineReply(
               replyToken,
-              `❌ 綁定失敗：${reasonMap[result.reason ?? ""] ?? result.reason}\n\n到 ${process.env.NEXT_PUBLIC_SITE_URL ?? "https://aiisland.tw"}/settings 重拿 code。`,
+              `❌ 綁定失敗：${reasonMap[result.reason ?? ""] ?? result.reason}\n\n到 ${process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet"}/settings 重拿 code。`,
               token,
             );
           }
@@ -283,7 +283,7 @@ export async function POST(req: NextRequest) {
         // 不是綁定指令、提示綁定流程
         await lineReply(
           replyToken,
-          `🤖 嗨～還沒綁定帳號\n\n要綁定請：\n1. 到 ${process.env.NEXT_PUBLIC_SITE_URL ?? "https://aiisland.tw"}/settings 拿 6 位 code\n2. 在這裡傳「/bind 123456」\n\n你的 LINE userId: ${userId}`,
+          `🤖 嗨～還沒綁定帳號\n\n要綁定請：\n1. 到 ${process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet"}/settings 拿 6 位 code\n2. 在這裡傳「/bind 123456」\n\n你的 LINE userId: ${userId}`,
           token,
         );
         continue;

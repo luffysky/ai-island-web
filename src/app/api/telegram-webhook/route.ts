@@ -307,7 +307,7 @@ export async function POST(req: NextRequest) {
         {
           role: "system",
           content:
-            `你是 AI 島 (aiisland.tw) 的 Telegram admin bot、林董 (Luffy 林、平台 owner) 的私人助理。\n` +
+            `你是 AI 島 (ai-island-web.snowrealm.pet) 的 Telegram admin bot、林董 (Luffy 林、平台 owner) 的私人助理。\n` +
             `用繁體中文台灣口語、簡潔、像同事 / 高階主管助理。\n` +
             `回答以 Telegram 格式為主 — 短段落、可用 *粗體* / \`code\` markdown、列點清楚。\n` +
             `當前 model: ${model.provider}/${model.model_name}。`,

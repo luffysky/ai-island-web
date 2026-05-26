@@ -4,7 +4,7 @@ import { DUNGEONS } from "@/data/dungeons";
 import { SITE_STATS } from "@/lib/site-stats";
 import { chapterDisplayNumber } from "@/lib/chapter-display";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://aiisland.tw";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
 
 /**
  * /llms.txt — Generative Engine Optimization (GEO)
@@ -80,7 +80,7 @@ export async function GET() {
   // optional 段
   lines.push("## 關於");
   lines.push("");
-  lines.push("- 平台：AI 島（aiisland.tw）");
+  lines.push("- 平台：AI 島（ai-island-web.snowrealm.pet）");
   lines.push("- 經營者：SnowRealm（個人開發者 Luffysky）");
   lines.push("- 所在地：台灣新北市鶯歌區");
   lines.push("- 主要語言：繁體中文（zh-Hant-TW）");

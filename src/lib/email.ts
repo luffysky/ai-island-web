@@ -69,7 +69,7 @@ export async function sendEmail(opts: SendEmailOptions): Promise<{ ok: boolean; 
       html: htmlWithFooter,
       text: textWithFooter,
       headers: {
-        "List-Unsubscribe": `<${unsubUrl}>, <mailto:unsubscribe@aiisland.tw?subject=Unsubscribe&body=token=${unsubToken}>`,
+        "List-Unsubscribe": `<${unsubUrl}>, <mailto:unsubscribe@ai-island-web.snowrealm.pet?subject=Unsubscribe&body=token=${unsubToken}>`,
         "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
       },
     });

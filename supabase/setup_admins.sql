@@ -3,7 +3,7 @@
 -- ============================================
 -- 步驟：
 -- 1. 在前台 /signup 註冊兩個帳號（用真實 email）
---    例如：luffysky@aiisland.tw 跟 nami@aiisland.tw
+--    例如：luffysky@ai-island-web.snowrealm.pet 跟 nami@ai-island-web.snowrealm.pet
 -- 2. 註冊完後、來 SQL Editor 執行這份 SQL
 --    把 email 換成你註冊用的
 -- ============================================
@@ -13,7 +13,7 @@ UPDATE public.profiles
 SET role = 'admin',
     display_name = COALESCE(display_name, 'Luffysky')
 WHERE id = (
-  SELECT id FROM auth.users WHERE email = 'luffysky@aiisland.tw'
+  SELECT id FROM auth.users WHERE email = 'luffysky@ai-island-web.snowrealm.pet'
 );
 
 -- 把 Nami 設為 admin
@@ -21,7 +21,7 @@ UPDATE public.profiles
 SET role = 'admin',
     display_name = COALESCE(display_name, 'Nami')
 WHERE id = (
-  SELECT id FROM auth.users WHERE email = 'nami@aiisland.tw'
+  SELECT id FROM auth.users WHERE email = 'nami@ai-island-web.snowrealm.pet'
 );
 
 -- 驗證

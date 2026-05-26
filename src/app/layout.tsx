@@ -24,7 +24,7 @@ import { organizationSchema, websiteSchema, jsonLdScript } from "@/lib/seo-jsonl
 const TITLE = `AI 島：${SITE_STATS.chapterCount} 章全端養成班`;
 const DESCRIPTION = `用最簡單的方式學會最難的技術—HTML 到 AI Agent ${SITE_STATS.chapterCount} 章全端 + 遊戲化學習。`;
 const OG_DESCRIPTION = `${SITE_STATS.chapterCount} 章 × ${SITE_STATS.lessonCount}+ 高品質 lesson、遊戲化學習、SnowRealm 生態整合`;
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://aiisland.tw";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
 
 export const metadata: Metadata = {
   title: TITLE,

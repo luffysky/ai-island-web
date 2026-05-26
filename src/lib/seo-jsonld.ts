@@ -10,7 +10,7 @@
 
 import { SITE_STATS } from "./site-stats";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://aiisland.tw";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
 const SITE_NAME = "AI 島";
 const SITE_DESC = `用遊戲化方式學程式：HTML 到 AI Agent ${SITE_STATS.chapterCount} 章 ${SITE_STATS.lessonCount}+ lesson、3D 島嶼 + AI 導師陪你練。`;
 

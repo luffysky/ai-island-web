@@ -52,7 +52,7 @@ INSERT INTO public.canned_replies (owner_user_id, title, body, category, shortcu
   (NULL, '請提供訂單編號', '麻煩請提供您的訂單編號（格式 #xxxxxxxx）、我幫您查一下狀況～', 'order', 'order-id'),
   (NULL, '轉技術部門', '這個問題已轉給技術部門、預計 24 小時內回覆您。造成不便、感謝您的耐心 🙏', 'tech', 'tech'),
   (NULL, '已解決 / 結案', '問題已處理完畢、麻煩您驗證一下是否正常 ✅\n\n如還有其他需要、隨時 LINE 給我們、結案這條 ticket 囉～', 'closing', 'done'),
-  (NULL, '請看常見問答', '這個問題在我們的 FAQ 有完整說明：https://aiisland.tw/help\n\n如果還是有疑問、再回我們～', 'tech', 'faq'),
+  (NULL, '請看常見問答', '這個問題在我們的 FAQ 有完整說明：https://ai-island-web.snowrealm.pet/help\n\n如果還是有疑問、再回我們～', 'tech', 'faq'),
   (NULL, '退款處理中', '已為您申請退款、約 3-5 個工作天會回到您原付款方式。退款完成會再通知您 💰', 'order', 'refund')
 ON CONFLICT DO NOTHING;
 

@@ -16,7 +16,7 @@ const TYPE_LABEL: Record<string, { emoji: string; text: string; tone: string }> 
   forum_thread: { emoji: "💭", text: "論壇", tone: "text-pink-400" },
 };
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://aiisland.tw";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
 
 type SearchResult = {
   type: string;

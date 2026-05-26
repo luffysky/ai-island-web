@@ -4,7 +4,7 @@ import { SITE_STATS } from "@/lib/site-stats";
 import { itemListSchema, breadcrumbSchema, jsonLdScript } from "@/lib/seo-jsonld";
 import type { Metadata } from "next";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://aiisland.tw";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
 
 export const revalidate = 60;
 

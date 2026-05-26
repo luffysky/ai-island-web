@@ -110,7 +110,7 @@ export function CopyGeneratorClient() {
             <input
               value={cta}
               onChange={(e) => setCta(e.target.value)}
-              placeholder="例：到 aiisland.tw/chapters/75 免費試讀第一節"
+              placeholder="例：到 ai-island-web.snowrealm.pet/chapters/75 免費試讀第一節"
               className="w-full bg-bg border border-border rounded-lg px-2 py-1.5 text-sm outline-none focus:border-purple-400"
             />
           </div>
