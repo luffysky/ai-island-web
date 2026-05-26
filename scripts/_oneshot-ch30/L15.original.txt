@@ -1,0 +1,86 @@
+## Tesseract
+```python
+import pytesseract
+from PIL import Image
+
+text = pytesseract.image_to_string(Image.open("image.png"), lang="chi_tra+eng")
+```
+
+## PaddleOCR（中文最強）
+```python
+from paddleocr import PaddleOCR
+
+ocr = PaddleOCR(use_angle_cls=True, lang="ch")
+result = ocr.ocr("image.png", cls=True)
+
+for line in result[0]:
+    print(line[1][0])
+```
+
+## Claude Vision（2024+ 主流）
+```python
+import anthropic, base64
+
+client = anthropic.Anthropic()
+
+with open("invoice.png", "rb") as f:
+    img = base64.b64encode(f.read()).decode()
+
+response = client.messages.create(
+    model="claude-opus-4-7",
+    max_tokens=1024,
+    messages=[{
+        "role": "user",
+        "content": [
+            {"type": "image", "source": {
+                "type": "base64", "media_type": "image/png", "data": img
+            }},
+            {"type": "text", "text": "抽出發票：商家、日期、總金額、品項（JSON）"}
+        ]
+    }]
+)
+```
+比 Tesseract 強 100 倍。
+
+## 解 Captcha
+```python
+import requests
+
+res = requests.post("http://2captcha.com/in.php", files={
+    "file": open("captcha.png", "rb")
+}, data={"key": API_KEY, "method": "post"})
+
+captcha_id = res.text.split("|")[1]
+
+while True:
+    res = requests.get(f"http://2captcha.com/res.php?key={API_KEY}&action=get&id={captcha_id}")
+    if res.text.startswith("OK"):
+        solution = res.text.split("|")[1]
+        break
+    time.sleep(2)
+```
+
+## YOLO（物件偵測）
+```python
+from ultralytics import YOLO
+
+model = YOLO("yolov8n.pt")
+results = model("image.jpg")
+
+for r in results:
+    for box in r.boxes:
+        cls = r.names[int(box.cls)]
+        print(f"{cls}: {float(box.conf):.2f}")
+```
+
+## 應用
+- 讀發票 → 記帳
+- 監視器 → 統計人流
+- 賽事資料
+- 政府 PDF
+
+## 心法
+- 簡單文字：Tesseract / PaddleOCR
+- 結構化：Claude Vision
+- 物件：YOLO
+- Captcha：付費服務

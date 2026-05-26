@@ -1,0 +1,95 @@
+## 為什麼
+單台 1 萬 req/小時、100 萬 = 100 小時
+10 台 = 10 小時、100 台 = 1 小時
+
+## 架構
+```
+[Master]
+   ↓ 分派 task
+[Queue（Redis / RabbitMQ / Kafka）]
+   ↓
+[Worker 1] [Worker 2] [Worker N]
+   ↓
+[Storage]
+```
+
+## Celery（Python）
+```python
+from celery import Celery
+
+app = Celery("scraper", broker="redis://localhost:6379")
+
+@app.task
+def scrape_url(url):
+    return scrape(url)
+
+# 跑 worker
+# celery -A tasks worker -l info
+
+# 派 task
+from tasks import scrape_url
+for url in urls:
+    scrape_url.delay(url)
+```
+
+## Scrapy + scrapy-redis
+```python
+# settings.py
+SCHEDULER = "scrapy_redis.scheduler.Scheduler"
+DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"
+REDIS_URL = "redis://localhost:6379"
+```
+
+多台跑同個 spider、Redis 協調。
+
+## BullMQ（Node）
+```javascript
+import { Queue, Worker } from "bullmq";
+
+const queue = new Queue("scrape", { connection: { host: "localhost", port: 6379 } });
+
+await queue.add("scrape-url", { url: "https://example.com" });
+
+const worker = new Worker("scrape", async (job) => {
+  return await scrape(job.data.url);
+}, { connection: { ... } });
+```
+
+## Kubernetes Jobs
+```yaml
+apiVersion: batch/v1
+kind: Job
+spec:
+  parallelism: 10  # 10 個 pod
+  template:
+    spec:
+      containers:
+      - name: scraper
+        image: my-scraper:latest
+```
+
+## AWS Lambda + SQS
+```
+[Cron] → [SQS] → [Lambda × 100]
+```
+無 server、自動 scale。
+
+## 心法
+- 多 worker > 單台多執行緒
+- Redis / Queue 協調
+- 去重重要
+- Idempotent
+- 監控每台 worker
+
+## 規模建議
+
+| 規模 | 推薦 |
+|---|---|
+| < 1 萬 req/天 | 單台 |
+| 1 萬-10 萬 | Celery 多台 |
+| 10 萬-百萬 | Celery + 雲端 |
+| 百萬-千萬 | Scrapy + scrapy-redis |
+| > 千萬 | Kafka + Spark |
+
+## Indie 不需要
+99% 一台機器就夠。撞到瓶頸再分散式。
