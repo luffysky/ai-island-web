@@ -1,0 +1,72 @@
+## 為什麼
+- ✅ 免費 100k req/天
+- ✅ 全球 IP（300+ 城市）
+- ✅ 不用 server
+- ✅ Cron Triggers
+- ⚠️ 不能 Puppeteer
+
+## 簡單爬蟲
+```typescript
+export default {
+  async fetch(request, env) {
+    const res = await fetch("https://example.com");
+    
+    const products = [];
+    new HTMLRewriter()
+      .on("div.product", {
+        element(el) {
+          const product = {};
+          el.onEndTag(() => products.push(product));
+        }
+      })
+      .transform(res);
+    
+    return new Response(JSON.stringify(products));
+  }
+};
+```
+
+## Cron Trigger
+```toml
+# wrangler.toml
+[triggers]
+crons = ["0 3 * * *"]
+```
+
+```typescript
+export default {
+  async scheduled(event, env) {
+    const data = await scrape();
+    await env.KV.put("data", JSON.stringify(data));
+  }
+};
+```
+
+## 儲存
+```typescript
+// KV
+await env.MY_KV.put("key", "value");
+
+// R2（S3 替代、10GB 免費）
+await env.BUCKET.put(`data/${Date.now()}.json`, JSON.stringify(data));
+
+// D1（SQL）
+await env.DB.prepare("INSERT INTO products VALUES (?, ?)").bind(name, price).run();
+```
+
+## Browser Rendering（付費）
+```typescript
+const browser = await puppeteer.launch(env.BROWSER);
+const page = await browser.newPage();
+await page.goto("https://example.com");
+```
+
+## 部署
+```bash
+npx wrangler deploy
+```
+
+## 限制
+- ⚠️ CPU 10ms / request（免費）
+- ⚠️ 不能 Puppeteer
+- ⚠️ 不能長時間任務

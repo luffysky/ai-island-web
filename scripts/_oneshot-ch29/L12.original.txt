@@ -1,0 +1,76 @@
+## 攔截 Response
+```javascript
+page.on("response", async response => {
+  const url = response.url();
+  if (url.includes("/api/products")) {
+    const data = await response.json();
+    console.log("API response:", data);
+  }
+});
+```
+
+## 攔截 Request
+```javascript
+await page.route("**/*", route => {
+  const req = route.request();
+  
+  if (req.resourceType() === "image") return route.abort();
+  if (req.url().includes("googletagmanager")) return route.abort();
+  
+  route.continue({
+    headers: { ...req.headers(), "X-Custom": "value" }
+  });
+});
+```
+
+## Mock API
+```javascript
+await page.route("**/api/users", route => {
+  route.fulfill({
+    status: 200,
+    contentType: "application/json",
+    body: JSON.stringify([{ id: 1, name: "Mock" }])
+  });
+});
+```
+
+## 修改 response
+```javascript
+await page.route("**/api/products", async route => {
+  const response = await route.fetch();
+  const data = await response.json();
+  data.products.forEach(p => p.scraped_at = new Date());
+  route.fulfill({ response, json: data });
+});
+```
+
+## 抓 cookies / storage
+```javascript
+const cookies = await page.context().cookies();
+const data = await page.evaluate(() => ({ ...localStorage }));
+```
+
+## 加速：只載 HTML
+```javascript
+await page.route("**/*", route => {
+  const type = route.request().resourceType();
+  if (["stylesheet", "image", "font", "media"].includes(type)) {
+    route.abort();
+  } else {
+    route.continue();
+  }
+});
+```
+省 80% 頻寬。
+
+## 抓 GraphQL
+```javascript
+page.on("response", async response => {
+  if (response.url().includes("/graphql")) {
+    const json = await response.json();
+    if (json.data?.products) {
+      console.log(json.data.products);
+    }
+  }
+});
+```

@@ -1,0 +1,52 @@
+## 偵測指標
+- `navigator.webdriver`
+- Canvas / WebGL fingerprint
+- 字型 / 解析度 / 時區
+- 沒滑鼠移動
+- 鍵盤太規律
+
+## stealth plugin
+```javascript
+import puppeteer from "puppeteer-extra";
+import Stealth from "puppeteer-extra-plugin-stealth";
+puppeteer.use(Stealth());
+```
+
+修了 17+ 個 detection。
+
+## 手動修改
+```javascript
+await page.evaluateOnNewDocument(() => {
+  Object.defineProperty(navigator, "webdriver", { get: () => undefined });
+  Object.defineProperty(navigator, "plugins", { get: () => [1,2,3,4,5] });
+  Object.defineProperty(navigator, "languages", { get: () => ["zh-TW", "zh", "en"] });
+});
+```
+
+## 模擬人類
+```javascript
+async function humanType(page, selector, text) {
+  for (const char of text) {
+    await page.type(selector, char, { delay: Math.random() * 200 + 50 });
+  }
+}
+
+await page.mouse.move(100, 200);
+await page.waitForTimeout(500);
+await page.mouse.move(300, 400, { steps: 10 });
+```
+
+## 商業服務
+- Multilogin / AdsPower / GoLogin
+- 月 NT$ 200-1000
+
+## 目標難度
+- 容易：靜態 + 沒反爬
+- 中等：Cloudflare
+- 困難：Akamai / DataDome
+- 地獄：Apple / Google / Meta
+
+## 心法
+- 目標太難 → 放棄
+- 看官方 API
+- 看 ROI

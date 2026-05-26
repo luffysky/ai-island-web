@@ -1,0 +1,55 @@
+## RSS
+```javascript
+import Parser from "rss-parser";
+
+const parser = new Parser();
+const feed = await parser.parseURL("https://example.com/rss");
+
+for (const item of feed.items) {
+  console.log(item.title, item.link, item.pubDate);
+}
+```
+
+## 找 RSS
+```html
+<link rel="alternate" type="application/rss+xml" href="/feed.xml">
+```
+
+常見路徑：`/feed`、`/rss`、`/feed.xml`、`/atom.xml`
+
+## Sitemap
+```
+https://example.com/sitemap.xml
+```
+
+```xml
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://example.com/page/1</loc>
+    <lastmod>2026-05-17</lastmod>
+  </url>
+</urlset>
+```
+
+## 解析
+```javascript
+import { XMLParser } from "fast-xml-parser";
+
+const res = await fetch("https://example.com/sitemap.xml");
+const xml = await res.text();
+const parser = new XMLParser();
+const data = parser.parse(xml);
+
+const urls = data.urlset.url.map(u => u.loc);
+```
+
+## 為什麼合法
+- 網站主動提供
+- robots.txt 通常 allow
+- SEO 需要
+
+## 應用
+- 監控新聞網站新文章
+- 抓部落格所有 URL
+- 找出網站所有商品
+- RSS 聚合器

@@ -1,0 +1,57 @@
+## 為什麼被擋
+Python requests 的 TLS fingerprint 跟 Chrome 不一樣、網站一看就擋。
+
+## got-scraping（Node）
+```bash
+npm install got-scraping
+```
+
+```javascript
+import { gotScraping } from "got-scraping";
+
+const res = await gotScraping({
+  url: "https://example.com",
+  headerGeneratorOptions: {
+    browsers: [{ name: "chrome", minVersion: 110 }],
+    devices: ["desktop"],
+    locales: ["zh-TW"]
+  }
+});
+```
+
+## undici + HTTP/2
+```javascript
+import { fetch, Agent } from "undici";
+
+const res = await fetch("https://example.com", {
+  headers: { "User-Agent": "Mozilla/5.0 ..." },
+  dispatcher: new Agent({ allowH2: true })
+});
+```
+
+## Playwright（最徹底）
+直接用真瀏覽器、TLS 自動對。
+
+## FlareSolverr（過 Cloudflare）
+```bash
+docker run -d -p 8191:8191 ghcr.io/flaresolverr/flaresolverr
+```
+
+```javascript
+const res = await fetch("http://localhost:8191/v1", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    cmd: "request.get",
+    url: "https://cloudflare-protected.com",
+    maxTimeout: 60000
+  })
+});
+```
+
+## 心法
+1. 試 fetch + UA
+2. 試 got-scraping（TLS）
+3. 試 Playwright（JS）
+4. 試 FlareSolverr（Cloudflare）
+5. 放棄
