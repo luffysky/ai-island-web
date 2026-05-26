@@ -4,7 +4,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { decryptKey } from "@/lib/ai-crypto";
 import { getAdminLineUser, type AdminLineUser } from "@/lib/admin-line-users";
 import { runBotCommand, isCommand } from "@/lib/line-bot-commands";
-import { buildAiReplyCard, buildAIErrorCard, buildQuickReply, COMMON_QR, type FlexMessage, type LineTextMessage } from "@/lib/line-flex";
+import { buildAiReplyCard, buildAIErrorCard, buildSimpleCard, buildQuickReply, COMMON_QR, type FlexMessage, type LineTextMessage } from "@/lib/line-flex";
 import { runPostback } from "@/lib/line-postback";
 import { getLiveSnapshot } from "@/lib/site-status-snapshot";
 import { askAIWithTools } from "@/lib/line-ai-tools";
@@ -30,6 +30,124 @@ export const runtime = "nodejs";
 export const maxDuration = 60;
 
 const ENDPOINT = "https://api.line.me/v2/bot";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
+const ADMIN_SLUG = process.env.NEXT_PUBLIC_ADMIN_SLUG ?? "console-x7k2";
+const ADMIN_ACCENT = "#bd93f9";  // admin LINE 紫色（區別 user 紫 #a78bfa）
+const SUCCESS_ACCENT = "#50fa7b";
+const WARN_ACCENT = "#ffb86c";
+const INFO_ACCENT = "#8be9fd";
+
+// 統一 admin LINE 卡片風格
+function adminFollowCard(userId: string, isAdmin: boolean): FlexMessage {
+  if (isAdmin) {
+    return buildSimpleCard({
+      emoji: "🏝️",
+      title: "AI 島 admin bot 已啟動",
+      accentColor: ADMIN_ACCENT,
+      body: "把你的 userId 貼進 Zeabur env ADMIN_LINE_USER_ID（或 ADMIN_LINE_USERS JSON）、之後就會收到通知 + 可直接跟我聊。",
+      meta: [{ label: "🆔 userId", value: userId.slice(0, 12) + "..." }],
+      buttons: [
+        { label: "後台", uri: `${SITE_URL}/${ADMIN_SLUG}/admin`, primary: true },
+        { label: "看 env 設定", uri: `${SITE_URL}/${ADMIN_SLUG}/admin/system` },
+      ],
+    });
+  }
+  return buildSimpleCard({
+    emoji: "🏝️",
+    title: "歡迎加入 AI 島",
+    accentColor: ADMIN_ACCENT,
+    body: "綁定帳號讓我推學習通知給你。",
+    meta: [
+      { label: "Step 1", value: "去網站「設定」拿 6 位 code" },
+      { label: "Step 2", value: "傳「/bind 123456」" },
+    ],
+    buttons: [
+      { label: "拿綁定 code", uri: `${SITE_URL}/settings`, primary: true },
+      { label: "看章節", uri: `${SITE_URL}/chapters` },
+    ],
+  });
+}
+
+function adminBindResultCard(ok: boolean, reason?: string): FlexMessage {
+  if (ok) {
+    return buildSimpleCard({
+      emoji: "✅",
+      title: "綁定成功",
+      accentColor: SUCCESS_ACCENT,
+      body: "之後完課 / 升等 / 解鎖成就 / 論壇被回覆都會推到你 LINE。",
+      meta: [
+        { label: "🔕 關通知", value: "傳「/unbind」" },
+        { label: "⚙️ 細部設定", value: "去網站「設定」" },
+      ],
+      buttons: [
+        { label: "去學習", uri: `${SITE_URL}/chapters`, primary: true },
+        { label: "設定", uri: `${SITE_URL}/settings` },
+      ],
+    });
+  }
+  return buildSimpleCard({
+    emoji: "❌",
+    title: "綁定失敗",
+    accentColor: "#ff5555",
+    body: reason ?? "未知錯誤",
+    buttons: [{ label: "重拿 code", uri: `${SITE_URL}/settings`, primary: true }],
+  });
+}
+
+function adminUnbindCard(): FlexMessage {
+  return buildSimpleCard({
+    emoji: "🔕",
+    title: "已解除綁定",
+    accentColor: "#6272a4",
+    body: "之後不再推通知。要重綁去網站重拿 code。",
+    buttons: [{ label: "重綁", uri: `${SITE_URL}/settings`, primary: true }],
+  });
+}
+
+function adminUnboundHintCard(userId: string): FlexMessage {
+  return buildSimpleCard({
+    emoji: "🤖",
+    title: "嗨～還沒綁定",
+    accentColor: ADMIN_ACCENT,
+    body: "綁定後完課 / 升等 / 論壇被回覆會推給你。",
+    meta: [
+      { label: "1️⃣", value: "去網站「設定」拿 6 位 code" },
+      { label: "2️⃣", value: "傳「/bind 123456」" },
+      { label: "🆔", value: userId.slice(0, 12) + "..." },
+    ],
+    buttons: [
+      { label: "去拿 code", uri: `${SITE_URL}/settings`, primary: true },
+      { label: "登入", uri: `${SITE_URL}/login` },
+    ],
+  });
+}
+
+function adminClearCard(name: string): FlexMessage {
+  return buildSimpleCard({
+    emoji: "✨",
+    title: "對話歷史已清空",
+    accentColor: INFO_ACCENT,
+    body: `${name} 的對話 context 已重置、下一句重新開始。`,
+  });
+}
+
+function adminWhoamiCard(userId: string, adminUser: { name: string; role: string }): FlexMessage {
+  return buildSimpleCard({
+    emoji: "🆔",
+    title: "已驗證為 admin",
+    accentColor: SUCCESS_ACCENT,
+    body: "你的 LINE userId 跟 env ADMIN_LINE_USER_ID 一致、走 admin 流程。",
+    meta: [
+      { label: "名稱", value: adminUser.name },
+      { label: "角色", value: adminUser.role },
+      { label: "LINE userId", value: userId.slice(0, 16) + "..." },
+    ],
+    buttons: [
+      { label: "後台", uri: `${SITE_URL}/${ADMIN_SLUG}/admin`, primary: true },
+      { label: "錯誤監控", uri: `${SITE_URL}/${ADMIN_SLUG}/admin/errors` },
+    ],
+  });
+}
 
 type Msg = { role: "user" | "assistant"; content: string };
 const historyByUser = new Map<string, Msg[]>();
@@ -210,11 +328,8 @@ export async function POST(req: NextRequest) {
 
     if (ev.type === "follow") {
       if (replyToken && userId) {
-        const isAdmin = getAdminLineUser(userId);
-        const msg = isAdmin
-          ? `🏝️ AI 島 admin bot 已啟動！\n\n你的 userId：\n${userId}\n\n把這個貼進 Zeabur 環境變數 ADMIN_LINE_USER_ID（或 ADMIN_LINE_USERS JSON）、之後就會收到通知、也能直接跟我聊。`
-          : `🏝️ 歡迎加入 AI 島！\n\n要綁定帳號讓我推學習通知給你：\n1. 到 ${process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet"}/settings 拿 6 位綁定 code\n2. 傳給我「/bind 123456」\n\n綁定後完課 / 升等 / 論壇回覆 / 解鎖成就都會推到你的 LINE。`;
-        await lineReply(replyToken, msg, token);
+        const isAdmin = !!getAdminLineUser(userId);
+        await lineReply(replyToken, adminFollowCard(userId, isAdmin), token);
       }
       continue;
     }
@@ -244,11 +359,7 @@ export async function POST(req: NextRequest) {
           const { consumeBindCode } = await import("@/lib/notify-user-line");
           const result = await consumeBindCode(bindMatch[1], userId);
           if (result.ok) {
-            await lineReply(
-              replyToken,
-              `✅ 綁定成功！\n\n之後你的學習動態會通知你：\n• 完成 lesson\n• 升等\n• 解鎖成就\n• 論壇被回覆\n\n要關通知到「設定 → LINE 通知」改、或傳「/unbind」解除。`,
-              token,
-            );
+            await lineReply(replyToken, adminBindResultCard(true), token);
           } else {
             const reasonMap: Record<string, string> = {
               invalid_format: "code 格式不對、應該是 6 位數字",
@@ -256,11 +367,7 @@ export async function POST(req: NextRequest) {
               code_expired: "code 過期了、請到網站重拿（5 分鐘有效）",
               line_already_bound_to_another: "這個 LINE 已綁過別的帳號、先到網站解除原綁定",
             };
-            await lineReply(
-              replyToken,
-              `❌ 綁定失敗：${reasonMap[result.reason ?? ""] ?? result.reason}\n\n到 ${process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet"}/settings 重拿 code。`,
-              token,
-            );
+            await lineReply(replyToken, adminBindResultCard(false, reasonMap[result.reason ?? ""] ?? result.reason), token);
           }
           continue;
         }
@@ -276,32 +383,24 @@ export async function POST(req: NextRequest) {
               line_notify_enabled: false,
             })
             .eq("line_user_id", userId);
-          await lineReply(replyToken, "✅ 已解除綁定、不再推通知給你。要重綁、到網站設定再拿 code。", token);
+          await lineReply(replyToken, adminUnbindCard(), token);
           continue;
         }
 
         // 不是綁定指令、提示綁定流程
-        await lineReply(
-          replyToken,
-          `🤖 嗨～還沒綁定帳號\n\n要綁定請：\n1. 到 ${process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet"}/settings 拿 6 位 code\n2. 在這裡傳「/bind 123456」\n\n你的 LINE userId: ${userId}`,
-          token,
-        );
+        await lineReply(replyToken, adminUnboundHintCard(userId), token);
         continue;
       }
 
       if (text === "/clear" || text === "清空" || text === "重來") {
         historyByUser.set(userId, []);
-        await lineReply(replyToken, `✨ ${adminUser.name} 的對話歷史已清空`, token);
+        await lineReply(replyToken, adminClearCard(adminUser.name), token);
         continue;
       }
 
       // /whoami — debug 用、admin 看自己 userId + 角色
       if (text === "/whoami" || text === "我是誰" || text === "whoami") {
-        await lineReply(
-          replyToken,
-          `🆔 你的 LINE userId：\n${userId}\n\n✅ 已驗證為 admin：\n• 名稱: ${adminUser.name}\n• 角色: ${adminUser.role}\n\nuserId 跟 env ADMIN_LINE_USER_ID 一致才會走 admin 流程、不一致會被當訪客。`,
-          token,
-        );
+        await lineReply(replyToken, adminWhoamiCard(userId, adminUser), token);
         continue;
       }
 
