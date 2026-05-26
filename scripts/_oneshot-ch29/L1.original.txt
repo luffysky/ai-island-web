@@ -1,0 +1,59 @@
+### Node.js 爬蟲優勢
+
+
+- ⚡ **原生 async / Promise**：並發 1000 個請求超輕鬆
+- 🌐 **同語言全棧**：前端 + 爬蟲 + 後端 + DB 全 JS / TS
+- 🤝 **跟瀏覽器同語言**：Puppeteer 跑 Chromium、跑的就是 JS
+- 📦 **npm 套件生態**：250 萬+ 套件、爬蟲相關超多
+- 🚀 **效能**：V8 引擎、單機並發遠勝 Python
+
+
+### Python 爬蟲優勢
+
+
+- 📚 **套件最完整**：Scrapy / BeautifulSoup / Requests 老牌
+- 🎯 **學習曲線平緩**：語法簡單、新手友善
+- 🤖 **跟 ML / AI 整合**：爬完直接接 pandas / scikit-learn
+- 📊 **資料分析強**：pandas / numpy / matplotlib 一條龍
+- 🌍 **社群中文資源**：台灣 / 中國資源 Python 多
+
+
+### 2026 選擇指南
+
+
+- **全端 / Indie SaaS**：Node（一個語言搞定所有）
+- **純資料抓取 + 分析**：Python（生態完整）
+- **大量並發**：Node（async 友善）
+- **跟 AI / ML 整合**：Python（pandas / PyTorch）
+- **接 Next.js 應用**：Node（同 codebase）
+- **Vibe Coding**：Node（Claude Code 生 TS 比 Python 順）
+
+
+### 實際對照範例
+
+
+#### 抓網頁標題（Python）
+
+```python
+import requests
+from bs4 import BeautifulSoup
+
+res = requests.get('https://example.com')
+soup = BeautifulSoup(res.text, 'lxml')
+title = soup.select_one('h1').text
+```
+
+
+#### 抓網頁標題（Node）
+
+```javascript
+import * as cheerio from 'cheerio';
+
+const res = await fetch('https://example.com');
+const html = await res.text();
+const $ = cheerio.load(html);
+const title = $('h1').text();
+```
+
+
+幾乎一樣、JS 更短、能跑 async 並行。

@@ -1,0 +1,127 @@
+### 安裝
+
+```bash
+npm init -y
+npm install cheerio
+# Node 18+ 內建 fetch、不用裝
+```
+
+
+### 基本爬蟲
+
+```javascript
+import * as cheerio from 'cheerio';
+
+async function scrape(url) {
+  const res = await fetch(url, {
+    headers: {
+      'User-Agent': 'Mozilla/5.0 ...'
+    }
+  });
+  const html = await res.text();
+  const $ = cheerio.load(html);
+
+  // CSS Selector（跟 jQuery 一樣）
+  const title = $('h1').text();
+  const links = $('a').map((_, el) => $(el).attr('href')).get();
+
+  return { title, links };
+}
+
+scrape('https://example.com').then(console.log);
+```
+
+
+### 實戰：爬 PTT 八卦版
+
+```javascript
+import * as cheerio from 'cheerio';
+import fs from 'fs/promises';
+
+async function scrapePTT(board = 'Gossiping') {
+  const url = `https://www.ptt.cc/bbs/${board}/index.html`;
+
+  const res = await fetch(url, {
+    headers: {
+      'User-Agent': 'Mozilla/5.0',
+      'Cookie': 'over18=1',  // 八卦版要這個
+    },
+  });
+  const html = await res.text();
+  const $ = cheerio.load(html);
+
+  const posts = [];
+  $('.r-ent').each((_, el) => {
+    const $el = $(el);
+    const $title = $el.find('.title a');
+    if ($title.length === 0) return;  // 被刪文
+
+    posts.push({
+      title: $title.text().trim(),
+      link: 'https://www.ptt.cc' + $title.attr('href'),
+      author: $el.find('.author').text(),
+      push: $el.find('.nrec').text() || '0',
+      date: $el.find('.date').text(),
+    });
+  });
+
+  return posts;
+}
+
+const posts = await scrapePTT('Stock');
+console.log(`抓到 ${posts.length} 篇文章`);
+
+// 存 JSON
+await fs.writeFile('posts.json', JSON.stringify(posts, null, 2));
+```
+
+
+### 並發抓多頁（Node 的強項）
+
+```javascript
+// 同時抓 10 頁、比 Python 順太多
+const urls = Array.from({ length: 10 }, (_, i) =>
+  `https://www.ptt.cc/bbs/Gossiping/index${i + 1}.html`
+);
+
+// Promise.all 並發、5 秒抓完 10 頁
+const allPages = await Promise.all(
+  urls.map(url => scrapePTT(url))
+);
+
+// 用 p-limit 控制並發數（避免被擋）
+// npm install p-limit
+import pLimit from 'p-limit';
+const limit = pLimit(3);  // 最多同時 3 個
+
+const results = await Promise.all(
+  urls.map(url => limit(() => scrapePTT(url)))
+);
+```
+
+
+### Cheerio 進階用法
+
+```javascript
+// 取屬性
+$('a').attr('href')
+$('img').attr('src')
+$('[data-id]').map((_, el) => $(el).data('id')).get()
+
+// 找子元素
+$('.product').find('.price')
+$('.product').children('.title')
+$('.product').parent()
+$('.product').siblings()
+
+// 過濾
+$('a').filter((_, el) => $(el).text().includes('下載'))
+
+// 文字 vs HTML
+$('.content').text()   // 純文字
+$('.content').html()   // 含 HTML
+
+// 修改 DOM（爬蟲少用）
+$('.ads').remove();
+const cleanHtml = $.html();
+```

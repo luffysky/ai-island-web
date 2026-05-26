@@ -1,0 +1,161 @@
+### 安裝
+
+```bash
+npm install puppeteer
+# 自動下載 Chromium（約 200MB）
+
+# 或用 puppeteer-core（不下載瀏覽器）
+npm install puppeteer-core
+```
+
+
+### 基本使用
+
+```javascript
+import puppeteer from 'puppeteer';
+
+async function scrape(url) {
+  const browser = await puppeteer.launch({
+    headless: true,  // 開發時改 false 看畫面
+    args: ['--no-sandbox']  // Docker / Linux 需要
+  });
+
+  const page = await browser.newPage();
+
+  // 設定 User-Agent
+  await page.setUserAgent('Mozilla/5.0 ...');
+
+  // 設定視窗大小（影響 mobile vs desktop）
+  await page.setViewport({ width: 1920, height: 1080 });
+
+  // 開啟頁面、等載入
+  await page.goto(url, { waitUntil: 'networkidle2' });
+
+  // 等元素出現
+  await page.waitForSelector('.product');
+
+  // 取資料（在頁面 context 執行 JS）
+  const data = await page.evaluate(() => {
+    return Array.from(document.querySelectorAll('.product')).map(el => ({
+      name: el.querySelector('.name')?.textContent,
+      price: el.querySelector('.price')?.textContent,
+      image: el.querySelector('img')?.src,
+    }));
+  });
+
+  await browser.close();
+  return data;
+}
+```
+
+
+### 互動：點擊 / 填表 / 等待
+
+```javascript
+// 點按鈕
+await page.click('button.load-more');
+
+// 填表單
+await page.type('input[name="email"]', 'a@b.com');
+await page.type('input[name="password"]', 'secret');
+await page.click('button[type="submit"]');
+
+// 等跳轉
+await page.waitForNavigation();
+
+// 等 N ms（不推薦）
+await page.waitForTimeout(2000);
+
+// 等 selector（推薦）
+await page.waitForSelector('.dashboard');
+
+// 等 function 條件為 true
+await page.waitForFunction(() =>
+  document.querySelectorAll('.item').length > 20
+);
+```
+
+
+### 無限捲動 + lazy load
+
+```javascript
+async function autoScroll(page) {
+  await page.evaluate(async () => {
+    await new Promise(resolve => {
+      let totalHeight = 0;
+      const distance = 500;
+      const timer = setInterval(() => {
+        const scrollHeight = document.body.scrollHeight;
+        window.scrollBy(0, distance);
+        totalHeight += distance;
+
+        if (totalHeight >= scrollHeight) {
+          clearInterval(timer);
+          resolve();
+        }
+      }, 200);
+    });
+  });
+}
+
+// 使用
+await page.goto('https://infinite-scroll.com');
+await autoScroll(page);
+const items = await page.$$eval('.item', els =>
+  els.map(el => el.textContent)
+);
+```
+
+
+### 截圖 / PDF（Puppeteer 殺手鐧）
+
+```javascript
+// 截圖整頁
+await page.screenshot({
+  path: 'shot.png',
+  fullPage: true
+});
+
+// 截特定元素
+const element = await page.$('.product-card');
+await element.screenshot({ path: 'product.png' });
+
+// 存 PDF
+await page.pdf({
+  path: 'page.pdf',
+  format: 'A4',
+  printBackground: true
+});
+
+// → 用途：自動生成發票 / 報價單 / 報告
+```
+
+
+### 截攔 Request / Response
+
+```javascript
+// 攔截 API 回應（最強技巧、跳過解 HTML）
+const apiData = [];
+page.on('response', async response => {
+  const url = response.url();
+  if (url.includes('/api/products')) {
+    try {
+      const data = await response.json();
+      apiData.push(data);
+    } catch {}
+  }
+});
+
+await page.goto('https://shop.example.com');
+console.log('API data:', apiData);
+
+// 阻擋資源加速（不載圖 / 廣告 / CSS）
+await page.setRequestInterception(true);
+page.on('request', req => {
+  if (['image', 'stylesheet', 'font'].includes(req.resourceType())) {
+    req.abort();
+  } else {
+    req.continue();
+  }
+});
+```
