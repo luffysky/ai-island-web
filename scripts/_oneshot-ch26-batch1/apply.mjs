@@ -1,0 +1,82 @@
+#!/usr/bin/env node
+// One-shot script: 套用 Ch26 batch1 改寫（L0 新增 + L1, L2 改寫）
+// 規格：docs/ch26_beginner_friendly_spec_v0 (1).md
+// 用法：node scripts/_oneshot-ch26-batch1/apply.mjs
+
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const REPO_ROOT = path.resolve(__dirname, '..', '..');
+const CH26_PATH = path.join(REPO_ROOT, 'src', 'data', 'chapters', 'ch26.json');
+
+console.log('[ch26-batch1] reading:', CH26_PATH);
+const raw = fs.readFileSync(CH26_PATH, 'utf8');
+const ch26 = JSON.parse(raw);
+
+console.log('[ch26-batch1] original lessons:', ch26.lessons.length);
+
+const L0_CONTENT = fs.readFileSync(path.join(__dirname, 'L0.content.md'), 'utf8');
+const L1_CONTENT = fs.readFileSync(path.join(__dirname, 'L1.content.md'), 'utf8');
+const L2_CONTENT = fs.readFileSync(path.join(__dirname, 'L2.content.md'), 'utf8');
+
+// === 新增 L0：環境預備課 ===
+const L0 = {
+  id: '26.0',
+  number: 'LESSON 26.0',
+  title: '開始之前 — 你需要知道的 5 件事',
+  oneLineSummary: '第一次碰程式？先認識「終端機、程式檔、寫 vs 執行、教材的四種標示」——後面 32 課才不會卡。',
+  analogy: '學煮飯之前、要先認識廚房裡的爐子、刀、食譜長什麼樣。學程式也一樣——在動手寫第一個 print 之前、要先知道「程式寫在哪裡、怎麼讓電腦跑起來、那個黑視窗叫什麼」。',
+  content: L0_CONTENT,
+  tip: {
+    type: 'practical',
+    text: '不需要把這 5 件事全記下來、後面的課會反覆出現。這課的目的是建立「地圖感」、不是考試。看一次有印象就行、之後遇到再回來查。',
+  },
+  xp: 10,
+  exercise: {
+    question: '打開你電腦上的終端機（Windows 按 Win 鍵打 cmd 或 PowerShell、Mac 按 Cmd+空白打 Terminal）、在裡面打 `python --version` 按 Enter、把你看到的結果用一句話寫下來。',
+    hint: '兩種可能結果：(1) 看到「Python 3.x.x」這種版本號 = 你電腦已經裝好 Python、可以直接進 L1。(2) 看到「找不到指令」或「command not found」之類錯誤 = 還沒裝、L1 會教安裝。',
+    answer: '兩種結果都是「正確答案」——重點不是版本號、是你成功做到了「打開終端機 + 在裡面下指令 + 看到電腦回應」這 3 個動作。這就是寫程式 90% 的時間在做的事。',
+  },
+  outline: [
+    { level: 3, text: '1. 什麼是「終端機」（Terminal）？' },
+    { level: 3, text: '2. 什麼是「程式檔」？' },
+    { level: 3, text: '3. 「寫程式」和「執行程式」是兩件事' },
+    { level: 3, text: '4. 教材的四種區塊標示（之後會一直看到）' },
+    { level: 3, text: '5. 遇到看不懂的英文術語怎麼辦？' },
+  ],
+};
+
+// 插在最前面（id 26.0、不動其他 lesson 的 id / number）
+if (ch26.lessons[0]?.id === '26.0') {
+  console.log('[ch26-batch1] L0 already exists — replacing in place');
+  ch26.lessons[0] = L0;
+} else {
+  ch26.lessons.unshift(L0);
+  console.log('[ch26-batch1] L0 prepended');
+}
+
+// === 改寫 L1 content ===
+const L1 = ch26.lessons.find((l) => l.id === '26.1');
+if (!L1) throw new Error('L1 (26.1) not found');
+L1.content = L1_CONTENT;
+console.log('[ch26-batch1] L1 content updated, new length:', L1.content.length);
+
+// === 改寫 L2 content ===
+const L2 = ch26.lessons.find((l) => l.id === '26.2');
+if (!L2) throw new Error('L2 (26.2) not found');
+L2.content = L2_CONTENT;
+console.log('[ch26-batch1] L2 content updated, new length:', L2.content.length);
+
+// === 寫回 + 驗證 ===
+const out = JSON.stringify(ch26, null, 2) + '\n';
+fs.writeFileSync(CH26_PATH, out, 'utf8');
+console.log('[ch26-batch1] wrote ch26.json,', out.length, 'bytes');
+
+const verify = JSON.parse(fs.readFileSync(CH26_PATH, 'utf8'));
+console.log('[ch26-batch1] verify: total lessons =', verify.lessons.length);
+console.log('[ch26-batch1] verify: first 3 =',
+  verify.lessons.slice(0, 3).map((l) => `${l.id} ${l.title}`).join(' | '));
+
+console.log('[ch26-batch1] DONE ✅');
