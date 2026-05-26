@@ -142,7 +142,7 @@ export async function POST(req: NextRequest) {
   const userUsername = (profileForRole as any)?.username ?? null;
   const userEmail = user.email ?? null;
 
-  const systemPrompt = buildTutorSystemPrompt({
+  const systemPrompt = await buildTutorSystemPrompt({
     tone: tone ?? "friendly",
     contextChapterId,
     contextLessonId,

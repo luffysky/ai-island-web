@@ -1,11 +1,12 @@
 // AI 學習導師系統提示
-// 把全站章節內容壓縮成 system prompt、讓模型像「上過 AI 島完整課程」
-// 章節數動態算 (chapters.length)、新增章節 prompt 自動更新
+// 從 Supabase chapters / lessons 表動態載入、章節改 JSON 跑 import 後 5 分鐘內 AI 看到新內容
+// 之前是 build-time import @/data/chapters、JSON 改了 AI 永遠看舊的
 
-import { chapters } from "@/data/chapters";
+import { unstable_cache } from "next/cache";
+import { createSupabaseAdmin } from "@/lib/supabase";
 import { chapterDisplayNumber } from "./chapter-display";
-
-const CHAPTER_COUNT = chapters.length;
+import { getPersona } from "./ai-personas";
+import { checkOwner } from "./is-owner";
 
 const TONE_STYLES: Record<string, string> = {
   friendly: "親切、耐心、像鄰家學長解釋。多用 emoji 偶爾。",
@@ -16,51 +17,129 @@ const TONE_STYLES: Record<string, string> = {
   pro: "專業、像 senior engineer code review、給 best practice。",
 };
 
-let cachedCourseSummary: string | null = null;
+type ChapterRow = {
+  id: number;
+  stage: string;
+  title: string;
+  subtitle: string | null;
+  difficulty: string | null;
+  estimated_hours: number | null;
+  outcomes: string[] | null;
+};
 
-function buildCourseSummary(): string {
-  if (cachedCourseSummary) return cachedCourseSummary;
+type LessonSummary = {
+  id: string;
+  chapter_id: number;
+  number: string;
+  title: string;
+  one_line_summary: string | null;
+  sort_order: number;
+};
 
+type LessonFull = {
+  id: string;
+  chapter_id: number;
+  number: string;
+  title: string;
+  one_line_summary: string | null;
+  analogy: string | null;
+  content: string | null;
+};
+
+// 章節 + 前 5 個 lesson 摘要：5 分鐘 cache（章節結構變動少）
+const getChapterSummaries = unstable_cache(
+  async () => {
+    const admin = createSupabaseAdmin();
+    const { data: chapters, error: chErr } = await admin
+      .from("chapters")
+      .select("id, stage, title, subtitle, difficulty, estimated_hours, outcomes")
+      .eq("status", "published")
+      .order("id", { ascending: true });
+    if (chErr || !chapters) {
+      console.warn("[ai-tutor-prompt] chapters fetch failed:", chErr?.message);
+      return { chapters: [] as ChapterRow[], lessonsByChapter: new Map<number, LessonSummary[]>() };
+    }
+
+    const { data: lessons } = await admin
+      .from("lessons")
+      .select("id, chapter_id, number, title, one_line_summary, sort_order")
+      .order("sort_order", { ascending: true });
+
+    const lessonsByChapter = new Map<number, LessonSummary[]>();
+    for (const l of (lessons || []) as LessonSummary[]) {
+      const arr = lessonsByChapter.get(l.chapter_id) ?? [];
+      arr.push(l);
+      lessonsByChapter.set(l.chapter_id, arr);
+    }
+
+    return { chapters: chapters as ChapterRow[], lessonsByChapter };
+  },
+  ["ai-tutor-chapter-summaries"],
+  { revalidate: 300, tags: ["chapters"] }, // 5 分鐘
+);
+
+// 單一 lesson 完整內容：60 秒 cache（lesson 內容改後 60 秒內 AI 看到新版）
+async function getLessonFull(lessonId: string): Promise<LessonFull | null> {
+  const cached = unstable_cache(
+    async () => {
+      const admin = createSupabaseAdmin();
+      const { data, error } = await admin
+        .from("lessons")
+        .select("id, chapter_id, number, title, one_line_summary, analogy, content")
+        .eq("id", lessonId)
+        .maybeSingle();
+      if (error || !data) return null;
+      return data as LessonFull;
+    },
+    ["ai-tutor-lesson", lessonId],
+    { revalidate: 60, tags: ["chapters", `lesson:${lessonId}`] },
+  );
+  return cached();
+}
+
+async function buildCourseSummary(): Promise<{ summary: string; chapterCount: number; lastChapter: ChapterRow | undefined }> {
+  const { chapters, lessonsByChapter } = await getChapterSummaries();
   const lines: string[] = [];
-  lines.push(`=== AI 島 ${CHAPTER_COUNT} 章完整課程結構 ===\n`);
+  lines.push(`=== AI 島 ${chapters.length} 章完整課程結構 ===\n`);
 
   for (const ch of chapters) {
-    const stage = ch.stage;
-    lines.push(`\n## Ch${chapterDisplayNumber(ch)}：${ch.title}（Stage ${stage}、${ch.difficulty}、${ch.estimatedHours}h）`);
-    lines.push(`副標：${ch.subtitle}`);
-    lines.push(`學習成果：${(ch.outcomes ?? []).slice(0, 3).join(" / ")}`);
+    lines.push(
+      `\n## Ch${chapterDisplayNumber({ id: ch.id, stage: ch.stage as any } as any)}：${ch.title}（Stage ${ch.stage}、${ch.difficulty ?? "?"}、${ch.estimated_hours ?? 0}h）`,
+    );
+    if (ch.subtitle) lines.push(`副標：${ch.subtitle}`);
+    const outcomes = (ch.outcomes ?? []).slice(0, 3).join(" / ");
+    if (outcomes) lines.push(`學習成果：${outcomes}`);
 
-    // 列前 5 個 lesson
-    const lessons = ch.lessons.slice(0, 5);
-    lessons.forEach((l) => {
-      const summary = l.oneLineSummary || l.title;
+    const allLessons = lessonsByChapter.get(ch.id) ?? [];
+    const previewLessons = allLessons.slice(0, 5);
+    previewLessons.forEach((l) => {
+      const summary = l.one_line_summary || l.title;
       lines.push(`  • ${l.number} ${l.title}：${summary.slice(0, 60)}`);
     });
-    if (ch.lessons.length > 5) {
-      lines.push(`  ... 還有 ${ch.lessons.length - 5} 個 lesson`);
+    if (allLessons.length > 5) {
+      lines.push(`  ... 還有 ${allLessons.length - 5} 個 lesson`);
     }
   }
 
-  cachedCourseSummary = lines.join("\n");
-  return cachedCourseSummary;
+  return {
+    summary: lines.join("\n"),
+    chapterCount: chapters.length,
+    lastChapter: chapters[chapters.length - 1],
+  };
 }
 
-import { getPersona } from "./ai-personas";
-
-import { checkOwner } from "./is-owner";
-
-export function buildTutorSystemPrompt(options: {
+export async function buildTutorSystemPrompt(options: {
   tone?: string;
   contextChapterId?: number;
   contextLessonId?: string;
   userName?: string;
   personaId?: string;
-  userContext?: string;  // 從 formatLearningStateForPrompt() 來的整段學員背景
+  userContext?: string;
   userRole?: string | null;
   userEmail?: string | null;
   userId?: string | null;
   userUsername?: string | null;
-}): string {
+}): Promise<string> {
   const tone = options.tone ?? "friendly";
   const toneInstruction = TONE_STYLES[tone] ?? TONE_STYLES.friendly;
   const persona = getPersona(options.personaId);
@@ -72,32 +151,34 @@ export function buildTutorSystemPrompt(options: {
   });
   const isOwner = ownerCheck.isOwner;
 
-  // 如果有 lesson context、把該 lesson 內容塞進去
+  const { summary, chapterCount, lastChapter } = await buildCourseSummary();
+
+  // contextChapter / contextLesson：用 DB 即時讀（60 秒 cache）
   let contextInfo = "";
   if (options.contextChapterId) {
+    const { chapters, lessonsByChapter } = await getChapterSummaries();
     const ch = chapters.find((c) => c.id === options.contextChapterId);
     if (ch) {
       contextInfo += `\n\n## 用戶目前在學：Ch${ch.id} ${ch.title}\n`;
       if (options.contextLessonId) {
-        const lesson = ch.lessons.find((l) => l.id === options.contextLessonId);
+        const lesson = await getLessonFull(options.contextLessonId);
         if (lesson) {
           contextInfo += `\n### Lesson ${lesson.number}：${lesson.title}\n`;
-          contextInfo += `${lesson.oneLineSummary}\n${lesson.analogy}\n`;
+          if (lesson.one_line_summary) contextInfo += `${lesson.one_line_summary}\n`;
+          if (lesson.analogy) contextInfo += `${lesson.analogy}\n`;
           if (lesson.content) {
             contextInfo += `\n完整內容：\n${lesson.content.slice(0, 3000)}\n`;
           }
         }
       } else {
-        // 列章內所有 lesson
         contextInfo += "本章 lessons：\n";
-        ch.lessons.forEach((l) => {
+        const chLessons = lessonsByChapter.get(ch.id) ?? [];
+        chLessons.forEach((l) => {
           contextInfo += `- ${l.number} ${l.title}\n`;
         });
       }
     }
   }
-
-  const summary = buildCourseSummary();
 
   const ownerBlock = isOwner
     ? `\n# ⚠️ 重要：你正在跟林董 (Luffy 林、本平台 Owner / 董事長) 對話
@@ -113,7 +194,7 @@ ${ownerBlock}
 
 # 你的角色
 - 教 Indie 創業者、開發者、設計師、自學者
-- 你「上過」AI 島完整 ${CHAPTER_COUNT} 章課程 (目前最新一章 Ch${chapters[chapters.length-1]?.id ?? CHAPTER_COUNT} ${chapters[chapters.length-1]?.title ?? ""})、熟悉每個主題
+- 你「上過」AI 島完整 ${chapterCount} 章課程 (目前最新一章 Ch${lastChapter?.id ?? chapterCount} ${lastChapter?.title ?? ""})、熟悉每個主題
 - 用戶問問題時、你會引用 AI 島的章節（「這在 Ch08 React 完整有教」）
 - 鼓勵實作、不只解釋
 - 如果用戶問跟課程無關、也要友善回答（你是 general assistant + 課程專家雙重身份）
@@ -145,7 +226,7 @@ ${toneInstruction}
 - **避免「顯然」「很簡單」「應該都知道」這種讓學生覺得自己笨的詞**
 - 學生問深技術問題時、也是先用國中生能懂的方式講「這在做什麼」、再放正式名詞
 
-# 我的知識來源（AI 島 ${CHAPTER_COUNT} 章課程結構）
+# 我的知識來源（AI 島 ${chapterCount} 章課程結構、從資料庫即時讀取、5 分鐘內最新）
 
 ${summary}
 
