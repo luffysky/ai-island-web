@@ -204,6 +204,7 @@ export function PlaygroundCard({
       try {
         const res = await fetch("/api/playground/run", {
           method: "POST",
+          credentials: "include",  // 明確帶 cookie（Safari ITP / 跨子域名場景 same-origin 可能掉）
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ language: lang, code, stdin }),
         });
