@@ -1,0 +1,64 @@
+HTML5 之前，所有東西都用 `<div>`。HTML5 加入語意化標籤，**讓機器讀得懂**。
+
+```html
+<!-- 語意化標籤 -->
+<header>
+  <nav>
+    <ul>
+      <li><a href="/">首頁</a></li>
+      <li><a href="/about">關於</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <article>
+    <header>
+      <h1>文章標題</h1>
+      <time datetime="2026-05-18">2026/5/18</time>
+    </header>
+    <section>
+      <h2>第一段</h2>
+      <p>段落內容...</p>
+    </section>
+    <aside>
+      <p>側邊補充</p>
+    </aside>
+  </article>
+</main>
+
+<footer>
+  <p>&copy; 2026 AI 島</p>
+</footer>
+```
+
+  
+### section vs article vs div：什麼時候用哪個？
+
+  
+- **article**：抽出去也能獨立的（部落格文、產品卡、留言）
+- **section**：主題區塊，內部通常有自己的 h2/h3
+- **div**：純樣式 wrapper，沒有語意
+- **aside**：旁邊內容（廣告、相關連結、註解）
+
+  
+判斷法：「**這塊內容能不能丟到 RSS 給人讀？**」能 → article。
+
+  
+### 更多語意標籤
+
+
+
+  
+**✨ 接案小技巧**
+
+用語意化標籤的客戶網站**SEO 排名平均比純 div 網站高 15-30%**（Google 自己說的）。這是**免費的 SEO 加分**，只是換個標籤名而已。
+
+  
+
+  
+
+⚡
+學習加速器
+
+把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。

@@ -1,0 +1,43 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AI 島：全端養成班">
+  <meta name="keywords" content="HTML, CSS, JavaScript, 教學">
+  <meta name="author" content="Luffysky">
+
+  <!-- SEO + Social -->
+  <title>我的網站 - 副標</title>
+  <link rel="canonical" href="https://example.com/page">
+  <meta property="og:title" content="我的網站">
+  <meta property="og:description" content="網站描述">
+  <meta property="og:image" content="https://example.com/og.png">
+
+  <!-- favicon -->
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+
+  <!-- 樣式 + 腳本 -->
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <!-- content -->
+</body>
+</html>
+```
+
+  
+**🚀 進階技巧**
+
+`script` 的三種載入：(1) 一般 — 阻擋 HTML 解析 (2) `async` — 並行下載，下載完立刻執行（順序不保證）(3) `defer` — 並行下載，HTML 解析完才執行（保留順序）。**大部分情況用 defer**。
+
+  
+
+  
+
+🎯
+面試考點
+
+台灣科技公司面試 90% 會問「HTML」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。

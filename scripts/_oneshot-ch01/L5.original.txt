@@ -1,0 +1,37 @@
+```html
+<!-- 無序列表 -->
+<ul>
+  <li>蘋果</li>
+  <li>香蕉</li>
+  <li>橘子</li>
+</ul>
+
+<!-- 有序列表 -->
+<ol>
+  <li>起床</li>
+  <li>刷牙</li>
+  <li>吃早餐</li>
+</ol>
+
+<!-- 定義列表 -->
+<dl>
+  <dt>HTML</dt>
+  <dd>HyperText Markup Language</dd>
+  <dt>CSS</dt>
+  <dd>Cascading Style Sheets</dd>
+</dl>
+```
+
+  
+**✨ 接案小技巧**
+
+導覽列、選單都用 `` 結構。Bootstrap、Material UI、Tailwind 都這樣做。原因：螢幕閱讀器跟 SEO 都會看 nav 結構。
+
+  
+
+  
+
+🛠️
+工具推薦
+
+配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。

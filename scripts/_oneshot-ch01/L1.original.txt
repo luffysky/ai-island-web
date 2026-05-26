@@ -1,0 +1,41 @@
+HTML（HyperText Markup Language）= **超文本標記語言**。1991 年由 Tim Berners-Lee 發明、原本是為了讓物理學家分享論文。30 年後，全世界的網頁都是它寫的。
+
+
+### HTML 的兩個身份
+
+
+1. **給人看**（透過瀏覽器渲染）：使用者看到的網頁
+2. **給機器看**（透過 parser / crawler / AI）：Google 抓內容做 SEO、AI 摘要、螢幕閱讀器讀給盲人聽
+
+
+很多人只顧第一個身份、結果機器看不懂 → SEO 爛、無障礙差、AI 摘要錯。**會寫好 HTML 的人、網頁能被找到、能被讀懂、能被 AI 引用**。這比視覺設計值錢得多。
+
+
+### HTML 標籤的完整語法
+
+```html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>我的第一頁</title>
+</head>
+<body>
+  <h1>Hello World</h1>
+  <p>這是我的第一個網頁</p>
+</body>
+</html>
+```
+
+
+### 5 個 head 必有
+
+
+- `<!DOCTYPE html>`：告訴瀏覽器是 HTML5
+- `<html lang="...">`：語言（影響 SEO、無障礙、自動翻譯）
+- `<meta charset="UTF-8">`：編碼（沒寫中文會變亂碼）
+- `<meta name="viewport">`：手機要這個才會正確縮放
+- `<title>`：分頁標題、Google 搜尋結果、社群分享預覽
+
+
+**2026 SEO 加分項**：加 `<meta name="description">`、`<link rel="canonical">`、Open Graph tags（og:title / og:image）、JSON-LD 結構化資料。AI 引擎（ChatGPT / Perplexity）抓內容會看這些。
