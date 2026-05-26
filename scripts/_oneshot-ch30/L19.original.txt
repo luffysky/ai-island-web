@@ -1,0 +1,102 @@
+## 為什麼
+單 Playwright：100 頁 = 500 秒
+Cluster 10 個：100 頁 = 50 秒
+
+## puppeteer-cluster
+```bash
+npm install puppeteer puppeteer-cluster
+```
+
+```javascript
+import { Cluster } from "puppeteer-cluster";
+
+const cluster = await Cluster.launch({
+  concurrency: Cluster.CONCURRENCY_CONTEXT,
+  maxConcurrency: 10,
+  puppeteerOptions: { headless: true }
+});
+
+await cluster.task(async ({ page, data: url }) => {
+  await page.goto(url);
+  const title = await page.title();
+  return { url, title };
+});
+
+for (const url of urls) {
+  cluster.queue(url);
+}
+
+await cluster.idle();
+await cluster.close();
+```
+
+## Playwright + p-limit
+```javascript
+import { chromium } from "playwright";
+import pLimit from "p-limit";
+
+const browser = await chromium.launch();
+const limit = pLimit(10);
+
+const results = await Promise.all(
+  urls.map(url => limit(async () => {
+    const context = await browser.newContext();
+    const page = await context.newPage();
+    await page.goto(url);
+    const data = await page.locator("h1").textContent();
+    await context.close();
+    return data;
+  }))
+);
+
+await browser.close();
+```
+
+## Browser Pool
+```javascript
+class BrowserPool {
+  constructor(size = 5) {
+    this.browsers = [];
+    this.queue = [];
+    this.size = size;
+  }
+  
+  async init() {
+    for (let i = 0; i < this.size; i++) {
+      this.browsers.push(await chromium.launch());
+    }
+  }
+  
+  async acquire() {
+    if (this.browsers.length > 0) return this.browsers.pop();
+    return new Promise(resolve => this.queue.push(resolve));
+  }
+  
+  release(browser) {
+    if (this.queue.length > 0) {
+      this.queue.shift()(browser);
+    } else {
+      this.browsers.push(browser);
+    }
+  }
+}
+```
+
+## 記憶體控制
+每 browser ~200MB、10 個 = 2GB。
+
+```javascript
+let count = 0;
+async function scrape(url) {
+  if (count++ % 100 === 0) {
+    await browser.close();
+    browser = await chromium.launch();
+  }
+}
+```
+
+## 雲端
+- AWS ECS + Fargate
+- Google Cloud Run Jobs
+- Cloudflare Browser Rendering
+- Browserless.io

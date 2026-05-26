@@ -1,0 +1,77 @@
+## 全方位指紋
+1. TLS / JA3
+2. HTTP/2 fingerprint
+3. Canvas fingerprint
+4. WebGL fingerprint
+5. AudioContext
+6. 字型列表
+7. 時區 / 語言
+8. 螢幕解析度
+
+## 偵測服務
+Cloudflare / DataDome / PerimeterX / Akamai / Imperva
+
+## stealth plugin（修 5-7）
+```javascript
+import puppeteer from "puppeteer-extra";
+import Stealth from "puppeteer-extra-plugin-stealth";
+
+puppeteer.use(Stealth());
+```
+
+## Canvas 修補
+```javascript
+await page.evaluateOnNewDocument(() => {
+  const orig = HTMLCanvasElement.prototype.toDataURL;
+  HTMLCanvasElement.prototype.toDataURL = function (...args) {
+    const ctx = this.getContext("2d");
+    if (ctx) {
+      const imageData = ctx.getImageData(0, 0, this.width, this.height);
+      for (let i = 0; i < imageData.data.length; i += 4) {
+        imageData.data[i] += Math.random() < 0.5 ? -1 : 1;
+      }
+      ctx.putImageData(imageData, 0, 0);
+    }
+    return orig.apply(this, args);
+  };
+});
+```
+
+## WebGL 修補
+```javascript
+await page.evaluateOnNewDocument(() => {
+  const orig = WebGLRenderingContext.prototype.getParameter;
+  WebGLRenderingContext.prototype.getParameter = function (param) {
+    if (param === 37445) return "Intel Inc.";
+    if (param === 37446) return "Intel Iris OpenGL Engine";
+    return orig.apply(this, [param]);
+  };
+});
+```
+
+## 商業反偵測
+- Browser fingerprint generator
+- Multilogin（多瀏覽器設定檔）
+- AdsPower / GoLogin
+- 月 NT$ 200-1000
+
+## ML 偵測（最難）
+DataDome / PerimeterX 用 ML：
+- 看「行為模式」
+- 滑鼠軌跡
+- 鍵盤節奏
+- 點擊位置
+
+對策：模擬人類行為。
+
+## 心法
+- 永遠用 stealth plugin（基本盤）
+- 困難網站用商業服務
+- ML 偵測 → 模擬真人
+- 別硬幹、看 ROI
+- 大網站（Apple / Google）放棄
+
+## 道德
+- 合法：研究、SEO、QA
+- 灰色：價格爬取
+- 非法：詐騙、ATO

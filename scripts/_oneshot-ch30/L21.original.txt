@@ -1,0 +1,111 @@
+## 完整 ETL
+
+### Extract（抓）
+```python
+def extract():
+    return scrape_all()
+```
+
+### Transform（清理 + 標準化）
+```python
+def transform(raw_items):
+    cleaned = []
+    for item in raw_items:
+        # 清理價格
+        price_str = item["price"].replace("NT$", "").replace(",", "")
+        try:
+            price = float(price_str)
+        except ValueError:
+            continue
+        
+        # 清理名稱
+        name = item["name"].strip()
+        if not name: continue
+        
+        # 標準化分類
+        category = standardize_category(item["category"])
+        
+        # 加 timestamp
+        cleaned.append({
+            "name": name,
+            "price": price,
+            "category": category,
+            "scraped_at": datetime.now()
+        })
+    return cleaned
+```
+
+### Load（寫 DB）
+```python
+def load(items):
+    db.bulk_insert(items)
+```
+
+### Orchestrate
+```python
+def daily_etl():
+    raw = extract()
+    cleaned = transform(raw)
+    load(cleaned)
+    notify(f"處理 {len(cleaned)} 筆")
+```
+
+## pandas ETL
+```python
+import pandas as pd
+
+# E
+df = pd.DataFrame(scrape_all())
+
+# T
+df["price"] = df["price"].str.replace("NT$", "").str.replace(",", "").astype(float)
+df["name"] = df["name"].str.strip()
+df["category"] = df["category"].str.lower().map(category_mapping)
+df = df.dropna(subset=["name", "price"])
+df = df.drop_duplicates(subset=["link"])
+df["scraped_at"] = pd.Timestamp.now()
+
+# L
+df.to_sql("products", engine, if_exists="append", index=False)
+```
+
+## 增量 ETL
+```python
+last_run = get_last_run_time()
+new_items = scrape_since(last_run)
+
+if new_items:
+    cleaned = transform(new_items)
+    load(cleaned)
+    update_last_run_time(datetime.now())
+```
+
+## 工具
+- **Airflow**：傳統 DAG
+- **Prefect**：modern Python
+- **Dagster**：data-aware
+- **dbt**：SQL transformation
+
+## 處理規則
+- ✅ 缺欄位 → 跳過 / 填預設
+- ✅ 格式錯 → 嘗試解析 / 跳過
+- ✅ 異常值 → 標記、不刪
+- ❌ 不要 silently drop（記 log）
+
+## 監控
+```python
+metrics = {
+    "extracted": total,
+    "valid": valid,
+    "invalid": invalid,
+    "duplicates": dup,
+    "loaded": loaded
+}
+send_to_dashboard(metrics)
+```
+
+## 心法
+- 抓的時候 raw、不要邊抓邊清（萬一爬錯重來）
+- T 寫成 idempotent（重跑結果一樣）
+- 永遠保留 raw（debug 用）
+- 失敗的記下、不要丟

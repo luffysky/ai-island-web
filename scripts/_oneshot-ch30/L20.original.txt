@@ -1,0 +1,126 @@
+## 去重
+
+### URL 去重
+```python
+seen = set()
+for url in urls:
+    if url in seen: continue
+    seen.add(url)
+    scrape(url)
+```
+
+### Bloom Filter（百萬級）
+```python
+from pybloom_live import BloomFilter
+
+bf = BloomFilter(capacity=1000000, error_rate=0.001)
+for url in urls:
+    if url in bf: continue
+    bf.add(url)
+    scrape(url)
+```
+
+### Content 去重（hash）
+```python
+import hashlib
+
+def content_hash(item):
+    return hashlib.md5(str(item).encode()).hexdigest()
+
+seen_hashes = set()
+for item in items:
+    h = content_hash(item)
+    if h in seen_hashes: continue
+    seen_hashes.add(h)
+    save(item)
+```
+
+### Fuzzy 去重（相似內容）
+```python
+from rapidfuzz import fuzz
+
+def is_similar(a, b, threshold=90):
+    return fuzz.ratio(a, b) > threshold
+```
+
+### DB UNIQUE constraint
+```sql
+CREATE TABLE products (
+  id UUID PRIMARY KEY,
+  link TEXT UNIQUE
+);
+
+-- 重複 INSERT 自動忽略
+INSERT INTO products ... ON CONFLICT (link) DO NOTHING;
+```
+
+## 驗證（pydantic）
+```python
+from pydantic import BaseModel, validator, HttpUrl
+
+class Product(BaseModel):
+    name: str
+    price: float
+    link: HttpUrl
+    
+    @validator("name")
+    def name_not_empty(cls, v):
+        if not v.strip(): raise ValueError("name empty")
+        return v
+    
+    @validator("price")
+    def price_reasonable(cls, v):
+        if v < 0 or v > 1_000_000: raise ValueError("price abnormal")
+        return v
+
+# 用
+try:
+    p = Product(**data)
+except ValidationError as e:
+    logger.error(f"invalid: {e}")
+```
+
+## 監控品質
+```python
+total = 0
+valid = 0
+duplicates = 0
+errors = []
+
+for raw in scrape_all():
+    total += 1
+    try:
+        p = Product(**raw)
+        if p.link in seen:
+            duplicates += 1
+            continue
+        seen.add(p.link)
+        valid += 1
+        save(p)
+    except ValidationError as e:
+        errors.append(e)
+
+print(f"總：{total}、有效：{valid}、重複：{duplicates}、錯：{len(errors)}")
+print(f"有效率：{valid/total*100:.1f}%")
+```
+
+## 異常偵測
+```python
+# 價格異常
+import numpy as np
+
+prices = [p.price for p in products]
+mean = np.mean(prices)
+std = np.std(prices)
+
+for p in products:
+    if abs(p.price - mean) > 3 * std:
+        print(f"異常價格: {p.name} {p.price}")
+```
+
+## 心法
+- 抓的時候就驗證
+- 不放髒資料進 DB
+- 監控有效率（< 80% 必有問題）
+- 異常 alert
+- 定期清理舊 / 無效資料
