@@ -120,6 +120,22 @@ for (const [id, content] of [
   console.log(`[batch3] ${id} (${l.title}) updated, new length:`, l.content.length);
 }
 
+// === batch4 part A: L13, L14, L15 (NumPy / Pandas / 視覺化) ===
+const L13_CONTENT = fs.readFileSync(path.join(__dirname, 'L13.content.md'), 'utf8');
+const L14_CONTENT = fs.readFileSync(path.join(__dirname, 'L14.content.md'), 'utf8');
+const L15_CONTENT = fs.readFileSync(path.join(__dirname, 'L15.content.md'), 'utf8');
+
+for (const [id, content] of [
+  ['26.13', L13_CONTENT],
+  ['26.14', L14_CONTENT],
+  ['26.15', L15_CONTENT],
+]) {
+  const l = ch26.lessons.find((x) => x.id === id);
+  if (!l) throw new Error(`${id} not found`);
+  l.content = content;
+  console.log(`[batch4a] ${id} (${l.title}) updated, new length:`, l.content.length);
+}
+
 // === 寫回 + 驗證 ===
 const out = JSON.stringify(ch26, null, 2) + '\n';
 fs.writeFileSync(CH26_PATH, out, 'utf8');

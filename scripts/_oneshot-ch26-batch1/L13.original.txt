@@ -1,0 +1,169 @@
+NumPy 是 Python AI/ML/DL **所有 library 的基礎**—Pandas、scikit-learn、PyTorch 內部全用 NumPy。學會它 = 解鎖 AI 生態。
+
+  
+### 為什麼要 NumPy（不用 list）
+
+```text
+# Python list 算數很慢
+nums = list(range(1_000_000))
+squared = [x ** 2 for x in nums]
+
+# NumPy：快 10-100 倍
+import numpy as np
+arr = np.arange(1_000_000)
+squared = arr ** 2
+
+原因：
+1. NumPy 用 C 寫
+2. 連續記憶體
+3. SIMD 向量化指令
+4. 沒 Python overhead
+```
+
+  
+### 建立 ndarray
+
+```text
+import numpy as np
+
+# 從 list
+arr = np.array([1, 2, 3, 4, 5])
+print(arr.shape)      # (5,)
+print(arr.dtype)      # int64
+print(arr.ndim)       # 1
+
+# 2D（矩陣）
+matrix = np.array([[1, 2, 3], [4, 5, 6]])
+print(matrix.shape)   # (2, 3)
+
+# 特殊建立
+np.zeros((3, 4))           # 3x4 全 0
+np.ones((2, 3))            # 2x3 全 1
+np.eye(3)                  # 3x3 單位矩陣
+
+# 範圍
+np.arange(10)              # [0 1 2 ... 9]
+np.arange(0, 10, 2)        # [0 2 4 6 8]
+np.linspace(0, 1, 5)       # [0. 0.25 0.5 0.75 1.]
+
+# 隨機
+np.random.rand(3, 3)       # 均勻 [0, 1)
+np.random.randn(3, 3)      # 標準常態
+np.random.randint(0, 10, (3, 3))
+```
+
+  
+### 運算：Vectorization
+
+```text
+a = np.array([1, 2, 3, 4])
+b = np.array([10, 20, 30, 40])
+
+# 元素級運算
+a + b      # [11 22 33 44]
+a * b      # [10 40 90 160]
+a ** 2     # [1 4 9 16]
+
+# Broadcasting
+a + 10     # [11 12 13 14]
+a * 2      # [2 4 6 8]
+
+# 比較
+a > 2      # [False False True True]
+
+# 矩陣乘法
+m1 = np.array([[1, 2], [3, 4]])
+m2 = np.array([[5, 6], [7, 8]])
+
+m1 @ m2    # 矩陣乘
+m1 * m2    # element-wise
+
+# 轉置 / inverse
+m1.T
+np.linalg.inv(m1)
+```
+
+  
+### 常用函數 + 索引
+
+```text
+arr = np.array([3, 1, 4, 1, 5, 9, 2, 6])
+
+# 統計
+arr.sum()           # 31
+arr.mean()          # 3.875
+arr.std()
+arr.min(), arr.max()
+arr.argmax()        # 5（max index）
+
+# 數學
+np.sqrt(arr)
+np.log(arr)
+np.exp(arr)
+
+# 排序
+np.sort(arr)         # [1 1 2 3 4 5 6 9]
+np.unique([1, 1, 2, 3])    # [1 2 3]
+
+# 索引
+arr[0]              # 3
+arr[arr > 5]        # [9 6] ← 條件篩選
+
+# 2D
+m = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+m[0, 0]             # 1
+m[:, 0]             # [1 4 7]（column 0）
+m[m > 5]            # [6 7 8 9]
+
+# Reshape
+arr = np.arange(12)
+m = arr.reshape(3, 4)
+m = arr.reshape(-1, 4)    # -1 自動算
+
+# 攤平
+m.flatten()
+```
+
+  
+### 實戰例子
+
+```text
+# 圖片是 numpy array
+from PIL import Image
+import numpy as np
+
+img = Image.open("photo.jpg")
+arr = np.array(img)        # shape (h, w, 3) RGB
+
+# 變灰階
+gray = arr.mean(axis=2).astype(np.uint8)
+
+# 反轉
+inverted = 255 - arr
+
+# Crop
+crop = arr[100:300, 200:400]
+
+# one-hot encoding
+labels = np.array([2, 0, 1, 2, 0])
+one_hot = np.eye(3)[labels]
+# [[0 0 1]
+#  [1 0 0]
+#  [0 1 0]
+#  [0 0 1]
+#  [1 0 0]]
+```
+
+  
+    **☕ 用人話講**
+    
+NumPy 是 Python AI 的**地基**。重點：(1) **向量化**—`arr * 2` 不是 `for` (2) **broadcasting**—不同 shape 自動配 (3) **boolean indexing**—`arr[arr > 5]` 篩選超強 (4) **reshape**—改 shape 不改 data。學熟後 Pandas / PyTorch 都是這套思維。
+
+  
+
+  
+    
+      💼
+      接案小知識
+    
+    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「Python」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。

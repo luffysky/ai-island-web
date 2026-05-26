@@ -1,0 +1,139 @@
+「**圖勝千言**」—資料一定要視覺化。3 大繪圖工具各有定位。
+
+  
+### Matplotlib：基礎
+
+```text
+import matplotlib.pyplot as plt
+
+# 折線
+plt.plot([1, 2, 3, 4], [10, 20, 25, 30])
+plt.title("Sales")
+plt.xlabel("Month")
+plt.ylabel("Revenue")
+plt.show()
+
+# 多條線
+plt.plot(months, product_a, label="A", marker="o")
+plt.plot(months, product_b, label="B", marker="s")
+plt.legend()
+plt.show()
+
+# Bar
+plt.bar(["A", "B", "C"], [10, 24, 36])
+
+# Histogram
+plt.hist(np.random.randn(1000), bins=30)
+
+# Scatter
+plt.scatter(x, y)
+
+# Pie
+plt.pie([30, 25, 20, 15], labels=["A", "B", "C", "D"])
+
+# Subplots
+fig, axes = plt.subplots(2, 2, figsize=(10, 8))
+axes[0, 0].plot([1, 2, 3], [1, 4, 9])
+axes[0, 1].bar(["a", "b"], [1, 2])
+plt.tight_layout()
+plt.savefig("chart.png", dpi=300)
+```
+
+  
+### Seaborn：統計圖、好看
+
+```text
+import seaborn as sns
+
+# 直接吃 DataFrame
+sns.scatterplot(data=df, x="age", y="salary", hue="department")
+sns.histplot(data=df, x="salary", bins=30)
+sns.boxplot(data=df, x="department", y="salary")
+
+# 熱力圖（相關性）
+correlation = df.corr()
+sns.heatmap(correlation, annot=True, cmap="coolwarm")
+
+# Pair plot
+sns.pairplot(df, hue="category")
+
+# 風格
+sns.set_style("whitegrid")
+sns.set_palette("husl")
+
+→ Seaborn 蓋在 Matplotlib 上
+→ 預設美觀
+→ 統計分析必用
+```
+
+  
+### Plotly：互動、Web
+
+```text
+import plotly.express as px
+
+# 互動式（hover、zoom）
+fig = px.scatter(df, x="age", y="salary",
+                 color="department",
+                 hover_data=["name", "city"])
+fig.show()
+
+# 折線
+px.line(df, x="date", y="sales", color="product")
+
+# 3D
+px.scatter_3d(df, x="x", y="y", z="z", color="category")
+
+# 動畫
+px.scatter(df, x="gdp", y="life_exp",
+           animation_frame="year",
+           size="population", color="continent")
+
+# 寫成 HTML（嵌入網站）
+fig.write_html("dashboard.html")
+
+→ 強在互動 + Web 友善
+→ 適合 dashboard（Dash 框架）
+```
+
+  
+### 怎麼選
+
+  
+| 場景 | 推薦 |
+| --- | --- |
+| 學術論文、靜態圖 | Matplotlib |
+| 統計探索分析 | Seaborn |
+| 互動 dashboard | Plotly |
+| Jupyter Notebook | 3 個都行 |
+| 快速 df 探索 | df.plot() 內建 |
+
+  
+### Pandas 內建畫圖
+
+```text
+# df 內建 .plot()
+df["sales"].plot()              # 折線
+df["sales"].plot.bar()
+df["sales"].plot.hist(bins=30)
+df.plot.scatter(x="age", y="salary")
+
+df.plot(figsize=(10, 6),
+        title="Sales",
+        grid=True)
+plt.show()
+```
+
+  
+    **☕ 用人話講**
+    
+3 工具各有定位：(1) **Matplotlib**—基礎、靜態 (2) **Seaborn**—統計、預設美 (3) **Plotly**—互動、Web。**新手**：先學 Matplotlib + Seaborn。Plotly 等做 dashboard 再學。
+
+  
+
+  
+    
+      ⚡
+      學習加速器
+    
+    把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。

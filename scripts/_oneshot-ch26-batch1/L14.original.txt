@@ -1,0 +1,74 @@
+Pandas 處理「**表格資料**」—像 Excel 但是 100x 強。所有 data scientist 必用。
+
+  
+### DataFrame：核心物件
+
+```text
+import pandas as pd
+
+# 從 dict 建
+df = pd.DataFrame({
+    "name": ["Alice", "Bob", "Charlie"],
+    "age": [30, 25, 35],
+    "city": ["Taipei", "Tokyo", "Seoul"]
+})
+
+# 從檔案
+df = pd.read_csv("users.csv")
+df = pd.read_excel("users.xlsx")
+df = pd.read_json("users.json")
+df = pd.read_sql("SELECT * FROM users", con=engine)
+
+# 看資料
+df.head()           # 前 5
+df.tail()
+df.sample(5)
+df.shape            # (rows, cols)
+df.columns
+df.dtypes
+df.describe()       # 統計總覽
+df.info()
+df.isnull().sum()   # 缺失
+```
+
+  
+### 選資料
+
+```text
+# 選欄位
+df["name"]                  # Series
+df[["name", "age"]]         # DataFrame
+
+# 選 row（位置）
+df.iloc[0]
+df.iloc[0:3]
+
+# 選 row（label）
+df.loc[0]
+
+# 篩選（最常用）
+df[df["age"] > 30]
+df[df["city"] == "Taipei"]
+df[(df["age"] > 25) & (df["age"]  30 and city == 'Taipei'")
+```
+
+  
+### 修改 + 聚合
+
+```text
+# 加 column
+df["country"] = ["TW", "JP", "KR"]
+df["age_in_5"] = df["age"] + 5
+df["category"] = df["age"].apply(lambda x: "young" if x 
+    **☕ 用人話講**
+    
+Pandas 是 Excel 進化版—10 萬 row 也順、1 行 code 搞定。**核心 4 動作**：(1) 讀 (read_csv) (2) 篩 (df[條件]) (3) 改 (df["new"] = ...) (4) 聚 (groupby + agg)。**2026 主流分析 stack**：Pandas + NumPy + Matplotlib + Jupyter。
+
+  
+
+  
+    
+      🎯
+      面試考點
+    
+    台灣科技公司面試 90% 會問「Python」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。
