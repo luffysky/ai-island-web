@@ -1,0 +1,167 @@
+「**Garbage in, garbage out**」—資料品質決定 model 好壞。特徵工程是 ML 60% 的工作。
+
+  
+### train / test 切分
+
+```text
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y,
+    test_size=0.2,       # 20% test
+    random_state=42,
+    stratify=y           # 保持類別比例
+)
+
+# 進階：train / val / test
+X_temp, X_test, y_temp, y_test = train_test_split(X, y, test_size=0.2)
+X_train, X_val, y_train, y_val = train_test_split(X_temp, y_temp, test_size=0.25)
+# 60 / 20 / 20
+```
+
+  
+### 處理缺失值
+
+```text
+# 看
+df.isnull().sum()
+
+# 刪
+df = df.dropna()
+df = df.dropna(subset=["age"])
+
+# 填
+df["age"].fillna(df["age"].median(), inplace=True)
+df["city"].fillna("Unknown", inplace=True)
+
+# KNN 預測缺值
+from sklearn.impute import KNNImputer
+imputer = KNNImputer(n_neighbors=5)
+X_filled = imputer.fit_transform(X)
+```
+
+  
+### 類別 → 數字
+
+```text
+# Label Encoding（有順序）
+from sklearn.preprocessing import LabelEncoder
+le = LabelEncoder()
+df["size_encoded"] = le.fit_transform(df["size"])
+# small, medium, large → 0, 1, 2
+
+# One-Hot（沒順序）
+df = pd.get_dummies(df, columns=["city", "category"])
+
+# Target Encoding（進階）
+import category_encoders as ce
+encoder = ce.TargetEncoder()
+df["city_enc"] = encoder.fit_transform(df["city"], y)
+```
+
+  
+### 數值縮放
+
+```text
+# 為什麼 scale？
+# 年齡 0-100、薪資 20000-200000
+# 沒 scale → 薪資 dominate
+
+# StandardScaler（z-score）
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+
+# 重要：先 split、再 fit on train
+scaler.fit(X_train)
+X_train_scaled = scaler.transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+# 不能 fit 整個 X（data leakage）
+
+# MinMaxScaler（[0, 1]）
+from sklearn.preprocessing import MinMaxScaler
+
+# RobustScaler（對 outlier 穩定）
+from sklearn.preprocessing import RobustScaler
+
+# 哪些 model 需要 scale：
+# Linear / SVM / KNN / NN → 要
+# Tree-based（RF / XGBoost）→ 不用
+```
+
+  
+### 創建新特徵
+
+```text
+# 日期 → 多特徵
+df["date"] = pd.to_datetime(df["date"])
+df["year"] = df["date"].dt.year
+df["month"] = df["date"].dt.month
+df["dayofweek"] = df["date"].dt.dayofweek
+df["is_weekend"] = df["dayofweek"] >= 5
+
+# 比例
+df["price_per_sqft"] = df["price"] / df["sqft"]
+
+# 交互
+df["age_x_income"] = df["age"] * df["income"]
+
+# 聚合特徵
+user_stats = df.groupby("user_id").agg({
+    "amount": ["mean", "max", "count"],
+})
+```
+
+  
+### Pipeline 避免 leakage
+
+```text
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import GradientBoostingClassifier
+
+pipeline = Pipeline([
+    ("scaler", StandardScaler()),
+    ("model", GradientBoostingClassifier())
+])
+
+pipeline.fit(X_train, y_train)
+# 自動 scale + 訓練
+# 自動避免 leakage
+y_pred = pipeline.predict(X_test)
+```
+
+  
+### 不平衡資料
+
+```text
+# 例：99% 正常、1% 詐欺
+# 全猜正常就 99% 準確、但沒用
+
+# 對策 1：stratify
+train_test_split(X, y, stratify=y)
+
+# 對策 2：SMOTE oversample
+from imblearn.over_sampling import SMOTE
+smote = SMOTE()
+X_resampled, y_resampled = smote.fit_resample(X_train, y_train)
+
+# 對策 3：class_weight
+model = RandomForestClassifier(class_weight="balanced")
+
+# 對策 4：看對的指標
+# precision / recall / F1 / AUC（不是 accuracy）
+```
+
+  
+    **🚀 進階技巧**
+    
+2026 特徵工程 5 原則：(1) **切 train/test 後才做特徵工程**—避免 leakage (2) **用 Pipeline**—自動化 (3) **類別 encoding 看 cardinality**—2-5 類用 one-hot、10+ 類用 target (4) **不平衡看 F1 不看 accuracy** (5) **新特徵驗證有用**—加進去看 score 變化。
+
+  
+
+  
+    
+      ⚠️
+      新手常見錯誤
+    
+    新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。

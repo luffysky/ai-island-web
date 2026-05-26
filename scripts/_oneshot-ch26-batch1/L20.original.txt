@@ -1,0 +1,185 @@
+Model 跑得很準 = 真的好？不一定—可能是**過擬合**（背答案）。
+
+  
+### 欠擬合 vs 過擬合
+
+```text
+欠擬合（Underfitting）：
+- Model 太簡單、抓不到 pattern
+- Train acc 低、test 也低
+- 像考前沒念書
+
+過擬合（Overfitting）：
+- Model 太複雜、背答案
+- Train acc 高、test 低
+- 像背題庫沒理解
+
+剛好（Good fit）：
+- Train 跟 test 都不錯、差距小
+
+判斷：
+train=0.95, test=0.95   → 剛好
+train=0.60, test=0.55   → 欠擬合
+train=1.00, test=0.70   → 過擬合（差 30%）
+```
+
+  
+### 欠擬合對策
+
+```text
+1. 增加 model 複雜度
+   - Linear → tree
+   - Tree depth 加深
+   - NN 加層
+
+2. 加更多特徵
+3. 訓練更久（epoch 加）
+4. 減正則化
+```
+
+  
+### 過擬合對策
+
+```text
+1. 簡化 model
+   - Tree 限制深度
+   - NN 減層
+
+2. 加更多資料
+3. Regularization
+   - L1 / L2
+   - Dropout（NN 用）
+
+4. Early stopping
+5. Cross-validation
+
+# Random Forest 防過擬合
+model = RandomForestClassifier(
+    n_estimators=100,
+    max_depth=10,
+    min_samples_split=20,
+    min_samples_leaf=10,
+)
+
+# XGBoost
+model = xgb.XGBClassifier(
+    max_depth=6,
+    reg_alpha=0.1,    # L1
+    reg_lambda=1.0,   # L2
+    early_stopping_rounds=10,
+)
+```
+
+  
+### 交叉驗證（CV）
+
+```text
+單一 split 問題：
+- 萬一 test 剛好簡單 / 困難？
+- 評估不穩
+
+K-Fold CV：
+切 K 份、輪流當 test
+
+from sklearn.model_selection import cross_val_score
+
+scores = cross_val_score(model, X, y, cv=5)
+print(f"平均：{scores.mean():.3f}")
+print(f"標準差：{scores.std():.3f}")
+
+# Stratified（分類用）
+from sklearn.model_selection import StratifiedKFold
+
+skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+for train_idx, val_idx in skf.split(X, y):
+    X_train, X_val = X[train_idx], X[val_idx]
+    y_train, y_val = y[train_idx], y[val_idx]
+    # 訓練 + 評估
+```
+
+  
+### Hyperparameter Tuning
+
+```text
+# Grid Search（暴力）
+from sklearn.model_selection import GridSearchCV
+
+param_grid = {
+    "n_estimators": [50, 100, 200],
+    "max_depth": [3, 5, 10],
+}
+
+grid = GridSearchCV(
+    RandomForestClassifier(),
+    param_grid,
+    cv=5,
+    scoring="f1",
+    n_jobs=-1
+)
+grid.fit(X_train, y_train)
+
+print(grid.best_params_)
+print(grid.best_score_)
+
+# Random Search
+from sklearn.model_selection import RandomizedSearchCV
+
+random_search = RandomizedSearchCV(
+    RandomForestClassifier(),
+    param_distributions=param_grid,
+    n_iter=50,
+    cv=5
+)
+
+# Optuna（業界主流、貝氏優化）
+import optuna
+
+def objective(trial):
+    params = {
+        "n_estimators": trial.suggest_int("n_estimators", 50, 500),
+        "max_depth": trial.suggest_int("max_depth", 3, 20),
+        "learning_rate": trial.suggest_float("lr", 0.01, 0.3),
+    }
+    model = xgb.XGBClassifier(**params)
+    return cross_val_score(model, X, y, cv=5).mean()
+
+study = optuna.create_study(direction="maximize")
+study.optimize(objective, n_trials=100)
+print(study.best_params)
+```
+
+  
+### 學習曲線（診斷）
+
+```text
+from sklearn.model_selection import learning_curve
+import matplotlib.pyplot as plt
+
+train_sizes, train_scores, val_scores = learning_curve(
+    model, X, y, cv=5,
+    train_sizes=np.linspace(0.1, 1.0, 10)
+)
+
+plt.plot(train_sizes, train_scores.mean(axis=1), label="train")
+plt.plot(train_sizes, val_scores.mean(axis=1), label="val")
+plt.legend()
+
+判斷：
+- train 高、val 低、差距大 → 過擬合（加資料 / 簡化）
+- train 低、val 低、差距小 → 欠擬合（複雜化）
+- train 高、val 高、差距小 → good fit
+```
+
+  
+    **🚀 進階技巧**
+    
+2026 ML 工作流：(1) **baseline model**—簡單 model 先跑 (2) **永遠用 cv**—不靠單一 split (3) **畫 learning curve**—判斷過 / 欠擬合 (4) **Optuna 調參**—比 Grid 快 10x (5) **記錄實驗**—MLflow / W&B。
+
+  
+
+  
+    
+      🎯
+      面試考點
+    
+    台灣科技公司面試 90% 會問「Python」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。

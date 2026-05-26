@@ -136,6 +136,26 @@ for (const [id, content] of [
   console.log(`[batch4a] ${id} (${l.title}) updated, new length:`, l.content.length);
 }
 
+// === batch4 part B: L16-L20 (ML 基礎) ===
+const L16_CONTENT = fs.readFileSync(path.join(__dirname, 'L16.content.md'), 'utf8');
+const L17_CONTENT = fs.readFileSync(path.join(__dirname, 'L17.content.md'), 'utf8');
+const L18_CONTENT = fs.readFileSync(path.join(__dirname, 'L18.content.md'), 'utf8');
+const L19_CONTENT = fs.readFileSync(path.join(__dirname, 'L19.content.md'), 'utf8');
+const L20_CONTENT = fs.readFileSync(path.join(__dirname, 'L20.content.md'), 'utf8');
+
+for (const [id, content] of [
+  ['26.16', L16_CONTENT],
+  ['26.17', L17_CONTENT],
+  ['26.18', L18_CONTENT],
+  ['26.19', L19_CONTENT],
+  ['26.20', L20_CONTENT],
+]) {
+  const l = ch26.lessons.find((x) => x.id === id);
+  if (!l) throw new Error(`${id} not found`);
+  l.content = content;
+  console.log(`[batch4b] ${id} (${l.title}) updated, new length:`, l.content.length);
+}
+
 // === 寫回 + 驗證 ===
 const out = JSON.stringify(ch26, null, 2) + '\n';
 fs.writeFileSync(CH26_PATH, out, 'utf8');

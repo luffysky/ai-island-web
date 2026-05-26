@@ -1,0 +1,145 @@
+「**怎麼知道 model 好**」—看錯指標 = model 上線後爆。
+
+  
+### 混淆矩陣
+
+```text
+預測：正常    預測：詐欺
+實際：正常       TN            FP（誤報）
+實際：詐欺       FN（漏抓）     TP
+
+from sklearn.metrics import confusion_matrix
+cm = confusion_matrix(y_test, y_pred)
+```
+
+  
+### Accuracy / Precision / Recall / F1
+
+```text
+accuracy = (TP + TN) / 全部
+        = 對的比例
+        
+⚠ 不平衡資料看 accuracy 沒意義
+（999 正常 1 詐欺、全猜正常 = 99.9% 但沒抓詐欺）
+
+precision = TP / (TP + FP)
+         = 預測詐欺中、真的是詐欺
+         「我說是、有多準？」
+高 precision = 不誤報
+（垃圾信過濾要高 precision）
+
+recall = TP / (TP + FN)
+      = 實際詐欺中、抓到的
+      「真的是、我抓到幾個？」
+高 recall = 不漏抓
+（癌症檢測要高 recall）
+
+precision vs recall：通常 trade-off
+- 嚴格 → 高 precision、低 recall
+- 寬鬆 → 低 precision、高 recall
+
+F1 = 兩者調和平均
+F1 = 2 * (precision * recall) / (precision + recall)
+兩個都重要時看 F1
+
+from sklearn.metrics import (
+    accuracy_score, precision_score, recall_score, f1_score
+)
+
+accuracy_score(y_test, y_pred)
+precision_score(y_test, y_pred)
+recall_score(y_test, y_pred)
+f1_score(y_test, y_pred)
+```
+
+  
+### ROC AUC
+
+```text
+ROC 曲線：不同 threshold 下、TPR vs FPR
+
+AUC = ROC 曲線下面積
+0.5 = 隨機
+1.0 = 完美
+
+優：
+- 跟 threshold 無關
+- 不平衡資料友善
+- 比較 model 公平
+
+from sklearn.metrics import roc_auc_score
+roc_auc_score(y_test, y_pred_proba)
+
+# y_pred_proba = model.predict_proba(X_test)[:, 1]
+```
+
+  
+### 完整分類報告
+
+```text
+from sklearn.metrics import classification_report
+
+print(classification_report(y_test, y_pred))
+
+              precision    recall  f1-score   support
+           0       0.95      0.98      0.96       900
+           1       0.78      0.65      0.71       100
+
+    accuracy                           0.94      1000
+   macro avg       0.86      0.81      0.84      1000
+weighted avg       0.93      0.94      0.93      1000
+```
+
+  
+### 回歸指標
+
+```text
+MAE（Mean Absolute Error）：
+mean(|預測 - 實際|)
+- 直觀
+- 對 outlier 不敏感
+
+from sklearn.metrics import mean_absolute_error
+mae = mean_absolute_error(y_test, y_pred)
+
+MSE / RMSE：
+平方放大大誤差
+RMSE = sqrt(MSE)、跟原單位一致
+
+from sklearn.metrics import mean_squared_error
+rmse = mean_squared_error(y_test, y_pred, squared=False)
+
+R² Score：
+變異被解釋的比例
+1.0 = 完美、0 = 跟亂猜一樣
+
+from sklearn.metrics import r2_score
+r2 = r2_score(y_test, y_pred)
+```
+
+  
+### 選對指標
+
+  
+| 場景 | 主要指標 |
+| --- | --- |
+| 平衡分類 | accuracy |
+| 不平衡分類 | F1 / AUC |
+| 不要漏抓（醫療 / 詐欺） | recall 優先 |
+| 不要誤報（垃圾信 / 推薦） | precision 優先 |
+| 房價預測 | RMSE / MAE |
+| 排名（推薦） | NDCG / MAP |
+
+  
+    **🚀 進階技巧**
+    
+3 大坑：(1) **不平衡看 accuracy**—99% 正常時全猜正常就 99%、沒用 (2) **只看一個指標**—precision 跟 recall 永遠一起看 (3) **用 train 指標**—一定看 test set。**業界主流**：分類看 F1 / AUC、回歸看 RMSE / R²。
+
+  
+
+  
+    
+      💼
+      接案小知識
+    
+    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「Python」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。

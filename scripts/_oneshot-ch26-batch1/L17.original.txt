@@ -1,0 +1,193 @@
+scikit-learn 是 Python ML **初學者首選**—API 一致、教學多、企業 95% 用。
+
+  
+### 第一個模型：房價預測
+
+```text
+import numpy as np
+from sklearn.linear_model import LinearRegression
+
+# X：坪數、y：房價
+X = np.array([[20], [25], [30], [35], [40], [50]])
+y = np.array([800, 1000, 1200, 1400, 1600, 2000])
+
+# 1. 建模
+model = LinearRegression()
+
+# 2. 訓練
+model.fit(X, y)
+
+# 3. 預測
+new_house = np.array([[27]])
+predicted = model.predict(new_house)
+print(f"預測：{predicted[0]:.0f} 萬")
+
+# 4. 看模型
+print(f"斜率：{model.coef_[0]}")    # 40
+print(f"截距：{model.intercept_}")   # 0
+```
+
+  
+### scikit-learn 統一 API
+
+```text
+所有 model 同樣 API：
+
+# 1. 建
+model = SomeAlgorithm()
+
+# 2. 訓練
+model.fit(X_train, y_train)
+
+# 3. 預測
+predictions = model.predict(X_test)
+
+# 4. 評估
+score = model.score(X_test, y_test)
+
+→ 換 algorithm 只改 import + 第 1 行
+```
+
+  
+### 分類：iris 鳶尾花
+
+```text
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report
+
+# 1. 資料
+iris = load_iris()
+X, y = iris.data, iris.target
+
+# 2. 切 train/test
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+# 3. 建模 + 訓練
+model = RandomForestClassifier(n_estimators=100)
+model.fit(X_train, y_train)
+
+# 4. 預測
+y_pred = model.predict(X_test)
+
+# 5. 評估
+print(f"準確率：{accuracy_score(y_test, y_pred):.2%}")
+print(classification_report(y_test, y_pred, target_names=iris.target_names))
+```
+
+  
+### 常見演算法
+
+```text
+分類：
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
+
+# 業界 #1：XGBoost / LightGBM
+import xgboost as xgb
+model = xgb.XGBClassifier()
+
+import lightgbm as lgb
+model = lgb.LGBMClassifier()
+
+回歸：
+from sklearn.linear_model import LinearRegression, Ridge, Lasso
+from sklearn.ensemble import RandomForestRegressor
+
+聚類：
+from sklearn.cluster import KMeans, DBSCAN
+
+降維：
+from sklearn.decomposition import PCA
+```
+
+  
+### 實戰：客戶流失預測
+
+```text
+import pandas as pd
+from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.metrics import classification_report
+
+# 1. 載入
+df = pd.read_csv("customers.csv")
+
+# 2. 特徵工程
+df["avg_monthly"] = df["total_charge"] / df["tenure_months"]
+df = pd.get_dummies(df, columns=["plan_type", "country"])
+
+# 3. 分 X y
+X = df.drop(columns=["churned"])
+y = df["churned"]
+
+# 4. Scale
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# 5. 切
+X_train, X_test, y_train, y_test = train_test_split(
+    X_scaled, y, test_size=0.2, stratify=y
+)
+
+# 6. 訓練
+model = GradientBoostingClassifier(n_estimators=200)
+model.fit(X_train, y_train)
+
+# 7. 評估
+y_pred = model.predict(X_test)
+print(classification_report(y_test, y_pred))
+
+# 8. 交叉驗證
+scores = cross_val_score(model, X_scaled, y, cv=5)
+print(f"CV：{scores.mean():.3f} ± {scores.std():.3f}")
+
+# 9. 特徵重要性
+importance = pd.DataFrame({
+    "feature": X.columns,
+    "importance": model.feature_importances_
+}).sort_values("importance", ascending=False)
+print(importance.head(10))
+```
+
+  
+### 儲存 + 部署
+
+```text
+import joblib
+
+# 存
+joblib.dump(model, "model.pkl")
+joblib.dump(scaler, "scaler.pkl")
+
+# 載
+model = joblib.load("model.pkl")
+
+# 部署 FastAPI
+@app.post("/predict")
+def predict(features: dict):
+    X = scaler.transform([list(features.values())])
+    pred = model.predict_proba(X)[0, 1]
+    return {"churn_probability": pred}
+```
+
+  
+    **☕ 用人話講**
+    
+scikit-learn 是 ML 入門最佳—API 統一、文件完整。**業界事實**：80% production ML 是 scikit-learn + XGBoost / LightGBM（不是深度學習）。表格資料 90% 用 GradientBoosting / RandomForest 就 work。
+
+  
+
+  
+    
+      🛠️
+      工具推薦
+    
+    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。
