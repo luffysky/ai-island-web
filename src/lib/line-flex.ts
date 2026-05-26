@@ -212,7 +212,6 @@ export function buildSimpleCard(input: SimpleCardInput): FlexMessage {
             { type: "text", text: input.emoji ?? "🔔", size: "xxl", color: "#ffffff", align: "center" },
           ],
           flex: 0,
-          width: "44px",
         },
         {
           type: "text",

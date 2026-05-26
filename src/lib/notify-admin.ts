@@ -262,23 +262,50 @@ async function logNotifyError(channel: string, message: string, extra: any = {})
   console.warn(`[notify-admin] ${channel} failed:`, message);
 }
 
+// UTF-16 safe truncate — 不切在 surrogate pair 中間
+// JS .slice(0, N) 對 emoji 不安全（emoji 占 2 char、切到一半留 lone surrogate）
+function safeUtf16Slice(s: string, max: number): string {
+  if (s.length <= max) return s;
+  // 從 max 往回找完整 code point 邊界
+  let end = max;
+  // 若 end-1 是 high surrogate（D800-DBFF）、切掉它（保 pair 完整）
+  while (end > 0) {
+    const code = s.charCodeAt(end - 1);
+    if (code >= 0xD800 && code <= 0xDBFF) {
+      end--; // 切到的是 high surrogate、再退 1
+    } else {
+      break;
+    }
+  }
+  return s.slice(0, end);
+}
+
+// 移除非配對 surrogate（即使 safe slice、原始 input 自己可能就有壞 surrogate）
+function stripLoneSurrogates(s: string): string {
+  return s.replace(/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g, "");
+}
+
 async function sendTelegram(botToken: string, chatId: string, text: string, kind?: string) {
   try {
-    // 解析 text: 第一行是 [kind] xxx、後面是內容
-    const m = text.match(/^\[(\w+)\]\s*(.+?)\n?([\s\S]*)$/);
+    // 1. 先 sanitize 原始 text、避免 lone surrogate（emoji 殘片）
+    const cleanText = stripLoneSurrogates(text);
+
+    // 2. 解析 text: 第一行是 [kind] xxx、後面是內容
+    const m = cleanText.match(/^\[(\w+)\]\s*(.+?)\n?([\s\S]*)$/);
     let formatted: string;
     if (m) {
       const [, k, summary, rest] = m;
       formatted = `*🔔 [${tgEscape(k)}]*\n${tgEscape(summary)}`;
       if (rest.trim()) formatted += `\n\n${tgEscape(rest.trim())}`;
     } else {
-      formatted = tgEscape(text);
+      formatted = tgEscape(cleanText);
     }
 
     const path = kind ? kindToAdminPath(kind) : null;
     const body: any = {
       chat_id: chatId,
-      text: formatted.slice(0, 4000),
+      // 3. safe slice 不切在 surrogate pair 中間
+      text: stripLoneSurrogates(safeUtf16Slice(formatted, 4000)),
       parse_mode: "MarkdownV2",
       disable_web_page_preview: true,
     };
@@ -293,8 +320,8 @@ async function sendTelegram(botToken: string, chatId: string, text: string, kind
       };
     }
 
-    // 強制 UTF-8 + 移除非配對 surrogate（避免 "text must be encoded in UTF-8" 400）
-    const jsonStr = JSON.stringify(body).replace(/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g, "");
+    // 4. 最終 safety net：JSON.stringify 後再 strip 一次（防漏網之魚）
+    const jsonStr = stripLoneSurrogates(JSON.stringify(body));
     const utf8Body = Buffer.from(jsonStr, "utf8");
     const res = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
       method: "POST",
