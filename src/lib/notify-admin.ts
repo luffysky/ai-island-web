@@ -248,6 +248,20 @@ function tgEscape(s: string): string {
   return s.replace(/([_*[\]()~`>#+=|{}.!\\-])/g, "\\$1");
 }
 
+async function logNotifyError(channel: string, message: string, extra: any = {}) {
+  try {
+    const { createSupabaseAdmin } = await import("./supabase-admin");
+    const admin = createSupabaseAdmin();
+    await admin.from("error_logs").insert({
+      source: `notify-admin/${channel}`,
+      level: "error",
+      message: `[notify_${channel}_failed] ${message}`,
+      extra,
+    });
+  } catch {}
+  console.warn(`[notify-admin] ${channel} failed:`, message);
+}
+
 async function sendTelegram(botToken: string, chatId: string, text: string, kind?: string) {
   try {
     // 解析 text: 第一行是 [kind] xxx、後面是內容
@@ -279,26 +293,57 @@ async function sendTelegram(botToken: string, chatId: string, text: string, kind
       };
     }
 
-    await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+    const res = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
       signal: AbortSignal.timeout(5000),
     });
+    if (!res.ok) {
+      const errBody = await res.text().catch(() => "");
+      await logNotifyError("telegram", `Telegram API ${res.status}: ${errBody.slice(0, 300)}`, {
+        status: res.status,
+        body: errBody.slice(0, 500),
+        chat_id_prefix: chatId.slice(0, 6) + "...",
+        kind: kind ?? "(no-kind)",
+        hint: res.status === 400 ? "bad chat_id / MarkdownV2 escape 問題"
+            : res.status === 401 ? "bot token 錯"
+            : res.status === 403 ? "bot 沒加入 chat / 被踢出 / 被阻擋"
+            : res.status === 429 ? "rate limit"
+            : "看 body",
+      });
+    }
   } catch (e) {
-    console.warn("[notify-admin] telegram failed:", (e as any)?.message);
+    await logNotifyError("telegram", (e as any)?.message ?? "unknown", {
+      error: String(e).slice(0, 300),
+      chat_id_prefix: chatId.slice(0, 6) + "...",
+      kind: kind ?? "(no-kind)",
+    });
   }
 }
 
 async function sendDiscord(url: string, text: string) {
   try {
-    await fetch(url, {
+    const res = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ content: text.slice(0, 1900) }),
       signal: AbortSignal.timeout(5000),
     });
+    if (!res.ok) {
+      const errBody = await res.text().catch(() => "");
+      await logNotifyError("discord", `Discord webhook ${res.status}: ${errBody.slice(0, 300)}`, {
+        status: res.status,
+        body: errBody.slice(0, 500),
+        hint: res.status === 401 ? "webhook 被撤銷、重建"
+            : res.status === 404 ? "webhook URL 無效"
+            : res.status === 429 ? "rate limit"
+            : "看 body",
+      });
+    }
   } catch (e) {
-    console.warn("[notify-admin] discord failed:", (e as any)?.message);
+    await logNotifyError("discord", (e as any)?.message ?? "unknown", {
+      error: String(e).slice(0, 300),
+    });
   }
 }

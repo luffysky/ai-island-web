@@ -36,6 +36,7 @@ export type OwnerCheckResult = {
     userId: boolean;
     email: boolean;
     lineUser: boolean;
+    lineUserIdMatch: boolean;    // LINE userId 在 OWNER_LINE_USER_IDS env list
     lineRole: boolean;
   };
   reasons: string[];           // 命中的理由 (給 UI / debug 顯示)
@@ -52,6 +53,7 @@ export function getOwnerConfig() {
     emails: (csv(process.env.OWNER_EMAILS).length > 0
       ? csv(process.env.OWNER_EMAILS)
       : ["luffysky00@gmail.com"]),
+    lineUserIds: csv(process.env.OWNER_LINE_USER_IDS) ?? [],  // 林董 LINE userId（綁定後直接認、不看登入）
     defaultUsernames: ["luffysky00", "luffysky004"], // 安全 fallback、就算 env 沒設也認得林董
   };
 }
@@ -67,6 +69,8 @@ export function checkOwner(input: OwnerCheckInput): OwnerCheckResult {
     cfg.usernames.includes(usernameLower) ||
     cfg.defaultUsernames.some((u) => usernameLower === u || usernameLower.startsWith(u + "_"));
 
+  const lineUserIdLower = (input.lineUserId ?? "").toLowerCase();
+
   const signals = {
     dbFlag: input.isOwner === true,
     role: input.role === "owner",
@@ -74,6 +78,7 @@ export function checkOwner(input: OwnerCheckInput): OwnerCheckResult {
     userId: !!userIdLower && cfg.userIds.includes(userIdLower),
     email: !!emailLower && cfg.emails.includes(emailLower),
     lineUser: !!input.lineUserId, // 在 admin LINE 白名單內 (caller 已驗)
+    lineUserIdMatch: !!lineUserIdLower && cfg.lineUserIds.includes(lineUserIdLower), // 林董 LINE userId 在 OWNER_LINE_USER_IDS（綁定後直接認）
     lineRole: !!lineRoleStr && (
       lineRoleStr.includes("董事") ||
       lineRoleStr.includes("owner") ||
@@ -83,22 +88,24 @@ export function checkOwner(input: OwnerCheckInput): OwnerCheckResult {
     ),
   };
 
-  // lineUser 單獨不算 owner (一般 admin 也在白名單)、要配 lineRole
+  // lineUser 單獨不算 owner (一般 admin 也在白名單)、要配 lineRole 或 lineUserIdMatch
   const reasons: string[] = [];
   if (signals.dbFlag) reasons.push("profile.is_owner = true (DB 旗標)");
   if (signals.role) reasons.push("profile.role = 'owner'");
   if (signals.username) reasons.push(`profile.username = ${input.username}`);
   if (signals.userId) reasons.push(`profile.id 在 OWNER_USER_IDS env list`);
   if (signals.email) reasons.push(`auth.users.email = ${input.email}`);
+  if (signals.lineUserIdMatch) reasons.push(`LINE userId 在 OWNER_LINE_USER_IDS env list`);
   if (signals.lineRole) reasons.push(`LINE role 含「董事/Owner/林董」(${input.lineRole})`);
 
-  // 任一命中即為 owner — 但 lineUser 單獨不算
+  // 任一命中即為 owner — lineUser 單獨不算、但 lineUserIdMatch（OWNER_LINE_USER_IDS）算
   const isOwner =
     signals.dbFlag ||
     signals.role ||
     signals.username ||
     signals.userId ||
     signals.email ||
+    signals.lineUserIdMatch ||
     signals.lineRole;
 
   return { isOwner, signals, reasons };
@@ -141,7 +148,7 @@ export async function checkOwnerByProfileId(
 }
 
 function emptySignals() {
-  return { dbFlag: false, role: false, username: false, userId: false, email: false, lineUser: false, lineRole: false };
+  return { dbFlag: false, role: false, username: false, userId: false, email: false, lineUser: false, lineUserIdMatch: false, lineRole: false };
 }
 
 /** 林董稱呼 — UI / AI 用 */
