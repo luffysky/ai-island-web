@@ -37,35 +37,45 @@ function DraggableTabs({ children }: { children: React.ReactNode }) {
     return () => el.removeEventListener("wheel", onWheel);
   }, []);
 
+  // ⚠️ 重要：不要在 onPointerDown 直接 setPointerCapture！
+  // 那會把所有後續 events 強制 capture 到父層、子層 button 的 click 都收不到 = 無法點擊
+  // 只有在「真的開始拖（移動 > 5px）」才 capture、單純點擊不捕獲、click 才能正常傳給子層
   const onPointerDown = (e: React.PointerEvent) => {
     const el = ref.current;
     if (!el) return;
     drag.current = { down: true, startX: e.pageX, scrollLeft: el.scrollLeft, moved: false };
-    el.setPointerCapture(e.pointerId);
-    el.style.cursor = "grabbing";
-    el.style.userSelect = "none";
+    // ❌ 不要在這 setPointerCapture / 改 cursor / 改 userSelect、會把 click 吃掉
   };
   const onPointerMove = (e: React.PointerEvent) => {
     const d = drag.current;
     const el = ref.current;
     if (!d || !d.down || !el) return;
     const dx = e.pageX - d.startX;
-    if (Math.abs(dx) > 3) d.moved = true;
-    el.scrollLeft = d.scrollLeft - dx;
+    if (Math.abs(dx) > 5) {
+      if (!d.moved) {
+        // ✓ 真的開始拖了、才 capture
+        d.moved = true;
+        try { el.setPointerCapture(e.pointerId); } catch {}
+        el.style.cursor = "grabbing";
+        el.style.userSelect = "none";
+      }
+      el.scrollLeft = d.scrollLeft - dx;
+    }
   };
   const onPointerUp = (e: React.PointerEvent) => {
     const d = drag.current;
     const el = ref.current;
     if (!el) return;
     if (d?.moved) {
-      // 防點擊 (剛剛是 drag)
+      // 剛剛是 drag、防點擊穿透
       e.preventDefault();
       e.stopPropagation();
+      el.style.cursor = "grab";
+      el.style.userSelect = "";
+      try { el.releasePointerCapture(e.pointerId); } catch {}
     }
+    // 如果 d.moved = false（純點擊）= 完全沒做事、click event 正常傳給子層 button
     drag.current = null;
-    el.style.cursor = "grab";
-    el.style.userSelect = "";
-    try { el.releasePointerCapture(e.pointerId); } catch {}
   };
 
   return (
