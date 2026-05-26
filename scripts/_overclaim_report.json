@@ -1,0 +1,197 @@
+{
+  "🟡 中等 - 速成 / 秒會": [
+    {
+      "file": "ch07",
+      "lessonId": "7.18",
+      "lessonTitle": "命名與風格：變數命名、縮排、linting",
+      "match": "1 個月後自己都看不懂。新手 3 個習慣養成 = 從垃圾 code 變專業",
+      "context": "...一週後自己看懂。爛 code「x、y、t、do_it」—你 1 個月後自己都看不懂。新手 3 個習慣養成 = 從垃圾 code 變專業：(1) **變數用名詞、函數用動詞** (2) **每個專..."
+    },
+    {
+      "file": "ch16",
+      "lessonId": "16.6",
+      "lessonTitle": "怎麼選後端語言：5 個維度決策",
+      "match": "速成",
+      "context": "... 全用 / - Android 官方 / - 後端 Ktor 新但快速成長 / Elixir：⭐⭐⭐ / - Hex 完整 / - Phoen..."
+    },
+    {
+      "file": "ch26",
+      "lessonId": "26.2",
+      "lessonTitle": "Hello World、REPL、第一個變數",
+      "match": "秒上手",
+      "context": "...什麼」 /    / **☕ 用人話講** / Python 30 秒上手：(1) **print** 印東西到螢幕 (2) **變數..."
+    },
+    {
+      "file": "ch27",
+      "lessonId": "27.2",
+      "lessonTitle": "Jupyter Notebook：資料分析師的 IDE",
+      "match": "秒上手",
+      "context": "...er 擴充**。**怎麼練習**：開 Colab（免裝、5 秒上手）→ 載 Kaggle 任何資料集 → 跟著做 EDA。 / ..."
+    },
+    {
+      "file": "ch68",
+      "lessonId": "68.18",
+      "lessonTitle": "持續學習 — 但不要學最潮的、學最久的",
+      "match": "速成",
+      "context": "...FC / 要學 Postgres： / ❌ 看「Postgres 速成」 / ✅ 讀 PostgreSQL: Up and Runni..."
+    }
+  ],
+  "🔴 嚴重 - 保證上班 / 找工作": [
+    {
+      "file": "ch27",
+      "lessonId": "27.25",
+      "lessonTitle": "資料分析職涯 + 學習路徑",
+      "match": "學完這章不等於能上工、要**做 portfolio + 找對工作",
+      "context": "...習路線 + 履歷面試攻略**」。 / > 💡 **重點**：學完這章不等於能上工、要**做 portfolio + 找對工作 + 持續輸出**才能變現。這課給你完整 roadmap。 / ..."
+    },
+    {
+      "file": "ch44",
+      "lessonId": "44.23",
+      "lessonTitle": "JTBD（Jobs To Be Done）框架",
+      "match": "學完一條清楚的路線、**這樣我才能** 半年內找到工程師工作",
+      "context": "...思考： / - 「**當我**想轉職寫 code、**我想要**學完一條清楚的路線、**這樣我才能** 半年內找到工程師工作」 / - 「**當我**接外包卡關、**我想要**5 分鐘找到..."
+    }
+  ],
+  "🟢 提醒 - 收入承諾（事實 / 範圍 OK、但要看上下文）": [
+    {
+      "file": "ch29",
+      "lessonId": "29.5",
+      "lessonTitle": "Crawlee：Node 版的 Scrapy 框架",
+      "match": "月入 $1000",
+      "context": "...e 實際案例：** / ```text / === 有人寫的爬蟲、月入 $1000+ USD === / - Google Maps 爬蟲（爬商家..."
+    },
+    {
+      "file": "ch29",
+      "lessonId": "29.17",
+      "lessonTitle": "Apify：商業爬蟲平台",
+      "match": "月入 $200-2000 USD (2) **接案** —— 寫 Actor 給企業 + 託管、NT$ 50K-200K (3) **代管** —— 客戶買 Apify 額度、你維護 Actor (4) **教學 / 顧問** —— 教企業內部用 Apify、時薪 NT$ 3000-5000。**indie hacker 黃金路線**：選 1 個熱門爬蟲（Google Maps / LinkedIn）、上架、6 個月達 $1000",
+      "context": "...4 條路：(1) **被動收入** —— 上架 Actor、月入 $200-2000 USD (2) **接案** —— 寫 Actor 給企業 + 託管、NT$ 50K-200K (3) **代管** —— 客戶買 Apify 額度、你維護 Actor (4) **教學 / 顧問** —— 教企業內部用 Apify、時薪 NT$ 3000-5000。**indie hacker 黃金路線**：選 1 個熱門爬蟲（Google Maps / LinkedIn）、上架、6 個月達 $1000/月 MRR 可能。 / ..."
+    },
+    {
+      "file": "ch29",
+      "lessonId": "29.22",
+      "lessonTitle": "完整實戰：蝦皮比價工具",
+      "match": "MRR $1000",
+      "context": "... / ### 完整商業流程 / ```text / === 6 個月 MRR $1000 USD 路線 === / Month 1：MVP（個人版免費..."
+    },
+    {
+      "file": "ch29",
+      "lessonId": "29.22",
+      "lessonTitle": "完整實戰：蝦皮比價工具",
+      "match": "MRR NT$ 30K (USD $1000",
+      "context": "...Month 5：產品優化、SEO、社群行銷 / Month 6：MRR NT$ 30K (USD $1000) / ``` /    /     **☕ 用人話講** /      / ..."
+    },
+    {
+      "file": "ch29",
+      "lessonId": "29.22",
+      "lessonTitle": "完整實戰：蝦皮比價工具",
+      "match": "MRR $1000",
+      "context": "... 500 → 企業 NT$ 5000 (4) **6 個月 MRR $1000 USD** 路線可達。**心法**：學會完整 stack、..."
+    },
+    {
+      "file": "ch29",
+      "lessonId": "29.22",
+      "lessonTitle": "完整實戰：蝦皮比價工具",
+      "match": "MRR $1000",
+      "context": "...000-500,000 (2) **自己跑 Indie**：MRR $1000-10000 路線可達 (3) **白牌**：賣給代理商、客..."
+    },
+    {
+      "file": "ch29",
+      "lessonId": "29.25",
+      "lessonTitle": "Node 爬蟲學習路徑",
+      "match": "MRR $1000",
+      "context": "... 自己刻 SaaS（如 L22 蝦皮比價） /    → 目標 MRR $1000-10000 / 🅱️ Apify Store /    → 寫..."
+    },
+    {
+      "file": "ch29",
+      "lessonId": "29.25",
+      "lessonTitle": "Node 爬蟲學習路徑",
+      "match": "MRR NT$ 30k = USD $1000",
+      "context": "...（Indie Hackers / 社群） / 6. 6 個月達 MRR NT$ 30k = USD $1000 / 7. 1 年達 USD $5000 / 8. 全職 Indie..."
+    },
+    {
+      "file": "ch30",
+      "lessonId": "30.24",
+      "lessonTitle": "跨語言爬蟲總結 + 學習路徑",
+      "match": "MRR USD $1000",
+      "context": "...T$ 30K（Month 10-12） / → 12 個月達 MRR USD $1000 可能 / ``` /    /     **☕ 用人話講** /    ..."
+    },
+    {
+      "file": "ch30",
+      "lessonId": "30.24",
+      "lessonTitle": "跨語言爬蟲總結 + 學習路徑",
+      "match": "MRR USD $1000",
+      "context": "...PI、客戶導向、持續學。**Indie 路線**：1 年達 MRR USD $1000 可能。 /    /    /      /       💼 /    ..."
+    },
+    {
+      "file": "ch46",
+      "lessonId": "46.22",
+      "lessonTitle": "AI 成本控制：cache、壓縮、路由",
+      "match": "MRR $5000 但 LLM 費 $4000、毛利只剩 $1000",
+      "context": "...。 / > 💡 **真實案例**：indie hacker MRR $5000 但 LLM 費 $4000、毛利只剩 $1000。**做對成本優化、毛利從 20% 變 80%**。 /   ..."
+    },
+    {
+      "file": "ch53",
+      "lessonId": "53.3",
+      "lessonTitle": "AI 虛擬人 / 數位代言",
+      "match": "月入 $1000",
+      "context": "...ideo 多語言 / - **個人 Indie**：不露臉頻道、月入 $1000-10000 / ## 限制 / - AI 仍能被看出（細節不自然..."
+    },
+    {
+      "file": "ch53",
+      "lessonId": "53.6",
+      "lessonTitle": "AI 虛擬主播 + 接案",
+      "match": "月入 $1000",
+      "context": "...language / - **個人 Indie**：不露臉頻道、月入 $1000-10000 / ## 限制 / - AI 仍能被看出（細節） / -..."
+    },
+    {
+      "file": "ch59",
+      "lessonId": "59.3",
+      "lessonTitle": "找第一個客戶（接案）",
+      "match": "月入多少、聚焦 1 件事：close 第一個 paying client、不管多小（NT$10000",
+      "context": "...udy + confidence**。Day 1-30 別管月入多少、聚焦 1 件事：close 第一個 paying client、不管多小（NT$10000 OK）。 /    /    / ⚡ / 學習加速器 / 把這節學到的..."
+    },
+    {
+      "file": "ch59",
+      "lessonId": "59.13",
+      "lessonTitle": "MRR $1k / $5k / $10k 不同階段",
+      "match": "MRR 後）— $1000",
+      "context": "... 順序： / #1：Customer success（$10k MRR 後）— $1000-2000/月 / #2：Marketing / Content..."
+    },
+    {
+      "file": "ch59",
+      "lessonId": "59.13",
+      "lessonTitle": "MRR $1k / $5k / $10k 不同階段",
+      "match": "MRR）— $1500",
+      "context": "...月 / #2：Marketing / Content（$15k MRR）— $1500-3000/月 / #3：Developer（$30k MRR）..."
+    },
+    {
+      "file": "ch59",
+      "lessonId": "59.13",
+      "lessonTitle": "MRR $1k / $5k / $10k 不同階段",
+      "match": "MRR）— $3000",
+      "context": "...1500-3000/月 / #3：Developer（$30k MRR）— $3000-6000/月 / #4：Operations / 法務 / 財..."
+    },
+    {
+      "file": "ch59",
+      "lessonId": "59.18",
+      "lessonTitle": "從 indie 變團隊 / 不變團隊",
+      "match": "MRR 至少要 $20000",
+      "context": "...雇 1 個全職 ≈ $4000-8000/月 cost / 你 MRR 至少要 $20000+ 才 sustainable hire / ``` /    / #..."
+    },
+    {
+      "file": "ch59",
+      "lessonId": "59.23",
+      "lessonTitle": "MRR / ARR / Churn：Indie SaaS 的核心指標",
+      "match": "MRR 增 $1000",
+      "context": "...─── / ``` / ## Churn 是隱形殺手 / ``` / 月 MRR 增 $1000、月 Churn 5% / → 第 12 個月只剩 $7500 ..."
+    },
+    {
+      "file": "ch59",
+      "lessonId": "59.23",
+      "lessonTitle": "MRR / ARR / Churn：Indie SaaS 的核心指標",
+      "match": "MRR 增 $1000",
+      "context": "...$7500 增加（5% × 12 = 60% 流失） / 月 MRR 增 $1000、月 Churn 2% / → 第 12 個月 $10,000 ..."
+    }
+  ]
+}
