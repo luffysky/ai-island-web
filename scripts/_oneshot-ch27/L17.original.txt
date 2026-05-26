@@ -1,0 +1,142 @@
+## 為什麼需要 Spark
+- pandas：單機、< 10GB
+- Spark：集群、TB 級
+- 速度比 Hadoop MapReduce 快 100 倍
+
+## 安裝
+```bash
+pip install pyspark
+# 或用 Databricks（雲端）
+```
+
+## 起 Spark
+```python
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder \
+    .appName("analysis") \
+    .config("spark.executor.memory", "4g") \
+    .getOrCreate()
+```
+
+## DataFrame API
+```python
+# 讀資料（Parquet 比 CSV 快 10 倍）
+df = spark.read.parquet("s3://bucket/data.parquet")
+df = spark.read.csv("data.csv", header=True, inferSchema=True)
+df = spark.read.json("data.json")
+
+# 看 schema
+df.printSchema()
+df.show(5)
+df.count()
+```
+
+## 操作（跟 pandas 像）
+```python
+from pyspark.sql.functions import col, sum as _sum, avg, count
+
+# Filter
+df.filter(col("age") >= 18)
+
+# Select + 計算
+df.select("name", (col("price") * col("qty")).alias("total"))
+
+# GroupBy
+df.groupBy("country").agg(
+    _sum("amount").alias("total"),
+    avg("amount").alias("avg"),
+    count("*").alias("orders")
+)
+
+# JOIN
+result = df1.join(df2, on="user_id", how="inner")
+
+# Sort
+df.orderBy(col("amount").desc())
+
+# Limit
+df.limit(100)
+```
+
+## Spark SQL
+```python
+df.createOrReplaceTempView("orders")
+
+result = spark.sql("""
+    SELECT country, SUM(amount) AS total
+    FROM orders
+    WHERE year = 2026
+    GROUP BY country
+    ORDER BY total DESC
+""")
+result.show()
+```
+
+## UDF（自訂函式）
+```python
+from pyspark.sql.functions import udf
+from pyspark.sql.types import StringType
+
+@udf(returnType=StringType())
+def categorize(amount):
+    if amount > 1000: return "high"
+    elif amount > 100: return "mid"
+    else: return "low"
+
+df.withColumn("tier", categorize(col("amount")))
+```
+
+## Lazy evaluation
+Spark 不會馬上算、組合 plan 後一起跑：
+```python
+df1 = spark.read.parquet("...")
+df2 = df1.filter(...)
+df3 = df2.groupBy(...).agg(...)
+df3.show()  # ← 這時才真正執行
+```
+
+## 寫出
+```python
+df.write.parquet("s3://output/result.parquet")
+df.write.mode("overwrite").parquet("...")  # 覆蓋
+df.write.csv("output.csv", header=True)
+
+# Partition 寫（按欄位分資料夾）
+df.write.partitionBy("year", "month").parquet("...")
+```
+
+## Pandas API on Spark（pyspark.pandas）
+原本 pandas code 直接跑大資料：
+```python
+import pyspark.pandas as ps
+
+df = ps.read_csv("huge.csv")
+df["new"] = df["a"] + df["b"]
+df.groupby("country").mean()
+# 寫法一樣、但跑在 Spark
+```
+
+## 平台
+- **Databricks**（最熱門、Apache Spark 商業化）
+- **AWS EMR**（AWS 集群）
+- **GCP Dataproc**
+- **本地 docker**（學習用）
+
+## 何時用 Spark
+- ✅ 資料 > 50GB
+- ✅ 需要分散式
+- ✅ 結合 ML（MLlib）
+- ❌ < 10GB（pandas / Polars 更快）
+
+## 替代品
+- **Polars**（Rust 寫、單機快）
+- **DuckDB**（in-process OLAP）
+- **Dask**（Python 分散式）
+- **Modin**（pandas 替代品、自動並行）
+
+## 心法
+- 不要 collect() 到 driver（OOM）
+- 善用 cache() 重複用的 DataFrame
+- Partition 適中（不要太大太小）
+- 看 Spark UI 找瓶頸

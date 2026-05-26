@@ -1,0 +1,133 @@
+## 為什麼 A/B test
+不靠「我覺得 A 好」、用資料：
+1. 隨機分組（A / B）
+2. 跑一段時間
+3. 統計分析誰好
+
+## 範例：按鈕顏色
+- A 組（綠色按鈕）：5000 訪客、240 點擊（4.8%）
+- B 組（橘色按鈕）：5000 訪客、275 點擊（5.5%）
+
+差距 0.7% 真的有意義？還是隨機波動？
+
+## p-value 概念
+**p-value < 0.05** 通常代表「顯著」、不是隨機。
+
+```python
+from statsmodels.stats.proportion import proportions_ztest
+
+count = [240, 275]      # 成功數
+nobs = [5000, 5000]     # 樣本數
+stat, pval = proportions_ztest(count, nobs)
+print(f"p-value: {pval:.4f}")
+
+if pval < 0.05:
+    print("✅ 顯著、B 真的比較好")
+else:
+    print("❌ 不顯著、可能只是隨機")
+```
+
+## Power Analysis（事前算需要多少樣本）
+**前**做、不是事後：
+```python
+from statsmodels.stats.power import zt_ind_solve_power
+
+# 想偵測 0.5% 的差異（從 5% → 5.5%）
+n = zt_ind_solve_power(
+    effect_size=0.025,  # Cohen's h
+    alpha=0.05,
+    power=0.8
+)
+print(f"每組需要 {n:.0f} 樣本")
+```
+
+樣本不夠 = 看不到差異 = 浪費時間。
+
+## 三大檢定方式
+
+### 1. 比例（轉換率）
+```python
+# Chi-square / Z-test
+from scipy.stats import chi2_contingency
+
+observed = [[240, 4760], [275, 4725]]  # success / fail
+chi2, pval, _, _ = chi2_contingency(observed)
+```
+
+### 2. 平均（連續變數、客單價）
+```python
+# T-test
+from scipy.stats import ttest_ind
+
+a_sales = [1000, 1200, 1500, ...]
+b_sales = [1100, 1300, 1450, ...]
+stat, pval = ttest_ind(a_sales, b_sales)
+```
+
+### 3. 多組（不只 2 個變體）
+```python
+# ANOVA
+from scipy.stats import f_oneway
+stat, pval = f_oneway(a, b, c, d)
+```
+
+## 信心區間
+比 p-value 更好的指標：
+```python
+import numpy as np
+from scipy import stats
+
+mean = np.mean(data)
+sem = stats.sem(data)
+ci = stats.t.interval(0.95, len(data)-1, loc=mean, scale=sem)
+print(f"95% CI: {ci}")
+```
+
+報告寫：「B 比 A 提升 14% (95% CI: 5% to 23%)」、比「p<0.05」實用。
+
+## A/B test 流程
+1. **定假設**：B 會比 A 高 ≥ 10%
+2. **算樣本數**：Power analysis
+3. **隨機分組**：注意公平
+4. **跑滿時間**（至少 1-2 週、含週末週間）
+5. **不偷看**（早停會偏）
+6. **分析**：p-value + 信心區間 + 業務意義
+7. **決定**：A 還 B 還是兩個都不夠好
+
+## 經典坑
+
+### 1. Peeking（偷看早停）
+中間看「好像 B 贏了」就停 = 偽陽性大增。
+
+### 2. 樣本太少
+看到 5% vs 6%「B 贏」、其實是隨機。
+
+### 3. 多重比較
+測 20 個指標、5% 機率是巧合。
+→ 用 Bonferroni 修正：alpha 0.05 / 20 = 0.0025
+
+### 4. Novelty effect
+新東西短期吸引、長期沒差。
+→ 跑久一點。
+
+### 5. Selection bias
+分組不公平（A 都給老用戶、B 都給新用戶）。
+
+## 工具
+- **Optimizely**：商業 A/B test 平台
+- **VWO**：類似
+- **PostHog**：開源、含 A/B
+- **GrowthBook**：開源
+- **Google Optimize**：免費但已停（2023）
+- 自己寫：feature flag + analytics
+
+## 進階：Bayesian A/B test
+不用 p-value、用機率：
+「B 比 A 好的機率是 87%」更直觀。
+工具：**PyMC** / **Bayesian-AB**
+
+## 心法
+- A/B test 不是「找最大值」、是「降低決策風險」
+- 沒辦法 A/B 的事：品牌、政策、長期戰略
+- 80% 的 A/B test 結果是 flat（沒差）
+- 接受 flat = 把資源放真正有效的事

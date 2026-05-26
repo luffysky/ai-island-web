@@ -1,0 +1,133 @@
+## 為什麼 Polars
+- ⚡ Rust 底層、快 pandas 5-10 倍
+- 💪 多核 CPU 自動並行
+- 🎯 Lazy evaluation（query optimization）
+- 📦 API 現代（type-safe）
+- 🔄 跟 pandas / NumPy 互通
+
+## 安裝
+```bash
+pip install polars
+```
+
+## 基本
+```python
+import polars as pl
+
+df = pl.read_csv("data.csv")
+df.head()
+df.shape
+df.schema
+```
+
+## 操作（比 pandas 簡潔）
+```python
+# Filter
+df.filter(pl.col("age") >= 18)
+
+# Select
+df.select(["name", "age", "email"])
+
+# With column（加新欄）
+df.with_columns(
+    (pl.col("price") * pl.col("qty")).alias("total")
+)
+
+# GroupBy
+df.group_by("country").agg([
+    pl.col("amount").sum().alias("total"),
+    pl.col("amount").mean().alias("avg"),
+    pl.count().alias("orders")
+])
+
+# Sort
+df.sort("amount", descending=True)
+```
+
+## Lazy（query optimization）
+```python
+result = (
+    pl.scan_csv("huge.csv")              # 不馬上讀
+    .filter(pl.col("country") == "TW")    # 只在 query 計劃內
+    .group_by("category")
+    .agg(pl.col("amount").sum())
+    .sort("amount", descending=True)
+    .collect()                            # ← 這時才執行、優化過
+)
+```
+
+## pandas → Polars
+```python
+import pandas as pd
+import polars as pl
+
+# pandas df → Polars
+df_pl = pl.from_pandas(df_pd)
+
+# Polars → pandas
+df_pd = df_pl.to_pandas()
+```
+
+## Polars vs pandas 對比
+
+| 操作 | pandas | Polars |
+|---|---|---|
+| 讀 1GB CSV | 8s | 1s |
+| GroupBy + sum | 5s | 0.5s |
+| JOIN 100M rows | OOM | 30s |
+| 語法 | df[df["a"]>5] | df.filter(pl.col("a")>5) |
+| 多核 | 不支援 | 自動 |
+
+## 範例
+```python
+df = pl.read_parquet("orders.parquet")
+
+# 各國月銷售 top 5
+result = (
+    df.filter(pl.col("year") == 2026)
+    .group_by(["country", "month"])
+    .agg([
+        pl.col("amount").sum().alias("revenue"),
+        pl.col("order_id").count().alias("orders"),
+    ])
+    .sort("revenue", descending=True)
+    .group_by("country")
+    .head(5)
+)
+```
+
+## Time series
+```python
+df = pl.read_csv("sales.csv")
+df = df.with_columns(pl.col("date").str.to_date())
+
+# Resample
+df.group_by_dynamic(
+    "date", every="1mo", closed="left"
+).agg(pl.col("sales").sum())
+
+# Rolling
+df.with_columns(
+    pl.col("sales").rolling_mean(7).alias("ma7")
+)
+```
+
+## 何時用 Polars
+- ✅ 中型資料（1GB - 100GB）
+- ✅ 速度敏感的 ETL
+- ✅ 新專案
+- ✅ TS / Rust 工程師（API 更友善）
+
+## 何時還是 pandas
+- ✅ 生態整合（sklearn / statsmodels）
+- ✅ 教學 / 入門
+- ✅ 老 codebase
+
+## 何時用 Spark
+- > 100GB
+- 真正需要集群
+
+## 心法
+- pandas → Polars 學習曲線 1-2 天
+- API 設計更好、寫起來爽
+- 跟 pandas 並存沒問題
