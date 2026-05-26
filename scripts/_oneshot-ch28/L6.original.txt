@@ -1,0 +1,83 @@
+### Proxy 類型
+
+
+- **免費 Proxy**：不穩、慢、可能被監聽—別用！
+- **Datacenter Proxy**：機房 IP、便宜（$1-5/月/IP）、易被識破
+- **Residential Proxy**：真實住宅 IP、貴（$10-15/GB）、最難識別
+- **Mobile Proxy**：4G IP、最貴（$30-100/月）、最難封
+
+
+### 主流付費服務
+
+
+- **Bright Data**（前 Luminati）：全球第一、超貴超強
+- **Smartproxy**：中等價位、品質好
+- **Oxylabs**：企業級
+- **ScraperAPI**：簡單包好的 API、$49/月起
+- **Zyte（Scrapy Cloud）**：Scrapy 親兒子
+
+
+### 用法（Requests）
+
+```python
+proxies = {
+    'http': 'http://user:pass@proxy.smartproxy.com:7000',
+    'https': 'http://user:pass@proxy.smartproxy.com:7000',
+}
+res = requests.get('https://example.com', proxies=proxies)
+print(res.json()['origin'])  # 看到 Proxy 的 IP
+```
+
+
+### IP 池輪詢
+
+```python
+import random
+import requests
+
+PROXY_POOL = [
+    'http://proxy1.io:8080',
+    'http://proxy2.io:8080',
+    'http://proxy3.io:8080',
+]
+
+def get_with_proxy(url):
+    for _ in range(3):  # 試 3 次
+        proxy = random.choice(PROXY_POOL)
+        try:
+            res = requests.get(
+                url,
+                proxies={'https': proxy},
+                timeout=10
+            )
+            if res.status_code == 200:
+                return res
+        except:
+            continue
+    return None
+```
+
+
+### 免費 IP 池（小規模測試用）
+
+```python
+# 自己抓免費 proxy 清單（注意：不穩）
+def get_free_proxies():
+    res = requests.get('https://www.free-proxy-list.net')
+    soup = BeautifulSoup(res.text, 'lxml')
+    proxies = []
+    for row in soup.select('table tbody tr'):
+        cols = row.select('td')
+        if cols[6].text == 'yes':  # https?
+            proxies.append(f'http://{cols[0].text}:{cols[1].text}')
+    return proxies
+```
+
+
+### 2026 推薦
+
+
+- 個人 / 學習：**免費 proxy + sleep** 夠用
+- 小型專案：**ScraperAPI**（$49/月、最簡單）
+- 中大型：**Smartproxy / Bright Data residential**
+- 商業爬蟲：**Zyte + Scrapy Cloud** 一條龍

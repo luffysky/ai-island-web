@@ -1,0 +1,46 @@
+## requests
+```python
+import requests
+
+headers = {"User-Agent": "Mozilla/5.0 ..."}
+res = requests.get("https://example.com", headers=headers, timeout=10)
+print(res.status_code, res.text)
+
+# Session（保留 cookie）
+session = requests.Session()
+session.get("https://example.com/login")
+session.post("...", data={...})
+```
+
+## BeautifulSoup
+```python
+from bs4 import BeautifulSoup
+soup = BeautifulSoup(res.text, "lxml")
+
+soup.select("div.product")
+soup.select_one("h1.title")
+soup.select("a[href^='/product/']")
+
+title = soup.select_one("h1").get_text(strip=True)
+link = soup.select_one("a")["href"]
+all_links = [a["href"] for a in soup.select("a[href]")]
+```
+
+## 完整範例
+```python
+def scrape_products(page):
+    url = f"https://example.com/products?page={page}"
+    res = requests.get(url, headers=HEADERS, timeout=10)
+    soup = BeautifulSoup(res.text, "lxml")
+    
+    return [{
+        "name": card.select_one(".name").get_text(strip=True),
+        "price": card.select_one(".price").get_text(strip=True),
+        "link": card.select_one("a")["href"]
+    } for card in soup.select("div.product-card")]
+
+all_products = []
+for p in range(1, 11):
+    all_products.extend(scrape_products(p))
+    time.sleep(1)
+```

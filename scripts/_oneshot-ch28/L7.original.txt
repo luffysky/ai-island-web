@@ -1,0 +1,97 @@
+```python
+import requests
+import pandas as pd
+import time, random
+from datetime import datetime
+
+HEADERS = {
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'
+                   ' AppleWebKit/537.36 (KHTML, like Gecko)'
+                   ' Chrome/120.0.0.0 Safari/537.36'
+}
+
+def scrape_pchome(keyword, max_pages=5):
+    # PChome 商品搜尋爬蟲（用內部 API、最穩）
+    all_items = []
+
+    for page in range(1, max_pages + 1):
+        # PChome 用 JSON API、不用解 HTML
+        url = f'https://ecshweb.pchome.com.tw/search/v3.3/all/results'
+        params = {
+            'q': keyword,
+            'page': page,
+            'sort': 'sale/dc',  # 銷量排序
+        }
+
+        try:
+            res = requests.get(url, headers=HEADERS, params=params, timeout=15)
+            res.raise_for_status()
+            data = res.json()
+        except Exception as e:
+            print(f'第 {page} 頁失敗：{e}')
+            continue
+
+        items = data.get('prods', [])
+        if not items:
+            break
+
+        for item in items:
+            all_items.append({
+                'id': item.get('Id'),
+                'name': item.get('name'),
+                'price': item.get('price'),
+                'original_price': item.get('originPrice'),
+                'brand': item.get('brand'),
+                'category': item.get('cateName'),
+                'image': f'https://a.ecimg.tw/{item.get("picS")}',
+                'url': f'https://24h.pchome.com.tw/prod/{item.get("Id")}',
+                'scraped_at': datetime.now().isoformat(),
+            })
+
+        print(f'✓ 第 {page} 頁、累計 {len(all_items)} 筆')
+        time.sleep(random.uniform(1, 2))  # 禮貌等待
+
+    return all_items
+
+if __name__ == '__main__':
+    items = scrape_pchome('iPhone 17', max_pages=10)
+
+    df = pd.DataFrame(items)
+    print(f'總共爬到 {len(df)} 筆商品')
+
+    # 分析
+    print(f'平均價格：NT$ {df["price"].mean():,.0f}')
+    print(f'最低價：NT$ {df["price"].min():,.0f}')
+    print(f'最高價：NT$ {df["price"].max():,.0f}')
+
+    # 儲存
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M')
+    df.to_csv(f'pchome_{timestamp}.csv', index=False,
+              encoding='utf-8-sig')
+    df.to_excel(f'pchome_{timestamp}.xlsx', index=False)
+    print('✓ 已儲存 CSV + Excel')
+```
+
+
+### 進階：定時跑（cron）
+
+```bash
+# Linux crontab：每天早上 8 點跑
+0 8 * * * /usr/bin/python3 /path/to/scraper.py
+
+# Windows Task Scheduler / Mac launchd 同理
+```
+
+
+### 進階：監控價格變化、發 LINE 通知
+
+```python
+def check_price_drops(today_df, yesterday_df):
+    # 找出降價商品
+    merged = today_df.merge(yesterday_df, on='id', suffixes=('_today', '_yesterday'))
+    drops = merged[merged['price_today'] < merged['price_yesterday']]
+
+    for _, row in drops.iterrows():
+        msg = f'📉 {row["name_today"]} 從 NT$ {row["price_yesterday"]} 降到 NT$ {row["price_today"]}'
+        send_line_notify(msg)
+```
