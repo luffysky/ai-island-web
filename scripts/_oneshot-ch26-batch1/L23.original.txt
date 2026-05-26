@@ -1,0 +1,159 @@
+不同資料用不同 NN 架構—圖用 CNN、序列用 RNN、語言用 Transformer。
+
+  
+### CNN：圖片之王
+
+```text
+為什麼圖片不用普通 NN？
+- 224x224 RGB = 150528 input
+- 太多、學不到、易過擬合
+
+CNN：
+- 卷積層（Conv）：學 local pattern（邊緣 / 紋理）
+- Pooling：降維
+- 全連接：分類
+
+[224x224x3] → Conv → Pool → Conv → Pool → FC → output
+
+PyTorch：
+class CNN(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.conv1 = nn.Conv2d(3, 32, kernel_size=3, padding=1)
+        self.pool = nn.MaxPool2d(2)
+        self.conv2 = nn.Conv2d(32, 64, kernel_size=3, padding=1)
+        self.fc1 = nn.Linear(64 * 56 * 56, 128)
+        self.fc2 = nn.Linear(128, 10)
+        self.relu = nn.ReLU()
+    
+    def forward(self, x):
+        x = self.pool(self.relu(self.conv1(x)))
+        x = self.pool(self.relu(self.conv2(x)))
+        x = x.view(x.size(0), -1)
+        x = self.relu(self.fc1(x))
+        x = self.fc2(x)
+        return x
+
+實戰：用預訓練
+from torchvision.models import resnet50
+model = resnet50(weights="DEFAULT")
+model.fc = nn.Linear(2048, 10)
+
+主流 CNN：
+- ResNet（業界 default）
+- EfficientNet
+- ConvNeXt（2022+）
+- ViT（Vision Transformer）
+```
+
+  
+### RNN：序列資料
+
+```text
+處理「有時間順序」：
+- 文字、股價、語音
+
+特色：
+- 有「記憶」（hidden state）
+- 上一個 input 影響下一個
+
+問題：vanilla RNN 學不到長依賴
+解：
+- LSTM（Long Short-Term Memory）
+- GRU（Gated Recurrent Unit）
+
+class LSTM(nn.Module):
+    def __init__(self, input_size, hidden_size, num_layers, output_size):
+        super().__init__()
+        self.lstm = nn.LSTM(input_size, hidden_size, num_layers, batch_first=True)
+        self.fc = nn.Linear(hidden_size, output_size)
+    
+    def forward(self, x):
+        out, _ = self.lstm(x)
+        out = self.fc(out[:, -1, :])
+        return out
+
+2026 現實：
+- RNN / LSTM 大幅被 Transformer 取代
+- 仍有用：低資源、序列超長、即時推論
+```
+
+  
+### Transformer：2017 革命
+
+```text
+"Attention Is All You Need" (2017)
+取代 RNN、開啟現代 AI 時代
+
+核心：Attention
+「處理每個 token 時、看全部 token 學關係」
+
+例：「The cat sat on the mat because it was tired」
+- it ↔ cat：0.85
+- it ↔ mat：0.05
+
+Self-Attention：
+- Q（Query）：「我要找什麼？」
+- K（Key）：「我有什麼？」
+- V（Value）：實際內容
+- attention = softmax(QK^T / sqrt(d)) * V
+
+Transformer 完整：
+- Multi-Head Attention（多個 attention 平行）
+- Feed-Forward
+- Layer Norm + Residual
+
+2026 應用：
+- GPT、Claude、Gemini（純 decoder）
+- BERT（純 encoder）
+- T5（encoder-decoder）
+- ViT（圖片）
+- Whisper（語音）
+- AlphaFold（蛋白質）
+
+→ 通吃所有任務
+```
+
+  
+### 2026 主流架構
+
+  
+| 任務 | 主流 | 例子 |
+| --- | --- | --- |
+| 圖片分類 | ViT / ConvNeXt | ImageNet |
+| 物件偵測 | DETR / YOLO | 自駕 |
+| 圖片生成 | Diffusion | Midjourney |
+| NLP 理解 | BERT / RoBERTa | 分類、NER |
+| NLP 生成 | GPT / Claude | ChatGPT |
+| 語音識別 | Whisper | 字幕 |
+
+  
+### 新手該學哪
+
+```text
+路徑：
+1. PyTorch 基礎
+2. CNN（圖片分類最直觀）
+3. LSTM（序列、感受 RNN）
+4. Transformer（從用預訓練開始）
+
+2026 indie 實戰：
+- 99% 直接用預訓練 model（HF）
+- 不從零訓練
+- Fine-tune 已有 model
+- 或 prompt LLM 解問題
+```
+
+  
+    **☕ 用人話講**
+    
+3 架構記憶：(1) **CNN**—圖片（local pattern） (2) **RNN/LSTM**—序列（有記憶） (3) **Transformer**—2017 革命、通吃所有任務。**indie 不用實作**—會用 HF 預訓練 model 就行。
+
+  
+
+  
+    
+      🛠️
+      工具推薦
+    
+    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。

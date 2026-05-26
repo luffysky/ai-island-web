@@ -1,0 +1,156 @@
+Pydantic 是 2026 Python **頭號驗證 library**—FastAPI / LangChain / Hugging Face / OpenAI SDK 全用。
+
+  
+### 為什麼用 Pydantic
+
+```text
+# 沒驗證
+def create_user(data: dict):
+    name = data["name"]            # KeyError 風險
+    age = int(data["age"])         # ValueError 風險
+    email = data["email"]
+    # 不知道 email 格式對不對
+
+# 用 Pydantic
+from pydantic import BaseModel, EmailStr
+
+class User(BaseModel):
+    name: str
+    age: int
+    email: EmailStr
+
+user = User(name="Alice", age=30, email="alice@x.com")
+# 自動驗證型別 + email 格式
+# 錯了 raise ValidationError
+```
+
+  
+### 基本用法
+
+```text
+from pydantic import BaseModel
+from typing import Optional
+
+class Product(BaseModel):
+    name: str
+    price: float
+    stock: int = 0                  # 預設值
+    description: Optional[str] = None
+    tags: list[str] = []
+
+# 建立
+p = Product(name="iPhone", price=999.99, stock=10)
+
+# 從 dict
+data = {"name": "iPhone", "price": "999.99"}
+p = Product(**data)
+# Pydantic 會自動轉 string "999.99" → float 999.99
+
+# 自動驗證
+Product(name="iPhone", price="not a number")
+# ValidationError
+```
+
+  
+### 進階型別 + 驗證
+
+```text
+from pydantic import BaseModel, EmailStr, HttpUrl, conint, constr
+from datetime import datetime
+
+class User(BaseModel):
+    # 範圍限制
+    age: conint(ge=0, le=120)           # 0-120
+    
+    # 字串限制
+    username: constr(min_length=3, max_length=20)
+    
+    # Email 格式
+    email: EmailStr
+    
+    # URL 格式
+    website: HttpUrl
+    
+    # 時間
+    created_at: datetime
+    
+    # 列表
+    tags: list[str] = []
+    
+    # 巢狀
+    address: "Address"
+
+class Address(BaseModel):
+    street: str
+    city: str
+    country: str
+
+# 自動驗證 email、url、字串長度、整數範圍...
+```
+
+  
+### 自訂驗證
+
+```text
+from pydantic import BaseModel, field_validator, model_validator
+
+class User(BaseModel):
+    username: str
+    password: str
+    password_confirm: str
+    age: int
+    
+    @field_validator("username")
+    @classmethod
+    def username_alphanumeric(cls, v):
+        if not v.isalnum():
+            raise ValueError("使用者名稱必須是字母 + 數字")
+        return v
+    
+    @field_validator("age")
+    @classmethod
+    def age_must_be_positive(cls, v):
+        if v  str:
+        return f"{self.first_name} {self.last_name}"
+
+# Generic
+from typing import Generic, TypeVar
+T = TypeVar("T")
+
+class Response(BaseModel, Generic[T]):
+    data: T
+    message: str = "success"
+
+# 用
+Response[User](data=user)
+Response[list[User]](data=[user1, user2])
+
+# Discriminated Union（多型）
+from typing import Literal
+from pydantic import Field
+
+class Cat(BaseModel):
+    pet_type: Literal["cat"]
+    meow: str
+
+class Dog(BaseModel):
+    pet_type: Literal["dog"]
+    bark: str
+
+class PetOwner(BaseModel):
+    pet: Cat | Dog = Field(discriminator="pet_type")
+```
+
+  
+    **☕ 用人話講**
+    
+Pydantic = Python **資料驗證 + 型別轉換** 的瑞士刀。**2026 必學**：(1) FastAPI 內建 (2) LangChain / OpenAI / Anthropic SDK 用 (3) 替代手寫驗證。**用法**：定義 BaseModel + type hint = 自動驗證、自動 JSON 序列化、自動文件。
+
+  
+
+  
+    
+      🎯
+      面試考點
+    
+    台灣科技公司面試 90% 會問「Python」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。

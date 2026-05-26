@@ -1,0 +1,274 @@
+Hugging Face = 2026 AI 的 GitHub—1 行 code 用世界最強 model。
+
+  
+### HF 是什麼
+
+```text
+Hugging Face Hub：
+- 100 萬+ 預訓練 model
+- 100 萬+ dataset
+- 大多免費
+
+包括：
+- Llama 4（Meta）
+- Gemma（Google）
+- Whisper（OpenAI 語音）
+- Stable Diffusion
+- BERT、RoBERTa
+- 中文 model（Qwen、Yi、Baichuan）
+
+工具：
+- transformers（最主要）
+- datasets
+- tokenizers
+- accelerate（分散式）
+- peft（高效 fine-tune）
+
+裝：
+$ uv add transformers torch
+$ uv add datasets accelerate
+```
+
+  
+### Pipeline：3 行用 AI
+
+```text
+from transformers import pipeline
+
+# 情感分析
+classifier = pipeline("sentiment-analysis")
+result = classifier("I love this product!")
+# [{'label': 'POSITIVE', 'score': 0.9998}]
+
+# 翻譯
+translator = pipeline("translation_en_to_zh")
+translator("Hello, how are you?")
+
+# 摘要
+summarizer = pipeline("summarization")
+summary = summarizer(long_text, max_length=50)
+
+# 問答
+qa = pipeline("question-answering")
+qa(question="Who created Python?",
+   context="Python was created by Guido van Rossum in 1991.")
+
+# 文字生成
+generator = pipeline("text-generation", model="gpt2")
+generator("The future of AI is", max_length=50)
+
+# Whisper 語音轉文字
+transcriber = pipeline("automatic-speech-recognition",
+                       model="openai/whisper-base")
+transcriber("audio.mp3")
+
+# 圖像分類
+classifier = pipeline("image-classification")
+classifier("dog.jpg")
+
+# Stable Diffusion
+from diffusers import StableDiffusionPipeline
+pipe = StableDiffusionPipeline.from_pretrained(
+    "runwayml/stable-diffusion-v1-5"
+)
+image = pipe("a cat astronaut in space").images[0]
+image.save("cat.png")
+```
+
+  
+### 明確 model 控制
+
+```text
+# 指定 model
+classifier = pipeline(
+    "sentiment-analysis",
+    model="uer/roberta-base-finetuned-jd-binary-chinese"
+)
+result = classifier("這產品很爛")
+
+# 找 model：https://huggingface.co/models
+# 篩選 task / language / size
+
+# 中文摘要
+summarizer = pipeline(
+    "summarization",
+    model="csebuetnlp/mT5_multilingual_XLSum"
+)
+```
+
+  
+### 底層 API
+
+```text
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+import torch
+
+model_name = "bert-base-uncased"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForSequenceClassification.from_pretrained(model_name)
+
+# Tokenize
+text = "I love this product"
+inputs = tokenizer(text, return_tensors="pt",
+                   padding=True, truncation=True)
+
+# 推論
+with torch.no_grad():
+    outputs = model(**inputs)
+    logits = outputs.logits
+    probs = torch.softmax(logits, dim=-1)
+    predicted = torch.argmax(probs, dim=-1)
+
+# 對應 task：
+# AutoModelForSequenceClassification（分類）
+# AutoModelForCausalLM（生成）
+# AutoModelForQuestionAnswering（QA）
+# AutoModelForTokenClassification（NER）
+```
+
+  
+### Fine-tune：客製化
+
+```text
+from transformers import (
+    AutoTokenizer, AutoModelForSequenceClassification,
+    Trainer, TrainingArguments
+)
+from datasets import Dataset
+
+# 1. 資料
+data = {
+    "text": ["這產品很棒", "服務很差", "普通", "超讚", "爛透"],
+    "label": [1, 0, 1, 1, 0]
+}
+dataset = Dataset.from_dict(data)
+dataset = dataset.train_test_split(test_size=0.2)
+
+# 2. Tokenize
+model_name = "bert-base-chinese"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+def tokenize(batch):
+    return tokenizer(batch["text"], truncation=True, padding=True)
+
+tokenized = dataset.map(tokenize, batched=True)
+
+# 3. Model
+model = AutoModelForSequenceClassification.from_pretrained(
+    model_name, num_labels=2
+)
+
+# 4. Training args
+training_args = TrainingArguments(
+    output_dir="./results",
+    num_train_epochs=3,
+    per_device_train_batch_size=16,
+    learning_rate=2e-5,
+    eval_strategy="epoch",
+    save_strategy="epoch",
+    load_best_model_at_end=True,
+)
+
+# 5. Trainer
+trainer = Trainer(
+    model=model,
+    args=training_args,
+    train_dataset=tokenized["train"],
+    eval_dataset=tokenized["test"],
+    tokenizer=tokenizer,
+)
+trainer.train()
+
+# 6. 存
+trainer.save_model("./my-model")
+tokenizer.save_pretrained("./my-model")
+```
+
+  
+### LoRA / PEFT（高效 fine-tune）
+
+```text
+# 完整 fine-tune Llama 70B = 100GB GPU
+# LoRA：只 fine-tune 0.1% 參數、結果幾乎一樣
+
+from peft import LoraConfig, get_peft_model
+
+model = AutoModelForCausalLM.from_pretrained("meta-llama/Llama-3-8B")
+
+lora_config = LoraConfig(
+    r=8,
+    lora_alpha=16,
+    target_modules=["q_proj", "v_proj"],
+    lora_dropout=0.05,
+    bias="none",
+    task_type="CAUSAL_LM"
+)
+
+model = get_peft_model(model, lora_config)
+model.print_trainable_parameters()
+# trainable params: 4M / 8B（0.05%）
+
+# 2026 主流：LoRA + QLoRA（量化 + LoRA）
+# Single GPU fine-tune Llama 70B
+```
+
+  
+### 推 HF Hub
+
+```text
+from huggingface_hub import login
+login()    # 輸入 HF token
+
+model.push_to_hub("your-username/my-model")
+tokenizer.push_to_hub("your-username/my-model")
+
+# 別人能用
+from transformers import AutoModel
+model = AutoModel.from_pretrained("your-username/my-model")
+```
+
+  
+### 2026 indie HF 應用
+
+```text
+1. SaaS 內建 AI feature
+   - pipeline 1 行加 AI
+
+2. 自己 fine-tune
+   - 公司資料 fine-tune
+   - 不送 OpenAI / Anthropic（隱私）
+
+3. Whisper 語音
+   - 會議轉錄
+   - YouTube 字幕
+
+4. Stable Diffusion
+   - 圖像生成
+   - 不付 Midjourney
+
+5. 自架 LLM（Llama / Mistral）
+   - 取代 OpenAI / Anthropic
+   - 隱私 + 成本
+
+Library：
+- transformers
+- diffusers（圖）
+- accelerate
+- peft（LoRA）
+- bitsandbytes（量化）
+- vllm（serving）
+```
+
+  
+    **🚀 進階技巧**
+    
+2026 AI 工程師核心 stack：**PyTorch + Transformers + HF Hub + PEFT + Datasets**。會這 5 個 = 能做 90% modern AI 工作。**indie 必學**：HF pipeline（5 分鐘加 AI）+ Whisper + Stable Diffusion。**3 個月內**能 fine-tune 自己 model + ship。
+
+  
+
+  
+    
+      ⚠️
+      新手常見錯誤
+    
+    新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。

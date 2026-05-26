@@ -1,0 +1,208 @@
+FastAPI 是 2026 Python 後端 #1 選擇—超快、自動文件、type-safe。Indie SaaS 首選。
+
+  
+### 為什麼 FastAPI
+
+```text
+2026 Python 後端 ranking：
+1. FastAPI（modern、最快）
+2. Django（大型、batteries-included）
+3. Flask（傳統、簡單）
+4. Litestar（FastAPI 替代）
+
+FastAPI 賣點：
+- 速度 = Node.js / Go 等級
+- 自動 OpenAPI / Swagger 文件
+- 內建 Pydantic 驗證
+- async 原生支援
+- Type hint 全用
+
+公司：
+- Uber
+- Microsoft
+- Netflix（部分）
+- 大量 indie SaaS
+```
+
+  
+### 第一個 API
+
+```text
+# 1. 裝
+$ uv add fastapi uvicorn
+
+# 2. main.py
+from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/")
+def hello():
+    return {"message": "Hello, World"}
+
+@app.get("/users/{user_id}")
+def get_user(user_id: int):
+    return {"user_id": user_id, "name": "Alice"}
+
+# 3. 跑
+$ uv run uvicorn main:app --reload
+
+INFO:     Uvicorn running on http://127.0.0.1:8000
+
+# 4. 測
+$ curl http://localhost:8000
+{"message":"Hello, World"}
+
+$ curl http://localhost:8000/users/42
+{"user_id":42,"name":"Alice"}
+
+# 5. 自動文件
+# 訪問 http://localhost:8000/docs
+# Swagger UI 自動生成、能互動測試
+```
+
+  
+### 路徑參數 / 查詢參數 / Body
+
+```text
+from fastapi import FastAPI
+from pydantic import BaseModel
+
+app = FastAPI()
+
+# 路徑參數
+@app.get("/users/{user_id}")
+def get_user(user_id: int):
+    return {"user_id": user_id}
+
+# 查詢參數
+@app.get("/search")
+def search(q: str, limit: int = 10, offset: int = 0):
+    return {"q": q, "limit": limit, "offset": offset}
+# /search?q=python&limit=20
+
+# 路徑 + 查詢
+@app.get("/users/{user_id}/orders")
+def get_orders(user_id: int, status: str = "all"):
+    return {"user_id": user_id, "status": status}
+
+# Body（POST）
+class UserCreate(BaseModel):
+    name: str
+    age: int
+    email: str
+
+@app.post("/users")
+def create_user(user: UserCreate):
+    return {"created": user}
+
+# 自動驗證：
+# {"name": "Alice", "age": 30, "email": "..."} → OK
+# {"name": "Alice"} → 422 Unprocessable
+# {"name": "Alice", "age": "thirty"} → 422
+```
+
+  
+### ASGI vs WSGI
+
+```text
+WSGI（傳統）：
+- Django / Flask
+- 同步、1 request 1 thread
+- 高並發痛苦
+
+ASGI（modern）：
+- FastAPI / Starlette / Sanic
+- async 原生
+- WebSocket 支援
+- 高並發強
+
+2026 主流 ASGI server：
+- Uvicorn（最快、純 ASGI）
+- Hypercorn
+- Daphne（Django Channels）
+
+production：
+$ uvicorn main:app --host 0.0.0.0 --port 8000 --workers 4
+
+# 4 個 worker process
+```
+
+  
+### 路由組織
+
+```text
+# 大型 app 用 router
+# routers/users.py
+from fastapi import APIRouter
+
+router = APIRouter(prefix="/users", tags=["users"])
+
+@router.get("/")
+def list_users():
+    return []
+
+@router.get("/{user_id}")
+def get_user(user_id: int):
+    return {"user_id": user_id}
+
+@router.post("/")
+def create_user(...):
+    ...
+
+# main.py
+from fastapi import FastAPI
+from routers import users, products
+
+app = FastAPI()
+app.include_router(users.router)
+app.include_router(products.router)
+```
+
+  
+### HTTP method + status code
+
+```text
+from fastapi import HTTPException, status
+
+@app.get("/users")
+def list_users():
+    return []
+
+@app.post("/users", status_code=201)
+def create_user(user: UserCreate):
+    return {"id": 1, **user.dict()}
+
+@app.patch("/users/{user_id}")
+def update_user(user_id: int, user: UserUpdate):
+    ...
+
+@app.delete("/users/{user_id}", status_code=204)
+def delete_user(user_id: int):
+    ...
+
+# 自訂 error
+@app.get("/users/{user_id}")
+def get_user(user_id: int):
+    user = db.find(user_id)
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail=f"User {user_id} not found"
+        )
+    return user
+```
+
+  
+    **☕ 用人話講**
+    
+FastAPI 30 分鐘上手：(1) 裝 fastapi + uvicorn (2) 寫 `@app.get / @app.post` (3) 用 Pydantic class 當 body (4) `uvicorn main:app --reload`。**自動文件**是賣點—`/docs` 直接看 + 測試。**2026 indie API 首選**—寫得快、跑得快、文件完整。
+
+  
+
+  
+    
+      💼
+      接案小知識
+    
+    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「Python」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。

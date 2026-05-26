@@ -1,0 +1,179 @@
+PyTorch 是 2026 DL 主流—研究界 80%、Hugging Face 全用、學術論文 90%。
+
+  
+### 裝 + Tensor
+
+```text
+$ uv add torch torchvision
+
+import torch
+
+# 從 list
+x = torch.tensor([1, 2, 3, 4])
+print(x.shape)      # torch.Size([4])
+print(x.dtype)      # torch.int64
+
+# 從 NumPy
+import numpy as np
+x = torch.from_numpy(np.array([1, 2, 3]))
+
+# 特殊建
+torch.zeros(3, 4)
+torch.ones(2, 3)
+torch.randn(3, 3)        # 標準常態
+
+# 運算（同 NumPy）
+a = torch.tensor([1, 2, 3])
+b = torch.tensor([4, 5, 6])
+a + b
+a @ b        # 32
+a.sum()
+a.mean()
+
+# Reshape
+x.view(6, 4)
+x.reshape(-1, 4)
+
+# GPU
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# Mac M1+：mps
+device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
+x = x.to(device)
+```
+
+  
+### Autograd：自動微分
+
+```text
+x = torch.tensor([2.0], requires_grad=True)
+y = x ** 2 + 3 * x + 1
+
+y.backward()
+print(x.grad)   # tensor([7.])
+# dy/dx = 2x + 3 = 7
+
+# 神經網路靠這個更新 weight
+```
+
+  
+### 第一個 NN：iris 分類
+
+```text
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+
+# 1. 資料
+iris = load_iris()
+X = StandardScaler().fit_transform(iris.data)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, iris.target, test_size=0.2, random_state=42
+)
+
+X_train = torch.FloatTensor(X_train)
+X_test = torch.FloatTensor(X_test)
+y_train = torch.LongTensor(y_train)
+y_test = torch.LongTensor(y_test)
+
+# 2. Model
+class IrisNet(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.fc1 = nn.Linear(4, 16)
+        self.fc2 = nn.Linear(16, 8)
+        self.fc3 = nn.Linear(8, 3)
+        self.relu = nn.ReLU()
+    
+    def forward(self, x):
+        x = self.relu(self.fc1(x))
+        x = self.relu(self.fc2(x))
+        x = self.fc3(x)
+        return x
+
+model = IrisNet()
+
+# 3. Loss + Optimizer
+criterion = nn.CrossEntropyLoss()
+optimizer = optim.Adam(model.parameters(), lr=0.01)
+
+# 4. 訓練
+for epoch in range(100):
+    outputs = model(X_train)
+    loss = criterion(outputs, y_train)
+    
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+    
+    if (epoch + 1) % 10 == 0:
+        print(f"Epoch {epoch+1}, Loss: {loss.item():.4f}")
+
+# 5. 評估
+model.eval()
+with torch.no_grad():
+    outputs = model(X_test)
+    _, predicted = torch.max(outputs, 1)
+    accuracy = (predicted == y_test).float().mean()
+    print(f"Test Accuracy: {accuracy:.2%}")
+```
+
+  
+### DataLoader（處理 batch）
+
+```text
+from torch.utils.data import Dataset, DataLoader
+
+class IrisDataset(Dataset):
+    def __init__(self, X, y):
+        self.X = torch.FloatTensor(X)
+        self.y = torch.LongTensor(y)
+    
+    def __len__(self):
+        return len(self.X)
+    
+    def __getitem__(self, idx):
+        return self.X[idx], self.y[idx]
+
+train_dataset = IrisDataset(X_train, y_train)
+train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+
+# 訓練
+for epoch in range(100):
+    for batch_X, batch_y in train_loader:
+        outputs = model(batch_X)
+        loss = criterion(outputs, batch_y)
+        
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+```
+
+  
+### 存 + 載 model
+
+```text
+# 存 state_dict（推薦）
+torch.save(model.state_dict(), "model.pth")
+
+# 載
+model = IrisNet()
+model.load_state_dict(torch.load("model.pth"))
+model.eval()
+```
+
+  
+    **☕ 用人話講**
+    
+PyTorch 5 核心：(1) **Tensor** (2) **nn.Module**（定義 model） (3) **Loss** (4) **Optimizer** (5) **Training loop**（forward + backward + step）。學熟 = 解鎖整個 DL 世界。
+
+  
+
+  
+    
+      🚀
+      2026 趨勢
+    
+    這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。

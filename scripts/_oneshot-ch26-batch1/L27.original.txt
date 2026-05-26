@@ -1,0 +1,211 @@
+FastAPI 兩大強項：async（高並發）+ DI（解耦）。
+
+  
+### async 路由
+
+```text
+# 同步（阻塞）
+@app.get("/users/{id}")
+def get_user(id: int):
+    user = db.query(User).filter(User.id == id).first()   # 阻塞
+    return user
+
+# async（非阻塞）
+@app.get("/users/{id}")
+async def get_user(id: int):
+    user = await db.fetch_one(query)    # 不阻塞
+    return user
+
+# 用 httpx async
+import httpx
+
+@app.get("/proxy/{url}")
+async def proxy(url: str):
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url)
+    return response.json()
+
+# 多個 async 並行
+import asyncio
+
+@app.get("/dashboard")
+async def dashboard():
+    user, orders, notifications = await asyncio.gather(
+        fetch_user(),
+        fetch_orders(),
+        fetch_notifications()
+    )
+    return {
+        "user": user,
+        "orders": orders,
+        "notifications": notifications
+    }
+
+# 三個 API 同時打、不一個個等
+```
+
+  
+### 什麼時候用 async
+
+```text
+該用：
+- I/O 密集（DB、外部 API、檔案）
+- 高並發 web server
+- WebSocket / SSE
+
+不用：
+- CPU 密集（純計算）
+- 簡單 script
+
+混合：
+async def endpoint():
+    # I/O 用 async
+    data = await fetch_from_db()
+    
+    # CPU 密集丟 thread
+    result = await asyncio.to_thread(
+        heavy_computation, data
+    )
+    return result
+```
+
+  
+### Dependency Injection
+
+```text
+# 場景：每個 endpoint 都要 DB session
+
+# 沒 DI（重複）
+@app.get("/users")
+def list_users():
+    db = SessionLocal()
+    try:
+        return db.query(User).all()
+    finally:
+        db.close()
+
+@app.get("/products")
+def list_products():
+    db = SessionLocal()    # 一樣的 code 重複
+    try:
+        return db.query(Product).all()
+    finally:
+        db.close()
+
+# 用 Depends
+from fastapi import Depends
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+@app.get("/users")
+def list_users(db: Session = Depends(get_db)):
+    return db.query(User).all()
+
+@app.get("/products")
+def list_products(db: Session = Depends(get_db)):
+    return db.query(Product).all()
+
+# DI 自動處理 setup / teardown
+```
+
+  
+### Auth Dependency（最常見）
+
+```text
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+def get_current_user(token: str = Depends(oauth2_scheme)):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        user_id = payload.get("sub")
+    except JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token"
+        )
+    
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404)
+    return user
+
+@app.get("/me")
+def read_me(current_user: User = Depends(get_current_user)):
+    return current_user
+
+@app.delete("/posts/{post_id}")
+def delete_post(
+    post_id: int,
+    current_user: User = Depends(get_current_user)
+):
+    # 自動有 current_user
+    ...
+```
+
+  
+### 巢狀 Dependency
+
+```text
+# Dependencies 能用 dependencies
+
+def get_db():
+    ...
+
+def get_current_user(db: Session = Depends(get_db), ...):
+    # 用 db
+    ...
+
+def require_admin(user: User = Depends(get_current_user)):
+    if user.role != "admin":
+        raise HTTPException(403)
+    return user
+
+@app.delete("/users/{id}")
+def admin_delete(
+    id: int,
+    admin: User = Depends(require_admin)
+):
+    # 自動：get_db → get_current_user → require_admin
+    ...
+```
+
+  
+### 路由 dependencies（middleware）
+
+```text
+# 整個 router 都要 auth
+admin_router = APIRouter(
+    prefix="/admin",
+    dependencies=[Depends(require_admin)]
+)
+
+@admin_router.delete("/users/{id}")
+def delete_user(id: int):
+    # require_admin 自動跑
+    ...
+
+# 全 app
+app = FastAPI(dependencies=[Depends(verify_api_key)])
+```
+
+  
+    **🚀 進階技巧**
+    
+FastAPI 2 大殺手鐧：(1) **async**—I/O 並行、跑得快 (2) **Depends**—DI 解耦、test 友善。**實戰**：(1) endpoint 預設 async（用 await）(2) DB session、auth、settings 全用 Depends (3) test 用 dependency_overrides mock。
+
+  
+
+  
+    
+      ⚡
+      學習加速器
+    
+    把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。

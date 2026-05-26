@@ -156,6 +156,22 @@ for (const [id, content] of [
   console.log(`[batch4b] ${id} (${l.title}) updated, new length:`, l.content.length);
 }
 
+// === batch5 part A: L21, L22, L23 (DL 基礎 + PyTorch + 3 大架構) ===
+const L21_CONTENT = fs.readFileSync(path.join(__dirname, 'L21.content.md'), 'utf8');
+const L22_CONTENT = fs.readFileSync(path.join(__dirname, 'L22.content.md'), 'utf8');
+const L23_CONTENT = fs.readFileSync(path.join(__dirname, 'L23.content.md'), 'utf8');
+
+for (const [id, content] of [
+  ['26.21', L21_CONTENT],
+  ['26.22', L22_CONTENT],
+  ['26.23', L23_CONTENT],
+]) {
+  const l = ch26.lessons.find((x) => x.id === id);
+  if (!l) throw new Error(`${id} not found`);
+  l.content = content;
+  console.log(`[batch5a] ${id} (${l.title}) updated, new length:`, l.content.length);
+}
+
 // === 寫回 + 驗證 ===
 const out = JSON.stringify(ch26, null, 2) + '\n';
 fs.writeFileSync(CH26_PATH, out, 'utf8');

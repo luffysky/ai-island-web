@@ -1,0 +1,150 @@
+DL = ML 的子集、用**神經網路**。2010+ 革命突破。
+
+  
+### 神經網路
+
+```text
+靈感：人類神經元
+
+人工神經元：
+  x1 ─w1→  ┐
+  x2 ─w2→  ├─sum + bias─activation─→ y
+  x3 ─w3→  ┘
+
+y = activation(w1*x1 + w2*x2 + w3*x3 + b)
+
+w（weight）、b（bias）= 學習參數
+activation = 非線性函數
+
+很多神經元組合 = 神經網路
+
+層（Layer）：
+[ Input ] → [ Hidden 1 ] → [ Hidden 2 ] → [ Output ]
+
+「深度」= 多 hidden layer
+```
+
+  
+### Activation Function
+
+```text
+沒 activation = 整個 NN 線性（沒比 linear 強）
+加 activation 學非線性
+
+1. ReLU（最普及）
+   f(x) = max(0, x)
+   - hidden layer 必選
+
+2. Sigmoid
+   f(x) = 1 / (1 + e^-x)
+   - 二分類 output
+
+3. Softmax
+   - 多分類 output（output 加起來 = 1）
+
+4. Tanh
+   - 輸出 -1 到 1
+   - RNN 常用
+
+實戰：
+- Hidden：ReLU（or GELU）
+- Output 二分類：Sigmoid
+- Output 多分類：Softmax
+- Output 回歸：無
+```
+
+  
+### 前向 + 反向傳播
+
+```text
+1. 前向（Forward）：
+   Input → Layer 1 → ... → Output
+   每層：y = activation(W*x + b)
+
+2. 算 Loss（差距）：
+   MSE / Cross-Entropy
+
+3. 反向（Backward）：
+   從 Output 算 gradient
+   往回傳到每層
+   更新 weight
+
+4. 更新（Gradient Descent）：
+   W = W - learning_rate * dW
+   往「降低 Loss」走
+
+重複千 / 萬次 → model 學會
+```
+
+  
+### Loss + Optimizer
+
+```text
+Loss：
+- 回歸：MSE / MAE
+- 二分類：Binary Cross-Entropy
+- 多分類：Cross-Entropy
+
+Optimizer：
+1. SGD（基本）
+2. SGD + Momentum
+3. Adam（最普及）
+   - 自動調 lr
+   - 預設選擇
+4. AdamW（2020+ 主流、Transformer 必用）
+
+實戰：
+- 新手：Adam（lr=0.001）
+- 進階：AdamW
+- 微調 lr：cosine schedule / warmup
+```
+
+  
+### 常見問題
+
+```text
+1. 梯度消失 / 爆炸
+   對策：
+   - ReLU
+   - Batch Normalization
+   - Residual Connection（ResNet）
+   - Gradient Clipping
+
+2. 過擬合
+   - Dropout
+   - L1 / L2
+   - Early stopping
+   - Data augmentation
+
+3. GPU OOM
+   - 減 batch size
+   - Gradient accumulation
+   - Mixed precision（FP16）
+```
+
+  
+### DL vs 傳統 ML
+
+  
+|  | 傳統 ML | DL |
+| --- | --- | --- |
+| 資料量 | 1k - 1M | 10K - 10B+ |
+| 特徵工程 | 手動 | 自動 |
+| 硬體 | CPU | GPU |
+| 解釋性 | 強 | 弱 |
+| 適合資料 | 表格 | 圖、聲、文字 |
+| 工具 | scikit-learn | PyTorch / TF |
+
+  
+    **☕ 用人話講**
+    
+NN = **很多層 layer 的數學運算**。Train = forward → 比答案 → backward → 更新 weight → 重複幾千次。**新手不用懂數學細節**—會用 PyTorch 寫就行。重點：layer / activation / loss / optimizer / overfitting。
+
+  
+
+  
+    
+      ⚡
+      學習加速器
+    
+    把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。
