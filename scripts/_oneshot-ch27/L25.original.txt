@@ -1,0 +1,115 @@
+## 三大資料職涯
+
+### 1. Data Analyst（資料分析師）
+- 工作：寫 SQL、做報表、看 dashboard
+- 技能：SQL（必）、Excel、Tableau / Power BI、Python pandas
+- 月薪（台）：NT$ 50-90k
+- 入門難度：⭐⭐⭐
+
+### 2. Data Scientist（資料科學家）
+- 工作：建模、A/B test、預測
+- 技能：Python（pandas / sklearn / pytorch）、統計、ML
+- 月薪：NT$ 80-150k
+- 入門難度：⭐⭐⭐⭐
+
+### 3. Data Engineer（資料工程師）
+- 工作：建 pipeline、ETL、資料倉儲
+- 技能：SQL、Python、Spark、Airflow、AWS / GCP
+- 月薪：NT$ 90-180k
+- 入門難度：⭐⭐⭐⭐⭐
+
+### 加碼：ML Engineer / MLOps
+- 工作：把 ML 模型上 production
+- 技能：DS + 工程 + 部署
+- 月薪：NT$ 100-200k
+
+## 學習路線圖
+
+### 0-3 個月：基礎
+- [ ] Python 基本（Ch26）
+- [ ] pandas（這章）
+- [ ] SQL（Ch17）
+- [ ] 統計（平均 / 中位數 / 分布）
+- [ ] 視覺化（matplotlib / seaborn）
+
+### 3-6 個月：能交付
+- [ ] 完整資料專案（從 raw → 結論）
+- [ ] Streamlit / Tableau dashboard
+- [ ] 至少 1 個 portfolio project
+- [ ] Kaggle 試 1-2 個比賽
+
+### 6-12 個月：找工作
+- [ ] 履歷 + LinkedIn
+- [ ] 投 10-30 個職位
+- [ ] 練 SQL leetcode
+- [ ] 練面試題
+
+### 12+ 個月：進階
+- 選一個方向：DS / DE / MLE
+- 深入該領域
+- 持續做 side project
+
+## Portfolio 準備
+3 個 project：
+1. **EDA**：開放資料集分析、寫 blog
+2. **預測**：時間序列 / 分類 / 回歸
+3. **儀表板**：Streamlit / Tableau 互動 dashboard
+
+放 GitHub + 寫文章解釋。
+
+## 學習資源
+
+### 課程
+- **Coursera / edX**：IBM Data Science、Google
+- **DataCamp**：互動式
+- **Kaggle Learn**：免費、實用
+- **Hahow / Udemy**：台灣中文
+
+### 書
+- 《Python for Data Analysis》Wes McKinney（pandas 作者）
+- 《Hands-on ML》Aurélien Géron
+- 《Designing Data-Intensive Apps》Martin Kleppmann（DE 必讀）
+
+### 中文
+- 林軒田《機器學習基石》（NTU 開放課）
+- 李宏毅《機器學習》（NTU、YouTube 免費）
+
+### 比賽
+- Kaggle（國際）
+- Tianchi（中國）
+- DataCastle
+
+## 找工作管道
+- LinkedIn（最重要）
+- 104 / Yourator
+- Apple / Google / FB / 蝦皮 career page
+- 內推（最有效）
+
+## 履歷必有
+- 1-2 個有完整故事的專案
+- GitHub 整理過、有 README
+- 量化成果（提升 X%、節省 Y 小時）
+- 簡潔（1 頁）
+
+## 面試準備
+- **SQL**：LeetCode / StrataScratch
+- **Python**：basic 演算法
+- **Statistics**：p-value、CI、A/B test
+- **ML**：模型優缺、評估指標
+- **Case study**：「如何衡量 X 產品的成功」
+
+## 跳槽時機
+- 1-2 年累積、跳薪水 +20-30%
+- 換領域（金融 → 電商 → SaaS）擴大經驗
+- 不要 1 年內換 2 次（履歷不好看）
+
+## Indie 路線
+- 接案：資料分析 NT$ 30-100k / 案
+- SaaS：做 dashboard SaaS
+- 顧問：垂直領域（電商 / 金融）
+
+## 心法
+- **SQL** 是命根、寫不好別想做資料
+- **溝通** > 技術深度（會解釋給老闆聽）
+- **領域知識** 是護城河（懂業務的資料人比純技術人值錢）
+- **持續輸出**（blog / GitHub）是長期競爭力

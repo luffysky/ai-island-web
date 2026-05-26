@@ -1,0 +1,195 @@
+## 中文分詞（基礎）
+英文用空白分、中文要先「斷詞」。
+
+### jieba（最熱門）
+```bash
+pip install jieba
+```
+
+```python
+import jieba
+
+text = "我愛吃台灣牛肉麵和滷肉飯"
+words = list(jieba.cut(text))
+print(words)
+# ['我', '愛', '吃', '台灣', '牛肉麵', '和', '滷肉飯']
+
+# 自訂詞典
+jieba.add_word("AI 島")
+jieba.del_word("不要的詞")
+
+# 載入外部詞典
+jieba.load_userdict("custom_dict.txt")
+
+# 詞性標註
+import jieba.posseg
+words = jieba.posseg.cut(text)
+for w in words:
+    print(w.word, w.flag)
+```
+
+### CKIP（中研院、更準）
+```bash
+pip install ckip-transformers
+```
+適合學術用、慢但更準。
+
+## TF-IDF（重要詞抽取）
+```python
+from sklearn.feature_extraction.text import TfidfVectorizer
+import jieba
+
+docs = [
+    "我愛 Python",
+    "Python 是程式語言",
+    "Python 適合資料分析"
+]
+
+# 中文要先斷詞
+def tokenize(text):
+    return list(jieba.cut(text))
+
+vec = TfidfVectorizer(tokenizer=tokenize)
+tfidf = vec.fit_transform(docs)
+print(vec.get_feature_names_out())
+```
+
+## 詞頻分析
+```python
+from collections import Counter
+
+text = " ".join(reviews)
+words = [w for w in jieba.cut(text) if len(w) > 1]
+counter = Counter(words)
+top10 = counter.most_common(10)
+```
+
+## 文字雲
+```bash
+pip install wordcloud
+```
+
+```python
+from wordcloud import WordCloud
+import matplotlib.pyplot as plt
+
+text = " ".join(jieba.cut(all_text))
+
+wc = WordCloud(
+    font_path="/path/to/NotoSansCJKtc-Regular.otf",  # 中文必設
+    width=800, height=400,
+    background_color="white"
+).generate(text)
+
+plt.imshow(wc)
+plt.axis("off")
+plt.show()
+```
+
+## 情感分析
+
+### 用預訓練模型（推薦）
+```bash
+pip install transformers torch
+```
+
+```python
+from transformers import pipeline
+
+# 中文情感模型
+classifier = pipeline(
+    "sentiment-analysis",
+    model="uer/roberta-base-finetuned-jd-binary-chinese"
+)
+
+results = classifier([
+    "這家店超好吃！",
+    "服務態度很差、再也不來"
+])
+# [{label: positive, score: 0.99}, {label: negative, score: 0.95}]
+```
+
+### 用 OpenAI / Claude API
+```python
+import anthropic
+
+client = anthropic.Anthropic()
+
+response = client.messages.create(
+    model="claude-opus-4-7",
+    max_tokens=100,
+    messages=[{
+        "role": "user",
+        "content": f"分析以下評論的情感（正面/負面/中性）：\n{review}"
+    }]
+)
+```
+
+## 主題建模（LDA）
+```python
+from sklearn.decomposition import LatentDirichletAllocation
+
+# tfidf → LDA
+lda = LatentDirichletAllocation(n_components=5, random_state=42)
+lda.fit(tfidf)
+
+# 看每個主題的關鍵詞
+for i, topic in enumerate(lda.components_):
+    top_words = [vec.get_feature_names_out()[j] for j in topic.argsort()[-10:]]
+    print(f"Topic {i}: {top_words}")
+```
+
+## Embedding + 相似度
+```python
+from sentence_transformers import SentenceTransformer
+from sklearn.metrics.pairwise import cosine_similarity
+
+model = SentenceTransformer("uer/sbert-base-chinese-nli")
+
+texts = ["我愛吃牛肉麵", "我喜歡牛肉麵", "Python 很棒"]
+embeddings = model.encode(texts)
+
+# 計算兩兩相似度
+similarities = cosine_similarity(embeddings)
+print(similarities)
+```
+
+## 應用範例
+
+### 1. 客服分類
+```python
+classifier = pipeline("text-classification", model="...")
+ticket_class = classifier("我的訂單還沒到")
+# → "物流問題"
+```
+
+### 2. 評論情感監控
+每天爬商品評論、自動標 + / 0 / -、追蹤趨勢。
+
+### 3. 摘要
+```python
+summarizer = pipeline("summarization", model="uer/...")
+summary = summarizer(long_article)
+```
+
+### 4. 翻譯
+```python
+translator = pipeline("translation", model="Helsinki-NLP/opus-mt-zh-en")
+en = translator("我愛 Python")
+```
+
+## 中文 NLP 套件比較
+
+| 套件 | 強項 |
+|---|---|
+| jieba | 分詞、最快 |
+| CKIP | 學術、最準 |
+| spaCy | 工程友善 |
+| Transformers (HF) | 最新 SOTA |
+| Anthropic / OpenAI API | 最強、付費 |
+
+## 何時用哪個
+- 純分詞 / 詞頻：jieba
+- 情感分析：Transformers
+- 複雜理解 / 摘要：LLM API
+- 學術研究：CKIP

@@ -1,0 +1,188 @@
+## 安裝
+```bash
+pip install scikit-learn numpy pandas
+```
+
+## ML 流程
+```
+1. 載入資料
+2. EDA + 清理
+3. Feature engineering
+4. Train / Test split
+5. 選模型
+6. 訓練
+7. 評估
+8. 部署
+```
+
+## 範例：分類（預測會不會購買）
+```python
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report
+
+# 1. 載入
+df = pd.read_csv("customer.csv")
+
+# 2. Feature / Target
+X = df[["age", "income", "days_since_last_visit"]]
+y = df["purchased"]  # 0 / 1
+
+# 3. Train / Test split
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y
+)
+
+# 4. Scale
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+# 5. 模型
+model = RandomForestClassifier(n_estimators=100, random_state=42)
+model.fit(X_train_scaled, y_train)
+
+# 6. 預測 + 評估
+preds = model.predict(X_test_scaled)
+print(f"Accuracy: {accuracy_score(y_test, preds):.3f}")
+print(classification_report(y_test, preds))
+```
+
+## 常用模型
+
+### 分類
+- **LogisticRegression**：簡單 / 可解釋
+- **RandomForest**：通用 / 表現好
+- **GradientBoosting / XGBoost / LightGBM**：競賽常勝
+- **SVM**：小資料量好
+- **NeuralNetwork（MLP）**：複雜
+
+### 回歸
+- **LinearRegression**：基線
+- **Ridge / Lasso**：正則化
+- **RandomForest Regressor**
+- **GradientBoosting Regressor**
+
+### 集群
+- **KMeans**：最常見
+- **DBSCAN**：適合非球形
+- **HierarchicalClustering**
+
+## 評估指標
+
+### 分類
+```python
+from sklearn.metrics import (
+    accuracy_score, precision_score, recall_score, f1_score,
+    confusion_matrix, roc_auc_score, roc_curve
+)
+
+# Confusion matrix
+cm = confusion_matrix(y_test, preds)
+print(cm)
+
+# ROC AUC（imbalanced 用）
+probs = model.predict_proba(X_test)[:, 1]
+auc = roc_auc_score(y_test, probs)
+```
+
+### 回歸
+```python
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+
+mse = mean_squared_error(y_test, preds)
+mae = mean_absolute_error(y_test, preds)
+r2 = r2_score(y_test, preds)
+```
+
+## 交叉驗證
+```python
+from sklearn.model_selection import cross_val_score
+
+scores = cross_val_score(model, X, y, cv=5, scoring="accuracy")
+print(f"CV: {scores.mean():.3f} ± {scores.std():.3f}")
+```
+
+## Hyperparameter tuning
+```python
+from sklearn.model_selection import GridSearchCV
+
+params = {
+    "n_estimators": [100, 200, 500],
+    "max_depth": [5, 10, None],
+    "min_samples_split": [2, 5, 10]
+}
+
+grid = GridSearchCV(
+    RandomForestClassifier(),
+    params,
+    cv=5,
+    scoring="accuracy",
+    n_jobs=-1  # 全核心
+)
+grid.fit(X_train, y_train)
+
+print(grid.best_params_)
+print(grid.best_score_)
+```
+
+## XGBoost / LightGBM（競賽常勝）
+```bash
+pip install xgboost lightgbm
+```
+
+```python
+import xgboost as xgb
+
+model = xgb.XGBClassifier(
+    n_estimators=500,
+    learning_rate=0.1,
+    max_depth=6,
+    objective="binary:logistic"
+)
+model.fit(X_train, y_train, eval_set=[(X_test, y_test)])
+```
+
+## 模型部署
+
+### 存模型
+```python
+import joblib
+joblib.dump(model, "model.pkl")
+joblib.dump(scaler, "scaler.pkl")
+
+# 載入
+model = joblib.load("model.pkl")
+```
+
+### Flask / FastAPI 服務
+```python
+from fastapi import FastAPI
+import joblib
+
+app = FastAPI()
+model = joblib.load("model.pkl")
+
+@app.post("/predict")
+def predict(features: dict):
+    X = [[features["age"], features["income"]]]
+    pred = model.predict(X)[0]
+    return {"prediction": int(pred)}
+```
+
+## 不要踩的坑
+- **Data leakage**：用了未來資料訓練
+- **Test set 偷看**：tuning 時用 test、cheating
+- **Imbalanced data**：99% 是 0、模型全猜 0 也 99% 準
+- **過擬合**：train 99%、test 50%
+- **沒做 CV**：單次 split 結果不穩
+
+## ML 路線圖
+1. **第 1 個月**：scikit-learn + 跑通流程
+2. **第 2 個月**：XGBoost + feature engineering
+3. **第 3 個月**：Kaggle 小比賽
+4. **第 4-6 個月**：深度學習 PyTorch / TensorFlow
+
+入門足夠應付 80% 工作場景。
