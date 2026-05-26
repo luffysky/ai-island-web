@@ -1,0 +1,107 @@
+## DataFrame 基本
+```python
+import pandas as pd
+
+df = pd.read_csv("data.csv")
+df.head()           # 前 5 筆
+df.tail(10)         # 後 10 筆
+df.info()           # 欄位資訊
+df.describe()       # 統計摘要
+df.shape            # (rows, cols)
+df.columns          # 欄位名
+df.dtypes           # 各欄型別
+```
+
+## 1. Filter（過濾）
+```python
+adults = df[df["age"] >= 18]
+adults_tw = df[(df["age"] >= 18) & (df["country"] == "TW")]
+many = df[df["name"].isin(["Alice", "Bob", "Charlie"])]
+not_null = df[df["email"].notna()]
+
+# 文字
+df[df["name"].str.contains("王")]
+df[df["email"].str.endswith("@gmail.com")]
+```
+
+## 2. Sort
+```python
+df.sort_values("amount", ascending=False)
+df.sort_values(["category", "amount"], ascending=[True, False])
+df.sort_index()  # 按 index 排
+```
+
+## 3. GroupBy（樞紐分析核心）
+```python
+# 各國銷售總額
+df.groupby("country")["amount"].sum()
+
+# 多欄分組 + 多種統計
+df.groupby(["country", "category"]).agg({
+    "amount": ["sum", "mean", "count"],
+    "user_id": "nunique"  # 不重複數
+})
+
+# 用 transform 取得 group 內排名
+df["rank"] = df.groupby("country")["amount"].transform(
+    lambda x: x.rank(ascending=False)
+)
+```
+
+## 4. Merge（SQL JOIN）
+```python
+# inner join
+result = pd.merge(orders, users, on="user_id", how="inner")
+
+# left / right / outer
+result = pd.merge(orders, users, on="user_id", how="left")
+
+# 多欄 join
+result = pd.merge(a, b, left_on="user_id", right_on="id")
+```
+
+## 5. Pivot（樞紐表）
+```python
+pivot = pd.pivot_table(
+    df, 
+    values="amount",
+    index="month",
+    columns="category",
+    aggfunc="sum",
+    fill_value=0
+)
+
+# Melt（pivot 反向）
+melted = pd.melt(df, id_vars=["id"], value_vars=["jan", "feb", "mar"])
+```
+
+## 其他常用
+```python
+# 新欄位
+df["total"] = df["price"] * df["quantity"]
+df["category_upper"] = df["category"].str.upper()
+
+# 條件 + apply
+df["tier"] = df["amount"].apply(
+    lambda x: "high" if x > 1000 else "low"
+)
+
+# 合併條件
+import numpy as np
+df["tier"] = np.where(df["amount"] > 1000, "high", "low")
+
+# 多條件
+df["grade"] = np.select(
+    [df["score"] >= 90, df["score"] >= 60],
+    ["A", "B"], default="F"
+)
+
+# 刪欄位 / 列
+df.drop("col_name", axis=1)        # 刪欄
+df.drop_duplicates(subset=["email"]) # 去重
+df.dropna(subset=["email"])        # 刪 NaN
+
+# Fill NaN
+df["age"].fillna(df["age"].mean(), inplace=True)
+df["category"].fillna("unknown", inplace=True)
+```

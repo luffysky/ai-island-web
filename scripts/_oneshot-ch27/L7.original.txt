@@ -1,0 +1,114 @@
+```python
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+plt.rcParams['font.family'] = ['PingFang TC']
+sns.set_theme(style='whitegrid', palette='Set2')
+
+# === Step 1: 讀資料 ===
+df = pd.read_csv('sales_2026Q1.csv', parse_dates=['order_date'])
+print(f'資料筆數：{len(df)}')
+print(df.info())
+
+# === Step 2: 資料清洗 ===
+# 處理缺值
+df['discount'] = df['discount'].fillna(0)
+df = df.dropna(subset=['customer_id'])  # 必要欄位
+
+# 型別轉換
+df['amount'] = pd.to_numeric(df['amount'], errors='coerce')
+
+# 移除異常值（負金額）
+df = df[df['amount'] > 0]
+
+# 加衍生欄位
+df['month'] = df['order_date'].dt.month
+df['weekday'] = df['order_date'].dt.day_name()
+df['is_weekend'] = df['order_date'].dt.dayofweek >= 5
+df['price_tier'] = pd.cut(df['amount'],
+    bins=[0, 500, 2000, 10000, np.inf],
+    labels=['低', '中', '高', '豪華'])
+
+# === Step 3: 探索性分析（EDA）===
+# 整體狀況
+print(f'總營業額：NT$ {df["amount"].sum():,.0f}')
+print(f'平均客單價：NT$ {df["amount"].mean():,.0f}')
+print(f'訂單數：{len(df)}')
+print(f'客戶數：{df["customer_id"].nunique()}')
+
+# 各類別表現
+category_stats = df.groupby('category').agg(
+    revenue=('amount', 'sum'),
+    orders=('order_id', 'count'),
+    avg_value=('amount', 'mean')
+).sort_values('revenue', ascending=False)
+print(category_stats)
+
+# Top 10 客戶（VIP 找出來）
+top_customers = df.groupby('customer_id')['amount'].sum()\
+    .nlargest(10)
+print('Top 10 VIP 客戶：', top_customers)
+
+# === Step 4: 視覺化 ===
+fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+
+# 圖 1：月營收趨勢
+monthly = df.groupby('month')['amount'].sum()
+axes[0, 0].plot(monthly.index, monthly.values, marker='o', linewidth=2)
+axes[0, 0].set_title('2026 Q1 月營收趨勢', fontsize=14)
+axes[0, 0].set_xlabel('月份')
+axes[0, 0].set_ylabel('營收（NT$）')
+
+# 圖 2：類別佔比
+category_stats['revenue'].plot(kind='bar', ax=axes[0, 1], color='#50fa7b')
+axes[0, 1].set_title('各類別營收', fontsize=14)
+axes[0, 1].tick_params(axis='x', rotation=45)
+
+# 圖 3：星期幾下單最多
+weekday_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday',
+                  'Friday', 'Saturday', 'Sunday']
+weekday_counts = df['weekday'].value_counts().reindex(weekday_order)
+sns.barplot(x=weekday_counts.index, y=weekday_counts.values,
+            ax=axes[1, 0], palette='pastel')
+axes[1, 0].set_title('各週天訂單數', fontsize=14)
+axes[1, 0].tick_params(axis='x', rotation=45)
+
+# 圖 4：客單價分布
+sns.histplot(df['amount'], bins=50, kde=True, ax=axes[1, 1])
+axes[1, 1].set_title('客單價分布', fontsize=14)
+axes[1, 1].set_xlabel('金額')
+
+plt.tight_layout()
+plt.savefig('2026Q1_report.png', dpi=300, bbox_inches='tight')
+plt.show()
+
+# === Step 5: 結論 ===
+# 📊 2026 Q1 銷售報告
+#
+# 【關鍵指標】
+# - 總營收：NT$ X,XXX,XXX
+# - 訂單數：X,XXX 筆
+# - 客單價：NT$ X,XXX
+# - 活躍客戶：X,XXX 位
+#
+# 【發現】
+# 1. 3 月營收最高、Q1 月成長率 +X%
+# 2. 「電子產品」類別佔總營收 40%、為主力
+# 3. 週六下單最多（佔 30%）、週二最低
+# 4. 80% 訂單在 NT$ 500-2000 區間
+#
+# 【建議】
+# 1. 加碼週末廣告、強化高需求時段
+# 2. 電子產品上新品、保持類別優勢
+# 3. 設計 NT$ 2000 加價購、拉客單
+
+# 輸出報告
+report_df = pd.DataFrame({
+    'metric': ['總營收', '訂單數', '客單價', '客戶數'],
+    'value': [df['amount'].sum(), len(df),
+              df['amount'].mean(), df['customer_id'].nunique()]
+})
+report_df.to_excel('2026Q1_summary.xlsx', index=False)
+```
