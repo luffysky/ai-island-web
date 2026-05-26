@@ -192,15 +192,21 @@ export default async function AdminOverviewPage() {
   });
   const hourlyActivityData = Object.entries(hourlyMap).map(([h, users]) => ({ hour: Number(h), users }));
 
-  // === 即時在線（站內 tracker、近 5 分鐘 last_seen_at）===
+  // === 即時在線（站內 tracker、近 5 分鐘 last_seen_at、去重 by user_id / visitor_id）===
   const fiveMinAgo = new Date(Date.now() - 5 * 60_000).toISOString();
   const { data: liveSessions } = await supabase
     .from("analytics_sessions")
-    .select("user_id, current_path")
+    .select("user_id, visitor_id, current_path")
     .gte("last_seen_at", fiveMinAgo);
-  const liveTotal = liveSessions?.length ?? 0;
-  const liveMembers = liveSessions?.filter((s: any) => s.user_id).length ?? 0;
-  const liveGuests = liveTotal - liveMembers;
+  // 同 user 多 device 算 1 個（電腦 + 手機同登 = 1）
+  const liveMembers = new Set(
+    (liveSessions ?? []).filter((s: any) => s.user_id).map((s: any) => s.user_id)
+  ).size;
+  const liveGuests = new Set(
+    (liveSessions ?? []).filter((s: any) => !s.user_id).map((s: any) => s.visitor_id)
+  ).size;
+  const liveTotal = liveMembers + liveGuests;
+  const liveSessionCount = liveSessions?.length ?? 0;
 
   // === 即將逾期 breach（urgent + 未通報）===
   const { data: urgentBreaches } = await supabase
@@ -302,6 +308,11 @@ export default async function AdminOverviewPage() {
           <div className="text-[10px] text-fg-muted mt-1">
             {liveMembers} 會員 / {liveGuests} 訪客
           </div>
+          {liveSessionCount > liveTotal && (
+            <div className="text-[9px] text-fg-muted/70 mt-0.5">
+              session {liveSessionCount}（多裝置已去重）
+            </div>
+          )}
         </Link>
 
         {/* 即將逾期 breach */}

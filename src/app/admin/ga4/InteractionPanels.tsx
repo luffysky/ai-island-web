@@ -14,6 +14,7 @@ type SessionRow = {
   os: string | null;
   country: string | null;
   city: string | null;
+  district: string | null;
   page_count: number;
   total_duration_sec: number;
   max_scroll_pct: number;
@@ -40,6 +41,7 @@ type PageViewRow = {
   device_type: string | null;
   country: string | null;
   city: string | null;
+  district: string | null;
   profile?: SessionRow["profile"];
 };
 
@@ -64,7 +66,14 @@ export function InteractionPanels({
   const now = Date.now();
   const totalDuration = recentPageViews.reduce((sum, row) => sum + (row.duration_sec ?? 0), 0);
   const completed = recentPageViews.filter((row) => row.read_complete).length;
-  const activeMembers = activeSessions.filter((row) => row.user_id).length;
+  // 去重：同一 user 多 device 算 1 個（電腦 + 手機同登 = 1 個會員）
+  const activeMembers = new Set(
+    activeSessions.filter((row) => row.user_id).map((row) => row.user_id)
+  ).size;
+  const activeGuests = new Set(
+    activeSessions.filter((row) => !row.user_id).map((row) => row.visitor_id)
+  ).size;
+  const activeUnique = activeMembers + activeGuests;
 
   const pageStats = Object.values(recentPageViews.reduce<Record<string, { path: string; views: number; duration: number; complete: number }>>((acc, row) => {
     acc[row.path] ??= { path: row.path, views: 0, duration: 0, complete: 0 };
@@ -82,7 +91,7 @@ export function InteractionPanels({
   }, {})).sort((a, b) => b.count - a.count);
 
   const regionStats = Object.values(recentPageViews.reduce<Record<string, { label: string; count: number }>>((acc, row) => {
-    const label = [row.country, row.city].filter(Boolean).join(" / ") || "unknown";
+    const label = [row.country, row.city, row.district].filter(Boolean).join(" / ") || "unknown";
     acc[label] ??= { label, count: 0 };
     acc[label].count++;
     return acc;
@@ -96,8 +105,8 @@ export function InteractionPanels({
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <MiniStat label="在線總數" value={activeSessions.length} />
-        <MiniStat label="在線會員" value={activeMembers} />
+        <MiniStat label="在線人數（去重）" value={activeUnique} hint={`session ${activeSessions.length}`} />
+        <MiniStat label="在線會員（去重）" value={activeMembers} hint={`含訪客 ${activeGuests}`} />
         <MiniStat label="近 24h 瀏覽" value={recentPageViews.length} />
         <MiniStat label="看完率" value={recentPageViews.length ? `${Math.round((completed / recentPageViews.length) * 100)}%` : "0%"} />
       </div>
@@ -128,7 +137,7 @@ export function InteractionPanels({
                         <div className="truncate text-[10px] text-fg-muted">{row.current_path}</div>
                       </td>
                       <td className="py-2">{row.device_type} · {row.browser} · {row.os}</td>
-                      <td className="py-2">{[row.country, row.city].filter(Boolean).join(" / ") || "—"}</td>
+                      <td className="py-2">{[row.country, row.city, row.district].filter(Boolean).join(" / ") || "—"}</td>
                       <td className="py-2 text-right">{Math.max(0, Math.round((now - new Date(row.last_seen_at).getTime()) / 1000))}s 前</td>
                     </tr>
                   ))}
@@ -238,11 +247,12 @@ function Panel({ title, children }: { title: string; children: React.ReactNode }
   );
 }
 
-function MiniStat({ label, value }: { label: string; value: string | number }) {
+function MiniStat({ label, value, hint }: { label: string; value: string | number; hint?: string }) {
   return (
     <div className="bg-bg border border-border rounded-lg p-3">
       <div className="text-xs text-fg-muted">{label}</div>
       <div className="text-xl font-bold mt-1">{value}</div>
+      {hint && <div className="text-[10px] text-fg-muted/70 mt-0.5">{hint}</div>}
     </div>
   );
 }

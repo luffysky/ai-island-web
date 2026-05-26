@@ -34,13 +34,13 @@ export default async function GA4Page() {
   const dayAgo = new Date(Date.now() - 24 * 60 * 60_000).toISOString();
   const { data: activeSessions } = await supabase
     .from("analytics_sessions")
-    .select("*, profile:profiles(username, display_name, avatar_url, level, role, last_active_at)")
+    .select("*, district, profile:profiles(username, display_name, avatar_url, level, role, last_active_at)")
     .gte("last_seen_at", activeSince)
     .order("last_seen_at", { ascending: false })
     .limit(100);
   const { data: recentPageViews } = await supabase
     .from("analytics_page_views")
-    .select("*, profile:profiles(username, display_name, avatar_url, level, role, last_active_at)")
+    .select("*, district, profile:profiles(username, display_name, avatar_url, level, role, last_active_at)")
     .gte("started_at", dayAgo)
     .order("started_at", { ascending: false })
     .limit(300);
