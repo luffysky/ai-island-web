@@ -1,0 +1,183 @@
+## 為什麼用 Streamlit
+- ✅ 純 Python、不用 HTML/CSS/JS
+- ✅ 5 分鐘從 notebook 變 dashboard
+- ✅ 內建 widget（selectbox / slider / button）
+- ✅ 部署一鍵（Streamlit Cloud 免費）
+- ✅ 接案神器
+
+## 安裝
+```bash
+pip install streamlit pandas plotly
+streamlit run app.py
+```
+
+## Hello World
+```python
+# app.py
+import streamlit as st
+
+st.title("我的第一個 Dashboard")
+st.write("Hello Streamlit")
+```
+
+```bash
+streamlit run app.py
+# 自動打開 http://localhost:8501
+```
+
+## 基本元件
+```python
+import streamlit as st
+
+# 文字
+st.title("標題")
+st.header("子標題")
+st.subheader("子子標題")
+st.markdown("**粗體** *斜體*")
+st.code("print('hello')", language="python")
+
+# 資料
+st.dataframe(df)          # 互動表格
+st.table(df)              # 靜態
+st.json({"key": "value"})
+
+# 圖
+st.line_chart(df)
+st.bar_chart(df)
+st.plotly_chart(fig)
+st.pyplot(matplotlib_fig)
+
+# 媒體
+st.image("image.png")
+st.video("video.mp4")
+st.audio("audio.mp3")
+```
+
+## 互動 Widget
+```python
+# 輸入
+name = st.text_input("姓名")
+age = st.number_input("年齡", min_value=0, max_value=120)
+date = st.date_input("日期")
+
+# 選擇
+choice = st.selectbox("選一個", ["A", "B", "C"])
+multi = st.multiselect("選多個", ["X", "Y", "Z"])
+value = st.slider("滑桿", 0, 100, 50)
+checked = st.checkbox("同意")
+radio = st.radio("選擇", ["選項 1", "選項 2"])
+
+# 按鈕
+if st.button("送出"):
+    st.success("成功！")
+
+# 上傳檔案
+file = st.file_uploader("上傳 CSV", type=["csv"])
+if file:
+    df = pd.read_csv(file)
+    st.dataframe(df)
+```
+
+## Layout
+```python
+# 左右分欄
+col1, col2, col3 = st.columns(3)
+col1.metric("營收", "NT$ 1.2M", "+12%")
+col2.metric("使用者", "5,234", "-23")
+col3.metric("Churn", "5.4%", "0.3%")
+
+# Tab
+tab1, tab2 = st.tabs(["概覽", "詳細"])
+with tab1:
+    st.line_chart(df)
+with tab2:
+    st.dataframe(df)
+
+# Sidebar
+with st.sidebar:
+    country = st.selectbox("國家", df["country"].unique())
+    
+filtered = df[df["country"] == country]
+```
+
+## 進階功能
+
+### Session State
+```python
+# 跨 rerun 保留狀態
+if "count" not in st.session_state:
+    st.session_state.count = 0
+
+if st.button("+1"):
+    st.session_state.count += 1
+
+st.write(f"count: {st.session_state.count}")
+```
+
+### Cache（避免重算）
+```python
+@st.cache_data
+def load_data():
+    return pd.read_csv("big.csv")
+
+df = load_data()  # 第二次不會重讀
+```
+
+### Form
+```python
+with st.form("my_form"):
+    name = st.text_input("姓名")
+    age = st.number_input("年齡")
+    submitted = st.form_submit_button("送出")
+    if submitted:
+        st.write(f"Hi {name}, you are {age}")
+```
+
+## 實戰範例：銷售 Dashboard
+```python
+import streamlit as st
+import pandas as pd
+import plotly.express as px
+
+st.set_page_config(page_title="銷售 Dashboard", layout="wide")
+st.title("📊 2026 銷售分析")
+
+@st.cache_data
+def load():
+    return pd.read_csv("sales.csv")
+df = load()
+
+# Sidebar 篩選
+with st.sidebar:
+    countries = st.multiselect(
+        "國家", df["country"].unique(),
+        default=df["country"].unique()
+    )
+    date_range = st.date_input("日期區間", value=[df["date"].min(), df["date"].max()])
+
+filtered = df[df["country"].isin(countries)]
+
+# Metrics
+col1, col2, col3 = st.columns(3)
+col1.metric("總營收", f"NT$ {filtered['amount'].sum():,.0f}")
+col2.metric("訂單數", len(filtered))
+col3.metric("客單價", f"{filtered['amount'].mean():.0f}")
+
+# 圖
+fig = px.bar(
+    filtered.groupby("month")["amount"].sum().reset_index(),
+    x="month", y="amount", title="月營收"
+)
+st.plotly_chart(fig, use_container_width=True)
+
+# 表格
+st.dataframe(filtered)
+```
+
+## 部署
+```bash
+# Streamlit Cloud（免費）
+# 1. 推到 GitHub
+# 2. share.streamlit.io 連 repo
+# 3. 5 分鐘上線
+```

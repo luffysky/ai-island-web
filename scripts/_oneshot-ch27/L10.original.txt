@@ -1,0 +1,138 @@
+## matplotlib 基礎
+```python
+import matplotlib.pyplot as plt
+
+# 中文字體（解決亂碼）
+plt.rcParams["font.family"] = "Noto Sans CJK TC"
+plt.rcParams["axes.unicode_minus"] = False
+
+# 線圖
+plt.plot(x, y)
+plt.title("月銷售")
+plt.xlabel("月份")
+plt.ylabel("營收")
+plt.savefig("plot.png", dpi=300)
+plt.show()
+```
+
+## 5 種基本圖
+
+### Line（趨勢）
+```python
+plt.plot(months, sales, marker="o")
+```
+
+### Bar
+```python
+plt.bar(categories, values)
+plt.barh(categories, values)  # 橫向
+```
+
+### Scatter（散點）
+```python
+plt.scatter(x, y, s=sizes, c=colors, alpha=0.5)
+```
+
+### Histogram
+```python
+plt.hist(data, bins=30)
+```
+
+### Pie（少用）
+```python
+plt.pie(values, labels=labels, autopct="%.1f%%")
+```
+
+## 子圖
+```python
+fig, axes = plt.subplots(2, 2, figsize=(12, 8))
+axes[0, 0].plot(x, y)
+axes[0, 1].bar(categories, values)
+axes[1, 0].scatter(x, y)
+axes[1, 1].hist(data)
+plt.tight_layout()
+```
+
+## seaborn（漂亮 stats 圖）
+```python
+import seaborn as sns
+
+# Bar
+sns.barplot(data=df, x="category", y="amount")
+
+# Box plot（看分布）
+sns.boxplot(data=df, x="country", y="income")
+
+# Violin（box + density）
+sns.violinplot(data=df, x="country", y="income")
+
+# Heatmap（相關矩陣）
+sns.heatmap(df.corr(), annot=True, cmap="coolwarm", fmt=".2f")
+
+# 散點 + 回歸
+sns.regplot(data=df, x="price", y="rating")
+
+# Pairplot（多變數關係）
+sns.pairplot(df[["age", "income", "spending"]])
+
+# Distribution
+sns.histplot(df["age"], kde=True)
+```
+
+## 設定樣式
+```python
+sns.set_theme(style="whitegrid")
+sns.set_palette("husl")
+
+# 自訂顏色
+colors = ["#50fa7b", "#8be9fd", "#ff79c6"]
+sns.barplot(data=df, x="cat", y="val", palette=colors)
+```
+
+## 進階：故事化圖
+
+### 加註解
+```python
+plt.plot(months, sales)
+plt.annotate(
+    "iPhone 17 發表",
+    xy=(7, 50000),
+    xytext=(5, 60000),
+    arrowprops={"arrowstyle": "->"}
+)
+```
+
+### 加水平線（基準）
+```python
+plt.axhline(y=target, color="red", linestyle="--", label="目標")
+plt.legend()
+```
+
+### 突出重點
+```python
+colors = ["#50fa7b" if v > target else "#cccccc" for v in values]
+plt.bar(categories, values, color=colors)
+```
+
+## 對比表
+
+| 工具 | 適合 |
+|---|---|
+| matplotlib | 細節控制、客製 |
+| seaborn | 統計圖、漂亮 |
+| Plotly | 互動式 |
+| Bokeh | 互動式、大資料 |
+| Altair | 宣告式 |
+
+## 出版品質
+```python
+fig, ax = plt.subplots(figsize=(8, 5), dpi=300)
+ax.plot(x, y, linewidth=2, color="#50fa7b")
+ax.set_xlabel("Month", fontsize=12)
+ax.set_ylabel("Revenue (NT$)", fontsize=12)
+ax.set_title("2026 月營收", fontsize=14, fontweight="bold")
+ax.grid(alpha=0.3)
+ax.spines["top"].set_visible(False)
+ax.spines["right"].set_visible(False)
+plt.savefig("publication.pdf", bbox_inches="tight")
+```

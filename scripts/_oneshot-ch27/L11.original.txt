@@ -1,0 +1,133 @@
+## 為什麼用 Plotly
+- ✅ 互動（hover、zoom、pan）
+- ✅ 可嵌入網頁（HTML）
+- ✅ 大資料可撐（WebGL）
+- ✅ 適合 dashboard
+- ✅ Jupyter 友善
+- ❌ 靜態出版選 matplotlib
+
+## 安裝
+```bash
+pip install plotly pandas
+```
+
+## Plotly Express（簡潔版、推薦）
+```python
+import plotly.express as px
+import pandas as pd
+
+df = pd.read_csv("data.csv")
+
+# 散點圖
+fig = px.scatter(
+    df, x="gdp", y="life_expectancy",
+    size="population", color="continent",
+    hover_name="country", log_x=True,
+    title="GDP vs 壽命"
+)
+fig.show()
+
+# 線圖
+fig = px.line(df, x="year", y="sales", color="region")
+
+# Bar
+fig = px.bar(df, x="category", y="amount", color="country")
+
+# Histogram
+fig = px.histogram(df, x="age", nbins=30)
+
+# Box
+fig = px.box(df, x="country", y="income")
+
+# Heatmap
+fig = px.imshow(df.corr(), text_auto=True)
+
+# Map
+fig = px.scatter_geo(
+    df, locations="iso_alpha",
+    size="population", color="continent"
+)
+```
+
+## Plotly Graph Objects（精細控制）
+```python
+import plotly.graph_objects as go
+
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=x1, y=y1, name="2025", mode="lines+markers"))
+fig.add_trace(go.Scatter(x=x2, y=y2, name="2026", mode="lines+markers"))
+fig.update_layout(
+    title="年度對比",
+    xaxis_title="月份",
+    yaxis_title="營收"
+)
+fig.show()
+```
+
+## 進階圖類型
+
+### Sankey（流向圖）
+```python
+fig = go.Figure(go.Sankey(
+    node={"label": ["A", "B", "C", "D"]},
+    link={
+        "source": [0, 1, 0, 2],
+        "target": [2, 3, 3, 3],
+        "value": [10, 20, 5, 15]
+    }
+))
+```
+
+### Sunburst（多層圓餅）
+```python
+fig = px.sunburst(
+    df, path=["region", "country", "city"],
+    values="population"
+)
+```
+
+### Treemap
+```python
+fig = px.treemap(df, path=["category", "subcategory"], values="amount")
+```
+
+### 3D scatter
+```python
+fig = px.scatter_3d(df, x="x", y="y", z="z", color="category")
+```
+
+## 輸出
+```python
+# 顯示
+fig.show()
+
+# 存 HTML（互動保留）
+fig.write_html("chart.html")
+
+# 存圖片（要 kaleido：pip install kaleido）
+fig.write_image("chart.png", width=1200, height=800)
+
+# 嵌入網頁
+html_str = fig.to_html(include_plotlyjs="cdn")
+```
+
+## Dash（Plotly 的 Dashboard）
+```python
+import dash
+from dash import dcc, html
+
+app = dash.Dash(__name__)
+app.layout = html.Div([
+    html.H1("我的 Dashboard"),
+    dcc.Graph(figure=fig1),
+    dcc.Graph(figure=fig2),
+])
+app.run_server(debug=True)
+```
+
+## 對比 Streamlit
+- **Dash**：Python web app、純 Python 寫
+- **Streamlit**：更簡單、適合資料分析師
+- **Plotly Dash**：類 React、適合工程師
+
+新手選 Streamlit、進階選 Dash。
