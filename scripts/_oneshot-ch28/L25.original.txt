@@ -1,0 +1,61 @@
+## 學習路徑
+
+### Month 1：基礎
+- Python 基本
+- requests + BS4
+- 1 個小案
+
+### Month 2：進階
+- Scrapy
+- Playwright（動態網站）
+- 反爬蟲技巧
+
+### Month 3：規模
+- Async（httpx）
+- 代理輪換
+- Database
+
+### Month 4：Production
+- 監控（Sentry）
+- 排程（Airflow / GitHub Actions）
+
+### Month 5：接案
+- 履歷 / 作品集
+- 第 1 個付費客戶
+
+### Month 6：規模化
+- 多個客戶
+- SaaS 產品試水
+
+## 進階方向
+
+### 1. Data Engineer
+- Spark / Airflow / Snowflake
+- 月薪 NT$ 100-180k
+
+### 2. Web 反爬蟲
+- Cloudflare / Imperva
+
+### 3. SaaS 創業
+- Diffbot / Bright Data 等
+
+### 4. AI 訓練資料
+- 爬書 / 論文 / code
+- 賣給 OpenAI / Anthropic
+
+## 資源
+- 《Python 網路爬蟲開發實戰》
+- Scrapy Docs
+- **John Watson Rooney** YT
+- 練習：books.toscrape.com
+
+## 求職市場（台灣 2026）
+- 「資料工程師」、「爬蟲工程師」
+- NT$ 60-150k
+- 大公司：蝦皮、Yahoo、KKBOX
+
+## 心法
+- 爬蟲是工具、不是終點
+- 結合領域知識（金融 / 電商）才值錢
+- 法律風險評估比技術重要
+- 永遠先試官方 API
