@@ -48,19 +48,38 @@ export function TopNav() {
     // AuthContext 會收到 SIGNED_OUT event 自動清掉 user/profile
 
     try {
+      // ⚠️ 不能用 scope: "local"！local 只清這個瀏覽器、不撤銷 server 的 refresh token、
+      // 別人拿到舊 token 還能用。要 global（預設）撤銷所有 session。
       await Promise.race([
-        supabase.auth.signOut({ scope: "local" }),
+        supabase.auth.signOut({ scope: "global" }),
         new Promise((resolve) => setTimeout(resolve, 1500)),
       ]);
+
+      // Server-side 也跑一次 signOut + 清 cookie（雙保險）
       const res = await fetch("/api/auth/logout", {
-      credentials: "include", method: "POST" });
+        credentials: "include",
+        method: "POST"
+      });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         devLog.error("[Logout] server signOut failed:", body);
       }
+
+      // 手動清掉所有 client-side cache（avoid 「登出後還看到舊資料」）
+      try {
+        localStorage.removeItem("ai-island-profile-cache");
+        // 清掉所有 sb-xxx-auth-token cookie（防 server signOut 沒清乾淨）
+        document.cookie.split(";").forEach((c) => {
+          const name = c.split("=")[0].trim();
+          if (name.startsWith("sb-")) {
+            document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+          }
+        });
+      } catch {}
     } catch (error) {
       devLog.error("[Logout] failed:", error);
     } finally {
+      // 用 replace 不要 push、避免「上一頁」回到登入後的 page
       window.location.replace("/");
     }
   }
