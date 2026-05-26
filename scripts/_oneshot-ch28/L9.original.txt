@@ -1,0 +1,67 @@
+## 為什麼
+- 並發 / retry / throttle 自動
+- Pipeline（清理 / 存 DB）
+- Middleware（代理 / cookie 輪換）
+
+## 建專案
+```bash
+pip install scrapy
+scrapy startproject myspider
+scrapy genspider products example.com
+```
+
+## Spider
+```python
+import scrapy
+
+class ProductsSpider(scrapy.Spider):
+    name = "products"
+    start_urls = ["https://example.com/products?page=1"]
+    custom_settings = {
+        "DOWNLOAD_DELAY": 1,
+        "CONCURRENT_REQUESTS": 8
+    }
+    
+    def parse(self, response):
+        for card in response.css("div.product-card"):
+            yield {
+                "name": card.css(".name::text").get().strip(),
+                "price": card.css(".price::text").get(),
+                "link": response.urljoin(card.css("a::attr(href)").get())
+            }
+        
+        next_page = response.css("a.next::attr(href)").get()
+        if next_page:
+            yield response.follow(next_page, self.parse)
+```
+
+```bash
+scrapy crawl products -O products.json
+```
+
+## Pipeline
+```python
+class MongoPipeline:
+    def open_spider(self, spider):
+        self.client = MongoClient(MONGO_URI)
+    
+    def process_item(self, item, spider):
+        self.client.db.products.insert_one(dict(item))
+        return item
+
+# settings.py
+ITEM_PIPELINES = { "myspider.pipelines.MongoPipeline": 200 }
+```
+
+## CrawlSpider
+```python
+from scrapy.spiders import CrawlSpider, Rule
+from scrapy.linkextractors import LinkExtractor
+
+class SiteSpider(CrawlSpider):
+    name = "site"
+    rules = (
+        Rule(LinkExtractor(allow=r"/products/\d+"), callback="parse_product"),
+        Rule(LinkExtractor(allow=r"/category/"), follow=True)
+    )
+```
