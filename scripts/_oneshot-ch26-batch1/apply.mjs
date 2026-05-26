@@ -172,6 +172,24 @@ for (const [id, content] of [
   console.log(`[batch5a] ${id} (${l.title}) updated, new length:`, l.content.length);
 }
 
+// === batch5 part B: L24-L27 (HF + FastAPI + Pydantic + Async/DI) ===
+const L24_CONTENT = fs.readFileSync(path.join(__dirname, 'L24.content.md'), 'utf8');
+const L25_CONTENT = fs.readFileSync(path.join(__dirname, 'L25.content.md'), 'utf8');
+const L26_CONTENT = fs.readFileSync(path.join(__dirname, 'L26.content.md'), 'utf8');
+const L27_CONTENT = fs.readFileSync(path.join(__dirname, 'L27.content.md'), 'utf8');
+
+for (const [id, content] of [
+  ['26.24', L24_CONTENT],
+  ['26.25', L25_CONTENT],
+  ['26.26', L26_CONTENT],
+  ['26.27', L27_CONTENT],
+]) {
+  const l = ch26.lessons.find((x) => x.id === id);
+  if (!l) throw new Error(`${id} not found`);
+  l.content = content;
+  console.log(`[batch5b] ${id} (${l.title}) updated, new length:`, l.content.length);
+}
+
 // === 寫回 + 驗證 ===
 const out = JSON.stringify(ch26, null, 2) + '\n';
 fs.writeFileSync(CH26_PATH, out, 'utf8');
