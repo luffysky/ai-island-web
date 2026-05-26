@@ -1,0 +1,94 @@
+## 全能技能樹
+
+### 基礎（必備）
+- HTTP / HTML / CSS Selector
+- 至少 1 個語言（Python / Node）
+- requests / fetch
+- 解析（BS4 / cheerio）
+
+### 中階
+- 動態網站（Playwright）
+- 反爬蟲（UA / 代理 / Cookie）
+- Async / 並發
+- Database
+- 排程（cron / Airflow）
+
+### 進階
+- 反偵測（stealth / fingerprint）
+- TLS impersonate
+- Distributed（Celery）
+- AI 爬蟲（browser-use）
+- OCR / Vision
+
+### 商業
+- 接案 / 報價
+- 法律 / 道德
+- Dashboard / 交付
+- SaaS 化
+
+## 跨語言能力
+
+主語言精通（Python or Node）+ 略懂其他：
+- Go：知道 colly、巨量場景用
+- Rust：知道 reqwest、極致場景
+- Java：知道 jsoup、企業環境
+- PHP / Ruby：知道、不用主用
+- cURL：CLI 必懂
+
+## 學習路徑（1 年）
+
+### Q1
+- 主語言（Python）
+- requests + BS4 + Scrapy
+- 第一個爬蟲案
+
+### Q2
+- Playwright
+- 反爬蟲
+- Async
+- DB
+- 接第一個付費客戶
+
+### Q3
+- 反偵測
+- 代理 / cluster
+- AI 爬蟲試水
+- 多客戶
+
+### Q4
+- 自己刻 SaaS
+- 賣 Apify Actor
+- 教課 / 顧問
+
+## 真實接案範圍
+- 簡單：NT$ 5-30k（1-3 天）
+- 中等：NT$ 30-100k（1-2 週）
+- 複雜：NT$ 100-500k（1-2 月）
+- 維護：NT$ 1-10k/月
+
+## 工作市場（台灣 2026）
+- 爬蟲工程師：NT$ 60-120k
+- Data Engineer：NT$ 90-180k
+- 自由接案：年收 NT$ 100-500k
+
+## 國際 remote
+- Upwork / Toptal
+- $30-100 USD/hr
+- 英文好的可全球接
+
+## 心法
+- **領域知識 > 技術深度**：懂金融的爬蟲 > 純技術
+- **法律意識**：商業案必諮詢律師
+- **永遠先 API**：減少不必要爬
+- **客戶導向**：dashboard > raw data
+- **持續學新**：AI 爬蟲、反偵測在進化
+
+## 給新手最佳路徑
+1. 學 Python（最大生態）
+2. 跑通第一個爬蟲（任何網站）
+3. 學 Scrapy + Playwright
+4. 接第一個付費案
+5. 累積 5 個 case
+6. 開始 SaaS / 顧問
+
+1 年後、你會是專業爬蟲工程師。

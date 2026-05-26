@@ -1,0 +1,122 @@
+## 1. Email 報表
+```python
+import smtplib
+from email.message import EmailMessage
+
+msg = EmailMessage()
+msg["Subject"] = "每日報表"
+msg["From"] = "bot@example.com"
+msg["To"] = "boss@example.com"
+msg.set_content(df.to_string())
+
+with open("report.csv", "rb") as f:
+    msg.add_attachment(f.read(), maintype="text", subtype="csv", filename="report.csv")
+
+with smtplib.SMTP("smtp.gmail.com", 587) as s:
+    s.starttls()
+    s.login(USER, PASS)
+    s.send_message(msg)
+```
+
+## 2. Google Sheets（簡單）
+```python
+import gspread
+
+gc = gspread.service_account()
+sheet = gc.open("Report").sheet1
+sheet.clear()
+sheet.update("A1", [df.columns.tolist()] + df.values.tolist())
+```
+
+## 3. Streamlit Dashboard
+```python
+import streamlit as st
+import pandas as pd
+import plotly.express as px
+
+st.title("📊 爬蟲報表")
+
+df = pd.read_parquet("data.parquet")
+
+col1, col2, col3 = st.columns(3)
+col1.metric("總商品", len(df))
+col2.metric("平均價", f"NT$ {df['price'].mean():,.0f}")
+col3.metric("分類數", df['category'].nunique())
+
+fig = px.bar(df.groupby("category")["price"].mean().reset_index(),
+             x="category", y="price")
+st.plotly_chart(fig)
+
+st.dataframe(df)
+```
+
+```bash
+streamlit run app.py
+```
+
+## 4. Next.js / React Dashboard
+```tsx
+import { LineChart, Line } from "recharts";
+
+export default function Dashboard() {
+  const { data } = useSWR("/api/products", fetcher);
+  
+  return (
+    <div>
+      <h1>商品趨勢</h1>
+      <LineChart width={800} height={400} data={data}>
+        <Line type="monotone" dataKey="price" stroke="#8884d8" />
+      </LineChart>
+    </div>
+  );
+}
+```
+
+## 5. API（FastAPI）
+```python
+from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/products")
+def get_products(limit: int = 100):
+    return db.query("SELECT * FROM products LIMIT $1", limit)
+
+@app.get("/stats")
+def stats():
+    return {
+        "total": db.query_one("SELECT COUNT(*) FROM products"),
+        "avg_price": db.query_one("SELECT AVG(price) FROM products")
+    }
+```
+
+## 6. PDF 報表
+```python
+from weasyprint import HTML
+
+html = render_template("report.html", data=data)
+HTML(string=html).write_pdf("report.pdf")
+```
+
+## 7. LINE Notify（即時）
+```python
+requests.post("https://notify-api.line.me/api/notify",
+    headers={"Authorization": f"Bearer {TOKEN}"},
+    data={"message": f"今日抓到 {count} 筆"})
+```
+
+## 報價對比
+
+| 交付方式 | 報價 |
+|---|---|
+| CSV 寄信 | NT$ 5-15k |
+| Google Sheets | NT$ 10-30k |
+| Streamlit | NT$ 30-80k |
+| Custom Dashboard | NT$ 80-300k |
+| API | NT$ 50-200k |
+
+## 心法
+- 客戶看不到 = 沒做
+- 越漂亮 = 越好賣
+- 給 dashboard > 給 CSV
+- 自動更新 = 月費合約

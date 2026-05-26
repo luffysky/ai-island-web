@@ -1,0 +1,76 @@
+## 全方位心法
+
+### 1. 領域知識 > 技術深度
+懂金融的爬蟲 > 純技術爬蟲。
+找你熟悉的領域（電商 / 金融 / 房地產）深耕。
+
+### 2. 法律意識
+- 台灣《妨害電腦使用罪》
+- 著作權、個資法、GDPR
+- 商業爬蟲先諮詢律師
+- 不確定 → 不做
+
+### 3. 永遠先 API
+官方 API > 爬蟲
+- 穩定
+- 合法
+- 快
+- 不會擋
+
+### 4. 客戶導向
+- Dashboard > Raw data
+- 自動寄報表 > 給檔案
+- 月費維護 > 一次性
+
+### 5. 持續學新
+- AI 爬蟲（browser-use）
+- 反偵測（fingerprint）
+- TLS impersonate
+
+## 工具選擇
+
+| 場景 | 推薦 |
+|---|---|
+| 入門 | Python + requests + BS4 |
+| 大規模 | Scrapy / Crawlee |
+| 動態 | Playwright |
+| 反爬 | curl_cffi / stealth |
+| 商業 | Bright Data / Scrapfly |
+| AI 時代 | browser-use / Claude Vision |
+
+## 6 個月學習路徑
+- M1：Python 基礎 + BS4
+- M2：Scrapy + Playwright
+- M3：反爬 + 代理
+- M4：Production（監控 / 排程）
+- M5：接第一個客戶
+- M6：規模化、SaaS 試水
+
+## 變現路徑
+- 簡單案：NT$ 5-30k
+- 中等：NT$ 30-100k
+- 維護：NT$ 1-10k/月
+- SaaS：月費 NT$ 200-5000
+- 教課：NT$ 5-30k
+
+## 全職市場
+- 爬蟲工程師：NT$ 60-120k
+- Data Engineer：NT$ 90-180k
+- 自由接案：年 NT$ 100-500k
+
+## 給新手最佳建議
+1. 學 Python（最大生態）
+2. 跑通第一個爬蟲
+3. 學 Scrapy + Playwright
+4. 接第一個付費案
+5. 累積 5 個 case
+6. SaaS / 顧問
+
+## 終極心法
+爬蟲不是「能爬」、是：
+- 法律安全
+- 客戶滿意
+- 長期維護
+- 商業可行
+
+1 年後、你會是專業爬蟲工程師。

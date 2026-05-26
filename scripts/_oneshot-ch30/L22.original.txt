@@ -1,0 +1,95 @@
+## CSV
+**優**：人類可讀、跨工具
+**劣**：慢、大、無 schema
+
+```python
+df.to_csv("data.csv", encoding="utf-8-sig", index=False)
+```
+
+## JSON / JSONL
+**優**：彈性 schema、巢狀資料
+**劣**：大、慢
+
+```python
+df.to_json("data.jsonl", orient="records", lines=True)
+```
+
+## Parquet（推薦大資料）
+**優**：壓縮（小 5-10x）、快、有 schema、列式儲存
+**劣**：要套件解析
+
+```python
+df.to_parquet("data.parquet", compression="snappy")
+df = pd.read_parquet("data.parquet")
+```
+
+## SQLite
+**優**：嵌入、SQL 查、易備份
+**劣**：單寫入
+
+## PostgreSQL / MySQL
+**優**：可靠、ACID、SQL 查
+**劣**：要 server
+
+## ClickHouse / DuckDB（分析）
+**優**：分析超快
+**劣**：寫入慢
+
+```python
+import duckdb
+
+duckdb.sql("""
+    SELECT category, AVG(price) AS avg_price
+    FROM 'data.parquet'
+    GROUP BY category
+""")
+```
+
+## S3 / R2（cold storage）
+**優**：便宜、無限大
+**劣**：慢、要 API
+
+```python
+import boto3
+
+s3 = boto3.client("s3")
+s3.put_object(
+    Bucket="my-bucket",
+    Key=f"data/{date}.parquet",
+    Body=df.to_parquet()
+)
+```
+
+## 分層儲存
+```
+Raw（S3 Parquet）
+  ↓ 清理
+Staging（PG）
+  ↓ 加工
+Production（PG indexed）
+  ↓ 分析
+Analytics（DuckDB / ClickHouse / BigQuery）
+```
+
+## 選擇
+
+| 階段 | 推薦 |
+|---|---|
+| 抓資料中 | JSONL（append）|
+| 處理後存 | Parquet |
+| Production API | PG / MySQL |
+| 分析 | DuckDB / BigQuery |
+| 歸檔 | S3 Parquet |
+
+## Partition（按時間分）
+```python
+df.to_parquet(
+    f"data/year={year}/month={month}/data.parquet"
+)
+```
+查詢時只讀需要的 partition。
+
+## 心法
+- 不要存重複（每階段不同 storage）
+- 列式（Parquet）比行式（CSV）快 10x
+- 巨量資料用 S3 + Parquet + DuckDB
