@@ -1,0 +1,230 @@
+非即時 / 慢 task 必備—Python 後端的進階能力。
+
+  
+### WebSocket：即時通訊
+
+```text
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+
+app = FastAPI()
+
+# 連線管理
+class ConnectionManager:
+    def __init__(self):
+        self.active: list[WebSocket] = []
+    
+    async def connect(self, ws: WebSocket):
+        await ws.accept()
+        self.active.append(ws)
+    
+    def disconnect(self, ws: WebSocket):
+        self.active.remove(ws)
+    
+    async def broadcast(self, msg: str):
+        for connection in self.active:
+            await connection.send_text(msg)
+
+manager = ConnectionManager()
+
+@app.websocket("/ws/{client_id}")
+async def websocket_endpoint(websocket: WebSocket, client_id: int):
+    await manager.connect(websocket)
+    try:
+        while True:
+            data = await websocket.receive_text()
+            await manager.broadcast(f"Client {client_id}: {data}")
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)
+        await manager.broadcast(f"Client {client_id} left")
+
+# Client（browser JS）
+const ws = new WebSocket("ws://localhost:8000/ws/1");
+ws.onmessage = (e) => console.log(e.data);
+ws.send("Hello!");
+```
+
+  
+### SSE：Server-Sent Events
+
+```text
+# AI 串流主流（ChatGPT 一字一字出）
+
+from fastapi import FastAPI
+from fastapi.responses import StreamingResponse
+import asyncio
+
+@app.get("/stream")
+async def stream():
+    async def generate():
+        for i in range(10):
+            yield f"data: {{\"count\": {i}}}\n\n"
+            await asyncio.sleep(1)
+    
+    return StreamingResponse(generate(), media_type="text/event-stream")
+
+# AI 串流範例
+@app.post("/chat")
+async def chat(message: str):
+    async def generate():
+        async for chunk in openai_stream(message):
+            yield f"data: {chunk}\n\n"
+    return StreamingResponse(generate(), media_type="text/event-stream")
+
+# Client
+const evt = new EventSource("/stream");
+evt.onmessage = (e) => console.log(JSON.parse(e.data));
+```
+
+  
+### BackgroundTasks（簡單背景）
+
+```text
+from fastapi import BackgroundTasks
+
+def send_welcome_email(email: str):
+    # 慢操作
+    send_email(email, "Welcome!")
+
+@app.post("/register")
+async def register(
+    user: UserCreate,
+    background_tasks: BackgroundTasks,
+    db: AsyncSession = Depends(get_db)
+):
+    new_user = User(**user.dict())
+    db.add(new_user)
+    await db.commit()
+    
+    # 寄信丟背景、不擋回應
+    background_tasks.add_task(send_welcome_email, user.email)
+    
+    return {"user": new_user}
+
+# 適合：
+# - 簡單一次性背景
+# - 不需要重試
+# - 不需要 cross-process
+
+# 不適合：
+# - 重 task
+# - 需要 retry
+# - 需要監控
+```
+
+  
+### Celery：production-grade 任務隊列
+
+```text
+$ uv add celery redis
+
+# tasks.py
+from celery import Celery
+
+celery_app = Celery(
+    "myapp",
+    broker="redis://localhost:6379/0",
+    backend="redis://localhost:6379/1"
+)
+
+@celery_app.task(bind=True, max_retries=3)
+def send_email_task(self, email: str, subject: str, body: str):
+    try:
+        email_service.send(email, subject, body)
+    except Exception as exc:
+        # 自動重試（exponential backoff）
+        raise self.retry(exc=exc, countdown=2 ** self.request.retries)
+
+@celery_app.task
+def process_video(video_id: int):
+    video = db.query(Video).get(video_id)
+    # 轉檔、產生縮圖、上傳 CDN
+    process(video)
+
+# 用
+@app.post("/upload-video")
+async def upload(video_data: ...):
+    video = Video(...)
+    db.add(video)
+    await db.commit()
+    
+    # 丟 Celery
+    process_video.delay(video.id)
+    
+    return {"video_id": video.id}
+
+# Worker（另一個 process）
+$ celery -A tasks worker --loglevel=info
+
+# 監控（Flower）
+$ uv add flower
+$ celery -A tasks flower
+# 訪問 http://localhost:5555
+```
+
+  
+### Celery Beat：定時任務
+
+```text
+# celery_app.py
+from celery.schedules import crontab
+
+celery_app.conf.beat_schedule = {
+    "daily-report": {
+        "task": "tasks.generate_daily_report",
+        "schedule": crontab(hour=3, minute=0),
+    },
+    "every-5-min": {
+        "task": "tasks.health_check",
+        "schedule": 300.0,
+    },
+}
+
+# 跑
+$ celery -A tasks beat --loglevel=info
+
+# Beat 排程 + worker 執行
+```
+
+  
+### 2026 替代品
+
+```text
+# Celery 強但複雜
+# 新興簡單替代：
+
+1. RQ（Redis Queue）
+   - 比 Celery 簡單 5 倍
+   - 適合 indie
+
+2. Dramatiq
+   - modern Python task queue
+   - 比 Celery 設計好
+
+3. Taskiq
+   - async-first
+   - FastAPI 親和
+
+4. Inngest / Trigger.dev
+   - serverless 任務
+   - 不用自架 Redis
+
+indie 選擇：
+- 小 SaaS：BackgroundTasks
+- 中 SaaS：RQ
+- 大型 / 複雜：Celery
+- Serverless：Inngest
+```
+
+  
+    **🚀 進階技巧**
+    
+2026 Python 後端即時 / 背景 stack：(1) **WebSocket**—聊天、協作 (2) **SSE**—AI 串流、通知（最常用） (3) **BackgroundTasks**—簡單背景 (4) **Celery / RQ + Redis**—複雜任務。**Indie 順序**：先用 BackgroundTasks（day 1）→ 需要 retry / cron 加 RQ。
+
+  
+
+  
+    
+      ⚠️
+      新手常見錯誤
+    
+    新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。

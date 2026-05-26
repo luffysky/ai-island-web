@@ -1,0 +1,239 @@
+SQLAlchemy 是 Python ORM 業界標準—Stripe、Reddit、Yelp 都用。2.0 加 async、modern API。
+
+  
+### 定義 Model
+
+```text
+# 1. 裝
+$ uv add sqlalchemy asyncpg alembic
+
+# 2. models.py
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy import String, Integer, ForeignKey, DateTime, func
+from datetime import datetime
+
+class Base(DeclarativeBase):
+    pass
+
+class User(Base):
+    __tablename__ = "users"
+    
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String(100))
+    email: Mapped[str] = mapped_column(String(255), unique=True)
+    age: Mapped[int | None]
+    created_at: Mapped[datetime] = mapped_column(default=func.now())
+    
+    orders: Mapped[list["Order"]] = relationship(back_populates="user")
+
+class Order(Base):
+    __tablename__ = "orders"
+    
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    total: Mapped[float]
+    
+    user: Mapped["User"] = relationship(back_populates="orders")
+```
+
+  
+### 連線 + Session
+
+```text
+# 3. database.py
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+
+DATABASE_URL = "postgresql+asyncpg://user:pass@localhost/mydb"
+
+engine = create_async_engine(DATABASE_URL, echo=True)
+AsyncSessionLocal = async_sessionmaker(engine, expire_on_commit=False)
+
+async def get_db() -> AsyncSession:
+    async with AsyncSessionLocal() as session:
+        yield session
+
+# FastAPI 用
+@app.get("/users")
+async def list_users(db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(User))
+    return result.scalars().all()
+```
+
+  
+### CRUD
+
+```text
+from sqlalchemy import select, update, delete
+
+# Create
+new_user = User(name="Alice", email="alice@x.com", age=30)
+db.add(new_user)
+await db.commit()
+await db.refresh(new_user)   # 拿 id
+
+# Read
+# 一個
+result = await db.execute(select(User).where(User.id == 1))
+user = result.scalar_one_or_none()
+
+# 多個
+result = await db.execute(select(User).where(User.age > 18))
+users = result.scalars().all()
+
+# 排序 / 分頁
+stmt = (
+    select(User)
+    .where(User.is_active == True)
+    .order_by(User.created_at.desc())
+    .limit(20)
+    .offset(0)
+)
+result = await db.execute(stmt)
+users = result.scalars().all()
+
+# Update
+user.name = "Alice Smith"
+await db.commit()
+
+# 或 bulk update
+await db.execute(
+    update(User)
+    .where(User.id == 1)
+    .values(name="Alice Smith")
+)
+await db.commit()
+
+# Delete
+await db.delete(user)
+await db.commit()
+
+# 或 bulk
+await db.execute(delete(User).where(User.id == 1))
+await db.commit()
+```
+
+  
+### Relationship + Join
+
+```text
+from sqlalchemy.orm import selectinload, joinedload
+
+# Lazy load（會 N+1）
+user = await db.get(User, 1)
+orders = user.orders   # 觸發 query
+
+# Eager load（避免 N+1）
+stmt = select(User).options(selectinload(User.orders)).where(User.id == 1)
+result = await db.execute(stmt)
+user = result.scalar_one()
+# 一個 query 連 orders 都載入
+
+# JOIN
+from sqlalchemy import select
+
+stmt = (
+    select(User, Order)
+    .join(Order)
+    .where(Order.total > 1000)
+)
+result = await db.execute(stmt)
+for user, order in result:
+    print(user.name, order.total)
+```
+
+  
+### Alembic：DB Migration
+
+```text
+# 改 schema 時、不能手動改 DB
+# 用 migration 自動 + 版控
+
+# 1. 初始化
+$ uv run alembic init alembic
+
+# 2. 設定 alembic.ini + env.py
+# sqlalchemy.url = postgresql+asyncpg://...
+
+# 3. 改 model 後、自動生 migration
+$ uv run alembic revision --autogenerate -m "add user.age column"
+
+# 自動產生：
+# alembic/versions/xxx_add_user_age_column.py
+
+def upgrade():
+    op.add_column("users", sa.Column("age", sa.Integer))
+
+def downgrade():
+    op.drop_column("users", "age")
+
+# 4. 套用
+$ uv run alembic upgrade head
+
+# 5. 看狀態
+$ uv run alembic current
+$ uv run alembic history
+
+# 6. 回滾
+$ uv run alembic downgrade -1
+```
+
+  
+### Production 最佳實踐
+
+```text
+# Connection pool
+engine = create_async_engine(
+    DATABASE_URL,
+    pool_size=20,
+    max_overflow=10,
+    pool_pre_ping=True,    # 連線前 ping
+)
+
+# Transaction
+async def transfer(from_id, to_id, amount):
+    async with db.begin():
+        from_user = await db.get(User, from_id)
+        from_user.balance -= amount
+        
+        to_user = await db.get(User, to_id)
+        to_user.balance += amount
+        
+    # 自動 commit / rollback
+
+# Repository pattern
+class UserRepository:
+    def __init__(self, db: AsyncSession):
+        self.db = db
+    
+    async def find_by_id(self, id: int) -> User | None:
+        result = await self.db.execute(
+            select(User).where(User.id == id)
+        )
+        return result.scalar_one_or_none()
+    
+    async def find_active(self) -> list[User]:
+        result = await self.db.execute(
+            select(User).where(User.is_active == True)
+        )
+        return result.scalars().all()
+    
+    async def save(self, user: User) -> User:
+        self.db.add(user)
+        await self.db.commit()
+        await self.db.refresh(user)
+        return user
+```
+
+  
+    **☕ 用人話講**
+    
+SQLAlchemy 2.0 + Alembic = Python DB 完整 stack。**2026 重點**：(1) 用 async（FastAPI 完美搭） (2) 用新版 syntax（Mapped、select）—2.0 之前的 API 別學 (3) 永遠 eager load 避免 N+1 (4) Alembic migration 從 day 1 用。
+
+  
+
+  
+    
+      🚀
+      2026 趨勢
+    
+    這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。

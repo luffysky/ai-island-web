@@ -1,0 +1,257 @@
+寫完 Python 後端、怎麼上 production？2026 主流選擇。
+
+  
+### 本機跑 vs Production
+
+```text
+# 本機 development
+$ uvicorn main:app --reload
+# 單 worker、改 code reload
+
+# Production：多 worker + 監控
+$ uvicorn main:app --host 0.0.0.0 --port 8000 --workers 4
+
+# 或用 Gunicorn 管 Uvicorn
+$ uv add gunicorn
+$ gunicorn main:app -w 4 -k uvicorn.workers.UvicornWorker
+
+# 為什麼多 worker：
+# Python GIL：1 個 process 1 個 thread 跑 Python
+# 多 worker = 多 process = 真平行
+# Rule: workers = CPU 核心 * 2
+```
+
+  
+### Dockerfile
+
+```text
+# Dockerfile
+FROM python:3.12-slim
+
+WORKDIR /app
+
+# 裝 uv
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
+# 裝依賴（先複製 pyproject、利用 cache）
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen --no-cache
+
+# 複製 code
+COPY . .
+
+# 環境變數
+ENV PYTHONUNBUFFERED=1
+
+EXPOSE 8000
+
+CMD ["uv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]
+
+# Build + run
+$ docker build -t myapp .
+$ docker run -p 8000:8000 myapp
+```
+
+  
+### docker-compose（完整 stack）
+
+```text
+# docker-compose.yml
+version: "3.9"
+
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://user:pass@db/mydb
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - db
+      - redis
+  
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: mydb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+  
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+  
+  worker:
+    build: .
+    command: celery -A tasks worker --loglevel=info
+    depends_on:
+      - redis
+
+volumes:
+  postgres_data:
+
+# 一鍵啟動
+$ docker compose up
+
+# 全部 services 一起跑
+```
+
+  
+### 2026 部署平台
+
+```text
+Indie / 簡單：
+1. Railway（最簡單、$0-30/月）
+   - git push 自動 deploy
+   - DB / Redis 一鍵加
+   - 推薦 indie 首選
+
+2. Render
+   - 類 Railway
+   - 免費 tier
+
+3. Fly.io
+   - 全球邊緣
+   - Docker-native
+
+4. Vercel
+   - 主前端、serverless Python 也行
+   - Next.js + Python API 完美
+
+中型：
+5. AWS（ECS / Fargate / Lambda）
+   - 最完整、最複雜
+   - 學習曲線陡
+
+6. Google Cloud Run
+   - serverless container
+   - 按用量
+
+7. Heroku
+   - 老牌、貴但穩
+
+大型：
+8. Kubernetes
+   - 自架 cluster
+   - 太重、indie 不需要
+```
+
+  
+### 環境變數 + secrets
+
+```text
+# .env（不 commit）
+DATABASE_URL=postgresql://...
+SECRET_KEY=xxx
+OPENAI_API_KEY=sk-...
+REDIS_URL=redis://...
+
+# .gitignore
+.env
+
+# main.py
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+DATABASE_URL = os.environ["DATABASE_URL"]
+SECRET_KEY = os.environ["SECRET_KEY"]
+
+# 或用 pydantic-settings（推薦）
+from pydantic_settings import BaseSettings
+
+class Settings(BaseSettings):
+    database_url: str
+    secret_key: str
+    openai_api_key: str
+    
+    class Config:
+        env_file = ".env"
+
+settings = Settings()
+
+# Production：在平台 UI 設環境變數
+# Railway / Vercel / Render 都有設定頁
+```
+
+  
+### 監控 + 日誌
+
+```text
+# Sentry（error tracking）
+$ uv add sentry-sdk
+
+import sentry_sdk
+sentry_sdk.init(
+    dsn=os.environ["SENTRY_DSN"],
+    traces_sample_rate=0.1,
+)
+
+# 自動抓 unhandled exception
+
+# Structured log
+import structlog
+logger = structlog.get_logger()
+
+logger.info("user_login", user_id=123, ip="1.2.3.4")
+
+# Health check
+@app.get("/health")
+async def health(db: AsyncSession = Depends(get_db)):
+    try:
+        await db.execute(text("SELECT 1"))
+        return {"status": "ok"}
+    except Exception:
+        return {"status": "unhealthy"}, 503
+```
+
+  
+### Indie SaaS 完整 stack
+
+```text
+2026 推薦組合：
+
+App：Railway / Fly.io
+DB：Neon（managed PostgreSQL）
+Cache：Upstash Redis
+Storage：Cloudflare R2
+CDN：Cloudflare
+Email：Resend
+Auth：Clerk
+Monitoring：Sentry
+Domain：Cloudflare
+
+月成本（0-1000 user）：$0-30
+月成本（10k user）：$50-200
+
+從本機到 production：
+1. uv sync（依賴）
+2. .env 設環境變數
+3. uvicorn 跑
+4. Dockerfile 包
+5. Railway / Render git push
+6. Sentry 監控
+7. Custom domain 設好
+8. 上線！
+```
+
+  
+    **☕ 用人話講**
+    
+Python 後端部署 2026 心法：(1) **Uvicorn + Gunicorn workers**（多 worker） (2) **Docker**（環境一致） (3) **Railway / Fly.io**（git push 自動 deploy） (4) **Managed DB / Redis**（不自架） (5) **Sentry**（監控）。**Indie 不要學 K8s**—用 PaaS 月 $30 撐 10k user 完全 OK。
+
+  
+
+  
+    
+      🎯
+      面試考點
+    
+    台灣科技公司面試 90% 會問「Python」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。

@@ -190,6 +190,26 @@ for (const [id, content] of [
   console.log(`[batch5b] ${id} (${l.title}) updated, new length:`, l.content.length);
 }
 
+// === batch6: L28-L32 (DB / Auth / WebSocket / Django / 部署) — ch26 全章收尾！ ===
+const L28_CONTENT = fs.readFileSync(path.join(__dirname, 'L28.content.md'), 'utf8');
+const L29_CONTENT = fs.readFileSync(path.join(__dirname, 'L29.content.md'), 'utf8');
+const L30_CONTENT = fs.readFileSync(path.join(__dirname, 'L30.content.md'), 'utf8');
+const L31_CONTENT = fs.readFileSync(path.join(__dirname, 'L31.content.md'), 'utf8');
+const L32_CONTENT = fs.readFileSync(path.join(__dirname, 'L32.content.md'), 'utf8');
+
+for (const [id, content] of [
+  ['26.28', L28_CONTENT],
+  ['26.29', L29_CONTENT],
+  ['26.30', L30_CONTENT],
+  ['26.31', L31_CONTENT],
+  ['26.32', L32_CONTENT],
+]) {
+  const l = ch26.lessons.find((x) => x.id === id);
+  if (!l) throw new Error(`${id} not found`);
+  l.content = content;
+  console.log(`[batch6] ${id} (${l.title}) updated, new length:`, l.content.length);
+}
+
 // === 寫回 + 驗證 ===
 const out = JSON.stringify(ch26, null, 2) + '\n';
 fs.writeFileSync(CH26_PATH, out, 'utf8');

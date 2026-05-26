@@ -1,0 +1,168 @@
+FastAPI 不是唯一—Django 仍主流大型 Python 後端。
+
+  
+### Django vs FastAPI vs Flask
+
+  
+|  | FastAPI | Django | Flask |
+| --- | --- | --- | --- |
+| 定位 | API-first、modern | Full-stack、batteries-included | Minimal、彈性 |
+| 速度 | 最快 | 中 | 中 |
+| 學習曲線 | 中 | 陡（內容多） | 簡單 |
+| 內建 | 少（你選工具） | 多（ORM / admin / auth / forms） | 少 |
+| async | 原生 | 4.0+ 支援、不完整 | 有限 |
+| 適合 | API / 微服務 / AI | 大型 monolith / CMS | 小工具 / prototype |
+| 公司 | Uber、Microsoft | Instagram、Pinterest、Spotify | 各種 startup |
+
+  
+### Django 範例
+
+```text
+# 1. 建專案
+$ uv add django djangorestframework
+$ django-admin startproject myapp
+$ cd myapp
+$ python manage.py startapp blog
+
+# 2. settings.py
+INSTALLED_APPS = [
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "rest_framework",
+    "blog",
+]
+
+# 3. models.py
+from django.db import models
+
+class Post(models.Model):
+    title = models.CharField(max_length=200)
+    content = models.TextField()
+    author = models.ForeignKey("auth.User", on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+# 4. Migration
+$ python manage.py makemigrations
+$ python manage.py migrate
+
+# 5. Admin（自動）
+# admin.py
+from django.contrib import admin
+from .models import Post
+
+admin.site.register(Post)
+
+# 訪問 /admin/ → 內建完整 CRUD UI
+# Django 強項 #1
+
+# 6. DRF API
+# serializers.py
+from rest_framework import serializers
+from .models import Post
+
+class PostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = "__all__"
+
+# views.py
+from rest_framework import viewsets
+from .models import Post
+from .serializers import PostSerializer
+
+class PostViewSet(viewsets.ModelViewSet):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+
+# urls.py
+from rest_framework.routers import DefaultRouter
+from blog.views import PostViewSet
+
+router = DefaultRouter()
+router.register("posts", PostViewSet)
+
+urlpatterns = router.urls
+
+# 自動有 GET / POST / PUT / PATCH / DELETE
+# 完整 RESTful API、不寫 endpoint
+```
+
+  
+### Django 強項
+
+```text
+1. Django Admin
+   - 內建 CRUD 後台
+   - 0 code 給管理者用
+
+2. Django ORM
+   - 簡單、教學多
+   - migration 內建
+
+3. Forms
+   - 自動驗證 + UI
+
+4. Authentication
+   - 內建（login、permissions、groups）
+
+5. 大量第三方
+   - django-rest-framework
+   - django-celery
+   - django-channels（WebSocket）
+
+6. Convention over configuration
+   - 大家寫法一致
+   - 接案 / 換工作友善
+```
+
+  
+### Django 不適合
+
+  
+- 純 API（FastAPI 更輕、更快）
+- Microservices（太重）
+- 需要極致效能
+- 新 startup（學習曲線陡）
+
+  
+### 怎麼選
+
+```text
+選 FastAPI 當：
+- 主要做 API
+- AI / ML backend
+- 微服務
+- 想 modern、async
+- 中小團隊（2026 主流）
+
+選 Django 當：
+- 全端 web app（含 UI）
+- 需要 admin 後台
+- CMS / 內容平台
+- 大型團隊有規範
+- 工作機會多（台灣中大企業）
+
+選 Flask 當：
+- 簡單 API / prototype
+- 小工具
+- 學習用
+
+2026 indie 推薦：
+- 純 API → FastAPI
+- 內含 UI → Next.js + FastAPI backend
+- 真的要 Django → 用 Django 但加 DRF
+```
+
+  
+    **☕ 用人話講**
+    
+Django 是 Python 後端「老大哥」—Instagram / Spotify / Pinterest 用了 15 年。**2026 現實**：(1) 新專案 FastAPI 主流（速度 + modern） (2) Django 仍主流 enterprise / CMS（生態 + admin） (3) Flask 變 prototype 用。學 Python 後端建議：FastAPI 為主、Django 知道存在、Flask 不用學。
+
+  
+
+  
+    
+      💼
+      接案小知識
+    
+    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「Python」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。

@@ -1,0 +1,254 @@
+Python 後端認證實戰—密碼 hash、JWT、OAuth 第三方登入。
+
+  
+### 密碼 hash（bcrypt）
+
+```text
+# 裝
+$ uv add passlib[bcrypt]
+
+from passlib.context import CryptContext
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+# 註冊：hash 密碼
+hashed = pwd_context.hash("user_password_123")
+# 存進 DB（永遠不存明文！）
+
+# 登入：驗證
+is_valid = pwd_context.verify("user_password_123", hashed)
+# True / False
+```
+
+  
+### JWT 完整實作
+
+```text
+$ uv add python-jose[cryptography]
+
+from datetime import datetime, timedelta
+from jose import jwt, JWTError
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+
+SECRET_KEY = "your-secret-key-keep-in-env"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+def create_access_token(data: dict, expires_delta: timedelta = None):
+    to_encode = data.copy()
+    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=15))
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+# 登入 endpoint
+@app.post("/token")
+async def login(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: AsyncSession = Depends(get_db)
+):
+    # 找 user
+    user = await db.execute(
+        select(User).where(User.email == form_data.username)
+    )
+    user = user.scalar_one_or_none()
+    
+    if not user or not pwd_context.verify(form_data.password, user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password"
+        )
+    
+    # 生 token
+    access_token = create_access_token(
+        data={"sub": str(user.id)},
+        expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    )
+    
+    return {"access_token": access_token, "token_type": "bearer"}
+
+# 驗證 token 的 dependency
+async def get_current_user(
+    token: str = Depends(oauth2_scheme),
+    db: AsyncSession = Depends(get_db)
+) -> User:
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials"
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id = payload.get("sub")
+        if user_id is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+    
+    user = await db.get(User, int(user_id))
+    if user is None:
+        raise credentials_exception
+    return user
+
+# 保護的 endpoint
+@app.get("/me")
+async def read_me(current_user: User = Depends(get_current_user)):
+    return current_user
+```
+
+  
+### Refresh Token Pattern
+
+```text
+# Access token 短期（15 分鐘）
+# Refresh token 長期（30 天、存 DB）
+
+class TokenPair(BaseModel):
+    access_token: str
+    refresh_token: str
+    token_type: str = "bearer"
+
+@app.post("/token", response_model=TokenPair)
+async def login(...):
+    user = ...
+    
+    access_token = create_access_token(
+        data={"sub": str(user.id)},
+        expires_delta=timedelta(minutes=15)
+    )
+    
+    refresh_token = create_access_token(
+        data={"sub": str(user.id), "type": "refresh"},
+        expires_delta=timedelta(days=30)
+    )
+    
+    # Refresh token 存 DB（能撤銷）
+    db.add(RefreshToken(token=refresh_token, user_id=user.id))
+    await db.commit()
+    
+    return TokenPair(
+        access_token=access_token,
+        refresh_token=refresh_token
+    )
+
+@app.post("/refresh", response_model=TokenPair)
+async def refresh(refresh_token: str):
+    try:
+        payload = jwt.decode(refresh_token, SECRET_KEY, algorithms=[ALGORITHM])
+        if payload.get("type") != "refresh":
+            raise HTTPException(401)
+        user_id = payload.get("sub")
+    except JWTError:
+        raise HTTPException(401)
+    
+    # 檢查 refresh token 沒被撤銷
+    db_token = await db.execute(
+        select(RefreshToken).where(RefreshToken.token == refresh_token)
+    )
+    if not db_token.scalar_one_or_none():
+        raise HTTPException(401)
+    
+    # 生新 access token
+    new_access = create_access_token(
+        data={"sub": user_id},
+        expires_delta=timedelta(minutes=15)
+    )
+    return TokenPair(access_token=new_access, refresh_token=refresh_token)
+```
+
+  
+### OAuth 第三方登入
+
+```text
+# 「用 Google 登入」「用 LINE 登入」
+
+# 用 Authlib
+$ uv add authlib httpx
+
+from authlib.integrations.starlette_client import OAuth
+
+oauth = OAuth()
+oauth.register(
+    name="google",
+    client_id=os.environ["GOOGLE_CLIENT_ID"],
+    client_secret=os.environ["GOOGLE_CLIENT_SECRET"],
+    server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
+    client_kwargs={"scope": "openid email profile"}
+)
+
+@app.get("/auth/google")
+async def google_login(request: Request):
+    redirect_uri = request.url_for("google_callback")
+    return await oauth.google.authorize_redirect(request, redirect_uri)
+
+@app.get("/auth/google/callback")
+async def google_callback(request: Request, db: AsyncSession = Depends(get_db)):
+    token = await oauth.google.authorize_access_token(request)
+    user_info = token.get("userinfo")
+    
+    # 找 / 建 user
+    result = await db.execute(
+        select(User).where(User.email == user_info["email"])
+    )
+    user = result.scalar_one_or_none()
+    
+    if not user:
+        user = User(
+            email=user_info["email"],
+            name=user_info["name"],
+            google_id=user_info["sub"]
+        )
+        db.add(user)
+        await db.commit()
+    
+    # 生 JWT
+    access_token = create_access_token(data={"sub": str(user.id)})
+    return RedirectResponse(f"/?token={access_token}")
+```
+
+  
+### 用 Clerk / Auth.js（推薦 indie）
+
+```text
+# 不要自己搞 auth、用 SaaS
+# 安全 + 省時間
+
+# Clerk Python SDK
+$ uv add clerk-backend-api
+
+from clerk_backend_api import Clerk
+
+clerk = Clerk(bearer_auth=os.environ["CLERK_SECRET_KEY"])
+
+async def get_current_user_from_clerk(
+    token: str = Depends(oauth2_scheme)
+):
+    try:
+        session = clerk.sessions.verify(token=token)
+        user = clerk.users.get(user_id=session.user_id)
+        return user
+    except Exception:
+        raise HTTPException(401)
+
+# 不用自己處理：
+# - 密碼 hash / 重設
+# - Email 驗證
+# - OAuth 多 provider
+# - 2FA
+# - Session 管理
+```
+
+  
+    **⚠ 踩雷警告**
+    
+Auth 是頭號資安洞：(1) **絕對不存明文密碼**—用 bcrypt / argon2 (2) **JWT secret 放 env**—不寫死 code (3) **HTTPS only**—不然 token 被竊聽 (4) **HttpOnly cookie**—防 XSS (5) **新手用 Clerk / Supabase Auth**—別自己搞。
+
+  
+
+  
+    
+      🛠️
+      工具推薦
+    
+    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。
