@@ -1,0 +1,269 @@
+讀寫檔案是日常—讀設定檔、存資料、處理 CSV / JSON / 文字。
+
+  
+### 讀檔案
+
+```text
+# 經典寫法（記得 close）
+f = open("data.txt", "r")
+content = f.read()
+print(content)
+f.close()   # 一定要
+
+# Pythonic：with 自動 close（推薦）
+with open("data.txt", "r") as f:
+    content = f.read()
+print(content)
+
+# 讀模式
+"r"   # 讀（預設）
+"w"   # 寫（蓋掉原本）
+"a"   # 追加（接在後面）
+"r+"  # 讀+寫
+"rb"  # 讀 binary
+"wb"  # 寫 binary
+
+# 讀整個檔案
+with open("data.txt") as f:
+    content = f.read()     # 整個 string
+
+# 一行行讀（記憶體友善、大檔用這個）
+with open("data.txt") as f:
+    for line in f:
+        print(line.strip())   # strip 去掉換行
+
+# 讀所有行成 list
+with open("data.txt") as f:
+    lines = f.readlines()
+# ['line 1\n', 'line 2\n', ...]
+
+# 讀指定 bytes
+with open("data.txt") as f:
+    chunk = f.read(1024)   # 1KB
+
+# UTF-8（中文檔案）
+with open("data.txt", encoding="utf-8") as f:
+    content = f.read()
+# Windows 預設 cp950、明確指定 encoding 防亂碼
+```
+
+  
+### 寫檔案
+
+```text
+# 寫（蓋掉）
+with open("output.txt", "w") as f:
+    f.write("Hello\n")
+    f.write("World\n")
+
+# 寫多行
+lines = ["line 1\n", "line 2\n", "line 3\n"]
+with open("output.txt", "w") as f:
+    f.writelines(lines)
+# 注意：writelines 不加換行、要自己在每行加 \n
+
+# 追加
+with open("log.txt", "a") as f:
+    f.write(f"{datetime.now()} - event\n")
+
+# 用 print 寫檔案
+with open("output.txt", "w") as f:
+    print("Hello", file=f)
+    print("World", file=f)
+```
+
+  
+### JSON
+
+```text
+import json
+
+# 寫 JSON
+data = {
+    "name": "Alice",
+    "age": 30,
+    "hobbies": ["reading", "hiking"]
+}
+
+with open("user.json", "w") as f:
+    json.dump(data, f, indent=2)    # indent 美化
+
+# 讀 JSON
+with open("user.json") as f:
+    data = json.load(f)
+
+print(data["name"])
+
+# 字串 ↔ JSON
+json_str = json.dumps(data)        # dict → string
+parsed = json.loads(json_str)      # string → dict
+
+# 中文不要被 escape
+json.dumps({"name": "愛麗絲"}, ensure_ascii=False)
+# 否則會變 "\u611b..."
+
+# 不能直接 dump 的型別
+import json
+from datetime import datetime
+
+data = {"time": datetime.now()}
+json.dumps(data)
+# ❌ TypeError
+
+# 解：自訂 encoder
+def encoder(obj):
+    if isinstance(obj, datetime):
+        return obj.isoformat()
+    raise TypeError()
+
+json.dumps(data, default=encoder)
+```
+
+  
+### CSV
+
+```text
+import csv
+
+# 寫 CSV
+data = [
+    ["name", "age", "city"],
+    ["Alice", 30, "Taipei"],
+    ["Bob", 25, "Tokyo"],
+]
+
+with open("users.csv", "w", newline="") as f:
+    writer = csv.writer(f)
+    writer.writerows(data)
+
+# 讀 CSV
+with open("users.csv") as f:
+    reader = csv.reader(f)
+    for row in reader:
+        print(row)   # ['Alice', '30', 'Taipei']
+
+# 用 DictReader（用 header 當 key）
+with open("users.csv") as f:
+    reader = csv.DictReader(f)
+    for row in reader:
+        print(row["name"], row["age"])
+
+# 用 DictWriter
+data = [
+    {"name": "Alice", "age": 30},
+    {"name": "Bob", "age": 25},
+]
+
+with open("users.csv", "w", newline="") as f:
+    writer = csv.DictWriter(f, fieldnames=["name", "age"])
+    writer.writeheader()
+    writer.writerows(data)
+
+# 大資料用 pandas（後面講）
+import pandas as pd
+df = pd.read_csv("users.csv")
+df.to_csv("output.csv", index=False)
+```
+
+  
+### pathlib：現代檔案操作
+
+```text
+# 推薦取代 os.path
+from pathlib import Path
+
+# 建立 path 物件
+p = Path("data/users.txt")
+
+# 屬性
+p.name              # "users.txt"
+p.stem              # "users"
+p.suffix            # ".txt"
+p.parent            # PosixPath('data')
+
+# 檢查
+p.exists()
+p.is_file()
+p.is_dir()
+
+# 讀 / 寫（簡單）
+content = p.read_text(encoding="utf-8")
+p.write_text("hello", encoding="utf-8")
+
+# Binary
+data = p.read_bytes()
+p.write_bytes(b"binary data")
+
+# 路徑運算
+data_dir = Path("data")
+user_file = data_dir / "users.txt"   # 用 / 串接！
+print(user_file)   # data/users.txt
+
+# 列資料夾
+for f in data_dir.iterdir():
+    print(f)
+
+# Glob 找檔案
+for f in data_dir.glob("*.json"):
+    print(f)
+
+# 遞迴找
+for f in data_dir.rglob("*.py"):
+    print(f)
+
+# 建資料夾
+new_dir = Path("output")
+new_dir.mkdir(exist_ok=True)        # 已存在不錯
+new_dir.mkdir(parents=True, exist_ok=True)   # 連父建立
+
+# 刪
+p.unlink()              # 刪檔
+new_dir.rmdir()         # 刪空資料夾
+```
+
+  
+### 環境變數（.env）
+
+```text
+# 機密資訊不該寫 code！
+
+# .env 檔（不 commit、加 .gitignore）
+DATABASE_URL=postgresql://user:pass@localhost/db
+API_KEY=sk-abc123
+SECRET=xyz
+
+# 讀（python-dotenv）
+$ uv add python-dotenv
+
+# main.py
+from dotenv import load_dotenv
+import os
+
+load_dotenv()   # 讀 .env 進 os.environ
+
+db_url = os.environ["DATABASE_URL"]
+api_key = os.getenv("API_KEY", "default")   # 給預設
+
+# .gitignore 必加
+.env
+.venv/
+__pycache__/
+
+# .env.example（範本、給其他開發者）
+DATABASE_URL=postgresql://...
+API_KEY=your_key_here
+```
+
+  
+    **⚠ 踩雷警告**
+    
+新手 3 個檔案 I/O 坑：(1) **不用 with** → 忘記 close、檔案 lock 住 (2) **讀中文沒加 encoding="utf-8"** → Windows 亂碼 (3) **密碼 / API key 寫死 code** → 推 GitHub 被偷。**對策**：永遠 with、永遠 utf-8、機密放 .env。**大 SaaS 半夜被刷帳單** = 99% API key commit 進 GitHub。
+
+  
+
+  
+    
+      🎯
+      面試考點
+    
+    台灣科技公司面試 90% 會問「Python」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。

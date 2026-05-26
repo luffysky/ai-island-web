@@ -1,0 +1,301 @@
+Python 是動態型別、但 2024+ 主流加 **type hint**—不影響執行、但**救你大專案的命**。
+
+  
+### 為什麼要 type hint
+
+```text
+# 沒 type hint
+def process(items):
+    return [item.upper() for item in items]
+
+# 看名字看不出來：
+# - items 是什麼？list of string？dict？
+# - 回傳什麼？
+# - 用錯了什麼時候會發現？跑到才知
+
+# 有 type hint
+def process(items: list[str]) -> list[str]:
+    return [item.upper() for item in items]
+
+# 一目瞭然：吃 list of string、回 list of string
+# IDE 自動完成神準
+# mypy 跑型別檢查、抓 bug
+```
+
+  
+### 基本 type hint
+
+```text
+# 變數
+age: int = 30
+name: str = "Alice"
+is_active: bool = True
+pi: float = 3.14
+nothing: None = None
+
+# 函數
+def add(a: int, b: int) -> int:
+    return a + b
+
+def greet(name: str) -> str:
+    return f"Hello, {name}"
+
+def log(msg: str) -> None:    # 不回值
+    print(msg)
+
+# Container（Python 3.9+ 用內建）
+def get_users() -> list[str]:
+    return ["Alice", "Bob"]
+
+def count_chars(s: str) -> dict[str, int]:
+    return {c: s.count(c) for c in set(s)}
+
+# Tuple（明確元素）
+def get_point() -> tuple[float, float]:
+    return (3.0, 4.0)
+
+# 不定長 tuple
+def get_nums() -> tuple[int, ...]:
+    return (1, 2, 3, 4)
+
+# Set
+def get_tags() -> set[str]:
+    return {"python", "ai"}
+```
+
+  
+### Optional / Union
+
+```text
+# 可能 None
+from typing import Optional
+
+def find_user(id: int) -> Optional[User]:
+    return db.get(id)   # 找不到回 None
+
+# Python 3.10+ 用 | None
+def find_user(id: int) -> User | None:
+    return db.get(id)
+
+# Union（多種型別）
+def parse(x: int | str) -> int:
+    return int(x)
+
+# 老式（Python 3.9 以下）
+from typing import Union
+def parse(x: Union[int, str]) -> int:
+    return int(x)
+```
+
+  
+### Callable / 函數型別
+
+```text
+from typing import Callable
+
+# 「吃 int 回 int」的函數
+def apply(func: Callable[[int], int], n: int) -> int:
+    return func(n)
+
+def double(x: int) -> int:
+    return x * 2
+
+apply(double, 5)   # 10
+
+# 多參數
+def reducer(
+    func: Callable[[int, int], int],
+    items: list[int]
+) -> int:
+    ...
+
+# 沒參數 / 任何
+Callable[[], None]    # 不吃、不回
+Callable[..., int]    # 任意參數、回 int
+```
+
+  
+### Generic（泛型）
+
+```text
+from typing import TypeVar
+
+T = TypeVar("T")
+
+def first(items: list[T]) -> T:
+    return items[0]
+
+first([1, 2, 3])           # 推導 T=int、回 int
+first(["a", "b"])          # 推導 T=str、回 str
+first([True, False])       # 推導 T=bool、回 bool
+
+# 約束
+NumberT = TypeVar("NumberT", int, float)
+
+def avg(items: list[NumberT]) -> NumberT:
+    return sum(items) / len(items)
+
+# Python 3.12+ 簡潔語法
+def first[T](items: list[T]) -> T:
+    return items[0]
+
+# class 泛型
+from typing import Generic
+
+class Container(Generic[T]):
+    def __init__(self, item: T):
+        self.item = item
+    
+    def get(self) -> T:
+        return self.item
+
+c = Container[int](42)
+n: int = c.get()
+```
+
+  
+### 進階 type hint
+
+```text
+# Literal（指定值）
+from typing import Literal
+
+def set_status(status: Literal["active", "inactive", "pending"]) -> None:
+    ...
+
+set_status("active")     # ✓
+set_status("xxx")         # mypy 抗議
+
+# TypedDict（dict with 固定 key + type）
+from typing import TypedDict
+
+class User(TypedDict):
+    name: str
+    age: int
+    email: str
+
+u: User = {"name": "Alice", "age": 30, "email": "..."}
+
+# Pydantic（API 主流、後面講）
+
+# Protocol（duck typing 的型別）
+from typing import Protocol
+
+class Drawable(Protocol):
+    def draw(self) -> None: ...
+
+# 任何有 .draw() 方法的都符合
+def render(item: Drawable) -> None:
+    item.draw()
+
+# Final（不可改）
+from typing import Final
+
+PI: Final = 3.14
+PI = 4   # mypy 抗議
+
+# NewType（取別名）
+from typing import NewType
+
+UserId = NewType("UserId", int)
+
+def get_user(id: UserId) -> User: ...
+
+uid = UserId(123)
+get_user(uid)    # ✓
+get_user(123)    # mypy 抗議（普通 int 不是 UserId）
+```
+
+  
+### mypy / pyright：型別檢查器
+
+```text
+# 裝
+$ uv add --dev mypy
+
+# 跑
+$ uv run mypy main.py
+
+# 例：
+def add(a: int, b: int) -> int:
+    return a + b
+
+result = add(1, "2")
+# mypy: error: Argument 2 to "add" has incompatible type "str"; expected "int"
+
+# 不用跑也能抓 bug！
+
+# 設定（pyproject.toml）
+[tool.mypy]
+strict = true
+python_version = "3.12"
+
+# 漸進式採用
+[tool.mypy]
+disallow_untyped_defs = true
+
+# IDE 內建（推薦）
+# VS Code + Pylance：自動 type check
+# Cursor / Zed：同 Pylance
+# PyCharm：內建
+
+# Pyright（更快、Microsoft 出）
+$ uv add --dev pyright
+$ uv run pyright
+```
+
+  
+### 實戰例子
+
+```text
+# 寫完整的 typed code
+from typing import Optional
+from dataclasses import dataclass
+
+@dataclass
+class User:
+    id: int
+    name: str
+    email: str
+    age: Optional[int] = None
+    is_active: bool = True
+
+class UserRepository:
+    def __init__(self, db: "Database"):
+        self.db = db
+    
+    def find_by_id(self, id: int) -> Optional[User]:
+        row = self.db.query("SELECT * FROM users WHERE id = ?", [id])
+        if not row:
+            return None
+        return User(**row)
+    
+    def find_active(self) -> list[User]:
+        rows = self.db.query("SELECT * FROM users WHERE is_active = true")
+        return [User(**row) for row in rows]
+    
+    def save(self, user: User) -> User:
+        if user.id:
+            self.db.update(user)
+        else:
+            user.id = self.db.insert(user)
+        return user
+
+# IDE 完整自動完成
+# mypy 抓所有型別錯
+# 自己看 1 個月後仍懂
+```
+
+  
+    **🚀 進階技巧**
+    
+2026 Python 加 type hint 4 大理由：(1) **IDE 補全強**—VS Code / Cursor 自動完成神準 (2) **mypy 抓 bug**—不用跑就知道哪錯 (3) **自我文件**—1 個月後自己 / 同事看得懂 (4) **大專案不能沒有**—10000 行以上不加 type 死。**新專案 day 1 加 type hint**—之後感謝過去的自己。**已有 code** 漸進式加（先 public function、再 internal）。
+
+  
+
+  
+    
+      ⚠️
+      新手常見錯誤
+    
+    新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。

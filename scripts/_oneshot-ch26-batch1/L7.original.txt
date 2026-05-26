@@ -1,0 +1,265 @@
+把 code 拆檔、用別人寫好的 library—大型專案必備。
+
+  
+### 什麼是模組
+
+```text
+# 一個 .py 檔 = 一個 module
+
+# math_utils.py
+def add(a, b):
+    return a + b
+
+def multiply(a, b):
+    return a * b
+
+PI = 3.14159
+
+# main.py（在同資料夾）
+import math_utils
+
+print(math_utils.add(2, 3))       # 5
+print(math_utils.PI)              # 3.14159
+
+# 改名 import
+import math_utils as mu
+mu.add(2, 3)
+
+# 只 import 某些（推薦）
+from math_utils import add, PI
+add(2, 3)
+print(PI)
+
+# import 全部（不推薦）
+from math_utils import *
+# 容易命名衝突
+```
+
+  
+### 標準函式庫（Python 內建）
+
+```text
+# 不用裝、直接 import
+
+# math：數學
+import math
+math.pi               # 3.14159...
+math.sqrt(16)         # 4.0
+math.floor(3.7)       # 3
+math.ceil(3.2)        # 4
+
+# random：亂數
+import random
+random.random()                    # 0-1 隨機
+random.randint(1, 10)              # 1-10 整數
+random.choice(["a", "b", "c"])     # 隨機選一個
+random.shuffle([1, 2, 3, 4])       # 原地洗牌
+
+# datetime：時間
+from datetime import datetime, timedelta
+
+now = datetime.now()
+print(now)            # 2026-05-13 14:30:00
+print(now.year)       # 2026
+
+# 加減
+tomorrow = now + timedelta(days=1)
+last_week = now - timedelta(weeks=1)
+
+# 格式化
+now.strftime("%Y-%m-%d %H:%M")    # "2026-05-13 14:30"
+datetime.strptime("2026-05-13", "%Y-%m-%d")
+
+# json：JSON
+import json
+data = {"name": "Alice", "age": 30}
+json_str = json.dumps(data)           # 變字串
+parsed = json.loads(json_str)         # 解析
+
+# 寫 / 讀檔
+with open("data.json", "w") as f:
+    json.dump(data, f, indent=2)
+
+with open("data.json") as f:
+    data = json.load(f)
+
+# os：作業系統
+import os
+os.environ.get("API_KEY")          # 取環境變數
+os.listdir(".")                    # 列檔案
+os.path.exists("file.txt")         # 檢查存在
+
+# pathlib：更現代的檔案處理（推薦）
+from pathlib import Path
+
+p = Path("data.txt")
+p.exists()                         # 檢查
+p.read_text()                      # 讀
+p.write_text("hello")              # 寫
+
+# re：正則
+import re
+re.findall(r"\d+", "今天 25 度、明天 28 度")
+# ['25', '28']
+```
+
+  
+### 第三方套件：用 uv 裝
+
+```text
+# 裝 requests（HTTP 客戶端）
+$ uv add requests
+
+# pyproject.toml 自動加：
+[project]
+dependencies = [
+    "requests>=2.32.0",
+]
+
+# 用
+import requests
+
+response = requests.get("https://api.github.com/users/torvalds")
+data = response.json()
+print(data["name"])
+
+# 多個套件
+$ uv add fastapi uvicorn sqlalchemy pydantic
+
+# 開發專用（test / lint、不上 production）
+$ uv add --dev pytest ruff mypy
+
+# 從別人專案 sync
+$ git clone someproject
+$ cd someproject
+$ uv sync   # 自動裝所有依賴
+
+# 升級
+$ uv lock --upgrade-package requests
+
+# 移除
+$ uv remove requests
+
+# Lock file（uv.lock）
+# 自動 commit、保證所有人裝同版本
+```
+
+  
+### 2026 必裝 Python 套件 Top 20
+
+  
+| 套件 | 用途 |
+| --- | --- |
+| **requests / httpx** | HTTP 客戶端 |
+| **fastapi** | 現代 API 框架 |
+| **uvicorn** | ASGI server |
+| **pydantic** | 資料驗證 |
+| **sqlalchemy** | ORM |
+| **alembic** | DB migration |
+| **django** | 大型 web framework |
+| **celery** | 背景任務 |
+| **redis** | Redis client |
+| **numpy** | 數值計算 |
+| **pandas** | 資料處理 |
+| **matplotlib / plotly** | 視覺化 |
+| **scikit-learn** | 機器學習 |
+| **torch / pytorch** | 深度學習 |
+| **transformers** | Hugging Face |
+| **langchain** | LLM 工具鏈 |
+| **openai / anthropic** | AI API client |
+| **pytest** | 測試 |
+| **ruff** | Linter + formatter（超快） |
+| **mypy / pyright** | 型別檢查 |
+
+  
+### 專案結構
+
+```text
+# 小專案
+my-project/
+├── .python-version
+├── pyproject.toml
+├── uv.lock
+├── README.md
+├── .gitignore
+└── main.py
+
+# 中型專案
+my-app/
+├── pyproject.toml
+├── uv.lock
+├── src/
+│   └── myapp/
+│       ├── __init__.py
+│       ├── main.py
+│       ├── models.py
+│       ├── api/
+│       │   ├── __init__.py
+│       │   ├── users.py
+│       │   └── products.py
+│       └── utils.py
+├── tests/
+│   ├── __init__.py
+│   ├── test_users.py
+│   └── test_api.py
+├── .env
+├── .gitignore
+└── README.md
+
+# __init__.py 讓資料夾變 package
+# 能 import myapp.api.users
+
+# 相對 import
+# api/users.py 想用 utils.py：
+from ..utils import helper
+
+# 絕對 import（推薦）
+from myapp.utils import helper
+```
+
+  
+### Virtual Environment（虛擬環境）
+
+```text
+為什麼要 venv？
+- 專案 A 用 Django 4
+- 專案 B 用 Django 5
+- 全裝到 global = 衝突
+
+解：每個專案自己的 venv
+
+# uv 自動處理！
+$ uv init
+$ uv add requests
+# 自動建 .venv、裝在裡面
+
+# 傳統方式
+$ python -m venv .venv
+$ source .venv/bin/activate
+(.venv) $ pip install requests
+(.venv) $ python main.py
+(.venv) $ deactivate
+
+# 啟動 venv 後、prompt 前有 (.venv)
+# pip / python 都用 venv 內的
+
+# .gitignore 加：
+.venv/
+__pycache__/
+*.pyc
+.env
+```
+
+  
+    **☕ 用人話講**
+    
+模組 + 套件管理 = 寫 Python 的「**用工具**」能力。**2026 心法**：(1) **uv 取代 pip + venv**—自動化、快 10 倍 (2) **標準函式庫先看**（math、json、datetime）—別重造輪子 (3) **第三方套件用 uv add**—自動裝 + 記錄 (4) **commit pyproject.toml + uv.lock**—團隊版本一致。**看官方文件**比 ChatGPT 答案準。
+
+  
+
+  
+    
+      💼
+      接案小知識
+    
+    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「Python」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。

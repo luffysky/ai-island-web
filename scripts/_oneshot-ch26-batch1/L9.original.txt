@@ -1,0 +1,156 @@
+「**程式跑錯怎麼辦？**」—好的錯誤處理 = production 不掛。
+
+  
+### 基本 try / except
+
+```text
+try:
+    result = 10 / 0
+except ZeroDivisionError:
+    print("不能除以 0")
+
+# 抓所有錯（不推薦）
+try:
+    risky_operation()
+except Exception as e:
+    print(f"出錯：{e}")
+
+# 抓特定錯（推薦）
+try:
+    f = open("data.txt")
+except FileNotFoundError:
+    print("檔案不存在")
+except PermissionError:
+    print("沒權限")
+except Exception as e:
+    print(f"其他錯：{e}")
+
+# 重新 raise
+try:
+    risky()
+except SomeError as e:
+    log(e)
+    raise   # 處理完繼續往外丟
+
+# raise from（保留 chain）
+try:
+    parse_json(data)
+except json.JSONDecodeError as e:
+    raise ValueError("Invalid input") from e
+```
+
+  
+### finally：必跑
+
+```text
+# finally 不管有沒有錯都跑
+try:
+    f = open("data.txt")
+    process(f)
+except FileNotFoundError:
+    print("沒檔案")
+finally:
+    f.close()   # 一定關
+
+# 但更 pythonic 是 with
+with open("data.txt") as f:
+    process(f)
+# 自動關、不用 try/finally
+
+# finally 用途：
+# - DB connection 關
+# - lock 釋放
+# - log 記錄
+# - cleanup
+
+try:
+    db.connect()
+    do_work()
+except Exception:
+    db.rollback()
+    raise
+else:
+    db.commit()
+finally:
+    db.close()
+
+# else：try 沒錯才跑（在 except 之後、finally 之前）
+```
+
+  
+### 常見 Exception 類型
+
+```text
+# 內建 Exception 層級
+BaseException
+ ├── SystemExit
+ ├── KeyboardInterrupt
+ └── Exception
+      ├── ArithmeticError
+      │    ├── ZeroDivisionError
+      │    └── OverflowError
+      ├── LookupError
+      │    ├── IndexError
+      │    └── KeyError
+      ├── TypeError
+      ├── ValueError
+      ├── AttributeError
+      ├── ImportError
+      ├── FileNotFoundError
+      ├── PermissionError
+      └── ...
+
+# 抓特定：
+try:
+    val = my_dict["key"]
+except KeyError:
+    val = "default"
+
+try:
+    n = int(s)
+except ValueError:
+    print(f"'{s}' 不是數字")
+
+try:
+    user.profile.email
+except AttributeError:
+    print("沒這屬性")
+
+# 不要直接 catch BaseException
+# 它包括 KeyboardInterrupt（Ctrl+C）
+# 你會擋掉用戶想停的能力
+```
+
+  
+### 自訂 Exception
+
+```text
+# 業務邏輯用自訂例外
+class UserNotFoundError(Exception):
+    pass
+
+class InsufficientBalanceError(Exception):
+    pass
+
+class PaymentError(Exception):
+    def __init__(self, message, code):
+        super().__init__(message)
+        self.code = code
+
+# 用
+def withdraw(user, amount):
+    if amount > user.balance:
+        raise InsufficientBalanceError(
+            f"User {user.id} 餘額不足: {user.balance} 
+    **🚀 進階技巧**
+    
+例外處理 5 大原則（2026 Senior 共識）：(1) **抓具體**例外、不抓 Exception (2) **不要默默吞錯**—永遠 log (3) **失敗早暴露**—不要繼續跑錯誤資料 (4) **用 with**—自動處理 close / cleanup (5) **用 EAFP（Easier to Ask Forgiveness than Permission）**—Python 慣用 try 而非 if 先檢查。
+
+  
+
+  
+    
+      ⚡
+      學習加速器
+    
+    把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。

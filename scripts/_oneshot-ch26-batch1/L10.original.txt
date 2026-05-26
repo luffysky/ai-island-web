@@ -1,0 +1,262 @@
+OOP 在 Python—寫 class 來組織「資料 + 行為」。
+
+  
+### 基本 class
+
+```text
+class Dog:
+    # 類別屬性（所有 instance 共享）
+    species = "Canis lupus familiaris"
+    
+    # 建構子
+    def __init__(self, name, age):
+        self.name = name     # 實例屬性
+        self.age = age
+    
+    # 方法
+    def bark(self):
+        print(f"{self.name} 汪汪叫")
+    
+    def info(self):
+        return f"{self.name} ({self.age} 歲)"
+
+# 創建 instance
+lucky = Dog("Lucky", 3)
+ruby = Dog("Ruby", 5)
+
+# 用
+lucky.bark()                # Lucky 汪汪叫
+print(lucky.info())         # Lucky (3 歲)
+print(lucky.species)        # Canis lupus familiaris
+
+# 改屬性
+lucky.age = 4
+
+# 動態加屬性（Python 特色）
+lucky.color = "白"          # 沒在 class 定義也行
+# 但不建議、容易亂
+```
+
+  
+### self 是什麼
+
+```text
+# self = 「呼叫這方法的物件」
+
+class Calculator:
+    def __init__(self, initial=0):
+        self.value = initial   # 設這個 instance 的 value
+    
+    def add(self, n):
+        self.value += n        # 改這個 instance 的 value
+        return self             # 回傳自己（chainable）
+
+c1 = Calculator(0)
+c2 = Calculator(100)
+
+c1.add(5).add(10)    # c1.value = 15
+c2.add(5).add(10)    # c2.value = 115
+
+# 兩個 instance 各有自己的 value
+
+# 為什麼要 self（不像 Java this 隱式）？
+# Python 設計：明確 > 隱式
+# 你看 def bark(self): 就知道是 instance method
+```
+
+  
+### 繼承
+
+```text
+class Animal:
+    def __init__(self, name):
+        self.name = name
+    
+    def eat(self):
+        print(f"{self.name} 在吃")
+    
+    def speak(self):
+        print(f"{self.name} 發出聲音")
+
+class Dog(Animal):
+    def speak(self):
+        print(f"{self.name} 汪汪叫")    # 覆寫
+    
+    def fetch(self):
+        print(f"{self.name} 撿球")     # 新方法
+
+class Cat(Animal):
+    def speak(self):
+        print(f"{self.name} 喵喵叫")
+    
+    def purr(self):
+        print(f"{self.name} 呼嚕")
+
+# 用
+d = Dog("Lucky")
+d.eat()       # 繼承自 Animal
+d.speak()     # Dog 自己的
+d.fetch()     # Dog 獨有
+
+c = Cat("Mimi")
+c.speak()     # 喵喵
+c.purr()      # 呼嚕
+
+# 呼叫 super
+class Puppy(Dog):
+    def __init__(self, name, age):
+        super().__init__(name)   # 呼叫父的 __init__
+        self.age = age
+    
+    def speak(self):
+        super().speak()           # 呼叫父的
+        print("(小聲版)")
+
+p = Puppy("Lucky", 1)
+p.speak()
+# Lucky 汪汪叫
+# (小聲版)
+```
+
+  
+### 特殊方法（Dunder Methods）
+
+```text
+# __xxx__ 雙底線方法 = Python 特殊鉤子
+
+class Vector:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+    
+    # print(v) 時呼叫
+    def __str__(self):
+        return f"({self.x}, {self.y})"
+    
+    # repr(v) 時呼叫（給開發者看）
+    def __repr__(self):
+        return f"Vector({self.x}, {self.y})"
+    
+    # v1 + v2
+    def __add__(self, other):
+        return Vector(self.x + other.x, self.y + other.y)
+    
+    # v1 == v2
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y
+    
+    # len(v)
+    def __len__(self):
+        import math
+        return int(math.sqrt(self.x ** 2 + self.y ** 2))
+    
+    # v[0], v[1]
+    def __getitem__(self, idx):
+        return [self.x, self.y][idx]
+
+v1 = Vector(3, 4)
+v2 = Vector(1, 2)
+
+print(v1)              # (3, 4)
+print(v1 + v2)         # (4, 6)
+print(v1 == Vector(3, 4))  # True
+print(len(v1))         # 5
+print(v1[0])           # 3
+
+# 常用 dunder：
+# __init__       建構子
+# __str__        print(obj) / str(obj)
+# __repr__       repr(obj)
+# __eq__         ==
+# __lt__ __gt__  
+# __add__ __sub__ __mul__   + - *
+# __len__        len(obj)
+# __iter__       for x in obj
+# __contains__   x in obj
+# __getitem__    obj[i]
+# __call__       obj()（讓 instance 變 callable）
+```
+
+  
+### dataclass：簡化 class（推薦）
+
+```text
+# 傳統寫法
+class User:
+    def __init__(self, name, age, email):
+        self.name = name
+        self.age = age
+        self.email = email
+    
+    def __repr__(self):
+        return f"User(name={self.name!r}, age={self.age}, email={self.email!r})"
+    
+    def __eq__(self, other):
+        return self.name == other.name and self.age == other.age and self.email == other.email
+
+# Dataclass 寫法
+from dataclasses import dataclass
+
+@dataclass
+class User:
+    name: str
+    age: int
+    email: str
+
+# 自動有 __init__、__repr__、__eq__！
+u = User("Alice", 30, "alice@x.com")
+print(u)
+# User(name='Alice', age=30, email='alice@x.com')
+
+# 預設值
+@dataclass
+class Product:
+    name: str
+    price: float = 0.0
+    stock: int = 0
+    tags: list = None   # 不能直接給 [] (mutable default 陷阱)
+    
+    def __post_init__(self):
+        if self.tags is None:
+            self.tags = []
+
+# 更好用 field
+from dataclasses import dataclass, field
+
+@dataclass
+class Product:
+    name: str
+    price: float = 0.0
+    tags: list = field(default_factory=list)
+    
+    def __post_init__(self):
+        if self.price  s2)   # True
+```
+
+  
+### Property（property decorator）
+
+```text
+class Circle:
+    def __init__(self, radius):
+        self._radius = radius
+    
+    @property
+    def radius(self):
+        return self._radius
+    
+    @radius.setter
+    def radius(self, value):
+        if value 
+    **🚀 進階技巧**
+    
+2026 Python OOP 心法：(1) **dataclass > 手寫 class**—簡單資料 class 必用 (2) **type hint 必加**—`name: str, age: int` (3) **不要過度繼承**—超過 2 層繼承通常設計有問題 (4) **用 composition 多過 inheritance**—has-a 比 is-a 彈性 (5) **property 取代 getter/setter**。**Pydantic**（後面講）是 dataclass 進階版、含驗證、API 主流。
+
+  
+
+  
+    
+      🚀
+      2026 趨勢
+    
+    這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。

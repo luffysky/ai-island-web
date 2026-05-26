@@ -1,0 +1,325 @@
+3 個 Python 進階特性—寫熟讓你從中階變高階。
+
+  
+### Decorator（裝飾器）
+
+```text
+# Decorator = 「包一層、加功能」
+
+# 最簡單版
+def my_decorator(func):
+    def wrapper():
+        print("Before")
+        func()
+        print("After")
+    return wrapper
+
+@my_decorator
+def hello():
+    print("Hello")
+
+hello()
+# Before
+# Hello
+# After
+
+# 等同於：
+hello = my_decorator(hello)
+
+# 帶參數的函數
+def my_decorator(func):
+    def wrapper(*args, **kwargs):
+        print("Before")
+        result = func(*args, **kwargs)
+        print("After")
+        return result
+    return wrapper
+
+@my_decorator
+def greet(name):
+    return f"Hi, {name}"
+
+print(greet("Alice"))
+
+# 實戰：計時
+import time
+from functools import wraps
+
+def timing(func):
+    @wraps(func)   # 保留原 function 的 metadata
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        print(f"{func.__name__} 花了 {time.time() - start:.2f}s")
+        return result
+    return wrapper
+
+@timing
+def slow_function():
+    time.sleep(1)
+    return "完成"
+
+slow_function()
+# slow_function 花了 1.00s
+
+# 實戰：log
+def log_calls(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        print(f"Calling {func.__name__}({args}, {kwargs})")
+        return func(*args, **kwargs)
+    return wrapper
+
+@log_calls
+def add(a, b):
+    return a + b
+
+# 帶參數的 decorator
+def retry(max_attempts=3):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            for attempt in range(max_attempts):
+                try:
+                    return func(*args, **kwargs)
+                except Exception as e:
+                    if attempt == max_attempts - 1:
+                        raise
+                    time.sleep(2 ** attempt)
+        return wrapper
+    return decorator
+
+@retry(max_attempts=5)
+def flaky_api_call():
+    ...
+
+# 內建 decorator
+@property            # getter
+@staticmethod        # 靜態方法
+@classmethod         # 類別方法
+@dataclass           # 自動產生 __init__ 等
+
+# Library 提供
+@app.route("/users") # Flask
+@app.get("/users")   # FastAPI
+@cache               # functools.cache
+@lru_cache           # functools.lru_cache
+@pytest.fixture      # pytest
+```
+
+  
+### Generator（生成器）
+
+```text
+# 用 yield 取代 return = generator
+def count_up_to(n):
+    i = 0
+    while i 
+
+# 一次拿一個
+for x in gen:
+    print(x)
+
+# 0
+# 1
+# 2
+# 3
+# 4
+
+# 或 next() 拿
+gen = count_up_to(3)
+next(gen)   # 0
+next(gen)   # 1
+next(gen)   # 2
+next(gen)   # ❌ StopIteration
+
+# 為什麼用 generator？
+
+# 場景 1：大資料、不要全進 memory
+def read_large_file(path):
+    with open(path) as f:
+        for line in f:
+            yield line
+
+# 1GB 檔案 OK、不爆 memory
+for line in read_large_file("huge.txt"):
+    process(line)
+
+# 場景 2：無限序列
+def fibonacci():
+    a, b = 0, 1
+    while True:
+        yield a
+        a, b = b, a + b
+
+fib = fibonacci()
+for _ in range(10):
+    print(next(fib))
+# 0, 1, 1, 2, 3, 5, 8, 13, 21, 34
+
+# 場景 3：管道（pipeline）
+def numbers(n):
+    for i in range(n):
+        yield i
+
+def squared(nums):
+    for n in nums:
+        yield n ** 2
+
+def filtered(nums):
+    for n in nums:
+        if n % 2 == 0:
+            yield n
+
+# 組合（lazy）
+result = filtered(squared(numbers(10)))
+for n in result:
+    print(n)   # 0, 4, 16, 36, 64
+
+# Generator expression（簡潔版）
+squares = (x ** 2 for x in range(1000000))
+# 跟 list comprehension 一樣、但是 generator
+# 不立刻算、省記憶體
+
+# vs list comprehension
+squares_list = [x ** 2 for x in range(1000000)]
+# 立刻算 1M 個、佔 8MB+
+
+squares_gen = (x ** 2 for x in range(1000000))
+# 不算、用才算、幾乎 0 memory
+```
+
+  
+### Context Manager（with 語法）
+
+```text
+# 你已經用過：
+with open("file.txt") as f:
+    ...
+# 自動 close
+
+# 自己寫 context manager（class 方式）
+class DBConnection:
+    def __init__(self, db_url):
+        self.db_url = db_url
+    
+    def __enter__(self):
+        print("Connecting...")
+        self.conn = connect(self.db_url)
+        return self.conn
+    
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        print("Closing...")
+        self.conn.close()
+        return False   # False = 不吞 exception
+
+with DBConnection("...") as conn:
+    conn.execute("SELECT * FROM users")
+# Connecting...
+# (do stuff)
+# Closing...
+
+# 用 contextmanager decorator（簡潔）
+from contextlib import contextmanager
+
+@contextmanager
+def timing():
+    start = time.time()
+    yield
+    print(f"Took {time.time() - start:.2f}s")
+
+with timing():
+    expensive_operation()
+# Took 1.50s
+
+# 實戰例子
+@contextmanager
+def db_transaction(conn):
+    try:
+        yield conn
+        conn.commit()
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+with db_transaction(conn) as c:
+    c.execute("INSERT ...")
+    c.execute("UPDATE ...")
+# 全成功 → commit
+# 任一失敗 → rollback
+# 永遠 close
+```
+
+  
+### 實戰：3 個進階組合
+
+```text
+# 例：API 客戶端
+from functools import wraps
+from contextlib import contextmanager
+import time
+import requests
+
+# Decorator：retry
+def retry(max_attempts=3):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            for attempt in range(max_attempts):
+                try:
+                    return func(*args, **kwargs)
+                except requests.RequestException:
+                    if attempt == max_attempts - 1:
+                        raise
+                    time.sleep(2 ** attempt)
+        return wrapper
+    return decorator
+
+# Context manager：rate limit
+@contextmanager
+def rate_limit(rps):
+    """限制 request per second"""
+    time.sleep(1 / rps)
+    yield
+
+# Generator：分批拉資料
+def paginated_fetch(base_url, page_size=100):
+    """分頁拉、不一次全進 memory"""
+    page = 1
+    while True:
+        with rate_limit(rps=10):
+            data = api_get(f"{base_url}?page={page}&size={page_size}")
+        if not data:
+            break
+        yield from data
+        page += 1
+
+@retry(max_attempts=3)
+def api_get(url):
+    return requests.get(url).json()
+
+# 用
+for user in paginated_fetch("https://api.example.com/users"):
+    process(user)
+
+# 結合：
+# - retry decorator 自動重試
+# - rate limit context manager 不打爆
+# - generator 不爆 memory
+```
+
+  
+    **🚀 進階技巧**
+    
+Python 進階 3 件神器：(1) **Decorator**—寫 middleware / log / cache 必用 (2) **Generator**—大資料處理、stream、無限序列 (3) **Context manager**—資源管理（檔案 / DB / lock）。**2026 主流 framework 大量用這 3 個**（FastAPI / Django / pytest 全靠它們）。寫熟你的 code 變 100x 優雅。
+
+  
+
+  
+    
+      🛠️
+      工具推薦
+    
+    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。

@@ -98,6 +98,28 @@ if (!L6) throw new Error('L6 (26.6) not found');
 L6.content = L6_CONTENT;
 console.log('[batch2] L6 content updated, new length:', L6.content.length);
 
+// === batch3: L7-L12 改寫 ===
+const L7_CONTENT = fs.readFileSync(path.join(__dirname, 'L7.content.md'), 'utf8');
+const L8_CONTENT = fs.readFileSync(path.join(__dirname, 'L8.content.md'), 'utf8');
+const L9_CONTENT = fs.readFileSync(path.join(__dirname, 'L9.content.md'), 'utf8');
+const L10_CONTENT = fs.readFileSync(path.join(__dirname, 'L10.content.md'), 'utf8');
+const L11_CONTENT = fs.readFileSync(path.join(__dirname, 'L11.content.md'), 'utf8');
+const L12_CONTENT = fs.readFileSync(path.join(__dirname, 'L12.content.md'), 'utf8');
+
+for (const [id, content] of [
+  ['26.7', L7_CONTENT],
+  ['26.8', L8_CONTENT],
+  ['26.9', L9_CONTENT],
+  ['26.10', L10_CONTENT],
+  ['26.11', L11_CONTENT],
+  ['26.12', L12_CONTENT],
+]) {
+  const l = ch26.lessons.find((x) => x.id === id);
+  if (!l) throw new Error(`${id} not found`);
+  l.content = content;
+  console.log(`[batch3] ${id} (${l.title}) updated, new length:`, l.content.length);
+}
+
 // === 寫回 + 驗證 ===
 const out = JSON.stringify(ch26, null, 2) + '\n';
 fs.writeFileSync(CH26_PATH, out, 'utf8');
