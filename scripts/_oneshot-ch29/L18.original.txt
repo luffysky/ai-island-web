@@ -1,0 +1,78 @@
+## 定義型別
+```typescript
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  link: string;
+  tags: string[];
+}
+```
+
+## Zod runtime 驗證
+```typescript
+import { z } from "zod";
+
+const ProductSchema = z.object({
+  id: z.string(),
+  name: z.string().min(1),
+  price: z.number().positive(),
+  link: z.string().url(),
+  tags: z.array(z.string())
+});
+
+type Product = z.infer<typeof ProductSchema>;
+```
+
+## 爬 + 驗證
+```typescript
+async function scrapeProduct(url: string): Promise<Product> {
+  const res = await fetch(url);
+  const html = await res.text();
+  const $ = cheerio.load(html);
+  
+  const raw = {
+    id: $("meta[name='product-id']").attr("content"),
+    name: $("h1").text().trim(),
+    price: parseFloat($(".price").text().replace(/[^0-9.]/g, "")),
+    link: url,
+    tags: $(".tag").map((i, el) => $(el).text()).get()
+  };
+  
+  return ProductSchema.parse(raw);
+}
+```
+
+## Safe parse
+```typescript
+const result = ProductSchema.safeParse(raw);
+if (result.success) {
+  return result.data;
+} else {
+  console.error(result.error.format());
+  return null;
+}
+```
+
+## Transform
+```typescript
+const PriceSchema = z.string()
+  .transform(s => s.replace(/[^0-9.]/g, ""))
+  .pipe(z.coerce.number().positive());
+
+PriceSchema.parse("NT$ 1,299");  // 1299
+```
+
+## Result type
+```typescript
+type Result<T, E = Error> = { ok: true; data: T } | { ok: false; error: E };
+
+async function safeScrape(url: string): Promise<Result<Product>> {
+  try {
+    const data = await scrapeProduct(url);
+    return { ok: true, data };
+  } catch (err) {
+    return { ok: false, error: err as Error };
+  }
+}
+```

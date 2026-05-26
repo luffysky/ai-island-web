@@ -1,0 +1,60 @@
+## 主流服務
+
+### ScraperAPI
+- $49-$249/月
+- 內建代理 + JS rendering
+
+```javascript
+const res = await fetch(
+  `https://api.scraperapi.com?api_key=${KEY}&url=https://target.com&render=true`
+);
+```
+
+### Bright Data Web Scraper IDE
+老牌最大、企業級。
+
+### Scrapfly
+```javascript
+import { ScrapflyClient, ScrapeConfig } from "scrapfly-sdk";
+
+const scrapfly = new ScrapflyClient({ key: "..." });
+const result = await scrapfly.scrape(
+  new ScrapeConfig({ url: "https://example.com", asp: true })
+);
+```
+
+### Diffbot
+```javascript
+const res = await fetch(
+  `https://api.diffbot.com/v3/product?token=${KEY}&url=${url}`
+);
+```
+
+### Browserless
+```javascript
+const browser = await puppeteer.connect({
+  browserWSEndpoint: "wss://chrome.browserless.io?token=..."
+});
+```
+
+## 價格（2026）
+
+| 服務 | 起價 | 1k req |
+|---|---|---|
+| ScraperAPI | $49/月 | $0.5 |
+| Scrapfly | $30/月 | $0.6 |
+| Bright Data | $500/月 | $5 |
+| Zyte | $499/月 | $10 |
+| Cloudflare Workers | $0 | $0 |
+
+## ROI
+自己寫 vs 買 API：
+- 自己：1 個月 + 維護
+- 買：月費 NT$ 1.5k-5k、0 維護
+
+> 10k req/月 = 買 API 划算。
+
+## Indie 建議
+- 接案：客戶付錢 = 用 API
+- 個人：自己寫 + 免費代理
+- SaaS：先 API 上線、規模化後自架

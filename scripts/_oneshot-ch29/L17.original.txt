@@ -1,0 +1,64 @@
+## 什麼是 Apify
+- 商業爬蟲平台
+- 1000+ 現成 actor
+- 出 Crawlee 開源框架
+
+## 用現成 Actor
+```
+1. apify.com 找「Shopee Scraper」
+2. 設參數
+3. Run、拿 JSON / CSV
+```
+每次 NT$ 5-50。
+
+## SDK 整合
+```javascript
+import { ApifyClient } from "apify-client";
+
+const client = new ApifyClient({ token: "..." });
+
+const run = await client.actor("apify/web-scraper").call({
+  startUrls: [{ url: "https://example.com" }],
+  pageFunction: `async ({ page }) => ({ title: await page.title() })`
+});
+
+const { items } = await client.dataset(run.defaultDatasetId).listItems();
+```
+
+## 自己寫 Actor
+```bash
+npm install -g apify-cli
+apify create my-scraper
+apify run
+```
+
+```typescript
+import { Actor } from "apify";
+import { PlaywrightCrawler } from "crawlee";
+
+await Actor.init();
+
+const input = await Actor.getInput();
+
+const crawler = new PlaywrightCrawler({
+  async requestHandler({ page, request }) {
+    const title = await page.title();
+    await Actor.pushData({ url: request.url, title });
+  }
+});
+
+await crawler.run(input.startUrls);
+await Actor.exit();
+```
+
+```bash
+apify push
+```
+
+## 賺錢
+- 賣 Actor 月入 $1000-10000 被動
+- 接案：寫 actor 給客戶
+
+## 替代品
+- Bright Data Web Scraper IDE
+- Scrapfly / Zyte

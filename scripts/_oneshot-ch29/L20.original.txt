@@ -1,0 +1,86 @@
+## Vercel Functions
+```typescript
+import * as cheerio from "cheerio";
+
+export default async function handler(req) {
+  const res = await fetch("https://example.com");
+  const html = await res.text();
+  const $ = cheerio.load(html);
+  
+  const products = $("div.product").map((i, el) => ({
+    name: $(el).find(".name").text(),
+    price: $(el).find(".price").text()
+  })).get();
+  
+  return Response.json(products);
+}
+
+export const config = {
+  runtime: "edge",
+  maxDuration: 60
+};
+```
+
+## Vercel Cron
+```json
+{
+  "crons": [{
+    "path": "/api/scrape",
+    "schedule": "0 3 * * *"
+  }]
+}
+```
+
+## 限制
+
+### Vercel
+- ⚠️ Free 100 GB-hr/月
+- ⚠️ Timeout 10s / 60s (pro)
+- ⚠️ 不能 Puppeteer
+
+### AWS Lambda
+- ⚠️ Timeout 15 分鐘
+- ✅ 可跑 Puppeteer
+
+## 處理長任務
+
+### 分批
+```typescript
+const page = parseInt(req.query.page || "1");
+const data = await scrapePage(page);
+
+if (data.hasNext) {
+  fetch(`/api/scrape?page=${page + 1}`);
+}
+```
+
+### Queue
+```
+[Cron] → [QStash] → [Function × N]
+```
+
+### Inngest
+```typescript
+inngest.createFunction(
+  { id: "scrape" },
+  { cron: "0 3 * * *" },
+  async ({ event, step }) => {
+    const urls = await step.run("get-urls", () => getUrls());
+    for (const url of urls) {
+      await step.run(`scrape-${url}`, () => scrape(url));
+    }
+  }
+);
+```
+
+## 持久化
+- Cloudflare R2 / KV / D1
+- Vercel Postgres / Blob
+- Upstash Redis
+- Supabase
+
+## 何時用
+- ✅ 小規模（< 1000 req/day）
+- ✅ 排程
+- ❌ Puppeteer
+- ❌ 長任務

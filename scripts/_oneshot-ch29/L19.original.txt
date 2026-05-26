@@ -1,0 +1,88 @@
+## Sentry
+```javascript
+import * as Sentry from "@sentry/node";
+
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  tracesSampleRate: 1.0
+});
+
+try {
+  await scrape();
+} catch (err) {
+  Sentry.captureException(err);
+  throw err;
+}
+```
+
+## Healthchecks.io
+```javascript
+const PING_URL = "https://hc-ping.com/UUID";
+
+await fetch(`${PING_URL}/start`);
+
+try {
+  const items = await scrape();
+  await fetch(PING_URL);
+} catch (err) {
+  await fetch(`${PING_URL}/fail`);
+  throw err;
+}
+```
+
+## Slack
+```javascript
+async function notifySlack(text) {
+  await fetch(process.env.SLACK_WEBHOOK, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text })
+  });
+}
+
+try {
+  const items = await scrape();
+  await notifySlack(`✅ ${items.length} 筆`);
+} catch (err) {
+  await notifySlack(`❌ ${err.message}`);
+}
+```
+
+## Discord
+```javascript
+await fetch(process.env.DISCORD_WEBHOOK, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    embeds: [{ fields: [{ name: "抓到", value: items.length.toString() }] }]
+  })
+});
+```
+
+## LINE Notify
+```javascript
+await fetch("https://notify-api.line.me/api/notify", {
+  method: "POST",
+  headers: {
+    "Authorization": `Bearer ${LINE_TOKEN}`,
+    "Content-Type": "application/x-www-form-urlencoded"
+  },
+  body: new URLSearchParams({ message: `完成：${count} 筆` })
+});
+```
+
+## Pino log
+```javascript
+import pino from "pino";
+
+const logger = pino({ level: "info" });
+logger.info("Starting");
+logger.error({ err }, "Failed");
+```
+
+## Indie 黃金組合
+- Sentry（crash）
+- Healthchecks（liveness）
+- Slack / Discord（通知）
+- Pino（log）
+- GitHub Actions（schedule）
