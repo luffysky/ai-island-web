@@ -18,6 +18,7 @@ const AUTH_ERROR_LABELS: Record<string, string> = {
   no_code: "LINE 沒有回傳授權碼，請重新登入一次。",
   no_token: "LINE 登入沒有取得 access token，請重新登入一次。",
   session_failed: "登入成功但寫入網站 session 失敗，請重新登入一次。",
+  session_expired: "登入狀態已過期、請重新登入一次（session expired）。",
 };
 
 export default function LoginPage() {

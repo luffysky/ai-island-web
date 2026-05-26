@@ -131,9 +131,50 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       },
     );
 
+    // === 「半登入」偵測：每 60 秒問 server 真的還認得我嗎 ===
+    // getSession() 只讀 client cookie、可能假登入（cookie 過期但還在）
+    // getUser() 會 hit Supabase server、強制 refresh token、真實檢查
+    // 防：UI 顯示登入、但所有需要登入的功能 API 都回 401（cookie 過期 / refresh 失敗）
+    const sessionCheck = setInterval(async () => {
+      if (!mounted) return;
+      // 沒登入不用 check（節省 request）
+      // login / signup / auth callback 頁面不要 check（會 loop）
+      if (typeof window === "undefined") return;
+      const path = window.location.pathname;
+      if (path.startsWith("/login") || path.startsWith("/signup") || path.startsWith("/auth/")) {
+        return;
+      }
+
+      try {
+        const { data: { user: serverUser }, error } = await supabase.auth.getUser();
+        if (error || !serverUser) {
+          // server 不認得 = 半登入、強制清掉
+          devLog.warn("[auth] session 失效（server 不認 cookie）、強制 sign out");
+          await supabase.auth.signOut({ scope: "global" });
+          writeCachedProfile(null);
+          setProfile(null);
+          setUser(null);
+          setStatus("out");
+          // 清 sb-* cookie 防殘留
+          document.cookie.split(";").forEach((c) => {
+            const name = c.split("=")[0].trim();
+            if (name.startsWith("sb-")) {
+              document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+            }
+          });
+          // 跳 login + 標記原因（login page 會顯示對應訊息）
+          window.location.href = "/login?error=session_expired";
+        }
+      } catch (e) {
+        // 網路斷之類、不做事、下次 interval 再 check
+        devLog.warn("[auth] session check 失敗（網路？）：", e);
+      }
+    }, 60_000);
+
     return () => {
       mounted = false;
       subscription.unsubscribe();
+      clearInterval(sessionCheck);
     };
   }, [supabase]);
 
