@@ -1,0 +1,249 @@
+2017 Google「**Attention is All You Need**」論文發明 Transformer。**這篇 paper 改變了整個 AI 領域**。2026 所有主流 LLM、大部分圖像 / 語音 / 影片 AI **都是 Transformer**。
+
+  
+### Transformer 之前：RNN / LSTM 的問題
+
+  
+2017 前處理「序列資料」（文字、語音）主流是 RNN（Recurrent Neural Network）跟 LSTM（Long Short-Term Memory）。問題：
+
+```text
+句子："我喜歡咖啡，特別是肯亞 AA，每天早上必喝一杯。"
+
+RNN 一個字一個字讀：
+  我 → 喜 → 歡 → 咖 → 啡 → ， → 特 → 別 → ... → 一 → 杯
+
+問題：
+1. 慢 — 必須順序處理，無法平行（GPU 浪費）
+2. 健忘 — 讀到「一杯」時已經忘了「我」（梯度消失）
+3. 短記憶 — 長句子 100 字後就模糊
+4. 不能雙向看 — 標準 RNN 只看前面，看不到後面
+```
+
+  
+結果：2017 前的 AI 翻譯品質差、文章生成沒邏輯。
+
+  
+### Transformer 的解法：Attention（注意力機制）
+
+  
+核心思想：「**每個字都看所有其他字，自己算跟誰最相關**」。
+
+```text
+句子："我喜歡咖啡，特別是肯亞 AA，每天早上必喝一杯。"
+
+當處理「一杯」時：
+  - 看「我」：關聯度 0.3
+  - 看「喜歡」：關聯度 0.1
+  - 看「咖啡」：關聯度 0.9 ← 最相關！
+  - 看「肯亞」：關聯度 0.7
+  - 看「AA」：關聯度 0.6
+  - 看「早上」：關聯度 0.2
+  ...
+
+機器自己決定「一杯」最該跟「咖啡」連在一起
+不管字數差距多遠都能連起來
+```
+
+  
+這就是 **Self-Attention**（自我注意力）—自己跟自己的關聯。
+
+  
+### 三大優勢
+
+  
+- **平行處理**：所有字同時算 attention，GPU 友善 → 訓練速度快 50-100 倍
+- **長距離關聯**：第 1 字跟第 1000 字直接相連，沒有距離衰減
+- **可擴展**：加更多參數、效果繼續好（Scaling Laws）
+
+  
+### Q K V：Attention 怎麼算？
+
+  
+不用懂數學細節，但要知道概念：
+
+```text
+每個字產生 3 個向量：
+  - Query（Q）：「我在找什麼」
+  - Key（K）：「我能提供什麼」
+  - Value（V）：「我的具體內容」
+
+對每個字：
+  1. 用我的 Q 跟所有字的 K 算相似度 → 得到 attention score
+  2. score 越高 = 越相關
+  3. softmax 把 score 變機率（加起來 = 1）
+  4. 用機率對 V 加權平均 → 得到我的「context」
+
+→ 我的新表示 = 我自己 + 跟我相關的人的資訊
+```
+
+  
+
+像搜尋引擎：你輸入 query「咖啡推薦」，系統有一堆網頁的 key（標題、關鍵字），算相似度，把最相關的網頁內容（value）給你。
+Self-Attention 就是每個字當自己是搜尋者，從句子裡找跟自己相關的其他字。
+
+  
+
+  
+### Transformer 完整結構
+
+```text
+輸入文字 → Tokenize（切成 token）
+   ↓
+每個 token 變成 Embedding 向量（512 或 1024 維）
+   ↓
++ Position Encoding（位置資訊—Attention 本身不知道字的順序）
+   ↓
+┌────────────────────────────┐
+│ Multi-Head Attention       │ ← 多個 attention 平行
+├────────────────────────────┤
+│ Add & Norm（殘差 + 正規化）│
+├────────────────────────────┤
+│ Feed Forward（一般 NN）    │
+├────────────────────────────┤
+│ Add & Norm                 │
+└────────────────────────────┘
+   ↓ 重複 N 層（GPT-4 約 96 層）
+   ↓
+輸出層 → 預測下一個 token（或分類等）
+```
+
+  
+### Multi-Head Attention
+
+  
+不只一個 attention，**同時跑多個**（GPT-4 約 96 個 head）。每個 head 學不同的關聯：
+
+  
+- Head 1 學「主詞-動詞」關聯
+- Head 2 學「形容詞-名詞」
+- Head 3 學「代詞指誰」（「他」指誰）
+- Head 4 學「時間順序」
+- ...
+
+  
+多 head 結果合併，**同時考慮多種關聯**。
+
+  
+### Encoder vs Decoder
+
+  
+原始 Transformer 有兩部分（用於翻譯）：
+
+```text
+Encoder（編碼器）：
+  - 看整個輸入句子
+  - 同時看前後文（bidirectional）
+  - 適合：理解、分類、摘要
+  - BERT 用這個
+
+Decoder（解碼器）：
+  - 一個字一個字生成
+  - 只能看前面（causal mask）
+  - 適合：生成、翻譯、對話
+  - GPT、Claude 用這個
+
+Encoder + Decoder：
+  - 適合翻譯（先理解中文 → 生成英文）
+  - T5、原始 Transformer
+```
+
+  
+### GPT 系列：Decoder-only
+
+  
+2018 OpenAI 發現「**只用 Decoder + 夠大就強**」。
+
+```text
+輸入：「今天天氣很」
+   ↓
+Decoder（Transformer 內部運算）
+   ↓
+輸出：「好」（預測下一個 token）
+
+把「好」加到輸入：
+「今天天氣很好」→ 「，」
+「今天天氣很好，」→ 「我」
+「今天天氣很好，我」→ 「想」
+...
+
+「自回歸生成」（autoregressive）— 一個 token 一個 token 往後生
+直到生成「結束符號」或達到 max length
+```
+
+  
+### BERT vs GPT
+
+  
+|  | BERT | GPT |
+| --- | --- | --- |
+| 架構 | Encoder-only | Decoder-only |
+| 能看前後 | 能（雙向） | 只能看前面 |
+| 擅長 | 分類、搜尋、嵌入 | 生成、對話、創作 |
+| 2026 用途 | Embedding、語義搜尋 | 幾乎所有 LLM |
+
+  
+### Scaling Laws：規模 = 效果
+
+  
+2020 OpenAI 發現「**Scaling Laws**」：
+
+```text
+模型效果 ∝ (參數 × 訓練資料 × 算力)
+
+三個因素同步加 → 效果穩定上升
+少加一個 → 沒效（資料夠多但模型太小 = 學不完整）
+```
+
+  
+這個發現引爆「**越大越好**」軍備競賽：
+
+  
+- 2019 GPT-2（15 億）
+- 2020 GPT-3（1750 億）
+- 2023 GPT-4（估 1-2 兆）
+- 2024-2026：朝 10 兆走
+
+  
+但 2024 後出現「Scaling 飽和」討論—單純加大已邊際遞減。重心轉到：
+
+  
+- **更好的資料**（質 > 量）
+- **更聰明的訓練**（RLHF、Constitutional AI）
+- **推理時間更長**（o1、Claude 思考模式）
+- **多模態**（圖、聲、影一起）
+
+  
+### Transformer 的演化
+
+  
+- **MoE**（Mixture of Experts）：不是所有參數都用，依輸入「路由到專家」。Mixtral、GPT-4 都用
+- **Mamba / State Space Models**：嘗試取代 Transformer，2024 興起但仍非主流
+- **長 context**：從 2k → 8k → 32k → 200k → 2M（Gemini）
+- **推理模型**（o1、o3、Claude Opus 思考）：先想再答
+- **多模態**：把圖、聲音都當 token 處理
+
+  
+### 為什麼這節重要
+
+  
+2026 你跟業界人講 AI，大家都會丟出「**Transformer、Attention、Q K V、Multi-head**」這些詞。**懂結構 = 能討論深度問題**：
+
+  
+- 為什麼 GPT 慢？因為自回歸生成必須一個個算
+- 為什麼 context 變長變慢？因為 Attention 計算量 O(n²)
+- 為什麼模型有 context limit？因為位置編碼有上限
+- 為什麼 Llama 70B 比 8B 強？參數多、能學更複雜的 attention pattern
+
+  
+**🚀 進階技巧**
+
+想深入懂 Transformer：**Karpathy 的 YouTube「Let's build GPT」**—一行行 code 從零實作 GPT-2，看完比讀 10 篇 paper 還清楚。或讀「**The Illustrated Transformer**」（jalammar.github.io）—視覺化 Attention 機制。
+
+  
+
+  
+
+🚀
+2026 趨勢
+
+這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。
