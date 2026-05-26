@@ -1,0 +1,76 @@
+## 完整 try / except
+```python
+def fetch_with_retry(url, max_retries=3):
+    for attempt in range(max_retries):
+        try:
+            res = requests.get(url, timeout=10)
+            res.raise_for_status()
+            return res
+        except HTTPError as e:
+            if res.status_code == 429:
+                time.sleep(2 ** attempt * 60)
+            elif res.status_code in (500, 502, 503, 504):
+                time.sleep(2 ** attempt)
+            else: raise
+        except (Timeout, ConnectionError):
+            time.sleep(2 ** attempt)
+    return None
+```
+
+## tenacity
+```python
+from tenacity import retry, stop_after_attempt, wait_exponential
+
+@retry(stop=stop_after_attempt(3), wait=wait_exponential(min=2, max=60))
+def fetch(url):
+    res = requests.get(url, timeout=10)
+    res.raise_for_status()
+    return res
+```
+
+## Sentry
+```python
+import sentry_sdk
+sentry_sdk.init(dsn="...", traces_sample_rate=1.0)
+
+try:
+    scrape()
+except Exception as e:
+    sentry_sdk.capture_exception(e)
+    raise
+```
+
+## Healthchecks.io
+```python
+import requests
+
+requests.get("https://hc-ping.com/UUID/start")
+try:
+    scrape()
+    requests.get("https://hc-ping.com/UUID")
+except Exception:
+    requests.get("https://hc-ping.com/UUID/fail")
+```
+
+## 驗證（pydantic）
+```python
+from pydantic import BaseModel, ValidationError
+
+class Product(BaseModel):
+    name: str
+    price: float
+    link: str
+
+try:
+    product = Product(**raw_data)
+except ValidationError as e:
+    logger.error(f"資料無效: {e}")
+```
+
+## 清單
+- [ ] Retry on network error
+- [ ] Rate limit 自動等
+- [ ] Rotation 代理 / UA
+- [ ] 驗證資料完整
+- [ ] 失敗 alert
+- [ ] 日誌完整

@@ -1,0 +1,65 @@
+## 代理類型
+1. **Datacenter**：便宜（$5-20/月）、易擋
+2. **Residential**：真人 IP、難擋、貴（$100-500/月）
+3. **Mobile**：最難擋、最貴
+
+## 供應商
+Bright Data / Smartproxy / Oxylabs / IPRoyal / Decodo
+
+## 用代理
+```python
+proxies = {
+    "http": "http://user:pass@proxy.com:8080",
+    "https": "http://user:pass@proxy.com:8080"
+}
+res = requests.get(url, proxies=proxies)
+```
+
+## 輪換
+```python
+import random
+
+class ProxyRotator:
+    def __init__(self, proxies):
+        self.proxies = proxies
+        self.failed = set()
+    
+    def get(self):
+        available = [p for p in self.proxies if p not in self.failed]
+        if not available:
+            self.failed.clear()
+            available = self.proxies
+        return random.choice(available)
+    
+    def mark_failed(self, proxy):
+        self.failed.add(proxy)
+
+rotator = ProxyRotator(PROXIES)
+
+for url in urls:
+    proxy = rotator.get()
+    try:
+        res = requests.get(url, proxies={"http": proxy, "https": proxy})
+    except Exception:
+        rotator.mark_failed(proxy)
+```
+
+## Scrapy 代理 middleware
+```python
+class ProxyMiddleware:
+    def __init__(self):
+        self.proxies = open("proxies.txt").read().splitlines()
+    
+    def process_request(self, request, spider):
+        request.meta["proxy"] = random.choice(self.proxies)
+```
+
+## 成本
+- 1 萬：$1-5
+- 10 萬：$10-50
+- 100 萬：$100-500
+
+## 反 pattern
+- ❌ 用免費代理（99% 失效）
+- ❌ 一個代理打 10000 次
+- ❌ 沒 retry 機制

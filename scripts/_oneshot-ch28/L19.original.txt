@@ -1,0 +1,50 @@
+## 安裝
+```bash
+pip install selenium webdriver-manager
+```
+
+## 基本
+```python
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+
+driver.get("https://example.com")
+title = driver.find_element(By.TAG_NAME, "h1").text
+
+WebDriverWait(driver, 10).until(
+    EC.presence_of_element_located((By.CLASS_NAME, "product"))
+)
+
+driver.find_element(By.CSS_SELECTOR, "input[name='email']").send_keys("user@example.com")
+driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
+
+driver.quit()
+```
+
+## Headless
+```python
+options = webdriver.ChromeOptions()
+options.add_argument("--headless=new")
+driver = webdriver.Chrome(options=options)
+```
+
+## undetected-chromedriver
+```python
+import undetected_chromedriver as uc
+driver = uc.Chrome()
+driver.get("https://cloudflare-protected.com")
+```
+
+## Selenium vs Playwright
+
+| 面向 | Selenium | Playwright |
+|---|---|---|
+| 速度 | 慢 | 快 5 倍 |
+| 自動等 | ❌ | ✅ |
+| 反偵測 | 弱 | 強 |

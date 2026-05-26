@@ -1,0 +1,71 @@
+## PDF
+```python
+import pdfplumber
+
+with pdfplumber.open("file.pdf") as pdf:
+    for page in pdf.pages:
+        text = page.extract_text()
+        tables = page.extract_tables()
+```
+
+## Excel
+```python
+import pandas as pd
+
+df = pd.read_excel("file.xlsx", sheet_name="Sheet1")
+sheets = pd.read_excel("file.xlsx", sheet_name=None)
+```
+
+## CSV / JSON / RSS
+```python
+df = pd.read_csv("file.csv")
+df = pd.read_json("file.jsonl", lines=True)
+
+import feedparser
+feed = feedparser.parse("https://example.com/rss")
+```
+
+## OCR
+```python
+import pytesseract
+from PIL import Image
+
+text = pytesseract.image_to_string(Image.open("invoice.png"), lang="chi_tra+eng")
+```
+
+## Claude Vision（更強）
+```python
+import anthropic, base64
+
+client = anthropic.Anthropic()
+
+with open("invoice.png", "rb") as f:
+    img = base64.b64encode(f.read()).decode()
+
+response = client.messages.create(
+    model="claude-opus-4-7",
+    max_tokens=1024,
+    messages=[{
+        "role": "user",
+        "content": [
+            {"type": "image", "source": {
+                "type": "base64", "media_type": "image/png", "data": img
+            }},
+            {"type": "text", "text": "抽出發票上：商家、日期、總金額、品項（JSON）"}
+        ]
+    }]
+)
+```
+
+## Whisper
+```python
+import whisper
+model = whisper.load_model("base")
+result = model.transcribe("audio.mp3")
+```
+
+## 應用
+- 政府公開資料（PDF）
+- 財報抓取
+- 收據自動化
+- YouTube 字幕
