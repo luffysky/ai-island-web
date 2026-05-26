@@ -70,6 +70,104 @@ function ownerAllowed(userId: string): boolean {
   return ids.includes(userId);
 }
 
+// Discord 色票（hex → decimal）
+const COLOR = {
+  accent: 0xbd93f9,   // 紫 admin
+  success: 0x50fa7b,  // 綠
+  error: 0xff5555,    // 紅
+  warn: 0xffb86c,     // 橘
+  info: 0x8be9fd,     // 青
+  gold: 0xffd700,     // 金（林董）
+};
+
+function adminConsoleUrl(): string {
+  const site = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
+  const slug = process.env.NEXT_PUBLIC_ADMIN_SLUG ?? "console-x7k2";
+  return `${site}/${slug}/admin`;
+}
+
+type EmbedField = { name: string; value: string; inline?: boolean };
+
+// 通用 embed 卡 helper
+function embedCard(opts: {
+  title: string;
+  description?: string;
+  color?: number;
+  fields?: EmbedField[];
+  footer?: string;
+  buttons?: Array<{ label: string; url?: string; style?: 1 | 2 | 3 | 4 | 5 }>;
+  ephemeral?: boolean;
+}) {
+  const data: any = {
+    embeds: [{
+      title: opts.title,
+      description: opts.description,
+      color: opts.color ?? COLOR.accent,
+      fields: opts.fields ?? [],
+      footer: opts.footer ? { text: opts.footer } : undefined,
+      timestamp: new Date().toISOString(),
+    }],
+  };
+  if (opts.buttons && opts.buttons.length > 0) {
+    data.components = [{
+      type: 1,
+      components: opts.buttons.slice(0, 5).map((b) => ({
+        type: 2,
+        style: b.style ?? (b.url ? 5 : 1),
+        label: b.label,
+        url: b.url,
+      })),
+    }];
+  }
+  if (opts.ephemeral) data.flags = FLAG_EPHEMERAL;
+  return data;
+}
+
+// AI 錯誤翻人話、不 dump raw JSON
+function friendlyDiscordAIError(provider: string, msg: string): { title: string; description: string; hint: string; fixUrl?: string } {
+  const lower = msg.toLowerCase();
+  if (/401|invalid.*api.*key|authentication/.test(lower)) {
+    return {
+      title: `⚠️ ${provider} API key 失效`,
+      description: "Anthropic 拒絕請求（401 invalid x-api-key）",
+      hint: "去後台貼新 key",
+      fixUrl: `${adminConsoleUrl()}/ai/models`,
+    };
+  }
+  if (/429|rate.*limit/.test(lower)) {
+    return { title: `⚠️ ${provider} 限流（429）`, description: "請求太頻繁、被擋下", hint: "等 1 分鐘再問、或升 API tier" };
+  }
+  if (/529|overloaded/.test(lower)) {
+    return { title: `⚠️ ${provider} 主機過載（529）`, description: "服務商暫時忙不過來", hint: "等 10 秒重試、或換模型" };
+  }
+  if (/timeout|abort/.test(lower)) {
+    return { title: "⚠️ AI 回應太慢", description: "超過時限沒回", hint: "再傳一次（網路抖動）" };
+  }
+  if (/model.*not.*found|404/.test(lower)) {
+    return {
+      title: "⚠️ 模型不存在或無權限",
+      description: msg.slice(0, 100),
+      hint: "去後台換 model",
+      fixUrl: `${adminConsoleUrl()}/ai/models`,
+    };
+  }
+  return { title: "⚠️ AI 暫時不能回", description: msg.slice(0, 200), hint: "看 /admin/errors 抓 stack" };
+}
+
+// AI deferred response 補 embed（用 PATCH webhook）
+async function patchOriginalEmbed(appId: string, interactionToken: string, payload: any) {
+  try {
+    await fetch(`https://discord.com/api/v10/webhooks/${appId}/${interactionToken}/messages/@original`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(10_000),
+    });
+  } catch (e) {
+    console.warn("[discord-interactions] patchOriginalEmbed failed:", (e as any)?.message);
+  }
+}
+
 // Discord webhook 用 PATCH 把 deferred response 補上 AI 結果
 async function patchOriginal(appId: string, interactionToken: string, content: string) {
   try {
@@ -105,7 +203,12 @@ async function runAIAndPatch(appId: string, interactionToken: string, userId: st
     .eq("provider", model.provider)
     .maybeSingle();
   if (!keyRow || !(keyRow as any).enabled) {
-    await patchOriginal(appId, interactionToken, `❌ ${model.provider} key 沒 enable、去 /admin/ai/models 啟用`);
+    await patchOriginalEmbed(appId, interactionToken, embedCard({
+      title: `⚠️ ${model.provider} key 沒啟用`,
+      description: `去後台 AI 模型管理啟用 ${model.provider} 的 key`,
+      color: COLOR.warn,
+      buttons: [{ label: "🔧 去後台修", url: `${adminConsoleUrl()}/ai/models` }],
+    }));
     return;
   }
 
@@ -113,7 +216,12 @@ async function runAIAndPatch(appId: string, interactionToken: string, userId: st
   try {
     apiKey = decryptKey((keyRow as any).api_key_encrypted);
   } catch (e: any) {
-    await patchOriginal(appId, interactionToken, `❌ key 解密失敗: ${e?.message ?? "unknown"}`);
+    await patchOriginalEmbed(appId, interactionToken, embedCard({
+      title: "⚠️ key 解密失敗",
+      description: `AI_KEY_SECRET 環境變數可能跟當時加密的不一致`,
+      color: COLOR.error,
+      footer: `decrypt error: ${(e?.message ?? "unknown").slice(0, 100)}`,
+    }));
     return;
   }
 
@@ -140,9 +248,43 @@ async function runAIAndPatch(appId: string, interactionToken: string, userId: st
     });
     const reply = (r.text ?? "").trim() || "(AI 沒回應、再試一次)";
     state.history.push({ role: "assistant", content: reply });
-    await patchOriginal(appId, interactionToken, reply);
+    // 短回答 → 純文字（保留 Discord markdown render）+ buttons
+    // 長回答 → 同樣純文字（embed.description 上限 4096 比 content 2000 大）
+    const payload = reply.length > 1800
+      ? embedCard({
+          title: "🤖 AI 回覆",
+          description: reply.slice(0, 4000),
+          color: COLOR.accent,
+          footer: `${model.provider}/${model.model_name}`,
+          buttons: [
+            { label: "📊 後台", url: adminConsoleUrl() },
+            { label: "🛡️ 錯誤監控", url: `${adminConsoleUrl()}/errors` },
+          ],
+        })
+      : {
+          content: reply,
+          components: [{
+            type: 1,
+            components: [
+              { type: 2, style: 5, label: "📊 後台", url: adminConsoleUrl() },
+              { type: 2, style: 5, label: "🤖 AI 模型", url: `${adminConsoleUrl()}/ai/models` },
+            ],
+          }],
+        };
+    await patchOriginalEmbed(appId, interactionToken, payload);
   } catch (e: any) {
-    await patchOriginal(appId, interactionToken, `❌ AI 失敗: ${e?.message ?? "unknown"}`);
+    const err = friendlyDiscordAIError(model.provider, e?.message ?? "unknown");
+    const buttons: any[] = [];
+    if (err.fixUrl) buttons.push({ label: "🔧 去後台修", url: err.fixUrl });
+    buttons.push({ label: "🛡️ 看 error log", url: `${adminConsoleUrl()}/errors` });
+    await patchOriginalEmbed(appId, interactionToken, embedCard({
+      title: err.title,
+      description: err.description,
+      color: COLOR.error,
+      fields: [{ name: "💡 解法", value: err.hint }],
+      footer: `${model.provider}/${model.model_name}`,
+      buttons,
+    }));
     try {
       await admin.from("error_logs").insert({
         source: "discord-interactions",
@@ -197,13 +339,17 @@ export async function POST(req: NextRequest) {
   if (!ownerAllowed(userId)) {
     return NextResponse.json({
       type: REPLY_MESSAGE,
-      data: {
-        content:
-          `🔒 此 bot 限白名單 owner 使用。\n\n` +
-          `你的 Discord:\nuser_id: \`${userId}\`\nusername: ${username}\n\n` +
-          `要授權自己: Zeabur env 加 \`DISCORD_OWNER_USER_IDS=${userId}\` 後 redeploy`,
-        flags: FLAG_EPHEMERAL,
-      },
+      data: embedCard({
+        title: "🔒 此 bot 限白名單 owner 使用",
+        description: "管理員需把你的 user_id 加進 `DISCORD_OWNER_USER_IDS` 環境變數",
+        color: COLOR.warn,
+        fields: [
+          { name: "user_id", value: `\`${userId}\``, inline: true },
+          { name: "username", value: username, inline: true },
+        ],
+        footer: "授權後 redeploy 才生效",
+        ephemeral: true,
+      }),
     });
   }
 
@@ -211,16 +357,22 @@ export async function POST(req: NextRequest) {
   if (cmd === "help") {
     return NextResponse.json({
       type: REPLY_MESSAGE,
-      data: {
-        content:
-          "👋 **AI 島 Discord bot**\n\n" +
-          "`/ai <prompt>` — 跟 AI 對話\n" +
-          "`/model` — 看可用 model 清單 + 當前選擇\n" +
-          "`/model_set <name>` — 切換 model\n" +
-          "`/clear` — 清對話歷史\n" +
-          "`/whoami` — 看 Discord user_id\n" +
-          "`/help` — 看這份",
-      },
+      data: embedCard({
+        title: "👋 AI 島 Discord bot",
+        description: "*林董的 AI 助理 + 後台監控*",
+        color: COLOR.accent,
+        fields: [
+          { name: "🤖 AI 對話", value: "`/ai <prompt>` — 跟 AI 對話（含完整網站章節知識）" },
+          { name: "🎛️ 模型管理", value: "`/model` 看清單 · `/model_set <name>` 切換" },
+          { name: "🧹 對話", value: "`/clear` 清歷史 · `/whoami` 看身份" },
+        ],
+        footer: "AI 島 v3 · Discord bot",
+        buttons: [
+          { label: "📊 後台首頁", url: adminConsoleUrl() },
+          { label: "🤖 AI 模型", url: `${adminConsoleUrl()}/ai/models` },
+          { label: "🛡️ 錯誤監控", url: `${adminConsoleUrl()}/errors` },
+        ],
+      }),
     });
   }
 
@@ -228,18 +380,30 @@ export async function POST(req: NextRequest) {
     const state = getState(userId);
     return NextResponse.json({
       type: REPLY_MESSAGE,
-      data: {
-        content:
-          `🆔 user_id: \`${userId}\`\n` +
-          `username: ${username}\n` +
-          `當前 model: \`${state.model_name ?? "(預設)"}\``,
-      },
+      data: embedCard({
+        title: "🆔 你的 Discord 身份",
+        description: "✅ 已通過 owner 白名單驗證",
+        color: COLOR.success,
+        fields: [
+          { name: "user_id", value: `\`${userId}\``, inline: true },
+          { name: "username", value: username, inline: true },
+          { name: "當前 model", value: `\`${state.model_name ?? "(預設)"}\`` },
+        ],
+        buttons: [{ label: "📊 後台", url: adminConsoleUrl() }],
+      }),
     });
   }
 
   if (cmd === "clear") {
     getState(userId).history = [];
-    return NextResponse.json({ type: REPLY_MESSAGE, data: { content: "✨ 對話歷史已清空" } });
+    return NextResponse.json({
+      type: REPLY_MESSAGE,
+      data: embedCard({
+        title: "✨ 對話歷史已清空",
+        description: "下一句重新開始、AI 不會帶之前 context",
+        color: COLOR.info,
+      }),
+    });
   }
 
   if (cmd === "model") {
@@ -252,7 +416,12 @@ export async function POST(req: NextRequest) {
     if (active.length === 0) {
       return NextResponse.json({
         type: REPLY_MESSAGE,
-        data: { content: "❌ 沒有 active model、去 /admin/ai/models 啟用" },
+        data: embedCard({
+          title: "⚠️ 沒有 active model",
+          description: "去後台 AI 模型管理啟用至少 1 個 model",
+          color: COLOR.warn,
+          buttons: [{ label: "🔧 去後台啟用", url: `${adminConsoleUrl()}/ai/models` }],
+        }),
       });
     }
     const state = getState(userId);
@@ -265,7 +434,13 @@ export async function POST(req: NextRequest) {
       .join("\n");
     return NextResponse.json({
       type: REPLY_MESSAGE,
-      data: { content: `**可用 model** (用 \`/model_set\` 切換)\n\n${list}` },
+      data: embedCard({
+        title: "🎛️ 可用 AI Model",
+        description: list,
+        color: COLOR.accent,
+        footer: "用 /model_set <name> 切換",
+        buttons: [{ label: "🔧 後台模型管理", url: `${adminConsoleUrl()}/ai/models` }],
+      }),
     });
   }
 
@@ -283,13 +458,22 @@ export async function POST(req: NextRequest) {
     if (!found) {
       return NextResponse.json({
         type: REPLY_MESSAGE,
-        data: { content: `❌ 找不到 \`${target}\`、用 /model 看清單` },
+        data: embedCard({
+          title: `❌ 找不到 \`${target}\``,
+          description: "可能拼錯了、或這個 model 沒啟用",
+          color: COLOR.error,
+          footer: "用 /model 看可用清單",
+        }),
       });
     }
     getState(userId).model_name = found.model_name;
     return NextResponse.json({
       type: REPLY_MESSAGE,
-      data: { content: `✅ 已切到 \`${found.provider}/${found.model_name}\`` },
+      data: embedCard({
+        title: "✅ 已切換 model",
+        description: `\`${found.provider}/${found.model_name}\``,
+        color: COLOR.success,
+      }),
     });
   }
 
@@ -297,7 +481,14 @@ export async function POST(req: NextRequest) {
   if (cmd === "ai") {
     const prompt = String(body.data?.options?.[0]?.value ?? "").trim();
     if (!prompt) {
-      return NextResponse.json({ type: REPLY_MESSAGE, data: { content: "❌ 沒給 prompt" } });
+      return NextResponse.json({
+        type: REPLY_MESSAGE,
+        data: embedCard({
+          title: "❌ 沒給 prompt",
+          description: "用 `/ai <你的問題>` 傳給 AI",
+          color: COLOR.error,
+        }),
+      });
     }
 
     // background AI、不 await (Discord 3 秒內必回、立即 return DEFERRED、後台跑完用 PATCH 補)
@@ -310,7 +501,11 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({
     type: REPLY_MESSAGE,
-    data: { content: `❓ 未知命令 /${cmd}、傳 /help 看清單` },
+    data: embedCard({
+      title: `❓ 未知命令 /${cmd}`,
+      description: "傳 `/help` 看可用清單",
+      color: COLOR.warn,
+    }),
   });
 }
 
