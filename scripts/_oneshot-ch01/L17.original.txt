@@ -1,0 +1,41 @@
+## 7 大語意標籤
+
+### `<header>` 頁首
+網頁或區塊的頂部，可放標題、logo、導航。
+```html
+&lt;header&gt;
+  &lt;h1&gt;AI 島&lt;/h1&gt;
+  &lt;nav&gt;...&lt;/nav&gt;
+&lt;/header&gt;
+```
+
+### `<nav>` 主導航
+重要的導覽連結，**不是**所有連結都要包 nav。
+```html
+&lt;nav aria-label="主選單"&gt;
+  &lt;ul&gt;
+    &lt;li&gt;&lt;a href="/"&gt;首頁&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/about"&gt;關於&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;
+```
+
+### `<main>` 主內容
+**一頁只能有一個**，包住主要內容（不含 header / footer / nav）。
+
+### `<article>` 獨立內容
+可獨立分發的內容：部落格文章、新聞、評論、卡片。
+
+### `<section>` 主題章節
+一組相關內容，**通常要有標題**。
+
+### `<aside>` 旁支內容
+side bar、廣告、相關推薦、註腳。
+
+### `<footer>` 頁尾
+版權、隱私連結、社群圖標。
+
+## SEO 跟 a11y 效益
+- Google 用語意標籤理解內容結構
+- 螢幕閱讀器讓盲人用戶「跳到主內容」「跳到導航」
+- Chrome 開「閱讀模式」抓 article 內容

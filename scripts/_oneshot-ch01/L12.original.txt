@@ -1,0 +1,102 @@
+2026 的 HTML 已經支援自訂元素，不需框架就能寫元件。React、Vue 不在的場合（純 HTML 站、跨框架共用），這是答案。
+
+```js
+// 1. 定義 class
+class CountdownTimer extends HTMLElement {
+  constructor() {
+    super();
+    this.count = parseInt(this.getAttribute("start") || "10");
+  }
+  
+  // 進入 DOM 時觸發
+  connectedCallback() {
+    this.render();
+    this.timer = setInterval(() => {
+      this.count--;
+      this.render();
+      if (this.count 
+
+```
+
+  
+### Shadow DOM：樣式封裝
+
+```js
+class CoolButton extends HTMLElement {
+  connectedCallback() {
+    const shadow = this.attachShadow({ mode: "open" });
+    shadow.innerHTML = `
+      
+        button {
+          background: gold;
+          padding: 10px;
+        }
+      
+      
+    `;
+  }
+}
+customElements.define("cool-btn", CoolButton);
+```
+
+```html
+<!-- 自訂元素：必有 hyphen -->
+<my-button>點我</my-button>
+<user-card user-id="123"></user-card>
+
+<script>
+class MyButton extends HTMLElement {
+  constructor() {
+    super();
+    const shadow = this.attachShadow({ mode: 'open' });
+    shadow.innerHTML = `
+      <style>
+        button { background: #50fa7b; padding: 8px 16px; }
+      </style>
+      <button><slot></slot></button>
+    `;
+  }
+}
+customElements.define('my-button', MyButton);
+</script>
+
+<!-- template + slot -->
+<template id="card-template">
+  <article>
+    <h3><slot name="title">預設標題</slot></h3>
+    <p><slot>預設內容</slot></p>
+  </article>
+</template>
+```
+
+  
+### 屬性變更監聽
+
+```js
+class User extends HTMLElement {
+  static get observedAttributes() {
+    return ["name", "age"];
+  }
+  
+  attributeChangedCallback(name, oldVal, newVal) {
+    console.log(`${name}: ${oldVal} → ${newVal}`);
+    this.render();
+  }
+}
+```
+
+  
+### 用得多的場合
+
+  
+- 公司內部 design system，跨產品/跨框架共用
+- 嵌入第三方的 widget（聊天室、評論）
+- Storybook 等工具元件
+- WordPress 等 CMS 的 block
+
+  
+
+⚠️
+新手常見錯誤
+
+新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。

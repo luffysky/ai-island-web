@@ -1,0 +1,45 @@
+```html
+<!-- SVG 直接寫在 HTML -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <circle cx="50" cy="50" r="40" fill="#50fa7b" />
+  <text x="50" y="55" text-anchor="middle" fill="white">Hi</text>
+</svg>
+
+<!-- 圖示用 SVG（可繼承顏色） -->
+<svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+</svg>
+
+<!-- 漸層 -->
+<svg viewBox="0 0 200 100">
+  <defs>
+    <linearGradient id="g">
+      <stop offset="0" stop-color="#50fa7b" />
+      <stop offset="1" stop-color="#8be9fd" />
+    </linearGradient>
+  </defs>
+  <rect width="200" height="100" fill="url(#g)" />
+</svg>
+```
+
+  
+### 為什麼 SVG 比 PNG 強
+
+  
+- 無限放大不模糊
+- 可以用 CSS 改顏色（icon system 必備）
+- 可動畫
+- 檔案小（簡單圖示比 PNG 小 10 倍）
+- 無障礙友善（可加 ``）
+
+  
+### SVG icon system
+
+
+
+  
+
+🎯
+面試考點
+
+台灣科技公司面試 90% 會問「HTML」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。

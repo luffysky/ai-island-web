@@ -1,0 +1,55 @@
+### 資源載入順序
+
+```html
+<!-- 效能優化 -->
+
+<!-- 1. preload 關鍵資源 -->
+<link rel="preload" href="/fonts/main.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/hero.jpg" as="image">
+
+<!-- 2. preconnect 第三方 -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://cdn.example.com">
+
+<!-- 3. 圖片 lazy load -->
+<img src="/below-fold.jpg" loading="lazy" alt="...">
+
+<!-- 4. script 載入策略 -->
+<script src="/critical.js"></script>
+<script src="/normal.js" defer></script>
+<script src="/analytics.js" async></script>
+
+<!-- 5. critical CSS inline -->
+<style>
+  /* 首屏 CSS 內嵌、減少 round-trip */
+  body { margin: 0; font-family: system-ui; }
+</style>
+<link rel="stylesheet" href="/non-critical.css" media="print" onload="this.media='all'">
+```
+
+  
+### 圖片必設 width / height
+
+
+
+  
+### 關鍵的 Core Web Vitals 影響
+
+  
+- **LCP（最大內容繪製）**：hero 圖加 `fetchpriority="high"`
+- **CLS（佈局位移）**：圖片設 width/height、字型設 `font-display: swap`
+- **INP（互動到下一次繪製）**：不要 inline 大型 JS
+
+  
+**🚀 進階技巧**
+
+2024+ 的 `fetchpriority` 屬性：`` 告訴瀏覽器先載這張。Hero 圖永遠加這個，LCP 分數會跳一個量級。
+
+  
+
+  
+
+⚡
+學習加速器
+
+把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。

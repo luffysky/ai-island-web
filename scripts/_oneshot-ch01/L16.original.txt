@@ -1,0 +1,57 @@
+實際接案、寫 SaaS 都用這個結構：
+
+```html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI 島：全端養成班</title>
+  <meta name="description" content="用最簡單的想法邏輯把最難的變成任何人都能懂">
+  <link rel="icon" href="/favicon.svg">
+  <link rel="canonical" href="https://ai-island-web.snowrealm.pet/">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="AI 島">
+  <meta property="og:image" content="https://ai-island-web.snowrealm.pet/og.png">
+
+  <!-- preconnect -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+
+  <!-- 樣式 -->
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header>
+    <nav aria-label="主選單">
+      <a href="/" aria-label="回首頁">🏝️ AI 島</a>
+      <ul>
+        <li><a href="/chapters">章節</a></li>
+        <li><a href="/login">登入</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section>
+      <h1>用最簡單的邏輯學最難的事</h1>
+      <p>60 章從 0 到全端 + AI</p>
+      <a href="/signup" class="cta">開始冒險</a>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 SnowRealm. <a href="/privacy">隱私權</a></p>
+  </footer>
+
+  <script src="/app.js" defer></script>
+</body>
+</html>
+```
+
+  
+
+🚀
+2026 趨勢
+
+這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。
