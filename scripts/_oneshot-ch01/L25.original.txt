@@ -1,0 +1,127 @@
+## 完整檔案結構
+```
+portfolio/
+├── index.html
+├── style.css
+├── og.png (1200×630)
+├── favicon.svg
+└── images/
+    ├── avatar.webp
+    └── projects/
+```
+
+## index.html 範本（重點段）
+```html
+&lt;!DOCTYPE html&gt;
+&lt;html lang="zh-Hant"&gt;
+&lt;head&gt;
+  &lt;meta charset="utf-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;Luffysky - 全端工程師 / Indie Hacker&lt;/title&gt;
+  &lt;meta name="description" content="鶯歌出身、SnowRealm 創辦人、專注 AI 應用 + 一人公司"&gt;
+
+  &lt;!-- Open Graph --&gt;
+  &lt;meta property="og:title" content="Luffysky"&gt;
+  &lt;meta property="og:description" content="全端工程師 / Indie Hacker"&gt;
+  &lt;meta property="og:image" content="/og.png"&gt;
+  &lt;meta property="og:type" content="profile"&gt;
+  &lt;meta property="og:locale" content="zh_TW"&gt;
+
+  &lt;link rel="icon" href="/favicon.svg"&gt;
+  &lt;link rel="stylesheet" href="style.css"&gt;
+
+  &lt;!-- JSON-LD 結構化資料 --&gt;
+  &lt;script type="application/ld+json"&gt;
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Luffysky",
+    "jobTitle": "Full-stack Engineer",
+    "url": "https://luffysky.tw",
+    "sameAs": [
+      "https://twitter.com/luffysky",
+      "https://github.com/luffysky"
+    ]
+  }
+  &lt;/script&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+  &lt;header&gt;
+    &lt;nav aria-label="主選單"&gt;
+      &lt;ul&gt;
+        &lt;li&gt;&lt;a href="#about"&gt;關於&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#projects"&gt;作品&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#contact"&gt;聯絡&lt;/a&gt;&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/nav&gt;
+  &lt;/header&gt;
+
+  &lt;main&gt;
+    &lt;section id="hero"&gt;
+      &lt;h1&gt;Hi, 我是 Luffysky&lt;/h1&gt;
+      &lt;p&gt;全端工程師、SnowRealm 創辦人、Indie hacker&lt;/p&gt;
+    &lt;/section&gt;
+
+    &lt;section id="about"&gt;
+      &lt;h2&gt;關於我&lt;/h2&gt;
+      &lt;article&gt;...&lt;/article&gt;
+    &lt;/section&gt;
+
+    &lt;section id="projects"&gt;
+      &lt;h2&gt;作品集&lt;/h2&gt;
+      &lt;article class="project"&gt;
+        &lt;picture&gt;
+          &lt;source srcset="img.avif" type="image/avif"&gt;
+          &lt;source srcset="img.webp" type="image/webp"&gt;
+          &lt;img src="img.jpg" width="600" height="400"
+               alt="專案截圖" loading="lazy"&gt;
+        &lt;/picture&gt;
+        &lt;h3&gt;AI 島&lt;/h3&gt;
+        &lt;p&gt;60 章全端養成課程網站&lt;/p&gt;
+      &lt;/article&gt;
+    &lt;/section&gt;
+
+    &lt;section id="contact"&gt;
+      &lt;h2&gt;聯絡&lt;/h2&gt;
+      &lt;form&gt;
+        &lt;label&gt;
+          您的 Email
+          &lt;input type="email" name="email" required
+                 autocomplete="email"&gt;
+        &lt;/label&gt;
+        &lt;label&gt;
+          訊息
+          &lt;textarea name="message" required
+                    minlength="10" maxlength="500"&gt;&lt;/textarea&gt;
+        &lt;/label&gt;
+        &lt;button type="submit"&gt;送出&lt;/button&gt;
+      &lt;/form&gt;
+    &lt;/section&gt;
+  &lt;/main&gt;
+
+  &lt;footer&gt;
+    &lt;p&gt;© 2026 Luffysky · &lt;a href="https://snowrealm.pet"&gt;SnowRealm&lt;/a&gt;&lt;/p&gt;
+  &lt;/footer&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+```
+
+## 檢查清單
+- [ ] `<html lang="zh-Hant">` 設好
+- [ ] Meta description 寫 100-150 字
+- [ ] OG image 1200×630
+- [ ] favicon.svg（不只 .ico）
+- [ ] JSON-LD 結構化資料
+- [ ] 所有圖片有 alt + loading="lazy" + width/height
+- [ ] 表單有 label + autocomplete + required
+- [ ] 語意化標籤 header / nav / main / article / section / footer
+- [ ] Lighthouse 跑一次、目標 90+
+- [ ] 用 Mobile-friendly Test
+- [ ] 註冊免費 domain（Cloudflare）+ 部署 Cloudflare Pages
+
+## 部署 1 分鐘
+```bash
+# Cloudflare Pages（免費、超快）
+npx wrangler pages deploy ./portfolio --project-name=my-portfolio
+```

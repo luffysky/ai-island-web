@@ -24,7 +24,7 @@
 
 | 章 | 標題 | 課數 | 完成日 |
 |---|---|---|---|
-| **ch01** | HTML 完整 | 25（L1-L17 完成、剩 L18-L25）| 進行 17/25 |
+| **ch01** | HTML 完整 | 25 | 2026-05-28 ✅ |
 | **ch26** | Python 基礎 | 35（含新 L0.5 終端機 + L1.5 工具）| 2026-05 ✅ |
 | **ch27** | Python 資料分析 | 25 | 2026-05 ✅ |
 | **ch28** | Python 爬蟲 | 25（analogy 全綠）| 2026-05 ✅ |
@@ -111,11 +111,13 @@
 - [ ] `/admin/ga4` 看「現在誰在用」區域是否顯示 TW / Taipei 而非只 TW（IP lookup）
 
 ### 內容工作 — ch01 系列
-ch01 完成 17/25、剩 2 批：
-- [x] L6-L11（連結 / 表格 / 表單 / SEO / JSON-LD / a11y）— 2026-05-28 ✅
-- [x] L12-L17（Web Components / PWA / SVG / 效能 / 範本 / 語意化進階）— 2026-05-28 ✅
-- [ ] L18-L23（a11y 進階 / 表單進階 / meta / 結構化 / lazy）
-- [ ] L24-L25（全域屬性 / 整章實戰）
+**ch01 25/25 全章完成 — 2026-05-28 ✅**
+- [x] L6-L11（連結 / 表格 / 表單 / SEO / JSON-LD / a11y）
+- [x] L12-L17（Web Components / PWA / SVG / 效能 / 範本 / 語意化進階）
+- [x] L18-L23（a11y 進階 / 表單進階 / meta 進階 / Schema 進階 / 圖片優化 / iframe）
+- [x] L24-L25（全域屬性 / 整章 portfolio 實戰）
+
+下一步：**P0 前端基礎下一章**（ch02 CSS / ch04 JS / ch07 共通 / ch08 React / ch10 Next）
 
 ### 內容工作 — 之後章節（按 P0-P6 詳見 BEGINNER_FRIENDLY_BACKLOG.md）
 - P0 前端基礎：ch02 CSS / ch04 JS / ch07 共通 / ch08 React / ch10 Next

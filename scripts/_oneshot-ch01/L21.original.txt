@@ -1,0 +1,77 @@
+## 為什麼用 JSON-LD（不是 microdata）
+2026 Google 推薦 JSON-LD：
+- 跟 HTML 分離、好維護
+- 一個 `<script>` 內全寫完
+- 不影響 HTML 結構
+
+## 常用 Schema 類型
+
+### Article 部落格 / 教學
+```html
+&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Ch17 SQL 完整教學",
+  "image": "https://ai-island-web.snowrealm.pet/ch17.jpg",
+  "datePublished": "2026-05-17",
+  "author": { "@type": "Person", "name": "Luffysky" }
+}
+&lt;/script&gt;
+```
+
+### Product 商品（有星評會在搜尋顯示）
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "iPhone 17 Pro",
+  "image": "https://...",
+  "offers": {
+    "@type": "Offer",
+    "price": "35900",
+    "priceCurrency": "TWD"
+  },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.8",
+    "reviewCount": "127"
+  }
+}
+```
+
+### FAQ 常見問題（會在搜尋直接展開）
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [{
+    "@type": "Question",
+    "name": "什麼是 SQL？",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "SQL 是和資料庫溝通的標準語言..."
+    }
+  }]
+}
+```
+
+### LocalBusiness 在地商家
+```json
+{
+  "@type": "LocalBusiness",
+  "name": "GLACÉRA 陶藝",
+  "address": { "addressLocality": "鶯歌", "addressRegion": "新北市" },
+  "openingHours": "Mo-Fr 10:00-19:00",
+  "telephone": "+886-2-..."
+}
+```
+
+## 測試工具
+- **Google Rich Results Test**：rich-results.google.com
+- **Schema.org Validator**：validator.schema.org
+
+## SEO 效益
+- 部落格加 FAQPage → 搜尋結果 CTR +30%
+- 商店加 Product → 出現星評、價格
+- 食譜加 Recipe → 出現烹飪時間、卡路里

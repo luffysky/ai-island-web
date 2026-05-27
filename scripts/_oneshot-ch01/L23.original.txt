@@ -1,0 +1,65 @@
+## iframe 嵌 YouTube
+```html
+&lt;iframe width="560" height="315"
+        src="https://www.youtube.com/embed/VIDEO_ID"
+        title="YouTube video"
+        frameborder="0"
+        loading="lazy"
+        allow="accelerometer; autoplay; encrypted-media; gyroscope"
+        allowfullscreen&gt;&lt;/iframe&gt;
+```
+
+## iframe 安全：sandbox 屬性
+**第三方內容一定要加** sandbox，限制能做的事：
+```html
+&lt;iframe src="https://untrusted.com"
+        sandbox="allow-scripts allow-same-origin"&gt;
+&lt;/iframe&gt;
+```
+
+可選項：
+- `allow-scripts`：允許 JS
+- `allow-same-origin`：允許同源請求
+- `allow-forms`：允許表單
+- `allow-popups`：允許彈窗
+- `allow-modals`：允許 alert
+- 不加任何 = 最嚴格沙箱
+
+## video 標籤
+```html
+&lt;video controls width="640"
+       poster="thumbnail.jpg"
+       preload="metadata"&gt;
+  &lt;source src="video.mp4" type="video/mp4"&gt;
+  &lt;source src="video.webm" type="video/webm"&gt;
+  &lt;track kind="subtitles" src="zh.vtt" srclang="zh" label="中文"&gt;
+  您的瀏覽器不支援 video
+&lt;/video&gt;
+```
+
+屬性：
+- `controls`：顯示播放控制
+- `autoplay muted`：自動播放（必須 muted）
+- `loop`：循環
+- `poster`：未播放時的縮圖
+- `preload="none|metadata|auto"`：預載策略
+
+## audio 標籤
+```html
+&lt;audio controls&gt;
+  &lt;source src="podcast.mp3" type="audio/mpeg"&gt;
+  &lt;source src="podcast.ogg" type="audio/ogg"&gt;
+&lt;/audio&gt;
+```
+
+## 嵌入 Google Map
+```html
+&lt;iframe src="https://www.google.com/maps/embed?pb=..."
+        width="600" height="450"
+        loading="lazy" allowfullscreen&gt;&lt;/iframe&gt;
+```
+
+## 影片優化
+- 影片 > 1MB **絕對不放官網**，用 YouTube / Cloudflare Stream
+- 自動播放動畫 → 用 WebP / video.muted 而不是 GIF（GIF 是 10 倍大）
+- 字幕用 .vtt 檔（純文字、可被搜尋）

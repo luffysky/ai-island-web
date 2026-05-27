@@ -1,0 +1,63 @@
+## label 配對 input
+**必做**—不只 a11y、點 label 文字也會 focus input。
+```html
+&lt;!-- 寫法 1：for + id --&gt;
+&lt;label for="email"&gt;Email&lt;/label&gt;
+&lt;input type="email" id="email" name="email"&gt;
+
+&lt;!-- 寫法 2：包起來 --&gt;
+&lt;label&gt;
+  Email
+  &lt;input type="email" name="email"&gt;
+&lt;/label&gt;
+```
+
+## input type 超完整
+```html
+&lt;input type="email"&gt;      &lt;!-- 手機自動跳 @ 鍵盤 --&gt;
+&lt;input type="tel"&gt;        &lt;!-- 數字鍵盤 --&gt;
+&lt;input type="number"&gt;     &lt;!-- 數字、有上下箭頭 --&gt;
+&lt;input type="date"&gt;       &lt;!-- 日期選擇器 --&gt;
+&lt;input type="color"&gt;      &lt;!-- 顏色選擇器 --&gt;
+&lt;input type="range"&gt;      &lt;!-- 滑桿 --&gt;
+&lt;input type="search"&gt;     &lt;!-- 搜尋框（有 X 清除） --&gt;
+&lt;input type="url"&gt;
+&lt;input type="password"&gt;
+&lt;input type="file" accept="image/*"&gt;
+```
+
+## autocomplete（神救援）
+讓 Chrome / Safari 自動填入：
+```html
+&lt;input type="email" autocomplete="email"&gt;
+&lt;input type="tel" autocomplete="tel"&gt;
+&lt;input type="password" autocomplete="current-password"&gt;
+&lt;input type="password" autocomplete="new-password"&gt;
+&lt;input autocomplete="name"&gt;
+&lt;input autocomplete="given-name"&gt;
+&lt;input autocomplete="family-name"&gt;
+&lt;input autocomplete="street-address"&gt;
+```
+
+## 內建驗證
+```html
+&lt;input type="email" required&gt;
+&lt;input minlength="8" maxlength="32"&gt;
+&lt;input type="text" pattern="[A-Z]{3}\d{4}" title="例：ABC1234"&gt;
+&lt;input type="number" min="0" max="100" step="0.1"&gt;
+```
+
+## fieldset / legend 分組
+```html
+&lt;fieldset&gt;
+  &lt;legend&gt;聯絡方式&lt;/legend&gt;
+  &lt;label&gt;Email &lt;input type="email"&gt;&lt;/label&gt;
+  &lt;label&gt;電話 &lt;input type="tel"&gt;&lt;/label&gt;
+&lt;/fieldset&gt;
+```
+
+## 進階：表單 UX 細節
+- `inputmode="decimal"` 數字鍵盤但允許小數
+- `enterkeyhint="send"` 改 Enter 鍵的文字
+- `autofocus` 自動聚焦（首頁慎用）
+- `disabled` vs `readonly`：disabled 不會 submit、readonly 會

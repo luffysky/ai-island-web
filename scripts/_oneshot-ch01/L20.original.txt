@@ -1,0 +1,57 @@
+## 基本 meta
+```html
+&lt;meta charset="utf-8"&gt;
+&lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+&lt;meta name="description" content="2026 全端養成 75 章課程"&gt;
+&lt;meta name="theme-color" content="#50fa7b"&gt;
+&lt;title&gt;AI 島 - 全端養成班&lt;/title&gt;
+```
+
+## Open Graph（FB / LINE / Threads 等都吃）
+```html
+&lt;meta property="og:type" content="website"&gt;
+&lt;meta property="og:url" content="https://ai-island-web.snowrealm.pet"&gt;
+&lt;meta property="og:title" content="AI 島 - 60 章全端養成"&gt;
+&lt;meta property="og:description" content="從 HTML 到 AI Agent"&gt;
+&lt;meta property="og:image" content="https://ai-island-web.snowrealm.pet/og.png"&gt;
+&lt;meta property="og:image:width" content="1200"&gt;
+&lt;meta property="og:image:height" content="630"&gt;
+&lt;meta property="og:locale" content="zh_TW"&gt;
+```
+
+## Twitter Card
+```html
+&lt;meta name="twitter:card" content="summary_large_image"&gt;
+&lt;meta name="twitter:title" content="AI 島"&gt;
+&lt;meta name="twitter:description" content="..."&gt;
+&lt;meta name="twitter:image" content="https://ai-island-web.snowrealm.pet/og.png"&gt;
+```
+
+## OG 圖規格
+- **1200 × 630 px**（最廣相容）
+- **檔案 < 1 MB**
+- 重要文字放中間（外圍可能被裁切）
+- 用 PNG 或 JPG（不支援 SVG）
+
+## 自動產生 OG 圖
+Next.js 13+ 內建：
+```typescript
+// app/og/route.tsx
+import { ImageResponse } from "next/og";
+
+export async function GET() {
+  return new ImageResponse(
+    <div style={{ fontSize: 60, color: "white", background: "#0a0e14",
+                  width: "100%", height: "100%", display: "flex",
+                  alignItems: "center", justifyContent: "center" }}>
+      AI 島
+    </div>,
+    { width: 1200, height: 630 }
+  );
+}
+```
+
+## 工具
+- **opengraph.xyz**：貼網址看預覽
+- **metatags.io**：產生 + 預覽各平台
+- **og:image generator**（Vercel）

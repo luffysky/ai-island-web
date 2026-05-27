@@ -1,0 +1,58 @@
+## lazy loading（原生、不用 JS）
+```html
+&lt;!-- 第一螢幕的圖：eager（預設）--&gt;
+&lt;img src="hero.jpg" alt="主視覺"&gt;
+
+&lt;!-- 下方的圖：lazy（捲到才載入）--&gt;
+&lt;img src="below.jpg" alt="..." loading="lazy"&gt;
+
+&lt;!-- iframe 也支援 --&gt;
+&lt;iframe src="..." loading="lazy"&gt;&lt;/iframe&gt;
+```
+
+## srcset 響應式圖
+不同螢幕載不同尺寸：
+```html
+&lt;img src="medium.jpg"
+     srcset="small.jpg 480w, medium.jpg 768w, large.jpg 1200w"
+     sizes="(max-width: 600px) 480px, (max-width: 1024px) 768px, 1200px"
+     alt="..."&gt;
+```
+
+## picture 不同格式
+新瀏覽器吃 WebP / AVIF，舊瀏覽器 fallback JPG：
+```html
+&lt;picture&gt;
+  &lt;source srcset="image.avif" type="image/avif"&gt;
+  &lt;source srcset="image.webp" type="image/webp"&gt;
+  &lt;img src="image.jpg" alt="..." loading="lazy"&gt;
+&lt;/picture&gt;
+```
+
+## 圖片格式選擇
+- **AVIF**：最小、最美，2024+ 主流
+- **WebP**：相容性最好，比 JPG 小 30%
+- **JPG**：照片
+- **PNG**：透明背景、UI 圖
+- **SVG**：圖示、Logo（向量）
+
+## width / height（防止 layout shift）
+```html
+&lt;!-- 一定要寫，瀏覽器才能預留空間 --&gt;
+&lt;img src="..." width="800" height="600" alt="..."&gt;
+```
+
+CLS（Cumulative Layout Shift）是 Core Web Vitals 三大指標之一，沒寫 width / height 會被扣分。
+
+## 工具
+- **squoosh.app**（Google 出）：壓縮 + 轉格式
+- **TinyPNG**：傳統壓縮
+- **Next.js `<Image>`**：自動產生 srcset + WebP + lazy
+- **cloudinary**：CDN 動態裁切
+
+## Next.js Image 範例
+```tsx
+import Image from "next/image";
+<Image src="/hero.jpg" width={1200} height={630}
+       alt="..." priority />
+```

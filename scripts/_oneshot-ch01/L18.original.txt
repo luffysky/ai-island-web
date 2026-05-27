@@ -1,0 +1,49 @@
+## ARIA 三大屬性
+
+### `aria-label` 標籤
+給沒有可見文字的元素一個無障礙名稱：
+```html
+&lt;button aria-label="關閉"&gt;×&lt;/button&gt;
+&lt;a href="/" aria-label="回首頁"&gt;&lt;img src="logo.svg"&gt;&lt;/a&gt;
+```
+
+### `aria-labelledby` 用其他元素當標籤
+```html
+&lt;h2 id="title"&gt;使用者列表&lt;/h2&gt;
+&lt;table aria-labelledby="title"&gt;...&lt;/table&gt;
+```
+
+### `aria-describedby` 補充描述
+```html
+&lt;input id="pwd" aria-describedby="pwd-hint"&gt;
+&lt;small id="pwd-hint"&gt;至少 8 字、含大小寫 + 數字&lt;/small&gt;
+```
+
+## 動態狀態 `aria-*`
+```html
+&lt;button aria-pressed="true"&gt;已關注&lt;/button&gt;
+&lt;details&gt;
+  &lt;summary aria-expanded="false"&gt;展開更多&lt;/summary&gt;
+&lt;/details&gt;
+&lt;div role="alert"&gt;您的訂單已送出！&lt;/div&gt;
+```
+
+## 鍵盤導航必備
+- 所有互動元素 `tabindex="0"` 可以 Tab 到
+- ESC 關彈窗
+- Enter / Space 觸發按鈕
+- 方向鍵在 list / tab 之間移動
+
+## 焦點樣式
+```css
+/* 別關 :focus-visible！盲人 + 鍵盤族靠它 */
+button:focus-visible {
+  outline: 2px solid #50fa7b;
+  outline-offset: 2px;
+}
+```
+
+## 工具
+- **axe DevTools**（瀏覽器外掛）：免費掃 a11y 問題
+- **Lighthouse**：Chrome 內建、a11y 分數
+- **VoiceOver**（Mac）/ **NVDA**（Windows）：實際試聽

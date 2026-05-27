@@ -1,0 +1,74 @@
+## data-* 自訂屬性
+存資料用，JS 可以讀：
+```html
+&lt;button data-action="delete" data-id="42" data-confirm="true"&gt;刪除&lt;/button&gt;
+```
+```javascript
+const btn = document.querySelector("button");
+console.log(btn.dataset.action);   // "delete"
+console.log(btn.dataset.id);        // "42"
+console.log(btn.dataset.confirm);   // "true"
+```
+
+CSS 也能用：
+```css
+[data-state="active"] { color: green; }
+button[data-confirm="true"]::after { content: " ⚠️"; }
+```
+
+## contenteditable 讓 div 變編輯區
+```html
+&lt;div contenteditable="true"&gt;點我可以編輯&lt;/div&gt;
+&lt;div contenteditable="plaintext-only"&gt;只能純文字&lt;/div&gt;
+```
+
+寫筆記 / 評論 / 富文字編輯器（Notion-style）的基礎。
+
+## draggable 拖拉
+```html
+&lt;div draggable="true" id="card"&gt;拖我&lt;/div&gt;
+```
+```javascript
+card.addEventListener("dragstart", e => {
+  e.dataTransfer.setData("text/plain", card.id);
+});
+```
+
+## hidden 屬性
+```html
+&lt;div hidden&gt;看不到&lt;/div&gt;
+&lt;!-- 等同 display: none --&gt;
+```
+
+## title 屬性（hover tooltip）
+```html
+&lt;abbr title="HyperText Markup Language"&gt;HTML&lt;/abbr&gt;
+&lt;button title="送出表單"&gt;送出&lt;/button&gt;
+```
+
+## lang 屬性（多語言）
+```html
+&lt;html lang="zh-Hant"&gt;
+&lt;p&gt;This is English &lt;span lang="zh-Hant"&gt;這是中文&lt;/span&gt;&lt;/p&gt;
+```
+
+讓 Chrome / 翻譯工具 / 螢幕閱讀器知道語言。
+
+## spellcheck / autocapitalize
+```html
+&lt;textarea spellcheck="true"&gt;&lt;/textarea&gt;
+&lt;input autocapitalize="words"&gt;  &lt;!-- 每個單字首字大寫 --&gt;
+&lt;input autocapitalize="off"&gt;    &lt;!-- 不自動大寫（密碼用）--&gt;
+```
+
+## dir 方向
+```html
+&lt;p dir="rtl"&gt;阿拉伯文 / 希伯來文&lt;/p&gt;
+```
+
+## inputmode（手機鍵盤）
+```html
+&lt;input type="text" inputmode="numeric"&gt;  &lt;!-- 數字鍵盤 --&gt;
+&lt;input type="text" inputmode="decimal"&gt;  &lt;!-- 小數鍵盤 --&gt;
+&lt;input type="text" inputmode="tel"&gt;      &lt;!-- 電話鍵盤 --&gt;
+```
