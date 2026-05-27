@@ -509,6 +509,35 @@ export async function POST(req: NextRequest) {
   });
 }
 
+// GET 給 cron keep-warm 用 — 主動預熱所有 cold path、不只 touch route
+// 之前只回 {ok:true}、module cache 可能仍冷、第一個真實 interaction 還是會超 3 秒
 export async function GET() {
-  return NextResponse.json({ ok: true, service: "discord-interactions" });
+  const t0 = Date.now();
+  const warmed: string[] = [];
+
+  // 1. 預熱 ed25519 key parse（cold 約 50-200ms）
+  try {
+    getKey();
+    warmed.push("ed25519_key");
+  } catch {}
+
+  // 2. 預熱 supabase admin client + 一個輕量 query
+  try {
+    const admin = createSupabaseAdmin();
+    await admin.from("ai_models").select("id").limit(1);
+    warmed.push("supabase_admin");
+  } catch {}
+
+  // 3. 預熱 ai-crypto decrypt 模組（import 副作用、不真 decrypt）
+  try {
+    void decryptKey;
+    warmed.push("ai_crypto");
+  } catch {}
+
+  return NextResponse.json({
+    ok: true,
+    service: "discord-interactions",
+    warmed,
+    elapsed_ms: Date.now() - t0,
+  });
 }

@@ -29,9 +29,11 @@ export async function GET(req: NextRequest) {
 
   const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
 
-  // 順手 ping 幾個 cold-prone endpoint（HEAD request 最輕、不 trigger 業務邏輯）
+  // 順手 ping 幾個 cold-prone endpoint
+  // discord-interactions GET 已改成「主動預熱」(load key + supabase + decrypt module)、不只 touch route
+  // 其他 webhook GET 也都會回 200、ping 即會觸發 Next.js Node runtime 載入並 cache module
   const targets = [
-    "/api/discord-interactions",
+    "/api/discord-interactions",  // 預熱 ed25519 key + supabase + ai-crypto
     "/api/line-webhook",
     "/api/line-webhook-user",
     "/api/telegram-webhook",
@@ -41,8 +43,12 @@ export async function GET(req: NextRequest) {
     targets.map((path) =>
       fetch(`${base}${path}`, {
         method: "GET",
-        signal: AbortSignal.timeout(3000),
-      }).then((r) => ({ path, status: r.status }))
+        signal: AbortSignal.timeout(5000),
+      }).then(async (r) => {
+        // 把 GET 回應的 warmed 資訊一併帶回、cron 才看得到真的暖到沒
+        const text = await r.text().catch(() => "");
+        return { path, status: r.status, body: text.slice(0, 200) };
+      })
     )
   );
 
