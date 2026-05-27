@@ -1,0 +1,106 @@
+## 寫法對比
+
+### React
+```jsx
+function Counter() {
+  const [count, setCount] = useState(0);
+  
+  return (
+    <button onClick={() => setCount(count + 1)}>
+      {count}
+    </button>
+  );
+}
+```
+
+### Vue
+```vue
+<script setup>
+import { ref } from "vue";
+const count = ref(0);
+</script>
+
+<template>
+  <button @click="count++">{{ count }}</button>
+</template>
+```
+
+## 哲學差異
+
+### React
+- All in JS（JSX）
+- 顯式（useState、useEffect dependency）
+- 函式式
+- 框架越來越接近 vanilla JS
+
+### Vue
+- 接近 HTML（template）
+- 隱式（自動追蹤依賴）
+- 漸進式
+- 框架封裝更多
+
+## 對比表
+
+| 面向 | React | Vue |
+|---|---|---|
+| 寫法 | JSX | template + JSX |
+| 響應式 | 顯式 setState | 自動 ref/reactive |
+| 學習曲線 | 中等 | 平 |
+| 招募（台）| ⭐⭐⭐⭐⭐ | ⭐⭐ |
+| 招募（中）| ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
+| 招募（東南亞）| ⭐⭐⭐ | ⭐⭐⭐⭐ |
+| 招募（美）| ⭐⭐⭐⭐⭐ | ⭐⭐ |
+| 生態 | 巨大 | 大 |
+| 大公司 | Meta / Netflix / Vercel | 阿里 / Bilibili / GitLab |
+| Server Components | 領先 | 跟進中 |
+| SSR | Next.js | Nuxt 3 |
+
+## 各自強項
+
+### React 強在
+- 招募市場（台 / 美）
+- 生態 / 套件最多
+- 跟 React Native 共用
+- Server Components 領先
+
+### Vue 強在
+- 入門快
+- template 對設計師友善
+- Single File Component（template / script / style 一個檔）
+- 框架封裝多（少 boilerplate）
+- 中文社群活躍
+
+## 怎麼選
+
+### 選 React 如果
+- 在台灣找工作 / 大公司
+- 想做 React Native
+- 想跟全球社群（GitHub trends）
+- 想最領先的技術
+
+### 選 Vue 如果
+- 入門想快
+- 喜歡 HTML 直觀
+- 中國 / 亞洲市場
+- 接案 / Indie SaaS
+- 設計師合作多
+
+### 都會的話最強
+換工作 / 接案、客戶要什麼就做什麼、不挑食。
+
+## 我的建議
+- **先學一個到熟**（3-6 個月）
+- **再學另一個**（1-2 週上手）
+- **兩個都熟** = 全端薪水 +20%
+
+## 不要被「哪個比較好」綁
+React vs Vue 是宗教戰爭、沒答案。
+**會 100 個 React project < 會 1 個 Vue 上線的 SaaS**。
+
+## 跨工作的學習
+- TS：兩個都用
+- Tailwind：兩個都用
+- Supabase / Firebase：兩個都接
+- Vercel / Cloudflare：兩個都部署
+
+→ 核心技能跨框架、別只學語法。

@@ -1,0 +1,66 @@
+```bash
+# 建專案（官方推薦：Vite）
+pnpm create vue@latest my-app
+cd my-app && pnpm install && pnpm dev
+```
+
+  
+### SFC（Single File Component）：Vue 的招牌
+
+```vue
+
+import { ref } from "vue";
+
+const count = ref(0);
+
+function increment() {
+  count.value++;
+}
+
+  
+    Hello Vue
+    
+Count: &#123;&#123; count &#125;&#125;
+
+    +1
+  
+
+.hello {
+  text-align: center;
+  padding: 20px;
+}
+
+```
+
+  
+一個 `.vue` 檔包**template + script + style**，三合一。樣式自動 scoped（不會影響其他元件）。
+
+  
+### 三大區塊
+
+  
+- `<script>`：JS 邏輯（Composition API 簡化版）
+- `<template>`：HTML 結構（含 Vue 指令）
+- `<style scoped>`：樣式（scoped 表示只影響這元件）
+
+  
+### Vue vs React 寫法對照
+
+```text
+React (JSX)                   Vue (SFC)
+─────────────────────         ─────────────────────
+className=""                  class=""
+onClick={fn}                  @click="fn"
+{value}                       &#123;&#123; value &#125;&#125;
+&#123;arr.map(...)&#125;             v-for="x in arr"
+&#123;cond && &#125;          v-if="cond"
+useState(0)                   ref(0)
+useEffect(fn, [dep])          watch(dep, fn)
+```
+
+  
+
+🎯
+面試考點
+
+台灣科技公司面試 90% 會問「Vue」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。

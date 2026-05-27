@@ -1,0 +1,109 @@
+### Props（父→子）
+
+```vue
+
+// 簡單版
+const props = defineProps(["name", "age"]);
+
+// TS 版（推薦）
+interface Props {
+  name: string;
+  age?: number;
+  tags?: string[];
+}
+
+const props = defineProps();
+
+// 帶預設值
+const props = withDefaults(defineProps(), {
+  age: 0,
+  tags: () => []
+});
+
+  
+&#123;&#123; props.name &#125;&#125;
+
+```
+
+```vue
+
+  
+
+```
+
+  
+### Emit（子→父）
+
+```vue
+
+const emit = defineEmits();
+
+function handleClick(e: MouseEvent) {
+  emit("click", e);
+}
+
+```
+
+  
+### v-model on Component（雙向綁定）
+
+```vue
+
+const model = defineModel(); // Vue 3.4+
+
+  
+
+```
+
+  
+### Slot（內容插槽）
+
+```vue
+
+  
+    
+      
+    
+    
+       
+    
+    
+      
+    
+  
+
+  
+## 標題
+
+  
+  
+內容會塞進預設 slot
+
+  
+  確認
+
+```
+
+  
+### Provide / Inject（跨層傳值）
+
+```js
+// 父元件
+import { provide, ref } from "vue";
+
+const theme = ref("dark");
+provide("theme", theme);
+
+// 任何深度的子元件
+import { inject } from "vue";
+
+const theme = inject("theme");
+// 不用一層層傳 props
+```
+
+  
+
+🛠️
+工具推薦
+
+配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。

@@ -1,0 +1,76 @@
+```bash
+pnpm add vue-router@4
+```
+
+```js
+// router.js
+import { createRouter, createWebHistory } from "vue-router";
+import Home from "@/views/Home.vue";
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [
+    { path: "/", component: Home },
+    { path: "/about", component: () => import("@/views/About.vue") }, // lazy
+    { path: "/user/:id", component: () => import("@/views/User.vue") },
+    {
+      path: "/admin",
+      component: () => import("@/layouts/Admin.vue"),
+      meta: { requiresAuth: true },
+      children: [
+        { path: "dashboard", component: () => import("@/views/Dashboard.vue") }
+      ]
+    },
+    { path: "/:catchAll(.*)", component: () => import("@/views/404.vue") }
+  ]
+});
+
+// 全域守衛（auth 檢查）
+router.beforeEach((to, from, next) => {
+  if (to.meta.requiresAuth && !isLoggedIn()) {
+    next("/login");
+  } else {
+    next();
+  }
+});
+
+export default router;
+```
+
+```vue
+
+  
+    首頁
+    關於
+  
+  
+   
+
+```
+
+  
+### 程式化導航
+
+```js
+import { useRouter, useRoute } from "vue-router";
+
+const router = useRouter();
+const route = useRoute();
+
+// 取參數
+console.log(route.params.id);
+console.log(route.query.search);
+
+// 導航
+router.push("/about");
+router.push({ name: "user", params: { id: 123 } });
+router.replace("/login");
+router.back();
+```
+
+  
+
+🎯
+面試考點
+
+台灣科技公司面試 90% 會問「Vue」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。

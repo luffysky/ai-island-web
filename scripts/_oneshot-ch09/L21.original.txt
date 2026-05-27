@@ -1,0 +1,136 @@
+## 1. Scoped CSS（內建）
+```vue
+<template>
+  <button class="btn">Click</button>
+</template>
+
+<style scoped>
+.btn {
+  background: #50fa7b;
+}
+</style>
+```
+
+編譯後：
+```html
+<button class="btn" data-v-abc123>Click</button>
+
+<style>
+.btn[data-v-abc123] { background: #50fa7b; }
+</style>
+```
+→ 只影響這個 component。
+
+## 2. CSS Modules
+```vue
+<template>
+  <button :class="$style.btn">Click</button>
+</template>
+
+<style module>
+.btn { background: #50fa7b; }
+</style>
+```
+
+class name 自動 hash、零衝突。
+
+## 3. Tailwind CSS（推薦主流）
+```bash
+npx nuxi@latest module add tailwindcss
+# 或 Vite Vue 專案：
+npm install -D tailwindcss@latest
+```
+
+```vue
+<template>
+  <button class="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded">
+    Click
+  </button>
+</template>
+```
+
+## 4. 動態 binding
+```vue
+<template>
+  <div :class="['base', { active: isActive }]">
+    內容
+  </div>
+  
+  <div :style="{ color: textColor, fontSize: size + 'px' }">
+    內容
+  </div>
+</template>
+```
+
+## 5. CSS-in-JS（少用、不推薦）
+Vue 較少用、社群偏 Tailwind / Scoped CSS。
+
+## v-deep（穿透 scoped）
+```vue
+<style scoped>
+/* 影響子元件 */
+.parent :deep(.child) {
+  color: red;
+}
+</style>
+```
+
+## v-bind in CSS（神功能、Vue 3.2+）
+```vue
+<script setup>
+import { ref } from "vue";
+const color = ref("#50fa7b");
+</script>
+
+<template>
+  <button>動態色</button>
+</template>
+
+<style scoped>
+button {
+  background: v-bind(color);  /* 動態！ */
+}
+</style>
+```
+
+## 全域 CSS
+```typescript
+// main.ts
+import "./assets/global.css";
+```
+
+## SCSS / PostCSS
+```bash
+npm install -D sass postcss-nesting
+```
+
+```vue
+<style scoped lang="scss">
+.btn {
+  background: $primary;
+  
+  &:hover {
+    background: $primary-dark;
+  }
+}
+</style>
+```
+
+## 推薦組合
+
+### 純前端
+- Tailwind + Scoped CSS（少量自訂）
+
+### 大型 design system
+- Tailwind + CSS variables（design tokens）
+
+### 多主題
+- CSS variables + v-bind
+
+### 企業 / 維護優先
+- BEM + Scoped CSS
+
+## 不要過度
+- 不要混 5 種方式
+- 一個 codebase 統一風格
+- Tailwind + Scoped 是 90% 場景的甜蜜點

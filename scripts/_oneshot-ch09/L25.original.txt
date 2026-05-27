@@ -1,0 +1,96 @@
+## 核心生態
+- **Vue 3** — 主體
+- **Vue Router** — 路由
+- **Pinia** — 狀態管理
+- **Vite** — build tool
+- **Nuxt 3** — SSR / 全端框架
+- **VueUse** — composables 集合
+- **Vitest** — 測試
+- **Vue Test Utils** — component 測試
+
+## UI 框架（2026 主流）
+- **shadcn-vue**（最熱、port 自 shadcn/ui）
+- **Element Plus**（中國老牌、企業愛用）
+- **Naive UI**（TS first、設計現代）
+- **PrimeVue**（巨大、enterprise）
+- **Vuetify**（Material design）
+- **Quasar**（含 mobile build）
+- **Ant Design Vue**（阿里出）
+
+## 動畫
+- **GSAP**（最強、付費）
+- **AutoAnimate**（輕量、自動）
+- **Motion One**（Web Animations API wrap）
+- **Vue Transition**（內建）
+
+## 資料 / API
+- **Pinia**（state）
+- **@vueuse/core**（reactive utils）
+- **TanStack Query Vue**（server state）
+- **VeeValidate**（表單驗證）
+- **Zod**（schema）
+
+## 部署 / Hosting
+- **Vercel**（Nuxt 親爸）
+- **Netlify**
+- **Cloudflare Pages**
+- **Railway / Zeabur / Fly.io**
+
+## 學習資源（2026）
+
+### 官方
+- **vuejs.org**（永遠先讀官方）
+- **vue-router docs**
+- **pinia.vuejs.org**
+- **nuxt.com**
+
+### 影片
+- **Vue Mastery**（付費、Evan You 認可）
+- **Vue School**（付費、深入）
+- **Vue.js 官方 YT**
+- **DevBytes 中文**（YouTube 免費）
+
+### 中文社群
+- **掘金**（中國最大）
+- **PTT WebDev**（台灣）
+- **Vue.js 台灣 FB / Discord**
+
+### 書
+- 《深入浅出 Vue.js》劉博文
+- 《Vue.js 設計與實作》霍春陽（核心原始碼）
+
+## 跟著做 project
+最快學法、做 3 個項目：
+1. **Todo App**（基本 CRUD + auth）
+2. **Blog**（Nuxt SSR + Markdown）
+3. **儀表板**（Pinia + charts + realtime）
+
+每個 1-2 週、3 個月會 Vue 80%。
+
+## 招募市場（2026 台灣）
+
+### 找工作關鍵字
+- Vue 3
+- Composition API
+- Pinia
+- Nuxt 3
+- TypeScript
+
+### 薪資範圍（2026 台灣）
+- Junior（1-2 年）：NT$ 50-70k
+- Mid（3-5 年）：NT$ 70-100k
+- Senior（5+ 年）：NT$ 100-150k
+- Tech Lead：NT$ 150-250k
+
+接案 / 自由：
+- 小案 NT$ 30-100k
+- 中案 NT$ 100-500k
+- 長期維護月費 NT$ 50-100k
+
+## 我的建議
+1. **第 1 個月**：Vue 3 基礎（這章）
+2. **第 2 個月**：做 2 個 project（Todo + Blog）
+3. **第 3 個月**：Nuxt 3 + 上線一個 portfolio
+4. **第 4-6 個月**：找工作 / 開始接案
+
+半年 0 → 有產出。

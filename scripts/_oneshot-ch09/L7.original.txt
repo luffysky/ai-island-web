@@ -1,0 +1,95 @@
+Pinia 是 Vue 3 官方推薦的狀態管理。比 Vuex 簡單、有完整 TS 支援。
+
+```bash
+pnpm add pinia
+```
+
+```js
+// main.js
+import { createApp } from "vue";
+import { createPinia } from "pinia";
+import App from "./App.vue";
+
+const app = createApp(App);
+app.use(createPinia());
+app.mount("#app");
+```
+
+  
+### 定義 Store（兩種寫法）
+
+```js
+// stores/counter.js — Composition API 風格（推薦）
+import { defineStore } from "pinia";
+import { ref, computed } from "vue";
+
+export const useCounterStore = defineStore("counter", () => {
+  // state
+  const count = ref(0);
+  
+  // getter
+  const doubled = computed(() => count.value * 2);
+  
+  // action
+  function increment() {
+    count.value++;
+  }
+  
+  async function fetchFromAPI() {
+    const r = await fetch("/api/count");
+    count.value = (await r.json()).count;
+  }
+  
+  return { count, doubled, increment, fetchFromAPI };
+});
+```
+
+```vue
+
+import { useCounterStore } from "@/stores/counter";
+import { storeToRefs } from "pinia";
+
+const counter = useCounterStore();
+
+// 解構時要用 storeToRefs 保留響應性
+const { count, doubled } = storeToRefs(counter);
+
+// actions 不用 storeToRefs
+const { increment, fetchFromAPI } = counter;
+
+  
+Count: &#123;&#123; count &#125;&#125;
+
+  
+Doubled: &#123;&#123; doubled &#125;&#125;
+
+  +
+
+```
+
+  
+### 持久化（搭配 plugin）
+
+```bash
+pnpm add pinia-plugin-persistedstate
+```
+
+```js
+import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
+
+const pinia = createPinia();
+pinia.use(piniaPluginPersistedstate);
+
+// store 內
+export const useStore = defineStore("main", {
+  state: () => ({ count: 0 }),
+  persist: true // 自動存進 localStorage
+});
+```
+
+  
+
+💼
+接案小知識
+
+剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「Vue」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。

@@ -1,0 +1,49 @@
+Vue 由前 Google 工程師**尤雨溪**（Evan You）2014 年發布。他從 AngularJS 學到 declarative rendering，從 React 學到 component 化，提煉成「**容易上手、漸進式採用**」的框架。
+
+  
+
+React 像**樂高散裝**，給你積木自己拼，自由但要選很多。Vue 像**樂高套裝**，幫你配好了路由（Vue Router）、狀態（Pinia）、CLI，按指引走就行。
+
+  
+
+  
+### Vue 3 的革命（2020+）
+
+  
+- **Composition API**：取代 Options API，更接近 React Hooks（但更好用）
+- **Proxy-based Reactivity**：取代 Object.defineProperty，效能跟靈活性大躍進
+- **TypeScript 一等公民**：原生支援，型別推導好
+- **Vite**：尤雨溪自己做的 build tool，秒速啟動
+- **更小 bundle**：tree-shaking 友善
+
+  
+### 選擇場景
+
+  
+| 場景 | 選 Vue | 選 React |
+| --- | --- | --- |
+| 個人專案 / 小型 SaaS | ✓（學最快） | OK |
+| 中文資源 | ✓（中文文件完整） |  |
+| 大型企業（亞洲） | ✓（中國市場主流） |  |
+| FAANG / 美國新創 |  | ✓ |
+| 新人團隊 | ✓（上手快） |  |
+| 需要 React Native |  | ✓ |
+| 需要最大生態 |  | ✓ |
+
+  
+### 2026 Vue 生態
+
+  
+- **核心**：Vue 3.5+
+- **路由**：Vue Router 4
+- **狀態**：Pinia（官方推薦，取代 Vuex）
+- **全端**：Nuxt 3+
+- **UI**：Element Plus、Naive UI、Vuetify、Quasar、PrimeVue
+- **build**：Vite（預設）
+
+  
+
+💼
+接案小知識
+
+剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「Vue」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。

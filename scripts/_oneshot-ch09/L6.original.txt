@@ -1,0 +1,89 @@
+### 生命週期 hooks
+
+```js
+import {
+  onMounted, onUnmounted, onUpdated,
+  onBeforeMount, onBeforeUnmount, onBeforeUpdate
+} from "vue";
+
+onMounted(() => {
+  console.log("元件掛載");
+  // 抓資料、設 timer、訂閱事件
+});
+
+onUnmounted(() => {
+  console.log("元件卸載");
+  // 清 timer、取消訂閱
+});
+
+onUpdated(() => {
+  console.log("DOM 更新後");
+});
+```
+
+  
+### Composables（Vue 版 Custom Hook）
+
+  
+把邏輯抽出來重用。慣例命名 `use*`。
+
+```js
+// useCounter.js
+import { ref } from "vue";
+
+export function useCounter(initial = 0) {
+  const count = ref(initial);
+  
+  const increment = () => count.value++;
+  const decrement = () => count.value--;
+  const reset = () => count.value = initial;
+  
+  return { count, increment, decrement, reset };
+}
+
+// 使用
+
+import { useCounter } from "./useCounter";
+
+const { count, increment } = useCounter(10);
+
+```
+
+  
+### VueUse：composables 超大集合
+
+```bash
+pnpm add @vueuse/core
+```
+
+```js
+import {
+  useLocalStorage, useDebounce, useMouse, useFetch,
+  useDark, useTitle, useClipboard, useIntersectionObserver
+} from "@vueuse/core";
+
+// 暗色模式
+const isDark = useDark();
+
+// 滑鼠位置
+const { x, y } = useMouse();
+
+// localStorage 同步
+const theme = useLocalStorage("theme", "light");
+
+// 200+ composables 解決 99% 常見需求
+```
+
+  
+**🚀 進階技巧**
+
+VueUse 是 Vue 生態的**瑞士刀**。網路、感測器、動畫、time、儲存全包。新專案幾乎都裝。比 React 的 usehooks 還完整。
+
+  
+
+  
+
+⚠️
+新手常見錯誤
+
+新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。

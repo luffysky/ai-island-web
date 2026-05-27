@@ -1,0 +1,82 @@
+Nuxt 之於 Vue，等於 Next.js 之於 React。SSR、SSG、API routes、檔案路由全包。
+
+```bash
+pnpx nuxi@latest init my-app
+cd my-app && pnpm install && pnpm dev
+```
+
+  
+### 檔案路由（自動）
+
+```text
+pages/
+├── index.vue              → /
+├── about.vue              → /about
+├── blog/
+│   ├── index.vue          → /blog
+│   └── [slug].vue         → /blog/:slug
+└── user-[id].vue          → /user-:id
+```
+
+  
+### useFetch：SSR 友善的資料抓取
+
+```vue
+
+// 自動處理 SSR / hydration / cache
+const { data, pending, error, refresh } = await useFetch("/api/users");
+
+  載入中...
+  錯誤
+  
+    &#123;&#123; u.name &#125;&#125;
+  
+
+```
+
+  
+### Server API（檔案系統路由）
+
+```text
+server/api/
+├── users.get.ts      → GET /api/users
+├── users.post.ts     → POST /api/users
+└── users/[id].get.ts → GET /api/users/:id
+```
+
+```ts
+// server/api/users.get.ts
+export default defineEventHandler(async (event) => {
+  const users = await db.query("SELECT * FROM users");
+  return users;
+});
+```
+
+  
+### SSR / SSG / Hybrid
+
+```ts
+// nuxt.config.ts
+export default defineNuxtConfig({
+  // 全站 SSR（預設）
+  ssr: true,
+  
+  // 或：混合模式
+  routeRules: {
+    "/blog/**": { static: true },         // 部落格用 SSG
+    "/dashboard": { ssr: false },         // 後台用 SPA
+    "/api/**": { cors: true },           // API 加 CORS
+    "/": { isr: 3600 }                  // 首頁每小時重新生成
+  }
+});
+```
+
+  
+Nuxt 一個專案解決：SPA、SSR、SSG、API、middleware、auth。**是 Vue 全端的事實標準**。
+
+  
+
+⚡
+學習加速器
+
+把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。

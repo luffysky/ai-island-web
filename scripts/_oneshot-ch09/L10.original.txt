@@ -1,0 +1,64 @@
+### API 風格差異
+
+```text
+React              Vue
+─────────         ─────────
+JSX                Template（HTML-like）
+useState           ref / reactive
+useEffect          watchEffect / onMounted
+useMemo            computed
+useContext         provide / inject
+Custom Hook        Composable
+useReducer         Pinia
+Redux              Pinia / Vuex（舊）
+```
+
+  
+### 各自優勢
+
+  
+**Vue 贏的點**：
+
+  
+- 學習曲線最緩
+- SFC（template + script + style 一起）寫起來舒服
+- v-model 雙向綁定方便
+- 內建指令（v-if、v-for、v-show）夠用
+- Pinia 比 Redux 簡單 10 倍
+- 中文資源最完整
+
+  
+**React 贏的點**：
+
+  
+- 生態最大
+- 工作機會多（特別美國）
+- React Native 跨平台
+- JSX 自由度最高（純 JS 表達式）
+- RSC / Server Actions 領先
+
+  
+### 效能
+
+  
+兩個都很快，差別小於 5%。**瓶頸永遠在你的 code 不在框架**。Vue 3 在某些場景比 React 略快（Proxy 響應比 VDOM diff 更精準）。React 在巨大列表略勝（搭配 Suspense + concurrent）。實際選哪個都不會卡效能。
+
+  
+### 遷移成本
+
+  
+會 React 學 Vue 大概一週上手，反過來也差不多。兩個框架的**心智模型 80% 一樣**，剩 20% 語法糖差異。
+
+  
+**🚀 進階技巧**
+
+2026 業界共識：**會一個夠用，會兩個薪水高**。資深工程師應該兩個都會（雖然只精通一個）。看到 Vue 專案不能說「我只會 React 不接」，看 Vue 文件 2-3 天就能 PR。
+
+  
+
+  
+
+🚀
+2026 趨勢
+
+這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。

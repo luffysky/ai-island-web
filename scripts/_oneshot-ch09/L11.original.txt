@@ -1,0 +1,84 @@
+## script setup（最簡）
+```vue
+<script setup>
+import { ref } from "vue";
+
+const count = ref(0);
+function increment() { count.value++; }
+</script>
+
+<template>
+  <button @click="increment">{{ count }}</button>
+</template>
+```
+
+## ref vs reactive
+
+### ref（原始值 + 物件）
+```javascript
+const count = ref(0);
+count.value++;  // .value 操作
+
+const user = ref({ name: "Alice" });
+user.value.name = "Bob";
+```
+
+### reactive（只能物件 / array）
+```javascript
+const user = reactive({ name: "Alice" });
+user.name = "Bob";  // 不用 .value
+```
+
+**推薦永遠用 ref**—統一寫法、不會混淆。
+
+## 為什麼 .value
+- ref 是 reactive 物件、`.value` 是它的內部值
+- template 內自動 unwrap（不用 .value）
+
+## computed（衍生值）
+```vue
+<script setup>
+import { ref, computed } from "vue";
+
+const firstName = ref("Alice");
+const lastName = ref("Wang");
+const fullName = computed(() => `${firstName.value} ${lastName.value}`);
+</script>
+```
+
+## watch（監聽變化）
+```javascript
+import { ref, watch } from "vue";
+
+const count = ref(0);
+watch(count, (newVal, oldVal) => {
+  console.log(`${oldVal} → ${newVal}`);
+});
+
+// 監聽多個
+watch([firstName, lastName], ([f, l]) => { ... });
+
+// 監聽物件深層
+watch(user, () => { ... }, { deep: true });
+```
+
+## watchEffect（自動追蹤）
+```javascript
+watchEffect(() => {
+  console.log(`count is ${count.value}`);
+  // 自動追蹤 count、改變就重跑
+});
+```
+
+## Lifecycle hooks
+```javascript
+import { onMounted, onUnmounted } from "vue";
+
+onMounted(() => {
+  console.log("mounted!");
+});
+
+onUnmounted(() => {
+  console.log("cleanup");
+});
+```
