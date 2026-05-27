@@ -1,0 +1,139 @@
+### 1. CSR（Client-Side Rendering）— 純前端渲染
+
+```text
+使用者請求頁面
+   ↓
+伺服器回傳空 HTML + JS bundle
+   ↓
+瀏覽器下載 JS（300ms~3s）
+   ↓
+JS 執行、React 渲染
+   ↓
+畫面出現
+```
+
+  
+**優點**：開發簡單、伺服器負擔小、互動極快（後續操作不用打 server）。
+
+  
+**缺點**：首屏白屏久、SEO 差、社群分享差。
+
+  
+**適合**：後台、管理介面、SEO 不重要的工具、登入後的 dashboard。
+
+  
+### 2. SSR（Server-Side Rendering）— 每次請求都渲染
+
+```text
+使用者請求頁面
+   ↓
+伺服器跑 React / Vue 元件、抓資料、產 HTML
+   ↓
+回傳完整 HTML
+   ↓
+瀏覽器顯示 HTML（首屏立刻有畫面）
+   ↓
+JS 載入後「Hydration」接管互動
+```
+
+  
+**優點**：SEO 好、首屏快、社群分享卡片正確。
+
+  
+**缺點**：每次請求都打 server，server 成本高；hydration 時可能短暫無互動。
+
+  
+**適合**：內容會變、需要登入狀態的頁面（用戶 dashboard、個人化內容）。
+
+  
+### 3. SSG（Static Site Generation）— 編譯時產 HTML
+
+```text
+build 時：
+  跑所有頁面、抓資料、產 HTML 檔
+  → /index.html, /about.html, /blog/post-1.html ...
+
+使用者請求：
+  CDN 直接吐 HTML（極快）
+  伺服器 0 計算
+```
+
+  
+**優點**：最快、最便宜、CDN 友善、安全（沒 runtime 容易被攻擊的點）。
+
+  
+**缺點**：內容變更要 rebuild、不適合每秒變的資料。
+
+  
+**適合**：部落格、文件、Landing page、行銷頁、Marketing 網站。
+
+  
+### 4. ISR（Incremental Static Regeneration）— SSG + 定期重 build
+
+```text
+build 時：產生 HTML（先給使用者）
+   ↓
+有人造訪後 X 秒過：
+   背景重新 build 那個頁面 → 替換舊版
+   
+使用者看到：永遠是「靜態檔」（快）
+        但內容會「漸進更新」（不用人工 rebuild）
+```
+
+  
+**優點**：又快又新鮮、不用全站重 build。
+
+  
+**缺點**：邏輯比 SSG 複雜、有時看到舊資料 1-2 分鐘。
+
+  
+**適合**：電商商品頁、新聞、需要新鮮但不要即時的資料。
+
+  
+### 5. RSC（React Server Components）— 元件在伺服器跑
+
+```text
+Server Components 在伺服器跑：
+  - 可 await（直接讀 DB）
+  - 不送 JS code 到 client
+  - 結果序列化送到瀏覽器
+
+Client Components 在瀏覽器跑：
+  - 處理互動（onClick、useState）
+  - 標 "use client"
+```
+
+  
+**優點**：bundle 變小（很多 code 不送到 client）、能直接讀 DB（不用寫 API）、首屏極快。
+
+  
+**缺點**：心智模型較複雜（要分清什麼能 server 什麼必須 client）。
+
+  
+**適合**：現代 SaaS、需要極致效能的網站、混合靜態 + 互動的頁面。
+
+  
+### 選擇對照表（最重要）
+
+  
+| 場景 | 渲染模式 | 典型例子 |
+| --- | --- | --- |
+| 部落格 / 文件 / Landing | SSG | 個人部落格 |
+| 電商商品頁 / 新聞 | ISR | 蝦皮、博客來 |
+| 個人化 dashboard | SSR + RSC | GitHub 首頁 |
+| 後台管理 | CSR | Admin panel |
+| 互動 SaaS | RSC + 部分 Client | Linear、Vercel |
+
+  
+**🚀 進階技巧**
+
+2026 業界趨勢：**混合模式**是王道。同個專案首頁用 SSG、商品列表用 ISR、購物車用 CSR、後台用 RSC。Next.js / Nuxt 都支援單個路由設定不同模式。
+
+  
+
+  
+
+🎯
+面試考點
+
+台灣科技公司面試 90% 會問「Next.js」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。

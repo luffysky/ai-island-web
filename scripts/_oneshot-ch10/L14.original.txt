@@ -1,0 +1,70 @@
+Next.js 14+ 的 i18n 用 middleware 自己組（比 Pages Router 彈性）。
+
+```text
+app/
+├── [lang]/
+│   ├── layout.tsx
+│   ├── page.tsx
+│   └── about/
+│       └── page.tsx
+└── middleware.ts
+```
+
+```ts
+// middleware.ts
+import { NextRequest, NextResponse } from "next/server";
+import { match } from "@formatjs/intl-localematcher";
+import Negotiator from "negotiator";
+
+const locales = ["en", "zh-Hant", "ja"];
+const defaultLocale = "en";
+
+function getLocale(req: NextRequest) {
+  const headers = { "accept-language": req.headers.get("accept-language") ?? "" };
+  const languages = new Negotiator({ headers }).languages();
+  return match(languages, locales, defaultLocale);
+}
+
+export function middleware(req: NextRequest) {
+  const pathname = req.nextUrl.pathname;
+  const hasLocale = locales.some(l => pathname.startsWith(`/${l}`));
+  
+  if (!hasLocale) {
+    const locale = getLocale(req);
+    req.nextUrl.pathname = `/${locale}${pathname}`;
+    return NextResponse.redirect(req.nextUrl);
+  }
+}
+```
+
+  
+### 字典載入
+
+```ts
+// dictionaries/en.json, zh-Hant.json, ja.json
+
+// app/[lang]/dictionaries.ts
+const dictionaries = {
+  en: () => import("./dictionaries/en.json").then(m => m.default),
+  "zh-Hant": () => import("./dictionaries/zh-Hant.json").then(m => m.default),
+  ja: () => import("./dictionaries/ja.json").then(m => m.default)
+};
+
+export const getDictionary = (locale: string) => dictionaries[locale]();
+
+// app/[lang]/page.tsx
+export default async function Page({ params: { lang } }) {
+  const dict = await getDictionary(lang);
+  return {dict.welcome};
+}
+```
+
+  
+進階套件：`next-intl`（最完整）、`next-i18next`（老牌）。
+
+  
+
+🎯
+面試考點
+
+台灣科技公司面試 90% 會問「Next.js」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。

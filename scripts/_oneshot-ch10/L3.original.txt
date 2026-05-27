@@ -1,0 +1,172 @@
+```bash
+pnpx create-next-app@latest my-app
+# 選擇：TypeScript ✓、Tailwind ✓、App Router ✓、ESLint ✓、src/ ✓
+cd my-app && pnpm dev
+```
+
+  
+### 完整檔案結構
+
+```text
+my-app/
+├── src/
+│   ├── app/                       ← App Router 根目錄
+│   │   ├── layout.tsx             ← 根 layout（包整站）
+│   │   ├── page.tsx               ← 首頁 /
+│   │   ├── loading.tsx            ← 首頁 loading 狀態
+│   │   ├── error.tsx              ← 錯誤邊界
+│   │   ├── not-found.tsx          ← 404 頁
+│   │   ├── globals.css            ← 全域樣式
+│   │   ├── favicon.ico
+│   │   ├── icon.png               ← favicon（自動）
+│   │   ├── apple-icon.png         ← iOS 圖示（自動）
+│   │   ├── opengraph-image.tsx    ← 動態 OG 圖（自動）
+│   │   ├── robots.ts              ← robots.txt（自動產）
+│   │   ├── sitemap.ts             ← sitemap.xml（自動產）
+│   │   ├── about/
+│   │   │   └── page.tsx           ← /about
+│   │   ├── blog/
+│   │   │   ├── page.tsx           ← /blog
+│   │   │   ├── loading.tsx        ← /blog 的 loading
+│   │   │   └── [slug]/
+│   │   │       └── page.tsx       ← /blog/:slug
+│   │   ├── (marketing)/           ← 路由 group（括號不出現在 URL）
+│   │   │   ├── layout.tsx         ← 只給行銷頁的 layout
+│   │   │   └── pricing/
+│   │   │       └── page.tsx       ← /pricing
+│   │   ├── dashboard/
+│   │   │   ├── layout.tsx         ← 後台共用 layout
+│   │   │   ├── page.tsx           ← /dashboard
+│   │   │   └── settings/
+│   │   │       └── page.tsx       ← /dashboard/settings
+│   │   └── api/                   ← API endpoints
+│   │       └── users/
+│   │           └── route.ts       ← /api/users
+│   ├── components/                ← 共用元件
+│   ├── lib/                       ← 工具函式
+│   └── middleware.ts              ← 全域 middleware
+├── public/                        ← 靜態資源
+├── next.config.js
+├── tsconfig.json
+└── package.json
+```
+
+  
+### 檔案命名約定（必須記）
+
+  
+| 檔名 | 用途 |
+| --- | --- |
+| `page.tsx` | 路由的 UI（必須有才能訪問） |
+| `layout.tsx` | 包裹路由的 layout（共用 nav/footer） |
+| `loading.tsx` | 自動轉成 Suspense fallback |
+| `error.tsx` | 錯誤邊界（自動 catch error） |
+| `not-found.tsx` | 404 頁（可手動觸發） |
+| `route.ts` | API endpoint |
+| `template.tsx` | 類似 layout 但每次切路由重 mount |
+| `default.tsx` | Parallel Routes 的 fallback |
+
+  
+### 路由 group：(folder)
+
+  
+用括號包資料夾名，**不會出現在 URL**，純粹組織用：
+
+```text
+app/
+├── (marketing)/
+│   ├── layout.tsx       ← 只有 marketing 頁面用這 layout
+│   ├── about/page.tsx   → /about
+│   └── pricing/page.tsx → /pricing
+└── (auth)/
+    ├── layout.tsx       ← 登入註冊頁的特殊 layout
+    ├── login/page.tsx   → /login
+    └── signup/page.tsx  → /signup
+```
+
+  
+實戰用途：行銷頁要置中佈局，後台要 sidebar，登入頁要極簡 — 不同 layout group 解決。
+
+  
+### 第一個 Server Component Page
+
+```tsx
+// app/page.tsx
+export default async function HomePage() {
+  // 直接在元件內 await（不用 useEffect！）
+  const users = await fetch("https://api.example.com/users", {
+    next: { revalidate: 3600 } // ISR：每小時重新驗證
+  }).then(r => r.json());
+  
+  return (
+    
+      使用者列表
+      
+
+    
+  );
+}
+```
+
+  
+看到那個 `async` 嗎？**純 React 元件不能 async**。Server Component 可以！這是 Next.js 14+ 的革命。
+
+  
+### Root Layout
+
+```tsx
+// app/layout.tsx — 根 layout（每個專案唯一）
+import "./globals.css";
+import { Inter } from "next/font/google";
+
+const inter = Inter({ subsets: ["latin"] });
+
+export const metadata = {
+  title: "AI 島 - 全端養成班",
+  description: "從入門到怪物工程師"
+};
+
+export default function RootLayout({ 
+  children 
+}: { 
+  children: React.ReactNode 
+}) {
+  return (
+    
+      
+        
+        {children}
+        
+      
+    
+  );
+}
+```
+
+  
+### 嵌套 Layout
+
+```tsx
+// app/blog/layout.tsx
+export default function BlogLayout({ children }) {
+  return (
+    
+      
+        
+## 分類
+
+        
+      
+      {children}
+    
+  );
+}
+// /blog/* 會被 RootLayout + BlogLayout 兩層包住
+```
+
+  
+
+⚡
+學習加速器
+
+把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。

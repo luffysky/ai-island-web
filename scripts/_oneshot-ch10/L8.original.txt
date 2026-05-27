@@ -1,0 +1,92 @@
+Next.js 14+ 的 fetch 自帶**三層快取**。重要參數：
+
+```ts
+// 1. 預設：強制快取（fetch 結果在 build 時就抓好）
+await fetch(url);
+await fetch(url, { cache: "force-cache" }); // 同上
+
+// 2. 不快取（每次都打）
+await fetch(url, { cache: "no-store" });
+
+// 3. ISR：時間驗證（每 X 秒重新打）
+await fetch(url, { next: { revalidate: 3600 } }); // 每小時
+
+// 4. 標籤驗證（手動觸發重新驗證）
+await fetch(url, { next: { tags: ["posts"] } });
+
+// 在 server action 內手動觸發
+import { revalidateTag, revalidatePath } from "next/cache";
+
+revalidateTag("posts"); // 所有 tag="posts" 的 fetch 都重來
+revalidatePath("/blog"); // 重新驗證 /blog 路徑
+```
+
+  
+### 整頁快取設定
+
+```tsx
+// 整頁靜態化（build 時產生）
+export const dynamic = "force-static";
+
+// 整頁動態（不快取）
+export const dynamic = "force-dynamic";
+
+// ISR：每 60 秒
+export const revalidate = 60;
+
+// 控制 fetch 預設快取行為
+export const fetchCache = "force-cache"; // 或 force-no-store
+```
+
+  
+### unstable_cache：快取任何 async function
+
+```ts
+import { unstable_cache } from "next/cache";
+
+const getCachedPosts = unstable_cache(
+  async (category: string) => {
+    // 任何 async 邏輯（不只 fetch）
+    return await db.posts.findMany({ where: { category } });
+  },
+  ["posts-by-category"],  // 快取 key
+  { 
+    revalidate: 3600,
+    tags: ["posts"]
+  }
+);
+
+// 使用
+const posts = await getCachedPosts("tech");
+```
+
+  
+### 常見抓資料模式
+
+```tsx
+// 並行抓多個
+export default async function Page() {
+  const [user, posts, stats] = await Promise.all([
+    getUser(),
+    getPosts(),
+    getStats()
+  ]);
+  
+  return ;
+}
+
+// 序列抓（後者依賴前者）
+export default async function Page({ params }) {
+  const user = await getUser(params.id);
+  const orders = await getUserOrders(user.id);
+  
+  return ;
+}
+```
+
+  
+
+🎯
+面試考點
+
+台灣科技公司面試 90% 會問「Next.js」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。

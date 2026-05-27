@@ -1,0 +1,90 @@
+Nuxt 內建 Nitro server，**檔案路由也適用**。
+
+```text
+server/api/
+├── users.get.ts          → GET /api/users
+├── users.post.ts         → POST /api/users
+├── users/[id].get.ts     → GET /api/users/:id
+├── users/[id].delete.ts  → DELETE /api/users/:id
+└── auth/login.post.ts    → POST /api/auth/login
+```
+
+```ts
+// server/api/users.get.ts
+export default defineEventHandler(async (event) => {
+  const query = getQuery(event);
+  const page = parseInt(query.page as string) || 1;
+  
+  const users = await db.users.findMany({ skip: (page - 1) * 20, take: 20 });
+  return users;
+});
+
+// server/api/users.post.ts
+export default defineEventHandler(async (event) => {
+  const body = await readBody(event);
+  // Pydantic 風的 schema 驗證可以用 zod
+  const user = await db.users.create({ data: body });
+  return user;
+});
+
+// server/api/users/[id].get.ts
+export default defineEventHandler(async (event) => {
+  const id = getRouterParam(event, "id");
+  const user = await db.users.findUnique({ where: { id } });
+  if (!user) {
+    throw createError({ statusCode: 404, statusMessage: "Not found" });
+  }
+  return user;
+});
+```
+
+  
+### Server Middleware
+
+```ts
+// server/middleware/auth.ts
+export default defineEventHandler(async (event) => {
+  const url = getRequestURL(event);
+  
+  if (url.pathname.startsWith("/api/admin")) {
+    const token = getCookie(event, "token");
+    if (!isAdmin(token)) {
+      throw createError({ statusCode: 401, statusMessage: "Unauthorized" });
+    }
+  }
+});
+```
+
+  
+### cron / scheduled tasks（Nitro tasks）
+
+```ts
+// server/tasks/cleanup.ts
+export default defineTask({
+  meta: {
+    name: "cleanup",
+    description: "清理過期資料"
+  },
+  async run() {
+    await db.sessions.deleteMany({ where: { expiresAt: { lt: new Date() } } });
+    return { result: "ok" };
+  }
+});
+
+// nuxt.config.ts
+export default defineNuxtConfig({
+  nitro: {
+    experimental: { tasks: true },
+    scheduledTasks: {
+      "0 * * * *": ["cleanup"]  // 每小時
+    }
+  }
+});
+```
+
+  
+
+⚠️
+新手常見錯誤
+
+新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。

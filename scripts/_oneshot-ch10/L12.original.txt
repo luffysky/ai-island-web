@@ -1,0 +1,101 @@
+### next/image：圖片自動優化
+
+```tsx
+import Image from "next/image";
+
+// 自動：
+// - 轉 webp / avif（看瀏覽器支援）
+// - 響應式不同尺寸（srcset）
+// - lazy load（除非 priority）
+// - 防止 layout shift（CLS）
+// - 雲端 CDN 變換
+```
+
+  
+### fill mode（不知道尺寸）
+
+```tsx
+
+  
+
+```
+
+  
+### 遠端圖片設定
+
+```js
+// next.config.js
+module.exports = {
+  images: {
+    remotePatterns: [
+      { protocol: "https", hostname: "cdn.example.com" },
+      { protocol: "https", hostname: "*.supabase.co" }
+    ],
+    formats: ["image/avif", "image/webp"],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920]
+  }
+};
+```
+
+  
+### next/font：字型優化
+
+```tsx
+// app/layout.tsx
+import { Inter, Noto_Sans_TC, JetBrains_Mono } from "next/font/google";
+
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter"
+});
+
+const notoTC = Noto_Sans_TC({
+  subsets: ["chinese-traditional"],
+  display: "swap",
+  weight: ["400", "500", "700"],
+  variable: "--font-noto"
+});
+
+const mono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono"
+});
+
+export default function RootLayout({ children }) {
+  return (
+    
+      {children}
+    
+  );
+}
+
+// 自動：
+// - 自架字型（不用每次跟 Google 連線，GDPR 友善）
+// - font-display: swap
+// - 預載
+// - 防 layout shift
+// - 只載用到的字符（subset）
+```
+
+  
+### 自架字型檔
+
+```tsx
+import localFont from "next/font/local";
+
+const myFont = localFont({
+  src: [
+    { path: "./fonts/MyFont-Regular.woff2", weight: "400" },
+    { path: "./fonts/MyFont-Bold.woff2", weight: "700" }
+  ],
+  variable: "--font-my"
+});
+```
+
+  
+
+⚠️
+新手常見錯誤
+
+新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。

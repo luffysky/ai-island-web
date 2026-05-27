@@ -1,0 +1,174 @@
+Server Actions 是 Next.js 14+ 的革命：**在 component 內直接寫 server function**，不用 API route、不用 fetch。
+
+```tsx
+// app/posts/new/page.tsx
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+
+async function createPost(formData: FormData) {
+  "use server";
+  
+  const title = formData.get("title") as string;
+  const content = formData.get("content") as string;
+  
+  // 直接呼叫 DB
+  await db.posts.insert({ title, content });
+  
+  revalidatePath("/posts"); // 重新驗證快取
+  redirect("/posts");     // 導向列表
+}
+
+export default function NewPost() {
+  return (
+    
+      
+      
+      發布
+    
+  );
+}
+// JS 關掉也能用！漸進式增強（Progressive Enhancement）
+```
+
+  
+### 把 Server Action 抽到獨立檔
+
+```ts
+// app/actions/posts.ts
+"use server";  // 整個檔案的 export 都是 server action
+
+import { z } from "zod";
+import { revalidatePath } from "next/cache";
+
+const CreatePostSchema = z.object({
+  title: z.string().min(1).max(200),
+  content: z.string().min(10)
+});
+
+export async function createPost(prevState: any, formData: FormData) {
+  const validated = CreatePostSchema.safeParse({
+    title: formData.get("title"),
+    content: formData.get("content")
+  });
+  
+  if (!validated.success) {
+    return { error: validated.error.flatten().fieldErrors };
+  }
+  
+  try {
+    const post = await db.posts.create({ data: validated.data });
+    revalidatePath("/posts");
+    return { success: true, post };
+  } catch (e) {
+    return { error: { _form: ["建立失敗"] } };
+  }
+}
+
+export async function deletePost(id: string) {
+  await db.posts.delete({ where: { id } });
+  revalidatePath("/posts");
+}
+```
+
+  
+### useFormState / useFormStatus（React 19）
+
+```tsx
+"use client";
+import { useFormState, useFormStatus } from "react-dom";
+import { createPost } from "@/app/actions/posts";
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    
+      {pending ? "送出中..." : "發布"}
+    
+  );
+}
+
+export default function PostForm() {
+  const [state, formAction] = useFormState(createPost, { error: null });
+  
+  return (
+    
+      
+      {state.error?.title && (
+        {state.error.title[0]}
+      )}
+      
+      
+      {state.error?.content && (
+        {state.error.content[0]}
+      )}
+      
+      
+    
+  );
+}
+```
+
+  
+### Server Action 從 onClick 呼叫
+
+```tsx
+"use client";
+import { deletePost } from "@/app/actions/posts";
+
+function DeleteButton({ id }: { id: string }) {
+  return (
+     &#123;
+      if (confirm("確定刪除？")) &#123;
+        await deletePost(id);
+      &#125;
+    &#125;}>
+      刪除
+    
+  );
+}
+```
+
+  
+### 樂觀更新（useOptimistic）
+
+```tsx
+"use client";
+import { useOptimistic } from "react";
+
+function TodoList({ todos }) {
+  const [optimisticTodos, addOptimistic] = useOptimistic(
+    todos,
+    (state, newTodo) => [...state, newTodo]
+  );
+  
+  async function handleAdd(formData) {
+    const text = formData.get("text");
+    addOptimistic({ id: "temp", text }); // 立刻顯示
+    await addTodoAction(text);          // 真的儲存
+  }
+  
+  return (
+    <>
+      
+
+      
+        
+      
+    
+  );
+}
+```
+
+  
+**🚀 進階技巧**
+
+Server Actions + RSC = **不用寫 API 中間層**。前端跟後端在同一個 component 檔。傳統 React 寫 fetch + API route 至少 30 行的事情，現在 5 行。
+
+  
+
+  
+
+⚠️
+新手常見錯誤
+
+新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。

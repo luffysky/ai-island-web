@@ -1,0 +1,87 @@
+### 選擇
+
+  
+- **NextAuth.js / Auth.js**：最紅、支援所有 OAuth、open source
+- **Lucia Auth**：輕量、自由度高、要自己寫 UI
+- **Clerk**：付費但 UX 最好、整合最快
+- **Supabase Auth**：跟 Supabase DB 一起用方便
+- **自己寫**：完全控制（學習用）
+
+  
+### NextAuth.js v5（Auth.js）
+
+```bash
+pnpm add next-auth@beta
+```
+
+```ts
+// auth.ts
+import NextAuth from "next-auth";
+import GitHub from "next-auth/providers/github";
+import Google from "next-auth/providers/google";
+
+export const { auth, handlers, signIn, signOut } = NextAuth({
+  providers: [
+    GitHub({ clientId: process.env.GITHUB_ID, clientSecret: process.env.GITHUB_SECRET }),
+    Google({ clientId: process.env.GOOGLE_ID, clientSecret: process.env.GOOGLE_SECRET })
+  ],
+  callbacks: {
+    session({ session, token }) {
+      session.user.id = token.sub;
+      return session;
+    }
+  }
+});
+
+// app/api/auth/[...nextauth]/route.ts
+export { GET, POST } = handlers;
+
+// 任何 Server Component 用
+import { auth } from "@/auth";
+
+export default async function Page() {
+  const session = await auth();
+  if (!session) return 
+請登入
+;
+  return 
+歡迎 {session.user.email}
+;
+}
+
+// 登入 / 登出按鈕
+import { signIn, signOut } from "@/auth";
+
+function LoginButton() {
+  return (
+     &#123; "use server"; await signIn("github") &#125;}>
+      用 GitHub 登入
+    
+  );
+}
+```
+
+  
+### JWT vs Session
+
+  
+|  | JWT | Session |
+| --- | --- | --- |
+| 儲存 | cookie / localStorage | server DB + cookie ID |
+| 失效 | 到期才失效 | 可即時撤銷 |
+| 擴展性 | 無狀態，好 scale | 要 sticky session 或共享 store |
+| 建議 | 簡單應用、跨域 | 需要立刻登出全裝置 |
+
+  
+**🚨 資安警報**
+
+JWT 不要放**敏感資訊**（payload 是 base64，不是加密）。token 一律存 `httpOnly cookie`，**不要存 localStorage**（XSS 一中就完）。
+
+  
+
+  
+
+⚡
+學習加速器
+
+把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。

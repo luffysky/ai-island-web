@@ -1,0 +1,77 @@
+## 檔案約定
+```
+app/
+├── layout.tsx        ← 根 layout（包整個 app）
+├── page.tsx          ← /
+├── loading.tsx       ← 載入中 UI
+├── error.tsx         ← error boundary
+├── not-found.tsx     ← 404
+├── about/
+│   └── page.tsx      ← /about
+├── blog/
+│   ├── layout.tsx    ← /blog/* 共用 layout
+│   ├── page.tsx      ← /blog
+│   └── [slug]/
+│       └── page.tsx  ← /blog/:slug
+└── api/
+    └── posts/
+        └── route.ts  ← /api/posts (REST API)
+```
+
+## 動態路由
+```tsx
+// app/blog/[slug]/page.tsx
+export default async function Post({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const post = await db.posts.findUnique({ where: { slug } });
+  return <article>{post.content}</article>;
+}
+
+// 靜態產生
+export async function generateStaticParams() {
+  const posts = await db.posts.findMany();
+  return posts.map(p => ({ slug: p.slug }));
+}
+```
+
+## Route Groups（分區但不影響 URL）
+```
+app/
+├── (marketing)/
+│   ├── layout.tsx     ← 行銷頁 layout
+│   ├── page.tsx       ← /
+│   └── pricing/page.tsx  ← /pricing
+└── (app)/
+    ├── layout.tsx     ← app layout（含 sidebar）
+    └── dashboard/page.tsx  ← /dashboard
+```
+
+## Parallel Routes（多 slot 同時 render）
+```
+app/
+├── @sidebar/page.tsx
+├── @main/page.tsx
+└── layout.tsx
+```
+```tsx
+export default function Layout({ sidebar, main }) {
+  return <><aside>{sidebar}</aside><main>{main}</main></>;
+}
+```
+
+## Streaming + Suspense
+```tsx
+// page.tsx
+import { Suspense } from "react";
+
+export default function Page() {
+  return (
+    <>
+      <h1>Dashboard</h1>
+      <Suspense fallback={<Loading />}>
+        <SlowComponent />  {/* 等這個慢 component 時其他先 render */}
+      </Suspense>
+    </>
+  );
+}
+```

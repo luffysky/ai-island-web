@@ -1,0 +1,83 @@
+## Vercel（推薦、最方便）
+```bash
+npm i -g vercel
+vercel  # 第一次：登入 + 連結 repo
+vercel --prod  # 部署到 production
+```
+
+優點：
+- 0 設定 Next.js 完美支援（畢竟是 Vercel 做的）
+- 全球 CDN
+- 免費額度大（hobby plan）
+- Edge Functions / Image Optimization 內建
+
+缺點：
+- 商業專案費用快漲（pro $20/月 + 流量費）
+- 中國 / 中國境內 user 速度慢
+
+## Cloudflare Pages（便宜方案）
+```bash
+# wrangler.toml
+name = "my-app"
+compatibility_date = "2025-05-01"
+compatibility_flags = ["nodejs_compat"]
+
+[build]
+command = "npx @cloudflare/next-on-pages"
+output = ".vercel/output/static"
+```
+
+優點：
+- 免費額度超大（500 builds/月、無限流量）
+- 全球 CDN、邊緣計算
+- 接 R2 / D1 / KV / Workers AI 便宜
+
+缺點：
+- Next.js 部分功能需要 adapter（@cloudflare/next-on-pages）
+- 不支援所有 Image Optimization
+
+## Self-Host（最自由、配 Docker）
+```dockerfile
+FROM node:22-alpine AS deps
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+
+FROM node:22-alpine AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+RUN npm run build
+
+FROM node:22-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
+EXPOSE 3000
+CMD ["node", "server.js"]
+```
+
+```js
+// next.config.mjs
+const nextConfig = {
+  output: "standalone",  // self-host 必加
+};
+```
+
+部署選擇：
+- **Zeabur**（推薦 Indie）：Asia 機房、跟 Vercel 體驗類似
+- **Railway**：$5 起跳、適合 prototype
+- **Fly.io**：全球、配 Postgres / Redis 方便
+- **AWS / GCP**：企業級
+
+## 對比表
+
+| 平台 | 免費額度 | 月費起 | 適合 |
+|---|---|---|---|
+| Vercel | 100GB/月 | $20 | Indie / startup |
+| Cloudflare Pages | 無限流量 | $0 | 流量大 / 預算少 |
+| Zeabur | 試用 | NT$50 | 台灣 Indie |
+| Railway | $5 credit | $5 | prototype |
+| Fly.io | 試用 | $0 起 | 全球部署 |

@@ -1,0 +1,84 @@
+### error.tsx：自動錯誤邊界
+
+```tsx
+// app/blog/error.tsx
+"use client"; // error.tsx 必須是 Client Component
+
+export default function Error({
+  error,
+  reset
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
+  return (
+    
+      
+## 發生錯誤
+
+      
+{error.message}
+
+      重試
+    
+  );
+}
+// 自動 catch /blog/* 內的所有錯誤
+```
+
+  
+### global-error.tsx：根層級錯誤
+
+```tsx
+// app/global-error.tsx（取代根 layout）
+"use client";
+
+export default function GlobalError({ error, reset }) {
+  return (
+    
+      
+        
+## 致命錯誤
+
+        重試
+      
+    
+  );
+}
+```
+
+  
+### not-found.tsx
+
+```tsx
+// app/not-found.tsx — 全站 404
+export default function NotFound() {
+  return (
+    
+      
+## 404
+
+      
+找不到頁面
+
+      [回首頁](/)
+    
+  );
+}
+
+// 程式內手動觸發 404
+import { notFound } from "next/navigation";
+
+export default async function Post({ params }) {
+  const post = await getPost(params.slug);
+  if (!post) notFound(); // 自動轉 not-found.tsx
+  return ...;
+}
+```
+
+  
+
+🚀
+2026 趨勢
+
+這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。

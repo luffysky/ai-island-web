@@ -1,0 +1,96 @@
+Streaming 是 Next.js 14+ 的殺手鐧：**HTML 邊產邊送**，不用等全部好才回。
+
+  
+### loading.tsx：自動 Suspense
+
+```tsx
+// app/blog/loading.tsx
+export default function Loading() {
+  return (
+    
+      
+      
+      
+    
+  );
+}
+// /blog 載入時自動顯示這個（Suspense fallback）
+```
+
+  
+### 手動 Suspense（更細粒度）
+
+```tsx
+import { Suspense } from "react";
+
+async function SlowComponent() {
+  await new Promise(r => setTimeout(r, 3000));
+  const data = await fetchSlow();
+  return 
+{data}
+;
+}
+
+async function FastComponent() {
+  const data = await fetchFast();
+  return 
+{data}
+;
+}
+
+export default function Page() {
+  return (
+    <>
+      標題（立刻出現）
+      
+      }>
+        
+      
+      
+      }>
+          {/* 3 秒後出現 */}
+      
+    
+  );
+}
+// 使用者立刻看到標題，快資料 200ms 內出現，慢資料 3 秒後出現
+// 而不是等 3 秒才看到全部
+```
+
+  
+### 實戰：Dashboard 並行載入
+
+```tsx
+export default function Dashboard() {
+  return (
+    
+      }>
+             {/* 500ms */}
+      
+      
+      }>
+               {/* 1s */}
+      
+      
+      }>
+              {/* 2s */}
+      
+    
+  );
+}
+// 每張卡片獨立載入，誰快誰先出現
+```
+
+  
+**🚀 進階技巧**
+
+Streaming 大幅提升「**感知效能**」。實際載入時間沒變，但使用者體感「**頁面有在動**」就覺得快。Linear、Vercel、GitHub 都這樣做。
+
+  
+
+  
+
+⚡
+學習加速器
+
+把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。

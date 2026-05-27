@@ -1,0 +1,103 @@
+Nuxt 的資料抓取 SSR 友善，自動處理 cache、hydration。
+
+  
+### useFetch：最常用
+
+```vue
+
+// SSR + Client 都會跑，自動 cache 避免 hydration 後重打
+const { data, pending, error, refresh } = await useFetch("/api/users");
+
+// 帶選項
+const { data } = await useFetch("/api/users", {
+  method: "POST",
+  body: { name: "招財" },
+  headers: { "X-Custom": "value" },
+  query: { page: 1 },
+  
+  // 只在客戶端跑（SSR 跳過）
+  server: false,
+  
+  // lazy：不等抓完就渲染（搭配 pending 顯示 loading）
+  lazy: true,
+  
+  // 預設 cache key 是 url，可以自訂
+  key: "users-list",
+  
+  // transform 資料
+  transform: (data) => data.users.map(u => ({ ...u, name: u.name.toUpperCase() })),
+  
+  // 監聽 reactive 變化自動重抓
+  watch: [page]
+});
+
+  載入中...
+  {{ error.message }}
+  
+    {{ u.name }}
+  
+  重新整理
+
+```
+
+  
+### useAsyncData：更彈性的版本
+
+```ts
+// 任何 async 邏輯都能 cache（不限 fetch）
+const { data, pending } = await useAsyncData("users", async () => {
+  const users = await $fetch("/api/users");
+  const stats = await $fetch("/api/stats");
+  return { users, stats };
+});
+```
+
+  
+### $fetch：簡單版（不自動 SSR cache）
+
+```ts
+// 給 onClick、表單提交、mutation 用
+async function handleSubmit() {
+  const r = await $fetch("/api/users", {
+    method: "POST",
+    body: { name: "招財" }
+  });
+  // 不會自動 cache，每次都打
+}
+```
+
+  
+### SEO：useHead 跟 useSeoMeta
+
+```ts
+// 基本
+useHead({
+  title: "AI 島",
+  meta: [
+    { name: "description", content: "..." }
+  ]
+});
+
+// 更方便的 useSeoMeta
+useSeoMeta({
+  title: "AI 島",
+  description: "...",
+  ogImage: "https://example.com/og.jpg",
+  ogTitle: "AI 島",
+  twitterCard: "summary_large_image"
+});
+
+// 動態（reactive）
+const post = ref(null);
+useSeoMeta({
+  title: () => post.value?.title ?? "載入中...",
+  description: () => post.value?.excerpt
+});
+```
+
+  
+
+🛠️
+工具推薦
+
+配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。

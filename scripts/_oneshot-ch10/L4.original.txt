@@ -1,0 +1,136 @@
+App Router 最重要的觀念。**預設所有元件都是 Server Component**，需要互動才用 Client。
+
+  
+### Server Component 的能力
+
+```tsx
+// 預設就是 Server Component（不需要任何標記）
+import { db } from "@/lib/db";
+import fs from "node:fs";
+
+export default async function UserList() {
+  // ✓ 可以 async / await
+  // ✓ 可以直接讀 DB
+  // ✓ 可以用 Node.js API（fs、crypto）
+  // ✓ 可以讀環境變數（API key 安全）
+  // ✗ 不能用 useState、useEffect
+  // ✗ 不能綁 onClick
+  // ✗ 不能用 browser API（window、localStorage）
+  
+  const users = await db.users.findMany();
+  const apiKey = process.env.SECRET_KEY; // 不會曝露給 client
+  
+  return 
+
+;
+}
+```
+
+  
+### Client Component 的能力
+
+```tsx
+"use client";
+// 檔案頂端加這行，整個檔案的元件都變 Client
+
+import { useState, useEffect } from "react";
+
+export default function Counter() {
+  // ✓ 可以用所有 hooks
+  // ✓ 可以綁事件
+  // ✓ 可以用 browser API
+  // ✗ 不能 async function 直接 await
+  // ✗ 不能直接讀 DB（要透過 API / Server Action）
+  
+  const [count, setCount] = useState(0);
+  
+  useEffect(() => {
+    const stored = localStorage.getItem("count");
+    if (stored) setCount(Number(stored));
+  }, []);
+  
+  return  setCount(c => c + 1)}>
+    {count}
+  ;
+}
+```
+
+  
+### 邊界：怎麼混用
+
+  
+關鍵原則：**Server Component 可以 import Client Component，反之不行**。
+
+```tsx
+// ✓ 對的
+// app/page.tsx (Server)
+import Counter from "./Counter"; // (Client)
+
+export default async function Page() {
+  const data = await getData();
+  return (
+    <>
+      {data.title}  {/* Server 渲染 */}
+                 {/* Client 互動 */}
+    
+  );
+}
+```
+
+```tsx
+// ✗ 錯的：Client 不能 import Server Component
+"use client";
+import ServerThing from "./ServerThing"; // 編譯錯
+```
+
+  
+### 但可以用 children 模式繞過
+
+```tsx
+// ClientWrapper.tsx (Client)
+"use client";
+export default function ClientWrapper({ children }) {
+  const [open, setOpen] = useState(false);
+  return (
+    
+       setOpen(!open)}>切換
+      {open && children}  {/* 接受 Server Component 當 children */}
+    
+  );
+}
+
+// page.tsx (Server)
+export default async function Page() {
+  const data = await getData();
+  return (
+    
+        {/* Server Component 可以塞給 Client Wrapper */}
+    
+  );
+}
+```
+
+  
+### 實戰準則
+
+  
+1. **預設 Server**，需要互動才加 "use client"
+2. **把 "use client" 推到葉子**（小元件），不要整個 page 都 client
+3. **抓資料在 Server**，傳到 Client 當 props
+4. **API key 永遠在 Server**，不要傳給 Client
+5. **狀態管理 / 表單 / 動畫 → Client**
+6. **內容展示 / SEO → Server**
+
+  
+**⚠ 踩雷警告**
+
+「我加 use client 不就好了，全部 client 比較簡單」— 這樣等於回到純 SPA，失去 RSC 所有好處（bundle 變大、SEO 變差、首屏變慢）。**盡量保留 Server Component**，只有真的要互動才 client。
+
+  
+
+  
+
+🚀
+2026 趨勢
+
+這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。

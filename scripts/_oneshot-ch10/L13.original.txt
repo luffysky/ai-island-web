@@ -1,0 +1,70 @@
+Next.js 14+ 的兩個進階路由特性，**讓某些 UI pattern 變得超簡單**。
+
+  
+### Parallel Routes：@slot
+
+  
+在同一個 layout 同時渲染多個獨立路由：
+
+```text
+app/
+└── dashboard/
+    ├── layout.tsx
+    ├── page.tsx
+    ├── @analytics/
+    │   └── page.tsx     ← 渲染為 layout 的 analytics slot
+    └── @team/
+        └── page.tsx     ← 渲染為 layout 的 team slot
+```
+
+```tsx
+// app/dashboard/layout.tsx
+export default function Layout({ 
+  children, 
+  analytics, 
+  team 
+}: { 
+  children: React.ReactNode;
+  analytics: React.ReactNode;
+  team: React.ReactNode;
+}) {
+  return (
+    
+      {children}
+      {analytics}
+      {team}
+    
+  );
+}
+// 三個 slot 各自獨立載入、獨立錯誤邊界
+```
+
+  
+### Intercepting Routes：(.) (..) (...)
+
+  
+「在不離開現在頁面下，顯示另一個路由的內容」— 經典用途是 modal：
+
+```text
+app/
+├── @modal/
+│   ├── default.tsx
+│   └── (.)photo/
+│       └── [id]/
+│           └── page.tsx     ← 攔截 /photo/:id 顯示為 modal
+├── photo/
+│   └── [id]/
+│       └── page.tsx          ← 直接訪問 /photo/:id 顯示完整頁
+└── layout.tsx
+└── page.tsx
+```
+
+  
+實戰：Instagram、Twitter 點圖開 modal、複製網址貼別人卻是完整頁。
+
+  
+
+💼
+接案小知識
+
+剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「Next.js」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。

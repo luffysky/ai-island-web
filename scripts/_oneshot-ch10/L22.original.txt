@@ -1,0 +1,107 @@
+### Vercel（Next.js 親兒子，最簡單）
+
+```bash
+# 方法 1：CLI
+pnpm add -g vercel
+vercel  # 互動式設定
+
+# 方法 2：GitHub 連 Vercel，push 自動部署（推薦）
+```
+
+  
+Vercel 提供：CDN、Edge Functions、ISR、自動 HTTPS、preview deployment、A/B testing、analytics。Hobby 方案免費，足夠個人專案跟小型新創。
+
+  
+### Cloudflare Pages
+
+```bash
+# Next.js
+pnpm add -D @cloudflare/next-on-pages
+pnpx next-on-pages
+
+# Nuxt（內建 preset）
+NITRO_PRESET=cloudflare-pages pnpm build
+```
+
+  
+Cloudflare 優勢：免費額度大（無限請求）、邊緣運算速度快、整合 R2 / D1 / KV 完整生態。但部分 Node API 不支援。
+
+  
+### Zeabur（台灣團隊愛用）
+
+```bash
+# 連 GitHub 就好，自動偵測 Next.js / Nuxt
+# 機房選東京（亞洲速度快）
+```
+
+  
+Zeabur 優勢：亞洲機房（東京）、繁中介面、便宜、支援完整 Node 環境。台灣個人開發者首選。
+
+  
+### Netlify
+
+  
+跟 Vercel 類似，UX 接近。Next.js 支援用 `@netlify/plugin-nextjs`。Nuxt 內建 netlify preset。
+
+  
+### Railway / Render / Fly.io
+
+  
+傳統容器化，**支援所有 Node 套件**（沒 edge runtime 限制）。適合需要長連線、WebSocket、cron 的應用。
+
+  
+### 自架 Docker
+
+```dockerfile
+# Dockerfile
+FROM node:20-alpine AS deps
+WORKDIR /app
+COPY package*.json pnpm-lock.yaml ./
+RUN npm i -g pnpm && pnpm install --frozen-lockfile
+
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+RUN npm i -g pnpm && pnpm build
+
+FROM node:20-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/node_modules ./node_modules
+EXPOSE 3000
+CMD ["npm", "start"]
+```
+
+  
+### 環境變數
+
+```bash
+# .env.local（不進 git）
+DATABASE_URL=postgres://...
+OPENAI_API_KEY=sk-...
+
+# Next.js 約定
+# NEXT_PUBLIC_* 開頭會曝露給 client
+NEXT_PUBLIC_GA_ID=G-XXX
+
+# Nuxt 約定
+# public 路徑（曝露給 client）
+NUXT_PUBLIC_API_BASE=...
+```
+
+  
+**🚨 資安警報**
+
+不要把 API key 用 `NEXT_PUBLIC_` 或 `NUXT_PUBLIC_` 開頭！會被 bundle 進 client，任何人都能看。**敏感資料只在 Server Component / Server Action / API Route 用**。
+
+  
+
+  
+
+🚀
+2026 趨勢
+
+這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。

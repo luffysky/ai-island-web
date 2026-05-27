@@ -1,0 +1,202 @@
+### 動態路由：[slug]
+
+```tsx
+// app/blog/[slug]/page.tsx
+type Props = { params: { slug: string } };
+
+export default async function BlogPost({ params }: Props) {
+  const post = await getPost(params.slug);
+  
+  if (!post) {
+    return 
+找不到
+;
+  }
+  
+  return (
+    
+      {post.title}
+      
+    
+  );
+}
+```
+
+  
+### 多參數動態路由
+
+```text
+app/shop/[category]/[id]/page.tsx
+  → /shop/electronics/123
+  → params = { category: "electronics", id: "123" }
+
+app/docs/[...path]/page.tsx        ← catch-all
+  → /docs/a/b/c
+  → params.path = ["a", "b", "c"]
+
+app/docs/[[...path]]/page.tsx      ← optional catch-all
+  → /docs              (params.path = undefined)
+  → /docs/a
+  → /docs/a/b
+```
+
+  
+### generateStaticParams：SSG 動態路由
+
+```tsx
+// 告訴 Next.js build 時要預先產哪些頁面
+export async function generateStaticParams() {
+  const posts = await getAllPosts();
+  return posts.map(p => ({ slug: p.slug }));
+}
+
+// build 時會跑出：
+// /blog/post-1.html
+// /blog/post-2.html
+// /blog/post-3.html ...
+```
+
+  
+### 靜態 Metadata
+
+```tsx
+// app/about/page.tsx
+export const metadata = {
+  title: "關於 AI 島 | 全端養成班",
+  description: "從入門到怪物工程師的免費 20 章教程",
+  keywords: ["全端", "教學", "AI"],
+  authors: [{ name: "Luffysky" }],
+  
+  openGraph: {
+    title: "AI 島 - 關於我們",
+    description: "...",
+    url: "https://example.com/about",
+    siteName: "AI 島",
+    images: [
+      { url: "https://example.com/og.jpg", width: 1200, height: 630 }
+    ],
+    locale: "zh_TW",
+    type: "website"
+  },
+  
+  twitter: {
+    card: "summary_large_image",
+    title: "AI 島",
+    description: "...",
+    images: ["https://example.com/og.jpg"]
+  },
+  
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large" }
+  },
+  
+  alternates: {
+    canonical: "https://example.com/about",
+    languages: {
+      "en": "https://example.com/en/about",
+      "zh-Hant": "https://example.com/about"
+    }
+  }
+};
+```
+
+  
+### 動態 Metadata
+
+```tsx
+// app/blog/[slug]/page.tsx
+import { Metadata } from "next";
+
+export async function generateMetadata({ params }): Promise {
+  const post = await getPost(params.slug);
+  
+  return {
+    title: `${post.title} | AI 島部落格`,
+    description: post.excerpt,
+    openGraph: {
+      title: post.title,
+      description: post.excerpt,
+      images: [post.coverImage],
+      type: "article",
+      publishedTime: post.publishedAt,
+      authors: [post.author]
+    }
+  };
+}
+```
+
+  
+### 動態 OG Image（神技）
+
+```tsx
+// app/blog/[slug]/opengraph-image.tsx
+import { ImageResponse } from "next/og";
+
+export const runtime = "edge";
+export const alt = "Blog post cover";
+export const size = { width: 1200, height: 630 };
+export const contentType = "image/png";
+
+export default async function Image({ params }) {
+  const post = await getPost(params.slug);
+  
+  return new ImageResponse(
+    (
+      
+        
+          AI 島 / 部落格
+        
+        
+          {post.title}
+        
+        
+          {post.author} · {post.date}
+        
+      
+    ),
+    { ...size }
+  );
+}
+// 每篇文章自動有獨特 OG image！社群分享品牌感大幅提升
+```
+
+  
+### sitemap.xml 與 robots.txt
+
+```ts
+// app/sitemap.ts
+import { MetadataRoute } from "next";
+
+export default async function sitemap(): Promise {
+  const posts = await getAllPosts();
+  
+  return [
+    { url: "https://example.com", lastModified: new Date(), priority: 1.0 },
+    { url: "https://example.com/about", priority: 0.8 },
+    ...posts.map(p => ({
+      url: `https://example.com/blog/${p.slug}`,
+      lastModified: p.updatedAt,
+      priority: 0.6
+    }))
+  ];
+}
+
+// app/robots.ts
+export default function robots(): MetadataRoute.Robots {
+  return {
+    rules: [
+      { userAgent: "*", allow: "/", disallow: ["/admin/", "/api/"] }
+    ],
+    sitemap: "https://example.com/sitemap.xml"
+  };
+}
+```
+
+  
+
+🛠️
+工具推薦
+
+配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。

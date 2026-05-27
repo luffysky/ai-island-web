@@ -1,0 +1,93 @@
+Nuxt 模組系統超強。一行設定加完整功能：
+
+```ts
+// nuxt.config.ts
+export default defineNuxtConfig({
+  modules: [
+    "@nuxt/image",
+    "@nuxt/content",
+    "@nuxt/ui",
+    "@pinia/nuxt",
+    "@vueuse/nuxt",
+    "@nuxtjs/tailwindcss",
+    "@nuxtjs/i18n",
+    "@nuxtjs/seo",
+    "@nuxtjs/supabase",
+    "nuxt-auth-utils"
+  ]
+});
+```
+
+  
+### @nuxt/image：圖片優化（類似 next/image）
+
+```vue
+
+```
+
+  
+### @nuxt/content：檔案系統 CMS
+
+```text
+content/
+├── blog/
+│   ├── 1.first-post.md
+│   └── 2.second-post.md
+└── docs/
+    └── intro.md
+```
+
+```vue
+
+const { data: posts } = await useAsyncData("posts", () =>
+  queryContent("blog").sort({ date: -1 }).find()
+);
+
+  
+    
+## {{ post.title }}
+
+    
+  
+
+```
+
+  
+### @nuxt/ui：完整 UI 元件庫
+
+```vue
+送出
+
+  ...
+
+```
+
+  
+### @nuxtjs/seo
+
+  
+一鍵搞定 sitemap、robots、Open Graph、structured data：
+
+```ts
+export default defineNuxtConfig({
+  modules: ["@nuxtjs/seo"],
+  site: {
+    url: "https://example.com",
+    name: "AI 島",
+    description: "..."
+  }
+});
+
+// 自動產生：
+// - /sitemap.xml
+// - /robots.txt
+// - OG meta
+// - JSON-LD
+```
+
+  
+
+🎯
+面試考點
+
+台灣科技公司面試 90% 會問「Next.js」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。

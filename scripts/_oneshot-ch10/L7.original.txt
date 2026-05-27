@@ -1,0 +1,140 @@
+Server Actions 適合內部用，**API Routes 適合給外部（行動 App、第三方）呼叫**。
+
+```ts
+// app/api/users/route.ts
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+
+export async function GET(req: NextRequest) {
+  const { searchParams } = req.nextUrl;
+  const page = parseInt(searchParams.get("page") ?? "1");
+  const limit = parseInt(searchParams.get("limit") ?? "20");
+  
+  const users = await db.users.findMany({
+    skip: (page - 1) * limit,
+    take: limit
+  });
+  
+  return NextResponse.json({ data: users, page, limit });
+}
+
+const CreateSchema = z.object({
+  name: z.string().min(1),
+  email: z.string().email()
+});
+
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const data = CreateSchema.parse(body);
+    const user = await db.users.create({ data });
+    return NextResponse.json(user, { status: 201 });
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      return NextResponse.json({ error: err.flatten() }, { status: 400 });
+    }
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
+  }
+}
+```
+
+  
+### 動態 API 路由
+
+```ts
+// app/api/users/[id]/route.ts
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const user = await db.users.findUnique({ where: { id: params.id } });
+  if (!user) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+  return NextResponse.json(user);
+}
+
+export async function PATCH(req, { params }) {
+  const updates = await req.json();
+  const user = await db.users.update({ where: { id: params.id }, data: updates });
+  return NextResponse.json(user);
+}
+
+export async function DELETE(req, { params }) {
+  await db.users.delete({ where: { id: params.id } });
+  return new Response(null, { status: 204 });
+}
+```
+
+  
+### 處理檔案上傳
+
+```ts
+// app/api/upload/route.ts
+export async function POST(req: NextRequest) {
+  const formData = await req.formData();
+  const file = formData.get("file") as File;
+  
+  if (!file) {
+    return NextResponse.json({ error: "No file" }, { status: 400 });
+  }
+  
+  const buffer = await file.arrayBuffer();
+  // 存到 S3 / R2 / 本地
+  await uploadToS3(file.name, buffer);
+  
+  return NextResponse.json({ ok: true, url: `...` });
+}
+```
+
+  
+### 串流回應（AI 場景必備）
+
+```ts
+// app/api/chat/route.ts
+export async function POST(req: NextRequest) {
+  const { messages } = await req.json();
+  
+  const stream = new ReadableStream({
+    async start(controller) {
+      const openaiStream = await openai.chat.completions.create({
+        model: "gpt-4",
+        messages,
+        stream: true
+      });
+      
+      for await (const chunk of openaiStream) {
+        const text = chunk.choices[0]?.delta?.content ?? "";
+        controller.enqueue(new TextEncoder().encode(text));
+      }
+      
+      controller.close();
+    }
+  });
+  
+  return new Response(stream, {
+    headers: { "Content-Type": "text/event-stream" }
+  });
+}
+```
+
+  
+### 什麼時候用 API vs Server Action？
+
+  
+| 場景 | 選 |
+| --- | --- |
+| 網頁內表單提交 | Server Action |
+| 網頁內 mutation | Server Action |
+| 給行動 App 用 | API Route |
+| 第三方 webhook | API Route |
+| 需要快取 header | API Route |
+| 需要 streaming | API Route |
+| 檔案上傳 | API Route |
+
+  
+
+💼
+接案小知識
+
+剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「Next.js」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。

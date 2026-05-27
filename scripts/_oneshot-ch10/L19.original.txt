@@ -1,0 +1,57 @@
+Nuxt 比 Next 更直覺的地方：**單個專案不同路由用不同渲染策略**，全在一個地方設。
+
+```ts
+// nuxt.config.ts
+export default defineNuxtConfig({
+  routeRules: {
+    // 首頁 ISR（每小時重生）
+    "/": { isr: 3600 },
+    
+    // 部落格全靜態（build 時產生）
+    "/blog/**": { prerender: true },
+    
+    // 後台 SPA（client only，不要 SSR）
+    "/dashboard/**": { ssr: false },
+    
+    // 管理員區強制 SSR + 加 header
+    "/admin/**": { 
+      ssr: true,
+      headers: { 
+        "X-Frame-Options": "DENY",
+        "Cache-Control": "no-store"
+      }
+    },
+    
+    // API 加 CORS
+    "/api/**": { cors: true },
+    
+    // 重定向
+    "/old-page": { redirect: "/new-page" },
+    
+    // Proxy
+    "/proxy/**": { proxy: "https://api.external.com/**" }
+  }
+});
+```
+
+  
+### 對應的部署行為
+
+  
+Nuxt 自動產生對應的部署檔。例如部署到 Vercel：
+
+  
+- `isr` 路由 → Vercel ISR
+- `prerender` 路由 → 靜態檔案
+- `ssr: false` → 純 client 渲染
+- `headers` → vercel.json 自動產
+
+  
+同樣設定，**部署到 Cloudflare、Netlify、Zeabur 都自動轉換**，不用手動設。
+
+  
+
+💼
+接案小知識
+
+剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「Next.js」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。

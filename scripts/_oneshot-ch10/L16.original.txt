@@ -1,0 +1,95 @@
+```bash
+pnpx nuxi@latest init my-app
+cd my-app && pnpm install && pnpm dev
+```
+
+  
+### 檔案結構
+
+```text
+nuxt-app/
+├── nuxt.config.ts          ← 全局設定
+├── app.vue                  ← 根元件
+├── pages/                   ← 自動檔案路由
+│   ├── index.vue            → /
+│   ├── about.vue            → /about
+│   └── blog/
+│       ├── index.vue        → /blog
+│       └── [slug].vue       → /blog/:slug
+├── layouts/                 ← 共用 layout
+│   ├── default.vue
+│   └── admin.vue
+├── components/              ← 自動 import（不用手寫 import）
+│   └── MyButton.vue
+├── composables/             ← 自動 import
+│   └── useCounter.ts
+├── server/
+│   ├── api/
+│   │   └── users.get.ts     → GET /api/users
+│   ├── middleware/
+│   └── plugins/
+├── middleware/              ← 路由 middleware
+│   └── auth.ts
+├── plugins/                 ← Nuxt 啟動時跑
+├── public/                  ← 靜態檔
+├── assets/                  ← 處理過的資源
+└── stores/                  ← Pinia store（自動匯入）
+```
+
+  
+### 自動 import：Nuxt 殺手鐧
+
+  
+放在 `components/`、`composables/`、`utils/` 的東西**不用 import 就能用**：
+
+```vue
+
+// 不用寫 import！
+const count = ref(0);          // 自動 import vue
+const route = useRoute();        // 自動 import 路由
+const { data } = await useFetch("/api/users");  // Nuxt 內建 composable
+const counter = useCounter(); // 你自己寫的 composable
+
+    
+
+```
+
+  
+### app.vue 根元件
+
+```vue
+
+  
+    
+        
+    
+  
+
+```
+
+  
+### Layout 系統
+
+```vue
+
+  
+    ...
+      
+    ...
+  
+
+  
+    
+    
+  
+
+definePageMeta({ layout: "admin" });
+
+```
+
+  
+
+🚀
+2026 趨勢
+
+這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。

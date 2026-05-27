@@ -1,0 +1,56 @@
+純 React / Vue 寫的網站是 **SPA（Single Page Application）**—瀏覽器拿到一個空 HTML，所有內容靠 JS 動態渲染。問題：
+
+  
+- **SEO 差**：搜尋引擎拿到空頁面（雖然 Google 能跑 JS，其他不一定）
+- **首屏慢**：要下載 + 解析 JS 才能看到內容（白屏 2-5 秒）
+- **社群分享卡片壞**：FB / LINE / Twitter 抓 OG 抓不到
+- **沒路由**：要自己裝 React Router / Vue Router
+- **沒 API**：後端要分開寫
+- **沒部署最佳化**：圖片、字型、code splitting 都要手動
+- **沒 SSR / SSG**：搜尋引擎友善的渲染要自己搞
+
+  
+### Next.js / Nuxt 解決什麼
+
+  
+- 檔案系統路由（不用手寫 router）
+- SSR / SSG / ISR / RSC 多種渲染模式
+- 內建 API routes（前後端同一專案）
+- 自動 code splitting、圖片優化、字型優化
+- SEO metadata、OG image 動態產生
+- Vercel / Cloudflare 一鍵部署
+- internationalization（i18n）支援
+- Streaming SSR、Suspense
+
+  
+
+React / Vue 像**引擎**。Next / Nuxt 像**整台車**—引擎、輪子、座椅、空調全配好。你想自己組車是 OK，但 99% 人直接買整台車。
+
+  
+
+  
+### 2026 業界共識
+
+  
+- **SaaS 產品**：99% 用 Next.js / Nuxt
+- **純後台**：可以純 Vite + React
+- **公開行銷頁 / 部落格**：必須用 SSG
+- **電商**：ISR + RSC 是黃金組合
+- **個人 portfolio**：Astro / Next.js / Nuxt 都行
+
+  
+### 什麼專案不該用 Next / Nuxt？
+
+  
+- 純桌面 App（用 Electron / Tauri）
+- 純手機 App（用 React Native / Expo）
+- 純 Chrome Extension
+- 已經有後端，前端只是純 SPA 後台
+- 追求極小 bundle 的 widget（用 Preact / Lit）
+
+  
+
+💼
+接案小知識
+
+剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「Next.js」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。

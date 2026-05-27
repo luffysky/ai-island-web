@@ -1,0 +1,43 @@
+| 項目 | Next.js | Nuxt 3 |
+| --- | --- | --- |
+| 底層 | React | Vue 3 |
+| 路由 | App Router（檔案） | 檔案路由 |
+| 渲染模式 | CSR/SSR/SSG/ISR/RSC | CSR/SSR/SSG/ISR |
+| RSC | ✓（領先） | 近似（Server Components 在預覽） |
+| Server Actions | ✓ | 用 server API 取代 |
+| 資料抓取 | fetch（內建快取） | useFetch / useAsyncData |
+| SEO Metadata | generateMetadata | useSeoMeta |
+| 圖片優化 | next/image | @nuxt/image |
+| 字型優化 | next/font | @nuxtjs/google-fonts |
+| Hybrid Rendering | 每路由獨立設 | routeRules（更直覺） |
+| 自動 import | ✗（手動） | ✓（components/composables） |
+| 原生模組系統 | ✗ | ✓（@nuxt/*） |
+| 主要部署 | Vercel（親兒子） | 多家平等 |
+| 市佔 | 80%+（全球） | 主要亞洲 |
+| 學習資源 | 英文最豐 | 中文最豐 |
+
+  
+### 該選誰？
+
+  
+- **已會 React** → Next.js
+- **已會 Vue** → Nuxt 3
+- **美國團隊 / FAANG 求職** → Next.js
+- **亞洲團隊 / 中文資源** → Nuxt 3
+- **個人專案，極簡上手** → Nuxt 3
+- **追求最新 RSC 體驗** → Next.js
+- **需要 Vercel 親兒子整合** → Next.js
+
+  
+**🚀 進階技巧**
+
+2026 業界共識：**會其中一個就好**，**看得懂另一個**。兩個架構心智模型 80% 相同（檔案路由、SSR、渲染模式、middleware），轉換成本一週內。
+
+  
+
+  
+
+⚡
+學習加速器
+
+把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。

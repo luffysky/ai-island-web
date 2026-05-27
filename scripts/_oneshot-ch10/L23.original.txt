@@ -1,0 +1,18 @@
+### Core Web Vitals
+
+  
+- **LCP（Largest Contentful Paint）**：
+
+// strategy 選項：
+// - beforeInteractive: 在頁面互動前載入（用 polyfill 才用）
+// - afterInteractive: 預設，互動後
+// - lazyOnload: 全部 load 完後（GA、Crisp 等）
+// - worker: 跑在 Web Worker（experimental）
+```
+
+  
+    
+      🛠️
+      工具推薦
+    
+    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。

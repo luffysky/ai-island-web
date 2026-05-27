@@ -1,0 +1,90 @@
+```ts
+// middleware.ts（放在 src/ 或專案根目錄）
+import { NextRequest, NextResponse } from "next/server";
+
+export async function middleware(req: NextRequest) {
+  const token = req.cookies.get("token")?.value;
+  
+  // 沒 token 導向登入
+  if (!token && req.nextUrl.pathname.startsWith("/dashboard")) {
+    return NextResponse.redirect(new URL("/login", req.url));
+  }
+  
+  // 加 header
+  const response = NextResponse.next();
+  response.headers.set("x-custom", "hello");
+  return response;
+}
+
+// 設定哪些路徑跑 middleware
+export const config = {
+  matcher: [
+    "/dashboard/:path*", 
+    "/api/:path*",
+    // 排除某些路徑
+    "/((?!_next/static|_next/image|favicon.ico).*)"
+  ]
+};
+```
+
+  
+### 常見用途
+
+```ts
+// 1. 身份驗證
+if (path.startsWith("/admin") && !isAdmin(token)) {
+  return NextResponse.redirect("/login");
+}
+
+// 2. 地理區域導流
+const country = req.geo?.country;
+if (country === "TW" && path === "/") {
+  return NextResponse.rewrite(new URL("/zh", req.url));
+}
+
+// 3. A/B 測試
+const variant = Math.random() > 0.5 ? "a" : "b";
+const response = NextResponse.next();
+response.cookies.set("variant", variant);
+return response;
+
+// 4. 安全 header
+const response = NextResponse.next();
+response.headers.set("X-Frame-Options", "DENY");
+response.headers.set("X-Content-Type-Options", "nosniff");
+response.headers.set("Strict-Transport-Security", "max-age=31536000");
+return response;
+
+// 5. 機器人偵測
+const ua = req.headers.get("user-agent") ?? "";
+if ("bot|crawler|spider".match(ua)) {
+  // 給 bot 看的版本
+}
+```
+
+  
+### Edge Runtime 限制
+
+  
+Middleware 跑在 Edge Runtime（極輕量），**不能用 Node 套件**：
+
+  
+- 不能 `fs`、`net`、`child_process`
+- 不能用 native Node 模組
+- 不能用某些 npm 套件（檢查 `edge-runtime-compatible`）
+- 可以用 `fetch`、Web Crypto、URL API
+- 有 size limit（1MB）跟執行時間限制
+
+  
+**⚠ 踩雷警告**
+
+Middleware 跑在**每個請求**（含靜態資源）。亂寫會拖慢全站。一定用 `matcher` 限制範圍。
+
+  
+
+  
+
+🛠️
+工具推薦
+
+配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。
