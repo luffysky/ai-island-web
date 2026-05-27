@@ -175,6 +175,30 @@ export function ModelsManagerClient({
     }
   };
 
+  const testKey = async (provider: string) => {
+    try {
+      const res = await fetch(`/api/admin/ai/keys/test?provider=${encodeURIComponent(provider)}`);
+      const ct = res.headers.get("content-type") ?? "";
+      if (!ct.includes("application/json")) {
+        showNotice("error", `API 沒回 JSON（${res.status}）、可能 Zeabur 還在 build`);
+        return;
+      }
+      const data = await res.json();
+      if (data.ok) {
+        showNotice("success", `✅ key 有效 · prefix=${data.key_info?.prefix} · len=${data.key_info?.length}`);
+      } else {
+        const detail = data.api_test?.status
+          ? `${data.api_test.status} ${(data.api_test.body ?? "").slice(0, 100)}`
+          : data.reason ?? data.error ?? "unknown";
+        showNotice("error", `❌ ${detail}\n💡 ${data.hint ?? ""}`);
+      }
+      // eslint-disable-next-line no-console
+      console.log(`[test-key:${provider}]`, data);
+    } catch (e) {
+      showNotice("error", e instanceof Error ? e.message : "test 失敗");
+    }
+  };
+
   const deleteKey = async (provider: string) => {
     const ok = await confirm({
       title: `刪除 ${provider} 的 API key？`,
@@ -320,9 +344,17 @@ export function ModelsManagerClient({
                   {key?.enabled ? "停用" : "啟用"}
                 </button>
                 <button
+                  onClick={() => testKey(provider)}
+                  disabled={!key || !hasSecret}
+                  className="inline-flex items-center gap-1 rounded border border-cyan-500/40 px-3 py-1.5 text-xs text-cyan-900 dark:text-cyan-100 bg-cyan-500/10 hover:bg-cyan-500/20 disabled:opacity-50"
+                  title="跑一個小請求驗證 key 真的可用"
+                >
+                  🧪 測 key
+                </button>
+                <button
                   onClick={() => deleteKey(provider)}
                   disabled={!key}
-                  className="inline-flex items-center gap-1 rounded border border-red-500/30 px-3 py-1.5 text-xs text-red-300 hover:bg-red-500/10 disabled:opacity-50"
+                  className="inline-flex items-center gap-1 rounded border border-red-500/30 px-3 py-1.5 text-xs text-red-900 dark:text-red-100 hover:bg-red-500/10 disabled:opacity-50"
                 >
                   <Trash2 size={14} />
                   刪除

@@ -25,11 +25,15 @@ export async function POST(req: NextRequest) {
   const { provider, apiKey } = await req.json();
   if (!provider || !apiKey) return NextResponse.json({ error: "missing" }, { status: 400 });
 
+  // 防複製貼上多出空白 / newline / zero-width chars 弄壞 key
+  const cleanKey = String(apiKey).trim().replace(/[\r\n​‌‍﻿]/g, "");
+  if (cleanKey.length < 10) return NextResponse.json({ error: "api_key too short after cleaning" }, { status: 400 });
+
   const admin = createSupabaseAdmin();
 
   const { data, error } = await admin.from("ai_api_keys").upsert({
     provider,
-    api_key_encrypted: encryptKey(apiKey),
+    api_key_encrypted: encryptKey(cleanKey),
     enabled: true,
     metadata: { has_key: true },
     reset_at: nextMonthResetDate(),
