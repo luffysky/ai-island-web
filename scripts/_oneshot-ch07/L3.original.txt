@@ -1,0 +1,179 @@
+所有程式語言處理 6-8 種**基本資料型態**。學完看任何語言都不會迷路。
+
+  
+### 整數（Integer）
+
+```text
+「沒有小數的數字」：
+1, 42, -5, 1000000, 0
+
+Python：
+age = 25                # int（無上限、自動擴張）
+
+JavaScript：
+let age = 25;           // number（無 int 概念）
+
+Go（分大小）：
+var age int = 25        // 預設大小（32 / 64 bit 看平台）
+var age int32 = 25      // 確定 32 bit
+var age int64 = 25      // 確定 64 bit
+var age uint = 25       // 無符號（不能負）
+
+Rust（嚴格）：
+let age: i32 = 25;      // 32 bit signed
+let age: u8 = 25;       // 8 bit unsigned (0-255)
+let age: i64 = 25;      // 64 bit signed
+
+Java：
+int age = 25;           // 32 bit
+long age = 25L;         // 64 bit
+short age = 25;         // 16 bit
+byte age = 25;          // 8 bit
+
+→ 系統程式語言（Go / Rust / C / Java）分大小
+→ 高階語言（Python / JS / Ruby）通常不管
+```
+
+  
+### 溢位（Overflow）—系統語言的陷阱
+
+```text
+整數有上限：
+
+i8（8 bit signed）：-128 到 127
+u8（8 bit unsigned）：0 到 255
+i32：-2,147,483,648 到 2,147,483,647
+i64：超過 9 千兆
+
+超過 = overflow（值溢出）：
+
+// Rust
+let x: u8 = 255;
+let y = x + 1;
+// ❌ Rust debug 模式 panic
+// ⚠ release 模式 wrap 到 0
+
+// Java
+int x = Integer.MAX_VALUE;
+int y = x + 1;
+// y = Integer.MIN_VALUE（負很大）
+
+Python / JS 沒這問題：
+- Python：自動擴張到任意大數
+- JS：超過 2^53 開始失精度（用 BigInt 解）
+```
+
+  
+### 浮點數（Float）
+
+```text
+「有小數的數字」：
+3.14, 0.5, -2.7, 1e10
+
+Python：
+pi = 3.14               # float（64 bit）
+
+JavaScript：
+let pi = 3.14;          // 一律 number
+
+Go：
+var pi float32 = 3.14
+var pi float64 = 3.14   // 大多用這個
+
+Rust：
+let pi: f32 = 3.14;
+let pi: f64 = 3.14;     // 64 bit
+
+Java：
+float pi = 3.14f;       // f 後綴
+double pi = 3.14;       // 預設
+
+→ 大多寫 f64 / double（精度高）
+```
+
+  
+### 浮點數的詭異陷阱
+
+```text
+所有語言通病：
+
+0.1 + 0.2 === 0.3
+# ❌ false（變 0.30000000000000004）
+
+# Python
+print(0.1 + 0.2)        # 0.30000000000000004
+
+# JavaScript
+0.1 + 0.2               // 0.30000000000000004
+
+# Java / Go 都一樣
+
+原因：
+電腦用 binary 存 0.1 = 無限循環
+就像 1/3 = 0.33333... 無法精確表示
+
+解法：
+1. 比較浮點數用 epsilon
+   abs(a - b)  = None;
+Java：         String x = null;
+C#：           string? x = null;
+PHP：          $x = null;
+
+→ Tony Hoare 稱 null 是「億萬美元錯誤」
+→ Rust / Swift 不給 null、強制用 Option / Maybe
+```
+
+  
+### Null 引發的災難
+
+```text
+所有語言頭號 bug：
+
+// Java
+String name = null;
+name.length();    // ❌ NullPointerException
+
+# Python
+name = None
+len(name)         # ❌ TypeError
+
+// JS
+const user = null;
+user.name;        // ❌ TypeError
+
+對策（2026 主流）：
+
+1. Optional chaining（?.）
+   user?.name        // JS / TS / C# / Swift
+
+2. Null coalescing（??）
+   const name = user?.name ?? "Unknown";
+
+3. Rust / Swift Option
+   match value {
+       Some(n) => println!("{}", n),
+       None => println!("沒值"),
+   }
+   # 強制處理 None 情況
+```
+
+  
+**⚠ 踩雷警告**
+
+新手最常踩的型別坑：(1) **浮點數比較**—`0.1 + 0.2 !== 0.3`、要用 epsilon (2) **整數溢位**—Go / Rust / Java 都會、用大數時用 BigInt / BigDecimal (3) **null pointer**—80% 的 production bug 是它。新語言（Rust / Kotlin / Swift）強制 null safety = 你寫的 bug 自動少一半。
+
+  
+
+  
+**🚀 進階技巧**
+
+2026 寫程式選語言時、檢查 null 處理機制 = 大型專案 sanity 保障。**強 null safety 排名**：Rust（沒 null）> Swift / Kotlin（強制標）> TypeScript strict（要設）> C# 8+（可選）> Java / Go（弱）> Python / JS（最弱）。indie / 一人公司寫 Python 沒事、團隊大專案就要 type hints + mypy / TypeScript strict。
+
+  
+
+  
+
+⚡
+學習加速器
+
+把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。

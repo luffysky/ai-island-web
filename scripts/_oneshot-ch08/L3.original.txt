@@ -1,0 +1,291 @@
+JSX 是 React 的核心語法—HTML 跟 JS 混在一起寫。第一週看不慣、之後愛上。
+
+  
+### JSX 基本
+
+```jsx
+// JSX 看起來像 HTML、其實是 JS
+const element = Hello;
+
+// 編譯後變
+const element = React.createElement("h1", null, "Hello");
+
+// 為什麼用 JSX？
+// 寫 createElement 太煩、JSX 看起來直觀
+
+// JSX 用 JS 變數（用 {}）
+const name = "Alice";
+const element = Hello, {name};
+
+// 任何 JS expression 都行
+const element = {2 + 3};            // 5
+const element = {name.toUpperCase()}; // ALICE
+const element = {getName()};          // function 結果
+
+// 不能放 statement（if / for）只能 expression
+{if (x) "a"}     // ❌
+{x ? "a" : "b"}   // ✓ 三元
+{x && "a"}        // ✓ 短路
+```
+
+  
+### JSX vs HTML 差別
+
+```text
+1. className 代替 class
+   ❌ 
+   ✓ 
+   （class 是 JS 保留字）
+
+2. htmlFor 代替 for
+   ❌ 
+   ✓ 
+
+3. style 用 object
+   ❌ 
+   ✓ 
+   （注意：兩層 {}—外面是 JSX expression、內是 object）
+
+4. 駝峰命名 attributes
+   ❌ onclick / onchange / onmouseover
+   ✓ onClick / onChange / onMouseOver
+
+5. self-closing
+   ❌ 
+
+   ✓ 
+
+   ❌ 
+   ✓ 
+
+6. 只能 return 1 個根元素
+   ❌ return 
+
+;
+   ✓ return 
+
+;
+   或 Fragment：
+   ✓ return <>
+
+;
+```
+
+  
+### 條件渲染
+
+```jsx
+// 1. 三元（最常用）
+function Greeting({ isLoggedIn }) {
+    return (
+        
+            {isLoggedIn ?  : }
+        
+    );
+}
+
+// 2. && 短路（單邊）
+function Notification({ count }) {
+    return (
+        
+            {count > 0 && (
+                {count}
+            )}
+        
+    );
+}
+
+// 3. if 在 function 內
+function Greeting({ user }) {
+    if (!user) {
+        return ;
+    }
+    return ;
+}
+
+// 4. switch / 多條件
+function StatusIcon({ status }) {
+    switch (status) {
+        case "success":
+            return ;
+        case "error":
+            return ;
+        case "loading":
+            return ;
+        default:
+            return null;
+    }
+}
+
+// 注意：0 跟 "" 不要直接用 &&
+{count && {count}}
+// count = 0 時 → 渲染 0（不是空）
+
+// 改：
+{count > 0 && {count}}
+// 明確判斷
+```
+
+  
+### 列表渲染
+
+```jsx
+const users = [
+    { id: 1, name: "Alice" },
+    { id: 2, name: "Bob" },
+    { id: 3, name: "Charlie" }
+];
+
+function UserList() {
+    return (
+        
+
+    );
+}
+
+// key 必須！React 用 key 識別哪個 item
+
+// 規則：
+// 1. key 必須穩定—不要用 index
+// 2. key 必須唯一—在這個 list 內
+// 3. key 必須可預測—同樣 item 永遠同 key
+
+// ❌ 不要用 index 當 key
+{users.map((user, i) => (
+    {user.name}
+))}
+// 加 / 刪 item 時、index 變、React 搞錯
+
+// ✓ 用唯一 ID
+{users.map(user => (
+    {user.name}
+))}
+
+// 沒 ID？建立穩定 key
+{items.map(item => (
+    
+        {item.name}
+    
+))}
+
+// 完全靜態 list、index 也行（少見）
+```
+
+  
+### Style + className
+
+```jsx
+// 1. 字串 className
+...
+
+// 2. 動態 className
+...
+
+// 3. inline style（object）
+...
+
+// 4. 用 classnames / clsx library
+import clsx from "clsx";
+
+...
+
+// 5. 用 Tailwind（2026 主流）
+
+    Button
+
+// 6. 條件 + Tailwind
+import { cn } from "@/lib/utils";
+
+...
+```
+
+  
+### Fragment（隱形 wrapper）
+
+```jsx
+// 想 return 多個元素、不要多包一層 div？用 Fragment
+
+// 1. 完整寫法
+import { Fragment } from "react";
+
+function List() {
+    return (
+        
+            1
+            2
+            3
+        
+    );
+}
+
+// 2. 簡寫（最常用）
+function List() {
+    return (
+        <>
+            1
+            2
+            3
+        
+    );
+}
+
+// 3. 需要 key 用完整寫法
+{items.map(item => (
+    
+        {item.term}
+        {item.def}
+    
+))}
+// <> 不能加 key
+```
+
+  
+### JSX 內 comment
+
+```jsx
+// JSX 內要包 {}
+
+    {/* 這是 JSX 註解 */}
+    Title
+    
+    {/* 多行
+       也要包 {}
+    */}
+
+// JSX 外是 JS、用 //
+function Component() {
+    // 這是 JS 註解
+    return (
+        
+            {/* JSX 註解 */}
+        
+    );
+}
+```
+
+  
+### 常見 JSX 陷阱
+
+  
+- **忘了用 className**—寫 class 警告
+- **沒 key 在 list**—console warning
+- **用 index 當 key**—list 改動 bug
+- **style 用字串**—要用 object
+- **return 多元素沒 wrapper**—語法錯
+- **{} 內寫 if / for**—只能 expression
+- **大寫元件名**—component 必須大寫開頭
+- **self-closing 漏 /**—`` 警告
+
+  
+**☕ 用人話講**
+
+JSX 核心 4 個：(1) **HTML 樣子、JS 行為**—第一週看不慣、之後愛 (2) **className 不是 class**—大多 attribute 駝峰 (3) **{} 內是 expression**—if / for 寫外面 (4) **list 必須 key**—用穩定 ID。**核心心法**：JSX 是 syntax sugar、編譯後是 React.createElement。
+
+  
+
+  
+
+⚡
+學習加速器
+
+把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。

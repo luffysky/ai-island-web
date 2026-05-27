@@ -1,0 +1,244 @@
+變數 = **記憶體中一塊空間的名字**。所有程式語言第一個學的概念—因為它是**計算的基本單位**。
+
+  
+### 變數的本質
+
+```text
+記憶體：
+[0x1000] [0x1001] [0x1002] [0x1003] ...
+   42       hello    3.14    true
+
+變數 = 給某個記憶體位址取名字
+
+  age = 42
+  ↑      ↑
+  名字   值（在記憶體裡）
+
+之後用「age」這個名字、就能拿到那塊記憶體的值
+
+電腦只記 0x1000、人類記 age—變數是「人類友善的別名」
+```
+
+  
+### 宣告變數：6 個語言對比
+
+```text
+Python（動態、不用宣告型別）：
+age = 25
+name = "Alice"
+is_active = True
+
+JavaScript（動態、用 let / const）：
+let age = 25;
+const name = "Alice";
+let isActive = true;
+
+TypeScript（靜態 + 動態混合、能標型別）：
+let age: number = 25;
+const name: string = "Alice";
+let isActive: boolean = true;
+
+Go（靜態、能自動推導）：
+age := 25                  // 推導為 int
+var name string = "Alice"  // 明確標
+isActive := true
+
+Rust（靜態、預設不可變）：
+let age = 25;              // i32（推導）
+let name = "Alice";        // &str
+let mut counter = 0;       // mut = 可變
+
+Java（靜態、要明確型別）：
+int age = 25;
+String name = "Alice";
+boolean isActive = true;
+
+C#（同 Java）：
+int age = 25;
+string name = "Alice";
+bool isActive = true;
+
+→ 概念一樣：「給個名字、存個值」
+→ 語法差別 = 5 分鐘記得起來
+```
+
+  
+### 動態型別 vs 靜態型別
+
+  
+#### 動態型別（Python / JS / Ruby）
+
+```text
+變數能隨便變型別：
+
+# Python
+x = 25          # int
+x = "hello"     # 變 string
+x = [1, 2, 3]   # 變 list
+
+# 一切看執行時才知道
+
+優點：
+- 寫得快
+- 彈性大
+- 適合 prototype
+
+缺點：
+- 跑到才發現型別錯
+- 大專案難維護
+- IDE 自動完成弱
+```
+
+  
+#### 靜態型別（Java / Go / Rust / TS）
+
+```text
+變數型別一開始決定、不能改：
+
+// Go
+var x int = 25
+x = "hello"  // ❌ 編譯錯誤
+
+// 寫的時候就知道有問題
+
+優點：
+- 錯誤編譯時抓到（不用跑就知道錯）
+- IDE 補全強
+- 大團隊容易維護
+- 跑得快（編譯器能優化）
+
+缺點：
+- 寫得慢（要標型別）
+- 對新手稍 verbose
+```
+
+  
+### 強型別 vs 弱型別
+
+```text
+強型別（Python / Rust / Java）：
+不同型別不能亂混
+
+# Python
+"5" + 3
+# ❌ TypeError: can only concatenate str to str
+
+弱型別（JavaScript / PHP）：
+不同型別會自動轉換（常出 bug）
+
+// JS
+"5" + 3        // "53"（變字串）
+"5" - 3        // 2（變數字）
+"5" * "3"      // 15
+[] + {}        // "[object Object]" wtf
+
+→ JS 著名的「型別陷阱」
+→ TypeScript 就是來救 JS 的
+```
+
+  
+### 命名風格慣例
+
+  
+| 風格 | 例子 | 常用語言 |
+| --- | --- | --- |
+| camelCase | userName, isActive | JS / Java / C# / Swift / Kotlin |
+| snake_case | user_name, is_active | Python / Ruby / Rust（變數）/ C |
+| PascalCase | UserName, IsActive | 類別名 / 大多語言 |
+| SCREAMING_SNAKE | MAX_RETRY, API_KEY | 常數（所有語言） |
+| kebab-case | user-name | 檔名 / CSS（變數內不能用） |
+
+  
+### 常數（不可變變數）
+
+```text
+「設一次、之後不能改」：
+
+Python（慣例大寫、其實仍能改）：
+MAX_RETRY = 5
+
+JavaScript（const 真的不能 reassign）：
+const MAX_RETRY = 5;
+MAX_RETRY = 10;  // ❌ TypeError
+
+Go：
+const MaxRetry = 5
+
+Rust：
+const MAX_RETRY: u32 = 5;
+
+Java：
+final int MAX_RETRY = 5;
+
+C#：
+const int MaxRetry = 5;
+
+→ 「不會變的東西」用常數
+→ 提升可讀性 + 編譯器能優化
+```
+
+  
+### 變數作用域（Scope）
+
+```text
+變數「在哪裡能看到」：
+
+全域（Global）：
+x = 5  # 全域變數
+def func():
+    print(x)  # 看得到
+func()
+
+區域（Local）：
+def func():
+    y = 10  # 區域變數
+    print(y)
+func()
+print(y)  # ❌ NameError（外面看不到）
+
+→ 區域變數「只在函數內存在」
+→ 函數結束 = 變數消失
+```
+
+  
+### 變數提升（Hoisting）—JS 特有陷阱
+
+```text
+JS 的怪現象：
+
+console.log(x);  // undefined（不是錯誤！）
+var x = 5;
+
+// 等同於：
+var x;           // 先宣告（undefined）
+console.log(x);
+x = 5;
+
+對策：用 let / const（沒 hoisting）
+console.log(x);  // ❌ ReferenceError
+let x = 5;
+
+→ 2026 別再用 var
+→ let（可變）/ const（不可變）
+```
+
+  
+**☕ 用人話講**
+
+變數就像置物櫃—給它個名字（age）、放東西進去（25）、之後叫名字就能拿。動態型別 = 任何東西都能放（鞋子今天放、明天可以換放食物）。靜態型別 = 一開始說好放鞋子、就只能放鞋子（誤放食物會被擋）。靜態型別**限制**你、但**救**你—大專案沒它會死。
+
+  
+
+  
+**🚀 進階技巧**
+
+動態型別 vs 靜態型別不是非黑即白—2026 主流是「**漸進式型別**」：Python 加 type hints、JS 加 TypeScript、Ruby 加 Sorbet / RBS、PHP 加 type declarations。小專案動態快、大專案加靜態。最強組合：**動態型別語言 + 靜態型別 annotation**—Python + mypy / JS + TS 是 2026 sweet spot。
+
+  
+
+  
+
+🎯
+面試考點
+
+台灣科技公司面試 90% 會問「程式邏輯」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。

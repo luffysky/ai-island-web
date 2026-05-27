@@ -1,0 +1,102 @@
+迴圈 = 「**重複做同件事**」。所有程式語言核心—資料處理、批次運算都靠它。
+
+  
+### for 迴圈：跑固定次數
+
+```text
+Python（用 range 或 iterable）：
+for i in range(5):
+    print(i)
+# 印 0, 1, 2, 3, 4
+
+for fruit in ["apple", "banana", "cherry"]:
+    print(fruit)
+
+JavaScript（C-style for）：
+for (let i = 0; i  x * 2);
+const evens = nums.filter(x => x % 2 === 0);
+const total = nums.reduce((a, b) => a + b, 0);
+
+Rust：
+let doubled: Vec = nums.iter().map(|x| x * 2).collect();
+let evens: Vec = nums.iter().filter(|&&x| x % 2 == 0).copied().collect();
+let total: i32 = nums.iter().sum();
+
+Go（無 functional、用迴圈）：
+nums := []int{1, 2, 3, 4, 5}
+doubled := []int{}
+for _, x := range nums {
+    doubled = append(doubled, x*2)
+}
+
+→ Go 哲學：「明確 > 簡潔」
+→ 大多語言走相反方向
+```
+
+  
+### 懶式評估（Lazy Evaluation）
+
+```text
+Python generator：
+# 一般 list（eager）
+nums = [x ** 2 for x in range(1000000)]
+# 立刻算 100 萬個、佔記憶體
+
+# Generator（lazy）
+nums = (x ** 2 for x in range(1000000))
+# 不立刻算、要用才算
+
+# 只取前 5 個
+for i, n in enumerate(nums):
+    print(n)
+    if i >= 4:
+        break
+# 只算 5 個、不浪費
+
+Rust（iterator 預設 lazy）：
+let result: Vec = (0..1000000)
+    .map(|x| x * x)
+    .filter(|&x| x % 2 == 0)
+    .take(5)  // 只取前 5 個
+    .collect();
+# 中間不會算 100 萬次
+
+→ Lazy 對大量資料很重要
+```
+
+  
+### 常見迴圈 pattern
+
+```text
+1. 累積總和
+   total = sum(nums)             # Python
+   const total = nums.reduce((a, b) => a + b, 0);  # JS
+
+2. 找最大 / 最小
+   max_val = max(nums)            # Python
+   const max = Math.max(...nums); # JS
+
+3. 計數
+   count = len([n for n in nums if n > 10])  # Python
+   const count = nums.filter(n => n > 10).length;  # JS
+
+4. 找元素索引
+   index = nums.index(target)     # Python
+   const index = nums.indexOf(target);  # JS
+
+5. 對應多個 list
+   for name, age in zip(names, ages):  # Python
+       print(f"{name}: {age}")
+```
+
+  
+**🚀 進階技巧**
+
+Senior 工程師寫 code 的 mark：**「很少看到 for」**。處理 array 用 `nums.filter().map().reduce()` 鏈式、處理大資料用 generator / iterator lazy 評估、需要 break 的迴圈拆成 helper function 用 return。傳統 `for (let i = 0; i 
+
+  
+
+⚠️
+新手常見錯誤
+
+新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。

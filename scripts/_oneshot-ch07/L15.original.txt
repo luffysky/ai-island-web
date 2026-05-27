@@ -1,0 +1,206 @@
+「**你的變數放在電腦哪裡？**」聽起來底層、但理解後一堆 bug 變秒懂。
+
+  
+### RAM 兩個區塊
+
+```text
+想像電腦記憶體分兩塊：
+
+Stack（堆疊）：
+- 整齊排列、像盤子疊
+- 小、快、自動管
+- 函數呼叫進來 push、結束 pop
+
+Heap（堆積）：
+- 大空地、亂放
+- 慢、要明確分配 / 釋放
+- 大物件、長壽命物件
+
+簡單想：
+Stack = 你桌上的東西（每天清）
+Heap = 倉庫（要記得管理）
+```
+
+  
+### 什麼放 Stack、什麼放 Heap
+
+```text
+# C / C++ / Rust（明確區分）
+int x = 5;              // Stack（簡單型別）
+int* arr = new int[100]; // Heap（明確分配）
+
+# Java
+int x = 5;              // Stack
+Dog dog = new Dog();    // dog 變數在 Stack
+                        // Dog 物件本身在 Heap
+                        // dog 是指向物件的「參考」
+
+# Python（一切都在 Heap）
+x = 5                   // 都在 Heap
+                        // 但有「small int cache」優化
+
+→ 規則：
+- 簡單值（int、bool）→ 通常 Stack
+- 物件、陣列、字串 → 通常 Heap
+- 「函數變數」→ Stack（離開函數就消失）
+```
+
+  
+### 指標 / 參考：「指向某東西的地址」
+
+```text
+想像快遞地址：
+你不是把房子本身給朋友、
+是給他「房子的地址」。
+
+# Python（隱式參考、沒有「指標」概念）
+a = [1, 2, 3]
+b = a              # b 跟 a 是同一個陣列
+b.append(4)
+print(a)           # [1, 2, 3, 4]（a 也變了！）
+
+# JS 同樣
+const a = [1, 2, 3];
+const b = a;
+b.push(4);
+console.log(a);    // [1, 2, 3, 4]
+
+# Go（明確指標）
+x := 5
+p := &x            // p 是「指向 x 的指標」
+*p = 10            // 透過指標改 x
+fmt.Println(x)     // 10
+
+# C / C++（最明確）
+int x = 5;
+int* p = &x;
+*p = 10;
+printf("%d", x);   // 10
+
+# Rust（嚴格、有 ownership）
+let mut x = 5;
+let p = &mut x;    // 可變借用
+*p = 10;
+println!("{}", x); // 10
+
+# Java（隱式參考、沒指標）
+Dog dog1 = new Dog("Lucky");
+Dog dog2 = dog1;   // 同個物件
+dog2.setName("Ruby");
+System.out.println(dog1.getName());  // Ruby
+```
+
+  
+### 值傳遞 vs 參考傳遞
+
+```text
+函數參數—改了會影響外面嗎？
+
+# Python / JS（簡單型別「值傳」、複雜型別「參考傳」）
+def add_one(x):
+    x += 1
+
+n = 5
+add_one(n)
+print(n)           # 5（沒變）
+
+def modify_list(arr):
+    arr.append(99)
+
+nums = [1, 2, 3]
+modify_list(nums)
+print(nums)        # [1, 2, 3, 99]（變了！）
+
+→ int / float / string 是「值」、改不影響外面
+→ list / dict / object 是「參考」、改會影響
+
+# Go / Rust（明確控制）
+# 值傳
+func addOne(x int) {
+    x += 1
+}
+
+# 參考傳
+func addOne(x *int) {
+    *x += 1
+}
+
+n := 5
+addOne(&n)         // 傳指標
+fmt.Println(n)     // 6
+```
+
+  
+### 記憶體洩漏（Memory Leak）
+
+```text
+「分配了記憶體、忘記釋放、累積爆炸」：
+
+# C / C++（手動管理）
+char* buffer = malloc(1024);  // 分配
+// ... 用 buffer
+// 忘了 free(buffer)！
+// 每次跑這函數、洩 1KB
+// 跑 1 萬次 = 洩 10MB
+
+→ Garbage Collector（GC）解決
+```
+
+  
+### Garbage Collection（GC）
+
+```text
+「自動找沒人用的記憶體、回收」：
+
+Python / Java / C# / Go / JS 都有 GC
+
+工作方式：
+- 看哪些物件「沒人指向」
+- 把它們的記憶體釋放
+
+優：
+- 不用手動釋放
+- 不會洩漏（理論上）
+
+缺：
+- 不可預測（什麼時候跑？）
+- 跑的時候會「暫停」（GC pause）
+- Latency 敏感的場景痛苦
+
+# 例：Java 老一代 GC pause 幾百 ms
+# Discord 從 Go 換 Rust 因為 GC pause 影響聊天延遲
+
+# Rust 無 GC、用 ownership 系統
+# - 編譯時決定何時釋放
+# - 無暫停
+# - 但學習曲線陡
+```
+
+  
+### 各語言記憶體管理
+
+  
+| 語言 | 管理方式 | 特色 |
+| --- | --- | --- |
+| C / C++ | 手動（malloc / free） | 最快、易洩漏 |
+| Rust | Ownership（編譯時決定） | 無 GC、無洩漏 |
+| Go | GC（並發、低暫停） | 2026 最強 GC 之一 |
+| Java / C# | GC（分代、複雜） | 成熟、可調 |
+| Python | 引用計數 + GC | 慢但簡單 |
+| JavaScript | GC（V8、追蹤） | 快、自動 |
+| Swift | ARC（自動引用計數） | 類 Rust 的混合 |
+| Kotlin | JVM GC（同 Java） | 無腦 |
+
+  
+**☕ 用人話講**
+
+記憶體模型聽起來底層、實戰你會卡這幾個地方：(1) 改了陣列 / 物件、外面也變了—因為傳的是「**地址**」、不是複製 (2) 程式越跑越慢、佔 memory 越來越多—可能是 memory leak (3) 跑大量資料卡頓—可能是 GC pause。**新手不用記細節、知道「有些東西傳的是地址**」就行—之後遇到 bug 才回來深學。
+
+  
+
+  
+
+⚡
+學習加速器
+
+把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。

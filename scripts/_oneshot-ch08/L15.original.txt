@@ -1,0 +1,282 @@
+Form 是 React 最常見痛點—純 useState 寫 50 行、用 React Hook Form 寫 10 行。
+
+  
+### 純 useState 寫 form 的痛
+
+```tsx
+function LoginForm() {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [emailError, setEmailError] = useState("");
+    const [passwordError, setPasswordError] = useState("");
+    const [submitting, setSubmitting] = useState(false);
+    
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        
+        let valid = true;
+        if (!email.includes("@")) {
+            setEmailError("Invalid email");
+            valid = false;
+        } else setEmailError("");
+        
+        if (password.length ;
+
+function LoginForm() {
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isSubmitting }
+    } = useForm({
+        resolver: zodResolver(LoginSchema)
+    });
+    
+    const onSubmit = async (data: LoginInput) => {
+        await login(data.email, data.password);
+    };
+    
+    return (
+        
+            
+                Email
+                
+                {errors.email && 
+{errors.email.message}
+}
+            
+            
+            
+                Password
+                
+                {errors.password && 
+{errors.password.message}
+}
+            
+            
+            
+                {isSubmitting ? "Loading..." : "Login"}
+            
+        
+    );
+}
+
+// 50 行 → 30 行
+// 自動驗證、type-safe、性能好
+```
+
+  
+### Zod schema 進階
+
+```typescript
+const SignupSchema = z.object({
+    name: z.string().min(3).max(50),
+    email: z.string().email(),
+    
+    password: z.string()
+        .min(8, "At least 8 chars")
+        .regex(/[A-Z]/, "Need uppercase")
+        .regex(/[0-9]/, "Need number"),
+    
+    age: z.number().int().min(18).max(150),
+    
+    agreeToTerms: z.literal(true, {
+        errorMap: () => ({ message: "Must agree" })
+    }),
+    
+    role: z.enum(["user", "admin"]),
+    bio: z.string().optional(),
+    tags: z.array(z.string()).min(1),
+    
+    website: z.string().url().optional(),
+    
+    username: z.string()
+        .refine(s => !s.includes(" "), "No spaces"),
+    
+    confirmPassword: z.string()
+}).refine(
+    (data) => data.password === data.confirmPassword,
+    {
+        message: "Passwords don't match",
+        path: ["confirmPassword"]
+    }
+);
+
+type SignupInput = z.infer;
+```
+
+  
+### React Hook Form 完整功能
+
+```tsx
+const {
+    register,
+    handleSubmit,
+    formState: {
+        errors,
+        isSubmitting,
+        isDirty,
+        isValid
+    },
+    watch,
+    setValue,
+    getValues,
+    reset,
+    control
+} = useForm({
+    defaultValues: { name: "", email: "" },
+    resolver: zodResolver(Schema),
+    mode: "onChange"
+});
+
+// 監聽特定欄位
+const password = watch("password");
+
+// 動態 disabled
+Save
+
+// 程式設值
+setValue("name", "Alice");
+
+// 重置
+reset();
+reset({ name: "Alice", email: "..." });
+```
+
+  
+### Controller（自訂 UI component）
+
+```tsx
+import { useForm, Controller } from "react-hook-form";
+
+function Form() {
+    const { control, handleSubmit } = useForm();
+    
+    return (
+        
+             (
+                    
+                )}
+            />
+            
+             (
+                    
+                )}
+            />
+        
+    );
+}
+
+// register 給原生 input
+// Controller 給自訂 component
+```
+
+  
+### 動態 form（陣列欄位）
+
+```tsx
+import { useForm, useFieldArray } from "react-hook-form";
+
+function ContactsForm() {
+    const { register, control, handleSubmit } = useForm({
+        defaultValues: {
+            name: "",
+            contacts: [{ type: "email", value: "" }]
+        }
+    });
+    
+    const { fields, append, remove } = useFieldArray({
+        control,
+        name: "contacts"
+    });
+    
+    return (
+        
+            
+            
+            {fields.map((field, index) => (
+                
+                    
+                        Email
+                        Phone
+                    
+                    
+                     remove(index)}>Remove
+                
+            ))}
+            
+             append({ type: "email", value: "" })}>
+                Add Contact
+            
+            
+            Save
+        
+    );
+}
+```
+
+  
+### Server Actions（Next.js）
+
+```tsx
+// app/actions.ts
+"use server";
+
+import { z } from "zod";
+
+const Schema = z.object({
+    email: z.string().email(),
+    password: z.string().min(8)
+});
+
+export async function loginAction(formData: FormData) {
+    const parsed = Schema.safeParse({
+        email: formData.get("email"),
+        password: formData.get("password")
+    });
+    
+    if (!parsed.success) {
+        return { error: parsed.error.flatten() };
+    }
+    
+    await db.login(parsed.data.email, parsed.data.password);
+    redirect("/dashboard");
+}
+
+// Component
+function LoginForm() {
+    return (
+        
+            
+            
+            Login
+        
+    );
+}
+
+// 沒 JavaScript 也能用！
+```
+
+  
+### 常見錯誤
+
+  
+- **用 useState 寫複雜 form**—50 個 state、地獄
+- **沒 schema 驗證**—手寫 if-else 散亂
+- **onChange 每次都驗**—太煩、用 onBlur
+- **沒 submit disable**—點 5 次送 5 個
+- **error 訊息技術化**—"ValidationError"
+- **iOS auto-zoom**—input font-size 16px+
+
+  
+**☕ 用人話講**
+
+Form 4 心法：(1) **React Hook Form + Zod**—2026 標配 (2) **schema 一處定義**—type + 驗證 + error 一條龍 (3) **onBlur 驗證**—不打擾 (4) **Next.js Server Actions**—漸進採用、無 JS 也能用。
+
+  
+
+  
+
+⚡
+學習加速器
+
+把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。

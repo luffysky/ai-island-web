@@ -1,0 +1,289 @@
+「**你怎麼知道 code 對？**」靠測試。沒測試的 code 跑得了一次是運氣、能跑一年是測試。
+
+  
+### 3 種測試層級
+
+```text
+1. 單元測試（Unit Test）
+   - 測 1 個函數 / 1 個 class
+   - 快、多
+   - 占整體 70%
+   
+2. 整合測試（Integration Test）
+   - 測「多個元件一起動」
+   - DB + API + 業務邏輯
+   - 占 20%
+
+3. End-to-End 測試（E2E）
+   - 模擬使用者操作
+   - 整個 app（前端 + 後端 + DB）
+   - 慢、少
+   - 占 10%
+
+測試金字塔：底厚（unit 多）、頂窄（E2E 少）
+```
+
+  
+### 單元測試實例
+
+```text
+# Python（pytest、最主流）
+# math_utils.py
+def add(a, b):
+    return a + b
+
+def divide(a, b):
+    if b == 0:
+        raise ValueError("不能除以 0")
+    return a / b
+
+# test_math.py
+import pytest
+from math_utils import add, divide
+
+def test_add():
+    assert add(2, 3) == 5
+    assert add(-1, 1) == 0
+    assert add(0, 0) == 0
+
+def test_divide():
+    assert divide(10, 2) == 5
+    assert divide(9, 3) == 3
+
+def test_divide_by_zero():
+    with pytest.raises(ValueError):
+        divide(10, 0)
+
+# 跑測試
+$ pytest
+======== 3 passed ========
+
+# JavaScript（Jest / Vitest）
+// math.test.js
+import { add, divide } from './math';
+
+describe('add', () => {
+    test('adds two numbers', () => {
+        expect(add(2, 3)).toBe(5);
+        expect(add(-1, 1)).toBe(0);
+    });
+});
+
+describe('divide', () => {
+    test('divides two numbers', () => {
+        expect(divide(10, 2)).toBe(5);
+    });
+    
+    test('throws on divide by zero', () => {
+        expect(() => divide(10, 0)).toThrow('不能除以 0');
+    });
+});
+
+# Go（內建 testing）
+// math_test.go
+func TestAdd(t *testing.T) {
+    result := Add(2, 3)
+    if result != 5 {
+        t.Errorf("Expected 5, got %d", result)
+    }
+}
+
+# 跑
+$ go test
+
+# Rust（內建）
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn test_add() {
+        assert_eq!(add(2, 3), 5);
+    }
+}
+
+$ cargo test
+```
+
+  
+### AAA 模式：Arrange / Act / Assert
+
+```text
+每個測試 3 步：
+
+def test_create_user():
+    # Arrange（準備）
+    db = create_test_db()
+    user_service = UserService(db)
+    
+    # Act（執行）
+    user = user_service.create("Alice", 30)
+    
+    # Assert（斷言結果）
+    assert user.id is not None
+    assert user.name == "Alice"
+    assert user.age == 30
+
+→ 結構清楚、好讀
+→ 一個測試只測一件事
+```
+
+  
+### Mock：假的依賴
+
+```text
+測試函數時、不想真的呼叫 DB / API：
+
+# Python
+from unittest.mock import Mock, patch
+
+def send_welcome_email(user):
+    email_service = EmailService()
+    email_service.send(user.email, "Welcome!")
+    return True
+
+# 測試時 mock email_service
+@patch('EmailService')
+def test_welcome_email(mock_email_class):
+    mock_email = Mock()
+    mock_email_class.return_value = mock_email
+    
+    user = User(email="alice@x.com")
+    result = send_welcome_email(user)
+    
+    assert result is True
+    mock_email.send.assert_called_with("alice@x.com", "Welcome!")
+    # 沒真的寄信、只檢查呼叫了
+
+# JS（jest.mock）
+jest.mock('./emailService');
+
+test('sends welcome email', () => {
+    const result = sendWelcomeEmail({email: "alice@x.com"});
+    expect(emailService.send).toHaveBeenCalledWith("alice@x.com", "Welcome!");
+});
+```
+
+  
+### E2E 測試
+
+```text
+# Playwright（最主流、2026）
+import { test, expect } from '@playwright/test';
+
+test('user can login', async ({ page }) => {
+    await page.goto('https://myapp.com/login');
+    await page.fill('input[name=email]', 'alice@example.com');
+    await page.fill('input[name=password]', 'secret');
+    await page.click('button[type=submit]');
+    
+    await expect(page).toHaveURL('https://myapp.com/dashboard');
+    await expect(page.locator('h1')).toHaveText('Welcome, Alice');
+});
+
+# 跑
+$ npx playwright test
+
+→ 在真實瀏覽器跑
+→ 模擬使用者點擊 / 輸入
+→ 慢（每個 test 幾秒）、但抓得到整合 bug
+```
+
+  
+### TDD：Test-Driven Development
+
+```text
+「先寫測試、後寫 code」：
+
+步驟：
+1. Red：寫一個失敗的測試
+2. Green：寫最少 code 讓測試通過
+3. Refactor：整理 code、測試還是綠
+
+例：寫個 Calculator
+
+Step 1：寫測試
+def test_add():
+    calc = Calculator()
+    assert calc.add(2, 3) == 5
+
+# 跑 → red（沒 Calculator class）
+
+Step 2：寫 minimal code
+class Calculator:
+    def add(self, a, b):
+        return a + b
+
+# 跑 → green
+
+Step 3：加新功能、先寫測試
+def test_subtract():
+    calc = Calculator()
+    assert calc.subtract(5, 3) == 2
+
+# red
+
+Step 4：實作
+class Calculator:
+    def add(self, a, b):
+        return a + b
+    def subtract(self, a, b):
+        return a - b
+
+# green
+
+→ TDD 的好處：
+- 你 100% 確定 code 對
+- 設計強迫變好（先想介面）
+- 重構不怕
+
+→ TDD 的缺點：
+- 慢（每行都要先寫測試）
+- 過度設計風險
+
+→ 2026 主流：「不是 strict TDD、但所有 code 都有測試」
+```
+
+  
+### 測試覆蓋率（Coverage）
+
+```text
+「測試跑過幾 % 的 code」：
+
+# Python
+pip install pytest-cov
+$ pytest --cov=myapp
+# 顯示：myapp/user.py 85%、myapp/order.py 60%
+
+# JS
+$ jest --coverage
+
+# Go
+$ go test -cover
+
+目標：
+-  量
+```
+
+  
+### 2026 測試最佳實踐
+
+  
+- **核心邏輯 100%**—錢相關、安全相關必測
+- **UI 50-70%**—快速變化、不用 100%
+- **CI 跑全部測試**—不過 reject PR
+- **Snapshot test**—UI 自動偵測變化
+- **Property-based test**—隨機輸入 + 屬性驗證（高階）
+- **AI 助寫測試**—Cursor / Claude 自動生 unit test
+
+  
+**☕ 用人話講**
+
+沒測試的 code = 危樓。新手藉口：「我手動測過」「以後再寫」—永遠沒「以後」。**3 個習慣養成 = 從業餘變專業**：(1) 寫新 function 同時寫 unit test (2) 修 bug 前先寫個重現 bug 的測試 (3) CI 強制跑測試、不過 reject。剛開始慢、3 個月後快—因為不再「改 A 壞 B」。
+
+  
+
+  
+
+⚡
+學習加速器
+
+把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。

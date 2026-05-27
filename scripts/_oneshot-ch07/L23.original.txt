@@ -1,0 +1,178 @@
+你寫的 code 為什麼跑得快或慢？**演算法的選擇 = 速度差 1000 倍**。Big O 是「估算速度」的標準語言。
+
+  
+### 同個問題、不同寫法
+
+```text
+問題：找陣列裡有沒有某數字
+
+寫法 1：linear search（一個一個找）
+def find(arr, target):
+    for x in arr:
+        if x == target:
+            return True
+    return False
+
+# 1000 個元素 → 平均比 500 次
+# 100 萬個 → 平均 50 萬次
+
+寫法 2：binary search（二分搜尋）
+def find(sorted_arr, target):
+    left, right = 0, len(sorted_arr) - 1
+    while left 翻倍
+- 例：好的排序演算法（merge sort、quick sort）
+
+O(n²)：平方時間
+- 輸入翻倍、時間 4 倍
+- 例：兩層巢狀迴圈、bubble sort
+- 1 萬資料就慢、10 萬資料卡死
+
+O(2ⁿ)：指數時間
+- 輸入 +1、時間翻倍
+- 例：暴力解迷宮、暴力解 NP-hard
+- 30 個輸入就跑 1 天
+
+O(n!)：階乘時間
+- 例：旅行推銷員暴力解
+- 20 個城市跑到下輩子
+
+→ Big O 越小越好
+```
+
+  
+### 實際感受
+
+```text
+1 秒能跑 10 億次基本操作的電腦：
+
+n=100 萬：
+- O(1)：瞬間
+- O(log n)：瞬間（20 次）
+- O(n)：1 毫秒
+- O(n log n)：20 毫秒
+- O(n²)：1000 秒 = 17 分鐘 ❌
+- O(2ⁿ)：不可能（宇宙年齡也跑不完）
+
+→ 寫到 O(n²) 通常已經太慢
+→ 大資料要 O(n log n) 以下
+```
+
+  
+### 常見演算法複雜度
+
+  
+| 動作 | 陣列 | 字典 | 樹 | 圖 |
+| --- | --- | --- | --- | --- |
+| 找元素 | O(n) | O(1) | O(log n) | O(V+E) |
+| 新增 | O(1) / O(n) | O(1) | O(log n) | — |
+| 刪除 | O(n) | O(1) | O(log n) | — |
+| 排序 | O(n log n) | — | — | — |
+
+  
+### 陣列 vs 字典：常見錯誤
+
+```text
+# 慢（O(n)）
+def has_user(users_list, target_id):
+    for user in users_list:
+        if user.id == target_id:
+            return True
+    return False
+
+# 快（O(1)）
+def has_user(users_dict, target_id):
+    return target_id in users_dict
+
+# 1 萬 user 找 1 次：
+# list：平均 5000 次比較
+# dict：1 次
+
+→ 大資料用「id 為 key 的字典」、不要「list 一個一個找」
+```
+
+  
+### 空間複雜度
+
+```text
+「用多少記憶體」、同樣 Big O 表示：
+
+O(1)：固定、不隨輸入變
+def sum(nums):
+    total = 0
+    for n in nums:
+        total += n
+    return total
+# 只 1 個變數、O(1) 空間
+
+O(n)：跟輸入成正比
+def double_all(nums):
+    result = []
+    for n in nums:
+        result.append(n * 2)
+    return result
+# 額外建 1 個 list、O(n)
+
+O(n²)：平方
+def all_pairs(nums):
+    pairs = []
+    for a in nums:
+        for b in nums:
+            pairs.append((a, b))
+    return pairs
+# n × n 個 pair、O(n²)
+
+→ 時間 vs 空間 trade-off
+→ 多花記憶體換速度（cache）
+→ 多花時間省記憶體（stream）
+```
+
+  
+### 實戰：怎麼分析複雜度
+
+```text
+步驟：
+1. 數有幾層迴圈
+2. 每層迴圈跑幾次
+3. 相乘
+
+例 1：
+def f(arr):
+    for x in arr:           # n 次
+        print(x)            # O(1)
+# 總：O(n)
+
+例 2：
+def f(arr):
+    for x in arr:           # n 次
+        for y in arr:       # n 次
+            print(x, y)     # O(1)
+# 總：O(n × n) = O(n²)
+
+例 3：
+def f(arr):
+    for x in arr:           # n 次
+        for y in range(10): # 10 次（固定）
+            print(x, y)
+# 總：O(n × 10) = O(10n) = O(n)
+# 常數丟掉
+
+例 4：
+def f(arr):
+    for x in arr:           # n 次
+        binary_search(arr, x)  # log n
+# 總：O(n × log n) = O(n log n)
+```
+
+  
+**☕ 用人話講**
+
+Big O 不用變專家、知道**幾個常見的**就夠：(1) O(1) 字典找 = 瞬間 (2) O(n) 跑陣列 = 還行 (3) O(n²) 兩層迴圈跑同陣列 = **大資料會卡死**。寫 code 看到「兩層 for 跑同個 list」想一下能不能用字典 / set 優化。**1 萬資料的 O(n²) = 1 億次運算 = 卡頓明顯**—大資料時這 1 句心法救你。
+
+  
+
+  
+
+🛠️
+工具推薦
+
+配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。

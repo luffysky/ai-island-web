@@ -1,0 +1,210 @@
+想像一下你有 30 個學生的名字要存。寫 30 個變數？瘋了。**陣列**就是來解這個的—「一堆東西放一起、能依順序找到」。
+
+  
+### 陣列就是排隊的格子
+
+```text
+想像超商置物櫃：
+
+[0]: 蘋果
+[1]: 香蕉
+[2]: 橘子
+[3]: 西瓜
+ ↑
+ 位置（叫 index、從 0 開始）
+
+你說：「給我第 2 號的」
+→ 拿到「橘子」
+
+陣列也一樣—用「位置」找東西
+```
+
+  
+### 建立陣列：所有語言怎麼寫
+
+```text
+Python（叫 list）：
+fruits = ["蘋果", "香蕉", "橘子"]
+print(fruits[0])     # 蘋果
+print(fruits[2])     # 橘子
+
+JavaScript / TypeScript（叫 Array）：
+const fruits = ["蘋果", "香蕉", "橘子"];
+console.log(fruits[0]);    // 蘋果
+
+Go（叫 slice）：
+fruits := []string{"蘋果", "香蕉", "橘子"}
+fmt.Println(fruits[0])
+
+Rust（Vec）：
+let fruits = vec!["蘋果", "香蕉", "橘子"];
+println!("{}", fruits[0]);
+
+Java：
+String[] fruits = {"蘋果", "香蕉", "橘子"};
+System.out.println(fruits[0]);
+
+# 或 ArrayList（可變長度）
+List fruits = new ArrayList<>();
+fruits.add("蘋果");
+
+C#：
+string[] fruits = { "蘋果", "香蕉", "橘子" };
+// 或可變
+var fruits = new List { "蘋果", "香蕉", "橘子" };
+
+PHP：
+$fruits = ["蘋果", "香蕉", "橘子"];
+echo $fruits[0];   // 蘋果
+
+Ruby：
+fruits = ["蘋果", "香蕉", "橘子"]
+puts fruits[0]
+
+Swift：
+let fruits = ["蘋果", "香蕉", "橘子"]
+print(fruits[0])
+
+Kotlin：
+val fruits = listOf("蘋果", "香蕉", "橘子")
+println(fruits[0])
+
+Dart：
+var fruits = ["蘋果", "香蕉", "橘子"];
+print(fruits[0]);
+
+→ 都從 0 開始—這是業界慣例
+→ 不要被「第一個」騙、第一個是 [0]
+```
+
+  
+### 為什麼從 0 開始？
+
+```text
+很多人困惑「第 1 個東西是 [0]？」
+
+歷史原因：
+[0] [1] [2] [3]
+ ↑
+這是「跟陣列起點的距離」
+第 0 號 = 距離 0（就是起點）
+第 1 號 = 距離 1（跳過 1 個）
+
+不是從 1 開始的語言：
+- Lua（從 1）
+- R（從 1）
+- MATLAB（從 1）
+
+主流（99%）：從 0 開始
+```
+
+  
+### 常用操作
+
+```text
+新增元素：
+
+# Python
+fruits.append("葡萄")        # 加到最後
+fruits.insert(0, "草莓")     # 加到第 0 位置
+
+# JavaScript
+fruits.push("葡萄");          // 加到最後
+fruits.unshift("草莓");       // 加到開頭
+
+# Go
+fruits = append(fruits, "葡萄")
+
+# Rust
+fruits.push("葡萄");
+
+刪除元素：
+
+# Python
+fruits.remove("香蕉")        # 依值刪
+fruits.pop(0)                # 依位置刪
+del fruits[0]                # 直接刪
+
+# JavaScript
+fruits.pop();                # 移除最後
+fruits.shift();              // 移除第一個
+fruits.splice(1, 1);         // 從位置 1 刪 1 個
+
+修改元素：
+
+fruits[0] = "鳳梨"           # 所有語言類似
+
+查長度：
+
+# Python
+len(fruits)                  # 3
+
+# JavaScript
+fruits.length                // 3
+
+# Go
+len(fruits)                  // 3
+
+# Rust
+fruits.len()                 // 3
+```
+
+  
+### 跑陣列每個元素
+
+```text
+Python：
+for fruit in fruits:
+    print(fruit)
+
+# 或要 index
+for i, fruit in enumerate(fruits):
+    print(f"第 {i} 號是 {fruit}")
+
+JavaScript：
+fruits.forEach((fruit, i) => {
+    console.log(`第 ${i} 號是 ${fruit}`);
+});
+
+// 或 for-of
+for (const fruit of fruits) {
+    console.log(fruit);
+}
+
+Go：
+for i, fruit := range fruits {
+    fmt.Printf("第 %d 號是 %s\n", i, fruit)
+}
+
+Rust：
+for (i, fruit) in fruits.iter().enumerate() {
+    println!("第 {} 號是 {}", i, fruit);
+}
+```
+
+  
+### 常見陣列陷阱
+
+```text
+1. 超出範圍
+
+fruits = ["蘋果", "香蕉", "橘子"]
+fruits[10]
+# Python: IndexError
+# JS: undefined（不報錯、更危險）
+# Go / Rust: panic / 編譯時抓
+
+→ 取之前先檢查長度
+if 10 
+    **☕ 用人話講**
+    
+陣列像一排有編號的櫃子—想拿東西報編號就好。記住：(1) **編號從 0 開始**—第一個是 [0] (2) **長度有限**—超過會爆 (3) **JS 不爆會給 undefined**—比直接爆更可怕（你看不出 bug）。實戰你會 80% 時間在跑陣列、新增 / 刪除 / 找元素—寫熟它你就會寫 code 了。
+
+  
+
+  
+    
+      🎯
+      面試考點
+    
+    台灣科技公司面試 90% 會問「程式邏輯」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。

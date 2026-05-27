@@ -1,0 +1,230 @@
+2026 React 抓 API 主流：**TanStack Query (React Query)**—自動 cache / refetch / loading / error。
+
+  
+### 為什麼不用 useEffect 抓？
+
+```text
+useEffect 抓 API 的痛點：
+
+1. 手動 loading / error state
+2. 沒 cache—切 tab 重抓
+3. 沒 deduplication—2 個 component 抓 2 次
+4. 沒 refetch on focus / reconnect
+5. 沒 stale-while-revalidate
+
+→ 用 React Query
+```
+
+  
+### React Query 設定
+
+```bash
+$ npm install @tanstack/react-query @tanstack/react-query-devtools
+```
+
+```tsx
+// app.tsx
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+
+const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            staleTime: 60 * 1000,
+            gcTime: 5 * 60 * 1000,
+            refetchOnWindowFocus: true,
+            retry: 1
+        }
+    }
+});
+
+function App() {
+    return (
+        
+            
+            
+        
+    );
+}
+```
+
+  
+### useQuery：抓 data
+
+```tsx
+import { useQuery } from "@tanstack/react-query";
+
+function UserProfile({ userId }: { userId: number }) {
+    const { data: user, isLoading, error } = useQuery({
+        queryKey: ["user", userId],
+        queryFn: () => fetch(`/api/users/${userId}`).then(r => r.json())
+    });
+    
+    if (isLoading) return ;
+    if (error) return ;
+    
+    return {user.name};
+}
+
+// 自動處理：
+// 1. Loading state
+// 2. Error state
+// 3. Cache（同 key 共用）
+// 4. Refetch on focus / reconnect
+// 5. Background refetch
+
+// Type-safe
+const { data } = useQuery({
+    queryKey: ["user", userId],
+    queryFn: async () => {
+        const res = await fetch(`/api/users/${userId}`);
+        return res.json() as Promise;
+    }
+});
+```
+
+  
+### queryKey 設計
+
+```tsx
+// 階層化命名
+useQuery({ queryKey: ["users"] });                          // 列表
+useQuery({ queryKey: ["user", 1] });                        // user 1
+useQuery({ queryKey: ["user", 1, "posts"] });               // user 1 的 posts
+useQuery({ queryKey: ["users", { status: "active", page: 1 }] });
+
+// 規則：
+// 1. 第一個是「resource type」
+// 2. 後面是 unique identifiers
+// 3. params 變、自動 refetch
+```
+
+  
+### useMutation：寫 data
+
+```tsx
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+function CreateUserForm() {
+    const queryClient = useQueryClient();
+    
+    const createMutation = useMutation({
+        mutationFn: (newUser: NewUser) => {
+            return fetch("/api/users", {
+                method: "POST",
+                body: JSON.stringify(newUser)
+            }).then(r => r.json());
+        },
+        
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["users"] });
+        },
+        
+        onError: (error) => {
+            toast.error("Failed: " + error.message);
+        }
+    });
+    
+    return (
+        
+            ...
+            
+                {createMutation.isPending ? "Saving..." : "Save"}
+            
+        
+    );
+}
+```
+
+  
+### Optimistic Update
+
+```tsx
+const updateMutation = useMutation({
+    mutationFn: updateUser,
+    
+    onMutate: async (newUser) => {
+        await queryClient.cancelQueries({ queryKey: ["user", newUser.id] });
+        const previous = queryClient.getQueryData(["user", newUser.id]);
+        queryClient.setQueryData(["user", newUser.id], newUser);
+        return { previous };
+    },
+    
+    onError: (err, newUser, context) => {
+        queryClient.setQueryData(["user", newUser.id], context.previous);
+    },
+    
+    onSettled: (data, error, variables) => {
+        queryClient.invalidateQueries({ queryKey: ["user", variables.id] });
+    }
+});
+
+// 先樂觀更新 UI、失敗 rollback、最後 sync 確認
+```
+
+  
+### 分頁 + 無限滾動
+
+```tsx
+// 1. 一般分頁
+function PageView() {
+    const [page, setPage] = useState(1);
+    
+    const { data, isFetching } = useQuery({
+        queryKey: ["users", { page }],
+        queryFn: () => fetchUsers({ page }),
+        placeholderData: (prev) => prev
+    });
+    
+    return ...;
+}
+
+// 2. 無限滾動
+import { useInfiniteQuery } from "@tanstack/react-query";
+
+function InfiniteList() {
+    const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
+        queryKey: ["users"],
+        queryFn: ({ pageParam }) => fetchUsers({ page: pageParam }),
+        initialPageParam: 1,
+        getNextPageParam: (lastPage) => lastPage.nextPage
+    });
+    
+    return (
+        <>
+            {data?.pages.map(page => page.users.map(u => ))}
+            
+            {hasNextPage && (
+                 fetchNextPage()} disabled={isFetchingNextPage}>
+                    {isFetchingNextPage ? "Loading..." : "Load more"}
+                
+            )}
+        
+    );
+}
+```
+
+  
+### React Query vs SWR
+
+  
+|  | React Query | SWR |
+| --- | --- | --- |
+| 創造者 | TanStack | Vercel |
+| 功能 | 完整 | 輕量 |
+| Bundle | 10kb | 4kb |
+| 2026 主流 | 業界 70% | Next.js 用戶 30% |
+
+  
+**🚀 進階技巧**
+
+React Query 5 心法：(1) **useQuery 取代 useEffect**—自動 cache / loading / error (2) **queryKey 階層化**—["resource", id, sub] (3) **invalidate 配 mutation**—寫完自動 refetch (4) **optimistic update**—體驗 instant (5) **用 DevTools**—看 cache 狀態。
+
+  
+
+  
+
+🚀
+2026 趨勢
+
+這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。

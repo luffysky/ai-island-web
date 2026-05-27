@@ -1,0 +1,198 @@
+React 預設「過度 re-render」—學完這節知道何時優化、怎麼優化。
+
+  
+### 什麼造成性能問題
+
+```text
+1. 過度 re-render
+   - 父 re-render → 子全 re-render
+2. 大計算 - filter / sort 1 萬個 item
+3. 大 list 一次渲染 - 1000 個 DOM 卡頓
+4. Bundle 太大 - 首屏 JS 5MB
+5. Re-mount 太多 - key 改了 state 重來
+```
+
+  
+### 診斷工具
+
+```text
+1. React DevTools Profiler（Chrome extension）
+2. Chrome Performance tab
+3. Lighthouse
+4. why-did-you-render（lib）
+5. React 19 內建工具
+```
+
+  
+### 3 個優化 hook
+
+```tsx
+// 1. useMemo：cache 計算結果
+const filtered = useMemo(() => {
+    return items.filter(i => i.name.includes(query));
+}, [items, query]);
+
+// 2. useCallback：cache function
+const handleClick = useCallback(() => {
+    console.log("click");
+}, []);
+
+// 3. React.memo：cache component
+const Child = React.memo(function Child({ name }) {
+    return {name};
+});
+
+// 3 個搭配：
+const Child = React.memo(function Child({ items, onSelect }) {
+    return ...;
+});
+
+function Parent() {
+    const [count, setCount] = useState(0);
+    
+    const items = useMemo(() => computeItems(), []);
+    const handleSelect = useCallback((id) => { ... }, []);
+    
+    return (
+        <>
+             setCount(c => c + 1)}>{count}
+            
+        
+    );
+}
+```
+
+  
+### 不要過度優化
+
+```text
+2026 共識：80% 場景不該手動 memo
+
+什麼時候真要優化？
+✓ Profiler 顯示 specific component 慢
+✓ 大 list（1000+ items）
+✓ Expensive 計算
+✓ Heavy component（chart / editor）
+
+什麼時候不要？
+✗ 小 component 沒性能問題
+✗ 簡單算
+✗ 沒測量過、瞎猜慢
+```
+
+  
+### Code Splitting
+
+```tsx
+import { lazy, Suspense } from "react";
+
+// Route-level
+const Home = lazy(() => import("./pages/Home"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+
+function App() {
+    return (
+        
+            }>
+                    
+                
+            } />
+        
+    );
+}
+
+// Component-level（heavy component）
+const HeavyChart = lazy(() => import("./HeavyChart"));
+
+// Library splitting
+import debounce from "lodash/debounce";   // 只 debounce
+// 不要：import { debounce } from "lodash";（整包）
+
+// Next.js 自動 route-level splitting
+```
+
+  
+### 大 list：Virtual Scrolling
+
+```tsx
+import { useVirtualizer } from "@tanstack/react-virtual";
+
+function VirtualList({ items }) {
+    const parentRef = useRef(null);
+    
+    const virtualizer = useVirtualizer({
+        count: items.length,
+        getScrollElement: () => parentRef.current,
+        estimateSize: () => 50
+    });
+    
+    return (
+        
+            
+                {virtualizer.getVirtualItems().map(virtualItem => (
+                    
+                        {items[virtualItem.index].name}
+                    
+                ))}
+            
+        
+    );
+}
+
+// 1 萬個 item 也順
+```
+
+  
+### Image 優化
+
+```tsx
+// Next.js Image（自動）
+import Image from "next/image";
+
+// 自動：
+// - srcset / responsive
+// - Lazy load
+// - AVIF / WebP
+// - 防 CLS
+```
+
+  
+### React 19 Compiler
+
+```text
+React 19：React Compiler
+
+自動加 useMemo / useCallback / React.memo
+
+寫：
+function Component({ items, query }) {
+    const filtered = items.filter(i => i.name.includes(query));
+    return ...;
+}
+
+Compiler 自動變：
+const filtered = useMemo(() => items.filter(...), [items, query]);
+
+2026 現況：RC、漸進採用
+過渡期：仍要懂手動 memo
+```
+
+  
+### Web Vitals
+
+```text
+Google Core Web Vitals：
+
+1. LCP（Largest Contentful Paint）
+    **🚀 進階技巧**
+    
+性能優化 5 心法：(1) **先量再優化**—Profiler 找瓶頸 (2) **80% 場景不用 memo**—React 19 Compiler 會處理 (3) **大 list 用 virtual scrolling** (4) **Code splitting**—lazy + Suspense (5) **Image 用 next/image**。
+
+  
+
+  
+    
+      ⚠️
+      新手常見錯誤
+    
+    新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。

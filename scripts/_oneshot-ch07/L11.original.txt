@@ -1,0 +1,369 @@
+OOP = Object-Oriented Programming（物件導向）。聽起來很學術、其實邏輯很自然—就是「**把東西跟它能做的事綁在一起**」。
+
+  
+### 用「狗」理解 OOP
+
+```text
+想像你描述一隻狗：
+
+牠有：
+- 名字（Lucky）
+- 年齡（3 歲）
+- 品種（柴犬）
+
+牠會：
+- 吠（bark）
+- 跑（run）
+- 睡（sleep）
+
+寫成程式：
+
+class Dog:                          # 定義「狗」這類東西
+    def __init__(self, name, age, breed):
+        self.name = name            # 屬性
+        self.age = age
+        self.breed = breed
+    
+    def bark(self):                 # 方法（會做的事）
+        print(f"{self.name} 汪汪叫！")
+    
+    def run(self):
+        print(f"{self.name} 在跑！")
+
+# 製造一隻具體的狗
+lucky = Dog("Lucky", 3, "柴犬")
+lucky.bark()   # Lucky 汪汪叫！
+lucky.run()    # Lucky 在跑！
+
+# 製造另一隻
+ruby = Dog("Ruby", 5, "黃金獵犬")
+ruby.bark()    # Ruby 汪汪叫！
+
+→ class = 「狗的設計圖」
+→ object = 「實際造出來的狗」（Lucky、Ruby）
+→ 屬性 = 牠有什麼（name、age）
+→ 方法 = 牠會做什麼（bark、run）
+```
+
+  
+### 各語言 OOP 對比
+
+```text
+JavaScript：
+class Dog {
+    constructor(name, age, breed) {
+        this.name = name;
+        this.age = age;
+        this.breed = breed;
+    }
+    
+    bark() {
+        console.log(`${this.name} 汪汪叫！`);
+    }
+    
+    run() {
+        console.log(`${this.name} 在跑！`);
+    }
+}
+
+const lucky = new Dog("Lucky", 3, "柴犬");
+lucky.bark();
+
+TypeScript（加型別）：
+class Dog {
+    name: string;
+    age: number;
+    breed: string;
+    
+    constructor(name: string, age: number, breed: string) {
+        this.name = name;
+        this.age = age;
+        this.breed = breed;
+    }
+    
+    bark(): void {
+        console.log(`${this.name} 汪汪叫！`);
+    }
+}
+
+Java：
+public class Dog {
+    private String name;
+    private int age;
+    private String breed;
+    
+    public Dog(String name, int age, String breed) {
+        this.name = name;
+        this.age = age;
+        this.breed = breed;
+    }
+    
+    public void bark() {
+        System.out.println(name + " 汪汪叫！");
+    }
+}
+
+Dog lucky = new Dog("Lucky", 3, "柴犬");
+lucky.bark();
+
+C#：
+public class Dog {
+    public string Name { get; set; }
+    public int Age { get; set; }
+    public string Breed { get; set; }
+    
+    public Dog(string name, int age, string breed) {
+        Name = name;
+        Age = age;
+        Breed = breed;
+    }
+    
+    public void Bark() {
+        Console.WriteLine($"{Name} 汪汪叫！");
+    }
+}
+
+Go（沒 class、用 struct + 方法）：
+type Dog struct {
+    Name  string
+    Age   int
+    Breed string
+}
+
+func (d Dog) Bark() {
+    fmt.Printf("%s 汪汪叫！\n", d.Name)
+}
+
+lucky := Dog{Name: "Lucky", Age: 3, Breed: "柴犬"}
+lucky.Bark()
+
+Rust（也沒 class、用 struct + impl）：
+struct Dog {
+    name: String,
+    age: u32,
+    breed: String,
+}
+
+impl Dog {
+    fn new(name: &str, age: u32, breed: &str) -> Self {
+        Dog {
+            name: name.to_string(),
+            age,
+            breed: breed.to_string(),
+        }
+    }
+    
+    fn bark(&self) {
+        println!("{} 汪汪叫！", self.name);
+    }
+}
+
+let lucky = Dog::new("Lucky", 3, "柴犬");
+lucky.bark();
+
+PHP：
+class Dog {
+    public string $name;
+    public int $age;
+    public string $breed;
+    
+    public function __construct(string $name, int $age, string $breed) {
+        $this->name = $name;
+        $this->age = $age;
+        $this->breed = $breed;
+    }
+    
+    public function bark() {
+        echo "{$this->name} 汪汪叫！\n";
+    }
+}
+
+$lucky = new Dog("Lucky", 3, "柴犬");
+$lucky->bark();
+
+Ruby：
+class Dog
+    attr_accessor :name, :age, :breed
+    
+    def initialize(name, age, breed)
+        @name = name
+        @age = age
+        @breed = breed
+    end
+    
+    def bark
+        puts "#{@name} 汪汪叫！"
+    end
+end
+
+lucky = Dog.new("Lucky", 3, "柴犬")
+lucky.bark
+
+Swift：
+class Dog {
+    var name: String
+    var age: Int
+    var breed: String
+    
+    init(name: String, age: Int, breed: String) {
+        self.name = name
+        self.age = age
+        self.breed = breed
+    }
+    
+    func bark() {
+        print("\(name) 汪汪叫！")
+    }
+}
+
+let lucky = Dog(name: "Lucky", age: 3, breed: "柴犬")
+lucky.bark()
+
+Kotlin（最簡潔）：
+class Dog(val name: String, val age: Int, val breed: String) {
+    fun bark() {
+        println("$name 汪汪叫！")
+    }
+}
+
+val lucky = Dog("Lucky", 3, "柴犬")
+lucky.bark()
+
+Dart：
+class Dog {
+    String name;
+    int age;
+    String breed;
+    
+    Dog(this.name, this.age, this.breed);
+    
+    void bark() {
+        print('$name 汪汪叫！');
+    }
+}
+
+var lucky = Dog("Lucky", 3, "柴犬");
+lucky.bark();
+
+→ 看起來各語言寫法差別大
+→ 但核心邏輯完全一樣：
+   1. 定義有什麼屬性
+   2. 定義會做什麼方法
+   3. constructor 設定初始值
+   4. new 出一個實例
+```
+
+  
+### this / self：「我自己」
+
+```text
+方法裡常看到 this 或 self—指「呼叫這個方法的物件」：
+
+# Python（用 self）
+class Dog:
+    def bark(self):
+        print(f"{self.name} 汪汪叫")
+        # self.name = 「呼叫這方法的那隻狗」的名字
+
+# JS / Java / C# / Swift（用 this）
+class Dog {
+    bark() {
+        console.log(`${this.name} 汪汪叫`);
+    }
+}
+
+# Rust（明確 &self）
+impl Dog {
+    fn bark(&self) {
+        println!("{} 汪汪叫", self.name);
+    }
+}
+
+# Go（顯式 receiver）
+func (d Dog) Bark() {
+    fmt.Printf("%s 汪汪叫\n", d.Name)
+    // d 就是 self
+}
+
+→ this / self 是區分「我自己屬性」vs「外面變數」
+→ 沒它的話：name = name 不知道左右誰是誰
+```
+
+  
+### 什麼時候用 class、什麼時候不用
+
+```text
+用 class（OOP）當：
+- 東西有「狀態」（屬性會變）
+- 東西有「行為」（要做事）
+- 多個相似東西（一堆狗、一堆使用者）
+
+例：
+- User class（使用者）
+- Product class（商品）
+- Game character class
+- DB connection class
+
+不用 class（用函數就好）當：
+- 簡單轉換（純函數）
+- 一次性處理
+- 沒狀態
+
+例：
+def calculate_tax(price):
+    return price * 0.05
+
+# 不需要包成 class
+# 函數就夠
+
+# 新手陷阱：什麼都包 class（過度 OOP）
+# 反例：
+class Calculator:
+    def add(self, a, b):
+        return a + b
+
+# 這是 OOP 過度
+# 直接 def add(a, b): return a + b 就好
+
+→ OOP 是工具、不是強制
+→ Python / JS 都能寫純函數式
+```
+
+  
+### 2026 OOP 觀念演進
+
+```text
+古典 OOP（1990-2010）：
+- Java / C# / Ruby 為代表
+- 一切是 class
+- Inheritance 重度使用
+- 大型架構（Spring / .NET）
+
+現代 OOP（2010+）：
+- Python / JS / TS / Kotlin 為代表
+- class 是工具、不是教條
+- Composition > Inheritance（組合 > 繼承）
+- 函數式混搭
+
+純函數式（小眾但成長）：
+- Haskell / Elixir / F# / Clojure
+- 沒 class、只有 data + function
+- 適合並發 / 容錯系統
+
+→ 不用糾結「OOP 好還是函數式好」
+→ 都會、看場景用
+```
+
+  
+**☕ 用人話講**
+
+OOP 不是什麼高深玄學—就是「**把東西的屬性跟動作綁在一起**」。狗有名字（屬性）、會吠（動作）—寫成 class、之後造 100 隻狗都一樣方便。新手陷阱：**什麼都寫 class**—簡單函數就用函數、別硬塞 class。**看到資料 + 行為總是一起出現**—那個時候用 class 才有意義。
+
+  
+
+  
+
+🛠️
+工具推薦
+
+配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。

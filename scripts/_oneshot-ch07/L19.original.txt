@@ -1,0 +1,297 @@
+同樣的問題、被解過 1000 次。**設計模式**是「**大家公認的解法**」—不用自己發明。
+
+  
+### 什麼是設計模式
+
+```text
+類比：
+你蓋房子—不用每次發明「窗戶怎麼裝」、有標準工法
+程式設計—不用每次想「怎麼讓只有一個 instance」、有標準模式
+
+23 個經典模式（GoF / Gang of Four 1994）：
+- 創建型（5 個）：怎麼建物件
+- 結構型（7 個）：怎麼組合物件
+- 行為型（11 個）：怎麼互動
+
+不用全記！實戰常用 5-10 個
+```
+
+  
+### Singleton（單例）：「整個程式只能有一個」
+
+```text
+例：
+- DB 連線池（只能有一個）
+- 設定檔（讀一次就好）
+- Logger（全程式共用）
+
+# Python
+class Database:
+    _instance = None
+    
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance.connect()
+        return cls._instance
+
+db1 = Database()
+db2 = Database()
+db1 is db2   # True（同一個）
+
+# JS
+class Database {
+    static instance;
+    
+    constructor() {
+        if (Database.instance) {
+            return Database.instance;
+        }
+        Database.instance = this;
+        this.connect();
+    }
+}
+
+# Java
+public class Database {
+    private static Database instance;
+    
+    private Database() { ... }
+    
+    public static Database getInstance() {
+        if (instance == null) {
+            instance = new Database();
+        }
+        return instance;
+    }
+}
+Database db = Database.getInstance();
+
+→ 確保整個程式只有 1 個 instance
+→ 太多 singleton 是 anti-pattern（全域狀態）
+```
+
+  
+### Factory（工廠）：「決定要 new 哪個」
+
+```text
+問題：根據條件 new 不同 class
+
+class Dog:
+    def speak(self): print("汪汪")
+
+class Cat:
+    def speak(self): print("喵喵")
+
+class Cow:
+    def speak(self): print("哞哞")
+
+# 沒 factory（呼叫處到處 if）
+def use_animal(kind):
+    if kind == "dog":
+        animal = Dog()
+    elif kind == "cat":
+        animal = Cat()
+    elif kind == "cow":
+        animal = Cow()
+    animal.speak()
+
+# 用 factory
+class AnimalFactory:
+    @staticmethod
+    def create(kind):
+        animals = {
+            "dog": Dog,
+            "cat": Cat,
+            "cow": Cow,
+        }
+        return animals[kind]()
+
+# 用
+animal = AnimalFactory.create("dog")
+animal.speak()
+
+→ 加新動物只改 factory、不影響其他 code
+→ 開閉原則：對擴充開放、對修改封閉
+```
+
+  
+### Observer（觀察者）：「事件發生通知所有訂閱者」
+
+```text
+例：
+- 使用者下訂單 → 寄信、扣庫存、寫 log
+- 不該硬寫在「下訂單」函數
+- 用 observer 解耦
+
+# Python
+class OrderManager:
+    def __init__(self):
+        self.observers = []
+    
+    def subscribe(self, observer):
+        self.observers.append(observer)
+    
+    def create_order(self, order):
+        # 處理訂單
+        ...
+        # 通知所有訂閱者
+        for observer in self.observers:
+            observer.notify(order)
+
+class EmailService:
+    def notify(self, order):
+        print(f"寄信給 {order.user}")
+
+class InventoryService:
+    def notify(self, order):
+        print(f"扣 {order.product} 庫存")
+
+class LoggerService:
+    def notify(self, order):
+        print(f"log: 訂單 {order.id} 建立")
+
+# 用
+manager = OrderManager()
+manager.subscribe(EmailService())
+manager.subscribe(InventoryService())
+manager.subscribe(LoggerService())
+
+manager.create_order(some_order)
+# 自動寄信、扣庫存、log
+
+→ Event-driven 架構核心
+→ React useEffect、Vue watch 本質都是 Observer
+→ Redux、EventEmitter 也都是
+```
+
+  
+### Strategy（策略）：「同樣動作、不同算法」
+
+```text
+例：付款方式（LINE Pay / 信用卡 / 街口）—同個 .pay() 介面
+
+class PaymentStrategy:
+    def pay(self, amount): pass
+
+class LinePay(PaymentStrategy):
+    def pay(self, amount):
+        print(f"LINE Pay {amount}")
+
+class CreditCard(PaymentStrategy):
+    def pay(self, amount):
+        print(f"信用卡 {amount}")
+
+class JKoPay(PaymentStrategy):
+    def pay(self, amount):
+        print(f"街口 {amount}")
+
+# 結帳
+class Cart:
+    def __init__(self, payment: PaymentStrategy):
+        self.payment = payment
+    
+    def checkout(self, amount):
+        self.payment.pay(amount)
+
+# 用
+cart = Cart(LinePay())
+cart.checkout(500)
+
+# 換策略
+cart.payment = CreditCard()
+cart.checkout(1200)
+
+→ 跟「多型」非常像
+→ 加新付款方式只要新 class、不改 Cart
+```
+
+  
+### Decorator（裝飾器）：「包一層、加功能」
+
+```text
+# Python 內建 @decorator 語法
+import time
+
+def timing(func):
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        print(f"花了 {time.time() - start}s")
+        return result
+    return wrapper
+
+@timing
+def slow_function():
+    time.sleep(1)
+    return "完成"
+
+slow_function()
+# 花了 1.0s
+# "完成"
+
+→ 不改原 function、加額外行為（log / 計時 / 權限檢查）
+
+# JS / TS（也有 decorator 提案）
+function timing(fn) {
+    return function(...args) {
+        const start = Date.now();
+        const result = fn(...args);
+        console.log(`花了 ${Date.now() - start}ms`);
+        return result;
+    };
+}
+
+const slowFunc = timing(actualFunc);
+
+→ React middleware、Express middleware 都是 decorator pattern
+```
+
+  
+### 2026 常用模式總覽
+
+  
+| 模式 | 用途 | 實戰例 |
+| --- | --- | --- |
+| Singleton | 全程式 1 個 instance | DB 連線、Logger |
+| Factory | 條件式 new 物件 | 建立不同類型 user |
+| Observer | 事件 + 訂閱 | React useEffect、Redux |
+| Strategy | 同介面、不同實作 | 付款方式、排序算法 |
+| Decorator | 包一層加功能 | middleware、權限檢查 |
+| Adapter | 接駁不相容介面 | 串第三方 API |
+| Repository | 抽象資料來源 | 不管 DB / cache 都同介面 |
+| MVC / MVP / MVVM | 分離 UI / 邏輯 / 資料 | 所有現代 framework |
+
+  
+### 「過度設計」的警告
+
+```text
+新手學模式後常犯：
+- 「我來用 Factory + Strategy + Singleton + Decorator + ...」
+- 結果簡單功能寫 10 個 class
+
+正確：
+- 模式是「解決問題的工具」
+- 沒問題不用套
+- 簡單能 work 就好
+
+Mark Seemann 名言：
+「過度設計是新手 senior 工程師的特徵」
+
+→ 真 senior：能 work 的最簡單 code
+→ 新 senior：什麼都套模式
+```
+
+  
+**☕ 用人話講**
+
+設計模式不是「**規矩**」、是「**工具箱**」。看到 5+ 個重複的 if、考慮 Strategy。看到事件 + 多個 handler、考慮 Observer。看到包一層加功能、考慮 Decorator。新手不用全記、知道**有這些工具存在**、需要時 Google 即可。**能寫簡單 code 解決問題 > 套 5 個模式炫技**—真 senior 反而 code 簡單。
+
+  
+
+  
+
+💼
+接案小知識
+
+剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「程式邏輯」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。

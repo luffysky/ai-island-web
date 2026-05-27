@@ -1,0 +1,354 @@
+陣列用**數字**當編號。但有時你想用**名字**當編號—例如「Alice 的年齡」「Bob 的電話」。**字典**就是來解這個的。
+
+  
+### 字典就是「名字對值」
+
+```text
+想像通訊錄：
+
+姓名（key）       →   電話（value）
+Alice            →   0912-345-678
+Bob              →   0987-654-321
+Charlie          →   0922-111-222
+
+你說「給我 Alice 的電話」
+→ 拿到 0912-345-678
+
+字典也一樣—用「key」找「value」
+```
+
+  
+### 建立字典：所有語言怎麼寫
+
+```text
+Python（叫 dict）：
+phones = {
+    "Alice": "0912-345-678",
+    "Bob": "0987-654-321",
+    "Charlie": "0922-111-222"
+}
+
+print(phones["Alice"])   # 0912-345-678
+
+JavaScript（叫 object 或 Map）：
+const phones = {
+    Alice: "0912-345-678",
+    Bob: "0987-654-321",
+    Charlie: "0922-111-222"
+};
+
+console.log(phones.Alice);
+console.log(phones["Alice"]);   // 兩種都行
+
+// 或正式的 Map（key 能是任何型別）
+const phones = new Map();
+phones.set("Alice", "0912-345-678");
+phones.get("Alice");
+
+TypeScript（加型別）：
+const phones: Record = {
+    Alice: "0912-345-678",
+    ...
+};
+
+// 或
+const phones: Map = new Map([
+    ["Alice", "0912-345-678"],
+]);
+
+Go（叫 map）：
+phones := map[string]string{
+    "Alice": "0912-345-678",
+    "Bob": "0987-654-321",
+}
+
+fmt.Println(phones["Alice"])
+
+Rust（HashMap）：
+use std::collections::HashMap;
+
+let mut phones = HashMap::new();
+phones.insert("Alice", "0912-345-678");
+phones.insert("Bob", "0987-654-321");
+
+println!("{}", phones["Alice"]);
+
+Java：
+Map phones = new HashMap<>();
+phones.put("Alice", "0912-345-678");
+phones.put("Bob", "0987-654-321");
+
+System.out.println(phones.get("Alice"));
+
+C#：
+var phones = new Dictionary {
+    { "Alice", "0912-345-678" },
+    { "Bob", "0987-654-321" }
+};
+
+PHP（associative array）：
+$phones = [
+    "Alice" => "0912-345-678",
+    "Bob" => "0987-654-321"
+];
+
+echo $phones["Alice"];
+
+Ruby：
+phones = {
+    "Alice" => "0912-345-678",
+    "Bob" => "0987-654-321"
+}
+
+# 或用 symbol（更 idiomatic）
+phones = {
+    alice: "0912-345-678",
+    bob: "0987-654-321"
+}
+
+Swift：
+let phones: [String: String] = [
+    "Alice": "0912-345-678",
+    "Bob": "0987-654-321"
+]
+
+print(phones["Alice"]!)
+
+Kotlin：
+val phones = mapOf(
+    "Alice" to "0912-345-678",
+    "Bob" to "0987-654-321"
+)
+
+println(phones["Alice"])
+
+Dart：
+var phones = {
+    "Alice": "0912-345-678",
+    "Bob": "0987-654-321"
+};
+
+print(phones["Alice"]);
+
+→ 各語言名字不同（dict / object / map / HashMap）
+→ 概念一樣：「key → value」
+```
+
+  
+### 常用操作
+
+```text
+新增 / 修改：
+
+# Python（一樣的語法）
+phones["David"] = "0900-000-000"   # 新增
+phones["Alice"] = "0911-111-111"   # 修改
+
+# JS
+phones.David = "0900-000-000";
+phones["David"] = "0900-000-000";
+
+# Go
+phones["David"] = "0900-000-000"
+
+刪除：
+
+# Python
+del phones["Alice"]
+
+# JS
+delete phones.Alice;
+
+# Go
+delete(phones, "Alice")
+
+# Rust
+phones.remove("Alice");
+
+檢查 key 存在：
+
+# Python
+if "Alice" in phones:
+    print(phones["Alice"])
+
+# JS
+if ("Alice" in phones) { ... }
+if (phones.Alice !== undefined) { ... }
+if (phones.hasOwnProperty("Alice")) { ... }
+
+# Go
+if value, ok := phones["Alice"]; ok {
+    fmt.Println(value)
+}
+
+長度：
+
+len(phones)                # Python / Go
+Object.keys(phones).length // JS
+phones.size                // JS Map
+phones.size()              // Java
+phones.len()               // Rust
+```
+
+  
+### 跑字典每個元素
+
+```text
+Python：
+for name, phone in phones.items():
+    print(f"{name}: {phone}")
+
+# 或只跑 key
+for name in phones:
+    print(name)
+
+# 只跑 value
+for phone in phones.values():
+    print(phone)
+
+JavaScript：
+for (const [name, phone] of Object.entries(phones)) {
+    console.log(`${name}: ${phone}`);
+}
+
+// Map
+for (const [name, phone] of phones) {
+    ...
+}
+
+Go：
+for name, phone := range phones {
+    fmt.Printf("%s: %s\n", name, phone)
+}
+
+Rust：
+for (name, phone) in &phones {
+    println!("{}: {}", name, phone);
+}
+```
+
+  
+### 巢狀字典（資料的常見結構）
+
+```text
+真實 app 通常 key 不只一層：
+
+# Python
+users = {
+    "alice": {
+        "age": 30,
+        "email": "alice@x.com",
+        "hobbies": ["讀書", "登山"]
+    },
+    "bob": {
+        "age": 25,
+        "email": "bob@x.com",
+        "hobbies": ["遊戲"]
+    }
+}
+
+# 取 Alice 的 email
+print(users["alice"]["email"])
+
+# 取 Bob 的第一個 hobby
+print(users["bob"]["hobbies"][0])
+
+# 改 Alice 的年齡
+users["alice"]["age"] = 31
+
+# 加新使用者
+users["charlie"] = {
+    "age": 28,
+    "email": "charlie@x.com",
+    "hobbies": []
+}
+
+→ JSON 本質就是巢狀字典
+→ API 回傳的資料都長這樣
+→ 寫網頁 / 後端常做
+```
+
+  
+### 常見字典陷阱
+
+```text
+1. Key 不存在
+
+print(phones["Eve"])
+# Python: KeyError
+# JS: undefined
+# Go: 回零值（空字串）
+
+對策：
+# Python
+phones.get("Eve")            # 沒就 None
+phones.get("Eve", "未知")    # 沒就用預設
+
+# JS
+phones.Eve ?? "未知"         // nullish coalescing
+
+2. JS object vs Map
+
+const obj = {};
+obj.key1 = "a";
+
+// 看似 key 是 string、其實能用 number、boolean
+obj[1] = "x";
+obj[true] = "y";
+// 全變 string key（自動轉型）
+
+// 真正想要 key 是任意型別 → 用 Map
+const map = new Map();
+map.set(1, "x");      // 真的 key 是數字
+map.set(true, "y");   // 真的 key 是 boolean
+
+3. 字典順序
+
+Python 3.7+：保證插入順序
+JS：保證 string key 的插入順序（symbol / int 不一定）
+Go：隨機順序（每次跑都不一樣！）
+Java HashMap：隨機
+Java LinkedHashMap：保證插入順序
+
+→ 不依賴順序最安全
+→ 要順序就用對的 class
+```
+
+  
+### 什麼時候用陣列 vs 字典
+
+```text
+用陣列（list）當：
+- 要「順序」很重要（前 10 名）
+- 要常常按 index 找
+- 不需要「依名字找」
+- 例：購物清單、log 訊息、輪流順序
+
+用字典（dict）當：
+- 用「名字」找東西
+- 不在乎順序
+- 大量資料（字典找比較快）
+- 例：通訊錄、設定檔、user 資料
+
+混合：
+users = [
+    {"name": "Alice", "age": 30},
+    {"name": "Bob", "age": 25}
+]
+# 陣列存「使用者列表」、每個是字典
+# 這是 JSON / API 最常見格式
+```
+
+  
+**☕ 用人話講**
+
+字典就是「**名字對應值**」的對照表。陣列用**編號**找、字典用**名字**找。實戰你會大量用字典—API 回傳的 JSON、設定檔、使用者資料、表單—全都是字典結構。學會字典 + 巢狀字典 = 你能處理 90% 的真實資料。
+
+  
+
+  
+
+⚡
+學習加速器
+
+把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。

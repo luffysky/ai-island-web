@@ -1,0 +1,232 @@
+陣列跟字典是 80% 場景。但有些情況有專門的資料結構更好用—先認識它們、不用全記、用到再深學。
+
+  
+### Set（集合）：不允許重複的陣列
+
+```text
+「我只要不重複的元素」：
+
+# Python
+fruits = {"蘋果", "香蕉", "橘子", "蘋果"}
+# 自動變 {"蘋果", "香蕉", "橘子"}（去重）
+
+# JS
+const fruits = new Set(["蘋果", "香蕉", "橘子", "蘋果"]);
+// Set { "蘋果", "香蕉", "橘子" }
+
+# 常見用途：去掉重複
+visitors = ["alice", "bob", "alice", "charlie", "bob"]
+unique = set(visitors)
+# {"alice", "bob", "charlie"}
+
+# Java
+Set fruits = new HashSet<>(Arrays.asList("蘋果", "香蕉"));
+
+# C#
+var fruits = new HashSet { "蘋果", "香蕉" };
+
+→ 想去重時就想到 Set
+→ 比陣列 + 一堆 if 判斷簡單 100 倍
+```
+
+  
+### Tuple（元組）：固定大小、能存多種型別
+
+```text
+「我要一組相關但不同型別的值」：
+
+# Python
+person = ("Alice", 30, True)   # 名字、年齡、是否啟用
+name, age, is_active = person  # 解包
+
+# 為什麼不用陣列？
+# 陣列：通常存「同類型」（一堆名字 / 一堆數字）
+# Tuple：存「一組相關但不同類型」的值
+
+# 常見回傳多值
+def get_user():
+    return ("Alice", 30, True)
+
+name, age, active = get_user()
+
+# JS（用 array 模擬 tuple、TypeScript 有真正 tuple）
+const person: [string, number, boolean] = ["Alice", 30, true];
+
+# Rust（原生支援）
+let person: (String, i32, bool) = (
+    String::from("Alice"), 30, true
+);
+
+# Go（沒 tuple、用 struct 或 多回傳值）
+name, age := getUser()
+
+→ Python / Rust / TS 強支援
+→ Java / C# 後來加 Record / ValueTuple
+```
+
+  
+### Stack（堆疊）：後進先出（LIFO）
+
+```text
+想像疊盤子：
+往上疊（push）：最上面那個
+要拿（pop）：拿最上面那個（最後疊的）
+
+[3]  ← 最後 push、最先 pop
+[2]
+[1]  ← 最早 push、最後 pop
+
+實戰：
+- 瀏覽器「上一頁」（最後看的頁先回去）
+- 編輯器「復原」（最後動作先退）
+- 函數呼叫（最後呼叫的最先回）
+
+# Python（用 list 模擬）
+stack = []
+stack.append(1)   # push
+stack.append(2)
+stack.append(3)
+stack.pop()       # 3
+stack.pop()       # 2
+
+# JS
+const stack = [];
+stack.push(1);
+stack.push(2);
+stack.pop();     // 2
+
+# Java
+Deque stack = new ArrayDeque<>();
+stack.push(1);
+stack.pop();
+```
+
+  
+### Queue（佇列）：先進先出（FIFO）
+
+```text
+想像排隊：
+最早排的最先服務
+
+[1] [2] [3]
+ ↑           ↑
+出口        入口（push）
+
+實戰：
+- 訊息佇列（先發的先處理）
+- 印表機排程（先按列印的先印）
+- 廣度優先搜尋
+
+# Python
+from collections import deque
+queue = deque()
+queue.append(1)        # 入隊
+queue.append(2)
+queue.popleft()        # 1（最早的出隊）
+
+# JS
+const queue = [];
+queue.push(1);
+queue.shift();         // 1
+
+# Java
+Queue queue = new LinkedList<>();
+queue.offer(1);
+queue.poll();          // 1
+```
+
+  
+### Tree（樹）：階層結構
+
+```text
+想像家譜：
+
+        老闆
+       /    \
+    經理 A   經理 B
+    /   \      \
+  員工1 員工2  員工3
+
+實戰：
+- 檔案系統（資料夾 / 檔案）
+- DOM（HTML 元素階層）
+- 公司組織
+- 決策樹（AI / ML）
+
+簡單實作：
+class TreeNode:
+    def __init__(self, value):
+        self.value = value
+        self.children = []
+
+root = TreeNode("老闆")
+mgr_a = TreeNode("經理 A")
+root.children.append(mgr_a)
+mgr_a.children.append(TreeNode("員工 1"))
+
+→ 寫 web / app 一直在處理樹（DOM）
+→ 但很少自己寫 Tree class（用內建的）
+```
+
+  
+### Graph（圖）：節點 + 邊
+
+```text
+想像捷運路線圖：
+
+  台北車站 ─── 中山 ─── 民權西路
+      │
+   西門
+      │
+   龍山寺 ─── 江子翠
+
+每個站 = 節點
+每條線 = 邊
+
+實戰：
+- 社群網路（誰跟誰是朋友）
+- 地圖導航（哪些路通哪些）
+- 推薦系統（看過 X 也看過 Y）
+
+簡單實作（用字典）：
+graph = {
+    "台北車站": ["中山", "西門"],
+    "中山": ["台北車站", "民權西路"],
+    "西門": ["台北車站", "龍山寺"],
+    ...
+}
+
+→ Graph 比 Tree 複雜
+→ 通常用專門資料庫（Neo4j、Memgraph）
+→ Facebook、LinkedIn 核心是 Graph
+```
+
+  
+### 各語言 Set / Tuple 對比表
+
+  
+| 語言 | Set | Tuple |
+| --- | --- | --- |
+| Python | set / frozenset | tuple（內建） |
+| JavaScript | Set | array（用 const） |
+| TypeScript | Set | [string, number]（真 tuple） |
+| Go | map[T]bool 模擬 | 多回傳值 / struct |
+| Rust | HashSet | (T1, T2)（原生） |
+| Java | HashSet | Record / Pair |
+| C# | HashSet | ValueTuple / Tuple |
+| Swift | Set | (T1, T2) |
+| Kotlin | setOf | Pair / Triple |
+
+  
+**☕ 用人話講**
+
+初學別怕記不起來—實際寫 code 你 90% 用 **陣列 + 字典**。其他資料結構（Set / Tuple / Stack / Queue / Tree / Graph）**遇到時再查**就好。但要知道它們**存在**—當你想「我要去重」就知道 Set、想「最後進先出」就知道 Stack。**知道有這個工具**比**記語法**重要。
+
+  
+
+  
+
+🚀
+2026 趨勢
+
+這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。

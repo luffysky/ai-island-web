@@ -1,0 +1,290 @@
+「**寫 code 50% 時間在 debug**」。會 debug 比會寫 code 更重要—因為你會寫一輩子的 bug。
+
+  
+### 5 大常見 bug 類型
+
+  
+#### 1. Off-by-one Error
+
+```text
+差 1 的錯：
+
+# 錯
+for i in range(len(arr) - 1):  # 漏最後一個
+    print(arr[i])
+
+for i in range(1, len(arr) + 1):  # 超界
+    print(arr[i])
+
+# 對
+for i in range(len(arr)):
+    print(arr[i])
+
+→ 邊界條件最易錯
+→ 寫測試時測 0 個 / 1 個 / 邊界
+```
+
+  
+#### 2. Null Pointer
+
+```text
+# 沒檢查 null
+user = find_user(id)
+print(user.name)  # ❌ 如果 user 是 None
+
+# 對策
+user = find_user(id)
+if user:
+    print(user.name)
+
+# 或 optional chaining
+user?.name        # Swift / Kotlin / TS
+```
+
+  
+#### 3. 競爭條件
+
+```text
+多 thread 同時改變數、結果不可預期
+(10.20 lesson 講過)
+```
+
+  
+#### 4. 記憶體洩漏
+
+```text
+分配記憶體沒釋放、累積爆炸
+- Python / JS：GC 通常處理
+- C / C++：手動忘了 free
+- 即使有 GC、「保留參考」也會洩漏
+```
+
+  
+#### 5. 邏輯錯
+
+```text
+# 條件寫錯
+if user.age > 18:  # 應該 >=
+    is_adult = True
+
+# 算錯
+discount = price * 0.8  # 應該是 20% off = price * (1 - 0.2)
+
+→ 沒 syntax 錯、執行也不爆
+→ 但結果錯
+→ 最難 debug
+```
+
+  
+### Debug 5 步法
+
+```text
+Step 1：重現
+- 確定能穩定重現 bug
+- 不能重現 = 不能修
+
+Step 2：縮小範圍
+- 是哪段 code 出問題？
+- 用 print / log / debugger 找
+
+Step 3：假設
+- 「我覺得 bug 在這、因為 X」
+- 寫下假設
+
+Step 4：驗證
+- 加 print 證明假設
+- 真錯就修、不對就回 Step 3
+
+Step 5：修 + 寫測試
+- 修 bug
+- 加測試防止再發生
+```
+
+  
+### Debug 工具
+
+```text
+1. Print debugging（最常見）
+   print(f"x = {x}, type = {type(x)}")
+   print(f"reached line 42")
+   
+   優：簡單、立刻看
+   缺：要改 code、要刪
+
+2. Debugger（IDE 內建）
+   - 設斷點（breakpoint）
+   - 一行行跑、看變數
+   
+   Python：
+   import pdb; pdb.set_trace()
+   # 跑到這停、進入互動模式
+   
+   或 IDE 點行號設斷點
+   
+   優：可看變數、能改流程
+   缺：要學工具
+
+3. Log
+   import logging
+   logger = logging.getLogger(__name__)
+   
+   logger.debug("詳細追蹤")
+   logger.info("一般訊息")
+   logger.warning("警告")
+   logger.error("錯誤")
+   logger.critical("嚴重")
+
+4. 二分法
+   程式 1000 行、bug 在哪？
+   - 加 print 在中間
+   - 看 bug 在前半還後半
+   - 那半再切半
+   - 10 次切完找到
+```
+
+  
+### Log 哲學：production debug 之本
+
+```text
+5 個 log 等級：
+- DEBUG：開發時細節（生產關掉）
+- INFO：流程訊息（正常運作）
+- WARNING：可能有問題（不影響）
+- ERROR：出錯了（但繼續跑）
+- CRITICAL：嚴重、要立刻處理
+
+什麼該 log：
+✓ 重要操作（user 登入、付款）
+✓ 錯誤 + context（不只「失敗」、是「user 123 付款失敗、因 X」）
+✓ 慢操作（DB query > 1s）
+✓ 外部 API 呼叫（response 太慢 / fail）
+
+什麼不該 log：
+✗ 密碼、credit card、PII
+✗ 每行 code（噪音太多）
+✗ 大物件（log 爆）
+
+格式：
+[時間] [等級] [來源] 訊息 [extra context]
+2026-05-13 14:30:25 INFO app.user User 123 logged in from IP 1.2.3.4
+
+工具：
+- 開發：terminal print / file
+- production：Sentry / Datadog / Logtail / CloudWatch
+```
+
+  
+### Structured Logging
+
+```text
+不是字串 log、是 JSON：
+
+# 普通
+logger.info(f"User {user_id} bought {product_id} for ${amount}")
+# 字串、難搜尋
+
+# Structured
+logger.info("purchase", user_id=user_id, product_id=product_id, amount=amount)
+# JSON：{"event": "purchase", "user_id": 123, ...}
+
+優：
+- 能 query（找所有 user_id=123 的 log）
+- 能 aggregate（總和、平均）
+- 工具友善
+
+2026 主流
+```
+
+  
+### Stack Trace：錯誤的「事發過程」
+
+```text
+Python 錯誤訊息：
+Traceback (most recent call last):
+  File "main.py", line 42, in 
+    result = process_user(123)
+  File "main.py", line 30, in process_user
+    user = db.get_user(user_id)
+  File "db.py", line 15, in get_user
+    return self.query(f"SELECT * FROM users WHERE id={id}")
+  File "db.py", line 5, in query
+    self.conn.execute(sql)
+ConnectionError: Database not available
+
+讀法：從下往上：
+1. 最底是錯誤本身（ConnectionError）
+2. 往上看怎麼到的（execute → query → get_user → process_user）
+3. 找你寫的 code 那行（不是 library 的）
+
+→ Stack trace 是你最好的朋友
+→ 別截圖、複製貼到 Google / AI
+```
+
+  
+### 用 AI Debug（2026 主流）
+
+```text
+遇 bug 把這 3 樣丟給 Claude / Cursor：
+1. Error 訊息（完整 stack trace）
+2. 相關 code
+3. 你已經試過什麼
+
+例：
+「我的 Python code 跑這個 error：[error]
+這是 code：[code]
+我已經試過：[嘗試]
+為什麼？怎麼修？」
+
+AI 通常能：
+- 解釋 error 意思
+- 找出原因
+- 給修正
+
+但要 review：
+- AI 可能猜錯
+- 自己看修正合理嗎
+- 不要無腦複製
+
+→ AI 是副駕、不是取代你
+→ Debug skill 還是要練
+```
+
+  
+### Debug 心態
+
+```text
+1. 別怒、別怪電腦
+   電腦永遠對的、bug 一定在你 code
+
+2. 假設你錯、不是 library 錯
+   99% 是你 code 問題
+   別亂罵 framework
+
+3. 一次只改一件事
+   改 5 件、不知道哪個有效
+
+4. 寫測試重現 bug
+   修完 bug 留測試永久防護
+
+5. 休息
+   卡 1 小時 = 出門走 5 分鐘
+   常常回來秒解
+
+6. 問人
+   1 小時還沒解 = 拍照 + 問同事 / 社群
+   不要 ego 卡死
+```
+
+  
+**☕ 用人話講**
+
+Debug 是寫程式的「核心技能」—不是 bug 出現的次數、是**處理 bug 的速度**。新手卡 bug 1 天、senior 30 分鐘搞定—差別不是天才、是**方法**：(1) 重現 (2) 縮小 (3) 假設 (4) 驗證 (5) 修。**log 是你未來的眼睛**—production 出問題、沒 log 你看不見發生什麼。AI 是 2026 神器、但要先有 debug 思維、不然 AI 也救不了你。
+
+  
+
+  
+
+🚀
+2026 趨勢
+
+這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。

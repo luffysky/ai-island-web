@@ -1,0 +1,248 @@
+Thread 重、async 輕。**I/O 密集場景用 async 比 thread 快 10-100 倍**。2020+ 主流並發方式。
+
+  
+### async 的核心想法
+
+```text
+同步（synchronous）：
+1. 跟 API 要資料 (等 100ms)
+2. 跟 DB 要資料 (等 50ms)
+3. 寄信 (等 200ms)
+總共 350ms、CPU 大部分時間 idle
+
+async：
+1. 跟 API 要資料 → 不等、開始下個
+2. 跟 DB 要資料 → 不等、開始下個
+3. 寄信 → 不等
+4. 三個一起等
+總共 max(100, 50, 200) = 200ms
+
+→ I/O 等待時、CPU 做其他事
+→ 不開新 thread、單 thread 內切換
+```
+
+  
+### async 在各語言
+
+```text
+# Python（asyncio）
+import asyncio
+import aiohttp
+
+async def fetch_url(url):
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as response:
+            return await response.text()
+
+async def main():
+    urls = ["https://api1.com", "https://api2.com", "https://api3.com"]
+    results = await asyncio.gather(*[fetch_url(u) for u in urls])
+    print(results)
+
+asyncio.run(main())
+
+# JavaScript（原生 async / await）
+async function fetchUrl(url) {
+    const response = await fetch(url);
+    return await response.text();
+}
+
+async function main() {
+    const urls = ["https://api1.com", "https://api2.com"];
+    const results = await Promise.all(urls.map(fetchUrl));
+    console.log(results);
+}
+
+main();
+
+# TypeScript（同 JS、加型別）
+async function fetchUrl(url: string): Promise {
+    const response = await fetch(url);
+    return await response.text();
+}
+
+# Rust（async / await、需要 runtime）
+use tokio;
+
+#[tokio::main]
+async fn main() {
+    let urls = vec!["https://api1.com", "https://api2.com"];
+    let futures: Vec = urls.iter()
+        .map(|u| fetch_url(u))
+        .collect();
+    
+    let results = futures::future::join_all(futures).await;
+}
+
+# C# (async / await、最早引入)
+public async Task FetchUrl(string url) {
+    using var client = new HttpClient();
+    var response = await client.GetAsync(url);
+    return await response.Content.ReadAsStringAsync();
+}
+
+# Kotlin（coroutines）
+suspend fun fetchUrl(url: String): String {
+    return withContext(Dispatchers.IO) {
+        URL(url).readText()
+    }
+}
+
+# Swift（async / await）
+func fetchUrl(_ url: URL) async throws -> String {
+    let (data, _) = try await URLSession.shared.data(from: url)
+    return String(data: data, encoding: .utf8)!
+}
+
+# Dart（同 JS 風格）
+Future fetchUrl(String url) async {
+    final response = await http.get(Uri.parse(url));
+    return response.body;
+}
+
+→ 大多現代語言都有 async / await
+→ 語法幾乎一樣
+```
+
+  
+### Event Loop：async 的引擎
+
+```text
+單 thread 怎麼「同時做多件事」？
+
+Event Loop：
+1. 看任務 queue 有沒有事做
+2. 拿一個做、做到要等 I/O
+3. 把它 park 起來、找下個任務
+4. I/O 完成 → 任務放回 queue
+5. 繼續執行
+
+像餐廳 1 個服務生服務 10 桌：
+- 桌 1：點餐 → 廚房準備（不等）
+- 桌 2：點餐 → 廚房準備
+- 桌 3：上菜（廚房好了）
+- 桌 1：上菜（廚房好了）
+- ...
+
+1 個 thread、看似同時服務 10 桌
+這就是 event loop
+
+主流實作：
+- Node.js：V8 + libuv
+- Python：asyncio + uvloop
+- Rust：tokio
+- Go：runtime（goroutine + scheduler）
+- Java：CompletableFuture / Project Loom（22+）
+- C# / .NET：Task / async runtime
+```
+
+  
+### async 陷阱：阻塞 event loop
+
+```text
+async 單 thread—不能有「不放手」的 task：
+
+# ❌ 錯
+async def task():
+    time.sleep(5)   # 同步 sleep、阻塞整個 event loop
+
+# ✓ 對
+async def task():
+    await asyncio.sleep(5)   # async sleep、讓給其他 task
+
+# 同樣陷阱：
+- 同步 DB 連線（用 async DB client）
+- 同步 file I/O（用 aiofiles）
+- 同步 HTTP（用 aiohttp / httpx async）
+- 純 CPU 計算超過 100ms（用 thread / process）
+
+→ async 函數內不能有同步阻塞
+→ 不然「假 async」
+```
+
+  
+### 什麼時候用 async vs thread
+
+```text
+I/O 密集（等網路、DB、檔案）：
+→ async（10-100 倍輕量）
+- Web 後端
+- API 客戶端
+- 爬蟲
+- 即時通訊
+
+CPU 密集（純算數）：
+→ thread / process（async 沒幫助、單 thread 還是 1 核）
+- 影像處理
+- ML 訓練
+- 加密
+- 大量數學運算
+
+混合：
+- async 處理 I/O
+- 把 CPU 密集 task 丟到 thread pool
+
+# Python
+async def handle_request(req):
+    data = await fetch_from_db(req.id)        # async I/O
+    
+    # CPU 密集、不能在 event loop 跑
+    result = await asyncio.to_thread(
+        heavy_computation, data
+    )
+    
+    return result
+```
+
+  
+### Promise / Future：async 的回傳值
+
+```text
+async 函數不直接回值、回「未來會有的值」：
+
+# JS：Promise
+const promise = fetchUrl("...");
+// promise 不是字串、是「未來會變字串的東西」
+
+const result = await promise;
+// await = 「等 promise 完成、拿到值」
+
+# 不用 await 的話：
+promise.then(result => {
+    console.log(result);
+});
+
+# Python：Coroutine
+coro = fetch_url("...")
+# coro 是 coroutine object、不是字串
+
+result = await coro
+
+# Rust：Future
+let fut = fetch_url("...");
+let result = fut.await;
+
+→ async 函數 = 「未來會回值的承諾」
+→ await = 「兌現承諾」
+```
+
+  
+### Go：channel + goroutine
+
+```text
+Go 不用 async / await、用另一個模型：
+
+// goroutine = 輕量並發單位
+func fetchUrl(url string, ch chan
+    **🚀 進階技巧**
+    
+2026 並發選擇：**Web 後端 / API client 用 async**（Python asyncio / Node.js / Rust tokio）。**分散式系統 / 高並發服務用 Go**（goroutine 太強）。**純運算密集用 thread / process**（Python multiprocessing / Rust rayon）。新手別跳過這章—寫不好 async 是 production 大魔王、整個服務卡死的根源。先學**單線程 → thread → async** 三階段、別跳級。
+
+  
+
+  
+    
+      ⚡
+      學習加速器
+    
+    把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。

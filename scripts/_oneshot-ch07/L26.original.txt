@@ -1,0 +1,280 @@
+I/O = Input / Output。所有程式都跟外面世界互動—讀檔案、發網路請求、存資料庫。
+
+  
+### 檔案 I/O
+
+```text
+# Python
+# 讀檔案
+with open("data.txt", "r") as f:
+    content = f.read()
+    
+# 寫檔案
+with open("output.txt", "w") as f:
+    f.write("Hello")
+
+# 一行行讀
+with open("data.txt") as f:
+    for line in f:
+        print(line.strip())
+
+# JSON 檔案
+import json
+with open("config.json") as f:
+    config = json.load(f)
+
+# JS / Node.js
+import fs from 'fs';
+const content = fs.readFileSync('data.txt', 'utf-8');
+fs.writeFileSync('output.txt', 'Hello');
+
+// async 版
+const content = await fs.promises.readFile('data.txt', 'utf-8');
+
+# Go
+import "os"
+data, err := os.ReadFile("data.txt")
+err = os.WriteFile("output.txt", []byte("Hello"), 0644)
+
+# Rust
+use std::fs;
+let contents = fs::read_to_string("data.txt").unwrap();
+fs::write("output.txt", "Hello").unwrap();
+
+# Java
+String content = Files.readString(Paths.get("data.txt"));
+Files.writeString(Paths.get("output.txt"), "Hello");
+
+# C#
+string content = File.ReadAllText("data.txt");
+File.WriteAllText("output.txt", "Hello");
+```
+
+  
+### 讀寫模式
+
+```text
+# Python open() 第二個參數
+"r"    讀（預設）
+"w"    寫（蓋掉原本）
+"a"    追加（接在後面）
+"r+"   讀+寫
+"rb"   讀 binary（圖片、壓縮檔）
+"wb"   寫 binary
+
+# 例：圖片
+with open("photo.jpg", "rb") as f:
+    image_bytes = f.read()
+```
+
+  
+### 網路 I/O：HTTP 請求
+
+```text
+「從 API 拿資料」是現代 app 必備：
+
+# Python（requests 套件）
+import requests
+
+# GET
+r = requests.get("https://api.example.com/users")
+data = r.json()
+
+# POST
+r = requests.post(
+    "https://api.example.com/users",
+    json={"name": "Alice", "age": 30}
+)
+
+# 帶 header（如 API key）
+headers = {"Authorization": "Bearer YOUR_TOKEN"}
+r = requests.get("https://api.example.com/me", headers=headers)
+
+# Python async（aiohttp / httpx）
+import httpx
+
+async with httpx.AsyncClient() as client:
+    r = await client.get("https://api.example.com/users")
+    data = r.json()
+
+# JS（fetch、內建）
+const response = await fetch("https://api.example.com/users");
+const data = await response.json();
+
+// POST
+await fetch("https://api.example.com/users", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({name: "Alice", age: 30})
+});
+
+# Go
+import "net/http"
+resp, err := http.Get("https://api.example.com/users")
+defer resp.Body.Close()
+
+body, _ := io.ReadAll(resp.Body)
+
+# Rust（reqwest）
+let body = reqwest::get("https://api.example.com/users")
+    .await?
+    .text()
+    .await?;
+
+# Java
+HttpClient client = HttpClient.newHttpClient();
+HttpRequest request = HttpRequest.newBuilder()
+    .uri(URI.create("https://api.example.com/users"))
+    .build();
+HttpResponse response = client.send(request, BodyHandlers.ofString());
+```
+
+  
+### HTTP method 速記
+
+```text
+GET     讀資料（不改變）
+POST    建立新資料
+PUT     完整更新（替換）
+PATCH   部分更新
+DELETE  刪除
+
+# RESTful 慣例：
+GET    /users          → 列所有 user
+GET    /users/123      → 拿 user 123
+POST   /users          → 建新 user
+PUT    /users/123      → 完整更新 user 123
+PATCH  /users/123      → 改 user 123 的某欄
+DELETE /users/123      → 刪 user 123
+```
+
+  
+### 狀態碼（Status Code）
+
+```text
+2xx 成功：
+200  OK（一般成功）
+201  Created（建立成功）
+204  No Content（成功、沒內容）
+
+3xx 重新導向：
+301  永久重定向
+302  暫時重定向
+304  Not Modified（用快取）
+
+4xx 用戶端錯：
+400  Bad Request（請求格式錯）
+401  Unauthorized（沒登入）
+403  Forbidden（沒權限）
+404  Not Found（找不到）
+422  Unprocessable Entity（驗證失敗）
+429  Too Many Requests（rate limit）
+
+5xx 伺服器錯：
+500  Internal Server Error（內部錯）
+502  Bad Gateway
+503  Service Unavailable
+504  Gateway Timeout
+
+→ 看狀態碼知問題在哪
+→ 4xx 你的鍋、5xx 對方的鍋
+```
+
+  
+### 資料庫 I/O
+
+```text
+# Python（用 ORM、SQLAlchemy）
+from sqlalchemy import create_engine, Column, Integer, String
+from sqlalchemy.orm import declarative_base, sessionmaker
+
+engine = create_engine("postgresql://user:pass@localhost/db")
+Base = declarative_base()
+
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+
+Session = sessionmaker(bind=engine)
+session = Session()
+
+# 查
+users = session.query(User).all()
+user = session.query(User).filter_by(id=1).first()
+
+# 新增
+new_user = User(name="Alice")
+session.add(new_user)
+session.commit()
+
+# 改
+user.name = "Bob"
+session.commit()
+
+# 刪
+session.delete(user)
+session.commit()
+
+# JS / Node.js（Prisma）
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
+
+// 查
+const users = await prisma.user.findMany();
+const user = await prisma.user.findUnique({where: {id: 1}});
+
+// 新增
+await prisma.user.create({
+    data: {name: "Alice"}
+});
+
+# Go（GORM）
+db, _ := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+
+var users []User
+db.Find(&users)
+db.Create(&User{Name: "Alice"})
+
+# Rust（sqlx）
+let users: Vec = sqlx::query_as!(User, "SELECT * FROM users")
+    .fetch_all(&pool).await?;
+```
+
+  
+### SQL vs NoSQL
+
+```text
+SQL（關聯式）：
+- PostgreSQL、MySQL、SQLite
+- 強結構（schema）
+- ACID 保證
+- 用 JOIN
+- 適合：交易、金融、結構化資料
+
+NoSQL：
+- MongoDB（文件）
+- Redis（key-value）
+- DynamoDB（key-value）
+- Cassandra（columnar）
+- Neo4j（graph）
+- 適合：彈性 schema、大規模、特殊資料
+
+2026 主流：
+- PostgreSQL（最通用）+ Redis（快取）
+- 90% indie 用 PostgreSQL 就夠
+```
+
+  
+**☕ 用人話講**
+
+I/O = 跟外面世界互動。新手 3 個必會：(1) **檔案 I/O**—讀寫 .txt / .json (2) **HTTP API**—呼叫別人的 API（用 requests / fetch） (3) **資料庫**—存資料（PostgreSQL + ORM）。**I/O 比 CPU 慢 1000-1000000 倍**—所以 async 才那麼重要。寫 backend / API client 必懂這 3 個 + async 配合。
+
+  
+
+  
+
+🎯
+面試考點
+
+台灣科技公司面試 90% 會問「程式邏輯」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。

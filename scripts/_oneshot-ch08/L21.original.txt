@@ -1,0 +1,342 @@
+2026 indie SaaS 主流 stack：**Next.js + TypeScript + Tailwind + shadcn/ui + Drizzle + React Query + Vercel**。
+
+  
+### 完整 stack 概覽
+
+```text
+2026 indie SaaS 黃金組合：
+
+Framework：Next.js 15+ (App Router)
+Language：TypeScript
+Styling：Tailwind CSS v4 + shadcn/ui
+
+State / Data：
+- React Query（server state）
+- Zustand（client state）
+- React Hook Form + Zod（form）
+
+Database：
+- PostgreSQL + Drizzle ORM
+- 或 Prisma
+
+Auth：Clerk / better-auth / NextAuth.js
+Email：Resend + React Email
+Payments：Stripe / Polar
+AI：Vercel AI SDK + Anthropic / OpenAI
+Storage：Vercel Blob / Cloudflare R2
+Deployment：Vercel
+```
+
+  
+### 專案 init
+
+```bash
+# 1. Next.js
+$ npx create-next-app@latest my-saas \
+    --typescript --tailwind --eslint --app --src-dir
+
+$ cd my-saas
+
+# 2. shadcn/ui
+$ npx shadcn@latest init
+$ npx shadcn@latest add button card input dialog toast
+
+# 3. React Query
+$ npm install @tanstack/react-query
+
+# 4. Form
+$ npm install react-hook-form zod @hookform/resolvers
+
+# 5. State
+$ npm install zustand
+
+# 6. Database
+$ npm install drizzle-orm postgres
+$ npm install -D drizzle-kit
+
+# 7. Auth（Clerk）
+$ npm install @clerk/nextjs
+
+# 8. Email
+$ npm install resend react-email
+
+# 9. AI
+$ npm install ai @ai-sdk/anthropic
+
+# 10. Utilities
+$ npm install clsx tailwind-merge date-fns lucide-react
+
+# 30 分鐘 setup 完成
+```
+
+  
+### Folder structure
+
+```text
+my-saas/
+├── src/
+│   ├── app/                  # Next.js App Router
+│   │   ├── (auth)/
+│   │   │   ├── sign-in/
+│   │   │   └── sign-up/
+│   │   ├── (dashboard)/
+│   │   │   ├── layout.tsx
+│   │   │   └── page.tsx
+│   │   ├── api/
+│   │   ├── layout.tsx
+│   │   ├── page.tsx
+│   │   └── globals.css
+│   │
+│   ├── components/
+│   │   ├── ui/               # shadcn/ui
+│   │   ├── dashboard/
+│   │   └── shared/
+│   │
+│   ├── lib/
+│   │   ├── db/
+│   │   ├── auth.ts
+│   │   ├── ai.ts
+│   │   └── utils.ts
+│   │
+│   ├── actions/              # Server actions
+│   ├── hooks/
+│   ├── types/
+│   └── middleware.ts
+│
+├── public/
+├── drizzle/
+├── .env.local
+└── package.json
+```
+
+  
+### Auth：Clerk 設定
+
+```tsx
+// 1. Provider
+// app/layout.tsx
+import { ClerkProvider } from "@clerk/nextjs";
+
+export default function RootLayout({ children }) {
+    return (
+        
+            {children}
+        
+    );
+}
+
+// 2. Middleware
+// middleware.ts
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+
+const isProtected = createRouteMatcher(["/dashboard(.*)"]);
+
+export default clerkMiddleware((auth, req) => {
+    if (isProtected(req)) auth().protect();
+});
+
+// 3. Sign-in page
+// app/sign-in/[[...sign-in]]/page.tsx
+import { SignIn } from "@clerk/nextjs";
+
+export default function Page() {
+    return ;
+}
+
+// 4. 用 user
+// app/dashboard/page.tsx
+import { currentUser } from "@clerk/nextjs/server";
+
+export default async function Dashboard() {
+    const user = await currentUser();
+    return Hello {user?.firstName};
+}
+```
+
+  
+### Database：Drizzle
+
+```ts
+// lib/db/schema.ts
+import { pgTable, serial, text, timestamp, integer } from "drizzle-orm/pg-core";
+
+export const users = pgTable("users", {
+    id: serial("id").primaryKey(),
+    clerkId: text("clerk_id").unique().notNull(),
+    email: text("email").notNull(),
+    createdAt: timestamp("created_at").defaultNow()
+});
+
+export const posts = pgTable("posts", {
+    id: serial("id").primaryKey(),
+    title: text("title").notNull(),
+    content: text("content"),
+    authorId: integer("author_id").references(() => users.id),
+    createdAt: timestamp("created_at").defaultNow()
+});
+
+// lib/db/index.ts
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
+import * as schema from "./schema";
+
+const queryClient = postgres(process.env.DATABASE_URL!);
+export const db = drizzle(queryClient, { schema });
+
+// Migrate
+$ npx drizzle-kit generate
+$ npx drizzle-kit migrate
+
+// 查詢
+import { db } from "@/lib/db";
+import { posts } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
+
+const allPosts = await db.select().from(posts);
+
+const userPosts = await db
+    .select()
+    .from(posts)
+    .where(eq(posts.authorId, 1));
+
+const newPost = await db.insert(posts).values({
+    title: "Hello",
+    content: "...",
+    authorId: 1
+}).returning();
+```
+
+  
+### 完整 CRUD example
+
+```tsx
+// actions/posts.ts
+"use server";
+
+import { db } from "@/lib/db";
+import { posts } from "@/lib/db/schema";
+import { revalidatePath } from "next/cache";
+import { z } from "zod";
+
+const CreatePostSchema = z.object({
+    title: z.string().min(1),
+    content: z.string().min(10)
+});
+
+export async function createPost(formData: FormData) {
+    const parsed = CreatePostSchema.safeParse({
+        title: formData.get("title"),
+        content: formData.get("content")
+    });
+    
+    if (!parsed.success) {
+        return { error: parsed.error.flatten() };
+    }
+    
+    await db.insert(posts).values({
+        ...parsed.data,
+        authorId: 1
+    });
+    
+    revalidatePath("/posts");
+    return { success: true };
+}
+
+// app/posts/page.tsx
+import { db } from "@/lib/db";
+import { posts } from "@/lib/db/schema";
+import { CreatePostForm } from "./CreatePostForm";
+
+export default async function PostsPage() {
+    const allPosts = await db.select().from(posts);
+    
+    return (
+        
+            
+            {allPosts.map(post => (
+                
+                    
+## {post.title}
+
+                    
+{post.content}
+
+                
+            ))}
+        
+    );
+}
+
+// app/posts/CreatePostForm.tsx
+"use client";
+
+import { useTransition } from "react";
+import { createPost } from "@/actions/posts";
+
+export function CreatePostForm() {
+    const [pending, startTransition] = useTransition();
+    
+    return (
+         startTransition(() => createPost(fd))}>
+            
+            
+            
+                {pending ? "Saving..." : "Create"}
+            
+        
+    );
+}
+```
+
+  
+### Deployment：Vercel
+
+```text
+1 條 command：
+$ vercel deploy
+
+或：
+1. push 到 GitHub
+2. connect Vercel
+3. 自動 deploy
+
+CI/CD 內建：
+- 每 push 自動 deploy
+- preview deployments per PR
+- 1 click rollback
+
+時間：1 個 SaaS 從 0 到上線 = 1 天
+```
+
+  
+### 業界 2026 範例
+
+```text
+用同樣 stack 的 indie SaaS：
+- Cal.com（open source）
+- shadcn/ui
+- Resend
+- Polar.sh
+- Documenso
+
+學習：
+1. 看 cal.com source code
+2. 用 Vercel templates 起手
+3. 抄 shadcn/ui patterns
+
+3 個月：能 ship 看起來像 50 人團隊的 SaaS
+```
+
+  
+**☕ 用人話講**
+
+2026 React stack 心法：(1) **Next.js + Vercel 一體**—部署 1 條 command (2) **shadcn/ui + Tailwind**—UI 不用想 (3) **Drizzle + Postgres**—Type-safe DB (4) **Clerk auth**—5 分鐘解決 (5) **Server Components 預設**—性能 + SEO 自動好。
+
+  
+
+  
+
+⚡
+學習加速器
+
+把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。

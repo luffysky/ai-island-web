@@ -1,0 +1,195 @@
+學完 22 lessons 是**起點**—持續精進的路徑。
+
+  
+### 3 階段學習路徑
+
+```text
+階段 1：能寫（前 1-2 個月）
+✓ JSX / Component / Props
+✓ useState / useEffect
+✓ Event handling
+✓ Forms（React Hook Form）
+✓ Data fetching（React Query）
+✓ Basic Next.js
+
+目標：ship 1 個 production SaaS
+
+階段 2：能精準（2-6 個月）
+✓ Custom hooks
+✓ Context / Reducer
+✓ Performance（memo / virtualization）
+✓ Testing（Vitest + Playwright）
+✓ Server Components / Server Actions
+✓ Optimistic updates
+
+目標：能進 React job、寫 large codebase
+
+階段 3：能設計（6 個月+）
+✓ Design patterns（compound / render props）
+✓ State machine（XState）
+✓ Advanced TypeScript
+✓ Library 設計（shadcn/ui style）
+✓ Edge runtime / Streaming
+✓ React internals
+
+目標：senior、能 mentor 別人
+```
+
+  
+### 推薦資源
+
+```text
+免費資源：
+
+1. React 官方 docs（react.dev）
+   - 2024 重寫過、超優質
+   - 必讀
+
+2. Next.js 官方 docs（nextjs.org）
+   - App Router 完整
+
+3. Theo - t3.gg（YouTube）
+   - 業界 React 評論
+   - 最新趨勢
+
+4. shadcn/ui 範例
+   - 看業界最高品質 React + TS
+
+5. Vercel templates
+   - vercel.com/templates
+
+付費資源：
+
+1. Epic React（Kent C. Dodds）—$700+
+2. Total TypeScript—含 React 進階
+3. Egghead
+
+YouTube：
+- Theo（@t3dotgg）
+- Jack Herrington
+- ByteGrad
+
+部落格：
+- React.dev
+- Vercel blog
+- TkDodo（React Query 作者）
+```
+
+  
+### 實戰專案推薦
+
+```text
+練習專案（從簡單到複雜）：
+
+入門（1-2 週）：
+1. Todo App
+2. Pokemon explorer
+3. 計算機 / 計時器
+4. Markdown editor
+
+中階（2-4 週）：
+1. Blog with comments
+2. Chat app
+3. Notion-clone
+4. Image gallery
+
+高階（1-3 個月）：
+1. SaaS dashboard（Auth + DB + Subscription）
+2. AI chatbot（streaming）
+3. Code sandbox
+4. Real-time collab
+
+關鍵：
+- 自己想題目、自己解
+- 卡了再 Google
+- ship 真用戶能用的
+```
+
+  
+### 讀什麼 source code
+
+```text
+從簡單到複雜：
+
+入門：
+- shadcn/ui（元件設計）
+- react-hook-form examples
+- next.js examples folder
+
+中階：
+- Cal.com（完整 SaaS）
+- Resend Dashboard
+- Vercel Examples
+
+高階：
+- Next.js 本身
+- React 本身
+- TanStack Query
+
+讀法：
+1. 看 README + examples
+2. 用過、感受 API
+3. 從 public API 入口讀
+4. 跟著看實作
+```
+
+  
+### 2026 業界趨勢
+
+```text
+1. RSC + Server Actions 普及
+2. React Compiler 自動優化
+3. AI-first development（Cursor / Copilot）
+4. shadcn/ui 模式延伸
+5. Edge runtime
+6. Streaming UI
+7. Type-safe full stack（tRPC / Drizzle / Zod）
+
+學習要持續：
+- 每月 1 個新東西
+- 不追每個潮、看主流
+- React 不變、ecosystem 變快
+```
+
+  
+### 給 indie 的最後建議
+
+```text
+1. 不要追新框架
+   - React + Next.js 5+ 年仍主流
+
+2. ship > perfect
+   - 上線 + iterate 才能進步
+
+3. 看 source code > 看 tutorial
+   - shadcn / Cal.com / Resend
+
+4. 寫 type-safe code
+   - TypeScript strict
+   - Zod validate
+
+5. Test 重要但不要 100%
+   - 80% coverage 夠
+
+6. 投資 indie：
+   - Vercel + Clerk + Resend + Polar
+   - 不要從零造輪
+
+7. Build in public
+   - Twitter / Threads 分享
+   - 拿 feedback
+```
+
+  
+**☕ 用人話講**
+
+React 變強 3 條路：(1) **每天寫 React 1 小時**—肌肉記憶 (2) **每月 ship 1 個小專案**—實作累積 (3) **讀好 codebase**—shadcn/ui / Cal.com。**2026 indie stack 標配**：Next.js + TS + Tailwind + shadcn/ui + React Query + Drizzle + Clerk。**3 個月後**你能 ship 真正的 indie SaaS。
+
+  
+
+  
+
+🚀
+2026 趨勢
+
+這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。

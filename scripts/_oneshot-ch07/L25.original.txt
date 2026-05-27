@@ -1,0 +1,264 @@
+「**處理文字**」是程式最常做的事—爬資料、清資料、表單驗證、log 分析—全是字串處理。
+
+  
+### 常用字串操作
+
+```text
+所有語言類似：
+
+# 長度
+len("hello")             # Python: 5
+"hello".length           // JS: 5
+len("hello")             // Go: 5
+"hello".len()            // Rust: 5
+
+# 大小寫
+"hello".upper()          # Python: "HELLO"
+"hello".toUpperCase()    // JS
+strings.ToUpper("hello") // Go
+
+# 切割
+"a,b,c".split(",")       # ["a", "b", "c"]（多語言通用）
+
+# 拼接
+",".join(["a", "b", "c"])   # Python
+["a", "b", "c"].join(",")   // JS
+strings.Join([]string{"a","b"}, ",")  // Go
+
+# 替換
+"hello".replace("l", "L")    # 多語言通用 "heLLo"
+
+# 包含
+"hello" in "hello world"     # Python: True
+"hello world".includes("hello")  // JS: true
+"hello world".contains("hello")  // Java / Kotlin
+
+# 開頭 / 結尾
+"hello.py".endswith(".py")        # Python
+"hello.py".endsWith(".py")         // JS / Java
+strings.HasSuffix("hello.py", ".py") // Go
+
+# 去前後空白
+"  hello  ".strip()              # Python: "hello"
+"  hello  ".trim()               // JS / Java
+strings.TrimSpace("  hello  ")   // Go
+
+# 子字串
+"hello"[1:4]             # Python: "ell"
+"hello".substring(1, 4)  // JS
+"hello"[1..4]            // Rust
+```
+
+  
+### 字串內插（Template）
+
+```text
+# Python（f-string）
+name = "Alice"
+age = 30
+print(f"{name} is {age} years old")
+# "Alice is 30 years old"
+
+# JS（template literal）
+const greeting = `${name} is ${age} years old`;
+
+# Go（fmt.Sprintf）
+fmt.Sprintf("%s is %d years old", name, age)
+
+# Rust（format!）
+format!("{} is {} years old", name, age)
+
+# Java（String.format / "+"）
+String.format("%s is %d years old", name, age)
+name + " is " + age + " years old"
+
+# C#
+$"{name} is {age} years old"
+
+# Kotlin
+"$name is $age years old"
+
+# Swift
+"\(name) is \(age) years old"
+
+# PHP
+"$name is $age years old"
+"{$name} is {$age} years old"
+
+# Ruby
+"#{name} is #{age} years old"
+
+→ 大多 2020+ 語言支援內插
+→ 比 + 拼接好讀 10 倍
+```
+
+  
+### 正則表達式（Regex）：文字模式匹配
+
+```text
+正則 = 「用 pattern 找 / 替換文字」：
+
+# Python
+import re
+
+# 抓 Email
+text = "聯絡 alice@example.com 或 bob@test.org"
+emails = re.findall(r'\S+@\S+', text)
+# ['alice@example.com', 'bob@test.org']
+
+# 替換
+clean = re.sub(r'\d+', '[數字]', "我 25 歲、有 3 隻狗")
+# "我 [數字] 歲、有 [數字] 隻狗"
+
+# 檢查格式
+def is_valid_email(s):
+    pattern = r'^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    return re.match(pattern, s) is not None
+
+# JS
+const text = "聯絡 alice@example.com";
+const emails = text.match(/\S+@\S+/g);
+
+const isEmail = (s) => /^[\w.-]+@[\w.-]+\.\w+$/.test(s);
+
+# Go
+import "regexp"
+
+re := regexp.MustCompile(`\S+@\S+`)
+matches := re.FindAllString(text, -1)
+
+# Java
+Pattern p = Pattern.compile("\\S+@\\S+");
+Matcher m = p.matcher(text);
+```
+
+  
+### 正則基本語法
+
+```text
+字元類：
+.       任何字（除換行）
+\d      數字 0-9
+\D      非數字
+\w      字、數字、底線
+\W      非字
+\s      空白（space、tab、換行）
+\S      非空白
+[abc]   a 或 b 或 c
+[^abc]  不是 abc
+[a-z]   a 到 z
+
+量詞：
+*       0 次或多次
++       1 次或多次
+?       0 或 1 次
+{3}     正好 3 次
+{2,5}   2 到 5 次
+{3,}    至少 3 次
+
+位置：
+^       開頭
+$       結尾
+\b      字邊界
+
+群組：
+(abc)   抓取群組
+(?:abc) 不抓取群組
+a|b     a 或 b
+
+例子：
+^\d{4}-\d{2}-\d{2}$        # 日期 YYYY-MM-DD
+\b\d{10}\b                  # 10 位數電話
+[A-Z][a-z]+                 # 開頭大寫的字
+\d+\.\d+                    # 浮點數
+```
+
+  
+### 常用正則範例
+
+```text
+# Email
+^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$
+
+# 台灣手機（09xx-xxx-xxx 或 09xxxxxxxx）
+^09\d{2}-?\d{3}-?\d{3}$
+
+# 台灣身分證
+^[A-Z][12]\d{8}$
+
+# 強密碼（8+、含大小寫、數字、特殊符號）
+^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$
+
+# URL
+^https?://[\w.-]+(?:\.[\w]+)+[/\w\-._?=&%]*$
+
+# 抓 HTML 標籤（不建議！HTML 用 parser）
+]+)>
+
+# 抓 hashtag
+#\w+
+
+# 抓 mention
+@\w+
+```
+
+  
+### 正則陷阱
+
+```text
+1. 貪婪 vs 非貪婪
+   .*    貪婪、能多吃就多吃
+   .*?   非貪婪、最少匹配
+
+text = "hello world"
+re.findall(r'.*', text)
+# ['hello world']  ❌ 一口吞
+
+re.findall(r'.*?', text)
+# ['hello', 'world']  ✓ 各自匹配
+
+2. 跳脫字元
+   . 是「任何字」、想找真的 . 要 \.
+   \. 是「真的 .」
+
+3. 效能
+   複雜正則跑大文字會慢
+   常用 pattern 預編譯（regex.compile）
+
+4. ReDoS（正則 DoS 攻擊）
+   壞 pattern 遇特殊輸入無限迴圈
+   例：(a+)+ 遇 "aaaaa..." 爆炸
+   生產環境用 timeout 保護
+```
+
+  
+### 2026 進階：用 AI 寫正則
+
+```text
+正則學起來痛苦—2026 直接讓 AI 寫：
+
+問 ChatGPT / Claude：
+「給我抓所有 LINE Pay 訂單號的 regex、
+訂單號格式：LINE-2026-XXXXXX-X
+其中 X 是英數」
+
+→ AI 給：r'LINE-\d{4}-[A-Z0-9]{6}-[A-Z0-9]'
+
+→ 你 review 確認、然後用
+→ 不用背語法
+→ 但要看懂、不能亂用
+```
+
+  
+**☕ 用人話講**
+
+字串處理是 80% 工作。基本操作（split / replace / contains）一定會。**正則**看起來像火星文、但寫一次能解 100 個問題—Email 驗證、文字抓取、format 檢查。新手 3 步：(1) 學會基本字串操作 (2) 認得正則基本符號（. * + \d \w） (3) 複雜正則讓 AI 寫、自己看懂改。**不用全記、需要時查 regexr.com 或問 AI**。
+
+  
+
+  
+
+💼
+接案小知識
+
+剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「程式邏輯」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。

@@ -1,0 +1,195 @@
+從最底層開始—**程式**就是「給電腦的指令清單」。但「電腦」只懂 0 跟 1。你寫的 Python、JS、Go—中間發生什麼？
+
+  
+### 從一段話到 CPU 執行
+
+```text
+你寫的：
+print("Hello")
+                    ↓
+變成：
+電腦能懂的指令（machine code）
+01001000 10100101 11110000 ...
+                    ↓
+CPU 執行：
+讀指令 → 算 → 寫記憶體 → 螢幕顯示「Hello」
+
+中間轉換 = 編譯（compile）或直譯（interpret）
+```
+
+  
+### 編譯型語言（Compiled）
+
+  
+原始碼**一次轉成**機器碼、之後直接執行：
+
+```text
+你的 .go / .rs / .c 檔
+        ↓ go build / rustc / gcc
+.exe 或執行檔（含機器碼）
+        ↓ 直接執行
+CPU 跑
+
+代表語言：
+- C / C++
+- Go
+- Rust
+- Swift
+- Kotlin（編成 JVM bytecode 算半編譯）
+
+優點：
+- 執行快（已轉成機器碼）
+- 部署簡單（一個 binary）
+- 不需要安裝 runtime
+
+缺點：
+- 編譯花時間（大專案幾分鐘）
+- 跨平台要重編（Mac / Windows / Linux 各一份）
+```
+
+  
+### 直譯型語言（Interpreted）
+
+  
+原始碼**不轉成機器碼**—另一個程式（直譯器）一行一行讀 + 執行：
+
+```text
+你的 .py / .rb / .js 檔
+        ↓ python / ruby / node
+直譯器讀一行 → 執行一行
+        ↓
+顯示結果
+
+代表語言：
+- Python
+- Ruby
+- JavaScript（瀏覽器 / Node）
+- PHP
+
+優點：
+- 寫完直接跑（沒編譯等）
+- 跨平台天然（裝直譯器就能跑）
+- 改 code 不用重編
+
+缺點：
+- 執行慢（一邊翻譯一邊跑）
+- 需要 runtime（裝 Python / Node）
+- 錯誤要跑到才發現
+```
+
+  
+### JIT 編譯（Just-In-Time）：中間派
+
+  
+2026 主流策略—**跑的時候邊翻譯邊優化**：
+
+```text
+原始碼
+   ↓ 直譯器先讀
+邊執行邊發現「這段常跑」
+   ↓ 動態編譯成機器碼
+之後跑這段直接用機器碼（快）
+
+代表：
+- Java（JVM）
+- C#（.NET）
+- JavaScript V8（Node / Chrome）
+- LuaJIT
+- PyPy（Python 的 JIT 版）
+
+優點：兼具直譯彈性 + 編譯速度
+缺點：啟動慢（先要熱身）
+```
+
+  
+### 2026 模糊化：界線越來越淡
+
+  
+傳統分類已過時、現在大多語言**混合**：
+
+  
+- **Python**—直譯為主、但 PyPy / Cython 可編譯
+- **JavaScript**—V8 用 JIT、Bun / Deno 加入 AOT 編譯
+- **Go**—編譯型、但跑得跟 JIT 一樣快
+- **Rust**—編譯型、但開發體驗近直譯（cargo run）
+- **Kotlin**—編譯到 JVM bytecode / 也能 native
+
+  
+### 實戰：你怎麼選
+
+```text
+1. 要極致速度 + 系統程式
+   → Rust / Go / C++（編譯型）
+
+2. 快速 prototype + indie SaaS
+   → Python / JavaScript / Ruby（直譯型）
+
+3. 企業大型專案 + JVM 生態
+   → Java / Kotlin / C#（JIT 編譯）
+
+4. Web 前端
+   → JavaScript / TypeScript（瀏覽器只跑 JS）
+
+5. 行動 App
+   → Swift（iOS）/ Kotlin（Android）/ Dart（Flutter）
+
+6. 遊戲
+   → C# (Unity) / C++ (Unreal)
+```
+
+  
+### 同個程式、不同語言怎麼跑
+
+```text
+「印出 Hello World」：
+
+Python（直譯）：
+print("Hello")
+$ python hello.py    # 直接跑
+
+JavaScript（直譯）：
+console.log("Hello");
+$ node hello.js      # 直接跑
+
+Go（編譯）：
+package main
+import "fmt"
+func main() { fmt.Println("Hello") }
+$ go build hello.go && ./hello   # 先編再跑
+
+Rust（編譯）：
+fn main() { println!("Hello"); }
+$ cargo run          # 編 + 跑（cargo 包了）
+
+Java（編譯到 JVM）：
+public class Hello {
+    public static void main(String[] args) {
+        System.out.println("Hello");
+    }
+}
+$ javac Hello.java && java Hello   # 編成 .class 再跑
+
+→ 同樣是「印 Hello」、流程差很多
+→ 但邏輯一樣
+```
+
+  
+**☕ 用人話講**
+
+編譯 = 像翻譯一整本書、之後讀者直接讀翻譯本（快但要等翻譯）。直譯 = 即席口譯、講一句翻一句（慢但立刻能聽）。JIT = 邊翻譯邊優化、常見句子翻過就記住。2026 大多語言用 JIT 折衷—兼具兩者優點。
+
+  
+
+  
+**🚀 進階技巧**
+
+選語言不要被「快 / 慢」迷惑。Instagram 用 Python（直譯、慢）服務 20 億用戶—因為瓶頸不在語言、在 DB / 網路。Discord 從 Go 換 Rust 因為 GC 暫停影響低延遲—語言選擇取決於**真實瓶頸**、不是 benchmark 數字。新手選你**能寫得快**的語言、不是**跑得最快**的。
+
+  
+
+  
+
+💼
+接案小知識
+
+剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「程式邏輯」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。

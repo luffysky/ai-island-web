@@ -1,0 +1,203 @@
+先講**為什麼這麼多人用 React**—理解後學起來才知道方向。
+
+  
+### 前端的 3 個時代
+
+```text
+1995-2010：jQuery 時代
+- $(".btn").click(function() { ... })
+- 直接操作 DOM
+- 簡單但越大越亂
+
+2010-2015：MVC 時代
+- Angular 1、Backbone、Ember
+- Two-way binding、route、ORM 全有
+- 太重、學習曲線陡
+
+2013-now：Component 時代
+- React 發明「拆 component」思路
+- 取代 jQuery、打敗 Angular
+- 一切都是 component
+
+2026 主流：
+- React 70%（業界最普及）
+- Vue 15%（亞洲 / 中小公司）
+- Svelte 5%（追求簡單）
+- Angular 5%（企業老專案）
+- Solid / Qwik 5%（新興）
+```
+
+  
+### React 的核心想法
+
+```text
+3 個核心：
+
+1. Component（元件）
+   - UI 拆成可重用的 component
+   - 像樂高一樣組合
+   -   
+
+2. Props（傳資料）
+   - 父 component 傳資料給子
+   - 單向流動（top → bottom）
+   - 不能反向改
+
+3. State（狀態）
+   - Component 內部資料
+   - 變了自動 re-render
+   - 例：count、isOpen、user
+
+口訣：UI = f(state)
+- UI 是 state 的函式
+- state 變、UI 變
+- 不直接改 DOM、改 state
+```
+
+  
+### React vs 其他框架
+
+  
+|  | React | Vue | Svelte | Angular |
+| --- | --- | --- | --- | --- |
+| 創造者 | Meta | 尤雨溪 | Rich Harris | Google |
+| 學習曲線 | 中 | 低 | 低 | 高 |
+| 生態 | 最大 | 大 | 中 | 中 |
+| 市場 | 70% | 15% | 5% | 5% |
+| 適合 | 幾乎所有 | 中小型 | 簡單app | 企業大型 |
+| 2026 推薦 | 主流首選 | 亞洲團隊 | 個人 | 不推薦新 |
+
+  
+### 為什麼 React 贏
+
+```text
+1. 簡單核心
+   - 不像 Angular 一堆 magic
+   - 學會 component + props + state = 80%
+
+2. 生態最大
+   - npm React 套件 50 萬+
+   - Next.js / Remix / Gatsby framework
+   - 任何問題 stack overflow 有答
+
+3. Meta 背書
+   - Facebook / Instagram / WhatsApp 都用
+   - 投資穩定
+
+4. 招聘市場大
+   - 75% 前端 job 要 React
+   - 學了找工作容易
+
+5. Server Components 革命（2023+）
+   - 解決 SPA 弱點
+   - Next.js App Router 領先
+
+6. AI / LLM 友好
+   - Cursor / Copilot 寫 React 比 Vue 好
+   - 訓練資料最多
+```
+
+  
+### React 的痛點
+
+```text
+1. 不是 batteries included
+   - 沒內建 router、要 React Router
+   - 沒內建 state mgmt、要 Zustand
+   - 沒內建 form、要 React Hook Form
+
+2. JSX 學習曲線
+   - HTML 跟 JS 混
+   - 第一週看不慣
+
+3. 太多選擇
+   - 100 種狀態管理 lib
+   - 5 種 routing 方法
+   - 新手會 paralyzed
+
+4. 性能優化複雜
+   - 預設 re-render 多
+   - 要懂 memo / callback
+
+5. 工具鏈快變
+   - Webpack → Vite → ?
+   - CRA 棄用 → Vite
+   - 2 年一輪
+```
+
+  
+### 2026 React 趨勢
+
+```text
+1. Next.js 變 default framework
+   - Vercel 投資 + 推動
+   - App Router + RSC + Server Actions
+   - 不只 React、是「整套」
+
+2. Server Components 普及
+   - 預設 Server、需要才 Client
+   - Bundle 變小、SEO 變好
+
+3. shadcn/ui + Tailwind 主流
+   - 元件就是 copy code
+   - 設計系統內建
+
+4. React 19 改進
+   - Actions（用 form 簡單）
+   - useTransition / useOptimistic
+   - 編譯器（自動 memo）
+
+5. TypeScript 標配
+   - 95% 新專案 TS
+   - 不寫 JS
+
+6. Edge / RSC / Streaming
+   - 全 region 部署
+   - 邊緣運算
+```
+
+  
+### 該不該學 React？
+
+```text
+該學：
+✓ 想找前端 / 全端工作
+✓ 想 ship indie SaaS（最快路徑）
+✓ 想學業界主流（投資 ROI 高）
+✓ 已會 HTML/CSS/JS 基本
+✓ 想用 Next.js / Vercel 部署
+
+不該學（或先別）：
+✗ 只想做靜態網站（用 Astro / Hugo）
+✗ 已用 Vue 而且滿意（沒必要換）
+✗ 完全沒寫過 JS（先學 JS 1 個月）
+✗ 想做 native mobile app（學 Swift / Kotlin）
+   - 雖然有 React Native
+   - 但 native 仍是 native 好
+
+2026 indie 真實：
+- 90% indie SaaS 用 React
+- 不會 React = 看不懂 90% open source
+- 學會 = 進大廠 / ship SaaS 都能
+```
+
+  
+**☕ 用人話講**
+
+React 心法 3 個：(1) **Component**—UI 拆成像樂高的塊 (2) **Props**—父傳資料給子 (3) **State**—內部狀態、變了自動 re-render。**口訣**：UI = f(state)。**2026 真實**：React 70% 市場、生態最大、AI 最會寫—不學會落後。
+
+  
+
+  
+**🚀 進階技巧**
+
+學 React 路徑：(1) **第 1-2 週**—JSX / Component / Props / State 基本 (2) **第 3-4 週**—Hooks（useEffect / useRef / Custom Hook） (3) **第 5-6 週**—Form / Data fetching / Routing (4) **第 7-8 週**—Next.js App Router + RSC (5) **第 9-12 週**—ship 1 個 production SaaS。**3 個月能 ship**。
+
+  
+
+  
+
+💼
+接案小知識
+
+剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「React」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。

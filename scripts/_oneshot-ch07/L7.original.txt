@@ -1,0 +1,310 @@
+函數 = 「**給一段 code 取個名字、之後叫名字就執行**」。是程式設計最重要的抽象工具—DRY（Don't Repeat Yourself）的核心。
+
+  
+### 基本函數：6 個語言對比
+
+```text
+Python：
+def greet(name):
+    return f"Hello, {name}"
+
+print(greet("Alice"))   # Hello, Alice
+
+JavaScript：
+function greet(name) {
+    return `Hello, ${name}`;
+}
+
+// 或 arrow function
+const greet = (name) => `Hello, ${name}`;
+
+TypeScript（加型別）：
+function greet(name: string): string {
+    return `Hello, ${name}`;
+}
+
+const greet = (name: string): string => `Hello, ${name}`;
+
+Go：
+func greet(name string) string {
+    return fmt.Sprintf("Hello, %s", name)
+}
+
+Rust：
+fn greet(name: &str) -> String {
+    format!("Hello, {}", name)
+}
+
+Java：
+public static String greet(String name) {
+    return "Hello, " + name;
+}
+
+C#：
+public static string Greet(string name) {
+    return $"Hello, {name}";
+}
+
+Ruby：
+def greet(name)
+    "Hello, #{name}"
+end
+
+→ 邏輯一樣：取輸入、做事、回結果
+→ 差別：型別標、語法符號
+```
+
+  
+### 函數的 4 個元素
+
+```text
+1. 名字（greet）—怎麼叫
+2. 參數（name）—輸入
+3. 主體（return ...）—做什麼
+4. 回傳值（"Hello, ..."）—輸出
+
+完整公式：
+input → function → output
+```
+
+  
+### 多個參數 + 預設值
+
+```text
+Python：
+def greet(name, greeting="Hello", punctuation="!"):
+    return f"{greeting}, {name}{punctuation}"
+
+greet("Alice")                          # "Hello, Alice!"
+greet("Alice", "Hi")                    # "Hi, Alice!"
+greet("Alice", punctuation="?")         # 關鍵字參數
+
+JavaScript：
+function greet(name, greeting = "Hello", punctuation = "!") {
+    return `${greeting}, ${name}${punctuation}`;
+}
+
+Go（沒預設參數）：
+func greet(name string, greeting string, punctuation string) string {
+    return greeting + ", " + name + punctuation
+}
+
+Rust（沒預設參數、用 Option）：
+fn greet(name: &str, greeting: Option) -> String {
+    let g = greeting.unwrap_or("Hello");
+    format!("{}, {}!", g, name)
+}
+
+→ Python / JS / TS / C# 都有預設值
+→ Go / Rust / Java 沒（哲學不同）
+```
+
+  
+### 可變參數（*args / Variadic）
+
+```text
+「不確定有幾個參數」：
+
+Python（*args / **kwargs）：
+def sum_all(*numbers):
+    return sum(numbers)
+
+sum_all(1, 2, 3)         # 6
+sum_all(1, 2, 3, 4, 5)   # 15
+
+def create_user(**kwargs):
+    print(kwargs)
+
+create_user(name="Alice", age=25)
+
+JavaScript（...rest）：
+function sumAll(...numbers) {
+    return numbers.reduce((a, b) => a + b, 0);
+}
+
+sumAll(1, 2, 3, 4, 5);  // 15
+
+Go（variadic）：
+func sumAll(numbers ...int) int {
+    total := 0
+    for _, n := range numbers {
+        total += n
+    }
+    return total
+}
+
+→ 常用於：print(), max(), min()
+```
+
+  
+### 多回傳值
+
+```text
+Python（tuple）：
+def divide(a, b):
+    return a // b, a % b
+
+q, r = divide(10, 3)   # q=3, r=1
+
+JavaScript（array / object destructuring）：
+function divide(a, b) {
+    return [Math.floor(a / b), a % b];
+}
+
+const [q, r] = divide(10, 3);
+
+Go（原生支援）：
+func divide(a, b int) (int, int) {
+    return a / b, a % b
+}
+
+q, r := divide(10, 3)
+
+# 常見 pattern：值 + error
+func openFile(name string) (*File, error) {
+    ...
+}
+
+file, err := openFile("data.txt")
+if err != nil {
+    log.Fatal(err)
+}
+
+Rust（用 tuple）：
+fn divide(a: i32, b: i32) -> (i32, i32) {
+    (a / b, a % b)
+}
+
+let (q, r) = divide(10, 3);
+
+→ Python / Go / Rust 自然多回傳
+→ Java / C# 要包成 class
+```
+
+  
+### Closure（閉包）：函數記住外面變數
+
+```text
+函數能「捕捉」外面 scope 的變數：
+
+# Python
+def make_counter():
+    count = 0
+    def increment():
+        nonlocal count
+        count += 1
+        return count
+    return increment
+
+counter = make_counter()
+counter()   # 1
+counter()   # 2
+
+# JavaScript（自然支援）
+function makeCounter() {
+    let count = 0;
+    return function() {
+        count++;
+        return count;
+    };
+}
+
+const counter = makeCounter();
+counter();   // 1
+counter();   // 2
+
+# Go
+func makeCounter() func() int {
+    count := 0
+    return func() int {
+        count++
+        return count
+    }
+}
+
+→ Closure 是函數式語言核心
+→ React Hooks / 中介軟體 / event handler 滿地都是
+```
+
+  
+### Lambda / Arrow Function：匿名函數
+
+```text
+「不用取名字、就地寫一個函數」：
+
+Python：
+square = lambda x: x ** 2
+square(5)   # 25
+
+# 常用於 map / filter / sort
+sorted(users, key=lambda u: u.age)
+
+JavaScript（arrow function）：
+const square = x => x ** 2;
+
+// 多參數
+const add = (a, b) => a + b;
+
+Go（匿名函數）：
+square := func(x int) int { return x * x }
+
+Rust：
+let square = |x: i32| x * x;
+
+Java（lambda 8+）：
+Function square = x -> x * x;
+
+→ 短小函數用 lambda
+→ 大邏輯還是用具名函數
+```
+
+  
+### 純函數 vs 副作用函數
+
+```text
+純函數：
+- 同樣輸入永遠同樣輸出
+- 不改外面狀態
+
+def add(a, b):
+    return a + b
+# 純函數！
+
+副作用函數：
+- 改外面狀態
+- 同樣輸入可能不同輸出
+
+count = 0
+def increment():
+    global count
+    count += 1
+    return count
+# 副作用：改了 count
+
+def log(msg):
+    print(msg)
+# 副作用：印到螢幕
+
+→ 純函數好測試 / 好除錯
+→ 副作用必要、但要清楚標出
+```
+
+  
+### 遞迴（Recursion）
+
+```text
+「函數呼叫自己」：
+
+Python（階乘）：
+def factorial(n):
+    if n 
+    **🚀 進階技巧**
+    
+函數設計 5 大原則（2026 Senior 共識）：(1) **一個函數做一件事**（
+
+  
+    
+      💼
+      接案小知識
+    
+    剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「程式邏輯」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。

@@ -1,0 +1,209 @@
+運算子 = **對值做運算的符號**。所有語言都有、長得幾乎一樣。
+
+  
+### 算術運算子
+
+```text
+所有語言通用：
+
+a + b    # 加
+a - b    # 減
+a * b    # 乘
+a / b    # 除
+a % b    # 取餘數（modulo）
+
+# 進階
+a ** b   # 次方（Python / JS / Ruby）
+math.pow(a, b)  # 函數版（所有語言）
+
+# 整數除法（去小數）
+a // b   # Python
+Math.floor(a / b)  # JS
+a / b 自動    # Go（int / int 自動去小數）
+
+例子：
+10 / 3 = 3.333...（Python / JS / float）
+10 // 3 = 3（Python int 除）
+10 % 3 = 1（餘數）
+2 ** 10 = 1024（2 的 10 次方）
+```
+
+  
+### 取餘數的妙用
+
+```text
+# 判斷奇偶
+if num % 2 == 0:
+    print("偶數")
+
+# 判斷能不能整除
+if year % 4 == 0:
+    print("閏年")
+
+# 循環索引
+for i in range(20):
+    idx = i % 5  # 0,1,2,3,4,0,1,2,3,4...
+
+# 雜湊分桶
+bucket = hash(key) % 100  # 分 100 個桶
+```
+
+  
+### 賦值運算子
+
+```text
+x += 5     # x = x + 5
+x -= 3     # x = x - 3
+x *= 2     # x = x * 2
+x /= 4     # x = x / 4
+x %= 3     # x = x % 3
+x **= 2    # x = x ** 2
+
+# 字串也能用 +=
+greeting = "Hello"
+greeting += ", world"
+# = "Hello, world"
+
+→ 所有主流語言都支援
+```
+
+  
+### 比較運算子
+
+```text
+結果是 boolean（true / false）：
+
+a == b    # 相等
+a != b    # 不相等
+a  b     # 大於
+a = b    # 大於等於
+```
+
+  
+### == vs ===（嚴格相等）—JS 大陷阱
+
+```text
+JavaScript 兩種：
+
+== （寬鬆相等、自動轉型）：
+5 == "5"      # true（"5" 自動轉 5）
+0 == false    # true（false 變 0）
+null == undefined  # true（怪）
+
+=== （嚴格相等、不轉型）：
+5 === "5"     # false（型別不同）
+0 === false   # false
+
+→ 永遠用 ===
+
+其他語言：
+Python：== 是嚴格的（不轉型）
+Go：== 嚴格、不同型別編譯錯誤
+Rust：== 同 Go
+Java：== 比參考（不是值）！要用 .equals()
+
+# Java 陷阱
+String a = new String("hello");
+String b = new String("hello");
+a == b           // false（不同物件）
+a.equals(b)      // true（內容一樣）
+```
+
+  
+### 邏輯運算子
+
+```text
+AND、OR、NOT：
+
+# Python 用英文
+a and b
+a or b
+not a
+
+# JS / Go / Rust / Java / C# 用符號
+a && b    # AND
+a || b    # OR
+!a        # NOT
+
+例子：
+(age >= 18) and (has_license)  # 兩個都要 True
+(is_admin) or (is_owner)       # 至少一個
+```
+
+  
+### 短路評估（Short-circuit）
+
+```text
+所有語言通用、節省效能 + 防 null：
+
+# AND：左邊 False 就不算右邊
+if user != None and user.is_active:
+    print(user.name)
+# 如果 user 是 None、後面 .is_active 不執行（不會爆）
+
+# OR：左邊 True 就不算右邊
+result = cache.get(key) or fetch_from_db(key)
+# 如果 cache 有、不查 DB
+
+# 2020+ 推薦 ?? 避免 falsy 陷阱
+const name = user.name ?? "Anonymous";
+# 只有 null / undefined 才用預設、不包含 "" 0 false
+```
+
+  
+### 位元運算子
+
+```text
+對二進位的位元運算：
+
+&     # AND（位元）
+|     # OR（位元）
+^     # XOR
+~     # NOT（取反）
+>    # 右移（÷2）
+
+# 實戰：權限 flags
+READ = 1   # 001
+WRITE = 2  # 010
+EXEC = 4   # 100
+
+user_perms = READ | WRITE  # 011 = 3（讀+寫）
+if user_perms & EXEC:      # 檢查有沒有執行權限
+    ...
+
+→ 一般 app 寫不到
+→ 系統程式 / 演算法 / 遊戲常用
+```
+
+  
+### 三元運算子
+
+```text
+「一行寫 if-else」：
+
+# JavaScript / TypeScript / Java / C# / Go / Rust
+const status = age >= 18 ? "成人" : "未成年";
+
+# Python（不一樣的順序）
+status = "成人" if age >= 18 else "未成年"
+
+# Rust（用 if 表達式）
+let status = if age >= 18 { "成人" } else { "未成年" };
+
+→ 簡單 if-else 用三元
+→ 複雜邏輯用完整 if-else
+```
+
+  
+**🚀 進階技巧**
+
+2026 主流：**避免複雜表達式、拆成多行**。`(a && b) || (c && d)` 雖然能寫、但拆成 `const isValid = a && b;` + `const isAlt = c && d;` + `const result = isValid || isAlt;` 可讀性高 10 倍。Senior 工程師寫的 code 看起來「**太簡單**」—因為每行只做一件事。Junior 寫的 code 一行做 5 件事、好像很厲害、其實是技術債。
+
+  
+
+  
+
+🚀
+2026 趨勢
+
+這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。

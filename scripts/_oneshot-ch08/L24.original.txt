@@ -1,0 +1,61 @@
+## 預設是 Server Component（Next.js 15）
+```tsx
+// app/page.tsx
+// 沒寫 "use client" → Server Component
+async function Page() {
+  const data = await db.posts.findMany();
+  return <div>{data.length} posts</div>;
+}
+```
+
+## 需要互動 → "use client"
+```tsx
+// components/Counter.tsx
+"use client";
+import { useState } from "react";
+
+export function Counter() {
+  const [n, setN] = useState(0);
+  return <button onClick={() => setN(n + 1)}>{n}</button>;
+}
+```
+
+## 規則對照
+
+| 能用 | Server Component | Client Component |
+|---|---|---|
+| async / await | ✅ | ❌ |
+| 直接連 DB / fs | ✅ | ❌ |
+| API key（process.env）| ✅ | ❌（會洩漏）|
+| useState / useEffect | ❌ | ✅ |
+| onClick / onChange | ❌ | ✅ |
+| 瀏覽器 API（window / localStorage）| ❌ | ✅ |
+| 直接 import server component | N/A | ❌ |
+
+## 混搭：server 包 client
+```tsx
+// page.tsx（Server）
+import { Counter } from "@/components/Counter";
+
+export default async function Page() {
+  const posts = await db.posts.findMany();  // server-side
+  return (
+    <div>
+      <h1>{posts.length} posts</h1>
+      <Counter />  {/* client */}
+    </div>
+  );
+}
+```
+
+## 傳資料：server → client
+```tsx
+// Server
+<UserGreeting name={user.name} />
+
+// Client
+"use client";
+export function UserGreeting({ name }: { name: string }) {
+  return <button onClick={() => alert(`Hi ${name}`)}>Greet</button>;
+}
+```

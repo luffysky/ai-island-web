@@ -1,0 +1,248 @@
+2026 不要用 create-react-app（CRA 棄用）—用 Vite 或 Next.js。
+
+  
+### 3 種起手方式
+
+```text
+1. Vite（純 React、SPA）
+   - 最快、最簡單
+   - 純前端、不需要 server
+   - 適合：學習、簡單 app
+
+2. Next.js（全端 framework）
+   - 包含 routing、API、SSR
+   - 業界 2026 主流
+   - 適合：production SaaS
+
+3. Bun / Deno
+   - 新興 runtime
+   - 內建跑 React + TS
+   - 適合：實驗
+
+99% 場景：
+- 學習 → Vite
+- Production → Next.js
+- 不要：CRA（棄用）、自己配 webpack
+```
+
+  
+### Vite 起手（最快）
+
+```bash
+# 建專案
+$ npm create vite@latest my-app -- --template react-ts
+
+# 進入 + 裝依賴
+$ cd my-app
+$ npm install
+
+# 跑 dev server
+$ npm run dev
+# 開 http://localhost:5173
+
+# 結構
+my-app/
+├── public/
+├── src/
+│   ├── App.tsx           # 主元件
+│   ├── main.tsx          # 入口
+│   ├── index.css
+│   └── assets/
+├── index.html            # HTML 入口
+├── tsconfig.json
+├── vite.config.ts
+└── package.json
+
+# 寫第一個 component
+// src/App.tsx
+function App() {
+    return Hello React;
+}
+
+export default App;
+
+# Vite 賣點：
+# - 啟動 Hello Next.js;
+}
+
+# Next.js 賣點：
+# - File-based routing
+# - Server Components 預設
+# - 內建 API routes
+# - 內建 image / font 優化
+# - Vercel 部署一鍵
+```
+
+  
+### 主要檔案解析
+
+```tsx
+// src/main.tsx（Vite 入口）
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import App from "./App.tsx";
+import "./index.css";
+
+createRoot(document.getElementById("root")!).render(
+    
+        
+    
+);
+
+// StrictMode：開發時跑 2 次 render 檢查 bug
+// production 不影響
+
+// src/App.tsx
+import { useState } from "react";
+
+function App() {
+    const [count, setCount] = useState(0);
+    
+    return (
+        
+            Count: {count}
+             setCount(count + 1)}>
+                +
+            
+        
+    );
+}
+
+export default App;
+
+// index.html（Vite）
+
+    
+        
+        
+    
+
+```
+
+  
+### package.json scripts
+
+```json
+{
+    "scripts": {
+        "dev": "vite",
+        "build": "tsc && vite build",
+        "preview": "vite preview",
+        "lint": "eslint . --ext ts,tsx"
+    }
+}
+
+# Next.js
+{
+    "scripts": {
+        "dev": "next dev --turbo",
+        "build": "next build",
+        "start": "next start",
+        "lint": "next lint"
+    }
+}
+
+# 跑
+$ npm run dev      # 開發
+$ npm run build    # 建 production
+$ npm run preview  # 預覽 production（Vite）
+$ npm start         # 跑 production（Next.js）
+```
+
+  
+### 2026 推薦：Next.js + TS + Tailwind + shadcn/ui
+
+```bash
+# 完整 stack 一條 command 建
+$ npx create-next-app@latest my-app \
+    --typescript \
+    --tailwind \
+    --eslint \
+    --app \
+    --src-dir \
+    --use-npm \
+    --turbo
+
+# 加 shadcn/ui
+$ cd my-app
+$ npx shadcn@latest init
+$ npx shadcn@latest add button
+
+# 用
+import { Button } from "@/components/ui/button";
+
+export default function HomePage() {
+    return (
+        
+            Hello
+            Click me
+        
+    );
+}
+
+# 完成—2026 主流 indie SaaS stack
+# - Next.js 15
+# - TypeScript
+# - Tailwind v4
+# - shadcn/ui
+# - Turbopack
+```
+
+  
+### 編輯器設定
+
+```text
+VS Code（最佳）：
+
+裝 extensions：
+1. ES7+ React/Redux/React-Native snippets
+   - rfc → 自動建 function component
+2. Tailwind CSS IntelliSense
+   - className 自動補全
+3. Prettier
+   - 自動格式化
+4. ESLint
+   - 即時錯誤檢查
+
+settings.json：
+{
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit"
+    },
+    "typescript.preferences.importModuleSpecifier": "non-relative"
+}
+
+其他選擇：
+- Cursor（VS Code + AI、推薦 indie）
+- WebStorm（付費、最強 React 支援）
+- Zed（新興、快）
+```
+
+  
+### 第一個專案 checklist
+
+  
+- **用 Vite 或 Next.js**—不要 CRA
+- **用 TypeScript**—2026 標配
+- **用 Tailwind**—寫得快
+- **用 shadcn/ui**—預設 UI 好看
+- **用 App Router**（Next.js）—不要 Pages Router
+- **用 Turbopack**—Next.js 15+ 預設、超快
+- **裝 React DevTools**—Chrome extension
+- **連 GitHub**—第一天就 commit
+
+  
+**☕ 用人話講**
+
+2026 起手 2 種：(1) **學習 / 簡單 app** → Vite + React + TS (2) **Production SaaS** → Next.js App Router + TS + Tailwind + shadcn/ui。**不要**：(a) CRA（已棄用） (b) 自己配 Webpack (c) 純 Pages Router（已過時、用 App Router）。
+
+  
+
+  
+
+🎯
+面試考點
+
+台灣科技公司面試 90% 會問「React」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。

@@ -1,0 +1,210 @@
+條件分支 = 「**看情況選不同路**」。程式不只是直線跑、要會判斷。
+
+  
+### 最基本：if / else
+
+```text
+Python（用縮排）：
+if age >= 18:
+    print("成人")
+else:
+    print("未成年")
+
+JavaScript / Go：
+if (age >= 18) {
+    console.log("成人");
+} else {
+    console.log("未成年");
+}
+
+Rust（if 是表達式）：
+let status = if age >= 18 {
+    "成人"
+} else {
+    "未成年"
+};
+
+Ruby：
+if age >= 18
+    puts "成人"
+else
+    puts "未成年"
+end
+
+→ 邏輯一樣、語法差別
+→ Python 縮排 / 大多 {} / Ruby 用 end
+```
+
+  
+### 多重條件：elif / else if
+
+```text
+Python（elif）：
+if score >= 90:
+    grade = "A"
+elif score >= 80:
+    grade = "B"
+elif score >= 70:
+    grade = "C"
+else:
+    grade = "F"
+
+JavaScript / Java / Go（else if）：
+if (score >= 90) {
+    grade = "A";
+} else if (score >= 80) {
+    grade = "B";
+} else {
+    grade = "F";
+}
+
+Ruby（elsif）：
+if score >= 90
+    grade = "A"
+elsif score >= 80
+    grade = "B"
+else
+    grade = "F"
+end
+
+→ 順序很重要—從上往下找第一個 True
+→ 如果「score >= 70」在最上面、永遠不會分 A / B
+```
+
+  
+### switch / case：多分支簡化
+
+```text
+有 5+ 個分支用 switch 比 if 好讀：
+
+JavaScript / Java / C#（用 case + break）：
+switch (day) {
+    case "MON":
+    case "TUE":
+    case "WED":
+        console.log("上班日");
+        break;
+    case "SAT":
+    case "SUN":
+        console.log("週末");
+        break;
+    default:
+        console.log("無效");
+}
+
+⚠ JS / Java / C 不寫 break 會 fall-through
+
+Go（不需 break）：
+switch day {
+case "MON", "TUE", "WED":
+    fmt.Println("上班日")
+case "SAT", "SUN":
+    fmt.Println("週末")
+default:
+    fmt.Println("無效")
+}
+
+Rust（用 match、更強）：
+match day {
+    "MON" | "TUE" | "WED" => println!("上班日"),
+    "SAT" | "SUN" => println!("週末"),
+    _ => println!("無效"),
+}
+
+Python（3.10+ match-case）：
+match day:
+    case "MON" | "TUE" | "WED":
+        print("上班日")
+    case "SAT" | "SUN":
+        print("週末")
+    case _:
+        print("無效")
+```
+
+  
+### Pattern Matching：2020+ 進化版
+
+```text
+Rust / Swift / Scala / Python 3.10+：
+不只比對值、比對「結構」：
+
+# Rust
+match user {
+    Some(User { age: 18..=64, .. }) => "成年活躍",
+    Some(User { age: 0..=17, .. }) => "未成年",
+    Some(User { age: 65.., .. }) => "資深",
+    None => "沒人",
+}
+
+# Python 3.10+
+match point:
+    case (0, 0):
+        print("原點")
+    case (x, 0):
+        print(f"X 軸上 x={x}")
+    case (0, y):
+        print(f"Y 軸上 y={y}")
+    case (x, y):
+        print(f"在 ({x}, {y})")
+
+→ 函數式語言（Haskell / Elixir）最早這樣
+→ 現代主流語言都跟進
+→ 比 if-else 簡潔強大
+```
+
+  
+### 常見陷阱
+
+```text
+1. 忘記 break（JS / Java / C）
+   switch (status) {
+       case "active":
+           console.log("活躍");
+           // 忘了 break！
+       case "pending":
+           console.log("待處理");  // ⚠ 也會印
+           break;
+   }
+
+2. 浮點數比較
+   if (0.1 + 0.2 == 0.3) { ... }
+   # ❌ 不會印（不相等）
+
+3. 賦值 vs 比較
+   if (x = 5) { ... }  // ⚠ 是賦值！
+
+4. null / undefined 沒檢查
+   if (user.age >= 18) { ... }
+   # 如果 user 是 null → 爆
+```
+
+  
+### Guard Clause（早 return）
+
+```text
+新手寫法（深巢狀）：
+def process(user):
+    if user:
+        if user.is_active:
+            if user.age >= 18:
+                send_email(user)
+
+Senior 寫法（early return）：
+def process(user):
+    if not user:
+        return
+    if not user.is_active:
+        return
+    if user.age 
+    **🚀 進階技巧**
+    
+2026 Senior 思維：**「條件越少越好」**。看到 5+ 個 if-else 通常能用 dict / map 取代。例：`if day == "MON": work = 1; elif day == "TUE": work = 2; ...` → `work_hours = {"MON": 1, "TUE": 2, ...}` + `work_hours.get(day)`。少 90% code、好讀 10 倍、易擴充。Pattern matching（Rust / Python 3.10+ / Swift）是「**條件分支的最終形態**」—學會它、你不會再寫 nested if。
+
+  
+
+  
+    
+      🛠️
+      工具推薦
+    
+    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。

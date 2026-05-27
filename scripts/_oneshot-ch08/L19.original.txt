@@ -1,0 +1,266 @@
+React 元件測試 2026 主流：**Vitest + React Testing Library**。
+
+  
+### 測試工具選擇
+
+  
+|  | Vitest | Jest | Bun test |
+| --- | --- | --- | --- |
+| 速度 | 最快 | 慢 | 最快 |
+| ESM 支援 | 原生 | 需設定 | 原生 |
+| 2026 主流 | 新專案首選 | 老專案 | 實驗 |
+
+  
+### 裝 + 設定
+
+```bash
+$ npm install -D vitest @testing-library/react @testing-library/jest-dom @testing-library/user-event jsdom
+```
+
+```ts
+// vitest.config.ts
+import { defineConfig } from "vitest/config";
+import react from "@vitejs/plugin-react";
+
+export default defineConfig({
+    plugins: [react()],
+    test: {
+        environment: "jsdom",
+        globals: true,
+        setupFiles: "./test/setup.ts"
+    }
+});
+
+// test/setup.ts
+import "@testing-library/jest-dom";
+
+// package.json
+{
+    "scripts": {
+        "test": "vitest",
+        "test:ui": "vitest --ui",
+        "test:coverage": "vitest --coverage"
+    }
+}
+```
+
+  
+### 第一個 test
+
+```tsx
+// Counter.tsx
+function Counter() {
+    const [count, setCount] = useState(0);
+    return (
+        
+            
+Count: {count}
+
+             setCount(c => c + 1)}>+
+        
+    );
+}
+
+// Counter.test.tsx
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { describe, it, expect } from "vitest";
+
+describe("Counter", () => {
+    it("renders count 0 initially", () => {
+        render();
+        expect(screen.getByText("Count: 0")).toBeInTheDocument();
+    });
+    
+    it("increments on click", async () => {
+        const user = userEvent.setup();
+        render();
+        
+        const button = screen.getByRole("button", { name: "+" });
+        await user.click(button);
+        
+        expect(screen.getByText("Count: 1")).toBeInTheDocument();
+    });
+});
+
+$ npm test
+```
+
+  
+### Testing Library 哲學
+
+```text
+「Test like a user uses it」
+
+不要：
+❌ 測 internal state
+❌ 用 className / data-testid（除非必要）
+
+要：
+✓ 測用戶看到的（screen.getByText）
+✓ 測用戶能做的（user.click）
+✓ 用 accessibility（getByRole）
+
+Query 順序：
+1. getByRole（最 accessible）
+2. getByLabelText
+3. getByText
+4. getByDisplayValue
+5. getByTestId（最後選擇）
+```
+
+  
+### 常見 test patterns
+
+```tsx
+// 1. Form test
+it("submits with valid input", async () => {
+    const user = userEvent.setup();
+    const onSubmit = vi.fn();
+    
+    render();
+    
+    await user.type(screen.getByLabelText("Email"), "alice@x.com");
+    await user.type(screen.getByLabelText("Password"), "password123");
+    await user.click(screen.getByRole("button", { name: "Login" }));
+    
+    expect(onSubmit).toHaveBeenCalledWith({
+        email: "alice@x.com",
+        password: "password123"
+    });
+});
+
+// 2. Async test（findBy 自動等）
+it("loads users", async () => {
+    render();
+    const alice = await screen.findByText("Alice");
+    expect(alice).toBeInTheDocument();
+});
+
+// 3. Mock function
+it("calls onSelect", async () => {
+    const user = userEvent.setup();
+    const onSelect = vi.fn();
+    
+    render();
+    await user.click(screen.getByText("Option 1"));
+    
+    expect(onSelect).toHaveBeenCalledTimes(1);
+});
+```
+
+  
+### Mock API（MSW）
+
+```tsx
+$ npm install -D msw
+
+// test/mocks/handlers.ts
+import { http, HttpResponse } from "msw";
+
+export const handlers = [
+    http.get("/api/users", () => {
+        return HttpResponse.json([
+            { id: 1, name: "Alice" },
+            { id: 2, name: "Bob" }
+        ]);
+    })
+];
+
+// test/setup.ts
+import { setupServer } from "msw/node";
+import { handlers } from "./mocks/handlers";
+
+const server = setupServer(...handlers);
+
+beforeAll(() => server.listen());
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
+
+// Test 自動用 mock data
+it("displays users from API", async () => {
+    render();
+    expect(await screen.findByText("Alice")).toBeInTheDocument();
+});
+```
+
+  
+### 測試 Custom Hook
+
+```tsx
+import { renderHook, act } from "@testing-library/react";
+
+describe("useCounter", () => {
+    it("increments", () => {
+        const { result } = renderHook(() => useCounter(0));
+        
+        expect(result.current.count).toBe(0);
+        
+        act(() => {
+            result.current.increment();
+        });
+        
+        expect(result.current.count).toBe(1);
+    });
+});
+```
+
+  
+### E2E Testing：Playwright
+
+```bash
+$ npm init playwright
+```
+
+```ts
+// tests/login.spec.ts
+import { test, expect } from "@playwright/test";
+
+test("login flow", async ({ page }) => {
+    await page.goto("/login");
+    
+    await page.fill('input[name="email"]', "alice@x.com");
+    await page.fill('input[name="password"]', "password");
+    await page.click('button[type="submit"]');
+    
+    await expect(page).toHaveURL("/dashboard");
+});
+
+// 真實瀏覽器
+$ npx playwright test
+
+// 2026 主流：Playwright（取代 Cypress）
+```
+
+  
+### 測試心法
+
+```text
+1. Test behavior、不 test implementation
+2. AAA pattern：Arrange / Act / Assert
+3. 不測第三方
+4. 快樂路徑 + 重要 error
+5. 不要 mock 太多
+
+2026 主流測試 stack：
+- Vitest（unit / integration）
+- Testing Library（render component）
+- MSW（mock API）
+- Playwright（E2E）
+
+目標：80% coverage（不需要 100%）
+```
+
+  
+**☕ 用人話講**
+
+Testing 5 心法：(1) **Vitest + Testing Library**—2026 標配 (2) **Test like a user** (3) **getByRole 優於 getByTestId** (4) **MSW mock API** (5) **E2E 用 Playwright**。
+
+  
+
+  
+
+💼
+接案小知識
+
+剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「React」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。

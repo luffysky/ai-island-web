@@ -1,0 +1,316 @@
+React 處理「異常 / 等待」的 2 大機制—讓 UI 更穩、體驗更好。
+
+  
+### Suspense：等待 component
+
+```tsx
+import { Suspense, lazy } from "react";
+
+// 1. Lazy load component
+const HeavyChart = lazy(() => import("./HeavyChart"));
+
+function App() {
+    return (
+        }>
+            
+        
+    );
+}
+
+// HeavyChart 還沒載入完前、顯示 fallback
+// 載入後自動換上實際 component
+
+// 用途：
+// 1. Code splitting（分 chunk、降 bundle）
+// 2. Slow component（dynamic import）
+// 3. Server Components data fetching
+```
+
+  
+### Suspense + lazy 完整範例
+
+```tsx
+// 大型 dashboard、按 tab 才載入
+
+import { Suspense, lazy } from "react";
+
+const Analytics = lazy(() => import("./tabs/Analytics"));
+const Settings = lazy(() => import("./tabs/Settings"));
+const Users = lazy(() => import("./tabs/Users"));
+
+function Dashboard() {
+    const [tab, setTab] = useState("analytics");
+    
+    return (
+        
+            
+                 setTab("analytics")}>Analytics
+                 setTab("settings")}>Settings
+                 setTab("users")}>Users
+            
+            
+            }>
+                {tab === "analytics" && }
+                {tab === "settings" && }
+                {tab === "users" && }
+            
+        
+    );
+}
+
+// 好處：
+// - 首屏 bundle 小（只載 nav）
+// - 用戶按 tab 才下載對應 chunk
+// - 自動 loading state
+
+// Build 時 webpack / Vite 自動拆 chunk
+// analytics.[hash].js
+// settings.[hash].js
+// users.[hash].js
+```
+
+  
+### Suspense for data（React 19+）
+
+```tsx
+// React 19：Suspense 也能等 data
+
+import { use } from "react";
+
+function UserProfile({ userPromise }) {
+    const user = use(userPromise);   // 暫停直到 resolve
+    return {user.name};
+}
+
+function App() {
+    const userPromise = fetchUser(1);
+    
+    return (
+        }>
+            
+        
+    );
+}
+
+// 配 React Query / SWR 也支援 Suspense
+
+import { useSuspenseQuery } from "@tanstack/react-query";
+
+function UserProfile({ id }) {
+    const { data: user } = useSuspenseQuery({
+        queryKey: ["user", id],
+        queryFn: () => fetchUser(id)
+    });
+    
+    return {user.name};
+    // 沒 loading 處理、外面 Suspense 處理
+}
+```
+
+  
+### Error Boundary
+
+```tsx
+// 抓 component tree 內的 error
+// 必須是 class component（hook 版還沒）
+
+import { Component, ErrorInfo, ReactNode } from "react";
+
+interface Props {
+    fallback: ReactNode;
+    children: ReactNode;
+}
+
+interface State {
+    hasError: boolean;
+    error?: Error;
+}
+
+class ErrorBoundary extends Component {
+    state: State = { hasError: false };
+    
+    static getDerivedStateFromError(error: Error): State {
+        return { hasError: true, error };
+    }
+    
+    componentDidCatch(error: Error, info: ErrorInfo) {
+        // Log to Sentry / DataDog
+        console.error("Error caught:", error, info);
+    }
+    
+    render() {
+        if (this.state.hasError) {
+            return this.props.fallback;
+        }
+        return this.props.children;
+    }
+}
+
+// 用
+
+    
+
+// 只要 UserProfile tree 內 throw error、不會炸整個 app
+// 只 fallback 那塊
+```
+
+  
+### 用 react-error-boundary（推薦）
+
+```tsx
+$ npm install react-error-boundary
+
+import { ErrorBoundary } from "react-error-boundary";
+
+function ErrorFallback({ error, resetErrorBoundary }) {
+    return (
+        
+            
+Something went wrong:
+
+            {error.message}
+            Try again
+        
+    );
+}
+
+ {
+        // Log to Sentry
+        Sentry.captureException(error);
+    }}
+    onReset={() => {
+        // Reset state
+    }}
+>
+    
+
+// 比自己寫 ErrorBoundary 簡單
+// 業界主流
+```
+
+  
+### Error Boundary 限制
+
+```text
+不會抓的：
+1. Event handler 的 error
+   ❌  { throw new Error() }}>
+   
+   要手動 try/catch：
+   const handleClick = () => {
+       try {
+           doSomething();
+       } catch (e) {
+           showError(e);
+       }
+   };
+
+2. Async error
+   ❌ useEffect(() => {
+       fetch("...").then(() => { throw new Error() });
+   });
+   
+   要手動處理：
+   useEffect(() => {
+       fetch("...")
+           .then(...)
+           .catch(err => setError(err));
+   });
+
+3. SSR error
+   - SSR 的 error 不算 component tree error
+   - Next.js 有 error.tsx 處理
+
+4. Error Boundary 自己的 error
+   - 用更上層的 ErrorBoundary 包
+
+抓得到的：
+✓ Render 時 throw
+✓ Lifecycle 內 throw
+✓ Constructor throw
+```
+
+  
+### Boundary 策略
+
+```tsx
+// 多層 boundary：細粒度錯誤處理
+
+}>
+    {/* 整個 app 級別 */}
+    
+    
+        }>
+            
+        
+        
+        }>
+            
+        
+        
+        }>
+            
+        
+    
+
+// 1 個 widget 出錯不影響整個 app
+// 用戶仍能用其他功能
+```
+
+  
+### Suspense + ErrorBoundary 組合
+
+```tsx
+// 完整體驗：Loading + Error 都處理
+
+import { Suspense } from "react";
+import { ErrorBoundary } from "react-error-boundary";
+
+function App() {
+    return (
+        }>
+            }>
+                
+            
+        
+    );
+}
+
+// 順序：
+// 1. Loading（Suspense fallback）
+// 2. Success（實際內容）
+// 3. Error（ErrorBoundary fallback）
+
+// 內部 UserList 不用寫 loading / error logic
+// 簡潔！
+
+// 整合 React Query：
+const { data } = useSuspenseQuery({ ... });
+// 自動配合 Suspense + ErrorBoundary
+```
+
+  
+### 常見錯誤
+
+  
+- **沒包 Suspense**—lazy import 顯示 blank
+- **整個 app 1 個 ErrorBoundary**—1 個錯炸整個
+- **沒 log error**—生產環境不知道發生什麼
+- **Boundary 抓 event handler error**—抓不到
+- **fallback UI 跟正常 UI 跳動大**—體驗差
+- **沒 reset 機制**—錯了用戶卡住
+- **濫用 lazy**—每個 component lazy、慢
+
+  
+**🚀 進階技巧**
+
+Suspense + ErrorBoundary 4 心法：(1) **Code splitting**—大 component / route 用 lazy + Suspense (2) **Multi-layer boundary**—細粒度錯誤處理 (3) **用 react-error-boundary**—業界主流 (4) **React Query + Suspense**—完美 data fetching 體驗。**2026 趨勢**：Server Components + Suspense 是 Next.js App Router 預設 pattern。
+
+  
+
+  
+
+🎯
+面試考點
+
+台灣科技公司面試 90% 會問「React」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。

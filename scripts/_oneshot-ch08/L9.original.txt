@@ -1,0 +1,291 @@
+useRef 有 2 個用途：拿 DOM 元素、存「不觸發 re-render 的值」。
+
+  
+### 用途 1：拿 DOM 元素
+
+```tsx
+import { useRef, useEffect } from "react";
+
+function AutoFocusInput() {
+    const inputRef = useRef(null);
+    
+    useEffect(() => {
+        inputRef.current?.focus();
+    }, []);
+    
+    return ;
+}
+
+// 規則：
+// 1. useRef(null) 初始 null
+// 2. ref.current 拿元素（可能 null）
+// 3. 用 ?. 安全存取
+
+// 常見場景：
+// - autofocus
+// - 量 DOM 大小
+// - 滾動到特定位置
+// - 觸發 native 行為
+
+// 量元素
+function MeasureBox() {
+    const boxRef = useRef(null);
+    const [size, setSize] = useState({ width: 0, height: 0 });
+    
+    useEffect(() => {
+        if (boxRef.current) {
+            const { width, height } = boxRef.current.getBoundingClientRect();
+            setSize({ width, height });
+        }
+    }, []);
+    
+    return (
+        <>
+            Box
+            
+Size: {size.width} x {size.height}
+
+        
+    );
+}
+```
+
+  
+### 用途 2：存可變值
+
+```tsx
+// useRef 存的值「跨 render 保留」、改了不觸發 re-render
+
+function Stopwatch() {
+    const [seconds, setSeconds] = useState(0);
+    const intervalRef = useRef(null);
+    
+    const start = () => {
+        intervalRef.current = setInterval(() => {
+            setSeconds(s => s + 1);
+        }, 1000);
+    };
+    
+    const stop = () => {
+        if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
+        }
+    };
+    
+    return (
+        <>
+            {seconds}s
+            Start
+            Stop
+        
+    );
+}
+
+// useState vs useRef：
+// useState：變了 → re-render
+// useRef：變了 → 不 re-render
+
+// 適合 useRef 的：
+// - timer / interval ID
+// - previous value
+// - 不影響 UI 的計數
+// - WebSocket connection
+// - 第三方 library instance
+```
+
+  
+### previous value pattern
+
+```tsx
+// 拿前一次 render 的值
+
+function usePrevious(value: T): T | undefined {
+    const ref = useRef();
+    
+    useEffect(() => {
+        ref.current = value;
+    }, [value]);
+    
+    return ref.current;
+}
+
+// 用
+function Counter() {
+    const [count, setCount] = useState(0);
+    const previousCount = usePrevious(count);
+    
+    return (
+        
+            
+Current: {count}
+
+            
+Previous: {previousCount}
+
+             setCount(c => c + 1)}>+
+        
+    );
+}
+```
+
+  
+### forwardRef（pass ref 給子）
+
+```tsx
+// 想把 ref pass 到自訂 component？
+// 用 forwardRef
+
+import { forwardRef } from "react";
+
+interface InputProps {
+    label: string;
+}
+
+const Input = forwardRef(
+    ({ label }, ref) => (
+        
+            {label}
+            
+        
+    )
+);
+
+// 用
+function Form() {
+    const inputRef = useRef(null);
+    
+    useEffect(() => {
+        inputRef.current?.focus();
+    }, []);
+    
+    return ;
+}
+
+// React 19：直接傳 ref 為 prop
+function Input({ label, ref }: InputProps & { ref?: React.Ref }) {
+    return (
+        
+            {label}
+            
+        
+    );
+}
+// 不用 forwardRef、簡單多
+```
+
+  
+### useImperativeHandle
+
+```tsx
+// 暴露自訂 method 給父
+
+const Input = forwardRef void; clear: () => void },
+    { label: string }
+>(({ label }, ref) => {
+    const inputRef = useRef(null);
+    
+    useImperativeHandle(ref, () => ({
+        focus: () => inputRef.current?.focus(),
+        clear: () => {
+            if (inputRef.current) inputRef.current.value = "";
+        }
+    }));
+    
+    return (
+        
+            {label}
+            
+        
+    );
+});
+
+// 用
+function Form() {
+    const inputRef = useRef void; clear: () => void }>(null);
+    
+    return (
+        <>
+            
+             inputRef.current?.focus()}>Focus
+             inputRef.current?.clear()}>Clear
+        
+    );
+}
+
+// 用途：暴露 imperative API（不要濫用）
+// 95% 場景用 props / state 解決
+```
+
+  
+### useRef 不該做的事
+
+```text
+1. 不要用 ref 取代 state
+   ❌ const countRef = useRef(0);
+       const increment = () => { countRef.current++ };
+       return {countRef.current};
+   
+   countRef 變了不 re-render、UI 不更新
+
+2. 不要在 render 期間改 ref
+   function Component() {
+       const ref = useRef(0);
+       ref.current = computeValue();   // ❌ 不要 in render
+       return ...;
+   }
+   
+   應該在 useEffect / event handler 內改
+
+3. 不要當 dependency
+   useEffect(() => {
+       console.log(ref.current);
+   }, [ref.current]);   // ❌ ref.current 改不觸發 effect
+
+   正確：直接 use 而已、不放 deps
+```
+
+  
+### 實戰：infinite scroll
+
+```tsx
+function InfiniteList({ items, loadMore }) {
+    const loaderRef = useRef(null);
+    
+    useEffect(() => {
+        const observer = new IntersectionObserver(([entry]) => {
+            if (entry.isIntersecting) {
+                loadMore();
+            }
+        });
+        
+        if (loaderRef.current) {
+            observer.observe(loaderRef.current);
+        }
+        
+        return () => observer.disconnect();
+    }, [loadMore]);
+    
+    return (
+        
+
+    );
+}
+
+// 用 IntersectionObserver 偵測 loader 出現在畫面內
+// 就自動 loadMore
+```
+
+  
+**☕ 用人話講**
+
+useRef 2 個用途：(1) **拿 DOM**—`useRef(null)` + `inputRef.current?.focus()` (2) **存可變值**—不觸發 re-render、適合 timer ID / WebSocket / previous。**規則**：永遠 `.current` 存取、`?.` 防 null、不要在 render 內改。
+
+  
+
+  
+
+⚡
+學習加速器
+
+把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。

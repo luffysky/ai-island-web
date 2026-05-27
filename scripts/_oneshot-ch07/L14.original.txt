@@ -1,0 +1,248 @@
+10.2 講過動態 vs 靜態。這節深入**型別系統**—2026 主流語言越來越往「強型別 + 推導」走。
+
+  
+### 4 個維度
+
+```text
+所有語言的型別系統在 4 個維度上：
+
+1. 強型別 vs 弱型別
+   - 強：不同型別不能亂混（Python "5" + 3 報錯）
+   - 弱：自動轉型（JS "5" + 3 = "53"）
+
+2. 靜態 vs 動態
+   - 靜態：編譯時知道型別（Go / Rust / Java）
+   - 動態：執行時才知（Python / JS）
+
+3. 顯式 vs 推導
+   - 顯式：要明確寫型別（Java: int x = 5）
+   - 推導：編譯器猜（Go: x := 5、Rust: let x = 5）
+
+4. Null safe vs Null unsafe
+   - Safe：強制處理 null（Rust / Kotlin / Swift）
+   - Unsafe：null 隨便（Java / JS / Python）
+
+四個組合 = 各語言定位
+
+例：
+- Python：強動態、推導、null unsafe
+- JS：弱動態、推導、null unsafe
+- TypeScript：強靜態、推導、半 null safe（strict 模式）
+- Go：強靜態、推導、null unsafe
+- Rust：強靜態、推導、null safe
+- Java：強靜態、顯式、null unsafe
+- Kotlin：強靜態、推導、null safe
+```
+
+  
+### 型別推導
+
+```text
+「編譯器猜型別、你不用寫」：
+
+Go：
+x := 5         // 推導為 int
+name := "Alice" // 推導為 string
+
+Rust：
+let x = 5;            // i32
+let name = "Alice";   // &str
+
+TypeScript：
+let x = 5;            // number
+let name = "Alice";   // string
+
+C++ 11+：
+auto x = 5;           // int
+auto name = "Alice";  // const char*
+
+C# 3.0+：
+var x = 5;            // int
+var name = "Alice";   // string
+
+→ 寫起來像動態型別、但其實是靜態
+→ 兩全其美：簡潔 + 安全
+→ 2026 主流
+```
+
+  
+### 聯合型別（Union Types）
+
+```text
+「這個變數可能是 A 或 B」：
+
+TypeScript：
+let id: string | number;
+id = "abc";   // ✓
+id = 123;     // ✓
+id = true;    // ❌
+
+# 函數返回多型別
+function fetch(): User | null {
+    if (found) return user;
+    return null;
+}
+
+const u = fetch();
+if (u) {
+    console.log(u.name);   // TS 知道這時 u 不是 null
+}
+
+Python（type hints）：
+from typing import Union
+
+def fetch() -> Union[User, None]:
+    ...
+
+# 或 Python 3.10+ 簡寫
+def fetch() -> User | None:
+    ...
+
+Rust（用 enum）：
+enum Result {
+    Ok(T),
+    Err(E),
+}
+
+fn fetch() -> Result {
+    ...
+}
+
+Kotlin（sealed class）：
+sealed class FetchResult {
+    data class Success(val user: User) : FetchResult()
+    data class Error(val msg: String) : FetchResult()
+}
+
+→ TypeScript 最直觀
+→ Rust / Kotlin 用 enum / sealed class
+```
+
+  
+### 泛型（Generics）
+
+```text
+「我這個函數能處理任何型別」：
+
+不用泛型（要寫多個函數）：
+def get_first_int(items: list[int]) -> int:
+    return items[0]
+
+def get_first_string(items: list[str]) -> str:
+    return items[0]
+
+# 每種型別寫一個？瘋了
+
+用泛型（一個函數搞定所有）：
+from typing import TypeVar
+
+T = TypeVar('T')
+
+def get_first(items: list[T]) -> T:
+    return items[0]
+
+# T 是「任何型別」的占位符
+get_first([1, 2, 3])      # T = int、回傳 int
+get_first(["a", "b"])     # T = str、回傳 str
+get_first([True, False])  # T = bool、回傳 bool
+
+TypeScript：
+function getFirst(items: T[]): T {
+    return items[0];
+}
+
+getFirst([1, 2, 3]);      // T = number
+getFirst(["a", "b"]);     // T = string
+
+Go（1.18+ 加泛型）：
+func GetFirst[T any](items []T) T {
+    return items[0]
+}
+
+GetFirst([]int{1, 2, 3})
+GetFirst([]string{"a", "b"})
+
+Rust：
+fn get_first(items: &[T]) -> T {
+    items[0]
+}
+
+Java：
+public static  T getFirst(List items) {
+    return items.get(0);
+}
+
+C#：
+public static T GetFirst(List items) {
+    return items[0];
+}
+
+→ 容器型別（List / Map / Set）大量用泛型
+→ List / List / List 都同個 class
+```
+
+  
+### 型別約束
+
+```text
+「T 不是任何型別、要符合某條件」：
+
+TypeScript：
+interface HasName {
+    name: string;
+}
+
+function greet(item: T): string {
+    return `Hello, ${item.name}`;
+}
+
+greet({name: "Alice", age: 30});   // ✓
+greet({age: 30});                   // ❌（沒 name）
+
+Go：
+func PrintIf[T comparable](items []T, target T) {
+    for _, item := range items {
+        if item == target {
+            fmt.Println(item)
+        }
+    }
+}
+// comparable = 「能比較」的型別
+
+Rust：
+fn print(item: T) {
+    println!("{}", item);
+}
+// 必須能 Display
+
+Java：
+public static > T max(List items) {
+    ...
+}
+
+→ 約束讓泛型更安全
+```
+
+  
+### 2026 型別系統發展趨勢
+
+  
+- **動態語言加靜態型別**—Python type hints、JS → TypeScript、Ruby Sorbet、PHP type declarations
+- **Null safety 標配**—Rust / Kotlin / Swift 引領、其他跟進
+- **更強的推導**—寫越少越好
+- **結構化型別**（TypeScript / Go）取代名稱型別（Java）
+- **編譯時錯誤越多越好**—在你 ship 前抓出 bug
+
+  
+**🚀 進階技巧**
+
+2026 選語言時、型別系統強度 = 大專案成功率指標。**強型別 + null safe + 推導**（TypeScript strict / Kotlin / Rust）= 上線後 bug 少 70%、但學習曲線高。**動態 + 弱型別**（純 JS / 早期 Python）= prototype 快、但大專案爆炸。Indie / 一人公司寫小工具 Python / JS 沒事、團隊 / 長期專案要用強型別。
+
+  
+
+  
+
+🎯
+面試考點
+
+台灣科技公司面試 90% 會問「程式邏輯」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。

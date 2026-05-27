@@ -1,0 +1,317 @@
+State 是 component 內部資料—變了自動 re-render。useState 是 React 最基本 hook。
+
+  
+### 基本 useState
+
+```tsx
+import { useState } from "react";
+
+function Counter() {
+    // useState 回 [當前值, setter]
+    const [count, setCount] = useState(0);
+    
+    return (
+        
+            
+Count: {count}
+
+             setCount(count + 1)}>
+                +
+            
+        
+    );
+}
+
+// 規則：
+// 1. useState 在 component 內呼叫
+// 2. 用 destructure 拿 [value, setter]
+// 3. setter 變了 → React 重新 render
+// 4. 不要直接改 state：count++ ❌、count = 5 ❌
+```
+
+  
+### 多個 State
+
+```tsx
+function Form() {
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [age, setAge] = useState(0);
+    
+    return (
+        
+             setName(e.target.value)} />
+             setEmail(e.target.value)} />
+             setAge(+e.target.value)} />
+        
+    );
+}
+
+// 也能用 object（但要小心 setter）
+function Form() {
+    const [form, setForm] = useState({
+        name: "",
+        email: "",
+        age: 0
+    });
+    
+    // 必須複製整個 object（spread）
+    const handleChange = (field: string, value: any) => {
+        setForm(prev => ({
+            ...prev,
+            [field]: value
+        }));
+    };
+    
+    // 直接這樣會壞：
+    // setForm({ name: "new" });   // 缺其他欄位！
+}
+```
+
+  
+### State 型別
+
+```tsx
+// 1. 基本型別（自動推導）
+const [count, setCount] = useState(0);              // number
+const [name, setName] = useState("");                // string
+const [isOpen, setIsOpen] = useState(false);         // boolean
+
+// 2. Object / Array（明確標型別）
+interface User {
+    id: number;
+    name: string;
+}
+
+const [user, setUser] = useState(null);
+const [users, setUsers] = useState([]);
+const [tags, setTags] = useState([]);
+
+// 3. Union type
+const [status, setStatus] = useState("idle");
+
+// 4. Lazy initial value（重計算的）
+const [data, setData] = useState(() => {
+    // 只在第一次 render 跑
+    return expensiveCalculation();
+});
+```
+
+  
+### 更新 State
+
+```tsx
+// 1. 直接設新值
+setCount(5);
+setName("Alice");
+
+// 2. Function updater（推薦）
+setCount(prev => prev + 1);
+setName(prev => prev.toUpperCase());
+
+// 為什麼用 function updater？
+// 連續更新時、確保用最新值
+
+// ❌ 壞：
+setCount(count + 1);
+setCount(count + 1);
+setCount(count + 1);
+// count = 0、最後 count = 1（不是 3！）
+
+// ✓ 好：
+setCount(prev => prev + 1);
+setCount(prev => prev + 1);
+setCount(prev => prev + 1);
+// count 變 3
+
+// Object / Array：spread
+setUser(prev => ({
+    ...prev,
+    name: "new name"
+}));
+
+setItems(prev => [...prev, newItem]);
+setItems(prev => prev.filter(item => item.id !== removeId));
+setItems(prev => prev.map(item =>
+    item.id === updateId ? { ...item, ...updates } : item
+));
+```
+
+  
+### 不可變更新（Immutable）
+
+```tsx
+// React 用 reference 判斷 state 變沒變
+// 必須建新 object / array、不能改舊的
+
+// ❌ 直接改舊的（不會 re-render）
+const [user, setUser] = useState({ name: "Alice" });
+user.name = "Bob";       // 改了、但 reference 沒變
+setUser(user);           // React 認為沒變、不 re-render
+
+// ✓ 建新 object
+setUser({ ...user, name: "Bob" });
+// 或
+setUser(prev => ({ ...prev, name: "Bob" }));
+
+// Array 同樣
+const [items, setItems] = useState([1, 2, 3]);
+
+// ❌ 改舊的
+items.push(4);
+setItems(items);
+
+// ✓ 建新 array
+setItems([...items, 4]);
+setItems(prev => [...prev, 4]);
+
+// 巢狀 object：每層都 spread
+setUser(prev => ({
+    ...prev,
+    address: {
+        ...prev.address,
+        city: "Taipei"
+    }
+}));
+
+// 太深 → 用 Immer
+import { produce } from "immer";
+
+setUser(produce(draft => {
+    draft.address.city = "Taipei";   // 直接寫
+}));
+// Immer 內部處理 immutable
+```
+
+  
+### State 不是即時的
+
+```tsx
+// 設了 state、不會立刻變
+function Counter() {
+    const [count, setCount] = useState(0);
+    
+    const handleClick = () => {
+        setCount(count + 1);
+        console.log(count);   // 還是舊值！
+        // React 排程 re-render、但這個 function 還在跑舊的
+    };
+    
+    return {count};
+}
+
+// 要新值用 function updater
+const handleClick = () => {
+    setCount(prev => {
+        const newCount = prev + 1;
+        console.log(newCount);   // 對的
+        return newCount;
+    });
+};
+
+// 或用 useEffect 監聽（後面講）
+useEffect(() => {
+    console.log("count changed:", count);
+}, [count]);
+```
+
+  
+### State 在哪存？
+
+```text
+State Lifting（向上提升）：
+
+當 2 個 sibling component 共用 state 時、放到共同 parent
+
+❌ 各自有 state（不同步）
+parent
+├── ChildA: const [count, setCount] = ...
+└── ChildB: const [count, setCount] = ...
+
+✓ Parent 持有、傳 props
+parent
+   const [count, setCount] = useState(0)
+├── ChildA: 
+└── ChildB: 
+
+決策：
+- 只 1 個 component 用 → local state
+- 多個 component 共用 → lift up
+- 太遠（pass through 多層）→ Context / Zustand
+```
+
+  
+### 實戰：Todo list
+
+```tsx
+interface Todo {
+    id: number;
+    text: string;
+    done: boolean;
+}
+
+function TodoList() {
+    const [todos, setTodos] = useState([]);
+    const [input, setInput] = useState("");
+    
+    const addTodo = () => {
+        if (!input.trim()) return;
+        
+        setTodos(prev => [...prev, {
+            id: Date.now(),
+            text: input,
+            done: false
+        }]);
+        setInput("");
+    };
+    
+    const toggleTodo = (id: number) => {
+        setTodos(prev => prev.map(t =>
+            t.id === id ? { ...t, done: !t.done } : t
+        ));
+    };
+    
+    const deleteTodo = (id: number) => {
+        setTodos(prev => prev.filter(t => t.id !== id));
+    };
+    
+    return (
+        
+             setInput(e.target.value)}
+                onKeyDown={e => e.key === "Enter" && addTodo()}
+            />
+            Add
+            
+            
+
+        
+    );
+}
+```
+
+  
+### 常見 state 錯誤
+
+  
+- **直接改 state**—count++ ❌、要用 setter
+- **沒 spread object**—改原本失去其他欄位
+- **不用 function updater**—連續更新拿不到新值
+- **太多 state**—能算的不要存 state
+- **state 重複**—items 跟 itemsCount 都存、不同步
+- **state 太深**—5 層巢狀、難維護
+- **console.log 看 state**—總是舊值、改用 useEffect
+- **沒 lift up**—2 個 sibling 各自存
+
+  
+**🚀 進階技巧**
+
+useState 5 心法：(1) **用 function updater**—`setCount(prev => prev + 1)`、安全 (2) **immutable update**—`{...prev, name: "..."}`、不改原本 (3) **分多個 useState**—不要 1 個大 object (4) **能算的不存 state**—`fullName = first + last`、不另存 (5) **太深用 Immer**—巢狀 state 直接寫。**1 個畫面 state 超過 5 個** → 考慮 useReducer。
+
+  
+
+  
+
+🛠️
+工具推薦
+
+配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。

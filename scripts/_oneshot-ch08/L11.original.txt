@@ -1,0 +1,326 @@
+Custom Hook 是 React 最強功能—抽出可重用邏輯、像 component 一樣分享。
+
+  
+### 第一個 Custom Hook
+
+```tsx
+// 把 logic 抽成 use 開頭的 function
+
+function useCounter(initial = 0) {
+    const [count, setCount] = useState(initial);
+    
+    const increment = () => setCount(c => c + 1);
+    const decrement = () => setCount(c => c - 1);
+    const reset = () => setCount(initial);
+    
+    return { count, increment, decrement, reset };
+}
+
+// 用
+function Counter() {
+    const { count, increment, decrement, reset } = useCounter(0);
+    
+    return (
+        
+            
+{count}
+
+            +
+            -
+            Reset
+        
+    );
+}
+
+// 規則：
+// 1. 名字 use 開頭（React 約定）
+// 2. 內部用其他 hook
+// 3. 回需要的值 + 函式
+// 4. 多個 component 能共用、各自獨立 state
+```
+
+  
+### 常用 custom hook 範例
+
+```tsx
+// 1. useToggle
+function useToggle(initial = false) {
+    const [value, setValue] = useState(initial);
+    const toggle = useCallback(() => setValue(v => !v), []);
+    return [value, toggle, setValue] as const;
+}
+
+// 用
+const [isOpen, toggleOpen] = useToggle(false);
+
+// 2. useLocalStorage
+function useLocalStorage(key: string, initial: T) {
+    const [value, setValue] = useState(() => {
+        const stored = localStorage.getItem(key);
+        return stored ? JSON.parse(stored) : initial;
+    });
+    
+    useEffect(() => {
+        localStorage.setItem(key, JSON.stringify(value));
+    }, [key, value]);
+    
+    return [value, setValue] as const;
+}
+
+// 用
+const [theme, setTheme] = useLocalStorage("theme", "light");
+// 自動存 localStorage、頁面 reload 保持
+
+// 3. useDebounce
+function useDebounce(value: T, delay: number = 300) {
+    const [debounced, setDebounced] = useState(value);
+    
+    useEffect(() => {
+        const timer = setTimeout(() => setDebounced(value), delay);
+        return () => clearTimeout(timer);
+    }, [value, delay]);
+    
+    return debounced;
+}
+
+// 用
+const [query, setQuery] = useState("");
+const debouncedQuery = useDebounce(query, 500);
+// 用戶停打 500ms 才更新
+
+// 4. useMediaQuery
+function useMediaQuery(query: string) {
+    const [matches, setMatches] = useState(false);
+    
+    useEffect(() => {
+        const media = window.matchMedia(query);
+        setMatches(media.matches);
+        
+        const listener = (e: MediaQueryListEvent) => setMatches(e.matches);
+        media.addEventListener("change", listener);
+        
+        return () => media.removeEventListener("change", listener);
+    }, [query]);
+    
+    return matches;
+}
+
+// 用
+const isMobile = useMediaQuery("(max-width: 768px)");
+const isDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
+
+// 5. useClickOutside
+function useClickOutside(
+    handler: () => void
+): React.RefObject {
+    const ref = useRef(null);
+    
+    useEffect(() => {
+        const listener = (e: MouseEvent) => {
+            if (ref.current && !ref.current.contains(e.target as Node)) {
+                handler();
+            }
+        };
+        
+        document.addEventListener("mousedown", listener);
+        return () => document.removeEventListener("mousedown", listener);
+    }, [handler]);
+    
+    return ref;
+}
+
+// 用
+function Dropdown() {
+    const [isOpen, setIsOpen] = useState(false);
+    const ref = useClickOutside(() => setIsOpen(false));
+    
+    return (
+        
+             setIsOpen(true)}>Open
+            {isOpen && Dropdown content}
+        
+    );
+}
+```
+
+  
+### useFetch（簡易版）
+
+```tsx
+function useFetch(url: string) {
+    const [data, setData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    
+    useEffect(() => {
+        let cancelled = false;
+        
+        async function load() {
+            try {
+                setLoading(true);
+                setError(null);
+                
+                const res = await fetch(url);
+                if (!res.ok) throw new Error("Failed");
+                
+                const json = await res.json();
+                if (!cancelled) {
+                    setData(json);
+                }
+            } catch (err) {
+                if (!cancelled) {
+                    setError(err as Error);
+                }
+            } finally {
+                if (!cancelled) {
+                    setLoading(false);
+                }
+            }
+        }
+        
+        load();
+        return () => { cancelled = true; };
+    }, [url]);
+    
+    return { data, loading, error };
+}
+
+// 用
+function UserList() {
+    const { data: users, loading, error } = useFetch("/api/users");
+    
+    if (loading) return ;
+    if (error) return ;
+    if (!users) return null;
+    
+    return 
+
+;
+}
+
+// 進階：用 React Query（業界主流、後面講）
+```
+
+  
+### Hook 規則
+
+```text
+1. 只在 component 或其他 hook 內呼叫
+   ❌ 在 if 內呼叫
+   ❌ 在 for 內呼叫
+   ❌ 在 function（非 component / 非 hook）內呼叫
+
+2. 永遠以 use 開頭
+   - useCustomHook（React 才知道）
+   - useFetch / useDebounce / useToggle
+
+3. 順序固定
+   - 每次 render 順序一樣
+   - 不能 1 次 5 個 hook、1 次 3 個
+
+ESLint 自動檢查：
+- react-hooks/rules-of-hooks
+- 違反規則立刻警告
+```
+
+  
+### 合成多個 hook
+
+```tsx
+// Custom hook 可以呼叫其他 custom hook
+
+function useUserProfile(userId: number) {
+    // 用其他 hook
+    const { data: user, loading } = useFetch(`/api/users/${userId}`);
+    const [favorites, setFavorites] = useLocalStorage("favs", []);
+    
+    const isFavorite = favorites.includes(userId);
+    
+    const toggleFavorite = useCallback(() => {
+        setFavorites(prev =>
+            prev.includes(userId)
+                ? prev.filter(id => id !== userId)
+                : [...prev, userId]
+        );
+    }, [userId, setFavorites]);
+    
+    return { user, loading, isFavorite, toggleFavorite };
+}
+
+// 用：1 個 hook 提供完整邏輯
+function UserCard({ userId }) {
+    const { user, loading, isFavorite, toggleFavorite } = useUserProfile(userId);
+    
+    if (loading) return ;
+    return (
+        
+            
+{user.name}
+
+            
+                {isFavorite ? "★" : "☆"}
+            
+        
+    );
+}
+```
+
+  
+### 2026 推薦：用業界 lib 不重造輪
+
+```text
+很多 hook 已有 lib：
+
+@uidotdev/usehooks（React 出品）：
+- useLocalStorage
+- useDebounce
+- useMediaQuery
+- useClickOutside
+- 30+ 高品質 hooks
+
+usehooks-ts（最普及）：
+- TypeScript first
+- 完整 hooks 庫
+
+react-use（最大）：
+- 100+ hooks
+- 各種場景
+
+裝：
+$ npm install @uidotdev/usehooks
+
+用：
+import { useDebounce, useLocalStorage, useMediaQuery } from "@uidotdev/usehooks";
+
+const debouncedValue = useDebounce(value, 500);
+
+不要造輪原則：
+- 簡單 hook 自己寫
+- 複雜 / 通用 hook 用 lib
+```
+
+  
+### 常見錯誤
+
+  
+- **沒 use 開頭**—React 認不出、不檢查規則
+- **在 if 內呼叫 hook**—違反規則
+- **state 太多**—應該拆多個 hook
+- **每次 render 建新 function**—用 useCallback
+- **沒 cleanup**—訂閱 leak
+- **hook 內 hook 順序變**—永遠固定順序
+- **濫用 ref**—應該用 state 或 useEffect
+
+  
+**☕ 用人話講**
+
+Custom Hook 4 心法：(1) **use 開頭**—React 約定 (2) **抽 logic、不抽 UI**—UI 用 component (3) **多個 component 共用**—各有獨立 state (4) **用業界 lib**—@uidotdev/usehooks。**實戰**：useToggle / useLocalStorage / useDebounce / useMediaQuery 是必學。
+
+  
+
+  
+
+🛠️
+工具推薦
+
+配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。

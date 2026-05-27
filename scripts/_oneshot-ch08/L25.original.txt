@@ -1,0 +1,75 @@
+## 三大 Hook 差別
+
+### React.memo（component 層）
+```tsx
+// 父 component 重 render、但 props 沒變 → 子不重 render
+const MemoizedChild = memo(function Child({ name }: { name: string }) {
+  console.log("render Child");
+  return <div>{name}</div>;
+});
+
+function Parent() {
+  const [count, setCount] = useState(0);
+  return (
+    <>
+      <button onClick={() => setCount(c => c + 1)}>{count}</button>
+      <MemoizedChild name="Alice" />  {/* 不會因為 count 變而重 render */}
+    </>
+  );
+}
+```
+
+### useMemo（值層）
+```tsx
+function ExpensiveList({ items, filter }) {
+  const filtered = useMemo(
+    () => items.filter(i => i.name.includes(filter)),
+    [items, filter]
+  );
+  return <List items={filtered} />;
+}
+```
+
+### useCallback（函式層）
+```tsx
+function Parent() {
+  const [count, setCount] = useState(0);
+
+  // 沒 useCallback：每次 render 都建新 function、MemoizedChild 失效
+  const handleClick = useCallback(() => {
+    console.log("clicked");
+  }, []);  // 空依賴：永遠同一個 function
+
+  return <MemoizedChild onClick={handleClick} />;
+}
+```
+
+## 何時該用
+
+✅ **該用**：
+- 巨量 list（>100 items）
+- 深度比較貴（巢狀物件、計算 chart 資料）
+- 渲染重的 component（chart / video / map）
+- props 容易變但結果不變
+
+❌ **不該用**：
+- 簡單 component（一行 div / text）
+- props 永遠變化（time、滑鼠位置）
+- component 永遠 re-mount
+
+## React 19 Compiler（殺手鐧）
+```jsx
+// React 19 自動加 memo、不用手寫
+function Component({ data }) {
+  const processed = data.map(/* ... */);  // 編譯後自動 memoize
+  return <div>{processed.length}</div>;
+}
+```
+
+啟用 React Compiler（Next.js 15）：
+```js
+// next.config.mjs
+const nextConfig = {
+  experimental: { reactCompiler: true },
+};
+```

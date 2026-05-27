@@ -1,0 +1,283 @@
+列表渲染是 React 必會—但 90% 新手 key 用錯。學完這節不再被 console warning 罵。
+
+  
+### 基本列表
+
+```tsx
+// 用 .map() 把陣列變成 JSX
+
+const items = ["Apple", "Banana", "Cherry"];
+
+function Fruits() {
+    return (
+        
+
+    );
+}
+
+// 注意：
+// 1. 用 {} 包 expression
+// 2. map 回 JSX element
+// 3. 必須加 key
+```
+
+  
+### Key 完整規則
+
+```text
+Key 是什麼？
+React 用 key 識別「哪個 item 是哪個」
+
+為什麼？
+- React 用 virtual DOM diff
+- 沒 key、React 不知道哪個 item 改了
+- 結果：重新渲染所有
+
+規則：
+1. key 必須唯一—在這個 list 內
+2. key 必須穩定—同 item 永遠同 key
+3. key 必須可預測—不要 Math.random()
+
+好的 key：
+✓ 資料庫 id
+✓ slug / unique string
+✓ 業務唯一 key（如 email）
+
+壞的 key：
+✗ index（順序變就亂）
+✗ Math.random()（每次 render 變）
+✗ 重複的值（warning）
+```
+
+  
+### Index 當 key 的問題
+
+```tsx
+// ❌ 用 index
+function TodoList({ todos }) {
+    return (
+        
+
+    );
+}
+
+// 假設 todos = [A, B, C]
+// 用戶在 A 打字 → 內部 state 在 li[0]
+
+// 刪除 A：
+// todos 變 [B, C]
+// key 0 變 B、key 1 變 C
+// 但 React 認為 key 0 是 A（內部 state 留著）
+// → B 的 input 顯示 A 的 state！bug
+
+// ✓ 用穩定 ID
+{todos.map(todo => (
+    
+        
+    
+))}
+
+// 例外：完全靜態 list、不會 add / remove / reorder
+// 用 index 也行（少數場景）
+```
+
+  
+### 沒 ID 怎麼辦
+
+```tsx
+// 情況：API 沒給 ID
+
+// 方法 1：用唯一欄位組合
+{users.map(user => (
+    {user.name}
+))}
+
+// 方法 2：加 ID
+const itemsWithId = items.map((item, i) => ({
+    ...item,
+    id: `${item.category}-${item.name}`
+}));
+
+// 方法 3：用 crypto.randomUUID()（一次性）
+const items = useState(() => rawItems.map(item => ({
+    ...item,
+    id: crypto.randomUUID()
+})));
+
+// 方法 4：用 nanoid 或 uuid library
+import { nanoid } from "nanoid";
+
+const items = useState(() => rawItems.map(item => ({
+    ...item,
+    id: nanoid()
+})));
+
+// 重要：建 ID 要 stable、不要每次 render 建新的
+```
+
+  
+### 列表 + filter / sort
+
+```tsx
+function UserList({ users, search }) {
+    // Filter + sort 之後 map
+    const visibleUsers = users
+        .filter(user => user.name.includes(search))
+        .sort((a, b) => a.name.localeCompare(b.name));
+    
+    return (
+        
+
+    );
+}
+
+// 不要在 JSX 內做 expensive filter
+// 拉到外面、用 useMemo（後面講）
+```
+
+  
+### 列表 + conditional
+
+```tsx
+function ItemList({ items }) {
+    return (
+        
+
+    );
+}
+
+// 或拆 component
+function ItemList({ items }) {
+    if (items.length === 0) {
+        return ;
+    }
+    
+    return (
+        
+
+    );
+}
+```
+
+  
+### 進階：Group by
+
+```tsx
+// 把 list 分組顯示
+
+interface Task {
+    id: number;
+    title: string;
+    category: "work" | "personal" | "shopping";
+}
+
+function GroupedTasks({ tasks }: { tasks: Task[] }) {
+    // 分組
+    const grouped = tasks.reduce((acc, task) => {
+        if (!acc[task.category]) acc[task.category] = [];
+        acc[task.category].push(task);
+        return acc;
+    }, {} as Record);
+    
+    return (
+        
+            {Object.entries(grouped).map(([category, tasks]) => (
+                
+                    
+### {category}
+
+                    
+
+                
+            ))}
+        
+    );
+}
+```
+
+  
+### 進階：列表動畫
+
+```tsx
+// 用 framer-motion AnimatePresence
+import { motion, AnimatePresence } from "framer-motion";
+
+function AnimatedList({ items }) {
+    return (
+        
+
+    );
+}
+
+// key 必須穩定、不然動畫怪
+// 加入 / 刪除自動有動畫
+```
+
+  
+### 大列表性能：Virtual Scrolling
+
+```text
+1000+ items 一次 render 慢
+
+對策：virtual scrolling
+- 只 render 可見的（如 20 個）
+- 滾動時動態替換
+
+2026 主流：
+- @tanstack/react-virtual（最普及）
+- react-window（簡單）
+- react-virtuoso（功能多）
+
+範例：
+import { useVirtualizer } from "@tanstack/react-virtual";
+
+function VirtualList({ items }) {
+    const parentRef = useRef(null);
+    
+    const virtualizer = useVirtualizer({
+        count: items.length,
+        getScrollElement: () => parentRef.current,
+        estimateSize: () => 50
+    });
+    
+    return (
+        
+            
+                {virtualizer.getVirtualItems().map(virtualItem => (
+                    
+                        {items[virtualItem.index].name}
+                    
+                ))}
+            
+        
+    );
+}
+
+// 1 萬個 item 也順
+```
+
+  
+### 常見錯誤
+
+  
+- **沒 key**—console warning
+- **用 index 當 key**—list 改動 state bug
+- **用 Math.random() 當 key**—每次 re-render
+- **key 不唯一**—warning + 怪行為
+- **JSX 內 filter / sort**—性能差、用 useMemo
+- **1000+ items 一次 render**—卡頓、用 virtual list
+- **Fragment 沒 key**—用 `` 不要 `<>`
+
+  
+**☕ 用人話講**
+
+List + Key 4 心法：(1) **永遠加 key**—不加 React 抗議 (2) **key 用唯一 ID**—不要 index、不要 random (3) **filter / sort 拉出 JSX**—用 useMemo 快取 (4) **1000+ 用 virtual list**—@tanstack/react-virtual。**記憶**：key 是 React 的「身份證」、不對就出 bug。
+
+  
+
+  
+
+💼
+接案小知識
+
+剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「React」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。

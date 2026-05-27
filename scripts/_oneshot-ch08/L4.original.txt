@@ -1,0 +1,342 @@
+React 核心思想：**UI 是 component 的組合**。學會拆 component 跟用 props 傳資料、寫 React 就會了一半。
+
+  
+### 第一個 Component
+
+```tsx
+// Function component（2026 主流）
+function Welcome() {
+    return Hello, world!;
+}
+
+// 用：當成 tag 寫
+
+// 規則：
+// 1. 函式名大寫開頭（區分跟 HTML tag）
+// 2. return 1 個元素
+// 3. export 給其他檔用
+
+export default Welcome;
+
+// 或 named export
+export function Welcome() { ... }
+```
+
+  
+### Props（傳資料）
+
+```tsx
+// Props 是 component 的「參數」
+
+interface WelcomeProps {
+    name: string;
+    age?: number;     // optional
+}
+
+function Welcome({ name, age }: WelcomeProps) {
+    return (
+        
+            Hello, {name}
+            {age && 
+Age: {age}
+}
+        
+    );
+}
+
+// 用
+
+// Props 傳法：
+
+// Boolean 簡寫
+        // 等於 isActive={true}
+
+```
+
+  
+### Children Prop
+
+```tsx
+// 特殊 prop：children
+interface CardProps {
+    children: React.ReactNode;
+}
+
+function Card({ children }: CardProps) {
+    return (
+        
+            {children}
+        
+    );
+}
+
+// 用
+
+    
+## Title
+
+    
+Content
+
+// children 自動包含所有子內容
+// 不用 prop 傳
+
+// 進階：children 多 slot
+interface LayoutProps {
+    header: React.ReactNode;
+    sidebar: React.ReactNode;
+    children: React.ReactNode;
+}
+
+function Layout({ header, sidebar, children }: LayoutProps) {
+    return (
+        
+            {header}
+            {sidebar}
+            {children}
+        
+    );
+}
+
+}
+    sidebar={}
+>
+    
+
+```
+
+  
+### Props 是唯讀
+
+```tsx
+// ❌ 不能改 props
+function Welcome({ name }: { name: string }) {
+    name = "Bob";   // ❌ 不該改
+    return {name};
+}
+
+// Props 是「父給的禮物」、只能用、不能改
+
+// 如果要「衍生」資料：算出來
+function Welcome({ name }: { name: string }) {
+    const upperName = name.toUpperCase();
+    return {upperName};
+}
+
+// 如果要「狀態」：用 useState（下節講）
+
+// 規則：data flow 是單向的
+// 父 → 子 → 孫
+// 不能反向
+```
+
+  
+### 拆 component 心法
+
+```text
+什麼時候拆 component？
+
+1. 重複用
+   - Button、Card、Modal
+   - 寫 3 次以上拆
+
+2. 邏輯獨立
+   - 1 個 component 100+ 行 → 太大
+   - 拆出有獨立責任的
+
+3. UI 區塊清楚
+   - Header / Footer / Sidebar
+   - 視覺上獨立 → 拆
+
+4. 不同人維護
+   - 不同 team 負責
+   - 拆檔案 + folder
+
+不該拆：
+✗ 只用 1 次的小 div
+✗ 強加抽象（為拆而拆）
+✗ 太多 props（pass-through）
+
+例：拆 Article
+傳統：
+
+    Title
+    by Alice
+    
+Content
+
+    
+        Like
+        Share
+    
+
+拆後：
+
+    
+    {content}
+    
+
+各 component 獨立、可測、可重用
+```
+
+  
+### Component 組合（Composition）
+
+```tsx
+// 大 component 由小 component 組成
+
+interface ButtonProps {
+    children: React.ReactNode;
+    variant?: "primary" | "secondary";
+    onClick?: () => void;
+}
+
+function Button({ children, variant = "primary", onClick }: ButtonProps) {
+    return (
+        
+            {children}
+        
+    );
+}
+
+interface IconProps {
+    name: string;
+}
+
+function Icon({ name }: IconProps) {
+    return ;
+}
+
+// 組合
+function IconButton({ icon, children, ...props }: any) {
+    return (
+        
+            
+            {children}
+        
+    );
+}
+
+// 用
+
+    Like
+
+```
+
+  
+### Spread props
+
+```tsx
+// 把所有 props 傳給子元件
+
+interface ButtonProps extends React.ButtonHTMLAttributes {
+    variant?: "primary" | "secondary";
+}
+
+function Button({ variant = "primary", children, ...rest }: ButtonProps) {
+    return (
+        
+            {children}
+        
+    );
+}
+
+// 用：能傳所有原生 button attributes
+
+    Submit
+
+// 不寫 ...rest 要一個個列出
+// ...rest 寫法簡潔 + 彈性
+```
+
+  
+### Default Props
+
+```tsx
+// 用 default 參數值
+interface ButtonProps {
+    variant?: "primary" | "secondary";
+    size?: "sm" | "md" | "lg";
+    children: React.ReactNode;
+}
+
+function Button({
+    variant = "primary",
+    size = "md",
+    children
+}: ButtonProps) {
+    return {children};
+}
+
+// 不指定就用 default
+Click            // primary / md
+Cancel
+Big
+```
+
+  
+### 實戰：Card component
+
+```tsx
+// 設計可重用 Card
+
+interface CardProps {
+    children: React.ReactNode;
+    className?: string;
+}
+
+function Card({ children, className }: CardProps) {
+    return (
+        
+            {children}
+        
+    );
+}
+
+function CardHeader({ children }: { children: React.ReactNode }) {
+    return {children};
+}
+
+function CardTitle({ children }: { children: React.ReactNode }) {
+    return {children};
+}
+
+function CardBody({ children }: { children: React.ReactNode }) {
+    return {children};
+}
+
+function CardFooter({ children }: { children: React.ReactNode }) {
+    return {children};
+}
+
+// Export 一起
+export { Card, CardHeader, CardTitle, CardBody, CardFooter };
+
+// 用：靈活組合
+
+    
+        Hello
+    
+    
+        Content here
+    
+    
+        Action
+    
+
+// 這是 shadcn/ui 的 pattern
+```
+
+  
+**☕ 用人話講**
+
+Component + Props 4 心法：(1) **function + 大寫名**—function Welcome() (2) **props 是參數**—父傳子用 (3) **props 唯讀**—不能改、要改用 state (4) **children 特殊**—子元素自動帶。**2026 慣例**：用 interface 寫 props、function component、composition over inheritance。
+
+  
+
+  
+
+🚀
+2026 趨勢
+
+這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。

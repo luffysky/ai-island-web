@@ -1,0 +1,252 @@
+RSC 是 React 最大革命—Server 跑 component、Client 只收 HTML。2026 Next.js App Router 預設。
+
+  
+### 傳統 React 的問題
+
+```text
+傳統 SPA：
+
+1. 首屏白屏—載大 bundle
+2. SEO 差—爬蟲看到空白 HTML
+3. Waterfall—多層 useEffect 多輪請求
+4. Bundle 大—所有 code 送 client
+```
+
+  
+### RSC 解什麼
+
+```text
+Server Components：
+
+1. Server 跑、回 HTML
+   - 首屏快、SEO 好
+   - 不送 component JS
+
+2. 直接抓 DB
+   - Component 內 await db.user.find()
+   - 不用 API、不用 useEffect
+
+3. 不送 component code
+   - Bundle 小
+   - lib 不在 client
+
+4. 自動 streaming
+   - 邊算邊送 HTML
+
+只缺：沒 interactivity（用 Client Components）
+```
+
+  
+### Server vs Client Component
+
+```tsx
+// app/page.tsx（Server Component 預設）
+import { db } from "@/lib/db";
+
+export default async function HomePage() {
+    const users = await db.user.findMany();
+    
+    return (
+        
+            Users
+            
+
+        
+    );
+}
+
+// Client Component（要互動）
+"use client";
+
+import { useState } from "react";
+
+export default function Counter() {
+    const [count, setCount] = useState(0);
+    return (
+         setCount(c => c + 1)}>
+            {count}
+        
+    );
+}
+```
+
+  
+### Server + Client 組合
+
+```tsx
+// app/page.tsx（Server）
+import { Counter } from "./Counter";   // Client component
+import { db } from "@/lib/db";
+
+export default async function HomePage() {
+    const users = await db.user.findMany();
+    
+    return (
+        
+            Users: {users.length}
+            {users.map(u => {u.name})}
+            
+            
+        
+    );
+}
+
+// Server：抓 users + render HTML
+// Client：只 hydrate Counter
+// Bundle 只包 Counter
+```
+
+  
+### Server Component 限制
+
+```text
+不能用：
+❌ useState / useEffect / useReducer
+❌ onClick / onChange
+❌ window / document / localStorage
+❌ Browser-only library
+
+能用：
+✓ async / await
+✓ DB 操作
+✓ Server-only library（Prisma / fs）
+✓ Environment variables
+✓ Sensitive secrets
+
+規則：
+- 互動 → Client
+- Data fetching → Server
+- UI 渲染 → Server
+```
+
+  
+### Server Actions
+
+```tsx
+// app/actions.ts
+"use server";
+
+import { db } from "@/lib/db";
+import { revalidatePath } from "next/cache";
+
+export async function createPost(formData: FormData) {
+    const title = formData.get("title") as string;
+    
+    await db.post.create({
+        data: { title, authorId: 1 }
+    });
+    
+    revalidatePath("/posts");
+}
+
+// app/posts/new/page.tsx
+import { createPost } from "../actions";
+
+export default function NewPostPage() {
+    return (
+        
+            
+            Create
+        
+    );
+}
+
+// 賣點：
+// 1. 無 API endpoint
+// 2. 無 JS 也能用
+// 3. type-safe
+// 4. 自動 revalidate
+```
+
+  
+### useOptimistic（樂觀更新）
+
+```tsx
+"use client";
+
+import { useOptimistic } from "react";
+import { toggleLike } from "./actions";
+
+export default function LikeButton({ post }) {
+    const [optimisticLiked, addOptimistic] = useOptimistic(
+        post.liked,
+        (state, newValue: boolean) => newValue
+    );
+    
+    const handleClick = async () => {
+        addOptimistic(!optimisticLiked);
+        await toggleLike(post.id);
+    };
+    
+    return (
+        
+            {optimisticLiked ? "♥" : "♡"}
+        
+    );
+}
+
+// 點下立刻變、不用等 server
+// 失敗自動 rollback
+```
+
+  
+### Streaming
+
+```tsx
+import { Suspense } from "react";
+
+async function SlowComponent() {
+    await sleep(3000);
+    const data = await fetchSlowData();
+    return {data};
+}
+
+export default function Page() {
+    return (
+        
+            Page Title
+            
+            }>
+                
+            
+            
+            
+        
+    );
+}
+
+// 1. 立刻 stream 標題 + footer
+// 2. 慢 component 顯示 spinner
+// 3. 載完 stream 出來
+```
+
+  
+### RSC 心法
+
+```text
+2026 Next.js App Router 思路：
+
+1. 預設 Server Component
+2. 互動 leaf 用 "use client"
+3. Server Action for mutation
+4. Suspense 處理 loading
+5. Revalidate for cache
+
+2026 真實：
+- 99% Next.js 新專案用 App Router
+- 學會 RSC = 寫 modern React 標配
+```
+
+  
+**🚀 進階技巧**
+
+RSC 5 心法：(1) **預設 Server**—大部分 component 不需互動 (2) **"use client" leaf 化**—只互動部分標 (3) **Server Actions 取代 API**—type-safe mutation (4) **Suspense 處理 loading**—streaming UX (5) **revalidatePath / revalidateTag**—cache 同步。
+
+  
+
+  
+
+🎯
+面試考點
+
+台灣科技公司面試 90% 會問「React」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。

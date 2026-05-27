@@ -1,0 +1,255 @@
+寫到 100 行 code、塞一個檔案還能。寫到 10000 行—**分檔**變必要。所有語言都有**模組系統**。
+
+  
+### 為什麼分檔
+
+```text
+沒分檔：
+- 1 個檔案 10000 行
+- 找東西要 Ctrl+F 一輩子
+- 一改影響全部
+- 多人開發互踩腳
+
+分檔後：
+- 每檔負責一個職責
+- user.py（使用者邏輯）
+- order.py（訂單邏輯）
+- email.py（寄信邏輯）
+- main.py（程式進入點）
+- 各檔互相 import
+
+→ 大型專案標配
+```
+
+  
+### import / export：6 個語言對比
+
+```text
+# Python
+# math_utils.py
+def add(a, b):
+    return a + b
+
+PI = 3.14
+
+# main.py
+from math_utils import add, PI
+# 或
+import math_utils
+math_utils.add(2, 3)
+
+# JavaScript（ES Modules）
+# math_utils.js
+export function add(a, b) { return a + b; }
+export const PI = 3.14;
+
+# main.js
+import { add, PI } from './math_utils.js';
+
+# 預設 export
+export default function() { ... }
+import myFunc from './math_utils.js';
+
+# TypeScript 同 JS
+
+# Go
+// math_utils.go
+package math_utils
+
+func Add(a, b int) int {
+    return a + b
+}
+
+// main.go
+import "myproject/math_utils"
+math_utils.Add(2, 3)
+
+# Rust
+// math_utils.rs
+pub fn add(a: i32, b: i32) -> i32 {
+    a + b
+}
+
+// main.rs
+mod math_utils;
+use math_utils::add;
+add(2, 3);
+
+# Java
+// MathUtils.java
+package com.example.utils;
+
+public class MathUtils {
+    public static int add(int a, int b) { return a + b; }
+}
+
+// Main.java
+import com.example.utils.MathUtils;
+MathUtils.add(2, 3);
+
+# C#（同 Java）
+using MyProject.Utils;
+MathUtils.Add(2, 3);
+
+→ 大同小異：定義 export、外面 import
+```
+
+  
+### 套件管理（Package Manager）
+
+```text
+「別人寫的好用 library 怎麼用」：
+
+每個語言有自己的套件管理：
+
+Python：
+- pip / uv（2026 主流）
+- 中央倉庫：PyPI
+
+# 安裝
+pip install requests
+uv add requests
+
+# 用
+import requests
+requests.get("https://api.example.com")
+
+JavaScript：
+- npm / yarn / pnpm / bun
+- 中央倉庫：npm registry
+
+# 安裝
+npm install axios
+
+# 用
+import axios from 'axios';
+
+Go：
+- go modules（內建）
+- 任何 git repo 都能當套件
+
+go get github.com/gin-gonic/gin
+
+Rust：
+- cargo（內建）
+- 中央倉庫：crates.io
+
+[dependencies]
+serde = "1.0"
+
+Java / Kotlin：
+- Maven / Gradle
+- 中央：Maven Central
+
+C#：
+- NuGet
+- dotnet add package Newtonsoft.Json
+
+PHP：
+- Composer
+- 中央：Packagist
+
+composer require guzzlehttp/guzzle
+
+Ruby：
+- gem / Bundler
+- 中央：RubyGems
+
+gem install rails
+
+Swift：
+- Swift Package Manager（SPM）
+- CocoaPods（舊但仍用）
+
+Dart：
+- pub.dev
+- pubspec.yaml 管理
+
+→ 每個語言一個套件管理工具
+→ 學熟你主語言的
+```
+
+  
+### 2026 主流套件管理趨勢
+
+  
+- **uv（Python）**—速度比 pip 快 10-100 倍、2024 後火速取代
+- **pnpm（JS）**—硬碟空間省 70%、速度快、取代 npm 中
+- **bun（JS）**—2025 後快速崛起、套件管理 + runtime 二合一
+- **cargo（Rust）**—2026 業界公認最強套件管理（其他都羨慕）
+
+  
+### 版本鎖定（Lock file）
+
+```text
+「保證所有人裝的版本一樣」：
+
+# 你裝 requests 1.0
+# 6 個月後別人 clone 專案、裝到 requests 2.0
+# 結果 API 變了、程式爆
+
+對策：lock file
+- package-lock.json（npm）
+- yarn.lock（yarn）
+- pnpm-lock.yaml（pnpm）
+- requirements.txt / poetry.lock / uv.lock（Python）
+- Cargo.lock（Rust）
+- go.sum（Go）
+
+→ 永遠 commit lock file 進 git！
+→ 確保所有環境一致
+```
+
+  
+### 命名空間（Namespace）
+
+```text
+「不同檔案能有同名 function 嗎？」
+
+可以、靠命名空間：
+
+# Python
+# user.py
+def create(name): ...
+
+# product.py
+def create(name): ...
+
+# main.py
+from user import create as create_user
+from product import create as create_product
+# 重新命名避免衝突
+
+# 或保留全名
+import user
+import product
+user.create("Alice")
+product.create("iPhone")
+
+# Java（package）
+com.example.user.User.create()
+com.example.product.Product.create()
+
+# C# （namespace）
+namespace MyApp.Users {
+    public class User { ... }
+}
+
+namespace MyApp.Products {
+    public class Product { ... }
+}
+```
+
+  
+**☕ 用人話講**
+
+模組化 = 「**把 code 分檔、避免一個檔 10000 行**」。**import / export** 是檔案間互通的方法。**套件管理**是裝別人寫的 library。新手記住 2 件事：(1) **每個語言一個 package manager**—Python 用 uv、JS 用 pnpm / bun、Rust 用 cargo (2) **永遠 commit lock file**—不然版本亂掉一週後別人無法跑你 code。
+
+  
+
+  
+
+🛠️
+工具推薦
+
+配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。

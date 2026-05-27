@@ -1,0 +1,343 @@
+State 多 / 複雜時、useState 變亂—useReducer 是內建解法。
+
+  
+### useState vs useReducer
+
+```text
+useState：
+- 適合：簡單 state（boolean / number / string / 1-2 個 object 欄位）
+- 多個 setter
+- 改邏輯散落
+
+useReducer：
+- 適合：複雜 state（多欄位 + 多 action）
+- 1 個 dispatch
+- 改邏輯集中
+
+何時用 useReducer：
+1. State 是物件、5+ 欄位
+2. 多種 action（add / remove / update / reset）
+3. Action 之間有依賴
+4. Logic 複雜（驗證、計算）
+```
+
+  
+### 基本 useReducer
+
+```tsx
+// State 型別
+interface State {
+    count: number;
+    step: number;
+}
+
+// Action 型別（discriminated union）
+type Action =
+    | { type: "increment" }
+    | { type: "decrement" }
+    | { type: "reset" }
+    | { type: "setStep"; step: number };
+
+// Reducer：(state, action) => newState
+function reducer(state: State, action: Action): State {
+    switch (action.type) {
+        case "increment":
+            return { ...state, count: state.count + state.step };
+        case "decrement":
+            return { ...state, count: state.count - state.step };
+        case "reset":
+            return { count: 0, step: 1 };
+        case "setStep":
+            return { ...state, step: action.step };
+    }
+}
+
+// Component
+function Counter() {
+    const [state, dispatch] = useReducer(reducer, {
+        count: 0,
+        step: 1
+    });
+    
+    return (
+        
+            
+Count: {state.count}
+
+            
+Step: {state.step}
+
+             dispatch({ type: "increment" })}>+
+             dispatch({ type: "decrement" })}>-
+             dispatch({ type: "reset" })}>Reset
+             dispatch({
+                    type: "setStep",
+                    step: +e.target.value
+                })}
+            />
+        
+    );
+}
+```
+
+  
+### 實戰：Todo Reducer
+
+```tsx
+interface Todo {
+    id: number;
+    text: string;
+    done: boolean;
+}
+
+interface State {
+    todos: Todo[];
+    filter: "all" | "active" | "done";
+}
+
+type Action =
+    | { type: "add"; text: string }
+    | { type: "toggle"; id: number }
+    | { type: "delete"; id: number }
+    | { type: "edit"; id: number; text: string }
+    | { type: "setFilter"; filter: State["filter"] }
+    | { type: "clearDone" };
+
+function reducer(state: State, action: Action): State {
+    switch (action.type) {
+        case "add":
+            return {
+                ...state,
+                todos: [...state.todos, {
+                    id: Date.now(),
+                    text: action.text,
+                    done: false
+                }]
+            };
+        case "toggle":
+            return {
+                ...state,
+                todos: state.todos.map(t =>
+                    t.id === action.id ? { ...t, done: !t.done } : t
+                )
+            };
+        case "delete":
+            return {
+                ...state,
+                todos: state.todos.filter(t => t.id !== action.id)
+            };
+        case "edit":
+            return {
+                ...state,
+                todos: state.todos.map(t =>
+                    t.id === action.id ? { ...t, text: action.text } : t
+                )
+            };
+        case "setFilter":
+            return { ...state, filter: action.filter };
+        case "clearDone":
+            return {
+                ...state,
+                todos: state.todos.filter(t => !t.done)
+            };
+    }
+}
+
+function TodoApp() {
+    const [state, dispatch] = useReducer(reducer, {
+        todos: [],
+        filter: "all"
+    });
+    
+    const visibleTodos = state.todos.filter(t => {
+        if (state.filter === "active") return !t.done;
+        if (state.filter === "done") return t.done;
+        return true;
+    });
+    
+    return (
+        
+             {
+                    if (e.key === "Enter") {
+                        dispatch({ type: "add", text: e.currentTarget.value });
+                        e.currentTarget.value = "";
+                    }
+                }}
+            />
+            
+            {visibleTodos.map(todo => (
+                
+                     dispatch({ type: "toggle", id: todo.id })}
+                    />
+                    {todo.text}
+                     dispatch({ type: "delete", id: todo.id })}>
+                        ×
+                    
+                
+            ))}
+            
+            
+                 dispatch({ type: "setFilter", filter: "all" })}>
+                    All
+                
+                 dispatch({ type: "setFilter", filter: "active" })}>
+                    Active
+                
+                 dispatch({ type: "setFilter", filter: "done" })}>
+                    Done
+                
+                 dispatch({ type: "clearDone" })}>
+                    Clear Done
+                
+            
+        
+    );
+}
+```
+
+  
+### Reducer + Context（mini Redux）
+
+```tsx
+// 大專案：reducer + context
+// 不用 Redux 也能做
+
+import { createContext, useContext, useReducer, ReactNode } from "react";
+
+const StateContext = createContext(null);
+const DispatchContext = createContext | null>(null);
+
+export function StoreProvider({ children }: { children: ReactNode }) {
+    const [state, dispatch] = useReducer(reducer, initialState);
+    
+    return (
+        
+            
+                {children}
+            
+        
+    );
+}
+
+// 分開 hook（性能）
+export function useStoreState() {
+    const state = useContext(StateContext);
+    if (!state) throw new Error("Need StoreProvider");
+    return state;
+}
+
+export function useStoreDispatch() {
+    const dispatch = useContext(DispatchContext);
+    if (!dispatch) throw new Error("Need StoreProvider");
+    return dispatch;
+}
+
+// 用
+function Component() {
+    const state = useStoreState();
+    const dispatch = useStoreDispatch();
+    
+    return (
+         dispatch({ type: "increment" })}>
+            {state.count}
+        
+    );
+}
+
+// dispatch 永遠同 reference、訂閱 dispatch 的不會 re-render
+// state 變才 re-render 對應 component
+```
+
+  
+### 進階：Immer 簡化
+
+```tsx
+import { produce } from "immer";
+
+// 不用 spread、直接寫
+function reducer(state: State, action: Action): State {
+    return produce(state, draft => {
+        switch (action.type) {
+            case "add":
+                draft.todos.push({
+                    id: Date.now(),
+                    text: action.text,
+                    done: false
+                });
+                break;
+            case "toggle":
+                const todo = draft.todos.find(t => t.id === action.id);
+                if (todo) todo.done = !todo.done;
+                break;
+            case "delete":
+                draft.todos = draft.todos.filter(t => t.id !== action.id);
+                break;
+        }
+    });
+}
+
+// 比 spread 直觀
+// Immer 內部處理 immutable
+```
+
+  
+### 什麼時候不用 useReducer？
+
+```text
+不該用 useReducer：
+
+1. 簡單 state
+   ❌ const [count, dispatch] = useReducer(...);
+   ✓ const [count, setCount] = useState(0);
+
+2. Server data
+   ✓ React Query（自動 cache、refetch）
+   ✗ useReducer + 手動 fetch
+
+3. Form state
+   ✓ React Hook Form
+   ✗ useReducer + 手動 input
+
+4. 全域複雜 state
+   ✓ Zustand / Jotai（簡單）
+   ✓ Redux Toolkit（完整 ecosystem）
+
+useReducer 甜蜜點：
+- Component 內複雜 state
+- 5+ actions
+- 中等規模
+- 不要全域
+```
+
+  
+### 2026 替代方案
+
+```text
+useReducer 適合場景越來越窄：
+
+組件內複雜 state → useReducer ✓
+組件間 state → useContext + useReducer 或 Zustand
+全域 state → Zustand / Jotai
+Server state → React Query / SWR
+Form state → React Hook Form
+URL state → Next Router / TanStack Router
+
+業界 2026 趨勢：
+- Zustand 取代部分 useReducer
+- 但 useReducer 仍是 component 內複雜邏輯首選
+- 不被取代
+```
+
+  
+**☕ 用人話講**
+
+useReducer 4 心法：(1) **state 複雜時用**—多欄位、多 action (2) **action 用 discriminated union**—type-safe (3) **spread 保持 immutable**—或用 Immer (4) **Reducer + Context = mini Redux**。**2026 業界**：複雜 component state 用 useReducer、全域 state 用 Zustand。
+
+  
+
+  
+
+💼
+接案小知識
+
+剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「React」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。

@@ -1,0 +1,134 @@
+Thread + lock 容易出 bug。**訊息傳遞**是另一條路—不共享記憶體、靠「**傳訊息**」溝通。
+
+  
+### 兩個哲學
+
+```text
+Shared Memory（共享記憶體）：
+- 多 thread 共用變數
+- 用 lock 保護
+- C / Java / C# / Python 主流
+
+Message Passing（訊息傳遞）：
+- 每個 actor 自己的狀態
+- 互相送訊息溝通
+- 沒共享 = 沒鎖 = 沒 race condition
+- Erlang / Elixir / Go / Akka（Scala）
+
+Go 名言：
+「不要靠共享記憶體溝通、用溝通共享記憶體」
+```
+
+  
+### Channel：Go 的 message passing
+
+```text
+Channel = 「傳訊息的管子」：
+
+// Go
+func main() {
+    ch := make(chan string)  // 建一個 channel
+    
+    go func() {
+        ch  loop(0) end)
+  end
+  
+  defp loop(count) do
+    receive do
+      :increment -> loop(count + 1)
+      {:get, caller} ->
+        send(caller, count)
+        loop(count)
+    end
+  end
+end
+
+# 用
+counter = Counter.start()
+send(counter, :increment)
+send(counter, :increment)
+send(counter, {:get, self()})
+receive do
+  count -> IO.puts(count)   # 2
+end
+
+→ Discord 後端用 Elixir
+→ WhatsApp 用 Erlang（同源）
+→ 2 百萬同時連線、 1 台 server 撐
+```
+
+  
+### 為什麼 message passing 強
+
+```text
+1. 沒共享 = 沒 race condition
+   每個 actor 自己玩自己的、安全
+
+2. 容易分散式
+   訊息能跨機器送（不只 thread）
+   橫向擴展容易
+
+3. 容易容錯
+   actor 死了不影響別人（隔離）
+   重啟就好
+
+4. 邏輯清楚
+   訊息往來 = 業務流程
+   像狀態機
+
+5. 高並發
+   Erlang VM：百萬 actor 都 OK
+   thread 1 萬就累
+```
+
+  
+### 2026 各語言 message passing
+
+  
+| 語言 | 方式 | 特色 |
+| --- | --- | --- |
+| Go | Channel | 內建、最 idiomatic |
+| Erlang / Elixir | Actor | 純訊息、超強容錯 |
+| Rust | std::sync::mpsc / async channel | 類 Go |
+| Scala | Akka actors | JVM 上的 Erlang |
+| JS / TS | Web Worker / postMessage | 瀏覽器並發 |
+| Python | multiprocessing.Queue | 多 process 間 |
+
+  
+### 實戰選擇
+
+```text
+什麼時候用 shared memory（thread + lock）？
+- 簡單、單機、效能極致
+- C / Rust 系統程式
+- 共享狀態必要時
+
+什麼時候用 message passing？
+- 分散式系統
+- 高並發 server
+- 容錯要求高
+- 多核擴展
+
+Go vs Elixir：
+- Go：goroutine + channel、中庸
+- Elixir：純 actor、極致
+
+新手建議：
+1. 先學 thread（最普及）
+2. 學 async（modern 主流）
+3. 學 channel / actor（架構級）
+```
+
+  
+**☕ 用人話講**
+
+Message passing 比 thread + lock 安全：(1) 每個 actor 自己玩、不共享 = 沒 race condition (2) 訊息往來看得到 = 好除錯 (3) 容易跨機器擴展。新手不用立刻學、知道有這條路就好—當你做**聊天系統 / 高並發 server / 分散式服務**會用到。Go channel 是最容易入門的、其次 Elixir Actor 是最強的（Discord 證明）。
+
+  
+
+  
+
+🚀
+2026 趨勢
+
+這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。

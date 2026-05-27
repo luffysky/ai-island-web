@@ -1,0 +1,274 @@
+「**同時做多件事**」—現代電腦 8 核心以上、不會並發 = 浪費 7 個核心。
+
+  
+### 3 個概念釐清
+
+```text
+1. 行程（Process）
+   - 1 個獨立程式
+   - 自己的記憶體空間
+   - 重、慢切換
+   - 例：Chrome 每個 tab 是 1 個 process
+
+2. 執行緒（Thread）
+   - Process 內的「執行單位」
+   - 共享 process 的記憶體
+   - 輕、快切換
+   - 例：Chrome 一個 tab 有多個 thread（UI、network、JS）
+
+3. 協程（Coroutine / async）
+   - 比 thread 還輕的並發單位
+   - 一個 thread 內能跑多個 coroutine
+   - 不切 OS、只切 user space
+   - 例：Python asyncio、Go goroutine、Rust async
+
+並發效能：
+協程 > thread > process（輕到重）
+```
+
+  
+### 為什麼要並發
+
+```text
+場景 1：CPU 密集（算很久）
+- 處理影像、訓練 model、加密
+- 8 核心電腦、1 個 thread 只用 1 核
+- 開 8 個 thread = 8 倍快
+
+場景 2：I/O 密集（等很久）
+- 等 DB 回應、等 API、等檔案讀完
+- 1 個 thread 等就 idle
+- 多 thread 同時等多個 I/O
+
+例：
+讀 100 個檔案
+- 同步：1 個一個讀、總共 100s
+- 並發：100 個一起讀、總共 1s
+```
+
+  
+### 各語言並發模型
+
+```text
+# Python（thread）
+import threading
+
+def task(n):
+    print(f"task {n}")
+
+threads = []
+for i in range(5):
+    t = threading.Thread(target=task, args=(i,))
+    threads.append(t)
+    t.start()
+
+for t in threads:
+    t.join()  # 等所有完成
+
+# ⚠ Python GIL（Global Interpreter Lock）
+# 同時只能一個 thread 跑 Python bytecode
+# CPU 密集型沒幫助、I/O 密集才有
+
+# Python（process）
+from multiprocessing import Process
+
+def task(n): ...
+
+processes = []
+for i in range(5):
+    p = Process(target=task, args=(i,))
+    p.start()
+    processes.append(p)
+
+for p in processes:
+    p.join()
+# 多 process = 真平行（突破 GIL）
+
+# Java / C#（thread）
+Thread t = new Thread(() -> {
+    System.out.println("running");
+});
+t.start();
+t.join();
+
+# 或 ExecutorService（thread pool）
+ExecutorService executor = Executors.newFixedThreadPool(10);
+executor.submit(() -> doStuff());
+
+# Go（goroutine—最強）
+func task(n int) {
+    fmt.Println("task", n)
+}
+
+for i := 0; i  = (0..5).map(|i| {
+    thread::spawn(move || {
+        println!("task {}", i);
+    })
+}).collect();
+
+for h in handles {
+    h.join().unwrap();
+}
+
+→ Go 是並發最容易的語言（goroutine）
+→ Java / C# / Python 用 thread
+→ Rust 用 thread 但有 ownership 保護
+```
+
+  
+### 競爭條件（Race Condition）
+
+```text
+「多 thread 同時改同個變數、結果亂掉」：
+
+# Python
+import threading
+
+count = 0
+
+def increment():
+    global count
+    for _ in range(1000):
+        count += 1
+
+threads = [threading.Thread(target=increment) for _ in range(10)]
+for t in threads: t.start()
+for t in threads: t.join()
+
+print(count)
+# 應該是 10000、但實際可能 9876 / 9999 / 不確定
+# Race condition！
+
+原因：
+count += 1 其實是 3 步：
+1. 讀 count
+2. 加 1
+3. 寫回
+
+兩 thread 同時：
+T1 讀 count（5）
+T2 讀 count（5）
+T1 寫回 6
+T2 寫回 6（不是 7）
+
+→ 多少 lost update
+```
+
+  
+### 鎖（Lock / Mutex）
+
+```text
+「同時只能一個 thread 動」：
+
+# Python
+import threading
+
+count = 0
+lock = threading.Lock()
+
+def increment():
+    global count
+    for _ in range(1000):
+        with lock:        # 拿鎖
+            count += 1    # 安全
+        # 出 with 釋放鎖
+
+# 現在永遠 10000
+
+# Java
+private final Object lock = new Object();
+private int count = 0;
+
+public void increment() {
+    synchronized (lock) {
+        count++;
+    }
+}
+
+# Rust（用 Mutex）
+use std::sync::Mutex;
+
+let counter = Mutex::new(0);
+
+let mut handle = counter.lock().unwrap();
+*handle += 1;
+// 出 scope 自動釋放
+
+# Go（用 sync.Mutex）
+var mu sync.Mutex
+count := 0
+
+func increment() {
+    mu.Lock()
+    defer mu.Unlock()
+    count++
+}
+```
+
+  
+### 死鎖（Deadlock）
+
+```text
+「兩個 thread 互相等對方的鎖、永遠卡住」：
+
+T1：拿了 lock_a、等 lock_b
+T2：拿了 lock_b、等 lock_a
+→ 永遠不會結束！
+
+避免：
+1. 鎖的順序一致
+   永遠先拿 lock_a 再 lock_b
+
+2. 用 timeout
+   try_lock(timeout=5)：5 秒拿不到放棄
+
+3. 用更高層工具
+   queue、channel、async / await
+   不直接用 lock
+
+→ 鎖是必要之惡
+→ 能不用就不用
+```
+
+  
+### Thread Pool：別亂開 thread
+
+```text
+不是每個 task 開新 thread：
+- 創建 thread 慢
+- 太多 thread = OS 切換開銷
+
+用 thread pool：
+- 預先創 N 個 thread
+- 任務丟進 queue
+- thread 從 queue 拿事做
+
+# Python
+from concurrent.futures import ThreadPoolExecutor
+
+with ThreadPoolExecutor(max_workers=10) as executor:
+    results = list(executor.map(process, items))
+
+# Java
+ExecutorService pool = Executors.newFixedThreadPool(10);
+pool.submit(() -> doStuff());
+
+# C#
+Task.Run(() => DoStuff());
+
+→ 預設 thread pool 大小：CPU 核心數 × 2
+```
+
+  
+**⚠ 踩雷警告**
+
+並發是 bug 大本營：(1) **Race condition**—偶發、難重現、最痛 (2) **Deadlock**—整個程式卡死 (3) **Memory ordering**—不同 CPU 看到不同順序。新手 3 條建議：(1) 沒必要不開 thread (2) 開 thread 就要鎖 (3) 鎖能不用就用 higher-level tools（queue / channel / async）。Rust 的 ownership 系統能**編譯時**抓很多並發 bug—這是它紅的原因。
+
+  
+
+  
+
+🎯
+面試考點
+
+台灣科技公司面試 90% 會問「程式邏輯」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。

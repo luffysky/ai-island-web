@@ -1,0 +1,268 @@
+「**程式碼是寫給人**看的、不是寫給**電腦**看的」—Knuth 名言。命名差 = 一週後自己看不懂。
+
+  
+### 命名的 5 大原則
+
+  
+#### 1. 看名字就懂用途
+
+```text
+爛：
+x = 5
+n = "Alice"
+d = "2026-05-13"
+do(a, b)
+
+好：
+user_count = 5
+user_name = "Alice"
+created_date = "2026-05-13"
+calculate_total(price, tax)
+```
+
+  
+#### 2. 變數用名詞、函數用動詞
+
+```text
+# 變數 = 「東西」（名詞）
+user_age = 30
+total_price = 1500
+is_active = True
+
+# 函數 = 「做事」（動詞）
+def calculate_tax(price): ...     # 動詞開頭
+def fetch_user(id): ...
+def send_email(to, body): ...
+def is_valid(input): ...           # 回 bool 用 is/has/can
+
+# 不好
+def user(id): ...                  # 名詞？拿 user 還是建 user？
+def total(): ...                   # 名詞、不清楚
+```
+
+  
+#### 3. 別怕長
+
+```text
+# 太短
+ufa = 30
+tnp = calc(p, t)
+
+# 太長
+the_age_of_the_current_user_logged_in_to_the_system = 30
+
+# 剛好
+user_age = 30
+total_price = calculate_total(price, tax)
+
+→ 變數名平均 15-25 字最好讀
+→ Modern IDE 補全好、不用怕長
+```
+
+  
+#### 4. 一致性
+
+```text
+# 不一致（看到頭暈）
+get_user(id)
+fetch_product(id)
+load_order(id)
+retrieve_payment(id)
+# 全部都是「取得」、卻 4 個動詞
+
+# 一致
+get_user(id)
+get_product(id)
+get_order(id)
+get_payment(id)
+# OR
+fetch_user(id)
+fetch_product(id)
+...
+
+→ 同一個動作、一個命名
+→ 整個 codebase 統一
+```
+
+  
+#### 5. 避免 magic number
+
+```text
+# 爛
+if user.age > 18 and user.purchases > 1000:
+    discount = 0.85
+# 18 / 1000 / 0.85 是什麼？
+
+# 好
+LEGAL_AGE = 18
+VIP_THRESHOLD = 1000
+VIP_DISCOUNT = 0.85
+
+if user.age > LEGAL_AGE and user.purchases > VIP_THRESHOLD:
+    discount = VIP_DISCOUNT
+# 名字解釋意義
+```
+
+  
+### 各語言命名風格
+
+  
+| 語言 | 變數 / 函數 | 類別 | 常數 |
+| --- | --- | --- | --- |
+| Python | snake_case | PascalCase | SCREAMING_SNAKE |
+| JavaScript | camelCase | PascalCase | SCREAMING_SNAKE |
+| TypeScript | camelCase | PascalCase | SCREAMING_SNAKE |
+| Go | camelCase（小寫=private） | PascalCase（大寫=public） | PascalCase |
+| Rust | snake_case | PascalCase | SCREAMING_SNAKE |
+| Java / C# | camelCase | PascalCase | SCREAMING_SNAKE |
+| Ruby | snake_case | PascalCase | SCREAMING_SNAKE |
+| PHP | $camelCase | PascalCase | SCREAMING_SNAKE |
+| Swift / Kotlin | camelCase | PascalCase | camelCase |
+| Dart | camelCase | PascalCase | SCREAMING_SNAKE |
+
+  
+學新語言第一件事：**查命名風格慣例**。寫錯風格 = 業界一看就知道你新手。
+
+  
+### 縮排（Indentation）
+
+```text
+2 個主流：
+- Tab（1 個 tab character）
+- Spaces（2 / 4 個空白）
+
+各語言慣例：
+- Python：4 spaces（PEP 8）—強制縮排！
+- JavaScript：2 spaces（Airbnb / Google）或 4
+- TypeScript：2 spaces
+- Go：tab（gofmt 自動）
+- Rust：4 spaces
+- Java：4 spaces
+- Ruby：2 spaces
+- PHP：4 spaces
+
+# Python 特殊：縮排是語法
+if x:
+print("hello")    # ❌ IndentationError
+
+if x:
+    print("hello") # ✓
+
+→ Python 用縮排取代 { }
+→ 其他語言縮排是「習慣」、Python 是「強制」
+```
+
+  
+### Linter：自動找出爛 code
+
+```text
+Linter = 「自動檢查 code 風格 / bug」
+
+各語言主流：
+- Python：ruff / black / pylint / flake8
+  ruff 是 2024+ 新王（速度快 100 倍）
+
+- JavaScript / TS：ESLint / Biome
+  Biome 是 2024+ 新興（Rust 寫的、超快）
+
+- Go：gofmt / golangci-lint（內建）
+
+- Rust：clippy（內建）
+
+- Java：Checkstyle / SpotBugs
+
+- C#：Roslyn analyzers
+
+- Ruby：RuboCop
+
+- PHP：PHP_CodeSniffer / PHPStan
+
+工作：
+1. 自動格式化（縮排、空白、引號）
+2. 抓常見 bug（沒用變數、無限迴圈）
+3. 強制風格一致
+
+設定：
+- 每個專案有 config（.eslintrc / pyproject.toml）
+- CI/CD 跑 linter、不過 reject PR
+- VS Code 即時提醒
+
+→ 沒 linter 的專案 = 風格大亂
+→ Day 1 就裝
+```
+
+  
+### Formatter：自動排版
+
+```text
+「不爭論風格、讓工具決定」：
+
+- Python：black（不能改設定、強制一致）
+- JS / TS：Prettier
+- Go：gofmt（內建、所有 Go code 同風格）
+- Rust：rustfmt（內建）
+- Java：google-java-format
+- Dart：dart format
+
+工作：
+- 寫完按一鍵 / 存檔自動跑
+- 統一所有人的排版
+- 不再吵「tab vs spaces」
+
+設定：
+- VS Code「format on save」
+- Pre-commit hook
+- CI 強制
+
+效果：
+- Code review 不再吵格式
+- 新人 onboarding 不用學風格
+- Git diff 乾淨
+```
+
+  
+### 命名 vs 註解
+
+```text
+爛 code：
+# 算稅
+def f(p):
+    # 是 5%
+    t = p * 0.05
+    return t
+
+好 code（用命名取代註解）：
+TAX_RATE = 0.05
+
+def calculate_tax(price):
+    return price * TAX_RATE
+
+→ 名字夠好 = 不用註解
+→ 註解是「解釋『為什麼』」、不是「重複『做什麼』」
+
+# 好註解
+def calculate_tax(price):
+    # 台灣 2026 標準稅率
+    # 不用 TaxAuthority class 因為依賴會擴散
+    return price * TAX_RATE
+
+# 壞註解
+def calculate_tax(price):
+    # 算稅
+    return price * TAX_RATE
+# 廢話、code 已說
+```
+
+  
+**☕ 用人話講**
+
+命名好 = 一週後自己看懂。爛 code「x、y、t、do_it」—你 1 個月後自己都看不懂。新手 3 個習慣養成 = 從垃圾 code 變專業：(1) **變數用名詞、函數用動詞** (2) **每個專案裝 linter + formatter**（自動修正、不用想） (3) **遵守該語言慣例**（Python snake_case、JS camelCase）。這些不是潔癖、是 code review 過關的最低標。
+
+  
+
+  
+
+⚠️
+新手常見錯誤
+
+新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。

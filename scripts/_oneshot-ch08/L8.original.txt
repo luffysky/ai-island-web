@@ -1,0 +1,335 @@
+useEffect 是 React 最容易誤用的 hook—學完這節寫起來不再 infinite loop / stale closure。
+
+  
+### 什麼是「副作用」
+
+```text
+純 component：UI = f(state)
+- 只看 props / state、回 JSX
+- 不該做別的事
+
+副作用（side effects）：
+- Fetch API
+- 操作 DOM
+- 訂閱事件
+- 計時器
+- log
+
+這些事不該寫在 render 內、用 useEffect 包
+
+useEffect 心法：
+「render 結束後跑的事」
+```
+
+  
+### useEffect 3 種寫法
+
+```tsx
+import { useEffect } from "react";
+
+function Component() {
+    // 1. 每次 render 都跑
+    useEffect(() => {
+        console.log("every render");
+    });
+    
+    // 2. 只跑 1 次（mount）
+    useEffect(() => {
+        console.log("mounted");
+    }, []);   // 空 dependency array
+    
+    // 3. 某些 state 變才跑
+    useEffect(() => {
+        console.log("count changed:", count);
+    }, [count]);   // count 變才跑
+    
+    return ...;
+}
+
+// 3 個寫法選擇：
+// 99% 場景用 #2 或 #3
+// #1 罕用、容易 infinite loop
+```
+
+  
+### Cleanup function
+
+```tsx
+// useEffect 回的 function 是 cleanup
+
+useEffect(() => {
+    console.log("setup");
+    
+    return () => {
+        console.log("cleanup");
+    };
+}, []);
+
+// 跑時機：
+// - 下次 effect 跑前
+// - component unmount 時
+
+// 場景：訂閱事件
+useEffect(() => {
+    const handler = (e) => console.log(e);
+    window.addEventListener("resize", handler);
+    
+    return () => {
+        window.removeEventListener("resize", handler);
+    };
+}, []);
+
+// 場景：計時器
+useEffect(() => {
+    const timer = setInterval(() => {
+        console.log("tick");
+    }, 1000);
+    
+    return () => clearInterval(timer);
+}, []);
+
+// 沒 cleanup → memory leak、bug
+```
+
+  
+### Fetch data pattern
+
+```tsx
+// 基本：fetch on mount
+function UserProfile({ id }) {
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+    
+    useEffect(() => {
+        let cancelled = false;
+        
+        async function load() {
+            setLoading(true);
+            const res = await fetch(`/api/users/${id}`);
+            const data = await res.json();
+            
+            if (!cancelled) {
+                setUser(data);
+                setLoading(false);
+            }
+        }
+        
+        load();
+        
+        return () => { cancelled = true; };
+    }, [id]);
+    
+    if (loading) return ;
+    return {user.name};
+}
+
+// 為什麼用 cancelled flag？
+// 用戶切換 id 快、舊的 fetch 才回
+// 不檢查會 race condition
+
+// 更好：用 React Query（後面講）
+// 自動處理 cancel、cache、loading、error
+```
+
+  
+### 常見 useEffect 陷阱
+
+```text
+1. Infinite loop
+   ❌ useEffect(() => {
+       setCount(count + 1);   // 每次都 set
+   });   // 沒 dependency、每 render 跑
+   
+   每 render → setCount → re-render → effect 跑 → ...
+
+   ✓ 加 dependency
+   useEffect(() => {
+       // 跑 1 次
+   }, []);
+
+2. 缺 dependency
+   ❌ useEffect(() => {
+       fetch(`/api/users/${id}`);
+   }, []);   // id 變沒重 fetch
+   
+   ✓ 加 id
+   useEffect(() => {
+       fetch(`/api/users/${id}`);
+   }, [id]);
+
+3. Stale closure
+   ❌ useEffect(() => {
+       const timer = setInterval(() => {
+           console.log(count);    // 永遠是初始 count
+       }, 1000);
+       return () => clearInterval(timer);
+   }, []);
+   
+   ✓ 加 count
+   useEffect(() => {
+       const timer = setInterval(() => {
+           console.log(count);
+       }, 1000);
+       return () => clearInterval(timer);
+   }, [count]);
+   
+   或用 ref（後面講）
+
+4. Object / function 當 dependency
+   ❌ useEffect(() => {
+       fetch(url, options);
+   }, [options]);   // options 每 render 新 object、無限跑
+   
+   ✓ 解構或用 useMemo
+   const { method, headers } = options;
+   useEffect(() => { ... }, [method, headers]);
+```
+
+  
+### ESLint 自動檢查
+
+```text
+裝 ESLint rule：react-hooks/exhaustive-deps
+
+// .eslintrc
+{
+    "extends": ["plugin:react-hooks/recommended"]
+}
+
+// VS Code 即時警告：
+// React Hook useEffect has missing dependencies: 'id', 'name'
+
+// 不要忽略！通常是真 bug
+
+// 例外場景（罕見）：
+// eslint-disable-next-line react-hooks/exhaustive-deps
+```
+
+  
+### 不該用 useEffect 的場景
+
+```tsx
+// 1. 算 derived state
+// ❌ 用 useEffect
+const [items, setItems] = useState([]);
+const [count, setCount] = useState(0);
+
+useEffect(() => {
+    setCount(items.length);
+}, [items]);
+
+// ✓ 直接算
+const count = items.length;
+
+// 2. 響應 props 變化
+// ❌ 用 useEffect
+useEffect(() => {
+    if (props.userId) {
+        setUser(props.userId);
+    }
+}, [props.userId]);
+
+// ✓ 直接用
+function Component({ userId }) {
+    // 用 userId 直接 fetch（React Query 處理）
+}
+
+// 3. 響應事件
+// ❌ 用 useEffect
+useEffect(() => {
+    if (clicked) {
+        showToast();
+        setClicked(false);
+    }
+}, [clicked]);
+
+// ✓ 直接在 handler 內做
+const handleClick = () => {
+    showToast();
+};
+
+// React 官方原則：
+// useEffect 是「同步外部系統」用的（API、DOM、訂閱）
+// 不是「響應變化」用的（用 derived state / event handler）
+```
+
+  
+### useLayoutEffect
+
+```tsx
+// 跟 useEffect 一樣、但同步跑
+// 在瀏覽器繪製前
+
+useLayoutEffect(() => {
+    // 量 DOM、立刻調整 layout
+    const rect = ref.current.getBoundingClientRect();
+    if (rect.width > 200) {
+        setWidth(200);
+    }
+}, []);
+
+// useEffect 在繪製後跑（可能閃一下）
+// useLayoutEffect 在繪製前跑（無閃）
+
+// 99% 場景用 useEffect
+// 只有「需要量 DOM 立刻調整」才用 useLayoutEffect
+
+// 注意：useLayoutEffect 比 useEffect 慢
+// 阻塞 paint
+```
+
+  
+### 實戰：訂閱 + 訂閱清理
+
+```tsx
+// 訂閱 WebSocket
+function ChatRoom({ roomId }) {
+    const [messages, setMessages] = useState([]);
+    
+    useEffect(() => {
+        const ws = new WebSocket(`wss://api.com/rooms/${roomId}`);
+        
+        ws.onmessage = (e) => {
+            const msg = JSON.parse(e.data);
+            setMessages(prev => [...prev, msg]);
+        };
+        
+        return () => {
+            ws.close();
+        };
+    }, [roomId]);
+    
+    return {messages.map(m => ...)};
+}
+
+// 監聽鍵盤
+function useEscapeKey(callback) {
+    useEffect(() => {
+        const handler = (e) => {
+            if (e.key === "Escape") callback();
+        };
+        window.addEventListener("keydown", handler);
+        return () => window.removeEventListener("keydown", handler);
+    }, [callback]);
+}
+
+// 用
+function Modal({ onClose }) {
+    useEscapeKey(onClose);
+    return ...;
+}
+```
+
+  
+**🚀 進階技巧**
+
+useEffect 5 心法：(1) **加 dependency array**—不加會 infinite loop (2) **完整列依賴**—ESLint 提示就照做 (3) **cleanup function**—訂閱必清、不然 leak (4) **cancel flag**—async race condition (5) **Fetch 用 React Query**—別自己造輪。**2026 真實**：99% data fetching 用 React Query、useEffect 主要做訂閱 / DOM。
+
+  
+
+  
+
+🎯
+面試考點
+
+台灣科技公司面試 90% 會問「React」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。

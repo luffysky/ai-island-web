@@ -1,0 +1,160 @@
+React 內建 Context 全域 state 性能差—2026 業界用 Zustand / Jotai。
+
+  
+### 狀態管理選擇
+
+  
+|  | Zustand | Jotai | Redux Toolkit | Context |
+| --- | --- | --- | --- | --- |
+| 學習曲線 | 低 | 低 | 中 | 低 |
+| bundle size | 1kb | 3kb | 11kb | 0 |
+| 2026 主流 | indie / 中小 | 新興 | 老專案 | Auth/Theme |
+
+  
+### Zustand：最簡單（2026 主流）
+
+```bash
+$ npm install zustand
+```
+
+```tsx
+import { create } from "zustand";
+
+interface CounterState {
+    count: number;
+    increment: () => void;
+    decrement: () => void;
+    reset: () => void;
+}
+
+const useCounterStore = create((set) => ({
+    count: 0,
+    increment: () => set((state) => ({ count: state.count + 1 })),
+    decrement: () => set((state) => ({ count: state.count - 1 })),
+    reset: () => set({ count: 0 })
+}));
+
+// 用
+function Counter() {
+    const count = useCounterStore((state) => state.count);
+    const increment = useCounterStore((state) => state.increment);
+    
+    return {count};
+}
+
+// 不用 Provider！任何 component 都能用
+// 訂閱 state.count 只有 count 變才 re-render
+```
+
+  
+### Zustand 進階
+
+```tsx
+// 1. 複雜 state
+const useStore = create((set) => ({
+    user: null,
+    cart: [],
+    
+    login: (user) => set({ user }),
+    logout: () => set({ user: null }),
+    addToCart: (item) => set((state) => ({ cart: [...state.cart, item] })),
+    removeFromCart: (id) => set((state) => ({
+        cart: state.cart.filter(i => i.id !== id)
+    }))
+}));
+
+// 2. Persist（存 localStorage）
+import { persist } from "zustand/middleware";
+
+const useStore = create(persist(
+    (set) => ({ /* ... */ }),
+    { name: "app-storage" }
+));
+
+// 3. Devtools
+import { devtools } from "zustand/middleware";
+
+const useStore = create(devtools(
+    (set) => ({ /* ... */ }),
+    { name: "MyStore" }
+));
+
+// 4. Immer
+import { immer } from "zustand/middleware/immer";
+
+const useStore = create(immer((set) => ({
+    cart: [],
+    addToCart: (item) => set((state) => {
+        state.cart.push(item);
+    })
+})));
+```
+
+  
+### Jotai：原子化 state
+
+```tsx
+$ npm install jotai
+
+import { atom, useAtom } from "jotai";
+
+const countAtom = atom(0);
+const nameAtom = atom("Alice");
+
+function Counter() {
+    const [count, setCount] = useAtom(countAtom);
+    return  setCount(c => c + 1)}>{count};
+}
+
+// 派生 atom
+const fullNameAtom = atom((get) => {
+    return `${get(firstNameAtom)} ${get(lastNameAtom)}`;
+});
+
+// 異步 atom
+const userAtom = atom(async (get) => {
+    const userId = get(userIdAtom);
+    const res = await fetch(`/api/users/${userId}`);
+    return res.json();
+});
+
+// 賣點：
+// 1. 每個 atom 獨立
+// 2. 派生 atom 自動更新
+// 3. 細粒度訂閱、性能好
+```
+
+  
+### 選擇指南
+
+```text
+場景 → 選擇：
+
+1. Auth / Theme（低頻）→ Context
+2. App 全域 state（中頻）→ Zustand
+3. 細粒度 state（高頻）→ Jotai
+4. Server data → React Query
+5. Form state → React Hook Form
+6. URL state → Next Router
+7. 大型企業老專案 → Redux Toolkit
+
+2026 indie 主流組合：
+- Zustand（全域 state）
+- React Query（server data）
+- React Hook Form（form）
+- Context（Auth / Theme）
+```
+
+  
+**☕ 用人話講**
+
+狀態管理 4 心法：(1) **Zustand 是 2026 默認**—簡單、性能好 (2) **Server data 用 React Query**—不是 state mgmt (3) **Form 用 React Hook Form** (4) **Context 給低頻 state**—Auth / Theme。
+
+  
+
+  
+
+🛠️
+工具推薦
+
+配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。

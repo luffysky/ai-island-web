@@ -1,0 +1,87 @@
+## Actions：async 處理革命
+```tsx
+// ❌ 舊：自己管 pending / error / optimistic
+function Form() {
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSubmit(formData: FormData) {
+    setPending(true);
+    try {
+      await updateName(formData.get("name") as string);
+    } catch (e) {
+      setError(e.message);
+    }
+    setPending(false);
+  }
+}
+
+// ✅ 新：useActionState
+function Form() {
+  const [state, action, pending] = useActionState(
+    async (prevState: any, formData: FormData) => {
+      try {
+        await updateName(formData.get("name") as string);
+        return { success: true };
+      } catch (e: any) {
+        return { error: e.message };
+      }
+    },
+    null
+  );
+
+  return (
+    <form action={action}>
+      <input name="name" />
+      <button disabled={pending}>Save</button>
+      {state?.error && <p>{state.error}</p>}
+    </form>
+  );
+}
+```
+
+## use() Hook：條件式 / 動態讀 Promise
+```tsx
+// 可在 if / loop 裡用、useEffect 不能
+function Profile({ userPromise }: { userPromise: Promise<User> }) {
+  const user = use(userPromise);  // suspends
+  return <div>{user.name}</div>;
+}
+```
+
+## useOptimistic：樂觀更新
+```tsx
+function Todos({ todos }) {
+  const [optimisticTodos, addOptimistic] = useOptimistic(
+    todos,
+    (state, newTodo) => [...state, { ...newTodo, sending: true }]
+  );
+
+  return (
+    <>
+      {optimisticTodos.map(t => <Todo key={t.id} todo={t} />)}
+      <form action={async (formData) => {
+        const newTodo = { id: Date.now(), text: formData.get("text") };
+        addOptimistic(newTodo);  // 立刻顯示
+        await saveTodo(newTodo);  // 背景送出
+      }}>
+        <input name="text" />
+      </form>
+    </>
+  );
+}
+```
+
+## React Server Components（RSC）
+```tsx
+// app/posts/page.tsx（Server Component，預設）
+async function PostsPage() {
+  const posts = await db.posts.findMany();  // 直接在 server 跑、不送 client
+  return (
+    <ul>
+      {posts.map(p => <li key={p.id}>{p.title}</li>)}
+    </ul>
+  );
+}
+// 不需要 useEffect、不需要 loading state、SEO 友善
+```

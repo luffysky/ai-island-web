@@ -1,0 +1,323 @@
+「**程式跑錯怎麼辦？**」這是區分新手 / 老手的重要技能。爛 code 一錯就崩、好 code 優雅 fall back。
+
+  
+### 3 種主流錯誤處理
+
+```text
+1. Exception（try / catch）
+   - Python / Java / JS / C# / Ruby / PHP
+   
+2. Result / Option（明確錯誤型別）
+   - Rust / Swift / Kotlin / TypeScript
+
+3. 多回傳值（值 + error）
+   - Go
+
+每種都有支持者、實戰你會用到全部
+```
+
+  
+### Exception：「丟出 / 接住」
+
+```text
+想像：你做事出錯、丟出一個錯誤、外面有人接住。
+
+# Python
+def divide(a, b):
+    if b == 0:
+        raise ValueError("不能除以 0")
+    return a / b
+
+try:
+    result = divide(10, 0)
+except ValueError as e:
+    print(f"錯誤：{e}")
+    # 印出 錯誤：不能除以 0
+
+# 沒接住會怎樣？
+result = divide(10, 0)
+# 整個程式崩掉、印 traceback
+
+# JavaScript
+function divide(a, b) {
+    if (b === 0) {
+        throw new Error("不能除以 0");
+    }
+    return a / b;
+}
+
+try {
+    const result = divide(10, 0);
+} catch (e) {
+    console.log(`錯誤：${e.message}`);
+}
+
+# Java
+public double divide(int a, int b) {
+    if (b == 0) {
+        throw new ArithmeticException("不能除以 0");
+    }
+    return (double) a / b;
+}
+
+try {
+    double result = divide(10, 0);
+} catch (ArithmeticException e) {
+    System.out.println("錯誤：" + e.getMessage());
+}
+
+# C#（一樣）
+try {
+    var result = Divide(10, 0);
+} catch (DivideByZeroException e) {
+    Console.WriteLine($"錯誤：{e.Message}");
+}
+```
+
+  
+### try / except / finally
+
+```text
+try：嘗試做
+except / catch：失敗處理
+finally：成功失敗都跑
+
+try:
+    file = open("data.txt")
+    data = file.read()
+except FileNotFoundError:
+    print("檔案不存在")
+except PermissionError:
+    print("沒權限")
+finally:
+    file.close()   # 不管有沒有錯、都要關檔案
+
+# 各語言類似
+JavaScript：try / catch / finally
+Java：try / catch / finally
+C#：try / catch / finally
+PHP：try / catch / finally
+Ruby：begin / rescue / ensure
+```
+
+  
+### Result：Rust / Swift 的方式
+
+```text
+「函數不丟錯、直接回傳『成功 or 失敗』」：
+
+# Rust
+fn divide(a: i32, b: i32) -> Result {
+    if b == 0 {
+        Err(String::from("不能除以 0"))
+    } else {
+        Ok(a / b)
+    }
+}
+
+match divide(10, 0) {
+    Ok(result) => println!("結果：{}", result),
+    Err(e) => println!("錯誤：{}", e),
+}
+
+# 或用 ? 簡化
+fn calculate() -> Result {
+    let x = divide(10, 2)?;   // ? = 失敗就 return Err
+    let y = divide(x, 0)?;    // 在這 return Err
+    Ok(y + 1)
+}
+
+# Swift（Result type）
+enum DivisionError: Error {
+    case divideByZero
+}
+
+func divide(_ a: Int, _ b: Int) -> Result {
+    if b == 0 {
+        return .failure(.divideByZero)
+    }
+    return .success(a / b)
+}
+
+switch divide(10, 0) {
+case .success(let result):
+    print("結果：\(result)")
+case .failure(let error):
+    print("錯誤")
+}
+
+→ 編譯器強制你處理錯誤
+→ 不能忘記
+```
+
+  
+### Go 的方式：值 + error
+
+```text
+# Go 慣用 pattern：函數回 (值, error)
+func divide(a, b int) (int, error) {
+    if b == 0 {
+        return 0, errors.New("不能除以 0")
+    }
+    return a / b, nil
+}
+
+result, err := divide(10, 0)
+if err != nil {
+    fmt.Println("錯誤：", err)
+    return
+}
+fmt.Println("結果：", result)
+
+→ Go 全部 if err != nil { ... } 滿地
+→ 啰嗦但明確
+→ 沒辦法「忘記處理錯誤」
+```
+
+  
+### Option：「可能沒值」
+
+```text
+Rust / Swift 用 Option 處理 null：
+
+# Rust
+fn find_user(id: u32) -> Option {
+    if exists(id) {
+        Some(get_user(id))
+    } else {
+        None
+    }
+}
+
+match find_user(1) {
+    Some(user) => println!("找到 {}", user.name),
+    None => println!("沒這個人"),
+}
+
+# Swift（用 Optional、加 ?）
+func findUser(id: Int) -> User? {
+    return exists(id) ? getUser(id) : nil
+}
+
+if let user = findUser(id: 1) {
+    print("找到 \(user.name)")
+} else {
+    print("沒這個人")
+}
+
+→ 編譯器強制你檢查 None
+→ 沒辦法忘
+→ 永別 null pointer exception
+```
+
+  
+### Panic：不可恢復的錯誤
+
+```text
+有些錯誤不該繼續—整個程式掛掉比較好：
+
+# Rust
+fn main() {
+    let nums = vec![1, 2, 3];
+    nums[10];   // panic: index out of bounds
+    // 程式直接掛
+}
+
+# 或主動 panic
+panic!("不可能發生的狀況");
+
+# Go 也有
+panic("不可能發生")
+
+# Python 用 assert
+assert x > 0, "x 必須是正數"
+# 失敗 = AssertionError
+
+→ Panic 用於「程式邏輯錯」、不是「輸入錯」
+→ 例：陣列超界、不可能的狀態、bug
+
+→ 輸入錯 → 用 Result / try-catch
+→ 邏輯錯 → 用 panic（讓開發者快發現）
+```
+
+  
+### 錯誤處理 5 大原則
+
+```text
+1. 不要默默吞錯
+   try:
+       do_stuff()
+   except:
+       pass  # ❌ 這是大罪
+
+2. 抓具體型別、不要全包
+   try:
+       parse_json(data)
+   except JSONDecodeError:  # ✓ 具體
+       ...
+   
+   # 不是
+   except Exception:        # ❌ 抓太廣
+       ...
+
+3. 記錄錯誤 + context
+   except Exception as e:
+       logger.error(f"處理 user {user_id} 失敗：{e}")
+       # 不只訊息、要有 context
+
+4. 失敗要早 fail-fast
+   if not user:
+       raise ValueError("找不到 user")
+   # 不要繼續、讓上層處理
+
+5. 給 user 友善訊息
+   try:
+       process_payment()
+   except PaymentError:
+       return "付款失敗、請稍後再試"
+   # 別把技術 stack trace 給 user 看
+```
+
+  
+### 實戰 pattern：層層上拋
+
+```text
+def get_user_from_db(id):
+    # DB 層：技術錯誤
+    try:
+        row = db.query(f"SELECT * FROM users WHERE id={id}")
+        return User(row)
+    except DBConnectionError:
+        raise  # 直接往上丟、不處理
+
+def get_user(id):
+    # 業務層：包裝成業務錯誤
+    try:
+        return get_user_from_db(id)
+    except DBConnectionError:
+        raise UserNotFoundError("找不到使用者")
+
+def api_get_user(id):
+    # API 層：給 client 友善回應
+    try:
+        return get_user(id)
+    except UserNotFoundError:
+        return {"error": "找不到使用者"}, 404
+
+→ 每層處理自己該處理的
+→ 不能處理的往上丟
+```
+
+  
+**⚠ 踩雷警告**
+
+新手 3 個錯誤處理大坑：(1) **except: pass**—吞掉所有錯、bug 永遠找不到 (2) **except Exception**—抓太廣、藏 bug (3) **忘記 log error**—錯了不知道。Production 出問題 80% 是「**log 不足**」找不到原因。**每個 except 都該 log**—之後感謝過去的自己。
+
+  
+
+  
+
+🚀
+2026 趨勢
+
+這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。

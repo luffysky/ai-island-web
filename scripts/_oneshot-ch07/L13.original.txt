@@ -1,0 +1,284 @@
+OOP 把資料跟動作綁一起。**函數式（Functional Programming, FP）**反過來—資料是資料、函數是函數、不混。聽起來奇怪、但讓 code 更**好預測、好測試**。
+
+  
+### 純函數：「同樣輸入永遠同樣輸出」
+
+```text
+純函數的特點：
+1. 同樣輸入 → 同樣輸出（不會變來變去）
+2. 不改外面狀態
+3. 不依賴外面狀態
+
+例：
+def add(a, b):
+    return a + b
+
+add(2, 3)   # 永遠是 5
+add(2, 3)   # 永遠是 5
+
+→ 純函數！
+
+不純函數：
+count = 0
+
+def increment():
+    global count
+    count += 1
+    return count
+
+increment()  # 1
+increment()  # 2
+increment()  # 3
+
+→ 同樣呼叫、結果不同
+→ 改了外面 count
+→ 不純！
+```
+
+  
+### 純函數的好處
+
+```text
+1. 好測試
+   def add(a, b):
+       return a + b
+   
+   assert add(2, 3) == 5     # 一行測完
+
+2. 好除錯
+   bug 一定在輸入或函數內、不會有「神秘狀態」
+
+3. 能 cache
+   add(2, 3) 算過、下次再叫直接拿結果
+
+4. 能平行
+   多個 thread 一起跑、不會互相影響
+
+5. 好推理
+   看函數簽名就懂 (input → output)
+```
+
+  
+### 不可變（Immutability）
+
+```text
+「資料一旦建立、不能改」：
+
+# 命令式（mutate）
+fruits = ["蘋果", "香蕉"]
+fruits.append("橘子")        # 改原本
+print(fruits)                # ["蘋果", "香蕉", "橘子"]
+
+# 函數式（immutable）
+fruits = ["蘋果", "香蕉"]
+new_fruits = fruits + ["橘子"]   # 建新的
+print(fruits)                    # ["蘋果", "香蕉"]（沒變）
+print(new_fruits)                # ["蘋果", "香蕉", "橘子"]
+
+→ 不改舊的、建新的
+```
+
+  
+### 各語言不可變支援
+
+```text
+Python（用 frozen / tuple）：
+data = (1, 2, 3)         # tuple 不可變
+data[0] = 99             # ❌ TypeError
+
+# dict 用 frozen
+from dataclasses import dataclass, frozen
+@dataclass(frozen=True)
+class Point:
+    x: int
+    y: int
+
+JavaScript（用 const + Object.freeze）：
+const obj = Object.freeze({x: 1, y: 2});
+obj.x = 99;              // ⚠ 安靜失敗（嚴格模式才報錯）
+
+// 真的不可變 → 用 Immutable.js / Immer
+
+TypeScript（用 readonly / Readonly）：
+type Point = Readonly;
+const p: Point = {x: 1, y: 2};
+p.x = 99;                // ❌ 編譯錯誤
+
+Rust（預設不可變）：
+let x = 5;
+x = 10;                  // ❌ 錯
+let mut x = 5;           // 想可變要明確標
+x = 10;                  // ✓
+
+Swift / Kotlin：
+let / val = 不可變（推薦）
+var = 可變
+
+→ Rust / Swift / Kotlin 預設不可變
+→ Python / JS / Java 預設可變
+```
+
+  
+### map / filter / reduce：三大金剛
+
+  
+處理陣列三招、學會你會寫 80% 的資料處理：
+
+```text
+map：「每個元素變形」
+
+nums = [1, 2, 3, 4, 5]
+
+# 每個 ×2
+doubled = list(map(lambda x: x * 2, nums))
+# [2, 4, 6, 8, 10]
+
+# Python 慣用 list comprehension
+doubled = [x * 2 for x in nums]
+
+# JS
+const doubled = nums.map(x => x * 2);
+
+# Rust
+let doubled: Vec = nums.iter().map(|x| x * 2).collect();
+
+# 實戰：把使用者名字全變大寫
+users = ["alice", "bob", "charlie"]
+upper_users = [u.upper() for u in users]
+# ["ALICE", "BOB", "CHARLIE"]
+
+filter：「選出符合條件的」
+
+# 只要偶數
+evens = list(filter(lambda x: x % 2 == 0, nums))
+# [2, 4]
+
+# Python comprehension
+evens = [x for x in nums if x % 2 == 0]
+
+# JS
+const evens = nums.filter(x => x % 2 === 0);
+
+# 實戰：只要活躍使用者
+active_users = [u for u in users if u.is_active]
+
+reduce：「聚合成一個值」
+
+# 加總
+from functools import reduce
+total = reduce(lambda a, b: a + b, nums, 0)
+# 15
+
+# Python 內建 sum
+total = sum(nums)
+
+# JS
+const total = nums.reduce((a, b) => a + b, 0);
+
+# 實戰：算所有訂單總額
+total = sum(order.price for order in orders)
+```
+
+  
+### 鏈式呼叫：威力倍增
+
+```text
+map / filter / reduce 串起來：
+
+# 給我「活躍使用者的薪水加總」
+total = sum(
+    u.salary for u in users 
+    if u.is_active and u.salary > 30000
+)
+
+# 或鏈式
+result = (
+    users
+    .filter(lambda u: u.is_active)
+    .filter(lambda u: u.salary > 30000)
+    .map(lambda u: u.salary)
+    .reduce(lambda a, b: a + b, 0)
+)
+
+# JS 最強
+const total = users
+    .filter(u => u.isActive)
+    .filter(u => u.salary > 30000)
+    .map(u => u.salary)
+    .reduce((a, b) => a + b, 0);
+
+→ 1 行做完 3 步驟
+→ 比 for 迴圈快 100 倍寫
+→ 但要練習讀懂
+```
+
+  
+### 命令式 vs 函數式對比
+
+```text
+命令式（傳統 for 寫法）：
+
+# 「給我成年人的名字、全變大寫」
+result = []
+for user in users:
+    if user.age >= 18:
+        result.append(user.name.upper())
+
+# 6 行、有 mutation（改 result）
+
+函數式：
+result = [u.name.upper() for u in users if u.age >= 18]
+# 1 行、沒 mutation
+
+# 或 JS
+const result = users
+    .filter(u => u.age >= 18)
+    .map(u => u.name.toUpperCase());
+
+→ 函數式：聲明「我要什麼」
+→ 命令式：講「怎麼做」
+→ 函數式短、好讀（熟悉後）
+```
+
+  
+### 什麼語言適合函數式
+
+```text
+純函數式（極致）：
+- Haskell
+- Elixir
+- F#
+- Clojure
+- OCaml
+
+混合（OOP + FP）：
+- JavaScript（陣列方法完整）
+- Python（comprehension + map/filter）
+- TypeScript
+- Kotlin
+- Swift
+- Rust（不可變預設）
+- Scala
+
+OOP 為主（FP 較弱）：
+- Java（8+ 加 lambda）
+- C#（LINQ 強大）
+- Go（沒 map/filter、要自己寫迴圈）
+
+→ Go 哲學：明確 > 簡潔、不喜歡函數鏈
+→ 大多 2026 主流語言都支援 FP
+```
+
+  
+**☕ 用人話講**
+
+函數式不是要你完全放棄 OOP—是「**多用純函數、少改變數**」。實戰建議：(1) 寫函數時優先**純函數**—不改外面 (2) 處理陣列用 **map / filter / reduce**—不用 for (3) 變數能不變就**用 const**。這 3 個習慣養成、你的 bug 自動少一半—因為函數式 code 容易預測。
+
+  
+
+  
+
+💼
+接案小知識
+
+剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「程式邏輯」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。

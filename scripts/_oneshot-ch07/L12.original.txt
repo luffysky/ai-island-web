@@ -1,0 +1,116 @@
+學會 class 後、會看到 3 個術語：**繼承（Inheritance）**、**封裝（Encapsulation）**、**多型（Polymorphism）**。聽起來很玄、其實都很自然。
+
+  
+### 繼承：「兒子繼承爸爸的能力」
+
+```text
+想像：所有狗都會吠、跑、睡。
+但「柴犬」會更多事—比如「捲尾巴」。
+你寫程式時、要重新寫一次「會吠、會跑」嗎？
+
+→ 不用！讓「柴犬」繼承「狗」就好
+
+# Python
+class Animal:           # 父類別（更廣的）
+    def __init__(self, name):
+        self.name = name
+    
+    def eat(self):
+        print(f"{self.name} 在吃")
+    
+    def sleep(self):
+        print(f"{self.name} 在睡")
+
+class Dog(Animal):      # 繼承 Animal
+    def bark(self):
+        print(f"{self.name} 汪汪叫")
+
+class ShibaInu(Dog):    # 繼承 Dog
+    def curl_tail(self):
+        print(f"{self.name} 捲尾巴")
+
+# 創建柴犬
+lucky = ShibaInu("Lucky")
+
+lucky.eat()        # 從 Animal 繼承
+lucky.sleep()      # 從 Animal 繼承
+lucky.bark()       # 從 Dog 繼承
+lucky.curl_tail()  # ShibaInu 自己的
+
+→ 不用重複寫「吃 / 睡」
+→ 「柴犬 是 狗 是 動物」的層級
+```
+
+  
+### 各語言繼承語法
+
+```text
+JavaScript：
+class Dog extends Animal {
+    bark() {
+        console.log(`${this.name} 汪汪叫`);
+    }
+}
+
+Java / C#：
+public class Dog extends Animal {   // Java
+    public void bark() { ... }
+}
+
+public class Dog : Animal {         // C#
+    public void Bark() { ... }
+}
+
+Go（沒繼承、用嵌入 Embedding）：
+type Animal struct {
+    Name string
+}
+
+func (a Animal) Eat() {
+    fmt.Println(a.Name, "在吃")
+}
+
+type Dog struct {
+    Animal      // 嵌入
+    Breed string
+}
+
+lucky := Dog{Animal: Animal{Name: "Lucky"}, Breed: "柴犬"}
+lucky.Eat()    // 能用 Animal 的方法
+
+Rust（沒繼承、用 trait）：
+trait Animal {
+    fn eat(&self);
+}
+
+struct Dog { name: String }
+
+impl Animal for Dog {
+    fn eat(&self) {
+        println!("{} 在吃", self.name);
+    }
+}
+
+PHP：
+class Dog extends Animal {
+    public function bark() { ... }
+}
+
+Ruby：
+class Dog  0:
+            self._balance += amount
+    
+    def withdraw(self, amount):
+        if 0 
+    **☕ 用人話講**
+    
+OOP 三大特性聽起來嚇人、其實簡單：(1) **繼承**—「兒子繼承爸的能力」、不用重複寫 (2) **封裝**—「私密屬性藏起來、只開特定操作」、像銀行帳戶 (3) **多型**—「同個動作、不同表現」、像每種動物都會 .speak() 但叫聲不同。實戰最常用的是**多型**—讓你的 code 容易擴充。新手不用全用、知道什麼時候該用就好。
+
+  
+
+  
+    
+      ⚠️
+      新手常見錯誤
+    
+    新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。
