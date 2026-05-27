@@ -1,0 +1,22 @@
+## 進階主題
+1. Indexing 深入
+2. Query optimization
+3. Transaction + Isolation
+4. Replication
+5. Sharding / Partitioning
+6. Connection pooling
+7. Cache 策略
+8. 監控 + slow query
+9. Backup + DR
+10. Migration
+
+## 三個目標
+- **快**：response < 100ms
+- **穩**：99.9% uptime
+- **省**：cost-effective
+
+## 學習路線
+- Year 1：SQL + Index 熟練
+- Year 2：EXPLAIN ANALYZE、Transaction
+- Year 3：Replication、效能調優
+- Year 4：分散式、HA

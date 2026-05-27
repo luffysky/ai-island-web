@@ -1,0 +1,88 @@
+## 為什麼
+- TCP handshake 慢
+- DB 建 process 慢
+- PG max_connections 有限（預設 100）
+
+## Node + PG
+```javascript
+import pg from "pg";
+
+const pool = new pg.Pool({
+  host: "...",
+  database: "...",
+  max: 20,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000
+});
+
+const result = await pool.query("SELECT * FROM users WHERE id = $1", [1]);
+```
+
+## Pool size 公式
+`((core_count * 2) + effective_spindle_count)`
+
+實務：
+- 小 app：10-20
+- 中型：50-100
+- 大型：100-500
+
+## Serverless 痛點
+Lambda / Vercel 每次 cold start 新 pool = 浪費。
+
+解：**PgBouncer / Supabase pooler**（port 6543）。
+
+## PgBouncer
+```ini
+# pgbouncer.ini
+[databases]
+mydb = host=localhost port=5432 dbname=mydb
+
+[pgbouncer]
+listen_port = 6432
+pool_mode = transaction  # 或 session / statement
+max_client_conn = 1000
+default_pool_size = 20
+```
+
+App 連 PgBouncer（不直接連 PG）：
+```
+DATABASE_URL=postgresql://user:pass@pgbouncer:6432/mydb
+```
+
+PgBouncer 維護 20 個真連線、給 1000 個 app 用。
+
+## Pool Mode
+- **session**：1 client = 1 server connection（連著到 client 斷）
+- **transaction**：1 transaction = 1 connection（不能用 prepared statement、session var）
+- **statement**：每 statement 一個（最省、限制最多）
+
+Serverless 通常 transaction mode。
+
+## Prisma + PgBouncer
+```env
+DATABASE_URL=postgresql://...?pgbouncer=true&connection_limit=1
+```
+
+Prisma 偵測 pgbouncer 不用 prepared statement。
+
+## Supabase 內建
+- Port 5432：direct（不 pool）
+- Port 6543：pooler
+
+Serverless 用 6543。
+
+## Monitor
+```sql
+SELECT count(*) FROM pg_stat_activity;
+```
+
+看：
+- 多少連線
+- 多少 active / idle
+- 哪個 query 阻塞
+
+## 心法
+- Indie：max 20-50 OK
+- Serverless：必用 PgBouncer / pooler
+- 永遠 connectionTimeout（避免無限等）
+- 監控連線數

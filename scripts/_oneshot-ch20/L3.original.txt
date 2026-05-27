@@ -1,0 +1,104 @@
+## 為什麼
+- REST：N+1 API call、over-fetch
+- GraphQL：一次 query 拿全部
+
+## Schema
+```graphql
+type User {
+  id: ID!
+  name: String!
+  email: String!
+  posts: [Post!]!
+}
+
+type Post {
+  id: ID!
+  title: String!
+  author: User!
+}
+
+type Query {
+  user(id: ID!): User
+  posts(limit: Int = 10): [Post!]!
+}
+
+type Mutation {
+  createPost(title: String!): Post!
+}
+```
+
+## Query
+```graphql
+query {
+  user(id: "1") {
+    name
+    posts(limit: 5) {
+      title
+    }
+  }
+}
+```
+
+## Mutation
+```graphql
+mutation {
+  createPost(title: "Hello") {
+    id
+    title
+  }
+}
+```
+
+## Server（Apollo）
+```typescript
+import { ApolloServer } from "@apollo/server";
+
+const resolvers = {
+  Query: {
+    user: (_, { id }) => db.user.findUnique({ where: { id } })
+  },
+  User: {
+    posts: (user) => db.post.findMany({ where: { authorId: user.id } })
+  }
+};
+
+const server = new ApolloServer({ typeDefs, resolvers });
+```
+
+## Client（urql / Apollo）
+```typescript
+import { useQuery } from "urql";
+
+const QUERY = `
+  query GetUser($id: ID!) {
+    user(id: $id) { name email }
+  }
+`;
+
+const [result] = useQuery({ query: QUERY, variables: { id: "1" } });
+```
+
+## DataLoader（解 N+1）
+```typescript
+const userLoader = new DataLoader(async (ids) => {
+  const users = await db.user.findMany({ where: { id: { in: ids } } });
+  return ids.map(id => users.find(u => u.id === id));
+});
+
+// 多次 call、自動 batch
+await userLoader.load("u1");
+await userLoader.load("u2");
+```
+
+## 缺點
+- 學習曲線
+- Caching 複雜
+- N+1 要小心
+- 不適合 binary / file
+
+## 何時用
+- ✅ Mobile App（省頻寬）
+- ✅ 複雜資料結構
+- ✅ Frontend 多種需求
+- ❌ 簡單 CRUD（REST 簡單）
+- ❌ 公開 API（不熟悉）

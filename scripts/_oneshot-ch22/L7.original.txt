@@ -1,0 +1,87 @@
+## 基本 workflow
+`.github/workflows/deploy.yml`：
+```yaml
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm ci
+      - run: npm test
+      - run: npm run lint
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy to Vercel
+        run: |
+          npm install -g vercel
+          vercel --prod --token=${{ secrets.VERCEL_TOKEN }}
+```
+
+## Secrets
+Settings → Secrets → Actions：
+- `VERCEL_TOKEN`
+- `DATABASE_URL`
+- `AWS_ACCESS_KEY_ID`
+
+## 多環境
+```yaml
+- name: Deploy staging
+  if: github.ref == 'refs/heads/develop'
+  run: vercel deploy --token=$VERCEL_TOKEN
+
+- name: Deploy production
+  if: github.ref == 'refs/heads/main'
+  run: vercel deploy --prod --token=$VERCEL_TOKEN
+```
+
+## Matrix（多版本測試）
+```yaml
+strategy:
+  matrix:
+    node: [18, 20, 22]
+steps:
+  - uses: actions/setup-node@v4
+    with: { node-version: ${{ matrix.node }} }
+  - run: npm test
+```
+
+## Cache 加速
+```yaml
+- uses: actions/cache@v4
+  with:
+    path: ~/.npm
+    key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
+```
+
+## Build Docker + Push
+```yaml
+- uses: docker/login-action@v3
+  with:
+    registry: ghcr.io
+    username: ${{ github.actor }}
+    password: ${{ secrets.GITHUB_TOKEN }}
+
+- uses: docker/build-push-action@v5
+  with:
+    push: true
+    tags: ghcr.io/myorg/myapp:latest
+```
+
+## 心法
+- main branch 自動 prod
+- PR 自動 preview
+- Test 沒過不能 merge
+- Secrets 永遠別 commit

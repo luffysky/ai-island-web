@@ -1,0 +1,87 @@
+## URL 規則
+```
+✅ /users          - 名詞、複數
+✅ /users/123      - 取單一
+✅ /users/123/posts - 巢狀資源
+❌ /getUsers       - 不要動詞
+❌ /user           - 不要單數
+```
+
+## HTTP Methods
+- `GET`：讀取（safe、idempotent）
+- `POST`：建立
+- `PUT`：完整取代（idempotent）
+- `PATCH`：部分更新
+- `DELETE`：刪除（idempotent）
+
+## Status Codes
+- **2xx 成功**
+  - 200 OK
+  - 201 Created
+  - 204 No Content
+- **3xx 重導**
+  - 301 Moved Permanently
+  - 304 Not Modified
+- **4xx 客戶端錯**
+  - 400 Bad Request
+  - 401 Unauthorized（沒登入）
+  - 403 Forbidden（沒權限）
+  - 404 Not Found
+  - 422 Unprocessable Entity（驗證失敗）
+  - 429 Too Many Requests
+- **5xx 伺服器錯**
+  - 500 Internal Server Error
+  - 502 Bad Gateway
+  - 503 Service Unavailable
+
+## 分頁
+```
+GET /posts?page=1&limit=20
+GET /posts?cursor=abc&limit=20
+```
+
+Response：
+```json
+{
+  "data": [...],
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 1500,
+    "has_more": true
+  }
+}
+```
+
+## Filter / Sort / Search
+```
+GET /posts?status=published&sort=-created_at
+GET /posts?search=python
+GET /posts?author=u1&tag=react
+```
+
+## 版本
+```
+✅ /v1/users
+✅ /api/v1/users
+✅ Header: API-Version: 1
+❌ /usersV1
+```
+
+## 錯誤格式
+```json
+{
+  "error": {
+    "code": "VALIDATION_FAILED",
+    "message": "Email is invalid",
+    "field": "email"
+  }
+}
+```
+
+## 心法
+- URL 名詞、動詞用 method
+- Status code 正確
+- 一致的錯誤格式
+- 永遠分頁（沒人想要 10000 筆）
+- 版本化（v1 / v2）

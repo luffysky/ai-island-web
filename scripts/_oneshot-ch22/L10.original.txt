@@ -1,0 +1,122 @@
+## 為什麼 IaC
+
+### 痛點
+- 「我們 prod server 上次怎麼設定的？」忘了
+- 換人接手不知道
+- 災難復原沒 SOP
+- 環境差異（dev vs prod）
+
+### 解
+所有資源（VM / DB / DNS / S3 bucket）寫成 code：
+- Version control
+- Code review
+- 自動化
+- 文件
+
+## 主流工具
+
+### Terraform（最熱）
+HCL 語法：
+```hcl
+provider "aws" {
+  region = "ap-northeast-1"
+}
+
+resource "aws_instance" "web" {
+  ami           = "ami-xxxxxx"
+  instance_type = "t3.small"
+  
+  tags = {
+    Name = "WebServer"
+  }
+}
+
+resource "aws_s3_bucket" "uploads" {
+  bucket = "myapp-uploads"
+  acl    = "private"
+}
+```
+
+### Pulumi
+用 TS / Python / Go 寫：
+```typescript
+import * as aws from "@pulumi/aws";
+
+const web = new aws.ec2.Instance("web", {
+  ami: "ami-xxxxxx",
+  instanceType: "t3.small",
+  tags: { Name: "WebServer" }
+});
+
+const bucket = new aws.s3.Bucket("uploads", {
+  acl: "private"
+});
+```
+
+優：用熟悉語言。
+
+### CloudFormation
+AWS 原生。
+
+### Ansible
+Configuration management（不只資源建立）。
+
+## 工作流
+
+### 1. 寫 code
+```bash
+# terraform/main.tf
+```
+
+### 2. Init
+```bash
+terraform init
+```
+
+### 3. Plan（預覽變動）
+```bash
+terraform plan
+```
+
+### 4. Apply
+```bash
+terraform apply
+```
+
+### 5. Destroy（拆掉所有資源）
+```bash
+terraform destroy
+```
+
+## State 管理
+
+Terraform 記住「現在有什麼」在 state file。
+- Local：個人用
+- S3 + DynamoDB lock：團隊
+- Terraform Cloud：託管
+
+## 多環境
+```
+environments/
+├── dev/
+├── staging/
+└── prod/
+```
+
+各自 state、共用 modules。
+
+## CI/CD 整合
+```yaml
+# .github/workflows/terraform.yml
+- run: terraform plan -out=plan.tfplan
+- run: terraform apply plan.tfplan
+  if: github.ref == 'refs/heads/main'
+```
+
+PR 顯示 `terraform plan` diff、reviewer 看清楚。
+
+## 心法
+- 不一定全部 IaC（漸進）
+- Secrets 不放 git（用 Vault / SSM）
+- 永遠 plan 才 apply
+- State 鎖好（防多人同時改）

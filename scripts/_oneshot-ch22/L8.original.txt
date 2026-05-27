@@ -1,0 +1,79 @@
+## 策略
+
+### 1. Rolling Update
+逐台換、不會全掛：
+```
+Server A (v1) → 換 v2
+Server B (v1)
+Server C (v1)
+（A 換好再換 B）
+```
+
+K8s / Vercel / Cloudflare 預設用這個。
+
+### 2. Blue-Green
+兩套環境輪替：
+- Blue (v1) 正在跑
+- Green (v2) 部署完
+- LB 切到 Green
+- Blue 留著回 rollback
+
+優：rollback 1 秒
+劣：成本雙倍
+
+### 3. Canary
+新版先給 5% 流量：
+- 5% 看 metric
+- 沒問題 → 50%
+- 沒問題 → 100%
+
+優：發現 bug 影響小
+劣：複雜
+
+## Health Check
+```typescript
+app.get("/healthz", (req, res) => {
+  // 檢查 DB / cache / 外部 service
+  const dbOk = await db.$queryRaw`SELECT 1`;
+  if (!dbOk) return res.status(503).end();
+  res.json({ status: "ok" });
+});
+```
+
+Load balancer 拿到 503 → 不送流量過來。
+
+## Graceful Shutdown
+```typescript
+const server = app.listen(3000);
+
+process.on("SIGTERM", () => {
+  console.log("SIGTERM received");
+  server.close(() => {
+    // 等現有 request 處理完
+    db.$disconnect();
+    process.exit(0);
+  });
+  
+  // 強制超時
+  setTimeout(() => process.exit(1), 30_000);
+});
+```
+
+K8s 給 30 秒、超過砍。
+
+## Database Migration
+
+### 規則
+1. 先加 column / table（不破壞舊 code）
+2. Deploy 新 code（雙寫舊新）
+3. Backfill 資料
+4. Deploy 純新 code
+5. 刪舊 column
+
+詳見 Ch19 migration 章節。
+
+## 心法
+- Indie 用託管平台（Vercel / Zeabur）自動 zero-downtime
+- 自己 deploy 學 K8s / Docker Swarm
+- 永遠 health check
+- 永遠 graceful shutdown

@@ -1,0 +1,71 @@
+## 是什麼
+Docker = 把 App + 環境打包成 image、在任何裝 Docker 的地方跑。
+
+### vs 虛擬機
+- VM：整套 OS、慢、肥
+- Container：共用 host kernel、輕、快
+
+## Dockerfile 範例
+```dockerfile
+FROM node:20-alpine
+
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+
+COPY . .
+RUN npm run build
+
+EXPOSE 3000
+CMD ["node", "server.js"]
+```
+
+## Build + Run
+```bash
+docker build -t myapp:1.0 .
+docker run -p 3000:3000 myapp:1.0
+```
+
+## docker-compose
+多個 service 一起：
+```yaml
+version: "3"
+services:
+  app:
+    build: .
+    ports: ["3000:3000"]
+    depends_on: [db]
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_PASSWORD: secret
+    volumes: ["db-data:/var/lib/postgresql/data"]
+volumes:
+  db-data:
+```
+
+```bash
+docker compose up
+```
+
+## Multi-stage Build（縮 image 大小）
+```dockerfile
+FROM node:20 AS builder
+WORKDIR /build
+COPY . .
+RUN npm ci && npm run build
+
+FROM node:20-alpine
+WORKDIR /app
+COPY --from=builder /build/dist ./dist
+COPY --from=builder /build/node_modules ./node_modules
+CMD ["node", "dist/server.js"]
+```
+
+500MB → 100MB。
+
+## 心法
+- Dockerfile 一定要 multi-stage
+- 用 alpine base 省空間
+- `.dockerignore` 排除 node_modules / .git
+- Layer cache 優化（不常變的放上面）

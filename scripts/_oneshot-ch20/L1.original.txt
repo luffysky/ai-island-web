@@ -1,0 +1,51 @@
+## REST
+- HTTP 動詞 + URL
+- 業界主流
+- 適合：公開 API、大部分場景
+
+```
+GET    /users
+GET    /users/:id
+POST   /users
+PUT    /users/:id
+DELETE /users/:id
+```
+
+## GraphQL
+- 一個 endpoint、用 query 拿需要的
+- 適合：複雜資料結構、行動 App、減少 round trip
+
+```graphql
+query {
+  user(id: "1") {
+    name
+    posts(limit: 5) {
+      title
+    }
+  }
+}
+```
+
+## tRPC（TS only）
+- TS 推斷、無需 schema
+- 適合：Next.js 全端、TS 專案
+
+```typescript
+const user = await trpc.user.byId.useQuery({ id: "1" });
+```
+
+## 對比
+
+| 面向 | REST | GraphQL | tRPC |
+|---|---|---|---|
+| 簡單 | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ |
+| 跨語言 | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐（TS only）|
+| Type-safe | ❌ | 部分 | ⭐⭐⭐⭐⭐ |
+| 公開 API | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ❌ |
+| 學習 | 平 | 中 | 平 |
+
+## Indie 選擇
+- 公開 API / 多語言：REST
+- TS Monorepo：tRPC
+- 複雜資料 / Mobile：GraphQL
+- 不確定：REST 起手

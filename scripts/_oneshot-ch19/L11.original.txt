@@ -1,0 +1,92 @@
+## 備份類型
+
+### Full
+完整 snapshot。
+適合：每週、長期保留。
+
+### Incremental
+只備自上次以來的變動。
+適合：每日、節省空間。
+
+### WAL / Logical replication
+即時、可 point-in-time recovery。
+
+## Postgres 備份
+
+### pg_dump（邏輯）
+```bash
+pg_dump -U postgres mydb > backup.sql
+pg_dump -Fc mydb > backup.dump  # custom format
+```
+
+還原：
+```bash
+psql mydb < backup.sql
+pg_restore -d mydb backup.dump
+```
+
+### pg_basebackup（物理）
+```bash
+pg_basebackup -D /backup -Ft -P
+```
+
+### PITR（Point-In-Time Recovery）
+搭配 WAL archiving、可還原到任意秒。
+
+## 雲端託管（推薦 Indie）
+
+### Supabase
+- 每日自動 backup（Pro: 7 天保留 / Team: 14 天 / Enterprise: 30 天）
+- PITR（Pro+）
+
+### Neon / PlanetScale
+- Branching = 自動備份
+- 一鍵 fork
+
+### AWS RDS
+- 自動 snapshot
+- Multi-AZ
+- 7-35 天保留
+
+## 3-2-1 規則
+- **3** 份備份
+- **2** 種媒介
+- **1** 份異地
+
+範例：
+- Supabase 自動（雲）
+- 自己 nightly export 到 R2（雲、不同 vendor）
+- 月一次 download 本地（外接 disk）
+
+## 演練
+
+**沒演練 = 沒備份**。
+
+### 月一次
+- 從 backup 還原到 staging
+- 跑 smoke test
+- 確認資料完整
+
+很多公司發現「備份壞了」是在出事時、才知道沒用。
+
+## RPO / RTO
+
+### RPO (Recovery Point Objective)
+能接受丟多少資料？
+- 1 小時 = 每小時備
+- 1 天 = 每日備
+- 0 秒 = streaming replication
+
+### RTO (Recovery Time Objective)
+多久要恢復？
+- 5 分鐘 = hot standby
+- 1 小時 = warm standby
+- 1 天 = cold backup
+
+Indie SaaS 通常 RPO 1 天 / RTO 4 小時 OK。
+
+## 心法
+- Day 1 設好 backup
+- 月一次演練還原
+- 異地 + 多 vendor（雲端服務商也會掛）
+- 設 monitor：backup 失敗立刻 alert

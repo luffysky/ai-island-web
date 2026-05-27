@@ -1,0 +1,106 @@
+## 何時用 K8s
+
+### 適合
+- 50+ container
+- 多 region
+- 大團隊
+- 複雜架構
+
+### 不適合（Indie）
+- < 10 container
+- 小團隊
+- 用 Vercel / Railway / Zeabur
+
+## 核心概念
+
+### Pod
+最小單位、1 個或多個 container：
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-app
+spec:
+  containers:
+  - name: app
+    image: myapp:1.0
+    ports:
+    - containerPort: 3000
+```
+
+### Deployment
+管理多個 Pod：
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels: { app: my-app }
+  template:
+    metadata:
+      labels: { app: my-app }
+    spec:
+      containers:
+      - name: app
+        image: myapp:1.0
+```
+
+### Service
+讓 Pod 對外可達：
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-app-svc
+spec:
+  selector: { app: my-app }
+  ports:
+  - port: 80
+    targetPort: 3000
+  type: LoadBalancer
+```
+
+### Ingress
+HTTP routing：
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-app-ingress
+spec:
+  rules:
+  - host: api.myapp.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service: { name: my-app-svc, port: { number: 80 } }
+```
+
+## 託管 K8s
+- **AWS EKS**：貴、強
+- **Google GKE**：易用
+- **Azure AKS**
+- **DigitalOcean K8s**：便宜入門
+
+自己架：太累、別。
+
+## 替代方案（Indie）
+- **Vercel**：Next.js / serverless
+- **Railway**：簡單、像 K8s lite
+- **Zeabur**：台灣、中文
+- **Fly.io**：global edge
+- **Render**：類 Heroku
+- **Cloudflare Workers**：edge function
+
+90% Indie 用這些就好。
+
+## 心法
+- K8s 學習曲線陡（3-6 月）
+- Indie 別碰
+- 學是好的（履歷加分）
+- 真的需要才用

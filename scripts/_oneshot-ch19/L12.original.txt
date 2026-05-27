@@ -1,0 +1,99 @@
+## 3 大模式
+
+### 1. Pool（Shared DB + tenant_id）
+所有 tenant 同個 DB、用 column 區隔：
+```sql
+CREATE TABLE posts (
+  id UUID,
+  tenant_id UUID NOT NULL,  -- 區隔
+  ...
+);
+```
+
+優：簡單、便宜、易維護
+劣：noisy neighbor、難客製、隔離弱
+
+**適合 80% SaaS**。
+
+### 2. Bridge（Schema per tenant）
+每 tenant 一個 schema：
+```
+public.users
+tenant_a.posts
+tenant_b.posts
+```
+
+優：隔離較好、可客製
+劣：管理複雜、migration 麻煩
+
+### 3. Silo（DB per tenant）
+每 tenant 一個 DB：
+
+優：最強隔離、客製化彈性、合規友善
+劣：成本高、運維重
+
+適合：企業 / 醫療 / 金融
+
+## Pool 模式實作
+
+### Row Level Security（PG）
+```sql
+ALTER TABLE posts ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY tenant_isolation ON posts
+USING (tenant_id = current_setting('app.tenant_id')::uuid);
+```
+
+每 request 設：
+```typescript
+await db.query("SET app.tenant_id = $1", [user.tenantId]);
+// 接下來所有 query 自動只看到該 tenant
+```
+
+### Middleware
+```typescript
+app.use((req, res, next) => {
+  req.tenantId = getTenantFromRequest(req);  // subdomain / JWT
+  next();
+});
+
+app.get("/posts", async (req, res) => {
+  const posts = await db.posts.findMany({
+    where: { tenantId: req.tenantId }
+  });
+});
+```
+
+⚠️ 漏掉 `tenantId` filter = 跨 tenant 資料外洩！
+用 RLS 雙保險。
+
+## Tenant 識別
+
+### Subdomain
+- `tenant-a.app.com`
+- `tenant-b.app.com`
+
+### Path
+- `app.com/tenant-a`
+
+### Custom domain
+- `mycompany.com` → 對應到 tenant
+
+### Header / JWT
+- 從 JWT 解出 tenant_id
+
+## Limits / Quota
+
+按 tenant 限流：
+```typescript
+const usage = await redis.incr(`tenant:${tenantId}:requests`);
+if (usage > tenant.plan.rateLimit) {
+  return res.status(429).end();
+}
+```
+
+## 心法
+- 99% SaaS 用 Pool 模式
+- 必 RLS + middleware 雙保險
+- 永遠不要 query 沒帶 tenant_id
+- 大客戶可獨立給 Silo

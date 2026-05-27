@@ -1,0 +1,75 @@
+## B-tree（預設）
+最常用、`=`、`<`、`>`、`BETWEEN`、`ORDER BY`：
+```sql
+CREATE INDEX idx_users_email ON users (email);
+CREATE INDEX idx_posts_user_created ON posts (user_id, created_at DESC);
+```
+
+## Composite Index 順序很重要
+```sql
+CREATE INDEX idx ON orders (user_id, status, created_at);
+```
+
+可加速：
+- `WHERE user_id = ?`
+- `WHERE user_id = ? AND status = ?`
+- `WHERE user_id = ? AND status = ? AND created_at > ?`
+
+無效：
+- `WHERE status = ?`（跳過第一個欄位）
+
+## GIN（陣列、JSONB、全文搜尋）
+```sql
+CREATE INDEX idx_posts_tags ON posts USING GIN (tags);
+CREATE INDEX idx_users_meta ON users USING GIN (metadata);
+
+-- 用
+SELECT * FROM posts WHERE tags @> ARRAY['python'];
+SELECT * FROM users WHERE metadata->>'plan' = 'pro';
+```
+
+## GiST（geometry、range）
+```sql
+CREATE INDEX idx_events_during ON events USING GIST (during);
+CREATE INDEX idx_places ON places USING GIST (location);
+```
+
+## Partial Index
+只 index 部分資料、超省空間：
+```sql
+CREATE INDEX idx_active_users ON users (email)
+WHERE is_active = true;
+```
+
+## Expression Index
+```sql
+CREATE INDEX idx_users_lower_email ON users (LOWER(email));
+
+-- 用
+SELECT * FROM users WHERE LOWER(email) = 'alice@example.com';
+```
+
+## Unique Index
+```sql
+CREATE UNIQUE INDEX idx_users_email ON users (email);
+```
+
+## 何時不該 index
+- 表太小（< 1000 rows）
+- 寫多讀少
+- 欄位值分布不均（如布林）
+- 已經有其他 index 涵蓋
+
+## 監控 unused index
+```sql
+SELECT schemaname, tablename, indexname, idx_scan
+FROM pg_stat_user_indexes
+WHERE idx_scan = 0
+ORDER BY pg_relation_size(indexrelid) DESC;
+```
+
+## 心法
+- WHERE / JOIN / ORDER BY 欄位加 index
+- 不要 over-indexing（寫入變慢）
+- composite 順序看 query
+- 定期清 unused

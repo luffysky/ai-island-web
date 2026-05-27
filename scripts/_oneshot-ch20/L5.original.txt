@@ -1,0 +1,123 @@
+## OpenAPI / Swagger
+標準格式描述 API：
+```yaml
+openapi: 3.0.0
+paths:
+  /users/{id}:
+    get:
+      parameters:
+        - name: id
+          in: path
+          required: true
+      responses:
+        200:
+          description: User
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+```
+
+## 自動產生
+
+### NestJS
+```typescript
+@Get(":id")
+@ApiResponse({ status: 200, type: User })
+getUser(@Param("id") id: string) {}
+```
+
+### Hono + Zod
+```typescript
+import { OpenAPIHono } from "@hono/zod-openapi";
+
+const app = new OpenAPIHono();
+
+app.openapi({
+  method: "get",
+  path: "/users/{id}",
+  request: { params: UserParams },
+  responses: { 200: { content: { "application/json": { schema: UserSchema } } } }
+}, async (c) => {
+  // ...
+});
+
+app.doc("/openapi.json", { openapi: "3.0.0", info: { title: "API" } });
+```
+
+### FastAPI（Python）
+```python
+@app.get("/users/{id}", response_model=User)
+async def get_user(id: str):
+    return await find_user(id)
+```
+自動 /docs。
+
+## Scalar / Swagger UI
+- swagger.io/tools/swagger-ui/
+- scalar.com（現代 UI）
+
+把 OpenAPI JSON 變美的 docs。
+
+## Postman / Bruno
+- Postman：商業、popular
+- Bruno：開源、Git 友善
+- Insomnia：UI 好看
+
+匯出 collection 給客戶。
+
+## Stoplight Elements
+網頁版 OpenAPI viewer。
+
+## Versioning
+
+### URL Path
+```
+/v1/users
+/v2/users
+```
+
+### Header
+```
+API-Version: 1
+```
+
+### Query
+```
+/users?version=1
+```
+
+URL 最常見、最明顯。
+
+## 版本策略
+- v1：穩定、不破壞
+- v2：breaking change 才升
+- 同時支援多版本 6-12 個月
+- Deprecate 提前通知
+
+## Breaking vs Non-breaking
+
+### Non-breaking（不升版）
+- 加新欄位
+- 加新 endpoint
+- 加 optional parameter
+
+### Breaking（要升版）
+- 刪欄位 / endpoint
+- 改欄位 type
+- 改 required parameter
+- 改回應格式
+
+## Deprecation
+```http
+Deprecation: true
+Sunset: Tue, 31 Dec 2026 23:59:59 GMT
+Link: <https://api.example.com/v2/users>; rel="successor-version"
+```
+
+## 心法
+- Day 1 寫 docs（同步 code）
+- 自動產生（OpenAPI）
+- 版本明確
+- Breaking change 提前通知
+- 給 Postman collection

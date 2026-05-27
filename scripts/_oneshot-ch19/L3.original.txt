@@ -1,0 +1,103 @@
+## 基本
+```sql
+EXPLAIN ANALYZE
+SELECT * FROM orders WHERE user_id = 'u1';
+```
+
+輸出：
+```
+Index Scan using idx_orders_user_id on orders
+  (cost=0.42..8.44 rows=1 width=64)
+  (actual time=0.025..0.027 rows=2 loops=1)
+Planning Time: 0.123 ms
+Execution Time: 0.045 ms
+```
+
+## 看什麼
+
+### Seq Scan（紅旗）
+全表掃描、表大就慢：
+```
+Seq Scan on orders (cost=0..100 rows=10000)
+```
+→ 加 index。
+
+### Index Scan（好）
+```
+Index Scan using idx_orders_user_id on orders
+```
+
+### Index Only Scan（最好）
+只讀 index、不碰 table：
+```
+Index Only Scan
+```
+
+### Bitmap Index Scan
+多 index 組合。
+
+### Nested Loop / Hash Join / Merge Join
+JOIN 演算法、看資料量自動選。
+
+## cost vs actual
+- `cost=0..100` 估計
+- `actual time=0.025..0.027` 實際
+
+若 estimate 跟 actual 差很多 → ANALYZE 表（更新統計）：
+```sql
+ANALYZE orders;
+```
+
+## rows
+估計回幾筆。
+若估錯 → query planner 選錯 index。
+
+## 找慢 query
+
+### PG slow query log
+```
+log_min_duration_statement = 1000  # 超過 1 秒記
+```
+
+### pg_stat_statements
+```sql
+CREATE EXTENSION pg_stat_statements;
+
+SELECT query, calls, total_exec_time, mean_exec_time
+FROM pg_stat_statements
+ORDER BY total_exec_time DESC
+LIMIT 20;
+```
+
+## 工具
+- pgAdmin（圖形化 EXPLAIN）
+- explain.dalibo.com（線上）
+- pgMustard（AI 建議）
+
+## 優化步驟
+1. EXPLAIN ANALYZE 看 plan
+2. 找 Seq Scan / 高 cost
+3. 加對的 index
+4. 重跑 EXPLAIN ANALYZE
+5. 確認改善
+
+## 常見 anti-pattern
+```sql
+-- ❌ Function on indexed column（index 失效）
+WHERE LOWER(email) = '...'
+
+-- ✅
+CREATE INDEX idx ON users (LOWER(email));
+
+-- ❌ LIKE %x%（無法用 index）
+WHERE name LIKE '%alice%'
+
+-- ✅ 用全文搜尋
+WHERE to_tsvector('english', name) @@ to_tsquery('alice');
+
+-- ❌ OR
+WHERE id = 1 OR id = 2
+
+-- ✅ IN
+WHERE id IN (1, 2)
+```

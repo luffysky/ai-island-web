@@ -1,0 +1,116 @@
+## 為什麼要版本
+
+App / SDK 已被裝在用戶手機 / 客戶 server：
+- 你今天改 API → 舊 client 立刻壞
+- 不能強制升級
+- 必須漸進
+
+## 3 種策略
+
+### 1. URL Path（最常用）
+```
+/v1/users
+/v2/users
+```
+
+優：明顯、easy
+劣：URL 變多
+
+### 2. Header
+```http
+GET /users
+API-Version: 2
+```
+
+優：URL 不變
+劣：不直覺、cache 麻煩
+
+### 3. Query
+```
+/users?version=2
+```
+
+少用、易忘。
+
+### 4. Accept header（RESTful 正統）
+```
+Accept: application/vnd.myapp.v2+json
+```
+
+少用、複雜。
+
+## 推薦：URL Path
+99% 場景。
+
+## Breaking vs Non-breaking
+
+### Non-breaking（不升版）
+- 加新 field（client 忽略）
+- 加新 endpoint
+- 加 optional parameter
+- 內部優化
+
+### Breaking（升版）
+- 刪 field
+- 改 field 型別
+- 改 field 名稱
+- 改 endpoint behavior
+- 改 status code
+
+## Deprecation 流程
+
+### Phase 1: Announce
+```http
+X-API-Deprecation: This endpoint will be removed on 2026-12-31
+Sunset: Tue, 31 Dec 2026 23:59:59 GMT
+```
+
+Docs / changelog 公告。
+
+### Phase 2: Migration period
+- 至少 6 個月（B2C）
+- 1-2 年（B2B）
+- 雙版本並存
+
+### Phase 3: Sunset
+舊版回 410 Gone。
+
+## 多版本並存
+
+### Code 設計
+```
+/api/v1/users.ts  ← 舊
+/api/v2/users.ts  ← 新
+/api/shared/      ← 共用 logic
+```
+
+或：
+```typescript
+function getUserHandler(version: number) {
+  const user = db.user.findUnique(...);
+  if (version === 1) return { ...user, name: user.fullName };
+  return user;
+}
+```
+
+## SDK 角度
+
+### Versioned SDK
+```bash
+npm install @myapp/sdk@1
+npm install @myapp/sdk@2
+```
+
+各 SDK 對應各 API version。
+
+### SDK 自動處理 deprecation
+```typescript
+console.warn("Method X is deprecated, use Y instead. Sunset: 2026-12-31");
+```
+
+## 心法
+- v1 → 寧可慢點 design、不要急
+- Breaking change 必升版 + 公告
+- 至少並存 6 個月
+- 永遠 changelog
+- SDK 隨 API version

@@ -1,0 +1,61 @@
+## 部署選項
+
+### 1. Serverless（Indie 首選）
+- Vercel / Cloudflare Pages / Netlify
+- 不管 server、按用量付
+- 5 分鐘上線
+
+### 2. PaaS
+- Railway / Render / Fly.io / Heroku
+- 比 serverless 彈性、比 IaaS 簡單
+- 適合：要長期跑的 server
+
+### 3. IaaS
+- AWS EC2 / GCP Compute / DigitalOcean
+- 完全控制、最便宜大規模
+- 要自己管 OS、安裝、SSL
+
+### 4. K8s
+- Kubernetes
+- 微服務、大規模
+- Indie 不需要
+
+## 部署管道
+
+### 手動
+SSH 上去 git pull、npm install、pm2 restart。
+慢、易錯。
+
+### CI/CD
+GitHub push → 自動 build → 自動部署。
+是 2026 標準。
+
+## Static vs SSR vs Container
+
+### Static
+HTML/CSS/JS 純靜態。
+平台：Vercel / Cloudflare Pages / GitHub Pages。
+
+### SSR（Server-Side Rendering）
+Next.js / Nuxt / Astro。
+平台：Vercel / Cloudflare / Railway。
+
+### Container（Docker）
+任何語言、任何 stack。
+平台：Railway / Fly.io / AWS ECS / Render。
+
+## Indie 選擇
+
+| 場景 | 推薦 |
+|---|---|
+| 純前端 / 靜態 | Cloudflare Pages |
+| Next.js | Vercel |
+| Node API | Railway |
+| Python / Go / Rust | Railway / Fly.io |
+| 重客製 / 多語言 | Docker → Fly.io |
+
+## 心法
+- Indie 不要自架 VPS（除非要省極致）
+- 託管平台 5 分鐘上線、值得月 $5-20
+- Docker 是「跨平台保險」
+- 不要過早 K8s

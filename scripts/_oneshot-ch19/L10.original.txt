@@ -1,0 +1,104 @@
+## Migration 工具
+
+### Prisma Migrate
+```bash
+npx prisma migrate dev --name add_user_role
+npx prisma migrate deploy  # prod
+```
+
+### Drizzle Kit
+```bash
+npx drizzle-kit generate
+npx drizzle-kit migrate
+```
+
+### Flyway / Liquibase（Java / 多語言）
+
+### TypeORM / Sequelize
+JS 老牌、各有 migration CLI。
+
+## Migration 寫法
+
+### Auto-generated（推薦）
+工具 diff 你的 schema 跟 DB、自動產生 SQL。
+
+### Manual
+```sql
+-- migrations/20260517_add_user_role.sql
+BEGIN;
+ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'member';
+CREATE INDEX idx_users_role ON users(role);
+COMMIT;
+```
+
+## Zero-Downtime Migration
+
+### 危險動作
+- ❌ DROP COLUMN（舊 code 還在跑）
+- ❌ RENAME COLUMN
+- ❌ Add NOT NULL constraint without default
+- ❌ Change column type
+
+### 安全 pattern：Expand-Migrate-Contract
+
+#### 改 column 名（user_name → username）
+
+**Phase 1: Expand**
+```sql
+ALTER TABLE users ADD COLUMN username TEXT;
+UPDATE users SET username = user_name;
+-- 兩個 column 共存
+```
+
+**Phase 2: Migrate**
+- 改 code 寫兩個 column
+- Deploy
+- 等舊 code instance 全死
+
+**Phase 3: Contract**
+- 改 code 只用 username
+- Deploy
+- 刪掉舊 column
+```sql
+ALTER TABLE users DROP COLUMN user_name;
+```
+
+需 3 次 deploy、但 zero downtime。
+
+## 大表 migration
+
+### 加 NOT NULL
+```sql
+-- ❌ 鎖表
+ALTER TABLE users ADD COLUMN email TEXT NOT NULL;
+
+-- ✅ 分段
+ALTER TABLE users ADD COLUMN email TEXT;  -- 1. 允許 NULL
+UPDATE users SET email = '' WHERE email IS NULL;  -- 2. 補
+ALTER TABLE users ALTER COLUMN email SET NOT NULL;  -- 3. 加 constraint
+```
+
+### 加 Index
+```sql
+-- ❌ 鎖
+CREATE INDEX idx_users_email ON users(email);
+
+-- ✅ Postgres 不鎖
+CREATE INDEX CONCURRENTLY idx_users_email ON users(email);
+```
+
+## Rollback 計畫
+每個 migration 都有 down script：
+```sql
+-- Up
+ALTER TABLE users ADD COLUMN role TEXT;
+
+-- Down
+ALTER TABLE users DROP COLUMN role;
+```
+
+## 心法
+- Production migration 必先 staging 跑
+- 大表加 NOT NULL / Index 必分段
+- Expand-Migrate-Contract 是 zero-downtime 公式
+- 永遠 backup before migration

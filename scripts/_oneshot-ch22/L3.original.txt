@@ -1,0 +1,140 @@
+## Railway
+
+### 為什麼
+- ✅ GitHub push 自動 deploy
+- ✅ DB 一鍵建（PG / MySQL / Redis）
+- ✅ UI 最友善
+- ✅ $5 起步（每月）
+
+### 部署
+1. railway.app
+2. 連 GitHub
+3. 選 repo
+4. 自動偵測 stack
+5. 加環境變數
+6. Deploy
+
+支援：Node / Python / Go / Ruby / Rust / PHP / Elixir / Java...
+
+### railway.toml
+```toml
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "npm start"
+healthcheckPath = "/health"
+```
+
+## Fly.io
+
+### 為什麼
+- ✅ 全球 30+ 城市
+- ✅ Docker first
+- ✅ 免費 plan
+- ✅ 寫得很 dev-friendly
+
+### 部署
+```bash
+brew install flyctl
+fly auth login
+fly launch  # 自動建 fly.toml + Dockerfile
+
+fly deploy
+fly logs
+fly ssh console
+```
+
+### fly.toml
+```toml
+app = "my-app"
+primary_region = "nrt"  # Tokyo
+
+[build]
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 256
+```
+
+### 多 region
+```bash
+fly regions add nrt sin sjc
+fly scale count 3
+```
+
+## Render
+
+### 為什麼
+- ✅ 類 Heroku
+- ✅ 免費 plan
+- ✅ DB / Static / Worker 全支援
+- ⚠️ 免費 plan 會睡眠
+
+### 部署
+1. render.com
+2. New → Web Service
+3. 連 GitHub
+4. 設環境變數
+5. Deploy
+
+### render.yaml
+```yaml
+services:
+  - type: web
+    name: my-app
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: my-db
+          property: connectionString
+
+databases:
+  - name: my-db
+    plan: starter
+```
+
+## 三巨頭對比
+
+| 面向 | Railway | Fly.io | Render |
+|---|---|---|---|
+| UI | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ |
+| 全球 | 美單區 | 30+ 城市 | 美單區 |
+| Docker | 可 | 必 | 可 |
+| 免費 | 試用 | 慷慨 | 會睡 |
+| DB | 整合 | 整合 | 整合 |
+| 價格 | $5+ | $0+ | $7+ |
+
+## Indie 選擇
+- 全 stack TS / Node：Vercel + Railway
+- 跨語言：Fly.io
+- 預算極省：Render（接受 cold start）
+- 全球 latency：Fly.io
+
+## 替代
+
+### Heroku
+老牌、不再免費、貴。
+
+### DigitalOcean App Platform
+類 Render、$5+。
+
+### AWS App Runner
+AWS 簡化版。
+
+### Google Cloud Run
+Container only、超彈性、按請求計費。
+
+## 心法
+- Indie：Railway / Fly.io 兩個就夠
+- 全球 user → Fly.io
+- 純 API server → Railway
+- 大流量再升 AWS / GCP

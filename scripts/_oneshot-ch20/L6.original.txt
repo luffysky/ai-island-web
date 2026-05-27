@@ -1,0 +1,119 @@
+## REST 的痛
+```
+GET /users/1       → user 基本資料
+GET /users/1/posts → user 文章
+GET /users/1/comments → 留言
+```
+3 個 round trip、且回多餘資料（你只要名字、卻收到全部）。
+
+## GraphQL 解
+```graphql
+query {
+  user(id: 1) {
+    name
+    posts(limit: 5) { title }
+    comments { content }
+  }
+}
+```
+1 個 request、只拿要的。
+
+## Schema 設計
+
+```graphql
+type Query {
+  user(id: ID!): User
+  posts(limit: Int = 10, offset: Int = 0): [Post!]!
+  searchPosts(query: String!): [Post!]!
+}
+
+type Mutation {
+  createPost(input: CreatePostInput!): Post!
+  deletePost(id: ID!): Boolean!
+}
+
+type User {
+  id: ID!
+  email: String!
+  name: String!
+  posts: [Post!]!
+}
+
+type Post {
+  id: ID!
+  title: String!
+  content: String!
+  author: User!
+  createdAt: DateTime!
+}
+
+input CreatePostInput {
+  title: String!
+  content: String!
+}
+
+scalar DateTime
+```
+
+## Resolver
+```typescript
+const resolvers = {
+  Query: {
+    user: async (_, { id }) => db.user.findUnique({ where: { id } })
+  },
+  User: {
+    posts: async (parent) => db.post.findMany({ where: { authorId: parent.id } })
+  }
+};
+```
+
+## N+1 問題 + DataLoader
+```typescript
+const userLoader = new DataLoader(async (ids) => {
+  const users = await db.user.findMany({ where: { id: { in: ids } } });
+  return ids.map(id => users.find(u => u.id === id));
+});
+
+const resolvers = {
+  Post: {
+    author: (parent) => userLoader.load(parent.authorId)
+  }
+};
+```
+
+10 個 post → 10 次 author query → 1 次 batch query。
+
+## 框架
+
+### Apollo Server
+最熱門：
+```typescript
+import { ApolloServer } from "@apollo/server";
+const server = new ApolloServer({ typeDefs, resolvers });
+```
+
+### GraphQL Yoga
+輕量、modern。
+
+### Pothos
+TypeScript-first、code-first。
+
+### Hasura / Postgraphile
+自動從 PG schema 產 GraphQL。
+
+## REST vs GraphQL
+
+| | REST | GraphQL |
+|---|---|---|
+| 學習 | 平 | 中 |
+| 上手 | 快 | 慢 |
+| Over-fetch | 有 | 無 |
+| Cache | 好（HTTP）| 難 |
+| 工具 | 多 | 多 |
+| Mobile 友善 | 中 | 高 |
+
+## 心法
+- REST 90% 場景夠
+- GraphQL 適合 mobile + 複雜 relation
+- 別新人專案用 GraphQL（複雜度）
+- tRPC 是 TS 全棧的折衷

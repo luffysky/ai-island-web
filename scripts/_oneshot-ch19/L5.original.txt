@@ -1,0 +1,104 @@
+## 為什麼
+- **效能**：讀分散到 replica
+- **HA**：主掛了切 replica
+- **備份**：replica 就是即時備份
+- **跨地區**：低延遲
+
+## Master-Slave（Primary-Replica）
+```
+Write → Primary → Replicate → Replica 1
+                            → Replica 2
+Read  → Primary / Replica
+```
+
+## PG 設定
+`postgresql.conf`（primary）：
+```
+wal_level = replica
+max_wal_senders = 10
+```
+
+`pg_hba.conf`：
+```
+host replication replicator 10.0.0.0/24 md5
+```
+
+Replica 上：
+```bash
+pg_basebackup -h primary -U replicator -D /var/lib/postgresql/data -R
+```
+
+## 程式分流
+```typescript
+const primary = new Pool({ host: "primary.db" });
+const replica = new Pool({ host: "replica.db" });
+
+// 寫
+await primary.query("INSERT INTO ...");
+
+// 讀
+await replica.query("SELECT * FROM ...");
+```
+
+⚠️ Replica lag：剛寫的可能 replica 還沒同步、讀不到。
+
+## Lag 處理
+```typescript
+// 寫完立刻讀 → 用 primary
+await primary.query("INSERT INTO posts ...");
+const posts = await primary.query("SELECT * FROM posts WHERE id = ?");
+
+// 不在意一致性 → 用 replica
+const allPosts = await replica.query("SELECT * FROM posts");
+```
+
+## Failover
+Primary 掛了：
+1. 偵測（health check）
+2. Promote replica 變 primary
+3. 改 DNS / connection string
+4. App 重連
+
+工具：
+- **Patroni**（PG HA）
+- **pgPool-II**
+- **AWS RDS Multi-AZ**（自動）
+- **Supabase**（內建）
+
+## Multi-Master（雙寫）
+進階、複雜：
+- BDR
+- Galera Cluster
+- CockroachDB / YugabyteDB
+
+99% 不需要。
+
+## 雲端方案
+
+### AWS RDS
+- Multi-AZ：自動 failover
+- Read Replicas：5 個
+- Cross-region replica
+
+### Cloud SQL（GCP）
+- HA 自動
+- Read replicas
+
+### Supabase
+- 自動 backup
+- Read replicas（Pro 以上）
+
+## 監控 lag
+```sql
+SELECT
+  pg_last_wal_receive_lsn() - pg_last_wal_replay_lsn() AS lag_bytes,
+  EXTRACT(EPOCH FROM now() - pg_last_xact_replay_timestamp()) AS lag_seconds;
+```
+
+警報：lag > 5s。
+
+## 心法
+- 小 SaaS：單 primary + daily backup 夠
+- 中型：Primary + 1 Replica
+- 大型：Multi-region
+- 不要過早 over-engineering

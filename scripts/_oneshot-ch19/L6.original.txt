@@ -1,0 +1,99 @@
+## Partitioning（同 DB）
+PG 內建、自動分 partition：
+
+### Range Partition
+```sql
+CREATE TABLE logs (
+  id BIGSERIAL,
+  created_at TIMESTAMPTZ
+) PARTITION BY RANGE (created_at);
+
+CREATE TABLE logs_2026_01 PARTITION OF logs
+FOR VALUES FROM ('2026-01-01') TO ('2026-02-01');
+
+CREATE TABLE logs_2026_02 PARTITION OF logs
+FOR VALUES FROM ('2026-02-01') TO ('2026-03-01');
+```
+
+查詢自動只掃對應 partition。
+
+### List Partition
+```sql
+CREATE TABLE users PARTITION BY LIST (country);
+
+CREATE TABLE users_tw PARTITION OF users FOR VALUES IN ('TW');
+CREATE TABLE users_us PARTITION OF users FOR VALUES IN ('US');
+```
+
+### Hash Partition
+```sql
+CREATE TABLE orders PARTITION BY HASH (user_id);
+
+CREATE TABLE orders_0 PARTITION OF orders FOR VALUES WITH (modulus 4, remainder 0);
+-- ... orders_1, orders_2, orders_3
+```
+
+### 自動 partition（pg_partman）
+```sql
+SELECT partman.create_parent(
+  'public.logs',
+  'created_at',
+  'native',
+  'monthly'
+);
+```
+
+每月自動建新 partition。
+
+## Sharding（跨 DB）
+資料分到不同 server。
+
+### 手動
+```typescript
+function getShardId(userId) {
+  return hash(userId) % NUM_SHARDS;
+}
+
+const shardDb = shards[getShardId(userId)];
+await shardDb.query("...");
+```
+
+### Citus（PG extension）
+分散式 PG：
+```sql
+SELECT create_distributed_table('users', 'user_id');
+```
+
+### CockroachDB
+分散式 SQL、自動 shard。
+
+### Vitess（MySQL）
+YouTube / Slack / GitHub 用。
+
+## 何時 partition / shard
+
+### Partition
+- 單表 > 10GB
+- 按時間 / 地區 / 客戶查
+- 想要刪舊資料快
+
+### Shard
+- 單 DB 撐不住
+- 100M+ users
+- 巨大 SaaS
+
+## 取捨
+- Sharding 複雜度爆增（JOIN 跨 shard 難）
+- 永遠先 vertical scale（升 server）
+- 再 partition
+- 最後 shard
+
+## Indie 何時碰
+- 永遠別碰 sharding
+- Partition 表 > 10GB 才考慮
+- 90% Indie 永遠不需要
+
+## 心法
+- 你不是 FB / Google、別過早優化
+- PG 一台撐 100k DAU 沒問題
+- 撞牆再考慮

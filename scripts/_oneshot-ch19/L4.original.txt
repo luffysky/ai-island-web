@@ -1,0 +1,103 @@
+## ACID
+- **Atomicity**：原子性（全成或全敗）
+- **Consistency**：一致性
+- **Isolation**：隔離性（並發不互相影響）
+- **Durability**：持久性
+
+## 基本
+```sql
+BEGIN;
+UPDATE accounts SET balance = balance - 100 WHERE id = 1;
+UPDATE accounts SET balance = balance + 100 WHERE id = 2;
+COMMIT;
+
+-- 出錯
+ROLLBACK;
+```
+
+## Node + PG
+```javascript
+await pool.query("BEGIN");
+try {
+  await pool.query("UPDATE accounts SET balance = balance - $1 WHERE id = $2", [100, 1]);
+  await pool.query("UPDATE accounts SET balance = balance + $1 WHERE id = $2", [100, 2]);
+  await pool.query("COMMIT");
+} catch (err) {
+  await pool.query("ROLLBACK");
+  throw err;
+}
+```
+
+## Prisma Transaction
+```typescript
+await prisma.$transaction(async (tx) => {
+  await tx.account.update({ where: { id: 1 }, data: { balance: { decrement: 100 } } });
+  await tx.account.update({ where: { id: 2 }, data: { balance: { increment: 100 } } });
+});
+```
+
+## Isolation Levels
+
+### Read Uncommitted（最弱、不要）
+看到未 commit 的資料（dirty read）。
+
+### Read Committed（PG 預設）
+只看到 committed。
+仍有 non-repeatable read（同 transaction 內讀兩次不同）。
+
+### Repeatable Read
+同 transaction 多次讀一致。
+仍有 phantom read（範圍查詢看到新 row）。
+
+### Serializable（最強）
+完全序列化、像 transaction 一個一個跑。
+慢、可能 conflict。
+
+## 設定
+```sql
+BEGIN ISOLATION LEVEL REPEATABLE READ;
+-- ...
+COMMIT;
+```
+
+## 並發問題
+
+### Lost Update
+```
+T1: SELECT balance → 100
+T2: SELECT balance → 100
+T1: UPDATE balance = 100 + 50
+T2: UPDATE balance = 100 + 30
+最終：130（T1 的 50 不見）
+```
+
+解法：
+- `SELECT ... FOR UPDATE`（鎖）
+- Optimistic locking（version 欄位）
+
+### Deadlock
+T1 等 T2、T2 等 T1。
+PG 自動偵測、kill 一個。
+
+## SELECT FOR UPDATE
+```sql
+BEGIN;
+SELECT balance FROM accounts WHERE id = 1 FOR UPDATE;
+-- 鎖住 row、其他 transaction 等
+UPDATE accounts SET balance = balance - 100 WHERE id = 1;
+COMMIT;
+```
+
+## Optimistic Locking
+```sql
+UPDATE posts SET content = '...', version = version + 1
+WHERE id = $1 AND version = $2;
+
+-- 影響 0 row = 別人改過、重試
+```
+
+## 心法
+- 短 transaction
+- 不在 transaction 內做 IO（call API / 等 user）
+- 高並發場景用 optimistic
+- 金融用 SELECT FOR UPDATE
