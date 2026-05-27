@@ -3,6 +3,13 @@ import { createPublicKey, verify } from "node:crypto";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { decryptKey } from "@/lib/ai-crypto";
 import { callAI } from "@/lib/ai-providers";
+import { tryAnthropicToolRun } from "@/lib/bot-anthropic-tool";
+import {
+  getOrCreateAdminConversation,
+  loadAdminHistory,
+  saveAdminTurn,
+  clearAdminConversation,
+} from "@/lib/bot-admin-conversation";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -57,11 +64,11 @@ function verifyDiscordSig(timestamp: string, body: string, signature: string): b
   }
 }
 
-// per-user in-memory 狀態
-type State = { model_name?: string; history: { role: "user" | "assistant"; content: string }[] };
+// per-user in-memory 狀態（model 選擇仍 in-memory、對話歷史走 DB persistent）
+type State = { model_name?: string };
 const stateByUser = new Map<string, State>();
 function getState(userId: string): State {
-  if (!stateByUser.has(userId)) stateByUser.set(userId, { history: [] });
+  if (!stateByUser.has(userId)) stateByUser.set(userId, {});
   return stateByUser.get(userId)!;
 }
 
@@ -225,29 +232,55 @@ async function runAIAndPatch(appId: string, interactionToken: string, userId: st
     return;
   }
 
-  state.history.push({ role: "user", content: prompt });
-  if (state.history.length > 20) state.history.splice(0, state.history.length - 20);
+  // 對話歷史走 DB：找不到林董 profile 退回 in-memory（fallback、不卡 bot）
+  const convId = await getOrCreateAdminConversation({
+    channel: "discord_admin",
+    channelUserId: userId,
+  });
+  const history = convId ? await loadAdminHistory(convId, 20) : [];
+  const historyPlusCurrent: Array<{ role: "user" | "assistant"; content: string }> = [
+    ...history,
+    { role: "user", content: prompt },
+  ];
+
+  const systemPrompt =
+    `你是 AI 島 Discord bot、林董 (Luffy 林、平台 owner) 的私人助理。\n` +
+    `繁體中文台灣口語、簡潔、像同事。Discord markdown 可用 (**粗體** \`code\` # heading)。\n` +
+    `當前 model: ${model.provider}/${model.model_name}。`;
 
   try {
-    const r = await callAI({
-      provider: model.provider,
-      model: model.model_name,
-      apiKey,
-      messages: [
-        {
-          role: "system",
-          content:
-            `你是 AI 島 Discord bot、林董 (Luffy 林、平台 owner) 的私人助理。\n` +
-            `繁體中文台灣口語、簡潔、像同事。Discord markdown 可用 (**粗體** \`code\` # heading)。\n` +
-            `當前 model: ${model.provider}/${model.model_name}。`,
-        },
-        ...state.history.map((m) => ({ role: m.role, content: m.content })),
-      ],
-      temperature: 0.7,
-      maxTokens: 1500,
+    // 先嘗試 anthropic + tool use（不管使用者選哪個 model、admin tool 都用 anthropic 跑）
+    // 找不到 anthropic key/model 才退回原本 callAI（無 tool）
+    let reply = "";
+    let modelTag = `${model.provider}/${model.model_name}`;
+    const toolRun = await tryAnthropicToolRun({
+      systemPrompt,
+      history: historyPlusCurrent,
+      user: { id: `discord:${userId}`, name: userId, role: "owner" },
+      preferModel: model.provider === "anthropic" ? model.model_name : undefined,
     });
-    const reply = (r.text ?? "").trim() || "(AI 沒回應、再試一次)";
-    state.history.push({ role: "assistant", content: reply });
+    if (toolRun && toolRun.ok) {
+      reply = (toolRun.text ?? "").trim() || "(AI 沒回應、再試一次)";
+      modelTag = `${toolRun.modelUsed} (tool)`;
+    } else {
+      const r = await callAI({
+        provider: model.provider,
+        model: model.model_name,
+        apiKey,
+        messages: [
+          { role: "system", content: systemPrompt },
+          ...historyPlusCurrent.map((m) => ({ role: m.role, content: m.content })),
+        ],
+        temperature: 0.7,
+        maxTokens: 1500,
+      });
+      reply = (r.text ?? "").trim() || "(AI 沒回應、再試一次)";
+    }
+    if (convId) {
+      await saveAdminTurn(convId, prompt, reply, modelTag).catch((e) => {
+        console.warn("[discord-interactions] saveAdminTurn failed:", (e as any)?.message);
+      });
+    }
     // 短回答 → 純文字（保留 Discord markdown render）+ buttons
     // 長回答 → 同樣純文字（embed.description 上限 4096 比 content 2000 大）
     const payload = reply.length > 1800
@@ -255,7 +288,7 @@ async function runAIAndPatch(appId: string, interactionToken: string, userId: st
           title: "🤖 AI 回覆",
           description: reply.slice(0, 4000),
           color: COLOR.accent,
-          footer: `${model.provider}/${model.model_name}`,
+          footer: modelTag,
           buttons: [
             { label: "📊 後台", url: adminConsoleUrl() },
             { label: "🛡️ 錯誤監控", url: `${adminConsoleUrl()}/errors` },
@@ -412,7 +445,13 @@ async function runCommandBg(
     }
 
     if (cmd === "clear") {
-      getState(userId).history = [];
+      const convId = await getOrCreateAdminConversation({
+        channel: "discord_admin",
+        channelUserId: userId,
+      });
+      if (convId) {
+        await clearAdminConversation(convId).catch(() => {});
+      }
       await patchOriginalEmbed(appId, interactionToken, embedCard({
         title: "✨ 對話歷史已清空",
         description: "下一句重新開始、AI 不會帶之前 context",

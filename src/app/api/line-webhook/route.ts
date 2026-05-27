@@ -8,6 +8,12 @@ import { buildAiReplyCard, buildAIErrorCard, buildSimpleCard, buildQuickReply, C
 import { runPostback } from "@/lib/line-postback";
 import { getLiveSnapshot } from "@/lib/site-status-snapshot";
 import { askAIWithTools } from "@/lib/line-ai-tools";
+import {
+  getOrCreateAdminConversation,
+  loadAdminHistory,
+  saveAdminTurn,
+  clearAdminConversation,
+} from "@/lib/bot-admin-conversation";
 import { pickModelForUsage } from "@/lib/ai-usage-models";
 import { checkOwner, OWNER_NAME_TW } from "@/lib/is-owner";
 
@@ -228,9 +234,22 @@ async function askAI(message: string, adminUser: AdminLineUser): Promise<string>
     return `❌ AI key 解密失敗 (AI_KEY_SECRET 環境變數可能不對)`;
   }
 
-  const hist = getHistory(adminUser.id);
-  hist.push({ role: "user", content: message });
-  if (hist.length > 20) hist.splice(0, hist.length - 20);
+  // 對話歷史走 DB persistent（找不到林董 profile → 退回 in-memory）
+  const convId = await getOrCreateAdminConversation({
+    channel: "line_admin",
+    channelUserId: adminUser.id,
+  });
+  const dbHist = convId ? await loadAdminHistory(convId, 20) : getHistory(adminUser.id);
+  const hist: Array<{ role: "user" | "assistant"; content: string }> = [
+    ...dbHist,
+    { role: "user", content: message },
+  ];
+  // in-memory fallback：DB 沒接到時仍要寫進 map、不然下次 reload 也空
+  if (!convId) {
+    const mem = getHistory(adminUser.id);
+    mem.push({ role: "user", content: message });
+    if (mem.length > 20) mem.splice(0, mem.length - 20);
+  }
 
   // 30 秒快取的站台即時狀態（規模 / 健康 / 商務 / 現在誰在用 / 訪客足跡 / 最新 audit / error）
   const snapshot = await getLiveSnapshot().catch(() => "");
@@ -284,7 +303,15 @@ ${snapshot}
       history: hist,
       user: adminUser,
     });
-    hist.push({ role: "assistant", content: reply });
+    if (convId) {
+      await saveAdminTurn(convId, message, reply, `${model.provider}/${model.model_name}`).catch((e) => {
+        console.warn("[line-webhook] saveAdminTurn failed:", (e as any)?.message);
+      });
+    } else {
+      const mem = getHistory(adminUser.id);
+      mem.push({ role: "assistant", content: reply });
+      if (mem.length > 20) mem.splice(0, mem.length - 20);
+    }
     return reply;
   } catch (e: any) {
     await logLineError("askAIWithTools_failed", e?.message ?? "unknown", { adminUserId: adminUser.id, model: model.model_name });
@@ -393,7 +420,14 @@ export async function POST(req: NextRequest) {
       }
 
       if (text === "/clear" || text === "清空" || text === "重來") {
-        historyByUser.set(userId, []);
+        const convId = await getOrCreateAdminConversation({
+          channel: "line_admin",
+          channelUserId: adminUser.id,
+        });
+        if (convId) {
+          await clearAdminConversation(convId).catch(() => {});
+        }
+        historyByUser.set(userId, []);  // in-memory fallback 也清
         await lineReply(replyToken, adminClearCard(adminUser.name), token);
         continue;
       }
