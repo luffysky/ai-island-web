@@ -1,17 +1,22 @@
 import { NextResponse } from "next/server";
-import { getAllChapters } from "@/lib/content";
+import { getAllChapters, invalidateContentCache } from "@/lib/content";
 
-export const revalidate = 60;
+// force-dynamic + 短 cache：避免 server in-memory cache 卡住 ch72/73/74 lesson 數對不上 DB 的問題
+// （之前 revalidate=60 + Cache-Control=60、但 production 上某些章節 lesson 數一直拿到舊值、林董手機看到 3/2/1 而 DB 是 5/5/4）
+export const dynamic = "force-dynamic";
+export const revalidate = 30;
 
 /**
  * Side navigation API - 給左側欄用、只回傳必要資料
  * 不含 content（太大）、只含 lesson 的 id / number / title / outline
  *
- * Cache 策略：跟 chapter detail page 對齊（revalidate 60 秒）、
- * 改完 chapter 跑 import_chapters_to_db.mjs 後最多 60 秒手機導覽列就更新。
- * （之前是 1 小時 ISR + 24 小時 CDN cache、改完 chapter 要等大半天才更新、林董有抱怨）
+ * 支援 ?refresh=1 強制清 server in-memory cache。
  */
-export async function GET() {
+export async function GET(req: Request) {
+  const url = new URL(req.url);
+  if (url.searchParams.get("refresh") === "1") {
+    invalidateContentCache();
+  }
   const chapters = await getAllChapters();
 
   const nav = chapters.map((c) => ({
@@ -31,7 +36,8 @@ export async function GET() {
 
   return NextResponse.json({ chapters: nav }, {
     headers: {
-      "Cache-Control": "public, max-age=60, s-maxage=60",
+      // 短 cache、edge 30s（CDN 還是吃一點、避免每個 client 都打 DB）
+      "Cache-Control": "public, max-age=30, s-maxage=30, stale-while-revalidate=60",
     },
   });
 }

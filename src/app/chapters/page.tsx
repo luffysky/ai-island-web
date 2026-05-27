@@ -6,7 +6,11 @@ import type { Metadata } from "next";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
 
-export const revalidate = 60;
+// 章節地圖 force-dynamic：確保 ChapterMap 顯示的 lessonCount 永遠跟 DB 一致
+// （之前 revalidate=60 + ISR、production 某些章節 lesson 數一直顯示 0 / 舊值、林董抱怨）
+// in-memory cache 還是 60s 一次、所以 DB 不會被打爆。
+export const dynamic = "force-dynamic";
+export const revalidate = 30;
 
 export async function generateMetadata(): Promise<Metadata> {
   const chCount = SITE_STATS.chapterCount;
