@@ -228,19 +228,21 @@ export function AITutorWidget({
     const newImages: typeof images = [];
     for (const file of list) {
       if (!file.type.startsWith("image/")) continue;
-      if (file.size > 4 * 1024 * 1024) {
-        setError(`圖片 ${file.name} 超過 4MB、跳過`);
+      if (file.size > 10 * 1024 * 1024) {
+        setError(`圖片 ${file.name} 超過 10MB、跳過`);
         continue;
       }
       try {
-        const base64 = await fileToBase64(file);
+        const { base64, mediaType } = await compressImage(file);
         newImages.push({
           id: crypto.randomUUID(),
           base64: base64.split(",")[1] ?? base64,
-          mediaType: file.type,
+          mediaType,
           previewUrl: base64,
         });
-      } catch {}
+      } catch (err) {
+        devLog.error("[AI tutor] compress image failed:", err);
+      }
     }
     setImages((prev) => [...prev, ...newImages].slice(0, 5));
     if (fileInputRef.current) fileInputRef.current.value = "";
@@ -306,13 +308,25 @@ export function AITutorWidget({
         }),
       });
 
-      // 非 200 = error JSON
+      // 非 200 = error response（多半是 JSON、但邊緣 502/504/413 可能回空 body 或 HTML）
       if (!res.ok) {
-        const data = await res.json();
-        setError(data.message || data.error || "發生錯誤");
+        const raw = await res.text().catch(() => "");
+        let parsed: any = null;
+        if (raw) {
+          try { parsed = JSON.parse(raw); } catch {}
+        }
+        const fallback = res.status === 413
+          ? "上傳內容太大、請減少圖片數量或縮小圖片"
+          : res.status === 504 || res.status === 502
+          ? "伺服器忙線中（gateway timeout）、稍後再試"
+          : res.status === 401
+          ? "登入逾時、請重新整理"
+          : `伺服器錯誤 (HTTP ${res.status})`;
+        const msg = parsed?.message || parsed?.error || (raw && raw.length < 200 ? raw : "") || fallback;
+        setError(msg);
         setMessages((prev) => {
           const copy = [...prev];
-          copy[copy.length - 1] = { role: "assistant", content: `❌ ${data.message || data.error}` };
+          copy[copy.length - 1] = { role: "assistant", content: `❌ ${msg}` };
           return copy;
         });
         setSending(false);
@@ -784,6 +798,38 @@ function fileToBase64(file: File): Promise<string> {
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
+}
+
+// 把圖片縮到寬度 max 1280px、JPEG 0.82 — 控制單張在 ~500KB 內，避免 request body 超過 server 限制（Zeabur/Vercel 都會 413）
+async function compressImage(file: File): Promise<{ base64: string; mediaType: string }> {
+  const MAX_W = 1280;
+  const QUALITY = 0.82;
+  const dataUrl = await fileToBase64(file);
+  // GIF / SVG 等不壓、直接回原檔
+  if (!/^image\/(jpeg|jpg|png|webp)$/i.test(file.type)) {
+    return { base64: dataUrl, mediaType: file.type };
+  }
+  try {
+    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const i = new Image();
+      i.onload = () => resolve(i);
+      i.onerror = reject;
+      i.src = dataUrl;
+    });
+    const scale = img.width > MAX_W ? MAX_W / img.width : 1;
+    const w = Math.round(img.width * scale);
+    const h = Math.round(img.height * scale);
+    const canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return { base64: dataUrl, mediaType: file.type };
+    ctx.drawImage(img, 0, 0, w, h);
+    const out = canvas.toDataURL("image/jpeg", QUALITY);
+    return { base64: out, mediaType: "image/jpeg" };
+  } catch {
+    return { base64: dataUrl, mediaType: file.type };
+  }
 }
 
 function SuggestedQ({ onPick, children }: { onPick: (q: string) => void; children: string }) {
