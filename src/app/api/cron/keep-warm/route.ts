@@ -20,10 +20,19 @@ export async function GET(req: NextRequest) {
   const t0 = Date.now();
   const secret = process.env.CRON_SECRET;
   // 如果設了 CRON_SECRET 就驗、沒設就 public
+  // 兩種驗法擇一通過：
+  //   - Authorization: Bearer <secret>  （header 方式、cron-job.org 要付費才能設 header）
+  //   - ?secret=<secret> 或 ?key=<secret>（query 方式、cron-job.org 免費 tier 就能用）
   if (secret) {
     const auth = req.headers.get("authorization");
-    if (auth !== `Bearer ${secret}`) {
-      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    const querySecret = req.nextUrl.searchParams.get("secret") || req.nextUrl.searchParams.get("key");
+    const headerOk = auth === `Bearer ${secret}`;
+    const queryOk = querySecret === secret;
+    if (!headerOk && !queryOk) {
+      return NextResponse.json({
+        error: "unauthorized",
+        hint: "URL 加 ?secret=YOUR_CRON_SECRET、或 header Authorization: Bearer YOUR_CRON_SECRET、或 Zeabur env 刪掉 CRON_SECRET（公開模式、推薦給 warm-up）",
+      }, { status: 401 });
     }
   }
 
