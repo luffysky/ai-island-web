@@ -1,0 +1,26 @@
+## 基本 SELECT
+```sql
+-- 全部欄位（學習用、production 別用）
+SELECT * FROM users;
+
+-- 指定欄位（推薦、效能好）
+SELECT id, name, email FROM users;
+
+-- 別名（AS 可省略）
+SELECT name AS 姓名, price * 1.05 AS 含稅價 FROM products;
+
+-- 算術
+SELECT id, price, quantity, price * quantity AS total FROM orders;
+
+-- DISTINCT 去重
+SELECT DISTINCT country FROM users;
+```
+
+## SELECT 7 大子句執行順序
+SQL 寫的順序跟跑的順序不一樣：
+```
+寫的順序：  SELECT → FROM → WHERE → GROUP BY → HAVING → ORDER BY → LIMIT
+跑的順序：  FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT
+```
+
+**懂這個你 SQL 就升一級**—為什麼 WHERE 不能用別名、HAVING 可以用 aggregate—都是因為執行順序。

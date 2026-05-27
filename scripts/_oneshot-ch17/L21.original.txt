@@ -1,0 +1,53 @@
+## 基本 Transaction
+```sql
+BEGIN;
+UPDATE accounts SET balance = balance - 1000 WHERE id = 1;
+UPDATE accounts SET balance = balance + 1000 WHERE id = 2;
+COMMIT;
+
+-- 中間出錯
+ROLLBACK;
+```
+
+## ACID 四大特性
+- **A**tomicity：原子性、全成功或全失敗
+- **C**onsistency：一致性、前後狀態合法
+- **I**solation：隔離性、多 transaction 互不干擾
+- **D**urability：持久性、COMMIT 後永久保存
+
+## Isolation Levels（隔離等級）
+- **READ UNCOMMITTED**：能讀未 COMMIT 的（dirty read、幾乎沒人用）
+- **READ COMMITTED**（PG 預設）：只讀已 COMMIT 的
+- **REPEATABLE READ**（MySQL InnoDB 預設）：同 transaction 內讀到同樣資料
+- **SERIALIZABLE**：最嚴格、完全串行、效能差
+
+```sql
+BEGIN ISOLATION LEVEL SERIALIZABLE;
+-- ... 操作 ...
+COMMIT;
+```
+
+## SAVEPOINT（部分回滾）
+```sql
+BEGIN;
+INSERT INTO orders ...;
+SAVEPOINT sp1;
+INSERT INTO order_items ...;
+-- 發現錯了
+ROLLBACK TO sp1;  -- 只回到 sp1、第一個 INSERT 還在
+COMMIT;
+```
+
+## Deadlock 死鎖
+兩個 transaction 互相等對方。DB 會自動偵測、犧牲一個。Code 要能 retry。
+
+## 並發控制
+```sql
+-- 鎖定該行（其他 transaction 等）
+SELECT * FROM accounts WHERE id = 1 FOR UPDATE;
+
+-- 樂觀鎖（用 version 欄位）
+UPDATE accounts SET balance = 500, version = version + 1
+WHERE id = 1 AND version = 5;
+-- 如果同時被改、影響 0 列、要 retry
+```

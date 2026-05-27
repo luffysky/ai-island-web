@@ -1,0 +1,39 @@
+## 建索引
+```sql
+-- 單欄索引
+CREATE INDEX idx_users_email ON users(email);
+
+-- 複合索引（順序重要！）
+CREATE INDEX idx_orders_user_created ON orders(user_id, created_at);
+
+-- 唯一索引（兼具 UNIQUE 約束）
+CREATE UNIQUE INDEX idx_users_username ON users(username);
+
+-- 部分索引（PG 特有、節省空間）
+CREATE INDEX idx_active_users ON users(id) WHERE deleted_at IS NULL;
+
+-- 表達式索引
+CREATE INDEX idx_users_lower_email ON users(LOWER(email));
+```
+
+## 什麼欄位該建索引
+- ✅ 常用在 WHERE：email / status / user_id
+- ✅ 常用在 JOIN：所有 foreign key
+- ✅ 常用在 ORDER BY：created_at
+- ❌ 變動頻繁：每次寫入要更新索引、慢
+- ❌ 低基數：boolean（只有 true/false）沒意義
+
+## 索引的成本
+- 佔空間（大表索引可能幾百 MB）
+- 寫入變慢（每次 INSERT / UPDATE 都要更新索引）
+- 過多索引拖累整體效能
+
+**原則：讀多寫少的欄位該建、寫多讀少的別建。**
+
+## 找出沒被使用的索引（PG）
+```sql
+SELECT schemaname, tablename, indexname, idx_scan
+FROM pg_stat_user_indexes
+WHERE idx_scan = 0;
+-- → 從沒被用過的索引、可以 DROP 掉省空間
+```

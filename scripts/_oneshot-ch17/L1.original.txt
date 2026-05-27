@@ -1,0 +1,31 @@
+## SQL 的歷史
+
+SQL = **Structured Query Language**（結構化查詢語言）。發明者 Edgar Codd（IBM）在 1970 年提出「關聯式模型」、用**數學集合論**處理資料、革命整個資訊產業。
+
+## 為什麼 2026 還在學 SQL
+
+- **標準化**：學會 MySQL 的 SELECT、PostgreSQL / SQLite / Oracle 全會、跨平台
+- **需求量超大**：台灣後端職缺 90% 要求 SQL、不會 SQL = 後端不會走
+- **不會被淘汰**：NoSQL 紅了 10 年、企業還是 SQL 為主、雙軌並行
+- **AI 也用**：Vector DB（pgvector）建在 PostgreSQL 上、AI 應用基礎
+
+## 第一個 SQL 範例
+
+```sql
+SELECT name, email
+FROM users
+WHERE age >= 18
+ORDER BY created_at DESC
+LIMIT 10;
+```
+
+看起來像英文吧？這就是 SQL 的設計哲學—**讀起來像話、所以好學**。
+
+## 2026 主流 SQL 資料庫
+
+| 名稱 | 特色 | 適合 |
+|---|---|---|
+| **MySQL** | 最熱門 | WordPress / 蝦皮 / Facebook |
+| **PostgreSQL** | 功能最強 | 企業 / Indie / AI 應用 |
+| **SQLite** | 單檔案、不用 server | 行動 App / 學習 |
+| **Supabase** | PG 雲端版 + 認證 + Realtime | Indie SaaS 神器 |

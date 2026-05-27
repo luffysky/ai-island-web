@@ -1,0 +1,44 @@
+## LEFT JOIN 範例
+```sql
+SELECT u.name, o.amount
+FROM users u
+LEFT JOIN orders o ON u.id = o.user_id;
+
+-- 結果（小美也出現、amount 是 NULL）：
+-- 小明 | 100
+-- 小明 | 200
+-- 小華 | 150
+-- 小美 | NULL  ← 沒訂單也出現
+```
+
+## 找「沒下單的使用者」（經典題！）
+```sql
+SELECT u.*
+FROM users u
+LEFT JOIN orders o ON u.id = o.user_id
+WHERE o.id IS NULL;
+
+-- 「LEFT JOIN + WHERE 右邊 IS NULL」= 找出左邊有但右邊沒的
+-- → 面試 80% 機率出現
+```
+
+## 計算「每個使用者下了幾筆訂單」（含 0 筆）
+```sql
+SELECT
+  u.name,
+  COUNT(o.id) AS order_count,
+  COALESCE(SUM(o.amount), 0) AS total
+FROM users u
+LEFT JOIN orders o ON u.id = o.user_id
+GROUP BY u.id, u.name
+ORDER BY total DESC;
+
+-- COALESCE(x, 0)：x 是 NULL 時回 0
+-- 沒訂單的小美也會出現、total = 0
+```
+
+## RIGHT JOIN（很少用）
+跟 LEFT 對調—實務上會把左右換、繼續用 LEFT JOIN。
+
+## FULL OUTER JOIN
+兩邊都不漏。MySQL 不支援、PG 支援。

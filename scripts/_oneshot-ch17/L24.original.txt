@@ -1,0 +1,67 @@
+## JSON vs JSONB
+- **JSON**：純文字、慢、保留空白
+- **JSONB**（推薦）：二進位、快、可索引
+
+```sql
+CREATE TABLE products (
+  id SERIAL PRIMARY KEY,
+  name TEXT,
+  metadata JSONB
+);
+
+INSERT INTO products (name, metadata) VALUES
+  ('iPhone 17', '{"color": "blue", "storage": "256GB", "specs": {"weight": 180}}'),
+  ('MacBook', '{"color": "silver", "tags": ["pro", "m4"]}');
+```
+
+## 查詢 JSON 欄位
+```sql
+-- -> 取 JSON、->> 取文字
+SELECT metadata -> 'color' FROM products;        -- "blue" (JSON)
+SELECT metadata ->> 'color' FROM products;       -- blue (TEXT)
+
+-- 巢狀
+SELECT metadata -> 'specs' ->> 'weight' FROM products;
+
+-- WHERE 過濾
+SELECT * FROM products WHERE metadata ->> 'color' = 'blue';
+SELECT * FROM products WHERE (metadata -> 'specs' ->> 'weight')::int > 200;
+
+-- @> 包含
+SELECT * FROM products WHERE metadata @> '{"color": "blue"}';
+
+-- ? 包含 key
+SELECT * FROM products WHERE metadata ? 'tags';
+```
+
+## JSONB 索引（重要！）
+```sql
+-- GIN 索引、整個 JSON 都能搜
+CREATE INDEX idx_products_metadata ON products USING GIN (metadata);
+
+-- 特定路徑索引
+CREATE INDEX idx_products_color ON products ((metadata ->> 'color'));
+```
+
+## 更新 JSON
+```sql
+-- 加 / 改 key
+UPDATE products
+SET metadata = metadata || '{"discount": 10}'
+WHERE id = 1;
+
+-- 刪 key
+UPDATE products SET metadata = metadata - 'discount' WHERE id = 1;
+
+-- 修改巢狀
+UPDATE products
+SET metadata = jsonb_set(metadata, '{specs,weight}', '195')
+WHERE id = 1;
+```
+
+## 什麼時候用 JSON 欄位
+- ✅ Schema 變動快（user settings、event data）
+- ✅ 每筆資料的欄位不同（product variations）
+- ✅ Webhook / API 收到的原始 payload
+- ❌ 結構固定的欄位（用 column）
+- ❌ 需要嚴格 type check 的（用 column + constraint）

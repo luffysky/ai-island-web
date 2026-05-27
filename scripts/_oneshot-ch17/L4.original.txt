@@ -1,0 +1,39 @@
+## 完整約束範例
+
+```sql
+CREATE TABLE orders (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  amount DECIMAL(10,2) NOT NULL CHECK (amount > 0),
+  status TEXT NOT NULL DEFAULT 'pending'
+    CHECK (status IN ('pending','paid','shipped','cancelled')),
+  email TEXT NOT NULL CHECK (email LIKE '%@%'),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE (user_id, status)  -- 複合唯一
+);
+```
+
+## 5 種約束
+
+- **PRIMARY KEY**：唯一識別、不能 NULL
+- **FOREIGN KEY**（REFERENCES）：指向另一個表
+- **UNIQUE**：值不能重複
+- **NOT NULL**：必填
+- **CHECK**：自訂條件、像 `amount > 0`
+
+## ON DELETE 行為
+
+```sql
+ON DELETE CASCADE     -- 連刪（小心用）
+ON DELETE SET NULL    -- 設為 NULL
+ON DELETE RESTRICT    -- 禁止刪除有關聯的（預設）
+```
+
+## ALTER TABLE（事後加約束）
+
+```sql
+ALTER TABLE users ADD COLUMN phone VARCHAR(20);
+ALTER TABLE users ADD CONSTRAINT phone_format CHECK (phone ~ '^09[0-9]{8}$');
+ALTER TABLE users DROP COLUMN phone;
+```

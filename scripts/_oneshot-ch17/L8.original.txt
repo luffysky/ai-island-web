@@ -1,0 +1,59 @@
+## 5 大聚合函數
+```sql
+SELECT
+  COUNT(*) AS 訂單數,
+  COUNT(DISTINCT user_id) AS 客戶數,
+  SUM(amount) AS 總營收,
+  AVG(amount) AS 平均客單,
+  MAX(amount) AS 最大訂單,
+  MIN(amount) AS 最小訂單
+FROM orders;
+```
+
+## GROUP BY 基本
+```sql
+-- 各國有多少使用者
+SELECT country, COUNT(*)
+FROM users
+GROUP BY country
+ORDER BY COUNT(*) DESC;
+
+-- 各分類各月總營收（多欄分組）
+SELECT
+  DATE_TRUNC('month', created_at) AS month,
+  category,
+  SUM(amount) AS revenue
+FROM orders
+GROUP BY month, category
+ORDER BY month, revenue DESC;
+```
+
+## HAVING：對 GROUP 後過濾
+```sql
+-- 找出訂單數 > 100 的國家
+SELECT country, COUNT(*) AS n
+FROM users
+GROUP BY country
+HAVING COUNT(*) > 100;
+
+-- ⚠️ WHERE 過濾「個別資料」、HAVING 過濾「分組後」
+```
+
+## 進階：FILTER（條件聚合）
+```sql
+-- 各國的「總人數」跟「成年人數」
+SELECT
+  country,
+  COUNT(*) AS total,
+  COUNT(*) FILTER (WHERE age >= 18) AS adults
+FROM users
+GROUP BY country;
+```
+
+## ROLLUP / CUBE（小計總計）
+```sql
+SELECT category, region, SUM(amount)
+FROM orders
+GROUP BY ROLLUP (category, region);
+-- 出 「各 cate 各 region」+「各 cate 小計」+「總計」
+```

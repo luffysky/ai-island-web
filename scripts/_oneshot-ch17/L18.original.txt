@@ -1,0 +1,51 @@
+## WHERE 子句中的子查詢
+```sql
+-- 薪水高於平均的員工
+SELECT name, salary
+FROM employees
+WHERE salary > (SELECT AVG(salary) FROM employees);
+
+-- 找出有訂單的使用者
+SELECT * FROM users
+WHERE id IN (SELECT DISTINCT user_id FROM orders);
+
+-- EXISTS（通常比 IN 快）
+SELECT * FROM users u
+WHERE EXISTS (SELECT 1 FROM orders WHERE user_id = u.id);
+```
+
+## FROM 子句中的子查詢（derived table）
+```sql
+SELECT category, avg_price FROM (
+  SELECT category, AVG(price) AS avg_price
+  FROM products
+  GROUP BY category
+) AS cat_avgs
+WHERE avg_price > 1000;
+```
+
+## SELECT 子句中的子查詢
+```sql
+SELECT
+  u.name,
+  (SELECT COUNT(*) FROM orders WHERE user_id = u.id) AS order_count
+FROM users u;
+```
+
+## Correlated vs Uncorrelated
+- **Uncorrelated**：子查詢可獨立執行（先算一次、給外層用）
+- **Correlated**：子查詢引用外層的值（每行都重算、慢）
+
+## 子查詢 vs CTE vs JOIN
+通常都能改寫、選 query plan 最好的：
+```sql
+-- 子查詢
+SELECT * FROM users WHERE id IN (SELECT user_id FROM orders);
+
+-- JOIN（更常被優化）
+SELECT DISTINCT u.* FROM users u JOIN orders o ON u.id = o.user_id;
+
+-- CTE（可讀性最佳）
+WITH order_users AS (SELECT DISTINCT user_id FROM orders)
+SELECT u.* FROM users u JOIN order_users o ON u.id = o.user_id;
+```

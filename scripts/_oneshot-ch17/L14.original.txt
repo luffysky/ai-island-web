@@ -1,0 +1,46 @@
+## 設定情境
+```
+users 表：
+  id=1, name=小明
+  id=2, name=小華
+  id=3, name=小美
+
+orders 表：
+  id=1, user_id=1, amount=100
+  id=2, user_id=1, amount=200
+  id=3, user_id=2, amount=150
+  id=4, user_id=99（沒對應 user）, amount=50
+```
+
+## INNER JOIN（兩邊都有才出現）
+```sql
+SELECT u.name, o.amount
+FROM users u
+INNER JOIN orders o ON u.id = o.user_id;
+
+-- 結果：
+-- 小明 | 100
+-- 小明 | 200
+-- 小華 | 150
+-- （小美沒訂單、user_id=99 沒對應使用者—都不出現）
+```
+
+## 多表 JOIN
+```sql
+SELECT u.name, o.amount, p.name AS product
+FROM orders o
+JOIN users u ON o.user_id = u.id
+JOIN order_items oi ON oi.order_id = o.id
+JOIN products p ON p.id = oi.product_id;
+```
+
+## JOIN 條件 vs WHERE
+```sql
+-- ✅ 在 ON 過濾（推薦）
+SELECT * FROM users u JOIN orders o
+  ON u.id = o.user_id AND o.status = 'paid';
+
+-- 也可以但效能稍差
+SELECT * FROM users u JOIN orders o ON u.id = o.user_id
+  WHERE o.status = 'paid';
+```

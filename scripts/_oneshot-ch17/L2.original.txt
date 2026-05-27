@@ -1,0 +1,43 @@
+## 三種安裝方式
+
+### 方式 1：Docker（推薦、最乾淨）
+```bash
+docker run -d \
+  --name postgres \
+  -e POSTGRES_PASSWORD=secret \
+  -p 5432:5432 \
+  -v pg_data:/var/lib/postgresql/data \
+  postgres:17
+```
+
+### 方式 2：Homebrew（Mac）
+```bash
+brew install postgresql@17
+brew services start postgresql@17
+```
+
+### 方式 3：直接用 Supabase（最快、不用本地裝）
+- 去 [supabase.com](https://supabase.com) 註冊
+- New Project → 等 2 分鐘起好
+- 拿 DB URL 直接連
+
+## 第一次連線
+
+```bash
+# CLI 工具
+psql -h localhost -U postgres -d postgres
+
+# 進去後：
+postgres=# SELECT 1;
+ ?column?
+----------
+        1
+postgres=# \q   -- 離開
+```
+
+## 推薦 GUI 工具（2026）
+
+- **TablePlus**（Mac/Win、收費但超美）
+- **DBeaver**（免費跨平台）
+- **pgAdmin**（PG 官方）
+- **Supabase Studio**（網頁版、SaaS）

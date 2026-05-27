@@ -1,0 +1,36 @@
+## 單筆 INSERT
+```sql
+INSERT INTO users (name, email, age) VALUES ('小明', 'ming@x.com', 25);
+```
+
+## 多筆（一次寫多筆、效能好）
+```sql
+INSERT INTO users (name, email) VALUES
+  ('小華', 'hua@x.com'),
+  ('小美', 'mei@x.com'),
+  ('小強', 'qiang@x.com');
+```
+
+## RETURNING（拿到剛建的資料、PG 特有）
+```sql
+INSERT INTO users (name) VALUES ('新人')
+RETURNING id, created_at, name;
+-- 回傳：插入的整筆、不用再 SELECT
+```
+
+## UPSERT（INSERT OR UPDATE）
+```sql
+INSERT INTO users (id, name, email)
+VALUES (1, '小明更新', 'ming@x.com')
+ON CONFLICT (id)
+DO UPDATE SET name = EXCLUDED.name, email = EXCLUDED.email;
+
+-- 衝突時忽略
+ON CONFLICT (id) DO NOTHING;
+```
+
+## INSERT ... SELECT（從另一個表複製）
+```sql
+INSERT INTO archived_users (id, name, email)
+SELECT id, name, email FROM users WHERE deleted_at IS NOT NULL;
+```

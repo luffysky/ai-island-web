@@ -1,0 +1,56 @@
+## 危險寫法（永遠別這樣）
+```javascript
+// ❌ 字串拼接 = 必死
+const username = req.body.username;
+const query = `SELECT * FROM users WHERE name = '${username}'`;
+
+// 使用者輸入：' OR 1=1; --
+// 變成：SELECT * FROM users WHERE name = '' OR 1=1; --'
+// → 回傳所有使用者！
+
+// 更狠：'; DROP TABLE users; --
+// → 整張表沒了
+```
+
+## 正確寫法：Prepared Statement
+```javascript
+// Node + pg
+const result = await pool.query(
+  'SELECT * FROM users WHERE name = $1',
+  [username]
+);
+
+// Python + psycopg2
+cursor.execute(
+  "SELECT * FROM users WHERE name = %s",
+  (username,)
+);
+
+// ORM 自動 escape
+await prisma.user.findMany({ where: { name: username } });
+await User.objects.filter(name=username)  // Django
+```
+
+## 為什麼 prepared statement 安全
+DB 把 SQL 結構跟參數**分開處理**—SQL 固定、參數只當「值」、不會被解析成命令。即使輸入「'; DROP TABLE; --」也只是字串。
+
+## 進階：second-order injection
+惡意輸入存進 DB、之後被另一個 query 拼進去：
+```javascript
+// 寫入：safe（用 prepared statement）
+await db.query('INSERT INTO users(name) VALUES($1)', [
+  "Alice'); DROP TABLE products; --"
+]);
+
+// 讀出來再用：危險！
+const user = await db.query('SELECT name FROM users WHERE id = 1');
+const q2 = `SELECT * FROM orders WHERE customer = '${user.name}'`;
+// → 攻擊觸發
+```
+
+## 防護清單
+- ✅ 所有使用者輸入用 prepared statement / ORM
+- ✅ 最小權限：app 連線用的 DB user 不能 DROP TABLE
+- ✅ 開 WAF（Cloudflare）擋 SQL injection
+- ✅ SAST 掃描（CodeQL / Semgrep）
+- ✅ 錯誤訊息不要曝露 SQL 結構

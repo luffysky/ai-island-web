@@ -1,0 +1,42 @@
+## EXPLAIN vs EXPLAIN ANALYZE
+```sql
+-- 只看計畫、不真的跑
+EXPLAIN SELECT * FROM users WHERE email = 'x@y.com';
+
+-- 跑 + 看實際時間（推薦）
+EXPLAIN ANALYZE SELECT * FROM users WHERE email = 'x@y.com';
+
+-- BUFFERS + ANALYZE（看 I/O）
+EXPLAIN (ANALYZE, BUFFERS, VERBOSE)
+SELECT * FROM users WHERE email = 'x@y.com';
+```
+
+## 常見 Query Plan 類型
+- **Seq Scan**（順序掃描）：全表掃、慢、要避免
+- **Index Scan**：走索引、快、最理想
+- **Index Only Scan**：只看索引就夠、超快
+- **Bitmap Heap Scan**：建 bitmap 再掃、中速
+- **Nested Loop**：兩表 JOIN 像迴圈—小資料行、大表會爆
+- **Hash Join**：建 hash 表加速 JOIN、中大資料量好
+- **Merge Join**：排好序再合併、超大資料量適合
+
+## 實戰：從 120ms 到 0.3ms
+```sql
+-- 10 萬筆 users、沒索引
+EXPLAIN ANALYZE SELECT * FROM users WHERE email = 'a@x.com';
+-- Seq Scan, cost=0..2000, time=120ms ← 慢！
+
+-- 加索引
+CREATE INDEX idx_users_email ON users(email);
+
+-- 再跑
+EXPLAIN ANALYZE SELECT * FROM users WHERE email = 'a@x.com';
+-- Index Scan, cost=0..8, time=0.3ms ← 快 400 倍！
+```
+
+## 常見效能問題
+- **N+1 query**：查 1 個訂單 + 各查 user = 1+N 次。改 JOIN。
+- **SELECT \***：拉很多用不到的欄位。指定欄位。
+- **OR 條件**：通常走不到索引。改 UNION 或重設計。
+- **LIKE '%xxx%'**：前綴 % 走不到索引。改全文搜尋。
+- **大 OFFSET**：用 cursor pagination 取代。

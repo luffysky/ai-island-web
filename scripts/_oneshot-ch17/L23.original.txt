@@ -1,0 +1,61 @@
+## 場景：自動更新 updated_at
+```sql
+CREATE OR REPLACE FUNCTION update_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER tr_products_updated
+BEFORE UPDATE ON products
+FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+-- 之後 UPDATE products、updated_at 會自動變成 NOW()
+```
+
+## 場景：寫 audit log
+```sql
+CREATE OR REPLACE FUNCTION audit_user_changes()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO audit_log (table_name, action, old_data, new_data, user_id)
+  VALUES (
+    'users',
+    TG_OP,
+    row_to_json(OLD),
+    row_to_json(NEW),
+    current_setting('app.user_id', TRUE)
+  );
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER tr_users_audit
+AFTER INSERT OR UPDATE OR DELETE ON users
+FOR EACH ROW EXECUTE FUNCTION audit_user_changes();
+```
+
+## Function（不只給 Trigger 用）
+```sql
+CREATE OR REPLACE FUNCTION get_user_total(user_id_param UUID)
+RETURNS DECIMAL AS $$
+DECLARE total DECIMAL;
+BEGIN
+  SELECT COALESCE(SUM(amount), 0)
+  INTO total
+  FROM orders
+  WHERE user_id = user_id_param AND status = 'paid';
+  RETURN total;
+END;
+$$ LANGUAGE plpgsql;
+
+-- 使用
+SELECT name, get_user_total(id) FROM users;
+```
+
+## Trigger 何時用 / 何時不用
+- ✅ 自動 updated_at、自動 audit log、簡單派生欄位
+- ❌ 業務邏輯（放 application 層）、複雜計算
+- ❌ 跨服務操作（call API / 寄 email、用 message queue）

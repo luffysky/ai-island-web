@@ -1,0 +1,37 @@
+## CROSS JOIN（笛卡兒積）
+```sql
+SELECT s.size, c.color
+FROM sizes s
+CROSS JOIN colors c;
+
+-- 3 個尺寸 × 4 個顏色 = 12 個組合
+```
+
+## SELF JOIN（自己跟自己 JOIN）
+```sql
+-- 找出主管 + 下屬的對應
+SELECT
+  e.name AS employee,
+  m.name AS manager
+FROM employees e
+LEFT JOIN employees m ON e.manager_id = m.id;
+```
+
+## LATERAL JOIN（PG 特有、超強）
+```sql
+-- 每個 user 的最新 3 筆訂單
+SELECT u.name, o.*
+FROM users u
+CROSS JOIN LATERAL (
+  SELECT * FROM orders WHERE user_id = u.id
+  ORDER BY created_at DESC LIMIT 3
+) o;
+```
+
+LATERAL = 右邊可以引用左邊每行的值（普通 JOIN 不行）。
+
+## JOIN 寫法選擇
+- 簡單關聯：INNER JOIN
+- 找缺漏：LEFT JOIN + IS NULL
+- 自我關聯：SELF JOIN
+- 每個 user 的 top N：LATERAL JOIN

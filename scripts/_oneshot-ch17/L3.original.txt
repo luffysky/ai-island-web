@@ -1,0 +1,30 @@
+## 建一個 users 表
+
+```sql
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  age INTEGER,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+```
+
+## 逐行解釋
+- `id SERIAL PRIMARY KEY`：自動遞增整數、唯一識別
+- `name VARCHAR(100) NOT NULL`：字串、最多 100 字、不能空
+- `email UNIQUE NOT NULL`：唯一、不能空
+- `age INTEGER`：整數、可空
+- `created_at TIMESTAMP DEFAULT NOW()`：時間戳、預設現在
+
+## SQL 常用資料型別
+
+- **整數**：`INT`, `SERIAL`, `BIGINT`
+- **字串**：`VARCHAR(n)`, `TEXT`, `CHAR(n)`
+- **數字**：`DECIMAL(p,s)`（金額用！）, `FLOAT`
+- **布林**：`BOOLEAN`
+- **日期時間**：`DATE`, `TIMESTAMP`, `TIMESTAMPTZ`
+- **進階**：`JSON`, `JSONB`（PG）, `UUID`, `ARRAY`
+
+## 為什麼金額不用 FLOAT
+FLOAT 是浮點數、計算有**四捨五入誤差**—`1.1 + 2.2 = 3.3000000004`。金額一律用 `DECIMAL(10, 2)`。

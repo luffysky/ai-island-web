@@ -1,0 +1,58 @@
+## 比較運算子
+```sql
+SELECT * FROM users WHERE age > 18;
+SELECT * FROM users WHERE age != 25;          -- 或 <>
+SELECT * FROM users WHERE age >= 18 AND age <= 65;
+SELECT * FROM users WHERE name = '小明';
+```
+
+## 邏輯運算子
+```sql
+SELECT * FROM users
+WHERE age >= 18
+  AND country = 'TW'
+  AND (city = '台北' OR city = '台中');
+```
+
+## IN / NOT IN（多選）
+```sql
+SELECT * FROM orders
+WHERE status IN ('pending', 'processing', 'shipped');
+
+SELECT * FROM users
+WHERE country NOT IN ('TW', 'HK', 'JP');
+```
+
+## BETWEEN（範圍、含頭尾）
+```sql
+SELECT * FROM orders
+WHERE created_at BETWEEN '2026-01-01' AND '2026-12-31';
+
+SELECT * FROM products
+WHERE price BETWEEN 100 AND 1000;
+```
+
+## LIKE（模糊比對）
+```sql
+SELECT * FROM users WHERE email LIKE '%@gmail.com';
+SELECT * FROM users WHERE name LIKE '王_';     -- _ 是單字元
+SELECT * FROM users WHERE name LIKE '張%';     -- 開頭是張
+SELECT * FROM users WHERE bio ILIKE '%python%'; -- PG 不分大小寫
+```
+
+## NULL 處理（重要！）
+```sql
+-- ❌ 錯：永遠回空
+SELECT * FROM users WHERE deleted_at = NULL;
+
+-- ✅ 正確
+SELECT * FROM users WHERE deleted_at IS NULL;
+SELECT * FROM users WHERE deleted_at IS NOT NULL;
+```
+
+## EXISTS / NOT EXISTS（搭配子查詢）
+```sql
+-- 找下過訂單的使用者
+SELECT * FROM users u
+WHERE EXISTS (SELECT 1 FROM orders o WHERE o.user_id = u.id);
+```

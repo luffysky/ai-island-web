@@ -1,0 +1,36 @@
+## UNION（合併、去重）
+```sql
+SELECT name, email FROM customers
+UNION
+SELECT name, email FROM suppliers;
+-- 兩邊資料合起來、重複的只出現一次
+```
+
+## UNION ALL（合併不去重、快很多）
+```sql
+SELECT name FROM customers
+UNION ALL
+SELECT name FROM suppliers;
+-- 100 萬筆 union all 比 union 快 5-10 倍
+```
+
+## INTERSECT（交集）
+```sql
+SELECT email FROM customers
+INTERSECT
+SELECT email FROM suppliers;
+-- 同時是客戶也是供應商的 email
+```
+
+## EXCEPT（差集）
+```sql
+SELECT email FROM customers
+EXCEPT
+SELECT email FROM blacklist;
+-- 在 customers 但不在 blacklist
+```
+
+## 規則
+- 每個 SELECT 欄位數要一樣
+- 對應欄位型別要相容
+- ORDER BY / LIMIT 放最後一個 SELECT 之後

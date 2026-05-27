@@ -1,0 +1,33 @@
+## ORDER BY
+```sql
+SELECT * FROM articles ORDER BY created_at DESC;
+SELECT * FROM products ORDER BY category ASC, price DESC;
+SELECT * FROM users ORDER BY name COLLATE "zh-TW-x-icu";  -- 中文排序
+SELECT * FROM products ORDER BY price DESC NULLS LAST;    -- NULL 排最後
+```
+
+## LIMIT / OFFSET 分頁
+```sql
+-- 第 1 頁
+SELECT * FROM products ORDER BY id LIMIT 10 OFFSET 0;
+-- 第 2 頁
+SELECT * FROM products ORDER BY id LIMIT 10 OFFSET 10;
+-- 第 N 頁
+SELECT * FROM products ORDER BY id LIMIT 10 OFFSET (N - 1) * 10;
+```
+
+## OFFSET 的效能問題（重要！）
+
+`OFFSET 1000000` 看起來只跳過 100 萬筆、實際 DB 還是要算出前 100 萬筆才能跳—**超大表會慢死**。
+
+## 解法：Cursor Pagination（推薦）
+```sql
+-- 第一頁
+SELECT * FROM articles WHERE id > 0 ORDER BY id LIMIT 10;
+-- 第二頁：用上一頁最後一筆的 id
+SELECT * FROM articles WHERE id > 10 ORDER BY id LIMIT 10;
+-- 第三頁
+SELECT * FROM articles WHERE id > 20 ORDER BY id LIMIT 10;
+```
+
+走索引、O(log n)、不管第幾頁都一樣快。Twitter / Instagram 都用這套。

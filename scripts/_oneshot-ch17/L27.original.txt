@@ -1,0 +1,67 @@
+## 10 分鐘 Setup
+1. 去 [supabase.com](https://supabase.com) 註冊（GitHub）
+2. New project → 取名 → 選 region（推薦 Singapore）
+3. 等 2 分鐘起好—拿到：
+   - PostgreSQL Database URL
+   - API URL + anon key（前端用）
+   - service_role key（後端用、絕不放前端！）
+
+## 在 Supabase Studio 建表
+```sql
+CREATE TABLE todos (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  completed BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 啟用 Row Level Security
+ALTER TABLE todos ENABLE ROW LEVEL SECURITY;
+
+-- 政策：只能看 / 改自己的
+CREATE POLICY "own_todos" ON todos
+  FOR ALL USING (auth.uid() = user_id);
+```
+
+## 從 Next.js 用 Supabase
+```typescript
+// npm install @supabase/supabase-js @supabase/ssr
+import { createBrowserClient } from '@supabase/ssr';
+
+const supabase = createBrowserClient(URL, ANON_KEY);
+
+// CRUD
+const { data, error } = await supabase
+  .from('todos')
+  .select('*')
+  .order('created_at', { ascending: false });
+
+await supabase.from('todos').insert({ title: '學 SQL' });
+
+await supabase.from('todos')
+  .update({ completed: true })
+  .eq('id', todoId);
+
+await supabase.from('todos').delete().eq('id', todoId);
+
+// Realtime 訂閱
+supabase.channel('todos')
+  .on('postgres_changes',
+    { event: '*', schema: 'public', table: 'todos' },
+    payload => console.log('Change!', payload))
+  .subscribe();
+```
+
+## Supabase 內建功能
+- 🔐 **Auth**：Email / Google / GitHub / Apple / OTP
+- 📦 **Storage**：S3 風格物件儲存
+- ⚡ **Realtime**：訂閱 DB 變化、聊天 / 多人協作
+- 🚀 **Edge Functions**：Deno、全球邊緣
+- 🤖 **pgvector**：內建向量搜尋、RAG
+- 🔧 **Studio**：網頁 DB 管理介面
+
+## 定價（2026）
+- **Free**：500MB DB / 1GB storage—Indie MVP 夠
+- **Pro $25/月**：8GB DB / 100GB storage
+- **Team / Enterprise**：大型專案

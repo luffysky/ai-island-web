@@ -1,0 +1,65 @@
+## 基本全文搜尋
+```sql
+CREATE TABLE articles (
+  id SERIAL PRIMARY KEY,
+  title TEXT,
+  body TEXT,
+  search_vector TSVECTOR  -- 預計算的搜尋向量
+);
+
+-- 建立搜尋向量（用 simple 配置、適合中文）
+UPDATE articles
+SET search_vector = to_tsvector('simple', title || ' ' || body);
+
+-- 加 GIN 索引
+CREATE INDEX idx_articles_search ON articles USING GIN (search_vector);
+
+-- 搜尋
+SELECT title, ts_rank(search_vector, query) AS rank
+FROM articles, to_tsquery('simple', 'AI & 工程師') AS query
+WHERE search_vector @@ query
+ORDER BY rank DESC;
+```
+
+## 自動維護搜尋向量（Trigger）
+```sql
+CREATE OR REPLACE FUNCTION update_search_vector()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.search_vector :=
+    setweight(to_tsvector('simple', COALESCE(NEW.title, '')), 'A') ||
+    setweight(to_tsvector('simple', COALESCE(NEW.body, '')), 'B');
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER tr_articles_search
+BEFORE INSERT OR UPDATE OF title, body ON articles
+FOR EACH ROW EXECUTE FUNCTION update_search_vector();
+```
+
+## 中文支援（zhparser）
+PG 內建的 tokenizer 不分中文詞、要裝 `zhparser`：
+```sql
+CREATE EXTENSION zhparser;
+CREATE TEXT SEARCH CONFIGURATION zh (PARSER = zhparser);
+ALTER TEXT SEARCH CONFIGURATION zh
+  ADD MAPPING FOR n,v,a,i,e,l WITH simple;
+
+-- 用 zh 配置
+SELECT * FROM articles WHERE to_tsvector('zh', body) @@ to_tsquery('zh', '機器學習');
+```
+
+## 比 LIKE '%xxx%' 快多少
+- 100 萬筆 LIKE '%機器學習%'：3-5 秒
+- 100 萬筆 tsvector + GIN：20-50 毫秒
+
+**快 100 倍。**
+
+## 什麼時候該用 Elasticsearch
+- 需要拼字糾錯（did you mean）
+- 需要 facet / aggregation 聚合
+- 需要超大規模（10 億+ 文件）
+- 需要 BM25 進階排序
+
+Indie / 中小 SaaS 用 PG 全文搜尋通常夠。

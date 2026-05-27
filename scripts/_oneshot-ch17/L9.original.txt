@@ -1,0 +1,59 @@
+## ROW_NUMBER / RANK / DENSE_RANK
+```sql
+SELECT
+  name,
+  score,
+  ROW_NUMBER() OVER (ORDER BY score DESC) AS row_num,
+  RANK()       OVER (ORDER BY score DESC) AS rank,
+  DENSE_RANK() OVER (ORDER BY score DESC) AS dense_rank
+FROM students;
+
+-- 分數: 100, 95, 95, 90
+-- ROW_NUMBER: 1, 2, 3, 4
+-- RANK:       1, 2, 2, 4  ← 跳號
+-- DENSE_RANK: 1, 2, 2, 3  ← 不跳號
+```
+
+## PARTITION BY（分組內排名）
+```sql
+-- 每個科系內前 3 名
+SELECT * FROM (
+  SELECT
+    name, dept, gpa,
+    ROW_NUMBER() OVER (PARTITION BY dept ORDER BY gpa DESC) AS rnk
+  FROM students
+) t
+WHERE rnk <= 3;
+```
+
+## LAG / LEAD（前後筆比較）
+```sql
+-- 比較今天跟昨天的銷售
+SELECT
+  date,
+  sales,
+  LAG(sales, 1) OVER (ORDER BY date) AS prev_day,
+  sales - LAG(sales, 1) OVER (ORDER BY date) AS diff
+FROM daily_sales;
+```
+
+## 累積值（cumulative sum）
+```sql
+SELECT
+  date,
+  sales,
+  SUM(sales) OVER (ORDER BY date) AS cumulative_sales
+FROM daily_sales;
+```
+
+## 移動平均
+```sql
+SELECT
+  date,
+  price,
+  AVG(price) OVER (
+    ORDER BY date
+    ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
+  ) AS ma_7day
+FROM stock_prices;
+```

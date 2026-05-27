@@ -1,0 +1,47 @@
+## 基本 UPDATE
+```sql
+UPDATE users SET age = 26 WHERE id = 1;
+
+-- 多欄一起改
+UPDATE users
+SET name = '小明', age = 26, updated_at = NOW()
+WHERE id = 1;
+```
+
+## 批量 UPDATE
+```sql
+-- 全電子產品漲 5%
+UPDATE products
+SET price = price * 1.05
+WHERE category = 'electronics';
+
+-- 條件 + JOIN（UPDATE FROM、PG 寫法）
+UPDATE orders o
+SET status = 'cancelled'
+FROM users u
+WHERE o.user_id = u.id AND u.banned = TRUE;
+```
+
+## RETURNING（看到改了什麼、PG）
+```sql
+UPDATE products
+SET stock = stock - 1
+WHERE id = 42
+RETURNING id, name, stock;
+```
+
+## 防錯：先 SELECT 看影響範圍
+```sql
+-- 跑 UPDATE 前一定先這樣確認
+SELECT count(*) FROM users WHERE id = 1;
+-- → 確認是 1、不是 100 萬、再 UPDATE
+```
+
+## 安全包裝（Transaction）
+```sql
+BEGIN;
+UPDATE users SET email = 'new@x.com' WHERE id = 1;
+SELECT * FROM users WHERE id = 1;  -- 看結果
+-- 如果對：COMMIT;
+-- 如果錯：ROLLBACK;
+```

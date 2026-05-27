@@ -1,0 +1,46 @@
+## 硬刪除（DELETE）
+```sql
+DELETE FROM users WHERE id = 1;
+
+-- 條件刪除
+DELETE FROM logs WHERE created_at < NOW() - INTERVAL '30 days';
+
+-- ⚠️ 沒 WHERE = 全表清空（小心！）
+DELETE FROM users;  -- 千萬別！
+
+-- TRUNCATE = 更快的全表清（不寫 log）
+TRUNCATE TABLE logs;
+```
+
+## 軟刪除（推薦 production）
+```sql
+-- 加 deleted_at 欄位
+ALTER TABLE users ADD COLUMN deleted_at TIMESTAMPTZ;
+
+-- 「刪除」其實是 UPDATE
+UPDATE users SET deleted_at = NOW() WHERE id = 1;
+
+-- 查詢要過濾
+SELECT * FROM users WHERE deleted_at IS NULL;
+
+-- 還原
+UPDATE users SET deleted_at = NULL WHERE id = 1;
+```
+
+## 用 View 自動過濾
+```sql
+CREATE VIEW active_users AS
+SELECT * FROM users WHERE deleted_at IS NULL;
+
+-- 之後永遠查 active_users、不用每次加 WHERE
+SELECT * FROM active_users WHERE age > 18;
+```
+
+## 軟刪除 vs 硬刪除取捨
+
+| 面向 | 軟刪除 | 硬刪除 |
+|---|---|---|
+| 還原 | ✅ 容易 | ❌ 不可能 |
+| 法規（GDPR） | ⚠️ 要定期清 | ✅ 直接消失 |
+| 空間 | ⚠️ 累積 | ✅ 立刻釋放 |
+| 業務分析 | ✅ 有歷史 | ❌ 無紀錄 |
