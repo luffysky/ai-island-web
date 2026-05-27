@@ -5,6 +5,11 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
 
+// 不在 build time 跑（4 個大 query 各 5000 條 + 章節、Zeabur 60s 超時）
+// first request 才 generate、之後 1 小時 cache
+export const revalidate = 3600;
+export const dynamic = "force-dynamic";
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const chapters = await getAllChapters();
   const now = new Date();

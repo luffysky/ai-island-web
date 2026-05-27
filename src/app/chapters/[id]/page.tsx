@@ -119,8 +119,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ id: st
   );
 }
 
-export async function generateStaticParams() {
-  // 動態抓所有章節 id (而非 hardcode 70) — 加新章後 build 自動 cover
-  const chapters = await getAllChapters();
-  return chapters.map((c) => ({ id: String(c.id) }));
-}
+// 不在 build time 預生 75 章靜態頁（Zeabur 每個 chapter SSG > 60s 會超時 build 失敗）
+// 改成 on-demand ISR：first request 才 render、之後 60s（revalidate）內走快取
+// 配合 export const revalidate = 60、Next.js 自動處理
+// SEO 不受影響、Google bot 第 1 次爬時會 trigger SSG + cache
