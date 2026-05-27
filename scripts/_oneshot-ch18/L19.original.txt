@@ -1,0 +1,33 @@
+## TimescaleDB（PG extension、推薦）
+```sql
+CREATE EXTENSION timescaledb;
+
+CREATE TABLE sensor_data (
+  time TIMESTAMPTZ NOT NULL,
+  sensor_id INT,
+  temperature DOUBLE PRECISION
+);
+
+SELECT create_hypertable('sensor_data', 'time');
+
+SELECT time_bucket('1 hour', time) AS hour,
+       avg(temperature) AS avg_temp
+FROM sensor_data
+WHERE time > NOW() - INTERVAL '24 hours'
+GROUP BY hour;
+```
+
+## 殺手功能
+- **Downsampling**：1 分鐘精度保留 1 週
+- **Retention**：自動刪超過 30 天
+- **Continuous Aggregates**：背景算統計
+
+## 監控 stack
+```
+[App] → [InfluxDB / Prometheus] → [Grafana]
+```
+
+## 選擇
+- 通用 + 時序：TimescaleDB
+- 純 metrics：InfluxDB + Grafana
+- 小資料：PG 直接撐

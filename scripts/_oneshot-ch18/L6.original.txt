@@ -1,0 +1,62 @@
+### 用 SQL 的訊號
+
+
+- ✅ 資料結構固定（使用者 / 訂單 / 商品）
+- ✅ 表跟表有複雜關聯（要 JOIN）
+- ✅ 需要強一致性（金流、庫存）
+- ✅ 需要 Transaction（ACID）
+- ✅ 團隊熟悉 SQL（多數工程師）
+
+
+### 用 NoSQL Document（MongoDB）的訊號
+
+
+- ✅ Schema 變化快（早期 MVP）
+- ✅ 資料天然是 JSON 結構（log、events）
+- ✅ 需要橫向擴展到超大規模
+- ✅ 不太需要複雜 JOIN
+
+
+### 用 Firebase 的訊號
+
+
+- ✅ 行動 App / Web 即時同步
+- ✅ 不想自己架後端
+- ✅ MVP / 學生作品
+- ✅ Google 生態（FCM / Analytics）
+
+
+### 用 Redis 的訊號
+
+
+- ✅ 已有主 DB（SQL / NoSQL）、需要加速
+- ✅ Session 儲存
+- ✅ 排行榜 / 限流
+- ✅ Pub/Sub 通訊
+
+
+### 用 Vector DB 的訊號
+
+
+- ✅ AI 應用（RAG / 推薦 / 搜尋）
+- ✅ 語意搜尋（不是關鍵字）
+- ✅ 處理 embedding（文字 / 圖 / 音）
+
+
+### 2026 黃金組合（按專案規模）
+
+
+- **學生 / MVP**：Firebase / Supabase（單一服務搞定）
+- **Indie SaaS**：Supabase + Upstash Redis（PG + Redis）
+- **中型 SaaS**：PostgreSQL + Redis + S3 + 可能加 pgvector
+- **AI 應用**：PostgreSQL + pgvector + Redis（RAG 必備）
+- **大型 / 多模態**：PG（業務）+ MongoDB（log）+ Redis（cache）+ Pinecone（vector）
+
+
+### 反模式：不要這樣做
+
+
+- ❌ 用 MongoDB 存金流 / 訂單（沒 ACID）
+- ❌ 用 SQL 存大量 log（變動快、JOIN 用不到）
+- ❌ 每查一次資料都打 DB（一定要加 Redis 快取）
+- ❌ 為了「酷」用 5 種 DB（維護地獄、選 1-2 個夠了）

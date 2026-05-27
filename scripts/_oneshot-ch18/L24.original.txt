@@ -1,0 +1,34 @@
+## 決策樹
+```
+你的資料是什麼？
+├─ 結構化 → PostgreSQL ✓
+├─ 半結構 → PG JSONB / MongoDB
+├─ 快取 → Redis
+├─ 搜尋 → Meilisearch / ES
+├─ 向量 → pgvector / Pinecone
+├─ 時序 → TimescaleDB / InfluxDB
+├─ 關係 → Neo4j
+└─ 不知道 → PG
+```
+
+## Indie SaaS 三階段
+
+### 階段 1（0-1k 用戶）
+Supabase 全套
+
+### 階段 2（1k-100k）
+PG + Redis + Meilisearch
+
+### 階段 3（> 100k）
+自架 PG + read replicas + Redis cluster + Elasticsearch
+
+## 9 大紀律
+1. 永遠 backup
+2. 永遠 index
+3. 永遠 connection pool
+4. 永遠 prepared statement
+5. 永遠 transaction（多步驟）
+6. 永遠 monitor
+7. 永遠 timeout
+8. 永遠分頁
+9. 永遠用 ORM

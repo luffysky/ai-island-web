@@ -1,0 +1,23 @@
+## 為什麼
+- 寫入超快（百萬/秒）
+- 多 DC、無單點故障
+- 水平擴展
+
+## CQL
+```sql
+CREATE TABLE events (
+  user_id UUID,
+  event_time TIMESTAMP,
+  PRIMARY KEY (user_id, event_time)
+) WITH CLUSTERING ORDER BY (event_time DESC);
+
+SELECT * FROM events WHERE user_id = '...' LIMIT 100;
+```
+
+## 限制
+- ❌ JOIN / Transaction / Ad-hoc 查詢
+- ✅ 為已知 query pattern 設計
+
+## 替代
+- **ScyllaDB**：C++ rewrite、快 10 倍
+- **CockroachDB**：SQL + 分散式

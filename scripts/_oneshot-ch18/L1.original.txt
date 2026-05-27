@@ -1,0 +1,37 @@
+### NoSQL 4 大類型
+
+
+- **Document（文件式）**：MongoDB / Couchbase / Firestore—JSON 形式
+- **Key-Value**：Redis / DynamoDB—超快快取
+- **Wide Column**：Cassandra / HBase—大資料分析
+- **Graph**：Neo4j / Amazon Neptune—關係網路（社交）
+- **Vector**（2023+ 新類）：Pinecone / Weaviate / pgvector—AI 應用
+
+
+### SQL vs NoSQL 對比
+
+
+| 面向 | SQL | NoSQL |
+| --- | --- | --- |
+| Schema | 嚴格（事先定義） | 彈性（隨意加欄位） |
+| 關聯 | JOIN 強大 | 通常嵌套或冗餘 |
+| 擴展 | 垂直（加 CPU/RAM） | 水平（加機器） |
+| 一致性 | 強（ACID） | 最終一致性常見（BASE） |
+| 適合 | 金流 / 訂單 / 結構固定 | 日誌 / 即時 / 大資料 / AI |
+
+
+### 什麼場景用 NoSQL
+
+
+- 📊 **日誌 / 事件**：MongoDB / Cassandra（量大、結構變動）
+- 💬 **即時聊天 / 通知**：Firebase / Redis Pub/Sub
+- ⚡ **快取 / Session**：Redis
+- 🤖 **AI 向量搜尋**：Pinecone / pgvector / Weaviate
+- 📱 **App 後端（彈性 schema）**：Firebase / MongoDB
+- 🗺️ **地理 / 圖網路**：MongoDB（GeoJSON）/ Neo4j
+
+
+### 2026 主流選擇
+
+
+Indie SaaS 常見 stack：**PostgreSQL（主）+ Redis（快取）+ pgvector（AI）**—一個 PG 通殺。需要的時候才加 MongoDB / Firebase。

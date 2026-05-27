@@ -1,0 +1,25 @@
+## PG Backup
+```bash
+pg_dump -U postgres mydb | gzip > backup.sql.gz
+pg_dump -U postgres mydb -F c -f backup.dump
+
+psql -U postgres mydb < backup.sql
+pg_restore -U postgres -d mydb backup.dump
+```
+
+## 自動 cron
+```bash
+0 3 * * * postgres pg_dump mydb | gzip > /backup/$(date +\%Y-\%m-\%d).sql.gz
+0 4 * * * aws s3 sync /backup/ s3://bucket/backups/
+0 5 * * * find /backup/ -mtime +30 -delete
+```
+
+## PITR（Point-in-Time Recovery）
+PG WAL / MySQL binlog—可 restore 到任意時間。
+
+## 雲端
+- Supabase Pro：每日自動 backup
+- AWS RDS：自動 + PITR
+
+## 演練！
+沒測過的 backup ≈ 沒 backup。每月演練 restore。

@@ -1,0 +1,26 @@
+## Cypher
+```cypher
+CREATE (a:User {name: "Alice"}),
+       (b:User {name: "Bob"}),
+       (a)-[:FRIEND]->(b);
+
+-- 推薦：朋友的朋友
+MATCH (me {id: $id})-[:FRIEND]->(f)-[:FRIEND]->(fof)
+WHERE NOT (me)-[:FRIEND]->(fof) AND me <> fof
+RETURN fof, COUNT(*) AS mutual
+ORDER BY mutual DESC LIMIT 10;
+```
+
+## Node
+```javascript
+import neo4j from "neo4j-driver";
+const driver = neo4j.driver("neo4j://localhost", neo4j.auth.basic("neo4j", "pw"));
+const session = driver.session();
+const result = await session.run("MATCH (u {name: $n}) RETURN u", { n: "Alice" });
+```
+
+## 應用
+- 社交（FB / LinkedIn）
+- 推薦（買 X 也買 Y）
+- 知識圖譜
+- 詐騙偵測

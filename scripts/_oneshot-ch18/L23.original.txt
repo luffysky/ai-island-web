@@ -1,0 +1,36 @@
+## Prisma
+```prisma
+model User {
+  id     String  @id @default(uuid())
+  email  String  @unique
+  posts  Post[]
+}
+```
+
+```bash
+npx prisma migrate dev --name init
+npx prisma migrate deploy  # production
+```
+
+```typescript
+const prisma = new PrismaClient();
+await prisma.user.create({ data: { email: "..." } });
+const users = await prisma.user.findMany({ include: { posts: true } });
+```
+
+## Drizzle（TS first）
+```typescript
+import { pgTable, uuid, text } from "drizzle-orm/pg-core";
+
+export const users = pgTable("users", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  email: text("email").notNull().unique(),
+});
+
+await db.insert(users).values({ email: "..." });
+```
+
+## 心法
+- ✅ 永遠加新欄、不刪舊
+- ✅ Migration 可逆
+- ❌ 別手動改 production schema

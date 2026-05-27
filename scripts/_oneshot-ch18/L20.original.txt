@@ -1,0 +1,40 @@
+## Meilisearch（推薦 Indie）
+```bash
+docker run -d -p 7700:7700 getmeili/meilisearch
+```
+
+```javascript
+import { MeiliSearch } from "meilisearch";
+const client = new MeiliSearch({ host: "http://localhost:7700" });
+await client.index("products").addDocuments([
+  { id: 1, name: "iPhone 17 Pro", price: 35900 }
+]);
+const res = await client.index("products").search("iphone");
+```
+
+## Elasticsearch（企業）
+```javascript
+const res = await es.search({
+  index: "products",
+  query: {
+    bool: {
+      must: [{ match: { name: "iPhone" } }],
+      filter: [{ range: { price: { lte: 50000 } } }]
+    }
+  }
+});
+```
+
+## ELK Stack
+```
+[App logs] → [Logstash / Filebeat] → [Elasticsearch] → [Kibana]
+```
+
+## 選擇
+
+| 場景 | 推薦 |
+|---|---|
+| 小型 | PG 全文 |
+| 中型 | Meilisearch |
+| 大型 + log | Elasticsearch |
+| 不自架 | Algolia |

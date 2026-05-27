@@ -1,0 +1,97 @@
+## 完整對比表
+
+| 面向 | SQL | NoSQL |
+|---|---|---|
+| Schema | 嚴格 | 彈性 |
+| 標準 | SQL | 各 DB 不同 |
+| JOIN | 完整支援 | 限制多 |
+| Transaction | ACID 完整 | 部分支援 |
+| 一致性 | 強一致 | 通常最終一致 |
+| 規模 | 垂直 + 部分水平 | 水平擴展強 |
+| 學習 | 一招走天下 | 各家學各家 |
+| 工具 | 巨大 | 各 DB 不同 |
+
+## 怎麼選
+
+### 選 SQL 如果
+- 結構固定（user / order / product）
+- 需要複雜查詢 + JOIN
+- 需要 ACID transaction（金流）
+- 資料 < 1TB（單機可容）
+- 不想 vendor lock-in
+- **不知道用什麼 = 選 SQL**
+
+### 選 NoSQL 如果
+- Schema 變動快（events / logs / IoT）
+- 需要水平擴展（10TB+）
+- 特殊資料模型（圖、文件、向量）
+- 已有強需求（即時、地理、快取）
+
+## 真實 stack 範例
+
+### Indie SaaS
+- **PostgreSQL**（Supabase）：99% 業務資料
+- **Redis**：快取 + Session
+- 加上 pgvector → AI 應用
+
+### 中型公司
+- **MySQL / PG**：交易資料
+- **Redis**：快取 + 排行榜
+- **MongoDB / DynamoDB**：用戶生成內容（評論、活動）
+- **Elasticsearch**：全文搜尋
+
+### 巨型公司
+- 全部都有、按場景拆
+- **Cassandra**：時序 / IoT
+- **HBase**：超大 OLAP
+- **Neo4j**：社交圖
+- **Snowflake / BigQuery**：分析
+
+## 反 pattern
+
+### ❌ 為 NoSQL 而 NoSQL
+「聽說 NoSQL 快」就轉、結果痛苦。
+規模沒大到 = SQL 簡單 10 倍。
+
+### ❌ 全用 SQL
+即使 PG 強、Redis 快取仍該用、不要用 PG 當快取。
+
+### ❌ Mongo 模仿 SQL
+寫一堆 $lookup（JOIN）= 走錯路、該回 SQL。
+
+### ❌ Firestore 大資料分析
+NoSQL 不適合 ad-hoc 分析、要 ETL 到 BigQuery / Snowflake。
+
+## Polyglot Persistence（多元存儲）
+不要堅持「一個 DB 解決一切」。
+每種資料用最適合的 DB：
+- 交易資料 → PG
+- Session → Redis
+- 全文 → Elasticsearch
+- 圖 → Neo4j
+- 向量 → pgvector
+- 時序 → InfluxDB
+
+## CAP 理論
+分散式系統三選二：
+- **C** onsistency：所有節點同時看到一樣
+- **A** vailability：永遠可回應
+- **P** artition tolerance：網路斷時仍工作
+
+實務：P 必選、然後 C 或 A 二選一。
+- SQL 通常選 CP（一致性優先）
+- NoSQL 通常選 AP（可用性優先）
+
+## 面試標準答案
+
+「我選 PG 為主、因為：
+1. 結構化資料、SQL 強大查詢
+2. PG JSONB 提供 NoSQL 彈性
+3. pgvector 支援 AI
+4. 一份運維知識、不要學 5 種 DB
+
+Redis 作快取 + 排行榜、
+Elasticsearch 給全文搜尋、
+這樣的 stack 撐 1M MAU 沒問題。」
+
+→ 答對。

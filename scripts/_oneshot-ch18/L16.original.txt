@@ -1,0 +1,36 @@
+## 概念
+- **Partition Key**：唯一識別 + 決定資料分布
+- **Sort Key**：搭 PK 變 composite、可排序
+- **GSI**：global secondary index
+
+## SDK
+```javascript
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocumentClient, PutCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
+
+const client = DynamoDBDocumentClient.from(new DynamoDBClient({}));
+
+await client.send(new PutCommand({
+  TableName: "orders",
+  Item: { user_id: "u1", order_id: "...", amount: 100 }
+}));
+
+await client.send(new QueryCommand({
+  TableName: "orders",
+  KeyConditionExpression: "user_id = :uid",
+  ExpressionAttributeValues: { ":uid": "u1" }
+}));
+```
+
+## Single Table Design
+```
+PK            | SK                | data
+USER#u1       | PROFILE           | { name, email }
+USER#u1       | ORDER#2026-05-17  | { amount: 100 }
+PRODUCT#p1    | DETAIL            | { name, price }
+```
+1 個 query 抓多種資料、效能爆好、設計難。
+
+## 何時用
+✅ AWS Serverless、已知 access pattern、巨量
+❌ Ad-hoc 查詢、複雜分析

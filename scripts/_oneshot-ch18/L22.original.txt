@@ -1,0 +1,43 @@
+## Node + PG
+```javascript
+import pg from "pg";
+const pool = new pg.Pool({
+  max: 20,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000
+});
+
+const result = await pool.query("SELECT * FROM users WHERE id = $1", [1]);
+```
+
+## 10 大效能優化
+1. Index（最重要）
+2. EXPLAIN ANALYZE 找慢 query
+3. N+1 殺手—用 JOIN / include
+4. 不要 SELECT *
+5. Cursor 分頁（不用 OFFSET）
+6. 批量操作
+7. Read replicas
+8. Redis 快取
+9. Materialized View
+10. Partitioning（巨表按時間切）
+
+## N+1 範例
+```javascript
+// ❌
+for (const u of users) {
+  u.posts = await Post.findMany({ where: { userId: u.id } });
+}
+
+// ✅
+const users = await prisma.user.findMany({ include: { posts: true } });
+```
+
+## Cursor pagination
+```sql
+-- ❌ 慢
+SELECT * FROM posts ORDER BY id LIMIT 20 OFFSET 10000;
+
+-- ✅
+SELECT * FROM posts WHERE id > $lastId ORDER BY id LIMIT 20;
+```

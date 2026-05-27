@@ -1,0 +1,55 @@
+## NoSQL 4 大類型
+
+### 1. Document（文件型）
+存 JSON-like 物件、schema 彈性。
+代表：**MongoDB**、Firestore、CouchDB
+
+### 2. Key-Value
+最簡單、像 hash map。
+代表：**Redis**、DynamoDB、Memcached
+
+### 3. Wide-Column
+類 SQL 但 schema 彈性、適合超大資料。
+代表：**Cassandra**、HBase、ScyllaDB
+
+### 4. Graph
+存「關係」、社交網路 / 推薦系統。
+代表：**Neo4j**、Dgraph、ArangoDB
+
+### 5. Vector（2023+ 新增）
+AI embeddings、相似度搜尋。
+代表：**Pinecone**、Qdrant、Weaviate、pgvector
+
+## SQL vs NoSQL 選擇
+
+| 場景 | 選 |
+|---|---|
+| 結構固定（user / order / product）| SQL |
+| Schema 變動快（events / logs）| NoSQL Document |
+| 快取 / Session | Redis |
+| 排行榜 / Queue | Redis |
+| 超大規模 write（IoT / log）| Cassandra |
+| 社交關係 / 推薦 | Graph |
+| AI / RAG | Vector |
+| 不知道用什麼 | SQL（PostgreSQL）|
+
+## 為什麼 SQL 仍主流
+- ACID 保證
+- 標準語法、跨產品
+- 工具生態巨大
+- PG 內建 JSONB（NoSQL 彈性）+ pgvector
+
+## NoSQL 致命缺點
+- 沒 JOIN（複雜查詢痛）
+- 沒 transaction（部分有但弱）
+- 一致性 vs 可用性取捨（CAP）
+
+## 2026 主流組合
+- **PG + Redis**：大部分 Indie / SaaS
+- **PG + Vector**：AI 應用
+- **MongoDB + Redis**：JS 全端團隊
+- **MySQL + Cassandra**：超大規模
+
+## 不要為 NoSQL 而 NoSQL
+看到「NoSQL 快」就跳的人 80% 後悔。
+規模沒大到那程度、用 SQL 簡單 10 倍。

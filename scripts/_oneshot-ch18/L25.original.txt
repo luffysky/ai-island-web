@@ -1,0 +1,37 @@
+## 4 年路線
+
+### Year 1
+- SQL 基本
+- 1 個 ORM
+- Index 概念
+- 簡單 backup
+
+### Year 2
+- EXPLAIN ANALYZE
+- 連線池 / Transaction
+- 慢查詢
+- Redis 快取
+
+### Year 3
+- Replication / sharding
+- 監控 + 告警
+- 多 DB 整合
+
+### Year 4+
+- DB 內部原理
+- 自己調 query plan
+- 跨 region
+
+## 資源
+- 《Designing Data-Intensive Applications》
+- Postgres 官方 docs
+- Use The Index, Luke!
+
+## 接案 / 工作（2026 台灣）
+- Backend + DB：NT$ 70-150k
+- DBA / Data Engineer：NT$ 90-180k
+
+## 永遠的真理
+- SQL 是命根
+- 領域知識 > 技術深度
+- PG 是 forever
