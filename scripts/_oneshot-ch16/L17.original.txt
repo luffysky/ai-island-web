@@ -1,0 +1,92 @@
+「**怎麼組織你的後端 code**」決定它好不好維護。架構模式 = 大家踩過的坑、提煉的最佳實踐。
+
+  
+### Layered Architecture（最常見）
+
+```text
+分層：
+
+[ Presentation Layer ]      ← API route / Controller
+        ↓
+[ Business Logic Layer ]    ← Service
+        ↓
+[ Data Access Layer ]       ← Repository / ORM
+        ↓
+[ Database ]
+
+範例：建立訂單
+├── routes/orders.py        ← API endpoint
+│   def create_order(req): 
+│       order = OrderService.create(req.data)
+│       return order
+│
+├── services/order_service.py   ← 業務邏輯
+│   class OrderService:
+│       def create(data):
+│           # 驗證、扣庫存、算總價、建單
+│           order = OrderRepository.save(...)
+│           EmailService.send_confirmation(...)
+│           return order
+│
+└── repositories/order_repo.py  ← DB access
+    class OrderRepository:
+        def save(data):
+            return db.insert(...)
+
+優：
+- 職責分明
+- 容易測試（mock 各層）
+- 新人能理解
+
+90% 後端用這架構
+```
+
+  
+### Repository Pattern
+
+```text
+「資料存取抽象化」：
+
+class UserRepository:
+    def find_by_id(id):
+        return db.users.find(id)
+    
+    def find_by_email(email):
+        return db.users.where("email", email).first()
+    
+    def save(user):
+        return db.users.insert(user)
+
+優：
+- 換 DB 容易（PostgreSQL → MongoDB 改 repo 就好）
+- 業務邏輯不知道 DB 細節
+- 容易 mock for test
+
+不該太教條：
+- 簡單 CRUD 直接 ORM 就好
+- 複雜 / 多 source 才包 Repository
+```
+
+  
+### Service Layer：業務邏輯放這
+
+```text
+route / controller 不該寫太多邏輯：
+
+# ❌ 全擠 controller
+@app.post("/orders")
+def create_order(req):
+    # 驗證 input
+    if req.amount 
+    **🚀 進階技巧**
+    
+2026 後端架構心法：**「Boring is good」**。Layered Architecture + Repository + Service + RESTful + OpenAPI = 90% 後端最佳實踐。**別追新**：Hexagonal、Onion、Clean Architecture、CQRS、Event Sourcing—99% indie / startup 不需要。等你變 Netflix 再考慮。**3 個關鍵原則**：(1) 1 個 endpoint 1 件事 (2) 業務邏輯不在 controller (3) 一致性 > 完美。
+
+  
+
+  
+    
+      🛠️
+      工具推薦
+    
+    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。

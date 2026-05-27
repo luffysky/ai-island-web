@@ -1,0 +1,86 @@
+## Hello World
+```typescript
+// npm install hono
+import { Hono } from "hono";
+
+const app = new Hono();
+app.get("/", c => c.text("Hello Hono!"));
+app.get("/users/:id", c => {
+  const id = c.req.param("id");
+  return c.json({ userId: id });
+});
+
+export default app;
+```
+
+執行：
+```bash
+# Node
+npx tsx server.ts
+
+# Bun（快 3 倍）
+bun run server.ts
+
+# Cloudflare Workers
+wrangler dev
+```
+
+## Middleware
+```typescript
+import { logger } from "hono/logger";
+import { cors } from "hono/cors";
+import { jwt } from "hono/jwt";
+
+app.use("*", logger());
+app.use("/api/*", cors());
+app.use("/api/*", jwt({ secret: process.env.JWT_SECRET }));
+```
+
+## Type-safe 客戶端（hono/client、神級）
+```typescript
+// server.ts
+const app = new Hono()
+  .get("/users", c => c.json({ users: [] }))
+  .post("/users", async c => {
+    const body = await c.req.json();
+    return c.json({ id: 1, ...body });
+  });
+
+export type AppType = typeof app;
+
+// client.ts（不同 repo / 同 repo 都可）
+import { hc } from "hono/client";
+import type { AppType } from "./server";
+
+const client = hc<AppType>("http://localhost:3000");
+const res = await client.users.$get();  // ← 完全 type-safe
+const { users } = await res.json();      // ← types 自動推
+```
+
+## Validation（用 zod）
+```typescript
+import { zValidator } from "@hono/zod-validator";
+import { z } from "zod";
+
+app.post(
+  "/users",
+  zValidator("json", z.object({
+    name: z.string().min(1),
+    age: z.number().int().min(0)
+  })),
+  c => {
+    const data = c.req.valid("json");  // type-safe
+    return c.json({ ok: true });
+  }
+);
+```
+
+## Hono vs Express vs Fastify
+
+| 面向 | Hono | Express | Fastify |
+|---|---|---|---|
+| TS 支援 | ⭐⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐ |
+| 跑 Cloudflare | ✅ | ❌ | ❌ |
+| 速度 | 快 | 慢 | 最快 |
+| 生態 | 中 | 巨大 | 中 |
+| 學習曲線 | 平 | 平 | 中 |

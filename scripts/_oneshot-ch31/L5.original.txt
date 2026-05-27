@@ -1,0 +1,63 @@
+Node 兩種模組系統—2026 主流 ESM、CommonJS 是舊版相容。看 code 一秒知道差異。
+
+  
+### 兩種寫法對比
+
+```text
+CommonJS（舊、2010-2020 主流）：
+
+// math.js
+function add(a, b) { return a + b; }
+const PI = 3.14;
+
+module.exports = { add, PI };
+
+// main.js
+const { add, PI } = require("./math.js");
+
+ES Modules（新、2020+ 主流）：
+
+// math.js
+export function add(a, b) { return a + b; }
+export const PI = 3.14;
+
+// main.js
+import { add, PI } from "./math.js";
+```
+
+  
+### 怎麼選
+
+```text
+2026 強烈建議：ESM
+
+理由：
+- 標準 JavaScript（瀏覽器也用）
+- 靜態分析（tree-shake、bundler 友善）
+- top-level await
+- 未來方向
+
+怎麼啟用：
+// package.json
+{
+  "type": "module"
+}
+
+// 或檔名用 .mjs（ESM）/ .cjs（CommonJS）
+
+CommonJS 何時用：
+- 老專案維護
+- 某些 library 還沒升級
+- Node 
+    **☕ 用人話講**
+    
+2026 Node 必用 ESM—`"type": "module"` 永遠加。**記憶法**：(1) **ESM**：`import / export`（modern、瀏覽器也用） (2) **CJS**：`require / module.exports`（舊、漸退場）。新專案 100% ESM、看老 code 知道 CJS 概念即可。**陷阱**：(a) 檔名要加 .js (b) ESM 沒 `__dirname`、要自己算 (c) ESM 跟 CJS 互通要小心。
+
+  
+
+  
+    
+      🛠️
+      工具推薦
+    
+    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。

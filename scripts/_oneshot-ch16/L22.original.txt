@@ -1,0 +1,95 @@
+## 4 種演算法
+
+### 1. Fixed Window
+每 60 秒最多 100 次：
+```
+00:00-00:59: 計數器 = 100 上限
+01:00-01:59: 重置 = 100 上限
+```
+**痛**：邊界突發（00:59 + 01:00 連續 200 次）
+
+### 2. Sliding Window（推薦）
+滑動視窗、平滑很多。
+
+### 3. Token Bucket
+每秒補 10 個 token、最多存 100、每次請求扣 1。
+適合突發流量。
+
+### 4. Leaky Bucket
+固定速率處理、超過丟掉。
+
+## Express middleware 範例
+```javascript
+import rateLimit from "express-rate-limit";
+
+const limiter = rateLimit({
+  windowMs: 60 * 1000,  // 1 分鐘
+  max: 100,              // 100 次
+  message: "Too many requests, try later",
+  standardHeaders: true,
+});
+
+app.use("/api/", limiter);
+```
+
+## Redis-based（分散式必用）
+```javascript
+import { RateLimiterRedis } from "rate-limiter-flexible";
+import Redis from "ioredis";
+
+const redis = new Redis();
+const limiter = new RateLimiterRedis({
+  storeClient: redis,
+  points: 100,          // 上限
+  duration: 60,         // 秒
+});
+
+app.use(async (req, res, next) => {
+  try {
+    await limiter.consume(req.ip);
+    next();
+  } catch (rejRes) {
+    res.set("Retry-After", String(rejRes.msBeforeNext / 1000));
+    res.status(429).send("Rate limit exceeded");
+  }
+});
+```
+
+## 回應 Header
+```http
+X-RateLimit-Limit: 100
+X-RateLimit-Remaining: 95
+X-RateLimit-Reset: 1735689660
+Retry-After: 30
+```
+
+## 分層 Rate Limit
+- **匿名**：60/分鐘 IP
+- **認證**：300/分鐘 user
+- **付費**：1000/分鐘 user
+- **企業**：協商
+
+## 進階：Different limits per endpoint
+```javascript
+// 一般 API
+app.use("/api", rateLimit({ max: 100, windowMs: 60000 }));
+
+// 嚴格：登入
+app.post("/api/login", rateLimit({ max: 5, windowMs: 60000 }));
+
+// 寬鬆：GET
+app.get("/api/posts", rateLimit({ max: 200, windowMs: 60000 }));
+```
+
+## Cloudflare Rate Limiting
+不用寫 code、Cloudflare 設定面板開：
+- 每 IP 每分鐘 60
+- 每登入 user 每分鐘 300
+- 自動擋掉、不打到後端
+
+## 工具 / 服務
+- **express-rate-limit**：Node 簡單
+- **rate-limiter-flexible**：分散式
+- **Upstash Ratelimit**：Serverless 友善
+- **Cloudflare WAF**：邊緣層
+- **AWS WAF**：AWS 環境

@@ -1,0 +1,87 @@
+## 1. API Key（最簡單）
+```http
+GET /api/users
+Authorization: Bearer sk_live_abc123...
+```
+或
+```http
+GET /api/users
+X-API-Key: abc123...
+```
+
+**適合**：
+- B2B API（後端對後端）
+- 內部 service
+- 第三方 webhook
+
+**痛點**：
+- 撤銷需要伺服器查 DB
+- 不能限定使用者
+- 洩漏要全部 rotate
+
+## 2. OAuth 2.0（標準）
+複雜但業界標準。流程：
+```
+1. App 帶使用者去 OAuth provider 登入
+2. 使用者授權
+3. Provider 回 authorization code
+4. App 用 code 換 access token
+5. App 用 token call API
+```
+
+**適合**：
+- 第三方應用（Google、GitHub 登入）
+- 公開 API（給很多開發者用）
+- 需要使用者授權範圍
+
+**Grant Types**：
+- **Authorization Code**：Web App
+- **PKCE**：Mobile / SPA
+- **Client Credentials**：M2M
+- **Device Code**：CLI、smart TV
+- ⚠️ Implicit / Password 已淘汰
+
+## 3. JWT（自包含 token）
+詳見 Ch6 JSON 章節。
+
+**適合**：
+- SPA / Mobile 認證
+- 微服務之間
+- Stateless 架構
+
+## 4. Session + Cookie（傳統）
+```
+登入 → server 建 session → 回 sessionId in Cookie
+之後請求 → server 查 session 看是誰
+登出 → 刪 session
+```
+
+**適合**：
+- 傳統 server-rendered web
+- 需要強撤銷能力
+- 客戶端不複雜
+
+## 5. mTLS（雙向 TLS）
+雙方都用 cert 互相認證、企業 / 銀行用。
+
+## 對比表
+
+| 方案 | 易用 | 安全 | 撤銷 | 適合 |
+|---|---|---|---|---|
+| API Key | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | DB lookup | B2B |
+| OAuth | ⭐⭐ | ⭐⭐⭐⭐⭐ | Refresh | 公開 API |
+| JWT | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | 困難 | SPA |
+| Session | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | 容易 | 傳統 web |
+| mTLS | ⭐⭐ | ⭐⭐⭐⭐⭐ | Cert revoke | 企業 |
+
+## 實務建議
+- **個人 / Indie 專案**：Supabase Auth / Clerk / NextAuth、別自己刻
+- **B2B SaaS**：API Key + Webhook secret
+- **公開平台**：OAuth 2.0（必須）
+- **內部 service**：mTLS 或 JWT
+
+## 進階：API Gateway
+- Cloudflare API Shield
+- AWS API Gateway
+- Kong / Tyk
+- 統一處理 auth / rate limit / log

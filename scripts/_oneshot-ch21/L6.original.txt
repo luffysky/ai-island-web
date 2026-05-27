@@ -1,0 +1,89 @@
+## Cookie-based Session
+
+### 流程
+1. User 登入、server 產 sessionId、存 DB
+2. 回 cookie `Set-Cookie: sessionId=xxx`
+3. 之後 user 每 request 自動帶 cookie
+4. Server 查 DB 取 user
+
+### 優
+- 簡單
+- 可即時 revoke（刪 DB session）
+- HttpOnly cookie 防 XSS
+- 跨 tab 自動 work
+
+### 劣
+- 每 request 查 DB
+- 不好做 microservice
+- 不適合 mobile App
+
+## JWT
+
+### 流程
+1. User 登入、server 簽 JWT
+2. 回 JWT（前端存 localStorage 或 cookie）
+3. 之後 user 帶 `Authorization: Bearer xxx`
+4. Server verify signature、不查 DB
+
+### 優
+- Stateless（不查 DB）
+- 適合 microservice
+- Mobile 友善
+- 可放 user info（role / permissions）
+
+### 劣
+- 難 revoke（簽出去就有效）
+- Payload size 大（cookie 限制）
+- Secret 洩漏 = 全部失效
+
+## OAuth + OIDC
+
+### 不是「auth 方法」、是「授權協議」
+- OAuth 2.0：授權（你能做什麼）
+- OIDC：認證 + OAuth（你是誰 + 你能做什麼）
+
+### 流程（Google Login）
+1. User 點「Login with Google」
+2. Redirect to Google
+3. User approve
+4. Google redirect back with code
+5. Backend exchange code for token
+6. Backend 取得 user info
+
+### Magic Link / OTP
+- Email 寄 link / code
+- 點開 / 輸入即登入
+- 簡單、user 不用記密碼
+
+## 選擇
+
+| 場景 | 推薦 |
+|---|---|
+| 傳統 web app | Session cookie |
+| Microservices | JWT |
+| Mobile App | JWT + Refresh token |
+| 公開 API | API key |
+| 整合第三方 | OAuth + OIDC |
+| 無密碼 | Magic Link |
+
+## Indie 推薦組合
+
+### Web SaaS
+- Supabase Auth（Cookie-based session）
+- OAuth providers（Google / GitHub）
+- Email + password fallback
+
+### Mobile App
+- JWT access + refresh
+- Biometric login（Face ID / Touch ID）
+
+### API Service
+- API key for B2B
+- OAuth 2.0 for developer integration
+
+## 心法
+- Indie：用 Supabase Auth / Clerk / Auth0
+- 別自己刻（安全坑很多）
+- Web cookie / Mobile JWT
+- 永遠 HTTPS
+- HttpOnly cookie

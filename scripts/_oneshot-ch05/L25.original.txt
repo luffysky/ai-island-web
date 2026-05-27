@@ -1,0 +1,64 @@
+## satisfies（4.9 新增、神級）
+```typescript
+// ❌ 舊寫法：用 type 標註會「擴大」型別、失去精準
+const config: Record<string, string | number> = {
+  port: 3000,
+  host: "localhost",
+};
+config.port.toFixed(2);  // ❌ port 變成 string | number、不能用 number method
+
+// ✅ satisfies：驗證符合型別、但保留精準型別
+const config = {
+  port: 3000,
+  host: "localhost",
+} satisfies Record<string, string | number>;
+config.port.toFixed(2);  // ✓ 保留為 number
+```
+
+## as const（深度凍結 + literal type）
+```typescript
+// 普通
+const status = "pending";  // type: string
+
+// as const
+const status = "pending" as const;  // type: "pending"
+
+// 物件 / 陣列
+const directions = ["up", "down", "left", "right"] as const;
+type Direction = typeof directions[number];  // "up" | "down" | "left" | "right"
+
+const config = { port: 3000 } as const;
+// { readonly port: 3000 }（連值都是 literal type）
+```
+
+## Template Literal Type
+```typescript
+type Greeting = `Hello, ${string}!`;
+const g1: Greeting = "Hello, Alice!";  // ✓
+const g2: Greeting = "Hi";              // ❌
+
+// 進階：路由型別
+type Route = `/users/${string}` | `/posts/${number}`;
+
+// 動態 key
+type EventName = `on${"Click" | "Hover" | "Focus"}`;
+// "onClick" | "onHover" | "onFocus"
+```
+
+## NoInfer<T>（5.4 新增）
+```typescript
+// 解決泛型推斷錯誤
+function createState<T>(initial: T, validate: (v: NoInfer<T>) => boolean) {
+  /* ... */
+}
+createState("hello", (v) => v.length > 0);
+// 不會用 validator 來推 T、避免衝突
+```
+
+## using（5.2 新增、resource management）
+```typescript
+{
+  using file = await fs.open("data.txt");
+  // 自動在離開 block 時關閉
+}  // file 自動 close
+```

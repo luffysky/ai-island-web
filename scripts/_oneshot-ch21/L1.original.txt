@@ -1,0 +1,51 @@
+## Authentication（認證）
+「你是誰」
+- 帳號密碼
+- OAuth（Google / FB）
+- Magic Link
+- WebAuthn / Passkeys
+- 2FA / MFA
+
+## Authorization（授權）
+「你能做什麼」
+- RBAC（role-based）
+- ABAC（attribute-based）
+- ACL（access control list）
+- Row Level Security
+
+## Session vs Token
+
+### Session
+Server 存 session ID → 查 DB。
+- 簡單、好 revoke
+- 不適合 microservice
+
+### JWT
+Stateless、自帶資訊。
+- 跨服務、Mobile 友善
+- 難 revoke
+
+## 主流方案
+
+### Indie / SaaS
+- **Supabase Auth**：免費 + PG + RLS
+- **Clerk**：最美 UI、商業
+- **Auth0**：企業級
+- **NextAuth / Auth.js**：Next.js 友善
+
+### Enterprise
+- Okta
+- Azure AD
+- SAML / OIDC
+
+## 自己刻？
+**不要。**
+- 浪費 1 個月
+- 必出資安漏洞
+- 後續維護成本高
+
+## 心法
+- 用現成（Supabase / Clerk）
+- 別自己刻 OAuth
+- 永遠 bcrypt / argon2
+- 短 access token + 長 refresh

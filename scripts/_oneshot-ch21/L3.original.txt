@@ -1,0 +1,94 @@
+## TOTP（Google Authenticator）
+最常用：
+```typescript
+import { authenticator } from "otplib";
+
+// 註冊
+const secret = authenticator.generateSecret();
+const qrUrl = authenticator.keyuri(user.email, "MyApp", secret);
+// 顯示 QR、user 用 Authenticator app 掃
+
+// 驗證
+const valid = authenticator.verify({ token: userInput, secret });
+```
+
+存 secret 加密。
+
+## SMS（弱、不推）
+SIM swap 攻擊風險。
+
+## Email OTP
+```typescript
+const otp = Math.floor(100000 + Math.random() * 900000);
+await redis.set(`otp:${user.id}`, otp, "EX", 600);
+await sendEmail(user.email, `Your code: ${otp}`);
+
+// 驗證
+const stored = await redis.get(`otp:${user.id}`);
+if (stored === userInput) { /* 通過 */ }
+```
+
+## Push（OneTrust / Auth0 Guardian）
+推到手機 App、user approve。
+
+## Passkey / WebAuthn
+```typescript
+// 註冊
+const credential = await navigator.credentials.create({
+  publicKey: {
+    challenge: serverChallenge,
+    rp: { name: "AI 島" },
+    user: { id: userId, name: email, displayName: name },
+    pubKeyCredParams: [{ type: "public-key", alg: -7 }]
+  }
+});
+
+// 登入
+const assertion = await navigator.credentials.get({
+  publicKey: { challenge: serverChallenge }
+});
+```
+
+支援：Touch ID、Face ID、Windows Hello、YubiKey。
+
+## Backup Codes
+2FA 設好給 10 個 backup codes、user 印下來：
+```typescript
+const codes = Array.from({ length: 10 }, () => 
+  crypto.randomBytes(4).toString("hex")
+);
+// hash 後存
+```
+
+裝置壞了能 recover。
+
+## Adaptive MFA
+不是每次都要 MFA、看風險：
+- 新裝置 → 要
+- 新 IP → 要
+- 異地登入 → 要
+- 同裝置同 IP → 不用
+
+## Recovery
+- Backup codes
+- Email recovery
+- 客服驗證
+- 信任聯絡人
+
+## 實作（Supabase）
+```typescript
+// 啟用 MFA
+const { data } = await supabase.auth.mfa.enroll({ factorType: "totp" });
+// 顯示 QR：data.totp.qr_code
+
+// 驗證
+await supabase.auth.mfa.challenge({ factorId });
+await supabase.auth.mfa.verify({ factorId, challengeId, code });
+```
+
+## 心法
+- 強制 admin 用 MFA
+- 一般 user 可選
+- 提供多種方法
+- Backup codes 必給
+- 不要 SMS（弱）

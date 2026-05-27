@@ -1,0 +1,88 @@
+## Email + Password
+
+### 流程
+1. User 註冊（email + password）
+2. Server bcrypt hash 存
+3. Login：bcrypt.compare()
+4. 發 token / session
+
+### 痛點
+- 密碼疲勞（記不住）
+- 密碼洩漏
+- 重設流程複雜
+
+## OAuth（Google / FB / GitHub）
+
+### 流程
+```
+1. User → "Login with Google"
+2. App 跳轉 Google 授權頁
+3. User 同意
+4. Google → app callback?code=...
+5. App → Google exchange code for token
+6. App → Google API 拿 user info
+7. App 建 session
+```
+
+### 優點
+- 不存密碼
+- UX 好
+- 信任 Google 安全
+
+### 缺點
+- 依賴第三方
+- 用戶不一定有帳號
+
+## Magic Link
+
+### 流程
+1. User 填 email
+2. Server 寄 link（含 token）
+3. User 點 link
+4. Server 驗 token、建 session
+
+### 優點
+- 不用記密碼
+- 安全（有 email = 你）
+- 簡單
+
+### 缺點
+- 要等 email
+- 不在 email 環境麻煩
+
+## Passkey / WebAuthn
+
+### 流程
+- 用 Touch ID / Face ID / 硬體 key
+- 公私鑰加密
+- 不能 phishing
+
+### 優點
+- 最安全
+- 最快（一秒登入）
+
+### 缺點
+- 裝置綁定
+- 還在推廣
+
+## 實作（Supabase）
+```typescript
+// Email + Password
+await supabase.auth.signUp({ email, password });
+await supabase.auth.signInWithPassword({ email, password });
+
+// OAuth
+await supabase.auth.signInWithOAuth({
+  provider: "google",
+  options: { redirectTo: "https://example.com/callback" }
+});
+
+// Magic Link
+await supabase.auth.signInWithOtp({ email });
+```
+
+## 心法
+- 提供多種選項
+- Magic Link + Google 是甜蜜點
+- 密碼可選（不強制）
+- 高敏感加 2FA

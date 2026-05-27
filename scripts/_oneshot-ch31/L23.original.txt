@@ -1,0 +1,73 @@
+## 內建 test runner
+```javascript
+// test/math.test.js
+import { test, describe } from "node:test";
+import { strict as assert } from "node:assert";
+
+describe("math", () => {
+  test("addition", () => {
+    assert.equal(1 + 1, 2);
+  });
+
+  test("async", async () => {
+    const result = await fetch("https://api.example.com");
+    assert.ok(result.ok);
+  });
+});
+```
+
+執行：
+```bash
+node --test test/
+node --test --watch test/  # watch mode
+```
+
+跟 Vitest / Jest 比：
+- ✅ 零依賴、超快
+- ✅ TS 透過 tsx / swc 可用
+- ❌ 沒有 jest 的 mock / snapshot 強大
+- ✅ 適合純 lib / CLI 測試
+
+## 內建 fetch（不用 axios / node-fetch）
+```javascript
+const res = await fetch("https://api.github.com/users/luffysky", {
+  headers: { Accept: "application/json" }
+});
+const data = await res.json();
+
+// AbortController 支援
+const ctrl = new AbortController();
+setTimeout(() => ctrl.abort(), 5000);  // 5 秒 timeout
+const res2 = await fetch(url, { signal: ctrl.signal });
+```
+
+## 內建 WebSocket（Node 22+）
+```javascript
+// Client
+const ws = new WebSocket("wss://echo.example.com");
+ws.addEventListener("open", () => ws.send("hello"));
+ws.addEventListener("message", (e) => console.log(e.data));
+```
+
+Server 仍需 `ws` 套件。
+
+## watch mode（取代 nodemon）
+```bash
+node --watch server.js
+node --watch --watch-path=./src server.js
+```
+
+## 內建 .env loader（Node 20.6+）
+```bash
+node --env-file=.env server.js
+```
+不用 dotenv 了。
+
+## permission model（Node 20+ 實驗）
+```bash
+node --experimental-permission \
+     --allow-fs-read=/data \
+     --allow-fs-write=/tmp \
+     server.js
+```
+類似 Deno 的權限模型、限制存取。

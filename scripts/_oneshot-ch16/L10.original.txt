@@ -1,0 +1,79 @@
+「**同樣資料、不要每次都重算 / 重查**」—Cache 是後端最簡單但 ROI 最高的優化。
+
+  
+### 為什麼要 Cache
+
+```text
+場景：首頁顯示「熱門商品 top 10」
+
+爛寫法（每個 request 跑）：
+def homepage():
+    top_products = db.query("""
+        SELECT * FROM products
+        ORDER BY sales DESC
+        LIMIT 10
+    """)
+    return render(top_products)
+
+# DB 累
+# 100 個 user 一秒 = DB 跑 100 次同個 query
+
+好寫法（cache）：
+def homepage():
+    top_products = cache.get("top_products")
+    if not top_products:
+        top_products = db.query(...)
+        cache.set("top_products", top_products, ttl=60)
+        # 存 60 秒
+    return render(top_products)
+
+# 60 秒內 DB 只查 1 次
+# 後續 99 個 user 直接拿 cache
+# 速度 10-100x
+
+→ Cache 是「用記憶體換速度」
+```
+
+  
+### 多層 Cache 架構
+
+```text
+實戰 SaaS 通常多層：
+
+[ Browser ] 
+    ↓ 1. Browser cache（Cache-Control header）
+[ CDN ] 
+    ↓ 2. CDN cache（Cloudflare / Vercel）
+[ Load Balancer ]
+    ↓
+[ Web Server ]
+    ↓ 3. Application cache（in-memory）
+    ↓ 4. Redis cache（共享）
+[ Database ]
+    ↑ 5. DB query cache（內部）
+
+層級越往上、越快但容量小
+
+實戰：
+1. 靜態資源（圖片、CSS、JS）：browser + CDN
+2. API response：CDN（短 TTL）+ Redis
+3. DB query：Redis
+4. 計算結果：in-memory 或 Redis
+```
+
+  
+### Cache 工具
+
+```text
+1. Redis（最普及）
+   - 內存、超快（
+    **🚀 進階技巧**
+    
+Cache 心法 5 條：(1) **讀多寫少的資料先 cache**—80/20 法則 (2) **Cache-aside pattern 是 default**—簡單夠用 (3) **Delete 比 update 簡單**—寫 DB 時刪 cache (4) **TTL 短一點比長安全**—不一致比慢恐怖 (5) **monitor cache hit rate**—
+
+  
+    
+      🚀
+      2026 趨勢
+    
+    這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。

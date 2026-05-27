@@ -1,0 +1,57 @@
+## 函式 generic
+```typescript
+function identity<T>(value: T): T {
+  return value;
+}
+
+const a = identity<string>("hello");  // T = string
+const b = identity(42);                 // TS 自動推 T = number
+const c = identity({ name: "Alice" }); // T = { name: string }
+```
+
+## 多型別參數
+```typescript
+function pair<K, V>(key: K, value: V): [K, V] {
+  return [key, value];
+}
+const p = pair("age", 25);  // [string, number]
+```
+
+## 約束（extends）
+```typescript
+// 只接受有 .length 屬性的型別
+function logLength<T extends { length: number }>(x: T) {
+  console.log(x.length);
+}
+logLength("hello");     // string 有 length ✓
+logLength([1, 2, 3]);   // array 有 length ✓
+logLength(42);          // ❌ number 沒 length
+```
+
+## Generic class
+```typescript
+class Stack<T> {
+  private items: T[] = [];
+  push(item: T) { this.items.push(item); }
+  pop(): T | undefined { return this.items.pop(); }
+}
+
+const numStack = new Stack<number>();
+numStack.push(1);
+const top = numStack.pop();  // number | undefined
+```
+
+## React 中 generic
+```tsx
+interface ListProps<T> {
+  items: T[];
+  renderItem: (item: T) => React.ReactNode;
+}
+
+function List<T>({ items, renderItem }: ListProps<T>) {
+  return <ul>{items.map((item, i) => <li key={i}>{renderItem(item)}</li>)}</ul>;
+}
+
+// 使用
+<List items={users} renderItem={u => <span>{u.name}</span>} />
+```

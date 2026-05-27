@@ -1,0 +1,61 @@
+## 10 大常用
+
+### Partial<T>（全部可選）
+```typescript
+interface User { name: string; age: number; email: string; }
+
+type UserUpdate = Partial<User>;
+// 等於：{ name?: string; age?: number; email?: string; }
+
+function updateUser(id: string, fields: Partial<User>) { /* ... */ }
+updateUser("1", { name: "Bob" });  // ✓ 不用提供所有欄位
+```
+
+### Required<T>（全部必填）
+```typescript
+type StrictUser = Required<User>;  // 把所有 ? 拿掉
+```
+
+### Readonly<T>（全部唯讀）
+```typescript
+const frozen: Readonly<User> = { name: "A", age: 1, email: "x" };
+frozen.name = "B";  // ❌ 不能改
+```
+
+### Pick<T, K>（挑欄位）
+```typescript
+type UserSummary = Pick<User, "name" | "email">;
+// { name: string; email: string }
+```
+
+### Omit<T, K>（去欄位）
+```typescript
+type UserPublic = Omit<User, "email">;
+// { name: string; age: number }
+```
+
+### Record<K, V>（建 map type）
+```typescript
+type Roles = Record<"admin" | "user" | "guest", string[]>;
+// { admin: string[]; user: string[]; guest: string[] }
+```
+
+### ReturnType / Parameters
+```typescript
+function fetchUser(id: string): Promise<User> { /* ... */ }
+
+type FetchResult = ReturnType<typeof fetchUser>;  // Promise<User>
+type FetchParams = Parameters<typeof fetchUser>;   // [string]
+```
+
+### Awaited<T>（拆 Promise）
+```typescript
+type Result = Awaited<Promise<User>>;  // User
+type Deep = Awaited<Promise<Promise<number>>>;  // number
+```
+
+### NonNullable<T>
+```typescript
+type Maybe = string | null | undefined;
+type Definitely = NonNullable<Maybe>;  // string
+```

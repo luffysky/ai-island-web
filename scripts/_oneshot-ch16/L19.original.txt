@@ -1,0 +1,97 @@
+## HTTP Methods
+- **GET**：取資料（冪等、可快取）
+- **POST**：建資料（不冪等）
+- **PUT**：完整更新
+- **PATCH**：部分更新
+- **DELETE**：刪除
+- **HEAD**：只取 header
+- **OPTIONS**：CORS preflight
+
+## 冪等性（Idempotency）
+GET / PUT / DELETE：重複呼叫結果相同。
+POST：重複呼叫可能建多筆。
+
+## Status Codes
+- **2xx 成功**
+  - 200 OK
+  - 201 Created
+  - 204 No Content
+- **3xx 重導**
+  - 301 永久搬家
+  - 302 暫時搬家
+  - 304 Not Modified（快取有效）
+- **4xx 客戶端錯**
+  - 400 Bad Request
+  - 401 未認證
+  - 403 已認證但無權限
+  - 404 找不到
+  - 409 衝突
+  - 422 資料不合法
+  - 429 太多請求
+- **5xx 伺服器錯**
+  - 500 Internal Error
+  - 502 Bad Gateway
+  - 503 Service Unavailable
+  - 504 Gateway Timeout
+
+## 常用 Header
+```
+Request:
+  Authorization: Bearer xxx
+  Content-Type: application/json
+  Accept: application/json
+  User-Agent: Mozilla/5.0 ...
+  Cookie: session=xxx
+  X-Requested-With: XMLHttpRequest
+
+Response:
+  Content-Type: application/json
+  Cache-Control: max-age=3600
+  Set-Cookie: session=xxx; HttpOnly; Secure
+  Access-Control-Allow-Origin: *
+  X-RateLimit-Remaining: 99
+```
+
+## Cookies
+```http
+Set-Cookie: session=xxx;
+  HttpOnly;          # JS 讀不到（防 XSS）
+  Secure;            # HTTPS only
+  SameSite=Strict;   # 跨站不送（防 CSRF）
+  Max-Age=86400;
+  Path=/;
+  Domain=example.com
+```
+
+## CORS（跨域）
+不同 domain 的 fetch 預設被擋：
+```
+Frontend: https://app.example.com
+API:      https://api.example.com  ← 不同 domain
+```
+
+Server 要回：
+```
+Access-Control-Allow-Origin: https://app.example.com
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Methods: GET, POST, PUT, DELETE
+Access-Control-Allow-Headers: Content-Type, Authorization
+```
+
+## Preflight Request
+PUT / DELETE / Custom Header 會先打 OPTIONS、檢查 CORS。
+
+## HTTPS / TLS
+- 永遠用 HTTPS、不用 HTTP
+- Let's Encrypt 免費憑證
+- Cloudflare 自動處理
+
+## HTTP/2 vs HTTP/3
+- HTTP/2：multiplexing、推送、優先序
+- HTTP/3：基於 QUIC、UDP、抗封包遺失
+
+## 工具
+- **curl**：命令列
+- **Postman / Insomnia / Bruno**：圖形化測試
+- **Chrome DevTools → Network**：debug 必用
+- **ngrok**：本地對外暴露 webhook
