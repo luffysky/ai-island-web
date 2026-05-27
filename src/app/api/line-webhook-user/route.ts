@@ -62,16 +62,24 @@ async function loadLineConversationHistory(convId: string, limit = 20): Promise<
   return (data as any[] ?? []).map((m) => ({ role: m.role, content: m.content }));
 }
 
-async function saveLineConversationTurn(convId: string, userText: string, assistantText: string, modelTag: string) {
+/**
+ * @returns 寫好的 assistant message id（給 LINE Quick Reply「📝 存筆記」按鈕用、postback data 帶 msg_id）
+ */
+async function saveLineConversationTurn(convId: string, userText: string, assistantText: string, modelTag: string): Promise<string | null> {
   const admin = createSupabaseAdmin();
-  await admin.from("ai_messages").insert([
-    { conversation_id: convId, role: "user", content: userText },
-    { conversation_id: convId, role: "assistant", content: assistantText, model_used: modelTag },
-  ]);
+  // user message 寫一筆
+  await admin.from("ai_messages").insert({ conversation_id: convId, role: "user", content: userText });
+  // assistant 寫一筆並取回 id
+  const { data: assistantRow } = await admin
+    .from("ai_messages")
+    .insert({ conversation_id: convId, role: "assistant", content: assistantText, model_used: modelTag })
+    .select("id")
+    .single();
   await admin
     .from("ai_conversations")
     .update({ updated_at: new Date().toISOString() })
     .eq("id", convId);
+  return (assistantRow as any)?.id ?? null;
 }
 
 type UserProfileLite = {
@@ -83,7 +91,13 @@ type UserProfileLite = {
   level: number | null;
 };
 
-export type AskUserAIResult = { reply: string; displayName: string; ownerMode: boolean };
+export type AskUserAIResult = {
+  reply: string;
+  displayName: string;
+  ownerMode: boolean;
+  /** ai_messages.id（assistant message）— 用來給 Quick Reply 「📝 存筆記」postback 帶 */
+  assistantMsgId?: string | null;
+};
 
 async function askUserAI(text: string, profile: UserProfileLite | null, lineUserId: string): Promise<AskUserAIResult | null> {
   const admin = createSupabaseAdmin();
@@ -181,10 +195,12 @@ async function askUserAI(text: string, profile: UserProfileLite | null, lineUser
       });
       reply = r.text?.trim() || "我這邊沒接到回應、再問一次試試？";
     }
-    // 持久化：已綁定存 DB、未綁定存 in-memory
+    // 持久化：已綁定存 DB（並取回 assistant message id 給 Quick Reply 用）、未綁定存 in-memory
+    let assistantMsgId: string | null = null;
     if (convId) {
-      saveLineConversationTurn(convId, text, reply, `${model.provider}/${model.model_name}`).catch((e) => {
+      assistantMsgId = await saveLineConversationTurn(convId, text, reply, `${model.provider}/${model.model_name}`).catch((e) => {
         console.warn("[line-webhook-user] save conversation failed:", (e as any)?.message);
+        return null;
       });
     } else {
       const mem = getUserHistory(lineUserId);
@@ -199,7 +215,7 @@ async function askUserAI(text: string, profile: UserProfileLite | null, lineUser
       email: null,
       lineUserId,
     }).isOwner;
-    return { reply, displayName, ownerMode };
+    return { reply, displayName, ownerMode, assistantMsgId };
   } catch (e: any) {
     console.warn("[line-webhook-user] AI failed:", e?.message);
     // 也寫 error_logs (之前只 console.warn、Zeabur log 翻不到)
@@ -358,17 +374,20 @@ function cardHelp(): FlexMessage {
     emoji: "📖",
     title: "AI 島 LINE bot",
     accentColor: USER_ACCENT,
-    body: "我能做的事",
+    body: "我能做的事（綁定後解鎖全部）",
     meta: [
-      { label: "💬", value: "聊天問 AI 學員導師（綁定後）" },
+      { label: "💬", value: "聊天問 AI 學員導師" },
+      { label: "/note 內容", value: "存筆記到網站" },
+      { label: "/footprint", value: "看 14 天學習足跡" },
       { label: "/bind 123456", value: "綁帳號" },
       { label: "/unbind", value: "解除綁定" },
       { label: "/whoami", value: "看綁定狀態" },
       { label: "/help", value: "看這份" },
     ],
     buttons: [
-      { label: "打開網站", uri: SITE_URL, primary: true },
-      { label: "設定", uri: `${SITE_URL}/settings` },
+      { label: "🛤️ 我的足跡", uri: `${SITE_URL}/me/footprint`, primary: true },
+      { label: "📓 我的筆記", uri: `${SITE_URL}/me/notes` },
+      { label: "📚 看章節", uri: `${SITE_URL}/chapters` },
     ],
   });
 }
@@ -445,6 +464,19 @@ const QUICK_REPLY = buildQuickReply([
   { type: "uri", label: "⚙️ 設定", uri: `${SITE_URL}/settings` },
   { type: "message", label: "❓ 說明", text: "/help" },
 ]);
+
+/**
+ * 給 AI 學員導師回覆專用的 Quick Reply — 第一顆按鈕是「📝 存筆記」postback
+ * msgId 是 ai_messages.id（UUID 36 字、塞在 postback data 內）
+ */
+function buildNoteQuickReply(msgId: string) {
+  return buildQuickReply([
+    { type: "postback", label: "📝 存筆記", data: `action=save_note&msg_id=${msgId}`, displayText: "已存進網站筆記本 ✅" } as any,
+    { type: "message", label: "🛤️ 我的足跡", text: "/footprint" },
+    { type: "uri", label: "📚 看章節", uri: `${SITE_URL}/chapters` },
+    { type: "message", label: "❓ 說明", text: "/help" },
+  ]);
+}
 
 // AI 學員導師回覆美化卡 — 短回答（< 220 字、無 code）整段包進 Flex bubble、長回答跟一張小卡 footer
 // header 紫色 "🤖 AI 學員導師 · 雪鑰"、footer 3 個按鈕
@@ -556,6 +588,84 @@ export async function POST(req: NextRequest) {
       continue;
     }
 
+    // Postback — Quick Reply 「📝 存筆記」按鈕觸發
+    if (ev.type === "postback" && replyToken && userId) {
+      const data = String(ev.postback?.data ?? "");
+      const params = new URLSearchParams(data);
+      const action = params.get("action");
+
+      if (action === "save_note") {
+        const msgId = params.get("msg_id");
+        if (!msgId) {
+          await lineReply(replyToken, "❌ 缺少訊息 id、再試一次", token, QUICK_REPLY);
+          continue;
+        }
+        const admin = createSupabaseAdmin();
+        const { data: profile } = await admin
+          .from("profiles")
+          .select("id")
+          .eq("line_user_id", userId)
+          .maybeSingle();
+        if (!profile) {
+          await lineReply(replyToken, cardUnbound(userId), token, QUICK_REPLY);
+          continue;
+        }
+        // 撈該則 ai_messages 內容
+        const { data: msg } = await admin
+          .from("ai_messages")
+          .select("content")
+          .eq("id", msgId)
+          .maybeSingle();
+        if (!msg || !(msg as any).content) {
+          await lineReply(replyToken, "❌ 找不到原訊息、可能太舊了", token, QUICK_REPLY);
+          continue;
+        }
+        const content = String((msg as any).content).slice(0, 4000);
+        const { error: noteErr } = await admin.from("notes").insert({
+          user_id: (profile as any).id,
+          chapter_id: null,
+          lesson_id: null,
+          content,
+          is_public: false,
+        });
+        if (noteErr) {
+          await lineReply(
+            replyToken,
+            buildSimpleCard({
+              emoji: "❌",
+              title: "存筆記失敗",
+              accentColor: "#ef4444",
+              body: noteErr.message,
+              buttons: [{ label: "📓 到網站手動加", uri: `${SITE_URL}/me/notes`, primary: true }],
+            }),
+            token,
+            QUICK_REPLY,
+          );
+          continue;
+        }
+        await lineReply(
+          replyToken,
+          buildSimpleCard({
+            emoji: "📝",
+            title: "AI 回覆已存進筆記",
+            accentColor: USER_ACCENT,
+            body: content.length > 240 ? content.slice(0, 240) + "…" : content,
+            meta: [{ label: "字數", value: `${content.length} 字` }],
+            buttons: [
+              { label: "📓 看所有筆記", uri: `${SITE_URL}/me/notes`, primary: true },
+              { label: "🛤️ 我的足跡", uri: `${SITE_URL}/me/footprint` },
+            ],
+          }),
+          token,
+          QUICK_REPLY,
+        );
+        continue;
+      }
+      // 未知 postback action — 忽略
+      console.warn("[line-webhook-user] unknown postback:", data);
+      continue;
+    }
+
     if (ev.type === "message" && ev.message?.type === "text" && replyToken && userId) {
       const text = String(ev.message.text ?? "").trim();
 
@@ -610,6 +720,148 @@ export async function POST(req: NextRequest) {
         continue;
       }
 
+      // 3.41. /note 命令式存筆記
+      // 支援：「/note 內容」「存筆記 內容」「筆記 內容」
+      const noteMatch =
+        text.match(/^\/note\s+([\s\S]+)/i) ||
+        text.match(/^存筆記\s+([\s\S]+)/) ||
+        text.match(/^筆記\s+([\s\S]+)/);
+      if (noteMatch) {
+        const admin = createSupabaseAdmin();
+        const { data: profile } = await admin
+          .from("profiles")
+          .select("id, display_name, username")
+          .eq("line_user_id", userId)
+          .maybeSingle();
+        if (!profile) {
+          await lineReply(replyToken, cardUnbound(userId), token, QUICK_REPLY);
+          continue;
+        }
+        const content = noteMatch[1].trim().slice(0, 4000);
+        const { error: noteErr } = await admin.from("notes").insert({
+          user_id: (profile as any).id,
+          chapter_id: null,
+          lesson_id: null,
+          content,
+          is_public: false,
+        });
+        if (noteErr) {
+          await lineReply(
+            replyToken,
+            buildSimpleCard({
+              emoji: "❌",
+              title: "存筆記失敗",
+              accentColor: "#ef4444",
+              body: noteErr.message,
+              buttons: [{ label: "🌐 到網站手動加", uri: `${SITE_URL}/me/notes`, primary: true }],
+            }),
+            token,
+            QUICK_REPLY,
+          );
+          continue;
+        }
+        await lineReply(
+          replyToken,
+          buildSimpleCard({
+            emoji: "📝",
+            title: "已存進筆記本",
+            accentColor: USER_ACCENT,
+            body: content.length > 200 ? content.slice(0, 200) + "…" : content,
+            meta: [{ label: "字數", value: `${content.length} 字` }],
+            buttons: [
+              { label: "📓 看筆記", uri: `${SITE_URL}/me/notes`, primary: true },
+              { label: "🛤️ 我的足跡", uri: `${SITE_URL}/me/footprint` },
+            ],
+          }),
+          token,
+          QUICK_REPLY,
+        );
+        continue;
+      }
+
+      // 3.42. /footprint /history /足跡 — 最近 14 天學習足跡
+      if (
+        text === "/footprint" ||
+        text === "/history" ||
+        text === "/足跡" ||
+        text === "足跡" ||
+        text === "我的足跡"
+      ) {
+        const admin = createSupabaseAdmin();
+        const { data: profile } = await admin
+          .from("profiles")
+          .select("id, display_name, username")
+          .eq("line_user_id", userId)
+          .maybeSingle();
+        if (!profile) {
+          await lineReply(replyToken, cardUnbound(userId), token, QUICK_REPLY);
+          continue;
+        }
+        const since = new Date(Date.now() - 14 * 86400_000).toISOString();
+        const { data: events } = await admin
+          .from("learning_events")
+          .select("created_at, event_type, chapter_id, lesson_id")
+          .eq("user_id", (profile as any).id)
+          .gte("created_at", since)
+          .order("created_at", { ascending: false })
+          .limit(50);
+        const rows = (events as any[]) ?? [];
+        if (rows.length === 0) {
+          await lineReply(
+            replyToken,
+            buildSimpleCard({
+              emoji: "🛤️",
+              title: "最近 14 天還沒紀錄",
+              accentColor: USER_ACCENT,
+              body: "去網站開始第一課、學習足跡會自動記下來。",
+              buttons: [{ label: "📚 看章節地圖", uri: `${SITE_URL}/chapters`, primary: true }],
+            }),
+            token,
+            QUICK_REPLY,
+          );
+          continue;
+        }
+        // 按日期分組
+        const byDay = new Map<string, string[]>();
+        for (const r of rows) {
+          const day = new Date(r.created_at).toLocaleDateString("zh-TW", {
+            timeZone: "Asia/Taipei",
+            month: "2-digit",
+            day: "2-digit",
+          });
+          if (!byDay.has(day)) byDay.set(day, []);
+          if (r.lesson_id) byDay.get(day)!.push(`${r.event_type === "lesson_complete" ? "✅" : "📖"} ${r.lesson_id}`);
+          else if (r.chapter_id) byDay.get(day)!.push(`📂 Ch${r.chapter_id}`);
+        }
+        const days = Array.from(byDay.entries()).slice(0, 10);
+        const bodyLines: string[] = [];
+        for (const [day, items] of days) {
+          bodyLines.push(`📅 ${day}（${items.length} 件）`);
+          for (const item of items.slice(0, 3)) bodyLines.push(`  ${item}`);
+          if (items.length > 3) bodyLines.push(`  …+${items.length - 3} 件`);
+        }
+        await lineReply(
+          replyToken,
+          buildSimpleCard({
+            emoji: "🛤️",
+            title: "最近 14 天學習足跡",
+            accentColor: USER_ACCENT,
+            body: bodyLines.join("\n").slice(0, 1900),
+            meta: [
+              { label: "天數", value: `${days.length} 天` },
+              { label: "事件", value: `${rows.length} 件` },
+            ],
+            buttons: [
+              { label: "🛤️ 看完整足跡", uri: `${SITE_URL}/me/footprint`, primary: true },
+              { label: "📚 看章節", uri: `${SITE_URL}/chapters` },
+            ],
+          }),
+          token,
+          QUICK_REPLY,
+        );
+        continue;
+      }
+
       // 3.5. 綁定 / 登入 自然語言引導
       const bindHints = ["綁定", "我要綁", "我要登入", "登入", "怎麼綁", "怎麼登入", "綁帳號", "綁帳戶", "bind", "login", "register", "註冊"];
       if (bindHints.some((k) => text.toLowerCase().includes(k.toLowerCase()))) {
@@ -638,7 +890,9 @@ export async function POST(req: NextRequest) {
         const aiResult = await askUserAI(text, profile as any, userId);
         if (aiResult) {
           const msgs = buildAITutorMessages(aiResult.reply, aiResult.displayName, aiResult.ownerMode);
-          await lineReply(replyToken, msgs, token, QUICK_REPLY);
+          // 動態 Quick Reply：有 assistantMsgId 用「📝 存筆記」按鈕、否則退回預設
+          const qr = aiResult.assistantMsgId ? buildNoteQuickReply(aiResult.assistantMsgId) : QUICK_REPLY;
+          await lineReply(replyToken, msgs, token, qr);
           continue;
         }
         // AI 失敗、fallback 到 ticket

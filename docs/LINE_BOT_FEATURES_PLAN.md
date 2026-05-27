@@ -34,6 +34,18 @@
 
 ---
 
+## ✅ 已實作（2026-05-28）
+
+林董要做 cron-job.org 設定觸發學員日報：
+- **URL**：`https://ai-island-web.snowrealm.pet/api/cron/student-daily-review?secret=$CRON_SECRET`
+- **時間**：每天 `12:00 UTC` = **台灣 20:00**
+- **interval**：daily（不是每分鐘 / 每小時）
+- **env 必需**：`CRON_SECRET`（已在 Zeabur 設、跟 line-daily cron 共用）+ `USER_LINE_CHANNEL_TOKEN`
+
+學員設定通知：去 `/settings/notifications` 開啟 `line_notify_enabled`（profile 欄位）。
+
+---
+
 ## 🟢 本輪實作（這 commit）
 
 ### A. 筆記命令式 `/note`
