@@ -1,0 +1,88 @@
+### 所有顏色寫法
+
+```css
+.a { color: red; }                          /* 命名顏色 */
+.b { color: #ff0000; }                       /* HEX */
+.c { color: #f00; }                          /* HEX 簡寫 */
+.d { color: #ff0000aa; }                     /* HEX + alpha */
+.e { color: rgb(255, 0, 0); }                  /* RGB */
+.f { color: rgba(255, 0, 0, 0.5); }            /* RGB + alpha */
+.g { color: rgb(255 0 0 / 50%); }            /* 新語法 */
+.h { color: hsl(0, 100%, 50%); }                /* HSL，最直覺 */
+.i { color: hwb(0 0% 0%); }                   /* HWB（色相白度黑度） */
+.j { color: lab(53% 80 67); }                /* LAB（感知均勻） */
+.k { color: oklch(0.7 0.2 30); }              /* OKLCH（2024 新寵） */
+```
+
+  
+### HSL：最直覺
+
+  
+- **H**ue（色相）：0–360 度，0=紅 120=綠 240=藍
+- **S**aturation（飽和度）：0% 灰到 100% 鮮豔
+- **L**ightness（明度）：0% 黑到 100% 白
+
+```css
+/* 想要紫色但較淡 → 改 L 就好，不用整個換 */
+.a { color: hsl(270, 80%, 50%); }
+.b { color: hsl(270, 80%, 80%); } /* 同色淡版 */
+```
+
+  
+### OKLCH：2024–2026 業界新標準
+
+  
+Tailwind v4、Linear、Vercel、Apple HIG 都改用 OKLCH。原因：**感知均勻** — 同樣的 L 值不同 H，看起來亮度一致。HSL 做不到（黃色 50% 看起來比紫色 50% 亮很多）。
+
+```css
+.a { color: oklch(0.7 0.2 30); }   /* L=0.7, C=0.2, H=30 (橘) */
+.b { color: oklch(0.7 0.2 270); }  /* 同亮度、同飽和度，紫 */
+/* 兩個看起來一樣亮！HSL 做不到 */
+```
+
+  
+### 漸層
+
+```css
+/* 線性漸層 */
+.a { background: linear-gradient(to right, red, blue); }
+.b { background: linear-gradient(45deg, red, orange, yellow); }
+
+/* 徑向漸層 */
+.c { background: radial-gradient(circle at center, white, black); }
+
+/* 圓錐漸層（可以做圓餅圖） */
+.d { background: conic-gradient(red, yellow, green, red); }
+
+/* 進階：硬切割（做條紋） */
+.e {
+  background: linear-gradient(
+    90deg,
+    red 0 50%,
+    blue 50% 100%
+  );
+}
+```
+
+  
+### color-mix（2023+）
+
+```css
+/* 混合兩個顏色 */
+.a {
+  background: color-mix(in srgb, red 50%, blue);
+}
+
+/* 動態：跟主題色混合 */
+.btn:hover {
+  background: color-mix(in oklch, var(--primary) 80%, black);
+}
+/* 一個變數就能產出深淺色系 */
+```
+
+  
+
+⚡
+學習加速器
+
+把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。

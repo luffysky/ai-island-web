@@ -1,0 +1,96 @@
+CSS 變數讓樣式變「動態」，是現代 CSS 的核心。
+
+```css
+/* 定義（通常在 :root） */
+:root {
+  --primary: oklch(0.7 0.2 240);
+  --gap: 16px;
+  --radius: 8px;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.05);
+}
+
+/* 使用 */
+.btn {
+  background: var(--primary);
+  padding: var(--gap);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+
+/* 有後備值 */
+.box { color: var(--text-color, black); }
+```
+
+  
+### 巢狀作用域
+
+```css
+:root { --bg: white; --fg: black; }
+
+.dark-section {
+  --bg: black;
+  --fg: white;
+}
+/* 區域內的所有 var(--bg) 都自動變黑 */
+```
+
+  
+### 暗黑模式：一個變數就搞定
+
+```css
+:root {
+  --bg: white;
+  --text: #222;
+}
+
+[data-theme="dark"] {
+  --bg: #0a0a0a;
+  --text: #eee;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.3s;
+}
+```
+
+```js
+// JS 切換主題
+document.documentElement.dataset.theme = "dark";
+```
+
+  
+### 進階：用 JS 即時更新
+
+```js
+document.documentElement.style.setProperty("--primary", "red");
+```
+
+  
+### 進階：屬性註冊（@property）
+
+```css
+@property --gradient-angle {
+  syntax: "";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.card {
+  background: linear-gradient(var(--gradient-angle), red, blue);
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  to { --gradient-angle: 360deg; }
+}
+/* 過去不能 animate 的角度值，現在能了 */
+```
+
+  
+
+💼
+接案小知識
+
+剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「CSS」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。

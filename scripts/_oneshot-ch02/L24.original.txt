@@ -1,0 +1,50 @@
+### Chrome DevTools 你必須會的
+
+  
+1. **Inspect Element**（右鍵 → 檢查）：看任何元素的計算樣式
+2. **Styles 面板**：每條規則旁邊有勾選框，可即時 toggle
+3. **Computed 面板**：最終計算結果（多條規則合併）
+4. **Layout 面板**：盒模型視覺化
+5. **Flex / Grid 工具**：標出 flex / grid 線
+6. **Animation 面板**：時間軸可拖、慢速重播
+7. **Coverage 工具**：看哪些 CSS 沒被用到
+
+  
+### 常見問題對照
+
+  
+| 症狀 | 檢查 |
+| --- | --- |
+| 樣式沒生效 | 選擇器拼字、特異性、是否被覆蓋（DevTools 劃刪除線） |
+| flex 子元素沒平均 | 父元素是 flex 嗎？子元素有 flex: 1 嗎？ |
+| 絕對定位沒對齊 | 父元素有 position: relative 嗎？ |
+| 滾動不順 | 動畫是否動 layout 屬性？改用 transform |
+| 移動裝置看起來不對 | 有 viewport meta 嗎？單位用對嗎？ |
+| z-index 沒效果 | 有 position 嗎？父元素的 stacking context？ |
+
+  
+### 暴力除錯神技
+
+```css
+/* 把所有元素加邊框 */
+* { outline: 1px solid red !important; }
+
+/* 父子層級用不同顏色 */
+* { outline: 1px solid red; }
+* * { outline: 1px solid blue; }
+* * * { outline: 1px solid green; }
+```
+
+  
+**✨ 接案小技巧**
+
+CSS 寫不出來時，先到 codepen / jsfiddle 用最小範例重現，然後一步一步加。85% 的問題都是「特異性」或「上下文」。多花 5 分鐘做 minimal repro，比盲改 1 小時有效。
+
+  
+
+  
+
+⚠️
+新手常見錯誤
+
+新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。

@@ -1,0 +1,118 @@
+Flexbox 解一維（一排），Grid 解二維（行 × 列）。儀表板、雜誌排版、複雜佈局都靠它。
+
+```css
+.grid {
+  display: grid;
+  
+  /* 定義列（columns） */
+  grid-template-columns: 200px 1fr 100px;
+  /* 左固定 200, 中彈性, 右固定 100 */
+  
+  /* 等寬 3 欄 */
+  grid-template-columns: 1fr 1fr 1fr;
+  /* 簡寫 */
+  grid-template-columns: repeat(3, 1fr);
+  
+  /* 響應式：能塞幾欄塞幾欄（最少 250px） */
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  
+  /* 列（rows） */
+  grid-template-rows: auto 1fr auto; /* 頭、身、尾 */
+  
+  /* 間距 */
+  gap: 16px;
+  
+  /* 區域命名 */
+  grid-template-areas:
+    "header header header"
+    "sidebar main main"
+    "footer footer footer";
+}
+
+/* 子元素放到指定區域 */
+.header  { grid-area: header; }
+.sidebar { grid-area: sidebar; }
+.main    { grid-area: main; }
+.footer  { grid-area: footer; }
+```
+
+  
+### 子項目放置
+
+```css
+.item {
+  /* 從第 1 條線到第 3 條線（跨 2 格） */
+  grid-column: 1 / 3;
+  grid-row: 1 / 2;
+  
+  /* 簡寫：跨幾格 */
+  grid-column: span 2;
+  
+  /* 從這條線到最後一條 */
+  grid-column: 2 / -1;
+}
+```
+
+  
+### 實戰例：完整的後台佈局
+
+```css
+.dashboard {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  grid-template-rows: 60px 1fr;
+  grid-template-areas:
+    "sidebar header"
+    "sidebar main";
+  height: 100dvh;
+}
+```
+
+  
+### 實戰例：自適應卡片牆
+
+```css
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+/* 完全不用 media query，自動填滿並換行 */
+```
+
+  
+### auto-fit vs auto-fill
+
+  
+- **auto-fill**：保留空欄位（即使沒內容）
+- **auto-fit**：自動壓縮空欄位，讓現有內容撐滿
+
+  
+**🚀 進階技巧**
+
+Grid 跟 Flexbox 不衝突，**會搭配用**。整體大佈局用 Grid（行 × 列），每個區塊內的對齊用 Flexbox。學會這個搭配，所有設計都做得出來。
+
+  
+
+  
+### Subgrid（2023+）
+
+```css
+.outer {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.inner {
+  display: grid;
+  grid-template-columns: subgrid; /* 繼承父 grid 的線 */
+}
+/* 過去要算半天的對齊，subgrid 自動同步 */
+```
+
+  
+
+💼
+接案小知識
+
+剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「CSS」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。

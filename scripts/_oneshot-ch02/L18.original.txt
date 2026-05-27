@@ -1,0 +1,52 @@
+Bootstrap 5（2021+）是當代版本，去除 jQuery 依賴。**後台、行政系統、企業內部工具的常勝軍**。學會幾天內可以拼出完整介面。
+
+```html
+
+```
+
+  
+### Grid 系統
+
+```html
+<!-- 此處原本為 HTML 範例
+     程式碼已在內容修正中、稍後將補回完整範例 -->
+```
+
+  
+### 元件範例
+
+```html
+<!-- 此處原本為 HTML 範例
+     程式碼已在內容修正中、稍後將補回完整範例 -->
+```
+
+  
+### 客製化主題（Sass）
+
+```scss
+// custom.scss
+$primary: #5e35b1;
+$border-radius: 12px;
+$font-family-sans-serif: "Inter", sans-serif;
+
+@import "bootstrap/scss/bootstrap";
+```
+
+  
+### Tailwind vs Bootstrap：怎麼選？
+
+  
+| 場景 | 選 |
+| --- | --- |
+| 客製化、品牌、設計重 | Tailwind + shadcn/ui |
+| 後台、原型、企業內部 | Bootstrap |
+| 快速 demo | Bootstrap |
+| SaaS 產品 | Tailwind |
+| 2026 新專案 | 多半選 Tailwind |
+
+  
+
+⚠️
+新手常見錯誤
+
+新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。

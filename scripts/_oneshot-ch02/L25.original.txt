@@ -1,0 +1,63 @@
+### 命名慣例
+
+  
+- **BEM**（Block-Element-Modifier）：`.card`、`.card__title`、`.card--featured`
+- **OOCSS**：分離結構跟皮膚（`.btn` + `.btn-primary`）
+- **SMACSS**：分 base / layout / module / state / theme
+- **Tailwind**：徹底放棄命名，全用 utility
+
+  
+2026 的實戰：Tailwind 居多，或元件 framework 自己處理 scope（Vue / Svelte），純 CSS 還是用 BEM。
+
+  
+### 檔案組織
+
+```text
+styles/
+├── reset.css           ← Tailwind 已含
+├── tokens.css          ← 設計 tokens
+├── base.css            ← 全域 base
+├── components/
+│   ├── button.css
+│   ├── card.css
+│   └── dialog.css
+├── utilities.css       ← 額外 utility
+└── main.css            ← @import 全部
+```
+
+  
+### 必須會的工具
+
+  
+- **PostCSS**：CSS 的 babel，加 prefix、autoprefixer
+- **Sass / Less**：CSS 預處理器
+- **Stylelint**：CSS 的 ESLint
+- **Prettier**：自動格式化
+- **Tailwind IntelliSense**：VS Code 必裝
+
+  
+### 2026 的「現代 CSS」核心
+
+  
+1. 用 `oklch()` 配色
+2. 用 `:has()` 替代 JS
+3. 用 `container queries` 而非單純 media queries
+4. 用 `clamp()` 做流體排版
+5. 用 `@layer` 管理優先級
+6. 用 `dvh` 而非 `vh`
+7. 用 CSS 變數做主題
+8. animation 只動 `transform / opacity`
+
+  
+**🚀 進階技巧**
+
+每年看一次 `https://web.dev/baseline` 跟 `https://caniuse.com`，知道現在哪些新 CSS 特性已經安全可用。CSS 進化非常快，2024 的東西到 2026 多半已是「能用」狀態。
+
+  
+
+  
+
+💼
+接案小知識
+
+剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「CSS」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。

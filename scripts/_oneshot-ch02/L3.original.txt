@@ -1,0 +1,97 @@
+CSS 全名 **Cascading** Style Sheets，「串接」是它的靈魂。同個元素被多個規則指到時，誰贏？
+
+  
+### 特異性（Specificity）：誰的權重大
+
+  
+權重計算用四個數字 `(行內, ID, class, 標籤)`：
+
+  
+| 選擇器 | 權重 | 說明 |
+| --- | --- | --- |
+| `p` | 0,0,0,1 | 標籤 = 1 |
+| `.card` | 0,0,1,0 | class = 10 |
+| `.card p` | 0,0,1,1 | class + 標籤 |
+| `#header` | 0,1,0,0 | ID = 100 |
+| `style="..."` | 1,0,0,0 | 行內 = 1000 |
+| `!important` | ∞ | 核子彈，盡量別用 |
+
+```css
+/* 兩條規則都選到同個  */
+p { color: blue; }           /* 權重 0,0,0,1 */
+.text { color: red; }       /* 權重 0,0,1,0 ← 贏 */
+
+/* 同權重時，後寫的贏 */
+.a { color: blue; }
+.a { color: red; }           /* 後寫，贏 */
+```
+
+  
+### 繼承（Inheritance）
+
+  
+某些屬性會自動傳給子元素（顏色、字型、行高），某些不會（邊框、padding、margin）。
+
+```css
+body {
+  color: #333;           /* 會繼承 */
+  font-family: sans-serif; /* 會繼承 */
+  background: white;     /* 不繼承 */
+  border: 1px solid;   /* 不繼承 */
+}
+
+/* 強制繼承 */
+button { color: inherit; }
+```
+
+  
+### !important：核子彈
+
+```css
+.btn { color: blue !important; }
+/* 除非另一個也 !important 且權重更高，否則絕對贏 */
+```
+
+  
+**⚠ 踩雷警告**
+
+**不要濫用 !important**。一個 !important 會逼後人也用 !important 救火，越滾越大。實戰只在兩種情況用：(1) 對抗第三方寫死的樣式（廣告、外掛）(2) utility class（如 Tailwind 的 `!hidden`）。
+
+  
+
+  
+### Cascade Layers（2022+ 新功能）
+
+  
+過去管理 CSS 優先級超痛苦，現在 CSS 原生支援「分層」：
+
+```css
+/* 定義層級順序：後面的層贏 */
+@layer reset, base, components, utilities;
+
+@layer reset {
+  * { margin: 0; padding: 0; }
+}
+
+@layer base {
+  body { font-family: sans-serif; }
+}
+
+@layer components {
+  .card { border: 1px solid gray; }
+}
+
+@layer utilities {
+  .hidden { display: none; }
+}
+```
+
+  
+不管特異性多高，**後面層的規則永遠贏前面層**。Tailwind v4、shadcn/ui 都用這個架構。
+
+  
+
+⚡
+學習加速器
+
+把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。

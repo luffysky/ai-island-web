@@ -1,0 +1,105 @@
+CSS 的核心是「選誰，做什麼」。選誰 = 選擇器（selector）。
+
+  
+### 基礎選擇器
+
+```css
+/* 標籤選擇器：選所有這種標籤 */
+p { color: gray; }
+
+/* class 選擇器：選 class="card" 的元素 */
+.card { padding: 20px; }
+
+/* id 選擇器：選 id="header" 的元素（不推薦多用） */
+#header { background: black; }
+
+/* 屬性選擇器：選有特定屬性的元素 */
+a[target="_blank"] { color: blue; }
+input[type="email"] { border: 1px solid blue; }
+
+/* 通用選擇器：所有元素 */
+* { box-sizing: border-box; }
+```
+
+  
+### 組合選擇器
+
+```css
+/* 後代：div 內所有 p（不管多深） */
+div p { margin: 10px; }
+
+/* 直接子代：div 的「直接」p */
+div > p { color: red; }
+
+/* 相鄰兄弟：緊接在 h1 後面的 p */
+h1 + p { font-weight: bold; }
+
+/* 一般兄弟：h1 後面所有 p */
+h1 ~ p { color: gray; }
+
+/* 多重：a 或 b 或 c */
+.primary, .success, .info { color: white; }
+```
+
+  
+### 偽類（pseudo-class）：狀態選擇器
+
+```css
+/* 滑鼠 hover 時 */
+button:hover { background: blue; }
+
+/* 按下時 */
+button:active { transform: scale(0.95); }
+
+/* 取得焦點時（鍵盤 Tab 過來） */
+input:focus { outline: 2px solid orange; }
+
+/* 只在鍵盤觸發 focus 時（不被 click 觸發），無障礙必備 */
+input:focus-visible { outline: 3px solid orange; }
+
+/* 第幾個子元素 */
+li:first-child { font-weight: bold; }
+li:last-child { border-bottom: 0; }
+li:nth-child(2n) { background: #f0f0f0; } /* 雙數 */
+li:nth-child(3) { color: red; }    /* 第 3 個 */
+
+/* 沒被選中的 */
+div:not(.active) { opacity: 0.5; }
+
+/* 2023+ 神級選擇器：包含 .has 內部的元素 */
+article:has(img) { padding-top: 0; }
+/* 「有圖的文章」可以這樣選！過去要 JS 才能做 */
+```
+
+  
+### 偽元素（pseudo-element）：插入虛擬元素
+
+```css
+/* 在元素前/後插入內容 */
+.quote::before { content: '"'; }
+.quote::after  { content: '"'; }
+
+/* 第一個字、第一行 */
+p::first-letter { font-size: 3em; float: left; }
+p::first-line   { font-weight: bold; }
+
+/* 選取的文字 */
+::selection { background: yellow; }
+
+/* placeholder 樣式 */
+input::placeholder { color: #aaa; }
+```
+
+  
+**🚀 進階技巧**
+
+`:has()` 是 2023 才被全瀏覽器支援的「父選擇器」。它讓 CSS 第一次能根據「內部有什麼」反推回去選父元素。用對的話可以省掉一半的 JS 邏輯。例如 `form:has(input:invalid) button { opacity: 0.5 }`。
+
+  
+
+  
+
+🎯
+面試考點
+
+台灣科技公司面試 90% 會問「CSS」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。

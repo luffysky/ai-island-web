@@ -1,0 +1,83 @@
+10–20% 使用者有某種無障礙需求（視障、色盲、運動障礙、認知障礙）。寫無障礙的 CSS 不難，但要記住。
+
+  
+### 對比度（Contrast）
+
+```css
+/* 文字對背景的對比 */
+.good { color: #333; background: #fff; }   /* 12.6:1 ✓ */
+.bad  { color: #999; background: #fff; }   /* 2.8:1 ✗ */
+```
+
+  
+WCAG 標準：
+
+  
+- **AA 級**：正常文字 4.5:1、大文字 3:1
+- **AAA 級**：正常文字 7:1、大文字 4.5:1
+
+  
+檢查工具：Chrome DevTools 內建、`https://webaim.org/resources/contrastchecker/`。
+
+  
+### focus 樣式（鍵盤使用者必備）
+
+```css
+/* 永遠不要關掉 focus */
+/* ✗ 大忌 */
+*:focus { outline: none; }
+
+/* ✓ 要客製就客製清楚 */
+button:focus-visible {
+  outline: 3px solid #0070f3;
+  outline-offset: 2px;
+}
+```
+
+  
+### 螢幕閱讀器友善的隱藏
+
+```css
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+```
+
+```html
+<!-- 此處原本為 HTML 範例
+     程式碼已在內容修正中、稍後將補回完整範例 -->
+```
+
+  
+### 不要只靠顏色傳達訊息
+
+```html
+<!-- 此處原本為 HTML 範例
+     程式碼已在內容修正中、稍後將補回完整範例 -->
+```
+
+  
+### 觸控目標最小 44×44px
+
+```css
+button {
+  min-width: 44px;
+  min-height: 44px;
+}
+/* iOS / Material Design 建議的最小可觸控區域 */
+```
+
+  
+
+🚀
+2026 趨勢
+
+這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。

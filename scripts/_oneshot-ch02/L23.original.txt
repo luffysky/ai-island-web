@@ -1,0 +1,70 @@
+### 瀏覽器渲染管線
+
+  
+1. **Parse**：HTML/CSS → DOM/CSSOM
+2. **Style**：算每個元素的樣式
+3. **Layout**：算每個元素的位置和大小
+4. **Paint**：畫到螢幕
+5. **Composite**：合成圖層
+
+  
+改不同屬性，觸發不同階段：
+
+  
+| 屬性 | 觸發階段 | 成本 |
+| --- | --- | --- |
+| `width / height / top / left` | Layout | 最貴 |
+| `color / background` | Paint | 中 |
+| `transform / opacity` | Composite | 便宜 |
+
+  
+**動畫只動 transform 跟 opacity**，這條鐵律記住。
+
+  
+### contain：告訴瀏覽器這個元素獨立
+
+```css
+.card {
+  contain: layout style paint;
+}
+/* 瀏覽器知道這 card 的變化不影響外部，可以隔離計算 */
+```
+
+  
+### content-visibility：跳過離畫面遠的元素
+
+```css
+.long-list-item {
+  content-visibility: auto;
+  contain-intrinsic-size: 200px;
+}
+/* 螢幕外的元素瀏覽器先不渲染，省下計算 */
+/* 上萬筆列表的救星 */
+```
+
+  
+### 降低 CSS 大小
+
+  
+- Tailwind v4 預設只產用到的 class（PurgeCSS 內建）
+- Critical CSS：把首屏 CSS 內聯到 HTML
+- code splitting：每個路由載入自己的 CSS
+- 移除沒用到的字型粗細 / 子集化（subset）
+
+  
+### 圖片優化
+
+```html
+
+  
+  
+  
+
+```
+
+  
+
+🛠️
+工具推薦
+
+配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。

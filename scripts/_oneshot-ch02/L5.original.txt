@@ -1,0 +1,32 @@
+每個元素都有「人格」— 是塊狀還是內聯？是 flex 容器還是 grid？由 `display` 決定。
+
+  
+| 值 | 行為 | 例子 |
+| --- | --- | --- |
+| `block` | 獨佔一行，可設寬高 | div, p, h1 |
+| `inline` | 跟其他在同一行，寬高失效 | span, a, strong |
+| `inline-block` | 同行但可設寬高 | 按鈕、tag |
+| `flex` | 變成 flex 容器 | 導覽列、卡片組 |
+| `grid` | 變成 grid 容器 | 圖庫、儀表板 |
+| `none` | 完全消失（占位也沒） | 切換顯示 |
+| `contents` | 盒子消失但子元素留 | 進階布局 |
+
+```css
+/* 隱藏元素的三種方式 */
+.hidden-1 { display: none; }       /* 完全消失，不占位 */
+.hidden-2 { visibility: hidden; } /* 看不到但占位 */
+.hidden-3 { opacity: 0; }            /* 看不到但可點 */
+.hidden-4 {                            /* 無障礙友善：螢幕閱讀器讀得到 */
+  position: absolute;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+```
+
+  
+
+🛠️
+工具推薦
+
+配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。

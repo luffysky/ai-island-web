@@ -1,0 +1,73 @@
+```css
+/* 1. static（預設）：跟著文檔流走 */
+.a { position: static; }
+
+/* 2. relative：相對自己原本位置偏移，原位置保留 */
+.b {
+  position: relative;
+  top: 10px;
+  left: 20px; /* 往右 20、往下 10 */
+}
+
+/* 3. absolute：脫離文檔流，相對最近的 relative 父元素定位 */
+.parent { position: relative; }
+.c {
+  position: absolute;
+  top: 0; right: 0; /* 父元素右上角 */
+}
+
+/* 4. fixed：相對視窗固定，捲動不動 */
+.d {
+  position: fixed;
+  bottom: 20px; right: 20px; /* 永遠在右下角 */
+}
+
+/* 5. sticky：滾到邊界後變固定 */
+.e {
+  position: sticky;
+  top: 0; /* 滾到頂部後黏住 */
+}
+```
+
+  
+### z-index：誰在上面
+
+```css
+.modal { position: fixed; z-index: 1000; }
+.toast { position: fixed; z-index: 2000; } /* 比 modal 高 */
+
+/* 注意：z-index 只在 position 不是 static 時生效 */
+```
+
+  
+**⚠ 踩雷警告**
+
+z-index 大戰是真的會發生的事。團隊常見問題：A 寫 999、B 寫 9999、C 不甘示弱寫 99999。**正確做法**：定義一套 z-index 系統（CSS 變數）：`--z-modal: 1000; --z-toast: 1100;` 全專案統一用，不准寫死數字。
+
+  
+
+  
+### 實戰例：黏性 header + sticky 章節標題
+
+```css
+header {
+  position: sticky;
+  top: 0;
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(10px); /* 毛玻璃 */
+  z-index: 100;
+}
+
+h2 {
+  position: sticky;
+  top: 60px; /* 在 header 下方黏住 */
+  background: white;
+}
+```
+
+  
+
+🎯
+面試考點
+
+台灣科技公司面試 90% 會問「CSS」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。

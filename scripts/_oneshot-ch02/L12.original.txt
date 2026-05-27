@@ -1,0 +1,105 @@
+### Viewport meta（一定要有）
+
+```html
+
+```
+
+  
+### Media Queries
+
+```css
+/* 手機優先（mobile-first） */
+.card {
+  width: 100%;
+}
+
+/* 平板以上（≥ 768px） */
+@media (min-width: 768px) {
+  .card { width: 50%; }
+}
+
+/* 桌面（≥ 1024px） */
+@media (min-width: 1024px) {
+  .card { width: 33.33%; }
+}
+
+/* 進階查詢 */
+@media (prefers-color-scheme: dark) {
+  body { background: #000; color: #fff; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none; transition: none; }
+}
+
+@media (hover: hover) {
+  button:hover { background: blue; }
+}
+/* 只在真的有 hover 的裝置（不是手機）套用 */
+
+/* 列印 */
+@media print {
+  nav, footer { display: none; }
+}
+```
+
+  
+### 標準斷點（業界共識）
+
+  
+| 名稱 | min-width | 裝置 |
+| --- | --- | --- |
+| sm | 640px | 大手機 |
+| md | 768px | 平板 |
+| lg | 1024px | 小筆電 |
+| xl | 1280px | 桌機 |
+| 2xl | 1536px | 大螢幕 |
+
+  
+### Container Queries：未來標準（2023+）
+
+  
+Media query 是「**視窗**多大」，Container query 是「**容器**多大」。讓元件變成真正可重用。
+
+```css
+/* 父容器宣告自己是查詢對象 */
+.card-wrapper {
+  container-type: inline-size;
+  container-name: card;
+}
+
+/* 子元素根據父容器寬度切換 */
+@container card (min-width: 400px) {
+  .card {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+  }
+}
+/* 同一張 card 在 sidebar 是直的，在 main 是橫的 */
+```
+
+  
+### 流體排版（Fluid Typography）
+
+```css
+/* clamp(最小, 理想, 最大) */
+h1 {
+  font-size: clamp(2rem, 5vw, 5rem);
+}
+/* 螢幕小時 32px，中等時 5vw，大時最多 80px */
+/* 完全不用 media query！ */
+```
+
+  
+**🚀 進階技巧**
+
+2026 年的響應式哲學是「**少用 media query，多用 clamp + container query + Grid auto-fit**」。寫出來的 CSS 更乾淨、更穩定。可惜很多老教學還停留在「斷點切換」思維。
+
+  
+
+  
+
+⚠️
+新手常見錯誤
+
+新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。

@@ -1,0 +1,63 @@
+```css
+.box {
+  /* 位移 */
+  transform: translateX(50px);
+  transform: translateY(50px);
+  transform: translate(50px, 100px);
+  transform: translate3d(50px, 100px, 0); /* GPU 加速 */
+  
+  /* 縮放 */
+  transform: scale(1.2);
+  transform: scale(2, 0.5); /* X、Y */
+  
+  /* 旋轉 */
+  transform: rotate(45deg);
+  transform: rotate3d(1, 1, 0, 45deg);
+  
+  /* 傾斜 */
+  transform: skew(10deg, 5deg);
+  
+  /* 組合（順序影響結果） */
+  transform: translate(50px, 0) rotate(45deg) scale(1.2);
+  
+  /* 變換原點 */
+  transform-origin: top left; /* 預設 center */
+}
+```
+
+  
+### 3D Transform
+
+```css
+.parent {
+  perspective: 1000px; /* 必須在父元素設 */
+}
+
+.card {
+  transform-style: preserve-3d;
+  transition: transform 0.6s;
+}
+
+.card:hover {
+  transform: rotateY(180deg); /* 翻牌 */
+}
+```
+
+  
+### 新語法（2023+）：可以單獨 animate
+
+```css
+.box {
+  translate: 50px 100px;
+  rotate: 45deg;
+  scale: 1.2;
+}
+/* 比 transform 簡單，可以單獨變更不互相覆蓋 */
+```
+
+  
+
+⚡
+學習加速器
+
+把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。

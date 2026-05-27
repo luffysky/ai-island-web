@@ -1,0 +1,105 @@
+Tailwind 改變了 2020 後的前端世界。寫 class 不寫 CSS。爭議大，但確實提升開發速度 10 倍。
+
+  
+### 裝起來（Tailwind v4，2024+）
+
+```bash
+pnpm add -D tailwindcss @tailwindcss/postcss
+# Vite 用：
+pnpm add -D @tailwindcss/vite
+```
+
+```css
+/* main.css */
+@import "tailwindcss";
+```
+
+  
+### 核心思想：把 CSS 切成最小 class
+
+```html
+<!-- 此處原本為 HTML 範例
+     程式碼已在內容修正中、稍後將補回完整範例 -->
+```
+
+  
+### 常用 class 對照
+
+  
+| Tailwind | CSS |
+| --- | --- |
+| `p-4` | `padding: 1rem` |
+| `px-4 py-2` | `padding: 0.5rem 1rem` |
+| `m-auto` | `margin: auto` |
+| `flex items-center justify-center` | flex + 置中 |
+| `grid grid-cols-3 gap-4` | 3 欄 grid |
+| `text-lg font-bold text-gray-700` | 字級+粗體+顏色 |
+| `bg-blue-500 hover:bg-blue-600` | 背景 + hover |
+| `rounded-lg shadow-md` | 圓角 + 陰影 |
+| `md:flex lg:grid` | 響應式 |
+| `dark:bg-gray-900` | 暗黑模式 |
+
+  
+### 修飾符（State Modifiers）
+
+```html
+
+```
+
+  
+### v4 新特性：@theme
+
+```css
+@import "tailwindcss";
+
+@theme {
+  --color-brand: oklch(0.7 0.2 240);
+  --color-brand-dark: oklch(0.5 0.2 240);
+  --font-display: "Inter", sans-serif;
+  --radius-pill: 999px;
+}
+
+/* 自動產生 bg-brand、text-brand、font-display、rounded-pill 等 class */
+```
+
+  
+### @apply（複用樣式）
+
+```css
+.btn-primary {
+  @apply px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600;
+}
+```
+
+  
+### 動態值（arbitrary values）
+
+```html
+
+```
+
+  
+### shadcn/ui：Tailwind 上的元件系統
+
+  
+**不是套件，是「複製貼上的元件」**。CLI 把 Radix UI + Tailwind 組合的元件複製到你專案，你可以隨意改。2024–2026 最紅的 UI 系統。
+
+```bash
+pnpx shadcn@latest init
+pnpx shadcn@latest add button
+pnpx shadcn@latest add dialog
+```
+
+  
+**⚠ 踩雷警告**
+
+Tailwind 的爭議：(1) HTML 看起來髒。(2) 一行 class 可能 30+ 個。解法：(a) 用 IDE 折行 / Prettier plugin (b) 元件化（React/Vue 把重複的包成元件）(c) 善用 `@apply`。但**不要對抗它**，違反設計哲學寫一堆 CSS 就失去意義了。
+
+  
+
+  
+
+🛠️
+工具推薦
+
+配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。

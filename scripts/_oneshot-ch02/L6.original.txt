@@ -1,0 +1,122 @@
+Flexbox = Flexible Box。**主要解一維問題**：一排東西怎麼排。是 2026 年所有開發者必精通的東西。
+
+  
+### 容器屬性
+
+```css
+.container {
+  display: flex;
+  
+  /* 主軸方向：row（預設）/ column / row-reverse / column-reverse */
+  flex-direction: row;
+  
+  /* 換行：nowrap（預設不換）/ wrap / wrap-reverse */
+  flex-wrap: wrap;
+  
+  /* 縮寫：direction + wrap */
+  flex-flow: row wrap;
+  
+  /* 主軸對齊：flex-start / center / flex-end / space-between / space-around / space-evenly */
+  justify-content: space-between;
+  
+  /* 交叉軸對齊：stretch（預設）/ flex-start / center / flex-end / baseline */
+  align-items: center;
+  
+  /* 多行時的交叉軸對齊 */
+  align-content: space-between;
+  
+  /* 元素間距（神器！）*/
+  gap: 16px;
+  row-gap: 16px;
+  column-gap: 24px;
+}
+```
+
+  
+### 子項目屬性
+
+```css
+.item {
+  /* 縮放：能多大 / 能多小 / 基本大小 */
+  flex-grow: 1;       /* 能變多大 */
+  flex-shrink: 1;     /* 能變多小 */
+  flex-basis: 200px;  /* 起始大小 */
+  
+  /* 縮寫 */
+  flex: 1;           /* = 1 1 0%，平均分配 */
+  flex: 0 0 auto;    /* = 不縮放、用 content 大小 */
+  flex: 2;           /* 比其他 flex:1 的多兩倍 */
+  
+  /* 單獨對齊（覆蓋容器的 align-items） */
+  align-self: flex-end;
+  
+  /* 順序（不改 HTML 改視覺順序）*/
+  order: -1;
+}
+```
+
+  
+### 實戰例：經典導覽列
+
+```css
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 32px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 24px;
+}
+```
+
+  
+### 實戰例：永遠在最下面的 footer
+
+```css
+body {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+main { flex: 1; } /* main 撐開剩餘空間 */
+/* footer 自然會被推到底 */
+```
+
+  
+### 實戰例：垂直水平置中（一行解決千古難題）
+
+```css
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+/* 過去要 absolute + translate，現在 3 行搞定 */
+```
+
+  
+### 實戰例：彈性卡片組
+
+```css
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.card {
+  flex: 1 1 300px; /* 至少 300px，能撐多大撐多大 */
+}
+/* 螢幕寬：一排 4 個；窄：一排 2 個；超窄：一排 1 個 */
+```
+
+  
+
+⚠️
+新手常見錯誤
+
+新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。

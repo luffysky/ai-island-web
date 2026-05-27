@@ -1,0 +1,111 @@
+React/Vue 時代，「把 CSS 寫在 JS 裡」變成另一條路線。各家方案：
+
+  
+### 1. styled-components / Emotion（runtime CSS-in-JS）
+
+```jsx
+import styled from "styled-components";
+
+const Button = styled.button`
+  background: ${props => props.primary ? "blue" : "gray"};
+  color: white;
+  padding: 10px 20px;
+  
+  &:hover {
+    opacity: 0.8;
+  }
+`;
+
+function App() {
+  return 點我;
+}
+```
+
+  
+**優點**：scoped、動態、跟 props 連動。**缺點**：runtime 開銷、SSR 麻煩、2024 之後逐漸式微（React Server Components 不友善）。
+
+  
+### 2. CSS Modules
+
+```css
+/* Button.module.css */
+.button {
+  background: blue;
+  color: white;
+}
+.primary { background: crimson; }
+```
+
+```jsx
+import styles from "./Button.module.css";
+
+function Button({ primary }) {
+  return ...;
+}
+```
+
+  
+**優點**：寫純 CSS、scoped、零 runtime、SSR 友善。**缺點**：動態樣式麻煩。
+
+  
+### 3. Vanilla Extract（零執行時 CSS-in-TS）
+
+```ts
+// button.css.ts
+import { style } from "@vanilla-extract/css";
+
+export const button = style({
+  background: "blue",
+  color: "white",
+  padding: "10px 20px",
+  ":hover": {
+    opacity: 0.8
+  }
+});
+
+// Button.tsx
+import { button } from "./button.css";
+export const Button = () => ...;
+```
+
+  
+**優點**：完整 TS 型別、零 runtime、SSR 完美。**缺點**：學習曲線。
+
+  
+### 4. Panda CSS / StyleX
+
+  
+2024+ 的新方案。Panda（Park UI 那家做的）跟 Meta 的 StyleX 都是「build-time + atomic CSS」。把 CSS-in-JS 的 DX 跟 Tailwind 的效能合在一起。
+
+```ts
+// Panda
+import { css } from "styled-system/css";
+
+const Button = () => (
+  ...
+);
+```
+
+  
+### 2026 業界選擇趨勢
+
+  
+- **新 Next.js / RSC 專案**：Tailwind v4（最多人選）
+- **強型別 + 設計系統**：Vanilla Extract、Panda CSS
+- **傳統 React SPA**：CSS Modules、styled-components
+- **Vue**：scoped style（內建）
+- **Meta 大型專案**：StyleX
+
+  
+**🚀 進階技巧**
+
+styled-components 在 2024 之後逐漸退場（不支援 RSC，效能也輸）。新專案**不要選 styled-components**，選 Tailwind 或 Vanilla Extract。維護老專案可以繼續用，但別新引入。
+
+  
+
+  
+
+💼
+接案小知識
+
+剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「CSS」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。

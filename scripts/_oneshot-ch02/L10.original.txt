@@ -1,0 +1,124 @@
+### 字型載入：Web Fonts
+
+```html
+
+```
+
+```css
+/* 自架字型（效能更好） */
+@font-face {
+  font-family: 'MyFont';
+  src: url('fonts/myfont.woff2') format('woff2');
+  font-weight: 100 900; /* variable font 範圍 */
+  font-display: swap;        /* 載入時顯示備用字 */
+}
+
+body {
+  font-family: 'MyFont', -apple-system, system-ui, sans-serif;
+}
+```
+
+  
+### 系統字型堆疊（performance）
+
+```css
+body {
+  font-family:
+    -apple-system,        /* macOS / iOS */
+    BlinkMacSystemFont,   /* macOS Chrome */
+    'Segoe UI',            /* Windows */
+    'Roboto',              /* Android */
+    'Helvetica Neue',
+    sans-serif;
+}
+/* 不用下載字型，每個系統用最佳原生字 */
+```
+
+  
+### 字型完整屬性
+
+```css
+.text {
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 400;        /* 100–900 */
+  font-style: italic;
+  font-variant: small-caps;
+  
+  /* 行高 */
+  line-height: 1.6;        /* 不加單位最好（會繼承倍數）*/
+  
+  /* 字距 */
+  letter-spacing: 0.02em;
+  word-spacing: 0.1em;
+  
+  /* 對齊 */
+  text-align: left;       /* left / right / center / justify */
+  
+  /* 裝飾 */
+  text-decoration: underline red wavy 2px;
+  text-underline-offset: 4px;
+  
+  /* 大小寫 */
+  text-transform: uppercase;  /* / lowercase / capitalize */
+  
+  /* 縮排 */
+  text-indent: 2em;
+  
+  /* 換行 */
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  hyphens: auto;             /* 自動斷字 */
+  
+  /* 字型平滑 */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+```
+
+  
+### 截斷文字（業界必備）
+
+```css
+/* 單行截斷加 ... */
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 多行截斷 */
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+```
+
+  
+### 可變字型（Variable Fonts）
+
+```css
+.text {
+  font-family: 'Inter Variable';
+  font-variation-settings: 
+    "wght" 450,   /* 字重 */
+    "slnt" -5;    /* 傾斜 */
+}
+/* 一個字型檔包含所有字重，省下流量 */
+```
+
+  
+**🚀 進階技巧**
+
+字型最佳寬度是**每行 50–80 字元**。用 `max-width: 70ch` 限制文章寬度，閱讀體驗會立刻提升。這是 Medium、Substack 都在用的設計。
+
+  
+
+  
+
+🚀
+2026 趨勢
+
+這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。

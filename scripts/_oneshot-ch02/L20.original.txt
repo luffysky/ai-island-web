@@ -1,0 +1,116 @@
+設計系統的最底層是「**tokens**」— 一組命名的設計常數。所有顏色、間距、字級、圓角都有名字、有層級。
+
+  
+### 三層 token 結構（業界標準）
+
+```css
+:root {
+  /* 1. Primitive（原始值，不直接用） */
+  --blue-50: #eff6ff;
+  --blue-500: #3b82f6;
+  --blue-900: #1e3a8a;
+  --gray-50: #f9fafb;
+  --gray-900: #111827;
+  
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-4: 16px;
+  
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  
+  /* 2. Semantic（語意，給元件用） */
+  --color-primary: var(--blue-500);
+  --color-primary-hover: var(--blue-600);
+  --color-text: var(--gray-900);
+  --color-bg: var(--gray-50);
+  --color-border: var(--gray-200);
+  
+  --space-card-padding: var(--space-4);
+  
+  /* 3. Component（特定元件） */
+  --btn-padding-x: var(--space-4);
+  --btn-padding-y: var(--space-2);
+  --btn-radius: var(--radius-md);
+}
+
+/* 暗色主題只改 semantic 層 */
+[data-theme="dark"] {
+  --color-text: var(--gray-50);
+  --color-bg: var(--gray-900);
+}
+```
+
+  
+### 對應的元件 CSS
+
+```css
+.btn {
+  background: var(--color-primary);
+  padding: var(--btn-padding-y) var(--btn-padding-x);
+  border-radius: var(--btn-radius);
+}
+
+.card {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  padding: var(--space-card-padding);
+}
+```
+
+  
+### 為什麼這樣做？
+
+  
+- 切換主題只改 semantic 層
+- 改一個常數，全網站跟著變
+- 設計師跟工程師有共同詞彙
+- 可匯出給 Figma / Sketch（用 Style Dictionary、Tokens Studio）
+- 未來換設計系統，元件不用改
+
+  
+### 規模範例：完整尺寸表
+
+```css
+:root {
+  /* 間距比例 — 使用 4px 為基準的 8 點網格 */
+  --space-0: 0;
+  --space-px: 1px;
+  --space-0_5: 2px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+  
+  /* 字級比例 — Major Third（1.25） */
+  --text-xs:   12px;
+  --text-sm:   14px;
+  --text-base: 16px;
+  --text-lg:   18px;
+  --text-xl:   20px;
+  --text-2xl:  24px;
+  --text-3xl:  30px;
+  --text-4xl:  36px;
+  --text-5xl:  48px;
+  --text-6xl:  60px;
+}
+```
+
+  
+看起來像 Tailwind？沒錯。Tailwind 就是把這套系統工業化。學會這個你可以自己造一個 Tailwind 級的 token 系統。
+
+  
+
+🎯
+面試考點
+
+台灣科技公司面試 90% 會問「CSS」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。

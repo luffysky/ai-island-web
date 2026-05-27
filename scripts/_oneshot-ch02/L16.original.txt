@@ -1,0 +1,148 @@
+純 CSS 寫久了會痛：沒有變數（後來才加）、沒有巢狀、沒有 mixin。**Sass** 補完這些。SCSS 是 Sass 的「兼容 CSS 的語法」，業界 99% 用 SCSS。
+
+```bash
+pnpm add -D sass
+```
+
+  
+### 變數
+
+```scss
+$primary: #0070f3;
+$radius: 8px;
+$breakpoint-md: 768px;
+
+.btn {
+  background: $primary;
+  border-radius: $radius;
+}
+```
+
+  
+### 巢狀（Nesting）
+
+```scss
+.card {
+  padding: 20px;
+  
+  h2 {
+    color: #333;
+    margin-bottom: 10px;
+  }
+  
+  &:hover {       // & 代表外層
+    transform: scale(1.02);
+  }
+  
+  &.primary {     // .card.primary
+    background: blue;
+  }
+  
+  .btn + .btn {  // 卡片內按鈕之間
+    margin-left: 8px;
+  }
+}
+```
+
+  
+### Mixin（可重用樣式塊）
+
+```scss
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin button($bg, $color: white) {
+  background: $bg;
+  color: $color;
+  padding: 10px 20px;
+  border-radius: 4px;
+  
+  &:hover {
+    background: darken($bg, 10%);
+  }
+}
+
+.center { @include flex-center; }
+.btn-primary { @include button(blue); }
+.btn-danger  { @include button(red, white); }
+```
+
+  
+### Function（運算邏輯）
+
+```scss
+@function rem($px) {
+  @return ($px / 16) * 1rem;
+}
+
+h1 { font-size: rem(32); } // 2rem
+```
+
+  
+### @extend（繼承）
+
+```scss
+.btn-base {
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-primary {
+  @extend .btn-base;
+  background: blue;
+}
+```
+
+  
+### @if / @each / @for（流程控制）
+
+```scss
+$colors: (primary: blue, success: green, danger: red);
+
+@each $name, $color in $colors {
+  .btn-#{$name} {
+    background: $color;
+  }
+}
+// 產生 .btn-primary, .btn-success, .btn-danger
+
+@for $i from 1 through 12 {
+  .col-#{$i} {
+    width: $i * 8.333%;
+  }
+}
+```
+
+  
+### @use 跟 @forward（2020+ 模組系統）
+
+```scss
+// _variables.scss
+$primary: blue;
+$radius: 8px;
+
+// _buttons.scss
+@use "variables" as v;
+
+.btn {
+  background: v.$primary;
+  border-radius: v.$radius;
+}
+
+// main.scss
+@use "buttons";
+```
+
+  
+Sass 主要場景在 2026 已縮小（CSS 變數＋現代特性已經很強），但**設計系統、大型 SaaS 後台、Bootstrap 主題客製**還是 Sass 主場。
+
+  
+
+🚀
+2026 趨勢
+
+這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。
