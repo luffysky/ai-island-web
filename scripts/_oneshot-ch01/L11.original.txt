@@ -1,0 +1,68 @@
+10–20% 使用者有無障礙需求。寫無障礙 HTML 不難，但要記住。
+
+  
+### 語意化標籤已經包了大半
+
+  
+用對 HTML 標籤 = 70% 無障礙完成。`` 自帶鍵盤支援、focus 狀態，`` 也是。用 `` 是**無障礙地獄**。
+
+  
+### ARIA：補語意
+
+```html
+<!-- 語意化 + ARIA -->
+<button aria-label="關閉視窗" onclick="close()">×</button>
+
+<nav aria-label="主選單">
+  <ul>
+    <li><a href="/">首頁</a></li>
+    <li><a href="/about" aria-current="page">關於</a></li>
+  </ul>
+</nav>
+
+<div role="alert" aria-live="polite">
+  存檔成功！
+</div>
+
+<div role="dialog" aria-labelledby="dialog-title" aria-modal="true">
+  <h2 id="dialog-title">確認刪除</h2>
+  <p>真的要刪除嗎？</p>
+  <button>確定</button>
+  <button>取消</button>
+</div>
+
+<input
+  type="search"
+  aria-label="搜尋商品"
+  aria-describedby="search-hint"
+>
+<span id="search-hint">輸入關鍵字後按 Enter</span>
+```
+
+  
+### ARIA 第一定律
+
+  
+**能不用 ARIA 就不用**。能用 HTML 原生標籤就用 HTML。ARIA 是補丁，不是替代。
+
+  
+### 鍵盤導航
+
+
+
+  
+### 跳過導覽連結（Skip link）
+
+
+
+  
+### 螢幕閱讀器專用內容
+
+
+
+  
+
+🛠️
+工具推薦
+
+配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。

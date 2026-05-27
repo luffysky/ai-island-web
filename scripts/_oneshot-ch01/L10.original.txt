@@ -1,0 +1,67 @@
+Google 搜尋結果有時會出現特殊樣式（星級、價格、FAQ、麵包屑、影片預覽）— 那不是 Google 猜的，是**你告訴它的**。用的就是 JSON-LD。
+
+  
+2026 更重要：AI 搜尋（ChatGPT search、Perplexity）會直接引用你的結構化資料。**沒寫 JSON-LD 等於不存在**。
+
+  
+### 文章類
+
+```html
+<!-- HTML5 新 input types -->
+<input type="email" placeholder="email@example.com">
+<input type="tel" placeholder="0912345678">
+<input type="url" placeholder="https://...">
+<input type="number" min="0" max="100" step="1">
+<input type="range" min="0" max="100">
+<input type="date">
+<input type="time">
+<input type="color">
+<input type="file" accept="image/*">
+<input type="password" minlength="8">
+<input type="search">
+
+<!-- 驗證 -->
+<input
+  type="email"
+  required
+  pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+  title="請輸入有效的 email"
+>
+```
+
+  
+### 產品（電商必備）
+
+
+
+  
+### FAQ（容易在搜尋上方出現）
+
+
+
+  
+### 麵包屑（讓搜尋顯示路徑）
+
+
+
+  
+### 組織
+
+
+
+  
+Schema.org 有**數百種類型**：影片、活動、食譜、課程、餐廳、地點、電影、書、Podcast... 每種都會在搜尋結果有特殊顯示。GEO/AEO 時代的核心技能。
+
+  
+### 驗證工具
+
+  
+- **Google Rich Results Test**：search.google.com/test/rich-results
+- **Schema Markup Validator**：validator.schema.org
+
+  
+
+🚀
+2026 趨勢
+
+這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。

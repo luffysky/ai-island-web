@@ -1,0 +1,50 @@
+### 基本 SEO meta
+
+```html
+<form action="/api/contact" method="POST">
+  <label for="name">姓名</label>
+  <input type="text" id="name" name="name" required>
+
+  <label for="email">Email</label>
+  <input type="email" id="email" name="email" required>
+
+  <label for="message">訊息</label>
+  <textarea id="message" name="message" rows="4"></textarea>
+
+  <label>
+    <input type="checkbox" name="subscribe"> 訂閱電子報
+  </label>
+
+  <fieldset>
+    <legend>聯絡方式</legend>
+    <label><input type="radio" name="contact" value="email"> Email</label>
+    <label><input type="radio" name="contact" value="phone"> 電話</label>
+  </fieldset>
+
+  <button type="submit">送出</button>
+</form>
+```
+
+  
+### Open Graph（Facebook、Threads、LINE 分享卡片）
+
+
+
+  
+### Twitter Card
+
+
+
+  
+**✨ 接案小技巧**
+
+OG 圖片標準尺寸：**1200×630**。手機平板都好看。製作工具：Figma、Canva 都有現成模板。動態產 OG 圖：Vercel 的 `@vercel/og`、Cloudflare Workers + satori。每篇文章自動產獨特 OG 圖，社群分享品牌感大幅提升。
+
+  
+
+  
+
+⚡
+學習加速器
+
+把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。

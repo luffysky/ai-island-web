@@ -1,0 +1,56 @@
+### 連結 a 標籤
+
+```html
+<!-- 連結 -->
+<a href="https://example.com">外部連結</a>
+<a href="/about">內部連結</a>
+<a href="#section1">頁內錨點</a>
+<a href="mailto:hi@example.com">寄信</a>
+<a href="tel:+886912345678">打電話</a>
+
+<!-- 新分頁 + 安全屬性 -->
+<a href="https://example.com" target="_blank" rel="noopener noreferrer">
+  在新分頁開啟
+</a>
+
+<!-- 下載 -->
+<a href="/file.pdf" download>下載 PDF</a>
+```
+
+  
+**🚨 資安警報**
+
+`target="_blank"` 一定要加 `rel="noopener noreferrer"`。**沒加會讓新分頁能存取你的 window.opener**，攻擊者能改你頁面的網址（tabnabbing 攻擊）。
+
+  
+
+  
+### 圖片：完整版
+
+
+
+  
+### alt 屬性的學問
+
+  
+- **裝飾用圖**：`alt=""`（讓螢幕閱讀器跳過）
+- **內容圖**：簡潔描述（「橘色貓在沙發睡」），不要寫「圖片」
+- **功能圖示**：描述功能（「關閉視窗」、「下載」）
+- **圖表**：描述要傳達的數據
+
+  
+### 影片
+
+
+
+  
+### iframe（嵌入其他網頁）
+
+
+
+  
+
+⚠️
+新手常見錯誤
+
+新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。

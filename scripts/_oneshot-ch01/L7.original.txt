@@ -1,0 +1,37 @@
+```html
+<!-- 圖片基本 -->
+<img src="/photo.jpg" alt="一隻橘色貓在睡覺">
+
+<!-- 響應式（不同尺寸 + 不同密度） -->
+<img
+  src="/photo-800.jpg"
+  srcset="/photo-400.jpg 400w, /photo-800.jpg 800w, /photo-1600.jpg 1600w"
+  sizes="(max-width: 600px) 400px, 800px"
+  alt="貓"
+  loading="lazy"
+>
+
+<!-- picture 元素：多格式 -->
+<picture>
+  <source type="image/avif" srcset="/photo.avif">
+  <source type="image/webp" srcset="/photo.webp">
+  <img src="/photo.jpg" alt="貓">
+</picture>
+
+<!-- 純裝飾 -->
+<img src="/divider.png" alt="">
+```
+
+  
+**⚠ 踩雷警告**
+
+2000 年代很多人用 `` 排版整個網站，現在已經是**嚴重錯誤**。表格只用於「真正的表格資料」（時間表、財報、價格表）。排版用 Flexbox / Grid。
+
+  
+
+  
+
+💼
+接案小知識
+
+剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「HTML」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。
