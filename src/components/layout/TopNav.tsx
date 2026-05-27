@@ -224,6 +224,15 @@ export function TopNav() {
                       <span>設定</span>
                     </Link>
 
+                    <Link
+                      href={"/settings/ai-keys" as any}
+                      className="flex items-center gap-3 px-4 py-2 hover:bg-bg-elevated transition"
+                      onClick={() => setOpen(false)}
+                    >
+                      <span>🔑</span>
+                      <span>我的 AI Keys（BYOK）</span>
+                    </Link>
+
                     {(displayProfile.role === "admin" || displayProfile.role === "owner") && (
                       <Link
                         href={`/${process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2"}/admin` as any}
