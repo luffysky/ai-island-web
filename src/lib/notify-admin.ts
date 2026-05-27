@@ -323,12 +323,40 @@ async function sendTelegram(botToken: string, chatId: string, text: string, kind
     // 4. 最終 safety net：JSON.stringify 後再 strip 一次（防漏網之魚）
     const jsonStr = stripLoneSurrogates(JSON.stringify(body));
     const utf8Body = Buffer.from(jsonStr, "utf8");
-    const res = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json; charset=utf-8" },
-      body: utf8Body,
-      signal: AbortSignal.timeout(5000),
-    });
+
+    // 5. 帶 retry 的 fetch — Telegram API 偶爾 DNS / 連線抖動、第 1 次 fail 等 500ms 再試 1 次
+    let res: Response | null = null;
+    let lastErr: any = null;
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      try {
+        res = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json; charset=utf-8" },
+          body: utf8Body,
+          // Telegram p99 約 2-3s、給 10s 留 buffer（之前 5s 太緊）
+          signal: AbortSignal.timeout(10_000),
+        });
+        break;
+      } catch (e: any) {
+        lastErr = e;
+        if (attempt === 1) await new Promise((r) => setTimeout(r, 500));
+      }
+    }
+    if (!res) {
+      // 2 次都 fetch fail — 帶具體 cause（DNS / TLS / TIMEOUT 等、不只「fetch failed」）
+      const causeMsg = lastErr?.cause?.message ?? lastErr?.cause?.code ?? lastErr?.name ?? "unknown";
+      await logNotifyError("telegram", `fetch failed (retry x2): ${lastErr?.message ?? "unknown"}`, {
+        cause: causeMsg,
+        cause_code: lastErr?.cause?.code,
+        chat_id_prefix: chatId.slice(0, 6) + "...",
+        kind: kind ?? "(no-kind)",
+        hint: causeMsg.includes("TIMEOUT") || causeMsg.includes("timeout") ? "Telegram 慢回 > 10s、可能臨時負載"
+            : causeMsg.includes("ENOTFOUND") || causeMsg.includes("EAI_AGAIN") ? "DNS 解析 telegram.org 失敗、Zeabur 網路問題"
+            : causeMsg.includes("ECONNRESET") || causeMsg.includes("UND_ERR") ? "TCP 連線斷、過會再試"
+            : "看 cause 細節",
+      });
+      return;
+    }
     if (!res.ok) {
       const errBody = await res.text().catch(() => "");
       await logNotifyError("telegram", `Telegram API ${res.status}: ${errBody.slice(0, 300)}`, {
@@ -343,8 +371,10 @@ async function sendTelegram(botToken: string, chatId: string, text: string, kind
             : "看 body",
       });
     }
-  } catch (e) {
-    await logNotifyError("telegram", (e as any)?.message ?? "unknown", {
+  } catch (e: any) {
+    // 走到這裡通常是 stringify / encode 階段壞了、不是 network
+    await logNotifyError("telegram", e?.message ?? "unknown", {
+      cause: e?.cause?.message ?? e?.cause?.code ?? null,
       error: String(e).slice(0, 300),
       chat_id_prefix: chatId.slice(0, 6) + "...",
       kind: kind ?? "(no-kind)",
