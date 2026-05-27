@@ -1,0 +1,59 @@
+class 是包裝，內部還是 prototype。看懂這層才看得懂奇怪 bug。
+
+```js
+const arr = [1, 2, 3];
+
+// arr 沒有 push 方法，為什麼可以 arr.push()？
+arr.push(4); // 從哪來？
+
+// 答案：JS 沿著 __proto__ 鏈找
+arr.__proto__ === Array.prototype;           // true
+Array.prototype.__proto__ === Object.prototype; // true
+Object.prototype.__proto__ === null;         // 終點
+
+// 所以 arr.push 實際是從 Array.prototype.push 找到
+```
+
+  
+### 原型鏈圖
+
+```text
+arr → Array.prototype → Object.prototype → null
+       (有 push, map...)  (有 toString...)
+```
+
+  
+### 手動建立原型
+
+```js
+const animalProto = {
+  greet() { return `Hi, I'm ${this.name}`; }
+};
+
+const dog = Object.create(animalProto);
+dog.name = "小白";
+dog.greet(); // "Hi, I'm 小白"（從 prototype 來）
+```
+
+  
+### 檢查原型
+
+```js
+arr instanceof Array;     // true
+Array.prototype.isPrototypeOf(arr); // true
+Object.getPrototypeOf(arr) === Array.prototype; // true
+```
+
+  
+**🚨 資安警報**
+
+**Prototype Pollution** 是真實漏洞。攻擊者改 `Object.prototype` 就能影響全部物件。防：(1) 不要 deep merge 不可信資料 (2) 用 `Object.create(null)` 建純物件 (3) 凍結 Object.prototype。lodash、jQuery 都被打過。
+
+  
+
+  
+
+⚡
+學習加速器
+
+把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。

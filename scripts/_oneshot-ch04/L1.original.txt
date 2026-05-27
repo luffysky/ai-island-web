@@ -1,0 +1,88 @@
+1995 年，Netscape 工程師 Brendan Eich 在 **10 天內**趕出來的腳本語言，原本叫 LiveScript。為了蹭當時最紅的 Java，改名 JavaScript（兩者沒關係，像「雷神」跟「雷神咖啡」）。
+
+  
+結果這個趕工出來的小玩具，30 年後變成**全世界使用最廣的程式語言**。每個瀏覽器、每台伺服器、手機 App、桌面軟體（VS Code、Discord、Slack 都是 JS）、嵌入式裝置都跑著 JS。
+
+  
+
+JS 像當年隨手做的 prototype，意外變成全公司的核心系統。一堆奇怪的設計（`typeof null === "object"`、`0.1 + 0.2 !== 0.3`）就是當年趕工的遺產，現在拆不掉了。
+
+  
+
+  
+### JS 跑在哪？
+
+  
+- **瀏覽器**：Chrome（V8）、Firefox（SpiderMonkey）、Safari（JavaScriptCore）
+- **後端**：Node.js（V8）、Bun（JavaScriptCore）、Deno（V8）
+- **邊緣運算**：Cloudflare Workers、Vercel Edge、Deno Deploy
+- **桌面**：Electron（Chrome + Node）、Tauri（用系統 webview）
+- **手機**：React Native、Capacitor、Ionic
+- **嵌入式**：MQTT、IoT 裝置（透過 Espruino、Moddable）
+
+  
+### ECMAScript vs JavaScript
+
+  
+JavaScript 是**實作**，ECMAScript（ES）是**規範**。就像 USB 是規範、不同廠商做的 USB 線是實作。每年發布一版（ES2015、ES2016、...、ES2026）。
+
+  
+### 嚴格模式
+
+```js
+"use strict"; // 檔案頂端
+
+// ES Module 自動嚴格模式（不用寫）
+```
+
+  
+嚴格模式禁止 sloppy 行為（隨手宣告全域變數、重複參數名、八進位字面量）。**所有新專案都應該用**。
+
+  
+### 怎麼把 JS 放進 HTML？三種方式
+
+  
+跟 CSS 一樣，JS 有**內聯（inline）、內部（internal）、外部（external）**三種寫法。
+
+```html
+<!-- 此處原本為 HTML 範例
+     程式碼已在內容修正中、稍後將補回完整範例 -->
+```
+
+  
+三種怎麼選？
+
+  
+| 方式 | 場景 | 2026 推薦 |
+| --- | --- | --- |
+| inline | 絕對不要 | ✗ |
+| internal | 頁面內小工具、analytics 程式碼 | △ |
+| external | 所有正式專案 | ✓ |
+
+  
+為什麼 inline 不行？(1) HTML 跟邏輯混在一起、難維護 (2) 違反 CSP（資安政策） (3) 沒辦法 minify、cache。**從第一行 code 開始就用 external**。
+
+  
+### script 標籤放哪？header / body 結尾 / async / defer
+
+  
+同樣的 `` 標籤、放不同位置行為完全不同：
+
+```html
+<!-- 此處原本為 HTML 範例
+     程式碼已在內容修正中、稍後將補回完整範例 -->
+```
+
+  
+**🚀 進階技巧**
+
+**2026 建議**：(1) 應用主程式：``（自帶 defer + ESM） (2) 第三方追蹤碼（GA、Pixel）：`async` (3) 不需要動 DOM 的 polyfill：`defer`。**絕對不要**放 `` 又沒 defer / async—會阻塞渲染、Lighthouse 評分直接掛。
+
+  
+
+  
+
+💼
+接案小知識
+
+剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「JavaScript」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。

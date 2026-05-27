@@ -1,0 +1,43 @@
+WebAssembly（WASM）讓 C / C++ / Rust 程式碼能在瀏覽器跑，速度**接近原生**。影片編解碼、CAD、遊戲、AI 推論用得多。
+
+```js
+// 載入 WASM 模組
+const resp = await fetch("/math.wasm");
+const { instance } = await WebAssembly.instantiateStreaming(resp);
+
+// 呼叫匯出的函式
+const result = instance.exports.fibonacci(40);
+// 比 JS 版快 10–100 倍
+```
+
+  
+### 常見 WASM 套件
+
+  
+- **ffmpeg.wasm**：瀏覽器內處理影片
+- **sql.js / wasm-sqlite**：瀏覽器內跑 SQLite
+- **onnxruntime-web**：瀏覽器內跑 AI 模型
+- **pdf-lib**（部分用 WASM）：PDF 處理
+- **simd-wasm**：向量計算
+
+  
+2026 的趨勢：**WASI**（WebAssembly System Interface）讓 WASM 變「跨語言、跨平台」標準，Cloudflare Workers、Vercel Edge 都接受 WASM 部署。
+
+  
+### 什麼時候用 WASM？
+
+  
+- CPU-bound 密集運算（影像處理、加密、編解碼）
+- 已有的 C/C++/Rust 程式碼想搬到 Web
+- 遊戲引擎、CAD、模擬
+- 需要極致效能的演算法
+
+  
+**不要**用在：簡單邏輯、DOM 操作、API 串接 — JS 已經夠好。
+
+  
+
+🛠️
+工具推薦
+
+配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。

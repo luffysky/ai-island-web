@@ -1,0 +1,77 @@
+```js
+class Animal {
+  // 公開欄位
+  name;
+  
+  // 私有欄位（ES2022）
+  #secret = "hidden";
+  
+  // 靜態欄位
+  static kingdom = "Animalia";
+  
+  constructor(name) {
+    this.name = name;
+  }
+  
+  // 一般方法
+  greet() {
+    return `Hello, I'm ${this.name}`;
+  }
+  
+  // getter / setter
+  get upperName() { return this.name.toUpperCase(); }
+  set upperName(v) { this.name = v.toLowerCase(); }
+  
+  // 靜態方法
+  static create(name) {
+    return new Animal(name);
+  }
+}
+
+const a = new Animal("招財");
+a.greet();          // "Hello, I'm 招財"
+a.upperName;       // "招財"（getter）
+Animal.kingdom;    // 直接從類別取靜態
+Animal.create("小白"); // 靜態方法
+```
+
+  
+### 繼承
+
+```js
+class Dog extends Animal {
+  constructor(name, breed) {
+    super(name); // 必須先呼叫 super
+    this.breed = breed;
+  }
+  
+  bark() { return "汪"; }
+  
+  // 覆寫父類方法
+  greet() {
+    return super.greet() + ", I'm a " + this.breed;
+  }
+}
+```
+
+  
+### 2026 的觀點
+
+  
+JS 的 class 是 prototype-based 的**語法糖**，不是真的物件導向。實戰大量使用 class 的場景：
+
+  
+- Web Components（自訂元素必須繼承 HTMLElement）
+- ORM 模型（Prisma、TypeORM）
+- 遊戲開發（實體系統）
+- 狀態機 / 複雜事件處理
+
+  
+大部分 React/Vue 元件、純函式邏輯、API client，現在偏向用**函式**而非 class。
+
+  
+
+🎯
+面試考點
+
+台灣科技公司面試 90% 會問「JavaScript」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。

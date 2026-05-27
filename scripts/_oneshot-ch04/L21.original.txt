@@ -1,0 +1,73 @@
+### XSS（跨站腳本攻擊）
+
+```js
+// ✗ 危險：把使用者輸入直接塞進 HTML
+div.innerHTML = userInput;
+// 如果 userInput = ""
+// 攻擊者可以執行任何 JS
+
+// ✓ 安全：用 textContent（只當文字）
+div.textContent = userInput;
+
+// ✓ 必須用 HTML 時 sanitize
+import DOMPurify from "dompurify";
+div.innerHTML = DOMPurify.sanitize(userInput);
+```
+
+  
+### CSP（Content Security Policy）
+
+```html
+
+```
+
+  
+### CSRF（跨站請求偽造）
+
+  
+使用者已登入 A 網站，攻擊者讓使用者在 B 網站點連結，自動帶 cookie 發請求到 A。
+
+  
+防禦：
+
+  
+- CSRF token（每個敏感操作要驗證 token）
+- SameSite cookie（`Set-Cookie: token=xxx; SameSite=Strict`）
+- 檢查 Origin / Referer header
+
+  
+### Prototype Pollution
+
+```js
+// 危險：deep merge 來自使用者的物件
+function merge(target, source) {
+  for (const key in source) {
+    if (typeof source[key] === "object") {
+      merge(target[key] = target[key] || {}, source[key]);
+    } else {
+      target[key] = source[key];
+    }
+  }
+}
+
+const attack = JSON.parse('{"__proto__": {"isAdmin": true}}');
+merge({}, attack);
+const u = {};
+u.isAdmin; // true ← 所有物件都被污染！
+```
+
+  
+防禦：
+
+  
+- 禁止 key 為 `__proto__`、`constructor`、`prototype`
+- 用 `Object.create(null)` 建純物件（沒有 prototype）
+- 用 Map 而非物件當 key-value
+- 用 schema validation（Zod）
+
+  
+
+⚡
+學習加速器
+
+把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。

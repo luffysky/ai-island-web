@@ -1,0 +1,126 @@
+### Singleton（單例）
+
+```js
+class Logger {
+  static #instance;
+  
+  static getInstance() {
+    if (!Logger.#instance) Logger.#instance = new Logger();
+    return Logger.#instance;
+  }
+  
+  log(msg) { console.log(msg); }
+}
+
+// 全局只有一個 Logger
+const a = Logger.getInstance();
+const b = Logger.getInstance();
+a === b; // true
+```
+
+  
+### Factory（工廠）
+
+```js
+function createButton(type) {
+  switch (type) {
+    case "primary": return { color: "blue", click: () => {} };
+    case "danger":  return { color: "red", click: () => {} };
+    default:        return { color: "gray", click: () => {} };
+  }
+}
+```
+
+  
+### Observer（觀察者）
+
+```js
+class EventBus {
+  #listeners = new Map();
+  
+  on(event, fn) {
+    if (!this.#listeners.has(event)) this.#listeners.set(event, []);
+    this.#listeners.get(event).push(fn);
+  }
+  
+  emit(event, data) {
+    this.#listeners.get(event)?.forEach(fn => fn(data));
+  }
+  
+  off(event, fn) {
+    const arr = this.#listeners.get(event);
+    if (arr) arr.splice(arr.indexOf(fn), 1);
+  }
+}
+
+const bus = new EventBus();
+bus.on("login", user => console.log("hi", user.name));
+bus.emit("login", { name: "招財" });
+```
+
+  
+### State Machine（狀態機）
+
+```js
+const states = {
+  idle:    { start: "loading" },
+  loading: { success: "done", fail: "error" },
+  done:    { reset: "idle" },
+  error:   { retry: "loading", reset: "idle" }
+};
+
+function transition(current, action) {
+  return states[current][action] ?? current;
+}
+
+let state = "idle";
+state = transition(state, "start");    // "loading"
+state = transition(state, "success");  // "done"
+state = transition(state, "reset");    // "idle"
+```
+
+  
+### Module Pattern
+
+```js
+const Counter = (() => {
+  let count = 0; // 私有
+  
+  return {
+    inc() { count++; },
+    get() { return count; }
+  };
+})();
+
+Counter.inc();
+Counter.get(); // 1
+// count 無法從外部存取
+```
+
+  
+### Proxy：metaprogramming
+
+```js
+const reactive = new Proxy({ count: 0 }, {
+  get(target, key) {
+    console.log("get", key);
+    return target[key];
+  },
+  set(target, key, value) {
+    console.log("set", key, value);
+    target[key] = value;
+    render(); // 自動重新渲染
+    return true;
+  }
+});
+
+reactive.count++;
+// Vue 3 的響應系統就是用這個
+```
+
+  
+
+💼
+接案小知識
+
+剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「JavaScript」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。

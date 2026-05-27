@@ -1,0 +1,78 @@
+JS 是單執行緒，但 Worker 可以開「另一個」執行緒。重運算丟過去，主執行緒不卡。
+
+```js
+// main.js
+const worker = new Worker("worker.js");
+
+worker.postMessage({ cmd: "compute", data: bigArray });
+
+worker.addEventListener("message", e => {
+  console.log("結果：", e.data);
+});
+
+// worker.js
+addEventListener("message", e => {
+  const { cmd, data } = e.data;
+  if (cmd === "compute") {
+    const result = heavy(data); // 不卡主執行緒
+    postMessage(result);
+  }
+});
+```
+
+  
+### 三種 Worker
+
+  
+- **Worker**（Dedicated）：跟某個分頁綁定
+- **SharedWorker**：多個分頁共用（同網域）
+- **ServiceWorker**：攔截網路請求 → 離線、PWA、快取
+
+  
+### Service Worker：PWA 核心
+
+```js
+// register
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/sw.js");
+}
+
+// sw.js
+addEventListener("install", e => {
+  e.waitUntil(
+    caches.open("v1").then(c => 
+      c.addAll(["/", "/style.css", "/app.js"])
+    )
+  );
+});
+
+addEventListener("fetch", e => {
+  e.respondWith(
+    caches.match(e.request).then(r => r || fetch(e.request))
+  );
+});
+// 離線也能用！
+```
+
+  
+### Worker 通訊：SharedArrayBuffer
+
+```js
+// 同記憶體（不用複製，速度極快）
+const sab = new SharedArrayBuffer(1024);
+const arr = new Int32Array(sab);
+
+worker.postMessage(sab); // 不複製，共用記憶體
+
+// 但要注意：
+// 1. 需要正確的 COOP/COEP HTTP headers
+// 2. 競爭條件要用 Atomics 處理
+Atomics.add(arr, 0, 1); // 原子操作
+```
+
+  
+
+🚀
+2026 趨勢
+
+這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。

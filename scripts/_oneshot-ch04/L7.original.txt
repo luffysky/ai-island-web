@@ -1,0 +1,97 @@
+### 物件操作
+
+```js
+const user = { name: "招財", age: 3, role: "hamster" };
+
+// 取所有 keys / values / entries
+Object.keys(user);    // ["name", "age", "role"]
+Object.values(user);  // ["招財", 3, "hamster"]
+Object.entries(user); // [["name","招財"], ["age",3], ...]
+
+// 從 entries 還原
+Object.fromEntries([["a", 1], ["b", 2]]); // { a:1, b:2 }
+
+// 複製（淺）
+const copy = { ...user };
+const copy2 = Object.assign({}, user);
+
+// 深複製（ES2022）
+const deep = structuredClone(user);
+
+// 凍結（不可改）
+Object.freeze(user);
+user.age = 5; // 嚴格模式會報錯，否則無聲失敗
+
+// 動態屬性
+const key = "name";
+const obj = { [key]: "招財" }; // { name: "招財" }
+
+// 簡寫
+const name = "招財", age = 3;
+const u = { name, age }; // 等於 { name: name, age: age }
+```
+
+  
+### Map：比 Object 更好的 key-value 容器
+
+```js
+const map = new Map();
+
+map.set("name", "招財");
+map.set(42, "answer");           // key 可以是任何型別！
+map.set({ a: 1 }, "obj key");     // 物件也行
+
+map.get("name");    // "招財"
+map.has("name");    // true
+map.delete("name");
+map.size;            // 2
+
+// 迭代（保留插入順序，物件不保證）
+for (const [k, v] of map) {
+  console.log(k, v);
+}
+```
+
+  
+### Set：唯一值集合
+
+```js
+const set = new Set([1, 2, 2, 3]);
+set.size; // 3（自動去重）
+
+set.add(4);
+set.has(1);
+set.delete(2);
+
+// 集合運算（ES2025）
+const a = new Set([1, 2, 3]);
+const b = new Set([2, 3, 4]);
+a.union(b);              // {1,2,3,4}
+a.intersection(b);       // {2,3}
+a.difference(b);         // {1}
+a.symmetricDifference(b); // {1,4}
+a.isSubsetOf(b);
+a.isSupersetOf(b);
+a.isDisjointFrom(b);
+```
+
+  
+### WeakMap / WeakSet：垃圾回收友善
+
+```js
+const wm = new WeakMap();
+let obj = { x: 1 };
+wm.set(obj, "data");
+
+obj = null; // obj 被回收後，wm 裡的這對自動清掉
+
+// 用途：給物件附加 metadata 而不阻止回收
+// DOM 節點的快取、私有屬性模擬
+```
+
+  
+
+💼
+接案小知識
+
+剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「JavaScript」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。

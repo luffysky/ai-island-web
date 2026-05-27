@@ -1,0 +1,52 @@
+```js
+// ES Module（瀏覽器 + 現代 Node）
+// math.js
+export function add(a, b) { return a + b; }
+export const PI = 3.14;
+export default class Calculator {}
+
+// main.js
+import Calc, { add, PI } from "./math.js";
+import * as math from "./math.js";
+import "./side-effect.js"; // 只執行不取值
+
+// 動態 import（lazy load）
+const { add } = await import("./math.js");
+```
+
+```js
+// CommonJS（Node 傳統）
+// math.js
+function add(a, b) { return a + b; }
+module.exports = { add, PI: 3.14 };
+
+// main.js
+const { add } = require("./math");
+```
+
+  
+### 差別
+
+  
+| 項目 | ESM | CommonJS |
+| --- | --- | --- |
+| 語法 | import / export | require / module.exports |
+| 載入 | 非同步（靜態解析） | 同步 |
+| Tree-shaking | 可以（dead code 移除） | 不行 |
+| 瀏覽器 | 原生支援 | 不支援（要 bundler） |
+| 2026 預設 | ✓ | 逐漸退場 |
+
+  
+### 瀏覽器使用 ESM
+
+```html
+<!-- 此處原本為 HTML 範例
+     程式碼已在內容修正中、稍後將補回完整範例 -->
+```
+
+  
+
+⚠️
+新手常見錯誤
+
+新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。

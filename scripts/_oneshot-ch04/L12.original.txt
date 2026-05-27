@@ -1,0 +1,15 @@
+### Iterator 協議
+
+```js
+// 任何有 [Symbol.iterator] 方法的物件都是 iterable
+const myIter = {
+  [Symbol.iterator]() {
+    let i = 0;
+    return {
+      next() {
+        return i 
+    
+      ⚠️
+      新手常見錯誤
+    
+    新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。

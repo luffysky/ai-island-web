@@ -1,0 +1,90 @@
+### 嚴格 vs 寬鬆相等
+
+```js
+// == 會做型別轉換（坑很多）
+0 == "";        // true
+0 == "0";       // true
+"" == "0";      // false（沒邏輯吧！）
+null == undefined; // true
+null == 0;     // false（沒邏輯×2）
+[] == false;    // true
+[0] == false;   // true
+
+// === 嚴格相等（型別跟值都要一樣）
+0 === "";       // false
+null === undefined; // false
+```
+
+  
+**永遠用 ===**，除非你在檢查 `x == null`（這是「null 或 undefined」的習慣寫法）。
+
+  
+### 邏輯運算符
+
+```js
+// && 短路：左邊 truthy 就回右邊，否則回左邊
+true && "yes";   // "yes"
+false && "yes";  // false
+0 && "yes";      // 0
+
+// || 短路：左邊 truthy 就回左邊，否則回右邊
+"hello" || "x"; // "hello"
+"" || "default";  // "default"
+0 || "default";   // "default"（但你想要 0 的話這就壞了）
+
+// ?? Nullish Coalescing（ES2020）：只有 null/undefined 才用預設
+0 ?? "default";   // 0 ✓
+"" ?? "default";  // "" ✓
+null ?? "default"; // "default"
+```
+
+  
+### Optional Chaining（ES2020）
+
+```js
+const user = { profile: { name: "招財" } };
+
+// 過去要這樣寫，超痛苦
+const name = user && user.profile && user.profile.name;
+
+// 現在
+const name = user?.profile?.name; // "招財"
+const miss = user?.missing?.deep; // undefined（不爆）
+
+// 陣列、函式也能用
+arr?.[0];
+callback?.();
+```
+
+  
+### 展開運算符（spread）跟其餘參數（rest）
+
+```js
+// 展開陣列
+const a = [1, 2, 3];
+const b = [...a, 4, 5]; // [1,2,3,4,5]
+
+// 展開物件
+const o1 = { a: 1, b: 2 };
+const o2 = { ...o1, c: 3 }; // { a:1, b:2, c:3 }
+
+// 函式的其餘參數
+function sum(...nums) {
+  return nums.reduce((a, b) => a + b, 0);
+}
+sum(1, 2, 3); // 6
+
+// 解構搭配
+const [first, ...rest] = [1, 2, 3, 4];
+// first=1, rest=[2,3,4]
+
+const { name, ...others } = { name: "A", age: 3, city: "TP" };
+// name="A", others={age:3, city:"TP"}
+```
+
+  
+
+🚀
+2026 趨勢
+
+這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。

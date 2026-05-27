@@ -1,0 +1,52 @@
+```js
+// localStorage：永久保存（除非清快取），5–10MB
+localStorage.setItem("token", "abc123");
+localStorage.getItem("token");
+localStorage.removeItem("token");
+localStorage.clear();
+
+// 注意：只能存字串
+localStorage.setItem("user", JSON.stringify(user));
+const u = JSON.parse(localStorage.getItem("user"));
+
+// sessionStorage：分頁關閉就消失
+sessionStorage.setItem("tmp", "value");
+
+// IndexedDB：大量結構化資料（百 MB 等級）
+const req = indexedDB.open("myDB", 1);
+req.onupgradeneeded = e => {
+  const db = e.target.result;
+  db.createObjectStore("users", { keyPath: "id" });
+};
+
+// 簡化版：用 idb-keyval（小套件）
+import { set, get } from "idb-keyval";
+await set("user", { name: "招財" });
+const u = await get("user");
+
+// Cookies（給後端用）
+document.cookie = "token=abc; max-age=3600; path=/; secure; samesite=strict";
+```
+
+  
+**🚨 資安警報**
+
+**不要在 localStorage 存敏感 token**。任何 XSS 都能讀到。改用 `httpOnly cookie`（JS 看不到，只跟 HTTP 走）。session token 一律走 cookie。
+
+  
+
+  
+### Cache API（給 Service Worker 用）
+
+```js
+const cache = await caches.open("v1");
+await cache.add("/api/data");
+const resp = await cache.match("/api/data");
+```
+
+  
+
+⚡
+學習加速器
+
+把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。

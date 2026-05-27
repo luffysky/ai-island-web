@@ -1,0 +1,58 @@
+JS 自動回收記憶體，但**還是會洩漏**。記憶體洩漏 = 用不到但回收不掉。
+
+  
+### 常見洩漏
+
+```js
+// 1. 沒清的 listener
+btn.addEventListener("click", handler);
+// 元素移除時 listener 還在 → 內存留著
+
+// 2. 沒清的 timer
+setInterval(() => heavy(), 1000);
+// 元件 unmount 後還在跑
+
+// 3. 閉包持有大資料
+function attach() {
+  const huge = new Array(1e7);
+  return () => console.log(huge[0]);
+}
+// 回傳的小函式持有 huge，huge 永遠不回收
+
+// 4. 全域變數
+window.cache = bigData;
+// 寫了就一直在
+
+// 5. 沒釋放的 DOM 引用
+const ref = document.getElementById("x");
+x.remove();
+// ref 還持有 → DOM 節點留在記憶體
+```
+
+  
+### WeakRef（ES2021）
+
+```js
+const obj = { huge: new Array(1e7) };
+const weakRef = new WeakRef(obj);
+
+// 當 obj 沒人用時，WeakRef 不會阻止回收
+const got = weakRef.deref();
+if (got) console.log(got.huge);
+else console.log("已被回收");
+```
+
+  
+### 檢測：Chrome Memory tab
+
+  
+- Heap Snapshot：當下記憶體狀態
+- Allocation timeline：誰在分配記憶體
+- Detached DOM tree：脫離但沒清的元素
+
+  
+
+🛠️
+工具推薦
+
+配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。

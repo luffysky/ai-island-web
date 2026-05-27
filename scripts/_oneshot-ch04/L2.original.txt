@@ -1,0 +1,94 @@
+```js
+// var：函式作用域（function scope），可重複宣告，會 hoist
+var name = "招財";
+var name = "小白"; // 沒事
+
+// let：區塊作用域（block scope），不可重複宣告
+let age = 3;
+// let age = 5;  // ✗ 重複宣告
+
+// const：宣告後不能重新指派（但物件內容還是可改）
+const pet = { name: "招財" };
+// pet = {};       // ✗
+pet.name = "小白";   // ✓ 物件內容可改
+```
+
+  
+### 2026 的選擇
+
+  
+- **const**：預設用這個（90% 場景）
+- **let**：需要重新指派時（迴圈計數、累加器）
+- **var**：永遠別用。除非維護 1990 年代的舊 code。
+
+  
+### Hoisting（變數提升）— 經典考題
+
+```js
+console.log(a); // undefined（不是 ReferenceError）
+var a = 10;
+
+// 等同於
+var a;
+console.log(a);
+a = 10;
+
+// let / const 也會 hoist，但有「暫時死區（TDZ）」
+console.log(b); // ReferenceError: Cannot access 'b' before initialization
+let b = 20;
+```
+
+  
+**⚠ 踩雷警告**
+
+「JS 沒有 block scope」是 var 害的傳說。2015 後 let/const 是 block scope。**新 code 不要寫 var**，所有可疑行為都會消失。
+
+  
+
+  
+### 作用域鏈（Scope Chain）
+
+```js
+const a = 1;
+
+function outer() {
+  const b = 2;
+  
+  function inner() {
+    const c = 3;
+    console.log(a, b, c); // 1, 2, 3
+    // inner 找不到時往外找 outer，outer 找不到再往外找全域
+  }
+  
+  inner();
+}
+```
+
+  
+### 閉包（Closure）— 最重要的概念
+
+```js
+function makeCounter() {
+  let count = 0;
+  return function() {
+    count++;
+    return count;
+  };
+}
+
+const counter = makeCounter();
+counter(); // 1
+counter(); // 2
+counter(); // 3
+// count 變數明明 makeCounter 結束就該消失，卻被內部函式「記住」
+```
+
+  
+閉包 = 函式「記住」它**定義時的環境**。是 JS 最強的特性之一，也是面試最愛考的。
+
+  
+
+🎯
+面試考點
+
+台灣科技公司面試 90% 會問「JavaScript」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。

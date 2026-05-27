@@ -1,0 +1,119 @@
+```js
+// 選元素
+document.getElementById("main");
+document.querySelector(".card");
+document.querySelectorAll("li"); // NodeList
+
+// 修改
+el.textContent = "hello";       // 純文字
+el.innerHTML = "粗體";  // HTML（注意 XSS！）
+el.setAttribute("data-id", "42");
+el.dataset.userId = "42";        // 等同 data-user-id
+
+// class 操作
+el.classList.add("active");
+el.classList.remove("active");
+el.classList.toggle("active");
+el.classList.contains("active");
+
+// 樣式
+el.style.color = "red";
+el.style.cssText = "color: red; font-size: 20px;";
+el.style.setProperty("--my-var", "blue"); // CSS 變數
+
+// 新增/移除元素
+const div = document.createElement("div");
+div.textContent = "hi";
+parent.appendChild(div);
+parent.prepend(div);     // 加到開頭
+target.before(div);     // 加到 target 之前
+target.after(div);      // 之後
+target.replaceWith(div);
+el.remove();
+
+// 走訪
+el.parentElement;
+el.children;            // HTMLCollection（只 Element）
+el.childNodes;          // NodeList（含 text node）
+el.firstElementChild;
+el.nextElementSibling;
+el.closest(".card");    // 往上找最近的祖先
+```
+
+  
+### 事件處理
+
+```js
+btn.addEventListener("click", e => {
+  e.preventDefault();        // 阻止預設行為
+  e.stopPropagation();      // 阻止冒泡
+  console.log(e.target);    // 觸發元素
+  console.log(e.currentTarget); // 綁定元素
+});
+
+// 事件委派：在父元素監聽，靠 e.target 判斷
+list.addEventListener("click", e => {
+  if (e.target.matches("button.delete")) {
+    handleDelete(e.target);
+  }
+});
+// 一個 listener 處理所有子按鈕，效能好
+
+// 移除（必須用同一個函式參考）
+function onClick(e) { /*...*/ }
+btn.addEventListener("click", onClick);
+btn.removeEventListener("click", onClick);
+
+// 選項：once / passive / capture
+el.addEventListener("click", fn, { once: true }); // 只觸發一次
+el.addEventListener("scroll", fn, { passive: true }); // 不會 preventDefault，效能好
+```
+
+  
+### 自訂事件
+
+```js
+const event = new CustomEvent("my-event", {
+  detail: { msg: "hello" },
+  bubbles: true
+});
+el.dispatchEvent(event);
+
+other.addEventListener("my-event", e => {
+  console.log(e.detail.msg);
+});
+```
+
+  
+### 觀察 API
+
+```js
+// IntersectionObserver：元素進入視窗時觸發（lazy load 用）
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      console.log("進視窗了");
+    }
+  });
+}, { threshold: 0.5 });
+io.observe(el);
+
+// MutationObserver：監聽 DOM 變化
+const mo = new MutationObserver(mutations => {
+  mutations.forEach(m => console.log(m.type));
+});
+mo.observe(el, { childList: true, subtree: true });
+
+// ResizeObserver：監聽大小變化
+const ro = new ResizeObserver(entries => {
+  entries.forEach(e => console.log(e.contentRect));
+});
+ro.observe(el);
+```
+
+  
+
+💼
+接案小知識
+
+剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「JavaScript」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。

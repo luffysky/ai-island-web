@@ -1,0 +1,42 @@
+```js
+// 1. Top-level await（不用 IIFE 包）
+const data = await fetch("/api/data").then(r => r.json());
+
+// 2. Object.hasOwn（取代 hasOwnProperty）
+Object.hasOwn(obj, "key"); // 不會被 prototype 影響
+
+// 3. Array.fromAsync（ES2024）
+const arr = await Array.fromAsync(asyncIterable);
+
+// 4. Promise.withResolvers（ES2024）
+const { promise, resolve, reject } = Promise.withResolvers();
+// 不用包 new Promise 就能取得 resolve / reject
+
+// 5. Iterator helpers（2026）
+function* naturals() { let i = 1; while(true) yield i++; }
+const first10Even = naturals()
+  .filter(n => n % 2 === 0)
+  .take(10)
+  .toArray();
+// 對 generator 直接用 array-like 方法！
+
+// 6. RegExp 命名群組 + d 旗標
+const re = /(?\d{4})/d;
+const m = "2026".match(re);
+m.indices.groups.y; // 知道每個 group 的位置
+
+// 7. Pipe operator（提案中，stage 2）
+// value |> double |> add(1) |> format
+// 寫資料處理鏈會超漂亮
+
+// 8. Temporal API（取代 Date，提案中）
+// Temporal.Now.plainDateISO()
+// 終於有不爛的日期 API
+```
+
+  
+
+💼
+接案小知識
+
+剛學會這個概念時、可以從接案平台（PRO、518、Tasker）找「JavaScript」相關的小案件練手—不接全責、只報「修一個小 bug」或「加一個小功能」這類短 case、單價 NT$ 1,500-5,000 都有人接。重點是建立 portfolio + 累積客戶評價。

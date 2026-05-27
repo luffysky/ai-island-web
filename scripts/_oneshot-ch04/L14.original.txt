@@ -1,0 +1,83 @@
+```js
+// GET
+const r = await fetch("/api/users");
+if (!r.ok) throw new Error(`HTTP ${r.status}`);
+const data = await r.json();
+
+// POST JSON
+const r = await fetch("/api/users", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ name: "招財" })
+});
+
+// 上傳檔案
+const fd = new FormData();
+fd.append("file", fileInput.files[0]);
+fd.append("caption", "我的圖");
+await fetch("/api/upload", { method: "POST", body: fd });
+
+// 超時 + 取消
+const ctrl = AbortSignal.timeout(5000);
+await fetch(url, { signal: ctrl });
+```
+
+  
+### 串流回應
+
+```js
+// 處理大型回應（檔案下載、AI 串流）
+const r = await fetch("/api/ai-stream");
+const reader = r.body.getReader();
+const decoder = new TextDecoder();
+
+while (true) {
+  const { value, done } = await reader.read();
+  if (done) break;
+  const chunk = decoder.decode(value);
+  console.log(chunk); // AI 回應一塊塊出來
+}
+```
+
+  
+### 實戰：穩健的 API client
+
+```js
+async function apiCall(url, opts = {}, retries = 3) {
+  for (let i = 0; i = 500) throw new Error("server error");
+        return { ok: false, error: await r.text() };
+      }
+      return { ok: true, data: await r.json() };
+    } catch (err) {
+      if (i === retries - 1) throw err;
+      await new Promise(r => setTimeout(r, 2 ** i * 1000)); // 指數退避
+    }
+  }
+}
+```
+
+  
+### 其他連線方式
+
+```js
+// WebSocket（雙向長連線）
+const ws = new WebSocket("wss://api.example.com");
+ws.addEventListener("open", () => ws.send("hello"));
+ws.addEventListener("message", e => console.log(e.data));
+
+// SSE（Server-Sent Events，伺服器單向推）
+const es = new EventSource("/api/events");
+es.addEventListener("message", e => console.log(e.data));
+// 適合：通知、AI 串流、即時更新
+
+// WebRTC（P2P 視訊 / 語音 / 資料）
+const pc = new RTCPeerConnection();
+// 複雜，但能做視訊通話、檔案傳輸不經伺服器
+```
+
+  
+
+🎯
+面試考點
+
+台灣科技公司面試 90% 會問「JavaScript」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。

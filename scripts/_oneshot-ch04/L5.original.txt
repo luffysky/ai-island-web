@@ -1,0 +1,120 @@
+### 三種寫法
+
+```js
+// 1. 函式宣告（會 hoist）
+function add(a, b) { return a + b; }
+
+// 2. 函式表達式
+const add = function(a, b) { return a + b; };
+
+// 3. 箭頭函式（ES2015，最常用）
+const add = (a, b) => a + b;
+```
+
+  
+### 箭頭函式的特殊性
+
+```js
+// 1. 沒有自己的 this（用外層的）
+class Timer {
+  constructor() {
+    this.count = 0;
+    
+    // ✗ 一般函式：this 變 setInterval 的
+    setInterval(function() {
+      this.count++; // undefined.count++ 爆
+    }, 1000);
+    
+    // ✓ 箭頭函式：保留外層 this
+    setInterval(() => {
+      this.count++; // OK
+    }, 1000);
+  }
+}
+
+// 2. 沒有 arguments
+const fn = () => arguments; // ReferenceError
+// 用 rest 參數代替：(...args) => args
+
+// 3. 不能當建構子
+const Foo = () => {};
+new Foo(); // TypeError
+```
+
+  
+### 預設參數 / 解構參數 / 命名參數
+
+```js
+// 預設值
+function greet(name = "訪客", hour = new Date().getHours()) {
+  return `${hour} 時, 哈囉 ${name}`;
+}
+
+// 解構參數（模擬命名參數）
+function createUser({ name, age = 0, role = "user" } = {}) {
+  return { name, age, role };
+}
+
+createUser({ name: "招財", age: 3 });
+// 比起 createUser("招財", 3, "user") 清楚多了
+```
+
+  
+### this：JS 最坑的概念
+
+  
+`this` 的值**取決於怎麼呼叫**，不是定義時：
+
+```js
+const obj = {
+  name: "招財",
+  greet() { return this.name; }
+};
+
+obj.greet();              // "招財"（this = obj）
+
+const g = obj.greet;
+g();                     // undefined（this = 全域或 undefined）
+
+obj.greet.call({ name: "小白" }); // "小白"（手動指定 this）
+obj.greet.bind({ name: "小黑" })(); // "小黑"（綁定後新函式）
+```
+
+  
+4 種 this 規則：
+
+  
+1. **new** 呼叫 → this = 新建的物件
+2. **obj.fn()** → this = obj
+3. **fn.call/apply/bind(x)** → this = x
+4. **裸呼叫 fn()** → this = 全域 / undefined（嚴格模式）
+
+  
+箭頭函式不在這 4 條規則內，它**沒有自己的 this**。
+
+  
+### 高階函式（Higher-Order Function）
+
+```js
+// 函式可以當參數、當回傳值
+function debounce(fn, delay) {
+  let timer;
+  return function(...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), delay);
+  };
+}
+
+const handleScroll = debounce(() => {
+  console.log("scrolled");
+}, 300);
+
+window.addEventListener("scroll", handleScroll);
+```
+
+  
+
+🛠️
+工具推薦
+
+配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。

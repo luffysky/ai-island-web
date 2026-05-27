@@ -1,0 +1,96 @@
+```js
+const arr = [1, 2, 3, 4, 5];
+
+// 基本操作
+arr.length;              // 5
+arr[0];                  // 1
+arr.at(-1);              // 5（負數索引，ES2022）
+
+// 修改（會改原陣列）
+arr.push(6);              // 加到尾巴，回傳新長度
+arr.pop();                // 移除尾巴，回傳被移除的
+arr.unshift(0);           // 加到頭
+arr.shift();              // 移除頭
+arr.splice(1, 2);         // 從 index 1 刪 2 個
+arr.reverse();
+arr.sort();
+```
+
+  
+### 函式式操作（不改原陣列，回新陣列）
+
+```js
+const nums = [1, 2, 3, 4, 5];
+
+// map：每個元素套用函式
+nums.map(n => n * 2); // [2,4,6,8,10]
+
+// filter：篩選
+nums.filter(n => n > 2); // [3,4,5]
+
+// reduce：累加
+nums.reduce((acc, n) => acc + n, 0); // 15
+
+// find / findIndex
+nums.find(n => n > 3); // 4
+nums.findIndex(n => n > 3); // 3
+
+// some / every
+nums.some(n => n > 4);  // true（有至少一個 > 4）
+nums.every(n => n > 0); // true（全部 > 0）
+
+// includes / indexOf
+nums.includes(3); // true
+nums.indexOf(3);  // 2
+
+// flat / flatMap（ES2019）
+[[1, 2], [3, 4]].flat(); // [1,2,3,4]
+[1, 2].flatMap(n => [n, n * 2]); // [1,2,2,4]
+
+// 新方法（ES2023）：不改原陣列
+nums.toSorted();    // 新排序陣列
+nums.toReversed();  // 新反轉陣列
+nums.toSpliced(1, 2); // 新版 splice
+nums.with(0, 99);   // 取代 index 0 的值，回新陣列
+```
+
+  
+### 實戰範例：資料處理 pipeline
+
+```js
+const orders = [
+  { id: 1, total: 100, paid: true },
+  { id: 2, total: 200, paid: false },
+  { id: 3, total: 300, paid: true }
+];
+
+// 算已付款訂單總金額
+const total = orders
+  .filter(o => o.paid)
+  .map(o => o.total)
+  .reduce((sum, n) => sum + n, 0);
+
+// = 400
+```
+
+  
+### 陣列建立技巧
+
+```js
+// 建立指定長度陣列
+Array.from({ length: 5 }, (_, i) => i); // [0,1,2,3,4]
+Array(5).fill(0);                       // [0,0,0,0,0]
+
+// 從 Set 轉
+const unique = [...new Set([1, 2, 2, 3])]; // [1,2,3] 去重
+
+// 從字串
+[..."hello"]; // ['h','e','l','l','o']
+```
+
+  
+
+⚠️
+新手常見錯誤
+
+新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。

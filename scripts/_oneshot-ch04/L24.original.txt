@@ -1,0 +1,48 @@
+```js
+// 兩種建立方式
+const r1 = /hello/i;
+const r2 = new RegExp("hello", "i");
+
+// 旗標
+// g - 全局（找所有）
+// i - 忽略大小寫
+// m - 多行
+// s - dotAll（. 可以匹配換行）
+// u - Unicode
+// y - sticky
+// d - 帶 indices
+
+// 常用方法
+"hello".match(/l+/g);            // ['ll']
+"hello".replace(/l/g, "L");       // "heLLo"
+"a,b,c".split(/,/);              // ['a','b','c']
+/^\d+$/.test("123");              // true
+"hello".matchAll(/l/g);          // iterator
+```
+
+  
+### 實戰範例
+
+```js
+// Email 驗證
+const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// 手機（台灣）
+const phoneRe = /^09\d{8}$/;
+
+// 從文字抓網址
+const urlRe = /https?:\/\/[^\s]+/g;
+text.match(urlRe);
+
+// 命名群組（ES2018）
+const dateRe = /(?\d{4})-(?\d{2})-(?\d{2})/;
+const m = "2026-05-11".match(dateRe);
+console.log(m.groups.year);  // "2026"
+```
+
+  
+
+⚠️
+新手常見錯誤
+
+新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。

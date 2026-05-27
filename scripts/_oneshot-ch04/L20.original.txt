@@ -1,0 +1,96 @@
+### 測量：Performance API
+
+```js
+performance.mark("start");
+heavyTask();
+performance.mark("end");
+performance.measure("task", "start", "end");
+
+const entries = performance.getEntriesByName("task");
+console.log(entries[0].duration); // 毫秒
+
+// Core Web Vitals
+new PerformanceObserver(list => {
+  list.getEntries().forEach(e => console.log(e.name, e.value));
+}).observe({ type: "largest-contentful-paint", buffered: true });
+```
+
+  
+### 常見優化招式
+
+```js
+// 1. Debounce：等使用者停手再執行
+function debounce(fn, delay) {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), delay);
+  };
+}
+
+// 2. Throttle：固定間隔最多執行一次
+function throttle(fn, interval) {
+  let last = 0;
+  return (...args) => {
+    const now = Date.now();
+    if (now - last >= interval) {
+      fn(...args);
+      last = now;
+    }
+  };
+}
+
+// 3. Memoize：快取函式結果
+function memoize(fn) {
+  const cache = new Map();
+  return (...args) => {
+    const key = JSON.stringify(args);
+    if (!cache.has(key)) cache.set(key, fn(...args));
+    return cache.get(key);
+  };
+}
+
+// 4. requestAnimationFrame：跟瀏覽器繪製同步
+function animate() {
+  // ... 更新位置
+  requestAnimationFrame(animate);
+}
+
+// 5. requestIdleCallback：空閒時做不重要的事
+requestIdleCallback(() => {
+  analytics.flush();
+});
+```
+
+  
+### 常見效能地雷
+
+  
+- **過度 DOM 操作**：批次操作，用 DocumentFragment
+- **大型物件深複製**：用 structuredClone 或 immer
+- **沒清乾淨的 listener**：記憶體洩漏
+- **同步重運算**：搬到 Web Worker
+- **大量資料 sort/filter**：考慮分頁 / 虛擬列表
+
+  
+### 虛擬列表（Virtual List）
+
+  
+1000+ 筆資料硬渲染會卡，只渲染「視窗內看得到」的：
+
+```js
+// 用套件：react-virtual / tanstack-virtual
+const rowVirtualizer = useVirtualizer({
+  count: 10000,
+  getScrollElement: () => ref.current,
+  estimateSize: () => 50
+});
+// 只渲染可視 + 預載一點，幾萬筆也順
+```
+
+  
+
+🎯
+面試考點
+
+台灣科技公司面試 90% 會問「JavaScript」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。

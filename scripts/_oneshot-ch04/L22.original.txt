@@ -1,0 +1,87 @@
+### Vitest（單元測試，2026 主流）
+
+```bash
+pnpm add -D vitest
+```
+
+```js
+// math.test.js
+import { describe, it, expect } from "vitest";
+import { add } from "./math";
+
+describe("add", () => {
+  it("adds two numbers", () => {
+    expect(add(1, 2)).toBe(3);
+  });
+  
+  it("handles negative", () => {
+    expect(add(-1, 1)).toBe(0);
+  });
+});
+```
+
+  
+### 常用斷言
+
+```js
+expect(value).toBe(3);                   // ===
+expect(obj).toEqual({ a: 1 });           // 深度相等
+expect(arr).toContain(2);
+expect(fn).toThrow();
+expect(fn).toHaveBeenCalled();
+expect(promise).resolves.toBe(42);
+expect(promise).rejects.toThrow();
+```
+
+  
+### Mock
+
+```js
+import { vi } from "vitest";
+
+const fn = vi.fn().mockReturnValue(42);
+fn(); // 42
+expect(fn).toHaveBeenCalledTimes(1);
+
+// Mock 模組
+vi.mock("./api", () => ({
+  fetchUser: vi.fn().mockResolvedValue({ id: 1 })
+}));
+```
+
+  
+### E2E：Playwright（取代 Cypress 成為主流）
+
+```js
+import { test, expect } from "@playwright/test";
+
+test("login flow", async ({ page }) => {
+  await page.goto("/login");
+  await page.fill('input[name="email"]', "a@b.com");
+  await page.fill('input[name="password"]', "pw");
+  await page.click("button[type=submit]");
+  await expect(page).toHaveURL("/dashboard");
+});
+```
+
+  
+### 測試金字塔
+
+  
+- **70% 單元測試**：快、多、覆蓋邊角案例
+- **20% 整合測試**：模組間互動
+- **10% E2E 測試**：關鍵流程（登入、結帳、發文）
+
+  
+**🚀 進階技巧**
+
+2026 業界主流：Vitest（單元）+ Testing Library（元件）+ Playwright（E2E）。Jest 在新專案漸退（Vitest 更快、更現代）。Cypress 還能用但 Playwright 已大幅超越（速度、API、跨瀏覽器支援）。
+
+  
+
+  
+
+🚀
+2026 趨勢
+
+這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。

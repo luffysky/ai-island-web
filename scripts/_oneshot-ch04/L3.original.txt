@@ -1,0 +1,101 @@
+### 7 種原始型別（Primitive）
+
+```js
+// 1. string
+const a = "hello";
+const b = 'hello';
+const c = `hello, ${name}`; // template literal
+
+// 2. number（IEEE 754 雙精度浮點）
+const d = 42;
+const e = 3.14;
+const f = Infinity;
+const g = NaN;
+const h = 0xff;     // 16 進位
+const i = 0b101;    // 2 進位
+const j = 1_000_000; // 分隔符（ES2021）
+
+// 3. boolean
+const k = true;
+const l = false;
+
+// 4. undefined（沒給值）
+let m;
+console.log(m); // undefined
+
+// 5. null（明確說「沒有」）
+const n = null;
+
+// 6. bigint（任意精度整數，ES2020）
+const o = 9007199254740993n;
+
+// 7. symbol（唯一識別符，ES2015）
+const p = Symbol("id");
+Symbol("id") === Symbol("id"); // false，每個 symbol 都是獨一無二
+```
+
+  
+### 物件型別（Object）
+
+```js
+// 物件 / 陣列 / 函式 / Date / Map / Set / Regex... 全是 object
+const obj = { name: "招財", age: 3 };
+const arr = [1, 2, 3];
+const fn = () => {};
+const dt = new Date();
+const mp = new Map();
+const st = new Set();
+const re = /abc/g;
+
+typeof obj; // "object"
+typeof arr; // "object"（看不出是陣列！）
+typeof fn;  // "function"
+typeof null; // "object"（傳奇 bug，1995 年留下來的）
+
+// 判斷陣列的正確姿勢
+Array.isArray(arr); // true
+```
+
+  
+### 值傳遞 vs 引用傳遞
+
+```js
+// 原始型別：值傳遞（複製一份）
+let a = 5;
+let b = a;
+b = 10;
+console.log(a); // 5（a 不變）
+
+// 物件型別：引用傳遞（同一個東西的兩個名字）
+const o1 = { name: "A" };
+const o2 = o1;
+o2.name = "B";
+console.log(o1.name); // "B"（兩個都變）
+```
+
+  
+### 真假值（Truthy / Falsy）
+
+```js
+// 7 個 falsy 值
+false, 0, -0, 0n, "", null, undefined, NaN;
+
+// 其他全部都 truthy（包括 "0"、[]、{}）
+if ([]) console.log("yes"); // yes（空陣列是真！）
+if ({}) console.log("yes"); // yes
+if ("0") console.log("yes"); // yes（字串 "0" 是真！）
+```
+
+  
+**⚠ 踩雷警告**
+
+新手常踩：`if (count)` 想檢查「count 有東西」，但 `count = 0` 也會被當 falsy。改寫 `if (count != null)` 或 `if (count !== undefined)`。
+
+  
+
+  
+
+⚡
+學習加速器
+
+把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。

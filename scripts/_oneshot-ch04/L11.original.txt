@@ -1,0 +1,107 @@
+```js
+// 建立 Promise
+const p = new Promise((resolve, reject) => {
+  setTimeout(() => resolve("done"), 1000);
+});
+
+// 三態：pending → fulfilled / rejected
+p.then(value => console.log(value))
+ .catch(err => console.error(err))
+ .finally(() => console.log("完成"));
+```
+
+  
+### async / await（ES2017）
+
+```js
+// 不用 Promise.then，可以像同步那樣寫
+async function loadUser(id) {
+  try {
+    const resp = await fetch(`/api/users/${id}`);
+    const user = await resp.json();
+    return user;
+  } catch (err) {
+    console.error("failed:", err);
+    throw err;
+  }
+}
+
+// 呼叫 async function 永遠回 Promise
+loadUser(42).then(u => console.log(u));
+```
+
+  
+### Promise 組合招式
+
+```js
+// Promise.all：全部成功才繼續（任何一個失敗整體失敗）
+const [a, b, c] = await Promise.all([
+  fetch("/api/a"),
+  fetch("/api/b"),
+  fetch("/api/c")
+]);
+
+// Promise.allSettled：全部完成就回（不管成敗）
+const results = await Promise.allSettled(promises);
+results.forEach(r => {
+  if (r.status === "fulfilled") console.log(r.value);
+  else console.error(r.reason);
+});
+
+// Promise.race：誰先完成就用誰
+const winner = await Promise.race([
+  fetch("/api/slow"),
+  new Promise((_, rej) => setTimeout(() => rej("timeout"), 3000))
+]); // 3 秒沒回就視為 timeout
+
+// Promise.any：有任何一個成功就回（全失敗才整體失敗）
+const first = await Promise.any([
+  fetch("/api/server1"),
+  fetch("/api/server2"),
+  fetch("/api/server3")
+]); // 哪個 server 先回就用哪個
+```
+
+  
+### 進階：可取消的 Promise
+
+```js
+const ctrl = new AbortController();
+
+fetch("/api/big", { signal: ctrl.signal })
+  .then(r => r.json())
+  .catch(err => {
+    if (err.name === "AbortError") console.log("取消");
+  });
+
+// 5 秒後取消
+setTimeout(() => ctrl.abort(), 5000);
+```
+
+  
+### 並行 vs 序列
+
+```js
+// ✗ 序列（慢）
+const a = await fetchA();
+const b = await fetchB();
+// 總時間 = A + B
+
+// ✓ 並行（快）
+const [a, b] = await Promise.all([fetchA(), fetchB()]);
+// 總時間 = max(A, B)
+```
+
+  
+**🚀 進階技巧**
+
+新手最常見錯：在 forEach 內用 await，結果根本沒等。改用 for...of（會等）或 Promise.all（並行）。`arr.forEach(async fn)` 是個 anti-pattern。
+
+  
+
+  
+
+🛠️
+工具推薦
+
+配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。

@@ -1,0 +1,83 @@
+JS 只有一個執行緒。怎麼處理「同時」做事？答案：**事件迴圈（Event Loop）**。
+
+  
+### 架構
+
+```text
+┌─────────────────┐
+│ Call Stack      │  ← 同步程式碼在這跑
+├─────────────────┤
+│ Microtask Queue │  ← Promise.then, queueMicrotask
+├─────────────────┤
+│ Task Queue      │  ← setTimeout, click, fetch...
+└─────────────────┘
+       ↓
+   Event Loop
+（不停地：Stack 空了 → 跑完所有 microtasks → 取一個 task）
+```
+
+  
+### 經典考題
+
+```js
+console.log("1");
+
+setTimeout(() => console.log("2"), 0);
+
+Promise.resolve().then(() => console.log("3"));
+
+console.log("4");
+
+// 輸出順序：1, 4, 3, 2
+// 因為：
+// 1. 同步「1」
+// 2. setTimeout 進 task queue
+// 3. Promise.then 進 microtask queue
+// 4. 同步「4」
+// 5. Stack 空了，先清 microtask → 「3」
+// 6. 再取一個 task → 「2」
+```
+
+  
+### 實戰意義
+
+  
+知道事件迴圈你能：
+
+  
+- debug「奇怪的執行順序」
+- 解開「為什麼 await 後的 console.log 沒執行」
+- 寫出不會卡頁面的程式
+- 面試大廠必考
+
+  
+### 長任務優化
+
+```js
+// ✗ 大迴圈卡頁面
+function processBig(arr) {
+  for (const item of arr) heavy(item);
+}
+
+// ✓ 拆批處理，讓事件迴圈喘氣
+async function processBig(arr) {
+  const CHUNK = 100;
+  for (let i = 0; i  setTimeout(r));
+  }
+}
+
+// 更新版（2024+）：scheduler.yield()
+async function processBig2(arr) {
+  for (const item of arr) {
+    heavy(item);
+    await scheduler.yield(); // 把控制權讓給瀏覽器
+  }
+}
+```
+
+  
+
+🚀
+2026 趨勢
+
+這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。
