@@ -4,6 +4,7 @@ import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
 import { DashboardCharts } from "./DashboardCharts";
 import { AutoRefresh } from "./AutoRefresh";
+import { NotifyTestButton } from "./NotifyTestButton";
 import { checkOwner } from "@/lib/is-owner";
 
 export default async function AdminOverviewPage() {
@@ -248,8 +249,9 @@ export default async function AdminOverviewPage() {
 
   return (
     <div className="space-y-6">
-      {/* Auto-refresh 控制列（dashboard 每 60 秒自動重抓資料、可暫停 / 立即更新）*/}
-      <div className="flex justify-end">
+      {/* Auto-refresh + 通知測試 控制列 */}
+      <div className="flex justify-end items-start gap-3 flex-wrap">
+        <NotifyTestButton />
         <AutoRefresh />
       </div>
 

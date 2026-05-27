@@ -336,6 +336,11 @@ export async function POST(req: NextRequest) {
   const appId: string = body.application_id;
   const interactionToken: string = body.token;
 
+  // === 全部 commands 改 deferred 策略 ===
+  // 之前 /help /whoami /clear /model /model_set 全部 sync return、cold start > 3s 都會「未及時回應」
+  // 現在統一：立刻 return REPLY_DEFERRED（< 50ms 必達）、background fire-and-forget 跑邏輯後 PATCH webhook
+  // 唯一例外：非 owner 的訊息要 ephemeral（不公開）、所以這個 sync return 但極簡（不查 DB）
+
   if (!ownerAllowed(userId)) {
     return NextResponse.json({
       type: REPLY_MESSAGE,
@@ -353,11 +358,25 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  // 快指令 — 同步回 (< 3 秒)
-  if (cmd === "help") {
-    return NextResponse.json({
-      type: REPLY_MESSAGE,
-      data: embedCard({
+  // dispatch 到 background 處理、立刻 ACK
+  runCommandBg(cmd, body, appId, interactionToken, userId, username).catch((e) => {
+    console.warn(`[discord-interactions] bg ${cmd} failed:`, e?.message);
+  });
+  return NextResponse.json({ type: REPLY_DEFERRED });
+}
+
+// 全部 commands 在這裡跑、把結果用 webhook PATCH 補上
+async function runCommandBg(
+  cmd: string,
+  body: any,
+  appId: string,
+  interactionToken: string,
+  userId: string,
+  username: string,
+) {
+  try {
+    if (cmd === "help") {
+      await patchOriginalEmbed(appId, interactionToken, embedCard({
         title: "👋 AI 島 Discord bot",
         description: "*林董的 AI 助理 + 後台監控*",
         color: COLOR.accent,
@@ -372,15 +391,13 @@ export async function POST(req: NextRequest) {
           { label: "🤖 AI 模型", url: `${adminConsoleUrl()}/ai/models` },
           { label: "🛡️ 錯誤監控", url: `${adminConsoleUrl()}/errors` },
         ],
-      }),
-    });
-  }
+      }));
+      return;
+    }
 
-  if (cmd === "whoami") {
-    const state = getState(userId);
-    return NextResponse.json({
-      type: REPLY_MESSAGE,
-      data: embedCard({
+    if (cmd === "whoami") {
+      const state = getState(userId);
+      await patchOriginalEmbed(appId, interactionToken, embedCard({
         title: "🆔 你的 Discord 身份",
         description: "✅ 已通過 owner 白名單驗證",
         color: COLOR.success,
@@ -390,123 +407,112 @@ export async function POST(req: NextRequest) {
           { name: "當前 model", value: `\`${state.model_name ?? "(預設)"}\`` },
         ],
         buttons: [{ label: "📊 後台", url: adminConsoleUrl() }],
-      }),
-    });
-  }
+      }));
+      return;
+    }
 
-  if (cmd === "clear") {
-    getState(userId).history = [];
-    return NextResponse.json({
-      type: REPLY_MESSAGE,
-      data: embedCard({
+    if (cmd === "clear") {
+      getState(userId).history = [];
+      await patchOriginalEmbed(appId, interactionToken, embedCard({
         title: "✨ 對話歷史已清空",
         description: "下一句重新開始、AI 不會帶之前 context",
         color: COLOR.info,
-      }),
-    });
-  }
+      }));
+      return;
+    }
 
-  if (cmd === "model") {
-    const admin = createSupabaseAdmin();
-    const { data: models } = await admin
-      .from("ai_models")
-      .select("model_name, provider, display_name")
-      .eq("is_active", true);
-    const active = (models as any[]) ?? [];
-    if (active.length === 0) {
-      return NextResponse.json({
-        type: REPLY_MESSAGE,
-        data: embedCard({
+    if (cmd === "model") {
+      const admin = createSupabaseAdmin();
+      const { data: models } = await admin
+        .from("ai_models")
+        .select("model_name, provider, display_name")
+        .eq("is_active", true);
+      const active = (models as any[]) ?? [];
+      if (active.length === 0) {
+        await patchOriginalEmbed(appId, interactionToken, embedCard({
           title: "⚠️ 沒有 active model",
           description: "去後台 AI 模型管理啟用至少 1 個 model",
           color: COLOR.warn,
           buttons: [{ label: "🔧 去後台啟用", url: `${adminConsoleUrl()}/ai/models` }],
-        }),
-      });
-    }
-    const state = getState(userId);
-    const cur =
-      state.model_name ??
-      (active.find((m) => m.provider === "anthropic")?.model_name ?? active[0]?.model_name) ??
-      "(none)";
-    const list = active
-      .map((m) => `• \`${m.model_name}\` (${m.provider})${m.model_name === cur ? " ← **當前**" : ""}`)
-      .join("\n");
-    return NextResponse.json({
-      type: REPLY_MESSAGE,
-      data: embedCard({
+        }));
+        return;
+      }
+      const state = getState(userId);
+      const cur =
+        state.model_name ??
+        (active.find((m) => m.provider === "anthropic")?.model_name ?? active[0]?.model_name) ??
+        "(none)";
+      const list = active
+        .map((m) => `• \`${m.model_name}\` (${m.provider})${m.model_name === cur ? " ← **當前**" : ""}`)
+        .join("\n");
+      await patchOriginalEmbed(appId, interactionToken, embedCard({
         title: "🎛️ 可用 AI Model",
         description: list,
         color: COLOR.accent,
         footer: "用 /model_set <name> 切換",
         buttons: [{ label: "🔧 後台模型管理", url: `${adminConsoleUrl()}/ai/models` }],
-      }),
-    });
-  }
+      }));
+      return;
+    }
 
-  if (cmd === "model_set") {
-    const target = String(body.data?.options?.[0]?.value ?? "");
-    const admin = createSupabaseAdmin();
-    const { data: models } = await admin.from("ai_models").select("*").eq("is_active", true);
-    const active = (models as any[]) ?? [];
-    const found = active.find(
-      (m) =>
-        m.model_name === target ||
-        `${m.provider}/${m.model_name}` === target ||
-        m.display_name === target,
-    );
-    if (!found) {
-      return NextResponse.json({
-        type: REPLY_MESSAGE,
-        data: embedCard({
+    if (cmd === "model_set") {
+      const target = String(body.data?.options?.[0]?.value ?? "");
+      const admin = createSupabaseAdmin();
+      const { data: models } = await admin.from("ai_models").select("*").eq("is_active", true);
+      const active = (models as any[]) ?? [];
+      const found = active.find(
+        (m) =>
+          m.model_name === target ||
+          `${m.provider}/${m.model_name}` === target ||
+          m.display_name === target,
+      );
+      if (!found) {
+        await patchOriginalEmbed(appId, interactionToken, embedCard({
           title: `❌ 找不到 \`${target}\``,
           description: "可能拼錯了、或這個 model 沒啟用",
           color: COLOR.error,
           footer: "用 /model 看可用清單",
-        }),
-      });
-    }
-    getState(userId).model_name = found.model_name;
-    return NextResponse.json({
-      type: REPLY_MESSAGE,
-      data: embedCard({
+        }));
+        return;
+      }
+      getState(userId).model_name = found.model_name;
+      await patchOriginalEmbed(appId, interactionToken, embedCard({
         title: "✅ 已切換 model",
         description: `\`${found.provider}/${found.model_name}\``,
         color: COLOR.success,
-      }),
-    });
-  }
+      }));
+      return;
+    }
 
-  // /ai <prompt> — 慢、用 deferred response
-  if (cmd === "ai") {
-    const prompt = String(body.data?.options?.[0]?.value ?? "").trim();
-    if (!prompt) {
-      return NextResponse.json({
-        type: REPLY_MESSAGE,
-        data: embedCard({
+    if (cmd === "ai") {
+      const prompt = String(body.data?.options?.[0]?.value ?? "").trim();
+      if (!prompt) {
+        await patchOriginalEmbed(appId, interactionToken, embedCard({
           title: "❌ 沒給 prompt",
           description: "用 `/ai <你的問題>` 傳給 AI",
           color: COLOR.error,
-        }),
-      });
+        }));
+        return;
+      }
+      await runAIAndPatch(appId, interactionToken, userId, prompt);
+      return;
     }
 
-    // background AI、不 await (Discord 3 秒內必回、立即 return DEFERRED、後台跑完用 PATCH 補)
-    runAIAndPatch(appId, interactionToken, userId, prompt).catch((e) => {
-      console.warn("[discord-interactions] background AI failed:", e?.message);
-    });
-
-    return NextResponse.json({ type: REPLY_DEFERRED });
-  }
-
-  return NextResponse.json({
-    type: REPLY_MESSAGE,
-    data: embedCard({
+    // 未知命令
+    await patchOriginalEmbed(appId, interactionToken, embedCard({
       title: `❓ 未知命令 /${cmd}`,
       description: "傳 `/help` 看可用清單",
       color: COLOR.warn,
-    }),
-  });
+    }));
+  } catch (e: any) {
+    // background error 也補一張 error embed、不然 user 永遠看 loading
+    await patchOriginalEmbed(appId, interactionToken, embedCard({
+      title: `❌ 處理 /${cmd} 失敗`,
+      description: (e?.message ?? "unknown").slice(0, 200),
+      color: COLOR.error,
+      buttons: [{ label: "🛡️ 看 error log", url: `${adminConsoleUrl()}/errors` }],
+    })).catch(() => {});
+  }
 }
 
 // GET 給 cron keep-warm 用 — 主動預熱所有 cold path、不只 touch route

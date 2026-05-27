@@ -384,25 +384,52 @@ async function sendTelegram(botToken: string, chatId: string, text: string, kind
 
 async function sendDiscord(url: string, text: string) {
   try {
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ content: text.slice(0, 1900) }),
-      signal: AbortSignal.timeout(5000),
-    });
+    // 加 retry + cause、跟 sendTelegram 一致
+    let res: Response | null = null;
+    let lastErr: any = null;
+    const cleanText = stripLoneSurrogates(text);
+    const body = JSON.stringify({ content: cleanText.slice(0, 1900) });
+
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      try {
+        res = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body,
+          signal: AbortSignal.timeout(10_000),
+        });
+        break;
+      } catch (e: any) {
+        lastErr = e;
+        if (attempt === 1) await new Promise((r) => setTimeout(r, 500));
+      }
+    }
+    if (!res) {
+      const causeMsg = lastErr?.cause?.message ?? lastErr?.cause?.code ?? lastErr?.name ?? "unknown";
+      await logNotifyError("discord", `fetch failed (retry x2): ${lastErr?.message ?? "unknown"}`, {
+        cause: causeMsg,
+        cause_code: lastErr?.cause?.code,
+        hint: causeMsg.includes("TIMEOUT") || causeMsg.includes("timeout") ? "Discord 慢回 > 10s"
+            : causeMsg.includes("ENOTFOUND") ? "DNS 解析 discord.com 失敗、Zeabur 網路問題"
+            : causeMsg.includes("ECONNRESET") ? "TCP 連線斷、過會再試"
+            : "看 cause",
+      });
+      return;
+    }
     if (!res.ok) {
       const errBody = await res.text().catch(() => "");
       await logNotifyError("discord", `Discord webhook ${res.status}: ${errBody.slice(0, 300)}`, {
         status: res.status,
         body: errBody.slice(0, 500),
         hint: res.status === 401 ? "webhook 被撤銷、重建"
-            : res.status === 404 ? "webhook URL 無效"
+            : res.status === 404 ? "webhook URL 無效（被刪 / channel 不存在）"
             : res.status === 429 ? "rate limit"
             : "看 body",
       });
     }
-  } catch (e) {
-    await logNotifyError("discord", (e as any)?.message ?? "unknown", {
+  } catch (e: any) {
+    await logNotifyError("discord", e?.message ?? "unknown", {
+      cause: e?.cause?.message ?? e?.cause?.code ?? null,
       error: String(e).slice(0, 300),
     });
   }
