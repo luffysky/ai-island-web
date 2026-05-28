@@ -45,6 +45,10 @@
       "analogy": "想像家裡 Wi-Fi—不用每個房間拉一條網路線、router 一台、整層樓自動收得到。Context 就是 React 的 Wi-Fi、Provider 在頂層、底下任何 component 都能 useContext() 拿到。",
       "content": "## 何時用 Context\n\n- ✅ 主題色 / 語言 / user session 這種「整站都要的」\n- ✅ 形式化的 wizard / multi-step form\n- ✅ 替代 props drilling 4 層以上\n- ❌ 局部狀態（例：modal 開關、用 useState）\n- ❌ 頻繁更新（例：滑鼠位置、用 ref 或 zustand）\n\n## 基本範例\n\n```tsx\n// 1. 建 context\nconst ThemeContext = React.createContext<'light' | 'dark'>('light');\n\n// 2. Provider 在頂層\nfunction App() {\n  const [theme, setTheme] = useState<'light' | 'dark'>('light');\n  return (\n    <ThemeContext.Provider value={theme}>\n      <Header />\n      <Main />\n      <Footer />\n    </ThemeContext.Provider>\n  );\n}\n\n// 3. 子孫 component 用 useContext\nfunction Button() {\n  const theme = useContext(ThemeContext);\n  return <button className={theme}>Click</button>;\n}\n```\n\n## Context 的坑\n\n1. **無腦 Provider 寫頂層、全站 re-render**：Context value 變 → 所有 useContext 的 component 都 re-render\n2. **解法 A：拆多個 Context**（讀的跟寫的分開）\n3. **解法 B：value 用 useMemo**\n4. **解法 C：複雜狀態管理改用 Zustand / Jotai**\n\n## 進階：useContext + useReducer 取代 Redux\n\n2026 業界：90% 場景不需要 Redux、Context + Reducer 已夠。只有極大型 app + 跨頁面共享複雜 state 才上 Zustand / Redux Toolkit。",
       "xp": 15,
+      "tip": {
+        "type": "warning",
+        "text": "Context value 用 useMemo 包起來：value={{theme, setTheme}} 寫法每次 render 都新建 object、底下所有 useContext 都 re-render。"
+      },
       "exercise": {
         "question": "建一個 ThemeContext + Provider、做 light/dark mode 切換、整站 button 跟 div 都跟著變色。",
         "answer": "重點：value 用 `{ theme, setTheme }` object、若 component 只讀 theme 不寫、可以拆兩個 Context (ThemeStateContext + ThemeDispatchContext) 避免不必要 re-render。"
@@ -61,6 +65,11 @@
         "type": "warning",
         "text": "遇到 'UI 沒更新' 9 成是直接改 state。React 用 Object.is 比較、reference 沒變 = 沒變、不 re-render。"
       },
+      "exercise": {
+        "question": "找出你 App 內出現的「以為改了 state 但 UI 沒動」的 bug、改成 immutable 寫法（spread / map / filter）。",
+        "hint": "排查順序：1) console.log state 看是不是真的變了、2) 變了但沒 re-render → reference 沒變、3) 改用 [...arr, newItem] 或 {...obj, key: val}。",
+        "answer": "口訣：'New reference, not new value'。改 array 用 [...arr]、改 object 用 {...obj}、改深層用 structuredClone 或 Immer。"
+      },
       "xp": 20
     },
     {
@@ -68,7 +77,16 @@
       "number": "LESSON 72.4",
       "title": "React 19 新功能 — Actions / useTransition / useOptimistic",
       "oneLineSummary": "React 19 把「表單提交 + loading 狀態 + optimistic update」三件事整合進去、寫起來像伺服器端、超直覺。",
+      "analogy": "想像點外送 App—按下「立刻送出」、訂單先進入「已下單」狀態（即使後台還在處理）、跑出 loading 圈、處理完才更新成「已接單」。useOptimistic 就是讓 UI 先假裝成功、useTransition 管理 loading、Actions 把這整套流程黏在 <form> 上。",
       "content": "## useTransition — 標記低優先 update\n\n```tsx\nconst [isPending, startTransition] = useTransition();\n\nstartTransition(() => {\n  setSearchQuery(input);  // 不阻塞 UI、可被中斷\n});\n```\n\n## useOptimistic — 樂觀更新\n\n```tsx\nconst [optimisticLikes, addOptimistic] = useOptimistic(likes, (state, n) => state + n);\n\nasync function like() {\n  addOptimistic(1);  // UI 立刻 +1\n  await fetch('/api/like', { method: 'POST' });  // 背景送\n}\n```\n\n## Actions — form 直接 await\n\n```tsx\n<form action={async (formData) => {\n  'use server';\n  await db.posts.insert(formData);\n}}>\n  <input name='title' />\n  <button type='submit'>送出</button>\n</form>\n```\n\n2026 業界：搭 Next.js Server Actions、寫法跟後端混在一起、不用建 API endpoint。",
+      "tip": {
+        "type": "practical",
+        "text": "useOptimistic 一定要配 server action / fetch 後的 revalidate、否則 UI 跟資料庫不同步。失敗時 React 會自動把 optimistic state 回滾、不用自己處理。"
+      },
+      "exercise": {
+        "question": "在你現有的「按讚」按鈕加上 useOptimistic — 點下去 UI 立刻 +1、背景 fetch、失敗自動還原。",
+        "answer": "Pattern：const [opt, add] = useOptimistic(likes, (s, n) => s + n); 然後 async function 內先 add(1)、再 await fetch。React 會自動處理失敗回滾。"
+      },
       "xp": 20
     },
     {
@@ -76,7 +94,17 @@
       "number": "LESSON 72.5",
       "title": "Server Component vs Client Component 心智模型",
       "oneLineSummary": "Next.js 預設 Server Component (沒 JS、SEO 友善)、加 `'use client'` 才變 Client (有互動)。一條線分兩世界。",
+      "analogy": "像餐廳——廚房（Server）負責備料、做菜、出餐（拿到 DB、render HTML）；外場（Client）負責收點單、跟客人互動（onClick、useState）。新菜可以從廚房送到外場、但客人不能直接進廚房（Client 不能包 Server）。",
       "content": "## 心智模型\n\n```text\nServer Component (預設):\n- 跑在 server、回靜態 HTML\n- 可以 await fetch / db query\n- 不能 useState / useEffect / onClick\n- 適合：頁面骨架、列表、SEO 內容\n\nClient Component ('use client'):\n- 跑在 browser、有互動\n- 可以 useState / useEffect / onClick\n- 不能 await fetch top-level (要 useEffect)\n- 適合：表單、modal、即時更新\n```\n\n## 規則\n\n1. **能 Server 就 Server**：頁面外殼、列表渲染、SEO 標題、靜態內容\n2. **互動才 Client**：button onClick / form input / state\n3. **Server 可包 Client**、反過來不行\n4. **Client component children 可以是 Server**（但需要 `<ServerComp />` 由 Server 傳進去）\n\n## 範例：搜尋頁\n\n```tsx\n// app/search/page.tsx — Server Component\nexport default async function SearchPage({ searchParams }) {\n  const { q } = await searchParams;\n  const results = await db.posts.findMany({ where: { title: { contains: q } } });  // 直接 await DB\n  return (\n    <div>\n      <SearchForm />  {/* Client (有 input) */}\n      <ResultList items={results} />  {/* Server (純渲染) */}\n    </div>\n  );\n}\n\n// app/search/SearchForm.tsx — Client\n'use client';\nexport function SearchForm() {\n  const [q, setQ] = useState('');\n  // ...\n}\n```",
+      "tip": {
+        "type": "warning",
+        "text": "錯把 'use client' 加在頁面最外層 → 全頁變 Client、SEO 跟資料抓取效能直接歸零。原則：盡量把 'use client' 推到「真的需要互動的最小元件」。"
+      },
+      "exercise": {
+        "question": "把你 App 中一個 'use client' 過大的頁面、拆成 Server 外殼 + Client 內島。觀察 bundle size 變化。",
+        "hint": "用 Next.js 的 `next build` 看 First Load JS、Server 區應該降到 0 額外 KB。",
+        "answer": "重點：Server Component 可以接 Client Component 當 children、用 props 傳資料下去。Client 內部不能 await fetch、要靠 server 先抓好傳進來。"
+      },
       "xp": 25
     }
   ]
