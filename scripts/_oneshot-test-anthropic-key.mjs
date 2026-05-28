@@ -3,50 +3,18 @@
  * 直接打 Anthropic /v1/models（不花 token）驗 key 真假。
  * 不印 key 值、只印 HTTP status + 失敗 hint。
  */
-import { readFileSync } from "node:fs";
 import pg from "pg";
-import crypto from "crypto";
+import { loadEnv, loadProviderKey } from "./_lib/ai-crypto.mjs";
 
-const env = Object.fromEntries(
-  readFileSync(".env.local", "utf8").split(/\r?\n/)
-    .map((l) => l.match(/^([A-Z_]+)=(.*)$/)).filter(Boolean)
-    .map((m) => [m[1], m[2].replace(/^['"]|['"]$/g, "")])
-);
-
-// 跟 src/lib/ai-crypto.ts 同邏輯
-function getKey() {
-  const secret = env.AI_KEY_SECRET;
-  if (!secret || secret.length < 32) {
-    throw new Error("AI_KEY_SECRET 缺或不足 32 字");
-  }
-  return crypto.createHash("sha256").update(secret).digest();
-}
-
-function decryptKey(encrypted) {
-  const [ivB64, tagB64, dataB64] = encrypted.split(":");
-  if (!ivB64 || !tagB64 || !dataB64) throw new Error("encrypted format wrong");
-  const iv = Buffer.from(ivB64, "base64");
-  const tag = Buffer.from(tagB64, "base64");
-  const data = Buffer.from(dataB64, "base64");
-  const decipher = crypto.createDecipheriv("aes-256-gcm", getKey(), iv);
-  decipher.setAuthTag(tag);
-  return Buffer.concat([decipher.update(data), decipher.final()]).toString("utf8");
-}
-
+const env = loadEnv();
 const c = new pg.Client({ connectionString: env.SUPABASE_DB_URL });
 await c.connect();
 
-const r = await c.query(`SELECT api_key_encrypted FROM ai_api_keys WHERE provider='anthropic'`);
-if (r.rowCount === 0) {
-  console.error("✗ ai_api_keys 內沒有 provider=anthropic");
-  process.exit(1);
-}
-
 let plainKey;
 try {
-  plainKey = decryptKey(r.rows[0].api_key_encrypted);
+  plainKey = await loadProviderKey(c, "anthropic", env.AI_KEY_SECRET);
 } catch (e) {
-  console.error("✗ decrypt 失敗:", e.message, "\n  → AI_KEY_SECRET 跟 encrypt 時用的不一樣？");
+  console.error("✗", e.message);
   process.exit(1);
 }
 
