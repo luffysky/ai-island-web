@@ -43,6 +43,8 @@ const MIGRATIONS = [
   "ai_embeddings_migration.sql",
   // 2026-05-29 — dev_quotes UNIQUE constraint (oneshot 寫入用 ON CONFLICT DO NOTHING)
   "dev_quotes_unique_constraint.sql",
+  // 2026-05-29 — 跨 channel AI 記憶（Web / LINE / TG / Discord 共用）
+  "user_ai_memory_migration.sql",
 ];
 
 // 從 .env.local 讀（不依賴 dotenv pkg）

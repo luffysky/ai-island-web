@@ -152,7 +152,7 @@ export async function buildTutorSystemPrompt(options: {
   userId?: string | null;
   userUsername?: string | null;
   lineUserId?: string | null;       // LINE bot 認林董用（OWNER_LINE_USER_IDS env 配對）
-  channel?: "web" | "line";         // LINE 會 append 短訊息規範
+  channel?: "web" | "line" | "telegram" | "discord";  // 非 web 一律 slim prompt
   modelProvider?: string | null;    // 顯式告訴 AI 自己是哪 provider（避免 hallucinate「我是 Claude Sonnet 3.5」）
   modelName?: string | null;
 }): Promise<string> {
@@ -170,8 +170,21 @@ export async function buildTutorSystemPrompt(options: {
 
   // LINE / Telegram / Discord 走 slim：只列章節標題、減 ~85% prompt token
   // 學員想知道具體 lesson、AI 走 search_lessons tool 動態查（Anthropic 才有 tool、其他 channel 依賴標題猜）
-  const slim = options.channel === "line";
+  const slim = options.channel !== undefined && options.channel !== "web";
   const { summary, chapterCount, lastChapter } = await buildCourseSummary(slim);
+
+  // 載入跨 channel user memory（cron 每天總結、Web/LINE/TG/Discord 共用同一份）
+  // 失敗不阻塞、回空字串
+  let memoryBlock = "";
+  if (options.userId) {
+    try {
+      const { loadUserMemory, formatMemoryForPrompt } = await import("./user-ai-memory");
+      const mem = await loadUserMemory(options.userId);
+      memoryBlock = formatMemoryForPrompt(mem);
+    } catch (e: any) {
+      console.warn("[ai-tutor-prompt] memory load failed:", e?.message);
+    }
+  }
 
   // contextChapter / contextLesson：用 DB 即時讀（60 秒 cache）
   let contextInfo = "";
@@ -219,6 +232,7 @@ export async function buildTutorSystemPrompt(options: {
   return `你是 AI 島（ai-island-web.snowrealm.pet）的 AI 學習導師。
 ${ownerBlock}
 ${modelIdentityBlock}
+${memoryBlock}
 # 你的角色
 - 教 Indie 創業者、開發者、設計師、自學者
 - 你「上過」AI 島完整 ${chapterCount} 章課程 (目前最新一章 Ch${lastChapter?.id ?? chapterCount} ${lastChapter?.title ?? ""})、熟悉每個主題

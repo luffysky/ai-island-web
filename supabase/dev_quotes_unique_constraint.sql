@@ -17,6 +17,13 @@ BEGIN
   END IF;
 END $$;
 
--- 加 UNIQUE constraint
-ALTER TABLE public.dev_quotes
-  ADD CONSTRAINT dev_quotes_quote_unique UNIQUE (quote);
+-- 加 UNIQUE constraint（idempotent、IF NOT EXISTS）
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'dev_quotes_quote_unique'
+  ) THEN
+    ALTER TABLE public.dev_quotes
+      ADD CONSTRAINT dev_quotes_quote_unique UNIQUE (quote);
+  END IF;
+END $$;
