@@ -97,31 +97,39 @@ async function getLessonFull(lessonId: string): Promise<LessonFull | null> {
   return cached();
 }
 
-async function buildCourseSummary(): Promise<{ summary: string; chapterCount: number; lastChapter: ChapterRow | undefined }> {
+async function buildCourseSummary(slim = false): Promise<{ summary: string; chapterCount: number; lastChapter: ChapterRow | undefined }> {
   const { chapters, lessonsByChapter } = await getChapterSummaries();
   const lines: string[] = [];
-  lines.push(`=== AI 島 ${chapters.length} 章完整課程結構（全部 lesson 標題索引）===\n`);
 
-  for (const ch of chapters) {
-    lines.push(
-      `\n## Ch${chapterDisplayNumber({ id: ch.id, stage: ch.stage as any } as any)}：${ch.title}（Stage ${ch.stage}、${ch.difficulty ?? "?"}、${ch.estimated_hours ?? 0}h）`,
-    );
-    if (ch.subtitle) lines.push(`副標：${ch.subtitle}`);
-    const outcomes = (ch.outcomes ?? []).slice(0, 3).join(" / ");
-    if (outcomes) lines.push(`學習成果：${outcomes}`);
-
-    // 灌入全部 lesson 標題（不限制前 5）— AI 能精準引用「Ch26 L5 講變數」
-    // 前 3 lesson 多帶一句摘要（給 AI 抓章節 vibe）、後面只列標題（控制 prompt size）
-    const allLessons = lessonsByChapter[ch.id] ?? [];
-    allLessons.forEach((l, idx) => {
-      if (idx < 3 && l.one_line_summary) {
-        lines.push(`  • ${l.number} ${l.title} — ${l.one_line_summary.slice(0, 60)}`);
-      } else {
-        lines.push(`  • ${l.number} ${l.title}`);
+  if (slim) {
+    // LINE / Telegram / Discord channel：只列章節標題、節省 ~85% prompt token
+    // AI 想看具體 lesson 用 tool（search_lessons）動態查、不灌進 prompt
+    lines.push(`=== AI 島 ${chapters.length} 章課程列表（只章節標題、要查 lesson 用 search_lessons tool）===\n`);
+    for (const ch of chapters) {
+      lines.push(
+        `Ch${chapterDisplayNumber({ id: ch.id, stage: ch.stage as any } as any)} ${ch.title}${ch.subtitle ? `（${ch.subtitle}）` : ""} · Stage ${ch.stage}`,
+      );
+    }
+  } else {
+    lines.push(`=== AI 島 ${chapters.length} 章完整課程結構（全部 lesson 標題索引）===\n`);
+    for (const ch of chapters) {
+      lines.push(
+        `\n## Ch${chapterDisplayNumber({ id: ch.id, stage: ch.stage as any } as any)}：${ch.title}（Stage ${ch.stage}、${ch.difficulty ?? "?"}、${ch.estimated_hours ?? 0}h）`,
+      );
+      if (ch.subtitle) lines.push(`副標：${ch.subtitle}`);
+      const outcomes = (ch.outcomes ?? []).slice(0, 3).join(" / ");
+      if (outcomes) lines.push(`學習成果：${outcomes}`);
+      const allLessons = lessonsByChapter[ch.id] ?? [];
+      allLessons.forEach((l, idx) => {
+        if (idx < 3 && l.one_line_summary) {
+          lines.push(`  • ${l.number} ${l.title} — ${l.one_line_summary.slice(0, 60)}`);
+        } else {
+          lines.push(`  • ${l.number} ${l.title}`);
+        }
+      });
+      if (allLessons.length > 0) {
+        lines.push(`  📖 完整章節：https://ai-island-web.snowrealm.pet/chapters/${ch.id}`);
       }
-    });
-    if (allLessons.length > 0) {
-      lines.push(`  📖 完整章節：https://ai-island-web.snowrealm.pet/chapters/${ch.id}`);
     }
   }
 
@@ -160,7 +168,10 @@ export async function buildTutorSystemPrompt(options: {
   });
   const isOwner = ownerCheck.isOwner;
 
-  const { summary, chapterCount, lastChapter } = await buildCourseSummary();
+  // LINE / Telegram / Discord 走 slim：只列章節標題、減 ~85% prompt token
+  // 學員想知道具體 lesson、AI 走 search_lessons tool 動態查（Anthropic 才有 tool、其他 channel 依賴標題猜）
+  const slim = options.channel === "line";
+  const { summary, chapterCount, lastChapter } = await buildCourseSummary(slim);
 
   // contextChapter / contextLesson：用 DB 即時讀（60 秒 cache）
   let contextInfo = "";

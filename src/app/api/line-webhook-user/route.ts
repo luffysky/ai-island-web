@@ -99,7 +99,28 @@ export type AskUserAIResult = {
   assistantMsgId?: string | null;
 };
 
+const ASK_USER_AI_TIMEOUT_MS = 25_000;
+
 async function askUserAI(text: string, profile: UserProfileLite | null, lineUserId: string): Promise<AskUserAIResult | null> {
+  // 整體硬 timeout：LINE reply token 有 30 秒、跑超過會永遠送不出 reply、學員乾等
+  // 用 race 包住整個流程、超時就回兜底訊息、保證一定能 reply
+  return Promise.race([
+    askUserAIInner(text, profile, lineUserId),
+    new Promise<AskUserAIResult>((resolve) =>
+      setTimeout(() => {
+        const displayName = profile?.display_name || profile?.username || "你";
+        resolve({
+          reply: `${displayName}、我這邊思考太久、訊號可能不穩、再傳一次試試？`,
+          displayName,
+          ownerMode: false,
+          assistantMsgId: null,
+        });
+      }, ASK_USER_AI_TIMEOUT_MS),
+    ),
+  ]);
+}
+
+async function askUserAIInner(text: string, profile: UserProfileLite | null, lineUserId: string): Promise<AskUserAIResult | null> {
   const admin = createSupabaseAdmin();
   const { data: models } = await admin.from("ai_models").select("*").eq("is_active", true).limit(20);
   const activeModels = (models as any[]) ?? [];
@@ -250,6 +271,20 @@ function verifySignature(body: string, signature: string | null, secret: string)
   if (!signature) return false;
   const expected = crypto.createHmac("sha256", secret).update(body).digest("base64");
   return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature));
+}
+
+/**
+ * 觸發 LINE「正在輸入」動畫、學員看到不會以為 bot 死了。
+ * fire-and-forget、不 await、不影響主流程。
+ * loadingSeconds 5–60、官方上限 60、之後自然消失。
+ */
+function lineLoadingStart(userId: string, token: string, seconds = 60) {
+  void fetch(`${ENDPOINT}/chat/loading/start`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ chatId: userId, loadingSeconds: Math.max(5, Math.min(60, seconds)) }),
+    signal: AbortSignal.timeout(3000),
+  }).catch(() => {});
 }
 
 async function logUserLineError(code: string, message: string, extra: any = {}) {
@@ -675,6 +710,9 @@ export async function POST(req: NextRequest) {
 
     if (ev.type === "message" && ev.message?.type === "text" && replyToken && userId) {
       const text = String(ev.message.text ?? "").trim();
+      // 立刻送 LINE「正在輸入」60s 動畫、學員看到不會以為 bot 卡死
+      // fire-and-forget、不阻塞後續處理
+      lineLoadingStart(userId, token, 60);
 
       // 1. 綁定
       const bindMatch = text.match(/^\/?bind\s+(\d{6})$/i);
