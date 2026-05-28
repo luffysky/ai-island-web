@@ -74,6 +74,18 @@ export class GamificationEngine {
       return { error: error.message };
     }
 
+    // 3.5. 寫 learning_events（給 admin/analytics/learning-events 跟 /me/footprint 用）
+    // 之前漏寫、admin 頁面永遠空。fail-soft、不擋主流程。
+    this.supabase.from('learning_events').insert({
+      user_id: user.id,
+      event_type: 'lesson_complete',
+      chapter_id: chapterId,
+      lesson_id: lessonId,
+      metadata: { xp_awarded: xp, base_xp: baseXp, multiplier: decision.multiplier },
+    }).then(({ error: evErr }) => {
+      if (evErr) console.warn('[completeLesson] learning_events insert failed:', evErr.message);
+    });
+
     // 4. 取更新後狀態
     const { data: after } = await this.supabase
       .from('profiles').select('level, xp, streak_days').eq('id', user.id).single();
@@ -118,6 +130,17 @@ export class GamificationEngine {
       user_id: user.id, chapter_id: chapterId, quiz_id: quizId,
       score, total_questions: total, correct,
       xp_awarded: xpAwarded, z_coin_awarded: zCoinAwarded,
+    });
+
+    // 寫 learning_events（admin/analytics/learning-events 用）
+    this.supabase.from('learning_events').insert({
+      user_id: user.id,
+      event_type: perfect ? 'quiz_perfect' : 'quiz_complete',
+      chapter_id: chapterId,
+      lesson_id: quizId,
+      metadata: { score, correct, total, perfect, xp_awarded: xpAwarded, z_coin_awarded: zCoinAwarded },
+    }).then(({ error: evErr }) => {
+      if (evErr) console.warn('[submitQuiz] learning_events insert failed:', evErr.message);
     });
 
     // 加 XP / Z-coin

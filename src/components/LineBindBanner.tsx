@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createSupabaseBrowser } from "@/lib/supabase-browser";
-import { MessageCircle, X, Copy, ExternalLink, Loader2, CheckCircle2 } from "lucide-react";
+import { MessageCircle, X, Copy, ExternalLink, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 
 const DISMISS_KEY = "line-bind-banner-dismissed-until";
@@ -15,7 +14,6 @@ const BOT_BASIC_ID = process.env.NEXT_PUBLIC_USER_LINE_BOT_BASIC_ID || "";
  * 已綁 / 7 天內按過「之後再說」會隱藏。
  */
 export function LineBindBanner() {
-  const supabase = createSupabaseBrowser();
   const toast = useToast();
   const [show, setShow] = useState(false);
   const [open, setOpen] = useState(false);
@@ -24,15 +22,17 @@ export function LineBindBanner() {
 
   useEffect(() => {
     (async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      // 已綁? 不顯示
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("line_user_id")
-        .eq("id", user.id)
-        .single();
-      if (profile?.line_user_id) return;
+      // 改走 server-side API：client 直接 select profiles.line_user_id 會被 RLS 遮蔽、
+      // 結果已綁的人也一直看到 banner。
+      try {
+        const res = await fetch("/api/me/line/status", { credentials: "include" });
+        if (!res.ok) return;
+        const j = await res.json();
+        if (!j.authed) return;        // 未登入、不顯示
+        if (j.bound) return;          // 已綁、不顯示
+      } catch {
+        return;                       // API fail、保守不顯示（避免誤打擾已綁的人）
+      }
       // 7 天內 dismiss 過? 不顯示
       const until = Number(localStorage.getItem(DISMISS_KEY) || "0");
       if (until > Date.now()) return;
