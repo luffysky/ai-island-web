@@ -83,7 +83,7 @@ export function ConversationsClient({ convs, isOwner }: { convs: Conv[]; isOwner
                   </td>
                   <td className="px-4 py-3 text-xs">{c.tone}</td>
                   <td className="px-4 py-3 text-xs">{c.use_byok ? "✓" : "—"}</td>
-                  <td className="px-4 py-3 text-xs text-fg-muted">{formatTW(c.updated_at)}</td>
+                  <td className="px-4 py-3 text-xs text-fg-muted">{new Date(c.updated_at).toLocaleString("zh-TW")}</td>
                   {isOwner && (
                     <td className="px-4 py-3">
                       <button
