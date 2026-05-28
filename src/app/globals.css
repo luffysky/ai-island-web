@@ -1,6 +1,16 @@
 @import "tailwindcss";
 @import "highlight.js/styles/atom-one-dark.css";
 
+/**
+ * 把 Tailwind v4 的 `dark:` variant 綁到本站的 [data-theme] 切換、
+ * 跟 OS `prefers-color-scheme` 解耦。
+ *
+ * 規則：沒 attr 或 data-theme="dark" → 暗色；data-theme="light" → 亮色。
+ * 沒這條的話、使用者選 light theme 但 OS = dark 時、`dark:` 還會觸發、
+ * 全站會出現「淺底卡片 + 深主題字色」這類對比看不見的混亂。
+ */
+@custom-variant dark (&:where(html:not([data-theme="light"]), html:not([data-theme="light"]) *));
+
 @theme {
   --color-bg: #0a0e14;
   --color-bg-elevated: #0f1419;

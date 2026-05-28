@@ -293,13 +293,17 @@ export function ModelsManagerClient({
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <span className={`text-xs px-2 py-0.5 rounded ${
-                  hasSecret ? "bg-green-500/20 text-green-900 dark:text-green-200" : "bg-gray-500/20 text-gray-900 dark:text-gray-200"
+                <span className={`text-xs px-2 py-0.5 rounded font-semibold ${
+                  hasSecret
+                    ? "bg-green-600 text-white dark:bg-green-500/30 dark:text-green-100"
+                    : "bg-gray-500 text-white dark:bg-gray-500/30 dark:text-gray-100"
                 }`}>
                   {hasSecret ? "✓ 已設定" : "未設定 key"}
                 </span>
-                <span className={`text-xs px-2 py-0.5 rounded ${
-                  key?.enabled ? "bg-sky-500/20 text-sky-900 dark:text-sky-100" : "bg-gray-500/20 text-gray-900 dark:text-gray-200"
+                <span className={`text-xs px-2 py-0.5 rounded font-semibold ${
+                  key?.enabled
+                    ? "bg-sky-600 text-white dark:bg-sky-500/30 dark:text-sky-100"
+                    : "bg-gray-500 text-white dark:bg-gray-500/30 dark:text-gray-100"
                 }`}>
                   {key?.enabled ? "啟用" : "停用"}
                 </span>
@@ -346,7 +350,7 @@ export function ModelsManagerClient({
                 <button
                   onClick={() => testKey(provider)}
                   disabled={!key || !hasSecret}
-                  className="inline-flex items-center gap-1 rounded border border-cyan-500/40 px-3 py-1.5 text-xs text-cyan-900 dark:text-cyan-100 bg-cyan-500/10 hover:bg-cyan-500/20 disabled:opacity-50"
+                  className="inline-flex items-center gap-1 rounded border border-cyan-600 px-3 py-1.5 text-xs font-medium text-white bg-cyan-600 hover:bg-cyan-700 disabled:opacity-50 dark:border-cyan-500/50 dark:bg-cyan-500/15 dark:text-cyan-100 dark:hover:bg-cyan-500/25"
                   title="跑一個小請求驗證 key 真的可用"
                 >
                   🧪 測 key
