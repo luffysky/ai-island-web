@@ -132,6 +132,7 @@ interface AIModel {
 interface Message {
   role: "user" | "assistant";
   content: string;
+  images?: Array<{ previewUrl: string; mediaType: string }>;
 }
 
 export function AITutorWidget({
@@ -285,10 +286,14 @@ export function AITutorWidget({
 
     const userMsg = input.trim() || (images.length > 0 ? "（看圖回答）" : "");
     const sendImages = images.map((img) => ({ base64: img.base64, mediaType: img.mediaType }));
+    const userImagesPreview = images.map((img) => ({ previewUrl: img.previewUrl, mediaType: img.mediaType }));
     setInput("");
     setImages([]);
     setError("");
-    setMessages((prev) => [...prev, { role: "user", content: userMsg }, { role: "assistant", content: "" }]);
+    setMessages((prev) => [...prev,
+      { role: "user", content: userMsg, images: userImagesPreview.length > 0 ? userImagesPreview : undefined },
+      { role: "assistant", content: "" },
+    ]);
     setSending(true);
 
     try {
@@ -745,7 +750,22 @@ export function AITutorWidget({
                       )}
                     </div>
                   ) : (
-                    <p className="whitespace-pre-wrap">{m.content}</p>
+                    <>
+                      {m.images && m.images.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 mb-1.5">
+                          {m.images.map((img, j) => (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              key={j}
+                              src={img.previewUrl}
+                              alt=""
+                              className="w-24 h-24 object-cover rounded-lg border border-black/20"
+                            />
+                          ))}
+                        </div>
+                      )}
+                      {m.content && <p className="whitespace-pre-wrap">{m.content}</p>}
+                    </>
                   )}
                 </div>
               </div>
