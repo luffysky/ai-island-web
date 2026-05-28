@@ -47,6 +47,8 @@ export async function runBotCommand(text: string, user: AdminLineUser): Promise<
       case "feature":   return await cmdFeature(args[0], args[1]);
       case "email":     return await cmdEmail(args[0], args.slice(1).join(" "));
       case "grant":     return await cmdGrantPrompt(args[0], Number(args[1] ?? 0));
+      case "model":     return await cmdModel(args);
+      case "models":    return await cmdModel(args);
       default: return { text: `❓ 未知命令 /${cmd}、輸入 /help 看清單` };
     }
   } catch (e: any) {
@@ -90,7 +92,8 @@ function cmdHelp(): BotReply {
     "/email [user] [內容]\n" +
     "/refund [order_id]\n" +
     "/grant [user] [amount]（雙重確認）\n" +
-    "/ban [user] · 封禁\n\n" +
+    "/ban [user] · 封禁\n" +
+    "/model · 看 AI 用途設定 / 切換（/model line_admin claude-haiku-4-5-20251001）\n\n" +
     "🛠️ 系統\n" +
     "/errors · 系統錯誤\n" +
     "/prefs · 通知偏好\n" +
@@ -536,4 +539,101 @@ async function cmdGrantPrompt(usernameOrId?: string, amount?: number): Promise<B
   // 小金額直接執行
   const { runPostback } = await import("./line-postback");
   return await runPostback(`action=grant_coin&user_id=${userId}&amount=${amount}`, { id: "", name: "", role: "" } as any);
+}
+
+// /model：列當前用途設定 + 可選 model
+// /model <usage> <model_name>：切換、立即 invalidate cache、60 秒內全 instance 同步
+async function cmdModel(args: string[]): Promise<BotReply> {
+  const admin = createSupabaseAdmin();
+
+  // 列當前
+  if (args.length === 0) {
+    const [usageRes, modelRes] = await Promise.all([
+      admin.from("ai_usage_models").select("usage_key, model_name, enabled").order("usage_key"),
+      admin.from("ai_models").select("provider, model_name, display_name").eq("is_active", true).order("provider"),
+    ]);
+    const usages = (usageRes.data as any[]) ?? [];
+    const models = (modelRes.data as any[]) ?? [];
+    const text = [
+      "🎛️ 當前 AI 用途設定",
+      ...(usages.length === 0
+        ? ["（沒設定、各 caller 走 fallback）"]
+        : usages.map((u) => `· ${u.usage_key} → ${u.model_name}${u.enabled === false ? " ❌" : ""}`)),
+      "",
+      "📋 可選 model（is_active=true）",
+      ...models.map((m) => `· [${m.provider}] ${m.model_name}${m.display_name ? ` (${m.display_name})` : ""}`),
+      "",
+      "切換用法：",
+      "  /model <usage_key> <model_name>",
+      "  例：/model line_admin claude-haiku-4-5-20251001",
+      "  例：/model line_user gpt-4o-mini",
+      "",
+      "清空回 fallback：",
+      "  /model <usage_key> -",
+    ].join("\n");
+    return {
+      text,
+      flex: buildSimpleCard({
+        emoji: "🎛️",
+        title: "AI 用途設定",
+        accentColor: "#8be9fd",
+        body: text.slice(0, 1900),
+        buttons: [
+          { label: "🌐 後台 UI", uri: `${SITE_URL}/${ADMIN_SLUG}/admin/ai/usage-models`, primary: true },
+        ],
+      }),
+    };
+  }
+
+  if (args.length < 2) {
+    return { text: "用法：/model <usage_key> <model_name>、或 /model 看當前清單" };
+  }
+
+  const usageKey = args[0];
+  const modelArg = args[1];
+
+  // - 表示清空、走 fallback
+  if (modelArg === "-" || modelArg === "fallback") {
+    const { error } = await admin.from("ai_usage_models").delete().eq("usage_key", usageKey);
+    if (error) return { text: `❌ 清失敗：${error.message}` };
+    const { invalidateUsageCache } = await import("./ai-usage-models");
+    invalidateUsageCache();
+    return { text: `🧹 ${usageKey} 已清回 fallback（60 秒內全 instance 同步）` };
+  }
+
+  // 驗 model 存在
+  const { data: m } = await admin
+    .from("ai_models")
+    .select("provider, display_name")
+    .eq("model_name", modelArg)
+    .eq("is_active", true)
+    .maybeSingle();
+  if (!m) return { text: `❌ 沒有 active model "${modelArg}"、用 /model 看可選清單` };
+
+  // upsert
+  const { error } = await admin.from("ai_usage_models").upsert({
+    usage_key: usageKey,
+    model_name: modelArg,
+    enabled: true,
+    updated_at: new Date().toISOString(),
+  });
+  if (error) return { text: `❌ 改失敗：${error.message}` };
+
+  // 清 cache、新 model 立即生效
+  const { invalidateUsageCache } = await import("./ai-usage-models");
+  invalidateUsageCache();
+
+  return {
+    text: `✅ ${usageKey} → [${(m as any).provider}] ${modelArg}${(m as any).display_name ? ` (${(m as any).display_name})` : ""}\n（60 秒內全 instance 同步）`,
+    flex: buildSimpleCard({
+      emoji: "🎛️",
+      title: "Model 已切換",
+      accentColor: "#50fa7b",
+      meta: [
+        { label: "用途", value: usageKey },
+        { label: "Provider", value: (m as any).provider },
+        { label: "Model", value: modelArg },
+      ],
+    }),
+  };
 }

@@ -382,13 +382,67 @@ async function sendTelegram(botToken: string, chatId: string, text: string, kind
   }
 }
 
+// 依 kind 決定 embed 顏色 + emoji（跟 Telegram 「[kind] xxx」第一行解析一樣）
+function discordKindStyle(kind: string): { color: number; emoji: string } {
+  const k = kind.toLowerCase();
+  // 紅色：危險 / 錯誤
+  if (k === "breach" || k === "error" || k === "error_log" || k === "refund") return { color: 0xef4444, emoji: "🚨" };
+  // 綠色：好消息
+  if (k === "order" || k === "new_signup" || k === "new_user" || k === "achievement") return { color: 0x22c55e, emoji: "✅" };
+  // 黃色：注意 / 待辦
+  if (k === "ticket" || k === "user_ticket") return { color: 0xeab308, emoji: "📩" };
+  // 紫色：權限相關
+  if (k === "admin_login") return { color: 0xa855f7, emoji: "🔑" };
+  // 橘色：費用警示
+  if (k === "ai_cost") return { color: 0xf97316, emoji: "💸" };
+  // 藍色：進度 / 互動
+  if (k === "level_up") return { color: 0x3b82f6, emoji: "⬆️" };
+  // 灰：日常活動（visit / lesson_complete / chapter_view）
+  if (k === "visit" || k === "chapter_view" || k === "lesson_complete") return { color: 0x6b7280, emoji: "👀" };
+  // 預設 cyan
+  return { color: 0x06b6d4, emoji: "🔔" };
+}
+
 async function sendDiscord(url: string, text: string) {
   try {
     // 加 retry + cause、跟 sendTelegram 一致
     let res: Response | null = null;
     let lastErr: any = null;
     const cleanText = stripLoneSurrogates(text);
-    const body = JSON.stringify({ content: cleanText.slice(0, 1900) });
+
+    // 解析 [kind] xxx\n... 結構、build Discord embed（色塊 + 標題 + 描述 + footer）
+    const m = cleanText.match(/^\[(\w+)\]\s*(.+?)\n?([\s\S]*)$/);
+    let body: string;
+    if (m) {
+      const [, kind, summary, rest] = m;
+      const style = discordKindStyle(kind);
+      const path = kindToAdminPath(kind);
+      const site = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
+      const slug = process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2";
+      const embed: any = {
+        title: `${style.emoji} [${kind}] ${summary.slice(0, 240)}`,
+        description: rest.trim().slice(0, 3800) || null,
+        color: style.color,
+        timestamp: new Date().toISOString(),
+        footer: { text: `AI 島 · ${kind}` },
+      };
+      // Discord webhook 支援 link button（components type=2 style=5）
+      const components = path
+        ? [{
+            type: 1, // ActionRow
+            components: [{
+              type: 2, // Button
+              style: 5, // Link
+              label: `📊 打開後台 ${path}`,
+              url: `${site}/${slug}/admin${path}`,
+            }],
+          }]
+        : undefined;
+      body = JSON.stringify({ embeds: [embed], components });
+    } else {
+      // 解析不出 kind → fallback 純 content
+      body = JSON.stringify({ content: cleanText.slice(0, 1900) });
+    }
 
     for (let attempt = 1; attempt <= 2; attempt++) {
       try {
