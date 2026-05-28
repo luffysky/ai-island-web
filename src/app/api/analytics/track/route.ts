@@ -42,26 +42,53 @@ function getClientIp(req: NextRequest): string | null {
   return req.headers.get("cf-connecting-ip") || req.headers.get("x-real-ip");
 }
 
-async function lookupCityByIp(ip: string): Promise<{ country: string | null; region: string | null; city: string | null } | null> {
-  // ipwho.is 免費、不需 key、https 也支援。Rate limit: 10k/月免費
+type GeoLookup = { country: string | null; region: string | null; city: string | null };
+
+// IP geo lookup — fallback chain: ipwho.is → ip-api.com
+// 之前單用 ipwho.is、Zeabur 環境下 region/city 命中 0%（疑 IPv6 / 路由問題）
+async function lookupCityByIp(ip: string): Promise<GeoLookup | null> {
+  // 1. ipwho.is（免費 10k/月、不需 key、支援 IPv4/v6）
   try {
     const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 1500);
-    const res = await fetch(`https://ipwho.is/${ip}?fields=success,country_code,city,region`, {
+    const timer = setTimeout(() => ctrl.abort(), 3000);
+    const res = await fetch(`https://ipwho.is/${encodeURIComponent(ip)}`, {
       signal: ctrl.signal,
     });
     clearTimeout(timer);
-    if (!res.ok) return null;
-    const data = await res.json();
-    if (!data.success) return null;
-    return {
-      country: data.country_code ?? null,
-      region: data.region ?? null,
-      city: data.city ?? null,
-    };
-  } catch {
-    return null;
-  }
+    if (res.ok) {
+      const data = await res.json();
+      if (data?.success) {
+        return {
+          country: data.country_code ?? null,
+          region: data.region ?? null,
+          city: data.city ?? null,
+        };
+      }
+    }
+  } catch {}
+
+  // 2. ip-api.com fallback（免費 45 req/min、IPv6 完整支援、注意是 http only）
+  try {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 3000);
+    const res = await fetch(
+      `http://ip-api.com/json/${encodeURIComponent(ip)}?fields=status,countryCode,regionName,city`,
+      { signal: ctrl.signal },
+    );
+    clearTimeout(timer);
+    if (res.ok) {
+      const data = await res.json();
+      if (data?.status === "success") {
+        return {
+          country: data.countryCode ?? null,
+          region: data.regionName ?? null,
+          city: data.city ?? null,
+        };
+      }
+    }
+  } catch {}
+
+  return null;
 }
 
 async function geo(req: NextRequest): Promise<{ country: string | null; region: string | null; city: string | null }> {

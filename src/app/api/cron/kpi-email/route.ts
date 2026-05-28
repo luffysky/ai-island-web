@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { verifyCronAuth } from "@/lib/cron-auth";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -8,8 +9,9 @@ export const runtime = "nodejs";
  * 每日 / 每週 KPI 報表 email（給 admin）
  *
  * 觸發：外部 cron 每日 09:00 UTC+8 (= UTC 01:00) 打：
- *   GET /api/cron/kpi-email?period=daily
- *   Authorization: Bearer <CRON_SECRET>
+ *   GET /api/cron/kpi-email?period=daily&secret=<CRON_SECRET>
+ *
+ * 認證三選一：Authorization Bearer / x-cron-secret / ?secret=
  *
  * period: daily (預設) / weekly
  *
@@ -18,13 +20,8 @@ export const runtime = "nodejs";
  * Service：Resend（RESEND_API_KEY 設好就會寄、沒設靜默 skip）
  */
 export async function GET(req: NextRequest) {
-  const secret = process.env.CRON_SECRET;
-  if (!secret) return NextResponse.json({ error: "cron_secret_not_set" }, { status: 500 });
-
-  const auth = req.headers.get("authorization") ?? "";
-  if (auth !== `Bearer ${secret}`) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  }
+  const guard = verifyCronAuth(req);
+  if (guard) return guard;
 
   const period = (req.nextUrl.searchParams.get("period") ?? "daily") as "daily" | "weekly";
   const days = period === "weekly" ? 7 : 1;

@@ -19,19 +19,14 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer, createSupabaseAdmin } from "@/lib/supabase";
+import { verifyCronAuth } from "@/lib/cron-auth";
 
 export const maxDuration = 60;
 
-// GET 給 cron 用、需要 header 驗證
+// GET 給 cron 用、認證三選一：Bearer / x-cron-secret / ?secret=
 export async function GET(req: NextRequest) {
-  const expectedSecret = process.env.CRON_SECRET;
-  if (!expectedSecret || expectedSecret.length < 16) {
-    return NextResponse.json({ error: "cron_secret_not_configured" }, { status: 503 });
-  }
-  const secret = req.headers.get("x-cron-secret");
-  if (!secret || secret !== expectedSecret) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  }
+  const guard = verifyCronAuth(req);
+  if (guard) return guard;
   return runSync();
 }
 
