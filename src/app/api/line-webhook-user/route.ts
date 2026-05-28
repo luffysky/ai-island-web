@@ -377,8 +377,13 @@ function cardHelp(): FlexMessage {
     body: "我能做的事（綁定後解鎖全部）",
     meta: [
       { label: "💬", value: "聊天問 AI 學員導師" },
+      { label: "/today", value: "今日學習狀況" },
+      { label: "/streak", value: "看連續簽到" },
+      { label: "/weak", value: "找弱項章節（quiz<60）" },
+      { label: "/lesson 關鍵字", value: "找特定 lesson" },
+      { label: "/explain 概念", value: "AI 一句話解釋" },
       { label: "/note 內容", value: "存筆記到網站" },
-      { label: "/footprint", value: "看 14 天學習足跡" },
+      { label: "/footprint", value: "看 14 天足跡" },
       { label: "/bind 123456", value: "綁帳號" },
       { label: "/unbind", value: "解除綁定" },
       { label: "/whoami", value: "看綁定狀態" },
@@ -859,6 +864,271 @@ export async function POST(req: NextRequest) {
           token,
           QUICK_REPLY,
         );
+        continue;
+      }
+
+      // 3.43. /today — 今日學習狀況
+      if (text === "/today" || text === "今日" || text === "今日學習") {
+        const admin = createSupabaseAdmin();
+        const { data: profile } = await admin
+          .from("profiles")
+          .select("id, display_name, username")
+          .eq("line_user_id", userId)
+          .maybeSingle();
+        if (!profile) {
+          await lineReply(replyToken, cardUnbound(userId), token, QUICK_REPLY);
+          continue;
+        }
+        const startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
+        const sinceISO = startOfDay.toISOString();
+        const todayDate = sinceISO.slice(0, 10);
+        const [lessonsRes, quizRes, checkinRes] = await Promise.all([
+          admin.from("lesson_progress").select("lesson_id, chapter_id").eq("user_id", (profile as any).id).gte("completed_at", sinceISO),
+          admin.from("daily_quiz_attempts").select("correct, total, pass").eq("user_id", (profile as any).id).eq("quiz_date", todayDate).maybeSingle(),
+          admin.from("daily_checkins").select("streak_count").eq("user_id", (profile as any).id).eq("checkin_date", todayDate).maybeSingle(),
+        ] as any);
+        const lessonCount = (lessonsRes.data as any[])?.length ?? 0;
+        const quizData = quizRes.data as any;
+        const checkinData = checkinRes.data as any;
+        const bodyLines = [
+          `📚 完成 ${lessonCount} 個 lesson`,
+          quizData ? `🧠 quiz：${quizData.correct}/${quizData.total} ${quizData.pass ? "✅" : "❌"}` : "🧠 quiz：今天還沒做",
+          checkinData ? `🔥 連續簽到 ${checkinData.streak_count} 天` : "🔥 今天還沒簽到",
+        ];
+        if (lessonCount === 0 && !quizData && !checkinData) {
+          bodyLines.push("", "今天還沒開始、去看一課吧 →");
+        }
+        await lineReply(replyToken, buildSimpleCard({
+          emoji: "📊",
+          title: "今日學習",
+          accentColor: USER_ACCENT,
+          body: bodyLines.join("\n"),
+          buttons: [
+            { label: "🛤️ 看完整足跡", uri: `${SITE_URL}/me/footprint`, primary: true },
+            { label: "📚 繼續學", uri: `${SITE_URL}/chapters` },
+          ],
+        }), token, QUICK_REPLY);
+        continue;
+      }
+
+      // 3.44. /weak — 列自己弱項章節（過去 30 天 quiz 平均 < 60）
+      if (text === "/weak" || text === "弱項" || text === "我的弱項") {
+        const admin = createSupabaseAdmin();
+        const { data: profile } = await admin
+          .from("profiles")
+          .select("id")
+          .eq("line_user_id", userId)
+          .maybeSingle();
+        if (!profile) {
+          await lineReply(replyToken, cardUnbound(userId), token, QUICK_REPLY);
+          continue;
+        }
+        const since = new Date(Date.now() - 30 * 86400_000).toISOString();
+        const { data: quizzes } = await admin
+          .from("quiz_attempts")
+          .select("chapter_id, score, total_questions, correct")
+          .eq("user_id", (profile as any).id)
+          .gte("attempted_at", since);
+        const rows = (quizzes as any[]) ?? [];
+        if (rows.length === 0) {
+          await lineReply(replyToken, buildSimpleCard({
+            emoji: "🧠",
+            title: "30 天內沒做過 quiz",
+            accentColor: USER_ACCENT,
+            body: "做一次 quiz 才看得出哪一章要補。",
+            buttons: [{ label: "📚 看章節", uri: `${SITE_URL}/chapters`, primary: true }],
+          }), token, QUICK_REPLY);
+          continue;
+        }
+        const byChapter: Record<number, { sum: number; n: number }> = {};
+        for (const r of rows) {
+          if (!r.chapter_id) continue;
+          const pct = r.total_questions > 0 ? (r.correct / r.total_questions) * 100 : 0;
+          byChapter[r.chapter_id] ||= { sum: 0, n: 0 };
+          byChapter[r.chapter_id].sum += pct;
+          byChapter[r.chapter_id].n++;
+        }
+        const weak = Object.entries(byChapter)
+          .map(([k, v]) => ({ chapter: Number(k), avg: v.sum / v.n, n: v.n }))
+          .filter((x) => x.n >= 1 && x.avg < 60)
+          .sort((a, b) => a.avg - b.avg)
+          .slice(0, 5);
+        if (weak.length === 0) {
+          await lineReply(replyToken, buildSimpleCard({
+            emoji: "💪",
+            title: "沒弱項、繼續保持",
+            accentColor: USER_ACCENT,
+            body: "30 天 quiz 全部都過 60 分以上、做得很好！",
+          }), token, QUICK_REPLY);
+          continue;
+        }
+        const lines = weak.map((w, i) => `${i + 1}. Ch${String(w.chapter).padStart(2, "0")}：${w.avg.toFixed(0)} 分（${w.n} 次測驗）`);
+        await lineReply(replyToken, buildSimpleCard({
+          emoji: "⚠️",
+          title: `弱項 Top ${weak.length}（< 60 分）`,
+          accentColor: "#f59e0b",
+          body: lines.join("\n"),
+          buttons: [
+            { label: `📚 複習 Ch${weak[0].chapter}`, uri: `${SITE_URL}/chapters/${weak[0].chapter}`, primary: true },
+          ],
+        }), token, QUICK_REPLY);
+        continue;
+      }
+
+      // 3.45. /streak — 連續簽到 + 激勵
+      if (text === "/streak" || text === "簽到" || text === "連續簽到") {
+        const admin = createSupabaseAdmin();
+        const { data: profile } = await admin
+          .from("profiles")
+          .select("id")
+          .eq("line_user_id", userId)
+          .maybeSingle();
+        if (!profile) {
+          await lineReply(replyToken, cardUnbound(userId), token, QUICK_REPLY);
+          continue;
+        }
+        const { data: latest } = await admin
+          .from("daily_checkins")
+          .select("checkin_date, streak_count")
+          .eq("user_id", (profile as any).id)
+          .order("checkin_date", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        const latestRow = latest as any;
+        const { data: longestRows } = await admin
+          .from("daily_checkins")
+          .select("streak_count")
+          .eq("user_id", (profile as any).id)
+          .order("streak_count", { ascending: false })
+          .limit(1);
+        const longest = (longestRows as any[])?.[0]?.streak_count ?? 0;
+        const today = new Date().toISOString().slice(0, 10);
+        const yesterday = new Date(Date.now() - 86400_000).toISOString().slice(0, 10);
+        let current = 0;
+        let signedInToday = false;
+        if (latestRow) {
+          if (latestRow.checkin_date === today) {
+            current = latestRow.streak_count ?? 0;
+            signedInToday = true;
+          } else if (latestRow.checkin_date === yesterday) {
+            current = latestRow.streak_count ?? 0;
+          }
+        }
+        const cheer = current >= 100 ? "🎖️ 百日修練、超神！" :
+                      current >= 30 ? "🏆 一個月以上、強！" :
+                      current >= 7  ? "🔥 一週連續、節奏抓住了" :
+                      current >= 1  ? "💪 起步了、別斷" :
+                                      "🌱 從今天開始連線";
+        const bodyLines = [
+          `🔥 目前連續：${current} 天`,
+          `🏆 個人最長：${longest} 天`,
+          "",
+          cheer,
+        ];
+        if (!signedInToday) bodyLines.push("", "⏰ 今天還沒簽到、別讓連勝斷掉！");
+        await lineReply(replyToken, buildSimpleCard({
+          emoji: "🔥",
+          title: "連續簽到",
+          accentColor: signedInToday ? USER_ACCENT : "#f59e0b",
+          body: bodyLines.join("\n"),
+          buttons: [
+            { label: signedInToday ? "🛤️ 看足跡" : "✅ 去簽到", uri: signedInToday ? `${SITE_URL}/me/footprint` : `${SITE_URL}/me`, primary: true },
+          ],
+        }), token, QUICK_REPLY);
+        continue;
+      }
+
+      // 3.46. /lesson <關鍵字> — 找特定 lesson 直連網站
+      const lessonMatch = text.match(/^\/lesson\s+(.+)/i) || text.match(/^找課\s+(.+)/);
+      if (lessonMatch) {
+        const keyword = lessonMatch[1].trim();
+        if (keyword.length < 2) {
+          await lineReply(replyToken, buildSimpleCard({
+            emoji: "🔎",
+            title: "請給關鍵字",
+            accentColor: USER_ACCENT,
+            body: "用法：/lesson React\n或：/lesson 變數",
+          }), token, QUICK_REPLY);
+          continue;
+        }
+        const admin = createSupabaseAdmin();
+        const kwSafe = keyword.replace(/[%_\\]/g, "\\$&");
+        const { data: lessons } = await admin
+          .from("lessons")
+          .select("id, chapter_id, number, title, one_line_summary")
+          .or(`title.ilike.%${kwSafe}%,one_line_summary.ilike.%${kwSafe}%`)
+          .limit(8);
+        const rows = (lessons as any[]) ?? [];
+        if (rows.length === 0) {
+          await lineReply(replyToken, buildSimpleCard({
+            emoji: "🔎",
+            title: `找不到「${keyword}」`,
+            accentColor: USER_ACCENT,
+            body: "換個關鍵字試試、或到網站章節地圖瀏覽。",
+            buttons: [{ label: "📚 章節地圖", uri: `${SITE_URL}/chapters`, primary: true }],
+          }), token, QUICK_REPLY);
+          continue;
+        }
+        const lines = rows.slice(0, 5).map((l: any) =>
+          `${l.number} ${l.title}\n  → ${SITE_URL}/chapters/${l.chapter_id}#lesson-${l.id}`
+        );
+        await lineReply(replyToken, buildSimpleCard({
+          emoji: "🔎",
+          title: `「${keyword}」找到 ${rows.length} 個`,
+          accentColor: USER_ACCENT,
+          body: lines.join("\n\n").slice(0, 1900),
+          buttons: rows.length > 0 ? [
+            { label: `📖 看 ${rows[0].title.slice(0, 18)}`, uri: `${SITE_URL}/chapters/${rows[0].chapter_id}#lesson-${rows[0].id}`, primary: true },
+          ] : undefined,
+        }), token, QUICK_REPLY);
+        continue;
+      }
+
+      // 3.47. /explain <概念> — AI 一句話解釋
+      const explainMatch = text.match(/^\/explain\s+(.+)/i) || text.match(/^解釋\s+(.+)/);
+      if (explainMatch) {
+        const concept = explainMatch[1].trim();
+        if (concept.length < 2) {
+          await lineReply(replyToken, buildSimpleCard({
+            emoji: "💡",
+            title: "請給概念",
+            accentColor: USER_ACCENT,
+            body: "用法：/explain 變數\n或：/explain React Hook",
+          }), token, QUICK_REPLY);
+          continue;
+        }
+        const admin = createSupabaseAdmin();
+        const { data: profile } = await admin
+          .from("profiles")
+          .select("id, display_name, username, role, xp, level")
+          .eq("line_user_id", userId)
+          .maybeSingle();
+        if (!profile) {
+          await lineReply(replyToken, cardUnbound(userId), token, QUICK_REPLY);
+          continue;
+        }
+        // 包成 explain prompt 給 askUserAI
+        const explainPrompt = `用「國中生能懂」的方式、3 行內白話解釋「${concept}」是什麼。先給最簡單的類比、再給技術定義。不要超過 100 字。`;
+        const aiResult = await askUserAI(explainPrompt, profile as any, userId);
+        if (!aiResult) {
+          await lineReply(replyToken, buildSimpleCard({
+            emoji: "🤖",
+            title: "AI 暫時無法回覆",
+            accentColor: "#ef4444",
+            body: "可能 quota 用完或網路問題、過會兒再試。",
+          }), token, QUICK_REPLY);
+          continue;
+        }
+        await lineReply(replyToken, buildSimpleCard({
+          emoji: "💡",
+          title: `白話解釋：${concept}`,
+          accentColor: USER_ACCENT,
+          body: aiResult.reply.slice(0, 1900),
+          buttons: [
+            { label: `🔎 找相關 lesson`, postback: `action=find_lesson&keyword=${encodeURIComponent(concept).slice(0, 100)}`, primary: true },
+          ],
+        }), token, aiResult.assistantMsgId ? buildNoteQuickReply(aiResult.assistantMsgId) : QUICK_REPLY);
         continue;
       }
 
