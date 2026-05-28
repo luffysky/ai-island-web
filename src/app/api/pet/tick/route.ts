@@ -67,11 +67,13 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // 生成一條主動訊息
+  // 生成一條主動訊息——admin 後台改 usage_key=pet 即可換 model
+  const { getModelNameForUsage } = await import("@/lib/ai-usage-models");
+  const petModelName = await getModelNameForUsage("pet", "claude-haiku-4-5-20251001");
   let { data: model } = await admin
     .from("ai_models")
     .select("*")
-    .eq("model_name", "claude-haiku-4-5-20251001")
+    .eq("model_name", petModelName)
     .eq("is_active", true)
     .maybeSingle();
   if (!model) {

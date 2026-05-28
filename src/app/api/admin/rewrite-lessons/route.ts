@@ -39,7 +39,7 @@ async function getAnthropicKey(admin: ReturnType<typeof createSupabaseAdmin>): P
   try { return decryptKey((data as any).api_key_encrypted); } catch { return null; }
 }
 
-const REWRITE_MODEL = "claude-sonnet-4-6";  // 友善化要 reasoning、用 Sonnet 4.6
+const DEFAULT_REWRITE_MODEL = "claude-sonnet-4-6";  // fallback；後台改 usage_key=rewrite_lessons 即覆蓋
 const MIN_ANALOGY_LEN = 50;
 
 function buildRewritePrompt(lesson: any): string {
@@ -83,7 +83,7 @@ async function rewriteOne(apiKey: string, lesson: any): Promise<{ analogy?: stri
       },
       signal: ctrl.signal,
       body: JSON.stringify({
-        model: REWRITE_MODEL,
+        model: await (await import("@/lib/ai-usage-models")).getModelNameForUsage("rewrite_lessons", DEFAULT_REWRITE_MODEL),
         max_tokens: 400,
         temperature: 0.8,
         messages: [{ role: "user", content: buildRewritePrompt(lesson) }],

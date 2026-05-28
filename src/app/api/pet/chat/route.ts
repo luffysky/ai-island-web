@@ -69,13 +69,16 @@ export async function POST(req: NextRequest) {
     if (chosen) model = chosen;
   }
   if (!model) {
-    const { data: haiku } = await admin
+    // admin 後台改 usage_key=pet 即可換 model（沒設就 fallback haiku-4-5）
+    const { getModelNameForUsage } = await import("@/lib/ai-usage-models");
+    const petModelName = await getModelNameForUsage("pet", "claude-haiku-4-5-20251001");
+    const { data: petModel } = await admin
       .from("ai_models")
       .select("*")
-      .eq("model_name", "claude-haiku-4-5-20251001")
+      .eq("model_name", petModelName)
       .eq("is_active", true)
       .maybeSingle();
-    model = haiku;
+    model = petModel;
   }
   if (!model) {
     const { data: defaultModel } = await admin
