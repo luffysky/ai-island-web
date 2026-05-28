@@ -193,7 +193,7 @@
 
 | ID | 狀態 | 缺什麼 | 估時 | 備註 |
 |---|---|---|---|---|
-| **QW-05** | 🟡 部分 | dashboard「即時在線」widget（breach 警告已有）| 1-2 hr | analytics_sessions.last_seen_at 已存、拉一個 30 分鐘內 count 就有 |
+| ~~QW-05~~ | ✅ DONE | （5/29 re-audit）即時在線 widget 早已在 admin/page.tsx:303 完整實作、原 audit 誤判 | — | 含綠點 pulse + 多裝置去重 |
 | **LT-17** | 🔴 未做 | 效能 ops（Sentry / PostHog 整合）| 1-2 天 | 接第三方、不建本地表；跟 P4-16 Web Vitals 部分重疊 |
 | **P4-05** | 🟡 待確認 | KPI 報表 admin UI ↔ `/api/cron/kpi-email` 是否真 wired | 10 分鐘 verify | cron 已實作、ReportsClient 也在、確認排程 → email 鏈路 |
 | **P4-19** | 🟡 部分 | 教師/助教 role admin 管理介面 | 0.5-1 天 | `/teacher` 入口頁存在、admin 改 role 介面缺 |
