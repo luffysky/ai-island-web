@@ -34,8 +34,8 @@ export default async function ConversationsPage() {
         title="AI 對話紀錄"
         desc={
           isOwner
-            ? "Owner 模式：點任一條對話「看內容」可展開完整訊息（含 tokens / cost）。一般 admin 看不到內容、只能看 metadata。"
-            : "Admin 模式：只看 metadata（主題 / 用戶 / 時間）。Owner 才能展開看完整對話內容、保護 user privacy。"
+            ? "點任一條對話「看內容」可展開完整訊息（含 tokens / cost）。"
+            : "AI 對話 metadata：主題 / 用戶 / 時間 / token 用量。為了保護使用者隱私、對話內容不對外開放。"
         }
         gradient="from-violet-500/10 via-purple-500/10 to-fuchsia-500/10"
         borderColor="border-violet-500/30"

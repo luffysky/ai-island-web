@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Loader2, X, MessageSquare, Crown } from "lucide-react";
+import { Loader2, X, MessageSquare } from "lucide-react";
 import { formatTW } from "@/lib/format-date";
 
 type Conv = {
@@ -101,7 +101,6 @@ export function ConversationsClient({ convs, isOwner }: { convs: Conv[]; isOwner
         </table>
       </div>
 
-      {/* Owner-only：對話內容 drawer */}
       {isOwner && selectedId && (
         <div
           className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center p-4"
@@ -112,10 +111,7 @@ export function ConversationsClient({ convs, isOwner }: { convs: Conv[]; isOwner
             onClick={(e) => e.stopPropagation()}
           >
             <div className="border-b border-border px-4 py-3 flex items-center justify-between sticky top-0 bg-bg-card rounded-t-2xl">
-              <h3 className="font-bold inline-flex items-center gap-2">
-                <Crown size={14} className="text-yellow-400" /> 完整對話內容
-                <span className="text-[10px] text-fg-muted font-normal">(owner 限定)</span>
-              </h3>
+              <h3 className="font-bold">完整對話內容</h3>
               <button onClick={() => setSelectedId(null)} className="p-1 text-fg-muted hover:text-fg">
                 <X size={16} />
               </button>
