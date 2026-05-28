@@ -1,9 +1,17 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
-import Link from "next/link";
+import { createSupabaseServer } from "@/lib/supabase-server";
+import { checkOwnerByProfileId } from "@/lib/is-owner";
 import { PageHero } from "@/components/admin/PageHero";
+import { ConversationsClient } from "./ConversationsClient";
 
 export default async function ConversationsPage() {
   const supabase = createSupabaseAdmin();
+
+  // server-side owner check：owner 看完整對話、admin 只看 metadata
+  const serverSb = await createSupabaseServer();
+  const { data: { user } } = await serverSb.auth.getUser();
+  const ownerCheck = user ? await checkOwnerByProfileId(user.id, supabase) : null;
+  const isOwner = ownerCheck?.isOwner === true;
 
   const { data: convs, error } = await supabase
     .from("ai_conversations")
@@ -24,43 +32,16 @@ export default async function ConversationsPage() {
       <PageHero
         emoji="💬"
         title="AI 對話紀錄"
-        desc="最近 100 個對話、用來 audit user 跟 AI 怎麼互動。發現異常 prompt / 燒 token 大戶必查。"
+        desc={
+          isOwner
+            ? "Owner 模式：點任一條對話「看內容」可展開完整訊息（含 tokens / cost）。一般 admin 看不到內容、只能看 metadata。"
+            : "Admin 模式：只看 metadata（主題 / 用戶 / 時間）。Owner 才能展開看完整對話內容、保護 user privacy。"
+        }
         gradient="from-violet-500/10 via-purple-500/10 to-fuchsia-500/10"
         borderColor="border-violet-500/30"
       />
 
-      <div className="bg-bg-card border border-border rounded-xl overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead className="bg-bg-elevated text-left text-xs text-fg-muted uppercase">
-            <tr>
-              <th className="px-4 py-3">主題</th>
-              <th className="px-4 py-3">用戶</th>
-              <th className="px-4 py-3">語氣</th>
-              <th className="px-4 py-3">BYOK</th>
-              <th className="px-4 py-3">最後更新</th>
-            </tr>
-          </thead>
-          <tbody>
-            {convs?.length === 0 ? (
-              <tr><td colSpan={5} className="px-4 py-8 text-center text-fg-muted">沒有對話</td></tr>
-            ) : (
-              convs?.map((c: any) => (
-                <tr key={c.id} className="border-t border-border hover:bg-bg-elevated">
-                  <td className="px-4 py-3 max-w-xs truncate">{c.title || "(無標題)"}</td>
-                  <td className="px-4 py-3">
-                    <Link href={`/admin/users?q=${c.profiles?.username}`} className="hover:text-accent">
-                      {c.profiles?.display_name || c.profiles?.username || "—"}
-                    </Link>
-                  </td>
-                  <td className="px-4 py-3 text-xs">{c.tone}</td>
-                  <td className="px-4 py-3 text-xs">{c.use_byok ? "✓" : "—"}</td>
-                  <td className="px-4 py-3 text-xs text-fg-muted">{new Date(c.updated_at).toLocaleString('zh-TW')}</td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+      <ConversationsClient convs={(convs ?? []) as any} isOwner={isOwner} />
     </div>
   );
 }
