@@ -9,6 +9,8 @@
  *       71 章 + N 篇文章一次性 indexing 約 1-3 美金 / 全站
  */
 
+import { getProviderKey } from "./ai-crypto";
+
 const MODEL = "text-embedding-3-small";
 const DIMS = 1536;
 
@@ -18,8 +20,8 @@ export interface EmbeddingResult {
 }
 
 export async function generateEmbedding(text: string): Promise<EmbeddingResult> {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) throw new Error("OPENAI_API_KEY not set");
+  const apiKey = await getProviderKey("openai");
+  if (!apiKey) throw new Error("openai key not configured in ai_api_keys");
 
   const input = text.slice(0, 8000); // 安全 cap、模型限制 8191 token
 
@@ -52,8 +54,8 @@ export async function generateEmbedding(text: string): Promise<EmbeddingResult> 
 
 /** 批次：給多段文字、一次拿多個 embedding（API 支援、省 round-trip） */
 export async function generateEmbeddingsBatch(texts: string[]): Promise<EmbeddingResult[]> {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) throw new Error("OPENAI_API_KEY not set");
+  const apiKey = await getProviderKey("openai");
+  if (!apiKey) throw new Error("openai key not configured in ai_api_keys");
   if (texts.length === 0) return [];
   if (texts.length > 100) throw new Error("batch_too_large_max_100");
 

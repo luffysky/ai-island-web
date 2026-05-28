@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { generateEmbeddingsBatch, toPgVector } from "@/lib/embeddings";
+import { getProviderKey } from "@/lib/ai-crypto";
 import { getAllChapters } from "@/lib/content";
 import { DUNGEONS } from "@/data/dungeons";
 
@@ -30,7 +31,7 @@ export async function POST(req: NextRequest) {
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
   if (profile?.role !== "admin") return NextResponse.json({ error: "forbidden" }, { status: 403 });
 
-  if (!process.env.OPENAI_API_KEY) {
+  if (!(await getProviderKey("openai"))) {
     return NextResponse.json({ error: "openai_key_not_set" }, { status: 503 });
   }
 

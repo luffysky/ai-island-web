@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { generateEmbedding, toPgVector } from "@/lib/embeddings";
+import { getProviderKey } from "@/lib/ai-crypto";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -19,7 +20,7 @@ export async function GET(req: NextRequest) {
   const n = Math.max(1, Math.min(20, parseInt(req.nextUrl.searchParams.get("n") ?? "10", 10) || 10));
   const typeFilter = req.nextUrl.searchParams.get("type") ?? null;
 
-  if (!process.env.OPENAI_API_KEY) {
+  if (!(await getProviderKey("openai"))) {
     return NextResponse.json({ error: "openai_key_not_set" }, { status: 503 });
   }
 

@@ -53,3 +53,48 @@ export function maskKey(key: string): string {
   if (key.length < 12) return "***";
   return `${key.slice(0, 6)}...${key.slice(-4)}`;
 }
+
+// ─── 從 DB 抓 provider plain key（取代散落各檔的 process.env.XXX_API_KEY） ───
+//
+// 林董：「所有用到那 4 個變數的地方都要這樣操作 是 db 去確認 env 的值」
+//   - 4 個 provider 的 plain key 都存 ai_api_keys.api_key_encrypted、不放 env
+//   - env 只放 AI_KEY_SECRET（用來解 DB 內的 encrypted）
+//   - 換 secret = admin UI rekey（待做）+ 同步 Zeabur env
+//
+// 1 分鐘 in-memory cache（跟 ai-embeddings.ts 同 pattern、減少 DB hit）
+const providerKeyCache = new Map<string, { key: string | null; ts: number }>();
+const PROVIDER_KEY_TTL = 60_000;
+
+export async function getProviderKey(provider: string): Promise<string | null> {
+  const cached = providerKeyCache.get(provider);
+  if (cached && Date.now() - cached.ts < PROVIDER_KEY_TTL) return cached.key;
+
+  // dynamic import 避免 circular（supabase-admin → 這檔）
+  const { createSupabaseAdmin } = await import("./supabase-admin");
+  const admin = createSupabaseAdmin();
+  const { data } = await admin
+    .from("ai_api_keys")
+    .select("api_key_encrypted, enabled")
+    .eq("provider", provider)
+    .maybeSingle();
+
+  if (!data || !(data as any).enabled) {
+    providerKeyCache.set(provider, { key: null, ts: Date.now() });
+    return null;
+  }
+
+  try {
+    const key = decryptKey((data as any).api_key_encrypted);
+    providerKeyCache.set(provider, { key, ts: Date.now() });
+    return key;
+  } catch (e: any) {
+    console.warn(`[ai-crypto] decrypt ${provider} key failed:`, e?.message);
+    providerKeyCache.set(provider, { key: null, ts: Date.now() });
+    return null;
+  }
+}
+
+export function invalidateProviderKeyCache(provider?: string) {
+  if (provider) providerKeyCache.delete(provider);
+  else providerKeyCache.clear();
+}
