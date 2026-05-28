@@ -180,12 +180,14 @@ ${msgs.map((m) => `[${m.role}] ${m.content.slice(0, 800)}`).join("\n")}`;
       results.push({ user_id: uid, status: "ok", msgs: msgs.length, summary_len: parsed.summary?.length ?? 0 });
     } catch (e: any) {
       failed++;
-      await admin.from("error_logs").insert({
-        source: "cron/summarize-memories",
-        level: "error",
-        message: `[summarize_user_failed] ${e?.message ?? "unknown"}`,
-        extra: { user_id: uid, stack: e?.stack?.slice(0, 800) },
-      }).catch(() => {});
+      try {
+        await admin.from("error_logs").insert({
+          source: "cron/summarize-memories",
+          level: "error",
+          message: `[summarize_user_failed] ${e?.message ?? "unknown"}`,
+          extra: { user_id: uid, stack: e?.stack?.slice(0, 800) },
+        });
+      } catch {}
       results.push({ user_id: uid, status: "failed", error: e?.message });
     }
   }
