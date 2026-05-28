@@ -293,18 +293,10 @@ export function ModelsManagerClient({
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <span className={`text-xs px-2 py-0.5 rounded font-semibold ${
-                  hasSecret
-                    ? "bg-green-600 text-white dark:bg-green-500/30 dark:text-green-100"
-                    : "bg-gray-500 text-white dark:bg-gray-500/30 dark:text-gray-100"
-                }`}>
+                <span className={`chip ${hasSecret ? "chip-success" : "chip-neutral"}`}>
                   {hasSecret ? "✓ 已設定" : "未設定 key"}
                 </span>
-                <span className={`text-xs px-2 py-0.5 rounded font-semibold ${
-                  key?.enabled
-                    ? "bg-sky-600 text-white dark:bg-sky-500/30 dark:text-sky-100"
-                    : "bg-gray-500 text-white dark:bg-gray-500/30 dark:text-gray-100"
-                }`}>
+                <span className={`chip ${key?.enabled ? "chip-info" : "chip-neutral"}`}>
                   {key?.enabled ? "啟用" : "停用"}
                 </span>
               </div>
@@ -342,7 +334,7 @@ export function ModelsManagerClient({
                 <button
                   onClick={() => toggleKeyEnabled(provider, !key?.enabled)}
                   disabled={!key || !hasSecret}
-                  className="inline-flex items-center gap-1 rounded border border-border px-3 py-1.5 text-xs hover:bg-bg-elevated disabled:opacity-50"
+                  className={`btn-chip ${key?.enabled ? "btn-chip-neutral" : "btn-chip-success"}`}
                 >
                   <Power size={14} />
                   {key?.enabled ? "停用" : "啟用"}
@@ -350,7 +342,7 @@ export function ModelsManagerClient({
                 <button
                   onClick={() => testKey(provider)}
                   disabled={!key || !hasSecret}
-                  className="inline-flex items-center gap-1 rounded border border-cyan-600 px-3 py-1.5 text-xs font-medium text-white bg-cyan-600 hover:bg-cyan-700 disabled:opacity-50 dark:border-cyan-500/50 dark:bg-cyan-500/15 dark:text-cyan-100 dark:hover:bg-cyan-500/25"
+                  className="btn-chip btn-chip-info"
                   title="跑一個小請求驗證 key 真的可用"
                 >
                   🧪 測 key
@@ -358,7 +350,7 @@ export function ModelsManagerClient({
                 <button
                   onClick={() => deleteKey(provider)}
                   disabled={!key}
-                  className="inline-flex items-center gap-1 rounded border border-red-500/30 px-3 py-1.5 text-xs text-red-900 dark:text-red-100 hover:bg-red-500/10 disabled:opacity-50"
+                  className="btn-chip btn-chip-danger"
                 >
                   <Trash2 size={14} />
                   刪除
