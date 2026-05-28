@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Save, Loader2, Sparkles, Lock } from "lucide-react";
+import { Save, Loader2, Sparkles } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 
 type Row = {
@@ -16,15 +16,6 @@ type ModelMeta = {
   display_name: string | null;
   provider: string;
   is_active: boolean;
-};
-
-// 某些 usage 的 caller code 鎖死打單一 provider 的 endpoint、選錯 provider 會 401。
-// 在 UI 直接限制可選範圍、避免設定錯亂。
-const PROVIDER_LOCKED: Record<string, { providers: string[]; reason: string }> = {
-  line_admin: {
-    providers: ["anthropic"],
-    reason: "LINE admin bot 走 askAIWithTools、寫死打 Anthropic /v1/messages + tool use 規格。選 OpenAI/Gemini 會 401。",
-  },
 };
 
 export function UsageModelsClient({
@@ -71,51 +62,35 @@ export function UsageModelsClient({
           <div className="col-span-4">使用 model</div>
           <div className="col-span-1 text-center">啟用</div>
         </div>
-        {rows.map((r) => {
-          const lock = PROVIDER_LOCKED[r.usage_key];
-          const available = lock
-            ? activeModels.filter((m) => lock.providers.includes(m.provider))
-            : activeModels;
-          return (
-            <div
-              key={r.usage_key}
-              className="grid grid-cols-12 gap-2 px-3 py-2.5 border-b border-border last:border-0 items-center hover:bg-bg-elevated/40"
+        {rows.map((r) => (
+          <div
+            key={r.usage_key}
+            className="grid grid-cols-12 gap-2 px-3 py-2.5 border-b border-border last:border-0 items-center hover:bg-bg-elevated/40"
+          >
+            <code className="col-span-3 text-[11px] text-purple-300 font-mono">{r.usage_key}</code>
+            <div className="col-span-4 text-xs text-fg-muted">{r.description}</div>
+            <select
+              className="col-span-4 bg-bg border border-border rounded-lg px-2 py-1.5 text-xs outline-none focus:border-purple-400"
+              value={r.model_name}
+              onChange={(e) => update(r.usage_key, { model_name: e.target.value })}
             >
-              <code className="col-span-3 text-[11px] text-purple-300 font-mono inline-flex items-center gap-1">
-                {lock && <Lock size={10} className="text-yellow-400 shrink-0" />}
-                {r.usage_key}
-              </code>
-              <div className="col-span-4 text-xs text-fg-muted">
-                {r.description}
-                {lock && (
-                  <div className="text-[10px] text-yellow-400/80 mt-0.5 leading-snug">
-                    🔒 鎖 {lock.providers.join(" / ")}：{lock.reason}
-                  </div>
-                )}
-              </div>
-              <select
-                className="col-span-4 bg-bg border border-border rounded-lg px-2 py-1.5 text-xs outline-none focus:border-purple-400"
-                value={r.model_name}
-                onChange={(e) => update(r.usage_key, { model_name: e.target.value })}
-              >
-                <option value="">— 用預設 fallback —</option>
-                {available.map((m) => (
-                  <option key={m.model_name} value={m.model_name}>
-                    [{m.provider}] {m.display_name ?? m.model_name}
-                  </option>
-                ))}
-              </select>
-              <div className="col-span-1 text-center">
-                <input
-                  type="checkbox"
-                  checked={r.enabled}
-                  onChange={(e) => update(r.usage_key, { enabled: e.target.checked })}
-                  className="w-4 h-4 accent-purple-500"
-                />
-              </div>
+              <option value="">— 用預設 fallback —</option>
+              {activeModels.map((m) => (
+                <option key={m.model_name} value={m.model_name}>
+                  [{m.provider}] {m.display_name ?? m.model_name}
+                </option>
+              ))}
+            </select>
+            <div className="col-span-1 text-center">
+              <input
+                type="checkbox"
+                checked={r.enabled}
+                onChange={(e) => update(r.usage_key, { enabled: e.target.checked })}
+                className="w-4 h-4 accent-purple-500"
+              />
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
 
       <div className="flex items-center gap-2">
