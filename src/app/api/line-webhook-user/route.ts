@@ -167,6 +167,8 @@ async function askUserAI(text: string, profile: UserProfileLite | null, lineUser
     userContext,
     lineUserId,
     channel: "line",
+    modelProvider: model.provider,
+    modelName: model.model_name,
   });
 
   try {

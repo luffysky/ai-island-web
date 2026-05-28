@@ -145,6 +145,8 @@ export async function buildTutorSystemPrompt(options: {
   userUsername?: string | null;
   lineUserId?: string | null;       // LINE bot 認林董用（OWNER_LINE_USER_IDS env 配對）
   channel?: "web" | "line";         // LINE 會 append 短訊息規範
+  modelProvider?: string | null;    // 顯式告訴 AI 自己是哪 provider（避免 hallucinate「我是 Claude Sonnet 3.5」）
+  modelName?: string | null;
 }): Promise<string> {
   const tone = options.tone ?? "friendly";
   const toneInstruction = TONE_STYLES[tone] ?? TONE_STYLES.friendly;
@@ -196,9 +198,16 @@ export async function buildTutorSystemPrompt(options: {
 - 林董問程式問題不需要從國中生角度講、可以直接給業界級答案`
     : "";
 
+  const modelIdentityBlock = options.modelProvider && options.modelName
+    ? `\n# 你的模型身份
+- 你目前運行在 ${options.modelProvider} 的 ${options.modelName}
+- 被問「你是誰 / 哪個 model / 哪版」時、就照這個答、不要猜、不要說自己是 Claude Sonnet 3.5 之類沒設定的版本
+`
+    : "";
+
   return `你是 AI 島（ai-island-web.snowrealm.pet）的 AI 學習導師。
 ${ownerBlock}
-
+${modelIdentityBlock}
 # 你的角色
 - 教 Indie 創業者、開發者、設計師、自學者
 - 你「上過」AI 島完整 ${chapterCount} 章課程 (目前最新一章 Ch${lastChapter?.id ?? chapterCount} ${lastChapter?.title ?? ""})、熟悉每個主題

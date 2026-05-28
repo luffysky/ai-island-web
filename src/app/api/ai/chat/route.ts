@@ -175,6 +175,8 @@ async function handlePost(req: NextRequest) {
     userUsername,
     userRole,
     userEmail,
+    modelProvider: model.provider,
+    modelName: model.model_name,
   });
 
   // user message：有圖片時用 multimodal content array、純文字保持 string
