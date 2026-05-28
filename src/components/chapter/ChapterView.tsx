@@ -53,6 +53,30 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
     };
   }, [chapter.id, user?.id]);
 
+  // URL hash 跳轉到指定 lesson（從 /me/notes「跳到該課」按鈕來）
+  // ChapterView 是 client component、初次 mount 時 LessonCard 還沒 render
+  // 瀏覽器原生 anchor 跳會失敗、要等 DOM 長出來再手動 scrollIntoView。
+  // 注意 lesson id 含 "."（如 "26.0.5"）、querySelector("#lesson-26.0.5") 會把
+  // ".0" ".5" 當 class selector、必須用 getElementById 才對得到。
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const hash = window.location.hash.slice(1);
+    if (!hash || !hash.startsWith("lesson-")) return;
+    let retries = 20;
+    const tryScroll = () => {
+      const el = document.getElementById(hash);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+        // 加 highlight 一下、讓用戶知道在這
+        el.classList.add("ring-2", "ring-accent", "ring-offset-2", "ring-offset-bg");
+        setTimeout(() => el.classList.remove("ring-2", "ring-accent", "ring-offset-2", "ring-offset-bg"), 2200);
+        return;
+      }
+      if (retries-- > 0) setTimeout(tryScroll, 100);
+    };
+    setTimeout(tryScroll, 150);
+  }, [chapter.id]);
+
   const handleComplete = async (lessonId: string, xp: number) => {
     if (!user) {
       notify.warning("請先登入才能記錄進度");
