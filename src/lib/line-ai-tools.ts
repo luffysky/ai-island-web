@@ -361,7 +361,7 @@ function friendlyAnthropicError(status: number, body: string, model: string): st
   const errType = parsed?.error?.type ?? "";
   const errMsg = parsed?.error?.message ?? "";
   if (status === 401 || errType === "authentication_error" || /invalid x-api-key/i.test(errMsg)) {
-    return "Anthropic API key 失效（401）— 林董去 /admin/ai-keys 重貼一次 key";
+    return "Anthropic API key 失效（401）— 林董去 /admin/ai/models 重貼一次 anthropic key";
   }
   if (status === 429 || errType === "rate_limit_error") {
     return "Anthropic 限流（429）— 等 1 分鐘再問、或升 API tier";
