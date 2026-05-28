@@ -229,6 +229,46 @@
 
 ---
 
+## 🔄 N8N 自動化規劃（12 workflow、2026-05-29 加入）
+
+> 前置：林董要先自架 N8N（建議 Zeabur Docker、~$5/月）。架完按優先序逐 workflow 配置。
+
+### 🔥 高 ROI（馬上能跑、立即受益）
+
+| # | 自動化 | 對 AI 島的價值 |
+|---|---|---|
+| **N1** | 學員 onboarding 7 天序列 — 註冊 → 24h 內 → 第 3 天 → 第 7 天分階段 email/LINE 引導 | 註冊→活躍 conversion 提升 30-50% |
+| **N2** | 流失 winback — 7/14/30 天沒登入觸發、AI 客製化挽回訊息 | 月活提升、retention 救回 |
+| **N3** | AI 內容工廠 — 寫一篇 blog → 自動生 5 個社群短文 + Threads + IG + YouTube 摘要 | 一篇變十篇、行銷流量 |
+| **N4** | KPI 自動報表 → LINE/Discord — 每天 09:00 自動跑 SQL、AI 摘要、推 LINE | 不用自己進後台、省 5 分鐘/天 |
+
+### ⚡ 中 ROI（有用、需設計流程）
+
+| # | 自動化 | 場景 |
+|---|---|---|
+| **N5** | 章節內容自動發布 — 寫好 ch JSON → 觸發 import script → 通知 → 自動 OG 圖 + 社群貼文 | 內容上線無人工 |
+| **N6** | AI 工作流路由 — 複雜任務 → Claude；簡單 → GPT-mini；批次 → Llama | 省 Token 成本 50%+ |
+| **N7** | 集中通知中心 — 重要事件 → fan-out 到 LINE + Discord + Slack + Email | 不用每處 hardcode |
+| **N8** | 客服工單分流 — LINE 收訊 → AI 分類 → 派 ticket → 答不出來才轉真人 | 客服省力 70% |
+
+### 🛠 低門檻（小工具、N8N 拿手）
+
+| # | 自動化 | 怎麼用 |
+|---|---|---|
+| **N9** | Stripe webhook → Supabase — 訂閱 / 退款事件 → update profiles.subscription | 取代寫 webhook code |
+| **N10** | 每日 backup DB — 每天 03:00 dump Supabase → S3 / R2 | 災難回復、合規 |
+| **N11** | 異常偵測 + alert — 流量突增 / API error spike → 自動派工單 + LINE 警報 | 不用盯著 dashboard |
+| **N12** | GitHub release 自動公告 — tag push → 抓 changelog → 發 newsletter + 站內 changelog | 已有 changelog 表、直接接 |
+
+### 推進順序（建議）
+
+1. **先架自架 N8N**（Zeabur Docker、~$5/月、無限 workflow）
+2. **第 1 個 workflow：N1 onboarding 7 天**（最容易看到效果）
+3. **第 2 個：N4 KPI 報表**（每天看到、有感）
+4. **再加**：N2 流失 winback、N8 客服分流、N6 AI 路由
+
+---
+
 ## 🟡 5/28 未驗證 / 需林董測
 
 ### LINE bot 五件功能（剛 push、明早測）
