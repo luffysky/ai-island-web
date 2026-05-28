@@ -44,7 +44,7 @@ export default async function FootprintPage() {
       .limit(500),
     supabase
       .from("profiles")
-      .select("display_name, username, current_streak, level, xp")
+      .select("display_name, username, streak_days, level, xp")
       .eq("id", user.id)
       .maybeSingle(),
     supabase
@@ -112,7 +112,7 @@ export default async function FootprintPage() {
 
       {/* 1. 簽到 / 狀態 banner */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <StatCard label="🔥 連續簽到" value={`${profile?.current_streak ?? 0} 天`} />
+        <StatCard label="🔥 連續簽到" value={`${(profile as any)?.streak_days ?? 0} 天`} />
         <StatCard label="📚 30 天完成" value={`${recent30.length} 課`} />
         <StatCard label="📂 涉獵章節" value={`${byChapter.size} 章`} />
         <StatCard label="⚠️ 弱項" value={`${weaks.length} 章`} />

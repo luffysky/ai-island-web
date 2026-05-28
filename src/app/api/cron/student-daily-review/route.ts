@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
   // 1. 找所有「綁定 LINE + 允許通知」學員
   const { data: targets, error: targetErr } = await admin
     .from("profiles")
-    .select("id, line_user_id, display_name, username, current_streak")
+    .select("id, line_user_id, display_name, username, streak_days")
     .not("line_user_id", "is", null)
     .eq("line_notify_enabled", true)
     .is("banned_at", null)
@@ -89,7 +89,7 @@ export async function GET(req: NextRequest) {
       const quizAvg = quizzes.length
         ? quizzes.reduce((s, q) => s + Number(q.score_pct ?? 0), 0) / quizzes.length
         : null;
-      const streak = Number(p.current_streak ?? 0);
+      const streak = Number(p.streak_days ?? 0);
 
       // 沒今日紀錄 + 無弱項 → 跳過、不打擾
       if (lessonCount === 0 && quizzes.length === 0 && weaks.length === 0 && streak === 0) {
