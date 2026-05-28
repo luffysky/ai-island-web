@@ -439,7 +439,7 @@ export function buildListCard(opts: {
 export function buildAIErrorCard(opts: {
   message: string;          // 友善中文訊息（不含 raw JSON）
   hint?: string;            // 補充提示（怎麼修）
-  fixUrl?: string;          // 修復頁面 URL（例如 /admin/ai-keys）
+  fixUrl?: string;          // 修復頁面 URL（例如 /admin/ai/models）
   fixLabel?: string;        // 修復按鈕文字
   userName?: string;
 }): FlexMessage {

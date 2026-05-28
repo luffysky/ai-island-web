@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
   if (!apiKey) {
     return NextResponse.json({
       error: "no_openai_key",
-      hint: "去 /admin/ai-keys 啟用 openai provider key",
+      hint: "去 /admin/ai/models 啟用 openai provider key",
     }, { status: 400 });
   }
 
