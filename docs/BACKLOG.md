@@ -186,6 +186,29 @@
 
 ---
 
+## 🛠️ Admin 後台升級剩餘（admin_upgrade audit 2026-05-29）
+
+> 39 項規劃（QW-01~05 + MED-06~12 + LT-13~18 + P4-01~21）審計後：**36 DONE / 5 待補**。
+> 完整 audit 見 `docs/admin_upgrade/README.md` + `docs/admin_upgrade/PHASE-4-PLUS-BACKLOG.md`
+
+| ID | 狀態 | 缺什麼 | 估時 | 備註 |
+|---|---|---|---|---|
+| **QW-05** | 🟡 部分 | dashboard「即時在線」widget（breach 警告已有）| 1-2 hr | analytics_sessions.last_seen_at 已存、拉一個 30 分鐘內 count 就有 |
+| **LT-17** | 🔴 未做 | 效能 ops（Sentry / PostHog 整合）| 1-2 天 | 接第三方、不建本地表；跟 P4-16 Web Vitals 部分重疊 |
+| **P4-05** | 🟡 待確認 | KPI 報表 admin UI ↔ `/api/cron/kpi-email` 是否真 wired | 10 分鐘 verify | cron 已實作、ReportsClient 也在、確認排程 → email 鏈路 |
+| **P4-19** | 🟡 部分 | 教師/助教 role admin 管理介面 | 0.5-1 天 | `/teacher` 入口頁存在、admin 改 role 介面缺 |
+| **P4-20** | 🔴 未做 | 學員作業批改介面 | ~1 週 | 章末 quiz 已有；開放題作業批改 UI 完全缺 |
+
+**已 done 的 34 項細節**：略（audit 表完整版在本次 commit 對話 transcript）
+
+**推進建議**：
+1. P4-05 verify 先做（10 分鐘）→ 不用排 sprint
+2. QW-05「即時在線」widget 順手做（dashboard 體感升級、CP 高）
+3. P4-19 + P4-20 合包（教師 role + 作業批改）→ 1.5 週
+4. LT-17 排最後（接第三方、可暫不做、靠現有 `/admin/errors` 度日）
+
+---
+
 ## 🟡 5/28 未驗證 / 需林董測
 
 ### LINE bot 五件功能（剛 push、明早測）
