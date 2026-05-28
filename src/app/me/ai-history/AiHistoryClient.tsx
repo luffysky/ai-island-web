@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { MessageSquare, ChevronRight, Loader2, Search } from "lucide-react";
+import { MessageSquare, ChevronRight, Loader2, Search, Trash2 } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
+import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { formatTW } from "@/lib/format-date";
 
 type Conv = {
@@ -26,12 +27,50 @@ const PERSONA_ICON: Record<string, string> = {
 
 export function AiHistoryClient({ initial }: { initial: Conv[] }) {
   const toast = useToast();
+  const confirm = useConfirm();
   const [filter, setFilter] = useState("");
   const [selected, setSelected] = useState<Conv | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [loadingMsgs, setLoadingMsgs] = useState(false);
+  const [conversations, setConversations] = useState<Conv[]>(initial);
+  const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
 
-  const filtered = initial.filter((c) => !filter || c.title.toLowerCase().includes(filter.toLowerCase()));
+  const filtered = conversations.filter((c) => !filter || c.title.toLowerCase().includes(filter.toLowerCase()));
+
+  const handleDelete = async (conv: Conv, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const ok = await confirm({
+      title: "刪除這段對話？",
+      description: `「${conv.title || "(無標題)"}」連同所有訊息會永久消失、無法復原。`,
+      confirmLabel: "刪除",
+      destructive: true,
+    });
+    if (!ok) return;
+
+    setDeletingIds((s) => new Set(s).add(conv.id));
+    // optimistic：先從列表拿掉、刪選中就清掉右側
+    const snapshot = conversations;
+    setConversations((cs) => cs.filter((c) => c.id !== conv.id));
+    if (selected?.id === conv.id) {
+      setSelected(null);
+      setMessages([]);
+    }
+
+    try {
+      const res = await fetch(`/api/me/ai-history/${conv.id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      toast.success("已刪除");
+    } catch (err: any) {
+      setConversations(snapshot);  // rollback
+      toast.error("刪除失敗、請再試一次");
+    } finally {
+      setDeletingIds((s) => {
+        const next = new Set(s);
+        next.delete(conv.id);
+        return next;
+      });
+    }
+  };
 
   useEffect(() => {
     if (!selected) return;
@@ -65,10 +104,12 @@ export function AiHistoryClient({ initial }: { initial: Conv[] }) {
             </div>
           ) : (
             filtered.map((c) => (
-              <button
+              <div
                 key={c.id}
                 onClick={() => setSelected(c)}
-                className={`w-full text-left p-3 hover:bg-bg-elevated transition ${selected?.id === c.id ? "bg-accent/10 border-l-2 border-accent" : ""}`}
+                role="button"
+                tabIndex={0}
+                className={`group w-full text-left p-3 hover:bg-bg-elevated transition cursor-pointer ${selected?.id === c.id ? "bg-accent/10 border-l-2 border-accent" : ""}`}
               >
                 <div className="flex items-start gap-2">
                   <div className="text-base shrink-0">
@@ -81,9 +122,19 @@ export function AiHistoryClient({ initial }: { initial: Conv[] }) {
                       {c.context_chapter_id && ` · Ch ${c.context_chapter_id}`}
                     </div>
                   </div>
+                  <button
+                    type="button"
+                    onClick={(e) => handleDelete(c, e)}
+                    disabled={deletingIds.has(c.id)}
+                    aria-label="刪除對話"
+                    title="刪除對話"
+                    className="p-1.5 rounded text-fg-muted hover:text-red-400 hover:bg-red-500/10 md:opacity-0 md:group-hover:opacity-100 focus:opacity-100 transition disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+                  >
+                    {deletingIds.has(c.id) ? <Loader2 size={12} className="animate-spin" /> : <Trash2 size={12} />}
+                  </button>
                   <ChevronRight size={12} className="text-fg-muted shrink-0 mt-1" />
                 </div>
-              </button>
+              </div>
             ))
           )}
         </div>

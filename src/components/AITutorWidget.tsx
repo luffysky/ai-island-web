@@ -1,8 +1,9 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Sparkles, Send, X, ChevronDown, Settings as SettingsIcon, Plus, Loader2, History, MessageSquare, ImagePlus } from "lucide-react";
+import { Sparkles, Send, X, ChevronDown, Settings as SettingsIcon, Plus, Loader2, History, MessageSquare, ImagePlus, Trash2 } from "lucide-react";
 import { useOverlayCount, useOverlayRegister } from "@/lib/overlay-stack";
 import { useEdgeSafe } from "@/lib/use-edge-safe";
+import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { devLog } from "@/lib/dev-log";
 
 const TUTOR_POS_KEY = "ai_tutor_ball_pos";
@@ -161,6 +162,8 @@ export function AITutorWidget({
   const [showHistory, setShowHistory] = useState(false);
   const [showModelMenu, setShowModelMenu] = useState(false);
   const [history, setHistory] = useState<Array<{ id: string; title: string; updated_at: string }>>([]);
+  const [deletingHistIds, setDeletingHistIds] = useState<Set<string>>(new Set());
+  const confirm = useConfirm();
   // 用全站 AuthContext、不再自己 race
   const { status: authState } = useAuth();
   const isLoggedIn = authState === "in";
@@ -398,6 +401,40 @@ export function AITutorWidget({
     setError("");
   };
 
+  const deleteHistory = async (
+    h: { id: string; title: string },
+    e: React.MouseEvent,
+  ) => {
+    e.stopPropagation();
+    const ok = await confirm({
+      title: "刪除這段對話？",
+      description: `「${h.title || "(無標題)"}」連同所有訊息會永久消失、無法復原。`,
+      confirmLabel: "刪除",
+      destructive: true,
+    });
+    if (!ok) return;
+
+    setDeletingHistIds((s) => new Set(s).add(h.id));
+    const snapshot = history;
+    setHistory((cs) => cs.filter((c) => c.id !== h.id));
+    // 正在看的對話被刪 → 自動 newChat
+    if (conversationId === h.id) newChat();
+
+    try {
+      const res = await fetch(`/api/me/ai-history/${h.id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    } catch (err) {
+      setHistory(snapshot);  // rollback
+      setError("刪除失敗、請再試一次");
+    } finally {
+      setDeletingHistIds((s) => {
+        const next = new Set(s);
+        next.delete(h.id);
+        return next;
+      });
+    }
+  };
+
   const selectedModel = models.find((m) => m.id === selectedModelId);
 
   return (
@@ -490,8 +527,10 @@ export function AITutorWidget({
                 <div className="p-4 text-center text-xs text-fg-muted">沒有對話紀錄</div>
               ) : (
                 history.map((h) => (
-                  <button
+                  <div
                     key={h.id}
+                    role="button"
+                    tabIndex={0}
                     onClick={async () => {
                       // 載入該對話的訊息
                       const { data } = await supabase
@@ -503,16 +542,28 @@ export function AITutorWidget({
                       setConversationId(h.id);
                       setShowHistory(false);
                     }}
-                    className="w-full text-left p-2 hover:bg-bg-elevated text-sm border-t border-border"
+                    className="group flex items-center gap-2 p-2 hover:bg-bg-elevated text-sm border-t border-border cursor-pointer"
                   >
-                    <div className="truncate flex items-center gap-1">
-                      <MessageSquare size={12} className="text-fg-muted shrink-0" />
-                      <span className="truncate">{h.title || "(無標題)"}</span>
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate flex items-center gap-1">
+                        <MessageSquare size={12} className="text-fg-muted shrink-0" />
+                        <span className="truncate">{h.title || "(無標題)"}</span>
+                      </div>
+                      <div className="text-xs text-fg-muted mt-0.5">
+                        {new Date(h.updated_at).toLocaleString("zh-TW", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })}
+                      </div>
                     </div>
-                    <div className="text-xs text-fg-muted mt-0.5">
-                      {new Date(h.updated_at).toLocaleString("zh-TW", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })}
-                    </div>
-                  </button>
+                    <button
+                      type="button"
+                      onClick={(e) => deleteHistory(h, e)}
+                      disabled={deletingHistIds.has(h.id)}
+                      aria-label="刪除對話"
+                      title="刪除對話"
+                      className="p-1.5 rounded text-fg-muted hover:text-red-400 hover:bg-red-500/10 md:opacity-0 md:group-hover:opacity-100 focus:opacity-100 transition disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+                    >
+                      {deletingHistIds.has(h.id) ? <Loader2 size={12} className="animate-spin" /> : <Trash2 size={12} />}
+                    </button>
+                  </div>
                 ))
               )}
             </div>
