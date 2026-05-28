@@ -12,6 +12,22 @@ import { scanContent, flagContent } from "@/lib/moderation";
 export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
+  try {
+    return await handlePost(req);
+  } catch (e: any) {
+    // outer guard：之前 route 內部分支沒包 try、出問題會回 Next.js 預設 500（無訊息）
+    // 包一層後、500 至少帶簡短訊息給 widget 顯示、stack 進 server log 給我查
+    console.error("[AI chat] uncaught:", e?.stack || e?.message || e);
+    const hint = (e?.message ?? "").toString().slice(0, 120);
+    return errorResponse(
+      "internal_error",
+      500,
+      hint ? `AI 內部錯誤：${hint}` : "AI 內部錯誤、已記錄、請稍後再試",
+    );
+  }
+}
+
+async function handlePost(req: NextRequest) {
   const supabase = await createSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return errorResponse("unauthorized", 401);
