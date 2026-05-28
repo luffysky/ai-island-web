@@ -295,14 +295,37 @@ async function askAI(message: string, adminUser: AdminLineUser): Promise<string>
 ${snapshot}
 ──────────────────────────────`;
 
+  // 兩條路：claude → 走 tool use（自動查 KPI/users/errors）、其他 → 純對話（便宜、不打 tool）
+  // 林董：「預設用 gpt 就好、用到 tool 再自己跳轉到 claude、不然帳單你幫我繳？」
+  // → usage_models 設 gpt-4o-mini 時走 callAI 純聊；要 tool 才把 line_admin usage 改成 claude。
+  const useToolUse = model.provider === "anthropic" && /claude/i.test(model.model_name);
+
   try {
-    const reply = await askAIWithTools({
-      apiKey,
-      model: model.model_name,
-      systemPrompt,
-      history: hist,
-      user: adminUser,
-    });
+    let reply: string;
+    if (useToolUse) {
+      reply = await askAIWithTools({
+        apiKey,
+        model: model.model_name,
+        systemPrompt,
+        history: hist,
+        user: adminUser,
+      });
+    } else {
+      // OpenAI / Gemini / Groq：走通用 callAI、純對話、沒 admin tools
+      const { callAI } = await import("@/lib/ai-providers");
+      const r = await callAI({
+        provider: model.provider,
+        model: model.model_name,
+        apiKey,
+        messages: [
+          { role: "system", content: systemPrompt },
+          ...hist.map((h) => ({ role: h.role, content: h.content })),
+        ],
+        temperature: 0.7,
+        maxTokens: 800,
+      });
+      reply = r.text || "（AI 沒回應、再問一次試試）";
+    }
     if (convId) {
       await saveAdminTurn(convId, message, reply, `${model.provider}/${model.model_name}`).catch((e) => {
         console.warn("[line-webhook] saveAdminTurn failed:", (e as any)?.message);
@@ -314,7 +337,7 @@ ${snapshot}
     }
     return reply;
   } catch (e: any) {
-    await logLineError("askAIWithTools_failed", e?.message ?? "unknown", { adminUserId: adminUser.id, model: model.model_name });
+    await logLineError("askAI_failed", e?.message ?? "unknown", { adminUserId: adminUser.id, provider: model.provider, model: model.model_name, useToolUse });
     return `❌ AI 呼叫失敗 (${model.model_name})：${e?.message ?? "未知錯誤"}\n(已寫 error_logs、可到 /admin/errors 看 stack)`;
   }
 }
