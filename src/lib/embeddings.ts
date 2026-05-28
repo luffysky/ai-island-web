@@ -10,9 +10,10 @@
  */
 
 import { getProviderKey } from "./ai-crypto";
+import { getModelNameForUsage } from "./ai-usage-models";
 
-const MODEL = "text-embedding-3-small";
-const DIMS = 1536;
+const DEFAULT_MODEL = "text-embedding-3-small";  // fallback；後台改 usage_key=embedding 即覆蓋
+const DIMS = 1536;                                // 跟 small / ada-002 相符；換 model 要同步改 schema
 
 export interface EmbeddingResult {
   embedding: number[];
@@ -32,7 +33,7 @@ export async function generateEmbedding(text: string): Promise<EmbeddingResult> 
       Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: MODEL,
+      model: await getModelNameForUsage("embedding", DEFAULT_MODEL),
       input,
       dimensions: DIMS,
     }),
@@ -67,7 +68,7 @@ export async function generateEmbeddingsBatch(texts: string[]): Promise<Embeddin
       Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: MODEL,
+      model: await getModelNameForUsage("embedding", DEFAULT_MODEL),
       input: inputs,
       dimensions: DIMS,
     }),

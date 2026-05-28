@@ -21,7 +21,10 @@ export type AiUsageKey =
   | "blog_writer"
   | "chapter_quiz_gen"
   | "seo_meta_gen"
-  | "admin_assistant";
+  | "admin_assistant"
+  | "embedding"          // 全站 embedding（site search / RAG / 章節索引）
+  | "rewrite_lessons"    // 批次 AI 改寫 chapter.analogy / content
+  | "pet";                // 寵物 AI 對話（Haiku 級）
 
 export const USAGE_LABELS: Record<AiUsageKey, string> = {
   line_admin:         "LINE admin bot 對話 / tool use",
@@ -34,7 +37,19 @@ export const USAGE_LABELS: Record<AiUsageKey, string> = {
   chapter_quiz_gen:   "章節 quiz 自動出題",
   seo_meta_gen:       "SEO meta 自動生成",
   admin_assistant:    "後台一般 AI 助理",
+  embedding:          "全站 embedding（site search / RAG）",
+  rewrite_lessons:    "批次 AI 改寫 chapter 內容",
+  pet:                "寵物 AI 對話",
 };
+
+/**
+ * 拿單一 usage 對應的 model_name 字串（給直接打 API / SELECT ai_models 用）
+ * 沒設 → 回 defaultModel；admin 後台 /admin/ai/usage-models 改即時生效（invalidateUsageCache 已串）
+ */
+export async function getModelNameForUsage(usageKey: AiUsageKey, defaultModel: string): Promise<string> {
+  const map = await loadUsageMap();
+  return map[usageKey] ?? defaultModel;
+}
 
 // in-memory cache (1 min)
 let cache: { at: number; data: Record<string, string> } | null = null;

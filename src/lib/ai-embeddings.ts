@@ -13,8 +13,9 @@
  */
 import { createSupabaseAdmin } from "./supabase-admin";
 import { decryptKey } from "./ai-crypto";
+import { getModelNameForUsage } from "./ai-usage-models";
 
-const EMBED_MODEL = "text-embedding-3-small";  // 1536 維、$0.00002/1K tokens、品質夠
+const DEFAULT_EMBED_MODEL = "text-embedding-3-small";  // fallback；後台改 usage_key=embedding 即覆蓋
 const EMBED_DIM = 1536;
 
 let cachedKey: { key: string; ts: number } | null = null;
@@ -48,7 +49,7 @@ export async function embedText(text: string): Promise<number[] | null> {
     const res = await fetch("https://api.openai.com/v1/embeddings", {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
-      body: JSON.stringify({ model: EMBED_MODEL, input }),
+      body: JSON.stringify({ model: await getModelNameForUsage("embedding", DEFAULT_EMBED_MODEL), input }),
       signal: ctrl.signal,
     });
     if (!res.ok) {
