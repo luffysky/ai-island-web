@@ -47,6 +47,8 @@ type LessonFull = {
 };
 
 // 章節 + 前 5 個 lesson 摘要：5 分鐘 cache（章節結構變動少）
+// 注意：unstable_cache 內部會 JSON 序列化、Map 會被打回 {}、回來呼叫 .get() 就炸。
+// 所以 lessonsByChapter 用 Record<number, LessonSummary[]>、access 用 [chId] 不用 .get()。
 const getChapterSummaries = unstable_cache(
   async () => {
     const admin = createSupabaseAdmin();
@@ -57,7 +59,7 @@ const getChapterSummaries = unstable_cache(
       .order("id", { ascending: true });
     if (chErr || !chapters) {
       console.warn("[ai-tutor-prompt] chapters fetch failed:", chErr?.message);
-      return { chapters: [] as ChapterRow[], lessonsByChapter: new Map<number, LessonSummary[]>() };
+      return { chapters: [] as ChapterRow[], lessonsByChapter: {} as Record<number, LessonSummary[]> };
     }
 
     const { data: lessons } = await admin
@@ -65,11 +67,9 @@ const getChapterSummaries = unstable_cache(
       .select("id, chapter_id, number, title, one_line_summary, sort_order")
       .order("sort_order", { ascending: true });
 
-    const lessonsByChapter = new Map<number, LessonSummary[]>();
+    const lessonsByChapter: Record<number, LessonSummary[]> = {};
     for (const l of (lessons || []) as LessonSummary[]) {
-      const arr = lessonsByChapter.get(l.chapter_id) ?? [];
-      arr.push(l);
-      lessonsByChapter.set(l.chapter_id, arr);
+      (lessonsByChapter[l.chapter_id] ??= []).push(l);
     }
 
     return { chapters: chapters as ChapterRow[], lessonsByChapter };
@@ -112,7 +112,7 @@ async function buildCourseSummary(): Promise<{ summary: string; chapterCount: nu
 
     // 灌入全部 lesson 標題（不限制前 5）— AI 能精準引用「Ch26 L5 講變數」
     // 前 3 lesson 多帶一句摘要（給 AI 抓章節 vibe）、後面只列標題（控制 prompt size）
-    const allLessons = lessonsByChapter.get(ch.id) ?? [];
+    const allLessons = lessonsByChapter[ch.id] ?? [];
     allLessons.forEach((l, idx) => {
       if (idx < 3 && l.one_line_summary) {
         lines.push(`  • ${l.number} ${l.title} — ${l.one_line_summary.slice(0, 60)}`);
@@ -181,7 +181,7 @@ export async function buildTutorSystemPrompt(options: {
         }
       } else {
         contextInfo += "本章 lessons：\n";
-        const chLessons = lessonsByChapter.get(ch.id) ?? [];
+        const chLessons = lessonsByChapter[ch.id] ?? [];
         chLessons.forEach((l) => {
           contextInfo += `- ${l.number} ${l.title}\n`;
         });
