@@ -142,7 +142,7 @@ export async function GET(req: NextRequest) {
       s.lessons.push({ id: l.id, title: l.title, current: l.analogy, len });
     }
   }
-  return NextResponse.json({ summary, model: REWRITE_MODEL });
+  return NextResponse.json({ summary, model: DEFAULT_REWRITE_MODEL });
 }
 
 // POST { chapter_ids: number[], dry_run?: boolean, limit?: number }
@@ -209,7 +209,7 @@ export async function POST(req: NextRequest) {
     ok: true,
     dry_run: dryRun,
     chapter_ids: chapterIds,
-    model: REWRITE_MODEL,
+    model: DEFAULT_REWRITE_MODEL,
     total_targets: targets.length,
     done,
     failed,

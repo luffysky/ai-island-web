@@ -115,4 +115,4 @@ export async function vectorSearchForum(query: string, limit = 5): Promise<Forum
   return (data ?? []) as ForumHit[];
 }
 
-export { EMBED_MODEL, EMBED_DIM };
+export { DEFAULT_EMBED_MODEL as EMBED_MODEL, EMBED_DIM };
