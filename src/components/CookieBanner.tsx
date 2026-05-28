@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { setPreciseOptIn, getPreciseLocation } from "@/lib/geo-precise";
 
 const CONSENT_KEY = "cookie-consent";
 
@@ -10,6 +11,7 @@ type ConsentValue = "accepted" | "essential-only" | null;
 export function CookieBanner() {
   const [show, setShow] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
+  const [precise, setPrecise] = useState(false);
 
   useEffect(() => {
     try {
@@ -34,6 +36,12 @@ export function CookieBanner() {
     // 如果同意 analytics、啟用 GA
     if (value === "accepted") {
       window.dispatchEvent(new Event("cookie-consent-accepted"));
+    }
+
+    // 順手開精準位置（瀏覽器會跳 GPS 授權框、按拒絕也沒關係）
+    if (value === "accepted" && precise) {
+      setPreciseOptIn(true);
+      getPreciseLocation().catch(() => {});
     }
   };
 
@@ -70,6 +78,18 @@ export function CookieBanner() {
                 </div>
               </div>
             )}
+            <label className="mt-2 flex items-start gap-2 text-xs text-fg-muted cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={precise}
+                onChange={(e) => setPrecise(e.target.checked)}
+                className="mt-0.5 accent-accent shrink-0"
+              />
+              <span>
+                📍 <strong>順手提供「區」級位置</strong>（選用、隨時可關）—
+                點全部同意時、瀏覽器會跳 GPS 授權、用來給你同城同學推薦、線下活動通知。<Link href="/settings" className="text-accent underline ml-1">隨時取消</Link>
+              </span>
+            </label>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto shrink-0">

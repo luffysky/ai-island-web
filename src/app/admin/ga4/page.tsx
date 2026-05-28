@@ -47,6 +47,17 @@ export default async function GA4Page() {
 
   const hasGa4 = snapshots && snapshots.length > 0;
 
+  // Geo 覆蓋率（7 天）：訪客的 country/city/district 命中比例
+  const sevenDaysAgo = new Date(Date.now() - 7 * 86400_000).toISOString();
+  const [geoTotal, geoCountry, geoCity, geoDistrict] = await Promise.all([
+    supabase.from("analytics_sessions").select("id", { count: "exact", head: true }).gte("last_seen_at", sevenDaysAgo),
+    supabase.from("analytics_sessions").select("id", { count: "exact", head: true }).gte("last_seen_at", sevenDaysAgo).not("country", "is", null),
+    supabase.from("analytics_sessions").select("id", { count: "exact", head: true }).gte("last_seen_at", sevenDaysAgo).not("city", "is", null),
+    supabase.from("analytics_sessions").select("id", { count: "exact", head: true }).gte("last_seen_at", sevenDaysAgo).not("district", "is", null),
+  ]);
+  const totalSessions = geoTotal.count ?? 0;
+  const pct = (n: number | null) => (totalSessions > 0 ? Math.round((n ?? 0) / totalSessions * 100) : 0);
+
   return (
     <div className="space-y-6">
       <PageHero
@@ -56,6 +67,23 @@ export default async function GA4Page() {
         gradient="from-green-500/10 via-emerald-500/10 to-teal-500/10"
         borderColor="border-green-500/30"
       />
+
+      {/* Geo 覆蓋率（7 天）— IP 自動 vs GPS opt-in 兩條路 */}
+      <section className="bg-bg-card border border-border rounded-xl p-4">
+        <div className="flex items-baseline justify-between mb-3 gap-2 flex-wrap">
+          <h3 className="font-bold text-sm">📍 地理資料覆蓋率（過去 7 天）</h3>
+          <span className="text-xs text-fg-muted">{totalSessions.toLocaleString()} session</span>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <CoverageBar label="國家" subtitle="IP 自動" pct={pct(geoCountry.count)} count={geoCountry.count ?? 0} />
+          <CoverageBar label="縣市" subtitle="IP 自動（ipwho.is + ip-api fallback）" pct={pct(geoCity.count)} count={geoCity.count ?? 0} />
+          <CoverageBar label="區" subtitle="訪客 GPS opt-in" pct={pct(geoDistrict.count)} count={geoDistrict.count ?? 0} />
+        </div>
+        <p className="text-[11px] text-fg-muted mt-3 leading-snug">
+          縣市靠 IP 自動取得（訪客無感）。
+          「區」級必須訪客在 cookie banner 勾選或到 /settings 啟用 GPS — IP 物理上拿不到行政區。
+        </p>
+      </section>
       <div className="hidden">
         <p className="text-sm text-fg-muted mt-1">
           站內第一方追蹤（即時 + 24h 歷史）為主數據源。
@@ -122,6 +150,24 @@ export default async function GA4Page() {
           </div>
         </div>
       </details>
+    </div>
+  );
+}
+
+function CoverageBar({ label, subtitle, pct, count }: { label: string; subtitle: string; pct: number; count: number }) {
+  const tone =
+    pct >= 80 ? "bg-green-500" : pct >= 40 ? "bg-yellow-500" : "bg-red-500";
+  return (
+    <div className="bg-bg-elevated border border-border rounded-lg p-3">
+      <div className="flex items-baseline justify-between mb-1">
+        <span className="text-xs font-semibold">{label}</span>
+        <span className="text-lg font-bold tabular-nums">{pct}%</span>
+      </div>
+      <div className="h-1.5 bg-bg rounded-full overflow-hidden mb-1.5">
+        <div className={`h-full ${tone} transition-[width]`} style={{ width: `${pct}%` }} />
+      </div>
+      <div className="text-[10px] text-fg-muted leading-tight">{subtitle}</div>
+      <div className="text-[10px] text-fg-muted mt-0.5">{count.toLocaleString()} 筆</div>
     </div>
   );
 }
