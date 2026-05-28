@@ -434,6 +434,17 @@ async function runToolLoop(opts: {
       });
       if (!res.ok) {
         const err = await res.text();
+        // 寫 error_logs、讓 admin 後台 / oneshot 查 raw response 找根因
+        // 之前只 return 友善訊息給林董、Zeabur log 沒打進 DB、無從 debug
+        try {
+          const admin = createSupabaseAdmin();
+          await admin.from("error_logs").insert({
+            source: "line-ai-tools/anthropic",
+            level: "error",
+            message: `Anthropic ${res.status}: ${err.slice(0, 150)}`,
+            extra: { status: res.status, body: err.slice(0, 2000), model: opts.model },
+          });
+        } catch {}
         return `❌ ${friendlyAnthropicError(res.status, err, opts.model)}`;
       }
       data = await res.json();
