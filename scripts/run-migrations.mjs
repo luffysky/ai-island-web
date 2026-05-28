@@ -41,6 +41,8 @@ const MIGRATIONS = [
   "profile_is_owner_migration.sql",
   // 2026-05-27 — AI embedding (學員 LINE AI 語意搜尋)
   "ai_embeddings_migration.sql",
+  // 2026-05-29 — dev_quotes UNIQUE constraint (oneshot 寫入用 ON CONFLICT DO NOTHING)
+  "dev_quotes_unique_constraint.sql",
 ];
 
 // 從 .env.local 讀（不依賴 dotenv pkg）
