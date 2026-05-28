@@ -9,6 +9,7 @@ import { useAuth } from "@/lib/auth-context";
 import { LessonCard } from "./LessonCard";
 import { BossBattle } from "./BossBattle";
 import { EndQuizPlayer } from "./EndQuizPlayer";
+import { FloatingNoteButton } from "./FloatingNoteButton";
 import { AchievementToast } from "../gamification/AchievementToast";
 import { LevelUpModal } from "../gamification/LevelUpModal";
 import { XpToast, type XpToastData } from "../gamification/XpToast";
@@ -231,6 +232,14 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
             ))}
           </div>
         </section>
+      )}
+
+      {/* Floating 筆記按鈕：跟著捲動、隨時對當前 lesson 做筆記 */}
+      {user && (
+        <FloatingNoteButton
+          chapterId={chapter.id}
+          lessons={chapter.lessons.map((l) => ({ id: l.id, title: l.title, number: l.number }))}
+        />
       )}
 
       {/* Nav */}

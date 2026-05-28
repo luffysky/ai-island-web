@@ -90,18 +90,20 @@ export function PopoverPanel({
   api,
   children,
   className = "",
+  style,
   withFocusManager = true,
 }: {
   api: PopoverApi;
   children: ReactNode;
   className?: string;
+  style?: React.CSSProperties;
   withFocusManager?: boolean;
 }) {
   if (!api.open) return null;
   const inner = (
     <div
       ref={api.refs.setFloating}
-      style={api.floatingStyles}
+      style={{ ...api.floatingStyles, ...style }}
       {...api.getFloatingProps()}
       className={`z-50 bg-bg-card border border-border rounded-xl shadow-2xl overflow-hidden ${className}`}
     >
