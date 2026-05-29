@@ -71,6 +71,40 @@ export async function notifyChapterView(userId: string, chapterId: number, chapt
 
 import { notifyUserLine } from "./notify-user-line";
 
+/**
+ * Post 一條 embed 到 Discord #achievements channel
+ * Env: DISCORD_ACHIEVEMENTS_WEBHOOK_URL
+ * 沒設就 noop、不報錯
+ */
+async function postDiscordAchievement(opts: {
+  title: string;
+  description: string;
+  color?: number;
+  thumbnail?: string;
+}) {
+  const url = process.env.DISCORD_ACHIEVEMENTS_WEBHOOK_URL;
+  if (!url) return;
+  try {
+    await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        embeds: [{
+          title: opts.title,
+          description: opts.description,
+          color: opts.color ?? 0xffd700,
+          footer: { text: "AI 島 · achievements" },
+          timestamp: new Date().toISOString(),
+          ...(opts.thumbnail ? { thumbnail: { url: opts.thumbnail } } : {}),
+        }],
+      }),
+      signal: AbortSignal.timeout(5000),
+    });
+  } catch (e: any) {
+    console.warn("[notify-helpers] discord achievement post failed:", e?.message);
+  }
+}
+
 /** 用戶完成 lesson → admin LINE + 用戶 in-app + 用戶 LINE（若有綁） */
 export async function notifyLessonComplete(opts: { userId: string; chapterId: number; lessonId: string; xp?: number }) {
   const name = await brief(opts.userId);
@@ -178,6 +212,12 @@ export async function notifyLessonComplete(opts: { userId: string; chapterId: nu
         text: `🎉 整章解鎖：Ch${opts.chapterId}${chTitle ? ` ${chTitle}` : ""}（${total} 課全完成）`,
         flex: chapterFlex,
       });
+      // Discord #achievements 公告（讓社群看到、激勵其他學員）
+      await postDiscordAchievement({
+        title: `🎉 ${name} 完成整章！`,
+        description: `**Ch${opts.chapterId}${chTitle ? ` ${chTitle}` : ""}** 全部 ${total} 課完成 ✨\n[看章節](${SITE_URL}/chapters/${opts.chapterId})`,
+        color: 0xffd700,
+      });
     } catch (e: any) {
       console.warn("[notify-helpers] chapter-complete check failed:", e?.message);
     }
@@ -228,6 +268,12 @@ export async function notifyStreakMilestone(opts: { userId: string; streak: numb
     userId: opts.userId,
     text: `${milestone.emoji} ${milestone.title}（${opts.streak} 天）`,
     flex,
+  });
+  // Discord #achievements 公告
+  await postDiscordAchievement({
+    title: `${milestone.emoji} ${name} 達成 ${opts.streak} 天連勝`,
+    description: `**${milestone.title}**\n${milestone.cheer}`,
+    color: opts.streak >= 100 ? 0xffd700 : 0xf97316,
   });
 }
 
