@@ -10,6 +10,7 @@ import { InteractionTracker } from "@/components/analytics/InteractionTracker";
 import { AuthProvider } from "@/lib/auth-context";
 import { AdminFloatingToolbar } from "@/components/admin/AdminFloatingToolbar";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
+import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import { CommandPalette } from "@/components/ui/CommandPalette";
 import { VisitTracker } from "@/components/layout/VisitTracker";
 import { Marquee } from "@/components/Marquee";
@@ -137,6 +138,7 @@ gtag('config', '${gaId}');`}
               <MobileBottomNav />
               <CommandPalette />
               <VisitTracker />
+              <PWAInstallPrompt />
             </ConfirmProvider>
           </ToastProvider>
         </AuthProvider>

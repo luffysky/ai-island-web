@@ -39,17 +39,24 @@ export default function manifest(): MetadataRoute.Manifest {
         icons: [{ src: "/favicon.svg", sizes: "192x192", type: "image/svg+xml" }],
       },
       {
-        name: "副本",
-        short_name: "副本",
-        description: "主題式短課",
-        url: "/courses",
+        name: "AI 履歷",
+        short_name: "履歷",
+        description: "雪鑰生成我的履歷",
+        url: "/me/resume",
         icons: [{ src: "/favicon.svg", sizes: "192x192", type: "image/svg+xml" }],
       },
       {
-        name: "排行榜",
-        short_name: "排行",
-        description: "每天 00:00 更新",
-        url: "/leaderboard",
+        name: "AI 模擬面試",
+        short_name: "面試",
+        description: "雪鑰當面試官",
+        url: "/me/mock-interview",
+        icons: [{ src: "/favicon.svg", sizes: "192x192", type: "image/svg+xml" }],
+      },
+      {
+        name: "週賽 Challenge",
+        short_name: "週賽",
+        description: "本週 Code Challenge",
+        url: "/me/challenge",
         icons: [{ src: "/favicon.svg", sizes: "192x192", type: "image/svg+xml" }],
       },
       {
@@ -60,6 +67,11 @@ export default function manifest(): MetadataRoute.Manifest {
         icons: [{ src: "/favicon.svg", sizes: "192x192", type: "image/svg+xml" }],
       },
     ],
+    share_target: {
+      action: "/share-to-xueyue",
+      method: "GET",
+      params: { title: "title", text: "text", url: "url" },
+    },
     prefer_related_applications: false,
-  };
+  } as any;
 }
