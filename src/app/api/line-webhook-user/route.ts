@@ -421,6 +421,7 @@ function cardHelp(): FlexMessage {
       { label: "/goal N", value: "設今日目標 N 個 lesson" },
       { label: "/goal", value: "看今日目標達成度" },
       { label: "/quote", value: "每日金句（程式 / 工程 / 創業）" },
+      { label: "/support 內容", value: "找真人 admin、建 ticket" },
       { label: "/lesson 關鍵字", value: "找特定 lesson" },
       { label: "/explain 概念", value: "AI 一句話解釋" },
       { label: "/note 內容", value: "存筆記到網站" },
@@ -1079,6 +1080,69 @@ export async function POST(req: NextRequest) {
           buttons: [
             { label: signedInToday ? "🛤️ 看足跡" : "✅ 去簽到", uri: signedInToday ? `${SITE_URL}/me/footprint` : `${SITE_URL}/me`, primary: true },
           ],
+        }), token, QUICK_REPLY);
+        continue;
+      }
+
+      // 3.45z. /support 或 /admin — 強制轉真人客服、不被 AI 接管
+      // 學員打「我想找真人」/「客服」/「admin」/「轉真人」都認、會建 ticket 通知 admin
+      const supportMatch = text.match(/^\/(?:support|admin|找人|客服)(?:\s+(.+))?$/i)
+        || (text.includes("找真人") || text.includes("找客服") || text === "轉真人" ? { 1: text } as any : null);
+      if (supportMatch) {
+        const issueText = (supportMatch[1] || "").toString().trim();
+        const admin = createSupabaseAdmin();
+        const { data: profile } = await admin
+          .from("profiles")
+          .select("id, username, display_name")
+          .eq("line_user_id", userId)
+          .maybeSingle();
+        if (!issueText) {
+          await lineReply(replyToken, buildSimpleCard({
+            emoji: "💬",
+            title: "想找真人 admin？",
+            accentColor: "#f59e0b",
+            body: "請描述你的問題、我會建 ticket 通知 admin。\n\n用法：\n/support 我的訂閱沒生效\n/客服 帳號被鎖住了\n\nadmin 24 小時內回覆、回覆會推到這個 LINE 對話。",
+          }), token, QUICK_REPLY);
+          continue;
+        }
+        const senderName = (profile as any)?.display_name || (profile as any)?.username || `LINE 學員${userId.slice(0, 6)}`;
+        const { data: ticket } = await admin
+          .from("tickets")
+          .insert({
+            user_id: (profile as any)?.id ?? null,
+            subject: `🙋 LINE 求助：${issueText.slice(0, 40)}`,
+            category: "support",
+            priority: "high",
+            status: "open",
+            meta: { source: "user_line_bot_support_cmd", line_user_id: userId, sender_name: senderName },
+          })
+          .select("id")
+          .single();
+        if (ticket?.id) {
+          await admin.from("ticket_messages").insert({
+            ticket_id: ticket.id,
+            author_type: "user",
+            author_id: (profile as any)?.id ?? null,
+            sender_type: "user",
+            sender_id: (profile as any)?.id ?? null,
+            body: issueText.slice(0, 4000),
+            content: issueText.slice(0, 4000),
+            is_staff: false,
+            meta: { source: "line_user_bot_support_cmd", line_user_id: userId },
+          });
+        }
+        const { notifyAdmin } = await import("@/lib/notify-admin");
+        notifyAdmin({
+          kind: "user_ticket",
+          dedupeKey: `support:${ticket?.id ?? userId}:${Date.now()}`,
+          text: `🆘 ${senderName} 主動求助：\n「${issueText.slice(0, 200)}」\n\n回覆：${SITE_URL}/${process.env.NEXT_PUBLIC_ADMIN_SLUG ?? "console-x7k2"}/admin/crm${ticket?.id ? `/${ticket.id}` : ""}`,
+        }).catch(() => {});
+        await lineReply(replyToken, buildSimpleCard({
+          emoji: "📩",
+          title: "已通知 admin",
+          accentColor: "#22c55e",
+          body: `Ticket #${ticket?.id?.toString().slice(0, 8) ?? "-"} 已建立、admin 會在 24 小時內回覆。\n\n回覆會直接推到這個 LINE 對話、不用一直開網站。`,
+          buttons: [{ label: "📝 我的 ticket", uri: `${SITE_URL}/me/support`, primary: true }],
         }), token, QUICK_REPLY);
         continue;
       }
