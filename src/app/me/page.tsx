@@ -10,6 +10,9 @@ import { LeetcodeCard } from "@/components/me/LeetcodeCard";
 import { DailyCheckin } from "@/components/gamification/DailyCheckin";
 import { SubscriptionRecommendCard } from "@/components/me/SubscriptionRecommendCard";
 import { MockInterviewWidget } from "@/components/me/MockInterviewWidget";
+import { ChallengeWidget } from "@/components/me/ChallengeWidget";
+import { PetQuestWidget } from "@/components/me/PetQuestWidget";
+import { ResumeCTA } from "@/components/me/ResumeCTA";
 import { EloProgress } from "@/components/me/EloProgress";
 import { RecommendedChapters } from "@/components/me/RecommendedChapters";
 import { MeHero } from "@/components/me/MeHero";
@@ -115,8 +118,17 @@ export default async function MeOverviewPage() {
       {/* 學習熱力圖 */}
       <StreakHeatmap />
 
-      {/* AI 模擬面試 widget */}
-      <MockInterviewWidget />
+      {/* AI 履歷 CTA + 寵物 quest（並排） */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <ResumeCTA />
+        <PetQuestWidget />
+      </div>
+
+      {/* 面試 + 週賽（並排）*/}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <MockInterviewWidget />
+        <ChallengeWidget />
+      </div>
 
       {/* 今日任務 */}
       <QuestsPanel />
