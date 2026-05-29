@@ -172,12 +172,12 @@ ${cardList.map((c, i) => `${i + 1}. [${c.id}] ${c.title}${c.description ? ` — 
 - 不確定 → 跳過、不要列出來
 - 完全不同 → 跳過
 
-寧可少列、不要誤判把還沒做的卡移走。`;
+寧可少列、不要誤判把還沒做的卡移走。
 
 # 輸出（嚴格 JSON、無 markdown）
 {
   "completed": [
-    { "card_id": "uuid", "commit_sha": "abc1234", "reason": "1 句話、< 40 字、講為什麼這張算做完" }
+    { "card_id": "uuid", "commit_sha": "abc1234 或 ref:done", "reason": "1 句話、< 40 字" }
   ]
 }
 
