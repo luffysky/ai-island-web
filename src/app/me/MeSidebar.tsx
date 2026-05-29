@@ -232,6 +232,13 @@ export function MeSidebar({ profile }: { profile: Profile | null }) {
           AI 履歷
         </MeLink>
         <MeLink
+          href="/me/mock-interview"
+          icon={<span>🎤</span>}
+          collapsed={collapsed}
+        >
+          AI 模擬面試
+        </MeLink>
+        <MeLink
           href="/me/support"
           icon={<span>💬</span>}
           collapsed={collapsed}
