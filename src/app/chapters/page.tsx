@@ -3,6 +3,8 @@ import { ChapterMap } from "@/components/home/ChapterMap";
 import { SITE_STATS } from "@/lib/site-stats";
 import { itemListSchema, breadcrumbSchema, jsonLdScript } from "@/lib/seo-jsonld";
 import type { Metadata } from "next";
+import Link from "next/link";
+import { ArrowRight, Sparkles } from "lucide-react";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
 
@@ -53,6 +55,30 @@ export default async function ChaptersPage() {
         <h1 className="text-3xl font-bold mb-2">📚 所有章節</h1>
         <p className="text-sm text-fg-muted">{chapters.length} 章 × 7 大區域、共 {lessonCount} 個 lesson</p>
       </div>
+
+      {/* C 方案：新手「從這開始」CTA 卡 — 第一次來不知道從哪開始 */}
+      <Link
+        href="/chapters/0"
+        className="block mb-6 rounded-2xl border border-accent/40 bg-gradient-to-br from-accent/10 via-accent-2/10 to-transparent p-5 hover:border-accent transition group"
+      >
+        <div className="flex items-start gap-4">
+          <div className="text-4xl">🌱</div>
+          <div className="flex-1 min-w-0">
+            <div className="text-[10px] text-fg-muted inline-flex items-center gap-1 mb-1">
+              <Sparkles size={10} className="text-accent" />
+              新手友善
+            </div>
+            <h2 className="text-lg font-bold mb-1">不知道從哪開始？先看 Ch00「環境準備」</h2>
+            <p className="text-xs text-fg-muted leading-relaxed">
+              連終端機是什麼都不知道、怎麼裝 Python？這章給你最基本的「會用終端機 + 會推 GitHub」、所有後面課的基礎。
+            </p>
+            <div className="text-xs text-accent mt-2 inline-flex items-center gap-1 font-bold group-hover:gap-2 transition-all">
+              開始第一課 <ArrowRight size={12} />
+            </div>
+          </div>
+        </div>
+      </Link>
+
       <ChapterMap chapters={chapters} />
     </div>
   );

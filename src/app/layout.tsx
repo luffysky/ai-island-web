@@ -20,6 +20,9 @@ import { ConfirmProvider } from "@/components/ui/ConfirmDialog";
 import { WebVitalsReporter } from "@/components/WebVitalsReporter";
 import { PWAInstall } from "@/components/PWAInstall";
 import { LineBindBanner } from "@/components/LineBindBanner";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { OnboardingTour } from "@/components/onboarding/OnboardingTour";
+import { OnboardingWizard } from "@/components/onboarding/OnboardingWizard";
 import { SITE_STATS } from "@/lib/site-stats";
 import { organizationSchema, websiteSchema, jsonLdScript } from "@/lib/seo-jsonld";
 
@@ -114,7 +117,10 @@ gtag('config', '${gaId}');`}
               <Marquee />
               <TopNav />
               <SideNav />
+              <Breadcrumbs />
               <main id="main-content" className="flex-1" tabIndex={-1}>{children}</main>
+              <OnboardingWizard />
+              <OnboardingTour />
               <footer className="border-t border-border py-8 mt-16">
                 <div className="max-w-6xl mx-auto px-6">
                   <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-fg-muted">

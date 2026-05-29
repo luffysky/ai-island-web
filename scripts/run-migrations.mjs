@@ -73,6 +73,8 @@ const MIGRATIONS = [
   "pet_lottie_settings_migration.sql",
   // 2026-05-29 — Discord OAuth 綁定 + onboarding 進度（DC#4/5/7/1 基礎）
   "discord_binding_migration.sql",
+  // 2026-05-29 — 新手友善 onboarding state（A: tour、B: wizard、C: chapters）
+  "onboarding_migration.sql",
 ];
 
 // 從 .env.local 讀（不依賴 dotenv pkg）

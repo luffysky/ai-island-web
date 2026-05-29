@@ -6,6 +6,7 @@ import { LottieBackground } from "@/components/admin/LottieBackground";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { checkOwner, OWNER_NAME_TW } from "@/lib/is-owner";
 import { NavGroup } from "./NavGroup";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 
 // 強制每次都 server-side render、不 cache
 export const dynamic = "force-dynamic";
@@ -220,7 +221,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
           </nav>
         </CollapsibleAside>
-        <div className="flex-1 min-w-0">{children}</div>
+        <div className="flex-1 min-w-0">
+          <Breadcrumbs className="!px-0 mb-3" />
+          {children}
+        </div>
       </div>
       </div>
     </div>
