@@ -620,8 +620,13 @@ async function runStudentCommandBg(
   }
 
   if (cmd === "quote") {
-    const { data: quote } = await admin.from("dev_quotes").select("content, author, tags").limit(1).order("id", { ascending: false }).limit(50);
-    const list = (quote as any[]) ?? [];
+    // dev_quotes 真實 column：quote / author / translation_zh / category
+    const { data: quoteList } = await admin
+      .from("dev_quotes")
+      .select("quote, author, translation_zh, category")
+      .eq("is_active", true)
+      .limit(100);
+    const list = (quoteList as any[]) ?? [];
     const pick = list[Math.floor(Math.random() * list.length)];
     if (!pick) {
       await patchOriginalEmbed(appId, interactionToken, embedCard({
@@ -631,12 +636,17 @@ async function runStudentCommandBg(
       }));
       return;
     }
+    const original = String(pick.quote ?? "").trim();
+    const zh = String(pick.translation_zh ?? "").trim();
+    const desc = zh && zh !== original
+      ? `*"${original}"*\n\n${zh}\n\n— ${pick.author ?? "佚名"}`
+      : `*"${original}"*\n\n— ${pick.author ?? "佚名"}`;
     await patchOriginalEmbed(appId, interactionToken, embedCard({
       title: "💭 今日金句",
-      description: `*"${pick.content}"*\n\n— ${pick.author ?? "佚名"}`,
+      description: desc,
       color: COLOR.gold,
-      footer: ((pick.tags as string[]) ?? []).map((t) => `#${t}`).join(" "),
-      buttons: [{ label: "📚 看更多", url: `${siteUrl}/me/quotes` }],
+      footer: pick.category ? `#${pick.category}` : undefined,
+      buttons: [{ label: "🏝️ 學習中心", url: `${siteUrl}/me` }],
     }));
     return;
   }
