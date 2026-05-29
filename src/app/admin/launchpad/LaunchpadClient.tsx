@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Plus, Trash2, X, Loader2, Search, Sparkles, Wand2, ExternalLink } from "lucide-react";
+import { Plus, Trash2, X, Loader2, Search, Sparkles, Wand2, ExternalLink, ChevronDown, ChevronRight } from "lucide-react";
 
 type Board = { id: string; slug: string; title: string; emoji: string | null; description: string | null; position: number };
 type Column = { id: string; board_id: string; title: string; emoji: string | null; color: string; position: number };
@@ -59,6 +59,28 @@ export function LaunchpadClient() {
   const [suggestOpen, setSuggestOpen] = useState(false);
   const [suggestions, setSuggestions] = useState<any | null>(null);
   const [suggestLoading, setSuggestLoading] = useState(false);
+  const [collapsedBoards, setCollapsedBoards] = useState<Record<string, boolean>>({});
+
+  // 載 / 存收合狀態
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("launchpad_collapsed_boards");
+      if (saved) setCollapsedBoards(JSON.parse(saved));
+    } catch {}
+  }, []);
+  function toggleBoard(slug: string) {
+    setCollapsedBoards((prev) => {
+      const next = { ...prev, [slug]: !prev[slug] };
+      try { localStorage.setItem("launchpad_collapsed_boards", JSON.stringify(next)); } catch {}
+      return next;
+    });
+  }
+  function setAllBoards(collapsed: boolean) {
+    const next: Record<string, boolean> = {};
+    for (const b of boards) next[b.slug] = collapsed;
+    setCollapsedBoards(next);
+    try { localStorage.setItem("launchpad_collapsed_boards", JSON.stringify(next)); } catch {}
+  }
 
   useEffect(() => { reload(); }, []);
 
@@ -203,6 +225,12 @@ export function LaunchpadClient() {
         <button onClick={() => setAiAddOpen(true)} className="btn-chip btn-chip-success" title="貼一段話、AI 自動分類建卡">
           <Wand2 size={14} /> AI 建卡
         </button>
+        <button onClick={() => setAllBoards(true)} className="btn-chip btn-chip-neutral text-xs" title="全部收合">
+          全收
+        </button>
+        <button onClick={() => setAllBoards(false)} className="btn-chip btn-chip-neutral text-xs" title="全部展開">
+          全展
+        </button>
         <span className="text-xs text-fg-muted">{filteredCards.length} / {cards.length} 卡</span>
       </div>
 
@@ -210,13 +238,24 @@ export function LaunchpadClient() {
       <div className="space-y-6">
         {boards.map((board) => {
           const boardCols = columns.filter((c) => c.board_id === board.id).sort((a, b) => a.position - b.position);
+          const isCollapsed = !!collapsedBoards[board.slug];
+          const boardCardCount = filteredCards.filter((c) => boardCols.some((col) => col.id === c.column_id)).length;
           return (
             <section key={board.id}>
-              <h2 className="text-lg font-bold mb-2 flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => toggleBoard(board.slug)}
+                className="w-full text-left text-lg font-bold mb-2 flex items-center gap-2 hover:text-accent transition"
+              >
+                {isCollapsed ? <ChevronRight size={18} /> : <ChevronDown size={18} />}
                 <span>{board.emoji}</span>
                 <span>{board.title}</span>
-                {board.description && <span className="text-xs text-fg-muted font-normal">— {board.description}</span>}
-              </h2>
+                <span className="text-xs text-fg-muted font-normal">({boardCardCount} 卡)</span>
+                {board.description && !isCollapsed && (
+                  <span className="text-xs text-fg-muted font-normal hidden md:inline">— {board.description}</span>
+                )}
+              </button>
+              {!isCollapsed && (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 {boardCols.map((col) => {
                   const colCards = filteredCards.filter((c) => c.column_id === col.id);
@@ -293,6 +332,7 @@ export function LaunchpadClient() {
                   );
                 })}
               </div>
+              )}
             </section>
           );
         })}
@@ -388,8 +428,22 @@ function SuggestPanel({ loading, data, onPick }: { loading: boolean; data: any; 
       </div>
     );
   }
+  if (data?.error) {
+    return (
+      <div>
+        <h3 className="font-bold mb-2 text-red-500">❌ 雪鑰回應失敗</h3>
+        <p className="text-sm bg-red-500/10 border border-red-500/30 rounded p-3 font-mono">
+          {data.error}
+        </p>
+        <p className="text-xs text-fg-muted mt-3">
+          常見原因：(1) Anthropic key 沒設 / 解不開 (2) AI_KEY_SECRET 跟 DB 不一致
+          <br />修法：到 /admin/ai/models 重新貼 Anthropic key
+        </p>
+      </div>
+    );
+  }
   if (!data?.suggestions || data.suggestions.length === 0) {
-    return <p className="text-fg-muted">{data?.message ?? "沒有建議"}</p>;
+    return <p className="text-fg-muted">{data?.message ?? "沒有建議（API 沒回東西、F12 看 console）"}</p>;
   }
   return (
     <div>
