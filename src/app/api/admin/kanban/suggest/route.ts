@@ -3,6 +3,14 @@ import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { getProviderKey } from "@/lib/ai-crypto";
 import { getModelNameForUsage } from "@/lib/ai-usage-models";
+import { callAI } from "@/lib/ai-providers";
+
+function providerFromModel(model: string): "anthropic" | "openai" | "google" | "groq" {
+  if (/^claude/i.test(model)) return "anthropic";
+  if (/^gemini/i.test(model)) return "google";
+  if (/^(llama|mixtral)/i.test(model)) return "groq";
+  return "openai"; // gpt-* / 預設
+}
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -61,10 +69,11 @@ async function handle() {
     return NextResponse.json({ ok: true, suggestions: [], message: "TODO / DOING 都空、林董你好閒" });
   }
 
-  const apiKey = await getProviderKey("anthropic");
-  if (!apiKey) return NextResponse.json({ error: "no_anthropic_key" }, { status: 503 });
   const modelName = await getModelNameForUsage("admin_assistant", "claude-haiku-4-5-20251001");
-  tlog(`apiKey + model ready, model=${modelName}`);
+  const provider = providerFromModel(modelName);
+  const apiKey = await getProviderKey(provider);
+  if (!apiKey) return NextResponse.json({ error: `no_${provider}_key` }, { status: 503 });
+  tlog(`apiKey + model ready, model=${modelName}, provider=${provider}`);
 
   const prompt = `你是雪鑰、AI 島的 AI 助手。林董開了 launchpad 看板、問你：「下一個該做什麼？」
 
@@ -91,28 +100,19 @@ ${cardList.map((c, i) => `${i + 1}. [${c.id}] ${c.title}${c.category ? ` (${c.ca
 }`;
 
   try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model: modelName,
-        max_tokens: 600,
-        temperature: 0.3,
-        messages: [{ role: "user", content: prompt }],
-      }),
-      signal: AbortSignal.timeout(15_000),
+    // 用 callAI provider-aware、不寫死 anthropic
+    // 這是 launchpad 502 的 root cause：之前 hardcode anthropic、但
+    // admin_assistant usage 設成 gpt-4o、Anthropic 收 gpt-4o 不認 → 4xx → 502
+    const r = await callAI({
+      provider,
+      model: modelName,
+      apiKey,
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.3,
+      maxTokens: 600,
     });
-    tlog(`anthropic response ${res.status}`);
-    if (!res.ok) {
-      const body = await res.text();
-      return NextResponse.json({ error: `anthropic ${res.status}: ${body.slice(0, 200)}` }, { status: 502 });
-    }
-    const data = await res.json();
-    const text = (data.content ?? []).filter((c: any) => c.type === "text").map((c: any) => c.text).join("").trim();
+    tlog(`${provider} response received, text len=${r.text.length}`);
+    const text = r.text.trim();
     const m = text.match(/\{[\s\S]*\}/);
     if (!m) return NextResponse.json({ error: "no_json_in_response", raw: text.slice(0, 300) }, { status: 500 });
     const parsed = JSON.parse(m[0]);

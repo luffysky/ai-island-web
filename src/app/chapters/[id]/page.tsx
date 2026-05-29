@@ -1,6 +1,7 @@
 import { getChapter, getAllChapters } from "@/lib/content";
 import { notFound } from "next/navigation";
 import { ChapterView } from "@/components/chapter/ChapterView";
+import { ChapterResources } from "@/components/chapter/ChapterResources";
 import { AiSummaryBlock } from "@/components/chapter/AiSummaryBlock";
 import { RelatedChapters } from "@/components/chapter/RelatedChapters";
 import { mergeSeoForPath } from "@/lib/seo-render";
@@ -114,6 +115,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ id: st
       />
       <AiSummaryBlock chapter={chapter} />
       <ChapterView chapter={chapter} />
+      <ChapterResources chapterId={chapter.id} />
       <RelatedChapters chapter={chapter} />
     </>
   );

@@ -51,6 +51,8 @@ const MIGRATIONS = [
   "admin_kanban_migration.sql",
   // 2026-05-29 — 學員外部資源庫（/me/resources）
   "external_resources_migration.sql",
+  // 2026-05-29 — external_resources 加 chapter_id（章節相關資源）
+  "external_resources_chapter_link_migration.sql",
 ];
 
 // 從 .env.local 讀（不依賴 dotenv pkg）
