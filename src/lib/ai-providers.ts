@@ -125,12 +125,28 @@ function toAnthropicMessages(messages: AIMessage[]): any[] {
   });
 }
 
+/**
+ * 把 system text 包成 Anthropic system block 格式、長 prompt 自動加 ephemeral cache。
+ * - cache_control: { type: "ephemeral" } 走 5 分鐘 TTL
+ * - cache write 第 1 次 1.25x cost、之後 cache read 只算 0.1x
+ * - 最低 1024 token (Haiku 2048) 才會 cache、低於不影響、Anthropic 自動忽略
+ * - 雪鑰 persona + tutor prompt full / slim 都會吃到、月省 30-50% AI cost
+ */
+function buildAnthropicSystem(systemText: string): string | any[] {
+  if (!systemText) return "";
+  // 估字數 → token：中文 ~1 字 1.5 token、英文 ~1 字 0.3 token、保守 4 字 = 1 token
+  // 至少 ~4000 字才有 cache 價值（Haiku 最低 2048 token = ~8000 字、Sonnet 1024 token）
+  if (systemText.length < 3000) return systemText;
+  return [{ type: "text", text: systemText, cache_control: { type: "ephemeral" } }];
+}
+
 async function callAnthropic(req: AICompletionRequest): Promise<AICompletionResponse> {
   const t0 = Date.now();
 
   // 分離 system message
   const systemMsg = req.messages.find((m) => m.role === "system");
   const nonSystem = req.messages.filter((m) => m.role !== "system");
+  const systemText = typeof systemMsg?.content === "string" ? systemMsg.content : contentToText(systemMsg?.content ?? "");
 
   const res = await fetchWithTimeout("https://api.anthropic.com/v1/messages", {
     method: "POST",
@@ -138,11 +154,12 @@ async function callAnthropic(req: AICompletionRequest): Promise<AICompletionResp
       "Content-Type": "application/json",
       "x-api-key": req.apiKey,
       "anthropic-version": "2023-06-01",
+      "anthropic-beta": "prompt-caching-2024-07-31",
     },
     body: JSON.stringify({
       model: req.model,
       messages: toAnthropicMessages(nonSystem),
-      system: typeof systemMsg?.content === "string" ? systemMsg.content : contentToText(systemMsg?.content ?? ""),
+      system: buildAnthropicSystem(systemText),
       max_tokens: req.maxTokens ?? 2000,
       temperature: req.temperature ?? 0.7,
     }),
@@ -161,7 +178,11 @@ async function callAnthropic(req: AICompletionRequest): Promise<AICompletionResp
     tokensOutput: data.usage?.output_tokens ?? 0,
     latencyMs: Date.now() - t0,
     raw: data,
-  };
+    // 帶 cache 資訊讓 caller 看實際省了多少
+    ...(data.usage?.cache_creation_input_tokens || data.usage?.cache_read_input_tokens
+      ? { cache: { write: data.usage.cache_creation_input_tokens ?? 0, read: data.usage.cache_read_input_tokens ?? 0 } }
+      : {}),
+  } as any;
 }
 
 // ============ Google Gemini ============
@@ -355,6 +376,7 @@ async function* streamOpenAILike(req: AICompletionRequest): AsyncGenerator<Strea
 async function* streamAnthropic(req: AICompletionRequest): AsyncGenerator<StreamChunk> {
   const systemMsg = req.messages.find((m) => m.role === "system");
   const nonSystem = req.messages.filter((m) => m.role !== "system");
+  const systemText = typeof systemMsg?.content === "string" ? systemMsg.content : contentToText(systemMsg?.content ?? "");
 
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
@@ -362,11 +384,12 @@ async function* streamAnthropic(req: AICompletionRequest): AsyncGenerator<Stream
       "Content-Type": "application/json",
       "x-api-key": req.apiKey,
       "anthropic-version": "2023-06-01",
+      "anthropic-beta": "prompt-caching-2024-07-31",
     },
     body: JSON.stringify({
       model: req.model,
       messages: toAnthropicMessages(nonSystem),
-      system: typeof systemMsg?.content === "string" ? systemMsg.content : contentToText(systemMsg?.content ?? ""),
+      system: buildAnthropicSystem(systemText),
       max_tokens: req.maxTokens ?? 2000,
       temperature: req.temperature ?? 0.7,
       stream: true,

@@ -142,49 +142,24 @@ async function handle(req: NextRequest) {
   }
   const modelName = await getModelNameForUsage("admin_assistant", "claude-haiku-4-5-20251001");
 
-  const prompt = githubAvailable
-    ? `你是雪鑰、AI 島常駐 AI。林董叫你掃 launchpad 看哪些「待辦 / 進行中」其實已經做完了、要移到 DONE。
+  // 兩段 prompt 拆獨立、避免 ternary template literal 內含複雜 markdown 撞 swc parser
+  const promptHeader = githubAvailable
+    ? "你是雪鑰、AI 島常駐 AI。林董叫你掃 launchpad 看哪些「待辦 / 進行中」其實已做完、要移到 DONE。"
+    : "你是雪鑰、AI 島常駐 AI。GitHub API 暫不可達、改用 DONE column 卡片當「已完成」reference、找 TODO/DOING 重複的。";
 
-# 最近 ${commits.length} 個 git commit messages
-${commits.map((c, i) => `${i + 1}. [${c.sha}] ${c.message}`).join("\n")}
+  const referenceBlock = githubAvailable
+    ? "# 最近 " + commits.length + " 個 git commit messages\n" + commits.map((c, i) => (i + 1) + ". [" + c.sha + "] " + c.message).join("\n")
+    : "# 已上線 (DONE / 採納) 卡片 (" + doneRef.length + " 張)\n" + doneRef.map((c, i) => (i + 1) + ". " + c.title + (c.description ? " — " + String(c.description).slice(0, 80) : "")).join("\n");
 
-# 未完成的卡片 (${cardList.length} 張、column = TODO/DOING/進行中/評估中/待開發/想法)
-${cardList.map((c, i) => `${i + 1}. [${c.id}] ${c.title}${c.description ? ` — ${c.description.slice(0, 100)}` : ""}`).join("\n")}
+  const todoBlock = "# 未完成的卡片 (" + cardList.length + " 張)\n" + cardList.map((c, i) => (i + 1) + ". [" + c.id + "] " + c.title + (c.description ? " — " + String(c.description).slice(0, 100) : "")).join("\n");
 
-# 任務
-對每張卡判斷：根據 commit message、這張卡是否已經 **完整做完**？
-- 完整做完 → 寫進「completed」、給 commit sha + 1 句理由
-- 部分完成（一半 commit、還有後續）→ 不算、跳過
-- 完全沒做 → 跳過、不要列出來
+  const taskBlock = githubAvailable
+    ? "# 任務\n對每張卡判斷：commit message 暗示已 **完整做完** 嗎？\n- 是 → 寫進 completed、給 commit sha + 1 句理由\n- 部分完成 → 跳過\n- 完全沒做 → 跳過\n寧可少列、不要誤判。"
+    : "# 任務\n對每張未完成卡判斷：是不是已被「已上線」某張卡完整涵蓋了？\n- 是 → 寫進 completed、commit_sha 寫 ref:done + 1 句理由\n- 不確定 → 跳過\n- 完全不同 → 跳過\n寧可少列、不要誤判把還沒做的移走。";
 
-不要列「可能做完但不確定」、寧可少列也不要錯。`
-    : `你是雪鑰、AI 島常駐 AI。GitHub API 暫不可達、改用 DONE column 卡片當「已完成」reference、找 TODO/DOING 重複的。
+  const outputSpec = '# 輸出（嚴格 JSON、無 markdown）\n{\n  "completed": [\n    { "card_id": "uuid", "commit_sha": "abc1234", "reason": "1 句話、< 40 字" }\n  ]\n}\n\n# 規則\n- card_id 必須對得上、不要編造\n- 看不出來的、留空陣列\n- 寧可保守';
 
-# 已上線 (DONE / 採納) 卡片 (${doneRef.length} 張)
-${doneRef.map((c, i) => `${i + 1}. ${c.title}${c.description ? ` — ${c.description.slice(0, 80)}` : ""}`).join("\n")}
-
-# 未完成的卡片 (${cardList.length} 張)
-${cardList.map((c, i) => `${i + 1}. [${c.id}] ${c.title}${c.description ? ` — ${c.description.slice(0, 100)}` : ""}`).join("\n")}
-
-# 任務
-對每張「未完成」卡判斷：內容是不是 **已經被「已上線」某張卡完整涵蓋了**？
-- 是 → 寫進「completed」、給 commit_sha = "ref:done" + 1 句理由（指 DONE 哪張）
-- 不確定 → 跳過、不要列出來
-- 完全不同 → 跳過
-
-寧可少列、不要誤判把還沒做的卡移走。
-
-# 輸出（嚴格 JSON、無 markdown）
-{
-  "completed": [
-    { "card_id": "uuid", "commit_sha": "abc1234 或 ref:done", "reason": "1 句話、< 40 字" }
-  ]
-}
-
-# 規則
-- card_id 必須對得上上面列出的、不要編造
-- 看不出來的、整個 array 留空（"completed": []）
-- 寧可保守不要過度自信`;
+  const prompt = promptHeader + "\n\n" + referenceBlock + "\n\n" + todoBlock + "\n\n" + taskBlock + "\n\n" + outputSpec;
 
   let parsed: any;
   try {
