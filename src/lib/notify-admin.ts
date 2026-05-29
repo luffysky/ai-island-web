@@ -285,20 +285,27 @@ function stripLoneSurrogates(s: string): string {
   return s.replace(/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g, "");
 }
 
+/** HTML escape (跟 MarkdownV2 escape 不同、更穩) */
+function htmlEscape(s: string): string {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
 async function sendTelegram(botToken: string, chatId: string, text: string, kind?: string) {
   try {
     // 1. 先 sanitize 原始 text、避免 lone surrogate（emoji 殘片）
     const cleanText = stripLoneSurrogates(text);
 
     // 2. 解析 text: 第一行是 [kind] xxx、後面是內容
+    // 跟 Discord embed 視覺對齊：標題用對應 kind emoji + 加粗、body 用 blockquote
+    const kindEmoji = kind ? kindToEmoji(kind) : "🔔";
     const m = cleanText.match(/^\[(\w+)\]\s*(.+?)\n?([\s\S]*)$/);
     let formatted: string;
     if (m) {
       const [, k, summary, rest] = m;
-      formatted = `*🔔 [${tgEscape(k)}]*\n${tgEscape(summary)}`;
-      if (rest.trim()) formatted += `\n\n${tgEscape(rest.trim())}`;
+      formatted = `${kindEmoji} <b>${htmlEscape(k)}</b>\n<b>${htmlEscape(summary)}</b>`;
+      if (rest.trim()) formatted += `\n\n<blockquote>${htmlEscape(rest.trim())}</blockquote>`;
     } else {
-      formatted = tgEscape(cleanText);
+      formatted = `${kindEmoji} ${htmlEscape(cleanText)}`;
     }
 
     const path = kind ? kindToAdminPath(kind) : null;
@@ -306,7 +313,7 @@ async function sendTelegram(botToken: string, chatId: string, text: string, kind
       chat_id: chatId,
       // 3. safe slice 不切在 surrogate pair 中間
       text: stripLoneSurrogates(safeUtf16Slice(formatted, 4000)),
-      parse_mode: "MarkdownV2",
+      parse_mode: "HTML",
       disable_web_page_preview: true,
     };
 
@@ -383,24 +390,32 @@ async function sendTelegram(botToken: string, chatId: string, text: string, kind
 }
 
 // 依 kind 決定 embed 顏色 + emoji（跟 Telegram 「[kind] xxx」第一行解析一樣）
-function discordKindStyle(kind: string): { color: number; emoji: string } {
+/** kind → emoji（給 Discord embed + Telegram 標題用、視覺一致） */
+function kindToEmoji(kind: string): string {
   const k = kind.toLowerCase();
-  // 紅色：危險 / 錯誤
-  if (k === "breach" || k === "error" || k === "error_log" || k === "refund") return { color: 0xef4444, emoji: "🚨" };
-  // 綠色：好消息
-  if (k === "order" || k === "new_signup" || k === "new_user" || k === "achievement") return { color: 0x22c55e, emoji: "✅" };
-  // 黃色：注意 / 待辦
-  if (k === "ticket" || k === "user_ticket") return { color: 0xeab308, emoji: "📩" };
-  // 紫色：權限相關
-  if (k === "admin_login") return { color: 0xa855f7, emoji: "🔑" };
-  // 橘色：費用警示
-  if (k === "ai_cost") return { color: 0xf97316, emoji: "💸" };
-  // 藍色：進度 / 互動
-  if (k === "level_up") return { color: 0x3b82f6, emoji: "⬆️" };
-  // 灰：日常活動（visit / lesson_complete / chapter_view）
-  if (k === "visit" || k === "chapter_view" || k === "lesson_complete") return { color: 0x6b7280, emoji: "👀" };
-  // 預設 cyan
-  return { color: 0x06b6d4, emoji: "🔔" };
+  if (k === "breach" || k === "error" || k === "error_log" || k === "refund") return "🚨";
+  if (k === "order" || k === "new_signup" || k === "new_user" || k === "achievement") return "✅";
+  if (k === "ticket" || k === "user_ticket") return "📩";
+  if (k === "admin_login") return "🔑";
+  if (k === "login") return "👋";
+  if (k === "ai_cost") return "💸";
+  if (k === "level_up") return "⬆️";
+  if (k === "visit" || k === "chapter_view" || k === "lesson_complete") return "👀";
+  return "🔔";
+}
+
+function discordKindStyle(kind: string): { color: number; emoji: string } {
+  const emoji = kindToEmoji(kind);
+  const k = kind.toLowerCase();
+  if (k === "breach" || k === "error" || k === "error_log" || k === "refund") return { color: 0xef4444, emoji };
+  if (k === "order" || k === "new_signup" || k === "new_user" || k === "achievement") return { color: 0x22c55e, emoji };
+  if (k === "ticket" || k === "user_ticket") return { color: 0xeab308, emoji };
+  if (k === "admin_login") return { color: 0xa855f7, emoji };
+  if (k === "login") return { color: 0x38bdf8, emoji };
+  if (k === "ai_cost") return { color: 0xf97316, emoji };
+  if (k === "level_up") return { color: 0x3b82f6, emoji };
+  if (k === "visit" || k === "chapter_view" || k === "lesson_complete") return { color: 0x6b7280, emoji };
+  return { color: 0x06b6d4, emoji };
 }
 
 async function sendDiscord(url: string, text: string) {
