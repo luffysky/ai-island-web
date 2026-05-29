@@ -11,6 +11,41 @@ export const runtime = "nodejs";
  * 用法：直接 POST 這個 URL (要 owner 登入) 一次就好、之後不用再跑
  *  curl -X POST https://your-site/api/admin/telegram/setup
  */
+/**
+ * Telegram bot 主選單命令（user 打 / 會彈出）
+ * 命名規則：lowercase + underscore、最長 32 字元、最多 100 個
+ */
+const BOT_COMMANDS = [
+  // 入門
+  { command: "help", description: "📖 看完整命令清單" },
+  { command: "whoami", description: "👤 看我的綁定狀態" },
+  { command: "clear", description: "🧹 清對話歷史" },
+  { command: "model", description: "🔄 切換 AI 模型" },
+  // 報表 / 數據
+  { command: "today", description: "📊 今日 KPI" },
+  { command: "kpi", description: "📈 N 天 KPI（例 /kpi 7）" },
+  { command: "online", description: "👥 線上人數" },
+  { command: "sub", description: "💎 訂閱概覽" },
+  { command: "orders", description: "💰 最近訂單" },
+  { command: "ai_cost", description: "💸 AI 用量 / 成本" },
+  { command: "quiz", description: "🧠 今日測驗統計" },
+  { command: "island", description: "🏝️ 島嶼總覽" },
+  // 用戶
+  { command: "users", description: "👥 最近註冊" },
+  { command: "churn", description: "⚠️ 流失預警" },
+  { command: "leetcode", description: "💻 leetcode 進度" },
+  // 動作
+  { command: "notify", description: "📢 全站廣播（/notify 訊息）" },
+  { command: "maint", description: "🛠️ 維護模式 on/off" },
+  { command: "feature", description: "🚩 feature flag" },
+  { command: "email", description: "✉️ 發信給 user" },
+  { command: "refund", description: "💸 退款（/refund order_id）" },
+  { command: "grant", description: "🎁 給點數（雙重確認）" },
+  // 系統
+  { command: "errors", description: "🐛 系統錯誤" },
+  { command: "prefs", description: "🔔 通知偏好" },
+];
+
 async function run() {
   const token = process.env.ADMIN_TELEGRAM_BOT_TOKEN;
   const site = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
@@ -19,35 +54,47 @@ async function run() {
   const webhookUrl = `${site}/api/telegram-webhook`;
   const secret = process.env.TELEGRAM_WEBHOOK_SECRET;
 
-  const params: any = {
+  const webhookParams: any = {
     url: webhookUrl,
     drop_pending_updates: true,
     allowed_updates: ["message", "edited_message"],
   };
-  if (secret) params.secret_token = secret;
+  if (secret) webhookParams.secret_token = secret;
 
   try {
-    const res = await fetch(`https://api.telegram.org/bot${token}/setWebhook`, {
+    // 1. setWebhook
+    const webhookRes = await fetch(`https://api.telegram.org/bot${token}/setWebhook`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(params),
+      body: JSON.stringify(webhookParams),
       signal: AbortSignal.timeout(8000),
     });
-    const j = await res.json();
+    const webhookJ = await webhookRes.json();
+
+    // 2. setMyCommands — 註冊主選單命令、打「/」彈選單
+    const cmdsRes = await fetch(`https://api.telegram.org/bot${token}/setMyCommands`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ commands: BOT_COMMANDS, language_code: "" }),
+      signal: AbortSignal.timeout(8000),
+    });
+    const cmdsJ = await cmdsRes.json();
+
     return NextResponse.json({
       webhook_url: webhookUrl,
       has_secret: !!secret,
-      telegram_response: j,
-      next_steps: j?.ok
+      commands_count: BOT_COMMANDS.length,
+      telegram_set_webhook: webhookJ,
+      telegram_set_commands: cmdsJ,
+      next_steps: webhookJ?.ok && cmdsJ?.ok
         ? [
-            "✅ webhook 設定成功",
-            "在 Telegram 找你的 bot 傳「hi」測試、bot 應該秒回 AI 回應",
-            "傳 /help 看指令清單",
-            "首次需 owner 白名單、設 TELEGRAM_OWNER_USER_IDS 或 TELEGRAM_OWNER_USERNAMES",
+            "✅ webhook + 命令選單都設定成功",
+            "在 Telegram 找你的 bot 打「/」應該彈出 23 個命令選單",
+            `已註冊 ${BOT_COMMANDS.length} 個命令（要加新命令、改 BOT_COMMANDS 後重打這個 API）`,
           ]
         : [
-            "❌ Telegram 拒絕設 webhook、看 telegram_response.description",
-            "可能 token 錯、或 site URL 不是 https",
+            webhookJ?.ok ? "✅ webhook OK" : `❌ webhook fail: ${webhookJ?.description}`,
+            cmdsJ?.ok ? "✅ commands OK" : `❌ commands fail: ${cmdsJ?.description}`,
           ],
     });
   } catch (e: any) {
