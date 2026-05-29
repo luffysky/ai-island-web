@@ -1,434 +1,253 @@
 # AI 島 — 完整 Backlog
 
-**版本**：v7.0 · **日期**：2026-05-28（深夜更新）· **Owner**：雪鑰
+**版本**：v7.1 · **日期**：2026-05-29（深夜更新）· **Owner**：雪鑰
 
-## Sprint S1–S9 完成度
+---
 
-| Sprint | 內容 | 狀態 |
+## 🔴 林董要自己設定（最高優先、無法由 code 完成）
+
+### 1️⃣ Stripe 訂閱付款（無此設定 = 訂閱賣不出去）
+
+| 步驟 | 怎麼做 | 狀態 |
 |---|---|---|
-| **S1** 緊急 bug 修 + AI 圖實測 | 5 provider 真實 root cause 修透 | ✅ 完成 |
-| **S2** alert/confirm → Toast | 全站 39 處 | ✅ 完成 |
-| **S3** 後台批美化 | 69/78 頁掛 PageHero | ✅ 完成 |
-| **S4** `<img>` → `<Image>` | 9 個刻意保留 | ✅ 完成 |
-| **S5** Loading skeleton | 13 個 + AdminPageSkeleton | ✅ 完成 |
-| **S6** Optimistic update | 21+ 處 + useOptimistic | ✅ 完成 |
-| **S7** 行銷 CRUD + AI OG | Affiliate / Competitor / Ads + chapter SEO | ✅ 完成 |
-| **S8** UX 細節 + Phase C | error / not-found / SW / a11y / focus-visible | ✅ 完成 |
-| **S9** 新手友善化 + 內容工程 | 22 章 / 472 課 + bot 美化 + 學員 AI 升級 | 🟡 進行中 |
+| 拿 Stripe secret key | https://dashboard.stripe.com/apikeys → Reveal test/live key | ❌ 未做 |
+| 貼到 `.env.local` + Zeabur env | `STRIPE_SECRET_KEY=sk_xxx` | ❌ 未做 |
+| 跑 bootstrap 建 3 個 Product | `node scripts/_oneshot-stripe-bootstrap.mjs` | ❌ 未做 |
+| 把 3 個 price_id 貼到 Zeabur | `STRIPE_PRICE_ID_MONTHLY/YEARLY/SINGLE` | ❌ 未做 |
+| Stripe Dashboard 設 Webhook | URL: `https://ai-island-web.snowrealm.pet/api/stripe/webhook`<br>勾 6 個事件（看 STRIPE_SETUP.md）| ❌ 未做 |
+| 把 Webhook signing secret 貼 Zeabur | `STRIPE_WEBHOOK_SECRET=whsec_xxx` | ❌ 未做 |
+| Zeabur redeploy | Variables 改完手動 trigger | ❌ 未做 |
+| 自己訂一筆 test mode 驗證 | 用卡號 `4242 4242 4242 4242` | ❌ 未做 |
 
----
+完整步驟：`docs/STRIPE_SETUP.md`
 
-## 🟢 S9 新手友善化（22 章完成 / 53 章剩）
+### 2️⃣ Discord 設定（綁定流程 / VIP role）
 
-### 已完成 — 共 22 章
-
-| 章 | 標題 | 課數 | 完成日 |
-|---|---|---|---|
-| **ch01** | HTML 完整 | 25 | 2026-05-28 ✅ |
-| **ch02** | CSS 完整 | 25 | 2026-05-28 ✅ |
-| **ch04** | JavaScript 完整 | 25 | 2026-05-28 ✅ |
-| **ch05** | TypeScript（補 3 課）| 25 | 2026-05-28 |
-| **ch07** | 程式邏輯共通（補 3 課）| 28 | 2026-05-28 |
-| **ch08** | React 完整（補 4 課）| 25 | 2026-05-28 |
-| **ch09** | Vue 完整（補 13 課）| 25 | 2026-05-28 |
-| **ch10** | Next.js / Nuxt | 25 | 2026-05-28 ✅ |
-| **ch16** | 後端世界全圖（補 5 課）| 25 | 2026-05-28 |
-| **ch17** | **SQL 資料庫** | 28 | 2026-05-28 ✅ |
-| **ch18** | NoSQL（補 14 課）| 25 | 2026-05-28 |
-| **ch19** | DB 進階（補 10 課）| 14 | 2026-05-28 |
-| **ch20** | API 設計（補 6 課）| 10 | 2026-05-28 |
-| **ch21** | 認證授權（補 4 課）| 10 | 2026-05-28 |
-| **ch22** | 部署 Docker（補 7 課）| 10 | 2026-05-28 |
-| **ch26** | Python 基礎 | 35（含 L0.5 終端機 + L1.5 工具）| 2026-05 |
-| **ch27** | Python 資料分析 | 25 | 2026-05 |
-| **ch28** | Python 爬蟲 | 25 | 2026-05 |
-| **ch29** | JavaScript 爬蟲 | 25 | 2026-05 |
-| **ch30** | 跨語言爬蟲 | 25 | 2026-05 |
-| **ch31** | Node.js（補 3 課）| 25 | 2026-05-28 |
-| **ch46** | AI/ML 原理 | 25 | 2026-05 |
-
-**P0 前端基礎全部完成** ✅、**P1 後端進階全部完成** ✅
-
----
-
-## 🔴 內容工作未做（53 章剩、按優先順序）
-
-### P2 - AI 進階系列（5 章 / ~100 課）
-
-| 章 | 標題 | 課數 | 工作量 |
-|---|---|---|---|
-| ch47 | AI 應用工程 | 12 | 🟡 補 |
-| ch48 | Vibe Coding | 19 | 🟡 補 |
-| ch49 | AI Agent | 22 | 🟡 補 |
-| ch50 | n8n 自動化 | 18 | 🟡 補 |
-| ch63 | AI / Prompt 工法大全 | 4 | 🟢 補 |
-
-### P3 - 中優先（4 章 / ~95 課）
-
-| 章 | 標題 | 課數 | 工作量 |
-|---|---|---|---|
-| ch03 | UI/UX 設計原理 | 25 | 🟡 補 |
-| ch11 | 行動裝置 App | 25 | 🟡 補 |
-| ch12 | 資安基礎 | 25 | 🟡 補 |
-| ch13 | SEO + GEO | 25 | 🟡 補 |
-| ch14 | PWA 跨平台 | 22 | 🟡 補 |
-| ch15 | 前端 DevOps | 23 | 🟡 補 |
-
-### P4 - 中優先（後端 + DB 補完、6 章 / ~50 課）
-
-| 章 | 標題 | 課數 | 工作量 |
-|---|---|---|---|
-| ch23 | 雲端架構 | 9 | 🟢 補 |
-| ch24 | 監控 Logs | 10 | 🟢 補 |
-| ch25 | 網域 + DNS + SSL | 10 | 🟢 補 |
-| ch32 | Go 完整 | 23 | 🟡 補 |
-| ch33 | Rust 完整 | 22 | 🟡 補 |
-| ch34 | Java + Spring Boot | 4 | 🟢 補 |
-| ch35 | C# + .NET | 5 | 🟢 補 |
-
-### P5 - 商業 + 創作（17 章 / ~140 課）
-
-| 章 | 標題 | 課數 | 工作量 |
-|---|---|---|---|
-| ch36 | PHP + Laravel | 6 | 🟢 補 |
-| ch37 | WordPress 接案 | 4 | 🟢 補 |
-| ch38 | 電商 + 金流 | 6 | 🟢 補 |
-| ch39 | LINE Bot + LIFF | 6 | 🟢 補 |
-| ch40 | Kotlin / Dart | 2 | 🟢 補 |
-| ch41 | 遊戲開發 | 4 | 🟢 補 |
-| ch42 | 接案完整流程 | 4 | 🟢 補 |
-| ch43 | 專案管理 | 23 | 🟡 補 |
-| ch44 | 產品經理 PdM | 23 | 🟡 補 |
-| ch45 | 跨職能協作 | 20 | 🟡 補 |
-| ch51 | AI 寫作 / 小說 | 3 | 🟢 補 |
-| ch52 | AI 設計 | 4 | 🟢 補 |
-| ch53 | AI 導演 / 短影音 | 4 | 🟢 補 |
-| ch54 | AI 音樂 | 3 | 🟢 補 |
-| ch55 | AI 行銷 | 4 | 🟢 補 |
-| ch56 | AI 虛擬 IP | 2 | 🟢 補 |
-| ch57 | AI 法律 / 倫理 | 4 | 🟢 補 |
-| ch58 | AI 時代職涯 | 4 | 🟢 補 |
-| ch59 | 一人公司 / Indie | 17 | 🟡 補 |
-| ch60 | 創業心法 | 1 | 🟢 補 |
-
-### P6 - 附錄速查（11 章 / ~40 課）
-
-| 章 | 標題 | 課數 | 備註 |
-|---|---|---|---|
-| ch61-ch71 | 附錄 A-J + Debug 聖經 | 40+ | 🟢 速查、可能不需大改 |
-
----
-
-## 🤖 LINE bot 功能擴充（plan v1.0）
-
-> 完整 spec 看 `docs/LINE_BOT_FEATURES_PLAN.md`
-
-### ✅ 已實作
-
-**2026-05-28**：
-- **A `/note`** 命令式存筆記
-- **B Quick Reply「📝 存筆記」** 按鈕（postback）
-- **D 每晚 20:00 學習回顧 push**（cron-job.org 設 12:00 UTC）
-- **D-bis `/footprint`** LINE 命令
-- **D-tris `/me/footprint`** 網站完整足跡頁
-
-**2026-05-29**（commit `fcd1dc4`）：
-- ✅ **`/today`** 今日學習狀況（lesson + quiz + checkin）
-- ✅ **`/weak`** 弱項章節 Top 5（30 天 quiz < 60）
-- ✅ **`/streak`** 連續簽到 + 個人最長 + 動態激勵語
-- ✅ **`/lesson <關鍵字>`** 用 ilike 搜 lesson、回直連 URL
-- ✅ **`/explain <概念>`** AI 國中生風格 3 行內白話解釋
-
-### 🟢 快 win（5-30 分鐘一條、立刻能做）
-
-| 命令 | 功能 | 工時 | 痛點 |
-|---|---|---|---|
-| `/recommend` | AI 推薦下一課（弱項 + 進度）| 40 min | 學員不知道下一步學什麼 |
-| `/quote` | 每日勵志程式名言 | 15 min | 增黏度、清晨打開 LINE 看到 |
-| `/recap` | AI 用足跡寫「最近你學了 X / Y / Z」 | 40 min | 學員自己看不出進步 |
-| `/quiz` | 隨機抽 1 題複習（歷史題庫）| 1 hr | 通勤 / 等公車快測 1 題 |
-| `/vocab` | 你的英文 jargon 卡關詞彙表（按新手友善 spec 規則 1 累積）| 1 hr | 學習過程的 jargon 翻不回去查 |
-| `/goal` | 設每日目標（N lesson、X quiz）| 30 min | 量化、好回頭看 |
-| `/hint <題目編號>` | 卡關時請 AI 給「提示」（不直接給答案）| 30 min | 學習階梯感、避免直接抄 |
-
-### 🟡 中工時、體感強
-
-| 命令 / 機制 | 功能 | 工時 |
+| 步驟 | 怎麼做 | 狀態 |
 |---|---|---|
-| 章節完成自動恭喜 push | 完成一章自動 push「🎉 你完成 Ch01 HTML！」+ 圖卡 | 30 min |
-| 連勝里程碑慶祝 | 7 / 30 / 100 / 365 天 push 大圖卡 | 30 min |
-| 連勝快斷提醒 | 晚 22:00 沒簽到自動推「⏰ 連勝快斷了」 | 1 hr |
-| `/review` 7 天前重學 | 7 天前學過的隨機挑 1 lesson + 立刻出 quiz（艾賓浩斯）| 1.5 hr |
-| `/forget` 最該複習 | 列「最該複習」（艾賓浩斯曲線排序）| 1 hr |
-| 簽到隨機抽 Z-coin | 簽到時隨機 1-50 z-coin（賭場心理）| 1 hr |
+| OAuth Redirects 加 URL | Discord Developer Portal → OAuth2 → Redirects → Add Redirect<br>`https://ai-island-web.snowrealm.pet/api/auth/discord/callback` | ✅ 已設 |
+| Reset Bot Token + 同步 Zeabur | Bot tab → Reset Token、貼 Zeabur env | ✅ 已設 |
+| 建 Premium VIP role | 伺服器設定 → 身分組 → 建立身分組「VIP」 | ✅ 已設 |
+| Bot role 拖到 VIP 之上 | 身分組頁面拖位置 | ⚠️ 待確認 |
+| Bot role 開「管理身分組」權限 | 點 bot role → 權限 → ✅ Manage Roles | ⚠️ 待確認 |
+| 補 Zeabur env | `DISCORD_VIP_ROLE_ID` + `DISCORD_CLIENT_SECRET` | ❌ 未做 |
+| `/admin/discord/setup` 註冊 slash | 開新分頁 GET 即可、看到 discord_response_status: 200 | ✅ 已成功 |
+| Discord 客戶端重啟看 `/quote` | iOS / 桌面要重啟 cache | ⚠️ 沒看到 commands 就重啟 |
 
-### 💎 未做 Pro 訂閱解鎖
+### 3️⃣ 寵物 4 隻 Lottie URL（沒填 = fallback emoji、不會壞）
 
-| 功能 | 工時 |
-|---|---|
-| 無限 AI 對話（免費 10/天）| schema 改、~1 hr |
-| 每週週報 push（週一 9:00）| 2 hr |
-| 每月學習報告 push（月初）| 2 hr |
-| AI 個人化學習路徑（4 週推薦）| 4 hr |
-| 錯題重練機制（艾賓浩斯排程）| 4 hr |
-| 語音輸入 → STT → AI 答 | 3 hr |
-| 圖片上傳 debug（拍程式碼錯誤）| 2 hr |
-| 自選推播時間 + 內容 | 2 hr |
-| 多語回應（中/英/日切換）| 3 hr |
-| 家長 / 老師同步推播（家庭學習方案）| 4 hr |
-
-### 🏆 未做旗艦獨享（v2+）
-
-| 功能 | 工時 |
-|---|---|
-| 24/7 AI 學習教練（mentor 角色）| 高 |
-| 每週 1 對 1 AI 學習 review | 高 |
-| 內測新章節權限 | 中 |
-| 獨享 Discord / Slack 群組 | 中 |
-
-### 🔥 「新手卡關」專屬（搭配新手友善 spec 規則 1）
-
-| 功能 | 為什麼有用 | 工時 |
+| 步驟 | 怎麼做 | 狀態 |
 |---|---|---|
-| `/jargon <英文詞>` | AI 用「國中生能懂」白話解釋 + 標註在 AI 島哪章學過 | 30 min |
-| 自動詞彙累積 | 學員看每個 lesson 時、自動記他「第一次看到的英文詞」、累積成個人詞彙表 | 2 hr |
-| `/sos <關鍵字>` | 卡關 SOS：AI 用學員當前進度推薦最少 3 個資源（站內 lesson + YT 影片 + blog）| 2 hr |
-| 每週個人化「你卡在哪」報告 | AI 分析學員行為（重看 N 次、quiz 不及格 N 次的 lesson）、推卡關熱點 | 3 hr |
+| 去 lottiefiles.com 挑 4 個動畫 | 推薦關鍵字：hamster / kawaii cat / shiba inu / bunny hopping | ❌ 未做 |
+| 進 `/admin/lottie-settings` 貼 URL | 4 個 slot：pet_lottie_hamster_url / cat / dog / rabbit | ❌ 未做 |
+| 儲存後右下角寵物秒生效 | 不用 redeploy | ❌ 未做 |
 
-### 🛤️ 學習足跡 v2 強化
+### 4️⃣ GitHub Actions CRON_SECRET（anomaly-check 401 修）
 
-| 功能 | 工時 |
-|---|---|
-| Timeline 視覺化（年 / 月 / 週切換）| 4 hr |
-| 統計圖表（每週連線天數 / quiz 趨勢）| 3 hr |
-| 艾賓浩斯複習排程 cron + spaced_review_queue | 5 hr |
-| 學習報告 PDF 匯出 | 3 hr |
-
----
-
-## 🛠️ Admin 後台升級剩餘（admin_upgrade audit 2026-05-29）
-
-> 39 項規劃（QW-01~05 + MED-06~12 + LT-13~18 + P4-01~21）審計後：**36 DONE / 5 待補**。
-> 完整 audit 見 `docs/admin_upgrade/README.md` + `docs/admin_upgrade/PHASE-4-PLUS-BACKLOG.md`
-
-| ID | 狀態 | 缺什麼 | 估時 | 備註 |
-|---|---|---|---|---|
-| ~~QW-05~~ | ✅ DONE | （5/29 re-audit）即時在線 widget 早已在 admin/page.tsx:303 完整實作、原 audit 誤判 | — | 含綠點 pulse + 多裝置去重 |
-| **LT-17** | 🔴 未做 | 效能 ops（Sentry / PostHog 整合）| 1-2 天 | 接第三方、不建本地表；跟 P4-16 Web Vitals 部分重疊 |
-| **P4-05** | 🟡 待確認 | KPI 報表 admin UI ↔ `/api/cron/kpi-email` 是否真 wired | 10 分鐘 verify | cron 已實作、ReportsClient 也在、確認排程 → email 鏈路 |
-| **P4-19** | 🟡 部分 | 教師/助教 role admin 管理介面 | 0.5-1 天 | `/teacher` 入口頁存在、admin 改 role 介面缺 |
-| **P4-20** | 🔴 未做 | 學員作業批改介面 | ~1 週 | 章末 quiz 已有；開放題作業批改 UI 完全缺 |
-
-**已 done 的 34 項細節**：略（audit 表完整版在本次 commit 對話 transcript）
-
-**推進建議**：
-1. P4-05 verify 先做（10 分鐘）→ 不用排 sprint
-2. QW-05「即時在線」widget 順手做（dashboard 體感升級、CP 高）
-3. P4-19 + P4-20 合包（教師 role + 作業批改）→ 1.5 週
-4. LT-17 排最後（接第三方、可暫不做、靠現有 `/admin/errors` 度日）
-
----
-
-## 🔄 N8N 自動化規劃（12 workflow、2026-05-29 加入）
-
-> 前置：林董要先自架 N8N（建議 Zeabur Docker、~$5/月）。架完按優先序逐 workflow 配置。
-
-### 🔥 高 ROI（馬上能跑、立即受益）
-
-| # | 自動化 | 對 AI 島的價值 |
+| 步驟 | 怎麼做 | 狀態 |
 |---|---|---|
-| **N1** | 學員 onboarding 7 天序列 — 註冊 → 24h 內 → 第 3 天 → 第 7 天分階段 email/LINE 引導 | 註冊→活躍 conversion 提升 30-50% |
-| **N2** | 流失 winback — 7/14/30 天沒登入觸發、AI 客製化挽回訊息 | 月活提升、retention 救回 |
-| **N3** | AI 內容工廠 — 寫一篇 blog → 自動生 5 個社群短文 + Threads + IG + YouTube 摘要 | 一篇變十篇、行銷流量 |
-| **N4** | KPI 自動報表 → LINE/Discord — 每天 09:00 自動跑 SQL、AI 摘要、推 LINE | 不用自己進後台、省 5 分鐘/天 |
+| 確認 GitHub repo secrets 對齊 | https://github.com/luffysky/ai-island-web/settings/secrets/actions<br>`CRON_SECRET` 跟 Zeabur env 一字不差 | ⚠️ 改過、等下個整點驗 |
+| 同上 SITE_URL | 確認也設了 | ⚠️ 改過、等下個整點驗 |
 
-### ⚡ 中 ROI（有用、需設計流程）
+### 5️⃣ Cron 排程（cron-job.org 免費版）
 
-| # | 自動化 | 場景 |
+| 排程 | URL | 頻率 |
 |---|---|---|
-| **N5** | 章節內容自動發布 — 寫好 ch JSON → 觸發 import script → 通知 → 自動 OG 圖 + 社群貼文 | 內容上線無人工 |
-| **N6** | AI 工作流路由 — 複雜任務 → Claude；簡單 → GPT-mini；批次 → Llama | 省 Token 成本 50%+ |
-| **N7** | 集中通知中心 — 重要事件 → fan-out 到 LINE + Discord + Slack + Email | 不用每處 hardcode |
-| **N8** | 客服工單分流 — LINE 收訊 → AI 分類 → 派 ticket → 答不出來才轉真人 | 客服省力 70% |
+| 學員每日推播 | `/api/cron/student-daily-review?secret=xxx` | 每天 12:00 UTC (20:00 台北) | ⚠️ 待確認 |
+| LINE 異常監控 | `/api/cron/anomaly-check?secret=xxx` | 每 30 分鐘 | ✅ GH Actions 已設 |
+| 流失提醒 | `/api/cron/recall-user?secret=xxx` | 每天 06:00 UTC | ❌ 未做 |
+| Leetcode 同步 | `/api/cron/leetcode-sync-daily?secret=xxx` | 每天 02:00 UTC | ⚠️ 待確認 |
+| Discord 每日金句 | `/api/cron/discord-quote-daily?secret=xxx` | 每天 23:00 UTC (07:00 台北) | ⚠️ 待確認 |
+| AI 記憶總結 | `/api/cron/summarize-memories?secret=xxx` | 每週日 21:00 UTC | ❌ 未做 |
+| Launchpad 自動掃 | `/api/cron/launchpad-auto-sync?secret=xxx` | 每天 03:00 UTC | ❌ 未做 |
+| Launchpad 月度回顧 | `/api/cron/launchpad-retrospective?secret=xxx` | 每月 1 號 09:00 UTC | ❌ 未做 |
 
-### 🛠 低門檻（小工具、N8N 拿手）
-
-| # | 自動化 | 怎麼用 |
-|---|---|---|
-| **N9** | Stripe webhook → Supabase — 訂閱 / 退款事件 → update profiles.subscription | 取代寫 webhook code |
-| **N10** | 每日 backup DB — 每天 03:00 dump Supabase → S3 / R2 | 災難回復、合規 |
-| **N11** | 異常偵測 + alert — 流量突增 / API error spike → 自動派工單 + LINE 警報 | 不用盯著 dashboard |
-| **N12** | GitHub release 自動公告 — tag push → 抓 changelog → 發 newsletter + 站內 changelog | 已有 changelog 表、直接接 |
-
-### 推進順序（建議）
-
-1. **先架自架 N8N**（Zeabur Docker、~$5/月、無限 workflow）
-2. **第 1 個 workflow：N1 onboarding 7 天**（最容易看到效果）
-3. **第 2 個：N4 KPI 報表**（每天看到、有感）
-4. **再加**：N2 流失 winback、N8 客服分流、N6 AI 路由
-
----
-
-## 🟡 5/28 未驗證 / 需林董測
-
-### LINE bot 五件功能（剛 push、明早測）
-- [ ] cron-job.org 設「12:00 UTC daily」打 `student-daily-review`
-- [ ] 學員 LINE 試 `/note 測試` 看是否同步網站
-- [ ] AI 回覆下方 Quick Reply 是否有「📝 存筆記」
-- [ ] 學員 LINE 試 `/footprint` 看回覆
-- [ ] 打開 `/me/footprint` 看 4 大區塊
-
-### 平台 UX 修
-- [ ] 手機 PWA 重整、ChapterMap lesson 數正確（不再 0）
-- [ ] SideNav ch72/73/74 = 5/5/4（不再 3/2/1）
-- [ ] AI 導師打開、下面 body 不再滑
-
-### 5/27 carry over
-- [ ] `/admin/ai-keys` 測 anthropic key
-- [ ] `/admin` 測 3 通道通知
-- [ ] `/admin/ai/embeddings` 按 backfill
-- [ ] Discord 試 `/help`
-
----
-
-## ⚠️ 林董授權 / blocked
-
-### B-3 · AI OG 圖 Replicate 等儲值
-- [ ] 林董去 https://replicate.com/account/billing 充 $10
-- [ ] 重打 `https://ai-island-web.snowrealm.pet/api/og/ai?provider=replicate&prompt=test&model=black-forest-labs/flux-schnell&seed=1`
-
-### B-4 · Piston 自架（task #24）
-- 文件 + env 支援已寫好（`docs/piston-selfhost.md`、env `PISTON_BASE_URL`）
-- 林董要實際 Zeabur 部署 piston Docker image、設 env
-- 月費 NT$ 150-600
-
----
-
-## 🤖 機器人功能（其他）
-
-### ✅ F-1 Discord + Telegram admin tool use（5/28 完成）
-### ✅ F-3 admin bot 對話 DB 持久化（5/28 完成）
-
-### F-2 · Anthropic Skills（未做）
-把「對帳 / 月報 / 故障處理」等流程包成 markdown 檔。
-
-### F-4 · LINE 通道餘額自動切換（未做）
-LINE push 月度滿時、自動把通知切到 TG / Discord（log warning）。需先有 LINE quota API 查詢。
-
-### F-5 · bot 之間能互相呼叫（未來規劃）
-
----
-
-## 🟢 平台 / 維運
-
-### M-1 · Zeabur build 偶爾 ECONNRESET
-`.npmrc retry=10` 加好、大部分能撐過。升 plan / 改 pnpm / 鏡像 fallback 都待議。
-
-### M-2 · LINE 通道餘額自動切換（同 F-4）
-
-### M-3 · Telegram chat_id 拿錯時不 silent（已改）
-
----
-
-## 📚 林董 blocked 實機測項
-
-| 項目 | 工時 | 內容 |
-|---|---|---|
-| Boss 戰實機測 | 1h | 3D 島嶼 Boss 戰流程、技能、掉落、結算 |
-| 寵物實機測 | 30min | 跟隨、親密度、餵食、對話 10 句 |
-| 簽到實機測 | 30min | 連續 7 天、第 7 天大禮、補簽 |
-| RWD audit | 1h | Lighthouse 跑前 / 中 / 後三天 mobile score |
-| Lottie 動畫挑 | 30min | 8 用途各挑一個 LottieFiles URL |
-| Rich Menu PNG | 30min | 自製 2500×1686 PNG、imgur 上傳、設 env |
-| GOOGLE_MAPS_API_KEY | 5min | 精準位置反查台灣縣市 |
-| 新手友善化章節驗收 | 30min | 看 ch01/02/04/10/17 隨機 3 課確認改寫品質 |
-| `/admin/ai/embeddings` backfill | 1-3min | 按按鈕、~$0.015 |
-| `/admin/ai/keys` 測 key | 30s | 確認 anthropic key 真值 |
-| `/admin` 測 3 通道通知 | 30s | 確認哪個 env 缺 |
-| **cron-job.org 設 student-daily-review** | 5 min | 每天 12:00 UTC 打 cron secret |
-| **學員 LINE 試 /note + /footprint** | 5 min | 確認新功能 work |
-| **學員 LINE 試 Quick Reply「📝 存筆記」** | 2 min | 點按鈕看是否寫到 notes table |
-| **打開 /me/footprint 看 4 大區塊** | 3 min | 學習足跡頁 |
-
----
-
-## 🔧 環境變數待設
+### 6️⃣ 其他 env（環境變數待設清單）
 
 ```bash
-# 新加 / 還沒設
-OWNER_LINE_USER_IDS=Uxxx                   # 綁定後 LINE bot 直接認林董
-PISTON_BASE_URL=                            # 自架 Piston 後改、預設 emkc.org
-ADMIN_TELEGRAM_CHAT_ID=純數字 (用 @userinfobot 拿)
-ADMIN_DISCORD_WEBHOOK_URL=                 # 通知用
-NOTIFY_DUAL_USERNAMES=nami                  # Nami 雙通知
-TELEGRAM_WEBHOOK_SECRET=                    # 選填、防偽 webhook
+# 🔴 必設、無此 = 功能掛掉
+STRIPE_SECRET_KEY=                 # Stripe checkout
+STRIPE_WEBHOOK_SECRET=             # Stripe webhook 驗 sig
+STRIPE_PRICE_ID_MONTHLY=
+STRIPE_PRICE_ID_YEARLY=
+STRIPE_PRICE_ID_SINGLE=
 
-# 學員 LINE bot 必需（5/28 加 / 應該已設）
-USER_LINE_CHANNEL_TOKEN=                   # 推播 / 回覆 token
-USER_LINE_CHANNEL_SECRET=                  # webhook 簽章
-CRON_SECRET=                                # 跟 line-daily 共用
+DISCORD_CLIENT_SECRET=             # Discord OAuth
+DISCORD_VIP_ROLE_ID=               # Discord VIP role
+
+# 🟡 選設、有則優化
+OWNER_LINE_USER_IDS=Uxxx          # LINE bot 直接認林董身份
+TELEGRAM_OWNER_USER_IDS=           # TG bot 白名單
+TELEGRAM_OWNER_USERNAMES=
+PISTON_BASE_URL=                   # 自架 Piston（不設用公版 emkc.org）
+NOTIFY_DUAL_USERNAMES=nami         # Nami 雙通知
+TELEGRAM_WEBHOOK_SECRET=           # 選填、防偽 webhook
+ADMIN_TELEGRAM_CHAT_ID=純數字       # 用 @userinfobot 拿
+N8N_INBOUND_API_KEY=               # n8n 拉資料用（架完再設）
+N8N_OUTBOUND_URL_PREFIX=https://n8n.snowrealm.pet/webhook
 
 # 已停用、可從 .env.local 刪除
-ADMIN_LINE_NOTIFY_TOKEN=                   # LINE Notify 2025-04 停服
+ADMIN_LINE_NOTIFY_TOKEN=          # LINE Notify 2025-04 停服
 ```
 
 ---
 
-## 🆕 未來規劃（v7+、不急）
+## 🟡 還沒做的 task（按優先排）
 
-### 演算法剩 2 條
-- ⏳ **Chapter 推薦**（content + collaborative filter）
-- ⏳ **全站語意搜尋**（embeddings + vector）— **基礎建設已有了**（embedding 跑完 backfill 即可開發 UI）
+### P0 — 影響上線體驗
 
-### Marketing 行銷下一輪
-- 排程實際接 OAuth
-- AI 自動寫 weekly newsletter
-- A/B 測 ad copy 真實點擊回填
+| # | 工作 | 工時 | 依賴 |
+|---|---|---|---|
+| 1 | **Stripe Dashboard 設好**（拿 key + bootstrap + webhook + env）| 30 min | 林董 |
+| 2 | **填寵物 Lottie URL** | 10 min | 林董 |
+| 3 | **設 cron-job.org 排程**（7 個 cron）| 20 min | 林董 |
+| 4 | **N8N self-host 架起來**（Zeabur Docker）| 30 min | 林董 |
 
-### 平台付費功能整合
-- LINE bot Pro 解鎖跟訂閱系統 wired
-- 「升 Pro」按鈕從 LINE bot 觸發直接接金流
+### P1 — 商業正循環
+
+| # | 工作 | 工時 | 文件 |
+|---|---|---|---|
+| 5 | **Z 幣商城 sink**（寵物配件 5 + 主題 3）| 4 hr | PRICING_STRATEGY.md |
+| 6 | **Z 幣儲值 4 套餐**（60/199/499/999）| 3 hr | PRICING_STRATEGY.md |
+| 7 | **訂閱付款監測 dashboard**（轉換率 / churn）| 4 hr | — |
+
+### P2 — 內容偷懶（章節 audit 結果）
+
+> 跑 `node scripts/_diag-lazy-chapters.mjs` 隨時 re-audit
+
+**非附錄真該補的（按分數排）**：
+
+| 章 | 分數 | 工時/課 | 課數 |
+|---|---|---|---|
+| **ch60** 創業心法 | 6.3 | 30 min | 6 |
+| **ch57** AI 法律 / 倫理 | 6.4 | 30 min | 5 |
+| **ch58** AI 時代職涯 | 6.4 | 30 min | 5 |
+| **ch51** AI 寫作 / 小說 | 6.5 | 30 min | 6 |
+| **ch55** AI 行銷 | 6.5 | 30 min | 6 |
+| **ch56** AI 虛擬 IP | 6.5 | 30 min | 6 |
+| ch68 高階工程師 | 7.0 | 30 min | 20 |
+
+**附錄（by design 可不改）**：ch61-67 / ch69-70（速查、5.0-3.0 分但 OK）
+
+### P3 — N8N 12 workflow（架完再開）
+
+完整 spec：`docs/N8N_INTEGRATION.md`
+
+| # | workflow | ROI |
+|---|---|---|
+| N1 | 學員 onboarding 7 天序列 | 🔥 註冊→活躍 +30-50% |
+| N4 | 每日 09:00 KPI 摘要 → LINE 自己 | 🔥 省 5 分鐘/天 |
+| N2 | 流失 winback 7/14/30 天 | ⚡ retention 救回 |
+| N8 | 客服工單 AI 分流 | ⚡ 客服省力 70% |
+| N6 | AI 工作流路由 | ⚡ token cost -50% |
+| N3 | AI 內容工廠（blog → 5 平台）| 🟢 行銷流量 |
+| N7 | 集中通知中心 fan-out | 🟢 不用每處 hardcode |
+| N5 | 章節內容自動發布 | 🟢 內容上線無人工 |
+| N9 | Stripe → Supabase | 🟢 已自接、補強用 |
+| N10 | 每日 03:00 DB backup | 🛡️ 災難回復 |
+| N11 | 異常偵測 + alert | 🛡️ 5 指標監控 |
+| N12 | GitHub release → 站內 changelog | 🟢 自動化 |
+
+### P4 — 內容工作未做（53 章剩、按 BACKLOG.md v7.0 排）
+
+#### P2 — AI 進階系列（5 章 / ~100 課）
+| 章 | 標題 | 課數 |
+|---|---|---|
+| ch47 | AI 應用工程 | 12 |
+| ch48 | Vibe Coding | 19 |
+| ch49 | AI Agent | 22 |
+| ch50 | n8n 自動化 | 18 |
+| ch63 | AI / Prompt 工法大全 | 4 |
+
+#### P3 — 中優先（6 章 / ~145 課）
+| 章 | 標題 | 課數 |
+|---|---|---|
+| ch03 | UI/UX 設計原理 | 25 |
+| ch11 | 行動裝置 App | 25 |
+| ch12 | 資安基礎 | 25 |
+| ch13 | SEO + GEO | 25 |
+| ch14 | PWA 跨平台 | 22 |
+| ch15 | 前端 DevOps | 23 |
+
+#### P4 — 後端 + DB 補完（7 章 / ~83 課）
+| 章 | 標題 | 課數 |
+|---|---|---|
+| ch23 | 雲端架構 | 9 |
+| ch24 | 監控 Logs | 10 |
+| ch25 | 網域 + DNS + SSL | 10 |
+| ch32 | Go 完整 | 23 |
+| ch33 | Rust 完整 | 22 |
+| ch34 | Java + Spring Boot | 4 |
+| ch35 | C# + .NET | 5 |
+
+#### P5 — 商業 + 創作（17 章 / ~140 課）詳見 BACKLOG v7.0
+
+### P5 — Admin 後台升級剩 5 項
+
+| ID | 缺 | 估時 |
+|---|---|---|
+| **LT-17** | 效能 ops（Sentry / PostHog）| 1-2 天 |
+| **P4-05** | KPI 報表 ↔ cron/kpi-email 確認 wired | 10 分 |
+| **P4-19** | 教師/助教 role admin 管理介面 | 0.5-1 天 |
+| **P4-20** | 學員作業批改介面 | ~1 週 |
+
+### P6 — 未來規劃（v7+、不急）
+
+- ⏳ Chapter 推薦演算法（content + collaborative filter）
+- ⏳ 全站語意搜尋 UI（embeddings 跑完）
+- ⏳ Marketing 排程 OAuth 接 LinkedIn / Threads
+- ⏳ A/B 測 ad copy 真實點擊回填
+- ⏳ ch68 嚴格 spec 重寫（task #21、20 課 8-15 hr）
 
 ---
 
-## 📝 文件 / 維運
+## ✅ 5/29 一天做完的（深夜更新）
 
-- [x] `docs/BACKLOG.md` v7.0（這份）
-- [x] `docs/BEGINNER_FRIENDLY_BACKLOG.md`（75 章完整 audit、5/28 更新）
-- [x] `docs/LINE_BOT_FEATURES_PLAN.md`（5/28 新加）
-- [x] `docs/daily_works_0526.md`
-- [x] `docs/daily_works_0527.md`
-- [x] `docs/daily_works_0528.md`（5/28 新加）
-- [x] `docs/piston-selfhost.md`（自架 Piston 部署）
-- [x] `docs/discord-cold-start-fix.md`（Discord 未及時回應 root cause + 修法）
-- [ ] `docs/LINE_BOT_TROUBLESHOOT.md`（admin/user webhook fail 模式 + error_logs source cheat sheet）
-- [ ] `docs/TELEGRAM_DISCORD_BOT_SETUP.md`（Telegram + Discord bot 完整設定流程）
-- [ ] `docs/BYOK_USER_GUIDE.md`（使用者怎麼貼自己的 API key）
+### 🔥 大型功能（13 件）
+
+| 功能 | 影響 |
+|---|---|
+| **LINE bot 5 件**（A: 5 命令 / B: 里程碑 push / C: ch00 / D: vision / E: 即時在線）| 學員 LINE 體驗成形 |
+| **TG bot 11 條進階指令**（silence/focus/me/digest/journal/tr/rewrite/idea/broadcast/grant_premium/vip/risk + voice）| 林董私人助理 |
+| **Discord 學員流 4 件**（DC#1/4/5/7：vision / VIP role / onboard DM / slash command）| Discord 學員流通 |
+| **AI 對話 5 件套**（時間戳/打字/複製/auto-scroll/搜尋）+ **視覺美化**（漸層/玻璃感/code 高亮）| 4 個 AI 入口統一 |
+| **章節 audit + 進度條**（76 章評分 + /chapters 卡進度 + 詳情頁升級）| 學員看得到 |
+| **新手友善 A+B+C**（5 步 Tour + 3 步 Wizard + /chapters CTA）| 第一次來不迷路 |
+| **全站 + 後台麵包屑**（前後台 layout 都掛、100+ segment 中文映射）| 導覽清楚 |
+| **Stripe 訂閱付款接通**（checkout + webhook + Discord role 同步 + /pricing CTA）| 商業化基礎 |
+| **N8N 整合 spec**（12 workflow + AI 島端 hooks）| 自動化規劃 |
+| **PRICING_STRATEGY.md**（訂閱 + Z 幣定價策略）| 定價決策 |
+| **資料表健檢 + 章節 audit script** | 維運工具 |
+| **許願池 10 條全部做完**（流失關懷 / AI 訂閱推薦 / YT / 履歷 / 面試 / 章節 audit / 週賽 / 配對 / PWA / 對外 API）| 老 wishlist 清零 |
+| **AI 特權系統 + 月 token cap + 月 action quota** + 5 個漏網 endpoint 接 gate | 成本壓縮接通 |
+
+### 🛠️ 修 bug（10+）
+
+- ch26.0.5 PowerShell `ls -la` 不認 → 補 Get-ChildItem 等價
+- LINE bot「完整對話」按鈕跳幽靈頁 → 改 `/me/ai-history`
+- Discord `/quote` 永遠回「還在路上」→ select column 名稱錯
+- TG `/me` `/digest` 表名錯（user_notes→notes、subscription_orders→orders）
+- bot token 失效診斷 endpoint
+- `/admin/discord` 控制台補（隱形入口外露）
+
+### 📊 健檢結果
+
+- DB 35/35 業務必要表都建好（線上 125 張）
+- 章節 audit：76 章內 健康 10 / 偏弱 56 / 該補 9（附錄不算）
+
+完整日誌：`docs/daily_works_0529.md`（待寫）
 
 ---
 
-## 🚦 下一步建議（按優先序）
+## 🚦 林董明天起床後優先做的事
 
-### 🔥 林董明早立刻做（10 分鐘）
-1. **cron-job.org 設 student-daily-review** — 每天 12:00 UTC
-2. **學員 LINE 試 /note + /footprint** — 確認新功能 work
-3. **打開 /me/footprint 看新頁**
-4. `/admin/ai-keys` 測 anthropic key
-5. `/admin` 測 3 通道通知
-6. `/admin/ai/embeddings` 按 backfill
-
-### 📌 本週繼續（內容）
-- P2 AI 進階：ch47 / ch48 / ch49 / ch50（5 章）
-- P3 ch11 行動裝置 / ch12 資安 / ch13 SEO / ch14 PWA / ch15 DevOps
-
-### 🤖 本週繼續（LINE bot）
-- 免費命令：`/today` `/weak` `/streak`（小工時、馬上能 ship）
-- `/recap` `/review` `/forget`（艾賓浩斯複習）
-
-### 🎮 林董 blocked 實機測（15 項一起跑）
-Boss / 寵物 / 簽到 / RWD / Lottie / Rich Menu / Maps API / 章節驗收 / Embedding backfill / Test key / Test notify / cron-job 設 / LINE 新功能 / footprint 頁 / Quick Reply 存
+1. **跑 Stripe bootstrap**（30 min、訂閱才能真的賣）
+2. **填寵物 Lottie URL**（10 min、視覺立刻升級）
+3. **設 cron-job.org 7 個排程**（20 min、所有自動化才會跑）
+4. 一杯咖啡時間：去 `/me/settings` 綁 Discord 走過一輪、看 `/quote` 真的能用
+5. 想做的話：N8N self-host 架起來（30 min）
 
 ---
 
-_最後更新：2026-05-28 深夜 by 雪鑰_
-_今天 16 commit、266 課新手友善化、5 件 LINE bot 功能、所有未做都記下來了_
+_最後更新：2026-05-29 深夜 by 雪鑰_
+_今天工作量打破紀錄、林董 2 天沒睡、休息為先_
