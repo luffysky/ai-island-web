@@ -61,14 +61,26 @@ async function tgSend(
     else body.parse_mode = "Markdown";
     if (options?.keyboard) body.reply_markup = { inline_keyboard: options.keyboard };
 
-    await fetch(`${TG}${token}/sendMessage`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-      signal: AbortSignal.timeout(8000),
-    });
+    // 帶 retry 的 fetch — Telegram API 偶爾 transient「fetch failed」(DNS/TLS/TCP 抖動)
+    // 1 次 fail 等 500ms 再試 1 次、跟 notify-admin sendTelegram 一致
+    let lastErr: any = null;
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      try {
+        await fetch(`${TG}${token}/sendMessage`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+          signal: AbortSignal.timeout(8000),
+        });
+        return;
+      } catch (e) {
+        lastErr = e;
+        if (attempt === 1) await new Promise((r) => setTimeout(r, 500));
+      }
+    }
+    console.warn("[telegram-webhook] send failed (retry x2):", (lastErr as any)?.message);
   } catch (e) {
-    console.warn("[telegram-webhook] send failed:", (e as any)?.message);
+    console.warn("[telegram-webhook] send failed (outer):", (e as any)?.message);
   }
 }
 

@@ -47,6 +47,8 @@ const MIGRATIONS = [
   "user_ai_memory_migration.sql",
   // 2026-05-29 — 學員每日目標表 (/goal LINE 命令)
   "user_daily_goals_migration.sql",
+  // 2026-05-29 — admin Launchpad kanban (功能總覽 / 待辦 / 許願池)
+  "admin_kanban_migration.sql",
 ];
 
 // 從 .env.local 讀（不依賴 dotenv pkg）
