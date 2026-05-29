@@ -135,7 +135,7 @@ export async function cmdMe(tgUsername?: string): Promise<string> {
   const [{ count: lessonsToday }, { count: aiToday }, { count: notesToday }, { data: lastLogin }] = await Promise.all([
     admin.from("lesson_progress").select("id", { count: "exact", head: true }).eq("user_id", (owner as any).id).gte("completed_at", dayStart),
     admin.from("ai_messages").select("id", { count: "exact", head: true }).eq("user_id", (owner as any).id).gte("created_at", dayStart),
-    admin.from("user_notes").select("id", { count: "exact", head: true }).eq("user_id", (owner as any).id).gte("created_at", dayStart),
+    admin.from("notes").select("id", { count: "exact", head: true }).eq("user_id", (owner as any).id).gte("created_at", dayStart),
     admin.from("profiles").select("last_active_at").eq("id", (owner as any).id).maybeSingle(),
   ] as any);
 
@@ -174,7 +174,7 @@ export async function cmdDigest(): Promise<string> {
     admin.from("lesson_progress").select("id", { count: "exact", head: true }).gte("completed_at", dayStart),
     admin.from("ai_messages").select("id", { count: "exact", head: true }).gte("created_at", dayStart),
     admin.from("error_logs").select("id", { count: "exact", head: true }).gte("created_at", dayStart).in("level", ["error", "fatal"]),
-    admin.from("subscription_orders").select("amount, currency, status").gte("created_at", dayStart).eq("status", "paid"),
+    admin.from("orders").select("amount, currency, status").gte("created_at", dayStart).eq("status", "paid"),
   ] as any);
 
   const revenue = ((ordersToday ?? []) as any[]).reduce((s, o) => s + Number(o.amount ?? 0), 0);
