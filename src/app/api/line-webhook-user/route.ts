@@ -556,7 +556,7 @@ function cardAITutorReply(opts: { reply: string; displayName: string; ownerMode:
     meta: [{ label: "👤 對象", value: opts.displayName }],
     buttons: [
       { label: "📚 看章節", uri: `${SITE_URL}/chapters`, primary: true },
-      { label: "🌐 完整對話", uri: `${SITE_URL}/ai-tutor` },
+      { label: "💬 對話歷史", uri: `${SITE_URL}/me/ai-history` },
     ],
   });
 }
@@ -572,7 +572,7 @@ function cardAITutorFooter(opts: { displayName: string; ownerMode: boolean }): F
     meta: [{ label: "👤", value: opts.displayName }],
     buttons: [
       { label: "📚 看章節", uri: `${SITE_URL}/chapters`, primary: true },
-      { label: "🌐 完整對話", uri: `${SITE_URL}/ai-tutor` },
+      { label: "💬 對話歷史", uri: `${SITE_URL}/me/ai-history` },
       { label: "⚙️ 設定", uri: `${SITE_URL}/settings` },
     ],
   });
