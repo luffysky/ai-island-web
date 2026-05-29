@@ -211,6 +211,13 @@ export function MeSidebar({ profile }: { profile: Profile | null }) {
           學習足跡
         </MeLink>
         <MeLink
+          href="/me/challenge"
+          icon={<span>🏆</span>}
+          collapsed={collapsed}
+        >
+          週賽 Challenge
+        </MeLink>
+        <MeLink
           href="/me/assignments"
           icon={<span>📋</span>}
           collapsed={collapsed}

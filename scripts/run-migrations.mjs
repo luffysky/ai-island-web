@@ -53,6 +53,8 @@ const MIGRATIONS = [
   "external_resources_migration.sql",
   // 2026-05-29 — external_resources 加 chapter_id（章節相關資源）
   "external_resources_chapter_link_migration.sql",
+  // 2026-05-29 — 週賽 Code Challenge
+  "weekly_challenge_migration.sql",
 ];
 
 // 從 .env.local 讀（不依賴 dotenv pkg）
