@@ -67,6 +67,12 @@ const MIGRATIONS = [
   "per_user_ai_cap_migration.sql",
   // 2026-05-29 — AI action quota（tutor 10 串、其他 3 次 / 月）
   "ai_action_quota_migration.sql",
+  // 2026-05-29 — TG bot 11 條進階指令（silence / focus / journal / idea / broadcast）
+  "tg_advanced_migration.sql",
+  // 2026-05-29 — 4 隻寵物 Lottie URL slot（林董：emoji 換成 Lottie）
+  "pet_lottie_settings_migration.sql",
+  // 2026-05-29 — Discord OAuth 綁定 + onboarding 進度（DC#4/5/7/1 基礎）
+  "discord_binding_migration.sql",
 ];
 
 // 從 .env.local 讀（不依賴 dotenv pkg）

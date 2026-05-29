@@ -243,13 +243,27 @@ export async function POST(req: NextRequest) {
 async function processTelegramUpdate(token: string, body: any) {
   const msg = body.message ?? body.edited_message;
   if (!msg || !msg.chat?.id) return NextResponse.json({ ok: true });
-  // 接受文字 OR 圖片（圖片可帶 caption）
-  if (!msg.text && !msg.photo) return NextResponse.json({ ok: true });
+  // 接受文字 OR 圖片 OR 語音
+  if (!msg.text && !msg.photo && !msg.voice && !msg.audio) return NextResponse.json({ ok: true });
 
   const chatId = msg.chat.id as number;
   const tgUserId = msg.from?.id as number;
   const tgUsername = msg.from?.username as string | undefined;
-  const text = String(msg.text ?? msg.caption ?? "").trim();
+  let text = String(msg.text ?? msg.caption ?? "").trim();
+
+  // 語音訊息 — 自動 transcribe + 接續走 AI（林董邊走路邊講想法 / 開會空檔的快速捕捉）
+  if ((msg.voice?.file_id || msg.audio?.file_id) && !text) {
+    const fileId = msg.voice?.file_id || msg.audio?.file_id;
+    const { transcribeVoice } = await import("@/lib/tg-advanced-commands");
+    const transcribed = await transcribeVoice(token, fileId);
+    if (!transcribed) {
+      await tgSend(token, chatId, "❌ <b>語音轉文字失敗</b>\n<i>檢查 openai key 或 file size &lt; 25MB</i>", { parseMode: "HTML" });
+      return NextResponse.json({ ok: true });
+    }
+    text = transcribed;
+    // 回個聲音的轉文 echo 給林董確認
+    await tgSend(token, chatId, `🎙️ <i>聽到：</i>${escapeHTML(text)}`, { parseMode: "HTML", replyTo: msg.message_id });
+  }
 
   if (!ownerAllowed(tgUserId, tgUsername)) {
     await tgSend(token, chatId,
@@ -288,6 +302,16 @@ async function processTelegramUpdate(token: string, body: any) {
         "",
         "🛡️ <b>系統</b>",
         "<code>/errors</code> · <code>/prefs</code>",
+        "",
+        "🌟 <b>進階（私人助理）</b>",
+        "<code>/silence 1h</code> 暫停 push · <code>/focus 25 主題</code> 番茄鐘",
+        "<code>/me</code> 個人摘要 · <code>/digest</code> 全站日報",
+        "<code>/journal &lt;內容&gt;</code> 日誌 · <code>/idea &lt;想法&gt;</code> 靈感箱",
+        "<code>/tr &lt;文字&gt;</code> 翻譯 · <code>/rewrite &lt;文字&gt;</code> 潤稿",
+        "<code>/broadcast &lt;內容&gt;</code> 推全用戶",
+        "<code>/grant_premium user 30</code> 給 VIP",
+        "<code>/vip</code> VIP 清單 · <code>/risk</code> 流失風險",
+        "🎙️ <i>傳語音直接 Whisper 轉文 + AI 回</i>",
       ].join("\n");
       await tgSend(token, chatId, html, {
         parseMode: "HTML",
@@ -356,6 +380,39 @@ async function processTelegramUpdate(token: string, body: any) {
           state.model_name = found.model_name;
           await tgSend(token, chatId, `✅ 已切到 \`${found.provider}/${found.model_name}\``);
         }
+      }
+      return NextResponse.json({ ok: true });
+    }
+
+    // TG bot 11 條進階指令（林董私人助理升級包）
+    const ADV_CMDS = new Set([
+      "silence", "focus", "me", "digest", "journal",
+      "tr", "translate", "rewrite", "idea",
+      "broadcast", "grant_premium", "vip", "risk",
+    ]);
+    if (ADV_CMDS.has(cmd)) {
+      try {
+        const adv = await import("@/lib/tg-advanced-commands");
+        let replyHTML = "";
+        const rest = args.join(" ");
+        switch (cmd) {
+          case "silence": replyHTML = await adv.cmdSilence(chatId, args); break;
+          case "focus": replyHTML = await adv.cmdFocus(chatId, args); break;
+          case "me": replyHTML = await adv.cmdMe(tgUsername); break;
+          case "digest": replyHTML = await adv.cmdDigest(); break;
+          case "journal": replyHTML = await adv.cmdJournal(rest); break;
+          case "tr":
+          case "translate": replyHTML = await adv.cmdTranslate(rest); break;
+          case "rewrite": replyHTML = await adv.cmdRewrite(rest); break;
+          case "idea": replyHTML = await adv.cmdIdea(rest); break;
+          case "broadcast": replyHTML = await adv.cmdBroadcast(args); break;
+          case "grant_premium": replyHTML = await adv.cmdGrantPremium(args); break;
+          case "vip": replyHTML = await adv.cmdVip(); break;
+          case "risk": replyHTML = await adv.cmdRisk(); break;
+        }
+        await tgSend(token, chatId, replyHTML, { parseMode: "HTML", replyTo: msg.message_id });
+      } catch (e: any) {
+        await tgSend(token, chatId, `❌ <b>/${escapeHTML(cmd)} 失敗</b>\n<i>${escapeHTML(e?.message ?? "unknown")}</i>`, { parseMode: "HTML" });
       }
       return NextResponse.json({ ok: true });
     }

@@ -58,6 +58,37 @@ const COMMANDS = [
     name: "help",
     description: "看指令清單",
   },
+  // === 學員 slash commands（DC#7 + DC#1）===
+  {
+    name: "quote",
+    description: "🎯 抽今日金句（不分 owner/學員）",
+  },
+  {
+    name: "recommend",
+    description: "📚 雪鑰推薦下一課（依你的進度）",
+  },
+  {
+    name: "vision",
+    description: "👁️ 上傳圖片問 AI（自動偵測程式碼 / UI / 錯誤訊息）",
+    options: [
+      {
+        name: "image",
+        description: "要分析的圖片",
+        type: 11, // ATTACHMENT
+        required: true,
+      },
+      {
+        name: "question",
+        description: "想問什麼（可選、不填會給通用分析）",
+        type: 3,
+        required: false,
+      },
+    ],
+  },
+  {
+    name: "bind",
+    description: "🔗 看你的綁定狀態 / 重新綁定 AI 島帳號",
+  },
 ];
 
 async function run() {

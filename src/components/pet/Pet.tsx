@@ -16,6 +16,7 @@ import {
 import { getSeason, getHoliday, getHeadDecoration } from "@/lib/pet-season";
 import { PlainBubble, CuteBubble } from "./PetBubble";
 import { PetChatPanel } from "./PetChatPanel";
+import { LottieIcon } from "@/components/ui/LottieIcon";
 
 type PetState = {
   name: string;
@@ -39,6 +40,7 @@ export function Pet() {
   const overlayCount = useOverlayCount();
 
   const [pet, setPet] = useState<PetState | null>(null);
+  const [lottieUrls, setLottieUrls] = useState<Record<string, string>>({});
   const [pos, setPos] = useState<Pos>({ x: 200, y: 400 });
   const [target, setTarget] = useState<Pos>({ x: 200, y: 400 });
   const [isMobile, setIsMobile] = useState(false);
@@ -86,6 +88,16 @@ export function Pet() {
       })
       .catch(() => {});
   }, [status, user?.id]);
+
+  // 載 Lottie URL（4 隻寵物各自一個、admin 在 /admin/lottie-settings 設）
+  useEffect(() => {
+    fetch("/api/app-settings?keys=pet_lottie_hamster_url,pet_lottie_cat_url,pet_lottie_dog_url,pet_lottie_rabbit_url")
+      .then((r) => r.json())
+      .then((j) => {
+        if (j?.settings) setLottieUrls(j.settings);
+      })
+      .catch(() => {});
+  }, []);
 
   // 建 ChatterCtx（每次 pet/profile/pathname 變動重建）
   const ctx: ChatterCtx | null = useMemo(() => {
@@ -597,7 +609,21 @@ export function Pet() {
               {headDeco}
             </span>
           )}
-          {species.emoji}
+          {(() => {
+            const lottieKey = `pet_lottie_${pet.species}_url`;
+            const lottieSrc = lottieUrls[lottieKey];
+            const petSize = isMobile ? Math.round(40 * MOBILE_SCALE) : 40;
+            if (lottieSrc) {
+              return (
+                <LottieIcon
+                  src={lottieSrc}
+                  size={petSize + 12}
+                  fallback={<span style={{ fontSize: petSize }}>{species.emoji}</span>}
+                />
+              );
+            }
+            return species.emoji;
+          })()}
         </button>
 
         <button

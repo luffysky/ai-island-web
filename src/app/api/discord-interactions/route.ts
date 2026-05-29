@@ -377,6 +377,15 @@ export async function POST(req: NextRequest) {
   // 現在統一：立刻 return REPLY_DEFERRED（< 50ms 必達）、background fire-and-forget 跑邏輯後 PATCH webhook
   // 唯一例外：非 owner 的訊息要 ephemeral（不公開）、所以這個 sync return 但極簡（不查 DB）
 
+  // 學員 slash commands（任何 Discord user 可用、不過 owner gate）
+  const STUDENT_CMDS = new Set(["quote", "recommend", "vision", "bind"]);
+  if (STUDENT_CMDS.has(cmd)) {
+    runStudentCommandBg(cmd, body, appId, interactionToken, userId, username).catch((e) => {
+      console.warn(`[discord-interactions] student ${cmd} failed:`, e?.message);
+    });
+    return NextResponse.json({ type: REPLY_DEFERRED });
+  }
+
   if (!ownerAllowed(userId)) {
     return NextResponse.json({
       type: REPLY_MESSAGE,
@@ -555,6 +564,195 @@ async function runCommandBg(
       buttons: [{ label: "🛡️ 看 error log", url: `${adminConsoleUrl()}/errors` }],
     })).catch(() => {});
   }
+}
+
+// === 學員 slash command handler（DC#7 + DC#1） ===
+async function runStudentCommandBg(
+  cmd: string,
+  body: any,
+  appId: string,
+  interactionToken: string,
+  discordUserId: string,
+  discordUsername: string,
+) {
+  const admin = createSupabaseAdmin();
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
+
+  // 從 Discord user_id 找 AI 島 user_id（綁定）
+  const { data: bind } = await admin.from("user_discord_bind").select("user_id").eq("discord_user_id", discordUserId).maybeSingle();
+  const userId = (bind as any)?.user_id ?? null;
+
+  // /bind — 永遠顯示綁定狀態（不需要先綁）
+  if (cmd === "bind") {
+    if (!userId) {
+      await patchOriginalEmbed(appId, interactionToken, embedCard({
+        title: "🔗 還沒綁定 AI 島帳號",
+        description: "去 AI 島 → 我的設定 → 綁 Discord、即可解鎖 /quote /recommend /vision",
+        color: COLOR.warn,
+        buttons: [{ label: "🏝️ 去綁定", url: `${siteUrl}/me/settings` }],
+      }));
+      return;
+    }
+    const { data: p } = await admin.from("profiles").select("display_name, username, level, xp, streak_days").eq("id", userId).maybeSingle();
+    await patchOriginalEmbed(appId, interactionToken, embedCard({
+      title: "✅ 已綁定 AI 島",
+      description: `**${(p as any)?.display_name ?? (p as any)?.username ?? "(未命名)"}**`,
+      color: COLOR.success,
+      fields: [
+        { name: "等級", value: `Lv ${(p as any)?.level ?? 1}`, inline: true },
+        { name: "XP", value: String((p as any)?.xp ?? 0), inline: true },
+        { name: "連勝", value: `${(p as any)?.streak_days ?? 0} 天`, inline: true },
+      ],
+      buttons: [{ label: "🏝️ 學習中心", url: `${siteUrl}/me` }],
+    }));
+    return;
+  }
+
+  // 其他學員 cmd 都需要先綁
+  if (!userId) {
+    await patchOriginalEmbed(appId, interactionToken, embedCard({
+      title: "🔗 先綁定 AI 島帳號",
+      description: "用 `/bind` 看綁定狀態、或去網站綁",
+      color: COLOR.warn,
+      buttons: [{ label: "🏝️ 去綁定", url: `${siteUrl}/me/settings` }],
+    }));
+    return;
+  }
+
+  if (cmd === "quote") {
+    const { data: quote } = await admin.from("dev_quotes").select("content, author, tags").limit(1).order("id", { ascending: false }).limit(50);
+    const list = (quote as any[]) ?? [];
+    const pick = list[Math.floor(Math.random() * list.length)];
+    if (!pick) {
+      await patchOriginalEmbed(appId, interactionToken, embedCard({
+        title: "💭 今日金句",
+        description: "今天的金句還在路上、之後再試~",
+        color: COLOR.info,
+      }));
+      return;
+    }
+    await patchOriginalEmbed(appId, interactionToken, embedCard({
+      title: "💭 今日金句",
+      description: `*"${pick.content}"*\n\n— ${pick.author ?? "佚名"}`,
+      color: COLOR.gold,
+      footer: ((pick.tags as string[]) ?? []).map((t) => `#${t}`).join(" "),
+      buttons: [{ label: "📚 看更多", url: `${siteUrl}/me/quotes` }],
+    }));
+    return;
+  }
+
+  if (cmd === "recommend") {
+    // 找下一課（user 未完成的 lesson、最近章節）
+    const { data: progress } = await admin.from("lesson_progress").select("chapter_id, lesson_id").eq("user_id", userId).order("completed_at", { ascending: false }).limit(1);
+    const lastChapter = ((progress ?? []) as any[])[0]?.chapter_id ?? 1;
+    const { data: nextLessons } = await admin.from("chapters")
+      .select("id, title, lessons")
+      .gte("id", lastChapter)
+      .order("id", { ascending: true })
+      .limit(3);
+    const recs = ((nextLessons ?? []) as any[]).slice(0, 2);
+    await patchOriginalEmbed(appId, interactionToken, embedCard({
+      title: "📚 雪鑰推薦下一步",
+      description: recs.map((c) => `• **Ch${c.id} ${c.title}**`).join("\n") || "你已經完成全部章節了 🎉",
+      color: COLOR.accent,
+      buttons: [{ label: "🏝️ 學習中心", url: `${siteUrl}/me` }],
+    }));
+    return;
+  }
+
+  if (cmd === "vision") {
+    const opts = body.data?.options ?? [];
+    const attachId = opts.find((o: any) => o.name === "image")?.value;
+    const question = opts.find((o: any) => o.name === "question")?.value as string | undefined;
+    const attachments = body.data?.resolved?.attachments ?? {};
+    const att = attachments[attachId];
+    if (!att?.url) {
+      await patchOriginalEmbed(appId, interactionToken, embedCard({
+        title: "❌ 沒收到圖片",
+        description: "請確認附件已上傳",
+        color: COLOR.error,
+      }));
+      return;
+    }
+
+    // AI gate（learning quota）
+    const { requireAiAction } = await import("@/lib/ai-gate");
+    const gate = await requireAiAction(userId, "tutor_thread");
+    if (!gate.ok) {
+      await patchOriginalEmbed(appId, interactionToken, embedCard({
+        title: "⏸️ AI 額度已用完",
+        description: gate.error ?? "本月 tutor 額度耗盡、明月恢復",
+        color: COLOR.warn,
+      }));
+      return;
+    }
+
+    // 下載圖、base64、丟給 anthropic vision
+    try {
+      const imgRes = await fetch(att.url, { signal: AbortSignal.timeout(8000) });
+      if (!imgRes.ok) throw new Error("圖片下載失敗");
+      const buf = await imgRes.arrayBuffer();
+      if (buf.byteLength > 8 * 1024 * 1024) {
+        await patchOriginalEmbed(appId, interactionToken, embedCard({
+          title: "❌ 圖片太大",
+          description: "請壓縮到 8MB 以下",
+          color: COLOR.error,
+        }));
+        return;
+      }
+      const mediaType = att.content_type ?? "image/jpeg";
+      const dataB64 = Buffer.from(buf).toString("base64");
+
+      const { getProviderKey } = await import("@/lib/ai-crypto");
+      const { getModelNameForUsage } = await import("@/lib/ai-usage-models");
+      const { callAI } = await import("@/lib/ai-providers");
+      const modelName = await getModelNameForUsage("admin_assistant", "claude-haiku-4-5-20251001");
+      const provider = providerForModel(modelName);
+      const apiKey = await getProviderKey(provider);
+      if (!apiKey) {
+        await patchOriginalEmbed(appId, interactionToken, embedCard({
+          title: "❌ AI 服務暫不可用",
+          description: "管理員設定中、稍後再試",
+          color: COLOR.error,
+        }));
+        return;
+      }
+      const { XUEYUE_STUDENT_IDENTITY } = await import("@/lib/xueyue-persona");
+      const sysPrompt = `${XUEYUE_STUDENT_IDENTITY}\n\n用國中生程度回答、簡潔、繁體中文、120 字內、不嚇人。`;
+      const r = await callAI({
+        provider, model: modelName, apiKey,
+        messages: [
+          { role: "system", content: sysPrompt },
+          { role: "user", content: [
+              { type: "text", text: question || "幫我看這張圖、給我重點觀察" },
+              { type: "image", mediaType, data: dataB64 },
+            ] },
+        ],
+        temperature: 0.5,
+        maxTokens: 600,
+      });
+      await patchOriginalEmbed(appId, interactionToken, embedCard({
+        title: "👁️ 雪鑰看圖回應",
+        description: r.text?.slice(0, 3500) || "(沒回應、再試一次)",
+        color: COLOR.accent,
+        footer: `${provider}/${modelName}`,
+      }));
+    } catch (e: any) {
+      await patchOriginalEmbed(appId, interactionToken, embedCard({
+        title: "❌ 看圖失敗",
+        description: e?.message?.slice(0, 200) ?? "unknown",
+        color: COLOR.error,
+      }));
+    }
+    return;
+  }
+}
+
+function providerForModel(model: string): "anthropic" | "openai" | "google" | "groq" {
+  if (/^claude/i.test(model)) return "anthropic";
+  if (/^gemini/i.test(model)) return "google";
+  if (/^(llama|mixtral)/i.test(model)) return "groq";
+  return "openai";
 }
 
 // GET 給 cron keep-warm 用 — 主動預熱所有 cold path、不只 touch route

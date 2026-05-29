@@ -5,6 +5,8 @@ import { SettingsForm } from "./SettingsForm";
 import { PreciseLocationToggle } from "@/components/PreciseLocationToggle";
 import { GdprSection } from "./GdprSection";
 import { LineBindSection } from "./LineBindSection";
+import { DiscordBindSection } from "./DiscordBindSection";
+import { createSupabaseAdmin } from "@/lib/supabase-admin";
 
 export default async function SettingsPage() {
   const supabase = await createSupabaseServer();
@@ -14,6 +16,13 @@ export default async function SettingsPage() {
   const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single();
 
   if (!profile) redirect("/login");
+
+  const admin = createSupabaseAdmin();
+  const { data: dcBind } = await admin
+    .from("user_discord_bind")
+    .select("discord_username, discord_avatar, bound_at, last_role_sync_at")
+    .eq("user_id", user.id)
+    .maybeSingle();
 
   return (
     <div className="max-w-2xl mx-auto px-6 py-12 space-y-6">
@@ -42,6 +51,7 @@ export default async function SettingsPage() {
         initialBound={!!profile.line_user_id}
         initialNotifyEnabled={profile.line_notify_enabled !== false}
       />
+      <DiscordBindSection initialBind={dcBind as any} />
       <PreciseLocationToggle />
       <GdprSection initialDeletedAt={profile.deleted_at ?? null} />
     </div>

@@ -69,4 +69,32 @@ export const LOTTIE_SLOTS: LottieSlot[] = [
     scope: "shared",
     recommendedKeywords: "loading dots, running cat, anime running, hourglass",
   },
+  {
+    key: "pet_lottie_hamster_url",
+    label: "🐹 倉鼠寵物（招財）",
+    desc: "右下角倉鼠寵物的 Lottie 動畫、沒填會 fallback 回 emoji 🐹",
+    scope: "frontend",
+    recommendedKeywords: "hamster running, hamster wheel, kawaii hamster, chubby hamster",
+  },
+  {
+    key: "pet_lottie_cat_url",
+    label: "🐱 貓寵物（Mochi）",
+    desc: "右下角貓寵物的 Lottie 動畫、沒填會 fallback 回 emoji 🐱",
+    scope: "frontend",
+    recommendedKeywords: "anime cat, kawaii cat, lazy cat, cat tail flick",
+  },
+  {
+    key: "pet_lottie_dog_url",
+    label: "🐶 狗寵物（Lucky）",
+    desc: "右下角狗寵物的 Lottie 動畫、沒填會 fallback 回 emoji 🐶",
+    scope: "frontend",
+    recommendedKeywords: "shiba inu, kawaii dog, doge wag, puppy",
+  },
+  {
+    key: "pet_lottie_rabbit_url",
+    label: "🐰 兔子寵物（麻糬）",
+    desc: "右下角兔子寵物的 Lottie 動畫、沒填會 fallback 回 emoji 🐰",
+    scope: "frontend",
+    recommendedKeywords: "bunny hopping, kawaii rabbit, rabbit ears, mochi rabbit",
+  },
 ];
