@@ -43,26 +43,29 @@ async function gate(req: NextRequest) {
 
 async function fetchGithubCommits(): Promise<Array<{ sha: string; message: string; date: string }>> {
   const repo = process.env.GITHUB_REPO ?? DEFAULT_REPO;
-  try {
-    const res = await fetch(`https://api.github.com/repos/${repo}/commits?per_page=100`, {
-      headers: {
-        "Accept": "application/vnd.github+json",
-        "User-Agent": "ai-island/1.0",
-        // 帶 token 可拉到 5000/hour、不然 60/hour
-        ...(process.env.GITHUB_TOKEN ? { "Authorization": `Bearer ${process.env.GITHUB_TOKEN}` } : {}),
-      },
-      signal: AbortSignal.timeout(15_000),
-    });
-    if (!res.ok) return [];
-    const data = await res.json();
-    return ((data ?? []) as any[]).map((c) => ({
-      sha: c.sha?.slice(0, 7) ?? "",
-      message: String(c.commit?.message ?? "").split("\n")[0].slice(0, 150),
-      date: c.commit?.author?.date ?? "",
-    }));
-  } catch {
-    return [];
+  // 2 次 retry、500ms 間隔
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    try {
+      const res = await fetch(`https://api.github.com/repos/${repo}/commits?per_page=100`, {
+        headers: {
+          "Accept": "application/vnd.github+json",
+          "User-Agent": "ai-island/1.0",
+          ...(process.env.GITHUB_TOKEN ? { "Authorization": `Bearer ${process.env.GITHUB_TOKEN}` } : {}),
+        },
+        signal: AbortSignal.timeout(10_000),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        return ((data ?? []) as any[]).map((c) => ({
+          sha: c.sha?.slice(0, 7) ?? "",
+          message: String(c.commit?.message ?? "").split("\n")[0].slice(0, 150),
+          date: c.commit?.author?.date ?? "",
+        }));
+      }
+    } catch { /* retry */ }
+    if (attempt === 1) await new Promise((r) => setTimeout(r, 500));
   }
+  return [];
 }
 
 export async function POST(req: NextRequest) {
@@ -108,8 +111,29 @@ async function handle(req: NextRequest) {
   }
 
   const commits = await fetchGithubCommits();
-  if (commits.length === 0) {
-    return NextResponse.json({ ok: false, error: "github_fetch_failed_or_no_commits", hint: "可能 GITHUB_REPO 沒設或 rate limit" });
+  const githubAvailable = commits.length > 0;
+
+  // GitHub fail 時 fallback：拉 DONE column 卡片當「已完成」reference
+  let doneRef: any[] = [];
+  if (!githubAvailable) {
+    const doneColIds = Object.values(doneColByBoard);
+    if (doneColIds.length > 0) {
+      const { data: doneCards } = await admin
+        .from("admin_kanban_cards")
+        .select("title, description, updated_at")
+        .in("column_id", doneColIds)
+        .order("updated_at", { ascending: false })
+        .limit(80);
+      doneRef = (doneCards ?? []) as any[];
+    }
+  }
+
+  if (!githubAvailable && doneRef.length === 0) {
+    return NextResponse.json({
+      ok: false,
+      error: "github_fetch_failed_or_no_commits",
+      hint: "可能 GitHub API 暫不可達 / rate limit (60/hr 沒帶 token)、且 DONE column 也沒卡可比對。設 GITHUB_TOKEN env 提額度。",
+    });
   }
 
   const apiKey = await getProviderKey("anthropic");
@@ -118,7 +142,8 @@ async function handle(req: NextRequest) {
   }
   const modelName = await getModelNameForUsage("admin_assistant", "claude-haiku-4-5-20251001");
 
-  const prompt = `你是雪鑰、AI 島常駐 AI。林董叫你掃 launchpad 看哪些「待辦 / 進行中」其實已經做完了、要移到 DONE。
+  const prompt = githubAvailable
+    ? `你是雪鑰、AI 島常駐 AI。林董叫你掃 launchpad 看哪些「待辦 / 進行中」其實已經做完了、要移到 DONE。
 
 # 最近 ${commits.length} 個 git commit messages
 ${commits.map((c, i) => `${i + 1}. [${c.sha}] ${c.message}`).join("\n")}
@@ -132,7 +157,22 @@ ${cardList.map((c, i) => `${i + 1}. [${c.id}] ${c.title}${c.description ? ` — 
 - 部分完成（一半 commit、還有後續）→ 不算、跳過
 - 完全沒做 → 跳過、不要列出來
 
-不要列「可能做完但不確定」、寧可少列也不要錯。
+不要列「可能做完但不確定」、寧可少列也不要錯。`
+    : `你是雪鑰、AI 島常駐 AI。GitHub API 暫不可達、改用 DONE column 卡片當「已完成」reference、找 TODO/DOING 重複的。
+
+# 已上線 (DONE / 採納) 卡片 (${doneRef.length} 張)
+${doneRef.map((c, i) => `${i + 1}. ${c.title}${c.description ? ` — ${c.description.slice(0, 80)}` : ""}`).join("\n")}
+
+# 未完成的卡片 (${cardList.length} 張)
+${cardList.map((c, i) => `${i + 1}. [${c.id}] ${c.title}${c.description ? ` — ${c.description.slice(0, 100)}` : ""}`).join("\n")}
+
+# 任務
+對每張「未完成」卡判斷：內容是不是 **已經被「已上線」某張卡完整涵蓋了**？
+- 是 → 寫進「completed」、給 commit_sha = "ref:done" + 1 句理由（指 DONE 哪張）
+- 不確定 → 跳過、不要列出來
+- 完全不同 → 跳過
+
+寧可少列、不要誤判把還沒做的卡移走。`;
 
 # 輸出（嚴格 JSON、無 markdown）
 {
