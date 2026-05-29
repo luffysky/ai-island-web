@@ -218,6 +218,13 @@ export function MeSidebar({ profile }: { profile: Profile | null }) {
           週賽 Challenge
         </MeLink>
         <MeLink
+          href="/me/mentor"
+          icon={<span>🤝</span>}
+          collapsed={collapsed}
+        >
+          學員配對
+        </MeLink>
+        <MeLink
           href="/me/assignments"
           icon={<span>📋</span>}
           collapsed={collapsed}
