@@ -1,14 +1,15 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { X, Send } from "lucide-react";
 import { getSpecies, type SpeciesId } from "@/lib/pet-species";
 import { useAuth } from "@/lib/auth-context";
 import { getVipTier, pickHonorific } from "@/lib/pet-vip";
 import { pickChatter, type ChatterCtx } from "@/lib/pet-chatter";
 import { useEdgeSafe } from "@/lib/use-edge-safe";
+import { ChatMessageBubble, TypingIndicator, ChatToolbar, ChatContent } from "@/components/chat";
 
-type Message = { role: "user" | "pet"; content: string };
+type Message = { role: "user" | "pet"; content: string; created_at?: string };
 
 const SECRET_LUFFY = /^(董事長|林董|林老闆|林總|頭家|luffy)[!！。.?？\s]*$/i;
 const SECRET_NAMI = /^(nami|nami\s*姊|nami\s*大人|親愛的\s*nami)[!！。.?？\s]*$/i;
@@ -28,6 +29,7 @@ export function PetChatPanel({
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
   const endRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const recentRef = useRef<Set<string>>(new Set());
@@ -74,17 +76,19 @@ export function PetChatPanel({
       else if (SECRET_NAMI.test(userMsg)) secretKind = "secret-nami";
       if (secretKind) {
         const reply = pickChatter(secretKind, ctx) ?? "♡";
+        const now = new Date().toISOString();
         setMessages((m) => [
           ...m,
-          { role: "user", content: userMsg },
-          { role: "pet", content: reply },
+          { role: "user", content: userMsg, created_at: now },
+          { role: "pet", content: reply, created_at: now },
         ]);
         onMessageSent?.(reply);
         return;
       }
     }
 
-    setMessages((m) => [...m, { role: "user", content: userMsg }, { role: "pet", content: "" }]);
+    const now = new Date().toISOString();
+    setMessages((m) => [...m, { role: "user", content: userMsg, created_at: now }, { role: "pet", content: "", created_at: now }]);
     setSending(true);
 
     try {
@@ -129,7 +133,8 @@ export function PetChatPanel({
               accumulated += json.text;
               setMessages((m) => {
                 const copy = [...m];
-                copy[copy.length - 1] = { role: "pet", content: accumulated };
+                const prev = copy[copy.length - 1];
+                copy[copy.length - 1] = { role: "pet", content: accumulated, created_at: prev?.created_at };
                 return copy;
               });
             }
@@ -166,25 +171,39 @@ export function PetChatPanel({
         </button>
       </div>
 
+      {messages.length > 3 && (
+        <ChatToolbar
+          onSearch={setSearch}
+          exportText={messages.filter((m) => m.content).map((m) => `[${m.role === "user" ? "你" : pet.name}] ${m.content}`).join("\n\n")}
+          exportFileName={`${pet.name}-chat-${new Date().toISOString().slice(0, 10)}.txt`}
+          placeholder={`搜尋跟 ${pet.name} 的對話...`}
+        />
+      )}
+
       <div className="flex-1 overflow-y-auto p-3 space-y-2">
         {messages.length === 0 ? (
           <div className="text-center text-xs text-fg-muted mt-12">
             跟 {pet.name} 聊聊。會記得你的學習狀態。
           </div>
         ) : null}
-        {messages.map((m, i) => (
-          <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
-            <div
-              className={`max-w-[80%] rounded-2xl px-3 py-1.5 text-sm whitespace-pre-wrap ${
-                m.role === "user"
-                  ? "bg-accent text-black"
-                  : "bg-bg-elevated"
-              }`}
+        {messages
+          .map((m, i) => ({ ...m, _i: i }))
+          .filter((m) => !search || m.content.toLowerCase().includes(search.toLowerCase()))
+          .map((m) => (
+            <ChatMessageBubble
+              key={m._i}
+              role={m.role === "pet" ? "assistant" : "user"}
+              content={m.content}
+              createdAt={m.created_at}
+              speakerName={m.role === "pet" ? pet.name : undefined}
             >
-              {m.content || (sending && i === messages.length - 1 ? "..." : "")}
-            </div>
-          </div>
-        ))}
+              {m.content ? (
+                <ChatContent text={m.content} />
+              ) : sending && m._i === messages.length - 1 ? (
+                <TypingIndicator label={`${pet.name} 正在輸入`} />
+              ) : null}
+            </ChatMessageBubble>
+          ))}
         <div ref={endRef} />
       </div>
 

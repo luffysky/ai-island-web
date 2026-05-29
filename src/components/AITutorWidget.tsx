@@ -109,6 +109,7 @@ import rehypeHighlight from "rehype-highlight";
 import rehypeRaw from "rehype-raw";
 import { linkifyChapterRefs } from "@/lib/linkify-chapters";
 import { CodeBlock } from "@/components/chapter/CodeBlock";
+import { CopyButton, TypingIndicator, ChatToolbar, formatChatTime } from "@/components/chat";
 
 const TONE_OPTIONS = [
   { value: "friendly", label: "😊 親切" },
@@ -133,6 +134,7 @@ interface Message {
   role: "user" | "assistant";
   content: string;
   images?: Array<{ previewUrl: string; mediaType: string }>;
+  created_at?: string;
 }
 
 export function AITutorWidget({
@@ -164,6 +166,7 @@ export function AITutorWidget({
   const [showModelMenu, setShowModelMenu] = useState(false);
   const [history, setHistory] = useState<Array<{ id: string; title: string; updated_at: string }>>([]);
   const [deletingHistIds, setDeletingHistIds] = useState<Set<string>>(new Set());
+  const [search, setSearch] = useState("");
   const confirm = useConfirm();
   // 用全站 AuthContext、不再自己 race
   const { status: authState } = useAuth();
@@ -290,9 +293,10 @@ export function AITutorWidget({
     setInput("");
     setImages([]);
     setError("");
+    const now = new Date().toISOString();
     setMessages((prev) => [...prev,
-      { role: "user", content: userMsg, images: userImagesPreview.length > 0 ? userImagesPreview : undefined },
-      { role: "assistant", content: "" },
+      { role: "user", content: userMsg, images: userImagesPreview.length > 0 ? userImagesPreview : undefined, created_at: now },
+      { role: "assistant", content: "", created_at: now },
     ]);
     setSending(true);
 
@@ -690,6 +694,16 @@ export function AITutorWidget({
             </div>
           )}
 
+          {/* 搜尋 + export toolbar — 訊息 >3 才顯示 */}
+          {messages.length > 3 && (
+            <ChatToolbar
+              onSearch={setSearch}
+              exportText={messages.filter((m) => m.content).map((m) => `[${m.role === "user" ? "你" : persona.name}] ${m.content}`).join("\n\n")}
+              exportFileName={`ai-tutor-${new Date().toISOString().slice(0, 10)}.txt`}
+              placeholder="搜尋這段對話..."
+            />
+          )}
+
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-3 space-y-3">
             {messages.length === 0 && (
@@ -704,8 +718,24 @@ export function AITutorWidget({
                 </div>
               </div>
             )}
-            {messages.map((m, i) => (
-              <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
+            {messages
+              .map((m, i) => ({ ...m, _i: i }))
+              .filter((m) => !search || m.content.toLowerCase().includes(search.toLowerCase()))
+              .map((m) => (
+              <div key={m._i} className={`group/msg flex flex-col gap-0.5 ${m.role === "user" ? "items-end" : "items-start"}`}>
+                {m.created_at && (
+                  <div className={`flex items-center gap-2 text-[10px] text-fg-muted px-1 ${m.role === "user" ? "flex-row-reverse" : ""}`}>
+                    <span className="font-bold">{m.role === "user" ? "你" : `${persona.emoji} ${persona.name}`}</span>
+                    <time title={new Date(m.created_at).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" })} className="tabular-nums">
+                      {formatChatTime(m.created_at)}
+                    </time>
+                    {m.content && (
+                      <span className="md:opacity-0 md:group-hover/msg:opacity-100 transition">
+                        <CopyButton text={m.content} size={10} />
+                      </span>
+                    )}
+                  </div>
+                )}
                 <div className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm ${
                   m.role === "user"
                     ? "bg-accent text-black"
@@ -770,10 +800,10 @@ export function AITutorWidget({
                 </div>
               </div>
             ))}
-            {sending && (
+            {sending && messages[messages.length - 1]?.role === "assistant" && !messages[messages.length - 1]?.content && (
               <div className="flex justify-start">
                 <div className="bg-bg-elevated rounded-2xl px-3 py-2">
-                  <Loader2 size={16} className="animate-spin" />
+                  <TypingIndicator label={`${persona.name} 正在輸入`} />
                 </div>
               </div>
             )}

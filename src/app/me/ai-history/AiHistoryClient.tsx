@@ -6,6 +6,7 @@ import { useToast } from "@/components/ui/Toast";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { formatTW } from "@/lib/format-date";
 import { useVirtualizer } from "@tanstack/react-virtual";
+import { CopyButton, TypingIndicator, ChatToolbar, formatChatTime } from "@/components/chat";
 
 type Conv = {
   id: string;
@@ -35,6 +36,7 @@ export function AiHistoryClient({ initial }: { initial: Conv[] }) {
   const [loadingMsgs, setLoadingMsgs] = useState(false);
   const [conversations, setConversations] = useState<Conv[]>(initial);
   const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
+  const [msgSearch, setMsgSearch] = useState("");
 
   const filtered = conversations.filter((c) => !filter || c.title.toLowerCase().includes(filter.toLowerCase()));
 
@@ -120,29 +122,46 @@ export function AiHistoryClient({ initial }: { initial: Conv[] }) {
             <Loader2 size={16} className="animate-spin inline mr-1" /> 載入中
           </div>
         ) : (
-          <div className="p-4 space-y-3 max-h-[600px] overflow-y-auto">
-            <div className="text-xs text-fg-muted pb-2 border-b border-border">
-              {selected.title} · {formatTW(selected.created_at)}
-              {selected.tone && ` · ${selected.tone}`}
-              {selected.persona_id && ` · ${PERSONA_ICON[selected.persona_id] ?? selected.persona_id}`}
-            </div>
-            {messages.map((m, i) => (
-              <div
-                key={i}
-                className={`p-3 rounded-lg ${m.role === "user" ? "bg-accent/10 ml-8" : "bg-bg mr-8"}`}
-              >
-                <div className="text-[10px] text-fg-muted mb-1 flex items-center gap-2">
-                  <span className="font-bold">{m.role === "user" ? "你" : "AI"}</span>
-                  <span>{formatTW(m.created_at)}</span>
-                  {m.model_used && <code className="bg-bg-elevated px-1 rounded">{m.model_used}</code>}
-                </div>
-                <div className="text-sm whitespace-pre-wrap break-words">{m.content}</div>
-              </div>
-            ))}
-            {messages.length === 0 && (
-              <div className="text-center text-fg-muted text-sm py-8">此對話沒有訊息</div>
+          <>
+            {messages.length > 3 && (
+              <ChatToolbar
+                onSearch={setMsgSearch}
+                exportText={messages.map((m) => `[${m.role === "user" ? "你" : "AI"}] ${formatChatTime(m.created_at)}\n${m.content}`).join("\n\n")}
+                exportFileName={`${(selected.title || "ai-chat").replace(/[^\w-]+/g, "_")}-${new Date().toISOString().slice(0, 10)}.txt`}
+                placeholder="搜尋這段對話內訊息..."
+              />
             )}
-          </div>
+            <div className="p-4 space-y-3 max-h-[600px] overflow-y-auto">
+              <div className="text-xs text-fg-muted pb-2 border-b border-border">
+                {selected.title} · {formatChatTime(selected.created_at)}
+                {selected.tone && ` · ${selected.tone}`}
+                {selected.persona_id && ` · ${PERSONA_ICON[selected.persona_id] ?? selected.persona_id}`}
+              </div>
+              {messages
+                .filter((m) => !msgSearch || m.content.toLowerCase().includes(msgSearch.toLowerCase()))
+                .map((m, i) => (
+                  <div
+                    key={i}
+                    className={`group/msg p-3 rounded-lg relative ${m.role === "user" ? "bg-accent/10 ml-8" : "bg-bg mr-8"}`}
+                  >
+                    <div className="text-[10px] text-fg-muted mb-1 flex items-center gap-2">
+                      <span className="font-bold">{m.role === "user" ? "你" : "AI"}</span>
+                      <time title={new Date(m.created_at).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" })} className="tabular-nums">
+                        {formatChatTime(m.created_at)}
+                      </time>
+                      {m.model_used && <code className="bg-bg-elevated px-1 rounded">{m.model_used}</code>}
+                      <span className="md:opacity-0 md:group-hover/msg:opacity-100 transition ml-auto">
+                        <CopyButton text={m.content} size={10} />
+                      </span>
+                    </div>
+                    <div className="text-sm whitespace-pre-wrap break-words">{m.content}</div>
+                  </div>
+                ))}
+              {messages.length === 0 && (
+                <div className="text-center text-fg-muted text-sm py-8">此對話沒有訊息</div>
+              )}
+            </div>
+          </>
         )}
       </div>
     </div>
