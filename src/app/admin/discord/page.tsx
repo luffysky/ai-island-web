@@ -61,6 +61,11 @@ export default async function DiscordConsole() {
             desc="掃所有已綁 user × active subscription、自動 assign / revoke Premium role。每天 cron 也可以叫。"
             href="/api/admin/discord/sync-roles"
           />
+          <Action
+            title="🩺 Token / App ID 診斷"
+            desc="401 註冊失敗時點這個、會回報 bot token 對應到哪個 app、跟 env DISCORD_APPLICATION_ID 是否一致。"
+            href="/api/admin/discord/diag"
+          />
         </div>
       </section>
 
