@@ -486,20 +486,47 @@ function cardWhoami(userId: string, bound: any | null): FlexMessage {
   });
 }
 
-function cardUnbound(userId: string): FlexMessage {
+/**
+ * 未綁定鎖頭卡 — 訴求明確 + 引導動作
+ * 林董：「LINE 上鎖有通知跟功能」
+ */
+function cardUnbound(userId: string, feature: string = "AI 學員導師"): FlexMessage {
   return buildSimpleCard({
-    emoji: "🤖",
-    title: "嗨～看到你訊息了",
-    accentColor: USER_ACCENT,
-    body: "你目前沒綁定 AI 島帳號、所以還不能用 AI 學員導師。",
+    emoji: "🔒",
+    title: `綁定後解鎖：${feature}`,
+    accentColor: "#f59e0b",  // 警示橘
+    body: "你目前沒綁定 AI 島帳號、進階功能還沒解鎖。3 步綁好馬上能用👇",
     meta: [
-      { label: "Step 1", value: "登入網站" },
-      { label: "Step 2", value: "去「設定」拿 6 位 code" },
-      { label: "Step 3", value: "回來傳「/bind 123456」" },
+      { label: "🔓 解鎖", value: "AI 對話 / 看圖 / 推播 / 完整足跡" },
+      { label: "1️⃣", value: "登入網站" },
+      { label: "2️⃣", value: "「設定」拿 6 位 code" },
+      { label: "3️⃣", value: "回來傳「/bind 123456」" },
     ],
     buttons: [
-      { label: "去拿 code", uri: `${SITE_URL}/settings`, primary: true },
+      { label: "🔗 立即綁定", uri: `${SITE_URL}/settings`, primary: true },
       { label: "登入", uri: `${SITE_URL}/login` },
+    ],
+  });
+}
+
+/**
+ * 高階功能未綁定鎖（語音 / 圖片 / 完整對話歷史）
+ * 用紅色強調「這項真的需要綁」
+ */
+function cardLockedFeature(feature: string, why: string): FlexMessage {
+  return buildSimpleCard({
+    emoji: "🔒",
+    title: `${feature} 需先綁定`,
+    accentColor: "#ef4444",
+    body: why,
+    meta: [
+      { label: "🔓 綁定後", value: "立刻解鎖此功能" },
+      { label: "1️⃣", value: "登入網站" },
+      { label: "2️⃣", value: "「設定」拿 code" },
+      { label: "3️⃣", value: "傳「/bind 123456」" },
+    ],
+    buttons: [
+      { label: "🔗 去綁定", uri: `${SITE_URL}/settings`, primary: true },
     ],
   });
 }
@@ -734,17 +761,27 @@ export async function POST(req: NextRequest) {
     // 圖片訊息 — 學員傳截圖卡關問題、AI 直接看圖回
     if (ev.type === "message" && ev.message?.type === "image" && replyToken && userId) {
       lineLoadingStart(userId, token, 60);
-      const img = await fetchLineImageBase64(ev.message.id, token);
-      if (!img) {
-        await lineReply(replyToken, "圖片下載失敗、再傳一次試試？", token, QUICK_REPLY);
-        continue;
-      }
       const admin = createSupabaseAdmin();
       const { data: profile } = await admin
         .from("profiles")
         .select("id, username, display_name, role, xp, level")
         .eq("line_user_id", userId)
         .maybeSingle();
+      // 🔒 未綁定不開放圖片 vision（成本敏感、防匿名濫用）
+      if (!profile) {
+        await lineReply(
+          replyToken,
+          cardLockedFeature("📷 AI 看圖", "圖片分析會用 AI 看圖、需要先綁定帳號。"),
+          token,
+          QUICK_REPLY,
+        );
+        continue;
+      }
+      const img = await fetchLineImageBase64(ev.message.id, token);
+      if (!img) {
+        await lineReply(replyToken, "圖片下載失敗、再傳一次試試？", token, QUICK_REPLY);
+        continue;
+      }
       const result = await askUserAI("", profile as any, userId, [img]);
       if (!result) {
         await lineReply(replyToken, "AI 暫時無法分析、稍後再試或描述一下圖片內容讓我幫忙。", token, QUICK_REPLY);

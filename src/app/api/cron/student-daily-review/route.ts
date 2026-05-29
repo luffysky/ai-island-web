@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { buildSimpleCard } from "@/lib/line-flex";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -96,36 +97,44 @@ export async function GET(req: NextRequest) {
         continue;
       }
 
-      // 組訊息
-      const lines: string[] = [`🌙 ${p.display_name || p.username} 今日學習回顧`];
-      lines.push("");
+      // 組 Flex 卡（取代純文字、跟整套對話風格一致）
+      const bodyLines: string[] = [];
+      const metaLines: Array<{ label: string; value: string }> = [];
+
       if (lessonCount > 0) {
-        lines.push(`📚 完成 ${lessonCount} 個 lesson`);
-        // 列前 5 個 lesson_id
-        const ids = lessons.slice(0, 5).map((l) => l.lesson_id).filter(Boolean).join(" / ");
-        if (ids) lines.push(`   ${ids}${lessons.length > 5 ? " …" : ""}`);
+        metaLines.push({ label: "📚 今日完課", value: `${lessonCount} 個 lesson` });
+        const ids = lessons.slice(0, 3).map((l) => l.lesson_id).filter(Boolean).join(" · ");
+        if (ids) bodyLines.push(`📖 ${ids}${lessons.length > 3 ? " …" : ""}`);
       } else {
-        lines.push("📚 今天沒完成 lesson、明天加油 🌱");
+        bodyLines.push("📚 今天還沒完課、明天加油 🌱");
       }
-      lines.push("");
+
       if (quizzes.length > 0 && quizAvg !== null) {
-        lines.push(`📝 quiz 嘗試 ${quizzes.length} 次、平均 ${quizAvg.toFixed(0)} 分`);
-      }
-      if (weaks.length > 0) {
-        lines.push("");
-        lines.push("⚠️ 弱項章節（建議複習）");
-        for (const w of weaks) {
-          lines.push(`   Ch${w.chapter_id}：${Number(w.avg_pct).toFixed(0)} 分（${w.attempt_count} 次）`);
-        }
+        metaLines.push({ label: "📝 今日 quiz", value: `${quizzes.length} 次・平均 ${quizAvg.toFixed(0)} 分` });
       }
       if (streak > 0) {
-        lines.push("");
-        lines.push(`🔥 連續簽到 ${streak} 天、保持下去！`);
+        metaLines.push({ label: "🔥 連續簽到", value: `${streak} 天` });
       }
-      lines.push("");
-      lines.push(`🛤️ 完整足跡 → ${site}/me/footprint`);
+      if (weaks.length > 0) {
+        bodyLines.push("");
+        bodyLines.push("⚠️ 建議複習弱項：");
+        for (const w of weaks.slice(0, 3)) {
+          bodyLines.push(`   • Ch${w.chapter_id} (${Number(w.avg_pct).toFixed(0)} 分)`);
+        }
+      }
 
-      const text = lines.join("\n").slice(0, 4900);
+      const flex = buildSimpleCard({
+        emoji: "🌙",
+        title: `${p.display_name || p.username} 今日學習回顧`,
+        accentColor: "#a78bfa",   // 紫色（晚上 / 回顧感）
+        body: bodyLines.join("\n"),
+        meta: metaLines,
+        buttons: [
+          { label: "🛤️ 看完整足跡", uri: `${site}/me/footprint`, primary: true },
+          { label: "📚 繼續學", uri: `${site}/chapters` },
+          { label: "⚙️ 關通知", uri: `${site}/settings` },
+        ],
+      });
 
       // Push
       const res = await fetch("https://api.line.me/v2/bot/message/push", {
@@ -133,19 +142,16 @@ export async function GET(req: NextRequest) {
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
         body: JSON.stringify({
           to: p.line_user_id,
-          messages: [
-            {
-              type: "text",
-              text,
-              quickReply: {
-                items: [
-                  { type: "action", action: { type: "message", label: "🛤️ 我的足跡", text: "/footprint" } },
-                  { type: "action", action: { type: "uri", label: "📚 看章節", uri: `${site}/chapters` } },
-                  { type: "action", action: { type: "uri", label: "⚙️ 關通知", uri: `${site}/settings/notifications` } },
-                ],
-              },
+          messages: [{
+            ...flex,
+            quickReply: {
+              items: [
+                { type: "action", action: { type: "message", label: "🛤️ 我的足跡", text: "/footprint" } },
+                { type: "action", action: { type: "uri", label: "📚 看章節", uri: `${site}/chapters` } },
+                { type: "action", action: { type: "uri", label: "⚙️ 設定", uri: `${site}/settings` } },
+              ],
             },
-          ],
+          }],
         }),
         signal: AbortSignal.timeout(8000),
       });
