@@ -1,4 +1,5 @@
 "use client";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { STAGE_COLORS, DIFFICULTY_LABELS } from "@/lib/utils";
 import { chapterDisplayNumber } from "@/lib/chapter-display";
@@ -9,6 +10,16 @@ interface Props {
 }
 
 export function ChapterMap({ chapters }: Props) {
+  // 學員每章 progress（登入時 fetch、未登入 = {}）
+  const [progress, setProgress] = useState<Record<number, number>>({});
+  useEffect(() => {
+    fetch("/api/me/chapter-progress")
+      .then((r) => r.json())
+      .then((j) => {
+        if (j?.progress) setProgress(j.progress);
+      })
+      .catch(() => {});
+  }, []);
   const byStage: Record<number, any[]> = {};
   chapters.forEach(c => {
     const stageKey = c.stage === "appendix" ? 7 : Number(c.stage);
@@ -52,10 +63,29 @@ export function ChapterMap({ chapters }: Props) {
                     <div className="text-xs text-fg-muted mb-1">Ch {chapterDisplayNumber(ch)}</div>
                     <div className="font-semibold mb-1 text-sm">{ch.title}</div>
                     <div className="text-xs text-fg-muted mb-3 line-clamp-1">{ch.subtitle}</div>
-                    <div className="flex items-center justify-between text-[10px] text-fg-dim">
-                      <span>{DIFFICULTY_LABELS[ch.difficulty]}</span>
-                      <span>{ch.lessonCount} lessons</span>
-                    </div>
+                    {(() => {
+                      const done = Math.min(progress[ch.id] ?? 0, ch.lessonCount || 0);
+                      const total = ch.lessonCount || 0;
+                      const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+                      const showBar = done > 0;
+                      return (
+                        <>
+                          <div className="flex items-center justify-between text-[10px] text-fg-dim">
+                            <span>{DIFFICULTY_LABELS[ch.difficulty]}</span>
+                            <span>{showBar ? `${done}/${total}` : `${total} lessons`}</span>
+                          </div>
+                          {showBar && (
+                            <div className="mt-1.5 h-1 rounded-full bg-bg-elevated overflow-hidden">
+                              <div
+                                className={`h-full rounded-full transition-all ${pct === 100 ? "bg-gradient-to-r from-green-400 to-emerald-500" : "bg-gradient-to-r from-accent to-accent-2"}`}
+                                style={{ width: `${pct}%` }}
+                                aria-label={`進度 ${pct}%`}
+                              />
+                            </div>
+                          )}
+                        </>
+                      );
+                    })()}
                     {ch.boss ? (
                       <div className="mt-2 text-xs flex items-center gap-1 text-fg-muted">
                         <span>{ch.boss.emoji}</span>

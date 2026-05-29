@@ -177,18 +177,30 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
           </div>
         </div>
 
-        {/* Progress */}
+        {/* Progress — 進度條 + 百分比 + 100% 慶祝色 */}
         {user && (
-          <div className="p-4 rounded-lg bg-bg-card border border-border mb-6">
+          <div className="p-4 rounded-2xl bg-gradient-to-br from-bg-card to-bg-elevated border border-border mb-6 shadow-sm">
             <div className="flex items-center justify-between mb-2 text-sm">
-              <span>📊 章節進度</span>
-              <span className="font-bold">{completedCount} / {totalLessons}</span>
+              <span className="inline-flex items-center gap-1.5">
+                📊 章節進度
+                {progress >= 1 && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-green-500/15 text-green-600 dark:text-green-300 font-bold">已完成 🎉</span>}
+              </span>
+              <span className="font-bold tabular-nums">
+                {completedCount} / {totalLessons}
+                <span className="text-fg-muted ml-1.5 text-xs">({Math.round(progress * 100)}%)</span>
+              </span>
             </div>
-            <div className="h-2 bg-bg rounded-full overflow-hidden">
+            <div className="h-2.5 bg-bg rounded-full overflow-hidden relative">
               <div
-                className="h-full bg-gradient-to-r from-accent to-accent-2 transition-all duration-500"
+                className={`h-full rounded-full transition-all duration-500 ${progress >= 1 ? "bg-gradient-to-r from-green-400 to-emerald-500 shadow-sm shadow-green-500/30" : "bg-gradient-to-r from-accent to-accent-2"}`}
                 style={{ width: `${progress * 100}%` }}
               />
+            </div>
+            <div className="mt-2 text-[10px] text-fg-muted flex items-center justify-between">
+              <span>{totalLessons - completedCount > 0 ? `還剩 ${totalLessons - completedCount} 個 lesson` : "全部完成！"}</span>
+              {chapter.estimatedHours && totalLessons > 0 && (
+                <span>預估 {Math.round(chapter.estimatedHours * 10) / 10} 小時</span>
+              )}
             </div>
           </div>
         )}
