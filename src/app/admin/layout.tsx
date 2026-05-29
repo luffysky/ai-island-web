@@ -153,7 +153,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             </NavGroup>
 
             {/* 6. 💬 通訊 & 客服 */}
-            <NavGroup title="💬 通訊 (LINE / Email)">
+            <NavGroup title="💬 通訊 (LINE / Email / Discord)">
               <AdminLink href="/admin/line">🏠 LINE 控制台</AdminLink>
               <AdminLink href="/admin/line/users">👥 LINE 綁定用戶</AdminLink>
               <AdminLink href="/admin/line/broadcast">📣 LINE 群發</AdminLink>
@@ -164,6 +164,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               <AdminLink href="/admin/email/subscribers">📧 Email 訂閱戶</AdminLink>
               <AdminLink href="/admin/email/campaigns">✉️ Email Campaigns</AdminLink>
               <AdminLink href="/admin/email/test">🧪 Email 測試發送</AdminLink>
+              <AdminLink href="/admin/discord">🟣 Discord 控制台</AdminLink>
             </NavGroup>
 
             {/* 7. 🤖 AI 管理 */}
