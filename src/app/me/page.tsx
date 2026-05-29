@@ -8,6 +8,7 @@ import { StreakHeatmap } from "@/components/me/StreakHeatmap";
 import { FriendsFeed } from "@/components/me/FriendsFeed";
 import { LeetcodeCard } from "@/components/me/LeetcodeCard";
 import { DailyCheckin } from "@/components/gamification/DailyCheckin";
+import { SubscriptionRecommendCard } from "@/components/me/SubscriptionRecommendCard";
 import { EloProgress } from "@/components/me/EloProgress";
 import { RecommendedChapters } from "@/components/me/RecommendedChapters";
 import { MeHero } from "@/components/me/MeHero";
@@ -78,6 +79,9 @@ export default async function MeOverviewPage() {
         completedLessons={completedLessons}
         totalLessons={totalLessons}
       />
+
+      {/* 雪鑰個人化訂閱推薦（已訂閱 / 7 天內 dismiss 不顯示）*/}
+      <SubscriptionRecommendCard />
 
       {/* 每日簽到 */}
       <DailyCheckin />
