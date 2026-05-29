@@ -59,6 +59,7 @@ async function handlePost(req: NextRequest) {
 
   // 2. 取 API key
   let apiKey: string;
+  let chargeable = false; // 走系統 key + 非特權 + 非 Premium → stream 結束扣 token cap
   if (useBYOK) {
     const { data: userKey } = await admin
       .from("user_api_keys")
@@ -75,7 +76,7 @@ async function handlePost(req: NextRequest) {
       return errorResponse("key_decrypt_failed", 500);
     }
   } else {
-    // 特權帳號（ai_unlimited 或 admin）或訂閱中 → 跳過扣免費 quota
+    // 特權帳號（ai_unlimited / is_owner）或訂閱中 → 跳過所有 quota / cap、最高禮遇
     const unlimited = await hasAiUnlimited(user.id);
     let isPremium = false;
     if (!unlimited) {
@@ -83,7 +84,8 @@ async function handlePost(req: NextRequest) {
       isPremium = !!premiumOk;
     }
     if (!unlimited && !isPremium) {
-      // 扣免費 quota
+      chargeable = true; // 月底要扣 token cap
+      // 扣免費 quota（每天）
       const { data: quotaOk, error: quotaError } = await admin.rpc("consume_ai_quota", { p_user_id: user.id, p_amount: 1 });
       if (quotaError) {
         console.error("[AI chat] consume_ai_quota failed:", quotaError);
@@ -91,6 +93,20 @@ async function handlePost(req: NextRequest) {
       }
       if (quotaOk === false) {
         return errorResponse("quota_exceeded", 429, "今天的免費額度用完了、可升級 Premium 或自帶 API key（設定 → AI Key）");
+      }
+      // 月 token cap pre-check（防單一 user 一個月燒爆）
+      const { data: prof } = await admin
+        .from("profiles")
+        .select("ai_monthly_token_cap, ai_monthly_token_used")
+        .eq("id", user.id)
+        .maybeSingle();
+      if (prof) {
+        const cap = (prof as any).ai_monthly_token_cap ?? 100000;
+        const used = (prof as any).ai_monthly_token_used ?? 0;
+        if (used >= cap) {
+          return errorResponse("token_cap_exceeded", 429,
+            `本月 AI token 上限 ${cap.toLocaleString()} 已用完（已用 ${used.toLocaleString()}）、可升級 Premium 提高上限或自帶 API key`);
+        }
       }
     }
     const { data: sysKey, error: sysKeyError } = await admin
@@ -361,6 +377,14 @@ async function handlePost(req: NextRequest) {
         if (!useBYOK) {
           try {
             await admin.rpc("inc_system_key_usage", { p_provider: model.provider, p_cost: cost });
+          } catch {}
+        }
+
+        // 月 token cap 累計（特權 / Premium 跳過）
+        if (chargeable && (tokensInput + tokensOutput) > 0) {
+          try {
+            const { consumeAiTokens } = await import("@/lib/ai-gate");
+            await consumeAiTokens(user.id, tokensInput + tokensOutput);
           } catch {}
         }
 

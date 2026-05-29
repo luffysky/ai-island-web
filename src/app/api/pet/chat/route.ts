@@ -107,13 +107,16 @@ export async function POST(req: NextRequest) {
     }
     apiKey = decryptKey(userKey.api_key_encrypted);
   } else {
-    // 共池：要算 quota
-    const unlimited = await hasAiUnlimited(user.id);
-    if (!unlimited) {
-      const { data: ok, error: quotaErr } = await admin.rpc("consume_ai_quota", { p_user_id: user.id, p_amount: 1 });
-      if (quotaErr) {
-        console.warn("[pet] quota rpc:", quotaErr.message);
-      } else if (ok === false) {
+    // 共池：用 ai-gate 統一閘門（特權 / Premium / Free 三段）
+    const { gateAiUsage } = await import("@/lib/ai-gate");
+    const gate = await gateAiUsage(user.id);
+    if (!gate.allow) {
+      return NextResponse.json({ error: gate.reason ?? "quota_exceeded" }, { status: 429 });
+    }
+    if (gate.chargeable) {
+      // 還要扣每日 quota（pet 比 chat 額度小）
+      const { data: ok } = await admin.rpc("consume_ai_quota", { p_user_id: user.id, p_amount: 1 });
+      if (ok === false) {
         return NextResponse.json({ error: "quota_exceeded" }, { status: 429 });
       }
     }
