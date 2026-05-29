@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { decryptKey } from "@/lib/ai-crypto";
 import { callAI } from "@/lib/ai-providers";
@@ -189,6 +189,17 @@ function dressUpAdminReply(rawText: string, cmd: string): { html: string; keyboa
   return { html };
 }
 
+/**
+ * Telegram webhook entry — fast-ack pattern
+ *
+ * 立刻 return 200 給 Telegram、AI / fetch 等慢操作走 after() background。
+ * 對應問題：
+ *   (1) AI 處理超過 30s 會被 Telegram 視為 timeout、retry 重複處理
+ *   (2) deploy 期間訊息可能被 retry、但容器收到後一直慢回容易丟訊息
+ *
+ * after() 是 Next.js 15.1+ 官方 background task API、保證 callback 在
+ * function 生命週期內跑完、不會被 serverless 提前 kill。
+ */
 export async function POST(req: NextRequest) {
   const token = process.env.ADMIN_TELEGRAM_BOT_TOKEN;
   if (!token) return NextResponse.json({ ok: false, error: "no_token" });
@@ -201,6 +212,23 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json().catch(() => ({} as any));
+
+  // fast-ack：立刻回 200、avoid Telegram timeout + retry
+  after(() =>
+    processTelegramUpdate(token, body).catch((e) =>
+      console.error("[telegram-webhook] bg fail:", e?.message ?? "unknown"),
+    ),
+  );
+
+  return NextResponse.json({ ok: true });
+}
+
+/**
+ * 真正處理 Telegram update — 從 after() 背景跑
+ * 原本 POST 內邏輯整段搬進來、保留 `return NextResponse.json(...)` 不動
+ * （在 background 內它們就是 early-return、不會真的送 response）
+ */
+async function processTelegramUpdate(token: string, body: any) {
   const msg = body.message ?? body.edited_message;
   if (!msg || !msg.chat?.id) return NextResponse.json({ ok: true });
   // 接受文字 OR 圖片（圖片可帶 caption）
