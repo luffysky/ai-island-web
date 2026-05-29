@@ -118,6 +118,117 @@ export async function notifyLessonComplete(opts: { userId: string; chapterId: nu
     text: `✅ 完成 Ch${opts.chapterId} · ${opts.lessonId}（+${opts.xp ?? 10} XP）`,
     flex: userFlex,
   }).catch(() => {});
+
+  // 章節整章完成檢測 — 若剛完成的這課讓 user 達成「整章 100%」、push 慶祝
+  // fire-and-forget、不阻塞主流程
+  void (async () => {
+    try {
+      const admin = createSupabaseAdmin();
+      const { count: total } = await admin
+        .from("lessons")
+        .select("id", { count: "exact", head: true })
+        .eq("chapter_id", opts.chapterId);
+      if (!total || total === 0) return;
+      const { count: done } = await admin
+        .from("lesson_progress")
+        .select("lesson_id", { count: "exact", head: true })
+        .eq("user_id", opts.userId)
+        .eq("chapter_id", opts.chapterId);
+      if (!done || done < total) return;
+      // 剛完成最後一課、整章 100%
+      const { data: ch } = await admin
+        .from("chapters")
+        .select("title")
+        .eq("id", opts.chapterId)
+        .maybeSingle();
+      const chTitle = (ch as any)?.title ?? "";
+      const chapterFlex = buildSimpleCard({
+        emoji: "🎉",
+        title: "整章解鎖！",
+        accentColor: "#ffd700",
+        body: `恭喜你完成 Ch${opts.chapterId}${chTitle ? ` ${chTitle}` : ""} 整章 ${total} 課！`,
+        meta: [
+          { label: "📚 章節", value: `Ch${opts.chapterId}` },
+          { label: "✅ 完成", value: `${total}/${total} 課` },
+        ],
+        buttons: [
+          { label: "看下一章", uri: `${SITE_URL}/chapters`, primary: true },
+          { label: "🛤️ 看足跡", uri: `${SITE_URL}/me/footprint` },
+        ],
+      });
+      // admin 也通知
+      await notifyAdmin({
+        kind: "achievement",
+        dedupeKey: `chapter_done:${opts.userId}:${opts.chapterId}`,
+        text: `🎉 ${name} 完成整章 Ch${opts.chapterId}${chTitle ? ` ${chTitle}` : ""}（${total} 課）`,
+        flex: chapterFlex,
+        subjectUserId: opts.userId,
+      });
+      // user in-app
+      await pushUserNotif({
+        userId: opts.userId,
+        kind: "achievement",
+        title: `🎉 整章解鎖：Ch${opts.chapterId}${chTitle ? ` ${chTitle}` : ""}`,
+        body: `${total} 課全部完成`,
+        link: `/chapters/${opts.chapterId}`,
+      });
+      // user LINE
+      await notifyUserLine({
+        userId: opts.userId,
+        text: `🎉 整章解鎖：Ch${opts.chapterId}${chTitle ? ` ${chTitle}` : ""}（${total} 課全完成）`,
+        flex: chapterFlex,
+      });
+    } catch (e: any) {
+      console.warn("[notify-helpers] chapter-complete check failed:", e?.message);
+    }
+  })();
+}
+
+/**
+ * 連勝里程碑 push（7 / 30 / 100 / 365 命中才發、其他天靜默）
+ * 從 DailyCheckin component / cron 呼叫
+ */
+const STREAK_MILESTONES = new Map<number, { emoji: string; title: string; cheer: string }>([
+  [7,   { emoji: "🔥", title: "一週連勝！", cheer: "節奏抓住了、繼續維持" }],
+  [30,  { emoji: "🏆", title: "一個月連勝！", cheer: "30 天習慣已養成、太強了" }],
+  [100, { emoji: "🎖️", title: "百日連勝！", cheer: "百日修練、絕大多數人撐不到這" }],
+  [365, { emoji: "👑", title: "一年連勝！", cheer: "整整一年沒斷、你已是傳奇" }],
+]);
+
+export async function notifyStreakMilestone(opts: { userId: string; streak: number }) {
+  const milestone = STREAK_MILESTONES.get(opts.streak);
+  if (!milestone) return; // 非里程碑不發
+  const name = await brief(opts.userId);
+  const flex = buildSimpleCard({
+    emoji: milestone.emoji,
+    title: milestone.title,
+    accentColor: opts.streak >= 100 ? "#ffd700" : "#f97316",
+    body: `${name}\n\n連續簽到 ${opts.streak} 天！\n${milestone.cheer}`,
+    meta: [{ label: "🔥 連勝", value: `${opts.streak} 天` }],
+    buttons: [
+      { label: "🛤️ 看足跡", uri: `${SITE_URL}/me/footprint`, primary: true },
+      { label: "📚 繼續學", uri: `${SITE_URL}/chapters` },
+    ],
+  });
+  await notifyAdmin({
+    kind: "achievement",
+    dedupeKey: `streak:${opts.userId}:${opts.streak}`,
+    text: `${milestone.emoji} ${name} 達成 ${opts.streak} 天連勝`,
+    flex,
+    subjectUserId: opts.userId,
+  });
+  await pushUserNotif({
+    userId: opts.userId,
+    kind: "achievement",
+    title: `${milestone.emoji} ${milestone.title}`,
+    body: `連續 ${opts.streak} 天簽到`,
+    link: `/me/footprint`,
+  });
+  await notifyUserLine({
+    userId: opts.userId,
+    text: `${milestone.emoji} ${milestone.title}（${opts.streak} 天）`,
+    flex,
+  });
 }
 
 /** 成就解鎖 → in-app + admin */

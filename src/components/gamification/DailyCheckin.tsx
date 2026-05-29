@@ -71,6 +71,13 @@ export function DailyCheckin() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ type: "daily_checkin", delta: 1 }),
     }).catch(() => {});
+    // 連勝里程碑通知（命中 7/30/100/365 才會真的 push、其他天 endpoint 內早 return）
+    fetch("/api/me/notify-streak", {
+      credentials: "include",
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ streak: data.streak }),
+    }).catch(() => {});
     confetti({
       particleCount: data.day_in_cycle >= 7 ? 80 : 35,
       spread: data.day_in_cycle >= 7 ? 70 : 50,
