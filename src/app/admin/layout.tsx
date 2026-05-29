@@ -123,6 +123,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             {/* 3. 📚 內容 */}
             <NavGroup title="📚 內容 (Content)">
               <AdminLink href="/admin/chapters">📚 章節管理</AdminLink>
+              <AdminLink href="/admin/chapters-audit">🔍 章節 audit (品質掃描)</AdminLink>
               <AdminLink href="/admin/achievements">🏆 成就管理</AdminLink>
               <AdminLink href="/admin/gamification">🎮 遊戲化規則</AdminLink>
               <AdminLink href="/admin/changelog">📜 更新日誌</AdminLink>
