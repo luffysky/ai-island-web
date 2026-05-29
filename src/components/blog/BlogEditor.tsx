@@ -103,10 +103,6 @@ function Toolbar({ editor }: { editor: Editor }) {
     if (url) editor.chain().focus().setLink({ href: url }).run();
     else editor.chain().focus().unsetLink().run();
   };
-  const addImageByUrl = () => {
-    const url = window.prompt("圖片網址（或直接點右邊上傳）：");
-    if (url) editor.chain().focus().setImage({ src: url }).run();
-  };
   const uploadAndInsert = async (file: File) => {
     if (!file.type.startsWith("image/")) {
       toast.error("只支援圖片");
@@ -194,15 +190,14 @@ function Toolbar({ editor }: { editor: Editor }) {
       <button type="button" onClick={() => editor.chain().focus().setTextAlign("right").run()} className={btn(editor.isActive({ textAlign: "right" }))} title="靠右"><AlignRight size={16} /></button>
       <Sep />
       <button type="button" onClick={addLink} className={btn(editor.isActive("link"))} title="連結"><LinkIcon size={16} /></button>
-      <button type="button" onClick={addImageByUrl} className={btn(false)} title="圖片網址（或拖放 / 貼上 / 按下面上傳）"><ImageIcon size={16} /></button>
       <button
         type="button"
         onClick={() => fileInputRef.current?.click()}
         disabled={uploading}
         className={btn(false)}
-        title="從電腦上傳圖片"
+        title="上傳圖片（也支援拖放 / 貼上）"
       >
-        {uploading ? <Loader2 size={16} className="animate-spin" /> : <Upload size={16} />}
+        {uploading ? <Loader2 size={16} className="animate-spin" /> : <ImageIcon size={16} />}
       </button>
       <input
         ref={fileInputRef}

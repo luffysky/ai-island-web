@@ -114,26 +114,14 @@ export function SettingsForm({ profile, email }: { profile: any; email: string }
 
         <div>
           <label className="block text-sm mb-2">頭像</label>
-          <div className="flex items-start gap-4 flex-wrap">
-            <ImageUploader
-              folder="avatar"
-              value={avatarUrl}
-              shape="circle"
-              onUploaded={(url) => setAvatarUrl(url)}
-              onClear={() => setAvatarUrl("")}
-              maxSizeMB={5}
-            />
-            <div className="flex-1 min-w-[200px]">
-              <label className="block text-xs text-fg-muted mb-1">或貼圖片網址</label>
-              <input
-                type="url"
-                value={avatarUrl}
-                onChange={(e) => setAvatarUrl(e.target.value)}
-                className="w-full bg-bg-elevated rounded-lg px-3 py-2 text-sm"
-                placeholder="https://..."
-              />
-            </div>
-          </div>
+          <ImageUploader
+            folder="avatar"
+            value={avatarUrl}
+            shape="circle"
+            onUploaded={(url) => setAvatarUrl(url)}
+            onClear={() => setAvatarUrl("")}
+            maxSizeMB={5}
+          />
         </div>
 
         <div>

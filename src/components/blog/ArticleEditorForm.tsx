@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { BlogEditor } from "@/components/blog/BlogEditor";
 import { AiWriteHelper } from "@/components/blog/AiWriteHelper";
+import { ImageUploader } from "@/components/ui/ImageUploader";
 import { Save, Globe, Lock, ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/components/ui/Toast";
@@ -175,12 +176,13 @@ export function ArticleEditorForm({ initial }: { initial?: Partial<ArticleFormDa
         {showMeta && (
           <div className="mt-3 space-y-3 p-4 rounded-xl bg-bg-card border border-border">
             <div>
-              <label className="text-sm font-medium mb-1 block">封面圖片網址</label>
-              <input
+              <label className="text-sm font-medium mb-1 block">封面圖片</label>
+              <ImageUploader
+                folder="blog"
                 value={data.cover_image}
-                onChange={(e) => set("cover_image", e.target.value)}
-                placeholder="https://..."
-                className="w-full bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent"
+                onUploaded={(url) => set("cover_image", url)}
+                onClear={() => set("cover_image", "")}
+                maxSizeMB={5}
               />
             </div>
             <div>
