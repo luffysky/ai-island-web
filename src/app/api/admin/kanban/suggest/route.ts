@@ -13,7 +13,15 @@ export const maxDuration = 60;
  */
 export async function POST() {
   try {
-    return await handle();
+    // Promise.race 25s 強制 timeout、避免 Zeabur platform 30s kill 變 502
+    return await Promise.race([
+      handle(),
+      new Promise<NextResponse>((resolve) =>
+        setTimeout(() => resolve(NextResponse.json({
+          error: "雪鑰想超過 25 秒、可能 Anthropic 端慢回 / DB 慢 query、稍後再試一次",
+        }, { status: 504 })), 25_000),
+      ),
+    ]);
   } catch (e: any) {
     // outer guard — 任何 uncaught throw 都包成 JSON 回、避免 Next.js 默認 502 HTML
     console.error("[kanban/suggest] uncaught:", e?.stack || e?.message || e);
@@ -24,7 +32,10 @@ export async function POST() {
 }
 
 async function handle() {
+  const t0 = Date.now();
+  const tlog = (tag: string) => console.log(`[suggest] +${Date.now() - t0}ms ${tag}`);
   const supabase = await createSupabaseServer();
+  tlog("supabase server ready");
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   const { data: p } = await supabase.from("profiles").select("role, is_owner").eq("id", user.id).maybeSingle();
@@ -38,10 +49,12 @@ async function handle() {
   if (!board) return NextResponse.json({ error: "todo_board_not_found" }, { status: 500 });
   const { data: cols } = await admin.from("admin_kanban_columns").select("id, title").eq("board_id", (board as any).id);
   const activeColIds = (cols ?? []).filter((c: any) => c.title === "TODO" || c.title === "DOING").map((c: any) => c.id);
+  tlog(`board+cols done, activeColIds=${activeColIds.length}`);
   const { data: cards } = await admin
     .from("admin_kanban_cards")
     .select("id, title, description, category, labels, updated_at")
     .in("column_id", activeColIds);
+  tlog(`cards loaded n=${(cards ?? []).length}`);
 
   const cardList = (cards ?? []) as any[];
   if (cardList.length === 0) {
@@ -51,6 +64,7 @@ async function handle() {
   const apiKey = await getProviderKey("anthropic");
   if (!apiKey) return NextResponse.json({ error: "no_anthropic_key" }, { status: 503 });
   const modelName = await getModelNameForUsage("admin_assistant", "claude-haiku-4-5-20251001");
+  tlog(`apiKey + model ready, model=${modelName}`);
 
   const prompt = `你是雪鑰、AI 島的 AI 助手。林董開了 launchpad 看板、問你：「下一個該做什麼？」
 
@@ -90,8 +104,9 @@ ${cardList.map((c, i) => `${i + 1}. [${c.id}] ${c.title}${c.category ? ` (${c.ca
         temperature: 0.3,
         messages: [{ role: "user", content: prompt }],
       }),
-      signal: AbortSignal.timeout(20_000),
+      signal: AbortSignal.timeout(15_000),
     });
+    tlog(`anthropic response ${res.status}`);
     if (!res.ok) {
       const body = await res.text();
       return NextResponse.json({ error: `anthropic ${res.status}: ${body.slice(0, 200)}` }, { status: 502 });
