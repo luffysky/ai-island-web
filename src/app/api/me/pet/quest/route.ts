@@ -37,6 +37,12 @@ export async function GET() {
 
   // 生成今日 quest
   const memory = await loadUserMemory(user.id).catch(() => null);
+
+  // 扣 pet_quest_gen quota（free 30/月、夠每天 1 個）
+  // 達上限不擋、只是不再用 AI 生個性化、改隨機模板
+  const { requireAiAction } = await import("@/lib/ai-gate");
+  const quotaGate = await requireAiAction(user.id, "pet_quest_gen");
+  const skipAiGen = !quotaGate.ok;
   const { data: profile } = await admin.from("profiles").select("level, streak_days, leetcode_username").eq("id", user.id).maybeSingle();
 
   const TEMPLATES = [

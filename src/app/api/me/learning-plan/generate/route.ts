@@ -20,6 +20,11 @@ export async function POST(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
+  // AI gate（學習計畫生成、free 3/月、用 resume 額度池）
+  const { requireAiAction } = await import("@/lib/ai-gate");
+  const gate = await requireAiAction(user.id, "resume");
+  if (!gate.ok) return NextResponse.json({ error: gate.error, reason: gate.reason }, { status: 429 });
+
   const body = await req.json().catch(() => ({} as any));
   const depth = ["lazy", "standard", "detail"].includes(body.depth) ? body.depth : "standard";
   const careerPath = String(body.career_path ?? "fullstack");

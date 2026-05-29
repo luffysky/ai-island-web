@@ -18,6 +18,10 @@ export async function POST() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
+  const { requireAiAction } = await import("@/lib/ai-gate");
+  const gate = await requireAiAction(user.id, "resource_rec");
+  if (!gate.ok) return NextResponse.json({ error: gate.error, reason: gate.reason }, { status: 429 });
+
   const admin = createSupabaseAdmin();
 
   // 撈 user memory + 最近 5 章完成的 chapter title

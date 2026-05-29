@@ -29,6 +29,17 @@ async function handle() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
+  // 特權 user（is_owner / ai_unlimited）跟已訂閱者一律當作「不需要推訂閱」、卡片不顯示
+  const { hasAiUnlimited } = await import("@/lib/ai-privilege");
+  if (await hasAiUnlimited(user.id)) {
+    return NextResponse.json({ ok: true, already_subscribed: true, current_plan: "vip_unlimited" });
+  }
+
+  // AI gate (subscription_rec 5/月)
+  const { requireAiAction } = await import("@/lib/ai-gate");
+  const gate = await requireAiAction(user.id, "subscription_rec");
+  if (!gate.ok) return NextResponse.json({ error: gate.error, reason: gate.reason }, { status: 429 });
+
   const admin = createSupabaseAdmin();
 
   // 撈 user 基本狀態
