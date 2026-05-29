@@ -66,6 +66,18 @@ async function fetchGithubCommits(): Promise<Array<{ sha: string; message: strin
 }
 
 export async function POST(req: NextRequest) {
+  try {
+    return await handle(req);
+  } catch (e: any) {
+    console.error("[kanban/auto-sync] uncaught:", e?.stack || e?.message || e);
+    return NextResponse.json({
+      ok: false,
+      error: e?.message ? `internal_error: ${String(e.message).slice(0, 200)}` : "internal_error",
+    }, { status: 500 });
+  }
+}
+
+async function handle(req: NextRequest) {
   const g = await gate(req);
   if (!g.ok) return NextResponse.json(g.body, { status: g.status });
 

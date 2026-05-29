@@ -12,6 +12,18 @@ export const maxDuration = 60;
  * 雪鑰建議下一個該做 — POST 拿 todo board 全部卡、AI 回 Top 3 推薦 + 理由
  */
 export async function POST() {
+  try {
+    return await handle();
+  } catch (e: any) {
+    // outer guard — 任何 uncaught throw 都包成 JSON 回、避免 Next.js 默認 502 HTML
+    console.error("[kanban/suggest] uncaught:", e?.stack || e?.message || e);
+    return NextResponse.json({
+      error: e?.message ? `internal_error: ${String(e.message).slice(0, 200)}` : "internal_error",
+    }, { status: 500 });
+  }
+}
+
+async function handle() {
   const supabase = await createSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
@@ -74,11 +86,11 @@ ${cardList.map((c, i) => `${i + 1}. [${c.id}] ${c.title}${c.category ? ` (${c.ca
       },
       body: JSON.stringify({
         model: modelName,
-        max_tokens: 800,
+        max_tokens: 600,
         temperature: 0.3,
         messages: [{ role: "user", content: prompt }],
       }),
-      signal: AbortSignal.timeout(30_000),
+      signal: AbortSignal.timeout(20_000),
     });
     if (!res.ok) {
       const body = await res.text();

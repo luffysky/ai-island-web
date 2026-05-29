@@ -21,6 +21,17 @@ const CATEGORIES = [
  *   target_board 不給就 AI 自己判斷（idea / bug → wishlist or todo）
  */
 export async function POST(req: NextRequest) {
+  try {
+    return await handle(req);
+  } catch (e: any) {
+    console.error("[kanban/ai-add] uncaught:", e?.stack || e?.message || e);
+    return NextResponse.json({
+      error: e?.message ? `internal_error: ${String(e.message).slice(0, 200)}` : "internal_error",
+    }, { status: 500 });
+  }
+}
+
+async function handle(req: NextRequest) {
   const supabase = await createSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });

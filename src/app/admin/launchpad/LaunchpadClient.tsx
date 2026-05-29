@@ -158,8 +158,16 @@ export function LaunchpadClient() {
         method: "POST",
         credentials: "include",
       });
-      const j = await res.json();
+      // 防 502 回 HTML、res.json() 會 throw、要 catch
+      const text = await res.text();
+      let j: any;
+      try { j = JSON.parse(text); }
+      catch {
+        j = { error: `Server ${res.status}: ${text.slice(0, 200).replace(/<[^>]+>/g, " ").trim() || "no body"}` };
+      }
       setSuggestions(j);
+    } catch (e: any) {
+      setSuggestions({ error: e?.message ?? "fetch failed" });
     } finally {
       setSuggestLoading(false);
     }
