@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MessageSquare, ChevronRight, Loader2, Search, Trash2 } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { formatTW } from "@/lib/format-date";
+import { useVirtualizer } from "@tanstack/react-virtual";
 
 type Conv = {
   id: string;
@@ -97,47 +98,14 @@ export function AiHistoryClient({ initial }: { initial: Conv[] }) {
             />
           </div>
         </div>
-        <div className="divide-y divide-border max-h-[600px] overflow-y-auto">
-          {filtered.length === 0 ? (
-            <div className="text-center py-12 text-fg-muted text-sm">
-              {filter ? "沒符合的對話" : "還沒跟 AI 對話過"}
-            </div>
-          ) : (
-            filtered.map((c) => (
-              <div
-                key={c.id}
-                onClick={() => setSelected(c)}
-                role="button"
-                tabIndex={0}
-                className={`group w-full text-left p-3 hover:bg-bg-elevated transition cursor-pointer ${selected?.id === c.id ? "bg-accent/10 border-l-2 border-accent" : ""}`}
-              >
-                <div className="flex items-start gap-2">
-                  <div className="text-base shrink-0">
-                    {c.persona_id ? PERSONA_ICON[c.persona_id]?.split(" ")[0] : "🤖"}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium truncate">{c.title}</div>
-                    <div className="text-[10px] text-fg-muted">
-                      {formatTW(c.updated_at)}
-                      {c.context_chapter_id && ` · Ch ${c.context_chapter_id}`}
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={(e) => handleDelete(c, e)}
-                    disabled={deletingIds.has(c.id)}
-                    aria-label="刪除對話"
-                    title="刪除對話"
-                    className="p-1.5 rounded text-fg-muted hover:text-red-400 hover:bg-red-500/10 md:opacity-0 md:group-hover:opacity-100 focus:opacity-100 transition disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
-                  >
-                    {deletingIds.has(c.id) ? <Loader2 size={12} className="animate-spin" /> : <Trash2 size={12} />}
-                  </button>
-                  <ChevronRight size={12} className="text-fg-muted shrink-0 mt-1" />
-                </div>
-              </div>
-            ))
-          )}
-        </div>
+        <VirtualConvList
+          filtered={filtered}
+          filter={filter}
+          selected={selected}
+          onSelect={setSelected}
+          onDelete={handleDelete}
+          deletingIds={deletingIds}
+        />
       </div>
 
       {/* 對話內容 */}
@@ -176,6 +144,81 @@ export function AiHistoryClient({ initial }: { initial: Conv[] }) {
             )}
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+function VirtualConvList({ filtered, filter, selected, onSelect, onDelete, deletingIds }: {
+  filtered: Conv[];
+  filter: string;
+  selected: Conv | null;
+  onSelect: (c: Conv) => void;
+  onDelete: (c: Conv, e: React.MouseEvent) => void;
+  deletingIds: Set<string>;
+}) {
+  const parentRef = useRef<HTMLDivElement>(null);
+  const virtualizer = useVirtualizer({
+    count: filtered.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 68,
+    overscan: 8,
+  });
+
+  if (filtered.length === 0) {
+    return (
+      <div className="text-center py-12 text-fg-muted text-sm">
+        {filter ? "沒符合的對話" : "還沒跟 AI 對話過"}
+      </div>
+    );
+  }
+
+  return (
+    <div ref={parentRef} style={{ maxHeight: 600, overflow: "auto" }}>
+      <div style={{ height: virtualizer.getTotalSize(), position: "relative", width: "100%" }}>
+        {virtualizer.getVirtualItems().map((vi) => {
+          const c = filtered[vi.index];
+          return (
+            <div
+              key={c.id}
+              data-index={vi.index}
+              ref={virtualizer.measureElement}
+              style={{ position: "absolute", top: 0, left: 0, width: "100%", transform: `translateY(${vi.start}px)` }}
+              className="border-b border-border"
+            >
+              <div
+                onClick={() => onSelect(c)}
+                role="button"
+                tabIndex={0}
+                className={`group w-full text-left p-3 hover:bg-bg-elevated transition cursor-pointer ${selected?.id === c.id ? "bg-accent/10 border-l-2 border-accent" : ""}`}
+              >
+                <div className="flex items-start gap-2">
+                  <div className="text-base shrink-0">
+                    {c.persona_id ? PERSONA_ICON[c.persona_id]?.split(" ")[0] : "🤖"}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium truncate">{c.title}</div>
+                    <div className="text-[10px] text-fg-muted">
+                      {formatTW(c.updated_at)}
+                      {c.context_chapter_id && ` · Ch ${c.context_chapter_id}`}
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={(e) => onDelete(c, e)}
+                    disabled={deletingIds.has(c.id)}
+                    aria-label="刪除對話"
+                    title="刪除對話"
+                    className="p-1.5 rounded text-fg-muted hover:text-red-400 hover:bg-red-500/10 md:opacity-0 md:group-hover:opacity-100 focus:opacity-100 transition disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+                  >
+                    {deletingIds.has(c.id) ? <Loader2 size={12} className="animate-spin" /> : <Trash2 size={12} />}
+                  </button>
+                  <ChevronRight size={12} className="text-fg-muted shrink-0 mt-1" />
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
