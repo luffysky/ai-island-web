@@ -262,7 +262,10 @@ async function askAI(message: string, adminUser: AdminLineUser, images?: Array<{
   });
   const callerName = ownerCheck.isOwner ? OWNER_NAME_TW : adminUser.name;
 
-  const systemPrompt = `你是 AI 島的管理員 AI 助理。
+  const { XUEYUE_ADMIN_IDENTITY } = await import("@/lib/xueyue-persona");
+  const systemPrompt = `${XUEYUE_ADMIN_IDENTITY}
+
+# 你的管理員角色
 目前對話者：${callerName}（${adminUser.role}${ownerCheck.isOwner ? "、👑 平台 Owner、本站最高權限" : ""}）。
 
 【你的模型身份】

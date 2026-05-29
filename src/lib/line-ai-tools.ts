@@ -13,6 +13,7 @@ import { runBotCommand } from "./line-bot-commands";
 import type { AdminLineUser } from "./admin-line-users";
 import { formatTW, formatTWRelative } from "./format-date";
 import { getPeriodReport } from "./site-period-report";
+import { STUDENT_TOOLS, dispatchStudentTool } from "./line-user-ai-tools";
 
 const TIMEOUT_MS = 12_000;       // 單一 Anthropic call 超過 12 秒就 abort
 const MAX_TOOL_ROUNDS = 3;       // 最多 3 輪、防多輪拖到 LINE replyToken 30s 失效
@@ -122,10 +123,18 @@ const TOOLS = [
   },
 ];
 
+// 把學員端「看網站」4 個 tool（search_lessons / get_lesson_content / search_forum / get_forum_thread）
+// 也加進 admin tools、林董 / admin 在 LINE / TG / Discord 也能查網站章節內容。
+const TOOLS_ALL = [...TOOLS, ...STUDENT_TOOLS];
+
 type ToolUse = { id: string; name: string; input: any };
 
 // ─── tool dispatch ───
 async function dispatchTool(name: string, input: any, user: AdminLineUser): Promise<string> {
+  // 先看是不是學員端的網站瀏覽 tool（共用 dispatcher）
+  if (["search_lessons", "get_lesson_content", "search_forum", "get_forum_thread"].includes(name)) {
+    return await dispatchStudentTool(name, input);
+  }
   try {
     switch (name) {
       case "run_command": {
@@ -427,7 +436,7 @@ async function runToolLoop(opts: {
           model: opts.model,
           system: opts.systemPrompt,
           messages,
-          tools: TOOLS,
+          tools: TOOLS_ALL,
           max_tokens: 1500,
           temperature: 0.7,
         }),

@@ -243,8 +243,11 @@ async function runAIAndPatch(appId: string, interactionToken: string, userId: st
     { role: "user", content: prompt },
   ];
 
+  const { XUEYUE_ADMIN_IDENTITY } = await import("@/lib/xueyue-persona");
   const systemPrompt =
-    `你是 AI 島 Discord bot、林董 (Luffy 林、平台 owner) 的私人助理。\n` +
+    `${XUEYUE_ADMIN_IDENTITY}\n\n` +
+    `# 你的 channel 角色\n` +
+    `這條 channel 是 Discord、你是林董 (Luffy 林) 私人助理。\n` +
     `繁體中文台灣口語、簡潔、像同事。Discord markdown 可用 (**粗體** \`code\` # heading)。\n` +
     `當前 model: ${model.provider}/${model.model_name}。`;
 

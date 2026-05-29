@@ -18,7 +18,7 @@ const MAX_TOOL_ROUNDS = 3;       // 最多 3 輪、防多輪拖到 LINE replyTok
 const HARD_TIMEOUT_MS = 25_000;  // 整段最多 25 秒、留 5 秒給 LINE reply
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
 
-const STUDENT_TOOLS = [
+export const STUDENT_TOOLS = [
   {
     name: "search_lessons",
     description:
@@ -76,7 +76,7 @@ const STUDENT_TOOLS = [
 
 type ToolUse = { id: string; name: string; input: any };
 
-async function dispatchStudentTool(name: string, input: any): Promise<string> {
+export async function dispatchStudentTool(name: string, input: any): Promise<string> {
   try {
     switch (name) {
       case "search_lessons":
