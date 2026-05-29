@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Plus, Trash2, X, Loader2, Search } from "lucide-react";
+import { Plus, Trash2, X, Loader2, Search, Sparkles, Wand2, ExternalLink } from "lucide-react";
 
 type Board = { id: string; slug: string; title: string; emoji: string | null; description: string | null; position: number };
 type Column = { id: string; board_id: string; title: string; emoji: string | null; color: string; position: number };
@@ -55,6 +55,10 @@ export function LaunchpadClient() {
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [editingCard, setEditingCard] = useState<Card | null>(null);
   const [adding, setAdding] = useState<{ columnId: string; boardSlug: string } | null>(null);
+  const [aiAddOpen, setAiAddOpen] = useState(false);
+  const [suggestOpen, setSuggestOpen] = useState(false);
+  const [suggestions, setSuggestions] = useState<any | null>(null);
+  const [suggestLoading, setSuggestLoading] = useState(false);
 
   useEffect(() => { reload(); }, []);
 
@@ -106,6 +110,38 @@ export function LaunchpadClient() {
     }
   }
 
+  async function aiAddCard(text: string, target_board: "todo" | "wishlist" | "") {
+    const res = await fetch("/api/admin/kanban/ai-add", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text, target_board: target_board || undefined }),
+    });
+    const j = await res.json();
+    if (res.ok && j.ok) {
+      setCards((cs) => [...cs, j.card]);
+      setAiAddOpen(false);
+      return j;
+    }
+    alert(`AI 建卡失敗：${j.error ?? "unknown"}`);
+    return null;
+  }
+
+  async function loadSuggestions() {
+    setSuggestLoading(true);
+    setSuggestOpen(true);
+    try {
+      const res = await fetch("/api/admin/kanban/suggest", {
+        method: "POST",
+        credentials: "include",
+      });
+      const j = await res.json();
+      setSuggestions(j);
+    } finally {
+      setSuggestLoading(false);
+    }
+  }
+
   // 拖曳：onDragStart 記 id、onDrop 改 column_id
   function onDragStart(id: string) { setDraggingId(id); }
   function onDragEnd() { setDraggingId(null); }
@@ -140,7 +176,7 @@ export function LaunchpadClient() {
 
   return (
     <div>
-      {/* 工具列：搜尋 + 分類過濾 */}
+      {/* 工具列：搜尋 + 分類過濾 + AI 助手 */}
       <div className="flex flex-wrap items-center gap-2 mb-4 bg-bg-card border border-border rounded-xl p-3">
         <div className="flex items-center gap-2 flex-1 min-w-[200px]">
           <Search size={16} className="text-fg-muted" />
@@ -161,6 +197,12 @@ export function LaunchpadClient() {
             <option key={c} value={c}>{CATEGORY_META[c].emoji} {CATEGORY_META[c].label}</option>
           ))}
         </select>
+        <button onClick={loadSuggestions} className="btn-chip btn-chip-info" title="雪鑰看 TODO/DOING 全部、推薦 Top 3 + 理由">
+          <Sparkles size={14} /> 雪鑰建議
+        </button>
+        <button onClick={() => setAiAddOpen(true)} className="btn-chip btn-chip-success" title="貼一段話、AI 自動分類建卡">
+          <Wand2 size={14} /> AI 建卡
+        </button>
         <span className="text-xs text-fg-muted">{filteredCards.length} / {cards.length} 卡</span>
       </div>
 
@@ -227,6 +269,17 @@ export function LaunchpadClient() {
                                   ))}
                                 </div>
                               )}
+                              {card.meta?.link && (
+                                <a
+                                  href={card.meta.link}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="inline-flex items-center gap-1 text-[10px] text-accent-2 hover:underline mt-1"
+                                >
+                                  <ExternalLink size={10} /> 連結
+                                </a>
+                              )}
                             </div>
                           );
                         })}
@@ -270,6 +323,104 @@ export function LaunchpadClient() {
           />
         </Modal>
       )}
+
+      {/* AI 建卡 modal */}
+      {aiAddOpen && (
+        <Modal onClose={() => setAiAddOpen(false)}>
+          <AiAddForm onSave={aiAddCard} />
+        </Modal>
+      )}
+
+      {/* 雪鑰建議 modal */}
+      {suggestOpen && (
+        <Modal onClose={() => { setSuggestOpen(false); setSuggestions(null); }}>
+          <SuggestPanel loading={suggestLoading} data={suggestions} onPick={(cardId) => {
+            const card = cards.find((c) => c.id === cardId);
+            if (card) { setEditingCard(card); setSuggestOpen(false); }
+          }} />
+        </Modal>
+      )}
+    </div>
+  );
+}
+
+function AiAddForm({ onSave }: { onSave: (text: string, target: "todo" | "wishlist" | "") => Promise<any> }) {
+  const [text, setText] = useState("");
+  const [target, setTarget] = useState<"todo" | "wishlist" | "">("");
+  const [busy, setBusy] = useState(false);
+
+  return (
+    <div>
+      <h3 className="font-bold mb-3 flex items-center gap-2"><Wand2 size={18} /> AI 建卡</h3>
+      <p className="text-xs text-fg-muted mb-2">
+        貼一段話、雪鑰幫你解析成 title / description / category、自動建卡。
+      </p>
+      <textarea
+        autoFocus
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        placeholder="例：「我想做一個 LINE 命令、學員可以查自己這週上了幾課」"
+        className="w-full bg-bg-elevated border border-border rounded p-2 text-sm mb-3 min-h-[100px]"
+      />
+      <label className="text-xs text-fg-muted">放哪個 board？</label>
+      <select value={target} onChange={(e) => setTarget(e.target.value as any)} className="w-full bg-bg-elevated border border-border rounded p-2 text-sm mb-3">
+        <option value="">AI 自己判斷（推薦）</option>
+        <option value="todo">放待辦（todo）</option>
+        <option value="wishlist">放許願池（wishlist）</option>
+      </select>
+      <button
+        disabled={!text.trim() || busy}
+        onClick={async () => { setBusy(true); await onSave(text.trim(), target); setBusy(false); }}
+        className="btn-chip btn-chip-success w-full justify-center disabled:opacity-50"
+      >
+        {busy ? <><Loader2 size={14} className="animate-spin" /> 雪鑰思考中...</> : "✨ 讓雪鑰建卡"}
+      </button>
+    </div>
+  );
+}
+
+function SuggestPanel({ loading, data, onPick }: { loading: boolean; data: any; onPick: (id: string) => void }) {
+  if (loading) {
+    return (
+      <div className="py-8 text-center text-fg-muted">
+        <Loader2 className="animate-spin mx-auto mb-2" size={24} />
+        雪鑰看待辦清單中...
+      </div>
+    );
+  }
+  if (!data?.suggestions || data.suggestions.length === 0) {
+    return <p className="text-fg-muted">{data?.message ?? "沒有建議"}</p>;
+  }
+  return (
+    <div>
+      <h3 className="font-bold mb-3 flex items-center gap-2">
+        <Sparkles size={18} className="text-accent-2" /> 雪鑰建議：最該做的 3 件事
+      </h3>
+      {data.overall && (
+        <p className="text-sm text-fg-muted mb-4 italic">「{data.overall}」</p>
+      )}
+      <div className="space-y-2">
+        {data.suggestions.map((s: any) => (
+          <button
+            key={s.card_id}
+            onClick={() => onPick(s.card_id)}
+            className="w-full text-left bg-bg-elevated border border-border rounded-lg p-3 hover:border-accent transition"
+          >
+            <div className="flex items-start gap-2">
+              <span className="font-bold text-accent-2 text-lg">#{s.rank}</span>
+              <div className="flex-1">
+                <p className="font-medium">{s.title}</p>
+                <p className="text-xs text-fg-muted mt-1">{s.reason}</p>
+                {s.category && CATEGORY_META[s.category] && (
+                  <span className="chip chip-neutral text-[10px] mt-1.5">
+                    {CATEGORY_META[s.category].emoji} {CATEGORY_META[s.category].label}
+                  </span>
+                )}
+              </div>
+            </div>
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
@@ -290,6 +441,7 @@ function EditCardForm({ card, onSave, onDelete }: { card: Card; onSave: (body: a
   const [description, setDescription] = useState(card.description ?? "");
   const [category, setCategory] = useState(card.category ?? "");
   const [labelsRaw, setLabelsRaw] = useState((card.labels ?? []).join(", "));
+  const [link, setLink] = useState(card.meta?.link ?? "");
 
   return (
     <div>
@@ -306,7 +458,9 @@ function EditCardForm({ card, onSave, onDelete }: { card: Card; onSave: (body: a
         ))}
       </select>
       <label className="text-xs text-fg-muted">標籤（逗號分隔）</label>
-      <input value={labelsRaw} onChange={(e) => setLabelsRaw(e.target.value)} className="w-full bg-bg-elevated border border-border rounded p-2 text-sm mb-4" placeholder="urgent, P0, frontend..." />
+      <input value={labelsRaw} onChange={(e) => setLabelsRaw(e.target.value)} className="w-full bg-bg-elevated border border-border rounded p-2 text-sm mb-3" placeholder="urgent, P0, frontend..." />
+      <label className="text-xs text-fg-muted">外部連結（GitHub PR / Notion / 章節 / Discord 等）</label>
+      <input type="url" value={link} onChange={(e) => setLink(e.target.value)} className="w-full bg-bg-elevated border border-border rounded p-2 text-sm mb-4" placeholder="https://github.com/... 或 /chapters/0" />
       <div className="flex items-center justify-between">
         <button onClick={onDelete} className="btn-chip btn-chip-danger">
           <Trash2 size={14} /> 刪除
@@ -317,6 +471,7 @@ function EditCardForm({ card, onSave, onDelete }: { card: Card; onSave: (body: a
             description: description || null,
             category: category || null,
             labels: labelsRaw.split(",").map((l) => l.trim()).filter(Boolean),
+            meta: { ...(card.meta ?? {}), link: link.trim() || null },
           })}
           className="btn-chip btn-chip-success"
         >
