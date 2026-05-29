@@ -156,20 +156,38 @@ export function PetChatPanel({
         width: "clamp(280px, calc(100vw - 1rem), 440px)",
         height: "clamp(360px, calc(100vh - 5rem), 560px)",
       }}
-      className="fixed bottom-2 left-1/2 -translate-x-1/2 z-50 bg-bg-card border border-border rounded-2xl shadow-2xl flex flex-col"
+      className="fixed bottom-2 left-1/2 -translate-x-1/2 z-50 bg-bg-card/95 backdrop-blur-xl border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-chat-panel-in"
     >
-      <div className="flex items-center justify-between p-3 border-b border-border">
+      {/* header — 漸層條 + 跳動 avatar */}
+      <div className="relative flex items-center justify-between p-3 border-b border-border bg-gradient-to-r from-accent/10 via-accent-2/10 to-transparent">
         <div className="flex items-center gap-2">
-          <div className="text-2xl">{species.emoji}</div>
+          <div className="relative">
+            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-accent to-accent-2 blur-md opacity-50 animate-pulse-soft" />
+            <div className="relative w-9 h-9 rounded-full bg-gradient-to-br from-accent/20 to-accent-2/20 ring-1 ring-accent/40 flex items-center justify-center text-xl">
+              {species.emoji}
+            </div>
+          </div>
           <div>
-            <div className="text-sm font-bold">{pet.name}</div>
+            <div className="text-sm font-bold flex items-center gap-1.5">
+              {pet.name}
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" title="在線" />
+            </div>
             <div className="text-[10px] text-fg-muted">{species.name} · {species.voiceHint.slice(0, 16)}…</div>
           </div>
         </div>
-        <button onClick={onClose} className="text-fg-muted hover:text-fg">
+        <button onClick={onClose} className="p-1.5 rounded-full text-fg-muted hover:text-fg hover:bg-bg-elevated transition">
           <X size={16} />
         </button>
       </div>
+      <style jsx global>{`
+        @keyframes chat-panel-in {
+          from { opacity: 0; transform: translate(-50%, 16px) scale(0.96); }
+          to   { opacity: 1; transform: translate(-50%, 0) scale(1); }
+        }
+        .animate-chat-panel-in {
+          animation: chat-panel-in 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+      `}</style>
 
       {messages.length > 3 && (
         <ChatToolbar

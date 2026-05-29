@@ -464,13 +464,25 @@ export function AITutorWidget({
             width: "clamp(280px, calc(100vw - 1rem), 480px)",
             height: "clamp(420px, calc(100vh - 5rem), 700px)",
           }}
-          className="fixed bottom-2 right-2 z-50 bg-bg-card border border-border rounded-2xl shadow-2xl flex flex-col"
+          className="fixed bottom-2 right-2 z-50 bg-bg-card/95 backdrop-blur-xl border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-tutor-panel-in"
         >
-          {/* Header */}
-          <div className="flex items-center justify-between p-3 border-b border-border">
+          <style jsx global>{`
+            @keyframes tutor-panel-in {
+              from { opacity: 0; transform: translateY(16px) scale(0.96); }
+              to   { opacity: 1; transform: translateY(0) scale(1); }
+            }
+            .animate-tutor-panel-in {
+              animation: tutor-panel-in 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+            }
+          `}</style>
+          {/* Header — 漸層條 + 跳動 avatar */}
+          <div className="relative flex items-center justify-between p-3 border-b border-border bg-gradient-to-r from-green-400/10 via-emerald-400/10 to-cyan-400/10">
             <div className="flex items-center gap-2 min-w-0">
-              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center text-base shrink-0">
-                ✨
+              <div className="relative shrink-0">
+                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-green-400 to-cyan-400 blur-md opacity-50 animate-pulse" />
+                <div className="relative w-8 h-8 rounded-full bg-gradient-to-br from-green-400 via-emerald-400 to-cyan-400 ring-1 ring-emerald-300/50 flex items-center justify-center text-base">
+                  ✨
+                </div>
               </div>
               <div className="min-w-0">
                 <div className="font-bold text-sm flex items-center gap-1">
@@ -736,10 +748,10 @@ export function AITutorWidget({
                     )}
                   </div>
                 )}
-                <div className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm ${
+                <div className={`max-w-[85%] rounded-2xl px-3.5 py-2 text-sm shadow-sm transition-all hover:shadow-md animate-chat-bubble-in ${
                   m.role === "user"
-                    ? "bg-accent text-black"
-                    : "bg-bg-elevated text-fg"
+                    ? "bg-gradient-to-br from-accent to-accent-2 text-black shadow-accent/20"
+                    : "bg-gradient-to-br from-bg-elevated to-bg-card border border-border/50 text-fg backdrop-blur-sm"
                 }`}>
                   {m.role === "assistant" ? (
                     <div className="prose-custom prose-sm min-w-0">

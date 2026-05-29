@@ -407,3 +407,19 @@ select {
 .animate-fade-in { animation: fade-in 0.4s ease-out; }
 .animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
 .animate-shake { animation: shake 0.4s ease-in-out; }
+
+/* Chat 訊息進場（共用：所有 AI 對話介面） */
+@keyframes chat-bubble-in {
+  from { opacity: 0; transform: translateY(6px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.animate-chat-bubble-in {
+  animation: chat-bubble-in 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes pulse-soft {
+  0%, 100% { opacity: 0.65; }
+  50%      { opacity: 1; }
+}
+.animate-pulse-soft {
+  animation: pulse-soft 2s ease-in-out infinite;
+}

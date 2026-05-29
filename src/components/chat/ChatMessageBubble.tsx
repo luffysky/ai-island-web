@@ -7,6 +7,12 @@ import { formatChatTime } from "@/lib/chat-time";
 import { useToast } from "@/components/ui/Toast";
 
 /**
+ * 共用 fade-slide 進場動畫
+ * 訊息進來時往上滑 4px + 淡入、不讓 UI 突然蹦出來
+ */
+const BUBBLE_ENTER = "animate-chat-bubble-in";
+
+/**
  * AI 對話訊息泡泡（統一樣式）
  * 林董要求：
  *   1. 時間戳（hover 顯示完整、預設顯示「15:03」）
@@ -53,7 +59,7 @@ export function ChatMessageBubble({
 
   return (
     <div
-      className={`group flex ${isUser ? "justify-end" : "justify-start"} relative`}
+      className={`group flex ${isUser ? "justify-end" : "justify-start"} relative ${BUBBLE_ENTER}`}
       onMouseEnter={() => setShowHoverActions(true)}
       onMouseLeave={() => setShowHoverActions(false)}
     >
@@ -61,11 +67,11 @@ export function ChatMessageBubble({
         {/* meta：發送者 + 時間戳 */}
         {(speakerName || createdAt) && (
           <div className={`flex items-center gap-2 text-[10px] text-fg-muted px-1 ${isUser ? "justify-end" : "justify-start"}`}>
-            {!isUser && speakerName && <span className="font-bold">{speakerName}</span>}
+            {!isUser && speakerName && <span className="font-bold bg-gradient-to-r from-accent to-accent-2 bg-clip-text text-transparent">{speakerName}</span>}
             {createdAt && (
               <time
                 title={typeof createdAt === "string" || createdAt instanceof Date ? new Date(createdAt).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" }) : ""}
-                className="tabular-nums"
+                className="tabular-nums opacity-75 group-hover:opacity-100 transition"
               >
                 {formatChatTime(createdAt)}
               </time>
@@ -74,10 +80,12 @@ export function ChatMessageBubble({
           </div>
         )}
 
-        {/* bubble */}
+        {/* bubble — 漸層 + 軟陰影 */}
         <div
-          className={`relative rounded-2xl px-3 py-2 text-sm whitespace-pre-wrap break-words ${
-            isUser ? "bg-accent text-black" : "bg-bg-elevated"
+          className={`relative rounded-2xl px-3.5 py-2 text-sm whitespace-pre-wrap break-words shadow-sm transition-all hover:shadow-md ${
+            isUser
+              ? "bg-gradient-to-br from-accent to-accent-2 text-black shadow-accent/20"
+              : "bg-gradient-to-br from-bg-elevated to-bg-card border border-border/50 backdrop-blur-sm"
           }`}
         >
           {children ?? content}
@@ -105,6 +113,22 @@ export function ChatMessageBubble({
           )}
         </div>
       </div>
+
+      <style jsx global>{`
+        @keyframes chat-bubble-in {
+          from {
+            opacity: 0;
+            transform: translateY(6px) scale(0.98);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+        .animate-chat-bubble-in {
+          animation: chat-bubble-in 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+      `}</style>
     </div>
   );
 }

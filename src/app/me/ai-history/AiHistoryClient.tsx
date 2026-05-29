@@ -142,7 +142,11 @@ export function AiHistoryClient({ initial }: { initial: Conv[] }) {
                 .map((m, i) => (
                   <div
                     key={i}
-                    className={`group/msg p-3 rounded-lg relative ${m.role === "user" ? "bg-accent/10 ml-8" : "bg-bg mr-8"}`}
+                    className={`group/msg p-3 rounded-2xl relative shadow-sm hover:shadow-md transition-all animate-chat-bubble-in ${
+                      m.role === "user"
+                        ? "bg-gradient-to-br from-accent/15 to-accent-2/10 ml-8 border border-accent/20"
+                        : "bg-gradient-to-br from-bg-elevated to-bg mr-8 border border-border/50 backdrop-blur-sm"
+                    }`}
                   >
                     <div className="text-[10px] text-fg-muted mb-1 flex items-center gap-2">
                       <span className="font-bold">{m.role === "user" ? "你" : "AI"}</span>

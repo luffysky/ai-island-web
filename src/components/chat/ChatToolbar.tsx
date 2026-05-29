@@ -38,7 +38,7 @@ export function ChatToolbar({
   };
 
   return (
-    <div className="flex items-center gap-2 px-3 py-2 border-b border-border bg-bg-card/50">
+    <div className="flex items-center gap-2 px-3 py-2 border-b border-border bg-gradient-to-r from-bg-card/80 via-bg-card/40 to-bg-card/80 backdrop-blur-sm">
       {onSearch && (
         <div className="flex-1 relative">
           <Search size={11} className="absolute left-2 top-1/2 -translate-y-1/2 text-fg-muted" />
