@@ -6,17 +6,32 @@ import { Loader2, Send, Square, Sparkles } from "lucide-react";
 type Msg = { role: "interviewer" | "candidate"; content: string };
 
 const MODES = [
-  { value: "tech",          label: "技術面試",      emoji: "💻" },
-  { value: "behavior",      label: "行為面試",      emoji: "🗣️" },
-  { value: "system-design", label: "系統設計",      emoji: "🏗️" },
+  { value: "tech",          label: "技術面試",        emoji: "💻" },
+  { value: "behavior",      label: "行為面試",        emoji: "🗣️" },
+  { value: "system-design", label: "系統設計",        emoji: "🏗️" },
+  { value: "portfolio",     label: "作品集 review",   emoji: "🖼️" },
+  { value: "case",          label: "Case Study",      emoji: "🧩" },
 ];
 
 const ROLES = [
+  // 工程
   { value: "frontend",  label: "前端工程師",    emoji: "🎨" },
   { value: "backend",   label: "後端工程師",    emoji: "⚙️" },
   { value: "fullstack", label: "全端工程師",    emoji: "🔧" },
-  { value: "ai",        label: "AI / ML 工程師", emoji: "🤖" },
-  { value: "freelance", label: "接案 / freelance", emoji: "💼" },
+  { value: "mobile",    label: "行動 App",       emoji: "📱" },
+  { value: "ai",        label: "AI / ML",        emoji: "🤖" },
+  { value: "data",      label: "資料工程",       emoji: "📊" },
+  { value: "devops",    label: "DevOps / SRE",   emoji: "🛠️" },
+  // 設計 / 產品
+  { value: "designer",  label: "設計師 UI/UX",   emoji: "🎭" },
+  { value: "pm",        label: "產品經理 PM",    emoji: "📋" },
+  // 商業 / 創作
+  { value: "marketing", label: "行銷 / 成長",    emoji: "📣" },
+  { value: "content",   label: "內容創作",       emoji: "✍️" },
+  // 創業 / 接案
+  { value: "freelance", label: "接案 freelance", emoji: "💼" },
+  { value: "indie",     label: "Indie Hacker",   emoji: "🚀" },
+  { value: "founder",   label: "創業者 pitch",   emoji: "🦄" },
 ];
 
 export function MockInterviewClient() {
@@ -106,22 +121,22 @@ export function MockInterviewClient() {
         <h3 className="font-bold text-lg mb-4">設定面試</h3>
 
         <label className="text-sm font-medium block mb-2">類型</label>
-        <div className="grid grid-cols-3 gap-2 mb-4">
+        <div className="grid grid-cols-3 md:grid-cols-5 gap-2 mb-4">
           {MODES.map((m) => (
             <button key={m.value} onClick={() => setMode(m.value)}
-              className={`text-sm rounded-lg p-3 border transition ${mode === m.value ? "border-accent bg-accent/10 font-bold" : "border-border bg-bg-elevated hover:border-accent/40"}`}>
-              <div className="text-xl mb-0.5">{m.emoji}</div>
+              className={`text-xs md:text-sm rounded-lg p-2.5 border transition ${mode === m.value ? "border-accent bg-accent/10 font-bold" : "border-border bg-bg-elevated hover:border-accent/40"}`}>
+              <div className="text-lg mb-0.5">{m.emoji}</div>
               {m.label}
             </button>
           ))}
         </div>
 
-        <label className="text-sm font-medium block mb-2">職位</label>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-2 mb-6">
+        <label className="text-sm font-medium block mb-2">職位 / 行業</label>
+        <div className="grid grid-cols-3 md:grid-cols-7 gap-2 mb-6">
           {ROLES.map((r) => (
             <button key={r.value} onClick={() => setRole(r.value)}
-              className={`text-xs md:text-sm rounded-lg p-2.5 border transition ${role === r.value ? "border-accent bg-accent/10 font-bold" : "border-border bg-bg-elevated hover:border-accent/40"}`}>
-              <div className="text-xl mb-0.5">{r.emoji}</div>
+              className={`text-[11px] md:text-xs rounded-lg p-2 border transition ${role === r.value ? "border-accent bg-accent/10 font-bold" : "border-border bg-bg-elevated hover:border-accent/40"}`}>
+              <div className="text-lg mb-0.5">{r.emoji}</div>
               {r.label}
             </button>
           ))}
@@ -184,9 +199,14 @@ export function MockInterviewClient() {
           <pre className="text-xs bg-bg-elevated rounded p-3 mb-4 overflow-auto">{feedback.raw}</pre>
         )}
 
-        <button onClick={reset} className="btn-chip btn-chip-info w-full justify-center py-2.5">
-          再面一場
-        </button>
+        <div className="flex gap-2">
+          <button onClick={reset} className="btn-chip btn-chip-info flex-1 justify-center py-2.5">
+            再面一場
+          </button>
+          <a href="/me/mock-interview/history" className="btn-chip btn-chip-neutral py-2.5">
+            📋 看歷史
+          </a>
+        </div>
       </div>
     );
   }

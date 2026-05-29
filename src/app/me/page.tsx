@@ -9,6 +9,7 @@ import { FriendsFeed } from "@/components/me/FriendsFeed";
 import { LeetcodeCard } from "@/components/me/LeetcodeCard";
 import { DailyCheckin } from "@/components/gamification/DailyCheckin";
 import { SubscriptionRecommendCard } from "@/components/me/SubscriptionRecommendCard";
+import { MockInterviewWidget } from "@/components/me/MockInterviewWidget";
 import { EloProgress } from "@/components/me/EloProgress";
 import { RecommendedChapters } from "@/components/me/RecommendedChapters";
 import { MeHero } from "@/components/me/MeHero";
@@ -113,6 +114,9 @@ export default async function MeOverviewPage() {
 
       {/* 學習熱力圖 */}
       <StreakHeatmap />
+
+      {/* AI 模擬面試 widget */}
+      <MockInterviewWidget />
 
       {/* 今日任務 */}
       <QuestsPanel />

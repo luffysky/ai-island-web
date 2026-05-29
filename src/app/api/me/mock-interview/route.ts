@@ -35,14 +35,25 @@ const MODE_LABEL: Record<string, string> = {
   tech: "技術面試（algorithm / coding / 概念）",
   behavior: "行為面試（STAR 模式 / 軟技能）",
   "system-design": "系統設計（架構 / scale / trade-off）",
+  portfolio: "作品集 review（解釋專案決策）",
+  case: "case study（給情境、看你怎麼拆解）",
 };
 
 const ROLE_LABEL: Record<string, string> = {
-  frontend: "前端工程師",
-  backend: "後端工程師",
-  fullstack: "全端工程師",
-  ai: "AI / ML 工程師",
-  freelance: "接案 / freelance（含面對客戶溝通）",
+  frontend:       "前端工程師",
+  backend:        "後端工程師",
+  fullstack:      "全端工程師",
+  ai:             "AI / ML 工程師",
+  data:           "資料工程師 / Data Scientist",
+  devops:         "DevOps / SRE",
+  mobile:         "行動 App 工程師",
+  designer:       "設計師（UI / UX）",
+  pm:             "產品經理（PM）",
+  marketing:      "行銷 / 成長駭客",
+  content:        "內容創作 / 寫手",
+  freelance:      "接案 / freelance（客戶溝通）",
+  indie:          "Indie Hacker（一人創業）",
+  founder:        "創業者（pitch / 募資）",
 };
 
 async function handle(req: Request) {
@@ -92,8 +103,10 @@ async function handle(req: Request) {
   }
 
   if (action === "finish") {
-    // 學員按結束、雪鑰評分 + 給回饋
+    // 學員按結束、雪鑰評分 + 給回饋 + 保存 session
     const transcript = history.map((h) => `${h.role === "interviewer" ? "面試官" : "學員"}: ${h.content}`).join("\n");
+    const { createSupabaseAdmin } = await import("@/lib/supabase-admin");
+    const admin = createSupabaseAdmin();
     const prompt = `${baseSystemPrompt}
 
 # 對話記錄
@@ -120,9 +133,19 @@ ${transcript}
     if (!m) return NextResponse.json({ feedback: { raw: text, error: "no_json" } });
     try {
       const parsed = JSON.parse(m[0]);
-      return NextResponse.json({ feedback: parsed });
-    } catch {
-      return NextResponse.json({ feedback: { raw: text, error: "parse_failed" } });
+      // 存 session
+      const { data: saved } = await admin.from("mock_interview_sessions").insert({
+        user_id: user.id,
+        mode, role,
+        transcript: history,
+        overall_score: parsed.overall_score ?? null,
+        comment: parsed.comment ?? null,
+        breakdown: parsed.breakdown ?? [],
+        next_steps: parsed.next_steps ?? [],
+      }).select("id").single();
+      return NextResponse.json({ feedback: parsed, session_id: (saved as any)?.id });
+    } catch (e: any) {
+      return NextResponse.json({ feedback: { raw: text, error: "parse_failed", parse_error: e?.message } });
     }
   }
 
