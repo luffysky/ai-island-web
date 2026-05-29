@@ -417,6 +417,10 @@ function cardHelp(): FlexMessage {
       { label: "/today", value: "今日學習狀況" },
       { label: "/streak", value: "看連續簽到" },
       { label: "/weak", value: "找弱項章節（quiz<60）" },
+      { label: "/recommend", value: "推薦下一課（弱項 + 進度）" },
+      { label: "/goal N", value: "設今日目標 N 個 lesson" },
+      { label: "/goal", value: "看今日目標達成度" },
+      { label: "/quote", value: "每日金句（程式 / 工程 / 創業）" },
       { label: "/lesson 關鍵字", value: "找特定 lesson" },
       { label: "/explain 概念", value: "AI 一句話解釋" },
       { label: "/note 內容", value: "存筆記到網站" },
@@ -1075,6 +1079,253 @@ export async function POST(req: NextRequest) {
           buttons: [
             { label: signedInToday ? "🛤️ 看足跡" : "✅ 去簽到", uri: signedInToday ? `${SITE_URL}/me/footprint` : `${SITE_URL}/me`, primary: true },
           ],
+        }), token, QUICK_REPLY);
+        continue;
+      }
+
+      // 3.45a. /quote — 隨機抽一句 dev_quotes、清晨 / 通勤打開有感
+      if (text === "/quote" || text === "語錄" || text === "金句") {
+        const admin = createSupabaseAdmin();
+        const { data: countRow } = await admin
+          .from("dev_quotes")
+          .select("id", { count: "exact", head: true })
+          .eq("is_active", true);
+        const total = (countRow as any)?.count ?? 0;
+        if (total === 0) {
+          await lineReply(replyToken, buildSimpleCard({
+            emoji: "📜",
+            title: "語錄庫還沒準備好",
+            accentColor: USER_ACCENT,
+            body: "請等語錄 seed 跑完。",
+          }), token, QUICK_REPLY);
+          continue;
+        }
+        const offset = Math.floor(Math.random() * total);
+        const { data: q } = await admin
+          .from("dev_quotes")
+          .select("quote, author, translation_zh, category")
+          .eq("is_active", true)
+          .range(offset, offset)
+          .single();
+        const row = q as any;
+        const lines: string[] = [];
+        lines.push(row.quote);
+        if (row.translation_zh && row.translation_zh !== row.quote) {
+          lines.push("");
+          lines.push(`📖 ${row.translation_zh}`);
+        }
+        lines.push("");
+        lines.push(`— ${row.author ?? "Unknown"}`);
+        await lineReply(replyToken, buildSimpleCard({
+          emoji: "📜",
+          title: "每日金句",
+          accentColor: USER_ACCENT,
+          body: lines.join("\n"),
+          buttons: [{ label: "🎲 再抽一句", text: "/quote" }],
+        }), token, QUICK_REPLY);
+        continue;
+      }
+
+      // 3.45b. /recommend — 推下一課（弱項優先、其次接著進度往下）
+      if (text === "/recommend" || text === "推薦" || text === "下一課") {
+        const admin = createSupabaseAdmin();
+        const { data: profile } = await admin
+          .from("profiles")
+          .select("id")
+          .eq("line_user_id", userId)
+          .maybeSingle();
+        if (!profile) {
+          await lineReply(replyToken, cardUnbound(userId), token, QUICK_REPLY);
+          continue;
+        }
+        const uid = (profile as any).id;
+        // 1. 找 30 天弱項（quiz < 60）
+        const since30 = new Date(Date.now() - 30 * 86400_000).toISOString();
+        const { data: weakQuizzes } = await admin
+          .from("quiz_attempts")
+          .select("chapter_id, correct, total_questions")
+          .eq("user_id", uid)
+          .gte("attempted_at", since30);
+        const byCh: Record<number, { sum: number; n: number }> = {};
+        for (const r of (weakQuizzes as any[]) ?? []) {
+          if (!r.chapter_id || !r.total_questions) continue;
+          const pct = (r.correct / r.total_questions) * 100;
+          (byCh[r.chapter_id] ??= { sum: 0, n: 0 }).sum += pct;
+          byCh[r.chapter_id].n += 1;
+        }
+        const weakChapters = Object.entries(byCh)
+          .map(([id, v]) => ({ id: Number(id), avg: v.sum / v.n }))
+          .filter((x) => x.avg < 60)
+          .sort((a, b) => a.avg - b.avg);
+
+        let pickReason = "";
+        let pickChapter: any = null;
+        let pickLesson: any = null;
+
+        if (weakChapters.length > 0) {
+          // 推弱章第一個 lesson
+          const weakest = weakChapters[0];
+          const { data: ch } = await admin.from("chapters").select("id, title").eq("id", weakest.id).maybeSingle();
+          const { data: firstLesson } = await admin
+            .from("lessons")
+            .select("id, number, title, one_line_summary")
+            .eq("chapter_id", weakest.id)
+            .order("sort_order", { ascending: true })
+            .limit(1)
+            .maybeSingle();
+          pickChapter = ch;
+          pickLesson = firstLesson;
+          pickReason = `📉 你 quiz 平均 ${weakest.avg.toFixed(0)} 分、這章最該補`;
+        } else {
+          // 沒弱項、找最後一課的下一課
+          const { data: last } = await admin
+            .from("lesson_progress")
+            .select("lesson_id, chapter_id, completed_at, lessons(sort_order, chapter_id)")
+            .eq("user_id", uid)
+            .order("completed_at", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          if (last && (last as any).lessons) {
+            const lastSort = (last as any).lessons.sort_order;
+            const lastChId = (last as any).chapter_id;
+            const { data: next } = await admin
+              .from("lessons")
+              .select("id, number, title, one_line_summary, chapter_id, chapters(title)")
+              .eq("chapter_id", lastChId)
+              .gt("sort_order", lastSort)
+              .order("sort_order", { ascending: true })
+              .limit(1)
+              .maybeSingle();
+            if (next) {
+              pickLesson = next;
+              pickChapter = { id: (next as any).chapter_id, title: (next as any).chapters?.title };
+              pickReason = "✅ 接著上次學到的、繼續往下";
+            } else {
+              // 同章學完、推下一章 first lesson
+              const { data: nextCh } = await admin
+                .from("chapters")
+                .select("id, title")
+                .gt("id", lastChId)
+                .eq("status", "published")
+                .order("id", { ascending: true })
+                .limit(1)
+                .maybeSingle();
+              if (nextCh) {
+                const { data: nextChFirst } = await admin
+                  .from("lessons")
+                  .select("id, number, title, one_line_summary")
+                  .eq("chapter_id", (nextCh as any).id)
+                  .order("sort_order", { ascending: true })
+                  .limit(1)
+                  .maybeSingle();
+                pickChapter = nextCh;
+                pickLesson = nextChFirst;
+                pickReason = "🎉 上一章學完了、進新章吧";
+              }
+            }
+          }
+        }
+
+        if (!pickLesson) {
+          await lineReply(replyToken, buildSimpleCard({
+            emoji: "🎯",
+            title: "找不到推薦",
+            accentColor: USER_ACCENT,
+            body: "做一次 quiz 或學一課我就能推。",
+            buttons: [{ label: "📚 章節地圖", uri: `${SITE_URL}/chapters`, primary: true }],
+          }), token, QUICK_REPLY);
+          continue;
+        }
+
+        const lessonNum = (pickLesson as any).number || (pickLesson as any).id;
+        const lessonTitle = (pickLesson as any).title;
+        const summary = (pickLesson as any).one_line_summary || "";
+        const chTitle = (pickChapter as any)?.title || "";
+        const chId = (pickChapter as any)?.id;
+        await lineReply(replyToken, buildSimpleCard({
+          emoji: "🎯",
+          title: `推薦：${lessonNum}`,
+          accentColor: USER_ACCENT,
+          body: `${pickReason}\n\n📖 ${lessonTitle}${chTitle ? `（Ch${chId} ${chTitle}）` : ""}${summary ? `\n\n${summary}` : ""}`,
+          buttons: [
+            { label: "▶ 去學這課", uri: `${SITE_URL}/chapters/${chId}#lesson-${(pickLesson as any).id}`, primary: true },
+            { label: "🎲 換一個", text: "/recommend" },
+          ],
+        }), token, QUICK_REPLY);
+        continue;
+      }
+
+      // 3.45c. /goal — 設每日目標 / 看達成度
+      const goalSetMatch = text.match(/^\/goal\s+(\d+)$/i);
+      if (text === "/goal" || text === "目標" || goalSetMatch) {
+        const admin = createSupabaseAdmin();
+        const { data: profile } = await admin
+          .from("profiles")
+          .select("id")
+          .eq("line_user_id", userId)
+          .maybeSingle();
+        if (!profile) {
+          await lineReply(replyToken, cardUnbound(userId), token, QUICK_REPLY);
+          continue;
+        }
+        const uid = (profile as any).id;
+        const today = new Date().toISOString().slice(0, 10);
+
+        if (goalSetMatch) {
+          const target = Math.min(20, Math.max(1, Number(goalSetMatch[1])));
+          await admin
+            .from("user_daily_goals")
+            .upsert({ user_id: uid, goal_date: today, target_lessons: target }, { onConflict: "user_id,goal_date" });
+          await lineReply(replyToken, buildSimpleCard({
+            emoji: "🎯",
+            title: "目標設好了",
+            accentColor: USER_ACCENT,
+            body: `今天目標：完成 ${target} 個 lesson\n\n加油、晚上來查 /goal 看達成。`,
+            buttons: [{ label: "📚 開始學", uri: `${SITE_URL}/chapters`, primary: true }],
+          }), token, QUICK_REPLY);
+          continue;
+        }
+
+        // 查目標 + 進度
+        const { data: goal } = await admin
+          .from("user_daily_goals")
+          .select("target_lessons")
+          .eq("user_id", uid)
+          .eq("goal_date", today)
+          .maybeSingle();
+        const target = (goal as any)?.target_lessons ?? 0;
+        const startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
+        const { data: done } = await admin
+          .from("lesson_progress")
+          .select("lesson_id")
+          .eq("user_id", uid)
+          .gte("completed_at", startOfDay.toISOString());
+        const doneCount = (done as any[])?.length ?? 0;
+
+        if (target === 0) {
+          await lineReply(replyToken, buildSimpleCard({
+            emoji: "🎯",
+            title: "今天還沒設目標",
+            accentColor: USER_ACCENT,
+            body: "傳「/goal N」設今日目標（N 個 lesson）\n\n例：/goal 3 = 今天完成 3 課",
+          }), token, QUICK_REPLY);
+          continue;
+        }
+
+        const pct = Math.min(100, Math.round((doneCount / target) * 100));
+        const filled = Math.round(pct / 10);
+        const bar = "█".repeat(filled) + "░".repeat(10 - filled);
+        const remark = pct >= 100 ? "🏆 達標、棒！" :
+                       pct >= 70 ? "🔥 快達標、再衝一下" :
+                       pct >= 30 ? "💪 進度過半要加油" :
+                                   "🌱 才開始、慢慢來";
+        await lineReply(replyToken, buildSimpleCard({
+          emoji: "🎯",
+          title: "今日目標",
+          accentColor: pct >= 100 ? "#22c55e" : USER_ACCENT,
+          body: `${bar} ${pct}%\n${doneCount} / ${target} lesson\n\n${remark}`,
+          buttons: [{ label: "📚 繼續學", uri: `${SITE_URL}/chapters`, primary: true }],
         }), token, QUICK_REPLY);
         continue;
       }
