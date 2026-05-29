@@ -75,6 +75,8 @@ const MIGRATIONS = [
   "discord_binding_migration.sql",
   // 2026-05-29 — 新手友善 onboarding state（A: tour、B: wizard、C: chapters）
   "onboarding_migration.sql",
+  // 2026-05-29 — Stripe 訂閱付款（webhook + customer + subscription mapping）
+  "stripe_migration.sql",
 ];
 
 // 從 .env.local 讀（不依賴 dotenv pkg）

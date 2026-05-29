@@ -1,10 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Check, Crown, Sparkles, TrendingUp } from "lucide-react";
+import { Check, Crown, Sparkles, TrendingUp, Loader2 } from "lucide-react";
 import { BackgroundBeams } from "@/components/ui/BackgroundBeams";
 import { Sparkles as SparklesParticles } from "@/components/ui/Sparkles";
 import { SITE_STATS } from "@/lib/site-stats";
+import { useToast } from "@/components/ui/Toast";
 
 type Plan = {
   id: string;
@@ -20,6 +22,39 @@ type Plan = {
 };
 
 export function PricingClient({ plans }: { plans: Plan[] }) {
+  const toast = useToast();
+  const [pendingPlan, setPendingPlan] = useState<string | null>(null);
+
+  const checkout = async (planId: string) => {
+    setPendingPlan(planId);
+    try {
+      const res = await fetch("/api/me/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan: planId }),
+        credentials: "include",
+      });
+      const j = await res.json();
+      if (!res.ok) {
+        if (res.status === 401) {
+          toast.warning("請先登入再訂閱");
+          setTimeout(() => { window.location.href = `/login?redirect=/pricing`; }, 800);
+          return;
+        }
+        if (res.status === 503) {
+          toast.error(j?.hint ?? "金流尚未開通、稍後再試");
+          return;
+        }
+        throw new Error(j?.error ?? `HTTP ${res.status}`);
+      }
+      if (j.url) window.location.href = j.url;
+    } catch (e: any) {
+      toast.error(e?.message ?? "啟動 checkout 失敗");
+    } finally {
+      setPendingPlan(null);
+    }
+  };
+
   return (
     <div className="relative min-h-screen overflow-hidden">
       {/* 背景 */}
@@ -131,17 +166,21 @@ export function PricingClient({ plans }: { plans: Plan[] }) {
                 ))}
               </ul>
 
-              {/* CTA */}
+              {/* CTA — 接 Stripe checkout */}
               <button
-                disabled
-                className={`w-full px-4 py-3 rounded-xl font-bold transition ${
+                onClick={() => checkout(p.id)}
+                disabled={pendingPlan !== null}
+                className={`w-full px-4 py-3 rounded-xl font-bold transition inline-flex items-center justify-center gap-2 ${
                   p.highlight
-                    ? "bg-gradient-to-r from-accent via-accent-2 to-accent-3 text-black shadow-lg shadow-accent/30"
-                    : "border-2 border-border bg-bg/50 hover:border-accent/50"
-                } opacity-70 cursor-not-allowed`}
-                title="金流整合中、敬請期待"
+                    ? "bg-gradient-to-r from-accent via-accent-2 to-accent-3 text-black shadow-lg shadow-accent/30 hover:shadow-xl hover:scale-[1.02]"
+                    : "border-2 border-border bg-bg/50 hover:border-accent/50 hover:bg-accent/5"
+                } disabled:opacity-60 disabled:cursor-not-allowed`}
               >
-                {p.cta}（即將開放）
+                {pendingPlan === p.id ? (
+                  <><Loader2 size={14} className="animate-spin" /> 跳轉中…</>
+                ) : (
+                  p.cta
+                )}
               </button>
             </motion.div>
           ))}
