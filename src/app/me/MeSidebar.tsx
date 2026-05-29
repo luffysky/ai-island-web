@@ -197,6 +197,20 @@ export function MeSidebar({ profile }: { profile: Profile | null }) {
           Leetcode 推薦
         </MeLink>
         <MeLink
+          href="/me/resources"
+          icon={<span>🧭</span>}
+          collapsed={collapsed}
+        >
+          外部資源
+        </MeLink>
+        <MeLink
+          href="/me/footprint"
+          icon={<span>🛤️</span>}
+          collapsed={collapsed}
+        >
+          學習足跡
+        </MeLink>
+        <MeLink
           href="/me/assignments"
           icon={<span>📋</span>}
           collapsed={collapsed}
@@ -232,6 +246,9 @@ export function MeSidebar({ profile }: { profile: Profile | null }) {
         </MeLink>
         <MeLink href="/settings" collapsed={collapsed}>
           {collapsed ? "⚙️" : "⚙️ 設定"}
+        </MeLink>
+        <MeLink href="/me/email-prefs" collapsed={collapsed}>
+          {collapsed ? "✉️" : "✉️ 信件偏好"}
         </MeLink>
       </div>
     </aside>
