@@ -9,19 +9,21 @@ const REQUIRED = [
   "tg_admin_state", "owner_journal", "owner_ideas", "broadcast_log",
   "user_discord_bind", "user_discord_onboarding",
   "app_settings",
-  // 已知重點表（老 sql 應該都有）
-  "subscriptions", "subscription_orders",
+  // 已知重點表（修正成線上實際名稱）
+  "subscriptions", "orders",                      // 原 subscription_orders → orders
   "lesson_progress", "ai_messages", "ai_models", "ai_api_keys",
   "chapters", "dev_quotes", "error_logs",
   "leetcode_problems", "challenge_submissions",
   "user_ai_memory", "user_daily_goals",
-  "pet_quests", "user_ai_action_quota",
+  "daily_quests", "user_ai_action_quota",         // 原 pet_quests → daily_quests
   "learning_plans", "mock_interview_sessions",
-  "external_resources", "mentorships",
-  "user_api_keys_v1",
+  "external_resources", "mentor_profiles",        // 原 mentorships → mentor_profiles
+  "api_keys_v1",                                  // 原 user_api_keys_v1 → api_keys_v1
   "forum_threads", "forum_replies", "forum_boards",
-  "checkins", "todos", "notifications",
-  "user_line_bind", "user_notes",
+  "daily_checkins", "todos", "notifications",     // 原 checkins → daily_checkins
+  "notes",                                        // 原 user_notes → notes
+  // 訂閱付款相關（接 Stripe / 綠界 用）
+  "stripe_customers", "stripe_subscriptions", "webhook_events",
 ];
 
 function loadEnv() {
