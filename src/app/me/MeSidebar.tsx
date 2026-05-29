@@ -225,6 +225,13 @@ export function MeSidebar({ profile }: { profile: Profile | null }) {
           作品集
         </MeLink>
         <MeLink
+          href="/me/resume"
+          icon={<span>🪪</span>}
+          collapsed={collapsed}
+        >
+          AI 履歷
+        </MeLink>
+        <MeLink
           href="/me/support"
           icon={<span>💬</span>}
           collapsed={collapsed}
