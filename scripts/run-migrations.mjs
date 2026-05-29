@@ -57,6 +57,8 @@ const MIGRATIONS = [
   "weekly_challenge_migration.sql",
   // 2026-05-29 — 學員配對 mentor / peer
   "mentorships_migration.sql",
+  // 2026-05-29 — 對外 AI API key (api_keys_v1)
+  "user_api_keys_v1_migration.sql",
 ];
 
 // 從 .env.local 讀（不依賴 dotenv pkg）

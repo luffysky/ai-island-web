@@ -225,6 +225,13 @@ export function MeSidebar({ profile }: { profile: Profile | null }) {
           學員配對
         </MeLink>
         <MeLink
+          href="/me/api-keys"
+          icon={<span>🔑</span>}
+          collapsed={collapsed}
+        >
+          對外 API Key
+        </MeLink>
+        <MeLink
           href="/me/assignments"
           icon={<span>📋</span>}
           collapsed={collapsed}
