@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { ExternalLink, Check, RefreshCcw, Loader2, Code2, Sparkles } from "lucide-react";
+import { ExternalLink, Check, RefreshCcw, Loader2, Code2, Sparkles, Search } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
+import { useVirtualizer } from "@tanstack/react-virtual";
 
 type Problem = {
   id: string;
@@ -37,6 +38,22 @@ export function LeetcodeListClient({
   const [diff, setDiff] = useState<"all" | "easy" | "medium" | "hard">("all");
   const [tag, setTag] = useState<string>("all");
   const [busy, setBusy] = useState(false);
+  const [search, setSearch] = useState("");
+  const [hideSolved, setHideSolved] = useState(false);
+  const [itemsPerRow, setItemsPerRow] = useState(3);
+
+  // 偵測螢幕寬度動態調 itemsPerRow
+  useEffect(() => {
+    const calc = () => {
+      const w = window.innerWidth;
+      if (w < 768) setItemsPerRow(1);
+      else if (w < 1024) setItemsPerRow(2);
+      else setItemsPerRow(3);
+    };
+    calc();
+    window.addEventListener("resize", calc);
+    return () => window.removeEventListener("resize", calc);
+  }, []);
 
   const allTags = useMemo(() => {
     const s = new Set<string>();
@@ -45,12 +62,17 @@ export function LeetcodeListClient({
   }, [problems]);
 
   const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
     return problems.filter((p) => {
       if (diff !== "all" && p.difficulty !== diff) return false;
       if (tag !== "all" && !p.tags?.includes(tag)) return false;
+      if (hideSolved && solved.has(p.id)) return false;
+      if (q) {
+        if (!p.title.toLowerCase().includes(q) && !String(p.number).includes(q) && !p.tags?.some((t) => t.toLowerCase().includes(q))) return false;
+      }
       return true;
     });
-  }, [problems, diff, tag]);
+  }, [problems, diff, tag, search, hideSolved, solved]);
 
   // 今日推薦 5 題（未解的、依難度均衡）
   const recommended = useMemo(() => {
@@ -143,14 +165,76 @@ export function LeetcodeListClient({
           <option value="all">全部</option>
           {allTags.map((t) => <option key={t} value={t}>{t}</option>)}
         </select>
-        <span className="text-fg-muted ml-auto">{filtered.length} 題 · 已解 {solved.size}</span>
+        <label className="flex items-center gap-1 text-xs ml-3 cursor-pointer">
+          <input type="checkbox" checked={hideSolved} onChange={(e) => setHideSolved(e.target.checked)} />
+          隱藏已解
+        </label>
+        <span className="text-fg-muted ml-auto">{filtered.length.toLocaleString()} 題 · 已解 {solved.size}</span>
       </div>
 
-      {/* 列表 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-        {filtered.map((p) => (
-          <ProblemCard key={p.id} p={p} solved={solved.has(p.id)} onMark={() => markSolved(p.id)} />
-        ))}
+      {/* 搜尋 + 虛擬化 list */}
+      <div className="bg-bg-card border border-border rounded-xl p-2 mb-2 flex items-center gap-2">
+        <Search size={14} className="text-fg-muted ml-2" />
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="搜尋題號 / 標題 / 標籤..."
+          className="flex-1 bg-transparent outline-none text-sm py-1.5"
+        />
+      </div>
+
+      <VirtualGrid filtered={filtered} itemsPerRow={itemsPerRow} solved={solved} onMark={markSolved} />
+    </div>
+  );
+}
+
+function VirtualGrid({ filtered, itemsPerRow, solved, onMark }: {
+  filtered: Problem[]; itemsPerRow: number; solved: Set<string>; onMark: (id: string) => void;
+}) {
+  const parentRef = useRef<HTMLDivElement>(null);
+  const rowCount = Math.ceil(filtered.length / itemsPerRow);
+
+  const virtualizer = useVirtualizer({
+    count: rowCount,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 145,
+    overscan: 5,
+  });
+
+  if (filtered.length === 0) {
+    return <p className="text-center py-12 text-fg-muted">沒符合條件的題目</p>;
+  }
+
+  return (
+    <div
+      ref={parentRef}
+      className="border border-border rounded-xl bg-bg/30"
+      style={{ height: "70vh", overflow: "auto" }}
+    >
+      <div style={{ height: `${virtualizer.getTotalSize()}px`, width: "100%", position: "relative" }}>
+        {virtualizer.getVirtualItems().map((vRow) => {
+          const startIdx = vRow.index * itemsPerRow;
+          const rowItems = filtered.slice(startIdx, startIdx + itemsPerRow);
+          return (
+            <div
+              key={vRow.key}
+              data-index={vRow.index}
+              ref={virtualizer.measureElement}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                transform: `translateY(${vRow.start}px)`,
+              }}
+              className={`grid gap-2 p-2 ${itemsPerRow === 1 ? "grid-cols-1" : itemsPerRow === 2 ? "grid-cols-2" : "grid-cols-3"}`}
+            >
+              {rowItems.map((p) => (
+                <ProblemCard key={p.id} p={p} solved={solved.has(p.id)} onMark={() => onMark(p.id)} />
+              ))}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
