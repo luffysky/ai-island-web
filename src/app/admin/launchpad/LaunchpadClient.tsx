@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Plus, Trash2, X, Loader2, Search, Sparkles, Wand2, ExternalLink, ChevronDown, ChevronRight } from "lucide-react";
+import { Plus, Trash2, X, Loader2, Search, Sparkles, Wand2, ExternalLink, ChevronDown, ChevronRight, RefreshCw } from "lucide-react";
 
 type Board = { id: string; slug: string; title: string; emoji: string | null; description: string | null; position: number };
 type Column = { id: string; board_id: string; title: string; emoji: string | null; color: string; position: number };
@@ -60,6 +60,7 @@ export function LaunchpadClient() {
   const [suggestions, setSuggestions] = useState<any | null>(null);
   const [suggestLoading, setSuggestLoading] = useState(false);
   const [collapsedBoards, setCollapsedBoards] = useState<Record<string, boolean>>({});
+  const [autoSyncing, setAutoSyncing] = useState(false);
 
   // 載 / 存收合狀態
   useEffect(() => {
@@ -164,6 +165,27 @@ export function LaunchpadClient() {
     }
   }
 
+  async function autoSync() {
+    if (autoSyncing) return;
+    if (!confirm("讓雪鑰掃 GitHub 最近 commit、自動把已完成的卡移到 DONE？")) return;
+    setAutoSyncing(true);
+    try {
+      const res = await fetch("/api/admin/kanban/auto-sync", { method: "POST", credentials: "include" });
+      const j = await res.json();
+      if (j.ok) {
+        const msg = j.moved > 0
+          ? `✨ 雪鑰移了 ${j.moved} 張到 DONE：\n${(j.moved_details ?? []).slice(0, 5).map((d: any) => `✓ ${d.title}`).join("\n")}`
+          : `雪鑰掃了 ${j.scanned_commits} 個 commit / ${j.scanned_cards} 張卡、沒看到能自動完成的`;
+        alert(msg);
+        await reload();
+      } else {
+        alert(`❌ 自動掃失敗：${j.error ?? "unknown"}`);
+      }
+    } finally {
+      setAutoSyncing(false);
+    }
+  }
+
   // 拖曳：onDragStart 記 id、onDrop 改 column_id
   function onDragStart(id: string) { setDraggingId(id); }
   function onDragEnd() { setDraggingId(null); }
@@ -224,6 +246,9 @@ export function LaunchpadClient() {
         </button>
         <button onClick={() => setAiAddOpen(true)} className="btn-chip btn-chip-success" title="貼一段話、AI 自動分類建卡">
           <Wand2 size={14} /> AI 建卡
+        </button>
+        <button onClick={autoSync} disabled={autoSyncing} className="btn-chip btn-chip-warn" title="雪鑰掃 GitHub commits、自動移已完成卡到 DONE">
+          {autoSyncing ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />} 雪鑰自動掃
         </button>
         <button onClick={() => setAllBoards(true)} className="btn-chip btn-chip-neutral text-xs" title="全部收合">
           全收
