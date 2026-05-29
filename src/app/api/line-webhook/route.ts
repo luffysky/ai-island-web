@@ -201,7 +201,7 @@ async function lineReply(replyToken: string, payload: string | FlexMessage | Lin
   }
 }
 
-async function askAI(message: string, adminUser: AdminLineUser): Promise<string> {
+async function askAI(message: string, adminUser: AdminLineUser, images?: Array<{ data: string; mediaType: string }>): Promise<string> {
   const admin = createSupabaseAdmin();
   const { data: models, error: modelsErr } = await admin.from("ai_models").select("*").eq("is_active", true).limit(20);
   if (modelsErr) {
@@ -302,7 +302,9 @@ ${snapshot}
   // 兩條路：claude → 走 tool use（自動查 KPI/users/errors）、其他 → 純對話（便宜、不打 tool）
   // 林董：「預設用 gpt 就好、用到 tool 再自己跳轉到 claude、不然帳單你幫我繳？」
   // → usage_models 設 gpt-4o-mini 時走 callAI 純聊；要 tool 才把 line_admin usage 改成 claude。
-  const useToolUse = model.provider === "anthropic" && /claude/i.test(model.model_name);
+  // 含圖片強制走 callAI（vision 不跑 tool use loop）
+  const hasImages = images && images.length > 0;
+  const useToolUse = !hasImages && model.provider === "anthropic" && /claude/i.test(model.model_name);
 
   try {
     let reply: string;
@@ -316,14 +318,23 @@ ${snapshot}
       });
     } else {
       // OpenAI / Gemini / Groq：走通用 callAI、純對話、沒 admin tools
+      // multimodal: 最後一條 user message 改成 [text + images]
       const { callAI } = await import("@/lib/ai-providers");
+      const historyMsgs = hist.slice(0, -1).map((h) => ({ role: h.role, content: h.content }));
+      const lastUserContent = hasImages
+        ? [
+            { type: "text" as const, text: message || "幫我看這張圖、有什麼重點？" },
+            ...images!.map((img) => ({ type: "image" as const, mediaType: img.mediaType, data: img.data })),
+          ]
+        : message;
       const r = await callAI({
         provider: model.provider,
         model: model.model_name,
         apiKey,
         messages: [
           { role: "system", content: systemPrompt },
-          ...hist.map((h) => ({ role: h.role, content: h.content })),
+          ...historyMsgs,
+          { role: "user", content: lastUserContent },
         ],
         temperature: 0.7,
         maxTokens: 800,
@@ -398,6 +409,30 @@ export async function POST(req: NextRequest) {
       }
       const reply = await runPostback(ev.postback?.data ?? "", adminUser);
       await lineReply(replyToken, reply.flex ?? reply.text, token);
+      continue;
+    }
+
+    // 圖片訊息（admin）— 林董 LINE 傳截圖、AI vision 直接看
+    if (ev.type === "message" && ev.message?.type === "image") {
+      if (!replyToken || !userId) continue;
+      const adminUser = getAdminLineUser(userId);
+      if (!adminUser) {
+        await lineReply(replyToken, "🤖 非授權 admin、忽略圖片", token);
+        continue;
+      }
+      const { fetchLineImageBase64 } = await import("@/lib/line-image");
+      const img = await fetchLineImageBase64(ev.message.id, token);
+      if (!img) {
+        await lineReply(replyToken, "❌ 圖片下載失敗、再傳一次試試？", token);
+        continue;
+      }
+      try {
+        const reply = await askAI("（請分析這張圖片、給我重點觀察）", adminUser, [img]);
+        await lineReply(replyToken, reply, token);
+      } catch (e: any) {
+        await logLineError("ai_image_failed", e?.message ?? "unknown", { adminUserId: adminUser.id });
+        await lineReply(replyToken, `❌ AI 看圖失敗：${e?.message?.slice(0, 100) ?? "unknown"}`, token);
+      }
       continue;
     }
 

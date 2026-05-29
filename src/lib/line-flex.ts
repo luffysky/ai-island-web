@@ -130,6 +130,7 @@ export type SimpleCardInput = {
   buttons?: Array<
     | { label: string; uri: string; primary?: boolean }
     | { label: string; postback: string; primary?: boolean; displayText?: string }
+    | { label: string; text: string; primary?: boolean }
   >;
   quickReply?: QuickReply;
 };
@@ -252,6 +253,8 @@ export function buildSimpleCard(input: SimpleCardInput): FlexMessage {
         type: "button",
         action: b.postback
           ? { type: "postback", label: String(b.label).slice(0, 20), data: b.postback, displayText: b.displayText }
+          : b.text
+          ? { type: "message", label: String(b.label).slice(0, 20), text: String(b.text).slice(0, 300) }
           : { type: "uri", label: String(b.label).slice(0, 20), uri: b.uri },
         style: b.primary ? "primary" : "secondary",
         color: b.primary ? colorDark : undefined,

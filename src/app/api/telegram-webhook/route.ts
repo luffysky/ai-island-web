@@ -202,12 +202,14 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json().catch(() => ({} as any));
   const msg = body.message ?? body.edited_message;
-  if (!msg || !msg.text || !msg.chat?.id) return NextResponse.json({ ok: true });
+  if (!msg || !msg.chat?.id) return NextResponse.json({ ok: true });
+  // 接受文字 OR 圖片（圖片可帶 caption）
+  if (!msg.text && !msg.photo) return NextResponse.json({ ok: true });
 
   const chatId = msg.chat.id as number;
   const tgUserId = msg.from?.id as number;
   const tgUsername = msg.from?.username as string | undefined;
-  const text = String(msg.text).trim();
+  const text = String(msg.text ?? msg.caption ?? "").trim();
 
   if (!ownerAllowed(tgUserId, tgUsername)) {
     await tgSend(token, chatId,
@@ -410,12 +412,43 @@ export async function POST(req: NextRequest) {
     `回答以 Telegram 格式為主 — 短段落、可用 *粗體* / \`code\` markdown、列點清楚。\n` +
     `當前 model: ${model.provider}/${model.model_name}。`;
 
+  // 圖片 vision：msg.photo[] 是不同解析度、抓最大張、下載 base64 餵 AI
+  const photos: Array<{ data: string; mediaType: string }> = [];
+  if (Array.isArray(msg.photo) && msg.photo.length > 0) {
+    const largest = msg.photo[msg.photo.length - 1];
+    if (largest?.file_id) {
+      try {
+        const fileInfoRes = await fetch(`https://api.telegram.org/bot${token}/getFile?file_id=${largest.file_id}`, {
+          signal: AbortSignal.timeout(5000),
+        });
+        const fileInfo = await fileInfoRes.json();
+        const filePath = fileInfo?.result?.file_path;
+        if (filePath) {
+          const binRes = await fetch(`https://api.telegram.org/file/bot${token}/${filePath}`, {
+            signal: AbortSignal.timeout(8000),
+          });
+          if (binRes.ok) {
+            const buf = await binRes.arrayBuffer();
+            if (buf.byteLength <= 8 * 1024 * 1024) {
+              const mediaType = filePath.endsWith(".png") ? "image/png" : filePath.endsWith(".webp") ? "image/webp" : "image/jpeg";
+              photos.push({ data: Buffer.from(buf).toString("base64"), mediaType });
+            }
+          }
+        }
+      } catch (e: any) {
+        console.warn("[telegram-webhook] image download failed:", e?.message);
+      }
+    }
+  }
+
   try {
     // 先嘗試 anthropic + tool use（不管使用者選哪個 model、admin tool 都用 anthropic 跑）
     // 找不到 anthropic key/model 才退回原本 callAI（無 tool）
+    // 含圖片強制走 callAI（vision 不走 tool use loop）
     let reply = "";
     let modelTag = `${model.provider}/${model.model_name}`;
-    const toolRun = await tryAnthropicToolRun({
+    const hasImages = photos.length > 0;
+    const toolRun = hasImages ? null : await tryAnthropicToolRun({
       systemPrompt,
       history: historyPlusCurrent,
       user: { id: `tg:${tgUserId}`, name: tgUsername ?? "Telegram user", role: "owner" },
@@ -425,13 +458,22 @@ export async function POST(req: NextRequest) {
       reply = (toolRun.text ?? "").trim() || "(AI 沒回應、再試一次)";
       modelTag = `${toolRun.modelUsed} (tool)`;
     } else {
+      // multimodal: 最後一條 user message 改成 [text + images]
+      const historyMsgs = historyPlusCurrent.slice(0, -1).map((m) => ({ role: m.role, content: m.content }));
+      const lastUserContent = hasImages
+        ? [
+            { type: "text" as const, text: text || "幫我看這張圖、給我重點觀察" },
+            ...photos.map((p) => ({ type: "image" as const, mediaType: p.mediaType, data: p.data })),
+          ]
+        : text;
       const r = await callAI({
         provider: model.provider,
         model: model.model_name,
         apiKey,
         messages: [
           { role: "system", content: systemPrompt },
-          ...historyPlusCurrent.map((m) => ({ role: m.role, content: m.content })),
+          ...historyMsgs,
+          { role: "user", content: lastUserContent },
         ],
         temperature: 0.7,
         maxTokens: 1500,

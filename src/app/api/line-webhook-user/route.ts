@@ -101,11 +101,18 @@ export type AskUserAIResult = {
 
 const ASK_USER_AI_TIMEOUT_MS = 25_000;
 
-async function askUserAI(text: string, profile: UserProfileLite | null, lineUserId: string): Promise<AskUserAIResult | null> {
+import { fetchLineImageBase64, type ImagePart } from "@/lib/line-image";
+
+async function askUserAI(
+  text: string,
+  profile: UserProfileLite | null,
+  lineUserId: string,
+  images?: ImagePart[],
+): Promise<AskUserAIResult | null> {
   // 整體硬 timeout：LINE reply token 有 30 秒、跑超過會永遠送不出 reply、學員乾等
   // 用 race 包住整個流程、超時就回兜底訊息、保證一定能 reply
   return Promise.race([
-    askUserAIInner(text, profile, lineUserId),
+    askUserAIInner(text, profile, lineUserId, images),
     new Promise<AskUserAIResult>((resolve) =>
       setTimeout(() => {
         const displayName = profile?.display_name || profile?.username || "你";
@@ -120,7 +127,7 @@ async function askUserAI(text: string, profile: UserProfileLite | null, lineUser
   ]);
 }
 
-async function askUserAIInner(text: string, profile: UserProfileLite | null, lineUserId: string): Promise<AskUserAIResult | null> {
+async function askUserAIInner(text: string, profile: UserProfileLite | null, lineUserId: string, images?: ImagePart[]): Promise<AskUserAIResult | null> {
   const admin = createSupabaseAdmin();
   const { data: models } = await admin.from("ai_models").select("*").eq("is_active", true).limit(20);
   const activeModels = (models as any[]) ?? [];
@@ -195,8 +202,10 @@ async function askUserAIInner(text: string, profile: UserProfileLite | null, lin
   try {
     // Anthropic（Claude）支援 tool use — 給學員 AI 4 個讀網站內容的 tool
     // 其他 provider（openai / google / groq）暫無 tool use、退回純對話
+    // 含圖片時強制走 callAI（vision 不走 tool use loop）
     let reply: string;
-    if (model.provider === "anthropic" && /claude/i.test(model.model_name)) {
+    const hasImages = images && images.length > 0;
+    if (!hasImages && model.provider === "anthropic" && /claude/i.test(model.model_name)) {
       reply = await askStudentAIWithTools({
         apiKey,
         model: model.model_name,
@@ -205,13 +214,22 @@ async function askUserAIInner(text: string, profile: UserProfileLite | null, lin
       });
       reply = reply.trim() || "我這邊沒接到回應、再問一次試試？";
     } else {
+      // multimodal: 最後一條 user message 改成 [text + images] 結構
+      const historyMsgs = hist.slice(0, -1).map((m) => ({ role: m.role, content: m.content }));
+      const lastUserContent = hasImages
+        ? [
+            { type: "text" as const, text: text || "幫我看這張圖、有什麼問題或要學的？" },
+            ...images!.map((img) => ({ type: "image" as const, mediaType: img.mediaType, data: img.data })),
+          ]
+        : text;
       const r = await callAI({
         provider: model.provider,
         model: model.model_name,
         apiKey,
         messages: [
           { role: "system", content: systemPrompt },
-          ...hist.map((m) => ({ role: m.role, content: m.content })),
+          ...historyMsgs,
+          { role: "user", content: lastUserContent },
         ],
         temperature: 0.7,
         maxTokens: 800,
@@ -710,6 +728,29 @@ export async function POST(req: NextRequest) {
       }
       // 未知 postback action — 忽略
       console.warn("[line-webhook-user] unknown postback:", data);
+      continue;
+    }
+
+    // 圖片訊息 — 學員傳截圖卡關問題、AI 直接看圖回
+    if (ev.type === "message" && ev.message?.type === "image" && replyToken && userId) {
+      lineLoadingStart(userId, token, 60);
+      const img = await fetchLineImageBase64(ev.message.id, token);
+      if (!img) {
+        await lineReply(replyToken, "圖片下載失敗、再傳一次試試？", token, QUICK_REPLY);
+        continue;
+      }
+      const admin = createSupabaseAdmin();
+      const { data: profile } = await admin
+        .from("profiles")
+        .select("id, username, display_name, role, xp, level")
+        .eq("line_user_id", userId)
+        .maybeSingle();
+      const result = await askUserAI("", profile as any, userId, [img]);
+      if (!result) {
+        await lineReply(replyToken, "AI 暫時無法分析、稍後再試或描述一下圖片內容讓我幫忙。", token, QUICK_REPLY);
+        continue;
+      }
+      await lineReply(replyToken, result.reply.slice(0, 4900), token, QUICK_REPLY);
       continue;
     }
 
