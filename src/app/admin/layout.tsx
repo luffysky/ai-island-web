@@ -102,6 +102,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             <NavGroup title="🏝️ 總覽 (Overview)">
               <AdminLink href="/admin">📊 Dashboard</AdminLink>
               <AdminLink href="/admin/launchpad">🚀 Launchpad（全功能 / 待辦 / 許願池）</AdminLink>
+              <AdminLink href="/admin/ai-cost">💰 AI 成本 / Unit Economics</AdminLink>
               <AdminLink href="/admin/kpi">📊 KPI 報表</AdminLink>
               <AdminLink href="/admin/analytics">📈 站內數據</AdminLink>
               <AdminLink href="/admin/analytics/learning-events">🧪 學習行為事件</AdminLink>
