@@ -36,6 +36,11 @@ async function handle(req: Request) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
+  // AI gate（特權跳過、Free 看月 quota：resume 3/月）
+  const { requireAiAction, consumeAiTokens } = await import("@/lib/ai-gate");
+  const gate = await requireAiAction(user.id, "resume");
+  if (!gate.ok) return NextResponse.json({ error: gate.error, reason: gate.reason }, { status: 429 });
+
   const body = await req.json().catch(() => ({} as any));
   const target = ["indie", "junior", "senior", "freelance"].includes(body.target) ? body.target : "junior";
 
@@ -166,6 +171,9 @@ ${memory?.summary ? `\n# 雪鑰對他的記憶\n${memory.summary}` : ""}
       maxTokens: 1500,
     });
     const md = r.text.trim();
+    if (gate.chargeable && (r.tokensInput + r.tokensOutput) > 0) {
+      await consumeAiTokens(user.id, r.tokensInput + r.tokensOutput);
+    }
     return NextResponse.json({ ok: true, markdown: md, target, model: modelName });
   } catch (e: any) {
     return NextResponse.json({ error: e?.message ?? "ai_failed" }, { status: 500 });

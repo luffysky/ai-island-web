@@ -71,6 +71,13 @@ async function handle(req: Request) {
     return NextResponse.json({ error: "invalid mode or role" }, { status: 400 });
   }
 
+  // 只在 start 動作扣 quota（一場面試只扣 1 次、之後 answer/finish 不扣）
+  if (action === "start") {
+    const { requireAiAction } = await import("@/lib/ai-gate");
+    const gate = await requireAiAction(user.id, "interview");
+    if (!gate.ok) return NextResponse.json({ error: gate.error, reason: gate.reason }, { status: 429 });
+  }
+
   const modelName = await getModelNameForUsage("admin_assistant", "claude-haiku-4-5-20251001");
   const provider = providerFromModel(modelName);
   const apiKey = await getProviderKey(provider);

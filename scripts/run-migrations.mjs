@@ -65,6 +65,8 @@ const MIGRATIONS = [
   "pet_quests_migration.sql",
   // 2026-05-29 — 每 user 月 AI token cap (成本壓縮 C)
   "per_user_ai_cap_migration.sql",
+  // 2026-05-29 — AI action quota（tutor 10 串、其他 3 次 / 月）
+  "ai_action_quota_migration.sql",
 ];
 
 // 從 .env.local 讀（不依賴 dotenv pkg）

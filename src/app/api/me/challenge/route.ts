@@ -92,6 +92,11 @@ async function submit(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
+  // AI gate（challenge 評分用 AI、free 月 3 次）
+  const { requireAiAction } = await import("@/lib/ai-gate");
+  const gate = await requireAiAction(user.id, "challenge");
+  if (!gate.ok) return NextResponse.json({ error: gate.error, reason: gate.reason }, { status: 429 });
+
   const body = await req.json().catch(() => ({} as any));
   const language = ["python", "javascript", "typescript", "go", "rust", "java", "cpp"].includes(body.language) ? body.language : "python";
   const code = String(body.code ?? "").trim();

@@ -88,3 +88,87 @@ export async function consumeAiTokens(userId: string, totalTokens: number): Prom
     console.warn("[ai-gate] consume_ai_tokens failed:", e?.message);
   }
 }
+
+/**
+ * 林董規格 — AI action quota（按行為類型計每月次數）
+ * - tutor_thread: 10 / 月（不能刪、刪 conversation 不減 count）
+ * - 其他項目: 3 / 月
+ * - 特權 / Premium 不檢查、最高禮遇
+ */
+export const AI_ACTION_CAPS = {
+  tutor_thread: 10,
+  resume: 3,
+  interview: 3,
+  challenge: 3,
+  subscription_rec: 5,
+  blog_write: 3,
+  pet_quest_gen: 30,
+  resource_rec: 5,
+  chapter_audit: 5,
+  kanban_suggest: 10,
+  kanban_ai_add: 10,
+  kanban_auto_sync: 5,
+} as const;
+
+export type AiActionType = keyof typeof AI_ACTION_CAPS;
+
+export type ActionGateResult = {
+  allow: boolean;
+  cap: number;
+  used: number;
+  remaining: number;
+  reason?: string;
+};
+
+export async function consumeAiAction(userId: string, action: AiActionType): Promise<ActionGateResult> {
+  const cap = AI_ACTION_CAPS[action];
+  const admin = createSupabaseAdmin();
+  try {
+    const { data } = await admin.rpc("consume_ai_action", {
+      p_user_id: userId, p_action_type: action, p_cap: cap,
+    });
+    const d = data as any;
+    return {
+      allow: !!d?.ok,
+      cap: d?.cap ?? cap,
+      used: d?.used ?? 0,
+      remaining: d?.remaining ?? 0,
+      reason: d?.ok ? undefined : `本月 ${action} 額度已用完（${d?.used}/${d?.cap}）、升級 Premium 解鎖無限`,
+    };
+  } catch (e: any) {
+    console.warn("[ai-gate] consume_ai_action failed:", e?.message);
+    return { allow: true, cap, used: 0, remaining: cap }; // RPC fail 放行
+  }
+}
+
+/**
+ * One-stop helper — gate (特權跳) + action quota check + auto consume action count
+ * 用法：
+ *   const r = await requireAiAction(user.id, "resume");
+ *   if (!r.ok) return NextResponse.json({ error: r.error, reason: r.reason }, { status: 429 });
+ *   ... 跑 AI ...
+ *   if (r.chargeable) await consumeAiTokens(user.id, totalTokens);
+ */
+export async function requireAiAction(userId: string, action: AiActionType): Promise<{
+  ok: boolean;
+  unlimited: boolean;
+  isPremium: boolean;
+  chargeable: boolean;
+  error?: string;
+  reason?: string;
+  used?: number;
+  cap?: number;
+}> {
+  const gate = await gateAiUsage(userId);
+  if (gate.unlimited || gate.isPremium) {
+    return { ok: true, unlimited: gate.unlimited, isPremium: gate.isPremium, chargeable: false };
+  }
+  if (!gate.allow) {
+    return { ok: false, unlimited: false, isPremium: false, chargeable: true, error: "token_cap_exceeded", reason: gate.reason };
+  }
+  const a = await consumeAiAction(userId, action);
+  if (!a.allow) {
+    return { ok: false, unlimited: false, isPremium: false, chargeable: true, error: "action_quota_exceeded", reason: a.reason, used: a.used, cap: a.cap };
+  }
+  return { ok: true, unlimited: false, isPremium: false, chargeable: true, used: a.used, cap: a.cap };
+}

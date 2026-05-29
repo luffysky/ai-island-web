@@ -134,9 +134,16 @@ async function handlePost(req: NextRequest) {
     }
   }
 
-  // 3. 取 / 建 conversation
+  // 3. 取 / 建 conversation — 新建時扣 tutor_thread 月 quota（特權 / Premium 跳過）
   let convId = conversationId;
   if (!convId) {
+    // 開新對話串、扣 tutor_thread 月配額（free 10/月、達上限拒）
+    const { requireAiAction } = await import("@/lib/ai-gate");
+    const tutorGate = await requireAiAction(user.id, "tutor_thread");
+    if (!tutorGate.ok) {
+      return errorResponse(tutorGate.error ?? "tutor_quota_exceeded", 429,
+        tutorGate.reason ?? "本月 AI 導師對話串已用完");
+    }
     const { data: newConv, error: convError } = await admin
       .from("ai_conversations")
       .insert({
