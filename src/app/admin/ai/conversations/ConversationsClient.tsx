@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Loader2, X, MessageSquare } from "lucide-react";
 import { formatTW } from "@/lib/format-date";
+import { CopyButton, ChatToolbar, formatChatTime } from "@/components/chat";
 
 type Conv = {
   id: string;
@@ -36,11 +37,16 @@ export function ConversationsClient({ convs, isOwner }: { convs: Conv[]; isOwner
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [msgSearch, setMsgSearch] = useState("");
 
   useEffect(() => {
-    if (!selectedId) return;
+    if (!selectedId) {
+      setMsgSearch("");
+      return;
+    }
     setLoading(true);
     setError(null);
+    setMsgSearch("");
     fetch(`/api/admin/ai/conversations/${selectedId}/messages`)
       .then(async (r) => {
         const j = await r.json();
@@ -117,6 +123,15 @@ export function ConversationsClient({ convs, isOwner }: { convs: Conv[]; isOwner
               </button>
             </div>
 
+            {messages.length > 3 && (
+              <ChatToolbar
+                onSearch={setMsgSearch}
+                exportText={messages.map((m) => `[${m.role === "user" ? "用戶" : "AI"}] ${formatChatTime(m.created_at)}${m.model_used ? ` (${m.model_used})` : ""}\n${m.content}`).join("\n\n")}
+                exportFileName={`admin-conv-${selectedId?.slice(0, 8) ?? "x"}-${new Date().toISOString().slice(0, 10)}.txt`}
+                placeholder="搜尋訊息內容..."
+              />
+            )}
+
             <div className="flex-1 overflow-y-auto p-4 space-y-3">
               {loading ? (
                 <div className="text-center py-12 text-fg-muted">
@@ -148,25 +163,32 @@ export function ConversationsClient({ convs, isOwner }: { convs: Conv[]; isOwner
                   {messages.length === 0 ? (
                     <div className="text-center text-fg-muted text-sm py-8">此對話沒有訊息</div>
                   ) : (
-                    messages.map((m, i) => (
-                      <div
-                        key={i}
-                        className={`p-3 rounded-lg ${m.role === "user" ? "bg-accent/10 ml-8" : "bg-bg-elevated mr-8"}`}
-                      >
-                        <div className="text-[10px] text-fg-muted mb-1 flex items-center gap-2 flex-wrap">
-                          <span className="font-bold">{m.role === "user" ? "用戶" : "AI"}</span>
-                          <span>{formatTW(m.created_at)}</span>
-                          {m.model_used && <code className="bg-bg px-1 rounded">{m.model_used}</code>}
-                          {(m.tokens_input ?? 0) + (m.tokens_output ?? 0) > 0 && (
-                            <span className="text-fg-muted">
-                              {m.tokens_input}↓ / {m.tokens_output}↑ tokens
-                              {m.cost_usd ? ` · $${Number(m.cost_usd).toFixed(4)}` : ""}
+                    messages
+                      .filter((m) => !msgSearch || m.content.toLowerCase().includes(msgSearch.toLowerCase()))
+                      .map((m, i) => (
+                        <div
+                          key={i}
+                          className={`group/msg p-3 rounded-lg relative ${m.role === "user" ? "bg-accent/10 ml-8" : "bg-bg-elevated mr-8"}`}
+                        >
+                          <div className="text-[10px] text-fg-muted mb-1 flex items-center gap-2 flex-wrap">
+                            <span className="font-bold">{m.role === "user" ? "用戶" : "AI"}</span>
+                            <time title={new Date(m.created_at).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" })} className="tabular-nums">
+                              {formatChatTime(m.created_at)}
+                            </time>
+                            {m.model_used && <code className="bg-bg px-1 rounded">{m.model_used}</code>}
+                            {(m.tokens_input ?? 0) + (m.tokens_output ?? 0) > 0 && (
+                              <span className="text-fg-muted">
+                                {m.tokens_input}↓ / {m.tokens_output}↑ tokens
+                                {m.cost_usd ? ` · $${Number(m.cost_usd).toFixed(4)}` : ""}
+                              </span>
+                            )}
+                            <span className="md:opacity-0 md:group-hover/msg:opacity-100 transition ml-auto">
+                              <CopyButton text={m.content} size={10} />
                             </span>
-                          )}
+                          </div>
+                          <div className="text-sm whitespace-pre-wrap break-words">{m.content || <span className="text-fg-muted italic">(空)</span>}</div>
                         </div>
-                        <div className="text-sm whitespace-pre-wrap break-words">{m.content || <span className="text-fg-muted italic">(空)</span>}</div>
-                      </div>
-                    ))
+                      ))
                   )}
                 </>
               )}
