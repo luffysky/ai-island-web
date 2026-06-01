@@ -1,0 +1,26 @@
+# build context 越小越好（避免把 Windows node_modules / .next 塞進 image）
+node_modules
+.next
+.git
+.github
+.vscode
+.idea
+npm-debug.log*
+*.log
+
+# 文件 / 範例 / 暫存（跟 runtime 無關）
+docs
+example
+bug
+.codex_zip_extract_*
+coverage
+.DS_Store
+Thumbs.db
+
+# 環境變數（千萬別進 image；NEXT_PUBLIC 由 build args 傳）
+.env
+.env.*
+!.env.example
+
+# 本機工具
+.tools

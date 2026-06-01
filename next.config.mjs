@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // 產出精簡的 standalone server（.next/standalone）、大幅縮小 Docker image
+  output: 'standalone',
   reactStrictMode: true,
   images: {
     remotePatterns: [
