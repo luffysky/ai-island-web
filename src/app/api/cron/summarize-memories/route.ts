@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { getProviderKey, decryptKey } from "@/lib/ai-crypto";
 import { getModelNameForUsage } from "@/lib/ai-usage-models";
+import { verifyCronAuth } from "@/lib/cron-auth";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -61,11 +62,8 @@ const SUMMARIZE_PROMPT = `你的任務：用一段話總結某位學員的近期
 - topics 按 count desc 排、最多 8 個`;
 
 export async function GET(req: NextRequest) {
-  const expected = process.env.CRON_SECRET;
-  const got = req.headers.get("x-cron-secret") ?? req.nextUrl.searchParams.get("secret");
-  if (!expected || got !== expected) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  }
+  const authErr = verifyCronAuth(req);
+  if (authErr) return authErr;
 
   const admin = createSupabaseAdmin();
   const apiKey = await getProviderKey("anthropic");

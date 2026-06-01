@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { buildSimpleCard } from "@/lib/line-flex";
+import { verifyCronAuth } from "@/lib/cron-auth";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -24,11 +25,8 @@ export const maxDuration = 60;
  * 失敗策略：個別 user push fail 不阻斷其他、寫 error_logs。
  */
 export async function GET(req: NextRequest) {
-  const expected = process.env.CRON_SECRET;
-  const got = req.headers.get("x-cron-secret") ?? req.nextUrl.searchParams.get("secret");
-  if (!expected || got !== expected) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  }
+  const authErr = verifyCronAuth(req);
+  if (authErr) return authErr;
 
   const token = process.env.USER_LINE_CHANNEL_TOKEN;
   if (!token) {

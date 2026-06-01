@@ -5,6 +5,7 @@ import { getProviderKey } from "@/lib/ai-crypto";
 import { getModelNameForUsage } from "@/lib/ai-usage-models";
 import { loadUserMemory } from "@/lib/user-ai-memory";
 import { buildSimpleCard } from "@/lib/line-flex";
+import { verifyCronAuth } from "@/lib/cron-auth";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -25,11 +26,8 @@ export const maxDuration = 300;
  * dedupe：每個 user 每 tier 只推一次、用 user_recall_log 防重複
  */
 export async function GET(req: NextRequest) {
-  const expected = process.env.CRON_SECRET;
-  const got = req.headers.get("x-cron-secret") ?? req.nextUrl.searchParams.get("secret");
-  if (!expected || got !== expected) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  }
+  const authErr = verifyCronAuth(req);
+  if (authErr) return authErr;
 
   const admin = createSupabaseAdmin();
 

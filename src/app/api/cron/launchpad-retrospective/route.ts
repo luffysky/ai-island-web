@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { notifyAdmin } from "@/lib/notify-admin";
+import { verifyCronAuth } from "@/lib/cron-auth";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -16,11 +17,8 @@ export const maxDuration = 60;
  *   3. 最久沒動的 5 張卡（updated_at 最早的）
  */
 export async function GET(req: NextRequest) {
-  const expected = process.env.CRON_SECRET;
-  const got = req.headers.get("x-cron-secret") ?? req.nextUrl.searchParams.get("secret");
-  if (!expected || got !== expected) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  }
+  const authErr = verifyCronAuth(req);
+  if (authErr) return authErr;
 
   const admin = createSupabaseAdmin();
 

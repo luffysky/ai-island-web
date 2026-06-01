@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { verifyCronAuth } from "@/lib/cron-auth";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -18,11 +19,8 @@ export const maxDuration = 60;
  *   2. 累計解題總榜 Top 5（profiles.leetcode_stats.totalSolved）
  */
 export async function GET(req: NextRequest) {
-  const expected = process.env.CRON_SECRET;
-  const got = req.headers.get("x-cron-secret") ?? req.nextUrl.searchParams.get("secret");
-  if (!expected || got !== expected) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  }
+  const authErr = verifyCronAuth(req);
+  if (authErr) return authErr;
 
   const webhookUrl = process.env.DISCORD_LEETCODE_WEBHOOK_URL || process.env.DISCORD_ACHIEVEMENTS_WEBHOOK_URL;
   if (!webhookUrl) {
