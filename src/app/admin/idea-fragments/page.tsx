@@ -25,6 +25,14 @@ export default async function IdeaFragmentsPage() {
 
   const pairs = await fetchSurprisingPairs({ count: 8 });
 
+  // 「誰丟的」名字表（協作：林董 / Nami 各自的碎片）
+  const creatorIds = Array.from(new Set(((fragments as any[]) ?? []).map((f) => f.created_by).filter(Boolean)));
+  const memberNames: Record<string, string> = {};
+  if (creatorIds.length > 0) {
+    const { data: people } = await admin.from("profiles").select("id, display_name, username").in("id", creatorIds);
+    for (const p of (people as any[]) ?? []) memberNames[p.id] = p.display_name || p.username || "成員";
+  }
+
   return (
     <div className="space-y-4">
       <PageHero
@@ -40,6 +48,7 @@ export default async function IdeaFragmentsPage() {
         initialDaily={(daily as any) ?? null}
         initialFolders={(folders as any) ?? []}
         initialPairs={(pairs as any) ?? []}
+        memberNames={memberNames}
       />
     </div>
   );

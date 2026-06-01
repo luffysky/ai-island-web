@@ -10,7 +10,7 @@ import {
   Bookmark, BookmarkCheck, ListTodo, FileText, X, Check,
   List, Clock, Hash, Share2, Rocket, FolderPlus, Folder as FolderIcon,
   CheckSquare, Square, MousePointerClick, GripVertical, Link2, RefreshCw,
-  ThumbsUp, ThumbsDown,
+  ThumbsUp, ThumbsDown, MessageCircle, Send,
 } from "lucide-react";
 import { DailyIdeaCard } from "./DailyIdeaCard";
 import { TagCloud } from "./views/TagCloud";
@@ -32,6 +32,7 @@ type Fragment = {
   ai_summary: string | null;
   potential_uses: string[];
   folder_id: string | null;
+  created_by: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -71,12 +72,14 @@ export function IdeaFragmentsClient({
   initialDaily,
   initialFolders,
   initialPairs,
+  memberNames,
 }: {
   initialFragments: Fragment[];
   initialIdeas: Idea[];
   initialDaily: Idea | null;
   initialFolders: Folder[];
   initialPairs: Pair[];
+  memberNames: Record<string, string>;
 }) {
   const [fragments, setFragments] = useState<Fragment[]>(initialFragments);
   const [ideas, setIdeas] = useState<Idea[]>(initialIdeas);
@@ -105,6 +108,12 @@ export function IdeaFragmentsClient({
   const [generating, setGenerating] = useState(false);
   const [editing, setEditing] = useState<Fragment | null>(null);
   const [busyIdea, setBusyIdea] = useState<string | null>(null);
+
+  // 深化（追問）點子
+  const [deepen, setDeepen] = useState<Idea | null>(null);
+  const [thread, setThread] = useState<{ role: "user" | "assistant"; content: string }[]>([]);
+  const [dInput, setDInput] = useState("");
+  const [dBusy, setDBusy] = useState(false);
 
   const allTags = useMemo(() => {
     const s = new Set<string>();
@@ -340,6 +349,22 @@ export function IdeaFragmentsClient({
       );
     } catch (e: any) { setErr(e.message); }
     finally { setBusyIdea(null); }
+  }
+
+  function openDeepen(idea: Idea) { setDeepen(idea); setThread([]); setDInput(""); }
+  async function askDeepen() {
+    if (!deepen || !dInput.trim() || dBusy) return;
+    const q = dInput.trim();
+    const history = thread;
+    setThread((prev) => [...prev, { role: "user", content: q }]);
+    setDInput("");
+    setDBusy(true);
+    try {
+      const { text } = await api(`/api/admin/generated-ideas/${deepen.id}/deepen`, "POST", { question: q, history });
+      setThread((prev) => [...prev, { role: "assistant", content: text }]);
+    } catch (e: any) {
+      setThread((prev) => [...prev, { role: "assistant", content: `⚠️ ${e.message}` }]);
+    } finally { setDBusy(false); }
   }
 
   // 從時間軸 / 關聯圖點碎片 → 開編輯
@@ -628,11 +653,14 @@ export function IdeaFragmentsClient({
                   )}
                 </div>
 
-                {(f.category || f.mood || f.folder_id) && (
+                {(f.category || f.mood || f.folder_id || (f.created_by && memberNames[f.created_by])) && (
                   <div className="flex gap-1.5 mt-1.5 text-[11px] flex-wrap">
                     {f.folder_id && <span className="px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300">📁 {folderName(f.folder_id)}</span>}
                     {f.category && <span className="px-1.5 py-0.5 rounded bg-violet-500/15 text-violet-300">{f.category}</span>}
                     {f.mood && <span className="px-1.5 py-0.5 rounded bg-pink-500/15 text-pink-300">{f.mood}</span>}
+                    {f.created_by && memberNames[f.created_by] && (
+                      <span className="px-1.5 py-0.5 rounded bg-bg-elevated text-fg-muted">🙋 {memberNames[f.created_by]}</span>
+                    )}
                   </div>
                 )}
 
@@ -748,6 +776,10 @@ export function IdeaFragmentsClient({
                 >
                   {busyIdea === idea.id ? <Loader2 size={12} className="animate-spin" /> : <Rocket size={12} />} 轉成產品企劃
                 </button>
+                <button
+                  onClick={() => openDeepen(idea)}
+                  className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-sky-500/15 hover:bg-sky-500/30 text-sky-300 transition"
+                ><MessageCircle size={12} /> 深化 / 追問</button>
                 <div className="ml-auto flex items-center gap-1">
                   <button
                     onClick={() => rateIdea(idea, "up")}
@@ -820,6 +852,51 @@ export function IdeaFragmentsClient({
             <div className="flex justify-end gap-2 pt-1">
               <button onClick={() => setEditing(null)} className="px-4 py-2 rounded-full bg-bg-elevated text-sm hover:opacity-80">取消</button>
               <button onClick={saveEdit} className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-accent text-white text-sm font-bold hover:opacity-90"><Check size={14} /> 儲存</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ===== 深化 / 追問 modal ===== */}
+      {deepen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setDeepen(null)}>
+          <div className="bg-bg-card border border-border rounded-2xl w-full max-w-lg flex flex-col max-h-[80vh]" onClick={(e) => e.stopPropagation()}>
+            <div className="p-4 border-b border-border flex items-start justify-between gap-2">
+              <div className="min-w-0">
+                <div className="font-bold flex items-center gap-2"><MessageCircle size={16} className="text-sky-300" /> 深化點子</div>
+                <div className="text-xs text-fg-muted mt-0.5 truncate">{deepen.title}</div>
+              </div>
+              <button onClick={() => setDeepen(null)} className="text-fg-muted hover:text-accent shrink-0"><X size={16} /></button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-4 space-y-2 text-sm">
+              {thread.length === 0 && (
+                <div className="text-fg-muted text-xs space-y-1">
+                  <div>把這個點子當對象，直接問，例如：</div>
+                  <div className="flex flex-wrap gap-1">
+                    {["商業模式再展開", "MVP 該先做哪 3 個功能", "最大的風險是什麼", "取個更好的名字"].map((s) => (
+                      <button key={s} onClick={() => setDInput(s)} className="px-2 py-0.5 rounded-full bg-bg-elevated hover:text-accent">{s}</button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {thread.map((m, i) => (
+                <div key={i} className={`rounded-xl px-3 py-2 whitespace-pre-wrap ${m.role === "user" ? "bg-accent/15 ml-8" : "bg-bg-elevated mr-4"}`}>
+                  {m.content}
+                </div>
+              ))}
+              {dBusy && <div className="text-fg-muted text-xs flex items-center gap-1.5"><Loader2 size={12} className="animate-spin" /> 思考中…</div>}
+            </div>
+            <div className="p-3 border-t border-border flex items-center gap-2">
+              <input
+                value={dInput}
+                onChange={(e) => setDInput(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); askDeepen(); } }}
+                placeholder="追問這個點子…"
+                className="flex-1 bg-bg-elevated border border-border rounded-full px-3 py-2 text-sm focus:border-accent outline-none"
+              />
+              <button onClick={askDeepen} disabled={dBusy || !dInput.trim()} className="p-2 rounded-full bg-accent text-white disabled:opacity-40">
+                <Send size={15} />
+              </button>
             </div>
           </div>
         </div>
