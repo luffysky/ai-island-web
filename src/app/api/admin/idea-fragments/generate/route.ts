@@ -28,11 +28,13 @@ export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({} as any));
   const count = Math.min(Math.max(Number(body.count) || 3, 1), 5);
   const fragmentIds: string[] = Array.isArray(body.fragmentIds) ? body.fragmentIds.map(String) : [];
+  const folderId: string | null = body.folderId ? String(body.folderId) : null;
 
   const admin = createSupabaseAdmin();
   let q = admin.from("idea_fragments").select("id, title, content, tags, mood, category").order("created_at", { ascending: false });
-  if (fragmentIds.length > 0) q = q.in("id", fragmentIds);
-  else q = q.limit(40);
+  if (fragmentIds.length > 0) q = q.in("id", fragmentIds);        // 手選的碎片優先
+  else if (folderId) q = q.eq("folder_id", folderId).limit(60);   // 指定資料夾
+  else q = q.limit(40);                                            // 最近 40 個
 
   const { data: frags } = await q;
   const fragments = (frags as any[]) ?? [];

@@ -30,12 +30,14 @@ export async function GET(req: NextRequest) {
 
   const q = req.nextUrl.searchParams.get("q")?.trim() ?? "";
   const tag = req.nextUrl.searchParams.get("tag")?.trim() ?? "";
+  const folderId = req.nextUrl.searchParams.get("folder")?.trim() ?? "";
 
   const admin = createSupabaseAdmin();
   let query = admin.from("idea_fragments").select("*").order("created_at", { ascending: false }).limit(500);
 
   if (q) query = query.or(`title.ilike.%${q}%,content.ilike.%${q}%`);
   if (tag) query = query.contains("tags", [tag]);
+  if (folderId) query = query.eq("folder_id", folderId);
 
   const { data, error } = await query;
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -68,6 +70,7 @@ export async function POST(req: NextRequest) {
       tags,
       mood: body.mood ? String(body.mood).slice(0, 50) : null,
       category: body.category ? String(body.category).slice(0, 50) : null,
+      folder_id: body.folderId ? String(body.folderId) : null,
     })
     .select("*")
     .single();

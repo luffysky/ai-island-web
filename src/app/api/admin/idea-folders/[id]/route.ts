@@ -9,50 +9,36 @@ async function guard() {
   const supabase = await createSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return false;
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role, is_owner")
-    .eq("id", user.id)
-    .maybeSingle();
+  const { data: profile } = await supabase.from("profiles").select("role, is_owner").eq("id", user.id).maybeSingle();
   return profile?.role === "admin" || (profile as any)?.is_owner === true;
 }
 
-/**
- * PATCH /api/admin/idea-fragments/[id]  { title?, content?, tags?, mood?, category? }
- */
+/** PATCH { name?, color? } — 改名 / 換色 */
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!(await guard())) return NextResponse.json({ error: "forbidden" }, { status: 403 });
   const { id } = await params;
   const body = await req.json().catch(() => ({} as any));
-
   const patch: Record<string, any> = {};
-  if (typeof body.title === "string") {
-    const t = body.title.trim().slice(0, 200);
-    if (!t) return NextResponse.json({ error: "title_required" }, { status: 400 });
-    patch.title = t;
+  if (typeof body.name === "string") {
+    const n = body.name.trim().slice(0, 60);
+    if (!n) return NextResponse.json({ error: "name_required" }, { status: 400 });
+    patch.name = n;
   }
-  if (typeof body.content === "string") patch.content = body.content.slice(0, 20000);
-  if (Array.isArray(body.tags)) patch.tags = body.tags.map((t: any) => String(t).trim()).filter(Boolean).slice(0, 30);
-  if ("mood" in body) patch.mood = body.mood ? String(body.mood).slice(0, 50) : null;
-  if ("category" in body) patch.category = body.category ? String(body.category).slice(0, 50) : null;
-  if ("folderId" in body) patch.folder_id = body.folderId ? String(body.folderId) : null;
-
+  if ("color" in body) patch.color = body.color ? String(body.color).slice(0, 20) : null;
   if (Object.keys(patch).length === 0) return NextResponse.json({ error: "nothing_to_update" }, { status: 400 });
 
   const admin = createSupabaseAdmin();
-  const { data, error } = await admin.from("idea_fragments").update(patch).eq("id", id).select("*").single();
+  const { data, error } = await admin.from("idea_folders").update(patch).eq("id", id).select("*").single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ fragment: data });
+  return NextResponse.json({ folder: data });
 }
 
-/**
- * DELETE /api/admin/idea-fragments/[id]
- */
+/** DELETE — 刪資料夾（碎片不刪、folder_id 自動設 NULL → 變未分類） */
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!(await guard())) return NextResponse.json({ error: "forbidden" }, { status: 403 });
   const { id } = await params;
   const admin = createSupabaseAdmin();
-  const { error } = await admin.from("idea_fragments").delete().eq("id", id);
+  const { error } = await admin.from("idea_folders").delete().eq("id", id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ ok: true });
 }

@@ -82,10 +82,11 @@ export async function generateIdeaRows(opts: {
     })
     .join("\n\n");
 
-  const system = `你是一個創意重組引擎，語氣像一位敏銳的創意顧問，不是筆記軟體。
+  const system = `你是一個「靈感重組引擎」。你的核心價值不是「生點子」，而是【看見別人看不到的連結】——
+告訴使用者：為什麼這些散落的碎片「值得」被組合在一起。
 
 以下是使用者長期收集的人生碎片、專案想法與靈感紀錄。
-請你「不要單純摘要」，而是找出它們之間可能存在的深層關聯，並重組成新的產品、故事、品牌、課程或功能點子。
+請找出它們之間「非顯而易見」的深層關聯，並重組成新的產品、故事、品牌、課程或功能點子。
 
 請「只」回傳一個 JSON 物件（不要任何解釋、不要 markdown fence），格式：
 {
@@ -95,16 +96,21 @@ export async function generateIdeaRows(opts: {
       "summary": "2~3 句把這個點子講清楚",
       "ideaType": "從這幾種挑一個最貼切：${IDEA_TYPES.join(" / ")}",
       "sourceFragmentIds": ["用到的碎片 id，對應上面 [#id]"],
-      "whyItWorks": "為什麼這些碎片可以組合在一起、為什麼這個點子成立",
+      "connections": [
+        "具體指出『碎片A 的某元素』和『碎片B 的某元素』之間那條線——它們共享的情緒/主題/結構/對比/因果。每條一句、要具體、要讓人有「原來如此」的感覺"
+      ],
+      "whyItWorks": "為什麼這個組合『值得做』、它打中了什麼、為什麼成立",
       "nextSteps": ["2~4 個具體的下一步行動"]
     }
   ]
 }
 
-要求：
-- 請產生 ${count} 個點子
-- 每個點子都要真的「跨碎片」連結，不要只是複述單一碎片
-- 全部用繁體中文`;
+鐵則：
+- 每個點子至少連結 2 個以上的碎片，connections 至少 1 條、講的是碎片「之間」的關係，不是單一碎片的摘要。
+- connections 不准空泛（禁止「都跟創作有關」這種廢話）；要指名是哪兩個碎片、哪個元素、為什麼能接。
+- 寧可少而精，不要硬湊不相干的碎片。
+- 語氣像敏銳的創意顧問，不是筆記軟體。
+- 請產生 ${count} 個點子，全部用繁體中文。`;
 
   let text: string;
   try {
@@ -141,6 +147,9 @@ export async function generateIdeaRows(opts: {
     why_it_works: it.whyItWorks ? String(it.whyItWorks).slice(0, 2000) : null,
     next_steps: Array.isArray(it.nextSteps)
       ? it.nextSteps.map((x: any) => String(x).trim()).filter(Boolean).slice(0, 10)
+      : [],
+    connections: Array.isArray(it.connections)
+      ? it.connections.map((x: any) => String(x).trim()).filter(Boolean).slice(0, 10)
       : [],
   }));
 

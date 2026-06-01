@@ -10,6 +10,7 @@ type Idea = {
   idea_type: string | null;
   why_it_works: string | null;
   next_steps: string[];
+  connections: string[];
 };
 
 /**
@@ -83,6 +84,14 @@ export function DailyIdeaCard({
             {idea.idea_type && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-violet-500/20 text-violet-300 font-normal">{idea.idea_type}</span>}
           </div>
           {idea.summary && <p className="text-sm text-fg-muted mt-1">{idea.summary}</p>}
+          {idea.connections?.length > 0 && (
+            <div className="mt-2 text-xs bg-bg-elevated/60 rounded-lg p-2 border-l-2 border-violet-400">
+              <div className="font-bold text-violet-300 mb-0.5">🔗 為什麼這些碎片值得組合</div>
+              <ul className="list-disc list-inside text-fg-muted space-y-0.5">
+                {idea.connections.map((c, i) => <li key={i}>{c}</li>)}
+              </ul>
+            </div>
+          )}
           {idea.why_it_works && (
             <p className="text-xs text-fg-muted mt-1.5"><span className="text-accent font-bold">為什麼成立：</span>{idea.why_it_works}</p>
           )}

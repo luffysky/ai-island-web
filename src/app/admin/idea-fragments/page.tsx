@@ -15,10 +15,11 @@ export default async function IdeaFragmentsPage() {
 
   const admin = createSupabaseAdmin();
   const today = new Date(Date.now() + 8 * 3600_000).toISOString().slice(0, 10); // 台北時區
-  const [{ data: fragments }, { data: ideas }, { data: daily }] = await Promise.all([
+  const [{ data: fragments }, { data: ideas }, { data: daily }, { data: folders }] = await Promise.all([
     admin.from("idea_fragments").select("*").order("created_at", { ascending: false }).limit(500),
     admin.from("generated_ideas").select("*").order("created_at", { ascending: false }).limit(100),
     admin.from("generated_ideas").select("*").eq("daily_date", today).maybeSingle(),
+    admin.from("idea_folders").select("*").order("sort_order", { ascending: true }).order("created_at", { ascending: true }),
   ]);
 
   return (
@@ -34,6 +35,7 @@ export default async function IdeaFragmentsPage() {
         initialFragments={(fragments as any) ?? []}
         initialIdeas={(ideas as any) ?? []}
         initialDaily={(daily as any) ?? null}
+        initialFolders={(folders as any) ?? []}
       />
     </div>
   );
