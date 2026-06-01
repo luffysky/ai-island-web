@@ -99,6 +99,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <CollapsibleAside>
           <nav className="space-y-4 text-sm">
 
+            {/* ⭐ 單獨置頂、不歸類 */}
+            <AdminLink href="/admin/idea-fragments">💡 給我一個點子</AdminLink>
+
             {/* 1. 🏝️ 總覽 */}
             <NavGroup title="🏝️ 總覽 (Overview)">
               <AdminLink href="/admin">📊 Dashboard</AdminLink>
