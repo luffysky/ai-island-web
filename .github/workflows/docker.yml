@@ -52,14 +52,15 @@ jobs:
           cache-to: type=gha,mode=max
           # NEXT_PUBLIC_* 在 build 階段被 inline 進前端 bundle，
           # 從 repo「Variables」傳入（Settings → Secrets and variables → Actions → Variables）。
+          # vars 沒設就 fallback 去讀 secrets（你設在哪邊都能讀到）
           build-args: |
-            NEXT_PUBLIC_SITE_URL=${{ vars.NEXT_PUBLIC_SITE_URL }}
-            NEXT_PUBLIC_SUPABASE_URL=${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
-            NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-            NEXT_PUBLIC_ADMIN_SLUG=${{ vars.NEXT_PUBLIC_ADMIN_SLUG }}
-            NEXT_PUBLIC_GA_ID=${{ vars.NEXT_PUBLIC_GA_ID }}
-            NEXT_PUBLIC_GTM_ID=${{ vars.NEXT_PUBLIC_GTM_ID }}
-            NEXT_PUBLIC_LINE_CHANNEL_ID=${{ vars.NEXT_PUBLIC_LINE_CHANNEL_ID }}
-            NEXT_PUBLIC_CONTENT_SOURCE=${{ vars.NEXT_PUBLIC_CONTENT_SOURCE }}
-            NEXT_PUBLIC_SENTRY_DSN=${{ vars.NEXT_PUBLIC_SENTRY_DSN }}
-            NEXT_PUBLIC_USER_LINE_BOT_BASIC_ID=${{ vars.NEXT_PUBLIC_USER_LINE_BOT_BASIC_ID }}
+            NEXT_PUBLIC_SITE_URL=${{ vars.NEXT_PUBLIC_SITE_URL || secrets.NEXT_PUBLIC_SITE_URL }}
+            NEXT_PUBLIC_SUPABASE_URL=${{ vars.NEXT_PUBLIC_SUPABASE_URL || secrets.NEXT_PUBLIC_SUPABASE_URL }}
+            NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+            NEXT_PUBLIC_ADMIN_SLUG=${{ vars.NEXT_PUBLIC_ADMIN_SLUG || secrets.NEXT_PUBLIC_ADMIN_SLUG }}
+            NEXT_PUBLIC_GA_ID=${{ vars.NEXT_PUBLIC_GA_ID || secrets.NEXT_PUBLIC_GA_ID }}
+            NEXT_PUBLIC_GTM_ID=${{ vars.NEXT_PUBLIC_GTM_ID || secrets.NEXT_PUBLIC_GTM_ID }}
+            NEXT_PUBLIC_LINE_CHANNEL_ID=${{ vars.NEXT_PUBLIC_LINE_CHANNEL_ID || secrets.NEXT_PUBLIC_LINE_CHANNEL_ID }}
+            NEXT_PUBLIC_CONTENT_SOURCE=${{ vars.NEXT_PUBLIC_CONTENT_SOURCE || secrets.NEXT_PUBLIC_CONTENT_SOURCE }}
+            NEXT_PUBLIC_SENTRY_DSN=${{ vars.NEXT_PUBLIC_SENTRY_DSN || secrets.NEXT_PUBLIC_SENTRY_DSN }}
+            NEXT_PUBLIC_USER_LINE_BOT_BASIC_ID=${{ vars.NEXT_PUBLIC_USER_LINE_BOT_BASIC_ID || secrets.NEXT_PUBLIC_USER_LINE_BOT_BASIC_ID }}
