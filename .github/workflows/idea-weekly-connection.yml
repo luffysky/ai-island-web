@@ -1,0 +1,35 @@
+name: Idea Weekly Connection
+
+# 每週一台灣時間 09:00 推「我幫你發現了一個連結」給林董。
+# UTC = 台灣 - 8 → 週一 01:00 UTC
+
+on:
+  schedule:
+    - cron: '0 1 * * 1'   # 週一 台灣 09:00
+  workflow_dispatch:
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Call /api/cron/idea-weekly-connection
+        env:
+          SITE_URL: ${{ secrets.SITE_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$SITE_URL" ] || [ -z "$CRON_SECRET" ]; then
+            echo "::error::SITE_URL or CRON_SECRET secret missing"
+            exit 1
+          fi
+          response=$(curl -sS -w "\n%{http_code}" \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            "$SITE_URL/api/cron/idea-weekly-connection")
+          body=$(echo "$response" | head -n -1)
+          code=$(echo "$response" | tail -n 1)
+          echo "HTTP $code"
+          echo "$body"
+          if [ "$code" -ne 200 ]; then
+            echo "::error::endpoint returned $code"
+            exit 1
+          fi
