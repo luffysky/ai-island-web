@@ -14,9 +14,11 @@ export default async function IdeaFragmentsPage() {
   if (!(profile?.role === "admin" || (profile as any)?.is_owner === true)) redirect("/");
 
   const admin = createSupabaseAdmin();
-  const [{ data: fragments }, { data: ideas }] = await Promise.all([
+  const today = new Date(Date.now() + 8 * 3600_000).toISOString().slice(0, 10); // 台北時區
+  const [{ data: fragments }, { data: ideas }, { data: daily }] = await Promise.all([
     admin.from("idea_fragments").select("*").order("created_at", { ascending: false }).limit(500),
     admin.from("generated_ideas").select("*").order("created_at", { ascending: false }).limit(100),
+    admin.from("generated_ideas").select("*").eq("daily_date", today).maybeSingle(),
   ]);
 
   return (
@@ -31,6 +33,7 @@ export default async function IdeaFragmentsPage() {
       <IdeaFragmentsClient
         initialFragments={(fragments as any) ?? []}
         initialIdeas={(ideas as any) ?? []}
+        initialDaily={(daily as any) ?? null}
       />
     </div>
   );

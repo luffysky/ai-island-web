@@ -4,7 +4,14 @@ import { useMemo, useState } from "react";
 import {
   Sparkles, Plus, Trash2, Pencil, Search, Loader2, Wand2,
   Bookmark, BookmarkCheck, ListTodo, FileText, X, Check,
+  List, Clock, Hash, Share2, Rocket,
 } from "lucide-react";
+import { DailyIdeaCard } from "./DailyIdeaCard";
+import { TagCloud } from "./views/TagCloud";
+import { Timeline } from "./views/Timeline";
+import { RelationshipGraph } from "./views/RelationshipGraph";
+
+type ViewMode = "list" | "timeline" | "tags" | "graph";
 
 type Fragment = {
   id: string;
@@ -45,15 +52,18 @@ async function api(url: string, method: string, body?: any) {
 export function IdeaFragmentsClient({
   initialFragments,
   initialIdeas,
+  initialDaily,
 }: {
   initialFragments: Fragment[];
   initialIdeas: Idea[];
+  initialDaily: Idea | null;
 }) {
   const [fragments, setFragments] = useState<Fragment[]>(initialFragments);
   const [ideas, setIdeas] = useState<Idea[]>(initialIdeas);
   const [q, setQ] = useState("");
   const [tagFilter, setTagFilter] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  const [view, setView] = useState<ViewMode>("list");
 
   // 新增碎片表單
   const [nt, setNt] = useState("");
@@ -164,14 +174,24 @@ export function IdeaFragmentsClient({
     } catch (e: any) { setErr(e.message); }
   }
 
-  async function convert(id: string, target: "task" | "article") {
+  async function convert(id: string, target: "task" | "article" | "product_plan") {
     setBusyIdea(id);
     setErr(null);
     try {
       await api(`/api/admin/generated-ideas/${id}/convert`, "POST", { target });
-      alert(target === "task" ? "✅ 已轉成任務（到「待辦」看）" : "✅ 已建立文章草稿（到部落格草稿看）");
+      alert(
+        target === "task" ? "✅ 已轉成任務（到「待辦」看）"
+        : target === "article" ? "✅ 已建立文章草稿（到部落格草稿看）"
+        : "✅ AI 已展開成產品企劃，存成部落格草稿（標題【產品企劃】…）"
+      );
     } catch (e: any) { setErr(e.message); }
     finally { setBusyIdea(null); }
+  }
+
+  // 從時間軸 / 關聯圖點碎片 → 開編輯
+  function openFragment(id: string) {
+    const f = fragments.find((x) => x.id === id);
+    if (f) setEditing(f);
   }
 
   return (
@@ -182,6 +202,9 @@ export function IdeaFragmentsClient({
           <button onClick={() => setErr(null)} className="opacity-60 hover:opacity-100"><X size={14} /></button>
         </div>
       )}
+
+      {/* ===== 今日點子（每日自動推薦） ===== */}
+      <DailyIdeaCard initialDaily={initialDaily} fragmentCount={fragments.length} />
 
       {/* ===== 主行動：給我一個點子 ===== */}
       <div className="bg-gradient-to-br from-amber-500/10 to-violet-500/10 border border-amber-500/30 rounded-2xl p-4 flex items-center justify-between gap-3 flex-wrap">
@@ -264,7 +287,38 @@ export function IdeaFragmentsClient({
             )}
           </div>
 
+          {/* 檢視切換 */}
+          <div className="flex items-center gap-1 bg-bg-card border border-border rounded-full p-1 text-xs">
+            {([
+              ["list", "列表", List],
+              ["timeline", "時間軸", Clock],
+              ["tags", "標籤雲", Hash],
+              ["graph", "關聯圖", Share2],
+            ] as [ViewMode, string, typeof List][]).map(([v, label, Icon]) => (
+              <button
+                key={v}
+                onClick={() => setView(v)}
+                className={`flex-1 inline-flex items-center justify-center gap-1 px-2 py-1.5 rounded-full transition ${
+                  view === v ? "bg-accent text-white font-bold" : "text-fg-muted hover:text-accent"
+                }`}
+              >
+                <Icon size={13} /> {label}
+              </button>
+            ))}
+          </div>
+
+          {view === "timeline" && <Timeline fragments={filtered} onSelect={openFragment} />}
+          {view === "tags" && (
+            <TagCloud
+              fragments={fragments}
+              activeTag={tagFilter}
+              onTagClick={(t) => { setTagFilter(tagFilter === t ? null : t); setView("list"); }}
+            />
+          )}
+          {view === "graph" && <RelationshipGraph fragments={filtered} onSelect={openFragment} />}
+
           {/* 碎片列表 */}
+          {view === "list" && (
           <div className="space-y-2">
             {filtered.length === 0 && (
               <div className="text-center text-fg-muted text-sm py-8">
@@ -317,6 +371,7 @@ export function IdeaFragmentsClient({
               </div>
             ))}
           </div>
+          )}
         </div>
 
         {/* ===== 右：生成的點子 ===== */}
@@ -382,6 +437,13 @@ export function IdeaFragmentsClient({
                   disabled={busyIdea === idea.id}
                   className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-bg-elevated hover:bg-accent/20 text-fg-muted hover:text-accent transition disabled:opacity-40"
                 ><FileText size={12} /> 轉成文章草稿</button>
+                <button
+                  onClick={() => convert(idea.id, "product_plan")}
+                  disabled={busyIdea === idea.id}
+                  className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-violet-500/15 hover:bg-violet-500/30 text-violet-300 transition disabled:opacity-40"
+                >
+                  {busyIdea === idea.id ? <Loader2 size={12} className="animate-spin" /> : <Rocket size={12} />} 轉成產品企劃
+                </button>
                 <button
                   onClick={() => deleteIdea(idea.id)}
                   className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-bg-elevated hover:bg-red-500/20 text-fg-muted hover:text-red-400 transition ml-auto"
