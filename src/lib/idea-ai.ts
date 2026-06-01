@@ -1,6 +1,41 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { decryptKey } from "@/lib/ai-crypto";
 import { callAI } from "@/lib/ai-providers";
+import { embedText } from "@/lib/ai-embeddings";
+
+/** 把碎片組成要做 embedding 的文字 */
+export function fragmentEmbedInput(f: {
+  title: string; content?: string | null; tags?: string[] | null; category?: string | null; mood?: string | null;
+}): string {
+  return [f.title, f.content, f.category, f.mood, (f.tags ?? []).join(" ")]
+    .filter(Boolean).join("\n").slice(0, 4000);
+}
+
+/** 算碎片 embedding 並寫回 DB（best-effort，失敗不拋；無 OpenAI key 時靜默跳過） */
+export async function embedFragmentRow(id: string, f: Parameters<typeof fragmentEmbedInput>[0]): Promise<boolean> {
+  try {
+    const vec = await embedText(fragmentEmbedInput(f));
+    if (!vec) return false;
+    const admin = createSupabaseAdmin();
+    await admin.from("idea_fragments").update({ embedding: `[${vec.join(",")}]` as any }).eq("id", id);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export type SurprisingPair = { a_id: string; a_title: string; b_id: string; b_title: string; similarity: number };
+
+/** 用 RPC 找語意中間帶的意外配對 */
+export async function fetchSurprisingPairs(opts?: { count?: number; folder?: string | null }): Promise<SurprisingPair[]> {
+  const admin = createSupabaseAdmin();
+  const { data, error } = await admin.rpc("idea_surprising_pairs", {
+    match_count: opts?.count ?? 8,
+    folder: opts?.folder ?? null,
+  });
+  if (error) return [];
+  return (data ?? []) as SurprisingPair[];
+}
 
 export const IDEA_TYPES = ["產品", "故事", "行銷", "功能", "品牌", "歌曲", "課程"];
 
@@ -67,6 +102,8 @@ export async function generateIdeaRows(opts: {
   fragments: FragmentLite[];
   count: number;
   userId: string;
+  surprisingPairs?: SurprisingPair[];
+  likedStyle?: string; // 回饋迴路：使用者喜歡過的點子風格摘要
 }): Promise<
   | { ok: true; rows: any[] }
   | { ok: false; status: number; error: string; message: string; raw?: string }
@@ -112,6 +149,16 @@ export async function generateIdeaRows(opts: {
 - 語氣像敏銳的創意顧問，不是筆記軟體。
 - 請產生 ${count} 個點子，全部用繁體中文。`;
 
+  // 語意「意外配對」提示：這些碎片向量距離落在中間帶（表面遠、深層可能有張力）
+  const pairsHint = (opts.surprisingPairs ?? []).length
+    ? `\n\n【系統演算法發現的「意外配對」】這幾組碎片語意上距離較遠、但可能藏著值得挖的張力，請『優先』嘗試把它們接起來，找出非顯而易見的連結：\n` +
+      opts.surprisingPairs!.map((p) => `- 「${p.a_title}」× 「${p.b_title}」`).join("\n")
+    : "";
+
+  const styleHint = opts.likedStyle
+    ? `\n\n【使用者偏好】過去他特別喜歡這類點子/連結風格，請往這個方向靠：${opts.likedStyle}`
+    : "";
+
   let text: string;
   try {
     const r = await callAI({
@@ -120,7 +167,7 @@ export async function generateIdeaRows(opts: {
       apiKey: resolved.model.apiKey,
       messages: [
         { role: "system", content: system },
-        { role: "user", content: `碎片如下：\n\n${fragmentBlock}` },
+        { role: "user", content: `碎片如下：\n\n${fragmentBlock}${pairsHint}${styleHint}` },
       ],
       temperature: 0.85,
       maxTokens: 2500,

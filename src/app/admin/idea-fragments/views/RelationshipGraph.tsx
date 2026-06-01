@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 
 type Frag = { id: string; title: string; tags: string[]; category: string | null };
+type Pair = { a_id: string; b_id: string; similarity: number };
 
 const PALETTE = ["#f59e0b", "#ec4899", "#8b5cf6", "#06b6d4", "#10b981", "#ef4444", "#3b82f6", "#eab308"];
 
@@ -13,7 +14,7 @@ const H = 720;
  * 碎片關聯圖：node = 碎片，edge = 兩碎片有共同標籤（線越粗 = 共用越多）。
  * 圓形佈局、純 SVG、無外部依賴。label 放在環外、hover 高亮相連碎片。
  */
-export function RelationshipGraph({ fragments, onSelect }: { fragments: Frag[]; onSelect: (id: string) => void }) {
+export function RelationshipGraph({ fragments, onSelect, semanticPairs = [] }: { fragments: Frag[]; onSelect: (id: string) => void; semanticPairs?: Pair[] }) {
   const [hover, setHover] = useState<string | null>(null);
 
   const { nodes, edges, categoryColor } = useMemo(() => {
@@ -67,10 +68,16 @@ export function RelationshipGraph({ fragments, onSelect }: { fragments: Frag[]; 
   const connected = (id: string) =>
     hover === id || edges.some((e) => (e.a === hover && e.b === id) || (e.b === hover && e.a === id));
 
+  // 語意「意外配對」邊（紫色虛線、跟標籤邊區分）
+  const pos = new Map(nodes.map((n) => [n.id, n]));
+  const semEdges = semanticPairs
+    .map((p) => ({ a: pos.get(p.a_id), b: pos.get(p.b_id), sim: p.similarity }))
+    .filter((e) => e.a && e.b) as { a: typeof nodes[0]; b: typeof nodes[0]; sim: number }[];
+
   return (
     <div className="bg-gradient-to-br from-bg-card to-bg-elevated/40 border border-border rounded-2xl p-3">
       <div className="text-xs text-fg-muted mb-1 px-2">
-        {edges.length} 條關聯（共同標籤）· 滑過碎片看它連到誰 · 點碎片可定位
+        {edges.length} 條標籤關聯{semEdges.length > 0 && <span className="text-violet-300"> · {semEdges.length} 條語意意外配對（紫虛線）</span>} · 滑過碎片看它連到誰 · 點碎片可定位
       </div>
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto select-none">
         <defs>
@@ -102,22 +109,48 @@ export function RelationshipGraph({ fragments, onSelect }: { fragments: Frag[]; 
           );
         })}
 
+        {/* 語意意外配對邊（紫色虛線） */}
+        {semEdges.map((e, i) => {
+          const active = !hover || e.a.id === hover || e.b.id === hover;
+          return (
+            <line
+              key={`sem-${i}`}
+              x1={e.a.x} y1={e.a.y} x2={e.b.x} y2={e.b.y}
+              stroke="#a78bfa"
+              strokeOpacity={active ? 0.7 : 0.08}
+              strokeWidth={active ? 2 : 0.8}
+              strokeDasharray="7 5"
+              strokeLinecap="round"
+            />
+          );
+        })}
+
         {/* nodes */}
         {nodes.map((nd) => {
-          const r = 11 + Math.min(nd.degree * 2, 20);
+          const r = 12 + Math.min(nd.degree * 2, 20);
           const isHover = hover === nd.id;
           const dim = hover && !connected(nd.id);
-          const labelX = nd.x + nd.cos * (r + 10);
-          const labelY = nd.y + nd.sin * (r + 10) + 5;
+          const fs = isHover ? 22 : 18;
+          const label = nd.title.length > 12 ? nd.title.slice(0, 12) + "…" : nd.title;
           const anchor = nd.cos < -0.3 ? "end" : nd.cos > 0.3 ? "start" : "middle";
-          const label = nd.title.length > 14 ? nd.title.slice(0, 14) + "…" : nd.title;
+          // label pill 幾何（CJK 約 1em 寬、估算背景大小，避免筆畫糊在一起）
+          const padX = 8, padY = 5;
+          const textW = label.length * fs * 1.02;
+          const pillW = textW + padX * 2;
+          const pillH = fs + padY * 2;
+          const gap = r + 12;
+          const cxL = nd.x + nd.cos * gap;
+          const cyL = nd.y + nd.sin * gap;
+          const pillX = anchor === "end" ? cxL - pillW : anchor === "start" ? cxL : cxL - pillW / 2;
+          const pillY = cyL - pillH / 2;
+          const textX = anchor === "end" ? cxL - padX : anchor === "start" ? cxL + padX : cxL;
           return (
             <g
               key={nd.id}
               onMouseEnter={() => setHover(nd.id)}
               onMouseLeave={() => setHover(null)}
               onClick={() => onSelect(nd.id)}
-              style={{ cursor: "pointer", opacity: dim ? 0.2 : 1, transition: "opacity .15s" }}
+              style={{ cursor: "pointer", opacity: dim ? 0.18 : 1, transition: "opacity .15s" }}
             >
               <title>{nd.title}</title>
               <circle
@@ -127,17 +160,22 @@ export function RelationshipGraph({ fragments, onSelect }: { fragments: Frag[]; 
                 stroke="#0b0b0f" strokeOpacity={0.35} strokeWidth={2}
                 filter={isHover ? "url(#ig-glow)" : undefined}
               />
+              {/* 乾淨的背景藥丸，不用 stroke halo（CJK 筆畫才不會糊） */}
+              <rect
+                x={pillX} y={pillY} width={pillW} height={pillH} rx={pillH / 2}
+                fill="var(--bg-card, #18181b)"
+                fillOpacity={0.92}
+                stroke={isHover ? nd.color : "var(--border, #333)"}
+                strokeOpacity={isHover ? 0.9 : 0.4}
+                strokeWidth={isHover ? 1.5 : 1}
+              />
               <text
-                x={labelX} y={labelY}
+                x={textX} y={cyL}
                 textAnchor={anchor}
-                fontSize={isHover ? 20 : 16}
+                dominantBaseline="central"
+                fontSize={fs}
                 fontWeight={isHover ? 800 : 600}
-                fill="currentColor"
                 className="fill-fg"
-                paintOrder="stroke"
-                stroke="var(--bg-card, #111)"
-                strokeWidth={4}
-                strokeLinejoin="round"
               >
                 {label}
               </text>

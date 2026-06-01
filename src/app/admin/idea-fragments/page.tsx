@@ -2,6 +2,7 @@ import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { redirect } from "next/navigation";
 import { PageHero } from "@/components/admin/PageHero";
+import { fetchSurprisingPairs } from "@/lib/idea-ai";
 import { IdeaFragmentsClient } from "./IdeaFragmentsClient";
 
 export const dynamic = "force-dynamic";
@@ -22,6 +23,8 @@ export default async function IdeaFragmentsPage() {
     admin.from("idea_folders").select("*").order("sort_order", { ascending: true }).order("created_at", { ascending: true }),
   ]);
 
+  const pairs = await fetchSurprisingPairs({ count: 8 });
+
   return (
     <div className="space-y-4">
       <PageHero
@@ -36,6 +39,7 @@ export default async function IdeaFragmentsPage() {
         initialIdeas={(ideas as any) ?? []}
         initialDaily={(daily as any) ?? null}
         initialFolders={(folders as any) ?? []}
+        initialPairs={(pairs as any) ?? []}
       />
     </div>
   );

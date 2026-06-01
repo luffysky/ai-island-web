@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { rateLimit } from "@/lib/rate-limit";
-import { generateIdeaRows } from "@/lib/idea-ai";
+import { generateIdeaRows, fetchSurprisingPairs } from "@/lib/idea-ai";
+import { likedStyleSummary } from "@/lib/idea-feedback";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -63,7 +64,11 @@ export async function POST(_req: NextRequest) {
     return NextResponse.json({ error: "not_enough_fragments", message: "至少要 2 個碎片" }, { status: 400 });
   }
 
-  const gen = await generateIdeaRows({ fragments, count: 1, userId: user!.id });
+  const [surprisingPairs, likedStyle] = await Promise.all([
+    fetchSurprisingPairs({ count: 5 }),
+    likedStyleSummary(),
+  ]);
+  const gen = await generateIdeaRows({ fragments, count: 1, userId: user!.id, surprisingPairs, likedStyle });
   if (!gen.ok) return NextResponse.json({ error: gen.error, message: gen.message, raw: gen.raw }, { status: gen.status });
 
   const row = { ...gen.rows[0], saved: true, daily_date: date };

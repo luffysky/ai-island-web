@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { embedFragmentRow } from "@/lib/idea-ai";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -76,5 +77,9 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  // 算語意向量（best-effort、無 OpenAI key 就跳過）
+  await embedFragmentRow(data.id, data);
+
   return NextResponse.json({ fragment: data });
 }

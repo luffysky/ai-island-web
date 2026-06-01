@@ -3,7 +3,7 @@ import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { callAI } from "@/lib/ai-providers";
 import { rateLimit } from "@/lib/rate-limit";
-import { resolveIdeaModel, extractJson } from "@/lib/idea-ai";
+import { resolveIdeaModel, extractJson, embedFragmentRow } from "@/lib/idea-ai";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -82,6 +82,10 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
       .single();
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+    // 分析後內容更豐富了、重算 embedding
+    await embedFragmentRow(id, updated);
+
     return NextResponse.json({ fragment: updated });
   } catch (e: any) {
     return NextResponse.json({ error: "ai_call_failed", message: e?.message }, { status: 500 });

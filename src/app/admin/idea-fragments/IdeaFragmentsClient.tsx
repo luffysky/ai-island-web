@@ -9,7 +9,8 @@ import {
   Sparkles, Plus, Trash2, Pencil, Search, Loader2, Wand2,
   Bookmark, BookmarkCheck, ListTodo, FileText, X, Check,
   List, Clock, Hash, Share2, Rocket, FolderPlus, Folder as FolderIcon,
-  CheckSquare, Square, MousePointerClick, GripVertical,
+  CheckSquare, Square, MousePointerClick, GripVertical, Link2, RefreshCw,
+  ThumbsUp, ThumbsDown,
 } from "lucide-react";
 import { DailyIdeaCard } from "./DailyIdeaCard";
 import { TagCloud } from "./views/TagCloud";
@@ -19,6 +20,7 @@ import { RelationshipGraph } from "./views/RelationshipGraph";
 type ViewMode = "list" | "timeline" | "tags" | "graph";
 
 type Folder = { id: string; name: string; color: string | null; created_at: string };
+type Pair = { a_id: string; a_title: string; b_id: string; b_title: string; similarity: number };
 
 type Fragment = {
   id: string;
@@ -44,6 +46,7 @@ type Idea = {
   next_steps: string[];
   connections: string[];
   saved: boolean;
+  feedback: "up" | "down" | null;
   created_at: string;
 };
 
@@ -67,15 +70,18 @@ export function IdeaFragmentsClient({
   initialIdeas,
   initialDaily,
   initialFolders,
+  initialPairs,
 }: {
   initialFragments: Fragment[];
   initialIdeas: Idea[];
   initialDaily: Idea | null;
   initialFolders: Folder[];
+  initialPairs: Pair[];
 }) {
   const [fragments, setFragments] = useState<Fragment[]>(initialFragments);
   const [ideas, setIdeas] = useState<Idea[]>(initialIdeas);
   const [folders, setFolders] = useState<Folder[]>(initialFolders);
+  const [pairs, setPairs] = useState<Pair[]>(initialPairs);
   const [q, setQ] = useState("");
   const [tagFilter, setTagFilter] = useState<string | null>(null);
   const [folderFilter, setFolderFilter] = useState<string>(ALL); // ALL / UNFILED / folderId
@@ -242,19 +248,44 @@ export function IdeaFragmentsClient({
     } catch (e: any) { setErr(e.message); }
   }
 
-  async function generate() {
+  async function generateWith(body: any) {
     setGenerating(true);
     setErr(null);
     try {
-      // 優先：手選的碎片 → 其次：目前資料夾 → 否則：最近全部
-      const body: any = { count: 3 };
-      if (selectedIds.size >= 2) body.fragmentIds = Array.from(selectedIds);
-      else if (folderFilter !== ALL && folderFilter !== UNFILED) body.folderId = folderFilter;
       const { ideas: fresh } = await api("/api/admin/idea-fragments/generate", "POST", body);
       setIdeas((prev) => [...fresh, ...prev]);
       exitSelect();
     } catch (e: any) { setErr(e.message); }
     finally { setGenerating(false); }
+  }
+
+  function generate() {
+    // 優先：手選的碎片 → 其次：目前資料夾 → 否則：最近全部
+    const body: any = { count: 3 };
+    if (selectedIds.size >= 2) body.fragmentIds = Array.from(selectedIds);
+    else if (folderFilter !== ALL && folderFilter !== UNFILED) body.folderId = folderFilter;
+    return generateWith(body);
+  }
+
+  // 用一組「意外配對」直接組合
+  function generateFromPair(p: Pair) {
+    return generateWith({ count: 1, fragmentIds: [p.a_id, p.b_id] });
+  }
+
+  // 重新整理意外配對 + 補算缺的向量
+  const [pairsBusy, setPairsBusy] = useState(false);
+  async function refreshPairs() {
+    setPairsBusy(true);
+    setErr(null);
+    try {
+      await api("/api/admin/idea-fragments/embed-backfill", "POST"); // 先補齊向量
+      const { pairs: fresh } = await api(
+        `/api/admin/idea-fragments/pairs${folderFilter !== ALL && folderFilter !== UNFILED ? `?folder=${folderFilter}` : ""}`,
+        "GET"
+      );
+      setPairs(fresh ?? []);
+    } catch (e: any) { setErr(e.message); }
+    finally { setPairsBusy(false); }
   }
 
   async function toggleSave(idea: Idea) {
@@ -264,6 +295,14 @@ export function IdeaFragmentsClient({
       setIdeas((prev) => prev.map((i) => (i.id === updated.id ? updated : i)));
     } catch (e: any) { setErr(e.message); }
     finally { setBusyIdea(null); }
+  }
+
+  async function rateIdea(idea: Idea, value: "up" | "down") {
+    const next = idea.feedback === value ? null : value; // 再按一次取消
+    setIdeas((prev) => prev.map((i) => (i.id === idea.id ? { ...i, feedback: next } : i)));
+    try {
+      await api(`/api/admin/generated-ideas/${idea.id}`, "PATCH", { feedback: next });
+    } catch (e: any) { setErr(e.message); }
   }
 
   async function deleteIdea(id: string) {
@@ -328,6 +367,53 @@ export function IdeaFragmentsClient({
           {generating ? "AI 重組中…" : selectedIds.size >= 2 ? `✨ 組合這 ${selectedIds.size} 個` : "✨ 給我一個點子"}
         </button>
       </div>
+
+      {/* ===== AI 意外配對（語意關聯引擎） ===== */}
+      {pairs.length > 0 ? (
+        <div className="bg-bg-card border border-violet-500/30 rounded-2xl p-4">
+          <div className="flex items-center justify-between mb-2 gap-2 flex-wrap">
+            <div className="font-bold text-sm flex items-center gap-2">
+              <Link2 size={15} className="text-violet-300" /> AI 發現的意外配對
+              <span className="text-[11px] font-normal text-fg-muted">語意上遠、卻可能藏著張力的碎片組合</span>
+            </div>
+            <button
+              onClick={refreshPairs}
+              disabled={pairsBusy}
+              className="text-[11px] inline-flex items-center gap-1 text-fg-muted hover:text-accent disabled:opacity-40"
+            >
+              {pairsBusy ? <Loader2 size={12} className="animate-spin" /> : <RefreshCw size={12} />} 重新探索
+            </button>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-2">
+            {pairs.map((p, i) => (
+              <div key={i} className="flex items-center justify-between gap-2 bg-bg-elevated rounded-lg px-3 py-2 text-xs">
+                <div className="min-w-0">
+                  <b className="text-fg">{p.a_title}</b>
+                  <span className="text-violet-300 mx-1">×</span>
+                  <b className="text-fg">{p.b_title}</b>
+                  <span className="text-[10px] text-fg-muted ml-1">{Math.round(p.similarity * 100)}%</span>
+                </div>
+                <button
+                  onClick={() => generateFromPair(p)}
+                  disabled={generating}
+                  className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-violet-500/20 text-violet-200 hover:bg-violet-500/40 transition disabled:opacity-40"
+                ><Sparkles size={11} /> 用這對</button>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className="bg-bg-card border border-dashed border-border rounded-2xl p-3 text-xs text-fg-muted flex items-center justify-between gap-2 flex-wrap">
+          <span>🔗 想讓 AI 找「表面無關、深層卻共振」的碎片配對嗎？先幫碎片建立語意向量。</span>
+          <button
+            onClick={refreshPairs}
+            disabled={pairsBusy || fragments.length < 2}
+            className="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-violet-500/20 text-violet-200 hover:bg-violet-500/40 transition disabled:opacity-40"
+          >
+            {pairsBusy ? <Loader2 size={12} className="animate-spin" /> : <Link2 size={12} />} 建立語意向量
+          </button>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* ===== 左：碎片 ===== */}
@@ -483,7 +569,7 @@ export function IdeaFragmentsClient({
               onTagClick={(t) => { setTagFilter(tagFilter === t ? null : t); setView("list"); }}
             />
           )}
-          {view === "graph" && <RelationshipGraph fragments={filtered} onSelect={openFragment} />}
+          {view === "graph" && <RelationshipGraph fragments={filtered} onSelect={openFragment} semanticPairs={pairs} />}
 
           {/* 碎片列表 */}
           {view === "list" && (
@@ -638,10 +724,22 @@ export function IdeaFragmentsClient({
                 >
                   {busyIdea === idea.id ? <Loader2 size={12} className="animate-spin" /> : <Rocket size={12} />} 轉成產品企劃
                 </button>
-                <button
-                  onClick={() => deleteIdea(idea.id)}
-                  className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-bg-elevated hover:bg-red-500/20 text-fg-muted hover:text-red-400 transition ml-auto"
-                ><Trash2 size={12} /> 丟掉</button>
+                <div className="ml-auto flex items-center gap-1">
+                  <button
+                    onClick={() => rateIdea(idea, "up")}
+                    title="這個連結很讚（AI 會學你的品味）"
+                    className={`p-1.5 rounded-lg transition ${idea.feedback === "up" ? "text-emerald-400 bg-emerald-500/15" : "text-fg-muted hover:text-emerald-400 hover:bg-bg-elevated"}`}
+                  ><ThumbsUp size={13} /></button>
+                  <button
+                    onClick={() => rateIdea(idea, "down")}
+                    title="這個不行"
+                    className={`p-1.5 rounded-lg transition ${idea.feedback === "down" ? "text-red-400 bg-red-500/15" : "text-fg-muted hover:text-red-400 hover:bg-bg-elevated"}`}
+                  ><ThumbsDown size={13} /></button>
+                  <button
+                    onClick={() => deleteIdea(idea.id)}
+                    className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-bg-elevated hover:bg-red-500/20 text-fg-muted hover:text-red-400 transition"
+                  ><Trash2 size={12} /> 丟掉</button>
+                </div>
               </div>
             </div>
           ))}

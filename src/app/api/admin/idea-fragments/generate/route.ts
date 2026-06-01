@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { rateLimit } from "@/lib/rate-limit";
-import { generateIdeaRows } from "@/lib/idea-ai";
+import { generateIdeaRows, fetchSurprisingPairs, type SurprisingPair } from "@/lib/idea-ai";
+import { likedStyleSummary } from "@/lib/idea-feedback";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -42,7 +43,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "not_enough_fragments", message: "至少要 2 個碎片才能重組點子" }, { status: 400 });
   }
 
-  const gen = await generateIdeaRows({ fragments, count, userId: user.id });
+  // 沒手選碎片時 → 撈語意「意外配對」當提示（手選時就尊重使用者的選擇、不另外塞）
+  let surprisingPairs: SurprisingPair[] = [];
+  if (fragmentIds.length === 0) {
+    surprisingPairs = await fetchSurprisingPairs({ count: 6, folder: folderId });
+  }
+  const likedStyle = await likedStyleSummary();
+
+  const gen = await generateIdeaRows({ fragments, count, userId: user.id, surprisingPairs, likedStyle });
   if (!gen.ok) return NextResponse.json({ error: gen.error, message: gen.message, raw: gen.raw }, { status: gen.status });
 
   const rows = gen.rows.map((r) => ({ ...r, saved: false }));
