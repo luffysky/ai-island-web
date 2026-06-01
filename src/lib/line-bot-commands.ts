@@ -51,6 +51,8 @@ export async function runBotCommand(text: string, user: AdminLineUser): Promise<
       case "models":    return await cmdModel(args);
       case "wish":      return await cmdWish(args.join(" "));
       case "todo":      return await cmdTodo(args.join(" "));
+      case "idea":      return await cmdIdea(args.join(" "));
+      case "碎片":      return await cmdIdea(args.join(" "));
       default: return { text: `❓ 未知命令 /${cmd}、輸入 /help 看清單` };
     }
   } catch (e: any) {
@@ -95,7 +97,9 @@ function cmdHelp(): BotReply {
     "/refund [order_id]\n" +
     "/grant [user] [amount]（雙重確認）\n" +
     "/ban [user] · 封禁\n" +
-    "/model · 看 AI 用途設定 / 切換（/model line_admin claude-haiku-4-5-20251001）\n\n" +
+    "/model · 看 AI 用途設定 / 切換（/model line_admin claude-haiku-4-5-20251001）\n" +
+    "/todo <內容> · 丟進待辦\n" +
+    "/idea <內容/網址> · 丟進「給我一個點子」碎片庫 💡\n\n" +
     "🛠️ 系統\n" +
     "/errors · 系統錯誤\n" +
     "/prefs · 通知偏好\n" +
@@ -551,6 +555,29 @@ async function cmdWish(text: string): Promise<BotReply> {
 // /todo <內容>：直接進 launchpad 待辦
 async function cmdTodo(text: string): Promise<BotReply> {
   return cmdLaunchpadAdd(text, "todo");
+}
+
+// /idea <內容>：隨手丟一句話 / 回憶 / 網址 → 進「給我一個點子」碎片庫（零摩擦收集）
+async function cmdIdea(text: string): Promise<BotReply> {
+  const body = text.trim();
+  if (!body) {
+    return { text: "用法：/idea <想法 / 回憶 / 概念 / 網址>\n例：/idea 小時候外婆灶腳的柴火味" };
+  }
+  const admin = createSupabaseAdmin();
+  const { data: owner } = await admin.from("profiles").select("id").eq("is_owner", true).maybeSingle();
+  const title = body.slice(0, 200);
+  const { data, error } = await admin
+    .from("idea_fragments")
+    .insert({ created_by: (owner as any)?.id ?? null, title, content: body.length > 200 ? body : "", tags: ["LINE"] })
+    .select("id, title, content, tags, mood, category")
+    .single();
+  if (error) return { text: `❌ 存碎片失敗：${error.message}` };
+  // best-effort 算語意向量（之後在後台就能被「意外配對」引擎撈到）
+  try {
+    const { embedFragmentRow } = await import("./idea-ai");
+    await embedFragmentRow((data as any).id, data);
+  } catch {}
+  return { text: `💡 收進碎片庫了：\n「${title}」\n\n之後在後台「給我一個點子」可以分析 / 重組成新點子。` };
 }
 
 async function cmdLaunchpadAdd(text: string, board: "todo" | "wishlist"): Promise<BotReply> {

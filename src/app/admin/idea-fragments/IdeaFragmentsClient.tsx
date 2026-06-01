@@ -94,6 +94,7 @@ export function IdeaFragmentsClient({
   const [ntags, setNtags] = useState("");
   const [nfolder, setNfolder] = useState<string>(""); // 新碎片要丟進的資料夾
   const [adding, setAdding] = useState(false);
+  const [fetchingUrl, setFetchingUrl] = useState(false);
 
   // 手選碎片組合
   const [selectMode, setSelectMode] = useState(false);
@@ -151,6 +152,20 @@ export function IdeaFragmentsClient({
       setNt(""); setNc(""); setNtags(""); setNfolder("");
     } catch (e: any) { setErr(e.message); }
     finally { setAdding(false); }
+  }
+
+  const ntLooksUrl = /^(https?:\/\/|www\.)\S+$|^\S+\.\S{2,}\/?\S*$/i.test(nt.trim()) && !nt.trim().includes(" ");
+
+  async function fetchUrl() {
+    setFetchingUrl(true);
+    setErr(null);
+    try {
+      const { title, description, url } = await api("/api/admin/idea-fragments/fetch-url", "POST", { url: nt.trim() });
+      setNt(title || nt);
+      setNc((prev) => [description, url, prev].filter(Boolean).join("\n").trim());
+      if (!ntags) setNtags("網摘");
+    } catch (e: any) { setErr(e.message); }
+    finally { setFetchingUrl(false); }
   }
 
   // ===== 資料夾 =====
@@ -425,9 +440,18 @@ export function IdeaFragmentsClient({
             <input
               value={nt}
               onChange={(e) => setNt(e.target.value)}
-              placeholder="標題（一句想法 / 一段回憶 / 一個概念…）"
+              placeholder="標題（一句想法 / 一段回憶 / 一個概念 / 貼個網址…）"
               className="w-full bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm focus:border-accent outline-none"
             />
+            {ntLooksUrl && (
+              <button
+                onClick={fetchUrl}
+                disabled={fetchingUrl}
+                className="inline-flex items-center gap-1.5 text-[11px] px-2.5 py-1 rounded-full bg-sky-500/15 text-sky-300 hover:bg-sky-500/30 transition disabled:opacity-40"
+              >
+                {fetchingUrl ? <Loader2 size={12} className="animate-spin" /> : <Link2 size={12} />} 從網址抓標題 / 摘要
+              </button>
+            )}
             <textarea
               value={nc}
               onChange={(e) => setNc(e.target.value)}
