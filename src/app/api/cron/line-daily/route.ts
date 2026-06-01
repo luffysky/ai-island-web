@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { notifyAdmin } from "@/lib/notify-admin";
 import { buildKpiCard } from "@/lib/line-flex";
+import { verifyCronAuth } from "@/lib/cron-auth";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -18,11 +19,9 @@ export const runtime = "nodejs";
  *   weekly → 上週 7 天報表（每週一早上推）
  */
 export async function GET(req: NextRequest) {
-  const expected = process.env.CRON_SECRET;
-  const got = req.headers.get("x-cron-secret") ?? req.nextUrl.searchParams.get("secret");
-  if (!expected || got !== expected) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  }
+  // 三種認證都吃（Authorization: Bearer / x-cron-secret / ?secret），跟其他 cron 一致
+  const authErr = verifyCronAuth(req);
+  if (authErr) return authErr;
 
   const period = (req.nextUrl.searchParams.get("period") ?? "daily") as "daily" | "weekly";
   const days = period === "weekly" ? 7 : 1;
