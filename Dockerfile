@@ -36,6 +36,11 @@ ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL \
     NEXT_PUBLIC_USER_LINE_BOT_BASIC_ID=$NEXT_PUBLIC_USER_LINE_BOT_BASIC_ID \
     NEXT_TELEMETRY_DISABLED=1
 
+# server 端 secret：SSG 預渲染 /forum 等公開頁時要用 admin client 撈資料。
+# 只在 builder 階段、不會進最終 image（runner 不繼承此 ENV、也只 COPY 產物）。
+ARG SUPABASE_SERVICE_ROLE_KEY
+ENV SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY
+
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm run build
