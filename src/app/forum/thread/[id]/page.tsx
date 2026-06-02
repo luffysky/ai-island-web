@@ -8,7 +8,7 @@ import { ThreadViewTracker } from "@/components/forum/ThreadViewTracker";
 import { ThreadReactionBar } from "@/components/forum/ThreadReactionBar";
 import { ArrowLeft, Eye, MessageSquare, Pin, Star, Lock } from "lucide-react";
 import type { ForumReply } from "@/lib/forum-types";
-import { sanitizeRichHtml } from "@/lib/rich-html";
+import { sanitizeRichHtmlStrict } from "@/lib/rich-html-server";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
 
@@ -126,7 +126,7 @@ export default async function ThreadPage({
 
         {/* 內文 */}
         {thread.content ? (
-          <div className="prose-custom max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(thread.content) }} />
+          <div className="prose-custom max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeRichHtmlStrict(thread.content) }} />
         ) : (
           <p className="text-fg-muted italic">（沒有內文）</p>
         )}

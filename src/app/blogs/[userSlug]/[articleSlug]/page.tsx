@@ -11,7 +11,7 @@ import { CommentSection } from "@/components/blog/CommentSection";
 import { ShareArticleButton } from "@/components/blog/ShareArticleButton";
 import { ReadingProgress } from "@/components/blog/ReadingProgress";
 import { TableOfContents } from "@/components/blog/TableOfContents";
-import { sanitizeRichHtml } from "@/lib/rich-html";
+import { sanitizeRichHtmlStrict } from "@/lib/rich-html-server";
 import { articleSchema, breadcrumbSchema, jsonLdScript } from "@/lib/seo-jsonld";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
@@ -160,7 +160,7 @@ export default async function ArticlePage({
       {/* 內文 */}
       <div
         className="prose-custom max-w-none"
-        dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(article.content) }}
+        dangerouslySetInnerHTML={{ __html: sanitizeRichHtmlStrict(article.content) }}
       />
 
       {/* emoji 反應 + 分享 */}
