@@ -4,6 +4,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { getProviderKey } from "@/lib/ai-crypto";
 import { getModelNameForUsage } from "@/lib/ai-usage-models";
 import { callAI } from "@/lib/ai-providers";
+import { requireAdmin } from "@/lib/admin-guard";
 
 function providerFromModel(model: string): "anthropic" | "openai" | "google" | "groq" {
   if (/^claude/i.test(model)) return "anthropic";
@@ -42,14 +43,9 @@ export async function POST() {
 async function handle() {
   const t0 = Date.now();
   const tlog = (tag: string) => console.log(`[suggest] +${Date.now() - t0}ms ${tag}`);
-  const supabase = await createSupabaseServer();
-  tlog("supabase server ready");
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  const { data: p } = await supabase.from("profiles").select("role, is_owner").eq("id", user.id).maybeSingle();
-  if (!(p as any)?.is_owner && !["admin", "owner"].includes((p as any)?.role ?? "")) {
-    return NextResponse.json({ error: "forbidden" }, { status: 403 });
-  }
+  const gate = await requireAdmin();
+  if (!gate.ok) return gate.response;
+  tlog("admin gate ok");
 
   const admin = createSupabaseAdmin();
   // 撈 todo board 的 TODO + DOING column 全部卡

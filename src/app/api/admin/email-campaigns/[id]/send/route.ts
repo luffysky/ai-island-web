@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { requireAdmin } from "@/lib/admin-guard";
 
 export const dynamic = "force-dynamic";
 
@@ -9,11 +10,9 @@ export const dynamic = "force-dynamic";
  * 實際 SMTP 寄送由背景 worker 處理（本任務不接 Resend、留 spec）。
  */
 export async function POST(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const gate = await requireAdmin();
+  if (!gate.ok) return gate.response;
   const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  if (profile?.role !== "admin") return NextResponse.json({ error: "forbidden" }, { status: 403 });
 
   const { id } = await params;
   const admin = createSupabaseAdmin();
@@ -61,7 +60,7 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
 
   await supabase.from("admin_events").insert({
     event_type: "email_campaign_sent",
-    user_id: user.id,
+    user_id: gate.userId,
     meta: { campaign_id: id, recipient_count: targets.length },
   });
 

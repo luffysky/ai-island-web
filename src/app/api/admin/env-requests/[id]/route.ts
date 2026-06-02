@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { createSupabaseServer } from "@/lib/supabase-server";
+import { requireAdmin } from "@/lib/admin-guard";
 
 export const dynamic = "force-dynamic";
 
@@ -16,18 +17,9 @@ const PatchSchema = z.object({
 export async function PATCH(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
   const { id } = await ctx.params;
 
+  const gate = await requireAdmin();
+  if (!gate.ok) return gate.response;
   const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role, username")
-    .eq("id", user.id)
-    .single();
-  if (profile?.role !== "admin") {
-    return NextResponse.json({ error: "forbidden" }, { status: 403 });
-  }
 
   const body = await req.json().catch(() => null);
   const parsed = PatchSchema.safeParse(body);
@@ -40,8 +32,8 @@ export async function PATCH(req: NextRequest, ctx: { params: Promise<{ id: strin
     .update({
       status: parsed.data.status,
       resolved_at: new Date().toISOString(),
-      resolved_by: user.id,
-      resolved_by_username: profile.username,
+      resolved_by: gate.userId,
+      resolved_by_username: gate.username,
       resolved_note: parsed.data.note ?? null,
     })
     .eq("id", id)

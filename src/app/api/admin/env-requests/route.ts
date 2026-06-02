@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { createSupabaseServer } from "@/lib/supabase-server";
+import { requireAdmin } from "@/lib/admin-guard";
 import { notifyAdmin } from "@/lib/notify-admin";
 import { buildSimpleCard } from "@/lib/line-flex";
 
@@ -18,18 +19,14 @@ const PostSchema = z.object({
  * admin 提交 ENV 變更申請、立刻 LINE 通知 owner。
  */
 export async function POST(req: NextRequest) {
+  const gate = await requireAdmin();
+  if (!gate.ok) return gate.response;
   const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role, username, display_name")
-    .eq("id", user.id)
+    .select("username, display_name")
+    .eq("id", gate.userId)
     .single();
-  if (profile?.role !== "admin") {
-    return NextResponse.json({ error: "forbidden" }, { status: 403 });
-  }
 
   const body = await req.json().catch(() => null);
   const parsed = PostSchema.safeParse(body);
@@ -40,9 +37,9 @@ export async function POST(req: NextRequest) {
   const { data: row, error } = await supabase
     .from("env_change_requests")
     .insert({
-      requested_by: user.id,
-      requested_by_username: profile.username,
-      requested_by_display_name: profile.display_name,
+      requested_by: gate.userId,
+      requested_by_username: profile?.username,
+      requested_by_display_name: profile?.display_name,
       key_name: parsed.data.key_name,
       purpose: parsed.data.purpose,
     })
@@ -54,7 +51,7 @@ export async function POST(req: NextRequest) {
   }
 
   // LINE 通知 owner（非阻塞）
-  const who = profile.display_name || profile.username || "admin";
+  const who = profile?.display_name || profile?.username || "admin";
   notifyAdmin({
     kind: "env_request",
     dedupeKey: `env_req_${row.id}`,
@@ -83,14 +80,9 @@ export async function POST(req: NextRequest) {
  * 列出 pending + 最近 done/rejected。
  */
 export async function GET() {
+  const gate = await requireAdmin();
+  if (!gate.ok) return gate.response;
   const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  if (profile?.role !== "admin") {
-    return NextResponse.json({ error: "forbidden" }, { status: 403 });
-  }
 
   const { data, error } = await supabase
     .from("env_change_requests")

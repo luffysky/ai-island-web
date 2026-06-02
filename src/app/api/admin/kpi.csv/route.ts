@@ -1,16 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createSupabaseServer } from "@/lib/supabase-server";
+import { requireAdmin } from "@/lib/admin-guard";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  const gate = await requireAdmin();
+  if (!gate.ok) return gate.response;
   const admin = createSupabaseAdmin();
-  const { data: prof } = await admin.from("profiles").select("role").eq("id", user.id).single();
-  if ((prof as any)?.role !== "admin") return NextResponse.json({ error: "forbidden" }, { status: 403 });
 
   const days = Math.max(1, Math.min(365, parseInt(req.nextUrl.searchParams.get("days") ?? "30", 10) || 30));
   const since = new Date(Date.now() - days * 86400_000).toISOString();

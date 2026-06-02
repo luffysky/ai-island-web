@@ -1,19 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createSupabaseServer } from "@/lib/supabase-server";
+import { requireAdmin } from "@/lib/admin-guard";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 async function gateAdmin() {
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { ok: false as const, status: 401, body: { error: "unauthorized" } };
-  const { data: p } = await supabase.from("profiles").select("role, is_owner").eq("id", user.id).maybeSingle();
-  if (!(p as any)?.is_owner && !["admin", "owner"].includes((p as any)?.role ?? "")) {
-    return { ok: false as const, status: 403, body: { error: "forbidden" } };
-  }
-  return { ok: true as const, userId: user.id };
+  const g = await requireAdmin();
+  if (!g.ok) return { ok: false as const, status: g.status, body: { error: g.status === 401 ? "unauthorized" : "forbidden" } };
+  return { ok: true as const, userId: g.userId };
 }
 
 /** PATCH — 編輯 card 或移動 column / 改 position（drag/drop 都打這） */
