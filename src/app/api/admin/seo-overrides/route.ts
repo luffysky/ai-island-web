@@ -1,17 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createSupabaseServer } from "@/lib/supabase-server";
+import { requireStaff } from "@/lib/admin-guard";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  if (!["admin", "editor"].includes(profile?.role ?? "")) {
-    return NextResponse.json({ error: "forbidden" }, { status: 403 });
-  }
+  const gate = await requireStaff(["admin", "editor"]);
+  if (!gate.ok) return gate.response;
 
   const body = await req.json().catch(() => ({} as any));
   const path = String(body.path ?? "");
@@ -24,7 +19,7 @@ export async function POST(req: NextRequest) {
     description: body.description ?? null,
     og_image: body.og_image ?? null,
     updated_at: new Date().toISOString(),
-    updated_by: user.id,
+    updated_by: gate.userId,
   }, { onConflict: "path" });
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

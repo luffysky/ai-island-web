@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createSupabaseServer } from "@/lib/supabase-server";
+import { requireStaff } from "@/lib/admin-guard";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { notifyUserLine } from "@/lib/notify-user-line";
 import { buildSimpleCard } from "@/lib/line-flex";
@@ -9,13 +9,8 @@ export const dynamic = "force-dynamic";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  if (!["admin","teacher","assistant"].includes(profile?.role ?? "")) {
-    return NextResponse.json({ error: "forbidden" }, { status: 403 });
-  }
+  const gate = await requireStaff(["admin", "teacher", "assistant"]);
+  if (!gate.ok) return gate.response;
 
   const { id } = await params;
   const body = await req.json().catch(() => ({} as any));
@@ -25,8 +20,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   const admin = createSupabaseAdmin();
   const { error } = await admin.from("ticket_messages").insert({
     ticket_id: id,
-    author_id: user.id,
-    sender_id: user.id,
+    author_id: gate.userId,
+    sender_id: gate.userId,
     author_type: "admin",
     sender_type: "admin",
     is_staff: true,
@@ -40,7 +35,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
   await admin.from("tickets").update({
     status: "waiting_user",
-    assigned_to: user.id,
+    assigned_to: gate.userId,
     updated_at: new Date().toISOString(),
   }).eq("id", id);
 

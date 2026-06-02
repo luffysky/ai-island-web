@@ -116,6 +116,30 @@ export async function requireAdmin(): Promise<GuardResult> {
 }
 
 /**
+ * 放寬給特定角色的 gate：owner 一律放行，外加 allowedRoles 內的角色。
+ * 用在「不是只有 admin、teacher/assistant/editor 也能用」的後台 route
+ * （客服罐頭、工單、changelog、SEO override 等），保留各自原本的角色集合、不改語意。
+ *
+ *   const gate = await requireStaff(["admin", "teacher", "assistant"]);
+ *   if (!gate.ok) return gate.response;
+ */
+export async function requireStaff(allowedRoles: string[]): Promise<GuardResult> {
+  const actor = await resolveActor();
+  if (!actor.ok) return actor;
+
+  const allowed = actor.isOwner || (actor.role != null && allowedRoles.includes(actor.role));
+  if (!allowed) return fail(403, "forbidden");
+
+  return {
+    ok: true,
+    userId: actor.userId,
+    role: actor.role,
+    username: actor.username,
+    isOwner: actor.isOwner,
+  };
+}
+
+/**
  * 僅限林董本人（owner）：危險操作用這個，
  * 例如 env 變更、breach 操作、impersonate、刪資料、金流設定。
  */
