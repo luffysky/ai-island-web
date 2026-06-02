@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { requireAdmin } from "@/lib/admin-guard";
 
 export const dynamic = "force-dynamic";
 
@@ -11,12 +12,8 @@ export const dynamic = "force-dynamic";
  */
 export async function POST(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  if (profile?.role !== "admin") return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  const gate = await requireAdmin();
+  if (!gate.ok) return gate.response;
 
   const admin = createSupabaseAdmin();
 
@@ -50,7 +47,7 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
     .update({
       status: "hard_deleted",
       completed_at: new Date().toISOString(),
-      processed_by: user.id,
+      processed_by: gate.userId,
     })
     .eq("id", id);
 
