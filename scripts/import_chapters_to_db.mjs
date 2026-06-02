@@ -27,8 +27,13 @@ if (!url || !key) {
 }
 const supabase = createClient(url, key, { auth: { persistSession: false } });
 
-const files = fs.readdirSync(CHAPTERS_DIR).filter((f) => f.endsWith(".json")).sort();
-console.log(`📚 找到 ${files.length} 個 JSON 章節檔`);
+// 可選：只匯入指定章節，例如 `node scripts/import_chapters_to_db.mjs ch00 ch03`
+const only = process.argv.slice(2).map((a) => a.replace(/\.json$/, ""));
+const files = fs.readdirSync(CHAPTERS_DIR)
+  .filter((f) => f.endsWith(".json"))
+  .filter((f) => only.length === 0 || only.includes(f.replace(/\.json$/, "")))
+  .sort();
+console.log(`📚 找到 ${files.length} 個 JSON 章節檔${only.length ? `（只匯入：${only.join(", ")}）` : ""}`);
 
 let chapterOk = 0;
 let lessonOk = 0;
