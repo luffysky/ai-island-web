@@ -55,7 +55,7 @@
 - [ ] OPT-7 其餘列表 API `select("*")` → 明確欄位（章節 metas/nav 已做）
 - [ ] OPT-8 RLS `is_admin()` SECURITY DEFINER function + 補 index
 - [x] OPT-9 公開頁加 ISR：blog 文章 revalidate=300s、論壇主文 60s（章節內容先前已做）。排行榜含 auth、暫不加
-- [ ] 20 處裸 `<img>` → `next/image`
+- [x] 20 處裸 `<img>` → `next/image`：**盤查後實際已完成/不適用**。頭像全已是 `next/image`（36 檔在用）；剩餘 raw `<img>` 是 `data:`/base64（playground 輸出、AI 貼圖、next/image 不能優化 data URI）、後台預覽工具、或 LessonImage（燈箱需 plain）——皆正確保持 `<img>`。原 audit 把 data: 圖也算進去高估了
 
 ---
 
