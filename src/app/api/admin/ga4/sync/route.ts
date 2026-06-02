@@ -34,12 +34,16 @@ export async function GET(req: NextRequest) {
 
 // POST 給 admin 後台手動觸發
 export async function POST() {
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  if (profile?.role !== "admin") return NextResponse.json({ error: "forbidden" }, { status: 403 });
-  return runSync();
+  try {
+    const supabase = await createSupabaseServer();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+    if (profile?.role !== "admin") return NextResponse.json({ error: "forbidden" }, { status: 403 });
+    return runSync();
+  } catch (e: any) {
+    return NextResponse.json({ error: "auth_failed", message: e?.message ?? "unknown" }, { status: 500 });
+  }
 }
 
 async function runSync() {
@@ -62,127 +66,84 @@ async function runSync() {
     const today = new Date();
     const startDate = new Date(Date.now() - 30 * 86400_000);
 
-    // 1. 每日總計
-    const dailyRes = await fetch(
-      `https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runReport`,
-      {
+    const dateStr = (d: Date) => d.toISOString().slice(0, 10);
+    const last7 = dateStr(new Date(Date.now() - 7 * 86400_000));
+    const todayStr = dateStr(today);
+
+    // 單支 runReport：帶 20 秒逾時，卡住就丟錯（被外層 try 接成 JSON，不會變平台 504 HTML）
+    const runReport = (body: any) =>
+      fetch(`https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runReport`, {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          dateRanges: [{
-            startDate: startDate.toISOString().slice(0, 10),
-            endDate: today.toISOString().slice(0, 10),
-          }],
-          dimensions: [{ name: "date" }],
-          metrics: [
-            { name: "screenPageViews" },
-            { name: "totalUsers" },
-            { name: "userEngagementDuration" },
-            { name: "bounceRate" },
-          ],
-        }),
-      }
-    );
+        headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+        signal: AbortSignal.timeout(20_000),
+      });
+
+    // 5 支報表並行（原本一支等一支跑、容易拖到閘道逾時）
+    const [dailyRes, topPagesRes, refRes, countryRes, deviceRes] = await Promise.all([
+      runReport({
+        dateRanges: [{ startDate: dateStr(startDate), endDate: todayStr }],
+        dimensions: [{ name: "date" }],
+        metrics: [
+          { name: "screenPageViews" },
+          { name: "totalUsers" },
+          { name: "userEngagementDuration" },
+          { name: "bounceRate" },
+        ],
+      }),
+      runReport({
+        dateRanges: [{ startDate: last7, endDate: todayStr }],
+        dimensions: [{ name: "pagePath" }],
+        metrics: [{ name: "screenPageViews" }],
+        orderBys: [{ metric: { metricName: "screenPageViews" }, desc: true }],
+        limit: 20,
+      }),
+      runReport({
+        dateRanges: [{ startDate: last7, endDate: todayStr }],
+        dimensions: [{ name: "sessionSource" }],
+        metrics: [{ name: "totalUsers" }],
+        orderBys: [{ metric: { metricName: "totalUsers" }, desc: true }],
+        limit: 20,
+      }),
+      runReport({
+        dateRanges: [{ startDate: last7, endDate: todayStr }],
+        dimensions: [{ name: "country" }],
+        metrics: [{ name: "totalUsers" }],
+        orderBys: [{ metric: { metricName: "totalUsers" }, desc: true }],
+        limit: 10,
+      }),
+      runReport({
+        dateRanges: [{ startDate: last7, endDate: todayStr }],
+        dimensions: [{ name: "deviceCategory" }],
+        metrics: [{ name: "totalUsers" }],
+      }),
+    ]);
 
     if (!dailyRes.ok) {
       const err = await dailyRes.text();
-      return NextResponse.json({ error: "ga_api_error", detail: err }, { status: 502 });
+      return NextResponse.json({ error: "ga_api_error", detail: err.slice(0, 500) }, { status: 502 });
     }
 
-    const daily = await dailyRes.json();
+    const [daily, topPagesData, refData, countryData, deviceData] = await Promise.all([
+      dailyRes.json(),
+      topPagesRes.json(),
+      refRes.json(),
+      countryRes.json(),
+      deviceRes.json(),
+    ]);
 
-    // 2. Top pages（近 7 天）
-    const topPagesRes = await fetch(
-      `https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runReport`,
-      {
-        method: "POST",
-        headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
-        body: JSON.stringify({
-          dateRanges: [{
-            startDate: new Date(Date.now() - 7 * 86400_000).toISOString().slice(0, 10),
-            endDate: today.toISOString().slice(0, 10),
-          }],
-          dimensions: [{ name: "pagePath" }],
-          metrics: [{ name: "screenPageViews" }],
-          orderBys: [{ metric: { metricName: "screenPageViews" }, desc: true }],
-          limit: 20,
-        }),
-      }
-    );
-    const topPagesData = await topPagesRes.json();
     const topPages = (topPagesData.rows ?? []).map((r: any) => ({
       path: r.dimensionValues[0]?.value,
       views: Number(r.metricValues[0]?.value ?? 0),
     }));
-
-    // 3. Top referrers
-    const refRes = await fetch(
-      `https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runReport`,
-      {
-        method: "POST",
-        headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
-        body: JSON.stringify({
-          dateRanges: [{
-            startDate: new Date(Date.now() - 7 * 86400_000).toISOString().slice(0, 10),
-            endDate: today.toISOString().slice(0, 10),
-          }],
-          dimensions: [{ name: "sessionSource" }],
-          metrics: [{ name: "totalUsers" }],
-          orderBys: [{ metric: { metricName: "totalUsers" }, desc: true }],
-          limit: 20,
-        }),
-      }
-    );
-    const refData = await refRes.json();
     const topReferrers = (refData.rows ?? []).map((r: any) => ({
       source: r.dimensionValues[0]?.value,
       visits: Number(r.metricValues[0]?.value ?? 0),
     }));
-
-    // 4. Top countries
-    const countryRes = await fetch(
-      `https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runReport`,
-      {
-        method: "POST",
-        headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
-        body: JSON.stringify({
-          dateRanges: [{
-            startDate: new Date(Date.now() - 7 * 86400_000).toISOString().slice(0, 10),
-            endDate: today.toISOString().slice(0, 10),
-          }],
-          dimensions: [{ name: "country" }],
-          metrics: [{ name: "totalUsers" }],
-          orderBys: [{ metric: { metricName: "totalUsers" }, desc: true }],
-          limit: 10,
-        }),
-      }
-    );
-    const countryData = await countryRes.json();
     const topCountries = (countryData.rows ?? []).map((r: any) => ({
       country: r.dimensionValues[0]?.value,
       users: Number(r.metricValues[0]?.value ?? 0),
     }));
-
-    // 5. Devices
-    const deviceRes = await fetch(
-      `https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runReport`,
-      {
-        method: "POST",
-        headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
-        body: JSON.stringify({
-          dateRanges: [{
-            startDate: new Date(Date.now() - 7 * 86400_000).toISOString().slice(0, 10),
-            endDate: today.toISOString().slice(0, 10),
-          }],
-          dimensions: [{ name: "deviceCategory" }],
-          metrics: [{ name: "totalUsers" }],
-        }),
-      }
-    );
-    const deviceData = await deviceRes.json();
     const topDevices = (deviceData.rows ?? []).map((r: any) => ({
       device: r.dimensionValues[0]?.value,
       users: Number(r.metricValues[0]?.value ?? 0),

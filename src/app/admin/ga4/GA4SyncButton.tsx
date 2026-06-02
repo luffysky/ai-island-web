@@ -13,13 +13,22 @@ export function GA4SyncButton() {
     setResult(null);
     try {
       const res = await fetch("/api/admin/ga4/sync", {
-      credentials: "include", method: "POST" });
+        credentials: "include",
+        method: "POST",
+      });
+      const ct = res.headers.get("content-type") ?? "";
+      if (!ct.includes("application/json")) {
+        // 收到 HTML（404 / 500 / 504 逾時頁等）→ 講出真正的狀態，別硬 parse
+        const text = (await res.text()).slice(0, 120).replace(/\s+/g, " ").trim();
+        setResult(`❌ HTTP ${res.status}（非 JSON 回應）${text ? `：${text}` : ""}`);
+        return;
+      }
       const data = await res.json();
       if (data.ok) {
         setResult(`✓ 已同步 ${data.upserted} 天的數據`);
         setTimeout(() => router.refresh(), 1000);
       } else {
-        setResult(`❌ ${data.message ?? data.error}`);
+        setResult(`❌ HTTP ${res.status}：${data.message ?? data.error}`);
       }
     } catch (e: any) {
       setResult(`❌ ${e.message}`);
