@@ -1,18 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { requireAdmin } from "@/lib/admin-guard";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
-  if (!profile || !["admin", "owner"].includes((profile as any).role)) {
-    return NextResponse.json({ error: "forbidden" }, { status: 403 });
-  }
+  const gate = await requireAdmin();
+  if (!gate.ok) return gate.response;
 
   const body = await req.json().catch(() => ({} as any));
   const admin = createSupabaseAdmin();
@@ -26,7 +22,7 @@ export async function POST(req: NextRequest) {
     dont_words: Array.isArray(body.dont_words) ? body.dont_words.slice(0, 30) : [],
     signature: body.signature ? String(body.signature).slice(0, 200) : null,
     hashtag_pool: Array.isArray(body.hashtag_pool) ? body.hashtag_pool.slice(0, 30) : [],
-    updated_by: user.id,
+    updated_by: gate.userId,
     updated_at: new Date().toISOString(),
   });
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

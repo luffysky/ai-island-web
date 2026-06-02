@@ -4,6 +4,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { decryptKey } from "@/lib/ai-crypto";
 import { pickModelForUsage } from "@/lib/ai-usage-models";
 import { getAdminLineUsers } from "@/lib/admin-line-users";
+import { requireAdmin } from "@/lib/admin-guard";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -15,13 +16,8 @@ export const runtime = "nodejs";
  * 不發訊息、不打 LINE API、純檢查本地端設定。
  */
 export async function GET(_req: NextRequest) {
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
-  if (!["admin", "owner"].includes((profile as any)?.role ?? "")) {
-    return NextResponse.json({ error: "forbidden" }, { status: 403 });
-  }
+  const gate = await requireAdmin();
+  if (!gate.ok) return gate.response;
 
   const checks: Array<{ step: string; status: "ok" | "warn" | "fail"; detail: string }> = [];
 

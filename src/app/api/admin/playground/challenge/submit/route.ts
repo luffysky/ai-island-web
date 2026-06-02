@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { requireAdmin } from "@/lib/admin-guard";
 
 export const dynamic = "force-dynamic";
 
@@ -11,11 +12,8 @@ export const dynamic = "force-dynamic";
  *   server 寫 progress、若 passed 第一次、發 XP。
  */
 export async function POST(req: NextRequest) {
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
-  if (profile?.role !== "admin") return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  const gate = await requireAdmin();
+  if (!gate.ok) return gate.response;
 
   const body = await req.json().catch(() => ({} as any));
   const challengeId = String(body.challenge_id ?? "");
@@ -35,7 +33,7 @@ export async function POST(req: NextRequest) {
   const { data: existing } = await admin
     .from("nami_challenge_progress")
     .select("*")
-    .eq("user_id", user.id)
+    .eq("user_id", gate.userId)
     .eq("challenge_id", challengeId)
     .maybeSingle();
 
@@ -44,7 +42,7 @@ export async function POST(req: NextRequest) {
   // upsert
   await admin.from("nami_challenge_progress").upsert(
     {
-      user_id: user.id,
+      user_id: gate.userId,
       challenge_id: challengeId,
       status: passed ? "passed" : "attempted",
       attempts: ((existing as any)?.attempts ?? 0) + 1,
@@ -58,10 +56,10 @@ export async function POST(req: NextRequest) {
   // 第一次 pass：加 XP + 記 xp_events
   if (isFirstPass) {
     const xp = (challenge as any).xp_award ?? 50;
-    try { await admin.rpc("add_xp", { p_user_id: user.id, p_amount: xp }); } catch {}
+    try { await admin.rpc("add_xp", { p_user_id: gate.userId, p_amount: xp }); } catch {}
     try {
       await admin.from("xp_events").insert({
-        user_id: user.id,
+        user_id: gate.userId,
         amount: xp,
         reason: `nami_challenge:${challengeId}`,
         meta: { title: (challenge as any).title },

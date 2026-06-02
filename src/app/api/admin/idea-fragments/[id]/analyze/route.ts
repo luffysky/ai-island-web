@@ -4,6 +4,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { callAI } from "@/lib/ai-providers";
 import { rateLimit } from "@/lib/rate-limit";
 import { resolveIdeaModel, extractJson, embedFragmentRow } from "@/lib/idea-ai";
+import { requireAdmin } from "@/lib/admin-guard";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -15,15 +16,10 @@ export const maxDuration = 60;
  *   回 { fragment }（已更新）
  */
 export async function POST(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  const { data: profile } = await supabase.from("profiles").select("role, is_owner").eq("id", user.id).maybeSingle();
-  if (!(profile?.role === "admin" || (profile as any)?.is_owner === true)) {
-    return NextResponse.json({ error: "forbidden" }, { status: 403 });
-  }
+  const gate = await requireAdmin();
+  if (!gate.ok) return gate.response;
 
-  const rl = rateLimit(`idea-analyze:${user.id}`, 60, 3600_000);
+  const rl = rateLimit(`idea-analyze:${gate.userId}`, 60, 3600_000);
   if (!rl.ok) return NextResponse.json({ error: "rate_limited", retry_after: rl.retryAfter }, { status: 429 });
 
   const { id } = await params;

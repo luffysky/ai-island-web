@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { requireAdmin } from "@/lib/admin-guard";
 
 export const dynamic = "force-dynamic";
 
@@ -10,11 +11,8 @@ export const dynamic = "force-dynamic";
  * 自動分配 id (py-{level}-{nextNum})、sort_order 也自動。
  */
 export async function POST(req: NextRequest) {
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  const { data: profile } = await supabase.from("profiles").select("role, username").eq("id", user.id).maybeSingle();
-  if (profile?.role !== "admin") return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  const gate = await requireAdmin();
+  if (!gate.ok) return gate.response;
 
   const body = await req.json().catch(() => ({} as any));
   const list = Array.isArray(body.challenges) ? body.challenges : [];
@@ -79,8 +77,8 @@ export async function POST(req: NextRequest) {
   // audit log
   try {
     await admin.from("audit_logs").insert({
-      actor_id: user.id,
-      actor_username: profile.username,
+      actor_id: gate.userId,
+      actor_username: gate.username,
       action: "admin.nami_challenge_bulk_insert",
       target_type: "nami_challenge",
       changes: { count: rows.length, ids: rows.map((r) => r.id) },

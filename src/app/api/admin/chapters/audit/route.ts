@@ -4,6 +4,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { getProviderKey } from "@/lib/ai-crypto";
 import { getModelNameForUsage } from "@/lib/ai-usage-models";
 import { callAI } from "@/lib/ai-providers";
+import { requireAdmin } from "@/lib/admin-guard";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -35,13 +36,8 @@ export async function POST(req: NextRequest) {
 }
 
 async function handle(req: NextRequest) {
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  const { data: p } = await supabase.from("profiles").select("role, is_owner").eq("id", user.id).maybeSingle();
-  if (!(p as any)?.is_owner && !["admin", "owner"].includes((p as any)?.role ?? "")) {
-    return NextResponse.json({ error: "forbidden" }, { status: 403 });
-  }
+  const gate = await requireAdmin();
+  if (!gate.ok) return gate.response;
 
   const body = await req.json().catch(() => ({} as any));
   const chapterId = body.chapter_id ? Number(body.chapter_id) : null;

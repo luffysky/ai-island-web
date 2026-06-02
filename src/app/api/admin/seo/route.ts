@@ -1,13 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer, createSupabaseAdmin } from "@/lib/supabase";
+import { requireAdmin } from "@/lib/admin-guard";
 
 export async function POST(req: NextRequest) {
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-
-  const { data: me } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  if (me?.role !== "admin") return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  const gate = await requireAdmin();
+  if (!gate.ok) return gate.response;
 
   const body = await req.json();
   const admin = createSupabaseAdmin();
@@ -26,7 +23,7 @@ export async function POST(req: NextRequest) {
     changefreq: body.changefreq,
     geo_target: body.geo_target,
     hreflang: body.hreflang,
-    updated_by: user.id,
+    updated_by: gate.userId,
     updated_at: new Date().toISOString(),
   }, { onConflict: "path" });
 

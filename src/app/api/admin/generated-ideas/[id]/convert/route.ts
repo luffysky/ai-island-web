@@ -3,6 +3,7 @@ import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { callAI } from "@/lib/ai-providers";
 import { resolveIdeaModel } from "@/lib/idea-ai";
+import { requireAdmin } from "@/lib/admin-guard";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -15,13 +16,8 @@ export const maxDuration = 90;
  *   - product_plan → AI 把點子展開成完整產品企劃、存成 blog 草稿（is_public=false）
  */
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  const { data: profile } = await supabase.from("profiles").select("role, is_owner").eq("id", user.id).maybeSingle();
-  if (!(profile?.role === "admin" || (profile as any)?.is_owner === true)) {
-    return NextResponse.json({ error: "forbidden" }, { status: 403 });
-  }
+  const gate = await requireAdmin();
+  if (!gate.ok) return gate.response;
 
   const { id } = await params;
   const body = await req.json().catch(() => ({} as any));
@@ -43,7 +39,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
     const { data, error } = await admin
       .from("todos")
-      .insert({ user_id: user.id, title: String(idea.title).slice(0, 200), notes })
+      .insert({ user_id: gate.userId, title: String(idea.title).slice(0, 200), notes })
       .select("id")
       .single();
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -61,7 +57,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const { data, error } = await admin
       .from("user_blog_articles")
       .insert({
-        user_id: user.id,
+        user_id: gate.userId,
         title: String(idea.title).slice(0, 200),
         slug,
         summary: idea.summary ? String(idea.summary).slice(0, 300) : null,
@@ -123,7 +119,7 @@ ${fragContext ? `\n靈感來源碎片：\n${fragContext}` : ""}`;
     const { data, error } = await admin
       .from("user_blog_articles")
       .insert({
-        user_id: user.id,
+        user_id: gate.userId,
         title: `【產品企劃】${String(idea.title).slice(0, 180)}`,
         slug,
         summary: idea.summary ? String(idea.summary).slice(0, 300) : null,

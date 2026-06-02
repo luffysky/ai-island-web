@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { runAutoSync } from "@/lib/kanban-auto-sync";
+import { requireAdmin } from "@/lib/admin-guard";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -19,13 +20,8 @@ async function gate(req: NextRequest) {
   const cronSecret = req.nextUrl.searchParams.get("secret") ?? req.headers.get("x-cron-secret");
   if (cronSecret && cronSecret === process.env.CRON_SECRET) return { ok: true as const };
 
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { ok: false as const, status: 401, body: { error: "unauthorized" } };
-  const { data: p } = await supabase.from("profiles").select("role, is_owner").eq("id", user.id).maybeSingle();
-  if (!(p as any)?.is_owner && !["admin", "owner"].includes((p as any)?.role ?? "")) {
-    return { ok: false as const, status: 403, body: { error: "forbidden" } };
-  }
+  const gate = await requireAdmin();
+  if (!gate.ok) return gate.response;
   return { ok: true as const };
 }
 

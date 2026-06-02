@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { requireAdmin } from "@/lib/admin-guard";
 
 export const dynamic = "force-dynamic";
 
@@ -13,11 +14,8 @@ export const dynamic = "force-dynamic";
  * 寫 audit_logs 留紀錄。
  */
 export async function POST(req: NextRequest) {
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  const { data: profile } = await supabase.from("profiles").select("role, username").eq("id", user.id).single();
-  if (profile?.role !== "admin") return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  const gate = await requireAdmin();
+  if (!gate.ok) return gate.response;
 
   const body = await req.json().catch(() => ({} as any));
   const text = String(body.text ?? "").trim();
@@ -63,8 +61,8 @@ export async function POST(req: NextRequest) {
     // audit
     const admin = createSupabaseAdmin();
     await admin.from("audit_logs").insert({
-      actor_id: user.id,
-      actor_username: profile.username,
+      actor_id: gate.userId,
+      actor_username: gate.username,
       action: "admin.line_push_user",
       target_type: "user",
       target_id: body.userId ?? null,

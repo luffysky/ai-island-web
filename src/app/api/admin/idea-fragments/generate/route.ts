@@ -4,6 +4,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { rateLimit } from "@/lib/rate-limit";
 import { generateIdeaRows, fetchSurprisingPairs, type SurprisingPair } from "@/lib/idea-ai";
 import { likedStyleSummary } from "@/lib/idea-feedback";
+import { requireAdmin } from "@/lib/admin-guard";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -15,15 +16,10 @@ export const maxDuration = 90;
  *   沒給 fragmentIds → 取最近 40 個碎片
  */
 export async function POST(req: NextRequest) {
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  const { data: profile } = await supabase.from("profiles").select("role, is_owner").eq("id", user.id).maybeSingle();
-  if (!(profile?.role === "admin" || (profile as any)?.is_owner === true)) {
-    return NextResponse.json({ error: "forbidden" }, { status: 403 });
-  }
+  const gate = await requireAdmin();
+  if (!gate.ok) return gate.response;
 
-  const rl = rateLimit(`idea-generate:${user.id}`, 30, 3600_000);
+  const rl = rateLimit(`idea-generate:${gate.userId}`, 30, 3600_000);
   if (!rl.ok) return NextResponse.json({ error: "rate_limited", retry_after: rl.retryAfter }, { status: 429 });
 
   const body = await req.json().catch(() => ({} as any));
@@ -50,7 +46,7 @@ export async function POST(req: NextRequest) {
   }
   const likedStyle = await likedStyleSummary();
 
-  const gen = await generateIdeaRows({ fragments, count, userId: user.id, surprisingPairs, likedStyle });
+  const gen = await generateIdeaRows({ fragments, count, userId: gate.userId, surprisingPairs, likedStyle });
   if (!gen.ok) return NextResponse.json({ error: gen.error, message: gen.message, raw: gen.raw }, { status: gen.status });
 
   const rows = gen.rows.map((r) => ({ ...r, saved: false }));

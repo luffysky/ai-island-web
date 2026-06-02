@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { requireAdmin } from "@/lib/admin-guard";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -17,13 +18,8 @@ export const runtime = "nodejs";
  *   - breakeven: 月訂 NT$ 299 ~ $9.5 USD、breakeven token 數
  */
 export async function GET(req: NextRequest) {
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  const { data: p } = await supabase.from("profiles").select("role, is_owner").eq("id", user.id).maybeSingle();
-  if (!(p as any)?.is_owner && !["admin", "owner"].includes((p as any)?.role ?? "")) {
-    return NextResponse.json({ error: "forbidden" }, { status: 403 });
-  }
+  const gate = await requireAdmin();
+  if (!gate.ok) return gate.response;
 
   const days = Math.max(7, Math.min(90, Number(req.nextUrl.searchParams.get("days") ?? 30)));
   const since = new Date(Date.now() - days * 86400_000).toISOString().slice(0, 10);
@@ -62,7 +58,7 @@ export async function GET(req: NextRequest) {
     .select("id, username, display_name")
     .in("id", userIds.length > 0 ? userIds : ["00000000-0000-0000-0000-000000000000"]);
   const profMap: Record<string, any> = {};
-  for (const p of (profiles ?? []) as any[]) profMap[p.id] = p;
+  for (const p of (profiles ?? []) as any[]) profMap[gate.userId] = p;
 
   // 抓所有 active subscriptions
   const { data: subs } = await admin

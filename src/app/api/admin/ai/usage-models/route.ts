@@ -2,18 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { invalidateUsageCache } from "@/lib/ai-usage-models";
+import { requireAdmin } from "@/lib/admin-guard";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
-  if (!profile || !["admin", "owner"].includes((profile as any).role)) {
-    return NextResponse.json({ error: "forbidden" }, { status: 403 });
-  }
+  const gate = await requireAdmin();
+  if (!gate.ok) return gate.response;
 
   const body = await req.json().catch(() => ({} as any));
   const rows = Array.isArray(body.rows) ? body.rows : [];
@@ -34,7 +30,7 @@ export async function POST(req: NextRequest) {
       model_name: r.model_name,
       enabled: r.enabled !== false,
       updated_at: new Date().toISOString(),
-      updated_by: user.id,
+      updated_by: gate.userId,
     });
     if (!error) upserted++;
   }

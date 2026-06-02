@@ -5,6 +5,7 @@ import { decryptKey } from "@/lib/ai-crypto";
 import { callAI } from "@/lib/ai-providers";
 import { pickModelForUsage } from "@/lib/ai-usage-models";
 import { rateLimit } from "@/lib/rate-limit";
+import { requireAdmin } from "@/lib/admin-guard";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -18,15 +19,10 @@ export const maxDuration = 60;
  * 用 marketing_copy_gen 的 model 設定、配 brand_voice 表的語氣守則
  */
 export async function POST(req: NextRequest) {
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
-  if (!profile || !["admin", "owner"].includes((profile as any).role)) {
-    return NextResponse.json({ error: "forbidden" }, { status: 403 });
-  }
+  const gate = await requireAdmin();
+  if (!gate.ok) return gate.response;
 
-  const rl = rateLimit(`mkt-copy:${user.id}`, 30, 3600_000);
+  const rl = rateLimit(`mkt-copy:${gate.userId}`, 30, 3600_000);
   if (!rl.ok) return NextResponse.json({ error: "rate_limited", retry_after: rl.retryAfter }, { status: 429 });
 
   const body = await req.json().catch(() => ({} as any));

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { assignVipRole, revokeVipRole } from "@/lib/discord-binding";
+import { requireAdmin } from "@/lib/admin-guard";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -16,13 +17,8 @@ export const maxDuration = 60;
  * 也可用 cron 每天跑一次
  */
 export async function GET() {
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  const { data: profile } = await supabase.from("profiles").select("role, is_owner").eq("id", user.id).maybeSingle();
-  if (!["admin", "owner"].includes((profile as any)?.role ?? "") && !(profile as any)?.is_owner) {
-    return NextResponse.json({ error: "forbidden" }, { status: 403 });
-  }
+  const gate = await requireAdmin();
+  if (!gate.ok) return gate.response;
 
   const admin = createSupabaseAdmin();
   const { data: binds } = await admin.from("user_discord_bind").select("user_id, discord_user_id");
