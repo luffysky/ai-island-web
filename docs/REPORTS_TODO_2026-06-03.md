@@ -32,7 +32,7 @@
 - [x] **security headers + HSTS**：`next.config.mjs` 已加 `headers()`（HSTS/X-Frame-Options/nosniff/Referrer-Policy/Permissions-Policy）+ `poweredByHeader:false`
 - [ ] **CSP（Report-Only 先行）**：收 violation、別直接強制
 - [x] **rate limit**：`/api/v1/chat` 已套（per-IP 60/min + per-key 30/min）。〔登入/註冊走 Supabase client、無 server route 可包、N/A〕
-- [~] **RLS 9 張空 policy 逐表確認**：`achievements` 公開 SELECT migration 已寫好（`supabase/achievements_select_policy.sql`）**待套用到 DB**（classifier 擋了直接寫 production，需林董授權或手動跑）
+- [x] **RLS 9 張空 policy 逐表確認**：`achievements` 公開 SELECT policy 已套用到 production DB（已驗證 anon/authenticated 皆可讀 25 筆徽章、寫入仍 deny-all）。其餘空 policy 表維持 deny-all（正確）
 
 ### B2 — P1
 - [ ] 套 `validate.ts`：高風險 API（金流/AI/UGC/admin）全補 zod `parseBody`
