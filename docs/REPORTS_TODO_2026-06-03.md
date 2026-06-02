@@ -28,7 +28,7 @@
 
 ### B1 — P0
 - [x] **UGC XSS 改白名單清洗**：新增 `sanitize-html` + `rich-html-server.ts`（`sanitizeRichHtmlStrict` 白名單），blog/forum 渲染已換；client 端 NoteCard 維持輕量 regex 當第二層（不打進 bundle）。〔resume 走 markdown 路徑、另計〕
-- [ ] **套 `admin-guard.ts`**（`requireAdmin`/`requireOwner`）：101 條 `api/admin/*` 的 inline gate 逐條換。〔helper 已 import 進 `src/lib/`、待逐條套用〕
+- [ ] **套 `admin-guard.ts`**（`requireAdmin`/`requireOwner`）：114 條 `api/admin/*`（9 條已用新 helper）。〔helper 已在 `src/lib/`。盤查結論：gate 寫法太分歧（helper 回 `{error,status}` / helper 回 `null` / inline `NextResponse` / owner-aware 與否混用、73 條用非 owner-aware 的 `role!=="admin"`），**不適合無腦 codemod 全換**（會炸整個後台授權）→ 改逐批 tsc 驗證式遷移、未做完〕
 - [x] **security headers + HSTS**：`next.config.mjs` 已加 `headers()`（HSTS/X-Frame-Options/nosniff/Referrer-Policy/Permissions-Policy）+ `poweredByHeader:false`
 - [ ] **CSP（Report-Only 先行）**：收 violation、別直接強制
 - [x] **rate limit**：`/api/v1/chat` 已套（per-IP 60/min + per-key 30/min）。〔登入/註冊走 Supabase client、無 server route 可包、N/A〕
@@ -36,7 +36,7 @@
 
 ### B2 — P1
 - [ ] 套 `validate.ts`：高風險 API（金流/AI/UGC/admin）全補 zod `parseBody`
-- [ ] Telegram webhook secret 改強制 + fail-closed
+- [x] Telegram webhook secret 改強制 + fail-closed（沒設 secret → 503；比對改 timingSafeEqual）。⚠️ **部署後林董須在 Zeabur 設 `TELEGRAM_WEBHOOK_SECRET` 並重跑 `/admin/telegram/setup`、否則 admin TG bot 會停**
 - [ ] admin slug 硬編 fallback `console-x7k2` 移除、收斂常數（25 處）
 - [ ] 22 條 RLS policy 補 `WITH CHECK`
 - [ ] 2 份未完成 migration 改 idempotent 並套用（breach_and_email / interaction_analytics）
@@ -52,7 +52,7 @@
 - [ ] bundle analyzer 裝起來跑基準 → TipTap/recharts/CodeMirror 動態 import；評估移除 Monaco（收斂 CodeMirror）
 - [ ] OPT-7 其餘列表 API `select("*")` → 明確欄位（章節 metas/nav 已做）
 - [ ] OPT-8 RLS `is_admin()` SECURITY DEFINER function + 補 index
-- [ ] OPT-9 blog/排行榜等公開頁加 ISR / 快取（章節內容已做）
+- [x] OPT-9 公開頁加 ISR：blog 文章 revalidate=300s、論壇主文 60s（章節內容先前已做）。排行榜含 auth、暫不加
 - [ ] 20 處裸 `<img>` → `next/image`
 
 ---
