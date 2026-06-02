@@ -1,6 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { createSupabaseServer } from "@/lib/supabase";
 import { slugify } from "@/lib/blog-types";
+import { parseBody } from "@/lib/validate";
+
+const SettingsSchema = z.object({
+  blog_title: z.string().max(200).nullable().optional(),
+  blog_desc: z.string().max(2000).nullable().optional(),
+  is_enabled: z.boolean().optional(),
+  blog_slug: z.string().max(100).optional(),
+});
 
 // GET /api/blog/settings — 取自己的部落格設定
 export async function GET() {
@@ -33,7 +42,9 @@ export async function PATCH(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
-  const body = await req.json();
+  const parsed = await parseBody(req, SettingsSchema);
+  if (!parsed.ok) return parsed.response;
+  const body = parsed.data as Record<string, any>;
   const patch: Record<string, any> = { updated_at: new Date().toISOString() };
 
   if ("blog_title" in body) patch.blog_title = body.blog_title;

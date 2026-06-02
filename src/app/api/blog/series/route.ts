@@ -1,5 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { createSupabaseServer } from "@/lib/supabase";
+import { parseBody } from "@/lib/validate";
+
+const SeriesPostSchema = z.object({
+  title: z.string().trim().min(1).max(200),
+  description: z.string().max(2000).nullable().optional(),
+  cover_image: z.string().max(2000).nullable().optional(),
+});
+const SeriesPatchSchema = z.object({
+  title: z.string().trim().min(1).max(200).optional(),
+  description: z.string().max(2000).nullable().optional(),
+  cover_image: z.string().max(2000).nullable().optional(),
+  is_completed: z.boolean().optional(),
+});
 
 // GET /api/blog/series — 取自己的系列
 export async function GET() {
@@ -23,9 +37,10 @@ export async function POST(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
-  const body = await req.json();
-  const title = (body.title ?? "").trim();
-  if (!title) return NextResponse.json({ error: "title_required" }, { status: 400 });
+  const parsed = await parseBody(req, SeriesPostSchema);
+  if (!parsed.ok) return parsed.response;
+  const body = parsed.data;
+  const title = body.title.trim();
 
   const { data, error } = await supabase
     .from("blog_series")
@@ -51,7 +66,9 @@ export async function PATCH(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
-  const body = await req.json();
+  const parsed = await parseBody(req, SeriesPatchSchema);
+  if (!parsed.ok) return parsed.response;
+  const body = parsed.data as Record<string, any>;
   const patch: Record<string, any> = { updated_at: new Date().toISOString() };
   for (const f of ["title", "description", "cover_image", "is_completed"]) {
     if (f in body) patch[f] = body[f];

@@ -1,7 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { createSupabaseServer, createSupabaseAdmin } from "@/lib/supabase";
 import { resolveArticle } from "@/lib/blog-resolve";
 import type { BlogComment } from "@/lib/blog-types";
+import { parseBody } from "@/lib/validate";
+
+const CommentSchema = z.object({
+  content: z.string().trim().min(1).max(1000),
+  author_name: z.string().max(40).optional(),
+  author_email: z.string().email().max(200).nullable().optional(),
+  parent_id: z.string().uuid().nullable().optional(),
+});
 
 // GET — 取文章的留言（巢狀組好）
 export async function GET(
@@ -45,11 +54,10 @@ export async function POST(
   const res = await resolveArticle(userSlug, articleSlug);
   if (!res) return NextResponse.json({ error: "article_not_found" }, { status: 404 });
 
-  const body = await req.json();
-  const content = (body.content ?? "").trim();
-  if (!content || content.length > 1000) {
-    return NextResponse.json({ error: "invalid_content" }, { status: 400 });
-  }
+  const parsed = await parseBody(req, CommentSchema);
+  if (!parsed.ok) return parsed.response;
+  const body = parsed.data;
+  const content = body.content.trim();
 
   const supabase = await createSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
