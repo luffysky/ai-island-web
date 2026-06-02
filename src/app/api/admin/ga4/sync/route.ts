@@ -79,8 +79,11 @@ async function runSync() {
         signal: AbortSignal.timeout(20_000),
       });
 
-    // 5 支報表並行（原本一支等一支跑、容易拖到閘道逾時）
-    const [dailyRes, topPagesRes, refRes, countryRes, deviceRes] = await Promise.all([
+    // GA4 報表全部並行（一支卡住有 20s 逾時、不會拖垮整體）
+    const [
+      dailyRes, topPagesRes, refRes, countryRes, deviceRes, cityRes,
+      channelRes, browserRes, osRes, langRes, landingRes, nvrRes,
+    ] = await Promise.all([
       runReport({
         dateRanges: [{ startDate: dateStr(startDate), endDate: todayStr }],
         dimensions: [{ name: "date" }],
@@ -89,6 +92,9 @@ async function runSync() {
           { name: "totalUsers" },
           { name: "userEngagementDuration" },
           { name: "bounceRate" },
+          { name: "sessions" },
+          { name: "engagementRate" },
+          { name: "newUsers" },
         ],
       }),
       runReport({
@@ -117,6 +123,55 @@ async function runSync() {
         dimensions: [{ name: "deviceCategory" }],
         metrics: [{ name: "totalUsers" }],
       }),
+      runReport({
+        dateRanges: [{ startDate: last7, endDate: todayStr }],
+        dimensions: [{ name: "city" }],
+        metrics: [{ name: "totalUsers" }],
+        orderBys: [{ metric: { metricName: "totalUsers" }, desc: true }],
+        limit: 15,
+      }),
+      runReport({
+        dateRanges: [{ startDate: last7, endDate: todayStr }],
+        dimensions: [{ name: "sessionDefaultChannelGroup" }],
+        metrics: [{ name: "totalUsers" }],
+        orderBys: [{ metric: { metricName: "totalUsers" }, desc: true }],
+        limit: 12,
+      }),
+      runReport({
+        dateRanges: [{ startDate: last7, endDate: todayStr }],
+        dimensions: [{ name: "browser" }],
+        metrics: [{ name: "totalUsers" }],
+        orderBys: [{ metric: { metricName: "totalUsers" }, desc: true }],
+        limit: 10,
+      }),
+      runReport({
+        dateRanges: [{ startDate: last7, endDate: todayStr }],
+        dimensions: [{ name: "operatingSystem" }],
+        metrics: [{ name: "totalUsers" }],
+        orderBys: [{ metric: { metricName: "totalUsers" }, desc: true }],
+        limit: 10,
+      }),
+      runReport({
+        dateRanges: [{ startDate: last7, endDate: todayStr }],
+        dimensions: [{ name: "language" }],
+        metrics: [{ name: "totalUsers" }],
+        orderBys: [{ metric: { metricName: "totalUsers" }, desc: true }],
+        limit: 10,
+      }),
+      runReport({
+        dateRanges: [{ startDate: last7, endDate: todayStr }],
+        dimensions: [{ name: "landingPage" }],
+        metrics: [{ name: "screenPageViews" }],
+        orderBys: [{ metric: { metricName: "screenPageViews" }, desc: true }],
+        limit: 15,
+      }),
+      runReport({
+        dateRanges: [{ startDate: last7, endDate: todayStr }],
+        dimensions: [{ name: "newVsReturning" }],
+        metrics: [{ name: "totalUsers" }],
+        orderBys: [{ metric: { metricName: "totalUsers" }, desc: true }],
+        limit: 5,
+      }),
     ]);
 
     if (!dailyRes.ok) {
@@ -124,30 +179,42 @@ async function runSync() {
       return NextResponse.json({ error: "ga_api_error", detail: err.slice(0, 500) }, { status: 502 });
     }
 
-    const [daily, topPagesData, refData, countryData, deviceData] = await Promise.all([
+    const [
+      daily, topPagesData, refData, countryData, deviceData, cityData,
+      channelData, browserData, osData, langData, landingData, nvrData,
+    ] = await Promise.all([
       dailyRes.json(),
       topPagesRes.json(),
       refRes.json(),
       countryRes.json(),
       deviceRes.json(),
+      cityRes.json(),
+      channelRes.json(),
+      browserRes.json(),
+      osRes.json(),
+      langRes.json(),
+      landingRes.json(),
+      nvrRes.json(),
     ]);
 
-    const topPages = (topPagesData.rows ?? []).map((r: any) => ({
-      path: r.dimensionValues[0]?.value,
-      views: Number(r.metricValues[0]?.value ?? 0),
-    }));
-    const topReferrers = (refData.rows ?? []).map((r: any) => ({
-      source: r.dimensionValues[0]?.value,
-      visits: Number(r.metricValues[0]?.value ?? 0),
-    }));
-    const topCountries = (countryData.rows ?? []).map((r: any) => ({
-      country: r.dimensionValues[0]?.value,
-      users: Number(r.metricValues[0]?.value ?? 0),
-    }));
-    const topDevices = (deviceData.rows ?? []).map((r: any) => ({
-      device: r.dimensionValues[0]?.value,
-      users: Number(r.metricValues[0]?.value ?? 0),
-    }));
+    // 共用：把「單一維度 + 單一數值」的報表轉成 [{<key>, <valKey>}]
+    const mapRows = (data: any, key: string, valKey = "users") =>
+      (data.rows ?? []).map((r: any) => ({
+        [key]: r.dimensionValues[0]?.value,
+        [valKey]: Number(r.metricValues[0]?.value ?? 0),
+      }));
+
+    const topPages = mapRows(topPagesData, "path", "views");
+    const topReferrers = mapRows(refData, "source", "visits");
+    const topCountries = mapRows(countryData, "country");
+    const topDevices = mapRows(deviceData, "device");
+    const topCities = mapRows(cityData, "city");
+    const topChannels = mapRows(channelData, "channel");
+    const topBrowsers = mapRows(browserData, "browser");
+    const topOs = mapRows(osData, "os");
+    const topLanguages = mapRows(langData, "language");
+    const topLandingPages = mapRows(landingData, "path", "views");
+    const newVsReturning = mapRows(nvrData, "type");
 
     // 寫入 DB
     const admin = createSupabaseAdmin();
@@ -161,10 +228,20 @@ async function runSync() {
         unique_visitors: Number(r.metricValues[1]?.value ?? 0),
         avg_engagement_sec: Math.round(Number(r.metricValues[2]?.value ?? 0)),
         bounce_rate: Number(r.metricValues[3]?.value ?? 0) * 100,
+        sessions: Number(r.metricValues[4]?.value ?? 0),
+        engagement_rate: Number(r.metricValues[5]?.value ?? 0) * 100,
+        new_users: Number(r.metricValues[6]?.value ?? 0),
         top_pages: isLatest ? topPages : [],
         top_referrers: isLatest ? topReferrers : [],
         top_countries: isLatest ? topCountries : [],
+        top_cities: isLatest ? topCities : [],
         top_devices: isLatest ? topDevices : [],
+        top_channels: isLatest ? topChannels : [],
+        top_browsers: isLatest ? topBrowsers : [],
+        top_os: isLatest ? topOs : [],
+        top_languages: isLatest ? topLanguages : [],
+        top_landing_pages: isLatest ? topLandingPages : [],
+        new_vs_returning: isLatest ? newVsReturning : [],
         source: "ga4",
         updated_at: new Date().toISOString(),
       };

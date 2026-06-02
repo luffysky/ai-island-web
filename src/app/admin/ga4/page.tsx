@@ -28,6 +28,20 @@ export default async function GA4Page() {
   const topPages: any[] = latest?.top_pages ?? [];
   const topReferrers: any[] = latest?.top_referrers ?? [];
   const topCountries: any[] = latest?.top_countries ?? [];
+  const topCities: any[] = latest?.top_cities ?? [];
+  const topDevices: any[] = latest?.top_devices ?? [];
+  const topChannels: any[] = latest?.top_channels ?? [];
+  const topBrowsers: any[] = latest?.top_browsers ?? [];
+  const topOs: any[] = latest?.top_os ?? [];
+  const topLanguages: any[] = latest?.top_languages ?? [];
+  const topLandingPages: any[] = latest?.top_landing_pages ?? [];
+  const newVsReturning: any[] = latest?.new_vs_returning ?? [];
+
+  const ga4Sessions = snapshots?.reduce((s: number, d: any) => s + (d.sessions ?? 0), 0) ?? 0;
+  const totalNewUsers = snapshots?.reduce((s: number, d: any) => s + (d.new_users ?? 0), 0) ?? 0;
+  const avgEngagementRate = snapshots && snapshots.length > 0
+    ? snapshots.reduce((s: number, d: any) => s + Number(d.engagement_rate ?? 0), 0) / snapshots.length
+    : 0;
 
   const gaProperty = process.env.NEXT_PUBLIC_GA_ID || "未設定";
   const activeSince = new Date(Date.now() - 5 * 60_000).toISOString();
@@ -113,15 +127,26 @@ export default async function GA4Page() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <Stat label="總瀏覽" value={totalPV.toLocaleString()} color="text-blue-400" />
               <Stat label="不重複訪客" value={totalVisitors.toLocaleString()} color="text-green-400" />
+              <Stat label="工作階段" value={ga4Sessions.toLocaleString()} color="text-cyan-400" />
+              <Stat label="新使用者" value={totalNewUsers.toLocaleString()} color="text-pink-400" />
               <Stat label="平均停留" value={`${Math.floor(avgEngagement / 60)}m ${avgEngagement % 60}s`} color="text-purple-400" />
+              <Stat label="互動率" value={`${avgEngagementRate.toFixed(1)}%`} color="text-emerald-400" />
               <Stat label="跳出率" value={`${avgBounce.toFixed(1)}%`} color="text-yellow-400" />
             </div>
           </div>
           <GA4Charts data={snapshots} />
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
             <TopTable title="🏆 熱門頁面" items={topPages} valueKey="views" labelKey="path" />
+            <TopTable title="🛬 到達網頁" items={topLandingPages} valueKey="views" labelKey="path" />
+            <TopTable title="📊 流量管道" items={topChannels} valueKey="users" labelKey="channel" />
             <TopTable title="🔗 引薦來源" items={topReferrers} valueKey="visits" labelKey="source" />
             <TopTable title="🌍 國家" items={topCountries} valueKey="users" labelKey="country" />
+            <TopTable title="🏙️ 城市 / 地區" items={topCities} valueKey="users" labelKey="city" />
+            <TopTable title="📱 裝置" items={topDevices} valueKey="users" labelKey="device" />
+            <TopTable title="🌐 瀏覽器" items={topBrowsers} valueKey="users" labelKey="browser" />
+            <TopTable title="💻 作業系統" items={topOs} valueKey="users" labelKey="os" />
+            <TopTable title="🗣️ 語言" items={topLanguages} valueKey="users" labelKey="language" />
+            <TopTable title="🔁 新 / 回訪" items={newVsReturning} valueKey="users" labelKey="type" />
           </div>
         </>
       )}
