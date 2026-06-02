@@ -1,7 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { createSupabaseServer } from "@/lib/supabase";
 import { slugify } from "@/lib/blog-types";
-import { sanitizeRichHtml } from "@/lib/rich-html";
+import { sanitizeRichHtmlStrict } from "@/lib/rich-html-server";
+import { parseBody } from "@/lib/validate";
+
+const ArticleSchema = z.object({
+  title: z.string().trim().min(1).max(200),
+  slug: z.string().max(200).optional(),
+  summary: z.string().max(1000).nullable().optional(),
+  content: z.string().max(200_000).optional().default(""),
+  cover_image: z.string().max(2000).nullable().optional(),
+  tags: z.array(z.string().max(50)).max(20).optional().default([]),
+  category: z.string().max(100).nullable().optional(),
+  is_public: z.boolean().optional().default(false),
+  seo_title: z.string().max(200).nullable().optional(),
+  seo_desc: z.string().max(500).nullable().optional(),
+  series_id: z.string().uuid().nullable().optional(),
+  series_order: z.number().int().nullable().optional(),
+});
 
 // GET /api/blog/articles — 取自己的文章列表
 export async function GET() {
@@ -25,9 +42,10 @@ export async function POST(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
-  const body = await req.json();
-  const title = (body.title ?? "").trim();
-  if (!title) return NextResponse.json({ error: "title_required" }, { status: 400 });
+  const parsed = await parseBody(req, ArticleSchema);
+  if (!parsed.ok) return parsed.response;
+  const body = parsed.data;
+  const title = body.title.trim();
 
   // slug：用給的或從標題產生、撞名加數字
   const baseSlug = body.slug ? slugify(body.slug) : slugify(title);
@@ -51,7 +69,7 @@ export async function POST(req: NextRequest) {
       title,
       slug,
       summary: body.summary ?? null,
-      content: sanitizeRichHtml(body.content),
+      content: sanitizeRichHtmlStrict(body.content),
       cover_image: body.cover_image ?? null,
       tags: body.tags ?? [],
       category: body.category ?? null,

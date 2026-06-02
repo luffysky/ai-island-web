@@ -1,7 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { createSupabaseServer } from "@/lib/supabase";
 import { slugify } from "@/lib/blog-types";
-import { sanitizeRichHtml } from "@/lib/rich-html";
+import { sanitizeRichHtmlStrict } from "@/lib/rich-html-server";
+import { parseBody } from "@/lib/validate";
+
+const PatchSchema = z.object({
+  title: z.string().trim().min(1).max(200).optional(),
+  slug: z.string().max(200).optional(),
+  summary: z.string().max(1000).nullable().optional(),
+  content: z.string().max(200_000).optional(),
+  cover_image: z.string().max(2000).nullable().optional(),
+  cover_image_position: z.string().max(50).nullable().optional(),
+  tags: z.array(z.string().max(50)).max(20).optional(),
+  category: z.string().max(100).nullable().optional(),
+  is_public: z.boolean().optional(),
+  seo_title: z.string().max(200).nullable().optional(),
+  seo_desc: z.string().max(500).nullable().optional(),
+  series_id: z.string().uuid().nullable().optional(),
+  series_order: z.number().int().nullable().optional(),
+});
 
 // GET /api/blog/articles/[id] — 取單篇（編輯用、本人）
 export async function GET(
@@ -34,14 +52,16 @@ export async function PATCH(
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
-  const body = await req.json();
+  const parsed = await parseBody(req, PatchSchema);
+  if (!parsed.ok) return parsed.response;
+  const body = parsed.data as Record<string, any>;
   const patch: Record<string, any> = { updated_at: new Date().toISOString() };
 
   // 只更新有給的欄位
   for (const f of ["title", "summary", "content", "cover_image", "cover_image_position",
                     "tags", "category", "is_public", "seo_title", "seo_desc",
                     "series_id", "series_order"]) {
-    if (f in body) patch[f] = f === "content" ? sanitizeRichHtml(body[f]) : body[f];
+    if (f in body) patch[f] = f === "content" ? sanitizeRichHtmlStrict(body[f]) : body[f];
   }
 
   // 若改 slug、檢查撞名

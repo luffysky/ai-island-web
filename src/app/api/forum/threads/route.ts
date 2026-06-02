@@ -1,8 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { createSupabaseServer, createSupabaseAdmin } from "@/lib/supabase";
 import { awardForumXp } from "@/lib/forum-xp";
-import { sanitizeRichHtml } from "@/lib/rich-html";
+import { sanitizeRichHtmlStrict } from "@/lib/rich-html-server";
+import { parseBody } from "@/lib/validate";
 import { sortByHnScore } from "@/lib/forum-rank";
+
+const ThreadSchema = z.object({
+  title: z.string().trim().min(1).max(200),
+  board_slug: z.string().min(1).max(100),
+  content: z.string().max(50_000).optional().default(""),
+  tags: z.array(z.string().max(50)).max(10).optional().default([]),
+});
 
 // GET /api/forum/threads?board=slug&sort=recent&offset=0&limit=20 — 主題串列表（分頁）
 export async function GET(req: NextRequest) {
@@ -83,11 +92,11 @@ export async function POST(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
-  const body = await req.json();
-  const title = (body.title ?? "").trim();
+  const parsed = await parseBody(req, ThreadSchema);
+  if (!parsed.ok) return parsed.response;
+  const body = parsed.data;
+  const title = body.title.trim();
   const boardSlug = body.board_slug;
-  if (!title) return NextResponse.json({ error: "title_required" }, { status: 400 });
-  if (!boardSlug) return NextResponse.json({ error: "board_required" }, { status: 400 });
 
   const admin = createSupabaseAdmin();
 
@@ -119,8 +128,8 @@ export async function POST(req: NextRequest) {
       board_id: board.id,
       user_id: user.id,
       title,
-      content: sanitizeRichHtml(body.content),
-      tags: body.tags ?? [],
+      content: sanitizeRichHtmlStrict(body.content),
+      tags: body.tags,
     })
     .select("id")
     .single();
