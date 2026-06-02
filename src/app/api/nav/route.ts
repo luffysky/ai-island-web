@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getAllChapters, invalidateContentCache } from "@/lib/content";
+import { getNavChapters, invalidateContentCache } from "@/lib/content";
 
 // force-dynamic + 短 cache：避免 server in-memory cache 卡住 ch72/73/74 lesson 數對不上 DB 的問題
 // （之前 revalidate=60 + Cache-Control=60、但 production 上某些章節 lesson 數一直拿到舊值、林董手機看到 3/2/1 而 DB 是 5/5/4）
@@ -17,16 +17,16 @@ export async function GET(req: Request) {
   if (url.searchParams.get("refresh") === "1") {
     invalidateContentCache();
   }
-  const chapters = await getAllChapters();
+  const chapters = await getNavChapters();
 
-  const nav = chapters.map((c) => ({
+  const nav = chapters.map((c: any) => ({
     id: c.id,
     title: c.title,
     subtitle: c.subtitle,
     stage: c.stage,
     icon: c.icon,
     difficulty: c.difficulty,
-    lessons: (c.lessons ?? []).map((l) => ({
+    lessons: (c.lessons ?? []).map((l: any) => ({
       id: l.id,
       number: l.number,
       title: l.title,

@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { getAllChapters } from "@/lib/content";
+import { getChapterMetas } from "@/lib/content";
 import { DUNGEONS } from "@/data/dungeons";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 
@@ -11,7 +11,7 @@ export const revalidate = 3600;
 export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const chapters = await getAllChapters();
+  const chapters = await getChapterMetas();
   const now = new Date();
 
   const staticRoutes: MetadataRoute.Sitemap = [
@@ -41,7 +41,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const chapterRoutes: MetadataRoute.Sitemap = chapters.map((c: any) => ({
     url: `${SITE_URL}/chapters/${c.id}`,
     // 用實際 updated_at（章節後台編輯有更新時、Google 才知道要重爬）
-    lastModified: c.updated_at ? new Date(c.updated_at) : now,
+    lastModified: c.updatedAt ? new Date(c.updatedAt) : now,
     changeFrequency: "monthly" as const,
     priority: 0.8,
   }));

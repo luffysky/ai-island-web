@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, Layers, BookOpen } from "lucide-react";
-import { getAllChapters } from "@/lib/content";
+import { getChapterMetas } from "@/lib/content";
 import type { Chapter } from "@/lib/types";
 import { chapterDisplayNumberById } from "@/lib/chapter-display";
 
@@ -12,7 +12,7 @@ import { chapterDisplayNumberById } from "@/lib/chapter-display";
  *  3. 給 Google / AI 抓到完整 internal link graph
  */
 export async function RelatedChapters({ chapter }: { chapter: Chapter }) {
-  const all = await getAllChapters();
+  const all = await getChapterMetas();
 
   // 找在排序裡的位置
   const sorted = [...all].sort((a, b) => ((a as any).sortIndex ?? a.id) - ((b as any).sortIndex ?? b.id));
