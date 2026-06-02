@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { notifyUserLine } from "@/lib/notify-user-line";
+import { buildSimpleCard } from "@/lib/line-flex";
 
 export const dynamic = "force-dynamic";
 
@@ -51,13 +52,24 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     .single();
 
   const meta = (ticket as any)?.meta ?? {};
-  const replyText = `💬 客服回覆 ticket #${String((ticket as any)?.id ?? id).slice(0, 8)}\n\n${text.slice(0, 1500)}\n\n看完整對話：${SITE_URL}/me/support`;
+  const ticketNo = String((ticket as any)?.id ?? id).slice(0, 8);
+  const replyText = `💬 客服回覆 ticket #${ticketNo}\n\n${text.slice(0, 1500)}\n\n看完整對話：${SITE_URL}/me/support`;
+  // 美化成 Flex 卡片（純文字當 fallback）
+  const replyCard = buildSimpleCard({
+    emoji: "💬",
+    title: "客服回覆",
+    accentColor: "#22c55e",
+    meta: [{ label: "Ticket", value: `#${ticketNo}` }],
+    body: text.slice(0, 1500),
+    buttons: [{ label: "📝 看完整對話", uri: `${SITE_URL}/me/support`, primary: true }],
+  });
 
   // 路徑 A：已綁定 user → 走 notifyUserLine（會 check line_user_id + line_notify_enabled）
   if ((ticket as any)?.user_id) {
     notifyUserLine({
       userId: (ticket as any).user_id,
       text: replyText,
+      flex: replyCard,
     }).catch(() => {});
   }
 
@@ -72,7 +84,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         headers: { Authorization: `Bearer ${userToken}`, "Content-Type": "application/json" },
         body: JSON.stringify({
           to: lineUid,
-          messages: [{ type: "text", text: replyText.slice(0, 4900) }],
+          messages: [replyCard],
         }),
         signal: AbortSignal.timeout(5000),
       }).catch(() => {});
