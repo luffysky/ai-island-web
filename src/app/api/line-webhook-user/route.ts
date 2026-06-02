@@ -210,6 +210,7 @@ async function askUserAIInner(text: string, profile: UserProfileLite | null, lin
         apiKey,
         model: model.model_name,
         systemPrompt,
+        userId: profile?.id ?? null,
         history: hist,
       });
       reply = reply.trim() || "我這邊沒接到回應、再問一次試試？";

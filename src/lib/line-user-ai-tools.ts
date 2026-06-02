@@ -72,11 +72,21 @@ export const STUDENT_TOOLS = [
       required: ["thread_id"],
     },
   },
+  {
+    name: "get_my_notes",
+    description: "讀「這位學員自己在網站上寫的筆記」內容。學員問到『我的筆記』『我之前記了什麼』『幫我看筆記』、或你要根據他記過的東西回答時用。不帶參數回最近筆記；可給 query 關鍵字過濾。",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        query: { type: "string", description: "可選：關鍵字、只回內容含此字的筆記" },
+      },
+    },
+  },
 ];
 
 type ToolUse = { id: string; name: string; input: any };
 
-export async function dispatchStudentTool(name: string, input: any): Promise<string> {
+export async function dispatchStudentTool(name: string, input: any, userId?: string | null): Promise<string> {
   try {
     switch (name) {
       case "search_lessons":
@@ -87,6 +97,8 @@ export async function dispatchStudentTool(name: string, input: any): Promise<str
         return await searchForum(String(input.query ?? ""), input.limit);
       case "get_forum_thread":
         return await getForumThread(String(input.thread_id ?? ""));
+      case "get_my_notes":
+        return await getMyNotes(userId, String(input.query ?? ""));
       default:
         return `❌ unknown tool: ${name}`;
     }
@@ -230,6 +242,28 @@ async function getForumThread(threadId: string): Promise<string> {
   return lines.join("\n");
 }
 
+async function getMyNotes(userId?: string | null, query?: string): Promise<string> {
+  if (!userId) return "（這位學員還沒綁定帳號、讀不到他的網站筆記）";
+  const admin = createSupabaseAdmin();
+  const { data, error } = await admin
+    .from("notes")
+    .select("content, chapter_id, lesson_id, updated_at")
+    .eq("user_id", userId)
+    .order("updated_at", { ascending: false })
+    .limit(query?.trim() ? 40 : 10);
+  if (error) return `❌ 讀筆記失敗：${error.message}`;
+  let rows = (data as any[]) ?? [];
+  if (query?.trim()) {
+    const ql = query.toLowerCase();
+    rows = rows.filter((r) => String(r.content ?? "").toLowerCase().includes(ql));
+  }
+  if (rows.length === 0) return query?.trim() ? `沒找到含「${query}」的筆記。` : "這位學員目前在網站上沒有筆記。";
+  return rows.slice(0, 10).map((r, i) => {
+    const loc = r.lesson_id ? `L${r.lesson_id}` : r.chapter_id ? `Ch${r.chapter_id}` : "";
+    return `【筆記 ${i + 1}${loc ? " · " + loc : ""}】\n${String(r.content ?? "").slice(0, 800)}`;
+  }).join("\n\n");
+}
+
 function stripHtml(html: string): string {
   return html.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
 }
@@ -242,6 +276,7 @@ export async function askStudentAIWithTools(opts: {
   apiKey: string;
   model: string;          // 必須是 claude-* 系列
   systemPrompt: string;
+  userId?: string | null;
   history: Array<{ role: "user" | "assistant"; content: string }>;
 }): Promise<string> {
   return Promise.race([
@@ -256,6 +291,7 @@ async function runStudentLoop(opts: {
   apiKey: string;
   model: string;
   systemPrompt: string;
+  userId?: string | null;
   history: Array<{ role: "user" | "assistant"; content: string }>;
 }): Promise<string> {
   const messages: any[] = opts.history.map((h) => ({ role: h.role, content: h.content }));
@@ -306,7 +342,7 @@ async function runStudentLoop(opts: {
       const toolUses: ToolUse[] = content.filter((c: any) => c.type === "tool_use");
       const toolResults: any[] = [];
       for (const tu of toolUses) {
-        const result = await dispatchStudentTool(tu.name, tu.input ?? {});
+        const result = await dispatchStudentTool(tu.name, tu.input ?? {}, opts.userId);
         toolResults.push({ type: "tool_result", tool_use_id: tu.id, content: result.slice(0, 6000) });
       }
       messages.push({ role: "user", content: toolResults });
