@@ -339,7 +339,7 @@ export function AITutorWidget({
         setError(msg);
         setMessages((prev) => {
           const copy = [...prev];
-          copy[copy.length - 1] = { role: "assistant", content: `❌ ${msg}` };
+          copy[copy.length - 1] = { ...copy[copy.length - 1], role: "assistant", content: `❌ ${msg}` };
           return copy;
         });
         setSending(false);
@@ -373,7 +373,7 @@ export function AITutorWidget({
               // 更新最後一則 message
               setMessages((prev) => {
                 const copy = [...prev];
-                copy[copy.length - 1] = { role: "assistant", content: accumulated };
+                copy[copy.length - 1] = { ...copy[copy.length - 1], role: "assistant", content: accumulated };
                 return copy;
               });
             } else if (json.type === "done") {
@@ -391,7 +391,7 @@ export function AITutorWidget({
               setError(json.error);
               setMessages((prev) => {
                 const copy = [...prev];
-                copy[copy.length - 1] = { role: "assistant", content: `❌ ${json.error}` };
+                copy[copy.length - 1] = { ...copy[copy.length - 1], role: "assistant", content: `❌ ${json.error}` };
                 return copy;
               });
             }
@@ -557,10 +557,10 @@ export function AITutorWidget({
                       // 載入該對話的訊息
                       const { data } = await supabase
                         .from("ai_messages")
-                        .select("role, content")
+                        .select("role, content, created_at")
                         .eq("conversation_id", h.id)
                         .order("created_at", { ascending: true });
-                      setMessages((data ?? []).filter((m: any) => m.role !== "system").map((m: any) => ({ role: m.role, content: m.content })));
+                      setMessages((data ?? []).filter((m: any) => m.role !== "system").map((m: any) => ({ role: m.role, content: m.content, created_at: m.created_at })));
                       setConversationId(h.id);
                       setShowHistory(false);
                     }}
