@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Sparkles, Send, X, ChevronDown, Settings as SettingsIcon, Plus, Loader2, History, MessageSquare, ImagePlus, Trash2 } from "lucide-react";
+import { Sparkles, Send, X, ChevronDown, Settings as SettingsIcon, Plus, Loader2, History, MessageSquare, ImagePlus, Trash2, Share2 } from "lucide-react";
 import { useOverlayCount, useOverlayRegister } from "@/lib/overlay-stack";
 import { chapterDisplayNumberById } from "@/lib/chapter-display";
 import { useEdgeSafe } from "@/lib/use-edge-safe";
@@ -743,8 +743,25 @@ export function AITutorWidget({
                       {formatChatTime(m.created_at)}
                     </time>
                     {m.content && (
-                      <span className="md:opacity-0 md:group-hover/msg:opacity-100 transition">
+                      <span className="md:opacity-0 md:group-hover/msg:opacity-100 transition inline-flex items-center gap-1.5">
                         <CopyButton text={m.content} size={10} />
+                        {m.role === "assistant" && (
+                          <button
+                            onClick={() => {
+                              const url = `${window.location.origin}/api/og/share-ai?persona=${encodeURIComponent(persona.name)}&a=${encodeURIComponent(m.content.slice(0, 400))}`;
+                              if (typeof navigator !== "undefined" && (navigator as any).share) {
+                                (navigator as any).share({ title: `${persona.name} 的回答`, url }).catch(() => {});
+                              } else {
+                                window.open(url, "_blank");
+                              }
+                            }}
+                            title="分享成圖卡"
+                            aria-label="分享成圖卡"
+                            className="hover:text-accent transition"
+                          >
+                            <Share2 size={10} />
+                          </button>
+                        )}
                       </span>
                     )}
                   </div>
