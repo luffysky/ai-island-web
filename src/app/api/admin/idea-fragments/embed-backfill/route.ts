@@ -2,17 +2,15 @@ import { NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { embedFragmentRow } from "@/lib/idea-ai";
+import { requireAdmin as adminGate } from "@/lib/admin-guard";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 export const maxDuration = 120;
 
 async function guard() {
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return false;
-  const { data: p } = await supabase.from("profiles").select("role, is_owner").eq("id", user.id).maybeSingle();
-  return p?.role === "admin" || (p as any)?.is_owner === true;
+  const gate = await adminGate();
+  return { user: gate.ok ? { id: gate.userId } : (null as null), ok: gate.ok };
 }
 
 /** POST → 幫所有「還沒有 embedding」的碎片補算向量。回 { done, failed, total } */

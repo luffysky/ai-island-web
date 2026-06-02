@@ -1,16 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { requireAdmin as adminGate } from "@/lib/admin-guard";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 async function guard() {
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { user: null as null, ok: false };
-  const { data: profile } = await supabase.from("profiles").select("role, is_owner").eq("id", user.id).maybeSingle();
-  return { user, ok: profile?.role === "admin" || (profile as any)?.is_owner === true };
+  const gate = await adminGate();
+  return { user: gate.ok ? { id: gate.userId } : (null as null), ok: gate.ok };
 }
 
 /** GET → { folders } */

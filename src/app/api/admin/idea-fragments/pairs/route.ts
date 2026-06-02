@@ -1,16 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { fetchSurprisingPairs } from "@/lib/idea-ai";
+import { requireAdmin as adminGate } from "@/lib/admin-guard";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 async function guard() {
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return false;
-  const { data: p } = await supabase.from("profiles").select("role, is_owner").eq("id", user.id).maybeSingle();
-  return p?.role === "admin" || (p as any)?.is_owner === true;
+  const gate = await adminGate();
+  return { user: gate.ok ? { id: gate.userId } : (null as null), ok: gate.ok };
 }
 
 /** GET ?folder= → { pairs } 語意意外配對（驚喜連結引擎） */

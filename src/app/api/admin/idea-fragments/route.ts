@@ -2,22 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { embedFragmentRow } from "@/lib/idea-ai";
+import { requireAdmin as adminGate } from "@/lib/admin-guard";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 // 後台 owner / admin 守門 — 回 user id（給 created_by）或 null
 async function guard() {
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { user: null as null, ok: false };
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role, is_owner")
-    .eq("id", user.id)
-    .maybeSingle();
-  const ok = profile?.role === "admin" || (profile as any)?.is_owner === true;
-  return { user, ok };
+  const gate = await adminGate();
+  return { user: gate.ok ? { id: gate.userId } : (null as null), ok: gate.ok };
 }
 
 /**
