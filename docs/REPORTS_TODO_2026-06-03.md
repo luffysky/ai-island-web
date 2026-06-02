@@ -28,7 +28,11 @@
 
 ### B1 — P0
 - [x] **UGC XSS 改白名單清洗**：新增 `sanitize-html` + `rich-html-server.ts`（`sanitizeRichHtmlStrict` 白名單），blog/forum 渲染已換；client 端 NoteCard 維持輕量 regex 當第二層（不打進 bundle）。〔resume 走 markdown 路徑、另計〕
-- [~] **套 `admin-guard.ts`**（`requireAdmin`/`requireOwner`）：**進度 37/114**（每批 tsc 0 + 獨立 commit，無壞授權進 main）。〔gate 寫法至少 5 種變體：inline `role!=="admin"`、`["admin","owner"].includes`、本地 `assertAdmin()→{error,status}|{ok}`、本地 `guard()→{err\|error}|{user}` 或 `{user,ok}`、本地 `requireAdmin()/gateAdmin()→profile|null`；外加 **semantic 地雷**：`changelog`/`canned-replies`/`tickets` 等允許 `editor` role，**不可盲轉成 admin-only**（tsc 抓不到語意改變）。所以剩下只能逐檔人工看 gate 邏輯、慢。剩 ~77、純技術債（這些 route 全都已有 gate、非開放漏洞）〕
+- [x] **套 `admin-guard.ts`**（`requireAdmin`/`requireOwner`）：**105/114 完成**（12 批、每批 tsc 0 + 獨立 commit，無壞授權進 main）。剩 9 條為**刻意不轉的例外**，非遺漏：
+  - 6 條 gate 刻意放寬給更廣角色（轉成 admin-only 會靜默砍權限）：`canned-replies`×2 + `tickets`×2（teacher/assistant）、`seo-overrides` + `changelog`（editor）
+  - 2 條多重認證路徑（cron 或 admin 旗標、非單純 gate）：`kpi.json`、`line/setup-richmenu`
+  - 1 條 cron/owner：`ai/conversations/[id]/messages`
+  - 〔未來若要 100% 收斂：可加 `requireStaff(roles[])` helper 給前 6 條用、不改語意〕
 - [x] **security headers + HSTS**：`next.config.mjs` 已加 `headers()`（HSTS/X-Frame-Options/nosniff/Referrer-Policy/Permissions-Policy）+ `poweredByHeader:false`
 - [ ] **CSP（Report-Only 先行）**：收 violation、別直接強制
 - [x] **rate limit**：`/api/v1/chat` 已套（per-IP 60/min + per-key 30/min）。〔登入/註冊走 Supabase client、無 server route 可包、N/A〕
