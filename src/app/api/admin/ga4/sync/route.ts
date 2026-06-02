@@ -20,7 +20,8 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { createSupabaseServer, createSupabaseAdmin } from "@/lib/supabase";
+import { createSupabaseAdmin } from "@/lib/supabase";
+import { requireAdmin } from "@/lib/admin-guard";
 import { verifyCronAuth } from "@/lib/cron-auth";
 
 export const maxDuration = 60;
@@ -35,11 +36,8 @@ export async function GET(req: NextRequest) {
 // POST 給 admin 後台手動觸發
 export async function POST() {
   try {
-    const supabase = await createSupabaseServer();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-    const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-    if (profile?.role !== "admin") return NextResponse.json({ error: "forbidden" }, { status: 403 });
+    const gate = await requireAdmin();
+    if (!gate.ok) return gate.response;
     return runSync();
   } catch (e: any) {
     return NextResponse.json({ error: "auth_failed", message: e?.message ?? "unknown" }, { status: 500 });

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createSupabaseServer } from "@/lib/supabase-server";
+import { requireAdmin } from "@/lib/admin-guard";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 
 export const dynamic = "force-dynamic";
@@ -7,11 +7,8 @@ export const dynamic = "force-dynamic";
 // GET /api/admin/chapters/[id]/versions — 列出該章節所有版本（不含完整 content、輕量）
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
-  if (profile?.role !== "admin") return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  const gate = await requireAdmin();
+  if (!gate.ok) return gate.response;
 
   const chapterId = Number(id);
   if (!Number.isFinite(chapterId)) {
