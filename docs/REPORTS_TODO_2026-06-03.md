@@ -28,11 +28,9 @@
 
 ### B1 — P0
 - [x] **UGC XSS 改白名單清洗**：新增 `sanitize-html` + `rich-html-server.ts`（`sanitizeRichHtmlStrict` 白名單），blog/forum 渲染已換；client 端 NoteCard 維持輕量 regex 當第二層（不打進 bundle）。〔resume 走 markdown 路徑、另計〕
-- [x] **套 `admin-guard.ts`**（`requireAdmin`/`requireOwner`）：**105/114 完成**（12 批、每批 tsc 0 + 獨立 commit，無壞授權進 main）。剩 9 條為**刻意不轉的例外**，非遺漏：
-  - 6 條 gate 刻意放寬給更廣角色（轉成 admin-only 會靜默砍權限）：`canned-replies`×2 + `tickets`×2（teacher/assistant）、`seo-overrides` + `changelog`（editor）
-  - 2 條多重認證路徑（cron 或 admin 旗標、非單純 gate）：`kpi.json`、`line/setup-richmenu`
-  - 1 條 cron/owner：`ai/conversations/[id]/messages`
-  - 〔未來若要 100% 收斂：可加 `requireStaff(roles[])` helper 給前 6 條用、不改語意〕
+- [x] **套 `admin-guard.ts`**（`requireAdmin`/`requireStaff`/`requireOwner`）：**111/114 完成**（13 批、每批 tsc 0 + 獨立 commit，無壞授權進 main）。
+  - 新增 `requireStaff(roles[])`（owner 一律放行 + 指定角色），收斂 `canned-replies`×2 / `tickets`×2（admin/teacher/assistant）/ `seo-overrides` / `changelog`（admin/editor），保留原角色集合不改語意。
+  - 剩 3 條**刻意不轉**（多重認證路徑：cron secret 或 admin、單一 gate 無法表達）：`ai/conversations/[id]/messages`、`kpi.json`、`line/setup-richmenu`。這 3 條維持自有 multi-path 邏輯為正解。
 - [x] **security headers + HSTS**：`next.config.mjs` 已加 `headers()`（HSTS/X-Frame-Options/nosniff/Referrer-Policy/Permissions-Policy）+ `poweredByHeader:false`
 - [ ] **CSP（Report-Only 先行）**：收 violation、別直接強制
 - [x] **rate limit**：`/api/v1/chat` 已套（per-IP 60/min + per-key 30/min）。〔登入/註冊走 Supabase client、無 server route 可包、N/A〕
