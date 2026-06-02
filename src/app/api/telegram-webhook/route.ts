@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse, after } from "next/server";
+import crypto from "crypto";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { decryptKey } from "@/lib/ai-crypto";
 import { callAI } from "@/lib/ai-providers";
@@ -216,11 +217,18 @@ export async function POST(req: NextRequest) {
   const token = process.env.ADMIN_TELEGRAM_BOT_TOKEN;
   if (!token) return NextResponse.json({ ok: false, error: "no_token" });
 
-  // 可選 secret token 驗證 (Telegram 設 webhook 時帶、防偽造)
+  // secret token 驗證強制 + fail-closed（B2）：沒設 secret 一律拒絕、避免陌生人燒 bot token。
+  // 設定方式：env 設 TELEGRAM_WEBHOOK_SECRET，並在 /admin/telegram/setup 設 webhook 時帶同一個值。
   const expectSecret = process.env.TELEGRAM_WEBHOOK_SECRET;
-  if (expectSecret) {
-    const got = req.headers.get("x-telegram-bot-api-secret-token");
-    if (got !== expectSecret) return NextResponse.json({ error: "invalid_secret" }, { status: 401 });
+  if (!expectSecret) {
+    console.error("[telegram-webhook] TELEGRAM_WEBHOOK_SECRET 未設定 — fail-closed 拒絕（去設 env + /admin/telegram/setup）");
+    return NextResponse.json({ error: "webhook secret not configured" }, { status: 503 });
+  }
+  const got = req.headers.get("x-telegram-bot-api-secret-token") ?? "";
+  const gotBuf = Buffer.from(got);
+  const expBuf = Buffer.from(expectSecret);
+  if (gotBuf.length !== expBuf.length || !crypto.timingSafeEqual(gotBuf, expBuf)) {
+    return NextResponse.json({ error: "invalid_secret" }, { status: 401 });
   }
 
   const body = await req.json().catch(() => ({} as any));
