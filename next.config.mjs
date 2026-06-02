@@ -1,3 +1,8 @@
+import withBundleAnalyzer from '@next/bundle-analyzer';
+
+// 跑 `ANALYZE=true npm run build` 才開分析（平常 build 零影響）；用來抓 /pricing 等肥包來源
+const bundleAnalyzer = withBundleAnalyzer({ enabled: process.env.ANALYZE === 'true' });
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // 產出精簡的 standalone server（.next/standalone）、大幅縮小 Docker image
@@ -40,4 +45,4 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+export default bundleAnalyzer(nextConfig);
