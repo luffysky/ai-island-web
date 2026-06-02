@@ -1,0 +1,183 @@
+@@@F0
+// JSX 看起來像 HTML、其實是 JS
+const element = <h1>Hello</h1>;
+
+// 編譯後變
+const element = React.createElement("h1", null, "Hello");
+
+// 為什麼用 JSX？
+// 寫 createElement 太煩、JSX 看起來直觀
+
+// JSX 用 JS 變數（用 {}）
+const name = "Alice";
+const element = <h1>Hello, {name}</h1>;
+
+// 任何 JS expression 都行
+const a = <p>{2 + 3}</p>;             // 5
+const b = <p>{name.toUpperCase()}</p>; // ALICE
+const c = <p>{getName()}</p>;          // function 結果
+
+// 不能放 statement（if / for）、只能 expression
+<p>{if (x) "a"}</p>      // ❌ 不行
+<p>{x ? "a" : "b"}</p>   // ✓ 三元
+<p>{x && "a"}</p>        // ✓ 短路
+@@@F1
+// 1. 三元（最常用）
+function Greeting({ isLoggedIn }) {
+    return (
+        <div>
+            {isLoggedIn ? <UserMenu /> : <LoginButton />}
+        </div>
+    );
+}
+
+// 2. && 短路（單邊）
+function Notification({ count }) {
+    return (
+        <div>
+            {count > 0 && (
+                <span className="badge">{count}</span>
+            )}
+        </div>
+    );
+}
+
+// 3. if 在 function 內
+function Greeting({ user }) {
+    if (!user) {
+        return <LoginButton />;
+    }
+    return <UserMenu user={user} />;
+}
+
+// 4. switch / 多條件
+function StatusIcon({ status }) {
+    switch (status) {
+        case "success":
+            return <CheckIcon />;
+        case "error":
+            return <ErrorIcon />;
+        case "loading":
+            return <Spinner />;
+        default:
+            return null;
+    }
+}
+
+// 注意：0 跟 "" 不要直接用 &&
+<div>{count && <span>{count}</span>}</div>
+// count = 0 時 → 會渲染出 0（不是空白）
+
+// 改成明確判斷：
+<div>{count > 0 && <span>{count}</span>}</div>
+@@@F2
+const users = [
+    { id: 1, name: "Alice" },
+    { id: 2, name: "Bob" },
+    { id: 3, name: "Charlie" }
+];
+
+function UserList() {
+    return (
+        <ul>
+            {users.map(user => (
+                <li key={user.id}>{user.name}</li>
+            ))}
+        </ul>
+    );
+}
+
+// key 必須！React 用 key 識別哪個 item
+
+// 規則：
+// 1. key 必須穩定—不要用 index
+// 2. key 必須唯一—在這個 list 內
+// 3. key 必須可預測—同樣 item 永遠同 key
+
+// ❌ 不要用 index 當 key
+{users.map((user, i) => (
+    <li key={i}>{user.name}</li>
+))}
+// 加 / 刪 item 時、index 變、React 會搞錯
+
+// ✓ 用唯一 ID
+{users.map(user => (
+    <li key={user.id}>{user.name}</li>
+))}
+
+// 沒 ID？用唯一欄位組出穩定 key
+{items.map(item => (
+    <li key={`${item.category}-${item.name}`}>
+        {item.name}
+    </li>
+))}
+
+// 完全靜態 list、不增刪不排序時、index 也行（少見）
+@@@F3
+// 1. 字串 className（注意：是 className、不是 class）
+<div className="card active">Hello</div>
+
+// 2. 動態 className
+<div className={isActive ? "card active" : "card"}>Hello</div>
+
+// 3. inline style（傳一個 object、屬性是駝峰）
+<div style={{ color: "red", fontSize: 16 }}>Hello</div>
+
+// 4. 用 classnames / clsx library
+import clsx from "clsx";
+
+<div className={clsx("card", { active: isActive, disabled: isDisabled })}>
+    Hello
+</div>
+
+// 5. 用 Tailwind（2026 主流）
+<button className="px-4 py-2 bg-blue-500 text-white rounded">
+    Button
+</button>
+
+// 6. 條件 + Tailwind（用 cn 合併）
+import { cn } from "@/lib/utils";
+
+<button className={cn("px-4 py-2 rounded", isActive ? "bg-blue-500" : "bg-gray-300")}>
+    Button
+</button>
+@@@F4
+// JSX 內的註解要包在 {} 裡、用 {/* */}
+<div>
+    {/* 這是 JSX 註解 */}
+    <h1>Title</h1>
+
+    {/* 多行註解
+       也要包在 {} 裡 */}
+</div>
+
+// JSX 外面是純 JS、用 //
+function Component() {
+    // 這是 JS 註解
+    return (
+        <div>
+            {/* 這裡才是 JSX 註解 */}
+        </div>
+    );
+}
+@@@PG 8.3.auto
+// JSX 看起來像 HTML、其實是 JS
+const name = "Alice";
+
+// 用 {} 在 JSX 裡塞 JS 變數 / 運算
+const element = (
+  <div>
+    <h1>Hello, {name}</h1>
+    <p>{2 + 3} 等於五</p>
+    <p>{name.toUpperCase()}</p>
+  </div>
+);
+
+// JSX 其實會被編譯成 React.createElement
+// 這裡用純 JS 模擬「JSX = 一個物件」的概念：
+const vdom = {
+  type: "h1",
+  props: { children: `Hello, ${name}` },
+};
+console.log("JSX 編譯後大概長這樣：");
+console.log(JSON.stringify(vdom, null, 2));

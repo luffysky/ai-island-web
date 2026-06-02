@@ -1,0 +1,12 @@
+@@@F0
+<!-- Open Graph（FB / LINE / 大部分平台分享時讀這個）-->
+<meta property="og:title" content="Vue 3 完整教學">
+<meta property="og:description" content="從零到上線的 Vue 3 教學">
+<meta property="og:image" content="https://example.com/og.png">
+<meta property="og:url" content="https://example.com/blog/vue-3">
+<meta property="og:type" content="article">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Vue 3 完整教學">
+<meta name="twitter:image" content="https://example.com/og.png">

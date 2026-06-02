@@ -1,0 +1,24 @@
+@@@PG 10.4.auto
+// 預設就是 Server Component（不需要任何標記）
+import { db } from "@/lib/db";
+
+export default async function UserList() {
+  // ✓ 可以 async / await
+  // ✓ 可以直接讀 DB
+  // ✓ 可以用 Node.js API（fs、crypto）
+  // ✓ 可以讀環境變數（API key 安全、不會送到瀏覽器）
+  // ✗ 不能用 useState、useEffect
+  // ✗ 不能綁 onClick
+  // ✗ 不能用 browser API（window、localStorage）
+
+  const users = await db.users.findMany();
+  const apiKey = process.env.SECRET_KEY; // 不會曝露給 client
+
+  return (
+    <ul>
+      {users.map((u) => (
+        <li key={u.id}>{u.name}</li>
+      ))}
+    </ul>
+  );
+}

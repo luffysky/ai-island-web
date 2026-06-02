@@ -1,0 +1,76 @@
+@@@F0
+// 用 Vercel AI SDK（2026 主流）
+// npm install ai
+
+import { useChat } from "ai/react";
+
+function ChatUI() {
+    const { messages, input, handleInputChange, handleSubmit } = useChat({
+        api: "/api/chat"
+    });
+
+    return (
+        <div className="chat">
+            <div className="messages">
+                {messages.map(m => (
+                    <div key={m.id} className={m.role}>
+                        {m.content}
+                    </div>
+                ))}
+            </div>
+
+            <form onSubmit={handleSubmit}>
+                <input value={input} onChange={handleInputChange} />
+                <button type="submit">Send</button>
+            </form>
+        </div>
+    );
+}
+
+// Server side（streaming）
+import { OpenAIStream, StreamingTextResponse } from "ai";
+import OpenAI from "openai";
+
+export async function POST(req: Request) {
+    const { messages } = await req.json();
+
+    const openai = new OpenAI();
+    const response = await openai.chat.completions.create({
+        model: "gpt-5",
+        stream: true,
+        messages
+    });
+
+    const stream = OpenAIStream(response);
+    return new StreamingTextResponse(stream);
+}
+
+// 自動處理 streaming、UI 一字字顯示
+@@@PG 3.19.auto
+// 用 Vercel AI SDK（2026 主流）
+// npm install ai
+
+import { useChat } from "ai/react";
+
+function ChatUI() {
+    const { messages, input, handleInputChange, handleSubmit } = useChat({
+        api: "/api/chat"
+    });
+
+    return (
+        <div className="chat">
+            <div className="messages">
+                {messages.map(m => (
+                    <div key={m.id} className={m.role}>
+                        {m.content}
+                    </div>
+                ))}
+            </div>
+
+            <form onSubmit={handleSubmit}>
+                <input value={input} onChange={handleInputChange} />
+                <button type="submit">Send</button>
+            </form>
+        </div>
+    );
+}

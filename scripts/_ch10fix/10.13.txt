@@ -1,0 +1,20 @@
+@@@PG 10.13.auto
+// app/dashboard/layout.tsx
+export default function Layout({
+  children,
+  analytics,
+  team
+}: {
+  children: React.ReactNode;
+  analytics: React.ReactNode;
+  team: React.ReactNode;
+}) {
+  return (
+    <div className="dashboard">
+      <section>{children}</section>
+      <section>{analytics}</section>
+      <section>{team}</section>
+    </div>
+  );
+}
+// 三個 slot 各自獨立載入、獨立錯誤邊界

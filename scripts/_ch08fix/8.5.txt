@@ -1,0 +1,184 @@
+@@@F0
+import { useState } from "react";
+
+function Counter() {
+    // useState 回 [當前值, setter]
+    const [count, setCount] = useState(0);
+
+    return (
+        <div>
+            <p>Count: {count}</p>
+            <button onClick={() => setCount(count + 1)}>
+                +
+            </button>
+        </div>
+    );
+}
+
+// 規則：
+// 1. useState 在 component 內呼叫
+// 2. 用 destructure 拿 [value, setter]
+// 3. setter 變了 → React 重新 render
+// 4. 不要直接改 state：count++ ❌、count = 5 ❌
+@@@F1
+function Form() {
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [age, setAge] = useState(0);
+
+    return (
+        <form>
+            <input value={name} onChange={(e) => setName(e.target.value)} />
+            <input value={email} onChange={(e) => setEmail(e.target.value)} />
+            <input type="number" value={age} onChange={(e) => setAge(+e.target.value)} />
+        </form>
+    );
+}
+
+// 也能用 object（但要小心 setter）
+function Form() {
+    const [form, setForm] = useState({
+        name: "",
+        email: "",
+        age: 0
+    });
+
+    // 必須複製整個 object（spread）
+    const handleChange = (field: string, value: any) => {
+        setForm(prev => ({
+            ...prev,
+            [field]: value
+        }));
+    };
+
+    // 直接這樣會壞：
+    // setForm({ name: "new" });   // 缺其他欄位！
+}
+@@@F2
+// 1. 基本型別（自動推導）
+const [count, setCount] = useState(0);              // number
+const [name, setName] = useState("");                // string
+const [isOpen, setIsOpen] = useState(false);         // boolean
+
+// 2. Object / Array（明確標型別）
+interface User {
+    id: number;
+    name: string;
+}
+
+const [user, setUser] = useState<User | null>(null);
+const [users, setUsers] = useState<User[]>([]);
+const [tags, setTags] = useState<string[]>([]);
+
+// 3. Union type
+const [status, setStatus] = useState<"idle" | "loading" | "done">("idle");
+
+// 4. Lazy initial value（重計算的）
+const [data, setData] = useState(() => {
+    // 只在第一次 render 跑
+    return expensiveCalculation();
+});
+@@@F5
+// 設了 state、不會立刻變
+function Counter() {
+    const [count, setCount] = useState(0);
+
+    const handleClick = () => {
+        setCount(count + 1);
+        console.log(count);   // 還是舊值！
+        // React 排程 re-render、但這個 function 還在跑舊的
+    };
+
+    return <button onClick={handleClick}>{count}</button>;
+}
+
+// 要新值用 function updater
+const handleClick = () => {
+    setCount(prev => {
+        const newCount = prev + 1;
+        console.log(newCount);   // 對的
+        return newCount;
+    });
+};
+
+// 或用 useEffect 監聽（後面講）
+useEffect(() => {
+    console.log("count changed:", count);
+}, [count]);
+@@@F6
+interface Todo {
+    id: number;
+    text: string;
+    done: boolean;
+}
+
+function TodoList() {
+    const [todos, setTodos] = useState<Todo[]>([]);
+    const [input, setInput] = useState("");
+
+    const addTodo = () => {
+        if (!input.trim()) return;
+
+        setTodos(prev => [...prev, {
+            id: Date.now(),
+            text: input,
+            done: false
+        }]);
+        setInput("");
+    };
+
+    const toggleTodo = (id: number) => {
+        setTodos(prev => prev.map(t =>
+            t.id === id ? { ...t, done: !t.done } : t
+        ));
+    };
+
+    const deleteTodo = (id: number) => {
+        setTodos(prev => prev.filter(t => t.id !== id));
+    };
+
+    return (
+        <div>
+            <input
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                onKeyDown={e => e.key === "Enter" && addTodo()}
+            />
+            <button onClick={addTodo}>Add</button>
+            <ul>
+                {todos.map(todo => (
+                    <li key={todo.id}>
+                        <input
+                            type="checkbox"
+                            checked={todo.done}
+                            onChange={() => toggleTodo(todo.id)}
+                        />
+                        <span>{todo.text}</span>
+                        <button onClick={() => deleteTodo(todo.id)}>×</button>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
+}
+@@@PG 8.5.auto
+import { useState } from "react";
+
+function Counter() {
+    // useState 回 [當前值, setter]
+    const [count, setCount] = useState(0);
+
+    return (
+        <div>
+            <p>Count: {count}</p>
+            <button onClick={() => setCount(count + 1)}>+1</button>
+            <button onClick={() => setCount(0)}>Reset</button>
+        </div>
+    );
+}
+
+// 規則：
+// 1. useState 在 component 內呼叫
+// 2. 用 destructure 拿 [value, setter]
+// 3. setter 變了 → React 重新 render
+// 4. 不要直接改 state：count++ ❌、count = 5 ❌

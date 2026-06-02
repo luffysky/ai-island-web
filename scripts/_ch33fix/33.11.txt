@@ -1,0 +1,8 @@
+@@@F0
+<!-- 告訴 Google：同一頁有哪些語言版本 -->
+<link rel="alternate" hreflang="zh-Hant" href="https://example.com/zh/vue">
+<link rel="alternate" hreflang="en" href="https://example.com/en/vue">
+<link rel="alternate" hreflang="ja" href="https://example.com/ja/vue">
+
+<!-- x-default：沒對應語言時的預設版本 -->
+<link rel="alternate" hreflang="x-default" href="https://example.com/vue">

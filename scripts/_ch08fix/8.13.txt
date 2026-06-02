@@ -1,0 +1,233 @@
+@@@F0
+// State 型別
+interface State {
+    count: number;
+    step: number;
+}
+
+// Action 型別（discriminated union）
+type Action =
+    | { type: "increment" }
+    | { type: "decrement" }
+    | { type: "reset" }
+    | { type: "setStep"; step: number };
+
+// Reducer：(state, action) => newState
+function reducer(state: State, action: Action): State {
+    switch (action.type) {
+        case "increment":
+            return { ...state, count: state.count + state.step };
+        case "decrement":
+            return { ...state, count: state.count - state.step };
+        case "reset":
+            return { count: 0, step: 1 };
+        case "setStep":
+            return { ...state, step: action.step };
+    }
+}
+
+// Component
+function Counter() {
+    const [state, dispatch] = useReducer(reducer, {
+        count: 0,
+        step: 1
+    });
+
+    return (
+        <div>
+            <p>Count: {state.count}</p>
+            <p>Step: {state.step}</p>
+            <button onClick={() => dispatch({ type: "increment" })}>+</button>
+            <button onClick={() => dispatch({ type: "decrement" })}>-</button>
+            <button onClick={() => dispatch({ type: "reset" })}>Reset</button>
+            <input
+                type="number"
+                value={state.step}
+                onChange={(e) => dispatch({
+                    type: "setStep",
+                    step: +e.target.value
+                })}
+            />
+        </div>
+    );
+}
+@@@F1
+interface Todo {
+    id: number;
+    text: string;
+    done: boolean;
+}
+
+interface State {
+    todos: Todo[];
+    filter: "all" | "active" | "done";
+}
+
+type Action =
+    | { type: "add"; text: string }
+    | { type: "toggle"; id: number }
+    | { type: "delete"; id: number }
+    | { type: "edit"; id: number; text: string }
+    | { type: "setFilter"; filter: State["filter"] }
+    | { type: "clearDone" };
+
+function reducer(state: State, action: Action): State {
+    switch (action.type) {
+        case "add":
+            return {
+                ...state,
+                todos: [...state.todos, {
+                    id: Date.now(),
+                    text: action.text,
+                    done: false
+                }]
+            };
+        case "toggle":
+            return {
+                ...state,
+                todos: state.todos.map(t =>
+                    t.id === action.id ? { ...t, done: !t.done } : t
+                )
+            };
+        case "delete":
+            return {
+                ...state,
+                todos: state.todos.filter(t => t.id !== action.id)
+            };
+        case "edit":
+            return {
+                ...state,
+                todos: state.todos.map(t =>
+                    t.id === action.id ? { ...t, text: action.text } : t
+                )
+            };
+        case "setFilter":
+            return { ...state, filter: action.filter };
+        case "clearDone":
+            return {
+                ...state,
+                todos: state.todos.filter(t => !t.done)
+            };
+    }
+}
+
+function TodoApp() {
+    const [state, dispatch] = useReducer(reducer, {
+        todos: [],
+        filter: "all"
+    });
+
+    const visibleTodos = state.todos.filter(t => {
+        if (state.filter === "active") return !t.done;
+        if (state.filter === "done") return t.done;
+        return true;
+    });
+
+    return (
+        <div>
+            <input
+                onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                        dispatch({ type: "add", text: e.currentTarget.value });
+                        e.currentTarget.value = "";
+                    }
+                }}
+            />
+
+            <ul>
+                {visibleTodos.map(todo => (
+                    <li key={todo.id}>
+                        <input
+                            type="checkbox"
+                            checked={todo.done}
+                            onChange={() => dispatch({ type: "toggle", id: todo.id })}
+                        />
+                        <span>{todo.text}</span>
+                        <button onClick={() => dispatch({ type: "delete", id: todo.id })}>
+                            ×
+                        </button>
+                    </li>
+                ))}
+            </ul>
+
+            <div>
+                <button onClick={() => dispatch({ type: "setFilter", filter: "all" })}>All</button>
+                <button onClick={() => dispatch({ type: "setFilter", filter: "active" })}>Active</button>
+                <button onClick={() => dispatch({ type: "setFilter", filter: "done" })}>Done</button>
+                <button onClick={() => dispatch({ type: "clearDone" })}>Clear Done</button>
+            </div>
+        </div>
+    );
+}
+@@@F2
+// 大專案：reducer + context
+// 不用 Redux 也能做
+
+import { createContext, useContext, useReducer, ReactNode, Dispatch } from "react";
+
+const StateContext = createContext<State | null>(null);
+const DispatchContext = createContext<Dispatch<Action> | null>(null);
+
+export function StoreProvider({ children }: { children: ReactNode }) {
+    const [state, dispatch] = useReducer(reducer, initialState);
+
+    return (
+        <StateContext.Provider value={state}>
+            <DispatchContext.Provider value={dispatch}>
+                {children}
+            </DispatchContext.Provider>
+        </StateContext.Provider>
+    );
+}
+
+// 分開 hook（性能）
+export function useStoreState() {
+    const state = useContext(StateContext);
+    if (!state) throw new Error("Need StoreProvider");
+    return state;
+}
+
+export function useStoreDispatch() {
+    const dispatch = useContext(DispatchContext);
+    if (!dispatch) throw new Error("Need StoreProvider");
+    return dispatch;
+}
+
+// 用
+function Component() {
+    const state = useStoreState();
+    const dispatch = useStoreDispatch();
+
+    return (
+        <button onClick={() => dispatch({ type: "increment" })}>
+            {state.count}
+        </button>
+    );
+}
+
+// dispatch 永遠同 reference、訂閱 dispatch 的不會 re-render
+// state 變才 re-render 對應 component
+@@@PG 8.13.auto
+import { useReducer } from "react";
+
+type Action = { type: "increment" } | { type: "decrement" } | { type: "reset" };
+
+function reducer(state: { count: number }, action: Action) {
+    switch (action.type) {
+        case "increment": return { count: state.count + 1 };
+        case "decrement": return { count: state.count - 1 };
+        case "reset": return { count: 0 };
+    }
+}
+
+function Counter() {
+    const [state, dispatch] = useReducer(reducer, { count: 0 });
+    return (
+        <div>
+            <p>Count: {state.count}</p>
+            <button onClick={() => dispatch({ type: "increment" })}>+</button>
+            <button onClick={() => dispatch({ type: "decrement" })}>-</button>
+            <button onClick={() => dispatch({ type: "reset" })}>Reset</button>
+        </div>
+    );
+}

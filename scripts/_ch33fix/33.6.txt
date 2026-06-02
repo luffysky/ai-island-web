@@ -1,0 +1,19 @@
+@@@F0
+<!-- robots.txt（放網站根目錄）-->
+<!--
+User-agent: *
+Allow: /
+Sitemap: https://example.com/sitemap.xml
+-->
+
+<!-- sitemap.xml -->
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://example.com/</loc>
+    <lastmod>2026-06-03</lastmod>
+  </url>
+</urlset>
+
+<!-- canonical：告訴 Google 哪個是正版網址、避免重複內容被分散權重 -->
+<link rel="canonical" href="https://example.com/blog/vue-3">

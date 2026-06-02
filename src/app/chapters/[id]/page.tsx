@@ -9,7 +9,7 @@ import {
   courseSchema, breadcrumbSchema, faqSchema, itemListSchema,
   withAuthorAndReviewer, jsonLdScript,
 } from "@/lib/seo-jsonld";
-import { chapterDisplayNumber } from "@/lib/chapter-display";
+import { chapterDisplayNumber, chapterDisplayNumberById } from "@/lib/chapter-display";
 import type { Metadata } from "next";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
@@ -30,7 +30,7 @@ export async function generateMetadata({
     };
   }
 
-  const title = `Ch${String(chapter.id).padStart(2, "0")}：${chapter.title} | AI 島`;
+  const title = `Ch${chapterDisplayNumberById(chapter.id)}：${chapter.title} | AI 島`;
   const desc = chapter.description || chapter.subtitle || `學習 ${chapter.title}、${chapter.lessons?.length ?? 0} 個 lesson、含實戰練習。`;
   const url = `${SITE_URL}/chapters/${chapter.id}`;
   const ogImage = `${SITE_URL}/api/og/chapter/${chapter.id}`;

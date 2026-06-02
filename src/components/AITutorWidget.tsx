@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Sparkles, Send, X, ChevronDown, Settings as SettingsIcon, Plus, Loader2, History, MessageSquare, ImagePlus, Trash2 } from "lucide-react";
 import { useOverlayCount, useOverlayRegister } from "@/lib/overlay-stack";
+import { chapterDisplayNumberById } from "@/lib/chapter-display";
 import { useEdgeSafe } from "@/lib/use-edge-safe";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { devLog } from "@/lib/dev-log";
@@ -489,7 +490,7 @@ export function AITutorWidget({
                   {persona.emoji} {persona.name}
                   {contextChapterId && (
                     <span className="text-xs px-1.5 py-0.5 bg-blue-500/20 text-blue-900 dark:text-blue-200 rounded-full ml-1">
-                      📚 Ch{String(contextChapterId).padStart(2, "0")}
+                      📚 Ch{chapterDisplayNumberById(Number(contextChapterId))}
                     </span>
                   )}
                 </div>

@@ -1,0 +1,41 @@
+@@@F0
+// Framer Motion 是 2026 React 動畫主流
+// npm install framer-motion
+
+import { motion, AnimatePresence } from "framer-motion";
+
+// 簡單動畫
+<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+    Hello
+</motion.div>
+
+// Hover + tap
+<motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+    Click me
+</motion.button>
+
+// List 動畫
+{items.map((item, i) => (
+    <motion.li
+        key={item.id}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: i * 0.05 }}
+    >
+        {item.name}
+    </motion.li>
+))}
+
+// Modal 進出
+<AnimatePresence>
+    {isOpen && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            Modal content
+        </motion.div>
+    )}
+</AnimatePresence>
+
+// Layout 動畫（神奇）
+<motion.div layout>
+    {/* 換位置自動補動畫 */}
+</motion.div>

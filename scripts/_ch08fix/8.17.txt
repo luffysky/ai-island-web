@@ -1,0 +1,82 @@
+@@@F0
+import { create } from "zustand";
+
+interface CounterState {
+    count: number;
+    increment: () => void;
+    decrement: () => void;
+    reset: () => void;
+}
+
+const useCounterStore = create<CounterState>((set) => ({
+    count: 0,
+    increment: () => set((state) => ({ count: state.count + 1 })),
+    decrement: () => set((state) => ({ count: state.count - 1 })),
+    reset: () => set({ count: 0 })
+}));
+
+// 用
+function Counter() {
+    const count = useCounterStore((state) => state.count);
+    const increment = useCounterStore((state) => state.increment);
+
+    return <button onClick={increment}>{count}</button>;
+}
+
+// 不用 Provider！任何 component 都能用
+// 訂閱 state.count 只有 count 變才 re-render
+@@@F2
+// npm install jotai
+
+import { atom, useAtom } from "jotai";
+
+const countAtom = atom(0);
+const nameAtom = atom("Alice");
+
+function Counter() {
+    const [count, setCount] = useAtom(countAtom);
+    return <button onClick={() => setCount(c => c + 1)}>{count}</button>;
+}
+
+// 派生 atom
+const fullNameAtom = atom((get) => {
+    return `${get(firstNameAtom)} ${get(lastNameAtom)}`;
+});
+
+// 異步 atom
+const userAtom = atom(async (get) => {
+    const userId = get(userIdAtom);
+    const res = await fetch(`/api/users/${userId}`);
+    return res.json();
+});
+
+// 賣點：
+// 1. 每個 atom 獨立
+// 2. 派生 atom 自動更新
+// 3. 細粒度訂閱、性能好
+@@@PG 8.17.auto
+import { create } from "zustand";
+
+// Zustand：不用 Provider 的全域 state
+interface CounterState {
+    count: number;
+    increment: () => void;
+    reset: () => void;
+}
+
+const useCounterStore = create<CounterState>((set) => ({
+    count: 0,
+    increment: () => set((s) => ({ count: s.count + 1 })),
+    reset: () => set({ count: 0 }),
+}));
+
+function Counter() {
+    const { count, increment, reset } = useCounterStore();
+    return (
+        <div>
+            <p>{count}</p>
+            <button onClick={increment}>+1</button>
+            <button onClick={reset}>Reset</button>
+        </div>
+    );
+}

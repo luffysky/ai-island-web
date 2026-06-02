@@ -1,0 +1,224 @@
+@@@F0
+import { Suspense, lazy } from "react";
+
+// 1. Lazy load component
+const HeavyChart = lazy(() => import("./HeavyChart"));
+
+function App() {
+    return (
+        <Suspense fallback={<Spinner />}>
+            <HeavyChart />
+        </Suspense>
+    );
+}
+
+// HeavyChart 還沒載入完前、顯示 fallback
+// 載入後自動換上實際 component
+
+// 用途：
+// 1. Code splitting（分 chunk、降 bundle）
+// 2. Slow component（dynamic import）
+// 3. Server Components data fetching
+@@@F1
+// 大型 dashboard、按 tab 才載入
+
+import { Suspense, lazy, useState } from "react";
+
+const Analytics = lazy(() => import("./tabs/Analytics"));
+const Settings = lazy(() => import("./tabs/Settings"));
+const Users = lazy(() => import("./tabs/Users"));
+
+function Dashboard() {
+    const [tab, setTab] = useState("analytics");
+
+    return (
+        <div>
+            <nav>
+                <button onClick={() => setTab("analytics")}>Analytics</button>
+                <button onClick={() => setTab("settings")}>Settings</button>
+                <button onClick={() => setTab("users")}>Users</button>
+            </nav>
+
+            <Suspense fallback={<Spinner />}>
+                {tab === "analytics" && <Analytics />}
+                {tab === "settings" && <Settings />}
+                {tab === "users" && <Users />}
+            </Suspense>
+        </div>
+    );
+}
+
+// 好處：
+// - 首屏 bundle 小（只載 nav）
+// - 用戶按 tab 才下載對應 chunk
+// - 自動 loading state
+@@@F2
+// React 19：Suspense 也能等 data
+
+import { use, Suspense } from "react";
+
+function UserProfile({ userPromise }) {
+    const user = use(userPromise);   // 暫停直到 resolve
+    return <p>{user.name}</p>;
+}
+
+function App() {
+    const userPromise = fetchUser(1);
+
+    return (
+        <Suspense fallback={<Spinner />}>
+            <UserProfile userPromise={userPromise} />
+        </Suspense>
+    );
+}
+
+// 配 React Query / SWR 也支援 Suspense
+import { useSuspenseQuery } from "@tanstack/react-query";
+
+function UserProfile2({ id }) {
+    const { data: user } = useSuspenseQuery({
+        queryKey: ["user", id],
+        queryFn: () => fetchUser(id)
+    });
+
+    return <p>{user.name}</p>;
+    // 沒 loading 處理、外面 Suspense 處理
+}
+@@@F3
+// 抓 component tree 內的 error
+// 必須是 class component（hook 版還沒）
+
+import { Component, ErrorInfo, ReactNode } from "react";
+
+interface Props {
+    fallback: ReactNode;
+    children: ReactNode;
+}
+
+interface State {
+    hasError: boolean;
+    error?: Error;
+}
+
+class ErrorBoundary extends Component<Props, State> {
+    state: State = { hasError: false };
+
+    static getDerivedStateFromError(error: Error): State {
+        return { hasError: true, error };
+    }
+
+    componentDidCatch(error: Error, info: ErrorInfo) {
+        // Log to Sentry / DataDog
+        console.error("Error caught:", error, info);
+    }
+
+    render() {
+        if (this.state.hasError) {
+            return this.props.fallback;
+        }
+        return this.props.children;
+    }
+}
+
+// 用
+<ErrorBoundary fallback={<p>出錯了</p>}>
+    <UserProfile />
+</ErrorBoundary>
+
+// 只要 UserProfile tree 內 throw error、不會炸整個 app
+// 只 fallback 那塊
+@@@F4
+// npm install react-error-boundary
+
+import { ErrorBoundary } from "react-error-boundary";
+
+function ErrorFallback({ error, resetErrorBoundary }) {
+    return (
+        <div role="alert">
+            <p>Something went wrong:</p>
+            <pre>{error.message}</pre>
+            <button onClick={resetErrorBoundary}>Try again</button>
+        </div>
+    );
+}
+
+<ErrorBoundary
+    FallbackComponent={ErrorFallback}
+    onError={(error) => {
+        // Log to Sentry
+        Sentry.captureException(error);
+    }}
+    onReset={() => {
+        // Reset state
+    }}
+>
+    <App />
+</ErrorBoundary>
+
+// 比自己寫 ErrorBoundary 簡單、業界主流
+@@@F5
+// 多層 boundary：細粒度錯誤處理
+
+<ErrorBoundary fallback={<AppCrash />}>
+    {/* 整個 app 級別 */}
+    <Header />
+
+    <main>
+        <ErrorBoundary fallback={<WidgetError />}>
+            <Sidebar />
+        </ErrorBoundary>
+
+        <ErrorBoundary fallback={<WidgetError />}>
+            <Feed />
+        </ErrorBoundary>
+
+        <ErrorBoundary fallback={<WidgetError />}>
+            <Recommendations />
+        </ErrorBoundary>
+    </main>
+</ErrorBoundary>
+
+// 1 個 widget 出錯不影響整個 app
+// 用戶仍能用其他功能
+@@@F6
+// 完整體驗：Loading + Error 都處理
+
+import { Suspense } from "react";
+import { ErrorBoundary } from "react-error-boundary";
+
+function App() {
+    return (
+        <ErrorBoundary fallback={<p>出錯了</p>}>
+            <Suspense fallback={<Spinner />}>
+                <UserList />
+            </Suspense>
+        </ErrorBoundary>
+    );
+}
+
+// 順序：
+// 1. Loading（Suspense fallback）
+// 2. Success（實際內容）
+// 3. Error（ErrorBoundary fallback）
+
+// 內部 UserList 不用寫 loading / error logic、簡潔！
+
+// 整合 React Query：
+// const { data } = useSuspenseQuery({ queryKey: ["users"], queryFn });
+// 自動配合 Suspense + ErrorBoundary
+@@@PG 8.14.auto
+import { Suspense, lazy } from "react";
+
+// 把重的 component 用 lazy 延遲載入、Suspense 提供「載入中」的畫面
+const HeavyChart = lazy(() => import("./HeavyChart"));
+
+function App() {
+    return (
+        <Suspense fallback={<p>載入中...</p>}>
+            <HeavyChart />
+        </Suspense>
+    );
+}
+
+// HeavyChart 載入完成前顯示 fallback、載完自動換上
+// 用途：code splitting、慢 component、Server Components 抓資料

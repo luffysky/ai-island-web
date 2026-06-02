@@ -1,0 +1,86 @@
+@@@F0
+// app.tsx
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+
+const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            staleTime: 60 * 1000,
+            gcTime: 5 * 60 * 1000,
+            refetchOnWindowFocus: true,
+            retry: 1
+        }
+    }
+});
+
+function App() {
+    return (
+        <QueryClientProvider client={queryClient}>
+            <Routes />
+            <ReactQueryDevtools initialIsOpen={false} />
+        </QueryClientProvider>
+    );
+}
+@@@F1
+import { useQuery } from "@tanstack/react-query";
+
+function UserProfile({ userId }: { userId: number }) {
+    const { data: user, isLoading, error } = useQuery({
+        queryKey: ["user", userId],
+        queryFn: () => fetch(`/api/users/${userId}`).then(r => r.json())
+    });
+
+    if (isLoading) return <Spinner />;
+    if (error) return <p>出錯了</p>;
+
+    return <p>{user.name}</p>;
+}
+
+// 自動處理：
+// 1. Loading state
+// 2. Error state
+// 3. Cache（同 key 共用）
+// 4. Refetch on focus / reconnect
+// 5. Background refetch
+
+// Type-safe
+const { data } = useQuery({
+    queryKey: ["user", userId],
+    queryFn: async () => {
+        const res = await fetch(`/api/users/${userId}`);
+        return res.json() as Promise<User>;
+    }
+});
+@@@F3
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+function CreateUserForm() {
+    const queryClient = useQueryClient();
+
+    const createMutation = useMutation({
+        mutationFn: (newUser: NewUser) => {
+            return fetch("/api/users", {
+                method: "POST",
+                body: JSON.stringify(newUser)
+            }).then(r => r.json());
+        },
+
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["users"] });
+        },
+
+        onError: (error) => {
+            toast.error("Failed: " + error.message);
+        }
+    });
+
+    return (
+        <form onSubmit={(e) => { e.preventDefault(); createMutation.mutate(newUser); }}>
+            {/* ...表單欄位... */}
+            <button disabled={createMutation.isPending}>
+                {createMutation.isPending ? "Saving..." : "Save"}
+            </button>
+        </form>
+    );
+}

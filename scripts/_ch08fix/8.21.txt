@@ -1,0 +1,114 @@
+@@@F0
+// 1. Provider
+// app/layout.tsx
+import { ClerkProvider } from "@clerk/nextjs";
+
+export default function RootLayout({ children }) {
+    return (
+        <ClerkProvider>
+            <html lang="zh-Hant">
+                <body>{children}</body>
+            </html>
+        </ClerkProvider>
+    );
+}
+
+// 2. Middleware
+// middleware.ts
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+
+const isProtected = createRouteMatcher(["/dashboard(.*)"]);
+
+export default clerkMiddleware((auth, req) => {
+    if (isProtected(req)) auth().protect();
+});
+
+// 3. Sign-in page
+// app/sign-in/[[...sign-in]]/page.tsx
+import { SignIn } from "@clerk/nextjs";
+
+export default function Page() {
+    return <SignIn />;
+}
+
+// 4. 用 user
+// app/dashboard/page.tsx
+import { currentUser } from "@clerk/nextjs/server";
+
+export default async function Dashboard() {
+    const user = await currentUser();
+    return <p>Hello {user?.firstName}</p>;
+}
+@@@F1
+// actions/posts.ts
+"use server";
+
+import { db } from "@/lib/db";
+import { posts } from "@/lib/db/schema";
+import { revalidatePath } from "next/cache";
+import { z } from "zod";
+
+const CreatePostSchema = z.object({
+    title: z.string().min(1),
+    content: z.string().min(10)
+});
+
+export async function createPost(formData: FormData) {
+    const parsed = CreatePostSchema.safeParse({
+        title: formData.get("title"),
+        content: formData.get("content")
+    });
+
+    if (!parsed.success) {
+        return { error: parsed.error.flatten() };
+    }
+
+    await db.insert(posts).values({
+        ...parsed.data,
+        authorId: 1
+    });
+
+    revalidatePath("/posts");
+    return { success: true };
+}
+
+// app/posts/page.tsx
+import { db } from "@/lib/db";
+import { posts } from "@/lib/db/schema";
+import { CreatePostForm } from "./CreatePostForm";
+
+export default async function PostsPage() {
+    const allPosts = await db.select().from(posts);
+
+    return (
+        <div>
+            <CreatePostForm />
+            {allPosts.map(post => (
+                <article key={post.id}>
+                    <h2>{post.title}</h2>
+                    <p>{post.content}</p>
+                </article>
+            ))}
+        </div>
+    );
+}
+
+// app/posts/CreatePostForm.tsx
+"use client";
+
+import { useTransition } from "react";
+import { createPost } from "@/actions/posts";
+
+export function CreatePostForm() {
+    const [pending, startTransition] = useTransition();
+
+    return (
+        <form action={(fd) => startTransition(() => createPost(fd))}>
+            <input name="title" />
+            <textarea name="content" />
+            <button type="submit" disabled={pending}>
+                {pending ? "Saving..." : "Create"}
+            </button>
+        </form>
+    );
+}

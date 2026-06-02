@@ -1,0 +1,243 @@
+@@@F0
+// 把 logic 抽成 use 開頭的 function
+
+function useCounter(initial = 0) {
+    const [count, setCount] = useState(initial);
+
+    const increment = () => setCount(c => c + 1);
+    const decrement = () => setCount(c => c - 1);
+    const reset = () => setCount(initial);
+
+    return { count, increment, decrement, reset };
+}
+
+// 用
+function Counter() {
+    const { count, increment, decrement, reset } = useCounter(0);
+
+    return (
+        <div>
+            <p>{count}</p>
+            <button onClick={increment}>+</button>
+            <button onClick={decrement}>-</button>
+            <button onClick={reset}>Reset</button>
+        </div>
+    );
+}
+
+// 規則：
+// 1. 名字 use 開頭（React 約定）
+// 2. 內部用其他 hook
+// 3. 回需要的值 + 函式
+// 4. 多個 component 能共用、各自獨立 state
+@@@F1
+// 1. useToggle
+function useToggle(initial = false) {
+    const [value, setValue] = useState(initial);
+    const toggle = useCallback(() => setValue(v => !v), []);
+    return [value, toggle, setValue] as const;
+}
+
+// 用
+const [isOpen, toggleOpen] = useToggle(false);
+
+// 2. useLocalStorage
+function useLocalStorage<T>(key: string, initial: T) {
+    const [value, setValue] = useState<T>(() => {
+        const stored = localStorage.getItem(key);
+        return stored ? JSON.parse(stored) : initial;
+    });
+
+    useEffect(() => {
+        localStorage.setItem(key, JSON.stringify(value));
+    }, [key, value]);
+
+    return [value, setValue] as const;
+}
+
+// 用
+const [theme, setTheme] = useLocalStorage("theme", "light");
+// 自動存 localStorage、頁面 reload 保持
+
+// 3. useDebounce
+function useDebounce<T>(value: T, delay: number = 300) {
+    const [debounced, setDebounced] = useState(value);
+
+    useEffect(() => {
+        const timer = setTimeout(() => setDebounced(value), delay);
+        return () => clearTimeout(timer);
+    }, [value, delay]);
+
+    return debounced;
+}
+
+// 用
+const [query, setQuery] = useState("");
+const debouncedQuery = useDebounce(query, 500);
+// 用戶停打 500ms 才更新
+
+// 4. useMediaQuery
+function useMediaQuery(query: string) {
+    const [matches, setMatches] = useState(false);
+
+    useEffect(() => {
+        const media = window.matchMedia(query);
+        setMatches(media.matches);
+
+        const listener = (e: MediaQueryListEvent) => setMatches(e.matches);
+        media.addEventListener("change", listener);
+
+        return () => media.removeEventListener("change", listener);
+    }, [query]);
+
+    return matches;
+}
+
+// 用
+const isMobile = useMediaQuery("(max-width: 768px)");
+const isDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
+
+// 5. useClickOutside
+function useClickOutside(handler: () => void) {
+    const ref = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const listener = (e: MouseEvent) => {
+            if (ref.current && !ref.current.contains(e.target as Node)) {
+                handler();
+            }
+        };
+
+        document.addEventListener("mousedown", listener);
+        return () => document.removeEventListener("mousedown", listener);
+    }, [handler]);
+
+    return ref;
+}
+
+// 用
+function Dropdown() {
+    const [isOpen, setIsOpen] = useState(false);
+    const ref = useClickOutside(() => setIsOpen(false));
+
+    return (
+        <div ref={ref}>
+            <button onClick={() => setIsOpen(true)}>Open</button>
+            {isOpen && <div className="menu">Dropdown content</div>}
+        </div>
+    );
+}
+@@@F2
+function useFetch<T>(url: string) {
+    const [data, setData] = useState<T | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<Error | null>(null);
+
+    useEffect(() => {
+        let cancelled = false;
+
+        async function load() {
+            try {
+                setLoading(true);
+                setError(null);
+
+                const res = await fetch(url);
+                if (!res.ok) throw new Error("Failed");
+
+                const json = await res.json();
+                if (!cancelled) {
+                    setData(json);
+                }
+            } catch (err) {
+                if (!cancelled) {
+                    setError(err as Error);
+                }
+            } finally {
+                if (!cancelled) {
+                    setLoading(false);
+                }
+            }
+        }
+
+        load();
+        return () => { cancelled = true; };
+    }, [url]);
+
+    return { data, loading, error };
+}
+
+// 用
+function UserList() {
+    const { data: users, loading, error } = useFetch<User[]>("/api/users");
+
+    if (loading) return <Spinner />;
+    if (error) return <p>出錯了：{error.message}</p>;
+    if (!users) return null;
+
+    return (
+        <ul>
+            {users.map(u => <li key={u.id}>{u.name}</li>)}
+        </ul>
+    );
+}
+
+// 進階：用 React Query（業界主流、後面講）
+@@@F3
+// Custom hook 可以呼叫其他 custom hook
+
+function useUserProfile(userId: number) {
+    // 用其他 hook
+    const { data: user, loading } = useFetch<User>(`/api/users/${userId}`);
+    const [favorites, setFavorites] = useLocalStorage<number[]>("favs", []);
+
+    const isFavorite = favorites.includes(userId);
+
+    const toggleFavorite = useCallback(() => {
+        setFavorites(prev =>
+            prev.includes(userId)
+                ? prev.filter(id => id !== userId)
+                : [...prev, userId]
+        );
+    }, [userId, setFavorites]);
+
+    return { user, loading, isFavorite, toggleFavorite };
+}
+
+// 用：1 個 hook 提供完整邏輯
+function UserCard({ userId }) {
+    const { user, loading, isFavorite, toggleFavorite } = useUserProfile(userId);
+
+    if (loading) return <Spinner />;
+    return (
+        <div>
+            <p>{user.name}</p>
+            <button onClick={toggleFavorite}>
+                {isFavorite ? "★" : "☆"}
+            </button>
+        </div>
+    );
+}
+@@@PG 8.11.auto
+import { useState } from "react";
+
+// Custom Hook：把可重用的邏輯抽成 use 開頭的 function
+function useCounter(initial = 0) {
+    const [count, setCount] = useState(initial);
+    const increment = () => setCount(c => c + 1);
+    const decrement = () => setCount(c => c - 1);
+    const reset = () => setCount(initial);
+    return { count, increment, decrement, reset };
+}
+
+// 用：任何 component 都能共用、各自獨立 state
+function Counter() {
+    const { count, increment, decrement, reset } = useCounter(0);
+    return (
+        <div>
+            <p>{count}</p>
+            <button onClick={increment}>+</button>
+            <button onClick={decrement}>-</button>
+            <button onClick={reset}>Reset</button>
+        </div>
+    );
+}

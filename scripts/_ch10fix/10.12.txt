@@ -1,0 +1,21 @@
+@@@PG 10.12.auto
+import Image from "next/image";
+
+export default function Hero() {
+  return (
+    <Image
+      src="/hero.jpg"
+      alt="封面"
+      width={1200}
+      height={630}
+      priority
+    />
+  );
+}
+
+// next/image 自動：
+// - 轉 webp / avif（看瀏覽器支援）
+// - 響應式不同尺寸（srcset）
+// - lazy load（除非 priority）
+// - 防止 layout shift（CLS）
+// - 雲端 CDN 變換

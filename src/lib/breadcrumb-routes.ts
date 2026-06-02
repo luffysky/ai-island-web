@@ -9,6 +9,8 @@
  *   - 動態路由（[id]）會 fallback 到「詳情」之類通用詞
  */
 
+import { chapterDisplayNumberById } from "./chapter-display";
+
 export type Crumb = { label: string; href?: string };
 
 const SEGMENT_MAP: Record<string, string> = {
@@ -121,7 +123,7 @@ const HIDE_SEGMENTS = new Set(["console-x7k2", process.env.NEXT_PUBLIC_ADMIN_SLU
 function labelFor(seg: string, prevSeg?: string): string {
   if (SEGMENT_MAP[seg]) return SEGMENT_MAP[seg];
   // chapter id（ch01 / 1 / 26）
-  if (prevSeg === "chapters" && /^\d+$/.test(seg)) return `Ch${seg.padStart(2, "0")}`;
+  if (prevSeg === "chapters" && /^\d+$/.test(seg)) return `Ch${chapterDisplayNumberById(Number(seg))}`;
   // discord/user/thread/blog id（UUID 或長 hex）→ 隱藏成「詳情」
   if (/^[0-9a-f-]{16,}$/.test(seg)) return "詳情";
   // 一般 fallback：保留原文、首字大寫

@@ -1,0 +1,100 @@
+@@@F0
+// Counter.tsx
+function Counter() {
+    const [count, setCount] = useState(0);
+    return (
+        <div>
+            <p>Count: {count}</p>
+            <button onClick={() => setCount(c => c + 1)}>+</button>
+        </div>
+    );
+}
+
+// Counter.test.tsx
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { describe, it, expect } from "vitest";
+
+describe("Counter", () => {
+    it("renders count 0 initially", () => {
+        render(<Counter />);
+        expect(screen.getByText("Count: 0")).toBeInTheDocument();
+    });
+
+    it("increments on click", async () => {
+        const user = userEvent.setup();
+        render(<Counter />);
+
+        const button = screen.getByRole("button", { name: "+" });
+        await user.click(button);
+
+        expect(screen.getByText("Count: 1")).toBeInTheDocument();
+    });
+});
+
+// 跑測試：npm test
+@@@F1
+// 1. Form test
+it("submits with valid input", async () => {
+    const user = userEvent.setup();
+    const onSubmit = vi.fn();
+
+    render(<LoginForm onSubmit={onSubmit} />);
+
+    await user.type(screen.getByLabelText("Email"), "alice@x.com");
+    await user.type(screen.getByLabelText("Password"), "password123");
+    await user.click(screen.getByRole("button", { name: "Login" }));
+
+    expect(onSubmit).toHaveBeenCalledWith({
+        email: "alice@x.com",
+        password: "password123"
+    });
+});
+
+// 2. Async test（findBy 自動等）
+it("loads users", async () => {
+    render(<UserList />);
+    const alice = await screen.findByText("Alice");
+    expect(alice).toBeInTheDocument();
+});
+
+// 3. Mock function
+it("calls onSelect", async () => {
+    const user = userEvent.setup();
+    const onSelect = vi.fn();
+
+    render(<Options onSelect={onSelect} />);
+    await user.click(screen.getByText("Option 1"));
+
+    expect(onSelect).toHaveBeenCalledTimes(1);
+});
+@@@F2
+// npm install -D msw
+
+// test/mocks/handlers.ts
+import { http, HttpResponse } from "msw";
+
+export const handlers = [
+    http.get("/api/users", () => {
+        return HttpResponse.json([
+            { id: 1, name: "Alice" },
+            { id: 2, name: "Bob" }
+        ]);
+    })
+];
+
+// test/setup.ts
+import { setupServer } from "msw/node";
+import { handlers } from "./mocks/handlers";
+
+const server = setupServer(...handlers);
+
+beforeAll(() => server.listen());
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
+
+// Test 自動用 mock data
+it("displays users from API", async () => {
+    render(<UserList />);
+    expect(await screen.findByText("Alice")).toBeInTheDocument();
+});

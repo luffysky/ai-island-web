@@ -1,5 +1,6 @@
 "use client";
 import { xpForNextLevel, CAREER_PATHS } from "@/lib/types";
+import { chapterDisplayNumberById } from "@/lib/chapter-display";
 import { Flame, Coins, Heart, Trophy, Calendar, Award, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { DailyCheckin } from "@/components/gamification/DailyCheckin";
@@ -112,7 +113,7 @@ export function DashboardView({ profile, progress, achievements, quests }: any) 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {Object.entries(byChapter).slice(0, 6).map(([cid, count]) => (
             <Link key={cid} href={`/chapters/${cid}`} className="p-3 rounded-lg bg-bg-elevated border border-border hover:border-accent">
-              <div className="text-xs text-fg-muted">Ch {String(cid).padStart(2, "0")}</div>
+              <div className="text-xs text-fg-muted">Ch {chapterDisplayNumberById(Number(cid))}</div>
               <div className="text-sm font-semibold mt-1">{count} lessons 已完成</div>
             </Link>
           ))}

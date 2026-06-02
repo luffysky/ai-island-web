@@ -1,0 +1,46 @@
+@@@F0
+// src/main.tsx（Vite 入口）
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import App from "./App.tsx";
+import "./index.css";
+
+createRoot(document.getElementById("root")!).render(
+    <StrictMode>
+        <App />
+    </StrictMode>
+);
+
+// StrictMode：開發時跑 2 次 render 檢查 bug
+// production 不影響
+
+// src/App.tsx
+import { useState } from "react";
+
+function App() {
+    const [count, setCount] = useState(0);
+
+    return (
+        <div>
+            <h1>Count: {count}</h1>
+            <button onClick={() => setCount(count + 1)}>
+                +
+            </button>
+        </div>
+    );
+}
+
+export default App;
+
+// index.html（Vite 自動產生、通常不用改）
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <title>My React App</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

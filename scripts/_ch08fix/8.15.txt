@@ -1,0 +1,254 @@
+@@@F0
+// ❌ 手動驗證：又臭又長
+function LoginForm() {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [emailError, setEmailError] = useState("");
+    const [passwordError, setPasswordError] = useState("");
+    const [submitting, setSubmitting] = useState(false);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        let valid = true;
+        if (!email.includes("@")) {
+            setEmailError("Invalid email");
+            valid = false;
+        } else setEmailError("");
+
+        if (password.length < 8) {
+            setPasswordError("密碼至少 8 碼");
+            valid = false;
+        } else setPasswordError("");
+
+        if (!valid) return;
+
+        setSubmitting(true);
+        await login(email, password);
+        setSubmitting(false);
+    };
+
+    return (
+        <form onSubmit={handleSubmit}>
+            <input value={email} onChange={(e) => setEmail(e.target.value)} />
+            {emailError && <span className="error">{emailError}</span>}
+            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+            {passwordError && <span className="error">{passwordError}</span>}
+            <button disabled={submitting}>{submitting ? "Loading..." : "Login"}</button>
+        </form>
+    );
+}
+
+// ✓ React Hook Form + Zod：短、type-safe、性能好
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+const LoginSchema = z.object({
+    email: z.string().email(),
+    password: z.string().min(8)
+});
+type LoginInput = z.infer<typeof LoginSchema>;
+
+function LoginFormRHF() {
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isSubmitting }
+    } = useForm<LoginInput>({
+        resolver: zodResolver(LoginSchema)
+    });
+
+    const onSubmit = async (data: LoginInput) => {
+        await login(data.email, data.password);
+    };
+
+    return (
+        <form onSubmit={handleSubmit(onSubmit)}>
+            <label>
+                Email
+                <input {...register("email")} />
+                {errors.email && <span>{errors.email.message}</span>}
+            </label>
+
+            <label>
+                Password
+                <input type="password" {...register("password")} />
+                {errors.password && <span>{errors.password.message}</span>}
+            </label>
+
+            <button disabled={isSubmitting}>
+                {isSubmitting ? "Loading..." : "Login"}
+            </button>
+        </form>
+    );
+}
+
+// 50 行 → 30 行、自動驗證、type-safe、性能好
+@@@F1
+const {
+    register,
+    handleSubmit,
+    formState: {
+        errors,
+        isSubmitting,
+        isDirty,
+        isValid
+    },
+    watch,
+    setValue,
+    getValues,
+    reset,
+    control
+} = useForm({
+    defaultValues: { name: "", email: "" },
+    resolver: zodResolver(Schema),
+    mode: "onChange"
+});
+
+// 監聽特定欄位
+const password = watch("password");
+
+// 動態 disabled
+<button disabled={!isDirty || !isValid}>Save</button>
+
+// 程式設值
+setValue("name", "Alice");
+
+// 重置
+reset();
+reset({ name: "Alice", email: "alice@x.com" });
+@@@F2
+import { useForm, Controller } from "react-hook-form";
+
+function Form() {
+    const { control, handleSubmit } = useForm();
+
+    return (
+        <form onSubmit={handleSubmit(onSubmit)}>
+            <Controller
+                name="country"
+                control={control}
+                render={({ field }) => (
+                    <Select {...field} options={countries} />
+                )}
+            />
+
+            <Controller
+                name="birthday"
+                control={control}
+                render={({ field }) => (
+                    <DatePicker {...field} />
+                )}
+            />
+        </form>
+    );
+}
+
+// register 給原生 input
+// Controller 給自訂 component
+@@@F3
+import { useForm, useFieldArray } from "react-hook-form";
+
+function ContactsForm() {
+    const { register, control, handleSubmit } = useForm({
+        defaultValues: {
+            name: "",
+            contacts: [{ type: "email", value: "" }]
+        }
+    });
+
+    const { fields, append, remove } = useFieldArray({
+        control,
+        name: "contacts"
+    });
+
+    return (
+        <form onSubmit={handleSubmit(onSubmit)}>
+            <input {...register("name")} />
+
+            {fields.map((field, index) => (
+                <div key={field.id}>
+                    <select {...register(`contacts.${index}.type`)}>
+                        <option value="email">Email</option>
+                        <option value="phone">Phone</option>
+                    </select>
+                    <input {...register(`contacts.${index}.value`)} />
+                    <button type="button" onClick={() => remove(index)}>Remove</button>
+                </div>
+            ))}
+
+            <button type="button" onClick={() => append({ type: "email", value: "" })}>
+                Add Contact
+            </button>
+
+            <button type="submit">Save</button>
+        </form>
+    );
+}
+@@@F4
+// app/actions.ts
+"use server";
+
+import { z } from "zod";
+
+const Schema = z.object({
+    email: z.string().email(),
+    password: z.string().min(8)
+});
+
+export async function loginAction(formData: FormData) {
+    const parsed = Schema.safeParse({
+        email: formData.get("email"),
+        password: formData.get("password")
+    });
+
+    if (!parsed.success) {
+        return { error: parsed.error.flatten() };
+    }
+
+    await db.login(parsed.data.email, parsed.data.password);
+    redirect("/dashboard");
+}
+
+// Component
+function LoginForm() {
+    return (
+        <form action={loginAction}>
+            <input name="email" type="email" />
+            <input name="password" type="password" />
+            <button type="submit">Login</button>
+        </form>
+    );
+}
+
+// 沒 JavaScript 也能用！
+@@@PG 8.15.auto
+import { useState } from "react";
+
+function SignupForm() {
+    const [email, setEmail] = useState("");
+    const [error, setError] = useState("");
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!email.includes("@")) {
+            setError("請輸入正確的 email");
+            return;
+        }
+        setError("");
+        console.log("送出：", email);
+    };
+
+    return (
+        <form onSubmit={handleSubmit}>
+            <input
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+            />
+            {error && <p style={{ color: "red" }}>{error}</p>}
+            <button type="submit">註冊</button>
+        </form>
+    );
+}

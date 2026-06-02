@@ -1,0 +1,169 @@
+@@@F0
+// onClick
+function Button() {
+    const handleClick = () => {
+        console.log("clicked");
+    };
+
+    return <button onClick={handleClick}>Click</button>;
+}
+
+// inline 箭頭函式
+<button onClick={() => console.log("clicked")}>Click</button>
+
+// 不能直接呼叫
+<button onClick={handleClick()}>Click</button>  // ❌ 立刻跑、不是綁 onClick
+<button onClick={handleClick}>Click</button>     // ✓ 傳 reference、被點才跑
+@@@F1
+function Form() {
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();        // 阻止預設行為（不跳轉頁面）
+        console.log("submitted");
+    };
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        console.log(e.target.value);
+    };
+
+    const handleClick = (e: React.MouseEvent) => {
+        console.log(e.clientX, e.clientY);
+        e.stopPropagation();    // 阻止冒泡到父
+    };
+
+    return (
+        <form onSubmit={handleSubmit}>
+            <input onChange={handleChange} />
+            <button type="submit" onClick={handleClick}>Submit</button>
+        </form>
+    );
+}
+@@@F3
+// Controlled input（推薦）
+function LoginForm() {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        try {
+            await login(email, password);
+            // 成功
+        } catch (err) {
+            // 失敗
+        }
+    };
+
+    return (
+        <form onSubmit={handleSubmit}>
+            <input
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                required
+            />
+            <input
+                type="password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                required
+            />
+            <button type="submit">Login</button>
+        </form>
+    );
+}
+
+// Controlled：value 跟 state 同步
+// Uncontrolled：用 ref（少用）
+
+// 多個輸入共用一個 handler
+const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: ""
+});
+
+const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setForm(prev => ({ ...prev, [name]: value }));
+};
+@@@F4
+// 場景：列表中每個 item 不同處理
+
+function ItemList({ items }) {
+    const handleDelete = (id: number) => {
+        // 處理 delete
+    };
+
+    return (
+        <ul>
+            {items.map(item => (
+                <li key={item.id}>
+                    {item.name}
+                    <button onClick={() => handleDelete(item.id)}>×</button>
+                </li>
+            ))}
+        </ul>
+    );
+}
+
+// 或 curry（回傳 function 的 function）
+const handleDelete = (id: number) => () => {
+    // 處理
+};
+
+<button onClick={handleDelete(item.id)}>×</button>
+// 第一次呼叫回 function、第二次（被點時）才跑
+
+// 注意：每次 render 都建新 function
+// 性能擔心？用 useCallback（後面講）
+@@@F5
+// preventDefault：阻止瀏覽器預設行為
+function Link() {
+    const handleClick = (e: React.MouseEvent) => {
+        e.preventDefault();   // 不跳轉頁面
+        // 自己處理
+    };
+
+    return <a href="/page" onClick={handleClick}>Click</a>;
+}
+
+// stopPropagation：阻止冒泡到父層
+function Parent() {
+    return (
+        <div onClick={() => console.log("parent")}>
+            <button onClick={(e) => {
+                e.stopPropagation();   // parent 的 onClick 不會跑
+                console.log("button");
+            }}>
+                Click
+            </button>
+        </div>
+    );
+}
+
+// 場景：modal 點外面關、點裡面不關
+<div className="overlay" onClick={onClose}>
+    <div className="modal" onClick={(e) => e.stopPropagation()}>
+        {/* 點 modal 內不關閉 */}
+    </div>
+</div>
+@@@PG 8.6.auto
+function Button() {
+    const handleClick = () => {
+        console.log("clicked");
+    };
+
+    // 事件處理：傳 function reference、不要直接呼叫
+    return (
+        <div>
+            <button onClick={handleClick}>Click（傳 reference）</button>
+            <button onClick={() => console.log("inline clicked")}>
+                Click（inline 箭頭函式）
+            </button>
+        </div>
+    );
+}
+
+// ❌ <button onClick={handleClick()}>  // 立刻執行、不是綁事件
+// ✓ <button onClick={handleClick}>     // 傳 reference、被點才跑

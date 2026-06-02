@@ -1,4 +1,5 @@
 import { getChapterMetas } from "@/lib/content";
+import { chapterDisplayNumberById } from "@/lib/chapter-display";
 import { ChapterMap } from "@/components/home/ChapterMap";
 import { SITE_STATS } from "@/lib/site-stats";
 import { itemListSchema, breadcrumbSchema, jsonLdScript } from "@/lib/seo-jsonld";
@@ -38,7 +39,7 @@ export default async function ChaptersPage() {
   const ld = [
     itemListSchema(
       chapters.map((c) => ({
-        name: `Ch${String(c.id).padStart(2, "0")} ${c.title}`,
+        name: `Ch${chapterDisplayNumberById(c.id)} ${c.title}`,
         url: `${SITE_URL}/chapters/${c.id}`,
       }))
     ),

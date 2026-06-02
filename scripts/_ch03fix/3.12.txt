@@ -1,0 +1,86 @@
+@@@F0
+function ProjectList() {
+    const { data, loading, error } = useFetch("/api/projects");
+
+    // Loading
+    if (loading) {
+        return (
+            <div className="grid gap-4">
+                {[1, 2, 3].map(i => (
+                    <div key={i} className="skeleton h-24" />
+                ))}
+            </div>
+        );
+    }
+
+    // Error
+    if (error) {
+        return <ErrorState message="載入失敗，請稍後再試" />;
+    }
+
+    // Empty
+    if (!data || data.length === 0) {
+        return (
+            <EmptyState
+                icon={<FolderIcon />}
+                title="No projects yet"
+                description="Create your first project to get started"
+                action={
+                    <button className="btn-primary">
+                        + New Project
+                    </button>
+                }
+            />
+        );
+    }
+
+    // Success
+    return (
+        <div className="grid gap-4">
+            {data.map(p => <ProjectCard key={p.id} project={p} />)}
+        </div>
+    );
+}
+@@@PG 3.12.auto
+function ProjectList() {
+    const { data, loading, error } = useFetch("/api/projects");
+
+    // Loading
+    if (loading) {
+        return (
+            <div className="grid gap-4">
+                {[1, 2, 3].map(i => (
+                    <div key={i} className="skeleton h-24" />
+                ))}
+            </div>
+        );
+    }
+
+    // Error
+    if (error) {
+        return <ErrorState message="載入失敗，請稍後再試" />;
+    }
+
+    // Empty
+    if (!data || data.length === 0) {
+        return (
+            <EmptyState
+                icon={<FolderIcon />}
+                title="No projects yet"
+                description="Create your first project to get started"
+                action={
+                    <button className="btn-primary">
+                        + New Project
+                    </button>
+                }
+            />
+        );
+    }
+
+    // Success
+    return (
+        <div className="grid gap-4">
+            {data.map(p => <ProjectCard key={p.id} project={p} />)}
+        </div>
+    );
+}

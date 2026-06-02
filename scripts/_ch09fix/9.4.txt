@@ -1,0 +1,38 @@
+@@@F0
+<script setup>
+import { ref } from "vue";
+
+const count = ref(0);
+const name = ref("招財");
+const user = ref({ name: "招財", age: 3 });
+
+// JS 中要用 .value
+count.value++;
+console.log(count.value);
+user.value.age = 4;
+</script>
+
+<template>
+  <!-- template 中不用 .value、Vue 會自動解包 -->
+  <p>{{ count }}</p>
+  <button @click="count++">+1</button>
+</template>
+@@@PG 9.4.auto
+<script setup>
+import { ref } from "vue";
+
+const count = ref(0);
+const name = ref("招財");
+const user = ref({ name: "招財", age: 3 });
+
+// JS 中要用 .value
+count.value++;
+console.log(count.value);
+user.value.age = 4;
+</script>
+
+<template>
+  <!-- template 中不用 .value、Vue 會自動解包 -->
+  <p>{{ count }}</p>
+  <button @click="count++">+1</button>
+</template>

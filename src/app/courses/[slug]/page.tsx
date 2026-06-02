@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { DUNGEONS, getDungeon } from "@/data/dungeons";
 import { getDungeonLesson } from "@/data/dungeon-lessons";
+import { chapterDisplayNumberById } from "@/lib/chapter-display";
 import { ModuleLessonCard } from "@/components/courses/ModuleLessonCard";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
@@ -239,7 +240,7 @@ export default async function DungeonPage({
               className="rounded-xl border border-border bg-bg-card p-4 hover:border-accent transition flex items-center gap-3"
             >
               <span className="text-xs font-mono text-fg-muted shrink-0">
-                Ch{String(c.id).padStart(2, "0")}
+                Ch{chapterDisplayNumberById(c.id)}
               </span>
               <span className="text-sm font-medium">{c.title}</span>
             </Link>

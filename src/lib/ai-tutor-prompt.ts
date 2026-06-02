@@ -4,7 +4,7 @@
 
 import { unstable_cache } from "next/cache";
 import { createSupabaseAdmin } from "@/lib/supabase";
-import { chapterDisplayNumber } from "./chapter-display";
+import { chapterDisplayNumber, chapterDisplayNumberById } from "./chapter-display";
 import { getPersona } from "./ai-personas";
 import { checkOwner } from "./is-owner";
 
@@ -107,14 +107,14 @@ async function buildCourseSummary(slim = false): Promise<{ summary: string; chap
     lines.push(`=== AI 島 ${chapters.length} 章課程列表（只章節標題、要查 lesson 用 search_lessons tool）===\n`);
     for (const ch of chapters) {
       lines.push(
-        `Ch${chapterDisplayNumber({ id: ch.id, stage: ch.stage as any } as any)} ${ch.title}${ch.subtitle ? `（${ch.subtitle}）` : ""} · Stage ${ch.stage}`,
+        `Ch${chapterDisplayNumberById(ch.id)} ${ch.title}${ch.subtitle ? `（${ch.subtitle}）` : ""} · Stage ${ch.stage}`,
       );
     }
   } else {
     lines.push(`=== AI 島 ${chapters.length} 章完整課程結構（全部 lesson 標題索引）===\n`);
     for (const ch of chapters) {
       lines.push(
-        `\n## Ch${chapterDisplayNumber({ id: ch.id, stage: ch.stage as any } as any)}：${ch.title}（Stage ${ch.stage}、${ch.difficulty ?? "?"}、${ch.estimated_hours ?? 0}h）`,
+        `\n## Ch${chapterDisplayNumberById(ch.id)}：${ch.title}（Stage ${ch.stage}、${ch.difficulty ?? "?"}、${ch.estimated_hours ?? 0}h）`,
       );
       if (ch.subtitle) lines.push(`副標：${ch.subtitle}`);
       const outcomes = (ch.outcomes ?? []).slice(0, 3).join(" / ");
@@ -192,7 +192,7 @@ export async function buildTutorSystemPrompt(options: {
     const { chapters, lessonsByChapter } = await getChapterSummaries();
     const ch = chapters.find((c) => c.id === options.contextChapterId);
     if (ch) {
-      contextInfo += `\n\n## 用戶目前在學：Ch${ch.id} ${ch.title}\n`;
+      contextInfo += `\n\n## 用戶目前在學：Ch${chapterDisplayNumberById(ch.id)} ${ch.title}\n`;
       if (options.contextLessonId) {
         const lesson = await getLessonFull(options.contextLessonId);
         if (lesson) {
@@ -238,7 +238,7 @@ ${modelIdentityBlock}
 ${memoryBlock}
 # 你的角色（學員導師具體職能）
 - 教 Indie 創業者、開發者、設計師、自學者
-- 你「上過」AI 島完整 ${chapterCount} 章課程 (目前最新一章 Ch${lastChapter?.id ?? chapterCount} ${lastChapter?.title ?? ""})、熟悉每個主題
+- 你「上過」AI 島完整 ${chapterCount} 章課程 (目前最新一章 Ch${lastChapter ? chapterDisplayNumberById(lastChapter.id) : chapterCount} ${lastChapter?.title ?? ""})、熟悉每個主題
 - 用戶問問題時、你會引用 AI 島的章節（「這在 Ch08 React 完整有教」）
 - 鼓勵實作、不只解釋
 - 如果用戶問跟課程無關、也要友善回答（你是 general assistant + 課程專家雙重身份）

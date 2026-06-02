@@ -1,0 +1,67 @@
+@@@F0
+import { lazy, Suspense } from "react";
+import { Routes, Route } from "react-router-dom";
+
+// Route-level
+const Home = lazy(() => import("./pages/Home"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+
+function App() {
+    return (
+        <Routes>
+            <Route path="/" element={
+                <Suspense fallback={<Spinner />}>
+                    <Home />
+                </Suspense>
+            } />
+            <Route path="/dashboard" element={
+                <Suspense fallback={<Spinner />}>
+                    <Dashboard />
+                </Suspense>
+            } />
+        </Routes>
+    );
+}
+
+// Component-level（heavy component）
+const HeavyChart = lazy(() => import("./HeavyChart"));
+
+// Library splitting
+import debounce from "lodash/debounce";   // 只 import debounce
+// 不要：import { debounce } from "lodash";（整包都拉進來）
+
+// Next.js 自動 route-level splitting
+@@@F1
+import { useVirtualizer } from "@tanstack/react-virtual";
+import { useRef } from "react";
+
+function VirtualList({ items }) {
+    const parentRef = useRef<HTMLDivElement>(null);
+
+    const virtualizer = useVirtualizer({
+        count: items.length,
+        getScrollElement: () => parentRef.current,
+        estimateSize: () => 50
+    });
+
+    return (
+        <div ref={parentRef} style={{ height: 400, overflow: "auto" }}>
+            <div style={{ height: virtualizer.getTotalSize(), position: "relative" }}>
+                {virtualizer.getVirtualItems().map(virtualItem => (
+                    <div
+                        key={virtualItem.key}
+                        style={{
+                            position: "absolute",
+                            top: 0,
+                            transform: `translateY(${virtualItem.start}px)`
+                        }}
+                    >
+                        {items[virtualItem.index].name}
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
+
+// 1 萬個 item 也順（只渲染畫面內看得到的）

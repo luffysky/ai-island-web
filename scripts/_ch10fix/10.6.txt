@@ -1,0 +1,28 @@
+@@@PG 10.6.auto
+// app/posts/new/page.tsx
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+
+async function createPost(formData: FormData) {
+  "use server";
+
+  const title = formData.get("title") as string;
+  const content = formData.get("content") as string;
+
+  // 直接呼叫 DB
+  await db.posts.insert({ title, content });
+
+  revalidatePath("/posts"); // 重新驗證快取
+  redirect("/posts");       // 導向列表
+}
+
+export default function NewPost() {
+  return (
+    <form action={createPost}>
+      <input name="title" placeholder="標題" />
+      <textarea name="content" placeholder="內容" />
+      <button type="submit">發布</button>
+    </form>
+  );
+}
+// JS 關掉也能用！漸進式增強（Progressive Enhancement）

@@ -1,0 +1,16 @@
+@@@F0
+<!-- 標題標籤：每頁唯一、50-60 字內、關鍵字放前面 -->
+<title>Vue 3 教學 - 從零到上線 | AI 島</title>
+
+<!-- 描述：120-160 字、吸引點擊、自然帶關鍵字 -->
+<meta name="description" content="完整 Vue 3 教學：Composition API、Pinia、Nuxt 3，從基礎到部署上線，附實戰範例。">
+@@@F1
+<!-- 每頁只有一個 h1、層級不跳級 -->
+<h1>Vue 3 完整教學</h1>
+  <h2>1. Composition API</h2>
+    <h3>ref 與 reactive</h3>
+    <h3>computed 與 watch</h3>
+  <h2>2. Pinia 狀態管理</h2>
+    <h3>定義 store</h3>
+
+<!-- ❌ 不要為了樣式跳級（h1 直接跳 h3）、字級大小交給 CSS 控制 -->

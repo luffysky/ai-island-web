@@ -1,0 +1,155 @@
+@@@F0
+// app/page.tsx（Server Component 預設）
+import { db } from "@/lib/db";
+
+export default async function HomePage() {
+    const users = await db.user.findMany();
+
+    return (
+        <div>
+            <h1>Users</h1>
+            <ul>
+                {users.map(u => <li key={u.id}>{u.name}</li>)}
+            </ul>
+        </div>
+    );
+}
+
+// Client Component（要互動）
+"use client";
+
+import { useState } from "react";
+
+export default function Counter() {
+    const [count, setCount] = useState(0);
+    return (
+        <button onClick={() => setCount(c => c + 1)}>
+            {count}
+        </button>
+    );
+}
+@@@F1
+// app/page.tsx（Server）
+import { Counter } from "./Counter";   // Client component
+import { db } from "@/lib/db";
+
+export default async function HomePage() {
+    const users = await db.user.findMany();
+
+    return (
+        <div>
+            <h1>Users: {users.length}</h1>
+            <ul>
+                {users.map(u => <li key={u.id}>{u.name}</li>)}
+            </ul>
+
+            <Counter />
+        </div>
+    );
+}
+
+// Server：抓 users + render HTML
+// Client：只 hydrate Counter
+// Bundle 只包 Counter
+@@@F2
+// app/actions.ts
+"use server";
+
+import { db } from "@/lib/db";
+import { revalidatePath } from "next/cache";
+
+export async function createPost(formData: FormData) {
+    const title = formData.get("title") as string;
+
+    await db.post.create({
+        data: { title, authorId: 1 }
+    });
+
+    revalidatePath("/posts");
+}
+
+// app/posts/new/page.tsx
+import { createPost } from "../actions";
+
+export default function NewPostPage() {
+    return (
+        <form action={createPost}>
+            <input name="title" />
+            <button type="submit">Create</button>
+        </form>
+    );
+}
+
+// 賣點：
+// 1. 無 API endpoint
+// 2. 無 JS 也能用
+// 3. type-safe
+// 4. 自動 revalidate
+@@@F3
+"use client";
+
+import { useOptimistic } from "react";
+import { toggleLike } from "./actions";
+
+export default function LikeButton({ post }) {
+    const [optimisticLiked, addOptimistic] = useOptimistic(
+        post.liked,
+        (state, newValue: boolean) => newValue
+    );
+
+    const handleClick = async () => {
+        addOptimistic(!optimisticLiked);
+        await toggleLike(post.id);
+    };
+
+    return (
+        <button onClick={handleClick}>
+            {optimisticLiked ? "♥" : "♡"}
+        </button>
+    );
+}
+
+// 點下立刻變、不用等 server
+// 失敗自動 rollback
+@@@F4
+import { Suspense } from "react";
+
+async function SlowComponent() {
+    await sleep(3000);
+    const data = await fetchSlowData();
+    return <div>{data}</div>;
+}
+
+export default function Page() {
+    return (
+        <div>
+            <h1>Page Title</h1>
+
+            <Suspense fallback={<Spinner />}>
+                <SlowComponent />
+            </Suspense>
+
+            <Footer />
+        </div>
+    );
+}
+
+// 1. 立刻 stream 標題 + footer
+// 2. 慢 component 顯示 spinner
+// 3. 載完 stream 出來
+@@@PG 8.20.auto
+// Server Component（預設）：在伺服器跑、可以直接 await 資料、不進 JS bundle
+import { db } from "@/lib/db";
+
+export default async function HomePage() {
+    const users = await db.user.findMany();
+    return (
+        <ul>
+            {users.map(u => <li key={u.id}>{u.name}</li>)}
+        </ul>
+    );
+}
+
+// 要互動（onClick / useState）的部分、才在檔案最上面標 "use client"
+// "use client";
+// export function Counter() { ... }

@@ -1,0 +1,58 @@
+@@@F1
+// useCallback = 給 function 用的 useMemo
+
+// 沒 useCallback：每 render 都建新 function
+function Parent() {
+    const [count, setCount] = useState(0);
+
+    const handleClick = () => {     // 每 render 新 function
+        console.log("clicked");
+    };
+
+    return <Child onClick={handleClick} />;
+}
+
+// 有 useCallback：cache function
+function Parent() {
+    const [count, setCount] = useState(0);
+
+    const handleClick = useCallback(() => {
+        console.log("clicked");
+    }, []);   // 依賴空、function 永遠同一個
+
+    return <Child onClick={handleClick} />;
+}
+
+// 場景：傳給 React.memo'd 子 component
+const Child = React.memo(({ onClick }) => {
+    return <button onClick={onClick}>Click</button>;
+});
+
+// 沒 useCallback：父 re-render → onClick 新 → Child re-render
+// 有 useCallback：父 re-render → onClick 同 → Child 不 re-render
+
+// 不該用 useCallback：
+// - 傳給原生 element（<button onClick={fn}>）
+// - 父 component 不會頻繁 re-render
+// - Function 邏輯簡單
+@@@PG 8.10.auto
+import { useMemo, useState } from "react";
+
+function FilteredList({ items, query }: { items: string[]; query: string }) {
+    // useMemo：只在 items 或 query 變時才重算（其餘時候回 cache）
+    const filtered = useMemo(() => {
+        return items.filter(i => i.includes(query));
+    }, [items, query]);
+
+    return (
+        <ul>
+            {filtered.map(i => <li key={i}>{i}</li>)}
+        </ul>
+    );
+}
+
+// 規則：
+// 1. 第一個參數是「算東西的 function」
+// 2. 第二個是 dependency array
+// 3. deps 不變 → 直接回上次 cache 的值、不重算
+// 不該用：簡單運算 / 小 list（反而增加複雜度）

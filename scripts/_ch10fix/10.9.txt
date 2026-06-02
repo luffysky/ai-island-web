@@ -1,0 +1,12 @@
+@@@PG 10.9.auto
+// app/blog/loading.tsx
+export default function Loading() {
+  return (
+    <div className="space-y-2">
+      <div className="skeleton h-6 w-1/2" />
+      <div className="skeleton h-4 w-full" />
+      <div className="skeleton h-4 w-3/4" />
+    </div>
+  );
+}
+// /blog 載入時自動顯示這個（Suspense fallback）

@@ -1,0 +1,96 @@
+@@@F0
+import { useEffect, useRef } from "react";
+
+interface ModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    title: string;
+    children: React.ReactNode;
+}
+
+function Modal({ isOpen, onClose, title, children }: ModalProps) {
+    const modalRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!isOpen) return;
+
+        // 鎖捲動
+        document.body.style.overflow = "hidden";
+
+        // ESC 關
+        const handleKey = (e: KeyboardEvent) => {
+            if (e.key === "Escape") onClose();
+        };
+        window.addEventListener("keydown", handleKey);
+
+        // Focus modal
+        modalRef.current?.focus();
+
+        return () => {
+            document.body.style.overflow = "";
+            window.removeEventListener("keydown", handleKey);
+        };
+    }, [isOpen, onClose]);
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="overlay" onClick={onClose}>
+            <div
+                ref={modalRef}
+                className="modal"
+                onClick={(e) => e.stopPropagation()}
+                tabIndex={-1}
+            >
+                <header>
+                    <h2>{title}</h2>
+                    <button onClick={onClose} aria-label="關閉">×</button>
+                </header>
+                {children}
+            </div>
+        </div>
+    );
+}
+
+// 2026 推薦：用 shadcn/ui Dialog 或 Radix Dialog
+// 處理好 a11y、不用自己造輪
+@@@F1
+// shadcn/ui Dialog（基於 Radix）
+// a11y 全處理好、focus trap / portal / animation
+
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+    DialogFooter
+} from "@/components/ui/dialog";
+
+<Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <DialogContent>
+        <DialogHeader>
+            <DialogTitle>Delete Item</DialogTitle>
+            <DialogDescription>
+                Are you sure? This cannot be undone.
+            </DialogDescription>
+        </DialogHeader>
+
+        <DialogFooter>
+            <button onClick={() => setIsOpen(false)}>
+                Cancel
+            </button>
+            <button className="btn-destructive">
+                Delete
+            </button>
+        </DialogFooter>
+    </DialogContent>
+</Dialog>
+
+// 全部 a11y 行為自動：
+// - ESC 關
+// - 點外面關
+// - Focus trap
+// - 鎖捲動
+// - Portal（不在 component tree 內）
+// - 動畫

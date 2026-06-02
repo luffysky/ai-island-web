@@ -13,6 +13,9 @@ __pycache__/
 
 # Codex zip handoff artifacts — never commit
 ai_island_v3.zip
+
+# 章節修復用的暫存 dump（重跑 _diag-dump-ch.mjs 即可重建）
+scripts/_*_broken.txt
 .codex_zip_extract_*/
 
 # Supabase CLI local cache

@@ -1,0 +1,95 @@
+@@@F0
+// 拿前一次 render 的值
+function usePrevious<T>(value: T): T | undefined {
+    const ref = useRef<T>();
+
+    useEffect(() => {
+        ref.current = value;
+    }, [value]);
+
+    return ref.current;
+}
+
+// 用
+function Counter() {
+    const [count, setCount] = useState(0);
+    const previousCount = usePrevious(count);
+
+    return (
+        <div>
+            <p>Current: {count}</p>
+            <p>Previous: {previousCount}</p>
+            <button onClick={() => setCount(c => c + 1)}>+</button>
+        </div>
+    );
+}
+@@@F1
+// 想把 ref pass 到自訂 component？用 forwardRef
+import { forwardRef } from "react";
+
+interface InputProps {
+    label: string;
+}
+
+const Input = forwardRef<HTMLInputElement, InputProps>(
+    ({ label }, ref) => (
+        <label>
+            {label}
+            <input ref={ref} />
+        </label>
+    )
+);
+
+// 用
+function Form() {
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        inputRef.current?.focus();
+    }, []);
+
+    return <Input label="Name" ref={inputRef} />;
+}
+
+// React 19：直接把 ref 當 prop 傳
+function Input2({ label, ref }: InputProps & { ref?: React.Ref<HTMLInputElement> }) {
+    return (
+        <label>
+            {label}
+            <input ref={ref} />
+        </label>
+    );
+}
+// 不用 forwardRef、簡單多
+@@@F2
+function InfiniteList({ items, loadMore }) {
+    const loaderRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(([entry]) => {
+            if (entry.isIntersecting) {
+                loadMore();
+            }
+        });
+
+        if (loaderRef.current) {
+            observer.observe(loaderRef.current);
+        }
+
+        return () => observer.disconnect();
+    }, [loadMore]);
+
+    return (
+        <div>
+            <ul>
+                {items.map(item => (
+                    <li key={item.id}>{item.name}</li>
+                ))}
+            </ul>
+            <div ref={loaderRef}>載入更多...</div>
+        </div>
+    );
+}
+
+// 用 IntersectionObserver 偵測 loader 出現在畫面內
+// 就自動 loadMore

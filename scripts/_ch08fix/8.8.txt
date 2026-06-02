@@ -1,0 +1,96 @@
+@@@F2
+// 基本：fetch on mount
+function UserProfile({ id }) {
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        let cancelled = false;
+
+        async function load() {
+            setLoading(true);
+            const res = await fetch(`/api/users/${id}`);
+            const data = await res.json();
+
+            if (!cancelled) {
+                setUser(data);
+                setLoading(false);
+            }
+        }
+
+        load();
+
+        return () => { cancelled = true; };
+    }, [id]);
+
+    if (loading) return <Spinner />;
+    return <p>{user.name}</p>;
+}
+
+// 為什麼用 cancelled flag？
+// 用戶切換 id 快、舊的 fetch 才回
+// 不檢查會 race condition
+
+// 更好：用 React Query（後面講）
+// 自動處理 cancel、cache、loading、error
+@@@F5
+// 訂閱 WebSocket
+function ChatRoom({ roomId }) {
+    const [messages, setMessages] = useState([]);
+
+    useEffect(() => {
+        const ws = new WebSocket(`wss://api.com/rooms/${roomId}`);
+
+        ws.onmessage = (e) => {
+            const msg = JSON.parse(e.data);
+            setMessages(prev => [...prev, msg]);
+        };
+
+        return () => {
+            ws.close();
+        };
+    }, [roomId]);
+
+    return (
+        <ul>
+            {messages.map((m, i) => (
+                <li key={i}>{m.text}</li>
+            ))}
+        </ul>
+    );
+}
+
+// 監聽鍵盤
+function useEscapeKey(callback) {
+    useEffect(() => {
+        const handler = (e) => {
+            if (e.key === "Escape") callback();
+        };
+        window.addEventListener("keydown", handler);
+        return () => window.removeEventListener("keydown", handler);
+    }, [callback]);
+}
+
+// 用
+function Modal({ onClose }) {
+    useEscapeKey(onClose);
+    return <div className="modal">...</div>;
+}
+@@@PG 8.8.auto
+import { useState, useEffect } from "react";
+
+function Timer() {
+    const [seconds, setSeconds] = useState(0);
+
+    // 只在 mount 跑一次（dependency array 是空的 []）
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setSeconds(s => s + 1);
+        }, 1000);
+
+        // cleanup：component unmount 時清掉 timer（不然 memory leak）
+        return () => clearInterval(timer);
+    }, []);
+
+    return <p>已經過 {seconds} 秒</p>;
+}

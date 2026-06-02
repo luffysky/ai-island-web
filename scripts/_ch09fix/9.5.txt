@@ -1,0 +1,25 @@
+@@@PG 9.5.auto
+<script setup lang="ts">
+// 以下三種寫法擇一（defineProps 一個 component 只呼叫一次）
+
+// 1. 簡單版
+// const props = defineProps(["name", "age"]);
+
+// 2. TS 版（推薦）
+interface Props {
+  name: string;
+  age?: number;
+  tags?: string[];
+}
+// const props = defineProps<Props>();
+
+// 3. 帶預設值
+const props = withDefaults(defineProps<Props>(), {
+  age: 0,
+  tags: () => []
+});
+</script>
+
+<template>
+  <p>{{ props.name }}</p>
+</template>

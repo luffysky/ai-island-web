@@ -46,3 +46,25 @@ export function chapterDisplayNumber(c: Pick<Chapter, "id"> & { sortIndex?: numb
 export function chapterDisplayLabel(c: Pick<Chapter, "id"> & { sortIndex?: number }): string {
   return `Ch${chapterDisplayNumber(c)}`;
 }
+
+/**
+ * 衍生章節的 sortIndex 覆蓋表（給只拿得到 id、拿不到 sortIndex 的呼叫端用）。
+ * 來源：src/data/chapters/ch72-75.json。新增衍生章節時、這裡也要補一筆。
+ * 不直接 import 整包 chapters.json、避免 client bundle 膨脹。
+ */
+const CHAPTER_SORT_INDEX: Record<number, number> = {
+  72: 8.5, // React 進階  → Ch08a
+  73: 9.5, // Vue 進階    → Ch09a
+  74: 9.7, // Vite        → Ch09b
+  75: 4.5, // HTTP 協定    → Ch04a
+};
+
+/** 只有 chapter id 時、用這個算顯示編號（自動套用衍生章節的 sortIndex） */
+export function chapterDisplayNumberById(id: number): string {
+  return chapterDisplayNumber({ id, sortIndex: CHAPTER_SORT_INDEX[id] });
+}
+
+/** 只有 chapter id 時的 "Ch08a" 標籤 */
+export function chapterDisplayLabelById(id: number): string {
+  return `Ch${chapterDisplayNumberById(id)}`;
+}

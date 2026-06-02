@@ -1,0 +1,260 @@
+@@@F0
+// Function component（2026 主流）
+function Welcome() {
+    return <h1>Hello, world!</h1>;
+}
+
+// 用：當成 tag 寫
+<Welcome />
+
+// 規則：
+// 1. 函式名大寫開頭（區分跟 HTML tag）
+// 2. return 1 個元素
+// 3. export 給其他檔用
+
+export default Welcome;
+
+// 或 named export
+export function Welcome() { /* ... */ }
+@@@F1
+// Props 是 component 的「參數」
+
+interface WelcomeProps {
+    name: string;
+    age?: number;     // optional（可有可無）
+}
+
+function Welcome({ name, age }: WelcomeProps) {
+    return (
+        <div>
+            <h1>Hello, {name}</h1>
+            {age && <p>Age: {age}</p>}
+        </div>
+    );
+}
+
+// 用
+<Welcome name="Alice" age={30} />
+
+// Props 傳法：字串用 "" 、其他用 {}
+<Welcome name="Bob" />
+
+// Boolean 簡寫
+<Welcome name="Eve" isActive />   // 等於 isActive={true}
+@@@F2
+// 特殊 prop：children
+interface CardProps {
+    children: React.ReactNode;
+}
+
+function Card({ children }: CardProps) {
+    return (
+        <div className="card">
+            {children}
+        </div>
+    );
+}
+
+// 用：包在 <Card> 裡的東西、自動變成 children
+<Card>
+    <h2>Title</h2>
+    <p>Content</p>
+</Card>
+
+// children 自動包含所有子內容、不用自己宣告 prop 傳
+
+// 進階：多 slot（header / sidebar / children）
+interface LayoutProps {
+    header: React.ReactNode;
+    sidebar: React.ReactNode;
+    children: React.ReactNode;
+}
+
+function Layout({ header, sidebar, children }: LayoutProps) {
+    return (
+        <div className="layout">
+            <header>{header}</header>
+            <aside>{sidebar}</aside>
+            <main>{children}</main>
+        </div>
+    );
+}
+
+// 用
+<Layout
+    header={<Navbar />}
+    sidebar={<Menu />}
+>
+    <Content />
+</Layout>
+@@@F3
+// ❌ 不能改 props
+function Welcome({ name }: { name: string }) {
+    name = "Bob";   // ❌ 不該改
+    return <h1>{name}</h1>;
+}
+
+// Props 是「父給的禮物」、只能用、不能改
+
+// 如果要「衍生」資料：算出來
+function Welcome({ name }: { name: string }) {
+    const upperName = name.toUpperCase();
+    return <h1>{upperName}</h1>;
+}
+
+// 如果要「狀態」：用 useState（下節講）
+
+// 規則：data flow 是單向的
+// 父 → 子 → 孫
+// 不能反向
+@@@F4
+// 大 component 由小 component 組成
+
+interface ButtonProps {
+    children: React.ReactNode;
+    variant?: "primary" | "secondary";
+    onClick?: () => void;
+}
+
+function Button({ children, variant = "primary", onClick }: ButtonProps) {
+    return (
+        <button className={`btn btn-${variant}`} onClick={onClick}>
+            {children}
+        </button>
+    );
+}
+
+interface IconProps {
+    name: string;
+}
+
+function Icon({ name }: IconProps) {
+    return <span className={`icon icon-${name}`} />;
+}
+
+// 組合
+function IconButton({ icon, children, ...props }: any) {
+    return (
+        <Button {...props}>
+            <Icon name={icon} />
+            {children}
+        </Button>
+    );
+}
+
+// 用
+<IconButton icon="heart" onClick={handleLike}>
+    Like
+</IconButton>
+@@@F5
+// 把所有剩下的 props 傳給子元件
+
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+    variant?: "primary" | "secondary";
+}
+
+function Button({ variant = "primary", children, ...rest }: ButtonProps) {
+    return (
+        <button className={`btn btn-${variant}`} {...rest}>
+            {children}
+        </button>
+    );
+}
+
+// 用：能傳所有原生 button attributes（type / disabled / onClick...）
+<Button variant="primary" type="submit" disabled={loading}>
+    Submit
+</Button>
+
+// 不寫 ...rest 就要一個個列出
+// ...rest 寫法簡潔 + 有彈性
+@@@F6
+// 用 default 參數值
+interface ButtonProps {
+    variant?: "primary" | "secondary";
+    size?: "sm" | "md" | "lg";
+    children: React.ReactNode;
+}
+
+function Button({
+    variant = "primary",
+    size = "md",
+    children
+}: ButtonProps) {
+    return <button className={`btn btn-${variant} btn-${size}`}>{children}</button>;
+}
+
+// 不指定就用 default
+<Button>Click</Button>                       // primary / md
+<Button variant="secondary">Cancel</Button>
+<Button size="lg">Big</Button>
+@@@F7
+// 設計可重用 Card
+
+interface CardProps {
+    children: React.ReactNode;
+    className?: string;
+}
+
+function Card({ children, className }: CardProps) {
+    return (
+        <div className={`card ${className ?? ""}`}>
+            {children}
+        </div>
+    );
+}
+
+function CardHeader({ children }: { children: React.ReactNode }) {
+    return <div className="card-header">{children}</div>;
+}
+
+function CardTitle({ children }: { children: React.ReactNode }) {
+    return <h3 className="card-title">{children}</h3>;
+}
+
+function CardBody({ children }: { children: React.ReactNode }) {
+    return <div className="card-body">{children}</div>;
+}
+
+function CardFooter({ children }: { children: React.ReactNode }) {
+    return <div className="card-footer">{children}</div>;
+}
+
+// Export 一起
+export { Card, CardHeader, CardTitle, CardBody, CardFooter };
+
+// 用：靈活組合
+<Card>
+    <CardHeader>
+        <CardTitle>Hello</CardTitle>
+    </CardHeader>
+    <CardBody>
+        Content here
+    </CardBody>
+    <CardFooter>
+        <Button>Action</Button>
+    </CardFooter>
+</Card>
+
+// 這是 shadcn/ui 的 pattern
+@@@PG 8.4.auto
+// Function component（2026 主流）：函式名大寫開頭、return 一個 JSX 元素
+function Welcome({ name }: { name: string }) {
+    return <h1>Hello, {name}!</h1>;
+}
+
+// 用：當成 tag 寫、用 props 傳資料
+function App() {
+    return (
+        <div>
+            <Welcome name="Alice" />
+            <Welcome name="Bob" />
+            <Welcome name="林董" />
+        </div>
+    );
+}
+
+// 規則：
+// 1. 函式名大寫開頭（區分跟 HTML 原生標籤）
+// 2. return 1 個根元素
+// 3. props 用解構拿、只能讀不能改

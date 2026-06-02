@@ -1,0 +1,99 @@
+@@@F0
+<form>
+  <label for="email">Email</label>
+  <input type="email" id="email" name="email" required>
+
+  <label for="password">Password</label>
+  <input type="password" id="password" name="password" required minlength="8">
+
+  <label for="name">Name</label>
+  <input type="text" id="name" name="name" required minlength="2">
+
+  <button type="submit">Sign Up</button>
+</form>
+@@@F1
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+const SignupSchema = z.object({
+    email: z.string().email("Invalid email"),
+    password: z.string().min(8, "At least 8 characters"),
+    name: z.string().min(2, "Name too short")
+});
+
+type SignupForm = z.infer<typeof SignupSchema>;
+
+function SignupForm() {
+    const { register, handleSubmit, formState: { errors, isSubmitting } } =
+        useForm<SignupForm>({
+            resolver: zodResolver(SignupSchema)
+        });
+
+    const onSubmit = async (data: SignupForm) => {
+        await signup(data);
+    };
+
+    return (
+        <form onSubmit={handleSubmit(onSubmit)}>
+            <label>
+                Email
+                <input {...register("email")} />
+                {errors.email && <span>{errors.email.message}</span>}
+            </label>
+
+            <label>
+                Password
+                <input type="password" {...register("password")} />
+                {errors.password && <span>{errors.password.message}</span>}
+            </label>
+
+            <button disabled={isSubmitting}>
+                {isSubmitting ? "Signing up..." : "Sign Up"}
+            </button>
+        </form>
+    );
+}
+@@@PG 3.8.auto
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+const SignupSchema = z.object({
+    email: z.string().email("Invalid email"),
+    password: z.string().min(8, "At least 8 characters"),
+    name: z.string().min(2, "Name too short")
+});
+
+type SignupForm = z.infer<typeof SignupSchema>;
+
+function SignupForm() {
+    const { register, handleSubmit, formState: { errors, isSubmitting } } =
+        useForm<SignupForm>({
+            resolver: zodResolver(SignupSchema)
+        });
+
+    const onSubmit = async (data: SignupForm) => {
+        await signup(data);
+    };
+
+    return (
+        <form onSubmit={handleSubmit(onSubmit)}>
+            <label>
+                Email
+                <input {...register("email")} />
+                {errors.email && <span>{errors.email.message}</span>}
+            </label>
+
+            <label>
+                Password
+                <input type="password" {...register("password")} />
+                {errors.password && <span>{errors.password.message}</span>}
+            </label>
+
+            <button disabled={isSubmitting}>
+                {isSubmitting ? "Signing up..." : "Sign Up"}
+            </button>
+        </form>
+    );
+}

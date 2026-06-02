@@ -1,0 +1,26 @@
+@@@PG 10.17.auto
+<script setup>
+const page = ref(1);
+
+// SSR + Client 都會跑，自動 cache 避免 hydration 後重打
+const { data, pending, error, refresh } = await useFetch("/api/users", {
+  method: "POST",
+  body: { name: "招財" },
+  headers: { "X-Custom": "value" },
+  query: { page: 1 },
+  server: false,     // 只在客戶端跑（SSR 跳過）
+  lazy: true,        // 不等抓完就渲染（搭配 pending 顯示 loading）
+  key: "users-list", // 預設 cache key 是 url，可以自訂
+  transform: (data) => data.users.map(u => ({ ...u, name: u.name.toUpperCase() })),
+  watch: [page]      // 監聽 reactive 變化自動重抓
+});
+</script>
+
+<template>
+  <p v-if="pending">載入中...</p>
+  <p v-else-if="error">{{ error.message }}</p>
+  <ul v-else>
+    <li v-for="u in data" :key="u.id">{{ u.name }}</li>
+  </ul>
+  <button @click="refresh()">重新整理</button>
+</template>

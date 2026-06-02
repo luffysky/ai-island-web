@@ -1,0 +1,30 @@
+@@@PG 9.3.auto
+<script setup>
+import { ref } from "vue";
+const message = ref("Hello Vue");
+const url = ref("https://example.com");
+const isLoggedIn = ref(false);
+const count = ref(0);
+</script>
+
+<template>
+  <!-- 文字插值 -->
+  <p>{{ message }}</p>
+
+  <!-- 屬性綁定 v-bind（簡寫 :） -->
+  <a :href="url">連結</a>
+
+  <!-- 事件綁定 v-on（簡寫 @） -->
+  <button @click="count++">點我</button>
+  <p>已點 {{ count }} 次</p>
+
+  <!-- 條件渲染 -->
+  <p v-if="isLoggedIn">歡迎</p>
+  <p v-else-if="count > 0">訪客</p>
+  <p v-else>請登入</p>
+
+  <!-- 列表渲染 -->
+  <ul>
+    <li v-for="n in 3" :key="n">項目 {{ n }}</li>
+  </ul>
+</template>

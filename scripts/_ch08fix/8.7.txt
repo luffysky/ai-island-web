@@ -1,0 +1,197 @@
+@@@F0
+// 用 .map() 把陣列變成 JSX
+
+const items = ["Apple", "Banana", "Cherry"];
+
+function Fruits() {
+    return (
+        <ul>
+            {items.map(item => (
+                <li key={item}>{item}</li>
+            ))}
+        </ul>
+    );
+}
+
+// 注意：
+// 1. 用 {} 包 expression
+// 2. map 回 JSX element
+// 3. 必須加 key
+@@@F1
+// ❌ 用 index 當 key
+function TodoList({ todos }) {
+    return (
+        <ul>
+            {todos.map((todo, i) => (
+                <li key={i}>
+                    <input defaultValue={todo.text} />
+                </li>
+            ))}
+        </ul>
+    );
+}
+
+// 假設 todos = [A, B, C]
+// 用戶在 A 打字 → 內部 state 在 li[0]
+
+// 刪除 A：
+// todos 變 [B, C]
+// key 0 變 B、key 1 變 C
+// 但 React 認為 key 0 是 A（內部 state 留著）
+// → B 的 input 顯示 A 的 state！bug
+
+// ✓ 用穩定 ID
+{todos.map(todo => (
+    <li key={todo.id}>
+        <input defaultValue={todo.text} />
+    </li>
+))}
+
+// 例外：完全靜態 list、不會 add / remove / reorder
+// 用 index 也行（少數場景）
+@@@F2
+// 情況：API 沒給 ID
+
+// 方法 1：用唯一欄位組合當 key
+{users.map(user => (
+    <li key={user.email}>{user.name}</li>
+))}
+
+// 方法 2：先加 ID
+const itemsWithId = items.map((item) => ({
+    ...item,
+    id: `${item.category}-${item.name}`
+}));
+
+// 方法 3：用 crypto.randomUUID()（一次性、放 lazy initial）
+const [list] = useState(() => rawItems.map(item => ({
+    ...item,
+    id: crypto.randomUUID()
+})));
+
+// 方法 4：用 nanoid 或 uuid library
+import { nanoid } from "nanoid";
+
+const [list2] = useState(() => rawItems.map(item => ({
+    ...item,
+    id: nanoid()
+})));
+
+// 重要：建 ID 要 stable、不要每次 render 建新的
+@@@F3
+function UserList({ users, search }) {
+    // Filter + sort 之後 map
+    const visibleUsers = users
+        .filter(user => user.name.includes(search))
+        .sort((a, b) => a.name.localeCompare(b.name));
+
+    return (
+        <ul>
+            {visibleUsers.map(user => (
+                <li key={user.id}>{user.name}</li>
+            ))}
+        </ul>
+    );
+}
+
+// 不要在 JSX 內做 expensive filter
+// 拉到外面、用 useMemo（後面講）
+@@@F4
+function ItemList({ items }) {
+    return (
+        <ul>
+            {items.map(item => (
+                <li key={item.id}>{item.name}</li>
+            ))}
+        </ul>
+    );
+}
+
+// 或拆 component、處理空狀態
+function ItemList({ items }) {
+    if (items.length === 0) {
+        return <EmptyState message="沒有資料" />;
+    }
+
+    return (
+        <ul>
+            {items.map(item => (
+                <li key={item.id}>{item.name}</li>
+            ))}
+        </ul>
+    );
+}
+@@@F5
+// 把 list 分組顯示
+
+interface Task {
+    id: number;
+    title: string;
+    category: "work" | "personal" | "shopping";
+}
+
+function GroupedTasks({ tasks }: { tasks: Task[] }) {
+    // 分組
+    const grouped = tasks.reduce((acc, task) => {
+        if (!acc[task.category]) acc[task.category] = [];
+        acc[task.category].push(task);
+        return acc;
+    }, {} as Record<string, Task[]>);
+
+    return (
+        <div>
+            {Object.entries(grouped).map(([category, list]) => (
+                <section key={category}>
+                    <h3>{category}</h3>
+                    <ul>
+                        {list.map(task => (
+                            <li key={task.id}>{task.title}</li>
+                        ))}
+                    </ul>
+                </section>
+            ))}
+        </div>
+    );
+}
+@@@F6
+// 用 framer-motion AnimatePresence
+import { motion, AnimatePresence } from "framer-motion";
+
+function AnimatedList({ items }) {
+    return (
+        <AnimatePresence>
+            {items.map(item => (
+                <motion.li
+                    key={item.id}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                >
+                    {item.name}
+                </motion.li>
+            ))}
+        </AnimatePresence>
+    );
+}
+
+// key 必須穩定、不然動畫會怪
+// 加入 / 刪除自動有動畫
+@@@PG 8.7.auto
+// 用 .map() 把陣列變成一排 JSX、每個都要有唯一的 key
+
+const fruits = ["Apple", "Banana", "Cherry"];
+
+function Fruits() {
+    return (
+        <ul>
+            {fruits.map(fruit => (
+                <li key={fruit}>{fruit}</li>
+            ))}
+        </ul>
+    );
+}
+
+// 注意：
+// 1. 用 {} 包 expression
+// 2. map 回傳 JSX element
+// 3. 必須加 key（穩定、唯一）
