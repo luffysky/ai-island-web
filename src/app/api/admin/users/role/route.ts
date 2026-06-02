@@ -1,15 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createSupabaseServer, createSupabaseAdmin } from "@/lib/supabase";
+import { createSupabaseAdmin } from "@/lib/supabase";
+import { requireAdmin } from "@/lib/admin-guard";
 
 // POST /api/admin/users/role { userId, role: 'member' | 'editor' | 'admin' }
 export async function POST(req: NextRequest) {
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-
-  // 確認操作者是 admin
-  const { data: me } = await supabase.from("profiles").select("role, username").eq("id", user.id).single();
-  if (me?.role !== "admin") return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  const gate = await requireAdmin();
+  if (!gate.ok) return gate.response;
 
   const { userId, role } = await req.json();
   if (!userId || !["member", "editor", "admin"].includes(role)) {
@@ -17,7 +13,7 @@ export async function POST(req: NextRequest) {
   }
 
   // 不可改自己（避免誤刪 admin）
-  if (userId === user.id) {
+  if (userId === gate.userId) {
     return NextResponse.json({ error: "cannot_change_self" }, { status: 400 });
   }
 
@@ -39,8 +35,8 @@ export async function POST(req: NextRequest) {
 
   // Audit log
   await admin.from("audit_logs").insert({
-    actor_id: user.id,
-    actor_username: me.username,
+    actor_id: gate.userId,
+    actor_username: gate.username,
     action: "user.role_changed",
     target_type: "user",
     target_id: userId,

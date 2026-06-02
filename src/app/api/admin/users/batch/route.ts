@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { requireAdmin } from "@/lib/admin-guard";
 
 export const dynamic = "force-dynamic";
 
@@ -15,11 +16,8 @@ type Action =
 const VALID_ROLES = new Set(["member", "editor", "admin", "teacher", "assistant"]);
 
 export async function POST(req: NextRequest) {
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  if (profile?.role !== "admin") return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  const gate = await requireAdmin();
+  if (!gate.ok) return gate.response;
 
   const body = await req.json().catch(() => ({} as any));
   const user_ids: string[] = Array.isArray(body.user_ids)
@@ -84,7 +82,7 @@ export async function POST(req: NextRequest) {
 
   await admin.from("admin_events").insert({
     event_type: "users_batch_op",
-    user_id: user.id,
+    user_id: gate.userId,
     meta: { action, total: user_ids.length, success, failed },
   });
 

@@ -1,22 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer, createSupabaseAdmin } from "@/lib/supabase";
+import { requireAdmin } from "@/lib/admin-guard";
 
 // POST /api/admin/users/ai-unlimited { userId, enabled: boolean }
 // 總後台開關「指定帳號」AI 無限額度特權
 export async function POST(req: NextRequest) {
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-
-  // 確認操作者是 admin
-  const { data: me } = await supabase
-    .from("profiles")
-    .select("role, username")
-    .eq("id", user.id)
-    .single();
-  if (me?.role !== "admin") {
-    return NextResponse.json({ error: "forbidden" }, { status: 403 });
-  }
+  const gate = await requireAdmin();
+  if (!gate.ok) return gate.response;
 
   const { userId, enabled } = await req.json();
   if (!userId || typeof enabled !== "boolean") {
@@ -36,7 +26,7 @@ export async function POST(req: NextRequest) {
   }
 
   const patch = enabled
-    ? { ai_unlimited: true, ai_unlimited_at: new Date().toISOString(), ai_unlimited_by: user.id }
+    ? { ai_unlimited: true, ai_unlimited_at: new Date().toISOString(), ai_unlimited_by: gate.userId }
     : { ai_unlimited: false, ai_unlimited_at: null, ai_unlimited_by: null };
 
   const { error } = await admin
@@ -48,8 +38,8 @@ export async function POST(req: NextRequest) {
 
   // Audit log
   await admin.from("audit_logs").insert({
-    actor_id: user.id,
-    actor_username: me.username,
+    actor_id: gate.userId,
+    actor_username: gate.username,
     action: enabled ? "user.ai_unlimited_enable" : "user.ai_unlimited_disable",
     target_type: "user",
     target_id: userId,
