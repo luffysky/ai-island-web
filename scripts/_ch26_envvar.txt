@@ -1,0 +1,45 @@
+### 裝完 uv「找不到指令」？環境變數 / PATH 設定
+
+**先搞懂「環境變數 / PATH」是什麼**——你在終端機打 `uv`、電腦會去一份「資料夾清單」（這份清單就叫 **PATH**）裡一個個找「有沒有一支叫 uv 的程式」。裝 uv 時、安裝程式會把 uv 放進某個資料夾、並把那資料夾「加進 PATH」。如果這一步沒生效、你打 `uv` 就會看到「**找不到指令**（command not found）」。
+
+🖥️ **9 成有效的解法：把終端機整個關掉、重開一個。** 安裝程式雖然改了 PATH、但「已經開著的那個終端機」還在用舊的 PATH、要重開才會讀到新的。
+
+如果重開還是不行、依作業系統手動加：
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🖥️ **Windows（PowerShell）** —— uv 預設裝在 `C:\Users\你的帳號\.local\bin`
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+```text
+# 1. 先確認 uv 真的在這裡（有列出 uv.exe 就對了）
+dir $env:USERPROFILE\.local\bin
+
+# 2. 把這個資料夾加進「使用者 PATH」（永久、只需做一次）
+[Environment]::SetEnvironmentVariable("Path", $env:Path + ";$env:USERPROFILE\.local\bin", "User")
+
+# 3. 關掉 PowerShell、重開、再試一次
+uv --version
+```
+
+> 不想打指令也可以用 GUI：按 Win 鍵打「環境變數」→「編輯系統環境變數」→「環境變數」→ 在上面「使用者變數」找到 `Path` → 按「編輯」→「新增」→ 貼上 `C:\Users\你的帳號\.local\bin` → 一路確定 → **關掉終端機重開**。
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🖥️ **Mac / Linux** —— 安裝腳本會把設定寫進你的 shell 設定檔（`~/.zshrc` 或 `~/.bashrc`）
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+```text
+# 重新載入設定檔（效果等於重開終端機）
+source ~/.zshrc      # zsh（Mac 預設）
+source ~/.bashrc     # bash
+
+# 還是不行就手動加一行（以 zsh 為例）、再 source 一次
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+✅ 設好後、打 `uv --version` 有看到版本號、就代表 PATH 正確——之後在**任何資料夾**都能用 uv 了。
+
