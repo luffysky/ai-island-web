@@ -120,3 +120,40 @@
 - LINE 客服回覆改 Flex 卡片
 
 > 全部已 commit/push 到 main + 匯入 DB 上線。
+
+---
+
+## 📌 I. Launchpad 看板未完成（2026-06-03 掃描，35 張卡，已排除「已上線」57 張）
+
+### I1 待開發（10）
+- [ ] [discord] OAuth 綁定 user + profiles.discord_user_id（為 role/onboarding/slash 鋪管）
+- [ ] [discord] Premium role 自動分配（訂閱成立 → grant role）
+- [ ] [discord] 新人 onboarding bot DM（guild_member_add → DM 引導）
+- [ ] [discord] 學員 slash command /quote /recommend（跨 channel 一致）
+- [ ] [discord] 圖片 vision /vision slash（attachment + GPT/Claude vision）
+- [ ] [web_front] RWD audit + 修（手機溢出 / touch target / table scroll）
+- [ ] [web_front] PWA 升級（manifest 補完 + SW + install prompt + offline）
+- [ ] [web_front] a11y 無障礙（semantic HTML / ARIA / 鍵盤 nav / SR）
+- [ ] [content] ch68 嚴格按 spec 新手友善化（A 方案、20 lesson）
+- [ ] [content] 14 章 strict spec rework（ch55-58 / ch60-67 / ch69-70）
+
+### I2 TODO（15）
+- [ ] [tg] TG bot 進階指令一批：/digest 每日摘要、/silence 暫停通知、語音→Whisper、/broadcast、/grant_premium、/vip、/risk、/idea、/me、/journal、/tr、/rewrite、/focus 番茄鐘
+- [ ] [web_front] Leetcode 3944 題分類規劃 + 中文題目註解（每頁限題數、可搜尋）
+- [ ] [web_front] Leetcode 題目按語言分類（Python/JS/Java/Go/Rust/C++ 各獨立）
+- [ ] [bug] tgSend webhook 加 2 次 retry（「fetch failed」transient 自動重試）
+- [ ] [bug] site-audit lesson_count mismatch（production /api/nav 跟 DB 對不上、**未解**）
+
+### I3 許願池 / 想法（10，wishlist）
+- [ ] PWA 手機 widget（連勝 / 今日目標）
+- [ ] AI 自動 chapter audit（標哪章 sub-spec 落後）
+- [ ] 學員配對（mentor / peer）
+- [ ] 週賽 Code Challenge（每週六線上解題 + leaderboard）
+- [ ] 雪鑰主動關懷流失 user（3 天沒登入主動 LINE）
+- [ ] AI 訂閱推薦（個人化 Premium 方案）
+- [ ] 影片教學整合 YT（每章匹配 YT 內嵌）
+- [ ] AI 模擬面試（技術 / 行為 mock）
+- [ ] 履歷 / 作品集自動生成（學習紀錄 + LeetCode → PDF）
+- [ ] 對外 AI 知識付費 API
+
+> 註：`site-audit lesson_count mismatch` 這條——本 session egress 優化已讓 /api/nav 改吃 getNavChapters + ch71-75 重匯入，可再驗一次是否已解。
