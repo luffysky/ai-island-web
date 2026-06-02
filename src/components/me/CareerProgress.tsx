@@ -1,5 +1,5 @@
 import { CAREER_PATHS } from "@/lib/types";
-import { chapters } from "@/data/chapters";
+import { chaptersLite } from "@/data/chapters-lite";
 import Link from "next/link";
 
 /**
@@ -15,10 +15,10 @@ export function CareerProgress({
   completedSet: Set<string>; // 已完成 lesson_id 的 Set
 }) {
   const paths = Object.values(CAREER_PATHS).map((path) => {
-    const pathChapters = chapters.filter((c) => (path.chapters as readonly number[]).includes(c.id));
-    const totalLessons = pathChapters.reduce((s, c) => s + c.lessons.length, 0);
+    const pathChapters = chaptersLite.filter((c) => (path.chapters as readonly number[]).includes(c.id));
+    const totalLessons = pathChapters.reduce((s, c) => s + c.lessonIds.length, 0);
     const doneLessons = pathChapters.reduce(
-      (s, c) => s + c.lessons.filter((l) => completedSet.has(l.id)).length,
+      (s, c) => s + c.lessonIds.filter((lid) => completedSet.has(lid)).length,
       0,
     );
     const pct = totalLessons > 0 ? Math.round((doneLessons / totalLessons) * 100) : 0;

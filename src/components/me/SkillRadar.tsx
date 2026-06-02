@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Legend } from "recharts";
-import { chapters } from "@/data/chapters";
+import { chaptersLite } from "@/data/chapters-lite";
 
 /**
  * 個人技能雷達圖。
@@ -27,12 +27,12 @@ export function SkillRadar({ completedSet }: { completedSet: Set<string> }) {
     const buckets: Record<string, { done: number; total: number }> = {};
     for (const stage of Object.keys(STAGE_LABELS)) buckets[stage] = { done: 0, total: 0 };
 
-    for (const c of chapters) {
+    for (const c of chaptersLite) {
       const s = String(c.stage);
       if (!buckets[s]) continue; // 略過 stage 7 / appendix
-      for (const l of c.lessons) {
+      for (const lid of c.lessonIds) {
         buckets[s].total++;
-        if (completedSet.has(l.id)) buckets[s].done++;
+        if (completedSet.has(lid)) buckets[s].done++;
       }
     }
 
