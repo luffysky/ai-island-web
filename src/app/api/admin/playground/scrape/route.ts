@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { rateLimit } from "@/lib/rate-limit";
+import { requireAdmin } from "@/lib/admin-guard";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -43,14 +44,11 @@ const ALLOWED_HOSTS = [
 const MAX_BYTES = 5 * 1024 * 1024; // 5 MB
 
 export async function GET(req: NextRequest) {
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
-  if (profile?.role !== "admin") return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  const gate = await requireAdmin();
+  if (!gate.ok) return gate.response;
 
   // rate limit：100/h/user
-  const rl = rateLimit(`scrape:${user.id}`, 100, 3600_000);
+  const rl = rateLimit(`scrape:${gate.userId}`, 100, 3600_000);
   if (!rl.ok) return NextResponse.json({ error: "rate_limited", retry_after: rl.retryAfter }, { status: 429 });
 
   const target = req.nextUrl.searchParams.get("url");

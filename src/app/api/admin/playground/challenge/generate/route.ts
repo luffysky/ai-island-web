@@ -4,6 +4,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { callAI } from "@/lib/ai-providers";
 import { decryptKey } from "@/lib/ai-crypto";
 import { rateLimit } from "@/lib/rate-limit";
+import { requireAdmin } from "@/lib/admin-guard";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -17,14 +18,11 @@ export const maxDuration = 90;
  * AI 依既有題目格式仿造新題、Nami 勾選後再 bulk-insert。
  */
 export async function POST(req: NextRequest) {
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
-  if (profile?.role !== "admin") return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  const gate = await requireAdmin();
+  if (!gate.ok) return gate.response;
 
   // rate limit：每 user 10/h（AI 出題比較貴）
-  const rl = rateLimit(`gen-challenge:${user.id}`, 10, 3600_000);
+  const rl = rateLimit(`gen-challenge:${gate.userId}`, 10, 3600_000);
   if (!rl.ok) return NextResponse.json({ error: "rate_limited", retry_after: rl.retryAfter }, { status: 429 });
 
   const body = await req.json().catch(() => ({} as any));
