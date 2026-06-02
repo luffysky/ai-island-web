@@ -2,6 +2,7 @@ import { createSupabaseServer } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { SettingsForm } from "./SettingsForm";
+import { BackgroundSection } from "./BackgroundSection";
 import { PreciseLocationToggle } from "@/components/PreciseLocationToggle";
 import { GdprSection } from "./GdprSection";
 import { LineBindSection } from "./LineBindSection";
@@ -28,6 +29,7 @@ export default async function SettingsPage() {
     <div className="max-w-2xl mx-auto px-6 py-12 space-y-6">
       <h1 className="text-2xl font-bold">設定</h1>
       <SettingsForm profile={profile} email={user.email!} />
+      <BackgroundSection initial={(profile as any).background ?? null} />
 
       {/* BYOK 入口：使用者自帶 API key、跳過免費額度限制 */}
       <Link
