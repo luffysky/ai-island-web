@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createSupabaseServer } from "@/lib/supabase-server";
+import { requireAdmin } from "@/lib/admin-guard";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 
 export const dynamic = "force-dynamic";
@@ -12,12 +12,8 @@ export const dynamic = "force-dynamic";
  *   "low_hit"     清 hit_count <= 1 的（從沒被命中過、純佔空間）
  */
 export async function POST(req: NextRequest) {
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-
-  const { data: profile } = await supabase.from("profiles").select("role, username").eq("id", user.id).single();
-  if (profile?.role !== "admin") return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  const gate = await requireAdmin();
+  if (!gate.ok) return gate.response;
 
   const { mode } = await req.json().catch(() => ({} as any));
   const admin = createSupabaseAdmin();
@@ -52,8 +48,8 @@ export async function POST(req: NextRequest) {
 
     // 寫 audit log
     await admin.from("audit_logs").insert({
-      actor_id: user.id,
-      actor_username: profile.username ?? null,
+      actor_id: gate.userId,
+      actor_username: gate.username ?? null,
       action: `cache_clear_${mode}`,
       target_type: "ai_response_cache",
       meta: { deleted_count: deleted },

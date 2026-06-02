@@ -1,16 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createSupabaseServer } from "@/lib/supabase-server";
+import { requireAdmin } from "@/lib/admin-guard";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { clearNotificationSettingsCache } from "@/lib/notification-settings";
 
 export const dynamic = "force-dynamic";
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ key: string }> }) {
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  const { data: profile } = await supabase.from("profiles").select("role, username").eq("id", user.id).single();
-  if (profile?.role !== "admin") return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  const gate = await requireAdmin();
+  if (!gate.ok) return gate.response;
 
   const { key } = await params;
   const body = await req.json().catch(() => ({} as any));
@@ -34,8 +31,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ ke
   clearNotificationSettingsCache();
 
   await admin.from("audit_logs").insert({
-    actor_id: user.id,
-    actor_username: profile.username,
+    actor_id: gate.userId,
+    actor_username: gate.username,
     action: "admin.notification_settings_update",
     target_type: "notification_setting",
     target_id: key,

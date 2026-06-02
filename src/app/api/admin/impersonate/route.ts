@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { requireAdmin } from "@/lib/admin-guard";
 
 export const dynamic = "force-dynamic";
 
@@ -16,12 +17,9 @@ export const dynamic = "force-dynamic";
  * 真正的「以對方視角」資料展示由 /admin/impersonate/[targetUserId] 頁面負責。
  */
 export async function POST(req: NextRequest) {
+  const gate = await requireAdmin();
+  if (!gate.ok) return gate.response;
   const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  if (profile?.role !== "admin") return NextResponse.json({ error: "forbidden" }, { status: 403 });
 
   const body = await req.json().catch(() => ({} as any));
   const targetUserId = String(body.targetUserId ?? "").trim();
@@ -29,7 +27,7 @@ export async function POST(req: NextRequest) {
   if (!targetUserId || !reason || reason.length < 5) {
     return NextResponse.json({ error: "target_and_reason_required", message: "reason 至少 5 字" }, { status: 400 });
   }
-  if (targetUserId === user.id) {
+  if (targetUserId === gate.userId) {
     return NextResponse.json({ error: "cannot_impersonate_self" }, { status: 400 });
   }
 
@@ -52,7 +50,7 @@ export async function POST(req: NextRequest) {
 
   const { data: row, error } = await admin
     .from("admin_impersonations")
-    .insert({ admin_id: user.id, target_user_id: targetUserId, reason: reason.slice(0, 500), ip_hash: ipHash || null })
+    .insert({ admin_id: gate.userId, target_user_id: targetUserId, reason: reason.slice(0, 500), ip_hash: ipHash || null })
     .select("id")
     .single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -60,7 +58,7 @@ export async function POST(req: NextRequest) {
   // 同時寫 admin_events
   await supabase.from("admin_events").insert({
     event_type: "impersonate_start",
-    user_id: user.id,
+    user_id: gate.userId,
     meta: { target_user_id: targetUserId, reason, impersonation_id: row.id },
   });
 
@@ -69,18 +67,14 @@ export async function POST(req: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
   // 結束 impersonate session
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  if (profile?.role !== "admin") return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  const gate = await requireAdmin();
+  if (!gate.ok) return gate.response;
 
   const body = await req.json().catch(() => ({} as any));
   const id = String(body.impersonation_id ?? "");
   if (!id) return NextResponse.json({ error: "id_required" }, { status: 400 });
 
   const admin = createSupabaseAdmin();
-  await admin.from("admin_impersonations").update({ ended_at: new Date().toISOString() }).eq("id", id).eq("admin_id", user.id);
+  await admin.from("admin_impersonations").update({ ended_at: new Date().toISOString() }).eq("id", id).eq("admin_id", gate.userId);
   return NextResponse.json({ ok: true });
 }

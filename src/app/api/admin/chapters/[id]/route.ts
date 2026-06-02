@@ -1,16 +1,14 @@
 import { createSupabaseServer } from "@/lib/supabase";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { requireAdmin } from "@/lib/admin-guard";
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const gate = await requireAdmin();
+  if (!gate.ok) return gate.response;
   const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  if (profile?.role !== "admin") return NextResponse.json({ error: "forbidden" }, { status: 403 });
 
   const { id } = await params;
   const body = await req.text();
@@ -36,7 +34,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       chapter_id: Number(id),
       version,
       content: parsed,
-      saved_by: user.id,
+      saved_by: gate.userId,
       note,
     });
     if (insErr) {
@@ -59,7 +57,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   // log 到 admin_events
   await supabase.from("admin_events").insert({
     event_type: "chapter_updated",
-    user_id: user.id,
+    user_id: gate.userId,
     meta: { chapter_id: Number(id), version },
   });
 
