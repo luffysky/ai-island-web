@@ -1,14 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAdmin as adminGate } from "@/lib/admin-guard";
 import { createSupabaseServer, createSupabaseAdmin } from "@/lib/supabase";
 import { encryptKey } from "@/lib/ai-crypto";
 
 async function requireAdmin() {
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return null;
-  const { data: p } = await supabase.from("profiles").select("role, id, username").eq("id", user.id).single();
-  if (p?.role !== "admin") return null;
-  return p;
+  const gate = await adminGate();
+  if (!gate.ok) return null;
+  return { id: gate.userId, role: gate.role, username: gate.username };
 }
 
 function nextMonthResetDate() {

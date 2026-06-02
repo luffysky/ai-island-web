@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAdmin as adminGate } from "@/lib/admin-guard";
 import { createSupabaseServer, createSupabaseAdmin } from "@/lib/supabase";
 import { decryptKey } from "@/lib/ai-crypto";
 
@@ -10,14 +11,9 @@ const EMBED_MODEL = "text-embedding-3-small";
 const EMBED_DIM = 1536;
 
 async function requireAdmin() {
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return null;
-  const { data: p } = await supabase.from("profiles").select("role, id, username, is_owner").eq("id", user.id).maybeSingle();
-  if (!p) return null;
-  // admin role 或 owner role 或 is_owner=true（林董）都可
-  if (p.role !== "admin" && p.role !== "owner" && !(p as any).is_owner) return null;
-  return p;
+  const gate = await adminGate();
+  if (!gate.ok) return null;
+  return { id: gate.userId, role: gate.role, username: gate.username };
 }
 
 async function getOpenAIKey(admin: ReturnType<typeof createSupabaseAdmin>): Promise<string | null> {

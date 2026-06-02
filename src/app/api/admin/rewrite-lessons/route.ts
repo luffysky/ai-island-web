@@ -19,14 +19,12 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 export const maxDuration = 300;
 
+import { requireAdmin as adminGate } from "@/lib/admin-guard";
+
 async function requireAdmin() {
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return null;
-  const { data: p } = await supabase.from("profiles").select("role, id, username, is_owner").eq("id", user.id).maybeSingle();
-  if (!p) return null;
-  if (p.role !== "admin" && p.role !== "owner" && !(p as any).is_owner) return null;
-  return p;
+  const gate = await adminGate();
+  if (!gate.ok) return null;
+  return { id: gate.userId, role: gate.role, username: gate.username };
 }
 
 async function getAnthropicKey(admin: ReturnType<typeof createSupabaseAdmin>): Promise<string | null> {

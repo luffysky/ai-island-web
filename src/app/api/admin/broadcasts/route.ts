@@ -1,17 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createSupabaseServer, createSupabaseAdmin } from "@/lib/supabase";
+import { createSupabaseAdmin } from "@/lib/supabase";
+import { requireAdmin as adminGate } from "@/lib/admin-guard";
 
 async function requireAdmin() {
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return null;
-  const { data: p } = await supabase
-    .from("profiles")
-    .select("id, role, username")
-    .eq("id", user.id)
-    .single();
-  if (p?.role !== "admin") return null;
-  return p;
+  const gate = await adminGate();
+  if (!gate.ok) return null;
+  return { id: gate.userId, role: gate.role, username: gate.username };
 }
 
 export async function POST(req: NextRequest) {
