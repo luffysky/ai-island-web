@@ -6,15 +6,17 @@
  *    需要 header: x-cron-secret = process.env.CRON_SECRET
  * 2. 手動：admin 後台按按鈕 POST
  *
- * 設定步驟：
- * 1. Google Cloud Console 開啟 Google Analytics Data API
- * 2. 建 Service Account、給 Viewer role
- * 3. 下載 JSON key
- * 4. GA4 → Admin → Property → Access Management、加 Service Account 為 Viewer
- * 5. Zeabur env：
- *    - GA4_PROPERTY_ID (例：123456789)
- *    - GA4_SA_CREDENTIALS = JSON key（整段貼進去）
- *    - CRON_SECRET = 隨機字串
+ * 認證二選一（程式自動偵測、優先 OAuth2）：
+ *
+ * 【推薦】OAuth2 Refresh Token（繞過 GA4 後台加 service account 卡死的 bug）
+ *   1. Google Cloud Console 開啟 Google Analytics Data API
+ *   2. 建「OAuth 用戶端 ID（網頁應用程式）」、在 OAuth Playground 用管理員帳號授權榨出 refresh token
+ *   3. Zeabur env：
+ *      - GA4_PROPERTY_ID (9 位數純數字、例：123456789)
+ *      - GA4_CLIENT_ID / GA4_CLIENT_SECRET / GA4_REFRESH_TOKEN
+ *      - CRON_SECRET = 隨機字串(≥16)
+ *
+ * 【舊方法 fallback】Service Account：設 GA4_PROPERTY_ID + GA4_SA_CREDENTIALS（JSON key 整段）
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -42,25 +44,19 @@ export async function POST() {
 
 async function runSync() {
   const propertyId = process.env.GA4_PROPERTY_ID;
-  const credentialsJson = process.env.GA4_SA_CREDENTIALS;
+  const hasOAuth = !!(process.env.GA4_CLIENT_ID && process.env.GA4_CLIENT_SECRET && process.env.GA4_REFRESH_TOKEN);
+  const hasSA = !!process.env.GA4_SA_CREDENTIALS;
 
-  if (!propertyId || !credentialsJson) {
+  if (!propertyId || (!hasOAuth && !hasSA)) {
     return NextResponse.json({
       error: "ga4_not_configured",
-      message: "GA4_PROPERTY_ID 或 GA4_SA_CREDENTIALS 未設定",
+      message: "需設 GA4_PROPERTY_ID ＋（OAuth2: GA4_CLIENT_ID / GA4_CLIENT_SECRET / GA4_REFRESH_TOKEN，或舊版 GA4_SA_CREDENTIALS）",
     }, { status: 503 });
   }
 
-  let credentials;
   try {
-    credentials = JSON.parse(credentialsJson);
-  } catch {
-    return NextResponse.json({ error: "credentials_parse_failed" }, { status: 500 });
-  }
-
-  try {
-    // 取 access token（用 service account JWT）
-    const accessToken = await getGoogleAccessToken(credentials);
+    // 取 access token（優先 OAuth2 refresh token、fallback service account JWT）
+    const accessToken = await getAccessToken();
 
     // GA4 Data API: 過去 30 天
     const today = new Date();
@@ -229,7 +225,37 @@ async function runSync() {
   }
 }
 
-// === Google Service Account JWT → Access Token ===
+// === 取 access token：優先 OAuth2 refresh token、fallback service account JWT ===
+async function getAccessToken(): Promise<string> {
+  if (process.env.GA4_REFRESH_TOKEN && process.env.GA4_CLIENT_ID && process.env.GA4_CLIENT_SECRET) {
+    return getAccessTokenViaRefreshToken();
+  }
+  const credentials = JSON.parse(process.env.GA4_SA_CREDENTIALS as string);
+  return getGoogleAccessToken(credentials);
+}
+
+// === OAuth2 Refresh Token → Access Token（繞過 GA4 後台加 service account 的限制）===
+async function getAccessTokenViaRefreshToken(): Promise<string> {
+  const res = await fetch("https://oauth2.googleapis.com/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      client_id: process.env.GA4_CLIENT_ID as string,
+      client_secret: process.env.GA4_CLIENT_SECRET as string,
+      refresh_token: process.env.GA4_REFRESH_TOKEN as string,
+      grant_type: "refresh_token",
+    }),
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`OAuth refresh: ${res.status} ${err.slice(0, 200)}`);
+  }
+  const { access_token } = await res.json();
+  if (!access_token) throw new Error("OAuth refresh: 沒拿到 access_token");
+  return access_token;
+}
+
+// === Google Service Account JWT → Access Token（舊方法、fallback）===
 async function getGoogleAccessToken(credentials: any): Promise<string> {
   const now = Math.floor(Date.now() / 1000);
   const header = { alg: "RS256", typ: "JWT" };
