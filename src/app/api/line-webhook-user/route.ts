@@ -186,6 +186,32 @@ async function askUserAIInner(text: string, profile: UserProfileLite | null, lin
     }
   }
 
+  // 把學員自己在網站寫的筆記帶進 context（任何 model 都讀得到、不依賴 tool use）
+  if (profile?.id) {
+    try {
+      const { data: noteRows } = await admin
+        .from("notes")
+        .select("content, chapter_id, lesson_id, updated_at")
+        .eq("user_id", profile.id)
+        .order("updated_at", { ascending: false })
+        .limit(8);
+      const notes = (noteRows as any[]) ?? [];
+      const notesText = notes
+        .map((n) => {
+          const loc = n.lesson_id ? `L${n.lesson_id}` : n.chapter_id ? `Ch${n.chapter_id}` : "";
+          const body = String(n.content ?? "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().slice(0, 250);
+          return body ? `- ${loc ? `[${loc}] ` : ""}${body}` : "";
+        })
+        .filter(Boolean)
+        .join("\n");
+      if (notesText) {
+        userContext = `${userContext ? userContext + "\n\n" : ""}## 這位學員自己在網站寫的筆記（最近 ${notes.length} 則、可直接引用來回答「我的筆記」之類問題）\n${notesText}`;
+      }
+    } catch (e: any) {
+      console.warn("[line-webhook-user] load notes failed:", e?.message);
+    }
+  }
+
   const systemPrompt = await buildTutorSystemPrompt({
     tone: "casual_tw",
     userId: profile?.id ?? null,

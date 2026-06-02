@@ -1,9 +1,15 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import { StickyNote, Save, Check, X, GripHorizontal } from "lucide-react";
 import { useLessonNote } from "@/lib/use-lesson-note";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
+
+const BlogEditor = dynamic(
+  () => import("@/components/blog/BlogEditor").then((m) => m.BlogEditor),
+  { ssr: false, loading: () => <div className="text-xs text-fg-muted p-3">載入編輯器…</div> },
+);
 
 type LessonRef = { id: string; title: string; number?: string };
 
@@ -138,15 +144,15 @@ export function FloatingNoteButton({
             <div className="text-xs text-fg-muted mb-2 line-clamp-1" title={activeLesson.title}>
               {activeLesson.title}
             </div>
-            <textarea
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              placeholder="紀錄你對這個 lesson 的想法、重點..."
-              rows={6}
-              className="w-full bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent resize-none"
-            />
+            <div className="max-h-[50vh] overflow-auto rounded-lg border border-border">
+              <BlogEditor
+                content={note}
+                onChange={setNote}
+                placeholder="紀錄你對這個 lesson 的想法、重點…（可貼上 / 拖曳圖片）"
+              />
+            </div>
             <div className="flex items-center justify-between mt-2">
-              <span className="text-xs text-fg-muted">{note.length} 字</span>
+              <span className="text-xs text-fg-muted">{note.replace(/<[^>]*>/g, "").length} 字</span>
               <button
                 onClick={save}
                 disabled={saving}

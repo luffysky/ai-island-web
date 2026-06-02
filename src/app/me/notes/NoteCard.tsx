@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { ChevronDown, ChevronUp, ArrowRight } from "lucide-react";
 import { formatTW } from "@/lib/format-date";
+import { sanitizeRichHtml } from "@/lib/rich-html";
 
 export function NoteCard({
   note,
@@ -52,13 +53,16 @@ export function NoteCard({
         )}
       </div>
 
-      <p
-        className={`text-sm text-fg-muted whitespace-pre-wrap ${
-          expanded ? "" : "line-clamp-3"
-        }`}
-      >
-        {note.content}
-      </p>
+      {/<[a-z][\s\S]*>/i.test(note.content) ? (
+        <div
+          className={`text-sm text-fg-muted prose-custom prose-sm max-w-none ${expanded ? "" : "line-clamp-3"}`}
+          dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(note.content) }}
+        />
+      ) : (
+        <p className={`text-sm text-fg-muted whitespace-pre-wrap ${expanded ? "" : "line-clamp-3"}`}>
+          {note.content}
+        </p>
+      )}
 
       <div className="flex items-center justify-between mt-3 gap-2">
         <div className="text-xs text-fg-muted">
