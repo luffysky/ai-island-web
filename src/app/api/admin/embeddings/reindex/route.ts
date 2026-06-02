@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createSupabaseServer } from "@/lib/supabase-server";
+import { requireAdmin } from "@/lib/admin-guard";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { generateEmbeddingsBatch, toPgVector } from "@/lib/embeddings";
 import { getProviderKey } from "@/lib/ai-crypto";
@@ -25,11 +25,8 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snow
  * 跑完後語意搜尋立即生效。
  */
 export async function POST(req: NextRequest) {
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  if (profile?.role !== "admin") return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  const gate = await requireAdmin();
+  if (!gate.ok) return gate.response;
 
   if (!(await getProviderKey("openai"))) {
     return NextResponse.json({ error: "openai_key_not_set" }, { status: 503 });
