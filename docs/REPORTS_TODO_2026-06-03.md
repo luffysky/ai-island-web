@@ -1,79 +1,122 @@
-# 5 份交付報告 → 整合待辦（2026-06-03 整理）
+# AI 島 — 待辦總表（2026-06-03 整合版）
 
-讀完 `docs/待閱/待/` 的 5 份報告（健檢/防禦/優化/新功能 + AI模型中台規格），整合成一份可執行、跨報告去重的待辦。**依「風險 × CP 值」排序。**
-
-> 交付包附了 3 個現成 helper（`docs/待閱/待/AI島_交付_2026-05-30/src_lib/`）：`admin-guard.ts`、`with-rate-limit.ts`、`validate.ts`——直接放進 `src/lib/` 就能用。
-
----
-
-## 🔴 P0 — 安全關鍵（先做、CP 值最高）
-
-| # | 任務 | 來源 | 做法重點 |
-|---|---|---|---|
-| 1 | **UGC XSS 改白名單清洗** | 健檢 P0-1 | `src/lib/rich-html.ts` 的 regex 黑名單換成 `sanitize-html` / `isomorphic-dompurify`，存入時 + 渲染時雙層清；影響 blog/forum/resume 3 個 `dangerouslySetInnerHTML` 頁 |
-| 2 | **套 `admin-guard.ts`** | 健檢 P0-2 | 把現成 `requireAdmin()`/`requireOwner()` 放進 `src/lib/`，101 條 `api/admin/*` 的 inline gate 逐條替換 |
-| 3 | **security headers + HSTS** | 防禦 #1 | `next.config.mjs` 加 `headers()`（X-Frame-Options/nosniff/Referrer-Policy/HSTS）+ `poweredByHeader:false`。最容易、回報最大 |
-| 4 | **CSP（Report-Only 先行）** | 防禦 #2 | 先 `Content-Security-Policy-Report-Only` 收 violation、別直接強制（會打爆 Three.js/GA4） |
-| 5 | **rate limit：/v1/chat + 登入/註冊** | 防禦 #3#4 | 套現成 `with-rate-limit.ts`：v1/chat per-key+per-IP、auth 端 per-IP |
-| 6 | **RLS 9 張空 policy 逐表確認** | 健檢 P0-3 | 多數維持 deny-all（正確）；`achievements` 補 `SELECT` policy（功能 bug） |
-
-## 🟠 P1 — 重要
-
-| # | 任務 | 來源 |
-|---|---|---|
-| 7 | 套 `validate.ts`：高風險 API（金流/AI/UGC/admin）全補 zod `parseBody` | 防禦 #3 |
-| 8 | Telegram webhook secret 改強制 + fail-closed | 健檢 P1-1 |
-| 9 | admin slug 硬編 fallback `console-x7k2` 移除、收斂常數（25 處） | 健檢 P1-2 / 防禦 #5 |
-| 10 | 22 條 RLS policy 補 `WITH CHECK` | 健檢 P1-3 |
-| 11 | 2 份未完成 migration 改 idempotent（加 `DROP POLICY IF EXISTS`）並套用 | 健檢 P1-4 |
-| 12 | 註冊/發文加 Cloudflare Turnstile + 蜜罐欄位 | 防禦 #4 |
-| 13 | 金鑰輪替計畫 + v1 API key 一鍵停用/重發按鈕 | 防禦 #6 |
-
-## 🟡 優化（升級報告，部分已做）
-
-| # | 任務 | 狀態 |
-|---|---|---|
-| 14 | **OPT-2 next.config 加 `optimizePackageImports`** + `poweredByHeader:false` | 待做（零風險瘦身） |
-| 15 | **OPT-1 拆 `chapters-meta`**（client 端只 import 輕量 metadata、別把 8.7MB 章節進前端 bundle）| 待做 ⚠️ 注意：這是 **client bundle** 問題，跟我已修的 **DB egress** 是兩件事 |
-| 16 | OPT-7 hot-path `select("*")` 改明確欄位 | 🟢 **章節 metas/nav 已做**（egress 優化那次）；其餘列表 API 待做 |
-| 17 | OPT-9 公開頁 ISR / 快取 | 🟢 **章節內容已有 cache + file 模式可選**；blog/排行榜待做 |
-| 18 | bundle analyzer 裝起來跑基準 → TipTap/recharts/CodeMirror 動態 import | 待做 |
-| 19 | OPT-8 RLS `is_admin()` SECURITY DEFINER function + 補 index | 待做 |
-
-## 🟢 林董手動（console / 設定，code 改不了）
-
-- Owner 帳號開 **Supabase MFA / TOTP**（防禦 #5）
-- **Cloudflare 擋在 Zeabur 前**（防禦 #9，DDoS/WAF/Bot Fight，CP 值最高的外層）
-- GitHub **Dependabot** + Supabase 定期備份
-- 金鑰定期輪替（AI_KEY_SECRET / CRON_SECRET / service_role）
+> 整合自 `BACKLOG.md`（v7.1）+ 5 份交付報告（健檢/防禦/優化/新功能/AI中台）。**這份是現在的唯一真實來源**，列出所有「還沒做」的事。
+> 本 session（0603）已完成的列在最後一段（給 context）。
 
 ---
 
-## 🚀 新功能（收尾與變現，非開新坑）— 報告建議「只做這 3 個」
+## 🔴 A. 林董手動設定（code 改不了、最高優先）
 
-1. **B1 自動評測 + 綠寶 AI Code Review** — 補學習閉環最後一哩（test cases→pass/fail→XP→AI 點評）。複用 Pyodide/playground/AI pool/gamification。**留存核心。**
-2. **B4 可驗證證書（`/verify/[certId]` + QR + LinkedIn 分享）+ 課程市集收尾**（試看/購物車/bundle/優惠碼）。**直接收錢 + 招生漏斗。**
-3. **C1 學習社群 / Cohort**（期數制、進度夥伴、組隊 streak/Boss）。**拉完課率、餵 Discord。**
+### A1 上線體驗 / 商業
+- [ ] **Stripe 訂閱付款**：拿 key → `node scripts/_oneshot-stripe-bootstrap.mjs` → 貼 3 個 price_id → 設 webhook（`/api/stripe/webhook`、勾 6 事件）→ 貼 `STRIPE_WEBHOOK_SECRET` → redeploy → 用 4242 測一筆。（`docs/STRIPE_SETUP.md`）
+- [ ] **寵物 4 隻 Lottie URL**：lottiefiles 挑 4 個 → `/admin/lottie-settings` 貼（hamster/cat/dog/rabbit）→ 秒生效
+- [ ] **cron-job.org 排程**（7 個）：student-daily-review / recall-user / leetcode-sync / discord-quote / summarize-memories / launchpad-auto-sync / launchpad-retrospective
+- [ ] **Discord 收尾**：bot role 拖到 VIP 之上 + 開 Manage Roles 權限 + 補 `DISCORD_VIP_ROLE_ID` / `DISCORD_CLIENT_SECRET`
+- [ ] **GitHub Actions secrets**：確認 `CRON_SECRET` / `SITE_URL` 跟 Zeabur 一字不差（anomaly-check 才不 401）
+- [ ] **其餘 env**（選設）：OWNER_LINE_USER_IDS / TELEGRAM_* / PISTON_BASE_URL / N8N_* 等（見舊 BACKLOG §6）
 
-第二批（工程量小 CP 高）：B2 SRS 間隔複習、D2 綠寶每週複習報告、C2 賽季排行榜。
-長線先別動：B5 職缺板、D1 Z-coin 跨產品錢包。
+### A2 安全 / 帳號（來自報告）
+- [ ] **後台登入 `deleted_client`**：Google Cloud 建新 OAuth client（redirect `https://twyfwalusqngmkydllfh.supabase.co/auth/v1/callback`）→ 貼進 Supabase Auth → Google。（林董表示已處理、待確認能登入）
+- [ ] **Egress**：Supabase Dashboard 看是 egress 還 storage 爆；視情況加 `NEXT_PUBLIC_CONTENT_SOURCE=file`（已確認安全；code 也已優化不再拉全文）
+- [ ] **Owner 帳號開 MFA / TOTP**（Supabase）
+- [ ] **Cloudflare 擋在 Zeabur 前**（DDoS / WAF / Bot Fight，CP 值最高的外層）+ 隱藏 origin IP
+- [ ] GitHub **Dependabot** + Supabase 定期備份 + 金鑰輪替（AI_KEY_SECRET / CRON_SECRET / service_role）
 
 ---
 
-## 🧠 AI 模型中台升級規格（獨立大專案）
+## 🔒 B. 安全加固（code、有 3 個現成 helper 在交付包 `src_lib/`）
 
-`AI島_AI模型中台升級規格_v1.md`（1603 行）是一套完整的 **AI Router 成本分級中台**：三層模型池（免費/標準/旗艦）、Intent Detection、Policy Engine、Fallback、成本防爆、Z 幣/VIP 經濟、DB schema、實作規格。
-- **核心目標**：免費也能一直聊天、但「昂貴智慧」分級收費、避免 API 成本炸裂。
-- 現況：站上已有 AI model pool + BYOK + 月配額 + ai_response_cache，是好基礎。
-- **建議**：當成獨立 v3→v4 路線圖專案，等上面 P0 安全 + B1/B4/C1 收尾後再啟動。要做時我可依此規格逐章拆 task。
+### B1 — P0
+- [ ] **UGC XSS 改白名單清洗**：`src/lib/rich-html.ts` regex 黑名單 → `sanitize-html`/`DOMPurify`，存入+渲染雙層；影響 blog/forum/resume 3 個 `dangerouslySetInnerHTML` 頁
+- [ ] **套 `admin-guard.ts`**（`requireAdmin`/`requireOwner`）：101 條 `api/admin/*` 的 inline gate 逐條換
+- [ ] **security headers + HSTS**：`next.config.mjs` 加 `headers()` + `poweredByHeader:false`
+- [ ] **CSP（Report-Only 先行）**：收 violation、別直接強制
+- [ ] **rate limit**：`/api/v1/chat`（per-key+per-IP）+ 登入/註冊（per-IP）；套現成 `with-rate-limit.ts`
+- [ ] **RLS 9 張空 policy 逐表確認**：多數維持 deny-all（正確）；`achievements` 補 `SELECT` policy
+
+### B2 — P1
+- [ ] 套 `validate.ts`：高風險 API（金流/AI/UGC/admin）全補 zod `parseBody`
+- [ ] Telegram webhook secret 改強制 + fail-closed
+- [ ] admin slug 硬編 fallback `console-x7k2` 移除、收斂常數（25 處）
+- [ ] 22 條 RLS policy 補 `WITH CHECK`
+- [ ] 2 份未完成 migration 改 idempotent 並套用（breach_and_email / interaction_analytics）
+- [ ] 註冊/發文加 Cloudflare Turnstile + 蜜罐欄位
+- [ ] 金鑰輪替計畫 + v1 API key 一鍵停用/重發按鈕
 
 ---
 
-## 📌 我的建議順序（給林董）
+## ⚡ C. 效能 / 優化（升級報告）
 
-1. **這週**：P0 #1~#5（XSS + admin-guard + headers + rate-limit）——3 個 helper 都現成、最快擋住風險。
-2. **接著**：#14 next.config（零風險瘦身）+ #15 chapters-meta（前端瘦身）。
-3. **行有餘力**：新功能 B1（自動評測）——這是留存槓桿最大的。
-4. 中台規格 = 長線，獨立排。
+- [ ] **OPT-2 next.config 加 `optimizePackageImports`**（lucide/recharts/framer-motion/date-fns…）+ `poweredByHeader:false`（零風險瘦身）
+- [ ] **OPT-1 拆 `chapters-meta`**：client component 別 import 整包 8.7MB 章節（`SkillRadar`/`CareerProgress` 改輕量版）⚠️ 這是 **client bundle**、跟已修的 DB egress 是兩件事
+- [ ] bundle analyzer 裝起來跑基準 → TipTap/recharts/CodeMirror 動態 import；評估移除 Monaco（收斂 CodeMirror）
+- [ ] OPT-7 其餘列表 API `select("*")` → 明確欄位（章節 metas/nav 已做）
+- [ ] OPT-8 RLS `is_admin()` SECURITY DEFINER function + 補 index
+- [ ] OPT-9 blog/排行榜等公開頁加 ISR / 快取（章節內容已做）
+- [ ] 20 處裸 `<img>` → `next/image`
 
-> 註：本 session 已順手完成的相關項：DB egress 優化（metas/nav 不拉全文）、ISR/cache 章節內容、章節編號修正、全站 promo 清除、壞檔程式碼重寫。
+---
+
+## 💰 D. 商業 / 變現
+
+### 報告建議「只做這 3 個」
+- [ ] **B1 自動評測 + 綠寶 AI Code Review**：題目附隱藏 test cases、提交自動判對錯 → 發 XP/Z幣 → 一鍵 AI 點評。複用 Pyodide/playground/AI pool/gamification。**留存核心**
+- [ ] **B4 可驗證證書 + 課程市集收尾**：證書給 `/verify/[certId]` + QR + LinkedIn 分享；市集補試看/購物車/bundle/優惠碼
+- [ ] **C1 學習社群 / Cohort**：期數制、進度夥伴、組隊 streak/Boss
+### 第二批（CP 高）
+- [ ] B2 SRS 間隔複習、D2 綠寶每週複習報告、C2 賽季排行榜
+### Z 幣經濟
+- [ ] Z 幣商城 sink（寵物配件 5 + 主題 3）、Z 幣儲值 4 套餐（60/199/499/999）、訂閱監測 dashboard（轉換率/churn）
+### 長線先別動
+- [ ] B5 職缺媒合板、D1 Z-coin 跨產品錢包
+
+---
+
+## 📚 E. 內容工作
+
+### E1 新手友善化（用 ch26 完整規格，詳見 `BEGINNER_FRIENDLY_BACKLOG.md`）
+- [x] **oneLineSummary 錯位修復**：ch02/04/07 手修 78 條 + 全站自動修 23 條（本 session 完成）
+- [ ] 補「☕ 用人話講」白話總結：ch01 缺 20 / ch02 缺 25 / ch04 缺 25 / ch07 缺 11（~81 課）
+- [ ] 低信心的 oneLineSummary 錯位（自動偵測抓不到的）逐章人工複查
+- [ ] **圖文解說圖**：`lesson_image_audit.md` 已備 492 條 prompt → 林董生圖放 `public/lesson-img/chNN/` → 嶼築依檔名插入
+
+### E2 章節偷懶 / 未補（章節 audit）
+- [ ] 真該補：ch60 創業心法(6) / ch57 AI法律(5) / ch58 AI職涯(5) / ch51 AI寫作(6) / ch55 AI行銷(6) / ch56 虛擬IP(6) / ch68 高階工程師(20)
+- [ ] 內容未做的章（按舊 BACKLOG P4）：ch47/48/49/50/63（AI 進階）、ch03/11/12/13/14/15（中優先）、ch23/24/25/32/33/34/35（後端+語言）、ch51-58 商業創作
+- [ ] 附錄 ch61-67 / 69-70 by design 可不改
+
+---
+
+## 🤖 F. N8N 12 workflow（自架後再開、spec 在 `N8N_INTEGRATION.md`）
+- [ ] N1 onboarding 7 天序列、N4 每日 KPI→LINE、N2 流失 winback、N8 客服 AI 分流、N6 AI 路由、N3 內容工廠、N7 通知 fan-out、N5 章節自動發布、N9 Stripe→Supabase、N10 DB backup、N11 異常偵測、N12 release→changelog
+
+---
+
+## 🛠️ G. Admin 後台剩 5 項
+- [ ] LT-17 效能 ops（Sentry / PostHog）
+- [ ] P4-05 KPI 報表 ↔ cron/kpi-email 確認 wired
+- [ ] P4-19 教師/助教 role admin 管理介面
+- [ ] P4-20 學員作業批改介面
+
+---
+
+## 🌌 H. 未來規劃（v7+、不急）
+- [ ] **AI 模型中台升級**（`AI島_AI模型中台升級規格_v1.md`、1603 行）：AI Router 三層模型池 + 成本分級 + Z幣/VIP 經濟。獨立大專案、等 B/D 收尾後啟動
+- [ ] Chapter 推薦演算法、全站語意搜尋 UI、Marketing 排程 OAuth、A/B 測 ad copy、ch68 嚴格 spec 重寫
+- [ ] 人生星圖（足跡流光整合）— 跨專案、暫緩
+
+---
+
+## ✅ 本 session（0603）已完成（給 context）
+
+- 壞檔程式碼重寫：ch01/03/08/09/10/33（全站壞 playground 23→0）
+- 全站 promo / 掛保證大掃除：💼接案小知識 + 🎯面試考點 區塊 + 122 條 promo tip 換真建議
+- AI島導覽章節編號修正（ch72→Ch08a 等、12 處改 chapterDisplayNumberById）
+- ch71-75 lesson 補回（DB 重新匯入）+ SQL/資料表稽核（126 表全在）
+- Supabase egress 優化（metas/nav/sitemap 不拉全文）
+- ch26 補「裝完 uv 設環境變數/PATH」段
+- **oneLineSummary 錯位修復 101 條**（ch02/04/07 手修 + 全站自動修）
+- 5 份報告整合（本檔）+ 新手友善化重排 + lesson_image_audit 補完 492 條
+- LINE 客服回覆改 Flex 卡片
+
+> 全部已 commit/push 到 main + 匯入 DB 上線。
