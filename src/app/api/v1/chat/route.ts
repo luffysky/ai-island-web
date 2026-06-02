@@ -3,6 +3,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { getProviderKey } from "@/lib/ai-crypto";
 import { getModelNameForUsage } from "@/lib/ai-usage-models";
 import { callAI } from "@/lib/ai-providers";
+import { enforceRateLimit, clientIp } from "@/lib/with-rate-limit";
 import crypto from "crypto";
 
 export const dynamic = "force-dynamic";
@@ -32,6 +33,10 @@ export async function POST(req: NextRequest) {
 }
 
 async function handle(req: NextRequest) {
+  // 粗分流：同一 IP 防 key 暴力猜測（每分鐘 60 次）
+  const ipLimited = enforceRateLimit({ key: `v1chat:ip:${clientIp(req)}`, limit: 60, windowMs: 60_000 });
+  if (ipLimited) return ipLimited;
+
   // 認證
   const auth = req.headers.get("authorization") ?? "";
   const m = auth.match(/^Bearer\s+(aii_[A-Za-z0-9]+)$/);
@@ -47,6 +52,10 @@ async function handle(req: NextRequest) {
     .maybeSingle();
   if (!keyRow) return NextResponse.json({ error: "invalid api key" }, { status: 401 });
   if (!(keyRow as any).active) return NextResponse.json({ error: "key disabled" }, { status: 403 });
+
+  // per-key 突發保護（每分鐘 30 次）——跟月配額是兩件事
+  const keyLimited = enforceRateLimit({ key: `v1chat:key:${(keyRow as any).id}`, limit: 30, windowMs: 60_000 });
+  if (keyLimited) return keyLimited;
 
   // 月配額重設
   const resetAt = new Date((keyRow as any).quota_reset_at).getTime();
