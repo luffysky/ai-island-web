@@ -134,6 +134,13 @@ export function MeSidebar({ profile }: { profile: Profile | null }) {
           我的程式碼
         </MeLink>
         <MeLink
+          href="/me/playground"
+          icon={<Code2 size={16} />}
+          collapsed={collapsed}
+        >
+          程式碼遊樂場
+        </MeLink>
+        <MeLink
           href="/me/blog"
           icon={<PenLine size={16} />}
           collapsed={collapsed}
