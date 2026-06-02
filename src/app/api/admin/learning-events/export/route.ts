@@ -1,19 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer, createSupabaseAdmin } from "@/lib/supabase";
 import { toCsv, UTF8_BOM } from "@/lib/csv";
+import { requireAdmin } from "@/lib/admin-guard";
 
 const MAX_ROWS = 50_000;
 
 export async function GET(req: NextRequest) {
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  const { data: me } = await supabase
-    .from("profiles")
-    .select("role, username")
-    .eq("id", user.id)
-    .single();
-  if (me?.role !== "admin") return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  const gate = await requireAdmin();
+  if (!gate.ok) return gate.response;
 
   const sp = req.nextUrl.searchParams;
   const from = sp.get("from");
@@ -52,8 +46,8 @@ export async function GET(req: NextRequest) {
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
   await admin.from("audit_logs").insert({
-    actor_id: user.id,
-    actor_username: me.username,
+    actor_id: gate.userId,
+    actor_username: gate.username,
     action: "learning_events.exported",
     target_type: "learning_events",
     changes: { filter: { from, to, eventType, chapterId, userId }, rows: data?.length ?? 0 },

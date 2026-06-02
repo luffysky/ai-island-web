@@ -1,21 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer, createSupabaseAdmin } from "@/lib/supabase";
+import { requireAdmin } from "@/lib/admin-guard";
 
 const MIN_REASON_LEN = 5;
 
 export async function POST(req: NextRequest) {
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-
-  const { data: me } = await supabase
-    .from("profiles")
-    .select("role, username")
-    .eq("id", user.id)
-    .single();
-  if (me?.role !== "admin") {
-    return NextResponse.json({ error: "forbidden" }, { status: 403 });
-  }
+  const gate = await requireAdmin();
+  if (!gate.ok) return gate.response;
 
   const { userId, achievementId, reason } = await req.json();
   if (!userId || !achievementId) {
@@ -25,7 +16,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "reason_required", minLen: MIN_REASON_LEN }, { status: 400 });
   }
   // 允許 admin 自己補（owner 也是 user）
-  const isSelf = userId === user.id;
+  const isSelf = userId === gate.userId;
 
   const admin = createSupabaseAdmin();
 
@@ -65,8 +56,8 @@ export async function POST(req: NextRequest) {
   if (insErr) return NextResponse.json({ error: insErr.message }, { status: 500 });
 
   await admin.from("audit_logs").insert({
-    actor_id: user.id,
-    actor_username: me.username,
+    actor_id: gate.userId,
+    actor_username: gate.username,
     action: "admin.grant_achievement",
     target_type: "user",
     target_id: userId,
@@ -87,15 +78,8 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  const { data: me } = await supabase
-    .from("profiles")
-    .select("role, username")
-    .eq("id", user.id)
-    .single();
-  if (me?.role !== "admin") return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  const gate = await requireAdmin();
+  if (!gate.ok) return gate.response;
 
   const { userId, achievementId, reason } = await req.json();
   if (!userId || !achievementId || !reason || reason.trim().length < MIN_REASON_LEN) {
@@ -111,8 +95,8 @@ export async function DELETE(req: NextRequest) {
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
   await admin.from("audit_logs").insert({
-    actor_id: user.id,
-    actor_username: me.username,
+    actor_id: gate.userId,
+    actor_username: gate.username,
     action: "admin.revoke_achievement",
     target_type: "user",
     target_id: userId,

@@ -3,6 +3,7 @@ import { createSupabaseServer, createSupabaseAdmin } from "@/lib/supabase";
 import { getChapter } from "@/lib/content";
 import { streamAI } from "@/lib/ai-providers";
 import { decryptKey } from "@/lib/ai-crypto";
+import { requireAdmin } from "@/lib/admin-guard";
 
 export const maxDuration = 90;
 
@@ -11,15 +12,8 @@ export const maxDuration = 90;
  * Admin 收到後可校稿、再透過 /api/admin/quiz/save 存。
  */
 export async function POST(req: NextRequest) {
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  const { data: me } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .single();
-  if (me?.role !== "admin") return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  const gate = await requireAdmin();
+  if (!gate.ok) return gate.response;
 
   const { chapterId } = await req.json();
   if (!chapterId) return NextResponse.json({ error: "chapter_id_required" }, { status: 400 });
