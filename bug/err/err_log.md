@@ -1,67 +1,240 @@
-INFO  🛠️ building image | #10 1.642    ▲ Next.js 15.5.18
+幹，現在完全不一樣了。
 
-INFO  🛠️ building image | #10 1.642 
+你成功了。
 
-INFO  🛠️ building image | #10 1.844    Creating an optimized production build ...
+你原本那幾百個：
 
-INFO  🛠️ building image | #10 44.28 <w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (131kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+```txt
+Unexpected any
+```
 
-INFO  🛠️ building image | #10 61.77  ✓ Compiled successfully in 55s
+已經全部消失了。
 
-INFO  🛠️ building image | #10 61.78    Linting and checking validity of types ...
+代表：
 
-INFO  🛠️ building image | #10 87.97 Failed to compile.
+```json
+"@typescript-eslint/no-explicit-any": "off"
+```
 
-INFO  🛠️ building image | #10 87.97 
+有生效。
 
-INFO  🛠️ building image | #10 87.97 ./src/app/api/line-webhook-user/route.ts:183:12
+---
 
-INFO  🛠️ building image | #10 87.97 Type error: Property 'catch' does not exist on type 'PostgrestFilterBuilder<any, any, any, null, "error_logs", unknown, "POST">'. Did you mean 'match'?
+現在剩下的是**真正的錯誤**。
 
-INFO  🛠️ building image | #10 87.97 
+而且數量其實不多。
 
-INFO  🛠️ building image | #10 87.97   181 |           message: `ticket insert failed: ${ticketErr.message}`,
+主要只有 5 種：
 
-INFO  🛠️ building image | #10 87.97   182 |           meta: { line_user_id: userId, text: text.slice(0, 200) },
+### 1. react/no-unescaped-entities
 
-INFO  🛠️ building image | #10 87.97 > 183 |         }).catch(() => {});
+例如：
 
-INFO  🛠️ building image | #10 87.97       |            ^
+```txt
+AppSettingsClient.tsx
+337行
+```
 
-INFO  🛠️ building image | #10 87.97   184 |       }
+你可能寫了：
 
-INFO  🛠️ building image | #10 87.97   185 |
+```tsx
+<p>
+  使用 "GPT-5" 模型
+</p>
+```
 
-INFO  🛠️ building image | #10 87.97   186 |       // ticket_messages 寫一筆
+要改：
 
-INFO  🛠️ building image | #10 88.08 Next.js build worker exited with code: 1 and signal: null
+```tsx
+<p>
+  使用 &quot;GPT-5&quot; 模型
+</p>
+```
 
-INFO  🛠️ building image | #10 ERROR: process "/bin/sh -c npm run build" did not complete successfully: exit code: 1
+或：
 
-INFO  🛠️ building image | ------
+```tsx
+<p>{'使用 "GPT-5" 模型'}</p>
+```
 
-INFO  🛠️ building image |  > [6/6] RUN npm run build:
 
-INFO  🛠️ building image | 87.97 Type error: Property 'catch' does not exist on type 'PostgrestFilterBuilder<any, any, any, null, "error_logs", unknown, "POST">'. Did you mean 'match'?
 
-INFO  🛠️ building image | 87.97 
+---
 
-INFO  🛠️ building image | 87.97   181 |           message: `ticket insert failed: ${ticketErr.message}`,
+### 2. react-hooks/rules-of-hooks
 
-INFO  🛠️ building image | 87.97   182 |           meta: { line_user_id: userId, text: text.slice(0, 200) },
+這才是大條的。
 
-INFO  🛠️ building image | 87.97 > 183 |         }).catch(() => {});
+例如：
 
-INFO  🛠️ building image | 87.97       |            ^
+```txt
+ReplyForm.tsx
+142行
+```
 
-INFO  🛠️ building image | 87.97   184 |       }
+```txt
+useCanned cannot be called inside callback
+```
 
-INFO  🛠️ building image | 87.97   185 |
+代表你有：
 
-INFO  🛠️ building image | 87.97   186 |       // ticket_messages 寫一筆
+```tsx
+button.onClick(() => {
+  const data = useCanned()
+})
+```
 
-INFO  🛠️ building image | 88.08 Next.js build worker exited with code: 1 and signal: null
+這是不合法的。
 
-INFO  🛠️ building image | ------
+Hook只能放：
 
-ERROR 🔴 build failed err=build image: build failed: failed to solve: process "/bin/sh -c npm run build" did not complete successfully: exit code: 1
+```tsx
+function Component() {
+  const data = useCanned()
+
+  ...
+}
+```
+
+
+
+---
+
+### 3. jsx-no-comment-textnodes
+
+例如：
+
+```txt
+MiniIDE.tsx
+BackendLab.tsx
+DataLab.tsx
+```
+
+你大概寫：
+
+```tsx
+<div>
+  // hello
+</div>
+```
+
+React不認識。
+
+要改：
+
+```tsx
+<div>
+  {/* hello */}
+</div>
+```
+
+
+
+---
+
+### 4. prefer-const
+
+例如：
+
+```ts
+let error = ...
+```
+
+但沒重新賦值。
+
+改：
+
+```ts
+const error = ...
+```
+
+
+
+---
+
+### 5. react/no-children-prop
+
+例如：
+
+```tsx
+<Component children={<div />} />
+```
+
+改：
+
+```tsx
+<Component>
+  <div />
+</Component>
+```
+
+
+
+---
+
+## 我會先這樣幹
+
+如果你只是要讓 AI島先跑：
+
+把 `.eslintrc.json`
+
+改成：
+
+```json
+{
+  "extends": ["next/core-web-vitals", "next/typescript"],
+  "rules": {
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-unused-vars": "warn",
+
+    "react/no-unescaped-entities": "off",
+    "react/jsx-no-comment-textnodes": "off",
+    "prefer-const": "warn"
+  }
+}
+```
+
+然後重跑：
+
+```bash
+npm run lint
+```
+
+這樣大概會直接少掉 70~80% 的紅字。
+
+---
+
+但有一個不要關：
+
+```txt
+react-hooks/rules-of-hooks
+```
+
+這個真的可能造成元件行為異常。
+
+像：
+
+```txt
+ReplyForm.tsx
+PushUserButton.tsx
+```
+
+這兩個我會優先修。
+
+---
+
+所以結論：
+
+✅ TSX沒壞
+
+✅ TypeScript沒壞
+
+✅ React沒壞
+
+✅ Next沒壞
+
+✅ 版本沒問題
+
+✅ ESLint設定已生效
+
+現在是在做真正的程式碼品質檢查，不是環境爆炸。這比剛剛「1000個 any」的情況健康太多了。 😎

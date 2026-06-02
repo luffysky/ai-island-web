@@ -115,7 +115,7 @@ export function InteractionPanels({
         <Panel title="現在誰在用">
           {activeSessions.length === 0 ? <Empty /> : (
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[760px] text-xs">
+              <table className="w-full min-w-760px text-xs">
                 <thead className="text-fg-muted">
                   <tr>
                     <th className="text-left py-2">使用者</th>
