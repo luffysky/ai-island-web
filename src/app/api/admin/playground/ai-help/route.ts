@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAdmin } from "@/lib/admin-guard";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { callAI, type AIContentBlock } from "@/lib/ai-providers";
@@ -17,14 +18,11 @@ export const maxDuration = 60;
  * 用法：寫完 code → 點「💡 問 AI」→ AI 看 code + 錯誤 + 截圖、給提示 / 修法
  */
 export async function POST(req: NextRequest) {
-  const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
-  if (profile?.role !== "admin") return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  const gate = await requireAdmin();
+  if (!gate.ok) return gate.response;
 
   // rate limit：30/h/user
-  const rl = rateLimit(`nami-ai:${user.id}`, 30, 3600_000);
+  const rl = rateLimit(`nami-ai:${gate.userId}`, 30, 3600_000);
   if (!rl.ok) return NextResponse.json({ error: "rate_limited", retry_after: rl.retryAfter }, { status: 429 });
 
   const body = await req.json().catch(() => ({} as any));
