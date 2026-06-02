@@ -16,6 +16,7 @@ import { BookmarkButton } from "./BookmarkButton";
 import { NotePanel } from "./NotePanel";
 import { CodeBlock } from "./CodeBlock";
 import { ResourceGroup } from "./ResourceCard";
+import { LessonImage } from "./LessonImage";
 
 // 從 markdown content 抽 ### 標題、產生 outline
 function extractOutline(content: string): Array<{ text: string; level: number }> {
@@ -152,18 +153,8 @@ export function LessonCard({
                       <table className="min-w-full text-sm">{children}</table>
                     </div>
                   ),
-                  // image 限制最大寬。markdown 來的 img 尺寸不可預測、
-                  // 不走 next/image、改加 loading=lazy + decoding=async 拿 lazy load。
-                  img: ({ src, alt }) => (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={src as string}
-                      alt={alt ?? ""}
-                      loading="lazy"
-                      decoding="async"
-                      className="max-w-full h-auto rounded my-2"
-                    />
-                  ),
+                  // 圖片：縮圖點一下開全螢幕燈箱放大（原畫質）。見 LessonImage。
+                  img: ({ src, alt }) => <LessonImage src={src as string} alt={alt} />,
                 }}
               >
                 {lesson.content}
