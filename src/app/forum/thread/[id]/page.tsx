@@ -10,6 +10,9 @@ import { ArrowLeft, Eye, MessageSquare, Pin, Star, Lock } from "lucide-react";
 import type { ForumReply } from "@/lib/forum-types";
 import { sanitizeRichHtmlStrict } from "@/lib/rich-html-server";
 
+// OPT-9 ISR：討論串主文每 60 秒 revalidate（回覆走 ThreadReplies client component、保持即時）
+export const revalidate = 60;
+
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
 
 async function getThread(id: string) {

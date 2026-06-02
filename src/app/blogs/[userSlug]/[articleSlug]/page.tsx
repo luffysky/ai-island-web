@@ -14,6 +14,9 @@ import { TableOfContents } from "@/components/blog/TableOfContents";
 import { sanitizeRichHtmlStrict } from "@/lib/rich-html-server";
 import { articleSchema, breadcrumbSchema, jsonLdScript } from "@/lib/seo-jsonld";
 
+// OPT-9 ISR：公開文章每 5 分鐘 revalidate，省掉每次造訪都打 DB（瀏覽數/留言/反應都走 client component、不受影響）
+export const revalidate = 300;
+
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
 
 async function getArticle(userSlug: string, articleSlug: string) {
