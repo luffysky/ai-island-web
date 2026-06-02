@@ -1,8 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { createSupabaseServer, createSupabaseAdmin } from "@/lib/supabase";
 import type { ForumReply } from "@/lib/forum-types";
 import { awardForumXp, revokeForumXp } from "@/lib/forum-xp";
-import { sanitizeRichHtml } from "@/lib/rich-html";
+import { sanitizeRichHtmlStrict } from "@/lib/rich-html-server";
+import { parseBody } from "@/lib/validate";
+
+const ThreadPatchSchema = z.object({
+  title: z.string().trim().min(1).max(200).optional(),
+  content: z.string().max(50_000).optional(),
+  tags: z.array(z.string().max(50)).max(10).optional(),
+  is_pinned: z.boolean().optional(),
+  is_featured: z.boolean().optional(),
+  is_locked: z.boolean().optional(),
+});
 
 // GET /api/forum/threads/[id] — 取單串 + 巢狀回覆
 export async function GET(
@@ -59,7 +70,9 @@ export async function PATCH(
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
-  const body = await req.json();
+  const parsed = await parseBody(req, ThreadPatchSchema);
+  if (!parsed.ok) return parsed.response;
+  const body = parsed.data as Record<string, any>;
   const admin = createSupabaseAdmin();
 
   // 確認身分
@@ -83,7 +96,7 @@ export async function PATCH(
   // 本人可改內容
   if (isOwner) {
     for (const f of ["title", "content", "tags"]) {
-      if (f in body) patch[f] = f === "content" ? sanitizeRichHtml(body[f]) : body[f];
+      if (f in body) patch[f] = f === "content" ? sanitizeRichHtmlStrict(body[f]) : body[f];
     }
   }
   // 管理員可置頂/精華/鎖定
