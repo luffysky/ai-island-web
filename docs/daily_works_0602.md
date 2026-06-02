@@ -158,5 +158,103 @@ migration：`idea_folders_migration.sql`
 
 ---
 
+# 下半場 — 程式碼品質 + GA4 數據打通
+
+上半場做完功能後，下半場處理三件事：**ESLint 全面除錯（被一個編輯器假象坑了快兩小時）、GA4 同步從掛掉修到正常、再把 GA4 能給的數據全接進後台。**
+
+## Commit 列表（下半場 3 個）
+
+```
+cde088f  feat(ga4): 同步補齊更多 GA4 維度與指標（城市/管道/瀏覽器/OS/語言/到達頁/新回訪 + sessions/互動率/新訪客）
+61644fd  fix(ga4): sync 5 支報表並行化 + 逾時保護，修手動同步收到 HTML(504)
+098a2ed  fix(lint): 清掉全部 41 個真 ESLint error + 根治 .tsx 被當純 ts 的假錯
+```
+
+2 個 SQL migration（先前的城市欄、後併入完整 `ga4_more_dimensions_migration.sql`）已套到線上 DB。
+
+---
+
+## 5️⃣ ESLint 大掃除 + 「.tsx 被當純 ts」假錯解謎（commit 098a2ed）⭐ 教訓最深
+
+林董看到編輯器 `page.tsx` 顯示 **541 個錯誤**，以為程式碼爛掉了。實際排查順序與真相：
+
+1. **先打掉真 ESLint error 41 個**（這些是真的、該修）：
+   - `rules-of-hooks` ×2：`useCanned` 不是 hook 卻用 `use` 前綴觸發誤判 → 改名 `applyCanned`
+   - `jsx-no-comment-textnodes` ×16：nami-playground / IDE 的 `// 提示文字` 直接當 JSX 文字節點（會原樣印在畫面）→ 包成 `{"// ..."}`
+   - `prefer-const` ×9：`let`→`const`（含 3 個 Supabase `let {data,error}` 拆成 `const error` + `let data`，因 data 有 fallback 重賦值）
+   - `no-children-prop` ×1：`TodoItem` 的 `children` 是資料 prop 不是 React children → 改名 `subTodos`
+   - `no-unescaped-entities` ×13：`<code>` 內的引號改 template literal
+   - 附帶修回 `InteractionPanels` 被手滑改壞的 `min-w-[760px]`
+
+2. **但 41 個修完，編輯器還是 541 → 反而變 1000+**。一度懷疑 ESLint、tsconfig、甚至刪了 40MB 的 `.codex_zip_extract_*` 殘骸（含第二個 tsconfig）、重啟 TS server、重開 VS Code，**全都沒用**。關鍵自證：`tsc --noEmit` 和 `npm run lint` 始終 **0 error**。
+
+3. **真兇（林董一句「tsx 一直被當成 ts」點破）**：那些 `找不到名稱 'div'`、`className` 不存在、`PageHero 作為類型使用` —— 是 **VS Code 把 `.tsx` 用「TypeScript」語言模式打開、而非「TypeScript React」**。`<div>` 被當成型別斷言而非 JSX。`<div>` 要不要當 JSX **是看副檔名/語言模式，不是 tsconfig 的 `jsx: preserve`**（那個只管 emit）。元兇多半是**全域** `files.associations` 把 `*.tsx` 綁成 `typescript`，壓過 workspace 改不動。
+
+4. **解法**：新增 `.vscode/settings.json` 強制 `"files.associations": { "*.tsx": "typescriptreact" }`（workspace 壓過全域）→ 重載後 541 全消。已記進 memory（`vscode-tsx-treated-as-ts`），下次秒解。
+
+> 教訓：**`tsc`/`lint` = 0 但編輯器一片紅 = 純編輯器/語言模式問題，不要再動程式碼。**
+
+收進 `.eslintrc.json`（`no-explicit-any` off、`no-unused-vars` warn）。最終 `lint` 0 error、205 warning（無害）。
+
+---
+
+## 6️⃣ GA4 手動同步修復（commit 61644fd + 設定面）
+
+林董按後台「立即同步」報 `Failed to execute 'json'... Unexpected token '<', "<!DOCTYPE"` —— 收到 HTML 而非 JSON。
+
+排查：直接 curl 線上 `/api/admin/ga4/sync` → GET/POST 都回乾淨 JSON 401 → **路由健康**，HTML 是平台層的逾時/錯誤頁。
+
+**程式面處置（commit 61644fd）**：
+- 5 支 GA4 Data API call 從「一支等一支」改 **`Promise.all` 並行**（原本容易拖到閘道逾時回 504 HTML）
+- 每支加 `AbortSignal.timeout(20s)`：卡住會丟錯被外層 try 接成 JSON，不再變平台 HTML
+- POST 登入檢查包 try/catch；按鈕改成偵測非 JSON 時直接顯示真正的 HTTP 狀態碼
+
+**設定面（真正主因）**：林董把 `GA4_PROPERTY_ID` 填成**串流 ID `14865503888`**（資料串流頁的那個），正確的是 **資源 ID（管理 → 資源設定，純數字 9 位）**。換成正確 Property ID → **同步成功** ✅
+
+**附帶解掉的雷 — Refresh Token 7 天死亡**：OAuth 同意畫面在「測試中」狀態時 refresh token 只活 7 天。指導林董把發布狀態切成 **「實際運作中」** → token 永久；並提醒**重新榨一次** token（舊的是測試模式時產的、仍是 7 天版）取代 Zeabur 上的。
+
+---
+
+## 7️⃣ GA4 數據大擴充（commit cde088f）
+
+林董：「還有什麼 GA4 有我沒有的資訊也幫我同步加上」→「所有」。
+
+**每日指標新增 3 個**：工作階段 `sessions`、互動率 `engagementRate`、新使用者 `newUsers`。
+
+**維度報表 3 張 → 11 張**：
+
+| 新增 | GA4 維度 |
+|---|---|
+| 🛬 到達網頁 | `landingPage` |
+| 📊 流量管道 | `sessionDefaultChannelGroup` |
+| 🏙️ 城市 / 地區 | `city`（台北各區） |
+| 📱 裝置 | `deviceCategory`（本來有存沒顯示，補上） |
+| 🌐 瀏覽器 | `browser` |
+| 💻 作業系統 | `operatingSystem` |
+| 🗣️ 語言 | `language` |
+| 🔁 新 / 回訪 | `newVsReturning` |
+
+- route：全部報表並行、抽 `mapRows()` 共用 helper
+- page：Stat 加 3 個、TopTable 擴成 11 張、grid 改 `xl:grid-cols-4`
+- DB：`ga4_more_dimensions_migration.sql`（11 個新欄位，已套線上；主 schema `ai_migration.sql` 同步）
+
+---
+
+## 📝 文件 / 設定（下半場）
+
+- `.vscode/settings.json` — 釘死 `*.tsx → typescriptreact` + 後移除棄用的 tsdk 設定
+- `.eslintrc.json` — 收進版控
+- `supabase/ga4_more_dimensions_migration.sql` — GA4 新欄位
+- 刪除 `.codex_zip_extract_20260522/`（40MB 解壓殘骸、含干擾用的第二個 tsconfig）
+- memory 新增：`vscode-tsx-treated-as-ts`（.tsx 假錯 SOP）
+
+## 🎯 林董要驗收 / 體感的點（下半場）
+
+1. 編輯器 541 假錯重載後是否歸零（語言模式那招）
+2. GA4 同步按下去出現 11 張表 + 新數字卡
+3. Refresh token 記得**重新榨一次正式版的**貼回 Zeabur，才真的一勞永逸
+
+---
+
 _最後更新：2026-06-02 by 雪鑰_
-_「給我一個點子」已上線、三階段完成，只剩「人生星圖」整合未做。_
+_上半場：「給我一個點子」三階段上線。下半場：ESLint 全清 + .tsx 假錯根治 + GA4 數據完整打通。只剩「人生星圖」整合未做。_
