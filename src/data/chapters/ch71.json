@@ -33,10 +33,22 @@
       "miniQuiz": {
         "question": "為什麼最強的 AI 也會產生 bug？以下哪個「不是」根本原因？",
         "options": [
-          {"label": "AI 看不到你的全部專案", "value": "a"},
-          {"label": "程式是「組合」出來的、組合會產生意外", "value": "b"},
-          {"label": "環境會變、套件會改版", "value": "c"},
-          {"label": "AI 故意整你、讓你 debug 練習", "value": "d"}
+          {
+            "label": "AI 看不到你的全部專案",
+            "value": "a"
+          },
+          {
+            "label": "程式是「組合」出來的、組合會產生意外",
+            "value": "b"
+          },
+          {
+            "label": "環境會變、套件會改版",
+            "value": "c"
+          },
+          {
+            "label": "AI 故意整你、讓你 debug 練習",
+            "value": "d"
+          }
         ],
         "answer": "d",
         "explanation": "前三個是真實原因（context 不完整 / integration complexity / environment drift）。AI 不會故意——它只是在「部分資訊」下盡力寫程式。"
@@ -57,10 +69,22 @@
       "miniQuiz": {
         "question": "假設驅動除錯（hypothesis-driven debugging）的「兩條鐵律」是什麼？",
         "options": [
-          {"label": "改得越快越好、出錯再改", "value": "a"},
-          {"label": "一次只改一個地方、每個改動都要能還原", "value": "b"},
-          {"label": "瀏覽器跑就好、不用想原因", "value": "c"},
-          {"label": "整段砍掉重寫一定不會錯", "value": "d"}
+          {
+            "label": "改得越快越好、出錯再改",
+            "value": "a"
+          },
+          {
+            "label": "一次只改一個地方、每個改動都要能還原",
+            "value": "b"
+          },
+          {
+            "label": "瀏覽器跑就好、不用想原因",
+            "value": "c"
+          },
+          {
+            "label": "整段砍掉重寫一定不會錯",
+            "value": "d"
+          }
         ],
         "answer": "b",
         "explanation": "(b) one change at a time + reversible 是核心紀律。(a)(d) 是瞎改典型；(c) 跳過理解步驟也是瞎改。"
@@ -81,10 +105,22 @@
       "miniQuiz": {
         "question": "「整頁空白、F12 Network 看到一個 API 是紅色 500」——這個 bug 最可能在哪一層？",
         "options": [
-          {"label": "畫面層（前端排版問題）", "value": "a"},
-          {"label": "狀態層（React state 沒更新）", "value": "b"},
-          {"label": "後端邏輯層 / 資料層", "value": "c"},
-          {"label": "瀏覽器版本太舊", "value": "d"}
+          {
+            "label": "畫面層（前端排版問題）",
+            "value": "a"
+          },
+          {
+            "label": "狀態層（React state 沒更新）",
+            "value": "b"
+          },
+          {
+            "label": "後端邏輯層 / 資料層",
+            "value": "c"
+          },
+          {
+            "label": "瀏覽器版本太舊",
+            "value": "d"
+          }
         ],
         "answer": "c",
         "explanation": "500 是伺服器內部錯誤、表示請求送到了但後端炸了。問題在後端那一側、前端的畫面 / 狀態層暫時可以不看。"
@@ -105,10 +141,22 @@
       "miniQuiz": {
         "question": "Debug Mindset 五支柱中、「卡住時、缺的是 ___、不是 ___」——填空？",
         "options": [
-          {"label": "金錢、運氣", "value": "a"},
-          {"label": "資訊、努力", "value": "b"},
-          {"label": "天分、時間", "value": "c"},
-          {"label": "工具、心情", "value": "d"}
+          {
+            "label": "金錢、運氣",
+            "value": "a"
+          },
+          {
+            "label": "資訊、努力",
+            "value": "b"
+          },
+          {
+            "label": "天分、時間",
+            "value": "c"
+          },
+          {
+            "label": "工具、心情",
+            "value": "d"
+          }
         ],
         "answer": "b",
         "explanation": "卡住時、不是更用力地試同樣方法、是去找「還沒拿到的資訊」（加 log、看訊息、換角度、講給別人聽）。"

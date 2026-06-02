@@ -9,7 +9,9 @@
   "description": "React 學完基本後最常卡的中間階段、不學完直接進 Next.js 容易懵。",
   "status": "published",
   "difficulty": "intermediate",
-  "prerequisites": [8],
+  "prerequisites": [
+    8
+  ],
   "estimatedHours": 8,
   "outcomes": [
     "會寫自訂 Hook、知道何時拆何時不拆",

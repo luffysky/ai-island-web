@@ -9,7 +9,9 @@
   "description": "HTTP 是前後端溝通的協定、學完 JS 後立刻要學。本章涵蓋 URL 結構、9 種 method、所有 status code、header / cookie、HTTPS / HTTP2 / HTTP3、CORS、跟 curl / Postman 實戰。",
   "status": "published",
   "difficulty": "beginner",
-  "prerequisites": [4],
+  "prerequisites": [
+    4
+  ],
   "estimatedHours": 6,
   "outcomes": [
     "看到一個 URL 能拆解出 scheme / host / path / query 各自意義",

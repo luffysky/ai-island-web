@@ -9,7 +9,10 @@
   "description": "Vite 是 React / Vue / Svelte 等現代前端的 build 工具、2026 業界 90% 新專案用。學完知道 dev server / production build / config / plugin 怎麼用。",
   "status": "published",
   "difficulty": "intermediate",
-  "prerequisites": [8, 9],
+  "prerequisites": [
+    8,
+    9
+  ],
   "estimatedHours": 4,
   "outcomes": [
     "理解 Vite 跟 Webpack 的本質差異、為什麼快 10x",

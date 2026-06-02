@@ -9,7 +9,9 @@
   "description": "Vue 學完基礎進階階段、配合 Pinia + Composition API 是 2026 業界主流。",
   "status": "published",
   "difficulty": "intermediate",
-  "prerequisites": [9],
+  "prerequisites": [
+    9
+  ],
   "estimatedHours": 8,
   "outcomes": [
     "完整掌握 Composition API (setup / ref / reactive / computed / watch)",

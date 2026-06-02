@@ -198,6 +198,7 @@ ADMIN_LINE_NOTIFY_TOKEN=          # LINE Notify 2025-04 停服
 - ⏳ Marketing 排程 OAuth 接 LinkedIn / Threads
 - ⏳ A/B 測 ad copy 真實點擊回填
 - ⏳ ch68 嚴格 spec 重寫（task #21、20 課 8-15 hr）
+- ⏳ 人生星圖（足跡流光整合）— 把點子碎片 + 學習足跡整合成視覺化人生星圖。**跨專案、足跡流光較麻煩、暫緩**
 
 ---
 
