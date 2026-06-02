@@ -37,7 +37,7 @@
 - [x] **RLS 9 張空 policy 逐表確認**：`achievements` 公開 SELECT policy 已套用到 production DB（已驗證 anon/authenticated 皆可讀 25 筆徽章、寫入仍 deny-all）。其餘空 policy 表維持 deny-all（正確）
 
 ### B2 — P1
-- [ ] 套 `validate.ts`：高風險 API（金流/AI/UGC/admin）全補 zod `parseBody`
+- [~] 套 `validate.ts`：**UGC 內文寫入面已完成**（blog 文章建立/編輯、forum 發文/編輯都 `parseBody` zod 限長 + `sanitizeRichHtmlStrict` 白名單寫入）。剩 like/reaction/subscribe/series/settings 等小 payload route 可後續補（風險低、多為 id/bool）
 - [x] Telegram webhook secret 改強制 + fail-closed（沒設 secret → 503；比對改 timingSafeEqual）。⚠️ **部署後林董須在 Zeabur 設 `TELEGRAM_WEBHOOK_SECRET` 並重跑 `/admin/telegram/setup`、否則 admin TG bot 會停**
 - [ ] admin slug 硬編 fallback `console-x7k2` 移除、收斂常數（25 處）
 - [ ] 22 條 RLS policy 補 `WITH CHECK`
