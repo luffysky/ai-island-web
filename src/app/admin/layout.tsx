@@ -169,6 +169,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               <AdminLink href="/admin/email/campaigns">✉️ Email Campaigns</AdminLink>
               <AdminLink href="/admin/email/test">🧪 Email 測試發送</AdminLink>
               <AdminLink href="/admin/discord">🟣 Discord 控制台</AdminLink>
+              <AdminLink href="/admin/telegram">📨 Telegram Bot 設定</AdminLink>
             </NavGroup>
 
             {/* 7. 🤖 AI 管理 */}
