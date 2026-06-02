@@ -28,7 +28,7 @@
 
 ### B1 — P0
 - [x] **UGC XSS 改白名單清洗**：新增 `sanitize-html` + `rich-html-server.ts`（`sanitizeRichHtmlStrict` 白名單），blog/forum 渲染已換；client 端 NoteCard 維持輕量 regex 當第二層（不打進 bundle）。〔resume 走 markdown 路徑、另計〕
-- [ ] **套 `admin-guard.ts`**（`requireAdmin`/`requireOwner`）：114 條 `api/admin/*`（9 條已用新 helper）。〔helper 已在 `src/lib/`。盤查結論：gate 寫法太分歧（helper 回 `{error,status}` / helper 回 `null` / inline `NextResponse` / owner-aware 與否混用、73 條用非 owner-aware 的 `role!=="admin"`），**不適合無腦 codemod 全換**（會炸整個後台授權）→ 改逐批 tsc 驗證式遷移、未做完〕
+- [~] **套 `admin-guard.ts`**（`requireAdmin`/`requireOwner`）：**進度 26/114**（批次1=12、批次2=5、原本就 9）。逐批 tsc 驗證式遷移中。〔結論：gate 寫法太分歧、不適合無腦 codemod，所以一批 5-12 條手動轉+tsc。剩 ~88 條（含 18 helper-obj、其餘 inline / 52 條需個別檢查）〕
 - [x] **security headers + HSTS**：`next.config.mjs` 已加 `headers()`（HSTS/X-Frame-Options/nosniff/Referrer-Policy/Permissions-Policy）+ `poweredByHeader:false`
 - [ ] **CSP（Report-Only 先行）**：收 violation、別直接強制
 - [x] **rate limit**：`/api/v1/chat` 已套（per-IP 60/min + per-key 30/min）。〔登入/註冊走 Supabase client、無 server route 可包、N/A〕
