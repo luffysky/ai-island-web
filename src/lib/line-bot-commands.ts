@@ -584,29 +584,36 @@ async function cmdLaunchpadAdd(text: string, board: "todo" | "wishlist"): Promis
   if (!text.trim()) {
     return { text: `用法：/${board === "wishlist" ? "wish" : "todo"} <你想到的東西>\n例：/wish AI 自動建議下一個該做的事` };
   }
-  // 直接呼叫 ai-add 內部邏輯：撈 anthropic key、AI 解析、寫進 kanban
+  // provider-aware：用 admin_assistant 設定的模型解析（可能是 OpenAI/Anthropic/Google）、寫進 kanban
+  // （之前 hardcode Anthropic endpoint + key、但 admin_assistant 設定成 gpt-4o → 送 OpenAI 模型給 Anthropic = 404）
   try {
     const { getProviderKey } = await import("./ai-crypto");
     const { getModelNameForUsage } = await import("./ai-usage-models");
+    const { callAI } = await import("./ai-providers");
     const admin = createSupabaseAdmin();
-    const apiKey = await getProviderKey("anthropic");
-    if (!apiKey) return { text: "❌ Anthropic key 沒設、雪鑰沒辦法分類" };
     const modelName = await getModelNameForUsage("admin_assistant", "claude-haiku-4-5-20251001");
+    // 從 ai_models 查這個 model 的 provider（查不到就用名稱前綴推）
+    const { data: modelRow } = await admin.from("ai_models").select("provider").eq("model_name", modelName).maybeSingle();
+    const provider = (modelRow as any)?.provider
+      || (modelName.startsWith("claude") ? "anthropic"
+        : modelName.startsWith("gemini") ? "google"
+        : modelName.startsWith("llama") ? "groq"
+        : "openai");
+    const apiKey = await getProviderKey(provider);
+    if (!apiKey) return { text: `❌ ${provider} key 沒設、雪鑰沒辦法分類（到後台「AI 模型管理」加）` };
 
     const prompt = `解析這段話成看板卡片：「${text}」
 
 輸出 JSON：
 {"title": "30 字內動詞開頭", "description": "60 字內", "category": "選 1：line_student / line_admin / tg / discord / web_front / web_admin / ai / cron / content / idea / bug / refactor / marketing"}`;
 
-    const r = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-api-key": apiKey, "anthropic-version": "2023-06-01" },
-      body: JSON.stringify({ model: modelName, max_tokens: 300, temperature: 0.2, messages: [{ role: "user", content: prompt }] }),
-      signal: AbortSignal.timeout(15_000),
-    });
-    if (!r.ok) return { text: `❌ AI fail: ${r.status}` };
-    const data = await r.json();
-    const respText = (data.content ?? []).filter((c: any) => c.type === "text").map((c: any) => c.text).join("").trim();
+    let respText = "";
+    try {
+      const res = await callAI({ provider, model: modelName, apiKey, messages: [{ role: "user", content: prompt }], temperature: 0.2, maxTokens: 300 });
+      respText = (res.text || "").trim();
+    } catch (e: any) {
+      return { text: `❌ AI fail（${provider}/${modelName}）：${e?.message?.slice(0, 80) ?? "unknown"}` };
+    }
     const m = respText.match(/\{[\s\S]*\}/);
     if (!m) return { text: `❌ AI 沒回 JSON：${respText.slice(0, 100)}` };
     const parsed = JSON.parse(m[0]);
