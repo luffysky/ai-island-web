@@ -28,7 +28,7 @@
 
 ### B1 — P0
 - [x] **UGC XSS 改白名單清洗**：新增 `sanitize-html` + `rich-html-server.ts`（`sanitizeRichHtmlStrict` 白名單），blog/forum 渲染已換；client 端 NoteCard 維持輕量 regex 當第二層（不打進 bundle）。〔resume 走 markdown 路徑、另計〕
-- [~] **套 `admin-guard.ts`**（`requireAdmin`/`requireOwner`）：**進度 32/114**（批次1=12、批次2=5、telegram-setup=1、playground/ai-help=1、批次3 marketing=4、原本就 9）。逐批 tsc 驗證式遷移中。〔gate 寫法分歧：inline `role!=="admin"` / 本地 `assertAdmin()` 回 `{error,status}` / 本地 `guard()` 回 `{err\|error}|{user}` / `["admin","owner"].includes` / 部分重用 user.id；codemod 會踩 err-vs-error key、CRLF、user 重用等地雷（靠 tsc 全擋下並還原），所以改穩紮穩打手動小批。剩 ~82〕
+- [~] **套 `admin-guard.ts`**（`requireAdmin`/`requireOwner`）：**進度 37/114**（每批 tsc 0 + 獨立 commit，無壞授權進 main）。〔gate 寫法至少 5 種變體：inline `role!=="admin"`、`["admin","owner"].includes`、本地 `assertAdmin()→{error,status}|{ok}`、本地 `guard()→{err\|error}|{user}` 或 `{user,ok}`、本地 `requireAdmin()/gateAdmin()→profile|null`；外加 **semantic 地雷**：`changelog`/`canned-replies`/`tickets` 等允許 `editor` role，**不可盲轉成 admin-only**（tsc 抓不到語意改變）。所以剩下只能逐檔人工看 gate 邏輯、慢。剩 ~77、純技術債（這些 route 全都已有 gate、非開放漏洞）〕
 - [x] **security headers + HSTS**：`next.config.mjs` 已加 `headers()`（HSTS/X-Frame-Options/nosniff/Referrer-Policy/Permissions-Policy）+ `poweredByHeader:false`
 - [ ] **CSP（Report-Only 先行）**：收 violation、別直接強制
 - [x] **rate limit**：`/api/v1/chat` 已套（per-IP 60/min + per-key 30/min）。〔登入/註冊走 Supabase client、無 server route 可包、N/A〕
