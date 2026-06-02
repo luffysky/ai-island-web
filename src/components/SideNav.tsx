@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { chapterDisplayNumber } from "@/lib/chapter-display";
+import { chapterDisplayNumberById } from "@/lib/chapter-display";
 import {
   ChevronRight, ChevronLeft, ChevronDown, BookOpen, Bookmark, FileText,
   Menu, X, Search, History, Star, Plus, Trash2,
@@ -314,7 +314,7 @@ export function SideNav() {
                         className={`shrink-0 transition-transform ${isOpenCh ? "" : "-rotate-90"}`}
                       />
                       <span className="text-xs text-fg-muted font-mono shrink-0">
-                        Ch{chapterDisplayNumber(ch)}
+                        Ch{chapterDisplayNumberById(ch.id)}
                       </span>
                       <span className="text-sm flex-1 truncate font-medium">{ch.title}</span>
                       <span className="text-[10px] text-fg-muted shrink-0">

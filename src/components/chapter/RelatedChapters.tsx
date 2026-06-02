@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowRight, Layers, BookOpen } from "lucide-react";
 import { getAllChapters } from "@/lib/content";
 import type { Chapter } from "@/lib/types";
-import { chapterDisplayNumber } from "@/lib/chapter-display";
+import { chapterDisplayNumberById } from "@/lib/chapter-display";
 
 /**
  * Internal linking 強化 — 章節頁尾推薦相關章節
@@ -42,7 +42,7 @@ export async function RelatedChapters({ chapter }: { chapter: Chapter }) {
             >
               <div className="text-[10px] text-fg-muted mb-1 inline-flex items-center gap-1">← 上一章</div>
               <div className="font-bold text-sm group-hover:text-accent transition">
-                Ch{chapterDisplayNumber(prev)} {prev.title}
+                Ch{chapterDisplayNumberById(prev.id)} {prev.title}
               </div>
               <div className="text-[10px] text-fg-muted line-clamp-1 mt-0.5">{prev.subtitle}</div>
             </Link>
@@ -54,7 +54,7 @@ export async function RelatedChapters({ chapter }: { chapter: Chapter }) {
             >
               <div className="text-[10px] text-fg-muted mb-1 inline-flex items-center gap-1">下一章 →</div>
               <div className="font-bold text-sm group-hover:text-accent transition">
-                Ch{chapterDisplayNumber(next)} {next.title}
+                Ch{chapterDisplayNumberById(next.id)} {next.title}
               </div>
               <div className="text-[10px] text-fg-muted line-clamp-1 mt-0.5">{next.subtitle}</div>
             </Link>
@@ -76,7 +76,7 @@ export async function RelatedChapters({ chapter }: { chapter: Chapter }) {
                 href={`/chapters/${c.id}` as any}
                 className="block p-3 rounded-xl border border-border bg-bg hover:border-purple-400/50 hover:bg-bg-elevated/40 transition group"
               >
-                <div className="text-[10px] text-fg-muted">Ch{chapterDisplayNumber(c)}</div>
+                <div className="text-[10px] text-fg-muted">Ch{chapterDisplayNumberById(c.id)}</div>
                 <div className="text-xs font-bold mt-0.5 group-hover:text-accent transition line-clamp-1">{c.title}</div>
                 <div className="text-[9px] text-fg-muted line-clamp-1 mt-0.5">{c.subtitle}</div>
               </Link>
