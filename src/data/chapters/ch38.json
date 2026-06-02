@@ -27,8 +27,8 @@
       "analogy": "從架構看電商需要什麼。",
       "content": "## 電商核心模組\n1. **商品**：分類、屬性、變體\n2. **購物車 / 結帳**\n3. **訂單管理**\n4. **金流**：刷卡 / 轉帳 / LINE Pay\n5. **物流**：黑貓 / 超商\n6. **會員 / 等級**\n7. **優惠 / 折扣 / 點數**\n8. **庫存 / 多倉**\n9. **客服 / 退換貨**\n10. **報表 / 分析**\n\n## 平台選擇\n\n### 1. WooCommerce\n- 自架、彈性\n- 中小型適合\n- 月成本 NT$ 500-2000\n\n### 2. Shopify\n- SaaS、易用\n- 月費 $29-$299\n- 海外友善\n\n### 3. Shopline\n- 台灣本土\n- 中文後台\n- 月費 NT$ 1290-4990\n\n### 4. 91App\n- 台灣大型\n- O2O 強\n- 月費 NT$ 1-5 萬\n\n### 5. 91 開店 / 91 加加\n- 中小型\n- 月 NT$ 500-2000\n\n### 6. 自架（Next.js + Stripe）\n- 完全客製\n- 開發成本高\n- 適合：品牌 / 特殊需求\n\n## 台灣 vs 國際\n\n### 台灣特色\n- LINE 渠道\n- 超商取貨\n- ATM 虛擬帳號\n- 發票（電子發票）\n- 紅利 / 點數文化\n\n### 國際\n- Email 行銷\n- 信用卡為主\n- 物流標準\n\n## 選擇邏輯\n\n| 規模 | 推薦 |\n|---|---|\n| MVP 試水 | Shopify / Shopline |\n| 月營業 < NT$ 50 萬 | Shopify / Shopline / 91App |\n| 月營業 50-500 萬 | 91App / Shopify Plus |\n| > 500 萬 | 自架 + 客製 |\n| 重品牌客製 | 自架 Next.js |\n| 跨境 | Shopify |\n\n## 接案範圍\n\n### Indie\n- WooCommerce 設定：NT$ 30-100k\n- Shopify 設定：NT$ 30-100k\n- 自架 MVP：NT$ 200-500k\n- 客製大型：NT$ 500k-3M\n\n## 心法\n- 不要重造輪子（用 WooCommerce / Shopify）\n- 客戶不在乎平台、在乎結果\n- 金流物流穩比功能多重要\n- 月維護 = 長期關係",
       "tip": {
-        "type": "business",
-        "text": "電商接案 = 月費維護 = 被動收入。"
+        "type": "practical",
+        "text": "電商先把『商品 → 購物車 → 金流 → 物流 → 訂單』這條主幹打通，再加優惠 / 會員等周邊，別一開始全做。"
       },
       "id": "38.1",
       "number": "LESSON 38.1",
@@ -253,8 +253,8 @@
       "analogy": "物流體驗 = 留客率。",
       "content": "## 台灣物流主流\n\n### 1. 黑貓宅急便\n- 宅配\n- 1-2 天到\n- 物流費 NT$ 60-150\n- 整合：API / WMS\n\n### 2. 7-11 賣貨便（取貨付款）\n- 超商取貨\n- 客戶最愛（不用在家）\n- 物流費 NT$ 60\n- 重量限制\n\n### 3. 全家店到店\n- 同 7-11\n- 競爭優勢：分店多\n\n### 4. 萊爾富 / OK\n- 補充選項\n\n### 5. SF Express（順豐）\n- 跨境\n- 快但貴\n\n### 6. 自取\n- 免運\n- 限地區\n\n## 整合方式\n\n### WooCommerce 外掛\n- 「7-11 賣貨便」外掛\n- 「黑貓宅急便」外掛\n- NT$ 1500-3000 一次\n\n### 自架（API）\n- 黑貓有 API（要簽約）\n- 超商 API 由綠界 / 藍新代理（不直接連 7-11）\n\n### 用綠界 / 藍新 一條龍\n金流 + 物流一起：\n- 客戶結帳選超商\n- 金流 + 取貨單 自動建立\n- 自動回傳取貨號\n\n## 訂單流程\n\n```\n1. User 加購物車\n2. User 結帳：\n   - 收件人資訊\n   - 物流方式（宅配 / 超商）\n   - 付款方式\n3. 金流付款\n4. 訂單 status: paid\n5. 賣家備貨\n6. 列印物流單（黑貓 / 超商）\n7. 出貨 → 訂單 status: shipped\n8. 物流公司送\n9. User 取貨 / 簽收\n10. 訂單 status: completed\n```\n\n## 庫存管理\n```typescript\n// 下單時扣\nasync function placeOrder(items) {\n  await prisma.$transaction(async (tx) => {\n    for (const item of items) {\n      const product = await tx.product.findUnique({ where: { id: item.productId } });\n      if (product.stock < item.quantity) {\n        throw new Error(\"Out of stock\");\n      }\n      await tx.product.update({\n        where: { id: item.productId },\n        data: { stock: { decrement: item.quantity } }\n      });\n    }\n    \n    await tx.order.create({\n      data: { items, status: \"pending\" }\n    });\n  });\n}\n\n// 取消訂單回庫存\nasync function cancelOrder(orderId) {\n  const order = await prisma.order.findUnique({ where: { id: orderId }, include: { items: true } });\n  \n  await prisma.$transaction(async (tx) => {\n    for (const item of order.items) {\n      await tx.product.update({\n        where: { id: item.productId },\n        data: { stock: { increment: item.quantity } }\n      });\n    }\n    await tx.order.update({ where: { id: orderId }, data: { status: \"cancelled\" } });\n  });\n}\n```\n\n## 多倉\n進階電商：\n- 北 / 中 / 南倉\n- 按客戶地址挑最近\n- 跨倉調貨\n\n## 退換貨 SOP\n```\n1. User 申請（24 小時內）\n2. 客服審核\n3. 同意 → 寄回地址 / 黑貓上門收\n4. 收到貨 → 驗貨\n5. 退款 / 換新\n6. 訂單 status: refunded\n```\n\n## 發票（電子發票）\n台灣必須：\n- 商家開立電子發票\n- 上傳財政部\n- 整合：綠界 / 藍新 提供發票 API\n\n```typescript\nawait ecpay.invoice.issue({\n  orderId,\n  customerEmail,\n  items: [...]\n});\n```\n\n## CSAT（客戶滿意度）\n- 出貨後 3 天問評價\n- 5 星制\n- 留 review 給優惠券\n\n## 心法\n- 物流選擇：超商取貨第一、宅配補充\n- 退換貨流程要寫清楚（FAQ）\n- 庫存即時扣（transaction）\n- 發票自動化\n- 客服 SOP 文件化\n\n## Indie 電商接案 SOP\n\n### 簡單版（NT$ 50-100k）\n- WooCommerce + Astra\n- 藍新 + 7-11\n- 30 個商品\n- 1 個月交付\n\n### 完整版（NT$ 150-300k）\n- 客製設計\n- 多金流（信用卡 + LINE Pay + ATM）\n- 多物流\n- 會員系統\n- 點數 / 優惠券\n- 2-3 個月交付\n\n### 月維護（NT$ 5-15k/月）\n- 主機 + SSL\n- 安全更新\n- 客服支援\n- 月報\n\n## 心法\n- 流程 > 技術\n- 客戶體驗 > 漂亮\n- 自動化（金流 / 物流 / 發票）\n- 報表給老闆看數字\n- 月維護長期關係",
       "tip": {
-        "type": "business",
-        "text": "電商接案：流程 + 客服 SOP 完整 = 客戶愛你。"
+        "type": "practical",
+        "text": "串金流物流先用沙盒環境測完整流程（含失敗、退款、取消），上線才不會用真錢踩雷。"
       },
       "id": "38.3",
       "number": "LESSON 38.3",

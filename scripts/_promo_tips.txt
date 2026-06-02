@@ -1,0 +1,122 @@
+ch00	0.3	Git + GitHub — 5 招 + 註冊 + 第一次 push
+ch02	2.1	CSS 是什麼？為什麼需要它？
+ch02	2.7	Grid：二維排版引擎
+ch02	2.13	CSS 變數（自訂屬性）
+ch02	2.19	CSS-in-JS：把樣式寫在元件裡
+ch02	2.25	業界最佳實踐總覽
+ch04	4.1	JavaScript 是什麼？為什麼長這樣？
+ch04	4.7	物件、Map、Set、WeakMap、WeakSet
+ch04	4.13	DOM 操作：跟 HTML 對話
+ch04	4.19	設計模式：JS 實戰版
+ch04	4.25	2026 必懂的新特性
+ch05	5.1	為什麼要學 TypeScript？JS 痛點解析
+ch05	5.7	Array / Map / Set / Record
+ch05	5.13	Module + import / export
+ch05	5.19	API 型別安全：Zod + tRPC
+ch06	6.1	JSON 是什麼，為什麼是事實標準
+ch06	6.7	讓 LLM 強制回傳結構化 JSON
+ch06	6.13	效能：大型 JSON 處理
+ch06	6.24	OpenAPI / Swagger：API 文件規範
+ch06	6.25	實戰：寫 Type-Safe Next.js API（Zod + tRPC）
+ch07	7.1	程式是什麼？指令、執行、編譯 vs 直譯
+ch07	7.7	函數：抽象的單位
+ch07	7.13	函數式：純函數、不可變、map/filter/reduce
+ch07	7.19	抽象與設計模式：singleton、factory、observer
+ch07	7.25	字串處理 + 正則表達式
+ch11	11.19	App 變現：IAP / 訂閱 / 廣告
+ch14	14.20	PWA 接案：報價 + 流程
+ch16	16.1	後端到底在做什麼？請求生命週期完整解析
+ch16	16.7	資料庫整合：ORM、Query Builder、Raw SQL
+ch16	16.13	檔案 / 串流處理：S3、R2、大檔上傳
+ch16	16.25	API 文件 + Testing（Postman / Bruno / Vites
+ch17	17.1	什麼是 SQL？為什麼學了 50 年還在用？
+ch17	17.21	Transaction：保證資料一致性
+ch18	18.12	Vector DB 完整：pgvector / Pinecone / Qdran
+ch26	26.1	為什麼是 Python？2026 安裝 + uv
+ch26	26.7	模組 + import + 套件管理（uv / pip）
+ch26	26.13	NumPy：陣列運算
+ch26	26.19	評估指標：accuracy / precision / recall / F1 
+ch26	26.25	FastAPI Hello World + ASGI
+ch26	26.31	Django + DRF 對比
+ch27	27.7	實戰：完整資料分析流程
+ch27	27.12	Streamlit：5 分鐘做出 Dashboard
+ch27	27.13	SQLAlchemy + pandas：DB 資料分析
+ch27	27.15	時間序列分析 + Prophet 預測
+ch27	27.17	PySpark：處理 TB 級資料
+ch27	27.23	Geo 分析：pandas + Folium / GeoPandas
+ch28	28.6	IP 池 / Proxy 服務：被封 IP 的救星
+ch28	28.18	爬蟲 + Pandas：抓 + 分析一條龍
+ch29	29.5	Crawlee：Node 版的 Scrapy 框架
+ch29	29.21	Web Scraping APIs：付費省心
+ch30	30.13	Excel / Google Sheets 爬蟲
+ch30	30.23	客戶交付：報表 + Dashboard + API
+ch31	31.1	Node.js 是什麼？為什麼後端用 JS
+ch31	31.7	TypeScript 設定 + 用法
+ch31	31.13	JWT 認證 + bcrypt 密碼
+ch31	31.19	部署：Docker / Railway / Vercel
+ch32	32.1	為什麼是 Go？2026 安裝
+ch32	32.7	Pointer：指標完整
+ch32	32.13	Package + Module 系統
+ch32	32.19	測試 + Benchmark
+ch35	35.3	.NET 進階 + 接案
+ch36	36.4	Laravel：PHP 框架王者
+ch36	36.5	Laravel 進階：Livewire + Filament + 部署
+ch37	37.1	WordPress 為什麼仍是接案金礦
+ch37	37.3	WooCommerce + 客製化 + 接案
+ch37	37.4	WordPress 仍是台灣接案主力
+ch38	38.1	電商架構總圖
+ch38	38.3	物流整合 + 電商完整流程
+ch39	39.1	LINE 生態系總圖：官方帳號 vs Bot vs LIFF
+ch39	39.2	LINE 官方帳號：註冊 + 後台
+ch39	39.8	LIFF：在 LINE 內開「網頁 App」
+ch39	39.11	LINE 接案 + 變現實戰
+ch42	42.1	接案 vs 全職：怎麼選
+ch42	42.2	找客戶 + 報價 + 簽約
+ch42	42.3	交付 + 維護 + 變被動收入
+ch42	42.6	交付 + 月費維護 + 升級長期客戶
+ch43	43.1	為什麼工程師也要懂專案管理
+ch43	43.7	Sprint Planning + Standup 怎麼開
+ch43	43.13	RFC / Design Doc：寫對的需求
+ch43	43.19	從工程師到 Lead / Manager
+ch43	43.22	Linear：2026 最熱 PM 工具
+ch43	43.23	Notion / Confluence：知識管理
+ch43	43.25	Sprint Planning：估時 + 切任務
+ch44	44.1	PdM vs PM：真實工作差別
+ch44	44.7	PMF：Product-Market Fit
+ch44	44.13	Retention 提升
+ch44	44.19	AI 時代 PdM 新工作
+ch45	45.1	為什麼跨職能會痛：incentive 不同
+ch45	45.7	工程 × 法務
+ch45	45.13	翻譯技術給非技術
+ch46	46.1	AI / ML / DL / GenAI：名詞釐清
+ch46	46.7	Token / Context Window / 價格完整
+ch46	46.13	RAG 完整：Retrieval Augmented Generation
+ch46	46.19	LlamaIndex：RAG 專家
+ch46	46.25	AI 倫理與偏見
+ch47	47.1	AI 應用的分類框架
+ch47	47.7	醫療 / 健康：8 種 AI 應用
+ch47	47.13	製造 / 物流：6 種 AI 應用
+ch47	47.19	個人生產力 / 助手：12 種 AI 應用
+ch48	48.1	Vibe Coding 是什麼？
+ch48	48.7	CLAUDE.md / .cursorrules / Skills
+ch48	48.13	Git workflow with AI
+ch48	48.19	AI 寫前端 vs 後端 vs DevOps 差異
+ch48	48.21	Cursor / Claude Code / Windsurf 三選一
+ch49	49.1	什麼是 Agent？跟 LLM、Tool Use 怎麼分？
+ch49	49.7	Tool Use 完整
+ch49	49.13	Coding Agent：Devin / Claude Code / OpenH
+ch49	49.19	Production 部署 + 監控
+ch49	49.25	Computer Use / Browser Use：AI 操作電腦
+ch50	50.1	為什麼要學自動化？
+ch50	50.7	Code Node：跑 JS / Python
+ch50	50.13	實戰 3：客服 RAG bot
+ch50	50.19	n8n 是什麼 + 跟 Zapier / Make 比
+ch56	56.5	VTuber 技術門檻
+ch59	59.1	為什麼是一人公司時代
+ch59	59.7	怎麼找 SaaS idea
+ch59	59.13	MRR $1k / $5k / $10k 不同階段
+ch59	59.19	Exit：賣公司 / 收購
+ch59	59.25	一人公司財務：稅 / 帳 / 法律
+ch60	60.1	Indie 創業心法
+ch60	60.2	Indie 心理建設 + 健康
+ch60	60.3	Indie 創業心法：別追獨角獸

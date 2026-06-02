@@ -913,8 +913,8 @@
       "analogy": "Apple / Google 抽 15-30%、要算進報價。",
       "content": "## 4 大模式\n1. 付費下載（過時）\n2. IAP（一次性購買）\n3. 訂閱（最賺）\n4. 廣告\n\n## IAP（react-native-iap）\n```typescript\nimport { initConnection, getProducts, requestPurchase } from \"react-native-iap\";\n\nawait initConnection();\nconst products = await getProducts({ skus: [\"com.you.app.pro_month\"] });\nawait requestPurchase({ sku: \"com.you.app.pro_month\" });\n```\n\n## Receipt 驗證（後端、必做）\n```typescript\nasync function verifyApple(receipt) {\n  const res = await fetch(\"https://buy.itunes.apple.com/verifyReceipt\", {\n    method: \"POST\",\n    body: JSON.stringify({\n      \"receipt-data\": receipt,\n      password: APPLE_SHARED_SECRET\n    })\n  });\n  return await res.json();\n}\n```\n\n## 抽成\n- Small Business：< $1M ARR、抽 15%\n- 一般：30%\n\n## RevenueCat（推薦 Indie）\n```bash\nnpm install react-native-purchases\n```\n統一 Apple + Google IAP、免費 plan：$2500 MTR。\n\n## 廣告（AdMob）\n```typescript\nimport { AdMobBanner, AdMobInterstitial, AdMobRewarded } from \"expo-ads-admob\";\n\n<AdMobBanner bannerSize=\"banner\" adUnitID=\"ca-app-pub-xxx/yyy\" />\n```\n\neCPM 台 $1-5、美 $3-10。\n\n## 定價\n- 心理價：$0.99 / $4.99 / $9.99\n- 年費 8 折比月費\n- 免費試用降低門檻\n\n## 監控\nDAU / MAU、ARPU、LTV、Churn rate",
       "tip": {
-        "type": "business",
-        "text": "App 賺錢 = 訂閱 + IAP > 廣告。"
+        "type": "practical",
+        "text": "選變現模式前先看使用情境：工具型適合訂閱、內容型適合廣告、加值功能適合 IAP。混用前先確認不會傷體驗。"
       },
       "id": "11.19",
       "number": "LESSON 11.19",

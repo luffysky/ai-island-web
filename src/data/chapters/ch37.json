@@ -26,8 +26,8 @@
       "analogy": "不時髦、但月入 NT$ 30-100k 接案剛需。",
       "content": "## 為什麼仍主流\n- 43% 全網（含大量企業 / 部落格）\n- 客戶熟悉\n- 主題 / 外掛超多\n- 不用寫 code 也能用\n- SEO 友善\n\n## WordPress 兩種\n\n### WordPress.com\n託管服務、限制多、不推薦商業。\n\n### WordPress.org（自架）\n完整控制、推薦。\n這章講這個。\n\n## 客戶類型\n\n### 1. 中小企業官網\n- 公司簡介 / 服務 / 聯絡\n- NT$ 30-100k\n- 1-2 週\n\n### 2. 部落格 / 內容網站\n- 個人 / 自媒體\n- NT$ 20-50k\n\n### 3. 電商（WooCommerce）\n- 中小電商\n- NT$ 50-300k\n\n### 4. 課程平台\n- LearnDash / Tutor LMS\n- NT$ 100-500k\n\n### 5. 會員網站\n- Membership\n- NT$ 50-200k\n\n### 6. 客製主題開發\n- 設計 + 開發\n- NT$ 100-500k\n\n### 7. 維護月費\n- NT$ 2-10k/月\n- 更新、備份、安全\n\n## 不要碰\n- ❌ 需大客製、企業級（用 Laravel / Next.js）\n- ❌ 高並發 / 高互動\n- ❌ Native App\n- ❌ 客戶很懂技術（會挑剔）\n\n## 收費策略\n\n### Fixed price\n明確規格、固定價。\n\n### Hourly\nNT$ 1000-3000/hr。\n\n### Retainer（月費）\n月固定費、優先處理。\n\n## 入門難度\n- 後台操作：1 週\n- 主題設定：2 週\n- 客製化（PHP）：1 個月\n- 全棧（外掛開發）：3-6 個月\n\n## 心法\n- 看不起 WordPress = 看不起錢\n- 中小企業老闆預算 NT$ 30-50k、剛好你的 sweet spot\n- 一年累積 20 個客戶 = 月被動 NT$ 30k+\n- 不要追完美主義、客戶不在乎",
       "tip": {
-        "type": "business",
-        "text": "WordPress 接案 = Indie 月入 NT$ 30k+ 最快路線。"
+        "type": "practical",
+        "text": "WordPress 客製重點是『用對 hook』而不是改核心檔；改核心更新就被蓋掉。子主題 + plugin 才是正解。"
       },
       "id": "37.1",
       "number": "LESSON 37.1",
@@ -244,8 +244,8 @@
       "analogy": "WooCommerce 是 Indie 電商飯碗。",
       "content": "## WooCommerce\nWordPress 的電商外掛、免費、市占 40%+。\n\n## 基本設定\n1. 裝 WooCommerce\n2. 設定金流（藍新 / 綠界 / Stripe）\n3. 設定物流（黑貓 / 7-11）\n4. 加商品\n5. 設稅率 / 運費\n\n## 台灣金流外掛\n- **藍新金流官方**\n- **綠界金流官方**\n- **TapPay**\n- **LINE Pay**：透過綠界\n\n每個 NT$ 1500-3000 一次性。\n\n## 物流外掛\n- **黑貓宅急便**\n- **7-11 賣貨便**\n- **全家店到店**\n\n## 必裝電商外掛\n- **WooCommerce Subscriptions**：訂閱（$199）\n- **WooCommerce Bookings**：預約\n- **Yoast WooCommerce SEO**\n- **Cart Abandonment**：未結帳提醒\n\n## 主題\n- **Astra**：通用\n- **Flatsome**：電商專門\n- **WoodMart**：服飾類\n\n## 接案流程\n\n### Phase 1：報價\n- 客戶問什麼類型電商\n- 商品數量 / 客製需求\n- 報價範圍：NT$ 50-300k\n\n### Phase 2：規格\n- 商品分類 / 結構\n- 金流 / 物流\n- 會員 / 點數\n- SEO 需求\n\n### Phase 3：開發（1-2 月）\n- 主機 + 安裝\n- 設計（PSD → 主題）\n- 商品上架\n- 金流測試\n- 物流整合\n- 測試\n\n### Phase 4：交付\n- 教育訓練（後台 1-2 hr）\n- 上線\n- 30 天保固\n\n### Phase 5：月費維護\n- 主機 + SSL + 備份\n- 月 NT$ 3-10k\n\n## 接案 SOP\n\n### 找客戶\n1. **Threads / IG**：分享案例\n2. **FB 社團**：中小企業老闆\n3. **Google Ads**：「WordPress 接案」\n4. **104 接案**\n5. **客戶轉介**：最強\n\n### 報價單必有\n- Scope（做什麼 / 不做什麼）\n- 時程\n- 付款條件（50% 訂金、50% 完成）\n- 交付物\n- 維護保固\n- 著作權\n\n### 合約注意\n- 不包：「無限改」\n- 包：3 次大改\n- 加項：另計\n- 月維護獨立合約\n\n## 案例：服飾電商\n\n**客戶**：30 商品、月營業額目標 NT$ 30 萬\n\n**規格**：\n- WordPress + WooCommerce\n- Flatsome 主題\n- 藍新金流\n- 黑貓物流\n- LINE 客服整合\n\n**報價**：\n- Setup：NT$ 80k\n- 月維護：NT$ 5k\n\n**時程**：6 週\n\n**完成內容**：\n- 主機 + Domain\n- 主題 + 客製\n- 30 商品上架\n- 金流 / 物流測試\n- SEO 基礎\n- Google Analytics\n- 後台教學影片\n\n## 進階變現\n\n### 1. 主題開發\n做 niche 主題、賣 ThemeForest。\n月被動 $200-2000。\n\n### 2. 外掛開發\n做 niche plugin。\n- CodeCanyon\n- WordPress.org（免費 + Pro）\n\n### 3. SaaS\n做 WordPress 工具（如 backup as a service）。\n\n## 學習資源\n- WPBeginner（中文：WordPress 中文教學）\n- ThemeIsle\n- Kinsta blog\n- Astra documentation\n\n## 心法\n- WooCommerce 是門檻 + 飯碗\n- 中小企業不在乎技術、在乎結果\n- 月費維護 = 被動收入\n- 累積 case study + 客戶見證\n- 慢慢做專業領域（餐飲 / 服飾 / 美容）",
       "tip": {
-        "type": "business",
-        "text": "WordPress 電商接案：月入 NT$ 50-150k 不難。"
+        "type": "practical",
+        "text": "WooCommerce 客製先找有沒有現成 plugin / hook，能設定解決就別寫 code，維護成本最低。"
       },
       "id": "37.3",
       "number": "LESSON 37.3",
@@ -365,8 +365,8 @@
       "analogy": "不會 WordPress = 接不到中小企業案。",
       "content": "## 為什麼 WordPress 還是主流\n\n### 數字\n- 全球 40%+ 網站\n- 台灣中小企業 70-80% 用 WP\n- CMS market 60%+\n\n### 為什麼用戶愛\n- 不用會 code\n- Plugin 多\n- 主機便宜\n- 改 / 維護自己來\n\n### 為什麼 dev 還在做\n- 客戶要\n- 快（一週交付）\n- 報價穩\n\n## WordPress 適合 vs 不適合\n\n### ✅ 適合\n- 部落格 / 內容站\n- 中小企業 brochure\n- 簡單電商（WooCommerce）\n- 課程平台（LearnDash）\n- 預約系統（Amelia）\n\n### ❌ 不適合\n- 高流量 SaaS\n- 複雜業務邏輯\n- 即時互動\n- Mobile App\n\n## 接案類型\n\n### 1. 全新建站（NT$ 30-200k）\n- 主題客製\n- Plugin 整合\n- 內容上架\n- SEO 基本\n\n### 2. 改版升級（NT$ 20-100k）\n- 主題換新\n- WordPress 升級\n- 加新功能\n\n### 3. WooCommerce 電商（NT$ 50-300k）\n- 商品設置\n- 金流物流\n- 設計\n- 月維護\n\n### 4. 修 bug / 維護（NT$ 3-20k）\n- 一次性\n- 或月費\n\n### 5. 速度優化（NT$ 10-50k）\n- Image / CDN / cache\n- DB 清理\n- Lighthouse 改善\n\n### 6. SEO 顧問（NT$ 10-50k/月）\n- Yoast / RankMath\n- 內容策略\n\n## 客戶來源\n\n### 1. 在地（最多）\n- 老闆 / 中小企業朋友\n- 商會 / 扶輪社\n- Word of mouth\n\n### 2. 接案平台\n- 104 接案\n- 1111\n- Tasker\n- WordPress 社團\n\n### 3. 自己 brand\n- IG / FB 個人 / 自己 case study\n- WP 課程教學 → 帶來客戶\n\n## 報價心法\n\n### 不報「網站多少錢」\n- 客戶覺得「便宜的網站 = 一樣」\n- 你陷入價格戰\n\n### 報「解決什麼問題」\n- 「3 個月後讓你的網站 SEO 進前 10」\n- 「Mobile 速度 90 分」\n- 「金流 + 物流 + 客服整合」\n\n差很多。\n\n## 心法\n- WordPress 學會 = 月入 NT$ 50-150k 基本盤\n- 別只賣「網站」、賣「結果」\n- 月維護 > 一次性\n- 結合 SEO / 行銷加值\n- 不要怕「過時」、80% 客戶就要 WordPress",
       "tip": {
-        "type": "milestone",
-        "text": "WordPress 接案 = Indie 最穩入口。"
+        "type": "practical",
+        "text": "WordPress 在台灣中小企業很常見，但別把它當萬用；重前端互動 / 即時的需求，用現代框架更適合。"
       },
       "exercise": {
         "question": "找一個你身邊的例子、用「WordPress 仍是台灣接案主力」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",

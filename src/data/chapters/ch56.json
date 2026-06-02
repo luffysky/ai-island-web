@@ -436,8 +436,8 @@
       "analogy": "Path 多元、看預算。",
       "content": "## 兩大技術\n- **VRM**（3D）：全身 / 360 度、適合直播 / VR\n- **Live2D**（2D）：平面但細膩、適合對話頭像\n\n## 製作流程\n1. 角色設定（Reference sheet）\n2. 設計（Midjourney 多角度多表情）\n3. 細化（Photoshop / Clip Studio 拆 layer）\n4. Rigging（Live2D Cubism）\n5. 上線（VTube Studio / VSeeFace）\n\n## 軟體\n- 設計：Photoshop / Clip Studio / Krita（免費）\n- Rigging：Live2D Cubism Pro $30/月\n- VRM：VRoid Studio（免費）\n- 直播：VTube Studio / VSeeFace / OBS\n\n## 動作 capture\n- iPhone（ARKit、最簡）\n- Leap Motion（手部）\n- Vive Trackers（全身）\n\n## 接案\n- Live2D 簡易：NT$ 30-80k\n- Live2D 完整：NT$ 100-300k\n- VRM：NT$ 50-200k\n\n## 商業模式\n- **Solo**：自己當 / 朋友配\n- **經紀**：簽 Hololive / Nijisanji、抽 50-70%\n- **自家 talent**：養多角色\n\n## 心法\n- 角色魅力 > 技術完美\n- 故事 > 視覺\n- 跟粉絲互動 > 演算法",
       "tip": {
-        "type": "milestone",
-        "text": "VTuber 是 2026 個人創業最大機會之一。"
+        "type": "practical",
+        "text": "做虛擬 IP 先用現成工具（VTube Studio 等）跑通流程，別一開始就鑽進自建系統；先驗證內容做不做得起來。"
       },
       "exercise": {
         "question": "找一個你身邊的例子、用「VTuber 技術門檻」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
