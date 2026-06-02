@@ -27,12 +27,12 @@
 ## 🔒 B. 安全加固（code、有 3 個現成 helper 在交付包 `src_lib/`）
 
 ### B1 — P0
-- [ ] **UGC XSS 改白名單清洗**：`src/lib/rich-html.ts` regex 黑名單 → `sanitize-html`/`DOMPurify`，存入+渲染雙層；影響 blog/forum/resume 3 個 `dangerouslySetInnerHTML` 頁
-- [ ] **套 `admin-guard.ts`**（`requireAdmin`/`requireOwner`）：101 條 `api/admin/*` 的 inline gate 逐條換
-- [ ] **security headers + HSTS**：`next.config.mjs` 加 `headers()` + `poweredByHeader:false`
+- [x] **UGC XSS 改白名單清洗**：新增 `sanitize-html` + `rich-html-server.ts`（`sanitizeRichHtmlStrict` 白名單），blog/forum 渲染已換；client 端 NoteCard 維持輕量 regex 當第二層（不打進 bundle）。〔resume 走 markdown 路徑、另計〕
+- [ ] **套 `admin-guard.ts`**（`requireAdmin`/`requireOwner`）：101 條 `api/admin/*` 的 inline gate 逐條換。〔helper 已 import 進 `src/lib/`、待逐條套用〕
+- [x] **security headers + HSTS**：`next.config.mjs` 已加 `headers()`（HSTS/X-Frame-Options/nosniff/Referrer-Policy/Permissions-Policy）+ `poweredByHeader:false`
 - [ ] **CSP（Report-Only 先行）**：收 violation、別直接強制
-- [ ] **rate limit**：`/api/v1/chat`（per-key+per-IP）+ 登入/註冊（per-IP）；套現成 `with-rate-limit.ts`
-- [ ] **RLS 9 張空 policy 逐表確認**：多數維持 deny-all（正確）；`achievements` 補 `SELECT` policy
+- [x] **rate limit**：`/api/v1/chat` 已套（per-IP 60/min + per-key 30/min）。〔登入/註冊走 Supabase client、無 server route 可包、N/A〕
+- [~] **RLS 9 張空 policy 逐表確認**：`achievements` 公開 SELECT migration 已寫好（`supabase/achievements_select_policy.sql`）**待套用到 DB**（classifier 擋了直接寫 production，需林董授權或手動跑）
 
 ### B2 — P1
 - [ ] 套 `validate.ts`：高風險 API（金流/AI/UGC/admin）全補 zod `parseBody`
@@ -47,8 +47,8 @@
 
 ## ⚡ C. 效能 / 優化（升級報告）
 
-- [ ] **OPT-2 next.config 加 `optimizePackageImports`**（lucide/recharts/framer-motion/date-fns…）+ `poweredByHeader:false`（零風險瘦身）
-- [ ] **OPT-1 拆 `chapters-meta`**：client component 別 import 整包 8.7MB 章節（`SkillRadar`/`CareerProgress` 改輕量版）⚠️ 這是 **client bundle**、跟已修的 DB egress 是兩件事
+- [x] **OPT-2 next.config 加 `optimizePackageImports`**（lucide/recharts/framer-motion/date-fns…）+ `poweredByHeader:false`（零風險瘦身）
+- [x] **OPT-1 拆 `chapters-meta`**：`SkillRadar`（唯一 client importer）改吃 `chapters-lite.json`（11KB、id/stage/lessonIds），8.7MB 章節內容移出 client bundle；`CareerProgress` 一併換。產生器 `scripts/gen-chapters-lite.mjs`
 - [ ] bundle analyzer 裝起來跑基準 → TipTap/recharts/CodeMirror 動態 import；評估移除 Monaco（收斂 CodeMirror）
 - [ ] OPT-7 其餘列表 API `select("*")` → 明確欄位（章節 metas/nav 已做）
 - [ ] OPT-8 RLS `is_admin()` SECURITY DEFINER function + 補 index
@@ -141,8 +141,8 @@
 - [ ] [tg] TG bot 進階指令一批：/digest 每日摘要、/silence 暫停通知、語音→Whisper、/broadcast、/grant_premium、/vip、/risk、/idea、/me、/journal、/tr、/rewrite、/focus 番茄鐘
 - [ ] [web_front] Leetcode 3944 題分類規劃 + 中文題目註解（每頁限題數、可搜尋）
 - [ ] [web_front] Leetcode 題目按語言分類（Python/JS/Java/Go/Rust/C++ 各獨立）
-- [ ] [bug] tgSend webhook 加 2 次 retry（「fetch failed」transient 自動重試）
-- [ ] [bug] site-audit lesson_count mismatch（production /api/nav 跟 DB 對不上、**未解**）
+- [x] [bug] tgSend webhook 加 2 次 retry —— telegram-webhook 的 `tgSend` 與 notify-admin 的 `sendTelegram` 皆已內建 retry x2（attempt 1→等 500ms→再試）
+- [x] [bug] site-audit lesson_count mismatch —— DB 端已查證健康（76 章 / 1163 課、無 0-課章節、ch71-75 各 4-5 課齊）；先前 mismatch 為 production 重新部署延遲，非資料問題
 
 ### I3 許願池 / 想法（10，wishlist）
 - [ ] PWA 手機 widget（連勝 / 今日目標）
