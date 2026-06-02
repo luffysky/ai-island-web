@@ -99,7 +99,7 @@ async function searchArticles(q: string): Promise<SearchResult[]> {
   const useFullText = q.length >= 2;
   const tsQuery = q.trim().split(/\s+/).filter(Boolean).join(" & ");
 
-  let { data, error } = await admin
+  const { data: queried, error } = await admin
     .from("user_blog_articles")
     .select(
       "id, title, slug, summary, cover_image, tags, view_count, published_at, user_id"
@@ -110,6 +110,7 @@ async function searchArticles(q: string): Promise<SearchResult[]> {
     })
     .order("published_at", { ascending: false })
     .limit(50);
+  let data = queried;
 
   if (error) {
     const fallback = await admin

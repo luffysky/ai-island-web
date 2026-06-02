@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
   if (!title) return NextResponse.json({ error: "title_required" }, { status: 400 });
 
   // slug：用給的或從標題產生、撞名加數字
-  let baseSlug = body.slug ? slugify(body.slug) : slugify(title);
+  const baseSlug = body.slug ? slugify(body.slug) : slugify(title);
   let slug = baseSlug;
   let n = 1;
   while (true) {

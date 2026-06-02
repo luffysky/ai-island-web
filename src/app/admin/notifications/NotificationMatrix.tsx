@@ -165,7 +165,7 @@ export function NotificationMatrix({ initial }: { initial: Setting[] }) {
         </div>
         <div>
           在程式碼任何發通知的點、用{" "}
-          <code className="bg-bg px-1.5 py-0.5 rounded text-[10px]">await isChannelEnabled('event_key', 'line')</code>{" "}
+          <code className="bg-bg px-1.5 py-0.5 rounded text-[10px]">{`await isChannelEnabled('event_key', 'line')`}</code>{" "}
           檢查、回 false 就 skip 那個 channel。
         </div>
       </div>

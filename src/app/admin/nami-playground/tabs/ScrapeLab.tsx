@@ -393,7 +393,7 @@ export function ScrapeLab() {
           <div className="flex-1 min-h-[400px] p-3 bg-[#0d1117] overflow-y-auto font-mono text-xs leading-relaxed">
             {output && <pre className="whitespace-pre-wrap text-[#e6edf3]">{output}</pre>}
             {stderr && <pre className="whitespace-pre-wrap text-red-400 mt-2">{stderr}</pre>}
-            {!output && !stderr && <span className="text-fg-muted/60">// 跑爬蟲後結果在這</span>}
+            {!output && !stderr && <span className="text-fg-muted/60">{"// 跑爬蟲後結果在這"}</span>}
           </div>
         </div>
       </div>

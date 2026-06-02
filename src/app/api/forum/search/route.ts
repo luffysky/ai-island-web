@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
   const admin = createSupabaseAdmin();
   const tsQuery = q.split(/\s+/).filter(Boolean).join(" & ");
 
-  let { data, error } = await admin
+  const { data: queried, error } = await admin
     .from("forum_threads")
     .select(`
       id, title, tags, reply_count, view_count, last_reply_at,
@@ -21,6 +21,7 @@ export async function GET(req: NextRequest) {
     .textSearch("search_vector", tsQuery, { config: "simple" })
     .order("last_reply_at", { ascending: false })
     .limit(30);
+  let data = queried;
 
   // 失敗退回 ilike
   if (error) {

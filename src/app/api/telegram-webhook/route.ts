@@ -463,7 +463,7 @@ async function processTelegramUpdate(token: string, body: any) {
   }
 
   // model 選擇優先順序: user 指定 > usage_models("telegram_admin") > anthropic > 第一個
-  let model =
+  const model =
     (state.model_name && activeModels.find((m) => m.model_name === state.model_name)) ||
     (await pickModelForUsage("admin_assistant", activeModels).catch(() => null)) ||
     activeModels.find((m) => m.provider === "anthropic") ||

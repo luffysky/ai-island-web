@@ -492,8 +492,8 @@ ${activeFile.content}
             <div className="bg-[#0d1117] p-3 font-mono text-xs max-h-[300px] overflow-y-auto">
               {!output && !stderr && !previewSrcDoc && (
                 <div className="text-fg-muted/60">
-                  // 點「執行」看結果<br />
-                  // .py → Pyodide / .sql → SQLite / .html+css+js → iframe sandbox
+                  {"// 點「執行」看結果"}<br />
+                  {"// .py → Pyodide / .sql → SQLite / .html+css+js → iframe sandbox"}
                 </div>
               )}
               {output && <pre className="whitespace-pre-wrap text-[#e6edf3]">{output}</pre>}

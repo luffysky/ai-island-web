@@ -46,7 +46,7 @@ export async function PATCH(
 
   // 若改 slug、檢查撞名
   if (body.slug) {
-    let baseSlug = slugify(body.slug);
+    const baseSlug = slugify(body.slug);
     let slug = baseSlug;
     let n = 1;
     while (true) {

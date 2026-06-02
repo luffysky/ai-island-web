@@ -449,7 +449,7 @@ export function DataLab() {
           </div>
           <div ref={outputRef} className="flex-1 min-h-[450px] overflow-y-auto bg-[#0d1117] p-3 font-mono text-xs">
             {!output && !stderr && images.length === 0 && (
-              <div className="text-fg-muted/60">// 選一題、點「跑分析」</div>
+              <div className="text-fg-muted/60">{"// 選一題、點「跑分析」"}</div>
             )}
             {output && <pre className="whitespace-pre-wrap text-[#e6edf3] mb-2">{output}</pre>}
             {images.map((b64, i) => (

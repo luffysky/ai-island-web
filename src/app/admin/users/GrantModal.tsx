@@ -30,7 +30,7 @@ export function GrantModal({
     setBusy(true);
     try {
       let endpoint = "";
-      let body: any = { userId: user.id, reason: reason.trim() };
+      const body: any = { userId: user.id, reason: reason.trim() };
       if (type === "xp") {
         endpoint = "/api/admin/grant/xp";
         body.amount = amount;

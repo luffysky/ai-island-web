@@ -168,7 +168,7 @@ export function PythonREPL() {
           </div>
           <div ref={outputRef} className="flex-1 min-h-[300px] p-3 bg-[#0d1117] overflow-y-auto font-mono text-xs leading-relaxed">
             {output.length === 0 ? (
-              <div className="text-fg-muted/60 text-[11px]">// 跑 Python 後輸出會顯示在這</div>
+              <div className="text-fg-muted/60 text-[11px]">{"// 跑 Python 後輸出會顯示在這"}</div>
             ) : (
               output.map((line, i) => (
                 <pre

@@ -334,7 +334,7 @@ function SettingModal({
               className="w-full bg-bg border border-border rounded-lg px-3 py-2 text-xs font-mono outline-none focus:border-accent resize-y"
             />
             <div className="text-[10px] text-fg-muted mt-1">
-              範例：字串 <code>"hello"</code>、數字 <code>42</code>、true/false、陣列 <code>["a","b"]</code>、物件 <code>{"{"}"x":1{"}"}</code>
+              範例：字串 <code>{`"hello"`}</code>、數字 <code>42</code>、true/false、陣列 <code>{`["a","b"]`}</code>、物件 <code>{`{"x":1}`}</code>
             </div>
             {parseError && <div className="text-[10px] text-red-400 mt-1">{parseError}</div>}
           </Field>

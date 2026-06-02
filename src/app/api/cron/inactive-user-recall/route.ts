@@ -82,7 +82,7 @@ export async function GET(req: NextRequest) {
     if ((already ?? 0) > 0) { skipped++; continue; }
 
     // 生成訊息
-    let title = "雪鑰想你了";
+    const title = "雪鑰想你了";
     let body = "";
     if (useAi) {
       try {

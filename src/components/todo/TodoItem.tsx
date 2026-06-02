@@ -29,7 +29,7 @@ function dueLabel(due: string | null): { text: string; tone: string } | null {
 
 export function TodoItem({
   todo,
-  children,
+  subTodos,
   onToggle,
   onDelete,
   onTitleChange,
@@ -38,7 +38,7 @@ export function TodoItem({
   depth = 0,
 }: {
   todo: Todo;
-  children?: Todo[];
+  subTodos?: Todo[];
   onToggle: (id: string, completed: boolean) => void;
   onDelete: (id: string) => void;
   onTitleChange: (id: string, title: string) => void;
@@ -67,7 +67,7 @@ export function TodoItem({
   };
 
   const due = dueLabel(todo.due_date);
-  const hasChildren = (children?.length ?? 0) > 0;
+  const hasChildren = (subTodos?.length ?? 0) > 0;
 
   return (
     <div
@@ -198,9 +198,9 @@ export function TodoItem({
         </div>
       </div>
 
-      {hasChildren && expanded && children && (
+      {hasChildren && expanded && subTodos && (
         <div className="border-l border-border ml-4">
-          {children.map((c) => (
+          {subTodos.map((c) => (
             <TodoItem
               key={c.id}
               todo={c}

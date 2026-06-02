@@ -742,7 +742,7 @@ export function Exercises() {
               </div>
             ))}
             {stderr && <pre className="whitespace-pre-wrap text-red-400 mt-2">{stderr}</pre>}
-            {!output && !stderr && images.length === 0 && <span className="text-fg-muted/60">// 寫完 code 點「試跑」</span>}
+            {!output && !stderr && images.length === 0 && <span className="text-fg-muted/60">{"// 寫完 code 點「試跑」"}</span>}
           </div>
         </div>
       </div>

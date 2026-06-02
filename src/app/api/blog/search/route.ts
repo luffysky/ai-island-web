@@ -14,13 +14,14 @@ export async function GET(req: NextRequest) {
   // 多個字以空白切、用 & 連接成 tsquery
   const tsQuery = q.split(/\s+/).filter(Boolean).join(" & ");
 
-  let { data, error } = await admin
+  const { data: queried, error } = await admin
     .from("user_blog_articles")
     .select("id, title, slug, summary, cover_image, tags, category, view_count, published_at, user_id")
     .eq("is_public", true)
     .textSearch("search_vector", tsQuery, { config: "simple" })
     .order("published_at", { ascending: false })
     .limit(30);
+  let data = queried;
 
   // textSearch 失敗時退回 ilike 模糊搜尋（標題）
   if (error) {

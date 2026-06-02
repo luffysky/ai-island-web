@@ -23,7 +23,7 @@ export default async function IslandPage() {
   }
 
   let completedChapterIds: number[] = [];
-  let chapterPctMap: Record<number, number> = {};
+  const chapterPctMap: Record<number, number> = {};
   let level = 1;
   let petName: string | null = null;
   let userProfile: any = null;

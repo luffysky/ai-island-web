@@ -505,9 +505,9 @@ export function BackendLab() {
           <div className="flex-1 min-h-[460px] p-3 bg-[#0d1117] overflow-y-auto font-mono text-xs">
             {!output && !stderr && (
               <div className="text-fg-muted/60">
-                // FastAPI / Flask 用 <span className="text-emerald-400">TestClient</span> 模擬 HTTP request<br/>
-                // 不需要真實 server、直接看 response 結果<br/>
-                // 業界寫測試的標準做法
+                {"// FastAPI / Flask 用 "}<span className="text-emerald-400">TestClient</span>{" 模擬 HTTP request"}<br/>
+                {"// 不需要真實 server、直接看 response 結果"}<br/>
+                {"// 業界寫測試的標準做法"}
               </div>
             )}
             {output && <pre className="whitespace-pre-wrap text-[#e6edf3]">{output}</pre>}

@@ -699,7 +699,7 @@ function DbContent({ db }: { db: DB }) {
               <>
                 {output && <pre className="whitespace-pre-wrap text-[#e6edf3]">{output}</pre>}
                 {stderr && <pre className="whitespace-pre-wrap text-red-400 mt-2">{stderr}</pre>}
-                {!output && !stderr && <span className="text-fg-muted/60">// 改 code、點「跑 SQL」</span>}
+                {!output && !stderr && <span className="text-fg-muted/60">{"// 改 code、點「跑 SQL」"}</span>}
               </>
             )}
             {!live && (

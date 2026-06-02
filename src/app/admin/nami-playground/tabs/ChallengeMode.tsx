@@ -311,7 +311,7 @@ export function ChallengeMode() {
                       <img src={`data:image/png;base64,${b64}`} alt={`output-${i}`} className="max-w-full rounded" />
                     </div>
                   ))}
-                  {!output && !result && images.length === 0 && <span className="text-fg-muted/60">// 寫完點「提交挑戰」、跑 user code + 隱藏 test、看 PASS / FAIL</span>}
+                  {!output && !result && images.length === 0 && <span className="text-fg-muted/60">{"// 寫完點「提交挑戰」、跑 user code + 隱藏 test、看 PASS / FAIL"}</span>}
                 </div>
               </div>
             </div>

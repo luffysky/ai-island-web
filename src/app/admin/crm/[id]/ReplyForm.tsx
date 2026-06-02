@@ -66,7 +66,7 @@ export function ReplyForm({
     });
   };
 
-  const useCanned = async (c: CannedReply) => {
+  const applyCanned = async (c: CannedReply) => {
     const filled = applyVariables(c.body, {
       username: targetUserName,
       ticket_id: ticketId.slice(0, 8),
@@ -139,7 +139,7 @@ export function ReplyForm({
                       <li key={c.id}>
                         <button
                           type="button"
-                          onClick={() => useCanned(c)}
+                          onClick={() => applyCanned(c)}
                           className="w-full text-left px-3 py-2 hover:bg-bg-elevated transition"
                         >
                           <div className="flex items-center gap-2 mb-0.5">

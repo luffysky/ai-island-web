@@ -457,7 +457,7 @@ conn.close()
                 />
               ) : (
                 <div className="flex-1 min-h-[400px] p-3 bg-[#0d1117] text-fg-muted/60 text-xs">
-                  // 點「{mode === "web" ? "渲染預覽" : "跑 JS"}」看結果
+                  {"// 點「"}{mode === "web" ? "渲染預覽" : "跑 JS"}{"」看結果"}
                 </div>
               )}
               {output && (
@@ -474,11 +474,11 @@ conn.close()
             <div className="flex-1 min-h-[500px] p-3 bg-[#0d1117] overflow-y-auto font-mono text-xs">
               {!output && !stderr && (
                 <div className="text-fg-muted/60">
-                  // 多檔案 IDE — 自動依檔名選 runner<br/>
-                  // - .py → Pyodide (Python in WASM)、可 import 其他 .py<br/>
-                  // - .sql → 內建 SQLite (Pyodide sqlite3)<br/>
-                  // - .html / .css / .js → iframe sandbox 渲染<br/>
-                  // - 自動存 localStorage、重整還在
+                  {"// 多檔案 IDE — 自動依檔名選 runner"}<br/>
+                  {"// - .py → Pyodide (Python in WASM)、可 import 其他 .py"}<br/>
+                  {"// - .sql → 內建 SQLite (Pyodide sqlite3)"}<br/>
+                  {"// - .html / .css / .js → iframe sandbox 渲染"}<br/>
+                  {"// - 自動存 localStorage、重整還在"}
                 </div>
               )}
               {output && <pre className="whitespace-pre-wrap text-[#e6edf3]">{output}</pre>}

@@ -28,7 +28,7 @@ export function PushUserButton({
       .then((j) => setCanned(j.replies ?? []));
   }, [showCanned]);
 
-  const useCanned = (c: any) => {
+  const applyCanned = (c: any) => {
     const filled = c.body.replace(/\{\{username\}\}/g, userName).replace(/\{\{ticket_id\}\}/g, "").replace(/\{\{ticket_subject\}\}/g, "");
     setText(filled);
     setShowCanned(false);
@@ -108,7 +108,7 @@ export function PushUserButton({
                   {canned.map((c: any) => (
                     <li key={c.id}>
                       <button
-                        onClick={() => useCanned(c)}
+                        onClick={() => applyCanned(c)}
                         className="w-full text-left px-3 py-2 hover:bg-bg-elevated"
                       >
                         <div className="text-xs font-bold text-accent">{c.title}</div>

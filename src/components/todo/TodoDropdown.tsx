@@ -371,12 +371,12 @@ function TodoPanelBody({ onClose }: { onClose: () => void }) {
                 {rootIds.map((id) => {
                   const todo = byId.get(id);
                   if (!todo) return null;
-                  const children = childrenById[id];
+                  const subTodos = childrenById[id];
                   return (
                     <TodoItem
                       key={id}
                       todo={todo}
-                      children={children}
+                      subTodos={subTodos}
                       onToggle={toggle}
                       onDelete={remove}
                       onTitleChange={(id, title) => patchTodo(id, { title })}
