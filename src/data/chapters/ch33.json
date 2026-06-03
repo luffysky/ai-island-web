@@ -23,647 +23,597 @@
     {
       "id": "33.1",
       "number": "LESSON 33.1",
-      "title": "行銷 vs 工程師：為什麼工程師該懂",
-      "oneLineSummary": "Rust 是「最安全、最快的鋼鐵戰士語言」—Mozilla 出的、連續 8 年 Stack Overflow 最愛。",
-      "analogy": "像德國坦克—學起來最痛、寫起來最爽。系統程式 / 嵌入式 / 區塊鏈 / WASM 都首選 Rust。Linux kernel、Firefox、Discord 後端—都用 Rust。",
-      "content": "很多工程師覺得「**我寫好 code 就好，行銷是行銷部的事**」。indie hacker 時代這想法**會害死你**。\n\n  \n### 2026 indie SaaS 的真實\n\n  \n沒人找的網站 = 死網站。**產品好沒用，沒人知道**。\n\n```text\n同樣花 100 小時：\n\n工程師 A：\n  寫超精美 SaaS、技術完美\n  上線後沒做行銷\n  → 一個月 5 個使用者\n  → 放棄\n\n工程師 B：\n  寫普通 SaaS、技術夠用\n  花 30 小時做 SEO + 寫部落格 + 社群\n  → 一個月 5000 使用者\n  → 開始有收入\n```\n\n  \n### 工程師懂行銷的好處\n\n  \n- 做 SaaS 不用雇行銷\n- 能跟行銷部有效溝通（不被忽悠）\n- 接案能提供「全包」服務（更貴）\n- 能識別客戶需求（不只是技術需求）\n- 知道哪些技術決策影響 SEO（SSR vs CSR）\n\n  \n### 哪些技術決策影響行銷？\n\n  \n- **渲染方式**：SPA 不利 SEO，要 SSR / SSG\n- **網址結構**：好的 URL 對 SEO + 分享有利\n- **頁面速度**：慢 = 跳出率高 = SEO 扣分\n- **Mobile-first**：Google 用手機版排名\n- **結構化資料**：影響搜尋結果呈現\n- **Open Graph**：影響社群分享預覽\n- **分析工具**：影響你能不能學習改進\n\n  \n### 2026 SEO 的三層\n\n  \n1. **SEO**：傳統 Google / Bing 搜尋\n2. **GEO**：Generative Engine Optimization—給 ChatGPT、Perplexity、Gemini 看的\n3. **AEO**：Answer Engine Optimization—給「直接給答案」的引擎看的\n\n  \n三個都要做，但**策略不同**。後面 lesson 會展開。\n\n  \n### 工程師的優勢\n\n  \n傳統行銷人不懂的東西，工程師有優勢：\n\n  \n- 能直接改 code 加 schema、metadata\n- 能優化 Core Web Vitals\n- 能寫自動化（auto-publish、自動 outreach）\n- 能用 API 做進階分析\n- 能用 AI 工具批量生成內容\n\n  \n**2026 indie hacker 的優勢就在於：工程 + 行銷一手包**。\n",
+      "title": "Rust 是什麼？為什麼 2026 值得學",
+      "oneLineSummary": "Rust 是「又快又安全」的系統語言——C 的速度、但編譯器幫你擋掉記憶體錯誤；學習陡但威力大。",
+      "analogy": "像有自動防護的賽車——跑得跟超跑（C/C++）一樣快，但出廠就裝好防撞系統，撞牆前編譯器先攔你。",
+      "content": "**Rust** 是 Mozilla 起家、現在業界（AWS / Microsoft / Cloudflare / Linux kernel）都在用的系統程式語言。它的招牌是「**又快又安全**」——跑得跟 C/C++ 一樣快，但**編譯器在你執行之前，就把記憶體錯誤（segfault、data race）擋下來**。\n\n### 1. Rust 解決什麼痛點？\n\nC / C++ 很快，但會出兩種致命錯誤：用到已釋放的記憶體、兩條執行緒同時改同個東西。這些 bug 難抓、又是資安漏洞的大宗。Rust 用「**所有權（ownership）**」制度，在編譯期就保證這些事不會發生——**零成本、不需要垃圾回收（GC）**。\n\n### 2. Rust 適合做什麼？\n\n- 系統 / 底層（作業系統、瀏覽器引擎、資料庫）\n- 高效能後端（Axum / Actix）\n- 命令列工具（ripgrep、fd 都是 Rust 寫的）\n- WebAssembly、嵌入式 / IoT、區塊鏈\n\n### 3. 老實說：Rust 難不難？\n\n難。它有別的語言沒有的「所有權 / 借用 / 生命週期」概念，初學會一直被編譯器罵。但**一旦編譯過，程式幾乎不會在執行時崩潰**——這是 Rust 連續多年「最受開發者喜愛語言」第一名的原因。\n\n> 💡 **學習心態**：把編譯器當成嚴格但善意的教練。它擋下來的每一個錯誤，都是別的語言會讓你上線後才炸的雷。\n\n### 🎯 重點回顧\n\n- Rust = C 的速度 + 編譯期的記憶體安全（不靠 GC）\n- 核心武器是「所有權」，下一章開始學\n- 適合系統、高效能後端、CLI、WASM、嵌入式\n\n**☕ 用人話講**\n\nRust 一句話：**「跑得像超跑、但出廠就裝好防撞系統」**。(1) **快**——跟 C/C++ 同級，沒有垃圾回收拖慢 (2) **安全**——編譯器靠「所有權」制度，在你執行前就擋掉記憶體錯誤跟資料競爭，這些正是別的語言會讓你上線後才炸的雷 (3) **代價是難**——多了「所有權/借用/生命週期」要學，初學一直被編譯器罵很正常。**一句話記住**：Rust 用「上線前嚴格、上線後超穩」換掉「上線前輕鬆、上線後爆炸」——編譯過了，程式幾乎不會在跑的時候崩潰。\n",
       "tip": {
-        "type": "practical",
-        "text": "工程師懂一點 SEO，等於讓自己寫的網站『被找得到』。最低限度先搞懂三件事：title / description 怎麼寫、heading 層級、網站能不能被 Google 爬到。"
+        "type": "concept",
+        "text": "Rust 初學一定會一直被編譯器擋。別氣餒——它擋下來的每一個錯，都是 C/C++ 會讓你上線才發現的記憶體 bug。把編譯器當教練，不是敵人。"
       },
       "xp": 10,
       "playgrounds": [
         {
           "key": "33.1.auto",
           "language": "rust",
-          "title": "試試看",
-          "initialCode": "fn main() {\n    println!(\"Hello AI 島！\");\n\n    let nums = vec![1, 2, 3, 4, 5];\n    let sum: i32 = nums.iter().sum();\n    println!(\"總和: {}\", sum);\n\n    let doubled: Vec<i32> = nums.iter().map(|n| n * 2).collect();\n    println!(\"乘 2: {:?}\", doubled);\n}",
-          "hint": "改 code、按執行看結果"
+          "title": "第一支 Rust 程式",
+          "hint": "Rust 用 println! 印東西（注意有驚嘆號）。",
+          "initialCode": "fn main() {\n    println!(\"哈囉，我在學 Rust！\");\n\n    let nums = [1, 2, 3, 4, 5];\n    let sum: i32 = nums.iter().sum();\n    println!(\"總和 = {}\", sum);\n}"
         }
       ],
       "exercise": {
-        "question": "找一個你身邊的例子、用「行銷 vs 工程師：為什麼工程師該懂」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
-        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
-        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+        "question": "用一句話說出 Rust 跟 C/C++ 最大的差別。",
+        "hint": "想「安全」。",
+        "answer": "Rust 跟 C/C++ 一樣快，但編譯器靠「所有權」制度在執行前就擋掉記憶體錯誤跟資料競爭，C/C++ 則要等執行時才炸。"
       },
       "outline": [
         {
-          "level": 3,
-          "text": "2026 indie SaaS 的真實"
+          "text": "1. Rust 解決什麼痛點？",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "工程師懂行銷的好處"
+          "text": "2. Rust 適合做什麼？",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "哪些技術決策影響行銷？"
+          "text": "3. 老實說：Rust 難不難？",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "2026 SEO 的三層"
-        },
-        {
-          "level": 3,
-          "text": "工程師的優勢"
+          "text": "🎯 重點回顧",
+          "level": 3
         }
       ]
     },
     {
       "id": "33.2",
       "number": "LESSON 33.2",
-      "title": "SEO 原理：搜尋引擎怎麼運作",
-      "oneLineSummary": "為什麼學 Rust：「能寫 C 速度的程式、又不會記憶體錯誤」—2026 系統語言首選。",
-      "analogy": "像魚與熊掌兼得—傳統 C / C++ 快但危險、Java / Python 安全但慢。Rust 兩個都要—靠 compiler 在編譯時抓記憶體錯誤、跑起來零負擔。",
-      "content": "沒搞懂原理就學技巧 = 死記。先搞懂搜尋引擎在幹嘛。\n\n  \n### 三步驟\n\n```text\n1. Crawl（爬取）\n   Googlebot 跑遍網路，把網頁抓回來\n\n2. Index（建索引）\n   分析內容、語義、結構，存進巨大資料庫\n\n3. Rank（排名）\n   使用者搜尋時，從索引找最相關的 → 排序顯示\n```\n\n  \n### 每步背後\n\n  \n#### Crawl\n\n  \n- 從已知網站開始（之前爬過的）\n- 跟著連結（link）發現新頁面\n- 讀 sitemap.xml（你主動告知）\n- 遵守 robots.txt（你說別爬就不爬）\n- 有 crawl budget（每天爬你多少頁有上限）\n\n  \n#### Index\n\n  \n- 內容是什麼主題？\n- 關鍵字密度\n- 結構（標題、段落、列表）\n- 連結到誰、誰連到你\n- 有 schema.org 結構化資料嗎\n- 更新頻率\n- Mobile-friendly\n- 頁面速度\n\n  \n#### Rank（最複雜）\n\n  \nGoogle 用**200+ 個因素**排名。主要：\n\n  \n- **內容相關性**：使用者搜的字跟頁面內容對不對\n- **權威度**：誰連結你、頁面歷史\n- **使用者體驗**：CWV 數值、停留時間、跳出率\n- **新鮮度**：新內容跟舊內容怎麼平衡\n- **個人化**：你的位置、搜尋歷史\n- **意圖**：使用者要什麼（資訊、購物、導覽）\n\n  \n### 2026 Google 的 AI 演算法\n\n  \n- **RankBrain**（2015+）：理解使用者意圖\n- **BERT**（2019+）：理解語意\n- **MUM**（2021+）：多模態，理解文字 + 圖片\n- **Helpful Content System**（2022+）：punish AI 生成的低質量內容\n- **SGE / AI Overview**（2024+）：搜尋結果頂部直接給 AI 答案\n\n  \n### SEO 的本質沒變\n\n  \n「**給使用者有用的內容**」。所有黑帽技巧（buy links、stuff keywords、cloaking）長期都會被抓。**2026 唯一可靠方法：認真做好內容**。\n\n  \n### 沒做 SEO 的下場\n\n```text\n你寫了 100 篇部落格\n但：\n- 沒 sitemap → Google 不知道有這些頁面\n- 沒 SSR → JS 才能看到內容，crawler 抓到空白\n- 沒 meta description → 搜尋結果摘要醜\n- 沒 schema → 顯示不出 rich result\n- 慢 → 排名扣分\n\n結果：100 篇文只有 3 篇被 index、0 個排名前 100\n```\n",
+      "title": "安裝 Rust + 第一個 Cargo 專案",
+      "oneLineSummary": "用 rustup 裝 Rust、用 cargo 管理專案——cargo new 建專案、cargo run 編譯執行，一條龍。",
+      "analogy": "像買了整套工具箱——rustup 是工具管理員、cargo 是萬用瑞士刀（建專案、裝套件、編譯、測試、跑全包）。",
+      "content": "Rust 的安裝跟工具鏈非常統一：用 **rustup** 安裝、用 **Cargo** 做所有事。\n\n### 1. 安裝（rustup）\n\n到 [rustup.rs](https://rustup.rs)，照指示一行指令裝完，它會幫你裝好 `rustc`（編譯器）、`cargo`（專案工具）、`rustup`（版本管理）。裝完驗證：\n\n🖥️ **在終端機輸入**\n\n```text\nrustc --version    # 看到版本號 = 裝好了\ncargo --version\n```\n\n### 2. Cargo 是什麼？\n\n**Cargo 是 Rust 的萬用工具**——建專案、加套件、編譯、測試、跑、發佈，全部用它。你幾乎不會直接呼叫 `rustc`。\n\n### 3. 建第一個專案\n\n```text\ncargo new hello        # 建一個叫 hello 的新專案（mkdir + 初始化）\ncd hello               # 進到專案資料夾\ncargo run              # 編譯 + 執行\n```\n\n`cargo new` 會生出：`Cargo.toml`（專案設定 + 依賴清單，像 package.json）跟 `src/main.rs`（程式進入點）。\n\n### 4. 加一個套件（crate）\n\nRust 的套件叫 **crate**，到 [crates.io](https://crates.io) 找。加法：\n\n```text\ncargo add rand          # 把 rand 套件加進 Cargo.toml\n```\n\n### 🎯 重點回顧\n\n- **rustup** 裝環境、**cargo** 做所有事\n- `cargo new` 建專案、`cargo run` 編譯執行、`cargo add` 加套件\n- 套件叫 **crate**、設定檔是 **Cargo.toml**\n\n**☕ 用人話講**\n\n裝 Rust 超統一：(1) **rustup** 一行裝好（編譯器 + 工具全包），打 `rustc --version` 有版本號就成功 (2) **cargo** 是萬用瑞士刀——`cargo new` 建專案、`cargo run` 編譯加執行、`cargo add` 加套件、`cargo test` 測試，幾乎所有事都用它 (3) 套件叫 **crate**、去 crates.io 找、設定寫在 **Cargo.toml**（像 JS 的 package.json）。**一句話記住**：別的語言環境常要東裝西裝，Rust 是「rustup 裝環境、cargo 做所有事」，一條龍超省心。\n",
       "tip": {
-        "type": "pro",
-        "text": "台灣科技公司面試 90% 會問「Rust」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+        "type": "practical",
+        "text": "Rust 幾乎不用直接呼叫 rustc。記住 cargo new / run / add / test / build 五個就夠日常用。"
       },
       "xp": 10,
       "playgrounds": [
         {
           "key": "33.2.auto",
           "language": "rust",
-          "title": "試試看",
-          "initialCode": "fn main() {\n    println!(\"Hello AI 島！\");\n\n    let nums = vec![1, 2, 3, 4, 5];\n    let sum: i32 = nums.iter().sum();\n    println!(\"總和: {}\", sum);\n\n    let doubled: Vec<i32> = nums.iter().map(|n| n * 2).collect();\n    println!(\"乘 2: {:?}\", doubled);\n}",
-          "hint": "改 code、按執行看結果"
+          "title": "Cargo 專案的進入點",
+          "hint": "main.rs 裡的 main() 就是程式起點。",
+          "initialCode": "fn main() {\n    // 這就是 cargo new 幫你生的 src/main.rs\n    let name = \"Cargo\";\n    println!(\"用 {} 管理 Rust 專案最省心\", name);\n}"
         }
       ],
       "exercise": {
-        "question": "挑一個你做過的舊專案、用本節「SEO 原理：搜尋引擎怎麼運作」介紹的進階技術重構它。",
-        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
-        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+        "question": "要建一個新 Rust 專案並執行，依序會打哪三個指令？",
+        "hint": "建、進、跑。",
+        "answer": "cargo new 專案名 → cd 專案名 → cargo run。"
       },
       "outline": [
         {
-          "level": 3,
-          "text": "三步驟"
+          "text": "1. 安裝（rustup）",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "每步背後"
+          "text": "2. Cargo 是什麼？",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "2026 Google 的 AI 演算法"
+          "text": "3. 建第一個專案",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "SEO 的本質沒變"
+          "text": "4. 加一個套件（crate）",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "沒做 SEO 的下場"
+          "text": "🎯 重點回顧",
+          "level": 3
         }
       ]
     },
     {
       "id": "33.3",
       "number": "LESSON 33.3",
-      "title": "關鍵字研究：找對的字",
-      "oneLineSummary": "Ownership：「Rust 最獨特的概念」—每個值有一個 owner、其他人借用。",
-      "analogy": "像租書系統—一次只能一個人借、別人要看得等。Rust 的 owner 機制：值只能屬於一個變數、其他變數「借」用—編譯時就杜絕 race condition。",
-      "content": "SEO 從**找對關鍵字**開始。不是「我想寫什麼」，是「**我的目標客戶在搜什麼**」。\n\n  \n### 關鍵字分類\n\n  \n- **Head terms（頭部）**：短、流量大、競爭激烈。例：「咖啡」\n- **Body terms（中部）**：中等。例：「掛耳咖啡推薦」\n- **Long-tail（長尾）**：長、流量小但精準。例：「肯亞 AA 掛耳咖啡 2026 推薦」\n\n  \n**indie hacker 應該主打 long-tail**—競爭少，轉換率高。\n\n  \n### 使用者搜尋意圖（Search Intent）\n\n  \n同樣的字，**不同意圖**：\n\n  \n- **Informational**：「咖啡怎麼煮」（找資訊）\n- **Navigational**：「星巴克菜單」（找特定網站）\n- **Commercial**：「最好的掛耳咖啡 2026」（比較）\n- **Transactional**：「買肯亞 AA 咖啡」（要買）\n\n  \n你的內容要**匹配意圖**。寫「咖啡知識」的文章，給「想買咖啡」的使用者看 = 浪費流量。\n\n  \n### 2026 關鍵字工具\n\n  \n- **Google Search Console**（GSC）：免費、官方\n- **Google Trends**：看趨勢\n- **Google 自動完成**：在搜尋列打字看建議\n- **Ahrefs**：$99/月、最強\n- **Ubersuggest**：$30/月、便宜\n- **Semrush**：$140/月、企業愛用\n- **AnswerThePublic**：問題型關鍵字\n- **Keywords Everywhere**：瀏覽器擴充\n- **Reddit / Dcard 搜尋**：看真實使用者怎麼問\n\n  \n### 2026 個人開發者的免費組合\n\n```text\n1. Google Trends 看趨勢\n2. Google 自動完成 + People Also Ask 找衍生問題\n3. AnswerThePublic 看問題雲圖\n4. GSC 看自己網站被搜什麼\n5. Ahrefs Free Backlink Checker 看競爭者\n\n完全免費，夠用到 1 萬 MAU\n```\n\n  \n### 關鍵字研究流程（SOP）\n\n  \n1. 列 10 個你的主題（「咖啡」、「網頁設計」）\n2. 用 Ahrefs / Ubersuggest 看每個的搜尋量、難度\n3. 看 Google「People Also Ask」抓問題\n4. 看競爭者排前面的文章寫什麼\n5. 篩選：搜尋量 100+、難度低、跟你產品相關\n6. 每個關鍵字寫一篇文章\n\n  \n### 關鍵字密度的迷思\n\n  \n2010 年代有人說「**關鍵字密度 2-5%**」。**2026 過時了**。Google 看的是「**整篇文章的語義主題**」，不是字數百分比。寫得自然、提到相關詞，比刻意塞重要。\n\n  \n### 2026 主流：Topic Clusters\n\n  \n不是「**一個關鍵字一篇文章**」，是「**一個主題一堆文章互相連結**」：\n\n```text\n主題：咖啡\n\nPillar（支柱文，2000+ 字）：\n- 「咖啡完整指南」\n\nClusters（衛星文，500-1000 字 × 10）：\n- 「怎麼選咖啡豆」\n- 「手沖咖啡入門」\n- 「義式咖啡機推薦」\n- 「咖啡產地介紹」\n- 「掛耳咖啡比較」\n...\n\n每個 cluster 都連結到 pillar\npillar 連結到每個 cluster\nGoogle 看到：「這站是咖啡專家」→ 排名整體提升\n```\n\n  \n\n⚡\n學習加速器\n\n把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。",
+      "title": "變數、型別、可變性（mut）",
+      "oneLineSummary": "Rust 變數預設「不可變」，要改得加 mut；強型別但會推導；整數浮點布林字串各有明確型別。",
+      "analogy": "像預設上鎖的抽屜——一般變數貼死封條（不可變），要能改的才特別標 mut 留個活動把手。",
+      "content": "Rust 是**強型別**語言，但很聰明、大多能自己推導型別。最特別的是：**變數預設不可變**。\n\n### 1. let 與 mut\n\n```rust\nlet x = 5;          // 不可變，x 之後不能再改\n// x = 6;           // ❌ 編譯錯誤！\n\nlet mut y = 5;      // 加 mut 才可變\ny = 6;              // ✅ OK\n```\n\n> 💡 **為什麼預設不可變？** 大部分變數其實不需要改；預設不可變能讓編譯器幫你抓到「不小心改到」的 bug，也讓多執行緒更安全。\n\n### 2. 型別推導 vs 明確標註\n\n```rust\nlet a = 10;          // 推導為 i32\nlet b: i64 = 10;     // 明確標 i64\nlet pi = 3.14;       // f64\nlet ok = true;       // bool\nlet s = \"嗨\";        // &str（字串切片）\n```\n\n### 3. 基本型別\n\n- 整數：`i32`（預設）、`u32`（無號）、`i64`、`usize`…\n- 浮點：`f64`（預設）、`f32`\n- 布林：`bool`\n- 字元：`char`（一個 Unicode 字）\n- 字串：`&str`（固定）跟 `String`（可成長，第 11 課詳談）\n\n### 4. Shadowing（遮蔽）\n\nRust 允許用同名 `let` 重新宣告，常用來轉型別：\n\n```rust\nlet spaces = \"   \";          // &str\nlet spaces = spaces.len();   // 變成數字，重用名字\n```\n\n### 🎯 重點回顧\n\n- 變數**預設不可變**，要改加 `mut`\n- 強型別但會推導，需要時用 `: 型別` 標註\n- shadowing 可用同名 `let` 重新宣告、常用來轉型\n\n**☕ 用人話講**\n\nRust 變數最特別的一點：**預設不可變**。(1) `let x = 5` 之後就不能改，要能改得寫 `let mut x`——這逼你想清楚「這個值到底會不會變」，編譯器順便幫你擋掉手滑改錯 (2) **強型別但會推導**——大多不用標型別，編譯器自己猜（i32、f64…），需要時再用 `: i64` 明講 (3) 基本型別就那幾種：整數、浮點、布林、字元、字串。**一句話記住**：別的語言變數預設能改、Rust 預設鎖死——要改才加 `mut`，一個小設計就少掉一整類「不小心改到」的 bug。\n",
       "tip": {
         "type": "practical",
-        "text": "把這節學到的馬上應用到一個小東西—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。"
+        "text": "養成習慣：先寫 let（不可變），編譯器叫你才加 mut。能不可變就不可變，bug 更少、也對多執行緒友善。"
       },
       "xp": 10,
       "playgrounds": [
         {
           "key": "33.3.auto",
           "language": "rust",
-          "title": "試試看",
-          "initialCode": "fn main() {\n    println!(\"Hello AI 島！\");\n\n    let nums = vec![1, 2, 3, 4, 5];\n    let sum: i32 = nums.iter().sum();\n    println!(\"總和: {}\", sum);\n\n    let doubled: Vec<i32> = nums.iter().map(|n| n * 2).collect();\n    println!(\"乘 2: {:?}\", doubled);\n}",
-          "hint": "改 code、按執行看結果"
+          "title": "mut 才能改",
+          "hint": "把 let count 改成 let mut count，看編譯能不能過。",
+          "initialCode": "fn main() {\n    let mut count = 0;   // 試試拿掉 mut 會怎樣\n    count += 1;\n    count += 1;\n    println!(\"count = {}\", count);\n\n    let name = \"Rust\";   // 不可變\n    println!(\"學 {}\", name);\n}"
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "為什麼 Rust 讓變數預設不可變？",
+        "hint": "想 bug 跟多執行緒。",
+        "answer": "大部分變數不需要改；預設不可變讓編譯器能抓到「不小心改到」的 bug，也讓多執行緒更安全。要可變就明確加 mut。"
       },
       "outline": [
         {
-          "level": 3,
-          "text": "關鍵字分類"
+          "text": "1. let 與 mut",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "使用者搜尋意圖（Search Intent）"
+          "text": "2. 型別推導 vs 明確標註",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "2026 關鍵字工具"
+          "text": "3. 基本型別",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "2026 個人開發者的免費組合"
+          "text": "4. Shadowing（遮蔽）",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "關鍵字研究流程（SOP）"
-        },
-        {
-          "level": 3,
-          "text": "關鍵字密度的迷思"
-        },
-        {
-          "level": 3,
-          "text": "2026 主流：Topic Clusters"
+          "text": "🎯 重點回顧",
+          "level": 3
         }
       ]
     },
     {
       "id": "33.4",
       "number": "LESSON 33.4",
-      "title": "On-page SEO：標題、描述、heading、URL",
-      "oneLineSummary": "Borrowing & Lifetimes：「借用規則」—Rust 的核心、也是難點。",
-      "analogy": "像共用 Netflix 帳號的規則—同時只能在一個裝置看（mutable borrow）、看完才能換人（lifetime）。聽起來複雜、但學會了寫 code 不會有 bug。",
-      "content": "On-page SEO = 一個頁面內你能控制的所有 SEO 元素。**最基本但最常被忽略**。\n\n  \n### Title Tag（最重要）\n\n```html\n<!-- 此處原本為 HTML 範例\n     程式碼已在內容修正中、稍後將補回完整範例 -->\n```\n\n  \n- 50-60 字以內（超過會被截斷）\n- 最重要關鍵字放前面\n- 有品牌名（| MyShop）\n- 包含年份吸引 click\n- 每個頁面都**獨特**（不要全站一樣）\n\n  \n### Meta Description\n\n```html\n<!-- 標題標籤：每頁唯一、50-60 字內、關鍵字放前面 -->\n<title>Vue 3 教學 - 從零到上線 | AI 島</title>\n\n<!-- 描述：120-160 字、吸引點擊、自然帶關鍵字 -->\n<meta name=\"description\" content=\"完整 Vue 3 教學：Composition API、Pinia、Nuxt 3，從基礎到部署上線，附實戰範例。\">\n```\n\n  \n- 150-160 字\n- **不直接影響排名**，但影響 CTR\n- 寫得吸引人讓人想點\n- 含關鍵字（搜尋結果會 highlight）\n- 每頁獨特\n\n  \n### Heading 階層（H1-H6）\n\n```html\n<!-- 此處原本為 HTML 範例\n     程式碼已在內容修正中、稍後將補回完整範例 -->\n```\n\n  \n- 結構清楚像書本目錄\n- H1 只能一個\n- 不要跳階（H1 → H3 跳過 H2）\n- 關鍵字自然出現\n\n  \n### URL 結構\n\n```text\n✗ 壞 URL：\nmyshop.com/page?id=12345\nmyshop.com/article/3jH9k2pQ\nmyshop.com/blog/2026/05/11/post-title-here-with-many-words\n\n✓ 好 URL：\nmyshop.com/blog/drip-coffee-guide\nmyshop.com/product/kenya-aa\nmyshop.com/2026-coffee-recommendations\n\n原則：\n- 短\n- 含關鍵字\n- 用 - 分隔（不要 _）\n- 全小寫\n- 不含 query string\n```\n\n  \n### 內部連結\n\n```html\n<!-- 此處原本為 HTML 範例\n     程式碼已在內容修正中、稍後將補回完整範例 -->\n```\n\n  \n- 每篇文章內部連結到 3-5 篇相關文章\n- anchor text 要描述目標頁的內容\n- 不要 `nofollow` 自己網站\n\n  \n### 圖片 SEO\n\n```html\n<!-- 此處原本為 HTML 範例\n     程式碼已在內容修正中、稍後將補回完整範例 -->\n```\n\n  \n### Open Graph + Twitter Card\n\n```html\n<!-- 每頁只有一個 h1、層級不跳級 -->\n<h1>Vue 3 完整教學</h1>\n  <h2>1. Composition API</h2>\n    <h3>ref 與 reactive</h3>\n    <h3>computed 與 watch</h3>\n  <h2>2. Pinia 狀態管理</h2>\n    <h3>定義 store</h3>\n\n<!-- ❌ 不要為了樣式跳級（h1 直接跳 h3）、字級大小交給 CSS 控制 -->\n```\n\n  \n這影響**社群分享預覽**—Facebook、LINE、X 上分享連結時顯示的圖。下節詳講。\n\n  \n### SEO checklist（每頁）\n\n  \n1. Title 50-60 字、含關鍵字、有品牌\n2. Meta description 150-160 字\n3. 一個 H1、階層清楚\n4. URL 短、含關鍵字、用連字號\n5. 圖片有 alt、檔名描述性、有 width/height\n6. 內部連結到 3+ 相關頁\n7. Open Graph 完整\n8. 內容 1000+ 字（一般 SEO 文章）\n9. Mobile-friendly\n10. 頁面速度 \n\n🚀\n2026 趨勢\n\n這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。",
+      "title": "Ownership 所有權 — Rust 的靈魂",
+      "oneLineSummary": "每個值都有唯一的「擁有者」，擁有者離開作用域值就被釋放；賦值會「移動」所有權——這是 Rust 不用 GC 卻安全的祕密。",
+      "analogy": "像一本書只能有一個主人——你把書給了別人（賦值），自己手上那本就失效了，不能再翻。書的主人離開房間，書就自動回收。",
+      "content": "**所有權（Ownership）是 Rust 最獨特、最重要的概念**——它讓 Rust 不需要垃圾回收（GC）、也不會有記憶體洩漏。三條規則：\n\n1. 每個值都有一個**擁有者（owner）**\n2. 同一時間只能有**一個**擁有者\n3. 擁有者離開作用域（scope），值就被自動釋放\n\n### 1. Move（移動）\n\n```rust\nlet s1 = String::from(\"嗨\");\nlet s2 = s1;            // 所有權「移動」到 s2\n// println!(\"{}\", s1);  // ❌ s1 已失效，不能再用！\nprintln!(\"{}\", s2);     // ✅\n```\n\n> 💡 跟別的語言不一樣：這裡 `s1` 不是被複製，而是「所有權搬給 `s2`」、`s1` 直接作廢。這樣同一塊記憶體永遠只有一個擁有者、不會被重複釋放。\n\n### 2. 函式呼叫也會移動\n\n把值傳進函式，所有權也跟著進去：\n\n```rust\nfn takes(s: String) { println!(\"{}\", s); }  // s 在這裡被釋放\n\nfn main() {\n    let s = String::from(\"hi\");\n    takes(s);             // 所有權移進函式\n    // println!(\"{}\", s); // ❌ s 已經沒了\n}\n```\n\n### 3. Clone（真的要複製時）\n\n```rust\nlet s1 = String::from(\"嗨\");\nlet s2 = s1.clone();   // 深拷貝，兩個都能用（但較花成本）\nprintln!(\"{} {}\", s1, s2);\n```\n\n簡單型別（i32、bool…）有 `Copy` 特性、是直接複製、不會 move。\n\n### 🎯 重點回顧\n\n- 每個值唯一擁有者、離開作用域就釋放（不用 GC）\n- 賦值 / 傳進函式 = **move**，原變數失效\n- 真要兩份用 `.clone()`；簡單型別自動 Copy\n\n**☕ 用人話講**\n\nOwnership（所有權）是 Rust 的靈魂、也是它不用垃圾回收卻安全的祕密。三條規則：(1) 每個值只有**一個擁有者** (2) 同時只能一個 (3) 擁有者離開作用域，值就**自動釋放**。最關鍵的是 **move**：`let s2 = s1` 不是複製、是把所有權「搬」給 s2，s1 直接作廢不能再用；傳進函式也一樣。真的要兩份才用 `.clone()`。**一句話記住**：像一本書只能有一個主人——書給了別人（賦值/傳函式），你手上那本就失效；主人離開房間書自動回收。靠這招，Rust 在編譯期就保證記憶體「不會重複釋放、不會洩漏」，完全不需要 GC。\n",
       "tip": {
-        "type": "trend",
-        "text": "這個技術 2026 還在主流、未來 5 年不會過時。但工具會更新—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。"
+        "type": "concept",
+        "text": "初學被 move 擋住很正常。記住：賦值跟傳進函式都會「搬走」所有權，原變數就不能用了。需要保留就傳參考（下一課的「借用」）或 clone。"
       },
       "xp": 10,
       "playgrounds": [
         {
           "key": "33.4.auto",
           "language": "rust",
-          "title": "試試看",
-          "initialCode": "fn main() {\n    println!(\"Hello AI 島！\");\n\n    let nums = vec![1, 2, 3, 4, 5];\n    let sum: i32 = nums.iter().sum();\n    println!(\"總和: {}\", sum);\n\n    let doubled: Vec<i32> = nums.iter().map(|n| n * 2).collect();\n    println!(\"乘 2: {:?}\", doubled);\n}",
-          "hint": "改 code、按執行看結果"
+          "title": "感受 move",
+          "hint": "把最後一行 println! 的 s1 解開註解，看編譯器怎麼罵。",
+          "initialCode": "fn main() {\n    let s1 = String::from(\"一本書\");\n    let s2 = s1;            // 所有權搬給 s2\n    println!(\"s2 = {}\", s2);\n    // println!(\"s1 = {}\", s1);  // 解開這行：編譯器會說 s1 已被 move\n}"
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "let s2 = s1; 之後為什麼不能再用 s1（s1 是 String）？",
+        "hint": "想「搬」。",
+        "answer": "因為賦值會把所有權「move」給 s2，s1 就失效了。這保證同一塊記憶體永遠只有一個擁有者、不會被重複釋放。要兩份得用 s1.clone()。"
       },
       "outline": [
         {
-          "level": 3,
-          "text": "Title Tag（最重要）"
+          "text": "1. Move（移動）",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "Meta Description"
+          "text": "2. 函式呼叫也會移動",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "Heading 階層（H1-H6）"
+          "text": "3. Clone（真的要複製時）",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "URL 結構"
-        },
-        {
-          "level": 3,
-          "text": "內部連結"
-        },
-        {
-          "level": 3,
-          "text": "圖片 SEO"
-        },
-        {
-          "level": 3,
-          "text": "Open Graph + Twitter Card"
-        },
-        {
-          "level": 3,
-          "text": "SEO checklist（每頁）"
+          "text": "🎯 重點回顧",
+          "level": 3
         }
       ]
     },
     {
       "id": "33.5",
       "number": "LESSON 33.5",
-      "title": "JSON-LD 結構化資料完整",
-      "oneLineSummary": "Cargo：「Rust 的套件管理 + 建置工具」—一條龍體驗。",
-      "analogy": "像iPhone 的所有事都用 Apple ID—登入、付費、家庭共享。Rust 一切用 Cargo—new、build、test、publish—工具鏈完整度業界第一。",
-      "content": "結構化資料 = **告訴 Google「我這頁是什麼類型」**，讓搜尋結果顯示「rich result」。\n\n  \n### 沒結構化的搜尋結果\n\n```text\n掛耳咖啡推薦 - myshop.com\n2026 最新掛耳咖啡推薦，從肯亞 AA 到衣索比亞...\nmyshop.com › blog › coffee-guide\n```\n\n  \n### 有結構化的搜尋結果\n\n```text\n掛耳咖啡推薦 - myshop.com\n★★★★☆ 4.5 (123 評論) · NT$80 · 庫存有\n2026 最新掛耳咖啡推薦，從肯亞 AA 到衣索比亞...\nmyshop.com › blog › coffee-guide\n\n★ 星星評分\n★ 價格\n★ 庫存狀態\n★ 圖片預覽\n★ FAQ 折疊\n```\n\n  \n差別超大—**CTR 高 30-50%**。\n\n  \n### 2026 主流：JSON-LD\n\n```html\n<!-- 此處原本為 HTML 範例\n     程式碼已在內容修正中、稍後將補回完整範例 -->\n```\n\n  \n### 常用 schema 類型\n\n  \n#### Article / BlogPosting\n\n```json\n{\n  \"@type\": \"BlogPosting\",\n  \"headline\": \"...\",\n  \"image\": \"...\",\n  \"datePublished\": \"2026-05-11\",\n  \"dateModified\": \"2026-05-11\",\n  \"author\": {...},\n  \"publisher\": {...}\n}\n```\n\n  \n#### Product\n\n```json\n{\n  \"@type\": \"Product\",\n  \"name\": \"肯亞 AA 掛耳咖啡\",\n  \"image\": \"...\",\n  \"description\": \"...\",\n  \"brand\": { \"@type\": \"Brand\", \"name\": \"MyShop\" },\n  \"offers\": {\n    \"@type\": \"Offer\",\n    \"price\": \"80\",\n    \"priceCurrency\": \"TWD\",\n    \"availability\": \"https://schema.org/InStock\"\n  },\n  \"aggregateRating\": {\n    \"@type\": \"AggregateRating\",\n    \"ratingValue\": \"4.5\",\n    \"reviewCount\": \"123\"\n  }\n}\n```\n\n  \n#### FAQPage\n\n```json\n{\n  \"@type\": \"FAQPage\",\n  \"mainEntity\": [\n    {\n      \"@type\": \"Question\",\n      \"name\": \"掛耳咖啡可以重複沖泡嗎？\",\n      \"acceptedAnswer\": {\n        \"@type\": \"Answer\",\n        \"text\": \"不建議。第二次沖會明顯變淡...\"\n      }\n    }\n  ]\n}\n```\n\n  \n#### Recipe / Event / Course / VideoObject\n\n  \n各種類型都有。完整清單：`schema.org/docs/full`\n\n  \n### 驗證工具\n\n  \n- **Google Rich Results Test**：search.google.com/test/rich-results\n- **Schema Markup Validator**：validator.schema.org\n\n  \n### Next.js 加 JSON-LD\n\n```tsx\nexport default function BlogPost({ post }) {\n  const jsonLd = {\n    \"@context\": \"https://schema.org\",\n    \"@type\": \"BlogPosting\",\n    headline: post.title,\n    datePublished: post.date,\n    author: { \"@type\": \"Person\", name: post.author }\n  };\n  \n  return (\n    <>\n      \n      ...\n    \n  );\n}\n```\n\n  \n**🚀 進階技巧**\n\n2026 GEO 重要：AI 搜尋引擎（Perplexity、ChatGPT）**偏好讀結構化資料**—因為比 HTML 好解析。設好 schema 同時優化 SEO + GEO。\n\n  \n\n  \n\n🛠️\n工具推薦\n\n配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。",
+      "title": "Borrowing 借用 — 用 & 參考不奪走所有權",
+      "oneLineSummary": "用 & 借用一個值的「參考」，可以讀/用它而不奪走所有權；可變借用用 &mut，但同時只能有一個。",
+      "analogy": "像借書不是送書——&（借用）是把書借你看完還我，我還是書的主人；&mut 是借你還能在書上寫字，但同一時間只能借給一個人。",
+      "content": "每次都 move 太麻煩。**借用（borrowing）**讓你用 `&` 拿到值的「**參考**」，能用它、但不奪走所有權。\n\n### 1. 不可變借用 &\n\n```rust\nfn len(s: &String) -> usize {   // 借用，不奪走\n    s.len()\n}\n\nfn main() {\n    let s = String::from(\"嗨\");\n    let n = len(&s);            // 借出去\n    println!(\"{} 長度 {}\", s, n); // s 還在！沒被 move\n}\n```\n\n### 2. 可變借用 &mut\n\n要改借來的東西，用 `&mut`：\n\n```rust\nfn push_world(s: &mut String) {\n    s.push_str(\" world\");\n}\n\nfn main() {\n    let mut s = String::from(\"hello\");\n    push_world(&mut s);\n    println!(\"{}\", s);   // hello world\n}\n```\n\n### 3. 借用規則（編譯器嚴格執行）\n\n- 同一時間，**要嘛多個不可變借用、要嘛一個可變借用**（不能同時）\n- 借用不能比擁有者活得久\n\n```rust\nlet mut s = String::from(\"hi\");\nlet r1 = &s;       // ok\nlet r2 = &s;       // ok，多個唯讀沒問題\n// let r3 = &mut s; // ❌ 已經有唯讀借用時，不能再可變借用\n```\n\n> 💡 **這條規則就是 Rust 防 data race 的核心**：不會有人一邊讀、一邊有人偷改，編譯期就擋掉。\n\n### 🎯 重點回顧\n\n- `&` 借用（唯讀）、`&mut` 可變借用，都不奪走所有權\n- 同時要嘛多個 `&`、要嘛一個 `&mut`\n- 這條規則讓 Rust 編譯期就杜絕資料競爭\n\n**☕ 用人話講**\n\n每次都 move 太累，所以有了**借用**：用 `&` 拿到值的「參考」，能用它、但不搶走所有權（用完還給原主人）。(1) **`&` 唯讀借用**——只能看不能改，可以同時借給很多人 (2) **`&mut` 可變借用**——能改，但同一時間**只能借一個**，而且有人在唯讀借用時不能再可變借用。**一句話記住**：像借書 vs 送書——`&` 是借你看完還我（我還是主人）、`&mut` 是借你還能寫字但只借一人。這條「多個讀、或一個寫，不能同時」的規則，就是 Rust 在**編譯期**就杜絕「一邊讀一邊被偷改」(data race) 的祕密武器。\n",
       "tip": {
-        "type": "practical",
-        "text": "配合這節用的工具：(1) VS Code（編輯器、免費）(2) Chrome DevTools（F12 開啟、除錯神器）(3) Live Server（VS Code 擴充、即時預覽）(4) GitHub Copilot / Cursor（AI 寫程式、學習加速 2-10x）。"
+        "type": "concept",
+        "text": "記口訣「多個讀、或一個寫，不能同時」。被借用規則擋到時，先問自己：是不是同時又讀又寫了？"
       },
       "xp": 15,
       "playgrounds": [
         {
           "key": "33.5.auto",
-          "language": "json",
-          "title": "試試看",
-          "initialCode": "{\n  \"@type\": \"BlogPosting\",\n  \"headline\": \"...\",\n  \"image\": \"...\",\n  \"datePublished\": \"2026-05-11\",\n  \"dateModified\": \"2026-05-11\",\n  \"author\": {...},\n  \"publisher\": {...}\n}",
-          "hint": "改 code、按執行看結果"
+          "language": "rust",
+          "title": "借用不奪走所有權",
+          "hint": "len(&s) 之後 s 還能用，因為只是借出去。",
+          "initialCode": "fn greet(s: &String) {\n    println!(\"哈囉 {}\", s);   // 借用、不奪走\n}\n\nfn main() {\n    let name = String::from(\"Nami\");\n    greet(&name);\n    println!(\"{} 還在這！\", name);  // 沒被 move\n}"
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Rust 的借用規則一句話是什麼？它防止了什麼？",
+        "hint": "讀 vs 寫。",
+        "answer": "同一時間「要嘛多個不可變借用、要嘛一個可變借用，不能同時」。它在編譯期就防止了 data race（一邊讀、一邊被偷改）。"
       },
       "outline": [
         {
-          "level": 3,
-          "text": "沒結構化的搜尋結果"
+          "text": "1. 不可變借用 &",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "有結構化的搜尋結果"
+          "text": "2. 可變借用 &mut",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "2026 主流：JSON-LD"
+          "text": "3. 借用規則（編譯器嚴格執行）",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "常用 schema 類型"
-        },
-        {
-          "level": 3,
-          "text": "驗證工具"
-        },
-        {
-          "level": 3,
-          "text": "Next.js 加 JSON-LD"
+          "text": "🎯 重點回顧",
+          "level": 3
         }
       ]
     },
     {
       "id": "33.6",
       "number": "LESSON 33.6",
-      "title": "Sitemap、robots.txt、canonical",
-      "oneLineSummary": "Option / Result：「Rust 不用 null 跟 exception」—用型別表達。",
-      "analogy": "像明確的「有 / 沒有」「成功 / 失敗」—Option&lt;T&gt; 是「可能有可能沒」、Result&lt;T, E&gt; 是「可能成功可能失敗」—compiler 強迫你處理、不會偷偷崩潰。",
-      "content": "### sitemap.xml：告訴 Google 你有哪些頁面\n\n```xml\n\n  \n    https://myshop.com/\n    2026-05-11\n    1.0\n  \n  \n    https://myshop.com/blog/coffee-guide\n    2026-05-10\n    0.8\n  \n\n```\n\n  \nNext.js / Nuxt 通常用 plugin 自動產：\n\n```bash\nnpm i next-sitemap\n\n# next-sitemap.config.js\nmodule.exports = {\n  siteUrl: 'https://myshop.com',\n  generateRobotsTxt: true,\n}\n```\n\n  \n### robots.txt：告訴 crawler 哪些別爬\n\n```text\nUser-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /api\nDisallow: /private\n\nUser-agent: GPTBot\nDisallow: /                # 不讓 OpenAI 訓練\n\nSitemap: https://myshop.com/sitemap.xml\n```\n\n  \n### 2026 robots.txt 重點：AI crawler\n\n  \n很多企業現在**明確擋特定 AI bot**：\n\n```text\nUser-agent: GPTBot          # OpenAI 訓練\nDisallow: /\n\nUser-agent: ChatGPT-User    # ChatGPT 即時瀏覽\nAllow: /\n\nUser-agent: anthropic-ai\nDisallow: /\n\nUser-agent: Claude-Web\nAllow: /\n\nUser-agent: PerplexityBot\nAllow: /\n\nUser-agent: CCBot           # Common Crawl（很多模型訓練資料來源）\nDisallow: /\n```\n\n  \n**indie hacker 通常允許 AI bot 來**—被 AI 引用是新流量來源。\n\n  \n### Canonical URL：解決重複內容\n\n```text\n同樣內容可能在多個 URL：\nhttps://myshop.com/blog/coffee\nhttps://myshop.com/blog/coffee/\nhttps://myshop.com/blog/coffee?utm_source=fb\nhttps://www.myshop.com/blog/coffee\n\nGoogle 看到「重複內容」會分散排名\n\n解法：每頁加 canonical\n\n告訴 Google：「以這個為主」\n```\n\n  \n### 什麼時候會有重複內容？\n\n  \n- www vs 非 www\n- http vs https\n- trailing slash 有無\n- UTM 參數\n- 分頁（?page=2）\n- 排序篩選參數\n- 多語系 / 多地區（這要用 hreflang 不是 canonical）\n\n  \n### 分頁的 canonical\n\n```html\n<!-- robots.txt（放網站根目錄）-->\n<!--\nUser-agent: *\nAllow: /\nSitemap: https://example.com/sitemap.xml\n-->\n\n<!-- sitemap.xml -->\n<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n  <url>\n    <loc>https://example.com/</loc>\n    <lastmod>2026-06-03</lastmod>\n  </url>\n</urlset>\n\n<!-- canonical：告訴 Google 哪個是正版網址、避免重複內容被分散權重 -->\n<link rel=\"canonical\" href=\"https://example.com/blog/vue-3\">\n```\n\n  \n### noindex 跟 nofollow\n\n```html\n<!-- 此處原本為 HTML 範例\n     程式碼已在內容修正中、稍後將補回完整範例 -->\n```\n\n  \n什麼時候用：\n\n  \n- **noindex**：搜尋結果頁、空白頁、感謝頁、admin、staging\n- **nofollow**：廣告連結、付費連結（要符合 Google 政策）、留言區連結\n\n  \n\n⚠️\n新手常見錯誤\n\n新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。",
+      "title": "Lifetimes 生命週期入門",
+      "oneLineSummary": "生命週期是「告訴編譯器參考能活多久」的標註（'a），確保參考不會比它指向的資料活得久（懸空參考）；多數情況編譯器自己推導。",
+      "analogy": "像借來的鑰匙不能比房子還久——你不能拿著一把指向已拆掉房子的鑰匙；生命週期就是編譯器在確認「鑰匙（參考）不會比房子（資料）晚還」。",
+      "content": "**生命週期（lifetime）**是 Rust 用來保證「**參考不會指向已經被釋放的資料**」（懸空參考 / dangling reference）的機制。好消息：**大部分時候編譯器自己推導、你不用寫**。\n\n### 1. 問題：懸空參考\n\n```rust\n// ❌ 這段不會編譯\nfn dangle() -> &String {\n    let s = String::from(\"hi\");\n    &s     // 回傳 s 的參考，但 s 在函式結束就被釋放了！\n}\n```\n\n編譯器擋下來：你回傳的參考會指向一塊馬上被釋放的記憶體。\n\n### 2. 生命週期標註 'a\n\n當函式有多個參考、編譯器搞不清關係時，你要用 `'a` 標註：\n\n```rust\n// 回傳兩個字串中較長的那個的參考\nfn longest<'a>(x: &'a str, y: &'a str) -> &'a str {\n    if x.len() > y.len() { x } else { y }\n}\n```\n\n`'a` 的意思是：「回傳的參考，活得跟 x、y 中較短的那個一樣久」。這只是**告訴編譯器關係**、不改變實際行為。\n\n### 3. 多數時候不用寫\n\n編譯器有「生命週期省略規則」，日常程式 90% 不用手動標。你只在「函式回傳參考、且來源不只一個」這種情況才需要。\n\n> 💡 **心態**：生命週期是 Rust 最難的部分之一。初學**先看得懂 `'a` 是什麼意思**就好，自己寫框架 / 函式庫時才會大量用到。\n\n### 🎯 重點回顧\n\n- 生命週期保證「參考不會比它指的資料活得久」\n- `'a` 是標註參考之間的關係、不改變行為\n- 90% 情況編譯器自己推導、不用手寫\n\n**☕ 用人話講**\n\n生命週期（lifetime）聽起來嚇人，其實就是編譯器在確認一件事：**參考不能比它指向的資料活得久**（不然會指到已釋放的記憶體＝懸空參考）。(1) 像函式回傳一個區域變數的參考，那變數函式一結束就沒了——編譯器會擋 (2) 當函式有多個參考、關係不清時，你用 `'a` 標註「它們活得一樣久」，**只是告訴編譯器關係、不改行為** (3) 好消息：**90% 情況編譯器自己推導、你根本不用寫**。**一句話記住**：像借來的鑰匙不能比房子還久——你不能拿一把指向已拆掉房子的鑰匙；生命週期就是 Rust 在確認「鑰匙不會比房子晚還」。初學看懂 `'a` 的意思就夠，寫函式庫才會大量用到。\n",
       "tip": {
-        "type": "warning",
-        "text": "新手 3 大坑：(1) 不看 console—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) 不存檔就 F5—改完忘記儲存以為「程式沒效果」 (3) 抄 code 不理解—複製貼上能跑、但下次要改就崩潰。記得：先看懂、再寫。"
+        "type": "concept",
+        "text": "生命週期是 Rust 公認最難的部分。初學別卡在這——先看懂「'a 是在描述參考活多久」，多數日常程式編譯器會自動推導，遇到再深入。"
       },
       "xp": 10,
       "playgrounds": [
         {
           "key": "33.6.auto",
-          "language": "xml",
-          "title": "試試看",
-          "initialCode": "https://myshop.com/\n    2026-05-11\n    1.0\n  \n  \n    https://myshop.com/blog/coffee-guide\n    2026-05-10\n    0.8",
-          "hint": "改 code、按執行看結果"
+          "language": "rust",
+          "title": "回傳較長的字串",
+          "hint": "longest 需要 'a 標註，告訴編譯器回傳值活多久。",
+          "initialCode": "fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {\n    if x.len() > y.len() { x } else { y }\n}\n\nfn main() {\n    let a = String::from(\"Rust\");\n    let b = String::from(\"程式語言\");\n    println!(\"較長：{}\", longest(&a, &b));\n}"
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "生命週期標註（如 'a）是在做什麼？會改變程式行為嗎？",
+        "hint": "描述關係。",
+        "answer": "它告訴編譯器「參考之間活多久的關係」，確保參考不會比它指的資料活得久（避免懸空參考）。它只是描述關係、不改變實際行為，而且多數情況編譯器會自動推導。"
       },
       "outline": [
         {
-          "level": 3,
-          "text": "sitemap.xml：告訴 Google 你有哪些頁面"
+          "text": "1. 問題：懸空參考",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "robots.txt：告訴 crawler 哪些別爬"
+          "text": "2. 生命週期標註 'a",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "2026 robots.txt 重點：AI crawler"
+          "text": "3. 多數時候不用寫",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "Canonical URL：解決重複內容"
-        },
-        {
-          "level": 3,
-          "text": "什麼時候會有重複內容？"
-        },
-        {
-          "level": 3,
-          "text": "分頁的 canonical"
-        },
-        {
-          "level": 3,
-          "text": "noindex 跟 nofollow"
+          "text": "🎯 重點回顧",
+          "level": 3
         }
       ]
     },
     {
       "id": "33.7",
       "number": "LESSON 33.7",
-      "title": "Open Graph + Twitter Card",
-      "oneLineSummary": "Pattern Matching：「強大的 switch」—Rust 寫 match 是日常。",
-      "analogy": "像升級版的 switch—不只匹配值、能匹配結構、提取資料。寫 match 配 Option / Result 是 Rust 最 Rust 的體驗。",
-      "content": "使用者在 FB / LINE / X 上分享你的連結時，看到的**那張預覽卡**—靠 Open Graph 控制。\n\n  \n### 沒設 OG 的下場\n\n  \n連結預覽變成：\n\n```text\nmyshop.com\n[隨機抓某張圖]\n[隨便擷取頁面前 100 字]\n```\n\n  \n醜、不專業、點擊率低。\n\n  \n### 完整 Open Graph 設定\n\n```html\n<!-- Open Graph（FB / LINE / 大部分平台分享時讀這個）-->\n<meta property=\"og:title\" content=\"Vue 3 完整教學\">\n<meta property=\"og:description\" content=\"從零到上線的 Vue 3 教學\">\n<meta property=\"og:image\" content=\"https://example.com/og.png\">\n<meta property=\"og:url\" content=\"https://example.com/blog/vue-3\">\n<meta property=\"og:type\" content=\"article\">\n\n<!-- Twitter Card -->\n<meta name=\"twitter:card\" content=\"summary_large_image\">\n<meta name=\"twitter:title\" content=\"Vue 3 完整教學\">\n<meta name=\"twitter:image\" content=\"https://example.com/og.png\">\n```\n\n  \n### OG 圖片規格\n\n  \n- **尺寸**：1200 × 630（FB / LINE）、1200 × 675（X large card）\n- **格式**：JPG / PNG（不要 WebP，相容性問題）\n- **檔案大小**：\n{title}\n\n),\n{ width: 1200, height: 630 }\n  );\n}\n\n// 用：\n```\n\n  \n### 驗證工具\n\n  \n- **Facebook Sharing Debugger**：developers.facebook.com/tools/debug\n- **X Card Validator**：cards-dev.twitter.com/validator\n- **LINE Posting Preview**：line.me 上實測\n- **OpenGraph.xyz**：通用測試\n\n  \n### 常見坑\n\n  \n- **Facebook 抓 cache**：改了 OG 圖之後要去 Debugger 強制 re-scrape\n- **圖片走 HTTPS**：HTTP 圖片不行\n- **圖片放在 same domain**：cross-origin 有時被擋\n- **OG image 路徑帶 query string**：有些 crawler 處理不好\n",
+      "title": "Struct 與 Enum — 自訂你的型別",
+      "oneLineSummary": "struct 把相關資料打包成一個型別（像物件）、用 impl 加方法；enum 列舉「就是這幾種之一」，搭 match 超強。",
+      "analogy": "struct 像填一張表格（姓名/年齡/email 一組）、enum 像單選題（紅綠燈只能是紅、黃、綠其中一種）。",
+      "content": "Rust 用 **struct** 跟 **enum** 來定義你自己的型別。\n\n### 1. Struct（結構）\n\n```rust\nstruct User {\n    name: String,\n    age: u32,\n    active: bool,\n}\n\nfn main() {\n    let u = User { name: String::from(\"Nami\"), age: 20, active: true };\n    println!(\"{} {} 歲\", u.name, u.age);\n}\n```\n\n### 2. 用 impl 加方法\n\n```rust\nimpl User {\n    // 關聯函式（像建構子）\n    fn new(name: String) -> User {\n        User { name, age: 0, active: true }\n    }\n    // 方法：第一個參數是 &self\n    fn greet(&self) {\n        println!(\"我是 {}\", self.name);\n    }\n}\n```\n\n### 3. Enum（列舉）\n\nenum 表示「就是這幾種之一」，而且每種還能帶資料：\n\n```rust\nenum Shape {\n    Circle(f64),            // 帶半徑\n    Rectangle(f64, f64),    // 帶寬高\n}\n\nfn area(s: &Shape) -> f64 {\n    match s {\n        Shape::Circle(r) => 3.14 * r * r,\n        Shape::Rectangle(w, h) => w * h,\n    }\n}\n```\n\n> 💡 enum + `match` 是 Rust 最強的組合：編譯器會**強制你處理每一種情況**，漏一種就不給過，徹底消滅「忘了處理某個 case」的 bug。\n\n### 🎯 重點回顧\n\n- `struct` 打包相關資料、`impl` 加方法（`&self`）\n- `enum` 列舉「幾種之一」、每種能帶資料\n- enum + `match` = 強制處理所有情況、不漏 case\n\n**☕ 用人話講**\n\nRust 用兩個東西做自訂型別：(1) **struct**——把相關資料打包成一組（像一張表格：姓名/年齡/email），用 `impl` 區塊幫它加方法（方法第一個參數是 `&self`） (2) **enum**——列舉「就是這幾種之一」（像紅綠燈只能紅黃綠），而且**每種還能帶不同資料**（Circle 帶半徑、Rectangle 帶寬高）。enum 配 `match` 是 Rust 的招牌組合：**編譯器強制你處理每一種情況、漏一個就不給過**。**一句話記住**：struct 像填表格（一組欄位）、enum 像單選題（限定幾選一）；enum + match 讓「忘了處理某個 case」這種 bug 直接在編譯期消失。\n",
       "tip": {
         "type": "practical",
-        "text": "改完 OG 標籤一定要實測：用 Facebook Sharing Debugger、X Card Validator 看實際抓到的縮圖與標題，順便強制清快取——很多人改了沒清，分享出去還是舊圖。"
+        "text": "enum + match 是 Rust 最該愛上的功能。它強迫你窮舉所有情況，少掉一堆「忘了某個 case」的執行期錯誤。"
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "enum 配 match 有什麼好處？",
+        "hint": "編譯器強制什麼？",
+        "answer": "match 處理 enum 時，編譯器會強制你窮舉每一種情況，漏掉一種就不給編譯通過——徹底消滅「忘了處理某個 case」這類執行期 bug。"
       },
       "outline": [
         {
-          "level": 3,
-          "text": "沒設 OG 的下場"
+          "text": "1. Struct（結構）",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "完整 Open Graph 設定"
+          "text": "2. 用 impl 加方法",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "OG 圖片規格"
+          "text": "3. Enum（列舉）",
+          "level": 3
+        },
+        {
+          "text": "🎯 重點回顧",
+          "level": 3
+        }
+      ],
+      "playgrounds": [
+        {
+          "key": "33.7.auto",
+          "language": "rust",
+          "title": "Enum + match 算面積",
+          "hint": "match 必須處理每一種 Shape，少一個編譯不過。",
+          "initialCode": "enum Shape {\n    Circle(f64),\n    Rectangle(f64, f64),\n}\n\nfn area(s: &Shape) -> f64 {\n    match s {\n        Shape::Circle(r) => 3.14 * r * r,\n        Shape::Rectangle(w, h) => w * h,\n    }\n}\n\nfn main() {\n    println!(\"圓面積 = {}\", area(&Shape::Circle(2.0)));\n    println!(\"矩形面積 = {}\", area(&Shape::Rectangle(3.0, 4.0)));\n}"
         }
       ]
     },
     {
       "id": "33.8",
       "number": "LESSON 33.8",
-      "title": "Core Web Vitals：頁面速度",
-      "oneLineSummary": "Traits：「Rust 的 interface」—定義行為、type 實作。",
-      "analogy": "像USB 規格 + 認證標章—Trait 定義「能做什麼」、type 實作後就有那能力。比 Go 的 interface 強、有「預設方法」「關聯型別」。",
-      "content": "Google 2021 推出 Core Web Vitals，**頁面速度直接影響 SEO 排名**。\n\n  \n### 三個指標\n\n  \n| 指標 | 意義 | 目標 |\n| --- | --- | --- |\n| **LCP** (Largest Contentful Paint) | 最大內容多快出現 | `\n- **CDN**：靜態檔走 CDN\n- **SSR / SSG**：不要全 client render\n- **Critical CSS inline**：第一屏 CSS 直接寫在 HTML\n- **字型 font-display: swap**：不要等字型才顯示\n\n  \n### INP 優化\n\n  \n- **少 JS**：bundle size 越小越好\n- **Code splitting**：用 dynamic import\n- **Web Worker**：重運算移到背景\n- **避免 blocking**：拆 long task\n- **preconnect**：提前連線到 third-party domain\n\n  \n### CLS 優化\n\n  \n- **圖片寫 width / height**：留好版位\n- **字型 font-display: optional** 或 preload\n- **避免動態插入內容**（廣告突然撐開頁面）\n- **用 transform 動畫**，不要改 layout 屬性\n- **aspect-ratio CSS**：留固定比例\n\n  \n### 測量工具\n\n  \n- **PageSpeed Insights**：pagespeed.web.dev（最權威）\n- **Chrome DevTools Lighthouse**：F12 → Lighthouse\n- **Web Vitals Chrome Extension**：即時看數值\n- **GSC 的 Core Web Vitals 報告**：真實使用者數據\n- **WebPageTest**：深度分析\n\n  \n### Real User Monitoring（RUM）\n\n```js\n// 用 web-vitals library 收真實數據\nimport { onCLS, onFID, onLCP, onINP } from \"web-vitals\";\n\nonLCP(metric => sendToAnalytics(metric));\nonINP(metric => sendToAnalytics(metric));\nonCLS(metric => sendToAnalytics(metric));\n```\n\n  \n### Next.js / Nuxt 內建優化\n\n  \n- **next/image**：自動產 srcset、WebP、lazy load\n- **next/font**：字型自託管 + preload\n- **next/script**：第三方 script 不阻擋\n- **App Router + RSC**：減少 client JS\n\n  \n### 目標：Lighthouse 95+\n\n```text\n2026 標竿：\n- Performance：95+\n- Accessibility：95+\n- Best Practices：95+\n- SEO：100\n\n低於 90 就影響 SEO 排名\n低於 70 影響跳出率（使用者跑光）\n```\n\n  \n**🚀 進階技巧**\n\n2026 Edge runtime 是 CWV 殺手鐧：Cloudflare Workers / Vercel Edge 把 SSR 移到邊緣節點，**LCP 從 800ms 降到 200ms**。對亞洲使用者體感差很大。\n",
+      "title": "Pattern Matching — match 的威力",
+      "oneLineSummary": "match 是超強的 switch：能比對值、解構 enum/struct、綁定變數、加守衛條件，而且強制窮舉；還有 if let 簡寫。",
+      "analogy": "像超聰明的郵件分揀機——不只看「是哪一類」，還能同時把裡面的東西拆出來（解構），而且規定每一類都要有出口、不能有漏掉的信。",
+      "content": "**Pattern Matching（模式比對）**是 Rust 最好用的功能之一。`match` 比其他語言的 `switch` 強太多。\n\n### 1. 基本 match\n\n```rust\nlet n = 3;\nlet word = match n {\n    1 => \"一\",\n    2 => \"二\",\n    3 => \"三\",\n    _ => \"其他\",      // _ 是「其他全部」，必須有（窮舉）\n};\n```\n\n### 2. 解構 + 綁定\n\nmatch 能一邊比對、一邊把值拆出來：\n\n```rust\nenum Msg { Quit, Move { x: i32, y: i32 }, Write(String) }\n\nfn handle(m: Msg) {\n    match m {\n        Msg::Quit => println!(\"結束\"),\n        Msg::Move { x, y } => println!(\"移動到 {}, {}\", x, y),\n        Msg::Write(text) => println!(\"文字：{}\", text),\n    }\n}\n```\n\n### 3. 守衛條件（guard）\n\n```rust\nlet n = 5;\nmatch n {\n    x if x < 0 => println!(\"負數\"),\n    0 => println!(\"零\"),\n    x if x % 2 == 0 => println!(\"正偶數\"),\n    _ => println!(\"正奇數\"),\n}\n```\n\n### 4. if let（只關心一種情況時）\n\n```rust\nlet some = Some(7);\nif let Some(x) = some {\n    println!(\"有值 {}\", x);   // 比完整 match 簡潔\n}\n```\n\n### 🎯 重點回顧\n\n- `match` 強制窮舉（用 `_` 接其他），漏 case 不給過\n- 能同時「比對 + 解構 + 綁定變數 + 守衛條件」\n- 只關心一種情況用 `if let` 簡寫\n\n**☕ 用人話講**\n\n`match` 是 Rust 版的 switch，但強太多。(1) **強制窮舉**——每種情況都要處理（用 `_` 接「其他全部」），漏一個編譯不過 (2) **能解構 + 綁定**——一邊比對「是哪一種」、一邊把裡面的資料拆出來綁成變數（Move 把 x、y 拆出來用） (3) **守衛條件**——`x if x % 2 == 0` 加額外判斷 (4) 只關心一種情況時用 **`if let`** 簡寫。**一句話記住**：match 像超聰明的郵件分揀機——不只看「是哪一類」，還順手把裡面的東西拆出來，而且規定每一類都要有出口、不准有漏掉的信。它是 Rust 處理 enum、Option、Result 的主力工具。\n",
       "tip": {
-        "type": "pro",
-        "text": "台灣科技公司面試 90% 會問「Rust」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+        "type": "practical",
+        "text": "match 的 _ 別亂用——能列出所有 case 就列，這樣之後 enum 多一種時編譯器會提醒你「這裡也要處理」。"
       },
       "xp": 10,
       "playgrounds": [
         {
           "key": "33.8.auto",
-          "language": "javascript",
-          "title": "試試看",
-          "initialCode": "// 用 web-vitals library 收真實數據\nimport { onCLS, onFID, onLCP, onINP } from \"web-vitals\";\n\nonLCP(metric => sendToAnalytics(metric));\nonINP(metric => sendToAnalytics(metric));\nonCLS(metric => sendToAnalytics(metric));",
-          "hint": "改 code、按執行看結果"
+          "language": "rust",
+          "title": "match 守衛條件",
+          "hint": "改 n 的值，看會走哪個分支。",
+          "initialCode": "fn classify(n: i32) -> &'static str {\n    match n {\n        x if x < 0 => \"負數\",\n        0 => \"零\",\n        x if x % 2 == 0 => \"正偶數\",\n        _ => \"正奇數\",\n    }\n}\n\nfn main() {\n    for n in [-3, 0, 4, 7] {\n        println!(\"{} 是 {}\", n, classify(n));\n    }\n}"
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "match 跟一般 switch 最大的兩個差別是什麼？",
+        "hint": "窮舉、解構。",
+        "answer": "(1) match 強制窮舉所有情況、漏 case 不給編譯過；(2) match 能在比對的同時解構並綁定裡面的值（如把 enum 帶的資料拆出來用）。"
       },
       "outline": [
         {
-          "level": 3,
-          "text": "三個指標"
+          "text": "1. 基本 match",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "INP 優化"
+          "text": "2. 解構 + 綁定",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "CLS 優化"
+          "text": "3. 守衛條件（guard）",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "測量工具"
+          "text": "4. if let（只關心一種情況時）",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "Real User Monitoring（RUM）"
-        },
-        {
-          "level": 3,
-          "text": "Next.js / Nuxt 內建優化"
-        },
-        {
-          "level": 3,
-          "text": "目標：Lighthouse 95+"
+          "text": "🎯 重點回顧",
+          "level": 3
         }
       ]
     },
     {
       "id": "33.9",
       "number": "LESSON 33.9",
-      "title": "Backlink：誰連結你比你多重要",
-      "oneLineSummary": "Async Rust：「Rust 的非同步」—Tokio 是事實標準。",
-      "analogy": "像F1 賽車的非同步引擎—複雜但極快。Rust async 比其他語言複雜（要懂 Future / Pin）、但效能爆表—Discord 後端用 Tokio 撐 10 億訊息 / 天。",
-      "content": "Backlink = 其他網站連到你的連結。**Google 排名最關鍵因素之一**。\n\n  \n### 為什麼 backlink 重要\n\n  \nGoogle 的核心邏輯：「**大家都連結的網站，一定有價值**」。一個重要網站連你 = 它「**背書**」你。\n\n  \n- 新聞網站連你 = 很強\n- 同領域大網站連你 = 強\n- 論壇 / 留言區連你 = 弱（很多有 nofollow）\n- spam 網站連你 = 負分\n\n  \n### backlink 三個維度\n\n  \n- **Quantity**：有多少個\n- **Quality**：哪些網站連的\n- **Anchor text**：用什麼字連\n\n  \n### 取得 backlink 的方法\n\n  \n#### 1. 寫真的好內容（最持久）\n\n  \n原創研究、實用工具、深度教學—別人會自動引用。\n\n  \n#### 2. Guest Posting（投稿）\n\n  \n到別人網站發文，文章內連回自己網站。\n\n  \n- 找：同領域、流量 > 你的網站\n- 提：原創、對他們讀者有價值的內容\n- 避免：付費 link（違反 Google 政策）\n\n  \n#### 3. HARO（Help A Reporter Out）\n\n  \n記者徵求專家提供素材。你回應、被引用 = 高品質 backlink。\n\n  \n#### 4. Skyscraper Technique\n\n  \n1. 找你領域排名前 10 的文章\n2. 寫更好的版本（更新、更深、更多例子）\n3. 聯絡引用原文的網站「我寫了更好的版本」\n4. 部分會改連結到你\n\n  \n#### 5. 工具吸引法\n\n  \n做免費工具讓人引用：\n\n  \n- 計算機（房貸計算、薪資計算）\n- 檢測工具（網站速度、SEO 檢測）\n- Templates（履歷範本、合約範本）\n\n  \n#### 6. 競爭者分析\n\n  \n用 Ahrefs 看競爭者的 backlink，逐個聯絡看能不能也連你。\n\n  \n#### 7. PR + 媒體\n\n  \n發新聞稿、上 Hacker News、Product Hunt—容易拿到媒體報導。\n\n  \n### 不該做的事\n\n  \n- **買 link**：違反 Google 政策\n- **link farm**：互連網路\n- **論壇 spam**：每個留言放連結\n- **低質量 directory**：1990s 的玩法\n- **PBN（Private Blog Network）**：自己建假網站連自己\n\n  \nGoogle 越來越會抓，**抓到會被懲罰甚至 deindex**。\n\n  \n### 2026 的 backlink 新趨勢\n\n  \n- **內容質量 > 數量**：10 個高質量 > 1000 個低質量\n- **Topical relevance**：同領域的連結價值高\n- **Brand mentions**：被提到但沒連結也算（Google 越來越會看）\n- **AI 引用**：被 Perplexity / ChatGPT 引用是新的「backlink」\n\n  \n### 追蹤工具\n\n  \n- **Ahrefs Site Explorer**：最完整\n- **Google Search Console**：看官方數據\n- **Majestic**：trust flow 指標\n\n  \n\n⚡\n學習加速器\n\n把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。",
+      "title": "Option 與 Result — 沒有 null、沒有例外",
+      "oneLineSummary": "Rust 沒有 null：可能沒值用 Option<T>（Some/None）；可能失敗用 Result<T,E>（Ok/Err）——逼你在編譯期就處理「沒有」跟「出錯」。",
+      "analogy": "像快遞一定附「有貨/缺貨」標籤——你拆箱前一定看得到狀態，不會像 null 那樣「以為有東西、伸手抓空」當場摔（NullPointerException）。",
+      "content": "Rust **沒有 null**，這消滅了號稱「十億美元錯誤」的 NullPointerException。取而代之是兩個 enum：\n\n### 1. Option<T> — 可能有值、可能沒有\n\n```rust\nenum Option<T> { Some(T), None }   // 標準庫已內建\n\nfn find(v: &[i32], target: i32) -> Option<usize> {\n    for (i, &x) in v.iter().enumerate() {\n        if x == target { return Some(i); }\n    }\n    None\n}\n```\n\n用的時候**編譯器逼你處理 None**：\n\n```rust\nmatch find(&[1,2,3], 2) {\n    Some(i) => println!(\"找到，位置 {}\", i),\n    None => println!(\"找不到\"),\n}\n```\n\n### 2. Result<T, E> — 可能成功、可能失敗\n\n```rust\nenum Result<T, E> { Ok(T), Err(E) }   // 標準庫已內建\n\nfn divide(a: f64, b: f64) -> Result<f64, String> {\n    if b == 0.0 { Err(String::from(\"不能除以 0\")) }\n    else { Ok(a / b) }\n}\n```\n\n### 3. 常用快捷\n\n- `.unwrap()`：取出值，是 None/Err 就 panic（**只在示範 / 確定不會錯時用**）\n- `.unwrap_or(預設值)`：沒值就給預設\n- `?` 運算子：出錯就提早回傳（下一課詳談）\n\n> 💡 **核心精神**：別的語言「忘了檢查 null / 沒接住例外」會在上線後炸；Rust 把「沒有」跟「出錯」變成型別的一部分，**編譯器逼你當場處理**。\n\n### 🎯 重點回顧\n\n- 沒有 null：可能沒值用 `Option`（Some/None）\n- 可能失敗用 `Result`（Ok/Err）\n- 編譯器強制你處理「沒有」跟「出錯」，bug 不會溜到上線\n\n**☕ 用人話講**\n\nRust **沒有 null**——這直接消滅了其他語言最常見的 NullPointerException。取而代之是兩個型別：(1) **`Option<T>`**——可能有值（`Some`）可能沒有（`None`），像查找可能找不到 (2) **`Result<T,E>`**——可能成功（`Ok`）可能失敗（`Err`），像除法可能除以零。關鍵是：**編譯器逼你當場處理「沒有」跟「出錯」**，不處理就不給過。快捷有 `.unwrap()`（出錯就 panic、少用）、`.unwrap_or(預設)`、還有下一課的 `?`。**一句話記住**：像快遞一定附「有貨/缺貨」標籤——你拆箱前就看得到狀態，不會像 null 那樣「以為有、伸手抓空」當場摔。Rust 把「沒有」跟「失敗」變成型別的一部分，bug 在編譯期就被抓出來。\n",
       "tip": {
-        "type": "practical",
-        "text": "把這節學到的馬上應用到一個小東西—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。"
+        "type": "warn",
+        "text": ".unwrap() 很方便但會在出錯時直接 panic（程式崩）。練習跟示範可以用，正式 code 要用 match / ? / unwrap_or 好好處理 None 跟 Err。"
       },
       "xp": 10,
       "exercise": {
-        "question": "找一個你身邊的例子、用「Backlink：誰連結你比你多重要」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
-        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
-        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+        "question": "Rust 沒有 null，那「可能沒有值」跟「可能失敗」分別用什麼表示？",
+        "hint": "兩個 enum。",
+        "answer": "可能沒有值用 Option<T>（Some / None），可能失敗用 Result<T, E>（Ok / Err）。編譯器會強制你處理 None 跟 Err。"
       },
       "outline": [
         {
-          "level": 3,
-          "text": "為什麼 backlink 重要"
+          "text": "1. Option<T> — 可能有值、可能沒有",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "backlink 三個維度"
+          "text": "2. Result<T, E> — 可能成功、可能失敗",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "取得 backlink 的方法"
+          "text": "3. 常用快捷",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "不該做的事"
-        },
+          "text": "🎯 重點回顧",
+          "level": 3
+        }
+      ],
+      "playgrounds": [
         {
-          "level": 3,
-          "text": "2026 的 backlink 新趨勢"
-        },
-        {
-          "level": 3,
-          "text": "追蹤工具"
+          "key": "33.9.auto",
+          "language": "rust",
+          "title": "Option：找得到 vs 找不到",
+          "hint": "改 target，看 Some 跟 None 兩種結果。",
+          "initialCode": "fn find(v: &[i32], target: i32) -> Option<usize> {\n    for (i, &x) in v.iter().enumerate() {\n        if x == target { return Some(i); }\n    }\n    None\n}\n\nfn main() {\n    let v = [10, 20, 30];\n    match find(&v, 20) {\n        Some(i) => println!(\"找到，位置 {}\", i),\n        None => println!(\"找不到\"),\n    }\n}"
         }
       ]
     },
     {
       "id": "33.10",
       "number": "LESSON 33.10",
-      "title": "內容行銷：E-E-A-T 與 Pillar / Cluster",
-      "oneLineSummary": "Tokio：「Rust 的 async runtime」—99% Rust async 用它。",
-      "analogy": "像Node 的 Event Loop—但寫起來更顯式。寫 Rust 後端就是寫 Tokio + 框架（Axum / Actix）。",
-      "content": "內容行銷 = 用**有價值的內容吸引使用者**，不是直接賣。長期效果最好的行銷方式。\n\n  \n### E-E-A-T（Google 評估內容的框架）\n\n  \n- **Experience（經驗）**：作者有實際經驗嗎\n- **Expertise（專業）**：作者是這領域專家嗎\n- **Authoritativeness（權威）**：作者 / 網站被業界認可嗎\n- **Trustworthiness（可信）**：資訊正確、來源清楚\n\n  \n2022 Google 加了第一個 E（Experience）—**強調「第一手經驗」**。AI 生成的「我綜合多篇文章寫的」內容會被降權。\n\n  \n### 怎麼提升 E-E-A-T？\n\n  \n- **作者頁**：每篇文章標明作者、附 bio + 經歷\n- **About 頁**：公司 / 個人背景、為什麼可信\n- **引用來源**：學術論文、官方數據、權威網站\n- **原創數據**：自己做的研究、調查\n- **實際照片 / 影片**：證明你真的有用過產品\n- **使用者評論**：第三方驗證（Trustpilot、Google）\n- **HTTPS**：基本但重要\n- **Privacy Policy / Terms**：必要\n\n  \n### Topic Clusters 策略\n\n  \n前面提過。具體執行：\n\n```text\n主題：咖啡\n\nPillar Page（3000-5000 字，全面覆蓋）：\n  「咖啡完整指南：從豆子到沖煮」\n  ├ 提到：產地、烘焙、研磨、沖煮、器具\n  ├ 每段都連到對應的衛星文\n  ├ 是 SEO 主目標頁\n\nCluster Pages（500-1500 字，深入一點）：\n  - 「咖啡產地完整介紹」\n  - 「淺焙 vs 深焙差異」\n  - 「手沖咖啡入門」\n  - 「義式咖啡機推薦」\n  - 「掛耳咖啡 vs 濾掛咖啡」\n  - 「咖啡因含量比較」\n  - 「冷萃咖啡製作」\n  - 「咖啡保存方法」\n  - 「咖啡產業趨勢」\n  \n  每篇都連回 pillar\n  互相之間也連\n\n結果：Google 看到 = 「這站是咖啡專家」\n整體網域權威度提升\n```\n\n  \n### 內容創作 SOP\n\n  \n1. **關鍵字研究**：找搜尋量 100+、難度低的\n2. **競爭分析**：看 Top 10 寫什麼、缺什麼\n3. **大綱**：H2 / H3 規劃\n4. **寫稿**：1500+ 字、自然不堆關鍵字\n5. **編輯**：加圖、加例子、加 FAQ\n6. **SEO 元素**：title、meta、schema、internal link\n7. **發布**\n8. **推廣**：社群、Email、發給已連結的人\n9. **追蹤 + 優化**：3 個月後看 GSC 看排名、補強\n\n  \n### 內容創作頻率\n\n  \n- **新站**：剛開始 1 週 2-3 篇衝量\n- **穩定後**：1 週 1 篇 + 持續更新舊文\n- **每篇都要 1500 字+**：薄內容沒競爭力\n- **舊文更新**：每 6 個月更新熱門文章（Google 喜歡）\n\n  \n### AI 寫稿可以嗎？\n\n  \n2026 答案：**輔助 OK，全 AI 寫不行**。\n\n  \n- AI 給 outline → 人工大改寫 → OK\n- AI 寫初稿 → 人工加自己經驗 / 例子 → OK\n- 純 AI 生成貼上 → Google「Helpful Content System」降權\n\n  \n原因：AI 文章**沒第一手經驗**，違反 E-E-A-T。\n\n  \n### 2026 真實案例\n\n  \n2024 有家 SEO 公司用 AI 量產 1000 篇文章，**三個月後流量歸零**。Google March 2024 Core Update 大規模降權 AI 內容。\n\n  \n另一個案例：個人 blogger 一年寫 30 篇**有第一手實驗的**長文，**單篇月流量 10 萬**。\n\n  \n\n🚀\n2026 趨勢\n\n這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。",
+      "title": "錯誤處理：? 運算子 + anyhow / thiserror",
+      "oneLineSummary": "? 運算子讓「出錯就提早回傳」一行搞定，不用層層 match；anyhow 適合應用程式、thiserror 適合函式庫定義錯誤型別。",
+      "analogy": "? 像接力賽的「掉棒就退場」——一棒沒接好（Err）就直接把錯往上交、不硬撐；anyhow 是萬用錯誤袋、thiserror 是幫你客製專屬錯誤標籤。",
+      "content": "用 `match` 處理每個 `Result` 很囉嗦。Rust 用 **`?` 運算子**讓錯誤處理變優雅。\n\n### 1. ? 運算子\n\n`?` 的意思：「成功就取出值繼續、失敗就提早 return 這個 Err」。\n\n```rust\nuse std::num::ParseIntError;\n\nfn parse_sum(a: &str, b: &str) -> Result<i32, ParseIntError> {\n    let x = a.parse::<i32>()?;   // 失敗就直接 return Err\n    let y = b.parse::<i32>()?;\n    Ok(x + y)\n}\n```\n\n比起用兩層 `match`，`?` 一個符號搞定。\n\n### 2. anyhow（應用程式用）\n\n寫應用程式時，你常常「只想知道出錯了、不在乎是哪種錯」。**anyhow** 提供一個萬用錯誤型別：\n\n```rust\nuse anyhow::Result;\n\nfn run() -> Result<()> {\n    let n: i32 = \"42\".parse()?;     // 各種錯都能用 ? 往上拋\n    println!(\"{}\", n);\n    Ok(())\n}\n```\n\n### 3. thiserror（函式庫用）\n\n寫函式庫時，你想給使用者**清楚的錯誤型別**。**thiserror** 幫你快速定義：\n\n```rust\nuse thiserror::Error;\n\n#[derive(Error, Debug)]\nenum MyError {\n    #[error(\"找不到檔案：{0}\")]\n    NotFound(String),\n    #[error(\"格式錯誤\")]\n    BadFormat,\n}\n```\n\n> 💡 **口訣**：**寫 app 用 anyhow、寫 lib 用 thiserror**，這是 2026 Rust 社群共識。\n\n### 🎯 重點回顧\n\n- `?` ＝「成功取值、失敗提早回傳 Err」，取代層層 match\n- 應用程式用 **anyhow**（萬用錯誤）\n- 函式庫用 **thiserror**（定義清楚的錯誤型別）\n\n**☕ 用人話講**\n\n處理錯誤每個都寫 `match` 太囉嗦，Rust 用 **`?` 運算子**：放在可能出錯的呼叫後面，意思是「成功就取出值繼續、失敗就直接把 Err 往上回傳」，一個符號取代一整段 match。再來兩個社群標配套件：(1) **anyhow**——寫**應用程式**用，提供一個萬用錯誤袋，各種錯都能用 `?` 往上拋、不用自己定義 (2) **thiserror**——寫**函式庫**用，幫你快速定義清楚的專屬錯誤型別給使用者。**一句話記住**：`?` 像接力賽「掉棒就退場」（出錯直接往上交、不硬撐）；口訣「**寫 app 用 anyhow、寫 lib 用 thiserror**」記起來就對了。\n",
       "tip": {
-        "type": "trend",
-        "text": "這個技術 2026 還在主流、未來 5 年不會過時。但工具會更新—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。"
+        "type": "practical",
+        "text": "2026 共識：應用程式用 anyhow（省事）、函式庫用 thiserror（給使用者清楚的錯誤）。? 運算子兩種都能搭。"
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "? 運算子做什麼？寫 app 跟寫 lib 分別建議用哪個錯誤套件？",
+        "hint": "提早回傳。",
+        "answer": "? 表示「成功取出值繼續、失敗就提早 return Err」，取代層層 match。寫應用程式用 anyhow（萬用錯誤）、寫函式庫用 thiserror（定義清楚的錯誤型別）。"
       },
       "outline": [
         {
-          "level": 3,
-          "text": "E-E-A-T（Google 評估內容的框架）"
+          "text": "1. ? 運算子",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "怎麼提升 E-E-A-T？"
+          "text": "2. anyhow（應用程式用）",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "Topic Clusters 策略"
+          "text": "3. thiserror（函式庫用）",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "內容創作 SOP"
-        },
+          "text": "🎯 重點回顧",
+          "level": 3
+        }
+      ],
+      "playgrounds": [
         {
-          "level": 3,
-          "text": "內容創作頻率"
-        },
-        {
-          "level": 3,
-          "text": "AI 寫稿可以嗎？"
-        },
-        {
-          "level": 3,
-          "text": "2026 真實案例"
+          "key": "33.10.auto",
+          "language": "rust",
+          "title": "? 運算子串接",
+          "hint": "把 b 改成 'abc'，看 parse 失敗時 ? 怎麼提早回傳。",
+          "initialCode": "fn parse_sum(a: &str, b: &str) -> Result<i32, std::num::ParseIntError> {\n    let x = a.parse::<i32>()?;\n    let y = b.parse::<i32>()?;\n    Ok(x + y)\n}\n\nfn main() {\n    match parse_sum(\"10\", \"32\") {\n        Ok(n) => println!(\"和 = {}\", n),\n        Err(e) => println!(\"出錯：{}\", e),\n    }\n}"
         }
       ]
     },
     {
       "id": "33.11",
       "number": "LESSON 33.11",
-      "title": "國際 SEO：hreflang 與多語策略",
-      "oneLineSummary": "Axum：「2026 Rust web 框架首選」—Tokio 同團隊出、超現代。",
-      "analogy": "像Rust 版的 FastAPI—async、type-safe、極快。寫 API 用 Axum + sqlx + Tokio—2026 indie 高性能首選。",
-      "content": "產品做給多國使用者，**每個語言版本怎麼讓對的人看到**？\n\n  \n### 三種 URL 結構\n\n```text\n選項 1：子目錄（推薦）\nmyshop.com/en/\nmyshop.com/zh-tw/\nmyshop.com/ja/\n\n優點：累積在同一網域、最簡單\n缺點：所有語言一個機房\n\n選項 2：子網域\nen.myshop.com\nzh.myshop.com\nja.myshop.com\n\n優點：可獨立部署到不同機房\n缺點：SEO 算「另一個網站」\n\n選項 3：不同 TLD\nmyshop.com（英文）\nmyshop.tw（繁中）\nmyshop.jp（日文）\n\n優點：最在地化、最高信任\n缺點：管理成本高、SEO 各自累積\n```\n\n  \n**2026 多數 indie：選項 1（子目錄）**。大企業視在地化深度選 2 或 3。\n\n  \n### hreflang：告訴 Google 哪個版本給誰\n\n```html\n<!-- 告訴 Google：同一頁有哪些語言版本 -->\n<link rel=\"alternate\" hreflang=\"zh-Hant\" href=\"https://example.com/zh/vue\">\n<link rel=\"alternate\" hreflang=\"en\" href=\"https://example.com/en/vue\">\n<link rel=\"alternate\" hreflang=\"ja\" href=\"https://example.com/ja/vue\">\n\n<!-- x-default：沒對應語言時的預設版本 -->\n<link rel=\"alternate\" hreflang=\"x-default\" href=\"https://example.com/vue\">\n```\n\n  \n### hreflang 規則\n\n  \n- **每個語言版本**都要列出**所有**語言（包括自己）\n- 用**ISO 標準**：`zh-TW`（繁中-台灣）、`en-US`（英文-美國）\n- 互相對應頁要**真的是翻譯**（不是只翻 title）\n- 404 / noindex 的頁不要列\n\n  \n### 實作位置（三選一）\n\n  \n1. HTML `` 內（最常用）\n2. HTTP header（非 HTML 檔案，如 PDF）\n3. sitemap.xml 內\n\n  \n### 地理導流\n\n```text\n使用者連 myshop.com（根目錄）\n  ↓\n依 IP / Accept-Language 判斷\n  ↓\n台灣使用者 → /zh-tw/\n日本使用者 → /ja/\n其他 → /en/\n```\n\n  \n用 Cloudflare Workers / Vercel Middleware 在 edge 做。注意：\n\n  \n- **不要強制 redirect**（讓使用者能切換）\n- 把選擇**記在 cookie**（下次直接給選過的）\n- **Googlebot 不應該被導**（讓它能爬所有版本）\n\n  \n### 翻譯品質 vs SEO\n\n  \n- **機器翻譯**：不建議當主要—Google 看得出\n- **人工翻譯**：高成本但正確\n- **混合**：AI 翻 → 人工校 → 較划算\n- **在地化（Localization）**：不只翻譯，是**適應文化**。例：「免運」在台灣有效、在日本要說「送料無料」\n\n  \n### 多語常見坑\n\n  \n- **機器翻譯不寫 hreflang**：Google 當重複內容\n- **hreflang 自我對應錯**（不互相列出）\n- **翻譯只翻 title**，內容還是原文\n- **RTL 語言**（阿拉伯、希伯來）沒處理 dir=\"rtl\"\n- **數字 / 日期格式**不在地化（5/11/2026 in 美國 vs 11/5/2026 in 歐洲）\n\n  \n\n🛠️\n工具推薦\n\n配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。",
+      "title": "集合：Vec / String / HashMap",
+      "oneLineSummary": "Vec<T> 是可成長陣列、String 是可成長字串、HashMap<K,V> 是鍵值對——三個最常用的集合，全在標準庫。",
+      "analogy": "像三種收納——Vec 是能一直加東西的層架、String 是能一直接字的便條、HashMap 是貼標籤的抽屜（用名字直接找）。",
+      "content": "Rust 標準庫三個最常用的集合：**Vec**、**String**、**HashMap**。\n\n### 1. Vec<T> — 可成長的陣列\n\n```rust\nlet mut v: Vec<i32> = Vec::new();\nv.push(1);\nv.push(2);\nv.push(3);\nprintln!(\"{:?}\", v);          // [1, 2, 3]\nprintln!(\"第一個 {}\", v[0]);\nfor x in &v { println!(\"{}\", x); }\n\nlet v2 = vec![10, 20, 30];    // vec! 巨集快速建立\n```\n\n### 2. String — 可成長的字串\n\n`String` 可變、擁有資料；`&str` 是固定的字串切片（借用）。\n\n```rust\nlet mut s = String::from(\"Hello\");\ns.push_str(\", Rust\");\ns.push('!');\nprintln!(\"{}\", s);            // Hello, Rust!\nlet len = s.len();\n```\n\n### 3. HashMap<K, V> — 鍵值對\n\n```rust\nuse std::collections::HashMap;\n\nlet mut scores = HashMap::new();\nscores.insert(\"Nami\", 90);\nscores.insert(\"Luffy\", 85);\n\nif let Some(s) = scores.get(\"Nami\") {\n    println!(\"Nami 分數 {}\", s);   // get 回傳 Option\n}\n\nfor (name, score) in &scores {\n    println!(\"{}: {}\", name, score);\n}\n```\n\n> 💡 `{:?}` 是「debug 印法」，能直接印出 Vec、HashMap 等集合的內容，debug 神器。\n\n### 🎯 重點回顧\n\n- `Vec<T>`：可成長陣列，`push` 加、`vec![]` 快速建\n- `String`（可變、擁有）vs `&str`（固定、借用）\n- `HashMap<K,V>`：鍵值對，`get` 回 `Option`\n\n**☕ 用人話講**\n\nRust 三個最常用的集合：(1) **`Vec<T>`**——可以一直 `push` 加東西的動態陣列，`vec![1,2,3]` 快速建 (2) **`String`**——可成長、擁有資料的字串（跟它對應的 `&str` 是固定的借用切片） (3) **`HashMap<K,V>`**——鍵值對，用 `insert` 放、`get` 取（回傳 Option，因為可能沒這個鍵）。debug 時用 `{:?}` 能直接印出整個集合內容。**一句話記住**：Vec 是能一直加的層架、String 是能一直接字的便條、HashMap 是貼標籤的抽屜（用名字直接找）——這三個學熟，日常資料處理就夠用了。\n",
       "tip": {
         "type": "practical",
-        "text": "配合這節用的工具：(1) VS Code（編輯器、免費）(2) Chrome DevTools（F12 開啟、除錯神器）(3) Live Server（VS Code 擴充、即時預覽）(4) GitHub Copilot / Cursor（AI 寫程式、學習加速 2-10x）。"
+        "text": "HashMap 的 get 回傳 Option（可能沒這個鍵），記得用 if let / match 處理 None，別直接 unwrap。"
       },
       "xp": 10,
       "exercise": {
-        "question": "把本節「國際 SEO：hreflang 與多語策略」的核心心法、轉成一個具體的「我今天 / 這週要做」的小行動。",
-        "hint": "心法 ≠ 知識、心法要落地。「我從今天起、每天 ___」這種格式。",
-        "answer": "好行動 = 小（5-10 分鐘以內）+ 具體（不模糊）+ 可量化（有沒有做得出來）。例：『每天起床先列 3 件最重要的事再開電腦』比『更專注』可執行 100 倍。配合 streak（連續紀錄）讓自己上癮。"
+        "question": "HashMap 的 get 為什麼回傳 Option 而不是直接給值？",
+        "hint": "可能沒有。",
+        "answer": "因為那個鍵「可能不存在」。回傳 Option（Some/None）逼你處理「找不到」的情況，避免抓到不存在的值出錯。"
       },
       "outline": [
         {
-          "level": 3,
-          "text": "三種 URL 結構"
+          "text": "1. Vec<T> — 可成長的陣列",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "hreflang：告訴 Google 哪個版本給誰"
+          "text": "2. String — 可成長的字串",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "hreflang 規則"
+          "text": "3. HashMap<K, V> — 鍵值對",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "實作位置（三選一）"
-        },
+          "text": "🎯 重點回顧",
+          "level": 3
+        }
+      ],
+      "playgrounds": [
         {
-          "level": 3,
-          "text": "地理導流"
-        },
-        {
-          "level": 3,
-          "text": "翻譯品質 vs SEO"
-        },
-        {
-          "level": 3,
-          "text": "多語常見坑"
+          "key": "33.11.auto",
+          "language": "rust",
+          "title": "Vec + HashMap",
+          "hint": "改改內容、看 {:?} 印出的結果。",
+          "initialCode": "use std::collections::HashMap;\n\nfn main() {\n    let mut v = vec![1, 2, 3];\n    v.push(4);\n    println!(\"Vec = {:?}\", v);\n\n    let mut m = HashMap::new();\n    m.insert(\"蘋果\", 30);\n    m.insert(\"香蕉\", 20);\n    println!(\"蘋果價格 = {:?}\", m.get(\"蘋果\"));\n}"
         }
       ]
     },
     {
       "id": "33.12",
       "number": "LESSON 33.12",
-      "title": "GEO：Generative Engine Optimization",
-      "oneLineSummary": "Actix Web：「Rust 老牌 web 框架」—極致效能、Tokio 同等級。",
-      "analogy": "像Rust 版 Express—老牌、文件多、性能極強。Axum 跟 Actix 二選一、看口味。",
-      "content": "2024-2026 SEO 領域最大變化：**使用者開始問 ChatGPT、Perplexity 而不是 Google**。\n\n  \n### 什麼是 GEO？\n\n  \n讓**生成式 AI 引擎（GPT、Claude、Gemini）**引用你的內容。\n\n  \n### GEO vs SEO 差異\n\n  \n|  | 傳統 SEO | GEO |\n| --- | --- | --- |\n| 目標 | 排名前 10 | 被 AI 引用 |\n| 呈現 | 10 個藍色連結 | 整合的答案 + 來源 |\n| 關鍵 | keyword | semantic + structured data |\n| 競爭 | 數百萬網站 | 少數高質量來源 |\n| 流量影響 | 排名好就有點擊 | 被引用但 click-through 較低 |\n\n  \n### 讓 AI 引用你的 8 個策略\n\n  \n#### 1. 結構化資料 + JSON-LD\n\n  \nAI 比 Google 更依賴 structured data（解析更快、更準）。所有頁面該有 schema。\n\n  \n#### 2. 明確的事實 + 數據\n\n  \nAI 喜歡引用**有具體數字、年份、引用來源**的內容。「肯亞 AA 咖啡每磅約 NT$1200（2026 年 5 月行情）」比「肯亞 AA 不便宜」好被引用。\n\n  \n#### 3. 直接回答常見問題\n\n  \n「**什麼是 X？**」、「**怎麼做 Y？**」**第一段就回答**，不要鋪陳。AI 抓答案需要直接的句子。\n\n  \n#### 4. 多用列表跟表格\n\n  \nAI 容易 parse。「Top 10 咖啡產地」比一段散文好引用。\n\n  \n#### 5. 引用權威來源\n\n  \n引用學術論文、官方數據、知名專家—AI 看到「**有來源**」更願意引用你的整合。\n\n  \n#### 6. 標明日期 + 持續更新\n\n  \nAI 偏好**新鮮資料**。文章標日期、定期更新、寫明「2026 年 5 月更新」。\n\n  \n#### 7. 個人經驗 / 第一手敘述\n\n  \n「**我用了 30 款掛耳咖啡之後**」AI 引用率比「綜合多篇評論」高—E-E-A-T 對 AI 也適用。\n\n  \n#### 8. llms.txt 檔案（2024 新規範）\n\n```text\n# 放在 https://myshop.com/llms.txt\n\n# MyShop - 台灣手沖咖啡專賣\n\n## About\n創立於 2024 的手沖咖啡電商，專注於精品咖啡豆零售。\n\n## Key Pages\n- [咖啡完整指南](https://myshop.com/blog/coffee-guide.md)\n- [產品清單](https://myshop.com/products.md)\n- [關於我們](https://myshop.com/about.md)\n\n## Contact\nhello@myshop.com\n```\n\n  \nllms.txt 提案 by Anthropic / Jeremy Howard（2024）—類似 robots.txt 但給 LLM。**讓 AI 一目了然你網站重點**。\n\n  \n### 2026 AI 搜尋引擎名單\n\n  \n- **Perplexity**：純 AI 搜尋，引用來源完整\n- **ChatGPT Search**（OpenAI）\n- **Google AI Overview / SGE**\n- **Bing Copilot**（Microsoft）\n- **Brave Search AI**\n- **You.com**\n- **Phind**（技術用）\n- **Arc Search**（瀏覽器內）\n\n  \n### 怎麼測試自己被引用\n\n  \n1. 去 Perplexity 問你領域的問題\n2. 看回答的「來源」列表有沒有你\n3. 沒有 → 看誰被引用、學他們的格式\n4. 有 → 看你被引用的什麼段落，這格式有效\n\n  \n### GEO 工具\n\n  \n- **Otterly**：追蹤 AI 引用\n- **Profound**：AI search analytics\n- **BrandRank.ai**：品牌在 AI 答案中的呈現\n- **Athena**：類似\n\n  \n### GEO 的真實流量\n\n  \n2026 估計：\n\n  \n- 傳統 Google 仍佔 70%+ 搜尋流量\n- AI 搜尋引擎佔 10-20%（成長快）\n- 未來 3 年 AI 引擎可能達 30-40%\n\n  \n結論：**SEO + GEO 都要做，重心慢慢移**。\n\n  \n\n⚠️\n新手常見錯誤\n\n新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。",
+      "title": "Iterator 與 Closure — 函式式的優雅",
+      "oneLineSummary": "Iterator 鏈（map/filter/collect）+ Closure（匿名函式 |x| ...）讓資料處理優雅又零成本；而且編譯後跟手寫迴圈一樣快。",
+      "analogy": "像生產線——資料一站站流過（filter 篩、map 加工、sum 總結），每站做一件事；Closure 是你貼在每站上的「處理小紙條」。",
+      "content": "Rust 的 **Iterator（迭代器）**配 **Closure（閉包）**，讓資料處理既優雅、又「零成本抽象」（編譯後跟手寫 for 迴圈一樣快）。\n\n### 1. Closure（閉包 / 匿名函式）\n\n語法是 `|參數| 運算式`：\n\n```rust\nlet add = |a: i32, b: i32| a + b;\nprintln!(\"{}\", add(3, 4));     // 7\n\nlet n = 10;\nlet add_n = |x| x + n;          // 能抓住外面的 n\nprintln!(\"{}\", add_n(5));       // 15\n```\n\n### 2. Iterator 鏈\n\n```rust\nlet nums = vec![1, 2, 3, 4, 5, 6];\n\nlet result: Vec<i32> = nums.iter()\n    .filter(|&&x| x % 2 == 0)    // 只留偶數\n    .map(|&x| x * 10)            // 每個 ×10\n    .collect();                  // 收集成 Vec\nprintln!(\"{:?}\", result);        // [20, 40, 60]\n\nlet sum: i32 = nums.iter().sum();\nlet max = nums.iter().max();     // Option\n```\n\n### 3. 常用方法\n\n- `map`（加工每個）、`filter`（篩選）、`collect`（收集）\n- `sum` / `max` / `min` / `count`（總結）\n- `enumerate`（配索引）、`zip`（兩個併在一起）\n\n> 💡 **零成本抽象**：這種漂亮的鏈式寫法，編譯器會優化成跟你手寫 for 迴圈一樣快——優雅跟效能兼得，這是 Rust 的招牌。\n\n### 🎯 重點回顧\n\n- Closure 語法 `|x| ...`，能抓住外面的變數\n- Iterator 鏈：`filter` → `map` → `collect`，優雅處理資料\n- 「零成本」：編譯後跟手寫迴圈一樣快\n\n**☕ 用人話講**\n\nRust 處理資料靠 **Iterator（迭代器）配 Closure（閉包）**，又優雅又快。(1) **Closure** 就是匿名小函式，語法 `|x| x + 1`，還能抓住外面的變數 (2) **Iterator 鏈**——`.filter()` 篩選、`.map()` 加工每個、`.collect()` 收成 Vec、`.sum()` 總結，一條鏈把資料處理完，不用寫一堆 for 迴圈 (3) **零成本抽象**——這種漂亮寫法編譯後跟你手寫迴圈**一樣快**。**一句話記住**：像生產線——資料一站站流過（篩→加工→總結），Closure 是貼在每站的「處理小紙條」；Rust 讓你「寫得漂亮、跑得飛快」兩者兼得，這是它最迷人的地方之一。\n",
       "tip": {
-        "type": "warning",
-        "text": "新手 3 大坑：(1) 不看 console—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) 不存檔就 F5—改完忘記儲存以為「程式沒效果」 (3) 抄 code 不理解—複製貼上能跑、但下次要改就崩潰。記得：先看懂、再寫。"
+        "type": "practical",
+        "text": "Iterator 鏈最後一定要有「消費者」（collect / sum / for…）才會真的執行——iterator 是惰性的，不收尾它不會動。"
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Rust 的 iterator 鏈（filter/map/collect）寫起來很優雅，效能會比手寫 for 迴圈差嗎？",
+        "hint": "零成本。",
+        "answer": "不會。Rust 的迭代器是「零成本抽象」，編譯器會把它優化成跟手寫 for 迴圈一樣快——優雅跟效能兼得。"
       },
       "outline": [
         {
-          "level": 3,
-          "text": "什麼是 GEO？"
+          "text": "1. Closure（閉包 / 匿名函式）",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "GEO vs SEO 差異"
+          "text": "2. Iterator 鏈",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "讓 AI 引用你的 8 個策略"
+          "text": "3. 常用方法",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "2026 AI 搜尋引擎名單"
-        },
+          "text": "🎯 重點回顧",
+          "level": 3
+        }
+      ],
+      "playgrounds": [
         {
-          "level": 3,
-          "text": "怎麼測試自己被引用"
-        },
-        {
-          "level": 3,
-          "text": "GEO 工具"
-        },
-        {
-          "level": 3,
-          "text": "GEO 的真實流量"
+          "key": "33.12.auto",
+          "language": "rust",
+          "title": "Iterator 鏈",
+          "hint": "改 filter / map 的邏輯，看結果怎麼變。",
+          "initialCode": "fn main() {\n    let nums = vec![1, 2, 3, 4, 5, 6];\n    let result: Vec<i32> = nums.iter()\n        .filter(|&&x| x % 2 == 0)   // 只留偶數\n        .map(|&x| x * 10)           // 每個 x10\n        .collect();\n    println!(\"{:?}\", result);       // [20, 40, 60]\n    let sum: i32 = nums.iter().sum();\n    println!(\"總和 = {}\", sum);\n}"
         }
       ]
     },
     {
       "id": "33.13",
       "number": "LESSON 33.13",
-      "title": "AEO：Answer Engine Optimization",
-      "oneLineSummary": "sqlx：「Rust 的 SQL 工具」—編譯時就驗證 SQL 是否合法。",
-      "analogy": "像SQL 也走 type-safe 路線—寫錯 SQL 在編譯期就抓、不會等執行時才炸。Rust 的瘋狂安全在這也展現。",
-      "content": "AEO 比 GEO 更聚焦：**讓答案引擎直接給你的答案**。\n\n  \n### GEO vs AEO 差別\n\n  \n- **GEO**：被 AI 引用為「來源之一」\n- **AEO**：被選為「the answer」直接顯示\n\n  \nGoogle 的 Featured Snippet 是經典 AEO 場景。AI 時代延伸到 ChatGPT 等。\n\n  \n### Featured Snippet 類型\n\n  \n- **段落型**：直接定義（「什麼是 X」）\n- **列表型**：步驟 / 排名（「怎麼做 X 步驟」）\n- **表格型**：比較資料\n- **影片型**：YouTube 片段\n\n  \n### 讓自己被選為答案的策略\n\n  \n#### 1. 結構：問題 + 直接答案\n\n```markdown\n# 什麼是掛耳咖啡？\n\n掛耳咖啡是一種單次使用的便攜咖啡濾掛包，內含已研磨好的咖啡粉，\n透過耳片掛在杯子上，用熱水沖泡即可飲用。1990 年代起源於日本，\n現為全球最受歡迎的便攜咖啡形式之一。\n\n## 掛耳咖啡的特色\n...\n```\n\n  \n第一段**直接定義**—AI 會抓這段當答案。\n\n  \n#### 2. 步驟型內容用 ordered list\n\n```markdown\n# 怎麼沖泡掛耳咖啡？\n\n1. 把掛耳袋耳片打開，掛在杯子上\n2. 注入少量 90°C 熱水，悶蒸 30 秒\n3. 緩慢注水至所需量\n4. 取下掛耳袋，享用咖啡\n```\n\n  \n#### 3. 比較用表格\n\n```markdown\n# 掛耳咖啡 vs 即溶咖啡\n\n| 項目 | 掛耳 | 即溶 |\n|------|------|------|\n| 風味 | 接近現磨 | 較單調 |\n| 沖泡時間 | 3 分鐘 | 30 秒 |\n| 價格 | 中等 | 便宜 |\n| 攜帶 | 方便 | 最方便 |\n```\n\n  \n#### 4. FAQ schema\n\n  \n用 FAQPage schema 讓 Google 直接抓問答。前面 15.5 講過。\n\n  \n#### 5. 短答案 + 完整解釋\n\n  \n每個小標下面**第一句**是 50 字內的精簡答案，**後面**再展開細節。AI 抓第一句、人類讀完整。\n\n  \n### 問題型關鍵字研究\n\n  \n用：\n\n  \n- **AnswerThePublic**：問題雲圖\n- **Google「People Also Ask」**：搜尋結果中段\n- **Quora / Reddit**：真實問題\n- **客服 log**：客戶實際問什麼\n\n  \n### 對話式 SEO 趨勢\n\n  \n2026 使用者搜尋變得更口語：\n\n```text\n傳統：「掛耳咖啡 推薦」\n現代：「掛耳咖啡有什麼推薦的嗎？」\n對話：「我想找一款適合早上喝的掛耳咖啡，最好不要太苦」\n\n→ 內容要能匹配長句子問題\n→ 寫 H2 / H3 直接用問句\n```\n\n  \n### 語音搜尋優化\n\n  \n智慧音箱 + 手機語音助理。特色：\n\n  \n- 更長更口語的 query\n- 通常只回一個答案（沒有「前 10 名」）\n- 更重視在地（「附近的 X」）\n- 偏好 schema 完整的網站\n",
+      "title": "Traits — Rust 的介面",
+      "oneLineSummary": "Trait 定義「能做什麼」（一組方法），型別 impl 它就有那能力；像 interface，是 Rust 多型與泛型約束的核心。",
+      "analogy": "像「會飛」這個資格——不管你是鳥、飛機還是超人，只要 impl 了 Fly，就都能被當「會飛的東西」使喚。",
+      "content": "**Trait（特徵）**是 Rust 版的「介面」——定義一組方法（能做什麼），任何型別 `impl` 它就獲得那能力。\n\n### 1. 定義 + 實作 Trait\n\n```rust\ntrait Greet {\n    fn hello(&self) -> String;          // 只定義簽名\n    fn hi(&self) -> String {            // 也能給預設實作\n        String::from(\"hi\")\n    }\n}\n\nstruct Cat;\nstruct Dog;\n\nimpl Greet for Cat {\n    fn hello(&self) -> String { String::from(\"喵\") }\n}\nimpl Greet for Dog {\n    fn hello(&self) -> String { String::from(\"汪\") }\n}\n```\n\n### 2. 用 trait 做多型\n\n```rust\nfn say(g: &impl Greet) {       // 接受「任何 impl 了 Greet 的型別」\n    println!(\"{}\", g.hello());\n}\n\nsay(&Cat);   // 喵\nsay(&Dog);   // 汪\n```\n\n### 3. 常見內建 Trait\n\n- `Debug`（能用 `{:?}` 印）、`Display`（能用 `{}` 印）\n- `Clone`（能 `.clone()`）、`PartialEq`（能用 `==` 比）\n- 用 `#[derive(...)]` 自動實作：\n\n```rust\n#[derive(Debug, Clone, PartialEq)]\nstruct Point { x: i32, y: i32 }\n```\n\n> 💡 `#[derive(Debug)]` 是 Rust 新手最常用的——加了它，struct 就能用 `{:?}` 直接印出來 debug。\n\n### 🎯 重點回顧\n\n- Trait = 介面，定義「能做什麼」、型別 `impl` 後就有\n- `&impl Trait` 做多型：接受任何實作了該 trait 的型別\n- 常用 `#[derive(Debug, Clone, PartialEq)]` 自動實作\n\n**☕ 用人話講**\n\nTrait 是 Rust 版的「介面」——定義一組方法（一個「資格」），任何型別 `impl` 它就獲得那能力。(1) 像定義「會打招呼」這個 trait，Cat impl 它回「喵」、Dog impl 它回「汪」 (2) 函式收 `&impl Greet` 就能接受「任何會打招呼的型別」，這就是**多型** (3) 很多能力是內建 trait：`Debug`（用 `{:?}` 印）、`Clone`、`PartialEq`（用 `==` 比），用 **`#[derive(...)]` 一行自動實作**。**一句話記住**：Trait 像「會飛」這個資格——不管你是鳥、飛機還是超人，只要 impl 了它，就都能被當「會飛的東西」使喚；它是 Rust 共用行為、做泛型約束的核心。新手最常用 `#[derive(Debug)]` 讓 struct 能直接印出來 debug。\n",
       "tip": {
         "type": "practical",
-        "text": "AEO 是讓內容能被 AI 問答引用：答案寫在段落開頭一句講清楚、用 FAQ 結構、加 Schema。讓機器三秒抓到重點，比堆關鍵字有效。"
+        "text": "struct 寫好習慣加 #[derive(Debug)]，馬上能用 {:?} 印出來 debug。需要比較或複製再加 PartialEq / Clone。"
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Trait 在 Rust 扮演什麼角色？#[derive(Debug)] 做什麼？",
+        "hint": "介面。",
+        "answer": "Trait 是 Rust 的介面，定義「能做什麼」（一組方法），型別 impl 後就獲得那能力，用來做多型跟泛型約束。#[derive(Debug)] 自動幫 struct 實作 Debug trait，讓它能用 {:?} 印出來 debug。"
       },
       "outline": [
         {
-          "level": 3,
-          "text": "GEO vs AEO 差別"
+          "text": "1. 定義 + 實作 Trait",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "Featured Snippet 類型"
+          "text": "2. 用 trait 做多型",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "讓自己被選為答案的策略"
+          "text": "3. 常見內建 Trait",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "問題型關鍵字研究"
-        },
+          "text": "🎯 重點回顧",
+          "level": 3
+        }
+      ],
+      "playgrounds": [
         {
-          "level": 3,
-          "text": "對話式 SEO 趨勢"
-        },
-        {
-          "level": 3,
-          "text": "語音搜尋優化"
+          "key": "33.13.auto",
+          "language": "rust",
+          "title": "Trait 多型",
+          "hint": "say 能吃任何 impl 了 Greet 的型別。",
+          "initialCode": "trait Greet { fn hello(&self) -> String; }\n\nstruct Cat;\nstruct Dog;\nimpl Greet for Cat { fn hello(&self) -> String { String::from(\"喵\") } }\nimpl Greet for Dog { fn hello(&self) -> String { String::from(\"汪\") } }\n\nfn say(g: &impl Greet) { println!(\"{}\", g.hello()); }\n\nfn main() {\n    say(&Cat);\n    say(&Dog);\n}"
         }
       ]
     },
