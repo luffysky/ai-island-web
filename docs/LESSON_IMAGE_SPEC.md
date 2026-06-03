@@ -253,12 +253,81 @@
 
 ---
 
+## F. 其他章節補充圖（📊 ch20 前面尚未列、加上 ch20-25 後端週邊）
+
+> 林董指示「20 章前面也列出來」。這區補齊前面章節缺的概念圖，**ch03 UI/UX 完全沒圖、又最視覺，優先**。
+
+### F-1. HTML（ch01，補 A 區的 devtools 之外）
+| 檔名 | lesson | 內容 |
+|---|---|---|
+| `ch01_html_tree.png` | 1.x | HTML 是一棵樹：DOCTYPE → html → head / body 的巢狀結構圖。|
+| `ch01_semantic_tags.png` | 1.x | 語意標籤 vs `<div>` 海：header / nav / main / article / footer 對照（給人 + 給機器看）。|
+| `ch01_head_essentials.png` | 1.9 | `<head>` 必備 5 個：charset / viewport / title / description / lang。|
+
+### F-2. UI/UX（ch03，🔴 最缺、最視覺、優先）
+| 檔名 | lesson | 內容 |
+|---|---|---|
+| `ch03_ui_vs_ux.png` | 3.1 | UI vs UX：UI＝長相（顏色 / 圓角）、UX＝流程順不順（少步驟）對照。|
+| `ch03_visual_hierarchy.png` | 3.3 | 視覺層次：用大小 / 粗細 / 顏色 / 對比引導眼睛先看哪。|
+| `ch03_color_system.png` | 3.4 / 3.22 | 色票系統：主色 / 灰階 / 語意色（成功 / 警告 / 危險）各 11 階。|
+| `ch03_spacing_8pt.png` | 3.6 / 3.24 | 8 點網格：間距都用 8 的倍數 + 對齊，整齊 vs 凌亂對照。|
+| `ch03_button_states.png` | 3.7 | 按鈕 5 種狀態：default / hover / active / disabled / focus。|
+| `ch03_5_laws.png` | 3.21 | 5 大設計法則一圖：Hick / Fitts / Miller / Jakob / 美感可用性。|
+| `ch03_states_3.png` | 3.12 | 三種狀態：空狀態 / 載入中 / 錯誤，各該長怎樣（別只做「有資料」版）。|
+| `ch03_a11y_contrast.png` | 3.14 | 無障礙：對比度合格 vs 不合格、觸控目標至少 44×44px。|
+
+### F-3. TypeScript（ch05）
+| 檔名 | lesson | 內容 |
+|---|---|---|
+| `ch05_type_inference.png` | 5.3 | 型別推斷：`const x = 5` → TS 自己知道是 number，不用標註。|
+| `ch05_union_literal.png` | 5.5 | Union（A \| B）+ Literal 型別：「只能是這幾個固定值」示意。|
+| `ch05_generics.png` | 5.8 / 5.23 | 泛型 `<T>`：一份程式適用多型別（萬用充電線比喻）。|
+| `ch05_utility_types.png` | 5.24 | Utility Types：Partial / Pick / Omit 改造現有型別對照。|
+
+### F-4. JSON（ch06）
+| 檔名 | lesson | 內容 |
+|---|---|---|
+| `ch06_json_syntax.png` | 6.2 | JSON 語法：6 種值 + 2 容器（{} / []）+ 嚴格規則（雙引號、不能尾逗號、不能註解）。|
+| `ch06_parse_stringify.png` | 6.3 | parse（字串 → 物件）/ stringify（物件 → 字串）來回轉示意。|
+
+### F-5. 行動 App / SEO / PWA / DevOps（ch11 / 13 / 14 / 15）
+| 檔名 | lesson | 內容 |
+|---|---|---|
+| `ch11_native_rn_flutter.png` | 11.1 | 三大路線對照：原生（Swift/Kotlin）/ React Native / Flutter，優缺點。|
+| `ch13_seo_3pillars.png` | 13.1 | SEO 三本柱：技術 SEO / 內容 SEO / 連結（信任），缺一不可。|
+| `ch13_serp_anatomy.png` | 13.1 / 13.12 | 搜尋結果（SERP）解剖：title / description / rich snippet 對應網頁哪些設定。|
+| `ch13_seo_vs_geo.png` | 13.5 / 13.15 | SEO（拼 Google 排名）vs GEO（拼被 AI 引用）對照。|
+| `ch14_pwa_3pieces.png` | 14.1 | PWA 三要素：Web Manifest + Service Worker + HTTPS。|
+| `ch14_cache_strategies.png` | 14.13 | 快取策略對照：網路優先 / 快取優先 / Stale-While-Revalidate。|
+| `ch15_cicd_pipeline.png` | 15.3 | CI/CD 流程：push → 測試 → build → deploy 自動化管線。|
+| `ch15_git_branch_pr.png` | 15.2 | Git 協作流程：branch → commit → PR → review → merge。|
+| `ch15_semver.png` | 15.13 | 語意化版本號 `1.2.3`：major / minor / patch 各代表什麼。|
+
+### F-6. 後端週邊（ch20-25）
+| 檔名 | lesson | 內容 |
+|---|---|---|
+| `ch20_rest_graphql_trpc.png` | 20.1 | 三種 API 風格對照：REST（固定套餐）/ GraphQL（自助夾取）/ tRPC（內線直通）。|
+| `ch20_webhook_vs_poll.png` | 20.8 | Webhook（主動推）vs Polling（一直問）對照——省資源又即時。|
+| `ch21_authn_vs_authz.png` | 21.x | 認證（你是誰）vs 授權（你能做什麼）對照（刷卡進門 vs 卡能開哪些門）。|
+| `ch21_session_vs_jwt.png` | 21.x | Session（伺服器記住）vs JWT（自己帶證件）運作差別。（B 區已有 jwt_anatomy / oauth_flow）|
+| `ch22_container_vs_vm.png` | 22.x | 容器（Docker）vs 虛擬機：共用 OS 核心、輕量快速 vs 各帶一套 OS。|
+| `ch22_docker_flow.png` | 22.x | Dockerfile → image → container 流程（食譜 → 半成品 → 上桌）。|
+| `ch23_iaas_paas_saas.png` | 23.x | IaaS / PaaS / SaaS 三層：租地自己蓋 / 租房簡裝 / 住飯店全包。|
+| `ch24_observability.png` | 24.x | 可觀測性三本柱：Logs / Metrics / Traces（可與 B 區 ch16 共用）。|
+| `ch25_dns_resolution.png` | 25.x | 從輸網址到看到網頁：DNS 查詢流程（問路 → 拿到 IP → 連線）。|
+| `ch25_https_lock.png` | 25.x | 網址列那個鎖頭怎麼來：憑證 + TLS 握手 = 加密連線。|
+
+---
+
 ## C. 建議產製順序
 
 1. **A 區（操作教學）全做** — 對應真實卡關、CP 值最高，且已有 6 張範例風格可參考。
 2. **B 區挑「最常被問」的**：ch07 變數賦值、ch17 JOIN、ch08 UI=f(state)、ch46 RAG、ch04 event loop。
 3. **D 區（前端框架專區）優先** — 林董指示前端是多數人入門基礎；先做 D-1 工具演進（含 CRA 歷史）、D-4 ch10 五種渲染模式、D-2 React Hooks 速查，這三組最常卡。
 4. **E 區（Python / 爬蟲 / Node）** — 先做 E-1 ch26 基礎（comprehension / decorator / generator / OOP）、E-3 ch28 爬蟲流程與靜態vs動態、E-6 ch31 event loop，這幾組最常卡。
-5. 其餘 B / D / E 區概念圖後續分批補。
+5. **F-2 ch03 UI/UX 🔴 優先** — 這章完全沒圖、又最視覺，視覺層次 / 色票 / 8 點網格 / 按鈕狀態做出來最有感。
+6. 其餘 B / D / E / F 區概念圖後續分批補。
+
+> 全部加總約 **110+ 張**概念圖待產（B 40+、D 26、E 33、F 30+）。生好丟進 `public/lesson-img/ch{NN}/`、跟我說一聲，我依本表把 `![]()` 插進對應 lesson。
 
 > 生好圖丟進 `public/lesson-img/ch{NN}/`、跟我說一聲，我就依本表把 `![]()` 插進對應 lesson 的正確段落。
