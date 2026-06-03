@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { consumeBindCode } from "@/lib/notify-user-line";
-import { buildQuickReply, buildSimpleCard, type FlexMessage, type LineTextMessage } from "@/lib/line-flex";
+import { buildQuickReply, buildSimpleCard, buildListCard, type FlexMessage, type LineTextMessage } from "@/lib/line-flex";
 import { decryptKey } from "@/lib/ai-crypto";
 import { callAI } from "@/lib/ai-providers";
 import { pickModelForUsage } from "@/lib/ai-usage-models";
@@ -194,7 +194,7 @@ async function askUserAIInner(text: string, profile: UserProfileLite | null, lin
         .select("content, chapter_id, lesson_id, updated_at")
         .eq("user_id", profile.id)
         .order("updated_at", { ascending: false })
-        .limit(8);
+        .limit(20);
       const notes = (noteRows as any[]) ?? [];
       const notesText = notes
         .map((n) => {
@@ -578,9 +578,9 @@ function cardBindHint(): FlexMessage {
 }
 
 const QUICK_REPLY = buildQuickReply([
+  { type: "message", label: "📓 我的筆記", text: "我的筆記" },
   { type: "uri", label: "🌐 打開網站", uri: SITE_URL },
   { type: "uri", label: "📚 看章節", uri: `${SITE_URL}/chapters` },
-  { type: "uri", label: "⚙️ 設定", uri: `${SITE_URL}/settings` },
   { type: "message", label: "❓ 說明", text: "/help" },
 ]);
 
@@ -872,6 +872,61 @@ export async function POST(req: NextRequest) {
           .eq("line_user_id", userId)
           .maybeSingle();
         await lineReply(replyToken, cardWhoami(userId, bound), token, QUICK_REPLY);
+        continue;
+      }
+
+      // 3.405. 看我的筆記內容 —— 直接在 LINE 顯示自己在網站寫的筆記
+      if (["我的筆記", "/筆記", "/notes", "看筆記", "看我的筆記", "筆記", "我的筆記內容", "查筆記"].includes(text)) {
+        const admin = createSupabaseAdmin();
+        const { data: prof } = await admin
+          .from("profiles")
+          .select("id")
+          .eq("line_user_id", userId)
+          .maybeSingle();
+        if (!prof) {
+          await lineReply(replyToken, cardUnbound(userId), token, QUICK_REPLY);
+          continue;
+        }
+        const { data: noteRows } = await admin
+          .from("notes")
+          .select("content, chapter_id, lesson_id, updated_at")
+          .eq("user_id", (prof as any).id)
+          .order("updated_at", { ascending: false })
+          .limit(10);
+        const myNotes = (noteRows as any[]) ?? [];
+        if (myNotes.length === 0) {
+          await lineReply(
+            replyToken,
+            buildSimpleCard({
+              emoji: "📭",
+              title: "還沒有筆記",
+              accentColor: "#7a5599",
+              body: "你還沒在網站寫筆記。上課時點筆記按鈕、或在這裡打「/note 內容」就能存。",
+              buttons: [{ label: "🌐 去寫筆記", uri: `${SITE_URL}/me/notes`, primary: true }],
+            }),
+            token,
+            QUICK_REPLY,
+          );
+          continue;
+        }
+        const items = myNotes.map((n) => {
+          const loc = n.lesson_id ? `📍 L${n.lesson_id}` : n.chapter_id ? `📍 Ch${n.chapter_id}` : "📝 自由筆記";
+          const body = String(n.content ?? "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().slice(0, 100) || "（空白）";
+          const date = new Date(n.updated_at).toLocaleDateString("zh-TW");
+          return { primary: body, secondary: `${loc} · ${date}` };
+        });
+        await lineReply(
+          replyToken,
+          buildListCard({
+            emoji: "📓",
+            title: `我的筆記（${myNotes.length} 則）`,
+            accentColor: "#7a5599",
+            items,
+            footerButton: { label: "看完整 / 編輯", uri: `${SITE_URL}/me/notes` },
+          }),
+          token,
+          QUICK_REPLY,
+        );
         continue;
       }
 
