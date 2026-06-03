@@ -60,6 +60,13 @@ CREATE POLICY "breach_incidents_admin_all"
       WHERE profiles.id = auth.uid()
       AND profiles.role = 'admin'
     )
+  )
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM public.profiles
+      WHERE profiles.id = auth.uid()
+      AND profiles.role = 'admin'
+    )
   );
 
 
@@ -118,13 +125,17 @@ CREATE POLICY "email_subs_own" ON public.email_subscriptions
 
 DROP POLICY IF EXISTS "email_subs_own_update" ON public.email_subscriptions;
 CREATE POLICY "email_subs_own_update" ON public.email_subscriptions
-  FOR UPDATE USING (auth.uid() = user_id);
+  FOR UPDATE USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
 
 -- Admin 看全部
 DROP POLICY IF EXISTS "email_subs_admin" ON public.email_subscriptions;
 CREATE POLICY "email_subs_admin" ON public.email_subscriptions
   FOR ALL
   USING (
+    EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin')
+  )
+  WITH CHECK (
     EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin')
   );
 

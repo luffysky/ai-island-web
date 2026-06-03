@@ -40,8 +40,8 @@
 - [x] 套 `validate.ts`：**UGC 寫入面完成**（blog 文章建立/編輯 + series/settings/comments、forum 發文/編輯都 `parseBody` zod 限長；內文另加 `sanitizeRichHtmlStrict` 白名單寫入）。剩 like/reaction/subscribe（純 id/bool、風險極低）可不補
 - [x] Telegram webhook secret 改強制 + fail-closed（沒設 secret → 503；比對改 timingSafeEqual）。⚠️ **部署後林董須在 Zeabur 設 `TELEGRAM_WEBHOOK_SECRET` 並重跑 `/admin/telegram/setup`、否則 admin TG bot 會停**
 - [~] admin slug 硬編 fallback `console-x7k2` 收斂：已把 `src/lib/admin-href.ts` 的 `ADMIN_SLUG` 改成單一來源（server `ADMIN_SLUG` → client `NEXT_PUBLIC_ADMIN_SLUG` → fallback），標為新 code 唯一來源。剩 26 處散落的硬編是**低優先 hygiene**（prod env 已設 `Ak83QDhUOVqx`、fallback 永不觸發、非實際洩漏），之後逐檔 import 即可、不急
-- [ ] 22 條 RLS policy 補 `WITH CHECK`
-- [ ] 2 份未完成 migration 改 idempotent 並套用（breach_and_email / interaction_analytics）
+- [x] RLS policy 補 `WITH CHECK`：**已套用 production**（林董授權）。實際只有 9 條 ALL/UPDATE 寫入 policy 缺 explicit WITH CHECK（audit 寫 22 高估），已全部鏡射 USING→WITH CHECK；現在 0 條缺。〔註：Postgres 本來就用 USING 當隱式 WITH CHECK、非漏洞、這是明確化〕。可重跑：`supabase/rls_with_check_explicit.sql`（idempotent DO block）+ breach migration 內已含 explicit WITH CHECK
+- [x] 2 份 migration：**本來就 idempotent**（`CREATE ... IF NOT EXISTS` / `DROP POLICY IF EXISTS`+CREATE / 守衛 DO block），已**重新套用 production**（5 張表齊全、policy/trigger/function 到位）
 - [ ] 註冊/發文加 Cloudflare Turnstile + 蜜罐欄位
 - [ ] 金鑰輪替計畫 + v1 API key 一鍵停用/重發按鈕
 
