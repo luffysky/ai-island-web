@@ -23,11 +23,17 @@ export default async function HomePage() {
   const stats = getSiteStats();
   const islandEnabled = await isIslandEnabled();
 
+  // 章/課數直接從資料庫算（getChapterMetas 已是 DB 即時資料），避免 build 快照過時。
+  // 撈不到時 fallback 靜態 stats。
+  const totalChapters = chapters.length || stats.totalChapters;
+  const totalLessons =
+    chapters.reduce((sum, ch) => sum + (ch.lessonCount ?? 0), 0) || stats.totalLessons;
+
   return (
     <div>
       <Hero
-        totalChapters={stats.totalChapters}
-        totalLessons={stats.totalLessons}
+        totalChapters={totalChapters}
+        totalLessons={totalLessons}
         stageCount={stats.stageCount}
         islandEnabled={islandEnabled}
       />
@@ -35,7 +41,7 @@ export default async function HomePage() {
       <StageMap />
       <section className="max-w-7xl mx-auto px-6 py-16 border-b border-border">
         <h2 className="text-3xl font-bold mb-2 text-center">🗺️ 完整章節地圖</h2>
-        <p className="text-center text-fg-muted mb-8">{stats.totalChapters} 章 × {stats.totalLessons}+ lesson — 點亮整片島嶼</p>
+        <p className="text-center text-fg-muted mb-8">{totalChapters} 章 × {totalLessons}+ lesson — 點亮整片島嶼</p>
         <ChapterMap chapters={chapters} />
       </section>
       <MissionDungeons />
