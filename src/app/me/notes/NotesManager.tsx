@@ -5,8 +5,9 @@ import dynamic from "next/dynamic";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { NoteCard } from "./NoteCard";
 import { NotesBackgroundPicker } from "./NotesBackgroundPicker";
+import { FloatingNotesOverlay } from "./FloatingNotesOverlay";
 import { DEFAULT_NOTES_BG, loadNotesBg, saveNotesBg, notesBgStyle, type NotesBgConfig } from "@/lib/notes-background";
-import { Plus, X, Save, Loader2 } from "lucide-react";
+import { Plus, X, Save, Loader2, Sparkles } from "lucide-react";
 
 const BlogEditor = dynamic(
   () => import("@/components/blog/BlogEditor").then((m) => m.BlogEditor),
@@ -40,6 +41,7 @@ export function NotesManager({
   const [bg, setBg] = useState<NotesBgConfig>(DEFAULT_NOTES_BG);
   useEffect(() => { setBg(loadNotesBg()); }, []);
   const updateBg = (c: NotesBgConfig) => { setBg(c); saveNotesBg(c); };
+  const [floating, setFloating] = useState(false);
 
   const categories = useMemo(
     () => Array.from(new Set(notes.map((n) => n.category).filter(Boolean))) as string[],
@@ -97,6 +99,14 @@ export function NotesManager({
         <Plus size={16} /> 新增筆記
       </button>
       <NotesBackgroundPicker cfg={bg} onChange={updateBg} />
+      {notes.length > 0 && (
+        <button
+          onClick={() => setFloating(true)}
+          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border bg-bg-card text-sm hover:border-accent transition"
+        >
+          <Sparkles size={15} /> 漂浮預覽
+        </button>
+      )}
       </div>
 
       {/* 篩選 */}
@@ -124,6 +134,15 @@ export function NotesManager({
 
       {editing && (
         <NoteEditor note={editing === "new" ? null : editing} onClose={() => setEditing(null)} onSaved={onSaved} />
+      )}
+
+      {floating && (
+        <FloatingNotesOverlay
+          notes={notes}
+          chapterMap={chapterMap}
+          onSelect={(n) => { setFloating(false); setEditing(n); }}
+          onClose={() => setFloating(false)}
+        />
       )}
 
       <div className="grid sm:grid-cols-2 gap-3">
