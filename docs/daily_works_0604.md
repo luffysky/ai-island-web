@@ -60,6 +60,14 @@
 - **A 區補**：create react / create vue / create nuxt 操作圖（含 CRA 對照）
 - 總計約 **110+ 張**概念圖待生，產製順序見 spec C 區
 
+## 🔴 重大發現：ch33「Rust 完整」內容損壞
+
+掃描全 75 章後確認**只有 ch33 損壞**：章名是「Rust 完整」、`oneLineSummary` / `analogy` / playground 都是 Rust，但**每課的 `title` + `content` 全部是 SEO 行銷內容**（關鍵字研究、On-page SEO、Core Web Vitals、Backlink、內容行銷…）——整章 Rust 內容被一份 SEO/行銷章覆蓋掉了。
+
+- 影響：學員點「Rust 完整」看到的是 SEO 教學，完全文不對題。
+- **不是用人話講能補的**——需要還原/重寫整章 25 課的 Rust 內容（Ownership、Borrowing、Cargo、Traits、Tokio、Axum、sqlx…，oneLine 還留著正確的 Rust 課綱可參考）。
+- 已暫時跳過 ch33，**等林董決定**：(a) 有原始 Rust 內容可還原？(b) 還是要我依 oneLine 課綱重寫整章？
+
 ## ⏭️ 待續
 
 1. **用人話講 + 三合一**：剩 **ch32 起到 ch75**（約 44 章）。照同標準逐章做。
