@@ -186,11 +186,79 @@
 
 ---
 
+## E. Python + 資料分析 + 爬蟲 + Node 專區（📊 ch26-31，加碼詳細）
+
+> 林董指示細細規劃。注意：**ch26-28 是 Python（基礎 / 資料分析 / 爬蟲）、ch29 是 JS 爬蟲、ch30 跨語言爬蟲、ch31 是 Node.js**，圖依各章真實主題。
+> A 區已有安裝圖（`ch26_install_uv_*` / `ch26_repl_guide` / `ch26_first_run_flow` / `ch31_install_node`）、B 區已有 `ch26_containers`，本區不重複、只補概念圖。
+
+### E-1. Python 基礎（ch26，35 課，橫跨基礎 → ML → FastAPI）
+| 檔名 | lesson | 內容 |
+|---|---|---|
+| `ch26_data_types.png` | 26.3 | int / float / str / bool 四基本型別 + 各自陷阱（float 精度 `0.1+0.2`、字串不可變）。|
+| `ch26_comprehension.png` | 26.5 | List Comprehension 拆解：`[x*2 for x in nums if x>0]` →（要什麼）（來源）（條件）三段，對照傳統 for 迴圈。|
+| `ch26_args_kwargs.png` | 26.6 | `*args` / `**kwargs` 怎麼收參數：位置參數收成 tuple、關鍵字參數收成 dict。|
+| `ch26_decorator.png` | 26.11 | decorator＝函數包函數：在「不改原函數」的前提下加功能（計時、權限檢查），@ 語法糖示意。|
+| `ch26_generator.png` | 26.11 | generator（yield）：一次吐一個、用到才算（省記憶體）vs list 一次全產出。|
+| `ch26_oop_class.png` | 26.10 | class / 物件 / 繼承：藍圖 → 實例、`dataclass` 省樣板。|
+| `ch26_ml_3types.png` | 26.16 | 機器學習三類對照：監督（有答案）/ 非監督（找結構）/ 強化（試錯獎勵）。|
+| `ch26_nn_backprop.png` | 26.21 | 神經網路 + 反向傳播：前向算預測 → 比對答案算誤差 → 後向修權重。（可與 B 區 `ch46_neural_net` 風格一致）|
+| `ch26_cnn_rnn_transformer.png` | 26.23 | CNN / RNN / Transformer 三大架構各擅長什麼（圖像 / 序列 / 全局注意力）。|
+| `ch26_fastapi_flow.png` | 26.25 | FastAPI 請求流程：route → Pydantic 驗證 → 處理 → 回 JSON ＋ 自動產生 API 文件。|
+| `ch26_async_python.png` | 26.27 | Python async / await + event loop：等 I/O 的空檔先做別的（呼應 7.21）。|
+
+> ML / 神經網路相關（26.16-26.24）可與 B 區 ch46 的圖共用風格與概念；train/test split 直接用 `ch46_train_test_split.png`。
+
+### E-2. Python 資料分析（ch27）
+| 檔名 | lesson | 內容 |
+|---|---|---|
+| `ch27_numpy_vectorize.png` | 27.3 / 27.9 | NumPy 向量運算 vs Python for 迴圈：整批一次算（快上百倍）的示意。|
+| `ch27_pandas_dataframe.png` | 27.4 | DataFrame 結構：index（列）/ columns（欄）/ values，像加強版 Excel 表。|
+| `ch27_pandas_5ops.png` | 27.8 | pandas 5 大操作一圖：篩選 / 排序 / 分組 / 合併 / 聚合。|
+| `ch27_data_cleaning.png` | 27.20 | 資料清理流程：缺失值（補 / 丟）/ 重複（去重）/ 異常值（偵測）。|
+| `ch27_pandas_polars_duckdb.png` | 27.18 / 27.19 | pandas vs Polars vs DuckDB：依資料量級「何時用誰」對照。|
+| `ch27_chart_picker.png` | 27.5 / 27.10 | 該用哪種圖：折線（趨勢）/ 長條（比較）/ 散點（關係）/ 圓餅（占比）選圖指南。|
+| `ch27_analysis_flow.png` | 27.7 | 完整資料分析流程：取得 → 清理 → 探索（EDA）→ 視覺化 → 結論。|
+
+### E-3. Python 爬蟲（ch28）
+| 檔名 | lesson | 內容 |
+|---|---|---|
+| `ch28_crawl_flow.png` | 28.1 / 28.2 | 爬蟲四步流程：發請求 → 拿 HTML → 解析（選取元素）→ 存資料。|
+| `ch28_static_vs_dynamic.png` | 28.2 / 28.3 | 靜態頁（requests + BS4 就夠）vs 動態頁（JS 渲染、要 Playwright）怎麼判斷、選工具。|
+| `ch28_selector_xpath.png` | 28.12 | CSS Selector vs XPath：對同一段 HTML，兩種定位元素的寫法對照。|
+| `ch28_anti_crawl.png` | 28.5 / 28.11 | 7 種反爬機制 + 對應破解（User-Agent / Cookie / 代理 IP / 驗證碼 / 頻率限制…）。|
+| `ch28_tool_picker.png` | 28.1 | 爬蟲工具選擇樹：requests+BS4 →（要 JS）Playwright →（要規模）Scrapy。|
+
+### E-4. JavaScript 爬蟲（ch29）
+| 檔名 | lesson | 內容 |
+|---|---|---|
+| `ch29_node_vs_python_crawler.png` | 29.1 / 29.7 | Node vs Python 爬蟲對比：生態、速度、適用場景。|
+| `ch29_puppeteer_vs_playwright.png` | 29.3 / 29.4 | Puppeteer vs Playwright（Node）差別與選擇（2026 首選 Playwright）。|
+| `ch29_network_intercept.png` | 29.12 | 攔截 Network 直接抓 API 資料（不用辛苦解 HTML）的示意。|
+
+### E-5. 跨語言爬蟲（ch30）
+| 檔名 | lesson | 內容 |
+|---|---|---|
+| `ch30_lang_quadrant.png` | 30.1 / 30.7 | Python / Node / Go / Rust 爬蟲象限圖：開發速度 ↔ 執行效能，什麼時候該換語言。|
+| `ch30_distributed_arch.png` | 30.5 / 30.17 | 分散式爬蟲架構：Redis Queue + 多 Worker + 去重 + 儲存。|
+| `ch30_etl_pipeline.png` | 30.21 / 30.22 | 爬蟲 ETL pipeline：抓取 → 清理 → 轉換 → 儲存（CSV / Parquet / DB）→ 交付。|
+
+### E-6. Node.js（ch31）
+| 檔名 | lesson | 內容 |
+|---|---|---|
+| `ch31_event_loop.png` | 31.8 | Node event loop + 非阻塞 I/O：單執行緒卻能扛大量連線（餐廳一個服務生同時招呼多桌）。|
+| `ch31_esm_vs_cjs.png` | 31.5 | ES Modules（import / export）vs CommonJS（require）對照表。|
+| `ch31_express_middleware.png` | 31.9 | Express 中介層管線：request 經過一層層 middleware → handler → response。|
+| `ch31_runtime_war.png` | 31.20 | Node vs Bun vs Deno（2026 runtime 戰）：速度、相容性、生態對照。|
+| `ch31_streams.png` | 31.25 | Streams：大檔案邊讀邊處理、不整包塞進記憶體（水管 vs 水桶示意）。|
+
+---
+
 ## C. 建議產製順序
 
 1. **A 區（操作教學）全做** — 對應真實卡關、CP 值最高，且已有 6 張範例風格可參考。
 2. **B 區挑「最常被問」的**：ch07 變數賦值、ch17 JOIN、ch08 UI=f(state)、ch46 RAG、ch04 event loop。
 3. **D 區（前端框架專區）優先** — 林董指示前端是多數人入門基礎；先做 D-1 工具演進（含 CRA 歷史）、D-4 ch10 五種渲染模式、D-2 React Hooks 速查，這三組最常卡。
-4. 其餘 B / D 區概念圖後續分批補。
+4. **E 區（Python / 爬蟲 / Node）** — 先做 E-1 ch26 基礎（comprehension / decorator / generator / OOP）、E-3 ch28 爬蟲流程與靜態vs動態、E-6 ch31 event loop，這幾組最常卡。
+5. 其餘 B / D / E 區概念圖後續分批補。
 
 > 生好圖丟進 `public/lesson-img/ch{NN}/`、跟我說一聲，我就依本表把 `![]()` 插進對應 lesson 的正確段落。
