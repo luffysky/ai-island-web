@@ -57,6 +57,7 @@ const CHAPTER_SORT_INDEX: Record<number, number> = {
   73: 9.5, // Vue 進階    → Ch09a
   74: 9.7, // Vite        → Ch09b
   75: 4.5, // HTTP 協定    → Ch04a
+  76: 9.9, // Angular     → Ch09c（前端三大框架之一）
 };
 
 /** 只有 chapter id 時、用這個算顯示編號（自動套用衍生章節的 sortIndex） */

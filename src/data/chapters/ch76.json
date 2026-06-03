@@ -1,0 +1,1245 @@
+{
+  "id": 76,
+  "slug": "angular",
+  "stage": 2,
+  "sortIndex": 9.9,
+  "title": "Angular 完整",
+  "subtitle": "企業級三大框架之一",
+  "icon": "shield",
+  "description": "Angular 完整：前端三大框架之一、企業級全配（Signals / RxJS / DI）",
+  "status": "published",
+  "difficulty": "intermediate",
+  "prerequisites": [
+    4,
+    5,
+    7
+  ],
+  "estimatedHours": 13,
+  "outcomes": [
+    "理解核心概念",
+    "實作主流工具",
+    "整章實戰可發佈作品",
+    "知道生態 / 接案行情",
+    "對齊 2026 業界主流"
+  ],
+  "boss": {
+    "name": "結構巨像",
+    "hp": 150,
+    "emoji": "🅰️",
+    "description": "全副武裝、型別與 DI 鑄成的鋼鐵骨架"
+  },
+  "quiz": {
+    "id": "ch76-quiz",
+    "questions": [],
+    "xpReward": 50,
+    "perfectBonus": 50
+  },
+  "lessons": [
+    {
+      "id": "76.1",
+      "number": "LESSON 76.1",
+      "title": "Angular 是什麼？前端三大框架之一",
+      "oneLineSummary": "Angular 是 Google 出的「企業級全配框架」——路由、表單、HTTP、DI 全內建、用 TypeScript，跟 React / Vue 並列三大前端框架。",
+      "analogy": "如果 React 是樂高（自由拼）、Vue 是黏土（好捏），Angular 就是一台出廠全配的車——東西都裝好了、規矩也定好了，上手較陡但大團隊開最穩。",
+      "content": "**Angular** 是 Google 維護的前端框架，跟 React、Vue 並列「**前端三大框架**」。它的定位是「**企業級、全配**」——路由、表單、HTTP、依賴注入（DI）、測試全部內建，而且**整套用 TypeScript**。\n\n### 1. Angular vs React vs Vue 一句話\n\n- **React**：函式庫、最自由、生態最大、要自己拼裝\n- **Vue**：漸進式、最好上手、模板直覺\n- **Angular**：**完整框架、約定多、企業 / 大團隊最愛**\n\n### 2. 為什麼企業愛 Angular\n\n- **全配**：不用自己選路由、狀態、HTTP 套件，官方都給好\n- **強型別**：原生 TypeScript，大專案不容易亂\n- **約定統一**：大團隊接手、風格一致，不會各寫各的\n\n### 3. 2026 的 Angular 不一樣了\n\n很多人對 Angular 的印象停在「又重又囉嗦」。但 Angular 17+ 後大改版：**Standalone Component**（免 NgModule）、**Signals**（新響應式）、**新控制流 @if / @for**——變得輕量、好寫很多。本章教的就是這個現代版。\n\n> 💡 **什麼時候選 Angular**：大型企業專案、團隊大、要長期維護、重視一致性與型別安全。小專案 / 個人作品，React / Vue 起步更快。\n\n### 🎯 重點回顧\n\n- Angular = Google 出的企業級全配框架、三大框架之一\n- 全配（路由/表單/HTTP/DI 內建）+ 原生 TypeScript\n- 2026 現代版（Standalone + Signals）比舊版輕量好寫很多\n\n**☕ 用人話講**\n\nAngular 是 Google 出的「**企業級全配**」前端框架，跟 React、Vue 並列三大。(1) **全配**——路由、表單、HTTP、依賴注入全內建，不像 React 要自己選套件拼 (2) **原生 TypeScript**——大專案型別安全、不易亂 (3) **約定多**——上手較陡，但大團隊接手風格一致。**一句話記住**：React 像樂高（自由拼）、Vue 像黏土（好捏）、Angular 像出廠全配的車（什麼都裝好、規矩定好）；大企業、大團隊、要長期維護就選它。而且 2026 的 Angular（Standalone + Signals）早就不是以前那個又重又囉嗦的版本了，變輕量好寫很多。\n",
+      "tip": {
+        "type": "concept",
+        "text": "別用舊印象看 Angular。Angular 17+ 的 Standalone Component + Signals + 新控制流，比兩三年前輕量好寫太多——本章學的是現代版。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "76.1.auto",
+          "language": "typescript",
+          "title": "三大框架定位",
+          "hint": "各有強項，看團隊與專案選。",
+          "initialCode": "// 前端三大框架，各有定位\nconst frameworks = {\n  React: \"函式庫、最自由、生態最大、要自己拼裝\",\n  Vue: \"漸進式、最好上手、模板直覺\",\n  Angular: \"完整框架、全配、企業 / 大團隊最愛、原生 TypeScript\",\n};\nfor (const [name, role] of Object.entries(frameworks)) {\n  console.log(name + \" -> \" + role);\n}"
+        }
+      ],
+      "exercise": {
+        "question": "用一句話說 Angular 跟 React 最大的定位差別。",
+        "hint": "全配 vs 自由。",
+        "answer": "Angular 是「全配的完整框架」（路由/表單/HTTP/DI 都內建、約定多、原生 TypeScript），適合大團隊；React 是「自由的函式庫」，什麼都自己選自己拼。"
+      },
+      "outline": [
+        {
+          "text": "1. Angular vs React vs Vue 一句話",
+          "level": 3
+        },
+        {
+          "text": "2. 為什麼企業愛 Angular",
+          "level": 3
+        },
+        {
+          "text": "3. 2026 的 Angular 不一樣了",
+          "level": 3
+        },
+        {
+          "text": "🎯 重點回顧",
+          "level": 3
+        }
+      ]
+    },
+    {
+      "id": "76.2",
+      "number": "LESSON 76.2",
+      "title": "安裝 + Angular CLI + 第一個專案",
+      "oneLineSummary": "用 Angular CLI（ng）建專案、跑 dev server、產生元件——一條龍工具，ng new / ng serve / ng generate 三招走天下。",
+      "analogy": "像有個工頭幫你打理工地——ng new 開工地、ng serve 開工、ng generate 自動產一間房（元件），你不用自己搬磚配水電。",
+      "content": "Angular 的工具鏈核心是 **Angular CLI**（指令 「ng」），幾乎所有事都用它。\n\n### 1. 安裝 CLI + 建專案\n\n🖥️ **在終端機輸入**\n\n```text\nnpm install -g @angular/cli   # 全域裝 CLI\nng new my-app                 # 建專案（會問你要不要 SSR、CSS 種類）\ncd my-app                     # 進專案資料夾\nng serve                      # 開發伺服器（預設 localhost:4200）\n```\n\n### 2. ng generate（產生程式碼）\n\nCLI 最方便的是「自動產檔」，不用手刻：\n\n```text\nng generate component hello   # 產一個 hello 元件（可簡寫 ng g c hello）\nng g s data                   # 產一個 service\nng g g auth                   # 產一個路由守衛 guard\n```\n\n### 3. 專案結構\n\n- 「src/main.ts」：進入點\n- 「src/app/app.component.ts」：根元件\n- 「angular.json」：專案設定\n- 「package.json」：依賴\n\n### 4. 常用 CLI 指令\n\n- 「ng serve」開發、「ng build」打包、「ng test」測試\n- 「ng add」裝官方整合（如 ng add @angular/material）\n\n> 💡 CLI 會照官方慣例幫你產出「一致結構」的程式碼——這正是 Angular「約定統一」的體現，團隊每個人產出的東西長一樣。\n\n### 🎯 重點回顧\n\n- Angular CLI（ng）是核心工具：「ng new / serve / generate / build」\n- 「ng g c 名字」自動產元件、省去手刻樣板\n- 結構與慣例由 CLI 統一、團隊一致\n\n**☕ 用人話講**\n\nAngular 的工具叫 **Angular CLI**（指令 「ng」），幾乎所有事都靠它。(1) **「ng new」** 建專案、**「ng serve」** 開發伺服器（localhost:4200）、**「ng build」** 打包 (2) 最方便的是 **「ng generate」（簡寫 ng g）** 自動產元件 / 服務 / 守衛，不用手刻樣板 (3) 它會照官方慣例產出「一致結構」。**一句話記住**：CLI 像個工頭——「ng new」開工地、「ng serve」開工、「ng g c hello」自動幫你蓋一間房（元件）；你不用自己搬磚配水電，而且每個人產出的結構都長一樣，這就是 Angular「約定統一」的好處。\n",
+      "tip": {
+        "type": "practical",
+        "text": "記住 ng g c 名字（產元件）、ng g s 名字（產服務）就解決日常九成的「建檔」需求，比手刻快又不會漏設定。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "76.2.auto",
+          "language": "typescript",
+          "title": "CLI 常用指令",
+          "hint": "ng 一個指令搞定建檔、開發、打包。",
+          "initialCode": "// Angular CLI 常用指令（在終端機跑）\nconst cli = {\n  \"ng new my-app\": \"建立新專案\",\n  \"ng serve\": \"開發伺服器 localhost:4200\",\n  \"ng g c hello\": \"產生 hello 元件\",\n  \"ng g s data\": \"產生 data 服務\",\n  \"ng build\": \"打包成 production\",\n};\nfor (const [cmd, desc] of Object.entries(cli)) console.log(cmd.padEnd(14) + \" -> \" + desc);"
+        }
+      ],
+      "exercise": {
+        "question": "要快速產生一個叫 user 的元件，Angular CLI 指令怎麼打？",
+        "hint": "generate component。",
+        "answer": "ng generate component user，或簡寫 ng g c user。CLI 會自動產出元件的 .ts / .html / .css 並照慣例設定好。"
+      },
+      "outline": [
+        {
+          "text": "1. 安裝 CLI + 建專案",
+          "level": 3
+        },
+        {
+          "text": "2. ng generate（產生程式碼）",
+          "level": 3
+        },
+        {
+          "text": "3. 專案結構",
+          "level": 3
+        },
+        {
+          "text": "4. 常用 CLI 指令",
+          "level": 3
+        },
+        {
+          "text": "🎯 重點回顧",
+          "level": 3
+        }
+      ]
+    },
+    {
+      "id": "76.3",
+      "number": "LESSON 76.3",
+      "title": "Standalone Component — 現代 Angular 的元件",
+      "oneLineSummary": "Component 是 Angular 的基本積木；Angular 17+ 用 Standalone Component（免 NgModule），一個 @Component 裝飾器 + 類別就是一個元件。",
+      "analogy": "像一塊自帶說明書的樂高——@Component 標籤把「長相（template）+ 樣式 + 邏輯」打包成一個能重複用的積木，現代版還不用先去登記（免 NgModule）。",
+      "content": "**Component（元件）**是 Angular 的基本單位——把畫面拆成一塊塊可重用的積木。2026 用 **Standalone Component**（不用再寫 NgModule 登記）。\n\n### 1. 一個 Standalone Component\n\n```typescript\nimport { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-hello',        // 在別處用 <app-hello>\n  standalone: true,             // 現代：免 NgModule\n  template: `<h1>哈囉 {{ name }}</h1>`,\n  styles: [`h1 { color: #50fa7b; }`],\n})\nexport class HelloComponent {\n  name = 'Angular';             // 元件的資料\n}\n```\n\n### 2. 三件事打包在一起\n\n- **selector**：這個元件的標籤名（「<app-hello>」）\n- **template**：HTML 長相（「{{ name }}」是插值）\n- **類別本身**：邏輯與資料\n\n### 3. 拆元件的心法\n\n跟 React / Vue 一樣：把畫面拆成小元件、各管一塊、可重用。一個按鈕、一張卡片、一個導覽列都可以是元件。\n\n> 💡 **Standalone 是大進步**：以前每個元件都要在 NgModule 裡「登記」、很囉嗦；現在 standalone: true 直接自帶依賴、想用哪個元件就 import 哪個，輕量很多。\n\n### 🎯 重點回顧\n\n- Component = Angular 的基本積木（selector + template + 類別）\n- 2026 用 Standalone Component（standalone: true、免 NgModule）\n- 把畫面拆成可重用的小元件\n\n**☕ 用人話講**\n\nComponent（元件）是 Angular 的基本積木，把畫面拆成一塊塊可重用的東西。(1) 用 **「@Component」裝飾器** 把「selector（標籤名）+ template（HTML 長相）+ 類別（邏輯資料）」打包 (2) 2026 用 **Standalone Component**（「standalone: true」）——**不用再寫 NgModule 登記**，自帶依賴、想用就 import (3) 「{{ name }}」是插值、把資料塞進畫面。**一句話記住**：元件像自帶說明書的樂高——一個標籤把長相、樣式、邏輯包成一塊能重複用的積木；現代版還免去以前要先「登記」（NgModule）的囉嗦，輕量很多。\n",
+      "tip": {
+        "type": "practical",
+        "text": "新專案一律用 standalone: true。舊教學裡那一堆 NgModule 登記在 2026 已經不需要了，別被舊範例帶歪。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "76.3.auto",
+          "language": "typescript",
+          "title": "元件的資料 → 畫面",
+          "hint": "template 用 {{ }} 把類別的資料顯示出來。",
+          "initialCode": "// 模擬 Angular 元件：類別有資料、template 顯示\nclass HelloComponent {\n  name = \"Angular\";\n  count = 3;\n}\n\nconst c = new HelloComponent();\n// template: <h1>哈囉 {{name}}</h1><p>{{count}} 個讚</p>\nconsole.log(\"哈囉 \" + c.name);\nconsole.log(c.count + \" 個讚\");"
+        }
+      ],
+      "exercise": {
+        "question": "2026 的 Angular 元件用 standalone: true 有什麼好處？",
+        "hint": "NgModule。",
+        "answer": "免去 NgModule 登記——以前每個元件都要在 NgModule 裡註冊很囉嗦，standalone 元件自帶依賴、想用哪個直接 import，輕量好寫很多。"
+      },
+      "outline": [
+        {
+          "text": "1. 一個 Standalone Component",
+          "level": 3
+        },
+        {
+          "text": "2. 三件事打包在一起",
+          "level": 3
+        },
+        {
+          "text": "3. 拆元件的心法",
+          "level": 3
+        },
+        {
+          "text": "🎯 重點回顧",
+          "level": 3
+        }
+      ]
+    },
+    {
+      "id": "76.4",
+      "number": "LESSON 76.4",
+      "title": "Template 綁定：插值 / 屬性 / 事件",
+      "oneLineSummary": "Angular 模板三種綁定：{{ }} 插值（顯示資料）、[屬性] 屬性綁定（綁 DOM 屬性）、(事件) 事件綁定（綁點擊等）。",
+      "analogy": "像三種貼便利貼的方式——{{ }} 是「把值寫上去」、[ ] 是「依資料設這個屬性」、( ) 是「被點時做這件事」；中括號往裡塞、小括號往外噴。",
+      "content": "Angular 模板用三種「綁定」把資料跟畫面連起來，記住**中括號 = 資料進、小括號 = 事件出**。\n\n### 1. 插值 {{ }}（顯示資料）\n\n```typescript\ntemplate: `<h1>{{ title }}</h1><p>{{ 1 + 1 }}</p>`\n```\n\n### 2. 屬性綁定 [ ]（綁 DOM 屬性）\n\n```typescript\ntemplate: `\n  <img [src]=\"imageUrl\">\n  <button [disabled]=\"isLoading\">送出</button>\n  <div [class.active]=\"isOpen\">...</div>\n`\n```\n\n### 3. 事件綁定 ( )（綁事件）\n\n```typescript\n@Component({\n  template: `<button (click)=\"onClick()\">點我</button>\n             <input (input)=\"onInput($event)\">`,\n  standalone: true,\n})\nexport class Demo {\n  onClick() { console.log('被點了'); }\n  onInput(e: Event) { console.log((e.target as HTMLInputElement).value); }\n}\n```\n\n> 💡 **記法**：「[ ] 中括號」像箭頭往內 → 資料流「進」屬性；「( ) 小括號」像往外噴 → 事件流「出」到方法。兩個合起來 「[(ngModel)]」 就是雙向綁定（下一課的「香蕉盒子」）。\n\n### 🎯 重點回顧\n\n- 「{{ }}」插值：把資料顯示在畫面\n- 「[屬性]」屬性綁定：依資料設定 DOM 屬性 / class\n- 「(事件)」事件綁定：被點 / 輸入時呼叫方法\n\n**☕ 用人話講**\n\nAngular 模板用三種綁定把資料跟畫面連起來：(1) **「{{ }}」插值**——把資料直接顯示出來 (2) **「[屬性]」屬性綁定**——依資料動態設 DOM 屬性（「[src]」「[disabled]」「[class.active]」） (3) **「(事件)」事件綁定**——被點擊 / 輸入時呼叫方法（「(click)」「(input)」）。**一句話記住**：中括號 [ ] 像箭頭往內、資料「進」屬性；小括號 ( ) 像往外噴、事件「出」到方法。記住「中括號塞進去、小括號噴出來」，模板綁定就通了；兩個合起來「[(ngModel)]」就是雙向綁定。\n",
+      "tip": {
+        "type": "practical",
+        "text": "口訣：[ ] 進（資料綁屬性）、( ) 出（事件呼叫方法）。看到 [(...)] 就是兩個合體＝雙向綁定。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "76.4.auto",
+          "language": "typescript",
+          "title": "三種綁定的概念",
+          "hint": "插值顯示、[ ] 綁屬性、( ) 綁事件。",
+          "initialCode": "// Angular 模板三綁定（概念示意）\nconst state = { title: \"標題\", imageUrl: \"/a.png\", isLoading: false };\n\n// {{ title }}     -> 顯示：\nconsole.log(\"插值：\" + state.title);\n// [disabled]=\"isLoading\" -> 依資料設屬性：\nconsole.log(\"按鈕 disabled = \" + state.isLoading);\n// (click)=\"onClick()\"    -> 事件呼叫方法：\nfunction onClick() { console.log(\"按鈕被點了！\"); }\nonClick();"
+        }
+      ],
+      "exercise": {
+        "question": "Angular 模板裡 [src] 和 (click) 分別代表什麼綁定？",
+        "hint": "中括號 vs 小括號。",
+        "answer": "[src] 是屬性綁定（中括號＝資料流進屬性，依資料設 DOM 屬性）；(click) 是事件綁定（小括號＝事件流出，被點時呼叫方法）。"
+      },
+      "outline": [
+        {
+          "text": "1. 插值 {{ }}（顯示資料）",
+          "level": 3
+        },
+        {
+          "text": "2. 屬性綁定 [ ]（綁 DOM 屬性）",
+          "level": 3
+        },
+        {
+          "text": "3. 事件綁定 ( )（綁事件）",
+          "level": 3
+        },
+        {
+          "text": "🎯 重點回顧",
+          "level": 3
+        }
+      ]
+    },
+    {
+      "id": "76.5",
+      "number": "LESSON 76.5",
+      "title": "新控制流 @if / @for / @switch",
+      "oneLineSummary": "Angular 17+ 的內建控制流：@if 條件、@for 迴圈（要 track）、@switch 多分支——寫在模板裡、取代舊的 *ngIf / *ngFor。",
+      "analogy": "像模板裡的智慧開關——@if 是「成立才顯示」、@for 是「照清單複製一份」、@switch 是「多選一」；比舊的星號指令直覺好讀。",
+      "content": "Angular 17 引入**新的內建控制流語法**（@if / @for / @switch），取代舊的 「*ngIf」「*ngFor」，更直覺、效能也更好。\n\n### 1. @if / @else\n\n```typescript\ntemplate: `\n  @if (user) {\n    <p>哈囉 {{ user.name }}</p>\n  } @else {\n    <p>請先登入</p>\n  }\n`\n```\n\n### 2. @for（一定要 track）\n\n```typescript\ntemplate: `\n  <ul>\n    @for (item of items; track item.id) {\n      <li>{{ item.name }}</li>\n    } @empty {\n      <li>清單是空的</li>\n    }\n  </ul>\n`\n```\n\n「track item.id」必寫——它讓 Angular 知道每筆的身分、更新時只動有變的（效能關鍵，類似 React 的 key）。\n\n### 3. @switch\n\n```typescript\ntemplate: `\n  @switch (status) {\n    @case ('loading') { <p>載入中...</p> }\n    @case ('error')   { <p>出錯了</p> }\n    @default          { <p>完成</p> }\n  }\n`\n```\n\n> 💡 舊教學裡的 「*ngIf」「*ngFor=\"let x of list\"」現在用 @if / @for 取代——看到星號語法就知道是舊版，新專案用 @ 語法。\n\n### 🎯 重點回顧\n\n- 「@if / @else」條件顯示、「@switch」多分支\n- 「@for (x of list; track x.id)」迴圈、「track」必寫（效能 / 身分）\n- 取代舊的 「*ngIf」「*ngFor」，更直覺好讀\n\n**☕ 用人話講**\n\nAngular 17+ 把控制流直接做進模板：(1) **「@if / @else」** 條件顯示 (2) **「@for (item of items; track item.id)」** 跑清單——**「track」必寫**，讓 Angular 知道每筆的身分、更新只動有變的（效能關鍵，等於 React 的 key），還能用「@empty」處理空清單 (3) **「@switch / @case」** 多選一。**一句話記住**：像模板裡的智慧開關——@if 成立才顯示、@for 照清單複製、@switch 多選一。它取代了舊版又長又怪的「*ngIf」「*ngFor」星號語法——看到星號就知道是舊教學，新專案用 @ 語法、直覺好讀多了。\n",
+      "tip": {
+        "type": "warn",
+        "text": "@for 一定要寫 track（如 track item.id）——少了它 Angular 會報錯。track 等於 React 的 key，讓更新只動有變的那筆、效能才好。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "76.5.auto",
+          "language": "typescript",
+          "title": "@if / @for 概念",
+          "hint": "條件顯示 + 清單渲染。",
+          "initialCode": "// Angular 新控制流（概念示意）\nconst user = { name: \"Nami\" };\nconst items = [{ id: 1, name: \"蘋果\" }, { id: 2, name: \"香蕉\" }];\n\n// @if (user) { 哈囉 {{user.name}} }\nconsole.log(user ? \"哈囉 \" + user.name : \"請先登入\");\n\n// @for (item of items; track item.id) { <li>{{item.name}}</li> }\nfor (const item of items) console.log(\"- \" + item.name);"
+        }
+      ],
+      "exercise": {
+        "question": "@for 裡的 track 是做什麼的？相當於 React 的什麼？",
+        "hint": "身分。",
+        "answer": "track（如 track item.id）告訴 Angular 每一筆資料的「身分」，更新時只動真的有變的那筆、不整個重畫——等於 React 列表的 key，是效能關鍵，而且 @for 必寫。"
+      },
+      "outline": [
+        {
+          "text": "1. @if / @else",
+          "level": 3
+        },
+        {
+          "text": "2. @for（一定要 track）",
+          "level": 3
+        },
+        {
+          "text": "3. @switch",
+          "level": 3
+        },
+        {
+          "text": "🎯 重點回顧",
+          "level": 3
+        }
+      ]
+    },
+    {
+      "id": "76.6",
+      "number": "LESSON 76.6",
+      "title": "Signals 訊號 — 現代 Angular 的響應式核心",
+      "oneLineSummary": "Signal 是 Angular 16+ 的新響應式：signal() 建立可變值、用 () 讀、set/update 改；資料一變、用到它的畫面自動更新。",
+      "analogy": "像連動的試算表格——signal 是一個格子，你改它（set），所有引用它的格子（畫面）自動重算；讀的時候要加 () 像「打開來看」。",
+      "content": "**Signal（訊號）**是 Angular 16+ 引入的新響應式系統，讓「資料變 → 畫面自動更新」更簡單、更高效。\n\n### 1. 建立 + 讀 + 改\n\n```typescript\nimport { signal } from '@angular/core';\n\nconst count = signal(0);       // 建立、初始值 0\n\nconsole.log(count());          // 讀：要加 ()！\ncount.set(5);                  // 設新值\ncount.update(n => n + 1);      // 依舊值更新 → 6\n```\n\n### 2. 在元件裡用\n\n```typescript\n@Component({\n  selector: 'app-counter',\n  standalone: true,\n  template: `\n    <p>數字：{{ count() }}</p>\n    <button (click)=\"inc()\">+1</button>\n  `,\n})\nexport class Counter {\n  count = signal(0);\n  inc() { this.count.update(n => n + 1); }\n}\n```\n\n模板裡 「{{ count() }}」一定要加 「()」 讀值；按按鈕改 signal，畫面**自動**更新，不用手動操作 DOM。\n\n### 3. 為什麼 Signal 重要\n\n- 比舊的變更偵測**更精準高效**（只更新真的用到的地方）\n- 寫法直覺、是 Angular 未來的主軸\n- 配 computed / effect（下一課）能組出完整響應式\n\n> 💡 **讀值要加 ()** 是新手最常忘的——「count」是那個 signal 本身、「count()」才是它的值。\n\n### 🎯 重點回顧\n\n- 「signal(初值)」建立、「值()」讀、「.set() / .update()」改\n- 資料變、畫面自動更新（精準、只動用到的地方）\n- 讀值務必加 「()」、是 2026 Angular 響應式主軸\n\n**☕ 用人話講**\n\n**Signal（訊號）**是 Angular 16+ 的新響應式核心，讓「資料變→畫面自動更新」又簡單又高效。(1) **「signal(0)」** 建立、**讀值要加「()」**（「count()」）、**「.set(5)」** 設新值、**「.update(n => n+1)」** 依舊值改 (2) 模板裡 「{{ count() }}」，按鈕改 signal、畫面**自動**更新，不用碰 DOM (3) 它比舊的變更偵測更精準（只更新真的用到的地方）、是 Angular 未來主軸。**一句話記住**：Signal 像連動的試算表格——改一個格子（set），所有引用它的格子（畫面）自動重算；新手最常忘記**讀值要加 ()**——「count」是訊號本身、「count()」才是它的值。\n",
+      "tip": {
+        "type": "warn",
+        "text": "讀 signal 值一定要加 ()！count 是訊號物件、count() 才是值。模板裡也是 {{ count() }}，少了括號會印出一坨函式而不是數字。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "76.6.auto",
+          "language": "typescript",
+          "title": "Signal 的讀與改",
+          "hint": "set / update 改值、() 讀值。",
+          "initialCode": "// 模擬 Angular Signal\nfunction signal(initial) {\n  let value = initial;\n  const s = () => value;            // 讀：加 ()\n  s.set = (v) => { value = v; };\n  s.update = (fn) => { value = fn(value); };\n  return s;\n}\n\nconst count = signal(0);\nconsole.log(\"初值:\", count());   // 0\ncount.set(5);\nconsole.log(\"set 後:\", count()); // 5\ncount.update(n => n + 1);\nconsole.log(\"update 後:\", count()); // 6"
+        }
+      ],
+      "exercise": {
+        "question": "Angular 的 signal 怎麼讀值、怎麼改值？",
+        "hint": "括號、set/update。",
+        "answer": "讀值要加括號：count()。改值用 count.set(新值) 或 count.update(舊值 => 新值)。資料一改、模板裡用到它的地方會自動更新。"
+      },
+      "outline": [
+        {
+          "text": "1. 建立 + 讀 + 改",
+          "level": 3
+        },
+        {
+          "text": "2. 在元件裡用",
+          "level": 3
+        },
+        {
+          "text": "3. 為什麼 Signal 重要",
+          "level": 3
+        },
+        {
+          "text": "🎯 重點回顧",
+          "level": 3
+        }
+      ]
+    },
+    {
+      "id": "76.7",
+      "number": "LESSON 76.7",
+      "title": "雙向綁定 + 模板表單（ngModel）",
+      "oneLineSummary": "[(ngModel)] 是「香蕉盒子」雙向綁定——輸入框跟資料即時同步；模板表單（FormsModule）做簡單表單最快。",
+      "analogy": "像會自動複寫的兩聯單——你在輸入框寫字，資料同步變；程式改資料，輸入框也同步變，兩邊永遠一致。",
+      "content": "要讓「輸入框」跟「資料」即時同步，用 **雙向綁定 「[(ngModel)]」**（暱稱「香蕉盒子 banana-in-a-box」，因為長得像 [( )]）。\n\n### 1. [(ngModel)] 雙向綁定\n\n```typescript\nimport { Component } from '@angular/core';\nimport { FormsModule } from '@angular/forms';\n\n@Component({\n  selector: 'app-form',\n  standalone: true,\n  imports: [FormsModule],        // 要 import 才能用 ngModel\n  template: `\n    <input [(ngModel)]=\"name\">\n    <p>你好，{{ name }}</p>\n  `,\n})\nexport class FormDemo {\n  name = '';\n}\n```\n\n你在輸入框打字，「name」即時變；程式改 「name」，輸入框也跟著變——**雙向**。\n\n### 2. [(ngModel)] = [ ] + ( ) 的合體\n\n「[(ngModel)]」其實就是「[ngModel]」（資料→畫面）+「(ngModelChange)」（畫面→資料）的縮寫。記住上一課的「中括號進、小括號出」，合起來就是雙向。\n\n### 3. 模板表單 vs 響應式表單\n\n- **模板表單（這課）**：用 ngModel、簡單表單最快\n- **響應式表單（第 17 課）**：用程式定義、複雜表單 / 動態驗證更強\n\n> 💡 用 ngModel 一定要 「imports: [FormsModule]」、忘了會報錯。\n\n### 🎯 重點回顧\n\n- 「[(ngModel)]」雙向綁定（香蕉盒子）：輸入框 ↔ 資料即時同步\n- 它是「[ ] 屬性綁定 + ( ) 事件綁定」的合體\n- 用它要 「imports: [FormsModule]」；簡單表單用模板表單最快\n\n**☕ 用人話講**\n\n要讓輸入框跟資料即時同步，用**雙向綁定「[(ngModel)]」**——暱稱「**香蕉盒子**」（長得像 [( )]）。(1) 你在輸入框打字、資料即時變；程式改資料、輸入框也跟著變，兩邊永遠一致 (2) 它其實就是上一課「[ ] 進 + ( ) 出」的合體（資料→畫面 + 畫面→資料） (3) 用它一定要「imports: [FormsModule]」。**一句話記住**：[(ngModel)] 像會自動複寫的兩聯單——一邊改、另一邊同步變。簡單表單用這個（模板表單）最快；複雜的、要動態驗證的，用第 17 課的響應式表單。\n",
+      "tip": {
+        "type": "warn",
+        "text": "用 [(ngModel)] 記得在元件的 imports 加 FormsModule，不然會報「找不到 ngModel」。這是新手最常踩的雷。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "76.7.auto",
+          "language": "typescript",
+          "title": "雙向綁定的概念",
+          "hint": "改一邊、另一邊同步。",
+          "initialCode": "// 模擬 [(ngModel)] 雙向綁定\nlet name = \"\";\n\nfunction onInput(value) {   // 畫面 -> 資料\n  name = value;\n  render();\n}\nfunction render() {         // 資料 -> 畫面\n  console.log(\"輸入框: [\" + name + \"]  顯示: 你好，\" + name);\n}\n\nonInput(\"Nami\");\nonInput(\"Luffy\");"
+        }
+      ],
+      "exercise": {
+        "question": "[(ngModel)] 為什麼叫「香蕉盒子」？用它前要 import 什麼？",
+        "hint": "符號、FormsModule。",
+        "answer": "因為符號 [( )] 像盒子裡放根香蕉。它是雙向綁定（輸入框↔資料同步），用它前要在元件 imports 裡加 FormsModule，否則會報錯。"
+      },
+      "outline": [
+        {
+          "text": "1. [(ngModel)] 雙向綁定",
+          "level": 3
+        },
+        {
+          "text": "2. [(ngModel)] = [ ] + ( ) 的合體",
+          "level": 3
+        },
+        {
+          "text": "3. 模板表單 vs 響應式表單",
+          "level": 3
+        },
+        {
+          "text": "🎯 重點回顧",
+          "level": 3
+        }
+      ]
+    },
+    {
+      "id": "76.8",
+      "number": "LESSON 76.8",
+      "title": "元件溝通：input() / output()",
+      "oneLineSummary": "父子元件溝通：父傳子用 input()（@Input）、子傳父用 output()（@Output 發事件）；Angular 17.3+ 改用 signal-based 的 input() / output() 函式。",
+      "analogy": "像家庭分工——父給小孩零用錢（input 往下傳）、小孩做完回報（output 往上喊事件）；現代版用更簡潔的 input()/output() 函式。",
+      "content": "元件之間靠 **input（父→子）** 跟 **output（子→父）** 溝通。Angular 17.3+ 用新的函式寫法。\n\n### 1. input()：父傳資料給子\n\n```typescript\nimport { Component, input } from '@angular/core';\n\n@Component({\n  selector: 'app-card',\n  standalone: true,\n  template: `<div class=\"card\">{{ title() }}</div>`,\n})\nexport class CardComponent {\n  title = input<string>('預設標題');   // 父層傳進來、是個 signal\n}\n// 父層用：<app-card [title]=\"'我的卡片'\" />\n```\n\n### 2. output()：子發事件給父\n\n```typescript\nimport { Component, output } from '@angular/core';\n\n@Component({\n  selector: 'app-button',\n  standalone: true,\n  template: `<button (click)=\"clicked.emit('hi')\">點我</button>`,\n})\nexport class MyButton {\n  clicked = output<string>();   // 子元件對外發的事件\n}\n// 父層接：<app-button (clicked)=\"onClicked($event)\" />\n```\n\n### 3. 資料流方向（單向往下、事件往上）\n\n跟 React / Vue 一樣：**資料往下傳（input）、事件往上報（output）**。子元件不直接改父層資料，而是「發事件、請父層改」。\n\n> 💡 「input()」拿到的是個 signal（讀值要 「title()」）。舊版用 「@Input()」 裝飾器、現在新專案多用 「input()」 函式，更簡潔、跟 Signal 體系一致。\n\n### 🎯 重點回顧\n\n- 「input()」父傳子（子拿到一個 signal、用 「()」 讀）\n- 「output()」子傳父（子 「.emit(值)」、父 「(事件)」 接）\n- 資料往下、事件往上；舊版是 「@Input/@Output」 裝飾器\n\n**☕ 用人話講**\n\n元件溝通兩個方向：(1) **「input()」父傳子**——父層把資料往下傳，子元件用「input()」接（拿到的是個 signal、讀值加「()」） (2) **「output()」子傳父**——子元件用「.emit(值)」對外發事件，父層用「(事件)」接住。資料**往下傳**、事件**往上報**，子元件不直接改父層的東西、而是「發事件請父層改」。**一句話記住**：像家庭分工——父給小孩零用錢（input 往下）、小孩做完回報（output 往上喊）。舊版用「@Input / @Output」裝飾器，2026 新版改用更簡潔的「input() / output()」函式、跟 Signal 體系一致。\n",
+      "tip": {
+        "type": "concept",
+        "text": "input() 拿到的是 signal，模板裡讀值要加 ()：{{ title() }}。看到舊範例用 @Input() 屬性也能用，但新專案優先 input() 函式。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "76.8.auto",
+          "language": "typescript",
+          "title": "input 往下、output 往上",
+          "hint": "父傳資料、子發事件。",
+          "initialCode": "// 父子元件溝通（概念示意）\n// 子元件\nclass CardComponent {\n  title = \"卡片標題\";            // 來自父層的 input\n  onClick() { this.emit(\"clicked\"); }  // 對父層發 output\n  emit(ev) { console.log(\"子元件發事件 -> \" + ev); }\n}\n\nconst card = new CardComponent();\nconsole.log(\"父傳子（input）顯示：\" + card.title);\ncard.onClick();   // 子傳父（output）"
+        }
+      ],
+      "exercise": {
+        "question": "Angular 元件溝通中，父傳子和子傳父分別用什麼？資料流方向是？",
+        "hint": "input/output。",
+        "answer": "父傳子用 input()（@Input），子傳父用 output()（@Output、子 .emit 發事件、父接）。資料往下傳、事件往上報；子元件不直接改父層資料，而是發事件請父層處理。"
+      },
+      "outline": [
+        {
+          "text": "1. input()：父傳資料給子",
+          "level": 3
+        },
+        {
+          "text": "2. output()：子發事件給父",
+          "level": 3
+        },
+        {
+          "text": "3. 資料流方向（單向往下、事件往上）",
+          "level": 3
+        },
+        {
+          "text": "🎯 重點回顧",
+          "level": 3
+        }
+      ]
+    },
+    {
+      "id": "76.9",
+      "number": "LESSON 76.9",
+      "title": "Services + 依賴注入（DI）",
+      "oneLineSummary": "Service 把「共用邏輯 / 資料」抽成一個類別；用依賴注入（DI）inject() 在任何元件取用——Angular 最核心的設計之一。",
+      "analogy": "像公司的共用部門——把「打 API、管購物車」這種共用的事交給一個部門（Service），各元件需要時用 inject() 叫它來幫忙，不用每個元件各做一套。",
+      "content": "**Service（服務）**把共用邏輯（打 API、管狀態、工具函式）抽出來；**依賴注入（DI）**讓任何元件都能取用同一個 service。這是 Angular 的招牌設計。\n\n### 1. 定義 Service\n\n```typescript\nimport { Injectable } from '@angular/core';\n\n@Injectable({ providedIn: 'root' })   // 全應用共用一個實例\nexport class CartService {\n  private items: string[] = [];\n  add(item: string) { this.items.push(item); }\n  list() { return this.items; }\n}\n```\n\n### 2. 在元件用 inject()\n\n```typescript\nimport { Component, inject } from '@angular/core';\nimport { CartService } from './cart.service';\n\n@Component({ /* ... */ })\nexport class ShopComponent {\n  private cart = inject(CartService);   // 注入！\n\n  addApple() { this.cart.add('蘋果'); }\n}\n```\n\n### 3. 為什麼 DI 這麼重要\n\n- **共用單一實例**（「providedIn: 'root'」）：整個 app 的 CartService 是同一個，購物車狀態到處一致\n- **好測試**：測試時可以「注入假的 service」替換真的\n- **解耦**：元件不用自己 new service、由框架提供\n\n> 💡 「inject()」是 2026 主流寫法（取代以前在 constructor 注入）。「providedIn: 'root'」= 全應用一個共用實例（單例）。\n\n### 🎯 重點回顧\n\n- Service（「@Injectable」）抽出共用邏輯 / 狀態\n- 「inject(服務)」在元件取用、「providedIn: 'root'」= 全應用共用單例\n- DI 讓程式解耦、好測試、共用狀態一致\n\n**☕ 用人話講**\n\n**Service（服務）**把共用的邏輯（打 API、管購物車、工具函式）抽成一個類別；**依賴注入（DI）**讓任何元件用「inject()」就能取用同一個 service。這是 Angular 的招牌設計。(1) 用「@Injectable({ providedIn: 'root' })」定義、**全應用共用一個實例**（單例） (2) 元件裡「private cart = inject(CartService)」就注入進來用 (3) 好處：狀態到處一致、好測試（可注入假的替換）、元件不用自己 new。**一句話記住**：Service 像公司的共用部門——「打 API、管購物車」交給一個部門，各元件需要時 inject() 叫它來幫忙，不用每個元件各做一套；DI 是 Angular 最核心、最該懂的設計。\n",
+      "tip": {
+        "type": "concept",
+        "text": "providedIn: 'root' = 全應用共用一個 service 實例（單例），所以購物車、登入狀態這種跨元件共用的東西放 service 最對。inject() 是 2026 主流注入寫法。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "76.9.auto",
+          "language": "typescript",
+          "title": "Service 共用狀態",
+          "hint": "同一個 service 實例、狀態到處一致。",
+          "initialCode": "// 模擬 Angular Service + DI\nclass CartService {\n  items = [];\n  add(item) { this.items.push(item); }\n  list() { return this.items; }\n}\n\n// providedIn: 'root' => 全應用共用同一個實例\nconst cart = new CartService();\n\n// 元件 A 加東西\ncart.add(\"蘋果\");\n// 元件 B（注入到同一個 cart）也看得到\ncart.add(\"香蕉\");\nconsole.log(\"購物車（跨元件共用）:\", cart.list());"
+        }
+      ],
+      "exercise": {
+        "question": "Angular 的 Service + DI 解決什麼問題？providedIn: 'root' 是什麼意思？",
+        "hint": "共用。",
+        "answer": "Service 把共用邏輯/狀態抽出來，DI（inject()）讓各元件取用同一個實例——狀態一致、好測試、解耦。providedIn: 'root' 表示全應用共用一個 service 實例（單例）。"
+      },
+      "outline": [
+        {
+          "text": "1. 定義 Service",
+          "level": 3
+        },
+        {
+          "text": "2. 在元件用 inject()",
+          "level": 3
+        },
+        {
+          "text": "3. 為什麼 DI 這麼重要",
+          "level": 3
+        },
+        {
+          "text": "🎯 重點回顧",
+          "level": 3
+        }
+      ]
+    },
+    {
+      "id": "76.10",
+      "number": "LESSON 76.10",
+      "title": "computed / effect — Signal 的衍生與副作用",
+      "oneLineSummary": "computed() 從別的 signal 算出衍生值（自動快取、依賴變才重算）；effect() 在 signal 變時跑副作用（如記 log、存 localStorage）。",
+      "analogy": "computed 像試算表的「公式格」（自動依別格重算）、effect 像「值一變就自動執行的提醒」（如改了就存檔）。",
+      "content": "Signal 配 **computed** 跟 **effect**，組成 Angular 完整的響應式。\n\n### 1. computed()：衍生值\n\n```typescript\nimport { signal, computed } from '@angular/core';\n\nconst price = signal(100);\nconst qty = signal(2);\nconst total = computed(() => price() * qty());   // 衍生\n\nconsole.log(total());   // 200\nqty.set(3);\nconsole.log(total());   // 300（自動重算）\n```\n\n「computed」**自動快取**——依賴（price / qty）沒變就不重算，變了才算。\n\n### 2. effect()：副作用\n\n```typescript\nimport { signal, effect } from '@angular/core';\n\nconst count = signal(0);\n\neffect(() => {\n  console.log('count 變成', count());   // count 一變就跑\n  localStorage.setItem('count', String(count()));\n});\n\ncount.set(5);   // 觸發 effect\n```\n\n### 3. 什麼時候用哪個\n\n- 要「**從別的值算出新值**」→ 「computed」\n- 要「**值變時做點事**」（log / 存檔 / 同步外部）→ 「effect」\n\n> 💡 「computed」是純運算（不該有副作用）、「effect」才放副作用。別在 computed 裡寫 「localStorage.setItem」 這種東西。\n\n### 🎯 重點回顧\n\n- 「computed(() => ...)」：從 signal 算衍生值、自動快取\n- 「effect(() => ...)」：signal 變時跑副作用（log / 存檔）\n- computed 純算、effect 放副作用，別搞混\n\n**☕ 用人話講**\n\nSignal 配兩個搭檔組成完整響應式：(1) **「computed(() => price() * qty())」**——從別的 signal **算出衍生值**，而且**自動快取**（依賴沒變就不重算，變了才算），像試算表的公式格 (2) **「effect(() => ...)」**——某個 signal 變時**自動跑副作用**（記 log、存 localStorage、同步外部），像「值一變就自動執行的提醒」。**一句話記住**：要「從別的值算出新值」用 computed、要「值變時做點事」用 effect；而且 computed 要保持純運算（別放存檔之類的副作用）、副作用一律放 effect。這三個（signal + computed + effect）就是 2026 Angular 響應式的全部。\n",
+      "tip": {
+        "type": "concept",
+        "text": "computed 只負責「算」、保持純淨；effect 才負責「做事」（存檔、log、同步）。別在 computed 裡寫副作用，會出問題。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "76.10.auto",
+          "language": "typescript",
+          "title": "computed 衍生值",
+          "hint": "依賴變、衍生值自動重算。",
+          "initialCode": "// 模擬 Signal + computed\nlet price = 100, qty = 2;\nconst total = () => price * qty;   // computed：衍生\n\nconsole.log(\"總價:\", total());     // 200\nqty = 3;                           // 依賴改變\nconsole.log(\"總價:\", total());     // 300（自動反映）\n\n// effect：值變時做事\nfunction effect() { console.log(\"[effect] 總價變成\", total(), \"-> 存檔\"); }\neffect();"
+        }
+      ],
+      "exercise": {
+        "question": "computed 和 effect 各用在什麼情況？",
+        "hint": "算 vs 做事。",
+        "answer": "computed 用來「從別的 signal 算出衍生值」（純運算、自動快取）；effect 用來「signal 變時跑副作用」（如 log、存 localStorage、同步外部）。computed 保持純淨、副作用放 effect。"
+      },
+      "outline": [
+        {
+          "text": "1. computed()：衍生值",
+          "level": 3
+        },
+        {
+          "text": "2. effect()：副作用",
+          "level": 3
+        },
+        {
+          "text": "3. 什麼時候用哪個",
+          "level": 3
+        },
+        {
+          "text": "🎯 重點回顧",
+          "level": 3
+        }
+      ]
+    },
+    {
+      "id": "76.11",
+      "number": "LESSON 76.11",
+      "title": "HttpClient — 打 API 拿資料",
+      "oneLineSummary": "用 HttpClient（provideHttpClient + inject）打 REST API；回傳 Observable，搭 RxJS 或轉成 signal 用。",
+      "analogy": "像派一個專員去外面拿資料——你說要哪個網址的東西，HttpClient 幫你去要、要回來再交給你處理。",
+      "content": "Angular 用 **HttpClient** 跟後端 API 溝通。現代設定用 「provideHttpClient()」。\n\n### 1. 啟用 + 注入\n\n```typescript\n// main.ts（app 啟動設定）\nimport { provideHttpClient } from '@angular/common/http';\nbootstrapApplication(App, {\n  providers: [provideHttpClient()],\n});\n```\n\n### 2. 在 Service 裡打 API\n\n```typescript\nimport { inject, Injectable } from '@angular/core';\nimport { HttpClient } from '@angular/common/http';\n\ninterface User { id: number; name: string; }\n\n@Injectable({ providedIn: 'root' })\nexport class UserService {\n  private http = inject(HttpClient);\n\n  getUsers() {\n    return this.http.get<User[]>('/api/users');   // 回傳 Observable\n  }\n}\n```\n\n### 3. 在元件訂閱\n\n```typescript\nexport class UserList {\n  private userService = inject(UserService);\n  users: User[] = [];\n\n  ngOnInit() {\n    this.userService.getUsers().subscribe(data => {\n      this.users = data;     // 拿到資料\n    });\n  }\n}\n```\n\n「http.get」回傳的是 **Observable**（下一課詳談），要 「.subscribe()」 才會真的發出請求。\n\n### 4. POST / 其他\n\n「http.post(url, body)」、「http.put」、「http.delete」都類似。\n\n> 💡 慣例：把 HttpClient 包在 **Service 裡**、元件只呼叫 service——元件不直接碰 http，乾淨又好測試。\n\n### 🎯 重點回顧\n\n- 「provideHttpClient()」啟用、「inject(HttpClient)」取用\n- 「http.get<T>(url)」回 Observable、「.subscribe()」拿資料\n- 慣例：HttpClient 包在 Service 裡、元件呼叫 service\n\n**☕ 用人話講**\n\nAngular 用 **HttpClient** 跟後端 API 溝通。(1) 先在啟動設定加「provideHttpClient()」，元件 / service 裡用「inject(HttpClient)」取用 (2) 「http.get<User[]>('/api/users')」打 API、**回傳 Observable**（要「.subscribe()」才真的發請求、拿到資料）(3) POST / PUT / DELETE 類似。**慣例**：把 HttpClient 包在 **Service** 裡、元件只呼叫 service，元件不直接碰 http、乾淨又好測試。**一句話記住**：HttpClient 像派一個專員去外面拿資料——你說要哪個網址的東西、它幫你去要回來；記得它回的是 Observable（下一課的 RxJS），要訂閱才會動。\n",
+      "tip": {
+        "type": "practical",
+        "text": "把所有打 API 的程式集中在 Service、元件只呼叫 service 方法。這樣 API 邏輯好重用、好測試，元件也乾淨。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "76.11.auto",
+          "language": "typescript",
+          "title": "打 API 拿資料（概念）",
+          "hint": "get 回 Observable、subscribe 拿到資料。",
+          "initialCode": "// 模擬 HttpClient.get(...).subscribe(...)\nfunction httpGet(url, callback) {\n  // 真實會發網路請求；這裡假裝拿到資料\n  const fakeData = [{ id: 1, name: \"Nami\" }, { id: 2, name: \"Luffy\" }];\n  setTimeout(() => callback(fakeData), 0);\n}\n\nhttpGet(\"/api/users\", (users) => {\n  console.log(\"拿到使用者:\", users.map(u => u.name).join(\", \"));\n});"
+        }
+      ],
+      "exercise": {
+        "question": "HttpClient.get() 回傳什麼？要做什麼才會真的發出請求？慣例上 API 程式放哪？",
+        "hint": "Observable、subscribe、service。",
+        "answer": "回傳 Observable，要 .subscribe() 才會真的發請求並拿到資料。慣例上把 HttpClient 包在 Service 裡、元件只呼叫 service 方法（好重用、好測試）。"
+      },
+      "outline": [
+        {
+          "text": "1. 啟用 + 注入",
+          "level": 3
+        },
+        {
+          "text": "2. 在 Service 裡打 API",
+          "level": 3
+        },
+        {
+          "text": "3. 在元件訂閱",
+          "level": 3
+        },
+        {
+          "text": "4. POST / 其他",
+          "level": 3
+        },
+        {
+          "text": "🎯 重點回顧",
+          "level": 3
+        }
+      ]
+    },
+    {
+      "id": "76.12",
+      "number": "LESSON 76.12",
+      "title": "RxJS + Observable 入門",
+      "oneLineSummary": "RxJS 的 Observable 是「會隨時間吐出多個值的串流」；用 pipe + 運算子（map/filter/switchMap）加工、subscribe 取用——Angular 處理非同步的底層。",
+      "analogy": "Observable 像一條水管（會持續流出水），pipe 是裝在管上的濾水器（map 加工、filter 過濾），subscribe 是接水的水龍頭——不打開（訂閱）水就不流。",
+      "content": "Angular 大量用 **RxJS**——它的核心是 **Observable**（可觀察物件），代表「**會隨時間吐出值的串流**」。\n\n### 1. Observable vs Promise\n\n- **Promise**：一次性、回**一個**值\n- **Observable**：可回**多個**值（隨時間）、可取消、能用運算子加工\n\n### 2. subscribe 才會動\n\n```typescript\nimport { of } from 'rxjs';\n\nconst obs = of(1, 2, 3);        // 一個會吐 1,2,3 的 Observable\nobs.subscribe(x => console.log(x));   // 訂閱才會印出 1 2 3\n```\n\n「Observable 是惰性的」——不 subscribe 就不執行（像水龍頭不開水不流）。\n\n### 3. pipe + 運算子\n\n```typescript\nimport { of } from 'rxjs';\nimport { map, filter } from 'rxjs/operators';\n\nof(1, 2, 3, 4)\n  .pipe(\n    filter(x => x % 2 === 0),   // 只留偶數\n    map(x => x * 10),           // 每個 x10\n  )\n  .subscribe(x => console.log(x));   // 20, 40\n```\n\n### 4. 最常用的運算子\n\n- 「map」「filter」（加工 / 篩選）\n- 「switchMap」（換成另一條串流，搜尋打 API 常用）\n- 「debounceTime」（等使用者停手，搜尋框必備）\n\n> 💡 在 Signal 時代，簡單狀態用 signal、但**處理事件串流 / 複雜非同步**（搜尋、防抖、HTTP 串接）還是 RxJS 強。兩者並存、各用所長。\n\n### 🎯 重點回顧\n\n- Observable = 隨時間吐多個值的串流（vs Promise 一次一個）\n- 「.subscribe()」才執行（惰性）；「.pipe(map/filter/...)」加工\n- 複雜非同步（搜尋 / 防抖 / HTTP）用 RxJS；簡單狀態用 Signal\n\n**☕ 用人話講**\n\nAngular 大量用 **RxJS**，核心是 **Observable（串流）**——代表「會隨時間吐出多個值的水流」。(1) 跟 Promise 不同：Promise 一次回一個值、Observable 可回多個、可取消、能加工 (2) **「.subscribe()」才會執行**（惰性，像水龍頭不開水不流） (3) 用 **「.pipe(filter(...), map(...))」** 在串流上加工（篩選、轉換），常用的還有「switchMap」（換串流、搜尋打 API）、「debounceTime」（等使用者停手）。**一句話記住**：Observable 像一條會持續流的水管、pipe 是裝在上面的濾水器、subscribe 是接水的水龍頭。2026 簡單狀態用 Signal，但**複雜非同步**（搜尋、防抖、HTTP 串接）還是 RxJS 強，兩者各用所長。\n",
+      "tip": {
+        "type": "concept",
+        "text": "別硬背所有 RxJS 運算子。先會 map / filter / switchMap / debounceTime 四個就能應付八成場景。記住「不 subscribe 就不執行」。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "76.12.auto",
+          "language": "typescript",
+          "title": "Observable 串流加工",
+          "hint": "filter 篩、map 加工、subscribe 取。",
+          "initialCode": "// 模擬 RxJS：filter + map + subscribe\nconst source = [1, 2, 3, 4];\n\nsource\n  .filter(x => x % 2 === 0)   // .pipe(filter(...))\n  .map(x => x * 10)           //      map(...)\n  .forEach(x => console.log(\"收到:\", x));  // .subscribe(...)\n// 收到 20、收到 40"
+        }
+      ],
+      "exercise": {
+        "question": "Observable 跟 Promise 最大的差別？為什麼「不 subscribe 就不執行」？",
+        "hint": "多值、惰性。",
+        "answer": "Promise 一次回一個值，Observable 可隨時間回多個值、可取消、能用運算子加工。Observable 是「惰性」的——它只是定義了串流，要 .subscribe() 才會真的開始執行（像水龍頭不開水不流）。"
+      },
+      "outline": [
+        {
+          "text": "1. Observable vs Promise",
+          "level": 3
+        },
+        {
+          "text": "2. subscribe 才會動",
+          "level": 3
+        },
+        {
+          "text": "3. pipe + 運算子",
+          "level": 3
+        },
+        {
+          "text": "4. 最常用的運算子",
+          "level": 3
+        },
+        {
+          "text": "🎯 重點回顧",
+          "level": 3
+        }
+      ]
+    },
+    {
+      "id": "76.13",
+      "number": "LESSON 76.13",
+      "title": "Routing 路由 — 多頁切換",
+      "oneLineSummary": "Angular Router 做 SPA 多頁：provideRouter 設路由表、<router-outlet> 放內容、routerLink 跳轉，不刷新整頁。",
+      "analogy": "像百貨公司的樓層切換——routerLink 是電梯按鈕、router-outlet 是「會換內容的那塊區域」，按了換樓層但你沒離開大樓（沒重載整頁）。",
+      "content": "**Angular Router** 讓你做 SPA（單頁應用）——換頁時只換內容、不重新載入整頁。\n\n### 1. 設定路由表\n\n```typescript\nimport { Routes } from '@angular/router';\n\nexport const routes: Routes = [\n  { path: '', component: HomeComponent },\n  { path: 'about', component: AboutComponent },\n  { path: 'users/:id', component: UserComponent },  // 動態參數\n  { path: '**', component: NotFoundComponent },     // 404\n];\n\n// main.ts\nbootstrapApplication(App, {\n  providers: [provideRouter(routes)],\n});\n```\n\n### 2. <router-outlet> 放內容\n\n```typescript\n@Component({\n  template: `\n    <nav>\n      <a routerLink=\"/\">首頁</a>\n      <a routerLink=\"/about\">關於</a>\n    </nav>\n    <router-outlet></router-outlet>   <!-- 路由內容顯示在這 -->\n  `,\n})\n```\n\n### 3. routerLink 跳轉\n\n用 「<a routerLink=\"/about\">」 而不是 「href」——這樣不會重載整頁、是 SPA 切換。程式裡跳轉用 「inject(Router).navigate(['/about'])」。\n\n### 4. 懶載入（lazy load）\n\n```typescript\n{ path: 'admin', loadComponent: () => import('./admin.component').then(m => m.AdminComponent) }\n```\n\n用到才載入該頁的程式、加快首頁速度。\n\n> 💡 「routerLink」（SPA 切換、不重載）vs 「href」（重載整頁）——別用錯，用 href 會失去 SPA 的順暢。\n\n### 🎯 重點回顧\n\n- 「provideRouter(routes)」設路由表、「<router-outlet>」放內容\n- 「routerLink」跳轉（不重載）、「:id」動態參數、「**」404\n- 「loadComponent」懶載入、加快首頁\n\n**☕ 用人話講**\n\n**Angular Router** 做 SPA 多頁——換頁只換內容、不重載整頁。(1) 用「provideRouter(routes)」設**路由表**（哪個網址對應哪個元件、「:id」是動態參數、「**」接 404） (2) 「<router-outlet>」放路由內容、頁面切換時這塊會換 (3) 用 **「routerLink」** 跳轉（不是「href」！routerLink 才不會重載整頁）(4) 「loadComponent」懶載入、用到才載、加快首頁。**一句話記住**：像百貨公司換樓層——routerLink 是電梯按鈕、router-outlet 是會換內容的那塊區域；按了換樓層但你沒離開大樓（沒重載整頁）。千萬別用 href 跳內部頁、會失去 SPA 的順暢。\n",
+      "tip": {
+        "type": "warn",
+        "text": "內部頁面跳轉用 routerLink、不要用 href。href 會整頁重載、失去 SPA 順暢感；routerLink 才是 Angular 路由的正確用法。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "76.13.auto",
+          "language": "typescript",
+          "title": "路由表的概念",
+          "hint": "網址對應元件、outlet 換內容。",
+          "initialCode": "// 模擬 Angular 路由\nconst routes = {\n  \"/\": \"HomeComponent\",\n  \"/about\": \"AboutComponent\",\n  \"/users/:id\": \"UserComponent\",\n};\n\nfunction navigate(path) {\n  const comp = routes[path] || routes[\"/users/:id\"] && path.startsWith(\"/users/\") ? \"UserComponent\" : routes[path] || \"NotFoundComponent\";\n  console.log(\"前往 \" + path + \" -> <router-outlet> 顯示 \" + comp);\n}\nnavigate(\"/\");\nnavigate(\"/about\");\nnavigate(\"/users/7\");"
+        }
+      ],
+      "exercise": {
+        "question": "Angular 內部頁面跳轉該用 routerLink 還是 href？為什麼？",
+        "hint": "重載。",
+        "answer": "用 routerLink。href 會重新載入整頁、失去 SPA 的順暢；routerLink 只換 <router-outlet> 裡的內容、不重載整頁，才是 Angular 路由的正確做法。"
+      },
+      "outline": [
+        {
+          "text": "1. 設定路由表",
+          "level": 3
+        },
+        {
+          "text": "2. <router-outlet> 放內容",
+          "level": 3
+        },
+        {
+          "text": "3. routerLink 跳轉",
+          "level": 3
+        },
+        {
+          "text": "4. 懶載入（lazy load）",
+          "level": 3
+        },
+        {
+          "text": "🎯 重點回顧",
+          "level": 3
+        }
+      ]
+    },
+    {
+      "id": "76.14",
+      "number": "LESSON 76.14",
+      "title": "Route 參數 + 守衛 Guard",
+      "oneLineSummary": "從網址抓參數用 ActivatedRoute（或 withComponentInputBinding 直接綁 input）；路由守衛（CanActivate）擋未登入等情況。",
+      "analogy": "參數像門牌號（/users/7 的 7）、守衛像門口保全——進某些頁前先驗證（登入了嗎？有權限嗎？），沒過就擋下或導去登入頁。",
+      "content": "路由常要「抓網址參數」跟「進頁前先檢查」。\n\n### 1. 抓路由參數\n\n```typescript\nimport { inject } from '@angular/core';\nimport { ActivatedRoute } from '@angular/router';\n\nexport class UserComponent {\n  private route = inject(ActivatedRoute);\n  id = this.route.snapshot.paramMap.get('id');   // 抓 /users/:id 的 id\n}\n```\n\n更現代：在 「provideRouter(routes, withComponentInputBinding())」 後，路由參數能直接綁成元件的 「input()」，更乾淨。\n\n### 2. 路由守衛 Guard（進頁前檢查）\n\n```typescript\nimport { inject } from '@angular/core';\nimport { Router, CanActivateFn } from '@angular/router';\n\nexport const authGuard: CanActivateFn = () => {\n  const isLoggedIn = inject(AuthService).isLoggedIn();\n  if (isLoggedIn) return true;\n  inject(Router).navigate(['/login']);   // 沒登入 → 導去登入\n  return false;\n};\n// 路由：{ path: 'admin', component: Admin, canActivate: [authGuard] }\n```\n\n### 3. 常見守衛用途\n\n- **CanActivate**：能不能進這頁（登入 / 權限）\n- **CanDeactivate**：能不能離開（表單沒存提醒）\n\n> 💡 守衛是「進頁前的攔截器」——把「要登入才能看」這種規則集中管理，不用每個元件各寫一次檢查。\n\n### 🎯 重點回顧\n\n- 抓參數：「ActivatedRoute」 或 「withComponentInputBinding」 綁 input\n- 「CanActivateFn」 守衛：進頁前檢查（登入 / 權限）、沒過就擋 / 導頁\n- 守衛把存取規則集中、不用每頁重寫\n\n**☕ 用人話講**\n\n路由常做兩件事：(1) **抓網址參數**——「/users/7」的「7」，用「ActivatedRoute」拿，或現代版用「withComponentInputBinding」直接綁成元件的 input()，更乾淨 (2) **路由守衛 Guard**——進某些頁前先檢查（「authGuard」確認登入了沒），沒過就「return false」並導去登入頁。**一句話記住**：參數像門牌號、守衛像門口保全——進某些頁前先驗證（登入嗎？有權限嗎？），沒過就擋下或導走。守衛的價值是把「要登入才能看」這種規則**集中管理**，不用每個頁面各寫一次檢查。\n",
+      "tip": {
+        "type": "practical",
+        "text": "「要登入才能看」的規則用路由守衛（canActivate）集中管、別在每個元件各寫一次。離開沒存的表單想提醒用 CanDeactivate。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "76.14.auto",
+          "language": "typescript",
+          "title": "路由守衛的概念",
+          "hint": "進頁前檢查、沒過導去登入。",
+          "initialCode": "// 模擬 Angular 路由守衛 CanActivate\nfunction authGuard(isLoggedIn) {\n  if (isLoggedIn) {\n    console.log(\"已登入 -> 放行進入 /admin\");\n    return true;\n  }\n  console.log(\"未登入 -> 導去 /login\");\n  return false;\n}\n\nauthGuard(true);   // 放行\nauthGuard(false);  // 擋下"
+        }
+      ],
+      "exercise": {
+        "question": "路由守衛（CanActivate）用來做什麼？放在哪裡比較好？",
+        "hint": "進頁前。",
+        "answer": "進某個頁面前先檢查（如登入、權限），沒通過就擋下或導去登入頁。把這類存取規則集中放在守衛、用 canActivate 掛到路由，比在每個元件各寫一次檢查好維護。"
+      },
+      "outline": [
+        {
+          "text": "1. 抓路由參數",
+          "level": 3
+        },
+        {
+          "text": "2. 路由守衛 Guard（進頁前檢查）",
+          "level": 3
+        },
+        {
+          "text": "3. 常見守衛用途",
+          "level": 3
+        },
+        {
+          "text": "🎯 重點回顧",
+          "level": 3
+        }
+      ]
+    },
+    {
+      "id": "76.15",
+      "number": "LESSON 76.15",
+      "title": "Directives 指令 — 給元素加行為",
+      "oneLineSummary": "Directive 是「加在 DOM 元素上的行為」：屬性指令（改外觀/行為，如自訂 hover 高亮）；@for/@if 是內建結構指令的現代版。",
+      "analogy": "像給元素貼的「功能貼紙」——貼上 appHighlight 它就有 hover 變色的能力，不改元素本體、只附加行為。",
+      "content": "**Directive（指令）**是「**加在元素上、賦予它行為**」的東西。元件其實是「有模板的特殊指令」。\n\n### 1. 兩種指令\n\n- **屬性指令**：改元素的外觀 / 行為（如 hover 高亮、自動聚焦）\n- **結構指令**：改 DOM 結構（增刪元素）——現代用 「@if」「@for」 取代舊的 「*ngIf」「*ngFor」\n\n### 2. 自訂屬性指令\n\n```typescript\nimport { Directive, ElementRef, inject, HostListener } from '@angular/core';\n\n@Directive({\n  selector: '[appHighlight]',\n  standalone: true,\n})\nexport class HighlightDirective {\n  private el = inject(ElementRef);\n\n  @HostListener('mouseenter') onEnter() {\n    this.el.nativeElement.style.background = '#ffe';\n  }\n  @HostListener('mouseleave') onLeave() {\n    this.el.nativeElement.style.background = '';\n  }\n}\n// 用：<p appHighlight>滑過我會變色</p>\n```\n\n### 3. 常見內建指令\n\n- 「ngClass」 / 「ngStyle」：動態 class / style（也可用 「[class.x]」「[style.x]」）\n- 「@for」「@if」「@switch」：結構控制（第 5 課）\n\n> 💡 簡單地說：**元件 = 有畫面的指令；指令 = 沒畫面、只加行為的元件**。要重用「一段行為」（不是一塊畫面）就寫指令。\n\n### 🎯 重點回顧\n\n- Directive = 加在元素上的行為（屬性指令改外觀 / 行為）\n- 自訂用 「@Directive」 + 「selector: '[appXxx]'」 + 「@HostListener」\n- 結構指令現代用 「@if/@for」；元件是「有模板的指令」\n\n**☕ 用人話講**\n\n**Directive（指令）**是「加在元素上、賦予它行為」的東西。(1) **屬性指令**——改元素的外觀或行為（自訂一個「appHighlight」讓元素 hover 變色），用「@Directive」+「selector: '[appHighlight]'」+「@HostListener」監聽事件 (2) **結構指令**——增刪 DOM，現代用「@if」「@for」取代舊的星號語法 (3) 內建的「ngClass」「ngStyle」動態套 class / style。**一句話記住**：指令像給元素貼的「功能貼紙」——貼上就多一個能力、不改元素本體。換個角度：**元件 = 有畫面的指令、指令 = 沒畫面只加行為的元件**；要重用「一段行為」（而不是一塊畫面）就寫指令。\n",
+      "tip": {
+        "type": "concept",
+        "text": "判斷寫元件還是指令：要重用「一塊畫面」→ 元件；要重用「一段行為」（如自動聚焦、hover 效果、權限隱藏）→ 屬性指令。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "76.15.auto",
+          "language": "typescript",
+          "title": "屬性指令的概念",
+          "hint": "給元素附加 hover 行為。",
+          "initialCode": "// 模擬 Angular 屬性指令 appHighlight\nclass HighlightDirective {\n  onEnter(el) { el.background = \"#ffe\"; console.log(\"滑入 -> 背景變黃\"); }\n  onLeave(el) { el.background = \"\"; console.log(\"滑出 -> 背景還原\"); }\n}\n\nconst el = { background: \"\" };\nconst dir = new HighlightDirective();\ndir.onEnter(el);   // <p appHighlight> 滑過\ndir.onLeave(el);"
+        }
+      ],
+      "exercise": {
+        "question": "什麼時候該寫指令（directive）而不是元件（component）？",
+        "hint": "行為 vs 畫面。",
+        "answer": "要重用「一塊畫面」時寫元件；要重用「一段行為」（如 hover 高亮、自動聚焦、依權限隱藏元素）而不是畫面時，寫屬性指令。元件其實就是「有模板的特殊指令」。"
+      },
+      "outline": [
+        {
+          "text": "1. 兩種指令",
+          "level": 3
+        },
+        {
+          "text": "2. 自訂屬性指令",
+          "level": 3
+        },
+        {
+          "text": "3. 常見內建指令",
+          "level": 3
+        },
+        {
+          "text": "🎯 重點回顧",
+          "level": 3
+        }
+      ]
+    },
+    {
+      "id": "76.16",
+      "number": "LESSON 76.16",
+      "title": "Pipes 管道 — 模板裡格式化資料",
+      "oneLineSummary": "Pipe 用 | 在模板裡格式化顯示：date / currency / uppercase / number 等內建，也能自訂；不改原資料、只改顯示。",
+      "analogy": "像濾鏡——資料流過 | 管道被加工成好看的樣子（日期變 2026/06/04、數字變 $1,200），但原始資料沒動。",
+      "content": "**Pipe（管道）**用 「|」 在模板裡**格式化資料的顯示**，不改原始值。\n\n### 1. 內建 Pipe\n\n```typescript\ntemplate: `\n  <p>{{ today | date:'yyyy/MM/dd' }}</p>      <!-- 2026/06/04 -->\n  <p>{{ price | currency:'TWD' }}</p>          <!-- NT$1,200.00 -->\n  <p>{{ name | uppercase }}</p>                <!-- 變大寫 -->\n  <p>{{ ratio | percent }}</p>                 <!-- 85% -->\n  <p>{{ bigNum | number:'1.0-2' }}</p>         <!-- 千分位 -->\n`\n```\n\n### 2. 串接多個 Pipe\n\n```typescript\n{{ name | uppercase | slice:0:3 }}   <!-- 先大寫、再取前 3 字 -->\n```\n\n### 3. 自訂 Pipe\n\n```typescript\nimport { Pipe, PipeTransform } from '@angular/core';\n\n@Pipe({ name: 'exclaim', standalone: true })\nexport class ExclaimPipe implements PipeTransform {\n  transform(value: string): string {\n    return value + '!!!';\n  }\n}\n// 用：{{ 'hi' | exclaim }}  ->  hi!!!\n```\n\n### 4. async pipe（超好用）\n\n```typescript\n{{ user$ | async }}    <!-- 自動 subscribe Observable、自動 unsubscribe -->\n```\n\n「async」 pipe 幫你訂閱 Observable / Promise、還自動取消訂閱，不用手動管。\n\n> 💡 Pipe **只改顯示、不改資料**——「{{ price | currency }}」 畫面變 NT$ 但 「price」 本身還是數字。\n\n### 🎯 重點回顧\n\n- Pipe 用 「|」 格式化顯示（date / currency / uppercase / number…）\n- 可串接、可自訂（「@Pipe」 + 「transform()」）\n- 「async」 pipe 自動訂閱 / 退訂 Observable；只改顯示、不改原資料\n\n**☕ 用人話講**\n\n**Pipe（管道）**用「|」在模板裡**格式化顯示**、不改原始資料。(1) 內建一堆：「| date」（日期格式）、「| currency」（金額）、「| uppercase」（大寫）、「| number」（千分位） (2) 能串接：「{{ name | uppercase | slice:0:3 }}」 (3) 能自訂（「@Pipe」+「transform()」）(4) 超好用的 **「| async」**——自動訂閱 Observable、還自動退訂，不用手動管。**一句話記住**：Pipe 像濾鏡——資料流過管道被加工成好看的樣子（日期變 2026/06/04、數字變 NT$1,200），但**原始資料沒動**。模板裡要格式化顯示，第一個想到 pipe。\n",
+      "tip": {
+        "type": "practical",
+        "text": "顯示 Observable 用 {{ data$ | async }} 最省事——它自動 subscribe 也自動 unsubscribe，免去手動管理訂閱、不會記憶體洩漏。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "76.16.auto",
+          "language": "typescript",
+          "title": "Pipe 格式化（概念）",
+          "hint": "資料過管道變好看、原值不變。",
+          "initialCode": "// 模擬 Angular Pipe：只改顯示、不改原值\nconst price = 1200;\nconst currency = (v) => \"NT$\" + v.toLocaleString();   // | currency\nconst upper = (v) => v.toUpperCase();                 // | uppercase\n\nconsole.log(\"顯示:\", currency(price), \"/ 原值:\", price);\nconsole.log(\"顯示:\", upper(\"angular\"));"
+        }
+      ],
+      "exercise": {
+        "question": "Pipe（如 | currency）會改變原始資料嗎？async pipe 有什麼好處？",
+        "hint": "顯示、訂閱。",
+        "answer": "不會，Pipe 只改「顯示」、原始資料不變（price 還是數字，只是畫面顯示成 NT$1,200）。async pipe 自動訂閱 Observable/Promise 並自動退訂，省去手動管理訂閱、避免記憶體洩漏。"
+      },
+      "outline": [
+        {
+          "text": "1. 內建 Pipe",
+          "level": 3
+        },
+        {
+          "text": "2. 串接多個 Pipe",
+          "level": 3
+        },
+        {
+          "text": "3. 自訂 Pipe",
+          "level": 3
+        },
+        {
+          "text": "4. async pipe（超好用）",
+          "level": 3
+        },
+        {
+          "text": "🎯 重點回顧",
+          "level": 3
+        }
+      ]
+    },
+    {
+      "id": "76.17",
+      "number": "LESSON 76.17",
+      "title": "Reactive Forms 響應式表單",
+      "oneLineSummary": "響應式表單用程式（FormGroup / FormControl）定義表單與驗證，比模板表單更可控、適合複雜 / 動態表單。",
+      "analogy": "模板表單像隨手填的紙本、響應式表單像「程式生成的智慧表單」——欄位、規則、驗證全用程式描述，動態增減、即時驗證都好做。",
+      "content": "Angular 有兩種表單：模板表單（第 7 課 ngModel、簡單用）跟**響應式表單**（程式定義、複雜用）。\n\n### 1. 建立表單\n\n```typescript\nimport { Component, inject } from '@angular/core';\nimport { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';\n\n@Component({\n  standalone: true,\n  imports: [ReactiveFormsModule],\n  template: `\n    <form [formGroup]=\"form\" (ngSubmit)=\"submit()\">\n      <input formControlName=\"email\">\n      <input formControlName=\"password\" type=\"password\">\n      <button [disabled]=\"form.invalid\">登入</button>\n    </form>\n  `,\n})\nexport class LoginForm {\n  private fb = inject(FormBuilder);\n  form = this.fb.group({\n    email: ['', [Validators.required, Validators.email]],\n    password: ['', [Validators.required, Validators.minLength(6)]],\n  });\n\n  submit() {\n    if (this.form.valid) console.log(this.form.value);\n  }\n}\n```\n\n### 2. 驗證 + 狀態\n\n- 「Validators.required / email / minLength」 等內建驗證\n- 「form.invalid」「form.valid」「form.value」 隨輸入即時更新\n- 每個欄位有 「touched / dirty / errors」 狀態可做錯誤提示\n\n### 3. 何時用哪種\n\n- **模板表單**：登入 / 訂閱這種簡單表單，「[(ngModel)]」 最快\n- **響應式表單**：多欄位、動態增減、複雜驗證、要單元測試 → 響應式\n\n> 💡 響應式表單「用程式描述表單」、所以好測試、好動態組（如「新增一個欄位」按鈕）。複雜表單一律用它。\n\n### 🎯 重點回顧\n\n- 響應式表單：「FormBuilder.group」 定義欄位 + 「Validators」 驗證\n- 「[formGroup]」 綁表單、「formControlName」 綁欄位、「form.valid/value」 取狀態\n- 簡單用模板表單、複雜 / 動態用響應式表單\n\n**☕ 用人話講**\n\nAngular 兩種表單：模板表單（第 7 課的 ngModel、簡單用）跟**響應式表單**（程式定義、複雜用）。(1) 用 **「FormBuilder.group」** 在程式裡定義欄位 + **「Validators」** 驗證規則（required / email / minLength） (2) 模板用「[formGroup]」綁表單、「formControlName」綁欄位 (3) 「form.valid / form.value / errors」隨輸入即時更新、好做錯誤提示。**一句話記住**：模板表單像隨手填的紙本、響應式表單像「程式生成的智慧表單」——欄位、規則、驗證全用程式描述，所以好測試、好動態增減欄位。登入這種簡單表單用 ngModel 最快；多欄位、動態、複雜驗證的，一律用響應式表單。\n",
+      "tip": {
+        "type": "practical",
+        "text": "判斷用哪種表單：簡單（登入/訂閱）用模板表單 ngModel；複雜（多欄位、動態增減、進階驗證、要寫測試）用響應式表單 FormBuilder。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "76.17.auto",
+          "language": "typescript",
+          "title": "響應式表單驗證（概念）",
+          "hint": "定義欄位 + 規則、即時算 valid。",
+          "initialCode": "// 模擬響應式表單驗證\nconst form = { email: \"\", password: \"\" };\nfunction validate(f) {\n  const errors = [];\n  if (!f.email.includes(\"@\")) errors.push(\"email 格式錯\");\n  if (f.password.length < 6) errors.push(\"密碼至少 6 碼\");\n  return errors;\n}\n\nform.email = \"bad\"; form.password = \"123\";\nconsole.log(\"錯誤:\", validate(form));   // 兩個錯、button disabled\nform.email = \"a@b.com\"; form.password = \"secret1\";\nconsole.log(\"錯誤:\", validate(form));   // [] -> valid、可送出"
+        }
+      ],
+      "exercise": {
+        "question": "模板表單和響應式表單分別適合什麼？",
+        "hint": "簡單 vs 複雜。",
+        "answer": "模板表單（ngModel）適合登入、訂閱這種簡單表單，最快；響應式表單（FormBuilder + Validators）適合多欄位、動態增減、複雜驗證、要寫測試的場景——因為它用程式描述表單、可控又好測。"
+      },
+      "outline": [
+        {
+          "text": "1. 建立表單",
+          "level": 3
+        },
+        {
+          "text": "2. 驗證 + 狀態",
+          "level": 3
+        },
+        {
+          "text": "3. 何時用哪種",
+          "level": 3
+        },
+        {
+          "text": "🎯 重點回顧",
+          "level": 3
+        }
+      ]
+    },
+    {
+      "id": "76.18",
+      "number": "LESSON 76.18",
+      "title": "元件生命週期 hooks",
+      "oneLineSummary": "元件從建立到銷毀有生命週期：ngOnInit（初始化、抓資料）、ngOnDestroy（清理）最常用；Signal 時代很多時機可被取代。",
+      "analogy": "像店面的營業流程——ngOnInit 是開門擺貨（初始化、抓資料）、ngOnDestroy 是打烊收攤（清理計時器 / 退訂），每個時段做對應的事。",
+      "content": "元件有「**從出生到銷毀**」的生命週期，可以在特定時機掛 hook。\n\n### 1. 最常用兩個\n\n```typescript\nimport { Component, OnInit, OnDestroy } from '@angular/core';\n\n@Component({ /* ... */ })\nexport class MyComponent implements OnInit, OnDestroy {\n  ngOnInit() {\n    // 元件初始化後：抓資料、設定初始狀態\n    console.log('元件出生了');\n  }\n  ngOnDestroy() {\n    // 元件銷毀前：清理計時器、退訂 Observable\n    console.log('元件要走了、清理');\n  }\n}\n```\n\n### 2. 完整時機（依序）\n\n- 「ngOnInit」：初始化（最常用、抓資料放這）\n- 「ngOnChanges」：input 變化時\n- 「ngAfterViewInit」：畫面渲染完（要操作 DOM / 子元件放這）\n- 「ngOnDestroy」：銷毀前（清理！）\n\n### 3. 為什麼 ngOnDestroy 重要\n\n忘了清理（計時器、手動 subscribe）會**記憶體洩漏**。用 「async」 pipe 或 「takeUntilDestroyed()」 可以自動退訂、少寫 ngOnDestroy。\n\n> 💡 Signal + 新 API 讓很多生命週期需求消失（例如 effect 自動清理）。但 「ngOnInit」（初始化抓資料）跟 「ngOnDestroy」（清理）還是常用、先記這兩個。\n\n### 🎯 重點回顧\n\n- 「ngOnInit」 初始化（抓資料）、「ngOnDestroy」 清理（最常用兩個）\n- 「ngAfterViewInit」 畫面好了（操作 DOM）；「ngOnChanges」 input 變\n- 忘了 ngOnDestroy 清理會記憶體洩漏；async pipe / takeUntilDestroyed 可自動退訂\n\n**☕ 用人話講**\n\n元件有「從出生到銷毀」的生命週期，可在特定時機掛 hook。最常用兩個：(1) **「ngOnInit」**——元件初始化後跑，**抓資料、設初始狀態**放這 (2) **「ngOnDestroy」**——元件銷毀前跑，**清理**（停計時器、退訂 Observable）放這，忘了清會記憶體洩漏。其他還有「ngAfterViewInit」（畫面渲染完、要操作 DOM 放這）、「ngOnChanges」（input 變時）。**一句話記住**：像店面營業流程——ngOnInit 開門擺貨（抓資料）、ngOnDestroy 打烊收攤（清理）。Signal 時代很多時機被自動化取代（effect 自動清理、async pipe 自動退訂），但這兩個還是先記起來。\n",
+      "tip": {
+        "type": "warn",
+        "text": "手動 subscribe 的 Observable 一定要在 ngOnDestroy 退訂、否則記憶體洩漏。更省事的做法：用 async pipe 或 takeUntilDestroyed()，框架自動幫你退訂。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "76.18.auto",
+          "language": "typescript",
+          "title": "生命週期時機",
+          "hint": "init 抓資料、destroy 清理。",
+          "initialCode": "// 模擬 Angular 元件生命週期\nclass MyComponent {\n  ngOnInit() { console.log(\"[ngOnInit] 初始化 -> 抓資料\"); }\n  ngAfterViewInit() { console.log(\"[ngAfterViewInit] 畫面好了 -> 可操作 DOM\"); }\n  ngOnDestroy() { console.log(\"[ngOnDestroy] 銷毀前 -> 清計時器、退訂\"); }\n}\n\nconst c = new MyComponent();\nc.ngOnInit();\nc.ngAfterViewInit();\nc.ngOnDestroy();"
+        }
+      ],
+      "exercise": {
+        "question": "ngOnInit 跟 ngOnDestroy 各放什麼？不寫 ngOnDestroy 清理會怎樣？",
+        "hint": "抓資料、清理、洩漏。",
+        "answer": "ngOnInit 放初始化邏輯（抓資料、設初始狀態）；ngOnDestroy 放清理（停計時器、退訂 Observable）。不清理（尤其手動 subscribe）會造成記憶體洩漏——可用 async pipe 或 takeUntilDestroyed 自動退訂避免。"
+      },
+      "outline": [
+        {
+          "text": "1. 最常用兩個",
+          "level": 3
+        },
+        {
+          "text": "2. 完整時機（依序）",
+          "level": 3
+        },
+        {
+          "text": "3. 為什麼 ngOnDestroy 重要",
+          "level": 3
+        },
+        {
+          "text": "🎯 重點回顧",
+          "level": 3
+        }
+      ]
+    },
+    {
+      "id": "76.19",
+      "number": "LESSON 76.19",
+      "title": "NgModule vs Standalone — 架構演進",
+      "oneLineSummary": "舊 Angular 用 NgModule 把元件「登記」成群組；2026 改用 Standalone（元件自帶依賴、免 NgModule），新專案一律 standalone。",
+      "analogy": "NgModule 像「要先去戶政事務所登記才能用」、Standalone 像「自帶身分證、隨到隨用」——後者少掉一堆繁瑣登記。",
+      "content": "理解 Angular 的「**舊（NgModule）vs 新（Standalone）**」，看舊教學才不會混亂。\n\n### 1. 舊：NgModule（要登記）\n\n以前每個元件都要在某個 NgModule 的 「declarations」 裡登記、依賴放 「imports」：\n\n```typescript\n@NgModule({\n  declarations: [AppComponent, HeaderComponent],   // 登記元件\n  imports: [BrowserModule, FormsModule],            // 依賴\n})\nexport class AppModule {}\n```\n\n很囉嗦——每加一個元件就要回去改 module。\n\n### 2. 新：Standalone（自帶依賴）\n\n```typescript\n@Component({\n  selector: 'app-header',\n  standalone: true,\n  imports: [FormsModule, OtherComponent],   // 直接在元件宣告依賴\n  template: `...`,\n})\nexport class HeaderComponent {}\n```\n\n元件**自帶依賴**、不用 NgModule。啟動也改用 「bootstrapApplication(AppComponent, { providers: [...] })」。\n\n### 3. 為什麼改\n\n- 更少樣板、更好理解（依賴就在元件旁邊）\n- 更好 tree-shaking（沒用到的不打包）\n- 是 Angular 官方的未來方向、新專案預設\n\n> 💡 看到舊範例一堆 「@NgModule」「declarations」 別慌——那是舊架構。2026 新專案一律 「standalone: true」，本章教的都是新版。\n\n### 🎯 重點回顧\n\n- 舊：NgModule（declarations 登記元件、imports 放依賴）、很囉嗦\n- 新：Standalone（元件自帶 imports、免登記）、2026 預設\n- 「bootstrapApplication」 啟動；看到舊 NgModule 範例知道是舊版即可\n\n**☕ 用人話講**\n\n看懂 Angular 的「舊 vs 新」架構，看舊教學才不會混亂。(1) **舊：NgModule**——每個元件都要在某個 module 的「declarations」登記、依賴放「imports」，每加一個元件就要回去改 module，很囉嗦 (2) **新：Standalone**——元件「standalone: true」**自帶依賴**（imports 直接寫在元件上）、**免 NgModule**，啟動用「bootstrapApplication」。**一句話記住**：NgModule 像「要先去戶政事務所登記才能用」、Standalone 像「自帶身分證隨到隨用」。看到舊範例一堆「@NgModule / declarations」別慌、那是舊架構；2026 新專案一律 standalone，本章教的都是新版。\n",
+      "tip": {
+        "type": "concept",
+        "text": "判斷範例新舊：有 @NgModule + declarations = 舊（2-3 年前）；元件寫 standalone: true + imports = 新。學新的、看到舊的知道對應即可。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "76.19.auto",
+          "language": "typescript",
+          "title": "NgModule vs Standalone",
+          "hint": "登記制 vs 自帶依賴。",
+          "initialCode": "// 舊 vs 新 Angular 架構\nconst oldWay = {\n  \"NgModule\": \"declarations 登記元件 + imports 放依賴，每加元件就改 module\",\n};\nconst newWay = {\n  \"Standalone\": \"元件 standalone:true + imports 自帶依賴，免 NgModule\",\n};\nconsole.log(\"舊（囉嗦）:\", oldWay.NgModule);\nconsole.log(\"新（2026）:\", newWay.Standalone);"
+        }
+      ],
+      "exercise": {
+        "question": "Standalone Component 相比舊的 NgModule 架構好在哪？",
+        "hint": "登記。",
+        "answer": "元件自帶依賴（imports 寫在元件上）、免去 NgModule 的登記（declarations），少樣板、更好理解、更好 tree-shaking。2026 新專案一律用 standalone。"
+      },
+      "outline": [
+        {
+          "text": "1. 舊：NgModule（要登記）",
+          "level": 3
+        },
+        {
+          "text": "2. 新：Standalone（自帶依賴）",
+          "level": 3
+        },
+        {
+          "text": "3. 為什麼改",
+          "level": 3
+        },
+        {
+          "text": "🎯 重點回顧",
+          "level": 3
+        }
+      ]
+    },
+    {
+      "id": "76.20",
+      "number": "LESSON 76.20",
+      "title": "狀態管理：Signals vs NgRx",
+      "oneLineSummary": "小～中型用 Signal-based 狀態（signal service）就夠；大型複雜用 NgRx（Redux 風的可預測狀態容器）；別一開始就上重武器。",
+      "analogy": "Signal 像家裡的公佈欄（簡單共用）、NgRx 像銀行的總帳系統（嚴謹可追溯）——小店用公佈欄就好，大企業才需要總帳。",
+      "content": "跨元件共用的狀態怎麼管？2026 有兩條路。\n\n### 1. 輕量：Signal-based Service（多數情況夠）\n\n```typescript\n@Injectable({ providedIn: 'root' })\nexport class CartStore {\n  private _items = signal<string[]>([]);\n  items = this._items.asReadonly();           // 對外唯讀\n  count = computed(() => this._items().length);\n\n  add(item: string) {\n    this._items.update(list => [...list, item]);\n  }\n}\n```\n\n元件 「inject(CartStore)」 用、改 「add()」、畫面靠 signal 自動更新。**小～中型 app 這樣就夠**。\n\n### 2. 重量：NgRx（大型複雜用）\n\nNgRx 是 Redux 風格的狀態容器——**單一 store + action + reducer + effect**。好處是「狀態變化可追溯、可除錯、可時光回溯」，但樣板多、學習陡。\n\n- 用在：超大型、多人團隊、狀態複雜、需要嚴格可預測性\n- 別用在：小專案（殺雞用牛刀）\n\n### 3. 怎麼選\n\n| 規模 | 建議 |\n|---|---|\n| 小～中 | Signal service（先用這個）|\n| 大型複雜 | NgRx（或 NgRx SignalStore）|\n\n> 💡 **別一開始就上 NgRx**。先用 signal service，等狀態真的複雜到難管再考慮——過早上重武器是常見的過度工程。\n\n### 🎯 重點回顧\n\n- 輕量：signal service（signal + computed 包成 store）、多數夠用\n- 重量：NgRx（Redux 風、store/action/reducer、可追溯但樣板多）\n- 先用 signal、真的複雜再上 NgRx；別過度工程\n\n**☕ 用人話講**\n\n跨元件共用的狀態怎麼管？(1) **輕量：Signal-based Service**——把 signal + computed 包成一個 store service，元件 inject 來用、改了畫面自動更新；**小～中型 app 這樣就夠** (2) **重量：NgRx**——Redux 風格的狀態容器（store + action + reducer），好處是狀態變化可追溯、可除錯、可時光回溯，但樣板多、學習陡，用在超大型複雜專案。**一句話記住**：Signal 像家裡公佈欄（簡單共用）、NgRx 像銀行總帳系統（嚴謹可追溯）——小店用公佈欄就好、大企業才需要總帳。**別一開始就上 NgRx**，先用 signal service，等狀態真的複雜到難管再考慮，過早上重武器是常見的過度工程。\n",
+      "tip": {
+        "type": "concept",
+        "text": "新專案先用 signal service 管狀態，別反射性裝 NgRx。NgRx 強但樣板多，只在「狀態真的複雜、多人團隊、需要嚴格可追溯」時才值得。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "76.20.auto",
+          "language": "typescript",
+          "title": "Signal store（概念）",
+          "hint": "signal + computed 包成共用狀態。",
+          "initialCode": "// 模擬 Angular signal-based store\nclass CartStore {\n  items = [];\n  get count() { return this.items.length; }     // computed\n  add(item) { this.items = [...this.items, item]; }\n}\n\nconst store = new CartStore();   // providedIn: root => 全應用共用\nstore.add(\"蘋果\");\nstore.add(\"香蕉\");\nconsole.log(\"購物車:\", store.items, \"共\", store.count, \"件\");"
+        }
+      ],
+      "exercise": {
+        "question": "Angular 狀態管理該先用 Signal service 還是 NgRx？為什麼？",
+        "hint": "規模。",
+        "answer": "先用 Signal service（signal + computed 包成 store）——小到中型 app 足夠、輕量好懂。NgRx 樣板多、學習陡，只在超大型、複雜、需要嚴格可追溯的專案才值得；別一開始就上 NgRx（過度工程）。"
+      },
+      "outline": [
+        {
+          "text": "1. 輕量：Signal-based Service（多數情況夠）",
+          "level": 3
+        },
+        {
+          "text": "2. 重量：NgRx（大型複雜用）",
+          "level": 3
+        },
+        {
+          "text": "3. 怎麼選",
+          "level": 3
+        },
+        {
+          "text": "🎯 重點回顧",
+          "level": 3
+        }
+      ]
+    },
+    {
+      "id": "76.21",
+      "number": "LESSON 76.21",
+      "title": "變更偵測 + OnPush 效能",
+      "oneLineSummary": "Angular 靠變更偵測更新畫面；OnPush 策略 + Signal 讓它只在必要時更新、大幅提升效能。",
+      "analogy": "預設變更偵測像「全班每次都重新點名」（保險但慢）、OnPush 像「只點有舉手的人」（精準快）——Signal 讓它知道誰真的有變。",
+      "content": "Angular 怎麼知道「該更新畫面」？靠**變更偵測（Change Detection）**。\n\n### 1. 預設策略（保險但可能慢）\n\n預設下，任何事件（點擊、計時器、HTTP 回來）都會觸發整棵元件樹的檢查——保險，但元件多時可能慢。\n\n### 2. OnPush（只在必要時檢查）\n\n```typescript\nimport { Component, ChangeDetectionStrategy } from '@angular/core';\n\n@Component({\n  selector: 'app-card',\n  changeDetection: ChangeDetectionStrategy.OnPush,   // 關鍵\n  template: `{{ data().name }}`,\n})\nexport class Card { /* ... */ }\n```\n\n「OnPush」 元件**只在這些情況才檢查**：input 參考變了、自己發的事件、用到的 signal 變了、async pipe 收到新值。其他時候跳過——**省很多**。\n\n### 3. Signal 讓 OnPush 更強\n\nSignal 天生「知道誰用了我」——signal 變時，只更新真的用到它的元件。**Signal + OnPush** 是 2026 高效 Angular 的標配。\n\n### 4. 其他效能招\n\n- 「@for」 的 「track」（只動有變的列）\n- 「@defer」 延遲載入（畫面看不到的先不載）\n- 懶載入路由（第 13 課）\n\n> 💡 不用一開始就到處 OnPush。先把 「@for track」 做對、用 Signal，效能就有底；再對熱點元件加 OnPush。\n\n### 🎯 重點回顧\n\n- 變更偵測決定「何時更新畫面」；預設保險但可能慢\n- 「OnPush」：只在 input 變 / 自身事件 / signal 變 / async 新值時檢查\n- Signal + OnPush + 「@for track」 + 「@defer」 = 2026 高效組合\n\n**☕ 用人話講**\n\nAngular 靠**變更偵測**決定「何時更新畫面」。(1) 預設下任何事件都會檢查整棵元件樹——保險但元件多時會慢 (2) **OnPush 策略**讓元件**只在必要時檢查**（input 參考變了、自己發的事件、用到的 signal 變了、async pipe 新值），其他時候跳過、省很多 (3) **Signal + OnPush** 是 2026 高效標配——signal 天生知道「誰用了我」、變時只更新真的用到的元件。其他招：「@for」的「track」、「@defer」延遲載入、懶載入路由。**一句話記住**：預設變更偵測像「全班每次重新點名」（保險但慢）、OnPush 像「只點有舉手的人」（精準快），Signal 讓它知道誰真的有變。不用一開始到處 OnPush——先把 @for track + Signal 做對，再對熱點元件加 OnPush。\n",
+      "tip": {
+        "type": "concept",
+        "text": "效能優化順序：先用 Signal + @for 的 track（基本盤），再對「列表項、重複很多次」的元件加 OnPush。別一上來就全站 OnPush、容易踩到「畫面不更新」的雷。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "76.21.auto",
+          "language": "typescript",
+          "title": "OnPush 的概念",
+          "hint": "只在必要時更新、不每次都檢查。",
+          "initialCode": "// 模擬變更偵測策略\nfunction shouldUpdate(strategy, trigger) {\n  if (strategy === \"Default\") return true;   // 任何事件都檢查\n  // OnPush：只在這些情況更新\n  return [\"inputChanged\", \"ownEvent\", \"signalChanged\", \"asyncValue\"].includes(trigger);\n}\nconsole.log(\"Default + 隨便的事件 ->\", shouldUpdate(\"Default\", \"timer\"));\nconsole.log(\"OnPush + timer      ->\", shouldUpdate(\"OnPush\", \"timer\"));\nconsole.log(\"OnPush + signalChanged ->\", shouldUpdate(\"OnPush\", \"signalChanged\"));"
+        }
+      ],
+      "exercise": {
+        "question": "OnPush 變更偵測策略讓元件在哪些情況才更新？為什麼配 Signal 特別好？",
+        "hint": "必要時。",
+        "answer": "OnPush 元件只在：input 參考變、自己發的事件、用到的 signal 變、async pipe 收到新值時才檢查，其他跳過、省效能。配 Signal 特別好，因為 signal 天生知道「誰用了它」，變時只精準更新真的用到的元件。"
+      },
+      "outline": [
+        {
+          "text": "1. 預設策略（保險但可能慢）",
+          "level": 3
+        },
+        {
+          "text": "2. OnPush（只在必要時檢查）",
+          "level": 3
+        },
+        {
+          "text": "3. Signal 讓 OnPush 更強",
+          "level": 3
+        },
+        {
+          "text": "4. 其他效能招",
+          "level": 3
+        },
+        {
+          "text": "🎯 重點回顧",
+          "level": 3
+        }
+      ]
+    },
+    {
+      "id": "76.22",
+      "number": "LESSON 76.22",
+      "title": "SSR — Angular 的伺服器渲染與 hydration",
+      "oneLineSummary": "用 Angular SSR（ng add @angular/ssr）在伺服器先產 HTML，SEO 好、首屏快；hydration 讓伺服器畫面「接手」變可互動。",
+      "analogy": "像餐廳先把菜在廚房做好端上桌（SSR 首屏快、Google 讀得到），再讓你現場加調味（hydration 變可互動）——不用你坐下才開始煮。",
+      "content": "純前端渲染（CSR）首屏慢、SEO 差。**Angular SSR** 在伺服器先把 HTML 產好。\n\n### 1. 開啟 SSR\n\n建專案時選 SSR，或事後加：\n\n```text\nng add @angular/ssr\n```\n\n它會設定好伺服器端渲染 + hydration。\n\n### 2. CSR vs SSR\n\n- **CSR**：伺服器送空殼、瀏覽器跑 JS 才有內容（首屏慢、Google 可能看到空白）\n- **SSR**：伺服器先產好完整 HTML 送來（首屏快、SEO 好）\n\n### 3. Hydration（水合）\n\nSSR 送來的是「靜態 HTML」。**Hydration** 讓 Angular 在前端「接手」這份 HTML、綁上事件、變成可互動的 app——而且**不重畫**（non-destructive hydration），無縫銜接。\n\n### 4. 還有 SSG / 預渲染\n\n「ng build」 可對固定頁面做**預渲染（prerender）**——建置時就產好靜態 HTML，適合不常變的頁（首頁、文件）。\n\n> 💡 要 SEO（內容網站、電商、部落格）就開 SSR；純後台 / 內部工具沒 SEO 需求，CSR 也行。\n\n### 🎯 重點回顧\n\n- SSR：伺服器先產 HTML、首屏快 + SEO 好（「ng add @angular/ssr」）\n- Hydration：前端接手 SSR 的 HTML、綁事件變可互動、不重畫\n- 不常變的頁可預渲染（SSG）；要 SEO 就開 SSR\n\n**☕ 用人話講**\n\n純前端渲染（CSR）首屏慢、SEO 差，**Angular SSR** 讓伺服器先把 HTML 產好。(1) 「ng add @angular/ssr」一鍵開啟 (2) **CSR**：送空殼、瀏覽器跑 JS 才有內容（Google 可能看到空白）；**SSR**：伺服器先產好完整 HTML 送來（首屏快、SEO 好） (3) **Hydration（水合）**：前端「接手」SSR 送來的 HTML、綁上事件變可互動、而且不重畫，無縫銜接 (4) 不常變的頁還能預渲染（SSG）。**一句話記住**：像餐廳先把菜在廚房做好端上桌（SSR 首屏快、Google 讀得到），再讓你現場加調味（hydration 變可互動）。要 SEO（內容站、電商、部落格）就開 SSR；純後台工具沒 SEO 需求、CSR 也行。\n",
+      "tip": {
+        "type": "concept",
+        "text": "判斷要不要 SSR：有 SEO 需求（內容、電商、行銷頁）→ 開 SSR；純內部後台 / 登入後才看的工具 → CSR 就夠，不用多花伺服器資源。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "76.22.auto",
+          "language": "typescript",
+          "title": "CSR vs SSR 首屏",
+          "hint": "誰先看到內容。",
+          "initialCode": "// CSR vs SSR：誰先有內容\nconst data = { title: \"Angular 教學\" };\n\n// CSR：先送空殼，JS 跑完才填（Google 可能看到空白）\nfunction csr() { return \"<app-root></app-root>  <!-- 內容靠 JS 補 -->\"; }\n// SSR：伺服器先填好內容送來\nfunction ssr(d) { return \"<app-root><h1>\" + d.title + \"</h1></app-root>\"; }\n\nconsole.log(\"CSR 送出:\", csr());\nconsole.log(\"SSR 送出:\", ssr(data));"
+        }
+      ],
+      "exercise": {
+        "question": "Angular SSR 解決什麼問題？hydration 做什麼？",
+        "hint": "首屏/SEO、接手。",
+        "answer": "SSR 在伺服器先產好完整 HTML，解決 CSR 首屏慢、SEO 差（Google 看到空白）的問題。Hydration 讓 Angular 在前端「接手」這份伺服器 HTML、綁上事件變成可互動的 app，且不重畫、無縫銜接。"
+      },
+      "outline": [
+        {
+          "text": "1. 開啟 SSR",
+          "level": 3
+        },
+        {
+          "text": "2. CSR vs SSR",
+          "level": 3
+        },
+        {
+          "text": "3. Hydration（水合）",
+          "level": 3
+        },
+        {
+          "text": "4. 還有 SSG / 預渲染",
+          "level": 3
+        },
+        {
+          "text": "🎯 重點回顧",
+          "level": 3
+        }
+      ]
+    },
+    {
+      "id": "76.23",
+      "number": "LESSON 76.23",
+      "title": "測試 — 單元測試與 E2E",
+      "oneLineSummary": "Angular 內建測試：單元測試用 TestBed + Jasmine/Karma（或改 Vitest）、E2E 用 Playwright/Cypress；CLI 一鍵 ng test。",
+      "analogy": "像出貨前的品管線——單元測試驗「每個零件對不對」、E2E 驗「整台組起來能不能用」，CLI 幫你把測試環境都配好。",
+      "content": "Angular 對測試支援完整、CLI 一鍵跑。\n\n### 1. 單元測試（元件 / service）\n\n```typescript\nimport { TestBed } from '@angular/core/testing';\nimport { CartService } from './cart.service';\n\ndescribe('CartService', () => {\n  let service: CartService;\n\n  beforeEach(() => {\n    TestBed.configureTestingModule({});\n    service = TestBed.inject(CartService);\n  });\n\n  it('加入商品後數量 +1', () => {\n    service.add('蘋果');\n    expect(service.list().length).toBe(1);\n  });\n});\n```\n\n跑：「ng test」。「TestBed」 是 Angular 的測試工具、幫你建測試用的 DI 環境。\n\n### 2. 工具\n\n- **單元**：Jasmine（斷言）+ Karma（跑），2026 很多改用 **Vitest**（更快）\n- **E2E**：Playwright / Cypress（模擬真人從頭點到尾）\n\n### 3. 測什麼\n\n- **Service**：邏輯（最好測、值得多寫）\n- **元件**：渲染、互動（用 「TestBed」 + 「fixture」 模擬）\n- **E2E**：關鍵流程（登入、下單）跑一遍\n\n### 4. mock 依賴\n\n測試時可以「注入假的 service」替換真的（DI 的好處）——這樣測元件時不用真的打 API。\n\n> 💡 別追求 100% 覆蓋率。先把 **service 的核心邏輯**跟**關鍵 E2E 流程**測起來，CP 值最高。\n\n### 🎯 重點回顧\n\n- 單元測試：「TestBed」 + Jasmine/Karma（或 Vitest）、「ng test」 跑\n- E2E：Playwright / Cypress 模擬真人操作\n- DI 讓你 mock 假 service；先測 service 邏輯 + 關鍵流程\n\n**☕ 用人話講**\n\nAngular 對測試支援完整、CLI 一鍵跑。(1) **單元測試**用 **「TestBed」**（建測試用的 DI 環境）+ Jasmine（斷言）+ Karma（跑），2026 很多改用更快的 **Vitest**，指令「ng test」 (2) **E2E** 用 Playwright / Cypress 模擬真人從頭點到尾 (3) 靠 DI 可以「**注入假的 service**」替換真的、測元件時不用真打 API。**一句話記住**：像出貨前的品管線——單元測試驗「每個零件對不對」、E2E 驗「整台組起來能不能用」，CLI 幫你把測試環境配好。別追求 100% 覆蓋率，先把 **service 核心邏輯**跟**關鍵 E2E 流程**（登入、下單）測起來，CP 值最高。\n",
+      "tip": {
+        "type": "practical",
+        "text": "測試優先順序：service 的核心邏輯（最好測、最值得）→ 關鍵 E2E 流程 → 複雜元件。別為了覆蓋率硬測一堆 getter/setter。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "76.23.auto",
+          "language": "typescript",
+          "title": "斷言的概念",
+          "hint": "expect(...).toBe(...) 驗結果。",
+          "initialCode": "// 模擬 Angular 單元測試\nclass CartService {\n  items = [];\n  add(x) { this.items.push(x); }\n}\n\n// it(\"加入後 +1\")\nconst service = new CartService();\nservice.add(\"蘋果\");\nconst pass = service.items.length === 1;   // expect(...).toBe(1)\nconsole.log(pass ? \"✅ 測試通過\" : \"❌ 測試失敗\");"
+        }
+      ],
+      "exercise": {
+        "question": "Angular 單元測試的 TestBed 是做什麼的？測試最該優先測什麼？",
+        "hint": "DI 環境、邏輯。",
+        "answer": "TestBed 幫你建立測試用的依賴注入（DI）環境，讓你能注入 service / 元件（還能 mock 假的依賴）。最該優先測 service 的核心邏輯，再加上關鍵 E2E 流程（登入、下單），CP 值最高，別追求 100% 覆蓋率。"
+      },
+      "outline": [
+        {
+          "text": "1. 單元測試（元件 / service）",
+          "level": 3
+        },
+        {
+          "text": "2. 工具",
+          "level": 3
+        },
+        {
+          "text": "3. 測什麼",
+          "level": 3
+        },
+        {
+          "text": "4. mock 依賴",
+          "level": 3
+        },
+        {
+          "text": "🎯 重點回顧",
+          "level": 3
+        }
+      ]
+    },
+    {
+      "id": "76.24",
+      "number": "LESSON 76.24",
+      "title": "Angular vs React vs Vue 全面對比",
+      "oneLineSummary": "三大框架對比：React 最自由生態最大、Vue 最好上手、Angular 最完整最企業；用 TypeScript / 全配 / 約定是 Angular 的標誌。",
+      "analogy": "像三款車——React 是改裝平台（零件多自己組）、Vue 是好開的家庭房車、Angular 是出廠全配的商務車（規矩多但穩、大公司愛）。",
+      "content": "學完 Angular，把三大框架放一起對比，幫你理解定位、選對工具。\n\n### 1. 核心對比\n\n| 面向 | React | Vue | Angular |\n|---|---|---|---|\n| 本質 | 函式庫 | 漸進式框架 | 完整框架 |\n| 語言 | JS/TS | JS/TS | **原生 TS** |\n| 上手 | 中 | **最易** | 較陡 |\n| 全配 | 自己拼 | 中 | **全內建** |\n| 響應式 | 重新執行 + hooks | ref/reactive | **Signals** |\n| 生態 | **最大** | 大 | 完整官方 |\n| 適合 | 彈性 / 新創 | 中小 / 快速 | **大型 / 企業** |\n\n### 2. 心智模型差異\n\n- **React**：UI = f(state)、重新執行 + 你管副作用\n- **Vue**：響應式自動追蹤、模板直覺\n- **Angular**：DI + 約定 + 型別、結構先行\n\n### 3. 怎麼選\n\n- 個人 / 新創 / 要最大生態 → **React**\n- 想快速上手 / 中小專案 → **Vue**\n- 大型 / 企業 / 多人團隊 / 重型別與一致性 → **Angular**\n\n> 💡 三個都會最強，但**先選一個學透**。會了一個，另外兩個的觀念（元件、響應式、路由）八成互通、上手很快。\n\n### 🎯 重點回顧\n\n- React 自由生態大、Vue 最好上手、Angular 最完整最企業\n- Angular 標誌：原生 TS + 全配 + DI + Signals + 約定\n- 先選一個學透、觀念互通；按團隊 / 專案規模選\n\n**☕ 用人話講**\n\n學完 Angular，把三大框架放一起看清楚定位：**React** 最自由、生態最大、什麼都自己拼（適合彈性 / 新創）；**Vue** 最好上手、模板直覺（適合中小 / 快速）；**Angular** 最完整、最企業——**原生 TypeScript + 全配（路由/表單/HTTP/DI 內建）+ Signals + 約定統一**（適合大型 / 多人團隊 / 長期維護）。**一句話記住**：像三款車——React 是改裝平台（零件多自己組）、Vue 是好開的家庭房車、Angular 是出廠全配的商務車（規矩多但穩、大公司愛）。三個都會最強，但**先選一個學透**——會了一個，另外兩個的核心觀念（元件、響應式、路由、狀態）八成互通、上手很快。\n",
+      "tip": {
+        "type": "concept",
+        "text": "別糾結「學哪個」糾結到不開始。先選一個學透做出作品，三大框架的觀念互通，之後要學第二個很快。職缺：台灣 React 最多、企業 / 外商 Angular 不少。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "76.24.auto",
+          "language": "typescript",
+          "title": "三大框架對比",
+          "hint": "各有定位、按需求選。",
+          "initialCode": "// 三大框架對比\nconst compare = {\n  React:   { 上手: \"中\", 全配: \"自己拼\", 適合: \"彈性 / 新創 / 最大生態\" },\n  Vue:     { 上手: \"最易\", 全配: \"中\",   適合: \"中小 / 快速上手\" },\n  Angular: { 上手: \"較陡\", 全配: \"全內建\", 適合: \"大型 / 企業 / 重型別\" },\n};\nfor (const [k, v] of Object.entries(compare)) {\n  console.log(k.padEnd(8) + \" 上手:\" + v.上手 + \" 全配:\" + v.全配 + \" -> \" + v.適合);\n}"
+        }
+      ],
+      "exercise": {
+        "question": "Angular 相比 React / Vue 最鮮明的三個特色是什麼？",
+        "hint": "TS、全配、約定。",
+        "answer": "原生 TypeScript（強型別）、全配（路由/表單/HTTP/DI 都官方內建、不用自己選套件）、約定統一（大團隊風格一致、好維護）。加上 Signals 響應式，這些讓它特別適合大型企業專案。"
+      },
+      "outline": [
+        {
+          "text": "1. 核心對比",
+          "level": 3
+        },
+        {
+          "text": "2. 心智模型差異",
+          "level": 3
+        },
+        {
+          "text": "3. 怎麼選",
+          "level": 3
+        },
+        {
+          "text": "🎯 重點回顧",
+          "level": 3
+        }
+      ]
+    },
+    {
+      "id": "76.25",
+      "number": "LESSON 76.25",
+      "title": "整章實戰：Todo App（Standalone + Signals）",
+      "oneLineSummary": "整合全章：用 Standalone Component + Signals + Service + 表單做一個 Todo App，這就是現代 Angular 的真實樣貌。",
+      "analogy": "像期末作品——把這章的零件（元件、signal、service、表單、控制流）組成一台真的能跑的小應用。",
+      "content": "把整章學的串成一個 Todo App——現代 Angular 的縮影。\n\n### 1. 用到的整章觀念\n\n- **Standalone Component**（第 3 課）\n- **Signals + computed**（第 6、10 課）管狀態\n- **Service + DI**（第 9 課）放共用邏輯\n- **@for / @if**（第 5 課）渲染清單\n- **(click) / [(ngModel)]**（第 4、7 課）互動\n\n### 2. 核心程式（精簡版）\n\n```typescript\nimport { Component, signal, computed } from '@angular/core';\nimport { FormsModule } from '@angular/forms';\n\ninterface Todo { id: number; text: string; done: boolean; }\n\n@Component({\n  selector: 'app-todo',\n  standalone: true,\n  imports: [FormsModule],\n  template: `\n    <input [(ngModel)]=\"draft\" (keyup.enter)=\"add()\">\n    <button (click)=\"add()\">新增</button>\n    <p>未完成：{{ remaining() }} 件</p>\n    <ul>\n      @for (t of todos(); track t.id) {\n        <li>\n          <input type=\"checkbox\" [checked]=\"t.done\" (change)=\"toggle(t.id)\">\n          {{ t.text }}\n        </li>\n      } @empty {\n        <li>還沒有待辦、新增一個吧</li>\n      }\n    </ul>\n  `,\n})\nexport class TodoApp {\n  draft = '';\n  todos = signal<Todo[]>([]);\n  remaining = computed(() => this.todos().filter(t => !t.done).length);\n\n  add() {\n    if (!this.draft.trim()) return;\n    this.todos.update(list => [...list, { id: Date.now(), text: this.draft, done: false }]);\n    this.draft = '';\n  }\n  toggle(id: number) {\n    this.todos.update(list => list.map(t => t.id === id ? { ...t, done: !t.done } : t));\n  }\n}\n```\n\n### 3. 下一步\n\n把 todos 抽到 service（跨元件共用）、接 HttpClient 存後端、加路由分頁（全部 / 未完成）——就是完整 app。部署用 「ng build」 + 任何靜態 / SSR 主機。\n\n### 🎯 重點回顧\n\n- 整章串起來：Standalone + Signals + computed + Service + @for + ngModel\n- signal 管狀態、computed 算衍生（未完成數）、update 改清單\n- 下一步：抽 service、接 API、加路由 → 完整可上線 app\n\n**☕ 用人話講**\n\n整章總整合——用 **Standalone Component + Signals + Service + 表單** 做一個 Todo App，這就是現代 Angular 的真實樣貌。它把這章學的全用上：**signal** 管狀態（todos 清單）、**computed** 算衍生（未完成幾件）、**update** 改清單、**@for/@empty** 渲染、**[(ngModel)]** 綁輸入、**(click)** 互動。**一句話記住**：像期末作品——把元件、signal、service、表單、控制流組成一台真的能跑的小應用；再把 todos 抽到 service（跨元件共用）、接 HttpClient 存後端、加路由分頁，就是完整可上線的 app，最後 `ng build` 打包丟上主機。學到這，你已經會用現代 Angular 做出東西了。\n",
+      "tip": {
+        "type": "practical",
+        "text": "現代 Angular 的「黃金組合」：Standalone Component + Signals（狀態）+ Service（共用邏輯）+ @if/@for（模板）。從這個 Todo 骨架長出去就是完整 app。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "76.25.auto",
+          "language": "typescript",
+          "title": "Todo 核心邏輯",
+          "hint": "signal 管清單、computed 算未完成。",
+          "initialCode": "// Todo App 核心（概念示意）\nlet todos = [];\nconst add = (text) => { todos = [...todos, { id: Date.now(), text, done: false }]; };\nconst toggle = (id) => { todos = todos.map(t => t.id === id ? { ...t, done: !t.done } : t); };\nconst remaining = () => todos.filter(t => !t.done).length;  // computed\n\nadd(\"學 Angular\");\nadd(\"做 Todo App\");\ntoggle(todos[0].id);\nconsole.log(\"清單:\", todos.map(t => (t.done ? \"✓\" : \"□\") + t.text).join(\"  \"));\nconsole.log(\"未完成:\", remaining(), \"件\");"
+        }
+      ],
+      "exercise": {
+        "question": "現代 Angular 做一個小 app 的「黃金組合」是哪幾個？",
+        "hint": "4 個。",
+        "answer": "Standalone Component（元件）+ Signals（管狀態、computed 算衍生）+ Service + DI（共用邏輯/狀態）+ @if/@for 控制流（模板）。再加表單（ngModel / 響應式）跟路由就是完整 app。"
+      },
+      "outline": [
+        {
+          "text": "1. 用到的整章觀念",
+          "level": 3
+        },
+        {
+          "text": "2. 核心程式（精簡版）",
+          "level": 3
+        },
+        {
+          "text": "3. 下一步",
+          "level": 3
+        },
+        {
+          "text": "🎯 重點回顧",
+          "level": 3
+        }
+      ]
+    },
+    {
+      "id": "76.26",
+      "number": "LESSON 76.26",
+      "title": "Angular 生態 + 學習路徑 + 職涯",
+      "oneLineSummary": "Angular 生態：Angular Material（UI）、NgRx（狀態）、Nx（monorepo）；學習照「核心→Signals→RxJS→實戰」走；企業 / 外商職缺多。",
+      "analogy": "像認識一座城市——不只市中心（Angular 本體），連商圈（Material/NgRx/Nx）、交通（CLI/SSR）都摸熟，才在這座城市混得開。",
+      "content": "收尾——Angular 的生態、學習路線、職涯。\n\n### 1. 必認識的生態\n\n- **Angular Material**：Google 官方 UI 元件庫（按鈕、表格、對話框…）\n- **NgRx**：大型狀態管理（含 SignalStore）\n- **Nx**：monorepo / 大型專案工具（企業愛用）\n- **Angular CDK**：做自訂元件的底層工具\n- **Tailwind**：也能跟 Angular 搭\n\n### 2. 學習路徑\n\n1. **核心**：元件 / 模板綁定 / 控制流（本章 1-5）\n2. **響應式**：Signals + computed + effect（6、10）\n3. **架構**：Service + DI + 路由（9、13）\n4. **進階**：RxJS、表單、SSR、效能（12、17、21、22）\n5. **實戰**：做 2-3 個專案（Todo → 後台 → 接 API 的完整 app）\n\n### 3. 職涯 / 接案\n\n- **企業 / 外商 / 金融 / 政府** 專案大量用 Angular（穩定、長期維護）\n- 台灣 React 職缺最多，但 **Angular 在中大型企業 / 外商有穩定需求**、競爭者相對少\n- 會 Angular + TypeScript + RxJS 是企業前端的硬通貨\n\n### 4. 持續跟進\n\nAngular 每 6 個月一個大版本、官方部落格 + 「ng update」 跟著升即可。Signals / 新控制流還在持續強化中。\n\n> 💡 學完這章，你已經會「現代 Angular」。接下來**做專案**最重要——把 Todo 擴成接後端、有路由、有登入的完整 app，作品比證書有說服力。\n\n### 🎯 重點回顧\n\n- 生態：Angular Material（UI）/ NgRx（狀態）/ Nx（monorepo）/ CDK\n- 路線：核心 → Signals → 架構(DI/路由) → 進階(RxJS/SSR) → 實戰\n- 職涯：企業 / 外商需求穩、競爭少；會 Angular+TS+RxJS 是硬通貨\n\n**☕ 用人話講**\n\n收尾看 Angular 的生態、學習路線、職涯。(1) **生態**：Angular Material（官方 UI 元件庫）、NgRx（大型狀態）、Nx（monorepo、企業愛）、CDK（做自訂元件） (2) **學習路徑**：核心（元件/綁定/控制流）→ 響應式（Signals）→ 架構（Service/DI/路由）→ 進階（RxJS/表單/SSR/效能）→ **做 2-3 個專案** (3) **職涯**：企業、外商、金融、政府的大型專案大量用 Angular（穩定、長期維護）；台灣 React 職缺最多，但 **Angular 在中大型企業 / 外商有穩定需求、競爭者相對少**，會 Angular + TS + RxJS 是企業前端的硬通貨。**一句話記住**：像認識一座城市——不只市中心（Angular 本體），連商圈（Material/NgRx/Nx）、交通（CLI/SSR）都摸熟才混得開；學完這章你已會「現代 Angular」，接下來**做專案**最重要，作品比證書有說服力。\n",
+      "tip": {
+        "type": "concept",
+        "text": "學完別停在看教學——把這章的 Todo 擴成「接後端 API + 路由 + 登入」的完整 app，再加上 Angular Material 做 UI。一個完整作品，求職 / 接案最有說服力。"
+      },
+      "xp": 10,
+      "playgrounds": [
+        {
+          "key": "76.26.auto",
+          "language": "typescript",
+          "title": "Angular 生態地圖",
+          "hint": "本體 + 周邊工具。",
+          "initialCode": "// Angular 生態速覽\nconst ecosystem = {\n  \"Angular Material\": \"官方 UI 元件庫\",\n  \"NgRx\": \"大型狀態管理（Redux 風）\",\n  \"Nx\": \"monorepo / 大型專案工具\",\n  \"Angular CDK\": \"做自訂元件的底層工具\",\n};\nfor (const [name, use] of Object.entries(ecosystem)) {\n  console.log(name.padEnd(18) + \"-> \" + use);\n}\nconsole.log(\"\\n學習路線：核心 -> Signals -> DI/路由 -> RxJS/SSR -> 做專案\");"
+        }
+      ],
+      "exercise": {
+        "question": "Angular 的官方 UI 元件庫叫什麼？學完 Angular 後最該做什麼來提升職涯競爭力？",
+        "hint": "Material、專案。",
+        "answer": "官方 UI 元件庫是 Angular Material。學完後最該「做完整專案」——把練習擴成接後端 API、有路由、有登入的 app（可搭 Angular Material 做 UI），一個完整作品比證書更有說服力，尤其 Angular 在企業 / 外商需求穩、競爭相對少。"
+      },
+      "outline": [
+        {
+          "text": "1. 必認識的生態",
+          "level": 3
+        },
+        {
+          "text": "2. 學習路徑",
+          "level": 3
+        },
+        {
+          "text": "3. 職涯 / 接案",
+          "level": 3
+        },
+        {
+          "text": "4. 持續跟進",
+          "level": 3
+        },
+        {
+          "text": "🎯 重點回顧",
+          "level": 3
+        }
+      ]
+    }
+  ]
+}
