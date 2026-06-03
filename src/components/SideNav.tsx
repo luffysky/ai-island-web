@@ -219,7 +219,7 @@ export function SideNav() {
       <button
         onClick={() => setOpen(true)}
         aria-label="開啟導覽"
-        className="fixed left-3 top-20 z-30 p-2 rounded-lg bg-bg-card border border-border hover:bg-bg-elevated transition shadow-lg lg:hidden"
+        className="fixed left-3 top-20 z-30 p-2 rounded-lg bg-bg-card border border-border hover:bg-bg-elevated transition shadow-lg"
       >
         <Menu size={18} />
       </button>
