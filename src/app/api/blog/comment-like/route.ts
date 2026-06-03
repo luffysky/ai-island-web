@@ -8,7 +8,10 @@ export async function POST(req: NextRequest) {
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
   const { comment_id } = await req.json();
-  if (!comment_id) return NextResponse.json({ error: "missing_id" }, { status: 400 });
+  const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (typeof comment_id !== "string" || !UUID.test(comment_id)) {
+    return NextResponse.json({ error: "invalid_id" }, { status: 400 });
+  }
 
   // 已按過？
   const { data: existing } = await supabase

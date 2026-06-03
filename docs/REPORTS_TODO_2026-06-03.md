@@ -96,7 +96,7 @@
 
 ## 🛠️ G. Admin 後台剩 5 項
 - [ ] LT-17 效能 ops（Sentry / PostHog）
-- [ ] P4-05 KPI 報表 ↔ cron/kpi-email 確認 wired
+- [x] P4-05 KPI 報表 ↔ cron/kpi-email **已查證完整 wired**：`/api/cron/kpi-email` 有 cron auth + 算每日/每週 KPI（註冊/DAU/WAU/訂閱/AI/錯誤/lesson/營收 + 期比）+ Resend 寄 HTML/text 給 ADMIN_EMAILS + 連後台 KPI 頁。只差林董設 cron-job.org 排程 + `ADMIN_EMAILS`/`RESEND_API_KEY`（在 A1）
 - [ ] P4-19 教師/助教 role admin 管理介面
 - [ ] P4-20 學員作業批改介面
 

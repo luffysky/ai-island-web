@@ -8,7 +8,10 @@ export async function POST(req: NextRequest) {
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
   const { reply_id } = await req.json();
-  if (!reply_id) return NextResponse.json({ error: "missing_id" }, { status: 400 });
+  const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (typeof reply_id !== "string" || !UUID.test(reply_id)) {
+    return NextResponse.json({ error: "invalid_id" }, { status: 400 });
+  }
 
   const { data: existing } = await supabase
     .from("forum_reply_likes")
