@@ -158,6 +158,8 @@ export function AITutorWidget({
   const [sending, setSending] = useState(false);
   // 上傳的圖片（截圖 / 相簿 / 拍照）— 跟 user message 一起送
   const [images, setImages] = useState<Array<{ id: string; base64: string; mediaType: string; previewUrl: string }>>([]);
+  // 拖拉圖片到聊天視窗時的高亮提示
+  const [isDraggingImage, setIsDraggingImage] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [error, setError] = useState("");
@@ -275,6 +277,25 @@ export function AITutorWidget({
       files.forEach((f) => dt.items.add(f));
       handleFiles(dt.files);
     }
+  };
+
+  // 拖拉圖片到聊天視窗直接上傳（桌面版）
+  const handleDragOver = (e: React.DragEvent) => {
+    if (!Array.from(e.dataTransfer.types).includes("Files")) return;
+    e.preventDefault();
+    if (authState === "in" && images.length < 5 && !isDraggingImage) setIsDraggingImage(true);
+  };
+  const handleDragLeave = (e: React.DragEvent) => {
+    // 移到子元素不算離開；真的離開面板才關提示
+    if (e.currentTarget.contains(e.relatedTarget as Node)) return;
+    setIsDraggingImage(false);
+  };
+  const handleDrop = (e: React.DragEvent) => {
+    if (!Array.from(e.dataTransfer.types).includes("Files")) return;
+    e.preventDefault();
+    setIsDraggingImage(false);
+    if (authState !== "in") return;
+    handleFiles(e.dataTransfer.files);
   };
 
   const send = async () => {
@@ -456,6 +477,9 @@ export function AITutorWidget({
       {open && (
         <div
           ref={panelRef}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
           style={{
             // clamp(最小, 動態, 最大)
             //   - 最小 280px：panel 太窄塞不下內容、體驗更差
@@ -467,6 +491,15 @@ export function AITutorWidget({
           }}
           className="fixed bottom-2 right-2 z-50 bg-bg-card/95 backdrop-blur-xl border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-tutor-panel-in"
         >
+          {/* 拖拉圖片提示遮罩 */}
+          {isDraggingImage && (
+            <div className="absolute inset-0 z-[60] flex items-center justify-center bg-emerald-500/15 backdrop-blur-sm border-2 border-dashed border-emerald-400 rounded-2xl pointer-events-none">
+              <div className="text-emerald-300 font-semibold text-sm flex flex-col items-center gap-1">
+                <span className="text-2xl">🖼️</span>
+                放開以上傳圖片（最多 5 張）
+              </div>
+            </div>
+          )}
           <style jsx global>{`
             @keyframes tutor-panel-in {
               from { opacity: 0; transform: translateY(16px) scale(0.96); }
@@ -879,7 +912,7 @@ export function AITutorWidget({
                 onClick={() => fileInputRef.current?.click()}
                 disabled={authState !== "in" || sending || images.length >= 5}
                 className="p-2 border border-border rounded-lg hover:border-accent hover:bg-accent/5 transition disabled:opacity-30"
-                title={images.length >= 5 ? "最多 5 張" : "上傳截圖 / 相簿 / 拍照（也可 Ctrl+V 貼上）"}
+                title={images.length >= 5 ? "最多 5 張" : "上傳截圖 / 相簿 / 拍照（也可 Ctrl+V 貼上、或直接把圖片拖進視窗）"}
               >
                 <ImagePlus size={16} />
               </button>
