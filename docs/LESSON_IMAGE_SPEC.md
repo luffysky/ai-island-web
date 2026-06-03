@@ -42,7 +42,7 @@
 | `ch00_terminal_open.png` | 0.x / 26.0 | 怎麼打開終端機：Windows（Win→cmd/PowerShell）、Mac（Cmd+空白→Terminal）。雙欄對照截圖。|
 | `ch00_git_first_push.png` | 0.3 | Git 第一次 push 五步：`git init` → `add` → `commit` → 連 GitHub remote → `push`。流程圖 + 指令。|
 | `ch00_github_signup.png` | 0.3 | GitHub 註冊 + 建 repo + 拿 remote URL 截圖步驟。|
-| `ch00_vscode_ui.png` | 0.4 | **VS Code 介面五大區塊導覽**：選單列 / 左側圖示（檔案總管、搜尋、Git、偵錯、擴充）/ 編輯區 / 終端機 / 狀態列，紅框 + 編號標註。對應 0.4 的 ASCII 介面圖。|
+| ✅ `ch00.04_vscode_interface.png` | 0.4 | **（已佈線）** VS Code 介面五大區塊導覽。林董實際檔名 `ch00.04_vscode_interface.png`（原規劃 `ch00_vscode_ui`）。0.4 另已佈 `ch00.01_vscode_install`（安裝）/ `ch00.03_vscode_extensions`（擴充）/ `ch00.05_first_project_setup`（建第一個專案）。|
 | `ch01_devtools_elements.png` | 1.1 | Chrome F12 開 Elements、游標移到頁面元素看對應 HTML 標籤。紅框標 Elements 面板。|
 | `ch08_create_react.png` | 8.2 | **建 React 專案（現代版）**：`npm create vite@latest` → 選 `react-ts` → `cd` → `npm install` → `npm run dev`。終端機編號步驟 + 一句「過來人：以前用 `npx create-react-app`、現已停更，改用 Vite」。|
 | `ch08_create_react_cra.png` | 8.2 | **（歷史對照、可選）** 舊的 `npx create-react-app my-app` 長怎樣 + 為什麼 2026 別再用（慢、停止維護）。對照 D-1 工具演進。|
@@ -57,7 +57,7 @@
 | `ch31_install_node.png` | 31.1 | 裝 Node（建議 nvm）+ `node -v` / `npm -v` 確認。|
 | `ch39_line_console.png` | 39.2 | LINE Developers Console 建 channel + 官方帳號後台設定截圖。|
 | `ch25_dns_setup.png` | 25.x | 網域 DNS 設定：A / CNAME 紀錄怎麼填、指到主機 + 等生效。|
-| `ch_vscode_zhtw.png` | 0.4 | **（已有範例 example/pic/6）** VS Code 裝繁體中文語言包步驟（改放 ch00 0.4，內容已加在該課）。檔案放 `public/lesson-img/ch00/`。|
+| ✅ `ch00.02_vscode_zhtw.png` | 0.4 | **（已佈線）** VS Code 裝繁體中文語言包步驟。林董實際檔名 `ch00.02_vscode_zhtw.png`（原規劃 `ch_vscode_zhtw`）。|
 
 ---
 
@@ -181,12 +181,16 @@
 | `ch10_nuxt_structure.png` | 10.16 | **Nuxt 3 檔案結構 + 自動 import**：`pages/` 自動路由、`components/` 自動匯入（不用寫 import），跟 Next 對照。|
 | `ch10_nuxt_data_fetching.png` | 10.17 | **useFetch / useAsyncData / $fetch 決策樹**：三者差別 + 什麼時候用哪個。|
 | `ch10_routerules_render.png` | 10.19 | **Nuxt routeRules**：一個設定檔讓不同路由各自選渲染模式（這頁 SSG、那頁 SSR、另一頁 ISR）對照圖。|
-| `ch10_next_vs_nuxt.png` | 10.21 | **Next vs Nuxt 對照**：React 陣營 vs Vue 陣營、心智模型 80% 相同、各自殺手鐧（Next: RSC / Nuxt: routeRules + auto import）。|
+| ✅ `ch10_next_vs_nuxt.png` | 10.21 | **（已佈線）** Next vs Nuxt 對照：React 陣營 vs Vue 陣營、心智模型 80% 相同、各自殺手鐧（Next: RSC / Nuxt: routeRules + auto import）。|
 
 ### D-6. 前端全景（收尾大圖）
 | 檔名 | lesson | 內容 |
 |---|---|---|
-| `ch08_frontend_framework_roadmap.png` | 8.1（開頭）| **🔴 前端三大框架路線圖**（林董要插在 ch08 開頭，內容已加在 8.1）：React（Ch08）/ Vue（Ch09）/ Angular（Ch09c）三者並列——各自定位（自由 / 易上手 / 企業全配）、職缺、怎麼選的決策路線、「先學一個再說」的學習動線。檔案放 `public/lesson-img/ch08/`。|
+| ✅ `ch08_frontend_framework_roadmap1.png` + `2.png` | 8.1（開頭）| **（已佈線）** 前端三大框架路線圖。林董拆成兩張（上 / 下），8.1 開頭並列插入。React（Ch08）/ Vue（Ch09）/ Angular（Ch09c）三者定位、職缺、怎麼選、學習動線。|
+| ✅ `ch08_react_ecosystem_2026.png` | 8.1 | **（已佈線）** React 生態系 2026，放「完整前端地圖」段開頭。|
+| ✅ `ch09_vue_ecosystem_2026.png` | 9.1 | **（已佈線）** Vue 生態系 2026。|
+| ✅ `ch09c_angular_ecosystem_2026.png` | 76.1（Ch09c）| **（已佈線）** Angular 生態系 2026。|
+| ✅ `ch09b_vite_react_vue.png` | 74.1（Ch09b）| **（已佈線）** Vite × React / Vue。|
 | `ch08_frontend_landscape_2026.png` | 8.1 | **2026 前端全景路線圖**：框架（React / Vue / Svelte / Solid）→ meta-framework（Next / Nuxt / SvelteKit）→ 建置工具（Vite）→ 該怎麼選的決策路線。新手入門地圖。|
 
 ---
