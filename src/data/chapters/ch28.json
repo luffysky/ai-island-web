@@ -36,9 +36,9 @@
         {
           "key": "28.1.auto",
           "language": "python",
-          "title": "試試看",
-          "initialCode": "# Python 範例\ndef fibonacci(n):\n    a, b = 0, 1\n    for _ in range(n):\n        yield a\n        a, b = b, a + b\n\nprint(list(fibonacci(10)))\n\n# List comprehension\nsquares = [x**2 for x in range(1, 6)]\nprint(\"平方:\", squares)",
-          "hint": "改 code、按執行看結果"
+          "title": "爬蟲的核心：從 HTML 抽出資料",
+          "initialCode": "# 爬蟲做的事：拿到網頁 HTML -> 抽出你要的資料\nhtml = \"<h1>iPhone 16</h1><span class='price'>NT$ 29900</span>\"\n\n# 真實爬蟲用 BeautifulSoup 解析，這裡先用字串方法示意概念\ntitle = html.split(\"<h1>\")[1].split(\"</h1>\")[0]\nprice = html.split(\"class='price'>\")[1].split(\"</span>\")[0]\n\nprint(\"商品：\", title)\nprint(\"價格：\", price)",
+          "hint": "真實爬蟲用 BeautifulSoup，這裡用字串方法示意「抽取」的概念。"
         }
       ],
       "exercise": {

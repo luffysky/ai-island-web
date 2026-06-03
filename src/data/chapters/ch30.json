@@ -37,9 +37,9 @@
         {
           "key": "30.1.auto",
           "language": "python",
-          "title": "試試看",
-          "initialCode": "# Python 範例\ndef fibonacci(n):\n    a, b = 0, 1\n    for _ in range(n):\n        yield a\n        a, b = b, a + b\n\nprint(list(fibonacci(10)))\n\n# List comprehension\nsquares = [x**2 for x in range(1, 6)]\nprint(\"平方:\", squares)",
-          "hint": "改 code、按執行看結果"
+          "title": "爬蟲語言怎麼選",
+          "initialCode": "# 爬蟲語言選擇：開發速度 vs 執行效能\nlangs = {\n    \"Python\":  \"開發最快、生態最全（BS4 / Scrapy），中小規模首選\",\n    \"Node.js\": \"JS 生態、動態網站順手\",\n    \"Go\":      \"高併發、每秒幾萬請求、省記憶體\",\n    \"Rust\":    \"極致效能與安全、學習較陡\",\n}\nfor name, why in langs.items():\n    print(f\"{name}: {why}\")\nprint(\"\\n結論：先用 Python，量大到撐不住再考慮 Go / Rust\")",
+          "hint": "開發速度 vs 執行效能：先用 Python，量大到撐不住再換。"
         }
       ],
       "exercise": {

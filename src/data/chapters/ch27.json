@@ -36,9 +36,9 @@
         {
           "key": "27.1.auto",
           "language": "python",
-          "title": "試試看",
-          "initialCode": "# Python 範例\ndef fibonacci(n):\n    a, b = 0, 1\n    for _ in range(n):\n        yield a\n        a, b = b, a + b\n\nprint(list(fibonacci(10)))\n\n# List comprehension\nsquares = [x**2 for x in range(1, 6)]\nprint(\"平方:\", squares)",
-          "hint": "改 code、按執行看結果"
+          "title": "用 Python 快速算一份資料",
+          "initialCode": "# 資料分析的精神：把一堆數字變成「看得懂的結論」\nsales = [120, 340, 80, 560, 200, 90]\n\ntotal = sum(sales)\navg = total / len(sales)\nbest = max(sales)\n\nprint(f\"總銷售：{total}\")\nprint(f\"平均：{avg:.1f}\")\nprint(f\"最高單日：{best}\")\nprint(f\"高於平均的天數：{sum(1 for s in sales if s > avg)}\")",
+          "hint": "資料分析的精神：把一堆數字變成看得懂的結論。"
         }
       ],
       "exercise": {
