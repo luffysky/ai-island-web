@@ -43,8 +43,11 @@
 | `ch00_git_first_push.png` | 0.3 | Git 第一次 push 五步：`git init` → `add` → `commit` → 連 GitHub remote → `push`。流程圖 + 指令。|
 | `ch00_github_signup.png` | 0.3 | GitHub 註冊 + 建 repo + 拿 remote URL 截圖步驟。|
 | `ch01_devtools_elements.png` | 1.1 | Chrome F12 開 Elements、游標移到頁面元素看對應 HTML 標籤。紅框標 Elements 面板。|
-| `ch08_create_vite.png` | 8.2 | 建 React 專案：`npm create vite@latest` → 選 react-ts → `cd` → `npm install` → `npm run dev`。終端機步驟。|
+| `ch08_create_react.png` | 8.2 | **建 React 專案（現代版）**：`npm create vite@latest` → 選 `react-ts` → `cd` → `npm install` → `npm run dev`。終端機編號步驟 + 一句「過來人：以前用 `npx create-react-app`、現已停更，改用 Vite」。|
+| `ch08_create_react_cra.png` | 8.2 | **（歷史對照、可選）** 舊的 `npx create-react-app my-app` 長怎樣 + 為什麼 2026 別再用（慢、停止維護）。對照 D-1 工具演進。|
+| `ch09_create_vue.png` | 9.2 | **建 Vue 專案**：`npm create vue@latest` → 互動選項（TS / Router / Pinia / ESLint 要不要）→ `cd` → `npm install` → `npm run dev`。終端機編號步驟。|
 | `ch10_create_next.png` | 10.1 | 建 Next.js 專案：`npx create-next-app@latest` 選項說明（App Router / TS / Tailwind）。|
+| `ch10_create_nuxt.png` | 10.16 | **建 Nuxt 專案**：`npx nuxi@latest init my-app` → `cd` → `npm install` → `npm run dev`。終端機編號步驟。|
 | `ch48_cursor_setup.png` | 48.21 | Cursor / Claude Code 安裝 + 第一次設定（登入、選模型、開專案）。|
 | `ch48_codex_cli.png` | 48.21 | **（已有範例 example/pic/4）** Codex / Claude Code CLI 使用：裝 → 登入 → 在專案下指令。|
 | `ch17_install_postgres.png` | 17.2 | 裝 PostgreSQL（Docker `docker run` 或本機）+ 用 TablePlus / psql 第一次連線。|
