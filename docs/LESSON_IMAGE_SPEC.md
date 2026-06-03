@@ -186,6 +186,7 @@
 ### D-6. 前端全景（收尾大圖）
 | 檔名 | lesson | 內容 |
 |---|---|---|
+| `ch08_frontend_framework_roadmap.png` | 8.1（開頭）| **🔴 前端三大框架路線圖**（林董要插在 ch08 開頭，內容已加在 8.1）：React（Ch08）/ Vue（Ch09）/ Angular（Ch09c）三者並列——各自定位（自由 / 易上手 / 企業全配）、職缺、怎麼選的決策路線、「先學一個再說」的學習動線。檔案放 `public/lesson-img/ch08/`。|
 | `ch08_frontend_landscape_2026.png` | 8.1 | **2026 前端全景路線圖**：框架（React / Vue / Svelte / Solid）→ meta-framework（Next / Nuxt / SvelteKit）→ 建置工具（Vite）→ 該怎麼選的決策路線。新手入門地圖。|
 
 ---
