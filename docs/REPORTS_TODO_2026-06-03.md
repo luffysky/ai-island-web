@@ -78,9 +78,9 @@
 
 ### E1 新手友善化（用 ch26 完整規格，詳見 `BEGINNER_FRIENDLY_BACKLOG.md`）
 - [x] **oneLineSummary 錯位修復**：ch02/04/07 手修 78 條 + 全站自動修 23 條（本 session 完成）
-- [ ] 補「☕ 用人話講」白話總結：ch01 缺 20 / ch02 缺 25 / ch04 缺 25 / ch07 缺 11（~81 課）
-- [ ] 低信心的 oneLineSummary 錯位（自動偵測抓不到的）逐章人工複查
-- [ ] **圖文解說圖**：`lesson_image_audit.md` 已備 492 條 prompt → 林董生圖放 `public/lesson-img/chNN/` → 嶼築依檔名插入
+- [~] 補「☕ 用人話講」白話總結：**ch01 ✅ 全章 25/25（0603 完成、定標準）**。剩 **69 章**要補（ch02 起）。**標準**：當第一次碰電腦的國中生、**讀每課實際內容**寫、大量生活化比喻（見 ch01 / `daily_works_0603.md`）。覆蓋現況：ch03 12/25、ch05 16/25、ch07 16/28、ch08 14/25、ch16 5/25、ch26 21/35、ch31 12/25、ch32 13/25、其餘多為 0
+- [x] oneLineSummary：全站 1163 課 100% 有（0 缺）
+- [~] **圖文解說圖**：🖼️ **A 區操作教學圖全做完**（29 張、ch00/01/08/10/17/22/25/26/31/39/48/64 已插好引用 + 燈箱）。**🔴 B 區「概念示意圖」還沒做**（diagram 型：ch07 變數賦值/迴圈、ch02 box model/flexbox、ch04 event loop、ch08 UI=f(state)、ch17 JOIN、ch46 RAG…見 `LESSON_IMAGE_SPEC.md` B 區）→ 等林董生圖放 `public/lesson-img/chNN/` → 依檔名插入（流程同 A 區）
 
 ### E2 章節偷懶 / 未補（章節 audit）
 - [ ] 真該補：ch60 創業心法(6) / ch57 AI法律(5) / ch58 AI職涯(5) / ch51 AI寫作(6) / ch55 AI行銷(6) / ch56 虛擬IP(6) / ch68 高階工程師(20)
