@@ -1,9 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { NoteCard } from "./NoteCard";
+import { NotesBackgroundPicker } from "./NotesBackgroundPicker";
+import { DEFAULT_NOTES_BG, loadNotesBg, saveNotesBg, notesBgStyle, type NotesBgConfig } from "@/lib/notes-background";
 import { Plus, X, Save, Loader2 } from "lucide-react";
 
 const BlogEditor = dynamic(
@@ -35,6 +37,9 @@ export function NotesManager({
   const [editing, setEditing] = useState<ManagedNote | "new" | null>(null);
   const [fCat, setFCat] = useState("");
   const [fTag, setFTag] = useState("");
+  const [bg, setBg] = useState<NotesBgConfig>(DEFAULT_NOTES_BG);
+  useEffect(() => { setBg(loadNotesBg()); }, []);
+  const updateBg = (c: NotesBgConfig) => { setBg(c); saveNotesBg(c); };
 
   const categories = useMemo(
     () => Array.from(new Set(notes.map((n) => n.category).filter(Boolean))) as string[],
@@ -63,14 +68,36 @@ export function NotesManager({
     setEditing(null);
   };
 
+  const bgStyle = notesBgStyle(bg);
+  const hasBg = bg.preset !== "none";
+
   return (
-    <div className="space-y-4">
+    <div
+      className="relative rounded-2xl min-h-[60vh] transition"
+      style={hasBg ? bgStyle : undefined}
+    >
+      {/* 液態玻璃層：在背景之上、內容之下。預設關 */}
+      {bg.glass && hasBg && (
+        <div
+          className="absolute inset-0 rounded-2xl pointer-events-none"
+          style={{
+            backdropFilter: "blur(10px)",
+            WebkitBackdropFilter: "blur(10px)",
+            background: `rgba(255,255,255,${bg.glassOpacity})`,
+          }}
+        />
+      )}
+
+      <div className={`relative space-y-4 ${hasBg ? "p-3 sm:p-5" : ""}`}>
+      <div className="flex items-center gap-2 flex-wrap">
       <button
         onClick={() => setEditing("new")}
         className="inline-flex items-center gap-1.5 px-4 py-2 bg-accent text-black font-semibold rounded-lg hover:scale-105 transition"
       >
         <Plus size={16} /> 新增筆記
       </button>
+      <NotesBackgroundPicker cfg={bg} onChange={updateBg} />
+      </div>
 
       {/* 篩選 */}
       {(categories.length > 0 || allTags.length > 0) && (
@@ -117,6 +144,7 @@ export function NotesManager({
       {shown.length === 0 && (
         <div className="text-sm text-fg-muted py-8 text-center">沒有符合的筆記。點「新增筆記」開始記吧。</div>
       )}
+      </div>
     </div>
   );
 }
