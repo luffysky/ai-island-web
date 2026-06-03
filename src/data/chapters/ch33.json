@@ -620,477 +620,493 @@
     {
       "id": "33.14",
       "number": "LESSON 33.14",
-      "title": "AI 摘要時代：內容寫給 AI 看",
-      "oneLineSummary": "Serde：「Rust 的 JSON / YAML 解析庫」—99% Rust 專案都用。",
-      "analogy": "像翻譯員—Rust struct ↔ JSON 互轉、derive 一行就行。Rust 生態的基石。",
-      "content": "2024-2026 Google 主動推 AI Overview—搜尋結果頂部直接給 AI 摘要。**使用者不點連結就走**。\n\n  \n### AI Overview 對流量的影響\n\n  \n業界數據（2024）：\n\n  \n- Featured Snippet 頁面 click-through 降 30%\n- AI Overview 出現的查詢，整體 CTR 降 50%\n- 但 AI 引用的網站「品牌曝光」反而提升\n\n  \n結論：**流量會減少，但被引用就有品牌價值**。\n\n  \n### 怎麼讓 AI 摘要時引用你？\n\n  \n#### 1. 寫出「AI 能直接 quote」的句子\n\n```text\n✗ 不好引用：\n「咖啡這東西啊，很多人都喜歡，特別是早上的時候，\n大家都需要它來提神，我覺得這就是它的價值所在。」\n\n✓ 好引用：\n「咖啡含有咖啡因（每杯約 95mg），能在 30 分鐘內提升警覺度與專注力，\n是全球第二大消費飲品（World Coffee Portal, 2024）。」\n\n第二個有：\n- 具體數字\n- 引用來源\n- 直接事實陳述\n```\n\n  \n#### 2. 第一段就放主結論\n\n  \nAI 摘要常只讀前 200-300 字。**把關鍵答案放最前面**，後面再展開。\n\n  \n#### 3. 用「TL;DR」開頭\n\n```markdown\n# 2026 掛耳咖啡完整指南\n\nTL;DR：2026 推薦三款掛耳咖啡—肯亞 AA（果香、酸值高）、\n衣索比亞耶加雪菲（花香、明亮）、瓜地馬拉安提瓜（巧克力、平衡）。\n價格約 NT$60-120/包，建議冷藏保存 90 天內使用完。\n\n## 詳細評比\n...\n```\n\n  \n#### 4. 子標題用完整句子\n\n```text\n✗ 不好：\nH2: 沖泡方法\nH3: 步驟\n\n✓ 好：\nH2: 掛耳咖啡怎麼沖泡才好喝\nH3: 5 步驟沖出專業手沖風味\n```\n\n  \n#### 5. 數字 + 單位明確\n\n  \n- 「水溫 90°C」比「適中溫度」好\n- 「沖 3 分鐘」比「短時間」好\n- 「100ml 熱水」比「適量水」好\n\n  \n#### 6. 主動標明「Update」\n\n```markdown\n**最後更新：2026 年 5 月**\n\n2026 年的咖啡市場變化：...\n```\n\n  \nAI 偏好新鮮資料。**每 6 個月更新熱門文章 + 改日期**。\n\n  \n### 「人類」內容仍然重要\n\n  \n反直覺：AI 越多，「真人經驗」越值錢。原因：\n\n  \n- AI 摘要都長得像 → 真人經驗變稀缺\n- AI 不能取代「我親自試過 30 款 → 結論」\n- 使用者 AI 看膩了想看真人觀點\n\n  \n策略：**結構化資料 + 人類經驗** 並重。\n",
+      "title": "泛型 Generics — 一份程式適用多型別",
+      "oneLineSummary": "泛型 <T> 讓你寫一份程式適用多種型別，配 trait bound（T: 約束）限定能力；零成本、編譯時展開。",
+      "analogy": "像萬用模具——一個 <T> 模具能壓出 string 餅乾、number 餅乾；trait bound 是規定「只收會被比較大小的材料」。",
+      "content": "**泛型（Generics）**讓你寫一份程式碼、適用多種型別，不用為每種型別各寫一遍。\n\n### 1. 泛型函式\n\n```rust\nfn largest<T: PartialOrd>(list: &[T]) -> &T {\n    let mut max = &list[0];\n    for x in list {\n        if x > max { max = x; }   // T: PartialOrd 才能用 >\n    }\n    max\n}\n\nfn main() {\n    println!(\"{}\", largest(&[3, 7, 2, 9, 1]));      // 數字\n    println!(\"{}\", largest(&['a', 'z', 'm']));      // 字元\n}\n```\n\n### 2. Trait Bound（約束）\n\n「<T: PartialOrd>」的意思是「T 必須實作 PartialOrd（能比大小）」。沒有約束，編譯器不知道 T 能不能用「>」。多個約束用「+」：「T: Clone + Debug」。\n\n### 3. 泛型 struct\n\n```rust\nstruct Pair<T> {\n    first: T,\n    second: T,\n}\n\nimpl<T: std::fmt::Display> Pair<T> {\n    fn show(&self) {\n        println!(\"{} 和 {}\", self.first, self.second);\n    }\n}\n```\n\n> 💡 **零成本**：泛型在編譯期「單型化」——編譯器幫每個實際用到的型別各生一份專屬程式，所以**執行時跟手寫各別版本一樣快**，沒有任何額外開銷。\n\n### 🎯 重點回顧\n\n- 「<T>」寫一份程式適用多型別\n- trait bound「<T: Trait>」限定 T 要有的能力（多個用「+」）\n- 編譯期單型化、零執行成本\n\n**☕ 用人話講**\n\n泛型 `<T>` 讓你寫**一份程式適用多種型別**——例如一個 `largest` 函式同時能找數字、字元、字串裡最大的，不用各寫一份。關鍵是 **trait bound（約束）**：寫 `<T: PartialOrd>` 是規定「T 必須能比大小」，沒約束編譯器不知道 T 會不會用 `>`；多個能力用 `+` 串（`T: Clone + Debug`）。**一句話記住**：泛型像萬用模具——一個 `<T>` 模具壓出各種型別的餅乾，trait bound 是「只收符合資格的材料」。而且它是**零成本**：編譯時幫每個實際型別各生一份專屬程式，跑起來跟手寫各別版本一樣快。\n",
       "tip": {
-        "type": "pro",
-        "text": "台灣科技公司面試 90% 會問「Rust」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+        "type": "concept",
+        "text": "泛型報錯多半是「少了 trait bound」——編譯器說「T 沒有實作某 trait」，就在 <T: 那個trait> 補上。"
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "泛型函式 fn largest<T: PartialOrd> 裡，T: PartialOrd 是在做什麼？",
+        "hint": "限定能力。",
+        "answer": "它是 trait bound（約束），限定 T 必須實作 PartialOrd（能比較大小），這樣函式內才能對 T 用 > 運算子。沒有約束編譯器不知道 T 能不能比大小。"
       },
       "outline": [
         {
-          "level": 3,
-          "text": "AI Overview 對流量的影響"
+          "text": "1. 泛型函式",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "怎麼讓 AI 摘要時引用你？"
+          "text": "2. Trait Bound（約束）",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "「人類」內容仍然重要"
+          "text": "3. 泛型 struct",
+          "level": 3
+        },
+        {
+          "text": "🎯 重點回顧",
+          "level": 3
+        }
+      ],
+      "playgrounds": [
+        {
+          "key": "33.14.auto",
+          "language": "rust",
+          "title": "泛型找最大",
+          "hint": "同一個函式吃數字也吃字元。",
+          "initialCode": "fn largest<T: PartialOrd>(list: &[T]) -> &T {\n    let mut max = &list[0];\n    for x in list {\n        if x > max { max = x; }\n    }\n    max\n}\n\nfn main() {\n    println!(\"{}\", largest(&[3, 7, 2, 9, 1]));\n    println!(\"{}\", largest(&['a', 'z', 'm']));\n}"
         }
       ]
     },
     {
       "id": "33.15",
       "number": "LESSON 33.15",
-      "title": "AI 搜尋引擎完整名單",
-      "oneLineSummary": "Error Handling：anyhow / thiserror—生產級 Rust 的標配。",
-      "analogy": "像美式 vs 日式錯誤處理—Rust 內建 Result 嚴格、anyhow 是「我快速處理」、thiserror 是「我定義 library 級的 error」。",
-      "content": "2026 你該知道的 10 個 AI 搜尋 / 答案引擎：\n\n  \n### 純 AI 搜尋\n\n  \n#### Perplexity\n\n  \n- 用 LLM + 即時搜尋\n- 每個答案附完整來源\n- 2026 用戶數爆炸成長\n- 有 Pro Search 模式（更深入）\n\n  \n#### ChatGPT Search（OpenAI）\n\n  \n- 2024 推出，整合 GPT-4 + 搜尋\n- Pro 訂閱用戶可用\n- 引用 SearchGPT 結果\n\n  \n#### You.com\n\n  \n- 較早做 AI 搜尋的\n- 個人化推薦\n- 免費\n\n  \n### 傳統搜尋的 AI 功能\n\n  \n#### Google AI Overview / Search Generative Experience\n\n  \n- 2024 大規模推出\n- 搜尋結果頂部 AI 摘要\n- 已影響大量流量\n\n  \n#### Bing Copilot\n\n  \n- Microsoft 整合 GPT-4\n- 免費\n- 市佔小但成長\n\n  \n#### Brave Search AI\n\n  \n- 注重隱私\n- 自己 index 不靠 Google / Bing\n- 有 Goggles（自訂排名）\n\n  \n### 專業 / 垂直 AI 搜尋\n\n  \n#### Phind\n\n  \n- 專門技術問題\n- 給工程師用\n- 有 VS Code 整合\n\n  \n#### Arc Search\n\n  \n- Arc 瀏覽器內建\n- 「Browse for me」直接整合答案\n- iOS app 流行\n\n  \n#### Kagi\n\n  \n- 付費搜尋（$10/月）\n- 無廣告、注重質量\n- 有 AI 摘要功能\n\n  \n#### Andi\n\n  \n- 對話式 AI 搜尋\n- 較小但有特色\n\n  \n### 2026 市佔估計\n\n  \n| 引擎 | 2026 市佔（搜尋次數） |\n| --- | --- |\n| Google（傳統 + AI Overview） | 70%+ |\n| Bing + Copilot | 10-15% |\n| Perplexity | 3-5% |\n| ChatGPT Search | 2-4% |\n| 其他 | 5-10% |\n\n  \n### 策略建議\n\n  \n- **主力**：Google SEO（流量最大）\n- **關注**：Perplexity、ChatGPT（成長最快）\n- **追蹤**：你被哪些引擎引用\n- **內容**：寫「兩邊都喜歡」的—事實清楚 + 真人經驗\n\n  \n### 各家 User Agent\n\n```text\n知道 User-Agent 才能在 log 看到誰來：\n\nOAI-SearchBot         # OpenAI 搜尋抓取\nChatGPT-User          # ChatGPT 即時瀏覽\nGPTBot                # OpenAI 訓練\nPerplexityBot         # Perplexity\nClaudeBot             # Anthropic\nClaude-Web            # Claude 瀏覽\nGoogle-Extended       # Google AI 訓練\nGooglebot             # 傳統 Google 爬蟲\nBingbot               # Bing\nDuckDuckBot           # DuckDuckGo\n```\n\n  \n\n⚡\n學習加速器\n\n把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。",
+      "title": "Cargo + Crates + Module 模組系統",
+      "oneLineSummary": "用 mod 拆模組、pub 控制公開、use 引入；Cargo.toml 管依賴（crate），cargo 一條龍編譯測試發佈。",
+      "analogy": "像把文件分資料夾貼標籤——mod 是資料夾、pub 是「這份可以外借」、use 是「把它拿到手邊」；Cargo.toml 是採購清單。",
+      "content": "隨著專案變大，要把程式拆成**模組（module）**、引入別人的**套件（crate）**。\n\n### 1. 模組 mod + 公開 pub\n\n```rust\nmod math {\n    pub fn add(a: i32, b: i32) -> i32 {   // pub 才能被外面用\n        a + b\n    }\n    fn secret() {}                        // 沒 pub = 模組私有\n}\n\nfn main() {\n    println!(\"{}\", math::add(2, 3));      // 用 :: 存取\n}\n```\n\n### 2. use 引入\n\n```rust\nuse std::collections::HashMap;   // 之後直接寫 HashMap\n\nmod math { pub fn add(a: i32, b: i32) -> i32 { a + b } }\nuse math::add;\n```\n\n### 3. Cargo.toml 管依賴\n\n```text\n[dependencies]\nserde = { version = \"1\", features = [\"derive\"] }\ntokio = { version = \"1\", features = [\"full\"] }\n```\n\n用「cargo add 套件名」會自動幫你寫進 [dependencies]。\n\n### 4. Cargo 常用指令\n\n- 「cargo build」（編譯）、「cargo run」（編譯+跑）\n- 「cargo test」（測試）、「cargo check」（只檢查、最快）\n- 「cargo build --release」（正式版、開最佳化）\n\n> 💡 開發時多用「cargo check」——它只檢查能不能編譯、不真的產出執行檔，比 build 快很多。\n\n### 🎯 重點回顧\n\n- mod 拆模組、pub 公開、use 引入、:: 存取\n- 依賴寫在 Cargo.toml 的 [dependencies]、用 cargo add\n- 開發用 cargo check（快）、正式版 cargo build --release\n\n**☕ 用人話講**\n\n專案大了要拆乾淨：(1) **`mod`** 把程式分成模組（像資料夾），**`pub`** 標記「這個可以給外面用」（沒 pub 就是模組私有），用 **`::`** 存取、**`use`** 把常用的拿到手邊 (2) 依賴（別人的套件＝crate）寫在 **`Cargo.toml`** 的 [dependencies]，用 `cargo add` 自動加 (3) cargo 指令：開發多用 **`cargo check`**（只檢查、最快）、跑用 `cargo run`、正式版 `cargo build --release`（開最佳化）。**一句話記住**：mod/pub/use 像把文件分資料夾貼標籤、Cargo.toml 是採購清單；Rust 的模組跟依賴管理一條龍、很整齊。\n",
       "tip": {
         "type": "practical",
-        "text": "把這節學到的馬上應用到一個小東西—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。"
+        "text": "改 code 想快速確認能不能編譯，用 cargo check（不產出執行檔、比 build 快好幾倍）。要真的跑才 cargo run。"
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "模組裡的函式要被外面用要加什麼？想快速檢查能不能編譯該用哪個 cargo 指令？",
+        "hint": "公開、檢查。",
+        "answer": "加 pub（公開）才能被模組外面用。想快速檢查用 cargo check（只檢查不產出，比 cargo build 快很多）。"
       },
       "outline": [
         {
-          "level": 3,
-          "text": "純 AI 搜尋"
+          "text": "1. 模組 mod + 公開 pub",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "傳統搜尋的 AI 功能"
+          "text": "2. use 引入",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "專業 / 垂直 AI 搜尋"
+          "text": "3. Cargo.toml 管依賴",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "2026 市佔估計"
+          "text": "4. Cargo 常用指令",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "策略建議"
-        },
+          "text": "🎯 重點回顧",
+          "level": 3
+        }
+      ],
+      "playgrounds": [
         {
-          "level": 3,
-          "text": "各家 User Agent"
+          "key": "33.15.auto",
+          "language": "rust",
+          "title": "模組 + pub",
+          "hint": "拿掉 add 前面的 pub，看 main 還能不能用它。",
+          "initialCode": "mod math {\n    pub fn add(a: i32, b: i32) -> i32 { a + b }\n    pub fn mul(a: i32, b: i32) -> i32 { a * b }\n}\n\nuse math::add;\n\nfn main() {\n    println!(\"{}\", add(2, 3));\n    println!(\"{}\", math::mul(4, 5));\n}"
         }
       ]
     },
     {
       "id": "33.16",
       "number": "LESSON 33.16",
-      "title": "內容寫給 AI 看的技巧",
-      "oneLineSummary": "WebAssembly：「Rust 編譯成 WASM 跑在瀏覽器」—Rust 在前端的殺手鐧。",
-      "analogy": "像把跑車塞進手機—把 Rust 級的性能搬到瀏覽器。Figma 用 WASM 處理向量、AI 模型在瀏覽器跑—都靠 Rust + WASM。",
-      "content": "整合前幾節，給你**實戰 checklist**。\n\n  \n### 頁面結構模板\n\n```markdown\n# H1：完整描述性標題 2026\n\n**TL;DR**：50 字以內精簡答案，含關鍵數字 / 結論。\n\n**最後更新：2026 年 5 月 11 日**\n\n## H2：什麼是 X？（定義型問題）\n直接定義 50 字以內。\n後續展開歷史、特性...\n\n## H2：怎麼做 Y？（操作型問題）\n1. 步驟一：具體說明\n2. 步驟二：具體說明\n3. 步驟三：具體說明\n\n## H2：X vs Y（比較型問題）\n| 項目 | X | Y |\n|------|---|---|\n| 特色 | ... | ... |\n\n## H2：常見問題\n### Q1：問題\n答案：直接、完整。\n\n## 來源 + 參考\n- 學術論文 1\n- 官方資料 2\n```\n\n  \n### 寫作風格\n\n  \n#### ✓ 該做的\n\n  \n- **具體數字**：「90% 的人」比「大多數人」好\n- **引用來源**：「根據 X 2024 年研究」\n- **明確日期**：「2026 年 5 月」\n- **第一人稱經驗**：「我試了 X 後發現」\n- **結論先行**：每段第一句是 thesis\n- **短段落**：2-3 句一段（AI 抓段落）\n- **用 H2 / H3 標**：每個 800 字 + 一個 H2\n\n  \n#### ✗ 不該做的\n\n  \n- **過度修飾**：「在這個瞬息萬變的時代...」\n- **模糊表達**：「應該、可能、或許」\n- **沒來源的數據**：「業界都這樣做」\n- **內容農場感**：「不點開後悔系列」\n- **AI 寫的痕跡**：「在當今這個...」、「總而言之...」\n- **關鍵字堆砌**：「咖啡是好咖啡，好咖啡就是咖啡」\n\n  \n### 標題寫法\n\n  \n傳統 SEO 標題 vs AI 友善標題：\n\n```text\n傳統 SEO（keyword stuff）：\n「掛耳咖啡 推薦 2026 - 掛耳咖啡 評比」\n\nAI 友善（自然語句）：\n「2026 掛耳咖啡完整指南：實測 10 款，推薦這 3 款」\n\n差別：\n- 自然句構\n- 含具體承諾（10 款、3 款推薦）\n- 像真人會說的話\n```\n\n  \n### FAQ 區塊（必加）\n\n```markdown\n## 常見問題\n\n### 掛耳咖啡可以重複沖泡嗎？\n不建議。第二次沖泡會明顯變淡，第一次沖泡已萃取出 80% 風味。\n\n### 掛耳咖啡保存期限多久？\n未開封 6-12 個月，開封後建議 30 天內喝完。冷藏可延長至 60 天。\n\n### 掛耳咖啡跟濾掛咖啡差在哪？\n兩者本質相同，「濾掛」是日本用法，「掛耳」是中文用法，\n都指可掛在杯口的單次咖啡濾包。\n```\n\n  \n配 FAQPage JSON-LD = AI 直接抓問答。\n\n  \n### 引用 + 連結策略\n\n  \n多**引用權威來源**（學術、官方）：\n\n```markdown\n根據 [Specialty Coffee Association](https://sca.coffee) \n2024 年數據，全球精品咖啡消費年增 8%...\n\n[USDA Coffee Report 2025](https://...) 指出，\n肯亞咖啡產量同比下降 12%...\n```\n\n  \nAI 看到「引用了權威來源」會更願意引用你。\n\n  \n### 真實案例研究\n\n  \n2024 知名 SEO 部落格 Backlinko 的「Skyscraper」文章 — 同時排 Google 第一名 + 被 ChatGPT / Perplexity 引用。特色：\n\n  \n- 原創數據（自己研究的）\n- 清楚的步驟列表\n- 大量截圖 / 圖表\n- 引用 50+ 個來源\n- 每年更新\n- 3000+ 字深度\n\n  \n\n🚀\n2026 趨勢\n\n這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。",
+      "title": "智慧指標：Box / Rc / RefCell",
+      "oneLineSummary": "Box<T> 把資料放堆積（遞迴型別必用）、Rc<T> 讓多個擁有者共享、RefCell<T> 在執行期借用檢查（內部可變）。",
+      "analogy": "Box 是寄物櫃、Rc 是共用圖書證（很多人共享、最後一人還才回收）、RefCell 是把借用檢查從編譯期延到執行期的活動把手。",
+      "content": "**智慧指標（smart pointer）**是「像指標、但帶額外能力」的型別。三個最常用：\n\n### 1. Box<T> — 放到堆積（heap）\n\n把資料放到堆積、手上拿一個固定大小的指標。**遞迴型別**（如鏈結串列）必須用它，否則編譯器算不出大小。\n\n```rust\nenum List {\n    Cons(i32, Box<List>),   // 沒 Box 會「無限大小」編譯不過\n    Nil,\n}\nlet list = List::Cons(1, Box::new(List::Cons(2, Box::new(List::Nil))));\n```\n\n### 2. Rc<T> — 多個擁有者共享（單執行緒）\n\n所有權規則說「只能一個擁有者」，但有時需要共享。**Rc（引用計數）**讓多個變數共享同一份資料、計數歸零才釋放。\n\n```rust\nuse std::rc::Rc;\nlet a = Rc::new(String::from(\"共享\"));\nlet b = Rc::clone(&a);    // 計數 +1，不是深拷貝\nprintln!(\"計數 = {}\", Rc::strong_count(&a));   // 2\n```\n\n### 3. RefCell<T> — 執行期借用檢查（內部可變）\n\n把借用規則的檢查從編譯期延到執行期，讓你在不可變的東西裡面改值。常跟 Rc 搭配。\n\n```rust\nuse std::cell::RefCell;\nlet data = RefCell::new(5);\n*data.borrow_mut() += 1;    // 執行期借用、可改\nprintln!(\"{}\", data.borrow());   // 6\n```\n\n> 💡 **多執行緒版**：Rc → Arc、RefCell → Mutex（下一課並發會用到）。\n\n### 🎯 重點回顧\n\n- Box<T>：放堆積、遞迴型別必用\n- Rc<T>：多擁有者共享（單執行緒）、計數歸零才釋放\n- RefCell<T>：執行期借用、內部可變，常跟 Rc 搭\n\n**☕ 用人話講**\n\n智慧指標是「像指標、但多了能力」的型別，三個最常用：(1) **`Box<T>`**——把資料放到堆積（heap），做遞迴型別（鏈結串列、樹）一定要用它，不然編譯器算不出大小 (2) **`Rc<T>`**——用「引用計數」讓多個變數共享同一份資料、計數歸零才回收 (3) **`RefCell<T>`**——把借用檢查從編譯期延到執行期，讓你在不可變的東西裡改值（內部可變），常跟 Rc 搭。**一句話記住**：Box 是寄物櫃、Rc 是共用圖書證、RefCell 是「執行期才檢查的活動把手」；多執行緒版則換成 `Arc` 跟 `Mutex`。新手先記用途：遞迴用 Box、要共享用 Rc、共享的還要能改用 Rc<RefCell<T>>。\n",
       "tip": {
-        "type": "trend",
-        "text": "這個技術 2026 還在主流、未來 5 年不會過時。但工具會更新—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。"
+        "type": "concept",
+        "text": "新手先記用途：遞迴型別用 Box、要共享用 Rc、要在共享的東西裡改值用 Rc<RefCell<T>>。多執行緒換成 Arc<Mutex<T>>。"
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "為什麼遞迴型別（如鏈結串列）一定要用 Box？",
+        "hint": "大小。",
+        "answer": "因為遞迴型別會「包含自己」，編譯器算不出它需要多大記憶體。Box 把內層資料放到堆積、本身只是固定大小的指標，編譯器就算得出大小了。"
       },
       "outline": [
         {
-          "level": 3,
-          "text": "頁面結構模板"
+          "text": "1. Box<T> — 放到堆積（heap）",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "寫作風格"
+          "text": "2. Rc<T> — 多個擁有者共享（單執行緒）",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "標題寫法"
+          "text": "3. RefCell<T> — 執行期借用檢查（內部可變）",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "FAQ 區塊（必加）"
-        },
+          "text": "🎯 重點回顧",
+          "level": 3
+        }
+      ],
+      "playgrounds": [
         {
-          "level": 3,
-          "text": "引用 + 連結策略"
-        },
-        {
-          "level": 3,
-          "text": "真實案例研究"
+          "key": "33.16.auto",
+          "language": "rust",
+          "title": "Rc 共享計數",
+          "hint": "clone 一次計數 +1，看 strong_count。",
+          "initialCode": "use std::rc::Rc;\n\nfn main() {\n    let a = Rc::new(String::from(\"一本共享的書\"));\n    println!(\"計數 = {}\", Rc::strong_count(&a));  // 1\n    let _b = Rc::clone(&a);\n    let _c = Rc::clone(&a);\n    println!(\"計數 = {}\", Rc::strong_count(&a));  // 3\n    println!(\"內容 = {}\", a);\n}"
         }
       ]
     },
     {
       "id": "33.17",
       "number": "LESSON 33.17",
-      "title": "LINE 行銷：台灣的特殊戰場",
-      "oneLineSummary": "CLI Tools：「Rust 寫 CLI 也很猛」—ripgrep / fd / bat 都是 Rust。",
-      "analogy": "像Go 的競爭對手—Go 跟 Rust 都適合 CLI、Rust 更注重效能跟安全。",
-      "content": "台灣 90%+ 使用者用 LINE。**LINE 行銷在台灣是必修**。\n\n  \n### LINE 官方帳號（LINE OA）\n\n  \n類似 FB Page，但**對話率高得多**：\n\n  \n- **免費版**：每月 200 則訊息\n- **輕用量**：NT$800/月，3000 則\n- **中用量**：NT$4000/月，25000 則\n- **高用量**：NT$15000/月，無限\n\n  \n### LINE OA 三大功能\n\n  \n#### 1. 群發訊息（Broadcast）\n\n  \n給所有好友推訊息。轉換率：\n\n  \n- 開啟率：70-90%（FB 是 5-10%）\n- 點擊率：5-20%\n- 但**太頻繁會被封鎖**（1 週 1-2 則上限）\n\n  \n#### 2. 自動回覆 / 聊天機器人\n\n  \n用 LINE Bot SDK：\n\n```python\nfrom linebot import LineBotApi, WebhookHandler\nfrom linebot.models import TextSendMessage\n\nline_bot_api = LineBotApi(CHANNEL_ACCESS_TOKEN)\n\n@app.post(\"/callback\")\ndef callback(event):\n    user_msg = event.message.text\n    \n    if \"訂單\" in user_msg:\n        reply = \"請輸入訂單號碼\"\n    elif \"客服\" in user_msg:\n        reply = \"專人為您服務...\"\n    else:\n        reply = \"請選擇：1.訂單查詢 2.客服\"\n    \n    line_bot_api.reply_message(\n        event.reply_token,\n        TextSendMessage(text=reply)\n    )\n```\n\n  \n#### 3. LIFF（LINE Front-end Framework）\n\n  \n在 LINE 內開啟你的 web app，**取得使用者 LINE 資料**：\n\n```js\nimport liff from \"@line/liff\";\n\nawait liff.init({ liffId: \"xxx\" });\n\nif (liff.isLoggedIn()) {\n  const profile = await liff.getProfile();\n  // { userId, displayName, pictureUrl, statusMessage }\n}\n\n// 在 LINE 內傳訊\nawait liff.sendMessages([{\n  type: \"text\",\n  text: \"訂單已送出\"\n}]);\n```\n\n  \n### 怎麼累積 LINE 好友？\n\n  \n- **網站加入按鈕**：固定 floating 按鈕\n- **結帳後引導**：「加 LINE 取得追蹤碼」\n- **實體 QR Code**：店面、名片、傳單\n- **FB / IG 廣告導流**：直接導加好友\n- **優惠誘因**：「加 LINE 享 9 折」\n- **Email 引導**：「加 LINE 即時通知出貨」\n\n  \n### LINE Pay 整合\n\n  \n台灣使用者習慣的支付：\n\n```text\n申請 LINE Pay 商家\n  ↓\n取得 Channel ID + Secret\n  ↓\n網站結帳整合 LINE Pay API\n  ↓\n使用者點 LINE Pay → 跳轉 → 一鍵付款\n```\n\n  \n### LINE Ads\n\n  \n在 LINE 內投放廣告（聊天列表頂部、Today、新聞）：\n\n  \n- 單次點擊：NT$5-20\n- 受眾鎖定：年齡、性別、興趣、自訂受眾\n- 適合：app 下載、加好友、電商\n\n  \n### SEGA（簡稱）：訊息分眾\n\n  \n2026 LINE OA 進階功能：依使用者標籤分群推訊：\n\n  \n- 「曾購買 A 產品的」推 A 相關\n- 「30 天沒互動的」推喚回優惠\n- 「高消費族群」推 VIP 活動\n\n  \n能提高轉換率 3-5 倍。\n\n  \n\n🛠️\n工具推薦\n\n配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。",
+      "title": "Async Rust + Tokio — 非同步與並發",
+      "oneLineSummary": "async/await 寫非同步、靠 runtime 驅動；Tokio 是事實標準的 async runtime，高併發 I/O 的基礎。",
+      "analogy": "async 像煮泡麵時去摺衣服（等 I/O 的空檔做別的）；Tokio 是那個「幫你調度一堆任務輪流跑」的廚房總管。",
+      "content": "Rust 的非同步用 async / await，但**語言本身不附 runtime**——要選一個，業界標準是 **Tokio**。\n\n### 1. async / await\n\n```rust\nasync fn fetch_data() -> String {\n    String::from(\"資料\")   // 假裝這裡有網路 I/O\n}\n\nasync fn run() {\n    let data = fetch_data().await;   // await 等它完成\n    println!(\"{}\", data);\n}\n```\n\n「async fn」回傳的是一個 **Future**（未來會有結果的東西），要 await 或交給 runtime 才會真的執行。\n\n### 2. Tokio runtime\n\n加依賴 tokio，用「#[tokio::main]」啟動：\n\n```rust\n#[tokio::main]\nasync fn main() {\n    let data = fetch_data().await;\n    println!(\"{}\", data);\n}\n```\n\n### 3. 並行跑多個任務\n\n```rust\n// 同時跑、不是一個等一個\nlet (a, b) = tokio::join!(fetch_data(), fetch_data());\n```\n\n### 4. 為什麼 Rust async 適合高併發\n\n一個系統執行緒能跑成千上萬個 async 任務，在等 I/O 時自動切換去做別的。配上 Rust 的零成本與安全，**高併發後端效能極強**。\n\n> 💡 async 不會讓單一運算變快——它是讓「等待 I/O 的空檔能做別的事」，適合網路 / 資料庫這種 I/O 密集場景。\n\n### 🎯 重點回顧\n\n- async fn 回傳 Future、要 await 才執行\n- Rust 不附 runtime，業界標準是 Tokio（#[tokio::main]）\n- async 適合 I/O 密集（網路 / DB）、不是讓單一運算變快\n\n**☕ 用人話講**\n\nRust 的非同步用 **`async` / `await`**，但語言本身不附「執行引擎（runtime）」——要自己選一個，業界標準是 **Tokio**。(1) `async fn` 回傳一個 **Future**（未來會有結果），要 `.await` 或交給 runtime 才真的跑 (2) 用 `#[tokio::main]` 一行啟動 Tokio (3) `tokio::join!` 能同時跑多個任務。**一句話記住**：async 像「煮泡麵時去摺衣服」——等網路/資料庫回應的空檔先做別的，所以它適合 I/O 密集場景、不是讓單一運算變快；Tokio 是幫你調度一堆任務輪流跑的廚房總管。Rust 的 async + 零成本 + 安全，讓它寫高併發後端效能極強。\n",
       "tip": {
-        "type": "practical",
-        "text": "配合這節用的工具：(1) VS Code（編輯器、免費）(2) Chrome DevTools（F12 開啟、除錯神器）(3) Live Server（VS Code 擴充、即時預覽）(4) GitHub Copilot / Cursor（AI 寫程式、學習加速 2-10x）。"
+        "type": "concept",
+        "text": "async 不會讓 CPU 運算變快，它是解決「等 I/O 時別乾等」。要做網路/DB 高併發才用得上；純計算用 async 沒意義。"
       },
       "xp": 10,
       "playgrounds": [
         {
           "key": "33.17.auto",
-          "language": "python",
-          "title": "試試看",
-          "initialCode": "from linebot import LineBotApi, WebhookHandler\nfrom linebot.models import TextSendMessage\n\nline_bot_api = LineBotApi(CHANNEL_ACCESS_TOKEN)\n\n@app.post(\"/callback\")\ndef callback(event):\n    user_msg = event.message.text\n    \n    if \"訂單\" in user_msg:\n        reply = \"請輸入訂單號碼\"\n    elif \"客服\" in user_msg:\n        reply = \"專人為您服務...\"\n    else:\n        reply = \"請選擇：1.訂單查詢 2.客服\"\n    \n    line_bot_api.reply_message(\n        event.reply_token,\n        TextSendMessage(text=reply)\n    )",
-          "hint": "改 code、按執行看結果"
+          "language": "rust",
+          "title": "感受 async（示意）",
+          "hint": "playground 不一定有 tokio，這裡用同步示意 async 的概念。",
+          "initialCode": "// async 的精神：等 I/O 的空檔做別的（這裡用同步示意）\nfn fetch(name: &str) -> String {\n    format!(\"{} 的資料\", name)\n}\n\nfn main() {\n    let a = fetch(\"使用者\");\n    let b = fetch(\"訂單\");\n    println!(\"{} / {}\", a, b);\n    println!(\"async 讓這些 I/O 能並行等待、不互相卡\");\n}"
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Rust 的 async 適合什麼場景？能讓單一 CPU 運算變快嗎？",
+        "hint": "I/O。",
+        "answer": "適合 I/O 密集場景（網路、資料庫）——讓等待 I/O 的空檔去做別的事。它不會讓單一 CPU 運算變快。Rust async runtime 業界標準是 Tokio。"
       },
       "outline": [
         {
-          "level": 3,
-          "text": "LINE 官方帳號（LINE OA）"
+          "text": "1. async / await",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "LINE OA 三大功能"
+          "text": "2. Tokio runtime",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "怎麼累積 LINE 好友？"
+          "text": "3. 並行跑多個任務",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "LINE Pay 整合"
+          "text": "4. 為什麼 Rust async 適合高併發",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "LINE Ads"
-        },
-        {
-          "level": 3,
-          "text": "SEGA（簡稱）：訊息分眾"
+          "text": "🎯 重點回顧",
+          "level": 3
         }
       ]
     },
     {
       "id": "33.18",
       "number": "LESSON 33.18",
-      "title": "Email 行銷：永遠最高 ROI",
-      "oneLineSummary": "Embedded / IoT：「Rust 在嵌入式發光」—取代 C、安全又快。",
-      "analogy": "像升級版的 C—寫 firmware / 韌體 / 嵌入式裝置。新一代嵌入式工程師主流用 Rust。",
-      "content": "Email 行銷是**所有行銷管道中 ROI 最高的**。$1 投入回收 $36-42（DMA 數據）。\n\n  \n### 為什麼 Email 還這麼強？\n\n  \n- **自有清單**：不依賴平台演算法\n- **高轉換**：訂閱者本來就有興趣\n- **個人化**：技術成熟、容易客製\n- **成本低**：每封幾分美金\n- **可追蹤**：開啟、點擊、轉換都看得到\n\n  \n### 2026 Email 服務（按規模）\n\n  \n| 服務 | 規模 | 價格 | 特色 |\n| --- | --- | --- | --- |\n| **Resend** | 小-中 | 3000 封/月免費 | 開發者友善、Markdown 模板 |\n| **Mailchimp** | 中-大 | 500 訂閱免費 | 老牌、模板多 |\n| **ConvertKit** | 創作者 | 1000 訂閱免費 | 自動化強 |\n| **Substack** | 個人 | 免費 + 抽成 | 付費訂閱友善 |\n| **SendGrid** | 企業 | 100 封/天免費 | API 強大 |\n| **Postmark** | 交易型 | 100 封/月免費 | 到信率高 |\n\n  \n### 兩種 Email 類型\n\n  \n#### 1. 交易型（Transactional）\n\n  \n使用者觸發發送的：\n\n  \n- 歡迎信\n- 訂單確認\n- 密碼重設\n- 付款收據\n- 預約提醒\n\n  \n#### 2. 行銷型（Marketing）\n\n  \n主動推送的：\n\n  \n- 產品發布\n- 促銷活動\n- 電子報\n- 內容更新通知\n\n  \n### Email Newsletter 經營\n\n  \n1. 選個利基主題（不要太廣）\n2. 固定頻率（每週 / 每兩週）\n3. 每期一個明確主題\n4. 個人化口吻（不要像企業）\n5. 明確 CTA（點連結 / 回信 / 分享）\n6. 累積 1000 訂閱 = 有規模\n\n  \n### Email 自動化（Drip Campaign）\n\n  \n新訂閱者自動跑一系列信件：\n\n```text\nDay 0：歡迎信 + 介紹\nDay 2：免費資源 / 工具\nDay 5：客戶案例\nDay 7：產品介紹\nDay 10：限時優惠\nDay 14：問問需求\n\n每封都有測試過的 CTA\n逐步建立信任\n```\n\n  \n### 關鍵指標\n\n  \n- **開信率**：目標 20-30%（一般 industry）\n- **點擊率**：目標 2-5%\n- **退訂率**： 95%\n\n  \n### 提升開信率\n\n  \n- **主旨好**：30-50 字、引發好奇\n- **Preview text**：補充主旨\n- **寄件人名稱**：用真人名（不要 noreply）\n- **SPF / DKIM / DMARC** 設好（Ch14）\n- **定期清不活躍**：3 個月沒開的取消訂閱\n- **避免 spam 詞**：「免費」、「立刻」、「百分百」（過頭）\n\n  \n### 2026 反 spam 新規（Gmail / Yahoo）\n\n  \n2024 Gmail 對大量發信者新規：\n\n  \n- 每月發 5000+ 封要設 SPF + DKIM + DMARC\n- 退訂連結必須一鍵\n- spam 比率 \",\n  to: user.email,\n  subject: \"歡迎加入 MyShop！\",\n  react: \n});\n```\n\n  \nResend 支援 React 寫 email template，**跟網站同 stack 超舒服**。\n\n  \n    \n      ⚠️\n      新手常見錯誤\n    \n    新手 3 大坑：(1) **不看 console**—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) **不存檔就 F5**—改完忘記儲存以為「程式沒效果」 (3) **抄 code 不理解**—複製貼上能跑、但下次要改就崩潰。**記得：先看懂、再寫**。",
+      "title": "Axum — 2026 主流 Rust Web 框架",
+      "oneLineSummary": "Axum 是 Tokio 團隊出的 web 框架，型別安全、好組合；用 Router 定路由、handler 回應，做高效能 API。",
+      "analogy": "像用樂高蓋餐廳——Router 是點餐櫃台、handler 是廚師；Axum 把零件設計得好拼又安全。",
+      "content": "**Axum** 是 Tokio 官方團隊出的 web 框架，2026 最主流，特色是型別安全、跟 Tokio 生態完美整合。\n\n### 1. 最小的 Axum 伺服器\n\n```rust\nuse axum::{routing::get, Router};\n\nasync fn hello() -> &'static str {\n    \"哈囉 from Axum\"\n}\n\n#[tokio::main]\nasync fn main() {\n    let app = Router::new().route(\"/\", get(hello));\n    let listener = tokio::net::TcpListener::bind(\"0.0.0.0:3000\")\n        .await.unwrap();\n    axum::serve(listener, app).await.unwrap();\n}\n```\n\n### 2. 路由 + 動態參數\n\n```rust\nuse axum::extract::Path;\n\nasync fn user(Path(id): Path<u32>) -> String {\n    format!(\"使用者 {}\", id)\n}\n// .route(\"/users/:id\", get(user))\n```\n\n### 3. 回傳 JSON\n\n```rust\nuse axum::Json;\nuse serde::Serialize;\n\n#[derive(Serialize)]\nstruct Msg { text: String }\n\nasync fn api() -> Json<Msg> {\n    Json(Msg { text: String::from(\"hi\") })\n}\n```\n\n### 4. 為什麼選 Axum\n\n- **型別安全的 extractor**：用 Path、Query、Json 從請求抽資料，型別不對編譯就擋\n- 跟 Tokio / tower（中介層）無縫整合、效能名列前茅\n\n> 💡 老牌的 **Actix Web** 也很強、效能頂尖；但 2026 新專案多選 Axum（設計更現代、社群動能強）。\n\n### 🎯 重點回顧\n\n- Axum＝Tokio 團隊的 web 框架、2026 主流\n- Router 定路由、async handler 回應、extractor 抽請求資料\n- 回 JSON 配 Json<T> + serde；老牌替代是 Actix Web\n\n**☕ 用人話講**\n\n**Axum** 是 Tokio 官方團隊出的 web 框架，2026 寫 Rust 後端的首選。(1) 用 **`Router`** 定路由（哪個網址交給哪個 handler）、用 **async handler** 處理請求 (2) 靠**型別安全的 extractor**（`Path` 抽網址參數、`Query` 抽查詢、`Json` 抽 body）拿資料，型別不對**編譯就擋** (3) 回 JSON 配 `Json<T>` + serde。**一句話記住**：像用樂高蓋餐廳——Router 是點餐櫃台、handler 是廚師；Axum 把零件設計得好拼又安全，跟 Tokio 生態無縫整合。老牌的 Actix Web 也很頂，但新專案多選 Axum。\n",
       "tip": {
-        "type": "warning",
-        "text": "新手 3 大坑：(1) 不看 console—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) 不存檔就 F5—改完忘記儲存以為「程式沒效果」 (3) 抄 code 不理解—複製貼上能跑、但下次要改就崩潰。記得：先看懂、再寫。"
+        "type": "practical",
+        "text": "2026 新 Rust 後端：Axum（設計現代、社群強）是預設選擇；Actix Web 效能頂尖、老專案還很多。會 Axum 為主就夠。"
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Axum 用什麼定路由？extractor（如 Path / Json）有什麼好處？",
+        "hint": "Router、型別。",
+        "answer": "用 Router 定路由。extractor 從請求型別安全地抽資料（網址參數、query、JSON body），型別不對在編譯期就擋下來，不會到執行時才炸。"
       },
       "outline": [
         {
-          "level": 3,
-          "text": "為什麼 Email 還這麼強？"
+          "text": "1. 最小的 Axum 伺服器",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "2026 Email 服務（按規模）"
+          "text": "2. 路由 + 動態參數",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "兩種 Email 類型"
+          "text": "3. 回傳 JSON",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "Email Newsletter 經營"
+          "text": "4. 為什麼選 Axum",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "Email 自動化（Drip Campaign）"
-        },
+          "text": "🎯 重點回顧",
+          "level": 3
+        }
+      ],
+      "playgrounds": [
         {
-          "level": 3,
-          "text": "關鍵指標"
-        },
-        {
-          "level": 3,
-          "text": "提升開信率"
-        },
-        {
-          "level": 3,
-          "text": "2026 反 spam 新規（Gmail / Yahoo）"
+          "key": "33.18.auto",
+          "language": "rust",
+          "title": "Axum handler 的樣子",
+          "hint": "playground 不跑伺服器，這裡示意 handler 回應的概念。",
+          "initialCode": "// Axum handler 的精神：收請求、回回應（這裡用普通函式示意）\nfn hello() -> &'static str {\n    \"哈囉 from Axum\"\n}\n\nfn user(id: u32) -> String {\n    format!(\"使用者 {}\", id)\n}\n\nfn main() {\n    println!(\"GET /        -> {}\", hello());\n    println!(\"GET /users/7 -> {}\", user(7));\n}"
         }
       ]
     },
     {
       "id": "33.19",
       "number": "LESSON 33.19",
-      "title": "社群行銷：IG / Threads / Dcard / X",
-      "oneLineSummary": "Cargo Workspaces：「Monorepo 多套件管理」—大型 Rust 專案的組織方式。",
-      "analogy": "像公司部門—不同子系統、共用一個 build。Cargo workspace 讓 Rust monorepo 開發極順。",
-      "content": "2026 社群平台市場：\n\n  \n- **Instagram**：年輕女性、生活時尚\n- **Threads**：文字社群（Meta 出，反 X 派）\n- **Dcard**：台灣大學生 / 年輕族群\n- **X（Twitter）**：科技、新聞、英文用戶\n- **TikTok**：短影音、跨年齡\n- **YouTube**：長影音、教學\n- **Facebook**：40+ 為主\n- **LinkedIn**：B2B、職場\n\n  \n### 怎麼選平台？\n\n  \n看你的客戶在哪。**不要做所有平台**，做 1-2 個做好。\n\n  \n| 產品類型 | 建議平台 |\n| --- | --- |\n| B2C 電商（時尚 / 美妝） | IG + Threads + Dcard |\n| B2C SaaS（一般使用者） | IG + LINE + TikTok |\n| B2B SaaS | LinkedIn + X + 部落格 |\n| 開發者工具 | X + GitHub + Reddit |\n| 教育 / 內容 | YouTube + Threads + Email |\n| 本地服務 | FB + IG + Google My Business |\n\n  \n### Instagram 策略\n\n  \n- **Reels**：2026 觸及最高\n- **Carousel**：保存率高、利於 SEO\n- **Stories**：日常互動、limited time offers\n- **Live**：產品發布、Q&A\n- **Hashtag**：5-10 個相關（不要 30 個）\n\n  \n### Threads 策略（2024+ 崛起）\n\n  \n- 長文也可（500 字內）\n- 對話式社群\n- 跟 IG 帳號連動\n- **2024 還在成長期，現在進入紅利期**\n\n  \n### Dcard 策略（台灣特有）\n\n  \n- 分版精準（產品在對應版）\n- 「分享 / 心得」文章為主\n- 不要硬廣告（會被噓 / 刪）\n- 真人經驗效果好\n- 抽獎活動容易爆紅\n\n  \n### X / Twitter（給工程師 / B2B）\n\n  \n- 每天 2-3 則\n- 分享技術文章、思考\n- 用「Threads」串多則\n- 跟業界人互動\n- Indie hacker 社群活躍（#buildinpublic）\n\n  \n### TikTok 策略\n\n  \n- 15-60 秒短影音\n- 前 3 秒決定一切\n- 音樂 / 字幕必備\n- 追熱門 trend\n- 2026 觸及率仍高（但下降中）\n\n  \n### 內容生產策略：1 → 10\n\n  \n一個內容用在多平台（不要每個平台寫一次）：\n\n```text\n1 篇深度部落格（3000 字）\n  ↓\n拆成：\n- 10 則 Threads\n- 5 個 IG carousel\n- 3 個 TikTok / Reels（不同切角）\n- 1 個 YouTube long video\n- 1 封 Email Newsletter\n- 1 個 LinkedIn post\n\n時間：\n- 寫長文：8 小時\n- 拆分發布：3 小時\n- 一週的社群素材都有了\n```\n\n  \n### 2026 社群行銷新趨勢\n\n  \n- **AI 生成內容警覺**：使用者已能辨識，純 AI 內容反感\n- **真人臉孔**：個人品牌比企業 page 強\n- **互動率 > 粉絲數**：100 個鐵粉勝 10000 個 ghost\n- **UGC（使用者產生內容）**：客戶幫你發比你自己發強\n- **短影音為王**：所有平台都推影音\n- **社群電商**：直接在 platform 內購買\n",
+      "title": "sqlx — 編譯期就檢查的 SQL",
+      "oneLineSummary": "sqlx 是 async 的 Rust SQL 工具，最大特色是「編譯時就檢查你的 SQL 語法跟欄位型別對不對」，連資料庫都不用先跑。",
+      "analogy": "像寫考卷時旁邊有老師即時批改——你 SQL 打錯欄位名，編譯當下就被圈出來，不用等程式跑到那行才當機。",
+      "content": "**sqlx** 是 Rust 的 async SQL 工具，支援 PostgreSQL / MySQL / SQLite。它最強的地方：**編譯期檢查 SQL**。\n\n### 1. 連線 + 查詢\n\n```rust\nuse sqlx::postgres::PgPool;\n\n#[derive(sqlx::FromRow)]\nstruct User { id: i32, name: String }\n\nasync fn get_users(pool: &PgPool) -> Result<Vec<User>, sqlx::Error> {\n    let users = sqlx::query_as::<_, User>(\"SELECT id, name FROM users\")\n        .fetch_all(pool)\n        .await?;\n    Ok(users)\n}\n```\n\n### 2. 參數化查詢（防 SQL injection）\n\n```rust\nlet user = sqlx::query_as::<_, User>(\"SELECT id, name FROM users WHERE id = $1\")\n    .bind(user_id)        // 參數綁定、永遠別字串拼接\n    .fetch_one(pool)\n    .await?;\n```\n\n### 3. 編譯期檢查（query! 巨集）\n\n用「sqlx::query!」巨集時，sqlx 會在**編譯時連到你的開發資料庫、驗證 SQL 語法跟回傳欄位型別**。SQL 打錯、欄位名拼錯，**編譯就失敗**——不會等到上線才炸。\n\n> 💡 這是 sqlx 跟一般 ORM 最大的差異：它不是「藏起 SQL」，而是「讓你寫真 SQL、但幫你在編譯期驗證」。\n\n### 4. sqlx vs ORM\n\n- **sqlx**：寫真 SQL + 編譯期檢查\n- **SeaORM / Diesel**：傳統 ORM（用物件操作、不寫 SQL）\n\n### 🎯 重點回顧\n\n- sqlx＝async SQL 工具、支援 PG / MySQL / SQLite\n- 招牌：query! 巨集**編譯期就檢查 SQL 語法與型別**\n- 永遠用 .bind() 參數化、別字串拼接（防 injection）\n\n**☕ 用人話講**\n\n**sqlx** 是 Rust 的 async SQL 工具，最殺的是「**編譯期就檢查你的 SQL**」。(1) 用 `query_as` 把查詢結果直接對應成 struct (2) 永遠用 **`.bind()` 參數化查詢**（`$1`），絕不字串拼接，從根本防 SQL injection (3) 用 `sqlx::query!` 巨集時，它會在**編譯當下連到開發資料庫、驗證 SQL 語法跟欄位型別**——SQL 打錯、欄位拼錯，**編譯就失敗**、不會等上線才炸。**一句話記住**：像寫考卷旁邊有老師即時批改——SQL 錯誤在編譯當下就被圈出來。它跟傳統 ORM 不同，是「讓你寫真 SQL、但幫你編譯期驗證」，掌控感跟安全兼得。\n",
       "tip": {
-        "type": "practical",
-        "text": "經營社群別每個平台都從零做圖：先在一個主力平台把內容做好，再依各平台特性裁切重發（IG 視覺、Threads / X 短文、Dcard 長討論）。"
+        "type": "warn",
+        "text": "資料庫查詢永遠用 .bind() 參數化（$1, $2…），絕不把使用者輸入字串拼進 SQL——這是防 SQL injection 的鐵則。"
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "sqlx 最大的特色是什麼？查詢為什麼要用 .bind() 而非字串拼接？",
+        "hint": "編譯期、injection。",
+        "answer": "特色是「編譯期就檢查 SQL 語法跟欄位型別」（query! 巨集連開發 DB 驗證），SQL 寫錯編譯就失敗。要用 .bind() 參數化，因為字串拼接使用者輸入會造成 SQL injection。"
       },
       "outline": [
         {
-          "level": 3,
-          "text": "怎麼選平台？"
+          "text": "1. 連線 + 查詢",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "Instagram 策略"
+          "text": "2. 參數化查詢（防 SQL injection）",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "Threads 策略（2024+ 崛起）"
+          "text": "3. 編譯期檢查（query! 巨集）",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "Dcard 策略（台灣特有）"
+          "text": "4. sqlx vs ORM",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "X / Twitter（給工程師 / B2B）"
-        },
+          "text": "🎯 重點回顧",
+          "level": 3
+        }
+      ],
+      "playgrounds": [
         {
-          "level": 3,
-          "text": "TikTok 策略"
-        },
-        {
-          "level": 3,
-          "text": "內容生產策略：1 → 10"
-        },
-        {
-          "level": 3,
-          "text": "2026 社群行銷新趨勢"
+          "key": "33.19.auto",
+          "language": "rust",
+          "title": "參數化查詢的概念",
+          "hint": "playground 不連 DB，這裡示意「參數綁定」vs「字串拼接」。",
+          "initialCode": "// sqlx 的精神：參數化查詢（用 $1 綁定，不字串拼接）\nfn safe_query(user_id: i32) -> String {\n    format!(\"SELECT * FROM users WHERE id = $1  -- bind({})\", user_id)\n}\n\nfn main() {\n    println!(\"{}\", safe_query(42));\n    println!(\"=> 用 bind 綁參數，使用者輸入永遠進不了 SQL 結構，防 injection\");\n}"
         }
       ]
     },
     {
       "id": "33.20",
       "number": "LESSON 33.20",
-      "title": "SEO 工具：GSC / GA4 / Lighthouse",
-      "oneLineSummary": "Testing & Benchmarks：內建測試 + Criterion—性能測試業界標竿。",
-      "analogy": "像F1 賽車的調校工具—精準到 nano 秒。Rust 寫高性能 lib 必跑 criterion benchmark。",
-      "content": "SEO 不能憑感覺，**用數據說話**。免費工具就夠用。\n\n  \n### Google Search Console（GSC）\n\n  \nSEO 最重要工具。**免費**。\n\n  \n#### 必看四個報告\n\n  \n- **Performance**：哪些查詢帶來流量、哪些頁面表現好\n- **Pages**：被 index、有錯誤的頁面\n- **Sitemaps**：提交 sitemap、看狀態\n- **Core Web Vitals**：真實使用者數據\n\n  \n#### GSC 重要操作\n\n  \n- **URL Inspection**：單頁狀態查詢\n- **Request Indexing**：手動要 Google 來爬\n- **Removals**：暫時隱藏特定頁面\n- **Links**：看誰連你\n\n  \n### Google Analytics 4（GA4）\n\n  \n2023 取代 Universal Analytics。免費。\n\n  \n#### 必看數據\n\n  \n- **Realtime**：現在誰在站上\n- **Acquisition**：流量來自哪\n- **Engagement**：使用者怎麼互動\n- **Pages and screens**：哪些頁面熱門\n- **Conversions**：達成目標的次數\n\n  \n#### GA4 vs UA 差別\n\n  \n- UA 算「session」，GA4 算「event」\n- GA4 整合 mobile app + web\n- 更注重隱私（cookieless）\n- UI 較難用（學習曲線）\n\n  \n### Lighthouse\n\n  \nChrome DevTools 內建。免費。\n\n  \n- **Performance**：頁面速度\n- **Accessibility**：無障礙\n- **Best Practices**：寫法規範\n- **SEO**：基本 SEO 檢查\n- **PWA**：漸進式 Web App 評分\n\n  \n目標：四項都 95+。\n\n  \n### Hotjar / Microsoft Clarity\n\n  \n使用者行為錄影：\n\n  \n- **Heatmap**：使用者點哪、看哪\n- **Recordings**：實際 session 重播\n- **Surveys**：彈出問卷\n\n  \n**Clarity 完全免費**，Hotjar 較強但有限額。\n\n  \n### 進階：Ahrefs / Semrush\n\n  \n付費（$99-140/月），給認真做 SEO 的：\n\n  \n- 關鍵字研究\n- 競爭者分析\n- Backlink 監控\n- 內容 gap 分析\n- SERP 追蹤\n\n  \n### 2026 開源替代\n\n  \n- **Plausible**：注重隱私的 GA4 替代\n- **Umami**：自架\n- **PostHog**：含 product analytics\n- **Matomo**：完整 GA 替代\n\n  \n### SEO 監控 SOP\n\n```text\n每天：\n- GSC 看有沒有錯誤通知\n- GA4 realtime 看流量\n\n每週：\n- GSC 看 query 變化\n- 看哪些頁面 impression 升 / 降\n- 競爭者 SERP 排名\n\n每月：\n- 全站 health check\n- Core Web Vitals 趨勢\n- 新增關鍵字機會\n\n每季：\n- 內容更新（熱門文章重寫）\n- 競爭者深度分析\n- 策略調整\n```\n",
+      "title": "Serde — 序列化（JSON / YAML / …）",
+      "oneLineSummary": "Serde 是 Rust 序列化的事實標準：struct 加 #[derive(Serialize, Deserialize)] 就能跟 JSON / YAML / TOML 互轉。",
+      "analogy": "像萬用翻譯機——struct 貼上 Serde 標籤，就能在「Rust 物件」跟「JSON 字串」之間自由互翻。",
+      "content": "**Serde**（Serialize + Deserialize）是 Rust 處理資料格式的核心套件，幾乎所有 web / 設定檔都用它。\n\n### 1. 幫 struct 加序列化能力\n\n```rust\nuse serde::{Serialize, Deserialize};\n\n#[derive(Serialize, Deserialize, Debug)]\nstruct User {\n    name: String,\n    age: u32,\n}\n```\n\n### 2. 物件 → JSON（serialize）\n\n```rust\nlet u = User { name: String::from(\"Nami\"), age: 20 };\nlet json = serde_json::to_string(&u).unwrap();\nprintln!(\"{}\", json);   // {\"name\":\"Nami\",\"age\":20}\n```\n\n### 3. JSON → 物件（deserialize）\n\n```rust\nlet data = r#\"{\"name\":\"Luffy\",\"age\":19}\"#;\nlet u: User = serde_json::from_str(data).unwrap();\nprintln!(\"{:?}\", u);\n```\n\n### 4. 欄位客製\n\n```rust\n#[derive(Serialize, Deserialize)]\nstruct Config {\n    #[serde(rename = \"user_name\")]   // JSON 用 user_name、Rust 用 username\n    username: String,\n    #[serde(default)]                // 缺這欄就用預設值\n    retries: u32,\n}\n```\n\n> 💡 Serde 不只 JSON——換套件就能處理 YAML、TOML、MessagePack，**同一套 derive 通吃各種格式**。\n\n### 🎯 重點回顧\n\n- Serde＝Rust 序列化標準，#[derive(Serialize, Deserialize)]\n- serde_json::to_string / from_str 在物件與 JSON 間互轉\n- #[serde(rename / default)] 客製欄位；換套件通吃 YAML / TOML\n\n**☕ 用人話講**\n\n**Serde** 是 Rust 處理資料格式（JSON / YAML / TOML…）的標準套件。(1) 幫 struct 加 **`#[derive(Serialize, Deserialize)]`**，它就獲得「跟 JSON 互轉」的能力 (2) **物件 → JSON** 用 `serde_json::to_string`、**JSON → 物件** 用 `from_str`，一行搞定 (3) 用 `#[serde(rename / default)]` 客製欄位名跟預設值。**一句話記住**：Serde 像萬用翻譯機——struct 貼上標籤就能在「Rust 物件」跟「JSON 字串」之間自由互翻；同一套 derive 還通吃 YAML、TOML，是 Rust 生態的基礎建設。\n",
       "tip": {
-        "type": "pro",
-        "text": "台灣科技公司面試 90% 會問「Rust」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+        "type": "practical",
+        "text": "Cargo.toml 記得開 serde 的 derive feature：serde = { version = \"1\", features = [\"derive\"] }，才能用 #[derive(Serialize, Deserialize)]。"
       },
       "xp": 10,
       "exercise": {
-        "question": "安裝 lesson 內介紹的工具、用官方的 quick start 跑一次 hello world。記錄安裝過程踩了哪些坑。",
-        "hint": "工具的學習曲線通常卡在「環境設定」這關。Node 版本、Python 版本、權限、PATH 變數、port 衝突——遇到一個解一個。",
-        "answer": "踩坑筆記範本：『遇到：[錯誤訊息] → 原因：[根本原因] → 解：[具體指令]』。整理在自己的 GitHub gist 或 Notion、下次遇到同樣坑直接複製貼上 = 把痛苦變資產。"
+        "question": "要讓 Rust struct 能跟 JSON 互轉要加什麼？",
+        "hint": "derive。",
+        "answer": "加 #[derive(Serialize, Deserialize)]（來自 serde）。然後用 serde_json::to_string 轉 JSON、from_str 轉回物件。"
       },
       "outline": [
         {
-          "level": 3,
-          "text": "Google Search Console（GSC）"
+          "text": "1. 幫 struct 加序列化能力",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "Google Analytics 4（GA4）"
+          "text": "2. 物件 → JSON（serialize）",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "Lighthouse"
+          "text": "3. JSON → 物件（deserialize）",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "Hotjar / Microsoft Clarity"
+          "text": "4. 欄位客製",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "進階：Ahrefs / Semrush"
-        },
+          "text": "🎯 重點回顧",
+          "level": 3
+        }
+      ],
+      "playgrounds": [
         {
-          "level": 3,
-          "text": "2026 開源替代"
-        },
-        {
-          "level": 3,
-          "text": "SEO 監控 SOP"
+          "key": "33.20.auto",
+          "language": "rust",
+          "title": "Serde 概念示意",
+          "hint": "playground 不一定有 serde，這裡手動示意物件→JSON。",
+          "initialCode": "// Serde 的精神：struct 跟 JSON 互轉（這裡手動示意）\nstruct User { name: String, age: u32 }\n\nfn to_json(u: &User) -> String {\n    format!(\"{{\\\"name\\\":\\\"{}\\\",\\\"age\\\":{}}}\", u.name, u.age)\n}\n\nfn main() {\n    let u = User { name: String::from(\"Nami\"), age: 20 };\n    println!(\"{}\", to_json(&u));\n}"
         }
       ]
     },
     {
       "id": "33.21",
       "number": "LESSON 33.21",
-      "title": "廣告：Google Ads / Meta Ads 基礎",
-      "oneLineSummary": "Macro：「Rust 的 metaprogramming」—寫 code 來產生 code。",
-      "analogy": "像程式碼產生器—寫 macro 自動生 100 個重複 code。#[derive(Debug)] 就是 macro 的成果。進階 Rust 必懂。",
-      "content": "SEO 是長期，廣告是**短期見效**。新產品 launch、短期活動必用。\n\n  \n### 2026 廣告平台地圖\n\n  \n- **Google Ads**：搜尋、Display、YouTube、Shopping\n- **Meta Ads**：Facebook、Instagram、Threads\n- **TikTok Ads**：年輕族群\n- **LINE Ads**：台灣必投\n- **X Ads**：科技 / 國際\n- **LinkedIn Ads**：B2B\n- **Reddit Ads**：利基社群\n\n  \n### Google Ads 基礎\n\n  \n#### 類型\n\n  \n- **Search**：搜尋結果頁，按關鍵字\n- **Display**：圖片廣告，到處掛\n- **Shopping**：產品列表（電商必投）\n- **Video**：YouTube 廣告\n- **Performance Max**：自動跨網路（2024+ 主推）\n\n  \n#### 關鍵指標\n\n  \n- **CPC**：每次點擊成本\n- **CTR**：點擊率\n- **Conversion Rate**：轉換率\n- **CPA**：每次轉換成本\n- **ROAS**：廣告投資回報率\n\n  \n### Meta Ads 基礎\n\n  \n#### 類型\n\n  \n- 動態廣告（自動產生）\n- 輪播廣告\n- 影片廣告\n- Stories / Reels 廣告\n- Lead 廣告（直接收名單）\n\n  \n#### 受眾鎖定\n\n  \n- **核心受眾**：年齡、性別、興趣、行為\n- **自訂受眾**：上傳 Email / 電話清單\n- **類似受眾**：Meta 找像你客戶的人\n- **重定向**：訪過你網站的人\n\n  \n### ROAS 計算\n\n```text\nROAS = 廣告帶來收入 ÷ 廣告花費\n\n例：\n- 花 NT$10,000 廣告\n- 帶來 30 個訂單，每單 NT$1000\n- 收入 NT$30,000\n- ROAS = 3.0\n\n行業基準：\n- 電商：ROAS 3-5 算健康\n- SaaS：看 LTV，可以 ROAS 1 但 LTV 高\n- 高毛利商品：ROAS 2 也夠\n- 低毛利：ROAS 要 5+\n```\n\n  \n### 個人開發者廣告 SOP\n\n  \n1. **先做好 landing page**（轉換率 \n\n⚡\n學習加速器\n\n把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。",
+      "title": "測試 + Benchmark — 內建就很強",
+      "oneLineSummary": "Rust 內建測試框架：#[test] 寫單元測試、cargo test 跑；assert 系列斷言；還能寫文件測試與基準測試。",
+      "analogy": "像 Rust 自帶品管設備 + 碼表——不用另外買，#[test] 標一下、cargo test 跑，連文件裡的範例都能當測試驗。",
+      "content": "Rust **內建測試框架**，不用裝任何套件，「cargo test」就跑。\n\n### 1. 單元測試\n\n```rust\nfn add(a: i32, b: i32) -> i32 { a + b }\n\n#[cfg(test)]\nmod tests {\n    use super::*;\n\n    #[test]\n    fn test_add() {\n        assert_eq!(add(2, 3), 5);          // 相等\n        assert!(add(2, 3) > 0);            // 為真\n        assert_ne!(add(2, 3), 6);          // 不相等\n    }\n}\n```\n\n### 2. 測試會 panic 的情況\n\n```rust\n#[test]\n#[should_panic(expected = \"除以 0\")]\nfn test_divide_zero() {\n    divide(1, 0);   // 預期它會 panic\n}\n```\n\n### 3. 測 Result（用 ? 更乾淨）\n\n```rust\n#[test]\nfn test_parse() -> Result<(), std::num::ParseIntError> {\n    let n: i32 = \"42\".parse()?;\n    assert_eq!(n, 42);\n    Ok(())\n}\n```\n\n### 4. 文件測試 + Benchmark\n\n- **文件測試**：寫在「///」文件註解裡的程式碼範例，「cargo test」會**真的執行它**——保證範例不過時。\n- **Benchmark**：用 criterion 套件量「跑多快」、做效能基準。\n\n> 💡 Rust 把測試當一等公民——測試跟原始碼放同檔、cargo test 一鍵跑，連文件範例都驗。\n\n### 🎯 重點回顧\n\n- #[test] 標測試、cargo test 跑、assert_eq! 等斷言\n- #[should_panic] 測該爆的情況、測試也能回 Result 用 ?\n- 文件範例會被當測試跑、效能基準用 criterion\n\n**☕ 用人話講**\n\nRust 把測試當一等公民、**內建就很強**，不用裝套件。(1) **`#[test]`** 標一個測試函式、**`cargo test`** 一鍵跑全部 (2) 斷言用 `assert_eq!`（相等）、`assert!`（為真）、`assert_ne!`（不等） (3) `#[should_panic]` 測「該爆的有沒有爆」、測試也能回 `Result` 用 `?` (4) 連寫在 `///` 文件註解裡的範例都會被 `cargo test` **真的執行**（文件測試），保證範例不過時；效能基準用 `criterion`。**一句話記住**：像 Rust 自帶品管設備 + 碼表——標一下、跑一下，連文件範例都幫你驗，寫測試零摩擦。\n",
       "tip": {
         "type": "practical",
-        "text": "把這節學到的馬上應用到一個小東西—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。"
+        "text": "測試跟程式放同一個檔（用 #[cfg(test)] mod tests 包起來），改 code 後 cargo test 一鍵全跑。"
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Rust 寫測試要裝額外套件嗎？文件註解裡的範例會怎樣？",
+        "hint": "內建、文件測試。",
+        "answer": "不用，Rust 內建測試框架（#[test] 標、cargo test 跑）。寫在 /// 文件註解裡的範例會被 cargo test 真的執行，確保範例不過時。"
       },
       "outline": [
         {
-          "level": 3,
-          "text": "2026 廣告平台地圖"
+          "text": "1. 單元測試",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "Google Ads 基礎"
+          "text": "2. 測試會 panic 的情況",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "Meta Ads 基礎"
+          "text": "3. 測 Result（用 ? 更乾淨）",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "ROAS 計算"
+          "text": "4. 文件測試 + Benchmark",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "個人開發者廣告 SOP"
+          "text": "🎯 重點回顧",
+          "level": 3
+        }
+      ],
+      "playgrounds": [
+        {
+          "key": "33.21.auto",
+          "language": "rust",
+          "title": "斷言的概念",
+          "hint": "playground 跑 main，這裡用 assert 示意測試斷言。",
+          "initialCode": "fn add(a: i32, b: i32) -> i32 { a + b }\n\nfn main() {\n    assert_eq!(add(2, 3), 5);   // 通過就沒事、失敗會 panic\n    assert!(add(2, 3) > 0);\n    println!(\"所有斷言通過 ✅\");\n}"
         }
       ]
     },
     {
       "id": "33.22",
       "number": "LESSON 33.22",
-      "title": "轉換漏斗：從流量到付費客戶",
-      "oneLineSummary": "Unsafe Rust：「需要時可以解開安全限制」—但要小心。",
-      "analogy": "像特殊許可證—正常情況下 Rust 不准、unsafe block 才能寫底層操作（指標 / FFI）。99% Rust 程式不需要、但寫 library 偶爾要。",
-      "content": "有 10000 人來，**只有 10 個付費**。剩下的去哪了？這就是轉換漏斗。\n\n  \n### 典型 SaaS 漏斗\n\n```text\n10000 訪客\n   ↓ (50% bounce)\n5000 看內容超過 30 秒\n   ↓ (10% sign up)\n500 註冊\n   ↓ (40% activate)\n200 第一次使用核心功能\n   ↓ (10% convert)\n20 付費\n\n整體轉換率：0.2%\n業界平均 SaaS：1-3%\n```\n\n  \n### 每層優化\n\n  \n#### 1. 流量 → 看內容（降跳出率）\n\n  \n- 頁面速度（CWV）\n- 第一屏內容清楚（5 秒測試）\n- 明確 value proposition\n- 社會證明（評論、客戶 logo）\n\n  \n#### 2. 看內容 → 註冊\n\n  \n- 明確 CTA（不要藏在 footer）\n- 降低門檻（免費試用、無需信用卡）\n- 表單欄位少（Email 一欄就夠）\n- OAuth 登入選項（Google、GitHub）\n\n  \n#### 3. 註冊 → 啟動（最容易流失）\n\n  \n- **Onboarding**：第一次用引導\n- 填空表單 / template\n- 5 分鐘內看到價值\n- 「Aha moment」越快越好\n\n  \n#### 4. 啟動 → 付費\n\n  \n- 免費版有清楚限制\n- 升級時機自然（用量到上限）\n- 付費頁面簡單明確\n- 多種付款方式\n- 退費政策清楚\n\n  \n### AARRR 框架（海盜指標）\n\n  \n- **Acquisition**（獲取）：怎麼來的\n- **Activation**（啟動）：第一次體驗\n- **Retention**（留存）：會不會回來\n- **Revenue**（收入）：付不付錢\n- **Referral**（推薦）：會不會分享\n\n  \n### 追蹤事件\n\n```js\n// PostHog / Mixpanel\nposthog.capture(\"signup_started\");\nposthog.capture(\"signup_completed\", { source: \"google\" });\nposthog.capture(\"first_project_created\");\nposthog.capture(\"upgraded\", { plan: \"pro\", mrr: 20 });\n\n// 之後可以畫漏斗、留存表、cohort 分析\n```\n\n  \n### 北極星指標（North Star Metric）\n\n  \n每家公司有**一個**關鍵指標代表成功：\n\n  \n- Spotify：分鐘聽歌時長\n- Airbnb：訂房晚數\n- Facebook：MAU\n- Notion：建立的頁面數\n\n  \n定義你的北極星，**所有決策圍繞它**。\n\n  \n### A/B 測試\n\n  \n不要憑感覺改，**數據驗證**：\n\n  \n- 每次只改一個變數\n- 樣本數要夠（> 1000 訪客）\n- 看顯著性（p-value \n\n🚀\n2026 趨勢\n\n這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。",
+      "title": "Macro 巨集 — Rust 的元編程",
+      "oneLineSummary": "巨集在編譯期「展開成程式碼」：好處是省重複（如 vec!、println!）；分宣告式 macro_rules! 與更強的程序式 macro。",
+      "analogy": "像萬能印章——蓋一下就自動印出一整段重複的程式碼；你天天用的 println!、vec!、#[derive] 全是巨集。",
+      "content": "**巨集（macro）**是 Rust 的元編程——在編譯期「**產生程式碼**」。你其實天天在用：println!、vec!、#[derive(...)] 都是巨集（後面有「!」的就是）。\n\n### 1. 為什麼需要巨集\n\n函式做不到的事，巨集可以：接受**任意數量參數**（println! 能吃任意個）、產生程式碼、在編譯期運作。\n\n### 2. 宣告式巨集 macro_rules!\n\n```rust\nmacro_rules! my_vec {\n    ( $( $x:expr ),* ) => {     // 比對「逗號分隔的多個運算式」\n        {\n            let mut v = Vec::new();\n            $( v.push($x); )*    // 每個都展開成一行 push\n            v\n        }\n    };\n}\n\nfn main() {\n    let v = my_vec![1, 2, 3];   // 展開成三行 push\n    println!(\"{:?}\", v);\n}\n```\n\n### 3. 程序式巨集（procedural macro）\n\n更強、但要寫在獨立 crate。最常見的就是 **#[derive(...)]**——你加 #[derive(Debug)]，背後就是程序式巨集幫你生出實作 Debug 的程式碼。\n\n### 4. 何時用巨集\n\n巨集很強但難寫、難讀。**有現成的（vec!、derive）就用；自己寫要慎重**——能用函式 / 泛型解決就別動巨集。\n\n> 💡 新手只要「會用」巨集（println!、vec!、derive）就好，「自己寫」巨集是進階中的進階，遇到再學。\n\n### 🎯 重點回顧\n\n- 巨集在編譯期產生程式碼（有「!」的：println!、vec!）\n- macro_rules! 宣告式；#[derive] 是程序式巨集\n- 新手會用就好、自己寫慎重（能用函式就別寫巨集）\n\n**☕ 用人話講**\n\n巨集（macro）是 Rust 的「元編程」——在**編譯期自動產生程式碼**。其實你天天在用：後面有 `!` 的 `println!`、`vec!`，還有 `#[derive(Debug)]`，全是巨集。(1) 它能做函式做不到的事，像 `println!` 吃任意數量參數 (2) 自己定義用 `macro_rules!`（宣告式）；`#[derive]` 是更強的程序式巨集 (3) **新手會用就好**（println!/vec!/derive），自己寫巨集是進階中的進階。**一句話記住**：巨集像萬能印章——蓋一下就印出一整段重複程式碼；威力大但難讀，能用函式或泛型解決的就別動巨集，遇到真的需要再學寫。\n",
       "tip": {
-        "type": "trend",
-        "text": "這個技術 2026 還在主流、未來 5 年不會過時。但工具會更新—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。"
+        "type": "concept",
+        "text": "新手對巨集的目標是「會用、看得懂」：認得 ! 結尾是巨集、#[derive] 在自動生 code。自己寫巨集等熟了再碰。"
       },
       "xp": 10,
       "playgrounds": [
         {
           "key": "33.22.auto",
-          "language": "javascript",
-          "title": "試試看",
-          "initialCode": "// PostHog / Mixpanel\nposthog.capture(\"signup_started\");\nposthog.capture(\"signup_completed\", { source: \"google\" });\nposthog.capture(\"first_project_created\");\nposthog.capture(\"upgraded\", { plan: \"pro\", mrr: 20 });\n\n// 之後可以畫漏斗、留存表、cohort 分析",
-          "hint": "改 code、按執行看結果"
+          "language": "rust",
+          "title": "自己寫一個簡單巨集",
+          "hint": "my_vec! 展開成多行 push。",
+          "initialCode": "macro_rules! my_vec {\n    ( $( $x:expr ),* ) => {{\n        let mut v = Vec::new();\n        $( v.push($x); )*\n        v\n    }};\n}\n\nfn main() {\n    let v = my_vec![10, 20, 30];\n    println!(\"{:?}\", v);\n}"
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "怎麼一眼看出某個東西是巨集？#[derive(Debug)] 算巨集嗎？",
+        "hint": "驚嘆號。",
+        "answer": "後面有 ! 的就是巨集（如 println!、vec!）。#[derive(Debug)] 也是巨集（程序式巨集），它在編譯期自動產生實作 Debug trait 的程式碼。"
       },
       "outline": [
         {
-          "level": 3,
-          "text": "典型 SaaS 漏斗"
+          "text": "1. 為什麼需要巨集",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "每層優化"
+          "text": "2. 宣告式巨集 macro_rules!",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "AARRR 框架（海盜指標）"
+          "text": "3. 程序式巨集（procedural macro）",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "追蹤事件"
+          "text": "4. 何時用巨集",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "北極星指標（North Star Metric）"
-        },
-        {
-          "level": 3,
-          "text": "A/B 測試"
+          "text": "🎯 重點回顧",
+          "level": 3
         }
       ]
     },
     {
       "id": "33.23",
       "number": "LESSON 33.23",
-      "title": "AI 時代的行銷地圖",
-      "oneLineSummary": "整章實戰：用 Rust + Axum + sqlx 寫一個高性能 API—體驗 Rust 後端的爽感。",
-      "analogy": "像最後的畢業考—寫過 Rust 後端、看其他語言都會覺得「為什麼這樣寫」。Portfolio 高階加分。",
-      "content": "整章看完，給你**2026 整合策略**。\n\n  \n### 個人開發者的行銷組合（最低配）\n\n```text\n1. SEO（長期）\n   - 1 週 1 篇深度部落格\n   - Topic cluster 策略\n   - On-page SEO 完整\n\n2. GEO / AEO（同 SEO 做）\n   - JSON-LD 結構化資料\n   - llms.txt\n   - FAQ + 直接答案\n\n3. Email（自有清單）\n   - 部落格訂閱\n   - 自動 onboarding\n\n4. 1 個社群（深耕）\n   - 看目標客戶在哪\n   - 每天 1-2 則\n\n5. LINE OA（台灣必）\n   - 加好友引導\n   - 月發 2-4 則\n\n6. 數據追蹤\n   - GSC + GA4 + PostHog\n   - 每週看一次\n\n成本：$0（不投廣告）\n時間：每週 10-15 小時\n預期：6 個月達 1000 MAU、12 個月達 10000 MAU\n```\n\n  \n### 2026 行銷的真實\n\n  \n- **SEO 流量被 AI Overview 吃掉一部分**—but 仍是最大來源\n- **內容質量門檻變高**—AI 內容氾濫，真人經驗稀缺\n- **Email 是最穩的**—不依賴平台\n- **個人品牌 > 企業品牌**—大眾喜歡真人\n- **社群演算法更短視**—持續創作才行\n- **付費廣告變貴**—但仍有效\n\n  \n### 行銷的本質沒變\n\n  \n不管 SEO、GEO、AEO、social、廣告—**核心都是「解決使用者問題」**。技術會變，但這個不變。\n\n  \n### 給工程師的建議\n\n  \n1. **把行銷當「另一種編程」**：可量化、可優化、可自動化\n2. **學會講人話**：技術文件 ≠ 行銷文案\n3. **每個 feature 都想 GTM**：發布 = 行銷\n4. **分析數據**：用工程師擅長的數據思維\n5. **自動化重複工作**：發文、追蹤、回覆\n6. **持續實驗**：A/B 測、迭代\n\n  \n### 學習路徑（從新手到專家）\n\n  \n1. **第 1 個月**：SEO 基礎（這章 + GSC）\n2. **第 2 個月**：寫 10 篇部落格\n3. **第 3 個月**：Email + 一個社群\n4. **第 4-6 個月**：觀察數據、優化\n5. **第 7-12 個月**：加 LINE、實驗廣告\n6. **第 2 年**：建立個人品牌、外部 backlink\n\n  \n### 推薦進階資源\n\n  \n- **Backlinko**：SEO 經典部落格\n- **Ahrefs Blog**：實戰研究\n- **Moz**：SEO 老牌\n- **Indie Hackers**：個人開發者社群\n- **Marketing Examples**：行銷案例\n- **Stratechery**：科技商業分析\n\n  \n### 2026 最重要心法\n\n  \n「**不是流量問題，是價值問題**」。沒人看你的網站，**99% 機率不是行銷做不好**，是「**你的東西不夠值得被看**」。\n\n  \n先把產品做好、把內容寫好，**行銷只是放大器**—好東西放大變更好，爛東西放大變更爛。\n\n  \n**🚀 進階技巧**\n\n2026 indie hacker 黃金組合：**SEO + 個人品牌 + Email**。三個都不快但複利效應強。看 indie hacker 富豪榜，幾乎全都靠這三個發跡。沒人靠純付費廣告做大的（成本越來越高）。\n\n  \n\n  \n\n🛠️\n工具推薦\n\n配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。",
+      "title": "Unsafe Rust — 必要時解開安全帶",
+      "oneLineSummary": "unsafe 區塊讓你做編譯器無法保證安全的事（裸指標、呼叫 C…）；用來實作底層、跟 C 互通，但範圍要小、責任在你。",
+      "analogy": "像賽車的「手動模式」——平常自動防護全開，極少數情況才切手動，但出事自己負責，所以範圍越小越好。",
+      "content": "Rust 預設「安全」，但有些事編譯器無法證明安全（操作硬體、跟 C 函式庫互通）。**unsafe** 讓你「自己負責」做這些事。\n\n### 1. unsafe 能做的 5 件事\n\n- 解引用**裸指標**（raw pointer）\n- 呼叫 unsafe 函式 / 呼叫 **C 函式**（FFI）\n- 存取 / 修改可變的靜態變數\n- 實作 unsafe trait\n- 存取 union 欄位\n\n### 2. 範例：裸指標\n\n```rust\nlet mut num = 5;\nlet r1 = &num as *const i32;     // 不可變裸指標\nlet r2 = &mut num as *mut i32;   // 可變裸指標\n\nunsafe {\n    println!(\"r1 = {}\", *r1);     // 解引用裸指標只能在 unsafe 裡\n    *r2 = 10;\n}\n```\n\n### 3. 跟 C 互通（FFI）\n\n```rust\nextern \"C\" {\n    fn abs(input: i32) -> i32;   // 用 C 標準庫的 abs\n}\n\nfn main() {\n    unsafe {\n        println!(\"{}\", abs(-3));  // 3\n    }\n}\n```\n\n### 4. 鐵則\n\n- **unsafe 不是「關掉所有檢查」**——只是多開放那 5 件事，其他規則照舊\n- **範圍越小越好**：把 unsafe 包在安全的函式裡、對外提供安全介面\n- **能不用就不用**：99% 的應用程式根本碰不到\n\n> 💡 unsafe 的存在不是讓 Rust「不安全」，而是「把不安全的部分明確圈起來」——出問題時，你知道只可能在這幾個 unsafe 區塊裡。\n\n### 🎯 重點回顧\n\n- unsafe 開放 5 件編譯器無法保證安全的事（裸指標、FFI…）\n- 不是關掉所有檢查、範圍要越小越好、能不用就不用\n- 用來做底層 / 跟 C 互通；應用層 99% 碰不到\n\n**☕ 用人話講**\n\nRust 預設全程安全，但有些事編譯器無法證明安全（操作硬體、呼叫 C 函式庫）。**`unsafe` 區塊**讓你「自己負責」做這些事。(1) 它開放 5 件事：解裸指標、呼叫 C 函式（FFI）、改可變靜態變數等 (2) 重點：**unsafe 不是「關掉所有檢查」**，只是多開放那幾件、其他規則照舊 (3) 鐵則是**範圍越小越好**、**能不用就不用**（應用層 99% 碰不到）。**一句話記住**：像賽車的「手動模式」——平常自動防護全開，極少數情況才切手動、出事自己扛。unsafe 的價值是「把不安全的部分明確圈起來」，出問題只可能在那幾塊、好排查。\n",
       "tip": {
-        "type": "practical",
-        "text": "配合這節用的工具：(1) VS Code（編輯器、免費）(2) Chrome DevTools（F12 開啟、除錯神器）(3) Live Server（VS Code 擴充、即時預覽）(4) GitHub Copilot / Cursor（AI 寫程式、學習加速 2-10x）。"
+        "type": "warn",
+        "text": "看到 unsafe 別怕、但別亂用。應用程式幾乎用不到；真要用就把它包在小範圍、對外給安全介面。它是「圈出危險區」、不是「全面放行」。"
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "unsafe 是「關掉 Rust 所有安全檢查」嗎？使用原則是什麼？",
+        "hint": "圈起來。",
+        "answer": "不是。unsafe 只多開放 5 件編譯器無法保證安全的事，其他規則照舊。原則是：範圍越小越好、包在安全函式裡對外給安全介面、能不用就不用。"
       },
       "outline": [
         {
-          "level": 3,
-          "text": "個人開發者的行銷組合（最低配）"
+          "text": "1. unsafe 能做的 5 件事",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "2026 行銷的真實"
+          "text": "2. 範例：裸指標",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "行銷的本質沒變"
+          "text": "3. 跟 C 互通（FFI）",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "給工程師的建議"
+          "text": "4. 鐵則",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "學習路徑（從新手到專家）"
-        },
+          "text": "🎯 重點回顧",
+          "level": 3
+        }
+      ],
+      "playgrounds": [
         {
-          "level": 3,
-          "text": "推薦進階資源"
-        },
-        {
-          "level": 3,
-          "text": "2026 最重要心法"
+          "key": "33.23.auto",
+          "language": "rust",
+          "title": "unsafe 裸指標",
+          "hint": "解引用裸指標只能寫在 unsafe 區塊裡。",
+          "initialCode": "fn main() {\n    let mut num = 5;\n    let r = &mut num as *mut i32;   // 裸指標\n\n    unsafe {\n        *r = 10;                    // 只能在 unsafe 裡解引用\n        println!(\"num = {}\", *r);\n    }\n    println!(\"外面 num = {}\", num);\n}"
         }
       ]
     },
     {
-      "title": "Rust async/await：Tokio runtime 完整",
-      "oneLineSummary": "tokio 是 Rust 的 Node.js runtime—99% 後端 / CLI 用它",
-      "analogy": "像 Node 內建 event loop、但 Rust 不內建—要選 runtime（tokio / async-std / smol），tokio 是 90% 場景的選擇。",
-      "content": "## 基本 async\n```rust\n// Cargo.toml\n// tokio = { version = \"1\", features = [\"full\"] }\n\nuse tokio::time::{sleep, Duration};\n\n#[tokio::main]\nasync fn main() {\n    println!(\"Start\");\n    sleep(Duration::from_secs(1)).await;\n    println!(\"After 1 sec\");\n}\n```\n\n## 並發\n```rust\nuse tokio::time::{sleep, Duration};\n\n#[tokio::main]\nasync fn main() {\n    // 序列：3 秒\n    let r1 = task1().await;\n    let r2 = task2().await;\n    let r3 = task3().await;\n\n    // 並發：1 秒\n    let (r1, r2, r3) = tokio::join!(task1(), task2(), task3());\n}\n\nasync fn task1() -> u32 {\n    sleep(Duration::from_secs(1)).await;\n    1\n}\n```\n\n## spawn（背景任務）\n```rust\nlet handle = tokio::spawn(async {\n    sleep(Duration::from_secs(1)).await;\n    42\n});\n\nprintln!(\"doing other things...\");\nlet result = handle.await.unwrap();\nprintln!(\"result: {}\", result);\n```\n\n## HTTP 請求（reqwest）\n```rust\n// Cargo.toml: reqwest = { version = \"0.12\", features = [\"json\"] }\nuse serde::Deserialize;\n\n#[derive(Deserialize, Debug)]\nstruct User { name: String }\n\n#[tokio::main]\nasync fn main() -> Result<(), Box<dyn std::error::Error>> {\n    let user: User = reqwest::get(\"https://api.github.com/users/luffysky\")\n        .await?\n        .json()\n        .await?;\n    println!(\"{:?}\", user);\n    Ok(())\n}\n```\n\n## 多個並發 fetch\n```rust\nuse futures::future::join_all;\n\nlet urls = vec![\"https://a.com\", \"https://b.com\", \"https://c.com\"];\nlet results = join_all(urls.into_iter().map(|url| async move {\n    reqwest::get(url).await\n})).await;\n```\n\n## Stream（類似 Node Streams）\n```rust\nuse futures::stream::{self, StreamExt};\n\nlet stream = stream::iter(1..=10)\n    .map(|n| async move {\n        sleep(Duration::from_millis(100)).await;\n        n * 2\n    })\n    .buffer_unordered(5);  // 並發 5 個\n\nlet results: Vec<i32> = stream.collect().await;\n```",
+      "title": "Rust 的應用領域：WASM / CLI / 嵌入式",
+      "oneLineSummary": "Rust 編成 WebAssembly 在瀏覽器跑高速運算、寫 CLI 工具（ripgrep/fd）、做嵌入式/IoT——靠安全+零成本攻佔各種底層場景。",
+      "analogy": "像一把能裝不同刀頭的瑞士刀——同一個 Rust，裝 WASM 刀頭跑瀏覽器、裝 CLI 刀頭做工具、裝嵌入式刀頭進晶片。",
+      "content": "Rust 的「快 + 安全 + 零成本」讓它在很多領域稱霸。\n\n### 1. WebAssembly（WASM）\n\nRust 能編譯成 WASM，在**瀏覽器裡以接近原生的速度跑**——做影像處理、遊戲、加密這種 JS 跑太慢的重運算。工具：wasm-pack。\n\n```rust\n// 用 wasm-bindgen 把 Rust 函式暴露給 JS\n#[wasm_bindgen]\npub fn fib(n: u32) -> u32 {\n    if n < 2 { n } else { fib(n - 1) + fib(n - 2) }\n}\n```\n\n### 2. CLI 命令列工具\n\n很多你天天用的快工具都是 Rust 寫的：**ripgrep**（rg，超快搜尋）、**fd**（找檔案）、**bat**。Rust 編出**單一執行檔、啟動快、不用 runtime**，做 CLI 完美。常配 clap 套件解析參數。\n\n### 3. 嵌入式 / IoT\n\nRust 能在**沒有作業系統**的微控制器上跑（no_std），記憶體安全對嵌入式特別珍貴（這些裝置難更新、出 bug 代價高）。\n\n### 4. 其他\n\n- **區塊鏈**：Solana、Polkadot 都用 Rust\n- **資料庫 / 基礎設施**：很多新一代資料庫、Cloudflare 的服務用 Rust\n\n> 💡 共同點：這些場景都要「又快又不能崩」——正是 Rust 的甜蜜點。\n\n### 🎯 重點回顧\n\n- **WASM**：瀏覽器裡跑高速運算（wasm-pack / wasm-bindgen）\n- **CLI**：單一執行檔、啟動快（ripgrep、fd 都是 Rust）\n- **嵌入式 / IoT**：no_std、記憶體安全；區塊鏈也大量用 Rust\n\n**☕ 用人話講**\n\nRust 的「快 + 安全 + 不用 runtime」讓它攻佔很多底層場景：(1) **WebAssembly**——編成 WASM 在瀏覽器以接近原生速度跑，做影像/遊戲/加密這種 JS 太慢的重運算 (2) **CLI 工具**——你天天用的 ripgrep（超快搜尋）、fd 都是 Rust 寫的，因為它編出單一執行檔、啟動快、不用裝 runtime (3) **嵌入式/IoT**——能在沒作業系統的晶片上跑（no_std） (4) 區塊鏈（Solana）、新一代資料庫也大量用。**一句話記住**：像能裝不同刀頭的瑞士刀——同一個 Rust 跑瀏覽器/做工具/進晶片；共同點都是「又快又不能崩」，正是 Rust 的甜蜜點。\n",
       "tip": {
-        "type": "pro",
-        "text": "Rust 後端 99% 用 tokio。Axum / Actix-web / Tower 都建在 tokio 上。Cloudflare、Discord、Dropbox 核心服務都跑 tokio。"
+        "type": "concept",
+        "text": "選 Rust 的判斷：你的場景是不是「又要快、又絕對不能在執行時崩潰」？是（系統、CLI、WASM、嵌入式、金融）就很適合；只是一般 CRUD 網站，用 Go/Node 開發更快。"
       },
       "id": "33.24",
       "number": "LESSON 33.24",
@@ -1099,51 +1115,47 @@
         {
           "key": "33.24.auto",
           "language": "rust",
-          "title": "試試看",
-          "initialCode": "// Cargo.toml\n// tokio = { version = \"1\", features = [\"full\"] }\n\nuse tokio::time::{sleep, Duration};\n\n#[tokio::main]\nasync fn main() {\n    println!(\"Start\");\n    sleep(Duration::from_secs(1)).await;\n    println!(\"After 1 sec\");\n}",
-          "hint": "改 code、按執行看結果"
+          "title": "Rust 也能做的事",
+          "hint": "一個 Rust 編譯目標適用多種領域。",
+          "initialCode": "fn main() {\n    let targets = [\n        (\"WebAssembly\", \"瀏覽器裡跑高速運算\"),\n        (\"CLI 工具\", \"ripgrep / fd，啟動快、單一執行檔\"),\n        (\"嵌入式 / IoT\", \"no_std，無作業系統也能跑\"),\n        (\"區塊鏈\", \"Solana / Polkadot\"),\n    ];\n    for (name, use_case) in targets {\n        println!(\"{:14} -> {}\", name, use_case);\n    }\n}"
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "舉兩個 Rust 擅長的應用領域，並說它們的共同需求。",
+        "hint": "快 + 不崩。",
+        "answer": "例如 WebAssembly、CLI 工具（ripgrep）、嵌入式/IoT、區塊鏈。共同需求是「又要快、又絕對不能在執行時崩潰」——正是 Rust 安全 + 零成本的甜蜜點。"
       },
       "outline": [
         {
-          "level": 2,
-          "text": "基本 async"
+          "text": "1. WebAssembly（WASM）",
+          "level": 3
         },
         {
-          "level": 2,
-          "text": "並發"
+          "text": "2. CLI 命令列工具",
+          "level": 3
         },
         {
-          "level": 2,
-          "text": "spawn（背景任務）"
+          "text": "3. 嵌入式 / IoT",
+          "level": 3
         },
         {
-          "level": 2,
-          "text": "HTTP 請求（reqwest）"
+          "text": "4. 其他",
+          "level": 3
         },
         {
-          "level": 2,
-          "text": "多個並發 fetch"
-        },
-        {
-          "level": 2,
-          "text": "Stream（類似 Node Streams）"
+          "text": "🎯 重點回顧",
+          "level": 3
         }
       ]
     },
     {
-      "title": "Axum：Rust 最熱門 Web 框架",
-      "oneLineSummary": "tower + tokio + serde 黃金組合、效能爆量、type-safe",
-      "analogy": "像 Rust 版的 Express—但 type-safe + 效能快 50 倍。Cloudflare 雲端核心服務寫法。",
-      "content": "## Hello World\n```rust\n// Cargo.toml\n// axum = \"0.7\"\n// tokio = { version = \"1\", features = [\"full\"] }\n// serde = { version = \"1\", features = [\"derive\"] }\n\nuse axum::{routing::get, Router, Json};\nuse serde::Serialize;\n\n#[derive(Serialize)]\nstruct Hello { message: String }\n\nasync fn root() -> Json<Hello> {\n    Json(Hello { message: \"Hello Axum\".into() })\n}\n\n#[tokio::main]\nasync fn main() {\n    let app = Router::new().route(\"/\", get(root));\n\n    let listener = tokio::net::TcpListener::bind(\"0.0.0.0:3000\").await.unwrap();\n    axum::serve(listener, app).await.unwrap();\n}\n```\n\n## 動態路由 + Query\n```rust\nuse axum::extract::{Path, Query};\nuse serde::Deserialize;\n\n#[derive(Deserialize)]\nstruct Pagination { page: Option<u32> }\n\nasync fn user(Path(id): Path<u32>) -> String {\n    format!(\"User {}\", id)\n}\n\nasync fn list(Query(p): Query<Pagination>) -> String {\n    format!(\"Page {}\", p.page.unwrap_or(1))\n}\n\nlet app = Router::new()\n    .route(\"/users/:id\", get(user))\n    .route(\"/posts\", get(list));\n```\n\n## POST + JSON body\n```rust\nuse axum::{routing::post, Json};\nuse serde::{Serialize, Deserialize};\n\n#[derive(Deserialize)]\nstruct CreateUser { name: String, age: u32 }\n\n#[derive(Serialize)]\nstruct User { id: u32, name: String }\n\nasync fn create(Json(payload): Json<CreateUser>) -> Json<User> {\n    Json(User { id: 1, name: payload.name })\n}\n```\n\n## Middleware（tower）\n```rust\nuse axum::{Router, middleware};\nuse tower_http::cors::CorsLayer;\nuse tower_http::trace::TraceLayer;\n\nlet app = Router::new()\n    .route(\"/\", get(root))\n    .layer(CorsLayer::permissive())\n    .layer(TraceLayer::new_for_http());\n```\n\n## State（共享資料）\n```rust\nuse std::sync::Arc;\nuse axum::extract::State;\n\n#[derive(Clone)]\nstruct AppState { db_pool: Pool }\n\nasync fn handler(State(state): State<AppState>) -> String {\n    let users = state.db_pool.query(\"SELECT ...\").await;\n    format!(\"{} users\", users.len())\n}\n\nlet state = AppState { db_pool };\nlet app = Router::new().route(\"/\", get(handler)).with_state(state);\n```\n\n## sqlx（type-safe DB）\n```rust\nuse sqlx::PgPool;\n\n#[derive(sqlx::FromRow, Serialize)]\nstruct User { id: i32, name: String }\n\nasync fn users(State(pool): State<PgPool>) -> Json<Vec<User>> {\n    let users: Vec<User> = sqlx::query_as!(User, \"SELECT id, name FROM users\")\n        .fetch_all(&pool)\n        .await\n        .unwrap();\n    Json(users)\n}\n```\n編譯時連 DB 驗證 SQL！",
+      "title": "整章實戰：用 Axum + sqlx 做一個 API",
+      "oneLineSummary": "整合全章——Axum 定路由、sqlx 存取 PostgreSQL、Serde 回 JSON、anyhow 處理錯誤，做一個型別安全的 REST API。",
+      "analogy": "像期末作品——把這章學的所有零件（所有權、Axum、sqlx、Serde、錯誤處理）組成一台真的能跑的車。",
+      "content": "把整章學的串成一個小 API——這就是真實 Rust 後端的骨架。\n\n### 1. 技術棧\n\n- **Axum**：web 框架 / 路由\n- **sqlx**：連 PostgreSQL、編譯期檢查 SQL\n- **Serde**：回傳 JSON\n- **Tokio**：async runtime\n- **anyhow**：錯誤處理\n\n### 2. 完整骨架\n\n```rust\nuse axum::{routing::get, Json, Router, extract::State};\nuse serde::Serialize;\nuse sqlx::postgres::PgPool;\n\n#[derive(Serialize, sqlx::FromRow)]\nstruct User { id: i32, name: String }\n\n// handler：查所有 user、回 JSON\nasync fn list_users(State(pool): State<PgPool>)\n    -> Result<Json<Vec<User>>, String>\n{\n    let users = sqlx::query_as::<_, User>(\"SELECT id, name FROM users\")\n        .fetch_all(&pool)\n        .await\n        .map_err(|e| e.to_string())?;\n    Ok(Json(users))\n}\n\n#[tokio::main]\nasync fn main() -> anyhow::Result<()> {\n    let pool = PgPool::connect(\"postgres://localhost/mydb\").await?;\n    let app = Router::new()\n        .route(\"/users\", get(list_users))\n        .with_state(pool);                    // 把連線池注入 handler\n\n    let listener = tokio::net::TcpListener::bind(\"0.0.0.0:3000\").await?;\n    axum::serve(listener, app).await?;\n    Ok(())\n}\n```\n\n### 3. 這個小 API 用到的整章觀念\n\n- **所有權 / 借用**：&pool 借用連線池\n- **Result + ?**：每一步出錯就往上拋\n- **Serde**：#[derive(Serialize)] 自動轉 JSON\n- **泛型**：query_as::<_, User> 指定回傳型別\n- **async / Tokio**：handler 都是 async\n\n### 4. 下一步\n\n加上 POST（建立）、路徑參數（查單一 user）、middleware（驗證），就是一個完整可上線的 API。部署時「cargo build --release」編出單一執行檔、丟進 Docker，超輕量。\n\n### 🎯 重點回顧\n\n- Axum（路由）+ sqlx（DB）+ Serde（JSON）+ Tokio（async）= Rust 後端標準棧\n- 整章觀念（所有權、Result+?、泛型、async）全用上\n- --release 編單一執行檔 + Docker，部署超輕量\n\n**☕ 用人話講**\n\n整章總整合——用 **Axum + sqlx + Serde + Tokio + anyhow** 做一個真的能跑的 REST API：Axum 定路由、sqlx 連 PostgreSQL（編譯期還幫你檢查 SQL）、Serde 把結果自動轉 JSON、`?` 處理每一步的錯誤。這個小 API 把整章學的全用上了：**所有權/借用**、**Result + ?**、**Serde**、**泛型**、**async/Tokio**。**一句話記住**：像期末作品——把這章所有零件組成一台能跑的車；再加上 POST、路徑參數、驗證 middleware 就是完整可上線的後端，最後 `cargo build --release` 編出單一執行檔丟進 Docker，部署超輕量。這就是 Rust 寫後端的真實樣貌。\n",
       "tip": {
-        "type": "milestone",
-        "text": "Axum + sqlx + tokio 是 2026 Rust 後端黃金 stack。比 Go 慢學 2 倍、寫好後效能 + 安全性 + 維護性贏 Go 1 個檔次。"
+        "type": "practical",
+        "text": "Rust 後端標準棧記起來：Axum + sqlx + Serde + Tokio + anyhow。從這個骨架長出去（加 POST、驗證、middleware）就是完整 API。"
       },
       "id": "33.25",
       "number": "LESSON 33.25",
@@ -1152,40 +1164,36 @@
         {
           "key": "33.25.auto",
           "language": "rust",
-          "title": "試試看",
-          "initialCode": "// Cargo.toml\n// axum = \"0.7\"\n// tokio = { version = \"1\", features = [\"full\"] }\n// serde = { version = \"1\", features = [\"derive\"] }\n\nuse axum::{routing::get, Router, Json};\nuse serde::Serialize;\n\n#[derive(Serialize)]\nstruct Hello { message: String }\n\nasync fn root() -> Json<Hello> {\n    Json(Hello { message: \"Hello Axum\".into() })\n}\n\n#[tokio::main]\nasync fn main() {\n    let app = Router::new().route(\"/\", get(root));\n\n    let listener = tokio::net::TcpListener::bind(\"0.0.0.0:3000\").await.unwrap();\n    axum::serve(listener, app).await.unwrap();\n}",
-          "hint": "改 code、按執行看結果"
+          "title": "API handler 的全貌（示意）",
+          "hint": "playground 不連 DB，這裡示意 handler 組裝資料回 JSON。",
+          "initialCode": "// 把整章串起來：查資料 -> 組成物件 -> 回 JSON（示意）\nstruct User { id: i32, name: String }\n\nfn list_users() -> String {\n    let users = vec![\n        User { id: 1, name: String::from(\"Nami\") },\n        User { id: 2, name: String::from(\"Luffy\") },\n    ];\n    let items: Vec<String> = users.iter()\n        .map(|u| format!(\"{{\\\"id\\\":{},\\\"name\\\":\\\"{}\\\"}}\", u.id, u.name))\n        .collect();\n    format!(\"[{}]\", items.join(\",\"))\n}\n\nfn main() {\n    println!(\"GET /users -> {}\", list_users());\n}"
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "寫一個 Rust REST API 的標準技術棧有哪幾個？各負責什麼？",
+        "hint": "5 個。",
+        "answer": "Axum（路由）、sqlx（連 DB + 編譯期檢查 SQL）、Serde（轉 JSON）、Tokio（async runtime）、anyhow（錯誤處理）。組起來就是型別安全、高效能的後端 API。"
       },
       "outline": [
         {
-          "level": 2,
-          "text": "Hello World"
+          "text": "1. 技術棧",
+          "level": 3
         },
         {
-          "level": 2,
-          "text": "動態路由 + Query"
+          "text": "2. 完整骨架",
+          "level": 3
         },
         {
-          "level": 2,
-          "text": "POST + JSON body"
+          "text": "3. 這個小 API 用到的整章觀念",
+          "level": 3
         },
         {
-          "level": 2,
-          "text": "Middleware（tower）"
+          "text": "4. 下一步",
+          "level": 3
         },
         {
-          "level": 2,
-          "text": "State（共享資料）"
-        },
-        {
-          "level": 2,
-          "text": "sqlx（type-safe DB）"
+          "text": "🎯 重點回顧",
+          "level": 3
         }
       ]
     }
