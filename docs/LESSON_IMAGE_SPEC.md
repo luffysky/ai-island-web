@@ -130,10 +130,67 @@
 
 ---
 
+## D. 前端框架專區（📊 React / Vue / Vite / Next / Nuxt — 前端是多數人入門基礎，加碼詳細）
+
+> 林董指示：這幾章教學圖要「帶到一點 CRA」——雖然 2026 幾乎沒人用 Create React App 了，但要讓學員知道「過來人以前怎麼寫、為什麼現在改用 Vite」，理解工具演進。
+> 全部是 📊 概念 / 對照型，深色底 + 綠青點綴、繁中、底部「☕ 一句話總結」。
+
+### D-1. 工具鏈演進 + 建置工具（含 CRA 歷史，跨 ch08 / ch10）
+| 檔名 | lesson | 內容 |
+|---|---|---|
+| `ch08_frontend_tooling_history.png` | 8.2 | **前端建置工具演進時間軸**：手寫 `<script>` →（2016）**Webpack** →（2016-2023）**CRA / Create React App**（曾是 React 官方起手式、現已停止維護）→（2021+）**Vite** 成主流。一句「過來人：以前 `create-react-app`、現在 `npm create vite`，啟動快 10 倍」。|
+| `ch08_cra_vs_vite.png` | 8.2 | **CRA vs Vite 對照表**：啟動速度（CRA 數十秒 vs Vite 秒開）、熱更新、設定彈性、2026 官方現況（React 官網已不再推薦 CRA、改推 Vite / Next）。讓學員看懂「為什麼舊教學都寫 CRA、但你別再用」。|
+| `ch08_vite_how_it_works.png` | 8.2 | **Vite 為什麼快**：開發時用瀏覽器原生 ESM、用到哪個檔才即時編譯哪個（on-demand）；對比 CRA / Webpack「啟動先把整包打包完」。左右對照圖。|
+| `ch08_npm_scripts_flow.png` | 8.2 | `npm run dev / build / preview` 各做什麼：dev=開發伺服器（熱更新）、build=產出 production 靜態檔、preview=本機預覽打包結果。|
+
+### D-2. React 核心（ch08，補現有 component_tree / usestate_rerender / useeffect_lifecycle 之外）
+| 檔名 | lesson | 內容 |
+|---|---|---|
+| `ch08_jsx_to_js.png` | 8.3 | **JSX 怎麼變成 JS**：`<h1>Hi</h1>` →（編譯）→ `React.createElement('h1', null, 'Hi')`。破除「JSX 是 HTML」的誤解。|
+| `ch08_virtual_dom_diff.png` | 8.1 / 8.5 | **Virtual DOM diff**：state 變 → 算出新虛擬樹 → 跟舊的比對 → 只更新「真的有變」的真實 DOM 節點。|
+| `ch08_hooks_overview.png` | 8.5-8.11 | **常用 Hooks 一圖速查**：useState（狀態）/ useEffect（副作用）/ useRef（不重渲染的值）/ useMemo（快取值）/ useCallback（快取函數）/ useContext（跨層共享）各管什麼。|
+| `ch08_props_vs_state.png` | 8.4 / 8.5 | **props vs state**：props＝外面傳進來、唯讀；state＝元件自己的、可變、變了會重畫。對照圖。|
+| `ch08_server_vs_client_component.png` | 8.20 / 8.24 | **Server Component vs Client Component**：在哪裡跑、能不能用 useState / onClick、`"use client"` 邊界、誰能 import 誰。|
+
+### D-3. Vue 核心（ch09）
+| 檔名 | lesson | 內容 |
+|---|---|---|
+| `ch09_reactivity_system.png` | 9.4 / 9.11 | **Vue 響應式系統**：`ref` / `reactive` → Proxy 在背後盯著 → 資料一變、用到它的畫面自動更新。|
+| `ch09_sfc_anatomy.png` | 9.2 | **單檔元件（.vue）三段解剖**：`<template>`（畫面）/ `<script setup>`（邏輯）/ `<style scoped>`（只影響本元件的樣式）。|
+| `ch09_template_directives.png` | 9.3 / 9.12 | **模板指令速查**：`{{ }}` 插值 / `v-bind`(:) / `v-on`(@) / `v-if` / `v-for` / `v-model` 各做什麼，一圖對照。|
+| `ch09_composition_vs_options.png` | 9.11 | **Composition API vs Options API**：同一個 counter 兩種寫法並排，標出「為什麼 Vue 3 改推 Composition（相關邏輯擺一起）」。|
+| `ch09_props_emit_slot.png` | 9.5 / 9.13 | **元件通訊三招**：props 往下傳、emit 往上喊、slot 留位置插內容。箭頭方向圖。|
+| `ch09_vue_vs_react.png` | 9.10 / 9.23 | **Vue vs React 心智模型對照**：模板指令 vs JSX、響應式自動追蹤 vs 重新執行整個函數、學習曲線、生態。|
+
+### D-4. Next.js（ch10）
+| 檔名 | lesson | 內容 |
+|---|---|---|
+| `ch10_rendering_modes.png` | 10.2 | **五種渲染模式對照**：CSR / SSR / SSG / ISR / RSC——誰在「何時、由誰」產生 HTML，對 SEO 與速度的影響。一張大對照表（最重要）。|
+| `ch10_spa_vs_ssr_seo.png` | 10.1 | **純 SPA vs SSR 對 SEO 的差別**：CRA / Vite React 送「空殼」給 Google（看到空白）vs Next SSR 送「填好內容」（Google 讀得到）。呼應 D-1 的工具演進。|
+| `ch10_app_router_structure.png` | 10.3 | **App Router 檔案即路由**：`app/` 資料夾結構 ↔ 對應 URL，約定檔名 `page` / `layout` / `loading` / `error` 各是什麼。|
+| `ch10_server_client_boundary.png` | 10.4 | **Server / Client Component 邊界**：哪些在伺服器跑、哪些標 `"use client"` 在瀏覽器跑、資料怎麼用 props 往下傳。|
+| `ch10_data_cache_layers.png` | 10.8 | **Next.js 四層快取**：Request Memoization / Data Cache / Full Route Cache / Router Cache，一圖看懂「為什麼改了資料沒更新」。|
+
+### D-5. Nuxt（ch10 後半）
+| 檔名 | lesson | 內容 |
+|---|---|---|
+| `ch10_nuxt_structure.png` | 10.16 | **Nuxt 3 檔案結構 + 自動 import**：`pages/` 自動路由、`components/` 自動匯入（不用寫 import），跟 Next 對照。|
+| `ch10_nuxt_data_fetching.png` | 10.17 | **useFetch / useAsyncData / $fetch 決策樹**：三者差別 + 什麼時候用哪個。|
+| `ch10_routerules_render.png` | 10.19 | **Nuxt routeRules**：一個設定檔讓不同路由各自選渲染模式（這頁 SSG、那頁 SSR、另一頁 ISR）對照圖。|
+| `ch10_next_vs_nuxt.png` | 10.21 | **Next vs Nuxt 對照**：React 陣營 vs Vue 陣營、心智模型 80% 相同、各自殺手鐧（Next: RSC / Nuxt: routeRules + auto import）。|
+
+### D-6. 前端全景（收尾大圖）
+| 檔名 | lesson | 內容 |
+|---|---|---|
+| `ch08_frontend_landscape_2026.png` | 8.1 | **2026 前端全景路線圖**：框架（React / Vue / Svelte / Solid）→ meta-framework（Next / Nuxt / SvelteKit）→ 建置工具（Vite）→ 該怎麼選的決策路線。新手入門地圖。|
+
+---
+
 ## C. 建議產製順序
 
 1. **A 區（操作教學）全做** — 對應真實卡關、CP 值最高，且已有 6 張範例風格可參考。
 2. **B 區挑「最常被問」的**：ch07 變數賦值、ch17 JOIN、ch08 UI=f(state)、ch46 RAG、ch04 event loop。
-3. 其餘 B 區概念圖後續分批補。
+3. **D 區（前端框架專區）優先** — 林董指示前端是多數人入門基礎；先做 D-1 工具演進（含 CRA 歷史）、D-4 ch10 五種渲染模式、D-2 React Hooks 速查，這三組最常卡。
+4. 其餘 B / D 區概念圖後續分批補。
 
 > 生好圖丟進 `public/lesson-img/ch{NN}/`、跟我說一聲，我就依本表把 `![]()` 插進對應 lesson 的正確段落。
