@@ -21,6 +21,7 @@ export default function CookiesPage() {
 
       <h3>1. 必要型 Cookies（不可關閉）</h3>
       <p>提供核心服務所需、關閉將導致無法使用。</p>
+      <div className="overflow-x-auto">
       <table>
         <thead>
           <tr><th>名稱</th><th>用途</th><th>期限</th></tr>
@@ -43,9 +44,11 @@ export default function CookiesPage() {
           </tr>
         </tbody>
       </table>
+      </div>
 
       <h3>2. 功能型 Cookies</h3>
       <p>記住您的偏好（如主題、語言）、增強使用體驗。</p>
+      <div className="overflow-x-auto">
       <table>
         <thead>
           <tr><th>名稱</th><th>用途</th><th>期限</th></tr>
@@ -63,9 +66,11 @@ export default function CookiesPage() {
           </tr>
         </tbody>
       </table>
+      </div>
 
       <h3>3. 分析型 Cookies（可選）</h3>
       <p>協助我們瞭解使用者行為、改善服務。資料已匿名化、不會識別個別使用者。</p>
+      <div className="overflow-x-auto">
       <table>
         <thead>
           <tr><th>來源</th><th>用途</th><th>期限</th></tr>
@@ -78,6 +83,7 @@ export default function CookiesPage() {
           </tr>
         </tbody>
       </table>
+      </div>
 
       <h3>4. 第三方 Cookies</h3>
       <p>當您使用第三方登入時、相應服務會設定其 Cookies：</p>
