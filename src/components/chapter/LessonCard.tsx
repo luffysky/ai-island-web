@@ -6,6 +6,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import rehypeRaw from "rehype-raw";
+import { rehypeSmartLang } from "@/lib/rehype-smart-lang";
 import { Check, Lock, List, Clock } from "lucide-react";
 import { estimateReadingTime, formatReadingTime } from "@/lib/reading-time";
 import { motion } from "framer-motion";
@@ -119,7 +120,7 @@ export function LessonCard({
             <div className="prose-custom mb-4 min-w-0 max-w-full overflow-hidden">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
-                rehypePlugins={[rehypeRaw, rehypeHighlight]}
+                rehypePlugins={[rehypeRaw, rehypeSmartLang, [rehypeHighlight, { detect: true }]]}
                 components={{
                   pre: ({ node, children, ...props }) => {
                     // 從子節點抽 className（hast 結構：pre > code）
