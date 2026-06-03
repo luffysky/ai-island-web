@@ -14,7 +14,7 @@
       "title": "通用多語言遊樂場",
       "oneLineSummary": "支援多種語言、一站搞定。",
       "xp": 50,
-      "content": "下面這些遊樂場都支援多種語言、可以瀏覽器內直接寫 + 跑 code。",
+      "content": "下面這些遊樂場都支援多種語言、可以瀏覽器內直接寫 + 跑 code。\n\n**☕ 用人話講**\n\n通用多語言遊樂場。**一句話記住**：像線上試菜——不用裝環境，就能線上試跑各種語言的 code。\n",
       "resourceGroups": [
         {
           "title": "🎮 多語言通用",
@@ -157,7 +157,7 @@
       "title": "各語言官方遊樂場",
       "oneLineSummary": "每個語言官方都有 playground、體驗最原汁原味。",
       "xp": 50,
-      "content": "官方 playground 通常有最新語言特性、可以分享 URL。",
+      "content": "官方 playground 通常有最新語言特性、可以分享 URL。\n\n**☕ 用人話講**\n\n各語言官方遊樂場。**一句話記住**：像原廠試駕——每個語言官方都有 playground，體驗最原汁原味。\n",
       "resourceGroups": [
         {
           "title": "🎯 後端語言官方",
@@ -471,7 +471,7 @@
       "title": "資料庫 / SQL 遊樂場",
       "oneLineSummary": "不裝 DB 就能練 SQL、查 schema。",
       "xp": 50,
-      "content": "練 SQL 不用裝 Postgres、線上 playground 就夠。",
+      "content": "練 SQL 不用裝 Postgres、線上 playground 就夠。\n\n**☕ 用人話講**\n\n資料庫 / SQL 遊樂場。**一句話記住**：像不用裝 DB 的練習場——線上就能練 SQL、查 schema，零安裝。\n",
       "resourceGroups": [
         {
           "title": "🗄️ SQL / DB",
@@ -601,7 +601,7 @@
       "title": "AI / ML 遊樂場",
       "oneLineSummary": "玩 LLM、訓練模型、看 prompt 效果。",
       "xp": 50,
-      "content": "AI 圈很多 playground 可以體驗、不用自己架。",
+      "content": "AI 圈很多 playground 可以體驗、不用自己架。\n\n**☕ 用人話講**\n\nAI / ML 遊樂場。**一句話記住**：像 AI 試玩場——玩 prompt、訓練模型、看效果，邊玩邊懂。\n",
       "resourceGroups": [
         {
           "title": "🤖 LLM 對話",
@@ -878,7 +878,7 @@
       "title": "Regex / 工具類遊樂場",
       "oneLineSummary": "正則、JSON、API、CSS 各種工具網站。",
       "xp": 50,
-      "content": "工具型 playground、寫 code 時常開。",
+      "content": "工具型 playground、寫 code 時常開。\n\n**☕ 用人話講**\n\nRegex / 工具類遊樂場。**一句話記住**：像線上工具箱——測 regex、格式化 JSON、調 CSS，隨手就有。\n",
       "resourceGroups": [
         {
           "title": "🔍 正則表達式",
