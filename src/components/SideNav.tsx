@@ -43,6 +43,11 @@ export function SideNav() {
   const [open, setOpen] = useState(false);
   // 通知 overlay-stack: 開啟時 AdminFloatingToolbar / 綠寶會自動隱藏、不撞列表
   useOverlayRegister(open);
+  // 桌機：展開時讓主內容區（#main-content）平滑往右縮，不被側欄蓋住（樣式在 globals.css）
+  useEffect(() => {
+    document.body.classList.toggle("sidenav-open", open);
+    return () => document.body.classList.remove("sidenav-open");
+  }, [open]);
   const [tab, setTab] = useState<Tab>("chapters");
   const [chapters, setChapters] = useState<NavChapter[]>([]);
   const [expandedCh, setExpandedCh] = useState<Set<number>>(new Set());

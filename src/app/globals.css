@@ -346,6 +346,17 @@ html[data-theme="light"] ::-webkit-scrollbar-track { background: var(--color-bg-
   box-shadow: 0 4px 14px rgba(236, 72, 153, 0.25);
 }
 
+/* 桌機常駐章節大綱側欄：主內容區保留側欄寬度、不被蓋住；展開時平滑往右縮（伸縮式）*/
+@media (min-width: 1024px) {
+  #main-content {
+    padding-left: 3rem;          /* 收合細欄寬（對齊 SideNav lg:w-12）*/
+    transition: padding-left 0.3s ease-in-out;
+  }
+  body.sidenav-open #main-content {
+    padding-left: 18rem;         /* 展開寬（對齊 SideNav lg:w-72）*/
+  }
+}
+
 /* Markdown content */
 .prose-custom { @apply break-words; min-width: 0; }
 .prose-custom h2 { @apply text-2xl font-bold mt-8 mb-4 text-accent; }
