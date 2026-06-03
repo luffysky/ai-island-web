@@ -47,11 +47,24 @@
 
 ---
 
+## 進度更新（續做）
+
+三合一已推進到 **ch02–ch31 全部完成**（ch27/28/29/30 先前已有用人話講，本批補了 ch17-26、31 + 各章摘要錯位 + 佔位 PG）。
+- 摘要錯位修正大章：ch26（25 課）、ch31（16 課）、ch16（15 課）等
+- 佔位 playground 換掉：ch27/28/30 的 fibonacci、ch31 的 5 個、ch21/22/23/24/25 的 bash 等
+
+### 圖片規劃（依林董需求新增）
+- **D 區**：前端框架（React/Vue/Vite/Next/Nuxt + CRA 歷史）26 張
+- **E 區**：Python/資料分析/爬蟲/Node（ch26-31）33 張
+- **F 區**：補 ch01-25 缺的概念圖（ch03 UI/UX 優先）30+ 張
+- **A 區補**：create react / create vue / create nuxt 操作圖（含 CRA 對照）
+- 總計約 **110+ 張**概念圖待生，產製順序見 spec C 區
+
 ## ⏭️ 待續
 
-1. **用人話講 + 三合一**：剩 **ch17 起到 ch75**（約 59 章）。照同標準逐章做。
-2. **佔位 playground**：剩約 75 個待換（集中在 ch31/32/42-45/47 等，逐章處理）。
-3. **🖼️ 圖片 B 區（概念示意圖）**：仍未做、等林董生圖（見 LESSON_IMAGE_SPEC.md B 區）。
+1. **用人話講 + 三合一**：剩 **ch32 起到 ch75**（約 44 章）。照同標準逐章做。
+2. **佔位 playground**：剩 ch46/47/49 的 fibonacci（AI 章，做到時換）+ ch32-50 零星。
+3. **🖼️ 圖片**：B/D/E/F 區全部等林董生圖，依檔名插入。
 4. **C OPT-8**：RLS is_admin() + index（production DB）。
 5. **部署**：Zeabur redeploy 才會套用 CodeBlock 美化 + 指令小抄；TG webhook secret 待設。
 
