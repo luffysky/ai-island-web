@@ -215,29 +215,41 @@ export function SideNav() {
 
   return (
     <>
-      {/* 開關按鈕（手機 + 桌機都有）*/}
+      {/* 手機漢堡鈕（只手機）*/}
       <button
         onClick={() => setOpen(true)}
         aria-label="開啟導覽"
-        className="fixed left-3 top-20 z-30 p-2 rounded-lg bg-bg-card border border-border hover:bg-bg-elevated transition shadow-lg"
+        className="fixed left-3 top-20 z-30 p-2 rounded-lg bg-bg-card border border-border hover:bg-bg-elevated transition shadow-lg lg:hidden"
       >
         <Menu size={18} />
       </button>
 
-      {/* Backdrop */}
+      {/* Backdrop（只手機；桌機是 docked 側欄、不蓋黑幕）*/}
       {open && (
         <div
-          className="fixed inset-0 bg-black/50 z-40"
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={() => setOpen(false)}
         />
       )}
 
-      {/* Side panel */}
+      {/* 側欄：手機=滑入抽屜、桌機=常駐側欄（收合成一條細欄、展開有寬度動畫）*/}
       <aside
-        className={`fixed top-0 left-0 h-screen overflow-hidden w-[85vw] max-w-sm z-50 bg-bg-card border-r border-border transform transition-transform duration-200 flex flex-col ${
-          open ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`fixed top-0 left-0 h-screen overflow-hidden z-50 bg-bg-card border-r border-border flex flex-col transition-all duration-300 ease-in-out
+          w-[85vw] max-w-sm ${open ? "translate-x-0" : "-translate-x-full"}
+          lg:translate-x-0 ${open ? "lg:w-72" : "lg:w-12"}`}
       >
+        {/* 桌機收合時的細欄（直書「章節大綱」、點一下展開）*/}
+        <button
+          onClick={() => setOpen(true)}
+          aria-label="展開章節大綱"
+          className={`${open ? "hidden" : "hidden lg:flex"} h-full w-full flex-col items-center gap-3 pt-4 hover:bg-bg-elevated transition`}
+        >
+          <Menu size={18} />
+          <span className="text-xs tracking-[0.35em] text-fg-muted [writing-mode:vertical-rl]">章節大綱</span>
+        </button>
+
+        {/* 完整內容（手機永遠顯示、桌機只在展開時）*/}
+        <div className={`${open ? "flex" : "flex lg:hidden"} flex-col min-h-0 flex-1`}>
         {/* Header */}
         <div className="flex shrink-0 items-center justify-between p-3 border-b border-border">
           <div className="font-bold flex items-center gap-2">
@@ -523,6 +535,7 @@ export function SideNav() {
         {/* Footer */}
         <div className="shrink-0 p-2 border-t border-border text-[10px] text-fg-muted text-center">
           🐹 招財 Z-coin 守護
+        </div>
         </div>
       </aside>
     </>
