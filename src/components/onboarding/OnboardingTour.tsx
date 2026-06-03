@@ -5,6 +5,11 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { X, ArrowRight, Sparkles } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
+import { chaptersLite } from "@/data/chapters-lite";
+
+// 動態課數（用輕量 chapters-lite、不把整包章節打進 bundle）
+const TOUR_CHAPTERS = chaptersLite.length;
+const TOUR_LESSONS = chaptersLite.reduce((s, c) => s + c.lessonIds.length, 0);
 
 /**
  * 新手 5 步 Tour（A 方案）
@@ -27,7 +32,7 @@ const STEPS = [
   },
   {
     emoji: "📚",
-    title: "75 章節 × 1158+ lessons",
+    title: `${TOUR_CHAPTERS} 章節 × ${TOUR_LESSONS}+ lessons`,
     body: "選一條職涯路線、跟著走。不知道從哪開始就點「ch00 環境準備」。",
     href: "/chapters",
     cta: "看章節地圖",
