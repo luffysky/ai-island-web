@@ -415,7 +415,7 @@
       "title": "Goroutine：並發核心",
       "oneLineSummary": "Goroutine：Go 並發核心——一個 go 關鍵字就開一個超輕量線程，幾萬個也不卡。",
       "analogy": "像請一堆又輕又便宜的小幫手——打一個 go 就多一個，幾萬個同時做事都沒問題。",
-      "content": "Goroutine 是 Go **最強賣點**—輕量級「執行緒」、1 個 server 撐百萬連線。\n\n  \n### Goroutine vs Thread\n\n```text\nOS Thread（Java / C++）：\n- 1 個 thread ~ 1MB memory\n- 開 1 萬個 = 10GB\n- 切換 context 慢（核心介入）\n\nGoroutine：\n- 1 個 ~ 2KB（初始）\n- 開 1 萬個 = 20MB\n- 切換快（user space、Go runtime 管）\n- 1 個 server 開 100 萬 goroutine 沒問題\n\n→ Go 是並發霸主的原因\n```\n\n  \n### 啟動 goroutine：go 關鍵字\n\n```text\nfunc say(msg string) {\n    for i := 0; i \n    **🚀 進階技巧**\n    \nGoroutine 5 心法：(1) **go func 開、wg.Wait 等** (2) **closure 用參數傳值**—別抓引用 (3) **共享資料用 mutex 或 atomic** (4) **限制並發**—10-100 通常足夠 (5) **跑 race detector**—`go run -race`、找出 race condition。**Go 並發比其他語言簡單 10x、但要懂規則**。\n\n  \n\n  \n    \n      ⚡\n      學習加速器\n    \n    把這節學到的**馬上應用到一個小東西**—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。\n```\n\n**☕ 用人話講**\n\nGoroutine 是 Go 的並發核心——**一個 `go` 關鍵字就開一個超輕量「線程」**，同時跑幾萬個也不卡。**一句話記住**：像請一堆又輕又便宜的小幫手——打一個 `go` 就多一個幫手，幾萬個同時做事都沒問題；這是 Go 扛高流量的看家本領。\n",
+      "content": "Goroutine 是 Go **最強的賣點**——超輕量的「執行緒」，一台伺服器能撐百萬個並發。\n\n### 1. Goroutine vs OS Thread\n\n| | OS Thread（Java/C++）| Goroutine |\n|---|---|---|\n| 記憶體 | 約 1MB / 個 | 約 2KB / 個（初始）|\n| 開 1 萬個 | 約 10GB | 約 20MB |\n| 切換 | 慢（要進核心）| 快（Go runtime 在 user space 管）|\n\n所以 Go 能輕鬆開「幾十萬個」goroutine——這是它成為並發霸主的原因。\n\n### 2. 啟動：go 關鍵字\n\n在任何函式呼叫前面加 「go」，它就在新的 goroutine 裡跑：\n\n```go\nfunc say(msg string) {\n    fmt.Println(msg)\n}\n\nfunc main() {\n    go say(\"背景跑\")   // 開一個 goroutine、不等它\n    say(\"主線跑\")\n    time.Sleep(time.Millisecond)  // 等背景跑完（暫時這樣）\n}\n```\n\n### 3. WaitGroup：等所有 goroutine 完成\n\n「time.Sleep」很爛、正確做法用 「sync.WaitGroup」：\n\n```go\nvar wg sync.WaitGroup\nfor i := 0; i < 3; i++ {\n    wg.Add(1)               // 計數 +1\n    go func(n int) {\n        defer wg.Done()     // 做完計數 -1\n        fmt.Println(\"worker\", n)\n    }(i)                    // 用參數傳值、別直接抓 i\n}\nwg.Wait()                   // 等全部做完\n```\n\n> 💡 **新手陷阱**：在 「for」 迴圈裡 「go func(){ ... i ... }」 直接抓 「i」 會出錯（所有 goroutine 共用同一個 i）。要像上面用「參數傳值」。\n\n### 🎯 重點回顧\n\n- Goroutine = 超輕量「線程」（2KB）、開幾十萬個都行\n- 「go 函式()」啟動；「sync.WaitGroup」 等全部完成\n- 迴圈裡開 goroutine 要「用參數傳值」、別直接抓迴圈變數\n\n**☕ 用人話講**\n\nGoroutine 是 Go 的並發核心——**一個 `go` 關鍵字就開一個超輕量「線程」**，同時跑幾萬個也不卡。**一句話記住**：像請一堆又輕又便宜的小幫手——打一個 `go` 就多一個幫手，幾萬個同時做事都沒問題；這是 Go 扛高流量的看家本領。\n",
       "tip": {
         "type": "practical",
         "text": "把這節學到的馬上應用到一個小東西—改你自己的部落格、做朋友的個人頁、幫家人做個簡單網頁。實作 1 次比看 10 次效果好。在 Chrome F12 按 Elements 看別的網站怎麼用、邊看邊學。"
@@ -428,12 +428,20 @@
       },
       "outline": [
         {
-          "level": 3,
-          "text": "Goroutine vs Thread"
+          "text": "1. Goroutine vs OS Thread",
+          "level": 3
         },
         {
-          "level": 3,
-          "text": "啟動 goroutine：go 關鍵字"
+          "text": "2. 啟動：go 關鍵字",
+          "level": 3
+        },
+        {
+          "text": "3. WaitGroup：等所有 goroutine 完成",
+          "level": 3
+        },
+        {
+          "text": "🎯 重點回顧",
+          "level": 3
         }
       ]
     },
@@ -443,7 +451,7 @@
       "title": "Channel：goroutine 間通訊",
       "oneLineSummary": "Channel：goroutine 之間溝通的「管道」——一邊放、一邊拿，安全傳資料不打架。",
       "analogy": "像傳送帶——一個 goroutine 放東西、另一個拿走；不用搶同一份資料，避免並發 bug。",
-      "content": "Channel 是 Go 的**核心哲學**—「**不要用記憶體共享溝通、用溝通共享記憶體**」。\n\n  \n### 基本 channel\n\n```text\n// 建 channel\nch := make(chan int)    // 無緩衝 channel of int\n\n// 發送（\n    **🚀 進階技巧**\n    \nChannel 設計 5 心法：(1) **\"Don't communicate by sharing memory; share memory by communicating\"**—Go 哲學 (2) **方向 channel**—表達意圖 (3) **only sender closes** (4) **緩衝大小看需求**—太小卡、太大記憶體 (5) **select + timeout**—防 hang。**學熟 channel = 寫好 Go 並發的關鍵**。\n\n  \n\n  \n    \n      🚀\n      2026 趨勢\n    \n    這個技術 2026 還在主流、未來 5 年不會過時。**但工具會更新**—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。\n```\n\n**☕ 用人話講**\n\nChannel 是 **goroutine 之間溝通的「管道」**——一邊放、一邊拿，安全地傳資料、不打架。**一句話記住**：像工廠的傳送帶——一個 goroutine 把東西放上去、另一個拿下來；大家不用搶改同一份資料（避免並發 bug），Go 推崇「用溝通來共享、而非共享記憶體」。\n",
+      "content": "Channel 是 Go 並發的**核心哲學**——「**不要用共享記憶體來溝通，要用溝通來共享記憶體**」。goroutine 之間靠 channel 傳資料、不搶改同一份。\n\n### 1. 建立 + 收發\n\n```go\nch := make(chan int)   // 建一個傳 int 的 channel\n\ngo func() {\n    ch <- 42           // 發送（把 42 放進去）\n}()\n\nvalue := <-ch          // 接收（從 channel 拿出來）\nfmt.Println(value)     // 42\n```\n\n箭頭方向就是資料流向：「ch <- x」 放進去、「<-ch」 拿出來。\n\n### 2. 無緩衝 vs 有緩衝\n\n```go\nch1 := make(chan int)      // 無緩衝：發送會「卡住」直到有人收\nch2 := make(chan int, 3)   // 有緩衝 3：滿了才卡\n```\n\n無緩衝 channel 是「**同步交棒**」（發跟收要同時到）；有緩衝像「**信箱**」（先放著、滿了才等）。\n\n### 3. close + for range\n\n```go\nch := make(chan int, 5)\ngo func() {\n    for i := 0; i < 5; i++ { ch <- i }\n    close(ch)              // 發完關閉（只能由發送方關）\n}()\n\nfor v := range ch {       // 一直收到 channel 關閉\n    fmt.Println(v)\n}\n```\n\n### 4. 方向 channel（表達意圖）\n\n「chan<- int」 只能發、「<-chan int」 只能收——當函式參數能讓意圖更清楚、更安全。\n\n> 💡 **三條鐵則**：(1) 只有**發送方**該 「close」 (2) 對已關閉的 channel 發送會 panic (3) 無緩衝 channel 沒人收會「卡住」（deadlock）。\n\n### 🎯 重點回顧\n\n- Channel：goroutine 間傳資料、「ch <- x」 發、「<-ch」 收\n- 無緩衝＝同步交棒、有緩衝＝信箱；「close」 後可 「for range」 收完\n- 只有發送方 close、別對關閉的 channel 發送\n\n**☕ 用人話講**\n\nChannel 是 **goroutine 之間溝通的「管道」**——一邊放、一邊拿，安全地傳資料、不打架。**一句話記住**：像工廠的傳送帶——一個 goroutine 把東西放上去、另一個拿下來；大家不用搶改同一份資料（避免並發 bug），Go 推崇「用溝通來共享、而非共享記憶體」。\n",
       "tip": {
         "type": "trend",
         "text": "這個技術 2026 還在主流、未來 5 年不會過時。但工具會更新—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。"
@@ -456,8 +464,24 @@
       },
       "outline": [
         {
-          "level": 3,
-          "text": "基本 channel"
+          "text": "1. 建立 + 收發",
+          "level": 3
+        },
+        {
+          "text": "2. 無緩衝 vs 有緩衝",
+          "level": 3
+        },
+        {
+          "text": "3. close + for range",
+          "level": 3
+        },
+        {
+          "text": "4. 方向 channel（表達意圖）",
+          "level": 3
+        },
+        {
+          "text": "🎯 重點回顧",
+          "level": 3
         }
       ]
     },
@@ -467,7 +491,7 @@
       "title": "select + context：並發控制",
       "oneLineSummary": "select + context：並發控制——select 同時等多個 channel、context 做取消與超時。",
       "analogy": "像同時盯多條傳送帶（select）、誰先來就處理誰；context 像總開關，一喊停就全部收工。",
-      "content": "`select` 同時等多個 channel、`context` 傳遞取消信號—並發程式必備。\n\n  \n### select：多 channel 等待\n\n```text\n// 同時等多個 channel\nch1 := make(chan string)\nch2 := make(chan string)\n\ngo func() {\n    time.Sleep(1 * time.Second)\n    ch1\n```\n\n**☕ 用人話講**\n    \n並發 3 核心工具：(1) **select**—多 channel 等待 (2) **context**—取消信號傳遞 (3) **errgroup**—goroutine 組 + 錯誤處理。**2026 Go 標配**：所有並發 code 用 context 傳遞、errgroup 包多 goroutine。**學會這 3 個** = 並發無痛。\n\n  \n\n  \n    \n      🛠️\n      工具推薦\n    \n    配合這節用的工具：(1) **VS Code**（編輯器、免費）(2) **Chrome DevTools**（F12 開啟、除錯神器）(3) **Live Server**（VS Code 擴充、即時預覽）(4) **GitHub Copilot** / **Cursor**（AI 寫程式、學習加速 2-10x）。",
+      "content": "並發程式常要「同時等多個 channel」跟「取消正在跑的工作」——靠 **select** 跟 **context**。\n\n### 1. select：同時等多個 channel\n\n「select」 像 「switch」、但等的是 channel——哪個先有資料就處理哪個：\n\n```go\nselect {\ncase msg1 := <-ch1:\n    fmt.Println(\"收到 ch1:\", msg1)\ncase msg2 := <-ch2:\n    fmt.Println(\"收到 ch2:\", msg2)\ncase <-time.After(2 * time.Second):\n    fmt.Println(\"等太久、超時\")   // 防止永遠卡住\n}\n```\n\n### 2. default：非阻塞\n\n加 「default」 讓 select 不卡住——沒有任何 channel 就緒就走 default：\n\n```go\nselect {\ncase v := <-ch:\n    fmt.Println(\"有資料:\", v)\ndefault:\n    fmt.Println(\"現在沒資料、不等\")\n}\n```\n\n### 3. context：傳遞取消信號 + 超時\n\n「context」 用來「**通知一群 goroutine 該停了**」（使用者取消、超時）：\n\n```go\nctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)\ndefer cancel()\n\ngo func() {\n    select {\n    case <-ctx.Done():           // 被取消 / 超時\n        fmt.Println(\"收到停止信號:\", ctx.Err())\n    case result := <-doWork():\n        fmt.Println(\"做完了:\", result)\n    }\n}()\n```\n\n> 💡 **2026 Go 慣例**：所有會「跑一段時間」的函式（HTTP handler、DB 查詢）第一個參數都收 「ctx context.Context」、一路往下傳——這樣上層一取消，整串 goroutine 都能即時收手、不浪費資源。\n\n### 🎯 重點回顧\n\n- 「select」 同時等多個 channel、誰先就緒處理誰（配 「time.After」 防卡死）\n- 「default」 讓 select 非阻塞\n- 「context」 傳遞取消 / 超時信號、慣例第一個參數收 「ctx」\n\n**☕ 用人話講**\n\n並發程式常要做兩件事，各有工具：(1) **「select」**——同時等多個 channel（像 switch 但等的是 channel），哪個先有資料就處理哪個，配「time.After」還能設超時、防止永遠卡住；加「default」則變非阻塞 (2) **「context」**——傳遞「該停了」的信號（使用者取消、超時），讓一整串 goroutine 即時收手。**一句話記住**：select 像同時盯好幾條傳送帶、誰先送來就先處理；context 像總開關，上面一喊停、底下所有工人立刻收工。2026 的 Go 慣例是「所有會跑一段時間的函式，第一個參數都收 ctx context.Context、一路往下傳」——這樣取消、超時才能貫穿整串並發、不浪費資源。\n",
       "tip": {
         "type": "practical",
         "text": "配合這節用的工具：(1) VS Code（編輯器、免費）(2) Chrome DevTools（F12 開啟、除錯神器）(3) Live Server（VS Code 擴充、即時預覽）(4) GitHub Copilot / Cursor（AI 寫程式、學習加速 2-10x）。"
@@ -480,8 +504,20 @@
       },
       "outline": [
         {
-          "level": 3,
-          "text": "select：多 channel 等待"
+          "text": "1. select：同時等多個 channel",
+          "level": 3
+        },
+        {
+          "text": "2. default：非阻塞",
+          "level": 3
+        },
+        {
+          "text": "3. context：傳遞取消信號 + 超時",
+          "level": 3
+        },
+        {
+          "text": "🎯 重點回顧",
+          "level": 3
         }
       ]
     },
