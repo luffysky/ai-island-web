@@ -39,7 +39,7 @@
 ### B2 — P1
 - [x] 套 `validate.ts`：**UGC 寫入面完成**（blog 文章建立/編輯 + series/settings/comments、forum 發文/編輯都 `parseBody` zod 限長；內文另加 `sanitizeRichHtmlStrict` 白名單寫入）。剩 like/reaction/subscribe（純 id/bool、風險極低）可不補
 - [x] Telegram webhook secret 改強制 + fail-closed（沒設 secret → 503；比對改 timingSafeEqual）。⚠️ **部署後林董須在 Zeabur 設 `TELEGRAM_WEBHOOK_SECRET` 並重跑 `/admin/telegram/setup`、否則 admin TG bot 會停**
-- [ ] admin slug 硬編 fallback `console-x7k2` 移除、收斂常數（25 處）
+- [~] admin slug 硬編 fallback `console-x7k2` 收斂：已把 `src/lib/admin-href.ts` 的 `ADMIN_SLUG` 改成單一來源（server `ADMIN_SLUG` → client `NEXT_PUBLIC_ADMIN_SLUG` → fallback），標為新 code 唯一來源。剩 26 處散落的硬編是**低優先 hygiene**（prod env 已設 `Ak83QDhUOVqx`、fallback 永不觸發、非實際洩漏），之後逐檔 import 即可、不急
 - [ ] 22 條 RLS policy 補 `WITH CHECK`
 - [ ] 2 份未完成 migration 改 idempotent 並套用（breach_and_email / interaction_analytics）
 - [ ] 註冊/發文加 Cloudflare Turnstile + 蜜罐欄位
