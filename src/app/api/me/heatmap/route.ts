@@ -15,7 +15,7 @@ export async function GET(req: Request) {
 
   // 合併 4 個來源：lesson_progress + ai_messages + forum_replies + blog_articles
   const [{ data: lp }, { data: ai }, { data: fr }, { data: bl }] = await Promise.all([
-    supabase.from("lesson_progress").select("created_at").eq("user_id", user.id).gte("created_at", since),
+    supabase.from("lesson_progress").select("created_at:completed_at").eq("user_id", user.id).gte("completed_at", since),
     supabase.from("ai_messages").select("created_at").eq("role", "user").gte("created_at", since), // ai_messages 沒 user_id 欄 → 但 RLS 應該擋住非自己的對話
     supabase.from("forum_replies").select("created_at").eq("user_id", user.id).gte("created_at", since),
     supabase.from("user_blog_articles").select("created_at").eq("user_id", user.id).gte("created_at", since),

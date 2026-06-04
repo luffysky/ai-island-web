@@ -20,10 +20,10 @@ export async function GET() {
   const [{ data: lessons }, { data: achievements }, { data: blogs }, { data: threads }, { data: replies }] = await Promise.all([
     admin
       .from("lesson_progress")
-      .select(`user_id, chapter_id, lesson_id, created_at,
+      .select(`user_id, chapter_id, lesson_id, created_at:completed_at,
         user:profiles!lesson_progress_user_id_fkey(username, display_name, avatar_url)`)
-      .gte("created_at", sevenAgo)
-      .order("created_at", { ascending: false })
+      .gte("completed_at", sevenAgo)
+      .order("completed_at", { ascending: false })
       .limit(30),
     admin
       .from("user_achievements")
@@ -111,7 +111,7 @@ export async function GET() {
   // 計算 affinity（同學 / 對話過的人加權）
   const [{ data: myLessons }, { data: othersLessons }, { data: myReplies }] = await Promise.all([
     admin.from("lesson_progress").select("lesson_id").eq("user_id", user.id),
-    admin.from("lesson_progress").select("user_id, lesson_id").gte("created_at", sevenAgo).neq("user_id", user.id),
+    admin.from("lesson_progress").select("user_id, lesson_id").gte("completed_at", sevenAgo).neq("user_id", user.id),
     admin.from("forum_replies").select("thread_id").eq("user_id", user.id).limit(200),
   ] as any);
   const myLessonIds = new Set((myLessons as any[] ?? []).map((r: any) => r.lesson_id));

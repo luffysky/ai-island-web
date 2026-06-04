@@ -36,7 +36,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
   // 順便也拿 conversation header（title / persona / chapter context）
   const { data: conv } = await admin
     .from("ai_conversations")
-    .select("title, tone, persona_id, context_chapter_id, context_lesson_id, created_at, use_byok, profiles(username, display_name)")
+    .select("title, tone, context_chapter_id, context_lesson_id, created_at, use_byok, profiles(username, display_name)")
     .eq("id", id)
     .maybeSingle();
 

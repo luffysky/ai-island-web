@@ -17,7 +17,7 @@ export async function GET() {
 
   const { data: progress } = await supabase
     .from("lesson_progress")
-    .select("chapter_id, lesson_id, created_at")
+    .select("chapter_id, lesson_id, created_at:completed_at")
     .eq("user_id", user.id);
 
   const completedSet = new Set((progress ?? []).map((p: any) => p.lesson_id as string));

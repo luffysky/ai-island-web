@@ -16,6 +16,7 @@ const MIGRATIONS = [
   "notes_pin_migration.sql",              // → notes.pinned（置頂）
   "notes_title_migration.sql",            // → notes.title（可選標題、nullable）
   "notes_invite_role_migration.sql",      // → note_invites.role（邀請碼帶預設權限 editor/viewer）
+  "tickets_body_email_migration.sql",     // → tickets.body / email（客服工單內文+聯絡信箱、API/後台都用到）
 ];
 
 const env = Object.fromEntries(
