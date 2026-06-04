@@ -10,6 +10,8 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
+import { useAuth } from "@/lib/auth-context";
+import { useNotePresence } from "./useNotePresence";
 import { NoteCard } from "./NoteCard";
 import { NotesBackgroundPicker } from "./NotesBackgroundPicker";
 import { FloatingNotesOverlay } from "./FloatingNotesOverlay";
@@ -626,11 +628,36 @@ function NoteEditor({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [title, content, category, tagsInput, isPublic, color, opacity, noteBg, noteId]);
 
+  // 共編 presence：誰也在這則共用筆記
+  const { profile } = useAuth();
+  const presenceMe = { id: meId, name: profile?.display_name || profile?.username || "我", avatar: profile?.avatar_url ?? null };
+  const presenceOthers = useNotePresence(noteId, !!noteId && (!!note?._shared || !owned), presenceMe, canEdit && dirty);
+
   return (
     <div className="rounded-2xl border border-accent/40 bg-bg-card p-4 space-y-3">
-      <div className="flex items-center justify-between">
-        <span className="font-semibold">{!note ? "新增筆記" : canEdit ? "編輯筆記" : "查看筆記（唯讀）"}</span>
-        <button onClick={onClose} className="text-fg-muted hover:text-fg" aria-label="關閉"><X size={16} /></button>
+      <div className="flex items-center justify-between gap-2">
+        <span className="font-semibold shrink-0">{!note ? "新增筆記" : canEdit ? "編輯筆記" : "查看筆記（唯讀）"}</span>
+        <div className="flex items-center gap-2 ml-auto">
+          {presenceOthers.length > 0 && (
+            <div className="flex items-center gap-1.5">
+              <div className="flex -space-x-2">
+                {presenceOthers.slice(0, 4).map((p) => (
+                  <span
+                    key={p.user_id}
+                    title={`${p.name}${p.editing ? "（編輯中）" : "（檢視中）"}`}
+                    className={`w-6 h-6 rounded-full border-2 ${p.editing ? "border-emerald-500" : "border-bg-card"} bg-bg-elevated overflow-hidden inline-flex items-center justify-center text-[10px] font-bold`}
+                  >
+                    {p.avatar ? <img src={p.avatar} alt="" className="w-full h-full object-cover" /> : (p.name[0] ?? "?")}
+                  </span>
+                ))}
+              </div>
+              <span className="text-[11px] text-fg-muted hidden sm:inline">
+                {presenceOthers.some((p) => p.editing) ? "有人正在編輯" : `${presenceOthers.length} 人也在線上`}
+              </span>
+            </div>
+          )}
+          <button onClick={onClose} className="text-fg-muted hover:text-fg shrink-0" aria-label="關閉"><X size={16} /></button>
+        </div>
       </div>
       {restored && (
         <div className="flex items-center justify-between text-xs bg-amber-500/10 border border-amber-500/30 rounded-lg px-3 py-1.5">
