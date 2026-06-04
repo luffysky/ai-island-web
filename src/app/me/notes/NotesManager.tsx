@@ -17,7 +17,7 @@ import { DEFAULT_NOTES_BG, loadNotesBg, saveNotesBg, notesBgStyle, type NotesBgC
 import { STICKY_COLORS, clampOpacity, noteBgImgStyle, DEFAULT_NOTE_BG, type NoteBg } from "@/lib/note-sticky";
 import { loadFolders, saveFolders, folderDropId, FOLDER_DROP_PREFIX, UNCATEGORIZED } from "@/lib/note-folders";
 import { useToast } from "@/components/ui/Toast";
-import { Plus, X, Save, Loader2, Sparkles, GripVertical, Folder, FolderPlus, Image as ImageIcon, RotateCw, Copy, Link2 } from "lucide-react";
+import { Plus, X, Save, Loader2, Sparkles, GripVertical, Folder, FolderPlus, Image as ImageIcon, RotateCw, Copy, Link2, Search } from "lucide-react";
 
 const UNCAT_FILTER = "__uncat__";
 
@@ -40,6 +40,7 @@ export type ManagedNote = {
   color: string | null;
   opacity: number | null;
   sort_order: number | null;
+  pinned: boolean | null;
   bg: NoteBg | null;
   _owned?: boolean;  // 我是擁有者（page 標記）
   _shared?: boolean; // 此筆記有共用關係
@@ -192,11 +193,24 @@ export function NotesManager({
     () => Array.from(new Set(notes.flatMap((n) => n.tags ?? []))).slice(0, 40),
     [notes],
   );
-  const shown = notes.filter((n) => {
-    const catOk = !fCat || (fCat === UNCAT_FILTER ? !n.category : n.category === fCat);
-    const tagOk = !fTag || (n.tags ?? []).includes(fTag);
-    return catOk && tagOk;
-  });
+  const [query, setQuery] = useState("");
+  const q = query.trim().toLowerCase();
+  const shown = notes
+    .filter((n) => {
+      const catOk = !fCat || (fCat === UNCAT_FILTER ? !n.category : n.category === fCat);
+      const tagOk = !fTag || (n.tags ?? []).includes(fTag);
+      const text = `${n.content.replace(/<[^>]*>/g, " ")} ${n.category ?? ""} ${(n.tags ?? []).join(" ")}`.toLowerCase();
+      const qOk = !q || text.includes(q);
+      return catOk && tagOk && qOk;
+    })
+    // 釘選的永遠排前面（穩定排序、組內維持原順序）
+    .sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
+
+  const togglePin = async (n: ManagedNote) => {
+    const pinned = !n.pinned;
+    setNotes((p) => p.map((x) => (x.id === n.id ? { ...x, pinned } : x)));
+    await supabase.from("notes").update({ pinned }).eq("id", n.id);
+  };
 
   // 資料夾（= 分類）：localStorage 名單 ∪ 現有筆記 category
   const [folders, setFolders] = useState<string[]>([]);
@@ -273,8 +287,8 @@ export function NotesManager({
     });
   };
 
-  // 拖移排序（只在沒套用篩選時開放、避免「拖動子集合」的順序歧義）
-  const canReorder = !fCat && !fTag;
+  // 拖移排序（只在沒套用篩選/搜尋時開放、避免「拖動子集合」的順序歧義）
+  const canReorder = !fCat && !fTag && !q;
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
   const onDragEnd = async (e: DragEndEvent) => {
     const { active, over } = e;
@@ -347,6 +361,22 @@ export function NotesManager({
           <Sparkles size={15} /> 漂浮預覽
         </button>
       )}
+      {notes.length > 0 && (
+        <div className="relative ml-auto">
+          <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-fg-muted pointer-events-none" />
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="搜尋筆記內容 / 分類 / 標籤"
+            className="w-48 sm:w-60 pl-8 pr-7 py-2 rounded-lg border border-border bg-bg-card text-sm outline-none focus:border-accent"
+          />
+          {query && (
+            <button onClick={() => setQuery("")} className="absolute right-2 top-1/2 -translate-y-1/2 text-fg-muted hover:text-fg" aria-label="清除搜尋">
+              <X size={13} />
+            </button>
+          )}
+        </div>
+      )}
       </div>
 
       {editing && (
@@ -395,6 +425,7 @@ export function NotesManager({
                       lessonTitle={meta?.lessonTitle ?? (n.lesson_id ?? "自由筆記")}
                       onEdit={() => setEditing(n)}
                       onDelete={() => del(n)}
+                      onPin={() => togglePin(n)}
                     />
                   </SortableNoteCard>
                 );
@@ -421,6 +452,7 @@ export function NotesManager({
                   lessonTitle={meta?.lessonTitle ?? (n.lesson_id ?? "自由筆記")}
                   onEdit={() => setEditing(n)}
                   onDelete={() => del(n)}
+                  onPin={() => togglePin(n)}
                 />
               );
             })}
@@ -703,8 +735,8 @@ function NoteSharePanel({ noteId, ensureSaved }: { noteId: string | null; ensure
       const id = noteId ?? (await ensureSaved()); // 新筆記先存一次拿到 id
       if (!id) { toast.error("請先輸入內容、才能產生邀請"); return; }
       const res = await fetch(`/api/me/notes/${id}/share`, { method: "POST" });
-      const j = await res.json();
-      if (!res.ok) { toast.error(j.message || "產生失敗"); return; }
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok) { toast.error(j.message || j.error || `產生失敗（${res.status}）`); return; }
       setCode(j.code); setUrl(j.url);
     } finally { setBusy(false); }
   };

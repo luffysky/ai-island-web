@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { ChevronDown, ChevronUp, ArrowRight, Pencil, Trash2, Copy, Check, LogOut, Eye } from "lucide-react";
+import { ChevronDown, ChevronUp, ArrowRight, Pencil, Trash2, Copy, Check, LogOut, Eye, Pin } from "lucide-react";
 import { formatTW } from "@/lib/format-date";
 import { sanitizeRichHtml } from "@/lib/rich-html";
 import { resolveSticky, stickyRotate, clampOpacity, hexToRgba, noteBgImgStyle, type NoteBg } from "@/lib/note-sticky";
@@ -28,6 +28,7 @@ export function NoteCard({
   lessonTitle,
   onEdit,
   onDelete,
+  onPin,
 }: {
   note: {
     id: string;
@@ -42,6 +43,7 @@ export function NoteCard({
     tags?: string[] | null;
     color?: string | null;
     opacity?: number | null;
+    pinned?: boolean | null;
     bg?: NoteBg | null;
     _owned?: boolean;
     _shared?: boolean;
@@ -52,6 +54,7 @@ export function NoteCard({
   lessonTitle: string;
   onEdit?: () => void;
   onDelete?: () => void;
+  onPin?: () => void;
 }) {
   const owned = note._owned ?? (note.user_id === meId);
   const isViewer = !owned && note._role === "viewer";
@@ -147,6 +150,11 @@ export function NoteCard({
         className="absolute -top-2.5 left-1/2 -translate-x-1/2 w-16 h-5 rounded-[2px] z-20"
         style={{ background: sk.tape, opacity: 0.6 * opacity, boxShadow: "0 1px 2px rgba(0,0,0,0.12)" }}
       />
+      {note.pinned && (
+        <div className="absolute -top-2 -left-2 z-20 w-6 h-6 rounded-full flex items-center justify-center shadow" style={{ background: "#fbbf24", color: "#7c2d12" }} title="已置頂">
+          <Pin size={12} className="fill-current" />
+        </div>
+      )}
 
       {/* 每則自訂背景圖：圖在底層、上面蓋一層便利貼色（用透明度控制圖露多少） */}
       {bgImg && (
@@ -229,6 +237,16 @@ export function NoteCard({
           {note.likes > 0 && <span className="ml-2">👍 {note.likes}</span>}
         </div>
         <div className="flex items-center gap-1.5">
+          {onPin && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onPin(); }}
+              className="inline-flex items-center text-xs px-2 py-1 rounded transition hover:bg-black/10"
+              style={{ color: note.pinned ? "#b45309" : "#444" }}
+              title={note.pinned ? "取消置頂" : "置頂"}
+            >
+              <Pin size={12} className={note.pinned ? "fill-current" : ""} />
+            </button>
+          )}
           <button
             onClick={copyAll}
             className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded transition hover:bg-black/10"

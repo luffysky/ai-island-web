@@ -32,7 +32,6 @@ async function shareState(admin: ReturnType<typeof createSupabaseAdmin>, note: {
     admin.from("profiles").select("id, username, display_name, avatar_url").eq("id", note.user_id).maybeSingle(),
     admin.from("note_invites").select("code")
       .eq("note_id", note.id).eq("revoked", false)
-      .or(`expires_at.is.null,expires_at.gt.${new Date().toISOString()}`)
       .order("created_at", { ascending: false }).limit(1).maybeSingle(),
   ]);
   return {
@@ -74,18 +73,22 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   // 已有有效邀請碼就沿用、否則開新的
   let { data: invite } = await admin.from("note_invites").select("code")
     .eq("note_id", id).eq("revoked", false)
-    .or(`expires_at.is.null,expires_at.gt.${new Date().toISOString()}`)
     .order("created_at", { ascending: false }).limit(1).maybeSingle();
+  let lastErr = "";
   if (!invite) {
     let code = genCode();
     for (let tries = 0; tries < 5; tries++) {
       const { data, error } = await admin.from("note_invites")
         .insert({ note_id: id, code, created_by: user.id }).select("code").single();
       if (!error && data) { invite = data; break; }
+      lastErr = error?.message ?? "";
       code = genCode();
     }
   }
-  if (!invite) return NextResponse.json({ error: "code_gen_failed" }, { status: 500 });
+  if (!invite) {
+    console.error("[note share] code_gen_failed:", lastErr);
+    return NextResponse.json({ error: "code_gen_failed", message: lastErr || "產生邀請碼失敗" }, { status: 500 });
+  }
   return NextResponse.json({ code: invite.code, url: `${req.nextUrl.origin}/notes/join/${invite.code}` });
 }
 
