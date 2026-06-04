@@ -1,96 +1,141 @@
 # Daily Works — 2026-06-04
 
-雪鑰處理、董事長林董（Luffy Lin）。主題：**課程內容三合一大整理 + 程式碼區塊全站美化**。
-
-## 工作主軸
-
-林董拍板「逐章三合一」——一章一章做，同時 (1) 補「☕ 用人話講」(2) 修錯位摘要 (3) 換佔位 playground。另外把章節頁的程式碼區塊（原本一片灰）做了全站自動美化 + 終端機指令小抄。
+雪鑰處理、董事長林董（Luffy Lin）。
+主題：**課程內容三合一收尾 → 全站清乾淨 → ch48/49 大擴充 → UX 順滑 + 圖片接線**。
 
 ---
 
-## 1️⃣ 🎨 程式碼區塊美化（全站自動、不改內容）
+## 🟢 上半場（早上）
 
-學員反映「章節頁 txt 區塊都一片灰」。根因：內容大量用 ` ```text ` 圍籬，highlight.js 當純文字＝不上色。
+### 1. 程式碼區塊全站美化
+- CodeBlock 改版（macOS 燈號 + 終端/檔案外觀 + 語言標籤）
+- `rehype-smart-lang`：` ```text ` 自動偵測上色、ASCII 圖跳過
+- `cli-glossary`：終端區塊自動附「📖 指令說明」小抄
+- ⚠️ 程式碼變更，需 Zeabur redeploy 才上線
 
-- **CodeBlock 改版**：macOS 紅黃綠燈 + 終端機（綠）/ 檔案（藍）兩種外觀 + 友善語言標籤
-- **`rehype-smart-lang`**：` ```text ` 區塊自動偵測語言上色；ASCII 示意圖（含箭頭 / 框線）自動跳過、不被亂上色
-- **`cli-glossary`**：偵測到終端機區塊，自動列出「📖 指令說明」小抄（mkdir / cd / ls… 白話解釋）→ 滿足「用到工具自動先解說」、全站生效不用改各章
-- 新手友善 inline 註解標準（`指令 名字  # 指令=做什麼、後面是你取的名字`）已在 ch02 2.1 示範
-
-> ⚠️ 這是程式碼變更，**Zeabur redeploy 後線上才看得到**（本機 npm run dev 可先看）。
-
-## 2️⃣ 📚 課程內容三合一（ch02–ch16 完成）
-
-| 章 | 主題 | 用人話講 | 摘要修正 | PG 換 |
-|---|---|---|---|---|
-| ch02 | CSS | 25 | — | — |
-| ch03 | UI/UX | 13（→25）| 19 | 3 |
-| ch04 | JavaScript | 25 | — | — |
-| ch05 | TypeScript | 9（→25）| 17 | — |
-| ch06 | JSON | 25 | 10 | 1 |
-| ch07 | 程式邏輯共通 | 12（→28）| — | 5 |
-| ch08 | React | 11（→25）| 13 | 1 |
-| ch09 | Vue | 25 | 4 | 1 |
-| ch10 | Next.js/Nuxt | 25 | 18 | 2 |
-| ch11 | 行動 App | 25 | — | 1 |
-| ch12 | 資安基礎 | 25 | — | 1 |
-| ch13 | SEO+GEO | 25 | — | 4 |
-| ch14 | PWA | 22 | — | 1 |
-| ch15 | 前端 DevOps | 23 | — | 1 |
-| ch16 | 後端世界全圖 | 20（→25）| 15 | 5 |
-
-**摘要錯位 bug**：多個章節改版後 `oneLineSummary`/`analogy` 還停在舊課表（標題/內文對、只有這兩欄錯，學員每課最上面就看到）。已逐章依實際標題+內容重寫。
-
-**佔位 playground**：711 個 PG 中約 100 個 `.auto` 還是通用佔位碼（同段 JS 陣列 / fibonacci / Hello world 重複貼多課）。逐章換成符合主題的範例（ch01 已含、本批換掉 ch03/06/07/08/09/10/11/12/13/14/15/16 共 25 個）。
-
-全部已 commit/push 到 main + import 進 DB（內容線上即時生效）。
+### 2. 用人話講全站 100%（1163/1163 課）
+- 全章每課都有「☕ 用人話講」
+- ch33「Rust 完整」原內容被 SEO 行銷汙染 → **整章重寫成真 Rust 課**
+- 摘要錯位（oneLine/analogy 殘留舊課表）大量修正
+- 佔位 playground ~100 個換成各章主題範例
+- AI 聊天**拖拉上傳圖片**
 
 ---
 
-## 🏁 用人話講全站 100% 完成（1163/1163 課）
+## 🔵 下半場（午後～晚上，本日大宗）
 
-**全部 75 章、每一課都有「☕ 用人話講」了。** ch33「Rust 完整」原內容被 SEO 行銷汙染，已**整章重寫成真正的 Rust 課程**（25 課完整課綱 + 用人話講 + rust playground + 練習）。
+### 3. 截斷尾巴逐課重寫（34 課）
+- ch03/07/08/16/32/43/44/45/48/49/50/59 共 34 課，截斷的程式碼/範例補完整
+- 殘留罐頭框改成乾淨的「進階技巧/踩雷警告」markdown
+- **全專案未閉合 code fence 歸零**
 
-另外本日也完成：**AI 聊天拖拉上傳圖片**（拖圖進視窗直接上傳）。
+### 4. 移除罐頭框（116 個 / 17 章）
+- 工具推薦（VS Code/Live Server）、**接案 promo**（違反不掛保證原則）、學習加速器、罐頭趨勢（Theo/Fireship）
+- 用固定模板文字當錨點刪除，真內容零誤刪（保留客製化的 ### 2026 趨勢、客製學習加速器）
 
-本日總計：
-- **用人話講**：補完 ch02-32、34-75（含先前已完成的 ch01、ch27-30、ch46）
-- **摘要錯位修正**：ch03/05/06/08/09/10/16/26/31/32/43/44/45/46/47/48/49/50/59 等大量章節（改版後殘留舊課表的 oneLine/analogy，依實際標題重寫）
-- **佔位 playground**：~100 個通用佔位碼（fibonacci / Hello world / 試試改變數）全換成各章主題範例
-- **Ch00 新手強化**（綠寶體檢）：0.1 開工前 SOP、0.2-0.5「你會卡在哪」預警、0.4 VS Code 繁中設定 + 介面圖
-- **程式碼區塊全站美化** + 終端機指令小抄
-- **圖片規劃**：A 區補 create 指令、D 區前端框架（含 CRA）、E 區 Python/爬蟲/Node、F 區補 ch01-25（共 110+ 張待生）
+### 5. 罐頭 tip → 每課真建議（235 課，4 批全清）
+- 每課的「這個技術 2026 還在主流…」換成跟該課主題相關的實用建議
+- 踩雷型標 warn（如 box-sizing 全域設、=== 不用 ==、Monolith first、rate limit Day 1、idempotency、Manage Up…）
+- **剩餘罐頭 = 0**
+
+### 6. ch48 Vibe Coding 大擴充（25 → 29 課）
+- 🆕 **48.4b Codex 完整**（CLI/IDE/Cloud 三介面、approval 三段、vs Claude Code）
+- 🆕 **48.4d Gemini CLI → Antigravity**（Google 終端 agent；**Gemini CLI 2026/6/18 對個人方案停服、改推 Antigravity CLI**，已查證）
+- 🆕 **48.4c 零基礎 30 分鐘做出第一個成品**（→ Netlify 上線）
+- 🆕 **48.5b Claude Design**（prompt→原型/簡報，2026/4 Anthropic Labs）
+- 48.4 加「第一次打開畫面長怎樣」；48.21 → 終端 agent 三巨頭比較
+- ch08 8.1 加「完整前端地圖」分層段（框架 / Meta Framework / Build Tool 釐清）
+
+### 7. ch49 AI Agent 大擴充（25 → 28 課）
+- 🆕 **49.6b 從零打造你專屬的 Agent**（50 行不靠框架，三零件＋記憶＋改成你要的）→ 達成「學完能**開發** agent」
+- 🆕 **49.1b 零基礎做出第一個 Agent**（無碼 Custom GPT / n8n）
+- 🆕 **49.13b Claude Cowork**（Anthropic 桌面知識工作 agent，2026/1，已查證）
+
+### 8. UX 順滑（過渡動畫 + 側欄泡泡）
+- 側欄 lesson 標題截斷時 **hover 顯示完整名稱**（精美泡泡、淡入＋箭頭）
+- globals.css 全站互動過渡（所有 hover/focus/active + 帶 hover: class 的元素統一 200ms）
+- `animate-expand/fade-in/scale-in`；SideNav 章節/大綱展開套滑出動畫
+- `prefers-reduced-motion` 仍歸零，無障礙不受影響
+
+### 9. RWD 安全網
+- 內容圖片 max-width:100% 不溢出、超長字串自動換行
+- 主要畫面（Hero 等）本就有 md:/lg: 斷點
+
+### 10. 圖片接線（林董重生 38 張）
+- 林董整批重生 A 區圖、命名有變動 → 逐一核對檔名+內容佈線
+- 合併（line_console、cursor_setup）、拆分（deploy_zeabur→1+2）、新截圖（claude_code_cli/codex_cli/gemini_cli/ai_coding_tools_landscape）
+- **全 38 張：被引用 38、孤兒 0、壞引用 0**
+- ch10 10.1 改放 next_vs_nuxt；ch64 vscode_zhtw 指向 ch00 既有圖
+
+### 11. 其他
+- 首頁文案數據改為**自動抓 DB**（不再寫死 75 章/1158 課）
+- 桌機章節大綱改**常駐側欄**（收合細欄、伸縮式主內容）
+- **資料庫健檢**：131 個 public 物件，所有 migration 預期 table 都存在、**無漏建資料表**
 
 ---
 
-## 進度更新（歷程）
+## 📊 數據總覽（本日結束）
+- 全站 **77 章 / 1196 課**
+- 罐頭框 0、罐頭 tip 0、截斷課 0、壞圖引用 0
+- 本日約 18 個 commit，全部 push 到 main
 
-三合一已推進到 **ch02–ch31 全部完成**（ch27/28/29/30 先前已有用人話講，本批補了 ch17-26、31 + 各章摘要錯位 + 佔位 PG）。
-- 摘要錯位修正大章：ch26（25 課）、ch31（16 課）、ch16（15 課）等
-- 佔位 playground 換掉：ch27/28/30 的 fibonacci、ch31 的 5 個、ch21/22/23/24/25 的 bash 等
+## ⚠️ 待 redeploy 才生效（程式碼/靜態檔）
+> 內容 / tip / 圖片路徑 / 資料庫都已**即時上線**；以下要 **Zeabur redeploy**：
+- CodeBlock 美化 + 指令小抄
+- 側欄 hover 泡泡、全站過渡動畫、RWD 安全網
+- **圖片新版**（public/ 靜態檔跟著 build 走；redeploy 後 + 強制重整 Ctrl+Shift+R 才看得到新圖）
 
-### 圖片規劃（依林董需求新增）
-- **D 區**：前端框架（React/Vue/Vite/Next/Nuxt + CRA 歷史）26 張
-- **E 區**：Python/資料分析/爬蟲/Node（ch26-31）33 張
-- **F 區**：補 ch01-25 缺的概念圖（ch03 UI/UX 優先）30+ 張
-- **A 區補**：create react / create vue / create nuxt 操作圖（含 CRA 對照）
-- 總計約 **110+ 張**概念圖待生，產製順序見 spec C 區
+---
 
-## 🔴 重大發現：ch33「Rust 完整」內容損壞
+# 📋 所有待辦
 
-掃描全 75 章後確認**只有 ch33 損壞**：章名是「Rust 完整」、`oneLineSummary` / `analogy` / playground 都是 Rust，但**每課的 `title` + `content` 全部是 SEO 行銷內容**（關鍵字研究、On-page SEO、Core Web Vitals、Backlink、內容行銷…）——整章 Rust 內容被一份 SEO/行銷章覆蓋掉了。
+## A. 內容 / 課程
+- [ ] **Ch00 零基礎 vs 有經驗「分流路徑」**（林董指示先記待辦）：完全沒碰電腦 vs 有 coding 經驗，給不同起點/跳課路徑。較大工程，需先想分流方式（標籤？引導頁？）
+- [ ] **strict-spec 重寫**（選配、更高標準）：ch68 高階工程師(20)、ch55-58 / 60-67 / 69-70 strict rework（用人話講已補、內容已可用）
+- [ ] 附錄 ch61-67 / 69-70 by design 可不改
 
-- 影響：學員點「Rust 完整」看到的是 SEO 教學，完全文不對題。
-- **不是用人話講能補的**——需要還原/重寫整章 25 課的 Rust 內容（Ownership、Borrowing、Cargo、Traits、Tokio、Axum、sqlx…，oneLine 還留著正確的 Rust 課綱可參考）。
-- 已暫時跳過 ch33，**等林董決定**：(a) 有原始 Rust 內容可還原？(b) 還是要我依 oneLine 課綱重寫整章？
+## B. 圖片（等林董生圖，依檔名插入）
+- [ ] **B / D / E / F 區概念圖**約 110+ 張（D 前端框架含 CRA、E Python/爬蟲/Node、F 補 ch01-25、B 概念示意）——產製順序見 `LESSON_IMAGE_SPEC.md`
+- [ ] **ch10 `ch10_create_next.png`**：A 區重生時沒生這張，10.1 暫用 next_vs_nuxt；林董補生後換回
+- [ ] （可選）ch64 專屬 vscode_zhtw（目前指向 ch00 同內容圖）
 
-## ⏭️ 待續
+## C. 部署 / 上線
+- [ ] **Zeabur redeploy**：套用 CodeBlock 美化、側欄泡泡、過渡動畫、RWD、**新圖**（最迫切）
+- [ ] 部署後**強制重整**（同檔名圖有瀏覽器/CDN 快取）；若仍舊圖 → 加版本參數/改檔名破快取
+- [ ] TG webhook secret 待設
 
-0. **🆕 Ch00 零基礎 vs 有經驗「分流路徑」**（林董指示先記待辦、暫不做）：架構調整——完全沒碰過電腦的人 vs 有 coding 經驗的人，給不同起點 / 跳課路徑。屬較大工程，需先想清楚怎麼在現有章節結構上做分流（標籤？引導頁？）。Ch00 的開工前 SOP + 每課「你會卡在哪」預警已完成（綠寶體檢）。
-1. **用人話講 + 三合一**：剩 **ch48 起到 ch75**（ch02-47 已完成、扣 ch33）。照同標準逐章做。
-2. **佔位 playground**：剩 ch46/47/49 的 fibonacci（AI 章，做到時換）+ ch32-50 零星。
-3. **🖼️ 圖片**：B/D/E/F 區全部等林董生圖，依檔名插入。
-4. **C OPT-8**：RLS is_admin() + index（production DB）。
-5. **部署**：Zeabur redeploy 才會套用 CodeBlock 美化 + 指令小抄；TG webhook secret 待設。
+## D. 林董手動設定（REPORTS_TODO）
+- [ ] **Stripe 訂閱付款**：key → bootstrap → 3 price_id → webhook（6 事件）→ secret → 4242 測一筆（`STRIPE_SETUP.md`）
+- [ ] **寵物 4 隻 Lottie URL**：lottiefiles 挑 4 個貼 `/admin/lottie-settings`
+- [ ] **cron-job.org 7 個排程**：student-daily-review / recall-user / leetcode-sync / discord-quote / summarize-memories / launchpad-auto-sync / launchpad-retrospective
+- [ ] **Discord 收尾**：bot role 拖到 VIP 之上 + Manage Roles + `DISCORD_VIP_ROLE_ID` / `DISCORD_CLIENT_SECRET`
+- [ ] **GitHub Actions secrets**：`CRON_SECRET` / `SITE_URL` 對齊 Zeabur
+- [ ] 其餘 env（選設）：OWNER_LINE_USER_IDS / TELEGRAM_* / PISTON_BASE_URL / N8N_*
+- [ ] 後台登入 `deleted_client`：建新 OAuth client（林董表示已處理、待確認能登入）
 
+## E. 安全 / 維運
+- [ ] **OPT-8**：RLS `is_admin()` SECURITY DEFINER + 補 index（production DB）
+- [ ] OPT-7 其餘列表 API `select("*")` → 明確欄位
+- [ ] Egress 來源確認（必要時 `NEXT_PUBLIC_CONTENT_SOURCE=file`）
+- [ ] Owner 帳號開 MFA/TOTP（Supabase）
+- [ ] Cloudflare 擋在 Zeabur 前（DDoS/WAF/Bot Fight）+ 隱藏 origin IP
+- [ ] Dependabot + Supabase 定期備份 + 金鑰輪替（AI_KEY_SECRET / CRON_SECRET / service_role）
+- [ ] CSP（Report-Only 先行）；註冊/發文加 Turnstile + 蜜罐
+- [ ] bundle analyzer 基準 → TipTap/recharts/CodeMirror 動態 import；評估收斂 Monaco
+
+## F. 功能 Backlog（留存/變現/成長）
+- [ ] **B1 自動評測 + 綠寶 AI Code Review**（隱藏 test cases → 自動判對錯 → XP/Z幣 → AI 點評）**留存核心**
+- [ ] **B4 可驗證證書**（`/verify/[certId]` + QR + LinkedIn）+ 課程市集收尾
+- [ ] **C1 學習社群 / Cohort**（期數制、進度夥伴、組隊 streak/Boss）
+- [ ] B2 SRS 間隔複習、D2 綠寶每週複習報告、C2 賽季排行榜
+- [ ] Z 幣商城 sink + 儲值 4 套餐 + 訂閱監測 dashboard
+- [ ] B5 職缺媒合板、D1 Z-coin 跨產品錢包
+- [ ] **web_front**：RWD audit 完整版（手機溢出/touch target/table scroll，本日已加安全網）、PWA 升級、a11y 無障礙
+- [ ] **N 系列自動化**（n8n）：onboarding 7 天、每日 KPI→LINE、流失 winback、客服 AI 分流、內容工廠、通知 fan-out、章節自動發布、Stripe→Supabase、DB backup、異常偵測、release→changelog
+- [ ] **discord**：OAuth 綁定、Premium role 自動分配、新人 onboarding DM、slash /quote /recommend /vision
+- [ ] **AI 模型中台升級**（v1 規格 1603 行）：AI Router 三層模型池 + 成本分級 + Z幣/VIP 經濟（等 B/D 收尾後啟動）
+- [ ] LT-17 效能 ops（Sentry/PostHog）、P4-19 教師/助教 admin、P4-20 作業批改介面
+- [ ] Chapter 推薦演算法、全站語意搜尋 UI、人生星圖（跨專案暫緩）
+
+> 來源：`REPORTS_TODO_2026-06-03.md`、`BACKLOG.md`、`LESSON_IMAGE_SPEC.md`。
 > import 偶發 Cloudflare 522，retry 即可。
