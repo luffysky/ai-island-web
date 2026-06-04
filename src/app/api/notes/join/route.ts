@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
   const admin = createSupabaseAdmin();
   const { data: invite } = await admin
     .from("note_invites")
-    .select("note_id, created_by, revoked, expires_at")
+    .select("note_id, created_by, revoked, expires_at, role")
     .eq("code", code.trim().toUpperCase())
     .maybeSingle();
 
@@ -30,8 +30,12 @@ export async function POST(req: NextRequest) {
 
   // 擁有者本人 = 已經有權限、不需加協作者
   if (note.user_id !== user.id) {
+    // 套用邀請碼帶的權限；若已是協作者就不動他現有權限（ignoreDuplicates）
     await admin.from("note_collaborators")
-      .upsert({ note_id: invite.note_id, user_id: user.id }, { onConflict: "note_id,user_id" });
+      .upsert(
+        { note_id: invite.note_id, user_id: user.id, role: invite.role === "viewer" ? "viewer" : "editor" },
+        { onConflict: "note_id,user_id", ignoreDuplicates: true },
+      );
   }
 
   const title = (note.title?.trim()) || String(note.content || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().slice(0, 40) || "（無標題筆記）";

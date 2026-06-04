@@ -722,6 +722,7 @@ function NoteSharePanel({ noteId, ensureSaved }: { noteId: string | null; ensure
   const [code, setCode] = useState<string | null>(null);
   const [url, setUrl] = useState<string | null>(null);
   const [collabs, setCollabs] = useState<Collab[]>([]);
+  const [inviteRole, setInviteRole] = useState<"editor" | "viewer">("editor"); // 擁有者先決定加入者權限
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
@@ -731,7 +732,10 @@ function NoteSharePanel({ noteId, ensureSaved }: { noteId: string | null; ensure
       try {
         const res = await fetch(`/api/me/notes/${noteId}/share`);
         const j = await res.json();
-        if (!cancelled && res.ok) { setCode(j.code); setUrl(j.url); setCollabs(j.collaborators ?? []); }
+        if (!cancelled && res.ok) {
+          setCode(j.code); setUrl(j.url); setCollabs(j.collaborators ?? []);
+          if (j.inviteRole) setInviteRole(j.inviteRole);
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -739,16 +743,24 @@ function NoteSharePanel({ noteId, ensureSaved }: { noteId: string | null; ensure
     return () => { cancelled = true; };
   }, [noteId]);
 
-  const generate = async () => {
+  const generate = async (role: "editor" | "viewer", silent = false) => {
     setBusy(true);
     try {
       const id = noteId ?? (await ensureSaved()); // 新筆記先存一次拿到 id
       if (!id) { toast.error("請先輸入內容、才能產生邀請"); return; }
-      const res = await fetch(`/api/me/notes/${id}/share`, { method: "POST" });
+      const res = await fetch(`/api/me/notes/${id}/share`, {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ role }),
+      });
       const j = await res.json().catch(() => ({}));
       if (!res.ok) { toast.error(j.message || j.error || `產生失敗（${res.status}）`); return; }
       setCode(j.code); setUrl(j.url);
+      if (!silent) toast.success("已產生邀請連結");
     } finally { setBusy(false); }
+  };
+  // 切換邀請權限：若已有連結 → 換新連結套用新權限（舊連結失效）
+  const changeInviteRole = (role: "editor" | "viewer") => {
+    setInviteRole(role);
+    if (url) { generate(role, true); toast.success(role === "viewer" ? "已改為唯讀邀請、連結已更新" : "已改為可編輯邀請、連結已更新"); }
   };
   const copy = async () => {
     if (!url) return;
@@ -766,17 +778,31 @@ function NoteSharePanel({ noteId, ensureSaved }: { noteId: string | null; ensure
   return (
     <div className="rounded-lg border border-border p-3 space-y-2">
       <div className="text-xs font-medium text-fg-muted inline-flex items-center gap-1"><Link2 size={13} /> 共用設定（邀請別人一起編輯）</div>
+
+      {/* 先決定加入者權限、再產生連結 */}
+      <div className="flex items-center gap-2 text-xs">
+        <span className="text-fg-muted shrink-0">對方加入後：</span>
+        <div className="inline-flex rounded border border-border overflow-hidden">
+          <button type="button" onClick={() => changeInviteRole("editor")} className={`px-2.5 py-0.5 transition ${inviteRole === "editor" ? "bg-accent text-black" : "text-fg-muted hover:text-fg"}`}>可編輯</button>
+          <button type="button" onClick={() => changeInviteRole("viewer")} className={`px-2.5 py-0.5 transition ${inviteRole === "viewer" ? "bg-accent text-black" : "text-fg-muted hover:text-fg"}`}>唯讀</button>
+        </div>
+      </div>
+
       {url ? (
         <div className="flex items-center gap-2">
           <input readOnly value={url} onFocus={(e) => e.currentTarget.select()} className="flex-1 bg-bg border border-border rounded px-2 py-1 text-xs" />
           <button type="button" onClick={copy} className="text-xs px-2 py-1 rounded border border-border hover:border-accent transition inline-flex items-center gap-1"><Copy size={12} /> 複製</button>
         </div>
       ) : (
-        <button type="button" onClick={generate} disabled={busy} className="text-xs px-3 py-1.5 rounded-lg bg-accent text-black font-semibold inline-flex items-center gap-1.5 disabled:opacity-50">
-          {busy ? <Loader2 size={12} className="animate-spin" /> : <Link2 size={12} />} 產生邀請連結
+        <button type="button" onClick={() => generate(inviteRole)} disabled={busy} className="text-xs px-3 py-1.5 rounded-lg bg-accent text-black font-semibold inline-flex items-center gap-1.5 disabled:opacity-50">
+          {busy ? <Loader2 size={12} className="animate-spin" /> : <Link2 size={12} />} 產生{inviteRole === "viewer" ? "唯讀" : "可編輯"}邀請連結
         </button>
       )}
-      {code && <div className="text-[11px] text-fg-muted">邀請碼：<code className="px-1 rounded bg-bg-elevated">{code}</code> — 連結貼到聊天室會有預覽卡片；對方也可在「加入共用」直接輸入這組碼</div>}
+      {code && (
+        <div className="text-[11px] text-fg-muted">
+          邀請碼：<code className="px-1 rounded bg-bg-elevated">{code}</code>（此連結加入後為「{inviteRole === "viewer" ? "唯讀" : "可編輯"}」）— 貼到聊天室會有預覽卡片，對方也可在「加入共用」輸入這組碼
+        </div>
+      )}
 
       {collabs.length > 0 ? (
         <div className="space-y-1 pt-1">

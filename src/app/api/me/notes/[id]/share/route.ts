@@ -40,7 +40,7 @@ async function shareState(admin: ReturnType<typeof createSupabaseAdmin>, note: {
       .select("user_id, role, added_at, profiles(username, display_name, avatar_url)")
       .eq("note_id", note.id).order("added_at", { ascending: true }),
     admin.from("profiles").select("id, username, display_name, avatar_url").eq("id", note.user_id).maybeSingle(),
-    admin.from("note_invites").select("code")
+    admin.from("note_invites").select("code, role")
       .eq("note_id", note.id).eq("revoked", false)
       .order("created_at", { ascending: false }).limit(1).maybeSingle(),
   ]);
@@ -53,6 +53,7 @@ async function shareState(admin: ReturnType<typeof createSupabaseAdmin>, note: {
       avatar_url: c.profiles?.avatar_url ?? null,
     })),
     code: invite?.code ?? null,
+    inviteRole: invite?.role ?? "editor",
     url: invite?.code ? `${origin}/notes/join/${invite.code}` : null,
   };
 }
@@ -88,16 +89,23 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   }
   if (!isOwner) return NextResponse.json({ error: "owner_only", message: "只有筆記擁有者可以發邀請" }, { status: 403 });
 
-  // 已有有效邀請碼就沿用、否則開新的
-  let { data: invite } = await admin.from("note_invites").select("code")
+  const body = await req.json().catch(() => ({}));
+  const role = body?.role === "viewer" ? "viewer" : "editor"; // 擁有者先決定加入者的權限
+
+  // 已有同權限的有效邀請碼就沿用；權限不同則作廢舊的、開一條新的（一則筆記同時只留一個有效邀請）
+  let { data: invite } = await admin.from("note_invites").select("code, role")
     .eq("note_id", id).eq("revoked", false)
     .order("created_at", { ascending: false }).limit(1).maybeSingle();
   let lastErr = "";
-  if (!invite) {
+  if (!invite || invite.role !== role) {
+    if (invite) {
+      await admin.from("note_invites").update({ revoked: true }).eq("note_id", id).eq("revoked", false);
+      invite = null;
+    }
     let code = genCode();
     for (let tries = 0; tries < 5; tries++) {
       const { data, error } = await admin.from("note_invites")
-        .insert({ note_id: id, code, created_by: user.id }).select("code").single();
+        .insert({ note_id: id, code, created_by: user.id, role }).select("code, role").single();
       if (!error && data) { invite = data; break; }
       lastErr = error?.message ?? "";
       code = genCode();
@@ -107,7 +115,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     console.error("[note share] code_gen_failed:", lastErr);
     return NextResponse.json({ error: "code_gen_failed", message: lastErr || "產生邀請碼失敗" }, { status: 500 });
   }
-  return NextResponse.json({ code: invite.code, url: `${siteOrigin(req)}/notes/join/${invite.code}` });
+  return NextResponse.json({ code: invite.code, role, url: `${siteOrigin(req)}/notes/join/${invite.code}` });
 }
 
 // 設定協作者權限：editor（可編輯）/ viewer（唯讀）— 只有擁有者
