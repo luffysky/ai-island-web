@@ -1,3 +1,22 @@
+import type { CSSProperties } from "react";
+
+/** 每則筆記可單獨設定的背景圖（上傳圖片 + 縮放/位移裁切/旋轉） */
+export type NoteBg = {
+  image: string; // 圖片 URL
+  scale: number; // 縮放（1 = 基準 cover，>1 放大）
+  x: number;     // 水平位置 %（0–100，50 = 置中）
+  y: number;     // 垂直位置 %
+  rotate: number; // 旋轉角度
+};
+export const DEFAULT_NOTE_BG: NoteBg = { image: "", scale: 1, x: 50, y: 50, rotate: 0 };
+
+/** 把 NoteBg 轉成背景圖 <img> 的 transform（搭配 140% 尺寸 + 置中定位）*/
+export function noteBgImgStyle(bg: NoteBg): CSSProperties {
+  return {
+    transform: `translate(-50%, -50%) translate(${bg.x - 50}%, ${bg.y - 50}%) scale(${bg.scale}) rotate(${bg.rotate}deg)`,
+  };
+}
+
 /**
  * 便利貼配色（共用：NoteCard / 漂浮預覽 / 編輯器選色）。
  * 每組都淺底深字，方便手寫筆記閱讀。

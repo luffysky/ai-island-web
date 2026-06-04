@@ -254,15 +254,20 @@ function FontSizeSelect({ editor }: { editor: Editor }) {
   );
 }
 
+// 字色盤 48 色（8 欄＝灰/紅/橙/黃/綠/青/藍/紫，6 列由淺到深）＋自訂取色器
 const TEXT_COLORS = [
-  "#ef4444", "#f97316", "#f59e0b", "#eab308", "#22c55e", "#14b8a6",
-  "#3b82f6", "#6366f1", "#8b5cf6", "#ec4899", "#0ea5e9", "#111827",
+  "#ffffff", "#fecaca", "#fed7aa", "#fde68a", "#bbf7d0", "#99f6e4", "#bfdbfe", "#e9d5ff",
+  "#d1d5db", "#fca5a5", "#fdba74", "#fcd34d", "#86efac", "#5eead4", "#93c5fd", "#d8b4fe",
+  "#9ca3af", "#f87171", "#fb923c", "#fbbf24", "#4ade80", "#2dd4bf", "#60a5fa", "#c084fc",
+  "#6b7280", "#ef4444", "#f97316", "#f59e0b", "#22c55e", "#14b8a6", "#3b82f6", "#a855f7",
+  "#374151", "#dc2626", "#ea580c", "#d97706", "#16a34a", "#0d9488", "#2563eb", "#9333ea",
+  "#000000", "#991b1b", "#9a3412", "#92400e", "#15803d", "#0f766e", "#1d4ed8", "#7e22ce",
 ];
 
 function ColorButton({ editor }: { editor: Editor }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
-  const active = (editor.getAttributes("textStyle").color as string) || "";
+  const active = ((editor.getAttributes("textStyle").color as string) || "").toLowerCase();
 
   useEffect(() => {
     if (!open) return;
@@ -284,20 +289,30 @@ function ColorButton({ editor }: { editor: Editor }) {
         <Baseline size={16} style={active ? { color: active } : undefined} />
       </button>
       {open && (
-        <div className="absolute z-30 mt-1 left-0 p-2 rounded-lg border border-border bg-bg-card shadow-xl w-[164px]">
-          <div className="grid grid-cols-6 gap-1.5">
+        <div className="absolute z-30 mt-1 left-0 p-2.5 rounded-lg border border-border bg-bg-card shadow-xl w-[244px]">
+          <div className="grid grid-cols-8 gap-1.5">
             {TEXT_COLORS.map((c) => (
               <button
                 key={c}
                 type="button"
                 onClick={() => { editor.chain().focus().setColor(c).run(); setOpen(false); }}
-                className={`w-5 h-5 rounded-full border transition hover:scale-110 ${active.toLowerCase() === c ? "border-fg ring-2 ring-accent" : "border-black/15"}`}
-                style={{ background: c }}
+                className={`w-6 h-6 rounded-full transition hover:scale-110 ${active === c ? "ring-2 ring-accent ring-offset-1 ring-offset-bg-card" : ""}`}
+                style={{ background: c, border: c === "#ffffff" ? "1px solid #d1d5db" : "1px solid rgba(0,0,0,0.12)" }}
                 title={c}
                 aria-label={`顏色 ${c}`}
               />
             ))}
           </div>
+          <label className="mt-2.5 flex items-center gap-2 text-xs text-fg-muted cursor-pointer">
+            <input
+              type="color"
+              value={/^#[0-9a-f]{6}$/i.test(active) ? active : "#000000"}
+              onChange={(e) => editor.chain().focus().setColor(e.target.value).run()}
+              className="w-6 h-6 rounded cursor-pointer bg-transparent border border-border p-0"
+              title="自訂顏色"
+            />
+            自訂顏色
+          </label>
           <button
             type="button"
             onClick={() => { editor.chain().focus().unsetColor().run(); setOpen(false); }}

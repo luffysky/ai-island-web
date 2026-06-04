@@ -10,6 +10,7 @@ import {
   Menu, X, Search, History, Star, Plus, Trash2,
 } from "lucide-react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
+import { useAuth } from "@/lib/auth-context";
 import { useToast } from "@/components/ui/Toast";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { useOverlayRegister } from "@/lib/overlay-stack";
@@ -67,7 +68,9 @@ export function SideNav() {
   const [bookmarks, setBookmarks] = useState<any[]>([]);
   const [notes, setNotes] = useState<any[]>([]);
   const [history, setHistory] = useState<any[]>([]);
-  const [user, setUser] = useState<any>(null);
+  // 登入狀態用全站共用 auth context（getSession + onAuthStateChange），
+  // 不要自己 getUser() 一次定生死 → 之前 session 還沒 hydrate 就卡在「登入後可以記筆記」
+  const { user } = useAuth();
   const [noteDraftOpen, setNoteDraftOpen] = useState(false);
   const [noteDraft, setNoteDraft] = useState("");
   const [savingNote, setSavingNote] = useState(false);
@@ -89,8 +92,15 @@ export function SideNav() {
       .catch(() => {});
   }, []);
 
-  // 載使用者狀態 + 個人資料
+  // 載使用者狀態 + 個人資料（user 來自 auth context，session 一就緒就觸發）
   useEffect(() => {
+    const uid = user?.id;
+    if (!uid) {
+      setBookmarks([]);
+      setNotes([]);
+      setHistory([]);
+      return;
+    }
     const supabase = createSupabaseBrowser();
     let cancelled = false;
 
@@ -106,37 +116,21 @@ export function SideNav() {
       setHistory(hi.data || []);
     };
 
-    supabase.auth.getUser().then(async ({ data }) => {
-      if (!data.user || cancelled) return;
-      setUser(data.user);
-      await loadAll(data.user.id);
-    });
+    loadAll(uid);
 
     // 同步監聽：BookmarkButton / NotePanel / SideNav 自己刪除 都會 dispatch
-    const reload = () => {
-      if (user?.id) {
-        loadAll(user.id);
-      } else {
-        supabase.auth.getUser().then(({ data }) => {
-          if (data.user?.id) loadAll(data.user.id);
-        });
-      }
-    };
-    const onBookmarkChange = reload;
-    const onNoteChange = reload;
-
-    window.addEventListener("pet:bookmark-added", onBookmarkChange);
-    window.addEventListener("sync:bookmarks", onBookmarkChange);
-    window.addEventListener("pet:note-saved", onNoteChange);
-    window.addEventListener("sync:notes", onNoteChange);
+    const reload = () => loadAll(uid);
+    window.addEventListener("pet:bookmark-added", reload);
+    window.addEventListener("sync:bookmarks", reload);
+    window.addEventListener("pet:note-saved", reload);
+    window.addEventListener("sync:notes", reload);
     return () => {
       cancelled = true;
-      window.removeEventListener("pet:bookmark-added", onBookmarkChange);
-      window.removeEventListener("sync:bookmarks", onBookmarkChange);
-      window.removeEventListener("pet:note-saved", onNoteChange);
-      window.removeEventListener("sync:notes", onNoteChange);
+      window.removeEventListener("pet:bookmark-added", reload);
+      window.removeEventListener("sync:bookmarks", reload);
+      window.removeEventListener("pet:note-saved", reload);
+      window.removeEventListener("sync:notes", reload);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
   const toggleCh = (id: number) => {

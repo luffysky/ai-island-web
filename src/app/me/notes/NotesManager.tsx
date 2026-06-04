@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useState, useRef, type CSSProperties } from "react";
 import dynamic from "next/dynamic";
 import {
-  DndContext, closestCenter, PointerSensor, useSensor, useSensors, type DragEndEvent,
+  DndContext, closestCenter, PointerSensor, useSensor, useSensors, useDroppable, type DragEndEvent,
 } from "@dnd-kit/core";
 import {
   SortableContext, arrayMove, useSortable, rectSortingStrategy,
@@ -14,8 +14,12 @@ import { NoteCard } from "./NoteCard";
 import { NotesBackgroundPicker } from "./NotesBackgroundPicker";
 import { FloatingNotesOverlay } from "./FloatingNotesOverlay";
 import { DEFAULT_NOTES_BG, loadNotesBg, saveNotesBg, notesBgStyle, type NotesBgConfig } from "@/lib/notes-background";
-import { STICKY_COLORS, clampOpacity } from "@/lib/note-sticky";
-import { Plus, X, Save, Loader2, Sparkles, GripVertical } from "lucide-react";
+import { STICKY_COLORS, clampOpacity, noteBgImgStyle, DEFAULT_NOTE_BG, type NoteBg } from "@/lib/note-sticky";
+import { loadFolders, saveFolders, folderDropId, FOLDER_DROP_PREFIX, UNCATEGORIZED } from "@/lib/note-folders";
+import { useToast } from "@/components/ui/Toast";
+import { Plus, X, Save, Loader2, Sparkles, GripVertical, Folder, FolderPlus, Image as ImageIcon, RotateCw } from "lucide-react";
+
+const UNCAT_FILTER = "__uncat__";
 
 const BlogEditor = dynamic(
   () => import("@/components/blog/BlogEditor").then((m) => m.BlogEditor),
@@ -35,9 +39,14 @@ export type ManagedNote = {
   color: string | null;
   opacity: number | null;
   sort_order: number | null;
+  bg: NoteBg | null;
 };
 
-/** 拖移排序用的卡片外殼（保留 NoteCard 自身旋轉、外層套 dnd transform） */
+/**
+ * 拖移排序用的卡片外殼。
+ * 重點：dnd listeners 只掛在「右上角把手」上、不掛整張卡 → 內文可自由選取，
+ * 選字不會跟拖曳打架（之前整卡可拖，一選字就變拖動）。
+ */
 function SortableNoteCard({ id, children }: { id: string; children: React.ReactNode }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
   const style: CSSProperties = {
@@ -45,11 +54,112 @@ function SortableNoteCard({ id, children }: { id: string; children: React.ReactN
     transition,
     opacity: isDragging ? 0.6 : 1,
     zIndex: isDragging ? 30 : undefined,
-    touchAction: "none",
   };
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners} className="active:cursor-grabbing">
+    <div ref={setNodeRef} style={style} className="relative">
+      <button
+        type="button"
+        {...attributes}
+        {...listeners}
+        onClick={(e) => e.stopPropagation()}
+        className="absolute top-1 right-1 z-20 p-1 rounded text-black/35 hover:text-black/70 hover:bg-black/10 cursor-grab active:cursor-grabbing transition"
+        style={{ touchAction: "none" }}
+        title="拖我調整順序"
+        aria-label="拖移排序"
+      >
+        <GripVertical size={15} />
+      </button>
       {children}
+    </div>
+  );
+}
+
+/** 可放下便利貼的資料夾 chip（拖筆記進來 = 設定分類）+ 點選＝篩選 */
+function DroppableFolderChip({
+  dropId, label, count, active, droppable, onClick, onRemove,
+}: {
+  dropId: string; label: string; count?: number; active: boolean; droppable?: boolean;
+  onClick: () => void; onRemove?: () => void;
+}) {
+  const { setNodeRef, isOver } = useDroppable({ id: dropId, disabled: !droppable });
+  return (
+    <span
+      ref={setNodeRef}
+      onClick={onClick}
+      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full cursor-pointer transition select-none ${
+        isOver ? "ring-2 ring-accent scale-110 bg-accent/25" : ""
+      } ${active ? "bg-accent text-black" : "bg-bg-elevated text-fg-muted hover:text-fg"}`}
+      title={droppable ? "點選篩選；把便利貼拖進來分類" : "點選篩選"}
+    >
+      {label}
+      {typeof count === "number" && <span className="opacity-60">{count}</span>}
+      {onRemove && (
+        <span
+          onClick={(e) => { e.stopPropagation(); onRemove(); }}
+          className="ml-0.5 leading-none hover:text-red-500"
+          title="移除空資料夾"
+        >×</span>
+      )}
+    </span>
+  );
+}
+
+function FolderBar({
+  folderList, folderCounts, uncategorizedCount, fCat, setFCat,
+  onAddFolder, onRemoveFolder, allTags, fTag, setFTag, droppable,
+}: {
+  folderList: string[]; folderCounts: Record<string, number>; uncategorizedCount: number;
+  fCat: string; setFCat: (v: string) => void;
+  onAddFolder: (name: string) => void; onRemoveFolder: (name: string) => void;
+  allTags: string[]; fTag: string; setFTag: (v: string) => void; droppable?: boolean;
+}) {
+  const [adding, setAdding] = useState(false);
+  const [name, setName] = useState("");
+  const submit = () => { if (name.trim()) onAddFolder(name); setName(""); setAdding(false); };
+  return (
+    <div className="space-y-2">
+      <div className="flex flex-wrap items-center gap-1.5 text-xs">
+        <span className="text-fg-muted inline-flex items-center gap-1"><Folder size={13} /> 資料夾：</span>
+        <button onClick={() => setFCat("")} className={`px-2 py-0.5 rounded-full ${!fCat ? "bg-accent text-black" : "bg-bg-elevated text-fg-muted hover:text-fg"}`}>全部</button>
+        <DroppableFolderChip
+          dropId={folderDropId(UNCATEGORIZED)} label="📥 未分類" count={uncategorizedCount}
+          active={fCat === UNCAT_FILTER} droppable={droppable}
+          onClick={() => setFCat(fCat === UNCAT_FILTER ? "" : UNCAT_FILTER)}
+        />
+        {folderList.map((c) => (
+          <DroppableFolderChip
+            key={c} dropId={folderDropId(c)} label={`📁 ${c}`} count={folderCounts[c] ?? 0}
+            active={fCat === c} droppable={droppable}
+            onClick={() => setFCat(c === fCat ? "" : c)}
+            onRemove={(folderCounts[c] ?? 0) === 0 ? () => onRemoveFolder(c) : undefined}
+          />
+        ))}
+        {adding ? (
+          <input
+            autoFocus value={name}
+            onChange={(e) => setName(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") submit(); if (e.key === "Escape") { setName(""); setAdding(false); } }}
+            onBlur={submit}
+            placeholder="資料夾名稱"
+            className="px-2 py-0.5 rounded-full bg-bg border border-border text-xs w-28 outline-none focus:border-accent"
+          />
+        ) : (
+          <button
+            onClick={() => setAdding(true)}
+            className="px-2 py-0.5 rounded-full border border-dashed border-border text-fg-muted hover:border-accent hover:text-fg inline-flex items-center gap-1"
+          >
+            <FolderPlus size={12} /> 新增資料夾
+          </button>
+        )}
+      </div>
+      {allTags.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 items-center text-xs">
+          <span className="text-fg-muted">標籤：</span>
+          {allTags.map((t) => (
+            <button key={t} onClick={() => setFTag(t === fTag ? "" : t)} className={`px-2 py-0.5 rounded-full ${fTag === t ? "bg-accent text-black" : "bg-bg-elevated text-fg-muted hover:text-fg"}`}>#{t}</button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -71,17 +181,43 @@ export function NotesManager({
   const updateBg = (c: NotesBgConfig) => { setBg(c); saveNotesBg(c); };
   const [floating, setFloating] = useState(false);
 
-  const categories = useMemo(
-    () => Array.from(new Set(notes.map((n) => n.category).filter(Boolean))) as string[],
-    [notes],
-  );
   const allTags = useMemo(
     () => Array.from(new Set(notes.flatMap((n) => n.tags ?? []))).slice(0, 40),
     [notes],
   );
-  const shown = notes.filter(
-    (n) => (!fCat || n.category === fCat) && (!fTag || (n.tags ?? []).includes(fTag)),
-  );
+  const shown = notes.filter((n) => {
+    const catOk = !fCat || (fCat === UNCAT_FILTER ? !n.category : n.category === fCat);
+    const tagOk = !fTag || (n.tags ?? []).includes(fTag);
+    return catOk && tagOk;
+  });
+
+  // 資料夾（= 分類）：localStorage 名單 ∪ 現有筆記 category
+  const [folders, setFolders] = useState<string[]>([]);
+  useEffect(() => setFolders(loadFolders()), []);
+  const folderCounts = useMemo(() => {
+    const m: Record<string, number> = {};
+    for (const n of notes) if (n.category) m[n.category] = (m[n.category] ?? 0) + 1;
+    return m;
+  }, [notes]);
+  const folderList = useMemo(() => {
+    const fromNotes = notes.map((n) => n.category).filter(Boolean) as string[];
+    return Array.from(new Set([...folders, ...fromNotes])).sort((a, b) => a.localeCompare(b, "zh-Hant"));
+  }, [folders, notes]);
+  const uncategorizedCount = useMemo(() => notes.filter((n) => !n.category).length, [notes]);
+  const addFolder = (name: string) => {
+    const n = name.trim();
+    if (!n || folderList.includes(n)) return;
+    const next = [...folders, n];
+    setFolders(next); saveFolders(next);
+  };
+  const removeFolder = (name: string) => {
+    const next = folders.filter((f) => f !== name);
+    setFolders(next); saveFolders(next);
+  };
+  const assignCategory = async (noteId: string, category: string | null) => {
+    setNotes((prev) => prev.map((n) => (n.id === noteId ? { ...n, category } : n)));
+    await supabase.from("notes").update({ category }).eq("id", noteId);
+  };
 
   const del = async (n: ManagedNote) => {
     if (!confirm("刪除這則筆記？")) return;
@@ -103,7 +239,19 @@ export function NotesManager({
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
   const onDragEnd = async (e: DragEndEvent) => {
     const { active, over } = e;
-    if (!over || active.id === over.id) return;
+    if (!over) return;
+    // 拖到資料夾 → 設定分類（不排序）
+    const overId = String(over.id);
+    if (overId.startsWith(FOLDER_DROP_PREFIX)) {
+      const raw = overId.slice(FOLDER_DROP_PREFIX.length);
+      const category = raw === UNCATEGORIZED ? null : raw;
+      const note = notes.find((n) => n.id === active.id);
+      if (note && (note.category ?? null) !== category) {
+        await assignCategory(String(active.id), category);
+      }
+      return;
+    }
+    if (active.id === over.id) return;
     const oldIndex = notes.findIndex((n) => n.id === active.id);
     const newIndex = notes.findIndex((n) => n.id === over.id);
     if (oldIndex < 0 || newIndex < 0) return;
@@ -155,31 +303,15 @@ export function NotesManager({
       )}
       </div>
 
-      {/* 篩選 */}
-      {(categories.length > 0 || allTags.length > 0) && (
-        <div className="flex flex-wrap items-center gap-1.5 text-xs">
-          {categories.length > 0 && (
-            <>
-              <span className="text-fg-muted">分類：</span>
-              <button onClick={() => setFCat("")} className={`px-2 py-0.5 rounded-full ${!fCat ? "bg-accent text-black" : "bg-bg-elevated text-fg-muted"}`}>全部</button>
-              {categories.map((c) => (
-                <button key={c} onClick={() => setFCat(c === fCat ? "" : c)} className={`px-2 py-0.5 rounded-full ${fCat === c ? "bg-accent text-black" : "bg-bg-elevated text-fg-muted"}`}>📁 {c}</button>
-              ))}
-            </>
-          )}
-          {allTags.length > 0 && (
-            <span className="ml-2 flex flex-wrap gap-1.5 items-center">
-              <span className="text-fg-muted">標籤：</span>
-              {allTags.map((t) => (
-                <button key={t} onClick={() => setFTag(t === fTag ? "" : t)} className={`px-2 py-0.5 rounded-full ${fTag === t ? "bg-accent text-black" : "bg-bg-elevated text-fg-muted"}`}>#{t}</button>
-              ))}
-            </span>
-          )}
-        </div>
-      )}
-
       {editing && (
-        <NoteEditor note={editing === "new" ? null : editing} onClose={() => setEditing(null)} onSaved={onSaved} />
+        <NoteEditor
+          note={editing === "new" ? null : editing}
+          categories={folderList}
+          tags={allTags}
+          onCreateFolder={addFolder}
+          onClose={() => setEditing(null)}
+          onSaved={onSaved}
+        />
       )}
 
       {floating && (
@@ -191,16 +323,20 @@ export function NotesManager({
         />
       )}
 
-      {canReorder && shown.length > 1 && (
-        <div className="flex items-center gap-1.5 text-xs text-fg-muted">
-          <GripVertical size={13} /> 拖移卡片可調整筆記順序
-        </div>
-      )}
-
       {canReorder ? (
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+          <FolderBar
+            folderList={folderList} folderCounts={folderCounts} uncategorizedCount={uncategorizedCount}
+            fCat={fCat} setFCat={setFCat} onAddFolder={addFolder} onRemoveFolder={removeFolder}
+            allTags={allTags} fTag={fTag} setFTag={setFTag} droppable
+          />
+          {shown.length > 1 && (
+            <div className="flex items-center gap-1.5 text-xs text-fg-muted mt-2">
+              <GripVertical size={13} /> 拖卡片排序；拖到上方資料夾＝分類
+            </div>
+          )}
           <SortableContext items={shown.map((n) => n.id)} strategy={rectSortingStrategy}>
-            <div className="grid sm:grid-cols-2 gap-3">
+            <div className="grid sm:grid-cols-2 gap-3 mt-2">
               {shown.map((n) => {
                 const meta = chapterMap[n.lesson_id ?? ""] ?? chapterMap[`ch${n.chapter_id}`] ?? null;
                 return (
@@ -219,21 +355,28 @@ export function NotesManager({
           </SortableContext>
         </DndContext>
       ) : (
-        <div className="grid sm:grid-cols-2 gap-3">
-          {shown.map((n) => {
-            const meta = chapterMap[n.lesson_id ?? ""] ?? chapterMap[`ch${n.chapter_id}`] ?? null;
-            return (
-              <NoteCard
-                key={n.id}
-                note={n}
-                chapterTitle={meta?.chapterTitle ?? ""}
-                lessonTitle={meta?.lessonTitle ?? (n.lesson_id ?? "自由筆記")}
-                onEdit={() => setEditing(n)}
-                onDelete={() => del(n)}
-              />
-            );
-          })}
-        </div>
+        <>
+          <FolderBar
+            folderList={folderList} folderCounts={folderCounts} uncategorizedCount={uncategorizedCount}
+            fCat={fCat} setFCat={setFCat} onAddFolder={addFolder} onRemoveFolder={removeFolder}
+            allTags={allTags} fTag={fTag} setFTag={setFTag}
+          />
+          <div className="grid sm:grid-cols-2 gap-3 mt-2">
+            {shown.map((n) => {
+              const meta = chapterMap[n.lesson_id ?? ""] ?? chapterMap[`ch${n.chapter_id}`] ?? null;
+              return (
+                <NoteCard
+                  key={n.id}
+                  note={n}
+                  chapterTitle={meta?.chapterTitle ?? ""}
+                  lessonTitle={meta?.lessonTitle ?? (n.lesson_id ?? "自由筆記")}
+                  onEdit={() => setEditing(n)}
+                  onDelete={() => del(n)}
+                />
+              );
+            })}
+          </div>
+        </>
       )}
       {shown.length === 0 && (
         <div className="text-sm text-fg-muted py-8 text-center">沒有符合的筆記。點「新增筆記」開始記吧。</div>
@@ -245,10 +388,16 @@ export function NotesManager({
 
 function NoteEditor({
   note,
+  categories,
+  tags,
+  onCreateFolder,
   onClose,
   onSaved,
 }: {
   note: ManagedNote | null;
+  categories: string[];
+  tags: string[];
+  onCreateFolder: (name: string) => void;
   onClose: () => void;
   onSaved: (n: ManagedNote) => void;
 }) {
@@ -256,9 +405,31 @@ function NoteEditor({
   const [content, setContent] = useState(note?.content ?? "");
   const [category, setCategory] = useState(note?.category ?? "");
   const [tagsInput, setTagsInput] = useState((note?.tags ?? []).join(", "));
+  // 分類下拉 + 標籤下拉
+  const [catOpen, setCatOpen] = useState(false);
+  const [tagOpen, setTagOpen] = useState(false);
+  const catRef = useRef<HTMLDivElement | null>(null);
+  const tagRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const onDown = (e: MouseEvent) => {
+      if (catRef.current && !catRef.current.contains(e.target as Node)) setCatOpen(false);
+      if (tagRef.current && !tagRef.current.contains(e.target as Node)) setTagOpen(false);
+    };
+    window.addEventListener("mousedown", onDown);
+    return () => window.removeEventListener("mousedown", onDown);
+  }, []);
+  const currentTags = tagsInput.split(/[,，\s]+/).map((t) => t.trim()).filter(Boolean);
+  const addTag = (t: string) => {
+    if (currentTags.includes(t)) return;
+    setTagsInput([...currentTags, t].join(", "));
+  };
+  const catTyped = category.trim();
+  const catMatches = categories.filter((c) => c !== catTyped && c.toLowerCase().includes(catTyped.toLowerCase()));
+  const tagSuggest = tags.filter((t) => !currentTags.includes(t));
   const [isPublic, setIsPublic] = useState(note?.is_public ?? false);
   const [color, setColor] = useState<string>(note?.color ?? "");
   const [opacity, setOpacity] = useState<number>(clampOpacity(note?.opacity));
+  const [noteBg, setNoteBg] = useState<NoteBg | null>(note?.bg ?? null);
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState("");
 
@@ -277,6 +448,7 @@ function NoteEditor({
         is_public: isPublic,
         color: color || null,
         opacity,
+        bg: noteBg && noteBg.image ? noteBg : null,
         updated_at: new Date().toISOString(),
       };
       if (note) {
@@ -305,18 +477,61 @@ function NoteEditor({
         <BlogEditor content={content} onChange={setContent} placeholder="寫下你的筆記…（可貼上 / 拖曳圖片）" />
       </div>
       <div className="flex flex-wrap gap-2">
-        <input
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          placeholder="分類（如：React / 面試 / 想法）"
-          className="flex-1 min-w-[140px] bg-bg border border-border rounded-lg px-3 py-1.5 text-sm outline-none focus:border-accent"
-        />
-        <input
-          value={tagsInput}
-          onChange={(e) => setTagsInput(e.target.value)}
-          placeholder="標籤、逗號分隔（如：hook, useEffect）"
-          className="flex-1 min-w-[140px] bg-bg border border-border rounded-lg px-3 py-1.5 text-sm outline-none focus:border-accent"
-        />
+        {/* 分類：可選現有資料夾、可直接打、可從下拉建立 */}
+        <div className="relative flex-1 min-w-[140px]" ref={catRef}>
+          <input
+            value={category}
+            onChange={(e) => { setCategory(e.target.value); setCatOpen(true); }}
+            onFocus={() => setCatOpen(true)}
+            placeholder="分類（選現有或打新的）"
+            className="w-full bg-bg border border-border rounded-lg px-3 py-1.5 text-sm outline-none focus:border-accent"
+          />
+          {catOpen && (
+            <div className="absolute z-30 mt-1 left-0 right-0 max-h-52 overflow-auto rounded-lg border border-border bg-bg-card shadow-xl py-1">
+              {category && (
+                <button type="button" onClick={() => { setCategory(""); setCatOpen(false); }} className="w-full text-left px-3 py-1.5 text-sm text-fg-muted hover:bg-bg-elevated">— 不分類 —</button>
+              )}
+              {catMatches.map((c) => (
+                <button key={c} type="button" onClick={() => { setCategory(c); setCatOpen(false); }} className="w-full text-left px-3 py-1.5 text-sm hover:bg-bg-elevated">📁 {c}</button>
+              ))}
+              {catMatches.length === 0 && !catTyped && categories.length === 0 && (
+                <div className="px-3 py-1.5 text-xs text-fg-muted">還沒有分類、直接打字或按下面建立</div>
+              )}
+              <button
+                type="button"
+                onClick={() => {
+                  const name = catTyped || window.prompt("新分類名稱：")?.trim() || "";
+                  if (name) { onCreateFolder(name); setCategory(name); }
+                  setCatOpen(false);
+                }}
+                className="w-full text-left px-3 py-1.5 text-sm text-accent hover:bg-bg-elevated border-t border-border inline-flex items-center gap-1.5"
+              >
+                <FolderPlus size={13} /> {catTyped && !categories.includes(catTyped) ? `建立分類「${catTyped}」` : "建立新分類…"}
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* 標籤：可從下拉選現有、也可逗號分隔自己打 */}
+        <div className="relative flex-1 min-w-[140px]" ref={tagRef}>
+          <input
+            value={tagsInput}
+            onChange={(e) => setTagsInput(e.target.value)}
+            onFocus={() => setTagOpen(true)}
+            placeholder="標籤、逗號分隔（如：hook, useEffect）"
+            className="w-full bg-bg border border-border rounded-lg px-3 py-1.5 text-sm outline-none focus:border-accent"
+          />
+          {tagOpen && tagSuggest.length > 0 && (
+            <div className="absolute z-30 mt-1 left-0 right-0 max-h-52 overflow-auto rounded-lg border border-border bg-bg-card shadow-xl p-2">
+              <div className="text-[11px] text-fg-muted mb-1">點一下加入現有標籤</div>
+              <div className="flex flex-wrap gap-1">
+                {tagSuggest.map((t) => (
+                  <button key={t} type="button" onClick={() => addTag(t)} className="px-2 py-0.5 rounded-full text-xs bg-bg-elevated text-fg-muted hover:text-fg hover:bg-accent/20 transition">#{t}</button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
       {/* 便利貼外觀：顏色 + 透明度 */}
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
@@ -357,6 +572,8 @@ function NoteEditor({
         </label>
       </div>
 
+      <NoteBackgroundEditor value={noteBg} onChange={setNoteBg} />
+
       <div className="flex items-center justify-between">
         <label className="flex items-center gap-2 text-sm text-fg-muted">
           <input type="checkbox" checked={isPublic} onChange={(e) => setIsPublic(e.target.checked)} />
@@ -369,6 +586,95 @@ function NoteEditor({
           </button>
         </div>
       </div>
+    </div>
+  );
+}
+
+/** 便利貼單獨背景圖：上傳 + 縮放/位移裁切/旋轉 + 即時預覽 */
+function NoteBackgroundEditor({ value, onChange }: { value: NoteBg | null; onChange: (b: NoteBg | null) => void }) {
+  const toast = useToast();
+  const fileRef = useRef<HTMLInputElement | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const bg = value ?? DEFAULT_NOTE_BG;
+  const update = (patch: Partial<NoteBg>) => onChange({ ...bg, ...patch });
+
+  const upload = async (file: File) => {
+    if (!file.type.startsWith("image/")) { toast.error("只支援圖片"); return; }
+    if (file.size > 8 * 1024 * 1024) { toast.error("檔案不可超過 8 MB"); return; }
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("folder", "notes");
+      const res = await fetch("/api/upload", { credentials: "include", method: "POST", body: fd });
+      const j = await res.json();
+      if (!res.ok) throw new Error(j.message || j.error || "上傳失敗");
+      onChange({ ...DEFAULT_NOTE_BG, ...(value ?? {}), image: j.url });
+      toast.success("背景已上傳");
+    } catch (e: any) {
+      toast.error(e?.message || "上傳失敗");
+    } finally {
+      setUploading(false);
+    }
+  };
+  const onPick = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (f) upload(f);
+    if (fileRef.current) fileRef.current.value = "";
+  };
+
+  const Slider = ({ label, min, max, step, val, on, fmt }: { label: string; min: number; max: number; step: number; val: number; on: (v: number) => void; fmt: (v: number) => string }) => (
+    <label className="flex items-center gap-2 text-xs text-fg-muted">
+      <span className="w-8 shrink-0">{label}</span>
+      <input type="range" min={min} max={max} step={step} value={val} onChange={(e) => on(Number(e.target.value))} className="flex-1 accent-accent cursor-pointer" />
+      <span className="tabular-nums w-12 text-right">{fmt(val)}</span>
+    </label>
+  );
+
+  return (
+    <div className="rounded-lg border border-border p-3 space-y-2">
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-medium text-fg-muted inline-flex items-center gap-1">
+          <ImageIcon size={13} /> 便利貼背景圖（可選）
+        </span>
+        {value?.image && (
+          <button type="button" onClick={() => onChange(null)} className="text-xs text-fg-muted hover:text-red-400 inline-flex items-center gap-1">
+            <X size={12} /> 移除
+          </button>
+        )}
+      </div>
+
+      {!value?.image ? (
+        <button
+          type="button"
+          onClick={() => fileRef.current?.click()}
+          disabled={uploading}
+          className="w-full py-3 rounded-lg border border-dashed border-border text-xs text-fg-muted hover:border-accent hover:text-fg transition inline-flex items-center justify-center gap-1.5 disabled:opacity-50"
+        >
+          {uploading ? <Loader2 size={14} className="animate-spin" /> : <ImageIcon size={14} />}
+          上傳圖片當背景
+        </button>
+      ) : (
+        <>
+          <div className="relative h-28 rounded-md overflow-hidden border border-border bg-bg">
+            <img src={value.image} alt="" className="absolute left-1/2 top-1/2 w-[140%] h-[140%] max-w-none object-cover" style={noteBgImgStyle(bg)} draggable={false} />
+          </div>
+          <Slider label="大小" min={1} max={3} step={0.05} val={bg.scale} on={(v) => update({ scale: v })} fmt={(v) => `${v.toFixed(2)}x`} />
+          <Slider label="左右" min={0} max={100} step={1} val={bg.x} on={(v) => update({ x: v })} fmt={(v) => `${Math.round(v)}%`} />
+          <Slider label="上下" min={0} max={100} step={1} val={bg.y} on={(v) => update({ y: v })} fmt={(v) => `${Math.round(v)}%`} />
+          <Slider label="旋轉" min={-180} max={180} step={1} val={bg.rotate} on={(v) => update({ rotate: v })} fmt={(v) => `${Math.round(v)}°`} />
+          <div className="flex items-center gap-2">
+            <button type="button" onClick={() => fileRef.current?.click()} disabled={uploading} className="text-xs px-2 py-1 rounded border border-border text-fg-muted hover:border-accent hover:text-fg transition inline-flex items-center gap-1 disabled:opacity-50">
+              {uploading ? <Loader2 size={12} className="animate-spin" /> : <ImageIcon size={12} />} 換圖
+            </button>
+            <button type="button" onClick={() => onChange({ ...DEFAULT_NOTE_BG, image: value.image })} className="text-xs px-2 py-1 rounded border border-border text-fg-muted hover:border-accent hover:text-fg transition inline-flex items-center gap-1">
+              <RotateCw size={12} /> 重設位置
+            </button>
+            <span className="text-[11px] text-fg-muted ml-auto">背景濃淡用上面「透明度」調</span>
+          </div>
+        </>
+      )}
+      <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" className="hidden" onChange={onPick} />
     </div>
   );
 }
