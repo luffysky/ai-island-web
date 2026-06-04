@@ -240,6 +240,13 @@ html[data-theme="light"] ::-webkit-scrollbar-track { background: var(--color-bg-
 
 ::selection { background: var(--color-accent); color: #000; }
 
+/* 明亮模式：實心 accent（深綠 #1f883d）背景上的文字/圖示一律白色
+   （暗色模式 accent 是亮綠 #50fa7b、配黑字；明亮模式深綠配黑字看不清）*/
+html[data-theme="light"] .bg-accent { color: #fff; }
+html[data-theme="light"] .bg-accent.text-black,
+html[data-theme="light"] .bg-accent .text-black,
+html[data-theme="light"] .bg-accent .text-fg { color: #fff; }
+
 /* ============================================================
    程式碼 / 終端機區塊 — 明亮模式：淺灰底 + 深字
    暗色介面不該沿用到 light theme；語法 token 改 atom-one-light 系。
