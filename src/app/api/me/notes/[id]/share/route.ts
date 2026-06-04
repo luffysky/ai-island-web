@@ -16,12 +16,13 @@ function genCode() {
 
 async function loadContext(id: string, userId: string) {
   const admin = createSupabaseAdmin();
-  const { data: note } = await admin.from("notes").select("id, user_id, title").eq("id", id).maybeSingle();
-  if (!note) return { admin, note: null, isOwner: false, isCollab: false };
+  const { data: note, error: noteErr } = await admin.from("notes").select("id, user_id, title").eq("id", id).maybeSingle();
+  if (noteErr) console.error("[note share] note lookup error:", noteErr.message);
+  if (!note) return { admin, note: null, isOwner: false, isCollab: false, noteErr: noteErr?.message ?? null };
   const isOwner = note.user_id === userId;
   const { data: collabRow } = await admin
     .from("note_collaborators").select("user_id").eq("note_id", id).eq("user_id", userId).maybeSingle();
-  return { admin, note, isOwner, isCollab: !!collabRow };
+  return { admin, note, isOwner, isCollab: !!collabRow, noteErr: null };
 }
 
 async function shareState(admin: ReturnType<typeof createSupabaseAdmin>, note: { id: string; user_id: string }, origin: string) {
@@ -66,8 +67,16 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   const supabase = await createSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  const { admin, note, isOwner } = await loadContext(id, user.id);
-  if (!note) return NextResponse.json({ error: "not_found" }, { status: 404 });
+  const { admin, note, isOwner, noteErr } = await loadContext(id, user.id);
+  if (!note) {
+    return NextResponse.json({
+      error: "not_found",
+      message: noteErr
+        ? `找不到筆記（DB: ${noteErr}）`
+        : "找不到這則筆記，或伺服器讀不到（請確認 SUPABASE_SERVICE_ROLE_KEY 已在 Zeabur 設好）",
+      noteId: id,
+    }, { status: 404 });
+  }
   if (!isOwner) return NextResponse.json({ error: "owner_only", message: "只有筆記擁有者可以發邀請" }, { status: 403 });
 
   // 已有有效邀請碼就沿用、否則開新的
