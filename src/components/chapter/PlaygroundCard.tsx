@@ -16,6 +16,47 @@ const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
   ),
 });
 
+// 明亮模式自訂 Monaco 主題：淺灰底 + 深字
+function defineMonacoLight(monaco: any) {
+  monaco.editor.defineTheme("ai-light", {
+    base: "vs",
+    inherit: true,
+    rules: [
+      { token: "comment", foreground: "5b6673", fontStyle: "italic" },
+      { token: "keyword", foreground: "a626a4" },
+      { token: "string", foreground: "3d8b40" },
+      { token: "number", foreground: "0184bb" },
+      { token: "type", foreground: "c18401" },
+      { token: "function", foreground: "4078f2" },
+      { token: "variable", foreground: "1f2328" },
+    ],
+    colors: {
+      "editor.background": "#f3f5f7",
+      "editor.foreground": "#1f2328",
+      "editorLineNumber.foreground": "#9ca3af",
+      "editorLineNumber.activeForeground": "#4b5563",
+      "editor.lineHighlightBackground": "#e8ebef",
+      "editor.selectionBackground": "#cfe6ff",
+      "editorCursor.foreground": "#1f883d",
+      "editorIndentGuide.background": "#e1e5ea",
+      "editorGutter.background": "#eaeef2",
+    },
+  });
+}
+
+// 跟著全站 data-theme 切換
+function useIsLight() {
+  const [light, setLight] = useState(false);
+  useEffect(() => {
+    const read = () => setLight(document.documentElement.getAttribute("data-theme") === "light");
+    read();
+    const obs = new MutationObserver(read);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    return () => obs.disconnect();
+  }, []);
+  return light;
+}
+
 // Monaco 語言對照（不是每個都直接對應）
 const MONACO_LANG: Record<string, string> = {
   html: "html", css: "css", js: "javascript", javascript: "javascript",
@@ -147,6 +188,7 @@ export function PlaygroundCard({
   const [lang, setLang] = useState<string>(playground.language);
   const [code, setCode] = useState(playground.initialCode);
   const [stdin, setStdin] = useState("");
+  const isLight = useIsLight();
   const [output, setOutput] = useState("");
   const [running, setRunning] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -395,7 +437,8 @@ export function PlaygroundCard({
           <MonacoEditor
             height={fullscreen ? "100vh" : (playground.height ?? 320)}
             language={MONACO_LANG[lang] ?? "plaintext"}
-            theme="vs-dark"
+            beforeMount={defineMonacoLight}
+            theme={isLight ? "ai-light" : "vs-dark"}
             value={code}
             onChange={(v) => setCode(v ?? "")}
             options={{

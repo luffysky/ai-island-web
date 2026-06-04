@@ -242,6 +242,11 @@ html[data-theme="light"] ::-webkit-scrollbar-track { background: var(--color-bg-
 
 /* 明亮模式：實心 accent（深綠 #1f883d）背景上的文字/圖示一律白色
    （暗色模式 accent 是亮綠 #50fa7b、配黑字；明亮模式深綠配黑字看不清）*/
+/* 課程圖片深淺色雙版本：預設(暗色)顯示 dark 版、明亮模式顯示 light 版 */
+.lesson-img-light { display: none; }
+html[data-theme="light"] .lesson-img-light { display: block; }
+html[data-theme="light"] .lesson-img-dark { display: none; }
+
 html[data-theme="light"] .bg-accent { color: #fff; }
 html[data-theme="light"] .bg-accent.text-black,
 html[data-theme="light"] .bg-accent .text-black,
