@@ -82,14 +82,14 @@ export function CodeBlock({ children, className }: CodeBlockProps) {
 
   return (
     <div
-      className={`my-4 rounded-xl border overflow-hidden shadow-lg ${
-        isTerminal ? "border-emerald-500/25 bg-[#0c1512]" : "border-white/10 bg-[#1b1d23]"
+      className={`cb-root my-4 rounded-xl border overflow-hidden shadow-lg ${
+        isTerminal ? "cb-terminal border-emerald-500/25 bg-[#0c1512]" : "cb-file border-white/10 bg-[#1b1d23]"
       }`}
       style={{ maxWidth: "100%" }}
     >
       {/* Header：macOS 紅黃綠燈 + 標籤 + 複製 */}
       <div
-        className={`flex items-center justify-between px-3.5 py-2 border-b ${
+        className={`cb-head flex items-center justify-between px-3.5 py-2 border-b ${
           isTerminal ? "bg-[#08100d] border-emerald-500/20" : "bg-[#15171c] border-white/10"
         }`}
       >
@@ -100,7 +100,7 @@ export function CodeBlock({ children, className }: CodeBlockProps) {
             <span className="w-3 h-3 rounded-full bg-[#28c840]" />
           </span>
           <span
-            className={`flex items-center gap-1.5 text-xs font-mono font-medium truncate ${
+            className={`cb-label flex items-center gap-1.5 text-xs font-mono font-medium truncate ${
               isTerminal ? "text-emerald-300" : "text-sky-300"
             }`}
           >
@@ -110,7 +110,7 @@ export function CodeBlock({ children, className }: CodeBlockProps) {
         </div>
         <button
           onClick={handleCopy}
-          className="flex items-center gap-1 px-2 py-1 text-xs rounded-md hover:bg-white/10 transition text-fg-muted shrink-0"
+          className="cb-copy flex items-center gap-1 px-2 py-1 text-xs rounded-md hover:bg-white/10 transition text-fg-muted shrink-0"
           aria-label="複製程式碼"
         >
           {copied ? (
@@ -154,7 +154,7 @@ export function CodeBlock({ children, className }: CodeBlockProps) {
         <div className={`border-t ${isTerminal ? "border-emerald-500/20" : "border-white/10"}`}>
           <button
             onClick={() => setShowGlossary((s) => !s)}
-            className="w-full flex items-center gap-1.5 px-3.5 py-1.5 text-xs text-emerald-300/80 hover:text-emerald-200 hover:bg-white/[0.03] transition"
+            className="cb-gloss w-full flex items-center gap-1.5 px-3.5 py-1.5 text-xs text-emerald-300/80 hover:text-emerald-200 hover:bg-white/[0.03] transition"
           >
             <BookOpen size={12} />
             指令說明（{commands.length}）
@@ -164,7 +164,7 @@ export function CodeBlock({ children, className }: CodeBlockProps) {
             <ul className="px-3.5 pb-3 pt-0.5 space-y-1.5 text-xs">
               {commands.map((cmd) => (
                 <li key={cmd} className="flex gap-2 leading-relaxed">
-                  <code className="shrink-0 px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-300 font-mono h-fit">
+                  <code className="cb-gloss-code shrink-0 px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-300 font-mono h-fit">
                     {cmd}
                   </code>
                   <span className="text-fg-muted">{CLI_GLOSSARY[cmd]}</span>

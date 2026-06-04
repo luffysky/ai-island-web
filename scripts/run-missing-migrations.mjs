@@ -10,6 +10,7 @@ const MIGRATIONS = [
   "interaction_analytics_migration.sql",  // → interaction_events / interaction_analytics
   "blog_migration.sql",                   // → blog_* 表（包含 subscribers / blog_posts 系列）
   "future_schemas_migration.sql",         // → reports / support_emails 等未來預留
+  "notes_personalize_migration.sql",      // → notes.color / opacity / sort_order（便利貼顏色、透明度、拖移排序）
 ];
 
 const env = Object.fromEntries(

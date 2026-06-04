@@ -1,13 +1,21 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import dynamic from "next/dynamic";
+import {
+  DndContext, closestCenter, PointerSensor, useSensor, useSensors, type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext, arrayMove, useSortable, rectSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { NoteCard } from "./NoteCard";
 import { NotesBackgroundPicker } from "./NotesBackgroundPicker";
 import { FloatingNotesOverlay } from "./FloatingNotesOverlay";
 import { DEFAULT_NOTES_BG, loadNotesBg, saveNotesBg, notesBgStyle, type NotesBgConfig } from "@/lib/notes-background";
-import { Plus, X, Save, Loader2, Sparkles } from "lucide-react";
+import { STICKY_COLORS, clampOpacity } from "@/lib/note-sticky";
+import { Plus, X, Save, Loader2, Sparkles, GripVertical } from "lucide-react";
 
 const BlogEditor = dynamic(
   () => import("@/components/blog/BlogEditor").then((m) => m.BlogEditor),
@@ -24,7 +32,27 @@ export type ManagedNote = {
   updated_at: string;
   category: string | null;
   tags: string[] | null;
+  color: string | null;
+  opacity: number | null;
+  sort_order: number | null;
 };
+
+/** 拖移排序用的卡片外殼（保留 NoteCard 自身旋轉、外層套 dnd transform） */
+function SortableNoteCard({ id, children }: { id: string; children: React.ReactNode }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+  const style: CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.6 : 1,
+    zIndex: isDragging ? 30 : undefined,
+    touchAction: "none",
+  };
+  return (
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners} className="active:cursor-grabbing">
+      {children}
+    </div>
+  );
+}
 
 export function NotesManager({
   initial,
@@ -68,6 +96,24 @@ export function NotesManager({
       return [n, ...p];
     });
     setEditing(null);
+  };
+
+  // 拖移排序（只在沒套用篩選時開放、避免「拖動子集合」的順序歧義）
+  const canReorder = !fCat && !fTag;
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
+  const onDragEnd = async (e: DragEndEvent) => {
+    const { active, over } = e;
+    if (!over || active.id === over.id) return;
+    const oldIndex = notes.findIndex((n) => n.id === active.id);
+    const newIndex = notes.findIndex((n) => n.id === over.id);
+    if (oldIndex < 0 || newIndex < 0) return;
+    const origById = new Map(notes.map((n) => [n.id, n.sort_order] as const));
+    const reordered = arrayMove(notes, oldIndex, newIndex).map((n, i) => ({ ...n, sort_order: i }));
+    setNotes(reordered);
+    const changed = reordered.filter((n) => origById.get(n.id) !== n.sort_order);
+    await Promise.all(
+      changed.map((n) => supabase.from("notes").update({ sort_order: n.sort_order }).eq("id", n.id)),
+    );
   };
 
   const bgStyle = notesBgStyle(bg);
@@ -145,21 +191,50 @@ export function NotesManager({
         />
       )}
 
-      <div className="grid sm:grid-cols-2 gap-3">
-        {shown.map((n) => {
-          const meta = chapterMap[n.lesson_id ?? ""] ?? chapterMap[`ch${n.chapter_id}`] ?? null;
-          return (
-            <NoteCard
-              key={n.id}
-              note={n}
-              chapterTitle={meta?.chapterTitle ?? ""}
-              lessonTitle={meta?.lessonTitle ?? (n.lesson_id ?? "自由筆記")}
-              onEdit={() => setEditing(n)}
-              onDelete={() => del(n)}
-            />
-          );
-        })}
-      </div>
+      {canReorder && shown.length > 1 && (
+        <div className="flex items-center gap-1.5 text-xs text-fg-muted">
+          <GripVertical size={13} /> 拖移卡片可調整筆記順序
+        </div>
+      )}
+
+      {canReorder ? (
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+          <SortableContext items={shown.map((n) => n.id)} strategy={rectSortingStrategy}>
+            <div className="grid sm:grid-cols-2 gap-3">
+              {shown.map((n) => {
+                const meta = chapterMap[n.lesson_id ?? ""] ?? chapterMap[`ch${n.chapter_id}`] ?? null;
+                return (
+                  <SortableNoteCard key={n.id} id={n.id}>
+                    <NoteCard
+                      note={n}
+                      chapterTitle={meta?.chapterTitle ?? ""}
+                      lessonTitle={meta?.lessonTitle ?? (n.lesson_id ?? "自由筆記")}
+                      onEdit={() => setEditing(n)}
+                      onDelete={() => del(n)}
+                    />
+                  </SortableNoteCard>
+                );
+              })}
+            </div>
+          </SortableContext>
+        </DndContext>
+      ) : (
+        <div className="grid sm:grid-cols-2 gap-3">
+          {shown.map((n) => {
+            const meta = chapterMap[n.lesson_id ?? ""] ?? chapterMap[`ch${n.chapter_id}`] ?? null;
+            return (
+              <NoteCard
+                key={n.id}
+                note={n}
+                chapterTitle={meta?.chapterTitle ?? ""}
+                lessonTitle={meta?.lessonTitle ?? (n.lesson_id ?? "自由筆記")}
+                onEdit={() => setEditing(n)}
+                onDelete={() => del(n)}
+              />
+            );
+          })}
+        </div>
+      )}
       {shown.length === 0 && (
         <div className="text-sm text-fg-muted py-8 text-center">沒有符合的筆記。點「新增筆記」開始記吧。</div>
       )}
@@ -182,6 +257,8 @@ function NoteEditor({
   const [category, setCategory] = useState(note?.category ?? "");
   const [tagsInput, setTagsInput] = useState((note?.tags ?? []).join(", "));
   const [isPublic, setIsPublic] = useState(note?.is_public ?? false);
+  const [color, setColor] = useState<string>(note?.color ?? "");
+  const [opacity, setOpacity] = useState<number>(clampOpacity(note?.opacity));
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState("");
 
@@ -198,6 +275,8 @@ function NoteEditor({
         category: category.trim() || null,
         tags,
         is_public: isPublic,
+        color: color || null,
+        opacity,
         updated_at: new Date().toISOString(),
       };
       if (note) {
@@ -239,6 +318,45 @@ function NoteEditor({
           className="flex-1 min-w-[140px] bg-bg border border-border rounded-lg px-3 py-1.5 text-sm outline-none focus:border-accent"
         />
       </div>
+      {/* 便利貼外觀：顏色 + 透明度 */}
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+        <div className="flex items-center gap-1.5">
+          <span className="text-xs text-fg-muted">便利貼顏色</span>
+          <button
+            type="button"
+            onClick={() => setColor("")}
+            className={`px-2 py-0.5 text-[11px] rounded-full border transition ${color === "" ? "border-accent bg-accent/15 text-fg" : "border-border text-fg-muted hover:border-accent"}`}
+            title="依分類自動配色"
+          >
+            自動
+          </button>
+          {STICKY_COLORS.map((c) => (
+            <button
+              key={c.key}
+              type="button"
+              onClick={() => setColor(c.key)}
+              className={`w-6 h-6 rounded-full border transition hover:scale-110 ${color === c.key ? "ring-2 ring-accent border-fg" : "border-black/15"}`}
+              style={{ background: c.bg }}
+              title={c.label}
+              aria-label={`便利貼顏色 ${c.label}`}
+            />
+          ))}
+        </div>
+        <label className="flex items-center gap-2 text-xs text-fg-muted">
+          透明度
+          <input
+            type="range"
+            min={0.3}
+            max={1}
+            step={0.05}
+            value={opacity}
+            onChange={(e) => setOpacity(Number(e.target.value))}
+            className="w-28 accent-accent cursor-pointer"
+          />
+          <span className="tabular-nums w-9 text-right">{Math.round(opacity * 100)}%</span>
+        </label>
+      </div>
+
       <div className="flex items-center justify-between">
         <label className="flex items-center gap-2 text-sm text-fg-muted">
           <input type="checkbox" checked={isPublic} onChange={(e) => setIsPublic(e.target.checked)} />

@@ -23,8 +23,9 @@ import {
   List as ListIcon, ListOrdered, Quote, Heading1, Heading2, Heading3,
   Link as LinkIcon, Image as ImageIcon, Table as TableIcon, Undo, Redo,
   Highlighter, AlignLeft, AlignCenter, AlignRight,
-  FileCode, Minus, CheckSquare, Upload, Loader2,
+  FileCode, Minus, CheckSquare, Upload, Loader2, Baseline, Type,
 } from "lucide-react";
+import { TextStyleColorSize } from "@/lib/tiptap-text-style";
 import { useToast } from "@/components/ui/Toast";
 
 const lowlight = createLowlight(common);
@@ -44,6 +45,7 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
       Link.configure({ openOnClick: false, HTMLAttributes: { class: "text-accent underline" } }),
       Image.configure({ HTMLAttributes: { class: "rounded-lg max-w-full" } }),
       Underline,
+      TextStyleColorSize,
       Highlight.configure({ multicolor: false }),
       TextAlign.configure({ types: ["heading", "paragraph"] }),
       CharacterCount,
@@ -176,6 +178,9 @@ function Toolbar({ editor }: { editor: Editor }) {
       <button type="button" onClick={() => editor.chain().focus().toggleStrike().run()} className={btn(editor.isActive("strike"))} title="刪除線"><Strikethrough size={16} /></button>
       <button type="button" onClick={() => editor.chain().focus().toggleHighlight().run()} className={btn(editor.isActive("highlight"))} title="螢光標記"><Highlighter size={16} /></button>
       <Sep />
+      <FontSizeSelect editor={editor} />
+      <ColorButton editor={editor} />
+      <Sep />
       <button type="button" onClick={() => editor.chain().focus().toggleBulletList().run()} className={btn(editor.isActive("bulletList"))} title="項目符號"><ListIcon size={16} /></button>
       <button type="button" onClick={() => editor.chain().focus().toggleOrderedList().run()} className={btn(editor.isActive("orderedList"))} title="編號清單"><ListOrdered size={16} /></button>
       <button type="button" onClick={() => editor.chain().focus().toggleTaskList().run()} className={btn(editor.isActive("taskList"))} title="待辦清單"><CheckSquare size={16} /></button>
@@ -216,4 +221,92 @@ function Toolbar({ editor }: { editor: Editor }) {
 
 function Sep() {
   return <div className="w-px h-5 bg-border mx-1" />;
+}
+
+const FONT_SIZES: { label: string; value: string }[] = [
+  { label: "小", value: "13px" },
+  { label: "正常", value: "" },
+  { label: "中", value: "18px" },
+  { label: "大", value: "22px" },
+  { label: "特大", value: "28px" },
+  { label: "超大", value: "36px" },
+];
+
+function FontSizeSelect({ editor }: { editor: Editor }) {
+  const current = (editor.getAttributes("textStyle").fontSize as string) || "";
+  return (
+    <span className="inline-flex items-center gap-1" title="字型大小">
+      <Type size={15} className="text-fg-muted shrink-0" />
+      <select
+        value={current}
+        onChange={(e) => {
+          const v = e.target.value;
+          if (v) editor.chain().focus().setFontSize(v).run();
+          else editor.chain().focus().unsetFontSize().run();
+        }}
+        className="bg-bg-elevated border border-border rounded px-1.5 py-1 text-xs outline-none focus:border-accent cursor-pointer"
+      >
+        {FONT_SIZES.map((s) => (
+          <option key={s.label} value={s.value}>{s.label}</option>
+        ))}
+      </select>
+    </span>
+  );
+}
+
+const TEXT_COLORS = [
+  "#ef4444", "#f97316", "#f59e0b", "#eab308", "#22c55e", "#14b8a6",
+  "#3b82f6", "#6366f1", "#8b5cf6", "#ec4899", "#0ea5e9", "#111827",
+];
+
+function ColorButton({ editor }: { editor: Editor }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement | null>(null);
+  const active = (editor.getAttributes("textStyle").color as string) || "";
+
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    window.addEventListener("mousedown", onDown);
+    return () => window.removeEventListener("mousedown", onDown);
+  }, [open]);
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className={`p-1.5 rounded transition ${open ? "bg-accent text-black" : "hover:bg-bg-elevated text-fg"}`}
+        title="文字顏色"
+      >
+        <Baseline size={16} style={active ? { color: active } : undefined} />
+      </button>
+      {open && (
+        <div className="absolute z-30 mt-1 left-0 p-2 rounded-lg border border-border bg-bg-card shadow-xl w-[164px]">
+          <div className="grid grid-cols-6 gap-1.5">
+            {TEXT_COLORS.map((c) => (
+              <button
+                key={c}
+                type="button"
+                onClick={() => { editor.chain().focus().setColor(c).run(); setOpen(false); }}
+                className={`w-5 h-5 rounded-full border transition hover:scale-110 ${active.toLowerCase() === c ? "border-fg ring-2 ring-accent" : "border-black/15"}`}
+                style={{ background: c }}
+                title={c}
+                aria-label={`顏色 ${c}`}
+              />
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={() => { editor.chain().focus().unsetColor().run(); setOpen(false); }}
+            className="mt-2 w-full text-xs px-2 py-1 rounded border border-border text-fg-muted hover:bg-bg-elevated transition"
+          >
+            清除顏色
+          </button>
+        </div>
+      )}
+    </div>
+  );
 }

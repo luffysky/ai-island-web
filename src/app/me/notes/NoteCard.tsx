@@ -5,21 +5,7 @@ import Link from "next/link";
 import { ChevronDown, ChevronUp, ArrowRight, Pencil, Trash2 } from "lucide-react";
 import { formatTW } from "@/lib/format-date";
 import { sanitizeRichHtml } from "@/lib/rich-html";
-
-// 便利貼配色（粉 / 黃 / 綠 / 藍 / 紫 / 橘）——淺底深字
-const STICKY = [
-  { bg: "#ffd9e8", tape: "#ff9ec4" }, // 粉
-  { bg: "#fff3c4", tape: "#ffd84d" }, // 黃
-  { bg: "#d2efd2", tape: "#86d586" }, // 綠
-  { bg: "#cfe6ff", tape: "#85bdff" }, // 藍
-  { bg: "#e9d9ff", tape: "#bd93f9" }, // 紫
-  { bg: "#ffe2c4", tape: "#ffb673" }, // 橘
-];
-function hashStr(s: string) {
-  let h = 0;
-  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
-  return h;
-}
+import { resolveSticky, stickyRotate, clampOpacity, hexToRgba } from "@/lib/note-sticky";
 
 export function NoteCard({
   note,
@@ -38,6 +24,8 @@ export function NoteCard({
     updated_at: string;
     category?: string | null;
     tags?: string[] | null;
+    color?: string | null;
+    opacity?: number | null;
   };
   chapterTitle: string;
   lessonTitle: string;
@@ -57,23 +45,29 @@ export function NoteCard({
       ? (`/chapters/${note.chapter_id}` as const)
       : null;
 
-  const h = hashStr(note.category || note.id);
-  const sk = STICKY[h % STICKY.length];
-  const rotate = ((h % 3) - 1) * 0.7; // -0.7 / 0 / 0.7 deg
+  const sk = resolveSticky({ color: note.color, category: note.category, id: note.id });
+  const opacity = clampOpacity(note.opacity);
+  const rotate = stickyRotate(note.id);
 
   const MUTED = "#6b6b6b";
   const TEXT = "#2d2d2d";
 
+  // 點卡片展開／收合；但若使用者正在選取文字（要複製）就別誤觸收合
+  const toggleExpand = () => {
+    if ((window.getSelection?.()?.toString() ?? "").length > 0) return;
+    setExpanded((v) => !v);
+  };
+
   return (
     <div
-      onClick={() => setExpanded(!expanded)}
+      onClick={toggleExpand}
       className="relative rounded-md p-4 pt-6 shadow-md hover:shadow-xl hover:-translate-y-0.5 transition cursor-pointer"
-      style={{ background: sk.bg, color: TEXT, transform: `rotate(${rotate}deg)` }}
+      style={{ background: hexToRgba(sk.bg, opacity), color: TEXT, transform: `rotate(${rotate}deg)` }}
     >
       {/* 膠帶 */}
       <div
         className="absolute -top-2.5 left-1/2 -translate-x-1/2 w-16 h-5 rounded-[2px]"
-        style={{ background: sk.tape, opacity: 0.6, boxShadow: "0 1px 2px rgba(0,0,0,0.12)" }}
+        style={{ background: sk.tape, opacity: 0.6 * opacity, boxShadow: "0 1px 2px rgba(0,0,0,0.12)" }}
       />
 
       <div className="flex items-start justify-between mb-2 gap-2">
@@ -90,7 +84,7 @@ export function NoteCard({
 
       {/<[a-z][\s\S]*>/i.test(note.content) ? (
         <div
-          className={`text-sm max-w-none ${expanded ? "" : "line-clamp-4"}`}
+          className={`note-rich prose-custom text-sm max-w-none ${expanded ? "" : "line-clamp-4"}`}
           style={{ color: TEXT }}
           dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(note.content) }}
         />

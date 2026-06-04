@@ -3,15 +3,8 @@
 import { useEffect } from "react";
 import { X } from "lucide-react";
 import type { ManagedNote } from "./NotesManager";
+import { resolveSticky, clampOpacity, hexToRgba } from "@/lib/note-sticky";
 
-const STICKY = [
-  { bg: "#ffd9e8", tape: "#ff9ec4" },
-  { bg: "#fff3c4", tape: "#ffd84d" },
-  { bg: "#d2efd2", tape: "#86d586" },
-  { bg: "#cfe6ff", tape: "#85bdff" },
-  { bg: "#e9d9ff", tape: "#bd93f9" },
-  { bg: "#ffe2c4", tape: "#ffb673" },
-];
 function hashStr(s: string) {
   let h = 0;
   for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
@@ -66,7 +59,8 @@ export function FloatingNotesOverlay({
         <div className="flex flex-wrap justify-center gap-5 p-6 pb-28">
           {notes.map((n) => {
             const h = hashStr(n.category || n.id);
-            const sk = STICKY[h % STICKY.length];
+            const sk = resolveSticky({ color: n.color, category: n.category, id: n.id });
+            const op = clampOpacity(n.opacity);
             const rot = ((h % 5) - 2) * 1.2;
             const dur = 4 + (h % 30) / 10; // 4–7s
             const delay = (h % 20) / 10; // 0–2s
@@ -82,7 +76,7 @@ export function FloatingNotesOverlay({
                 className="relative w-40 h-40 sm:w-44 sm:h-44 rounded-lg p-3 pt-5 shadow-xl text-left hover:scale-110 hover:z-20 transition-transform"
                 style={
                   {
-                    background: sk.bg,
+                    background: hexToRgba(sk.bg, op),
                     color: "#2d2d2d",
                     "--r": `${rot}deg`,
                     animation: `noteFloat ${dur}s ease-in-out ${delay}s infinite`,

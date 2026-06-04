@@ -241,6 +241,88 @@ html[data-theme="light"] ::-webkit-scrollbar-track { background: var(--color-bg-
 ::selection { background: var(--color-accent); color: #000; }
 
 /* ============================================================
+   程式碼 / 終端機區塊 — 明亮模式：淺灰底 + 深字
+   暗色介面不該沿用到 light theme；語法 token 改 atom-one-light 系。
+   （暗色模式維持原本 atom-one-dark，不受影響）
+   ============================================================ */
+html[data-theme="light"] .cb-root { border-color: #d1d9e0; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08); }
+html[data-theme="light"] .cb-root.cb-terminal { background: #f3f5f7; border-color: #cdd6e0; }
+html[data-theme="light"] .cb-root.cb-file { background: #f6f8fa; border-color: #d1d9e0; }
+html[data-theme="light"] .cb-head { border-color: #d8dee4; }
+html[data-theme="light"] .cb-root.cb-terminal .cb-head { background: #e8edf2; }
+html[data-theme="light"] .cb-root.cb-file .cb-head { background: #eaeef2; }
+html[data-theme="light"] .cb-root.cb-terminal .cb-label { color: #15803d; }
+html[data-theme="light"] .cb-root.cb-file .cb-label { color: #1d4ed8; }
+html[data-theme="light"] .cb-copy { color: #59636e; }
+html[data-theme="light"] .cb-copy:hover { background: rgba(15, 23, 42, 0.07); }
+html[data-theme="light"] .cb-gloss,
+html[data-theme="light"] .cb-gloss span { color: #15803d; }
+html[data-theme="light"] .cb-gloss:hover { background: rgba(15, 23, 42, 0.05); }
+html[data-theme="light"] .cb-gloss-code { background: rgba(22, 163, 74, 0.12); color: #15803d; }
+
+/* 明亮模式語法上色（覆寫 atom-one-dark）*/
+html[data-theme="light"] .hljs { color: #383a42; background: transparent; }
+html[data-theme="light"] .hljs-comment,
+html[data-theme="light"] .hljs-quote { color: #5b6673; font-style: italic; }
+html[data-theme="light"] .hljs-keyword,
+html[data-theme="light"] .hljs-doctag,
+html[data-theme="light"] .hljs-formula,
+html[data-theme="light"] .hljs-meta .hljs-keyword { color: #a626a4; }
+html[data-theme="light"] .hljs-section,
+html[data-theme="light"] .hljs-name,
+html[data-theme="light"] .hljs-selector-tag,
+html[data-theme="light"] .hljs-deletion,
+html[data-theme="light"] .hljs-subst { color: #d1431f; }
+html[data-theme="light"] .hljs-literal,
+html[data-theme="light"] .hljs-number,
+html[data-theme="light"] .hljs-bullet { color: #0184bb; }
+html[data-theme="light"] .hljs-string,
+html[data-theme="light"] .hljs-regexp,
+html[data-theme="light"] .hljs-addition,
+html[data-theme="light"] .hljs-meta .hljs-string { color: #3d8b40; }
+html[data-theme="light"] .hljs-attr,
+html[data-theme="light"] .hljs-attribute,
+html[data-theme="light"] .hljs-variable,
+html[data-theme="light"] .hljs-template-variable,
+html[data-theme="light"] .hljs-type,
+html[data-theme="light"] .hljs-selector-class,
+html[data-theme="light"] .hljs-selector-attr,
+html[data-theme="light"] .hljs-selector-pseudo { color: #986801; }
+html[data-theme="light"] .hljs-symbol,
+html[data-theme="light"] .hljs-link,
+html[data-theme="light"] .hljs-meta,
+html[data-theme="light"] .hljs-selector-id,
+html[data-theme="light"] .hljs-title,
+html[data-theme="light"] .hljs-params { color: #2f6df0; }
+html[data-theme="light"] .hljs-built_in,
+html[data-theme="light"] .hljs-title.class_,
+html[data-theme="light"] .hljs-class .hljs-title { color: #b06800; }
+
+/* ============================================================
+   便利貼筆記內容（我的筆記卡片）— TipTap 所見即所得 + 緊湊排版
+   便利貼底色固定淺色，所以結構元素跟著內文用深字（使用者自選的 inline
+   顏色是 inline style、優先級最高、不受影響）。
+   ============================================================ */
+.note-rich :is(h1, h2, h3, h4) { color: inherit; margin: 0.5em 0 0.3em; line-height: 1.3; }
+.note-rich h1 { font-size: 1.25em; }
+.note-rich h2 { font-size: 1.15em; }
+.note-rich h3 { font-size: 1.05em; }
+.note-rich p { margin: 0.35em 0; }
+.note-rich ul, .note-rich ol { margin: 0.35em 0; padding-left: 1.2em; }
+.note-rich li { margin: 0.1em 0; }
+.note-rich strong { color: inherit; }
+.note-rich a { color: #1d4ed8; text-decoration: underline; }
+.note-rich blockquote { border-left: 3px solid rgba(0, 0, 0, 0.2); padding-left: 0.7em; margin: 0.4em 0; color: #555; }
+.note-rich img { border-radius: 0.4rem; margin: 0.4em 0; }
+.note-rich pre { background: rgba(0, 0, 0, 0.06); border-radius: 0.4rem; padding: 0.6em 0.8em; margin: 0.4em 0; overflow-x: auto; }
+.note-rich code { background: rgba(0, 0, 0, 0.08); padding: 0.05em 0.3em; border-radius: 0.25rem; }
+.note-rich pre code { background: transparent; padding: 0; }
+.note-rich table { border-collapse: collapse; margin: 0.4em 0; }
+.note-rich th, .note-rich td { border: 1px solid rgba(0, 0, 0, 0.2); padding: 0.2em 0.5em; }
+.note-rich :first-child { margin-top: 0; }
+.note-rich :last-child { margin-bottom: 0; }
+
+/* ============================================================
    語意 chip class — 全站任何狀態徽章用這個、自動跟 theme 翻配色
    寫法：<span class="chip chip-success">啟用</span>
    theme 切換時 CSS var 重新繼承、不用 JS 重畫元件

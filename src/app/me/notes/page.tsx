@@ -14,6 +14,7 @@ export default async function NotesPage() {
     .from("notes")
     .select("*")
     .eq("user_id", user.id)
+    .order("sort_order", { ascending: true, nullsFirst: true })
     .order("updated_at", { ascending: false });
 
   // 章節 / lesson 標題對照（卡片顯示用）
