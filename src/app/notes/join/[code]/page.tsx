@@ -15,10 +15,10 @@ async function lookup(code: string) {
     .maybeSingle();
   if (!invite || invite.revoked) return null;
   if (invite.expires_at && new Date(invite.expires_at) < new Date()) return null;
-  const { data: note } = await admin.from("notes").select("title, user_id").eq("id", invite.note_id).maybeSingle();
+  const { data: note } = await admin.from("notes").select("content, user_id").eq("id", invite.note_id).maybeSingle();
   if (!note) return null;
   const { data: owner } = await admin.from("profiles").select("username, display_name").eq("id", note.user_id).maybeSingle();
-  const plainTitle = String(note.title || "").replace(/<[^>]*>/g, "").trim() || "（無標題筆記）";
+  const plainTitle = String(note.content || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().slice(0, 40) || "（無標題筆記）";
   const ownerName = owner?.display_name || owner?.username || "某位學員";
   return { title: plainTitle, ownerName };
 }

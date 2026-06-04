@@ -16,7 +16,7 @@ function genCode() {
 
 async function loadContext(id: string, userId: string) {
   const admin = createSupabaseAdmin();
-  const { data: note, error: noteErr } = await admin.from("notes").select("id, user_id, title").eq("id", id).maybeSingle();
+  const { data: note, error: noteErr } = await admin.from("notes").select("id, user_id").eq("id", id).maybeSingle();
   if (noteErr) console.error("[note share] note lookup error:", noteErr.message);
   if (!note) return { admin, note: null, isOwner: false, isCollab: false, noteErr: noteErr?.message ?? null };
   const isOwner = note.user_id === userId;
