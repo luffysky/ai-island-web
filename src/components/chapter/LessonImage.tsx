@@ -31,6 +31,9 @@ function useIsLight() {
 
 export function LessonImage({ src, alt }: { src?: string; alt?: string }) {
   const [open, setOpen] = useState(false);
+  const [darkFb, setDarkFb] = useState(false);   // dark 變體載入失敗 → 退回 light
+  const [lightFb, setLightFb] = useState(false); // light 變體載入失敗 → 退回 dark
+  const [lbFb, setLbFb] = useState(false);       // 燈箱載入失敗 → 退回另一變體
   const isLight = useIsLight();
 
   useEffect(() => {
@@ -68,8 +71,16 @@ export function LessonImage({ src, alt }: { src?: string; alt?: string }) {
         {/* eslint-disable @next/next/no-img-element */}
         {hasVariant ? (
           <>
-            <img src={darkSrc} alt={alt ?? ""} loading="lazy" decoding="async" className={`lesson-img-dark ${imgClass}`} />
-            <img src={lightSrc} alt={alt ?? ""} loading="lazy" decoding="async" className={`lesson-img-light ${imgClass}`} />
+            <img
+              src={darkFb ? lightSrc : darkSrc}
+              onError={() => !darkFb && setDarkFb(true)}
+              alt={alt ?? ""} loading="lazy" decoding="async" className={`lesson-img-dark ${imgClass}`}
+            />
+            <img
+              src={lightFb ? darkSrc : lightSrc}
+              onError={() => !lightFb && setLightFb(true)}
+              alt={alt ?? ""} loading="lazy" decoding="async" className={`lesson-img-light ${imgClass}`}
+            />
           </>
         ) : (
           <img src={src} alt={alt ?? ""} loading="lazy" decoding="async" className={imgClass} />
@@ -96,7 +107,8 @@ export function LessonImage({ src, alt }: { src?: string; alt?: string }) {
           </button>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={lightboxSrc}
+            src={lbFb ? (lightboxSrc === lightSrc ? darkSrc : lightSrc) : lightboxSrc}
+            onError={() => !lbFb && setLbFb(true)}
             alt={alt ?? ""}
             className="max-w-full max-h-full object-contain rounded shadow-2xl"
             onClick={(e) => e.stopPropagation()}
