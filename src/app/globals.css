@@ -322,6 +322,28 @@ html[data-theme="light"] .hljs-class .hljs-title { color: #b06800; }
 .note-rich :first-child { margin-top: 0; }
 .note-rich :last-child { margin-bottom: 0; }
 
+/* 複製成功懸浮氣泡（跟著游標、淡入上浮後消失）*/
+.note-copied-bubble {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  padding: 4px 11px;
+  border-radius: 9999px;
+  background: rgba(17, 24, 39, 0.92);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.32);
+  animation: noteCopiedPop 1.2s ease forwards;
+}
+@keyframes noteCopiedPop {
+  0% { opacity: 0; transform: translate(-50%, 6px) scale(0.9); }
+  15% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  75% { opacity: 1; transform: translate(-50%, -6px) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -16px) scale(0.95); }
+}
+
 /* ============================================================
    語意 chip class — 全站任何狀態徽章用這個、自動跟 theme 翻配色
    寫法：<span class="chip chip-success">啟用</span>

@@ -17,7 +17,7 @@ import { DEFAULT_NOTES_BG, loadNotesBg, saveNotesBg, notesBgStyle, type NotesBgC
 import { STICKY_COLORS, clampOpacity, noteBgImgStyle, DEFAULT_NOTE_BG, type NoteBg } from "@/lib/note-sticky";
 import { loadFolders, saveFolders, folderDropId, FOLDER_DROP_PREFIX, UNCATEGORIZED } from "@/lib/note-folders";
 import { useToast } from "@/components/ui/Toast";
-import { Plus, X, Save, Loader2, Sparkles, GripVertical, Folder, FolderPlus, Image as ImageIcon, RotateCw } from "lucide-react";
+import { Plus, X, Save, Loader2, Sparkles, GripVertical, Folder, FolderPlus, Image as ImageIcon, RotateCw, Copy, Link2 } from "lucide-react";
 
 const UNCAT_FILTER = "__uncat__";
 
@@ -28,6 +28,7 @@ const BlogEditor = dynamic(
 
 export type ManagedNote = {
   id: string;
+  user_id: string;
   chapter_id: number | null;
   lesson_id: string | null;
   content: string;
@@ -40,6 +41,9 @@ export type ManagedNote = {
   opacity: number | null;
   sort_order: number | null;
   bg: NoteBg | null;
+  _owned?: boolean;  // 我是擁有者（page 標記）
+  _shared?: boolean; // 此筆記有共用關係
+  _role?: string;    // 我的權限：owner / editor / viewer
 };
 
 /**
@@ -167,11 +171,14 @@ function FolderBar({
 export function NotesManager({
   initial,
   chapterMap,
+  meId,
 }: {
   initial: ManagedNote[];
   chapterMap: Record<string, { chapterTitle: string; lessonTitle: string }>;
+  meId: string;
 }) {
   const supabase = createSupabaseBrowser();
+  const toast = useToast();
   const [notes, setNotes] = useState<ManagedNote[]>(initial);
   const [editing, setEditing] = useState<ManagedNote | "new" | null>(null);
   const [fCat, setFCat] = useState("");
@@ -220,16 +227,48 @@ export function NotesManager({
   };
 
   const del = async (n: ManagedNote) => {
-    if (!confirm("刪除這則筆記？")) return;
-    setNotes((p) => p.filter((x) => x.id !== n.id));
-    await supabase.from("notes").delete().eq("id", n.id);
+    const owned = n._owned ?? (n.user_id === meId);
+    if (owned) {
+      if (!confirm("刪除這則筆記？")) return;
+      setNotes((p) => p.filter((x) => x.id !== n.id));
+      await supabase.from("notes").delete().eq("id", n.id);
+    } else {
+      if (!confirm("退出這則共用筆記？（不會刪掉原筆記）")) return;
+      setNotes((p) => p.filter((x) => x.id !== n.id));
+      await fetch(`/api/me/notes/${n.id}/share`, {
+        method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({}),
+      });
+    }
+  };
+
+  // 用邀請碼 / 連結加入共用筆記
+  const joinByCode = async () => {
+    const raw = window.prompt("貼上邀請碼或邀請連結：");
+    if (!raw) return;
+    let code = raw.trim();
+    const idx = code.indexOf("/join/");
+    if (idx >= 0) code = code.slice(idx + 6);
+    code = code.replace(/[/?#].*$/, "").toUpperCase();
+    if (!code) { toast.error("看不出邀請碼"); return; }
+    try {
+      const res = await fetch("/api/notes/join", {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code }),
+      });
+      const j = await res.json();
+      if (!res.ok) { toast.error(j.message || "加入失敗"); return; }
+      toast.success(j.alreadyOwner ? "這是你自己的筆記" : "已加入共用筆記");
+      window.location.reload();
+    } catch {
+      toast.error("加入失敗、請再試一次");
+    }
   };
 
   const onSaved = (n: ManagedNote) => {
     setNotes((p) => {
       const i = p.findIndex((x) => x.id === n.id);
-      if (i >= 0) { const c = [...p]; c[i] = n; return c; }
-      return [n, ...p];
+      // DB row 沒有 _owned/_shared 旗標，沿用既有值，避免存檔後共用徽章消失
+      if (i >= 0) { const c = [...p]; c[i] = { ...n, _owned: p[i]._owned, _shared: p[i]._shared }; return c; }
+      return [{ ...n, _owned: true, _shared: false }, ...p];
     });
     setEditing(null);
   };
@@ -287,6 +326,13 @@ export function NotesManager({
       <div className={`relative space-y-4 ${hasBg ? "p-3 sm:p-5" : ""}`}>
       <div className="flex items-center gap-2 flex-wrap">
       <button
+        onClick={joinByCode}
+        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border bg-bg-card text-sm hover:border-accent transition"
+        title="用邀請碼或連結加入別人的共同筆記"
+      >
+        🤝 加入共用
+      </button>
+      <button
         onClick={() => setEditing("new")}
         className="inline-flex items-center gap-1.5 px-4 py-2 bg-accent text-black font-semibold rounded-lg hover:scale-105 transition"
       >
@@ -306,6 +352,7 @@ export function NotesManager({
       {editing && (
         <NoteEditor
           note={editing === "new" ? null : editing}
+          meId={meId}
           categories={folderList}
           tags={allTags}
           onCreateFolder={addFolder}
@@ -343,6 +390,7 @@ export function NotesManager({
                   <SortableNoteCard key={n.id} id={n.id}>
                     <NoteCard
                       note={n}
+                      meId={meId}
                       chapterTitle={meta?.chapterTitle ?? ""}
                       lessonTitle={meta?.lessonTitle ?? (n.lesson_id ?? "自由筆記")}
                       onEdit={() => setEditing(n)}
@@ -368,6 +416,7 @@ export function NotesManager({
                 <NoteCard
                   key={n.id}
                   note={n}
+                  meId={meId}
                   chapterTitle={meta?.chapterTitle ?? ""}
                   lessonTitle={meta?.lessonTitle ?? (n.lesson_id ?? "自由筆記")}
                   onEdit={() => setEditing(n)}
@@ -388,6 +437,7 @@ export function NotesManager({
 
 function NoteEditor({
   note,
+  meId,
   categories,
   tags,
   onCreateFolder,
@@ -395,6 +445,7 @@ function NoteEditor({
   onSaved,
 }: {
   note: ManagedNote | null;
+  meId: string;
   categories: string[];
   tags: string[];
   onCreateFolder: (name: string) => void;
@@ -402,6 +453,8 @@ function NoteEditor({
   onSaved: (n: ManagedNote) => void;
 }) {
   const supabase = createSupabaseBrowser();
+  const owned = note ? (note._owned ?? note.user_id === meId) : true;
+  const canEdit = !note || owned || note._role === "editor";
   const [content, setContent] = useState(note?.content ?? "");
   const [category, setCategory] = useState(note?.category ?? "");
   const [tagsInput, setTagsInput] = useState((note?.tags ?? []).join(", "));
@@ -470,12 +523,17 @@ function NoteEditor({
   return (
     <div className="rounded-2xl border border-accent/40 bg-bg-card p-4 space-y-3">
       <div className="flex items-center justify-between">
-        <span className="font-semibold">{note ? "編輯筆記" : "新增筆記"}</span>
+        <span className="font-semibold">{!note ? "新增筆記" : canEdit ? "編輯筆記" : "查看筆記（唯讀）"}</span>
         <button onClick={onClose} className="text-fg-muted hover:text-fg" aria-label="關閉"><X size={16} /></button>
       </div>
       <div className="max-h-[50vh] overflow-auto rounded-lg border border-border">
-        <BlogEditor content={content} onChange={setContent} placeholder="寫下你的筆記…（可貼上 / 拖曳圖片）" />
+        <BlogEditor content={content} onChange={setContent} editable={canEdit} placeholder="寫下你的筆記…（可貼上 / 拖曳圖片）" />
       </div>
+      {!canEdit && (
+        <div className="text-xs text-fg-muted bg-bg-elevated rounded-lg px-3 py-2">🔒 你是這則共用筆記的「唯讀」協作者、看得到內容但不能編輯。</div>
+      )}
+      {canEdit && (
+      <>
       <div className="flex flex-wrap gap-2">
         {/* 分類：可選現有資料夾、可直接打、可從下拉建立 */}
         <div className="relative flex-1 min-w-[140px]" ref={catRef}>
@@ -574,6 +632,8 @@ function NoteEditor({
 
       <NoteBackgroundEditor value={noteBg} onChange={setNoteBg} />
 
+      {note && owned && <NoteSharePanel noteId={note.id} />}
+
       <div className="flex items-center justify-between">
         <label className="flex items-center gap-2 text-sm text-fg-muted">
           <input type="checkbox" checked={isPublic} onChange={(e) => setIsPublic(e.target.checked)} />
@@ -586,6 +646,91 @@ function NoteEditor({
           </button>
         </div>
       </div>
+      </>
+      )}
+    </div>
+  );
+}
+
+type Collab = { user_id: string; role: string; username: string | null; display_name: string | null; avatar_url: string | null };
+
+/** 共用設定（只有擁有者看得到）：產生邀請連結 + 多人協作者清單 + 權限(編輯/唯讀) + 解除 */
+function NoteSharePanel({ noteId }: { noteId: string }) {
+  const toast = useToast();
+  const [loading, setLoading] = useState(true);
+  const [code, setCode] = useState<string | null>(null);
+  const [url, setUrl] = useState<string | null>(null);
+  const [collabs, setCollabs] = useState<Collab[]>([]);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(`/api/me/notes/${noteId}/share`);
+        const j = await res.json();
+        if (!cancelled && res.ok) { setCode(j.code); setUrl(j.url); setCollabs(j.collaborators ?? []); }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [noteId]);
+
+  const generate = async () => {
+    setBusy(true);
+    try {
+      const res = await fetch(`/api/me/notes/${noteId}/share`, { method: "POST" });
+      const j = await res.json();
+      if (!res.ok) { toast.error(j.message || "產生失敗"); return; }
+      setCode(j.code); setUrl(j.url);
+    } finally { setBusy(false); }
+  };
+  const copy = async () => {
+    if (!url) return;
+    try { await navigator.clipboard.writeText(url); toast.success("已複製邀請連結"); } catch { toast.error("複製失敗"); }
+  };
+  const setRole = async (uid: string, role: string) => {
+    setCollabs((cs) => cs.map((c) => (c.user_id === uid ? { ...c, role } : c)));
+    await fetch(`/api/me/notes/${noteId}/share`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ userId: uid, role }) });
+  };
+  const remove = async (uid: string) => {
+    setCollabs((cs) => cs.filter((c) => c.user_id !== uid));
+    await fetch(`/api/me/notes/${noteId}/share`, { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ userId: uid }) });
+  };
+
+  return (
+    <div className="rounded-lg border border-border p-3 space-y-2">
+      <div className="text-xs font-medium text-fg-muted inline-flex items-center gap-1"><Link2 size={13} /> 共用設定（邀請別人一起編輯）</div>
+      {url ? (
+        <div className="flex items-center gap-2">
+          <input readOnly value={url} onFocus={(e) => e.currentTarget.select()} className="flex-1 bg-bg border border-border rounded px-2 py-1 text-xs" />
+          <button type="button" onClick={copy} className="text-xs px-2 py-1 rounded border border-border hover:border-accent transition inline-flex items-center gap-1"><Copy size={12} /> 複製</button>
+        </div>
+      ) : (
+        <button type="button" onClick={generate} disabled={busy} className="text-xs px-3 py-1.5 rounded-lg bg-accent text-black font-semibold inline-flex items-center gap-1.5 disabled:opacity-50">
+          {busy ? <Loader2 size={12} className="animate-spin" /> : <Link2 size={12} />} 產生邀請連結
+        </button>
+      )}
+      {code && <div className="text-[11px] text-fg-muted">邀請碼：<code className="px-1 rounded bg-bg-elevated">{code}</code> — 連結貼到聊天室會有預覽卡片；對方也可在「加入共用」直接輸入這組碼</div>}
+
+      {collabs.length > 0 ? (
+        <div className="space-y-1 pt-1">
+          <div className="text-[11px] text-fg-muted">與這些人共用（{collabs.length}）</div>
+          {collabs.map((c) => (
+            <div key={c.user_id} className="flex items-center gap-2 text-xs">
+              <span className="flex-1 truncate">{c.display_name || c.username || c.user_id.slice(0, 8)}</span>
+              <div className="inline-flex rounded border border-border overflow-hidden shrink-0">
+                <button type="button" onClick={() => setRole(c.user_id, "editor")} className={`px-2 py-0.5 transition ${c.role !== "viewer" ? "bg-accent text-black" : "text-fg-muted hover:text-fg"}`}>可編輯</button>
+                <button type="button" onClick={() => setRole(c.user_id, "viewer")} className={`px-2 py-0.5 transition ${c.role === "viewer" ? "bg-accent text-black" : "text-fg-muted hover:text-fg"}`}>唯讀</button>
+              </div>
+              <button type="button" onClick={() => remove(c.user_id)} className="text-fg-muted hover:text-red-400 shrink-0" title="解除共用"><X size={13} /></button>
+            </div>
+          ))}
+        </div>
+      ) : (
+        !loading && <div className="text-[11px] text-fg-muted">還沒有人加入。</div>
+      )}
     </div>
   );
 }

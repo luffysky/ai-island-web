@@ -12,6 +12,7 @@ const MIGRATIONS = [
   "future_schemas_migration.sql",         // → reports / support_emails 等未來預留
   "notes_personalize_migration.sql",      // → notes.color / opacity / sort_order（便利貼顏色、透明度、拖移排序）
   "notes_bg_migration.sql",               // → notes.bg jsonb（每則筆記單獨背景圖：縮放/位移/旋轉）
+  "notes_sharing_migration.sql",          // → note_collaborators / note_invites（共同筆記、邀請碼、多人協作）
 ];
 
 const env = Object.fromEntries(

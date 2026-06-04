@@ -34,11 +34,13 @@ interface BlogEditorProps {
   content: string;
   onChange: (html: string) => void;
   placeholder?: string;
+  editable?: boolean;
 }
 
-export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) {
+export function BlogEditor({ content, onChange, placeholder, editable = true }: BlogEditorProps) {
   const editor = useEditor({
     immediatelyRender: false,
+    editable,
     extensions: [
       StarterKit.configure({ codeBlock: false }),
       Placeholder.configure({ placeholder: placeholder ?? "開始寫你的文章..." }),
@@ -72,13 +74,18 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editor]);
 
+  // editable 變動時同步到 editor
+  useEffect(() => {
+    if (editor) editor.setEditable(editable);
+  }, [editor, editable]);
+
   if (!editor) {
     return <div className="h-[460px] rounded-xl border border-border bg-bg-card animate-pulse" />;
   }
 
   return (
     <div className="rounded-xl border border-border bg-bg-card overflow-hidden">
-      <Toolbar editor={editor} />
+      {editable && <Toolbar editor={editor} />}
       <EditorContent editor={editor} />
       <div className="px-4 py-2 border-t border-border text-xs text-fg-muted flex justify-between">
         <span>{editor.storage.characterCount.characters()} 字</span>

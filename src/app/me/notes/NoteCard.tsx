@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
-import { ChevronDown, ChevronUp, ArrowRight, Pencil, Trash2, Copy, Check } from "lucide-react";
+import { ChevronDown, ChevronUp, ArrowRight, Pencil, Trash2, Copy, Check, LogOut, Eye } from "lucide-react";
 import { formatTW } from "@/lib/format-date";
 import { sanitizeRichHtml } from "@/lib/rich-html";
 import { resolveSticky, stickyRotate, clampOpacity, hexToRgba, noteBgImgStyle, type NoteBg } from "@/lib/note-sticky";
@@ -22,6 +23,7 @@ function htmlToPlain(html: string): string {
 
 export function NoteCard({
   note,
+  meId,
   chapterTitle,
   lessonTitle,
   onEdit,
@@ -29,6 +31,7 @@ export function NoteCard({
 }: {
   note: {
     id: string;
+    user_id?: string;
     chapter_id: number | null;
     lesson_id: string | null;
     content: string;
@@ -40,12 +43,18 @@ export function NoteCard({
     color?: string | null;
     opacity?: number | null;
     bg?: NoteBg | null;
+    _owned?: boolean;
+    _shared?: boolean;
+    _role?: string;
   };
+  meId?: string;
   chapterTitle: string;
   lessonTitle: string;
   onEdit?: () => void;
   onDelete?: () => void;
 }) {
+  const owned = note._owned ?? (note.user_id === meId);
+  const isViewer = !owned && note._role === "viewer";
   const [expanded, setExpanded] = useState(false);
 
   const header = note.chapter_id
@@ -75,7 +84,17 @@ export function NoteCard({
 
   // 複製：整則用右上角按鈕；想複製「某段」就直接選取文字（內容可自由選取）
   const [copied, setCopied] = useState(false);
-  const writeClipboard = async (text: string) => {
+  // 複製成功時在游標位置跳「✓ 已複製」懸浮氣泡（id 變動 → 每次重播動畫）
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const [bubble, setBubble] = useState<{ x: number; y: number; id: number } | null>(null);
+  useEffect(() => {
+    if (!bubble) return;
+    const t = setTimeout(() => setBubble(null), 1200);
+    return () => clearTimeout(t);
+  }, [bubble]);
+
+  const writeClipboard = async (text: string, x: number, y: number) => {
     try {
       await navigator.clipboard.writeText(text);
     } catch {
@@ -90,22 +109,23 @@ export function NoteCard({
     }
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
+    setBubble({ x, y, id: Date.now() });
   };
-  const copyAllText = () => {
+  const copyAllText = (x: number, y: number) => {
     const text = /<[a-z][\s\S]*>/i.test(note.content) ? htmlToPlain(note.content) : note.content;
-    writeClipboard(text);
+    writeClipboard(text, x, y);
   };
-  const copyAll = (e: React.MouseEvent) => { e.stopPropagation(); copyAllText(); };
+  const copyAll = (e: React.MouseEvent) => { e.stopPropagation(); copyAllText(e.clientX, e.clientY); };
   // 放開滑鼠時若選了一段文字 → 只複製那段（拖曳已改成只在右上角把手、不會打架）
-  const copySelection = () => {
+  const copySelection = (e: React.MouseEvent) => {
     const sel = window.getSelection?.()?.toString() ?? "";
-    if (sel.trim().length > 0) writeClipboard(sel);
+    if (sel.trim().length > 0) writeClipboard(sel, e.clientX, e.clientY);
   };
   // 點內容：沒選取 → 複製全部；有選取 → 交給 mouseup 複製那段
   const onContentClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     if ((window.getSelection?.()?.toString() ?? "").trim().length > 0) return;
-    copyAllText();
+    copyAllText(e.clientX, e.clientY);
   };
 
   return (
@@ -114,6 +134,14 @@ export function NoteCard({
       className="relative rounded-md shadow-md hover:shadow-xl hover:-translate-y-0.5 transition cursor-pointer"
       style={{ background: bgImg ? "transparent" : hexToRgba(sk.bg, opacity), color: TEXT, transform: `rotate(${rotate}deg)` }}
     >
+      {/* 複製成功懸浮氣泡（portal 到 body，避開卡片 rotate / overflow） */}
+      {mounted && bubble && createPortal(
+        <div key={bubble.id} className="note-copied-bubble" style={{ left: bubble.x, top: bubble.y - 14 }}>
+          ✓ 已複製
+        </div>,
+        document.body,
+      )}
+
       {/* 膠帶 */}
       <div
         className="absolute -top-2.5 left-1/2 -translate-x-1/2 w-16 h-5 rounded-[2px] z-20"
@@ -141,11 +169,18 @@ export function NoteCard({
           <div className="text-xs mb-1" style={{ color: MUTED }}>{header}</div>
           <div className="font-bold truncate">{lessonTitle}</div>
         </div>
-        {note.is_public && (
-          <span className="text-xs px-2 py-0.5 rounded shrink-0" style={{ background: "rgba(0,0,0,0.1)", color: "#333" }}>
-            公開
-          </span>
-        )}
+        <div className="flex items-center gap-1 shrink-0">
+          {note._shared && (
+            <span className="text-xs px-2 py-0.5 rounded" style={{ background: owned ? "rgba(37,99,235,0.16)" : "rgba(168,85,247,0.18)", color: "#222" }}>
+              🤝 {owned ? "共用中" : isViewer ? "共用·唯讀" : "共用"}
+            </span>
+          )}
+          {note.is_public && (
+            <span className="text-xs px-2 py-0.5 rounded" style={{ background: "rgba(0,0,0,0.1)", color: "#333" }}>
+              公開
+            </span>
+          )}
+        </div>
       </div>
 
       {/* 點一下複製全部；選取一段只複製那段（拖曳改在右上把手、不打架）。收合時最多 5 行 */}
@@ -207,19 +242,19 @@ export function NoteCard({
               onClick={(e) => { e.stopPropagation(); onEdit(); }}
               className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded transition hover:bg-black/10"
               style={{ color: "#444" }}
-              title="編輯"
+              title={isViewer ? "查看" : "編輯"}
             >
-              <Pencil size={12} /> 編輯
+              {isViewer ? <><Eye size={12} /> 查看</> : <><Pencil size={12} /> 編輯</>}
             </button>
           )}
           {onDelete && (
             <button
               onClick={(e) => { e.stopPropagation(); onDelete(); }}
-              className="inline-flex items-center text-xs px-2 py-1 rounded transition hover:bg-red-500/15 hover:text-red-600"
+              className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded transition hover:bg-red-500/15 hover:text-red-600"
               style={{ color: "#444" }}
-              title="刪除"
+              title={owned ? "刪除" : "退出共用"}
             >
-              <Trash2 size={12} />
+              {owned ? <Trash2 size={12} /> : <><LogOut size={12} /> 退出</>}
             </button>
           )}
           <button
