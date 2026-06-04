@@ -167,10 +167,10 @@
       "title": "Claude Code CLI 完整",
       "oneLineSummary": "Claude Code CLI：終端機裡的 AI coding agent：跟 Cursor 的差別、典型流程",
       "analogy": "像請一個會自己動手改檔案的助理——你下任務，它在你的專案裡實際操作、跑指令、改多個檔。",
-      "content": "2024.10 Anthropic 推出 Claude Code—**terminal 內的 AI agent**。2025-2026 成為 indie hacker 主力工具之一。\n\n  \n### 跟 Cursor 的關鍵差別\n\n  \n|  | Cursor | Claude Code |\n| --- | --- | --- |\n| 環境 | IDE GUI | Terminal CLI |\n| 適合 | 邊看邊改 | 給目標、自己跑 |\n| 多檔操作 | Composer | 原生強 |\n| 跑指令 | 有但侷限 | 原生（git / npm / 任何 CLI） |\n| 長時間任務 | 較弱 | 強（能跑 30 分鐘+） |\n| 計費 | 訂閱 $20/月 | API 按用量或 Max 訂閱 |\n\n  \n簡單說：**Cursor 是 IDE、Claude Code 是「會寫程式的 terminal 助理」**。\n\n  \n### 安裝 + 啟動\n\n```bash\n# 1. 裝\nnpm install -g @anthropic-ai/claude-code\n\n# 2. 在專案目錄啟動\ncd ~/my-project\nclaude\n\n# 第一次會問要登入 Anthropic 帳號\n# 用 Claude Pro / Max 訂閱（推薦）或 API key\n```\n\n  \n### 典型使用流程\n\n```text\n$ claude\n\n> 加一個 user profile 頁面，路由 /profile，\n  顯示使用者名稱、email、頭像，\n  從 Supabase 拿資料\n\nClaude 內部運作：\n1. 讀 CLAUDE.md（如果有）\n2. 跑 ls 看專案結構\n3. 讀 package.json 知道技術 stack\n4. 讀 app/ 看現有 route 結構\n5. 讀 lib/supabase.ts 知道怎麼連\n6. 寫 app/profile/page.tsx\n7. 寫 components/UserCard.tsx\n8. 改 middleware.ts 加 auth 保護\n9. 跑 npm run typecheck\n10. 跑 npm run lint\n11. 改最後一個 type error\n12. 報告：「完成、改了 3 個檔案、過所有檢查」\n\n時間：5-10 分鐘\n你做的事：打那一句話、然後 review\n```\n\n  \n### 核心指令\n\n```bash\n# 在 Claude Code session 內：\n\n/init       # 自動產生 CLAUDE.md（讀專案、寫摘要）\n/clear      # 清掉對話歷史（保留 CLAUDE.md）\n/compact    # 壓縮對話歷史省 context\n/cost       # 看這個 session 花多少錢\n/help       # 看所有指令\n\n# 引用檔案\n@app/page.tsx                # 看這個檔\n@app/                        # 看整個資料夾\n\n# 對話：\n# 直接打中文 / 英文都行\n```\n\n  \n### CLAUDE.md：給 AI 的工程規範\n\n  \nClaude Code 啟動時會自動讀根目錄的 `CLAUDE.md`。這是**專案的「個性」**：\n\n```markdown\n# CLAUDE.md\n\nThis is the SnowRealm Insight project.\n\n## What is this\nAI-driven survey + social SaaS at insight.snowrealm.pet.\nTarget: Taiwan SMB market.\n\n## Tech Stack\n- Next.js 15 App Router\n- TypeScript strict\n- Supabase（auth + db）\n- Prisma ORM\n- Tailwind + shadcn/ui\n- Deploy on Zeabur\n\n## Architecture\n- /app: routes\n- /components/ui: shadcn\n- /components/: features\n- /lib: utilities\n- /server-actions: server actions\n- /db/schema.prisma: schema\n\n## Coding Rules\n- TypeScript strict, no `any`\n- Server Component by default\n- \"use client\" only when need state / event\n- No useEffect for data fetching (use Server Component)\n- Tailwind only, no CSS modules\n\n## Common Commands\n- pnpm dev\n- pnpm typecheck\n- pnpm lint\n- npx prisma migrate dev\n- npx prisma generate\n\n## Current Focus\n建立 YukiBoard companion app\n跟 Insight 用同一個 Supabase auth\n\n## Don't\n- 不要用 console.log（用 logger）\n- 不要直接寫 SQL（用 Prisma）\n- 不要 commit secret 到 git\n```\n\n  \nClaude Code 每次啟動都讀這個—**專案個性傳給 AI**。沒有就要每次重講。\n\n  \n### Claude Code 的「殺手用法」\n\n  \n#### 1. 長時間 refactor\n\n```text\n> 把專案內所有 fetch() 改成 React Query\n\nClaude 自己：\n- grep 找所有 fetch()\n- 一個一個改成 useQuery\n- 處理 mutation 改成 useMutation\n- 改 import\n- 跑測試\n- 30 分鐘後完成\n\n你只要打開另一個 terminal 做別的事\n```\n\n  \n#### 2. 從 issue 直接寫 PR\n\n```text\n> 看 GitHub issue #234 然後實作 + 開 PR\n\nClaude：\n1. gh issue view 234\n2. 分析需求\n3. 開 feature branch\n4. 寫 code\n5. 寫測試\n6. commit\n7. push\n8. gh pr create\n```\n\n  \n#### 3. 跟 git 整合\n\n```text\n> 看最近 10 個 commit 寫 changelog\n\n> 我這個 PR 改了什麼？產生 review 重點\n\n> 把當前的改動拆成幾個邏輯獨立的 commit\n```\n\n  \n### Plan Mode（2025 後）\n\n  \nClaude Code 有兩種模式：\n\n  \n- **直接模式**：你說、它做（容易失控）\n- **Plan 模式**：你說 → 它列計畫 → 你看 → 它執行\n\n  \n**複雜任務一律用 Plan mode**—避免 AI 自作主張改錯方向。\n\n  \n### 成本控制\n\n  \nClaude Code 用 API 計費（或包在 Max 訂閱）。1 個複雜任務可能 $1-5 美金。注意：\n\n  \n- 定期 `/clear` 跟 `/compact` 省 token\n- 不要動不動就 `@codebase`—一次性吃光 context\n- 大任務拆小（一次跑完一個小功能）\n- 用 Claude Pro / Max 訂閱（每月固定價、不怕爆）\n\n  \n### 實際案例：1 小時做完 1 天工作\n\n```text\n任務：建 user feedback 系統\n\n傳統 1 天：\n- 想 schema\n- 寫 migration\n- 寫 API\n- 寫前端表單\n- 寫管理 dashboard\n- 寫測試\n\nClaude Code 1 小時：\n$ claude\n> 我要做 user feedback。spec：\n> - 使用者填 type（bug / feature / other）+ description\n> - 存 Supabase\n> - admin 看 dashboard 能 mark resolved\n> - 整個流程含 schema、API、UI、admin page\n\nClaude 跑 45 分鐘 → 全部完成\n你 15 分鐘 review + 微調\n```\n\n  \n### 什麼時候不該用 Claude Code\n\n  \n- **超精細 UI 調整**—用 Cursor 邊看邊改\n- **不確定要做什麼**—先用 chat 想清楚\n- **關鍵架構決策**—自己想\n- **單一檔案小修改**—Cursor 快\n\n  \n**🚀 進階技巧**\n\nSnowRealm 的真實組合：**Cursor（看 UI 邊改）+ Claude Code（後台跑大任務）+ Codex（執行 Claude 寫的 plan）**。三個視窗開著、產出 ×5。一個人 = 中型團隊。\n\n**☕ 用人話講**\n\nClaude Code CLI——**終端機裡的 AI coding agent**：跟 Cursor 的差別、典型流程。**一句話記住**：像請一個會自己動手改檔案的助理——你下任務，它在你的專案裡實際操作、跑指令、改多個檔。\n",
+      "content": "2024.10 Anthropic 推出 Claude Code—**terminal 內的 AI agent**。2025-2026 成為 indie hacker 主力工具之一。\n\n  \n### 跟 Cursor 的關鍵差別\n\n  \n|  | Cursor | Claude Code |\n| --- | --- | --- |\n| 環境 | IDE GUI | Terminal CLI |\n| 適合 | 邊看邊改 | 給目標、自己跑 |\n| 多檔操作 | Composer | 原生強 |\n| 跑指令 | 有但侷限 | 原生（git / npm / 任何 CLI） |\n| 長時間任務 | 較弱 | 強（能跑 30 分鐘+） |\n| 計費 | 訂閱 $20/月 | API 按用量或 Max 訂閱 |\n\n  \n簡單說：**Cursor 是 IDE、Claude Code 是「會寫程式的 terminal 助理」**。\n\n  \n### 第一次打開：畫面長怎樣（新手必看）\n\n你裝完打 「claude」 之後，**不會跳出什麼花俏視窗**——就是在你的終端機裡，長這樣：\n\n```text\n╭───────────────────────────────────────────╮\n│ ✻ Welcome to Claude Code                   │\n│   cwd: ~/my-project                        │\n╰───────────────────────────────────────────╯\n\n> ▊        ← 游標在這，直接打中文跟它講話\n\nEOF\n```\n\n你做的事就一句話：**在「>」後面打你想做什麼**（中文就好），按 Enter。然後它會：\n\n```text\n> 幫我做一個顯示「Hello 雪域」的網頁\n\n● 我來建立一個簡單網頁                       ← 它在想 / 講解\n  ⎿ Read package.json                        ← 它讀檔\n● Create index.html                          ← 它要改檔\n  Do you want to create index.html?          ← ★ 改檔前會問你準不准\n  ❯ 1. Yes\n    2. Yes, and don't ask again\n    3. No, tell Claude what to do differently\n```\n\n**看到 1/2/3 的詢問就是它在「請示」**——按 1 准它做、按 3 喊停叫它改方向。**新手只要記住：看不懂就先按 1，跑壞了用 git 還原（Ch48.13 教）**。\n\n### 安裝 + 啟動\n\n```bash\n# 1. 裝\nnpm install -g @anthropic-ai/claude-code\n\n# 2. 在專案目錄啟動\ncd ~/my-project\nclaude\n\n# 第一次會問要登入 Anthropic 帳號\n# 用 Claude Pro / Max 訂閱（推薦）或 API key\n```\n\n  \n### 典型使用流程\n\n```text\n$ claude\n\n> 加一個 user profile 頁面，路由 /profile，\n  顯示使用者名稱、email、頭像，\n  從 Supabase 拿資料\n\nClaude 內部運作：\n1. 讀 CLAUDE.md（如果有）\n2. 跑 ls 看專案結構\n3. 讀 package.json 知道技術 stack\n4. 讀 app/ 看現有 route 結構\n5. 讀 lib/supabase.ts 知道怎麼連\n6. 寫 app/profile/page.tsx\n7. 寫 components/UserCard.tsx\n8. 改 middleware.ts 加 auth 保護\n9. 跑 npm run typecheck\n10. 跑 npm run lint\n11. 改最後一個 type error\n12. 報告：「完成、改了 3 個檔案、過所有檢查」\n\n時間：5-10 分鐘\n你做的事：打那一句話、然後 review\n```\n\n  \n### 核心指令\n\n```bash\n# 在 Claude Code session 內：\n\n/init       # 自動產生 CLAUDE.md（讀專案、寫摘要）\n/clear      # 清掉對話歷史（保留 CLAUDE.md）\n/compact    # 壓縮對話歷史省 context\n/cost       # 看這個 session 花多少錢\n/help       # 看所有指令\n\n# 引用檔案\n@app/page.tsx                # 看這個檔\n@app/                        # 看整個資料夾\n\n# 對話：\n# 直接打中文 / 英文都行\n```\n\n  \n### CLAUDE.md：給 AI 的工程規範\n\n  \nClaude Code 啟動時會自動讀根目錄的 `CLAUDE.md`。這是**專案的「個性」**：\n\n```markdown\n# CLAUDE.md\n\nThis is the SnowRealm Insight project.\n\n## What is this\nAI-driven survey + social SaaS at insight.snowrealm.pet.\nTarget: Taiwan SMB market.\n\n## Tech Stack\n- Next.js 15 App Router\n- TypeScript strict\n- Supabase（auth + db）\n- Prisma ORM\n- Tailwind + shadcn/ui\n- Deploy on Zeabur\n\n## Architecture\n- /app: routes\n- /components/ui: shadcn\n- /components/: features\n- /lib: utilities\n- /server-actions: server actions\n- /db/schema.prisma: schema\n\n## Coding Rules\n- TypeScript strict, no `any`\n- Server Component by default\n- \"use client\" only when need state / event\n- No useEffect for data fetching (use Server Component)\n- Tailwind only, no CSS modules\n\n## Common Commands\n- pnpm dev\n- pnpm typecheck\n- pnpm lint\n- npx prisma migrate dev\n- npx prisma generate\n\n## Current Focus\n建立 YukiBoard companion app\n跟 Insight 用同一個 Supabase auth\n\n## Don't\n- 不要用 console.log（用 logger）\n- 不要直接寫 SQL（用 Prisma）\n- 不要 commit secret 到 git\n```\n\n  \nClaude Code 每次啟動都讀這個—**專案個性傳給 AI**。沒有就要每次重講。\n\n  \n### Claude Code 的「殺手用法」\n\n  \n#### 1. 長時間 refactor\n\n```text\n> 把專案內所有 fetch() 改成 React Query\n\nClaude 自己：\n- grep 找所有 fetch()\n- 一個一個改成 useQuery\n- 處理 mutation 改成 useMutation\n- 改 import\n- 跑測試\n- 30 分鐘後完成\n\n你只要打開另一個 terminal 做別的事\n```\n\n  \n#### 2. 從 issue 直接寫 PR\n\n```text\n> 看 GitHub issue #234 然後實作 + 開 PR\n\nClaude：\n1. gh issue view 234\n2. 分析需求\n3. 開 feature branch\n4. 寫 code\n5. 寫測試\n6. commit\n7. push\n8. gh pr create\n```\n\n  \n#### 3. 跟 git 整合\n\n```text\n> 看最近 10 個 commit 寫 changelog\n\n> 我這個 PR 改了什麼？產生 review 重點\n\n> 把當前的改動拆成幾個邏輯獨立的 commit\n```\n\n  \n### Plan Mode（2025 後）\n\n  \nClaude Code 有兩種模式：\n\n  \n- **直接模式**：你說、它做（容易失控）\n- **Plan 模式**：你說 → 它列計畫 → 你看 → 它執行\n\n  \n**複雜任務一律用 Plan mode**—避免 AI 自作主張改錯方向。\n\n  \n### 成本控制\n\n  \nClaude Code 用 API 計費（或包在 Max 訂閱）。1 個複雜任務可能 $1-5 美金。注意：\n\n  \n- 定期 `/clear` 跟 `/compact` 省 token\n- 不要動不動就 `@codebase`—一次性吃光 context\n- 大任務拆小（一次跑完一個小功能）\n- 用 Claude Pro / Max 訂閱（每月固定價、不怕爆）\n\n  \n### 實際案例：1 小時做完 1 天工作\n\n```text\n任務：建 user feedback 系統\n\n傳統 1 天：\n- 想 schema\n- 寫 migration\n- 寫 API\n- 寫前端表單\n- 寫管理 dashboard\n- 寫測試\n\nClaude Code 1 小時：\n$ claude\n> 我要做 user feedback。spec：\n> - 使用者填 type（bug / feature / other）+ description\n> - 存 Supabase\n> - admin 看 dashboard 能 mark resolved\n> - 整個流程含 schema、API、UI、admin page\n\nClaude 跑 45 分鐘 → 全部完成\n你 15 分鐘 review + 微調\n```\n\n  \n### 什麼時候不該用 Claude Code\n\n  \n- **超精細 UI 調整**—用 Cursor 邊看邊改\n- **不確定要做什麼**—先用 chat 想清楚\n- **關鍵架構決策**—自己想\n- **單一檔案小修改**—Cursor 快\n\n  \n**🚀 進階技巧**\n\nSnowRealm 的真實組合：**Cursor（看 UI 邊改）+ Claude Code（後台跑大任務）+ Codex（執行 Claude 寫的 plan）**。三個視窗開著、產出 ×5。一個人 = 中型團隊。\n\n**☕ 用人話講**\n\nClaude Code CLI——**終端機裡的 AI coding agent**：跟 Cursor 的差別、典型流程。**一句話記住**：像請一個會自己動手改檔案的助理——你下任務，它在你的專案裡實際操作、跑指令、改多個檔。\n",
       "tip": {
-        "type": "trend",
-        "text": "這個技術 2026 還在主流、未來 5 年不會過時。但工具會更新—訂閱 1-2 個技術頻道（如 Theo / Fireship / Web Dev Simplified），每月花 30 分鐘看新東西就夠跟上潮流。AI 時代學習法：不背、會查、會用 ChatGPT / Claude 問。"
+        "type": "warn",
+        "text": "Claude Code 會「請示」你才改檔／跑指令——新手別怕，看不懂先按允許，搭配 git（Ch48.13）隨時能還原。真正危險的只有 rm、刪 DB 這種，看到要停一下。"
       },
       "xp": 10,
       "playgrounds": [
@@ -188,6 +188,10 @@
         "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
       },
       "outline": [
+        {
+          "level": 3,
+          "text": "第一次打開：畫面長怎樣（新手必看）"
+        },
         {
           "level": 3,
           "text": "跟 Cursor 的關鍵差別"
@@ -227,6 +231,116 @@
         {
           "level": 3,
           "text": "什麼時候不該用 Claude Code"
+        }
+      ]
+    },
+    {
+      "id": "48.4b",
+      "number": "LESSON 48.4b",
+      "title": "Codex 完整：OpenAI 的終端 AI agent",
+      "oneLineSummary": "OpenAI Codex：CLI + IDE 外掛 + 雲端三種介面、approval 三段模式、跟 Claude Code 怎麼選。",
+      "analogy": "如果 Claude Code 是「Anthropic 派來的工程助理」，Codex 就是「OpenAI 派來的同款助理」——一樣會自己改檔、跑指令，只是背後換成 GPT 系列模型。",
+      "tip": {
+        "type": "tip",
+        "text": "Claude Code 和 Codex 兩個都先裝來玩玩，同一個任務各跑一次、比誰寫得合你意。工具會一直更新，重點是養成「給目標、讓它跑、自己 review」的習慣，換哪個工具都通用。"
+      },
+      "xp": 10,
+      "content": "OpenAI 的 **Codex** 是 Claude Code 的直接對手——一樣是「會自己動手的 AI coding agent」，背後用 OpenAI 的 GPT-5 / codex 系列模型。2025 重出江湖後，2026 已是兩大主流之一。\n\n> 📌 **名字別搞混**：2021 那個舊「Codex API」早就退役了。現在講的 Codex 是 **2025 全新的 coding agent**，有三種用法：CLI、IDE 外掛、雲端。\n\n### Codex 的三種介面（這就是你要會的）\n\n```text\n1. Codex CLI    → 終端機裡跑（最像 Claude Code）　← 本課主角\n2. Codex IDE    → VS Code / Cursor 裝外掛，側邊欄聊天 + 改檔\n3. Codex Cloud  → 在 ChatGPT 網站上，丟任務給雲端 agent 跑，跑完開 PR\n```\n\n新手先學 **CLI**（最通用、最看得懂它在幹嘛），熟了再用 IDE / Cloud。\n\n### 安裝 + 第一次啟動\n\n```bash\n# 1. 裝（需要先裝好 Node，Ch31 有教）\nnpm install -g @openai/codex\n\n# 2. 進到你的專案資料夾\ncd ~/my-project\n\n# 3. 啟動\ncodex\n\n# 第一次會要你登入：\n#   - 用 ChatGPT 帳號登入（Plus / Pro 方案內含額度，推薦）\n#   - 或貼 OpenAI API key（按用量付費）\n```\n\n### 第一次打開：畫面長怎樣\n\n跟 Claude Code 一樣，是**終端機裡的對話框**，不是花俏視窗：\n\n```text\n╭──────────────────────────────────────────╮\n│  OpenAI Codex                             │\n│  model: gpt-5-codex   approval: suggest   │\n│  cwd: ~/my-project                        │\n╰──────────────────────────────────────────╯\n\n  user ▊      ← 在這打你要做什麼（中文 OK）\n```\n\n打一句話、按 Enter，它就開始讀檔、想、改檔——跟 Claude Code 體驗幾乎一樣。\n\n### ★ 最重要：approval 三段模式\n\nCodex 的核心設計就是「**它能自己做多少、要不要先問你**」分三段。新手一定要懂：\n\n```text\n1. Suggest（建議，預設）\n   - 任何改檔 / 跑指令前都先問你\n   - 最安全，新手從這開始\n\n2. Auto Edit（自動改檔）\n   - 改檔不問你，但「跑指令」還是會問\n   - 熟了之後常用\n\n3. Full Auto（全自動）\n   - 改檔 + 跑指令都自己來，關在沙箱裡（預設斷網）\n   - 適合「我先去喝杯咖啡，回來看結果」的長任務\n```\n\n切換很簡單：啟動時加參數，或在對話中用指令切。\n\n```bash\ncodex --suggest        # 凡事先問（新手）\ncodex --auto-edit      # 改檔不問、跑指令問\ncodex --full-auto      # 全自動沙箱\n\n# 一句話直接派任務、不進對話：\ncodex \"把 README 翻成繁體中文\"\n```\n\n### 常用指令（在 Codex 對話中）\n\n```text\n/init        產生專案說明檔（類似 Claude 的 CLAUDE.md）\n/diff        看它這次改了哪些檔（超重要，送出前一定看）\n/clear       清掉對話、重新開始\n/model       換模型\n/approval    切 approval 模式\n```\n\n> 💡 對 Codex，專案規範檔叫 **AGENTS.md**（放專案根目錄）；Claude Code 叫 CLAUDE.md。作用一樣：開場先讀，告訴 AI 這專案的技術、規則、雷區。很多人兩個檔放一樣的內容，兩邊工具都吃。\n\n### Codex vs Claude Code：怎麼選\n\n```text\n|            | Claude Code        | Codex              |\n|------------|--------------------|--------------------|\n| 公司 / 模型 | Anthropic / Claude | OpenAI / GPT-5     |\n| 介面        | CLI（+ IDE）        | CLI + IDE + 雲端    |\n| 規範檔      | CLAUDE.md          | AGENTS.md          |\n| 沙箱全自動  | 有                  | 有（Full Auto）     |\n| 內含方案    | Claude Pro / Max   | ChatGPT Plus / Pro |\n| 雲端 agent  | （走 API / Actions）| Codex Cloud 原生   |\n```\n\n**白話結論**：兩個本質一樣、都很強。你已經付 ChatGPT Plus 就先用 Codex；付 Claude 就用 Claude Code。**最好兩個都裝**，同一個任務各跑一次、選你看得順的那個。別陷入「哪個最強」的宗教戰爭——它們每個月都在互相超車。\n\n### 新手最容易踩的 3 個雷\n\n```text\n1. 沒看 /diff 就接受 → 永遠送出前看它改了什麼\n2. 一開始就開 Full Auto → 先 Suggest 練幾次手感再放權\n3. 沒設 AGENTS.md → 它亂猜你的技術 stack，先花 5 分鐘寫好\n```",
+      "playgrounds": [
+        {
+          "key": "48.4b.auto",
+          "language": "bash",
+          "title": "試試看：裝 Codex 跑第一個任務",
+          "initialCode": "# 1. 裝（要先有 Node）\nnpm install -g @openai/codex\n\n# 2. 進專案、啟動\ncd ~/my-project\ncodex\n\n# 3. 新手先用最安全的 suggest 模式派任務：\n# codex --suggest \"幫我在 index.html 加一個置中的標題：Hello 雪域\"",
+          "hint": "第一次會要你用 ChatGPT 帳號登入。先用 --suggest，凡事先問你再做。"
+        }
+      ],
+      "exercise": {
+        "question": "同一個任務（例如「做一個顯示目前時間的網頁」），分別用 Claude Code 和 Codex 各跑一次，比較兩者的提問方式、改檔順序、最後成品差在哪。",
+        "hint": "兩邊都先用最安全模式（Claude 的逐步詢問 / Codex 的 --suggest）。重點不是比誰快，是觀察它們「怎麼想、怎麼一步步動手」。",
+        "answer": "你會發現：(1) 流程幾乎一樣——讀檔 → 計畫 → 改檔 → 跑檢查 (2) 提問顆粒度、預設模型不同 (3) 同個 prompt 兩邊成品會有差，因為背後模型不同。結論：工具是其次，**會下清楚的任務 + 會 review**才是真本事。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "Codex 的三種介面"
+        },
+        {
+          "level": 3,
+          "text": "安裝 + 第一次啟動"
+        },
+        {
+          "level": 3,
+          "text": "第一次打開：畫面長怎樣"
+        },
+        {
+          "level": 3,
+          "text": "approval 三段模式"
+        },
+        {
+          "level": 3,
+          "text": "常用指令"
+        },
+        {
+          "level": 3,
+          "text": "Codex vs Claude Code：怎麼選"
+        },
+        {
+          "level": 3,
+          "text": "新手最容易踩的 3 個雷"
+        }
+      ]
+    },
+    {
+      "id": "48.4c",
+      "number": "LESSON 48.4c",
+      "title": "零基礎跟著做：30 分鐘做出第一個成品",
+      "oneLineSummary": "什麼都不會也能跟著做：用 AI 工具從零做出一個能在網路上打開的個人網站，並部署上線。",
+      "analogy": "像第一次煮飯——不用懂食材化學，照著一步步做，就能端出一盤能吃的菜。先有「我做出來了」的成就感，原理之後慢慢補。",
+      "tip": {
+        "type": "tip",
+        "text": "卡住很正常。任何一步出錯，直接把「錯誤訊息整段」貼回給 AI、加一句「這個錯怎麼修」，它 9 成能幫你解。你不是在背指令，是在練「跟 AI 一起把問題解掉」。"
+      },
+      "xp": 15,
+      "content": "這節**不講原理，只帶你做出東西**。跟著打，30 分鐘後你會有一個**真的能在手機上打開的個人網站**。什麼都不會也沒關係——卡住就把錯誤丟給 AI 問。\n\n> 🎯 **成品目標**：一個個人介紹頁（你的名字、一句話介紹、幾個連結），部署到網路上，拿到一條 https 網址，傳給朋友就能開。\n\n### 開工前：裝好兩樣東西\n\n```text\n1. VS Code（編輯器）── Ch00.4 教過\n2. 一個 AI 工具，二選一：\n   - Cursor（內建 AI 的編輯器，最適合新手）← 本課用這個\n   - 或 Claude Code / Codex（終端機派，前兩課教過）\n```\n\n### Step 1：開一個空資料夾，用 Cursor 打開\n\n```text\n1. 桌面新建資料夾，命名 my-site\n2. Cursor → File → Open Folder → 選 my-site\n3. 按 Ctrl + L（Mac: Cmd + L）打開右邊 AI 對話框\n```\n\n### Step 2：把整個需求「一句話」交給 AI\n\n在 AI 對話框貼這段（**直接抄，改成你的資料**）：\n\n```text\n幫我做一個個人介紹的單頁網站，純 HTML + CSS、不要框架：\n- 中間置中顯示我的名字「林小明」（大字）\n- 下面一句介紹：「正在學寫程式的設計師」\n- 三個按鈕連結：GitHub、Email、Instagram\n- 深色背景、圓角按鈕、手機打開也好看（RWD）\n- 全部寫在一個 index.html 裡\n```\n\n按 Enter。AI 會生出一個 「index.html」，按它的「Apply / 接受」把檔案寫進資料夾。\n\n### Step 3：在瀏覽器打開看看\n\n```text\n方法 A（最簡單）：在 VS Code / Cursor 裝「Live Server」擴充，\n   右鍵 index.html → Open with Live Server → 自動開瀏覽器\n\n方法 B：直接把 index.html 拖進 Chrome 也能看\n```\n\n不滿意？**繼續用嘴改**，例如回 AI：\n\n```text\n「按鈕顏色改成綠色」\n「名字再大一點，加一點發光效果」\n「背景換成深藍到黑的漸層」\n```\n\n改到你喜歡為止——這就是 Vibe Coding：**用講的調，不用自己記語法**。\n\n### Step 4：部署上線（拿到網址）\n\n把成品放到網路上，最白話的方法是 **Netlify Drop**：\n\n```text\n1. 開 https://app.netlify.com/drop\n2. 把整個 my-site 資料夾「拖進」那個框框\n3. 等 10 秒 → 它給你一條網址（像 random-name.netlify.app）\n4. 點開、傳給朋友 → 成品上線了 🎉\n```\n\n（之後想用自己的網域、自動部署，Ch22 / Ch25 會教。）\n\n### 你剛剛完成了什麼\n\n```text\n✓ 從一個空資料夾，做出一個真網站\n✓ 用「講需求」讓 AI 寫 code、自己 review 接受\n✓ 用「講修改」迭代到滿意\n✓ 部署上線，拿到能分享的網址\n```\n\n**這就是一條完整的 Vibe Coding 流程的縮影。** 接下來的課會把每一步講深：怎麼下更好的 prompt（48.6）、怎麼管 git 不怕改壞（48.13）、怎麼做更大的專案（48.10、48.20）。但你已經跨過最難的一關——**從 0 到「我做出來了」**。\n\n> 🚀 **進階一步**：把上面的需求換成你真正想做的東西（朋友的店家頁、一個記帳小工具、一個倒數計時器），同一套流程再跑一次。做 3 個，你就有手感了。",
+      "playgrounds": [
+        {
+          "key": "48.4c.html",
+          "language": "html",
+          "title": "試試看：個人介紹頁起手式",
+          "initialCode": "<!DOCTYPE html>\n<html lang=\"zh-Hant\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>林小明</title>\n  <style>\n    body { margin:0; min-height:100vh; display:flex; flex-direction:column;\n      align-items:center; justify-content:center; gap:16px;\n      background:linear-gradient(160deg,#0f172a,#000); color:#e2e8f0;\n      font-family:system-ui, sans-serif; }\n    h1 { font-size:48px; margin:0; }\n    p { color:#94a3b8; margin:0; }\n    .links { display:flex; gap:12px; margin-top:8px; }\n    a { padding:10px 18px; border-radius:9999px; background:#1e293b;\n      color:#e2e8f0; text-decoration:none; }\n    a:hover { background:#334155; }\n  </style>\n</head>\n<body>\n  <h1>林小明</h1>\n  <p>正在學寫程式的設計師</p>\n  <div class=\"links\">\n    <a href=\"#\">GitHub</a>\n    <a href=\"#\">Email</a>\n    <a href=\"#\">Instagram</a>\n  </div>\n</body>\n</html>",
+          "hint": "改成你的名字和連結。改完按執行看結果，再試著叫 AI 幫你換配色。"
+        }
+      ],
+      "exercise": {
+        "question": "照著本課做出你自己的個人頁並部署上線，把網址記下來。然後把同一套流程用在「一個你真正想要的小東西」上，再做一個。",
+        "hint": "第二個建議做：倒數計時器、記帳小工具、或朋友店家的介紹頁。需求一樣用一段話講清楚交給 AI。",
+        "answer": "完成標準：(1) 有一條能在手機打開的 https 網址 (2) 你能用「講的」讓 AI 改樣式 (3) 你能獨立把成品拖上 Netlify。做到這三點，代表你已經會「從 0 到上線」這條最重要的路徑了。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "開工前：裝好兩樣東西"
+        },
+        {
+          "level": 3,
+          "text": "Step 1：開資料夾、用 Cursor 打開"
+        },
+        {
+          "level": 3,
+          "text": "Step 2：一句話交給 AI"
+        },
+        {
+          "level": 3,
+          "text": "Step 3：瀏覽器打開看看"
+        },
+        {
+          "level": 3,
+          "text": "Step 4：部署上線（拿到網址）"
+        },
+        {
+          "level": 3,
+          "text": "你剛剛完成了什麼"
         }
       ]
     },
@@ -1098,10 +1212,10 @@
       ]
     },
     {
-      "title": "Cursor / Claude Code / Windsurf 三選一",
-      "oneLineSummary": "Cursor / Claude Code / Windsurf 三選一：各自的殺手特色怎麼選",
+      "title": "Cursor / Claude Code / Codex / Windsurf 怎麼選",
+      "oneLineSummary": "Cursor / Claude Code / Windsurf 四大工具：各自的殺手特色怎麼選",
       "analogy": "像選車——各有殺手鐧，挑一個用到熟，比三個都半調子強得多。",
-      "content": "## Cursor\n\n![Cursor 安裝 + 第一次設定（一）](/lesson-img/ch48/ch48_cursor_setup1.png)\n\n![Cursor 安裝 + 第一次設定（二）](/lesson-img/ch48/ch48_cursor_setup2.png)\n\n- AI-native VS Code fork\n- **強項**：Tab 補全流暢、UI 順手\n- **適合**：日常 90% 場景\n- **價格**：$20/月\n\n### 殺手特色\n- Tab Tab Tab（游標跳下個編輯位置）\n- Cmd+K（行內生成 / 改寫）\n- Cmd+L（右邊 chat + @file reference）\n- Composer（跨檔案大改造）\n- Apply（1 鍵套用 suggestion）\n\n## Claude Code\n\n![Claude Code / Codex CLI：裝 → 登入 → 在專案下指令](/lesson-img/ch48/ch48_codex_cli.png)\n\n- CLI agentic tool\n- **強項**：深度推理、自主完成複雜任務\n- **適合**：refactor / 新 feature / debug\n- **價格**：Claude Max plan\n\n### 殺手特色\n- Plan mode（先計畫再動工）\n- Subagents（分派子任務）\n- Long-running（可跑幾十分鐘）\n- Skills（學你的 codebase 慣例）\n- Terminal-first（任何 IDE 都能用）\n\n## Windsurf（Codeium）\n- Cursor 替代、設計師友善\n- 免費 plan 強\n- 適合個人 / 學生\n\n## 選擇建議\n\n| 場景 | 推薦 |\n|---|---|\n| 純寫 code（90%）| Cursor |\n| Refactor / 新 feature | Claude Code |\n| 全用 AI | Cursor + Claude Code 雙軌 |\n| 預算有限 | Windsurf 或 Cursor 免費 |\n\n## 真實工作流\n```\n日常寫 code      → Cursor（Cmd+K / Tab）\n複雜 / 重構      → Claude Code\n跨檔案 refactor  → Cursor Composer\n研究新東西       → Claude.ai chat\n```\n\n## 不適合 AI 場景\n- 公司有資料隱私規範\n- 金融 / 醫療嚴規範\n- 學習階段（自己寫才學會）\n\n## 心法\n- AI 不是替代你、是放大你\n- 你要會看 code、否則接不到爛 code\n- 永遠 review、不 ship AI 直出\n\n**☕ 用人話講**\n\nCursor / Claude Code / Windsurf 三選一——各自的殺手特色怎麼選。**一句話記住**：像選車——各有殺手鐧，挑一個用到熟，比三個都半調子強得多。\n",
+      "content": "## Cursor\n\n![Cursor 安裝 + 第一次設定（一）](/lesson-img/ch48/ch48_cursor_setup1.png)\n\n![Cursor 安裝 + 第一次設定（二）](/lesson-img/ch48/ch48_cursor_setup2.png)\n\n- AI-native VS Code fork\n- **強項**：Tab 補全流暢、UI 順手\n- **適合**：日常 90% 場景\n- **價格**：$20/月\n\n### 殺手特色\n- Tab Tab Tab（游標跳下個編輯位置）\n- Cmd+K（行內生成 / 改寫）\n- Cmd+L（右邊 chat + @file reference）\n- Composer（跨檔案大改造）\n- Apply（1 鍵套用 suggestion）\n\n## Claude Code\n\n![Claude Code / Codex CLI：裝 → 登入 → 在專案下指令](/lesson-img/ch48/ch48_codex_cli.png)\n\n- CLI agentic tool\n- **強項**：深度推理、自主完成複雜任務\n- **適合**：refactor / 新 feature / debug\n- **價格**：Claude Max plan\n\n### 殺手特色\n- Plan mode（先計畫再動工）\n- Subagents（分派子任務）\n- Long-running（可跑幾十分鐘）\n- Skills（學你的 codebase 慣例）\n- Terminal-first（任何 IDE 都能用）\n\n## Codex（OpenAI）\n\n- OpenAI 的終端 / 雲端 agent（詳見 Ch48.4b）\n- **強項**：CLI + IDE + 雲端三種介面、approval 三段模式、ChatGPT 方案內含\n- **適合**：已經付 ChatGPT Plus / Pro 的人、想要雲端跑長任務\n- **價格**：ChatGPT Plus / Pro 內含，或 API 按量\n\n### 殺手特色\n- Codex Cloud（雲端 agent 跑完直接開 PR）\n- approval 三段（suggest / auto-edit / full-auto）\n- AGENTS.md（專案規範檔，等同 CLAUDE.md）\n\n## Windsurf（Codeium）\n- Cursor 替代、設計師友善\n- 免費 plan 強\n- 適合個人 / 學生\n\n## 選擇建議\n\n| 場景 | 推薦 |\n|---|---|\n| 純寫 code（90%）| Cursor |\n| Refactor / 新 feature | Claude Code |\n| 已付 ChatGPT | Cursor + Codex 雙軌 |\n| 已付 Claude | Cursor + Claude Code 雙軌 |\n| 預算有限 | Windsurf 或 Cursor 免費 |\n\n## 真實工作流\n```\n日常寫 code      → Cursor（Cmd+K / Tab）\n複雜 / 重構      → Claude Code 或 Codex\n跨檔案 refactor  → Cursor Composer\n研究新東西       → Claude.ai chat\n```\n\n## 不適合 AI 場景\n- 公司有資料隱私規範\n- 金融 / 醫療嚴規範\n- 學習階段（自己寫才學會）\n\n## 心法\n- AI 不是替代你、是放大你\n- 你要會看 code、否則接不到爛 code\n- 永遠 review、不 ship AI 直出\n\n**☕ 用人話講**\n\nCursor / Claude Code / Windsurf 三選一——各自的殺手特色怎麼選。**一句話記住**：像選車——各有殺手鐧，挑一個用到熟，比三個都半調子強得多。\n",
       "tip": {
         "type": "practical",
         "text": "三個工具先各用一天做同一個小任務，憑實際手感選；工具一直在變，重點是養成『會用 AI 協作』的習慣。"
