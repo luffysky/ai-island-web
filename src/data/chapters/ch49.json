@@ -400,6 +400,59 @@
       ]
     },
     {
+      "id": "49.6b",
+      "number": "LESSON 49.6b",
+      "title": "從零打造你專屬的 Agent（完整實戰）",
+      "oneLineSummary": "把 Agent Loop + Tool Use + Memory 串成一個你自己的、真的會跑的客製 agent——50 行 code，照著改成你要的。",
+      "analogy": "前一課學了引擎怎麼運轉，這課我們真的把一台車組起來開上路——你會有一個能自己查資料、自己存檔、能重複跑的專屬 agent。",
+      "tip": {
+        "type": "tip",
+        "text": "Agent 的「職業」是被 system prompt 跟你給它的「工具」決定的。把這課的 50 行留著當骨架，之後想做什麼 agent，就換 system prompt + 換工具，骨架幾乎不用動。"
+      },
+      "xp": 18,
+      "content": "學會了 Agent Loop（49.6）、Tool Use（49.7）、Memory（49.8）之後，這課把它們**串成一個你真的能跑、能改成自己用的 agent**。目標：**不靠框架、用最少的 code，從零做出一個專屬 agent**——這樣你會懂每一個齒輪，之後要換框架（49.11）也一看就通。\n\n> 🎯 **這課的成品**：一個「研究 + 報告 agent」——你給它一個主題，它**自己決定要不要查資料、查完整理重點、存成 report.md**。改一下 prompt 和工具，它就能變成你要的任何 agent（競品監控、週報、客服…）。\n\n### Agent 的三個零件（記住這個就會做 agent）\n\n```text\n1. 大腦（LLM）  ── 負責「想」：下一步該做什麼\n2. 工具（Tools）── 它的手腳：搜尋、讀寫檔、呼叫 API…\n3. 迴圈（Loop） ── 想 → 用工具 → 看結果 → 再想，直到任務完成\n```\n\n「專屬」的關鍵就兩件事：**改 system prompt（它的職業）+ 換工具（它的能力）**。骨架不動。\n\n### Step 1：先準備（5 分鐘）\n\n```bash\npip install anthropic          # 用 Claude 當大腦\nexport ANTHROPIC_API_KEY=你的key  # 到 console.anthropic.com 拿\n```\n\n### Step 2：定義工具（agent 的手腳）\n\n工具就是「告訴 AI 它能做哪些動作」+「動作真正怎麼執行」兩部分：\n\n```python\n# (A) 跟 AI 描述有哪些工具（它靠這份清單決定要不要用）\ntools = [\n    {\n        \"name\": \"web_search\",\n        \"description\": \"搜尋網路上的最新資訊\",\n        \"input_schema\": {\n            \"type\": \"object\",\n            \"properties\": {\"query\": {\"type\": \"string\"}},\n            \"required\": [\"query\"],\n        },\n    },\n    {\n        \"name\": \"save_note\",\n        \"description\": \"把整理好的內容存成檔案\",\n        \"input_schema\": {\n            \"type\": \"object\",\n            \"properties\": {\n                \"filename\": {\"type\": \"string\"},\n                \"content\": {\"type\": \"string\"},\n            },\n            \"required\": [\"filename\", \"content\"],\n        },\n    },\n]\n\n# (B) 工具真正的實作（AI 決定用哪個，這裡負責執行）\ndef run_tool(name, args):\n    if name == \"web_search\":\n        return search_web(args[\"query\"])      # ← 接你的搜尋 API（Tavily / Serper…）\n    if name == \"save_note\":\n        with open(args[\"filename\"], \"w\", encoding=\"utf-8\") as fp:\n            fp.write(args[\"content\"])\n        return \"已存檔：\" + args[\"filename\"]\n    return \"未知工具\"\n```\n\n### Step 3：Agent Loop（核心，就這一段）\n\n```python\nimport anthropic\nclient = anthropic.Anthropic()\n\nSYSTEM = \"你是研究助理。需要最新資料就用 web_search，至少查 2 個來源、交叉比對，整理成重點後用 save_note 存成 report.md。不確定就誠實說，不要瞎掰。\"\n\nmessages = [{\"role\": \"user\", \"content\": \"幫我研究『2026 台灣 AI 新創趨勢』\"}]\n\nwhile True:\n    resp = client.messages.create(\n        model=\"claude-opus-4-8\",\n        max_tokens=2000,\n        system=SYSTEM,\n        tools=tools,\n        messages=messages,\n    )\n    messages.append({\"role\": \"assistant\", \"content\": resp.content})\n\n    # 找出 AI 這一輪想用的工具\n    tool_uses = [b for b in resp.content if b.type == \"tool_use\"]\n    if not tool_uses:               # 它不再用工具 = 任務完成\n        print(resp.content[-1].text)\n        break\n\n    # 執行工具，把結果餵回去，讓它「看到結果再想下一步」\n    results = []\n    for tu in tool_uses:\n        output = run_tool(tu.name, tu.input)\n        results.append({\n            \"type\": \"tool_result\",\n            \"tool_use_id\": tu.id,\n            \"content\": str(output),\n        })\n    messages.append({\"role\": \"user\", \"content\": results})\n```\n\n**看懂這段你就會做 agent 了**：它就是一個 while 迴圈——AI 講話 →（如果它要用工具）執行工具、把結果塞回對話 → 再問 AI →…… 直到它不再用工具、給出最終答案。**這就是 ReAct（49.3）的真身。**\n\n### Step 4：加記憶（讓它記得跨次對話）\n\n上面的 messages 是「這一次任務」的短期記憶。要它記得「上週查過什麼」，就把每次結論存進檔案 / 向量資料庫，下次開場讀回來放進 messages（49.8 的做法）：\n\n```python\n# 開場先載入長期記憶\nmemory = load_memory(\"research_history.json\")   # 你上次的結論\nmessages = [{\"role\": \"user\", \"content\": f\"過去紀錄：{memory}\n\n這次研究：2026 AI 新創\"}]\n```\n\n### Step 5：把它變成「你的」 agent\n\n骨架完全不動，只改兩個地方：\n\n```text\n想做的 agent        改 SYSTEM 成…                    換上的工具\n─────────────────────────────────────────────────────────\n競品監控 agent      \"監控這些競品的更新並比較\"          web_search + save_note + send_email\n自動週報 agent      \"讀我的 git log 和 todo 寫週報\"     read_git_log + save_note\n客服 agent          \"用知識庫回答客戶問題\"              search_kb + create_ticket\n記帳 agent          \"解析發票照片記到表格\"              ocr_image + append_sheet\n```\n\n> 🚀 **你現在會的**：從零用 50 行做出一個會自己規劃、用工具、產出成品的 agent。下一步——任務一複雜、要多 agent 分工、要穩定上線時，就把這個骨架換成框架（LangGraph / CrewAI，49.11）；要安全（沙箱 / 權限 / 預算）看 49.18；要上 production 看 49.19。但**核心永遠是這課的「想 → 用工具 → 看結果 → 再想」**。",
+      "playgrounds": [
+        {
+          "key": "49.6b.py",
+          "language": "python",
+          "title": "試試看：最小 Agent Loop 骨架",
+          "initialCode": "# 這是 agent 的骨架（這裡用假的 LLM/工具示意流程，真的要接 anthropic）\ndef fake_llm(messages):\n    # 真實版會呼叫 client.messages.create(...)\n    return {\"wants_tool\": False, \"text\": \"任務完成：已整理重點\"}\n\ndef run_tool(name, args):\n    return f\"[{name} 的結果]\"\n\nmessages = [{\"role\": \"user\", \"content\": \"研究 2026 AI 趨勢\"}]\nfor step in range(5):\n    resp = fake_llm(messages)\n    if not resp[\"wants_tool\"]:\n        print(resp[\"text\"])  # 不用工具了 = 完成\n        break\n    # 真實版：執行工具、把結果塞回 messages 再迴圈\n    print(\"（這一輪會用工具，然後把結果餵回去再想）\")",
+          "hint": "把 fake_llm 換成真的 client.messages.create、run_tool 換成真工具，就是一個能跑的 agent。"
+        }
+      ],
+      "exercise": {
+        "question": "拿本課的 50 行骨架，做出一個「你自己真的會用」的 agent（週報 / 競品監控 / 記帳…）。只改 SYSTEM prompt 和工具清單，跑跑看。",
+        "hint": "先讓它只有 1 個工具能跑通，再慢慢加。卡住就把錯誤貼給 Claude 問。搜尋工具可以先接 Tavily（有免費額度）。",
+        "answer": "完成標準：(1) 你能說出 agent 三零件（大腦 / 工具 / 迴圈）各是哪段 code (2) 改 SYSTEM 就改變它的職業、加工具就加它的能力 (3) 它會自己決定何時用工具、產出一個檔案成品。做到這三點，你就是「能從零開發 agent」而不只是會用了。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "Agent 的三個零件"
+        },
+        {
+          "level": 3,
+          "text": "Step 1：先準備"
+        },
+        {
+          "level": 3,
+          "text": "Step 2：定義工具"
+        },
+        {
+          "level": 3,
+          "text": "Step 3：Agent Loop（核心）"
+        },
+        {
+          "level": 3,
+          "text": "Step 4：加記憶"
+        },
+        {
+          "level": 3,
+          "text": "Step 5：把它變成「你的」 agent"
+        }
+      ]
+    },
+    {
       "id": "49.7",
       "number": "LESSON 49.7",
       "title": "Tool Use 完整",
@@ -798,6 +851,43 @@
         {
           "level": 3,
           "text": "Coding Agent 評估標準：SWE-bench"
+        }
+      ]
+    },
+    {
+      "id": "49.13b",
+      "number": "LESSON 49.13b",
+      "title": "Claude Cowork：把 Agent 帶到桌面（會用）",
+      "oneLineSummary": "Anthropic 的桌面知識工作 agent——把 Claude Code 的自主能力給不寫 code 的人：在你電腦的檔案、App 裡跑完整件事。",
+      "analogy": "如果 Claude Code 是「會自己動手的工程助理」，Cowork 就是「會自己動手的辦公室助理」——你給目標，它在你電腦的資料夾、文件、App 之間自己跑完，交回一份成品。",
+      "tip": {
+        "type": "tip",
+        "text": "Cowork 是「會用就好」的 agent 產品——但它正是這章所有概念（規劃、工具使用、多步驟自主）打包給一般人用的樣子。用它時觀察它「怎麼拆步驟、何時停下來問你」，反過來幫你理解 agent 設計。"
+      },
+      "xp": 12,
+      "content": "**Claude Cowork** 是 Anthropic 在 2026 年 1 月推出的**桌面 agent**（research preview）。一句話：**把 Claude Code 的自主能力，帶給「不寫 code 的知識工作」**。\n\n> 📌 它不是聊天機器人。你給它一個目標，它會在你電腦的**本機檔案、資料夾、日常 App** 之間自己移動、跨多個來源整理資訊、把整件事從頭做到尾，最後交回一份成品。\n\n### 跟 Claude Code 怎麼分\n\n```text\n              Claude Code            Claude Cowork\n環境          終端機 / 寫程式          桌面 App / 知識工作\n對象          工程師                  PM、行銷、營運、創辦人…不用會寫 code\n做的事        改 codebase、跑指令      整理檔案、做研究、寫文件、跨 App 完成任務\n本質          一樣是 agent（自己規劃 + 用工具 + 多步驟自主）\n```\n\n有趣的是：**Anthropic 自己說 Cowork 大約只花 10 天、主要用 Claude Code 做出來的**——這就是 agent 時代的開發速度。\n\n### 怎麼開始用\n\n```text\n1. 方案：目前需要 Claude Max 訂閱（約 $100–200/月）\n2. 平台：先支援 macOS（Windows 規劃中）\n3. 打開桌面 App → 給它一個「目標」（不是一句問句，是一件任務）\n4. 它會開始自己做，過程中遇到要決定 / 要權限時會停下來問你\n5. 跑完交回成品（整理好的文件、報告、檔案）\n```\n\n### 適合丟給它的任務（範例）\n\n```text\n- 「把這個資料夾裡 20 份 PDF 的重點整理成一份 summary」\n- 「研究這 3 家競品最近的動態，做成一頁對照」\n- 「把這批雜亂的檔案照專案分類、重新命名」\n- 「讀這份會議逐字稿，產出待辦清單 + 寄給相關人」\n```\n\n還能裝 **plug-ins**（2026 初開放）擴充它能接的工具 / 服務。\n\n### 用它的時候，順便學 agent 設計\n\nCowork 把這一章的概念全包進去了——你用它的時候可以反過來觀察：\n\n```text\n- 它怎麼「拆步驟」？      → 對照 49.4 Plan-and-Execute\n- 它何時停下來問你？      → 對照 49.18 權限 / 安全設計\n- 它用了哪些「工具」？     → 對照 49.7 Tool Use、49.9 Computer Use\n- 它記得前面做過什麼嗎？   → 對照 49.8 Memory\n```\n\n> 💡 **學習建議**：先用 Cowork（會用）感受一個成熟 agent 產品長怎樣，再回頭看 49.6b（從零自己做一個）。一個從上往下看、一個從下往上拆，兩邊對起來，你對 agent 的理解會立體很多。",
+      "playgrounds": [],
+      "exercise": {
+        "question": "如果你有 Claude Max，丟一個你工作上真實的多步驟任務給 Cowork（整理檔案 / 做研究 / 寫文件），全程觀察它怎麼拆步驟、何時問你。沒有訂閱也可以：看官方 demo，把它的流程對照本章的 ReAct / Plan-Execute / Tool Use。",
+        "hint": "重點不是「它幫我省多少時間」，是「它的行為怎麼對應到你學的 agent 架構」。把觀察寫下來。",
+        "answer": "你應該能指出：(1) Cowork = 把 agent（規劃 + 工具 + 多步自主）打包給非工程師的桌面產品 (2) 它跟 Claude Code 同源、差在對象與環境 (3) 它的每個行為都能對應到本章某個概念。能做到這個對照，代表你不只是「會用」，是「看得懂它在幹嘛」。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "跟 Claude Code 怎麼分"
+        },
+        {
+          "level": 3,
+          "text": "怎麼開始用"
+        },
+        {
+          "level": 3,
+          "text": "適合丟給它的任務"
+        },
+        {
+          "level": 3,
+          "text": "用它的時候，順便學 agent 設計"
         }
       ]
     },

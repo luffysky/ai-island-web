@@ -414,6 +414,39 @@
       ]
     },
     {
+      "id": "48.5b",
+      "number": "LESSON 48.5b",
+      "title": "Claude Design：文字變介面 / 簡報 / 原型",
+      "oneLineSummary": "Anthropic 的 prompt-to-prototype 工具：打字描述就生出可點的原型、簡報、一頁式、UI mockup，輸出是真 HTML、能匯出。",
+      "analogy": "像 v0 / Bolt 那一掛，但更偏「快速做出能展示的視覺」——創辦人、PM 不會設計也能把腦中的畫面變成可點的東西，拿去對需求、提案。",
+      "tip": {
+        "type": "tip",
+        "text": "Claude Design 的產出是「活的 HTML」不是死圖——可以點、可以測、能匯出成 Canva / PDF / PPTX。先用它把想法做成可點原型對齊需求，確定方向了再進到真正寫 code（48.4c）。"
+      },
+      "xp": 10,
+      "content": "**Claude Design** 是 Anthropic Labs 在 2026 年 4 月推出的**實驗性產品**——用講的就生出視覺：**可互動的原型、簡報、一頁式（one-pager）、提案 deck、UI mockup**，不需要任何設計底子。\n\n> 📌 跟上一課的 v0 / Bolt / Lovable 是同一家族（**prompt → 介面**），但 Claude Design 特別偏「**快速做出能展示、能對齊需求的視覺**」，給創辦人 / PM 這種「有想法、不會設計」的人。\n\n### 它能做什麼\n\n```text\n- 描述需求 → Claude 生出第一版視覺\n- 用「直接編輯」或「再下指令」迭代修改\n- 產出是「活的 HTML」：可點、可測，不是靜態圖\n- 能匯出成 Canva / PDF / PPTX / 獨立 HTML\n- 會讀你公司的 codebase + 設計檔，套用你的 design system，\n  讓每次產出都跟品牌風格一致\n```\n\n技術上由 Claude Opus 4.7 驅動；目前是 research preview，開放給 Claude Pro / Max / Team / Enterprise 訂閱者。\n\n### 跟 v0 / Bolt / Lovable 怎麼分（同家族、定位不同）\n\n```text\n              主打                      產出\n─────────────────────────────────────────────────────\nv0            React / shadcn 元件        可直接融入 codebase 的 component\nBolt          整個可跑的小 app           瀏覽器內就能跑的全端雛形\nLovable       非技術者做出能用的產品      接 DB / Auth 的成品\nClaude Design 原型 / 簡報 / 視覺提案       可互動 HTML，能套 design system、能匯出\n```\n\n### 放在你的流程哪一步\n\n```text\n想法  →  Claude Design 做可點原型  →  對齊需求 / 提案  →  確定方向\n                                                          ↓\n                          真的開發（Cursor / Claude Code / Codex，48.3~48.4b）\n```\n\n**白話**：Claude Design 是「動工前，先把腦中畫面變成能點的東西」的利器——對齊得越早，後面寫 code 越不會白做。確定方向後，再進 48.4c 那條「真的把它做出來並上線」的路。\n\n> ⚠️ 這類工具更新很快、功能和方案常變動。重點不是背它今天有哪些按鈕，是抓住「**用講的把想法變成可展示的視覺**」這個能力——哪天換工具也通用。",
+      "playgrounds": [],
+      "exercise": {
+        "question": "把你最近一個「想做但還在腦中」的點子，寫一段清楚的描述，丟給 Claude Design（或 v0 / Bolt 任一）做出可點原型，拿去問 2 個人「這是你要的嗎」。",
+        "hint": "描述要具體：給誰用、解決什麼、主畫面要有哪些東西、什麼風格。越具體，第一版越準。",
+        "answer": "完成標準：(1) 你能用一段話把抽象想法變成可點的視覺 (2) 你理解 Claude Design 偏『原型 / 視覺提案』、跟 v0（元件）/ Bolt（可跑 app）定位不同 (3) 你知道它在流程裡的位置——動工前對齊需求，不是取代真正開發。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "它能做什麼"
+        },
+        {
+          "level": 3,
+          "text": "跟 v0 / Bolt / Lovable 怎麼分"
+        },
+        {
+          "level": 3,
+          "text": "放在你的流程哪一步"
+        }
+      ]
+    },
+    {
       "id": "48.6",
       "number": "LESSON 48.6",
       "title": "Prompt 即架構：怎麼跟 AI 下指令",
