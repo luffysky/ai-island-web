@@ -561,7 +561,7 @@ function NoteEditor({
     setSaving(true);
     try {
       const d = await persist();
-      if (d) onClose();
+      if (d) { clearDraft(); onClose(); }
     } finally {
       setSaving(false);
     }
@@ -574,12 +574,70 @@ function NoteEditor({
     return d?.id ?? null;
   };
 
+  // ── 自動儲存 + 還原 ──
+  const DRAFT_KEY = "ai-island-note-draft-new";
+  const [autosaveAt, setAutosaveAt] = useState<number | null>(null);
+  const [dirty, setDirty] = useState(false);
+  const [restored, setRestored] = useState(false);
+  const firstRender = useRef(true);
+
+  // 開全新筆記時還原上次未存草稿
+  useEffect(() => {
+    if (note) return;
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY);
+      if (!raw) return;
+      const d = JSON.parse(raw);
+      if (!(d.content || "").replace(/<[^>]*>/g, "").trim()) return;
+      firstRender.current = true; // 還原後別馬上又觸發存草稿
+      setTitle(d.title ?? ""); setContent(d.content ?? ""); setCategory(d.category ?? "");
+      setTagsInput(d.tagsInput ?? ""); setColor(d.color ?? "");
+      if (typeof d.opacity === "number") setOpacity(d.opacity);
+      setNoteBg(d.bg ?? null); setIsPublic(!!d.isPublic); setRestored(true);
+    } catch {}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const clearDraft = () => { try { localStorage.removeItem(DRAFT_KEY); } catch {} };
+  const discardDraft = () => {
+    setTitle(""); setContent(""); setCategory(""); setTagsInput("");
+    setColor(""); setOpacity(1); setNoteBg(null); setIsPublic(false);
+    clearDraft(); setRestored(false); setAutosaveAt(null);
+  };
+
+  // debounce 自動儲存：已存在的筆記 → 寫 DB；全新筆記 → 暫存 localStorage 草稿
+  useEffect(() => {
+    if (!canEdit) return;
+    if (firstRender.current) { firstRender.current = false; return; }
+    if (!content.replace(/<[^>]*>/g, "").trim()) return;
+    setDirty(true);
+    const t = setTimeout(async () => {
+      if (noteId) {
+        const d = await persist();
+        if (d) { setAutosaveAt(Date.now()); setDirty(false); }
+      } else {
+        try {
+          localStorage.setItem(DRAFT_KEY, JSON.stringify({ title, content, category, tagsInput, color, opacity, bg: noteBg, isPublic, ts: Date.now() }));
+        } catch {}
+        setAutosaveAt(Date.now()); setDirty(false);
+      }
+    }, 1500);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [title, content, category, tagsInput, isPublic, color, opacity, noteBg, noteId]);
+
   return (
     <div className="rounded-2xl border border-accent/40 bg-bg-card p-4 space-y-3">
       <div className="flex items-center justify-between">
         <span className="font-semibold">{!note ? "新增筆記" : canEdit ? "編輯筆記" : "查看筆記（唯讀）"}</span>
         <button onClick={onClose} className="text-fg-muted hover:text-fg" aria-label="關閉"><X size={16} /></button>
       </div>
+      {restored && (
+        <div className="flex items-center justify-between text-xs bg-amber-500/10 border border-amber-500/30 rounded-lg px-3 py-1.5">
+          <span className="text-amber-700 dark:text-amber-400">↩️ 已還原上次未存的草稿</span>
+          <button type="button" onClick={discardDraft} className="text-fg-muted hover:text-fg underline">清除草稿</button>
+        </div>
+      )}
       <input
         value={title}
         onChange={(e) => setTitle(e.target.value)}
@@ -702,6 +760,11 @@ function NoteEditor({
         </label>
         <div className="flex items-center gap-2">
           {err && <span className="text-xs text-red-400">{err}</span>}
+          {canEdit && !err && (
+            <span className="text-[11px] text-fg-muted">
+              {dirty ? "編輯中…" : autosaveAt ? `✓ ${noteId ? "已自動儲存" : "草稿已暫存"} ${new Date(autosaveAt).toLocaleTimeString("zh-TW", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}` : ""}
+            </span>
+          )}
           <button onClick={save} disabled={saving} className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-accent text-black font-semibold rounded-lg hover:scale-105 transition disabled:opacity-50">
             {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />} 儲存
           </button>
