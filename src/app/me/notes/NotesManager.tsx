@@ -29,6 +29,7 @@ const BlogEditor = dynamic(
 export type ManagedNote = {
   id: string;
   user_id: string;
+  title: string | null;
   chapter_id: number | null;
   lesson_id: string | null;
   content: string;
@@ -487,6 +488,7 @@ function NoteEditor({
   const supabase = createSupabaseBrowser();
   const owned = note ? (note._owned ?? note.user_id === meId) : true;
   const canEdit = !note || owned || note._role === "editor";
+  const [title, setTitle] = useState(note?.title ?? "");
   const [content, setContent] = useState(note?.content ?? "");
   const [category, setCategory] = useState(note?.category ?? "");
   const [tagsInput, setTagsInput] = useState((note?.tags ?? []).join(", "));
@@ -527,6 +529,7 @@ function NoteEditor({
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { setErr("請先登入"); return null; }
     const payload: any = {
+      title: title.trim() || null,
       content,
       category: category.trim() || null,
       tags: tagsArr,
@@ -577,6 +580,13 @@ function NoteEditor({
         <span className="font-semibold">{!note ? "新增筆記" : canEdit ? "編輯筆記" : "查看筆記（唯讀）"}</span>
         <button onClick={onClose} className="text-fg-muted hover:text-fg" aria-label="關閉"><X size={16} /></button>
       </div>
+      <input
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        disabled={!canEdit}
+        placeholder="標題（可留空）"
+        className="w-full bg-bg border border-border rounded-lg px-3 py-2 text-base font-semibold outline-none focus:border-accent disabled:opacity-70"
+      />
       <div className="max-h-[50vh] overflow-auto rounded-lg border border-border">
         <BlogEditor content={content} onChange={setContent} editable={canEdit} placeholder="寫下你的筆記…（可貼上 / 拖曳圖片）" />
       </div>

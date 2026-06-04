@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "expired", message: "邀請碼已過期" }, { status: 410 });
   }
 
-  const { data: note } = await admin.from("notes").select("id, content, user_id").eq("id", invite.note_id).maybeSingle();
+  const { data: note } = await admin.from("notes").select("id, title, content, user_id").eq("id", invite.note_id).maybeSingle();
   if (!note) return NextResponse.json({ error: "note_gone", message: "筆記已不存在" }, { status: 404 });
 
   // 擁有者本人 = 已經有權限、不需加協作者
@@ -34,6 +34,6 @@ export async function POST(req: NextRequest) {
       .upsert({ note_id: invite.note_id, user_id: user.id }, { onConflict: "note_id,user_id" });
   }
 
-  const title = String(note.content || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().slice(0, 40) || "（無標題筆記）";
+  const title = (note.title?.trim()) || String(note.content || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().slice(0, 40) || "（無標題筆記）";
   return NextResponse.json({ ok: true, noteId: note.id, title, alreadyOwner: note.user_id === user.id });
 }

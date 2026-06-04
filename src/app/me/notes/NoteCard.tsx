@@ -33,6 +33,7 @@ export function NoteCard({
   note: {
     id: string;
     user_id?: string;
+    title?: string | null;
     chapter_id: number | null;
     lesson_id: string | null;
     content: string;
@@ -175,7 +176,7 @@ export function NoteCard({
       <div className="flex items-start justify-between mb-2 gap-2">
         <div className="min-w-0 flex-1">
           <div className="text-xs mb-1" style={{ color: MUTED }}>{header}</div>
-          <div className="font-bold truncate">{lessonTitle}</div>
+          <div className="font-bold truncate">{note.title?.trim() || lessonTitle}</div>
         </div>
         <div className="flex items-center gap-1 shrink-0">
           {note._shared && (

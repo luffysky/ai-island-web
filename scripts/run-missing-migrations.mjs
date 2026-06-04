@@ -14,6 +14,7 @@ const MIGRATIONS = [
   "notes_bg_migration.sql",               // → notes.bg jsonb（每則筆記單獨背景圖：縮放/位移/旋轉）
   "notes_sharing_migration.sql",          // → note_collaborators / note_invites（共同筆記、邀請碼、多人協作）
   "notes_pin_migration.sql",              // → notes.pinned（置頂）
+  "notes_title_migration.sql",            // → notes.title（可選標題、nullable）
 ];
 
 const env = Object.fromEntries(
