@@ -656,7 +656,7 @@ async function runStudentCommandBg(
     const { data: progress } = await admin.from("lesson_progress").select("chapter_id, lesson_id").eq("user_id", userId).order("completed_at", { ascending: false }).limit(1);
     const lastChapter = ((progress ?? []) as any[])[0]?.chapter_id ?? 1;
     const { data: nextLessons } = await admin.from("chapters")
-      .select("id, title, lessons")
+      .select("id, title, lessons(id, title, sort_order)")
       .gte("id", lastChapter)
       .order("id", { ascending: true })
       .limit(3);

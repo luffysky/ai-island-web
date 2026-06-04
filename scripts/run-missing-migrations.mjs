@@ -20,6 +20,8 @@ const MIGRATIONS = [
   "subscriptions_granted_by_migration.sql", // → subscriptions.granted_by（手動授予者）
   "soft_delete_columns_migration.sql",      // → forum_threads/user_blog_articles.deleted_at（軟刪除）
   "ai_models_tier_migration.sql",           // → ai_models.tier（AI 路由分級）
+  "profiles_email_sync_migration.sql",      // → profiles.email（鏡射 auth、含同步 trigger）
+  "daily_quiz_pass_migration.sql",          // → daily_quiz_attempts.pass（計算欄、正確率≥60%）
 ];
 
 const env = Object.fromEntries(

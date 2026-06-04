@@ -134,7 +134,7 @@ export async function cmdMe(tgUsername?: string): Promise<string> {
 
   const [{ count: lessonsToday }, { count: aiToday }, { count: notesToday }, { data: lastLogin }] = await Promise.all([
     admin.from("lesson_progress").select("id", { count: "exact", head: true }).eq("user_id", (owner as any).id).gte("completed_at", dayStart),
-    admin.from("ai_messages").select("id", { count: "exact", head: true }).eq("user_id", (owner as any).id).gte("created_at", dayStart),
+    admin.from("ai_messages").select("id, ai_conversations!inner(user_id)", { count: "exact", head: true }).eq("ai_conversations.user_id", (owner as any).id).gte("created_at", dayStart),
     admin.from("notes").select("id", { count: "exact", head: true }).eq("user_id", (owner as any).id).gte("created_at", dayStart),
     admin.from("profiles").select("last_active_at").eq("id", (owner as any).id).maybeSingle(),
   ] as any);
