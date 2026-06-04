@@ -292,6 +292,55 @@
       ]
     },
     {
+      "id": "48.4d",
+      "number": "LESSON 48.4d",
+      "title": "Gemini CLI → Antigravity：Google 的終端 AI agent",
+      "oneLineSummary": "Google 的終端 agent：Gemini CLI（開源、免費額度大）2026 正轉成 Antigravity CLI；含轉換時程與跟 Claude Code / Codex 怎麼分。",
+      "analogy": "三大家都在做「終端裡會自己動手的 AI 助理」：Anthropic 的 Claude Code、OpenAI 的 Codex、Google 的這一個。差別在背後的模型、免費額度、跟生態。",
+      "tip": {
+        "type": "warn",
+        "text": "Google 這條線正在換招牌——Gemini CLI 要收掉、改推 Antigravity CLI（2026/6/18 起 Gemini CLI 對個人方案停止服務，企業 Code Assist 授權不受影響）。新學的人直接學 Antigravity；舊的 Gemini CLI 指令和概念大多能平移過去。"
+      },
+      "xp": 10,
+      "content": "三大 AI 公司都有自己的「終端 AI agent」：Anthropic 的 **Claude Code**（48.4）、OpenAI 的 **Codex**（48.4b）、Google 的就是這課——**Gemini CLI**，而它在 2026 正轉成 **Antigravity CLI**。\n\n> ⚠️ **先講最重要的時程（2026）**：Google 在 I/O 2026 宣布用 **Antigravity 2.0** 取代 Gemini CLI。**2026/6/18 起，Gemini CLI 對 Google AI Pro / Ultra / 免費方案停止服務**（用 Gemini Code Assist 企業授權的不受影響）。新功能、新模型都走 Antigravity CLI。**所以現在才開始學的人，直接學 Antigravity CLI 就好**——但 Gemini CLI 的概念幾乎都能平移，下面一起講。\n\n### Gemini CLI 是什麼（地基，概念可平移）\n\n```text\n- 開源的終端 AI agent，用 ReAct 迴圈（想 → 用工具 → 看結果 → 再想）\n- 內建工具：Google 搜尋 grounding、讀寫檔、跑 shell、抓網頁\n- 支援 MCP（接你自己的工具 / 資料源）\n- Plan Mode（先給計畫再動手）、Subagents（分身去跑子任務）\n- 賣點：免費額度大、Gemini 3 模型、1M token 超大 context\n```\n\n免費額度（個人 Google 帳號）：約 **每分鐘 60 次、每天 1,000 次**——練手幾乎不用錢，這是它最香的地方。\n\n### 安裝 + 第一次啟動\n\n```bash\n# Gemini CLI（要先有 Node 20+）\nnpm install -g @google/gemini-cli\n# 或免安裝、用一次：\nnpx @google/gemini-cli\n\n# 進專案、啟動\ncd ~/my-project\ngemini\n# 第一次用 Google 帳號登入（免費額度即可開跑）\n```\n\n```text\n╭───────────────────────────────────────╮\n│  Gemini CLI                            │\n│  model: gemini-3   cwd: ~/my-project   │\n╰───────────────────────────────────────╯\n > ▊   ← 直接打你要做什麼（中文 OK）\n```\n\n### Antigravity CLI：接班人（2026 起的主線）\n\n```text\n- 用 Go 寫的，更快更穩\n- 主打「多 agent 編排」：背景同時跑多個 agent 做大型重構 / 多主題研究，\n  不會卡住你的終端\n- 不只 CLI——還有桌面 App + SDK，背後是 Gemini 3.5 Flash\n- 從 Gemini CLI 保留下來的：Agent Skills、Hooks、Subagents、\n  Extensions（改叫 Antigravity plugins）\n```\n\n白話：**Antigravity = Gemini CLI 長大、變成「整個 agent 開發平台」**。你在 Gemini CLI 學到的（給目標、Plan Mode、MCP 工具、subagent）幾乎都還在，只是換了個更強的殼。\n\n### 三大終端 agent 怎麼分\n\n```text\n              公司        模型          特色\n─────────────────────────────────────────────────────────\nClaude Code   Anthropic   Claude        長任務穩、CLAUDE.md、生態成熟\nCodex         OpenAI      GPT-5         CLI+IDE+雲端、approval 三段、ChatGPT 內含\nGemini/Antigravity  Google  Gemini 3    免費額度大、Google 搜尋 grounding、\n                                        1M context、多 agent 編排\n```\n\n### 新手怎麼選\n\n```text\n1. 想「不花錢練到飽」→ 先用 Google 這條（免費額度最大）\n2. 已經付 ChatGPT → 用 Codex；已經付 Claude → 用 Claude Code\n3. 三個介面、體驗八九成像——挑一個上手，會一個其他都很快\n4. 重點永遠是：給清楚的任務 + 自己 review，工具是其次\n```\n\n> 💡 **這課的真正重點**：別把力氣花在「背某個 CLI 今天有哪些指令」——這領域每幾個月就洗一次牌（Gemini CLI → Antigravity 就是活生生的例子）。抓住「終端 agent ＝給目標、它用 ReAct 迴圈自己動手」這個不變的核心，換哪家、改什麼名字你都能馬上上手。",
+      "playgrounds": [
+        {
+          "key": "48.4d.bash",
+          "language": "bash",
+          "title": "試試看：裝 Google 的終端 agent",
+          "initialCode": "# Gemini CLI（要先有 Node 20+）\nnpm install -g @google/gemini-cli\ngemini   # 用 Google 帳號登入，免費額度即可開跑\n\n# ⚠ 2026/6/18 起 Gemini CLI 對個人方案停止服務\n#   新學的人請改用 Antigravity CLI（Google I/O 2026 推出的接班人）\n#   概念一樣：給目標 → 它用 ReAct 迴圈自己動手",
+          "hint": "免費額度大，適合零成本練手。學會這個，Claude Code / Codex 也一通百通。"
+        }
+      ],
+      "exercise": {
+        "question": "用 Google 的終端 agent（Gemini CLI 或 Antigravity CLI）跑一個小任務（例如「幫我把這個資料夾的 README 翻成英文」），跟你用過的 Claude Code / Codex 比較提問與動手方式。",
+        "hint": "先用免費額度試水溫。重點不是比誰強，是感受「三家的終端 agent 體驗其實很像」，抓住共通的 ReAct 核心。",
+        "answer": "你應該能講出：(1) 三大公司都有終端 agent，核心都是 ReAct（想→用工具→看結果→再想）(2) Google 這條的特色是免費額度大、Google 搜尋 grounding、多 agent 編排 (3) Gemini CLI 正轉成 Antigravity CLI——工具會換名換殼，但核心概念不變，這才是你該記住的。"
+      },
+      "outline": [
+        {
+          "level": 3,
+          "text": "Gemini CLI 是什麼（概念可平移）"
+        },
+        {
+          "level": 3,
+          "text": "安裝 + 第一次啟動"
+        },
+        {
+          "level": 3,
+          "text": "Antigravity CLI：接班人"
+        },
+        {
+          "level": 3,
+          "text": "三大終端 agent 怎麼分"
+        },
+        {
+          "level": 3,
+          "text": "新手怎麼選"
+        }
+      ]
+    },
+    {
       "id": "48.4c",
       "number": "LESSON 48.4c",
       "title": "零基礎跟著做：30 分鐘做出第一個成品",
@@ -1245,10 +1294,10 @@
       ]
     },
     {
-      "title": "Cursor / Claude Code / Codex / Windsurf 怎麼選",
+      "title": "終端 agent 三巨頭 + 編輯器怎麼選",
       "oneLineSummary": "Cursor / Claude Code / Windsurf 四大工具：各自的殺手特色怎麼選",
       "analogy": "像選車——各有殺手鐧，挑一個用到熟，比三個都半調子強得多。",
-      "content": "## Cursor\n\n![Cursor 安裝 + 第一次設定（一）](/lesson-img/ch48/ch48_cursor_setup1.png)\n\n![Cursor 安裝 + 第一次設定（二）](/lesson-img/ch48/ch48_cursor_setup2.png)\n\n- AI-native VS Code fork\n- **強項**：Tab 補全流暢、UI 順手\n- **適合**：日常 90% 場景\n- **價格**：$20/月\n\n### 殺手特色\n- Tab Tab Tab（游標跳下個編輯位置）\n- Cmd+K（行內生成 / 改寫）\n- Cmd+L（右邊 chat + @file reference）\n- Composer（跨檔案大改造）\n- Apply（1 鍵套用 suggestion）\n\n## Claude Code\n\n![Claude Code / Codex CLI：裝 → 登入 → 在專案下指令](/lesson-img/ch48/ch48_codex_cli.png)\n\n- CLI agentic tool\n- **強項**：深度推理、自主完成複雜任務\n- **適合**：refactor / 新 feature / debug\n- **價格**：Claude Max plan\n\n### 殺手特色\n- Plan mode（先計畫再動工）\n- Subagents（分派子任務）\n- Long-running（可跑幾十分鐘）\n- Skills（學你的 codebase 慣例）\n- Terminal-first（任何 IDE 都能用）\n\n## Codex（OpenAI）\n\n- OpenAI 的終端 / 雲端 agent（詳見 Ch48.4b）\n- **強項**：CLI + IDE + 雲端三種介面、approval 三段模式、ChatGPT 方案內含\n- **適合**：已經付 ChatGPT Plus / Pro 的人、想要雲端跑長任務\n- **價格**：ChatGPT Plus / Pro 內含，或 API 按量\n\n### 殺手特色\n- Codex Cloud（雲端 agent 跑完直接開 PR）\n- approval 三段（suggest / auto-edit / full-auto）\n- AGENTS.md（專案規範檔，等同 CLAUDE.md）\n\n## Windsurf（Codeium）\n- Cursor 替代、設計師友善\n- 免費 plan 強\n- 適合個人 / 學生\n\n## 選擇建議\n\n| 場景 | 推薦 |\n|---|---|\n| 純寫 code（90%）| Cursor |\n| Refactor / 新 feature | Claude Code |\n| 已付 ChatGPT | Cursor + Codex 雙軌 |\n| 已付 Claude | Cursor + Claude Code 雙軌 |\n| 預算有限 | Windsurf 或 Cursor 免費 |\n\n## 真實工作流\n```\n日常寫 code      → Cursor（Cmd+K / Tab）\n複雜 / 重構      → Claude Code 或 Codex\n跨檔案 refactor  → Cursor Composer\n研究新東西       → Claude.ai chat\n```\n\n## 不適合 AI 場景\n- 公司有資料隱私規範\n- 金融 / 醫療嚴規範\n- 學習階段（自己寫才學會）\n\n## 心法\n- AI 不是替代你、是放大你\n- 你要會看 code、否則接不到爛 code\n- 永遠 review、不 ship AI 直出\n\n**☕ 用人話講**\n\nCursor / Claude Code / Windsurf 三選一——各自的殺手特色怎麼選。**一句話記住**：像選車——各有殺手鐧，挑一個用到熟，比三個都半調子強得多。\n",
+      "content": "## Cursor\n\n![Cursor 安裝 + 第一次設定（一）](/lesson-img/ch48/ch48_cursor_setup1.png)\n\n![Cursor 安裝 + 第一次設定（二）](/lesson-img/ch48/ch48_cursor_setup2.png)\n\n- AI-native VS Code fork\n- **強項**：Tab 補全流暢、UI 順手\n- **適合**：日常 90% 場景\n- **價格**：$20/月\n\n### 殺手特色\n- Tab Tab Tab（游標跳下個編輯位置）\n- Cmd+K（行內生成 / 改寫）\n- Cmd+L（右邊 chat + @file reference）\n- Composer（跨檔案大改造）\n- Apply（1 鍵套用 suggestion）\n\n## Claude Code\n\n![Claude Code / Codex CLI：裝 → 登入 → 在專案下指令](/lesson-img/ch48/ch48_codex_cli.png)\n\n- CLI agentic tool\n- **強項**：深度推理、自主完成複雜任務\n- **適合**：refactor / 新 feature / debug\n- **價格**：Claude Max plan\n\n### 殺手特色\n- Plan mode（先計畫再動工）\n- Subagents（分派子任務）\n- Long-running（可跑幾十分鐘）\n- Skills（學你的 codebase 慣例）\n- Terminal-first（任何 IDE 都能用）\n\n## Codex（OpenAI）\n\n- OpenAI 的終端 / 雲端 agent（詳見 Ch48.4b）\n- **強項**：CLI + IDE + 雲端三種介面、approval 三段模式、ChatGPT 方案內含\n- **適合**：已經付 ChatGPT Plus / Pro 的人、想要雲端跑長任務\n- **價格**：ChatGPT Plus / Pro 內含，或 API 按量\n\n### 殺手特色\n- Codex Cloud（雲端 agent 跑完直接開 PR）\n- approval 三段（suggest / auto-edit / full-auto）\n- AGENTS.md（專案規範檔，等同 CLAUDE.md）\n\n## Gemini CLI / Antigravity（Google）\n\n- Google 的終端 agent（詳見 Ch48.4d）\n- **強項**：免費額度最大、Google 搜尋 grounding、1M context、多 agent 編排\n- **注意**：Gemini CLI 2026/6/18 起對個人方案停止服務，改推 **Antigravity CLI**（接班人）\n- **價格**：個人 Google 帳號有免費額度（約 60 次/分、1000 次/天）\n\n## Windsurf（Codeium）\n- Cursor 替代、設計師友善\n- 免費 plan 強\n- 適合個人 / 學生\n\n## 選擇建議\n\n| 場景 | 推薦 |\n|---|---|\n| 純寫 code（90%）| Cursor |\n| Refactor / 新 feature | Claude Code |\n| 已付 ChatGPT | Cursor + Codex 雙軌 |\n| 已付 Claude | Cursor + Claude Code 雙軌 |\n| 想零成本練手 | Google Gemini / Antigravity（免費額度大） |\n| 預算有限 | Windsurf 或 Cursor 免費 |\n\n## 真實工作流\n```\n日常寫 code      → Cursor（Cmd+K / Tab）\n複雜 / 重構      → Claude Code 或 Codex\n跨檔案 refactor  → Cursor Composer\n研究新東西       → Claude.ai chat\n```\n\n## 不適合 AI 場景\n- 公司有資料隱私規範\n- 金融 / 醫療嚴規範\n- 學習階段（自己寫才學會）\n\n## 心法\n- AI 不是替代你、是放大你\n- 你要會看 code、否則接不到爛 code\n- 永遠 review、不 ship AI 直出\n\n**☕ 用人話講**\n\nCursor / Claude Code / Windsurf 三選一——各自的殺手特色怎麼選。**一句話記住**：像選車——各有殺手鐧，挑一個用到熟，比三個都半調子強得多。\n",
       "tip": {
         "type": "practical",
         "text": "三個工具先各用一天做同一個小任務，憑實際手感選；工具一直在變，重點是養成『會用 AI 協作』的習慣。"
