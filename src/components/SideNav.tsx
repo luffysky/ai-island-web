@@ -349,8 +349,9 @@ export function SideNav() {
                       </span>
                     </button>
 
-                    {isOpenCh &&
-                      ch.lessons.map((l) => {
+                    {isOpenCh && (
+                    <div className="animate-expand">
+                    {ch.lessons.map((l) => {
                         const isOpenLs = expandedLs.has(l.id);
                         const hasOutline = l.outline && l.outline.length > 0;
                         return (
@@ -383,7 +384,7 @@ export function SideNav() {
                             </div>
 
                             {isOpenLs && hasOutline && (
-                              <ul className="pl-14 pr-3 py-1 bg-bg/60 space-y-0.5">
+                              <ul className="pl-14 pr-3 py-1 bg-bg/60 space-y-0.5 animate-expand">
                                 {l.outline!.map((item, i) => (
                                   <li
                                     key={i}
@@ -402,6 +403,8 @@ export function SideNav() {
                           </div>
                         );
                       })}
+                    </div>
+                    )}
                   </div>
                 );
               })}

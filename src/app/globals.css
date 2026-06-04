@@ -366,6 +366,62 @@ html[data-theme="light"] ::-webkit-scrollbar-track { background: var(--color-bg-
   animation: sidenavTipIn 0.14s ease-out;
 }
 
+/* ============================================================
+   全站互動順滑 — 所有可互動元素的 hover / focus / active 都有過渡。
+   component 自帶的 transition-* class 權重更高、會覆蓋這裡的預設；
+   reduced-motion 由上方 `*` 規則統一歸零，不影響無障礙。
+   ============================================================ */
+a,
+button,
+summary,
+label,
+select,
+input,
+textarea,
+[role="button"],
+[role="tab"],
+[role="switch"],
+[role="menuitem"],
+[role="option"],
+[class*="hover:"],
+[class*="cursor-pointer"] {
+  transition-property: color, background-color, border-color, fill, stroke,
+    opacity, box-shadow, transform, filter;
+  transition-duration: 200ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 展開 / 出現動畫 — 給 accordion、dropdown、條件渲染的內容用 */
+@keyframes expandIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-expand { animation: expandIn 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.animate-fade-in { animation: fadeIn 0.25s ease-out; }
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.animate-scale-in { animation: scaleIn 0.18s cubic-bezier(0.4, 0, 0.2, 1); }
+
+/* 內容圖片：RWD 安全網（不超出容器）+ 載入淡入、避免硬跳 */
+.prose-custom img,
+article img {
+  max-width: 100%;
+  height: auto;
+  transition: opacity 0.3s ease;
+}
+
+/* RWD 安全網：超長字串（URL / 無空格 code）在窄螢幕自動換行不破版 */
+.prose-custom,
+article p,
+article li {
+  overflow-wrap: anywhere;
+}
+
 /* Markdown content */
 .prose-custom { @apply break-words; min-width: 0; }
 .prose-custom h2 { @apply text-2xl font-bold mt-8 mb-4 text-accent; }
