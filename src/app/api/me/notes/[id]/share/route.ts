@@ -5,6 +5,15 @@ import { randomBytes } from "node:crypto";
 
 export const dynamic = "force-dynamic";
 
+// 對外網址：用設定的正式網域（Zeabur proxy 後面 req.origin 會是 0.0.0.0:8080）
+function siteOrigin(req: NextRequest) {
+  const env = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "");
+  if (env) return env;
+  const host = req.headers.get("x-forwarded-host") ?? req.headers.get("host");
+  const proto = req.headers.get("x-forwarded-proto") ?? "https";
+  return host ? `${proto}://${host}` : req.nextUrl.origin;
+}
+
 // 邀請碼：去掉易混字元的 10 碼
 function genCode() {
   const ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
@@ -57,7 +66,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
   const { admin, note, isOwner, isCollab } = await loadContext(id, user.id);
   if (!note) return NextResponse.json({ error: "not_found" }, { status: 404 });
   if (!isOwner && !isCollab) return NextResponse.json({ error: "forbidden" }, { status: 403 });
-  const state = await shareState(admin, note, req.nextUrl.origin);
+  const state = await shareState(admin, note, siteOrigin(req));
   return NextResponse.json({ isOwner, ...state });
 }
 
@@ -98,7 +107,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     console.error("[note share] code_gen_failed:", lastErr);
     return NextResponse.json({ error: "code_gen_failed", message: lastErr || "產生邀請碼失敗" }, { status: 500 });
   }
-  return NextResponse.json({ code: invite.code, url: `${req.nextUrl.origin}/notes/join/${invite.code}` });
+  return NextResponse.json({ code: invite.code, url: `${siteOrigin(req)}/notes/join/${invite.code}` });
 }
 
 // 設定協作者權限：editor（可編輯）/ viewer（唯讀）— 只有擁有者
