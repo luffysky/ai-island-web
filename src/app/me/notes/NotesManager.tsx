@@ -17,9 +17,10 @@ import { NotesBackgroundPicker } from "./NotesBackgroundPicker";
 import { FloatingNotesOverlay } from "./FloatingNotesOverlay";
 import { DEFAULT_NOTES_BG, loadNotesBg, saveNotesBg, notesBgStyle, type NotesBgConfig } from "@/lib/notes-background";
 import { STICKY_COLORS, clampOpacity, noteBgImgStyle, DEFAULT_NOTE_BG, type NoteBg } from "@/lib/note-sticky";
+import { nextSrs, isDue, dueLabel, type SrsRating } from "@/lib/note-srs";
 import { loadFolders, saveFolders, folderDropId, FOLDER_DROP_PREFIX, UNCATEGORIZED } from "@/lib/note-folders";
 import { useToast } from "@/components/ui/Toast";
-import { Plus, X, Save, Loader2, Sparkles, GripVertical, Folder, FolderPlus, Image as ImageIcon, RotateCw, Copy, Link2, Search } from "lucide-react";
+import { Plus, X, Save, Loader2, Sparkles, GripVertical, Folder, FolderPlus, Image as ImageIcon, RotateCw, Copy, Link2, Search, Repeat2 } from "lucide-react";
 
 const UNCAT_FILTER = "__uncat__";
 
@@ -172,18 +173,49 @@ function FolderBar({
   );
 }
 
+type ReviewRow = { note_id: string; due_at: string; interval_days: number; ease: number; reviews: number };
+
 export function NotesManager({
   initial,
   chapterMap,
   meId,
+  initialReviews = [],
 }: {
   initial: ManagedNote[];
   chapterMap: Record<string, { chapterTitle: string; lessonTitle: string }>;
   meId: string;
+  initialReviews?: ReviewRow[];
 }) {
   const supabase = createSupabaseBrowser();
   const toast = useToast();
   const [notes, setNotes] = useState<ManagedNote[]>(initial);
+  const [reviews, setReviews] = useState<Record<string, ReviewRow>>(
+    () => Object.fromEntries(initialReviews.map((r) => [r.note_id, r])),
+  );
+
+  // SRS：加入複習 / 評分重排 / 移除
+  const addReview = async (noteId: string) => {
+    const due = new Date(Date.now() + 86400_000).toISOString(); // 明天第一次
+    const row: ReviewRow = { note_id: noteId, due_at: due, interval_days: 1, ease: 2.5, reviews: 0 };
+    setReviews((r) => ({ ...r, [noteId]: row }));
+    await supabase.from("note_reviews").upsert({ ...row, user_id: meId }, { onConflict: "note_id,user_id" });
+    toast.success("已加入間隔複習");
+  };
+  const removeReview = async (noteId: string) => {
+    setReviews((r) => { const c = { ...r }; delete c[noteId]; return c; });
+    await supabase.from("note_reviews").delete().eq("note_id", noteId).eq("user_id", meId);
+  };
+  const rateReview = async (noteId: string, rating: SrsRating) => {
+    const cur = reviews[noteId];
+    if (!cur) return;
+    const nx = nextSrs({ interval_days: cur.interval_days, ease: cur.ease, reviews: cur.reviews }, rating);
+    const row: ReviewRow = { note_id: noteId, due_at: nx.due_at, interval_days: nx.interval_days, ease: nx.ease, reviews: nx.reviews };
+    setReviews((r) => ({ ...r, [noteId]: row }));
+    await supabase.from("note_reviews").update({
+      due_at: nx.due_at, interval_days: nx.interval_days, ease: nx.ease, reviews: nx.reviews, last_reviewed_at: new Date().toISOString(),
+    }).eq("note_id", noteId).eq("user_id", meId);
+  };
+  const dueNotes = notes.filter((n) => reviews[n.id] && isDue(reviews[n.id].due_at));
   const [editing, setEditing] = useState<ManagedNote | "new" | null>(null);
   const [fCat, setFCat] = useState("");
   const [fTag, setFTag] = useState("");
@@ -382,6 +414,30 @@ export function NotesManager({
       )}
       </div>
 
+      {dueNotes.length > 0 && (
+        <div className="rounded-xl border border-accent/40 bg-accent/[0.06] p-3 space-y-2">
+          <div className="flex items-center gap-1.5 text-sm font-semibold"><Repeat2 size={15} /> 📚 今日複習（{dueNotes.length}）</div>
+          {dueNotes.map((n) => {
+            const meta = chapterMap[n.lesson_id ?? ""] ?? chapterMap[`ch${n.chapter_id}`] ?? null;
+            const preview = n.content.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().slice(0, 80);
+            return (
+              <div key={n.id} className="rounded-lg bg-bg-card border border-border p-2.5 flex items-start gap-2">
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium truncate">{n.title?.trim() || meta?.lessonTitle || "自由筆記"}</div>
+                  <div className="text-xs text-fg-muted line-clamp-2">{preview || "（空白）"}</div>
+                </div>
+                <div className="flex items-center gap-1 shrink-0">
+                  <button type="button" onClick={() => rateReview(n.id, "forgot")} className="text-xs px-2 py-1 rounded bg-red-500/10 text-red-500 hover:bg-red-500/20 transition">忘了</button>
+                  <button type="button" onClick={() => rateReview(n.id, "hard")} className="text-xs px-2 py-1 rounded bg-amber-500/10 text-amber-600 hover:bg-amber-500/20 transition">模糊</button>
+                  <button type="button" onClick={() => rateReview(n.id, "good")} className="text-xs px-2 py-1 rounded bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 transition">記得</button>
+                </div>
+              </div>
+            );
+          })}
+          <div className="text-[11px] text-fg-muted">評分後自動排下次：忘了→1 天、模糊→稍長、記得→間隔加大</div>
+        </div>
+      )}
+
       {editing && (
         <NoteEditor
           note={editing === "new" ? null : editing}
@@ -429,6 +485,8 @@ export function NotesManager({
                       onEdit={() => setEditing(n)}
                       onDelete={() => del(n)}
                       onPin={() => togglePin(n)}
+                      srsDue={reviews[n.id]?.due_at ?? null}
+                      onToggleReview={() => (reviews[n.id] ? removeReview(n.id) : addReview(n.id))}
                     />
                   </SortableNoteCard>
                 );
@@ -456,6 +514,8 @@ export function NotesManager({
                   onEdit={() => setEditing(n)}
                   onDelete={() => del(n)}
                   onPin={() => togglePin(n)}
+                  srsDue={reviews[n.id]?.due_at ?? null}
+                  onToggleReview={() => (reviews[n.id] ? removeReview(n.id) : addReview(n.id))}
                 />
               );
             })}

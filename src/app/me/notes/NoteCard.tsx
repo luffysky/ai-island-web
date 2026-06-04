@@ -3,10 +3,11 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { ChevronDown, ChevronUp, ArrowRight, Pencil, Trash2, Copy, Check, LogOut, Eye, Pin } from "lucide-react";
+import { ChevronDown, ChevronUp, ArrowRight, Pencil, Trash2, Copy, Check, LogOut, Eye, Pin, Repeat2 } from "lucide-react";
 import { formatTW } from "@/lib/format-date";
 import { sanitizeRichHtml } from "@/lib/rich-html";
 import { resolveSticky, stickyRotate, clampOpacity, hexToRgba, noteBgImgStyle, type NoteBg } from "@/lib/note-sticky";
+import { dueLabel } from "@/lib/note-srs";
 
 // HTML → 純文字（保留換行）給「點一下複製」用
 function htmlToPlain(html: string): string {
@@ -29,6 +30,8 @@ export function NoteCard({
   onEdit,
   onDelete,
   onPin,
+  srsDue,
+  onToggleReview,
 }: {
   note: {
     id: string;
@@ -56,6 +59,8 @@ export function NoteCard({
   onEdit?: () => void;
   onDelete?: () => void;
   onPin?: () => void;
+  srsDue?: string | null;
+  onToggleReview?: () => void;
 }) {
   const owned = note._owned ?? (note.user_id === meId);
   const isViewer = !owned && note._role === "viewer";
@@ -238,6 +243,17 @@ export function NoteCard({
           {note.likes > 0 && <span className="ml-2">👍 {note.likes}</span>}
         </div>
         <div className="flex items-center gap-1.5">
+          {onToggleReview && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onToggleReview(); }}
+              className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded transition hover:bg-black/10"
+              style={{ color: srsDue ? "#7c3aed" : "#444" }}
+              title={srsDue ? `間隔複習・${dueLabel(srsDue)}（點一下移除）` : "加入間隔複習"}
+            >
+              <Repeat2 size={12} className={srsDue ? "fill-current" : ""} />
+              {srsDue && <span className="hidden sm:inline">{dueLabel(srsDue)}</span>}
+            </button>
+          )}
           {onPin && (
             <button
               onClick={(e) => { e.stopPropagation(); onPin(); }}

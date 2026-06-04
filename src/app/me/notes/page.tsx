@@ -40,6 +40,12 @@ export default async function NotesPage() {
     ...sharedNotes.map((n) => ({ ...n, _owned: false, _shared: true, _role: roleByNote.get(n.id) ?? "editor" })),
   ];
 
+  // SRS 間隔複習排程
+  const { data: reviewRows } = await supabase
+    .from("note_reviews")
+    .select("note_id, due_at, interval_days, ease, reviews")
+    .eq("user_id", user.id);
+
   // 章節 / lesson 標題對照（卡片顯示用）
   const chapterMap: Record<string, { chapterTitle: string; lessonTitle: string }> = {};
   for (const ch of chapters) {
@@ -61,7 +67,7 @@ export default async function NotesPage() {
         {list.length > 0 && <NotesExportButton />}
       </div>
 
-      <NotesManager initial={list} chapterMap={chapterMap} meId={user.id} />
+      <NotesManager initial={list} chapterMap={chapterMap} meId={user.id} initialReviews={(reviewRows ?? []) as any} />
     </div>
   );
 }

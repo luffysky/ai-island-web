@@ -22,6 +22,7 @@ const MIGRATIONS = [
   "ai_models_tier_migration.sql",           // → ai_models.tier（AI 路由分級）
   "profiles_email_sync_migration.sql",      // → profiles.email（鏡射 auth、含同步 trigger）
   "daily_quiz_pass_migration.sql",          // → daily_quiz_attempts.pass（計算欄、正確率≥60%）
+  "note_reviews_migration.sql",             // → note_reviews（筆記 SRS 間隔複習）
 ];
 
 const env = Object.fromEntries(
