@@ -357,6 +357,15 @@ html[data-theme="light"] ::-webkit-scrollbar-track { background: var(--color-bg-
   }
 }
 
+/* SideNav hover 泡泡：淡入 + 從左滑出一點 */
+@keyframes sidenavTipIn {
+  from { opacity: 0; transform: translate(-6px, -50%); }
+  to   { opacity: 1; transform: translate(0, -50%); }
+}
+.sidenav-tip {
+  animation: sidenavTipIn 0.14s ease-out;
+}
+
 /* Markdown content */
 .prose-custom { @apply break-words; min-width: 0; }
 .prose-custom h2 { @apply text-2xl font-bold mt-8 mb-4 text-accent; }

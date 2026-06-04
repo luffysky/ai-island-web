@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { chapterDisplayNumberById } from "@/lib/chapter-display";
@@ -49,6 +50,15 @@ export function SideNav() {
     return () => document.body.classList.remove("sidenav-open");
   }, [open]);
   const [tab, setTab] = useState<Tab>("chapters");
+  // hover 泡泡：顯示 lesson 完整名稱（側欄會 truncate，hover 看全名）
+  const [mounted, setMounted] = useState(false);
+  const [tip, setTip] = useState<{ num: string; text: string; x: number; y: number } | null>(null);
+  useEffect(() => setMounted(true), []);
+  const showTip = (e: React.MouseEvent<HTMLElement>, num: string, text: string) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    setTip({ num, text, x: r.right + 12, y: r.top + r.height / 2 });
+  };
+  const hideTip = () => setTip(null);
   const [chapters, setChapters] = useState<NavChapter[]>([]);
   const [expandedCh, setExpandedCh] = useState<Set<number>>(new Set());
   const [expandedLs, setExpandedLs] = useState<Set<string>>(new Set());
@@ -349,6 +359,8 @@ export function SideNav() {
                               <Link
                                 href={`/chapters/${ch.id}#lesson-${l.id}`}
                                 onClick={() => setOpen(false)}
+                                onMouseEnter={(e) => showTip(e, l.number, l.title)}
+                                onMouseLeave={hideTip}
                                 className="flex-1 flex items-center gap-2 px-3 py-1.5 pl-9 text-xs hover:bg-bg-elevated transition min-w-0"
                               >
                                 <span className="text-fg-muted font-mono shrink-0">
@@ -543,6 +555,25 @@ export function SideNav() {
         </div>
         </div>
       </aside>
+
+      {/* Hover 泡泡：lesson 完整名稱（portal 到 body、不被側欄 overflow 裁切）*/}
+      {mounted && tip && createPortal(
+        <div
+          className="sidenav-tip pointer-events-none fixed z-[60] max-w-xs -translate-y-1/2"
+          style={{ left: tip.x, top: tip.y }}
+        >
+          <div className="relative rounded-xl border border-accent/40 bg-bg-card/95 px-3 py-2 shadow-2xl backdrop-blur-sm">
+            {/* 左側小箭頭 */}
+            <span className="absolute right-full top-1/2 -translate-y-1/2 border-[6px] border-transparent border-r-accent/40" />
+            <span className="absolute right-full top-1/2 -translate-y-1/2 mr-[-1px] border-[6px] border-transparent border-r-bg-card" />
+            <div className="flex items-baseline gap-2">
+              <span className="shrink-0 font-mono text-[10px] text-accent">{tip.num}</span>
+              <span className="text-xs font-medium leading-snug text-fg">{tip.text}</span>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </>
   );
 }
