@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
       patch.onboarding_pet_picked = body.pet_picked;
       // 也同步建寵物（如果還沒有）
       try {
-        const { data: existing } = await admin.from("pets").select("id").eq("user_id", user.id).maybeSingle();
+        const { data: existing } = await admin.from("pets").select("user_id").eq("user_id", user.id).maybeSingle();
         if (!existing) {
           await admin.from("pets").insert({ user_id: user.id, species: body.pet_picked, walk_enabled: true, proactive_enabled: true });
         } else {

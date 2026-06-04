@@ -17,6 +17,9 @@ const MIGRATIONS = [
   "notes_title_migration.sql",            // → notes.title（可選標題、nullable）
   "notes_invite_role_migration.sql",      // → note_invites.role（邀請碼帶預設權限 editor/viewer）
   "tickets_body_email_migration.sql",     // → tickets.body / email（客服工單內文+聯絡信箱、API/後台都用到）
+  "subscriptions_granted_by_migration.sql", // → subscriptions.granted_by（手動授予者）
+  "soft_delete_columns_migration.sql",      // → forum_threads/user_blog_articles.deleted_at（軟刪除）
+  "ai_models_tier_migration.sql",           // → ai_models.tier（AI 路由分級）
 ];
 
 const env = Object.fromEntries(

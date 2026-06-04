@@ -50,8 +50,8 @@ export async function getPeriodReport(days: number): Promise<string> {
     admin.from("orders").select("amount, status").gte("created_at", thisStart),
     admin.from("orders").select("amount, status").gte("created_at", prevStart).lt("created_at", prevEnd),
     // 錯誤
-    admin.from("error_logs").select("*", { count: "exact", head: true }).gte("created_at", thisStart),
-    admin.from("error_logs").select("*", { count: "exact", head: true }).gte("created_at", prevStart).lt("created_at", prevEnd),
+    admin.from("error_logs").select("*", { count: "exact", head: true }).gte("occurred_at", thisStart),
+    admin.from("error_logs").select("*", { count: "exact", head: true }).gte("occurred_at", prevStart).lt("occurred_at", prevEnd),
     // 完課（lesson_progress.completed_at）
     admin.from("lesson_progress").select("*", { count: "exact", head: true }).gte("completed_at", thisStart).not("completed_at", "is", null),
     admin.from("lesson_progress").select("*", { count: "exact", head: true }).gte("completed_at", prevStart).lt("completed_at", prevEnd).not("completed_at", "is", null),
@@ -59,7 +59,7 @@ export async function getPeriodReport(days: number): Promise<string> {
     admin.from("forum_threads").select("*", { count: "exact", head: true }).gte("created_at", thisStart),
     admin.from("forum_replies").select("*", { count: "exact", head: true }).gte("created_at", thisStart),
     // 高頻 error source top 3
-    admin.from("error_logs").select("source").gte("created_at", thisStart).limit(500),
+    admin.from("error_logs").select("source").gte("occurred_at", thisStart).limit(500),
     // 最活躍用戶 top 5（用 lesson_progress count）
     admin.from("xp_events").select("user_id, amount").gte("created_at", thisStart).limit(1000),
   ]);

@@ -102,8 +102,8 @@ async function handleCheckoutCompleted(session: any) {
       user_id: userId,
       plan: "single",
       status: "active",
-      start_date: new Date().toISOString(),
-      end_date: null,
+      started_at: new Date().toISOString(),
+      expires_at: null,
       granted_by: "stripe_oneshot",
     }, { onConflict: "user_id" });
     await syncDiscordRole(userId, true);
@@ -145,8 +145,8 @@ async function handleSubscriptionUpsert(sub: any) {
     user_id: userId,
     plan: plan ?? "monthly",
     status: isActive ? "active" : sub.status,
-    start_date: sub.current_period_start ? new Date(sub.current_period_start * 1000).toISOString() : new Date().toISOString(),
-    end_date: sub.current_period_end ? new Date(sub.current_period_end * 1000).toISOString() : null,
+    started_at: sub.current_period_start ? new Date(sub.current_period_start * 1000).toISOString() : new Date().toISOString(),
+    expires_at: sub.current_period_end ? new Date(sub.current_period_end * 1000).toISOString() : null,
     granted_by: "stripe",
   }, { onConflict: "user_id" });
 

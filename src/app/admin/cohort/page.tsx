@@ -79,7 +79,7 @@ export default async function AdminCohortPage() {
   const { data: distinctLessonUsers } = await admin
     .from("lesson_progress")
     .select("user_id")
-    .gte("created_at", sinceIso)
+    .gte("completed_at", sinceIso)
     .limit(100000);
   const counts: Record<string, number> = {};
   for (const r of distinctLessonUsers ?? []) {

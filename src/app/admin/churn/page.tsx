@@ -39,11 +39,11 @@ export default async function AdminChurnPage({
       .gte("completed_at", since90),
     ids.length === 0 ? { data: [] as any[] } : admin
       .from("orders")
-      .select("user_id, amount_twd")
+      .select("user_id, amount_twd:amount")
       .in("user_id", ids)
       .eq("status", "paid"),
     ids.length === 0 ? { data: [] as any[] } : admin
-      .from("zcoin_ledger")
+      .from("coin_transactions")
       .select("user_id, amount")
       .in("user_id", ids)
       .lt("amount", 0),

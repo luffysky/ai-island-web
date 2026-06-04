@@ -39,10 +39,10 @@ export async function GET(req: NextRequest) {
     admin.from("profiles").select("*", { count: "exact", head: true }).gte("last_active_at", new Date(Date.now() - 7 * 86400_000).toISOString()).is("banned_at", null),
     admin.from("subscriptions").select("*", { count: "exact", head: true }).eq("status", "active"),
     admin.from("ai_conversations").select("*", { count: "exact", head: true }).gte("created_at", since),
-    admin.from("error_logs").select("*", { count: "exact", head: true }).gte("created_at", since),
+    admin.from("error_logs").select("*", { count: "exact", head: true }).gte("occurred_at", since),
     admin.from("lesson_progress").select("user_id").gte("completed_at", since).limit(50000),
-    admin.from("orders").select("amount_twd, status").gte("created_at", since),
-    admin.from("orders").select("amount_twd, status").gte("created_at", prevSince).lt("created_at", since),
+    admin.from("orders").select("amount_twd:amount, status").gte("created_at", since),
+    admin.from("orders").select("amount_twd:amount, status").gte("created_at", prevSince).lt("created_at", since),
   ]);
 
   const [

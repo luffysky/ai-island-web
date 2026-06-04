@@ -21,7 +21,7 @@ export async function POST(_req: NextRequest) {
   // 一日一次（用 zcoin_ledger reason 鎖、即使睡覺只加 heart 不加 coin）
   try {
     const { data: existing } = await admin
-      .from("zcoin_ledger")
+      .from("coin_transactions")
       .select("id")
       .eq("user_id", user.id)
       .eq("reason", reason)
@@ -39,7 +39,7 @@ export async function POST(_req: NextRequest) {
 
   // 寫一筆 0 amount ledger 作為 dedupe 標記
   try {
-    await admin.from("zcoin_ledger").insert({ user_id: user.id, amount: 0, reason, balance_after: 0 });
+    await admin.from("coin_transactions").insert({ user_id: user.id, amount: 0, reason, balance_after: 0 });
   } catch {}
 
   return NextResponse.json({ ok: true, hearts: next });

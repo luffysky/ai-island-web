@@ -21,7 +21,7 @@ export default async function ZcoinPage() {
   const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
   const { data: monthTxs } = await supabase
     .from("coin_transactions")
-    .select("amount, type")
+    .select("amount, type:reason")
     .gte("created_at", startOfMonth);
 
   const inflow = monthTxs?.filter((t: any) => t.amount > 0).reduce((s: number, t: any) => s + t.amount, 0) ?? 0;

@@ -232,7 +232,7 @@ export default async function AdminOverviewPage() {
   // === AI 預算進度（enabled keys 各一條進度條）===
   const { data: aiKeys } = await supabase
     .from("ai_api_keys")
-    .select("provider, enabled, monthly_budget_usd, used_this_month_usd, reset_date")
+    .select("provider, enabled, monthly_budget_usd, used_this_month_usd, reset_date:reset_at")
     .eq("enabled", true);
   const budgetView = (aiKeys ?? []).map((k: any) => {
     const used = Number(k.used_this_month_usd ?? 0);

@@ -36,7 +36,7 @@ export async function GET(req: NextRequest) {
     admin.from("profiles").select("*", { count: "exact", head: true }).gte("last_active_at", new Date(Date.now() - 7 * 86400_000).toISOString()).is("banned_at", null),
     admin.from("subscriptions").select("*", { count: "exact", head: true }).eq("status", "active"),
     admin.from("lesson_progress").select("user_id").gte("completed_at", since).limit(50000),
-    admin.from("orders").select("amount_twd").eq("status", "paid").gte("created_at", since),
+    admin.from("orders").select("amount_twd:amount").eq("status", "paid").gte("created_at", since),
   ] as any);
 
   const revenue = ((orders as any[]) ?? []).reduce((s, o: any) => s + Number(o.amount_twd ?? 0), 0);

@@ -47,8 +47,8 @@ async function handle() {
     admin.from("profiles").select("username, display_name, level, xp, streak_days, created_at").eq("id", user.id).maybeSingle(),
     admin.from("lesson_progress").select("lesson_id", { count: "exact", head: true }).eq("user_id", user.id),
     admin.from("lesson_progress").select("chapter_id", { count: "exact", head: true }).eq("user_id", user.id),
-    admin.from("ai_messages").select("id", { count: "exact", head: true }).eq("user_id", user.id),
-    admin.from("subscriptions").select("plan, status, end_date").eq("user_id", user.id).eq("status", "active").maybeSingle(),
+    admin.from("ai_conversations").select("id", { count: "exact", head: true }).eq("user_id", user.id),
+    admin.from("subscriptions").select("plan, status, end_date:expires_at").eq("user_id", user.id).eq("status", "active").maybeSingle(),
   ] as any);
 
   // 跨表 distinct chapter

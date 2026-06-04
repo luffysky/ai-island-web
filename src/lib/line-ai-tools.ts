@@ -229,8 +229,8 @@ async function getRecentErrors(n: number, level?: string, source?: string): Prom
   const n2 = Math.max(1, Math.min(20, Number(n) || 5));
   const admin = createSupabaseAdmin();
   let q = admin.from("error_logs")
-    .select("id, level, source, message, created_at")
-    .order("created_at", { ascending: false })
+    .select("id, level, source, message, created_at:occurred_at")
+    .order("occurred_at", { ascending: false })
     .limit(n2);
   if (level) q = q.eq("level", level);
   if (source) q = q.ilike("source", `%${source}%`);

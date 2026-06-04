@@ -47,7 +47,7 @@ export default async function ImpersonateViewerPage({
     { data: todos },
     { data: lastEvents },
   ] = await Promise.all([
-    admin.from("lesson_progress").select("chapter_id, lesson_id, created_at").eq("user_id", id).order("created_at", { ascending: false }).limit(10),
+    admin.from("lesson_progress").select("chapter_id, lesson_id, created_at:completed_at").eq("user_id", id).order("completed_at", { ascending: false }).limit(10),
     admin.from("notes").select("id, content, lesson_id, updated_at").eq("user_id", id).order("updated_at", { ascending: false }).limit(10),
     admin.from("bookmarks").select("id, lesson_id, lesson_title, created_at").eq("user_id", id).order("created_at", { ascending: false }).limit(10),
     admin.from("todos").select("*").eq("user_id", id).eq("completed", false).order("created_at", { ascending: false }).limit(10),

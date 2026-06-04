@@ -79,7 +79,7 @@ export async function GET() {
     safe(admin.from("todos").select("*").eq("user_id", uid)),
     safe(admin.from("pets").select("*").eq("user_id", uid).maybeSingle()),
     safe(admin.from("user_settings").select("*").eq("user_id", uid).maybeSingle()),
-    safe(admin.from("ai_conversations").select("id, title, model, created_at, updated_at").eq("user_id", uid)),
+    safe(admin.from("ai_conversations").select("id, title, model:model_id, created_at, updated_at").eq("user_id", uid)),
     safeCount(admin.from("ai_messages").select("*", { count: "exact", head: true }).eq("user_id", uid)),
     safeCount(admin.from("analytics_sessions").select("*", { count: "exact", head: true }).eq("user_id", uid)),
   ]);

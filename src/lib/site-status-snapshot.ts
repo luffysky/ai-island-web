@@ -53,8 +53,8 @@ async function build(): Promise<string> {
   const queries = await Promise.allSettled([
     admin.from("profiles").select("*", { count: "exact", head: true }),
     admin.from("profiles").select("*", { count: "exact", head: true }).gte("created_at", isoAgo(86400_000)),
-    admin.from("error_logs").select("*", { count: "exact", head: true }).gte("created_at", isoAgo(3600_000)),
-    admin.from("error_logs").select("*", { count: "exact", head: true }).gte("created_at", isoAgo(86400_000)),
+    admin.from("error_logs").select("*", { count: "exact", head: true }).gte("occurred_at", isoAgo(3600_000)),
+    admin.from("error_logs").select("*", { count: "exact", head: true }).gte("occurred_at", isoAgo(86400_000)),
     admin.from("ai_conversations").select("*", { count: "exact", head: true }).gte("created_at", isoAgo(86400_000)),
     // 30 分鐘內活躍「已登入」session
     admin.from("analytics_sessions").select("*", { count: "exact", head: true })
@@ -74,8 +74,8 @@ async function build(): Promise<string> {
       .order("created_at", { ascending: false })
       .limit(50),
     admin.from("error_logs")
-      .select("level, source, message, created_at")
-      .order("created_at", { ascending: false })
+      .select("level, source, message, created_at:occurred_at")
+      .order("occurred_at", { ascending: false })
       .limit(3),
     admin.from("audit_logs")
       .select("action, actor_username, target_type, created_at")

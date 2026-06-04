@@ -55,7 +55,7 @@ export default async function UserTimelinePage({ params }: { params: Promise<{ i
   ] = await Promise.all([
     admin.from("xp_events").select("amount, reason, created_at").eq("user_id", id).gte("created_at", since).order("created_at", { ascending: false }).limit(50),
     admin.from("coin_transactions").select("amount, reason, created_at, balance_after").eq("user_id", id).gte("created_at", since).order("created_at", { ascending: false }).limit(50),
-    admin.from("lesson_progress").select("chapter_id, lesson_id, created_at").eq("user_id", id).gte("created_at", since).order("created_at", { ascending: false }).limit(50),
+    admin.from("lesson_progress").select("chapter_id, lesson_id, created_at:completed_at").eq("user_id", id).gte("completed_at", since).order("completed_at", { ascending: false }).limit(50),
     admin.from("forum_threads").select("title, created_at").eq("user_id", id).gte("created_at", since).order("created_at", { ascending: false }).limit(20),
     admin.from("forum_replies").select("content, created_at, thread_id").eq("user_id", id).gte("created_at", since).order("created_at", { ascending: false }).limit(30),
     admin.from("user_blog_articles").select("title, created_at, is_public").eq("user_id", id).gte("created_at", since).order("created_at", { ascending: false }).limit(20),

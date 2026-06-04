@@ -146,7 +146,7 @@ async function cmdKpi(args: string[], label?: string): Promise<BotReply> {
     admin.from("profiles").select("*", { count: "exact", head: true }).gte("last_active_at", day1).is("banned_at", null),
     admin.from("subscriptions").select("*", { count: "exact", head: true }).eq("status", "active"),
     admin.from("lesson_progress").select("user_id").gte("completed_at", since).limit(50000),
-    admin.from("orders").select("amount_twd").eq("status", "paid").gte("created_at", since),
+    admin.from("orders").select("amount_twd:amount").eq("status", "paid").gte("created_at", since),
   ] as any);
 
   const revenue = ((orders as any[]) ?? []).reduce((s, o: any) => s + Number(o.amount_twd ?? 0), 0);
@@ -227,9 +227,9 @@ async function cmdErrors(): Promise<BotReply> {
   const admin = createSupabaseAdmin();
   try {
     const { data } = await admin
-      .from("error_log")
-      .select("level, message, path, created_at")
-      .order("created_at", { ascending: false })
+      .from("error_logs")
+      .select("level, message, path:request_path, created_at:occurred_at")
+      .order("occurred_at", { ascending: false })
       .limit(10);
     if (!data || data.length === 0) return { text: "✅ 最近沒有錯誤" };
     const items = (data as any[]).map((e) => {
@@ -300,7 +300,7 @@ async function cmdOrders(args: string[]): Promise<BotReply> {
   const admin = createSupabaseAdmin();
   const { data } = await admin
     .from("orders")
-    .select("id, amount_twd, status, plan_label, created_at, user_id")
+    .select("id, amount_twd:amount, status, plan_label:product_name, created_at, user_id")
     .order("created_at", { ascending: false })
     .limit(n);
   if (!data || data.length === 0) return { text: "📭 沒有訂單" };
@@ -424,7 +424,7 @@ async function cmdIsland(): Promise<BotReply> {
   // 從 zcoin_ledger 抓今日 island_* reason
   try {
     const { data } = await admin
-      .from("zcoin_ledger")
+      .from("coin_transactions")
       .select("reason, amount")
       .gte("created_at", new Date(today).toISOString())
       .like("reason", "island_%")

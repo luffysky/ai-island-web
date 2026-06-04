@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
   // 一天一次
   try {
     const { data: existing } = await admin
-      .from("zcoin_ledger")
+      .from("coin_transactions")
       .select("id")
       .eq("user_id", user.id)
       .eq("reason", reason)
@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
   } else {
     // 非 coin tier 寫一筆 0 amount ledger 作為 dedupe 標記
     try {
-      await admin.from("zcoin_ledger").insert({ user_id: user.id, amount: 0, reason, balance_after: 0 });
+      await admin.from("coin_transactions").insert({ user_id: user.id, amount: 0, reason, balance_after: 0 });
     } catch {}
   }
 

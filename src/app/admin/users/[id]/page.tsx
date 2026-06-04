@@ -44,7 +44,7 @@ export default async function AdminUserDetailPage({
     admin.from("xp_events").select("*").eq("user_id", id).order("created_at", { ascending: false }).limit(20),
     admin.from("coin_transactions").select("*").eq("user_id", id).order("created_at", { ascending: false }).limit(20),
     admin.from("user_achievements").select("achievement_id, unlocked_at").eq("user_id", id).order("unlocked_at", { ascending: false }),
-    admin.from("lesson_progress").select("chapter_id, lesson_id, xp_awarded, created_at", { count: "exact" }).eq("user_id", id).order("created_at", { ascending: false }).limit(10),
+    admin.from("lesson_progress").select("chapter_id, lesson_id, xp_awarded, created_at:completed_at", { count: "exact" }).eq("user_id", id).order("completed_at", { ascending: false }).limit(10),
     admin.from("quiz_attempts").select("*", { count: "exact", head: true }).eq("user_id", id),
     admin.from("ai_conversations").select("id, title, updated_at").eq("user_id", id).order("updated_at", { ascending: false }).limit(10),
     admin.from("bookmarks").select("*", { count: "exact" }).eq("user_id", id).order("created_at", { ascending: false }).limit(10),

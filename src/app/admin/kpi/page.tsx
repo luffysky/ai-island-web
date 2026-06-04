@@ -153,7 +153,7 @@ async function fetchKpi(admin: ReturnType<typeof createSupabaseAdmin>, days: num
 
   const [{ data: progress }, { data: orders }] = await Promise.all([
     admin.from("lesson_progress").select("user_id, chapter_id, lesson_id, completed_at").gte("completed_at", since).limit(50000),
-    admin.from("orders").select("amount_twd, created_at").eq("status", "paid").gte("created_at", since),
+    admin.from("orders").select("amount_twd:amount, created_at").eq("status", "paid").gte("created_at", since),
   ] as any);
 
   const lessonsDone = progress?.length ?? 0;

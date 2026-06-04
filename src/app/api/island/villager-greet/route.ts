@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const { data: existing } = await admin
-      .from("zcoin_ledger")
+      .from("coin_transactions")
       .select("id")
       .eq("user_id", user.id)
       .eq("reason", reason)

@@ -39,8 +39,8 @@ export default async function AdminHealthPage() {
   ] = await Promise.all([
     supabase.from("profiles").select("*", { count: "exact", head: true }),
     supabase.from("profiles").select("*", { count: "exact", head: true }).gte("created_at", oneDayAgo),
-    supabase.from("error_logs").select("*", { count: "exact", head: true }).gte("created_at", oneHourAgo),
-    supabase.from("error_logs").select("*", { count: "exact", head: true }).gte("created_at", oneDayAgo),
+    supabase.from("error_logs").select("*", { count: "exact", head: true }).gte("occurred_at", oneHourAgo),
+    supabase.from("error_logs").select("*", { count: "exact", head: true }).gte("occurred_at", oneDayAgo),
     supabase.from("ai_conversations").select("*", { count: "exact", head: true }).gte("created_at", oneDayAgo),
     supabase.from("active_sessions").select("*", { count: "exact", head: true }).gte("last_seen_at", thirtyMinAgo),
     supabase.from("notifications").select("*", { count: "exact", head: true }).is("read_at", null),
@@ -51,8 +51,8 @@ export default async function AdminHealthPage() {
       .limit(5),
     supabase
       .from("error_logs")
-      .select("id, level, source, message, created_at")
-      .order("created_at", { ascending: false })
+      .select("id, level, source, message, created_at:occurred_at")
+      .order("occurred_at", { ascending: false })
       .limit(5),
   ]);
 

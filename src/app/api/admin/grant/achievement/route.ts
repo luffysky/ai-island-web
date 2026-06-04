@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
   // 已擁有就不再發
   const { data: existing } = await admin
     .from("user_achievements")
-    .select("id")
+    .select("user_id")
     .eq("user_id", userId)
     .eq("achievement_id", achievementId)
     .maybeSingle();

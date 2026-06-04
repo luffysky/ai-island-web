@@ -173,7 +173,7 @@ export async function cmdDigest(): Promise<string> {
     admin.from("profiles").select("id", { count: "exact", head: true }).gte("last_active_at", dayStart),
     admin.from("lesson_progress").select("id", { count: "exact", head: true }).gte("completed_at", dayStart),
     admin.from("ai_messages").select("id", { count: "exact", head: true }).gte("created_at", dayStart),
-    admin.from("error_logs").select("id", { count: "exact", head: true }).gte("created_at", dayStart).in("level", ["error", "fatal"]),
+    admin.from("error_logs").select("id", { count: "exact", head: true }).gte("occurred_at", dayStart).in("level", ["error", "fatal"]),
     admin.from("orders").select("amount, currency, status").gte("created_at", dayStart).eq("status", "paid"),
   ] as any);
 
@@ -420,8 +420,8 @@ export async function cmdGrantPremium(args: string[]): Promise<string> {
     user_id: (user as any).id,
     plan: "monthly",
     status: "active",
-    start_date: new Date().toISOString(),
-    end_date: endDate.toISOString(),
+    started_at: new Date().toISOString(),
+    expires_at: endDate.toISOString(),
     granted_by: "telegram_admin",
   }, { onConflict: "user_id" });
   if (error) return `❌ 失敗：${escapeHTML(error.message)}`;
@@ -455,9 +455,9 @@ export async function cmdGrantPremium(args: string[]): Promise<string> {
 export async function cmdVip(): Promise<string> {
   const admin = createSupabaseAdmin();
   const { data: subs } = await admin.from("subscriptions")
-    .select("user_id, plan, end_date, profiles!inner(username, display_name, level, xp, last_active_at)")
+    .select("user_id, plan, end_date:expires_at, profiles!inner(username, display_name, level, xp, last_active_at)")
     .eq("status", "active")
-    .order("end_date", { ascending: true })
+    .order("expires_at", { ascending: true })
     .limit(15);
 
   if (!subs || subs.length === 0) return "📭 <b>目前沒有 active VIP</b>";
@@ -483,7 +483,7 @@ export async function cmdRisk(): Promise<string> {
   // 規則：active 訂閱、超過 7 天沒登入
   const sevenDaysAgo = new Date(Date.now() - 7 * 86400_000).toISOString();
   const { data: at_risk } = await admin.from("subscriptions")
-    .select("user_id, plan, end_date, profiles!inner(username, display_name, last_active_at)")
+    .select("user_id, plan, end_date:expires_at, profiles!inner(username, display_name, last_active_at)")
     .eq("status", "active")
     .lt("profiles.last_active_at", sevenDaysAgo)
     .limit(15);

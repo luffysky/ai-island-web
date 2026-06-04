@@ -68,9 +68,9 @@ export async function GET(req: NextRequest) {
           .limit(50),
         admin
           .from("quiz_attempts")
-          .select("score_pct")
+          .select("score_pct:score")
           .eq("user_id", p.id)
-          .gte("created_at", todayStartIso)
+          .gte("attempted_at", todayStartIso)
           .limit(100),
         admin
           .from("user_weak_chapters")

@@ -50,10 +50,11 @@ async function handle(req: Request) {
   const [{ data: profile }, lessonsRes, { data: portfolios }, { data: leetcodeBindings }, { count: aiMsgCount }, { data: certs }] = await Promise.all([
     admin.from("profiles").select("username, display_name, level, xp, streak_days, leetcode_username, leetcode_stats, created_at, bio").eq("id", user.id).maybeSingle(),
     admin.from("lesson_progress").select("chapter_id, lesson_id, chapters(title, stage)").eq("user_id", user.id).order("completed_at", { ascending: false }).limit(200),
-    admin.from("portfolios").select("title, description, url, tags").eq("user_id", user.id).eq("is_public", true).limit(20),
+    admin.from("portfolios").select("title, description, slug, tags").eq("user_id", user.id).eq("is_public", true).limit(20),
     admin.from("profiles").select("leetcode_stats").eq("id", user.id).maybeSingle(),
-    admin.from("ai_messages").select("id", { count: "exact", head: true }).eq("user_id", user.id),
-    admin.from("certificates").select("chapter_id, issued_at, verification_code, chapters(title)").eq("user_id", user.id),
+    // ai_messages 沒有 user_id 欄；用對話數當「AI 互動量」代理（ai_conversations 有 user_id）
+    admin.from("ai_conversations").select("id", { count: "exact", head: true }).eq("user_id", user.id),
+    admin.from("certificates").select("cert_type, title, issued_at, verification_code").eq("user_id", user.id),
   ] as any);
 
   const lessons = (lessonsRes.data ?? []) as any[];

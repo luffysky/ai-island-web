@@ -18,7 +18,7 @@ export async function GET() {
     .select("*")
     .eq("user_id", user.id)
     .eq("quest_date", today)
-    .order("created_at");
+    .order("quest_date");
 
   return NextResponse.json({ quests: data ?? [] });
 }

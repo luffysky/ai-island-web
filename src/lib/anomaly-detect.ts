@@ -51,8 +51,8 @@ export async function detectAnomalies(): Promise<Anomaly[]> {
     activeSess30m,
     sess24h,
   ] = await Promise.all([
-    admin.from("error_logs").select("*", { count: "exact", head: true }).gte("created_at", isoAgo(1800_000)),
-    admin.from("error_logs").select("*", { count: "exact", head: true }).gte("created_at", isoAgo(86400_000)),
+    admin.from("error_logs").select("*", { count: "exact", head: true }).gte("occurred_at", isoAgo(1800_000)),
+    admin.from("error_logs").select("*", { count: "exact", head: true }).gte("occurred_at", isoAgo(86400_000)),
     admin.from("tickets").select("*", { count: "exact", head: true }).eq("status", "open"),
     admin.from("env_change_requests").select("*", { count: "exact", head: true }).eq("status", "pending"),
     admin.from("user_reports").select("*", { count: "exact", head: true }).eq("status", "pending"),
