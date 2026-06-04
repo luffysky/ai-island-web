@@ -263,14 +263,14 @@ export function NotesManager({
     }
   };
 
+  // 只 upsert 進列表、不關閉編輯器（關閉由 NoteEditor 的儲存按鈕另外呼叫 onClose）
   const onSaved = (n: ManagedNote) => {
     setNotes((p) => {
       const i = p.findIndex((x) => x.id === n.id);
       // DB row 沒有 _owned/_shared 旗標，沿用既有值，避免存檔後共用徽章消失
-      if (i >= 0) { const c = [...p]; c[i] = { ...n, _owned: p[i]._owned, _shared: p[i]._shared }; return c; }
-      return [{ ...n, _owned: true, _shared: false }, ...p];
+      if (i >= 0) { const c = [...p]; c[i] = { ...n, _owned: p[i]._owned, _shared: p[i]._shared, _role: p[i]._role }; return c; }
+      return [{ ...n, _owned: true, _shared: false, _role: "owner" }, ...p];
     });
-    setEditing(null);
   };
 
   // 拖移排序（只在沒套用篩選時開放、避免「拖動子集合」的順序歧義）
@@ -483,41 +483,60 @@ function NoteEditor({
   const [color, setColor] = useState<string>(note?.color ?? "");
   const [opacity, setOpacity] = useState<number>(clampOpacity(note?.opacity));
   const [noteBg, setNoteBg] = useState<NoteBg | null>(note?.bg ?? null);
+  const [noteId, setNoteId] = useState<string | null>(note?.id ?? null);
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState("");
 
-  const save = async () => {
-    if (!content.replace(/<[^>]*>/g, "").trim()) { setErr("內容不能空白"); return; }
-    setSaving(true);
+  // insert / update，回傳存好的 row（會 upsert 進列表、但不關閉）
+  const persist = async (): Promise<ManagedNote | null> => {
+    if (!content.replace(/<[^>]*>/g, "").trim()) { setErr("內容不能空白"); return null; }
     setErr("");
-    const tags = tagsInput.split(/[,，\s]+/).map((t) => t.trim()).filter(Boolean).slice(0, 12);
+    const tagsArr = tagsInput.split(/[,，\s]+/).map((t) => t.trim()).filter(Boolean).slice(0, 12);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { setErr("請先登入"); return null; }
+    const payload: any = {
+      content,
+      category: category.trim() || null,
+      tags: tagsArr,
+      is_public: isPublic,
+      color: color || null,
+      opacity,
+      bg: noteBg && noteBg.image ? noteBg : null,
+      updated_at: new Date().toISOString(),
+    };
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { setErr("請先登入"); return; }
-      const payload: any = {
-        content,
-        category: category.trim() || null,
-        tags,
-        is_public: isPublic,
-        color: color || null,
-        opacity,
-        bg: noteBg && noteBg.image ? noteBg : null,
-        updated_at: new Date().toISOString(),
-      };
-      if (note) {
-        const { data, error } = await supabase.from("notes").update(payload).eq("id", note.id).select("*").single();
+      if (noteId) {
+        const { data, error } = await supabase.from("notes").update(payload).eq("id", noteId).select("*").single();
         if (error) throw error;
         onSaved(data as ManagedNote);
-      } else {
-        const { data, error } = await supabase.from("notes").insert({ ...payload, user_id: user.id }).select("*").single();
-        if (error) throw error;
-        onSaved(data as ManagedNote);
+        return data as ManagedNote;
       }
+      const { data, error } = await supabase.from("notes").insert({ ...payload, user_id: user.id }).select("*").single();
+      if (error) throw error;
+      setNoteId(data.id);
+      onSaved(data as ManagedNote);
+      return data as ManagedNote;
     } catch (e: any) {
       setErr(e?.message ?? "儲存失敗");
+      return null;
+    }
+  };
+
+  const save = async () => {
+    setSaving(true);
+    try {
+      const d = await persist();
+      if (d) onClose();
     } finally {
       setSaving(false);
     }
+  };
+
+  // 共用面板要用：確保筆記已存在（新筆記先存一次拿到 id）、不關閉編輯器
+  const ensureSaved = async (): Promise<string | null> => {
+    if (noteId) return noteId;
+    const d = await persist();
+    return d?.id ?? null;
   };
 
   return (
@@ -632,7 +651,7 @@ function NoteEditor({
 
       <NoteBackgroundEditor value={noteBg} onChange={setNoteBg} />
 
-      {note && owned && <NoteSharePanel noteId={note.id} />}
+      {owned && <NoteSharePanel noteId={noteId} ensureSaved={ensureSaved} />}
 
       <div className="flex items-center justify-between">
         <label className="flex items-center gap-2 text-sm text-fg-muted">
@@ -655,15 +674,16 @@ function NoteEditor({
 type Collab = { user_id: string; role: string; username: string | null; display_name: string | null; avatar_url: string | null };
 
 /** 共用設定（只有擁有者看得到）：產生邀請連結 + 多人協作者清單 + 權限(編輯/唯讀) + 解除 */
-function NoteSharePanel({ noteId }: { noteId: string }) {
+function NoteSharePanel({ noteId, ensureSaved }: { noteId: string | null; ensureSaved: () => Promise<string | null> }) {
   const toast = useToast();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!!noteId);
   const [code, setCode] = useState<string | null>(null);
   const [url, setUrl] = useState<string | null>(null);
   const [collabs, setCollabs] = useState<Collab[]>([]);
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
+    if (!noteId) { setLoading(false); return; }
     let cancelled = false;
     (async () => {
       try {
@@ -680,7 +700,9 @@ function NoteSharePanel({ noteId }: { noteId: string }) {
   const generate = async () => {
     setBusy(true);
     try {
-      const res = await fetch(`/api/me/notes/${noteId}/share`, { method: "POST" });
+      const id = noteId ?? (await ensureSaved()); // 新筆記先存一次拿到 id
+      if (!id) { toast.error("請先輸入內容、才能產生邀請"); return; }
+      const res = await fetch(`/api/me/notes/${id}/share`, { method: "POST" });
       const j = await res.json();
       if (!res.ok) { toast.error(j.message || "產生失敗"); return; }
       setCode(j.code); setUrl(j.url);

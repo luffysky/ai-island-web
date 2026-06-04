@@ -18,6 +18,7 @@ import TaskItem from "@tiptap/extension-task-item";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import { common, createLowlight } from "lowlight";
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   Bold, Italic, Underline as UnderlineIcon, Strikethrough, Code,
   List as ListIcon, ListOrdered, Quote, Heading1, Heading2, Heading3,
@@ -174,7 +175,7 @@ function Toolbar({ editor }: { editor: Editor }) {
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-0.5 p-2 border-b border-border sticky top-0 bg-bg-card z-10 overflow-x-auto">
+    <div className="flex flex-wrap items-center gap-0.5 p-2 border-b border-border sticky top-0 bg-bg-card z-10">
       <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} className={btn(editor.isActive("heading", { level: 1 }))} title="標題 1"><Heading1 size={16} /></button>
       <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} className={btn(editor.isActive("heading", { level: 2 }))} title="標題 2"><Heading2 size={16} /></button>
       <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} className={btn(editor.isActive("heading", { level: 3 }))} title="標題 3"><Heading3 size={16} /></button>
@@ -273,36 +274,66 @@ const TEXT_COLORS = [
 
 function ColorButton({ editor }: { editor: Editor }) {
   const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement | null>(null);
+  const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
+  const btnRef = useRef<HTMLButtonElement | null>(null);
+  const panelRef = useRef<HTMLDivElement | null>(null);
+  const originalRef = useRef<string>("");
   const active = ((editor.getAttributes("textStyle").color as string) || "").toLowerCase();
 
+  const PANEL_W = 244;
+  const openPanel = () => {
+    originalRef.current = (editor.getAttributes("textStyle").color as string) || "";
+    const r = btnRef.current?.getBoundingClientRect();
+    if (r) {
+      const left = Math.min(r.left, window.innerWidth - PANEL_W - 8);
+      setPos({ top: r.bottom + 6, left: Math.max(8, left) });
+    }
+    setOpen(true);
+  };
+  const preview = (c: string) => editor.chain().focus().setColor(c).run(); // 即時預覽、不關閉
+  const confirm = () => setOpen(false); // 保留預覽
+  const cancel = () => {
+    const o = originalRef.current;
+    if (o) editor.chain().focus().setColor(o).run();
+    else editor.chain().focus().unsetColor().run();
+    setOpen(false);
+  };
+
+  // 點面板與按鈕以外 = 確定（保留目前預覽）
   useEffect(() => {
     if (!open) return;
     const onDown = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+      const t = e.target as Node;
+      if (panelRef.current?.contains(t) || btnRef.current?.contains(t)) return;
+      setOpen(false);
     };
     window.addEventListener("mousedown", onDown);
     return () => window.removeEventListener("mousedown", onDown);
   }, [open]);
 
   return (
-    <div className="relative" ref={ref}>
+    <>
       <button
+        ref={btnRef}
         type="button"
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => (open ? confirm() : openPanel())}
         className={`p-1.5 rounded transition ${open ? "bg-accent text-black" : "hover:bg-bg-elevated text-fg"}`}
         title="文字顏色"
       >
         <Baseline size={16} style={active ? { color: active } : undefined} />
       </button>
-      {open && (
-        <div className="absolute z-30 mt-1 left-0 p-2.5 rounded-lg border border-border bg-bg-card shadow-xl w-[244px]">
+      {open && pos && createPortal(
+        <div
+          ref={panelRef}
+          className="fixed z-[80] p-2.5 rounded-lg border border-border bg-bg-card shadow-2xl"
+          style={{ top: pos.top, left: pos.left, width: PANEL_W }}
+        >
           <div className="grid grid-cols-8 gap-1.5">
             {TEXT_COLORS.map((c) => (
               <button
                 key={c}
                 type="button"
-                onClick={() => { editor.chain().focus().setColor(c).run(); setOpen(false); }}
+                onClick={() => preview(c)}
                 className={`w-6 h-6 rounded-full transition hover:scale-110 ${active === c ? "ring-2 ring-accent ring-offset-1 ring-offset-bg-card" : ""}`}
                 style={{ background: c, border: c === "#ffffff" ? "1px solid #d1d5db" : "1px solid rgba(0,0,0,0.12)" }}
                 title={c}
@@ -314,21 +345,20 @@ function ColorButton({ editor }: { editor: Editor }) {
             <input
               type="color"
               value={/^#[0-9a-f]{6}$/i.test(active) ? active : "#000000"}
-              onChange={(e) => editor.chain().focus().setColor(e.target.value).run()}
+              onChange={(e) => preview(e.target.value)}
               className="w-6 h-6 rounded cursor-pointer bg-transparent border border-border p-0"
               title="自訂顏色"
             />
             自訂顏色
           </label>
-          <button
-            type="button"
-            onClick={() => { editor.chain().focus().unsetColor().run(); setOpen(false); }}
-            className="mt-2 w-full text-xs px-2 py-1 rounded border border-border text-fg-muted hover:bg-bg-elevated transition"
-          >
-            清除顏色
-          </button>
-        </div>
+          <div className="mt-2.5 flex items-center gap-1.5">
+            <button type="button" onClick={cancel} className="flex-1 text-xs px-2 py-1 rounded border border-border text-fg-muted hover:bg-bg-elevated transition">取消</button>
+            <button type="button" onClick={() => editor.chain().focus().unsetColor().run()} className="text-xs px-2 py-1 rounded border border-border text-fg-muted hover:bg-bg-elevated transition">清除</button>
+            <button type="button" onClick={confirm} className="flex-1 text-xs px-2 py-1 rounded bg-accent text-black font-semibold hover:scale-105 transition">確定</button>
+          </div>
+        </div>,
+        document.body,
       )}
-    </div>
+    </>
   );
 }
