@@ -131,31 +131,50 @@ async function askUserAIInner(text: string, profile: UserProfileLite | null, lin
   const admin = createSupabaseAdmin();
   const { data: models } = await admin.from("ai_models").select("*").eq("is_active", true).limit(20);
   const activeModels = (models as any[]) ?? [];
-  // 先讀後台「LINE user bot 學員導師」用途的對應、沒設再 fallback
-  const usageModel = await pickModelForUsage("line_user", activeModels).catch(() => null);
-  const model = usageModel
-    ?? activeModels.find((m) => m.provider === "anthropic")
-    ?? activeModels[0];
-  if (!model) {
+  if (!activeModels.length) {
     console.warn("[line-webhook-user] no active model in ai_models");
+    try {
+      await admin.from("error_logs").insert({
+        source: "line-webhook-user", level: "error",
+        message: "[user_ai_null] no active model in ai_models",
+        extra: { line_user_id: lineUserId },
+      });
+    } catch {}
     return null;
   }
 
-  const { data: sysKey } = await admin
-    .from("ai_api_keys")
-    .select("api_key_encrypted, enabled")
-    .eq("provider", model.provider)
-    .maybeSingle();
-  if (!sysKey || !(sysKey as any).enabled) {
-    console.warn(`[line-webhook-user] no enabled api key for provider=${model.provider}`);
-    return null;
-  }
+  // 候選順序：後台「line_user」用途對應 → anthropic（有 tool use）→ 其餘
+  // 之前只挑一個、若它的 provider key 沒啟用就直接 return null → 整個 fallback 到 ticket（學員端 AI「當」的主因）。
+  // 改成依序找「provider key 有啟用且能解密」的第一個、任何一家通就用、別輕易投降。
+  const usageModel = await pickModelForUsage("line_user", activeModels).catch(() => null);
+  const ordered = [
+    ...(usageModel ? [usageModel] : []),
+    ...activeModels.filter((m) => m.provider === "anthropic"),
+    ...activeModels,
+  ].filter((m, i, arr) => arr.findIndex((x) => x.id === m.id) === i);
 
-  let apiKey: string;
-  try {
-    apiKey = decryptKey((sysKey as any).api_key_encrypted);
-  } catch (e: any) {
-    console.warn(`[line-webhook-user] decrypt failed for ${model.provider}:`, e?.message);
+  let model: any = null;
+  let apiKey: string | null = null;
+  const keyProblems: string[] = [];
+  for (const cand of ordered) {
+    const { data: sk } = await admin
+      .from("ai_api_keys")
+      .select("api_key_encrypted, enabled")
+      .eq("provider", cand.provider)
+      .maybeSingle();
+    if (!sk || !(sk as any).enabled) { keyProblems.push(`${cand.provider}:no_enabled_key`); continue; }
+    try { apiKey = decryptKey((sk as any).api_key_encrypted); model = cand; break; }
+    catch { keyProblems.push(`${cand.provider}:decrypt_fail`); }
+  }
+  if (!model || !apiKey) {
+    console.warn("[line-webhook-user] no usable model+key:", keyProblems.join(", "));
+    try {
+      await admin.from("error_logs").insert({
+        source: "line-webhook-user", level: "error",
+        message: `[user_ai_null] no usable model+key (${keyProblems.join(", ") || "none"})`,
+        extra: { line_user_id: lineUserId, tried: ordered.map((m) => `${m.provider}/${m.model_name}`) },
+      });
+    } catch {}
     return null;
   }
 
