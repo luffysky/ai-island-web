@@ -143,10 +143,29 @@ async function askUserAIInner(text: string, profile: UserProfileLite | null, lin
     return null;
   }
 
-  // 候選順序：後台「line_user」用途對應 → anthropic（有 tool use）→ 其餘
+  // 特定人（owner / 付費 Premium / admin·editor）走「更好的模型」：
+  // 後台用途鍵 line_user_vip 設一個強模型即可、沒設就自動退回 line_user（不影響其他人）。
+  let privileged = checkOwner({
+    id: profile?.id ?? null,
+    username: profile?.username ?? null,
+    role: profile?.role ?? null,
+    email: null,
+    lineUserId,
+  }).isOwner || ["owner", "admin", "editor"].includes(String((profile as any)?.role ?? ""));
+  if (!privileged && profile?.id) {
+    try {
+      const { data: premiumOk } = await admin.rpc("has_active_subscription", { p_user_id: profile.id });
+      privileged = !!premiumOk;
+    } catch {}
+  }
+
+  // 候選順序：後台用途對應（VIP 先 line_user_vip）→ anthropic（有 tool use）→ 其餘
   // 之前只挑一個、若它的 provider key 沒啟用就直接 return null → 整個 fallback 到 ticket（學員端 AI「當」的主因）。
   // 改成依序找「provider key 有啟用且能解密」的第一個、任何一家通就用、別輕易投降。
-  const usageModel = await pickModelForUsage("line_user", activeModels).catch(() => null);
+  const usageModel = (privileged
+    ? await pickModelForUsage("line_user_vip", activeModels).catch(() => null)
+    : null)
+    ?? await pickModelForUsage("line_user", activeModels).catch(() => null);
   const ordered = [
     ...(usageModel ? [usageModel] : []),
     ...activeModels.filter((m) => m.provider === "anthropic"),

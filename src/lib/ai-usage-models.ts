@@ -14,6 +14,7 @@ import { createSupabaseAdmin } from "./supabase-admin";
 export type AiUsageKey =
   | "line_admin"
   | "line_user"
+  | "line_user_vip"      // LINE 學員導師 — VIP/付費/owner 專用（更強的模型、沒設自動退回 line_user）
   | "ai_tutor"
   | "nami_challenge_gen"
   | "nami_help"
@@ -29,6 +30,7 @@ export type AiUsageKey =
 export const USAGE_LABELS: Record<AiUsageKey, string> = {
   line_admin:         "LINE admin bot 對話 / tool use",
   line_user:          "LINE user bot 學員導師",
+  line_user_vip:      "LINE 學員導師 — VIP/付費專用（強模型）",
   ai_tutor:           "站內 AI 學員導師 (聊天視窗)",
   nami_challenge_gen: "Nami 出題 AI",
   nami_help:          "Nami Playground 問 AI",
