@@ -9,7 +9,7 @@ export default async function TeacherLayout({ children }: { children: React.Reac
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login?next=/teacher");
   const { data: profile } = await supabase.from("profiles").select("role, display_name, username").eq("id", user.id).single();
-  if (!["admin", "teacher", "assistant", "editor"].includes(profile?.role ?? "")) redirect("/");
+  if (!["owner", "admin", "teacher", "assistant", "editor"].includes(profile?.role ?? "")) redirect("/");
 
   return (
     <div>

@@ -16,7 +16,7 @@ export default async function IslandPage() {
   let isAdmin = false;
   if (user) {
     const { data: meRole } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-    isAdmin = (meRole as any)?.role === "admin";
+    isAdmin = (meRole as any)?.role === "admin" || (meRole as any)?.role === "owner";
   }
   if (!enabled && !isAdmin) {
     return <IslandClosed />;

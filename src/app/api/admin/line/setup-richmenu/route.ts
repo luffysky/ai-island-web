@@ -47,7 +47,7 @@ export async function GET(req: NextRequest) {
     if (user) {
       const admin = createSupabaseAdmin();
       const { data: prof } = await admin.from("profiles").select("role").eq("id", user.id).single();
-      if ((prof as any)?.role === "admin") authorized = true;
+      if (((prof as any)?.role === "admin" || (prof as any)?.role === "owner")) authorized = true;
     }
   }
   if (!authorized) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
@@ -129,7 +129,7 @@ export async function DELETE(req: NextRequest) {
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   const admin = createSupabaseAdmin();
   const { data: prof } = await admin.from("profiles").select("role").eq("id", user.id).single();
-  if ((prof as any)?.role !== "admin") return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  if ((prof as any)?.role !== "admin" && (prof as any)?.role !== "owner") return NextResponse.json({ error: "forbidden" }, { status: 403 });
 
   const channelToken = process.env.ADMIN_LINE_CHANNEL_TOKEN;
   if (!channelToken) return NextResponse.json({ error: "no_line_token" }, { status: 500 });

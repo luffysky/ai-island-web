@@ -42,7 +42,7 @@ export default async function OpsAdminPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
   const { data: meProfile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  if (meProfile?.role !== "admin") redirect("/");
+  if (meProfile?.role !== "admin" && meProfile?.role !== "owner") redirect("/");
 
   const admin = createSupabaseAdmin();
 

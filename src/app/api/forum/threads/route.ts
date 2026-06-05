@@ -117,7 +117,7 @@ export async function POST(req: NextRequest) {
       .select("role")
       .eq("id", user.id)
       .single();
-    if (profile?.role !== "admin") {
+    if (profile?.role !== "admin" && profile?.role !== "owner") {
       return NextResponse.json({ error: "forbidden", message: "這個版塊只有管理員能發文" }, { status: 403 });
     }
   }

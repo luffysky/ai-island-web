@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   const { data: p } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  if (p?.role !== "admin") return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  if (p?.role !== "admin" && p?.role !== "owner") return NextResponse.json({ error: "forbidden" }, { status: 403 });
 
   return NextResponse.json({
     "env.NEXT_PUBLIC_SITE_URL": process.env.NEXT_PUBLIC_SITE_URL ?? "(not set)",

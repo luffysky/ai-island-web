@@ -8,7 +8,7 @@ export async function GET() {
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
   const { data: p } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  if (p?.role !== "admin") return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  if (p?.role !== "admin" && p?.role !== "owner") return NextResponse.json({ error: "forbidden" }, { status: 403 });
 
   const slug = process.env.ADMIN_SLUG;
   const publicSlug = process.env.NEXT_PUBLIC_ADMIN_SLUG;

@@ -151,7 +151,7 @@ export function formatLearningStateForPrompt(s: LearningState): string {
   lines.push(`# 你正在跟誰對話`);
   lines.push(`- 名字：**${name}**（@${s.username}）`);
   lines.push(`- 等級：Lv ${s.level}、累計 ${s.xp.toLocaleString()} XP`);
-  if (s.role === "admin") lines.push(`- 身份：**管理員**（你可以更專業、不用避諱技術細節）`);
+  if (s.role === "admin" || s.role === "owner") lines.push(`- 身份：**管理員**（你可以更專業、不用避諱技術細節）`);
   if (s.joined_days_ago !== null) lines.push(`- 加入 ${s.joined_days_ago} 天`);
   if (s.last_active_days_ago !== null && s.last_active_days_ago > 0) {
     lines.push(`- 上次活動：${s.last_active_days_ago} 天前${s.last_active_days_ago > 7 ? "（中斷一陣子、你可以溫和提一下）" : ""}`);

@@ -88,7 +88,7 @@ export async function PATCH(
     .select("role")
     .eq("id", user.id)
     .single();
-  const isAdmin = profile?.role === "admin";
+  const isAdmin = profile?.role === "admin" || profile?.role === "owner";
   const isOwner = thread.user_id === user.id;
 
   const patch: Record<string, any> = { updated_at: new Date().toISOString() };
@@ -155,7 +155,7 @@ export async function DELETE(
     .eq("id", user.id)
     .single();
 
-  if (thread.user_id !== user.id && profile?.role !== "admin") {
+  if (thread.user_id !== user.id && profile?.role !== "admin" && profile?.role !== "owner") {
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
 

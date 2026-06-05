@@ -15,5 +15,5 @@ export async function hasAiUnlimited(userId: string): Promise<boolean> {
     .eq("id", userId)
     .maybeSingle();
   if (!data) return false;
-  return data.ai_unlimited === true || data.role === "admin";
+  return data.ai_unlimited === true || data.role === "admin" || data.role === "owner";
 }

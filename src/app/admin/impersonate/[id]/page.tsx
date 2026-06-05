@@ -23,7 +23,7 @@ export default async function ImpersonateViewerPage({
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
   const { data: me } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  if (me?.role !== "admin") redirect("/");
+  if (me?.role !== "admin" && me?.role !== "owner") redirect("/");
 
   const admin = createSupabaseAdmin();
   const { data: profile } = await admin.from("profiles").select("*").eq("id", id).maybeSingle();

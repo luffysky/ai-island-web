@@ -8,7 +8,7 @@ export async function GET() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return new Response("unauthorized", { status: 401 });
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  if (!["admin", "teacher", "assistant", "editor"].includes(profile?.role ?? "")) {
+  if (!["owner", "admin", "teacher", "assistant", "editor"].includes(profile?.role ?? "")) {
     return new Response("forbidden", { status: 403 });
   }
 

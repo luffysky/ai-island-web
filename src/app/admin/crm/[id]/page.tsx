@@ -14,7 +14,7 @@ export default async function CRMTicketDetailPage({ params }: { params: Promise<
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  if (!["admin", "teacher", "assistant"].includes(profile?.role ?? "")) redirect("/");
+  if (!["owner", "admin", "teacher", "assistant"].includes(profile?.role ?? "")) redirect("/");
 
   const { id } = await params;
   const admin = createSupabaseAdmin();

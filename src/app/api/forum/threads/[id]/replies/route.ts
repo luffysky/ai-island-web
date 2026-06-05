@@ -161,7 +161,7 @@ export async function DELETE(
     .eq("id", user.id)
     .single();
 
-  if (reply.user_id !== user.id && profile?.role !== "admin") {
+  if (reply.user_id !== user.id && profile?.role !== "admin" && profile?.role !== "owner") {
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
 

@@ -226,8 +226,8 @@ async function getForumThread(threadId: string): Promise<string> {
 
   // 拉前 10 條回覆
   const { data: posts } = await admin
-    .from("forum_posts")
-    .select("id, content, created_at, profiles!forum_posts_user_id_fkey(username, display_name)")
+    .from("forum_replies")
+    .select("id, content, created_at, profiles!forum_replies_user_id_fkey(username, display_name)")
     .eq("thread_id", threadId)
     .order("created_at", { ascending: true })
     .limit(10);

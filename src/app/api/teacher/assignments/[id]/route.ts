@@ -9,7 +9,7 @@ async function assertTeacher() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: "unauthorized" as const, status: 401 };
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  if (!["admin", "teacher", "editor"].includes(profile?.role ?? "")) return { error: "forbidden" as const, status: 403 };
+  if (!["owner", "admin", "teacher", "editor"].includes(profile?.role ?? "")) return { error: "forbidden" as const, status: 403 };
   return { ok: true as const };
 }
 

@@ -11,7 +11,7 @@ export default async function BreachPage() {
   if (!user) redirect("/login");
 
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  if (profile?.role !== "admin") redirect("/");
+  if (profile?.role !== "admin" && profile?.role !== "owner") redirect("/");
 
   const { data: incidents } = await supabase
     .from("breach_incidents_urgent")

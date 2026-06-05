@@ -379,7 +379,7 @@ async function cmdMaint(arg?: string): Promise<BotReply> {
   const admin = createSupabaseAdmin();
   const enabled = arg === "on";
   try {
-    await admin.from("system_settings").upsert({ key: "maintenance_mode", value: { enabled, at: new Date().toISOString() } });
+    await admin.from("app_settings").upsert({ key: "maintenance_mode", value: { enabled, at: new Date().toISOString() } });
   } catch {
     try { await admin.from("feature_flags").upsert({ key: "maintenance_mode", enabled }); } catch {}
   }

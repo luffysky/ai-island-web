@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
     if (user) {
       const admin = createSupabaseAdmin();
       const { data: prof } = await admin.from("profiles").select("role").eq("id", user.id).single();
-      if ((prof as any)?.role === "admin") isAuthorized = true;
+      if (((prof as any)?.role === "admin" || (prof as any)?.role === "owner")) isAuthorized = true;
     }
   }
   if (!isAuthorized) return NextResponse.json({ error: "unauthorized" }, { status: 401 });

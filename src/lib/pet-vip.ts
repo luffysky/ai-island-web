@@ -10,7 +10,7 @@ export function getVipTier(profile: { id?: string | null; role?: string | null }
   if (!profile?.id) return "user";
   if (profile.id === LUFFY_ID) return "luffy";
   if (profile.id === NAMI_ID) return "nami";
-  if (profile.role === "admin") return "admin";
+  if (profile.role === "admin" || profile.role === "owner") return "admin";
   return "user";
 }
 

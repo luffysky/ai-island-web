@@ -13,7 +13,7 @@ export default async function NamiPlaygroundPage() {
     .select("role, username, display_name, avatar_url")
     .eq("id", user.id)
     .maybeSingle();
-  if (profile?.role !== "admin") redirect("/");
+  if (profile?.role !== "admin" && profile?.role !== "owner") redirect("/");
 
   return (
     <div className="space-y-4">

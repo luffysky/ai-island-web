@@ -14,7 +14,7 @@ export default async function AdminCannedPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  if (!["admin", "teacher", "assistant"].includes(profile?.role ?? "")) redirect("/");
+  if (!["owner", "admin", "teacher", "assistant"].includes(profile?.role ?? "")) redirect("/");
 
   const admin = createSupabaseAdmin();
   const { data: replies } = await admin

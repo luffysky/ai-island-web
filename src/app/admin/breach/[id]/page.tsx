@@ -21,7 +21,7 @@ export default async function BreachDetailPage({
     .select("role, username")
     .eq("id", user.id)
     .single();
-  if (me?.role !== "admin") redirect("/");
+  if (me?.role !== "admin" && me?.role !== "owner") redirect("/");
 
   const admin = createSupabaseAdmin();
   const { data: incident } = await admin

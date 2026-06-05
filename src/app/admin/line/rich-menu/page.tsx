@@ -13,7 +13,7 @@ export default async function AdminRichMenuPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  if (profile?.role !== "admin") redirect("/");
+  if (profile?.role !== "admin" && profile?.role !== "owner") redirect("/");
 
   const currentImageUrl = process.env.RICH_MENU_IMAGE_URL || null;
   const hasUserBot = !!(process.env.USER_LINE_CHANNEL_TOKEN && process.env.USER_LINE_CHANNEL_SECRET);
