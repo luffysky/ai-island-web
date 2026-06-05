@@ -20,6 +20,7 @@ import { STICKY_COLORS, clampOpacity, noteBgImgStyle, DEFAULT_NOTE_BG, type Note
 import { nextSrs, isDue, dueLabel, type SrsRating } from "@/lib/note-srs";
 import { loadFolders, saveFolders, folderDropId, FOLDER_DROP_PREFIX, UNCATEGORIZED } from "@/lib/note-folders";
 import { useToast } from "@/components/ui/Toast";
+import { trackEvent } from "@/lib/analytics";
 import { Plus, X, Save, Loader2, Sparkles, GripVertical, Folder, FolderPlus, Image as ImageIcon, RotateCw, Copy, Link2, Search, Repeat2, SlidersHorizontal } from "lucide-react";
 
 const UNCAT_FILTER = "__uncat__";
@@ -644,7 +645,7 @@ function NoteEditor({
     setSaving(true);
     try {
       const d = await persist();
-      if (d) { clearDraft(); onClose(); }
+      if (d) { trackEvent("note_save", { is_new: !noteId }); clearDraft(); onClose(); }
     } finally {
       setSaving(false);
     }

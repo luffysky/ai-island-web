@@ -6,6 +6,7 @@ import { Check, Crown, Sparkles, TrendingUp, Loader2 } from "lucide-react";
 import { BackgroundBeams } from "@/components/ui/BackgroundBeams";
 import { Sparkles as SparklesParticles } from "@/components/ui/Sparkles";
 import { SITE_STATS } from "@/lib/site-stats";
+import { trackEvent } from "@/lib/analytics";
 import { useToast } from "@/components/ui/Toast";
 
 type Plan = {
@@ -27,6 +28,7 @@ export function PricingClient({ plans }: { plans: Plan[] }) {
 
   const checkout = async (planId: string) => {
     setPendingPlan(planId);
+    trackEvent("begin_checkout", { plan: planId });
     try {
       const res = await fetch("/api/me/checkout", {
         method: "POST",

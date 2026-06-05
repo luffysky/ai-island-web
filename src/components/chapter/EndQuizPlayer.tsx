@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Sparkles, Trophy, RotateCw, Check, X, Lock } from "lucide-react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
+import { trackEvent } from "@/lib/analytics";
 import { useAuth } from "@/lib/auth-context";
 
 type Question = {
@@ -140,6 +141,7 @@ export function EndQuizPlayer({ chapterId }: { chapterId: number }) {
       }
       setResult(data);
       setStage("result");
+      trackEvent("quiz_complete", { chapter_id: (quiz as any)?.chapter_id, score: data.score, passed: !!data.passed });
       // Update best
       setBestScore((prev) => (prev === null ? data.score : Math.max(prev, data.score)));
       // 通知寵物
