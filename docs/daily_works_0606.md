@@ -58,11 +58,12 @@
 # 📋 所有待辦（彙整 + 本日新增；✅=完成）
 
 ## A. 要你手動跑/設（最迫切）
-- [ ] **跑 `supabase/set_owner_role.sql`**（部署後）：Luffy Lin→owner、luffysky004→member
-- [ ] **跑 `supabase/seo_overrides_migration.sql`**：補 SEO 覆寫表
-- [ ] （選）跑 `supabase/secdef_function_grants_migration.sql`、`security_invoker_views_migration.sql`、`fix_function_search_path_migration.sql` —— **本日已用腳本套用到正式機**，SQL 留存供查；若 Advisor 還有殘留再跑
+- [x] ✅ **`set_owner_role.sql`**：Luffy Lin→**owner**、luffysky004→**member**（順手發現 `profiles_role_check` 原本不允許 'owner'、已把 owner 加進 constraint）
+- [x] ✅ **`seo_overrides_migration.sql`**：補好 SEO 覆寫表
+- [x] ✅ views / search_path / secdef grants / notifications policy 都已套用到正式機（SQL 留存供查）
 - [ ] Supabase Dashboard：開**外洩密碼防護** + **MFA(TOTP)** + 縮短 OTP 有效期
 - [ ] Zeabur redeploy 到最新 commit；學員 LINE 部署後再戳一次確認正常
+- [ ] （選）`user_settings` 表補建（目前只有 gdpr export 讀、已 safe() 包住不會壞）
 
 ## B. AI 升級 #2~#6（接著做）
 - [ ] **#2 模型分級路由**：輕量分類器判難度 → 簡單用 Haiku/Flash、難題升 Sonnet/Opus（接 `ai_models.tier`）
