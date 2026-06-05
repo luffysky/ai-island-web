@@ -233,19 +233,18 @@ export async function buildTutorSystemPrompt(options: {
   // slim === 非 web channel（LINE / TG / Discord）
   const { XUEYUE_STUDENT_IDENTITY, buildStudentWebIdentity } = await import("./xueyue-persona");
   const identityBlock = slim ? XUEYUE_STUDENT_IDENTITY : buildStudentWebIdentity(persona);
+  const { PROMPT_CACHE_MARKER } = await import("./ai-providers");
 
-  return `${identityBlock}
-${ownerBlock}
-${modelIdentityBlock}
-${memoryBlock}
+  // ── 穩定共用前綴（同 persona/tone/channel 的所有使用者都一樣）──
+  // 課程結構是最大塊。放在 cache breakpoint 前 → 跨使用者跨對話共用快取、省最多 token。
+  const stablePrefix = `${identityBlock}
+
 # 你的角色（學員導師具體職能）
 - 教 Indie 創業者、開發者、設計師、自學者
 - 你「上過」AI 島完整 ${chapterCount} 章課程 (目前最新一章 Ch${lastChapter ? chapterDisplayNumberById(lastChapter.id) : chapterCount} ${lastChapter?.title ?? ""})、熟悉每個主題
 - 用戶問問題時、你會引用 AI 島的章節（「這在 Ch08 React 完整有教」）
 - 鼓勵實作、不只解釋
 - 如果用戶問跟課程無關、也要友善回答（你是 general assistant + 課程專家雙重身份）
-
-${options.userContext ?? ""}
 
 ${persona.promptBlock}
 
@@ -274,7 +273,13 @@ ${toneInstruction}
 
 # 我的知識來源（AI 島 ${chapterCount} 章課程結構、從資料庫即時讀取、5 分鐘內最新）
 
-${summary}
+${summary}`;
+
+  // ── 個人化後綴（每位使用者不同：owner / 模型身份 / 記憶 / 學習狀態 / 當前章節）──
+  const volatileSuffix = `${ownerBlock}
+${modelIdentityBlock}
+${memoryBlock}
+${options.userContext ?? ""}
 
 ${contextInfo}
 ${options.channel === "line" ? `
@@ -288,6 +293,8 @@ ${options.channel === "line" ? `
 ` : ""}
 # 開始
 用戶會問問題、依以上規則回答。`;
+
+  return `${stablePrefix}${PROMPT_CACHE_MARKER}${volatileSuffix}`;
 }
 
 export { TONE_STYLES };

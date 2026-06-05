@@ -126,16 +126,34 @@ function toAnthropicMessages(messages: AIMessage[]): any[] {
 }
 
 /**
+ * Prompt cache 邊界標記（4 個零寬空格、肉眼/語意都無感、極不可能自然出現）。
+ * buildTutorSystemPrompt 用它把「全站共用的穩定前綴（課程結構 + persona + 規則）」
+ * 跟「每位使用者不同的後綴（記憶 / 學習狀態 / owner / 當前章節）」切開。
+ * Anthropic 端把前綴設成獨立 cache block → 同 persona/tone 的所有使用者「共用同一份快取」、
+ * 不只單一對話內、跨使用者跨對話都命中（課程結構是最大塊、省最多）。
+ */
+export const PROMPT_CACHE_MARKER = "​​​​";
+
+/**
  * 把 system text 包成 Anthropic system block 格式、長 prompt 自動加 ephemeral cache。
  * - cache_control: { type: "ephemeral" } 走 5 分鐘 TTL
  * - cache write 第 1 次 1.25x cost、之後 cache read 只算 0.1x
  * - 最低 1024 token (Haiku 2048) 才會 cache、低於不影響、Anthropic 自動忽略
- * - 雪鑰 persona + tutor prompt full / slim 都會吃到、月省 30-50% AI cost
+ * - 有 PROMPT_CACHE_MARKER → 切成 [穩定前綴(cache) , 個人化後綴(不cache)]、跨使用者共用前綴快取
  */
 function buildAnthropicSystem(systemText: string): string | any[] {
   if (!systemText) return "";
-  // 估字數 → token：中文 ~1 字 1.5 token、英文 ~1 字 0.3 token、保守 4 字 = 1 token
-  // 至少 ~4000 字才有 cache 價值（Haiku 最低 2048 token = ~8000 字、Sonnet 1024 token）
+  const mi = systemText.indexOf(PROMPT_CACHE_MARKER);
+  if (mi >= 0) {
+    const prefix = systemText.slice(0, mi);
+    const suffix = systemText.slice(mi + PROMPT_CACHE_MARKER.length);
+    const blocks: any[] = [];
+    // 穩定前綴設 cache breakpoint（太短時 Anthropic 自動忽略、無害）
+    if (prefix) blocks.push({ type: "text", text: prefix, cache_control: { type: "ephemeral" } });
+    if (suffix.trim()) blocks.push({ type: "text", text: suffix });
+    return blocks.length ? blocks : "";
+  }
+  // 無 marker（其他呼叫端）：維持原本「夠長才整塊 cache」
   if (systemText.length < 3000) return systemText;
   return [{ type: "text", text: systemText, cache_control: { type: "ephemeral" } }];
 }
