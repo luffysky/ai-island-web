@@ -142,15 +142,19 @@ export async function POST(req: NextRequest) {
   const userName = profile?.display_name || profile?.username || "你";
   const ctx = path ? `\n目前頁面：${path}` : "";
 
-  // 雪鑰跨對話記憶（user_ai_memory）— 寵物跟雪鑰共享同一份對主人的認識
+  // 雪鑰跨對話記憶（user_ai_memory）— 智慧載入：第一句或有回憶訊號才載、平常不灌（省 token）
+  // 寵物本身已有 pet.memory_summary（小、照常帶），這裡是「跨對話的額外長期記憶」
   let sharedMemoryBlock = "（雪鑰也還在認識他）";
-  try {
-    const { loadUserMemory } = await import("@/lib/user-ai-memory");
-    const mem = await loadUserMemory(user.id);
-    if (mem?.summary) {
-      sharedMemoryBlock = `${mem.summary}${mem.preferences?.style ? `\n風格：${mem.preferences.style}` : ""}`;
-    }
-  } catch {}
+  const { needsMemoryRecall } = await import("@/lib/ai-tutor-prompt");
+  if (needsMemoryRecall(message, !(pet as any).memory_summary)) {
+    try {
+      const { loadUserMemory } = await import("@/lib/user-ai-memory");
+      const mem = await loadUserMemory(user.id);
+      if (mem?.summary) {
+        sharedMemoryBlock = `${mem.summary}${mem.preferences?.style ? `\n風格：${mem.preferences.style}` : ""}`;
+      }
+    } catch {}
+  }
 
   // 使用者自訂 prompt 取代預設（沒設就用預設）
   const defaultPrompt = `你「不是 AI 助理」、你是「${pet.name}」、${userName} 的 ${species.name} 寵物。

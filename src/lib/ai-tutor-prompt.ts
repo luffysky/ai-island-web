@@ -140,6 +140,14 @@ async function buildCourseSummary(slim = false): Promise<{ summary: string; chap
   };
 }
 
+// 智慧記憶判斷：第一句一律帶記憶建立 context；之後只在訊息含「回憶訊號」時才載長期記憶（省 token）
+const MEMORY_RECALL_SIGNALS = /記得|上次|之前|剛剛|前面|我叫|我的名字|我是誰|我們(聊|說|講)|繼續|還記得|我喜歡|我想學|我的目標|我說過|你知道我|幫我複習|我的進度|接續|上一題|剛才/;
+export function needsMemoryRecall(message: string | undefined, isFirstTurn: boolean): boolean {
+  if (message === undefined) return true;   // 舊呼叫端沒傳 → 維持原行為
+  if (isFirstTurn) return true;
+  return MEMORY_RECALL_SIGNALS.test(message);
+}
+
 export async function buildTutorSystemPrompt(options: {
   tone?: string;
   contextChapterId?: number;
@@ -155,6 +163,8 @@ export async function buildTutorSystemPrompt(options: {
   channel?: "web" | "line" | "telegram" | "discord";  // 非 web 一律 slim prompt
   modelProvider?: string | null;    // 顯式告訴 AI 自己是哪 provider（避免 hallucinate「我是 Claude Sonnet 3.5」）
   modelName?: string | null;
+  currentMessage?: string;          // 這輪使用者訊息 — 用來判斷「要不要載長期記憶」（省 token）
+  historyCount?: number;            // 目前對話已有幾則 — 0 = 第一句、必帶記憶建立 context
 }): Promise<string> {
   const tone = options.tone ?? "friendly";
   const toneInstruction = TONE_STYLES[tone] ?? TONE_STYLES.friendly;
@@ -173,10 +183,13 @@ export async function buildTutorSystemPrompt(options: {
   const slim = options.channel !== undefined && options.channel !== "web";
   const { summary, chapterCount, lastChapter } = await buildCourseSummary(slim);
 
-  // 載入跨 channel user memory（cron 每天總結、Web/LINE/TG/Discord 共用同一份）
+  // 智慧記憶：不是每次都灌長期記憶（傷 token）。只在「需要回憶」時才載：
+  //   - 第一句（建立 context）、或訊息出現「記得 / 之前 / 我叫 / 我的目標…」這類回憶訊號
+  //   - 舊呼叫端沒傳 currentMessage → 維持原行為（一律載）
   // 失敗不阻塞、回空字串
   let memoryBlock = "";
-  if (options.userId) {
+  const recallMemory = needsMemoryRecall(options.currentMessage, (options.historyCount ?? 0) === 0);
+  if (options.userId && recallMemory) {
     try {
       const { loadUserMemory, formatMemoryForPrompt } = await import("./user-ai-memory");
       const mem = await loadUserMemory(options.userId);

@@ -8,6 +8,7 @@ import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { devLog } from "@/lib/dev-log";
 
 const TUTOR_POS_KEY = "ai_tutor_ball_pos";
+const TUTOR_SIZE_KEY = "ai_tutor_panel_size";
 const DRAG_THRESHOLD_PX = 5;
 
 function DraggableTutorBall({ onOpen }: { onOpen: () => void }) {
@@ -182,6 +183,14 @@ export function AITutorWidget({
   const panelRef = useRef<HTMLDivElement>(null);
   // Messenger 式：最小化記住捲動位置（數字）、關閉則下次回到最底（"bottom"）
   const restoreScrollRef = useRef<number | "bottom" | null>(null);
+  // 可調大小 + 記憶（最大=預設 480×700、可縮小到 280×420；存 localStorage）
+  const [size, setSize] = useState<{ w: number; h: number } | null>(null);
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(TUTOR_SIZE_KEY);
+      if (raw) { const s = JSON.parse(raw); if (s?.w && s?.h) setSize(s); }
+    } catch {}
+  }, []);
   useEdgeSafe(panelRef);
   const supabase = createSupabaseBrowser();
 
@@ -464,6 +473,27 @@ export function AITutorWidget({
     setOpen(false);
   };
 
+  // 拖左上角調整視窗大小（面板錨在右下、往左上拖＝變大）；放開存 localStorage 記住
+  const onResizeStart = (e: React.PointerEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const rect = panelRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const startX = e.clientX, startY = e.clientY, startW = rect.width, startH = rect.height;
+    const onMove = (ev: PointerEvent) => {
+      const w = Math.max(280, Math.min(480, startW + (startX - ev.clientX)));
+      const h = Math.max(420, Math.min(700, startH + (startY - ev.clientY)));
+      setSize({ w, h });
+    };
+    const onUp = () => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+      setSize((s) => { if (s) { try { localStorage.setItem(TUTOR_SIZE_KEY, JSON.stringify(s)); } catch {} } return s; });
+    };
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+  };
+
   const deleteHistory = async (
     h: { id: string; title: string },
     e: React.MouseEvent,
@@ -518,11 +548,21 @@ export function AITutorWidget({
             //   - 動態 calc(100vw - 1rem)：跟視口跑、所有裝置都不超出
             //   - 最大 480px：桌面太大也不該佔半個螢幕
             // useEdgeSafe hook 是第二層保險：ResizeObserver 即時偵測異常溢出再 translate 回視口
-            width: "clamp(280px, calc(100vw - 1rem), 480px)",
-            height: "clamp(420px, calc(100vh - 5rem), 700px)",
+            // 有記憶大小就用（並 min() 夾進視口、手機不溢出）；沒有則用響應式 clamp
+            width: size ? `min(${size.w}px, calc(100vw - 1rem))` : "clamp(280px, calc(100vw - 1rem), 480px)",
+            height: size ? `min(${size.h}px, calc(100vh - 5rem))` : "clamp(420px, calc(100vh - 5rem), 700px)",
           }}
           className="fixed bottom-2 right-2 z-50 bg-bg-card/95 backdrop-blur-xl border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-tutor-panel-in"
         >
+          {/* 左上角調整大小把手（桌面）。面板錨右下、往左上拖＝放大 */}
+          <div
+            onPointerDown={onResizeStart}
+            title="拖曳調整視窗大小"
+            className="hidden sm:block absolute top-0 left-0 w-5 h-5 z-[70] cursor-nwse-resize"
+            style={{ touchAction: "none" }}
+          >
+            <div className="absolute top-1.5 left-1.5 w-2.5 h-2.5 border-l-2 border-t-2 border-fg-muted/40 rounded-tl-sm" />
+          </div>
           {/* 拖拉圖片提示遮罩 */}
           {isDraggingImage && (
             <div className="absolute inset-0 z-[60] flex items-center justify-center bg-emerald-500/15 backdrop-blur-sm border-2 border-dashed border-emerald-400 rounded-2xl pointer-events-none">

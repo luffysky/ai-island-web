@@ -284,6 +284,8 @@ async function askUserAIInner(text: string, profile: UserProfileLite | null, lin
     channel: "line",
     modelProvider: model.provider,
     modelName: model.model_name,
+    currentMessage: text,
+    historyCount: Math.max(0, hist.length - 1), // hist 已 push 當前訊息、扣回 1
   });
 
   try {
