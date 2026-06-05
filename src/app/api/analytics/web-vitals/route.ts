@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
+import { createSupabaseAdmin } from "@/lib/supabase-admin";
 
 export const dynamic = "force-dynamic";
 
@@ -23,7 +24,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "invalid_value" }, { status: 400 });
   }
 
-  const { error } = await supabase.from("web_vitals").insert({
+  // 用 service_role 寫入（伺服器端遙測）→ policy 可收成 WITH CHECK(false)、client 不能偽造
+  const admin = createSupabaseAdmin();
+  const { error } = await admin.from("web_vitals").insert({
     metric: body.metric,
     value: body.value,
     rating: body.rating ?? null,
