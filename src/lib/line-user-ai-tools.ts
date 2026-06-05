@@ -12,6 +12,21 @@
 
 import { createSupabaseAdmin } from "./supabase-admin";
 import { vectorSearchLessons, vectorSearchForum } from "./ai-embeddings";
+import { stripLoneSurrogates } from "./ai-providers";
+
+// 深層清掉落單 surrogate（半個 emoji）— 這條 tool 路徑自己組 Anthropic body、
+// 沒走 ai-providers 的 toAnthropicMessages，所以注入的筆記/lesson 內容若被 slice 切到 emoji 中間
+// 就會送出非法 JSON → Anthropic 400 → 學員 LINE 退化成 ticket（就是這個 bug）。
+function deepStrip(v: any): any {
+  if (typeof v === "string") return stripLoneSurrogates(v);
+  if (Array.isArray(v)) return v.map(deepStrip);
+  if (v && typeof v === "object") {
+    const o: any = {};
+    for (const k in v) o[k] = deepStrip(v[k]);
+    return o;
+  }
+  return v;
+}
 
 const TIMEOUT_MS = 14_000;       // 單一 Anthropic call 超過 14 秒就 abort
 const MAX_TOOL_ROUNDS = 3;       // 最多 3 輪、防多輪拖到 LINE replyToken 30s 失效
@@ -310,14 +325,14 @@ async function runStudentLoop(opts: {
           "anthropic-version": "2023-06-01",
         },
         signal: ctrl.signal,
-        body: JSON.stringify({
+        body: JSON.stringify(deepStrip({
           model: opts.model,
           system: opts.systemPrompt,
           messages,
           tools: STUDENT_TOOLS,
           max_tokens: 1500,
           temperature: 0.7,
-        }),
+        })),
       });
       if (!res.ok) {
         const err = await res.text();
@@ -373,13 +388,13 @@ async function fallbackPlain(
         "anthropic-version": "2023-06-01",
       },
       signal: ctrl.signal,
-      body: JSON.stringify({
+      body: JSON.stringify(deepStrip({
         model: opts.model,
         system: opts.systemPrompt + "\n\n注意：這一輪不要呼叫 tool、用純文字回答學員。",
         messages,
         max_tokens: 800,
         temperature: 0.8,
-      }),
+      })),
     });
     if (!res.ok) return "嗯？我這邊沒抓到、再問一次？";
     const data = await res.json();

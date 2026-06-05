@@ -14,6 +14,15 @@ import type { AdminLineUser } from "./admin-line-users";
 import { formatTW, formatTWRelative } from "./format-date";
 import { getPeriodReport } from "./site-period-report";
 import { STUDENT_TOOLS, dispatchStudentTool } from "./line-user-ai-tools";
+import { stripLoneSurrogates } from "./ai-providers";
+
+// 深層清落單 surrogate（半個 emoji）— 這條也自己組 Anthropic body、防非法 JSON 400
+function deepStrip(v: any): any {
+  if (typeof v === "string") return stripLoneSurrogates(v);
+  if (Array.isArray(v)) return v.map(deepStrip);
+  if (v && typeof v === "object") { const o: any = {}; for (const k in v) o[k] = deepStrip(v[k]); return o; }
+  return v;
+}
 
 const TIMEOUT_MS = 12_000;       // 單一 Anthropic call 超過 12 秒就 abort
 const MAX_TOOL_ROUNDS = 3;       // 最多 3 輪、防多輪拖到 LINE replyToken 30s 失效
@@ -432,14 +441,14 @@ async function runToolLoop(opts: {
           "anthropic-version": "2023-06-01",
         },
         signal: ctrl.signal,
-        body: JSON.stringify({
+        body: JSON.stringify(deepStrip({
           model: opts.model,
           system: opts.systemPrompt,
           messages,
           tools: TOOLS_ALL,
           max_tokens: 1500,
           temperature: 0.7,
-        }),
+        })),
       });
       if (!res.ok) {
         const err = await res.text();
@@ -529,13 +538,13 @@ async function fallbackPlainText(
         "anthropic-version": "2023-06-01",
       },
       signal: ctrl.signal,
-      body: JSON.stringify({
+      body: JSON.stringify(deepStrip({
         model: opts.model,
         system: opts.systemPrompt + "\n\n注意：這一輪不要呼叫 tool、用純文字回答。",
         messages,
         max_tokens: 1000,
         temperature: 0.8,
-      }),
+      })),
     });
     if (!res.ok) return "嗯？剛剛沒抓到、再說一次？";
     const data = await res.json();
