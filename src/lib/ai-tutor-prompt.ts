@@ -229,10 +229,12 @@ export async function buildTutorSystemPrompt(options: {
 `
     : "";
 
-  // 雪鑰身份 — 學員 channel 共同 persona
-  const { XUEYUE_STUDENT_IDENTITY } = await import("./xueyue-persona");
+  // 身份：網站 = 三位導師各自身份（綠寶 / 肥仔 / 菇寶、不是雪鑰）；LINE / TG / Discord = 雪鑰
+  // slim === 非 web channel（LINE / TG / Discord）
+  const { XUEYUE_STUDENT_IDENTITY, buildStudentWebIdentity } = await import("./xueyue-persona");
+  const identityBlock = slim ? XUEYUE_STUDENT_IDENTITY : buildStudentWebIdentity(persona);
 
-  return `${XUEYUE_STUDENT_IDENTITY}
+  return `${identityBlock}
 ${ownerBlock}
 ${modelIdentityBlock}
 ${memoryBlock}

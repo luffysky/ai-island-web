@@ -8,6 +8,26 @@ import { NextRequest } from "next/server";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+/**
+ * 載入 Noto Sans TC 的「子集字型」— 只含這次要畫的字，幾十 KB、夠快。
+ * 沒這個的話 next/og 預設字型不含中日韓字、整張卡的中文會變成 □□□ 亂碼（豆腐字）。
+ * 任何一步失敗就回 null、改用預設字型（至少不會 500）。
+ */
+async function loadCjkFont(text: string, weight: 400 | 700): Promise<ArrayBuffer | null> {
+  try {
+    const api = `https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@${weight}&text=${encodeURIComponent(text)}`;
+    const css = await fetch(api, {
+      headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" },
+    }).then((r) => r.text());
+    const url = css.match(/src:\s*url\(([^)]+)\)/)?.[1];
+    if (!url) return null;
+    const buf = await fetch(url).then((r) => r.arrayBuffer());
+    return buf;
+  } catch {
+    return null;
+  }
+}
+
 function stripMd(s: string): string {
   return (s || "")
     .replace(/```[\s\S]*?```/g, "（程式碼略）")
@@ -24,6 +44,19 @@ export async function GET(req: NextRequest) {
   const q = stripMd(sp.get("q") || "").slice(0, 70);
   const a = stripMd(sp.get("a") || "").slice(0, 300);
 
+  // 把所有會畫出來的字湊在一起做子集（含固定文案、Q/A、導師名）
+  const renderedText =
+    "🏝️ AI 島🤖 綠寶 AI 導師 · 邊學邊問ai-island-web.snowrealm.petQ：在問邊學邊問。" +
+    persona + q + a;
+  const [bodyFont, boldFont] = await Promise.all([
+    loadCjkFont(renderedText, 400),
+    loadCjkFont(renderedText, 700),
+  ]);
+  const fonts = [
+    bodyFont && { name: "Noto Sans TC", data: bodyFont, weight: 400 as const, style: "normal" as const },
+    boldFont && { name: "Noto Sans TC", data: boldFont, weight: 700 as const, style: "normal" as const },
+  ].filter(Boolean) as { name: string; data: ArrayBuffer; weight: 400 | 700; style: "normal" }[];
+
   return new ImageResponse(
     (
       <div
@@ -34,7 +67,7 @@ export async function GET(req: NextRequest) {
           height: "100%",
           background: "#070709",
           color: "#fff",
-          fontFamily: "sans-serif",
+          fontFamily: fonts.length ? "'Noto Sans TC', sans-serif" : "sans-serif",
           padding: "64px 72px",
           position: "relative",
           overflow: "hidden",
@@ -71,6 +104,6 @@ export async function GET(req: NextRequest) {
         </div>
       </div>
     ),
-    { width: 1200, height: 630 }
+    { width: 1200, height: 630, fonts: fonts.length ? fonts : undefined }
   );
 }

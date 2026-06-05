@@ -20,7 +20,7 @@ import { STICKY_COLORS, clampOpacity, noteBgImgStyle, DEFAULT_NOTE_BG, type Note
 import { nextSrs, isDue, dueLabel, type SrsRating } from "@/lib/note-srs";
 import { loadFolders, saveFolders, folderDropId, FOLDER_DROP_PREFIX, UNCATEGORIZED } from "@/lib/note-folders";
 import { useToast } from "@/components/ui/Toast";
-import { Plus, X, Save, Loader2, Sparkles, GripVertical, Folder, FolderPlus, Image as ImageIcon, RotateCw, Copy, Link2, Search, Repeat2 } from "lucide-react";
+import { Plus, X, Save, Loader2, Sparkles, GripVertical, Folder, FolderPlus, Image as ImageIcon, RotateCw, Copy, Link2, Search, Repeat2, SlidersHorizontal } from "lucide-react";
 
 const UNCAT_FILTER = "__uncat__";
 
@@ -223,6 +223,7 @@ export function NotesManager({
   useEffect(() => { setBg(loadNotesBg()); }, []);
   const updateBg = (c: NotesBgConfig) => { setBg(c); saveNotesBg(c); };
   const [floating, setFloating] = useState(false);
+  const [toolsOpen, setToolsOpen] = useState(false); // 手機：工具列收合旋鈕
 
   const allTags = useMemo(
     () => Array.from(new Set(notes.flatMap((n) => n.tags ?? []))).slice(0, 40),
@@ -374,44 +375,64 @@ export function NotesManager({
 
       <div className={`relative space-y-4 ${hasBg ? "p-3 sm:p-5" : ""}`}>
       <div className="flex items-center gap-2 flex-wrap">
-      <button
-        onClick={joinByCode}
-        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border bg-bg-card text-sm hover:border-accent transition"
-        title="用邀請碼或連結加入別人的共同筆記"
-      >
-        🤝 加入共用
-      </button>
+      {/* 主要 CTA：永遠顯示 */}
       <button
         onClick={() => setEditing("new")}
         className="inline-flex items-center gap-1.5 px-4 py-2 bg-accent text-black font-semibold rounded-lg hover:scale-105 transition"
       >
         <Plus size={16} /> 新增筆記
       </button>
-      <NotesBackgroundPicker cfg={bg} onChange={updateBg} />
-      {notes.length > 0 && (
+
+      {/* 手機：收合旋鈕（點一下旋轉、展開其餘功能；省得工具列在小螢幕擠成一團）*/}
+      <button
+        type="button"
+        onClick={() => setToolsOpen((o) => !o)}
+        aria-expanded={toolsOpen}
+        aria-label={toolsOpen ? "收合工具列" : "展開工具列"}
+        className="sm:hidden inline-flex items-center justify-center w-10 h-10 rounded-lg border border-border bg-bg-card hover:border-accent transition"
+      >
+        <SlidersHorizontal
+          size={16}
+          className="transition-transform duration-300"
+          style={{ transform: toolsOpen ? "rotate(180deg)" : "rotate(0deg)" }}
+        />
+      </button>
+
+      {/* 其餘功能：手機收合（展開才顯示、佔整行）；桌面永遠內聯 */}
+      <div className={`${toolsOpen ? "flex" : "hidden"} sm:flex w-full sm:w-auto sm:flex-1 items-center gap-2 flex-wrap`}>
         <button
-          onClick={() => setFloating(true)}
+          onClick={joinByCode}
           className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border bg-bg-card text-sm hover:border-accent transition"
+          title="用邀請碼或連結加入別人的共同筆記"
         >
-          <Sparkles size={15} /> 漂浮預覽
+          🤝 加入共用
         </button>
-      )}
-      {notes.length > 0 && (
-        <div className="relative ml-auto">
-          <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-fg-muted pointer-events-none" />
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="搜尋筆記內容 / 分類 / 標籤"
-            className="w-48 sm:w-60 pl-8 pr-7 py-2 rounded-lg border border-border bg-bg-card text-sm outline-none focus:border-accent"
-          />
-          {query && (
-            <button onClick={() => setQuery("")} className="absolute right-2 top-1/2 -translate-y-1/2 text-fg-muted hover:text-fg" aria-label="清除搜尋">
-              <X size={13} />
-            </button>
-          )}
-        </div>
-      )}
+        <NotesBackgroundPicker cfg={bg} onChange={updateBg} />
+        {notes.length > 0 && (
+          <button
+            onClick={() => setFloating(true)}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border bg-bg-card text-sm hover:border-accent transition"
+          >
+            <Sparkles size={15} /> 漂浮預覽
+          </button>
+        )}
+        {notes.length > 0 && (
+          <div className="relative w-full sm:w-auto sm:ml-auto">
+            <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-fg-muted pointer-events-none" />
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="搜尋筆記內容 / 分類 / 標籤"
+              className="w-full sm:w-60 pl-8 pr-7 py-2 rounded-lg border border-border bg-bg-card text-sm outline-none focus:border-accent"
+            />
+            {query && (
+              <button onClick={() => setQuery("")} className="absolute right-2 top-1/2 -translate-y-1/2 text-fg-muted hover:text-fg" aria-label="清除搜尋">
+                <X size={13} />
+              </button>
+            )}
+          </div>
+        )}
+      </div>
       </div>
 
       {dueNotes.length > 0 && (

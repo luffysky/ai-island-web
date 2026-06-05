@@ -146,7 +146,10 @@ export function AITutorWidget({
   contextLessonId?: string;
 }) {
   const [open, setOpen] = useState(false);
-  useOverlayRegister(open);
+  // lockScroll=false：聊天視窗是「浮動面板」不是 modal。
+  // 游標在頁面 → 滾頁面；在聊天室 → 只滾聊天室（靠下方 overscroll-contain 擋住捲動冒泡）。
+  // 之前鎖 body scroll 導致「打開綠寶就不能滑網頁」（bug 76）。
+  useOverlayRegister(open, false);
   const [models, setModels] = useState<AIModel[]>([]);
   const [selectedModelId, setSelectedModelId] = useState<string>("");
   const [tone, setTone] = useState("friendly");
@@ -175,6 +178,7 @@ export function AITutorWidget({
   const { status: authState } = useAuth();
   const isLoggedIn = authState === "in";
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   useEdgeSafe(panelRef);
   const supabase = createSupabaseBrowser();
@@ -227,9 +231,10 @@ export function AITutorWidget({
     })();
   }, [authState, models]);
 
-  // 自動 scroll
+  // 自動 scroll — 只動聊天容器自己，不用 scrollIntoView（會連帶捲動整個頁面）
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const c = messagesContainerRef.current;
+    if (c) c.scrollTo({ top: c.scrollHeight, behavior: "smooth" });
   }, [messages]);
 
   const handleFiles = async (files: FileList | null) => {
@@ -750,8 +755,8 @@ export function AITutorWidget({
             />
           )}
 
-          {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-3 space-y-3">
+          {/* Messages — overscroll-contain：滾到頂/底不冒泡到頁面（cursor 在這裡只滾這裡） */}
+          <div ref={messagesContainerRef} className="flex-1 overflow-y-auto overscroll-contain p-3 space-y-3">
             {messages.length === 0 && (
               <div className="text-center text-fg-muted text-sm py-8">
                 <Sparkles size={32} className="mx-auto mb-2 opacity-50" />

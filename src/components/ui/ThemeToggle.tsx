@@ -22,7 +22,13 @@ function applyTheme(t: Theme) {
   html.setAttribute("data-theme", effective);
 }
 
-export function ThemeToggle() {
+function effectiveTheme(t: Theme): "dark" | "light" {
+  if (t !== "system") return t;
+  if (typeof window === "undefined") return "dark";
+  return window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+}
+
+export function ThemeToggle({ compact = false }: { compact?: boolean } = {}) {
   const [theme, setTheme] = useState<Theme>("dark");
 
   useEffect(() => {
@@ -44,6 +50,22 @@ export function ThemeToggle() {
     localStorage.setItem(STORAGE_KEY, t);
     applyTheme(t);
   };
+
+  // compact：單顆 on/off 鈕、在深↔淺之間切換（手機 nav 用、省空間）
+  if (compact) {
+    const eff = effectiveTheme(theme);
+    const isLight = eff === "light";
+    return (
+      <button
+        onClick={() => set(isLight ? "dark" : "light")}
+        className="p-2 rounded-full bg-bg-card border border-border text-fg-muted hover:text-fg"
+        title={isLight ? "切到暗黑" : "切到明亮"}
+        aria-label={isLight ? "切換到暗黑模式" : "切換到明亮模式"}
+      >
+        {isLight ? <Moon size={16} /> : <Sun size={16} />}
+      </button>
+    );
+  }
 
   return (
     <div className="inline-flex items-center gap-0.5 p-0.5 rounded-full bg-bg-card border border-border" role="group" aria-label="主題切換">

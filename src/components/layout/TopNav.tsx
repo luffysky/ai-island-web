@@ -127,8 +127,9 @@ export function TopNav() {
                 </span>
               </div>
 
-              {/* 主題切換 */}
+              {/* 主題切換 — 桌面三段、手機單顆 on/off（在大頭貼那排 nav） */}
               <div className="hidden md:block"><ThemeToggle /></div>
+              <div className="md:hidden"><ThemeToggle compact /></div>
 
               {/* 通知中心 */}
               <NotificationsDropdown />

@@ -21,7 +21,7 @@ export default async function MeLayout({ children }: { children: React.ReactNode
   return (
     <div className="min-h-screen" style={bgCss ? { background: bgCss } : undefined}>
       <div className="max-w-7xl mx-auto px-6 py-6">
-        <div className="flex gap-6">
+        <div className="flex flex-col md:flex-row gap-6">
           <MeSidebar profile={profile ?? null} />
           <div className="flex-1 min-w-0">{children}</div>
         </div>

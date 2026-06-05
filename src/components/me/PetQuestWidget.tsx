@@ -67,7 +67,7 @@ export function PetQuestWidget() {
         <button onClick={complete} disabled={completing}
           className="btn-chip btn-chip-success w-full justify-center py-2 text-sm disabled:opacity-50">
           {completing ? <Loader2 size={12} className="animate-spin" /> : <Check size={12} />}
-          已做完 / 領獎
+          我完成了，領獎勵 🎁
         </button>
       )}
     </div>

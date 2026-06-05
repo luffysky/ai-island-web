@@ -161,6 +161,10 @@ article table {
   white-space: nowrap;
 }
 
+/* 完全隱藏 scrollbar（手機橫向快捷列用、仍可滑動）*/
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
 /* 自訂 scrollbar 樣式（細、不擋畫面）*/
 .scrollbar-thin::-webkit-scrollbar { height: 6px; width: 6px; }
 .scrollbar-thin::-webkit-scrollbar-thumb { background: var(--color-border-hover); border-radius: 3px; }
