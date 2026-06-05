@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Chapter } from "@/lib/types";
 import { STAGE_COLORS, DIFFICULTY_LABELS, TIP_LABELS } from "@/lib/utils";
 import { chapterDisplayNumber } from "@/lib/chapter-display";
+import { trackEvent } from "@/lib/analytics";
 import { GamificationEngine } from "@/lib/gamification";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { useAuth } from "@/lib/auth-context";
@@ -96,6 +97,7 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
         });
         // 通知寵物
         if (typeof window !== "undefined") {
+          trackEvent("lesson_complete", { chapter_id: chapter.id, lesson_id: lessonId, xp });
           window.dispatchEvent(new CustomEvent("pet:lesson-complete", { detail: { chapterId: chapter.id, lessonId, xp } }));
           window.dispatchEvent(new CustomEvent("pet:xp-earned", { detail: { xp } }));
           // quest 任務
