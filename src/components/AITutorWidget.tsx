@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Sparkles, Send, X, ChevronDown, Settings as SettingsIcon, Plus, Loader2, History, MessageSquare, ImagePlus, Trash2, Share2 } from "lucide-react";
+import { Sparkles, Send, X, ChevronDown, Settings as SettingsIcon, Plus, Loader2, History, MessageSquare, ImagePlus, Trash2, Share2, ThumbsUp, ThumbsDown } from "lucide-react";
 import { useOverlayCount, useOverlayRegister } from "@/lib/overlay-stack";
 import { chapterDisplayNumberById } from "@/lib/chapter-display";
 import { useEdgeSafe } from "@/lib/use-edge-safe";
@@ -154,6 +154,7 @@ export function AITutorWidget({
   const [models, setModels] = useState<AIModel[]>([]);
   const [selectedModelId, setSelectedModelId] = useState<string>("auto"); // 預設 Auto（依難度自動分級、省成本）
   const [autoModelUsed, setAutoModelUsed] = useState<string | null>(null); // Auto 模式實際選到的模型
+  const [feedback, setFeedback] = useState<Record<number, "up" | "down">>({}); // 每則回答的讚/倒讚
   const [tone, setTone] = useState("friendly");
   const [personaId, setPersonaId] = useState<PersonaId>("green");
   const persona = getPersona(personaId);
@@ -461,6 +462,26 @@ export function AITutorWidget({
     setMessages([]);
     setConversationId(null);
     setError("");
+  };
+
+  // #6 回饋：對某則 AI 回答按讚/倒讚（樂觀更新、背景送）
+  const sendFeedback = (i: number, rating: "up" | "down") => {
+    setFeedback((f) => ({ ...f, [i]: rating }));
+    const answer = messages[i]?.content ?? "";
+    const question = messages[i - 1]?.role === "user" ? messages[i - 1].content : "";
+    fetch("/api/ai/feedback", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        conversationId,
+        rating,
+        question,
+        answer,
+        model: autoModelUsed || selectedModel?.model_name || (selectedModelId === "auto" ? "auto" : selectedModelId),
+        persona: persona.name,
+      }),
+    }).catch(() => {});
   };
 
   // 縮小：收回大頭貼泡泡、保留對話 + 記住目前捲動位置（再點泡泡展開會停在原地）
@@ -891,6 +912,26 @@ export function AITutorWidget({
                           >
                             <Share2 size={10} />
                           </button>
+                        )}
+                        {m.role === "assistant" && m.content && (
+                          <>
+                            <button
+                              onClick={() => sendFeedback(m._i, "up")}
+                              title="有幫助"
+                              aria-label="有幫助"
+                              className={`transition ${feedback[m._i] === "up" ? "text-green-500" : "hover:text-accent"}`}
+                            >
+                              <ThumbsUp size={10} className={feedback[m._i] === "up" ? "fill-current" : ""} />
+                            </button>
+                            <button
+                              onClick={() => sendFeedback(m._i, "down")}
+                              title="沒幫助（幫我們改進）"
+                              aria-label="沒幫助"
+                              className={`transition ${feedback[m._i] === "down" ? "text-red-500" : "hover:text-accent"}`}
+                            >
+                              <ThumbsDown size={10} className={feedback[m._i] === "down" ? "fill-current" : ""} />
+                            </button>
+                          </>
                         )}
                       </span>
                     )}
