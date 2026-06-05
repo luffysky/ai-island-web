@@ -52,10 +52,21 @@ async function handlePost(req: NextRequest) {
 
   const admin = createSupabaseAdmin();
 
-  // 1. 取模型
-  const { data: model, error: modelError } = await admin.from("ai_models").select("*").eq("id", modelId).single();
-  if (modelError) return errorResponse("model_lookup_failed", 500, modelError.message);
-  if (!model || !model.is_active) return errorResponse("model_unavailable", 400);
+  // 1. 取模型（modelId === "auto" → 依問題難度自動分級選 tier、省成本）
+  let model: any;
+  if (modelId === "auto") {
+    const { data: actives } = await admin.from("ai_models").select("*").eq("is_active", true);
+    const { classifyDifficulty, pickModelByTier } = await import("@/lib/ai-difficulty");
+    const tier = classifyDifficulty(message ?? "", { hasImages: images.length > 0 });
+    model = pickModelByTier(actives ?? [], tier);
+    if (!model) return errorResponse("model_unavailable", 400, "目前沒有可用模型");
+  } else {
+    const { data, error: modelError } = await admin.from("ai_models").select("*").eq("id", modelId).single();
+    if (modelError) return errorResponse("model_lookup_failed", 500, modelError.message);
+    if (!data || !data.is_active) return errorResponse("model_unavailable", 400);
+    model = data;
+  }
+  const effectiveModelId = model.id;
 
   // 2. 取 API key
   let apiKey: string;
@@ -149,7 +160,7 @@ async function handlePost(req: NextRequest) {
       .insert({
         user_id: user.id,
         title: message.slice(0, 60),
-        model_id: modelId,
+        model_id: effectiveModelId,
         tone: tone ?? "friendly",
         context_chapter_id: contextChapterId,
         context_lesson_id: contextLessonId,
@@ -375,7 +386,7 @@ async function handlePost(req: NextRequest) {
           await admin.rpc("upsert_ai_usage", {
             p_date: today,
             p_user_id: user.id,
-            p_model_id: modelId,
+            p_model_id: effectiveModelId,
             p_provider: model.provider,
             p_tokens_in: tokensInput,
             p_tokens_out: tokensOutput,
@@ -403,6 +414,7 @@ async function handlePost(req: NextRequest) {
           tokensInput,
           tokensOutput,
           cost: Number(cost.toFixed(6)),
+          modelUsed: model.display_name || model.model_name,  // Auto 模式讓前端顯示實際選了哪個
         })}\n\n`));
       } catch (e: any) {
         controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "error", error: e.message })}\n\n`));

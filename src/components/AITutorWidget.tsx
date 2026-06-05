@@ -152,7 +152,8 @@ export function AITutorWidget({
   // 之前鎖 body scroll 導致「打開綠寶就不能滑網頁」（bug 76）。
   useOverlayRegister(open, false);
   const [models, setModels] = useState<AIModel[]>([]);
-  const [selectedModelId, setSelectedModelId] = useState<string>("");
+  const [selectedModelId, setSelectedModelId] = useState<string>("auto"); // 預設 Auto（依難度自動分級、省成本）
+  const [autoModelUsed, setAutoModelUsed] = useState<string | null>(null); // Auto 模式實際選到的模型
   const [tone, setTone] = useState("friendly");
   const [personaId, setPersonaId] = useState<PersonaId>("green");
   const persona = getPersona(personaId);
@@ -209,8 +210,8 @@ export function AITutorWidget({
       }
       if (data) {
         setModels(data);
-        const def = data.find((m: any) => m.is_default) || data[0];
-        if (def) setSelectedModelId(def.id);
+        // 預設保持 "auto"（智慧分級）；只有當使用者先前選過具體模型才不動
+        setSelectedModelId((prev) => (prev && prev !== "") ? prev : "auto");
         if (data.length === 0) {
           setError("目前沒有可用 AI 模型，請到後台啟用至少一個模型");
         }
@@ -427,6 +428,7 @@ export function AITutorWidget({
                 return copy;
               });
             } else if (json.type === "done") {
+              if (json.modelUsed) setAutoModelUsed(json.modelUsed); // Auto 模式：顯示實際選到的模型
               if (!useBYOK && quotaUsed) {
                 setQuotaUsed({ ...quotaUsed, used: quotaUsed.used + 1 });
               }
@@ -529,6 +531,7 @@ export function AITutorWidget({
   };
 
   const selectedModel = models.find((m) => m.id === selectedModelId);
+  const isAuto = selectedModelId === "auto";
 
   return (
     <>
@@ -605,8 +608,10 @@ export function AITutorWidget({
                     </span>
                   )}
                 </div>
-                {selectedModel && (
-                  <div className="text-xs text-fg-muted truncate">{selectedModel.display_name}</div>
+                {(isAuto || selectedModel) && (
+                  <div className="text-xs text-fg-muted truncate">
+                    {isAuto ? `🤖 Auto${autoModelUsed ? ` · ${autoModelUsed}` : "（依難度自動選）"}` : selectedModel?.display_name}
+                  </div>
                 )}
               </div>
             </div>
@@ -746,7 +751,7 @@ export function AITutorWidget({
                   className="w-full flex items-center justify-between gap-2 bg-bg-card border border-border rounded p-2 text-sm text-left"
                 >
                   <span className="truncate">
-                    {selectedModel ? `${selectedModel.display_name} (${selectedModel.provider})` : "選擇 AI 模型"}
+                    {isAuto ? "🤖 Auto（依難度自動選）" : selectedModel ? `${selectedModel.display_name} (${selectedModel.provider})` : "選擇 AI 模型"}
                   </span>
                   <ChevronDown size={14} className={`shrink-0 transition ${showModelMenu ? "rotate-180" : ""}`} />
                 </button>
@@ -757,6 +762,17 @@ export function AITutorWidget({
                 )}
                 {showModelMenu && (
                   <ul className="absolute left-0 right-0 top-[calc(100%+4px)] z-[80] max-h-56 overflow-y-auto rounded-lg border border-border bg-bg-card shadow-2xl">
+                    {/* Auto：依問題難度自動分級（閒聊省、難題強） */}
+                    <li>
+                      <button
+                        type="button"
+                        onClick={() => { setSelectedModelId("auto"); setShowModelMenu(false); }}
+                        className={`w-full px-3 py-2 text-left text-sm hover:bg-bg-elevated border-b border-border ${isAuto ? "text-accent" : ""}`}
+                      >
+                        <div className="font-medium">🤖 Auto（智慧分級）</div>
+                        <div className="text-xs text-fg-muted">依問題難度自動選模型、省成本</div>
+                      </button>
+                    </li>
                     {models.length === 0 ? (
                       <li className="px-3 py-2 text-xs text-fg-muted">沒有可用模型</li>
                     ) : (
