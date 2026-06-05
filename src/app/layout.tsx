@@ -76,6 +76,10 @@ export const viewport: Viewport = {
   themeColor: "#0a0e14",
   width: "device-width",
   initialScale: 1,
+  // 鎖縮放：layout viewport = 視覺 viewport = device-width，
+  // 讓 100vw 精準等於螢幕寬，浮動元件（綠寶聊天、筆記）才不會在手機溢出。PWA 也更像原生 App。
+  maximumScale: 1,
+  userScalable: false,
   viewportFit: "cover",
 };
 

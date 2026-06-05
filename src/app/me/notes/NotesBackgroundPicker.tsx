@@ -45,7 +45,7 @@ export function NotesBackgroundPicker({
       {open && (
         <>
           <div className="fixed inset-0 z-20" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 z-30 mt-2 w-[300px] max-h-[72vh] overflow-auto space-y-3 rounded-2xl border border-border bg-bg-card p-3 shadow-xl">
+          <div className="absolute right-0 z-30 mt-2 w-[300px] max-w-[calc(100vw-1.5rem)] max-h-[72vh] overflow-auto space-y-3 rounded-2xl border border-border bg-bg-card p-3 shadow-xl">
             {GROUPS.map((g) => (
               <div key={g}>
                 <div className="text-xs text-fg-muted mb-1.5">{g}</div>
