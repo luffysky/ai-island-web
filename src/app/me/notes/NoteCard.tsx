@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { ChevronDown, ChevronUp, ArrowRight, Pencil, Trash2, Copy, Check, LogOut, Eye, Pin, Repeat2 } from "lucide-react";
+import { ChevronDown, ChevronUp, ArrowRight, Pencil, Trash2, Copy, Check, LogOut, Eye, Pin, Repeat2, SlidersHorizontal } from "lucide-react";
 import { formatTW } from "@/lib/format-date";
 import { sanitizeRichHtml } from "@/lib/rich-html";
 import { resolveSticky, stickyRotate, clampOpacity, hexToRgba, noteBgImgStyle, type NoteBg } from "@/lib/note-sticky";
@@ -65,6 +65,7 @@ export function NoteCard({
   const owned = note._owned ?? (note.user_id === meId);
   const isViewer = !owned && note._role === "viewer";
   const [expanded, setExpanded] = useState(false);
+  const [actionsOpen, setActionsOpen] = useState(false); // footer 動作鈕收合（旋鈕展開）
 
   const header = note.chapter_id
     ? `Ch ${String(note.chapter_id).padStart(2, "0")} · ${chapterTitle}`
@@ -242,7 +243,19 @@ export function NoteCard({
           {formatTW(note.updated_at)}
           {note.likes > 0 && <span className="ml-2">👍 {note.likes}</span>}
         </div>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 flex-wrap justify-end">
+          {/* 旋鈕：點一下旋轉展開所有動作（收合時不占空間、手機不爆版） */}
+          <button
+            onClick={(e) => { e.stopPropagation(); setActionsOpen((o) => !o); }}
+            className="inline-flex items-center justify-center w-7 h-7 rounded-full transition hover:bg-black/10 shrink-0"
+            style={{ color: "#444" }}
+            title={actionsOpen ? "收合動作" : "更多動作"}
+            aria-label="更多動作"
+            aria-expanded={actionsOpen}
+          >
+            <SlidersHorizontal size={14} className="transition-transform duration-300" style={{ transform: actionsOpen ? "rotate(180deg)" : "rotate(0deg)" }} />
+          </button>
+          {actionsOpen && (<>
           {onToggleReview && (
             <button
               onClick={(e) => { e.stopPropagation(); onToggleReview(); }}
@@ -309,6 +322,7 @@ export function NoteCard({
               跳到該課 <ArrowRight size={12} />
             </Link>
           )}
+          </>)}
         </div>
       </div>
       </div>
