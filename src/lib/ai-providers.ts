@@ -14,8 +14,8 @@ export interface AIMessage {
 
 // 內部 helper：把 string | AIContentBlock[] 轉純文字（Gemini / Groq 用、image 忽略）
 function contentToText(content: string | AIContentBlock[]): string {
-  if (typeof content === "string") return content;
-  return content.filter((b) => b.type === "text").map((b) => (b as any).text).join("\n");
+  if (typeof content === "string") return stripLoneSurrogates(content);
+  return stripLoneSurrogates(content.filter((b) => b.type === "text").map((b) => (b as any).text).join("\n"));
 }
 
 // 內部 helper：判斷 content 有沒有 image
@@ -110,15 +110,26 @@ async function callOpenAI(req: AICompletionRequest): Promise<AICompletionRespons
 }
 
 // ============ Anthropic Claude ============
+/**
+ * 移除「落單的 UTF-16 surrogate」（半個 emoji）。
+ * 來源通常是 someStr.slice(0, N) 剛好切在 emoji 的代理對中間 → 落單 surrogate
+ * → JSON.stringify 後變成不合法 JSON → Anthropic 回 400「no low surrogate in string」
+ * → 整個 AI 請求炸掉（學員 LINE 注入筆記時最常踩、因為筆記被 slice(0,250)）。
+ */
+export function stripLoneSurrogates(s: string): string {
+  if (!s) return s;
+  return s.replace(/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g, "");
+}
+
 function toAnthropicMessages(messages: AIMessage[]): any[] {
   return messages.map((m) => {
-    if (typeof m.content === "string") return { role: m.role, content: m.content };
+    if (typeof m.content === "string") return { role: m.role, content: stripLoneSurrogates(m.content) };
     // multimodal: 轉 Anthropic 格式
     return {
       role: m.role,
       content: m.content.map((b) =>
         b.type === "text"
-          ? { type: "text", text: b.text }
+          ? { type: "text", text: stripLoneSurrogates(b.text) }
           : { type: "image", source: { type: "base64", media_type: b.mediaType, data: b.data } },
       ),
     };
@@ -143,6 +154,7 @@ export const PROMPT_CACHE_MARKER = "​​​​";
  */
 function buildAnthropicSystem(systemText: string): string | any[] {
   if (!systemText) return "";
+  systemText = stripLoneSurrogates(systemText);
   const mi = systemText.indexOf(PROMPT_CACHE_MARKER);
   if (mi >= 0) {
     const prefix = systemText.slice(0, mi);
