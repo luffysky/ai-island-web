@@ -6,6 +6,7 @@ import { chapterDisplayNumberById } from "@/lib/chapter-display";
 import { useEdgeSafe } from "@/lib/use-edge-safe";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { devLog } from "@/lib/dev-log";
+import { trackEvent } from "@/lib/analytics";
 
 const TUTOR_POS_KEY = "ai_tutor_ball_pos";
 const TUTOR_SIZE_KEY = "ai_tutor_panel_size";
@@ -352,6 +353,7 @@ export function AITutorWidget({
       { role: "assistant", content: "", created_at: now },
     ]);
     setSending(true);
+    trackEvent("ai_chat_send", { persona: personaId, model: selectedModelId, has_image: images.length > 0 });
 
     try {
       // 島嶼每日學習任務（client-only）
@@ -467,6 +469,7 @@ export function AITutorWidget({
   // #6 回饋：對某則 AI 回答按讚/倒讚（樂觀更新、背景送）
   const sendFeedback = (i: number, rating: "up" | "down") => {
     setFeedback((f) => ({ ...f, [i]: rating }));
+    trackEvent("ai_feedback", { rating, persona: personaId });
     const answer = messages[i]?.content ?? "";
     const question = messages[i - 1]?.role === "user" ? messages[i - 1].content : "";
     fetch("/api/ai/feedback", {
@@ -899,6 +902,7 @@ export function AITutorWidget({
                         {m.role === "assistant" && (
                           <button
                             onClick={() => {
+                              trackEvent("share_answer", { persona: persona.name });
                               const url = `${window.location.origin}/api/og/share-ai?persona=${encodeURIComponent(persona.name)}&a=${encodeURIComponent(m.content.slice(0, 400))}`;
                               if (typeof navigator !== "undefined" && (navigator as any).share) {
                                 (navigator as any).share({ title: `${persona.name} 的回答`, url }).catch(() => {});

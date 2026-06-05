@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
+import { trackEvent } from "@/lib/analytics";
 import confetti from "canvas-confetti";
 import { Check, Flame, Gift } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
@@ -57,6 +58,7 @@ export function DailyCheckin() {
       return;
     }
     // 簽到成功
+    trackEvent("checkin", { streak: data.streak, day_in_cycle: data.day_in_cycle });
     setStatus({
       checked_today: true,
       streak: data.streak,

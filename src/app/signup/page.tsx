@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
+import { trackEvent } from "@/lib/analytics";
 import Link from "next/link";
 
 export default function SignupPage() {
@@ -46,6 +47,7 @@ export default function SignupPage() {
       }
     }
 
+    trackEvent("sign_up", { method: "email" });
     window.location.href = "/";
     setLoading(false);
   };

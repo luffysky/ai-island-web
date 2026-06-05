@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
+import { trackEvent } from "@/lib/analytics";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Sparkles, ArrowRight, Mail, Lock } from "lucide-react";
@@ -50,12 +51,14 @@ export default function LoginPage() {
         setLoading(false);
         return;
       }
+      trackEvent("login", { method: "email" });
       window.location.href = "/";
     }
     setLoading(false);
   };
 
   const googleLogin = async () => {
+    trackEvent("login", { method: "google" });
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: { redirectTo: `${window.location.origin}/auth/callback` },

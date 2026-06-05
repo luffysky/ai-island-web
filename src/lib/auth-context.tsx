@@ -10,6 +10,7 @@ import {
 import type { User } from "@supabase/supabase-js";
 import { devLog } from "@/lib/dev-log";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
+import { setAnalyticsUser } from "@/lib/analytics";
 
 /**
  * 全站共用 auth state。
@@ -140,6 +141,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       subscription.unsubscribe();
     };
   }, [supabase]);
+
+  // GA4（A）：登入後綁 user_id（跨裝置）+ 設受眾屬性（role / level / 連勝）；登出清掉
+  useEffect(() => {
+    if (status === "in" && user) {
+      setAnalyticsUser(user.id, {
+        role: (profile as any)?.role ?? "member",
+        level: (profile as any)?.level ?? 0,
+        streak: (profile as any)?.streak_days ?? 0,
+      });
+    } else if (status === "out") {
+      setAnalyticsUser(null);
+    }
+  }, [status, user?.id, (profile as any)?.role, (profile as any)?.level]);
 
   const value: AuthState = useMemo(
     () => ({
