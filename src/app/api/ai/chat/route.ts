@@ -187,7 +187,23 @@ async function handlePost(req: NextRequest) {
 
   // 5. 組 messages — 注入學員學習狀態 (AI 導師知道在跟誰對話、能個人化)
   const learningState = await getUserLearningState(user.id);
-  const userContext = learningState ? formatLearningStateForPrompt(learningState) : undefined;
+  let userContext = learningState ? formatLearningStateForPrompt(learningState) : undefined;
+
+  // 5.1 #4 RAG：語意檢索「跟這個問題最相關的章節」、注入 context（殺幻覺、引用更準）。
+  //     閒聊 / 太短不檢索（省 embedding call + 延遲）；pgvector 失敗自動略過、不影響回答。
+  try {
+    if (message && message.trim().length >= 8) {
+      const { vectorSearchLessons } = await import("@/lib/ai-embeddings");
+      const hits = await vectorSearchLessons(message, 4);
+      if (hits.length) {
+        const block = "## 與此問題語意最相關的 AI 島章節（優先引用、不確定就以這裡為準）\n" +
+          hits.map((h) => `- Ch${h.chapter_id}「${h.title}」：${String(h.summary ?? "").replace(/\s+/g, " ").slice(0, 160)}`).join("\n");
+        userContext = userContext ? `${userContext}\n\n${block}` : block;
+      }
+    }
+  } catch (e: any) {
+    console.warn("[ai chat] RAG retrieve failed:", e?.message);
+  }
 
   // 拿 user role + username + email 給 AI 認得董事長 (多 signal 識別)
   const { data: profileForRole } = await admin
