@@ -170,12 +170,18 @@ export async function POST(req: NextRequest) {
 - ❌ markdown 語法（** _ # > -）
 
 # 應該長這樣
-- 短！1-2 句、最多 30 字
+- 短！通常 1-3 句、別長篇大論（但可以接著剛剛的話聊、不是每句都重開）
 - 講人話、不要正式
 - 帶物種特色（${species.voiceHint}）
 - 情緒先：開心 / 鬧 / 累 / 想睡 / 餓 / 撒嬌
 - 偶爾講 ${userName} 的事：「你 Lv${profile?.level ?? 1} 了喔」「連勝 ${profile?.streak_days ?? 0} 天耶」
 - emoji 最多 1 個、不一定要
+
+# 你記得我們剛剛在聊什麼（很重要、不然會像金魚腦）
+- 上面是我們最近的對話、你看得到、要「接著聊」、不要每句都當第一次見面
+- ${userName} 說過的事你要記得：他的名字、心情、剛剛在幹嘛、剛剛問你什麼、你剛剛答了什麼
+- 他問「我剛剛說什麼」「我叫什麼」「我們在聊什麼」→ 從上面對話找出來、自然答出來、別裝傻
+- 接話要有連貫感：他上一句講累，你這句就順著關心；他上一句報喜，你就接著起鬨
 
 # 範例（看語氣別抄字面）
 人：「你好」
@@ -208,25 +214,37 @@ ${sharedMemoryBlock}
 
   // 如果使用者有自訂 prompt 就用、否則用 default
   const systemPrompt = pet.custom_prompt?.trim()
-    ? `${pet.custom_prompt.trim()}\n\n# 規則（不可違反）\n- 你是「${pet.name}」、${userName} 的寵物\n- 短句、不超過 30 字\n- 不解釋知識、不列點、不 markdown\n- 程式問題回「去問綠寶」\n\n${ctx}`
+    ? `${pet.custom_prompt.trim()}\n\n# 規則（不可違反）\n- 你是「${pet.name}」、${userName} 的寵物\n- 短句、通常 1-3 句、別長篇大論\n- 不解釋知識、不列點、不 markdown\n- 程式問題回「去問綠寶」\n- 你記得我們上面最近的對話、要接著聊、記得 ${userName} 說過的事（名字 / 心情 / 剛剛問什麼）、別像金魚腦每句重來\n\n# 你記得的事\n${pet.memory_summary || "（剛認識、還沒記憶）"}\n\n# 雪鑰跟你共享的記憶\n${sharedMemoryBlock}\n${ctx}`
     : defaultPrompt;
 
-  // 拿最近 10 條歷史
+  // 拿最近 30 條歷史（15 輪對話）— 讓寵物記得前面在聊什麼
   const { data: history } = await admin
     .from("pet_messages")
     .select("role, content")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false })
-    .limit(10);
+    .limit(30);
 
-  const historyAsc = (history ?? []).reverse();
+  // newest-last；並確保第一則是 user（Anthropic 要 user 開頭、且角色需交替）
+  let historyAsc = (history ?? []).reverse();
+  while (historyAsc.length && historyAsc[0].role !== "user") historyAsc = historyAsc.slice(1);
+  // 合併連續同角色（避免 streamAI 丟給 Anthropic 時 role 不交替而 400）
+  const mergedHistory: { role: "user" | "assistant"; content: string }[] = [];
+  for (const m of historyAsc) {
+    const role = (m.role === "user" ? "user" : "assistant") as "user" | "assistant";
+    const last = mergedHistory[mergedHistory.length - 1];
+    if (last && last.role === role) last.content += "\n" + m.content;
+    else mergedHistory.push({ role, content: m.content });
+  }
+  // 避免 history 末尾剛好也是 user（連續 user）→ 跟當前訊息合併、保持 user/assistant 交替
+  if (mergedHistory.length && mergedHistory[mergedHistory.length - 1].role === "user") {
+    mergedHistory[mergedHistory.length - 1].content += "\n" + message;
+  } else {
+    mergedHistory.push({ role: "user", content: message });
+  }
   const conversation = [
     { role: "system" as const, content: systemPrompt },
-    ...historyAsc.map((m: any) => ({
-      role: (m.role === "user" ? "user" : "assistant") as "user" | "assistant",
-      content: m.content,
-    })),
-    { role: "user" as const, content: message },
+    ...mergedHistory,
   ];
 
   // 寫 user message
@@ -248,7 +266,7 @@ ${sharedMemoryBlock}
           model: model.model_name,
           apiKey,
           messages: conversation,
-          maxTokens: 200,
+          maxTokens: 280,
         })) {
           if ((chunk as any).type === "text") {
             const text = (chunk as any).text;
@@ -274,6 +292,35 @@ ${sharedMemoryBlock}
             affinity: Math.min(1000, (pet.affinity ?? 0) + 1),
           })
           .eq("user_id", user.id);
+
+        // 滾動長期記憶：每累積一定訊息數、把對話濃縮進 memory_summary
+        // → 寵物記得的不只最近 30 則、而是長期認識主人（名字 / 喜好 / 在學什麼 / 約定）。
+        // 只偶爾跑（省 cost）、失敗不影響聊天。
+        try {
+          const { count } = await admin
+            .from("pet_messages")
+            .select("id", { count: "exact", head: true })
+            .eq("user_id", user.id);
+          if (count && count >= 12 && count % 12 === 0) {
+            const recentForSummary = [...mergedHistory.slice(-20), { role: "assistant" as const, content: petReply }]
+              .map((m) => `${m.role === "user" ? userName : pet.name}：${m.content}`)
+              .join("\n");
+            const { callAI } = await import("@/lib/ai-providers");
+            const sum = await callAI({
+              provider: model.provider,
+              model: model.model_name,
+              apiKey,
+              messages: [{
+                role: "user",
+                content: `你是寵物「${pet.name}」。把你對主人 ${userName} 的「長期記憶」更新成一段 200 字內的重點筆記（合併舊記憶＋最近對話、只留值得長期記得的：名字暱稱、喜好、在學什麼、心情起伏、彼此的約定 / 玩笑）。只輸出記憶本身、不要任何前後綴或解釋。\n\n舊記憶：${pet.memory_summary || "（還沒有）"}\n\n最近對話：\n${recentForSummary}`,
+              }],
+              maxTokens: 320,
+              temperature: 0.3,
+            });
+            const newMem = sum.text?.trim().slice(0, 700);
+            if (newMem) await admin.from("pets").update({ memory_summary: newMem }).eq("user_id", user.id);
+          }
+        } catch {}
       }
       controller.close();
     },
