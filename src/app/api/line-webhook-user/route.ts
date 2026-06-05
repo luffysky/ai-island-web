@@ -599,6 +599,24 @@ function cardUnbound(userId: string, feature: string = "AI 學員導師"): FlexM
   });
 }
 
+/** 已收到訊息 / 自動建工單 — 美化卡（取代純文字） */
+function cardTicketReceived(ticketId: string): FlexMessage {
+  return buildSimpleCard({
+    emoji: "📩",
+    title: "已收到你的訊息！",
+    accentColor: "#16a34a",  // 綠
+    body: "admin 會在 24 小時內回覆、回覆會直接推到這個 LINE 對話、不用一直開網站。",
+    meta: [
+      { label: "🎫 工單", value: `#${ticketId}` },
+      { label: "🔗 綁帳號", value: "傳「/bind 123456」" },
+      { label: "📖 看說明", value: "傳「/help」" },
+    ],
+    buttons: [
+      { label: "💬 看常見問題", uri: `${SITE_URL}/support`, primary: true },
+    ],
+  });
+}
+
 /**
  * 高階功能未綁定鎖（語音 / 圖片 / 完整對話歷史）
  * 用紅色強調「這項真的需要綁」
@@ -1814,10 +1832,10 @@ export async function POST(req: NextRequest) {
         text: `💌 ${senderName} 透過 LINE 提問：\n「${text.slice(0, 200)}」\n\n回覆：${SITE_URL}/${process.env.NEXT_PUBLIC_ADMIN_SLUG ?? "console-x7k2"}/admin/crm${ticket?.id ? `/${ticket.id}` : ""}`,
       }).catch(() => {});
 
-      // 回 user：已收到
+      // 回 user：已收到（美化 Flex 卡）
       await lineReply(
         replyToken,
-        `📩 已收到你的訊息、admin 會在 24 小時內回覆～\n\n（系統自動建 ticket #${ticket?.id?.toString().slice(0, 8) ?? "-"}、回覆會推到這個 LINE 對話）\n\n想自助：\n• 綁帳號：「/bind 123456」\n• 看說明：「/help」`,
+        cardTicketReceived(ticket?.id?.toString().slice(0, 8) ?? "-"),
         token, QUICK_REPLY,
       );
     }
