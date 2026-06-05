@@ -180,6 +180,8 @@ export function AITutorWidget({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  // Messenger 式：最小化記住捲動位置（數字）、關閉則下次回到最底（"bottom"）
+  const restoreScrollRef = useRef<number | "bottom" | null>(null);
   useEdgeSafe(panelRef);
   const supabase = createSupabaseBrowser();
 
@@ -236,6 +238,19 @@ export function AITutorWidget({
     const c = messagesContainerRef.current;
     if (c) c.scrollTo({ top: c.scrollHeight, behavior: "smooth" });
   }, [messages]);
+
+  // 展開時還原捲動：最小化過 → 回原位；關閉/全新 → 回到最底
+  useEffect(() => {
+    if (!open) return;
+    const r = restoreScrollRef.current;
+    requestAnimationFrame(() => {
+      const c = messagesContainerRef.current;
+      if (!c) return;
+      if (typeof r === "number") c.scrollTop = r;
+      else c.scrollTop = c.scrollHeight;
+      restoreScrollRef.current = null;
+    });
+  }, [open]);
 
   const handleFiles = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -437,6 +452,18 @@ export function AITutorWidget({
     setError("");
   };
 
+  // 縮小：收回大頭貼泡泡、保留對話 + 記住目前捲動位置（再點泡泡展開會停在原地）
+  const minimize = () => {
+    const c = messagesContainerRef.current;
+    restoreScrollRef.current = c ? c.scrollTop : null;
+    setOpen(false);
+  };
+  // 關閉：一樣收回泡泡、但下次展開回到最底（跟縮小不一樣）
+  const closeChat = () => {
+    restoreScrollRef.current = "bottom";
+    setOpen(false);
+  };
+
   const deleteHistory = async (
     h: { id: string; title: string },
     e: React.MouseEvent,
@@ -517,12 +544,18 @@ export function AITutorWidget({
           {/* Header — 漸層條 + 跳動 avatar */}
           <div className="relative flex items-center justify-between p-3 border-b border-border bg-gradient-to-r from-green-400/10 via-emerald-400/10 to-cyan-400/10">
             <div className="flex items-center gap-2 min-w-0">
-              <div className="relative shrink-0">
+              <button
+                type="button"
+                onClick={minimize}
+                title="縮小（保留對話、再點泡泡展開停在原處）"
+                aria-label="縮小聊天視窗"
+                className="relative shrink-0 hover:scale-105 active:scale-95 transition"
+              >
                 <div className="absolute inset-0 rounded-full bg-gradient-to-br from-green-400 to-cyan-400 blur-md opacity-50 animate-pulse" />
                 <div className="relative w-8 h-8 rounded-full bg-gradient-to-br from-green-400 via-emerald-400 to-cyan-400 ring-1 ring-emerald-300/50 flex items-center justify-center text-base">
                   ✨
                 </div>
-              </div>
+              </button>
               <div className="min-w-0">
                 <div className="font-bold text-sm flex items-center gap-1">
                   {persona.emoji} {persona.name}
@@ -571,7 +604,10 @@ export function AITutorWidget({
               >
                 <SettingsIcon size={16} />
               </button>
-              <button onClick={() => setOpen(false)} className="p-1.5 hover:bg-bg-elevated rounded">
+              <button onClick={minimize} className="p-1.5 hover:bg-bg-elevated rounded" title="縮小（保留對話）" aria-label="縮小">
+                <ChevronDown size={16} />
+              </button>
+              <button onClick={closeChat} className="p-1.5 hover:bg-bg-elevated rounded" title="關閉" aria-label="關閉">
                 <X size={16} />
               </button>
             </div>
