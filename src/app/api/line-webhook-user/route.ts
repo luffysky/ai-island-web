@@ -143,15 +143,17 @@ async function askUserAIInner(text: string, profile: UserProfileLite | null, lin
     return null;
   }
 
-  // 特定人（owner / 付費 Premium / admin·editor）走「更好的模型」：
-  // 後台用途鍵 line_user_vip 設一個強模型即可、沒設就自動退回 line_user（不影響其他人）。
-  let privileged = checkOwner({
+  // 身分判定：
+  // - isAdminId（owner / admin / editor）→ 在學員 LINE 也「直接用最高階模型」、不必先設 line_user_vip
+  // - privileged（再加上付費 Premium）→ 可走 line_user_vip 用途對應的強模型
+  const isAdminId = checkOwner({
     id: profile?.id ?? null,
     username: profile?.username ?? null,
     role: profile?.role ?? null,
     email: null,
     lineUserId,
   }).isOwner || ["owner", "admin", "editor"].includes(String((profile as any)?.role ?? ""));
+  let privileged = isAdminId;
   if (!privileged && profile?.id) {
     try {
       const { data: premiumOk } = await admin.rpc("has_active_subscription", { p_user_id: profile.id });
@@ -159,18 +161,39 @@ async function askUserAIInner(text: string, profile: UserProfileLite | null, lin
     } catch {}
   }
 
-  // 候選順序：後台用途對應（VIP 先 line_user_vip）→ anthropic（有 tool use）→ 其餘
-  // 之前只挑一個、若它的 provider key 沒啟用就直接 return null → 整個 fallback 到 ticket（學員端 AI「當」的主因）。
-  // 改成依序找「provider key 有啟用且能解密」的第一個、任何一家通就用、別輕易投降。
-  const usageModel = (privileged
-    ? await pickModelForUsage("line_user_vip", activeModels).catch(() => null)
-    : null)
-    ?? await pickModelForUsage("line_user", activeModels).catch(() => null);
-  const ordered = [
-    ...(usageModel ? [usageModel] : []),
-    ...activeModels.filter((m) => m.provider === "anthropic"),
-    ...activeModels,
-  ].filter((m, i, arr) => arr.findIndex((x) => x.id === m.id) === i);
+  // 模型「強度」估算（admin 身分直接挑最強的先試）
+  const strength = (m: any) => {
+    const n = String(m?.model_name ?? "").toLowerCase();
+    if (/opus/.test(n)) return 6;
+    if (/sonnet/.test(n)) return 5;
+    if (/gpt-4\.1|gpt-4o(?!-mini)|^o[134]\b/.test(n)) return 5;
+    if (/haiku/.test(n)) return 3;
+    if (/mini|flash|lite|nano|8b/.test(n)) return 1;
+    return 4;
+  };
+
+  const vipModel = privileged ? await pickModelForUsage("line_user_vip", activeModels).catch(() => null) : null;
+  const baseModel = await pickModelForUsage("line_user", activeModels).catch(() => null);
+
+  // 候選順序（之後依序找「金鑰有啟用且能解密」的第一個、任一家通就用、別輕易投降）：
+  let ordered: any[];
+  if (isAdminId) {
+    // admin 身分：line_user_vip 明設的擺最前、其餘按模型強度降序（Opus→Sonnet→…）、anthropic 同分優先（有 tool）
+    const pinned = vipModel ? [vipModel] : [];
+    const rest = activeModels
+      .filter((m) => !pinned.some((p) => p.id === m.id))
+      .sort((a, b) => strength(b) - strength(a) || (a.provider === "anthropic" ? -1 : 1));
+    ordered = [...pinned, ...rest];
+  } else {
+    // 一般 / Premium：vip（privileged 且有設）→ line_user → anthropic → 其餘
+    ordered = [
+      ...(vipModel ? [vipModel] : []),
+      ...(baseModel ? [baseModel] : []),
+      ...activeModels.filter((m) => m.provider === "anthropic"),
+      ...activeModels,
+    ];
+  }
+  ordered = ordered.filter((m, i, arr) => arr.findIndex((x) => x.id === m.id) === i);
 
   let model: any = null;
   let apiKey: string | null = null;
