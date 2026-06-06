@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { ChevronDown, ChevronUp, ArrowRight, Pencil, Trash2, Copy, Check, LogOut, Eye, Pin, Repeat2, SlidersHorizontal } from "lucide-react";
@@ -65,7 +65,30 @@ export function NoteCard({
   const owned = note._owned ?? (note.user_id === meId);
   const isViewer = !owned && note._role === "viewer";
   const [expanded, setExpanded] = useState(false);
-  const [actionsOpen, setActionsOpen] = useState(false); // footer 動作鈕收合（旋鈕展開）
+  const [actionsOpen, setActionsOpen] = useState(false); // footer 動作環形選單
+  const [canHover, setCanHover] = useState(false);        // 桌機=hover 展開、手機=點擊
+  const [ringOffset, setRingOffset] = useState({ x: 0, y: 0 }); // 圓環超出視口時往內移
+  const radialRef = useRef<HTMLDivElement>(null);
+  const RADIAL_R = 60;
+  useEffect(() => {
+    setCanHover(typeof window !== "undefined" && !!window.matchMedia?.("(hover: hover) and (pointer: fine)").matches);
+  }, []);
+  // 展開前量測中心、若整個圓環超出視口就算出往內位移（手機常見、桌機保險）
+  const openRadial = () => {
+    const el = radialRef.current;
+    if (el && typeof window !== "undefined") {
+      const r = el.getBoundingClientRect();
+      const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+      const pad = RADIAL_R + 22; // 半徑 + 半個 item + 邊距
+      const vw = window.innerWidth, vh = window.innerHeight;
+      let dx = 0, dy = 0;
+      if (cx - pad < 0) dx = pad - cx; else if (cx + pad > vw) dx = vw - (cx + pad);
+      if (cy - pad < 0) dy = pad - cy; else if (cy + pad > vh) dy = vh - (cy + pad);
+      setRingOffset({ x: dx, y: dy });
+    } else setRingOffset({ x: 0, y: 0 });
+    setActionsOpen(true);
+  };
+  const closeRadial = () => setActionsOpen(false);
 
   const header = note.chapter_id
     ? `Ch ${String(note.chapter_id).padStart(2, "0")} · ${chapterTitle}`
@@ -256,26 +279,35 @@ export function NoteCard({
           if (jumpHref) items.push({ key: "jump", icon: <ArrowRight size={14} />, title: "跳到該課", href: jumpHref, bg: "#1a1a1a", color: "#fff" });
 
           const N = items.length;
-          const START = 182, END = 286, R = 62; // 左上扇形：往上 + 左飛出（避開卡片右下角）
-          const angleOf = (i: number) => (N <= 1 ? 226 : START + (END - START) * (i / (N - 1)));
-          const cls = "absolute left-1/2 top-1/2 w-8 h-8 rounded-full flex items-center justify-center shadow-md ring-1 ring-black/5 transition-all duration-300 ease-out hover:scale-110";
-          const close = () => setActionsOpen(false);
+          const R = RADIAL_R;
+          // 整個圓：360/N 動態等分（之後加新功能自動均分、不寫死）；從正上方順時針排
+          const angleOf = (i: number) => -90 + i * (360 / N);
+          const cls = "absolute left-1/2 top-1/2 w-8 h-8 rounded-full flex items-center justify-center shadow-md ring-1 ring-black/5 will-change-transform";
+          const close = closeRadial;
 
           return (
-            <div className="relative shrink-0 w-9 h-9">
-              {actionsOpen && (
-                <div onClick={(e) => { e.stopPropagation(); close(); }} aria-hidden style={{ position: "absolute", inset: "-240px", zIndex: 4 }} />
+            <div
+              ref={radialRef}
+              className="relative shrink-0 w-9 h-9"
+              onMouseEnter={() => { if (canHover) openRadial(); }}
+              onMouseLeave={() => { if (canHover) closeRadial(); }}
+            >
+              {/* 手機：點外面收合（桌機靠 hover 離開收合、不需要遮罩）*/}
+              {actionsOpen && !canHover && (
+                <div onClick={(e) => { e.stopPropagation(); closeRadial(); }} aria-hidden style={{ position: "absolute", inset: "-280px", zIndex: 4 }} />
               )}
               {items.map((it, i) => {
                 const rad = (angleOf(i) * Math.PI) / 180;
-                const x = (Math.cos(rad) * R).toFixed(1);
-                const y = (Math.sin(rad) * R).toFixed(1);
+                const x = Math.cos(rad) * R + ringOffset.x;
+                const y = Math.sin(rad) * R + ringOffset.y;
+                const delay = actionsOpen ? i * 40 : (N - 1 - i) * 22; // 環繞：依序彈出 / 收回
                 const style: React.CSSProperties = {
                   transform: actionsOpen
-                    ? `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) scale(1)`
+                    ? `translate(calc(-50% + ${x.toFixed(1)}px), calc(-50% + ${y.toFixed(1)}px)) scale(1)`
                     : "translate(-50%, -50%) scale(0.2)",
                   opacity: actionsOpen ? 1 : 0,
-                  transitionDelay: actionsOpen ? `${i * 35}ms` : `${(N - 1 - i) * 18}ms`,
+                  // springy 過場（overshoot 有「彈出/環繞」感）+ staggered delay
+                  transition: `transform 380ms cubic-bezier(0.34, 1.56, 0.64, 1) ${delay}ms, opacity 220ms ease ${delay}ms`,
                   pointerEvents: actionsOpen ? "auto" : "none",
                   background: it.bg ?? "rgba(255,255,255,0.95)",
                   color: it.color ?? "#444",
@@ -296,8 +328,8 @@ export function NoteCard({
               {/* 中間旋鈕：展開旋轉 135°、變深色 */}
               <button
                 type="button"
-                onClick={(e) => { e.stopPropagation(); setActionsOpen((o) => !o); }}
-                className="absolute left-1/2 top-1/2 z-20 w-9 h-9 rounded-full flex items-center justify-center shadow-md ring-1 ring-black/10 transition-transform duration-300 hover:scale-105"
+                onClick={(e) => { e.stopPropagation(); actionsOpen ? closeRadial() : openRadial(); }}
+                className="absolute left-1/2 top-1/2 z-20 w-9 h-9 rounded-full flex items-center justify-center shadow-md ring-1 ring-black/10 transition-transform duration-300"
                 style={{
                   background: actionsOpen ? "#1a1a1a" : "rgba(255,255,255,0.95)",
                   color: actionsOpen ? "#fff" : "#444",
