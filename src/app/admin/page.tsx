@@ -9,6 +9,7 @@ import { checkOwner } from "@/lib/is-owner";
 import { CountUp } from "@/components/ui/CountUp";
 import { PulseDot } from "@/components/ui/PulseDot";
 import { AdminGreeting } from "@/components/admin/AdminGreeting";
+import { RingGauge } from "@/components/ui/RingGauge";
 
 export default async function AdminOverviewPage() {
   const supabase = createSupabaseAdmin();
@@ -360,7 +361,12 @@ export default async function AdminOverviewPage() {
         {/* AI 預算 */}
         <Link href={adminHref("/admin/ai/models") as any} className={`bg-bg-card border rounded-xl p-4 transition ${budgetView.some((b: any) => b.level === "critical") ? "border-red-500/40" : budgetView.some((b: any) => b.level === "warning") ? "border-orange-500/40" : "border-border hover:border-accent"}`}>
           <div className="text-[10px] uppercase tracking-wider text-fg-muted">AI 預算</div>
-          <div className="text-sm font-bold mt-1">
+          <div className="flex items-center gap-3 mt-1">
+            {budgetView.length > 0 && (
+              <RingGauge pct={Math.max(0, ...budgetView.map((b: any) => Number(b.pct)))} />
+            )}
+            <div className="flex-1 min-w-0">
+          <div className="text-sm font-bold">
             {budgetView.length === 0 ? "—" : `${budgetView.length} 把 key`}
           </div>
           <div className="mt-1 space-y-0.5">
@@ -377,6 +383,8 @@ export default async function AdminOverviewPage() {
                 </span>
               </div>
             ))}
+          </div>
+            </div>
           </div>
         </Link>
       </div>
