@@ -165,6 +165,22 @@ article table {
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 
+/* 連勝火焰閃爍（StreakFlame）*/
+@keyframes flame-flicker {
+  0%, 100% { transform: scale(1) translateY(0) rotate(-1deg); }
+  25%      { transform: scale(1.04) translateY(-0.5px) rotate(1.5deg); }
+  50%      { transform: scale(0.98) translateY(0.5px) rotate(-1.5deg); }
+  75%      { transform: scale(1.03) translateY(-0.5px) rotate(1deg); }
+}
+@media (prefers-reduced-motion: reduce) { @keyframes flame-flicker { 0%,100% { transform: none; } } }
+
+/* 摸寵物浮愛心（PetHearts）*/
+@keyframes pet-heart-float {
+  0%   { opacity: 0; transform: translateY(0) scale(0.6); }
+  15%  { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-46px) scale(1.1); }
+}
+
 /* 自訂 scrollbar 樣式（細、不擋畫面）*/
 .scrollbar-thin::-webkit-scrollbar { height: 6px; width: 6px; }
 .scrollbar-thin::-webkit-scrollbar-thumb { background: var(--color-border-hover); border-radius: 3px; }

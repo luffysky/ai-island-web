@@ -6,6 +6,7 @@ import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { useAuth } from "@/lib/auth-context";
 import { Flame, Coins, Heart, LogOut, Settings, Trophy, User as UserIcon, ChevronDown, Menu, X } from "lucide-react";
 import { TodoDropdownButton } from "@/components/todo/TodoDropdown";
+import { CountUp } from "@/components/ui/CountUp";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { NotificationsDropdown } from "@/components/layout/NotificationsDropdown";
 import { usePopover, PopoverPanel } from "@/components/ui/Popover";
@@ -115,15 +116,15 @@ export function TopNav() {
               <div className="hidden md:flex items-center gap-3 text-xs">
                 <span className="flex items-center gap-1" title="連勝">
                   <Flame size={14} className="text-orange-400" />
-                  {displayProfile.streak_days ?? 0}
+                  <CountUp value={displayProfile.streak_days ?? 0} />
                 </span>
                 <span className="flex items-center gap-1" title="Z-coin">
                   <Coins size={14} className="text-yellow-400" />
-                  {displayProfile.z_coin ?? 0}
+                  <CountUp value={displayProfile.z_coin ?? 0} />
                 </span>
                 <span className="flex items-center gap-1" title="生命">
                   <Heart size={14} className="text-red-400" />
-                  {displayProfile.hearts ?? 5}
+                  <CountUp value={displayProfile.hearts ?? 5} />
                 </span>
               </div>
 

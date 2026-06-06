@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { CountUp } from "@/components/ui/CountUp";
+import { StreakFlame } from "@/components/ui/StreakFlame";
 import {
   LayoutDashboard,
   StickyNote,
@@ -137,20 +139,20 @@ export function MeSidebar({ profile }: { profile: Profile | null }) {
                   {profile?.display_name || profile?.username}
                 </div>
                 <div className="text-xs text-fg-muted">
-                  Lv {profile?.level ?? 1} · {profile?.xp ?? 0} XP
+                  Lv {profile?.level ?? 1} · <CountUp value={profile?.xp ?? 0} /> XP
                 </div>
               </div>
             </div>
             <div className="mt-3 grid grid-cols-2 gap-2 text-center text-xs">
               <div className="bg-bg rounded p-2">
                 <div className="text-yellow-400 font-bold">
-                  🪙 {profile?.z_coin ?? 0}
+                  🪙 <CountUp value={profile?.z_coin ?? 0} />
                 </div>
                 <div className="text-fg-muted">Z-coin</div>
               </div>
               <div className="bg-bg rounded p-2">
-                <div className="text-orange-400 font-bold">
-                  🔥 {profile?.streak_days ?? 0}
+                <div className="text-orange-400 font-bold flex items-center justify-center gap-1">
+                  <StreakFlame streak={profile?.streak_days ?? 0} /> <CountUp value={profile?.streak_days ?? 0} />
                 </div>
                 <div className="text-fg-muted">連續天</div>
               </div>
