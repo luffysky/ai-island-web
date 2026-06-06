@@ -127,4 +127,9 @@
 - [ ] 33 篇新 lesson 補 embedding（.env.local 放 OPENAI_API_KEY 跑 backfill_embeddings.mjs）
 - [ ] v2 島嶼、AI 模型中台 dashboard、Nami 貼圖（林董手作中）
 
+## 🎁 小巧思批次（UI 微互動，無 DB 變更、審計 0 錯）
+**學員**：`<CountUp>` 數字滾動（等級/XP/Z幣/連勝/生命，側欄+TopNav）、`<StreakFlame>` 連勝越燒越旺、摸寵物浮愛心+彈跳、複製氣泡改液態玻璃、升級撒 confetti。
+**後台**：`AdminGreeting` 時段問候+雪鑰揮手+今日註冊、KPI `<CountUp>`（漲跌箭頭本來就有）、`PulseDot` 近 7 日活躍呼吸燈、`RingGauge` AI 預算環形量表。
+**留著沒做（有原因）**：① 後台浮動工具列改環形 → 現有面板有標籤+拖移+關閉/隱藏，環形會犧牲這些、不划算；② Z 幣入袋飛行粒子 → 數字已用 CountUp 滾、飛行粒子屬額外、需掛全站得幣事件、列為選配。
+
 > 來源：`daily_works_0605.md` + 本日進度。
