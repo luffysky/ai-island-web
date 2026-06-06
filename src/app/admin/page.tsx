@@ -6,6 +6,9 @@ import { DashboardCharts } from "./DashboardCharts";
 import { AutoRefresh } from "./AutoRefresh";
 import { NotifyTestButton } from "./NotifyTestButton";
 import { checkOwner } from "@/lib/is-owner";
+import { CountUp } from "@/components/ui/CountUp";
+import { PulseDot } from "@/components/ui/PulseDot";
+import { AdminGreeting } from "@/components/admin/AdminGreeting";
 
 export default async function AdminOverviewPage() {
   const supabase = createSupabaseAdmin();
@@ -255,6 +258,12 @@ export default async function AdminOverviewPage() {
         <AutoRefresh />
       </div>
 
+      {/* 時段問候 + 今日註冊 */}
+      <AdminGreeting
+        name={ownerCheck?.isOwner ? "林董" : ((currentProfile as any)?.username ?? "管理員")}
+        signupsToday={newUsersToday ?? 0}
+      />
+
       {/* Owner identity card — 顯示 AI 為什麼判你 owner */}
       {ownerCheck?.isOwner && (
         <div className="bg-gradient-to-r from-yellow-500/10 via-pink-500/10 to-purple-500/10 border border-yellow-500/30 rounded-2xl p-4">
@@ -378,7 +387,7 @@ export default async function AdminOverviewPage() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <Stat label="總用戶" value={userCount ?? 0} hint={`+${newUsersThisMonth ?? 0} 本月`} color="text-accent" trend={userTrend} />
           <Stat label="今日新註冊" value={newUsersToday ?? 0} color="text-blue-400" hint={`本週 ${usersThisWeek ?? 0}`} />
-          <Stat label="近 7 日活躍" value={dauCount ?? 0} hint={`${userCount ? Math.round((dauCount ?? 0) / userCount * 100) : 0}% 整體留存`} color="text-green-400" />
+          <Stat label="近 7 日活躍" value={dauCount ?? 0} hint={`${userCount ? Math.round((dauCount ?? 0) / userCount * 100) : 0}% 整體留存`} color="text-green-400" live />
           <Stat label="MRR" value={`NT$ ${mrr.toLocaleString()}`} hint={`${activeSubs ?? 0} 訂閱、本週收入 NT$ ${revThisWeek.toLocaleString()}`} color="text-yellow-400" trend={revTrend} />
         </div>
       </div>
@@ -461,20 +470,21 @@ export default async function AdminOverviewPage() {
 }
 
 function Stat({
-  label, value, hint, color, trend,
+  label, value, hint, color, trend, live,
 }: {
   label: string;
   value: any;
   hint?: string;
   color: string;
   trend?: { pct: number; dir: "up" | "down" | "flat" };
+  live?: boolean;
 }) {
   return (
     <div className="bg-bg-card border border-border rounded-xl p-4 hover:border-accent/40 transition relative overflow-hidden group">
       <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-accent/[0.03] opacity-0 group-hover:opacity-100 transition" />
       <div className="relative">
         <div className="flex items-center justify-between">
-          <div className="text-xs text-fg-muted">{label}</div>
+          <div className="text-xs text-fg-muted flex items-center gap-1.5">{live && <PulseDot size={7} />}{label}</div>
           {trend && trend.dir !== "flat" && (
             <span className={`text-[10px] font-bold inline-flex items-center gap-0.5 ${
               trend.dir === "up" ? "text-emerald-400" : "text-red-400"
@@ -483,7 +493,7 @@ function Stat({
             </span>
           )}
         </div>
-        <div className={`text-2xl font-bold mt-1 ${color}`}>{value}</div>
+        <div className={`text-2xl font-bold mt-1 ${color}`}>{typeof value === "number" ? <CountUp value={value} /> : value}</div>
         {hint && <div className="text-[11px] text-fg-muted mt-1 leading-tight">{hint}</div>}
       </div>
     </div>
