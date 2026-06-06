@@ -132,4 +132,25 @@
 **後台**：`AdminGreeting` 時段問候+雪鑰揮手+今日註冊、KPI `<CountUp>`（漲跌箭頭本來就有）、`PulseDot` 近 7 日活躍呼吸燈、`RingGauge` AI 預算環形量表。
 **留著沒做（有原因）**：① 後台浮動工具列改環形 → 現有面板有標籤+拖移+關閉/隱藏，環形會犧牲這些、不划算；② Z 幣入袋飛行粒子 → 數字已用 CountUp 滾、飛行粒子屬額外、需掛全站得幣事件、列為選配。
 
+---
+
+# 🏁 收工總結（2026-06-06）
+
+**今日 35 個 commit**（`c90f3a8` → `6b769e5`），全部 push 到 main、`tsc` + `next build` 全綠、DB 審計 0 欄位錯。
+
+一句話：**從「AI 像白癡」修到 RAG + Auto 分級 + 乾淨安全姿態 + 一堆手感巧思。**
+
+- **AI 體驗**：三導師正名（不再自稱雪鑰）、平台 FAQ 防「沒有 App」、智慧記憶按需載入、**#2 Auto 模型分級**、**#4 RAG（接 vectorSearchLessons）**、**#6 讚倒讚回饋**、prompt cache 前綴。
+- **學員 LINE 連環修**：韌性 fallback → admin 直接高模型 → **真正主因落單 surrogate（含 tool 路徑）** → ticket 美化卡。
+- **Supabase 安全**：5 views security_invoker、38 函式 search_path、函式 EXECUTE 收緊、4 policy WITH CHECK(false)、war 60→~15。
+- **權限**：owner ⊇ admin（28 處）、Luffy→owner、小號→member、profiles_role_check 加 owner。
+- **接錯表修**：forum_posts→forum_replies、system_settings→app_settings、補建 seo_overrides / ai_feedback。
+- **RWD/UI**：viewport 鎖縮放、**筆記環形選單（撲克牌順時針掃出 + 液態玻璃氣泡 + hover 定格）**、綠寶 Messenger 縮放、手機側欄。
+- **GA4**：trackEvent + 11 事件 + user 屬性（C/D 後台設定待林董點）。
+- **小巧思**：count-up、連勝火焰、摸寵物愛心、升級撒花、後台問候+脈動點+AI 預算環形量表。
+
+**待林董手動**：GA4 後台自訂維度/Enhanced Measurement/BigQuery、Supabase Auth 三開關、env（Stripe/cron 等）、部署後戳學員 LINE 驗收。
+
+辛苦了，下班！🌙
+
 > 來源：`daily_works_0605.md` + 本日進度。
