@@ -66,6 +66,7 @@ export function NoteCard({
   const isViewer = !owned && note._role === "viewer";
   const [expanded, setExpanded] = useState(false);
   const [actionsOpen, setActionsOpen] = useState(false); // footer 動作環形選單
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null); // hover 哪個項目（顯示氣泡 + 不收）
   const [canHover, setCanHover] = useState(false);        // 桌機=hover 展開、手機=點擊
   const [ringOffset, setRingOffset] = useState({ x: 0, y: 0 }); // 圓環超出視口時往內移
   const radialRef = useRef<HTMLDivElement>(null);
@@ -292,7 +293,19 @@ export function NoteCard({
           const R = RADIAL_R;
           const startA = startAngleRef.current;            // 隨機起點（疊牌處）
           const ease = "cubic-bezier(0.22, 1, 0.36, 1)";
-          const keepOpen = () => { if (canHover && actionsOpen) armCloseTimer(); }; // 互動續命
+          // hover 到項目/旋鈕：暫停 3.2s 收合計時（不會選一半被收）；離開才重新倒數
+          const pauseClose = (key?: string) => { if (closeTimerRef.current) clearTimeout(closeTimerRef.current); if (key) setHoveredItem(key); };
+          const resumeClose = () => { if (canHover && actionsOpen) armCloseTimer(); setHoveredItem(null); };
+          // 液態玻璃氣泡：半透明 + 背景模糊 + saturate + 內緣高光
+          const tipCls = "absolute left-1/2 bottom-full mb-2 -translate-x-1/2 px-2.5 py-1 rounded-lg text-[10px] font-medium leading-tight whitespace-nowrap pointer-events-none z-[60] text-white";
+          const tipStyle: React.CSSProperties = {
+            background: "rgba(17,18,22,0.36)",
+            backdropFilter: "blur(8px) saturate(170%)",
+            WebkitBackdropFilter: "blur(8px) saturate(170%)",
+            border: "1px solid rgba(255,255,255,0.22)",
+            boxShadow: "0 6px 22px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.30)",
+            textShadow: "0 1px 2px rgba(0,0,0,0.45)",
+          };
 
           return (
             <div
@@ -330,32 +343,40 @@ export function NoteCard({
                   return (
                     <div key={it.key} style={spokeStyle}>
                       {it.href ? (
-                        <Link href={it.href as any} title={it.title} aria-label={it.title} className={btnCls} style={btnStyle}
-                          onMouseEnter={keepOpen} onClick={(e) => { e.stopPropagation(); closeRadial(); }}>
+                        <Link href={it.href as any} aria-label={it.title} className={btnCls} style={btnStyle}
+                          onMouseEnter={() => pauseClose(it.key)} onMouseLeave={resumeClose}
+                          onClick={(e) => { e.stopPropagation(); closeRadial(); }}>
                           {it.icon}
+                          {hoveredItem === it.key && <span className={tipCls} style={tipStyle}>{it.title}</span>}
                         </Link>
                       ) : (
-                        <button type="button" title={it.title} aria-label={it.title} className={btnCls} style={btnStyle}
-                          onMouseEnter={keepOpen} onClick={(e) => { e.stopPropagation(); it.onClick?.(e); closeRadial(); }}>
+                        <button type="button" aria-label={it.title} className={btnCls} style={btnStyle}
+                          onMouseEnter={() => pauseClose(it.key)} onMouseLeave={resumeClose}
+                          onClick={(e) => { e.stopPropagation(); it.onClick?.(e); closeRadial(); }}>
                           {it.icon}
+                          {hoveredItem === it.key && <span className={tipCls} style={tipStyle}>{it.title}</span>}
                         </button>
                       )}
                     </div>
                   );
                 })}
               </div>
+              {/* 旋鈕的液態玻璃氣泡（收合 / 更多動作）— 放在旋鈕外層、不受 135° 旋轉影響 */}
+              {hoveredItem === "__dial__" && (
+                <span className={tipCls} style={{ ...tipStyle, zIndex: 30 }}>{actionsOpen ? "收合" : "更多動作"}</span>
+              )}
               {/* 中間旋鈕：展開旋轉 135°、變深色 */}
               <button
                 type="button"
                 onClick={(e) => { e.stopPropagation(); actionsOpen ? closeRadial() : openRadial(); }}
-                onMouseEnter={keepOpen}
+                onMouseEnter={() => pauseClose("__dial__")}
+                onMouseLeave={resumeClose}
                 className="absolute left-1/2 top-1/2 z-20 w-9 h-9 rounded-full flex items-center justify-center shadow-md ring-1 ring-black/10 transition-transform duration-300"
                 style={{
                   background: actionsOpen ? "#1a1a1a" : "rgba(255,255,255,0.95)",
                   color: actionsOpen ? "#fff" : "#444",
                   transform: `translate(-50%, -50%) rotate(${actionsOpen ? 135 : 0}deg)`,
                 }}
-                title={actionsOpen ? "收合" : "更多動作"}
                 aria-label="更多動作"
                 aria-expanded={actionsOpen}
               >
