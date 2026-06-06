@@ -330,6 +330,9 @@ export function NoteCard({
                     transformOrigin: "0 0",
                     transform: `rotate(${angle}deg) translateX(${r}px)`,
                     transition: `transform 600ms ${ease} ${delay}ms`,
+                    // 每根 spoke 因 transform 自成 stacking context；被 hover 的整根提到最上層，
+                    // 它的氣泡才不會被其他項目（DOM 較後者）蓋住
+                    zIndex: hoveredItem === it.key ? 60 : undefined,
                   };
                   const btnStyle: React.CSSProperties = {
                     transform: `translate(-50%, -50%) rotate(${-angle}deg)`,      // 置中於端點 + 反轉保持圖示正立
