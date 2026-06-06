@@ -48,6 +48,7 @@ export function Pet() {
   const [line, setLine] = useState<string | null>(null);
   const [hidden, setHidden] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
+  const [loveHearts, setLoveHearts] = useState<{ id: number; dx: number }[]>([]); // 摸寵物浮愛心
   const [dragging, setDragging] = useState(false);
   const [userMoved, setUserMoved] = useState(false); // 用戶拖過後、不再強制右下角
   const [milestoneBurst, setMilestoneBurst] = useState<30 | 60 | 100 | null>(null);
@@ -134,6 +135,17 @@ export function Pet() {
     if (!ctx) return;
     const text = pickChatter(kind, ctx, extra);
     if (text) say(text, opts);
+  };
+
+  // 摸寵物：開心彈跳 + 愛心往上飄
+  const petLove = () => {
+    setMood("happy");
+    if (moodTimer.current) clearTimeout(moodTimer.current);
+    moodTimer.current = setTimeout(() => setMood("idle"), 700);
+    const base = Date.now();
+    const fresh = Array.from({ length: 3 }, (_, i) => ({ id: base + i, dx: Math.round((Math.random() - 0.5) * 30) }));
+    setLoveHearts((h) => [...h, ...fresh]);
+    setTimeout(() => setLoveHearts((h) => h.filter((x) => !fresh.some((n) => n.id === x.id))), 1100);
   };
 
   // 偵測手機
@@ -478,6 +490,22 @@ export function Pet() {
       >
         {line && <Bubble text={line} />}
 
+        {/* 摸寵物浮愛心 */}
+        {loveHearts.map((h) => (
+          <span
+            key={h.id}
+            aria-hidden
+            style={{
+              position: "absolute", left: "50%", top: -4,
+              transform: `translateX(${h.dx}px)`,
+              animation: "pet-heart-float 1.1s ease-out forwards",
+              pointerEvents: "none", fontSize: 15, zIndex: 3,
+            }}
+          >
+            ❤️
+          </span>
+        ))}
+
         {/* VIP aura */}
         {auraOn && auraColor && (
           <div
@@ -546,6 +574,7 @@ export function Pet() {
               window.removeEventListener("mousemove", onMoveCheck);
               window.removeEventListener("mouseup", onUpCheck);
               if (!moved) {
+                petLove();
                 setChatOpen(true);
               }
             };
@@ -572,7 +601,7 @@ export function Pet() {
             const onTouchEndCheck = () => {
               window.removeEventListener("touchmove", onTouchMoveCheck);
               window.removeEventListener("touchend", onTouchEndCheck);
-              if (!moved) setChatOpen(true);
+              if (!moved) { petLove(); setChatOpen(true); }
             };
             window.addEventListener("touchmove", onTouchMoveCheck, { passive: true });
             window.addEventListener("touchend", onTouchEndCheck);

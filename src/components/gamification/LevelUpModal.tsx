@@ -1,7 +1,14 @@
 "use client";
 import { motion } from "framer-motion";
+import { useEffect } from "react";
+import confetti from "canvas-confetti";
 
 export function LevelUpModal({ level, onClose }: { level: number; onClose: () => void }) {
+  useEffect(() => {
+    confetti({ particleCount: 130, spread: 85, origin: { y: 0.5 }, zIndex: 60 });
+    const t = setTimeout(() => confetti({ particleCount: 70, spread: 110, startVelocity: 38, origin: { y: 0.42 }, zIndex: 60 }), 260);
+    return () => clearTimeout(t);
+  }, []);
   return (
     <motion.div
       initial={{ opacity: 0 }}
