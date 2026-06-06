@@ -243,87 +243,75 @@ export function NoteCard({
           {formatTW(note.updated_at)}
           {note.likes > 0 && <span className="ml-2">👍 {note.likes}</span>}
         </div>
-        <div className="flex items-center gap-1.5 flex-wrap justify-end">
-          {/* 旋鈕：點一下旋轉展開所有動作（收合時不占空間、手機不爆版） */}
-          <button
-            onClick={(e) => { e.stopPropagation(); setActionsOpen((o) => !o); }}
-            className="inline-flex items-center justify-center w-7 h-7 rounded-full transition hover:bg-black/10 shrink-0"
-            style={{ color: "#444" }}
-            title={actionsOpen ? "收合動作" : "更多動作"}
-            aria-label="更多動作"
-            aria-expanded={actionsOpen}
-          >
-            <SlidersHorizontal size={14} className="transition-transform duration-300" style={{ transform: actionsOpen ? "rotate(180deg)" : "rotate(0deg)" }} />
-          </button>
-          {actionsOpen && (<>
-          {onToggleReview && (
-            <button
-              onClick={(e) => { e.stopPropagation(); onToggleReview(); }}
-              className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded transition hover:bg-black/10"
-              style={{ color: srsDue ? "#7c3aed" : "#444" }}
-              title={srsDue ? `間隔複習・${dueLabel(srsDue)}（點一下移除）` : "加入間隔複習"}
-            >
-              <Repeat2 size={12} className={srsDue ? "fill-current" : ""} />
-              {srsDue && <span className="hidden sm:inline">{dueLabel(srsDue)}</span>}
-            </button>
-          )}
-          {onPin && (
-            <button
-              onClick={(e) => { e.stopPropagation(); onPin(); }}
-              className="inline-flex items-center text-xs px-2 py-1 rounded transition hover:bg-black/10"
-              style={{ color: note.pinned ? "#b45309" : "#444" }}
-              title={note.pinned ? "取消置頂" : "置頂"}
-            >
-              <Pin size={12} className={note.pinned ? "fill-current" : ""} />
-            </button>
-          )}
-          <button
-            onClick={copyAll}
-            className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded transition hover:bg-black/10"
-            style={{ color: copied ? "#15803d" : "#444" }}
-            title="複製整則筆記"
-          >
-            {copied ? <><Check size={12} /> 已複製</> : <><Copy size={12} /> 複製</>}
-          </button>
-          {onEdit && (
-            <button
-              onClick={(e) => { e.stopPropagation(); onEdit(); }}
-              className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded transition hover:bg-black/10"
-              style={{ color: "#444" }}
-              title={isViewer ? "查看" : "編輯"}
-            >
-              {isViewer ? <><Eye size={12} /> 查看</> : <><Pencil size={12} /> 編輯</>}
-            </button>
-          )}
-          {onDelete && (
-            <button
-              onClick={(e) => { e.stopPropagation(); onDelete(); }}
-              className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded transition hover:bg-red-500/15 hover:text-red-600"
-              style={{ color: "#444" }}
-              title={owned ? "刪除" : "退出共用"}
-            >
-              {owned ? <Trash2 size={12} /> : <><LogOut size={12} /> 退出</>}
-            </button>
-          )}
-          <button
-            onClick={(e) => { e.stopPropagation(); setExpanded(!expanded); }}
-            className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded transition hover:bg-black/10"
-            style={{ color: "#444" }}
-          >
-            {expanded ? <><ChevronUp size={12} /> 收合</> : <><ChevronDown size={12} /> 展開</>}
-          </button>
-          {jumpHref && (
-            <Link
-              href={jumpHref as any}
-              onClick={(e) => e.stopPropagation()}
-              className="inline-flex items-center gap-1 text-xs px-3 py-1 rounded font-semibold transition hover:scale-105"
-              style={{ background: "#1a1a1a", color: "#fff" }}
-            >
-              跳到該課 <ArrowRight size={12} />
-            </Link>
-          )}
-          </>)}
-        </div>
+        {(() => {
+          // 環形（扇形）動作選單：中間旋鈕、展開時項目沿弧線環繞飛出（手機 / 桌機 / PWA 通用）
+          type RItem = { key: string; icon: React.ReactNode; title: string; onClick?: (e: React.MouseEvent) => void; href?: string; bg?: string; color?: string };
+          const items: RItem[] = [];
+          if (onToggleReview) items.push({ key: "review", icon: <Repeat2 size={14} className={srsDue ? "fill-current" : ""} />, title: srsDue ? `複習・${dueLabel(srsDue)}` : "加入間隔複習", onClick: onToggleReview, color: srsDue ? "#7c3aed" : "#444" });
+          if (onPin) items.push({ key: "pin", icon: <Pin size={14} className={note.pinned ? "fill-current" : ""} />, title: note.pinned ? "取消置頂" : "置頂", onClick: onPin, color: note.pinned ? "#b45309" : "#444" });
+          items.push({ key: "copy", icon: copied ? <Check size={14} /> : <Copy size={14} />, title: "複製整則", onClick: copyAll, color: copied ? "#15803d" : "#444" });
+          if (onEdit) items.push({ key: "edit", icon: isViewer ? <Eye size={14} /> : <Pencil size={14} />, title: isViewer ? "查看" : "編輯", onClick: onEdit, color: "#444" });
+          if (onDelete) items.push({ key: "del", icon: owned ? <Trash2 size={14} /> : <LogOut size={14} />, title: owned ? "刪除" : "退出共用", onClick: onDelete, color: "#dc2626" });
+          items.push({ key: "expand", icon: expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />, title: expanded ? "收合" : "展開", onClick: () => setExpanded(!expanded), color: "#444" });
+          if (jumpHref) items.push({ key: "jump", icon: <ArrowRight size={14} />, title: "跳到該課", href: jumpHref, bg: "#1a1a1a", color: "#fff" });
+
+          const N = items.length;
+          const START = 182, END = 286, R = 62; // 左上扇形：往上 + 左飛出（避開卡片右下角）
+          const angleOf = (i: number) => (N <= 1 ? 226 : START + (END - START) * (i / (N - 1)));
+          const cls = "absolute left-1/2 top-1/2 w-8 h-8 rounded-full flex items-center justify-center shadow-md ring-1 ring-black/5 transition-all duration-300 ease-out hover:scale-110";
+          const close = () => setActionsOpen(false);
+
+          return (
+            <div className="relative shrink-0 w-9 h-9">
+              {actionsOpen && (
+                <div onClick={(e) => { e.stopPropagation(); close(); }} aria-hidden style={{ position: "absolute", inset: "-240px", zIndex: 4 }} />
+              )}
+              {items.map((it, i) => {
+                const rad = (angleOf(i) * Math.PI) / 180;
+                const x = (Math.cos(rad) * R).toFixed(1);
+                const y = (Math.sin(rad) * R).toFixed(1);
+                const style: React.CSSProperties = {
+                  transform: actionsOpen
+                    ? `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) scale(1)`
+                    : "translate(-50%, -50%) scale(0.2)",
+                  opacity: actionsOpen ? 1 : 0,
+                  transitionDelay: actionsOpen ? `${i * 35}ms` : `${(N - 1 - i) * 18}ms`,
+                  pointerEvents: actionsOpen ? "auto" : "none",
+                  background: it.bg ?? "rgba(255,255,255,0.95)",
+                  color: it.color ?? "#444",
+                  zIndex: 10,
+                };
+                return it.href ? (
+                  <Link key={it.key} href={it.href as any} title={it.title} aria-label={it.title} className={cls} style={style}
+                    onClick={(e) => { e.stopPropagation(); close(); }}>
+                    {it.icon}
+                  </Link>
+                ) : (
+                  <button key={it.key} type="button" title={it.title} aria-label={it.title} className={cls} style={style}
+                    onClick={(e) => { e.stopPropagation(); it.onClick?.(e); close(); }}>
+                    {it.icon}
+                  </button>
+                );
+              })}
+              {/* 中間旋鈕：展開旋轉 135°、變深色 */}
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); setActionsOpen((o) => !o); }}
+                className="absolute left-1/2 top-1/2 z-20 w-9 h-9 rounded-full flex items-center justify-center shadow-md ring-1 ring-black/10 transition-transform duration-300 hover:scale-105"
+                style={{
+                  background: actionsOpen ? "#1a1a1a" : "rgba(255,255,255,0.95)",
+                  color: actionsOpen ? "#fff" : "#444",
+                  transform: `translate(-50%, -50%) rotate(${actionsOpen ? 135 : 0}deg)`,
+                }}
+                title={actionsOpen ? "收合" : "更多動作"}
+                aria-label="更多動作"
+                aria-expanded={actionsOpen}
+              >
+                <SlidersHorizontal size={15} />
+              </button>
+            </div>
+          );
+        })()}
       </div>
       </div>
     </div>
