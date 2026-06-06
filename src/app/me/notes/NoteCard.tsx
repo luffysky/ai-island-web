@@ -69,17 +69,26 @@ export function NoteCard({
   const [canHover, setCanHover] = useState(false);        // 桌機=hover 展開、手機=點擊
   const [ringOffset, setRingOffset] = useState({ x: 0, y: 0 }); // 圓環超出視口時往內移
   const radialRef = useRef<HTMLDivElement>(null);
+  const startAngleRef = useRef(-90);          // 撲克牌起始角（每次展開隨機）
+  const closeTimerRef = useRef<any>(null);    // hover 展開後自動收合計時
   const RADIAL_R = 60;
+  const HOVER_HOLD_MS = 3200;                 // hover 展開後定格幾秒、期間沒互動才收
   useEffect(() => {
     setCanHover(typeof window !== "undefined" && !!window.matchMedia?.("(hover: hover) and (pointer: fine)").matches);
+    return () => { if (closeTimerRef.current) clearTimeout(closeTimerRef.current); };
   }, []);
-  // 展開前量測中心、若整個圓環超出視口就算出往內位移（手機常見、桌機保險）
+  const armCloseTimer = () => {
+    if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+    closeTimerRef.current = setTimeout(() => setActionsOpen(false), HOVER_HOLD_MS);
+  };
+  // 展開前：隨機起點 + 量測中心、整圈若超出視口就算出往內位移
   const openRadial = () => {
+    startAngleRef.current = Math.round(Math.random() * 360);
     const el = radialRef.current;
     if (el && typeof window !== "undefined") {
       const r = el.getBoundingClientRect();
       const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
-      const pad = RADIAL_R + 22; // 半徑 + 半個 item + 邊距
+      const pad = RADIAL_R + 22;
       const vw = window.innerWidth, vh = window.innerHeight;
       let dx = 0, dy = 0;
       if (cx - pad < 0) dx = pad - cx; else if (cx + pad > vw) dx = vw - (cx + pad);
@@ -87,8 +96,9 @@ export function NoteCard({
       setRingOffset({ x: dx, y: dy });
     } else setRingOffset({ x: 0, y: 0 });
     setActionsOpen(true);
+    if (canHover) armCloseTimer();  // 桌機 hover：定格幾秒、互動會續命
   };
-  const closeRadial = () => setActionsOpen(false);
+  const closeRadial = () => { if (closeTimerRef.current) clearTimeout(closeTimerRef.current); setActionsOpen(false); };
 
   const header = note.chapter_id
     ? `Ch ${String(note.chapter_id).padStart(2, "0")} · ${chapterTitle}`
@@ -165,7 +175,7 @@ export function NoteCard({
     <div
       onClick={toggleExpand}
       className="relative rounded-md shadow-md hover:shadow-xl hover:-translate-y-0.5 transition cursor-pointer"
-      style={{ background: bgImg ? "transparent" : hexToRgba(sk.bg, opacity), color: TEXT, transform: `rotate(${rotate}deg)` }}
+      style={{ background: bgImg ? "transparent" : hexToRgba(sk.bg, opacity), color: TEXT, transform: `rotate(${rotate}deg)`, zIndex: actionsOpen ? 50 : undefined }}
     >
       {/* 複製成功懸浮氣泡（portal 到 body，避開卡片 rotate / overflow） */}
       {mounted && bubble && createPortal(
@@ -280,55 +290,65 @@ export function NoteCard({
 
           const N = items.length;
           const R = RADIAL_R;
-          // 整個圓：360/N 動態等分（之後加新功能自動均分、不寫死）；從正上方順時針排
-          const angleOf = (i: number) => -90 + i * (360 / N);
-          const cls = "absolute left-1/2 top-1/2 w-8 h-8 rounded-full flex items-center justify-center shadow-md ring-1 ring-black/5 will-change-transform";
-          const close = closeRadial;
+          const startA = startAngleRef.current;            // 隨機起點（疊牌處）
+          const ease = "cubic-bezier(0.22, 1, 0.36, 1)";
+          const keepOpen = () => { if (canHover && actionsOpen) armCloseTimer(); }; // 互動續命
 
           return (
             <div
               ref={radialRef}
               className="relative shrink-0 w-9 h-9"
-              onMouseEnter={() => { if (canHover) openRadial(); }}
-              onMouseLeave={() => { if (canHover) closeRadial(); }}
+              onMouseEnter={() => { if (canHover && !actionsOpen) openRadial(); }}
             >
-              {/* 手機：點外面收合（桌機靠 hover 離開收合、不需要遮罩）*/}
+              {/* 手機：點外面收合（桌機用定格計時、不需要遮罩）*/}
               {actionsOpen && !canHover && (
-                <div onClick={(e) => { e.stopPropagation(); closeRadial(); }} aria-hidden style={{ position: "absolute", inset: "-280px", zIndex: 4 }} />
+                <div onClick={(e) => { e.stopPropagation(); closeRadial(); }} aria-hidden style={{ position: "absolute", inset: "-300px", zIndex: 4 }} />
               )}
-              {items.map((it, i) => {
-                const rad = (angleOf(i) * Math.PI) / 180;
-                const x = Math.cos(rad) * R + ringOffset.x;
-                const y = Math.sin(rad) * R + ringOffset.y;
-                const delay = actionsOpen ? i * 40 : (N - 1 - i) * 22; // 環繞：依序彈出 / 收回
-                const style: React.CSSProperties = {
-                  transform: actionsOpen
-                    ? `translate(calc(-50% + ${x.toFixed(1)}px), calc(-50% + ${y.toFixed(1)}px)) scale(1)`
-                    : "translate(-50%, -50%) scale(0.2)",
-                  opacity: actionsOpen ? 1 : 0,
-                  // springy 過場（overshoot 有「彈出/環繞」感）+ staggered delay
-                  transition: `transform 380ms cubic-bezier(0.34, 1.56, 0.64, 1) ${delay}ms, opacity 220ms ease ${delay}ms`,
-                  pointerEvents: actionsOpen ? "auto" : "none",
-                  background: it.bg ?? "rgba(255,255,255,0.95)",
-                  color: it.color ?? "#444",
-                  zIndex: 10,
-                };
-                return it.href ? (
-                  <Link key={it.key} href={it.href as any} title={it.title} aria-label={it.title} className={cls} style={style}
-                    onClick={(e) => { e.stopPropagation(); close(); }}>
-                    {it.icon}
-                  </Link>
-                ) : (
-                  <button key={it.key} type="button" title={it.title} aria-label={it.title} className={cls} style={style}
-                    onClick={(e) => { e.stopPropagation(); it.onClick?.(e); close(); }}>
-                    {it.icon}
-                  </button>
-                );
-              })}
+              {/* 環形項目：spoke 旋轉帶圖示「沿圓弧順時針掃出」；整圈受 ringOffset 內移、旋鈕本身不動 */}
+              <div style={{ position: "absolute", inset: 0, zIndex: 10, transform: `translate(${ringOffset.x}px, ${ringOffset.y}px)`, transition: "transform 300ms ease" }}>
+                {items.map((it, i) => {
+                  const target = -90 + i * (360 / N);                              // 最終角（360/N 等分）
+                  const finalA = startA + ((((target - startA) % 360) + 360) % 360); // 一律順時針掃出
+                  const angle = actionsOpen ? finalA : startA;
+                  const r = actionsOpen ? R : 0;                                   // 收起＝疊在中心（撲克牌一疊）
+                  const delay = actionsOpen ? i * 46 : (N - 1 - i) * 24;
+                  const spokeStyle: React.CSSProperties = {
+                    position: "absolute", left: "50%", top: "50%", width: 0, height: 0,
+                    transformOrigin: "0 0",
+                    transform: `rotate(${angle}deg) translateX(${r}px)`,
+                    transition: `transform 600ms ${ease} ${delay}ms`,
+                  };
+                  const btnStyle: React.CSSProperties = {
+                    transform: `translate(-50%, -50%) rotate(${-angle}deg)`,      // 置中於端點 + 反轉保持圖示正立
+                    transition: `transform 600ms ${ease} ${delay}ms, opacity 260ms ease ${delay}ms`,
+                    opacity: actionsOpen ? 1 : 0,
+                    pointerEvents: actionsOpen ? "auto" : "none",
+                    background: it.bg ?? "rgba(255,255,255,0.95)",
+                    color: it.color ?? "#444",
+                  };
+                  const btnCls = "absolute left-0 top-0 w-8 h-8 rounded-full flex items-center justify-center shadow-md ring-1 ring-black/5 will-change-transform";
+                  return (
+                    <div key={it.key} style={spokeStyle}>
+                      {it.href ? (
+                        <Link href={it.href as any} title={it.title} aria-label={it.title} className={btnCls} style={btnStyle}
+                          onMouseEnter={keepOpen} onClick={(e) => { e.stopPropagation(); closeRadial(); }}>
+                          {it.icon}
+                        </Link>
+                      ) : (
+                        <button type="button" title={it.title} aria-label={it.title} className={btnCls} style={btnStyle}
+                          onMouseEnter={keepOpen} onClick={(e) => { e.stopPropagation(); it.onClick?.(e); closeRadial(); }}>
+                          {it.icon}
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
               {/* 中間旋鈕：展開旋轉 135°、變深色 */}
               <button
                 type="button"
                 onClick={(e) => { e.stopPropagation(); actionsOpen ? closeRadial() : openRadial(); }}
+                onMouseEnter={keepOpen}
                 className="absolute left-1/2 top-1/2 z-20 w-9 h-9 rounded-full flex items-center justify-center shadow-md ring-1 ring-black/10 transition-transform duration-300"
                 style={{
                   background: actionsOpen ? "#1a1a1a" : "rgba(255,255,255,0.95)",
