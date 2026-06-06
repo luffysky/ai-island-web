@@ -95,4 +95,36 @@
 ## G. 功能 Backlog（沿用 0605）
 - [ ] B1 自動評測 + 綠寶 code review、B4 證書、C1 Cohort、Z 幣商城、職缺媒合、n8n 自動化、Discord OAuth、模型中台 v1
 
+---
+
+# 🌙 本日後續（深夜場：AI 升級 #2~#6 + GA4 + 收尾）
+
+## ✅ 已完成上線
+- **學員 LINE 真正主因**：tool 路徑（askStudentAIWithTools）自組 Anthropic body、繞過 surrogate 清洗 → deepStrip 修好（學員＋admin 兩條）
+- **AI 升級全套**：#2 Auto 模型分級路由（依難度 flash↔sonnet、設預設）、#4 RAG（接 vectorSearchLessons、1163 篇已 embed）、#5 智慧記憶（按需載入省 token）、#6 讚/倒讚回饋（ai_feedback 表）
+- **Supabase 安全**：5 views security_invoker、38 函式 search_path、函式 EXECUTE 收緊 54→14、4 個 policy WITH CHECK(false)（notifications + 3 遙測）→ war.json 60→~15（剩皆刻意保留）
+- **owner ⊇ admin**：28 處 gating 補 owner；Luffy→owner、luffysky004→member（順手把 owner 加進 profiles_role_check）
+- **接錯表修**：forum_posts→forum_replies、system_settings→app_settings；補建 seo_overrides
+- **手機 RWD**：viewport 鎖縮放、筆記卡片底部改收合旋鈕、綠寶 Messenger 縮小/展開 + 可調大小記憶
+- **GA4 A+B**：trackEvent helper、登入綁 user_id+受眾屬性、接 sign_up/login/ai_chat_send/ai_feedback/share_answer/checkin/lesson_complete/quiz_complete/note_save/begin_checkout
+
+## 📋 GA4 C+D（要你在 GA4 後台點選、程式給不了）
+- [ ] **自訂定義**（Admin → 自訂定義）：事件維度 persona/model/rating/method/chapter_id/lesson_id/xp/streak；使用者屬性 role/level/streak
+- [ ] **Enhanced Measurement** 開：scroll / outbound / site search / file download / form
+- [ ] **標關鍵事件**：sign_up / begin_checkout / lesson_complete → 轉換目標
+- [ ] **BigQuery 連結**（免費）→ 留存 / cohort
+- [x] page_title 已含章名（Ch26：… | AI 島）= C5 OK
+
+## 🧱 DB 審計發現（皆優雅降級、不 crash；需產品決定真實表名再修）
+- [ ] `active_sessions`（admin/health 計數）→ 疑為 `analytics_sessions`
+- [ ] `email_subscribers`（admin 計數）→ 疑為 `email_subscriptions` / `blog_subscribers`
+- [ ] `courses`（island 首頁區塊）→ 無對應表、courses 功能尚未建表（島嶼該區塊顯示空）
+- [ ] `ai_usage_logs` / `feature_flags` / `user_settings`：**已有 try-catch「表未建」優雅處理**、屬可選功能、非 bug（feature_flags 的維護模式已改寫 app_settings）
+- ✅ 欄位錯接 0、254 支 route 全註冊、ai_feedback / seo_overrides 已建
+
+## ⏭️ 還沒做
+- [ ] GA4 剩餘事件（pet_chat / playground_run / line_bind 在 LINE 端故略）
+- [ ] 33 篇新 lesson 補 embedding（.env.local 放 OPENAI_API_KEY 跑 backfill_embeddings.mjs）
+- [ ] v2 島嶼、AI 模型中台 dashboard、Nami 貼圖（林董手作中）
+
 > 來源：`daily_works_0605.md` + 本日進度。
