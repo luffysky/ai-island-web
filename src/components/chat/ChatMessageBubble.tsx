@@ -26,6 +26,7 @@ export function ChatMessageBubble({
   createdAt,
   showActions = true,
   speakerName,
+  shareCard,
   children,
 }: {
   role: "user" | "assistant" | "pet" | string;
@@ -33,6 +34,8 @@ export function ChatMessageBubble({
   createdAt?: string | Date | number;
   showActions?: boolean;
   speakerName?: string;
+  // 帶這個 → assistant 回答可分享成 OG 圖卡（跟綠寶一致、丟 /share/ai HTML 落地頁讓 LINE 生預覽卡）
+  shareCard?: { persona: string; question?: string };
   children?: React.ReactNode; // 自訂渲染（例如 markdown / code block）；不傳就用純文字
 }) {
   const toast = useToast();
@@ -40,6 +43,29 @@ export function ChatMessageBubble({
   const isUser = role === "user";
 
   const share = async () => {
+    // assistant 回答 + 有 shareCard → 分享成圖卡（HTML 落地頁，LINE/FB 才讀得到 og:image）
+    if (shareCard && !isUser && content && typeof window !== "undefined") {
+      const p = new URLSearchParams();
+      p.set("persona", shareCard.persona);
+      if (shareCard.question) p.set("q", shareCard.question.slice(0, 70));
+      p.set("a", content.slice(0, 400));
+      const url = `${window.location.origin}/share/ai?${p.toString()}`;
+      if ((navigator as any).share) {
+        try {
+          await (navigator as any).share({ title: `${shareCard.persona} 的回答`, url });
+          return;
+        } catch {
+          // 用戶取消、忽略
+        }
+      }
+      try {
+        await navigator.clipboard.writeText(url);
+        toast.success("分享連結已複製、貼到 LINE 會出現圖卡");
+        return;
+      } catch {
+        // 落到下面純文字
+      }
+    }
     if (typeof navigator !== "undefined" && (navigator as any).share) {
       try {
         await (navigator as any).share({ text: content });

@@ -214,6 +214,14 @@ export function PetChatPanel({
               content={m.content}
               createdAt={m.created_at}
               speakerName={m.role === "pet" ? pet.name : undefined}
+              shareCard={
+                m.role === "pet"
+                  ? {
+                      persona: pet.name,
+                      question: messages[m._i - 1]?.role === "user" ? messages[m._i - 1]?.content : undefined,
+                    }
+                  : undefined
+              }
             >
               {m.content ? (
                 <ChatContent text={m.content} />

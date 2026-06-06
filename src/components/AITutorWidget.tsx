@@ -903,7 +903,15 @@ export function AITutorWidget({
                           <button
                             onClick={() => {
                               trackEvent("share_answer", { persona: persona.name });
-                              const url = `${window.location.origin}/api/og/share-ai?persona=${encodeURIComponent(persona.name)}&a=${encodeURIComponent(m.content.slice(0, 400))}`;
+                              // 對應的提問（前一則 user 訊息），讓圖卡有 Q 更豐富
+                              const prev = messages[m._i - 1];
+                              const q = prev && prev.role === "user" ? prev.content : "";
+                              const p = new URLSearchParams();
+                              p.set("persona", persona.name);
+                              if (q) p.set("q", q.slice(0, 70));
+                              p.set("a", m.content.slice(0, 400));
+                              // 分享「HTML 落地頁」而非圖片端點，LINE/FB 才讀得到 og:image 生預覽卡（否則只貼出一串編碼亂碼網址）
+                              const url = `${window.location.origin}/share/ai?${p.toString()}`;
                               if (typeof navigator !== "undefined" && (navigator as any).share) {
                                 (navigator as any).share({ title: `${persona.name} 的回答`, url }).catch(() => {});
                               } else {
