@@ -154,3 +154,31 @@
 辛苦了，下班！🌙
 
 > 來源：`daily_works_0605.md` + 本日進度。
+
+---
+
+# 🔧 補班：AI 回答分享卡修整（同日續）
+
+林董回報「綠寶導師分享到 LINE 變亂碼」，連環修 + 美化：
+
+## 亂碼根因（已修）
+分享按鈕原本直接把**圖片端點** `/api/og/share-ai`（回 PNG、無 HTML）的網址丟去分享 → LINE/FB 讀不到 `og:image` meta → 只能把含百分比編碼中文的長網址當純文字貼出，看起來像亂碼。
+
+- **新增 `/share/ai` HTML 落地頁**（`src/app/share/ai/page.tsx`）：`generateMetadata` 設 `og:image` + twitter card、`robots noindex`；分享這頁網址，平台抓 HTML → 讀 og:image → 正常出預覽卡。
+- `AITutorWidget` 分享鈕改丟 `/share/ai?persona&q&a`，帶上對應提問 Q。
+- `ChatMessageBubble` 加 `shareCard` prop → **寵物聊天回答也能分享成圖卡**（`PetChatPanel` 接上、自動抓前一則提問當 Q）。
+
+## 圖卡風格（AI 圖 → 乾淨漸層）
+- 一度把背景換成 Cloudflare flux AI 藝術底圖（Pollinations 匿名額度已關、改 token 制不可用）。實測能出圖，但林董覺得「有圖但好醜」（隨機粉櫻花樹跟綠色品牌打架、品質不穩、慢 4 秒）。
+- **改採乾淨品牌漸層**（無 AI 圖）：深底 + 頂部綠→青光條 + 右上綠/左下青柔光暈 + 大引號裝飾，回答大字當主角、底部分隔線署名/網址。每次都穩、生成更快（純文字 Satori、移除 CF 依賴）。已本機渲染眼驗。
+
+## 其他分享處查核
+章節 / 課程頁的 OG 都是「圖卡掛在真 HTML 頁」的正確做法（不受影響）；邀請碼分享真網頁；只有 AI 回答那條是直丟圖片端點才壞，已全修。
+
+## 連帶修
+- **筆記環形選單氣泡被擋**：每根 spoke 因 `transform` 自成 stacking context、氣泡 `z-[60]` 只在自身 spoke 內有效 → 被 hover 的 spoke 整根提升 `zIndex:60`，氣泡浮到最上層不再被其他項目蓋住。
+
+## ⚠️ 部署備註
+分享卡為純文字 Satori，**不再依賴任何外部生圖 key**，線上直接生效（Zeabur 不必設 CF env）。
+
+commits：`1a32265`（落地頁+AI 圖版）、`e0915f4`（改乾淨漸層 + 筆記氣泡 z-index）。`tsc` 綠、`next build` 綠、OG 路由本機渲染驗證 200。
