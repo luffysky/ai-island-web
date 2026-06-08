@@ -197,7 +197,7 @@ function CellView({
               className="w-full bg-bg font-mono text-xs p-3 outline-none border-0 resize-y min-h-[80px]"
               placeholder="markdown..."
             />
-            <div className="p-3 text-sm prose prose-invert prose-sm max-w-none [&_h1]:text-lg [&_h1]:font-bold [&_h2]:text-base [&_h2]:font-bold [&_h2]:mt-2 [&_li]:list-disc [&_li]:ml-4 [&_strong]:text-accent [&_code]:bg-bg-elevated [&_code]:px-1 [&_code]:rounded" dangerouslySetInnerHTML={{ __html: renderMarkdown(cell.source) }} />
+            <div className="p-3 text-sm prose dark:prose-invert prose-sm max-w-none [&_h1]:text-lg [&_h1]:font-bold [&_h2]:text-base [&_h2]:font-bold [&_h2]:mt-2 [&_li]:list-disc [&_li]:ml-4 [&_strong]:text-accent [&_code]:bg-bg-elevated [&_code]:px-1 [&_code]:rounded" dangerouslySetInnerHTML={{ __html: renderMarkdown(cell.source) }} />
           </div>
         )}
 

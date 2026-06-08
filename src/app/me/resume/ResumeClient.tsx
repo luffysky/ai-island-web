@@ -110,7 +110,7 @@ export function ResumeClient() {
 
       {/* 預覽 */}
       {md && (
-        <article className="bg-bg-card border border-border rounded-xl p-6 md:p-10 prose prose-invert max-w-none print:border-0 print:p-0 print:bg-white print:text-black">
+        <article className="bg-bg-card border border-border rounded-xl p-6 md:p-10 prose dark:prose-invert max-w-none print:border-0 print:p-0 print:bg-white print:text-black">
           <div className="resume-content" dangerouslySetInnerHTML={{ __html: renderMarkdown(md) }} />
         </article>
       )}
