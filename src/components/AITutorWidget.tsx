@@ -220,26 +220,30 @@ export function AITutorWidget({
 
   // 載入模型清單（不依賴登入狀態；anon 也讀得到 is_active=true）
   useEffect(() => {
+    let cancelled = false;
     (async () => {
-      const { data, error: modelsError } = await supabase
-        .from("ai_models")
-        .select("*")
-        .eq("is_active", true)
-        .order("sort_order");
-      if (modelsError) {
-        devLog.error("[AI tutor] load models failed:", modelsError);
-        setError("AI 模型清單載入失敗");
-        return;
-      }
-      if (data) {
-        setModels(data);
-        // 預設保持 "auto"（智慧分級）；只有當使用者先前選過具體模型才不動
-        setSelectedModelId((prev) => (prev && prev !== "") ? prev : "auto");
-        if (data.length === 0) {
-          setError("目前沒有可用 AI 模型，請到後台啟用至少一個模型");
+      // Supabase 偶發冷啟動 / 慢回應會讓「單次」查詢失敗 → 下拉就只剩 Auto 可選。
+      // 重試 3 次（遞增 backoff）再放棄，大幅減少「明明有模型卻只剩 Auto」的情況。
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        const { data, error: modelsError } = await supabase
+          .from("ai_models")
+          .select("*")
+          .eq("is_active", true)
+          .order("sort_order");
+        if (cancelled) return;
+        if (!modelsError && data) {
+          setModels(data);
+          // 預設保持 "auto"（智慧分級）；只有當使用者先前選過具體模型才不動
+          setSelectedModelId((prev) => (prev && prev !== "") ? prev : "auto");
+          if (data.length === 0) setError("目前沒有可用 AI 模型，請到後台啟用至少一個模型");
+          return;
         }
+        devLog.error(`[AI tutor] load models failed (attempt ${attempt}/3):`, modelsError);
+        if (attempt < 3) await new Promise((r) => setTimeout(r, attempt * 800));
       }
+      if (!cancelled) setError("AI 模型清單載入失敗");
     })();
+    return () => { cancelled = true; };
   }, []);
 
   // 登入後（或登入狀態切換時）載入今日 quota

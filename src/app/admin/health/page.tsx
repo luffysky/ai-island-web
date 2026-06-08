@@ -42,7 +42,7 @@ export default async function AdminHealthPage() {
     supabase.from("error_logs").select("*", { count: "exact", head: true }).gte("occurred_at", oneHourAgo),
     supabase.from("error_logs").select("*", { count: "exact", head: true }).gte("occurred_at", oneDayAgo),
     supabase.from("ai_conversations").select("*", { count: "exact", head: true }).gte("created_at", oneDayAgo),
-    supabase.from("active_sessions").select("*", { count: "exact", head: true }).gte("last_seen_at", thirtyMinAgo),
+    supabase.from("analytics_sessions").select("*", { count: "exact", head: true }).gte("last_seen_at", thirtyMinAgo),
     supabase.from("notifications").select("*", { count: "exact", head: true }).is("read_at", null),
     supabase
       .from("audit_logs")

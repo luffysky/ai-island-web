@@ -105,7 +105,8 @@ export default async function AdminOverviewPage() {
     utmStats = (r.data as any[]) ?? [];
   } catch {}
   try {
-    const r = await supabase.from("email_subscribers").select("*", { count: "exact", head: true });
+    // email_subscriptions：真表（舊碼接成不存在的 email_subscribers）。算「仍訂閱電子報」的人數
+    const r = await supabase.from("email_subscriptions").select("*", { count: "exact", head: true }).eq("newsletter", true).is("unsubscribed_at", null);
     emailSubs = r.count ?? 0;
   } catch {}
   try {

@@ -317,43 +317,41 @@ async function cmdOrders(args: string[]): Promise<BotReply> {
 async function cmdAiCost(args: string[]): Promise<BotReply> {
   const days = Math.max(1, Math.min(90, parseInt(args[0] ?? "7", 10) || 7));
   const admin = createSupabaseAdmin();
-  const since = new Date(Date.now() - days * 86400_000).toISOString();
-  // ai_usage_logs（若存在）— 用 try / fallback
-  try {
-    const { data } = await admin
-      .from("ai_usage_logs")
-      .select("tokens_input, tokens_output, model_name, provider")
-      .gte("created_at", since)
-      .limit(50000);
-    if (!data || data.length === 0) return { text: `💸 近 ${days} 天無 AI 用量紀錄` };
-    let inTok = 0, outTok = 0;
-    const byModel: Record<string, { in: number; out: number }> = {};
-    for (const r of data as any[]) {
-      inTok += r.tokens_input ?? 0;
-      outTok += r.tokens_output ?? 0;
-      const k = r.model_name ?? "unknown";
-      byModel[k] ??= { in: 0, out: 0 };
-      byModel[k].in += r.tokens_input ?? 0;
-      byModel[k].out += r.tokens_output ?? 0;
-    }
-    // 粗估成本（Anthropic claude-3.5-sonnet $3/MTok in、$15/MTok out 平均）
-    const estUsd = (inTok * 3 + outTok * 15) / 1_000_000;
-    const top = Object.entries(byModel).sort((a, b) => (b[1].in + b[1].out) - (a[1].in + a[1].out)).slice(0, 5);
-    return {
-      text: `💸 ${days} 天 AI 用量：${(inTok / 1000).toFixed(1)}K in / ${(outTok / 1000).toFixed(1)}K out · 估 $${estUsd.toFixed(2)}`,
-      flex: buildListCard({
-        title: `💸 AI ${days} 天用量`,
-        emoji: "🤖",
-        items: [
-          { primary: `總計 $${estUsd.toFixed(2)}`, secondary: `${(inTok / 1000).toFixed(1)}K in / ${(outTok / 1000).toFixed(1)}K out` },
-          ...top.map(([model, v]) => ({ primary: model, secondary: `${(v.in / 1000).toFixed(1)}K in / ${(v.out / 1000).toFixed(1)}K out` })),
-        ],
-        footerButton: { label: "AI 用量後台", uri: `${SITE_URL}/${ADMIN_SLUG}/admin/ai/usage` },
-      }),
-    };
-  } catch {
-    return { text: "⚠️ ai_usage_logs 表還沒建" };
+  const sinceDate = new Date(Date.now() - days * 86400_000).toISOString().slice(0, 10);
+  // 真實用量在 ai_usage_daily（每人每天每模型一列、已聚合 + 有 cost_usd）；舊碼接的 ai_usage_logs 不存在
+  const { data, error } = await admin
+    .from("ai_usage_daily")
+    .select("provider, tokens_input, tokens_output, cost_usd, message_count")
+    .gte("date", sinceDate)
+    .limit(50000);
+  if (error) return { text: `⚠️ 讀 AI 用量失敗：${error.message}` };
+  if (!data || data.length === 0) return { text: `💸 近 ${days} 天無 AI 用量紀錄` };
+  let inTok = 0, outTok = 0, usd = 0, msgs = 0;
+  const byProvider: Record<string, { in: number; out: number; usd: number }> = {};
+  for (const r of data as any[]) {
+    inTok += r.tokens_input ?? 0;
+    outTok += r.tokens_output ?? 0;
+    usd += Number(r.cost_usd ?? 0);
+    msgs += r.message_count ?? 0;
+    const k = r.provider ?? "unknown";
+    byProvider[k] ??= { in: 0, out: 0, usd: 0 };
+    byProvider[k].in += r.tokens_input ?? 0;
+    byProvider[k].out += r.tokens_output ?? 0;
+    byProvider[k].usd += Number(r.cost_usd ?? 0);
   }
+  const top = Object.entries(byProvider).sort((a, b) => b[1].usd - a[1].usd).slice(0, 5);
+  return {
+    text: `💸 ${days} 天 AI 用量：${(inTok / 1000).toFixed(1)}K in / ${(outTok / 1000).toFixed(1)}K out · $${usd.toFixed(2)}（${msgs} 則）`,
+    flex: buildListCard({
+      title: `💸 AI ${days} 天用量`,
+      emoji: "🤖",
+      items: [
+        { primary: `總計 $${usd.toFixed(2)}`, secondary: `${(inTok / 1000).toFixed(1)}K in / ${(outTok / 1000).toFixed(1)}K out · ${msgs} 則` },
+        ...top.map(([prov, v]) => ({ primary: prov, secondary: `$${v.usd.toFixed(2)} · ${(v.in / 1000).toFixed(1)}K in / ${(v.out / 1000).toFixed(1)}K out` })),
+      ],
+      footerButton: { label: "AI 用量後台", uri: `${SITE_URL}/${ADMIN_SLUG}/admin/ai/usage` },
+    }),
+  };
 }
 
 async function cmdNotify(msg: string): Promise<BotReply> {
@@ -378,11 +376,9 @@ async function cmdMaint(arg?: string): Promise<BotReply> {
   if (arg !== "on" && arg !== "off") return { text: "用法：/maint on 或 /maint off" };
   const admin = createSupabaseAdmin();
   const enabled = arg === "on";
-  try {
-    await admin.from("app_settings").upsert({ key: "maintenance_mode", value: { enabled, at: new Date().toISOString() } });
-  } catch {
-    try { await admin.from("feature_flags").upsert({ key: "maintenance_mode", enabled }); } catch {}
-  }
+  // maintenance_mode 唯一真相是 app_settings（admin 設定頁 + getAppSetting 都讀這裡）；
+  // 舊碼那段 feature_flags 後援是不存在的表、已移除
+  await admin.from("app_settings").upsert({ key: "maintenance_mode", value: { enabled, at: new Date().toISOString() } });
   return { text: `🚧 維護模式已 ${enabled ? "開啟" : "關閉"}`, flex: buildSimpleCard({
     emoji: enabled ? "🚧" : "✅", title: `維護模式 ${enabled ? "ON" : "OFF"}`,
     accentColor: enabled ? "#ff5555" : "#50fa7b",
@@ -490,11 +486,10 @@ async function cmdFeature(key?: string, value?: string): Promise<BotReply> {
   if (!key) return { text: "用法：/feature [key] on|off" };
   const enabled = value === "on";
   const admin = createSupabaseAdmin();
-  try {
-    await admin.from("feature_flags").upsert({ key, enabled, updated_at: new Date().toISOString() });
-  } catch {
-    return { text: "❌ feature_flags 表未建" };
-  }
+  // flag 存進 app_settings（每個 flag 一個 key、value={enabled}），跟 island_enabled / maintenance_mode 同一套；
+  // getAppSetting / isIslandEnabled 都讀得到。舊碼的 feature_flags 表不存在、已改掉
+  const { error } = await admin.from("app_settings").upsert({ key, value: { enabled }, updated_at: new Date().toISOString() });
+  if (error) return { text: `❌ 寫入失敗：${error.message}` };
   return { text: `🎚️ Feature [${key}] 已 ${enabled ? "ON" : "OFF"}` };
 }
 

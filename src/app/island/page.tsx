@@ -1,6 +1,7 @@
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { chapters } from "@/data/chapters";
+import { DUNGEONS } from "@/data/dungeons";
 import { isIslandEnabled } from "@/lib/app-settings";
 import IslandClient from "./IslandClient";
 import IslandClosed from "./IslandClosed";
@@ -53,12 +54,14 @@ export default async function IslandPage() {
 
   // 用 admin 撈 modal 內要顯示的清單（前 5-10 筆）
   const admin = createSupabaseAdmin();
-  const [{ data: topUsers }, { data: latestThreads }, { data: latestBlogs }, { data: courses }] = await Promise.all([
+  const [{ data: topUsers }, { data: latestThreads }, { data: latestBlogs }] = await Promise.all([
     admin.from("profiles").select("id, username, display_name, avatar_url, xp, level").is("banned_at", null).order("xp", { ascending: false }).limit(10),
     admin.from("forum_threads").select("id, title, created_at").order("created_at", { ascending: false }).limit(8),
     admin.from("user_blog_articles").select("title, slug, published_at, user_id").eq("is_public", true).order("published_at", { ascending: false }).limit(8),
-    admin.from("courses").select("slug, title, emoji, difficulty").eq("is_published", true).order("created_at", { ascending: false }).limit(8),
-  ] as any).catch(() => [{ data: [] }, { data: [] }, { data: [] }, { data: [] }] as any);
+  ] as any).catch(() => [{ data: [] }, { data: [] }, { data: [] }] as any);
+
+  // 副本清單用 DUNGEONS 靜態資料（跟 /courses 副本頁同一份）；沒有 courses 資料表、不必為它建表
+  const courses = DUNGEONS.map((d) => ({ slug: d.slug, title: d.name, emoji: d.emoji, difficulty: d.subtitle }));
 
   // 部落格作者 username 查詢
   let blogList: any[] = [];
