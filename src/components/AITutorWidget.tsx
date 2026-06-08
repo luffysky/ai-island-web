@@ -194,6 +194,27 @@ export function AITutorWidget({
       if (raw) { const s = JSON.parse(raw); if (s?.w && s?.h) setSize(s); }
     } catch {}
   }, []);
+  // 桌面才用「停靠側欄」模式（像 Notion 推開內容）；手機螢幕太窄、維持原本浮動覆蓋
+  const [isDesktop, setIsDesktop] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const sync = () => setIsDesktop(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+  // 停靠：打開 + 桌面。停靠時面板貼右側滿版、寬度記憶（夾在 320~520）
+  const docked = open && isDesktop;
+  const dockWidth = Math.max(320, Math.min(size?.w ?? 420, 520));
+  // 停靠時把「整個頁面」往左縮（body padding-right 留出側欄的欄位），教材不再被擋
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const body = document.body;
+    body.style.transition = "padding-right 0.32s cubic-bezier(0.22, 1, 0.36, 1)";
+    body.style.paddingRight = docked ? `${dockWidth}px` : "";
+    return () => { body.style.paddingRight = ""; };
+  }, [docked, dockWidth]);
   useEdgeSafe(panelRef);
   const supabase = createSupabaseBrowser();
 
@@ -506,8 +527,9 @@ export function AITutorWidget({
     const rect = panelRef.current?.getBoundingClientRect();
     if (!rect) return;
     const startX = e.clientX, startY = e.clientY, startW = rect.width, startH = rect.height;
+    const maxW = docked ? 520 : 480; // 停靠側欄可略寬
     const onMove = (ev: PointerEvent) => {
-      const w = Math.max(280, Math.min(480, startW + (startX - ev.clientX)));
+      const w = Math.max(280, Math.min(maxW, startW + (startX - ev.clientX)));
       const h = Math.max(420, Math.min(700, startH + (startY - ev.clientY)));
       setSize({ w, h });
     };
@@ -569,17 +591,28 @@ export function AITutorWidget({
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
-          style={{
-            // clamp(最小, 動態, 最大)
-            //   - 最小 280px：panel 太窄塞不下內容、體驗更差
-            //   - 動態 calc(100vw - 1rem)：跟視口跑、所有裝置都不超出
-            //   - 最大 480px：桌面太大也不該佔半個螢幕
-            // useEdgeSafe hook 是第二層保險：ResizeObserver 即時偵測異常溢出再 translate 回視口
-            // 有記憶大小就用（並 min() 夾進視口、手機不溢出）；沒有則用響應式 clamp
-            width: size ? `min(${size.w}px, calc(100vw - 1rem))` : "clamp(280px, calc(100vw - 1rem), 480px)",
-            height: size ? `min(${size.h}px, calc(100vh - 5rem))` : "clamp(420px, calc(100vh - 5rem), 700px)",
-          }}
-          className="fixed bottom-2 right-2 z-50 bg-bg-card/95 backdrop-blur-xl border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-tutor-panel-in"
+          style={
+            docked
+              ? // 停靠側欄：貼右側、滿版高（top-0 ~ bottom-0 撐高），只控制寬度
+                { width: dockWidth }
+              : {
+                  // clamp(最小, 動態, 最大)
+                  //   - 最小 280px：panel 太窄塞不下內容、體驗更差
+                  //   - 動態 calc(100vw - 1rem)：跟視口跑、所有裝置都不超出
+                  //   - 最大 480px：桌面太大也不該佔半個螢幕
+                  // useEdgeSafe hook 是第二層保險：ResizeObserver 即時偵測異常溢出再 translate 回視口
+                  // 有記憶大小就用（並 min() 夾進視口、手機不溢出）；沒有則用響應式 clamp
+                  // 高度用 dvh（dynamic viewport height）而非 vh：手機網址列收合 / 鍵盤彈出時 dvh 會即時跟著縮，
+                  // 卡片永遠貼齊「實際看得到的高度」、不會被鍵盤頂出畫面或超過螢幕（vh 會用「最大高度」算、手機才會卡卡）
+                  width: size ? `min(${size.w}px, calc(100vw - 1rem))` : "clamp(280px, calc(100vw - 1rem), 480px)",
+                  height: size ? `min(${size.h}px, calc(100dvh - 5rem))` : "clamp(360px, calc(100dvh - 5rem), 700px)",
+                }
+          }
+          className={`fixed z-50 bg-bg-card/95 backdrop-blur-xl border-border shadow-2xl flex flex-col overflow-hidden animate-tutor-panel-in ${
+            docked
+              ? "top-0 right-0 bottom-0 border-l" // 停靠：滿版右側欄、只留左邊框（內容已被 body padding 推開）
+              : "bottom-2 right-2 border rounded-2xl" // 浮動：右下角圓角卡片
+          }`}
         >
           {/* 左上角調整大小把手（桌面）。面板錨右下、往左上拖＝放大 */}
           <div
@@ -601,11 +634,16 @@ export function AITutorWidget({
           )}
           <style jsx global>{`
             @keyframes tutor-panel-in {
-              from { opacity: 0; transform: translateY(16px) scale(0.96); }
+              from { opacity: 0; transform: translateY(24px) scale(0.97); }
               to   { opacity: 1; transform: translateY(0) scale(1); }
             }
             .animate-tutor-panel-in {
-              animation: tutor-panel-in 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+              animation: tutor-panel-in 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+              /* GPU 合成、手機滑入不掉幀 */
+              will-change: transform, opacity;
+            }
+            @media (prefers-reduced-motion: reduce) {
+              .animate-tutor-panel-in { animation-duration: 0.01ms; }
             }
           `}</style>
           {/* Header — 漸層條 + 跳動 avatar */}
