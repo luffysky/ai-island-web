@@ -154,7 +154,8 @@ export function PetChatPanel({
       ref={panelRef}
       style={{
         width: "clamp(280px, calc(100vw - 1rem), 440px)",
-        height: "clamp(360px, calc(100vh - 5rem), 560px)",
+        // dvh（動態視口）：手機鍵盤彈出 / 網址列收合時跟著縮、卡片不被頂出畫面（vh 會用最大高度算、手機卡卡）
+        height: "clamp(360px, calc(100dvh - 5rem), 560px)",
       }}
       className="fixed bottom-2 left-1/2 -translate-x-1/2 z-50 bg-bg-card/95 backdrop-blur-xl border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-chat-panel-in"
     >
