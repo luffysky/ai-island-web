@@ -281,6 +281,13 @@ html[data-theme="light"] .bg-accent.text-black,
 html[data-theme="light"] .bg-accent .text-black,
 html[data-theme="light"] .bg-accent .text-fg { color: #fff; }
 
+/* AI 導師 / 寵物等聊天室的「使用者訊息泡泡」用漸層 from-accent→to-accent-2
+   （明亮模式是深綠 #1f883d → 藍 #218bff），上面配 text-black 看不到 → 一律改白字。
+   上面那組只蓋實心 .bg-accent、漏掉漸層泡泡，這裡補上。 */
+html[data-theme="light"] [class*="from-accent"].text-black,
+html[data-theme="light"] [class*="from-accent"] .text-black,
+html[data-theme="light"] [class*="from-accent"] .text-fg { color: #fff; }
+
 /* ============================================================
    程式碼 / 終端機區塊 — 明亮模式：淺灰底 + 深字
    暗色介面不該沿用到 light theme；語法 token 改 atom-one-light 系。
