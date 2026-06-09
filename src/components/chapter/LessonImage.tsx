@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { X, ZoomIn } from "lucide-react";
 
 /**
@@ -36,10 +36,42 @@ export function LessonImage({ src, alt }: { src?: string; alt?: string }) {
   const [lbFb, setLbFb] = useState(false);       // 燈箱載入失敗 → 退回另一變體
   const isLight = useIsLight();
 
+  // ── 燈箱內縮放 / 平移 ──
+  const lbRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+  const [dragging, setDragging] = useState(false);
+  const dragRef = useRef<{ sx: number; sy: number; ox: number; oy: number } | null>(null);
+  const MIN_SCALE = 1;
+  const MAX_SCALE = 8;
+
+  const resetZoom = () => { setScale(1); setPos({ x: 0, y: 0 }); };
+
+  // 以游標為中心縮放（factor>1 放大、<1 縮小）
+  const zoomAt = (clientX: number, clientY: number, factor: number) => {
+    const el = lbRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const cx = clientX - rect.left - rect.width / 2;
+    const cy = clientY - rect.top - rect.height / 2;
+    setScale((prev) => {
+      const next = Math.min(MAX_SCALE, Math.max(MIN_SCALE, prev * factor));
+      setPos((p) => {
+        if (next <= MIN_SCALE) return { x: 0, y: 0 };
+        const ratio = next / prev;
+        return { x: cx - (cx - p.x) * ratio, y: cy - (cy - p.y) * ratio };
+      });
+      return next;
+    });
+  };
+
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setOpen(false);
+      else if (e.key === "+" || e.key === "=") zoomAt(innerWidth / 2, innerHeight / 2, 1.25);
+      else if (e.key === "-" || e.key === "_") zoomAt(innerWidth / 2, innerHeight / 2, 1 / 1.25);
+      else if (e.key === "0") resetZoom();
     };
     window.addEventListener("keydown", onKey);
     const prev = document.body.style.overflow;
@@ -49,6 +81,22 @@ export function LessonImage({ src, alt }: { src?: string; alt?: string }) {
       document.body.style.overflow = prev;
     };
   }, [open]);
+
+  // 滾輪縮放：用原生非被動監聽，才能 preventDefault 擋掉「Ctrl+滾輪 = 瀏覽器整頁縮放」
+  useEffect(() => {
+    if (!open) return;
+    const el = lbRef.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      zoomAt(e.clientX, e.clientY, e.deltaY < 0 ? 1.15 : 1 / 1.15);
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, [open]);
+
+  // 開關時重置縮放
+  useEffect(() => { if (!open) resetZoom(); }, [open]);
 
   if (!src) return null;
 
@@ -93,14 +141,16 @@ export function LessonImage({ src, alt }: { src?: string; alt?: string }) {
 
       {open && (
         <div
-          onClick={() => setOpen(false)}
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 cursor-zoom-out"
+          ref={lbRef}
+          onClick={() => { if (scale <= 1) setOpen(false); }}
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 overflow-hidden touch-none"
+          style={{ cursor: scale > 1 ? (dragging ? "grabbing" : "grab") : "zoom-out" }}
           role="dialog"
           aria-modal="true"
         >
           <button
-            onClick={() => setOpen(false)}
-            className="absolute top-4 right-4 text-white/80 hover:text-white transition"
+            onClick={(e) => { e.stopPropagation(); setOpen(false); }}
+            className="absolute top-4 right-4 z-10 text-white/80 hover:text-white transition"
             aria-label="關閉"
           >
             <X size={28} />
@@ -110,14 +160,38 @@ export function LessonImage({ src, alt }: { src?: string; alt?: string }) {
             src={lbFb ? (lightboxSrc === lightSrc ? darkSrc : lightSrc) : lightboxSrc}
             onError={() => !lbFb && setLbFb(true)}
             alt={alt ?? ""}
-            className="max-w-full max-h-full object-contain rounded shadow-2xl"
+            draggable={false}
+            className="max-w-full max-h-full object-contain rounded shadow-2xl select-none"
+            style={{
+              transform: `translate(${pos.x}px, ${pos.y}px) scale(${scale})`,
+              transition: dragging ? "none" : "transform 0.12s ease-out",
+              willChange: "transform",
+            }}
             onClick={(e) => e.stopPropagation()}
+            onDoubleClick={(e) => {
+              e.stopPropagation();
+              if (scale > 1) resetZoom();
+              else zoomAt(e.clientX, e.clientY, 2.5);
+            }}
+            onPointerDown={(e) => {
+              if (scale <= 1) return;
+              e.stopPropagation();
+              dragRef.current = { sx: e.clientX, sy: e.clientY, ox: pos.x, oy: pos.y };
+              setDragging(true);
+              (e.target as Element).setPointerCapture?.(e.pointerId);
+            }}
+            onPointerMove={(e) => {
+              const d = dragRef.current;
+              if (!d) return;
+              setPos({ x: d.ox + (e.clientX - d.sx), y: d.oy + (e.clientY - d.sy) });
+            }}
+            onPointerUp={() => { dragRef.current = null; setDragging(false); }}
+            onPointerCancel={() => { dragRef.current = null; setDragging(false); }}
           />
-          {alt && (
-            <div className="absolute bottom-4 left-0 right-0 px-4 text-center text-sm text-white/70">
-              {alt}
-            </div>
-          )}
+          <div className="absolute bottom-4 left-0 right-0 px-4 text-center text-sm text-white/70 pointer-events-none">
+            {alt && <div>{alt}</div>}
+            <div className="mt-1 text-xs text-white/45">滾輪縮放 · 拖曳移動 · 雙擊放大/還原 · Esc 關閉</div>
+          </div>
         </div>
       )}
     </>
