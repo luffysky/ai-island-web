@@ -41,7 +41,7 @@ export function LessonImage({ src, alt }: { src?: string; alt?: string }) {
   const [scale, setScale] = useState(1);
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const [dragging, setDragging] = useState(false);
-  const dragRef = useRef<{ sx: number; sy: number; ox: number; oy: number } | null>(null);
+  const dragRef = useRef<{ sx: number; sy: number; ox: number; oy: number; moved: boolean } | null>(null);
   const MIN_SCALE = 1;
   const MAX_SCALE = 8;
 
@@ -142,11 +142,27 @@ export function LessonImage({ src, alt }: { src?: string; alt?: string }) {
       {open && (
         <div
           ref={lbRef}
-          onClick={() => { if (scale <= 1) setOpen(false); }}
           className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 overflow-hidden touch-none"
           style={{ cursor: scale > 1 ? (dragging ? "grabbing" : "grab") : "zoom-out" }}
           role="dialog"
           aria-modal="true"
+          onPointerDown={(e) => {
+            if (scale <= 1) return;
+            dragRef.current = { sx: e.clientX, sy: e.clientY, ox: pos.x, oy: pos.y, moved: false };
+            setDragging(true);
+            (e.currentTarget as Element).setPointerCapture?.(e.pointerId);
+          }}
+          onPointerMove={(e) => {
+            const d = dragRef.current;
+            if (!d) return;
+            const dx = e.clientX - d.sx;
+            const dy = e.clientY - d.sy;
+            if (Math.abs(dx) > 3 || Math.abs(dy) > 3) d.moved = true;
+            setPos({ x: d.ox + dx, y: d.oy + dy });
+          }}
+          onPointerUp={() => { dragRef.current = null; setDragging(false); }}
+          onPointerCancel={() => { dragRef.current = null; setDragging(false); }}
+          onClick={() => { if (scale <= 1 && !dragRef.current?.moved) setOpen(false); }}
         >
           <button
             onClick={(e) => { e.stopPropagation(); setOpen(false); }}
@@ -161,7 +177,7 @@ export function LessonImage({ src, alt }: { src?: string; alt?: string }) {
             onError={() => !lbFb && setLbFb(true)}
             alt={alt ?? ""}
             draggable={false}
-            className="max-w-full max-h-full object-contain rounded shadow-2xl select-none"
+            className="max-w-full max-h-full object-contain rounded shadow-2xl select-none touch-none"
             style={{
               transform: `translate(${pos.x}px, ${pos.y}px) scale(${scale})`,
               transition: dragging ? "none" : "transform 0.12s ease-out",
@@ -173,20 +189,6 @@ export function LessonImage({ src, alt }: { src?: string; alt?: string }) {
               if (scale > 1) resetZoom();
               else zoomAt(e.clientX, e.clientY, 2.5);
             }}
-            onPointerDown={(e) => {
-              if (scale <= 1) return;
-              e.stopPropagation();
-              dragRef.current = { sx: e.clientX, sy: e.clientY, ox: pos.x, oy: pos.y };
-              setDragging(true);
-              (e.target as Element).setPointerCapture?.(e.pointerId);
-            }}
-            onPointerMove={(e) => {
-              const d = dragRef.current;
-              if (!d) return;
-              setPos({ x: d.ox + (e.clientX - d.sx), y: d.oy + (e.clientY - d.sy) });
-            }}
-            onPointerUp={() => { dragRef.current = null; setDragging(false); }}
-            onPointerCancel={() => { dragRef.current = null; setDragging(false); }}
           />
           <div className="absolute bottom-4 left-0 right-0 px-4 text-center text-sm text-white/70 pointer-events-none">
             {alt && <div>{alt}</div>}
