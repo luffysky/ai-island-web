@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
-import { useOverlayCount } from "@/lib/overlay-stack";
+import { useModalOverlayCount } from "@/lib/overlay-stack";
 import { getSpecies, type SpeciesId } from "@/lib/pet-species";
 import { getVipTier, pickHonorific, usesCuteBubble, hasVipAura } from "@/lib/pet-vip";
 import {
@@ -37,7 +37,7 @@ const MOBILE_SCALE = 0.7;
 export function Pet() {
   const { status, user, profile } = useAuth();
   const pathname = usePathname() || "/";
-  const overlayCount = useOverlayCount();
+  const overlayCount = useModalOverlayCount();
 
   const [pet, setPet] = useState<PetState | null>(null);
   const [lottieUrls, setLottieUrls] = useState<Record<string, string>>({});
@@ -483,7 +483,7 @@ export function Pet() {
         style={{
           position: "fixed",
           ...positionStyle,
-          zIndex: 39,
+          zIndex: 55,
           pointerEvents: "none",
           userSelect: "none",
         }}

@@ -211,7 +211,7 @@ export function AdminFloatingToolbar() {
           position: "fixed",
           left: pos.x,
           top: pos.y,
-          zIndex: 40,
+          zIndex: 55,
           touchAction: "none",
           cursor: dragging ? "grabbing" : "grab",
         }}
