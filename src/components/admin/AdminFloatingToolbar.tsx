@@ -14,7 +14,7 @@ import {
   GripVertical,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
-import { useOverlayCount } from "@/lib/overlay-stack";
+import { useModalOverlayCount } from "@/lib/overlay-stack";
 
 const ADMIN_SLUG =
   process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2";
@@ -83,7 +83,7 @@ export function AdminFloatingToolbar() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  const overlayCount = useOverlayCount();
+  const overlayCount = useModalOverlayCount();
   if (profile?.role !== "admin" && profile?.role !== "owner") return null;
   if (pathname.startsWith(`${ADMIN_BASE}`)) return null;
   if (pathname.startsWith("/admin")) return null;

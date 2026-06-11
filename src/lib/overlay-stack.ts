@@ -7,6 +7,7 @@
  * 避免 AI 導師 / dropdown 開啟時下面主內容跟著滑（林董抱怨：很怪）。
  */
 let count = 0;        // 總 overlay 數（floating 元件據此隱藏）
+let navCount = 0;     // 其中屬於「導覽抽屜（章節大綱）」的數量。綠寶 / Admin 想蓋在大綱上、不因它隱藏。
 let lockCount = 0;    // 需要鎖 body scroll 的 overlay 數（非 modal 的浮動面板不鎖）
 const subs = new Set<(n: number) => void>();
 let savedScrollY = 0;
@@ -47,16 +48,18 @@ function unlockBodyScroll() {
   window.scrollTo(0, savedScrollY);
 }
 
-export function pushOverlay(lockScroll = true) {
+export function pushOverlay(lockScroll = true, isNav = false) {
   count++;
+  if (isNav) navCount++;
   if (lockScroll) {
     lockCount++;
     if (lockCount === 1) lockBodyScroll();
   }
   for (const f of subs) f(count);
 }
-export function popOverlay(lockScroll = true) {
+export function popOverlay(lockScroll = true, isNav = false) {
   count = Math.max(0, count - 1);
+  if (isNav) navCount = Math.max(0, navCount - 1);
   if (lockScroll) {
     lockCount = Math.max(0, lockCount - 1);
     if (lockCount === 0) unlockBodyScroll();
@@ -64,6 +67,8 @@ export function popOverlay(lockScroll = true) {
   for (const f of subs) f(count);
 }
 export function getOverlayCount() { return count; }
+// 「非導覽抽屜」的 overlay 數：綠寶 / Admin 用這個 → 大綱展開不算、真 modal 才算
+export function getModalOverlayCount() { return Math.max(0, count - navCount); }
 export function subscribeOverlay(fn: (n: number) => void) {
   subs.add(fn);
   return () => { subs.delete(fn); };
@@ -77,12 +82,12 @@ export function subscribeOverlay(fn: (n: number) => void) {
  * 用在「非 modal 的浮動面板」（如 AI 導師聊天視窗）：游標在頁面要能滾頁面、在面板才滾面板。
  */
 import { useEffect } from "react";
-export function useOverlayRegister(open: boolean, lockScroll = true) {
+export function useOverlayRegister(open: boolean, lockScroll = true, isNav = false) {
   useEffect(() => {
     if (!open) return;
-    pushOverlay(lockScroll);
-    return () => popOverlay(lockScroll);
-  }, [open, lockScroll]);
+    pushOverlay(lockScroll, isNav);
+    return () => popOverlay(lockScroll, isNav);
+  }, [open, lockScroll, isNav]);
 }
 
 /**
@@ -94,5 +99,16 @@ import { useState } from "react";
 export function useOverlayCount() {
   const [n, setN] = useState(0);
   useEffect(() => subscribeOverlay(setN), []);
+  return n;
+}
+
+/**
+ * 給「要蓋在章節大綱之上」的 floating 用（綠寶 / Admin）：
+ * 只在「非導覽抽屜」的 overlay（真 modal、dropdown、聊天面板）開啟時才隱藏；
+ * 章節大綱展開不算 → 浮鈕照樣浮在大綱上面。
+ */
+export function useModalOverlayCount() {
+  const [n, setN] = useState(0);
+  useEffect(() => subscribeOverlay(() => setN(getModalOverlayCount())), []);
   return n;
 }

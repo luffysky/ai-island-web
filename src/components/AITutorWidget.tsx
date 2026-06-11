@@ -1,7 +1,7 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Sparkles, Send, X, ChevronDown, Settings as SettingsIcon, Plus, Loader2, History, MessageSquare, ImagePlus, Trash2, Share2, ThumbsUp, ThumbsDown } from "lucide-react";
-import { useOverlayCount, useOverlayRegister } from "@/lib/overlay-stack";
+import { useModalOverlayCount, useOverlayRegister } from "@/lib/overlay-stack";
 import { chapterDisplayNumberById } from "@/lib/chapter-display";
 import { useEdgeSafe } from "@/lib/use-edge-safe";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
@@ -81,8 +81,8 @@ function DraggableTutorBall({ onOpen }: { onOpen: () => void }) {
     dragRef.current = null;
   }, [onOpen]);
 
-  // modal 開時隱藏（避免擋 dropdown / TODO panel）
-  const overlayCount = useOverlayCount();
+  // 真 modal / dropdown 開時才隱藏；章節大綱展開不算（綠寶要蓋在大綱上）
+  const overlayCount = useModalOverlayCount();
   if (!pos || overlayCount > 0) return null;
 
   return (

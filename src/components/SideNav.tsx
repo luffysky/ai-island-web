@@ -43,8 +43,9 @@ export function SideNav() {
   const toast = useToast();
   const confirm = useConfirm();
   const [open, setOpen] = useState(false);
-  // 通知 overlay-stack: 開啟時 AdminFloatingToolbar / 綠寶會自動隱藏、不撞列表
-  useOverlayRegister(open);
+  // 通知 overlay-stack: 開啟時鎖捲動 + Pet / Todo 讓位。
+  // 標記 isNav=true → 綠寶 / Admin「不」因大綱展開而隱藏（要能蓋在大綱上面）。
+  useOverlayRegister(open, true, true);
   // 桌機：展開時讓主內容區（#main-content）平滑往右縮，不被側欄蓋住（樣式在 globals.css）
   useEffect(() => {
     document.body.classList.toggle("sidenav-open", open);
