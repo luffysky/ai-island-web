@@ -88,12 +88,18 @@
 ## 🧮 順帶回答：專案有 8 套自寫演算法
 `src/lib/`：#1 筆記間隔複習(SM-2)、#2 AI 模型路由(綠寶 Auto)、#3 論壇 HN 排序、#4 動態 XP、#5 Thompson Sampling A/B、#6 朋友推薦 feed、#7 ELO 自適應出題、#8 章節推薦；外加 embeddings(RAG) + gamification。
 
+## 🖼️ 26 張圖完整 prompt 清單
+- `docs/ch28ab_image_prompts.md`：每張一段 paste-ready prompt（套好 G-0 模板、含畫什麼面板/標題/底部總結）+ 淺色版做法 + 對應檔名。12 張 28a + 14 張 28b。
+- 流程：生圖工具貼 prompt（深淺各一）→ 照檔名存 → 丟進 `ch28a|ch28b/` → 破圖自動變圖。
+
 ## 📋 待辦 / 提醒
-- **生 26 張圖**：用 G-0 提示詞模板生成、放進 `public/lesson-img/ch28a|ch28b/`（dark+light 一組）、破圖即消失。
+- **生 26 張圖**：照 `docs/ch28ab_image_prompts.md` 一張張生（dark+light 一組）、放進 `public/lesson-img/ch28a|ch28b/`、破圖即消失。
 - 28a/28b 上線後實機翻一遍、確認顯示順序與內容。
+- notes RLS 修已套 prod；若側欄仍讀不到、多半是登入 session 狀態、先登出再登入。
 
 ## 📦 本日 commit（續）
 `035c139` capitalize 範例修正 · `f10cce0` 圖規格 G 區 · `c197460` G-0 出圖提示詞 ·
 `54d3199` 新增 28a/28b（首批） · `e423f1f` ch03 補 14 HTML 範例 + 健檢工具 ·
 `6f4d4e3`/`a884b3d` notes RLS 修（TO authenticated、已套 prod） ·
-`235a6ac` 28a 擴到 25 課 · `b95f823` 28b 擴到 25 課 · `c77caef` 28a/28b 佈線 26 圖。
+`235a6ac` 28a 擴到 25 課 · `b95f823` 28b 擴到 25 課 · `c77caef` 28a/28b 佈線 26 圖 ·
+`81ec39b` 工作日誌更新 · `b5ecefc` 26 張圖完整出圖 prompt 清單。
