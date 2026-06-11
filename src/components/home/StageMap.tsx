@@ -23,7 +23,7 @@ export function StageMap() {
         {/* 地圖總覽圖 */}
         <div className="mb-12">
           <Image
-            src="/mascot/upgrade-map.png"
+            src="/mascot/adventure-map.png"
             alt="AI 島技術地圖：6 大技術區域"
             width={1200}
             height={700}

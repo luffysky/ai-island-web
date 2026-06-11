@@ -11,7 +11,7 @@ export function MascotIntro() {
 
         <div className="relative mb-10">
           <Image
-            src="/mascot/trio.png"
+            src="/mascot/mascot-trio.png"
             alt="肥仔、菇寶、綠寶 — AI 島核心夥伴"
             width={1200}
             height={700}

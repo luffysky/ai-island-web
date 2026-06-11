@@ -57,7 +57,7 @@ export function TrapBosses() {
 
         <div className="mb-12">
           <Image
-            src="/mascot/boss-pits.png"
+            src="/mascot/trap-bosses.png"
             alt="新手最容易踩的 5 大坑"
             width={1200}
             height={700}
