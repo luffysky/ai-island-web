@@ -43,9 +43,20 @@ export function SideNav() {
   const toast = useToast();
   const confirm = useConfirm();
   const [open, setOpen] = useState(false);
-  // 通知 overlay-stack: 開啟時鎖捲動 + Pet / Todo 讓位。
-  // 標記 isNav=true → 綠寶 / Admin「不」因大綱展開而隱藏（要能蓋在大綱上面）。
-  useOverlayRegister(open, true, true);
+  // 桌機（lg+）的大綱是「常駐側欄」、展開只把內容往右推、頁面照樣要能捲；
+  // 只有手機是「抽屜 modal」才需要鎖捲動 + 讓 Pet/Todo 退位。
+  const [isDesktop, setIsDesktop] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const sync = () => setIsDesktop(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+  // 通知 overlay-stack：只在「手機抽屜開啟」時鎖捲動 + Pet/Todo 讓位（桌機常駐側欄不鎖、否則內容滑不動）。
+  // isNav=true → 綠寶 / Admin「不」因大綱而隱藏（要能蓋在大綱上面）。
+  useOverlayRegister(open && !isDesktop, true, true);
   // 桌機：展開時讓主內容區（#main-content）平滑往右縮，不被側欄蓋住（樣式在 globals.css）
   useEffect(() => {
     document.body.classList.toggle("sidenav-open", open);
