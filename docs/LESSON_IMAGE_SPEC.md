@@ -33,12 +33,14 @@
 
 | 檔名 | 對應 lesson | 內容說明 |
 |---|---|---|
-| `ch26_install_uv_win.png` | 26.1 | Windows 裝 uv：PowerShell 貼 `irm https://astral.sh/uv/install.ps1 \| iex` → 重開終端機 → `uv --version` 確認。編號步驟 + 截圖。|
-| `ch26_install_uv_mac.png` | 26.1 | Mac / Linux 裝 uv：`curl -LsSf https://astral.sh/uv/install.sh \| sh` → `uv --version`。|
-| `ch26_env_var_win.png` | 26.1 | **（已有範例 example/pic/1、2）** 裝完後環境變數 / PATH 設定（Windows）：找不到指令時怎麼把 uv 加進 PATH、重開終端機讓 PATH 生效。|
-| `ch26_vscode_python_ext.png` | 26.1 | VS Code 裝 Python + Pylance + Ruff 擴充：Extensions 面板搜尋 → Install → 選直譯器。|
-| `ch26_repl_guide.png` | 26.2 | **（已有範例 example/pic/5）** Python REPL 圖文指南：`python` 進入 → `>>>` 是提示符不是要打的字 → 試 1+1 → `exit()` 離開。|
-| `ch26_first_run_flow.png` | 26.2 | 「寫檔 → 終端機執行 → 看輸出」完整流程圖：📄 寫進 hello.py → 🖥️ `uv run hello.py` → 💬 電腦印出。對應四種標籤。|
+| ✅ `ch26.05_install_uv_win_{dark,light}_v1.png` | 26.1 | **（已佈線）** Windows 裝 uv：PowerShell 貼 `irm https://astral.sh/uv/install.ps1 \| iex` → 重開終端機 → `uv --version` 確認。深/淺雙版 + `_v1`。|
+| ✅ `ch26.04_install_uv_mac_{dark,light}_v1.png` | 26.1 | **（已佈線）** Mac / Linux 裝 uv：`curl -LsSf https://astral.sh/uv/install.sh \| sh` → `uv --version`。|
+| ✅ `ch26.02_env_var_win_{dark,light}_v1.png` / `ch26.01_env_var_mac_{dark,light}_v1.png` | 26.1 | **（已佈線、Win + Mac 兩張）** 裝完後環境變數 / PATH 設定：找不到指令時怎麼把 uv 加進 PATH、重開終端機讓 PATH 生效。|
+| ✅ `ch26.09_vscode_python_ext_{dark,light}_v1.png` | 26.1.5 | **（已佈線）** VS Code 裝 Python + Pylance + Ruff 擴充：Extensions 面板搜尋 → Install → 選直譯器。|
+| ✅ `ch26.08_vscode_extensions_{dark,light}_v1.png` | 26.1.5 | **（已佈線）** 編輯器 / Jupyter / Colab 工具大全：VS Code 擴充總覽。|
+| ✅ `ch26.07_repl_guide_{dark,light}_v1.png` | 26.2 | **（已佈線）** Python REPL 圖文指南：`python` 進入 → `>>>` 是提示符不是要打的字 → 試 1+1 → `exit()` 離開。|
+| ✅ `ch26.06_python_modules_{dark,light}_v1.png` | 26.7 | **（已佈線）** 模組 / import / 套件管理（uv / pip）：標準庫 vs 第三方、import 路徑。|
+| ✅ `ch26.03_first_run_flow_{dark,light}_v1.png` | 26.2 | **（已佈線）**「寫檔 → 終端機執行 → 看輸出」完整流程圖：📄 寫進 hello.py → 🖥️ `uv run hello.py` → 💬 電腦印出。|
 | `ch00_terminal_open.png` | 0.x / 26.0 | 怎麼打開終端機：Windows（Win→cmd/PowerShell）、Mac（Cmd+空白→Terminal）。雙欄對照截圖。|
 | `ch00_git_first_push.png` | 0.3 | Git 第一次 push 五步：`git init` → `add` → `commit` → 連 GitHub remote → `push`。流程圖 + 指令。|
 | `ch00_github_signup.png` | 0.3 | GitHub 註冊 + 建 repo + 拿 remote URL 截圖步驟。|
@@ -328,6 +330,167 @@
 
 ---
 
+## G. Python 系列總表（ch26–30 ＋ 新增 28.a 機器學習 / 28.b 深度學習）★ 主力工作清單
+
+> 林董指示：**ch26–30 + 28.a/28.b 所有需要的圖一次列齊**（含已完成的）。目的：讓 Python 系列「看圖就懂」。
+> 本區是 ch26–30 的**權威工作清單**，整合並取代散落在 E 區的同章條目（E 區保留為歷史）。
+>
+> **實際命名規格（依站上現況）**：
+> `public/lesson-img/ch{NN}/ch{NN}.{seq}_{slug}_{dark|light}_v1.png`
+> - 每張圖**一組深色 + 淺色**（`_dark` / `_light`），站上 `LessonImage` 會依主題自動切換。
+> - `{seq}` 兩位數流水號（01、02…）；`_v1` 是破快取版次，改圖就升 `_v2`。
+> - **嶼築只在 markdown 寫 dark 版路徑、light 由元件自動推導**（檔名把 `dark` 換 `light`）。
+> - 標記：✅=已完成佈線、📷=操作截圖型、📊=概念示意型。
+> - 風格同 0 區：深底 + 綠/青點綴、繁中、左上標題、底部「☕ 一句話總結」。
+
+### G-1. ch26 — Python 基礎 / OOP / FastAPI（35 課）
+> ML/DL 段（26.16–26.24）的圖改放 **G-4（28.a）/ G-5（28.b）**、ch26 本體聚焦「Python 語言 + 後端」。
+
+| 檔名（dark/light 一組） | lesson | 內容 | 狀態 |
+|---|---|---|---|
+| `ch26.01_env_var_mac` | 26.1 | Mac PATH / 環境變數設定 | ✅ |
+| `ch26.02_env_var_win` | 26.1 | Windows PATH / 環境變數設定 | ✅ |
+| `ch26.03_first_run_flow` | 26.2 | 寫檔 → `uv run` → 看輸出 流程 | ✅ |
+| `ch26.04_install_uv_mac` | 26.1 | Mac/Linux 裝 uv | ✅ |
+| `ch26.05_install_uv_win` | 26.1 | Windows 裝 uv | ✅ |
+| `ch26.06_python_modules` | 26.7 | 模組 / import / 套件管理 | ✅ |
+| `ch26.07_repl_guide` | 26.2 | REPL 圖文指南 | ✅ |
+| `ch26.08_vscode_extensions` | 26.1.5 | 編輯器 / Jupyter / Colab 工具大全 | ✅ |
+| `ch26.09_vscode_python_ext` | 26.1.5 | VS Code Python + Pylance + Ruff | ✅ |
+| `ch26.10_data_types` | 26.3 | 📊 int/float/str/bool ＋ 陷阱（float 精度 `0.1+0.2`、str 不可變、`capitalize` 開頭空白雷） | 待做 |
+| `ch26.11_containers_4` | 26.4 | 📊 list/tuple/set/dict 四容器對照（有序? 可改? 可重複? 鍵值?） | 待做 |
+| `ch26.12_comprehension` | 26.5 | 📊 List Comprehension 三段拆解 `[x*2 for x in nums if x>0]` vs 傳統 for | 待做 |
+| `ch26.13_args_kwargs` | 26.6 | 📊 `*args`（收成 tuple）/ `**kwargs`（收成 dict）/ lambda | 待做 |
+| `ch26.14_file_io_with` | 26.8 | 📊 `with open()` 自動關檔（對比忘了 close 的坑） | 待做 |
+| `ch26.15_exception_flow` | 26.9 | 📊 try / except / else / finally 執行流程 | 待做 |
+| `ch26.16_oop_class` | 26.10 | 📊 class→實例、繼承、`dataclass` 省樣板（藍圖→房子比喻） | 待做 |
+| `ch26.17_decorator` | 26.11 | 📊 decorator＝函數包函數，不改原碼加功能（@ 語法糖） | 待做 |
+| `ch26.18_generator` | 26.11 | 📊 generator（yield）一次吐一個、用到才算 vs list 一次全產出 | 待做 |
+| `ch26.19_type_hints` | 26.12 | 📊 type hint + mypy：標籤給人/IDE/檢查器看，不影響執行 | 待做 |
+| `ch26.20_fastapi_flow` | 26.25 | 📊 FastAPI 請求流程：route→Pydantic 驗證→處理→回 JSON ＋ 自動 API 文件 | 待做 |
+| `ch26.21_pydantic_validate` | 26.26 | 📊 Pydantic v2：型別自動驗證、錯誤訊息、序列化 | 待做 |
+| `ch26.22_async_di` | 26.27 | 📊 async/await event loop ＋ Depends 依賴注入 | 待做 |
+| `ch26.23_sqlalchemy_alembic` | 26.28 | 📊 ORM（物件↔資料表）＋ Alembic migration（版本控管 schema） | 待做 |
+| `ch26.24_deploy_asgi` | 26.32 | 📊 部署：Uvicorn / Gunicorn / Docker，ASGI vs WSGI | 待做 |
+
+### G-2. ch27 — Python 資料分析 / Pandas / NumPy（25 課）
+| 檔名（dark/light 一組） | lesson | 內容 | 狀態 |
+|---|---|---|---|
+| `ch27.01_why_python_data` | 27.1 | 📊 為什麼 Python 是資料分析霸主（生態：NumPy/Pandas/sklearn…一圖） | 待做 |
+| `ch27.02_jupyter_tour` | 27.2 | 📷 Jupyter Notebook 介面導覽：cell / 執行 / 變數保留 | 待做 |
+| `ch27.03_numpy_vectorize` | 27.3 / 27.9 | 📊 NumPy 向量運算 vs Python for 迴圈（整批一次算、快上百倍） | 待做 |
+| `ch27.04_pandas_dataframe` | 27.4 | 📊 DataFrame 結構：index（列）/ columns（欄）/ values（加強版 Excel） | 待做 |
+| `ch27.05_pandas_5ops` | 27.8 | 📊 pandas 5 大操作：篩選 / 排序 / 分組 / 合併 / 聚合 | 待做 |
+| `ch27.06_chart_picker` | 27.5 / 27.10 | 📊 該用哪種圖：折線（趨勢）/ 長條（比較）/ 散點（關係）/ 圓餅（占比） | 待做 |
+| `ch27.07_plotly_interactive` | 27.11 | 📊 Plotly 互動圖（hover / zoom）vs matplotlib 靜態 | 待做 |
+| `ch27.08_streamlit_dashboard` | 27.12 | 📷 Streamlit 5 分鐘做 Dashboard：一段 script → 網頁 | 待做 |
+| `ch27.09_timeseries_prophet` | 27.6 / 27.15 | 📊 時序資料 + Prophet 預測（趨勢 + 季節性 + 預測區間） | 待做 |
+| `ch27.10_ab_test` | 27.16 | 📊 A/B Test 統計：對照組 vs 實驗組、顯著性 p 值 | 待做 |
+| `ch27.11_pandas_polars_duckdb` | 27.18 / 27.19 | 📊 pandas vs Polars vs DuckDB：依資料量級何時用誰 | 待做 |
+| `ch27.12_data_cleaning` | 27.20 | 📊 資料清理：缺失值（補/丟）/ 重複（去重）/ 異常值（偵測） | 待做 |
+| `ch27.13_feature_engineering` | 27.21 | 📊 特徵工程：把原始資料變模型可用（編碼/正規化/分箱） | 待做 |
+| `ch27.14_analysis_flow` | 27.7 | 📊 完整資料分析流程：取得 → 清理 → 探索(EDA) → 視覺化 → 結論 | 待做 |
+| `ch27.15_geo_analysis` | 27.23 | 📊 Geo 分析：pandas + Folium / GeoPandas 把資料畫上地圖 | 待做 |
+
+### G-3. ch28 — Python 爬蟲 / Scrapy / Playwright / 反爬（25 課）
+| 檔名（dark/light 一組） | lesson | 內容 | 狀態 |
+|---|---|---|---|
+| `ch28.01_crawl_flow` | 28.1 / 28.2 | 📊 爬蟲四步流程：發請求 → 拿 HTML → 解析選元素 → 存資料 | 待做 |
+| `ch28.02_static_vs_dynamic` | 28.2 / 28.3 | 📊 靜態頁（requests+BS4 夠）vs 動態頁（JS 渲染、要 Playwright）怎麼判斷 | 待做 |
+| `ch28.03_requests_bs4` | 28.2 / 28.8 | 📊 requests + BeautifulSoup 基本盤：抓 → `soup.select()` 取值 | 待做 |
+| `ch28.04_selector_xpath` | 28.12 | 📊 同一段 HTML：CSS Selector vs XPath 兩種定位寫法對照 | 待做 |
+| `ch28.05_playwright` | 28.3 / 28.10 | 📷 Playwright：開瀏覽器、等元素、截圖、點擊（動態網站） | 待做 |
+| `ch28.06_scrapy_arch` | 28.4 / 28.9 | 📊 Scrapy 架構：Spider / Scheduler / Pipeline / Middleware 資料流 | 待做 |
+| `ch28.07_anti_crawl_7` | 28.5 / 28.11 | 📊 7 種反爬機制 + 對應破解（UA / Cookie / 代理 IP / 驗證碼 / 頻率限制…） | 待做 |
+| `ch28.08_proxy_ip_pool` | 28.6 / 28.20 | 📊 IP 池 / Proxy：被封 IP 的救星、輪替機制 | 待做 |
+| `ch28.09_async_httpx` | 28.14 | 📊 同步 vs Async（httpx）爬蟲：等 I/O 空檔先抓下一個 | 待做 |
+| `ch28.10_login_session` | 28.15 | 📊 登入 + Session 維持：帶 cookie/token 爬需登入頁 | 待做 |
+| `ch28.11_schedule_airflow` | 28.16 | 📊 排程：cron / Airflow DAG 定時自動爬 | 待做 |
+| `ch28.12_crawl_api` | 28.17 | 📊 直接打網站背後 API（看 Network）→ 拿乾淨 JSON，不用解 HTML | 待做 |
+| `ch28.13_store_data` | 28.13 | 📊 儲存：CSV / JSON / DB 各適合的場景 | 待做 |
+| `ch28.14_tool_picker` | 28.1 | 📊 爬蟲工具選擇樹：requests+BS4 →（要 JS）Playwright →（要規模）Scrapy | 待做 |
+| `ch28.15_legal_ethics` | 28.23 | 📊 爬蟲法律 + 道德：robots.txt / 頻率 / 個資 / 著作權紅線 | 待做 |
+
+### G-4. 🆕 ch28.a — 機器學習（Machine Learning，從 ch26.16–26.20 擴充成獨立章）
+> 林董新增章。圖目標：把「ML 到底在幹嘛、流程、怎麼評估」講到看圖就懂。檔名前綴 `ch28a.`。
+> 與 B 區 `ch46_*` 可共用風格；若日後實作正式章號（如 Ch77）再把前綴對映過去。
+
+| 檔名（dark/light 一組） | lesson | 內容 | 狀態 |
+|---|---|---|---|
+| `ch28a.01_ai_ml_dl` | 28.a-1 | 📊 AI ⊃ ML ⊃ DL 同心圓：三者關係 + 一句話定義 | 待做 |
+| `ch28a.02_ml_3types` | 28.a-2 | 📊 ML 三類：監督（有答案）/ 非監督（找結構）/ 強化（試錯獎勵） | 待做 |
+| `ch28a.03_ml_workflow` | 28.a-3 | 📊 ML 完整流程：資料 → 特徵 → 切分 → 訓練 → 評估 → 部署 | 待做 |
+| `ch28a.04_sklearn_api` | 28.a-4 | 📊 scikit-learn 統一 API：`fit` / `predict` / `score` 學一次到處用 | 待做 |
+| `ch28a.05_train_test_split` | 28.a-5 | 📊 train/test split：為什麼要分、資料外洩(leakage) 的坑 | 待做 |
+| `ch28a.06_feature_engineering` | 28.a-6 | 📊 特徵工程：編碼 / 正規化 / 分箱 / 缺失處理（決定模型上限） | 待做 |
+| `ch28a.07_overfit_underfit` | 28.a-7 | 📊 過擬合 vs 欠擬合 + 交叉驗證（k-fold）示意 | 待做 |
+| `ch28a.08_metrics_confusion` | 28.a-8 | 📊 混淆矩陣 + accuracy / precision / recall / F1 / AUC 何時看哪個 | 待做 |
+| `ch28a.09_algorithms_map` | 28.a-9 | 📊 常見演算法地圖：線性 / 邏輯迴歸 / 決策樹 / KNN / SVM / 集成(RF/XGBoost) 各擅長 | 待做 |
+| `ch28a.10_bias_variance` | 28.a-10 | 📊 偏差-方差權衡：模型太簡單 vs 太複雜的取捨曲線 | 待做 |
+| `ch28a.11_pipeline_preprocess` | 28.a-11 | 📊 sklearn Pipeline：前處理 + 模型串成一條、避免 leakage | 待做 |
+| `ch28a.12_clustering_kmeans` | 28.a-12 | 📊 非監督分群（K-means）：沒有標籤怎麼把資料分組 | 待做 |
+
+### G-5. 🆕 ch28.b — 深度學習（Deep Learning，從 ch26.21–26.24 擴充成獨立章）
+> 林董新增章。圖目標：神經網路怎麼學、三大架構各擅長什麼。檔名前綴 `ch28b.`。
+> 與 B 區 `ch46_neural_net` 風格一致；可與 G-4 互相呼應。
+
+| 檔名（dark/light 一組） | lesson | 內容 | 狀態 |
+|---|---|---|---|
+| `ch28b.01_dl_vs_ml` | 28.b-1 | 📊 DL vs 傳統 ML：要不要手工特徵、資料量門檻、何時用 DL | 待做 |
+| `ch28b.02_neuron_perceptron` | 28.b-2 | 📊 一顆神經元：輸入×權重 + 偏置 → 激活 → 輸出 | 待做 |
+| `ch28b.03_neural_net_layers` | 28.b-3 | 📊 神經網路結構：input / hidden / output 層 + 全連接 | 待做 |
+| `ch28b.04_activation_functions` | 28.b-4 | 📊 激活函數：ReLU / Sigmoid / Tanh / Softmax 各長相與用途 | 待做 |
+| `ch28b.05_forward_backprop` | 28.b-5 | 📊 前向傳播算預測 → 算誤差 → 反向傳播修權重（學習迴圈） | 待做 |
+| `ch28b.06_gradient_descent` | 28.b-6 | 📊 梯度下降：下山找最低點 + 學習率太大/太小的後果 | 待做 |
+| `ch28b.07_loss_functions` | 28.b-7 | 📊 損失函數：MSE（迴歸）/ Cross-Entropy（分類）在量什麼 | 待做 |
+| `ch28b.08_pytorch_loop` | 28.b-8 | 📊 PyTorch 訓練 5 步：forward → loss → `backward()` → `step()` → `zero_grad()` | 待做 |
+| `ch28b.09_cnn_arch` | 28.b-9 | 📊 CNN：卷積 + 池化怎麼抓圖像特徵（邊緣→形狀→物件） | 待做 |
+| `ch28b.10_rnn_lstm` | 28.b-10 | 📊 RNN / LSTM：處理序列、記憶前文（文字 / 時序） | 待做 |
+| `ch28b.11_transformer_attention` | 28.b-11 | 📊 Transformer 自注意力：每個詞看全句、誰跟誰相關（LLM 底層） | 待做 |
+| `ch28b.12_regularization` | 28.b-12 | 📊 防過擬合：Dropout / BatchNorm / 早停 / 資料增強 | 待做 |
+| `ch28b.13_transfer_finetune` | 28.b-13 | 📊 預訓練 + Fine-tune（Hugging Face）：站在巨人肩膀上 | 待做 |
+| `ch28b.14_gpu_batch_epoch` | 28.b-14 | 📊 GPU / batch / epoch 概念：為什麼要 GPU、一輪 vs 一批 | 待做 |
+
+### G-6. ch29 — JavaScript 爬蟲 / Puppeteer / Playwright（25 課）
+| 檔名（dark/light 一組） | lesson | 內容 | 狀態 |
+|---|---|---|---|
+| `ch29.01_node_vs_python_crawler` | 29.1 / 29.7 | 📊 Node vs Python 爬蟲：生態 / 速度 / 適用場景對比 | 待做 |
+| `ch29.02_fetch_cheerio` | 29.2 / 29.7 | 📊 fetch + Cheerio：Node 最輕量組合（像 jQuery 選元素） | 待做 |
+| `ch29.03_puppeteer_vs_playwright` | 29.3 / 29.4 | 📊 Puppeteer vs Playwright（Node）差別與選擇（2026 首選 Playwright） | 待做 |
+| `ch29.04_crawlee_framework` | 29.5 / 29.10 | 📊 Crawlee：Node 版 Scrapy（排隊 / 重試 / 去重 / 儲存內建） | 待做 |
+| `ch29.05_network_intercept` | 29.12 | 📊 攔截 + 修改 Network：直接抓 API 回應，不用解 HTML | 待做 |
+| `ch29.06_fingerprint_evasion` | 29.14 / 29.15 | 📊 反 fingerprint：TLS / Canvas / UA 一致性，Curl Impersonate | 待做 |
+| `ch29.07_serverless_crawl` | 29.13 / 29.20 | 📊 Serverless 爬蟲：Cloudflare Workers / Vercel Functions 部署 | 待做 |
+| `ch29.08_rss_sitemap` | 29.16 | 📊 RSS / Sitemap：合法又友善的抓法（網站主動給的清單） | 待做 |
+| `ch29.09_ai_crawler` | 29.23 | 📊 AI 爬蟲：browser-use / Magnitude 用自然語言操作瀏覽器 | 待做 |
+| `ch29.10_ocr_cv` | 29.24 | 📊 OCR + CV：把圖片 / 截圖裡的資料抓出來 | 待做 |
+
+### G-7. ch30 — 跨語言爬蟲 / Go colly / Rust（25 課）
+| 檔名（dark/light 一組） | lesson | 內容 | 狀態 |
+|---|---|---|---|
+| `ch30.01_lang_quadrant` | 30.1 / 30.7 | 📊 Python / Node / Go / Rust 爬蟲象限：開發速度 ↔ 執行效能，何時換語言 | 待做 |
+| `ch30.02_go_colly` | 30.2 / 30.8 | 📊 Go colly：goroutine 高並發（5 萬並發）架構 | 待做 |
+| `ch30.03_rust_scraper` | 30.3 / 30.9 | 📊 Rust + reqwest + scraper：極致效能、零成本抽象 | 待做 |
+| `ch30.04_schedule_options` | 30.4 | 📊 排程對照：cron / GitHub Actions / Temporal 各適合什麼 | 待做 |
+| `ch30.05_distributed_arch` | 30.5 / 30.17 | 📊 分散式爬蟲：Redis Queue + 多 Worker + 去重 + 儲存 | 待做 |
+| `ch30.06_headless_cluster` | 30.19 | 📊 Headless Browser Cluster：多瀏覽器並行、資源調度 | 待做 |
+| `ch30.07_data_quality` | 30.20 | 📊 資料品質：去重 + 驗證 + schema 檢查 | 待做 |
+| `ch30.08_etl_pipeline` | 30.21 / 30.22 | 📊 ETL pipeline：抓 → 清 → 轉 → 存（CSV / Parquet / DB） | 待做 |
+| `ch30.09_delivery` | 30.23 | 📊 客戶交付：報表 / Dashboard / API 三種交付形式 | 待做 |
+| `ch30.10_ai_browser_crawl` | 30.14 | 📊 AI 爬蟲：Claude / GPT + Browser 自動化解析難頁 | 待做 |
+
+### G-8. 小計（ch26–30 ＋ 28.a/28.b）
+- ch26：✅ 9 完成 ＋ 15 待做 = 24
+- ch27：15 待做
+- ch28：15 待做
+- **28.a 機器學習：12 待做（新）**
+- **28.b 深度學習：14 待做（新）**
+- ch29：10 待做
+- ch30：10 待做
+- **合計：100 張（其中 9 完成、91 待做）；每張含深/淺兩版 = 實際出圖 200 個檔。**
+
+---
+
 ## C. 建議產製順序
 
 1. **A 區（操作教學）全做** — 對應真實卡關、CP 值最高，且已有 6 張範例風格可參考。
@@ -335,7 +498,8 @@
 3. **D 區（前端框架專區）優先** — 林董指示前端是多數人入門基礎；先做 D-1 工具演進（含 CRA 歷史）、D-4 ch10 五種渲染模式、D-2 React Hooks 速查，這三組最常卡。
 4. **E 區（Python / 爬蟲 / Node）** — 先做 E-1 ch26 基礎（comprehension / decorator / generator / OOP）、E-3 ch28 爬蟲流程與靜態vs動態、E-6 ch31 event loop，這幾組最常卡。
 5. **F-2 ch03 UI/UX 🔴 優先** — 這章完全沒圖、又最視覺，視覺層次 / 色票 / 8 點網格 / 按鈕狀態做出來最有感。
-6. 其餘 B / D / E / F 區概念圖後續分批補。
+6. **G 區（Python 系列 ch26–30 ＋ 28.a/28.b）★** — ch26 安裝/工具 9 張已完成；接著建議 G-1 ch26 核心語言（comprehension / decorator / generator / OOP）、G-4 28.a ML 流程（3 類 / workflow / 評估指標）、G-5 28.b DL（神經網路 / 反向傳播 / Transformer）、G-3 ch28 爬蟲流程，最能讓 Python 系列「看圖就懂」。
+7. 其餘 B / D / E / F 區概念圖後續分批補。
 
 > 全部加總約 **110+ 張**概念圖待產（B 40+、D 26、E 33、F 30+）。生好丟進 `public/lesson-img/ch{NN}/`、跟我說一聲，我依本表把 `![]()` 插進對應 lesson。
 
