@@ -903,13 +903,32 @@ const L = [
   },
 ];
 
+// 圖片佈線（G-5）：lesson 序號(1-based) → [檔名slug, 圖說]。圖放 public/lesson-img/ch28b/，
+// 只寫 dark 路徑、light 由 LessonImage 自動推導。圖未生成前會顯示破圖、生好放進去即生效。
+const IMG = {
+  1: ["ch28b.01_dl_vs_ml", "深度學習 vs 傳統機器學習"],
+  2: ["ch28b.02_neuron_perceptron", "神經元（感知器）"],
+  3: ["ch28b.03_neural_net_layers", "神經網路：輸入 / 隱藏 / 輸出層"],
+  4: ["ch28b.04_activation_functions", "激活函數：ReLU / Sigmoid / Softmax"],
+  6: ["ch28b.07_loss_functions", "損失函數：MSE / Cross-Entropy"],
+  7: ["ch28b.05_forward_backprop", "前向傳播 + 反向傳播"],
+  8: ["ch28b.06_gradient_descent", "梯度下降 + 學習率"],
+  11: ["ch28b.08_pytorch_loop", "PyTorch 訓練迴圈 5 步"],
+  12: ["ch28b.14_gpu_batch_epoch", "batch / epoch / GPU 訓練實務"],
+  14: ["ch28b.12_regularization", "防過擬合：Dropout / BatchNorm / 早停"],
+  15: ["ch28b.09_cnn_arch", "CNN：卷積 + 池化"],
+  17: ["ch28b.10_rnn_lstm", "RNN / LSTM：序列模型"],
+  18: ["ch28b.11_transformer_attention", "Transformer + 注意力機制"],
+  20: ["ch28b.13_transfer_finetune", "遷移學習 + Fine-tune"],
+};
+
 const lessons = L.map((x, i) => ({
   id: `78.${i + 1}`,
   number: `LESSON 28b.${i + 1}`,
   title: x.t,
   oneLineSummary: x.s,
   analogy: x.a,
-  content: J(x.c),
+  content: (IMG[i + 1] ? `![${IMG[i + 1][1]}](/lesson-img/ch28b/${IMG[i + 1][0]}_dark.png)\n\n` : "") + J(x.c),
   tip: x.tip,
   exercise: { question: x.ex.question, answer: x.ex.answer },
   xp: x.xp,

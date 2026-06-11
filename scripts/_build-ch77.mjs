@@ -1006,13 +1006,30 @@ const L = [
   },
 ];
 
+// 圖片佈線（G-4）：lesson 序號(1-based) → [檔名slug, 圖說]。圖放 public/lesson-img/ch28a/，
+// 只寫 dark 路徑、light 由 LessonImage 自動推導。圖未生成前會顯示破圖、生好放進去即生效。
+const IMG = {
+  1: ["ch28a.01_ai_ml_dl", "AI / ML / DL 三層關係"],
+  2: ["ch28a.02_ml_3types", "機器學習三大類型：監督 / 非監督 / 強化"],
+  3: ["ch28a.03_ml_workflow", "機器學習完整流程七步"],
+  4: ["ch28a.04_sklearn_api", "scikit-learn：fit / predict 統一介面"],
+  5: ["ch28a.05_train_test_split", "訓練集 / 測試集切分"],
+  7: ["ch28a.06_feature_engineering", "特徵工程：編碼 + 縮放"],
+  9: ["ch28a.09_algorithms_map", "常見演算法地圖"],
+  15: ["ch28a.07_overfit_underfit", "過擬合 vs 欠擬合"],
+  16: ["ch28a.10_bias_variance", "偏差–方差權衡"],
+  18: ["ch28a.08_metrics_confusion", "混淆矩陣 + 分類評估指標"],
+  20: ["ch28a.11_pipeline_preprocess", "Pipeline：前處理 + 模型防外洩"],
+  21: ["ch28a.12_clustering_kmeans", "K-means 分群"],
+};
+
 const lessons = L.map((x, i) => ({
   id: `77.${i + 1}`,
   number: `LESSON 28a.${i + 1}`,
   title: x.t,
   oneLineSummary: x.s,
   analogy: x.a,
-  content: J(x.c),
+  content: (IMG[i + 1] ? `![${IMG[i + 1][1]}](/lesson-img/ch28a/${IMG[i + 1][0]}_dark.png)\n\n` : "") + J(x.c),
   tip: x.tip,
   exercise: { question: x.ex.question, answer: x.ex.answer },
   xp: x.xp,
