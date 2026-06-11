@@ -1,35 +1,30 @@
 -- 修：notes 的協作者 RLS 政策呼叫 is_note_collaborator / is_note_editor，
 -- 但 secdef_function_grants_migration.sql 已 REVOKE anon 的 EXECUTE。
--- 結果：任何「未登入 / session 尚未水合」的情境讀 notes 會直接
+-- 結果：未登入 / session 未水合 時讀 notes 會直接
 --   ERROR：permission denied for function is_note_collaborator
--- 連帶讓側邊欄「筆記」整個讀不到（owner 政策也救不了、因為是硬錯誤）。
+-- 連帶讓側邊欄「筆記」整個讀不到（同一查詢硬錯誤、owner 政策也救不了）。
 --
--- 修法：用 CASE 包住、auth.uid() 為 null（anon）時直接回 false、
---       「不呼叫」definer 函式 → 不觸發 EXECUTE 權限檢查 → 不再硬錯。
---       登入者（authenticated 有 EXECUTE）行為完全不變、協作分享照常。
---       anon 仍「無法執行該函式」（保留 secdef 收緊、不重開 Supabase 警告）。
+-- 為什麼 CASE 包不住：Postgres 對「政策內引用的函式」會檢查角色的 EXECUTE
+-- 權限，不因 CASE 短路而跳過。所以 anon 只要這條政策還引用該函式就會錯。
+--
+-- 正解：把「協作者」政策限定 TO authenticated。
+--   - anon：根本不套用這兩條政策 → 不引用 definer 函式 → 不再硬錯，
+--           只會走 notes_select（is_public OR 自己的）→ 安全回空。
+--   - authenticated：照常套用（該角色有 EXECUTE）、協作分享功能不變。
+--   - 保留 secdef 收緊（anon 仍無 EXECUTE）、不重開 Supabase 警告。
 
--- SELECT：協作者可讀（登入才評估函式）
 drop policy if exists notes_select_shared on public.notes;
-create policy notes_select_shared on public.notes for select using (
-  case
-    when auth.uid() is null then false
-    else public.is_note_collaborator(notes.id, auth.uid())
-  end
-);
+create policy notes_select_shared on public.notes
+  for select to authenticated using (
+    public.is_note_collaborator(id, auth.uid())
+  );
 
--- UPDATE：editor 角色可改（登入才評估函式）
 drop policy if exists notes_update_shared on public.notes;
-create policy notes_update_shared on public.notes for update using (
-  case
-    when auth.uid() is null then false
-    else public.is_note_editor(notes.id, auth.uid())
-  end
-) with check (
-  case
-    when auth.uid() is null then false
-    else public.is_note_editor(notes.id, auth.uid())
-  end
-);
+create policy notes_update_shared on public.notes
+  for update to authenticated using (
+    public.is_note_editor(id, auth.uid())
+  ) with check (
+    public.is_note_editor(id, auth.uid())
+  );
 
--- 驗證（套用後）：用 anon 讀 notes 應「回空、不報錯」；登入者照常讀到自己 + 被分享的。
+-- 驗證：anon 讀 notes 應「回空、不報錯」；登入者照常讀到自己 + public + 被分享的。
