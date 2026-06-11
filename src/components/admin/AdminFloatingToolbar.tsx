@@ -233,7 +233,7 @@ export function AdminFloatingToolbar() {
         position: "fixed",
         left: panelStyle.left,
         top: panelStyle.top,
-        zIndex: 40,
+        zIndex: 55,
         touchAction: "none",
         maxHeight: "calc(100vh - 16px)",
         overflowY: "auto",

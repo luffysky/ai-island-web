@@ -14,9 +14,20 @@ import { FloatingNoteButton } from "./FloatingNoteButton";
 import { AchievementToast } from "../gamification/AchievementToast";
 import { LevelUpModal } from "../gamification/LevelUpModal";
 import { XpToast, type XpToastData } from "../gamification/XpToast";
-import { ChevronLeft, ChevronRight, Clock, Trophy } from "lucide-react";
+import { ChevronLeft, ChevronRight, Clock, Trophy, BookmarkCheck, X } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/components/ui/Toast";
+import { saveReadingPos, getReadingPos } from "@/lib/reading-position";
+
+// 平滑捲到某個 lesson 卡並短暫高亮（跟 hash 跳轉同效果）
+function scrollToLesson(lessonId: string) {
+  const el = document.getElementById(`lesson-${lessonId}`);
+  if (!el) return false;
+  el.scrollIntoView({ behavior: "smooth", block: "start" });
+  el.classList.add("ring-2", "ring-accent", "ring-offset-2", "ring-offset-bg");
+  setTimeout(() => el.classList.remove("ring-2", "ring-accent", "ring-offset-2", "ring-offset-bg"), 2200);
+  return true;
+}
 
 export function ChapterView({ chapter }: { chapter: Chapter }) {
   const { user } = useAuth();
@@ -25,6 +36,8 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
   const [toast, setToast] = useState<any>(null);
   const [levelUp, setLevelUp] = useState<number | null>(null);
   const [xpToast, setXpToast] = useState<XpToastData | null>(null);
+  // 「繼續上次閱讀」橫幅：重開章節時若記得上次看到的 lesson（且不是第一節）就提示一鍵跳回
+  const [resume, setResume] = useState<{ lessonId: string; label: string } | null>(null);
   const supabase = createSupabaseBrowser();
   const stageKey = chapter.stage === "appendix" ? 7 : Number(chapter.stage);
   const stageColor = STAGE_COLORS[stageKey] ?? STAGE_COLORS[1];
@@ -77,6 +90,66 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
     };
     setTimeout(tryScroll, 150);
   }, [chapter.id]);
+
+  // 開章節時：若帶 hash（從別處指定跳轉）就不顯示橫幅；否則讀「上次看到的段落」
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.location.hash.startsWith("#lesson-")) { setResume(null); return; }
+    const pos = getReadingPos(chapter.id);
+    if (!pos) { setResume(null); return; }
+    // 上次就在第一節 = 等於沒進度、不打擾
+    if (chapter.lessons[0]?.id === pos.lessonId) { setResume(null); return; }
+    // lesson 還在這章才提示（內容改版後 id 可能不存在）
+    if (!chapter.lessons.some((l) => l.id === pos.lessonId)) { setResume(null); return; }
+    const num = pos.lessonNumber != null ? `LESSON ${pos.lessonNumber}` : "上次的段落";
+    setResume({ lessonId: pos.lessonId, label: pos.lessonTitle ? `${num} · ${pos.lessonTitle}` : num });
+  }, [chapter.id]);
+
+  // 捲動時記住「目前在視窗中最上方的 lesson」→ 存 localStorage（停 1.2s 才寫、避免狂寫）
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const cards = Array.from(document.querySelectorAll<HTMLElement>("[data-lesson-id]"));
+    if (cards.length === 0) return;
+    const visible = new Set<string>();
+    let currentId: string | null = null;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          const id = (e.target as HTMLElement).dataset.lessonId;
+          if (!id) continue;
+          if (e.isIntersecting) visible.add(id);
+          else visible.delete(id);
+        }
+        // 在所有可見 lesson 中、挑卡片頂端最靠近視窗頂部那一個
+        let best: { id: string; top: number } | null = null;
+        visible.forEach((id) => {
+          const el = document.getElementById(`lesson-${id}`);
+          if (!el) return;
+          const top = el.getBoundingClientRect().top;
+          if (!best || top < best.top) best = { id, top };
+        });
+        if (best && (best as { id: string }).id !== currentId) {
+          currentId = (best as { id: string }).id;
+          if (timer) clearTimeout(timer);
+          timer = setTimeout(() => {
+            const lesson = chapter.lessons.find((l) => l.id === currentId);
+            if (lesson) {
+              saveReadingPos({
+                chapterId: chapter.id,
+                lessonId: lesson.id,
+                lessonNumber: lesson.number,
+                lessonTitle: lesson.title,
+              });
+            }
+          }, 1200);
+        }
+      },
+      { threshold: [0, 0.25, 0.5] },
+    );
+    cards.forEach((c) => io.observe(c));
+    return () => { io.disconnect(); if (timer) clearTimeout(timer); };
+  }, [chapter.id, chapter.lessons]);
 
   const handleComplete = async (lessonId: string, xp: number) => {
     if (!user) {
@@ -219,6 +292,30 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
           </div>
         )}
       </header>
+
+      {/* 繼續上次閱讀 */}
+      {resume && (
+        <div className="mb-4 flex items-center gap-3 rounded-2xl border border-accent/40 bg-accent/5 px-4 py-3">
+          <BookmarkCheck size={18} className="shrink-0 text-accent" />
+          <div className="min-w-0 flex-1">
+            <div className="text-xs text-fg-muted">上次看到這裡</div>
+            <div className="truncate text-sm font-semibold">{resume.label}</div>
+          </div>
+          <button
+            onClick={() => { scrollToLesson(resume.lessonId); setResume(null); }}
+            className="shrink-0 rounded-lg bg-accent px-3 py-1.5 text-sm font-bold text-black transition hover:scale-105"
+          >
+            繼續閱讀 →
+          </button>
+          <button
+            onClick={() => setResume(null)}
+            aria-label="關閉"
+            className="shrink-0 rounded p-1 text-fg-muted hover:bg-bg-elevated hover:text-fg"
+          >
+            <X size={16} />
+          </button>
+        </div>
+      )}
 
       {/* Lessons */}
       <div className="space-y-4">

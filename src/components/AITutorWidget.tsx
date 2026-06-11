@@ -7,9 +7,11 @@ import { useEdgeSafe } from "@/lib/use-edge-safe";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { devLog } from "@/lib/dev-log";
 import { trackEvent } from "@/lib/analytics";
+import { getReadingPos, type ReadingPos } from "@/lib/reading-position";
 
 const TUTOR_POS_KEY = "ai_tutor_ball_pos";
 const TUTOR_SIZE_KEY = "ai_tutor_panel_size";
+const TUTOR_MODEL_KEY = "ai_tutor_model"; // 記住使用者選的 AI 模型（重新整理 / 下次再來都還在）
 const DRAG_THRESHOLD_PX = 5;
 
 function DraggableTutorBall({ onOpen }: { onOpen: () => void }) {
@@ -90,7 +92,7 @@ function DraggableTutorBall({ onOpen }: { onOpen: () => void }) {
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
       onPointerCancel={() => { dragRef.current = null; setDragging(false); }}
-      style={{ position: "fixed", left: pos.x, top: pos.y, zIndex: 30, touchAction: "none", cursor: dragging ? "grabbing" : "grab" }}
+      style={{ position: "fixed", left: pos.x, top: pos.y, zIndex: 55, touchAction: "none", cursor: dragging ? "grabbing" : "grab" }}
       className="w-16 h-16 rounded-full bg-gradient-to-br from-green-400 via-emerald-400 to-cyan-400 text-black shadow-2xl hover:scale-110 transition flex items-center justify-center group select-none"
       title="綠寶 — 你的 AI 學習導師（可拖曳）"
       aria-label="開啟 AI 導師"
@@ -154,6 +156,15 @@ export function AITutorWidget({
   useOverlayRegister(open, false);
   const [models, setModels] = useState<AIModel[]>([]);
   const [selectedModelId, setSelectedModelId] = useState<string>("auto"); // 預設 Auto（依難度自動分級、省成本）
+  // 初次載入：還原上次選的模型（localStorage）。models 載入後會再驗證該模型是否仍存在。
+  useEffect(() => {
+    try { const v = localStorage.getItem(TUTOR_MODEL_KEY); if (v) setSelectedModelId(v); } catch {}
+  }, []);
+  // 選模型 = 立即記住（含 "auto"）
+  const pickModel = useCallback((id: string) => {
+    setSelectedModelId(id);
+    try { localStorage.setItem(TUTOR_MODEL_KEY, id); } catch {}
+  }, []);
   const [autoModelUsed, setAutoModelUsed] = useState<string | null>(null); // Auto 模式實際選到的模型
   const [feedback, setFeedback] = useState<Record<number, "up" | "down">>({}); // 每則回答的讚/倒讚
   const [tone, setTone] = useState("friendly");
@@ -233,8 +244,11 @@ export function AITutorWidget({
         if (cancelled) return;
         if (!modelsError && data) {
           setModels(data);
-          // 預設保持 "auto"（智慧分級）；只有當使用者先前選過具體模型才不動
-          setSelectedModelId((prev) => (prev && prev !== "") ? prev : "auto");
+          // 還原的具體模型若已被後台停用 → 退回 auto；auto / 空值維持 auto
+          setSelectedModelId((prev) => {
+            if (!prev || prev === "auto") return "auto";
+            return data.some((m: any) => m.id === prev) ? prev : "auto";
+          });
           if (data.length === 0) setError("目前沒有可用 AI 模型，請到後台啟用至少一個模型");
           return;
         }
@@ -583,6 +597,29 @@ export function AITutorWidget({
   const selectedModel = models.find((m) => m.id === selectedModelId);
   const isAuto = selectedModelId === "auto";
 
+  // 「跳到上次看的段落」：打開綠寶時讀最後閱讀位置（localStorage）
+  const [resumePos, setResumePos] = useState<ReadingPos | null>(null);
+  useEffect(() => {
+    if (!open) return;
+    setResumePos(getReadingPos() ?? null);
+  }, [open]);
+  const jumpToReading = useCallback((pos: ReadingPos) => {
+    trackEvent("tutor_resume_jump", { chapter: pos.chapterId });
+    const onThisChapter = contextChapterId != null && Number(contextChapterId) === pos.chapterId;
+    if (onThisChapter) {
+      const el = document.getElementById(`lesson-${pos.lessonId}`);
+      if (el) {
+        setOpen(false); // 收起綠寶才看得到教材
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+        el.classList.add("ring-2", "ring-accent", "ring-offset-2", "ring-offset-bg");
+        setTimeout(() => el.classList.remove("ring-2", "ring-accent", "ring-offset-2", "ring-offset-bg"), 2200);
+        return;
+      }
+    }
+    // 不同章節（或當頁找不到）→ 直接導去該章 + hash，ChapterView 會自動捲過去
+    window.location.href = `/chapters/${pos.chapterId}#lesson-${pos.lessonId}`;
+  }, [contextChapterId]);
+
   return (
     <>
       {/* Floating button - 綠寶導師（可拖曳） */}
@@ -832,7 +869,7 @@ export function AITutorWidget({
                     <li>
                       <button
                         type="button"
-                        onClick={() => { setSelectedModelId("auto"); setShowModelMenu(false); }}
+                        onClick={() => { pickModel("auto"); setShowModelMenu(false); }}
                         className={`w-full px-3 py-2 text-left text-sm hover:bg-bg-elevated border-b border-border ${isAuto ? "text-accent" : ""}`}
                       >
                         <div className="font-medium">🤖 Auto（智慧分級）</div>
@@ -847,7 +884,7 @@ export function AITutorWidget({
                           <button
                             type="button"
                             onClick={() => {
-                              setSelectedModelId(m.id);
+                              pickModel(m.id);
                               setShowModelMenu(false);
                             }}
                             className={`w-full px-3 py-2 text-left text-sm hover:bg-bg-elevated ${
@@ -920,6 +957,20 @@ export function AITutorWidget({
                 <Sparkles size={32} className="mx-auto mb-2 opacity-50" />
                 <p className="font-medium mb-1">AI 學習導師</p>
                 <p className="text-xs">問我任何 AI 島課程的問題</p>
+                {resumePos && (
+                  <button
+                    onClick={() => jumpToReading(resumePos)}
+                    className="mt-4 w-full rounded-lg border border-accent/40 bg-accent/10 px-3 py-2 text-left text-xs transition hover:bg-accent/15"
+                    title="回到你上次看到的段落"
+                  >
+                    📍 跳到我上次看的段落
+                    <span className="mt-0.5 block truncate text-[11px] text-fg-muted">
+                      Ch{chapterDisplayNumberById(resumePos.chapterId)}
+                      {resumePos.lessonNumber != null ? ` · LESSON ${resumePos.lessonNumber}` : ""}
+                      {resumePos.lessonTitle ? ` · ${resumePos.lessonTitle}` : ""}
+                    </span>
+                  </button>
+                )}
                 <div className="mt-4 space-y-1 text-xs">
                   <SuggestedQ onPick={setInput}>什麼是 RAG？</SuggestedQ>
                   <SuggestedQ onPick={setInput}>怎麼從 0 開始學 Next.js？</SuggestedQ>
