@@ -428,10 +428,10 @@
 | `ch26.25_index_access` | 26.4 | 📊 索引與取值：`list[i]` / 負索引 / `dict[key]`（從 0 開始；image seq=25、非 lesson 號） | ✅ |
 | `ch26.26_slicing` | 26.4 | 📊 切片 `[start:end:step]`：取一段、反轉 `[::-1]`、含頭不含尾 | ✅ |
 | `ch26.27_for_loop` | 26.5 | 📊 `for x in iterable`：list/str/range/enumerate 依序取出（image seq=27、非 lesson 號） | ✅ |
-| `ch26.15_exception_flow` | 26.9 | 📊 try / except / else / finally 執行流程 | 待做 |
-| `ch26.16_oop_class` | 26.10 | 📊 class→實例、繼承、`dataclass` 省樣板（藍圖→房子比喻） | 待做 |
-| `ch26.17_decorator` | 26.11 | 📊 decorator＝函數包函數，不改原碼加功能（@ 語法糖） | 待做 |
-| `ch26.18_generator` | 26.11 | 📊 generator（yield）一次吐一個、用到才算 vs list 一次全產出 | 待做 |
+| `ch26.15_exception_flow` | 26.9 | 📊 try / except / else / finally 執行流程 | ✅ |
+| `ch26.16_oop_class` | 26.10 | 📊 class→實例、繼承、`dataclass` 省樣板（藍圖→房子比喻） | ✅ |
+| `ch26.17_decorator` | 26.11 | 📊 decorator＝函數包函數，不改原碼加功能（@ 語法糖） | ✅ |
+| `ch26.18_generator` | 26.11 | 📊 generator（yield）一次吐一個、用到才算 vs list 一次全產出 | ✅ |
 | `ch26.19_type_hints` | 26.12 | 📊 type hint + mypy：標籤給人/IDE/檢查器看，不影響執行 | 待做 |
 | `ch26.20_fastapi_flow` | 26.25 | 📊 FastAPI 請求流程：route→Pydantic 驗證→處理→回 JSON ＋ 自動 API 文件 | 待做 |
 | `ch26.21_pydantic_validate` | 26.26 | 📊 Pydantic v2：型別自動驗證、錯誤訊息、序列化 | 待做 |
