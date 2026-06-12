@@ -432,9 +432,9 @@
 | `ch26.16_oop_class` | 26.10 | 📊 class→實例、繼承、`dataclass` 省樣板（藍圖→房子比喻） | ✅ |
 | `ch26.17_decorator` | 26.11 | 📊 decorator＝函數包函數，不改原碼加功能（@ 語法糖） | ✅ |
 | `ch26.18_generator` | 26.11 | 📊 generator（yield）一次吐一個、用到才算 vs list 一次全產出 | ✅ |
-| `ch26.19_type_hints` | 26.12 | 📊 type hint + mypy：標籤給人/IDE/檢查器看，不影響執行 | 待做 |
-| `ch26.20_fastapi_flow` | 26.25 | 📊 FastAPI 請求流程：route→Pydantic 驗證→處理→回 JSON ＋ 自動 API 文件 | 待做 |
-| `ch26.21_pydantic_validate` | 26.26 | 📊 Pydantic v2：型別自動驗證、錯誤訊息、序列化 | 待做 |
+| `ch26.19_type_hints` | 26.12 | 📊 type hint + mypy：標籤給人/IDE/檢查器看，不影響執行 | ✅ |
+| `ch26.20_fastapi_flow` | 26.25 | 📊 FastAPI 請求流程：route→Pydantic 驗證→處理→回 JSON ＋ 自動 API 文件 | ✅ |
+| `ch26.21_pydantic_validate` | 26.26 | 📊 Pydantic v2：型別自動驗證、錯誤訊息、序列化 | ✅ |
 | `ch26.22_async_di` | 26.27 | 📊 async/await event loop ＋ Depends 依賴注入 | 待做 |
 | `ch26.23_sqlalchemy_alembic` | 26.28 | 📊 ORM（物件↔資料表）＋ Alembic migration（版本控管 schema） | 待做 |
 | `ch26.24_deploy_asgi` | 26.32 | 📊 部署：Uvicorn / Gunicorn / Docker，ASGI vs WSGI | 待做 |
