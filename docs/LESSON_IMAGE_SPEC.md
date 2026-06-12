@@ -420,11 +420,14 @@
 | `ch26.07_repl_guide` | 26.2 | REPL 圖文指南 | ✅ |
 | `ch26.08_vscode_extensions` | 26.1.5 | 編輯器 / Jupyter / Colab 工具大全 | ✅ |
 | `ch26.09_vscode_python_ext` | 26.1.5 | VS Code Python + Pylance + Ruff | ✅ |
-| `ch26.10_data_types` | 26.3 | 📊 int/float/str/bool ＋ 陷阱（float 精度 `0.1+0.2`、str 不可變、`capitalize` 開頭空白雷） | 待做 |
-| `ch26.11_containers_4` | 26.4 | 📊 list/tuple/set/dict 四容器對照（有序? 可改? 可重複? 鍵值?） | 待做 |
-| `ch26.12_comprehension` | 26.5 | 📊 List Comprehension 三段拆解 `[x*2 for x in nums if x>0]` vs 傳統 for | 待做 |
-| `ch26.13_args_kwargs` | 26.6 | 📊 `*args`（收成 tuple）/ `**kwargs`（收成 dict）/ lambda | 待做 |
-| `ch26.14_file_io_with` | 26.8 | 📊 `with open()` 自動關檔（對比忘了 close 的坑） | 待做 |
+| `ch26.10_data_types` | 26.3 | 📊 int/float/str/bool ＋ 陷阱（float 精度 `0.1+0.2`、str 不可變、`capitalize` 開頭空白雷） | ✅ |
+| `ch26.11_containers_4` | 26.4 | 📊 list/tuple/set/dict 四容器對照（有序? 可改? 可重複? 鍵值?） | ✅ |
+| `ch26.12_comprehension` | 26.4 | 📊 List Comprehension 三段拆解 `[x*2 for x in nums if x>0]` vs 傳統 for | ✅ |
+| `ch26.13_args_kwargs` | 26.6 | 📊 `*args`（收成 tuple）/ `**kwargs`（收成 dict）/ lambda | ✅ |
+| `ch26.14_file_io_with` | 26.8 | 📊 `with open()` 自動關檔（對比忘了 close 的坑） | ✅ |
+| `ch26.25_index_access` | 26.4 | 📊 索引與取值：`list[i]` / 負索引 / `dict[key]`（從 0 開始；image seq=25、非 lesson 號） | ✅ |
+| `ch26.26_slicing` | 26.4 | 📊 切片 `[start:end:step]`：取一段、反轉 `[::-1]`、含頭不含尾 | ✅ |
+| `ch26.27_for_loop` | 26.5 | 📊 `for x in iterable`：list/str/range/enumerate 依序取出（image seq=27、非 lesson 號） | ✅ |
 | `ch26.15_exception_flow` | 26.9 | 📊 try / except / else / finally 執行流程 | 待做 |
 | `ch26.16_oop_class` | 26.10 | 📊 class→實例、繼承、`dataclass` 省樣板（藍圖→房子比喻） | 待做 |
 | `ch26.17_decorator` | 26.11 | 📊 decorator＝函數包函數，不改原碼加功能（@ 語法糖） | 待做 |
