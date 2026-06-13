@@ -121,6 +121,21 @@ export async function getChapter(id: number): Promise<Chapter | null> {
   return result;
 }
 
+// Supabase/PostgREST 預設一次最多回 1000 筆；lessons 已 >1000、必須分頁撈滿、
+// 不然「一次撈全部 lessons」的查詢會被截斷、部分章節缺課（最後灌的 ch79 整批掉光 → 0 節）。
+async function fetchAllLessons(admin: any, columns: string): Promise<any[]> {
+  const all: any[] = [];
+  const PAGE = 1000;
+  for (let from = 0; ; from += PAGE) {
+    const { data, error } = await admin.from('lessons').select(columns).range(from, from + PAGE - 1);
+    if (error) throw error;
+    const rows = data ?? [];
+    all.push(...rows);
+    if (rows.length < PAGE) break;
+  }
+  return all;
+}
+
 export async function getAllChapters(): Promise<Chapter[]> {
   if (allCache && isFresh(allCache.at)) return allCache.data;
 
@@ -129,7 +144,7 @@ export async function getAllChapters(): Promise<Chapter[]> {
     try {
       const admin = createSupabaseAdmin();
       const { data: chRows } = await admin.from('chapters').select('*');
-      const { data: allLessons } = await admin.from('lessons').select('*');
+      const allLessons = await fetchAllLessons(admin, '*');
       if (chRows && chRows.length > 0) {
         const byCh = new Map<number, any[]>();
         for (const l of (allLessons as any[]) ?? []) {
@@ -178,7 +193,7 @@ export async function getChapterMetas() {
       const admin = createSupabaseAdmin();
       const { data: chRows } = await admin.from('chapters').select('*');
       if (chRows && chRows.length > 0) {
-        const { data: lessonIds } = await admin.from('lessons').select('chapter_id');
+        const lessonIds = await fetchAllLessons(admin, 'chapter_id');
         const counts = new Map<number, number>();
         for (const l of (lessonIds as any[]) ?? []) counts.set(l.chapter_id, (counts.get(l.chapter_id) ?? 0) + 1);
         metas = (chRows as any[]).map((c) => ({
@@ -219,9 +234,7 @@ export async function getNavChapters() {
       const admin = createSupabaseAdmin();
       const { data: chRows } = await admin.from('chapters').select('*');
       if (chRows && chRows.length > 0) {
-        const { data: lessonRows } = await admin
-          .from('lessons')
-          .select('id, number, title, outline, chapter_id, sort_order');
+        const lessonRows = await fetchAllLessons(admin, 'id, number, title, outline, chapter_id, sort_order');
         const byCh = new Map<number, any[]>();
         for (const l of (lessonRows as any[]) ?? []) {
           if (!byCh.has(l.chapter_id)) byCh.set(l.chapter_id, []);
