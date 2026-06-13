@@ -16,6 +16,8 @@ type QuizQuestion = {
 
 const TOTAL_QUESTIONS = 8;
 const LEETCODE_RATIO = 0.5;
+// 防重複：最近這幾天出過的題（依 source_id）優先不再抽，題庫不夠才會回頭用
+const RECENT_DAYS = 14;
 
 function shuffle<T>(arr: T[]): T[] {
   const out = [...arr];
@@ -26,8 +28,20 @@ function shuffle<T>(arr: T[]): T[] {
   return out;
 }
 
-// 從學過的章節 lesson.miniQuiz 抽題
-function pickFromChapters(completedLessons: Set<string>, count: number): QuizQuestion[] {
+// 優先抽「最近沒出過」的題；不夠再補最近出過的（一樣 shuffle、避免每天同一份）
+function pickPreferFresh<T extends { source_id?: string }>(
+  pool: T[],
+  count: number,
+  recent: Set<string>,
+): T[] {
+  const fresh = shuffle(pool.filter((q) => !q.source_id || !recent.has(String(q.source_id))));
+  if (fresh.length >= count) return fresh.slice(0, count);
+  const stale = shuffle(pool.filter((q) => q.source_id && recent.has(String(q.source_id))));
+  return [...fresh, ...stale].slice(0, count);
+}
+
+// 學過的章節 lesson.miniQuiz 全部候選（不在這裡 slice、交給 pickPreferFresh）
+function buildChapterPool(completedLessons: Set<string>): QuizQuestion[] {
   const pool: QuizQuestion[] = [];
   for (const ch of chapters) {
     for (const lesson of ch.lessons) {
@@ -43,7 +57,18 @@ function pickFromChapters(completedLessons: Set<string>, count: number): QuizQue
       });
     }
   }
-  return shuffle(pool).slice(0, count);
+  return pool;
+}
+
+function toLeetQuestion(l: any): QuizQuestion {
+  return {
+    q: `[${(l.difficulty ?? "easy").toUpperCase()}] ${l.title}\n\n${l.body_md}`,
+    options: l.options,
+    answer: l.answer,
+    source: "leetcode",
+    source_id: l.id,
+    explanation: l.explanation,
+  };
 }
 
 // GET /api/quiz/today
@@ -54,7 +79,7 @@ export async function GET() {
 
   const today = new Date().toISOString().slice(0, 10);
 
-  // 已存在 → 直接回
+  // 已存在 → 直接回（同一天鎖同一份考卷）
   const { data: existing } = await supabase
     .from("daily_quiz_attempts")
     .select("*")
@@ -68,7 +93,20 @@ export async function GET() {
     });
   }
 
-  // 新抽題：先抓學過 lesson、再從章節 miniQuiz 取一半、leetcode 取另一半
+  // 最近 RECENT_DAYS 天出過的 source_id（防短期重複）
+  const sinceDate = new Date(Date.now() - RECENT_DAYS * 86_400_000).toISOString().slice(0, 10);
+  const { data: recentAttempts } = await supabase
+    .from("daily_quiz_attempts")
+    .select("questions")
+    .eq("user_id", user.id)
+    .gte("quiz_date", sinceDate);
+  const recentIds = new Set<string>();
+  for (const a of recentAttempts ?? []) {
+    const qs = Array.isArray((a as any).questions) ? (a as any).questions : [];
+    for (const q of qs) if (q?.source_id) recentIds.add(String(q.source_id));
+  }
+
+  // 學過的 lesson
   const { data: progress } = await supabase
     .from("lesson_progress")
     .select("lesson_id")
@@ -78,9 +116,11 @@ export async function GET() {
   const leetcodeCount = Math.floor(TOTAL_QUESTIONS * LEETCODE_RATIO);
   const chapterCount = TOTAL_QUESTIONS - leetcodeCount;
 
-  const chapterQs = pickFromChapters(completedSet, chapterCount);
+  // 章節題池 → 優先抽沒出過的
+  const chapterPool = buildChapterPool(completedSet);
+  const chapterQs = pickPreferFresh(chapterPool, chapterCount, recentIds);
 
-  // ELO 自適應出題：拿用戶 elo_rating、用 pickQuestions 在 ±80 範圍內挑
+  // ELO 自適應 leetcode：拿用戶 elo_rating、優先在沒出過的題裡挑
   const { data: profileRow } = await supabase.from("profiles").select("elo_rating").eq("id", user.id).single();
   const userR = (profileRow as any)?.elo_rating ?? ELO_DEFAULT;
 
@@ -88,19 +128,44 @@ export async function GET() {
     .from("leetcode_questions")
     .select("id, slug, title, body_md, options, answer, explanation, difficulty, rating, attempts")
     .eq("active", true)
-    .limit(300); // 抓多一點讓 ELO 範圍篩有空間
+    .limit(300); // 抓多一點讓 ELO 範圍 + 防重複篩有空間
 
-  const eloPicked = pickQuestions((leetcode as any[]) ?? [], userR, leetcodeCount);
-  const leetcodeQs: QuizQuestion[] = eloPicked.map((l: any) => ({
-    q: `[${(l.difficulty ?? "easy").toUpperCase()}] ${l.title}\n\n${l.body_md}`,
-    options: l.options,
-    answer: l.answer,
-    source: "leetcode",
-    source_id: l.id,
-    explanation: l.explanation,
-  }));
+  const leetAll = (leetcode as any[]) ?? [];
+  const leetFresh = leetAll.filter((l) => !recentIds.has(String(l.id)));
+  let leetPicked = pickQuestions(leetFresh, userR, leetcodeCount);
+  if (leetPicked.length < leetcodeCount) {
+    // 沒出過的不夠 → 從全部（含最近出過）補、去掉已選
+    const chosen = new Set(leetPicked.map((x: any) => String(x.id)));
+    leetPicked = [
+      ...leetPicked,
+      ...pickQuestions(leetAll.filter((l) => !chosen.has(String(l.id))), userR, leetcodeCount - leetPicked.length),
+    ];
+  }
+  const leetcodeQs: QuizQuestion[] = leetPicked.map(toLeetQuestion);
 
-  const questions = shuffle([...chapterQs, ...leetcodeQs]);
+  // 組題 + backfill：某一邊題庫不夠時、用另一邊補滿 TOTAL_QUESTIONS
+  let questions: QuizQuestion[] = [...chapterQs, ...leetcodeQs];
+
+  if (questions.length < TOTAL_QUESTIONS && chapterPool.length > chapterQs.length) {
+    const usedChapter = new Set(chapterQs.map((q) => q.source_id));
+    const more = pickPreferFresh(
+      chapterPool.filter((q) => !usedChapter.has(q.source_id)),
+      TOTAL_QUESTIONS - questions.length,
+      recentIds,
+    );
+    questions = [...questions, ...more];
+  }
+  if (questions.length < TOTAL_QUESTIONS && leetAll.length > leetPicked.length) {
+    const usedLeet = new Set(leetPicked.map((x: any) => String(x.id)));
+    const more = pickQuestions(
+      leetAll.filter((l) => !usedLeet.has(String(l.id))),
+      userR,
+      TOTAL_QUESTIONS - questions.length,
+    ).map(toLeetQuestion);
+    questions = [...questions, ...more];
+  }
+
+  questions = shuffle(questions);
 
   if (questions.length === 0) {
     return NextResponse.json({
