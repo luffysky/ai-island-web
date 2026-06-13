@@ -55,6 +55,8 @@ for (const file of files) {
     difficulty: ch.difficulty ?? "beginner",
     prerequisites: Array.isArray(ch.prerequisites) ? ch.prerequisites : [],
     estimated_hours: ch.estimatedHours ?? 0,
+    sort_index: ch.sortIndex ?? ch.id, // ← 章節顯示排序（衍生章 8.5/28.9…）；漏了這個 Angular/28a-c 會排到最後
+
     outcomes: ch.outcomes ?? [],
     boss: ch.boss ?? null,
     summary: ch.summary ?? [],
