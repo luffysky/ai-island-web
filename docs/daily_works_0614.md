@@ -58,6 +58,7 @@
 - **修**：`import_chapters_to_db.mjs` 補上漏掉的 `sort_index`、跑同步（**80 章 / 1258 課 / 0 錯**）。`/chapters` 是 `force-dynamic` → DB 改完即時生效、不用 rebuild。
 - 順手修：`next.config` Permissions-Policy `microphone=(self)`（語音輸入解禁）；ch79 `sortIndex 28.8→28.9`（之前撞 Ch28b、改成顯示 Ch28c）。
 - **教訓寫進 `CLAUDE.md` + 記憶**：線上章節怪 → 先看 DB、不是看 JSON、也不是換 image；改 JSON 必跑 import 同步。
+- 🐛 **又一雷（同場加映）**：DB 同步後線上仍**散落缺課**、ch79（28c）顯示 **0 節** → 查出 **Supabase/PostgREST 預設一次只回 1000 筆**、但 `lessons` 已 **1258 筆**。`content.ts` 三處「一次撈全部 lessons」（`getAllChapters`/`getChapterMetas`/`getNavChapters`）被默默截斷、ch79 的課全在 1000 之外 → 全掉。修法：`fetchAllLessons()` 用 `.range()` **分頁撈滿**（驗證撈到 1258、ch79=9）。這是 code 修正、要部署才生效；也補進 CLAUDE.md。
 
 ---
 
@@ -79,6 +80,9 @@
 `9a95203` ch79 顯示編號改 Ch28c（sortIndex 28.8→28.9） ·
 `64ba894` Permissions-Policy 開放 microphone=(self) ·
 `67b736f` / `8963283` docker.yml 自動觸發 Zeabur redeploy（改用 restartService） ·
-`99d4011` 新增 CLAUDE.md（章節從 DB 讀的雷 + 部署/同步 SOP）+ import 腳本補 sort_index。
+`99d4011` 新增 CLAUDE.md（章節從 DB 讀的雷 + 部署/同步 SOP）+ import 腳本補 sort_index ·
+`daba270` daily_works_0614 補上除錯馬拉松 ·
+`8c133f9` 修 Supabase 1000 筆截斷（lessons 分頁撈滿） ·
+`126666d` CLAUDE.md 補 1000 筆截斷雷。
 
-> 註：DB 同步（`import_chapters_to_db.mjs`）是直接對 Supabase 跑、不是 commit；跑完線上章節才正確。
+> 註：DB 同步（`import_chapters_to_db.mjs`）是直接對 Supabase 跑、不是 commit；跑完線上章節才正確。`8c133f9` 是 code 修正、要等部署（image build + Zeabur redeploy）才生效。
