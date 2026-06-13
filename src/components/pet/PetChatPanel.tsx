@@ -7,7 +7,7 @@ import { useAuth } from "@/lib/auth-context";
 import { getVipTier, pickHonorific } from "@/lib/pet-vip";
 import { pickChatter, type ChatterCtx } from "@/lib/pet-chatter";
 import { useEdgeSafe } from "@/lib/use-edge-safe";
-import { ChatMessageBubble, TypingIndicator, ChatToolbar, ChatContent } from "@/components/chat";
+import { ChatMessageBubble, TypingIndicator, ChatToolbar, ChatContent, MicButton } from "@/components/chat";
 
 type Message = { role: "user" | "pet"; content: string; created_at?: string };
 
@@ -240,7 +240,13 @@ export function PetChatPanel({
         </div>
       )}
 
-      <div className="p-3 border-t border-border flex gap-2">
+      <div className="p-3 border-t border-border flex gap-2 items-center">
+        <MicButton
+          onResult={(t) => setInput((prev) => (prev ? prev + " " : "") + t)}
+          onError={(m) => setError(m)}
+          disabled={sending}
+          className="p-2 border border-border rounded-lg hover:border-accent hover:bg-accent/5"
+        />
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}

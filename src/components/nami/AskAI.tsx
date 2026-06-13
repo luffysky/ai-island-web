@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, X, Loader2, Send, RefreshCw, Copy, Check, ImagePlus } from "lucide-react";
+import { MicButton, SpeakButton } from "@/components/chat";
 
 type UploadedImage = {
   id: string;
@@ -259,13 +260,16 @@ export function AskAI({
                 )}
                 {response && (
                   <div className="bg-bg-elevated text-fg rounded-lg p-3 text-sm leading-relaxed relative">
-                    <button
-                      onClick={copy}
-                      className="absolute top-2 right-2 p-1 text-fg-muted hover:text-accent transition"
-                      title="複製"
-                    >
-                      {copied ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
-                    </button>
+                    <div className="absolute top-2 right-2 flex items-center gap-1.5">
+                      <SpeakButton text={response} size={12} />
+                      <button
+                        onClick={copy}
+                        className="p-1 text-fg-muted hover:text-accent transition"
+                        title="複製"
+                      >
+                        {copied ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
+                      </button>
+                    </div>
                     {renderResponse(response)}
                   </div>
                 )}
@@ -290,6 +294,12 @@ export function AskAI({
                   >
                     <ImagePlus size={14} />
                   </button>
+                  <MicButton
+                    onResult={(t) => setQuestion((prev) => (prev ? prev + " " : "") + t)}
+                    onError={(m) => setErr(m)}
+                    disabled={loading}
+                    className="p-2 rounded-lg border border-border hover:border-purple-400 hover:bg-purple-500/5"
+                  />
                   <input
                     type="text"
                     value={question}

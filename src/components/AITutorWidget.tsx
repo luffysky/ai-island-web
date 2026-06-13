@@ -114,7 +114,7 @@ import rehypeHighlight from "rehype-highlight";
 import rehypeRaw from "rehype-raw";
 import { linkifyChapterRefs } from "@/lib/linkify-chapters";
 import { CodeBlock } from "@/components/chapter/CodeBlock";
-import { CopyButton, TypingIndicator, ChatToolbar, formatChatTime } from "@/components/chat";
+import { CopyButton, TypingIndicator, ChatToolbar, formatChatTime, MicButton, SpeakButton } from "@/components/chat";
 
 const TONE_OPTIONS = [
   { value: "friendly", label: "😊 親切" },
@@ -992,6 +992,7 @@ export function AITutorWidget({
                     {m.content && (
                       <span className="md:opacity-0 md:group-hover/msg:opacity-100 transition inline-flex items-center gap-1.5">
                         <CopyButton text={m.content} size={10} />
+                        {m.role === "assistant" && <SpeakButton text={m.content} size={10} />}
                         {m.role === "assistant" && (
                           <button
                             onClick={() => {
@@ -1159,6 +1160,12 @@ export function AITutorWidget({
               >
                 <ImagePlus size={16} />
               </button>
+              <MicButton
+                onResult={(t) => setInput((prev) => (prev ? prev + " " : "") + t)}
+                onError={(m) => setError(m)}
+                disabled={authState !== "in" || sending}
+                className="p-2 border border-border rounded-lg hover:border-accent hover:bg-accent/5"
+              />
               <textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}

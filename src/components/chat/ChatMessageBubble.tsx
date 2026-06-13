@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Share2 } from "lucide-react";
 import { CopyButton } from "./CopyButton";
+import { SpeakButton } from "./SpeakButton";
 import { formatChatTime } from "@/lib/chat-time";
 import { useToast } from "@/components/ui/Toast";
 
@@ -25,6 +26,7 @@ export function ChatMessageBubble({
   content,
   createdAt,
   showActions = true,
+  speakable = true,
   speakerName,
   shareCard,
   children,
@@ -33,6 +35,8 @@ export function ChatMessageBubble({
   content: string;
   createdAt?: string | Date | number;
   showActions?: boolean;
+  // AI 訊息顯示朗讀鈕（瀏覽器不支援時自動藏）；user 訊息一律不顯示
+  speakable?: boolean;
   speakerName?: string;
   // 帶這個 → assistant 回答可分享成 OG 圖卡（跟綠寶一致、丟 /share/ai HTML 落地頁讓 LINE 生預覽卡）
   shareCard?: { persona: string; question?: string };
@@ -125,6 +129,7 @@ export function ChatMessageBubble({
             >
               <div className="bg-bg border border-border rounded-full px-2 py-1 flex items-center gap-2 shadow-sm">
                 <CopyButton text={content} size={11} />
+                {speakable && !isUser && <SpeakButton text={content} size={11} />}
                 <button
                   type="button"
                   onClick={share}
