@@ -426,7 +426,7 @@
 | `ch26.13_args_kwargs` | 26.6 | 📊 `*args`（收成 tuple）/ `**kwargs`（收成 dict）/ lambda | ✅ |
 | `ch26.14_file_io_with` | 26.8 | 📊 `with open()` 自動關檔（對比忘了 close 的坑） | ✅ |
 | `ch26.25_index_access` | 26.4 | 📊 索引與取值：`list[i]` / 負索引 / `dict[key]`（從 0 開始；image seq=25、非 lesson 號） | ✅ |
-| `ch26.26_slicing` | 26.4 | 📊 切片 `[start:end:step]`：取一段、反轉 `[::-1]`、含頭不含尾 | ✅ |
+| `ch26.26_slicing` | 26.4 | 📊 切片 `[start:end:step]`：取一段、反轉 `[::-1]`、含頭不含尾（已更新 **v2**、引用為 `_dark_v2`） | ✅ |
 | `ch26.27_for_loop` | 26.5 | 📊 `for x in iterable`：list/str/range/enumerate 依序取出（image seq=27、非 lesson 號） | ✅ |
 | `ch26.15_exception_flow` | 26.9 | 📊 try / except / else / finally 執行流程 | ✅ |
 | `ch26.16_oop_class` | 26.10 | 📊 class→實例、繼承、`dataclass` 省樣板（藍圖→房子比喻） | ✅ |
@@ -435,9 +435,10 @@
 | `ch26.19_type_hints` | 26.12 | 📊 type hint + mypy：標籤給人/IDE/檢查器看，不影響執行 | ✅ |
 | `ch26.20_fastapi_flow` | 26.25 | 📊 FastAPI 請求流程：route→Pydantic 驗證→處理→回 JSON ＋ 自動 API 文件 | ✅ |
 | `ch26.21_pydantic_validate` | 26.26 | 📊 Pydantic v2：型別自動驗證、錯誤訊息、序列化 | ✅ |
-| `ch26.22_async_di` | 26.27 | 📊 async/await event loop ＋ Depends 依賴注入 | 待做 |
-| `ch26.23_sqlalchemy_alembic` | 26.28 | 📊 ORM（物件↔資料表）＋ Alembic migration（版本控管 schema） | 待做 |
-| `ch26.24_deploy_asgi` | 26.32 | 📊 部署：Uvicorn / Gunicorn / Docker，ASGI vs WSGI | 待做 |
+| `ch26.22_async_di` | 26.27 | 📊 async/await event loop ＋ Depends 依賴注入 | ✅ |
+| `ch26.23_sqlalchemy_alembic` | 26.28 | 📊 ORM（物件↔資料表）＋ Alembic migration（版本控管 schema） | ✅ |
+| `ch26.24_deploy_asgi` | 26.32 | 📊 部署：Uvicorn / Gunicorn / Docker，ASGI vs WSGI | ✅ |
+| `ch26.28_type_conversion` | 26.3 | 📊 型別轉換 int/float/str/bool 互轉（接「`input()` 永遠是 str」的雷；image seq=28、非 lesson 號、放在「型別查詢 + 轉換總表」段） | ✅ |
 
 ### G-2. ch27 — Python 資料分析 / Pandas / NumPy（25 課）
 | 檔名（dark/light 一組） | lesson | 內容 | 狀態 |
