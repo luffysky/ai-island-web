@@ -65,3 +65,25 @@ jobs:
             NEXT_PUBLIC_SENTRY_DSN=${{ vars.NEXT_PUBLIC_SENTRY_DSN || secrets.NEXT_PUBLIC_SENTRY_DSN }}
             NEXT_PUBLIC_USER_LINE_BOT_BASIC_ID=${{ vars.NEXT_PUBLIC_USER_LINE_BOT_BASIC_ID || secrets.NEXT_PUBLIC_USER_LINE_BOT_BASIC_ID }}
             SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+
+      # image 推完後、自動打 Zeabur GraphQL API 觸發該服務重部署、拉最新 image。
+      # 因為 Zeabur 是 Prebuilt Image 模式、不會自己重拉 :latest、所以這裡主動觸發。
+      # serviceID / environmentID 非機密、直接寫；token 放 GitHub secret。
+      - name: Trigger Zeabur redeploy
+        env:
+          ZEABUR_API_TOKEN: ${{ secrets.ZEABUR_API_TOKEN }}
+          SERVICE_ID: "6a2dd61f00b9937b8de229c3"
+          ENVIRONMENT_ID: "6a00c698e5ed304c1d845a93"
+        run: |
+          query="mutation { redeployService(serviceID: \"$SERVICE_ID\", environmentID: \"$ENVIRONMENT_ID\") }"
+          payload=$(jq -nc --arg q "$query" '{query: $q}')
+          resp=$(curl -sS -X POST https://api.zeabur.com/graphql \
+            -H "Authorization: Bearer $ZEABUR_API_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "$payload")
+          echo "Zeabur response: $resp"
+          if echo "$resp" | grep -q '"errors"'; then
+            echo "::error::Zeabur redeploy 失敗（檢查 mutation 欄位名 / token / IDs）"
+            exit 1
+          fi
+          echo "✅ 已觸發 Zeabur redeploy"
