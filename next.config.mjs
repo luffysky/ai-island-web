@@ -28,8 +28,8 @@ const nextConfig = {
       { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
       { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
       { key: 'X-DNS-Prefetch-Control', value: 'on' },
-      // 關掉用不到的高風險能力 + opt-out FLoC；之後做 mock-interview 要用麥克風再放寬
-      { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), browsing-topics=()' },
+      // 關掉用不到的高風險能力 + opt-out FLoC；microphone=(self) 開放同源（AI 聊天語音輸入要用）
+      { key: 'Permissions-Policy', value: 'camera=(), microphone=(self), geolocation=(), browsing-topics=()' },
     ];
     return [{ source: '/:path*', headers: securityHeaders }];
   },
