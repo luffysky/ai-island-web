@@ -48,6 +48,17 @@
 - 修 26.4 slicing：v1 已刪、引用改 **v2**（不然破圖）。
 - 驗證 ch26 全 **28 張**圖引用都對得到實體檔。LESSON_IMAGE_SPEC G-1 表同步更新（22/23/24/28 標 ✅、slicing 註記 v2）。
 
+## 🚨 上線除錯馬拉松（部署 404 → 真正根因是 DB 沒同步）
+推上線後整站 404、查了一輪：
+- **不是 code**：本地 `next build` exit 0、GitHub Actions（docker.yml）全綠。
+- **Zeabur runtime log 只有 Caddy**（GOMAXPROCS/GOMEMLIMIT、沒 `▲ Next.js`）→ zbpack 把 Next 誤建成「靜態 + Caddy、沒起 node server」→ 全站 `/api` 被 Caddy 回 404、Cloudflare 快取撐住部分靜態頁。不是記憶體（GOMEMLIMIT 7.3GB）。
+- **切 GHCR 預建 image**（繞開 zbpack）：Zeabur 服務改 Prebuilt Image = `ghcr.io/...:latest`。私有 image 報「anonymous token 401」→ 把 GHCR package 設 **Public** 解決（image 不含 server 機密）。
+- **自動重部署**：docker.yml 尾巴加 Zeabur GraphQL `restartService`（image 服務正解；`redeployService` 只給綁 git 的服務、會回 Cannot redeploy in-place）。token 存 GitHub secret `ZEABUR_API_TOKEN`。
+- 🎯 **真正根因（卡最久）**：換 image / 改 sortIndex 都沒用、28c 不見 + Angular 跑到最後 + Ch26 像少課——因為 **前台章節是讀 Supabase DB（`content.ts` → `chapters`/`lessons` 表）、不是 JSON**。DB 裡沒 ch79、76/77/78 的 `sort_index` 是 NULL。
+- **修**：`import_chapters_to_db.mjs` 補上漏掉的 `sort_index`、跑同步（**80 章 / 1258 課 / 0 錯**）。`/chapters` 是 `force-dynamic` → DB 改完即時生效、不用 rebuild。
+- 順手修：`next.config` Permissions-Policy `microphone=(self)`（語音輸入解禁）；ch79 `sortIndex 28.8→28.9`（之前撞 Ch28b、改成顯示 Ch28c）。
+- **教訓寫進 `CLAUDE.md` + 記憶**：線上章節怪 → 先看 DB、不是看 JSON、也不是換 image；改 JSON 必跑 import 同步。
+
 ---
 
 # 📋 待辦 / 提醒
@@ -63,4 +74,11 @@
 `0a92aa0` 語音輸入輸出（綠寶/寵物/Nami） ·
 `363158e` 每日測驗修復 + 防重複 + backfill + leetcode 種子 ·
 `ae9a9d1` Ch79 新章 + 全站 metadata/miniQuiz + 偏薄章補厚 + Ch26 去重導引（86 檔） ·
-`3a43e46` ch26 佈線 4 圖（22/23/24/28）+ slicing v2。
+`3a43e46` ch26 佈線 4 圖（22/23/24/28）+ slicing v2 ·
+`0300ff8` 更新 LESSON_IMAGE_SPEC + daily_works_0614 ·
+`9a95203` ch79 顯示編號改 Ch28c（sortIndex 28.8→28.9） ·
+`64ba894` Permissions-Policy 開放 microphone=(self) ·
+`67b736f` / `8963283` docker.yml 自動觸發 Zeabur redeploy（改用 restartService） ·
+`99d4011` 新增 CLAUDE.md（章節從 DB 讀的雷 + 部署/同步 SOP）+ import 腳本補 sort_index。
+
+> 註：DB 同步（`import_chapters_to_db.mjs`）是直接對 Supabase 跑、不是 commit；跑完線上章節才正確。
