@@ -91,7 +91,30 @@
           "level": 2,
           "text": "開發者帳號"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "一間餐廳想在 LINE 上做「推廣優惠訊息」和「線上訂位」，應該用哪個組合最恰當？",
+        "options": [
+          {
+            "value": "a",
+            "label": "只用 LINE 官方帳號就夠了，所有功能後台都能做"
+          },
+          {
+            "value": "b",
+            "label": "LINE 官方帳號推優惠 + LIFF 做訂位網頁"
+          },
+          {
+            "value": "c",
+            "label": "用 LINE Bot 控制官方帳號，搭配自寫的網站訂位"
+          },
+          {
+            "value": "d",
+            "label": "直接開發 LIFF App，讓用戶在裡面完成所有操作"
+          }
+        ],
+        "answer": "b",
+        "explanation": "LINE 官方帳號(OA)本身就能群發優惠訊息，但訂位表單需要互動式網頁介面，這正是 LIFF 的用途——在 LINE 內嵌入網頁應用。選 a 太陽春、選 c 和 d 都過度工程化。"
+      }
     },
     {
       "title": "LINE 官方帳號：註冊 + 後台",
@@ -192,7 +215,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你是新開的咖啡店老闆，想用 LINE 官方帳號開始經營。如果你第一個月預計群發 2,500 則訊息給顧客，應該選哪一種方案最划算？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Trial 免費方案（200 則/月）"
+          },
+          {
+            "value": "b",
+            "label": "Light 方案（NT$ 800/月，4,000 則/月）"
+          },
+          {
+            "value": "c",
+            "label": "Standard 方案（NT$ 1,800/月，25,000 則/月）"
+          },
+          {
+            "value": "d",
+            "label": "Pro 協議方案（客製大量方案）"
+          }
+        ],
+        "answer": "b",
+        "explanation": "2,500 則訊息超過 Trial 的 200 則上限，所以免費方案不行。Light 方案 4,000 則/月足以應付，價格也最經濟；Standard 方案雖然訊息量充足但對小店來說成本太高，Pro 方案是給大企業用的。"
+      }
     },
     {
       "title": "LINE OA 後台操作：群發、選單、自動回覆",
@@ -333,7 +379,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你經營一間餐廳的 LINE 官方帳號，想要提高顧客體驗。下列做法中，哪一個「最符合」課程教的心法？",
+        "options": [
+          {
+            "value": "a",
+            "label": "每天都發群發訊息推銷最新餐點，確保顧客不會忘記"
+          },
+          {
+            "value": "b",
+            "label": "設定圖文選單在底部，放上「菜單」「營業時間」「地址」等常用功能，搭配自動回覆回答常見問題"
+          },
+          {
+            "value": "c",
+            "label": "手動一個一個傳訊息給所有好友，這樣更溫暖、被封鎖的人數更少"
+          },
+          {
+            "value": "d",
+            "label": "只使用文字群發，不要用圖片或卡片型訊息，以免浪費額度"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程的心法強調「不要每天推」、「高品質內容」、「圖文選單常駐入口」、「自動回覆覆蓋常見問題」。選項 b 整合了這些要點——透過常駐選單和自動回覆來提高效率，而不是無腦群發。其他選項都違反了課程教的最佳實踐。"
+      }
     },
     {
       "title": "LINE Developer：Provider + Channel 概念",
@@ -430,7 +499,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你要開發一個 LINE Bot，同時也要開發一個用 LIFF 的網頁服務。請問應該如何組織？",
+        "options": [
+          {
+            "value": "a",
+            "label": "建一個 Provider，底下開兩個 Channel（一個 Messaging API、一個 LIFF）"
+          },
+          {
+            "value": "b",
+            "label": "建兩個 Provider，每個 Provider 各一個 Channel"
+          },
+          {
+            "value": "c",
+            "label": "只建一個 Messaging API Channel，在 Bot 裡面同時處理 Bot 和網頁邏輯"
+          },
+          {
+            "value": "d",
+            "label": "建一個 Provider，但用同一個 Channel 同時串 Messaging API 和 LIFF"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Provider 是開發者組織，一個 Provider 可以開多個 Channel。每種服務（Bot、網頁、登入等）都要各自建一個 Channel，所以應該建一個 Provider 底下的兩個不同 Channel。選項 b、c、d 都是錯的架構方式。"
+      }
     },
     {
       "title": "LINE Bot Webhook：接收訊息",
@@ -507,7 +599,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在 LINE Bot Webhook 中，當用戶傳訊息給你的 Bot 時，整個流程的順序是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用戶傳訊息 → 你的 Server 收到 HTTP POST → LINE Server 處理"
+          },
+          {
+            "value": "b",
+            "label": "用戶傳訊息 → LINE Server → 你的 Server 收到 HTTP POST → 解析事件並回應"
+          },
+          {
+            "value": "c",
+            "label": "你的 Server 主動連結 LINE Server → LINE 轉發訊息給用戶"
+          },
+          {
+            "value": "d",
+            "label": "LINE Server → 你的 Server → 再傳回 LINE Server → 最後傳給用戶"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Webhook 的核心流程是：用戶傳訊息到 LINE → LINE Server 轉發給你的 Server（HTTP POST）→ 你的 Server 解析事件並回應。選項 a 的順序錯誤，c 是誤解 webhook 的 push 性質，d 多了不必要的往返。"
+      }
     },
     {
       "title": "Flex Message：富文本訊息",
@@ -596,7 +711,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "如果你要在 LINE Bot 中顯示 3 件商品讓使用者橫滑選擇，應該用哪個 container 類型？",
+        "options": [
+          {
+            "value": "a",
+            "label": "bubble，在 contents 中放 3 個商品物件"
+          },
+          {
+            "value": "b",
+            "label": "carousel，在 contents 中放 3 個 bubble"
+          },
+          {
+            "value": "c",
+            "label": "box，用 layout: horizontal 排列 3 個商品"
+          },
+          {
+            "value": "d",
+            "label": "可以用 bubble 也可以用 carousel，效果一樣"
+          }
+        ],
+        "answer": "b",
+        "explanation": "carousel 就是專門用來放多張卡片橫滑的 container，每張卡片是一個 bubble。bubble 只能顯示單一卡片，box 只是內部排版用，都不適合做橫滑卡片牆。"
+      }
     },
     {
       "title": "Rich Menu：底部選單（用 API 設定）",
@@ -693,7 +831,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想在 LINE Bot 中實現「VIP 會員看到的底部選單和一般會員不同」，應該怎麼做？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 Rich Menu 後台版設定，為所有人創建一個選單，然後在程式中判斷會員等級來修改訊息內容"
+          },
+          {
+            "value": "b",
+            "label": "用 Rich Menu API 版，分別建立 VIP 和一般會員的選單，然後用 linkRichMenuToUser 將不同使用者綁定到不同選單"
+          },
+          {
+            "value": "c",
+            "label": "直接用 richmenuswitch 功能，讓使用者自己點按鈕切換選單"
+          },
+          {
+            "value": "d",
+            "label": "在聊天訊息中放入 QuickReply 按鈕，這樣就能根據會員等級顯示不同內容"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Rich Menu API 版的核心優勢就是「動態、可分眾」，用 linkRichMenuToUser 可以針對不同 userId 綁定不同的選單。後台版是靜態的，richmenuswitch 是用於切換選單層級，QuickReply 則不是 Rich Menu。"
+      }
     },
     {
       "title": "LIFF：在 LINE 內開「網頁 App」",
@@ -806,7 +967,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想在 LINE 聊天室內開一個預約系統網頁 App，讓使用者不用離開 LINE 就能預約。請問應該使用什麼工具，以及最重要的第一步是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "使用 LIFF、在 LINE Developer Console 的 LIFF tab 建立 App、設定 Endpoint URL 和 Scope"
+          },
+          {
+            "value": "b",
+            "label": "使用 LINE Messaging API、在 Webhook 設定好就可以直接開網頁"
+          },
+          {
+            "value": "c",
+            "label": "使用 LINE Login、用 Google OAuth 驗證使用者身份即可"
+          },
+          {
+            "value": "d",
+            "label": "使用 LIFF、直接在前端寫好網頁、不需要在 Developer Console 設定"
+          }
+        ],
+        "answer": "a",
+        "explanation": "LIFF 就是在 LINE 內開網頁 App 的框架。建立 LIFF App 的第一步必須在 Developer Console 的 LIFF tab 新增、設定 App 名稱、Endpoint URL（你的網站位置）和 Scope（要拿的使用者資料）。選項 b 是 Messaging API 用途不同、選項 c 是 OAuth 而非 LIFF、選項 d 忽略了必須的 Developer Console 設定步驟。"
+      }
     },
     {
       "title": "LINE Bot + DB + AI 整合",
@@ -875,7 +1059,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在這個 LINE Bot 系統中，為什麼要把用戶的訊息和 AI 的回覆都存進資料庫？",
+        "options": [
+          {
+            "value": "a",
+            "label": "這樣才能在下次呼叫 AI 時，提供完整的對話歷史給 AI 參考，讓 AI 能理解前後文"
+          },
+          {
+            "value": "b",
+            "label": "因為 LINE 官方要求所有訊息都必須存起來才能使用 LINE API"
+          },
+          {
+            "value": "c",
+            "label": "只是為了記錄用戶的行為，方便未來分析統計數據"
+          },
+          {
+            "value": "d",
+            "label": "防止 AI 服務器故障時訊息遺失"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程展示的核心就是透過 findMany 拿出最近 10 筆對話歷史，反序後傳給 Claude 的 messages 參數，這樣 AI 才能知道前面聊過什麼。b 是錯的（LINE API 沒這要求）、c 太間接、d 不是主要目的。"
+      }
     },
     {
       "title": "LINE Pay + 金流整合",
@@ -980,7 +1187,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "小美開發一個 LINE Bot 商城，用戶在 LIFF 裡選好商品後要付款。她決定用 LINE Pay，請問整個付款流程中，用戶會被導向哪個網址去完成付款？",
+        "options": [
+          {
+            "value": "a",
+            "label": "pay.line.me/portal/tw（商戶申請系統）"
+          },
+          {
+            "value": "b",
+            "label": "sandbox-api-pay.line.me 的沙箱測試環境"
+          },
+          {
+            "value": "c",
+            "label": "從 Request Payment API 拿到的 paymentUrl"
+          },
+          {
+            "value": "d",
+            "label": "小美自己設定的 confirmUrl 確認頁面"
+          }
+        ],
+        "answer": "c",
+        "explanation": "用戶付款要被導向 Request Payment API 回應裡的 paymentUrl（透過 window.location.href 或 liff.openWindow）。a 是商戶後台、b 是測試環境、d 是付完款後才導回的確認頁，都不對。"
+      }
     },
     {
       "title": "LINE 接案 + 變現實戰",
@@ -1128,7 +1358,30 @@
           "level": 2,
           "text": "終極建議"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，為什麼「餐廳訂位 Bot」和「美容預約系統」適合作為 LINE 接案的主要目標客戶？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為這些產業的老闆都有預算，願意花 50-200k 購買高級功能"
+          },
+          {
+            "value": "b",
+            "label": "因為這些產業有明確的痛點（人工管理問題），而 LINE Bot 能直接解決，客戶容易看到 ROI"
+          },
+          {
+            "value": "c",
+            "label": "因為這些產業的系統最容易開發，只需要基礎的 LINE OA 設定就夠了"
+          },
+          {
+            "value": "d",
+            "label": "因為這些產業的客戶都願意簽月費合約，是最穩定的被動收入來源"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調用 value-based 報價策略，核心是「解決痛點 → 展示 ROI」而非報功能。餐廳的痛點是人工漏訂、美容的痛點是手帳記不完，LINE Bot 正好能用訂位 + 提醒解決這些問題，讓客戶看到節省成本或翻桌率提升的直接效益。其他選項都偏離了課程核心的「找到有痛點的產業」這個邏輯。"
+      }
     }
   ],
   "boss": {
@@ -1142,5 +1395,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "LINE 官方帳號是品牌窗口，Bot 是自動化大腦，LIFF 是 LINE 內的迷你網頁 App。",
+    "官方帳號後台可直接群發、設選單、自動回覆，不用寫程式就能做基礎操作。",
+    "Developer 後台申請 Channel、拿 Webhook URL 和 API 金鑰，才能用程式控制 Bot。",
+    "Webhook 是 LINE 推訊息給你的管道，Flex Message 能做出比傳統卡片更精美的介面。",
+    "Bot 搭資料庫、AI、LINE Pay，能做會員系統、推薦系統、下單結帳，完成完整商業流程。"
+  ],
+  "faq": [
+    {
+      "q": "LINE 官方帳號和 Bot 是同一個東西嗎？",
+      "a": "官方帳號是 LINE 給品牌用的帳戶，有基礎的群發和自動回覆功能。Bot 是靠程式碼跑起來的智能助手，住在官方帳號裡面。打個比方，官方帳號是店面，Bot 是店員。"
+    },
+    {
+      "q": "一定要會寫程式才能用 LINE Bot 嗎？",
+      "a": "官方帳號的基礎功能（群發、選單、自動回覆）不用寫程式。但如果想做自動回覆、接 AI、連資料庫這些進階功能，就需要會基本的 API 概念和程式碼。"
+    },
+    {
+      "q": "LIFF 和 LINE Bot 有什麼不一樣？",
+      "a": "Bot 是聊天機器人，在 LINE 聊天框內跟你對話。LIFF 是在 LINE 內開啟的網頁 App（像內嵌瀏覽器），可以有更複雜的介面和功能，例如表單、地圖、遊戲等。"
+    }
+  ]
 }

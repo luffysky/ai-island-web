@@ -64,7 +64,30 @@
           "level": 3,
           "text": "2026 主流選擇"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，SQL 和 NoSQL 最根本的差異是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "SQL 一定比 NoSQL 快、NoSQL 一定比 SQL 慢"
+          },
+          {
+            "value": "b",
+            "label": "SQL 先定義死欄位才能存、NoSQL 可以彈性調整資料結構"
+          },
+          {
+            "value": "c",
+            "label": "SQL 只能存小資料、NoSQL 專門存超大資料"
+          },
+          {
+            "value": "d",
+            "label": "SQL 用 JOIN、NoSQL 完全不能做多表查詢"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程核心用 Excel vs Google Drive 的比喻說明：SQL 像 Excel 需要先畫好欄位、改欄位很麻煩；NoSQL 則像 Google Drive 能隨意加欄位。這才是兩者最根本的設計理念差異。其他選項都是過度簡化或誤解。"
+      }
     },
     {
       "id": "18.2",
@@ -121,7 +144,30 @@
           "level": 3,
           "text": "MongoDB Atlas（雲端版）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在 MongoDB 中，下列哪個敘述「正確」描述了 MongoDB 與 SQL 資料庫的核心差異？",
+        "options": [
+          {
+            "value": "a",
+            "label": "MongoDB 的 Collection 對應 SQL 的 Table，但 MongoDB 的每個 Document 可以有不同的欄位結構"
+          },
+          {
+            "value": "b",
+            "label": "MongoDB 必須先定義好所有欄位的資料型態，才能新增資料，跟 SQL 一樣嚴格"
+          },
+          {
+            "value": "c",
+            "label": "MongoDB 無法做複雜的跨 Collection 查詢，只能單一 Collection 搜尋"
+          },
+          {
+            "value": "d",
+            "label": "MongoDB 不需要建立索引，因為 JSON 結構已經自動最佳化效能"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調 MongoDB 的彈性 Schema 是關鍵特色——每個 Document 可以有不同欄位，不像 SQL 要求嚴格的 Schema。b 錯在 MongoDB 就是彈性；c 錯在有 $lookup 可以 JOIN；d 錯在索引仍需手動建立以提升效能。"
+      }
     },
     {
       "id": "18.3",
@@ -178,7 +224,30 @@
           "level": 3,
           "text": "Firebase vs Supabase"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在 Firebase 專案中想要讓使用者只能看到自己的待辦事項，不能看別人的。下列哪個做法最正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "在 JavaScript 中用 if 判斷 userId，只查詢自己的資料"
+          },
+          {
+            "value": "b",
+            "label": "在 Firestore Security Rules 中設定 allow read 只在 request.auth.uid 等於資料擁有者時生效"
+          },
+          {
+            "value": "c",
+            "label": "把使用者密碼存在 Firestore，靠密碼來驗證身份"
+          },
+          {
+            "value": "d",
+            "label": "使用 Firebase Storage 而不用 Firestore，因為 Storage 更安全"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Security Rules 是 Firestore 的防護機制，在資料庫層面直接控制誰能存取什麼。只在前端做判斷（選項 a）容易被繞過，因為使用者可以改 code；密碼、Storage 都不是用來解決這個問題的。"
+      }
     },
     {
       "id": "18.4",
@@ -231,7 +300,30 @@
           "level": 3,
           "text": "2026 Redis 雲端服務"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想做一個「每位使用者每分鐘最多只能按讚 5 次」的限流功能。用 Redis 該怎麼做最簡單？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 INCR 累計該使用者在這分鐘的按讚次數，超過 5 次就拒絕；並在第一次按讚時設 EXPIRE 讓計數器 1 分鐘後自動歸零"
+          },
+          {
+            "value": "b",
+            "label": "用 List 把每次按讚記錄存進去，然後每次都檢查整個 List 長度有沒有超過 5"
+          },
+          {
+            "value": "c",
+            "label": "用 Sorted Set 記錄所有按讚時間戳，檢查最近 1 分鐘內有幾筆記錄"
+          },
+          {
+            "value": "d",
+            "label": "用 Hash 存使用者資料，直接在裡面加一個 'like_count' 欄位"
+          }
+        ],
+        "answer": "a",
+        "explanation": "限流就是計數，用 INCR 是最簡單的——每按讚一次就 +1，超過 5 就拒絕；配合 EXPIRE 在第一次計數時啟動 1 分鐘的自動清零。選項 b、c、d 都太複雜或不適合這個場景。"
+      }
     },
     {
       "id": "18.5",
@@ -284,7 +376,30 @@
           "level": 3,
           "text": "應用場景"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你公司有一個常見問題資料庫，現在要用 Vector Database 建立一個客服 AI。這個 AI 要能根據客戶的問題，自動找到最相關的常見問題答案，再回答客戶。這個做法叫什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "RAG（先搜尋相關資料、再用 LLM 生成答案）"
+          },
+          {
+            "value": "b",
+            "label": "Fine-tuning（直接訓練一個新的 AI 模型）"
+          },
+          {
+            "value": "c",
+            "label": "Embedding（把文字轉成數字）"
+          },
+          {
+            "value": "d",
+            "label": "Prompt engineering（設計更聰明的提示詞）"
+          }
+        ],
+        "answer": "a",
+        "explanation": "這個流程就是 RAG 的經典應用：先用 embedding + vector DB 找最相關的常見問題（retrieval），再給 LLM 當 context 生成答案（generation）。選項 c（Embedding）只是 RAG 的一個步驟，不是整個方法；b、d 都不是為了「找相關資料」而設計的。"
+      }
     },
     {
       "id": "18.6",
@@ -332,7 +447,30 @@
           "level": 3,
           "text": "反模式：不要這樣做"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在開發一個新的電商平台，需要存放用戶、訂單、商品等資料，並且金流轉帳必須確保「全部成功或全部失敗」。同時，你的團隊大多數人都會 SQL。按照課程的決策流程，你應該選什麼資料庫？",
+        "options": [
+          {
+            "value": "a",
+            "label": "選 MongoDB，因為它能擴展到更大規模"
+          },
+          {
+            "value": "b",
+            "label": "選 Firebase，因為它是新服務最快上線"
+          },
+          {
+            "value": "c",
+            "label": "選 PostgreSQL 或 MySQL，因為需要強一致性（ACID）和複雜 JOIN"
+          },
+          {
+            "value": "d",
+            "label": "選 Redis，因為它速度最快"
+          }
+        ],
+        "answer": "c",
+        "explanation": "課程明確列出用 SQL 的訊號包括：資料結構固定、需要 JOIN、需要強一致性（金流）、需要 Transaction。你的狀況全中，而且團隊熟悉 SQL。不知道用什麼時直接選 SQL 也不會錯。"
+      }
     },
     {
       "title": "NoSQL 是什麼？跟 SQL 怎麼選",
@@ -396,7 +534,30 @@
           "level": 2,
           "text": "不要為 NoSQL 而 NoSQL"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，為什麼說「Schema-less 是 NoSQL 最大的賣點，也是最大的陷阱」？",
+        "options": [
+          {
+            "value": "a",
+            "label": "賣點是改資料快不用寫 migration，陷阱是一年後資料品質失控、同個 collection 可能有 8 種不同格式"
+          },
+          {
+            "value": "b",
+            "label": "賣點是省空間，陷阱是查詢速度比 SQL 慢很多"
+          },
+          {
+            "value": "c",
+            "label": "賣點是巢狀資料好用，陷阱是沒有 ACID 保證就一定會丟資料"
+          },
+          {
+            "value": "d",
+            "label": "賣點是不用管 schema，陷阱是 MongoDB 不支援 JOIN 所以完全不能用"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確指出 schema-less 短期讓開發快速（改資料不用 migration），但長期會導致資料品質失控（沒防護誰都能塞奇怪資料、同個表內格式混亂）。b 強調速度但課程重點不在此；c 說一定會丟資料過於絕對；d 說「完全不能用」太嚴格，課程只說 JOIN 痛苦但 4.0+ 有 $lookup。"
+      }
     },
     {
       "title": "MongoDB 完整 CRUD",
@@ -473,7 +634,30 @@
           "level": 2,
           "text": "比 SQL 困難的地方"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想要找出所有年齡在 18 到 65 歲之間、且標籤裡有 'vip' 或 'premium' 的使用者。下面哪個查詢語法是正確的？",
+        "options": [
+          {
+            "value": "a",
+            "label": "User.find({ age: { $gte: 18, $lte: 65 }, tags: { $in: [\"vip\", \"premium\"] } })"
+          },
+          {
+            "value": "b",
+            "label": "User.find({ age: { $between: 18, 65 }, tags: [\"vip\", \"premium\"] })"
+          },
+          {
+            "value": "c",
+            "label": "User.find({ age > 18 && age < 65, tags: { $contains: \"vip\" OR \"premium\" } })"
+          },
+          {
+            "value": "d",
+            "label": "User.where(age).gte(18).lte(65).find({ tags: \"vip\" || \"premium\" })"
+          }
+        ],
+        "answer": "a",
+        "explanation": "MongoDB 查詢用 $gte（大於等於）、$lte（小於等於）和 $in（符合陣列中任一值）的語法。選項 b、c、d 都用了 MongoDB 沒有或錯誤的運算子語法。"
+      }
     },
     {
       "title": "MongoDB Aggregation Pipeline",
@@ -558,7 +742,30 @@
           "level": 2,
           "text": "比 SQL 強的地方"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想統計每個使用者在過去一個月內的訂單總金額，資料來自 Order collection，欄位有 userId、amount、createdAt、status。下面哪個 Aggregation Pipeline 最正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "先 $match 過濾出 status='paid' 和最近一個月的資料，再 $group 按 userId 加總金額"
+          },
+          {
+            "value": "b",
+            "label": "先 $group 按 userId 加總所有金額，再用 $match 過濾出 status='paid' 和最近一個月的資料"
+          },
+          {
+            "value": "c",
+            "label": "用 $lookup 先 join users 表，再 $group 按 userId 加總"
+          },
+          {
+            "value": "d",
+            "label": "直接用 $project 選出 userId 和 amount，然後 $match 過濾日期"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Pipeline 要把 $match 放第一個最有效率（能走 index 減少掃描資料量），之後才是 $group 分組統計。選項 b 顛倒順序會掃描全部資料才過濾，很沒效率；c 和 d 都不是分組統計的正確做法。"
+      }
     },
     {
       "title": "Firebase Firestore：純前端的後端",
@@ -639,7 +846,30 @@
           "level": 2,
           "text": "適合場景"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你要做一個聊天 App，需要實時顯示新訊息、支持多個用戶同步看同一個聊天室。Firestore 的哪個特色最適合這個需求？",
+        "options": [
+          {
+            "value": "a",
+            "label": "免費額度大（50k reads/day），可以省錢"
+          },
+          {
+            "value": "b",
+            "label": "內建 onSnapshot 訂閱，多裝置自動同步新訊息"
+          },
+          {
+            "value": "c",
+            "label": "支持複雜 JOIN 查詢，可以一次取出所有關聯資料"
+          },
+          {
+            "value": "d",
+            "label": "單文件可以存 1 MB 以上，可以放很多訊息"
+          }
+        ],
+        "answer": "b",
+        "explanation": "這課的殺手特色就是 Firestore 的即時同步，onSnapshot 訂閱可以監聽資料變化自動推送給所有連線用戶。複雜 JOIN、大檔案、免費額度都不是為了解決『實時同步』這個需求。"
+      }
     },
     {
       "title": "Redis 完整：5 種資料結構 + 應用場景",
@@ -752,7 +982,30 @@
           "level": 2,
           "text": "主流用途"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想存一個使用者的名字、年齡、信箱等多個欄位，之後可能只想更新其中一個欄位（比如年齡），不想整個物件重新寫入。用 Redis 哪種資料結構最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "String，把整個物件 JSON.stringify 後存進去"
+          },
+          {
+            "value": "b",
+            "label": "Hash，用 hset 存欄位，需要改時只用 hincrby 或 hset 更新該欄位"
+          },
+          {
+            "value": "c",
+            "label": "List，用 lpush 把每個欄位都推進去"
+          },
+          {
+            "value": "d",
+            "label": "Set，用 sadd 把所有欄位加進去"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Hash 的優勢就是結構化存儲，可以單獨讀寫某一個欄位，不用每次都整包 JSON 編解碼；String 方案每次改一個欄位都要讀整個物件再寫回去，效率差。"
+      }
     },
     {
       "title": "Vector DB 完整：pgvector / Pinecone / Qdrant",
@@ -837,7 +1090,30 @@
           "level": 2,
           "text": "成本估算"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想快速做一個個人部落格的語意搜尋功能，不想額外付費或管理基礎設施。下列哪個 Vector DB 最適合你？",
+        "options": [
+          {
+            "value": "a",
+            "label": "pgvector with Supabase，因為不用另裝服務、成本低"
+          },
+          {
+            "value": "b",
+            "label": "Pinecone，因為託管服務最穩定"
+          },
+          {
+            "value": "c",
+            "label": "Qdrant 自架版本，因為速度最快"
+          },
+          {
+            "value": "d",
+            "label": "傳統 LIKE 搜尋配合 keyword filter，因為最簡單"
+          }
+        ],
+        "answer": "a",
+        "explanation": "pgvector 是 PostgreSQL extension，可用 Supabase 直接用現有 DB，不用多付服務費也不用管基礎設施，最適合 Indie。Pinecone 免費方案限制大且要月費；Qdrant 自架要管 infra；傳統搜尋找不到語意相近的內容，不符合這課主軸。"
+      }
     },
     {
       "title": "Supabase 完整：Auth + DB + Realtime + Storage",
@@ -914,7 +1190,30 @@
           "level": 2,
           "text": "注意事項"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想建一個部落格應用，需要讓使用者發布文章、編輯自己的文章、但看得到別人的文章。用 Supabase 搭配 PostgreSQL 要做到這個需求，最關鍵的是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "設定 RLS 政策，限制使用者只能編輯自己的文章、但允許查看所有文章"
+          },
+          {
+            "value": "b",
+            "label": "用 Realtime 訂閱所有資料表變化，這樣文章內容會自動同步"
+          },
+          {
+            "value": "c",
+            "label": "在 Client 端用 JavaScript 檢查使用者身分，確保他們不能編輯別人的文章"
+          },
+          {
+            "value": "d",
+            "label": "設定 OAuth 登入，這樣就能識別不同使用者身分"
+          }
+        ],
+        "answer": "a",
+        "explanation": "RLS（Row Level Security）是保護資料庫層級的權限控制機制，直接在 PostgreSQL 定義哪些使用者可以讀寫哪些列。只在 Client 端檢查（選項 c）容易被繞過；Realtime 是用來同步資料變化、不是權限控制；OAuth 只是身分驗證、不是資料權限。"
+      }
     },
     {
       "title": "NoSQL 索引 + 效能調校",
@@ -1007,7 +1306,30 @@
           "level": 2,
           "text": "Firestore 效能"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在 MongoDB 設計複合索引時，如果你要查詢『userId 等於 123、且 createdAt 在最近 7 天、並按 createdAt 降序排列』，根據 ESR 規則，索引欄位的正確順序應該是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "{ userId: 1, createdAt: -1 }"
+          },
+          {
+            "value": "b",
+            "label": "{ createdAt: -1, userId: 1 }"
+          },
+          {
+            "value": "c",
+            "label": "{ userId: 1, createdAt: 1 }"
+          },
+          {
+            "value": "d",
+            "label": "{ createdAt: -1, userId: -1 }"
+          }
+        ],
+        "answer": "a",
+        "explanation": "ESR 規則是：Equality（相等）→ Sort（排序）→ Range（範圍）。userId 用 = 比較（Equality）放最前，createdAt 既要排序又要做範圍查詢（Range），所以放後面且方向 -1 符合降序需求。選項 b 違反 ESR 順序，c 和 d 的升降序設定無法正確優化查詢。"
+      }
     },
     {
       "title": "SQL vs NoSQL 對比 + 怎麼選",
@@ -1091,7 +1413,30 @@
           "level": 2,
           "text": "面試標準答案"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你要開發一個新服務，需要存交易紀錄（user、order、payment）、快速查詢用戶的全部訂單。根據這課的選 DB 邏輯，應該優先選什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "MongoDB，因為是新服務、schema 可能會變"
+          },
+          {
+            "value": "b",
+            "label": "PostgreSQL，因為結構固定、需要 JOIN 查詢、ACID 保障"
+          },
+          {
+            "value": "c",
+            "label": "Redis，因為要快速查詢"
+          },
+          {
+            "value": "d",
+            "label": "Cassandra，因為可以水平擴展"
+          }
+        ],
+        "answer": "b",
+        "explanation": "這個場景符合選 SQL 的訊號：結構固定（user/order/payment）、需要複雜查詢 JOIN、需要 ACID transaction（金流敏感）。MongoDB 和 Cassandra 是在資料量超大或 schema 變動快時才用，Redis 是快取而不是主資料庫。"
+      }
     },
     {
       "title": "DynamoDB：AWS Serverless 標配",
@@ -1136,7 +1481,30 @@
           "level": 2,
           "text": "何時用"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "DynamoDB 和傳統 SQL 資料庫在查詢方式上最大的差異是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "DynamoDB 只能用 PK / SK / GSI 來查詢，不能像 SQL 一樣任意 WHERE 任何欄位"
+          },
+          {
+            "value": "b",
+            "label": "DynamoDB 的查詢速度比 SQL 慢，所以需要多建立索引來補償"
+          },
+          {
+            "value": "c",
+            "label": "DynamoDB 不支援複合鍵，每張表只能有一個 Partition Key"
+          },
+          {
+            "value": "d",
+            "label": "DynamoDB 無法進行排序查詢，必須在應用層手動排序"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調『DynamoDB 跟 SQL 最大差異』就是只能用 PK / SK / GSI 查詢，設計時要先想好所有 access pattern。其他選項都不符合課程內容：b 是速度誤解、c 完全錯（SK 就是複合鍵）、d 錯誤（SK 可以排序）。"
+      }
     },
     {
       "title": "Cassandra：超大規模分散式",
@@ -1181,7 +1549,30 @@
           "level": 2,
           "text": "替代"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程，Cassandra 寫入速度比 SQL 快 100 倍的主要原因是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Cassandra 不檢查 unique constraint、直接寫入記憶體，同時記錄 commit log，加上沒有 master 節點協調"
+          },
+          {
+            "value": "b",
+            "label": "Cassandra 使用了比 SQL 更先進的硬碟儲存技術，能更快寫入硬碟"
+          },
+          {
+            "value": "c",
+            "label": "Cassandra 會自動壓縮資料，所以需要寫入的資料量更少"
+          },
+          {
+            "value": "d",
+            "label": "Cassandra 採用 consistent hashing，讓每台機器獨立決定寫入位置，不需要協調"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確提到寫入快的 3 大祕密：不檢查 unique、先寫 memory 和 commit log、沒有 master 協調。選項 b 錯因 Cassandra 是背景 flush；選項 c 是瞎編；選項 d 混淆了 consistent hashing 的角色（決定存放位置，非加速寫入）。"
+      }
     },
     {
       "title": "Neo4j / Graph DB：社交 + 推薦",
@@ -1222,7 +1613,30 @@
           "level": 2,
           "text": "應用"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "為什麼推薦系統、社交網路功能要用 Neo4j 而不是 SQL？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Neo4j 可以儲存更多資料，SQL 伺服器容量太小"
+          },
+          {
+            "value": "b",
+            "label": "找多層關係（例如朋友的朋友的朋友）時，Neo4j 查詢快速而且容易，SQL 需要很多層 JOIN 會變得很慢"
+          },
+          {
+            "value": "c",
+            "label": "SQL 無法儲存關係資料，只能存表格資料"
+          },
+          {
+            "value": "d",
+            "label": "Neo4j 的查詢語言 Cypher 比 SQL 的文法更簡單"
+          }
+        ],
+        "answer": "b",
+        "explanation": "圖資料庫的核心優勢是多層關係查詢，Neo4j 用 -[:FRIEND*1..6]- 一行就能查 6 層，SQL 需要 6 層 JOIN 會極度緩慢。a 錯在容量，c 錯在 SQL 當然存得住關係，d 錯在簡單性不是關鍵原因。"
+      }
     },
     {
       "title": "TimescaleDB / InfluxDB：時序資料",
@@ -1267,7 +1681,30 @@
           "level": 2,
           "text": "選擇"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你是 IoT 公司的工程師，要存 1000 個溫度感測器的資料，每秒各記一筆。用一般 PostgreSQL 和用 TimescaleDB，最大的差異在哪裡？",
+        "options": [
+          {
+            "value": "a",
+            "label": "TimescaleDB 支援 SQL、一般 PG 不支援"
+          },
+          {
+            "value": "b",
+            "label": "TimescaleDB 專門優化「大量寫入 + 按時間查詢」，自動分區存放；一般 PG 會因為寫入量爆炸和索引問題而變慢"
+          },
+          {
+            "value": "c",
+            "label": "TimescaleDB 可以刪舊資料、一般 PG 不行"
+          },
+          {
+            "value": "d",
+            "label": "TimescaleDB 用 JSON 存資料、一般 PG 用表格"
+          }
+        ],
+        "answer": "b",
+        "explanation": "時序 DB 的核心優勢就是針對「寫多、讀少、按時間查」的場景最佳化。一般 PG 在每秒數百萬筆寫入時會崩潰，時間索引也沒有特別優化；TimescaleDB 用 hypertable 自動按時間分區，讓寫入和時間查詢都快很多。a 項是錯的（TimescaleDB 本身就是 PG extension），c 項只是附加功能而非核心差異。"
+      }
     },
     {
       "title": "Elasticsearch / Meilisearch：全文搜尋",
@@ -1312,7 +1749,30 @@
           "level": 2,
           "text": "選擇"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "為什麼全文搜尋不能用 SQL 的 LIKE 來做？下列何者不是理由？",
+        "options": [
+          {
+            "value": "a",
+            "label": "SQL LIKE 在百萬筆資料下需要全表掃描，速度太慢"
+          },
+          {
+            "value": "b",
+            "label": "SQL LIKE 無法自動處理打字錯誤和同義詞"
+          },
+          {
+            "value": "c",
+            "label": "SQL LIKE 不支援中文斷詞，無法正確分詞"
+          },
+          {
+            "value": "d",
+            "label": "SQL LIKE 只能用在特定的資料庫引擎，換引擎就不能用"
+          }
+        ],
+        "answer": "d",
+        "explanation": "課程重點是 SQL LIKE 的五大痛點：(1)全表掃速度慢 (2)無法處理 typo (3)不能排序相關度 (4)不能加權 (5)不支援中文斷詞。SQL LIKE 本身在任何資料庫都能用，只是慢，不是「換引擎就不能用」。"
+      }
     },
     {
       "title": "Backup / Restore：永遠別賭",
@@ -1361,7 +1821,30 @@
           "level": 2,
           "text": "演練！"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，為什麼說「沒測過的 backup ≈ 沒 backup」？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為很多公司備份了但從未真正測試還原，結果到了真正需要時才發現備份已經損壞或無法使用"
+          },
+          {
+            "value": "b",
+            "label": "因為測試備份會消耗太多時間和成本，所以乾脆不備份"
+          },
+          {
+            "value": "c",
+            "label": "因為備份檔案的大小太大，測試時容易失敗"
+          },
+          {
+            "value": "d",
+            "label": "因為備份工具有很多種，測試時很難選擇正確的工具"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調業界鐵則：只有定期測試還原的備份才有用，很多公司3年沒測restore導致真正災難時備份無法用。測試備份是確保它真的能救命的唯一方法。"
+      }
     },
     {
       "title": "Connection Pool + 效能優化",
@@ -1406,7 +1889,30 @@
           "level": 2,
           "text": "Cursor pagination"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你寫的 API 每次都執行 new Client() 連接資料庫，導致伺服器在高流量下容易當機。根據這堂課，最直接的解決方案是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "改用 Connection Pool，讓連線在啟動時就建好，之後每個 request 只是借用和歸還"
+          },
+          {
+            "value": "b",
+            "label": "建立多個 index，這樣每個 query 都會跑得更快，自然就不會當機"
+          },
+          {
+            "value": "c",
+            "label": "改寫 SQL 語法，把 SELECT * 改成只選必要的欄位，減少連線負擔"
+          },
+          {
+            "value": "d",
+            "label": "導入 Redis 快取，把常用的資料存在記憶體裡，就不用連 DB 了"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程開頭的核心問題就是『每次 new Client() 造成連線爆滿』，Connection Pool 才是直接的解決方案——預先建立一群連線、重複使用，避免頻繁連接。b/c/d 都是其他優化技巧，但不是解決『連線耗盡』的方法。"
+      }
     },
     {
       "title": "Migration 工具：Prisma / Drizzle",
@@ -1447,7 +1953,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你們團隊現在用手動改 production 資料庫的方式，結果 staging 跟 production 的 schema 亂套、deploy 時出錯。使用 Migration 工具（Prisma / Drizzle）後，最根本解決的問題是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Migration 工具會自動幫你寫 SQL，所以 SQL 語法錯誤會大幅減少"
+          },
+          {
+            "value": "b",
+            "label": "每次 schema 改動都被記錄成檔案版本、存進 git，各環境跑同樣 migration 就保證一致"
+          },
+          {
+            "value": "c",
+            "label": "Migration 工具跑得比手動改快，所以 deploy 時間會縮短"
+          },
+          {
+            "value": "d",
+            "label": "用了 Migration 工具就不需要 DBA 了，開發者可以自己管理所有資料庫"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Migration 的核心價值就是「版本控制 + 同步多環境」——每次改動存成檔案進 git、部署時工具自動跑相同 migration，所以 dev / staging / production 絕對一致。a 只是技術細節、c 和 d 都偏離重點。"
+      }
     },
     {
       "title": "DB 選型決策樹",
@@ -1491,7 +2020,30 @@
           "level": 2,
           "text": "9 大紀律"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在開發一個 1 萬用戶的 SaaS 應用，需要存用戶資料、快取常用數據，還要支援商品搜尋功能。根據決策樹，你應該選擇哪個組合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "PostgreSQL + Redis + Meilisearch"
+          },
+          {
+            "value": "b",
+            "label": "MongoDB + Elasticsearch + DynamoDB"
+          },
+          {
+            "value": "c",
+            "label": "Cassandra + Pinecone + Neo4j"
+          },
+          {
+            "value": "d",
+            "label": "只用 PostgreSQL，其他都不需要"
+          }
+        ],
+        "answer": "a",
+        "explanation": "1 萬用戶屬於「階段 2：Indie SaaS（1k-100k 用戶）」，推薦 stack 就是 PG + Redis + Meilisearch。PostgreSQL 存結構化資料（用戶帳號），Redis 做快取，Meilisearch 則專門處理搜尋功能。B 是大型應用用法、C 是超大規模、D 則低估了搜尋的需求。"
+      }
     },
     {
       "title": "DB 心法 + 學習路徑",
@@ -1543,7 +2095,30 @@
           "level": 2,
           "text": "永遠的真理"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程的 4 年 DB 工程師成長路線，Year 1 和 Year 2 的學習重點有什麼根本差異？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Year 1 重點是學會寫 SQL 和基本概念，Year 2 重點是學會找出問題和優化效能"
+          },
+          {
+            "value": "b",
+            "label": "Year 1 只需學 SQL，Year 2 才開始接觸資料庫架構"
+          },
+          {
+            "value": "c",
+            "label": "Year 1 和 Year 2 學的內容幾乎一樣，只是公司給的薪水不同"
+          },
+          {
+            "value": "d",
+            "label": "Year 1 要學會分散式系統，Year 2 才學基礎 SQL"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Year 1 的目標是『能寫業務 query』（掌握基礎），Year 2 的目標是『能調效能、不出問題』（從寫能跑進化到寫得好）。這是從能力上「從無到有」到「從有到優」的轉變。"
+      }
     }
   ],
   "boss": {
@@ -1557,5 +2132,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "NoSQL 用靈活的 JSON / Key-Value 結構存資料、比 SQL 更快上手但需要自己管理資料關係",
+    "MongoDB 是文件資料庫、Firebase / Supabase 是雲端整合方案、Redis 是超快的記憶體快取",
+    "Vector Database 專為 AI 相似度搜尋設計、傳統資料庫加不了 AI 功能需靠向量數據庫",
+    "選資料庫看你的資料結構、查詢模式、擴展需求、團隊熟悉度——沒有銀彈",
+    "備份、連線池、索引、遷移工具都是上線前必做、小問題能害死大專案"
+  ],
+  "faq": [
+    {
+      "q": "NoSQL 比 SQL 更新更好嗎？",
+      "a": "不是，各有優缺。NoSQL 適合結構不固定或超大流量、SQL 適合資料關係複雜且需要事務。大多大型專案是混用，不是非此即彼。"
+    },
+    {
+      "q": "我是新手，應該先學 MongoDB 還是 Firebase？",
+      "a": "如果想快速上線靠雲端、學 Firebase。如果想理解資料庫原理、學 MongoDB。Firebase 更方便但黑盒多，MongoDB 自主性強但要自己建基礎設施。"
+    },
+    {
+      "q": "什麼時候需要 Vector Database？",
+      "a": "當你要做 AI 相似度搜尋、推薦系統、語意搜尋時才需要。普通業務系統不用，加了反而複雜拖累效能。"
+    }
+  ]
 }

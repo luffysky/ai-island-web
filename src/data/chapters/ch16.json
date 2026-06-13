@@ -67,7 +67,30 @@
           "level": 3,
           "text": "用「餐廳」理解後端"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在手機按下「登入」按鈕、2 秒後看到主頁。下面哪個敘述正確地說出後端在這個過程中真正做的事？",
+        "options": [
+          {
+            "value": "a",
+            "label": "後端負責 DNS 查詢、TCP 連線、TLS 握手，然後把網頁傳回給瀏覽器顯示"
+          },
+          {
+            "value": "b",
+            "label": "後端解析登入資訊、連 DB 驗證密碼、產生 token，這些才是後端核心工作—其他步驟（DNS、TCP 等）是前置作業"
+          },
+          {
+            "value": "c",
+            "label": "後端只負責存資料到資料庫，前端負責驗證密碼、產生 token，兩邊配合才能完成登入"
+          },
+          {
+            "value": "d",
+            "label": "後端要單獨處理 DNS 查詢、Load Balancer 分配、Web Server 接收等所有 10 個步驟"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確指出「Step 5-9 才是後端真正在做的事」，核心就是處理請求、驗證資料、與 DB 互動、回應結果。DNS、TCP、TLS 是網路基礎層（發生在 Step 1-3），不是後端工程師設計的應用邏輯。"
+      }
     },
     {
       "id": "16.2",
@@ -128,7 +151,30 @@
           "level": 3,
           "text": "HTTP/1.1 vs HTTP/2 vs HTTP/3"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的後端 API 要「部分更新」某個使用者的資料，只改電話號碼欄位，其他欄位保持不變。根據 HTTP method 慣例和 idempotent 原則，應該用哪個 method？",
+        "options": [
+          {
+            "value": "a",
+            "label": "PUT /users/123，因為 PUT 是更新資料的標準做法"
+          },
+          {
+            "value": "b",
+            "label": "PATCH /users/123，因為只改部分欄位、而且同請求跑多次結果相同"
+          },
+          {
+            "value": "c",
+            "label": "POST /users/123，因為有異動資料就該用 POST"
+          },
+          {
+            "value": "d",
+            "label": "GET /users/123，因為要先確認使用者存在才能修改"
+          }
+        ],
+        "answer": "b",
+        "explanation": "PATCH 就是用來部分修改（只改某欄）、且具有 idempotent 特性（跑多次結果相同、不會重複建立）。PUT 會完整替換整個物件（沒提的欄位會被清空），風險較高，實戰應避免。"
+      }
     },
     {
       "id": "16.3",
@@ -185,7 +231,30 @@
           "level": 3,
           "text": "怎麼選"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你現在要設計一個「內部微服務架構」，前端和後端都用 TypeScript，對方需要很快的執行速度、也不用跟其他語言的系統溝通。下列哪個選擇最合理？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 tRPC，因為全 TypeScript、type safe、開發體驗好，而且不用寫 schema"
+          },
+          {
+            "value": "b",
+            "label": "用 GraphQL，因為可以只拿想要的欄位、不會過度抓取"
+          },
+          {
+            "value": "c",
+            "label": "用 gRPC，因為執行速度最快、適合服務間通訊"
+          },
+          {
+            "value": "d",
+            "label": "用 REST，因為大家都會、最簡單、夠用就好"
+          }
+        ],
+        "answer": "a",
+        "explanation": "tRPC 專為 TypeScript 全端設計、無需 schema、type safe end-to-end，是 2024+ Next.js 全端的首選。gRPC 雖快但需要 .proto 定義、不適合只 TS 的內部團隊；GraphQL 對這場景是 overkill；REST 沒有錯但不如 tRPC 適合 TS 全棧。"
+      }
     },
     {
       "id": "16.4",
@@ -230,7 +299,30 @@
           "level": 3,
           "text": "選擇 framework"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的新創公司只有 8 個人，流量穩定可預測，團隊熟悉 Rails。根據這堂課的選擇框架，以下哪個架構最適合你們？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Monolith（單體），因為團隊小、不複雜，1 個 deploy 就行"
+          },
+          {
+            "value": "b",
+            "label": "Microservices，因為這樣才能學到業界最新技術"
+          },
+          {
+            "value": "c",
+            "label": "Serverless，因為成本最低、不用管 server"
+          },
+          {
+            "value": "d",
+            "label": "Edge Computing，因為可以提供全球低延遲"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調「Monolith first」原則：1-5 人團隊應該選 Monolith，因為簡單、快速 ship、一個 codebase 協作順暢。流量穩定也不需要 Serverless 的按量付費優勢。選 b 會掉進「過早微服務化」的陷阱，選 c 和 d 都不符合你們的實際需求（不是波動流量、也不是全球延遲敏感）。"
+      }
     },
     {
       "id": "16.5",
@@ -275,7 +367,30 @@
           "level": 3,
           "text": "各語言典型「Hello World 後端」"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據 2026 年主流後端語言的定位，如果你是一個 indie 開發者想快速開發 AI 相關的後端服務，以下哪個語言組合最符合課程中的建議？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Python（快速開發 + 無敵生態）+ Node.js（全端）"
+          },
+          {
+            "value": "b",
+            "label": "Rust（極致效能）+ Go（高並發）"
+          },
+          {
+            "value": "c",
+            "label": "Java（企業穩定）+ C#（微軟生態）"
+          },
+          {
+            "value": "d",
+            "label": "Ruby on Rails（開發爽快）+ PHP（便宜 hosting）"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程中明確指出 Python 的賣點是「寫得快、生態無敵（AI / data / web）」、indie 友善度最高，最適合 AI 後端；Node.js 則能做全端開發。而 Rust、Go 雖然性能強但不是 indie 首選，Java、C# 適合企業，Ruby、PHP 則無 AI 生態優勢。"
+      }
     },
     {
       "id": "16.6",
@@ -319,7 +434,30 @@
           "level": 3,
           "text": "給不同人的推薦"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你是個 Indie SaaS 創業者，想快速推出產品，同時未來可能需要處理 AI 功能。根據課程的 5 個維度，以下哪個選擇最符合你的情況？",
+        "options": [
+          {
+            "value": "a",
+            "label": "選 Rust，因為性能最高，能處理 400k+ req/s，這樣產品最穩定"
+          },
+          {
+            "value": "b",
+            "label": "選 Python（FastAPI），因為寫得快、生態強、AI 生態無敵，性能對 indie 也夠用"
+          },
+          {
+            "value": "c",
+            "label": "選 Java，因為生態最完整、有 25 年累積，企業級穩定"
+          },
+          {
+            "value": "d",
+            "label": "選 Go，因為學習曲線最簡單，只有 25 個關鍵字，快速上手"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確指出『Indie SaaS、想快速 ship』應選 Python（FastAPI），原因是寫得快、生態強、debug 容易；同時 Python 在『AI/ML 後端』維度是『沒之一』，完美符合未來需求。性能 50k req/s 對 indie 已經超夠用，不是瓶頸。"
+      }
     },
     {
       "id": "16.7",
@@ -355,7 +493,30 @@
           "level": 3,
           "text": "2026 主流選擇"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你現在要寫一個後端功能：「撈出某個使用者所有訂單，並按日期排序」。根據課程內容，以下哪個選項最符合實戰建議？",
+        "options": [
+          {
+            "value": "a",
+            "label": "直接用 Raw SQL，因為它性能最佳、控制最完全"
+          },
+          {
+            "value": "b",
+            "label": "用 ORM，因為這是簡單 CRUD 需求、程式碼最簡潔"
+          },
+          {
+            "value": "c",
+            "label": "一定要用 Query Builder，因為它最安全、最跨資料庫"
+          },
+          {
+            "value": "d",
+            "label": "三種方式都學會，但只用其中一種就夠了"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確說「簡單 CRUD → ORM」，撈訂單並排序就是典型簡單 CRUD，ORM 寫法最簡潔。Raw SQL 雖快但這裡沒必要，Query Builder 則是複雜需求的中間選項。"
+      }
     },
     {
       "id": "16.8",
@@ -395,7 +556,30 @@
           "level": 3,
           "text": "實戰：完整認證 + 授權 stack"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在做一個網站的登入系統，需要選擇認證方式。如果你要做一個 mobile app，且希望 server 不用存任何登入狀態，應該選哪個方案？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Session-based，因為最簡單"
+          },
+          {
+            "value": "b",
+            "label": "JWT，因為無狀態且適合多端"
+          },
+          {
+            "value": "c",
+            "label": "OAuth 2.0，因為最安全"
+          },
+          {
+            "value": "d",
+            "label": "直接存明文密碼，因為 mobile app 只有自己用"
+          }
+        ],
+        "answer": "b",
+        "explanation": "JWT 是無狀態的（server 驗簽就行、不查 DB），跨服務、多端適用，最適合 mobile app。Session 需要 server 維護狀態，不適合 mobile；OAuth 是第三方登入框架，不是 mobile app 自己的認證方案；明文密碼絕對禁止。"
+      }
     },
     {
       "id": "16.9",
@@ -443,7 +627,30 @@
           "level": 3,
           "text": "2026 主流選擇"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的網站要讓使用者上傳影片，上傳完立刻回應「上傳成功」，然後背景慢慢轉檔成多種格式。下列哪個做法最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "在 user request 中直接轉檔，轉完才回應成功"
+          },
+          {
+            "value": "b",
+            "label": "把轉檔任務丟到 queue，立刻回應成功，worker 背景處理"
+          },
+          {
+            "value": "c",
+            "label": "用 Redis 存影片檔案，user request 直接讀寫"
+          },
+          {
+            "value": "d",
+            "label": "定時用 cron job 每 10 分鐘檢查一次要轉檔的影片"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Background job 的核心就是把慢操作（轉檔）丟到 queue，讓 web server 立刻回應使用者，worker 背景非同步處理。這樣 user 體驗快、伺服器不會被卡住。選項 a 會讓使用者等很久；c 搞混 Redis 用途；d 太被動、不夠及時。"
+      }
     },
     {
       "id": "16.10",
@@ -475,7 +682,30 @@
           "level": 3,
           "text": "Cache 工具"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "假設你的系統每秒有 500 個使用者查詢「商品列表」，每次查詢 DB 需要 100ms。如果加入 cache，第一次查詢後、後續 499 次查詢都直接從 cache 取得（1ms），請問加 cache 後、DB 的負載大約會降低到原來的幾分之幾？",
+        "options": [
+          {
+            "value": "a",
+            "label": "1/500（降低到原來的 0.2%）"
+          },
+          {
+            "value": "b",
+            "label": "1/100（降低到原來的 1%）"
+          },
+          {
+            "value": "c",
+            "label": "1/10（降低到原來的 10%）"
+          },
+          {
+            "value": "d",
+            "label": "1/2（降低到原來的 50%）"
+          }
+        ],
+        "answer": "a",
+        "explanation": "加 cache 前 DB 每秒接 500 次查詢，加 cache 後同樣 1 秒內只有第 1 次查詢打 DB、其餘 499 次打 cache，所以 DB 負載從 500 次降到 1 次、約等於原來的 1/500。這就是課堂強調的『同樣硬體 cost 差 100 倍』的核心原理。"
+      }
     },
     {
       "id": "16.11",
@@ -503,7 +733,30 @@
           "level": 3,
           "text": "Rate Limit 演算法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "如果你的登入 API 沒有設定 rate limit，最直接的風險是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "攻擊者可以在短時間內嘗試大量密碼組合進行暴力破解"
+          },
+          {
+            "value": "b",
+            "label": "使用者忘記密碼時無法重設"
+          },
+          {
+            "value": "c",
+            "label": "伺服器的硬碟空間會快速耗盡"
+          },
+          {
+            "value": "d",
+            "label": "真正的使用者會被要求設定更複雜的密碼"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確提到沒有 rate limit 的首個後果就是『暴力破解——攻擊者一秒嘗試 1 萬個密碼』。其他選項與 rate limit 的核心防護目的無關。"
+      }
     },
     {
       "id": "16.12",
@@ -551,7 +804,30 @@
           "level": 3,
           "text": "WebSocket scale 挑戰"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "如果你要做一個「股票即時報價」的功能，server 需要持續推送最新價格給 client，但 client 不需要傳資料回 server，你應該選哪種技術？",
+        "options": [
+          {
+            "value": "a",
+            "label": "長輪詢（Long Polling），因為最簡單可靠"
+          },
+          {
+            "value": "b",
+            "label": "SSE，因為單向 push、簡單、HTTP 相容性好"
+          },
+          {
+            "value": "c",
+            "label": "WebSocket，因為最快最專業"
+          },
+          {
+            "value": "d",
+            "label": "三種都可以，選哪個都沒差"
+          }
+        ],
+        "answer": "b",
+        "explanation": "SSE 完美適合這個場景：server 單向推資料、不需要 client 回傳、比 WebSocket 簡單、HTTP 上跑易維護。WebSocket 也行但過度設計；長輪詢浪費頻寬。"
+      }
     },
     {
       "id": "16.13",
@@ -599,7 +875,30 @@
           "level": 3,
           "text": "檔案處理常見坑"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的 Indie SaaS 產品讓用戶上傳大量照片和影片，為什麼不應該把這些檔案直接存在資料庫裡？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為物件儲存的 API 比較新，業界都在用"
+          },
+          {
+            "value": "b",
+            "label": "因為檔案會讓 DB 容量爆炸、備份慢、查詢慢，而且成本遠高於物件儲存"
+          },
+          {
+            "value": "c",
+            "label": "因為資料庫只能存文字，不支援二進位檔案"
+          },
+          {
+            "value": "d",
+            "label": "因為檔案存 DB 會影響網站的 SEO 排名"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程的核心是說明檔案儲存的成本與性能差異：DB 存檔案會導致容量爆炸（1 萬張 2MB 圖片 = 20GB）、備份慢、查詢慢、成本高（DB 1GB > S3 100GB），所以應該用物件儲存（S3/R2），只在 DB 存 URL。選項 a 的「API 新」、c 的「不支援二進位」、d 的「影響 SEO」都是課程未提及或錯誤的理由。"
+      }
     },
     {
       "id": "16.14",
@@ -643,7 +942,30 @@
           "level": 3,
           "text": "Latency：p99 重要"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的服務突然變慢，user 在半夜罵你，你想立刻知道是哪個環節出問題。以下哪個工具最適合「看單一 request 經過哪些服務、各花多少時間」？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Logging（日誌）- 記錄每個重要操作的事件"
+          },
+          {
+            "value": "b",
+            "label": "Metrics（指標）- 看系統整體健康狀態的數字"
+          },
+          {
+            "value": "c",
+            "label": "Tracing（追蹤）- 追蹤單一 request 的完整時間軸"
+          },
+          {
+            "value": "d",
+            "label": "Structured Logging - 把 log 轉成 JSON 格式方便搜尋"
+          }
+        ],
+        "answer": "c",
+        "explanation": "Tracing 專門處理「1 個 request 走過哪些服務」的問題，能看到完整時間軸（例如：API gateway 5ms → DB 30ms → cache 1ms）。Logging 和 Metrics 都是全域觀察，看不到單一 request 的跨服務路徑。"
+      }
     },
     {
       "id": "16.15",
@@ -691,7 +1013,30 @@
           "level": 3,
           "text": "常見假優化（別做）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的網站變慢了，想找出問題在哪裡。根據這堂課，正確的做法應該是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "直接加 index、用 connection pool、改成異步，這樣通常就會快"
+          },
+          {
+            "value": "b",
+            "label": "先用 APM 或 profiling 工具測量找出真正的瓶頸，再針對最痛的地方優化"
+          },
+          {
+            "value": "c",
+            "label": "檢查程式碼邏輯有沒有 bug，bug 修好效能自然就好了"
+          },
+          {
+            "value": "d",
+            "label": "把所有查詢都改成異步、所有欄位都加 index，這樣最保險"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程一開始強調「先 measure 再修」，用 APM、慢 query log 或 profiling 找瓶頸才是 Senior 的做法。亂優化（a、d）可能浪費時間或反而變慢（index 太多會拖累 INSERT/UPDATE）；b 是科學有效的方法。"
+      }
     },
     {
       "id": "16.16",
@@ -739,7 +1084,30 @@
           "level": 3,
           "text": "2026 indie 推薦 stack"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "為什麼要在 production 環境中使用環境變數而不是直接在程式碼裡寫死資料庫密碼和 API Key？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為寫死在程式碼裡會讓程式跑得很慢"
+          },
+          {
+            "value": "b",
+            "label": "因為機密資料不應該進 git，且不同環境（dev/staging/prod）需要用不同設定"
+          },
+          {
+            "value": "c",
+            "label": "因為環境變數是 Python 語言的特殊功能，其他語言用不了"
+          },
+          {
+            "value": "d",
+            "label": "因為 Docker 強制規定所有應用都必須用環境變數"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調用環境變數的核心理由是：1) 機密資料（密碼、API Key）不進版本控制；2) 不同環境可用不同設定。a 選項無關效能，c 選項錯誤（多語言都支持），d 選項把 Docker 和環境變數混為一談。"
+      }
     },
     {
       "id": "16.17",
@@ -771,7 +1139,30 @@
           "level": 3,
           "text": "Service Layer：業務邏輯放這"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在新創公司當後端工程師，公司現在只有 3 個人、還在快速迭代產品。你該選哪種後端架構？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Monolith（單體架構），因為開發快、部署簡單、初創最適合"
+          },
+          {
+            "value": "b",
+            "label": "Microservices（微服務），因為這是業界最新的標準做法"
+          },
+          {
+            "value": "c",
+            "label": "Serverless，因為不用管伺服器、最省成本"
+          },
+          {
+            "value": "d",
+            "label": "API Gateway，因為一定要有統一入口才叫專業"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確說初創 99% 該用 Monolith，因為開發超快、部署簡單、debug 容易。微服務適合大公司多團隊，太早用會增加複雜度反而拖慢進度。Serverless 和 API Gateway 都是配套工具，不是初創的首選架構。"
+      }
     },
     {
       "id": "16.18",
@@ -811,7 +1202,30 @@
           "level": 3,
           "text": "對你的 implication"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，2026 年後端的「大轉變」重點是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "應用程式從單一 region 轉變為在離使用者最近的地方運行（Edge Computing），同時 AI 整合、Serverless、Rust 滲透成為主流趨勢"
+          },
+          {
+            "value": "b",
+            "label": "放棄 Node.js 改用 Rust 重寫所有後端服務，因為 Rust 的性能比其他語言快 10 倍以上"
+          },
+          {
+            "value": "c",
+            "label": "所有公司都應該立即遷移到 Kubernetes 和微服務架構，才能跟上 2026 年的技術趨勢"
+          },
+          {
+            "value": "d",
+            "label": "DevOps 工作完全消失，所有部署和監控都由 AI 自動完成，不再需要人工介入"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程核心講的是 6 個主要趨勢（Edge、Serverless、AI-native、TypeScript 全棧、Rust 滲透、DevOps 自動化）共同驅動的大轉變。選項 b 誇大了 Rust 的角色（Rust 主要在框架層滲透而非全面取代）；選項 c 提出的 Kubernetes 遷移與課程建議相反（中小企業應避免過早微服務化）；選項 d 過度誇大 AI 能力（AI 只是輔助工具）。"
+      }
     },
     {
       "title": "HTTP 完整：method / status code / header / cookies",
@@ -880,7 +1294,30 @@
           "level": 2,
           "text": "工具"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在 F12 Network 面板看到一個 API 請求顯示 POST /api/users，回傳狀態碼 201，body 是 JSON。這表示什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "成功建立了一筆新使用者資料"
+          },
+          {
+            "value": "b",
+            "label": "使用者資料更新成功"
+          },
+          {
+            "value": "c",
+            "label": "伺服器暫時無法處理這個請求"
+          },
+          {
+            "value": "d",
+            "label": "瀏覽器在詢問是否可以跨域請求"
+          }
+        ],
+        "answer": "a",
+        "explanation": "POST 方法是用來建立新資料，201 Created 狀態碼就是代表「新資源已被建立」。若是更新用 PUT/PATCH 搭配 200；503 才是伺服器暫時無法服務；OPTIONS 才是 CORS preflight。"
+      }
     },
     {
       "title": "REST API 設計原則",
@@ -953,7 +1390,30 @@
           "level": 2,
           "text": "不要過度設計"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的團隊在設計一個部落格 API，要讓前端取得某個使用者的所有文章、並能過濾作者、分頁。下列哪個 API 端點設計最符合 REST 原則？",
+        "options": [
+          {
+            "value": "a",
+            "label": "GET /api/v1/users/789/posts?author=alice&page=1&limit=20"
+          },
+          {
+            "value": "b",
+            "label": "GET /api/v1/getPosts?userId=789&author=alice&page=1&limit=20"
+          },
+          {
+            "value": "c",
+            "label": "POST /api/v1/users/789/fetchPosts?author=alice&page=1&limit=20"
+          },
+          {
+            "value": "d",
+            "label": "GET /api/v1/posts/789?filterAuthor=alice&pageNumber=1&pageSize=20"
+          }
+        ],
+        "answer": "a",
+        "explanation": "選項 a 遵循 REST 原則：用名詞複數路徑 (posts)、巢狀資源表示隸屬關係 (users/789/posts)、用 GET 加 query parameters 做過濾和分頁。b 用了動詞 (getPosts)、c 用了 POST 查詢、d 命名冗長且沒有巢狀結構，都不符合。"
+      }
     },
     {
       "title": "API 認證：API Key / OAuth / JWT 對比",
@@ -1014,7 +1474,30 @@
           "level": 2,
           "text": "進階：API Gateway"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在開發一個手機 App，需要讓使用者用 Google 帳號登入。下面哪個認證方式最適合這個場景？",
+        "options": [
+          {
+            "value": "a",
+            "label": "API Key——簡單方便，直接把 API Key 存在手機裡"
+          },
+          {
+            "value": "b",
+            "label": "OAuth 2.0 with PKCE——使用者不交出密碼，只授權特定權限給 App"
+          },
+          {
+            "value": "c",
+            "label": "Basic Auth——用 Base64 編碼 username 和 password，夠安全"
+          },
+          {
+            "value": "d",
+            "label": "JWT——把使用者資訊編在 token 裡，無法過期"
+          }
+        ],
+        "answer": "b",
+        "explanation": "手機 App 第三方登入必須用 OAuth 2.0（搭配 PKCE），因為無法安全保管 client_secret。API Key 不能放 client side 會洩漏，Basic Auth 是古老方式不適合，JWT 本身不是認證方式而是 token 格式。"
+      }
     },
     {
       "title": "Rate Limiting：防止 API 被打爆",
@@ -1091,7 +1574,30 @@
           "level": 2,
           "text": "工具 / 服務"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "如果你的 API 沒有 Rate Limiting，最可能發生什麼問題？",
+        "options": [
+          {
+            "value": "a",
+            "label": "駭客容易用 brute force 撞密碼、bot 可以大量爬資料、server 被打到掛掉"
+          },
+          {
+            "value": "b",
+            "label": "使用者無法快速取得資料、API 回應時間會變很長"
+          },
+          {
+            "value": "c",
+            "label": "資料庫會自動限制每個連線的速度、保護系統安全"
+          },
+          {
+            "value": "d",
+            "label": "只有 VIP 使用者才能使用 API、普通使用者會被擋掉"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Rate Limiting 的核心目的就是防止駭客攻擊（brute force、DDoS）、防止資料被爬、保護 server 不掛掉。b 是速度問題而非安全問題；c 和 d 是錯誤認知，Rate Limit 必須在 API 層主動實作。"
+      }
     },
     {
       "title": "Caching：快取策略 + Redis 入門",
@@ -1184,7 +1690,30 @@
           "level": 2,
           "text": "工具"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的應用正在用 Redis 快取使用者資料。當使用者更新個人資料時，如果只用「時間過期 TTL」來失效快取，會發生什麼問題？",
+        "options": [
+          {
+            "value": "a",
+            "label": "使用者馬上看到新資料，因為 Redis 會自動重新查詢資料庫"
+          },
+          {
+            "value": "b",
+            "label": "在快取過期前，使用者看到的還是舊資料"
+          },
+          {
+            "value": "c",
+            "label": "快取會變成空的，導致每次都要重新查資料庫"
+          },
+          {
+            "value": "d",
+            "label": "無法設定 TTL，必須改用主動刪除才能更新"
+          }
+        ],
+        "answer": "b",
+        "explanation": "時間過期 TTL 會等到時間到了才自動清除快取，但使用者更新資料後、在快取還沒過期前，其他人查詢會拿到舊資料。所以課程說「簡單但資料更新後仍延遲」——這就是延遲的原因。解決辦法是「主動刪除」或「Write-Through」。"
+      }
     },
     {
       "title": "WebSocket / SSE：即時通訊",
@@ -1249,7 +1778,30 @@
           "level": 2,
           "text": "部署痛點"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你要做一個功能：當資料庫裡的訊息有新增時，立刻通知所有連線中的使用者。你會優先選用哪一個技術？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Polling 每 3 秒抓一次資料庫"
+          },
+          {
+            "value": "b",
+            "label": "SSE 從 server 單向推送通知"
+          },
+          {
+            "value": "c",
+            "label": "WebSocket 建立雙向連線"
+          },
+          {
+            "value": "d",
+            "label": "Supabase Realtime 訂閱資料庫變化"
+          }
+        ],
+        "answer": "d",
+        "explanation": "這個需求的核心是「資料庫變化即時同步」，Supabase Realtime 專門設計來做這件事（透過 PG NOTIFY），可以直接監聽 DB 異動。WebSocket 可以做但需要自己寫邏輯，SSE 單向不適合互動，Polling 則是最浪費資源的方案。"
+      }
     },
     {
       "title": "API 文件 + Testing（Postman / Bruno / Vitest）",
@@ -1330,7 +1882,30 @@
           "level": 2,
           "text": "實戰建議"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在決定選用哪個工具來測試公司的 API。如果希望測試檔案能夠跟著程式碼一起版控在 Git 裡、整個團隊共享、又不想註冊帳號，應該選哪個？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Postman"
+          },
+          {
+            "value": "b",
+            "label": "Bruno"
+          },
+          {
+            "value": "c",
+            "label": "Thunder Client"
+          },
+          {
+            "value": "d",
+            "label": "HTTPie"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Bruno 是開源工具、純本地檔案、Git 友善、免費無需註冊，最適合跟程式碼一起版控。Postman 是雲端優先、需註冊；Thunder Client 是 VS Code 外掛、不是專門版控工具；HTTPie 是 CLI、主要用於臨時測試。"
+      }
     }
   ],
   "boss": {
@@ -1344,5 +1919,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "後端核心：接收請求、處理邏輯、回傳回應，路上要經過路由、認證、資料庫、快取等關卡",
+    "HTTP 是網路通訊的規則書，GET/POST/PUT/DELETE 各司其職，status code 講故事",
+    "REST 最常見但不是唯一選擇，GraphQL 讓前端自己決定要什麼資料，WebSocket 走的是雙向即時",
+    "架構從一台伺服器（Monolith）演進到許多小服務（Microservice），無伺服器（Serverless）更省事，Edge 讓請求在地處理",
+    "後端語言沒有絕對最好，選擇看團隊、生態、效能需求、學習成本而定"
+  ],
+  "faq": [
+    {
+      "q": "後端和前端到底怎麼分工？",
+      "a": "簡單說前端是使用者看得到的畫面，後端是在伺服器裡跑的邏輯跟資料。前端問後端「我要這筆資料」，後端去資料庫找、整理好、回傳給前端。"
+    },
+    {
+      "q": "REST、GraphQL、WebSocket 都是 API，我到底該用哪個？",
+      "a": "REST 最基礎通用，適合大多數情況；GraphQL 的優勢是前端可以自己決定要哪些欄位，省頻寬；WebSocket 走雙向即時，適合聊天、通知、遊戲。用 REST 起手準沒錯，等有痛點再考慮換。"
+    },
+    {
+      "q": "我要先學資料庫還是先學後端語言？",
+      "a": "建議同時學，它們綁在一起。但如果一定要選，先掌握後端邏輯流程，再深入資料庫；大多數後端框架會幫你處理資料庫基本操作，用到一定程度才需要真的懂 SQL。"
+    }
+  ]
 }

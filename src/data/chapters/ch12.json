@@ -68,7 +68,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這堂課，為什麼 Indie 開發者一定要優先做「HTTPS、Auth、ORM 防 SQL injection、Rate limit、不存明文密碼」這些事？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為這些是 OWASP Top 10 中最常見、最容易被攻擊的漏洞，優先補這些洞能最有效降低風險"
+          },
+          {
+            "value": "b",
+            "label": "因為只要做完這 5 項，就能保證網站 100% 安全，不會再有任何資安問題"
+          },
+          {
+            "value": "c",
+            "label": "因為法律規定 Indie 開發者一定要做這些才能上線"
+          },
+          {
+            "value": "d",
+            "label": "因為 Cloudflare 和 Supabase 官方說新手一定要裝這些功能"
+          }
+        ],
+        "answer": "a",
+        "explanation": "這課的核心是『安全是縱深、先補最常見的洞』——OWASP Top 10 就是業界公認的『最常被攻擊的漏洞排行榜』，這 5 項是 Indie 必做清單裡優先級最高的防守重點。選 b 錯因為沒有 100% 安全、選 c 和 d 都只是工具或法規，不是『為什麼要優先做』的正確原因。"
+      }
     },
     {
       "title": "SQL Injection 防護",
@@ -125,7 +148,30 @@
           "level": 2,
           "text": "NoSQL Injection"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "以下哪一種做法可以有效防護 SQL Injection 攻擊？",
+        "options": [
+          {
+            "value": "a",
+            "label": "使用字串拼接建構 SQL 查詢，但檢查輸入是否包含 SQL 關鍵字"
+          },
+          {
+            "value": "b",
+            "label": "使用 Prepared Statement（參數化查詢），把 SQL 指令和資料分開傳遞"
+          },
+          {
+            "value": "c",
+            "label": "直接使用 ORM，就不用擔心任何注入問題"
+          },
+          {
+            "value": "d",
+            "label": "在查詢前把輸入用單引號括起來，防止特殊字元被執行"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Prepared Statement 是防護 SQL Injection 的根本做法——資料庫會先編譯 SQL 結構，再接收參數值，讓輸入無法當成指令執行。其他方式都不夠安全：字串拼接即使檢查也容易遺漏、ORM 雖安全但不是萬能、單引號也能被繞過。"
+      }
     },
     {
       "title": "XSS：跨站腳本攻擊",
@@ -186,7 +232,30 @@
           "level": 2,
           "text": "URL"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的網站有個留言區，使用者可以輸入任意文字。如果直接把使用者輸入的內容用 `dangerouslySetInnerHTML` 顯示在頁面上，為什麼這樣特別危險？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為攻擊者可以在留言裡寫 JavaScript 程式碼，當其他人看到這則留言時，這段程式碼會在他們的瀏覽器裡執行"
+          },
+          {
+            "value": "b",
+            "label": "因為 dangerouslySetInnerHTML 會讓伺服器的資料庫被清空"
+          },
+          {
+            "value": "c",
+            "label": "因為使用 dangerouslySetInnerHTML 會導致網站載入速度變慢"
+          },
+          {
+            "value": "d",
+            "label": "因為這樣會把使用者的帳號密碼傳給攻擊者"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Stored XSS 的核心危害就是惡意程式碼被存進資料庫，然後對每個看到該內容的人執行。`dangerouslySetInnerHTML` 會把字串當成 HTML/JavaScript 解析執行，而不是單純文字，所以特別容易中招。防護方法是用 escape、DOMPurify 清洗，或在 React 裡用 `{userInput}` 讓它自動跳脫。"
+      }
     },
     {
       "title": "CSRF：跨站請求偽造",
@@ -247,7 +316,30 @@
           "level": 2,
           "text": "敏感動作"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "CSRF 攻擊最根本的原因是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "惡意網站可以直接讀取你的 cookie"
+          },
+          {
+            "value": "b",
+            "label": "你的瀏覽器在登入狀態下，會自動幫跨站請求帶上 cookie，導致銀行無法分辨是真的你還是攻擊者"
+          },
+          {
+            "value": "c",
+            "label": "銀行的網站程式碼有漏洞，無法識別惡意請求"
+          },
+          {
+            "value": "d",
+            "label": "攻擊者可以修改你電腦裡的 cookie 內容"
+          }
+        ],
+        "answer": "b",
+        "explanation": "CSRF 之所以能成功，就是因為瀏覽器的自動帶 cookie 機制——即使請求來自惡意網站，瀏覽器還是會自動附上你在銀行的登入 cookie，讓銀行誤認為是你本人發出的請求。"
+      }
     },
     {
       "title": "密碼儲存：bcrypt / argon2",
@@ -308,7 +400,30 @@
           "level": 2,
           "text": "Indie 用現成"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的公司在設計登入系統，現在要決定如何儲存使用者密碼。以下哪個做法最安全？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 bcrypt 的 cost factor 設 12，每個密碼產生不同的 salt"
+          },
+          {
+            "value": "b",
+            "label": "用 MD5 加密密碼後存進資料庫，因為 MD5 被廣泛使用很穩定"
+          },
+          {
+            "value": "c",
+            "label": "明文存密碼但設定資料庫只有 admin 才能存取"
+          },
+          {
+            "value": "d",
+            "label": "自己寫一個加密演算法，比 bcrypt 更快更安全"
+          }
+        ],
+        "answer": "a",
+        "explanation": "bcrypt 是業界標準的密碼雜湊方案，cost factor 12 提供適當的防護強度（約 250ms），每次雜湊會自動使用不同的 salt 防止彩虹表攻擊。MD5 和明文儲存都是絕對禁止，自己發明加密則會引入安全漏洞。"
+      }
     },
     {
       "title": "JWT 安全使用",
@@ -365,7 +480,30 @@
           "level": 2,
           "text": "何時不用 JWT"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "假設你的應用程式使用 JWT，現在遇到一個問題：用戶登出後，他的 JWT token 仍然有效，直到過期時間才會失效。下列哪個做法最能解決「無法立即撤銷 token」的問題？",
+        "options": [
+          {
+            "value": "a",
+            "label": "把 JWT 存放在 localStorage，這樣登出時可以直接刪除它"
+          },
+          {
+            "value": "b",
+            "label": "縮短 access token 的過期時間（例如 15 分鐘），搭配 Blocklist 機制，這樣可以更快速地撤銷 token"
+          },
+          {
+            "value": "c",
+            "label": "改用非對稱加密（RS256）而不是 HMAC（HS256），這樣 token 就能被撤銷"
+          },
+          {
+            "value": "d",
+            "label": "在 JWT payload 中放入用戶的密碼雜湊，這樣修改密碼時 token 自動失效"
+          }
+        ],
+        "answer": "b",
+        "explanation": "JWT 的根本限制是「無法中途撤銷」，無法通過存放位置、加密方式或 payload 內容改變這一點。最實務的解決方案是結合「短過期時間」（讓未授權 token 快速失效）與「Blocklist」（記錄已登出的 token），這樣既能立即撤銷又不完全依賴 session。"
+      }
     },
     {
       "title": "HTTPS + TLS + 證書",
@@ -429,7 +567,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程，如果你要快速幫網站開啟 HTTPS，並且希望自動更新憑證、還能享受全球 CDN，最簡單的做法是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "使用 Cloudflare，把域名 nameserver 改到 Cloudflare，並設定 SSL/TLS 為「Full (strict)」"
+          },
+          {
+            "value": "b",
+            "label": "自己購買 EV 憑證，設定 TLS 1.3，然後手動上傳到伺服器"
+          },
+          {
+            "value": "c",
+            "label": "用 Let's Encrypt 的 certbot 申請憑證，每 90 天手動更新一次"
+          },
+          {
+            "value": "d",
+            "label": "在網站程式碼中寫入 Certificate Pinning，只信任特定 CA"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確指出 Cloudflare 是最簡單的選項，只需改 nameserver + 設定 SSL/TLS，就能自動、免費、全球 CDN。選項 b 的 EV 憑證過時且收費，c 需要手動更新，d 則是行動 App 才需要的進階做法。"
+      }
     },
     {
       "title": "Rate Limiting：防 DDoS / 暴力破解",
@@ -494,7 +655,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的登入頁面遭受暴力破解攻擊，有人在短時間內試了 1000 次密碼。根據課程內容，你應該怎麼做？",
+        "options": [
+          {
+            "value": "a",
+            "label": "在登入 endpoint 設定 rate limit 為 5 次/15 分，超過就回傳 429 status"
+          },
+          {
+            "value": "b",
+            "label": "只在全域 API 路由設定 100 次/分的限制就足夠了"
+          },
+          {
+            "value": "c",
+            "label": "直接用 Cloudflare 免費 plan 就能完全阻擋這種攻擊"
+          },
+          {
+            "value": "d",
+            "label": "設定一個很高的限制（例如 1000 次/分）這樣才不會誤傷正常用戶"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確指出「登入：5 次失敗/15 分」是標準做法，敏感 endpoint 需要比一般 API 更嚴格的限制。選 b 是全域限制太鬆散、選 c 誤解 Cloudflare 免費版只有基本 DDoS、選 d 則完全沒有限制效果。"
+      }
     },
     {
       "title": "CORS 跨來源",
@@ -555,7 +739,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的後端設定了 `Access-Control-Allow-Credentials: true`，前端要用 `fetch` 帶上 Cookie，下列哪個做法是正確的？",
+        "options": [
+          {
+            "value": "a",
+            "label": "後端設 `Access-Control-Allow-Origin: *`，前端 fetch 加 `credentials: \"include\"`"
+          },
+          {
+            "value": "b",
+            "label": "後端設 `Access-Control-Allow-Origin: https://example.com`，前端 fetch 加 `credentials: \"include\"`"
+          },
+          {
+            "value": "c",
+            "label": "後端設 `Access-Control-Allow-Origin: *`，前端 fetch 不用加 credentials"
+          },
+          {
+            "value": "d",
+            "label": "後端設 `Access-Control-Allow-Origin: https://example.com`，前端 fetch 加 `credentials: \"omit\"`"
+          }
+        ],
+        "answer": "b",
+        "explanation": "當使用 Credentials 時，`Access-Control-Allow-Origin` 必須指定具體的網域（不能用 `*`），且前端 fetch 要加 `credentials: \"include\"` 才能帶上 Cookie。選項 a 因為用了 `*` 會被瀏覽器擋掉。"
+      }
     },
     {
       "title": "Session vs JWT vs OAuth",
@@ -611,7 +818,30 @@
           "level": 2,
           "text": "Indie 建議"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的新創公司要做一個 Mobile App，需要讓使用者登入並呼叫自己的 API。同時未來想支援「用 Google 帳號登入」。在 Session、JWT、OAuth 三種機制中，最適合的組合是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 Session 儲存登入狀態，因為最簡單"
+          },
+          {
+            "value": "b",
+            "label": "用 JWT 做自己的認證，搭配 OAuth / OIDC 整合 Google 登入"
+          },
+          {
+            "value": "c",
+            "label": "只用 OAuth，因為 OAuth 可以做認證和授權"
+          },
+          {
+            "value": "d",
+            "label": "用 Session + OAuth 一起，避免漏掉功能"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確指出 Mobile + API 場景推薦 JWT（Stateless、跨服務、Mobile 友善），而「整合 Google / FB 登入」要用 OAuth + OIDC。選項 c 錯在 OAuth 只是授權不是認證；選項 a 和 d 都不適合 Mobile 場景（Session 跨域難、每 request 查 DB）。"
+      }
     },
     {
       "title": "Authentication vs Authorization",
@@ -676,7 +906,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "小明是一個網站的普通使用者，他登入帳號成功了。現在他想要刪除別人的文章。請問：登入成功屬於什麼檢查？刪除文章的權限檢查又屬於什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "登入成功是 Authentication，刪除文章的權限檢查是 Authorization"
+          },
+          {
+            "value": "b",
+            "label": "登入成功是 Authorization，刪除文章的權限檢查是 Authentication"
+          },
+          {
+            "value": "c",
+            "label": "兩個都是 Authentication"
+          },
+          {
+            "value": "d",
+            "label": "兩個都是 Authorization"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Authentication 是驗證「你是誰」（登入確認身分），Authorization 是檢查「你能做什麼」（確認是否有權限刪除）。登入成功證明小明身分，但不代表他能刪除別人的文章，需要額外的權限檢查。"
+      }
     },
     {
       "title": "Security Headers + CSP",
@@ -745,7 +998,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在 Express 專案中想快速設置安全 headers，應該用什麼方式最有效率？",
+        "options": [
+          {
+            "value": "a",
+            "label": "使用 helmet 套件，一行 app.use(helmet()) 就能設好大部分的安全 headers"
+          },
+          {
+            "value": "b",
+            "label": "手動逐個設置所有 Security Headers，這樣才能完全控制每個細節"
+          },
+          {
+            "value": "c",
+            "label": "只設置 Content-Security-Policy，其他 headers 不重要"
+          },
+          {
+            "value": "d",
+            "label": "使用 Cloudflare 一鍵啟用後，就不需要在程式碼中設置任何 headers"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調 helmet 能一行設好 80% 的防護，是最有效率的做法。選項 b 太費時、c 遺漏其他重要防護、d 混淆了 Cloudflare 是輔助工具而非替代方案。"
+      }
     },
     {
       "title": "Supply Chain：依賴安全",
@@ -817,7 +1093,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的專案用了 npm 套件，想要防止依賴被駭客惡意修改後偷偷更新版本害你中招。下列做法中，哪一個最有效？",
+        "options": [
+          {
+            "value": "a",
+            "label": "使用 npm audit 定期掃描漏洞"
+          },
+          {
+            "value": "b",
+            "label": "在 package.json 裡鎖死套件版本（例如 \"express\": \"4.18.2\"），並提交 package-lock.json"
+          },
+          {
+            "value": "c",
+            "label": "只安裝 GitHub stars 數最多的套件"
+          },
+          {
+            "value": "d",
+            "label": "用 Docker 隔離開發環境"
+          }
+        ],
+        "answer": "b",
+        "explanation": "鎖死版本 + lock file 能確保所有人裝到的套件版本完全一樣，就算原作者偷偷發布惡意新版本也不會自動更新到你的專案。audit 只能檢測已知漏洞、Docker 只是隔離環境、stars 多也無法防止 maintainer 帳號被駭。"
+      }
     },
     {
       "title": "Logging + Monitoring",
@@ -890,7 +1189,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的應用出現效能問題，需要快速追查是哪個 API 慢、哪個用戶受影響、整個請求流程經過哪些服務。下列做法中，最能幫助你有效追查的是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "在每個 log 記錄加上 request_id，搭配結構化 log（JSON 格式）和 distributed tracing，這樣整個請求流程一目瞭然"
+          },
+          {
+            "value": "b",
+            "label": "盡可能 log 更多資訊，包括使用者密碼、JWT token、信用卡號等敏感資料，這樣資料最完整"
+          },
+          {
+            "value": "c",
+            "label": "只監控 uptime 和 error rate，這兩個指標最重要，response time 可以不用看"
+          },
+          {
+            "value": "d",
+            "label": "使用免費的開源工具就夠了，不需要集中化的 log 管理平台"
+          }
+        ],
+        "answer": "a",
+        "explanation": "這課的核心是「結構化 log + request_id 串 distributed tracing」能讓你快速追查問題。選項 b 違反「不要 log 敏感資料」原則、選項 c 忽略 response time 監控、選項 d 在實務上會很難追查問題，只有 a 符合這課教的最佳實踐。"
+      }
     },
     {
       "title": "Pentest + Bug Bounty + 心法",
@@ -983,7 +1305,30 @@
           "level": 2,
           "text": "接案 / 職涯"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，如果你是獨立開發者（Indie），預算有限，想在上線前做好基本安全檢測，以下哪個組合最符合「簡易版」的建議？",
+        "options": [
+          {
+            "value": "a",
+            "label": "付費請商業 pentest 公司做完整檢測（NT$50k 以上）"
+          },
+          {
+            "value": "b",
+            "label": "使用 Cloudflare + Snyk + Sentry + OWASP ZAP + 手測 OWASP Top 10，月費不到 NT$500"
+          },
+          {
+            "value": "c",
+            "label": "只用 nuclei 自動掃 CVE，不需要其他工具"
+          },
+          {
+            "value": "d",
+            "label": "開設 Bug Bounty 計畫，讓白帽駭客找出所有漏洞"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確列出「Indie 簡易版」的 5 個步驟，總月費 <NT$500，包含 Cloudflare、Snyk、Sentry、OWASP ZAP 和手測。選項 a 是商業 pentest（適合大公司）、c 只用一個工具不完整、d 是 Bug Bounty（適合已上線的產品）。"
+      }
     },
     {
       "title": "社交工程攻擊",
@@ -1051,7 +1396,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，為什麼社交工程攻擊這麼危險？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為它直接攻擊人的信任和心理，而不是靠複雜的技術漏洞"
+          },
+          {
+            "value": "b",
+            "label": "因為駭客的技術水準遠高於公司的防護系統"
+          },
+          {
+            "value": "c",
+            "label": "因為員工永遠無法區分真假信件"
+          },
+          {
+            "value": "d",
+            "label": "因為防火牆和加密技術都無法防止"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調『人才是最弱的一環』，駭客利用欺騙、假冒身份等心理手法，讓員工自願交出密碼或資訊，而非攻擊技術層面。其他選項都過度絕對化或沒抓到社交工程的核心特點。"
+      }
     },
     {
       "title": "Zero Trust 架構",
@@ -1123,7 +1491,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "傳統的周邊安全（perimeter security）和 Zero Trust 最大的差別在哪裡？",
+        "options": [
+          {
+            "value": "a",
+            "label": "傳統只相信防火牆，Zero Trust 則完全不用防火牆"
+          },
+          {
+            "value": "b",
+            "label": "傳統認為進入公司網路後就可信任，Zero Trust 則是每次存取都要驗證"
+          },
+          {
+            "value": "c",
+            "label": "傳統使用密碼，Zero Trust 只能用生物辨識"
+          },
+          {
+            "value": "d",
+            "label": "傳統會監控內部流量，Zero Trust 完全不監控"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Zero Trust 的核心概念就是「沒有信任的網路」——即使在公司內部也不預設信任，而是每個 request 都要驗證。傳統則是以防火牆為界，進來就視為安全。其他選項都扭曲了兩者的差異。"
+      }
     },
     {
       "title": "WAF + DDoS 防護",
@@ -1191,7 +1582,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，Indie 開發者想快速防護網站，應該優先選擇什麼方案？",
+        "options": [
+          {
+            "value": "a",
+            "label": "立即購買 AWS Shield Advanced ($3k/月)，因為企業級防護最全面"
+          },
+          {
+            "value": "b",
+            "label": "套用 Cloudflare 免費 plan，同時開啟 Bot Fight Mode，這樣 5 分鐘內就能防護大部分攻擊"
+          },
+          {
+            "value": "c",
+            "label": "自己寫 custom WAF rules 擋 SQL injection 和 XSS，比廠商規則更客製化"
+          },
+          {
+            "value": "d",
+            "label": "只部署 DDoS 防護就夠了，因為大部分攻擊都是 L3/L4 層的 volumetric 攻擊"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確指出 Indie 配置推薦用 Cloudflare 免費 plan（含基礎 DDoS、CDN、Bot Fight Mode），5 分鐘快速啟動。選項 a 過於昂貴不適合 Indie，c 忽略 managed rules 優勢，d 忽視應用層攻擊威脅。"
+      }
     },
     {
       "title": "滲透測試 vs 紅隊",
@@ -1276,7 +1690,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "滲透測試和紅隊的主要差異在哪裡？",
+        "options": [
+          {
+            "value": "a",
+            "label": "滲透測試有時間限制、只測特定系統；紅隊模擬真實攻擊、沒有時間限制、範圍更廣（包括社交工程）"
+          },
+          {
+            "value": "b",
+            "label": "滲透測試用來破解密碼、紅隊用來掃描漏洞"
+          },
+          {
+            "value": "c",
+            "label": "滲透測試針對大公司、紅隊針對小公司"
+          },
+          {
+            "value": "d",
+            "label": "滲透測試需要 OSCP 認證、紅隊不需要認證"
+          }
+        ],
+        "answer": "a",
+        "explanation": "滲透測試是針對特定系統有範圍地找漏洞並出報告；紅隊則是更全面地模擬真實駭客攻擊，包括社交工程，目標是取得最高權限（皇冠寶石），不限時間。選項 b、c、d 都偏離課程重點或相反。"
+      }
     },
     {
       "title": "密鑰管理（KMS / Vault）",
@@ -1361,7 +1798,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的公司有個重要的資料庫密碼，下面哪種做法最符合密鑰管理的標準？",
+        "options": [
+          {
+            "value": "a",
+            "label": "把密碼寫在 .env 檔案裡，加入 .gitignore，只在本機開發用；正式環境改用 Vercel 或 Zeabur 的環境變數設定"
+          },
+          {
+            "value": "b",
+            "label": "把密碼寫在程式碼註解裡，這樣不會被 Git 追蹤"
+          },
+          {
+            "value": "c",
+            "label": "把密碼寫進去 Git commit，然後用 AWS Secrets Manager 管理，這樣就安全了"
+          },
+          {
+            "value": "d",
+            "label": "密碼可以共用一個 admin 帳號給整個團隊，在 Slack 傳送即可"
+          }
+        ],
+        "answer": "a",
+        "explanation": "標準做法是本機用 .env（gitignore 保護），正式環境用平台的環境變數或 Secrets Manager。選項 b 寫在註解一樣會洩漏、選項 c 不應該把密碼先 commit 進去、選項 d 共用密碼和用通訊軟體傳都是大禁忌。"
+      }
     },
     {
       "title": "GDPR / 個資法合規",
@@ -1465,7 +1925,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的網站收集了歐盟使用者的電子郵件和電話號碼，但實際上只需要電子郵件就能完成服務。根據 GDPR 的核心要求，這個做法違反了什麼原則？",
+        "options": [
+          {
+            "value": "a",
+            "label": "資料最小化原則——只應該收集必要的資料"
+          },
+          {
+            "value": "b",
+            "label": "透明原則——沒有在 Privacy Policy 說明"
+          },
+          {
+            "value": "c",
+            "label": "儲存限制原則——資料保存時間太長"
+          },
+          {
+            "value": "d",
+            "label": "完整性原則——沒有加密保護使用者資料"
+          }
+        ],
+        "answer": "a",
+        "explanation": "GDPR 的『資料最小化』要求只收集必要的資料，多收電話號碼但不使用，就違反了這個原則。其他選項雖然也是 GDPR 要求，但不是這個案例的核心問題。"
+      }
     },
     {
       "title": "Container 安全",
@@ -1566,7 +2049,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你公司要部署一個 Node.js 應用到 Kubernetes。以下哪個做法最符合 Container 安全的最小權限原則？",
+        "options": [
+          {
+            "value": "a",
+            "label": "在 Dockerfile 裡用 USER root 跑應用、因為這樣效能最好"
+          },
+          {
+            "value": "b",
+            "label": "建立一個非 root 用戶在 Dockerfile 裡、並在 K8s securityContext 設定 runAsNonRoot: true 和 allowPrivilegeEscalation: false"
+          },
+          {
+            "value": "c",
+            "label": "在 Dockerfile 裡用 ENV 存放資料庫密碼、這樣 container 啟動更快"
+          },
+          {
+            "value": "d",
+            "label": "使用 privileged: true 確保 container 有足夠權限處理各種情況"
+          }
+        ],
+        "answer": "b",
+        "explanation": "最小權限原則就是只給必要權限。選項 b 同時在 build 時（非 root user）和 runtime（securityContext 限制）雙重防護，才能真正隔離風險。其他選項都違反安全原則——a 和 d 給過度權限、c 把密碼寫進 image 是重大風險。"
+      }
     },
     {
       "title": "Web3 / Crypto 安全",
@@ -1675,7 +2181,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "為什麼 Reentrancy（重入）攻擊在 The DAO 事件中能偷走 $60M？",
+        "options": [
+          {
+            "value": "a",
+            "label": "智能合約先將錢轉出去，但還沒更新帳戶餘額前，攻擊者就重複呼叫提領函數，導致能多次領錢"
+          },
+          {
+            "value": "b",
+            "label": "攻擊者猜中了私鑰，所以可以任意轉移資金"
+          },
+          {
+            "value": "c",
+            "label": "The DAO 的 Oracle 被攻擊者操控，報出錯誤價格"
+          },
+          {
+            "value": "d",
+            "label": "攻擊者申請了一個 Flash Loan，借了大筆資金後沒有還"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Reentrancy 的核心是「順序錯誤」——先執行動作（轉帳）再改狀態（歸零帳戶），攻擊者在帳戶尚未歸零時重新進入，每次都看得到原本的餘額。b、c、d 都是其他不同類型的漏洞，不是 Reentrancy。"
+      }
     },
     {
       "title": "行動 App 安全",
@@ -1804,7 +2333,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，為什麼不應該把 API 密鑰直接寫在 App 程式碼裡？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為攻擊者可以通過反組譯來拆解 App 並取得密鑰"
+          },
+          {
+            "value": "b",
+            "label": "因為密鑰會被自動上傳到雲端而暴露"
+          },
+          {
+            "value": "c",
+            "label": "因為 iOS 和 Android 都禁止在 App 內存放密鑰"
+          },
+          {
+            "value": "d",
+            "label": "因為密鑰儲存在本機會被作業系統自動加密"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確說明攻擊者可以反組譯 App 找出密鑰，所以密鑰應該放在後端。選項 b、c、d 都是似是而非的說法——實際上沒有這些限制或保證。"
+      }
     },
     {
       "title": "資安事件 SOP + 心法總結",
@@ -1952,7 +2504,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "公司發現有駭客正在進行 DDoS 攻擊，導致網站間歇性無法使用。根據資安事件 SOP，在「止血（Contain）」這個步驟，應該優先做什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "立刻追查駭客來源、分析攻擊日誌找出漏洞根本原因"
+          },
+          {
+            "value": "b",
+            "label": "先看程式碼找出為什麼容易被 DDoS，然後修補漏洞上線"
+          },
+          {
+            "value": "c",
+            "label": "使用 Cloudflare 的 DDoS 防護、切流量或暫時下線受影響服務來停止出血"
+          },
+          {
+            "value": "d",
+            "label": "馬上通知所有用戶發生了 DDoS 攻擊，告訴他們該怎麼辦"
+          }
+        ],
+        "answer": "c",
+        "explanation": "止血（Contain）的核心目標是「先停止損害擴大」，比修復更重要。選項 a 和 b 都是調查和修復的工作（應在後續步驟），選項 d 是通報（最後的環節）。只有選項 c 是立即隔離受影響的流量，把傷害控制住，這就是止血的正確做法。"
+      }
     }
   ],
   "boss": {
@@ -1966,5 +2541,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "OWASP Top 10 是網頁應用最常見的 10 大資安風險清單，涵蓋注入攻擊、認證失效、敏感資料暴露等。",
+    "XSS 是駭客在網頁塞入惡意腳本竊取用戶資料，CSRF 是誘騙用戶在無意識下送出危險請求，防護方式各異。",
+    "密碼要用 bcrypt / argon2 雜湊、不能明文存；傳輸用 HTTPS / TLS 加密；Token 用 JWT 時要驗簽。",
+    "跨域請求要設定 CORS、Security Headers 和 CSP；登入頻率要限制避免暴力破解；依賴套件要定期更新。",
+    "資安是持續的過程，靠監控告警、滲透測試、事件回應 SOP 和全團隊的安全意識才能有效防護。"
+  ],
+  "faq": [
+    {
+      "q": "學完這章是不是就成為資安高手了？",
+      "a": "不是。這章是打底，讓你看懂常見漏洞、知道怎麼防。真正的資安高手需要持續實踐、跟著最新威脅演進、可能還要讀研究論文。"
+    },
+    {
+      "q": "我是前端工程師，需要學密鑰管理、滲透測試這些嗎？",
+      "a": "看你的工作範圍。前端主要防 XSS、CSRF、掌握 CORS / Security Headers；後端更要吃透認證、密碼存儲、SQL Injection 防護。都學一遍能讓你更懂全景，但優先度可以有差。"
+    },
+    {
+      "q": "為什麼要分 Authentication 和 Authorization？",
+      "a": "認證是「你是誰」（查證身分）、授權是「你能幹嘛」（決定權限）。兩個都要做對才能安全，其中一個失效都危險。"
+    }
+  ]
 }

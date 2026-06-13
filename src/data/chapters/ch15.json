@@ -95,7 +95,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，前端工程師為什麼需要學 DevOps？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為寫完 code 後，上線、監控、維護整條線都是工程師的責任，不是只有寫 code 就完事"
+          },
+          {
+            "value": "b",
+            "label": "因為 DevOps 工具很便宜，用 Vercel 和 GitHub Actions 可以省錢"
+          },
+          {
+            "value": "c",
+            "label": "因為公司規定前端一定要會部署網站"
+          },
+          {
+            "value": "d",
+            "label": "因為 DevOps 比寫 code 更重要，應該優先學"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程核心是「上線 = 工程師責任」，強調 DevOps 不是選修，而是從寫完 code、上線、監控、處理問題的整條營運鏈都要打通。這是 Senior 和 Junior 的分水嶺——不只會寫 code，還要會讓產品穩穩運轉。"
+      }
     },
     {
       "title": "Git 進階：Branch + PR + Conflict",
@@ -172,7 +195,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在開發新功能時，應該用什麼流程才符合 GitHub Flow 的做法？",
+        "options": [
+          {
+            "value": "a",
+            "label": "直接在 main 分支上寫 code，改完就 push 上去"
+          },
+          {
+            "value": "b",
+            "label": "從 main 開一條 feature branch、寫 code、推到遠端、開 PR 讓人審核再合併"
+          },
+          {
+            "value": "c",
+            "label": "開一條 develop branch，在上面寫 code，完成後自己合併到 main"
+          },
+          {
+            "value": "d",
+            "label": "開 feature / release / hotfix 三條分支，同時並行開發"
+          }
+        ],
+        "answer": "b",
+        "explanation": "GitHub Flow 的核心就是：開分支→寫 code→PR 審核→merge。選項 a 違反「main 永遠可上線」的原則；c 少了 PR 審核這個重要環節；d 是 Git Flow（更複雜的策略），不是 GitHub Flow。"
+      }
     },
     {
       "title": "GitHub Actions：CI/CD",
@@ -245,7 +291,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，GitHub Actions 中的 CI 和 CD 分別代表什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "CI 是每次 push 自動測試和建置；CD 是通過後自動上線"
+          },
+          {
+            "value": "b",
+            "label": "CI 是持續整合程式碼；CD 是持續刪除舊版本"
+          },
+          {
+            "value": "c",
+            "label": "CI 是定時檢查程式碼品質；CD 是手動部署到伺服器"
+          },
+          {
+            "value": "d",
+            "label": "CI 是快取 npm 套件；CD 是清除部署紀錄"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確定義 CI（Continuous Integration）是每 push 自動測試和 build，CD（Continuous Deployment）是通過測試後自動上線。其他選項都是似是而非的錯誤定義。"
+      }
     },
     {
       "title": "Vercel / Netlify / Cloudflare Pages",
@@ -338,7 +407,30 @@
           "level": 2,
           "text": "checklist"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "如果你要部署一個 Next.js 應用，又特別在乎全球速度和無頻寬限制，應該優先選哪個平台？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Vercel，因為是 Next.js 親爸、優化最好"
+          },
+          {
+            "value": "b",
+            "label": "Netlify，因為老牌社群最大、最穩定"
+          },
+          {
+            "value": "c",
+            "label": "Cloudflare Pages，因為有 300+ 城市 CDN 和無頻寬限制"
+          },
+          {
+            "value": "d",
+            "label": "GitHub Pages，因為免費又簡單"
+          }
+        ],
+        "answer": "c",
+        "explanation": "Vercel 雖然 Next.js 支援最強，但流量有費用；Cloudflare Pages 擁有全球最廣的 CDN（300+ 城市）、無頻寬限制、免費 500 builds/月，最適合既要速度又要省錢的情況。"
+      }
     },
     {
       "title": "環境變數 + Secrets",
@@ -435,7 +527,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在 Next.js 專案中需要存放 Stripe 的私密金鑰（不能讓客戶端看到）。下列做法哪個正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "存在 .env.local 裡設定為 STRIPE_SECRET_KEY=sk_test_...，並在 .gitignore 中加入 .env*"
+          },
+          {
+            "value": "b",
+            "label": "存在 .env.local 裡設定為 NEXT_PUBLIC_STRIPE_SECRET_KEY=sk_test_...，這樣所有地方都能用"
+          },
+          {
+            "value": "c",
+            "label": "直接寫在程式碼的常數裡，然後把檔案加入 .gitignore 就不會 commit"
+          },
+          {
+            "value": "d",
+            "label": "把 secret 放在 .env.example 裡，讓團隊成員看到實際的金鑰值再複製"
+          }
+        ],
+        "answer": "a",
+        "explanation": "私密金鑰要存在 .env.local（不要 NEXT_PUBLIC_ 前綴，那是給公開變數用的），並確保 .env* 被 .gitignore 排除。選項 b 會把 secret 暴露到客戶端；選項 c 和 d 都違反「不要在程式碼或範例檔中硬寫 secret」的原則。"
+      }
     },
     {
       "title": "Preview Deploy + Staging",
@@ -520,7 +635,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據 Preview Deploy + Staging 的流程，為什麼要把 Preview 環境連接到 Staging Database，而不是直接用 Production Database？",
+        "options": [
+          {
+            "value": "a",
+            "label": "為了節省成本，Staging Database 比較便宜"
+          },
+          {
+            "value": "b",
+            "label": "因為 Preview 是給設計師看的，不需要真實資料"
+          },
+          {
+            "value": "c",
+            "label": "為了保護 Production 資料安全，避免 PR 測試時不小心修改真實資料"
+          },
+          {
+            "value": "d",
+            "label": "Vercel 系統規定一定要這樣做"
+          }
+        ],
+        "answer": "c",
+        "explanation": "Preview 環境是臨時的測試環境，每個 PR 都會自動產生，如果連到 Production DB 會有資料汙染和安全風險。用 Staging DB 才能安全地測試功能，確保 Production 資料的完整性——這是『不影響 production』這個核心目的的實現方式。"
+      }
     },
     {
       "title": "Monitoring：Sentry + Better Stack",
@@ -617,7 +755,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，假設你是一個小型新創團隊，每個月的服務有 2000 個錯誤、需要監控 API 持續運作、也想看到使用者真實的網頁速度。下列哪個組合最適合你的「Indie 黃金監控方案」？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Sentry（錯誤）+ Better Stack Uptime（監控狀態）+ Better Stack Logtail（紀錄）+ Vercel Analytics（真實使用者速度）"
+          },
+          {
+            "value": "b",
+            "label": "Datadog（全包）+ Sentry + Better Stack，三個都裝以確保萬無一失"
+          },
+          {
+            "value": "c",
+            "label": "Sentry 就夠了，因為它有 Crash report、Performance monitoring 和 Session Replay 三大功能"
+          },
+          {
+            "value": "d",
+            "label": "自己寫 logging 程式 + 手動定時 ping 網站檢查，省錢不用付費服務"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確提出 Indie 黃金組合就是這四個工具，月費 0-500 元。選項 c 錯在 Sentry 主要是錯誤監控，不包含服務是否掛掉的 Uptime 監控；選項 b 和 d 都是過度或反向做法。"
+      }
     },
     {
       "title": "Feature Flags + A/B Testing",
@@ -706,7 +867,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你們團隊剛完成一個新的支付功能，想要先給 10% 的用戶試用，觀察有沒有問題，再慢慢擴大到 100%。下面哪個做法最符合 Feature Flags 的核心精神？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 Feature Flag 控制 rollout_percentage，先設定 10%，確認沒問題後再改成 50% 再改成 100%，整個過程不需要重新部署"
+          },
+          {
+            "value": "b",
+            "label": "開一個新的 git branch 寫新功能，等 10% 用戶驗證後再合併到 main，這樣最安全"
+          },
+          {
+            "value": "c",
+            "label": "先發佈到測試環境讓 10% 測試人員試用，通過後再發佈到正式環境給所有人"
+          },
+          {
+            "value": "d",
+            "label": "在程式碼裡寫 if 判斷，手動檢查用戶 ID 是否在白名單裡，符合才給他看新功能"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Feature Flag 的核心優勢就是不用重新部署，只要改後台的 rollout_percentage 參數就能控制釋出比例。選項 b 是舊的分支開發流程、c 是傳統環境發佈、d 則是最陽春的白名單做法，都沒有善用 Feature Flag 的便利性。"
+      }
     },
     {
       "title": "Production 部署 SOP",
@@ -799,7 +983,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程的 Production 部署 SOP，如果你在週五下午發現一個重大 bug，需要立刻修復上線，應該怎麼做？",
+        "options": [
+          {
+            "value": "a",
+            "label": "立刻開 hotfix branch、修好就馬上部署到 production，因為很急"
+          },
+          {
+            "value": "b",
+            "label": "開 hotfix branch、快速 review、部署，但改成週一早上執行，避開週五下午這個危險時段"
+          },
+          {
+            "value": "c",
+            "label": "等到下週二早上才處理，因為課程說週五下午不要部署"
+          },
+          {
+            "value": "d",
+            "label": "直接在 production database 改資料，比部署 code 快"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Hotfix 確實需要快速流程，但部署時機同樣重要——週五下午出事沒人改。正確做法是快速修+review，但選在流量低峰、有人值班的時段（週一早上）才部署。倉促在週五部署會讓問題更嚴重。"
+      }
     },
     {
       "title": "npm vs yarn vs pnpm vs bun",
@@ -856,7 +1063,30 @@
           "level": 2,
           "text": "切換成 pnpm"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "假設你現在有一個大型專案，需要頻繁安裝和更新許多依賴套件，同時想要省省磁碟空間。根據課程內容，哪個套件管理器最適合你？",
+        "options": [
+          {
+            "value": "a",
+            "label": "npm，因為它是 Node 內建，最安全可靠"
+          },
+          {
+            "value": "b",
+            "label": "pnpm，因為它速度快、磁碟省，特別適合大型專案"
+          },
+          {
+            "value": "c",
+            "label": "yarn，因為它是 Facebook 出的，生態最完整"
+          },
+          {
+            "value": "d",
+            "label": "bun，因為它是最新的工具，一定是最好的"
+          }
+        ],
+        "answer": "b",
+        "explanation": "根據課程比較表和推薦場景，pnpm 因為用 Symlink 共用依賴，磁碟省，速度又是 npm 的 2-3 倍，非常適合需要大量套件的大型專案。npm 雖然安全但磁碟浪費，bun 雖快但仍有相容問題，都不如 pnpm 在這個場景適合。"
+      }
     },
     {
       "title": "Branching 策略：GitHub Flow vs Git Flow",
@@ -900,7 +1130,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在一個 5 人新創團隊做獨立開發者工具，每天要部署新功能到線上。應該選用哪個 Branching 策略最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "GitHub Flow：從 main 開短期 branch、PR review 後直接 merge 回 main 並部署"
+          },
+          {
+            "value": "b",
+            "label": "Git Flow：分 main、develop、feature、release 等多層 branch、走完整流程才上線"
+          },
+          {
+            "value": "c",
+            "label": "Trunk-Based：所有人都直接 push 到 main、用 feature flag 控制功能開關"
+          },
+          {
+            "value": "d",
+            "label": "Long-lived branches：開長期分支保持各版本穩定、每週才合一次"
+          }
+        ],
+        "answer": "a",
+        "explanation": "GitHub Flow 最適合小型團隊與頻繁部署的場景。Git Flow 太複雜、適合大型多版本軟體；Trunk-Based 需要成熟 feature flag 系統；Long-lived branches 違反 branching 心法，會拖延上線時間。"
+      }
     },
     {
       "title": "Code Review 文化",
@@ -984,7 +1237,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在 Code Review 時發現同事的代碼有個問題：在 try/catch 裡把所有例外都吞掉了，但不同的錯誤應該有不同處理方式。你應該怎麼留言？",
+        "options": [
+          {
+            "value": "a",
+            "label": "直接說「這裡 error handling 有問題，改一下。」"
+          },
+          {
+            "value": "b",
+            "label": "先讚美這段邏輯清晰，指出問題在哪、為什麼要分開處理、怎麼改，最後給鼓勵"
+          },
+          {
+            "value": "c",
+            "label": "只在代碼下方標註「有問題」，讓對方自己猜是什麼意思"
+          },
+          {
+            "value": "d",
+            "label": "用 Suggest changes 直接修改代碼，不用寫解釋"
+          }
+        ],
+        "answer": "b",
+        "explanation": "好的 review 要用 sandwich pattern：先讚美、再指出具體問題和改進方向、最後鼓勵。這樣才是「教學 + 建立共識」而不是單純批評，也符合「什麼錯、為什麼錯、怎麼改」的三要素。"
+      }
     },
     {
       "title": "Semantic Versioning + Changelog",
@@ -1045,7 +1321,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的專案目前版本是 1.2.0，現在要刪掉一個舊 API 函數。請問下一個版本號應該是多少？",
+        "options": [
+          {
+            "value": "a",
+            "label": "1.2.1"
+          },
+          {
+            "value": "b",
+            "label": "1.3.0"
+          },
+          {
+            "value": "c",
+            "label": "2.0.0"
+          },
+          {
+            "value": "d",
+            "label": "1.2.0-rc.1"
+          }
+        ],
+        "answer": "c",
+        "explanation": "刪掉舊 API 是 breaking change（使用者的代碼會壞），必須動 MAJOR 版號。所以 1.2.0 → 2.0.0。1.2.1 只適合修 bug、1.3.0 只適合新功能。"
+      }
     },
     {
       "title": "Monorepo：Turborepo / Nx / pnpm workspace",
@@ -1126,7 +1425,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，什麼情況下 Monorepo 最適合使用？",
+        "options": [
+          {
+            "value": "a",
+            "label": "只有 1-2 個完全獨立的應用程式，互相不需要共用程式碼"
+          },
+          {
+            "value": "b",
+            "label": "有 3 個以上的應用程式，且它們之間有共用的 components 或 libraries"
+          },
+          {
+            "value": "c",
+            "label": "團隊規模小，不需要 CI/CD 加速"
+          },
+          {
+            "value": "d",
+            "label": "所有應用程式都用不同的技術棧和團隊，release cycle 完全不同"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確說明「< 3 個 app 不用 monorepo；≥ 3 個 + 共用 code = monorepo」。Monorepo 的核心價值是管理多個相關的 app，並讓它們共用程式碼（如 UI、config、DB schema），而不是為了管理完全獨立或團隊差異大的專案。"
+      }
     },
     {
       "title": "Code Quality 工具棧",
@@ -1187,7 +1509,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，下列哪個工具的責任配對是正確的？",
+        "options": [
+          {
+            "value": "a",
+            "label": "ESLint 負責自動格式化程式碼（如縮排、引號統一）"
+          },
+          {
+            "value": "b",
+            "label": "Prettier 負責找出邏輯錯誤和不一致的程式碼寫法"
+          },
+          {
+            "value": "c",
+            "label": "Husky + lint-staged 在 commit 前自動執行 ESLint 和 Prettier"
+          },
+          {
+            "value": "d",
+            "label": "TypeScript 的主要作用是在儲存檔案時自動排版程式碼"
+          }
+        ],
+        "answer": "c",
+        "explanation": "Husky + lint-staged 是 pre-commit hook，會在你 commit 之前自動攔截並執行 ESLint 修復和 Prettier 格式化。a 錯是因為 Prettier 才是格式化工具；b 錯是因為那是 ESLint 的工作；d 錯是因為 TypeScript 是型別檢查，不是自動排版。"
+      }
     },
     {
       "title": "Storybook：UI 元件開發 + 文件",
@@ -1256,7 +1601,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，Storybook 最主要解決的開發痛點是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "UI 元件要在 App 內某頁才看得到，改一個按鈕要點很多步才能驗證"
+          },
+          {
+            "value": "b",
+            "label": "npm 套件太多，安裝速度太慢"
+          },
+          {
+            "value": "c",
+            "label": "TypeScript 型別檢查太嚴格"
+          },
+          {
+            "value": "d",
+            "label": "設計師用的設計軟體和工程師用的程式碼無法同步"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程開頭明確列出「痛點」：元件要在 App 內才看得到、改 1 個 button 要點 5 步才能驗證。Storybook 就是為了解決這個問題，提供獨立的 component playground，讓開發者不用跑整個 App 也能快速開發和測試元件。"
+      }
     },
     {
       "title": "Documentation：README / 文件文化",
@@ -1320,7 +1688,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這堂課的內容，README 的核心目的是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "讓機器理解程式碼怎麼運作"
+          },
+          {
+            "value": "b",
+            "label": "讓人（包括未來的自己）能快速理解專案、知道怎麼用和怎麼修"
+          },
+          {
+            "value": "c",
+            "label": "取代所有的程式碼註解"
+          },
+          {
+            "value": "d",
+            "label": "記錄專案的所有技術細節和複雜演算法"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調『程式碼是給機器看的、文件是給人看的』，README 就像家電說明書，目的是讓別人或半年後的自己能快速上手和維護專案。選項 a 是程式碼的工作、c 和 d 都超出 README 的主要責任範圍。"
+      }
     },
     {
       "title": "Testing 完整策略",
@@ -1393,7 +1784,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據 Testing Pyramid 的策略，為什麼要讓 Unit Test 占最大比例（80%），而 E2E Test 只占少數（5%）？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 Unit Test 最容易寫，所以要寫最多"
+          },
+          {
+            "value": "b",
+            "label": "Unit Test 快速、便宜、容易找到 bug 根源；E2E Test 慢且昂貴，只用來驗證核心使用者旅程"
+          },
+          {
+            "value": "c",
+            "label": "因為 E2E Test 用 Playwright 執行，比 Vitest 效能差"
+          },
+          {
+            "value": "d",
+            "label": "Unit Test 不需要 mock，所以比 Integration Test 更重要"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Testing Pyramid 的核心概念是投資報酬率：Unit Test 執行快、成本低、能快速定位問題，適合大量撰寫；E2E Test 需要真實瀏覽器執行且慢速，應該只用在驗證核心使用者流程（Happy path），才是務實的測試策略。"
+      }
     },
     {
       "title": "Performance Budget",
@@ -1490,7 +1904,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，Performance Budget 的核心目的是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "在網站上線後定期測量速度，如果太慢就優化程式碼"
+          },
+          {
+            "value": "b",
+            "label": "預先設定速度和體積的上限，並用自動化工具把關，防止網站慢慢變肥"
+          },
+          {
+            "value": "c",
+            "label": "用 Lighthouse 測試工具來檢測網站的各項分數"
+          },
+          {
+            "value": "d",
+            "label": "選擇輕量級的套件庫，例如用 date-fns 取代 moment.js"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Performance Budget 的重點是「預先設定上限」並「自動檢查」，不是事後優化。課程強調「設了不執行 = 沒設」，必須用 Lighthouse CI 等工具自動把關，讓 PR 超標就退回，這樣才能防止網站漸進式衰退。"
+      }
     },
     {
       "title": "Accessibility（a11y）",
@@ -1575,7 +2012,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，下列哪個做法最能有效解決無障礙問題，同時投資報酬比最高？",
+        "options": [
+          {
+            "value": "a",
+            "label": "使用語意化 HTML（如 <button>、<nav>、<main>）而不是用 <div> 加 CSS 模擬"
+          },
+          {
+            "value": "b",
+            "label": "為所有網頁元素都加上 ARIA 屬性，確保完整的無障礙標籤"
+          },
+          {
+            "value": "c",
+            "label": "只在上線前才進行無障礙檢測和修正"
+          },
+          {
+            "value": "d",
+            "label": "使用 axe DevTools 自動測試就足夠，不需要手動測試"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確指出「語意化 HTML > ARIA（80% 解決）」且列為「必做（投資報酬比高）」的第一項。ARIA 應該只在 HTML 本身無法表達時才補強；自動測試只能抓 50%，剩下需要手動測；無障礙應該從 day 1 就做，不要後補。"
+      }
     },
     {
       "title": "SaaS 模板 + Boilerplate",
@@ -1671,7 +2131,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這堂課的內容，一個 indie 開發者第一次做 SaaS 產品時，買模板（Boilerplate）最主要的好處是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "省掉 1-3 個月重複開發 Auth、金流、Email 等基礎設施的時間，能快速上線找使用者"
+          },
+          {
+            "value": "b",
+            "label": "買一次模板後，之後所有 SaaS 產品都不用再花錢，永久可用"
+          },
+          {
+            "value": "c",
+            "label": "模板會自動幫你判斷商業策略，直接賺錢"
+          },
+          {
+            "value": "d",
+            "label": "可以完全不用學程式碼，純粹靠模板視覺化配置就能做出完整產品"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程核心是「用模板省時間」——特別強調認真做 SaaS 的人應該買模板，第一個月內衝上線找使用者，重點不在學完整細節。選項 b 錯在第 2 個 SaaS 後自己有模板、不買新的；c、d 都誇大不實。"
+      }
     },
     {
       "title": "Open Source 文化 + License",
@@ -1771,7 +2254,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在開發一個商業 SaaS 產品，想使用一個很好用的開源函式庫。下列哪個 License 的開源庫你用不了（或需要非常謹慎）？",
+        "options": [
+          {
+            "value": "a",
+            "label": "MIT License"
+          },
+          {
+            "value": "b",
+            "label": "Apache 2.0 License"
+          },
+          {
+            "value": "c",
+            "label": "AGPL License"
+          },
+          {
+            "value": "d",
+            "label": "BSD License"
+          }
+        ],
+        "answer": "c",
+        "explanation": "AGPL 要求如果你用它做 SaaS，你的整個 SaaS 也必須開源。對商業 SaaS 來說這不可行。MIT、Apache 2.0、BSD 都可以放心用在商業產品，只要保留版權聲明即可。"
+      }
     },
     {
       "title": "上線後維運：On-call + Postmortem",
@@ -1871,7 +2377,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "公司發生一次上線後服務掛機事件，事後要開 Postmortem 檢討會。下列哪一個提問方式最符合 Blameless 文化的精神？",
+        "options": [
+          {
+            "value": "a",
+            "label": "「這個 bug 是誰寫的？怎麼會這麼不小心？」"
+          },
+          {
+            "value": "b",
+            "label": "「為什麼 staging 環境沒有測到這個問題？系統怎麼設計才能預防？」"
+          },
+          {
+            "value": "c",
+            "label": "「負責部署的人為什麼沒檢查就直接上線？」"
+          },
+          {
+            "value": "d",
+            "label": "「誰應該被責罰才能避免下次犯同樣錯誤？」"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Blameless 文化的核心是「對事不對人」、把焦點放在「系統流程哪裡可以改進」，而不是追究「誰的責任」。選項 b 問的是怎麼改進測試流程和系統設計，這才是預防未來事件的正確方向；其他選項都是在究責個人，會讓團隊害怕分享問題。"
+      }
     }
   ],
   "boss": {
@@ -1885,5 +2414,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "DevOps 就是讓開發、測試、部署全自動化，減少人工出錯和重複工作",
+    "Git 分支和 PR 流程是團隊協作的基礎，Conflict 解不好就容易出事",
+    "CI/CD 靠 GitHub Actions 等工具自動跑測試和部署，推代碼就能上線",
+    "Vercel 和 Netlify 內建 Git 整合，提 PR 就自動預覽、合並就自動上線",
+    "環境變數、Feature Flag、Monitoring、Code Review 缺一不可，才能穩定運營"
+  ],
+  "faq": [
+    {
+      "q": "DevOps 是工作職位嗎？前端工程師一定要懂嗎？",
+      "a": "DevOps 是職位，但現在前端工程師也要懂這些工具，至少要會用 Vercel 和 GitHub Actions。大公司有專門 DevOps 團隊，小公司和新創就靠前端自己搞，學好這些技能會讓你更值錢。"
+    },
+    {
+      "q": "一定要用 Vercel 嗎？能不能自己用 Linux 伺服器部署？",
+      "a": "可以，但 Vercel 內建 Git 整合和自動部署會省很多事，新手用 Vercel 會更輕鬆；如果你公司有自己的伺服器或用 AWS，就要學怎麼用 GitHub Actions 部署到那些地方。"
+    },
+    {
+      "q": "Monorepo 和 Storybook 對小專案有必要嗎？",
+      "a": "都不是必需的，單個網站用傳統單一 Repo 就夠；但如果你管理多個前端專案或很多 UI 元件，Monorepo 和 Storybook 會讓你少做很多重複工作，早點用上其實不虧。"
+    }
+  ]
 }

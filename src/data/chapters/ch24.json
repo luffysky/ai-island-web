@@ -95,7 +95,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的 API 服務上線後，想要用最少的力氣監控系統健康度。根據 SRE 四黃金訊號的概念，以下哪個選項最能代表「系統運作正常」？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Response 時間正常、流量穩定、錯誤率低、資源使用率合理"
+          },
+          {
+            "value": "b",
+            "label": "CPU 使用率不超過 50%、RAM 空閒充足、磁碟容量夠大"
+          },
+          {
+            "value": "c",
+            "label": "註冊數持續成長、訂單量增加、營收達標"
+          },
+          {
+            "value": "d",
+            "label": "使用者反饋良好、網站美觀、功能齊全"
+          }
+        ],
+        "answer": "a",
+        "explanation": "四黃金訊號就是 Latency（延遲）、Traffic（流量）、Errors（錯誤率）、Saturation（資源飽和度），只要這四個都正常，系統健康度就掌握住了。選項 b 只看基礎設施層面、c 是業務指標、d 是主觀評價，都不是 SRE 監控的核心。"
+      }
     },
     {
       "title": "Sentry：錯誤追蹤",
@@ -176,7 +199,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的 Next.js 應用上線後，某位用戶遇到錯誤。你想知道他在出錯前點了哪些按鈕、輸入了什麼資料。Sentry 的哪個功能可以幫你看到這段過程的影片紀錄？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Session Replay"
+          },
+          {
+            "value": "b",
+            "label": "Performance Monitoring"
+          },
+          {
+            "value": "c",
+            "label": "Release Tracking"
+          },
+          {
+            "value": "d",
+            "label": "Source Map"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Session Replay 可以錄製用戶觸發錯誤前的操作影片（點擊、輸入、頁面瀏覽），是 debug 的神器。其他選項分別是監控效能、追蹤版本、還原程式碼，都無法看到用戶行為。"
+      }
     },
     {
       "title": "Logs：結構化 + 集中化",
@@ -273,7 +319,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，為什麼要把 log 改成 JSON 格式而不是用字串？",
+        "options": [
+          {
+            "value": "a",
+            "label": "JSON 格式檔案更小、可以省空間"
+          },
+          {
+            "value": "b",
+            "label": "JSON 格式易於 query 和 aggregate，方便後續搜尋和分析"
+          },
+          {
+            "value": "c",
+            "label": "JSON 格式執行速度比字串快"
+          },
+          {
+            "value": "d",
+            "label": "用 JSON 才能用 pino 套件寫 log"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程開頭明確對比字串 log『難 query、難 aggregate』，而 JSON log『易 filter、aggregate』。這是結構化 log 的核心目的——讓 log 變得可查詢、可分析，而不是只有人眼看懂的文字。"
+      }
     },
     {
       "title": "Web Vitals + RUM",
@@ -354,7 +423,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你用 Lighthouse 測試網站得到 LCP 1.8 秒，但 Vercel Speed Insights 顯示真實使用者的 p75 LCP 是 4.2 秒。為什麼會有這麼大的差異，你應該相信哪一個數據來優化？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Lighthouse 數據更準確，因為環境控制完善；應該相信 Lighthouse 的 1.8 秒"
+          },
+          {
+            "value": "b",
+            "label": "Speed Insights 反映真實使用者體驗，p75 的 4.2 秒才是你應該優化的目標"
+          },
+          {
+            "value": "c",
+            "label": "兩個數據都有問題，應該用 Sentry 的 session replay 重新檢測"
+          },
+          {
+            "value": "d",
+            "label": "Lighthouse 和 Speed Insights 測的是不同指標，不能比較"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Lab（Lighthouse）是模擬環境測試，環境固定但不代表真實；Field（RUM）才是真實使用者數據，會包含各種網速、裝置差異。優化應該對標 RUM 的真實數據（特別是 p75 百分位），而不是實驗室的理想數值。"
+      }
     },
     {
       "title": "Uptime + Alert + On-call",
@@ -463,7 +555,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的服務設定了 99.9% 的 SLO（內部目標），這代表一個月可以容許多少時間的停機？如果停機時間用完了，團隊應該優先做什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "約 43 分鐘停機時間；優先暫停新功能開發，focus 在穩定性上"
+          },
+          {
+            "value": "b",
+            "label": "約 43 分鐘停機時間；繼續開發新功能，等到真的掛才處理"
+          },
+          {
+            "value": "c",
+            "label": "約 4.3 分鐘停機時間；立刻裁減監控告警，減少誤報"
+          },
+          {
+            "value": "d",
+            "label": "約 430 分鐘停機時間；只要沒超過就不用擔心"
+          }
+        ],
+        "answer": "a",
+        "explanation": "99.9% SLO = 0.1% error budget = 一個月約 43 分鐘。當 error budget 用完時，應該暫停新功能開發並 focus 在穩定性，這就是 error budget 的概念——量化風險，指導優先順序。"
+      }
     },
     {
       "title": "Observability 三柱",
@@ -539,7 +654,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的 API 最近變得很慢，想要找出到底是哪個環節拖累了整個請求。你應該主要使用 Observability 三柱中的哪一個？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Logs（日誌）— 看每一行的事件記錄"
+          },
+          {
+            "value": "b",
+            "label": "Metrics（指標）— 監控系統整體的數字表現"
+          },
+          {
+            "value": "c",
+            "label": "Traces（追蹤）— 追蹤單一 request 跨服務的完整路徑"
+          },
+          {
+            "value": "d",
+            "label": "同時用三柱，但 Metrics 最重要"
+          }
+        ],
+        "answer": "c",
+        "explanation": "Traces 就是設計來看「一個 request 跑了什麼」、找出瓶頸在哪裡服務。Logs 是找錯誤內容、Metrics 是看整體數字，都看不出單筆請求的各環節耗時。"
+      }
     },
     {
       "title": "Sentry 完整實作",
@@ -620,7 +758,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "假設你的 Next.js app 有 bug，沒装 Sentry 和有裝 Sentry 最大的差別是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "有 Sentry 的話，bug 就不會發生"
+          },
+          {
+            "value": "b",
+            "label": "沒 Sentry 時 user 看到錯誤通常不會主動回報，你根本不知道有 bug；有 Sentry 時立刻 alert，還能看完整 stack trace、user 資訊、影響範圍"
+          },
+          {
+            "value": "c",
+            "label": "Sentry 只能看 error，看不到效能問題"
+          },
+          {
+            "value": "d",
+            "label": "Sentry 需要使用者手動上傳錯誤日誌才能運作"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Sentry 的核心價值就是自動捕捉錯誤、主動通知，讓你不再盲目等 user 回報。選項 a 錯誤（Sentry 不能防止 bug），c 錯誤（Performance Monitoring 也包含），d 錯誤（自動化的）。"
+      }
     },
     {
       "title": "Structured Logging",
@@ -709,7 +870,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "為什麼 Structured Logging 比傳統文字 log 更值得用？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 JSON 格式看起來比較專業和現代化"
+          },
+          {
+            "value": "b",
+            "label": "因為有欄位結構，可以用 SQL-like 查詢、自動製作 dashboard、方便後續分析"
+          },
+          {
+            "value": "c",
+            "label": "因為可以記錄更多資訊，檔案會變得更詳細"
+          },
+          {
+            "value": "d",
+            "label": "因為用 Pino 這個套件會自動保護所有敏感資訊"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Structured Logging 的核心價值就是結構化欄位化，讓 log 變成可查詢、可統計、可視覺化的資料；傳統文字 log 只能靠 grep 和 regex 笨搜。a 是表面理由、c 和 d 分別是錯誤認知（敏感資訊要主動 redact）。"
+      }
     },
     {
       "title": "Metrics + Dashboard",
@@ -810,7 +994,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的 API 服務最近變慢了，老闆問「到底慢在哪？」。根據這堂課的黃金信號，你應該先看哪個指標來診斷？",
+        "options": [
+          {
+            "value": "a",
+            "label": "平均 response time（平均延遲）"
+          },
+          {
+            "value": "b",
+            "label": "P95 / P99 延遲，搭配流量和錯誤率"
+          },
+          {
+            "value": "c",
+            "label": "CPU 和 Memory 使用率"
+          },
+          {
+            "value": "d",
+            "label": "今天新增用戶數"
+          }
+        ],
+        "answer": "b",
+        "explanation": "黃金信號包含 Latency、Traffic、Errors、Saturation，診斷慢的問題要同時看延遲（用 P95/P99 而非平均）、流量是否暴增、有沒有錯誤堆積、以及資源飽和度，才能判斷是網路、應用層、還是基礎設施的問題。單看 CPU 只是一個面向，業務指標無關系統效能。"
+      }
     },
     {
       "title": "Alert 文化：別 spam",
@@ -915,7 +1122,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "公司的 Slack #alerts 頻道每天有 200 則告警，結果大家都把通知關掉，真正發生重大故障時沒人發現。根據課程內容，要改善這個狀況，最應該先做什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "把所有告警都設成 P0 (Critical)，這樣大家會更認真看"
+          },
+          {
+            "value": "b",
+            "label": "檢查告警設定，確保只有「有人能立刻採取行動」的問題才發送告警，同時對重複告警做 deduplicate"
+          },
+          {
+            "value": "c",
+            "label": "換一個更貴的告警工具，像 PagerDuty，這樣系統會自動變好"
+          },
+          {
+            "value": "d",
+            "label": "增加 on-call 工程師的人數，讓更多人輪班看告警"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調 Alert Fatigue 的核心問題是「告警太多導致麻木」，解決方法是 (1) Actionable 原則——只對能採取行動的事發告警，(2) Aggregation——避免重複告警。選項 a 會讓問題更糟，c 只是工具不是根本原因，d 治標不治本。"
+      }
     }
   ],
   "boss": {
@@ -929,5 +1159,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "監控核心就是四黃金訊號：延遲、流量、錯誤、飽和度，缺一不可。",
+    "Sentry 是用來自動捕捉前後端例外和崩潰，省去手動追 trace 的麻煩。",
+    "結構化 logs 搭配集中化儲存（如 ELK），才能快速查詢和分析問題根源。",
+    "Observability 三柱是 metrics、logs、traces，三個都有才能真正看透系統。",
+    "告警要有策略（別狼來了），on-call 要有流程，才能健康地應對生產故障。"
+  ],
+  "faq": [
+    {
+      "q": "Sentry、Datadog、PostHog 到底誰做什麼？",
+      "a": "Sentry 專業抓錯誤和崩潰；Datadog 是全能型監控（包括基礎設施、APM、logs）；PostHog 專注產品分析和使用者行為。新創通常先用 Sentry，再按需求補 Datadog。"
+    },
+    {
+      "q": "我一個小團隊真的需要監控嗎？",
+      "a": "至少要有錯誤追蹤（Sentry 免費版夠用），不然線上出問題完全無頭緒。Logs 和 metrics 可以後來再加，但錯誤捕捉是最基本的保險。"
+    },
+    {
+      "q": "Structured Logging 和普通 log 差在哪？",
+      "a": "普通 log 是自由文本（「使用者登入失敗」），結構化 log 是 JSON 欄位（user_id、error_code、timestamp），讓你能真的查詢和聚合，而不是靠 grep 瞎找。"
+    }
+  ]
 }

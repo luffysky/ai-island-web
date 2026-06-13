@@ -64,7 +64,30 @@
           "level": 2,
           "text": "💡 選擇建議"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你現在要做一個需要大量處理文本的批次工作，同時預算很有限。根據課程內容，你應該選擇哪個模型？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Claude Opus 4.7，因為它的寫作品質最好"
+          },
+          {
+            "value": "b",
+            "label": "Claude Haiku 或 Gemini Flash，因為它們便宜又快"
+          },
+          {
+            "value": "c",
+            "label": "GPT-5，因為它是最新的旗艦模型"
+          },
+          {
+            "value": "d",
+            "label": "Gemini 2.5 Pro，因為它的 context 最長"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確指出大量處理/批次場景應該用 Haiku/Flash/GPT mini，而且列出的價格速算表顯示 Haiku 和 Flash 是最便宜的選項。Opus 和 GPT-5 雖然強大但對批次工作來說浪費錢；Context 長度在批次工作中不是優先考慮。"
+      }
     },
     {
       "id": "63.2",
@@ -230,7 +253,30 @@
           "level": 2,
           "text": "💡 進階心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "Prompt 工法中，「明確角色（Role）」和「一步一步想（Chain of Thought）」的主要差別是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "角色是告訴 AI 你是誰，Chain of Thought 是要求 AI 展示推理過程"
+          },
+          {
+            "value": "b",
+            "label": "角色只用在創作，Chain of Thought 只用在分析問題"
+          },
+          {
+            "value": "c",
+            "label": "角色會輸出 JSON，Chain of Thought 會輸出表格"
+          },
+          {
+            "value": "d",
+            "label": "角色是進階工法，Chain of Thought 是基礎工法"
+          }
+        ],
+        "answer": "a",
+        "explanation": "角色是在 Prompt 開頭設定 AI 的身份（如 SEO 專家），而 Chain of Thought 是要求 AI 逐步展示思考邏輯。兩者解決不同問題：角色提升回答品質，Chain of Thought 增加邏輯透明度。"
+      }
     },
     {
       "id": "63.3",
@@ -324,7 +370,30 @@
           "level": 2,
           "text": "💡 Tip"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "如果你要讓 Claude API 在回應時逐字輸出，而不是一次性給完整結果，應該用哪個方法？",
+        "options": [
+          {
+            "value": "a",
+            "label": "設定 stream: true 並使用 client.messages.stream()"
+          },
+          {
+            "value": "b",
+            "label": "調高 temperature 參數到 1.0"
+          },
+          {
+            "value": "c",
+            "label": "在 messages 中加入 system prompt"
+          },
+          {
+            "value": "d",
+            "label": "使用 tools 參數定義可用的工具"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Streaming 就是用來實現漸進式輸出的功能，透過監聽 content_block_delta 事件逐步接收文字。其他選項都是用來控制回應品質或功能，不能實現串流效果。"
+      }
     },
     {
       "id": "63.4",
@@ -426,7 +495,59 @@
           "level": 2,
           "text": "💡 Tip"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你有一份 500 頁的客戶手冊，想用 RAG 系統讓員工快速查詢。直接把整本手冊當成一個 chunk 放進 Vector DB，會遇到什麼主要問題？",
+        "options": [
+          {
+            "value": "a",
+            "label": "向量維度太高，embedding 模型無法處理"
+          },
+          {
+            "value": "b",
+            "label": "chunk 太大，模型吃不下內容，也難以精準計算相似度"
+          },
+          {
+            "value": "c",
+            "label": "Vector DB 會自動拆分，但會很慢"
+          },
+          {
+            "value": "d",
+            "label": "embedding 成本會變成五倍"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確提到『不能把整本書當一個 chunk、太大模型吃不下、相似度也算不準』。這是 Chunking 策略的核心原因——太大的 chunk 會導致 LLM context 溢出，同時相似度計算會不夠精準。其他選項都是常見的似是而非答案。"
+      }
     }
-  ]
+  ],
+  "outcomes": [
+    "查出各大 LLM 模型（GPT、Claude、Gemini）的成本、速度、強項，選對工具",
+    "套用 30 個實戰 Prompt 模板，快速寫出有效指令",
+    "讀懂 API 文件，調對參數（temperature、max_tokens 等），控制模型行為",
+    "理解 RAG、Embedding、Vector DB 這套工作流，知道怎麼串接外部知識",
+    "遇到 AI 工具選擇或用法問題時，能自己查表找答案"
+  ],
+  "summary": [
+    "GPT 系列快又全能但貴、Claude 長文本強、Gemini 便宜，選模型要看預算和任務",
+    "Prompt 工法有大白話法、結構化法、少樣本學習法，背幾個模板省時間",
+    "temperature 控溫度（低 = 穩定、高 = 創意）、max_tokens 限長度、top_p 控多樣性",
+    "RAG 是把外部文件轉成向量存進資料庫，問題來時先搜相關文檔再丟給 LLM 回答",
+    "API 速查表涵蓋參數預設值、限制、計費方式，遇到問題先翻這張"
+  ],
+  "faq": [
+    {
+      "q": "我該用哪個模型？",
+      "a": "看你的預算和任務。GPT-4 全能但最貴、Claude 擅長長文本、Gemini 最便宜，新手通常先試 GPT-3.5 或 Claude 免費版試手感。"
+    },
+    {
+      "q": "Prompt 工法那麼多，我要全背嗎？",
+      "a": "不用。先學 3-5 個最常用的（像結構化法、少樣本法），其他當查表用。遇到特定任務再翻出來套用。"
+    },
+    {
+      "q": "RAG 真的必要嗎？",
+      "a": "看你的用途。如果模型需要最新資料或你的專業文檔，RAG 才能解決；簡單問答可能用不到。"
+    }
+  ],
+  "status": "published"
 }

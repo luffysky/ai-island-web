@@ -24,7 +24,7 @@
       "title": "Kotlin vs Dart：兩大 Mobile 語言",
       "oneLineSummary": "Android 原生 vs Flutter 跨平台",
       "analogy": "寫 Mobile 必選一個。",
-      "content": "## Kotlin\n- Google 力推、Android 官方\n- 取代 Java\n- 跑 JVM、可寫後端（Ktor）\n- KMP（Kotlin Multiplatform）：寫一份跑 iOS / Android\n\n## Dart\n- Google 出\n- 主要給 Flutter\n- 跨平台（iOS / Android / Web / Desktop）\n- 學習曲線平\n\n## Kotlin vs Dart\n\n| 面向 | Kotlin | Dart |\n|---|---|---|\n| 主場 | Android 原生 | Flutter |\n| 跨平台 | KMP（新）| Flutter（成熟）|\n| 語言 | 現代、強型別 | 現代、強型別 |\n| 生態 | Java + Android | Flutter |\n| 工作 | Android 工程師 | Flutter 工程師 |\n| 學一個 | Android 深度 | 全平台廣度 |\n\n## Kotlin Sample\n```kotlin\ndata class User(val id: String, val name: String, val age: Int = 0)\n\nfun main() {\n    val users = listOf(\n        User(\"u1\", \"Alice\", 25),\n        User(\"u2\", \"Bob\", 30)\n    )\n    \n    val adults = users.filter { it.age >= 18 }\n        .sortedBy { it.name }\n        .map { it.name }\n    \n    println(adults)\n}\n\n// Coroutines（非同步）\nsuspend fun fetchUser(id: String): User {\n    delay(1000)\n    return User(id, \"Alice\", 25)\n}\n```\n\n## Dart Sample\n```dart\nclass User {\n  final String id;\n  final String name;\n  final int age;\n  \n  User(this.id, this.name, {this.age = 0});\n}\n\nvoid main() {\n  final users = [\n    User('u1', 'Alice', age: 25),\n    User('u2', 'Bob', age: 30),\n  ];\n  \n  final adults = users\n    .where((u) => u.age >= 18)\n    .map((u) => u.name)\n    .toList()\n    ..sort();\n  \n  print(adults);\n}\n\n// Async\nFuture<User> fetchUser(String id) async {\n  await Future.delayed(Duration(seconds: 1));\n  return User(id, 'Alice', age: 25);\n}\n```\n\n## Indie 選擇\n\n### 想做 Android 原生 / 進大公司\n- Kotlin\n\n### 想一份 code 跨 iOS / Android\n- Dart + Flutter\n\n### 想 cross-platform 但已會 React\n- React Native（不選這兩個）\n\n### 想全平台（Web + Mobile + Desktop）\n- Flutter\n\n## 心法\n- 同時學兩個浪費時間、選一個深入\n- RN（React Native）競爭力可能比這兩個強（已會 React）\n- Flutter 適合：愛 Google、想全平台、能 build 漂亮 UI\n- Kotlin 適合：進 Android team、做 native 原生\n\n**☕ 用人話講**\n\nKotlin vs Dart——兩大 Mobile 語言：**Android 原生（Kotlin）vs Flutter 跨平台（Dart）**。**一句話記住**：像道地的當地語言（Kotlin 做 Android）vs 萬用翻譯機（Dart / Flutter 一套跨平台）；看你要「最道地」還是「最省工」來選。\n",
+      "content": "## Kotlin vs Dart：兩大 Mobile 語言\n\n你現在面臨一個選擇：要學 Kotlin 還是 Dart？這不只是語言選擇，而是選擇走哪條職業路線。讓我們從實際情況出發，幫你理清。\n\n---\n\n## Kotlin：Android 的親生兒子\n\n### 背景故事\n\nKotlin 是 Google 在 2017 年宣佈為 Android 官方語言的現代程式語言。為什麼 Google 要搞新語言？因為 Java 太老、太冗長、有歷史包袱。Kotlin 跑在 JVM（Java Virtual Machine —— Java 程式的虛擬執行環境）上，這代表它能直接用 Java 的所有套件庫，同時語法乾淨得多。\n\n想像你家用了 30 年的廚房（Java），Google 說：「我幫你蓋個現代廚房（Kotlin），還能用你所有的舊廚具（Java 生態）。」\n\n### 核心優勢\n\n**1. Android 官方支持**  \n你學 Kotlin，等於直接走 Android 工程師的標準路。Google 官方文件、範例、工具都優先支持 Kotlin，不是「順便」支持。\n\n**2. 跑 JVM、可寫後端**  \nKotlin 不只能做 App——你還能用 Ktor（Kotlin 的後端框架）寫伺服器。同一個工程師可以寫 Android + 後端，公司特別喜歡。\n\n**3. KMP 多平台編譯**  \nKotlin Multiplatform（簡稱 KMP）是新興的跨平台技術。你寫一份商業邏輯（例如資料處理、加密），編譯成 iOS 和 Android 都能用。注意：它不像 Flutter 是「全新 UI 層」，KMP 是「共享程式邏輯」，UI 還是要各寫各的，所以對大公司友善，不適合 solo 開發者。\n\n### 程式碼風味\n\n📄 `User.kt`\n```kotlin\n// data class 自動產生 equals, hashCode, toString\ndata class User(\n    val id: String,\n    val name: String,\n    val age: Int = 0  // 預設值\n)\n\nfun main() {\n    val users = listOf(\n        User(\"u1\", \"Alice\", 25),\n        User(\"u2\", \"Bob\", 30),\n        User(\"u3\", \"Charlie\", 17)\n    )\n    \n    // 函數式寫法：filter -> map -> 打印\n    val adults = users\n        .filter { it.age >= 18 }\n        .sortedBy { it.name }\n        .map { it.name }\n    \n    println(adults)  // [Alice, Bob]\n}\n```\n\n看到 `{ it.age >= 18 }` 嗎？這種短短的匿名函式（lambda —— 沒有名字的函式）是 Kotlin 的招牌。很多小操作不用寫整個方法，一行搞定。\n\n**非同步的長相：**\n\n```kotlin\n// suspend 函式 = 可以被暫停和繼續\nsuspend fun fetchUser(id: String): User {\n    delay(1000)  // 等 1 秒（不會卡住整個 App）\n    return User(id, \"Alice\", 25)\n}\n\n// 呼叫地點\nfun loadUser() {\n    viewModelScope.launch {  // 在背景執行\n        val user = fetchUser(\"u1\")\n        updateUI(user)\n    }\n}\n```\n\nKotlin 的 Coroutines（協程 —— 輕量級的非同步工具）特別厲害，寫非同步程式碼看起來就像寫同步程式碼，大腦負擔少。\n\n---\n\n## Dart：Flutter 的媽媽\n\n### 背景故事\n\nDart 是 Google 在 2011 年發佈的語言，起初想要替代 JavaScript（網頁語言），後來沒成功。但 2018 年 Flutter 出現後，Dart 突然找到主場——**Flutter 只能用 Dart 寫**。\n\n想像你有個廠牌叫「飛鏢」（Dart），一開始沒什麼人用。後來 Google 推出了超厲害的飛鏢靶（Flutter），忽然飛鏢成為標配。\n\n### 核心優勢\n\n**1. Flutter 獨家語言**  \n如果你想用 Flutter（全平台漂亮 UI 框架），別無選擇，一定得學 Dart。這也是為什麼 Dart 最近工作機會爆增。\n\n**2. 真正的全平台**  \nDart + Flutter 可以一套 code 跑在：\n- Android\n- iOS\n- Web 瀏覽器\n- Windows / macOS / Linux 桌面\n\nKotlin KMP 做不了這個——KMP 只共享邏輯，UI 還是分開。\n\n**3. 學習曲線和緩**  \nDart 語法簡潔、邏輯直白，沒有 Kotlin 那麼多隱晦的函數式魔法。對初學者友善。\n\n**4. 熱重載（Hot Reload）超快**  \n你改一行 code，手機 App 在 1 秒內重新載入。不用重新編譯、不用重啟 App。開發速度飛快。\n\n### 程式碼風味\n\n📄 `main.dart`\n```dart\nclass User {\n  final String id;\n  final String name;\n  final int age;\n  \n  // 具名參數 —— 叫的時候要說清楚名字\n  User(\n    this.id,\n    this.name,\n    {this.age = 0}  // {} 代表選填、有預設值\n  );\n}\n\nvoid main() {\n  final users = [\n    User('u1', 'Alice', age: 25),\n    User('u2', 'Bob', age: 30),\n    User('u3', 'Charlie', age: 17),\n  ];\n  \n  // where (類似 filter) + map + 轉成 List\n  final adults = users\n      .where((u) => u.age >= 18)\n      .map((u) => u.name)\n      .toList()\n      ..sort();  // .. 是「連鎖呼叫」，直接在 list 上排序\n  \n  print(adults);  // [Alice, Bob]\n}\n```\n\n看起來比 Kotlin 更直白一點。沒有 `data class` 這麼聰明的自動工具，但也沒那麼魔法。\n\n**非同步的長相：**\n\n```dart\nFuture<User> fetchUser(String id) async {\n  await Future.delayed(Duration(seconds: 1));\n  return User(id, 'Alice', age: 25);\n}\n\n// 呼叫地點\nvoid loadUser() async {\n  final user = await fetchUser('u1');\n  updateUI(user);\n}\n```\n\nDart 的 `async/await` 寫法比 Kotlin 更傳統（很像 JavaScript、Python），但對很多人來說反而更好理解。\n\n---\n\n## 直接對決：怎麼選？\n\n| 面向 | Kotlin | Dart |\n|---|---|---|\n| **主場** | Android 原生 App | Flutter 全平台 |\n| **跨平台成熟度** | KMP（2023+ 還在進化）| Flutter（已成熟、久經戰場）|\n| **語法難度** | 現代、有點函數式魔法 | 現代、直白 |\n| **生態廣度** | Java + Android + Kotlin 套件 | Flutter 套件 + Dart |\n| **工作機會** | Android 工程師（大公司多）| Flutter 工程師（新創多） |\n| **學習投資** | 學好了能做 Android + 後端 | 學好了能做全平台 |\n| **開發速度** | 正常 | 超快（熱重載） |\n\n---\n\n## 實戰選擇指南\n\n### 情境 1：「我想進大公司 Android 團隊」\n→ **選 Kotlin**\n\n大企業（銀行、電信、電商平台）都有成熟的 Android 原生團隊，他們用 Kotlin。你掌握 Kotlin + Android Framework，進門檻低、薪水穩定。\n\n### 情境 2：「我想自己做一個跨平台 App、又快又省」\n→ **選 Dart + Flutter**\n\n一份 code 跑 iOS/Android，開發快（熱重載），UI 漂亮（Flutter 的設計優美）。Solo 開發者的最佳伴侶。\n\n### 情境 3：「我想做 Android 原生 + 後端」\n→ **選 Kotlin**\n\nKotlin 能寫 Ktor 後端。一人全棧、全用 Kotlin，公司特別喜歡這種多面手。\n\n### 情況 4：「我已經會 React / JavaScript，想快速做跨平台 App」\n→ **考慮 React Native**（不是這兩個）\n\n如果你的投資是 JavaScript 生態，React Native 讓你重用 React 知識。學 Kotlin 或 Dart 等於從零開始。\n\n### 情景 5：「我想全平台（Web + Mobile + Desktop）、UI 要漂亮」\n→ **選 Dart + Flutter**\n\nFlutter 跑 Web、桌面都很順。Kotlin 做不了 Web。\n\n---\n\n## 學習時間 vs 投資報酬\n\n**Kotlin 的投資**\n- 前 1~2 個月：學語言 + Android Framework —— 比較陡峭\n- 3 個月後：能寫簡單 App\n- 6 個月後：能獨立上線 Android 應用\n- 報酬：Android 工作多、薪水穩、進大公司機會高\n\n**Dart 的投資**\n- 前 3~4 週：學語言 —— 平緩\n- 1 個月後：結合 Flutter，已能寫完整 App\n- 2 個月後：能上線 iOS + Android 雙平台\n- 報酬：開發快、新創偏愛、全平台能力\n\n**最重要的心法**\n「不要同時學兩個」。團隊和深度打不起來。選一個，3~6 個月深入，不但學語言還要學生態、框架、最佳實踐。半途而廢最浪費時間。\n\n---\n\n## 秒速決策樹\n\n```\n我",
       "tip": {
         "type": "practical",
         "text": "已會 React → RN。從零開始 → Flutter。"
@@ -91,7 +91,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這堂課，如果你是獨立開發者，想要用一份程式碼同時支援 iOS 和 Android，但也希望未來能擴展到 Web 和桌面應用，應該選擇哪個技術組合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Kotlin + KMP，因為 Kotlin 是 Google 官方推薦"
+          },
+          {
+            "value": "b",
+            "label": "Dart + Flutter，因為 Flutter 已是成熟的跨平台方案，能覆蓋全平台"
+          },
+          {
+            "value": "c",
+            "label": "React Native，因為它的競爭力最強"
+          },
+          {
+            "value": "d",
+            "label": "同時學 Kotlin 和 Dart，這樣最靈活"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確指出想「全平台（Web + Mobile + Desktop）」應選 Flutter，而 Dart + Flutter 是成熟的跨平台方案；同時學兩個語言是浪費時間（心法提到）；React Native 則是給已會 React 的人的替代方案。"
+      }
     },
     {
       "title": "Kotlin + Android 開發",
@@ -168,7 +191,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在 Kotlin + Android 開發中，如果想要在 Composable 函式內保存狀態（例如計數器），應該使用什麼機制？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 remember 和 mutableStateOf 在 Composable 內直接管理狀態"
+          },
+          {
+            "value": "b",
+            "label": "所有狀態都必須放在 ViewModel 中，Composable 不能有狀態"
+          },
+          {
+            "value": "c",
+            "label": "用全域變數存放狀態，這樣在整個應用都能存取"
+          },
+          {
+            "value": "d",
+            "label": "用 Room 資料庫存放所有狀態，確保重新啟動後不會遺失"
+          }
+        ],
+        "answer": "a",
+        "explanation": "remember + mutableStateOf 是在 Composable 內管理簡單狀態的標準做法，狀態會跟著元件的生命周期。選項 b 過於絕對（簡單狀態就不需要 ViewModel），c 會造成記憶體外洩，d 則是用在需要持久化的資料。"
+      }
     },
     {
       "title": "Dart + Flutter 開發",
@@ -273,13 +319,36 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在 Flutter 中，如果你要讓一個計數器按鈕能夠更新顯示的數字，應該使用哪種 Widget？",
+        "options": [
+          {
+            "value": "a",
+            "label": "StatelessWidget，因為它可以保存狀態"
+          },
+          {
+            "value": "b",
+            "label": "StatefulWidget，因為它能夠保存和更新狀態"
+          },
+          {
+            "value": "c",
+            "label": "MaterialApp，因為它是所有 App 的基礎"
+          },
+          {
+            "value": "d",
+            "label": "Scaffold，因為它提供了按鈕功能"
+          }
+        ],
+        "answer": "b",
+        "explanation": "StatefulWidget 能夠保存可變的狀態（state），並透過 setState() 更新 UI。StatelessWidget 則無法保存狀態，只能顯示固定內容；MaterialApp 和 Scaffold 是容器元件，不負責狀態管理。"
+      }
     },
     {
       "title": "Kotlin 進階：Coroutines + Flow",
       "oneLineSummary": "Kotlin 並發 / async 神器",
       "analogy": "取代 callback hell + RxJava。",
-      "content": "## Coroutine 基礎\n\n### 啟動\n```kotlin\nimport kotlinx.coroutines.*\n\nfun main() = runBlocking {\n    launch {\n        delay(1000)\n        println(\"World\")\n    }\n    println(\"Hello\")\n}\n// 印：Hello, World（順序）\n```\n\n### Suspend\n```kotlin\nsuspend fun fetchUser(id: String): User {\n    delay(1000)  // 非阻塞\n    return User(...)\n}\n\n// 用\nval user = fetchUser(\"u123\")\n```\n\n### Scope\n```kotlin\n// GlobalScope（不建議）\nGlobalScope.launch { ... }\n\n// CoroutineScope（推薦）\nval scope = CoroutineScope(Dispatchers.IO)\nscope.launch { ... }\n\n// ViewModelScope（Android）\nviewModelScope.launch { ... }\n```\n\n## Flow（reactive stream）\n\n```kotlin\nfun userFlow(): Flow<User> = flow {\n    while (true) {\n        val user = fetchUser()\n        emit(user)\n        delay(5000)\n    }\n}\n\n// 收\nuserFlow().collect { user ->\n    println(user)\n}\n```\n\n### StateFlow（UI state）\n```kotlin\nclass UserViewModel : ViewModel() {\n    private val _user = MutableStateFlow<User?>(null)\n    val user: StateFlow<User?> = _user\n    \n    fun load(id: String) = viewModelScope.launch {\n        _user.value = api.getUser(id)\n    }\n}\n\n// Compose\nval user by viewModel.user.collectAsState()\n```\n\n### SharedFlow（events）\n```kotlin\nprivate val _events = MutableSharedFlow<String>()\nval events: SharedFlow<String> = _events\n\n// 發\n_events.emit(\"Login success\")\n```\n\n## Structured Concurrency\n\n### supervisorScope\n其中一個 fail 不影響其他：\n```kotlin\nsupervisorScope {\n    launch { task1() }\n    launch { task2() }  // task1 fail、task2 仍跑\n}\n```\n\n### withContext（切 thread）\n```kotlin\nsuspend fun loadData() = withContext(Dispatchers.IO) {\n    db.query(...)  // IO thread\n}\n```\n\n## 心法\n- Coroutine 取代 Thread / Callback\n- viewModelScope 自動 cancel\n- Flow > LiveData（現代）\n- StateFlow for UI、SharedFlow for events\n\n**☕ 用人話講**\n\nKotlin 進階：Coroutines + Flow——**Kotlin 的並發 / async 神器**。**一句話記住**：像 Kotlin 版的 async/await——Coroutines 讓非同步寫得很順、同時處理多工又不卡住畫面。\n",
+      "content": "## Kotlin 進階：Coroutines + Flow\n\n### 什麼是 Coroutine？為什麼需要它？\n\n**Coroutine（協程）—— 一種輕量級的「暫停 / 恢復」執行單位，不是真的線程**。\n\n想像你在餐廳排隊點餐。傳統「線程」方式，是每個人點完才能輪下一個（一個線程一直卡著）；**Coroutine 的方式**，是你先點餐、收到號碼牌就去等，餐廳可以同時幫別人點、做菜、出餐，輪到你時再把餐遞給你。結果是：同樣的人（工作），但不需要那麼多「店員」（線程）。\n\n**為什麼不用 Thread？**\n- Thread 很重、建立一個耗資源\n- 容易死鎖、難管理\n- Android 上主線程不能做 IO（網路、檔案），否則 ANR（應用無回應）\n\n**Coroutine 的好處：**\n- 超輕量，可開幾千個\n- 非阻塞（不會卡住線程）\n- 寫法像同步程式碼，讀起來順\n- 異常處理簡單\n\n---\n\n## Coroutine 核心觀念\n\n### 啟動（launch、async）\n\n最基礎的寫法用 `runBlocking`——它建立一個協程環境、執行完才退出：\n\n```kotlin\nimport kotlinx.coroutines.*\n\nfun main() = runBlocking {\n    // runBlocking 內這個括號，就是協程作用域\n    launch {\n        delay(1000)  // 暫停 1 秒，不卡線程\n        println(\"World\")\n    }\n    println(\"Hello\")\n}\n// 印出：Hello（先），然後 World（1秒後）\n```\n\n**`launch` 做什麼？** 啟動一個「背景工作」，不等它完成、立刻往下跑。\n\n**`delay` 做什麼？** suspend 函式——會暫停協程、但**不卡線程**。換個比喻：你按暫停鍵、切到別人，時間到自動恢復。\n\n如果你需要「等結果」，用 `async` + `await`：\n\n```kotlin\nfun main() = runBlocking {\n    val result = async {\n        delay(1000)\n        \"Done\"\n    }.await()  // 等他結束、拿結果\n    println(result)\n}\n// 印：Done（等 1秒）\n```\n\n---\n\n### Suspend function（暫停函式）\n\n**Suspend function—— 只能在協程或另一個 suspend 函式內呼叫的函式**。\n\n```kotlin\n// 只能在協程內呼叫\nsuspend fun fetchUser(id: String): User {\n    delay(1000)  // 網路延遲，模擬\n    return User(id = id, name = \"Alice\")\n}\n\n// 用法\nfun main() = runBlocking {\n    val user = fetchUser(\"u123\")  // 看起來很同步，但其實非同步\n    println(user.name)\n}\n```\n\n**為什麼要 `suspend`？** 它是個標記——告訴編譯器「這個函式可能卡很久，呼叫時要在協程裡」。編譯器會幫你插入「暫停點」，讓協程可以掛起、換別人執行。\n\n**常見誤會**：「suspend 就是睡眠」——**不對！** `delay()` 才是睡眠；suspend 只是「標記可暫停」。\n\n---\n\n### Scope（協程作用域）—— 生命週期管理\n\n**Scope—— 協程的「籃子」，籃子消滅，裡面的協程全部被 cancel**。\n\n#### 不建議：GlobalScope\n\n```kotlin\nGlobalScope.launch {\n    println(\"背景工作\")\n}\n// 用戶關 app，這個協程還在跑 → 浪費電、浪費流量、記憶體洩漏\n```\n\n**為什麼不建議？** 失控。你無法追蹤、無法取消，很容易變成幽靈工作。\n\n#### 推薦：CoroutineScope（手動建立）\n\n```kotlin\nclass UserRepository {\n    val scope = CoroutineScope(Dispatchers.IO)  // IO 線程\n    \n    fun fetchUser(id: String) {\n        scope.launch {\n            val user = api.getUser(id)\n            println(user)\n        }\n    }\n    \n    fun cleanup() {\n        scope.cancel()  // 清掃，所有工作停止\n    }\n}\n```\n\n#### 更推薦：viewModelScope（Android）\n\n如果你用 ViewModel，系統幫你管：\n\n```kotlin\nclass UserViewModel : ViewModel() {\n    fun loadUser(id: String) = viewModelScope.launch {\n        // ViewModel 銷毀時，自動 cancel\n        val user = api.getUser(id)\n        _userData.value = user\n    }\n}\n```\n\n**為什麼這樣好？** 使用者退出頁面 → ViewModel 銷毀 → 所有協程自動停止、不浪費資源。\n\n---\n\n### Dispatcher（選線程）\n\n**Dispatcher—— 告訴協程要在哪個線程跑**。\n\n```kotlin\nviewModelScope.launch(Dispatchers.Main) {\n    // 更新 UI（必須在 Main 線程）\n    textView.text = \"下載完\"\n}\n\nviewModelScope.launch(Dispatchers.IO) {\n    // 網路 / 檔案（IO 線程，不卡 UI）\n    val data = api.fetchData()\n}\n\nviewModelScope.launch(Dispatchers.Default) {\n    // 複雜計算（背景線程）\n    val result = expensiveCalculation()\n}\n```\n\n**或者用 `withContext` 動態切線程**：\n\n```kotlin\nsuspend fun loadAndParse(url: String): Data {\n    // 先在 IO 線程下載\n    val json = withContext(Dispatchers.IO) {\n        api.fetchJson(url)\n    }\n    // 回到原線程，解析\n    return parseJson(json)\n}\n```\n\n---\n\n## Flow（反應式串流）\n\n**Flow—— 持續發射值的串流，像是「自動更新的清單」**。\n\n### 基礎用法\n\n```kotlin\n// 定義 flow\nfun userFlow(): Flow<User> = flow {\n    while (true) {\n        val user = fetchUser()\n        emit(user)  // 發射一個值\n        delay(5000)  // 每 5 秒發一次\n    }\n}\n\n// 收聽\nfun main() = runBlocking {\n    userFlow().collect { user ->\n        println(\"收到：${user.name}\")\n    }\n}\n```\n\n**比喻**：像訂閱雜誌——雜誌社定期寄雜誌給你，你拿到就看。Flow 是「源源不絕」的雜誌。\n\n### Flow 的操作符（map、filter、catch）\n\n```kotlin\nuserFlow()\n    .filter { it.age > 18 }  // 只要成人\n    .map { it.name }  // 只要名字\n    .catch { e ->\n        println(\"錯誤：${e.message}\")\n    }\n    .collect { name ->\n        println(name)\n    }\n```\n\n---\n\n## StateFlow（UI 狀態）\n\n**StateFlow—— 只記住「最新值」的 Flow，常用來存 UI 狀態**。\n\n```kotlin\nclass UserViewModel : ViewModel() {\n    private val _userData = MutableStateFlow<User?>(null)\n    val userData: StateFlow<User?> = _userData\n    \n    fun loadUser(id: String) = viewModelScope.launch {\n        _userData.value = api.getUser(id)\n    }\n}\n\n// Compose 中用\n@Composable\nfun UserScreen(viewModel: UserViewModel) {\n    val user by viewModel.userData.collectAsState()\n    Text(user?.name ?: \"載入中...\")\n}\n```\n\n**StateFlow vs LiveData**：\n- StateFlow：現代、更靈活、可用 Flow 操作符\n- LiveData：舊式、但在某些情況下簡單\n\n---\n\n## SharedFlow（事件）\n\n**SharedFlow—— 發射事件給多個接收者，不記住值**。\n\n```kotlin\nclass EventBus {\n    private val _events = MutableSharedFlow<String>()\n    val events: SharedFlow<String> = _events\n    \n    suspend fun postEvent(msg: String) {\n        _events.emit(msg)\n    }\n}\n\n// 用法\nval bus = EventBus()\n\n// 接收\nviewModelScope.launch {\n    bus.events.collect { event ->\n        println(\"事件：$event\")\n    }\n}\n\n// 發出\nviewModelScope.launch {\n    bus.postEvent(\"使用者登入成功\")\n}\n```\n\n---\n\n## Structured Concurrency（結構化並發）\n\n### supervisorScope（容錯）\n\n```kotlin\nviewModelScope.launch {\n    supervisorScope {\n        val job1 = launch { task1() }  // 掛掉\n        val job2 = launch { task2() }  // 仍執行\n    }\n}\n```\n\n**差異**：\n- `supervisorScope`：其中一個失敗，不影響兄弟\n- 普通 `launch`：其中一個失敗，整個作用域取消\n\n---\n\n## 心法總結\n\n- **用 Coroutine 取代 Thread / Callback**——程式碼更簡潔\n- **一定要選對 Scope**——viewModelScope / lifecycleScope 自動清理\n- **Flow 是現代反應式的基石**——搭配 Compose 無敵\n- **StateFlow for UI state、SharedFlow for 事件**\n- **catch 要加**——不然崩潰無聲息\n\n---\n\n**☕ 用人話講**\n\nKotlin Coroutines 就是「非同步的聰明管家」。不用寫回呼地獄、不用手動開線程、寫得像同步程式碼但執行很非同步。Flow 是「自動推播系統」——源源不絕地給 UI 新資料。搭起來就是現代 Android app 的標配：ViewModel + viewModelScope + StateFlow + Compose——簡潔、高效、不容易爆炸。",
       "tip": {
         "type": "practical",
         "text": "Kotlin Coroutine + Flow = Android 現代寫法。"
@@ -346,7 +415,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在寫一個 Android App，需要從 API 拿使用者資料後更新 UI，並且在 Activity 關閉時自動停止該任務。下列哪個做法最合適？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 GlobalScope.launch 啟動 Coroutine，這樣可以在全域管理所有非同步任務"
+          },
+          {
+            "value": "b",
+            "label": "在 ViewModel 裡用 viewModelScope.launch 執行任務，存資料到 StateFlow 供 UI 訂閱"
+          },
+          {
+            "value": "c",
+            "label": "用傳統 Thread 搭配回調函式，這樣最穩定不容易出錯"
+          },
+          {
+            "value": "d",
+            "label": "直接在 main thread 呼叫 fetchUser()，使用 delay() 等待結果就不會卡畫面"
+          }
+        ],
+        "answer": "b",
+        "explanation": "viewModelScope 會自動在 ViewModel 銷毀時取消任務，避免記憶體洩漏；StateFlow 適合存 UI 狀態並讓 Compose 訂閱。GlobalScope 不建議（無自動清理）、Thread 已過時、直接呼叫會卡 UI（除非有 suspend 才是非阻塞）。"
+      }
     },
     {
       "title": "Jetpack Compose 完整心法",
@@ -419,7 +511,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在 Jetpack Compose 中，當你想在多個 Composable 之間共享和管理狀態時，最推薦的做法是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "在每個需要狀態的 Composable 內部各自用 remember 建立獨立的 mutableStateOf"
+          },
+          {
+            "value": "b",
+            "label": "使用 ViewModel 搭配 StateFlow，在 Composable 中用 collectAsState() 訂閱狀態變化"
+          },
+          {
+            "value": "c",
+            "label": "直接在 Composable 的參數中傳遞 MutableState 物件"
+          },
+          {
+            "value": "d",
+            "label": "把所有狀態都存在全域變數，讓所有 Composable 共享存取"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調 ViewModel + StateFlow + collectAsState 是黃金組合，用來管理和共享複雜的應用狀態。而 remember 只適合單一 Composable 的本地狀態，全域變數和直接傳遞 MutableState 都不是最佳實踐。"
+      }
     },
     {
       "title": "Dart 進階 + Flutter 心法",
@@ -500,7 +615,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在 Flutter 中，如果你想要在應用程式裡管理一個計數器的狀態，讓多個 Widget 可以共享和監聽這個計數值的變化，應該使用什麼方案最合適？",
+        "options": [
+          {
+            "value": "a",
+            "label": "使用 Riverpod 的 StateProvider，在 ConsumerWidget 中用 ref.watch() 監聽狀態變化"
+          },
+          {
+            "value": "b",
+            "label": "在每個需要計數的 Widget 中各自宣告 int count 變數，各自管理各自的計數"
+          },
+          {
+            "value": "c",
+            "label": "使用 late 修飾符宣告計數器變數，確保初始化後才能使用"
+          },
+          {
+            "value": "d",
+            "label": "使用 Null safety 的可空型別 int? count，在需要時檢查是否為 null"
+          }
+        ],
+        "answer": "a",
+        "explanation": "這堂課推薦 Riverpod 作為現代的狀態管理方案，StateProvider 用來管理簡單的狀態，ConsumerWidget 搭配 ref.watch() 可以自動監聽狀態變化並重新構建。其他選項要嘛是各自為政（無法共享），要嘛把 Null safety 和 late 當成狀態管理工具（完全是不同的概念）。"
+      }
     }
   ],
   "boss": {
@@ -514,5 +652,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "Kotlin 靠 null safety 和簡潔語法搶佔 Android 市場，Dart 為 Flutter 單一語言跨平台而生",
+    "Android 開發要理解四大元件和生命週期，Activity 是手機上的「一個畫面」",
+    "Flutter 用 Widget 樹層層堆疊介面，一份程式碼同時跑在 iOS 和 Android",
+    "Coroutines 讓你寫非同步程式碼跟寫同步一樣直覺，Flow 是 Kotlin 的資料流管道",
+    "Jetpack Compose 和 Flutter 都是宣告式 UI，拋棄複雜的 XML 或 XML 改用程式碼描述畫面"
+  ],
+  "faq": [
+    {
+      "q": "學 Kotlin / Dart 一定要裝 Android Studio 或 VS Code 嗎？",
+      "a": "不一定。Kotlin 可以在 online IDE 裡跑，Dart 也有線上編譯器。但真的要開發 Android / Flutter 應用，裝開發工具會方便很多，因為要用模擬器或測試工具。"
+    },
+    {
+      "q": "我沒學過 Java，直接學 Kotlin 可以嗎？",
+      "a": "可以。Kotlin 設計得比 Java 簡潔，新手直接上手不會太難。但如果你未來要維護別人的 Android 老專案，遲早會碰到 Java，不過不用現在學。"
+    },
+    {
+      "q": "Kotlin for Android 和 Flutter 我應該選哪個學？",
+      "a": "想只開發 Android、深入系統功能就學 Kotlin；想一份程式碼跑雙平台、快速做出成品就學 Flutter。兩個都學最完整，但時間有限先挑一個。"
+    }
+  ]
 }

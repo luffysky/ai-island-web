@@ -79,7 +79,30 @@
           "level": 3,
           "text": "為什麼這節重要"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在新聞上聽到「公司導入 AI 技術」，但不確定具體指什麼。根據 AI / ML / DL / GenAI 的層級關係，下列哪個敘述最能幫助你判斷對方真正在講什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "直接問對方是不是用了 ChatGPT，因為現在講 AI 通常就是指 GenAI"
+          },
+          {
+            "value": "b",
+            "label": "追問具體應用場景，因為「AI」是最廣的概念，可能是規則引擎、也可能是生成式 AI"
+          },
+          {
+            "value": "c",
+            "label": "確認他們有沒有用神經網路，因為 AI 就是用神經網路實現的"
+          },
+          {
+            "value": "d",
+            "label": "詢問資料量有沒有百萬級以上，因為只有資料夠大才能稱為 AI"
+          }
+        ],
+        "answer": "b",
+        "explanation": "AI 是最廣的概念，包含規則引擎、決策樹、圖搜尋等非 ML 方案，也包含 GenAI。課程強調「聽客戶說『AI』時不會被話術」，就是要靠追問具體場景來釐清對方指的是俄羅斯娃娃的哪一層。選項 a 太武斷（不一定是 GenAI），c 錯誤（AI 不一定用神經網路），d 錯誤（規則引擎也是 AI）。"
+      }
     },
     {
       "id": "46.2",
@@ -140,7 +163,30 @@
           "level": 3,
           "text": "怎麼判斷一個 AI 應用屬於哪類？"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，如果你要訓練一個 AI 模型來判斷一張照片裡有沒有貓，你應該用哪一類機器學習方法？",
+        "options": [
+          {
+            "value": "a",
+            "label": "監督式學習——需要大量已標籤的貓咪照片（有的標「有貓」、有的標「沒貓」）"
+          },
+          {
+            "value": "b",
+            "label": "非監督式學習——給機器很多照片，讓它自己找出「有貓」和「沒貓」的規律"
+          },
+          {
+            "value": "c",
+            "label": "增強式學習——機器試著判斷有沒有貓，判斷對就給獎勵、錯就給懲罰"
+          },
+          {
+            "value": "d",
+            "label": "三種方法都要用，才能訓練出最好的模型"
+          }
+        ],
+        "answer": "a",
+        "explanation": "影像分類（判斷照片內容）是課程明確舉的監督式學習例子，因為我們有「輸入（照片）和正確答案（有沒有貓）的配對資料」。非監督式沒有答案標籤，增強式是試錯獲獎勵，都不適合這個任務。"
+      }
     },
     {
       "id": "46.3",
@@ -205,7 +251,30 @@
           "level": 3,
           "text": "學 AI 不用學數學嗎？"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，為什麼神經網路需要啟動函式（Activation Function）？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為啟動函式能加入非線性，讓多層網路能學到複雜的模式，而不是只等於一層"
+          },
+          {
+            "value": "b",
+            "label": "因為啟動函式能加快訓練速度，讓反向傳播計算更快"
+          },
+          {
+            "value": "c",
+            "label": "因為啟動函式能自動調整權重，不需要梯度下降"
+          },
+          {
+            "value": "d",
+            "label": "因為啟動函式能讓輸出值保持在 0 到 1 之間，方便解讀機率"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確提到：沒有啟動函式的話，多層神經網路「等於一層」（線性的線性還是線性），啟動函式才能加入非線性讓網路學複雜模式。b 選項是速度問題（超出課程範圍）、c 選項誤解函式功能、d 選項只是某些啟動函式的特性而非核心原因。"
+      }
     },
     {
       "id": "46.4",
@@ -282,7 +351,30 @@
           "level": 3,
           "text": "為什麼這節重要"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "為什麼 Transformer 中的 Attention 機制比 RNN/LSTM 更能處理長句子中「相距遠的字詞關聯」？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 Attention 讓每個字可以直接看所有其他字、計算相關度，不受距離限制"
+          },
+          {
+            "value": "b",
+            "label": "因為 Attention 使用了更多層的神經網路、參數量比 RNN 大很多"
+          },
+          {
+            "value": "c",
+            "label": "因為 Attention 能雙向處理、所以字序不重要、自動找到關聯"
+          },
+          {
+            "value": "d",
+            "label": "因為 Attention 用 GPU 平行運算、速度快所以記憶力變好"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Attention 的核心就是讓每個字透過 Query-Key-Value 機制直接與句子中所有字比較相關度，第 1 個字可以直接跟第 1000 個字相連，沒有距離衰減；RNN/LSTM 必須順序讀，導致遠距離的字資訊會逐漸消失（梯度消失）。其他選項混淆了速度、層數、雙向性等，但都不是 Attention 解決長距離關聯的真正原因。"
+      }
     },
     {
       "id": "46.5",
@@ -347,7 +439,30 @@
           "level": 3,
           "text": "LLM 的真實局限"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，LLM（大型語言模型）的核心運作原理是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "透過理解文字意思，直接生成完整的答案"
+          },
+          {
+            "value": "b",
+            "label": "一個超大型的『猜下一個字機器』，透過預測機率最高的下一個 token 來逐字產生輸出"
+          },
+          {
+            "value": "c",
+            "label": "將使用者的問題轉換成程式碼，然後執行程式取得結果"
+          },
+          {
+            "value": "d",
+            "label": "儲存所有訓練資料的內容，根據關鍵字直接查詢並回傳相關文本"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確指出 LLM 本質是『超大型猜下一個字機器』——透過 Tokenize、Embedding、Transformer 運算產生機率分布，選擇機率最高的 token，然後迴圈重複直到完成。這就是 ChatGPT 革命的全部。"
+      }
     },
     {
       "id": "46.6",
@@ -387,7 +502,30 @@
           "level": 3,
           "text": "2026 怎麼選的真實建議"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，2026 年 LLM 的最佳使用策略是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "選擇一家最強的廠商（如 OpenAI），所有任務都用它，這樣最穩定"
+          },
+          {
+            "value": "b",
+            "label": "依照不同任務選擇不同模型來路由，例如程式碼用 Claude、推理用 o3、長文用 Gemini，可以節省 30-70% 成本"
+          },
+          {
+            "value": "c",
+            "label": "永遠用最便宜的模型（Gemini Flash），因為便宜就是最划算"
+          },
+          {
+            "value": "d",
+            "label": "只用開源模型自架，這樣不用付費也不用擔心當機"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程核心心法就是『沒有人只用一家、最佳策略是依任務路由』——不同模型各有冠軍領域，透過任務路由可以兼顧性能和成本。其他選項都違反了這個核心觀念，要嘛過度依賴單一廠商，要嘛忽視了能力差異。"
+      }
     },
     {
       "id": "46.7",
@@ -452,7 +590,30 @@
           "level": 3,
           "text": "監控成本的最佳實踐"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你有一份 50 頁的技術文件（約 50k tokens），想用 Claude Sonnet 摘要成 500 字。關於這次 API 呼叫的成本，下列何者最接近？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Input 成本遠高於 output，因為文件很長"
+          },
+          {
+            "value": "b",
+            "label": "Output 成本遠高於 input，因為摘要的字數價格更貴"
+          },
+          {
+            "value": "c",
+            "label": "兩者成本差不多，因為 token 數量接近"
+          },
+          {
+            "value": "d",
+            "label": "無法估算，因為不知道摘要會用幾個 token"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Input 是 50k tokens × $3/M，output 摘要只約 1k tokens × $15/M。雖然 output 的單位價格高，但 input 的總量（50k）遠大於 output（1k），所以 input 成本遠高。"
+      }
     },
     {
       "id": "46.8",
@@ -476,7 +637,30 @@
           "level": 3,
           "text": "5 個基本原則"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，為什麼「你越精確、AI 越精確」是 Prompt Engineering 的核心心法？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 AI 無法理解模糊的指令，所以精確的 prompt 才能引導 AI 給出你真正需要的答案"
+          },
+          {
+            "value": "b",
+            "label": "因為精確的 prompt 會使用更多 token，讓 AI 有更多資訊去思考"
+          },
+          {
+            "value": "c",
+            "label": "因為只有精確的 prompt 才能讓 AI 使用 Chain-of-Thought 進行推理"
+          },
+          {
+            "value": "d",
+            "label": "因為精確度越高，AI 生成的文字就越長、越詳細"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調「模糊 prompt = 模糊答案」，核心概念是：AI 會自己「想」，但如果 prompt 不精確，AI 想出來的答案未必是你要的。只有給 AI 明確的語言、框架、行為要求，才能得到精確的結果。"
+      }
     },
     {
       "id": "46.9",
@@ -540,7 +724,30 @@
           "level": 3,
           "text": "2026 推理模型：內建 CoT"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在寫一個 prompt 讓 AI 幫忙分析客戶評論的情緒。評論內容複雜、包含反諷和領域術語。你想要 AI 的準確率最高，應該怎麼做？",
+        "options": [
+          {
+            "value": "a",
+            "label": "直接問 AI「請分析這些評論的情緒」，不給範例，因為 LLM 很聰明應該能理解"
+          },
+          {
+            "value": "b",
+            "label": "給 AI 3-5 個包含反諷和領域術語的情緒分析範例，用 XML 標籤清楚分隔範例和實際輸入"
+          },
+          {
+            "value": "c",
+            "label": "只給 AI 一個很完美的範例，這樣最高效、不浪費 token"
+          },
+          {
+            "value": "d",
+            "label": "給 AI 10 個以上的範例，讓 AI 學得越全面越好"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Few-shot 是最強的技巧，2-5 個多樣性範例（包含 edge case 如反諷）最佳；用 XML 分隔能清楚告訴 AI 哪裡是範例、哪裡是真正的輸入。選項 a 是 zero-shot 效果差、c 的單一範例不夠多樣、d 太多浪費 token。"
+      }
     },
     {
       "id": "46.10",
@@ -601,7 +808,30 @@
           "level": 3,
           "text": "安全考量"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，LLM 要能夠查天氣、寄信或執行其他動作，最主要的原因是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 LLM 本身只會生文字，無法直接連接外界系統或 API"
+          },
+          {
+            "value": "b",
+            "label": "因為使用者不想要 LLM 直接回答問題"
+          },
+          {
+            "value": "c",
+            "label": "因為 Tool Use 可以讓 LLM 生成更長的文字回應"
+          },
+          {
+            "value": "d",
+            "label": "因為所有的 LLM 模型都必須使用 Tool Use 才能運作"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確指出『LLM 本身只會生文字』，所以需要 Tool Use 來讓它呼叫外界的 API、資料庫或執行動作。Tool Use 是將 LLM 從『會講話的玩具』變成『能做事的助手』的關鍵。"
+      }
     },
     {
       "id": "46.11",
@@ -646,7 +876,30 @@
           "level": 3,
           "text": "常見場景"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你用傳統方法（只在 prompt 裡寫「請回 JSON」）讓 LLM 輸出框架列表，為什麼會遇到維護問題？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 LLM 每次回傳的格式不一樣（有時多了 markdown、有時少括號、有時混入解釋文字），你的程式碼要寫一堆容錯邏輯"
+          },
+          {
+            "value": "b",
+            "label": "因為 JSON 格式本身太複雜，LLM 的 token 不夠用"
+          },
+          {
+            "value": "c",
+            "label": "因為 prompt 寫得不夠清楚，只要把範例寫更詳細就能完全解決"
+          },
+          {
+            "value": "d",
+            "label": "因為傳統方法無法支援中文，只有結構化輸出才行"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程核心就是指出傳統 prompt 做法讓 LLM 每次回傳格式不穩定（版本 1-5 各不相同），導致你的程式碼維護困難。結構化輸出（JSON Mode / Pydantic）則強制保證 schema，完全解決這個痛點。"
+      }
     },
     {
       "id": "46.12",
@@ -707,7 +960,30 @@
           "level": 3,
           "text": "2026 推薦 stack"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "為什麼在 AI 應用中串流（Streaming）能讓使用者感覺比較快？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 LLM 本來就是一個 token 一個 token 產生的，串流是邊產邊送，不用等全部完成才顯示"
+          },
+          {
+            "value": "b",
+            "label": "因為串流使用了更快的伺服器，可以加速 AI 模型的運算速度"
+          },
+          {
+            "value": "c",
+            "label": "因為串流會壓縮文字內容，所以傳輸更快"
+          },
+          {
+            "value": "d",
+            "label": "因為串流不需要接收完整回應，只顯示前面一部分就結束"
+          }
+        ],
+        "answer": "a",
+        "explanation": "串流的核心優勢是利用 LLM 本身產生內容的方式（逐 token 產生），邊產邊送給使用者看，而不是等全部完成。這樣使用者 1 秒後就能看到內容開始出現，體感大幅改善。選項 b、c、d 都是對串流原理的誤解。"
+      }
     },
     {
       "id": "46.13",
@@ -743,7 +1019,30 @@
           "level": 3,
           "text": "Chunking 策略（關鍵設計）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你公司有一份內部員工手冊，裡面記載著請假規定、薪資政策等資訊。你想讓 AI 助手能夠回答員工關於公司規定的問題，但這些資訊不在 ChatGPT 的訓練資料裡。下列哪個方案最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 RAG：先把員工手冊切段 → 轉 embedding → 存向量資料庫；使用者提問時先搜尋相關段落 → 再讓 LLM 根據找到的內容回答"
+          },
+          {
+            "value": "b",
+            "label": "直接把整份員工手冊（10MB）貼進 ChatGPT 的 prompt，讓它讀完再回答問題"
+          },
+          {
+            "value": "c",
+            "label": "花錢重新訓練 ChatGPT，讓它學會你公司的員工手冊內容"
+          },
+          {
+            "value": "d",
+            "label": "告訴使用者這不在 ChatGPT 的知識範圍內，建議他們自己查手冊"
+          }
+        ],
+        "answer": "a",
+        "explanation": "RAG 的核心就是解決『LLM 不知道你的私有資料』問題。選項 a 是標準的 RAG 流程（切段→embedding→向量搜尋→生成）。選項 b 受 context 限制；選項 c 比 RAG 貴 10 倍；選項 d 根本沒解決問題。"
+      }
     },
     {
       "id": "46.14",
@@ -808,7 +1107,30 @@
           "level": 3,
           "text": "2026 建議"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "假設你有一個商品推薦系統，使用 Embedding 來找相似商品。用戶搜尋「能喝的黑色液體」，系統應該怎樣透過 Embedding 找到相關商品？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用關鍵字搜尋「黑色液體」，只能找到明確標記這些字的商品"
+          },
+          {
+            "value": "b",
+            "label": "把使用者查詢變成向量，計算跟各商品 Embedding 的相似度，找語意相近的商品（如咖啡、可樂、醬油）"
+          },
+          {
+            "value": "c",
+            "label": "只能搜尋中文商品，英文的產品無法找到"
+          },
+          {
+            "value": "d",
+            "label": "需要用 Cosine Similarity 計算後，維度越高的 Embedding 結果一定越準確"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Embedding 的核心就是把「意思變成數字」，透過計算向量距離來衡量語意相似度，所以「能喝的黑色液體」這種概念性描述，Embedding 能找到語意相近的商品。a 是舊的關鍵字搜尋、c 錯誤（Embedding 跨語言）、d 夸大了（維度高只是略微提升精度，1024-1536 維已足夠）。"
+      }
     },
     {
       "id": "46.15",
@@ -869,7 +1191,30 @@
           "level": 3,
           "text": "索引演算法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你現在在做一個新的 AI 應用專案，需要存放 embedding 並快速搜尋相似內容。假設預計會有 50 萬筆向量資料，你應該選擇哪個方案最合適？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用普通 PostgreSQL 的 SQL 計算 cosine 相似度，省錢又簡單"
+          },
+          {
+            "value": "b",
+            "label": "用 pgvector（PostgreSQL extension），既免費又夠快，適合這個規模"
+          },
+          {
+            "value": "c",
+            "label": "立即上 Pinecone，因為一定要用 SaaS 才能做向量搜尋"
+          },
+          {
+            "value": "d",
+            "label": "用 Chroma，因為它是最新最強的向量資料庫"
+          }
+        ],
+        "answer": "b",
+        "explanation": "50 萬筆向量用 pgvector 搭 HNSW 索引可以在 50ms 內完成搜尋，免費且夠快；普通 SQL 會很慢（秒級以上）；Pinecone 適合更大規模（億級以上）且有預算時；Chroma 主要用於本機開發或試水階段。"
+      }
     },
     {
       "id": "46.16",
@@ -934,7 +1279,30 @@
           "level": 3,
           "text": "2026 Agent 趨勢"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你有一個 AI Agent 要完成「寫一篇 3000 字的市場分析文章」，這是一個複雜、多步驟的任務。根據課程內容，用 ReAct 還是 Plan-Execute 架構更適合？為什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 ReAct，因為它邊想邊做、快速反應，對長文章最有效"
+          },
+          {
+            "value": "b",
+            "label": "用 Plan-Execute，因為任務複雜且步驟多（10+），需要先列全局計畫再執行"
+          },
+          {
+            "value": "c",
+            "label": "兩個都一樣好，取決於用什麼 LLM 模型"
+          },
+          {
+            "value": "d",
+            "label": "用 Multi-Agent，把任務分給 researcher、writer、editor 各司其職"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Plan-Execute 適合任務複雜、有明確目標、步驟多（10+）的情況，寫長文章就是典型例子。ReAct 只適合 3-5 步的探索型任務。選項 d 雖然也合理，但課程強調的是「ReAct vs Plan-Execute 的選擇」，不是必須用 Multi-Agent。"
+      }
     },
     {
       "id": "46.17",
@@ -991,7 +1359,30 @@
           "level": 3,
           "text": "2026 建議"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "LangChain 在 2026 年的主要優勢和限制分別是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "優勢是生態大、prototype 快，但缺點是框架太大太抽象，生產級可能需要重寫"
+          },
+          {
+            "value": "b",
+            "label": "優勢是完全免費開源，缺點是只能用 OpenAI 的模型"
+          },
+          {
+            "value": "c",
+            "label": "優勢是自動處理所有 AI 複雜性，缺點是必須學會 LangGraph 才能用"
+          },
+          {
+            "value": "d",
+            "label": "優勢是比 Vercel AI SDK 快 10 倍，缺點是不支援向量資料庫"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程在開頭明確指出『LangChain 適合「生態大 + prototype 快」、生產級可考慮重寫』，並建議新專案優先 Vercel AI SDK。其他選項都是課程沒有提及或與事實不符的說法。"
+      }
     },
     {
       "id": "46.18",
@@ -1052,7 +1443,30 @@
           "level": 3,
           "text": "2026 TS 開發者建議"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，如果你用 Next.js 開發 AI 應用，目前想從 OpenAI 改用 Anthropic 的模型，使用 Vercel AI SDK 時最少要改幾行程式碼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "1 行——只改 import 的 provider 或 model() 參數就行"
+          },
+          {
+            "value": "b",
+            "label": "3-5 行——需要改 import、改函數呼叫、改設定"
+          },
+          {
+            "value": "c",
+            "label": "10 行以上——要重寫整個串流邏輯"
+          },
+          {
+            "value": "d",
+            "label": "無法改——兩個模型架構差異太大，必須用不同的 SDK"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調 Vercel AI SDK 的跨模型抽象能力，範例顯示只要改一行（`model: anthropic()` 或 `model: openai()`），其他邏輯完全不動。這正是它的核心優勢——模型切換極簡。"
+      }
     },
     {
       "id": "46.19",
@@ -1117,7 +1531,30 @@
           "level": 3,
           "text": "2026 建議"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，LlamaIndex 相比 LangChain 在做 RAG 時最大的優勢是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "LlamaIndex 能處理更多種類的 LLM provider"
+          },
+          {
+            "value": "b",
+            "label": "用更少的程式碼完成 RAG，並內建 RAG 專用的各種工具和策略"
+          },
+          {
+            "value": "c",
+            "label": "LlamaIndex 支援的資料來源比 LangChain 多很多倍"
+          },
+          {
+            "value": "d",
+            "label": "LlamaIndex 的 Agent 功能比 LangChain 更強大"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確指出 LlamaIndex 專做 RAG、用 3 行程式碼搞定 LangChain 需要 30 行的事，核心優勢是把 chunking/embedding/retrieval/synthesis 全包，內建各種 retrieval 策略。其他選項都不是主要優勢。"
+      }
     },
     {
       "id": "46.20",
@@ -1169,7 +1606,30 @@
           "level": 3,
           "text": "什麼時候別 Fine-tune"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你公司有 3 千篇產品文件，需要讓 AI 客服能回答客戶問題。目前還在測試階段，規則可能常改。應該選哪個方案？",
+        "options": [
+          {
+            "value": "a",
+            "label": "直接 Fine-tune，一次訓練就解決"
+          },
+          {
+            "value": "b",
+            "label": "先用 Prompt + Few-shot，不夠再試 RAG"
+          },
+          {
+            "value": "c",
+            "label": "用 RAG 搭配 Fine-tune，效果最好"
+          },
+          {
+            "value": "d",
+            "label": "只用 Prompt 塞所有文件進去"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程主要路徑是 Prompt → Few-shot → RAG → Fine-tune，因為還在測試階段規則常改，Fine-tune 重訓費時又貴。3 千篇文件適合 RAG，但先從低成本的 Prompt 試起，不夠才升級，這樣最符合黃金路徑。"
+      }
     },
     {
       "id": "46.21",
@@ -1230,7 +1690,30 @@
           "level": 3,
           "text": "個人開發者實戰"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "如果你想在自己的筆電上跑開源大模型，不想付 API 錢，也想保護資料隱私，下面三個工具中，最適合「個人開發者快速上手」的是哪個？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Ollama——安裝簡單、OpenAI 相容 API、本機跑、免費"
+          },
+          {
+            "value": "b",
+            "label": "vLLM——高效能推論、適合企業生產級部署、需要多 GPU"
+          },
+          {
+            "value": "c",
+            "label": "llama.cpp——必須手動編譯 C++ 代碼、最適合新手學習"
+          },
+          {
+            "value": "d",
+            "label": "直接用 Hugging Face Transformers——官方庫最穩定、速度最快"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確說 Ollama 是「最簡單、推薦個人」，只需 5 行指令就能跑、API 也跟 OpenAI 相容。vLLM 是企業級、llama.cpp 需要編譯、Transformers 不在這課的三大方案中。"
+      }
     },
     {
       "id": "46.22",
@@ -1275,7 +1758,30 @@
           "level": 3,
           "text": "真實案例：成本優化"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "一個 indie hacker 的產品月收 $5000，但 LLM API 費就花了 $4000。如果他想把毛利從 20% 提升到 80%，根據課程內容，最有效的成本控制策略應該是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "使用多模型路由，讓 80% 的簡單問題用便宜模型（如 Gemini Flash）、只有 20% 複雜問題用旗艦模型"
+          },
+          {
+            "value": "b",
+            "label": "把所有使用者都強制改用開源模型，完全停用付費 API"
+          },
+          {
+            "value": "c",
+            "label": "縮短 System Prompt，讓每次 API call 的 token 數量減半"
+          },
+          {
+            "value": "d",
+            "label": "要求所有使用者用 Batch API 批次提交問題，等待 24 小時才回覆"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確指出「多模型路由」可省 50-70%，且實例展示 80% 場景用便宜模型、20% 用貴模型就能從 20% 毛利變 80%。其他選項雖然也是成本優化方法，但沒有像路由那樣既能大幅省成本又能維持使用體驗的平衡。"
+      }
     },
     {
       "id": "46.23",
@@ -1336,7 +1842,30 @@
           "level": 3,
           "text": "2026 即時對話"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，2026年AI發展的核心趨勢是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "所有主流LLM已經支援多模態（圖片+文字），並整合STT/TTS/影片/音樂等完整功能"
+          },
+          {
+            "value": "b",
+            "label": "文字模型會被圖片生成模型完全取代，不再需要處理文本"
+          },
+          {
+            "value": "c",
+            "label": "只有OpenAI和Google能做出多模態AI，其他公司無法跟進"
+          },
+          {
+            "value": "d",
+            "label": "語音和影片功能還不成熟，企業應該繼續只用純文字LLM"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程開頭明確指出「2026真相」：所有主流LLM已多模態（圖+文），加上STT/TTS/影片/音樂構成完整AI棧。其他選項都違反課程核心論述——並非取代，而是整合；並非只有少數公司，而是主流都支援。"
+      }
     },
     {
       "id": "46.24",
@@ -1401,7 +1930,30 @@
           "level": 3,
           "text": "常見坑"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你改了一個 prompt，覺得應該會讓 AI 回答更好。但實際上沒有 Eval 系統的情況下，你怎麼知道改了到底有沒有變好？",
+        "options": [
+          {
+            "value": "a",
+            "label": "靠直覺和感覺，改了就是有改進"
+          },
+          {
+            "value": "b",
+            "label": "需要建立測試集、跑 Eval 來量化比較新舊版本的差異"
+          },
+          {
+            "value": "c",
+            "label": "只要問一兩個朋友覺得哪個好就可以了"
+          },
+          {
+            "value": "d",
+            "label": "改完之後直接上 production，用真實使用者反饋來判斷"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程的核心就是說沒 Eval 的 AI 產品 = 賭博，改 prompt 後「直覺覺得應該更好」可能實際 regression。正確做法是準備測試 case、跑 Eval 系統（code-based、LLM-as-Judge 或 human eval）來量化比較新舊版本的分數差異。"
+      }
     },
     {
       "id": "46.25",
@@ -1445,7 +1997,30 @@
           "level": 3,
           "text": "indie hacker 該關注什麼？"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在開發一個 AI 客服工具，想用 OpenAI API 處理客戶輸入的敏感資訊（如信用卡號碼）。根據課程內容，你應該採取什麼做法？",
+        "options": [
+          {
+            "value": "a",
+            "label": "直接把客戶輸入傳給 OpenAI API，他們會自動過濾敏感資訊"
+          },
+          {
+            "value": "b",
+            "label": "選擇 OpenAI Enterprise 或 Zero Data Retention 方案，並在傳送前用 Presidio 等工具過濾 PII"
+          },
+          {
+            "value": "c",
+            "label": "使用免費的 API 服務，因為費用更低且隱私保護相同"
+          },
+          {
+            "value": "d",
+            "label": "只要在用戶界面上告訴使用者「不要輸入敏感資訊」就可以了"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調隱私保護的多層防守：要選擇有隱私保障的 API 方案（OpenAI Enterprise/ZDR），同時主動過濾使用者輸入的敏感資訊（PII）。直接傳輸敏感資料會有洩漏風險，光靠告知也不夠。"
+      }
     }
   ],
   "boss": {
@@ -1459,5 +2034,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "AI、ML、DL、GenAI 是層層深入的概念，生成式 AI 是深度學習的一種應用。",
+    "Transformer 靠 Attention 機制讓模型看懂長文本的上下文，是 GPT 等 LLM 的基礎架構。",
+    "LLM 本質上是預測下一個 Token 的超大型機率模型，不是真的「理解」而是高度擬合。",
+    "RAG 是把外部資料庫和 LLM 結合，讓 AI 回答它沒被訓練過的資訊，比微調更靈活便宜。",
+    "Prompt Engineering、Function Calling、結構化輸出是讓 LLM 在實務上用得好用的核心技巧。"
+  ],
+  "faq": [
+    {
+      "q": "我不會數學，能學懂 Transformer 和 Attention 嗎？",
+      "a": "可以的。這章重點不是推導公式，而是用直覺和圖解讓你看懂原理，知道「Attention 在做什麼」就夠實作。深度數學是選修，不是必修。"
+    },
+    {
+      "q": "RAG、微調、Prompt 三個都能改善 AI 回答，我怎麼知道用哪個？",
+      "a": "簡單判斷：Prompt 最快最便宜先試，資料量大或要改變風格才考慮微調，需要外部實時資料就用 RAG。課程會詳細比較三者的優缺點和成本。"
+    },
+    {
+      "q": "學完這章我能自己建個 AI 應用嗎？",
+      "a": "能的。章節包含 LangChain、LangGraph、Vercel AI SDK 等實作框架和完整示例，你會有能力組裝一個簡單但完整的 RAG 系統或 AI Agent。"
+    }
+  ]
 }

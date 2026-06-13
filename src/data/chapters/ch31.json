@@ -72,7 +72,30 @@
           "level": 3,
           "text": "2026 vs 2015 Node"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "Node.js 和瀏覽器 JavaScript 最大的差別是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Node.js 可以讀寫檔案、開 server，瀏覽器 JS 因為 sandbox 限制不能；但兩者都是相同的 JavaScript 語言"
+          },
+          {
+            "value": "b",
+            "label": "Node.js 用的是完全不同的編程語言，瀏覽器 JS 才是真正的 JavaScript"
+          },
+          {
+            "value": "c",
+            "label": "Node.js 能存取 DOM、window、document，瀏覽器 JS 則沒有這些"
+          },
+          {
+            "value": "d",
+            "label": "Node.js 比瀏覽器 JS 快 10 倍，所以後端務必要用 Node"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Node.js 把 V8 引擎搬到伺服器上，語法仍是 JavaScript，但 API 不同。Node 有檔案系統（fs）、HTTP 模組等系統資源，瀏覽器 JS 則有 DOM / window 但被 sandbox 限制，這正是兩者設計差異的核心。"
+      }
     },
     {
       "id": "31.2",
@@ -133,7 +156,30 @@
           "level": 3,
           "text": "常見坑"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "為什麼課程建議用 fnm 或 nvm 這類版本管理工具，而不是直接從官網下載 Node 來安裝？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為直接安裝會很慢，版本管理工具可以加快下載速度"
+          },
+          {
+            "value": "b",
+            "label": "因為不同專案可能需要不同 Node 版本，版本管理工具可以快速切換，避免重複安裝的麻煩"
+          },
+          {
+            "value": "c",
+            "label": "因為官網下載的 Node 品質不穩定，容易出 bug"
+          },
+          {
+            "value": "d",
+            "label": "因為直接安裝會佔用太多硬碟空間"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程開頭就說『Node 版本更新快、不同專案要不同版本』，這正是版本管理工具的核心價值—讓你輕鬆在多個版本間切換。直接安裝的話，換版本就很痛苦。"
+      }
     },
     {
       "id": "31.3",
@@ -198,7 +244,30 @@
           "level": 3,
           "text": "內建 .env 載入（20.6+）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想用 Node 內建 API 開一個 server，當有人訪問 `/` 時顯示「Hello」、訪問 `/about` 時顯示「About Page」、其他路由回傳 404。下面哪個做法正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 http.createServer() 拿到 req 和 res，根據 req.url 判斷路由，用 res.writeHead() 設定狀態碼和標頭，最後用 res.end() 回應內容"
+          },
+          {
+            "value": "b",
+            "label": "用 http.createServer() 建立 server，但路由判斷要用 Express 框架才能做，內建 API 做不到"
+          },
+          {
+            "value": "c",
+            "label": "用 fs.readFile() 讀取不同的 HTML 檔案，根據路由判斷讀哪個檔，但不需要用 res.writeHead() 設定標頭"
+          },
+          {
+            "value": "d",
+            "label": "用 http.createServer() 設定好固定回應後，server.listen() 會自動根據不同路由回應，不需要在 callback 裡自己判斷"
+          }
+        ],
+        "answer": "a",
+        "explanation": "這課核心就是用 http 模組的 createServer() 在 callback 函數裡透過 req.url 判斷路由，再用 res.writeHead() 和 res.end() 回應。選 b 錯在內建 API 完全能做路由；選 c 錯在 res.writeHead() 是必要的；選 d 錯在 callback 裡一定要自己寫判斷邏輯。"
+      }
     },
     {
       "id": "31.4",
@@ -255,7 +324,30 @@
           "level": 3,
           "text": "package.json 進階"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在 package.json 中，`dependencies` 和 `devDependencies` 最主要的區別是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "`dependencies` 是正式上線用的套件，`devDependencies` 只在開發時需要"
+          },
+          {
+            "value": "b",
+            "label": "`dependencies` 的版本號固定不變，`devDependencies` 可以自動更新"
+          },
+          {
+            "value": "c",
+            "label": "`dependencies` 一定要用 npm 裝，`devDependencies` 可以手動複製"
+          },
+          {
+            "value": "d",
+            "label": "`dependencies` 是免費的，`devDependencies` 需要付費使用"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確說 `dependencies` 用於 production，`devDependencies` 用於開發（如測試工具、型別定義），上線時只打包 `dependencies`。其他選項都是似是而非的錯誤觀念。"
+      }
     },
     {
       "id": "31.5",
@@ -292,7 +384,30 @@
           "level": 3,
           "text": "怎麼選"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的 Node.js 專案要轉用 ES Modules，但有些舊的第三方套件還在用 CommonJS。請問下列哪個做法最容易出錯？",
+        "options": [
+          {
+            "value": "a",
+            "label": "在 package.json 設 `\"type\": \"module\"`，並把所有 import 語句改成 `import xxx from \"./file.js\"`（加副檔名）"
+          },
+          {
+            "value": "b",
+            "label": "用 `.cjs` 副檔名寫一個 CommonJS 的 helper 檔案，在需要時用 `import()` 動態引入它"
+          },
+          {
+            "value": "c",
+            "label": "在 ESM 檔案裡直接寫 `import { something } from \"./math\"` 而不加 `.js` 副檔名"
+          },
+          {
+            "value": "d",
+            "label": "用 `import.meta.url` 搭配 `fileURLToPath()` 來取代 CommonJS 的 `__dirname`"
+          }
+        ],
+        "answer": "c",
+        "explanation": "ES Modules 強制要求 import 時寫完整副檔名（包括 `.js`），少了副檔名會直接報錯。其他三個選項都是正確的做法：a 是標準 ESM 轉換、b 是處理舊 CJS 套件的常見方式、d 是 ESM 中取得目錄路徑的正確替代方案。"
+      }
     },
     {
       "id": "31.6",
@@ -340,7 +455,30 @@
           "level": 3,
           "text": "Workspace（monorepo）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你要開始一個新的獨立開發者專案，不想有太多麻煩，也希望安裝和執行速度快一點。根據 2026 年的現況，下列哪個套件管理器最適合你？",
+        "options": [
+          {
+            "value": "a",
+            "label": "pnpm，因為速度快、省硬碟、命令跟 npm 幾乎一樣"
+          },
+          {
+            "value": "b",
+            "label": "npm，因為它內建在 Node 裡，不用額外安裝"
+          },
+          {
+            "value": "c",
+            "label": "bun，因為它是新的和最快的，而且內建 runtime"
+          },
+          {
+            "value": "d",
+            "label": "yarn，因為它是 Facebook 做的，最穩定可靠"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確推薦 2026 新專案用 pnpm：速度快（比 npm 快 2-3x）、硬碟省 70%、命令相同容易上手。雖然 bun 很快，但生態還在追趕、生產案例少；npm 雖然內建但較慢；yarn 已被 pnpm 超車。"
+      }
     },
     {
       "id": "31.7",
@@ -388,7 +526,30 @@
           "level": 3,
           "text": "2026 嚴格 TS 設定"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，使用 TypeScript 最直接的好處是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "可以在編譯時期捕捉型別錯誤，避免執行時才發現 bug"
+          },
+          {
+            "value": "b",
+            "label": "程式碼執行速度會比純 JavaScript 快很多"
+          },
+          {
+            "value": "c",
+            "label": "不需要寫任何設定檔，開箱即用"
+          },
+          {
+            "value": "d",
+            "label": "可以完全取代 JavaScript，不用再學 JS"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確指出 TypeScript 的核心優勢是「編譯時抓 bug」，比純 JS 的例子更能即時發現型別不符的問題。速度、零設定、取代 JS 都不是 TS 的主要目的。"
+      }
     },
     {
       "id": "31.8",
@@ -440,7 +601,30 @@
           "level": 3,
           "text": "Error 處理最佳實踐"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你寫了一個 async function，裡面依序 await 了三個 API 呼叫（fetchUser、fetchOrders、fetchProducts），但現在服務很慢。下列哪個做法能最有效改善效能？",
+        "options": [
+          {
+            "value": "a",
+            "label": "把三個 await 改成 callback，用 Callback Hell 的方式並行"
+          },
+          {
+            "value": "b",
+            "label": "用 Promise.all 把三個 Promise 一起 await，讓它們並行執行"
+          },
+          {
+            "value": "c",
+            "label": "把 async function 改回 Promise.then 鏈"
+          },
+          {
+            "value": "d",
+            "label": "在 try-catch 外面加更多 await，確保每個都完全執行完"
+          }
+        ],
+        "answer": "b",
+        "explanation": "單純依序 await 會讓每個 API 等上一個完成才開始（串行），改用 Promise.all([...]) 能讓三個同時發出去（並行），大幅縮短總時間。這是 async/await 優化並發的核心技巧。"
+      }
     },
     {
       "id": "31.9",
@@ -488,7 +672,30 @@
           "level": 3,
           "text": "完整 Express 結構"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想要在 Express 中建立一個後端 API，讓不同的資源（如使用者、商品）的路由能被清楚地組織。下列哪一個做法最符合 Express 的最佳實踐？",
+        "options": [
+          {
+            "value": "a",
+            "label": "把所有路由都寫在主 index.ts 檔案裡，用 app.get()、app.post() 等方法堆疊"
+          },
+          {
+            "value": "b",
+            "label": "為不同資源分別建立 Router 物件（如 usersRouter、productsRouter），再用 app.use() 掛載到主應用"
+          },
+          {
+            "value": "c",
+            "label": "使用 Middleware 來定義所有的路由邏輯，因為 Middleware 最靈活"
+          },
+          {
+            "value": "d",
+            "label": "用正則路徑和通配符來一次定義所有路由，避免重複程式碼"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Router 就是用來組織和模組化路由的工具。課程明確展示用 usersRouter 和 productsRouter 分離後，再用 app.use('/api/users', usersRouter) 掛載，這是 Express 推薦的做法。其他選項要麼不符合最佳實踐（a），要麼誤解 Middleware 用途（c、d）。"
+      }
     },
     {
       "id": "31.10",
@@ -528,7 +735,30 @@
           "level": 3,
           "text": "2026 選擇指南"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "如果你要開發一個新的 serverless 應用，需要用同一份程式碼同時部署到 Cloudflare Workers 和 Deno 上，下面哪個框架最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Express，因為它是最成熟的框架"
+          },
+          {
+            "value": "b",
+            "label": "Hono，因為它是 edge-first 設計、支援跨 runtime"
+          },
+          {
+            "value": "c",
+            "label": "Fastify，因為它內建 schema 驗證"
+          },
+          {
+            "value": "d",
+            "label": "NestJS，因為它有最完整的企業級架構"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Hono 的核心賣點就是『超輕量 + 跨 runtime』，同一份 code 可以無縫改部署到 Cloudflare Workers、Deno、Node 等。其他三個框架都是 Node-only 或傳統方案，無法做到這種跨平台靈活性。"
+      }
     },
     {
       "id": "31.11",
@@ -568,7 +798,30 @@
           "level": 3,
           "text": "進階查詢"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想要在 Prisma 中查詢某個用戶及他所有已發佈的文章，並按建立時間倒序排列。下列哪個做法最正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 include 搭配 where 和 orderBy 在 posts 物件裡篩選和排序"
+          },
+          {
+            "value": "b",
+            "label": "分兩次查詢：先 findUnique 拿用戶，再用 findMany 拿他的文章"
+          },
+          {
+            "value": "c",
+            "label": "用 select 語法把所有欄位列出來，這樣才能篩選文章"
+          },
+          {
+            "value": "d",
+            "label": "直接在 findUnique 的 where 條件裡加上 published: true，一句話搞定"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Prisma 支援在 include 的關聯物件內部直接寫 where 和 orderBy，可以在一次查詢中同時篩選和排序相關資料。選項 b 雖然可行但不是最佳做法，c 和 d 都誤解了 Prisma 的查詢語法。"
+      }
     },
     {
       "id": "31.12",
@@ -616,7 +869,30 @@
           "level": 3,
           "text": "實戰：Express + Zod"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，Zod 最核心的優勢是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "可以同時做資料驗證和自動型別推導，不用寫兩份型別定義"
+          },
+          {
+            "value": "b",
+            "label": "提供比 TypeScript 更強大的型別檢查功能"
+          },
+          {
+            "value": "c",
+            "label": "可以自動轉換資料格式，不需要手動 transform"
+          },
+          {
+            "value": "d",
+            "label": "完全取代 TypeScript，使程式碼更簡潔"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Zod 的核心價值是一份 schema 既能驗證執行時資料，又能透過 z.infer 自動推導型別，避免重複定義。其他選項都誤解或誇大了 Zod 的角色—它是驗證 library，不是型別系統的替代品。"
+      }
     },
     {
       "id": "31.13",
@@ -660,7 +936,30 @@
           "level": 3,
           "text": "第三方登入：OAuth（Google / GitHub）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在登入流程中，你已經用 bcrypt.compare() 驗證過使用者的密碼是正確的，為什麼還要再用 JWT 來做認證？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 bcrypt 只能驗證一次，JWT 可以讓使用者在多個請求中保持登入狀態而不用每次都輸入密碼"
+          },
+          {
+            "value": "b",
+            "label": "因為 bcrypt 不夠安全，JWT 更強大所以要雙重保護"
+          },
+          {
+            "value": "c",
+            "label": "因為 bcrypt 是用來檢查密碼，JWT 是用來當作身份識別卡，兩者用途不同"
+          },
+          {
+            "value": "d",
+            "label": "因為登入後每次請求都要重新 hash 密碼驗證，用 JWT 可以避免這個麻煩"
+          }
+        ],
+        "answer": "a",
+        "explanation": "bcrypt 驗證密碼後只做了一次確認，而 JWT token 讓客戶端可以帶著身份證明（token）去後續請求，省去重複輸入密碼。選項 c 看似合理但混淆了概念——JWT 不是「身份識別卡」而是「登入後的通行證」，d 則誤導了 JWT 的核心意義。"
+      }
     },
     {
       "id": "31.14",
@@ -708,7 +1007,30 @@
           "level": 3,
           "text": "SSE（Server-Sent Events）：替代方案"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "假設你要開發一個即時聊天應用，需要多個聊天室、自動重連機制，並且要跨瀏覽器相容。根據這堂課的內容，你應該選哪個 library？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Node 內建 WebSocket"
+          },
+          {
+            "value": "b",
+            "label": "ws 套件"
+          },
+          {
+            "value": "c",
+            "label": "Socket.io"
+          },
+          {
+            "value": "d",
+            "label": "Hono WebSocket"
+          }
+        ],
+        "answer": "c",
+        "explanation": "Socket.io 具備房間(聊天室)、自動重連、跨瀏覽器支援等完整生態，最適合聊天應用。ws 太輕量、Node 內建只適合簡單需求、Hono 是 Edge 環境用的。"
+      }
     },
     {
       "id": "31.15",
@@ -756,7 +1078,30 @@
           "level": 3,
           "text": "替代品 / 2026 比較"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "為什麼在 Node.js 中應該用 BullMQ 這類 Queue 系統來處理寄信、影片轉檔這些工作，而不是在 API 路由裡直接執行？",
+        "options": [
+          {
+            "value": "a",
+            "label": "可以讓使用者立刻收到 API 回應，不用等待耗時任務完成；同時 Worker 可以在背景自動重試失敗的工作"
+          },
+          {
+            "value": "b",
+            "label": "Queue 系統比直接執行程式碼執行速度快 10 倍以上"
+          },
+          {
+            "value": "c",
+            "label": "因為 BullMQ 可以完全取代資料庫，不需要用 Prisma 了"
+          },
+          {
+            "value": "d",
+            "label": "只有使用 Queue 才能在 Node.js 裡使用非同步的 async/await 語法"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程的核心目的是解決「慢 task 擋住使用者回應」的問題。用 Queue 把任務丟到背景，API 立刻回應；Worker 慢慢處理並自動重試，這正是 BullMQ 的價值。其他選項都是課程沒提到或錯誤的說法。"
+      }
     },
     {
       "id": "31.16",
@@ -808,7 +1153,30 @@
           "level": 3,
           "text": "Cache 策略 + TTL"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，使用 Cache-Aside Pattern 時，如果 Redis 中找不到資料，應該怎麼做？",
+        "options": [
+          {
+            "value": "a",
+            "label": "直接向資料庫查詢，然後把結果存到 Redis 裡"
+          },
+          {
+            "value": "b",
+            "label": "向資料庫查詢，但不需要存到 Redis（因為已經查過了）"
+          },
+          {
+            "value": "c",
+            "label": "放棄這次查詢，告訴使用者資料不存在"
+          },
+          {
+            "value": "d",
+            "label": "重新檢查 Redis，直到找到資料為止"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Cache-Aside Pattern 的核心邏輯就是：查不到 cache 時，從 DB 撈資料，然後寫回 cache 供下次使用。這樣下次同樣查詢就能直接從 Redis 取得，達到加速效果。"
+      }
     },
     {
       "id": "31.17",
@@ -860,7 +1228,30 @@
           "level": 3,
           "text": "Jest vs Vitest"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，Vitest 相比 Jest 的主要優勢是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "速度快 10 倍、Vite 生態整合、TypeScript 友善"
+          },
+          {
+            "value": "b",
+            "label": "可以用於生產環境、支援更多瀏覽器測試"
+          },
+          {
+            "value": "c",
+            "label": "不需要設定檔案、自動偵測所有測試"
+          },
+          {
+            "value": "d",
+            "label": "內建 Mock 功能比 Jest 更強大、覆蓋率分析更快"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程開頭明確提到 Vitest 是 2026 年的測試主流，優勢就是「比 Jest 快 10x、Vite 生態、TS 友善」三大特點。其他選項都超出課程內容或不符合主要亮點。"
+      }
     },
     {
       "id": "31.18",
@@ -912,7 +1303,30 @@
           "level": 3,
           "text": "Health check + Uptime"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的 Node.js 應用在 Production 環境出現問題，用 console.log 記了一堆訊息，但現在要搜尋特定使用者的行為很困難。用 Pino 結構化 log 的主要優勢是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Pino 會自動修復 bug，不用手動 debug"
+          },
+          {
+            "value": "b",
+            "label": "Pino 輸出 JSON 格式，可以輕易搜尋、篩選、統計特定欄位"
+          },
+          {
+            "value": "c",
+            "label": "Pino 比 console.log 快 100 倍，應用會跑得更快"
+          },
+          {
+            "value": "d",
+            "label": "Pino 可以自動傳訊息通知工程師，不用看 log 檔"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Pino 的核心優勢是結構化 JSON 輸出（例如 userId、ip 等變成獨立欄位），讓 Production 環境可以用工具搜尋、aggregate 和分析；console.log 只輸出純字串，難以查詢。速度提升和自動修復都不是結構化 log 的直接目的。"
+      }
     },
     {
       "id": "31.19",
@@ -964,7 +1378,30 @@
           "level": 3,
           "text": "環境變數管理"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的 Node.js 應用需要 PostgreSQL 資料庫 + Redis 快取，同時有背景工作任務要跑。下列哪個部署方案最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Vercel Serverless Functions，因為它最便宜"
+          },
+          {
+            "value": "b",
+            "label": "Railway，用 docker-compose 定義完整 stack，一鍵啟動所有 service"
+          },
+          {
+            "value": "c",
+            "label": "自己寫 Dockerfile，部署到 AWS EC2"
+          },
+          {
+            "value": "d",
+            "label": "Vercel + 外部 PostgreSQL，因為 Vercel 支援長連線"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Railway 最適合這類需求：一鍵整合 PostgreSQL、Redis、多個 worker 的完整 stack。Vercel 是 Serverless 架構，有 10-60 秒 timeout 限制，不適合背景任務和長連線；自己管 EC2 則失去 Indie maker 的簡便性。"
+      }
     },
     {
       "id": "31.20",
@@ -1008,7 +1445,30 @@
           "level": 3,
           "text": "遷移指南"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，如果你正在開發一個新的 indie SaaS 應用，想要快速啟動並且不想寫編譯步驟，同時也想保持穩定性，以下哪個選擇最平衡？",
+        "options": [
+          {
+            "value": "a",
+            "label": "選擇 Bun，因為它內建支援 TypeScript、速度快 3-5x，且內建 bundler 和套件管理"
+          },
+          {
+            "value": "b",
+            "label": "選擇 Node 22，因為這是最穩定且生態最完整，內建 .env loader 和 --watch 功能"
+          },
+          {
+            "value": "c",
+            "label": "選擇 Deno，因為它強制權限控制，是最安全的 runtime"
+          },
+          {
+            "value": "d",
+            "label": "選擇 Node 搭配 tsx 編譯器，因為這是 2026 年最新的業界標準做法"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確建議新 indie SaaS 想試新技術時選 Bun，因為它結合了「TS 原生不用編譯」、「速度快」、「內建工具全」的優勢。選項 b 是保守穩定的選法，c 和 d 都不符合「快速啟動」且「不想寫編譯」的需求。"
+      }
     },
     {
       "id": "31.21",
@@ -1060,7 +1520,30 @@
           "level": 3,
           "text": "2026 tRPC 使用場景"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "tRPC 相比傳統 REST API 最大的優勢是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "前後端共享型別，後端改動時 TypeScript 會立刻提示錯誤，不用寫 schema 檔案同步"
+          },
+          {
+            "value": "b",
+            "label": "執行速度比 REST API 快很多，因為不需要經過 HTTP 協議"
+          },
+          {
+            "value": "c",
+            "label": "自動產生 OpenAPI 文件，讓前後端溝通更清楚"
+          },
+          {
+            "value": "d",
+            "label": "可以用 GraphQL 語法寫 query，比 REST 更靈活"
+          }
+        ],
+        "answer": "a",
+        "explanation": "tRPC 的核心特色就是前後端共享型別（import type），後端改了型別或欄位名稱，前端 TS 會立刻紅線提示，避免傳統 REST 需要寫 schema 檔案同步的麻煩。b 錯因為 tRPC 還是透過 HTTP；c 是額外工具；d 是 GraphQL 的特色，不是 tRPC。"
+      }
     },
     {
       "id": "31.22",
@@ -1112,7 +1595,30 @@
           "level": 3,
           "text": "實戰 AI app stack"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "如果你要在 Node.js 後端同時支援 OpenAI 和 Claude，用 Vercel AI SDK 的好處是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "只需要改一行程式碼就能切換不同的 AI 模型，其他邏輯都不用改"
+          },
+          {
+            "value": "b",
+            "label": "OpenAI 和 Claude 的 SDK 功能完全相同，所以直接用官方 SDK 就夠了"
+          },
+          {
+            "value": "c",
+            "label": "Vercel AI SDK 比較便宜，可以省下 API 成本"
+          },
+          {
+            "value": "d",
+            "label": "Vercel AI SDK 可以一次呼叫多個 AI 模型，同時拿到結果"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Vercel AI SDK 的核心賣點就是統一介面 (unified API)，讓你用同一套 generateText/streamText 的寫法，只需要改 model 參數就能切換 OpenAI、Claude 等不同提供商。選項 b 錯在兩個 SDK API 其實不同；c 和 d 都不是 Vercel AI SDK 的設計目的。"
+      }
     },
     {
       "title": "Node.js 22+ 新特性：內建 test runner / fetch / WebSocket",
@@ -1165,7 +1671,30 @@
           "level": 2,
           "text": "permission model（Node 20+ 實驗）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的專案現在還在用 Jest 做測試、用 axios 打 API、用 nodemon 監看檔案。如果升級到 Node.js 22，下列哪個敘述是「正確的」？",
+        "options": [
+          {
+            "value": "a",
+            "label": "這三個套件都可以移除，因為 Node 22 全部內建了"
+          },
+          {
+            "value": "b",
+            "label": "只有 nodemon 可以移除，Jest 和 axios 還是要裝"
+          },
+          {
+            "value": "c",
+            "label": "Jest 可以移除，但 axios 一定要裝才能打 API"
+          },
+          {
+            "value": "d",
+            "label": "都不能移除，Node 22 沒有內建測試和 HTTP 功能"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Node 22 內建了 node:test（取代 Jest）、fetch API（取代 axios）、--watch 模式（取代 nodemon），這些都可以直接移除。B 選項遺漏了 axios，C 選項錯誤以為必須裝 axios，D 選項完全相反。"
+      }
     },
     {
       "title": "Hono：取代 Express 的現代 Web 框架",
@@ -1214,7 +1743,30 @@
           "level": 2,
           "text": "Hono vs Express vs Fastify"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，為什麼說 Hono 比 Express 更適合現代後端開發？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Hono 使用 Web Standards 的 fetch API、支援多個 runtime 平台、內建驗證功能，而 Express 是 2010 年設計、自己一套 req/res、bundle 大且效能較差"
+          },
+          {
+            "value": "b",
+            "label": "Hono 的語法比 Express 更簡潔，而且 Express 根本沒有 TypeScript 支援"
+          },
+          {
+            "value": "c",
+            "label": "Hono 可以直接在 Node.js 上執行，Express 則需要額外的編譯工具才能運作"
+          },
+          {
+            "value": "d",
+            "label": "Hono 內建了資料庫驅動程式，不需要另外安裝，Express 則什麼都沒有"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確列出 Hono 的七大優勢（Web Standards、TS 支援、多 runtime、效能快、async/await、內建 validator、bundle 小），而 Express 的七個問題正好相反。選項 b 誇大其詞（Express 有 @types），c 和 d 都不符合課程內容。"
+      }
     },
     {
       "title": "Streams：處理大檔案不爆記憶體",
@@ -1271,7 +1823,30 @@
           "level": 2,
           "text": "Web Streams API（跨平台、現代）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你有一個 5GB 的日誌檔案要處理。下面哪個做法最不容易讓程式爆掉？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 fs.readFile() 一次把整個檔案讀進記憶體，然後用 split('\\n') 逐行處理"
+          },
+          {
+            "value": "b",
+            "label": "用 createReadStream() 搭配 readline，讓資料邊流邊處理"
+          },
+          {
+            "value": "c",
+            "label": "用 createWriteStream() 直接寫入一個新檔案，不做任何處理"
+          },
+          {
+            "value": "d",
+            "label": "用迴圈逐次呼叫 readFile() 讀取檔案的某個部分"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Streams 的核心概念就是邊讀邊處理、記憶體只保留當下的資料區塊（chunk）。選項 a 會把整個 5GB 一次載入記憶體必爆；b 才是正確的 Stream 用法；c 和 d 都無法有效處理大檔案。"
+      }
     }
   ],
   "boss": {
@@ -1285,5 +1860,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "Node.js 用 JavaScript 跑伺服器、npm/pnpm 管套件、ES Modules 是現代寫法",
+    "Express 最成熟但用 Hono/Fastify 更現代、都能搭 TypeScript 寫型別安全程式",
+    "非同步核心是 Promise 和 async/await、Event Loop 讓單執行緒處理大量請求",
+    "Prisma 當 ORM、Zod 驗證、bcrypt 雜湊密碼、JWT 簽發 token、Redis 快取熱資料",
+    "Docker 容器化、Railway/Vercel 一鍵部署、Vitest 測試、Pino 結構化 log 便於監控"
+  ],
+  "faq": [
+    {
+      "q": "Node.js、Express、Fastify、Hono 差別是什麼？",
+      "a": "Node.js 是 JavaScript runtime、讓你在伺服器跑 JS。Express/Fastify/Hono 是建在 Node.js 上的 Web 框架，Express 最老牌、Fastify 追求速度、Hono 最現代輕量。選哪個看團隊習慣，新專案可考慮 Hono。"
+    },
+    {
+      "q": "npm、pnpm、yarn 用哪個？",
+      "a": "都能用，npm 預設在 Node.js 裡、pnpm 節省磁碟空間、yarn 快但維護較少。推薦新手用 npm 或 pnpm，重點是理解套件管理概念而不是工具選擇。"
+    },
+    {
+      "q": "一定要會 TypeScript 才能學 Node 後端嗎？",
+      "a": "不一定，但強烈建議學，因為後端容易出 bug、型別檢查能救命。可以邊做邊學 TypeScript，這章會從無到有教你設置和用法。"
+    }
+  ]
 }

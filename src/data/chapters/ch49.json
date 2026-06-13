@@ -75,7 +75,30 @@
           "level": 3,
           "text": "Agent 不適合場景"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你給 AI 一個目標：「幫我安排一次台北到紐約的出差、包括機票、飯店、會議室預訂」。AI 自己分解成三個任務、分別呼叫搜尋工具、看結果後決定要不要加第四步查簽證、最後交付完整方案。這個 AI 是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "純 LLM、因為它回答了你的問題"
+          },
+          {
+            "value": "b",
+            "label": "LLM with Tool Use、因為它呼叫了工具"
+          },
+          {
+            "value": "c",
+            "label": "Agent、因為它有多輪迴圈、自己決定下一步、有目標導向"
+          },
+          {
+            "value": "d",
+            "label": "Workflow Bot、因為它有規劃流程的能力"
+          }
+        ],
+        "answer": "c",
+        "explanation": "Agent 的核心是「多輪迴圈 + 自主決策 + 目標導向」。這個例子中 AI 不是被告訴做什麼，而是自己拆解任務、看結果決定下一步（是否需要查簽證），這正是 Agent 的定義。LLM with Tool Use 只能一次呼叫工具就結束，無法自主迴圈。"
+      }
     },
     {
       "id": "49.1b",
@@ -120,7 +143,30 @@
           "level": 3,
           "text": "接下來這章會帶你往哪走"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這課的內容，你剛剛做出來的「研究小幫手 Agent」，跟一般聊天機器人最核心的差異是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "它能回答更多種類的問題，知識面更廣"
+          },
+          {
+            "value": "b",
+            "label": "它會自己判斷是否需要查新資料，然後主動用工具去查、再整理回答"
+          },
+          {
+            "value": "c",
+            "label": "它的回答速度更快，因為用了最新的 AI 模型"
+          },
+          {
+            "value": "d",
+            "label": "它能同時跟很多使用者聊天，效率更高"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確強調『普通聊天機器人只會用既有知識回答，Agent 會「自己判斷要不要查→自己用工具查→再回答」』，這個「自己決定+自己動手」才是 agent 的核心特徵。其他選項都是聊天機器人也可能具備的特性，不是 agent 的核心差異。"
+      }
     },
     {
       "id": "49.2",
@@ -185,7 +231,30 @@
           "level": 3,
           "text": "indie hacker 的機會時間窗"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這堂課，Agent 技術從 2022 到 2026 最重要的轉折點是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "2022 年 BabyAGI 和 AutoGPT 首次讓人看到 AI 能自己做事的概念"
+          },
+          {
+            "value": "b",
+            "label": "2024 下半年 Devin、Cursor Agent 等工具讓 Agent 從 demo 變成真的能用"
+          },
+          {
+            "value": "c",
+            "label": "2023 年 LangChain 推出 Agent 框架，業界開始嘗試客服應用"
+          },
+          {
+            "value": "d",
+            "label": "2025 年各大 SaaS 開始加入 Agent 模式，成為產品標配"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調 2024 下半年是「**關鍵轉折**」，Agent 從炫但不實用的 demo，真正演進到能寫完整 feature、改多個檔案的實用工具。這是從『不能用』到『真的能用』的分界點，也是課程標題『進化簡史』的核心主軸。"
+      }
     },
     {
       "id": "49.3",
@@ -238,7 +307,30 @@
           "level": 3,
           "text": "ReAct 變體：CoT + Tools"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "ReAct 架構的核心循環中，「Thought → Action → Observation」這個流程最重要的意義是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "讓 AI 在每一步都先思考再行動，根據觀察結果調整下一步，避免盲目試錯"
+          },
+          {
+            "value": "b",
+            "label": "讓 AI 能夠同時進行多個 Action，加快任務完成速度"
+          },
+          {
+            "value": "c",
+            "label": "確保 AI 使用最多的工具數量，這樣才能得到最完整的資訊"
+          },
+          {
+            "value": "d",
+            "label": "簡化程式碼的複雜度，減少開發者需要寫的邏輯"
+          }
+        ],
+        "answer": "a",
+        "explanation": "ReAct 的核心就是「想完再做、做完再想」的循環——Thought 讓 AI 有計畫，Action 執行，Observation 看結果後調整。這樣才能解決複雜問題，避免盲目嘗試。選項 b、c、d 都是誤解，不是 ReAct 的真正目的。"
+      }
     },
     {
       "id": "49.4",
@@ -295,7 +387,30 @@
           "level": 3,
           "text": "Replan 機制"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "Plan-and-Execute 架構跟 ReAct 最主要的差異在哪？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Plan-and-Execute 先把全部步驟規劃好再執行，ReAct 是邊想邊做邊調整"
+          },
+          {
+            "value": "b",
+            "label": "Plan-and-Execute 用得到工具，ReAct 用不到工具"
+          },
+          {
+            "value": "c",
+            "label": "Plan-and-Execute 只能處理短任務，ReAct 可以處理長任務"
+          },
+          {
+            "value": "d",
+            "label": "Plan-and-Execute 需要使用者點擊確認每一步，ReAct 不需要"
+          }
+        ],
+        "answer": "a",
+        "explanation": "這是 Plan-and-Execute 的核心概念—先由 Planner 產出完整步驟清單，再由 Executor 逐步執行。ReAct 則是即時思考和行動，每一步都邊想邊做。其他選項都不符合課程內容。"
+      }
     },
     {
       "id": "49.5",
@@ -348,7 +463,30 @@
           "level": 3,
           "text": "Multi-Agent 不適合場景"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在開發一個系統要「自動分類客服問題 → 找答案 → 寫回信 → 檢查品質」。這四個步驟應該用哪個 Multi-Agent pattern 最合適？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Supervisor（主管）pattern，讓主管決定每個問題丟給誰"
+          },
+          {
+            "value": "b",
+            "label": "Pipeline（流水線）pattern，讓每個 agent 依序處理"
+          },
+          {
+            "value": "c",
+            "label": "Swarm（蜂群）pattern，讓四個 agent 同時討論再投票"
+          },
+          {
+            "value": "d",
+            "label": "用一個全能 agent 處理所有步驟會更快"
+          }
+        ],
+        "answer": "b",
+        "explanation": "這是明確的「線性流程」—分類 → 找答案 → 寫回信 → 檢查，每步依序進行，正是 Pipeline pattern 的典型場景。Supervisor 用來拆任務給平行的 agent，Swarm 用來投票決策，都不適合；全能 agent 違反了「專業分工」的核心原則。"
+      }
     },
     {
       "id": "49.6",
@@ -397,7 +535,30 @@
           "level": 3,
           "text": "進階：加 logging / observability"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在這個 Agent 實作中，TOOLS_SCHEMA 的主要目的是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "直接執行工具函數，調用具體的業務邏輯"
+          },
+          {
+            "value": "b",
+            "label": "告訴 AI 有哪些工具可用、每個工具的輸入參數格式是什麼"
+          },
+          {
+            "value": "c",
+            "label": "儲存所有工具執行過的結果，提供給下一步使用"
+          },
+          {
+            "value": "d",
+            "label": "限制 Agent 最多只能用多少個工具"
+          }
+        ],
+        "answer": "b",
+        "explanation": "TOOLS_SCHEMA 是給 Claude AI 看的『菜單』，描述了有哪些工具、怎麼呼叫。而真正執行工具的是 TOOLS_REGISTRY 裡的函數。AI 根據 TOOLS_SCHEMA 決定要不要用某個工具、傳什麼參數給它。"
+      }
     },
     {
       "id": "49.6b",
@@ -450,7 +611,30 @@
           "level": 3,
           "text": "Step 5：把它變成「你的」 agent"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想把這個「研究 Agent」改成「客服 Agent」，需要改哪個地方？",
+        "options": [
+          {
+            "value": "a",
+            "label": "改 system prompt（告訴它新職業是客服）和換掉工具（改成查知識庫、發送訊息等）"
+          },
+          {
+            "value": "b",
+            "label": "改 while 迴圈的條件判斷，讓它自動回覆客人訊息"
+          },
+          {
+            "value": "c",
+            "label": "改 Claude 模型，換成一個更擅長客服的 LLM"
+          },
+          {
+            "value": "d",
+            "label": "改 run_tool 函式內部的實作，換一個新的搜尋引擎"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調『專屬的關鍵就兩件事：改 system prompt（它的職業）+ 換工具（它的能力）。骨架不動』，所以只需要改提示詞和工具清單，Agent Loop 的骨架完全不用改。"
+      }
     },
     {
       "id": "49.7",
@@ -503,7 +687,30 @@
           "level": 3,
           "text": "Tool 設計檢查清單"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，以下哪個工具定義最符合「好 Tool 的設計原則」？",
+        "options": [
+          {
+            "value": "a",
+            "label": "名稱：search_internal_docs，Description：「搜尋公司內部文件，用於回答公司規章、產品功能、SOP 流程的問題，不適合搜尋外部新聞或即時資料」"
+          },
+          {
+            "value": "b",
+            "label": "名稱：查詢員工資料，Description：「這個工具可以幫你找員工資訊\""
+          },
+          {
+            "value": "c",
+            "label": "名稱：get_info，Description：「獲取各種資訊\"，回應包含所有可能的 200 個結果"
+          },
+          {
+            "value": "d",
+            "label": "名稱：delete_user，沒有確認機制，直接執行刪除操作"
+          }
+        ],
+        "answer": "a",
+        "explanation": "選項 a 符合課程的五項原則：名字像 function（search_internal_docs）、Description 清楚寫了「什麼時候用」（適合什麼、不適合什麼）。選項 b 名稱像句子不像 function、Description 太籠統；選項 c 名稱太通用、回應過多；選項 d 是危險操作沒有人工確認機制。"
+      }
     },
     {
       "id": "49.8",
@@ -568,7 +775,30 @@
           "level": 3,
           "text": "Memory 的隱私 / 安全"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在開發一個客服 Agent，使用者需要在一週內多次對話。如果只用 Working Memory（把所有訊息放在 context 裡），會遇到什麼主要問題？",
+        "options": [
+          {
+            "value": "a",
+            "label": "對話越來越多時，成本上升、最後超過 context 上限會爆掉"
+          },
+          {
+            "value": "b",
+            "label": "Agent 無法理解使用者的長期偏好和歷史背景"
+          },
+          {
+            "value": "c",
+            "label": "Redis 資料庫會自動刪除舊訊息"
+          },
+          {
+            "value": "d",
+            "label": "LLM 會自動為你摘要對話內容"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Working Memory 只存當前對話在 context window 內，對話越長成本越高（tokens 增加），最終會超過模型的 context 上限。選項 b 是 Long-term Memory 的問題，c 和 d 都不是 Working Memory 的實際限制。"
+      }
     },
     {
       "id": "49.9",
@@ -629,7 +859,30 @@
           "level": 3,
           "text": "什麼時候別用"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "Computer Use 讓 Claude 能操控電腦的核心原理是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Claude 直接連接到你的作業系統，像裝在電腦裡一樣"
+          },
+          {
+            "value": "b",
+            "label": "Claude 看截圖理解畫面，透過 API 工具執行滑鼠鍵盤動作，再看新截圖決定下一步"
+          },
+          {
+            "value": "c",
+            "label": "Claude 用自然語言指令給瀏覽器，瀏覽器自動執行用戶的需求"
+          },
+          {
+            "value": "d",
+            "label": "Claude 可以完全自動化任何工作，不需要人類介入"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確說明核心循環是「截圖→理解→規劃→執行工具→看新截圖」。Claude 是透過視覺 + 工具的組合來操控電腦，不是直接連接系統，也不是百分百自動化。"
+      }
     },
     {
       "id": "49.10",
@@ -690,7 +943,30 @@
           "level": 3,
           "text": "法律 / 倫理問題"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "Browser Agent 和傳統爬蟲的最大差別是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Browser Agent 用 AI 看頁面自動決定操作，不用事先寫死 selector"
+          },
+          {
+            "value": "b",
+            "label": "Browser Agent 速度比傳統爬蟲快 10 倍"
+          },
+          {
+            "value": "c",
+            "label": "Browser Agent 可以破解 CAPTCHA 和反爬蟲機制"
+          },
+          {
+            "value": "d",
+            "label": "Browser Agent 只能用 Python 寫，傳統爬蟲可以用任何語言"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確指出『傳統爬蟲：寫 selector、針對每個網站』vs『Browser Agent：給目標、AI 自己看頁面操作』，核心差異就是 AI 的自主判斷能力，不需要預先寫死每個網站的選擇器。其他選項都是課程未提及或明確反駁的（如限制中提到 CAPTCHA 會被擋、速度是 5-15 秒）。"
+      }
     },
     {
       "id": "49.11",
@@ -751,7 +1027,30 @@
           "level": 3,
           "text": "各框架 production 真實狀況"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，如果你是第一次做 agent 專案，但預計 6 個月後會變成很複雜的 production 系統，最聰明的做法是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "直接用 LangGraph，因為它功能最完整，從一開始就不用換框架"
+          },
+          {
+            "value": "b",
+            "label": "先用 CrewAI 學概念、搞懂 agent 怎麼運作，production 時再評估換 LangGraph 或純 SDK"
+          },
+          {
+            "value": "c",
+            "label": "用純 SDK 自寫 loop，這樣最靈活、不被框架綁"
+          },
+          {
+            "value": "d",
+            "label": "用 OpenAI Swarm，因為最輕量、最快上手"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確建議『先用 CrewAI 學概念、production 用 LangGraph 或純 SDK』。CrewAI 直觀易學能幫你理解 agent 核心，之後再根據複雜度評估是否升級到 LangGraph。其他選項要不是忽視學習階段（a）、要不是過度設計（c、d）。"
+      }
     },
     {
       "id": "49.12",
@@ -816,7 +1115,30 @@
           "level": 3,
           "text": "2026 建議"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "OpenAI Assistants 和 Anthropic Skills 最根本的差異在哪裡？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Assistants 用 gpt-4o，Skills 用 Claude，所以 Assistants 比較快"
+          },
+          {
+            "value": "b",
+            "label": "Assistants 是託管 agent 平台，自動管 state 和 memory；Skills 是把知識封裝成可重用模組，需要時才載入"
+          },
+          {
+            "value": "c",
+            "label": "Assistants 支援檔案上傳，Skills 不支援，所以 Assistants 更強大"
+          },
+          {
+            "value": "d",
+            "label": "Assistants 用 Tools，Skills 也用 Tools，兩個本質上是同一個東西"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Assistants 解決的是『怎麼自動管理對話狀態、記憶和工具執行』；Skills 解決的是『怎麼把複雜的專業知識和流程有效組織起來，避免佔用 context』。兩個設計目標不同，不能直接比較強弱。"
+      }
     },
     {
       "id": "49.13",
@@ -852,7 +1174,30 @@
           "level": 3,
           "text": "Coding Agent 評估標準：SWE-bench"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "為什麼說 Coding Agent 是目前最成熟的 AI Agent 應用領域？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為程式碼有明確的驗證方式（跑得過或跑不過、測試綠或紅），訓練資料豐富，失敗成本低，商業價值高"
+          },
+          {
+            "value": "b",
+            "label": "因為 Devin 是第一個推出的 AI 軟體工程師，已經達到接近人類工程師的水準"
+          },
+          {
+            "value": "c",
+            "label": "因為 Cursor Agent 能在 IDE 內邊看邊改，讓開發流程完全自動化了"
+          },
+          {
+            "value": "d",
+            "label": "因為開源的 OpenHands 和 Aider 免費好用，所有工程師都能負擔"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程開頭明確列出『程式碼有明確 verifier、訓練資料豐富、失敗成本低、商業價值高』為 Coding Agent 成熟的四大原因。選項 b、c、d 都只是某個工具的特色，不是 Coding Agent 領域整體成熟的根本原因。"
+      }
     },
     {
       "id": "49.13b",
@@ -889,7 +1234,30 @@
           "level": 3,
           "text": "用它的時候，順便學 agent 設計"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "Claude Cowork 最主要的設計目標是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "把 Claude 聊天機器人的對話能力搬到桌面上，讓使用者可以更方便地聊天"
+          },
+          {
+            "value": "b",
+            "label": "讓不寫程式的知識工作者（如 PM、行銷、營運）能用 agent 的自主能力來完成工作任務"
+          },
+          {
+            "value": "c",
+            "label": "取代 Claude Code，成為所有開發者的新開發工具"
+          },
+          {
+            "value": "d",
+            "label": "提供一個聊天界面，協助使用者寫更好的程式碼"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課文明確說『把 Claude Code 的自主能力，帶給「不寫 code 的知識工作」』，Cowork 的對象正是 PM、行銷、營運等非工程師，讓他們也能用 agent 的自主規劃和多步驟完成能力。"
+      }
     },
     {
       "id": "49.14",
@@ -950,7 +1318,30 @@
           "level": 3,
           "text": "2026 indie 機會"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "Research Agent 的核心運作流程中，「分解成子問題」這一步的目的是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "讓 LLM 可以並行搜尋多個問題，加快找資料的速度"
+          },
+          {
+            "value": "b",
+            "label": "確保最後寫出的報告字數夠長"
+          },
+          {
+            "value": "c",
+            "label": "減少需要用到的搜尋工具數量"
+          },
+          {
+            "value": "d",
+            "label": "避免 LLM 產生幻覺問題"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確說 Deep Research 的第 2 步是「分解成 10-50 個子問題」，第 3 步才是「並行 web search」—分子問題的目的就是讓每個子問題可以獨立並行搜尋，而不是串聯等待，這樣才能在 5-30 分鐘內產出完整報告。b、c、d 都不是這個分解步驟的真正目的。"
+      }
     },
     {
       "id": "49.15",
@@ -1011,7 +1402,30 @@
           "level": 3,
           "text": "2026 indie 機會"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，Customer Service Agent 的「分層」架構中，AI Agent 應該在什麼情況下立刻轉給真人客服？",
+        "options": [
+          {
+            "value": "a",
+            "label": "客戶的訊息字數超過 100 字時"
+          },
+          {
+            "value": "b",
+            "label": "當客戶情緒激動、複雜度高或緊急程度高時"
+          },
+          {
+            "value": "c",
+            "label": "所有客服問題都應該先轉真人，確保品質"
+          },
+          {
+            "value": "d",
+            "label": "只有當 AI 找不到相關知識庫資料時"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調分層的核心是 AI 處理 80% 能答的問題，但 5% 複雜、情緒相關的問題要立刻轉真人。情緒偵測和複雜度評估是升級決策的關鍵因素，不是根據字數或盲目轉真人。"
+      }
     },
     {
       "id": "49.16",
@@ -1047,7 +1461,30 @@
           "level": 3,
           "text": "Cold Outreach Agent"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，2026年 AI Sales Agent 在整個業務流程中表現最強的階段是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "複雜的商務談判與最終成交階段"
+          },
+          {
+            "value": "b",
+            "label": "找客戶、開發信、以及產品介紹與部分談判"
+          },
+          {
+            "value": "c",
+            "label": "客戶啟用與長期維護"
+          },
+          {
+            "value": "d",
+            "label": "完全接手從找客戶到成交的所有環節"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確列出 2026 AI 強項是第 1-3 項（找客戶、開發信、評估）以及第 5-6 項部分（產品介紹、部分談判），而複雜談判與成交是 AI 弱項。選項 a 和 d 是常見的誤解，但課程強調 AI 不擅長複雜協商；選項 c 超出本課範圍。"
+      }
     },
     {
       "id": "49.17",
@@ -1103,7 +1540,30 @@
           "level": 3,
           "text": "個人助手經濟學"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，個人 AI 助手的「Proactive（主動）」特性最主要的差異是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "助手會主動記住使用者說過的事，不需要重複告訴它"
+          },
+          {
+            "value": "b",
+            "label": "不等使用者問，而是主動推送有價值的資訊（如每天早上的行程整理和提醒）"
+          },
+          {
+            "value": "c",
+            "label": "助手可以整合多個服務，讓使用者一次操作就完成複雜任務"
+          },
+          {
+            "value": "d",
+            "label": "助手支援語音輸入，使用者不用打字就能與它溝通"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Proactive 的核心是不用等使用者提問，助手主動提供價值，例如課程範例中每天早上自動推送行程、客戶背景、建議等。a 是 Memory 的特性、c 是整合層、d 是 Voice 功能，都不是 Proactive 的定義。"
+      }
     },
     {
       "id": "49.18",
@@ -1152,7 +1612,30 @@
           "level": 3,
           "text": "Production Agent 安全 checklist"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在設計一個 Agent 系統，讓它能自動處理使用者的資料庫查詢。下列哪個做法最符合 Agent 安全的「權限最小化」原則？",
+        "options": [
+          {
+            "value": "a",
+            "label": "給 Agent 使用 Admin API Key，這樣所有功能都能用，最方便"
+          },
+          {
+            "value": "b",
+            "label": "為 Agent 建立專屬的 readonly token，只開放「讀取使用者」和「讀取訂單」的權限，並設定 1 小時的有效期"
+          },
+          {
+            "value": "c",
+            "label": "給 Agent 可以讀寫所有資料的 token，但在程式碼裡限制它只用讀取功能"
+          },
+          {
+            "value": "d",
+            "label": "定期更換 Admin token，這樣即使外洩也不怕"
+          }
+        ],
+        "answer": "b",
+        "explanation": "權限最小化的核心是「只給絕對必要的權限」。選項 b 符合課程原則：readonly（讀不寫）、具體 scope（明確指定哪些功能）、短 TTL（1 小時到期）。選項 a 和 c 都違反最小化原則，選項 d 只是被動防禦、不符合主動的最小化設計。"
+      }
     },
     {
       "id": "49.19",
@@ -1217,7 +1700,30 @@
           "level": 3,
           "text": "Scale 議題"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "為什麼 Production 環境中，agent 任務不能直接在 API 的 request-response 循環內執行（即使用同步方式）？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 agent 執行時間長（30 秒到 5 分鐘），會讓使用者長時間等待，影響用戶體驗"
+          },
+          {
+            "value": "b",
+            "label": "因為同步執行會讓伺服器無法處理其他 request，導致效能下降"
+          },
+          {
+            "value": "c",
+            "label": "因為 agent 需要存取外部 API，同步方式容易超時"
+          },
+          {
+            "value": "d",
+            "label": "因為監控工具（如 Langfuse）無法追蹤同步的 agent 執行"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確說『Agent 動輒 30 秒-5 分鐘、不能讓使用者等』，這就是為什麼要用 Streaming（短任務）或 Queue + Worker（長任務）的非同步架構。選項 b 是傳統伺服器知識但不是重點，c 和 d 都超出課程範圍。"
+      }
     },
     {
       "id": "49.20",
@@ -1262,7 +1768,30 @@
           "level": 3,
           "text": "真實案例：debugging 一個失敗 SDR Agent"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，下列哪一種做法最能同時防止「無限迴圈」和「失憶」這兩個 Agent 失敗模式？",
+        "options": [
+          {
+            "value": "a",
+            "label": "設定 max_steps 上限，防止 Agent 執行太多步驟"
+          },
+          {
+            "value": "b",
+            "label": "偵測重複工具呼叫，並每隔幾步重新注入原始目標到 context"
+          },
+          {
+            "value": "c",
+            "label": "使用 temperature=0 來確保每次執行結果一致"
+          },
+          {
+            "value": "d",
+            "label": "建立完整的 eval suite 測試所有可能的失敗情況"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確指出無限迴圈的解法是「偵測重複（同樣 tool + input 連續 3 次）」，失憶的解法是「每幾步把目標重新 inject」。選項 b 同時結合了這兩個防護機制。其他選項只能應對單一問題或無法直接防止這兩種失敗。"
+      }
     },
     {
       "id": "49.21",
@@ -1319,7 +1848,30 @@
           "level": 3,
           "text": "複雜性管理"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這堂課，為什麼不能單獨用 RAG 來解決保險理賠問題？",
+        "options": [
+          {
+            "value": "a",
+            "label": "RAG 只能查知識，不能看照片和執行理賠動作"
+          },
+          {
+            "value": "b",
+            "label": "RAG 太貴，無法大規模應用"
+          },
+          {
+            "value": "c",
+            "label": "RAG 無法連接公司的資料庫系統"
+          },
+          {
+            "value": "d",
+            "label": "RAG 在 2026 年技術還不成熟"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調『純 RAG：知道知識、但不會做事』，保險理賠需要三能力：看照片（多模態）、查理賠 SOP（RAG）、執行動作如計算理賠金（Agent），單靠 RAG 只能做第二項。"
+      }
     },
     {
       "id": "49.22",
@@ -1375,7 +1927,30 @@
           "level": 3,
           "text": "學習 path 建議"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這堂課的 2026-2030 趨勢分析，indie hacker 最容易賺錢的機會在哪裡？",
+        "options": [
+          {
+            "value": "a",
+            "label": "做一個通用的 Agent 平台，競爭大公司像 OpenAI 和 Devin"
+          },
+          {
+            "value": "b",
+            "label": "找垂直行業（如診所、律師）或在地化需求，用 Agent 解決他們特定的痛點"
+          },
+          {
+            "value": "c",
+            "label": "包裝 GPT API，做一個簡單的 Agent wrapper 就能快速上市"
+          },
+          {
+            "value": "d",
+            "label": "專注在 Excel 和 Notion 的 AI 整合，因為用戶量最大"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確指出 indie 的 sweet spot 是「垂直行業 Agent」和「在地化 Agent」——大公司不做的小市場。而通用 Agent（選項a）、純 wrapper（選項c）和「Excel/Notion + AI」（選項d）都在「什麼別做」的清單裡，因為大廠會自己做、沒有護城河。"
+      }
     },
     {
       "title": "Multi-Agent 架構：多個 AI 分工合作",
@@ -1440,7 +2015,30 @@
           "level": 2,
           "text": "框架選擇"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在設計一個自動程式碼審查系統，需要讓「風格檢查員」、「資安審計員」、「效能檢查員」三個 agent 同時檢視一份 PR，然後整合結果。根據課程內容，下列哪個通訊模式最適合這個場景？",
+        "options": [
+          {
+            "value": "a",
+            "label": "集中式（透過 Supervisor Agent 負責分派和整合）"
+          },
+          {
+            "value": "b",
+            "label": "點對點（三個 agent 直接互相傳訊息）"
+          },
+          {
+            "value": "c",
+            "label": "階層式（設立一個 sub-supervisor 管理三個檢查員）"
+          },
+          {
+            "value": "d",
+            "label": "廣播式（同時發送訊息給所有 agent，各自回報）"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程在「PR 自動 review 實戰例」中用 Promise.all 同時執行多個檢查，再透過 integrateReports 統整結果——這正是集中式（Supervisor）的典型做法。Supervisor 決定派誰做、收集結果、最後整合，debug 最容易。點對點會造成三個 agent 互相通訊混亂，階層式是大專案用，廢答則超出課程範圍。"
+      }
     },
     {
       "title": "Memory 系統：讓 AI 記得長期 context",
@@ -1497,7 +2095,30 @@
           "level": 2,
           "text": "記憶壓縮（Summary）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在建立一個 AI 助理，使用者問「我上次提到的咖啡館叫什麼名字？」但這個資訊是一週前講的，已經不在最近的對話紀錄裡。你應該用哪種 memory 系統來解決這個問題？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Short-term（context window）—直接放在 prompt 裡查詢"
+          },
+          {
+            "value": "b",
+            "label": "Long-term Semantic Memory（向量資料庫）—搜尋相關事實"
+          },
+          {
+            "value": "c",
+            "label": "Long-term Episodic Memory（SQL 表格）—查詢過去的對話紀錄"
+          },
+          {
+            "value": "d",
+            "label": "記憶壓縮—先把舊對話摘要才能查詢"
+          }
+        ],
+        "answer": "b",
+        "explanation": "咖啡館名字是使用者說過的「重要事實」，應該用 Vector DB 存語義記憶、用相似度搜尋取出。Episodic Memory 也能用，但課程強調 Semantic Memory 是專門為「抽取和查詢事實」設計的；Short-term 放不了一週前的資訊；記憶壓縮是為了管理記憶量、不是為了查詢特定資訊。"
+      }
     },
     {
       "title": "Computer Use / Browser Use：AI 操作電腦",
@@ -1550,7 +2171,30 @@
           "level": 2,
           "text": "2026 主流工具"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "如果你要用 AI 自動化去蝦皮買東西，以下哪個說法最正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Computer Use / Browser Use 讓 AI 可以看到螢幕、點擊、輸入文字，自動完成跨網站的任務，但速度慢、成本高、需要做好風險控管"
+          },
+          {
+            "value": "b",
+            "label": "Browser-use 是 Anthropic 官方工具，功能最強大，免費使用，速度和人工一樣快"
+          },
+          {
+            "value": "c",
+            "label": "用 Computer Use 操作電腦時，不需要截圖，AI 可以直接感知螢幕內容，所以成本很低"
+          },
+          {
+            "value": "d",
+            "label": "把帳號密碼直接給 AI 用最方便，因為 AI 不會外洩資料"
+          }
+        ],
+        "answer": "a",
+        "explanation": "這課的核心是：Computer Use / Browser Use 的能力（可以自動化複雜任務）與限制（慢、貴、有風險）要同時理解。選項 b 混淆了工具、選項 c 誤解了工作原理（每步都要截圖），選項 d 違反安全最佳實踐。"
+      }
     }
   ],
   "boss": {
@@ -1564,5 +2208,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "Agent 是能自主規劃、呼叫工具、反覆思考的 AI 系統，比單純 LLM 聰明一個檔次",
+    "ReAct 讓 Agent 邊思考邊行動，Plan-and-Execute 先計畫再執行，各有優劣",
+    "Memory 系統讓 Agent 記住長期上下文，多 Agent 分工讓複雜任務並行處理",
+    "Tool Use、Computer Use、Browser Use 是 Agent 與外界互動的三種方式",
+    "Production 部署要考慮 sandbox 安全、成本預算、失敗除錯、監控告警"
+  ],
+  "faq": [
+    {
+      "q": "Agent 跟我平常用的 ChatGPT 有什麼不同？",
+      "a": "ChatGPT 回答完就停，Agent 會自己決定要用哪個工具、看結果再想下一步，能解決需要多步驟的複雜問題。簡單說，Agent 有「自主權」。"
+    },
+    {
+      "q": "學 Agent 一定要會寫程式嗎？",
+      "a": "不一定。這章前面有完整無程式碼教學，用現成框架把 Agent 組裝起來。後面的實作課才涉及扣，但也會一步步帶。"
+    },
+    {
+      "q": "Agent 會不會亂用工具、花我一堆錢？",
+      "a": "會啦，這很常見。所以後面會教 budget 限制、sandbox 隔離、權限管理，確保 Agent 在你能控制的範圍內行動。"
+    }
+  ]
 }

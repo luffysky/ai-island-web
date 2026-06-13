@@ -79,7 +79,30 @@
           "level": 2,
           "text": "框架"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，什麼是 PWA 最核心的優勢？",
+        "options": [
+          {
+            "value": "a",
+            "label": "一份程式碼可以跨平台使用，不用分別開發 iOS 和 Android 版本，同時避免 App Store 抽成和審核"
+          },
+          {
+            "value": "b",
+            "label": "PWA 可以完全取代原生 App，所有功能都比原生 App 更強大"
+          },
+          {
+            "value": "c",
+            "label": "PWA 不需要使用者安裝任何東西，打開網址就能像 App 一樣使用"
+          },
+          {
+            "value": "d",
+            "label": "PWA 能在 App Store 上架，而且下載速度比原生 App 快很多"
+          }
+        ],
+        "answer": "a",
+        "explanation": "PWA 的核心價值就是「一份 code 跨平台」加上「不過 App Store 審核和分潤」。選項 b 過度承諾（PWA 有限制），選項 c 誤導（還是要安裝到主畫面），選項 d 錯誤（PWA 反而找不到 App Store）。"
+      }
     },
     {
       "title": "Service Worker：PWA 心臟",
@@ -148,7 +171,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的網站用 Service Worker 做快取策略，有些是靜態資源（CSS、圖片），有些是 API 資料會經常更新。下列哪個做法最恰當？",
+        "options": [
+          {
+            "value": "a",
+            "label": "靜態資源用 Cache First，API 資料用 Network First"
+          },
+          {
+            "value": "b",
+            "label": "靜態資源和 API 資料都用 Cache First，這樣最快"
+          },
+          {
+            "value": "c",
+            "label": "靜態資源和 API 資料都用 Network First，確保資料最新"
+          },
+          {
+            "value": "d",
+            "label": "不用分類，全部用 Stale While Revalidate 就可以"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Cache First 適合不常改變的靜態資源（快速載入），Network First 適合會變動的 API 資料（優先取最新）。分類使用才能既快又能保證資料新鮮度。"
+      }
     },
     {
       "title": "Web App Manifest",
@@ -209,7 +255,30 @@
           "level": 2,
           "text": "測試"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "如果你想讓使用者在 Android 手機上點擊「安裝應用程式」按鈕來加入你的 Web App，需要在 JavaScript 裡監聽哪個事件？",
+        "options": [
+          {
+            "value": "a",
+            "label": "beforeinstallprompt"
+          },
+          {
+            "value": "b",
+            "label": "oninstall"
+          },
+          {
+            "value": "c",
+            "label": "installprompt"
+          },
+          {
+            "value": "d",
+            "label": "beforeaddtohomescreen"
+          }
+        ],
+        "answer": "a",
+        "explanation": "beforeinstallprompt 是 Android 瀏覽器觸發的事件，開發者可以攔截它（preventDefault）並保存事件物件，之後在自己的按鈕上呼叫 prompt() 來顯示安裝提示。iOS 不支援這個事件，需要改用手動教學。"
+      }
     },
     {
       "title": "離線 + Background Sync",
@@ -266,7 +335,30 @@
           "level": 2,
           "text": "樂觀更新"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "小明的 App 在離線時使用者新增了一筆文章，但網路一直沒有恢復。根據這課的 Background Sync 做法，這筆文章資料應該儲存在哪裡，才能確保網路恢復後能自動同步上傳？",
+        "options": [
+          {
+            "value": "a",
+            "label": "IndexedDB 的 pending-posts 資料表"
+          },
+          {
+            "value": "b",
+            "label": "Service Worker 的全域變數"
+          },
+          {
+            "value": "c",
+            "label": "Browser Cache（caches API）"
+          },
+          {
+            "value": "d",
+            "label": "LocalStorage"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程中示範當 fetch 失敗時，用 `db.put('pending-posts', post)` 存入 IndexedDB，再透過 Background Sync 的 sync 事件觸發上傳。IndexedDB 是結構化資料的持久儲存，最適合存待同步的資料；其他選項都沒有課程內容支持或不夠適合。"
+      }
     },
     {
       "title": "Push Notification（PWA）",
@@ -331,7 +423,30 @@
           "level": 2,
           "text": "監控"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "如果你要用 PWA 發送推播通知給使用者，以下哪個步驟順序是正確的？",
+        "options": [
+          {
+            "value": "a",
+            "label": "先用 Notification.requestPermission() 取得權限 → 用 pushManager.subscribe() 訂閱 → 把訂閱資訊存到後端 → 後端用 VAPID 密鑰發送通知"
+          },
+          {
+            "value": "b",
+            "label": "直接在後端用 VAPID 公鑰發送通知 → Service Worker 接收 → 請求使用者權限"
+          },
+          {
+            "value": "c",
+            "label": "先建立 Service Worker → 直接發送通知 → 使用者同意權限"
+          },
+          {
+            "value": "d",
+            "label": "使用者點擊按鈕 → 訂閱推播 → 後端發送 → 不需要存儲任何訂閱資訊"
+          }
+        ],
+        "answer": "a",
+        "explanation": "正確的流程是：1. 先請求權限（requestPermission）2. 訂閱推播（pushManager.subscribe）並轉換 VAPID 公鑰 3. 把訂閱物件傳到後端保存 4. 後端才能用 VAPID 私鑰發送通知。選項 b 順序錯（要先取權限），c 沒有提到 pushManager，d 忽略了訂閱資訊必須存到後端的重要步驟。"
+      }
     },
     {
       "title": "PWA 安裝 + iOS 處理",
@@ -392,7 +507,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的 PWA 要同時支援 Android 和 iOS。根據這課內容，下列敘述哪一個正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Android 和 iOS 都會自動跳出安裝提示，所以可以用同一套程式碼處理"
+          },
+          {
+            "value": "b",
+            "label": "Android 會自動跳安裝提示，iOS 需要手動指引使用者透過 Safari 的「Share」→「加入主畫面」"
+          },
+          {
+            "value": "c",
+            "label": "iOS 比較進階，會自動跳安裝提示，Android 反而要手動教"
+          },
+          {
+            "value": "d",
+            "label": "兩個平台都要強制使用者安裝，才能確保 PWA 正常運作"
+          }
+        ],
+        "answer": "b",
+        "explanation": "這課的核心就是兩個平台差異——Android 有 beforeinstallprompt 事件會自動顯示安裝提示，iOS 沒有這個機制，必須手動引導使用者用 Share 來加入主畫面。選項 a 忽略了平台差異、c 顛倒了、d 違反「不要強迫安裝」的心法。"
+      }
     },
     {
       "title": "Capacitor / Tauri：PWA 變 App",
@@ -477,7 +615,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你用 React 寫了一個 PWA，現在想同時上架到 iOS、Android 和 Desktop。根據課程的「Indie 路線」，最合理的做法是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "先用 Capacitor 包 iOS/Android，再用 Tauri 2.0 加 Desktop 版本"
+          },
+          {
+            "value": "b",
+            "label": "直接選 Tauri 2.0，因為它一次支援三個平台"
+          },
+          {
+            "value": "c",
+            "label": "分別用 Capacitor（行動裝置）、Electron（Desktop），因為生態最大"
+          },
+          {
+            "value": "d",
+            "label": "先上 PWA，再根據需求逐步加 Capacitor 或 Tauri"
+          }
+        ],
+        "answer": "d",
+        "explanation": "課程心法強調「先 PWA、夠用就停，需原生→Capacitor，想 Desktop→Tauri」，以及「Indie 路線」的三步驟：1. PWA 2. 加 Capacitor 3. 加 Tauri。選項 a/b 跳過驗證 PWA 的步驟，選項 c 違背「一份程式碼多平台」的核心概念。"
+      }
     },
     {
       "title": "PWA 效能優化",
@@ -574,7 +735,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的 PWA 要達到真正的 App 等級體驗，以下哪一個是「最直接影響首屏加載速度」的優化策略？",
+        "options": [
+          {
+            "value": "a",
+            "label": "使用 App Shell 框架先存入 cache，立刻顯示骨架，再慢慢載入內容"
+          },
+          {
+            "value": "b",
+            "label": "所有圖片都改用 WebP 格式，並設置 srcset 讓不同裝置載不同大小"
+          },
+          {
+            "value": "c",
+            "label": "在 Service Worker 對所有資源都採用 Cache First 策略"
+          },
+          {
+            "value": "d",
+            "label": "把 API 改成 GraphQL，這樣能減少不必要的資料傳輸"
+          }
+        ],
+        "answer": "a",
+        "explanation": "App Shell 是專門為首屏設計的模式：框架 HTML/CSS 先從 cache 取出秒開，使用者馬上看到 Skeleton UI，體驗上就像 App 啟動一樣快。選項 b、d 是有幫助但不是「最直接」的首屏優化；選項 c 對所有資源用 Cache First 反而容易載到舊資料。"
+      }
     },
     {
       "title": "PWA 接案 + 學習路徑",
@@ -678,7 +862,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，如果你想以最快速度進入 PWA 接案市場並開始賺錢，應該優先選擇哪一個接案類型？",
+        "options": [
+          {
+            "value": "a",
+            "label": "PWA 改造，因為價格低但週期短，可以快速累積案件和經驗"
+          },
+          {
+            "value": "b",
+            "label": "PWA + 上 Store，因為費用高達 50-200k，賺錢最快"
+          },
+          {
+            "value": "c",
+            "label": "PWA + 客製，因為可以收 100-500k，一案抵多案"
+          },
+          {
+            "value": "d",
+            "label": "維護合約，因為月費穩定，不用重複開發"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調 PWA 改造是 1-3 週的短週期案件（NT$ 20-80k），最適合新手快速累積實戰經驗和建立作品集，為後續更大型案件打基礎。雖然單價不是最高，但週期短、易成交，更符合『快速進入接案市場』的目標。"
+      }
     },
     {
       "title": "PWA 適合什麼？不適合什麼？",
@@ -758,7 +965,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在開發一個「線上筆記應用」，功能包括寫筆記、分享、評論，不需要相機或藍牙。根據課程內容，PWA 適不適合？為什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "非常適合。這是內容導向 App，PWA 能完全勝任，而且開發快、成本低。"
+          },
+          {
+            "value": "b",
+            "label": "不太適合。線上筆記需要重度原生功能，還是用 React Native 比較好。"
+          },
+          {
+            "value": "c",
+            "label": "看情況。如果要上 App Store 曝光，就必須改用原生 App。"
+          },
+          {
+            "value": "d",
+            "label": "完全不適合。所有筆記應用都應該用原生技術開發。"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確提到「內容導向」（部落格、文件、wiki）與簡單社群功能（訊息、評論、分享）都非常適合 PWA。線上筆記應用正符合這兩個特徵，加上不需原生 API，是 PWA 的最佳使用場景。選項 b、c、d 都誤解了 PWA 的適用時機。"
+      }
     },
     {
       "title": "Web Manifest 進階",
@@ -823,7 +1053,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想讓使用者在 PWA 上長按 App 圖示時，能看到「今天的 lesson」和「排行榜」這兩個快速選單。應該在 manifest.json 中使用哪個欄位來設定？",
+        "options": [
+          {
+            "value": "a",
+            "label": "shortcuts"
+          },
+          {
+            "value": "b",
+            "label": "display"
+          },
+          {
+            "value": "c",
+            "label": "share_target"
+          },
+          {
+            "value": "d",
+            "label": "screenshots"
+          }
+        ],
+        "answer": "a",
+        "explanation": "shortcuts 欄位就是用來設定長按 icon 時顯示的快捷選單。display 控制顯示模式、share_target 用於接收分享、screenshots 是安裝時的預覽，都不是這個功能。"
+      }
     },
     {
       "title": "Service Worker 完整生命週期",
@@ -904,7 +1157,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "Service Worker 更新時，如果舊版還在執行、新版已經安裝完成，新版預設會進入什麼狀態？",
+        "options": [
+          {
+            "value": "a",
+            "label": "立刻進入 activate，接管所有頁面"
+          },
+          {
+            "value": "b",
+            "label": "進入 waiting 狀態，等舊版停止後才 activate"
+          },
+          {
+            "value": "c",
+            "label": "進入 idle 狀態，等待 fetch 事件觸發"
+          },
+          {
+            "value": "d",
+            "label": "進入 terminated，被系統回收"
+          }
+        ],
+        "answer": "b",
+        "explanation": "新版 SW 安裝完成後預設進 waiting 狀態，因為舊版還控制著使用者的頁面。只有呼叫 skipWaiting() 或使用者關閉舊頁面，新版才能進 activate 接管；這就是課程強調的「處理更新衝突」的核心。"
+      }
     },
     {
       "title": "Cache 策略深入",
@@ -965,7 +1241,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的 App 有一個使用者頭像圖片，使用者不會常常改頭像，但偶爾會換。用戶網路有時候不穩定。應該用哪個 Cache 策略最合適？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Cache First — 直接從快取拿，永遠不問網路"
+          },
+          {
+            "value": "b",
+            "label": "Stale While Revalidate — 先給快取的舊圖片，背景偷偷更新"
+          },
+          {
+            "value": "c",
+            "label": "Network First — 一定要從網路拿最新的，才不會顯示舊頭像"
+          },
+          {
+            "value": "d",
+            "label": "Network Only — 完全不用快取，每次都打網路"
+          }
+        ],
+        "answer": "b",
+        "explanation": "頭像是課堂明確提到 SWR 的例子。使用者偶爾會換（需要更新），但不是急需最新（可以先給舊的），且網路不穩時要有備份，所以 SWR 最平衡——快速給 cache、背景更新、網路爛時也不會卡。"
+      }
     },
     {
       "title": "IndexedDB 實戰",
@@ -1022,7 +1321,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的應用要存 30MB 的使用者課程資料，需要離線時能快速查詢特定章節的所有課程。下列做法何者最恰當？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 localStorage 存所有課程資料，因為原生 API 最簡單"
+          },
+          {
+            "value": "b",
+            "label": "用 IndexedDB 搭配 idb library，並在 upgrade 時為章節 ID 建立索引"
+          },
+          {
+            "value": "c",
+            "label": "用 localStorage 存課程標題，用其他方式存詳細資料"
+          },
+          {
+            "value": "d",
+            "label": "用 IndexedDB 但不用 idb library，直接用原生 API"
+          }
+        ],
+        "answer": "b",
+        "explanation": "IndexedDB 容量足夠（50%+ disk），idb library 提供簡潔 API，索引讓快速查詢特定章節成為可能。localStorage 只支援 5MB 且無索引功能，不符合需求。"
+      }
     },
     {
       "title": "Background Sync + Periodic Sync",
@@ -1071,7 +1393,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "小王在開發一個 PWA 應用，使用者離線時按了「發表文章」按鈕，但因為沒網路導致失敗。根據 Background Sync 的設計理念，應該怎麼做才最符合「離線優先」的使用體驗？",
+        "options": [
+          {
+            "value": "a",
+            "label": "先把文章存進本地資料庫，UI 立刻顯示發表成功，一上線自動同步到伺服器"
+          },
+          {
+            "value": "b",
+            "label": "顯示錯誤提示，要求使用者手動重新點一次「發表」按鈕，直到網路恢復"
+          },
+          {
+            "value": "c",
+            "label": "等待網路連線，連線成功後再更新 UI 讓使用者知道發表完成"
+          },
+          {
+            "value": "d",
+            "label": "使用 Periodic Sync 設定每分鐘檢查一次，自動重新上傳所有失敗的文章"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Background Sync 的核心是『樂觀更新』——離線時先存本地、UI 立刻反應，使用者感覺很快；網路恢復後在背景自動同步，不需使用者干預。選項 b 破壞體驗、選項 c 違反離線優先、選項 d 用錯工具（Periodic Sync 是定時檢查，不是事件驅動）。"
+      }
     },
     {
       "title": "Push Notification 完整流程",
@@ -1140,7 +1485,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在 Push Notification 的完整流程中，如果使用者已經訂閱了通知，但後來在手機設定中關閉了 App 的通知權限，伺服器再次推送時會發生什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "通知會正常傳送到手機"
+          },
+          {
+            "value": "b",
+            "label": "伺服器會收到錯誤，應該偵測到狀態碼 410 並從資料庫刪除該訂閱"
+          },
+          {
+            "value": "c",
+            "label": "VAPID 金鑰會自動失效，需要重新產生"
+          },
+          {
+            "value": "d",
+            "label": "Service Worker 會自動請求使用者重新授權"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程第 4 步的 server 推送程式碼明確提到：當 webpush.sendNotification 收到狀態碼 410（表示訂閱已失效），就應該刪除該使用者的訂閱記錄。選項 a 忽視了權限關閉的影響，c 和 d 都不是伺服器應該做的事。"
+      }
     },
     {
       "title": "Offline UX 設計",
@@ -1201,7 +1569,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據 Offline UX 設計的五大原則，當使用者網路斷線時，最重要的做法是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "立刻顯示離線狀態提示，同時讓使用者能繼續看已快取的內容"
+          },
+          {
+            "value": "b",
+            "label": "禁用所有功能按鈕，等使用者恢復連網後再使用"
+          },
+          {
+            "value": "c",
+            "label": "隱藏所有互動元素，只顯示一個連線狀態指示器"
+          },
+          {
+            "value": "d",
+            "label": "自動刪除本機快取，防止顯示過時資料"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Offline UX 的核心是「不拋棄使用者」——要同時做到三件事：(1) 清楚提示現在離線，(2) 提供快取內容讓他繼續使用，(3) 寫入操作 optimistic 後排隊同步。選項 b、c、d 都是被動放棄服務的做法，違反了課程的心法「不要 silent fail、cache 過的全可用」。"
+      }
     },
     {
       "title": "Capacitor 進階整合",
@@ -1294,7 +1685,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你用 Capacitor 做好一個 PWA 應用，現在想在 iOS 和 Android 上都能用手機相機功能。下面的做法哪一個最符合 Capacitor 的正確工作流？",
+        "options": [
+          {
+            "value": "a",
+            "label": "先執行 npm run build，再用 npx cap sync 同步到原生平台，然後在程式裡用 Camera API 呼叫相機"
+          },
+          {
+            "value": "b",
+            "label": "直接在 Xcode 和 Android Studio 裡分別寫原生程式碼來實現相機功能"
+          },
+          {
+            "value": "c",
+            "label": "用 localStorage 存相機照片的路徑，Capacitor 會自動轉換成原生相機"
+          },
+          {
+            "value": "d",
+            "label": "只需要 npm install @capacitor/camera，就能在網頁上直接使用原生相機，不用 sync"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Capacitor 的標準流程是：Web 先 build → npx cap sync 同步原生檔案 → 用 Capacitor 提供的 API（如 Camera）在程式裡呼叫原生功能。選項 b 違反「90% code 共用」的精神、c 和 d 都誤解了 Capacitor 的實際運作方式。"
+      }
     },
     {
       "title": "PWA 安裝率 + Engagement 優化",
@@ -1383,7 +1797,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你是一個 PWA 產品經理。現在有兩個方案：方案 A 是用戶進站馬上彈 Install 提示，方案 B 是等用戶完成一個 action（比如完成一堂課）後再提示。根據本課內容，哪個方案會更有效？",
+        "options": [
+          {
+            "value": "a",
+            "label": "方案 A 更好，因為越早提示安裝率越高"
+          },
+          {
+            "value": "b",
+            "label": "方案 B 更好，因為等用戶 engage 後再提示，安裝率和留存都會更好"
+          },
+          {
+            "value": "c",
+            "label": "兩個方案差不多，重點是推播通知夠多"
+          },
+          {
+            "value": "d",
+            "label": "應該同時用 A 和 B，這樣安裝數最多"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調「等用戶 engage 再提示」，不要一進站就提示。更重要的是，安裝只是手段、retention 才是目標——方案 B 的用戶已經有興趣（願意完成 action），後續留存率會更好。方案 A 則會浪費提示機會、降低轉化率。"
+      }
     },
     {
       "title": "PWA 接案：報價 + 流程",
@@ -1479,7 +1916,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，如果客戶要把現有網站升級成 PWA，並且希望後續能上架到 App Store，你應該採用哪一種接案類型來報價？",
+        "options": [
+          {
+            "value": "a",
+            "label": "PWA 改造（現有 web 升級），報價 NT$ 20-80k"
+          },
+          {
+            "value": "b",
+            "label": "PWA 改造 + Capacitor，報價 NT$ 150-800k，2-4 月完成"
+          },
+          {
+            "value": "c",
+            "label": "PWA 全新建（含後端），報價 NT$ 100-500k，1-3 月"
+          },
+          {
+            "value": "d",
+            "label": "只收月費維護 NT$ 5-30k/月，不用一次性報價"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確列出「PWA + Capacitor（上 App Store）」是用來升級現有網站並需要上架的類型。如果只用改造方案（a），無法上架 App Store；全新建（c）是針對沒有既有網站的情況；月費維護（d）只是後續服務，不是初期接案方式。"
+      }
     },
     {
       "title": "PWA 部署 + CI/CD",
@@ -1588,7 +2048,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在 Vercel 上部署 Next.js PWA，現在想要每次推 PR 都自動產生一個獨立的測試網址讓團隊檢查。以下做法哪個最符合 Vercel 的內建功能？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Vercel 會自動幫每個 PR 生成 Preview URL，不用額外設定"
+          },
+          {
+            "value": "b",
+            "label": "需要在 `.github/workflows` 手動寫 script 才能為 PR 建立預覽網址"
+          },
+          {
+            "value": "c",
+            "label": "必須在 Netlify 上設定才有 PR preview 的功能"
+          },
+          {
+            "value": "d",
+            "label": "要用 Cloudflare Workers 才能支援多個預覽環境"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確提到 Vercel 的核心優勢就是『每個 PR → 獨立 preview URL』，這是內建自動功能。GitHub 連接後無需額外設定即可啟用。其他選項都是誤導或混淆其他平台的特性。"
+      }
     },
     {
       "title": "PWA 心法 + 給 Indie 的建議",
@@ -1696,7 +2179,30 @@
           "level": 2,
           "text": "終極心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程的 PWA 心法，下列哪個想法最符合「Indie 該有的正確心態」？",
+        "options": [
+          {
+            "value": "a",
+            "label": "每個 web 產品都應該做 PWA，因為 PWA 是未來趨勢"
+          },
+          {
+            "value": "b",
+            "label": "PWA 是手段不是目的，要先看產品需求，再決定值不值得做"
+          },
+          {
+            "value": "c",
+            "label": "一定要用 Capacitor 搭配 PWA，才能稱得上真正的 App"
+          },
+          {
+            "value": "d",
+            "label": "Push notification 功能越多越好，要每天推送讓用戶記住你"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調 PWA 不是所有 web 都該做（部落格可以但不必、簡單 landing 不需要），終極心法是「PWA 是手段、不是目的」。選項 a 過度絕對、c 不符合「別 over-engineer」、d 違反「Push 用克制、每天≤1」的原則。"
+      }
     }
   ],
   "boss": {
@@ -1710,5 +2216,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "PWA 是用現代網頁技術（Service Worker、Manifest）做出可安裝、可離線、可推播的 Web App。",
+    "Service Worker 是一隻背景 Worker，負責攔截網路請求、管理快取、讓網頁離線也能跑。",
+    "Web Manifest 是一份 JSON 檔，定義 App 的名字、圖示、顏色、啟動 URL，讓瀏覽器知道怎麼安裝它。",
+    "離線 + 推播 + 背景同步是 PWA 的殺手級功能，讓使用者即使沒網路也能用、也能接收通知。",
+    "Capacitor / Tauri 可以把 PWA 包成真正的原生 App，上架 App Store / Google Play，享受更好的系統整合。"
+  ],
+  "faq": [
+    {
+      "q": "PWA 和一般網頁有什麼差？為什麼不直接做原生 App？",
+      "a": "PWA 可以安裝到桌面 / 手機首頁、離線能用、支援推播，體驗接近原生 App。但開發成本只有原生 App 的一半，因為你用同一套網頁代碼跑所有平台。缺點是系統整合度不如原生 App，某些硬體功能（相機、藍牙）支援度有限。"
+    },
+    {
+      "q": "我沒學過 Service Worker，這章會很難嗎？",
+      "a": "不會。我們會從零教你 Service Worker 是什麼、怎麼寫，把它當作一隻負責快取和離線的背景工人來理解。重點是看懂生命週期和快取策略，不需要你已經會進階 JavaScript。"
+    },
+    {
+      "q": "學 PWA 可以接案嗎？",
+      "a": "可以。但 PWA 接案不像一般網頁那麼常見，通常是給已經有網頁的客戶升級成 PWA、或是 Indie 自己用來減少 App 開發成本。我們會教你評估專案適不適合 PWA、怎麼跟客戶報價。"
+    }
+  ]
 }

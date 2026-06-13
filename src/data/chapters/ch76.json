@@ -78,7 +78,30 @@
           "text": "🎯 重點回顧",
           "level": 3
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，Angular 相比 React 最大的優勢是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Angular 的執行速度比 React 快很多"
+          },
+          {
+            "value": "b",
+            "label": "Angular 是全配框架，路由、表單、HTTP 等功能都內建，不用自己選套件拼裝"
+          },
+          {
+            "value": "c",
+            "label": "Angular 比 React 更容易上手，新手學習曲線更平緩"
+          },
+          {
+            "value": "d",
+            "label": "Angular 的生態系統比 React 更大，可用的第三方套件更多"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確指出 Angular 的定位是「全配」框架，內建路由、表單、HTTP、依賴注入等，而 React 是函式庫，要自己拼裝。這正是企業愛 Angular 的主要原因。選項 a、c、d 都不符合課程重點。"
+      }
     },
     {
       "id": "76.2",
@@ -127,7 +150,30 @@
           "text": "🎯 重點回顧",
           "level": 3
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這堂課，Angular CLI 最方便的功能是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 ng generate 自動產生元件、服務等程式碼，不用手刻樣板"
+          },
+          {
+            "value": "b",
+            "label": "用 ng serve 可以在本地端看到網站效果"
+          },
+          {
+            "value": "c",
+            "label": "用 ng build 可以把專案打包成可上線的檔案"
+          },
+          {
+            "value": "d",
+            "label": "用 npm install 可以快速安裝所有需要的套件"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調 ng generate（ng g）是 CLI 最方便之處，能自動產檔不用手刻樣板，並確保團隊程式碼結構一致。b、c、d 雖然也是 CLI 的功能，但不是課程著重的「最方便」核心賣點。"
+      }
     },
     {
       "id": "76.3",
@@ -172,7 +218,30 @@
           "text": "🎯 重點回顧",
           "level": 3
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "關於 Standalone Component，下列敘述何者正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Standalone Component 需要在 NgModule 裡登記才能使用"
+          },
+          {
+            "value": "b",
+            "label": "Standalone Component 用 standalone: true 設定，免去 NgModule 登記，想用就直接 import"
+          },
+          {
+            "value": "c",
+            "label": "Component 的 selector 是用來存放元件的邏輯程式碼"
+          },
+          {
+            "value": "d",
+            "label": "Template 裡用 {{ name }} 是 Angular 的資料綁定語法，但 Standalone 不支援"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Standalone Component 的核心進步就是免去舊時代要在 NgModule 登記的囉嗦，設定 standalone: true 後就能自帶依賴、直接 import 使用。選項 a 說反了、c 混淆了 selector（標籤名）的用途、d 則錯在 Standalone 完全支援插值語法。"
+      }
     },
     {
       "id": "76.4",
@@ -217,7 +286,30 @@
           "text": "🎯 重點回顧",
           "level": 3
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想在 Angular 模板中根據一個布林變數 isDisabled 的值，動態控制按鈕是否能點擊。下列哪個寫法正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "<button [disabled]=\"isDisabled\">送出</button>"
+          },
+          {
+            "value": "b",
+            "label": "<button (disabled)=\"isDisabled\">送出</button>"
+          },
+          {
+            "value": "c",
+            "label": "<button {{ disabled }}=\"isDisabled\">送出</button>"
+          },
+          {
+            "value": "d",
+            "label": "<button disabled=\"{{ isDisabled }}\">送出</button>"
+          }
+        ],
+        "answer": "a",
+        "explanation": "屬性綁定用中括號 [ ]，代表資料往內「進」到 DOM 屬性。[disabled] 會根據 isDisabled 的值動態設定按鈕的停用狀態。選項 b 用小括號是事件綁定（錯誤用途），c 和 d 是不正確的語法。"
+      }
     },
     {
       "id": "76.5",
@@ -262,7 +354,30 @@
           "text": "🎯 重點回顧",
           "level": 3
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在 Angular 17 的 @for 迴圈中，為什麼一定要寫 track？",
+        "options": [
+          {
+            "value": "a",
+            "label": "讓 Angular 知道每筆資料的身分，更新時只重新渲染有變化的項目，提升效能"
+          },
+          {
+            "value": "b",
+            "label": "用來追蹤迴圈執行的次數，防止無窮迴圈"
+          },
+          {
+            "value": "c",
+            "label": "讓清單的順序保持不變，避免資料被排序"
+          },
+          {
+            "value": "d",
+            "label": "用來綁定事件監聽器，讓每個項目都能響應點擊"
+          }
+        ],
+        "answer": "a",
+        "explanation": "track 的作用就像 React 的 key，它告訴 Angular 如何識別清單中的每一筆資料。Angular 更新清單時，只會重新渲染有實際變化的項目，而不是整個清單都重新算一遍，這是效能優化的關鍵。其他選項都是誤解 track 的用途。"
+      }
     },
     {
       "id": "76.6",
@@ -307,7 +422,30 @@
           "text": "🎯 重點回顧",
           "level": 3
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在 Angular Signal 中，下面這段程式碼執行後，count 的值會是多少？",
+        "options": [
+          {
+            "value": "a",
+            "label": "1"
+          },
+          {
+            "value": "b",
+            "label": "5"
+          },
+          {
+            "value": "c",
+            "label": "6"
+          },
+          {
+            "value": "d",
+            "label": "0"
+          }
+        ],
+        "answer": "c",
+        "explanation": "count.set(5) 先把值設成 5，再用 count.update(n => n + 1) 依舊值加 1，所以最後是 6。記住 set() 是直接換值、update() 是根據現在的值去改。"
+      }
     },
     {
       "id": "76.7",
@@ -352,7 +490,30 @@
           "text": "🎯 重點回顧",
           "level": 3
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在元件中宣告了 name = '小明'，然後在模板用 [(ngModel)]=\"name\" 綁定一個輸入框。現在使用者在輸入框裡改成「小王」。請問會發生什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "輸入框顯示「小王」，同時元件裡的 name 變數也自動變成「小王」"
+          },
+          {
+            "value": "b",
+            "label": "輸入框顯示「小王」，但 name 變數還是「小明」，除非程式手動更新它"
+          },
+          {
+            "value": "c",
+            "label": "輸入框還是顯示「小明」，因為 name 是靜態變數不會改變"
+          },
+          {
+            "value": "d",
+            "label": "ngModel 會報錯，因為沒有宣告 FormsModule"
+          }
+        ],
+        "answer": "a",
+        "explanation": "[(ngModel)] 就是雙向綁定——使用者在輸入框改資料，元件的變數自動同步；元件改變數，輸入框也自動同步。這就是『香蕉盒子』的威力。選項 b 是單向綁定，c 理解錯了，d 則是忘記 import 會報的是『import 錯誤』而不是『執行錯誤』。"
+      }
     },
     {
       "id": "76.8",
@@ -397,7 +558,30 @@
           "text": "🎯 重點回顧",
           "level": 3
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在 Angular 17.3+ 中，子元件想接收父層傳下來的資料，應該用哪個方式？拿到的值是什麼、讀取時要怎麼用？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 input() 函式接收、拿到的是 signal、讀值時要加括號 ()"
+          },
+          {
+            "value": "b",
+            "label": "用 output() 函式接收、拿到的是普通變數、直接讀取"
+          },
+          {
+            "value": "c",
+            "label": "用 @Input 裝飾器接收、拿到的是 signal、用 .emit() 讀取"
+          },
+          {
+            "value": "d",
+            "label": "用 input() 函式接收、拿到的是普通變數、加 .value 才能讀"
+          }
+        ],
+        "answer": "a",
+        "explanation": "input() 是新版接收父層資料的方式，回傳的是 signal 型別，所以讀取時要像呼叫函式一樣加括號 ()（例如 title()）。output() 是用來發事件的、@Input 是舊版裝飾器、signal 也不需要 .value。"
+      }
     },
     {
       "id": "76.9",
@@ -442,7 +626,30 @@
           "text": "🎯 重點回顧",
           "level": 3
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在一個購物網站的多個元件中都需要用到購物車功能。如果你用 Service + DI 的方式來設計，「providedIn: 'root'」的作用是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "讓整個應用共用同一個 CartService 實例，所以任何地方加的商品都在同一個購物車裡"
+          },
+          {
+            "value": "b",
+            "label": "讓每個元件在注入 CartService 時自動建立一個新的實例"
+          },
+          {
+            "value": "c",
+            "label": "只允許根元件（root）使用 CartService，其他元件用不了"
+          },
+          {
+            "value": "d",
+            "label": "把 CartService 打包到 root 資料夾，方便管理檔案"
+          }
+        ],
+        "answer": "a",
+        "explanation": "「providedIn: 'root'」就是設定 Service 在全應用層級提供、所有元件共用一個單例實例。這樣購物車狀態在整個 app 裡都一致。b 選項是錯的，因為單例就是只有一個實例；c 是對「root」的誤解；d 不相關。"
+      }
     },
     {
       "id": "76.10",
@@ -487,7 +694,30 @@
           "text": "🎯 重點回顧",
           "level": 3
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在寫 Angular 元件，有個 `price` 和 `qty` 兩個 signal，現在要自動算出「總金額」，而且只有在 price 或 qty 改變時才重新計算。下面哪個做法最合適？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 computed(() => price() * qty())，讓衍生值自動快取和重算"
+          },
+          {
+            "value": "b",
+            "label": "用 effect(() => { const total = price() * qty(); })，每次都重新計算"
+          },
+          {
+            "value": "c",
+            "label": "用 signal() 手動存總金額，然後在 effect 裡每次 set 新值"
+          },
+          {
+            "value": "d",
+            "label": "直接在 effect 裡寫 console.log(price() * qty())，不用儲存"
+          }
+        ],
+        "answer": "a",
+        "explanation": "computed 就是用來從其他 signal 算出衍生值、自動快取的工具；只有依賴改變才會重算。effect 是拿來做副作用（log、存檔），不適合單純的「衍生值計算」。"
+      }
     },
     {
       "id": "76.11",
@@ -536,7 +766,30 @@
           "text": "🎯 重點回顧",
           "level": 3
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在 Angular 用 HttpClient 打 API，以下哪個做法最符合「慣例」？",
+        "options": [
+          {
+            "value": "a",
+            "label": "在 Service 裡用 HttpClient 打 API，元件只呼叫 Service 的方法"
+          },
+          {
+            "value": "b",
+            "label": "在元件裡直接 inject(HttpClient)，直接打 API 比較快"
+          },
+          {
+            "value": "c",
+            "label": "在 Service 裡打 API，但不用 inject，直接 new HttpClient() 建立實例"
+          },
+          {
+            "value": "d",
+            "label": "在元件的 ngOnInit 裡不用 subscribe，http.get() 回傳值直接用"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調慣例是把 HttpClient 包在 Service 裡、元件只呼叫 service——這樣乾淨又好測試。選項 b 違反分離原則、c 破壞依賴注入、d 忽略了 Observable 必須 subscribe 才會執行的特性。"
+      }
     },
     {
       "id": "76.12",
@@ -585,7 +838,30 @@
           "text": "🎯 重點回顧",
           "level": 3
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下面哪個說法正確地描述了 Observable 和 Promise 的主要差異？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Observable 一次回一個值，Promise 可以回多個值"
+          },
+          {
+            "value": "b",
+            "label": "Observable 可以回多個值且能取消，Promise 一次只回一個值且無法取消"
+          },
+          {
+            "value": "c",
+            "label": "Observable 和 Promise 功能完全相同，只是寫法不同"
+          },
+          {
+            "value": "d",
+            "label": "Observable 比 Promise 快，所以 Angular 優先用 Observable"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Promise 是一次性回傳單一值、無法取消；Observable 是隨時間吐多個值的串流、支援取消和用運算子加工。選項 a 反了，c 功能不同不只是寫法，d 速度快慢不是核心差異。"
+      }
     },
     {
       "id": "76.13",
@@ -634,7 +910,30 @@
           "text": "🎯 重點回顧",
           "level": 3
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在 Angular SPA 應用中想從首頁跳到「/about」頁面，下面哪個做法是正確的？",
+        "options": [
+          {
+            "value": "a",
+            "label": "<a href=\"/about\">關於</a> — 用 href 直接導向"
+          },
+          {
+            "value": "b",
+            "label": "<a routerLink=\"/about\">關於</a> — 用 routerLink 做 SPA 切換"
+          },
+          {
+            "value": "c",
+            "label": "<a navigate=\"/about\">關於</a> — 用 navigate 屬性"
+          },
+          {
+            "value": "d",
+            "label": "<router-outlet routerLink=\"/about\"></router-outlet> — 在 router-outlet 上設定"
+          }
+        ],
+        "answer": "b",
+        "explanation": "routerLink 是 Angular Router 專門用來做 SPA 頁面切換的指令，只會換內容不會重載整頁。href 會導致整頁重新載入，失去 SPA 的順暢感。router-outlet 是用來放路由內容的容器，不是用來導航的。"
+      }
     },
     {
       "id": "76.14",
@@ -679,7 +978,30 @@
           "text": "🎯 重點回顧",
           "level": 3
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在做一個「只有登入用戶才能看的後台頁面」。下面哪個做法最符合「路由守衛」的設計概念？",
+        "options": [
+          {
+            "value": "a",
+            "label": "在後台元件的 ngOnInit() 裡檢查登入狀態，沒登入就手動跳轉到登入頁"
+          },
+          {
+            "value": "b",
+            "label": "寫一個 authGuard，在路由設定用 canActivate 綁上去，進頁前就先檢查並決定能不能進"
+          },
+          {
+            "value": "c",
+            "label": "在路由參數裡傳 userId，然後元件收到參數後再檢查權限"
+          },
+          {
+            "value": "d",
+            "label": "用 ActivatedRoute 抓路由參數，判斷網址有沒有帶登入狀態"
+          }
+        ],
+        "answer": "b",
+        "explanation": "守衛的核心價值是「進頁前攔截」——在元件載入前就決定能不能進。選 b 做法把檢查規則集中在 Guard 裡管理，不用每個頁面重寫。選 a 是後被動檢查（已進頁再檢查），選 c 和 d 是混淆「參數」和「守衛」的概念。"
+      }
     },
     {
       "id": "76.15",
@@ -724,7 +1046,30 @@
           "text": "🎯 重點回顧",
           "level": 3
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你寫了一個自訂指令 appHighlight，想讓元素滑鼠移進來時背景變黃、移出去時恢復。下列哪個做法是正確的？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 @Directive 裝飾器、selector 寫 '[appHighlight]'、用 @HostListener('mouseenter') 和 @HostListener('mouseleave') 監聽事件、在方法裡改 this.el.nativeElement.style.background"
+          },
+          {
+            "value": "b",
+            "label": "用 @Component 裝飾器、selector 寫 'appHighlight'、在 ngOnInit 裡直接改元素樣式"
+          },
+          {
+            "value": "c",
+            "label": "用 @Directive 裝飾器、selector 寫 'appHighlight'、用 @Input 接收參數控制背景顏色"
+          },
+          {
+            "value": "d",
+            "label": "用 @Injectable 裝飾器、在服務裡寫方法改元素樣式、再注入到元件"
+          }
+        ],
+        "answer": "a",
+        "explanation": "屬性指令用 @Directive + selector: '[appHighlight]'（方括號表示屬性選擇器）+ @HostListener 監聽滑鼠事件是標準做法。選項 b 用 @Component 是元件不是指令、c 的 selector 少了方括號、d 用服務不適合。"
+      }
     },
     {
       "id": "76.16",
@@ -773,7 +1118,30 @@
           "text": "🎯 重點回顧",
           "level": 3
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下列敘述中，何者對 Pipe（管道）的用途描述最正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Pipe 在模板裡格式化資料的顯示，但不會改變原始值"
+          },
+          {
+            "value": "b",
+            "label": "Pipe 可以改變元件 TypeScript 裡的原始資料，讓變數永久變更"
+          },
+          {
+            "value": "c",
+            "label": "Pipe 只能用在日期格式，不能用在其他地方"
+          },
+          {
+            "value": "d",
+            "label": "Pipe 無法串接使用，一個模板裡只能用一個 Pipe"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Pipe 的核心概念是「只改顯示、不改資料」——{{ price | currency }}在畫面顯示 NT$1,200，但 price 變數本身仍是數字。b 錯因為 Pipe 不改原始值；c 錯因為有內建多種 Pipe（date、currency、uppercase 等）；d 錯因為可以串接多個 Pipe 如 {{ name | uppercase | slice:0:3 }}。"
+      }
     },
     {
       "id": "76.17",
@@ -818,7 +1186,30 @@
           "text": "🎯 重點回顧",
           "level": 3
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在開發一個「會員註冊表單」，需要 8 個欄位、每個欄位都有不同的驗證規則（如 Email 格式、密碼長度、電話號碼），而且使用者可以動態新增「其他聯絡方式」欄位。請問應該用哪種表單方式？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用模板表單搭配 [(ngModel)]，因為 Angular 提供的預設方式"
+          },
+          {
+            "value": "b",
+            "label": "用響應式表單搭配 FormBuilder，因為欄位多、規則複雜、還要動態增減"
+          },
+          {
+            "value": "c",
+            "label": "兩種混用，模板表單寫簡單欄位、響應式表單寫複雜欄位"
+          },
+          {
+            "value": "d",
+            "label": "用模板表單就可以，只要多加幾個驗證器就能應付複雜情況"
+          }
+        ],
+        "answer": "b",
+        "explanation": "響應式表單用程式描述表單邏輯，適合多欄位、複雜驗證、動態增減的情況；模板表單(ngModel)只適合簡單表單如登入。這個情境需要 FormBuilder 定義規則、支援動態新增欄位，明確指向響應式表單。"
+      }
     },
     {
       "id": "76.18",
@@ -863,7 +1254,30 @@
           "text": "🎯 重點回顧",
           "level": 3
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的 Angular 元件裡面用 setInterval() 開了一個計時器，但元件銷毀時沒有清理。這樣最可能造成什麼問題？",
+        "options": [
+          {
+            "value": "a",
+            "label": "記憶體洩漏，計時器一直在背景執行浪費資源"
+          },
+          {
+            "value": "b",
+            "label": "元件無法正常銷毀，畫面會卡住"
+          },
+          {
+            "value": "c",
+            "label": "ngOnInit 會被執行兩次"
+          },
+          {
+            "value": "d",
+            "label": "Input 變化無法被偵測到"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調 ngOnDestroy 的重點就是清理計時器和退訂 Observable，否則會造成記憶體洩漏。元件銷毀了但計時器還在跑，會持續占用資源。b、c、d 都不是課程教的內容。"
+      }
     },
     {
       "id": "76.19",
@@ -908,7 +1322,30 @@
           "text": "🎯 重點回顧",
           "level": 3
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在 Angular 的新架構（Standalone）中，一個元件要使用其他元件或模組的功能，應該怎麼做？",
+        "options": [
+          {
+            "value": "a",
+            "label": "直接在元件的 @Component 裝飾器裡的 imports 陣列宣告依賴"
+          },
+          {
+            "value": "b",
+            "label": "在元件所屬的 NgModule 的 declarations 裡登記它"
+          },
+          {
+            "value": "c",
+            "label": "在 NgModule 的 imports 陣列裡加入依賴，元件會自動使用"
+          },
+          {
+            "value": "d",
+            "label": "在 bootstrapApplication 的啟動設定裡登記所有元件"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Standalone 架構的核心就是元件自帶依賴——直接在 @Component 的 imports 裡宣告需要什麼，不用經過 NgModule 登記。b、c 是舊 NgModule 方式，d 是啟動應用的地方，不是宣告元件依賴的地方。"
+      }
     },
     {
       "id": "76.20",
@@ -953,7 +1390,30 @@
           "text": "🎯 重點回顧",
           "level": 3
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在開發一個中型的電商應用，需要跨多個元件共用「購物車」的狀態。根據這堂課的建議，你應該用哪個方案？",
+        "options": [
+          {
+            "value": "a",
+            "label": "直接用 NgRx，因為它功能最完整、可追溯性最高"
+          },
+          {
+            "value": "b",
+            "label": "用 Signal-based Service，因為中型應用通常夠用，等狀態真的複雜再考慮升級"
+          },
+          {
+            "value": "c",
+            "label": "兩個都用，NgRx 管狀態、Signal 管 UI 更新"
+          },
+          {
+            "value": "d",
+            "label": "用 computed 直接在元件裡算，不用 service"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確指出中型應用應該先用 Signal service（簡單夠用），等狀態真的複雜到難管才考慮 NgRx，避免過度工程。選 a 是過度設計、c 是架構混亂、d 違反狀態共用原則。"
+      }
     },
     {
       "id": "76.21",
@@ -1002,7 +1462,30 @@
           "text": "🎯 重點回顧",
           "level": 3
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的 Angular 元件用了 OnPush 策略，現在有一個父元件傳來的 @Input() data 物件，但這個物件只是內部屬性被改動（參考沒變），下列何者正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "OnPush 會偵測到物件內部變化，畫面會更新"
+          },
+          {
+            "value": "b",
+            "label": "OnPush 只看參考有沒有變，物件內部改動會被跳過、畫面不更新"
+          },
+          {
+            "value": "c",
+            "label": "需要手動呼叫 markForCheck() 才能讓 OnPush 看到內部變化"
+          },
+          {
+            "value": "d",
+            "label": "應該改用預設策略，OnPush 無法處理物件內部變化"
+          }
+        ],
+        "answer": "b",
+        "explanation": "OnPush 的核心概念就是「只在 input 參考變了才檢查」——物件參考沒變，即使內部屬性改動也會被跳過。這正是為什麼要配合 Signal（它知道內部變化）或確保傳入新參考，才能觸發更新。"
+      }
     },
     {
       "id": "76.22",
@@ -1051,7 +1534,30 @@
           "text": "🎯 重點回顧",
           "level": 3
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "關於 Angular 的 SSR 和 Hydration，下列敘述何者正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "SSR 是伺服器先產好完整 HTML 送來，Hydration 是前端接手這份 HTML、綁上事件讓它變成可互動的應用，過程中不需要重畫"
+          },
+          {
+            "value": "b",
+            "label": "CSR 比 SSR 更適合 SEO，因為伺服器送完整 HTML、Google 爬蟲更容易讀到內容"
+          },
+          {
+            "value": "c",
+            "label": "開啟 Angular SSR 需要執行 'ng add @angular/ssr'，但預渲染（SSG）無法針對固定頁面建置時就產好靜態 HTML"
+          },
+          {
+            "value": "d",
+            "label": "純後台系統和內部工具如果沒有 SEO 需求，可以繼續用 CSR 就足夠，不一定要用 SSR"
+          }
+        ],
+        "answer": "a",
+        "explanation": "SSR 的核心就是伺服器先產 HTML（首屏快、SEO 好），Hydration 則是前端無縫接手、綁事件不重畫。選項 b 弄反了（CSR 不利 SEO），選項 c 說預渲染做不到是錯的，選項 d 雖然有部分正確，但不如選項 a 完整涵蓋 SSR + Hydration 的核心概念。"
+      }
     },
     {
       "id": "76.23",
@@ -1100,7 +1606,30 @@
           "text": "🎯 重點回顧",
           "level": 3
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，為什麼在 Angular 測試元件時常常需要注入「假的 service」來替換真的 service？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為真的 service 會在測試時出錯，假的 service 比較穩定"
+          },
+          {
+            "value": "b",
+            "label": "因為測試元件邏輯時，不需要真的打 API，只要驗證元件跟 service 互動是否正確"
+          },
+          {
+            "value": "c",
+            "label": "因為 Jasmine 和 Karma 不支援真實的 service 連線"
+          },
+          {
+            "value": "d",
+            "label": "因為假的 service 執行速度比真的快 10 倍"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調 DI 的好處就是「測元件時不用真的打 API」，所以注入假 service 是為了隔離測試環節、只驗證元件邏輯本身，而不被外部 API 或真實資料影響。其他選項都不是主要原因。"
+      }
     },
     {
       "id": "76.24",
@@ -1145,7 +1674,30 @@
           "text": "🎯 重點回顧",
           "level": 3
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這堂課的對比，如果你正在帶一個 10 人左右的企業級專案、需要強型別保障和一致的開發規範，應該優先選擇哪個框架？",
+        "options": [
+          {
+            "value": "a",
+            "label": "React，因為生態最大、第三方套件最多"
+          },
+          {
+            "value": "b",
+            "label": "Vue，因為上手最快、能快速交付功能"
+          },
+          {
+            "value": "c",
+            "label": "Angular，因為原生 TS + 全內建 + DI + 約定統一、最適合大型企業團隊"
+          },
+          {
+            "value": "d",
+            "label": "都可以，三個框架沒有本質差別"
+          }
+        ],
+        "answer": "c",
+        "explanation": "課程明確指出 Angular 是『大型 / 企業 / 多人團隊 / 重型別與一致性』的最佳選擇，具備原生 TS、全配套路由/表單/DI、以及約定統一的優勢。React 生態大但需自己拼、Vue 則更適合中小專案快速上手。"
+      }
     },
     {
       "id": "76.25",
@@ -1190,7 +1742,30 @@
           "text": "🎯 重點回顧",
           "level": 3
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在這個 Todo App 裡，為什麼要用 computed 來管理「未完成件數」，而不是直接在範本裡寫 `this.todos().filter(t => !t.done).length`？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 computed 會自動追蹤 todos 的變化，只有當 todos 改變時才重新計算，避免不必要的重新計算"
+          },
+          {
+            "value": "b",
+            "label": "因為 computed 可以直接在範本上寫，比 filter 更簡潔"
+          },
+          {
+            "value": "c",
+            "label": "因為在範本裡寫邏輯會導致記憶體洩漏"
+          },
+          {
+            "value": "d",
+            "label": "因為 computed 是 signal 的升級版，任何衍生值都必須用它來做"
+          }
+        ],
+        "answer": "a",
+        "explanation": "computed 是專門用來計算衍生值的工具，它會自動追蹤依賴（todos），只在依賴改變時才重新計算結果。直接在範本裡寫 filter 則會在每次渲染時都執行，效能較差。"
+      }
     },
     {
       "id": "76.26",
@@ -1239,7 +1814,51 @@
           "text": "🎯 重點回顧",
           "level": 3
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，如果你想在台灣找到 Angular 相關工作，以下哪個說法最符合現況？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Angular 在台灣職缺很多，競爭激烈，不如轉學 React"
+          },
+          {
+            "value": "b",
+            "label": "Angular 在企業、外商、金融、政府等中大型專案有穩定需求，競爭者相對少，是硬通貨技能"
+          },
+          {
+            "value": "c",
+            "label": "只要會 Angular 本身就夠了，不用學 RxJS 和 TypeScript"
+          },
+          {
+            "value": "d",
+            "label": "Angular 職缺只在新創公司，穩定性不如其他框架"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調 Angular 在台灣的職涯優勢在於中大型企業、外商、金融、政府等長期穩定專案，競爭者相對少；而會 Angular + TypeScript + RxJS 才是企業前端的硬通貨。選項 a、c、d 都違背課程職涯篇的核心訊息。"
+      }
+    }
+  ],
+  "summary": [
+    "Angular 是企業級框架、內建 DI + TypeScript + RxJS，學習曲線陡但能力全面",
+    "Signals 是現代 Angular 的響應式核心，取代舊的 change detection，寫法更簡潔直觀",
+    "元件透過 input()/output() 和 Services 溝通，模板用新控制流 @if/@for/@switch 邏輯清晰",
+    "HttpClient 配合 Observable 打 API、Routing 切頁面、Guard 保護路由，都是企業應用必備",
+    "掌握表單、生命週期、效能優化（OnPush）、SSR，才算真的會用 Angular 開發"
+  ],
+  "faq": [
+    {
+      "q": "Angular 會不會太難？什麼人適合學？",
+      "a": "Angular 學習曲線比 React、Vue 陡，但如果你有 TypeScript 基礎、想進大公司或維護企業系統，就值得投入。這章會從零開始，一步步帶你打底。"
+    },
+    {
+      "q": "Signals 是什麼？一定要學嗎？",
+      "a": "Signals 是 Angular 新推的狀態管理方式，更簡潔好用。舊方法（NgRx）還能用，但新專案建議用 Signals，這章會都教。"
+    },
+    {
+      "q": "學完 Angular 能做什麼？",
+      "a": "你能建立完整的企業級應用、理解前後端溝通、知道如何優化效能。但找工作、接案還要靠自己作品和經驗累積，學框架只是打底。"
     }
   ]
 }

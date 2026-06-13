@@ -25,7 +25,7 @@
       "title": "電商架構總圖",
       "oneLineSummary": "不只「商品 + 購物車」、是完整生態",
       "analogy": "從架構看電商需要什麼。",
-      "content": "## 電商核心模組\n1. **商品**：分類、屬性、變體\n2. **購物車 / 結帳**\n3. **訂單管理**\n4. **金流**：刷卡 / 轉帳 / LINE Pay\n5. **物流**：黑貓 / 超商\n6. **會員 / 等級**\n7. **優惠 / 折扣 / 點數**\n8. **庫存 / 多倉**\n9. **客服 / 退換貨**\n10. **報表 / 分析**\n\n## 平台選擇\n\n### 1. WooCommerce\n- 自架、彈性\n- 中小型適合\n- 月成本 NT$ 500-2000\n\n### 2. Shopify\n- SaaS、易用\n- 月費 $29-$299\n- 海外友善\n\n### 3. Shopline\n- 台灣本土\n- 中文後台\n- 月費 NT$ 1290-4990\n\n### 4. 91App\n- 台灣大型\n- O2O 強\n- 月費 NT$ 1-5 萬\n\n### 5. 91 開店 / 91 加加\n- 中小型\n- 月 NT$ 500-2000\n\n### 6. 自架（Next.js + Stripe）\n- 完全客製\n- 開發成本高\n- 適合：品牌 / 特殊需求\n\n## 台灣 vs 國際\n\n### 台灣特色\n- LINE 渠道\n- 超商取貨\n- ATM 虛擬帳號\n- 發票（電子發票）\n- 紅利 / 點數文化\n\n### 國際\n- Email 行銷\n- 信用卡為主\n- 物流標準\n\n## 選擇邏輯\n\n| 規模 | 推薦 |\n|---|---|\n| MVP 試水 | Shopify / Shopline |\n| 月營業 < NT$ 50 萬 | Shopify / Shopline / 91App |\n| 月營業 50-500 萬 | 91App / Shopify Plus |\n| > 500 萬 | 自架 + 客製 |\n| 重品牌客製 | 自架 Next.js |\n| 跨境 | Shopify |\n\n## 接案範圍\n\n### Indie\n- WooCommerce 設定：NT$ 30-100k\n- Shopify 設定：NT$ 30-100k\n- 自架 MVP：NT$ 200-500k\n- 客製大型：NT$ 500k-3M\n\n## 心法\n- 不要重造輪子（用 WooCommerce / Shopify）\n- 客戶不在乎平台、在乎結果\n- 金流物流穩比功能多重要\n- 月維護 = 長期關係\n\n**☕ 用人話講**\n\n電商架構總圖——**不只「商品 + 購物車」，是一整套生態**（金流、物流、訂單、客服）。**一句話記住**：開網店像開實體店——不只擺貨架（商品），還要收銀（金流）、宅配（物流）、管庫存（訂單）、顧客服，缺一不可。\n",
+      "content": "## 電商架構總圖\n\n### 什麼是電商架構？\n\n開一間網路商店，看起來簡單（放商品、顧客下單、收錢、寄出去）、但其實背後有**10 個環節環環相扣**。這堂課就是要畫出整張「骨架圖」——讓你知道從顧客進網站、到他收到貨、甚至退貨為止，每個環節用什麼工具、誰負責、怎麼串連。\n\n不管你是用 Shopify、WooCommerce、還是自己寫程式，**核心模組都一樣**——只是工具換了，邏輯不變。\n\n---\n\n## 電商 10 大核心模組\n\n### 1. **商品模組**\n你要管的不只是「一個商品」，而是：\n- **分類**：衣服 > 上衣 > T 恤（樹狀結構）\n- **屬性**：T 恤的尺寸（XS / S / M / L）、顏色（黑 / 白 / 藍）\n- **變體**：黑色 M 碼、白色 L 碼各是獨立的 SKU（Stock Keeping Unit—— 庫存單位），要各自計算庫存、價格可能不同\n\n**現實例子**：你在 MOMO 買衣服，選「黑色 M 碼」才能加購物車，不是籠統選「黑色衣服」。\n\n### 2. **購物車 / 結帳**\n- 顧客選好商品 → 加入購物車（存在 DB / localStorage）\n- 結帳前可以修改數量、刪除品項\n- **結帳流程**：確認收貨地址 > 選運費 > 輸入折扣碼 > 選金流方式\n\n常見雷：**超過 30 分鐘沒付款、購物車自動清空**，或庫存不足時突然跳錯誤。\n\n### 3. **訂單管理**\n後台核心——每個訂單要記錄：\n- 訂單編號 / 日期 / 顧客資訊\n- 商品清單 + 金額明細\n- **訂單狀態流程**：待付款 > 已付款 > 已出貨 > 已簽收（或退貨中 > 已退）\n- 店家可以在後台改狀態、發貨、列印條碼\n\n### 4. **金流模組**（重中之重）\n台灣很複雜——不只刷卡一種：\n- **信用卡**：Visa / Mastercard / JCB\n- **電子錢包**：LINE Pay、Apple Pay、Google Pay\n- **銀行轉帳**：一般轉帳、ATM 虛擬帳號（客戶轉帳到臨時帳號，要驗證）\n- **BNPL**：分期付款（KOKO / 買一送一）\n\n**金流廠商角色**：你不能直接接刷卡（違法），要透過「金流服務商」（綠界 / Newebpay / 藍新 等）— 他們幫你驗證顧客身份、檢查刷卡額度、再把錢轉給你。\n\n### 5. **物流模組**\n台灣選項多：\n- **宅配**：黑貓 / 新竹物流 / 7-11 宅配通（送到府）\n- **超商取貨**：7-11 / 全家 / OK / 萊爾富（顧客自己去超商領）\n- **郵局**：特定商品用（比較便宜但慢）\n\n**流程**：訂單確定 > 打包 > 產生運單 > 交給物流廠商 > 物流廠商掃描 > 顧客收到\n\n物流商會給你 API，讓系統自動產生條碼、查詢進度。\n\n### 6. **會員 / 等級系統**\n- 顧客帳號 / 密碼\n- **會員等級**：銅卡 > 銀卡 > 金卡（買越多折扣越高、運費優惠）\n- 購買紀錄、地址簿、收藏清單\n\n許多店家忽略的 ⚠️：**會員等級要自動升降**，不是手動維護。\n\n### 7. **優惠 / 折扣 / 點數**\n- **折扣碼**：滿 $1000 打 9 折\n- **紅利點數**：消費 $100 送 10 點，點數可折抵現金\n- **優惠卷**：會員專享、特定商品折扣\n- **時間限制**：檔期活動、母親節特惠\n\n**重點**：要在「結帳時」即時計算、驗證優惠是否有效。\n\n### 8. **庫存 / 多倉管理**\n- 每個商品的「現有庫存」要實時更新\n- **下單扣庫存**：顧客下單 > 庫存 -1（要鎖定、防超賣）\n- **多倉**：台北倉庫有 10 件、台中倉庫有 5 件，系統要自動調配最近的倉寄\n\n常見問題：**超賣**（同時 2 個顧客買最後 1 件）> 要用「資料庫鎖」防止。\n\n### 9. **客服 / 退換貨**\n- 顧客有問題怎麼問（聊天機器人 / 客服表單 / Line）\n- **退換貨流程**：申請 > 店家審核 > 寄回 > 驗收 > 退款 / 換貨\n- 必須與金流、物流系統整合（退款要接金流 API）\n\n### 10. **報表 / 分析**\n後台儀表板，店家每天看：\n- 今天營業額多少\n- 熱銷商品排行\n- 顧客來源（直流 / Google / Facebook 廣告）\n- 退貨率、客訴數\n\n---\n\n## 台灣電商的特色（必知）\n\n### 為什麼台灣和國際這麼不同？\n\n| 項目 | 台灣 | 國際（歐美） |\n|---|---|---|\n| **金流主力** | 信用卡 + LINE Pay + ATM 虛擬帳號 | 信用卡為主（Stripe / PayPal） |\n| **取貨方式** | 超商取貨超常見（因為超商密度高） | 必須宅配到家 |\n| **發票** | 電子發票（統一編號、報稅用）**一定要** | 不需要（他們有 VAT） |\n| **運費** | 金額複雜（有時免運、有時偏遠加價） | 通常固定 |\n| **點數文化** | 紅利點數、點數折抵、集點卡很流行 | 較少 |\n| **客服語言** | 繁體中文必須 | 英文 / 當地語言 |\n\n### 為什麼這很重要？\n\n如果你用國際平台（Shopify）給台灣客戶，**金流就會卡住** —— Shopify 原生不支援「ATM 虛擬帳號」、「LINE Pay」、「電子發票」。你得自己用 Shopify 的 API 去接綠界、Newebpay 這些台灣金流商。**麻煩。**\n\n---\n\n## 平台選擇（按你的規模）\n\n### 1. **Shopify**（國際平台）\n- **適合**：小資初創、想跨境、不想自己維運\n- **成本**：月費 $29 USD ~ $299 USD（約 NT$ 900 ~ 9,500）\n- **優點**：穩定、功能全、生態豐富（APP Store 有幾千個擴充）\n- **缺點**：金流要自接綠界 / Newebpay、英文介面、超商取貨要自己串\n\n**適合接案**：中小型品牌試水、想快速上線\n\n### 2. **Shopline**（台灣平台）\n- **適合**：月營業 20~200 萬的店家\n- **成本**：月費 NT$ 1,290 ~ 4,990（有免費版）\n- **優點**：中文後台、內建綠界 / Newebpay、支援超商取貨、有客服協助\n- **缺點**：個性化難度高、套版感重\n\n**適合接案**：不想 coding、純粹用設定的案子\n\n### 3. **WooCommerce**（開源 WordPress 外掛）\n- **適合**：有自架能力、想完全客製\n- **成本**：月費 NT$ 300~2,000（主機費）+ 外掛費\n- **優點**：無限彈性、外掛多（Payment Gateway、Shipping）\n- **缺點**：要自己維護主機、要會 PHP / 自己接金流\n\n**適合接案**：大型品牌、需要特殊功能、有 2-3 人開發團隊\n\n### 4. **91App / 91 開店**（台灣大廠）\n- **91App**：企業級（O2O 整合、實體店出單等），月費 NT$ 5,000~50,000\n- **91 開店**：中小型版本，月費 NT$ 500~2,000\n- **優點**：台灣本土、支援完整的台灣金流 / 物流\n- **缺點**：費用高、功能龐大、小型業者用不完\n\n### 5. **自架（Next.js + Stripe / 綠界）**\n- **適合**：大型品牌、營業額月均 500 萬以上、需要特殊 B2B 流程\n- **成本**：開發 NT$ 200k ~ 1M、月維護 NT$ 10k~50k\n- **優點**：100% 客製、無限擴展、完全掌控\n- **缺點**：開發成本高、需要工程師團隊、上線後要持續維護\n\n---\n\n## 選擇邏輯速查表\n\n```\n你的情況                          推薦方案\n─────────",
       "tip": {
         "type": "practical",
         "text": "電商先把『商品 → 購物車 → 金流 → 物流 → 訂單』這條主幹打通，再加優惠 / 會員等周邊，別一開始全做。"
@@ -108,7 +108,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想幫一個月營業額約 200 萬的中型品牌建立電商平台，客戶希望有完整的台灣在地功能（超商取貨、LINE 支付、電子發票）。根據本課的選擇邏輯，最合適的方案是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "選 Shopify，因為它是全球最大電商平台，功能最多"
+          },
+          {
+            "value": "b",
+            "label": "選 91App 或 Shopline，因為規模和預算符合，且原生支援台灣在地功能"
+          },
+          {
+            "value": "c",
+            "label": "選 WooCommerce 自架，成本最低且彈性大"
+          },
+          {
+            "value": "d",
+            "label": "選自架 Next.js + Stripe，這樣才能完全客製所有功能"
+          }
+        ],
+        "answer": "b",
+        "explanation": "本課的選擇邏輯表：月營業 50-500 萬推薦 91App / Shopify Plus。91App 和 Shopline 都是台灣本土平台，原生支援 LINE、超商取貨、ATM 虛擬帳號等在地需求，不需額外開發。自架或 Shopify 雖然可行，但對這個規模來說成本與複雜度不必要。"
+      }
     },
     {
       "title": "金流整合：台灣主流",
@@ -245,7 +268,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在為一個中小電商建置金流系統，預算有限、希望快速上線。根據課程內容，下列哪個選擇最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "選擇藍新金流，因為申請快、文件簡單、支援信用卡+ATM+LINE Pay"
+          },
+          {
+            "value": "b",
+            "label": "選擇 PayPal，因為國際知名度高、用戶信任度最好"
+          },
+          {
+            "value": "c",
+            "label": "選擇 LINE Pay 直接串接，因為手續費較低"
+          },
+          {
+            "value": "d",
+            "label": "選擇 Stripe，因為跨境支援最完整"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確指出藍新金流是 Indie 起步的首選：申請 1 週、文件簡單、支援多種付款方式。PayPal 手續費太高不推薦；LINE Pay 申請門檻高（需公司戶）；Stripe 適合品牌/App 而非中小電商起步。"
+      }
     },
     {
       "title": "物流整合 + 電商完整流程",
@@ -366,13 +412,36 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在台灣開設電商平台，想讓客人有最多選擇。根據這課內容，哪個物流組合最符合「客戶體驗優先」的原則？",
+        "options": [
+          {
+            "value": "a",
+            "label": "優先提供 7-11 或全家超商取貨，搭配黑貓宅配作補充"
+          },
+          {
+            "value": "b",
+            "label": "只提供黑貓宅配，因為速度最快、最專業"
+          },
+          {
+            "value": "c",
+            "label": "只提供 SF Express，跨境能力強"
+          },
+          {
+            "value": "d",
+            "label": "只提供自取，省運費最划算"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確指出「客戶最愛超商取貨（不用在家）」且物流費便宜，這是台灣電商主流選擇。黑貓宅配作為補充滿足特殊需求。其他選項都是單一物流方式，無法提供最好的客戶體驗。"
+      }
     },
     {
       "title": "電商架構：自建 vs 平台",
       "oneLineSummary": "Shopify / WooCommerce / 自架 / 蝦皮",
       "analogy": "看規模 + 控制度選。",
-      "content": "## 4 大選擇\n\n### 1. SaaS 電商（最簡單）\n- **Shopify**：全球第一、月 $39+\n- **Wix eCommerce**\n- **Squarespace**\n- **91APP**（台灣）：月 NT$ 3-5k\n\n優：5 分鐘上線\n劣：月費 + 抽成、客製有限\n\n### 2. Marketplace\n- **蝦皮**：抽 5-8%\n- **momo**：抽 8-15%\n- **Yahoo**\n\n優：0 流量問題\n劣：價格戰、沒 brand\n適合：先驗證 product\n\n### 3. 開源（WooCommerce / Magento）\n- **WooCommerce**（WP plugin）：免費\n- **Magento**：企業\n- **PrestaShop**\n\n優：免費、彈性\n劣：自己維護 / 安全\n\n### 4. 自架（最強控制）\n- Next.js + Stripe + Supabase\n- 完全客製\n- 高開發成本\n\n## Indie 路線\n\n### 起步（< 100 訂單/月）\n- 蝦皮 + IG 賣\n- 0 技術\n- 驗證 product\n\n### 成長（100-1000 訂單）\n- 91APP / Shopify\n- 月 NT$ 3-5k\n- 完整 SaaS\n\n### 規模化（1000+ 訂單）\n- 加自家 site（Shopify Plus / 自架）\n- 整合 ERP / CRM\n- 多 channel\n\n## 必備功能\n\n### 基本\n- 商品 catalog\n- 購物車\n- 結帳（金流）\n- 訂單管理\n- Email 通知\n\n### 進階\n- 庫存管理\n- 物流追蹤\n- 客服 chat\n- Email 行銷\n- 會員系統 + 折扣\n- Coupon\n- Abandoned cart recovery\n- 多語言 / 多幣別\n\n### 數據\n- GA4 e-commerce tracking\n- FB Pixel\n- LINE Pixel\n- TikTok Pixel\n\n## 台灣特殊需求\n\n### 金流\n- 綠界 / NewebPay：信用卡 + ATM + 超商\n- LINE Pay\n- Apple Pay / Google Pay\n- 街口\n\n### 物流\n- 黑貓\n- 7-11 取貨\n- 全家取貨\n- 宅配通\n\n### 發票\n- 雲端發票（綠界 / NewebPay 內建）\n\n### 法規\n- 退貨 7 天鑑賞期\n- 個資法\n- 食品 / 化妝品 / 藥品有特殊要求\n\n## 接案\n\n### 報價\n- 基本電商（Shopify）：NT$ 30-100k\n- WooCommerce：NT$ 50-200k\n- 客製整合：NT$ 100-500k+\n\n### 月維護\n- 加新商品\n- Bug fix\n- 行銷整合\n- NT$ 5-30k/月\n\n## 心法\n- 不確定 → 91APP / Shopify 開始\n- 有客戶 → WooCommerce 客製\n- 大規模 → 自架\n- 別跳級\n\n**☕ 用人話講**\n\n電商架構：自建 vs 平台——Shopify / WooCommerce / 自架 / 蝦皮怎麼選。**一句話記住**：像開店選通路——擺攤蝦皮（快但抽成）、租 Shopify（省事）、自建（自由但要自己顧）；看你的規模跟預算選。\n",
+      "content": "## 電商架構：自建 vs 平台\n\n你想開線上店鋪，但不知道要在蝦皮賣、租 Shopify、還是自己寫網站？這一課幫你徹底理解各路線的優缺點、什麼時機用什麼方案，以及台灣電商特有的「金流、物流、發票」坑。\n\n---\n\n## 4 大選擇詳解\n\n### 1. SaaS 電商（最簡單、最快上線）\n\nSaaS（Software-as-a-Service，軟體即服務）—— 你不買軟體、不自己裝伺服器，直接租用別人已經做好的網店系統、按月或按年付費。\n\n**全球常見方案：**\n- **Shopify**：全球最大、月 USD $39+ 起（約 NT$ 1,200+），支援 150+ 國家、台灣也能用\n- **Wix eCommerce**：UI 很漂亮、月 USD $27+\n- **Squarespace**：設計友善、月 USD $23+\n- **91APP**（台灣本土）：月 NT$ 3,000-5,000、內建綠界金流、專做台灣市場\n\n**優點：**\n- 5 分鐘上線（真的、沒有誇大）\n- 不用懂技術，拖拖拖放、點點點就能開店\n- 自動備份、安全維護廠商負責\n- 內建 SSL 憑證（網址小鎖）、GDPR 合規\n- 有官方技術支援\n\n**缺點：**\n- 每月固定費用（即使 0 訂單也要付）+ 抽成（Shopify 抽 2.9% + 手續費）\n- 客製功能受限（不能改底層、擴充插件有限）\n- 不擁有數據（遷移比較麻煩）\n- 限制商品數量、API 調用次數（看方案等級）\n\n**什麼時候用：**\n- 初創者、沒有技術背景\n- 想快速驗證商品能不能賣\n- 月訂單 < 1,000 單\n- 預算有限、不想一次投入太多\n\n---\n\n### 2. Marketplace（市集）\n\n別人的平台上開店，像是虛擬的百貨公司——你只負責上架商品、打理店面，平台負責流量、付款、物流。\n\n**台灣主要平台：**\n- **蝦皮購物**：台灣最大、每月 2 億訪客、抽成 5-8%（視品類）\n- **momo 購物**：老牌、客層高端、抽成 8-15%\n- **Yahoo 奇摩超級商城**：曾經火紅、現在日漸衰落\n- **PChome 24h 購物**：3C 強、抽成高\n\n**優點：**\n- 零流量問題（平台自帶 2 億訪客）\n- 0 前置成本（不用建站、不用技術）\n- 平台負責客服、退貨、物流\n- 買家有「蝦皮認證」信任感\n\n**缺點：**\n- 抽成高（5-15%，蠶食毛利）\n- 沒有品牌（客戶只看蝦皮、不認識你）\n- 價格戰激烈（同品類商家互砍價格）\n- 演算法黑箱（怎麼排序、要不要花錢推廣不清楚）\n- 無法累積客戶名單（客戶資料歸平台）\n\n**什麼時候用：**\n- 完全新手、0 經驗\n- 先驗證商品（5 天就知道有沒有人買）\n- 短期快速現金流\n- 多品類、不想建多個 site\n\n**實際例子：**\n一件衣服成本 100 元、賣 300 元。在蝦皮賣：被抽 8%（24 元） = 實得 276 元、毛利 176 元。在自家 site 賣：沒抽成、毛利 200 元。差價 24 元 × 月 1,000 單 = 月少 24,000 元。\n\n---\n\n### 3. 開源電商系統（WooCommerce / Magento / PrestaShop）\n\n自己租虛擬主機、裝開源軟體、建立網站。比 SaaS 自由、比完全自架簡單。\n\n**常見方案：**\n- **WooCommerce**（建議新手用）：WordPress 的外掛、免費、台灣有海量教學、月 USD $5-20 主機費\n- **Magento**：企業級、功能強大、但複雜、月費 USD $22+\n- **PrestaShop**：中等水準、歐洲流行、免費軟體 + 主機費\n\n**優點：**\n- 免費（軟體本身 0 元、只付主機錢 USD $5-20/月）\n- 完全客製（改 code、做任何功能）\n- 擁有全部數據、客戶資料歸你\n- 外掛生態大（萬種外掛可選）\n- 沒有手續費、金流費用可自己談\n\n**缺點：**\n- 需要基本技術（HTML、PHP、MySQL 概念）\n- 維護靠自己（安全更新、備份、故障排查）\n- 安全風險高（外掛不安全、主機被駭）\n- 性能調優辛苦（網頁速度要自己優化）\n- 選錯主機會很慢（購物車卡頓 = 客戶跑掉）\n\n**什麼時候用：**\n- 有技術背景（懂 PHP、SQL）或願意花時間學\n- 已有穩定客源（客製功能有價值）\n- 月訂單 1,000-10,000 單\n- 預算 NT$ 5,000-20,000/月\n\n---\n\n### 4. 完全自架（最強控制、最高成本）\n\n自己寫程式、自己部署、沒有任何限制。\n\n**常見技術棧：**\n- **前端**：React / Next.js、Vue\n- **後端**：Node.js / Python / Go\n- **資料庫**：PostgreSQL / MongoDB\n- **金流 API**：Stripe / 綠界\n- **部署**：AWS / Heroku / Vercel\n\n**優點：**\n- 完全客製、做任何功能（推薦系統、AR 試穿、AI 聊天）\n- 無限擴展（高流量也沒問題）\n- 完全擁有數據、無廠商綁架\n- 功能創新、可能變成競爭優勢\n\n**缺點：**\n- 高開發成本（NT$ 100-500k+ 起跳）\n- 長開發周期（3-6 個月以上）\n- 維運成本高（需要專職 DevOps / 工程師）\n- 需要深度技術（不懂別人的 code 會很痛苦）\n- 上線前無法驗證 (你得花 100k 才知道有沒有人買)\n\n**什麼時候用：**\n- 已驗證商品有市場、月訂單 5,000+\n- 有獨特商業模式（平台 SaaS 做不到）\n- 融資 / 有充足預算\n- 有技術團隊\n\n---\n\n## 💰 實際成本對比\n\n假設你是新手、月目標 500 單：\n\n| 方案 | 初始成本 | 月費 | 抽成 | 月訂單 500 利潤影響 |\n|------|---------|------|------|------------------|\n| 蝦皮 | 0 | 0 | 8% | 少 4,000 |\n| Shopify | 0 | 1,200 | 2.9% | 少 2,650 |\n| 91APP | 0 | 3,500 | 0% | 少 3,500 |\n| WooCommerce | 0 | 300 | 0% | 少 300 |\n| 自架 | 100,000+ | 1,000 | 0% | 少 1,000（但前期虧本） |\n\n**結論**：月 500 單時，WooCommerce 成本最低；但如果你真的什麼都不懂，Shopify 的 1,200 元月費買的是「安心」。\n\n---\n\n## Indie 路線：分階段選法\n\n大多數成功創業者的成長路徑是這樣的：\n\n### 起步階段（< 100 訂單/月）\n**選方案：蝦皮 + IG 賣**\n- 0 技術、0 成本\n- 驗證「有沒有人買」（不是「怎麼做」）\n- 1 週內看到結果\n\n**工作流：**\n1. 蝦皮開店（15 分鐘完成）\n2. 拍照 + 上架商品（1 小時）\n3. IG 分享連結、貼文\n4. 手工打包、黑貓寄\n\n**如果成功**：進入下一階段；如果失敗：損失時間而已、沒燒錢。\n\n---\n\n### 成長階段（100-1,000 訂單/月）\n**選方案：91APP 或 Shopify**\n- 開始投入月費（NT$ 3-5k）\n- 需要自有 site（品牌感）\n- 自動化流程（訂單通知、email、客服）\n\n**91APP 理由：**\n- 內建綠界金流（台灣特有）\n- 內建黑貓、7-11 物流（不用自己 API 整合）\n- 有台灣客服、文件繁體中文\n- 月 NT$ 3,000-5,000\n\n**Shopify 理由：**\n- 全球生態（想來台灣 × 跨境電商）\n- App Store 有萬種外掛\n- 國際品牌形象\n\n**工作流：**\n1. 搬家（蝦皮商品匯入新 site）\n2. 埋 GA4 + FB Pixel（數據追蹤）\n3. 開發行銷漏斗（Email 名單、優惠",
       "tip": {
         "type": "business",
         "text": "台灣電商首選 91APP / Shopify / WooCommerce。"
@@ -483,13 +552,36 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "一個新創電商品牌現在每月約 200 訂單，預算有限但想要更多品牌控制權。根據課程的 Indie 路線，最適合的做法是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "繼續只用蝦皮賣，等到 1000+ 訂單再考慮"
+          },
+          {
+            "value": "b",
+            "label": "立即自架一個完整的 Next.js + Stripe 系統"
+          },
+          {
+            "value": "c",
+            "label": "改用 91APP 或 Shopify，搭配 IG 賣"
+          },
+          {
+            "value": "d",
+            "label": "選擇 WooCommerce 並投入 50-200k 客製開發"
+          }
+        ],
+        "answer": "c",
+        "explanation": "200 訂單落在「成長期（100-1000 訂單）」，課程明確建議用 SaaS 方案如 91APP/Shopify，成本合理（月 3-5k）且能建立品牌形象。蝦皮只適合驗證，自架和 WooCommerce 客製都會超支。"
+      }
     },
     {
       "title": "金流整合：綠界 / NewebPay / LINE Pay / Stripe",
       "oneLineSummary": "台灣金流複雜、各有強項",
       "analogy": "不是隨便接、有 KYC + 合約。",
-      "content": "## 主流台灣金流\n\n### 綠界（ECPay）\n- 最廣\n- 信用卡 + ATM + 超商 + 街口\n- 抽 1.5-2.8%\n- KYC 簡單\n- 文件友善\n\n### NewebPay（藍新）\n- 類似綠界\n- 抽 2-3%\n- 整合多\n\n### LINE Pay\n- 必接\n- 抽 1.5-2%\n- 台灣使用率高\n\n### 街口\n- 年輕族群\n- 抽 1.8-3%\n\n### Apple Pay / Google Pay\n- 透過綠界 / NewebPay\n\n### 國際（Stripe）\n- 全球\n- 台灣 2024 終於開放\n- 抽 2.9% + NT$ 10\n- 信用卡為主\n\n### PayPal\n- 國際\n- 老牌\n- 抽 3.4% + 固定\n\n## 整合範例（綠界）\n\n### 1. 註冊取得金鑰\n- ECPay 商店後台\n- 取得 MerchantID + HashKey + HashIV\n\n### 2. 產生訂單\n```php\n$params = [\n    'MerchantID' => 'xxxxxxxx',\n    'MerchantTradeNo' => 'ORDER' . time(),\n    'MerchantTradeDate' => date('Y/m/d H:i:s'),\n    'PaymentType' => 'aio',\n    'TotalAmount' => 1000,\n    'TradeDesc' => '訂單描述',\n    'ItemName' => '商品 A#商品 B',\n    'ReturnURL' => 'https://example.com/payment/callback',\n    'ChoosePayment' => 'ALL',\n];\n\n// 加 checksum\n$params['CheckMacValue'] = generateCheckMac($params, $hashKey, $hashIV);\n\n// 自動 submit form to ECPay\n```\n\n### 3. Callback 驗證\n```php\n// 接 ECPay 通知\n$data = $_POST;\n\n// 驗 checksum\n$check = generateCheckMac($data, $hashKey, $hashIV);\nif ($check !== $data['CheckMacValue']) {\n    die('Invalid');\n}\n\nif ($data['RtnCode'] == 1) {\n    // 付款成功、更新訂單\n    Order::where('id', $data['MerchantTradeNo'])->update(['status' => 'paid']);\n}\n\necho '1|OK';  // 回應 ECPay\n```\n\n## LINE Pay 整合\n\n```typescript\n// Step 1: Request payment\nconst res = await fetch(\"https://sandbox-api-pay.line.me/v3/payments/request\", {\n  method: \"POST\",\n  headers: {\n    \"X-LINE-ChannelId\": CHANNEL_ID,\n    \"X-LINE-Authorization-Nonce\": uuid(),\n    \"X-LINE-Authorization\": signature(),\n  },\n  body: JSON.stringify({\n    amount: 1000,\n    currency: \"TWD\",\n    orderId: \"ORDER123\",\n    packages: [{ id: \"pkg1\", amount: 1000, products: [...] }],\n    redirectUrls: {\n      confirmUrl: \"https://example.com/payment/confirm\",\n      cancelUrl: \"https://example.com/payment/cancel\"\n    }\n  })\n});\n\nconst { info } = await res.json();\n// info.paymentUrl.web → redirect user\n```\n\n## 設計考量\n\n### 多金流並存\n讓 user 選：\n- 信用卡（綠界）\n- LINE Pay\n- 街口\n- ATM\n\n用 strategy pattern：\n```php\n$payment = PaymentFactory::create($method);\n$payment->charge($order);\n```\n\n### 對帳\n- 每日從金流 download\n- 跟自己 DB 對\n- 找差異\n\n### 退款\n- 各金流 API 不同\n- 寫統一 interface\n- 留 admin 介面\n\n### 安全\n- ⚠️ 永遠 server-side 驗 callback\n- ⚠️ 不信前端傳的「付款成功」\n- ⚠️ Webhook 必要 idempotent\n\n## 心法\n- 起步：1-2 個金流\n- 主流：綠界 / LINE Pay\n- 國際：Stripe\n- 文件多看、不要憑感覺\n- Sandbox 測試環境必用\n- 上 production 前千萬模擬完整流程\n\n**☕ 用人話講**\n\n金流整合：綠界 / NewebPay / LINE Pay / Stripe——**台灣金流複雜、各有強項**。**一句話記住**：像選收款方式——國內常用綠界、跨境用 Stripe、年輕客群愛 LINE Pay；看你的客群選對的金流商。\n",
+      "content": "## 金流整合：綠界 / NewebPay / LINE Pay / Stripe\n\n你現在要做一個電商網站，用戶在購物車點「結帳」，錢要進帳，這就牽涉到「金流整合」。金流整合就是：**把你的網站跟銀行、信用卡、電子錢包、線上支付商連起來，讓用戶安全地把錢轉給你**。\n\n但這件事沒有一家金流商能做到全部——台灣市場很分散，所以通常一個網站會串 2~3 個金流商，讓用戶自己選。\n\n---\n\n## 台灣金流生態概覽\n\n### 為什麼要選金流商？不能自己接信用卡嗎？\n\n**不行。** 你不能直接收信用卡卡號。原因有三：\n1. **PCI-DSS 合規成本超高**——要通過國際支付安全認證，要燒錢買設備、雇安全人員\n2. **法律風險**——直接持有卡號，一旦被駭客入侵，要承擔法律責任\n3. **國際規格**——每張卡的發卡銀行不同，你要跟全部銀行連線，根本不可能\n\n所以就有「金流商」這個角色：他們已經持證、已經跟銀行簽約，你把用戶導到他們的收款頁，他們收完錢後通知你、把錢撥給你（扣掉手續費）。\n\n### 台灣主流金流商比較\n\n| 金流商 | 適用場景 | 支付方式 | 手續費 | 小額優勢 | 複雜度 |\n|------|--------|--------|------|--------|------|\n| **綠界（ECPay）** | 全品類電商 | 信用卡、ATM、超商、街口 | 1.5~2.8% | ⭐⭐⭐ 最廣 | 中 |\n| **NewebPay（藍新）** | 類似綠界 | 信用卡、ATM、超商、金融卡 | 2~3% | ⭐⭐⭐ | 中 |\n| **LINE Pay** | 年輕客群必備 | LINE 內建錢包 | 1.5~2% | ⭐⭐⭐⭐ 手續費低 | 中 |\n| **Stripe** | 跨境電商、SaaS | 信用卡（全球） | 2.9% + NT$10 | ⭐⭐ 國際卡優 | 高 |\n| **街口支付** | 年輕用戶 | QR Code、APP | 1.8~3% | ⭐⭐ | 低 |\n| **PayPal** | 國際舊用戶 | 信用卡、PayPal帳號 | 3.4% + 固定 | ⭐ 貴 | 高 |\n\n**綠界的優勢**：最多台灣商家用、文件最多、KYC（Know Your Customer—認識你的客戶，即實名驗證）流程簡單、Apple Pay / Google Pay 都能走綠界。\n\n**LINE Pay 的優勢**：台灣使用滲透率超高（一堆人都裝 LINE），手續費便宜，用戶體驗順暢（不用輸卡號，直接掃二維碼或點一下）。\n\n**Stripe 的優勢**：國際支付一流（全球 195 國支援），2024 年才正式在台灣開放（之前用的人得靠香港帳號曲線救國），如果客群在海外就必接。\n\n---\n\n## 綠界（ECPay）完整整合流程\n\n### 步驟 1：後台註冊、取得金鑰\n\n登入 [ECPay 商店後台](https://vendor-stage.ecpay.com.tw/)，在「系統設定」→「API 操作」裡，你會看到三個關鍵資料：\n\n- **MerchantID**：你的商店編號，每次請求都要帶（如 `2000132`）\n- **HashKey**：用來產生驗證碼的鑰匙（像密碼）\n- **HashIV**：用來產生驗證碼的初始向量（也像密碼）\n\n⚠️ **千萬不要把這三個貼進 GitHub、GitLab，改成環境變數放在 `.env`！**\n\n```\nECPAY_MERCHANT_ID=2000132\nECPAY_HASH_KEY=pwFHCqoIxxxxxxx\nECPAY_HASH_IV=EkRm7nxxxxxxx\n```\n\n### 步驟 2：建立訂單、產生付款頁面\n\n用戶在購物車點「立即結帳」，你的後端要組一個訂單，參數像這樣：\n\n```php\n<?php\n// application/routes/payment.php 或 controller\n\n$merchantID = getenv('ECPAY_MERCHANT_ID');\n$hashKey = getenv('ECPAY_HASH_KEY');\n$hashIV = getenv('ECPAY_HASH_IV');\n\n// 假設訂單從前端或資料庫撈來\n$order = [\n    'order_id' => 'ORD20240115001',\n    'amount' => 2500,  // 新台幣\n    'items' => [\n        ['name' => '藍莓優格', 'qty' => 2, 'price' => 1000],\n        ['name' => '寵物罐頭', 'qty' => 1, 'price' => 500],\n    ],\n];\n\n// 組綠界要求的參數\n$params = [\n    'MerchantID' => $merchantID,\n    'MerchantTradeNo' => $order['order_id'],  // 你自己給訂單的號碼\n    'MerchantTradeDate' => date('Y/m/d H:i:s'),  // 現在時間，格式固定\n    'PaymentType' => 'aio',  // aio = all in one，什麼都能選\n    'TotalAmount' => (int)$order['amount'],  // 必須是整數\n    'TradeDesc' => '飲料 + 寵物用品',\n    'ItemName' => '藍莓優格#寵物罐頭',  // 用 # 分隔多個商品\n    'ReturnURL' => 'https://myshop.com/payment/callback',  // 綠界付款後的回調 URL\n    'ChoosePayment' => 'ALL',  // 顯示所有支付方式\n    'ClientBackURL' => 'https://myshop.com/shop',  // 用戶按「返回」時的導向\n];\n\n// 核心步驟：產生 CheckMacValue（檢驗碼）\n// 這是一串雜湊值，用來證明這筆請求確實來自你、沒被篡改\n$params['CheckMacValue'] = generateCheckMacValue($params, $hashKey, $hashIV);\n\n// 生成 HTML form，自動 submit 到綠界付款頁\necho generatePaymentForm($params, 'https://payment.ecpay.com.tw/Cashier/AioCheckOut/V5');\n?>\n```\n\n**generateCheckMacValue 函式怎麼寫？**\n\n```php\n<?php\nfunction generateCheckMacValue($params, $hashKey, $hashIV) {\n    // 步驟 1：按照綠界規則，移除 CheckMacValue 和 IgnorePayment\n    unset($params['CheckMacValue']);\n    unset($params['IgnorePayment']);\n    \n    // 步驟 2：按照 key 的字母順序排序（很重要！順序錯誤驗證會失敗）\n    ksort($params);\n    \n    // 步驟 3：把所有 key=value 組合，用 & 連接\n    $data = '';\n    foreach ($params as $key => $value) {\n        $data .= '&' . $key . '=' . $value;\n    }\n    \n    // 步驟 4：前後加 HashKey 和 HashIV\n    $data = 'HashKey=' . $hashKey . $data . '&HashIV=' . $hashIV;\n    \n    // 步驟 5：URL 編碼、小寫、做 SHA256 雜湊\n    $data = strtolower(urlencode($data));\n    $checkMacValue = strtoupper(hash('sha256', $data));\n    \n    return $checkMacValue;\n}\n?>\n```\n\n**為什麼這麼複雜？** 因為要防止駭客中途竄改訂單金額。駭客如果改了 `TotalAmount` 從 2500 改 25000，但不知道 HashKey 和 HashIV，生不出對應的 CheckMacValue，綠界驗證就會失敗，這筆訂單作廢。\n\n### 步驟 3：用戶選擇支付方式、完成付款\n\n綠界的頁面會顯示所有支付選項給用戶選：信用卡、ATM 轉帳、超商繳費、街口支付等。用戶選定並輸入資訊（或掃 QR Code），付款成功。\n\n綠界會重導到你設定的 ReturnURL（`https://myshop.com/payment/callback`）。\n\n### 步驟 4：接收並驗證回調（Callback）\n\n綠界會用 **POST** 把付款結果送到你的 callback URL。這是最關鍵的步驟：**你不能信任前端傳來的「付款成功」信息，只能信任綠界的正式回調。**\n\n```php\n<?php\n// application/routes/payment_callback.php\n\n// 接收綠界的 POST 通知\n$data = $_POST;\n\n// 驗證 CheckMacValue（防止有心人士偽造通知）\n$hashKey = getenv('ECPAY_HASH_KEY');\n$hashIV = getenv('ECPAY_HASH_IV');\n\n$receivedCheckMac = $data['CheckMacValue'];\nunset($data['CheckMacValue']);\n\n$expectedCheckMac = generateCheckMacValue($data, $hashKey, $hashIV);\n\nif ($receivedCheckMac !== $expectedCheckMac) {\n    // 驗證失敗，可能被篡改或被駭\n    log('Callback verification failed: ' . json_encode($data));\n    echo '0|Failed';\n    exit;\n}\n\n//",
       "tip": {
         "type": "warning",
         "text": "金流 callback 必驗、不信前端、必 idempotent。"
@@ -588,13 +680,36 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的線上商城想同時支援信用卡、ATM 和 LINE Pay 三種付款方式。在實作時，為了避免每種金流都寫一套重複的邏輯，應該用什麼設計模式來統一管理？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Strategy Pattern——針對每個金流方式建立統一的介面"
+          },
+          {
+            "value": "b",
+            "label": "一次只接一個金流、依序測試、最後再整合"
+          },
+          {
+            "value": "c",
+            "label": "直接在前端判斷選了哪個金流、各自呼叫對應 API"
+          },
+          {
+            "value": "d",
+            "label": "把所有金流邏輯寫在一個大 function 裡、用 if-else 判斷"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確提到用 Strategy Pattern 來設計多金流並存，讓不同付款方式透過統一的 interface 來實作，避免重複邏輯。直接呼叫 API、寫在前端判斷、或用 if-else 大函數都是容易維護且不夠彈性的做法。"
+      }
     },
     {
       "title": "物流整合 + 訂單管理",
       "oneLineSummary": "台灣物流五花八門、各家 API 不同",
       "analogy": "客戶滿意度看物流。",
-      "content": "## 台灣物流選擇\n\n### 黑貓（最常用）\n- 宅配\n- 抽 NT$ 60-100/件\n- API 友善\n\n### 7-11 取貨\n- 統一速達\n- 抽 NT$ 40-65/件\n- 用戶愛\n\n### 全家取貨\n- 全臺物流\n- 類似 7-11\n\n### 宅配通（中華郵政）\n- 便宜\n- 慢\n\n### LINE Express / Lalamove\n- 同城快遞\n- 適合：餐飲 / 急件\n\n## 整合方式\n\n### 1. 直接接 API\n各物流自己 API（複雜）。\n\n### 2. 透過綠界 / NewebPay\n金流商常含物流：\n```php\n$params['ChooseSubPayment'] = 'CVS';  // 超商取貨\n$params['CVSStoreID'] = $storeId;\n```\n\n簡單、但抽手續費。\n\n### 3. 物流整合 SaaS\n- ShipBob（國際）\n- 國內：合作物流商\n\n## 訂單管理\n\n### Status 流轉\n```\ncreated → pending payment\n  ↓\npaid\n  ↓\npreparing → shipped → delivered\n  ↓\n完成\n```\n\n### Status 變動 trigger\n- paid → 寄 email + 通知後台\n- shipped → 寄追蹤碼\n- delivered → 邀評論\n\n### 退款 / 退貨\n- 7 天鑑賞期\n- 退款流程\n- 退貨物流（誰付）\n\n## 倉儲\n\n### 自己倉\n- 適合：低量\n- 自己出貨\n\n### 第三方倉（3PL）\n- 適合：高量\n- 萊爾富 / iPickup\n- 抽 NT$ 30-60/件 + 倉儲費\n\n### Dropshipping\n- 廠商直發\n- 你不碰商品\n- 低 margin\n\n## 客服\n\n### 客戶問題集中\n- 訂單狀態\n- 退貨\n- 退款\n- 商品問題\n\n### 解法\n- LINE OA 客服\n- IG 私訊\n- Email\n- 後台 ticket 系統\n\n### AI 客服（2026）\n- LINE Bot + Claude\n- 80% 常見問題自動回\n- 複雜轉人工\n\n## 接案範例\n\n### 客戶：手作飾品店\n\n**功能**：\n- WooCommerce\n- 7-11 取貨 + 黑貓\n- 綠界金流\n- LINE OA 通知\n- 後台訂單管理\n- 月銷售報表\n\n**報價**：NT$ 100-150k\n\n**月維護**：NT$ 5k/月\n\n## 心法\n- 物流整合是「無聊但重要」\n- 客戶滿意 80% 看物流順不順\n- 7-11 取貨對台灣 user 是 must\n- 退貨流程要清楚\n- 客服系統 Day 1 設好\n\n**☕ 用人話講**\n\n物流整合 + 訂單管理——**台灣物流五花八門、各家 API 不同**。**一句話記住**：像一個總調度台——不同物流（黑貓 / 7-11 / 全家）接進來、所有訂單狀態在一處看，出貨才不會亂掉。\n",
+      "content": "## 台灣物流選擇\n\n### 黑貓（T-CAT）：最常用宅配\n\n黑貓宅急便是台灣電商用得最多的物流。為什麼？因為它覆蓋全台、速度快、客戶認知度高。\n\n**費用結構**：\n- 一般宅配：NT$ 60–100 元/件（視距離、重量）\n- 冷鏈宅配：NT$ 150–200 元/件（生鮮、藥品用）\n- 簽約商戶通常有優惠（月寄件量多、可談到 NT$ 50–70 元/件）\n\n**為什麼電商喜歡**：\n- 官方 API 文件齊全、友善（相比其他物流商）\n- 追蹤號碼精確、客戶信任度高\n- 黑貓 app 普及，客戶習慣用它查件\n\n**整合方式**：\n你的系統產生訂單 → 呼叫黑貓 API → 黑貓回傳追蹤號 → 存進你的資料庫 → 發 email/SMS 給客戶。\n\n黑貓也提供「黑貓配」（司機同日內到府收件）、「宅配通」（經濟方案）。\n\n---\n\n### 超商取貨：7-11 + 全家\n\n台灣有超商 14,000+ 間，所以「超商取貨」是電商標配。客戶可以選擇就近門市領件，不用在家等，大幅提升轉換率。\n\n**7-11 取貨（ibon）**：\n- 用「統一速達」物流\n- 手續費：NT$ 40–65 元/件\n- 門市約 7,000+ 間\n- 消費者習慣度最高\n\n**全家取貨（FamiPort）**：\n- 用「全臺物流」或「全家便利運送」\n- 手續費：NT$ 40–70 元/件\n- 門市約 4,000+ 間\n- 與 7-11 功能接近\n\n**為什麼用超商取貨**：\n- 消費者在家附近領件，不怕被看到\n- 退貨也方便（直接在超商取號退件）\n- 對女性消費者特別友善（安全感）\n\n**費用陷阱**：很多新手以為超商取貨「便宜」，但實際上，買家不付運費時，你要吃掉 NT$ 40–65，有時比黑貓貴。該誰付？要在購物流程寫清楚。\n\n---\n\n### 郵局（中華郵政）：便宜但慢\n\n- 費用：NT$ 30–50 元/件（最便宜）\n- 速度：通常 3–5 天（最慢）\n- 適合：對時效不敏感的商品（書籍、手工藝品）\n- 查詢體驗：相對陽春，客戶滿意度較低\n\n中華郵政推出「郵寶貼」API，但整合度不如黑貓。除非你的客戶明確要求，否則通常不是首選。\n\n---\n\n### LINE Express / Lalamove：同城急遞\n\n- 適合：**台北市內、台中市內**的同日送達\n- 用途：餐飲外送、急件補件\n- 費用：NT$ 50–150 元（視距離）\n- 缺點：不適合大規模電商\n\n如果你做的是「早上下單、晚上到」的生鮮、蛋糕外送，才用得上。一般電商用不到。\n\n---\n\n## 整合方式：三條路選一條\n\n### 路線 1：直接接各家 API（複雜、強大）\n\n每家物流商都有自己的 API 文件。你寫程式直接呼叫。\n\n**優點**：\n- 掌握全部邏輯、最彈性\n- 手續費最低\n\n**缺點**：\n- 每家 API 規格不同、文件品質參差\n- 維護成本高（物流商改版時你也要改）\n- 需要專業工程師\n\n**例子（黑貫 API 概念）**：\n```php\n$catData = [\n    'ClientID' => 'YOUR_CAT_ID',\n    'TrackNo' => '',  // 新寄件留空\n    'Shipment' => [\n        'ReceiverName' => '王小美',\n        'ReceiverPhone' => '0912345678',\n        'ReceiverAddress' => '台北市信義區松壽路 1 號',\n    ]\n];\n\n// 呼叫黑貓 API、取得 trackNo\n$trackNo = callCatAPI($catData);\n```\n\n---\n\n### 路線 2：透過金流商整合（最簡單、最常用）\n\n綠界（ECPay）、NewebPay（藍新）都是金流商，他們也整合了物流。你只要在結帳時指定物流方式，金流商自動幫你呼叫物流 API、寄件、追蹤。\n\n**優點**：\n- 只要會金流 API、不用另外學物流 API\n- 金流 + 物流一起跑、對帳簡單\n- 風險由金流商承擔\n\n**缺點**：\n- 物流手續費會加上「金流商中介費」（通常加 5–10%）\n- 客製化有限\n\n**綠界 + 7-11 取貨例子**：\n```php\n$params = [\n    'MerchantID' => 'YOUR_MERCHANT_ID',\n    'TradeNo' => $orderId,\n    'PaymentType' => 'aio',\n    'ChoosePayment' => 'CVS',          // 用超商金流\n    'ChooseSubPayment' => 'CVS',        // 宅配/超商取貨\n    'StoreID' => $selectedStoreID,     // 客戶選的門市\n    'Desc' => '商品名稱',\n    'TotalAmount' => 1000,\n];\n\n// 綠界會自動產生 ibon 單號、寄件\n```\n\n**NewebPay 物流整合**：流程類似，只是 API field 不同。兩家功能大同小異。\n\n---\n\n### 路線 3：物流整合 SaaS 平台（中等複雜度）\n\n有些第三方服務（如 Shipbob、國內的「物流管理系統」）可以統一管理多家物流。\n\n**例如：iPickup（美商、但支援台灣）**\n- 一個介面、同時對接 7-11、全家、黑貓、郵局\n- 自動比價、自動寄件\n- 月費 NT$ 3000–5000\n\n**優點**：\n- 門檻中等（不用自己寫 API）\n- 維護輕鬆\n\n**缺點**：\n- 多一層成本\n- 小型電商不划算\n\n---\n\n## 訂單管理：狀態流轉 + 觸發\n\n電商訂單就像工廠流水線——每個環節有不同狀態，狀態改變時觸發不同動作。\n\n### 完整狀態流轉圖\n\n```\ncreated (剛建立)\n  ↓\npending_payment (等待付款)\n  ↓\n[付款失敗?] ←→ payment_failed (提醒重試)\n  ↓\npaid (付款成功 ⭐)\n  ↓\npreparing (準備寄件、打包、驗貨)\n  ↓\n[缺貨?] ←→ backorder (待補貨)\n  ↓\nshipped (已寄出 ⭐)\n  ↓\ndelivered (送達)\n  ↓\ncompleted (完成、邀評論)\n  ↓\n[客戶要退貨?] → returned / refunding / refunded\n```\n\n### 各狀態的「業務含義」\n\n| 狀態 | 誰該做什麼 | 何時觸發 |\n|------|---------|--------|\n| `created` | 系統產生訂單 | 客戶按「下單」 |\n| `pending_payment` | 等客戶付款；後台不動 | 訂單建立後 |\n| `paid` | 倉庫開始撿貨、打包 | 金流商回調成功 |\n| `preparing` | 倉庫員工包裝、驗貨 | 人工標記 |\n| `shipped` | 物流司機已取件；寄追蹤碼給客戶 | 掃描物流條碼 / 人工標記 |\n| `delivered` | 客戶簽收；邀請評論 | 物流商 webhook 回傳 |\n| `completed` | 訂單結案 | 一般是寄出後 7 天自動 |\n| `refunded` | 退款結束、訂單作廢 | 退款申請核准 + 物流確認 |\n\n### 狀態改變時的自動動作\n\n當訂單狀態變化，系統要自動觸發事件：\n\n**`paid` 狀態 → 觸發**：\n- 寄「訂單確認」email 給客戶（包含訂單號、金額、商品清單）\n- 發 LINE 通知給老闆：有新訂單\n- 後台傳入「待寄出」隊列\n- 清空客戶購物車\n\n**`shipped` 狀態 → 觸發**：\n- 寄「物流追蹤碼」email/SMS 給客戶\n- 更新後台「出貨中」數據\n- 如用 LINE OA，推播：「您的訂單已出貨，追蹤號：1234567」\n\n**`delivered` 狀態 → 觸發**：\n- 寄「已送達」通知\n- 發送「商品評論邀請」email（72 小時後）\n- 後台「完成訂單」統計\n\n**`refunded` 狀態 → 觸發**：\n- 寄「退款已完成」通知\n- 後台營收報表扣除此筆金額\n- 客戶積分清空（如有）\n\n### 實作方式\n\n用 **webhook（網頁掛勾）** 或 **定時檢查**：\n\n**方案 A：物流商 webhook（推薦）**",
       "tip": {
         "type": "milestone",
         "text": "電商成敗 = 商品 × 物流 × 客服。"
@@ -717,7 +832,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在幫一家手作飾品店建置電商系統。老闆希望支援多種物流方式，但又不想自己管理每個物流商的 API。以下哪個做法最符合課程中提到的「簡單整合方式」？",
+        "options": [
+          {
+            "value": "a",
+            "label": "直接接黑貓、7-11、全家的 API，自己寫 code 串聯所有物流"
+          },
+          {
+            "value": "b",
+            "label": "透過綠界或 NewebPay 金流商的物流整合功能，讓他們幫忙調度"
+          },
+          {
+            "value": "c",
+            "label": "改用 Dropshipping 模式，所有商品都由廠商直發，自己不需要碰物流"
+          },
+          {
+            "value": "d",
+            "label": "馬上租用物流整合 SaaS 服務如 ShipBob，雖然月費較高但最完整"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確指出透過綠界／NewebPay 是最簡單的整合方式——金流商本身就包含物流功能，不用自己串 API（選項 a 太複雜）。Dropshipping 和 SaaS 是特定情境的解法，不是「一般小店」的標準做法。"
+      }
     }
   ],
   "boss": {
@@ -731,5 +869,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "電商系統要處理三條線：前台訂單、金流驗證、物流配送，三線要同步。",
+    "台灣主流金流商有綠界（最多中小企用）、Newebpay、LINE Pay、Stripe，各有手續費和功能差異。",
+    "金流商是仲介，負責驗證付款、扣款、匯款給你，絕不碰客戶信用卡。",
+    "物流系統串接黑貓、7-11、全家，主要是自動產生單號和追蹤碼，減少手工作業。",
+    "自建平台貴但自由度高、用現成平台便宜但功能被限制，選擇取決於預算和需求複雜度。"
+  ],
+  "faq": [
+    {
+      "q": "金流商會不會看到顧客的信用卡號？",
+      "a": "不會。客戶在金流商的頁面輸入卡號，金流商驗證並扣款，你只會拿到「付款成功」或「失敗」的訊號，永遠看不到卡號。這叫 PCI 規範。"
+    },
+    {
+      "q": "黑貓、7-11 物流，我應該用哪一個？",
+      "a": "看你的客戶在哪。黑貓全台到府、7-11 貨到超商便宜但客戶要自己去取。大多電商兩個都串，讓客戶選。"
+    },
+    {
+      "q": "我沒錢自建平台，用 Shopify / 蝦皮 可以嗎？",
+      "a": "完全可以。小賣家一開始用現成平台最實際，等業績穩定了再考慮自建。現成平台金流、物流、後台都幫你包好。"
+    }
+  ]
 }

@@ -81,7 +81,30 @@
           "level": 2,
           "text": "💡 學習建議"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據 HTML5 的語意化原則，下列哪個敘述是正確的？",
+        "options": [
+          {
+            "value": "a",
+            "label": "每個頁面可以有多個 <h1>，用來標示不同區塊的主標題"
+          },
+          {
+            "value": "b",
+            "label": "應該選擇 <b> 而不是 <strong>，因為 <b> 在所有瀏覽器支援度更好"
+          },
+          {
+            "value": "c",
+            "label": "<header>、<nav>、<main>、<footer> 這些標籤是為了讓機器（搜尋引擎、輔助閱讀器）更理解頁面結構"
+          },
+          {
+            "value": "d",
+            "label": "<section> 和 <article> 沒有區別，可以互換使用"
+          }
+        ],
+        "answer": "c",
+        "explanation": "HTML5 語意化標籤的核心目的就是用結構化標籤幫助機器理解內容，而不只是視覺呈現。選項 a 錯在每頁只能一個 h1；選項 b 錯在應選語意標籤而非純視覺；選項 d 錯在兩者有不同用途（article 是獨立完整內容，section 是主題區塊）。"
+      }
     },
     {
       "id": "61.2",
@@ -159,7 +182,30 @@
           "level": 2,
           "text": "💡 學習建議"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "如果你想讓文字超出容器時自動顯示「...」省略號，應該用哪個 CSS 屬性組合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "只設定 `text-overflow: ellipsis`"
+          },
+          {
+            "value": "b",
+            "label": "`white-space: nowrap` + `overflow: hidden` + `text-overflow: ellipsis`"
+          },
+          {
+            "value": "c",
+            "label": "只設定 `word-break: break-all`"
+          },
+          {
+            "value": "d",
+            "label": "`text-decoration: ellipsis` + `overflow-wrap: break-word`"
+          }
+        ],
+        "answer": "b",
+        "explanation": "`text-overflow: ellipsis` 需要搭配 `white-space: nowrap`（禁止換行）和 `overflow: hidden`（隱藏溢出）才能生效；單獨設定 `text-overflow` 是無法運作的。"
+      }
     },
     {
       "id": "61.3",
@@ -257,7 +303,59 @@
           "level": 2,
           "text": "💡 學習建議"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想把陣列 [1, 2, 3, 4, 5] 中所有大於 2 的數字乘以 2，請問下列哪個做法最符合「不改變原陣列」的推薦做法？",
+        "options": [
+          {
+            "value": "a",
+            "label": "使用 filter 過濾出大於 2 的數字，再用 map 乘以 2"
+          },
+          {
+            "value": "b",
+            "label": "使用 splice 直接刪除小於等於 2 的元素，再迴圈乘以 2"
+          },
+          {
+            "value": "c",
+            "label": "使用 sort 排序後，再用 forEach 修改每個元素"
+          },
+          {
+            "value": "d",
+            "label": "使用 reduce 一次過濾和轉換"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調不改變原陣列的方法，filter 和 map 都是不改變原陣列的推薦做法。選項 b 的 splice 會改變原陣列，c 的 sort 和 forEach 也會改變原陣列；d 雖然 reduce 也不改變原陣列，但相比之下 a 的組合（filter + map）更直觀和易讀。"
+      }
     }
-  ]
+  ],
+  "outcomes": [
+    "快速查到需要的 HTML 標籤，不用猜、不用問 Google",
+    "找到對應的 CSS 屬性，知道怎麼寫、預設值是什麼",
+    "查 JavaScript 常用 API，看懂參數和回傳值",
+    "分類瀏覽標籤、屬性、方法，建立腦中的工具庫地圖",
+    "邊查邊用，加快開發速度、減少重複查資料的時間"
+  ],
+  "summary": [
+    "HTML 標籤按功能分類（文本、表單、多媒體、語意等），每個標籤列常用屬性和用途。",
+    "CSS 屬性按功能分類（盒模型、排版、動畫、轉換等），列數值範圍、初始值和兼容性。",
+    "JavaScript API 按用途分類（DOM、事件、字串、陣列、時間等），標注參數型別和回傳值。",
+    "每個條目都有簡短例子，可以複製改用，不用背、直接套。",
+    "這是工具書，不需要從頭讀，查什麼翻什麼，搭配開發工作流來用最順。"
+  ],
+  "faq": [
+    {
+      "q": "這章要從頭讀嗎？",
+      "a": "不用。這是字典和速查表，你在寫 code 時卡住了、忘記某個標籤或屬性怎麼寫，才翻來查。邊做邊查，慢慢就記起來了。"
+    },
+    {
+      "q": "列的東西這麼多，會不會很難記？",
+      "a": "不用全記。常用的自然會記住，冷門的查表就好，這就是為什麼要有這章。重點是知道在這裡可以找到，而不是背下來。"
+    },
+    {
+      "q": "這些 HTML 標籤、CSS 屬性、JS API 涵蓋所有情況嗎？",
+      "a": "涵蓋 90% 的日常開發場景。如果遇到很冷門的需求，Google 上面會有，但光是掌握這些就夠你完成大多數專案了。"
+    }
+  ],
+  "status": "published"
 }

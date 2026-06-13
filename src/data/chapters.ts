@@ -78,6 +78,7 @@ import ch75 from "./chapters/ch75.json";
 import ch76 from "./chapters/ch76.json";
 import ch77 from "./chapters/ch77.json";
 import ch78 from "./chapters/ch78.json";
+import ch79 from "./chapters/ch79.json";
 
 const RAW_CHAPTERS: any[] = [
   ch01 as unknown as Chapter,
@@ -158,6 +159,7 @@ const RAW_CHAPTERS: any[] = [
   ch76 as unknown as Chapter,
   ch77 as unknown as Chapter,
   ch78 as unknown as Chapter,
+  ch79 as unknown as Chapter,
 ];
 
 // 用 sortIndex 排顯示順序 (新章節插入既有 stage 中間)

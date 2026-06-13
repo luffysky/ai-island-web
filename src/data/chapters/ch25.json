@@ -131,7 +131,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你買了 example.com，想把它指向你在 Vercel 上的網站。下面哪個做法最完整且省事？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 Cloudflare Registrar 買域名，設定 Cloudflare DNS 接管，加上 Vercel 給的 DNS record——一次搞定域名、DNS、HTTPS 和 CDN"
+          },
+          {
+            "value": "b",
+            "label": "在 Namecheap 買域名，自己手動在註冊商後台加 A record 指向 Vercel 主機 IP"
+          },
+          {
+            "value": "c",
+            "label": "買 .ai 域名會比 .com 更適合科技公司，因為更好記"
+          },
+          {
+            "value": "d",
+            "label": "域名買好後記得設定 WHOIS 隱私保護，然後就可以放著不管，自動續約"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Cloudflare Registrar + DNS 是課程推薦的『Indie 黃金組合』——既便宜（成本價）又整合 DNS、HTTPS、CDN、DDoS 防護全免費，一次到位最省事。b 雖然可行但麻煩；c 混淆了 TLD 選擇（.ai 貴且 spam 風險高，.com 才首選）；d 雖然隱私保護重要，但不是『完整上線流程』的重點。"
+      }
     },
     {
       "title": "SSL / HTTPS 設定",
@@ -240,7 +263,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在 Cloudflare 上設定 SSL，想要確保用戶到 Cloudflare 的連線是 HTTPS、Cloudflare 到你的 origin server 也是 HTTPS，而且還要驗證 origin server 的憑證是否合法。你應該選擇哪個 SSL Mode？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Off"
+          },
+          {
+            "value": "b",
+            "label": "Flexible"
+          },
+          {
+            "value": "c",
+            "label": "Full"
+          },
+          {
+            "value": "d",
+            "label": "Full (strict)"
+          }
+        ],
+        "answer": "d",
+        "explanation": "Full (strict) 是最安全的選擇，提供雙邊 HTTPS + 驗證 origin 憑證；Flexible 只保護用戶到 Cloudflare 的連線但不安全；Full 沒有驗證 origin cert；Off 根本不加密。"
+      }
     },
     {
       "title": "Subdomain 策略",
@@ -349,7 +395,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你公司有個 SaaS 產品，想讓每個客戶都能用自己的子網域進入（比如 acme.example.com、beta.example.com）。這種做法最主要的好處是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "省 DNS 設定的成本"
+          },
+          {
+            "value": "b",
+            "label": "能清楚隔離各租戶的資料和 Cookie，同時用 Next.js 中間件路由到對應的內容"
+          },
+          {
+            "value": "c",
+            "label": "不需要設定 CORS，因為都在同一個 domain"
+          },
+          {
+            "value": "d",
+            "label": "可以在同一個伺服器上跑所有租戶的程式碼"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Subdomain 模式最核心的好處是能隔離各租戶（cookie 獨立、不同 origin），並透過中間件根據 subdomain 路由到對應內容。選項 c 錯誤，因為子網域間仍需要 CORS 設定；a、d 都不是重點。"
+      }
     },
     {
       "title": "Email：自己 domain 收信",
@@ -458,7 +527,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想用自己網域（yourbrand.com）收發 email，預算有限。根據課程推薦，下列哪個組合最適合你？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Cloudflare Email Routing 收信 + Resend 寄信 + 設定 SPF/DKIM/DMARC"
+          },
+          {
+            "value": "b",
+            "label": "Google Workspace 收發一體，省事不用設定認證"
+          },
+          {
+            "value": "c",
+            "label": "只用 Email Forwarding，把信轉到 Gmail 就夠了"
+          },
+          {
+            "value": "d",
+            "label": "AWS SES 收發，因為最便宜"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確推薦 Indie 用 Cloudflare Email Routing（免費收信）+ Resend（100 封/天免費寄信）的組合，加上三大認證設定以確保送達率。B 選項有額外費用、C 選項無法寄信、D 選項設定複雜且不是課程重點。"
+      }
     },
     {
       "title": "CDN / Cloudflare 進階",
@@ -575,7 +667,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "假設你是 Indie 開發者，想用 Cloudflare 全家桶快速建站。下列哪個組合最符合「月成本最低、功能最齊全」的做法？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Cloudflare DNS + CDN（免費）+ Pages 部署 + R2 存儲 + D1 資料庫，只開免費額度"
+          },
+          {
+            "value": "b",
+            "label": "買別家的 DNS 和域名、用 Cloudflare 只負責 CDN 加速"
+          },
+          {
+            "value": "c",
+            "label": "用 Cloudflare Pro（$20/月）才能開啟 Workers 和 WAF 功能"
+          },
+          {
+            "value": "d",
+            "label": "所有服務都要付費才夠安全，免費額度根本不夠用"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調 Cloudflare 是『Indie 的 AWS』，免費額度爆大且整合完整——DNS、CDN、SSL、Pages 部署、R2、D1 等都有慷慨免費方案，月成本 NT$30-300 足夠。選項 b 是多此一舉（破壞整合優勢），c 和 d 都誤解了 Cloudflare 的免費策略。"
+      }
     },
     {
       "title": "DNS 完整心法",
@@ -675,7 +790,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你要把 example.com 的 IP 從 1.2.3.4 改成 5.6.7.8，為什麼要在改之前 24 小時先把 TTL 從 3600 改成 300？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為低 TTL 讓改完後的新 IP 更快被全球使用者看到，避免長時間有人還連到舊 IP"
+          },
+          {
+            "value": "b",
+            "label": "因為 TTL 越低代表 DNS server 查詢越快，可以加速整個改 DNS 的流程"
+          },
+          {
+            "value": "c",
+            "label": "因為 Cloudflare 規定改 DNS 前一定要先降低 TTL"
+          },
+          {
+            "value": "d",
+            "label": "因為高 TTL 會讓新 IP 無法正確傳播到所有 nameserver"
+          }
+        ],
+        "answer": "a",
+        "explanation": "低 TTL（300秒）代表 cache 只活 5 分鐘，這樣改 record 後各地 DNS cache 很快就過期重新查詢，5-10 分鐘內全球使用者都會看到新 IP；如果跳過這步，舊 TTL 3600 的 cache 會讓某些人 24 小時內還連到舊 IP。"
+      }
     },
     {
       "title": "SSL / HTTPS / Let's Encrypt",
@@ -788,7 +926,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，為什麼建議用 Cloudflare、Vercel 或 Caddy 這類服務，而不要自己手動管理 SSL 憑證？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為這些服務可以自動化憑證申請、續期和部署，省去手動管理的麻煩，而 Let's Encrypt 的 90 天有效期強制輪換需要自動化才安全"
+          },
+          {
+            "value": "b",
+            "label": "因為只有這些服務支援 Let's Encrypt，自己架設的伺服器無法使用免費憑證"
+          },
+          {
+            "value": "c",
+            "label": "因為自己管理憑證會被 Chrome 標記為不安全，影響 SEO 排名"
+          },
+          {
+            "value": "d",
+            "label": "因為這些服務提供的憑證有效期更長，不像 Let's Encrypt 只有 90 天"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調 Let's Encrypt 憑證 90 天就要自動 renewal，託管平台（Cloudflare、Vercel、Netlify、Caddy）的優勢就在於全自動化，使用者只需設定一次就完成。手動管理容易遺漏導致憑證過期，這是安全風險。"
+      }
     },
     {
       "title": "Domain 註冊 + 管理",
@@ -924,7 +1085,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你剛註冊了一個 domain，想要確保帳號和 domain 的安全。根據課程，以下哪個做法最不重要？",
+        "options": [
+          {
+            "value": "a",
+            "label": "開啟 Auto-renewal，避免忘記續約被搶"
+          },
+          {
+            "value": "b",
+            "label": "開啟 Lock 功能，防止被惡意 transfer"
+          },
+          {
+            "value": "c",
+            "label": "設定 2FA 保護帳號不被駭"
+          },
+          {
+            "value": "d",
+            "label": "選擇 .com 而不是 .io，因為信任度更高"
+          }
+        ],
+        "answer": "d",
+        "explanation": "課程強調 Day 1 必須開啟 auto-renewal、lock 和 2FA 是保護 domain 安全的重點；而選 .com 或 .io 是個人品牌策略選擇，不是安全面的必做事項。"
+      }
     },
     {
       "title": "Email DNS 完整設定",
@@ -1040,7 +1224,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的新 startup 要寄行銷信給用戶，為了不進 spam 資料夾，必須設定哪三個 DNS records？",
+        "options": [
+          {
+            "value": "a",
+            "label": "SPF、DKIM、DMARC"
+          },
+          {
+            "value": "b",
+            "label": "SPF、MX、A record"
+          },
+          {
+            "value": "c",
+            "label": "DKIM、DMARC、BIMI"
+          },
+          {
+            "value": "d",
+            "label": "SPF、CNAME、TXT"
+          }
+        ],
+        "answer": "a",
+        "explanation": "SPF + DKIM + DMARC 是寄信的「三劍客」——SPF 告訴收件方誰能用你的 domain 寄信、DKIM 簽名驗證信沒被改、DMARC 統合檢查並決定怎麼處理。其他選項混了不相關或進階的紀錄。"
+      }
     },
     {
       "title": "CDN + DNS 進階整合",
@@ -1153,7 +1360,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的網站用 Cloudflare 當主要 CDN，但擔心 Cloudflare 整個服務掛掉會影響全網。根據課程內容，最適合的做法是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "設定 Geo DNS，讓不同地區用戶連到不同的 origin server"
+          },
+          {
+            "value": "b",
+            "label": "用 DNS Load Balancer 在 Cloudflare 和 Fastly 之間切換，其中一家掛自動改連另一家"
+          },
+          {
+            "value": "c",
+            "label": "啟用 DNSSEC，防止 DNS 被攻擊導致服務中斷"
+          },
+          {
+            "value": "d",
+            "label": "在 Cloudflare 設定 Failover，主 server 掛就切到備用 server"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確提到 Multi-CDN 策略就是為了「一個 CDN 掛 = 全網掛」的風險，做法是在 DNS 層用 Load Balancer 管理多家 CDN（Cloudflare primary、Fastly backup），一家故障自動切換。選 a 是地理分散但沒解決單 CDN 風險；選 c 是安全而非高可用；選 d 只是在 origin 層做 failover，沒解決 CDN 層問題。"
+      }
     }
   ],
   "boss": {
@@ -1167,5 +1397,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "網域是網站的門牌、需要向註冊商購買並定期續費、透過 DNS 將網域指向你的伺服器",
+    "SSL 憑證讓瀏覽器和伺服器加密溝通、HTTPS 是安全連線的表現、Let's Encrypt 提供免費憑證",
+    "Subdomain 讓你在一個網域下分出多個獨立區塊、如 shop.、blog.、api. 各司其職",
+    "用 DNS 的 MX 記錄設定、就能用自己網域當信箱、比免費信箱更專業",
+    "Cloudflare 是 CDN 服務、同時幫你管理 DNS、加速內容、防止攻擊、很多功能免費用"
+  ],
+  "faq": [
+    {
+      "q": "我需要多少錢才能開始有自己的網域？",
+      "a": "網域註冊通常一年新台幣 100-500 元不等、看你選的網域商和熱門程度。之後每年都要續費。SSL 憑證可以用免費的 Let's Encrypt、不用花錢。"
+    },
+    {
+      "q": "買了網域之後要做什麼？",
+      "a": "買完網域要進到註冊商的後台、設定 DNS 記錄把網域指向你的網站伺服器。通常 DNS 設定會在同一個後台完成、不用跑另外一個地方。"
+    },
+    {
+      "q": "Cloudflare 和直接用註冊商的 DNS 有什麼差別？",
+      "a": "註冊商通常只有基本的 DNS 功能、Cloudflare 除了 DNS 還有 CDN 加速、防火牆、DDoS 防護等額外功能、大部分免費。如果你不需要特殊功能、直接用註冊商也可以。"
+    }
+  ]
 }

@@ -67,7 +67,30 @@
           "level": 3,
           "text": "爬蟲 3 大難度"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，下列哪一個情況屬於「合法的爬蟲行為」？",
+        "options": [
+          {
+            "value": "a",
+            "label": "爬取某網站公開的商品資料，每次請求間隔 1-2 秒，遵守 robots.txt，不破解付費牆"
+          },
+          {
+            "value": "b",
+            "label": "用高頻率爬蟲自動抓取某購物網站的全部商品資料，導致對方伺服器當機"
+          },
+          {
+            "value": "c",
+            "label": "破解登入後的社群網站（Facebook / Instagram）個人資料進行爬蟲"
+          },
+          {
+            "value": "d",
+            "label": "爬取網路上的資料後直接轉售給第三方公司，賺取商業利潤"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確說明：爬「公開資料」且遵守 robots.txt、合理頻率、不破解付費牆 = 合法。選項 b 會涉刑法 360 條、選項 c 和 d 都屬於違法行為，課程案例已清楚說明。"
+      }
     },
     {
       "id": "28.2",
@@ -116,7 +139,30 @@
           "level": 3,
           "text": "儲存到 CSV / DB"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你要爬一個網站的商品列表，打開瀏覽器按 F12 看 view source，發現所有商品價格都寫在 HTML 裡面。請問應該用什麼工具組合最快搞定？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Requests + BeautifulSoup"
+          },
+          {
+            "value": "b",
+            "label": "Playwright + BeautifulSoup"
+          },
+          {
+            "value": "c",
+            "label": "Requests 就夠了，不需要 BeautifulSoup"
+          },
+          {
+            "value": "d",
+            "label": "BeautifulSoup 就夠了，不需要 Requests"
+          }
+        ],
+        "answer": "a",
+        "explanation": "這是典型的靜態 HTML 爬蟲場景——資料在 view source 就看得到，用 Requests 抓網頁、BeautifulSoup 解析 HTML 就能 3-5 行搞定。Playwright 是用來處理需要 JS 才能載入的動態頁面，這裡用不到。"
+      }
     },
     {
       "id": "28.3",
@@ -173,7 +219,30 @@
           "level": 3,
           "text": "async 版本（高速）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你用 Requests 抓一個蝦皮商品頁面，view source 裡看不到商品資料，但打開瀏覽器 F12 可以看到。這時候你應該怎麼做？",
+        "options": [
+          {
+            "value": "a",
+            "label": "改用 Playwright，因為商品資料是 JS 渲染後才載入的"
+          },
+          {
+            "value": "b",
+            "label": "在 Requests 的 headers 加 User-Agent，就能抓到 JS 載入的資料"
+          },
+          {
+            "value": "c",
+            "label": "用 Requests 加 timeout 參數等 JS 跑完，再抓資料"
+          },
+          {
+            "value": "d",
+            "label": "用 BeautifulSoup 的動態模式，直接解析 JS 渲染的網頁"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Requests 只拿 HTML 原始碼、拿不到 JS 動態載入的資料。Playwright 會真的開瀏覽器跑 JS，所以能拿到；B 和 C 改 headers / timeout 無法讓 Requests 執行 JS；D 是編造的，BeautifulSoup 沒有動態模式。"
+      }
     },
     {
       "id": "28.4",
@@ -230,7 +299,30 @@
           "level": 3,
           "text": "分散式 Scrapy（Scrapy-Redis）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想爬一個網站的 500 個商品頁面，需要自動翻頁、防止 IP 被封、結果存成 JSON。下列哪個敘述最符合應該用 Scrapy 的原因？",
+        "options": [
+          {
+            "value": "a",
+            "label": "爬 500 頁需要大規模分散式框架，Requests + BS4 容易被網站封 IP，Scrapy 有並發控制、下載間隔、retry 機制可以解決"
+          },
+          {
+            "value": "b",
+            "label": "Scrapy 是唯一能存成 JSON 的爬蟲工具，Requests + BS4 只能存成 CSV"
+          },
+          {
+            "value": "c",
+            "label": "因為 Scrapy 的 CSS selector 比 BS4 更強大，能抓到更多資料"
+          },
+          {
+            "value": "d",
+            "label": "爬 500 頁一定要用 Scrapy，用 Requests + BS4 根本不可能完成"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確說『爬上千/上萬個頁面、需要 retry/pipeline/排程、要 production 級可靠性才用 Scrapy』，重點是框架提供的『並發控制、下載延遲、自動 retry』等機制防止被封；b 錯在輸出格式不是選擇 Scrapy 的主因；c 錯在 selector 強度不是核心差異；d 過度絕對化。"
+      }
     },
     {
       "id": "28.5",
@@ -271,7 +363,30 @@
           "level": 3,
           "text": "反反爬黃金組合"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在爬一個網站時，發現對方用 Cloudflare 的 JS 挑戰機制擋住了你的請求。以下哪個做法最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "直接加上 User-Agent header 和 Referer，應該就能繞過"
+          },
+          {
+            "value": "b",
+            "label": "用 Playwright 自動執行 JavaScript，或用 cloudscraper 套件來破解"
+          },
+          {
+            "value": "c",
+            "label": "增加 sleep 時間到 10 秒以上，等對方放鬆警惕再爬"
+          },
+          {
+            "value": "d",
+            "label": "馬上改用 IP 池輪流切換 IP，這樣就不會被擋"
+          }
+        ],
+        "answer": "b",
+        "explanation": "JS Challenge 是網站用 JavaScript 程式來驗證訪客身份，光改 UA / Referer 或調整頻率無法繞過。需要用能實際執行 JavaScript 的工具（Playwright）或專門針對 Cloudflare 的套件（cloudscraper）才行。"
+      }
     },
     {
       "id": "28.6",
@@ -324,7 +439,30 @@
           "level": 3,
           "text": "2026 推薦"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在爬一個網站，發現同一個 IP 頻繁被擋住（HTTP 429）。你該用什麼方式解決？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用免費 Proxy 服務，完全不花錢"
+          },
+          {
+            "value": "b",
+            "label": "多個 Proxy IP 輪流發 request，避免單一 IP 被識別"
+          },
+          {
+            "value": "c",
+            "label": "加大 sleep 時間，降低請求速度就不會被擋"
+          },
+          {
+            "value": "d",
+            "label": "改用 VPN，這樣 IP 就不會被限制"
+          }
+        ],
+        "answer": "b",
+        "explanation": "這課的核心就是『用多個 IP 輪流發 request 避免被封』。免費 proxy 不穩且有風險、加大 sleep 只能延遲但不是根本解、VPN 也容易被識別。正確答案是用 IP 池/Proxy 輪詢。"
+      }
     },
     {
       "id": "28.7",
@@ -361,7 +499,30 @@
           "level": 3,
           "text": "進階：監控價格變化、發 LINE 通知"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這課教的方法，為什麼用 PChome 內部 JSON API 比用 Playwright 爬 HTML 更好？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 JSON API 的速度快約 10 倍、資料結構乾淨、更穩定"
+          },
+          {
+            "value": "b",
+            "label": "因為 JSON API 不需要設定 User-Agent、可以避免被擋"
+          },
+          {
+            "value": "c",
+            "label": "因為 JSON API 可以爬更多頁數、不會被限流"
+          },
+          {
+            "value": "d",
+            "label": "因為 JSON API 是官方公開的、使用 API 不違反法律"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確講『用 PChome 內部 JSON API（不解 HTML）—— 比 Playwright 跑瀏覽器快 10 倍、結構乾淨、穩定』，這是使用 API 而非瀏覽器自動化的核心優勢。b、c、d 都是常見迷思但課程沒教、不是選 API 的主要原因。"
+      }
     },
     {
       "title": "requests + BeautifulSoup：爬蟲基本盤",
@@ -402,7 +563,30 @@
           "level": 2,
           "text": "完整範例"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在寫一個爬蟲程式，需要爬取某個網站的 100 筆資料。中間有幾個請求失敗了，你希望程式能自動重試，並且開發時不要重複打對方的 server。根據這課教的「生產級」寫法，你應該怎麼做？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 @retry 裝飾器自動重試失敗的請求，並用 requests-cache 快取 HTTP 回應，這樣既能處理失敗、又不會重複打 server"
+          },
+          {
+            "value": "b",
+            "label": "用 requests 的 Session 物件並設定 max_retries，就能自動重試和快取所有回應"
+          },
+          {
+            "value": "c",
+            "label": "用迴圈手動重試每個失敗請求，再用檔案存本地備份資料"
+          },
+          {
+            "value": "d",
+            "label": "改用另一個爬蟲套件會更快，requests 和 BeautifulSoup 只適合學習用"
+          }
+        ],
+        "answer": "a",
+        "explanation": "這課教的「生產級」寫法的核心就是：用 @retry 裝飾器處理暫時性失敗（指數退避重試），用 requests-cache 快取回應避免重複打 server。Session 物件主要用來持久化 cookie，不是為了重試；手動迴圈不夠專業；說 requests 只能學習用也不符合課程的「生產級」精神。"
+      }
     },
     {
       "title": "Scrapy：大型爬蟲框架",
@@ -451,7 +635,30 @@
           "level": 2,
           "text": "CrawlSpider"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在用 Scrapy 爬一個購物網站，需要自動跟所有「商品頁面」的連結並解析，同時也要自動進入「分類頁面」繼續往下爬。下列哪個做法最有效率？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用基礎 Spider，在 parse 方法裡用 if/else 判斷連結類型，再手動寫 yield response.follow()"
+          },
+          {
+            "value": "b",
+            "label": "用 CrawlSpider + Rule，分別定義商品頁面和分類頁面的 pattern，讓框架自動跟連結並呼叫對應的 callback"
+          },
+          {
+            "value": "c",
+            "label": "用 requests + BeautifulSoup 逐頁爬，自己管理連結佇列和遞迴邏輯"
+          },
+          {
+            "value": "d",
+            "label": "用基礎 Spider + custom_settings 調高並發數，這樣速度快就不用管連結邏輯"
+          }
+        ],
+        "answer": "b",
+        "explanation": "CrawlSpider 的核心設計就是透過 Rule + LinkExtractor 自動比對 URL pattern，分別觸發不同的 callback 方法，省掉手動 follow 邏輯。這正是 Scrapy 相比 requests + BS4 的優勢——production 級的自動化爬蟲。"
+      }
     },
     {
       "title": "Playwright Python：動態網站",
@@ -504,7 +711,30 @@
           "level": 2,
           "text": "反偵測"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的爬蟲在 production 環境掛掉了，但不知道卡在哪裡。根據這課教的工具，你應該用什麼來快速找到問題？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 Codegen 重新錄製一遍操作過程"
+          },
+          {
+            "value": "b",
+            "label": "用 Trace Viewer 看 trace.zip 的截圖、DOM 和 Network 紀錄"
+          },
+          {
+            "value": "c",
+            "label": "用 Async 並發模式重新跑一次"
+          },
+          {
+            "value": "d",
+            "label": "用 Semaphore 限制並發數後重跑"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Trace Viewer 就是為了 debug production 問題而設計——它記錄每個 step 的截圖、DOM 快照和 Network 請求，讓你快速看出程式掛在哪裡。Codegen 是用來快速寫 code、Async 和 Semaphore 是性能優化，都不能幫你 debug。"
+      }
     },
     {
       "title": "反爬蟲：UA / Cookie / 代理",
@@ -557,7 +787,30 @@
           "level": 2,
           "text": "法律"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的爬蟲被網站擋掉，診斷發現是 Cloudflare 的 TLS fingerprint 偵測。根據這堂課，你應該優先選用下列哪個工具來解決？",
+        "options": [
+          {
+            "value": "a",
+            "label": "curl_cffi"
+          },
+          {
+            "value": "b",
+            "label": "fake-useragent"
+          },
+          {
+            "value": "c",
+            "label": "time.sleep(1)"
+          },
+          {
+            "value": "d",
+            "label": "加代理 IP"
+          }
+        ],
+        "answer": "a",
+        "explanation": "curl_cffi 是神器、專門用 C 寫的 binding 來偽裝真實瀏覽器的 TLS fingerprint，才能繞過 2024+ Cloudflare 偵測。fake-useragent 只改 UA 字串、sleep 控制速度、代理改 IP，都解決不了 TLS 層級的偵測。"
+      }
     },
     {
       "title": "解析 HTML：CSS Selector + XPath",
@@ -622,7 +875,30 @@
           "level": 3,
           "text": "6. 巢狀"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在爬一個電商網站，發現很難用 CSS Selector 從 HTML 裡抓出商品資訊。朋友告訴你「直接查看網頁原始碼，找 <script type=\"application/ld+json\"> 這個標籤」。為什麼這招這麼有效？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 JSON-LD 是結構化資料，Google 搜尋結果要顯示價格、評分、庫存等豐富片段必須有它，所以現代電商幾乎都內建——直接解析 JSON 比挖 HTML 穩定 100 倍"
+          },
+          {
+            "value": "b",
+            "label": "因為 JSON-LD 比 CSS Selector 執行速度快，瀏覽器優先載入 JSON-LD，所以資料最完整"
+          },
+          {
+            "value": "c",
+            "label": "因為 JSON-LD 是 HTML5 標準，所有網站都必須用它存商品資訊，所以一定能找到"
+          },
+          {
+            "value": "d",
+            "label": "因為 JSON-LD 會自動轉換成 Python Dictionary，爬蟲不用自己寫 XPath 就能拿資料"
+          }
+        ],
+        "answer": "a",
+        "explanation": "JSON-LD 是為了給 Google 搜尋引擎讀取而存在的結構化資料，電商網站需要它來顯示豐富片段。b 錯在速度快是搜尋引擎的考量、c 錯在不是所有網站都有、d 錯在 JSON-LD 還是要自己用 json.loads() 轉換。"
+      }
     },
     {
       "title": "儲存資料：CSV / JSON / DB",
@@ -671,7 +947,30 @@
           "level": 2,
           "text": "選擇"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你爬到了 150 萬筆商品資料（名稱、價格、連結），要存起來後續分析。下列哪個選擇最合適？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 CSV，因為它最簡單，什麼資料都能存"
+          },
+          {
+            "value": "b",
+            "label": "用 SQLite，因為 100 萬筆以下單檔 DB 最方便，不需要裝伺服器"
+          },
+          {
+            "value": "c",
+            "label": "用 PostgreSQL 或 MongoDB，因為資料量大、需要多人共用或更強大的查詢能力"
+          },
+          {
+            "value": "d",
+            "label": "用 JSONL，因為只是爬蟲初期，之後再考慮搬到資料庫"
+          }
+        ],
+        "answer": "c",
+        "explanation": "150 萬筆已超過 SQLite 的舒適區（<100 萬），需要伺服器級資料庫。PostgreSQL（多人、production）或 MongoDB（靈活結構）才是這個量級的正確選擇。CSV 會開不起來，JSONL 只適合存檔案、不適合頻繁查詢分析。"
+      }
     },
     {
       "title": "Async 爬蟲：httpx",
@@ -716,7 +1015,30 @@
           "level": 2,
           "text": "進度條"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你要同時爬 100 個網頁，用 httpx async 比 requests 同步快很多。但如果直接 await asyncio.gather(*[fetch(client, url) for url in urls])，一次打 100 個 request，最容易遇到什麼問題？",
+        "options": [
+          {
+            "value": "a",
+            "label": "httpx 會自動限制並發、不會有問題"
+          },
+          {
+            "value": "b",
+            "label": "對方網站可能認為你在攻擊、擋掉你的 request"
+          },
+          {
+            "value": "c",
+            "label": "asyncio.gather 會自動失敗重試、速度會變慢"
+          },
+          {
+            "value": "d",
+            "label": "你的電腦網路卡會爆掉、無法傳送 100 個 request"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確說明要用 asyncio.Semaphore 限制並發（同時最多 10 個）來避免「打爆對方」。直接無限並發會被對方視為攻擊而擋掉，這是為什麼業界經驗值是根據對方反爬強度調整並發數（5-10 或 1-3）。"
+      }
     },
     {
       "title": "登入 + Session 爬蟲",
@@ -765,7 +1087,30 @@
           "level": 2,
           "text": "注意"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你要爬一個網站的「登入後才看得到」的個人化推薦內容。第一次登入時用 Playwright 成功進去了，拿到了 cookie。下次還要爬同樣的內容時，最聰明的做法是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "再跑一次 Playwright 登入，確保 cookie 一定還是新鮮的"
+          },
+          {
+            "value": "b",
+            "label": "把第一次拿到的 cookie 存下來，直接用 requests + 這個 cookie 爬，省去每次都跑 Playwright 的時間"
+          },
+          {
+            "value": "c",
+            "label": "每次都用 requests 直接 POST 帳號密碼登入，不用 Playwright"
+          },
+          {
+            "value": "d",
+            "label": "直接用 requests 爬，不用登入，因為登入後的內容應該也是公開的"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調 Playwright 跑一次拿 cookie、之後用 requests + cookie 爬是「混合用最強」的做法——Playwright 啟動慢，requests 快，所以不用每次都重新登入。選 a 浪費時間、c 容易被擋、d 違背課程重點（登入後內容是個人化的，不能直接爬）。"
+      }
     },
     {
       "title": "Schedule：cron + Airflow",
@@ -818,7 +1163,30 @@
           "level": 2,
           "text": "監控"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你公司現在有 8 個網頁爬蟲需要定時執行、爬蟲之間沒有依賴關係（互不影響）。根據課程的業界選擇心法、你應該選用哪個方案最合適？",
+        "options": [
+          {
+            "value": "a",
+            "label": "cron、因為最簡單、成本最低"
+          },
+          {
+            "value": "b",
+            "label": "APScheduler 或 Prefect、因為爬蟲數量在 5-20 個範圍內"
+          },
+          {
+            "value": "c",
+            "label": "Airflow、因為數量多於 5 個就應該用業界標準工具"
+          },
+          {
+            "value": "d",
+            "label": "自己寫迴圈 while True 搭配 sleep、最客製化"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確提出：1-3 個爬蟲用 cron、5-20 個用 APScheduler / Prefect、20+ 個或多步驟 pipeline 才上 Airflow。8 個爬蟲落在 5-20 區間，所以應選 APScheduler 或 Prefect，既避免 cron 複雜度、也不過度設計用 Airflow。"
+      }
     },
     {
       "title": "爬 API（不用解 HTML）",
@@ -871,7 +1239,30 @@
           "level": 2,
           "text": "Cursor pagination"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在 F12 DevTools 的 Network 分頁看到一個 request，Response 是 HTML 格式、URL 也沒有 /api/ 字樣。這時候你應該怎麼做？",
+        "options": [
+          {
+            "value": "a",
+            "label": "繼續看其他 request，因為這個不是 API"
+          },
+          {
+            "value": "b",
+            "label": "馬上用 requests 爬這個 URL，HTML 也能解析"
+          },
+          {
+            "value": "c",
+            "label": "這一定是假 API，放棄爬這個網站"
+          },
+          {
+            "value": "d",
+            "label": "加上 User-Agent 再試一次，應該就會變成 JSON"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調要找回傳 JSON 格式、Content-Type 是 application/json 的 request 才是 API。如果 Response 是 HTML，就代表這個不是 API endpoint，應該繼續篩選其他 request。User-Agent 或加 header 改變不了回傳格式本質。"
+      }
     },
     {
       "title": "爬蟲 + Pandas：抓 + 分析一條龍",
@@ -916,7 +1307,30 @@
           "level": 2,
           "text": "監控趨勢"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在爬蟲 + Pandas 的完整一條龍流程中，「爬下來的價格是字串 'NT$ 1,299'、要轉成數字」這個步驟叫什麼？為什麼要做？",
+        "options": [
+          {
+            "value": "a",
+            "label": "清理（data cleaning）——把爬下來的髒資料轉成可以分析的格式"
+          },
+          {
+            "value": "b",
+            "label": "正規化（normalization）——統一所有資料的單位和樣式"
+          },
+          {
+            "value": "c",
+            "label": "驗證（validation）——檢查資料有沒有錯誤和重複"
+          },
+          {
+            "value": "d",
+            "label": "編碼（encoding）——把文字轉成電腦能看懂的代碼"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課文明確說「爬下來是字串『NT$ 1,299』、要轉 float」，就是清理的例子。清理是爬蟲→分析的必要中間步驟，把原始資料變成能做 groupby、計算的乾淨格式。"
+      }
     },
     {
       "title": "Selenium：傳統王者",
@@ -965,7 +1379,30 @@
           "level": 2,
           "text": "Selenium vs Playwright"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，為什麼新專案應該選 Playwright 而不是 Selenium？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 Selenium 是舊技術，Playwright 速度快 5 倍、內建自動 wait、安裝更簡單"
+          },
+          {
+            "value": "b",
+            "label": "因為 Selenium 只能在 Chrome 上跑，Playwright 支援多個瀏覽器"
+          },
+          {
+            "value": "c",
+            "label": "因為 Selenium 需要 undetected-chromedriver 才能繞過反爬蟲"
+          },
+          {
+            "value": "d",
+            "label": "因為 Selenium 不支援 headless 模式，Playwright 才有"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確指出新專案 100% 選 Playwright，主要原因是：Playwright 速度快 5 倍、內建自動 wait（Selenium 要手動 WebDriverWait）、安裝更簡單（一個 `playwright install` 搞定，Selenium 還要 webdriver-manager）。選項 b、c、d 都超出課程重點或不符合內容。"
+      }
     },
     {
       "title": "代理 + IP 池：商業爬蟲核心",
@@ -1022,7 +1459,30 @@
           "level": 2,
           "text": "反 pattern"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你是一個獨立開發者，要爬取中等規模的電商網站。根據這課的推薦，你應該優先選擇哪個方案？",
+        "options": [
+          {
+            "value": "a",
+            "label": "使用 Bright Data 的 Residential Proxy，因為它是全球第一、品質最好"
+          },
+          {
+            "value": "b",
+            "label": "先用 ScraperAPI（$49/月），等規模變大再換 Smartproxy"
+          },
+          {
+            "value": "c",
+            "label": "自己架設 Datacenter Proxy 伺服器，成本最低"
+          },
+          {
+            "value": "d",
+            "label": "使用 IPRoyal 的按流量計費方案，這樣最彈性"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課文明確寫『indie 推薦：先用 ScraperAPI（$49/月、不用管 proxy 池）、規模大才換 Smartproxy』。ScraperAPI 的優勢是一個 API 解決一切、最簡單，適合剛起步的獨立開發者；其他選項要麼成本過高、要麼不符合規模。"
+      }
     },
     {
       "title": "爬蟲監控 + 錯誤處理",
@@ -1075,7 +1535,30 @@
           "level": 2,
           "text": "清單"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的爬蟲在 production 跑了 2 週、突然停止工作。根據這課教的內容，你應該怎麼做才能「下次立刻發現問題」？",
+        "options": [
+          {
+            "value": "a",
+            "label": "裝 Sentry 監控 + 設定好 DSN，這樣 exception 自動上報、你會收到通知"
+          },
+          {
+            "value": "b",
+            "label": "多寫幾個 try/except、捕捉所有錯誤就夠了"
+          },
+          {
+            "value": "c",
+            "label": "每天手動檢查爬蟲日誌，看有沒有失敗"
+          },
+          {
+            "value": "d",
+            "label": "只用 requests retry 機制、不用額外監控工具"
+          }
+        ],
+        "answer": "a",
+        "explanation": "這課重點就是『24/7 監控 + 立刻通知』。光寫 try/except 或 retry 只能讓爬蟲自己恢復，但無法讓你知道出問題了。Sentry 才是業界標配監控方案，會自動捕捉 exception 並通知你，確保 production 環境出狀況時你立刻發現。"
+      }
     },
     {
       "title": "PDF / Excel / 圖片：非 HTML",
@@ -1132,7 +1615,30 @@
           "level": 2,
           "text": "應用"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你要從政府公告 PDF 中抽取表格資料，並存成 CSV 檔。根據課程內容，用哪個套件最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "pdfplumber，因為它的表格識別最準、能自動辨識列和欄"
+          },
+          {
+            "value": "b",
+            "label": "PyPDF2，因為它是最常用的 PDF 處理套件"
+          },
+          {
+            "value": "c",
+            "label": "PyMuPDF，因為它速度最快，適合大量 PDF"
+          },
+          {
+            "value": "d",
+            "label": "pandas，直接用 pd.read_pdf() 最方便"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確說明 pdfplumber 是『最強的 PDF 處理套件』，特別強調『表格識別最準』，而 PyMuPDF 雖然速度快但文字位置抓不準。pandas 沒有原生 read_pdf 功能，PyPDF2 則沒有特別優勢。"
+      }
     },
     {
       "title": "爬蟲法律 + 道德",
@@ -1204,7 +1710,30 @@
           "level": 2,
           "text": "Indie 建議"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "假設你要為客戶寫爬蟲爬某個電商網站的商品資料（不含個資），並計畫商業使用。根據本課內容，下列哪個做法最能保護自己？",
+        "options": [
+          {
+            "value": "a",
+            "label": "直接開始爬蟲，因為商品資料是公開的就沒有法律風險"
+          },
+          {
+            "value": "b",
+            "label": "先查看 robots.txt、確認網站 ToS 沒明確禁止，爬蟲加延遲，並在合約中明確客戶承擔法律責任"
+          },
+          {
+            "value": "c",
+            "label": "爬蟲時避免加延遲，這樣速度快、風險反而更低"
+          },
+          {
+            "value": "d",
+            "label": "只要不爬個資就安全，可以大量爬取並立即商業轉賣資料"
+          }
+        ],
+        "answer": "b",
+        "explanation": "本課強調『低風險爬蟲』需要三件事：尊重 robots.txt、加適當延遲、商業專案必須簽合約轉移責任給客戶。選項 a 忽視 ToS，c 的做法反而會衝擊伺服器，d 賣資料給第三方是『極高風險』不要做。"
+      }
     },
     {
       "title": "爬蟲接案 + 變現",
@@ -1268,7 +1797,30 @@
           "level": 2,
           "text": "反 pattern"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，爬蟲接案中「最划算的變現模式」是什麼？為什麼它被強調是最好的選擇？",
+        "options": [
+          {
+            "value": "a",
+            "label": "一次性接案，因為單價高達 NT$5,000-30,000，可以快速賺錢"
+          },
+          {
+            "value": "b",
+            "label": "持續監控（月費），因為做一次、收一輩子，客戶不換就一直有被動收入"
+          },
+          {
+            "value": "c",
+            "label": "SaaS 工具，因為用戶數量越多、月收入上限最高"
+          },
+          {
+            "value": "d",
+            "label": "顧問/教學，因為時薪最高可達 NT$3,000/hr"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程核心強調「持續監控是最划算的模式」——做一次爬蟲、每月收費就能持續賺被動收入，5-10個客戶月入就能達NT$10,000-50,000。相比一次性接案（只賺一次）和需要高用戶數的SaaS，月費模式最快達到穩定被動收入。"
+      }
     },
     {
       "title": "學習路徑 + 進階方向",
@@ -1348,7 +1900,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這課的 6 個月學習路徑，從「新手」變成「能靠爬蟲賺錢」最關鍵的一步是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "學完 L1-L24 所有課程內容"
+          },
+          {
+            "value": "b",
+            "label": "做 Portfolio + 接第一個付費 case（即使是朋友 1000 元）"
+          },
+          {
+            "value": "c",
+            "label": "學會 Scrapy 和 Playwright 這兩個進階框架"
+          },
+          {
+            "value": "d",
+            "label": "部署到 production 環境、讓爬蟲 24 小時不中斷運作"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確強調「學完這章不等於能上工、要做 portfolio + 接第一個 case 才會變錢」。學知識只是基礎，真正的轉折點是第 5 個月拿到第一個付費客戶——這是從學習者變成接案者的關鍵分界線。"
+      }
     }
   ],
   "boss": {
@@ -1362,5 +1937,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "爬蟲本質是自動化取得網頁資料，但要遵守 robots.txt、服務條款、法律，否則可能被告",
+    "靜態網站用 Requests 取 HTML，再用 BeautifulSoup 解析，簡單快速",
+    "動態網站（靠 JS 生成內容）要用 Playwright 或 Selenium，讓瀏覽器實際渲染後再抓",
+    "反爬機制無所不在：User-Agent、IP 限流、驗證碼、JavaScript 檢測、Cookie 驗證等，需要搭配代理池、延遲、偽裝來對付",
+    "Scrapy 是工業級框架，適合大量資料爬取；httpx async 適合中等規模；爬蟲 + 儲存（DB/CSV/API）+ 定時排程才是完整專案"
+  ],
+  "faq": [
+    {
+      "q": "爬蟲違法嗎？",
+      "a": "不一定。要看你爬什麼、怎麼用。爬公開資訊通常沒問題，但如果超過網站負荷、侵犯隱私、商業竊密、或違反服務條款就會有麻煩。建議先看 robots.txt、API 文件，沒有就直接問網站。"
+    },
+    {
+      "q": "為什麼有些網站爬不下來？",
+      "a": "通常是因為內容用 JavaScript 動態生成，靜態爬蟲只能抓到空殼。這時要用 Playwright 或 Selenium 讓瀏覽器真的跑起來。另一個原因是被偵測到爬蟲特徵（IP、User-Agent），被擋了。"
+    },
+    {
+      "q": "IP 被封了怎麼辦？",
+      "a": "用代理池或 VPN 換 IP。免費代理常常不穩定，商業爬蟲通常買付費代理服務。加上 User-Agent 輪換、請求延遲、Session 管理等才能長期存活。"
+    }
+  ]
 }

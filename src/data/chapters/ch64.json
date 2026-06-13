@@ -84,7 +84,30 @@
           "level": 2,
           "text": "💡 Tip"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "如果你在 Windows 上想同時編輯一個單字在檔案中出現的所有位置，應該用哪個快捷鍵？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Ctrl+D"
+          },
+          {
+            "value": "b",
+            "label": "Ctrl+Shift+L"
+          },
+          {
+            "value": "c",
+            "label": "Ctrl+Shift+F"
+          },
+          {
+            "value": "d",
+            "label": "Ctrl+Alt+↑↓"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Ctrl+Shift+L 是「加 cursor 到所有同字」，可以一次編輯全部。Ctrl+D 只加到下一個，Ctrl+Shift+F 是全域搜尋，Ctrl+Alt+↑↓ 是向上下加 cursor。"
+      }
     },
     {
       "id": "64.2",
@@ -174,7 +197,30 @@
           "level": 2,
           "text": "💡 推薦"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想在 package.json 的 devDependencies 中加入 TypeScript，請問用 pnpm 指令是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "pnpm add -D typescript"
+          },
+          {
+            "value": "b",
+            "label": "pnpm add typescript"
+          },
+          {
+            "value": "c",
+            "label": "pnpm install -D typescript"
+          },
+          {
+            "value": "d",
+            "label": "pnpm add -g typescript"
+          }
+        ],
+        "answer": "a",
+        "explanation": "pnpm 加 dev 套件的正確指令是 `pnpm add -D pkg`，-D 就是 --save-dev 的簡寫。選項 b 會加到 dependencies，c 是 npm 的語法，d 是加全域而非 dev。"
+      }
     },
     {
       "id": "64.3",
@@ -248,7 +294,30 @@
           "level": 2,
           "text": "💡 Tip"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想要在 Docker 容器中跑一個 Node.js 應用，同時希望容器停止時自動刪除、可以在終端機互動輸入指令。下面哪個指令最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "docker run -d node bash"
+          },
+          {
+            "value": "b",
+            "label": "docker run --rm -it node bash"
+          },
+          {
+            "value": "c",
+            "label": "docker run -it node bash"
+          },
+          {
+            "value": "d",
+            "label": "docker run --rm node bash"
+          }
+        ],
+        "answer": "b",
+        "explanation": "--rm 讓容器結束時自動刪除、-it 提供互動式終端機。選項 a 的 -d 是背景執行，無法互動；選項 c 沒有 --rm，容器停止後仍保留；選項 d 缺少 -it，無法互動輸入。"
+      }
     },
     {
       "id": "64.4",
@@ -342,7 +411,59 @@
           "level": 2,
           "text": "💡 Tip"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想用正則表達式匹配 HTML 標籤 `<div>` 和 `<span>`，以下哪個正則式最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "/<(div|span)>/"
+          },
+          {
+            "value": "b",
+            "label": "/<(div)|(span)>/"
+          },
+          {
+            "value": "c",
+            "label": "/<div|span>/"
+          },
+          {
+            "value": "d",
+            "label": "/<[div|span]>/"
+          }
+        ],
+        "answer": "a",
+        "explanation": "選項 a 用 `(div|span)` 在同一個群組內表示「div 或 span」，因此 `<div>` 和 `<span>` 都能匹配。選項 b 雖然也能匹配，但創建了兩個不必要的群組；選項 c 會誤匹配 `<div` 或 `<span`；選項 d 的字元類 `[div|span]` 會當成個別字元來判斷。"
+      }
     }
-  ]
+  ],
+  "outcomes": [
+    "查到 VSCode 常用快捷鍵和必裝套件、快速提升編碼效率",
+    "分辨 npm、yarn、pnpm 三種套件管理工具的指令差異、選對工具",
+    "看懂 Docker 和 Docker Compose 的基本指令、能複製貼上跑起來",
+    "讀懂常見正則表達式的寫法、會改現成的正則式符合自己的需求",
+    "在開發卡住時、快速找到對應工具的用法而不用 Google 半天"
+  ],
+  "summary": [
+    "VSCode 有內建快捷鍵和可擴展套件、裝對套件能省一半工作時間",
+    "npm、yarn、pnpm 都是套件管理工具、指令名稱略不同但功能一樣",
+    "Docker 把開發環境打包成容器、Docker Compose 用來管理多個容器一起跑",
+    "正則表達式用特殊符號寫規則、用來搜尋、驗證、提取文字",
+    "這章是速查表、遇到問題時翻一下就有答案、不需要全背起來"
+  ],
+  "faq": [
+    {
+      "q": "要把這章全部背起來嗎？",
+      "a": "不用、這就是速查表、看懂邏輯就好。真正工作時直接查、查久了自然就記住常用的指令了。"
+    },
+    {
+      "q": "npm、yarn、pnpm 要選哪個？",
+      "a": "新手用 npm 就夠、npm 是最基礎的、裝 Node.js 就內建了。等你熟悉後再試試其他的、都不難切換。"
+    },
+    {
+      "q": "Docker 一定要學嗎？",
+      "a": "不一定、但工作中很常用。先把前面章節的基礎學好、有機會再來摸 Docker、循序漸進最不會卡。"
+    }
+  ],
+  "status": "published"
 }

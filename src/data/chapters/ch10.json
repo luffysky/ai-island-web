@@ -60,7 +60,30 @@
           "level": 3,
           "text": "什麼專案不該用 Next / Nuxt？"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "為什麼大多數新創 SaaS 公司會選用 Next.js / Nuxt，而不是直接用純 React / Vue 寫網站？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 Next.js / Nuxt 自動解決 SEO 差、首屏慢、社群分享卡片壞掉、路由、API 等純 React / Vue 的缺點"
+          },
+          {
+            "value": "b",
+            "label": "因為 Next.js / Nuxt 比 React / Vue 更簡單，新手更容易上手"
+          },
+          {
+            "value": "c",
+            "label": "因為 Next.js / Nuxt 是唯一能讓網站跑起來的工具"
+          },
+          {
+            "value": "d",
+            "label": "因為 Next.js / Nuxt 的執行速度比純 React / Vue 快 10 倍"
+          }
+        ],
+        "answer": "a",
+        "explanation": "這課核心就是說：純 React / Vue（SPA）有 7 個致命缺點，Next.js / Nuxt 就是為了補這些缺口而生的「整台車」。選項 b 錯因為 Meta-framework 其實更複雜；選項 c 過度誇大；選項 d 是效能迷思，不是主要原因。"
+      }
     },
     {
       "id": "10.2",
@@ -113,7 +136,30 @@
           "level": 3,
           "text": "選擇對照表（最重要）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的公司做一個電商網站，商品列表頁面上的商品資訊每小時更新一次，但不需要即時反應。用戶點擊「加入購物車」需要立刻有互動反應。這個場景最適合用哪種渲染模式？",
+        "options": [
+          {
+            "value": "a",
+            "label": "CSR——因為需要立刻互動反應，只能在瀏覽器跑"
+          },
+          {
+            "value": "b",
+            "label": "ISR——既能保持靜態頁面的速度，又能自動定期更新內容"
+          },
+          {
+            "value": "c",
+            "label": "SSR——每次用戶訪問都重新抓最新資料，確保內容即時"
+          },
+          {
+            "value": "d",
+            "label": "SSG——靜態頁面最快，用戶互動也不會有問題"
+          }
+        ],
+        "answer": "b",
+        "explanation": "ISR 完美應對這個場景：平常快速供應靜態 HTML（像倉庫拿畫），同時每小時自動背景重新產生新頁面，內容會漸進更新。SSR 每次都要 server 算會很貴，SSG 無法自動更新，CSR 首屏會慢。"
+      }
     },
     {
       "id": "10.3",
@@ -166,7 +212,30 @@
           "level": 3,
           "text": "嵌套 Layout"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在 Next.js 14 的 App Router 中，如果你想在 `src/app/blog/[slug]/` 資料夾裡建立一個動態文章頁面，應該建立哪個檔案？",
+        "options": [
+          {
+            "value": "a",
+            "label": "page.tsx（會自動成為 /blog/:slug 路由）"
+          },
+          {
+            "value": "b",
+            "label": "route.ts（用來處理 API 請求）"
+          },
+          {
+            "value": "c",
+            "label": "layout.tsx（用來包裹所有子頁面的共用樣式）"
+          },
+          {
+            "value": "d",
+            "label": "loading.tsx（用來顯示頁面載入中的畫面）"
+          }
+        ],
+        "answer": "a",
+        "explanation": "根據 App Router 慣例，page.tsx 是必須有的檔案才能讓路由可以訪問。[slug] 是動態參數，整個資料夾結構自動對應 URL 路由，所以 src/app/blog/[slug]/page.tsx 就會自動成為 /blog/:slug 頁面。route.ts 是 API endpoint、layout.tsx 是共用樣式、loading.tsx 是載入畫面，都不是用來顯示頁面內容的。"
+      }
     },
     {
       "id": "10.4",
@@ -215,7 +284,30 @@
           "level": 3,
           "text": "實戰準則"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下列哪個敘述最能解釋為什麼預設要用 Server Component、盡量少用 Client Component？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 Server Component 不需要寫 'use client' 這行，程式碼比較簡潔"
+          },
+          {
+            "value": "b",
+            "label": "因為 Server Component 直接在伺服器跑、只把結果（HTML）送給瀏覽器，不會增加 client bundle 大小，這樣首屏速度才快"
+          },
+          {
+            "value": "c",
+            "label": "因為 Server Component 可以用 React hooks、更容易做互動功能"
+          },
+          {
+            "value": "d",
+            "label": "因為 Server Component 不需要跨域呼叫 API、直接讀資料庫更方便"
+          }
+        ],
+        "answer": "b",
+        "explanation": "這課的核心價值是「正確分配 server / client 邊界能讓 bundle 小 50%、首屏快 2 秒」。Server Component 的最大優勢就是程式碼不會進 client bundle，所以瀏覽器要下載和執行的東西才會變少。選 d 雖然也是 Server Component 的好處，但不是「為什麼要預設用它」的根本原因。"
+      }
     },
     {
       "id": "10.5",
@@ -272,7 +364,30 @@
           "level": 3,
           "text": "sitemap.xml 與 robots.txt"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你有一個部落格網站，文章放在 `/blog/hello-world`、`/blog/ai-tools` 等不同網址。如果想讓每篇文章在 Google 搜尋結果和 LINE 分享時都有專屬的標題、描述、封面圖，下列做法哪個最合適？",
+        "options": [
+          {
+            "value": "a",
+            "label": "在 `app/blog/[slug]/page.tsx` 用動態路由搭配動態 metadata，讓每篇文章根據 slug 參數產生不同的 title、description、OG 圖"
+          },
+          {
+            "value": "b",
+            "label": "在 `app/blog/page.tsx` 寫一個靜態 metadata，所有文章共用同一份標題和封面圖"
+          },
+          {
+            "value": "c",
+            "label": "用 catch-all 路由 `[...slug]` 並在資料夾裡放 147 個靜態 HTML 檔案，每個檔案寫死自己的 metadata"
+          },
+          {
+            "value": "d",
+            "label": "只需要設定 generateStaticParams，Next.js 會自動為所有頁面產生 metadata，不用另外寫程式"
+          }
+        ],
+        "answer": "a",
+        "explanation": "動態路由 `[slug]` 搭配動態 metadata（根據 slug 參數從資料庫取不同的 title、description、OG 圖）才能實現「每篇文章獨立 SEO 資訊」的目標，這也是課程強調的「品牌感 up 10 倍」的關鍵。其他選項要不是共用同一份 metadata（b），要不是誤解了技術用法（c、d）。"
+      }
     },
     {
       "id": "10.6",
@@ -317,7 +432,30 @@
           "level": 3,
           "text": "樂觀更新（useOptimistic）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "Server Action 最重要的特色是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "在 component 內直接寫 server function，不用寫 API route 和 fetch，form 可以直接連接到 server function"
+          },
+          {
+            "value": "b",
+            "label": "它是一種新的 React hook，可以直接存取資料庫"
+          },
+          {
+            "value": "c",
+            "label": "用來取代所有 API route 的標準做法"
+          },
+          {
+            "value": "d",
+            "label": "一個加快網站速度的快取機制"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Server Action 的核心價值就是「在 component 內直接寫 server function、form action 直接指向它、不用寫 API route、不用 fetch」。選項 b 錯誤（它不是 hook）、選項 c 過度絕對（不是取代所有、是簡化常見的表單和 CRUD）、選項 d 是快取功能（revalidatePath）但不是主特色。"
+      }
     },
     {
       "id": "10.7",
@@ -362,7 +500,30 @@
           "level": 3,
           "text": "什麼時候用 API vs Server Action？"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在做一個行動 App，需要從你的 Next.js 網站取得使用者清單。下面哪個做法最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "在網站的 React 元件裡用 Server Action 處理、然後把結果傳給行動 App"
+          },
+          {
+            "value": "b",
+            "label": "在 app/api/users/route.ts 開一個 API Route 的 GET endpoint，行動 App 直接呼叫這個 HTTP 介面"
+          },
+          {
+            "value": "c",
+            "label": "在頁面上用 Server Component 查詢資料庫、行動 App 去爬網頁的 HTML"
+          },
+          {
+            "value": "d",
+            "label": "用 useEffect 在客戶端fetch 資料、行動 App 監聽同一個請求"
+          }
+        ],
+        "answer": "b",
+        "explanation": "API Route 就是設計來給外部應用（行動 App、第三方服務）呼叫的 HTTP endpoint。而 Server Action 只適合網站內部使用，不能被外部直接呼叫，所以行動 App 必須用 API Route。"
+      }
     },
     {
       "id": "10.8",
@@ -403,7 +564,30 @@
           "level": 3,
           "text": "常見抓資料模式"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在 Next.js 頁面裡用 fetch 抓資料，但發現改了後端資料後，網站還是一直顯示舊的。下列哪個做法最能解決這個問題？",
+        "options": [
+          {
+            "value": "a",
+            "label": "在 fetch 時加上 next: { tags: [\"posts\"] }，然後在後台操作後執行 revalidateTag(\"posts\")"
+          },
+          {
+            "value": "b",
+            "label": "改用 cache: \"force-cache\"，這樣就能強制更新快取"
+          },
+          {
+            "value": "c",
+            "label": "把所有 fetch 改成 cache: \"no-store\"，永遠不快取任何資料"
+          },
+          {
+            "value": "d",
+            "label": "設定 export const revalidate = 0，確保頁面永遠是最新的"
+          }
+        ],
+        "answer": "a",
+        "explanation": "tag 搭配 revalidateTag 是最精準的快取控制——只更新特定資料、不影響其他快取。選項 b 的 force-cache 反而會凍結資料；選項 c 和 d 是全面禁用快取，會大幅降低效能，不是好辦法。"
+      }
     },
     {
       "id": "10.9",
@@ -444,7 +628,30 @@
           "level": 3,
           "text": "實戰：Dashboard 並行載入"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "如果你的頁面有「使用者卡片（500ms）」和「圖表資料（3s）」兩個部分，使用 Streaming + Suspense 的做法，使用者最快何時能看到完整頁面？",
+        "options": [
+          {
+            "value": "a",
+            "label": "立刻看到標題，500ms 後看到使用者卡片，3 秒後看到圖表——總共 3 秒才完整"
+          },
+          {
+            "value": "b",
+            "label": "等 3 秒後一次看到全部，因為要等最慢的部分"
+          },
+          {
+            "value": "c",
+            "label": "立刻看到框架和標題，500ms 和 3s 的部分各自獨立補上，不用互相等待"
+          },
+          {
+            "value": "d",
+            "label": "先看到圖表（3s），再看到使用者卡片（500ms），因為兩個 Suspense 會依序執行"
+          }
+        ],
+        "answer": "c",
+        "explanation": "Streaming 的核心價值是「邊產邊送、快的先到、慢的慢慢補」，不是等最慢的部分。用手動 Suspense 分別包裝使用者卡片和圖表，兩者可以並行載入，各自完成就各自顯示，使用者體感是漸進填滿、不是白屏等待。"
+      }
     },
     {
       "id": "10.10",
@@ -485,7 +692,30 @@
           "level": 3,
           "text": "not-found.tsx"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的 Next.js 網站在 /blog 路由發生錯誤，使用者看到白屏。要讓 /blog 路由顯示友善的錯誤頁面而不是整個網站掛掉，你應該建立哪個檔案？",
+        "options": [
+          {
+            "value": "a",
+            "label": "app/blog/error.tsx（使用 Client Component）"
+          },
+          {
+            "value": "b",
+            "label": "app/global-error.tsx（在根目錄）"
+          },
+          {
+            "value": "c",
+            "label": "app/blog/not-found.tsx（專門處理 404）"
+          },
+          {
+            "value": "d",
+            "label": "app/error.ts（使用 Server Component）"
+          }
+        ],
+        "answer": "a",
+        "explanation": "error.tsx 放在特定路由資料夾（/blog）會自動 catch 該路由內所有錯誤、且必須是 Client Component 才能使用 reset 等交互功能。global-error.tsx 是根層級最後防線、not-found.tsx 是針對 404、error.ts 則沒有這種寫法。"
+      }
     },
     {
       "id": "10.11",
@@ -522,7 +752,30 @@
           "level": 3,
           "text": "Edge Runtime 限制"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "假設你要保護 /admin 後台頁面，只讓登入過的使用者進去，這應該用 middleware 的什麼功能達成？",
+        "options": [
+          {
+            "value": "a",
+            "label": "在 middleware 檢查 cookie 裡有沒有 token，沒有就用 redirect 轉到登入頁"
+          },
+          {
+            "value": "b",
+            "label": "在 /admin 的 page.tsx 裡檢查登入狀態，不合格就 throw error"
+          },
+          {
+            "value": "c",
+            "label": "用 rewrite 把 /admin 改寫成 /login，所以訪客會看到登入頁"
+          },
+          {
+            "value": "d",
+            "label": "在資料庫設定 /admin 是受保護的路徑，Next.js 會自動攔截"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Middleware 就是為了在「請求到達 page 之前」先攔截，檢查 cookie 並用 redirect 轉址是最典型的身份驗證做法。B 項太晚（已經載入 page），C 項 rewrite 是隱藏 URL，D 項不存在。"
+      }
     },
     {
       "id": "10.12",
@@ -571,7 +824,30 @@
           "level": 3,
           "text": "自架字型檔"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的網站用了 Next.js 的 next/image 元件，但 Lighthouse 跑分還是只有 60-70 分。根據這課的內容，最可能的原因是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "沒有在首屏的大圖加 priority 屬性，所以 LCP 優化不夠"
+          },
+          {
+            "value": "b",
+            "label": "next/image 只能優化本地圖片，無法優化遠端 CDN 的圖片"
+          },
+          {
+            "value": "c",
+            "label": "沒有在 next.config.js 設定 remotePatterns，圖片無法正常載入"
+          },
+          {
+            "value": "d",
+            "label": "因為你的圖片解析度太高，需要自己手動轉成 WebP 格式"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程重點強調 priority 只加在首屏 LCP 元素，才能優化首屏載入速度；加太多或完全不加都會導致分數不理想。其他選項都是誤解——next/image 本就能優化遠端圖、remotePatterns 是安全設定非必須、WebP 轉換是自動的。"
+      }
     },
     {
       "id": "10.13",
@@ -608,7 +884,30 @@
           "level": 3,
           "text": "Intercepting Routes：(.) (..) (...)"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在做一個 Instagram 風的照片牆功能。使用者點擊照片時，網址變成 `/photo/123` 並以 modal 形式顯示，但背景仍保留 feed 頁面；如果直接訪問 `/photo/123` 網址，則顯示完整的照片詳情頁。請問這個效果主要需要用到 Next.js 的哪兩個特性組合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Parallel Routes 搭配 Intercepting Routes"
+          },
+          {
+            "value": "b",
+            "label": "Parallel Routes 搭配 Server Components"
+          },
+          {
+            "value": "c",
+            "label": "Intercepting Routes 搭配 Client Components"
+          },
+          {
+            "value": "d",
+            "label": "Dynamic Routes 搭配 middleware"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Intercepting Routes 負責攔截 `/photo/123` 路由用 modal 顯示；Parallel Routes 則讓 modal 與背景 feed 同時獨立渲染。直接訪問網址時，攔截失效就會顯示完整頁。"
+      }
     },
     {
       "id": "10.14",
@@ -641,7 +940,30 @@
           "level": 3,
           "text": "字典載入"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的 SaaS 產品要支援多語言，現在要選擇 URL 策略。下列哪個選項是「最推薦」的做法？",
+        "options": [
+          {
+            "value": "a",
+            "label": "使用子路徑策略（subpath），例如 https://example.com/en/about 和 https://example.com/zh-Hant/about"
+          },
+          {
+            "value": "b",
+            "label": "使用子網域策略（subdomain），例如 https://en.example.com/about 和 https://zh.example.com/about"
+          },
+          {
+            "value": "c",
+            "label": "使用獨立網域策略，例如 https://example.com 給英文、https://example.com.tw 給中文"
+          },
+          {
+            "value": "d",
+            "label": "使用 query string 策略，例如 https://example.com/about?lang=en，這樣最靈活"
+          }
+        ],
+        "answer": "a",
+        "explanation": "子路徑策略是 99% 的推薦做法，因為 SEO 友善、實作簡單、Google 容易辨識。Query string 會讓 SEO 變差、不應該用；子網域和獨立網域實作複雜得多。"
+      }
     },
     {
       "id": "10.15",
@@ -682,7 +1004,30 @@
           "level": 3,
           "text": "JWT vs Session"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在開發一個 Next.js 的 SaaS 應用，需要快速上線。根據這課學到的認證方案對比，下列哪個選擇最適合你？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 Clerk，因為上手最快、UX 一流，而且有免費額度"
+          },
+          {
+            "value": "b",
+            "label": "自己寫認證系統，這樣對系統有完全控制權"
+          },
+          {
+            "value": "c",
+            "label": "用 NextAuth.js，因為它是唯一免費的方案"
+          },
+          {
+            "value": "d",
+            "label": "用 Lucia Auth，因為它的自由度最高"
+          }
+        ],
+        "answer": "a",
+        "explanation": "題目強調「快速上線」，Clerk 正是為了「趕時間」設計的方案，上手最快、UX 最優，且 1 萬 MAU 免費。自己寫系統容易出安全漏洞（課程明確警告）、NextAuth 和 Lucia 雖然強大但不是「最快」上手。"
+      }
     },
     {
       "id": "10.16",
@@ -727,7 +1072,30 @@
           "level": 3,
           "text": "Layout 系統"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "Nuxt 3 最大的優勢之一是「自動 import」功能。下列哪個資料夾裡的檔案，放進去就能直接在元件中使用，完全不需要手寫 import 語句？",
+        "options": [
+          {
+            "value": "a",
+            "label": "public/ 資料夾"
+          },
+          {
+            "value": "b",
+            "label": "components/ 和 composables/ 資料夾"
+          },
+          {
+            "value": "c",
+            "label": "server/api/ 資料夾"
+          },
+          {
+            "value": "d",
+            "label": "assets/ 資料夾"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Nuxt 3 的自動 import 是針對 components/、composables/ 和 utils/ 資料夾裡的檔案，放進去就能直接用而不需要 import。public/ 和 assets/ 是靜態檔案位置，server/api/ 是後端路由，都不具有自動 import 功能。"
+      }
     },
     {
       "id": "10.17",
@@ -772,7 +1140,30 @@
           "level": 3,
           "text": "SEO：useHead 跟 useSeoMeta"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在寫一個 Nuxt 頁面，需要同時抓取「使用者列表」、「統計數據」、「訂單清單」三個 API，並在 SSR 時一起快取。應該用哪個？",
+        "options": [
+          {
+            "value": "a",
+            "label": "useFetch，在 template 裡分別呼叫三次"
+          },
+          {
+            "value": "b",
+            "label": "useAsyncData，在 callback 裡用 $fetch 組合三個 API"
+          },
+          {
+            "value": "c",
+            "label": "$fetch，直接在 setup 裡呼叫三次"
+          },
+          {
+            "value": "d",
+            "label": "三個都可以，效果一樣"
+          }
+        ],
+        "answer": "b",
+        "explanation": "useAsyncData 的設計就是為了「組合多個資料來源」並自動 SSR cache；useFetch 只適合打單一 URL；$fetch 不會自動 SSR cache、每次都重打。"
+      }
     },
     {
       "id": "10.18",
@@ -809,7 +1200,30 @@
           "level": 3,
           "text": "cron / scheduled tasks（Nitro tasks）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你現在用 Nuxt 的 Nitro 寫了一個檔案叫 `server/api/products.post.ts`，請問這個檔案會自動變成什麼 HTTP 路由？",
+        "options": [
+          {
+            "value": "a",
+            "label": "POST /api/products"
+          },
+          {
+            "value": "b",
+            "label": "GET /api/products"
+          },
+          {
+            "value": "c",
+            "label": "/products（method 不固定）"
+          },
+          {
+            "value": "d",
+            "label": "需要在 router.ts 裡手動設定才能用"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Nitro 的核心就是『檔名即路由』——副檔名的 METHOD 部分（.post）就代表 HTTP method，資料夾結構變成 URL 路徑，所以 `server/api/products.post.ts` 自動對應 POST /api/products，完全不用手寫 router。"
+      }
     },
     {
       "id": "10.19",
@@ -842,7 +1256,30 @@
           "level": 3,
           "text": "對應的部署行為"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的 SaaS 專案有三個區域：首頁要快（但每天內容更新）、部落格文章（一年改不了幾次）、登入後的個人 dashboard。用 routeRules 應該怎麼配置最恰當？",
+        "options": [
+          {
+            "value": "a",
+            "label": "首頁 isr: 86400、部落格 prerender: true、dashboard ssr: false"
+          },
+          {
+            "value": "b",
+            "label": "首頁 ssr: true、部落格 ssr: true、dashboard ssr: true"
+          },
+          {
+            "value": "c",
+            "label": "首頁 prerender: true、部落格 isr: 3600、dashboard prerender: true"
+          },
+          {
+            "value": "d",
+            "label": "首頁 ssr: false、部落格 ssr: false、dashboard isr: true"
+          }
+        ],
+        "answer": "a",
+        "explanation": "首頁用 isr（定時自動更新靜態檔）最適合日常更新的內容；部落格用 prerender（build 時就產靜態檔）省錢又快，因為改動少；dashboard 用 ssr: false 變 SPA，因為登入後需要即時互動，不需 server 預渲染。"
+      }
     },
     {
       "id": "10.20",
@@ -887,7 +1324,30 @@
           "level": 3,
           "text": "@nuxtjs/seo"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這課內容，Nuxt Modules 相比純 Vue 的最大優勢是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "只需在 nuxt.config.ts 的 modules 陣列加一行，就能自動完成整套設定，省去手動設置各種工具的時間"
+          },
+          {
+            "value": "b",
+            "label": "Nuxt Modules 的功能比 Vue 外掛多，所以能做更多複雜的事情"
+          },
+          {
+            "value": "c",
+            "label": "使用 Nuxt Modules 不需要安裝 npm 套件，直接內建在 Nuxt 裡面"
+          },
+          {
+            "value": "d",
+            "label": "Nuxt Modules 只能用在大型專案，小專案不適合使用"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程核心價值就是「一行 config 加完整功能」——以 Tailwind 為例，純 Vue 要設 PostCSS、autoprefixer 等多項設定，但 Nuxt 只需加 @nuxtjs/tailwindcss 一行就全自動設好，這正是省時間的關鍵。"
+      }
     },
     {
       "id": "10.21",
@@ -911,7 +1371,30 @@
           "level": 3,
           "text": "該選誰？"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，下列哪種情況「最不適合」選擇 Next.js？",
+        "options": [
+          {
+            "value": "a",
+            "label": "你已經會 React，想要快速上手全棧框架"
+          },
+          {
+            "value": "b",
+            "label": "你不會任何前端框架，但目標是在北美找工作"
+          },
+          {
+            "value": "c",
+            "label": "你只會 Vue，想學習全棧開發但不想重新學框架"
+          },
+          {
+            "value": "d",
+            "label": "你想要用最新的 RSC 技術和 Server Actions 開發"
+          }
+        ],
+        "answer": "c",
+        "explanation": "課程決策樹明確指出「會 Vue 就選 Nuxt 3」；Next.js 適合已會 React 或目標北美求職的人。選項 c 的人應該選 Nuxt 3，不是 Next.js。"
+      }
     },
     {
       "id": "10.22",
@@ -968,7 +1451,30 @@
           "level": 3,
           "text": "環境變數"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你寫完了一個 Next.js 網站，現在要讓全世界的朋友都能打開網址看到。如果你想要最簡單、設定最少、又能自動支援 ISR 和 Image Optimization，應該選哪個部署平台？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Vercel"
+          },
+          {
+            "value": "b",
+            "label": "Cloudflare Pages"
+          },
+          {
+            "value": "c",
+            "label": "Zeabur"
+          },
+          {
+            "value": "d",
+            "label": "Railway"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Vercel 是 Next.js 的開發公司，整合度最高、0 設定、內建支援 ISR / Image Optimization / Edge Functions 等 Next.js 特性。其他平台雖然也能部署，但要額外設定或犧牲某些功能。"
+      }
     },
     {
       "id": "10.23",
@@ -992,7 +1498,30 @@
           "level": 3,
           "text": "Core Web Vitals"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的網站 Lighthouse 跑分只有 65 分，想達到 90+ 必須優化三大核心指標。如果使用者反映「點按鈕會卡頓」，這是在優化哪一個指標的問題？",
+        "options": [
+          {
+            "value": "a",
+            "label": "LCP（首屏大元素加速）"
+          },
+          {
+            "value": "b",
+            "label": "INP（互動快速）"
+          },
+          {
+            "value": "c",
+            "label": "CLS（佈局不跳）"
+          },
+          {
+            "value": "d",
+            "label": "TTFB（後端回應時間）"
+          }
+        ],
+        "answer": "b",
+        "explanation": "INP 就是測「點按鈕到看到反應」有多快（< 200ms 達標），卡頓代表互動延遲太長。LCP 是首屏顯示速度、CLS 是內容跳動、TTFB 是伺服器速度，都不是這個問題。"
+      }
     },
     {
       "title": "Next.js 15 App Router 完整指南",
@@ -1041,7 +1570,30 @@
           "level": 2,
           "text": "Streaming + Suspense"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "Next.js 15 的 Partial Pre-Rendering（PPR）最核心的概念是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "同一個頁面中，靜態部分在 build 時預先生成，動態部分在每次請求時 streaming 進來，讓頁面既快又能個人化"
+          },
+          {
+            "value": "b",
+            "label": "所有頁面都改成 Server-Side Rendering，這樣可以獲得更好的個人化體驗"
+          },
+          {
+            "value": "c",
+            "label": "把整個頁面分成多個小檔案，分開 build，這樣可以加快編譯速度"
+          },
+          {
+            "value": "d",
+            "label": "使用 Turbopack 來預先渲染所有頁面，讓訪客一打開就能看到完整的動態內容"
+          }
+        ],
+        "answer": "a",
+        "explanation": "PPR 的重點就是「混合靜態和動態」——靜態部分（如 Hero、Features）build 時生成放 CDN，動態部分（如個人化內容）用 Suspense 包起來 streaming。這樣既有靜態頁的速度，又有動態頁的個人化能力。其他選項都誤解了 PPR 的真正意義。"
+      }
     },
     {
       "title": "Next.js 部署：Vercel / Cloudflare / self-host",
@@ -1086,7 +1638,30 @@
           "level": 2,
           "text": "對比表"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的 Next.js 專案月流量預計 100 萬 PV、需要支援中國境內使用者、預算有限。以下三個平台，哪一個最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Vercel，因為是 Next.js 官方平台、功能最完整"
+          },
+          {
+            "value": "b",
+            "label": "Cloudflare Pages，因為有中國節點、免費額度大、流量無額外費用"
+          },
+          {
+            "value": "c",
+            "label": "Self-host，因為可以完全自訂、成本最低"
+          },
+          {
+            "value": "d",
+            "label": "三個都不適合，應該用 AWS Amplify"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Cloudflare Pages 有 270+ 全球邊緣節點（包括中國境內速度可接受）、免費額度無流量限制、Pro 才 $5/月，對於這個規模最划算。Vercel 在中國速度慢且月流量 100 萬 PV 會產生可觀的超額費用；Self-host 雖便宜但維運成本高、不符合「預算有限」；AWS 不在這課討論範圍。"
+      }
     }
   ],
   "boss": {
@@ -1100,5 +1675,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "純 React / Vue 只有前端，沒有 SEO、伺服器渲染、API 層——全端框架一次補齊",
+    "五種渲染模式各有用途：SSR 即時內容、SSG 靜態頁面、ISR 定期更新、CSR 互動應用、Hybrid 混合策略",
+    "Next.js App Router 用檔案結構自動生成路由，Server Components 預設減少 JS 傳給瀏覽器",
+    "Server Actions 讓你直接在元件裡寫伺服器函數、Middleware 攔截請求、資料快取三層（瀏覽器 / CDN / 資料庫）",
+    "Nuxt 用 routeRules 一句話決定頁面快取策略、Nitro 提供開箱即用的伺服器層、生態更輕量但 Next 文件和社群更大"
+  ],
+  "faq": [
+    {
+      "q": "Next.js 和 Nuxt 差別在哪？我該選誰？",
+      "a": "Next.js 內建功能更多、社群更大、適合追求穩定和方案齐全的團隊；Nuxt 更輕量、檔案結構更自由、Nuxt 開發者體驗略優。都能做全端應用，看你的團隊熟悉 React 還是 Vue。"
+    },
+    {
+      "q": "一定要用全端框架嗎？能不能前後端分離？",
+      "a": "可以，但你要自己處理 SEO、伺服器渲染、部署兩個應用——全端框架把這些內建了、部署維護更省事。小專案或需要極致彈性的才真的需要分離。"
+    },
+    {
+      "q": "Server Components 是什麼？為什麼要用？",
+      "a": "在伺服器上就渲染完、不傳 JS 給瀏覽器、減輕前端負擔、可以直接存取資料庫——但不能用 hook、事件監聽這些前端功能。大部分頁面用 Server Components、互動部分再改 Client Components。"
+    }
+  ]
 }

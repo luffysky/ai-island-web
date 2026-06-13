@@ -24,7 +24,7 @@
       "title": "Java 為什麼仍是主流",
       "oneLineSummary": "2026 Java 仍是企業 backend 第一",
       "analogy": "銀行、政府、大公司全 Java。",
-      "content": "## 為什麼仍主流\n- JVM 穩定 30 年\n- 生態最完整（Spring 王者）\n- 招募市場大\n- 銀行 / 保險 / 電信幾乎都 Java\n- 薪水高（NT$ 90-180k）\n\n## Java 演進\n- Java 8：Lambda、Stream\n- Java 17：LTS、Records、Pattern Matching\n- Java 21：LTS、Virtual Threads（神武）、Pattern Matching for switch\n- Java 25：LTS\n\n## Spring Boot vs Spring\n- Spring：原始框架（XML 設定地獄）\n- Spring Boot：自動配置、5 分鐘起專案\n\n## 適合 vs 不適合\n\n### ✅ 適合\n- 大企業\n- 高並發 / 重交易\n- 金融 / 保險\n- 長期專案\n- 大團隊\n\n### ❌ 不適合\n- Indie / startup MVP（重）\n- 全棧開發（前後一致用 TS 簡單）\n- 快速迭代\n\n## 跟 Node / Go 比\n\n| 面向 | Java | Node | Go |\n|---|---|---|---|\n| 啟動 | 慢 | 快 | 快 |\n| 記憶體 | 高 | 中 | 低 |\n| 生態 | 巨 | 巨 | 中 |\n| 招募 | 多 | 多 | 中 |\n| 薪水 | 高 | 中 | 高 |\n| 開發速度 | 慢 | 快 | 中 |\n\n## Indie 接案\n- Java 接案少（企業案大、要團隊）\n- 比較適合：全職企業工程師\n\n## 心法\n- 想進大企業 / 金融：學 Java\n- 想做 startup / Indie：不一定\n- 求穩定高薪：Java 是好選擇\n- 不要為了「新」放棄 Java（仍是金礦）\n\n**☕ 用人話講**\n\n2026 年 Java 仍是**企業後端的第一名**——穩定、生態龐大、職缺又多（銀行、大企業最愛）。**一句話記住**：Java 像老牌大車廠——不花俏但超級可靠耐操；大企業要的是「穩」，所以後端首選它，相關職缺也最穩定、最多。\n",
+      "content": "## Java 為什麼仍是主流\n\n### JVM：30 年的穩定基石\n\nJava 最強的超能力叫做「JVM（Java Virtual Machine —— Java 虛擬機）」。簡單講，JVM 就像一個萬能翻譯機——無論你在 Windows、Mac、Linux，JVM 都能把 Java 程式碼「翻譯」成那個系統聽得懂的指令。正因為有這層保護膜，Java 程式可以「一次寫、到處跑」。\n\n這個技術已經穩定運行了 30 多年。**穩定有多重要？**在銀行每天轉帳幾百萬筆、保險公司要處理數十萬個理賠案件、電信公司要服務千萬用戶的世界裡，「不出錯」值幾千萬。Java 和 JVM 就是那種能在半夜 3 點讓系統管理員睡著覺的技術——**可靠到不需要擔心**。\n\n### 生態完整到令人發指\n\n想像你要蓋一棟 101 大樓。Java 的世界就像——所有的磚頭、鋼筋、電線、玻璃、電梯、空調都已經有廠商做好了，你只要選一個牌子、裝上去就行。\n\n這套完整的「零件庫」叫 **Spring 生態**。Spring 包括：\n- **Spring Boot**：5 分鐘快速建專案的工具\n- **Spring Data**：資料庫操作變得像說話一樣簡單\n- **Spring Security**：帳密、權限、登入全自動處理\n- **Spring Cloud**：大型微服務架構的標準套組\n\n另外還有 Maven、Gradle（專案管理工具）、JUnit、Mockito（測試工具）、Docker 整合……這些東西在 Java 世界已經磨合 20 年，互相搭配得天衣無縫。**換句話說：你想做的事，十之八九已經有現成輪子可用。**\n\n### 招募市場最龐大\n\n查閱台灣主流人力銀行（1111、104）：Java / Spring Boot 職缺數最常排在前三名。為什麼？因為大企業多。\n\n**「大企業多」= 「選擇多」= 「職涯穩定」**\n\n你學 Java 可以選：\n- 銀行前三名（台灣銀、國泰、第一金）\n- 保險龍頭（國泰人壽、南山、新光）\n- 電信三雄（台灣大、遠傳、中華）\n- 電商巨頭（蝦皮、PChome、Momo）\n- 金科新貴（街口支付、歐付寶）\n\n這些公司年年招，人才流動量大（升遷、離職），所以 Java 工程師的職缺幾乎永遠缺人。\n\n### 薪水為什麼高？（不只是行情）\n\n台灣 Java 工程師行情：\n- 新鮮人：NT$ 50-70k\n- 2-3 年經驗：NT$ 70-100k\n- 5 年以上：NT$ 100-150k\n- Senior / Tech Lead：NT$ 150-180k+\n\n**為什麼比 Node / Python 工程師高？**不全是因為「Java 更難」，而是：\n\n1. **企業體質**——銀行、保險這些公司是「舊產業」，獲利穩定、錢多，給工資時下手大方\n2. **難度成本**——大型系統（幾十萬行程式碼）需要經驗豐富的人，新鮮人進不來，所以在職者水漲船高\n3. **責任重**——你的程式碼可能掌管百億資金，出錯要賠的不只是薪水\n\n簡言之：**高薪不是天上掉下來，而是企業賺錢能力強 + 工作責任重的結果**。\n\n---\n\n## Java 的演進：從恐龍變聰明\n\n### Java 8（2014）—— 現代 Java 的起點\n\nJava 8 是個轉折點。在它之前，Java 很「冗長」——同樣邏輯要寫超多行。Java 8 引入兩個黑科技：\n\n**Lambda —— 匿名函式**\n\n```java\n// Java 8 之前（悲）\nList<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);\nCollections.sort(numbers, new Comparator<Integer>() {\n    @Override\n    public int compare(Integer a, Integer b) {\n        return a.compareTo(b);\n    }\n});\n\n// Java 8 之後（爽）\nList<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);\nnumbers.sort((a, b) -> a.compareTo(b));\n```\n\n**Stream —— 流式處理**\n\n```java\n// 過濾、轉換、計算都變得像讀英文一樣自然\nList<Integer> result = numbers.stream()\n    .filter(n -> n > 2)           // 只要大於 2 的\n    .map(n -> n * 2)              // 每個都乘以 2\n    .collect(Collectors.toList()); // 收集成 List\n```\n\nJava 8 之後，Java 程式碼開始「可讀」了。這版本至今仍有很多公司在用。\n\n### Java 17（2021）—— LTS 企業穩定版\n\n**LTS = Long-Term Support（長期支援版）**——Oracle 承諾免費更新 5 年、付費支援到 10 年。企業很愛選 LTS 版本，因為「不用擔心 3 年後官方突然放棄」。\n\nJava 17 新增：\n\n**Records —— 簡化 Data Class**\n\n```java\n// 之前要寫一堆 getter / setter / equals / hashCode\npublic class User {\n    private String name;\n    private int age;\n    \n    public User(String name, int age) { ... }\n    public String getName() { ... }\n    public int getAge() { ... }\n    @Override\n    public boolean equals(Object o) { ... }\n    // 還要寫更多...\n}\n\n// Java 17 用 record 一行搞定\npublic record User(String name, int age) {}\n```\n\n**Pattern Matching —— 更聰明的 if-else**\n\n```java\n// 之前\nObject obj = \"hello\";\nif (obj instanceof String) {\n    String str = (String) obj;\n    System.out.println(str.length());\n}\n\n// Java 17\nif (obj instanceof String str) {\n    System.out.println(str.length());\n}\n```\n\n### Java 21（2023）—— Virtual Threads 革命\n\n**Virtual Threads（虛擬執行緒）**是最近 Java 圈最興奮的功能。簡白講：\n\n傳統 Java 建立一個執行緒很「貴」——每個執行緒消耗約 1MB 記憶體。如果要同時處理 100 萬個網路連線，就得建 100 萬個執行緒，記憶體一下炸裂。\n\nVirtual Threads 不一樣——它是「假執行緒」，建立它幾乎不消耗記憶體。同一套程式碼，可以輕鬆處理 **百萬級連線**：\n\n```java\n// 傳統方法：每個連線用一個執行緒（記憶體爆炸）\nfor (int i = 0; i < 1_000_000; i++) {\n    new Thread(() -> handleConnection()).start();\n}\n\n// Java 21 Virtual Threads：記憶體友善\nfor (int i = 0; i < 1_000_000; i++) {\n    Thread.startVirtualThread(() -> handleConnection());\n}\n```\n\n**真實案例**：某大型網路服務公司升級到 Java 21 後，同樣的硬體，吞吐量增加 10 倍——不改一行業務邏輯，只改 JVM。\n\nJava 25 預計也是 LTS 版本，維持「每 2 年一個 LTS」的節奏。\n\n---\n\n## Spring Boot vs Spring：一場無痛升級\n\n### Spring（古董時代）\n\n「Spring」原本是一個通用框架，提供「相依性注入（DI）」這個概念——讓程式碼更好測試、更好維護。\n\n但初期 Spring 有個地獄：**XML 設定檔地獄**\n\n```xml\n<!-- applicationContext.xml -->\n<beans xmlns=\"...\">\n    <bean id=\"userService\" class=\"com.example.UserService\">\n        <constructor-arg ref=\"userRepository\" />\n    </bean>\n    <bean id=\"userRepository\" class=\"com.example.UserRepository\">\n        <property name=\"dataSource\" ref=\"dataSource\" />\n    </bean>\n    <bean id=\"dataSource\" class=\"org.springframework.jdbc.datasource.DriverManagerDataSource\">\n        <property name=\"driverClassName\" value=\"com.mysql.cj.jdbc.Driver\" />\n        <property name=\"url\" value=\"jdbc:mysql://localhost:3306/mydb\" />\n        <!-- 還要寫超多... -->\n    </bean>\n</beans>\n```\n\n一個簡單的專案要寫幾百行 XML，維護死人。\n\n### Spring Boot（救世主）\n\nSpring Boot 解決了這個痛點——**零 XML、自動配置**：\n\n```java\n// Application.java\n@SpringBootApplication\npublic class Application {\n    public static void main(String[] args) {\n        SpringApplication.run(Application.class, args);\n    }\n}\n\n// application.properties\nspring.datasource.url=jdbc:mysql://localhost:3306/mydb\nspring.datasource.username=root\nspring.datasource.password=***\n```\n\n**5 分鐘建好一個完整後端專案**：\n\n🖥️ 指令行\n```bash\n# 用 Spring Boot 官方工具快速建專案\ncurl https://start.spring.io/starter.zip \\\n  -d dependencies=web,mysql,jpa \\\n  -d language=java \\\n  -o myproject.zip\nunzip myproject.zip\ncd myproject\nmvn spring-boot:run\n```\n\n💬 輸出\n```\nStarted Application in 3.142 seconds\n```\n\n然後你就有了一個可運行的 REST API 框架、資料庫連線、錯誤處理全都自動裝好。**Spring Boot = Spring + 開箱即用**。\n\n---\n\n## 適合 vs 不適合：誠實的評估\n\n### ✅ 適合 Java",
       "tip": {
         "type": "practical",
         "text": "Java 不時髦、但養老穩定、薪水高。"
@@ -83,7 +83,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這堂課的內容，Java 相比 Node.js 和 Go 最大的優勢是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "啟動速度快、記憶體用量低"
+          },
+          {
+            "value": "b",
+            "label": "生態完整、企業職缺多、薪水高"
+          },
+          {
+            "value": "c",
+            "label": "開發速度快、適合 Indie 接案"
+          },
+          {
+            "value": "d",
+            "label": "新功能最多、技術最先進"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調 Java 仍是主流的核心原因是『生態龐大、企業採用廣、招募市場大、薪水高』，這些正是它相比 Node 和 Go 的競爭優勢。而 a、c、d 都不符合課程內容——Java 啟動慢、開發速度慢、不適合 Indie，也不是以「新」取勝。"
+      }
     },
     {
       "title": "Spring Boot 起步 + REST API",
@@ -152,7 +175,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在 Spring Boot REST API 中，如果想讓 POST /api/users 創建使用者時回傳 HTTP 201 Created 狀態碼，應該在哪裡加上什麼註解？",
+        "options": [
+          {
+            "value": "a",
+            "label": "在 UserService 的 create() 方法上加 @ResponseStatus(CREATED)"
+          },
+          {
+            "value": "b",
+            "label": "在 UserController 的 create() 方法上加 @ResponseStatus(CREATED)"
+          },
+          {
+            "value": "c",
+            "label": "在 User Entity 的 @PostMapping 上加 @ResponseStatus(CREATED)"
+          },
+          {
+            "value": "d",
+            "label": "在 build.gradle 中設定 spring.http.encoding.enabled=true"
+          }
+        ],
+        "answer": "b",
+        "explanation": "@ResponseStatus 是控制器層的註解，用來設定 HTTP 回應狀態碼，所以要放在 UserController 的 @PostMapping 方法上；Service 層負責業務邏輯、Entity 是資料模型，都不是放狀態碼的地方。"
+      }
     },
     {
       "title": "Spring Boot 進階",
@@ -225,13 +271,36 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在 Spring Boot 進階開發中，如果你想要保護 API 端點，讓只有通過身份驗證的使用者才能存取 `/api/private/**` 路徑，但允許所有人存取 `/api/public/**`，應該使用什麼來實現？",
+        "options": [
+          {
+            "value": "a",
+            "label": "在 SecurityConfig 中用 authorizeHttpRequests 設定不同路徑的存取權限"
+          },
+          {
+            "value": "b",
+            "label": "在每個 Controller 上面加 @Secured 註解，逐一設定權限"
+          },
+          {
+            "value": "c",
+            "label": "直接在 application.properties 設定哪些路徑需要認證"
+          },
+          {
+            "value": "d",
+            "label": "使用 Flyway 在資料庫層面設定使用者的存取權限"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程中的 SecurityConfig 示範用 authorizeHttpRequests 來管理不同 URL 的存取規則，這是 Spring Security 的標準做法。選項 b 是舊版方式、c 無法設定，d 是資料庫遷移工具與此無關。"
+      }
     },
     {
       "title": "Spring Boot 是什麼",
       "oneLineSummary": "Java 生態最大後端 framework",
       "analogy": "金融 / 大企業必備。",
-      "content": "## 為什麼用 Spring Boot\n\n### 生態\n- 業界用最廣\n- 金融 / 銀行 / 電商\n- 工作機會多\n\n### 優點\n- 約定 > 配置\n- 內建 server\n- 龐大社群\n- IDE 支援好（IntelliJ）\n\n### 缺點\n- 啟動慢（10-30 秒）\n- 記憶體高\n- 學習曲線\n- 不適合 serverless\n\n## 快速起步\n\n```bash\n# Spring Initializr\ncurl https://start.spring.io/starter.tgz \\\n  -d type=maven-project \\\n  -d language=java \\\n  -d bootVersion=3.2.0 \\\n  -d groupId=com.example \\\n  -d artifactId=myapi \\\n  -d dependencies=web,jpa,postgresql | tar -xzvf -\n```\n\n### Hello World\n```java\n@RestController\n@RequestMapping(\"/api\")\npublic class HelloController {\n    @GetMapping(\"/hello\")\n    public Map<String, String> hello() {\n        return Map.of(\"message\", \"Hello, World!\");\n    }\n}\n```\n\n跑：\n```bash\n./mvnw spring-boot:run\n```\n\n## 核心概念\n\n### Dependency Injection\n```java\n@Service\npublic class UserService {\n    private final UserRepository repo;\n    \n    public UserService(UserRepository repo) {\n        this.repo = repo;  // Spring 自動注入\n    }\n}\n```\n\n### JPA（DB）\n```java\n@Entity\n@Table(name = \"users\")\npublic class User {\n    @Id @GeneratedValue\n    private Long id;\n    private String email;\n    private String name;\n}\n\npublic interface UserRepository extends JpaRepository<User, Long> {\n    Optional<User> findByEmail(String email);\n}\n```\n\nCRUD 自動有、不用寫 SQL。\n\n## 心法\n- Spring Boot 是 enterprise 標配\n- Indie 用太重（推薦 Node / Go）\n- 找 Java 工作必學\n- IntelliJ 是 IDE 首選\n\n**☕ 用人話講**\n\nSpring Boot 是 **Java 生態最大的後端框架**——靠自動配置、「約定優於配置」省掉大量樣板程式。**一句話記住**：像有個超強的助理——很多瑣碎的事（設定、連資料庫）它自動幫你搞定，你只要專心寫真正重要的業務邏輯。\n",
+      "content": "## Spring Boot 是什麼\n\nSpring Boot 是什麼？簡單講，它是一個 **Java 後端框架**——幫助開發者快速建立企業級的網頁 API 和應用程式。如果你把 Java 看作「汽車的引擎」，Spring Boot 就是「把引擎裝進車子、加上方向盤和油門」的工程師。\n\n### 為什麼全世界企業都選它\n\n#### 1. 業界生態最成熟\nSpring Boot 在全球企業中使用最廣，尤其是**銀行、保險、電商、政府機構**。為什麼？因為：\n- 已經經過 20+ 年的考驗（Spring 框架本身從 2003 年開始）\n- 大公司專案裡的坑都被踩過、解決方案都現成\n- 人才多、找人容易、知識分享也多\n- 和現有的企業系統整合能力最強\n\n你如果看台灣銀行業徵才，**十個 Java 職位有八個都要 Spring / Spring Boot**。這代表什麼？代表學它，未來找工作會方便很多。\n\n#### 2. 開發速度快\n最核心的優點就四個字：**約定優於配置**（Convention over Configuration）。\n\n什麼意思呢？傳統 Java 開發要自己寫一堆設定檔（XML、properties），告訴框架「我的資料庫在這、連接池設定多少、路由怎麼走」。Spring Boot 反過來說：「你不用告訴我，我自動猜。你的資料庫 jar 包都放進去了，我就認定你要用它、自動幫你連上。你的 Controller 方法叫 `hello`，我就自動接 `/hello` 的請求。」\n\n這樣做的好處？**少寫 90% 的樣板程式（boilerplate code）**。你可以把時間花在真正有價值的業務邏輯上。\n\n#### 3. 內建應用伺服器\n以前 Java 開發，你要：\n1. 寫完程式碼\n2. 把它編譯成 `.war` 檔（Web Application aRchive）\n3. 手動部署到 Tomcat / JBoss / WebLogic 這種獨立的應用伺服器\n4. 啟動伺服器、看日誌\n\n現在 Spring Boot？一個指令就跑：\n\n🖥️\n```bash\n./mvnw spring-boot:run\n```\n\n完了。整個 Tomcat 伺服器已經打包在程式裡面了。你不用裝任何東西、不用配置 Tomcat，一行指令，10 秒後網頁 API 就活著了。這對開發速度的幫助有多大？**開發環境的啟動時間從「半小時」掉到「10 秒」**。\n\n#### 4. IDE 支援超好\nJetBrains 的 **IntelliJ IDEA**（Java 開發首選 IDE）和 Spring Boot 整合得完美。你在 IDE 裡新建 Spring Boot 專案、創建 Controller、寫 @Autowired 註解，IDE 會：\n- 自動完成類別名稱\n- 實時檢查 Bean 有沒有找到\n- 一鍵運行應用\n- Debug 時顯示 Spring 容器內的所有物件\n\n這種開發體驗比起手寫 XML、靠終端機操作，整個爽度不同級。\n\n#### 5. 社群又大又活躍\nStack Overflow 上 Spring Boot 的問題有幾十萬筆。遇到任何問題，99% 都有人問過、有解答。GitHub 上官方的 Spring Boot 專案，每年更新頻繁、文件完整。你學習的資源永遠不缺。\n\n---\n\n## 說實話：缺點也挺明顯\n\n#### 啟動時間慢\nSpring Boot 應用啟動需要 **10～30 秒**。為什麼？因為它要：\n- 掃描 classpath（所有 jar 包）\n- 自動偵測你需要什麼、把 Bean 都創建好\n- 連接資料庫、初始化連接池\n- 準備好所有 HTTP 路由\n\n如果你是開發「Serverless 函式」（比如 AWS Lambda、Google Cloud Functions），冷啟動 30 秒代表**每次呼叫都要等半分鐘**。這在雲端環境就很吃虧。這也是為什麼 Go、Node.js 在 Serverless 領域更受歡迎。\n\n#### 記憶體吃很多\n一個簡單的 Spring Boot 應用，光啟動就要 **200～400 MB 的 RAM**。如果你在一台小伺服器上跑 10 個 Spring Boot 應用，可能就吃滿了。這在成本敏感的項目（比如新創、或者邊緣運算場景）就是問題。\n\n#### 學習曲線陡\nSpring Boot 表面上「開箱即用」，但真的懂它、改配置、串接複雜的 ORM（Object-Relational Mapping）關係、處理事務（transaction），還是需要學很多東西。初學者如果沒有指導，容易被魔法般的自動配置搞糊塗。\n\n---\n\n## 快速起步：從零到 API\n\n### 方式 1：用 Spring Initializr（推薦）\n\n最簡單的方式就是上 **https://start.spring.io** 這個網站。打開後：\n1. 選語言：Java\n2. 選建置工具：Maven（或 Gradle，Maven 更常見）\n3. 選 Spring Boot 版本：最新穩定版（比如 3.2.x）\n4. 填 Group ID（組織代碼，比如 `com.mycompany`）、Artifact ID（專案名稱，比如 `myapi`）\n5. 加 Dependencies：選 `Spring Web`（做 REST API）、`Spring Data JPA`（資料庫）、`PostgreSQL Driver`（如果用 PostgreSQL）\n6. 按 Generate，下載 zip、解壓\n\n或者直接用指令：\n\n🖥️\n```bash\ncurl https://start.spring.io/starter.zip \\\n  -d type=maven-project \\\n  -d language=java \\\n  -d bootVersion=3.2.0 \\\n  -d groupId=com.mycompany \\\n  -d artifactId=myapi \\\n  -d dependencies=web,data-jpa,postgresql \\\n  -o myapi.zip\n\nunzip myapi.zip\ncd myapi\n```\n\n### 方式 2：用 IntelliJ（企業標配）\n打開 IntelliJ → File → New → Project → Spring Initializr，直接在 IDE 裡走完整個流程。\n\n### 寫你的第一個 API\n\n解壓後的資料夾結構大概是：\n```\nmyapi/\n├── src/main/java/com/mycompany/myapi/\n│   └── MyapiApplication.java       ← 程式進入點\n├── src/main/resources/\n│   └── application.properties       ← 設定檔\n├── pom.xml                          ← Maven 依賴清單\n└── mvnw                             ← Maven 包裝器（不用裝 Maven）\n```\n\n開啟 `src/main/java/com/mycompany/myapi/`，新建一個檔案 `HelloController.java`：\n\n📄 `HelloController.java`\n```java\npackage com.mycompany.myapi;\n\nimport org.springframework.web.bind.annotation.*;\nimport java.util.Map;\n\n@RestController\n@RequestMapping(\"/api\")\npublic class HelloController {\n    \n    @GetMapping(\"/hello\")\n    public Map<String, String> hello() {\n        return Map.of(\"message\", \"Hello, World!\", \"status\", \"OK\");\n    }\n    \n    @GetMapping(\"/hello/{name}\")\n    public Map<String, String> helloName(@PathVariable String name) {\n        return Map.of(\"message\", \"Hello, \" + name + \"!\");\n    }\n}\n```\n\n解釋一下這段程式碼：\n- `@RestController` ——這個類別就是 REST API 的控制器，會自動把 return 的東西變成 JSON 傳回去\n- `@RequestMapping(\"/api\")` ——所有這個類別的方法，網址都會加上 `/api` 前綴\n- `@GetMapping(\"/hello\")` ——HTTP GET 請求的路由，網址會是 `/api/hello`\n- `@PathVariable String name` ——把網址上的 `{name}` 參數取出來\n\n現在執行：\n\n🖥️\n```bash\n./mvnw spring-boot:run\n```\n\n稍等 10～15 秒，會看到：\n\n💬\n```\n...\nStarted MyapiApplication in 12.345 seconds\n```\n\n然後用瀏覽器或 curl 測試：\n\n🖥️\n```bash\ncurl http://localhost:8080/api/hello\n```\n\n💬\n```json\n{\"message\":\"Hello, World!\",\"status\":\"OK\"}\n```\n\n🖥️\n```bash\ncurl http://localhost:8080/api/hello/Alice\n```\n\n💬\n```json\n{\"message\":\"Hello, Alice!\"}\n```\n\n完成！你剛才用 Spring Boot 寫出的 API 就活著了。\n\n---\n\n## 核心概念 1：依賴注入（Dependency Injection）\n\nSpring 最強的魔法就是「自動給你注入物件」。\n\n比如，你寫了一個 `UserService` 類別，它內部需要一個 `UserRepository` 來查詢資料庫：\n\n📄 `UserService.java`\n```java\npackage com.mycompany.myapi;\n\nimport org.springframework.stereotype.Service;\n\n@Service\npublic class UserService {\n    private final UserRepository repo;\n    \n    // Spring 會自動呼叫這個建構子、把 UserRepository 注進去\n    public UserService(UserRepository repo) {\n        this.repo = repo;\n    }\n    \n    public User findUserByEmail(String email) {\n        return repo.findByEmail(email).orElse(null);\n    }\n}\n```\n\n你不用在 main 裡手寫 `new UserService(new UserRepository())`。Spring 啟動時會自動掃描所有 `@Service`、`@Repository`、`@Component` 的類別，把它們全部建立一份、放進「容器」（Spring Container）裡。當某個類別需要它們，Spring 就自動注進去。\n\n這叫 **IoC（Inversion of Control —— 控制反轉）**——你不再主",
       "tip": {
         "type": "practical",
         "text": "Java 工作多但 Indie 不推、選 stack 看目標。"
@@ -294,13 +363,36 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這堂課，Spring Boot 最大的優勢是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "啟動速度快，只需要 1-2 秒"
+          },
+          {
+            "value": "b",
+            "label": "用約定優於配置的方式，自動幫你搞定很多瑣碎設定，讓你專心寫業務邏輯"
+          },
+          {
+            "value": "c",
+            "label": "記憶體占用最低，很適合所有規模的專案"
+          },
+          {
+            "value": "d",
+            "label": "是目前唯一支援 serverless 架構的 Java 框架"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調 Spring Boot 的核心優勢是「約定 > 配置」和內建 server，讓開發者不用做大量的手動設定，直接專注業務邏輯。a 是缺點（啟動慢），c 和 d 都是課程明確提到的缺點或不適用情況。"
+      }
     },
     {
       "title": "Spring Security + JPA 進階",
       "oneLineSummary": "認證 + 資料層、Spring 兩大支柱",
       "analogy": "懂這兩個 = 能做 80% 後端。",
-      "content": "## Spring Security\n\n### 設定\n```java\n@Configuration\n@EnableWebSecurity\npublic class SecurityConfig {\n    @Bean\n    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {\n        http\n            .csrf(csrf -> csrf.disable())\n            .authorizeHttpRequests(auth -> auth\n                .requestMatchers(\"/api/public/**\").permitAll()\n                .requestMatchers(\"/api/admin/**\").hasRole(\"ADMIN\")\n                .anyRequest().authenticated()\n            )\n            .oauth2ResourceServer(oauth -> oauth.jwt());\n        return http.build();\n    }\n}\n```\n\n### JWT 驗證\n```java\n@RestController\npublic class ProfileController {\n    @GetMapping(\"/api/me\")\n    public Map<String, Object> me(@AuthenticationPrincipal Jwt jwt) {\n        return Map.of(\n            \"userId\", jwt.getSubject(),\n            \"email\", jwt.getClaim(\"email\")\n        );\n    }\n}\n```\n\n## JPA Query\n\n### Repository 方法名\n```java\npublic interface UserRepository extends JpaRepository<User, Long> {\n    List<User> findByRole(String role);\n    List<User> findByCreatedAtAfter(LocalDateTime date);\n    Optional<User> findFirstByEmailIgnoreCase(String email);\n}\n```\n\nSpring 自動產 SQL。\n\n### 自訂 query\n```java\n@Query(\"SELECT u FROM User u WHERE u.email = :email AND u.active = true\")\nOptional<User> findActiveByEmail(@Param(\"email\") String email);\n```\n\n### Native SQL\n```java\n@Query(value = \"SELECT * FROM users WHERE ...\", nativeQuery = true)\nList<User> customQuery();\n```\n\n## Transaction\n```java\n@Service\npublic class OrderService {\n    @Transactional\n    public Order createOrder(OrderRequest req) {\n        Order order = orderRepo.save(new Order(...));\n        paymentService.charge(req.amount);\n        notificationService.sendEmail(req.userEmail);\n        return order;\n    }\n}\n```\n\n任一步失敗 → 全 rollback。\n\n## 心法\n- Spring Security 強但複雜、用範本起步\n- JPA 方便但要懂 N+1 問題\n- Transaction 別亂用 @Transactional\n- Production 開 SQL log 找慢查\n\n**☕ 用人話講**\n\nSpring 的兩大支柱：**Spring Security**（管認證授權）+ **JPA**（管資料層、ORM）。**一句話記住**：Security 像保全（誰能進門、能做什麼）、JPA 像翻譯（讓你用 Java 物件操作資料庫）；這兩根柱子撐起了整個企業級後端。\n",
+      "content": "## Spring Security + JPA 進階\n\n### Spring Security 是什麼？為什麼企業一定要用\n\n想像你的銀行 App。每次登入、轉帳、看帳單，系統都要確認「你真的是你」、「你有沒有權限看這筆資料」。**Spring Security（Spring 安全框架）** —— 就是替你自動做這些檢查的工具。它處理三件事：\n\n1. **認證（Authentication）**—— 確認你是誰（帳號密碼、指紋、人臉）\n2. **授權（Authorization）**—— 確認你能做什麼（管理員可刪用戶、普通員工不行）\n3. **攻擊防禦**—— 擋掉常見網路攻擊（CSRF、跨域偽造等）\n\n為什麼要用現成框架而不自己寫？因為**安全不是自己寫加密函式就安全了**、一堆邊邊角角很容易遺漏、Spring Security 由安全專家維護、有數百萬企業驗證過。\n\n---\n\n### 設定 Security 的門禁規則\n\n```java\n@Configuration\n@EnableWebSecurity\npublic class SecurityConfig {\n    @Bean\n    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {\n        http\n            // 先關掉 CSRF（跨站偽造請求）防護\n            // 因為前後端分離、用 JWT token、已經不需要 CSRF cookie 防護\n            .csrf(csrf -> csrf.disable())\n            \n            // 設定哪些路徑誰能進去\n            .authorizeHttpRequests(auth -> auth\n                // 公開路徑：登入、註冊、文件 → 任何人都可以\n                .requestMatchers(\"/api/public/**\").permitAll()\n                .requestMatchers(\"/api/auth/login\").permitAll()\n                .requestMatchers(\"/api/auth/register\").permitAll()\n                \n                // 後台路徑：只有管理員可以進去\n                .requestMatchers(\"/api/admin/**\").hasRole(\"ADMIN\")\n                \n                // 其他所有請求：都要登入（通過認證）\n                .anyRequest().authenticated()\n            )\n            \n            // 告訴 Security：我用 JWT token 驗證身份（不用 Session）\n            .oauth2ResourceServer(oauth -> oauth.jwt());\n        \n        return http.build();\n    }\n}\n```\n\n**讀這段代碼時想像一道門：**\n- `/api/public/*` 路徑—— 門打開、誰都進\n- `/api/admin/*` 路徑—— 門有警衛、要檢查你是不是管理員\n- 其他路徑—— 門半開、要檢查你登過沒\n\n**常見誤區**：有人把密碼直接寫在代碼裡配置、那不叫安全。正確做法是用環境變數或密鑰管理系統（如 AWS Secrets Manager）。\n\n---\n\n### JWT Token（通行證）怎麼驗\n\n**JWT（JSON Web Token）** —— 把用戶身份資訊加密打包成一個字串，用戶每次請求都帶著它，後端驗證它沒被竄改就相信用戶身份。\n\n```java\n@RestController\npublic class ProfileController {\n    \n    // 取得當前登入用戶的個人資料\n    @GetMapping(\"/api/me\")\n    public Map<String, Object> me(@AuthenticationPrincipal Jwt jwt) {\n        // @AuthenticationPrincipal Jwt jwt\n        // Spring Security 會自動解析 request header 裡的 token\n        // 如果 token 無效 → 直接返回 401 Unauthorized、不會進來這個方法\n        \n        return Map.of(\n            \"userId\", jwt.getSubject(),           // token 裡的 sub 欄位（通常是用戶 ID）\n            \"email\", jwt.getClaim(\"email\"),       // token 裡的自訂欄位\n            \"roles\", jwt.getClaimAsStringList(\"roles\") // 用戶角色清單\n        );\n    }\n    \n    // 只有管理員能進的端點\n    @GetMapping(\"/api/admin/users\")\n    @PreAuthorize(\"hasRole('ADMIN')\")  // 用註解寫死權限檢查、比在 SecurityConfig 更靈活\n    public List<User> listAllUsers() {\n        return userRepo.findAll();\n    }\n}\n```\n\n**實際請求會長這樣：**\n\n🖥️ 假設客戶端已經登入、拿到 token\n\n```bash\ncurl -H \"Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\" \\\n     http://localhost:8080/api/me\n```\n\n💬 返回\n\n```json\n{\n  \"userId\": \"12345\",\n  \"email\": \"user@bank.com\",\n  \"roles\": [\"CUSTOMER\"]\n}\n```\n\n**為什麼用 JWT 而不用 Session**：JWT 無狀態（後端不用存它、省資料庫）、適合分散系統、移動端也用得順。缺點是一旦 token 發出去、在過期前都無法立即撤銷（像飛機票一樣）。\n\n---\n\n### JPA Repository：讓 Java 替你寫 SQL\n\n**JPA（Java Persistence API）** —— 讓你用面向物件的語言操作資料庫、不用手寫 SQL。它自動翻譯成 SQL 指令。\n\n#### 1. 方法名自動產 SQL\n\n```java\npublic interface UserRepository extends JpaRepository<User, Long> {\n    // 方法名規則：find + By + 欄位名 + 條件\n    // Spring 看到方法名、自動產對應 SQL\n    \n    // SELECT * FROM users WHERE role = ?\n    List<User> findByRole(String role);\n    \n    // SELECT * FROM users WHERE created_at > ?\n    List<User> findByCreatedAtAfter(LocalDateTime date);\n    \n    // SELECT * FROM users WHERE email = ? (case insensitive)\n    Optional<User> findFirstByEmailIgnoreCase(String email);\n    \n    // SELECT * FROM users WHERE active = true AND role = ? ORDER BY created_at DESC\n    List<User> findByActiveAndRoleOrderByCreatedAtDesc(boolean active, String role);\n}\n```\n\n**好處**：簡潔、自動檢查、易讀；**缺點**：方法名太長時難维護、複雜邏輯寫不出來。\n\n#### 2. 手寫查詢 @Query\n\n當方法名太複雜、或需要 JOIN 其他表格時：\n\n```java\npublic interface UserRepository extends JpaRepository<User, Long> {\n    \n    // JPQL（Java Persistence Query Language）—— 用 Java 物件名、不是表名\n    @Query(\"SELECT u FROM User u WHERE u.email = :email AND u.active = true\")\n    Optional<User> findActiveByEmail(@Param(\"email\") String email);\n    \n    // 查詢搭配計數\n    @Query(\"SELECT COUNT(u) FROM User u WHERE u.role = :role\")\n    long countByRole(@Param(\"role\") String role);\n    \n    // 複雜 JOIN：查出每個用戶的最新訂單\n    @Query(\"SELECT new map(u.id as userId, u.email as email, o.id as orderId, o.amount as amount) \" +\n           \"FROM User u LEFT JOIN Order o ON u.id = o.userId \" +\n           \"WHERE u.active = true\")\n    List<Map<String, Object>> getUsersWithOrders();\n}\n```\n\n#### 3. 原生 SQL（最後手段）\n\n某些複雜查詢（如用資料庫特定語法）無法用 JPQL 表達時：\n\n```java\npublic interface UserRepository extends JpaRepository<User, Long> {\n    \n    // nativeQuery = true 表示直接執行 SQL、不翻譯\n    @Query(value = \"SELECT u.* FROM users u \" +\n                   \"WHERE DATE(u.created_at) = CURDATE() \" +\n                   \"AND u.verified = 1 \" +\n                   \"ORDER BY u.created_at DESC\", \n           nativeQuery = true)\n    List<User> findTodayVerifiedUsers();\n    \n    // 還可以搭配分頁\n    @Query(value = \"SELECT * FROM users WHERE status = ?1\", \n           nativeQuery = true)\n    Page<User> findByStatus(String status, Pageable pageable);\n}\n```\n\n**原生 SQL 的危險**：寫錯 SQL、SQL 注入攻擊、換資料庫時要改程式。盡量用 JPQL。\n\n---\n\n### N+1 問題（最常踩的坑）\n\n假設 User 和 Order 是一對多關係（一個用戶可以有多個訂單）：\n\n```java\n// ❌ 錯誤做法\n@Service\npublic class UserService {\n    \n    public List<UserDTO> getAllUsersWithOrders() {\n        List<User> users = userRepo.findAll();  // 1 句 SQL：取所有用戶\n        \n        for (User user : users) {\n            user.getOrders();  // ← 每個用戶都執行 1 句 SQL！ \n                               // 100 個用戶 = 1 + 100 = 101 句 SQL（N+1 問題）\n        }\n        \n        return users.stream().map(this::toDTO).collect(toList());\n    }\n}\n```\n\n**為什麼慢**：資料庫來回通訊要時間；100 次來回比 1 次來回慢 100 倍。\n\n```java\n// ✅ 正確做法 1：@EntityGraph（推薦簡單場景）\npublic interface UserRepository extends JpaRepository<User, Long> {\n    \n    // 告訴 JPA：取 User 時一起 eager load orders 關聯\n    @EntityGraph(attributePaths = {\"orders\"})\n    List<User> findAll();\n}\n\n// ✅ 正確做法 2：JOIN FETCH（推薦複雜查詢）\n@Query(\"SELECT DISTINCT u FROM User u LEFT JOIN FETCH u.orders WHERE u.active = true\")\nList<User> findAllActiveWithOrders();\n\n// ✅ 正確做法 3：只查需要的欄位（最快）\n@Query(\"SELECT new com.example.dto.UserOrderDTO(u.id, u.email, o.id, o.amount) \" +\n       \"FROM User u LEFT JOIN Order o ON u.id = o.userId\")\nList<UserOrderDTO> findUsersOrdersDTO();\n```\n\n---\n\n### Transaction：多步驟操作的原子性\n\n**Transaction（交易）** —— 確保多個資料庫操作要麼全部成功、要麼全部失敗、不會出現中間狀態。\n\n```java\n@Service",
       "tip": {
         "type": "milestone",
         "text": "Spring 找工作必懂、自己 side project 不推。"
@@ -359,13 +451,36 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，如果在 @Transactional 方法中，orderRepo.save() 成功了，但 paymentService.charge() 拋出異常，會發生什麼事？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Order 會被保存到資料庫，因為 save() 已經執行成功"
+          },
+          {
+            "value": "b",
+            "label": "Order 會被 rollback，整個方法的資料庫操作都會被撤銷"
+          },
+          {
+            "value": "c",
+            "label": "只有 paymentService 的操作會失敗，其他服務不受影響"
+          },
+          {
+            "value": "d",
+            "label": "系統會自動重試 paymentService.charge() 直到成功"
+          }
+        ],
+        "answer": "b",
+        "explanation": "@Transactional 的核心就是：任一步失敗 → 全 rollback。當 paymentService.charge() 拋異常時，整個交易會被回滾，包括已經執行的 orderRepo.save()。這是事務的原子性原則。"
+      }
     },
     {
       "title": "Spring Boot 部署 + 接案",
       "oneLineSummary": "上線 + 找客戶",
       "analogy": "Java 工作多、但啟動 Indie 慢。",
-      "content": "## 部署選擇\n\n### 1. JAR\n```bash\n./mvnw clean package\njava -jar target/myapp.jar\n```\n傳到 VPS / Docker。\n\n### 2. Docker\n```dockerfile\nFROM eclipse-temurin:21-jre-alpine\nCOPY target/myapp.jar /app.jar\nENTRYPOINT [\"java\", \"-jar\", \"/app.jar\"]\n```\n\n### 3. 託管\n- **Railway**：友善\n- **Fly.io**：可\n- **AWS Elastic Beanstalk**\n- **Google App Engine**\n- ❌ Vercel（不支援 Java）\n\n### 4. 雲端 VM\n- AWS EC2\n- GCP Compute\n- 自管\n\n## 性能優化\n\n### Native Image（GraalVM）\n```bash\n./mvnw native:compile -Pnative\n```\n- 啟動快 10x\n- Memory 降 5x\n- 但 build 慢、有些 lib 不支援\n\n### JVM tuning\n```bash\njava -Xms512m -Xmx2g -XX:+UseG1GC -jar app.jar\n```\n\n## 接案\n\n### 客戶類型\n- 銀行 / 金融\n- 政府 / 公部門\n- 大型企業\n- 電商（中大）\n\n### 報價\n- Indie Java：少（沒人找）\n- 企業 freelancer：NT$ 100-300/hr\n- 月薪：NT$ 80-200k\n\n### 客戶常用 stack\n- Spring Boot + Oracle / Postgres\n- Spring MVC + JSP（舊）\n- Spring Cloud（microservices）\n\n## 心法\n- Java 接案 = 進企業 / 開發團隊\n- Indie SaaS 不推 Java\n- 學 Java 是「履歷」、不是「Indie 工具」\n- 同樣時間學 Go / Node 對 Indie 更值\n\n**☕ 用人話講**\n\nSpring Boot 部署 + 接案——把專案**上線**、以及怎麼**接 Java 的案子**。**一句話記住**：像開店的最後一哩路——把店真正開起來（部署）、再招攬客人（接案）；學會這些，才能把 Java 技能變成實際收入。\n",
+      "content": "## Spring Boot 部署 + 接案\n\n### 前言：為什麼要學部署？\n\n寫好程式只是第一步。程式要在「真實的電腦上、24 小時跑著」客戶才能用。部署（deploy —— 把程式送上線）就像你開了家餐廳，寫好食譜只是準備，真正要「開門營業」才能賺錢。Java 的部署方式很多，選錯會花冤枉錢、選對能省一大筆。\n\n---\n\n## 一、部署選擇——從本地到上線\n\n### JAR：最簡單的打包方式\n\nJAR（Java Archive —— Java 壓縮檔）就是把你寫的 Spring Boot 程式、加上所有依賴、全部打成一個檔案。執行它就能跑。\n\n**打包的指令**：\n```bash\n./mvnw clean package\n```\n\n這會在 `target/` 資料夾產生一個 `myapp.jar` 檔案（大小通常 50MB ~ 200MB）。\n\n**本地執行看看**：\n```bash\njava -jar target/myapp.jar\n```\n\n你會看到：\n```\n💬 . . .\n💬 2024-01-15 10:23:45 INFO  - Tomcat started on port(s): 8080 (http) with context path ''\n💬 2024-01-15 10:23:46 INFO  - Started MyApplication in 3.456 seconds\n```\n\n這時在瀏覽器打 `http://localhost:8080` 就能看到應用。\n\n**上線到 VPS**：最常見的方式是買台虛擬主機（VPS —— Virtual Private Server，幾百塊台幣一個月），裡面裝 Linux，把 JAR 檔案上傳上去，再執行它。這樣客戶就能 24 小時存取你的服務。\n\n```bash\n# 在你的電腦上\nscp target/myapp.jar user@your-vps-ip:/home/app/\n\n# 登入 VPS 後\nssh user@your-vps-ip\ncd /home/app\njava -jar myapp.jar\n```\n\n**前置條件**：VPS 要裝 Java（通常裝 Eclipse Temurin 或 OpenJDK）。\n\n---\n\n### Docker：讓部署變簡單\n\nDocker（容器化 —— 把程式和它的環境全部打進一個盒子）解決一個經典問題：「在我電腦上跑得好好的，為什麼上線就爆炸？」原因通常是環境不一樣（Java 版本、系統設定、依賴不同）。\n\n**Dockerfile**（一份部署配方）：\n```dockerfile\nFROM eclipse-temurin:21-jre-alpine\nCOPY target/myapp.jar /app.jar\nENTRYPOINT [\"java\", \"-jar\", \"/app.jar\"]\n```\n\n**拆解**：\n- `FROM eclipse-temurin:21-jre-alpine`——從一個官方的「包含 Java 21 的 Linux 環境」開始\n- `COPY target/myapp.jar /app.jar`——把你的 JAR 檔複製進去\n- `ENTRYPOINT [\"java\", \"-jar\", \"/app.jar\"]`——啟動時執行這個指令\n\n**構建 Docker 映像（image）**：\n```bash\ndocker build -t myapp:latest .\n```\n\n**本地執行**：\n```bash\ndocker run -p 8080:8080 myapp:latest\n```\n\n**為什麼選 alpine？** Alpine Linux 只有 5MB，比普通 Linux 小 20 倍，上傳和執行都快；如果碰到問題再改成 `eclipse-temurin:21-jre` 就好。\n\n**上線到 Docker 容器平台**：支援 Docker 的託管服務會自動幫你構建、執行、管理容器（包括自動重啟、流量分配等）。\n\n---\n\n### 託管平台選擇表\n\n| 平台 | 成本 | 難度 | 特色 | 適合對象 |\n|------|------|------|------|---------|\n| **Railway** | 月 USD 5～100 | ⭐ 最簡單 | 一個指令部署、自動 CI/CD | 新手、快速上線 |\n| **Fly.io** | 月 USD 3～50 | ⭐ 簡單 | 全球邊緣分發、效能好 | 需要全球訪問速度 |\n| **AWS Elastic Beanstalk** | 月 USD 10～200+ | ⭐⭐ 中等 | 自動擴展、與 AWS 其他服務整合 | 企業、大流量 |\n| **Google App Engine** | 月 USD 10～200+ | ⭐⭐ 中等 | Google 基礎設施、整合 Firebase | Google 生態 |\n| **Heroku** | 月 USD 7～500 | ⭐ 簡單 | 曾經最友善、現在 pricing 變貴 | 預算充足的小團隊 |\n| **Vercel** | ❌ | — | 不支援 Java（只支援 Node / Python 等） | 不選這個 |\n\n**給新手的建議**：Railway 或 Fly.io 選一個。部署真的只要：\n```bash\n# 裝 Railway CLI\nnpm install -g @railway/cli\n\n# 在你的專案資料夾執行\nrailway init\nrailway up\n```\n就完成了。\n\n---\n\n### 雲端 VM（自管模式）\n\n如果你想「完全掌控」、願意自己裝系統、設定防火牆、管理 SSL 憑證，可以直接租一台虛擬機：\n\n- **AWS EC2**（每月 USD 5～20）：業界標準，功能最全\n- **GCP Compute Engine**（每月 USD 5～20）：Google 的，類似 EC2\n- **Linode / DigitalOcean**（每月 USD 4～12）：較便宜，介面友善\n- **自管機房**：有預算 + 運維團隊才考慮\n\n**優點**：完全自由、長期便宜。\n**缺點**：要自己處理安全更新、備份、監控、擴展；一個人搞很辛苦。\n\n---\n\n## 二、效能優化——讓程式跑得更快\n\n### 問題：Spring Boot 啟動慢、吃記憶體多\n\n一個典型的 Spring Boot 應用啟動需要 5～15 秒，靜止時佔用 300MB～1GB 記憶體。對「無伺服器」（serverless）或頻繁重啟的場景，這是痛點。\n\n### 方案 1：GraalVM Native Image——編譯成原生程式\n\nGraalVM 是一個特殊的 Java 運行環境，能把 Java 程式直接編譯成作業系統的原生二進位檔（像 C 語言一樣）。\n\n**安裝 GraalVM**（複雜一點，但跟著官方文件走）：\n```bash\n# macOS\nbrew install oracle/tap/graalvm-jdk21\n\n# 或手動下載：https://www.graalvm.org/downloads/\n```\n\n**編譯 Native Image**：\n```bash\n./mvnw native:compile -Pnative\n```\n\n**結果**：\n- ✅ 啟動時間：**100ms ~ 500ms**（不是秒，是毫秒！）\n- ✅ 記憶體佔用：**50MB ~ 100MB**（砍掉 5 倍）\n- ✅ 檔案大小：**60MB** 左右（一個獨立執行檔，不需要裝 Java）\n\n**缺點**：\n- ❌ 編譯很慢（15～30 分鐘）\n- ❌ 不是所有 library 都支援（Reflection —— 反射，一些動態載入的功能會壞）\n- ❌ 設定複雜，除錯困難\n\n**什麼時候用**：\n- 無伺服器函數（AWS Lambda）\n- Kubernetes 容器密集部署\n- 邊緣運算裝置\n\n**簡單專案不用**：普通 REST API 用 Jar + JVM 就夠快了。\n\n---\n\n### 方案 2：JVM 調優——調整 Java 虛擬機參數\n\n不需要編譯成原生程式，直接告訴 JVM「我的記憶體預算是多少、用什麼垃圾回收策略」。\n\n```bash\njava -Xms512m -Xmx2g -XX:+UseG1GC -jar myapp.jar\n```\n\n**參數拆解**：\n- `-Xms512m`——最少預留 512MB 記憶體（s = start）\n- `-Xmx2g`——最多用 2GB 記憶體（x = max）；超過就 OOM（Out Of Memory）崩潰\n- `-XX:+UseG1GC`——用 G1 垃圾回收器（比默認的 Serial GC 快得多）\n\n**實務建議**：\n```bash\n# 小應用（部落格、API）\njava -Xms256m -Xmx512m -XX:+UseG1GC -jar app.jar\n\n# 中等應用（電商、CRM）\njava -Xms1g -Xmx2g -XX:+UseG1GC -jar app.jar\n\n# 大型應用（銀行系統）\njava -Xms4g -Xmx8g -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -jar app.jar\n```\n\n**在 Docker 裡用**（最常見）：\n```dockerfile\nENV JAVA_OPTS=\"-Xms512m -Xmx1g -XX:+UseG1GC\"\nENTRYPOINT [\"sh\", \"-c\", \"java $JAVA_OPTS -jar /app.jar\"]\n```\n\n---\n\n## 三、接案現實——Java 接案的客户、報價、技能\n\n### Java 為什麼好接案（但限定客戶）？\n\nJava 在「**大公司、銀行、政府**」特別吃香。為什麼？因為這些機構：\n- 重視穩定性、不怕慢\n- 有 IT 預算、不怕貴\n- 喜歡長期維護合約（= 你能一直賺）\n- 內部系統都是 Java（= 找你改舊程式的單子多）\n\n### 典型客",
       "tip": {
         "type": "business",
         "text": "Java 工作多 = 找全職好、Indie 不推。"
@@ -440,7 +555,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，如果你是個人開發者想透過 Java 接案賺錢，應該怎麼看待這條路？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Java 接案主要面向個人 SaaS 開發，學好 Spring Boot 就能獨立創業"
+          },
+          {
+            "value": "b",
+            "label": "Java 接案機會主要在企業和開發團隊，而同樣時間學 Go/Node 對個人 Indie 開發更有利"
+          },
+          {
+            "value": "c",
+            "label": "只要掌握 Docker 和雲端部署，個人開發者就能和企業競爭 Java 案件"
+          },
+          {
+            "value": "d",
+            "label": "Native Image 可以讓啟動速度快 10 倍，這是個人開發者搶 Java 案件的關鍵優勢"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程的核心心法強調：Java 接案 = 進企業/開發團隊，而非 Indie 工具。個人開發者學 Java 是為了「履歷」進企業，不是為了獨立接案；同樣投入時間，學 Go/Node 對想做個人 SaaS 的開發者更划算。"
+      }
     }
   ],
   "boss": {
@@ -454,5 +592,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "Java 的穩定性、跨平台性和龐大生態，讓它至今仍是企業開發的首選語言。",
+    "Spring Boot 透過自動配置和內嵌伺服器，大幅簡化了 Spring 框架的複雜度，讓你快速啟動專案。",
+    "REST API 是現代應用溝通的標準方式，Spring Boot 提供簡潔的註解讓你輕鬆打造。",
+    "Spring Security 和 JPA 分別負責使用者認證授權和資料庫操作，兩者搭配可以架構出安全又有效率的系統。",
+    "部署和接案是實戰的最後一哩路，掌握 Docker、雲端平台和常見錯誤排查，才能真正獨立交付產品。"
+  ],
+  "faq": [
+    {
+      "q": "為什麼要學 Java，不直接學新興語言？",
+      "a": "Java 在企業、銀行、金融等大型系統中仍是主流，學它的就業機會和薪水行情都比較穩定。而且一旦理解 Java 的思維，轉向其他語言會更快。"
+    },
+    {
+      "q": "Spring Boot 和 Spring 有什麼差別？",
+      "a": "Spring 是龐大的框架家族，需要手動配置很多東西；Spring Boot 則是 Spring 的加速版本，自動幫你做好大部分設定，讓你專注在寫商業邏輯。"
+    },
+    {
+      "q": "學完這章真的能接案或找到工作嗎？",
+      "a": "這章會給你企業開發的扎實基礎和動手能力，但實際接案或求職還需要投作品、累積經驗、面試練習，不會一步到位——重點是你具備了門檻。"
+    }
+  ]
 }

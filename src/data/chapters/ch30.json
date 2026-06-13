@@ -68,7 +68,30 @@
           "level": 3,
           "text": "2026 建議路徑"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這堂課的建議，如果你現在要爬 8,000 筆/天的資料，應該用什麼語言？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Python 或 Node，因為規模夠、生態完整、開發快"
+          },
+          {
+            "value": "b",
+            "label": "Go，因為並發能力強、效能好"
+          },
+          {
+            "value": "c",
+            "label": "Rust，因為記憶體最省、最省雲端費用"
+          },
+          {
+            "value": "d",
+            "label": "Python Scrapy 框架，因為只有框架才能支撐這個規模"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確指出 10K 以下用 Python/Node 就夠，不要過度工程。Go/Rust 是 100K+ 規模才考慮的選擇，用 Rust 爬 8,000 筆是典型浪費資源的過度工程。"
+      }
     },
     {
       "id": "30.2",
@@ -125,7 +148,30 @@
           "level": 3,
           "text": "colly 編譯部署"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "Go colly 框架為什麼能支持單機並發 5 萬+？下列哪個是最主要的原因？",
+        "options": [
+          {
+            "value": "a",
+            "label": "goroutine 輕量、創造 1 萬個沒壓力，比 Python thread 省資源"
+          },
+          {
+            "value": "b",
+            "label": "colly 自動幫你優化 SQL 查詢效率"
+          },
+          {
+            "value": "c",
+            "label": "Go 編譯器會自動並行化所有 for 迴圈"
+          },
+          {
+            "value": "d",
+            "label": "colly 內建了機器學習模型來加速爬蟲"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確說明 Go 快的三個原因：(1) goroutine 輕量 (2) 編譯型無 interpreter overhead (3) GC 快。其中 goroutine 輕量是支撐高並發的核心——相比 Python thread，goroutine 佔用資源極少，才能創建數萬個。其他選項都超出課程範圍。"
+      }
     },
     {
       "id": "30.3",
@@ -182,7 +228,30 @@
           "level": 3,
           "text": "Rust 爬蟲生產級套件"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "為什麼這堂課說「新手不建議學 Rust 爬蟲」，反而建議先學 Python / Node？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 Rust 爬蟲的速度比較慢"
+          },
+          {
+            "value": "b",
+            "label": "因為 Rust 的學習曲線高，需要先懂 ownership / borrow / lifetime / async 等概念，規模大才值得投入"
+          },
+          {
+            "value": "c",
+            "label": "因為 Rust 沒有好用的爬蟲套件像 reqwest 和 scraper"
+          },
+          {
+            "value": "d",
+            "label": "因為 Rust 編譯時間太長，不適合做爬蟲專案"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程開頭明確警告「學習曲線高——ownership / borrow / lifetime / async 全要懂。新手不建議：先學 Python / Node、規模大才動 Rust」。Rust 的價值在於極致效能和低記憶體，但前置學習成本高，只有大規模爬蟲才能回本。"
+      }
     },
     {
       "id": "30.4",
@@ -235,7 +304,30 @@
           "level": 3,
           "text": "排程選擇指南"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你是一個個人開發者，想要每天自動跑一個爬蟲，但手上沒有自己的 server。根據這課教的 4 大方案，最合適的選擇是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 Linux cron，因為它最簡單"
+          },
+          {
+            "value": "b",
+            "label": "用 GitHub Actions，因為免費又不用自己的 server"
+          },
+          {
+            "value": "c",
+            "label": "用 Vercel Cron，因為它最強大"
+          },
+          {
+            "value": "d",
+            "label": "用 Inngest，因為它專門為個人開發者設計"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課表明確指出『個人用 cron 或 GH Actions』，但 cron 需要自己有 server，你沒有就用不了。GitHub Actions 是免費、不用 server、適合小型 SaaS 和個人的方案，最符合你的情況。"
+      }
     },
     {
       "id": "30.5",
@@ -288,7 +380,30 @@
           "level": 3,
           "text": "監控（Bull Board / Grafana）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在分散式爬蟲中，為什麼需要用 Redis Queue 而不是讓每個 Worker 直接從資料庫讀取任務？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Redis Queue 可以讓多個 Worker 安全地競爭拿任務、避免重複爬同一個 URL，同時支援去重、重試、優先級等功能"
+          },
+          {
+            "value": "b",
+            "label": "因為 Redis 比資料庫快，所以爬蟲的速度會提升 10 倍以上"
+          },
+          {
+            "value": "c",
+            "label": "Redis Queue 可以自動檢測 Worker 是否掉線、如果掉線就停止爬蟲工作"
+          },
+          {
+            "value": "d",
+            "label": "Redis Queue 的主要目的是減少爬蟲結果的儲存空間"
+          }
+        ],
+        "answer": "a",
+        "explanation": "分散式爬蟲的核心是多個 Worker 同時競爭同一個共用任務佇列，Redis Queue 提供了安全的任務分配、自動去重、重試機制等功能。b 混淆了 Redis 快速的特性但不是主要理由；c 和 d 都不是 Redis Queue 的主要設計目的。"
+      }
     },
     {
       "id": "30.6",
@@ -325,7 +440,30 @@
           "level": 3,
           "text": "關鍵設計決策"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在千萬規模的爬蟲系統中，為什麼要把 URL 用 SHA256 hash 後再存到 Redis SET 去重，而不是直接存整個 URL？",
+        "options": [
+          {
+            "value": "a",
+            "label": "URL 可能很長，hash 成固定 32 字元能省記憶體；而且 Redis SET 的查重速度是 O(1)，不受 URL 長度影響"
+          },
+          {
+            "value": "b",
+            "label": "因為 hash 過的資料加密程度更高，能保護爬蟲的目標網址不被竊取"
+          },
+          {
+            "value": "c",
+            "label": "直接存 URL 會導致 Redis 連線超時，一定要 hash 才能加快速度"
+          },
+          {
+            "value": "d",
+            "label": "URL hash 可以自動去除重複的查詢參數，讓去重邏輯更簡單"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確提到『URL 可能很長、hash 32 字元固定』和『Redis SET 用 hash 省記憶體』這兩個實際的工程考量。選項 b、c、d 都是似是而非的理由，但不是這個設計決策的真正原因。"
+      }
     },
     {
       "title": "Python vs Node vs Go：爬蟲語言對比",
@@ -385,7 +523,30 @@
           "level": 2,
           "text": "真實 stack"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你現在是個人開發者，要爬一個有 JavaScript 動態載入內容的網站，同時後續要把爬下來的資料做分析和視覺化。根據課程內容，以下哪個選擇最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 Go + colly，因為 Go 速度最快、部署最輕"
+          },
+          {
+            "value": "b",
+            "label": "用 Python + Scrapy + BeautifulSoup，再配 Playwright 處理動態內容，最後用 pandas 分析"
+          },
+          {
+            "value": "c",
+            "label": "用 Rust，因為記憶體最省、最穩定"
+          },
+          {
+            "value": "d",
+            "label": "用 Node.js + Crawlee，因為 Playwright 是原生支援、部署也友善"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Python 是個人開發者的首選：Scrapy 最強框架、Playwright 可外接處理動態網站、pandas 則完美支援後續資料分析一條龍。Go 和 Rust 對個人開發者而言過度設計；Node 雖然動態網站原生但資料分析弱於 Python。"
+      }
     },
     {
       "title": "Go + Colly：高效能",
@@ -446,7 +607,30 @@
           "level": 2,
           "text": "何時用"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你要爬一個靜態 HTML 網站（內容在 HTML 源碼裡、不用等 JavaScript 跑），應該用 colly 還是 chromedp？為什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 chromedp，因為它更厲害"
+          },
+          {
+            "value": "b",
+            "label": "用 colly，因為夠快又輕量、不用開真瀏覽器"
+          },
+          {
+            "value": "c",
+            "label": "兩個都可以，但 chromedp 更省資源"
+          },
+          {
+            "value": "d",
+            "label": "用 colly，但一定要加 chromedp 才能抓資料"
+          }
+        ],
+        "answer": "b",
+        "explanation": "colly 就夠用了，因為靜態網站直接送 HTML，不需要跑 JavaScript。chromedp 是用來處理動態網站（JS 渲染）的進階工具，用它反而浪費資源、影響效能。Go 爬蟲的強項就是輕量快速，該用時才用 chromedp。"
+      }
     },
     {
       "title": "Rust 爬蟲：極致效能",
@@ -503,7 +687,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這課內容，下列何者是「真正適合用 Rust 寫爬蟲」的場景？",
+        "options": [
+          {
+            "value": "a",
+            "label": "個人 side project，需要快速完成一個爬蟲取得公開資料"
+          },
+          {
+            "value": "b",
+            "label": "公司已是 Rust 技術棧，每天需要處理億級請求的爬蟲系統"
+          },
+          {
+            "value": "c",
+            "label": "接案客戶要求寫爬蟲，預算有限、工期只有兩週"
+          },
+          {
+            "value": "d",
+            "label": "爬蟲主要在等網路回應，CPU 計算量不大"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確指出 Rust 爬蟲適用於「巨大 scale 且已是 Rust 團隊」的情況；而 a、c、d 都是課程強調「99% 場景不要用 Rust」的典型例子——個人 project 開發慢、接案難維護、爬蟲是 IO bound 不是 CPU bound。"
+      }
     },
     {
       "title": "Java / Kotlin 爬蟲",
@@ -564,7 +771,30 @@
           "level": 2,
           "text": "招募"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你現在要在 Java 專案中爬取一個網站的商品資訊。根據課程內容，下列哪個敘述最符合「最簡單且推薦的做法」？",
+        "options": [
+          {
+            "value": "a",
+            "label": "直接用 jsoup，一行程式碼同時完成 HTTP 請求和 HTML 解析，再用 CSS selector 提取資料"
+          },
+          {
+            "value": "b",
+            "label": "先用 OkHttp 發送 HTTP 請求取得 HTML，再用 jsoup 解析，這樣分工更明確"
+          },
+          {
+            "value": "c",
+            "label": "用 Selenium Java 讓真實瀏覽器自動化爬蟲，效果最穩定"
+          },
+          {
+            "value": "d",
+            "label": "改用 Python + BeautifulSoup，因為 Python 爬蟲比 Java 簡單很多"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調 jsoup 是『HTTP + 解析合體』、『Java 爬蟲首選』，可以一行搞定連線和解析。OkHttp 雖強但要額外搭 jsoup；Selenium 只在需要真瀏覽器時才用；改 Python 不符合課程『Java / Kotlin 爬蟲』的主題。"
+      }
     },
     {
       "title": "PHP / Ruby 爬蟲",
@@ -625,7 +855,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，如果你要在 2026 年用 PHP 或 Ruby 做爬蟲，最適當的使用情境是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 PHP 或 Ruby 新開一個純爬蟲專案，因為這兩種語言生態完整"
+          },
+          {
+            "value": "b",
+            "label": "在 WordPress / Laravel / Rails 這些框架內整合爬蟲，而不是新開純爬蟲專案"
+          },
+          {
+            "value": "c",
+            "label": "用 Ruby 的 Goutte 套件，因為它結合了 HTTP 和 HTML 解析功能"
+          },
+          {
+            "value": "d",
+            "label": "優先選 PHP 而非 Ruby，因為 PHP 的爬蟲套件更多"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確說『新爬蟲專案不推薦用這兩個』，但 PHP 和 Ruby 仍有『WordPress / Laravel / Rails 整合場景』，所以這兩種語言現在主要是用來在既有框架內加爬蟲功能，而非開新專案。"
+      }
     },
     {
       "title": "cURL：命令列爬蟲",
@@ -698,7 +951,30 @@
           "level": 2,
           "text": "何時用"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "如果你想用 cURL 同時抓 100 個不同的 URL，下列哪個做法最能充分利用這課教的「免費並發工具」？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 for 迴圈一個一個 curl，每次等前一個完成再抓下一個"
+          },
+          {
+            "value": "b",
+            "label": "把 URL 清單存成 urls.txt，用 cat + xargs -P 搭配 curl 並行抓取"
+          },
+          {
+            "value": "c",
+            "label": "寫 Python 用 asyncio 庫來並發，比較專業"
+          },
+          {
+            "value": "d",
+            "label": "用 curl -L 選項，會自動幫你快速抓完所有 URL"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調 xargs -P 是 unix 的「免費並發工具」，不用學複雜的程式語言就能輕鬆並發。選 a 是逐一執行（沒有並發）、選 c 超出範圍、選 d 誤解了 -L 的功能（只是跟隨重定向）。"
+      }
     },
     {
       "title": "Excel / Google Sheets 爬蟲",
@@ -775,7 +1051,30 @@
           "level": 2,
           "text": "案例"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想在 Google Sheets 裡抓取一個網頁上「所有價格超過 500 元的商品名稱」，但這個網頁的商品資料不是用表格 <table> 呈現，而是用 <div class='product-name'> 這樣的 HTML 結構。下列哪個公式最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "=IMPORTHTML(\"https://example.com\", \"table\", 1)"
+          },
+          {
+            "value": "b",
+            "label": "=IMPORTXML(\"https://example.com\", \"//div[@class='product-name']\")"
+          },
+          {
+            "value": "c",
+            "label": "=IMPORTDATA(\"https://example.com/data.csv\")"
+          },
+          {
+            "value": "d",
+            "label": "=IMPORTFEED(\"https://example.com/rss\")"
+          }
+        ],
+        "answer": "b",
+        "explanation": "IMPORTHTML 只能抓 <table>、<ul>、<ol>，而 IMPORTXML 用 XPath 語法可以精準選中任何 HTML 元素（這裡是 <div class='product-name'>）。IMPORTDATA 是抓 CSV、IMPORTFEED 是抓 RSS，都不適合。"
+      }
     },
     {
       "title": "AI 爬蟲：Claude / GPT + Browser",
@@ -840,7 +1139,30 @@
           "level": 2,
           "text": "未來"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "傳統爬蟲和 AI 爬蟲最大的差異在哪？",
+        "options": [
+          {
+            "value": "a",
+            "label": "AI 爬蟲速度比傳統爬蟲快很多"
+          },
+          {
+            "value": "b",
+            "label": "AI 爬蟲不需要寫 selector，網站改版時維護成本更低"
+          },
+          {
+            "value": "c",
+            "label": "傳統爬蟲只能用 Python，AI 爬蟲可以用任何語言"
+          },
+          {
+            "value": "d",
+            "label": "AI 爬蟲無法處理動態網頁，只能爬靜態 HTML"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程核心就是強調：傳統爬蟲寫死 selector（如 .product .name），網站改版就全壞；AI 爬蟲只要告訴 AI「找商品名字和價格」，AI 自己看懂，改版後仍能運作，維護成本近乎為零。"
+      }
     },
     {
       "title": "OCR + Computer Vision",
@@ -897,7 +1219,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在 OCR 四件套中，如果要從發票上自動抽出商家名稱、日期和總金額這些結構化資訊，應該用什麼工具最合適？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Tesseract，因為它是免費的、最入門"
+          },
+          {
+            "value": "b",
+            "label": "Claude Vision，因為它擅長結構化抽取、能理解內容意義"
+          },
+          {
+            "value": "c",
+            "label": "PaddleOCR，因為它中文準確度最高"
+          },
+          {
+            "value": "d",
+            "label": "YOLO，因為它能偵測文件的位置"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確指出 Claude Vision 是用於『結構化抽取』的最強付費工具，能從發票這類文件智慧地提取指定欄位。Tesseract 和 PaddleOCR 只做文字識別，YOLO 是物件偵測，都不適合這個需求。"
+      }
     },
     {
       "title": "Streaming 爬蟲：邊抓邊處理",
@@ -958,7 +1303,30 @@
           "level": 2,
           "text": "記憶體監控"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在爬一個有 50 萬筆資料的網站，資料量很大。比較「傳統全爬完再處理」和「Streaming 邊抓邊處理」，下列何者是 Streaming 的主要優勢？",
+        "options": [
+          {
+            "value": "a",
+            "label": "爬蟲速度更快，可以少花一半的時間"
+          },
+          {
+            "value": "b",
+            "label": "記憶體用量保持低位，中途 crash 已存的資料不會遺失"
+          },
+          {
+            "value": "c",
+            "label": "不需要寫程式碼，Scrapy 會自動完成所有工作"
+          },
+          {
+            "value": "d",
+            "label": "可以同時爬多個網站，並行效率更高"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Streaming 的核心優勢是「一筆爬完寫一筆」，記憶體永遠只有 1 筆（< 100MB），而傳統方式會累積 10 萬筆到記憶體造成 OOM。另外中途 crash 時，已經存入的資料還保存著，不會全部遺失。速度、自動化、並行爬蟲都不是 Streaming 特有的優勢。"
+      }
     },
     {
       "title": "Distributed 爬蟲：跨多台",
@@ -1027,7 +1395,30 @@
           "level": 2,
           "text": "Indie 不需要"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "假設你現在要爬 500 萬筆資料，預計要在 2 天內完成。根據課程提到的「規模建議速查」，你應該選擇哪種方案？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用單台機器跑，等個 20 天就好"
+          },
+          {
+            "value": "b",
+            "label": "用 Celery + 雲端，部署 10-20 台機器"
+          },
+          {
+            "value": "c",
+            "label": "用 scrapy-redis，分散爬蟲到多台"
+          },
+          {
+            "value": "d",
+            "label": "直接上 Kafka + Spark，最穩妥"
+          }
+        ],
+        "answer": "b",
+        "explanation": "500 萬筆落在 10-100 萬的上方，課程明確說 10-100 萬用 Celery、100 萬-千萬用 scrapy-redis。要 2 天內爬完 500 萬，Celery + 雲端部署多台是合適的規模；scrapy-redis 適合更大規模（百萬以上），Kafka + Spark 則針對千萬級別以上，都過度設計了。"
+      }
     },
     {
       "title": "反偵測進階：fingerprint 全修",
@@ -1092,7 +1483,30 @@
           "level": 2,
           "text": "道德"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，如果你要用 Python 爬蟲過 Cloudflare 的基礎防護，以下哪個做法最有效地解決 TLS fingerprint 和 HTTP/2 的問題？",
+        "options": [
+          {
+            "value": "a",
+            "label": "直接用 requests 庫加上 headers 偽造，因為 requests 已經很接近 Chrome 了"
+          },
+          {
+            "value": "b",
+            "label": "使用 curl-impersonate 解決 TLS fingerprint、用 httpx[http2] 支援 HTTP/2"
+          },
+          {
+            "value": "c",
+            "label": "只需要修改 User-Agent，TLS 和 HTTP/2 偵測對爬蟲影響不大"
+          },
+          {
+            "value": "d",
+            "label": "改用 Puppeteer stealth plugin，它能同時處理所有 8 種 fingerprint"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確指出 Python requests 的 TLS Client Hello 順序和加密套件清單與 Chrome 不同（構成 TLS fingerprint）、且 requests 不支援 HTTP/2，所以需要 curl-impersonate 和 httpx[http2] 分別解決。而 stealth plugin 是 Puppeteer（瀏覽器自動化）的方案，不是 Python 爬蟲。"
+      }
     },
     {
       "title": "Headless Browser Cluster",
@@ -1145,7 +1559,30 @@
           "level": 2,
           "text": "雲端"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你要爬 1000 個動態網站，單一 Playwright 跑一頁要 5 秒。如果用 Headless Browser Cluster 搭 10 個並行瀏覽器，大約要多少時間才能全部完成？",
+        "options": [
+          {
+            "value": "a",
+            "label": "約 50 秒（原本的 1/10）"
+          },
+          {
+            "value": "b",
+            "label": "約 500 秒（跟單一瀏覽器一樣）"
+          },
+          {
+            "value": "c",
+            "label": "約 5000 秒（因為要管理 cluster 所以更慢）"
+          },
+          {
+            "value": "d",
+            "label": "約 5 秒（瞬間完成）"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Cluster 的核心優勢就是用多個瀏覽器並行處理，10 個瀏覽器同時跑相當於效率提升 10 倍。1000 頁 × 5 秒 ÷ 10 並行 = 約 50 秒。選 b 是沒有用 cluster，選 c 和 d 則誤解了 cluster 的效果。"
+      }
     },
     {
       "title": "資料品質：去重 + 驗證",
@@ -1214,7 +1651,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "假設你要爬 500 萬個商品，記憶體只有 2GB。下列哪一種去重方案最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 Python set() 把所有 URL 存起來"
+          },
+          {
+            "value": "b",
+            "label": "用 Bloom Filter，容量 500 萬、誤判率 0.1%"
+          },
+          {
+            "value": "c",
+            "label": "每次都查資料庫有沒有重複"
+          },
+          {
+            "value": "d",
+            "label": "用 list 存過的 URL、每次用 if x in list 檢查"
+          }
+        ],
+        "answer": "b",
+        "explanation": "set() 需要約 500MB 記憶體不行。Bloom Filter 能用 < 100MB 記憶體支撐百萬級規模，且 0.1% 誤判率在實務上可接受。a 會爆記憶體，c 太慢，d 最慢（O(n) 查詢）。"
+      }
     },
     {
       "title": "資料清理 + ETL pipeline",
@@ -1287,7 +1747,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在爬蟲的 ETL pipeline 中，「Extract 階段不清理、只存原始資料」的主要好處是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "如果爬到的資料有問題，可以重新處理，不用重新爬一次"
+          },
+          {
+            "value": "b",
+            "label": "原始資料占用的硬碟空間比較小"
+          },
+          {
+            "value": "c",
+            "label": "這樣爬蟲執行速度會更快"
+          },
+          {
+            "value": "d",
+            "label": "可以直接把 raw data 存進資料庫，省去 Transform 步驟"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程重點強調「抓的時候 raw、不要邊抓邊清」——目的是保留原始資料以便萬一出錯可重新處理，避免要重爬。其他選項都不符合 ETL 的核心邏輯：b 與存儲無關、c 反而會增加複雜度、d 違反了「必須經過 Transform」的原則。"
+      }
     },
     {
       "title": "儲存策略：CSV vs Parquet vs DB",
@@ -1360,7 +1843,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你爬了 50 萬筆商品資料，需要存下來供分析團隊查詢「特定欄位」（如只看價格和分類）。以下哪個儲存格式最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "CSV，因為人類可讀，分析團隊容易打開"
+          },
+          {
+            "value": "b",
+            "label": "Parquet，因為壓縮小、列式儲存查詢快、有 schema"
+          },
+          {
+            "value": "c",
+            "label": "JSONL，因為彈性高適合爬蟲和各種交換"
+          },
+          {
+            "value": "d",
+            "label": "PostgreSQL，因為是業界主流一定最好"
+          }
+        ],
+        "answer": "b",
+        "explanation": "50 萬筆是大資料規模，CSV 會太大且慢；JSONL 只適合爬蟲中暫存；PostgreSQL 適合 Production API 不是分析。Parquet 的列式儲存和壓縮正是為大資料分析設計，查特定欄位會快 10 倍。"
+      }
     },
     {
       "title": "客戶交付：報表 + Dashboard + API",
@@ -1425,7 +1931,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "同一個爬蟲程式，為什麼寄 CSV 只能報價 5-15K，但做成 Dashboard 可以報價 30-80K？主要差別在哪裡？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Dashboard 的程式碼更難寫、技術門檻更高"
+          },
+          {
+            "value": "b",
+            "label": "交付的「體驗形式」不同——客戶看得懂、用得到、願意付更多錢"
+          },
+          {
+            "value": "c",
+            "label": "Dashboard 能自動更新資料，但 CSV 不行"
+          },
+          {
+            "value": "d",
+            "label": "Dashboard 可以加上 HTML 和 CSS，所以更值錢"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程的核心心法就是「交付體驗決定報價」——同一個數據，包裝成老闆每天收到的漂亮報表、或者可以互動探索的 Dashboard，客戶體驗和願付金額就天差地遠。不是技術難度決定價格，而是**客戶能用得爽、能從中獲得價值**才是關鍵。"
+      }
     },
     {
       "title": "跨語言爬蟲總結 + 學習路徑",
@@ -1509,7 +2038,30 @@
           "level": 2,
           "text": "給新手最佳路徑"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這課的學習路徑，如果你目前只會 Python 基礎和 requests，想在 6 個月內接到付費案件，你應該優先學什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "先把 Go 和 Rust 都學起來，這樣才能應對各種規模的案子"
+          },
+          {
+            "value": "b",
+            "label": "Playwright（動態網站）+ Async 並發 + 資料庫 + 反爬蟲基本，這些是能接案的必備門檻"
+          },
+          {
+            "value": "c",
+            "label": "直接學反偵測和分散式爬蟲，因為付費客戶通常要爬難度很高的網站"
+          },
+          {
+            "value": "d",
+            "label": "專注學 AI 爬蟲（browser-use）和 OCR，這樣功能最強大，最容易報高價"
+          }
+        ],
+        "answer": "b",
+        "explanation": "根據 Q2（Month 4-6）的內容，接付費案的門檻是『動態網站 + 反爬蟲基本 + 資料庫 + 排程』，這些第 2 層技能是商業化的必要條件；而 Go/Rust 是副語言（規模大才用）、反偵測和 AI 爬蟲是進階工具（Q3 以後），過度工程反而浪費時間。"
+      }
     },
     {
       "title": "跨語言爬蟲：總結 + 心法",
@@ -1577,7 +2129,30 @@
           "level": 2,
           "text": "終極心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程所說，什麼是爬蟲事業長期成功的核心關鍵？",
+        "options": [
+          {
+            "value": "a",
+            "label": "技術能力越強越好，要掌握最新的爬蟲框架和反爬技術"
+          },
+          {
+            "value": "b",
+            "label": "法律安全、客戶滿意、長期維護、商業可行這四件事缺一不可"
+          },
+          {
+            "value": "c",
+            "label": "累積爬蟲的案件經驗，每個案子都能從 0 到 1 快速交付"
+          },
+          {
+            "value": "d",
+            "label": "蒐集並提供數量最多、品質最高的原始資料給客戶"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調『能爬 ≠ 成功』，真正的成功需要法律安全、客戶滿意、長期維護、商業可行四個要素。相比之下，純技術深度、案件經驗、原始資料都不是核心，客戶要的是完整的商業解決方案。"
+      }
     }
   ],
   "boss": {
@@ -1591,5 +2166,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "Go 適合高並發、Rust 適合極致效能、Python 適合快速開發——選語言前要先問清楚需求",
+    "Go colly 內建連線池和速率控制、幾十行代碼就能並發爬 5 萬筆資料",
+    "Rust 爬蟲記憶體占用少、速度快、適合大規模長時間運行的場景",
+    "分散式爬蟲靠 Redis Queue 解耦、多 Worker 並行處理、不怕單機當掉",
+    "完整爬蟲系統要包括排程、反偵測、去重、資料驗證、儲存和客戶交付，不只會寫代碼就夠"
+  ],
+  "faq": [
+    {
+      "q": "我已經會 Python 爬蟲了，還有必要學 Go 或 Rust 嗎？",
+      "a": "看場景。如果你的爬蟲已經穩定運行，Python 就夠了；但如果要處理幾百萬筆資料或需要長時間 7x24 運行，Go / Rust 能省下很多伺服器成本。最實用的做法是 Python 快速開發原型，成功後再用 Go 或 Rust 重寫效能關鍵部分。"
+    },
+    {
+      "q": "分散式爬蟲一定要學 Redis 和 Message Queue 嗎？",
+      "a": "不一定。如果你的資料量在幾十萬以內、單機 24 小時能抓完，就不用。但超過百萬筆、爬蟲經常掉線、需要多台伺服器協作，那用 Redis Queue 能大幅簡化運維和防止資料重複。"
+    },
+    {
+      "q": "我該選 Go colly 還是 Rust？",
+      "a": "快速開發選 Go colly，因為語法簡單、社群大、範例多；追求最低成本和最快速度選 Rust，但學習曲線陡。實務上多數人選 Go，除非你是系統程式背景或爬蟲規模確實大到需要優化每一毫秒。"
+    }
+  ]
 }

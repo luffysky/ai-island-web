@@ -95,7 +95,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你是一個 Indie 開發者，剛開始做副專案。根據這課的建議，你現階段應該怎麼選擇雲端方案？",
+        "options": [
+          {
+            "value": "a",
+            "label": "直接用 AWS，因為它是市占第一、服務最多"
+          },
+          {
+            "value": "b",
+            "label": "用 Vercel / Railway 這類託管平台，專心做業務"
+          },
+          {
+            "value": "c",
+            "label": "用便宜的 VPS，省錢最重要"
+          },
+          {
+            "value": "d",
+            "label": "同時試用 AWS、GCP、Azure，三個都學"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確指出 Indie 路線第一階段（前 2 年）應該用託管平台（Vercel / Railway / Cloudflare），別碰 AWS / GCP，Focus 在業務而不是基礎設施。等到規模化撞牆才升級到大雲端。"
+      }
     },
     {
       "title": "Serverless：Lambda / Cloud Functions",
@@ -196,7 +219,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的公司有一個 API 服務，每天只在特定時段有幾十個請求，其他時間幾乎沒人用。同時你的另一個服務是需要 24 小時持續保持連線來處理 WebSocket 即時訊息。根據課程內容，這兩個服務最適合的部署方式應該是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "兩個都用 Serverless（Lambda 或 Vercel Functions），因為 Serverless 自動 scale 功能很強大"
+          },
+          {
+            "value": "b",
+            "label": "API 用 Serverless，WebSocket 服務用傳統 VM / 容器，因為 Serverless 不適合持續連線"
+          },
+          {
+            "value": "c",
+            "label": "兩個都用傳統 VM，因為 Serverless 有 cold start 問題會影響使用者體驗"
+          },
+          {
+            "value": "d",
+            "label": "API 用傳統 VM，WebSocket 用 Serverless，因為 Serverless 更適合長時間連線"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確指出 Serverless 適合『API（low traffic）』但『❌ 不適合持續連線（WebSocket）』；API 服務流量時有時無正是 Serverless 的黃金場景（按用量計費），但 WebSocket 需要持續連線應該用傳統 VM。"
+      }
     },
     {
       "title": "Container Orchestration：K8s / ECS",
@@ -297,7 +343,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你現在是一個 5 人新創團隊，只有 1 個 Node.js 後端服務和 1 個資料庫，偶爾需要手動重啟。按照這堂課的建議，你應該選哪個方案？",
+        "options": [
+          {
+            "value": "a",
+            "label": "使用 Kubernetes，因為這是業界標準，早點學習對未來有幫助"
+          },
+          {
+            "value": "b",
+            "label": "使用 Cloud Run 或 Fly.io，因為規模小、簡單需求不適合 K8s"
+          },
+          {
+            "value": "c",
+            "label": "使用 AWS ECS，因為比 K8s 簡單但功能完整"
+          },
+          {
+            "value": "d",
+            "label": "繼續用 Docker + 手動管理，等到公司更大再考慮容器編排"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確說小團隊、少量容器（<10 個）不適合 K8s，應該用 Cloud Run、Fly.io 這類簡化方案；K8s 的學習成本（3-6 個月）和維護成本（1-2 人 full-time）對新創不值得。ECS 比 K8s 簡單但仍過度複雜；手動管理無法解決課程開頭提到的自動擴展和故障恢復問題。"
+      }
     },
     {
       "title": "CDN + Storage：S3 / R2 / Cloudflare",
@@ -398,7 +467,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想讓使用者直接上傳大檔案到 S3，不想讓流量經過自己的伺服器。應該採用什麼做法？",
+        "options": [
+          {
+            "value": "a",
+            "label": "前端直接把檔案 POST 到伺服器，伺服器再上傳到 S3"
+          },
+          {
+            "value": "b",
+            "label": "後端產生 Signed URL 給前端，前端直接 PUT 到 S3"
+          },
+          {
+            "value": "c",
+            "label": "使用 Multipart Upload API，由伺服器分片上傳"
+          },
+          {
+            "value": "d",
+            "label": "上傳到 Cloudflare CDN，CDN 自動同步到 S3"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Signed URL 讓前端繞過伺服器直接上傳到 S3，這是課程強調的「推薦做法」——省頻寬、不過伺服器、加快上傳。其他選項都會讓流量經過伺服器或用錯工具。"
+      }
     },
     {
       "title": "Microservice vs Monolith",
@@ -511,7 +603,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你現在是 5 人新創團隊，技術棧一致，沒有監控基礎。根據這堂課的內容，下列哪個架構選擇最合理？",
+        "options": [
+          {
+            "value": "a",
+            "label": "直接拆成 Microservice，這樣未來擴展會更容易"
+          },
+          {
+            "value": "b",
+            "label": "用 Monolith 起步，如果將來遇到瓶頸再考慮拆"
+          },
+          {
+            "value": "c",
+            "label": "用 Modular Monolith，程式碼分模組但同個 deploy，既有彈性又不會過度複雜"
+          },
+          {
+            "value": "d",
+            "label": "用 Distributed Monolith，看起來像 Microservice 會比較專業"
+          }
+        ],
+        "answer": "c",
+        "explanation": "小團隊應該用 Modular Monolith：既能保持 Monolith 的簡單（同個 deploy、好 debug），又能預先做好程式碼模組化，為未來擴展預留彈性。選項 b 也不錯但不如 c 周全；a 違反「微服務 50+ 工程師」的建議；d 是最糟的反面教材。"
+      }
     },
     {
       "title": "AWS / GCP / Azure 比較",
@@ -599,7 +714,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程，如果你是一個 Indie 開發者，想要快速上線一個全棧應用，現在在「AWS」和「Cloudflare」之間選擇，應該優先選誰？為什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "優先選 AWS，因為它市占第一、服務最完整，學會對履歷幫助最大"
+          },
+          {
+            "value": "b",
+            "label": "優先選 Cloudflare，因為它邊緣計算便宜快、R2 沒有出站費用、對 Indie 實用性高"
+          },
+          {
+            "value": "c",
+            "label": "優先選 GCP，因為它有永久 free tier，對新手最友善"
+          },
+          {
+            "value": "d",
+            "label": "兩個都不用，應該直接用 Vercel 或 Railway 更簡單"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確指出「90% Indie 不直接用 AWS」，而是用 Cloudflare 或 Vercel 等更簡單的方案。AWS 雖然強大，但對 Indie 來說「複雜度高、不實用」；Cloudflare 才是「履歷外、實用優先」的正確選擇。A 選項搞反了 Indie 的優先順序，C 和 D 則不是在給定選擇中的最佳答案。"
+      }
     },
     {
       "title": "Serverless 完整心法",
@@ -716,7 +854,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "小王想選一個 Serverless 服務來部署 API。他的需求是：需要全球邊緣節點、冷啟動要快、預算不多。以下哪個最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "AWS Lambda，因為它最老最大、功能最完整"
+          },
+          {
+            "value": "b",
+            "label": "Cloudflare Workers，因為邊緣全球、冷啟動 < 5ms、免費額度夠用"
+          },
+          {
+            "value": "c",
+            "label": "Vercel Functions，因為和 Next.js 整合、部署最簡單"
+          },
+          {
+            "value": "d",
+            "label": "Google Cloud Functions，因為 GCP 生態完善"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程特別強調 Cloudflare Workers 的三大優勢：邊緣全球佈署、冷啟動 < 5ms（幾乎無感）、V8 isolates 架構快速。對於預算有限的獨立開發者，這三點完全符合小王的需求。AWS Lambda 冷啟動慢、Vercel 沒有邊緣優勢、Google Cloud 也不是重點服務。"
+      }
     },
     {
       "title": "CDN 完整心法",
@@ -849,7 +1010,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的網站有靜態資源（圖片、CSS）和 API 端點。按照 CDN 完整心法，以下哪個 Cache 策略最合理？",
+        "options": [
+          {
+            "value": "a",
+            "label": "靜態資源（CSS、JS）cache 1 年，API 端點也 cache 1 年，這樣最快"
+          },
+          {
+            "value": "b",
+            "label": "靜態資源（CSS、JS）cache 1 年，API 端點 bypass cache，HTML 只 cache 5 分鐘"
+          },
+          {
+            "value": "c",
+            "label": "所有內容都 cache 5 分鐘，保持資料最新鮮"
+          },
+          {
+            "value": "d",
+            "label": "不用 CDN cache，直接從 origin 拿，最安全"
+          }
+        ],
+        "answer": "b",
+        "explanation": "心法是：靜態資源強 cache（1 year）讓邊緣節點快速返回，HTML 弱 cache（5 min）保持頁面不會太舊，API 必須 bypass 因為資料即時性重要。選項 a 會害 API 回傳過期資料，選項 c 反而失去 CDN 優勢，選項 d 等於不用 CDN。"
+      }
     },
     {
       "title": "成本優化",
@@ -945,7 +1129,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，為什麼說「Day 1 設 budget alert」是成本優化最重要的第一步？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 AWS 和 GCP 預設沒有上限，一個無限迴圈就可能產生巨額帳單，alert 能及早發現異常"
+          },
+          {
+            "value": "b",
+            "label": "因為只有設 alert 才能使用 Spot Instance 和 Preemptible 機器"
+          },
+          {
+            "value": "c",
+            "label": "因為 budget alert 會自動把帳單降低 50% 以上"
+          },
+          {
+            "value": "d",
+            "label": "因為不設 alert 就無法使用 CDN 和 Cloudflare R2"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確指出AWS/GCP預設無上限、一個無限loop就能產生嚇人帳單，所以Day 1必須設alert來預警。其他選項都是錯誤的——alert本身不能降低費用、不是使用某些服務的前提條件。"
+      }
     },
     {
       "title": "災難復原（DR）+ 高可用（HA）",
@@ -1046,7 +1253,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你是一間 Indie 新創的技術負責人。老闆要求「服務不能超過 1 小時停機」，同時要控制成本。根據這堂課的建議，你應該採用什麼策略？",
+        "options": [
+          {
+            "value": "a",
+            "label": "馬上建立 Multi-region 架構，兩個 region 都部署完整 stack，確保最高可用性"
+          },
+          {
+            "value": "b",
+            "label": "在單一 region 內做 Multi-AZ 高可用設置，搭配自動化 cold restore（RTO 4 小時、RPO 1 天），並定期演練"
+          },
+          {
+            "value": "c",
+            "label": "只做每小時的 DB backup，依賴手動 restore，不需要演練"
+          },
+          {
+            "value": "d",
+            "label": "設定 RPO 為 0（streaming replication），確保完全沒有資料損失"
+          }
+        ],
+        "answer": "b",
+        "explanation": "根據課程，Indie 的標準就是單 region 多 AZ 搭配 RPO 1 天、RTO 4 小時、定期演練。Multi-region 成本 3-5 倍太貴，不必要的 RPO=0 也過度設計。關鍵是要定期演練，否則「有 backup 但還不了」。"
+      }
     }
   ],
   "boss": {
@@ -1060,5 +1290,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "AWS 市佔最大功能最全、GCP 資料分析強、Azure 適合微軟生態，選擇前要看自己需求",
+    "Serverless 適合流量不穩定的服務，Container 更靈活但要自己管理，Kubernetes 是容器編排界的標準",
+    "CDN 讓全球使用者快速拿到內容，S3 / R2 存檔案便宜又耐用，選擇看價格和地理分布",
+    "微服務讓團隊獨立開發但複雜度高，單體簡單但難以擴展，小公司通常從單體開始",
+    "高可用靠多區部署 + 自動容錯轉移，災難復原要有備份計畫，成本最大頭通常是網路流量和儲存"
+  ],
+  "faq": [
+    {
+      "q": "新手應該學 AWS、GCP 還是 Azure？",
+      "a": "AWS 用的人最多工作機會最多，先學 AWS 最划算。GCP 和 Azure 概念相通，之後轉移也快。重點是理解雲端邏輯，不是死背某一家的服務名稱。"
+    },
+    {
+      "q": "Serverless 是不是以後的趨勢，要完全放棄傳統伺服器？",
+      "a": "不是。Serverless 很好用但有限制，比如冷啟動延遲、執行時間上限，很多公司還是混用。重點是根據需求選最合適的，不是非此即彼。"
+    },
+    {
+      "q": "小創業團隊一開始要用 K8s / 微服務架構嗎？",
+      "a": "不用。K8s 很強大但維運複雜，小團隊維護成本高。建議先用 Serverless 或簡單 Container，等產品穩定、規模大了再逐步轉向微服務。"
+    }
+  ]
 }

@@ -92,7 +92,30 @@
           "level": 2,
           "text": "💡 Tip：開發必裝"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在 SQL 中，如果你想要查詢「每個商品類別的平均價格，但只顯示平均價格高於 100 的類別」，應該用哪個子句來過濾分組後的結果？",
+        "options": [
+          {
+            "value": "a",
+            "label": "WHERE 子句"
+          },
+          {
+            "value": "b",
+            "label": "HAVING 子句"
+          },
+          {
+            "value": "c",
+            "label": "GROUP BY 子句"
+          },
+          {
+            "value": "d",
+            "label": "ORDER BY 子句"
+          }
+        ],
+        "answer": "b",
+        "explanation": "WHERE 是針對原始資料列的過濾，HAVING 才是針對 GROUP BY 分組後的結果做過濾。在這題中，「平均價格高於 100」是針對分組後的聚合值判斷，所以要用 HAVING。"
+      }
     },
     {
       "id": "62.2",
@@ -158,7 +181,30 @@
           "level": 2,
           "text": "💡 必裝小工具"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在 Linux 上執行 `chmod 755 script.sh`，這個指令的意思是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "擁有者有完全權限（讀寫執行），群組和其他人只有讀和執行權限"
+          },
+          {
+            "value": "b",
+            "label": "擁有者有讀寫權限，群組和其他人有執行權限"
+          },
+          {
+            "value": "c",
+            "label": "所有人（擁有者、群組、其他人）都有完全權限"
+          },
+          {
+            "value": "d",
+            "label": "只有擁有者可以執行這個檔案，其他人無法存取"
+          }
+        ],
+        "answer": "a",
+        "explanation": "755 = 7(擁有者) 5(群組) 5(其他)，其中 7=4+2+1(讀寫執行)，5=4+1(讀執行)。所以擁有者有 rwx，群組和其他人有 rx。"
+      }
     },
     {
       "id": "62.3",
@@ -248,7 +294,30 @@
           "level": 2,
           "text": "💡 Tip"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在本地改了好幾個檔案，也 add 進暫存區了，但突然發現其中一個檔案改錯了，想要回到最後一個 commit 的狀態重新改。下面哪個做法最合適？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 git reset 回到某個舊 commit，這樣所有改動都會消失"
+          },
+          {
+            "value": "b",
+            "label": "用 git checkout file 或 git restore file 把那個檔案回到上次 commit 的狀態"
+          },
+          {
+            "value": "c",
+            "label": "用 git commit --amend 把錯誤的改動加進上次 commit"
+          },
+          {
+            "value": "d",
+            "label": "用 git pull 從遠端拉下最新版本蓋掉本地"
+          }
+        ],
+        "answer": "b",
+        "explanation": "git checkout 或 git restore 可以讓特定檔案回到上次 commit 的狀態，不影響其他改動。a 太粗暴會刪除所有改動、c 是改 commit 訊息的、d 會拉遠端版本不是回到本地 commit。"
+      }
     },
     {
       "id": "62.4",
@@ -378,7 +447,59 @@
           "level": 2,
           "text": "💡 Tip"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想更新一位使用者的部分資料（只改名字，保留其他欄位），應該用哪個 HTTP Method，為什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 PUT，因為 PUT 是冪等的，多次呼叫結果一樣"
+          },
+          {
+            "value": "b",
+            "label": "用 PATCH，因為 PATCH 用來部分更新資料"
+          },
+          {
+            "value": "c",
+            "label": "用 POST，因為 POST 用來新增或修改資料"
+          },
+          {
+            "value": "d",
+            "label": "用 DELETE 後再 POST，因為要完全取代舊資料"
+          }
+        ],
+        "answer": "b",
+        "explanation": "PATCH 就是用來做部分更新的，只改動你指定的欄位；PUT 是整筆取代（所有欄位都要送），兩者是不同用途。"
+      }
     }
-  ]
+  ],
+  "outcomes": [
+    "查得到 SQL 常用語法、進階寫法、效能優化方式，不用再網路亂找",
+    "快速找到 Bash 指令、檔案操作、權限管理的正確用法",
+    "懂 Git 進階操作，自己解衝突、調整 commit 歷史、不怕搞亂 repo",
+    "理解 HTTP 狀態碼、請求方法、REST 設計規範的實際意義",
+    "把這章當工作速查字典，遇到不確定就翻一下，快速找到答案"
+  ],
+  "summary": [
+    "SQL 從基本 SELECT、JOIN 到 Window Functions、CTE、Index 策略，一次搞清楚各種進階寫法怎麼用",
+    "Bash 指令涵蓋檔案操作、權限、進程、環境變數，server 上操作不再霧煞煞",
+    "Git 不只 commit、push，rebase、cherry-pick、解衝突、stash 這些進階操作一次看透",
+    "HTTP 不是只有 200、404，狀態碼、請求方法、headers、REST 概念講清楚",
+    "這章是你工作時的字典，設計給你快速查、快速用，不是讀完才能用"
+  ],
+  "faq": [
+    {
+      "q": "為什麼要特別學進階 SQL、Git 這些？不是基礎就夠了嗎？",
+      "a": "基礎夠了寫功能，但進階的（Window Functions、rebase、index）會讓你寫得快、寫得對、不卡效能。一開始不用全學，遇到問題再來查，慢慢練就會懂了。"
+    },
+    {
+      "q": "這章是速查字典，那有沒有詳細解釋？",
+      "a": "有，但重點是實用。每個語法、指令都會有「用在哪」「怎麼用」「常見錯」，夠你快速上手。如果想深入理解 SQL 優化或 Git 原理，那是另外的課程。"
+    },
+    {
+      "q": "我還沒開始工作，現在看這章有用嗎？",
+      "a": "有用。後端開發本來就會一直用到這些，先存起來當參考。之後每次寫 SQL、用 Git、呼叫 API 時，有問題就翻一下，邊做邊學效果最好。"
+    }
+  ],
+  "status": "published"
 }

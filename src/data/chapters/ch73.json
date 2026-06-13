@@ -37,7 +37,30 @@
         "hint": "對應：data → ref/reactive、methods → 普通 function、computed → computed()、watch → watch()。",
         "answer": "重點：<script setup> 內 import 的東西自動可用、不用 components 註冊；defineProps/defineEmits 是 compiler macro 不用 import。"
       },
-      "xp": 20
+      "xp": 20,
+      "miniQuiz": {
+        "question": "你有一個購物車，需要存購物項目的列表（名稱、價格、數量），以及自動計算總價。下面哪個做法最符合 Composition API 的最佳實踐？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 ref 包裝整個購物車物件，calculated 用 computed 監聽這個 ref"
+          },
+          {
+            "value": "b",
+            "label": "用 reactive 包裝購物車物件，總價用 computed 自動計算"
+          },
+          {
+            "value": "c",
+            "label": "用 ref 分別存購物項目陣列和總價，改動時用 watch 手動更新總價"
+          },
+          {
+            "value": "d",
+            "label": "用 reactive 包裝購物車物件，每次改動用 watch 手動觸發總價計算"
+          }
+        ],
+        "answer": "b",
+        "explanation": "物件類型用 reactive（不用 .value、業界推薦）；需要自動追蹤衍生值（總價）就用 computed，不需要手動 watch。computed 會自動偵測依賴變化，這是核心概念。"
+      }
     },
     {
       "id": "73.2",
@@ -54,7 +77,30 @@
         "question": "為你的 App 建一個 useAuthStore：state 含 user / token、actions 含 login / logout、getter 含 isLoggedIn。",
         "answer": "重點：storeToRefs() 拆 state 才能保 reactive、actions 可以直接解構（這在 React 用 Zustand 時也是同樣的坑）。"
       },
-      "xp": 20
+      "xp": 20,
+      "miniQuiz": {
+        "question": "你在 Vue 元件裡使用 Pinia store，想要讀取 state 的 name 狀態並保持響應式。下列哪個做法是正確的？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 storeToRefs() 包裝 store，才能保持響應式"
+          },
+          {
+            "value": "b",
+            "label": "直接從 store 解構 name，響應式會自動保持"
+          },
+          {
+            "value": "c",
+            "label": "用 store.$state.name 讀取，這樣不需要 storeToRefs"
+          },
+          {
+            "value": "d",
+            "label": "定義一個本地的 ref 複製 store 的 name 值"
+          }
+        ],
+        "answer": "a",
+        "explanation": "因為 store 的狀態是物件參考，直接解構會失去響應式。storeToRefs() 會把每個狀態轉成 ref，才能在元件內保持響應式更新。其他選項都不能正確保持響應式。"
+      }
     },
     {
       "id": "73.3",
@@ -71,7 +117,30 @@
         "question": "把 App 內某個重複 3 次以上的「ref + onMounted/onUnmounted addEventListener」pattern、抽成 composable。",
         "answer": "命名規則：use 開頭、回傳 ref（單一）或 object（多個）。記得 onUnmounted 清掉 listener、否則記憶體洩漏。"
       },
-      "xp": 15
+      "xp": 15,
+      "miniQuiz": {
+        "question": "根據課程內容，useLocalStorage、useDebounce、useFetch 這三個 Composables 的共同目的是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "把重複出現的邏輯抽出來，讓多個組件都能共用，不用每次都重寫"
+          },
+          {
+            "value": "b",
+            "label": "取代 Vue 的 ref 和 watch，提供更強大的響應式系統"
+          },
+          {
+            "value": "c",
+            "label": "只用來操作瀏覽器的 localStorage、localStorage 和網路請求"
+          },
+          {
+            "value": "d",
+            "label": "讓組件的程式碼變得更短，減少檔案大小"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Composables 就是 Vue 的 Custom Hook——把常見的邏輯（如本地存儲、防抖、資料取得）封裝成可重用函數，多個組件直接呼叫就能用，不用重複寫。b 錯因為 Composables 是建立在 ref/watch 基礎上；c 錯因為 Composables 不只用來做這些事；d 是次要好處，不是主要目的。"
+      }
     },
     {
       "id": "73.4",
@@ -88,7 +157,30 @@
         "question": "把現有 Modal component 用 Teleport 重寫、確認在 overflow:hidden 父層也能正常彈出。",
         "answer": "Pattern：<Teleport to='body'> 包住 modal-overlay + modal、closeOnEsc + closeOnBackdropClick 兩個 props 是常見需求。"
       },
-      "xp": 20
+      "xp": 20,
+      "miniQuiz": {
+        "question": "你有一個大列表，裡面有 2000 個項目，使用者只會偶爾點擊某些項目改變它的 selected 狀態。如果想要提高效能，減少不必要的重新渲染，應該用哪個工具？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Teleport，把列表傳送到 body 外面去渲染"
+          },
+          {
+            "value": "b",
+            "label": "v-memo，只在 item.selected 改變時才重新渲染該項目"
+          },
+          {
+            "value": "c",
+            "label": "Suspense，讓列表分段載入，邊載邊顯示"
+          },
+          {
+            "value": "d",
+            "label": "用 v-if 隱藏看不見的項目"
+          }
+        ],
+        "answer": "b",
+        "explanation": "v-memo 專門用來快取列表項目的渲染結果，只在指定的依賴值改變時才重新渲染，適合大列表效能優化。Teleport 是解決定位問題、Suspense 是處理非同步載入、v-if 會持續檢查都不是最佳方案。"
+      }
     },
     {
       "id": "73.5",
@@ -105,7 +197,51 @@
         "question": "對 App 跑一次 Lighthouse 或 Vue DevTools Profiler、找出最慢的 3 個元件、針對性套用上面其中 3 招、再量一次差距。",
         "answer": "常見痛點 Top 3：1) 大列表沒 virtual scroll、2) computed 內做了很重的計算且依賴頻繁變、3) 內聯 function 害 child memo 失效。"
       },
-      "xp": 25
+      "xp": 25,
+      "miniQuiz": {
+        "question": "你有一個大物件需要在 Vue 中使用，但不需要監聽它內部屬性的變化，只需要監聽整個物件的引用是否改變。根據課程內容，你應該用什麼方法來優化性能？",
+        "options": [
+          {
+            "value": "a",
+            "label": "使用 shallowRef，省去深度比較成本"
+          },
+          {
+            "value": "b",
+            "label": "使用 ref，但手動設定 watch deep: false"
+          },
+          {
+            "value": "c",
+            "label": "使用 reactive，它預設就是淺層反應"
+          },
+          {
+            "value": "d",
+            "label": "使用 computed，避免多次的物件比較"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確指出 shallowRef / shallowReactive 用於大物件且不需要深度監聽的情況，只比較 reference，省 80% 比較成本。b 選項雖然也能限制深度監聽但不是最優方案；c 選項 reactive 本身不提供淺層選項；d 選項 computed 的用途不同。"
+      }
+    }
+  ],
+  "summary": [
+    "Composition API 是現代 Vue 寫法、setup() 是入口、ref() 和 reactive() 各有優缺",
+    "Pinia 比 Vuex 簡單得多、就是 store 定義 state + actions、元件引入就能用",
+    "Composables 把邏輯拆成小函數、跨元件複用像分享工具函式一樣簡單",
+    "Teleport 可以把 DOM 傳送到別處、Suspense 處理非同步、v-memo 避免不必要重新渲染",
+    "性能優化沒有銀彈、要測、要用 DevTools、按優先度逐一改善"
+  ],
+  "faq": [
+    {
+      "q": "Composition API vs Options API，我應該全部改成 Composition API 嗎？",
+      "a": "不用全改，新專案或新功能用 Composition API 就好。舊程式碼能跑就讓它跑，兩種混用也不會怎樣。業界現在 Composition API 是主流，學它是未來投資。"
+    },
+    {
+      "q": "Pinia 真的比 Vuex 簡單很多嗎？",
+      "a": "簡單多了。Vuex 要寫 mutations、actions、getters 分開，Pinia 少很多樣板代碼。官方也推薦 Pinia，Vuex 未來會逐漸淡出。"
+    },
+    {
+      "q": "我的應用跑得很慢，是不是一定要用 v-memo 才會快？",
+      "a": "不一定。先用 DevTools 看哪些元件在亂重新渲染、通常改用 reactive 或加 key 就夠了。v-memo 是最後手段，用之前先確認真的有效能問題。"
     }
   ]
 }

@@ -64,7 +64,30 @@
           "level": 2,
           "text": "2026 主流 SQL 資料庫"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，SQL 之所以能活 50 年還在用，最核心的原因是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 SQL 的語法簡單，比 Python 更容易學"
+          },
+          {
+            "value": "b",
+            "label": "因為 Edgar Codd 設計的「宣告式語言」概念解決了核心問題，加上 1986 年被訂為國家標準，導致標準化超徹底"
+          },
+          {
+            "value": "c",
+            "label": "因為 MySQL 從 1995 年開源，全世界 80% 網站都在用"
+          },
+          {
+            "value": "d",
+            "label": "因為 NoSQL 失敗了，所以 SQL 被迫繼續用"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調 SQL 長壽的根本原因是 Codd 的「宣告式設計」（你只說要什麼、電腦自己優化怎麼做），加上 1986 年的標準化讓全球統一，所以即使 50 年後仍適用。MySQL 熱門和 NoSQL 退潮只是表象，不是根本原因。"
+      }
     },
     {
       "id": "17.2",
@@ -117,7 +140,30 @@
           "level": 2,
           "text": "推薦 GUI 工具（2026）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "如果你是完全新手，想最快開始學 SQL，林董建議你應該選擇哪一種方式擁有 PostgreSQL？",
+        "options": [
+          {
+            "value": "a",
+            "label": "先用 Supabase 雲端練習，因為不用裝軟體、5 分鐘就能開始寫 SQL"
+          },
+          {
+            "value": "b",
+            "label": "一開始就裝本機 PostgreSQL，才能學到完整的底層知識"
+          },
+          {
+            "value": "c",
+            "label": "用 Docker 容器，因為可以同時跑多個版本"
+          },
+          {
+            "value": "d",
+            "label": "用命令列工具 psql，因為所有 PG 工程師都在用"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確提到「林董的建議：先用 Supabase 練」，原因是 SQL 是語言不是工具，99% 新手適合從 Supabase 開始。選項 b、c、d 都是真實存在的方式，但不是林董給新手的建議。"
+      }
     },
     {
       "id": "17.3",
@@ -162,7 +208,30 @@
           "level": 2,
           "text": "為什麼金額不用 FLOAT"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這課內容，為什麼 SQL 的「table 設計」這麼重要？",
+        "options": [
+          {
+            "value": "a",
+            "label": "table 設計好，後面寫 query 才救得回來；設計爛的話再怎麼寫 query 也救不了"
+          },
+          {
+            "value": "b",
+            "label": "因為 table 設計決定了能不能用 Excel 匯出資料"
+          },
+          {
+            "value": "c",
+            "label": "因為 table 的欄位名稱一定要用英文，否則 SQL 會報錯"
+          },
+          {
+            "value": "d",
+            "label": "因為資料型別選錯的話，INSERT 資料時會自動轉換，不會有問題"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確指出『table 設計爛、後面 query 怎麼寫都救不回來』，強調設計階段打好基礎（資料型別、NOT NULL、DEFAULT）才是王道。其他選項都是課程沒有提及或與課意相反的敘述。"
+      }
     },
     {
       "id": "17.4",
@@ -207,7 +276,30 @@
           "level": 2,
           "text": "ALTER TABLE（事後加約束）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在設計一個電商平台的訂單系統，需要確保資料品質。以下哪一個做法最符合「在 DB 層擋住髒資料」的核心原則？",
+        "options": [
+          {
+            "value": "a",
+            "label": "在應用程式的 JavaScript 驗證使用者輸入，確保年齡不為負數"
+          },
+          {
+            "value": "b",
+            "label": "在資料庫表上加 CHECK (age >= 0)，不管應用層有沒有驗證"
+          },
+          {
+            "value": "c",
+            "label": "只在後端 API 層寫 if-else 檢查，不需要在 DB 加約束"
+          },
+          {
+            "value": "d",
+            "label": "使用 UNIQUE 約束就夠了，CHECK 約束不必要"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程的核心價值是『應用層程式可以有 bug、DB 約束不會放水』——在資料庫層加 CHECK 約束是最後防線，能確保無論應用層怎麼寫，髒資料都永遠進不來。其他選項都只依賴應用層或遺漏了約束的重要性。"
+      }
     },
     {
       "id": "17.5",
@@ -244,7 +336,30 @@
           "level": 2,
           "text": "SELECT 7 大子句執行順序"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在寫 SQL 時，想要看 users 表中所有人的姓名和城市，但不要重複的城市名稱。下面哪個指令是正確的？",
+        "options": [
+          {
+            "value": "a",
+            "label": "SELECT DISTINCT city, name FROM users;"
+          },
+          {
+            "value": "b",
+            "label": "SELECT name, DISTINCT city FROM users;"
+          },
+          {
+            "value": "c",
+            "label": "SELECT * FROM users WHERE DISTINCT city;"
+          },
+          {
+            "value": "d",
+            "label": "SELECT name FROM users; SELECT DISTINCT city FROM users;"
+          }
+        ],
+        "answer": "a",
+        "explanation": "DISTINCT 要寫在 SELECT 後面、作用在整個結果集。選項 b 的 DISTINCT 位置錯誤，c 的 WHERE 搭配 DISTINCT 是錯語法，d 是兩個分開的查詢。"
+      }
     },
     {
       "id": "17.6",
@@ -301,7 +416,30 @@
           "level": 2,
           "text": "EXISTS / NOT EXISTS（搭配子查詢）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你寫了一個 SQL 查詢想找出「年齡在 25 到 35 歲之間，且城市是台北或台中的用戶」，下面哪個 WHERE 語法最安全、最不容易出錯？",
+        "options": [
+          {
+            "value": "a",
+            "label": "WHERE age BETWEEN 25 AND 35 AND city = '台北' OR city = '台中'"
+          },
+          {
+            "value": "b",
+            "label": "WHERE age BETWEEN 25 AND 35 AND (city = '台北' OR city = '台中')"
+          },
+          {
+            "value": "c",
+            "label": "WHERE age >= 25 AND age <= 35 OR city IN ('台北', '台中')"
+          },
+          {
+            "value": "d",
+            "label": "WHERE age BETWEEN 25 AND 35 AND city IN ('台北', '台中')"
+          }
+        ],
+        "answer": "d",
+        "explanation": "選項 d 同時使用了 BETWEEN（更清楚的範圍表達）和 IN（取代多個 OR），最簡潔且不容易理解錯誤。選項 b 雖然加了括號避免優先順序問題，但選項 d 的寫法更專業；選項 a 和 c 都因為缺少括號或邏輯錯誤，會包含不該有的結果。"
+      }
     },
     {
       "id": "17.7",
@@ -346,7 +484,30 @@
           "level": 2,
           "text": "解法：Cursor Pagination（推薦）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在做一個商品列表頁，要顯示「最新上架的商品」，每頁 10 筆，現在使用者要看第 3 頁。下列哪個 SQL 語句正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "SELECT * FROM products ORDER BY created_at DESC LIMIT 10 OFFSET 20;"
+          },
+          {
+            "value": "b",
+            "label": "SELECT * FROM products ORDER BY created_at LIMIT 10 OFFSET 20;"
+          },
+          {
+            "value": "c",
+            "label": "SELECT * FROM products LIMIT 10 OFFSET 20;"
+          },
+          {
+            "value": "d",
+            "label": "SELECT * FROM products ORDER BY created_at DESC LIMIT 20 OFFSET 10;"
+          }
+        ],
+        "answer": "a",
+        "explanation": "第 3 頁需要 OFFSET (3-1) × 10 = 20，且要 DESC 排最新商品在前。選項 b 沒 DESC 所以從舊到新（錯誤順序），選項 c 沒排序會導致結果不固定，選項 d 則是 LIMIT/OFFSET 搞反了。"
+      }
     },
     {
       "id": "17.8",
@@ -395,7 +556,30 @@
           "level": 2,
           "text": "ROLLUP / CUBE（小計總計）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想查詢「每個城市的人數和平均年齡」，下列哪個 SQL 是正確的？",
+        "options": [
+          {
+            "value": "a",
+            "label": "SELECT city, name, COUNT(*) AS people, AVG(age) FROM users GROUP BY city;"
+          },
+          {
+            "value": "b",
+            "label": "SELECT city, COUNT(*) AS people, AVG(age) FROM users GROUP BY city;"
+          },
+          {
+            "value": "c",
+            "label": "SELECT city, COUNT(*) AS people, AVG(age) FROM users WHERE city IS NOT NULL;"
+          },
+          {
+            "value": "d",
+            "label": "SELECT city, name, COUNT(*) AS people, AVG(age) FROM users;"
+          }
+        ],
+        "answer": "b",
+        "explanation": "選項 b 正確，因為 SELECT 只能放 GROUP BY 的欄位（city）和聚合函式（COUNT、AVG）。選項 a 多放了 name 會報錯；選項 c 沒有分組無法算出「每個城市」的統計；選項 d 既沒 GROUP BY 也沒聚合，會傳回整張表。"
+      }
     },
     {
       "id": "17.9",
@@ -444,7 +628,30 @@
           "level": 2,
           "text": "移動平均"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下列何者是 Window Function 相比 GROUP BY 的「最大優勢」？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Window Function 的執行速度比 GROUP BY 快很多"
+          },
+          {
+            "value": "b",
+            "label": "Window Function 可以保留原始列、同時加上分組統計、不會合併行數"
+          },
+          {
+            "value": "c",
+            "label": "Window Function 只能用在排名、GROUP BY 只能用在求和"
+          },
+          {
+            "value": "d",
+            "label": "Window Function 不需要寫 OVER 子句、語法比較簡單"
+          }
+        ],
+        "answer": "b",
+        "explanation": "這課的核心概念就是：GROUP BY 會合併列（6 列變 3 列），但 Window Function 維持原始 6 列、只在旁邊加一個統計欄位。選項 a 錯在速度不是重點、c 和 d 都是錯誤的敘述。"
+      }
     },
     {
       "id": "17.10",
@@ -489,7 +696,30 @@
           "level": 2,
           "text": "Recursive CTE（樹狀資料）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下面哪一個情況「最適合用 CTE」而不是 subquery？",
+        "options": [
+          {
+            "value": "a",
+            "label": "在 WHERE 子句裡只需要檢查「某個城市是否存在」，用一行 SELECT 就夠"
+          },
+          {
+            "value": "b",
+            "label": "要拆成 3 個邏輯步驟，第 2 步參考第 1 步的結果、第 3 步又參考第 1 步，並且最後才組合出答案"
+          },
+          {
+            "value": "c",
+            "label": "只是想在 SELECT 清單裡加一個簡單的計數欄位，用 Scalar subquery 一行搞定"
+          },
+          {
+            "value": "d",
+            "label": "資料量很小，只有 10 筆資料要查詢"
+          }
+        ],
+        "answer": "b",
+        "explanation": "CTE 最大優勢是「拆多步驟、同一段可重複引用」。選項 b 涵蓋了兩個關鍵點：多步驟（3 個）+ 重複引用（第 1 步被用 2 次），這正是 CTE 發揮威力的地方。其他選項都是簡單情況，subquery 更簡潔。"
+      }
     },
     {
       "id": "17.11",
@@ -538,7 +768,30 @@
           "level": 2,
           "text": "INSERT ... SELECT（從另一個表複製）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "如果你要在資料庫中一次新增 1000 筆使用者資料，下列哪種寫法效率最好？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用迴圈寫 1000 個分開的 INSERT 語句，每筆各執行一次"
+          },
+          {
+            "value": "b",
+            "label": "用一個 INSERT 語句，在 VALUES 裡放 1000 組資料"
+          },
+          {
+            "value": "c",
+            "label": "用 INSERT ... SELECT 從另一張表複製資料"
+          },
+          {
+            "value": "d",
+            "label": "用 ON CONFLICT 搭配 UPSERT 機制來新增"
+          }
+        ],
+        "answer": "b",
+        "explanation": "批次 INSERT（一個語句多筆 VALUES）只需 1 次連線和 1 次 disk write，比逐筆 INSERT 的 1000 次連線快 10 倍以上。選項 c 是複製用、選項 d 是更新衝突用，都不是純新增的最佳做法。"
+      }
     },
     {
       "id": "17.12",
@@ -587,7 +840,30 @@
           "level": 2,
           "text": "安全包裝（Transaction）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在生產環境寫了一個 UPDATE 語句來修改使用者的城市資訊，但不小心忘記加 WHERE 條件。根據本課教的內容，為什麼這是最危險的操作？",
+        "options": [
+          {
+            "value": "a",
+            "label": "整張 users 表的所有列都會被修改成同一個城市，而且無法用 UNDO 復原（除非有備份）"
+          },
+          {
+            "value": "b",
+            "label": "資料庫會自動拒絕執行，系統會跳出警告訊息"
+          },
+          {
+            "value": "c",
+            "label": "只有沒有填寫城市欄位的列會被修改，有資料的列不會受影響"
+          },
+          {
+            "value": "d",
+            "label": "UPDATE 語句會在執行時自動加上 LIMIT 1 的限制，只修改第一筆資料"
+          }
+        ],
+        "answer": "a",
+        "explanation": "本課重點強調「沒寫 WHERE 的 UPDATE = 整張表被改」，這是最危險的操作因為會影響全表，而且無法復原除非有備份。選項 b 錯在安全模式是自主開啟的選項而非自動拒絕、c 和 d 都是錯誤的保護機制想像。"
+      }
     },
     {
       "id": "17.13",
@@ -632,7 +908,30 @@
           "level": 2,
           "text": "軟刪除 vs 硬刪除取捨"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的應用有「用戶可以刪除聊天訊息，但之後可能要恢復」的需求。同時公司也有「遵守 GDPR、用戶要求刪除個資就要真的刪」的規定。請問應該採用什麼策略？",
+        "options": [
+          {
+            "value": "a",
+            "label": "所有資料都用 soft delete，這樣最安全、最靈活"
+          },
+          {
+            "value": "b",
+            "label": "聊天訊息用 soft delete、用戶個資用 hard delete"
+          },
+          {
+            "value": "c",
+            "label": "所有資料都用 hard delete，簡單快速、符合 GDPR"
+          },
+          {
+            "value": "d",
+            "label": "先 soft delete 所有資料、之後再根據法規要求手動 hard delete"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確指出：有恢復需求（聊天訊息、文章）用 soft delete；完全用不到的或 GDPR 個資必須用 hard delete。選項 a 忽視了 GDPR 要求、選項 c 讓聊天訊息無法恢復、選項 d 流程繁瑣且風險高。"
+      }
     },
     {
       "id": "17.14",
@@ -677,7 +976,30 @@
           "level": 2,
           "text": "JOIN 條件 vs WHERE"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你有兩張表：customers（客戶表）和 orders（訂單表）。想要查詢「所有客戶名稱和他們的訂單金額」。用 INNER JOIN 會得到什麼結果？",
+        "options": [
+          {
+            "value": "a",
+            "label": "只顯示有訂單的客戶（兩張表都對到的列）"
+          },
+          {
+            "value": "b",
+            "label": "顯示所有客戶，沒訂單的欄位留空"
+          },
+          {
+            "value": "c",
+            "label": "只顯示所有訂單，客戶資訊重複顯示"
+          },
+          {
+            "value": "d",
+            "label": "先顯示所有客戶，再另外顯示所有訂單"
+          }
+        ],
+        "answer": "a",
+        "explanation": "INNER JOIN 的核心就是「只留兩張表都對到的列」。沒有訂單的客戶不會出現在結果裡。選項 b 是 LEFT JOIN 的行為、c 和 d 都不符合 JOIN 的概念。"
+      }
     },
     {
       "id": "17.15",
@@ -726,7 +1048,30 @@
           "level": 2,
           "text": "FULL OUTER JOIN"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想找出「沒有下過任何訂單的客戶」，以下哪個 SQL 寫法是正確的？",
+        "options": [
+          {
+            "value": "a",
+            "label": "SELECT u.id, u.name FROM users u LEFT JOIN orders o ON u.id = o.user_id WHERE o.id IS NULL;"
+          },
+          {
+            "value": "b",
+            "label": "SELECT u.id, u.name FROM users u INNER JOIN orders o ON u.id = o.user_id WHERE o.id IS NULL;"
+          },
+          {
+            "value": "c",
+            "label": "SELECT u.id, u.name FROM users u LEFT JOIN orders o ON u.id = o.user_id WHERE o.id IS NOT NULL;"
+          },
+          {
+            "value": "d",
+            "label": "SELECT u.id, u.name FROM users u WHERE u.id NOT IN (SELECT user_id FROM orders);"
+          }
+        ],
+        "answer": "a",
+        "explanation": "LEFT JOIN 保留左表全部記錄，再用 WHERE o.id IS NULL 篩出「右表沒對到的」（即沒訂單的客戶）。選 b 用 INNER JOIN 會直接砍掉沒訂單的客戶；選 c 反向篩選出有訂單的；選 d 雖然也能找，但課程強調 LEFT JOIN + IS NULL 是業界最常用的寫法。"
+      }
     },
     {
       "id": "17.16",
@@ -771,7 +1116,30 @@
           "level": 2,
           "text": "JOIN 寫法選擇"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的公司要做一份報表，顯示 2024 年每個月、每個城市的營收。問題是：有些城市某個月沒有訂單，但報表上還是要顯示那一行、營收顯示 0。用什麼 JOIN 技巧最適合做這件事？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 INNER JOIN orders，然後用 COALESCE 把 NULL 變成 0"
+          },
+          {
+            "value": "b",
+            "label": "用 CROSS JOIN 產生「城市 × 月份」的完整矩陣，再 LEFT JOIN 訂單資料"
+          },
+          {
+            "value": "c",
+            "label": "用 SELF JOIN 把 orders 表跟自己 JOIN，比較不同月份的營收"
+          },
+          {
+            "value": "d",
+            "label": "用 GROUP BY HAVING 篩選出營收 = 0 的那些行"
+          }
+        ],
+        "answer": "b",
+        "explanation": "CROSS JOIN 就是用來產生「所有可能組合」的矩陣（12 個月 × 城市數），確保沒訂單的組合也會出現。再用 LEFT JOIN 訂單、COALESCE 填 0。其他選項都無法保證「沒訂單的月份」也會顯示在結果裡。"
+      }
     },
     {
       "id": "17.17",
@@ -820,7 +1188,30 @@
           "level": 2,
           "text": "規則"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的公司有日本、美國、台灣三個地區的使用者表，結構一樣都是 (id, name, email)，現在要把三個地區的使用者合併成一份清單。下列哪個做法最符合業界共識？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 UNION ALL 合併三個 SELECT，因為不同地區的使用者不會重複，速度更快"
+          },
+          {
+            "value": "b",
+            "label": "用 UNION（有去重）合併三個 SELECT，確保沒有任何重複資料"
+          },
+          {
+            "value": "c",
+            "label": "用三個 INTERSECT 合併，找出三個地區都有的使用者"
+          },
+          {
+            "value": "d",
+            "label": "用 EXCEPT 做差集，這樣可以排除某些使用者"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確說業界共識是「用 UNION ALL、除非真的要去重」，因為多數場景兩邊沒重複（不同 region 的 user），UNION ALL 又快效能差 10 倍以上。選 b 會多做無必要的排序去重、選 c 和 d 是把集合運算功能用錯了。"
+      }
     },
     {
       "id": "17.18",
@@ -869,7 +1260,30 @@
           "level": 2,
           "text": "子查詢 vs CTE vs JOIN"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "假設你要找出「有下過訂單的使用者名稱」，下面四個寫法中，哪一個最能說明子查詢（subquery）的核心概念——把一個 SELECT 的結果當作「值」或「表」放進另一個 SELECT 裡用？",
+        "options": [
+          {
+            "value": "a",
+            "label": "SELECT name FROM users WHERE id IN (SELECT user_id FROM orders);"
+          },
+          {
+            "value": "b",
+            "label": "SELECT name FROM users JOIN orders ON users.id = orders.user_id;"
+          },
+          {
+            "value": "c",
+            "label": "SELECT name FROM users WHERE age > 18;"
+          },
+          {
+            "value": "d",
+            "label": "SELECT name, (SELECT COUNT(*) FROM orders) FROM users;"
+          }
+        ],
+        "answer": "a",
+        "explanation": "選項 a 展示子查詢的本質——(SELECT user_id FROM orders) 的結果被當作「值的集合」餵給外層的 IN 判斷。選項 b 是 JOIN（不是子查詢）、c 沒有子查詢、d 雖有子查詢但不夠清楚表達「結果當條件用」的概念。"
+      }
     },
     {
       "id": "17.19",
@@ -914,7 +1328,30 @@
           "level": 2,
           "text": "找出沒被使用的索引（PG）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你為 users 表的 email 欄位加了 Index，現在執行「SELECT * FROM users WHERE email = 'luffy@ai.com'」。根據本課講的原理，這個查詢速度變快的根本原因是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Index 用 B-tree 結構，把「掃全表」的 O(n) 變成「逐層折半查找」的 O(log n)，所以快"
+          },
+          {
+            "value": "b",
+            "label": "Index 把資料按 email 排序存放，排序資料本身就比較快"
+          },
+          {
+            "value": "c",
+            "label": "加 Index 後 PG 自動快取了查詢結果，所以下次查就很快"
+          },
+          {
+            "value": "d",
+            "label": "Index 減少了 users 表的資料量，只保留 email 欄位，所以掃描範圍變小"
+          }
+        ],
+        "answer": "a",
+        "explanation": "本課核心是 B-tree 如何把線性查找 O(n) 轉成對數查找 O(log n)。b 混淆了排序與 B-tree 結構、c 是快取不是 Index、d 誤會了 Index 的作用（Index 是另外建的樹狀結構，不是刪資料）。"
+      }
     },
     {
       "id": "17.20",
@@ -959,7 +1396,30 @@
           "level": 2,
           "text": "常見效能問題"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你寫了一個 SELECT 查詢，用 EXPLAIN ANALYZE 跑出來看到 `Rows Removed by Filter: 999999`、但 actual time 只有 0.5 ms。下面哪個說法最正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "這個查詢很快、不需要優化、因為執行時間才 0.5 ms"
+          },
+          {
+            "value": "b",
+            "label": "這個查詢在做 Seq Scan 且掃掉 99 萬筆資料才找到 1 筆、應該考慮加 Index"
+          },
+          {
+            "value": "c",
+            "label": "時間這麼短代表 PG 已經自動用了 Index、不用擔心"
+          },
+          {
+            "value": "d",
+            "label": "Filter 字段出現就一定要重寫 SQL、才能解決浪費"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Rows Removed by Filter: 999999 是警訊——即使執行時間短、也代表浪費了掃描資源。加 Index 在 WHERE 條件上、可以讓 PG 用 Index Scan 而不是 Seq Scan、這樣才根本解決問題。a 選項忽視了浪費的本質、c 選項誤判了 Filter 的出現、d 選項過度反應。"
+      }
     },
     {
       "id": "17.21",
@@ -1012,7 +1472,30 @@
           "level": 2,
           "text": "並發控制"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "假設你在寫一個「線上購物」系統，需要做：①建立訂單、②扣減庫存、③更新使用者積分。如果第 2 步失敗（庫存不足），第 1、3 步已經執行了一半。在沒有 Transaction 的情況下會發生什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "資料庫會自動偵測到錯誤，把已執行的步驟全部退回"
+          },
+          {
+            "value": "b",
+            "label": "訂單可能被建立、但庫存沒扣、積分也沒加，導致資料不一致"
+          },
+          {
+            "value": "c",
+            "label": "系統會停止所有操作，等到所有步驟都能成功才執行"
+          },
+          {
+            "value": "d",
+            "label": "只有第 2 步失敗，第 1、3 步會自動跳過不執行"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Transaction 的核心價值就是保證「全成或全退」。沒有 Transaction 時，多個 SQL 各自獨立執行，一旦中間失敗，已執行的部分不會自動回滾，導致資料不一致——這正是課程一開始轉帳範例要說明的問題。只有用 BEGIN...COMMIT/ROLLBACK 才能保證原子性。"
+      }
     },
     {
       "id": "17.22",
@@ -1057,7 +1540,30 @@
           "level": 2,
           "text": "View 跟 Stored Procedure 差別"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的公司有個複雜的 SQL 統計 10 個表的數據，每次寫報表都要貼這段超長 query。用 View 包起來之後，下次查詢時會發生什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "結果被永久存在資料庫裡，查詢會非常快"
+          },
+          {
+            "value": "b",
+            "label": "PG 每次都會重新執行一遍底下的 SELECT，查詢內容是即時的"
+          },
+          {
+            "value": "c",
+            "label": "View 會自動快取結果，不用重新執行"
+          },
+          {
+            "value": "d",
+            "label": "必須改用 Materialized View，否則查詢會失敗"
+          }
+        ],
+        "answer": "b",
+        "explanation": "普通 View 不存資料，只是 SQL 的別名——每次查都會執行底下的 SELECT 一次。如果要預存結果加速查詢，才需要用 Materialized View；但題目只說用普通 View，所以是即時重算。"
+      }
     },
     {
       "id": "17.23",
@@ -1102,7 +1608,30 @@
           "level": 2,
           "text": "Trigger 何時用 / 何時不用"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "某個電商網站想記錄「誰在什麼時間改了訂單表的什麼內容」，應該用 Trigger 搭配什麼機制來自動實現？",
+        "options": [
+          {
+            "value": "a",
+            "label": "在應用層每次 UPDATE 訂單表時、手動呼叫一個記錄函式"
+          },
+          {
+            "value": "b",
+            "label": "用 AFTER UPDATE Trigger 搭配 Function、自動插入審計日誌表"
+          },
+          {
+            "value": "c",
+            "label": "在訂單表加一個 log_content 欄位、用 BEFORE UPDATE 寫入修改內容"
+          },
+          {
+            "value": "d",
+            "label": "用 SELECT 定時掃描訂單表、比對前後差異自動產生日誌"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Trigger 的核心應用就是在資料異動時自動觸發邏輯；AFTER UPDATE + Function 能在訂單被改之後、立即自動寫入審計日誌，不靠應用層手動記錄。選項 a 是放棄 Trigger 優勢、c 是誤用 BEFORE（應該記舊新資料），d 則是沒用上 Trigger 機制。"
+      }
     },
     {
       "id": "17.24",
@@ -1151,7 +1680,30 @@
           "level": 2,
           "text": "什麼時候用 JSON 欄位"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的產品表要存放商品的顏色、容量、標籤等資訊，這些欄位未來可能增加或變化。請問應該用 JSON 還是 JSONB，以及主要原因是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 JSONB，因為查詢快、可以建索引、能自動去重複 key"
+          },
+          {
+            "value": "b",
+            "label": "用 JSON，因為寫入快、保留原始空白和 key 順序"
+          },
+          {
+            "value": "c",
+            "label": "用 JSON，因為 JSON 是標準格式、在所有資料庫都能用"
+          },
+          {
+            "value": "d",
+            "label": "用 JSONB，因為它是更新的格式、自動把所有資料轉成文字"
+          }
+        ],
+        "answer": "a",
+        "explanation": "JSONB 是 PostgreSQL 處理半結構化資料的標準選擇：已解析的二進位格式讓查詢快速、支援 GIN 索引加速檢索、還能自動去除重複 key。業界共識 99% 用 JSONB。JSON 只在需要保留原始格式時才用（極少）。"
+      }
     },
     {
       "id": "17.25",
@@ -1200,7 +1752,30 @@
           "level": 2,
           "text": "什麼時候該用 Elasticsearch"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "為什麼在 PostgreSQL 中使用 Full-Text Search（FTS）比 ILIKE '%關鍵字%' 更好？",
+        "options": [
+          {
+            "value": "a",
+            "label": "FTS 會自動切詞、詞幹化，還能用 GIN Index 加速，搜尋結果也可以排序相關性"
+          },
+          {
+            "value": "b",
+            "label": "ILIKE 需要寫正規表達式，而 FTS 不用，所以 FTS 更簡單"
+          },
+          {
+            "value": "c",
+            "label": "FTS 可以搜尋大小寫不同的字，ILIKE 則一定要完全相符"
+          },
+          {
+            "value": "d",
+            "label": "FTS 不需要建立任何 Index，直接就能快速搜尋百萬筆資料"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調 FTS 的三大優勢：(1) 快速——GIN Index 加速、(2) 準確——自動詞幹化讓「running」和「run」都能找到、(3) 有排序——tsvector 和 tsquery 的相關性比對。選項 b、c、d 都誤解了 FTS 的核心價值。"
+      }
     },
     {
       "id": "17.26",
@@ -1249,7 +1824,30 @@
           "level": 2,
           "text": "防護清單"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "假設你要寫一個登入功能，使用者輸入 email，你需要查詢資料庫中是否存在這個 email。如果使用字串拼接 SQL，駭客輸入 `' OR 1=1 --`，為什麼這個輸入會造成嚴重的安全漏洞？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 1=1 是一個永遠為真的條件，會導致查詢回傳所有使用者資料，而不是只查詢特定的 email"
+          },
+          {
+            "value": "b",
+            "label": "因為這個輸入包含特殊符號，會導致資料庫連線中斷"
+          },
+          {
+            "value": "c",
+            "label": "因為 `--` 符號會讓資料庫自動刪除後面的所有表格"
+          },
+          {
+            "value": "d",
+            "label": "因為駭客輸入的字串太長，會超過資料庫欄位的最大長度限制"
+          }
+        ],
+        "answer": "a",
+        "explanation": "字串拼接會把駭客輸入當成 SQL 語法的一部分，`OR 1=1` 會變成額外的查詢條件，導致 WHERE 子句永遠為真，查詢回傳所有資料。只有 prepared statement 才能確保輸入被當成「值」而非「SQL 語法」。"
+      }
     },
     {
       "id": "17.27",
@@ -1298,7 +1896,30 @@
           "level": 2,
           "text": "定價（2026）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "一個 Indie Hacker 想快速起一個 SaaS 產品，需要用戶認證、即時同步、資料儲存和 SQL 查詢功能。為什麼 Supabase 比 Firebase 更適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Supabase 使用真正的 PostgreSQL，支援 JOIN、Transaction、複雜查詢，而 Firebase 的 Firestore 是 NoSQL 無法做這些"
+          },
+          {
+            "value": "b",
+            "label": "Supabase 完全免費，而 Firebase 在大流量時會很貴"
+          },
+          {
+            "value": "c",
+            "label": "Supabase 不需要寫任何後端程式碼，但 Firebase 一定要"
+          },
+          {
+            "value": "d",
+            "label": "Supabase 只能在亞洲使用，Firebase 全球都能用"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程的核心價值就是 Supabase = 完整 PostgreSQL + Firebase 風格服務。相比 Firebase 的 NoSQL 無法做 JOIN 和 Transaction，Supabase 的真正 PG 能力讓前 26 課學的 SQL 技能全部用上，這是它最大的優勢。B 選項誤導（都有免費方案），C 和 D 都是課程未提及或錯誤的資訊。"
+      }
     },
     {
       "id": "17.28",
@@ -1343,7 +1964,30 @@
           "level": 2,
           "text": "完成檢查"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在這個 Todo 應用中，為什麼要在 Supabase 的 todos 表上設定 Row Level Security (RLS) 和多個 POLICY？",
+        "options": [
+          {
+            "value": "a",
+            "label": "確保每個使用者只能看到和操作自己的 Todo，防止其他使用者的資料被竄改或洩露"
+          },
+          {
+            "value": "b",
+            "label": "讓 SQL 查詢執行速度更快，減少資料庫的負擔"
+          },
+          {
+            "value": "c",
+            "label": "自動備份使用者的 Todo 資料，避免意外刪除"
+          },
+          {
+            "value": "d",
+            "label": "限制每個使用者最多只能建立 200 個 Todo"
+          }
+        ],
+        "answer": "a",
+        "explanation": "RLS 和 POLICY 的核心目的是實現行級安全控制，讓資料庫層面就強制執行「user_id 相符才能讀寫」的邏輯。其他選項分別涉及查詢最佳化、備份機制和字數限制，都不是 RLS 的設計目的。"
+      }
     }
   ],
   "boss": {

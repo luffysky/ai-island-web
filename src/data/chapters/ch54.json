@@ -22,7 +22,7 @@
       "title": "AI 音樂生成工具",
       "oneLineSummary": "Suno / Udio—2024+ 改變音樂創作",
       "analogy": "不會樂器、不會編曲、也能做完整歌。",
-      "content": "## 主流工具\n\n### Suno（最熱門）\n- Text-to-song\n- 歌詞 + 旋律 + 演唱一條龍\n- 免費 50 credits / 天\n- Pro $8/月、Premier $24/月\n- 適合：完整歌曲\n\n### Udio\n- 類 Suno、品質微優\n- 免費 / Pro\n- 更多 fine-tune\n\n### Mubert\n- 背景音樂 / loop\n- 訂閱\n- 適合：YT / Podcast 用\n\n### AIVA\n- 古典 / 電影配樂\n- 多種風格\n- 適合：影視配樂\n\n### Riffusion\n- 開源\n- 玩家用\n\n### MusicGen（Meta）\n- 開源\n- Local 跑\n\n### Splash Pro\n- AI 鼓 / bass\n\n## Suno 使用\n\n### Custom Mode\n```\nLyrics:\n[Verse 1]\n台北的雨下不停、捷運上滑著手機\n誰的訊息打字打到一半、又默默刪掉了\n\n[Chorus]\n給我一杯拿鐵、讓我撐過這個夜\n今晚的霓虹太美、卻只能一個人看\n\n[Verse 2]\n...\n\nStyle: bossa nova, lo-fi, female vocal, warm coffee shop vibe, soft jazz drums\n```\n\n→ 生 2-4 分鐘完整歌、有 vocal。\n\n### Quick Mode\n```\nA chill lo-fi song about coffee and rainy mornings\n```\n\n→ AI 自動寫詞 + 編曲。\n\n### 商業使用\n- Suno Pro：可商業\n- 免費：個人 only\n\n## 音樂類型\n\n### Lo-fi / Chill\n- IG / YT 背景音樂\n- 易聽、易賺\n\n### Pop / Indie\n- 完整歌曲\n- 流量平台\n\n### 電影配樂\n- AIVA / Suno\n- 接案\n\n### 廣告 jingle\n- 短、洗腦\n- 商業需求\n\n### 遊戲音樂\n- Loop 版\n- Mubert\n\n## 變現\n\n### 1. Spotify / Apple Music\n- 上 distrokid（$22/年）\n- AI 音樂可上（但要標）\n- 月收入：低（每千次 streams $4）\n\n### 2. YouTube\n- Suno 音樂 + 視覺 = YT 內容\n- 廣告分潤\n\n### 3. Stock Music\n- 賣 BGM 給 YouTuber\n- Pond5 / Envato\n\n### 4. 客製\n- 餐廳 / 店家 BGM 客製\n- NT$ 5-30k 一首\n- 月接 5-10 單 = NT$ 30-100k\n\n### 5. 廣告 jingle\n- NT$ 10-50k 一首\n- 客戶找你做品牌歌\n\n### 6. 短影音音樂\n- TikTok / IG 用\n- 紅了會帶來其他案\n\n## 倫理 + 法律\n\n### 著作權\n- AI 音樂：誰擁有？仍法律灰色\n- 美國：純 AI 無 copyright\n- 歐盟：要看「人類貢獻」\n\n### Spotify 限制\n- 2024 年起「100% AI」標明\n- 不會封、但有差異對待\n\n### Suno / Udio 法律\n被各大唱片公司告（2024+）。\n解決中。\n\n## 工作流程\n\n### Indie 個人創作\n1. Suno 生 5-10 個 demo\n2. 挑最好的\n3. 自己重錄 vocal（更個人化）\n4. 後製（混音）\n5. 上 Spotify\n\n### 接案 BGM\n1. 客戶需求（場景 / 情緒）\n2. Suno 生 5-10 個 candidate\n3. 客戶選\n4. 微調（lyrics / structure）\n5. 交付（WAV / MP3 + 商業授權聲明）\n\n## 配音 / 旁白\n\n### ElevenLabs（最熱門）\n- 訓練自己聲音\n- 多語言\n- $5-330/月\n\n### OpenAI TTS\n- 6 種聲音\n- 便宜\n\n### Murf\n- 商業 voiceover\n- 多 accent\n\n## 心法\n- AI 音樂仍是「素材」、不是「藝術」\n- 完整作品要人類後製\n- 商業使用看授權\n- 個人風格仍重要\n- 第一個月不要追求完美\n\n## 學習資源\n- Suno YouTube\n- AI Music Generator subreddit\n- The Verge / AI music news\n\n**☕ 用人話講**\n\nAI 音樂生成工具——Suno / Udio，2024+ 改變音樂創作。**一句話記住**：像不會樂器也能作曲——打字描述風格跟歌詞，就生出一首完整的歌。\n",
+      "content": "## AI 音樂生成工具\n\n### 什麼是 AI 音樂生成？\n\n想像你有個全能的樂手朋友——會作詞、會編曲、會唱歌、會混音。你只需要告訴他「我想要一首咖啡館氛圍的 lo-fi 歌，歌詞講雨夜的台北」，他就能在幾秒鐘內給你一首完整、可用的歌曲。這就是 AI 音樂生成工具在做的事。\n\n這類工具用「深度學習（Deep Learning）—— 電腦透過大量歌曲學會作曲規則」的方式，讓你不必懂音樂理論、不必買昂貴的樂器、不必坐在錄音棚裡花好幾小時，就能產出有商業價值的音樂內容。對於內容創作者、獨立遊戲開發者、小店家或想額外收入的人來說，這是個遊戲規則改變者。\n\n---\n\n## 主流工具對比\n\n### Suno（市場最熱門、最成熟）\n\n**核心特色**：Text-to-Song（文字轉完整歌曲）—— 一句話描述，就產出歌詞、旋律、伴奏、人聲演唱全部。\n\n**怎麼用？**\n\nSuno 有兩個主要模式：\n\n1. **Custom Mode（自訂模式）** —— 你寫歌詞跟風格描述\n   \n   你給的材料：\n   - 歌詞（Verse、Chorus、Bridge 這樣分段）\n   - 風格標籤（例如「bossa nova、lo-fi、女性嗓音、溫暖咖啡館氛圍、爵士鼓」）\n   \n   Suno 產出：2-4 分鐘完整歌曲、有真人感的演唱、編排完整的伴奏。\n\n   範例：\n   ```\n   Lyrics:\n   [Verse 1]\n   台北的雨下不停、捷運上滑著手機\n   誰的訊息打字打到一半、又默默刪掉了\n   \n   [Chorus]\n   給我一杯拿鐵、讓我撐過這個夜\n   今晚的霓虹太美、卻只能一個人看\n   \n   [Verse 2]\n   手機螢幕反射出疲倦的眼\n   \n   Style: bossa nova, lo-fi, female vocal, warm coffee shop vibe, soft jazz drums, 120 BPM\n   ```\n\n2. **Quick Mode（快速模式）** —— 你只說概念，AI 自動寫詞編曲\n   \n   你給的材料：一句話描述\n   ```\n   A chill lo-fi song about coffee and rainy mornings in an Asian city\n   ```\n   Suno 自動生出歌詞、曲調、編排——整個完成品。快但你對細節掌控少。\n\n**免費額度與付費**：\n- 免費用戶：50 credits / 天（每首歌耗 10 credits，月約可生 150 首）\n- Suno Pro：$8/月（300 credits/天、優先生成、商業使用權）\n- Suno Premier：$24/月（無限生成、商業使用、優先排隊）\n\n**誰該用？** 想做完整、可發行歌曲的人。成品品質最穩定。\n\n---\n\n### Udio（品質微優、更多控制）\n\n類似 Suno 的概念，但稍微更細緻。很多用戶說它的「聲線自然度」略優於 Suno，特別是人聲部分。\n\n**差異**：\n- 免費額度相對大方\n- 可調整更多參數（例如情感強度、速度細調）\n- 生成速度稍慢\n\n**適合對象**：對音樂品質有高要求、願意多花時間調參數的人。\n\n---\n\n### Mubert（背景音樂、Loop 專家）\n\n**用途不同**：不是做「一首可發行的完整歌」，而是做「無限循環的背景音樂」。\n\n**典型場景**：\n- YouTube 長影片背景樂\n- Podcast 過場音樂\n- 遊戲大廳音樂\n- 直播時的環境音\n\n**特色**：\n- 訂閱制（一般 $15-50/月）\n- 可做 10 秒到 10 分鐘無限 loop\n- 風格多樣（ambient、electronic、jazz 等）\n- 不太適合「發行為獨立歌曲」\n\n---\n\n### AIVA（古典、電影配樂專家）\n\n如果你需要「高級感的背景樂」，AIVA 特別擅長。\n\n**強項**：\n- 古典樂風格（弦樂、鋼琴為主）\n- 電影預告片、紀錄片配樂\n- 專業級音色庫\n\n**缺點**：比較不適合做「流行歌」。\n\n**適合**：接案做影片配樂、影視製作。\n\n---\n\n### MusicGen（Meta 開源、進階用戶）\n\nMeta（臉書母公司）開發的開源音樂模型。\n\n**核心優勢**：完全免費、可在自己電腦本機跑、沒有生成次數限制。\n\n**缺點**：需要 Python 程式碼能力、音質不如商業工具、生成速度慢。\n\n**適合**：想玩技術、有程式背景、不在乎速度的人。\n\n---\n\n### Riffusion、Splash Pro\n\n這些都是「小眾玩家用」的工具——生態不完整、更新不頻繁、變現路徑不清。先別碰。\n\n---\n\n## Suno 實戰工作流\n\n### 你是獨立創作者\n\n**步驟**：\n\n1. **概念釐清** —— 想清楚「這首歌的情緒、風格、對象聽眾是誰」\n   \n   範例想法：「給年輕上班族聽的、雨夜都市感 lo-fi、帶點悲傷但溫暖、大概 100 BPM」\n\n2. **寫歌詞 + 描述風格** —— 用 Custom Mode\n   \n   花 15-30 分鐘寫好核心 Verse 和 Chorus，列出具體的風格標籤（樂器、速度、情感、語言）。\n\n3. **一次生 5-10 個 demo** —— 不要只生 1 個\n   \n   同樣的歌詞、描述，按「generate」5 次，會得到 5 個不同的編排、唱腔。這很重要——因為 AI 的多樣性來自「隨機性」。\n\n4. **挑最滿意的** —— 下載 MP3\n   \n   通常 5 個裡有 2-3 個「哇，這個不錯」。\n\n5. **自己重錄人聲**（可選但建議）\n   \n   用手機錄音或簡單麥克風，唱一遍歌詞（跟著原版 AI 唱的拍子）。這樣：\n   - 加入你個人的風格、感情\n   - 降低「純 AI 生成」的痕跡\n   - 聽眾更有連結感\n\n6. **後製混音** —— 用免費工具如 Audacity 或 Garage Band\n   \n   把 AI 版本跟你的人聲混在一起、調音量、加 fade in/out。\n\n7. **上傳 Spotify / Apple Music** —— 用 DistroKid（$22/年）\n   \n   DistroKid 會幫你把音樂發到全球 50+ 平台。\n\n---\n\n### 你是接案做 BGM\n\n**客戶需求**：餐廳想要「輕鬆、有氛圍的背景音樂」。\n\n**你的做法**：\n\n1. **客戶溝通** —— 問清楚\n   \n   「你們餐廳風格是什麼？目標客群？想要什麼情緒？有沒有喜歡的參考歌曲？」\n   \n   記錄下來：例如「老洋房咖啡館、30-50 歲文青、溫暖懷舊感、參考類似戰地之音《Café Del Mar》」\n\n2. **生 5-10 個 candidate** —— 各種組合試試\n   \n   範例：\n   ```\n   A. jazz lounge, soft piano, bossa nova, 1950s warm vibe\n   B. indie folk, acoustic guitar, nostalgic coffee shop, vintage\n   C. ambient electronic, warm pad, 溫暖咖啡館，無歌詞\n   ```\n\n3. **讓客戶選** —— 給他們試聽連結\n   \n   「我準備了 5 個方向，聽聽哪個最像你們要的？」\n\n4. **微調** —— 根據反饋修改\n   \n   「你們想更 chill 一點，我重新調參數、長度改 3 分鐘 loop」再生一次。\n\n5. **交付檔案 + 授權文件**\n   \n   給客戶：\n   - 高品質 WAV 檔（專業音質）\n   - 商業使用授權聲明（「本音樂由 AI 生成，使用者 XXX 擁有商業使用權」）\n   - 使用範圍說明（例如「限用於該餐廳內放音」）\n\n6. **收款** —— NT$ 5,000-30,000 / 首，看複雜度\n   \n   簡單 BGM：NT$ 5-10k\n   複雜、需多輪修改：NT$ 15-30k\n\n---\n\n## 商業使用權必知\n\n### 免費版 vs Pro 版\n\n| 用途 | 免費 Suno | Pro/Premier |\n|------|----------|-----------|\n| 個人創作 | ✅ 可以 | ✅ 可以 |\n| 內容創作（YouTube、Podcast） | ❌ 不建議 | ✅ 可以 |\n| 販售給客戶 | ❌ 不行 | ✅ 可以 |\n| Spotify 上架販售 | ❌",
       "tip": {
         "type": "milestone",
         "text": "AI 音樂門檻為 0、但商業仍要授權 + 風格。"
@@ -188,13 +188,36 @@
           "level": 2,
           "text": "學習資源"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，如果你想靠 AI 音樂生成工具賺取最穩定的月收入，應該選擇下列哪種變現方式？",
+        "options": [
+          {
+            "value": "a",
+            "label": "上傳到 Spotify / Apple Music，靠串流次數賺廣告分潤"
+          },
+          {
+            "value": "b",
+            "label": "接餐廳或店家的客製背景音樂案，月接 5-10 單"
+          },
+          {
+            "value": "c",
+            "label": "在 TikTok / IG 發佈短影音音樂，等著紅起來"
+          },
+          {
+            "value": "d",
+            "label": "用 Suno 免費版生成歌曲，直接上傳到所有平台"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確指出客製背景音樂可月接 5-10 單、收入 NT$ 30-100k，是最穩定的；而 Spotify 月收入「低」（每千次 streams $4），TikTok 靠運氣，免費版無商業授權。"
+      }
     },
     {
       "title": "AI 音樂接案 + 變現",
       "oneLineSummary": "會用 AI 工具 = 月入 NT$ 30-100k",
       "analogy": "小眾領域、競爭少、需求多。",
-      "content": "## 接案類型\n\n### 1. YouTuber BGM\n- 1 個 channel 需 5-10 首歌\n- NT$ 1-5k 一首\n- 月可接 20-30 首\n\n### 2. Podcast 配樂\n- Intro / outro / interlude\n- NT$ 3-10k 一套\n\n### 3. 餐廳 / 店家 BGM\n- 客製品牌歌\n- NT$ 5-30k 一首\n\n### 4. 短影音音樂\n- TikTok / IG 用\n- NT$ 1-5k 一首\n\n### 5. 廣告 jingle\n- 30-60 秒\n- NT$ 10-50k\n\n### 6. 遊戲音樂\n- BGM + SFX\n- NT$ 50-300k 一個 project\n\n### 7. 個人化（生日 / 婚禮）\n- 客製歌\n- NT$ 3-15k 一首\n\n### 8. AI 音樂教學\n- 課程 / 顧問\n- NT$ 3-10k/hr\n\n## 工作流程\n\n### 客戶溝通\n- 場景 / 情緒\n- 長度\n- 樂器偏好\n- 參考曲\n\n### 生成\n- Suno / Udio 跑 10-20 candidate\n- 不要直接給客戶看 raw\n\n### 挑選\n- 你先挑 3-5 個最好的\n- 給客戶選\n\n### 微調\n- 改 lyrics\n- 改 structure\n- 客戶 feedback\n\n### 後製\n- Logic / Ableton 混音\n- 加 fade in/out\n- Master\n\n### 交付\n- WAV + MP3\n- 商業授權聲明\n- 多版本（30s / 60s / full）\n\n## 報價策略\n\n### 簡單（30 秒 BGM）\n- NT$ 1-3k\n- 1-2 小時完成\n\n### 中等（完整歌曲）\n- NT$ 5-15k\n- 半天完成\n\n### 高端（品牌歌）\n- NT$ 30-100k\n- 多次修改、品牌策略討論\n\n### 訂閱（YouTuber 月費）\n- NT$ 3-10k/月\n- 月給 5-10 首\n\n## 找客戶\n\n### 1. 自己作品集\n- Spotify / SoundCloud 放\n- YT 自己頻道\n- IG / TikTok 分享\n\n### 2. 社群\n- YouTuber 社團\n- Podcast 社團\n- 餐飲社團\n\n### 3. 平台\n- Fiverr（AI music gig）\n- Upwork\n- 接案網\n\n### 4. 直接 outreach\n- Email 中型 YouTuber\n- 提供 3 個 free sample\n\n## SaaS 化（進階）\n\n### 工具\n- 「為餐廳客製音樂」SaaS\n- 月費 NT$ 500-3000/客戶\n- 一個月 100 客戶 = NT$ 50-300k 被動\n\n### 範例\n- Beatoven.ai（已存在）\n- Boomy（個人音樂平台）\n\n## 學新技能（加值）\n\n### 音樂理論\n- Coursera：Berklee 課\n- 8-10 hr 基本理論\n- 改 prompt 更精準\n\n### DAW（Digital Audio Workstation）\n- Logic Pro（Mac，$199 一次）\n- Ableton（$99-749）\n- GarageBand（免費）\n\n### 混音 + Master\n- 5-10 hr 學基礎\n- 加 reverb / EQ / compression\n- 質感差很多\n\n### 聲音設計\n- 影片配 sound effect\n- 加分\n\n## 心法\n- 不要當「Suno 操作員」、當「音樂顧問」\n- 客戶要的是「適合的歌」、不是「最好的歌」\n- 月費維護 = 穩定收入\n- 累積 portfolio\n- 一年累積 100 首 portfolio = 自然有客戶來\n\n## 警告\n\n### 法律灰色\n- AI 音樂版權不明\n- 大公司可能告\n- 商業使用建議 Suno Pro+\n\n### 對手\n- AI 工具門檻低、競爭增加\n- 你的優勢是「審美 + 客戶溝通」\n\n### 別當主收入\n- 副業可、主業有風險\n- 同時做 Web / 設計 / 多元\n\n## 案例\n\n### Indie 個人\n- 月接 10-20 BGM = NT$ 30k 副業\n- YouTuber 客戶月費 NT$ 3-5k × 10 = NT$ 30-50k 被動\n\n### Agency\n- 多人團隊\n- 大客戶（餐廳連鎖 / 品牌）\n- 月入 NT$ 100-500k\n\n## 終極組合\n- AI 圖（Midjourney）\n- AI 影片（Runway）\n- AI 音樂（Suno）\n- 接案：「完整 30 秒廣告片」NT$ 10-30k\n- 1 個人 = 1 個 creative agency\n\n**☕ 用人話講**\n\nAI 音樂接案 + 變現——**會用工具 = 月入 NT$ 3-10 萬**。**一句話記住**：像賣配樂服務——影片、廣告、Podcast 都需要音樂，會 AI 生樂就有源源不絕的案子。\n",
+      "content": "## AI 音樂接案 + 變現\n\nAI 音樂工具（Suno、Udio、ElevenLabs）已經讓「做音樂」這件事民主化了。你不用是作曲家、不用會樂器，只要會溝通、有品味、懂怎麼賣，就能靠 AI 音樂接案賺錢。這一課教你怎麼把 AI 音樂變成真金白銀。\n\n---\n\n## 接案類型 × 市場現況\n\n### 1. YouTuber BGM 背景音樂\n**最常見、進入門檻最低的接案**\n\n一個中型 YouTuber（10-50 萬訂閱）每月發 5-10 支影片，每支都需要 1-3 首不同的背景音樂——Intro、中段、Outro。你可以：\n- 一次性報價：NT$ 1-5k 一首（取決於頻道規模、使用期限）\n- 月費訂閱：NT$ 3-10k/月，包 5-10 首曲子、無限修改、有新影片主題直接出新歌\n\n**客戶找法**：找 50k-100k 訂閱的 YouTuber（不會太小，也不會要求完美），直接私訊說「我可以幫你做 3 首免費示範歌」。有 portfolio 後比較好談。\n\n### 2. Podcast 配樂組合\n**每集 Podcast 通常需要 3-5 段配樂**\n\n- Intro / Outro：20-30 秒，定調感\n- Interlude（段落間）：10-15 秒\n- Background ambience（說話時的低調襯底）：可循環的 30-60 秒\n\n報價：NT$ 3-10k 一整套（5-7 首曲子）。Podcast 圈子很需要這個，因為專業錄音棚太貴。\n\n### 3. 餐廳 / 店家品牌歌曲\n**最高單價、最有粘著力的接案**\n\n咖啡廳、餐廳、服飾店都想要「自己的音樂」——用來營造氛圍、甚至當 Brand Identity。你可以客製：\n- 店名融入歌詞\n- 特定風格（ambient、lo-fi、爵士等）\n- 長度 2-3 分鐘、可無限循環\n\n報價：NT$ 5-30k 一首。高端的話（涉及品牌策略、多次修改），可談到 NT$ 50k。然後月費維護（新季節新歌）= 穩定被動收入。\n\n### 4. 短影音音樂\n**TikTok / Instagram Reels / YouTube Shorts**\n\n短、有記憶點、卡得準。報價低（NT$ 1-5k），但量大——一個迷你創意機構一個月可以接 20-30 首。\n\n### 5. 廣告 Jingle\n**最專業的聲音工程活**\n\n30-60 秒的廣告主視覺（美妝、飲料、電信），需要卡得極準的配樂。這涉及：\n- 時間分秒不差\n- 品牌調性理解\n- 可能的後期修改\n\n報價：NT$ 10-50k（看客戶規模）。中小品牌 NT$ 10-15k，大品牌新產品發布 NT$ 30-50k。\n\n### 6. 遊戲音樂\n**最複雜、也最好賺的**\n\nIndie game 開發者需要：\n- Menu / Lobby 背景音\n- In-game BGM（戰鬥、探索、Boss 場景）\n- Game Over / Victory 音效\n\n一個完整的小遊戲 project（6-8 首曲子 + 20-30 個 SFX），報價 NT$ 50-300k。Upwork 和 Itch.io 論壇都有這種案子。\n\n### 7. 個人化音樂\n**情感溫度最高、單價中等**\n\n- 生日驚喜歌（某人名字融入歌詞）\n- 婚禮主題曲或入場曲\n- 紀念日客製歌\n\n報價：NT$ 3-15k。通常是朋友轉介，或在 Fiverr 上接。\n\n### 8. AI 音樂教學 / 諮詢\n**自己成為專家**\n\n- 線上課程（「3 天學會用 Suno 接案」）\n- 1 對 1 顧問（NT$ 3-10k/小時）\n- YouTube 教學頻道 + 置入廣告\n\n---\n\n## 實戰工作流程——從客戶溝通到交付\n\n### Step 1：詳細溝通（最重要）\n\n不要讓客戶說「隨便來點配樂」。要問清楚：\n\n**場景 / 使用環境**：YouTube 影片、餐廳、廣告？（決定整個音樂調性）\n\n**情緒 / 感覺**：明亮活潑？沉靜冥想？緊張刺激？（用例如「像 Apple 廣告一樣簡潔」來舉例）\n\n**時長**：精確到秒（30 秒 / 60 秒 / 2 分 30 秒）\n\n**樂器偏好**：「有鋼琴嗎？」「想要真實樂器還是合成器？」「有人聲嗎？」\n\n**參考曲**：「做得像這首歌的感覺」（給 Spotify 連結），這 10 倍重要\n\n**節奏 BPM**：如果客戶知道就問，不知道就靠經驗推（餐廳通常 90-110 BPM、廣告 120+ BPM）\n\n### Step 2：生成多個候選版本\n\n用 Suno Pro 或 Udio，**不要只生一個**。跑 10-20 個不同的版本：\n- 不同樂器組合\n- 稍微變化 prompt\n- 記住最好的 seed（參數）方便後續修改\n\n**重點**：永遠不要直接把原始輸出給客戶看。先自己篩選。\n\n### Step 3：你先挑選，再給客戶選\n\n你挑出 3-5 個最好的版本給客戶選（「我覺得這三個最符合你的需求」），而不是給他所有 20 個亂七八糟的版本——這樣顯得專業，也不會讓客戶迷茫。\n\n### Step 4：微調迴圈\n\n客戶通常會要求改：\n- 歌詞修改（如果有人聲）\n- 結構調整（「前 20 秒太安靜」「結尾太急」）\n- 音色微調（「想要更多吉他」）\n\n用 Suno 的 Remix 功能或重新生成。一般 2-3 輪修改就定稿。\n\n### Step 5：後製 + 專業化\n\n**這步決定你能不能從「我會用 AI」升級到「我是音樂製作人」**\n\n用 Logic Pro、Ableton Live，或免費的 GarageBand：\n- **Fade in / out**：避免生硬突兀\n- **EQ**：把刺耳的頻率削掉、加溫暖感\n- **Compression**：讓音量更均勻專業\n- **Reverb**：加一點空間感（特別是餐廳音樂）\n- **Master 限制器**：防止破音、確保音量不超標\n\n15 分鐘的後製能把「AI 原生」聽起來變成「正式製作」。\n\n### Step 6：打包交付\n\n客戶收到：\n- **WAV 格式**（無損質量，給 YouTube / 專業用）\n- **MP3 320 kbps**（通用播放）\n- **多版本**：30 秒、60 秒、完整版（廣告用得到）\n- **使用授權說明**：「此音樂可用於你的頻道 / 商業、不可販售給第三方」（保護自己）\n\n---\n\n## 報價策略——怎麼定價才合理\n\n### 簡單檔（30 秒 BGM）\n**NT$ 1-3k | 完成時間 1-2 小時**\n\n例如：TikTok 背景音樂、簡單短片 intro。客戶通常是小型創作者。\n\n### 中等檔（完整歌曲）\n**NT$ 5-15k | 完成時間半天**\n\n例如：YouTuber 月份合約（給 3-5 首）、Podcast 配樂組合。涉及 1-2 輪修改。\n\n### 高端檔（品牌客製歌）\n**NT$ 30-100k | 完成時間 3-7 天**\n\n例如：餐廳品牌歌、廣告 jingle、遊戲 project。涉及品牌策略討論、多次修改、高層核准。客戶通常是公司、不是個人。\n\n### 月費訂閱（持續性收入，最穩定）\n**NT$ 3-10k/月**\n\n例如：YouTuber 月費合約（每月 5-10 首新歌）。一旦簽下 5-10 個月費客戶，就有 NT$ 15-100k 的穩定底線收入。\n\n---\n\n## 找客戶的 4 種方法\n\n### 1. 自己的作品集\n**Build in public：讓別人看到你的作品**\n\n- 在 Spotify / SoundCloud 開帳號、上傳 20-30 首你做的歌（即使是自己的 portfolio 曲）\n- 開 YouTube 頻道示範「AI 音樂接案案例」（保護隱私的情況下）\n- Instagram / TikTok 分享製作過程、Reels 秀配樂效果\n- 個人網站 1-2 分鐘 demo reel（「看我怎麼幫餐廳做音樂」）\n\n### 2. 社群 + 社團\n**找到需要的人聚集的地方**\n\n- YouTuber 交流社團（Facebook / Discord）\n- Podcast 製作社團\n- 餐飲創業社團\n- 遊戲開",
       "tip": {
         "type": "milestone",
         "text": "AI 音樂 + 影片 + 圖 = 一人 creative agency。"
@@ -380,13 +403,36 @@
           "level": 2,
           "text": "終極組合"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，為什麼「只會操作 Suno」無法成為好的 AI 音樂接案者？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 Suno 的功能不夠強大，無法生成商業等級的音樂"
+          },
+          {
+            "value": "b",
+            "label": "因為客戶真正需要的是「適合的歌」，而不是「最好的歌」，需要審美判斷和客戶溝通能力"
+          },
+          {
+            "value": "c",
+            "label": "因為 Suno 會侵犯音樂版權，不能用來做商業接案"
+          },
+          {
+            "value": "d",
+            "label": "因為沒有學音樂理論就無法使用 Suno 生成音樂"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調「不要當『Suno 操作員』、當『音樂顧問』」，核心是你的優勢來自「審美 + 客戶溝通」，而非單純的工具操作能力。只會按按鈕無法區隔競爭對手。"
+      }
     },
     {
       "title": "Suno + Udio 完整心法",
       "oneLineSummary": "2024+ AI 音樂神器",
       "analogy": "不會樂器也能做完整歌。",
-      "content": "## Suno\n\n### 是什麼\n- Text-to-song\n- 歌詞 + 旋律 + 演唱\n- 免費 50 credits / 天\n- Pro $8 / Premier $24\n\n### Custom Mode\n```\nLyrics:\n[Verse 1]\n台北的雨下不停\n捷運上滑著手機\n\n[Chorus]\n給我一杯拿鐵\n讓我撐過這個夜\n\nStyle: bossa nova, lo-fi, female vocal, warm jazz\n```\n\n→ 生 2-4 分鐘完整歌、有 vocal。\n\n### Quick Mode\n```\nA chill lo-fi song about coffee and rainy mornings\n```\nAI 自動寫詞 + 編曲。\n\n### 商業使用\n- Suno Pro：可商業\n- 免費：個人 only\n\n## Udio\n\n類 Suno、品質微優、更多 fine-tune。\n\n## Mubert\n\n背景音樂 / loop、訂閱、適合 YT / Podcast。\n\n## AIVA\n\n古典 / 電影配樂、適合影視。\n\n## 音樂類型\n\n### Lo-fi / Chill\nIG / YT 背景、易聽易賺。\n\n### Pop / Indie\n完整歌曲、流量平台。\n\n### 廣告 jingle\n短洗腦、商業需求。\n\n### 遊戲音樂\nLoop 版、Mubert。\n\n## 變現\n\n### 1. Spotify / Apple Music\n- 上 distrokid（$22/年）\n- 月收：低（每千次 streams $4）\n\n### 2. YouTube\n- AI 音樂 + 視覺 = YT 內容\n- 廣告分潤\n\n### 3. Stock Music\n- 賣 BGM\n- Pond5 / Envato\n\n### 4. 客製\n- 餐廳 / 店家 BGM\n- NT$ 5-30k 一首\n\n### 5. 廣告 jingle\n- NT$ 10-50k\n\n### 6. 短影音音樂\n- TikTok / IG 用\n- 紅了帶來其他案\n\n## 倫理 + 法律\n\n### 著作權\n- AI 音樂版權仍灰色（2026）\n- 美國：純 AI 無 copyright\n- 商業用：付費 plan 保險\n\n### 大唱片公司告（2024+）\n- 仍訴訟中\n- 商業用看 Suno 條款\n\n## 工作流\n\n### 個人創作\n1. Suno 生 5-10 demo\n2. 挑最好\n3. 自己重錄 vocal（更個人）\n4. 後製混音\n5. 上 Spotify\n\n### 接案 BGM\n1. 客戶需求（場景 / 情緒）\n2. Suno 生 5-10 candidate\n3. 客戶選\n4. 微調\n5. 交付（WAV + MP3 + 商業授權）\n\n## 心法\n- AI 音樂仍是「素材」\n- 完整作品要人類後製\n- 商業用看授權\n- 個人風格仍重要\n\n**☕ 用人話講**\n\nSuno + Udio 完整心法——2024+ AI 音樂神器。**一句話記住**：把 Suno / Udio 練熟——描述風格、丟歌詞就出歌，這是 AI 音樂變現的核心工具。\n",
+      "content": "## Suno + Udio 完整心法\n\n### Suno 是什麼？為什麼紅？\n\nSuno 是一個「文字轉完整歌曲」的 AI 工具 —— 只要你寫幾句歌詞 + 告訴它風格，它就能幫你自動編曲、安排演唱，生出 2-4 分鐘有完整人聲的歌。\n\n想像你是作曲家，但沒有樂手、沒有錄音棚。Suno 就像你的「虛擬樂隊」，5 秒內交付成品。\n\n**免費方案 vs 付費**：\n- 免費帳號：每天 50 credits（能生 5-10 首歌），但作品只能個人用\n- Suno Pro（$8／月）：每月 500 credits，可商業使用\n- Suno Premier（$24／月）：每月 10,000 credits，優先隊列、商業授權最完整\n\n關鍵認知：**免費版生的歌，你不能上傳到 Spotify、不能做商業配樂、不能賣錢**。想賺錢第一步就是升 Pro。\n\n### 兩大玩法：Custom Mode vs Quick Mode\n\n**Custom Mode —— 給詞 + 風格**\n\n你自己寫歌詞（中文、英文都行），再用「自然語言」告訴 Suno 你要什麼風格，它會嚴格按你的設定編曲。\n\n具體長這樣：\n\n```\nLyrics:\n[Verse 1]\n台北的雨下不停\n捷運上滑著手機\n[Verse 2]\n咖啡冷了沒人喝\n明天又是忙碌日\n\n[Chorus]\n給我一杯拿鐵\n讓我撐過這個夜\n生活像個無限迴圈\n但至少還有你在\n\n[Outro]\n台北的雨一直下\n陪著我走過這一夜\n\nStyle: bossa nova, lo-fi, female vocal, warm jazz, 80s vibe, acoustic guitar, soft drums\n```\n\nSuno 會根據你的詞和風格說明，自動生出 2-4 分鐘的完整歌。**關鍵是寫好歌詞結構** —— 要有 Verse（主歌）、Chorus（副歌）、Bridge（橋段），這樣歌曲邏輯才會完整，不會亂。\n\n**Quick Mode —— 只說概念，AI 全包**\n\n你只需要寫一句話描述：\n\n```\nA chill lo-fi song about coffee and rainy mornings in Taipei, \nacoustic vibes, female vocal, sad but hopeful\n```\n\nSuno 自動幫你「編歌詞 + 寫旋律 + 配樂」。速度更快，但你對最終成品的控制力就小。適合：\n- 急著生 demo 的時候\n- 找靈感卡住的時候\n- 不知道從何下手的初心者\n\n**實戰選法**：\n- 有自己的創作想法 → Custom Mode\n- 只想快速試 idea → Quick Mode\n\n### Udio：Suno 的強敵\n\nUdio 也是「文字到歌」的 AI，品質上「微微優於 Suno」（特別是人聲自然度），UI 也更直覺。同樣免費有額度限制、付費解鎖商業授權。\n\n**實戰建議**：兩個都裝、兩個都試。同一個 idea 分別用 Suno 和 Udio 生 3-5 版本，再挑最好的。因為 AI 模型每次輸出都不同，所以「多生幾版」永遠是提高滿意度的關鍵。\n\n### 其他 AI 音樂工具快速認識\n\n- **Mubert**：專做「無限 loop 背景音樂」，適合 YouTube、Podcast、店面 BGM，訂閱制\n- **AIVA**：古典、電影配樂風格，如果你在做影視項目會很適合\n- **這些都不是「生完整歌詞歌曲」的工具**，是「素材生成器」\n\n### 怎麼描述風格不會踩雷？\n\n最常見的坑：寫得太模糊 AI 就生出亂七八糟的東西。\n\n**好的風格描述**：\n```\nlo-fi hip-hop, chill, female vocal, acoustic piano, light drums, \nsad but cozy, like studying late at night, 90 BPM\n```\n\n**爛的風格描述**：\n```\n好聽的歌、悲傷的\n```\n\n關鍵詞分類：\n- **音樂類型**：lo-fi、bossa nova、indie pop、trap、電子\n- **人聲**：female vocal、male vocal、falsetto、rap、choir\n- **樂器**：acoustic guitar、piano、synthesizer、drums、strings\n- **情緒**：chill、sad、energetic、hopeful、dark、romantic\n- **節奏**：slow、medium、fast、70 BPM\n- **年代感**：80s vibe、vintage、modern、retro\n\n**越具體越好**。「暖暖的、雨天、咖啡廳、女聲、木吉他」遠好過「溫柔」。\n\n### 商業使用：授權問題\n\n**法律現況（2024-2025）**：\n- 美國判例：純 AI 生的東西「無法獲得版權保護」（人類必須有創意貢獻）\n- 大唱片公司（環球、索尼等）正起訴 Suno / Udio，案件仍在進行\n- **你安不安全？** 取決於你用的是免費還是付費、Suno / Udio 的條款如何演變\n\n**實戰保險做法**：\n1. 商業用就買 Pro / Premier，等於付費換「授權保護傘」\n2. 客戶接案時簽好合約，寫清楚「你用 AI 生的，但已獲得商業授權」\n3. 關注 Suno / Udio 官方更新，法律這塊每季在變\n\n**不要在免費版生歌、上傳 Spotify 賣錢**，風險太高。\n\n### 真實工作流：個人創作 vs 客製接案\n\n**Case 1：個人創作者路線**\n1. 每天用 Suno / Udio 生 5-10 個 demo（不同風格）\n2. 挑最滿意的 3-5 首\n3. **重點來了**：下載原始檔（WAV），自己用 Audacity / Logic Pro 重新錄人聲 或 混音調整\n4. 上傳到 DistroKid（$22／年），自動發布到 Spotify、Apple Music、YouTube Music\n5. 等待流量和版稅（單位：每千次 streams 約 $4，很低，但如果有 10 萬人聽就有 $400）\n\n**Case 2：客製接案（餐廳、品牌 BGM）**\n1. 客戶說需求：「我們餐廳要 lo-fi BGM，店裡很文青，平均客人年齡 25-35」\n2. 你理解需求 → 生 5-10 個版本讓客戶選\n3. 客戶挑了 2 首 → 你微調（可能加點混音效果、改一個樂器）\n4. 交付：MP3 + WAV + 商業授權證明\n5. 收費：台灣行情 NT$ 5,000-30,000 一首（看知名度和修改次數）\n\n**Case 3：廣告 Jingle（短、洗腦）**\n1. 客戶：「我們新產品上市，要 15 秒洗腦廣告配樂」\n2. 你用 Suno 生 10+ 個 15 秒版本（簡短、重複副歌）\n3. 客戶選 → 調整\n4. 交付\n5. 收費：台灣行情 NT$ 10,000-50,000（看媒體投放規模）\n\n**共通點**：都不是直接交付 Suno 的原始輸出，而是「基於 AI 的版本，加上自己的後製 / 混音 / 人聲」。這樣才能：\n- 加上個人風格（不會和別人的 AI 歌一樣）\n- 提高品質感（客戶才願意給錢）\n- 法律上更安全（有人類創意在）\n\n### 變現管道全景\n\n**1. 串流平台分潤（Spotify / Apple Music）**\n- 需要 DistroKid 或 CD Baby（代理商）\n- 優點：被動收入、全球傳播\n- 缺點：每千次 streams 只有 $4，要 25 萬人聽才賺 $1000\n- 適合：樂觀派、想累積粉絲\n\n**2. YouTube 內容變現**\n- 自己做「AI 音樂 + 視覺效果」上傳\n- 靠廣告分潤 + 粉絲贊助\n- 適合：有製作影片能力的人\n\n**3. Stock Music 平台（Pond5、Envato、AudioJungle）**\n- 上傳 BGM 讓買家購買授權\n- 一次上傳、重複賺取版稅\n- 適合：量大、工業化流程\n\n**4. 客製 BGM 接案（最賺）**\n- 直接談案子：餐廳、咖啡廳、診所、品牌\n- 一首 NT$ 5,000-30,000\n- 適合：懂營銷、有人脈的人\n\n**5. 廣告 Jingle**\n- 一次性或系列合作\n- 一首 NT$ 10,000-50,000\n- 適合：懂品牌、會找案源的人\n\n**6. 短影音音樂庫**\n- 生一堆風格化的短歌（15-30 秒）\n- TikTok / Instagram 的創作者買授權\n- 量大、單價低、但容易累積\n\n**老實話**：流媒體分潤很慢，真正賺錢的是「客製接案」和「Jingle」。前者月收 NT$ 20,000-50,000 起",
       "tip": {
         "type": "milestone",
         "text": "Suno + 後製 = Indie 音樂神器。"
@@ -508,13 +554,36 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，如果你想透過 AI 音樂工具來商業變現，最重要的認知是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "AI 直接生成的歌曲就可以直接上架販售，不需要任何人類後製"
+          },
+          {
+            "value": "b",
+            "label": "AI 音樂只是素材，完整作品還是需要人類來後製，商業用也要確認授權方案"
+          },
+          {
+            "value": "c",
+            "label": "Suno 和 Udio 功能完全相同，選哪個都一樣"
+          },
+          {
+            "value": "d",
+            "label": "免費 plan 和付費 plan 的商業權利是一樣的，只是功能差異而已"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程核心心法就是強調『AI 音樂仍是素材』和『完整作品要人類後製』，同時商業用必須確認授權（免費 only 個人、Pro 才可商業）。其他選項都是誤解或與課程內容相悖。"
+      }
     },
     {
       "title": "AI 音樂進階：ElevenLabs + 配音",
       "oneLineSummary": "不只 BGM、還有 voice over / 多語",
       "analogy": "Indie content 全套。",
-      "content": "## ElevenLabs\n\n### 是什麼\n- AI 配音 / TTS\n- 訓練你自己聲音\n- 多語言（含中文）\n- $5-330/月\n\n### Voice Cloning\n1. 錄 1-3 分鐘自己念稿\n2. 上傳 ElevenLabs\n3. 取得「我的聲音」\n4. 輸入文字 → 用你聲音念\n\n### 多語言\n你只會中文、但 ElevenLabs 能用你的聲音念英 / 日 / 韓。\n\n### Pro plan\n- 細調 stability / similarity\n- 多人物模型\n- 商業使用\n\n## OpenAI TTS\n- 6 種聲音\n- 便宜（$15/百萬字元）\n- 中文 OK\n\n## Murf\n\n商業 voiceover、多 accent、$29-79/月。\n\n## Resemble AI\n\n類似 ElevenLabs、更專業。\n\n## 應用\n\n### YouTube 影片\n- 不想露聲音 / 不想念稿\n- 用你 AI 配音\n- 自然、不像機器\n\n### Podcast\n- 一個人多角色\n- 自己配多人對話\n\n### 課程\n- 同樣 voice 跨平台一致\n- 多語言版本\n\n### 翻譯影片\n- 中文影片 → 英 / 日配音\n- ElevenLabs dubbing 直接做\n\n### 客服 IVR\n- 「歡迎來到 X、按 1...」\n\n## 倫理\n\n### 不能做\n- 假冒別人聲音\n- 詐騙電話\n- 騷擾\n- 未經同意的 voice clone\n\n### Can do\n- 你自己聲音（任何用途）\n- 商業 voice（如 ElevenLabs 內建）\n- 經同意的他人聲音\n\n## 工作流\n\n### Indie YouTuber\n1. 寫腳本（Claude）\n2. ElevenLabs 用你聲音念\n3. CapCut 加 b-roll / 字幕\n4. 發布\n\n不用真的開麥克風、可以一邊家事一邊「拍」影片。\n\n### 多語言頻道\n1. 中文腳本\n2. AI 翻譯（Claude / DeepL）\n3. ElevenLabs 多語配音\n4. 字幕同步\n5. 跨國觀眾\n\n## 訂閱配置\n\n### Lean（NT$ 200/月）\n- ElevenLabs Starter $5\n\n### Standard（NT$ 700/月）\n- ElevenLabs Creator $22\n\n### Pro（NT$ 3000/月）\n- + Suno Premier\n- + Midjourney\n- + Claude Pro\n\n## 心法\n- 你的聲音是最強 brand\n- 多語言低門檻 = 全球觀眾\n- AI 配音 + AI 影片 + AI 圖 = 一人 studio\n- 倫理仍要顧\n\n**☕ 用人話講**\n\nAI 音樂進階：ElevenLabs + 配音——**不只 BGM，還有 voice over / 多語**。**一句話記住**：像 AI 配音員——生出多語旁白、角色聲音；配樂 + 配音都包，影音內容更完整。\n",
+      "content": "## ElevenLabs + 配音：從文字到聲音的完整指南\n\n### ElevenLabs 是什麼？為什麼你需要它\n\nElevenLabs —— 一個 AI 配音 / 文字轉語音（TTS，Text-To-Speech）平台。簡單講，就是「把你寫好的文字，用 AI 念出來，而且聽起來很自然」。\n\n你可能想：「那 Google 助手不也會念稿嗎？」差別在於：\n- **Google TTS** 聽起來還是有點「機器感」、語調生硬\n- **ElevenLabs** 聲音更自然、有感情、聽起來像真人在讀\n\n而且 ElevenLabs 最強的功能是「voice cloning 聲音複製」—— 只要錄 1-3 分鐘自己講話，AI 就能學會你的聲音特色，之後輸入任何文字，都用「你的聲音」念出來。\n\n**實際場景**：你是個 YouTuber，今天要錄 10 支影片旁白。不用一個一個開麥克風錄（會累、會有環境噪音），寫好文案丟進 ElevenLabs，按一下就全自動生成、而且聽起來像你本人親自念的。\n\n---\n\n### Voice Cloning：複製你的聲音\n\n#### 怎麼做\n\n**第 1 步：錄音素材**  \n找個安靜的地方，用手機 / 電腦錄 1-3 分鐘自己講話。內容不重要，只要清晰、自然就行。比如念一段課本、新聞、或故事都可以。\n\n**第 2 步：上傳到 ElevenLabs**  \n- 登入 ElevenLabs，找到「Voice Library」或「My Voices」\n- 選「Create a new voice」\n- 上傳你的錄音檔（支援 MP3、WAV 等）\n- 給這個聲音取名（例如「我的旁白聲」）\n\n**第 3 步：AI 訓練（自動）**  \nElevenLabs 的 AI 會在幾秒到幾分鐘內分析你的聲音特色：音高、語速、口音、停頓習慣等。\n\n**第 4 步：開始用**  \n在文本輸入框貼進你想念的文案，選擇剛建立的聲音，點「Generate」—— AI 就會用「你的聲音」念出來。\n\n#### 為什麼這有用\n\n- **品牌一致性**：你所有影片 / Podcast 都是同一個聲音，觀眾聽久了會認識你的「嗓音」\n- **省時間**：寫完文案立刻有配音，不用花時間自己錄\n- **可以改稿**：改文案重新生成，不用重新錄整段\n- **多平台通用**：同樣聲音用在 YouTube、Podcast、課程、社群都可以\n\n#### 常見雷\n\n⚠️ **聲音素材品質差** —— 如果錄音有風聲、背景噪音、太多口頭禪，AI 訓練出來的聲音會帶著這些特色。建議在安靜房間、用還不錯的麥克風（甚至耳機麥也行）。\n\n⚠️ **只錄 30 秒以下** —— 太短 AI 學不夠準，效果會很生硬。至少 1 分鐘。\n\n⚠️ **用別人聲音** —— 平台明文禁止；這涉及倫理（下面會講）。\n\n---\n\n### 多語言配音：跨越語言邊界\n\nElevenLabs 最狂的是：**你只會中文，但可以用你的聲音念英文、日文、韓文等等**。\n\n#### 怎麼做\n\n1. 寫英文文案（或請 AI 翻譯）\n2. 在 ElevenLabs 選你的聲音 + 選語言「English」\n3. 生成 —— 出來的就是用你的聲音、帶著中文口音的英文配音\n\n聲音會自動適應語言的語調和節奏，不會像「生硬翻譯」。\n\n#### 實際應用\n\n假設你是個中文 YouTuber，想開拓英文市場：\n- 中文版本：中文腳本 → 你的聲音\n- 英文版本：英文腳本 → 同樣的聲音，但念英文\n\n觀眾聽起來會覺得「咦，這位 creator 會多國語言」，其實你只是寫稿 + 靠 AI。\n\n---\n\n### Pro Plan 與進階功能\n\nElevenLabs 免費版可以用，但功能有限。付費有幾個等級：\n\n| 等級 | 月費 | 主要功能 |\n|------|------|--------|\n| **Starter** | $5 | 基本 TTS、10 分鐘生成額度 |\n| **Creator** | $22 | Voice Cloning、100 分鐘額度、細調參數 |\n| **Pro** | $99 | 更多額度、多人物模型、商業使用授權 |\n\n**細調參數** —— Creator 以上能調整：\n- **Stability（穩定度）**：數字越高，聲音越一致；太高會失去變化感\n- **Similarity（相似度）**：越高越像你的原始聲音；太高可能不夠自然\n\n**多人物模型** —— Pro 可以從一個聲音樣本，生成多個不同「角色」（例如年輕女生、老爺爺、小男孩版本）。\n\n**商業授權** —— 免費版只能私人用；付費版本可以用在商業內容（YouTube Partner、Podcast 變現、課程販售等）。\n\n---\n\n### 其他配音工具快速比較\n\n#### OpenAI TTS\n- **特點**：便宜（$15/百萬字元）、集成在 ChatGPT / API 中\n- **聲音**：6 種預設聲音，不能自訂\n- **用途**：快速原型、小型專案\n- **缺點**：沒有 voice cloning\n\n#### Murf\n- **特點**：商業配音專用、多種口音（美式英文、印度英文、英式英文等）\n- **價格**：$29-79/月\n- **強項**：適合企業廣告、教育內容\n- **缺點**：中文支援較弱\n\n#### Resemble AI\n- **特點**：類似 ElevenLabs、更專業級\n- **聲音品質**：略好於 ElevenLabs（一分毫利\n- **價格**：稍貴\n- **適合**：高端專案、需要完美品質\n\n**選誰**：個人 YouTuber / Podcaster 用 **ElevenLabs**；大公司廣告用 **Murf**；要最高品質用 **Resemble AI**。\n\n---\n\n### 配音的實際應用場景\n\n#### YouTube 影片\n不想露臉、不想自己念稿？寫好文案，用 AI 配音：\n- 風景旅遊頻道：「歡迎來到台灣宜蘭...」\n- 知識科普：解釋複雜概念，語速平穩\n- 故事創作：剪輯配圖 + AI 旁白 = 完整影片\n\n#### Podcast 與多角色對話\n一個人想做 Podcast，但需要「AB 對談」的感覺？\n- 錄 3-4 種不同聲音素材\n- 分別 clone 成角色 A、B、C\n- 寫對話稿 → 分別生成不同角色的對白\n- 編輯拼接 = 多人 Podcast\n\n#### 在線課程\n課程賣給全球學生：\n- 中文版：中文配音\n- 英文版：同樣聲音念英文\n- 日文版：同樣聲音念日文\n品牌一致、學生無差別體驗。\n\n#### 影片翻譯 / 配音\n有個日本美食頻道，想翻譯成中文給台灣觀眾：\n- 日語原音軌保留\n- 加上中文配音軌\n- ElevenLabs 支援「dubbing」（直接配音，自動嘴型同步）\n\n#### 客服 IVR 系統\n自動客服電話：「歡迎來到 XX 公司，按 1 查詢訂單...」  \n不用錄那種生硬的機器聲，可以用有溫度的 AI 聲音。\n\n---\n\n### 倫理與法律：什麼能做、什麼不能做\n\n#### ❌ 嚴禁\n\n- **假冒他人聲音**：複製明星 / 政治人物的聲音製作假影片\n- **詐騙**：用 AI 聲音打詐騙電話假冒銀行\n- **騷擾**：製作有害的聲音內容\n- **未經同意複製他人聲音**：即使能技術上做到，法律上禁止\n\n#### ✅ 可以做\n\n- **自己的聲音**：任何用途都行（商業、非商業都可）\n- **ElevenLabs 內建聲音**：平台提供的預設角色聲音，可自由使用\n- **經同意的他人聲音**：「我媽同意我複製她的聲音做影片」就沒問題\n- **虛構角色聲音**：純粹創作，不真實指代任何人\n\n#### 實務建議\n\n- 使用 voice cloning 時，記錄你的同意聲明（如果事後有人質疑「這是你的聲音嗎」）\n- 如果內容涉及商業變現（YouTube Partner、課程販售），用付費版本確保授權清楚\n- 如果要複製名人聲音做惡搞內容，最好在標題 / 描述明確標註「AI 生成」\n\n---\n\n### 實際工作流範例\n\n#### 一人 YouTube 頻道的完整流程\n\n1. **寫腳本**：用 Claude 或 Chat",
       "tip": {
         "type": "milestone",
         "text": "ElevenLabs + Suno + 你 = 一人 multimedia studio。"
@@ -628,13 +697,36 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你用 ElevenLabs 錄了 2 分鐘自己唸稿、訓練出「我的聲音」。現在想製作日文版 YouTube 影片，這個 AI 聲音能直接用日文念台詞嗎？",
+        "options": [
+          {
+            "value": "a",
+            "label": "不行，ElevenLabs 只能用訓練時的語言（中文）念稿"
+          },
+          {
+            "value": "b",
+            "label": "可以，ElevenLabs 能用你的聲音念多語言，包括日文"
+          },
+          {
+            "value": "c",
+            "label": "可以，但要再錄一次日文稿才能訓練出日文版聲音"
+          },
+          {
+            "value": "d",
+            "label": "不行，多語言配音只有 OpenAI TTS 才能做"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確提到「多語言」特性：你只會中文，但 ElevenLabs 能用你訓練好的聲音念英文、日文、韓文等。這是 ElevenLabs 相比傳統 TTS 的強大優勢。"
+      }
     },
     {
       "title": "AI 音樂接案 + 變現策略",
       "oneLineSummary": "從 0 到月入 NT$ 50k",
       "analogy": "小眾領域、競爭少。",
-      "content": "## 接案類型 + 報價\n\n- **YouTuber BGM**：NT$ 1-5k/首、月可 20-30 首\n- **Podcast 配樂**：NT$ 3-10k 一套\n- **餐廳 / 店家 BGM**：NT$ 5-30k 一首\n- **短影音音樂**：NT$ 1-5k\n- **廣告 jingle**：NT$ 10-50k（30-60 秒）\n- **遊戲音樂**：NT$ 50-300k 一個 project\n- **個人化（生日 / 婚禮）**：NT$ 3-15k\n- **AI 音樂教學**：NT$ 3-10k/hr\n\n## 接案流程\n\n1. **客戶溝通**：場景 / 情緒 / 長度 / 樂器偏好 / 參考曲\n2. **生成**：Suno 跑 10-20 candidate\n3. **挑選**：你挑 3-5 個最好的給客戶\n4. **微調**：lyrics / structure / 客戶 feedback\n5. **後製**：混音 / fade / master\n6. **交付**：WAV + MP3 + 商業授權聲明 + 多版本\n\n## 報價策略\n\n### 簡單（30 秒 BGM）：NT$ 1-3k、1-2 hr\n### 中等（完整歌）：NT$ 5-15k、半天\n### 高端（品牌歌）：NT$ 30-100k、多次修改 + brand 策略\n### 訂閱（YouTuber 月費）：NT$ 3-10k/月、月給 5-10 首\n\n## 找客戶\n\n### 1. 個人作品集\n- Spotify / SoundCloud\n- YT 自己頻道\n- IG / TikTok 分享 demo\n\n### 2. 社群\n- YouTuber 社團\n- Podcast 社團\n- 餐飲社團\n\n### 3. 平台\n- Fiverr（AI music gig）\n- Upwork / 接案網\n\n### 4. 直接 outreach\n- Email 中型 YouTuber\n- 提供 3 個 free sample\n\n## SaaS 化（進階）\n\n「為餐廳客製音樂」SaaS：\n- 月費 NT$ 500-3000/客戶\n- 100 客戶 = NT$ 50-300k 被動\n\n範例：Beatoven.ai / Boomy。\n\n## 學新技能（加值）\n\n### 音樂理論\n- Coursera Berklee 課\n- 8-10 hr 基本\n- 改 prompt 更精準\n\n### DAW\n- Logic Pro（Mac $199 一次）\n- Ableton $99-749\n- GarageBand 免費\n\n### 混音 + Master\n- 5-10 hr 學基礎\n- Reverb / EQ / compression\n- 質感差很多\n\n## 警告\n\n### 法律灰色\n- AI 音樂版權不明\n- 商業使用建議 Suno Pro+\n- 大公司可能告\n\n### 對手\n- AI 工具門檻低、競爭增加\n- 優勢：審美 + 客戶溝通\n\n### 別當主收入\n- 副業可、主業有風險\n- 多元（Web / 設計 / 音樂）\n\n## 終極組合\n\n- AI 圖（Midjourney）\n- AI 影片（Runway）\n- AI 音樂（Suno）\n- AI 配音（ElevenLabs）\n\n接案：「完整 30 秒廣告片」NT$ 10-30k。\n1 個人 = 1 個 creative agency。\n\n## 心法\n- 不只「Suno 操作員」、是「音樂顧問」\n- 客戶要「適合的歌」、不是「最好的歌」\n- 月費 = 穩定\n- 累積 portfolio\n- 1 年 100 首 portfolio = 客戶自然來\n\n**☕ 用人話講**\n\nAI 音樂接案 + 變現策略——從 0 到月入 NT$ 5 萬。**一句話記住**：像把 AI 音樂變成生意——找對客群（影音創作者 / 商家）、定價、交付，把技能變收入。\n",
+      "content": "# AI 音樂接案 + 變現策略\n\n## 為什麼要開始 AI 音樂接案？\n\n在做任何生意前，你得先問自己：**為什麼客人應該找我、不找別人？** \n\nAI 音樂工具確實門檻低，按個按鈕、跑個模型就有歌。但「有歌」和「有合用的歌」差十萬八千里。一個好的 AI 音樂接案者，其實就是「懂客戶需求 + 懂 AI 能力 + 懂後製的顧問」。比如說，YouTuber 不缺「有音樂」的選項，他缺的是「這個場景、這個情緒、30 秒能帶出故事感的音樂」。這是你的價值。\n\n---\n\n## 接案類型 + 現實報價\n\n這些報價都是**基於台灣中小客戶市場**。接案時，你的定價要符合客戶能承受、又能反映你的時間。\n\n### YouTuber BGM：NT$ 1,000–5,000 / 首\n\n**場景**：Vlogger、遊戲實況、開箱影片配樂。\n\n**為什麼這個價位？**\n- 客戶需求清楚：「給我個輕快的、30 秒、適合美食開箱」\n- 你的工作量：3–5 小時（包括溝通、生成、挑選、微調）\n- 月量能高：一個 YouTuber 一週可能要 2–3 首，月 20–30 首不誇張\n\n**實例**：某美食頻道，月給你 25 首 BGM，每首 2,000 元，月簽約 50,000 元。這是穩定收入。\n\n---\n\n### Podcast 配樂：NT$ 3,000–10,000 / 一套\n\n**場景**：Podcast intro、outro、過場音樂（通常 3–5 首為一套）。\n\n**為什麼貴一點？**\n- 需要品牌感：不能太爛、要符合節目調性\n- 反覆使用：一套用 100 集、客戶期待投報率高\n- 你的工作：更多溝通、修改、品質控制\n\n**實例**：某科技 Podcast，給你素材清單（想要「聰慧、現代、有點酷」），你生成 20 個 candidate、挑 5 個最好的給他們選，最後交付 1 套（intro 1 首、outro 1 首、過場 3 首）。費用 8,000 元。\n\n---\n\n### 餐廳 / 店家 BGM：NT$ 5,000–30,000 / 首\n\n**場景**：咖啡廳、餐廳、美容院背景音樂。\n\n**為什麼跨度這麼大？**\n- 小咖啡廳：隨意 BGM、1 首 5,000 元\n- 新餐廳開幕：整套形象音樂、品牌感強、可能 3–5 首、總價 50,000 元以上\n\n**關鍵**：店家客群決定風格。裝潢日式的高級精緻餐廳，絕對不是「歡快的電子音樂」，而是「寧靜、精致、有點空靈的鋼琴或弦樂」。\n\n---\n\n### 短影音（TikTok / IG Reels）：NT$ 1,000–5,000 / 首\n\n**場景**：短影音創作者、15–60 秒卡點音樂。\n\n**特色**：\n- 週期快：創作者一週可能要 3–5 首\n- 需求簡單：「給我個洗腦的、適合舞蹈」\n- 低價、高量\n\n---\n\n### 廣告 Jingle（30–60 秒）：NT$ 10,000–50,000\n\n**場景**：品牌廣告、電視商業、線上廣告片。\n\n**為什麼貴？**\n- 法律複雜：涉及商業授權、可能要簽 buyout（買斷）\n- 修改多：甲方爸爸可能改 10 次\n- 專業要求高：不能有破音、必須符合廣告節奏\n\n**實例**：某飲料品牌要做網路廣告，給你 brief「年輕、活力、15–30 秒」。你生成 15 個、挑 3 個給他們聽、改 2 輪、最後交付。費用 25,000 元 + 商業授權。\n\n---\n\n### 遊戲音樂：NT$ 50,000–300,000 / project\n\n**場景**：獨立遊戲開發者、手遊、網頁遊戲。\n\n**為什麼這麼貴？**\n- 複雜度高：需要多首（主題曲、戰鬥、勝負、menu 背景）\n- 循環要求：BGM 要能無縫循環 3–5 分鐘、不會膩\n- 技術細節：需要了解遊戲節奏、關卡設計\n\n**實例**：某 indie 小遊戲，需要 8 首曲子（6 個關卡 + boss + menu）。你花 2 週、生成 50+ candidate、交付 8 首 + 多版本（帶鼓聲版、純旋律版）。費用 80,000 元。\n\n---\n\n### 個人化需求（生日、婚禮）：NT$ 3,000–15,000\n\n**場景**：為朋友做生日 MV、婚禮進場曲、紀念影片配樂。\n\n**特色**：\n- 客戶期待高：「我人生中只有一次婚禮」\n- 修改頻繁：新郎新娘可能改 5–8 次\n- 情感價值：一首歌、可能陪他們一輩子\n\n**實例**：婚禮進場曲，客戶要求「融合雙方名字、古典優雅、2 分鐘版本」。你生成、修改、交付。費用 12,000 元。\n\n---\n\n### AI 音樂教學課程：NT$ 3,000–10,000 / 小時\n\n**場景**：教內容創作者、企業、學生怎麼用 Suno / Udio。\n\n**能做什麼？**\n- 1 小時 workshop：Suno 完整教學 → NT$ 5,000\n- 5 人小班課（2 小時）→ NT$ 25,000\n- 企業 training（2 天）→ NT$ 50,000+\n\n---\n\n## 接案流程（具體步驟）\n\n### 1. 客戶溝通（非常重要）\n\n**你要問的 6 個問題**：\n\n```\n① 用途是什麼？（BGM / 主題曲 / Jingle / 個人）\n② 場景跟情緒？（明快活潑 / 沉靜優雅 / 科技感 / 靈動 / 懷舊）\n③ 長度？（30 秒 / 1 分鐘 / 2 分鐘）\n④ 樂器偏好？（鋼琴 / 吉他 / 電子 / 管弦樂 / 混合）\n⑤ 參考曲？（「有點像 Spotify 裡這首歌」）\n⑥ 商業授權？（個人用 / 發佈到 YouTube / 商用 / 廣告）\n```\n\n**白話例子**：\n- ❌ 客戶說：「給我一首好聽的歌」→ 你茫茫然、可能生成 50 首都不對\n- ✅ 客戶說：「30 秒 YouTube Vlog 配樂、場景是台北下雨天、情緒要有點孤獨但堅定、像偏 lo-fi hip hop、鋼琴 + 吉他」→ 你清楚了、可以精準生成\n\n**建議**：用 Google Form 或簡單的問卷表單，省溝通時間。\n\n---\n\n### 2. 生成（跑 10–20 個 candidate）\n\n**用 Suno（推薦）或 Udio**：\n\n根據客戶 brief，你寫詳細的 prompt：\n\n```\n[Example Suno Prompt]\nA 30-second lofi hip-hop background music. Rainy Taipei city vibe. \nMelancholic but determined. Features piano and acoustic guitar. \nSoft drums. Vintage warm sound. Slight reverb. No vocals.\n```\n\n**為什麼要生成 10–20 個？**\n- AI 有隨機性：同個 prompt、跑 20 次可能有 3–5 個完全不同的輸出\n- 你有選擇權：從中挑最接近的 3–5 個給客戶\n- 客戶感受「被認真對待」\n\n**時間投入**：約 1.5–2 小時（包括 prompt 調整、等待生成）。\n\n---\n\n### 3. 挑選 + 呈現\n\n**你挑 3–5 個最好的、放成 playlist 給客戶**。\n\n**怎麼挑？**\n- ① 最接近 brief 的\n- ② 音質最清楚的\n- ③ 結構最完整的（intro 流暢、middle 有變化、outro 圓滿）\n\n**怎麼呈現？**\n- 用 Spotify / SoundCloud playlist、或直接上傳 MP3 到雲端分享\n- 加上說明：「#1 是最符合您的懷舊感、#2 是現代版本、#3 是介於兩者的」\n\n---\n\n### 4. 微調（最花時間）\n\n**客戶可能會說**：\n- 「我喜歡 #1，但能不能更快一點？」\n- 「加點鼓聲」\n- 「歌詞改成……」\n\n**你的微調方式**：\n\n#### A. 改 Suno Prompt 重新跑\n例如客戶說「更快一點」，你改 prompt：\n```\n[Original]\nA 30-second lofi hip-hop...\n\n[Revised]\nA 30-second lofi hip-hop, slightly faster tempo (100 BPM), \nmore upbeat drums...\n```\n\n#### B.",
       "tip": {
         "type": "milestone",
         "text": "AI 音樂 + 影片 + 圖 = 一人 creative agency。"
@@ -740,7 +832,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，如果你想用 AI 音樂接案穩定賺錢，下列哪個策略最符合課程強調的「心法」？",
+        "options": [
+          {
+            "value": "a",
+            "label": "專注於用 Suno 生成最好聽的歌曲，這樣客戶自然會買單"
+          },
+          {
+            "value": "b",
+            "label": "與客戶深入溝通需求，理解場景和情緒，推薦「最適合」而非「最好」的歌，並逐步累積 portfolio 和月費訂閱"
+          },
+          {
+            "value": "c",
+            "label": "快速接大量短期案件（如短影音音樂），衝高月收入總額"
+          },
+          {
+            "value": "d",
+            "label": "專門做高端品牌歌（NT$30-100k），因為單價高回報最大"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程心法明確指出：不只是『Suno 操作員』，要當『音樂顧問』；客戶要『適合的歌』不是『最好的歌』；月費=穩定；累積 portfolio。選項 b 完整反映這個核心思路，其他選項都偏離了『顧問思維』和『長期穩定』的要點。"
+      }
     }
   ],
   "boss": {
@@ -754,5 +869,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "Suno 和 Udio 是目前最好用的 AI 音樂生成工具，能直接吐出成品，但品質和風格可控性各有不同。",
+    "AI 配音工具 ElevenLabs 的語音自然度已經很高，可以和 AI 音樂結合做整套內容。",
+    "AI 音樂接案不是做完就算，重點是理解客戶需求、溝通版權邊界、交付規格。",
+    "變現管道有三種：直接接案、授權給內容創作者、做自己的 podcast / 內容搭配販售。",
+    "AI 音樂還在紅利期，但競爭也在快速增加，差異化靠的是溝通能力和對客戶痛點的理解。"
+  ],
+  "faq": [
+    {
+      "q": "AI 生成的音樂能商用嗎？",
+      "a": "能，但要看工具的授權條款。Suno 和 Udio 都支援商用，只要你買對方案就行。建議接案前先問清楚客戶的使用範圍，避免後續糾紛。"
+    },
+    {
+      "q": "我不懂音樂，能用 AI 工具接案嗎？",
+      "a": "可以。AI 音樂工具已經把技術門檻降到很低，重點反而是你能不能聽懂客戶想要什麼、能不能用文字 prompt 把感覺描述清楚。這章會教你怎麼問、怎麼調整。"
+    },
+    {
+      "q": "AI 生成音樂和人類作曲有什麼差別？",
+      "a": "目前 AI 音樂適合背景配樂、BGM、內容片段，但複雜的編排、獨特風格的創作還是難度高。簡單說，AI 很會做「夠用」的音樂，但做「驚人」的音樂還不夠成熟。"
+    }
+  ]
 }

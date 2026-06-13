@@ -73,7 +73,30 @@
           "level": 3,
           "text": "2026 軟體業 PM 真實狀況"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這堂課，為什麼同樣 5 年經驗的工程師薪資會差到 2 倍？技術其實差不多，真正的差別關鍵是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "會不會寫出高效能的 code，效率越高薪水越高"
+          },
+          {
+            "value": "b",
+            "label": "能不能把事情「做完」（ship），包括估時、溝通、文件、排優先序等專案管理能力"
+          },
+          {
+            "value": "c",
+            "label": "學歷背景和證照數量，名校畢業的工程師自然薪資更高"
+          },
+          {
+            "value": "d",
+            "label": "工作年資有沒有達到 5 年以上，資深工程師才能談到百萬年薪"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程開頭直接點出：同等經驗的工程師差別在「能不能 ship」。估時不準、任務拖延、沒文件、不會溝通導致東西出不來，就升不上去；反之會專案管理的工程師信任度高、能升遷快、甚至能獨立撐 SaaS，這才是薪資差距的根本原因。"
+      }
     },
     {
       "id": "43.2",
@@ -146,7 +169,30 @@
           "level": 3,
           "text": "2026 後敏捷趨勢"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，為什麼敏捷（Agile）更適合軟體業，而瀑布（Waterfall）不適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為敏捷的文件更詳細，更容易追蹤進度"
+          },
+          {
+            "value": "b",
+            "label": "因為軟體的需求容易變化，敏捷可以邊做邊調整；瀑布需求一改就得整個重來"
+          },
+          {
+            "value": "c",
+            "label": "因為敏捷不需要客戶參與，效率更高"
+          },
+          {
+            "value": "d",
+            "label": "因為瀑布只適合新創公司，而敏捷適合大公司"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程核心就在說三個流派適合不同情境。敏捷的優點是『歡迎需求變化』、『每 2-4 週小交付』，而瀑布的致命缺點正是『需求一改整個重來』。敏捷就是為了應對軟體業需求不確定的特性而誕生的。"
+      }
     },
     {
       "id": "43.3",
@@ -211,7 +257,30 @@
           "level": 3,
           "text": "2026 簡化版 Scrum"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據 Scrum 的定義，以下哪一個說法最正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Sprint Backlog 是 PO 排序優先序的所有想做事項清單，Team 從中挑選要做的"
+          },
+          {
+            "value": "b",
+            "label": "Scrum Master 主要負責分配工作、確保程式寫得好，並與外部需求方談判"
+          },
+          {
+            "value": "c",
+            "label": "Daily Standup 是讓主管掌握每個人進度的 status report，應該完整報告細節"
+          },
+          {
+            "value": "d",
+            "label": "Story Point 用 Fibonacci 數列表示，是為了更精準衡量每個工作實際需要的時數"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Product Backlog 是 PO 排序的整個優先序清單，Sprint Backlog 則是從中挑出這個 sprint 要做的項目。選項 b 錯在 SM 不負責分配工作和寫程式；選項 c 錯在 standup 是找 blocker、不是詳細 status report；選項 d 錯在 Story Point 反映複雜度，不是時間。"
+      }
     },
     {
       "id": "43.4",
@@ -288,7 +357,30 @@
           "level": 3,
           "text": "個人版 Kanban"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據 Kanban 的核心概念，設定 WIP limit 最主要的目的是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "讓工程師能夠專注於少數任務，加快完成速度和發現瓶頸"
+          },
+          {
+            "value": "b",
+            "label": "確保每個工程師每天都有新任務可以做"
+          },
+          {
+            "value": "c",
+            "label": "減少開會的次數和時間"
+          },
+          {
+            "value": "d",
+            "label": "讓所有任務都能在同時進行中，提高平行效率"
+          }
+        ],
+        "answer": "a",
+        "explanation": "WIP limit 的核心功能是強制限制每個階段同時進行的工作數量，讓人能 focus 而不是 context switch，這樣才能發現流程瓶頸並加快整體流動。選項 b、d 是反向邏輯，c 則不是 WIP limit 的目的。"
+      }
     },
     {
       "id": "43.5",
@@ -329,7 +421,30 @@
           "level": 3,
           "text": "「t-shirt size」估算（很粗）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，為什麼工程師估時常常不準？下列哪個原因最根本？",
+        "options": [
+          {
+            "value": "a",
+            "label": "工程師偷懶、故意報少時間"
+          },
+          {
+            "value": "b",
+            "label": "人類大腦天生對未來太樂觀、只想到順利情況、沒考慮細節和中斷"
+          },
+          {
+            "value": "c",
+            "label": "客戶要求太多、一直要求改功能"
+          },
+          {
+            "value": "d",
+            "label": "估時的人經驗不足、應該找資深工程師才準"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調這是大腦結構問題（規劃謬誤、快樂路徑偏誤、細節隱藏、過度自信、沒考慮中斷），不是態度或經驗問題。即使資深工程師也容易低估，因為這是人類認知的普遍規律。"
+      }
     },
     {
       "id": "43.6",
@@ -385,7 +500,30 @@
           "level": 3,
           "text": "「Anti-roadmap」（沒 roadmap）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "關於 Roadmap 的本質，下列何者最正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Roadmap 是未來 1-12 個月的方向指引，不是死硬的承諾"
+          },
+          {
+            "value": "b",
+            "label": "Roadmap 應該列出所有想做的事，越詳細越好"
+          },
+          {
+            "value": "c",
+            "label": "Roadmap 要標註精確日期（如 7/15 上線），才能有執行力"
+          },
+          {
+            "value": "d",
+            "label": "Roadmap 就是 Sprint Plan 的放大版，內容應該一樣詳細"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Roadmap 的核心是『direction 而非 commitment』，展示未來 1-12 個月的大方向。選項 b 違反「只放重要的」原則，選項 c 會被誤認為承諾而造成問題，選項 d 混淆了時間維度—Roadmap 是高層次，Sprint Plan 才是具體 task。"
+      }
     },
     {
       "id": "43.7",
@@ -429,7 +567,30 @@
           "level": 3,
           "text": "取消會議 = 賺到的會議"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的 team 有 10 人，正在做 Sprint Planning。估算時發現大家很樂觀，總共承諾了 200 小時的工作，但實際上 team 這週有 5 天 × 8 小時 = 400 小時。下列哪個做法最符合課程教的「避免估算太樂觀」的原則？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 400 小時容量的 60%（240 小時）作為實際可分配容量，並留 20% buffer 給突發狀況"
+          },
+          {
+            "value": "b",
+            "label": "保持 200 小時承諾不變，但要求 team 加班補足剩下的 200 小時"
+          },
+          {
+            "value": "c",
+            "label": "等 sprint 開始後，看實際進度再決定要不要加工作進來"
+          },
+          {
+            "value": "d",
+            "label": "用三點估算方式重新估一次，就能確保估點一定準確"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確提到容量計算公式：每人 sprint 容量 = 工作時數 × 60%（其他是會議/中斷），再加上留 20% buffer 給 bug/救火。選項 a 正確套用了這個原則。b 是加班違反 Scrum 精神；c 是被動做法，無法預防；d 三點估算只是輔助，不能保證準確。"
+      }
     },
     {
       "id": "43.8",
@@ -481,7 +642,30 @@
           "level": 3,
           "text": "個人 / indie 版本"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，Retrospective 和 Postmortem 最根本的差異是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Retrospective 是每個 sprint 定期舉辦，Postmortem 只在嚴重事件後才開"
+          },
+          {
+            "value": "b",
+            "label": "Retrospective 是預防性的持續改善，Postmortem 是治療性的事後分析"
+          },
+          {
+            "value": "c",
+            "label": "Retrospective 由 team lead 主持，Postmortem 由 CTO 主持"
+          },
+          {
+            "value": "d",
+            "label": "Retrospective 可以怪人，Postmortem 必須 blameless"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程開頭明確寫『Retro 是預防、Postmortem 是治療』，這正是兩者最根本的區別。Retro 是定期反思找出問題並改進流程、Postmortem 則是在重大事件發生後進行事後分析。選項 a 講的是頻率差異、c 講的是主持人、d 混淆了兩種會議的特性，都不是根本差異。"
+      }
     },
     {
       "id": "43.9",
@@ -545,7 +729,30 @@
           "level": 3,
           "text": "2026 OKR 趨勢"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "假設你是一個 SaaS 公司的產品經理，老闆要你設定這季的 OKR。下面哪個做法最符合 OKR 的核心精神？",
+        "options": [
+          {
+            "value": "a",
+            "label": "設定 Objective：提升用戶滿意度，KR 分別是：完成 API 文件、優化搜尋功能、修復 10 個 bug"
+          },
+          {
+            "value": "b",
+            "label": "設定 Objective：加速用戶增長，KR 分別是：新用戶註冊數 1000 → 5000、月活躍用戶 500 → 2000、續約率 60% → 85%"
+          },
+          {
+            "value": "c",
+            "label": "設定 10 個 Objective，每個配 5-10 個 KR，確保所有部門工作都被涵蓋"
+          },
+          {
+            "value": "d",
+            "label": "設定 Objective 時，故意設低一點，確保季末能達成 100% 並拿到全額獎金"
+          }
+        ],
+        "answer": "b",
+        "explanation": "OKR 的核心是用量化的『結果』來定義目標方向（不是列工作項目），且 3-5 個 KR 才能保持 focus。選項 b 是衡量實際產出結果；a 混淆了 task 和 KR；c 違反『少而精』原則；d 違反 OKR 哲學（60-70% 達成才對、且不該跟獎金綁）。"
+      }
     },
     {
       "id": "43.10",
@@ -605,7 +812,30 @@
           "level": 3,
           "text": "個人專案 / indie 的風險清單"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的專案經理發現：「DB 可能在高流量時爆掉」。根據風險管理，他應該採取什麼行動？",
+        "options": [
+          {
+            "value": "a",
+            "label": "立刻等 DB 真的爆掉再處理，現在先不用管"
+          },
+          {
+            "value": "b",
+            "label": "這是個 Risk，應該評估機率×影響，決定要避免、緩解、轉移還是接受"
+          },
+          {
+            "value": "c",
+            "label": "因為是技術問題，直接交給工程師去修，PM 不用參與"
+          },
+          {
+            "value": "d",
+            "label": "把「DB 可能爆掉」登記為 Issue，納入本週 sprint"
+          }
+        ],
+        "answer": "b",
+        "explanation": "「DB 可能爆掉」是尚未發生的事，屬於 Risk（不是已經爆炸的 Issue）。PM 的工作就是用風險評估矩陣評估機率和影響，然後選擇合適的緩解策略（避免、緩解、轉移或接受），而不是等事情發生後才 firefighting。"
+      }
     },
     {
       "id": "43.11",
@@ -665,7 +895,30 @@
           "level": 3,
           "text": "政治處理"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的專案延期了一週，老闆 Tony 很快就會在公司會議上被問到進度。你應該怎麼做？",
+        "options": [
+          {
+            "value": "a",
+            "label": "等到會議前一天再跟 Tony 說，這樣他有時間準備"
+          },
+          {
+            "value": "b",
+            "label": "先主動告訴 Tony 延期的原因和你的解決方案，不讓他在會議上被 surprise"
+          },
+          {
+            "value": "c",
+            "label": "只跟直屬主管報告，由主管再轉告 Tony，這樣比較正式"
+          },
+          {
+            "value": "d",
+            "label": "在專案狀態報告裡寫清楚，Tony 自己看報告就會知道，不用特別說"
+          }
+        ],
+        "answer": "b",
+        "explanation": "這課強調「別 surprise 高層」和「帶解法不帶問題」——你要主動、提前讓 Tony 知道壞消息和你的因應方案，這樣他在會議上才能有信心地回答，而不是被動挨質問。"
+      }
     },
     {
       "id": "43.12",
@@ -693,7 +946,30 @@
           "level": 3,
           "text": "對抗 Scope Creep 的工具"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "關於 Scope Creep，下列敘述何者正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Scope Creep 最主要的原因是估算錯誤，只要估對時間就能完全避免"
+          },
+          {
+            "value": "b",
+            "label": "寫一份清楚的 Scope 文件，明確列出「包含什麼」和「不包含什麼」，有助於擋住不必要的需求變更"
+          },
+          {
+            "value": "c",
+            "label": "在實作中發現的新需求（discovered scope）和 stakeholder 臨時加的需求性質相同，處理方式一樣"
+          },
+          {
+            "value": "d",
+            "label": "口頭答應 stakeholder 新需求和文件寫下來的效力相同，都算正式決定"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調「明確 Scope 文件」是對抗 scope creep 的核心工具，透過寫下「範圍包含」和「範圍不包含」來設定邊界。選項 a 忽略了估算錯誤只是原因之一；c 混淆了 discovered scope 和 scope creep 的區別；d 違反課程「沒寫下來的 scope = 沒 scope」的鐵則。"
+      }
     },
     {
       "id": "43.13",
@@ -753,7 +1029,30 @@
           "level": 3,
           "text": "個人 / Indie 也該寫 RFC"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "為什麼 RFC 應該在動工前寫，而不是等 code review 時才檢視設計？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為在 RFC 階段改文字便宜，但推翻架構才會發現問題很痛，不如提前對齊方向"
+          },
+          {
+            "value": "b",
+            "label": "因為寫 RFC 可以證明工程師的思考能力，是升 senior 的必要條件"
+          },
+          {
+            "value": "c",
+            "label": "因為 code review 只能看程式碼品質，無法檢查功能是否符合需求"
+          },
+          {
+            "value": "d",
+            "label": "因為 RFC 可以留下歷史紀錄，讓半年後的人知道為什麼這樣設計"
+          }
+        ],
+        "answer": "a",
+        "explanation": "RFC 最核心的價值是在架構決策還是文字的時候就獲得回饋，改方向便宜；等寫完 code 再推翻架構會付出極大代價。b 說對了結果（升 senior）但不是核心原因，c 和 d 是 RFC 的額外好處，但不是「為什麼提前寫」的主要理由。"
+      }
     },
     {
       "id": "43.14",
@@ -801,7 +1100,30 @@
           "level": 3,
           "text": "如何拒絕會議"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你是一位主管，想確認下週要不要開「進度同步會議」。根據課程內容，以下哪個情況最不應該開這場會？",
+        "options": [
+          {
+            "value": "a",
+            "label": "有 3 個專案 blocker 需要當場討論和決策"
+          },
+          {
+            "value": "b",
+            "label": "只是想讓大家報告一下目前做到哪裡、有沒有問題"
+          },
+          {
+            "value": "c",
+            "label": "需要 5 個人對跨團隊的合作方向達成共識"
+          },
+          {
+            "value": "d",
+            "label": "決策者必須在場、已經列出 agenda 和時間限制"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確指出「80% 的 sync meeting 該被 async 取代」，只是同步進度細節應該用 email 或 Slack，不必開會。而 a、c、d 都符合開會的三個條件：需要即時互動、有具體 outcome、對的人到場。"
+      }
     },
     {
       "id": "43.15",
@@ -849,7 +1171,30 @@
           "level": 3,
           "text": "2026 趨勢：Doc as Code"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這堂課，為什麼工程師應該把「邊做邊寫文件」當成習慣，而不是等專案結束再一次寫完？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為等專案結束再寫會花更多時間，而邊做邊寫可以分散工作量、及時補充內容"
+          },
+          {
+            "value": "b",
+            "label": "因為文件寫得越多越好，邊做邊寫才能達到最完美的文件品質"
+          },
+          {
+            "value": "c",
+            "label": "因為公司規定所有工程師一定要邊做邊寫，違反會被扣績效"
+          },
+          {
+            "value": "d",
+            "label": "因為只有邊做邊寫才能用 AI 工具自動產生文件"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調「Write as you go」的核心是提高效率：寫 RFC 時開 architecture doc、改 endpoint 時更新 API doc、解 bug 時更新 troubleshooting，這樣文件永遠是最新、不容易過期，也避免一次堆積大量工作。選項 b 追求完美是課程反對的、c 是虛構的強制、d 混淆了工具使用的時機。"
+      }
     },
     {
       "id": "43.16",
@@ -885,7 +1230,30 @@
           "level": 3,
           "text": "2026 真實組合（依規模）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這堂課，一個 10 人的新創科技團隊，應該優先選擇哪套工具組合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Jira 做 Issue Tracking + Confluence 做文件 + Slack 溝通"
+          },
+          {
+            "value": "b",
+            "label": "Linear 做 Issue Tracking + Notion 做文件 + Slack 溝通"
+          },
+          {
+            "value": "c",
+            "label": "Asana 做 Issue Tracking + Coda 做文件 + Microsoft Teams 溝通"
+          },
+          {
+            "value": "d",
+            "label": "Trello 做 Issue Tracking + Notion 做文件 + Discord 溝通"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確指出「Linear（新創最熱）+ Notion（全能）+ Slack」是 2026 indie 真實組合，能撐到 100 人公司。10 人新創應該選輕便、快速的工具，而非 Jira（大企業標配、UI 慢、學習曲線陡）或 Asana（跨職能但工程功能弱）。"
+      }
     },
     {
       "id": "43.17",
@@ -929,7 +1297,30 @@
           "level": 3,
           "text": "indie / solopreneur 的 AI PM stack"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這堂課，AI 工具最能幫助 PM 大幅省時的工作是什麼？為什麼會產生『一人管 2 倍規模』的效果？",
+        "options": [
+          {
+            "value": "a",
+            "label": "自動化 admin work（如寫會議 minutes、整理 status report），讓 PM 能專注在溝通和判斷上"
+          },
+          {
+            "value": "b",
+            "label": "用 AI 寫 PRD 和策略文件，完全取代 PM 的產品決策工作"
+          },
+          {
+            "value": "c",
+            "label": "透過 AI 工具參加所有會議，減少 PM 需要實際出席的會議數量"
+          },
+          {
+            "value": "d",
+            "label": "用 AI 直接和 stakeholder 溝通，省去 PM 的 1-on-1 時間"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確指出 50% 的傳統 admin work（minutes、status report 等）被 AI 自動化後，PM 能把時間重新分配到 30% 溝通和 20% 判斷上，因此能管理 2 倍規模的專案。選項 b、c、d 都違反課程強調的『AI 不能取代政治判斷、vision、信任建立』的原則。"
+      }
     },
     {
       "id": "43.18",
@@ -993,7 +1384,30 @@
           "level": 3,
           "text": "遠端個人技巧"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你所在的公司有台灣、美西、歐洲三個時區的團隊，完全沒有共同上班時間。根據這課的原則，你應該採取什麼策略來確保工作順利進行？",
+        "options": [
+          {
+            "value": "a",
+            "label": "改為 async-first 工作方式，用完整自包含的文字訊息溝通，不依賴即時回覆"
+          },
+          {
+            "value": "b",
+            "label": "堅持每天視訊會議，讓各時區輪流犧牲睡眠時間參加，這樣才能即時同步"
+          },
+          {
+            "value": "c",
+            "label": "只雇用同一時區的人，避免跨時區的複雜性"
+          },
+          {
+            "value": "d",
+            "label": "所有工作都改成口頭會議和即時通訊，這樣最快最有效率"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程核心強調跨時區團隊沒有共同上班時間時，必須採用 async-first 原則，包括文字優先、自包含訊息、明確回應時間預期，而不是依賴即時溝通。選項 b、c、d 都違反了課程的實踐建議。"
+      }
     },
     {
       "id": "43.19",
@@ -1049,7 +1463,30 @@
           "level": 3,
           "text": "遠端時代的 Manager 挑戰"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你是一名新晉的 Engineering Manager，團隊中有位資深工程師的程式品質最近明顯下降。根據這課教的內容，你應該怎麼做？",
+        "options": [
+          {
+            "value": "a",
+            "label": "立刻找他談話，說『我注意到你最近 code review 常被打回，會擔心影響 deadline，能幫你嗎？』然後一起想辦法"
+          },
+          {
+            "value": "b",
+            "label": "再等幾個月觀察看看，如果真的沒改善再考慮處理"
+          },
+          {
+            "value": "c",
+            "label": "自己接手他的工作做，這樣品質有保障，他可以減少壓力"
+          },
+          {
+            "value": "d",
+            "label": "在下次月度績效評估時才提出來，這樣比較正式"
+          }
+        ],
+        "answer": "a",
+        "explanation": "這課強調新手 Manager 常見錯誤之一是『避免困難對話』——拖延不講會導致後來非得開除不可。正確做法是立刻給 feedback，用『直接但 supportive』的方式處理（注意到 X、會擔心 Y、能幫你嗎），這樣既解決問題又保護關係。"
+      }
     },
     {
       "id": "43.20",
@@ -1121,7 +1558,30 @@
           "level": 3,
           "text": "怎麼提前布局"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這堂課，2026-2030 年 PM 工作會面臨什麼最關鍵的改變？",
+        "options": [
+          {
+            "value": "a",
+            "label": "AI 會接手大量行政工作，PM 要轉變成『AI 編排師』，但同時入門 PM 和中階 PM 的職缺會減少，競爭變得更激烈"
+          },
+          {
+            "value": "b",
+            "label": "公司會裁減所有 PM，改由工程師直接決定產品方向，PM 這個職位會完全消失"
+          },
+          {
+            "value": "c",
+            "label": "PM 只需要學會用 AI 工具就能勝任，不需要累積任何 domain knowledge 或專業深度"
+          },
+          {
+            "value": "d",
+            "label": "產品開發會變得更簡單，因為 AI 能自動完成所有決策，PM 的重要性會降低"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程的核心是 PM 角色在進化而非消失：AI 接手 admin work（趨勢 1），但高階 PM 工作反而增加，同時需要更強的判斷力、垂直專精（趨勢 3）和 outcome 責任。中階和入門 PM 的職缺才是真正在縮減。"
+      }
     },
     {
       "title": "Agile / Scrum 完整流程",
@@ -1213,7 +1673,30 @@
           "level": 2,
           "text": "不要過度信教"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在 Scrum 流程中，如果團隊想要「檢討這個 Sprint 哪些地方做得好、哪些做得不好，並決定下次改善的方向」，應該參加哪個會議？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Sprint Planning（衝刺規劃）"
+          },
+          {
+            "value": "b",
+            "label": "Daily Standup（每日站會）"
+          },
+          {
+            "value": "c",
+            "label": "Sprint Review（衝刺審查）"
+          },
+          {
+            "value": "d",
+            "label": "Retrospective（回顧）"
+          }
+        ],
+        "answer": "d",
+        "explanation": "Retrospective 是團隊內部在 Sprint 結束後討論「What went well / What didn't」和訂定改善行動的會議。Sprint Review 是向 stakeholder demo 收 feedback，兩者目的不同。"
+      }
     },
     {
       "title": "Linear：2026 最熱 PM 工具",
@@ -1314,7 +1797,30 @@
           "level": 2,
           "text": "我的建議"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "Linear 的核心工作流程中，從「收到需求」到「自動標記完成」的正確順序是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "開 issue → 寫描述估點 → 開 branch 寫 code → PR merge 時自動 Done"
+          },
+          {
+            "value": "b",
+            "label": "建立 Project → 加入 Cycle → 開 PR → 手動改狀態為 Done"
+          },
+          {
+            "value": "c",
+            "label": "搜尋 issue → 改狀態為 In Progress → 寫 code → 通知團隊"
+          },
+          {
+            "value": "d",
+            "label": "指派 issue → 開發完成 → 等待審核 → 手動更新進度"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程重點在於 Linear 的自動化優勢：開 issue 時寫描述估點，開 branch 複製 Linear 自動產生的 branch name（如 feat/eng-123），PR merge 時因為包含 issue ID，Linear 自動連結並將 issue 標記為 Done。b、c、d 都缺少自動化或打亂了正確流程。"
+      }
     },
     {
       "title": "Notion / Confluence：知識管理",
@@ -1370,7 +1876,30 @@
           "level": 2,
           "text": "文化建議"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，為什麼說 Notion 適合當「團隊知識的家」？下列哪個選項最能說明這個工具的核心價值？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 Notion 的速度很快，可以立即儲存所有公司資料"
+          },
+          {
+            "value": "b",
+            "label": "因為它能把產品文件、會議記錄、SOP 等知識集中在一處，讓新人查得到、老人離職也不會斷檔"
+          },
+          {
+            "value": "c",
+            "label": "因為 Notion 有完整的 API，可以自動化整合所有外部工具"
+          },
+          {
+            "value": "d",
+            "label": "因為 Notion 的中文搜尋功能很強大，員工能快速找到需要的資訊"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調 Notion 的核心價值是「集中管理知識、防止散落」（不寫等於沒發生、不要讓知識散在聊天記錄），b 選項完全符合這個重點。a 和 d 都與課程提到的缺點矛盾（速度慢、中文搜尋弱），c 只是進階技巧不是核心價值。"
+      }
     },
     {
       "title": "OKR：目標管理",
@@ -1450,7 +1979,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下列哪一個是正確的 OKR 寫法？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Objective: 成為市場領導者｜KR: 月活躍使用者達到 10,000"
+          },
+          {
+            "value": "b",
+            "label": "Objective: 改善用戶體驗｜KR: 我們會很努力優化介面"
+          },
+          {
+            "value": "c",
+            "label": "Objective: 上線新功能｜KR: 完成所有規劃的開發工作"
+          },
+          {
+            "value": "d",
+            "label": "Objective: 增加營收｜KR: 達成 100% 銷售目標"
+          }
+        ],
+        "answer": "a",
+        "explanation": "選項 a 符合 OKR 原則：Objective 是質化的雄心目標（市場領導者），KR 是量化、可衡量的結果。其他選項都違反原則：b 的 KR 無法量化、c 的 O 應該是質化目標不是功能、d 訂 100% 達標代表目標訂太低（應該是 60-70% 達成才合理）。"
+      }
     },
     {
       "title": "Sprint Planning：估時 + 切任務",
@@ -1534,7 +2086,30 @@
           "level": 2,
           "text": "反 pattern"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的團隊在 Sprint Planning 時，PO 提出一個需求：「優化系統效能」。根據這堂課的 INVEST 原則，為什麼這個任務不夠好？應該怎麼改？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為它太大了，應該拆成「優化首頁載入時間」、「優化資料庫查詢」等具體小任務"
+          },
+          {
+            "value": "b",
+            "label": "因為它沒有明確的交付物和可測試的驗收條件，應該改成「將首頁載入時間從 3 秒優化到 1 秒以下」"
+          },
+          {
+            "value": "c",
+            "label": "因為它不是 Must，應該改成 Should 優先序，等其他需求做完才做"
+          },
+          {
+            "value": "d",
+            "label": "因為它沒辦法用 Planning Poker 估時，應該改成研究型 task、用 timebox"
+          }
+        ],
+        "answer": "b",
+        "explanation": "「優化效能」違反了 INVEST 的 N（可協商）、E（可估時）、T（可測試），因為它太模糊、沒交付物。改成「將首頁載入時間從 3 秒優化到 1 秒」就清楚了——有明確目標、可測試、可估時。選項 a 的拆法是對的但不完整，選項 c 和 d 解決的是其他問題。"
+      }
     }
   ],
   "boss": {
@@ -1548,5 +2123,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "專案管理不是 PM 專利——工程師懂了能更好地協作、減少返工、看清全貌。",
+    "瀑布講計畫、敏捷講迭代、Lean 講精益，選錯方法會事倍功半。",
+    "Scrum 給你衝刺節奏，Kanban 讓你隨時拉進新工作，兩者各有脾氣。",
+    "估時、開會、寫文件這三件事做好，你團隊的效率能差一倍以上。",
+    "Linear 和 Notion 是 2026 標配，學會用它們讓資訊一致、決策有跡可循。"
+  ],
+  "faq": [
+    {
+      "q": "我是工程師，為什麼非得懂專案管理？",
+      "a": "因為懂了能看清自己在做什麼、為什麼做、做到什麼程度算完；還能跟 PM 有效溝通、提早發現問題、少浪費時間。說白了，這是提升自己工作品質的必修課。"
+    },
+    {
+      "q": "Scrum、Kanban、Lean 到底選哪個？",
+      "a": "沒有絕對答案。Scrum 適合需求清楚、衝刺目標明確的團隊；Kanban 適合任務流量不穩定、需要靈活應對的場景；Lean 是一種心態，可以跟任何方法組合用。很多團隊是混搭的。"
+    },
+    {
+      "q": "估時經常失準，我怎麼才能估得準？",
+      "a": "先別期望完全準準——估時本身就是不確定的。更實用的做法是拆細一點、根據歷史數據調整、留點緩衝、定期複盤。久了你會發現自己的估時偏差規律，就能修正。"
+    }
+  ]
 }

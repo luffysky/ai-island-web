@@ -104,7 +104,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "小明寫好了一個 Node.js 網站，現在想把它放到網路上讓使用者使用。根據部署的 5 個階段，他的程式「從他電腦上的 localhost:3000 → 變成可執行的 dist/ 資料夾 → 最後在真正的伺服器上跑」，請問他分別經過了哪三個階段？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Dev → Build → Runtime"
+          },
+          {
+            "value": "b",
+            "label": "Dev → Artifact → Build"
+          },
+          {
+            "value": "c",
+            "label": "Build → Artifact → 監控"
+          },
+          {
+            "value": "d",
+            "label": "Dev → Build → Artifact → Runtime（四個都經過）"
+          }
+        ],
+        "answer": "d",
+        "explanation": "部署的 5 個階段是依序進行的：Stage 1 Dev（localhost）→ Stage 2 Build（編譯成 dist/）→ Stage 3 Artifact（打包產物）→ Stage 4 Runtime（真正執行）→ Stage 5 監控。小明的流程包含了前四個階段，所以答案是全部四個都經過。"
+      }
     },
     {
       "title": "Docker 入門",
@@ -181,7 +204,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "小明想把自己的 Node.js 應用部署到 Docker，他建了一個 Dockerfile，裡面包含了編譯工具、測試框架，還有一堆開發依賴。現在 image 很大（1GB），他想瘦身。下列哪個做法最符合這堂課教的最佳實踐？",
+        "options": [
+          {
+            "value": "a",
+            "label": "使用多階段 build，在 builder stage 做編譯，production stage 只複製最終產物，不帶編譯工具"
+          },
+          {
+            "value": "b",
+            "label": "把 node_modules 從 Dockerfile 刪掉，改成執行時再 npm install"
+          },
+          {
+            "value": "c",
+            "label": "用 docker-compose 分開多個 container，這樣每個 image 都會變小"
+          },
+          {
+            "value": "d",
+            "label": "改用 Ubuntu 或 CentOS base image，它們比 Alpine 更輕量"
+          }
+        ],
+        "answer": "a",
+        "explanation": "多階段 build 是課程強調的核心優化方法：builder stage 包含所有編譯工具，但最後的 production stage 只複製編譯好的產物，完全不帶 build 工具，大幅減少 image 體積且提升安全性。b 會拖累啟動速度，c 是架構決策不是瘦身方法，d 完全反向（Alpine 才是最輕量）。"
+      }
     },
     {
       "title": "Railway / Fly.io / Render",
@@ -294,7 +340,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "如果你要快速上線一個 Node.js 後端 + PostgreSQL 資料庫的 side project，同時希望整個設定步驟最簡單、不想學 Docker，下列哪個平台最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Railway——連 GitHub、內建 DB 整合、push 即部署，最簡單上手"
+          },
+          {
+            "value": "b",
+            "label": "Fly.io——全球多個 region、自動就近 routing、適合全球用戶"
+          },
+          {
+            "value": "c",
+            "label": "Render——功能最全面、像新版 Heroku、最平衡的選擇"
+          },
+          {
+            "value": "d",
+            "label": "Heroku——業界最成熟、功能最完整、最值得信賴"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確提到 Railway 的特色就是「最簡單、UI 漂亮、DB 整合超好」，且「不想學 Docker」的人最適合用 Railway 的 CLI 一鍵部署。Fly.io 是針對全球部署優化、Render 是功能平衡但比較像 Heroku、Heroku 已經貴到不行且取消免費方案，都不符合題目的「最簡單」需求。"
+      }
     },
     {
       "title": "Vercel / Cloudflare Workers",
@@ -383,7 +452,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，Edge Computing 相比 Serverless 最主要的優勢是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Latency 更低，因為程式碼跑在離使用者最近的城市而非固定 region"
+          },
+          {
+            "value": "b",
+            "label": "可以執行更長時間的任務，沒有 timeout 限制"
+          },
+          {
+            "value": "c",
+            "label": "可以直接使用所有 Node.js API，不需要轉換"
+          },
+          {
+            "value": "d",
+            "label": "免費額度更多，可以每天處理更多請求"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確指出 Edge 跑在 300+ 城市（離 user 最近），而 Serverless 跑在固定 region，因此 Edge 的 latency < 50ms 是核心優勢。選項 b、c、d 都不符合課程內容——Edge 反而不能跑長任務、不能用部分 Node API、免費額度是 Cloudflare Workers 的特色而非 Edge 的專屬優勢。"
+      }
     },
     {
       "title": "部署 Best Practices",
@@ -484,7 +576,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你公司要在週五下午 3 點部署一個新功能到 production，同時需要修改資料庫的某個欄位型別。根據課程的部署 Best Practices，以下哪個做法最恰當？",
+        "options": [
+          {
+            "value": "a",
+            "label": "直接部署，在 production 環境中修改欄位型別，如果出問題馬上 rollback"
+          },
+          {
+            "value": "b",
+            "label": "改期到週二早上部署，先做 backward-compatible migration 加新欄，部署新 code，等穩定後再在下次部署時清舊欄位"
+          },
+          {
+            "value": "c",
+            "label": "先在 development 環境測試，通過後就可以直接推到 production"
+          },
+          {
+            "value": "d",
+            "label": "用 Canary 部署 50% 流量，邊部署邊修改資料庫型別"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調週五下午不要部署，且資料庫改型別要用 backward-compatible migration 分階段進行，不能直接改。選項 b 同時遵守了部署時機和資料庫安全的最佳實踐，其他選項都違反了課程的核心原則。"
+      }
     },
     {
       "title": "Docker 基礎",
@@ -541,7 +656,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "Docker 的核心價值是什麼？下列何者最能說明 Docker 解決的問題？",
+        "options": [
+          {
+            "value": "a",
+            "label": "把整個 OS + 程式 + 設定打包成一個檔案，讓同一個 image 在不同電腦跑出一樣的結果"
+          },
+          {
+            "value": "b",
+            "label": "完全取代虛擬機，提供更強的隔離和安全性"
+          },
+          {
+            "value": "c",
+            "label": "自動管理所有伺服器的資源分配和負載均衡"
+          },
+          {
+            "value": "d",
+            "label": "讓開發者不用學習 Linux，就能在 Windows 上開發程式"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程開頭就強調 Docker 解決「我電腦跑得起來、你電腦跑不起來」的千古難題，靠的是把所有東西打包成 image。b 錯因為 Container 隔離不如 VM 強，c 和 d 都超出課程範圍。"
+      }
     },
     {
       "title": "CI/CD：GitHub Actions",
@@ -598,7 +736,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在 GitHub 上 push 一段程式碼後，希望自動執行測試、檢查型別、然後 build。你應該怎麼做？",
+        "options": [
+          {
+            "value": "a",
+            "label": "在 .github/workflows/ 資料夾下寫一個 YAML 檔，裡面定義 event、job 和 step，push 上去就會自動跑"
+          },
+          {
+            "value": "b",
+            "label": "打開 GitHub Settings，手動設定自動化工具，然後每次 push 時用指令觸發測試"
+          },
+          {
+            "value": "c",
+            "label": "安裝 GitHub 的桌面應用程式，在本機設定好自動化腳本，這樣 push 時才會執行"
+          },
+          {
+            "value": "d",
+            "label": "寫好測試程式後，在 main branch 建立一個特殊檔案 CI.js，GitHub 會自動偵測並執行"
+          }
+        ],
+        "answer": "a",
+        "explanation": "GitHub Actions 就是透過 .github/workflows/ 下的 YAML 檔定義自動化流程，只要 push 上去就自動執行。其他選項要嘛是需要手動觸發，要嘛是用錯工具或格式。"
+      }
     },
     {
       "title": "Zero-downtime Deploy",
@@ -663,7 +824,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的公司決定採用 Canary Deployment 上線新版本。第一階段給 1% 流量到新版本、觀察 10 分鐘後發現 error rate 異常升高。請問接下來該怎麼做？",
+        "options": [
+          {
+            "value": "a",
+            "label": "立刻把流量全部拉回舊版本、停止 deploy"
+          },
+          {
+            "value": "b",
+            "label": "繼續推進到 10% 流量、看看問題會不會自動消失"
+          },
+          {
+            "value": "c",
+            "label": "改用 Rolling Update 策略重新部署、這樣會更快"
+          },
+          {
+            "value": "d",
+            "label": "等待 24 小時後再檢查、讓系統自己恢復"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Canary 的核心優勢就是「真實流量驗證 + 自動 rollback」。Metric 不對就要立刻停止、拉回流量，這樣風險最低。選 b 是硬推導致更多使用者受影響；選 c 和 d 都沒有對症下藥。"
+      }
     },
     {
       "title": "Kubernetes 入門",
@@ -736,7 +920,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這課的內容，下列哪個情況最「不適合」導入 Kubernetes？",
+        "options": [
+          {
+            "value": "a",
+            "label": "公司有 3 人工程團隊、月流量 50 萬、沒有專職 DevOps"
+          },
+          {
+            "value": "b",
+            "label": "公司有 15 個微服務、跨多個雲平台、配置專職 SRE team"
+          },
+          {
+            "value": "c",
+            "label": "公司有法規要求自建基礎設施、需要管理 100+ 容器"
+          },
+          {
+            "value": "d",
+            "label": "公司需要自動升級容器、故障自動恢復、跨 region 部署"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確指出，團隊 < 5 人、沒專職 DevOps、月流量 < 100 萬時不應該用 k8s，應改用 Railway / Fly.io 等托管服務。選項 a 完全符合「不要用 k8s」的三個條件。其他選項都是課程列舉的「適合 k8s」的場景。"
+      }
     },
     {
       "title": "Infrastructure as Code (IaC)",
@@ -837,7 +1044,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "為什麼使用 Infrastructure as Code（IaC）相比手動在 AWS console 點設定？",
+        "options": [
+          {
+            "value": "a",
+            "label": "所有基礎設施變更都能被 review、版本控制、且災難時可快速重建"
+          },
+          {
+            "value": "b",
+            "label": "IaC 工具會自動優化你的 cloud 成本"
+          },
+          {
+            "value": "c",
+            "label": "IaC 只能用 Terraform，不支援其他工具"
+          },
+          {
+            "value": "d",
+            "label": "使用 IaC 後就不需要再進 AWS console 工作"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調 IaC 的三大價值：(1)環境可重現 + PR review（像 git），(2)變更有歷史紀錄，(3)災難快速重建。選項 b 超出內容、c 錯誤（有多種工具可選）、d 過度誇大（仍需進 console 但頻率大幅降低）。"
+      }
     }
   ],
   "boss": {
@@ -851,5 +1081,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "部署就是把你在自己電腦跑的東西搬到網路上的伺服器，讓別人能用",
+    "Docker 像是一個標準化的箱子，裝著應用程式和所有它需要的東西，到哪都能一樣地跑",
+    "Railway、Fly.io、Render 等平台簡化了部署流程，不用自己管伺服器硬體",
+    "CI/CD 是自動化工具，當你推程式碼時自動跑測試、自動部署，不用手動操作",
+    "零停機部署、Kubernetes、IaC 是進階技巧，用來應對大規模或高可靠性需求"
+  ],
+  "faq": [
+    {
+      "q": "Docker 是什麼？為什麼一定要用？",
+      "a": "Docker 是打包應用的工具，把程式碼、依賴套件、環境設定都裝進一個標準化的容器。好處是你在電腦上測試成功，部署到伺服器也百分百一樣執行，省去「在我電腦上可以跑」的問題。"
+    },
+    {
+      "q": "Railway、Fly.io、Vercel 選哪一個？",
+      "a": "取決於你的需求：Vercel 最適合前端和 Next.js，Railway 和 Fly.io 則對後端友善、功能較完整。新手建議先選一個用習慣，再根據成本或功能切換。"
+    },
+    {
+      "q": "什麼時候才用得上 Kubernetes、IaC 這些東西？",
+      "a": "小專案不需要。通常是公司規模大、需要管理多個服務、自動擴展，或對可靠性要求高時才會用到。新手先掌握基礎部署即可，需要再學。"
+    }
+  ]
 }

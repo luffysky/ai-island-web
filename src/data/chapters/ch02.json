@@ -139,7 +139,30 @@
           "level": 3,
           "text": "偽元素（pseudo-element）：插入虛擬元素"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在 CSS 中，如果你想選擇「所有 div 標籤裡面的 p 標籤，包括孫子層級」，應該用哪個選擇器？",
+        "options": [
+          {
+            "value": "a",
+            "label": "div > p"
+          },
+          {
+            "value": "b",
+            "label": "div p"
+          },
+          {
+            "value": "c",
+            "label": "div + p"
+          },
+          {
+            "value": "d",
+            "label": "div ~ p"
+          }
+        ],
+        "answer": "b",
+        "explanation": "div p（空格）是後代選擇器，會選到 div 內所有層級的 p，包括孫子；div > p 只選直接子代的 p，孫子不算。這是新手最常踩的坑。"
+      }
     },
     {
       "id": "2.3",
@@ -184,7 +207,30 @@
           "level": 3,
           "text": "Cascade Layers（2022+ 新功能）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你寫了兩條 CSS 規則都選到同一個 `<h1 class=\"title\">` 元素，一條是 `h1 { color: blue; }`，另一條是 `.title { color: red; }`。請問最後這個標題會顯示什麼顏色？",
+        "options": [
+          {
+            "value": "a",
+            "label": "藍色，因為 h1 標籤是更具體的選擇器"
+          },
+          {
+            "value": "b",
+            "label": "紅色，因為 class 選擇器的權重更高"
+          },
+          {
+            "value": "c",
+            "label": "取決於哪條規則在 CSS 檔案裡寫得比較後面"
+          },
+          {
+            "value": "d",
+            "label": "無法判斷，需要用 F12 DevTools 才能看出來"
+          }
+        ],
+        "answer": "b",
+        "explanation": "根據 Specificity（特異性）規則，`h1` 的權重是 0,0,0,1（只有標籤），而 `.title` 的權重是 0,0,1,0（class），因為 class = 10 分 > 標籤 = 1 分，所以 `.title { color: red; }` 會贏，標題顯示紅色。出現順序只在權重相同時才有用。"
+      }
     },
     {
       "id": "2.4",
@@ -279,6 +325,29 @@
         "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
         "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
         "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "miniQuiz": {
+        "question": "你在寫一個購物網站的「商品標籤」，希望標籤能排成一行（像 #優惠 #新品 #熱賣），同時想設定每個標籤的寬度和高度。下列哪個 display 值最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "display: block"
+          },
+          {
+            "value": "b",
+            "label": "display: inline"
+          },
+          {
+            "value": "c",
+            "label": "display: inline-block"
+          },
+          {
+            "value": "d",
+            "label": "display: flex"
+          }
+        ],
+        "answer": "c",
+        "explanation": "inline-block 同時具有「不換行（inline）」和「可設寬高（block）」的特性，正好滿足這個需求。block 會換行、inline 無法設寬高、flex 是高階容器，都不如 inline-block 直接。"
       }
     },
     {
@@ -404,7 +473,30 @@
           "level": 3,
           "text": "Subgrid（2023+）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你要做一個商品圖庫，希望在寬螢幕一排顯示 4 個商品、窄螢幕自動變成 2 個或 3 個，不想寫 media query。應該用哪個 CSS 屬性組合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "display: flex; flex-wrap: wrap; 搭配 flex: 1 1 250px;"
+          },
+          {
+            "value": "b",
+            "label": "display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 搭配 gap: 16px;"
+          },
+          {
+            "value": "c",
+            "label": "display: grid; grid-template-columns: repeat(4, 1fr); 搭配媒體查詢調整"
+          },
+          {
+            "value": "d",
+            "label": "display: grid; grid-template-areas 搭配 grid-column 手動指定每個商品位置"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Grid 的 `repeat(auto-fit, minmax(250px, 1fr))` 是 2026 主流響應式寫法，能根據螢幕寬度自動調整欄數，且比 Flex 更精準不會擠在一起。選項 a 的 Flex 也能換行但不如 Grid 精確；選項 c 要靠 media query；選項 d 是手動指定位置，不適合要自動響應的圖庫。"
+      }
     },
     {
       "id": "2.8",
@@ -441,7 +533,30 @@
           "level": 3,
           "text": "實戰例：黏性 header + sticky 章節標題"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你寫了一個購物車浮動徽章，標記有幾個商品。徽章要浮在購物車 icon 右上角，不管用戶怎麼滾頁面都要跟著 icon 動。下面哪個做法最正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "購物車 icon 設 position: relative，徽章設 position: absolute 並給 top / right 座標"
+          },
+          {
+            "value": "b",
+            "label": "購物車 icon 設 position: static，徽章設 position: fixed"
+          },
+          {
+            "value": "c",
+            "label": "購物車 icon 設 position: fixed，徽章設 position: absolute"
+          },
+          {
+            "value": "d",
+            "label": "購物車 icon 設 position: absolute，徽章也設 position: absolute"
+          }
+        ],
+        "answer": "a",
+        "explanation": "absolute 必須配 relative 父元素才能正確定位。icon 用 relative（不脫離文檔流、保留空間），徽章用 absolute 貼在 icon 右上角。如果用 fixed（選項 b），徽章會相對視窗固定而不是跟著 icon；如果父元素沒有 position（選項 b），absolute 元素會往上找到 body，導致『飄走』。"
+      }
     },
     {
       "id": "2.9",
@@ -490,7 +605,30 @@
           "level": 3,
           "text": "color-mix（2023+）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想用 CSS 做一個按鈕、需要同一個顏色的三個版本：正常態、滑鼠懸停時要淡一點、按下去要深一點。下列哪種顏色寫法最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 HEX，三個版本分別寫 #3b82f6、#60a5fa、#1e40af"
+          },
+          {
+            "value": "b",
+            "label": "用 HSL，只改 L 值：hsl(217, 91%, 60%)、hsl(217, 91%, 75%)、hsl(217, 91%, 45%)"
+          },
+          {
+            "value": "c",
+            "label": "用 RGB，三個版本分別寫 rgb(59 130 246)、rgb(96 165 250)、rgb(30 64 175)"
+          },
+          {
+            "value": "d",
+            "label": "用命名顏色，寫 blue、lightblue、darkblue"
+          }
+        ],
+        "answer": "b",
+        "explanation": "HSL 的特點就是只改 L（明度）值就能得到同色不同亮度的版本，配色最直覺。HEX / RGB 要做到這點得整個重算數字，命名顏色也無法精確控制。"
+      }
     },
     {
       "id": "2.10",
@@ -539,7 +677,30 @@
           "level": 3,
           "text": "可變字型（Variable Fonts）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這課內容，為什麼在寫 font-family 時一定要寫一串「備用字型」，而不是只寫一個字型名稱？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為瀏覽器喜歡有選擇，多個字型會讓網頁載入速度變快"
+          },
+          {
+            "value": "b",
+            "label": "因為使用者電腦不一定安裝了你指定的字型，找不到就要跳到下一個，最後用系統字保底"
+          },
+          {
+            "value": "c",
+            "label": "因為一串字型能讓同一個網頁在不同段落用不同字，這樣看起來更高級"
+          },
+          {
+            "value": "d",
+            "label": "因為 CSS 規定 font-family 一定要至少寫三個以上的字型才有效"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確說明：使用者電腦可能沒有安裝你指定的字（如 Inter），所以要寫備用字型序列，找不到就往下找，最後用 sans-serif 或 serif 這種通用字型保底。這是字型堆疊的核心概念。"
+      }
     },
     {
       "id": "2.11",
@@ -584,7 +745,30 @@
           "level": 3,
           "text": "filter：CSS 濾鏡"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想做一個「電商首圖」，背景是一張大圖片，但上面的白色標題文字看不清楚。根據這課教的技巧，應該怎麼寫 CSS？",
+        "options": [
+          {
+            "value": "a",
+            "label": "在圖片上加半透明黑色漸層，讓背景變暗、文字更清楚"
+          },
+          {
+            "value": "b",
+            "label": "直接把文字改成黑色、加上 text-shadow 暈影"
+          },
+          {
+            "value": "c",
+            "label": "用 outline 幫文字加邊框、提高對比"
+          },
+          {
+            "value": "d",
+            "label": "把背景圖片的 opacity 調低、整張圖變透明"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確提到「多層背景技巧」：在圖片上疊一層半透明漸層（如 linear-gradient(rgba(0,0,0,.5)...)），這是電商 hero 圖的標配做法，可以保持圖片品質又讓文字清楚可讀。其他選項都是繞路或不符合課內教法。"
+      }
     },
     {
       "id": "2.12",
@@ -633,7 +817,30 @@
           "level": 3,
           "text": "流體排版（Fluid Typography）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在建構一個網站，希望在手機、平板和桌機上都好看。根據現代 RWD 最佳實踐，下列何者是正確的做法？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 Mobile First 寫法，預設設定手機樣式，再用 @media (min-width) 為更大螢幕調整"
+          },
+          {
+            "value": "b",
+            "label": "直接用 Desktop First 寫法，預設設定桌機樣式，用 @media (max-width) 為手機調整"
+          },
+          {
+            "value": "c",
+            "label": "不必寫 viewport meta，手機會自動縮放網頁"
+          },
+          {
+            "value": "d",
+            "label": "為了響應式設計，每個尺寸都要寫 @media query，不能使用 clamp()"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Mobile First 是 2026 業界主流做法，從手機優先開始，用 min-width 逐步為更大螢幕加樣式，這樣 CSS 更少更高效。選項 b 是舊做法（Desktop First），選項 c 會導致手機看不清，選項 d 忽視了 clamp() 能減少 media query 的優勢。"
+      }
     },
     {
       "id": "2.13",
@@ -678,7 +885,30 @@
           "level": 3,
           "text": "進階：屬性註冊（@property）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想要做一個功能：點暗黑模式按鈕時，整個網站的背景色、文字色、邊框色都要一起變。用 CSS 變數的話，最有效的做法是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "在 :root 定義 --bg、--text、--border，再用 [data-theme=\"dark\"] 選擇器覆寫這些變數、JS 只需切換 data-theme 屬性"
+          },
+          {
+            "value": "b",
+            "label": "在每個元素上寫死亮色和暗色 CSS，用 JS 逐一改每個元素的 background、color、border 屬性"
+          },
+          {
+            "value": "c",
+            "label": "寫兩套完整的 CSS 樣式檔（light.css 和 dark.css），JS 動態載入不同檔案"
+          },
+          {
+            "value": "d",
+            "label": "定義一個全域變數 --theme，值設為 'dark' 或 'light'，然後在選擇器裡用 if 判斷"
+          }
+        ],
+        "answer": "a",
+        "explanation": "CSS 變數的核心就是定義一次、多處使用，搭配巢狀作用域（[data-theme] 選擇器）覆寫，一個 JS 語句就能切換整個主題。選項 b 會改 100 個地方、選項 c 浪費資源、選項 d 在 CSS 裡沒有條件判斷。"
+      }
     },
     {
       "id": "2.14",
@@ -727,7 +957,30 @@
           "level": 3,
           "text": "View Transitions API（2024+）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的網站上有個按鈕，希望使用者點擊時能「感受到」被按下去的觸感——也就是縮小 0.95 倍，然後彈回來。下列哪個做法最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 @keyframes 做彈跳動畫，搭配 cubic-bezier(0.34, 1.56, 0.64, 1) 的緩動函數"
+          },
+          {
+            "value": "b",
+            "label": "用 transition: all 0.3s，在 :hover 時改變 transform"
+          },
+          {
+            "value": "c",
+            "label": "用 transition: all 0.5s linear，讓所有屬性均勻變化"
+          },
+          {
+            "value": "d",
+            "label": "直接在 JavaScript 裡用 setTimeout 改 DOM，不需要 CSS 動畫"
+          }
+        ],
+        "answer": "a",
+        "explanation": "按鈕按下的彈跳感需要 cubic-bezier 這種能「超過終點再回來」的非線性緩動，而 @keyframes 適合多階段的複雜動畫。選項 b 用 :hover 不符合 :active 的按下需求；選項 c 用 linear 會很機械感；選項 d 違背了用 CSS 動畫提升專業度的目標。"
+      }
     },
     {
       "id": "2.15",
@@ -764,7 +1017,30 @@
           "level": 3,
           "text": "新語法（2023+）：可以單獨 animate"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "為什麼在做動畫時，應該用 transform: translate() 移動元素，而不是用 top / left？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 translate() 用 GPU 加速、跳過版面重排，能穩定達到 60 fps；而 top / left 會觸發 layout 和 paint，容易卡頓"
+          },
+          {
+            "value": "b",
+            "label": "因為 translate() 的寫法比較簡短，code 量更少"
+          },
+          {
+            "value": "c",
+            "label": "因為 top / left 在手機上不支援，translate() 才是各平台通用的方法"
+          },
+          {
+            "value": "d",
+            "label": "因為 translate() 可以用百分比，而 top / left 只能用絕對像素"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程核心強調 transform 是『動畫效能之王』——translate() 利用 GPU 加速直接合成圖層，避免瀏覽器重新計算版面，所以動畫順暢；top / left 則會觸發 layout 和 paint，導致效能低落。其他選項都是次要或錯誤的理由。"
+      }
     },
     {
       "id": "2.16",
@@ -821,7 +1097,30 @@
           "level": 3,
           "text": "@use 跟 @forward（2020+ 模組系統）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在維護一個用 Sass 寫的舊專案，看到這段程式碼。請問編譯後 `.card:hover` 會產生什麼 CSS 選擇器？",
+        "options": [
+          {
+            "value": "a",
+            "label": ".card:hover { transform: scale(1.02); }"
+          },
+          {
+            "value": "b",
+            "label": ".card &:hover { transform: scale(1.02); }"
+          },
+          {
+            "value": "c",
+            "label": ".card .card:hover { transform: scale(1.02); }"
+          },
+          {
+            "value": "d",
+            "label": "&.card:hover { transform: scale(1.02); }"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Sass 巢狀中的 & 代表外層 selector（.card），所以 `&:hover` 編譯成 `.card:hover`。選項 b、c 是常見誤解，d 則是 & 用法完全反了。"
+      }
     },
     {
       "id": "2.17",
@@ -882,7 +1181,30 @@
           "level": 3,
           "text": "shadcn/ui：Tailwind 上的元件系統"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "Tailwind CSS 的核心概念「utility-first（功能優先）」指的是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "把 CSS 拆成最小單位（如 p-4、text-lg、bg-blue-500），直接組合使用，不用寫自訂 CSS 類名"
+          },
+          {
+            "value": "b",
+            "label": "優先使用 Tailwind 內建的 UI 元件庫，減少手動編碼的時間"
+          },
+          {
+            "value": "c",
+            "label": "先寫 tailwind.config.js 設定檔，再決定哪些 utility 要使用"
+          },
+          {
+            "value": "d",
+            "label": "優先在 CSS 檔案裡寫樣式，再透過 class 組合套用到 HTML"
+          }
+        ],
+        "answer": "a",
+        "explanation": "utility-first 就是不命名、直接用預設的小功能 class 組合，解決傳統 CSS 的命名痛苦和維護困難。b 講的是元件庫、c 講的是設定順序、d 反而是傳統 CSS 做法，都不符合核心概念。"
+      }
     },
     {
       "id": "2.18",
@@ -927,7 +1249,30 @@
           "level": 3,
           "text": "Tailwind vs Bootstrap：怎麼選？"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在做一個銀行內部的帳戶管理後台系統，需要快速拼出介面。同時有個新創 SaaS 產品要做高度客製化的品牌設計。根據 Bootstrap 和 Tailwind 的哲學差別，怎麼選才最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "兩個案子都用 Bootstrap，因為它是老牌框架更穩定"
+          },
+          {
+            "value": "b",
+            "label": "銀行後台用 Bootstrap，SaaS 產品用 Tailwind"
+          },
+          {
+            "value": "c",
+            "label": "兩個案子都用 Tailwind，因為它是新潮更現代"
+          },
+          {
+            "value": "d",
+            "label": "銀行後台用 Tailwind，SaaS 產品用 Bootstrap"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Bootstrap 的成品元件優先、適合快速做出「能用就好」的後台介面；Tailwind 是 utility 原料、適合高度客製化的品牌設計。選項 b 符合課程提到的「選擇心法」。"
+      }
     },
     {
       "id": "2.19",
@@ -976,7 +1321,30 @@
           "level": 3,
           "text": "2026 業界選擇趨勢"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的新專案要選 CSS-in-JS 方案。如果團隊希望**零執行時開銷、SSR 完美、又支援 React Server Components**，下列哪個是 2026 的建議選擇？",
+        "options": [
+          {
+            "value": "a",
+            "label": "styled-components，因為它最靈活、社群最大"
+          },
+          {
+            "value": "b",
+            "label": "Panda CSS 或 Vanilla Extract，因為是編譯時方案、效能最好"
+          },
+          {
+            "value": "c",
+            "label": "CSS Modules，因為寫純 CSS、最簡單"
+          },
+          {
+            "value": "d",
+            "label": "Emotion，因為比 styled-components 輕量"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確說明 styled-components 在 2024 後逐漸退場、不支援 React Server Components；而 Panda CSS / Vanilla Extract / StyleX 是編譯時方案、零 runtime 開銷、是 2026 新主流。CSS Modules 雖然也不錯，但比較適合傳統需求、不如編譯時方案強大。"
+      }
     },
     {
       "id": "2.20",
@@ -1021,7 +1389,30 @@
           "level": 3,
           "text": "規模範例：完整尺寸表"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "假設你要改變整個網站的主題色，從藍色改成綠色，並同時支援暗色模式。使用 design token 三層結構，你應該改哪一層？",
+        "options": [
+          {
+            "value": "a",
+            "label": "只改 Primitive 層的顏色值，例如把 --blue-500 改成綠色"
+          },
+          {
+            "value": "b",
+            "label": "只改 Semantic 層，把 --color-primary 指向新的綠色 primitive token"
+          },
+          {
+            "value": "c",
+            "label": "同時改 Primitive 和 Component 層，才能確保所有元件更新"
+          },
+          {
+            "value": "d",
+            "label": "改所有三層，這樣才能支援暗色模式"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Semantic 層是「意義層」，--color-primary 指向 primitive 的顏色值，只要改 semantic 層指向新的綠色 token，所有用 var(--color-primary) 的元件就會自動變綠，暗色模式也只需在 [data-theme=\"dark\"] 改 semantic 層即可，無需動 primitive 和 component 層。"
+      }
     },
     {
       "id": "2.21",
@@ -1066,7 +1457,30 @@
           "level": 3,
           "text": "遵守 prefers-reduced-motion"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在設計一個確認按鈕，使用者按下去後要「感覺按鈕有被按」。根據課程內容，下列哪個選擇最符合動畫心理學原則？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 ease-out、300ms、cubic-bezier(0.4, 0, 0.2, 1)，讓按鈕縮小後回彈到原位"
+          },
+          {
+            "value": "b",
+            "label": "用 linear、2 秒、讓按鈕持續旋轉，越炫越能吸引使用者"
+          },
+          {
+            "value": "c",
+            "label": "用 spring / overshoot 緩動、100-200ms 的微互動時長，讓按鈕有質量感地回彈"
+          },
+          {
+            "value": "d",
+            "label": "用 ease-in、500ms、讓按鈕慢慢淡出，表示確認完成"
+          }
+        ],
+        "answer": "c",
+        "explanation": "課程強調動畫的目的是『告訴使用者發生了什麼』，按鈕回彈要用 spring / overshoot 傳達『活的』、『有質量』的感覺，且微互動應該在 100-200ms 內完成，而不是拖長時間。選項 a 的時長太長（300ms 是狀態切換層級），選項 b 違反『動畫服務功能不服務虛榮』的原則，選項 d 用了 ease-in 容易造成『逃跑感』而非回彈。"
+      }
     },
     {
       "id": "2.22",
@@ -1115,7 +1529,30 @@
           "level": 3,
           "text": "觸控目標最小 44×44px"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的網站有一個提交按鈕，設定成 `color: #999; background: #fff;`（淺灰字白底）。這樣符合無障礙標準嗎？為什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "不符合。對比度約 2.8:1，低於 AA 標準的 4.5:1，視障或低視力使用者會看不清楚"
+          },
+          {
+            "value": "b",
+            "label": "符合。只要有文字就可以，顏色深淺不重要"
+          },
+          {
+            "value": "c",
+            "label": "不符合。因為使用了灰色，WCAG 規定按鈕一定要用黑色"
+          },
+          {
+            "value": "d",
+            "label": "符合。淺灰色看起來很優雅，無障礙就是讓所有人用，不需要特別改"
+          }
+        ],
+        "answer": "a",
+        "explanation": "WCAG AA 標準要求一般文字對比度至少 4.5:1，#999 對 #fff 只有約 2.8:1，達不到標準。這是課程中強調的「新手最常犯」的錯誤——輔助文字最深只能到 #666 才能保證可讀性。"
+      }
     },
     {
       "id": "2.23",
@@ -1164,7 +1601,30 @@
           "level": 3,
           "text": "圖片優化"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的網站有一個列表、每次使用者捲動時都會卡頓。根據瀏覽器渲染管線、下面哪個做法最能解決這個問題？",
+        "options": [
+          {
+            "value": "a",
+            "label": "改用 CSS 動畫改變列表項目的 top 和 left 屬性、這樣可以更精確控制位置"
+          },
+          {
+            "value": "b",
+            "label": "在列表項目加上 `content-visibility: auto` 和 `contain-intrinsic-size`、讓瀏覽器跳過渲染離畫面遠的元素"
+          },
+          {
+            "value": "c",
+            "label": "增加 CSS 檔案大小、這樣瀏覽器會用更多資源、效能自然提升"
+          },
+          {
+            "value": "d",
+            "label": "在所有元素上加 `will-change: transform`、讓瀏覽器提前為每個元素準備 GPU 圖層"
+          }
+        ],
+        "answer": "b",
+        "explanation": "content-visibility: auto 是針對長列表卡頓的神級優化、可以跳過渲染離畫面遠的元素。選項 a 觸發 Layout 最貴、選項 c 明顯錯誤、選項 d 無腦加 will-change 反而耗記憶體拖慢速度。"
+      }
     },
     {
       "id": "2.24",
@@ -1205,7 +1665,30 @@
           "level": 3,
           "text": "暴力除錯神技"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在 DevTools 的 Styles 面板看到某條 CSS 規則被刪除線劃掉了，這表示什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "這條規則沒有生效，被其他更高優先級的規則覆蓋了"
+          },
+          {
+            "value": "b",
+            "label": "這條規則寫錯了，瀏覽器直接忽略"
+          },
+          {
+            "value": "c",
+            "label": "這個元素被設成 display: none，所以這條規則不再適用"
+          },
+          {
+            "value": "d",
+            "label": "你需要重新整理頁面，規則才會生效"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Styles 面板的刪除線表示該條規則被覆蓋（通常是特異性更高或在後面的規則贏了），而不是代碼寫錯。如果規則寫錯，瀏覽器會顯示警告；display: none 是元素層級的問題，不會只讓某條規則失效；重新整理也不相關。"
+      }
     },
     {
       "id": "2.25",
@@ -1241,7 +1724,30 @@
           "level": 3,
           "text": "2026 的「現代 CSS」核心"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在開始一個 React + Next.js 新專案，需要選擇 CSS 命名慣例。根據課程內容，你應該採用哪一套？",
+        "options": [
+          {
+            "value": "a",
+            "label": "BEM（Block-Element-Modifier），因為它是最嚴格的命名規則"
+          },
+          {
+            "value": "b",
+            "label": "Tailwind 的 Utility-first，因為它是 2026 新主流、業界在 React/Next.js 上的主流選擇"
+          },
+          {
+            "value": "c",
+            "label": "SMACSS，因為它適合所有專案類型"
+          },
+          {
+            "value": "d",
+            "label": "OOCSS，因為它最像傳統 CSS 寫法"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確指出選擇命名慣例的準則：React/Next.js 專案應該用 Tailwind（業界主流）。BEM 適合純 CSS 專案、SMACSS 適合大型專案、OOCSS 是 Bootstrap 哲學，都不是 React/Next.js 的首選。"
+      }
     }
   ],
   "boss": {
@@ -1255,5 +1761,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "CSS 選擇器決定你對誰下指令，特異性和繼承決定哪個規則會贏",
+    "盒模型是所有排版的基礎，padding、margin、border、content 要分清楚",
+    "display 改變元素的排版行為，Flexbox 和 Grid 分別用來做一維和二維排版",
+    "position 用來精確定位元素，搭配 top、left 等屬性調整位置",
+    "響應式設計用 media query 和相對單位，讓同一份 CSS 在各裝置上都能用"
+  ],
+  "faq": [
+    {
+      "q": "CSS 就是改顏色和大小？為什麼要花這麼多時間學？",
+      "a": "CSS 遠不只改顏色，它控制了排版、動畫、無障礙、效能，決定了使用者體驗。學好 CSS 代表你能獨立完成設計稿到網頁的全過程，不用靠設計師或後端幫忙調整樣子。"
+    },
+    {
+      "q": "Flexbox 和 Grid 要都學嗎？還是只學一個？",
+      "a": "兩個都學，但用途不同。Flexbox 適合單行或單列的排版（像導航列、按鈕組），Grid 適合二維複雜排版（像網誌卡片網格）。實務上經常混用，哪個順手就用哪個。"
+    },
+    {
+      "q": "每次改 CSS 都要手動重整網頁，有沒有更快的方式？",
+      "a": "有的，用開發者工具直接在瀏覽器改 CSS 看效果（改完截圖或筆記下來再回到編輯器改），或用 Live Server 這類工具自動重整。學到後面會用 Sass 和打包工具，改一次檔案自動編譯更新。"
+    }
+  ]
 }

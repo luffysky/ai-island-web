@@ -63,7 +63,30 @@
           "text": "🎯 重點回顧",
           "level": 3
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，Rust 最核心的優勢是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "執行速度比 C/C++ 快，而且有自動垃圾回收保護記憶體"
+          },
+          {
+            "value": "b",
+            "label": "編譯器在執行前就用「所有權」制度擋掉記憶體錯誤和資料競爭，又不需要垃圾回收"
+          },
+          {
+            "value": "c",
+            "label": "語法簡單易學，初學者不會被編譯器罵"
+          },
+          {
+            "value": "d",
+            "label": "只有系統程式設計師才需要學，網頁和手機開發用不到"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調 Rust 的招牌是「又快又安全」——速度跟 C/C++ 一樣快，但編譯器在執行前就靠「所有權」保證記憶體安全，且零成本不靠 GC。選項 a 錯在 Rust 不使用垃圾回收，選項 c 和 d 都與課程內容相反。"
+      }
     },
     {
       "id": "33.2",
@@ -112,7 +135,30 @@
           "text": "🎯 重點回顧",
           "level": 3
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你剛裝好 Rust，現在想建一個新專案、加入 rand 套件、然後執行程式。下面哪個指令順序是對的？",
+        "options": [
+          {
+            "value": "a",
+            "label": "cargo new myapp → cd myapp → cargo add rand → cargo run"
+          },
+          {
+            "value": "b",
+            "label": "rustup new myapp → cargo add rand → rustc myapp"
+          },
+          {
+            "value": "c",
+            "label": "cargo add rand → cargo new myapp → cargo run"
+          },
+          {
+            "value": "d",
+            "label": "cargo new myapp → rustc --version → cargo add rand → cargo run"
+          }
+        ],
+        "answer": "a",
+        "explanation": "正確順序是先用 cargo new 建專案、進資料夾、用 cargo add 加套件、最後 cargo run 執行。選項 b 用錯了 rustup（是裝環境用、不是建專案）、選項 c 順序反了、選項 d 多了無關的 rustc --version。"
+      }
     },
     {
       "id": "33.3",
@@ -161,7 +207,30 @@
           "text": "🎯 重點回顧",
           "level": 3
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下面哪一段程式碼可以成功編譯？",
+        "options": [
+          {
+            "value": "a",
+            "label": "let x = 5; x = 6;"
+          },
+          {
+            "value": "b",
+            "label": "let mut y = 5; y = 6;"
+          },
+          {
+            "value": "c",
+            "label": "let z: i32 = \"hello\"; z = 10;"
+          },
+          {
+            "value": "d",
+            "label": "let name = \"Alice\"; let name: i32 = 25; name = 26;"
+          }
+        ],
+        "answer": "b",
+        "explanation": "只有 (b) 可以編譯。(a) 違反「變數預設不可變」規則；(c) 型別不符；(d) shadowing 後第二個 name 也是不可變。正確做法是加 `mut` 才能改值。"
+      }
     },
     {
       "id": "33.4",
@@ -206,7 +275,30 @@
           "text": "🎯 重點回顧",
           "level": 3
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下面這段 Rust 程式碼執行時會發生什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "s1 和 s2 都能正常印出「hello」，因為 Rust 會自動複製 String"
+          },
+          {
+            "value": "b",
+            "label": "編譯會失敗，因為 s1 的所有權已經移動給 s2，s1 不能再使用"
+          },
+          {
+            "value": "c",
+            "label": "s2 能印出「hello」，但 s1 會印出空字串，因為值被移空了"
+          },
+          {
+            "value": "d",
+            "label": "程式正常執行，但會洩漏記憶體，因為有兩個擁有者"
+          }
+        ],
+        "answer": "b",
+        "explanation": "所有權的第二和第三條規則：同一時間只能有一個擁有者、賦值會 move（移動）所有權。`let s2 = s1` 不是複製，而是把所有權搬給 s2，s1 直接失效；後面再用 s1 會編譯失敗。"
+      }
     },
     {
       "id": "33.5",
@@ -251,7 +343,30 @@
           "text": "🎯 重點回顧",
           "level": 3
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下面哪個程式碼會被 Rust 編譯器拒絕？",
+        "options": [
+          {
+            "value": "a",
+            "label": "let s = String::from(\"hi\"); let r1 = &s; let r2 = &s; println!(\"{} {}\", r1, r2);"
+          },
+          {
+            "value": "b",
+            "label": "let mut s = String::from(\"hi\"); let r1 = &s; let r2 = &s; s.push_str(\" world\");"
+          },
+          {
+            "value": "c",
+            "label": "let mut s = String::from(\"hi\"); let r = &mut s; r.push_str(\" world\"); println!(\"{}\", r);"
+          },
+          {
+            "value": "d",
+            "label": "let s = String::from(\"hi\"); let r1 = &s; let r2 = &mut s; println!(\"{} {}\", r1, r2);"
+          }
+        ],
+        "answer": "d",
+        "explanation": "選項 d 違反了借用規則：已經有不可變借用 r1 時，不能同時有可變借用 r2。選項 a、c 都符合規則，選項 b 則是在借用結束後才修改原值，也合法。"
+      }
     },
     {
       "id": "33.6",
@@ -296,7 +411,30 @@
           "text": "🎯 重點回顧",
           "level": 3
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下面哪個敘述正確說明了 Rust 生命週期的核心目的？",
+        "options": [
+          {
+            "value": "a",
+            "label": "確保參考不會比它指向的資料活得更久，避免指向已釋放記憶體的情況"
+          },
+          {
+            "value": "b",
+            "label": "讓編譯器自動延長變數的存活時間，使參考可以在任何地方使用"
+          },
+          {
+            "value": "c",
+            "label": "在程式執行時動態追蹤所有參考，確保記憶體安全"
+          },
+          {
+            "value": "d",
+            "label": "強制開發者在每個函式都寫 'a 標註，以提高程式碼的清晰度"
+          }
+        ],
+        "answer": "a",
+        "explanation": "生命週期的核心目的就是防止懸空參考——參考不能比它指向的資料活得久。選項 b 曲解了生命週期的作用（它不延長存活時間），選項 c 混淆了編譯時檢查和執行時追蹤，選項 d 則忽略了課程強調的「大多數情況編譯器自動推導」這個重點。"
+      }
     },
     {
       "id": "33.7",
@@ -341,7 +479,30 @@
           "hint": "match 必須處理每一種 Shape，少一個編譯不過。",
           "initialCode": "enum Shape {\n    Circle(f64),\n    Rectangle(f64, f64),\n}\n\nfn area(s: &Shape) -> f64 {\n    match s {\n        Shape::Circle(r) => 3.14 * r * r,\n        Shape::Rectangle(w, h) => w * h,\n    }\n}\n\nfn main() {\n    println!(\"圓面積 = {}\", area(&Shape::Circle(2.0)));\n    println!(\"矩形面積 = {}\", area(&Shape::Rectangle(3.0, 4.0)));\n}"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下列關於 Rust 的 struct 和 enum 的說法，何者正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "struct 是用來列舉「幾種之一」的型別，enum 是用來打包相關資料的型別"
+          },
+          {
+            "value": "b",
+            "label": "在 impl 區塊中定義的方法，第一個參數通常是 &self，用來存取該物件的資料"
+          },
+          {
+            "value": "c",
+            "label": "enum 每一種變體都必須帶資料，不能只是空的名稱"
+          },
+          {
+            "value": "d",
+            "label": "使用 match 搭配 enum 時，可以選擇只處理其中幾種情況就好"
+          }
+        ],
+        "answer": "b",
+        "explanation": "struct 打包相關資料、enum 列舉幾種之一（a 反了）；enum 的變體可以帶資料也可以不帶（c 錯）；match 必須窮舉所有 enum 變體，漏一種編譯器就不讓過（d 錯）；只有 b 正確——impl 區塊中的方法第一個參數 &self 讓方法能存取物件本身的資料。"
+      }
     },
     {
       "id": "33.8",
@@ -390,7 +551,30 @@
           "text": "🎯 重點回顧",
           "level": 3
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你有一個 Option<i32> 的值，想在有值的時候把數字拿出來用，沒值就不管。以下哪個寫法最簡潔？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用完整的 match，列出 Some(x) 和 None 兩個分支"
+          },
+          {
+            "value": "b",
+            "label": "用 if let Some(x) = 值 來直接拿出 x，不管 None 的情況"
+          },
+          {
+            "value": "c",
+            "label": "用 match 但只寫 Some(x) 一個分支，None 用 _ 接"
+          },
+          {
+            "value": "d",
+            "label": "用 if 判斷 is_some()，再呼叫 unwrap() 拿值"
+          }
+        ],
+        "answer": "b",
+        "explanation": "if let 就是為了「只關心一種情況」設計的簡寫，比完整 match 簡潔。選項 c 看似可行但不合法（match 必須窮舉，不能漏掉任何分支），選項 d 可以但比較冗長且容易出錯。"
+      }
     },
     {
       "id": "33.9",
@@ -435,7 +619,30 @@
           "hint": "改 target，看 Some 跟 None 兩種結果。",
           "initialCode": "fn find(v: &[i32], target: i32) -> Option<usize> {\n    for (i, &x) in v.iter().enumerate() {\n        if x == target { return Some(i); }\n    }\n    None\n}\n\nfn main() {\n    let v = [10, 20, 30];\n    match find(&v, 20) {\n        Some(i) => println!(\"找到，位置 {}\", i),\n        None => println!(\"找不到\"),\n    }\n}"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下列敘述何者正確？Rust 如何處理「可能沒有值」的情況？",
+        "options": [
+          {
+            "value": "a",
+            "label": "使用 Option<T> 型別，分成 Some(值) 和 None 兩種情況，編譯器強制你必須處理 None"
+          },
+          {
+            "value": "b",
+            "label": "像其他語言一樣使用 null，但 Rust 的編譯器會自動檢查避免 NullPointerException"
+          },
+          {
+            "value": "c",
+            "label": "使用 Result<T, E> 型別，裡面包含 Some 和 None 兩個分支"
+          },
+          {
+            "value": "d",
+            "label": "直接使用 .unwrap() 方法，可以安全地取出值，不用擔心 panic"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Rust 沒有 null，改用 Option<T> 來表達「可能有值或沒有值」的情況。編譯器強制要用 match 或其他方式處理 None，這樣 null 相關的 bug 在編譯期就被抓出來。選項 b 錯在 Rust 根本沒有 null；選項 c 混淆了 Result 的用途（Result 是用來表達「成功或失敗」）；選項 d 錯在 unwrap() 容易 panic，只應在確定不會出錯時使用。"
+      }
     },
     {
       "id": "33.10",
@@ -480,7 +687,30 @@
           "hint": "把 b 改成 'abc'，看 parse 失敗時 ? 怎麼提早回傳。",
           "initialCode": "fn parse_sum(a: &str, b: &str) -> Result<i32, std::num::ParseIntError> {\n    let x = a.parse::<i32>()?;\n    let y = b.parse::<i32>()?;\n    Ok(x + y)\n}\n\nfn main() {\n    match parse_sum(\"10\", \"32\") {\n        Ok(n) => println!(\"和 = {}\", n),\n        Err(e) => println!(\"出錯：{}\", e),\n    }\n}"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在寫一個 Rust 應用程式，需要讀檔案、解析 JSON、連接資料庫，這些操作都可能出錯。根據這堂課的建議，你應該怎麼選擇錯誤處理的方式？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 anyhow 的 Result，這樣各種錯誤都能用 ? 往上拋，不用自己定義錯誤型別"
+          },
+          {
+            "value": "b",
+            "label": "用 thiserror 為每種錯誤都定義清楚的型別，這樣最安全也最專業"
+          },
+          {
+            "value": "c",
+            "label": "每個可能出錯的地方都用 match 語句逐一處理，這樣最明確"
+          },
+          {
+            "value": "d",
+            "label": "使用標準庫的 ParseIntError，因為它已經涵蓋大多數應用程式的錯誤"
+          }
+        ],
+        "answer": "a",
+        "explanation": "應用程式（app）用 anyhow，因為它提供萬用錯誤型別，只想知道「出錯了」而不在乎細節。thiserror 是為了寫函式庫給別人用，才需要定義清楚的錯誤型別；match 逐一處理太囉嗦，正是 ? 運算子要解決的問題。"
+      }
     },
     {
       "id": "33.11",
@@ -525,7 +755,30 @@
           "hint": "改改內容、看 {:?} 印出的結果。",
           "initialCode": "use std::collections::HashMap;\n\nfn main() {\n    let mut v = vec![1, 2, 3];\n    v.push(4);\n    println!(\"Vec = {:?}\", v);\n\n    let mut m = HashMap::new();\n    m.insert(\"蘋果\", 30);\n    m.insert(\"香蕉\", 20);\n    println!(\"蘋果價格 = {:?}\", m.get(\"蘋果\"));\n}"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "假設你要寫一個程式，記錄多個學生的分數，並用學生名字來快速查詢某個學生的分數。下列哪個集合最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Vec<i32>，因為能用 push 快速加入分數"
+          },
+          {
+            "value": "b",
+            "label": "HashMap<String, i32>，因為能用名字當鍵直接查詢對應分數"
+          },
+          {
+            "value": "c",
+            "label": "String，因為能儲存所有學生資訊"
+          },
+          {
+            "value": "d",
+            "label": "&str，因為是最輕量的集合"
+          }
+        ],
+        "answer": "b",
+        "explanation": "HashMap 適合需要用鍵快速查詢值的場景。Vec 只能按索引存取、String 是字串集合、&str 是借用不能修改，都不適合「用名字查分數」這種需求。"
+      }
     },
     {
       "id": "33.12",
@@ -570,7 +823,30 @@
           "hint": "改 filter / map 的邏輯，看結果怎麼變。",
           "initialCode": "fn main() {\n    let nums = vec![1, 2, 3, 4, 5, 6];\n    let result: Vec<i32> = nums.iter()\n        .filter(|&&x| x % 2 == 0)   // 只留偶數\n        .map(|&x| x * 10)           // 每個 x10\n        .collect();\n    println!(\"{:?}\", result);       // [20, 40, 60]\n    let sum: i32 = nums.iter().sum();\n    println!(\"總和 = {}\", sum);\n}"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "以下哪個敘述最能說明 Rust Iterator 與 Closure 搭配的核心優勢？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Closure 能抓住外面的變數，讓匿名函式更靈活；Iterator 鏈讓資料處理代碼更簡潔，編譯後執行速度也跟手寫 for 迴圈一樣快"
+          },
+          {
+            "value": "b",
+            "label": "Iterator 鏈可以取代所有的 for 迴圈，讓程式完全不需要手動控制迴圈流程"
+          },
+          {
+            "value": "c",
+            "label": "Closure 的主要作用是簡化函式定義，使用 Iterator 時一定要搭配 Closure 才能編譯"
+          },
+          {
+            "value": "d",
+            "label": "Iterator 會自動最佳化記憶體，所以用 Iterator 鏈處理大資料集永遠比 for 迴圈更省記憶體"
+          }
+        ],
+        "answer": "a",
+        "explanation": "選項 a 正確地涵蓋課程的三個核心點：Closure 能抓住外面變數（靈活性）、Iterator 鏈讓代碼簡潔（優雅性）、編譯後速度一致（零成本抽象）。選項 b 誇大其詞、c 說「一定要」不對、d 的記憶體說法課程未提及。"
+      }
     },
     {
       "id": "33.13",
@@ -615,7 +891,30 @@
           "hint": "say 能吃任何 impl 了 Greet 的型別。",
           "initialCode": "trait Greet { fn hello(&self) -> String; }\n\nstruct Cat;\nstruct Dog;\nimpl Greet for Cat { fn hello(&self) -> String { String::from(\"喵\") } }\nimpl Greet for Dog { fn hello(&self) -> String { String::from(\"汪\") } }\n\nfn say(g: &impl Greet) { println!(\"{}\", g.hello()); }\n\nfn main() {\n    say(&Cat);\n    say(&Dog);\n}"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下列何者正確描述 Trait 的用途？",
+        "options": [
+          {
+            "value": "a",
+            "label": "定義一組方法簽名，任何型別 impl 它就獲得那些方法的實作能力"
+          },
+          {
+            "value": "b",
+            "label": "Trait 是一種資料結構，用來儲存不同型別的值"
+          },
+          {
+            "value": "c",
+            "label": "只能用 #[derive] 來實作 Trait，不能手動寫 impl 區塊"
+          },
+          {
+            "value": "d",
+            "label": "Trait 的主要目的是取代 struct 成為 Rust 的預設類型定義方式"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Trait 就像介面，定義「能做什麼」（方法簽名），型別透過 impl 來實現這些方法。選項 b 搞混了 struct 的角色；c 錯在 Trait 可以手動 impl 也可以 #[derive]；d 搞混了 Trait 和 struct 的用途。"
+      }
     },
     {
       "id": "33.14",
@@ -660,7 +959,30 @@
           "hint": "同一個函式吃數字也吃字元。",
           "initialCode": "fn largest<T: PartialOrd>(list: &[T]) -> &T {\n    let mut max = &list[0];\n    for x in list {\n        if x > max { max = x; }\n    }\n    max\n}\n\nfn main() {\n    println!(\"{}\", largest(&[3, 7, 2, 9, 1]));\n    println!(\"{}\", largest(&['a', 'z', 'm']));\n}"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你寫了一個泛型函式 `fn process<T>(item: T)`，但函式內需要呼叫 item 的 `.clone()` 方法。請問應該怎麼寫才能讓編譯器知道 T 一定有 clone 能力？",
+        "options": [
+          {
+            "value": "a",
+            "label": "fn process<T: Clone>(item: T)"
+          },
+          {
+            "value": "b",
+            "label": "fn process<T>(item: T) 然後在函式內註解說會用 clone"
+          },
+          {
+            "value": "c",
+            "label": "fn process<T: PartialOrd>(item: T)"
+          },
+          {
+            "value": "d",
+            "label": "fn process(item: T: Clone) 在參數加上約束"
+          }
+        ],
+        "answer": "a",
+        "explanation": "trait bound 的寫法是 `<T: Trait>`，這樣編譯器才知道 T 必須實作某個 trait。選項 c 的 PartialOrd 是用來比大小，跟 clone 無關；選項 b、d 的語法都不對。"
+      }
     },
     {
       "id": "33.15",
@@ -709,7 +1031,30 @@
           "hint": "拿掉 add 前面的 pub，看 main 還能不能用它。",
           "initialCode": "mod math {\n    pub fn add(a: i32, b: i32) -> i32 { a + b }\n    pub fn mul(a: i32, b: i32) -> i32 { a * b }\n}\n\nuse math::add;\n\nfn main() {\n    println!(\"{}\", add(2, 3));\n    println!(\"{}\", math::mul(4, 5));\n}"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在開發一個 Rust 專案，寫了一個 math 模組裡有兩個函數：add() 和 secret()。你希望別的地方只能呼叫 add()、secret() 保持私有。下面哪個做法是對的？",
+        "options": [
+          {
+            "value": "a",
+            "label": "兩個函數都不加 pub，這樣都是私有的"
+          },
+          {
+            "value": "b",
+            "label": "只在 add() 前面加 pub，secret() 不加 pub"
+          },
+          {
+            "value": "c",
+            "label": "兩個都加 pub，然後在呼叫 secret() 時不要用"
+          },
+          {
+            "value": "d",
+            "label": "用 use math::add 引入 add，就會自動隱藏 secret()"
+          }
+        ],
+        "answer": "b",
+        "explanation": "pub 是用來標記「可以被模組外部存取」，secret() 沒加 pub 就是模組私有，外部無法存取。選項 a 錯因為 add() 也會被隱藏；選項 c 錯因為 pub 的東西外部就能存取，不加就不能用；選項 d 錯因為 use 只是引入方式，不會改變函數的公開性。"
+      }
     },
     {
       "id": "33.16",
@@ -754,7 +1099,30 @@
           "hint": "clone 一次計數 +1，看 strong_count。",
           "initialCode": "use std::rc::Rc;\n\nfn main() {\n    let a = Rc::new(String::from(\"一本共享的書\"));\n    println!(\"計數 = {}\", Rc::strong_count(&a));  // 1\n    let _b = Rc::clone(&a);\n    let _c = Rc::clone(&a);\n    println!(\"計數 = {}\", Rc::strong_count(&a));  // 3\n    println!(\"內容 = {}\", a);\n}"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在寫一個單執行緒的程式，有一個數據結構需要被多個變數共享，而且共享的資料還要能修改。應該用什麼組合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Rc<RefCell<T>>"
+          },
+          {
+            "value": "b",
+            "label": "Box<T>"
+          },
+          {
+            "value": "c",
+            "label": "Rc<T>"
+          },
+          {
+            "value": "d",
+            "label": "RefCell<Box<T>>"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Rc<T> 用來多擁有者共享、RefCell<T> 用來執行期借用檢查以支持內部可變。兩者搭配 Rc<RefCell<T>> 就能實現「多個變數共享且能改值」。Box<T> 只是單一擁有者放堆積、Rc<T> 單獨用則無法改值。"
+      }
     },
     {
       "id": "33.17",
@@ -803,7 +1171,30 @@
           "text": "🎯 重點回顧",
           "level": 3
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下列關於 Rust async/await 的敘述，何者正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "async fn 回傳 Future，要 await 或交給 runtime 才會真正執行"
+          },
+          {
+            "value": "b",
+            "label": "Rust 內建 async runtime，不需要額外引入第三方套件"
+          },
+          {
+            "value": "c",
+            "label": "使用 async/await 能讓單一個運算速度變快"
+          },
+          {
+            "value": "d",
+            "label": "async 最適合用在 CPU 密集的運算工作"
+          }
+        ],
+        "answer": "a",
+        "explanation": "async fn 確實回傳 Future，必須 await 或由 runtime 調度才會執行。選項 b 錯在 Rust 不附 runtime，要自己選（Tokio 是標準）；選項 c 和 d 都誤解了 async 的用途——async 是讓「等 I/O 時去做別的事」，適合 I/O 密集，不能讓單一運算變快，也不適合 CPU 密集。"
+      }
     },
     {
       "id": "33.18",
@@ -852,7 +1243,30 @@
           "hint": "playground 不跑伺服器，這裡示意 handler 回應的概念。",
           "initialCode": "// Axum handler 的精神：收請求、回回應（這裡用普通函式示意）\nfn hello() -> &'static str {\n    \"哈囉 from Axum\"\n}\n\nfn user(id: u32) -> String {\n    format!(\"使用者 {}\", id)\n}\n\nfn main() {\n    println!(\"GET /        -> {}\", hello());\n    println!(\"GET /users/7 -> {}\", user(7));\n}"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程，Axum 中的 extractor（例如 Path、Query、Json）最重要的優勢是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "可以自動將請求資料轉換成 Rust 型別，型別不對編譯階段就會被擋住"
+          },
+          {
+            "value": "b",
+            "label": "比 Actix Web 的 extractor 執行速度更快"
+          },
+          {
+            "value": "c",
+            "label": "可以同時提取多個不同格式的請求資料而不需要額外設定"
+          },
+          {
+            "value": "d",
+            "label": "讓開發者不需要手動寫任何 handler 函數"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調 Axum 的核心特色就是『型別安全的 extractor』——用 Path、Query、Json 等從請求抽資料時，型別不符合就編譯不過，這是防止執行時錯誤的關鍵設計。選項 b 談效能而非設計優勢、c 過度誇大、d 完全誤解 handler 用途。"
+      }
     },
     {
       "id": "33.19",
@@ -901,7 +1315,30 @@
           "hint": "playground 不連 DB，這裡示意「參數綁定」vs「字串拼接」。",
           "initialCode": "// sqlx 的精神：參數化查詢（用 $1 綁定，不字串拼接）\nfn safe_query(user_id: i32) -> String {\n    format!(\"SELECT * FROM users WHERE id = $1  -- bind({})\", user_id)\n}\n\nfn main() {\n    println!(\"{}\", safe_query(42));\n    println!(\"=> 用 bind 綁參數，使用者輸入永遠進不了 SQL 結構，防 injection\");\n}"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下列關於 sqlx 的敘述，何者正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "sqlx 的編譯期檢查只能驗證 SQL 語法，無法驗證欄位型別是否正確"
+          },
+          {
+            "value": "b",
+            "label": "使用 sqlx::query! 巨集時，編譯器會在編譯時連到開發資料庫驗證 SQL 語法與欄位型別，SQL 錯誤會在編譯階段就被發現"
+          },
+          {
+            "value": "c",
+            "label": "sqlx 推薦用字串拼接的方式組合 SQL 語句，這樣能讓程式碼更清楚易讀"
+          },
+          {
+            "value": "d",
+            "label": "sqlx 是傳統 ORM，它會把 SQL 語句隱藏起來，用物件導向的方式操作資料庫"
+          }
+        ],
+        "answer": "b",
+        "explanation": "sqlx 的核心優勢就是 query! 巨集在編譯期連線驗證 SQL 與型別。選項 a 錯在只驗證語法不驗證型別；c 錯在應該用 .bind() 參數化防 injection；d 錯在 sqlx 讓你寫真 SQL 而非傳統 ORM。"
+      }
     },
     {
       "id": "33.20",
@@ -950,7 +1387,30 @@
           "hint": "playground 不一定有 serde，這裡手動示意物件→JSON。",
           "initialCode": "// Serde 的精神：struct 跟 JSON 互轉（這裡手動示意）\nstruct User { name: String, age: u32 }\n\nfn to_json(u: &User) -> String {\n    format!(\"{{\\\"name\\\":\\\"{}\\\",\\\"age\\\":{}}}\", u.name, u.age)\n}\n\nfn main() {\n    let u = User { name: String::from(\"Nami\"), age: 20 };\n    println!(\"{}\", to_json(&u));\n}"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你有一個 Rust struct，想讓它能在「Rust 物件」和「JSON 字串」之間互相轉換。下列做法哪個是正確的第一步？",
+        "options": [
+          {
+            "value": "a",
+            "label": "在 struct 上加 #[derive(Serialize, Deserialize)]"
+          },
+          {
+            "value": "b",
+            "label": "直接呼叫 serde_json::to_string，讓編譯器自動推導"
+          },
+          {
+            "value": "c",
+            "label": "手寫 impl Serialize 和 impl Deserialize trait"
+          },
+          {
+            "value": "d",
+            "label": "在每個欄位加 #[serde(rename)] 標籤"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Serde 的核心就是用 #[derive(Serialize, Deserialize)] 這個巨集自動幫 struct 生成序列化能力，這是第一步。選 b 會編譯失敗（沒有trait），c 是過時做法，d 是欄位層級的客製而非必要步驟。"
+      }
     },
     {
       "id": "33.21",
@@ -999,7 +1459,30 @@
           "hint": "playground 跑 main，這裡用 assert 示意測試斷言。",
           "initialCode": "fn add(a: i32, b: i32) -> i32 { a + b }\n\nfn main() {\n    assert_eq!(add(2, 3), 5);   // 通過就沒事、失敗會 panic\n    assert!(add(2, 3) > 0);\n    println!(\"所有斷言通過 ✅\");\n}"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下面哪個敘述最能解釋 Rust 的文件測試（doctest）為什麼特別？",
+        "options": [
+          {
+            "value": "a",
+            "label": "文件測試可以用 cargo test 執行，保證寫在 /// 註解裡的程式碼範例不會過時"
+          },
+          {
+            "value": "b",
+            "label": "文件測試用 criterion 套件量效能，比普通單元測試更準確"
+          },
+          {
+            "value": "c",
+            "label": "文件測試不需要 #[test] 標籤，cargo test 會自動找到所有程式碼"
+          },
+          {
+            "value": "d",
+            "label": "文件測試可以測試 panic 和 Result，比 assert_eq! 功能更強"
+          }
+        ],
+        "answer": "a",
+        "explanation": "文件測試的特點就是寫在 /// 裡的範例會被 cargo test 真的執行，這保證了文件中的程式碼範例始終有效、不會因為後續改動而變成錯的。b 是 benchmark（基準測試），不是文件測試；c 和 d 都混淆了不同概念。"
+      }
     },
     {
       "id": "33.22",
@@ -1048,7 +1531,30 @@
           "text": "🎯 重點回顧",
           "level": 3
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下列敘述何者正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "巨集在編譯期產生程式碼，println! 和 vec! 都是巨集的例子"
+          },
+          {
+            "value": "b",
+            "label": "巨集只能用 macro_rules! 定義，#[derive] 不是巨集"
+          },
+          {
+            "value": "c",
+            "label": "巨集最大的優點是程式碼比函式更簡潔易讀"
+          },
+          {
+            "value": "d",
+            "label": "新手應該要會自己寫宣告式巨集才能算真正懂 Rust"
+          }
+        ],
+        "answer": "a",
+        "explanation": "a 正確：巨集確實在編譯期產生程式碼，println! 和 vec! 都是常見的宣告式巨集。b 錯：#[derive] 是程序式巨集，也是巨集。c 錯：巨集難寫難讀，優點是「能做函式做不到的事」（接受任意數量參數等），不是易讀。d 錯：課程明確說新手「會用」巨集就好，「自己寫」是進階，不是必須。"
+      }
     },
     {
       "id": "33.23",
@@ -1097,7 +1603,30 @@
           "hint": "解引用裸指標只能寫在 unsafe 區塊裡。",
           "initialCode": "fn main() {\n    let mut num = 5;\n    let r = &mut num as *mut i32;   // 裸指標\n\n    unsafe {\n        *r = 10;                    // 只能在 unsafe 裡解引用\n        println!(\"num = {}\", *r);\n    }\n    println!(\"外面 num = {}\", num);\n}"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下列哪個敘述最能說明 Rust 中 unsafe 的真正目的？",
+        "options": [
+          {
+            "value": "a",
+            "label": "讓程式設計師可以完全關掉 Rust 的安全檢查，自由地寫任何程式碼"
+          },
+          {
+            "value": "b",
+            "label": "只在必要時（如操作硬體、呼叫 C 函式）開放特定的 5 項操作，並把不安全的部分明確圈起來好追蹤"
+          },
+          {
+            "value": "c",
+            "label": "專門用來加快程式執行速度，不用浪費時間檢查記憶體安全"
+          },
+          {
+            "value": "d",
+            "label": "讓初學者可以更輕鬆地學習 Rust，避免被編譯器限制"
+          }
+        ],
+        "answer": "b",
+        "explanation": "unsafe 不是「關掉所有檢查」，而是在必要情況下開放那 5 件編譯器無法證明安全的事（裸指標、FFI 等），同時其他 Rust 規則照舊。它的核心價值是把不安全部分明確圈起來，出問題時知道只可能在 unsafe 區塊裡，便於偵錯和維護。"
+      }
     },
     {
       "title": "Rust 的應用領域：WASM / CLI / 嵌入式",
@@ -1146,7 +1675,30 @@
           "text": "🎯 重點回顧",
           "level": 3
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，Rust 在 WebAssembly、CLI 工具、嵌入式三個領域都很強的共同原因是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Rust 編譯出來的程式又快又安全，不需要 runtime，這正好符合這些場景的需求"
+          },
+          {
+            "value": "b",
+            "label": "Rust 有 wasm-pack、clap 等強大的工具庫，所以適合各種應用"
+          },
+          {
+            "value": "c",
+            "label": "Rust 的語法簡單易學，很容易被不同領域的開發者採用"
+          },
+          {
+            "value": "d",
+            "label": "Rust 能直接在瀏覽器、命令列和微控制器上跑，不需要額外轉換"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程核心就是強調 Rust 的『快 + 安全 + 零成本』讓它在很多領域稱霸，WASM 需要接近原生速度、CLI 需要單執行檔和快速啟動、嵌入式需要記憶體安全——這些都是『又快又不能崩』的場景。選項 b 只是工具層面，c 歪曲了事實，d 則是表面現象而非根本原因。"
+      }
     },
     {
       "title": "整章實戰：用 Axum + sqlx 做一個 API",
@@ -1195,7 +1747,30 @@
           "text": "🎯 重點回顧",
           "level": 3
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在這個 Axum + sqlx 的小 API 中，為什麼要用 `State(pool)` 把連線池傳給 handler？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 handler 是 async 函式，必須透過 State 才能接收參數"
+          },
+          {
+            "value": "b",
+            "label": "因為連線池需要被所有 handler 共用，所以用 State 注入同一個實例到各個 route"
+          },
+          {
+            "value": "c",
+            "label": "因為 sqlx 的 FromRow 只能搭配 State 使用"
+          },
+          {
+            "value": "d",
+            "label": "因為 PostgreSQL 連線必須要透過 State 才能保證執行緒安全"
+          }
+        ],
+        "answer": "b",
+        "explanation": "State 是 Axum 的依賴注入機制，用來把同一個連線池實例共用給多個 handler。a 錯在 async 函式可以接收普通參數；c 錯在 FromRow 是 sqlx 的序列化特徵，跟 State 無關；d 錯在 PgPool 本身就是執行緒安全的，不是 State 提供安全。"
+      }
     }
   ],
   "boss": {
@@ -1209,5 +1784,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "Rust 靠 ownership 和借用來管理記憶體安全，編譯時期就抓出 bug。",
+    "Pattern matching、Option、Result 讓你優雅地處理各種情況，沒有 null 例外。",
+    "Traits 和泛型是 Rust 的超能力，一份程式碼能適應多種型別和需求。",
+    "Async/Tokio 讓 Rust 高效併發，Axum 是 2026 年最輕鬆寫 API 的框架。",
+    "實戰把所有概念整合在一起：資料庫查詢、JSON 序列化、錯誤處理、單元測試全包。"
+  ],
+  "faq": [
+    {
+      "q": "我完全沒學過 Rust，這章會不會太難？",
+      "a": "不會。這章從零開始、一步步建進度，每個概念都有程式碼例子。你只需要對程式設計有基本概念（什麼是變數、函式就行），Rust 的特殊部分我們會一一拆解。"
+    },
+    {
+      "q": "Ownership 和 borrowing 是什麼？為什麼 Rust 一定要有？",
+      "a": "簡單說：ownership 決定誰負責清理記憶體，borrowing 讓你暫時用別人的東西但不搶走。這樣編譯器就能保證沒有記憶體洩漏、沒有野指標，你寫的程式一出廠就很安全。"
+    },
+    {
+      "q": "學完這章就能用 Rust 做真實專案嗎？",
+      "a": "能看懂、能寫基本的。實戰章會帶你用 Axum + sqlx 做出一個可運行的 API，你就有完整的模板可以改。遇到更深的概念再學，Rust 的力量隨著經驗會越來越明顯。"
+    }
+  ]
 }

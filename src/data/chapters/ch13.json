@@ -80,7 +80,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程，2026 年做 SEO 時最容易踩的坑是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "只優化 Google，忽視 AI 搜尋和社媒搜尋"
+          },
+          {
+            "value": "b",
+            "label": "過度堆砌關鍵字、忽視內容品質"
+          },
+          {
+            "value": "c",
+            "label": "沒有買 Ahrefs 或 SEMrush 等工具"
+          },
+          {
+            "value": "d",
+            "label": "沒有在 1-3 月內衝出流量"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調『寫給人、不是寫給機器』和『內容 > 技巧』，同時提到 E-E-A-T 信任度為新趨勢。選項 A 錯在 2026 確實要同時優化三大引擎；C 錯在免費工具也能做；D 錯在 1-3 月只是建基礎，3-6 月才開始有流量。"
+      }
     },
     {
       "title": "關鍵字研究",
@@ -141,7 +164,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你是一個新手部落格寫手，想寫關於「咖啡」的內容。根據這課教的策略，你應該怎麼選擇關鍵字？",
+        "options": [
+          {
+            "value": "a",
+            "label": "寫「咖啡」這個 Head 關鍵字，因為搜尋量最大，流量最多"
+          },
+          {
+            "value": "b",
+            "label": "寫「咖啡豆品牌推薦 2026」、「冷萃咖啡怎麼做」這類 Long-tail 關鍵字，每個搜尋量小但競爭低，加起來流量可觀"
+          },
+          {
+            "value": "c",
+            "label": "寫自己最喜歡喝的咖啡品牌和風味，不用管別人在搜什麼"
+          },
+          {
+            "value": "d",
+            "label": "先寫完 100 篇文章再做關鍵字研究，之後再調整"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程的核心心法是「寫使用者實際在搜的字」，Long-tail 策略正是 Indie 寫手的黃金法則——選低競爭、具體的關鍵字，寫 100 個 long-tail 勝過 1 個 head。選項 a 是新手常犯的錯誤（高競爭難排名），c 和 d 都違反了「先研究、後寫作」的流程。"
+      }
     },
     {
       "title": "Technical SEO",
@@ -222,7 +268,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，如果你的網站內容很好，但是加載速度很慢、URL 結構混亂，Google 爬蟲爬不進來，這會對 SEO 有什麼影響？",
+        "options": [
+          {
+            "value": "a",
+            "label": "沒有影響，因為內容好就夠了，Google 一定會給高排名"
+          },
+          {
+            "value": "b",
+            "label": "有很大影響。再好的內容，如果網站慢、結構亂、Google 爬不進來，還是不會有好排名"
+          },
+          {
+            "value": "c",
+            "label": "只要設定好 robots.txt 就能解決所有問題"
+          },
+          {
+            "value": "d",
+            "label": "只要用 Next.js 就自動會有好的 SEO"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程的核心心法就是：內容好不夠，Technical SEO 也要做好。網站速度、URL 結構、可被正確索引，這些基礎沒做好，Google 爬蟲進不來，排名也好不了。就像店面再棒，但招牌壞掉、走道亂，客人也進不來。"
+      }
     },
     {
       "title": "Content SEO",
@@ -295,7 +364,30 @@
           "level": 2,
           "text": "內容類型"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你寫了一篇 1500 字的文章，包含所有必要的 H1、H2、圖片和連結，但內容只淺談主題，沒有深入解答讀者的問題。根據 Content SEO 的核心概念，這篇文章最可能遇到什麼問題？",
+        "options": [
+          {
+            "value": "a",
+            "label": "字數太少，Google 無法判斷主題權重"
+          },
+          {
+            "value": "b",
+            "label": "雖然結構完整，但內容深度不夠，不符合『質 > 量』的原則，Google 不會偏愛它"
+          },
+          {
+            "value": "c",
+            "label": "缺少 TL;DR 和目錄，導致使用者體驗差"
+          },
+          {
+            "value": "d",
+            "label": "沒有加入數字和年份在標題裡，排名會被有數字的文章完全壓制"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Content SEO 最核心的理念是『質 > 量』——寫出真正解決問題、深度覆蓋主題的內容，Google 才會推薦。這篇文章結構合格但內容淺，正好違反了這個原則；相比之下，選項 a、c、d 都是表面問題，不是根本的內容品質問題。"
+      }
     },
     {
       "title": "GEO：AI 搜尋優化",
@@ -388,7 +480,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據 GEO 的核心概念，以下哪個做法最符合「讓 AI 搜尋引擎願意引用你」的目標？",
+        "options": [
+          {
+            "value": "a",
+            "label": "寫一篇長篇大論、用優美文筆開頭講故事，讓內容看起來很專業"
+          },
+          {
+            "value": "b",
+            "label": "直接回答問題、用清楚的結構（H1/H2/H3）、列出具體步驟、加上權威來源連結"
+          },
+          {
+            "value": "c",
+            "label": "盡量多寫各種角度的觀點，讓內容看起來很全面均衡"
+          },
+          {
+            "value": "d",
+            "label": "引用很多其他網站的文章，證明你有做功課"
+          }
+        ],
+        "answer": "b",
+        "explanation": "GEO 的核心是「結構清楚 > 風格」、「直答 > 鋪陳」、「權威來源」。AI 搜尋引擎喜歡能直接找到答案、有明確層級結構、有可信來源的內容，而不是靠文筆或面面俱到的內容。"
+      }
     },
     {
       "title": "Local SEO：在地服務",
@@ -465,7 +580,30 @@
           "level": 2,
           "text": "接案"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你經營一間在新北市板橋的咖啡廳，想做 Local SEO。下列哪個做法最能直接幫你在「附近咖啡廳」搜尋時出現？",
+        "options": [
+          {
+            "value": "a",
+            "label": "砸大錢買全國咖啡廳相關的廣告關鍵字"
+          },
+          {
+            "value": "b",
+            "label": "在 Google Business Profile 完整填寫資料、驗證地址、上傳照片、回覆評論"
+          },
+          {
+            "value": "c",
+            "label": "寫 100 篇部落格文章介紹咖啡豆知識"
+          },
+          {
+            "value": "d",
+            "label": "跟全國知名部落客合作推廣"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Local SEO 的核心是讓在地客在地圖上找到你，Google Business Profile 是最重要的免費工具。完整資料、驗證、評論管理直接影響在地搜尋排名，比全國流量或部落格文章對在地生意更有效。"
+      }
     },
     {
       "title": "Link Building",
@@ -517,7 +655,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據 Link Building 的核心原則，下列哪一個做法最符合 Google 眼中「好的連結」？",
+        "options": [
+          {
+            "value": "a",
+            "label": "花錢買 50 條來自高 DA 網站的連結，快速提升排名"
+          },
+          {
+            "value": "b",
+            "label": "寫一篇很棒的原創內容，自然吸引相關網站主動連向你"
+          },
+          {
+            "value": "c",
+            "label": "在論壇留言區大量貼自己網站連結，增加曝光"
+          },
+          {
+            "value": "d",
+            "label": "加入 PBN（私人部落格網絡），自己建立多個網站互相連結"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Link Building 的心法是「質 > 量、自然 > 操弄」。選項 a、c、d 都是買連結、留言 spam、PBN 等黑帽手法，短期有效但長期會被 Google 砍。只有 b 是正道——靠好內容自然吸引，這樣的連結最被信任。"
+      }
     },
     {
       "title": "GSC + Analytics",
@@ -590,7 +751,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這課教的內容，Google Search Console 和 Google Analytics 4 分別主要看什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "GSC 看訪客進來後做了什麼、GA4 看你在搜尋上的排名和點擊率"
+          },
+          {
+            "value": "b",
+            "label": "GSC 看你在搜尋上的表現和排名、GA4 看訪客進來後的行為和轉換"
+          },
+          {
+            "value": "c",
+            "label": "GSC 和 GA4 都是看搜尋排名，只是介面不同"
+          },
+          {
+            "value": "d",
+            "label": "GSC 看流量來源、GA4 看索引狀態"
+          }
+        ],
+        "answer": "b",
+        "explanation": "GSC 的 Performance 看關鍵字、排名、CTR；GA4 的 Acquisition 和 Conversions 看訪客來源和轉換。兩個工具一個看「人進來前」、一個看「進來後」，缺一不可。"
+      }
     },
     {
       "title": "內容生產流程",
@@ -658,7 +842,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據內容生產流程，為什麼要把內容製作分成 6 個階段而不是直接寫完就發布？",
+        "options": [
+          {
+            "value": "a",
+            "label": "把複雜的工作流程化，才能穩定大量產出、不會遺漏 SEO 優化和推廣步驟"
+          },
+          {
+            "value": "b",
+            "label": "因為 AI 工具需要 6 個步驟才能生成完整內容"
+          },
+          {
+            "value": "c",
+            "label": "只有經過 6 個階段的文章才符合 Google 的收錄標準"
+          },
+          {
+            "value": "d",
+            "label": "為了讓每篇文章都達到完美品質才能發布"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調的核心是「流程化」——把內容生產變成 SOP，像麵包店的備料→烤→上架一樣有系統，這樣才能持續穩定產出多篇文章，不會遺漏研究、規劃、推廣、監控等關鍵步驟。選項 b、c、d 都不符合課程重點。"
+      }
     },
     {
       "title": "SEO 接案 + 變現",
@@ -746,7 +953,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你跟一個在地牙醫診所簽了 SEO 合約，客戶問你：「你能保證我的診所在 Google 搜尋上排第一頁嗎？」你應該怎麼回答？",
+        "options": [
+          {
+            "value": "a",
+            "label": "不能保證排名，但承諾會努力優化並定期提供詳細報告"
+          },
+          {
+            "value": "b",
+            "label": "保證 3 個月內排上第一頁，不然免費做到達成為止"
+          },
+          {
+            "value": "c",
+            "label": "說排名取決於 Google 演算法，我也無法控制，所以不做這個承諾"
+          },
+          {
+            "value": "d",
+            "label": "保證排名，但要另外加價做付費廣告來加速"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確指出『不保證排名』，因為影響因素多、Google 演算法會變，應該承諾『努力 + 報告』而非排名結果。選項 b 過度承諾會惹麻煩；c 雖然技術上對但太消極，無法簽約；d 是轉移話題，不是誠實回應。"
+      }
     },
     {
       "title": "SEO 演算法 + 心法",
@@ -822,7 +1052,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，如果你的網站在 Google 演算法更新後排名大幅下降，最重要的第一步應該是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "立即大量購買高品質外部連結，快速提升網站權威性"
+          },
+          {
+            "value": "b",
+            "label": "不用慌張，先等待 4-6 週，同時檢視內容的 E-E-A-T 是否達標"
+          },
+          {
+            "value": "c",
+            "label": "馬上改用純 AI 寫文章，因為 Google 偏好 AI 內容"
+          },
+          {
+            "value": "d",
+            "label": "使用 Cloaking 技術隱藏真實內容，應對演算法變化"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確指出被演算法打到的應對步驟是：1.不慌 2.等 4-6 週 3.檢視內容品質（E-E-A-T）。a 項違反白帽原則；c 項誤解了課程「人 + AI 共寫」而非純 AI；d 項是黑帽手法，完全錯誤。"
+      }
     },
     {
       "title": "Schema.org 結構化資料深入",
@@ -895,7 +1148,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的網站是一個線上課程平台，想讓 Google 搜尋結果顯示課程評分、價格和課程大綱。根據本課內容，你應該在頁面加入哪種 Schema 類型才最合適？",
+        "options": [
+          {
+            "value": "a",
+            "label": "BlogPosting，因為課程內容也是文章形式"
+          },
+          {
+            "value": "b",
+            "label": "Course，它能標記課程名稱、評分、價格等資訊"
+          },
+          {
+            "value": "c",
+            "label": "FAQPage，因為課程通常有常見問題"
+          },
+          {
+            "value": "d",
+            "label": "HowTo，因為課程教人怎麼做某件事"
+          }
+        ],
+        "answer": "b",
+        "explanation": "本課列出 Schema.org 有 800+ 種類型，其中 Course 專門用來標記課程的結構化資料（名稱、評分、價格等）。BlogPosting 是給文章用、FAQPage 是給常見問題用、HowTo 是給教學步驟用，都不如 Course 準確。"
+      }
     },
     {
       "title": "Core Web Vitals 優化",
@@ -1020,7 +1296,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的網站 LCP 是 2.8 秒，INP 是 150 毫秒，CLS 是 0.08。根據 Core Web Vitals 的目標，哪個指標需要優化？",
+        "options": [
+          {
+            "value": "a",
+            "label": "LCP，因為它超過 2.5 秒的目標"
+          },
+          {
+            "value": "b",
+            "label": "INP，因為它最容易受 JavaScript 影響"
+          },
+          {
+            "value": "c",
+            "label": "CLS，因為它是三個指標中最重要的"
+          },
+          {
+            "value": "d",
+            "label": "都符合目標，不需要優化"
+          }
+        ],
+        "answer": "a",
+        "explanation": "LCP 目標是 < 2.5 秒，你的 2.8 秒超標了；INP 150ms < 200ms 達標；CLS 0.08 < 0.1 也達標。所以只有 LCP 需要優化。"
+      }
     },
     {
       "title": "關鍵字研究進階",
@@ -1172,7 +1471,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你是新手 SEO，預算有限，想快速看到成果。下面哪個策略最適合你的情況？",
+        "options": [
+          {
+            "value": "a",
+            "label": "專注搜尋量 100 萬以上的熱門關鍵字，因為流量大"
+          },
+          {
+            "value": "b",
+            "label": "找搜尋量中等但競爭難度低的長尾關鍵字，這是快速贏的策略"
+          },
+          {
+            "value": "c",
+            "label": "追著 Google Trends 上升的熱詞做，趁熱度高時搶排名"
+          },
+          {
+            "value": "d",
+            "label": "先把所有高難度關鍵字都優化完，才去碰簡單的"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程的優先級矩陣明確說「Volume 中 + Difficulty 低 → 先做（quick win）」，這正是新手該打的戰場。熱門字你贏不了（a 錯），追熱詞也容易白費力（c 錯），而應該集中火力找「有人搜、對手少」的縫隙。"
+      }
     },
     {
       "title": "GEO（AI 搜尋優化）深入",
@@ -1284,7 +1606,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據 GEO 的核心概念，以下哪個做法最能幫助你的內容被 AI 搜尋引用？",
+        "options": [
+          {
+            "value": "a",
+            "label": "寫長篇大論、用豐富的形容詞讓文章看起來專業"
+          },
+          {
+            "value": "b",
+            "label": "用結構化內容（清楚的標題層級、TL;DR、FAQ）直接回答問題，並包含引用權威來源"
+          },
+          {
+            "value": "c",
+            "label": "專注於 Google SEO 排名，因為 AI 搜尋還不夠成熟"
+          },
+          {
+            "value": "d",
+            "label": "在社群媒體上頻繁發文，但內容可以重複或簡化"
+          }
+        ],
+        "answer": "b",
+        "explanation": "GEO 的關鍵是讓 AI 容易找到、理解、引用你的內容。結構化內容（H1/H2/H3、TL;DR、短段落）+ 權威引用是 AI 最愛的形式。選 a 是傳統寫作風格（AI 不買單）、選 c 低估了 GEO 重要性、選 d 忽視內容品質。"
+      }
     },
     {
       "title": "內部連結策略",
@@ -1444,7 +1789,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的網站新發布了一篇「Python 爬蟲實戰」的文章（1200 字），這篇文章應該要加多少個內部連結，才符合 SEO 最佳實踐？",
+        "options": [
+          {
+            "value": "a",
+            "label": "2-3 個，越少越好避免 spam"
+          },
+          {
+            "value": "b",
+            "label": "6-18 個，按照每 1000 字 5-15 個的規則"
+          },
+          {
+            "value": "c",
+            "label": "20 個以上，連結越多權重傳遞越多"
+          },
+          {
+            "value": "d",
+            "label": "1 個就夠，只要連回首頁即可"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確提到每 1000 字需要 5-15 個 internal links，1200 字應該落在 6-18 個範圍。太少無法有效傳遞權重和引導讀者，太多則變成 spam 並降低用戶體驗。"
+      }
     },
     {
       "title": "Outreach + Guest Post",
@@ -1584,7 +1952,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，為什麼 Outreach（主動外展）比起被動等待更能加速 SEO 排名？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為主動寄送 Outreach Email 會自動讓 Google 爬蟲更快索引你的網站"
+          },
+          {
+            "value": "b",
+            "label": "因為主動建立連結、而不是被動等待別人推薦，能更快獲得高品質的 backlink"
+          },
+          {
+            "value": "c",
+            "label": "因為 Outreach 是唯一能避免買連結被懲罰的方法"
+          },
+          {
+            "value": "d",
+            "label": "因為寫好內容後透過 Outreach 一定能在 6 個月內排上第一頁"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程核心是『寫好內容沒人知道，主動推＝加速，質好的 backlink＝排名飛』——Outreach 的價值在於主動去建立外部連結，而不是被動等待他人推薦，這樣能更快累積高品質的 backlink。a 項對爬蟲速度的邏輯不正確；c 項只是 Outreach 的一個優點但非加速的主要原因；d 項過度保證結果，課程強調需要『6+ 個月才看效果』。"
+      }
     },
     {
       "title": "Local SEO 完整 SOP",
@@ -1729,7 +2120,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據 Local SEO 完整 SOP，為什麼 NAP 一致性（Name、Address、Phone）對在地排名這麼重要？",
+        "options": [
+          {
+            "value": "a",
+            "label": "NAP 不一致會讓 Google 無法信任你的商家資訊，導致不推薦你的店家給在地用戶"
+          },
+          {
+            "value": "b",
+            "label": "NAP 要一致才能讓競爭對手看不到你的真實位置"
+          },
+          {
+            "value": "c",
+            "label": "NAP 一致可以直接提升網站的整體 SEO 排名，對全球搜尋有幫助"
+          },
+          {
+            "value": "d",
+            "label": "NAP 一致會自動增加評論數量，改善店家評分"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確指出「NAP 不一致 = Google 不信、不推」，這是 Google 判斷商家可信度的關鍵。NAP 要在 Google、FB、LINE、黃頁等全網保持一致，Google 才會確信這是同一家真實店家，進而推薦給在地搜尋用戶。其他選項都不符合課程重點。"
+      }
     },
     {
       "title": "內容更新策略",
@@ -1877,7 +2291,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據內容更新策略，以下哪個做法是錯誤的？",
+        "options": [
+          {
+            "value": "a",
+            "label": "發現排名下降的文章，每 3-6 個月檢查一次並更新數據"
+          },
+          {
+            "value": "b",
+            "label": "更新舊文章時直接改變 URL，並用 301 轉址保留舊連結的權重"
+          },
+          {
+            "value": "c",
+            "label": "更新文章時改 dateModified 但保留 datePublished，讓 Google 知道是舊文章的新版本"
+          },
+          {
+            "value": "d",
+            "label": "刪除低流量又沒有反向連結的文章前，先檢查是否能合併到相關文章"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確指出「不要改 URL」，因為舊 URL 已有反向連結，改 URL 會導致這些連結失效。真的需要改 URL 才能用 301 轉址。選項 b 說「直接改變 URL」是違反鐵則的做法。"
+      }
     },
     {
       "title": "多語言 SEO",
@@ -2014,7 +2451,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你是個剛起步的獨立開發者，要做多語言網站。根據這堂課的建議，你應該選哪個 URL 結構？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 subdirectory（例如 example.com/en/ 和 example.com/zh-tw/）"
+          },
+          {
+            "value": "b",
+            "label": "用 subdomain（例如 en.example.com 和 zh.example.com）"
+          },
+          {
+            "value": "c",
+            "label": "用不同 domain（例如 example.com 和 example.tw）"
+          },
+          {
+            "value": "d",
+            "label": "用 query parameter（例如 example.com?lang=en）"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確推薦 Indie（獨立開發者）用 subdirectory，因為最簡單、維護成本最低。Subdomain 適合大網站，不同 domain 適合在地 brand，query parameter 根本沒提過且 SEO 不佳。"
+      }
     },
     {
       "title": "SEO 心理學 + UX",
@@ -2158,7 +2618,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據本課的 User Intent 三層理論，假設有人搜尋「Python 教學」，你在寫內容時應該怎麼做才能同時照顧到所有三層需求？",
+        "options": [
+          {
+            "value": "a",
+            "label": "只寫清楚 Python 的基礎語法和概念，就能滿足他的搜尋意圖"
+          },
+          {
+            "value": "b",
+            "label": "除了教 Python，還要說明學習路徑（Deep intent），並在內容中呈現轉職、自我提升的故事或成就感（Hidden intent）"
+          },
+          {
+            "value": "c",
+            "label": "只需要關注 Hidden intent（轉職、證明自己），因為這才是真正的動機"
+          },
+          {
+            "value": "d",
+            "label": "先分別寫三篇文章，分別針對字面意思、真實需求和情感需求"
+          }
+        ],
+        "answer": "b",
+        "explanation": "User Intent 三層都要照顧：Surface intent 是他搜尋的表面詞（Python 教學），Deep intent 是真正想解決的問題（從哪開始），Hidden intent 是情感驅動（轉職、自我證明）。一篇好內容要同時服務這三層，才能既符合搜尋意圖、又真正留住讀者的心。"
+      }
     },
     {
       "title": "SEO 工具完整推薦",
@@ -2422,7 +2905,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，一個剛起步的 indie 開發者如果預算有限，應該優先裝哪些工具？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Google Search Console、Google Analytics 4、Google Keyword Planner、AnswerThePublic（免費版）"
+          },
+          {
+            "value": "b",
+            "label": "直接購買 Ahrefs Standard 和 Surfer SEO，因為工具越專業效果越好"
+          },
+          {
+            "value": "c",
+            "label": "只用 Claude 或 ChatGPT 寫內容，其他都不用"
+          },
+          {
+            "value": "d",
+            "label": "購買 Semrush All-in-one 方案，一個工具搞定所有功能"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調「先用免費、有結果再升級」，月 $0 預算就足以涵蓋關鍵字研究、流量分析、排名追蹤的基本需求。其他選項都違反了「工具不能取代策略」和「別一開始就砸大錢」的心法。"
+      }
     },
     {
       "title": "AI 時代 SEO 變化",
@@ -2626,7 +3132,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，AI 時代 SEO 最核心的改變是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Google 搜尋結果頁面被 AI Overviews 佔據，導致 0-click 增加，用戶不用點連結就能看到答案"
+          },
+          {
+            "value": "b",
+            "label": "關鍵字排名變得不重要，只要在社群媒體上有 brand mention 就能獲得流量"
+          },
+          {
+            "value": "c",
+            "label": "只要用 AI 工具生成內容再加上結構化標記，就能自動獲得好排名"
+          },
+          {
+            "value": "d",
+            "label": "影片內容完全取代文字內容，現在必須把所有文章改成 YouTube 影片"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程開頭就強調 AI Overviews 是最直接的改變，導致流量從搜尋結果流向 AI 答案。選項 b 過度簡化（backlink 還是重要），選項 c 忽視「人工 polish」的必要性，選項 d 是極端化說法。"
+      }
     },
     {
       "title": "SEO 接案完整流程 + 報價",
@@ -2798,7 +3327,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，SEO 接案報價單中「不保證排名」這點為什麼很重要？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 Google 演算法、競爭對手變化、行業環境都不在 SEO 接案者的控制範圍內，所以要誠實告訴客戶無法保證特定排名，但能保證按最佳實踐執行"
+          },
+          {
+            "value": "b",
+            "label": "因為客戶會因此接受更低的報價，讓接案者容易談成合約"
+          },
+          {
+            "value": "c",
+            "label": "因為法律規定 SEO 接案者必須寫出來，否則會被罰款"
+          },
+          {
+            "value": "d",
+            "label": "因為這樣客戶就不會在乎成效，接案者可以偷懶少做工作"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調「不保證排名」是誠信原則，讓客戶明白 SEO 的成效受多方因素影響，而接案者承諾的是執行過程的專業性與透明報表。其他選項都違背接案應有的信任與責任態度。"
+      }
     },
     {
       "title": "SEO 心法 + 給 Indie 的建議",
@@ -2998,7 +3550,30 @@
           "level": 2,
           "text": "最後一句"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這堂課的核心概念，一個 Indie 想透過 SEO 成長，最容易踩的陷阱是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "第 1 個月發現沒有排名就放棄，然後改追 TikTok 紅利"
+          },
+          {
+            "value": "b",
+            "label": "花時間學完所有技術 SEO 和演算法細節，再開始寫文章"
+          },
+          {
+            "value": "c",
+            "label": "一開始就選大眾市場「程式設計教學」，與大網站正面對抗"
+          },
+          {
+            "value": "d",
+            "label": "每天查看 Google 排名，看到波動就馬上調整內容"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調 SEO 是長跑（1-12 個月才看到趨勢），不要追短期 hack 或 trend noise。選項 a 同時踩到「時間太短就放棄」和「被 trend 迷惑」兩個陷阱，最容易讓 Indie 失敗。選項 b、c、d 雖然也是常見錯誤，但課程重點在於「時間與信心」，而非工具或策略細節。"
+      }
     }
   ],
   "boss": {
@@ -3012,5 +3587,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "SEO 核心沒變：關鍵字 + 優質內容 + 技術乾淨，但 AI 搜尋興起讓策略要調整。",
+    "關鍵字研究不是亂選，要看搜尋意圖、競爭程度、有沒有機會上首頁。",
+    "Technical SEO 是基礎建設：速度、行動版、索引狀況、結構化資料都要到位。",
+    "Local SEO 靠在地信號、Google My Business、在地連結、客戶評價累積信任度。",
+    "GEO 搜尋優化是新手段：針對 AI 搜尋引擎調整、跟傳統 SEO 互補但策略不同。"
+  ],
+  "faq": [
+    {
+      "q": "我完全不懂 SEO，學完這章真的能自己優化網站嗎？",
+      "a": "可以打底。你會懂怎麼調整網站讓 Google 看得懂、怎麼選關鍵字、內容怎麼寫，但 SEO 是長期累積，要持續優化才看到效果，不是學完就一步到位。"
+    },
+    {
+      "q": "SEO 跟 AI 搜尋優化（GEO）差很多嗎？要一起做嗎？",
+      "a": "策略有差：SEO 還是要上排名、做傳統搜尋結果；GEO 是針對 ChatGPT Search、Perplexity 這類 AI 引擎調整。兩個都要做，但方法不完全一樣。"
+    },
+    {
+      "q": "我想接 SEO 案子，學這章能夠報價嗎？",
+      "a": "能看出工作量和複雜度，但報價還要看自己經驗和市場行情。這章會教你怎麼診斷客戶網站、規畫優化策略，報價時才有根據。"
+    }
+  ]
 }

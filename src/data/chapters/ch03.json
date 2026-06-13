@@ -136,7 +136,30 @@
           "level": 3,
           "text": "2026 補充原則"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在設計一個「刪除帳號」的功能。根據 Nielsen 10 大原則，下列做法何者最符合可用性？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用戶點「刪除」後立即刪除，系統自動記錄；出錯才寄通知信"
+          },
+          {
+            "value": "b",
+            "label": "顯示警告視窗說明後果、要求用戶輸入密碼二次確認，提供「取消」選項"
+          },
+          {
+            "value": "c",
+            "label": "在設定頁放刪除按鈕，用紅色顯示但不需確認，讓進階用戶快速操作"
+          },
+          {
+            "value": "d",
+            "label": "用 API 錯誤碼回應：「Error: Account deletion failed - Status 422」"
+          }
+        ],
+        "answer": "b",
+        "explanation": "選項 b 同時體現原則 3（防止錯誤、給用戶取消按鈕）、原則 5（危險操作要 confirm）、原則 9（清楚說明後果）。選項 a 沒防止錯誤、c 忽視安全機制、d 違反原則 9（用戶不懂的技術訊息）。"
+      }
     },
     {
       "id": "3.3",
@@ -189,7 +212,30 @@
           "level": 3,
           "text": "常見錯誤"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在設計一個 SaaS 產品的首頁。頁面上有「產品標題」、「副標說明」、「開始免費試用」按鈕、和「無須信用卡」的小字提示。根據視覺層次原則，用戶的眼睛應該依序看向哪三個元素？",
+        "options": [
+          {
+            "value": "a",
+            "label": "產品標題 → 開始免費試用按鈕 → 副標說明"
+          },
+          {
+            "value": "b",
+            "label": "產品標題 → 副標說明 → 開始免費試用按鈕"
+          },
+          {
+            "value": "c",
+            "label": "無須信用卡提示 → 產品標題 → 開始免費試用按鈕"
+          },
+          {
+            "value": "d",
+            "label": "開始免費試用按鈕 → 產品標題 → 副標說明"
+          }
+        ],
+        "answer": "b",
+        "explanation": "根據視覺層次設計，頁面上半部分吸引注意力（標題最大、粗）→ 中間說明（副標中等大小、淡灰色）→ 行動按鈕（對比色、誘導點擊）。這個順序引導用戶理解價值、再採取行動。"
+      }
     },
     {
       "id": "3.4",
@@ -246,7 +292,30 @@
           "level": 3,
           "text": "2026 趨勢"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想快速配出專業色票，現在有 3 種方法可選。如果你是新手、時間緊，最實用的做法是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "從 Tailwind 預設色票直接套用，不用自己想色"
+          },
+          {
+            "value": "b",
+            "label": "用 Coolors.co 輸入品牌主色，讓工具自動生色票"
+          },
+          {
+            "value": "c",
+            "label": "研究色彩心理學，根據紅色代表危險、藍色代表信任來選色"
+          },
+          {
+            "value": "d",
+            "label": "抄 Apple、Stripe 等大品牌的配色方案"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確提到『新手最簡單』的做法就是用 Tailwind 內建的 22 種顏色 + 11 階，不用想直接套。選項 b、c、d 都是方法，但對新手來說不是『最快最簡單』的路。"
+      }
     },
     {
       "id": "3.5",
@@ -307,7 +376,30 @@
           "level": 3,
           "text": "常見字體錯誤"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你要為新專案建立字體系統，需要選擇適合現代網站的 sans-serif 字體。下列哪個組合最符合 2026 年主流 indie 做法？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Inter + Noto Sans CJK + JetBrains Mono"
+          },
+          {
+            "value": "b",
+            "label": "Times New Roman + Georgia + Fira Code"
+          },
+          {
+            "value": "c",
+            "label": "Playfair + Anton + IBM Plex Mono"
+          },
+          {
+            "value": "d",
+            "label": "SF Pro + 思源宋體 + Geist Mono"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確指出「2026 indie 主流：Inter + Noto Sans CJK + JetBrains Mono」為推薦組合。選項 b 用 serif 不適合現代網站、c 是 display 字體不該當主要字體、d 混搭宋體不夠乾淨。"
+      }
     },
     {
       "id": "3.6",
@@ -368,7 +460,30 @@
           "level": 3,
           "text": "常見間距錯誤"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "如果你設計一個網頁、想要看起來專業而不是業餘，最重要的第一步是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "建立一個間距系統，讓所有間距都是 8 的倍數（如 8px、16px、24px、32px...）"
+          },
+          {
+            "value": "b",
+            "label": "把所有文字都設定成居中對齐，這樣看起來更對稱和整齊"
+          },
+          {
+            "value": "c",
+            "label": "使用越多不同的間距數值越好，例如 13px、17px、22px，這樣設計才夠細緻"
+          },
+          {
+            "value": "d",
+            "label": "選擇一個喜歡的顏色，然後隨意調整各元素的位置和間距"
+          }
+        ],
+        "answer": "a",
+        "explanation": "8pt grid 是建立專業感的核心——所有間距用 8 的倍數保證視覺一致。選項 b 錯在大段內文不該居中（讀起來累），c 和 d 代表沒系統的設計方式，正是「業餘」的表現。"
+      }
     },
     {
       "id": "3.7",
@@ -425,7 +540,30 @@
           "level": 3,
           "text": "常見 Button 錯誤"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在設計一個購物網站的結帳頁面，頁面上有「確認購買」、「繼續購物」和「刪除此項目」三個按鈕。根據 Button 階層的原則，這三個按鈕應該分別設定為什麼類型？",
+        "options": [
+          {
+            "value": "a",
+            "label": "確認購買=Primary、繼續購物=Secondary、刪除此項目=Destructive"
+          },
+          {
+            "value": "b",
+            "label": "確認購買=Primary、繼續購物=Primary、刪除此項目=Secondary"
+          },
+          {
+            "value": "c",
+            "label": "確認購買=Secondary、繼續購物=Primary、刪除此項目=Destructive"
+          },
+          {
+            "value": "d",
+            "label": "三個都用 Primary，讓使用者自行判斷"
+          }
+        ],
+        "answer": "a",
+        "explanation": "同一畫面只能有 1 個 Primary（主動作），因此「確認購買」是主按鈕；「繼續購物」是次要動作用 Secondary；「刪除」是危險動作必須用紅色的 Destructive。"
+      }
     },
     {
       "id": "3.8",
@@ -486,7 +624,30 @@
           "level": 3,
           "text": "常見 form 錯誤"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在設計一個註冊表單，想讓使用者體驗最好。根據課程內容，下列哪個做法最符合 2026 年業界推薦的驗證策略？",
+        "options": [
+          {
+            "value": "a",
+            "label": "使用者每打一個字就立即驗證，讓他們馬上知道有沒有錯誤"
+          },
+          {
+            "value": "b",
+            "label": "使用者填完欄位、點擊離開（onBlur）時驗證，如果有錯才在即時重新驗證，最後送出時做全部驗證"
+          },
+          {
+            "value": "c",
+            "label": "只在使用者點擊提交按鈕時才驗證所有欄位，這樣最簡單"
+          },
+          {
+            "value": "d",
+            "label": "完全不驗證欄位，等後端返回錯誤訊息再告訴使用者"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確指出 2026 推薦做法是混合驗證：onBlur（欄位離開驗一次，不打擾）+ onChange（錯誤時即時 re-validate，避免煩人）+ onSubmit（最終驗證）。選項 a 太頻繁會惹惱用戶，選項 c 不夠即時讓用戶體驗差，選項 d 完全沒有前端驗證。"
+      }
     },
     {
       "id": "3.9",
@@ -547,7 +708,30 @@
           "level": 3,
           "text": "常見 Card 錯誤"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在設計一個產品列表頁面，需要用 card 呈現商品。下列哪一個做法最符合 card 設計的最佳實踐？",
+        "options": [
+          {
+            "value": "a",
+            "label": "使用 grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)) 讓 card 自動響應不同螢幕寬度，不用寫 media query"
+          },
+          {
+            "value": "b",
+            "label": "同時使用深陰影和粗邊框來讓 card 更立體有層次感"
+          },
+          {
+            "value": "c",
+            "label": "在 card hover 時加上 rotate(5deg) scale(1.1) 的動畫，讓使用者感受更強的互動回饋"
+          },
+          {
+            "value": "d",
+            "label": "在同一個頁面中混用邊框風格和陰影風格的 card，讓視覺更豐富多變"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調 auto-fill + minmax 是現代響應式 card 的最佳做法，能自動調整列數而無需 media query。選項 b、c、d 都違反了課程的設計原則：b 是重複視覺、c 是過度誇張、d 是風格不一致。"
+      }
     },
     {
       "id": "3.10",
@@ -608,7 +792,30 @@
           "level": 3,
           "text": "常見 Modal 錯誤"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你要設計一個「刪除帳號」的功能，需要用戶輸入很長的法律聲明、選擇刪除原因（有 10 多個選項）、填寫多個確認欄位。請問用 Modal 對話框適不適合？為什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "適合，因為 Modal 視覺上最醒目，能確保用戶認真看內容"
+          },
+          {
+            "value": "b",
+            "label": "不適合，因為這是長表單，應該用獨立頁面而不是 Modal"
+          },
+          {
+            "value": "c",
+            "label": "適合，只要加上滾動就可以放任何長度的內容"
+          },
+          {
+            "value": "d",
+            "label": "不適合，因為 Modal 無法處理複雜流程的 accessibility"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確指出 Modal 不適合長表單，應該用獨立頁面。長表單在 Modal 內會讓使用體驗變差、也容易超過螢幕高度造成滾動混亂。Modal 最適合短表單（如登入）或簡短確認。"
+      }
     },
     {
       "id": "3.11",
@@ -656,7 +863,30 @@
           "level": 3,
           "text": "常見 nav 錯誤"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在設計一個 SaaS 後台管理工具，有「Dashboard」「課程管理」「用戶設定」「帳單」等 4 個主要功能區，每個區域還有 2-3 層的子頁面。請問應該選用哪種 Navigation 模式最合適？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Top nav（頂部水平選單），因為最常見所以最穩定"
+          },
+          {
+            "value": "b",
+            "label": "Side nav（側邊垂直選單），因為適合多層級結構"
+          },
+          {
+            "value": "c",
+            "label": "Bottom nav（底部 tab bar），因為視覺上更整潔"
+          },
+          {
+            "value": "d",
+            "label": "Hybrid（Top + Side 組合），因為 4 個功能需要組合"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Side nav 就是為了處理「多層級、dashboard 型態」而生；雖然 Hybrid 也行，但 4 個主選項用 Side nav 已足夠，不需要過度設計。"
+      }
     },
     {
       "id": "3.12",
@@ -721,7 +951,30 @@
           "level": 3,
           "text": "常見錯誤"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在開發一個待辦清單應用。用戶第一次登入時、還沒建立任何待辦事項。根據課程內容、這時應該顯示什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "顯示空的表格、讓用戶自己領悟要建立新項目"
+          },
+          {
+            "value": "b",
+            "label": "顯示 Empty State、包含友善訊息和「建立第一個待辦事項」的按鈕"
+          },
+          {
+            "value": "c",
+            "label": "顯示 Loading spinner、直到有資料才停止"
+          },
+          {
+            "value": "d",
+            "label": "顯示技術錯誤訊息、告訴用戶沒有找到任何資料"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調 Empty State 不該顯示空表格、要給用戶清楚的指引（CTA 按鈕）告訴他們下一步該做什麼。選項 a 是常見錯誤、c 是 Loading 狀態、d 是錯誤狀態、都不適用於「沒資料」的情況。"
+      }
     },
     {
       "id": "3.13",
@@ -786,7 +1039,30 @@
           "level": 3,
           "text": "常見 Toast 錯誤"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的應用程式中，用戶點擊「發送訊息」按鈕後，訊息立刻在畫面上顯示已發送，系統同時背景執行 API 調用。如果 API 失敗，訊息會被移除並顯示錯誤 Toast。這是什麼設計模式？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Optimistic UI（樂觀 UI）"
+          },
+          {
+            "value": "b",
+            "label": "Modal 回饋模式"
+          },
+          {
+            "value": "c",
+            "label": "Banner 持續警告"
+          },
+          {
+            "value": "d",
+            "label": "Inline feedback 欄位驗證"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Optimistic UI 就是先讓 UI 樂觀地更新，再背景執行 API，失敗才 revert + 顯示錯誤 toast。這樣既快速又順暢。其他選項都是靜態顯示或強制互動，不符合這個「先改 UI、再驗證」的流程。"
+      }
     },
     {
       "id": "3.14",
@@ -826,7 +1102,30 @@
           "level": 3,
           "text": "Semantic HTML（最重要）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你設計的網站上有一個只有圖示的搜尋按鈕（🔍），使用全盲者用螢幕閱讀器時，只會聽到「按鈕」兩個字。要解決這個問題，下列哪個做法最正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "加上 aria-label=\"搜尋\"，讓螢幕閱讀器讀出完整的按鈕功能"
+          },
+          {
+            "value": "b",
+            "label": "改用 tabindex=\"1\" 強化按鈕的鍵盤可操作性"
+          },
+          {
+            "value": "c",
+            "label": "將圖示改成 <div> 並加上 onclick 事件，讓更多人能理解"
+          },
+          {
+            "value": "d",
+            "label": "設定 outline: none 讓視覺設計更清潔"
+          }
+        ],
+        "answer": "a",
+        "explanation": "ARIA label 就是為了補充只有圖示或視覺資訊的無障礙說明，讓螢幕閱讀器讀出正確的按鈕功能。b 是控制 tab 順序不是解決標籤問題、c 用 div 反而失去語義性、d 移除 outline 會讓鍵盤用戶看不到焦點位置。"
+      }
     },
     {
       "id": "3.15",
@@ -887,7 +1186,30 @@
           "level": 3,
           "text": "常見響應式錯誤"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "為什麼響應式設計應該採用 mobile-first 而不是 desktop-first？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Mobile-first 可以強迫聚焦核心功能、提升性能、符合 60%+ 用戶是手機使用者的現實"
+          },
+          {
+            "value": "b",
+            "label": "Desktop-first 會讓網站在手機上顯示太大，所以 mobile-first 的聲音比較大"
+          },
+          {
+            "value": "c",
+            "label": "Mobile-first 寫法用 max-width 媒體查詢，比 desktop-first 的 min-width 更簡單"
+          },
+          {
+            "value": "d",
+            "label": "Mobile-first 只是一個建議，但 desktop-first 已經過時所以不能用"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Mobile-first 的核心好處就是課程開頭強調的三個理由：1) 小螢幕強迫你去掉非必要功能，2) 性能優因為 mobile 是預設，3) 符合 Google mobile-first 索引和現實用戶比例。選項 b 只是結果、c 用詞錯誤（mobile-first 用 min-width 不是 max-width）、d 矛盾了課程開頭說的「必須」。"
+      }
     },
     {
       "id": "3.16",
@@ -952,7 +1274,30 @@
           "level": 3,
           "text": "常見微互動錯誤"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在設計一個購物網站，有三個互動元素：(1) 按鈕 hover 時改變顏色、(2) 卡片 hover 時浮起來、(3) 頁面載入時多個商品逐一淡入出現。根據「微互動的 3 個層次」，這三個分別屬於哪個層次？",
+        "options": [
+          {
+            "value": "a",
+            "label": "State transition、Micro-animation、Choreographed"
+          },
+          {
+            "value": "b",
+            "label": "Micro-animation、State transition、Choreographed"
+          },
+          {
+            "value": "c",
+            "label": "State transition、Choreographed、Micro-animation"
+          },
+          {
+            "value": "d",
+            "label": "Choreographed、Micro-animation、State transition"
+          }
+        ],
+        "answer": "a",
+        "explanation": "按鈕改色是最簡單的狀態切換（State transition）；卡片浮起涉及 transform 和 shadow 的搭配回饋（Micro-animation）；多個商品逐一出現是多元素有編排順序的複雜互動（Choreographed）。越基本越簡單、越特別越複雜。"
+      }
     },
     {
       "id": "3.17",
@@ -1013,7 +1358,30 @@
           "level": 3,
           "text": "常見 token 錯誤"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想要在整個 app 裡把主要按鈕顏色從藍色改成綠色，使用 Design Tokens 時，你應該改哪一層的值才最有效率？",
+        "options": [
+          {
+            "value": "a",
+            "label": "改 Primitive Tokens 的 --blue-500 值"
+          },
+          {
+            "value": "b",
+            "label": "改 Semantic Tokens 的 --color-primary 值"
+          },
+          {
+            "value": "c",
+            "label": "改 Component Tokens 的 --button-bg 值"
+          },
+          {
+            "value": "d",
+            "label": "直接在每個 .button CSS 裡改顏色"
+          }
+        ],
+        "answer": "b",
+        "explanation": "改 Semantic Tokens 的 --color-primary 最有效率，因為它是專門描述主要色系用途的層級，改它會影響所有用到主色的元件（按鈕、連結等），同時不會意外改到其他用藍色但無關的地方。改 Primitive 太上游會全盤影響，改 Component 太下游只能改按鈕。"
+      }
     },
     {
       "id": "3.18",
@@ -1069,7 +1437,30 @@
           "level": 3,
           "text": "常見錯誤"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "如果你是個 indie SaaS 創辦人，想在 1 週內搭出自己的 design system，下列哪一個是「最有效率」的做法？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 shadcn/ui 初始化、複製需要的元件、再改 CSS tokens 和客製化元件"
+          },
+          {
+            "value": "b",
+            "label": "先自己從零開始寫 50-100 個元件，確保涵蓋所有可能用到的情況"
+          },
+          {
+            "value": "c",
+            "label": "直接用 Material UI npm 套件，因為是業界標準，改動最少"
+          },
+          {
+            "value": "d",
+            "label": "只寫 foundations（顏色、字體、間距），元件部分以後再說"
+          }
+        ],
+        "answer": "a",
+        "explanation": "shadcn/ui 是 2026 業界主流、設計師已幫你配好元件和 a11y，你只需 copy code 進 project（擁有元件所有權）再客製化 tokens 和樣式，這是 indie SaaS 1 週內最快完成的方法。b 太耗時、c 改動反而多、d 不完整。"
+      }
     },
     {
       "id": "3.19",
@@ -1134,7 +1525,30 @@
           "level": 3,
           "text": "2026 UI 工具生態"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據本課內容，2026 AI 時代的 UI 設計中，『Streaming UI』的核心目的是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "讓 AI 的回應一字字顯示，在心理上讓使用者感覺回答更快"
+          },
+          {
+            "value": "b",
+            "label": "將所有 AI 回應分成多個小塊，降低伺服器的計算負擔"
+          },
+          {
+            "value": "c",
+            "label": "支援使用者同時上傳多個檔案和圖片"
+          },
+          {
+            "value": "d",
+            "label": "自動將 AI 回應轉換成不同的 UI 元件（圖表、卡片等）"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Streaming UI 的設計目的是讓 AI 回應一字字 typed in，而不是等全部完成才顯示，這在心理上會讓使用者感覺回答速度更快。選項 b 是伺服器優化概念、c 是 Multimodal、d 是 Generative UI，都不是 Streaming UI 的核心。"
+      }
     },
     {
       "id": "3.20",
@@ -1178,7 +1592,30 @@
           "level": 3,
           "text": "給 indie 的最後建議"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，如果你是 indie developer 想在 2026 年快速打造一個看起來專業的 SaaS，「設計工具 + 開發框架 + UI Library」的最佳組合應該是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Figma + Next.js + shadcn/ui"
+          },
+          {
+            "value": "b",
+            "label": "Penpot + Vue + Chakra UI"
+          },
+          {
+            "value": "c",
+            "label": "Excalidraw + SvelteKit + Tailwind UI"
+          },
+          {
+            "value": "d",
+            "label": "Adobe XD + Astro + Radix UI"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確指出 Figma 是「業界標配」、Next.js + TypeScript + Tailwind 佔「90% indie」、shadcn/ui 是「2026 主流」。這三個組合最符合工業標準且生態最成熟，也最容易參考其他成功案例（如 Stripe、Vercel）。"
+      }
     },
     {
       "title": "5 大設計原則：Hick / Fitts / Miller / Jakob / Aesthetic-Usability",
@@ -1226,7 +1663,30 @@
           "level": 2,
           "text": "真人測試（cheap & fast）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在設計一個電商平台的結帳流程。根據今天學的五大設計原則，下列哪個做法最符合「好設計」的精神？",
+        "options": [
+          {
+            "value": "a",
+            "label": "把所有結帳步驟（收貨地址、付款方式、發票選項、禮物包裝、保險）放在一頁，讓用戶一次填完，減少點擊次數"
+          },
+          {
+            "value": "b",
+            "label": "分成 3-5 個步驟頁面，每頁只問 5-7 個欄位；「確認送出」按鈕設 60×60px 且放在頁面右下角；用綠色表示確認、紅色表示取消"
+          },
+          {
+            "value": "c",
+            "label": "用超酷炫的 3D 動畫和漸變色彩做結帳介面，讓它看起來很科技感，這樣用戶就會覺得好用"
+          },
+          {
+            "value": "d",
+            "label": "創新設計獨特的購物車符號和自創的步驟指示器，讓平台與競爭者完全不同"
+          }
+        ],
+        "answer": "b",
+        "explanation": "選項 b 同時應用了 Miller 法則（每步 5-7 欄不超載）、Fitts 法則（按鈕夠大且放易按位置）、Jakob 法則（用綠色=確認、紅色=取消的既有認知）。a 違反 Miller 法則會造成認知過載，c 只追美忽視可用性，d 違反 Jakob 法則不跟主流一致。"
+      }
     },
     {
       "title": "顏色理論：色票系統 + 對比度",
@@ -1275,7 +1735,30 @@
           "level": 2,
           "text": "推薦色票工具"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在設計一個網站，想讓灰色文字顯示在白色背景上。下列哪個做法最符合專業的色票系統與對比度規範？",
+        "options": [
+          {
+            "value": "a",
+            "label": "直接用 #888 灰色，因為看起來順眼就好"
+          },
+          {
+            "value": "b",
+            "label": "建立色票 token（如 --gray-500、--gray-700），並檢查文字與背景的對比度是否達到 WCAG AA 級以上"
+          },
+          {
+            "value": "c",
+            "label": "用最淡的灰色 --gray-50，這樣最安全不會出錯"
+          },
+          {
+            "value": "d",
+            "label": "根據個人偏好調整顏色，暗黑模式時再反相處理就可以"
+          }
+        ],
+        "answer": "b",
+        "explanation": "色票系統的核心是用 token 管理顏色階級，並且遵守 WCAG 對比度規範（AA 級 4.5:1）。#888 灰色在白底只有 3.5:1，不及格；選項 b 強調了系統化管理 + 檢驗標準，這才是專業做法。選項 a 憑感覺、c 過度保守、d 忽視暗黑模式需要重新調而非反相。"
+      }
     },
     {
       "title": "字體與排版（Typography）",
@@ -1344,7 +1827,30 @@
           "level": 2,
           "text": "Google Fonts 加速"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在做一個中文部落格網站的排版。要讓讀者舒服地閱讀長篇文章，下面哪個做法最合適？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 Serif 字體、字級 16px、行距 1.5-1.75、段落寬度 30-40 字"
+          },
+          {
+            "value": "b",
+            "label": "用 Sans-serif 字體、字級 12px、行距 1.2、段落寬度越寬越好"
+          },
+          {
+            "value": "c",
+            "label": "用 Mono 字體、字級 20px、行距 1、段落寬度 50 字以上"
+          },
+          {
+            "value": "d",
+            "label": "用 Sans-serif 字體、字級 16px、行距 1、段落寬度 20 字"
+          }
+        ],
+        "answer": "a",
+        "explanation": "長篇內文應該用 Serif（優雅、適合閱讀）或 Sans-serif，字級至少 16px（中文易讀基準），行距 1.5-1.75（讓眼睛舒服），段落寬度 30-40 字（不會太累）。選項 b 字級太小、選項 c 的 Mono 是程式碼用、選項 d 行距太緊。"
+      }
     },
     {
       "title": "佈局原則：8 點網格 + 留白",
@@ -1405,7 +1911,30 @@
           "level": 2,
           "text": "工具"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在設計一個卡片元件，根據 8 點網格原則，以下哪個間距搭配是「正確」的？",
+        "options": [
+          {
+            "value": "a",
+            "label": "卡片內邊距 24px、區塊間距 48px、按鈕內邊距左右 20px"
+          },
+          {
+            "value": "b",
+            "label": "卡片內邊距 24px、區塊間距 56px、按鈕內邊距左右 28px"
+          },
+          {
+            "value": "c",
+            "label": "卡片內邊距 20px、區塊間距 48px、按鈕內邊距左右 24px"
+          },
+          {
+            "value": "d",
+            "label": "卡片內邊距 24px、區塊間距 48px、按鈕內邊距左右 24px"
+          }
+        ],
+        "answer": "d",
+        "explanation": "8 點網格系統要求所有間距都是 8 的倍數。選項 d 的 24、48、24 都是 8 的倍數；a 的 20px 不是；b 的 56px 不是；c 的 20px 不是。"
+      }
     },
     {
       "title": "微互動（Microinteractions）：細節決定質感",
@@ -1474,7 +2003,30 @@
           "level": 2,
           "text": "別過頭"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，為什麼要在按鈕的 hover 狀態加上微動畫（如變色、浮起、陰影），而不是保持靜止？",
+        "options": [
+          {
+            "value": "a",
+            "label": "告訴使用者這個按鈕是可以互動的，提升產品的細節質感"
+          },
+          {
+            "value": "b",
+            "label": "為了讓網頁看起來更酷炫，吸引使用者的注意力"
+          },
+          {
+            "value": "c",
+            "label": "因為 CSS 的 hover 偽類本來就應該搭配動畫使用"
+          },
+          {
+            "value": "d",
+            "label": "避免瀏覽器自動產生預設的 hover 效果"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調微互動是為了給予使用者即時回饋、提示互動性，而這些細節累積起來就是「質感」的來源——像 Apple、Stripe 就是靠每個小動作都有回饋才感覺「有用心」。選項 b 是過度設計、c 只是技術事實、d 是錯誤理由。"
+      }
     }
   ],
   "boss": {
@@ -1488,5 +2040,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "UI 是長什麼樣子，UX 是用起來爽不爽——設計師要同時顧兩個。",
+    "Nielsen 10 原則就像 UX 的教科書，照著做能避免大多數的可用性地雷。",
+    "視覺層次、色彩、字體、間距都是引導眼睛和營造情緒的工具。",
+    "Button、Form、Card、Modal 這些元件有套路可循，學會一套就能用在全部設計裡。",
+    "設計系統和 Design Tokens 讓你不用每次都重新造輪子，團隊也能保持一致。"
+  ],
+  "faq": [
+    {
+      "q": "我不是設計系畢業，學這個會不會太難？",
+      "a": "完全不會。UI/UX 設計原理是可以學的技能，不是天賦。我們會從最基礎的概念開始，配上實際例子，邊看邊做就能上手。"
+    },
+    {
+      "q": "學完能找工作 / 接案嗎？",
+      "a": "學完你會有做介面設計的能力和觀念，但找工作還需要累積作品集和實務經驗。把這章當作打底，後面要靠實戰練習和自己改進。"
+    },
+    {
+      "q": "是不是一定要會用設計軟體（Figma 或 Adobe）？",
+      "a": "這章重點是教原理和思考方式，可以邊看邊用設計軟體操作。如果還沒有工具也不用慌，先把概念搞懂，工具會用比較快。"
+    }
+  ]
 }

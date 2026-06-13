@@ -239,7 +239,30 @@
           "level": 3,
           "text": "程式碼"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "為什麼不應該用 <b> 和 <i> 標籤來做文字粗體和斜體，改用 <strong> 和 <em>？",
+        "options": [
+          {
+            "value": "a",
+            "label": "<b> 和 <i> 只有視覺意義、沒有語意，搜尋引擎和螢幕閱讀器無法理解這些文字的重要性"
+          },
+          {
+            "value": "b",
+            "label": "<b> 和 <i> 會讓網頁速度變慢，影響使用者體驗"
+          },
+          {
+            "value": "c",
+            "label": "<strong> 和 <em> 的字體效果更好看，能吸引更多使用者點擊"
+          },
+          {
+            "value": "d",
+            "label": "HTML 標準規定不能在一份文件裡使用超過 5 個 <b> 或 <i> 標籤"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程核心是 HTML 標籤代表『這段文字是什麼角色』、不是『長什麼樣』。<strong> 和 <em> 有語意（重要/強調），搜尋引擎和無障礙工具能識別；而 <b> 和 <i> 只是視覺樣式，沒有意義層面的資訊。"
+      }
     },
     {
       "id": "1.5",
@@ -266,6 +289,29 @@
         "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（<header>, <main>, <footer> 等）做出一個簡單的個人介紹頁。",
         "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
         "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "miniQuiz": {
+        "question": "你要做一個網站導覽列，包含「首頁」、「產品」（有子選單）、「聯絡我們」。根據業界慣例，應該用哪個 HTML 標籤來標記這個導覽列結構？",
+        "options": [
+          {
+            "value": "a",
+            "label": "<ul> 搭配 <li> 和巢狀的 <ul>"
+          },
+          {
+            "value": "b",
+            "label": "<ol> 因為導覽列有順序"
+          },
+          {
+            "value": "c",
+            "label": "<dl> 因為導覽有選項對應"
+          },
+          {
+            "value": "d",
+            "label": "<div> 再用 CSS 排成列表樣式"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確說明業界慣例是用 <ul> 寫導覽列，原因是螢幕閱讀器認得、Google 認得結構、支援多層 nested menu、Bootstrap/Material UI/Tailwind 都這樣做。<ol> 是有順序才用、<dl> 是詞和定義對照才用、<div> 不具語義。"
       }
     },
     {
@@ -365,6 +411,29 @@
         "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（<header>, <main>, <footer> 等）做出一個簡單的個人介紹頁。",
         "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
         "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "miniQuiz": {
+        "question": "下列哪一種情況「最適合」使用 <table> 標籤？",
+        "options": [
+          {
+            "value": "a",
+            "label": "要把網頁分成左右兩欄，左邊放導覽列、右邊放內容"
+          },
+          {
+            "value": "b",
+            "label": "要呈現課程的上課時間、教室、講師資訊，每堂課一列"
+          },
+          {
+            "value": "c",
+            "label": "要做一個美觀的三欄式新聞版面"
+          },
+          {
+            "value": "d",
+            "label": "要並排放兩個不相關的資訊區塊"
+          }
+        ],
+        "answer": "b",
+        "explanation": "表格只用於「真的有縱橫對應關係的資料」（如課表、價目表），不應用於版面排版。選項 b 是多個維度交叉的資料，符合表格用途；a、c、d 都是排版需求，應該用 CSS Flexbox / Grid。"
       }
     },
     {
@@ -417,7 +486,30 @@
           "level": 3,
           "text": "表單驗證"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在做一個登入表單，需要讓使用者輸入帳號。下列哪個做法同時符合「傳給 server」和「配合 label」的需求？",
+        "options": [
+          {
+            "value": "a",
+            "label": "<input id=\"account\" name=\"account\" type=\"text\"> 搭配 <label for=\"account\">帳號</label>"
+          },
+          {
+            "value": "b",
+            "label": "<input name=\"account\" type=\"text\" placeholder=\"請輸入帳號\">（不用 id 和 label）"
+          },
+          {
+            "value": "c",
+            "label": "<input id=\"account\" type=\"text\"> 搭配 <label for=\"account\">帳號</label>（不用 name）"
+          },
+          {
+            "value": "d",
+            "label": "<input value=\"account\" name=\"account\" type=\"text\"> 搭配 <label>帳號</label>"
+          }
+        ],
+        "answer": "a",
+        "explanation": "name 是傳給 server 的 key，id 是配 label 用的識別——兩個都要寫。選項 b 少了 id 和 label（無障礙問題），選項 c 少了 name（server 收不到資料），選項 d 的 value 不是用來當識別符的。"
+      }
     },
     {
       "id": "1.9",
@@ -543,7 +635,30 @@
           "level": 3,
           "text": "驗證工具"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據本課內容，JSON-LD 相比於舊的 Microdata 和 RDFa，最主要的優勢是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "JSON-LD 跟 HTML 解耦、不汙染標籤，而且是 Google 官方推薦的方式"
+          },
+          {
+            "value": "b",
+            "label": "JSON-LD 能夠直接在搜尋結果顯示，Microdata 和 RDFa 則無法做到"
+          },
+          {
+            "value": "c",
+            "label": "JSON-LD 只需要寫在 <head> 內，Microdata 和 RDFa 必須寫在 HTML 標籤上"
+          },
+          {
+            "value": "d",
+            "label": "JSON-LD 支援更多的 @type 類型，Microdata 和 RDFa 類型有限制"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確提到『JSON-LD 最大優點：跟 HTML 解耦、不汙染標籤』，並且『Google 官方推薦 JSON-LD（其他兩個是歷史包袱）』。其他選項都超出了課程內容或是似是而非的說法。"
+      }
     },
     {
       "id": "1.11",
@@ -596,7 +711,30 @@
           "level": 3,
           "text": "螢幕閱讀器專用內容"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的網站有一個橘色的圖片，是用來裝飾頁面美觀的，不帶任何資訊。請問應該怎麼寫 alt 文字才符合無障礙標準？",
+        "options": [
+          {
+            "value": "a",
+            "label": "<img src=\"decoration.png\" alt=\"\" role=\"presentation\">"
+          },
+          {
+            "value": "b",
+            "label": "<img src=\"decoration.png\" alt=\"橘色裝飾圖片\">"
+          },
+          {
+            "value": "c",
+            "label": "<img src=\"decoration.png\" alt=\"none\">"
+          },
+          {
+            "value": "d",
+            "label": "<div style=\"background-image: url('decoration.png')\"></div>"
+          }
+        ],
+        "answer": "a",
+        "explanation": "純裝飾圖片要設 alt=\"\"（空）+ role=\"presentation\"，這樣螢幕閱讀器就會跳過它，不會念出無意義的文字。選項 b 會念出多餘資訊、選項 c 的 alt=\"none\" 不是標準寫法、選項 d 用背景圖無法被螢幕閱讀器識別。"
+      }
     },
     {
       "id": "1.12",
@@ -637,7 +775,30 @@
           "level": 3,
           "text": "用得多的場合"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你公司同時使用 React 和 Vue，需要共用一套 UI 元件庫。下列哪個方案最合適？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 React 寫元件，在 Vue 中引入使用"
+          },
+          {
+            "value": "b",
+            "label": "用 Web Components 寫元件，兩個框架都能直接使用"
+          },
+          {
+            "value": "c",
+            "label": "分別用 React 和 Vue 各寫一套元件庫"
+          },
+          {
+            "value": "d",
+            "label": "把所有邏輯寫在純 JavaScript，兩個框架都 import"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Web Components 不依賴任何框架，能跨框架共用——這是它相比 React / Vue 元件的最大優勢。課程強調 Shopify / GitHub / YouTube 就是因為需要在不同技術棧間共用 UI，所以才用 Web Components。"
+      }
     },
     {
       "id": "1.13",
@@ -674,7 +835,30 @@
           "level": 3,
           "text": "Service Worker（離線）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "要讓一個網頁變成可以「加到主畫面」的 PWA App，必須準備哪三個核心東西？",
+        "options": [
+          {
+            "value": "a",
+            "label": "manifest.json、Service Worker、HTTPS"
+          },
+          {
+            "value": "b",
+            "label": "manifest.json、Service Worker、Node.js"
+          },
+          {
+            "value": "c",
+            "label": "package.json、Service Worker、HTTPS"
+          },
+          {
+            "value": "d",
+            "label": "manifest.json、CSS、icon 圖檔"
+          }
+        ],
+        "answer": "a",
+        "explanation": "PWA 三大支柱就是 manifest.json（App 設定）、Service Worker（離線快取）、HTTPS（安全連線），三者齊備才會出現安裝按鈕。其他選項混進了 Node.js 或 package.json（不是必須），或用 CSS 代替 Service Worker（不對）。"
+      }
     },
     {
       "id": "1.14",
@@ -711,7 +895,30 @@
           "level": 3,
           "text": "SVG icon system"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你要設計一個 logo，需要在網頁上用多種尺寸顯示（24px、48px、96px），並且用 CSS 讓它隨著按鈕的 hover 狀態改變顏色。下面哪個做法最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 PNG 檔案、用 <img> 標籤載入、搭配 CSS filter 改顏色"
+          },
+          {
+            "value": "b",
+            "label": "用 SVG 搭配 fill=\"currentColor\"、inline 寫在 HTML、用 CSS 控制 color 屬性"
+          },
+          {
+            "value": "c",
+            "label": "用 JPG 檔案、做三種尺寸版本、分別對應不同螢幕大小"
+          },
+          {
+            "value": "d",
+            "label": "用 SVG 搭配 <img> 標籤載入、設定 width=\"24\"，然後用 CSS 改 SVG 內部的 fill 顏色"
+          }
+        ],
+        "answer": "b",
+        "explanation": "inline SVG 搭配 fill=\"currentColor\" 是最彈性的做法——SVG 可以無限縮放不糊、fill=\"currentColor\" 讓顏色跟著 CSS 的 color 屬性自動改變、一份檔案適應所有尺寸。選項 a 的 PNG 放大會糊、選項 c 很笨重、選項 d 用 <img> 載入的 SVG 無法從 CSS 改內部 fill 顏色。"
+      }
     },
     {
       "id": "1.15",
@@ -752,7 +959,30 @@
           "level": 3,
           "text": "關鍵的 Core Web Vitals 影響"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的網站首屏有個大英雄圖，下方還有 20 張產品圖。根據這課教的 HTML 寫法，下列做法何者最能改善效能？",
+        "options": [
+          {
+            "value": "a",
+            "label": "英雄圖用 <img src=\"hero.jpg\">，產品圖也都用 <img src=\"product.jpg\">，讓瀏覽器自動判斷"
+          },
+          {
+            "value": "b",
+            "label": "英雄圖加 fetchpriority=\"high\" 和 width/height，產品圖加 loading=\"lazy\" 和 width/height，用 WebP/AVIF 格式"
+          },
+          {
+            "value": "c",
+            "label": "把所有 CSS 寫進 <style> 標籤放 <head>，確保頁面一次載完"
+          },
+          {
+            "value": "d",
+            "label": "在 <head> 最上面放 <script src=\"app.js\"></script>，讓 JS 先載完再畫頁面"
+          }
+        ],
+        "answer": "b",
+        "explanation": "這課的核心是用 HTML 寫法影響速度。選項 b 結合了圖片優化的四大招：優先級提示、尺寸防晃動、延遲載入下方圖、新格式減檔案——這些都是 HTML 層面的改善。c 和 d 都會造成阻塞，反而變慢。"
+      }
     },
     {
       "id": "1.16",
@@ -789,6 +1019,29 @@
         "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（<header>, <main>, <footer> 等）做出一個簡單的個人介紹頁。",
         "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
         "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "miniQuiz": {
+        "question": "這份完整網頁範本的主要目的是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "讓新手不用思考，直接複製貼上就能有一個包含 SEO、無障礙、RWD 等最佳實踐的合格網頁"
+          },
+          {
+            "value": "b",
+            "label": "教你逐行編寫 HTML，詳細解釋每個標籤的用途"
+          },
+          {
+            "value": "c",
+            "label": "提供最複雜、最完善的網頁範本，包含所有可能用到的功能"
+          },
+          {
+            "value": "d",
+            "label": "示範如何用 CSS 框架快速建立響應式網頁設計"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程重點就是把前 15 課的最佳實踐打包成「直接抄、改改 title 和 OG 圖」就能用的範本，解決新手『不知道 head 要放什麼』的困境。b 是教學過程、c 是過度設計、d 超出課程範圍。"
       }
     },
     {
@@ -854,7 +1107,30 @@
           "level": 2,
           "text": "SEO 跟 a11y 效益"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在製作一個部落格列表頁面，裡面有「本月精選」和「本週熱門」兩個分區，每個分區內放著多篇部落格文章。下面哪個做法最符合語意化 HTML5 的標準？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 <section> 包「本月精選」和「本週熱門」，每篇文章用 <article> 包起來"
+          },
+          {
+            "value": "b",
+            "label": "用 <article> 包「本月精選」和「本週熱門」，裡面的文章用 <div> 包起來"
+          },
+          {
+            "value": "c",
+            "label": "整個列表頁都用 <article> 包，因為列表也是可以分享的內容"
+          },
+          {
+            "value": "d",
+            "label": "全部用 <div> 包，然後加上 CSS class 名稱標示區域用途"
+          }
+        ],
+        "answer": "a",
+        "explanation": "「本月精選」和「本週熱門」只是頁面的分區標題，不是獨立可分發的內容，所以用 <section>；但每篇部落格文章可以單獨拿出來放 RSS，所以用 <article>。選項 b 搞反了、c 誤用 article、d 是舊時代 div soup 做法。"
+      }
     },
     {
       "title": "無障礙 a11y：aria 屬性 + 鍵盤導航",
@@ -915,7 +1191,30 @@
           "level": 2,
           "text": "工具"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你用 Tailwind 寫了一個自訂下拉選單，用 <div> 做按鈕、<div> 做選項，目前能用滑鼠點選。為什麼鍵盤使用者和盲人還是沒辦法用？最少要補什麼才能解決？",
+        "options": [
+          {
+            "value": "a",
+            "label": "只要加 CSS 讓它看起來更像按鈕就行，HTML 結構不用改"
+          },
+          {
+            "value": "b",
+            "label": "要加 tabindex / role / ARIA 屬性，還要寫 JavaScript 處理 Enter / Space / 箭頭鍵，以及焦點管理"
+          },
+          {
+            "value": "c",
+            "label": "加 aria-label 就夠了，ARIA 屬性會自動讓鍵盤可以控制"
+          },
+          {
+            "value": "d",
+            "label": "改用 HTML5 的 <select>，不然靠 ARIA 補丁永遠補不完"
+          }
+        ],
+        "answer": "b",
+        "explanation": "這課重點就是：HTML5 元素本身帶 tabindex / 鍵盤事件 / screen reader 支援，但自訂元件要靠 ARIA 屬性 + JavaScript 事件監聽 + focus 管理才能真正無障礙。只加 CSS (a) 或只加 aria-label (c) 都不夠；d 項雖然對但忽略了「自訂元件也能做到無障礙」的課程核心。"
+      }
     },
     {
       "title": "表單：input / label / fieldset / 驗證",
@@ -968,7 +1267,30 @@
           "level": 2,
           "text": "進階：表單 UX 細節"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想要做一個「密碼確認」欄位，只有當它的值與密碼欄位相同時才算有效。下列做法哪一個最恰當？",
+        "options": [
+          {
+            "value": "a",
+            "label": "在確認密碼欄位用 pattern 屬性，寫正則式比對密碼欄位的值"
+          },
+          {
+            "value": "b",
+            "label": "監聽確認密碼欄位的 input event，用 setCustomValidity() 根據是否與密碼相同來設定自訂錯誤訊息"
+          },
+          {
+            "value": "c",
+            "label": "在 form 的 submit event 裡用 alert() 比對兩個欄位，不相同就阻止送出"
+          },
+          {
+            "value": "d",
+            "label": "給確認密碼欄位加 required 屬性，然後在 change event 時用 checkValidity() 檢查"
+          }
+        ],
+        "answer": "b",
+        "explanation": "HTML5 的 pattern 無法動態比對另一個欄位，所以 a 錯。Constraint Validation API 的 setCustomValidity() 就是為了客製化驗證邏輯而設計的，input event 能即時反應，讓使用者邊打邊看到錯誤提示，這是最佳實踐。c 的 alert 會毀掉 UX 與 a11y，d 只能在失焦才驗證，不如 input event 即時。"
+      }
     },
     {
       "title": "meta 標籤 + Open Graph + Twitter Card",
@@ -1021,7 +1343,30 @@
           "level": 2,
           "text": "工具"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你有一個多語言網站，同時有中文版（台灣）、中文版（中國）和英文版。關於 hreflang 的正確做法，下列何者最適當？",
+        "options": [
+          {
+            "value": "a",
+            "label": "只在中文版頁面加上 hreflang，指向英文版；英文版頁面不需要加 hreflang"
+          },
+          {
+            "value": "b",
+            "label": "在每個語言版本的頁面都加上所有語言版本的 hreflang，包括 zh-TW、zh-CN、en，以及 x-default 預設版本"
+          },
+          {
+            "value": "c",
+            "label": "只在首頁加 hreflang 就夠了，內頁不需要重複加"
+          },
+          {
+            "value": "d",
+            "label": "用 robots.txt 就能告訴 Google 哪些頁面是重複內容，不需要加 hreflang"
+          }
+        ],
+        "answer": "b",
+        "explanation": "hreflang 的目的是讓搜尋引擎知道同一內容的不同語言版本，因此每個語言版本都需要在 <head> 中列出所有版本的 hreflang，並加上 x-default 作為預設。選項 a、c、d 都是常見誤解：a 只在單一版本加會導致其他版本無法被正確對應、c 重複內容對網站 SEO 很重要、d 則混淆了 robots.txt 的功能。"
+      }
     },
     {
       "title": "結構化資料：JSON-LD / Schema.org",
@@ -1082,7 +1427,30 @@
           "level": 2,
           "text": "SEO 效益"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，為什麼現在加寫 JSON-LD Schema 對 2026 年的流量特別重要？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 Google 搜尋會完全停止運作，只剩 AI 引擎"
+          },
+          {
+            "value": "b",
+            "label": "因為 AI 引擎（ChatGPT / Perplexity 等）會接管 30-50% 流量，多寫 schema 就是多一份 AI 引用流量"
+          },
+          {
+            "value": "c",
+            "label": "因為 Schema 可以讓網站排名直接提升到第一名"
+          },
+          {
+            "value": "d",
+            "label": "因為傳統 SEO 已經完全失效，必須改用 Schema 才能有任何流量"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確指出『傳統 SEO 流量 5 年內可能腰斬、AI 引擎會接管 30-50%，現在多寫一份 schema = 未來多一份 AI 引用流量』。選項 a、c、d 都把趨勢說得太絕對或誤解了 schema 的實際作用。"
+      }
     },
     {
       "title": "lazy loading + 圖片優化（picture / srcset / WebP）",
@@ -1139,7 +1507,30 @@
           "level": 2,
           "text": "Next.js Image 範例"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你要優化一張首屏的 Hero 圖片，希望在不同裝置上都能快速載入。下列寫法哪個最符合 2024 年的最佳實踐？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 <picture> 標籤提供 AVIF + WebP + JPG 三層 fallback，搭配 loading=\"eager\" 和 fetchpriority=\"high\""
+          },
+          {
+            "value": "b",
+            "label": "直接用 <img src=\"hero.jpg\" loading=\"lazy\"> 就可以，lazy loading 對首屏圖最有效"
+          },
+          {
+            "value": "c",
+            "label": "只準備 WebP 格式即可，因為所有現代瀏覽器都支援，不需要 JPG fallback"
+          },
+          {
+            "value": "d",
+            "label": "用 <img srcset> 提供多個解析度版本，sizes 屬性設定成越小越好以節省流量"
+          }
+        ],
+        "answer": "a",
+        "explanation": "首屏 Hero 圖應該用 eager 立刻載（不 lazy），並加 fetchpriority=\"high\" 優先級、用 picture 標籤三層 fallback 確保最小的 AVIF 格式能被瀏覽器使用。b 錯在首屏用 lazy 會延遲載入；c 缺少相容性考慮；d 的 sizes 目的不是節省流量而是讓瀏覽器選擇合適解析度。"
+      }
     },
     {
       "title": "iframe / embed / video / audio：嵌入媒體",
@@ -1192,7 +1583,30 @@
           "level": 2,
           "text": "影片優化"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你要在網頁嵌入 YouTube 影片，同時在意「安全性」和「效能」。下列做法何者最適當？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 sandbox=\"\" 空字串，確保 iframe 內容完全不能執行任何程式碼"
+          },
+          {
+            "value": "b",
+            "label": "加上 loading=\"lazy\" 和 youtube-nocookie.com，並用白名單 sandbox 屬性只開放必要權限"
+          },
+          {
+            "value": "c",
+            "label": "直接用 <iframe src=\"https://www.youtube.com/watch?v=...\"> 最簡單，不用加其他屬性"
+          },
+          {
+            "value": "d",
+            "label": "使用 allowfullscreen 就夠了，其他安全屬性對一般網站沒差"
+          }
+        ],
+        "answer": "b",
+        "explanation": "loading=\"lazy\" 能延遲載入提升效能，youtube-nocookie.com 保護隱私（GDPR 友善），白名單式的 sandbox 屬性（如 allow-scripts allow-same-origin）既開放必要功能又限制風險——這三者結合才是安全+快+負責任的做法。sandbox=\"\" 會讓影片無法播放；直接嵌 YouTube 網址會載入過多資源；單靠 allowfullscreen 忽視了安全防護。"
+      }
     },
     {
       "title": "HTML 全域屬性：data-* / contenteditable / draggable",
@@ -1257,7 +1671,30 @@
           "level": 2,
           "text": "inputmode（手機鍵盤）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你寫了一個刪除按鈕，想把使用者 ID 綁在按鈕上，這樣點擊時才能知道要刪除誰。下面哪個做法最合適？",
+        "options": [
+          {
+            "value": "a",
+            "label": "<button data-user-id=\"123\" onclick=\"del(this.dataset.userId)\">刪除</button>"
+          },
+          {
+            "value": "b",
+            "label": "<button id=\"user-123\" onclick=\"del(this.id)\">刪除</button>"
+          },
+          {
+            "value": "c",
+            "label": "<button data-123=\"user-id\" onclick=\"del(this.dataset)\">刪除</button>"
+          },
+          {
+            "value": "d",
+            "label": "<button user-id=\"123\" onclick=\"del(this.getAttribute('user-id'))\">刪除</button>"
+          }
+        ],
+        "answer": "a",
+        "explanation": "data-* 屬性就是用來存自訂資料的，data-user-id 符合 kebab-case 規則，JavaScript 可用 dataset.userId 直接讀取。選 b 把資料塞在 id 屬性不符合語義，選 c 屬性命名反過來了，選 d 則不是有效的標準屬性。"
+      }
     },
     {
       "title": "整章實戰：寫一張可發佈的 Portfolio 頁",
@@ -1302,7 +1739,30 @@
           "level": 2,
           "text": "部署 1 分鐘"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這課的內容，一張可直接發佈的 Portfolio 頁最核心的目的是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "把前 24 課學到的知識整合在一起，寫出一個可運作的完整範本，改 5 個地方就能成為自己的作品集"
+          },
+          {
+            "value": "b",
+            "label": "學會如何從零開始設計一個美觀的網頁，並用最新的框架來開發"
+          },
+          {
+            "value": "c",
+            "label": "了解每一個 HTML 標籤的詳細用法，並掌握進階的 CSS 動畫技巧"
+          },
+          {
+            "value": "d",
+            "label": "建立一個能夠自動更新作品的 CMS 系統，讓使用者不用手動修改程式碼"
+          }
+        ],
+        "answer": "a",
+        "explanation": "這課的核心價值就是把 24 課知識整合成「完整可運作的 portfolio html」，讓你直接抄走當起手範本，改名字、介紹、作品、聯絡、OG 圖這 5 個地方就是自己的作品集。其他選項都超出了這課的實際目的。"
+      }
     }
   ],
   "boss": {
@@ -1316,5 +1776,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "HTML 是網頁的骨架，用標籤描述內容是什麼，而不是長什麼樣子。",
+    "head 區塊放 meta、title、Open Graph 等資訊給機器看，body 才是使用者看得到的內容。",
+    "語意化標籤（header、nav、main、article 等）取代亂用 div，讓搜尋引擎和輔助工具看懂網頁結構。",
+    "表單、表格、列表是 HTML 最常用的複雜元素，搭配驗證和標籤才能用得好。",
+    "JSON-LD、ARIA、lazy loading、picture 等進階技巧能讓網頁更聰明、更快、更容易用。"
+  ],
+  "faq": [
+    {
+      "q": "HTML 和 CSS 的差別是什麼？為什麼要分開？",
+      "a": "HTML 只負責內容和結構（骨架），CSS 負責長相和排版（皮膚）。分開寫能讓代碼更乾淨、更容易修改，也能讓同一份 HTML 套不同 CSS 有不同樣子。"
+    },
+    {
+      "q": "我一定要用語意化標籤嗎？用 div 包一切可以嗎？",
+      "a": "技術上可以，但 Google 搜尋、螢幕閱讀器、手機瀏覽器都會因為用了正確標籤而對你更友善，所以強烈建議用。不會花你多少時間，但好處很大。"
+    },
+    {
+      "q": "SEO 優化是不是只有 HTML 的問題？",
+      "a": "HTML 是基礎，做好 meta、標題、結構化資料這些才能讓 Google 看懂你的頁面。但真正的 SEO 還包括內容品質、載入速度、行動體驗等因素，HTML 只是其中一塊。"
+    }
+  ]
 }

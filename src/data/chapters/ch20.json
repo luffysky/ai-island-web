@@ -67,7 +67,30 @@
           "level": 2,
           "text": "Indie 選擇"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在設計一個新的全棧專案，前後端都用 TypeScript。你想要最小化型別定義的重複、讓前端改 server function 簽名時能立刻得到型別提示。應該選哪個 API 架構最合適？",
+        "options": [
+          {
+            "value": "a",
+            "label": "REST，因為是最主流的選擇，大多數公司都在用"
+          },
+          {
+            "value": "b",
+            "label": "tRPC，因為它提供端到端型別安全，且不需要 code generation"
+          },
+          {
+            "value": "c",
+            "label": "GraphQL，因為它有內建型別系統和自動文件"
+          },
+          {
+            "value": "d",
+            "label": "gRPC，因為它用 Protobuf 可以精確定義所有型別"
+          }
+        ],
+        "answer": "b",
+        "explanation": "tRPC 就是為 TypeScript 全棧設計的，能直接把 server function 當 client function 呼叫、自動型別推斷、0 code generation。GraphQL 雖然有型別系統但設定複雜許多、REST 和 gRPC 都不是為 TS 全棧優化。"
+      }
     },
     {
       "title": "RESTful 設計原則",
@@ -128,7 +151,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你設計一個 API 要刪除某篇文章的留言，下面哪個做法最符合 RESTful 原則？",
+        "options": [
+          {
+            "value": "a",
+            "label": "DELETE /api/posts/123/comments/456"
+          },
+          {
+            "value": "b",
+            "label": "POST /api/deleteComment?postId=123&commentId=456"
+          },
+          {
+            "value": "c",
+            "label": "GET /api/posts/123/comments/456/delete"
+          },
+          {
+            "value": "d",
+            "label": "POST /api/comments/456 + 在 body 寫 action=delete"
+          }
+        ],
+        "answer": "a",
+        "explanation": "RESTful 的統一介面原則要求：URL 用名詞表達資源、動作用 HTTP method 表達。a 選項用 DELETE verb 清楚表達刪除動作、用 resource path 指定對象，符合規範。b、c、d 都在 URL 或 method 裡混入動詞，違反統一介面的核心原則。"
+      }
     },
     {
       "title": "GraphQL 入門",
@@ -193,7 +239,30 @@
           "level": 2,
           "text": "何時用"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你要在一個頁面上顯示「一篇文章 + 作者資訊 + 5 條留言」。用 REST API 和 GraphQL 各需要打幾次 request？",
+        "options": [
+          {
+            "value": "a",
+            "label": "REST 打 3 次，GraphQL 打 1 次"
+          },
+          {
+            "value": "b",
+            "label": "REST 打 1 次，GraphQL 打 3 次"
+          },
+          {
+            "value": "c",
+            "label": "REST 和 GraphQL 都打 1 次"
+          },
+          {
+            "value": "d",
+            "label": "REST 和 GraphQL 都打 3 次"
+          }
+        ],
+        "answer": "a",
+        "explanation": "REST 需要分別呼叫「取得文章」、「取得作者」、「取得留言」三個 endpoint，而 GraphQL 在一個 query 裡同時指定所有欄位需求，只需一次 request。這正是 GraphQL 解決 REST 痛點的核心價值。"
+      }
     },
     {
       "title": "tRPC：TS 全端神器",
@@ -258,7 +327,30 @@
           "level": 2,
           "text": "何時用"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "tRPC 相比 REST API 最大的優勢是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "後端改了型別，前端會立刻看到 TypeScript 錯誤，不用寫 OpenAPI schema"
+          },
+          {
+            "value": "b",
+            "label": "可以支援任何程式語言，包括 Python、Java 等"
+          },
+          {
+            "value": "c",
+            "label": "自動幫你生成漂亮的 API 文件"
+          },
+          {
+            "value": "d",
+            "label": "相比 REST 可以大幅減少網路流量"
+          }
+        ],
+        "answer": "a",
+        "explanation": "tRPC 的核心賣點就是『型別自動 propagate』——後端改了，前端立刻 type error，完全不用寫 schema。b 錯因為 tRPC 只支援 TS；c 和 d 都不是課程重點。"
+      }
     },
     {
       "title": "API Docs + Versioning",
@@ -359,7 +451,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "為什麼說 API 文件比 API 本身還重要？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為好的文件讓客戶能輕鬆使用 API、減少 bug 回報和溝通成本"
+          },
+          {
+            "value": "b",
+            "label": "因為文件是用來取代 API 功能的"
+          },
+          {
+            "value": "c",
+            "label": "因為 OpenAPI 比寫程式的人更聰明"
+          },
+          {
+            "value": "d",
+            "label": "因為客戶只看文件、不會實際呼叫 API"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調沒文件 API 沒人用、過時文件導致客戶出錯，好文件（像 Stripe/Twilio）讓開發者愛上你的 API。b 誤解文件目的、c 和 d 都是課程沒提到的邪說。"
+      }
     },
     {
       "title": "GraphQL：Schema-First 設計",
@@ -436,7 +551,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "如果你的 team 想用 GraphQL 開發一個大型專案，應該先選定「Schema-First 還是 Code-First」？各有什麼根本差異？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Schema-First 是先寫 GraphQL SDL schema 再寫 resolver；Code-First 是寫程式碼（TS/Python）自動產生 schema"
+          },
+          {
+            "value": "b",
+            "label": "Schema-First 速度快、Code-First 速度慢，所以大型專案一定要用 Schema-First"
+          },
+          {
+            "value": "c",
+            "label": "兩派沒有差異，都是最後產生相同的 schema，選哪個都可以"
+          },
+          {
+            "value": "d",
+            "label": "Code-First 是舊方法已被淘汰，現在 GraphQL 只推薦用 Schema-First"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Schema-First 和 Code-First 的根本差異就在「順序」：一個先設計 schema 再實作、一個先寫程式碼 schema 是附帶物。選項 b、c、d 都混淆了差異或誤解了兩派的立場。"
+      }
     },
     {
       "title": "Rate Limiting + Throttling",
@@ -521,7 +659,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的服務遭到登入爆破攻擊，同一個帳號在 15 分鐘內被嘗試登入 50 次。下列哪個做法最能有效防止這種攻擊？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 Fixed Window 限制每分鐘 100 次登入"
+          },
+          {
+            "value": "b",
+            "label": "用 express-rate-limit 在登入 endpoint 設定 15 分內最多 5 次"
+          },
+          {
+            "value": "c",
+            "label": "回傳 503 Service Unavailable 給超過限制的請求"
+          },
+          {
+            "value": "d",
+            "label": "用 Token Bucket 演算法允許 burst 流量通過"
+          }
+        ],
+        "answer": "b",
+        "explanation": "登入是敏感操作，課程強調「登入 / 註冊 / 寄信必嚴」，應該用嚴格的 rate limit。選項 b 用 express-rate-limit 在登入路由設定 15 分內最多 5 次，正是課程範例的直接應用。選項 a 的 100 次太寬鬆、選項 c 應該回 429 而非 503、選項 d 的 Token Bucket 容許突發流量，都不適合防爆破。"
+      }
     },
     {
       "title": "Webhook 設計 + 安全",
@@ -598,7 +759,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的應用收到一個 Stripe Webhook 通知「付款成功」，但沒有驗簽章直接處理。這樣做最大的風險是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "任何人都可以假裝是 Stripe，發送虛假的付款成功通知來欺騙你的系統"
+          },
+          {
+            "value": "b",
+            "label": "Stripe 發送的訊息會被網路中途竄改，導致金額計算錯誤"
+          },
+          {
+            "value": "c",
+            "label": "你的伺服器效能會下降，因為沒有簽章驗證會增加 CPU 負擔"
+          },
+          {
+            "value": "d",
+            "label": "Webhook 回應超過 5 秒，Stripe 會停止發送後續所有通知"
+          }
+        ],
+        "answer": "a",
+        "explanation": "驗簽章的核心目的是確認通知確實來自 Stripe，而不是被冒充。不驗就無法區分真假，攻擊者可以偽造虛假通知來執行惡意操作（如標記未支付的訂單為已付款）。b 是簽章的附加好處但不是主要風險、c 和 d 都無關驗簽章。"
+      }
     },
     {
       "title": "API Versioning 策略",
@@ -707,7 +891,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的 API 上線一年後，需要把 name 欄位拆成 firstName 和 lastName。如果不做 versioning，會發生什麼問題？",
+        "options": [
+          {
+            "value": "a",
+            "label": "舊版 app 找不到 name 欄位會 crash，但可以強制用戶升級 app 來解決"
+          },
+          {
+            "value": "b",
+            "label": "舊版 app 找不到 name 欄位會 crash，無法強制 5 萬用戶立即升級，所以必須用 versioning 讓舊版繼續工作"
+          },
+          {
+            "value": "c",
+            "label": "新欄位會自動向下相容，舊版 app 不會受影響"
+          },
+          {
+            "value": "d",
+            "label": "只要用 Query Versioning 就能完全避免這個問題"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調 versioning 的核心目的，就是當 API 改變時不能強制所有舊 client 升級（像行動 app 用戶），必須讓舊版本繼續工作。選項 a 錯因為你無法強制，選項 c 是誤解（自動向下相容是不可能的），選項 d 過度承諾（任何方式都只是管理版本，不是完全避免）。"
+      }
     },
     {
       "title": "API Documentation：OpenAPI / Swagger",
@@ -804,7 +1011,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，為什麼 NestJS 自動產生 OpenAPI 文件比手寫 YAML 更好？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為自動產生的文件一定比手寫更詳細"
+          },
+          {
+            "value": "b",
+            "label": "因為可以從 Code 自動產生，文件和程式碼不會分散，易於維護和同步"
+          },
+          {
+            "value": "c",
+            "label": "因為自動產生的文件看起來比較專業"
+          },
+          {
+            "value": "d",
+            "label": "因為 YAML 格式太難寫，自動產生可以避免學習 YAML 語法"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調 'Docs 跟 code 一起寫' 和 'Auto-generate > 手寫'，重點是透過自動產生確保文件和程式碼同步，而不會出現文件過時的問題。其他選項是偏離核心的理由。"
+      }
     }
   ],
   "boss": {
@@ -818,5 +1048,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "REST 是最通用的選擇，用 HTTP 方法和狀態碼溝通；GraphQL 讓前端自己決定要什麼資料；tRPC 是 TypeScript 專用的全端強型別方案",
+    "好的 API 設計就是用對 HTTP 方法（GET / POST / PUT / DELETE）、回傳對的狀態碼、路由命名清楚有邏輯",
+    "GraphQL Schema 定義了所有資料結構，前端寫 Query 或 Mutation 來操作，減少過度載入和不足載入的問題",
+    "API 要加版本號、寫文檔、限制請求頻率、安全驗證，才能在真實環境活下去",
+    "Webhook 讓後端主動推送事件給外部系統，WebSocket 讓雙向實時通信成為可能"
+  ],
+  "faq": [
+    {
+      "q": "REST 和 GraphQL 選哪個？",
+      "a": "REST 簡單直白，適合大多數情況；GraphQL 適合複雜、多變的資料需求。新手一開始學 REST 比較好上手，日後再加 GraphQL。"
+    },
+    {
+      "q": "一定要寫 API 文檔嗎？",
+      "a": "絕對要。文檔讓前端知道怎麼用，也方便你自己查。用 Swagger / OpenAPI 工具能自動產生，省很多功夫。"
+    },
+    {
+      "q": "API 被亂打怎麼辦？",
+      "a": "要加 Rate Limiting 限制單位時間內的請求數，避免伺服器被打爆。同時驗證請求者身分，才能分配誰可以打多快。"
+    }
+  ]
 }

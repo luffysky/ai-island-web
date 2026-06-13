@@ -59,7 +59,30 @@
           "level": 3,
           "text": "2026 進階套件"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這課的內容，Python 之所以成為 2026 資料分析霸主，最核心的原因是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Python 的學習曲線最平緩，初學者最容易上手"
+          },
+          {
+            "value": "b",
+            "label": "Python 擁有豐富的套件生態，能涵蓋分析、ML、Web、自動化等全方位需求，且免費開源"
+          },
+          {
+            "value": "c",
+            "label": "Python 的執行速度比 R 和 SAS 都快，特別適合處理超大資料"
+          },
+          {
+            "value": "d",
+            "label": "Python 的視覺化功能比 Excel 強大，企業都已經全面轉用"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程的 4 大優勢明確列出：生態豐富、通用語言、開源免費、AI 時代主場。選項 a 說「最平緩」是錯的（課文說「學習曲線中等」）；c 過度強調速度（Polars 才是快的替代品）；d 過度誇大（Excel 還有小型臨時分析的位置）。"
+      }
     },
     {
       "id": "27.2",
@@ -104,7 +127,30 @@
           "level": 3,
           "text": "Magic Commands"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "Jupyter Notebook 相比於執行 .py 檔案的最大差別是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Jupyter 是以 cell（段落）為單位獨立執行，變數保留在記憶體；.py 是整個檔案從頭到尾跑一次"
+          },
+          {
+            "value": "b",
+            "label": "Jupyter 只能在雲端執行，.py 只能在本機執行"
+          },
+          {
+            "value": "c",
+            "label": "Jupyter 支援畫圖，.py 不支援畫圖"
+          },
+          {
+            "value": "d",
+            "label": "Jupyter 執行速度比 .py 快很多"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程的核心重點就是說明 Jupyter 的「cell 獨立執行、變數保留」機制，這是讓資料分析師能「邊探索邊思考」的關鍵。b 錯（本地 Jupyter Lab 也在本機跑），c 錯（.py 也能畫圖），d 錯（速度沒差異）。"
+      }
     },
     {
       "id": "27.3",
@@ -153,7 +199,30 @@
           "level": 3,
           "text": "實戰：考試成績分析"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你有一個包含 1000 筆銷售資料的 NumPy 陣列，需要計算每筆資料乘以 1.1（漲價 10%）後的結果。下列哪種做法最符合 NumPy 的核心精神？",
+        "options": [
+          {
+            "value": "a",
+            "label": "使用 for 迴圈逐一乘以 1.1，這樣最清楚易懂"
+          },
+          {
+            "value": "b",
+            "label": "直接用 arr * 1.1，一次對整個陣列運算"
+          },
+          {
+            "value": "c",
+            "label": "先轉成 Python list，再用 list comprehension 計算"
+          },
+          {
+            "value": "d",
+            "label": "使用 np.full() 建立全是 1.1 的陣列，再相乘"
+          }
+        ],
+        "answer": "b",
+        "explanation": "NumPy 的核心就是「向量化運算」——直接對整個陣列操作，比 for 迴圈快 10-100 倍。arr * 1.1 正是這個原則的體現，c 和 a 違反了這個原則，d 則多此一舉。"
+      }
     },
     {
       "id": "27.4",
@@ -218,7 +287,30 @@
           "level": 3,
           "text": "輸出"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你拿到一個 CSV 檔案，想快速了解資料的基本狀況。下列哪個方法的組合，最能在最短時間內掌握「列數、欄數、欄位名稱、資料型別、以及是否有缺值」？",
+        "options": [
+          {
+            "value": "a",
+            "label": "df.head() 和 df.tail()"
+          },
+          {
+            "value": "b",
+            "label": "df.shape、df.info()、df.isna().sum()"
+          },
+          {
+            "value": "c",
+            "label": "df.describe() 和 df.sample()"
+          },
+          {
+            "value": "d",
+            "label": "df.dtypes 和 df.query()"
+          }
+        ],
+        "answer": "b",
+        "explanation": "df.shape 告訴你列數和欄數、df.info() 列出欄位名稱和資料型別、df.isna().sum() 統計每欄缺值數量——三個方法組合能完整掌握基本狀況。其他選項要嘛功能重複（a、c），要嘛只能看型別不能看缺值數量（d）。"
+      }
     },
     {
       "id": "27.5",
@@ -267,7 +359,30 @@
           "level": 3,
           "text": "Plotly：互動圖表"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你拿到一個新的資料集，想快速看出所有數值變數之間的關係。根據這課教的 8 種圖表，下列哪個最適合一次完成這個需求？",
+        "options": [
+          {
+            "value": "a",
+            "label": "折線圖，因為可以顯示所有變數的趨勢"
+          },
+          {
+            "value": "b",
+            "label": "Pair Plot，因為會自動畫出所有數值欄兩兩的關係"
+          },
+          {
+            "value": "c",
+            "label": "熱力圖，因為可以看到每個變數的分布"
+          },
+          {
+            "value": "d",
+            "label": "散點圖，因為最清楚看兩個變數的關聯"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Pair Plot 是 EDA（探索性資料分析）神器，會自動產生所有數值欄兩兩的散點圖矩陣，對角線還畫直方圖，一張圖就能看完所有關係。其他選項都只能看特定變數或關係，無法一次完成。"
+      }
     },
     {
       "id": "27.6",
@@ -294,6 +409,29 @@
         "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
         "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
         "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "miniQuiz": {
+        "question": "你有一個股價資料集，時間欄叫 'date'，價格欄叫 'price'。現在想要：(1) 把時間欄轉成 datetime 型別、(2) 設為 index、(3) 計算 7 日移動平均。下列哪個步驟順序最正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "df.set_index('date'); df['date'] = pd.to_datetime(df['date']); df['ma7'] = df['price'].rolling(7).mean()"
+          },
+          {
+            "value": "b",
+            "label": "df['date'] = pd.to_datetime(df['date']); df.set_index('date', inplace=True); df['ma7'] = df['price'].rolling(7).mean()"
+          },
+          {
+            "value": "c",
+            "label": "df['ma7'] = df['price'].rolling(7).mean(); df['date'] = pd.to_datetime(df['date']); df.set_index('date', inplace=True)"
+          },
+          {
+            "value": "d",
+            "label": "df['date'] = pd.to_datetime(df['date']); df['ma7'] = df['price'].rolling(7).mean(); df.set_index('date', inplace=True)"
+          }
+        ],
+        "answer": "b",
+        "explanation": "必須先轉 datetime、再設為 index，才能讓 rolling 和後續時間操作有效。選項 a 順序反了會失敗、c 和 d 都在設 index 前就算均線，錯過時間 index 的優化。"
       }
     },
     {
@@ -321,6 +459,29 @@
         "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
         "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
         "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "miniQuiz": {
+        "question": "你要分析一份 2026 Q1 的銷售資料，已經讀進 DataFrame，第一步應該做什麼才能決定後續清洗的方向？",
+        "options": [
+          {
+            "value": "a",
+            "label": "馬上用 groupby 計算各類別的營收，看哪個類別賺最多"
+          },
+          {
+            "value": "b",
+            "label": "執行 df.info()，檢查欄位數量、資料型別、缺值位置"
+          },
+          {
+            "value": "c",
+            "label": "立刻繪製 10 張圖表，視覺化所有資料分佈"
+          },
+          {
+            "value": "d",
+            "label": "先把所有 NaN 都用 fillna(0) 填滿，確保沒有缺值"
+          }
+        ],
+        "answer": "b",
+        "explanation": "df.info() 是 EDA 第一步，能快速掌握資料的整體樣貌（欄位型別、缺值位置、資料筆數），這樣後續清洗才有方向；貿然計算、畫圖或填值，容易因為不了解資料而出錯。"
       }
     },
     {
@@ -378,7 +539,30 @@
           "level": 2,
           "text": "其他常用"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你有一個 DataFrame，想找出「每個國家的銷售總額、平均訂單金額，以及該國不重複客戶數」。下列哪個寫法最清楚且符合業界標準？",
+        "options": [
+          {
+            "value": "a",
+            "label": "df.groupby('country').agg({'amount': ['sum', 'mean'], 'user_id': 'nunique'})"
+          },
+          {
+            "value": "b",
+            "label": "df.groupby('country').agg(total_revenue=('amount', 'sum'), avg_order=('amount', 'mean'), customer_count=('user_id', 'nunique'))"
+          },
+          {
+            "value": "c",
+            "label": "df.groupby('country')['amount'].sum() + df.groupby('country')['amount'].mean() + df.groupby('country')['user_id'].nunique()"
+          },
+          {
+            "value": "d",
+            "label": "df.sort_values('country').groupby('country')['amount'].agg(['sum', 'mean', 'count'])"
+          }
+        ],
+        "answer": "b",
+        "explanation": "named aggregation（選項 b）是課程推薦的做法，結果欄位名自動變成 total_revenue / avg_order / customer_count，遠比選項 a 的預設名稱（('amount', 'sum') 這種）清楚；選項 c 和 d 都沒有達到「一次同時算三種統計」的效率。"
+      }
     },
     {
       "title": "NumPy 向量運算：矩陣的基礎",
@@ -544,7 +728,30 @@
           "level": 2,
           "text": "出版品質"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的老闆要看「不同國家的收入分布狀況」，希望一眼看出中位數、四分位數，還要看有沒有離群值。下面哪個圖最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 plt.pie() 圓餅圖，按國家分割"
+          },
+          {
+            "value": "b",
+            "label": "用 sns.boxplot() 箱形圖"
+          },
+          {
+            "value": "c",
+            "label": "用 plt.bar() 長條圖，每個國家一根"
+          },
+          {
+            "value": "d",
+            "label": "用 sns.barplot() 自動算平均值"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Box plot 是看分布的標準工具，能同時展示中位數、四分位數、離群值；而 bar chart 只顯示單一統計量（平均或總和），看不出分布形狀和離群值。"
+      }
     },
     {
       "title": "Plotly：互動式圖表",
@@ -621,7 +828,30 @@
           "level": 2,
           "text": "對比 Streamlit"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在做一個公司的銷售 Dashboard，需要讓使用者在網頁上 hover 看數值、zoom 放大、還要能處理 50 萬筆歷史資料不卡頓。根據這堂課的內容，應該用什麼工具？",
+        "options": [
+          {
+            "value": "a",
+            "label": "matplotlib，因為它是最老牌、最穩定的繪圖工具"
+          },
+          {
+            "value": "b",
+            "label": "Plotly，因為它是互動式圖表、WebGL 撐大數據、能嵌入網頁"
+          },
+          {
+            "value": "c",
+            "label": "matplotlib，因為它能輸出 PDF 給客戶印刷"
+          },
+          {
+            "value": "d",
+            "label": "Plotly，但要搭配 kaleido 套件才能做 Dashboard"
+          }
+        ],
+        "answer": "b",
+        "explanation": "這題考的是「何時用 Plotly」的重點判斷。Dashboard（互動網頁）+ 大資料（WebGL 撐百萬點）+ hover/zoom 互動，完全符合 Plotly 的三大使用場景。matplotlib 是靜態圖、不適合 Dashboard；kaleido 只是輔助輸出 PNG，不是做 Dashboard 的工具。"
+      }
     },
     {
       "title": "Streamlit：5 分鐘做出 Dashboard",
@@ -698,7 +928,30 @@
           "level": 2,
           "text": "部署"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "如果你是資料分析師，想要快速把 Jupyter Notebook 轉成給客戶看的互動 dashboard，為什麼 Streamlit 是最好的選擇？",
+        "options": [
+          {
+            "value": "a",
+            "label": "純 Python 寫、不用學前端、5 分鐘能交付、內建各種 widget 和圖表"
+          },
+          {
+            "value": "b",
+            "label": "因為它的客製化彈性最高，能做出最漂亮的視覺效果"
+          },
+          {
+            "value": "c",
+            "label": "因為它是唯一支援 Plotly 圖表的 Python 工具"
+          },
+          {
+            "value": "d",
+            "label": "因為它可以直接把 Excel 檔案轉成 dashboard，不用寫程式"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程重點強調 Streamlit 的核心優勢就是「純 Python、快速上手、內建元件完整、接案神器」，讓不懂前端的資料分析師也能 5 分鐘交付 dashboard。選項 b 說彈性高其實是它的缺點，c 和 d 都超出課程範圍或不符事實。"
+      }
     },
     {
       "title": "SQLAlchemy + pandas：DB 資料分析",
@@ -775,7 +1028,30 @@
           "level": 2,
           "text": "工具"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你是資料分析師，要從 DB 拉昨天的訂單資料來分析。下面哪個做法最安全又最正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 pd.read_sql(\"SELECT * FROM orders WHERE user_id = \" + str(123), engine) 拉資料"
+          },
+          {
+            "value": "b",
+            "label": "用 pd.read_sql(\"SELECT * FROM orders WHERE user_id = %(uid)s\", engine, params={\"uid\": 123}) 拉資料"
+          },
+          {
+            "value": "c",
+            "label": "直接用 df = pd.read_sql_table(\"orders\", engine) 拉整個表，再在 pandas 裡面篩選"
+          },
+          {
+            "value": "d",
+            "label": "用 SQLAlchemy ORM query API 拉資料，不要用 read_sql"
+          }
+        ],
+        "answer": "b",
+        "explanation": "選項 b 用 params 帶參數，能防止 SQL injection 攻擊，這是課程強調的「超重要」安全原則。選項 a 是危險的字串拼接；選項 c 會把整個表載進記憶體再篩選，浪費資源；選項 d 超出課程範圍。"
+      }
     },
     {
       "title": "Jupyter Notebook 進階技巧",
@@ -892,7 +1168,30 @@
           "level": 2,
           "text": "替代品"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在 Jupyter 裡寫了一個很耗時的資料分析程式，想知道它到底跑了多久。下列哪個做法可以精確計時整個 cell 的執行時間？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 %%time magic 在 cell 最上面，執行一次看結果"
+          },
+          {
+            "value": "b",
+            "label": "用 %timeit magic 在 cell 最上面，會跑多次取平均"
+          },
+          {
+            "value": "c",
+            "label": "用 %pwd 查看執行路徑、推估執行時間"
+          },
+          {
+            "value": "d",
+            "label": "用 @interact decorator 監控時間變化"
+          }
+        ],
+        "answer": "a",
+        "explanation": "%%time 是 cell magic（整個 cell 作用），執行一次並顯示耗時；%timeit 是行 magic，會反覆跑多次取平均（用於精確計時小段程式）。題目要「整個 cell」所以是 %%time。"
+      }
     },
     {
       "title": "時間序列分析 + Prophet 預測",
@@ -961,7 +1260,30 @@
           "level": 2,
           "text": "常見坑"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你有一份每日銷售資料，想用 Prophet 預測未來 30 天的銷售額。根據這課內容，下列敘述何者正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Prophet 會自動處理季節性和假日效應，不需要事先檢查資料是否平穩"
+          },
+          {
+            "value": "b",
+            "label": "必須先用 ARIMA 模型預測一次，確認效果好才能用 Prophet"
+          },
+          {
+            "value": "c",
+            "label": "一定要用 seasonal_decompose 分解出 Trend 和 Seasonal，才能餵給 Prophet 訓練"
+          },
+          {
+            "value": "d",
+            "label": "資料必須是乘法季節性（multiplicative）才能用 Prophet，加法季節性不適合"
+          }
+        ],
+        "answer": "a",
+        "explanation": "這課強調 Prophet 是 2026 主流選擇的原因，就是它自動處理季節、假日和平穩性問題，新手可以『1 行訓練』就出結果，不用像 ARIMA 一樣手動調參數或先檢查 stationarity。而 seasonal_decompose、ARIMA 都是傳統工具，Prophet 已經內部處理了。"
+      }
     },
     {
       "title": "A/B Test 統計分析",
@@ -1151,7 +1473,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "以下哪個敘述最正確地說明「PySpark 適用場景」？",
+        "options": [
+          {
+            "value": "a",
+            "label": "處理 50GB 的資料時，應該優先選用 PySpark，因為它比 Pandas 快"
+          },
+          {
+            "value": "b",
+            "label": "PySpark 是專為單台電腦優化的工具，類似 Pandas 但速度更快"
+          },
+          {
+            "value": "c",
+            "label": "當資料超過 1TB 時，Spark 在分散式集群上才是合理選擇，而不是本機執行"
+          },
+          {
+            "value": "d",
+            "label": "新手應該先學 PySpark，因為它是數據分析的最標準工具"
+          }
+        ],
+        "answer": "c",
+        "explanation": "課程明確指出：Spark 是為了在多台機器的集群上處理 TB 級資料，50GB 用 Polars、100GB-1TB 用 DuckDB 就夠；而新手 95% 不需要 Spark。選項 a 規模不對、b 誤解為單機優化、d 違反課程新手建議。"
+      }
     },
     {
       "title": "Polars：取代 pandas 的新星",
@@ -1232,7 +1577,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這課內容，Polars 相比 Pandas 最核心的三個優勢是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Rust 底層、多核自動並行、Lazy evaluation 可優化 query"
+          },
+          {
+            "value": "b",
+            "label": "免費開源、支援超過 100 種檔案格式、可連接雲端資料庫"
+          },
+          {
+            "value": "c",
+            "label": "單核效能快 2 倍、API 語法完全相同、內建機器學習模組"
+          },
+          {
+            "value": "d",
+            "label": "只能處理小資料、但執行速度穩定、最適合教學用"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確列出「Polars 5 大優勢」的前三項就是 Rust 底層快 5-10 倍、多核 CPU 自動並行、Lazy evaluation 可做 query optimization。其他選項都超出課程內容或與事實相反。"
+      }
     },
     {
       "title": "DuckDB：In-process OLAP",
@@ -1317,7 +1685,30 @@
           "level": 2,
           "text": "案例：取代 pandas"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你有一個 100 萬筆訂單的 Parquet 檔案，想找出每個國家金額最高的前 3 筆訂單。下面哪個做法最符合 DuckDB 的設計理念？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 DuckDB 直接寫 SQL query 這個 Parquet 檔案，不用先 import 進資料庫"
+          },
+          {
+            "value": "b",
+            "label": "先用 pandas 讀進 Parquet、轉成 DataFrame、再寫 pandas groupby 語法找出結果"
+          },
+          {
+            "value": "c",
+            "label": "先安裝 PostgreSQL server、把資料 import 進去、再用 SQL query"
+          },
+          {
+            "value": "d",
+            "label": "用 Polars 讀取 Parquet 檔案、因為它比 DuckDB 還快"
+          }
+        ],
+        "answer": "a",
+        "explanation": "DuckDB 的核心優勢就是『直接 query 檔案、in-process、不用 server』，可以一行 SQL 解決：`duckdb.sql(\"SELECT * FROM 'orders.parquet' ...\")` 。B 是傳統 Pandas 做法（複雜且慢）、C 是傳統 DB 做法（多此一舉）、D 雖然 Polars 快但課程重點在 DuckDB 的「直接 query 檔案」特性。"
+      }
     },
     {
       "title": "資料清理：缺失值 / 重複 / 異常",
@@ -1398,7 +1789,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的資料有不少缺失值，現在要決定怎麼處理。以下哪個選擇最不合理？",
+        "options": [
+          {
+            "value": "a",
+            "label": "重要欄位缺失比例 5%，用該欄的中位數填補"
+          },
+          {
+            "value": "b",
+            "label": "整列資料 80% 都是缺失值，直接刪掉這一列"
+          },
+          {
+            "value": "c",
+            "label": "時間序列資料缺失值，使用線性插值（interpolate）填補"
+          },
+          {
+            "value": "d",
+            "label": "某欄有 200 個缺失值，直接用 fillna('unknown') 填，再繼續分析"
+          }
+        ],
+        "answer": "d",
+        "explanation": "選 d 最不合理。200 個缺失值用'unknown'填、會讓數值欄變成字串或邏輯混亂，後續分析容易出錯。應該先檢查缺失比例和欄位特性，再選用中位數、平均數、或 KNN 這類更合適的策略。其他選項都是合理做法。"
+      }
     },
     {
       "title": "Feature Engineering：把資料變模型可用",
@@ -1523,7 +1937,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "為什麼特徵工程被稱為資料科學家的「真功夫」？以下哪個說法最符合業界經驗？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為特徵工程需要最複雜的數學公式，難度最高"
+          },
+          {
+            "value": "b",
+            "label": "因為好的特徵能帶來 80% 的模型提升，比用高級演算法更重要"
+          },
+          {
+            "value": "c",
+            "label": "因為特徵工程是唯一能直接改善 model 準確度的方法"
+          },
+          {
+            "value": "d",
+            "label": "因為特徵工程可以完全消除原始資料的噪音"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確提出「經驗法則：好的特徵 > 複雜的 model」和「80% 提升來自特徵工程」，說明特徵工程的價值在於實際效果，而非複雜度。其他選項都是過度誇大或不正確的陳述。"
+      }
     },
     {
       "title": "機器學習入門：scikit-learn",
@@ -1624,7 +2061,30 @@
           "level": 2,
           "text": "ML 路線圖"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在做一個分類專案，要根據客戶資料預測是否會購買。按照 ML 8 步驟流程，在「訓練模型」之前，有一個重要的動作是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "使用 train_test_split() 分割資料，並用 stratify 保持類別比例"
+          },
+          {
+            "value": "b",
+            "label": "直接用全部資料訓練模型，這樣精度最高"
+          },
+          {
+            "value": "c",
+            "label": "選擇一個模型，例如 LogisticRegression，然後立即預測"
+          },
+          {
+            "value": "d",
+            "label": "把資料存成 JSON 格式，方便後續部署"
+          }
+        ],
+        "answer": "a",
+        "explanation": "ML 8 步驟中第 4 步是 Train/Test split，這是訓練前必做的。stratify=y 可以確保訓練集和測試集的類別比例一致，避免評估結果偏差。選項 b 違反機器學習原則（會過擬合），c 跳過了 split 和 scaling，d 跟流程順序無關。"
+      }
     },
     {
       "title": "Geo 分析：pandas + Folium / GeoPandas",
@@ -1705,7 +2165,30 @@
           "level": 2,
           "text": "真實案例"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的外送 App 要在地圖上顯示方圓 1km 內的所有餐廳，並用點的大小表示每家餐廳的評分。請問應該用哪個工具組合最合適？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Folium 的 Circle（畫範圍）+ CircleMarker（點大小代表評分）"
+          },
+          {
+            "value": "b",
+            "label": "只用 GeoPandas 就可以直接在地圖上顯示所有資訊"
+          },
+          {
+            "value": "c",
+            "label": "用 Plotly 的 scatter 在一般座標圖上標記餐廳位置"
+          },
+          {
+            "value": "d",
+            "label": "用 pandas 的 groupby 統計，不需要地圖工具"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Folium 是互動地圖工具，Circle 可以視覺化方圓範圍，CircleMarker 的 radius 參數能用評分控制點的大小。B 錯因為 GeoPandas 主要是空間查詢工具；C、D 都不是地理視覺化工具。"
+      }
     },
     {
       "title": "NLP 入門：文字資料分析",
@@ -1806,7 +2289,30 @@
           "level": 2,
           "text": "何時用哪個"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你收到一個客服任務：要從 500 條餐廳評論裡找出顧客最常抱怨的問題。下列哪個做法最符合「2026 NLP 心法」？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 jieba 分詞、Counter 統計詞頻、找出現最多的負面詞，簡單快速"
+          },
+          {
+            "value": "b",
+            "label": "直接呼叫 LLM API 分析每一條評論，精準但成本高"
+          },
+          {
+            "value": "c",
+            "label": "自己寫深度學習模型從零開始訓練情感分析器"
+          },
+          {
+            "value": "d",
+            "label": "用英文分詞工具（以空白切割）處理中文評論"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調『簡單任務（分詞/詞頻）用 jieba』，這個任務只需要分詞後統計詞頻就能解決，選 b 會浪費成本、選 c 重造輪子、選 d 中文分詞會失敗。"
+      }
     },
     {
       "title": "資料分析職涯 + 學習路徑",
@@ -1914,7 +2420,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你完成了 L1-L24 的所有課程，現在想找資料分析的工作。根據這課的內容，以下哪一個做法最符合「正確的變現路徑」？",
+        "options": [
+          {
+            "value": "a",
+            "label": "立刻投履歷給 20 家公司，邊面試邊做 portfolio"
+          },
+          {
+            "value": "b",
+            "label": "先做 3 個完整的 portfolio project（EDA + 預測 + Dashboard），放上 GitHub，再開始投履歷"
+          },
+          {
+            "value": "c",
+            "label": "考一張 Google Data Analytics 認證，有證書就能直接進大公司"
+          },
+          {
+            "value": "d",
+            "label": "學完課程就代表能上工了，只需要寫好履歷就沒問題"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調『學完不等於能上工』，必須做 portfolio + 找對工作 + 持續輸出才能變現。3 個經典 project（EDA、預測、Dashboard）是找工作的必備基礎，放在 GitHub 和個人網站才有說服力，比單純投履歷或只有證書更重要。"
+      }
     }
   ],
   "boss": {
@@ -1928,5 +2457,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "Python 配合 Pandas、NumPy、Jupyter 是現代資料分析的標準技棧，比 Excel 快多倍",
+    "NumPy 是底層，Pandas 建在它上面，懂這兩個就能處理 80% 的資料問題",
+    "Jupyter 讓你邊寫程式邊看結果，比傳統 IDE 更適合做探索式分析",
+    "視覺化工具從簡單的 matplotlib 到互動式的 Plotly，挑適合的用就好",
+    "資料清理、特徵工程、統計檢驗這些步驟都得練過，才能上手真實世界的資料"
+  ],
+  "faq": [
+    {
+      "q": "Excel 用得好好的，為什麼要學 Python 資料分析？",
+      "a": "Excel 只能處理百萬列以內的資料，Python 可以處理百億、甚至 TB 級資料。而且 Excel 點來點去容易出錯，Python 程式可以重複用、版本控制，工作才不會亂。"
+    },
+    {
+      "q": "Pandas、NumPy、Polars 都是處理表格資料，怎麼選？",
+      "a": "Pandas 是老牌、文件多、用的人最多，新手就學它。Polars 比較快，但生態還沒那麼完整。先熟 Pandas，以後要換工具才容易。"
+    },
+    {
+      "q": "學完這章是不是就能找資料分析的工作？",
+      "a": "不是。這章是打底，讓你看得懂資料、會基本操作。真正找工作還要懂統計、SQL、機器學習其中幾個，最重要的是多做真實案例練習。"
+    }
+  ]
 }

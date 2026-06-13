@@ -89,7 +89,30 @@
           "level": 3,
           "text": "該不該學 React？"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程，前端三大框架中，如果你是新手不確定要學哪一個，最推薦先學哪個框架？原因是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "React，因為資源最多、職缺最大、卡關最好查"
+          },
+          {
+            "value": "b",
+            "label": "Vue，因為最好上手、能最快做出東西"
+          },
+          {
+            "value": "c",
+            "label": "Angular，因為是 Google 出的、最企業級"
+          },
+          {
+            "value": "d",
+            "label": "Svelte，因為是新興框架、觀念最先進"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確提到「不確定就先 React」，原因是資源最多、職缺最大、卡關最好查。Vue 雖然好上手但適合已有專案方向的人，Angular 適合企業目標，Svelte 是新興黑馬但市佔仍小，都不是新手首選。"
+      }
     },
     {
       "id": "8.2",
@@ -146,7 +169,30 @@
           "level": 3,
           "text": "第一個專案 checklist"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你現在要開始學 React，應該用什麼工具建第一個專案？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 create-react-app（CRA），因為是官方工具最保險"
+          },
+          {
+            "value": "b",
+            "label": "用 Vite，因為最快最簡單，適合學習"
+          },
+          {
+            "value": "c",
+            "label": "用 Next.js，因為包含所有功能最完整"
+          },
+          {
+            "value": "d",
+            "label": "自己用 webpack 配置，這樣最能學到原理"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確說 2026 不用 CRA（已棄用），學習階段就用 Vite 因為最快最簡單；Next.js 是給 production SaaS 用，自己配 webpack 也是要避免的做法。"
+      }
     },
     {
       "id": "8.3",
@@ -207,7 +253,30 @@
           "level": 3,
           "text": "常見 JSX 陷阱"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下面這段 JSX 程式碼會渲染出什麼結果？",
+        "options": [
+          {
+            "value": "a",
+            "label": "顯示數字 0"
+          },
+          {
+            "value": "b",
+            "label": "什麼都不顯示（空白）"
+          },
+          {
+            "value": "c",
+            "label": "顯示 <span>0</span>"
+          },
+          {
+            "value": "d",
+            "label": "出現錯誤訊息"
+          }
+        ],
+        "answer": "a",
+        "explanation": "當 count = 0 時，count && <span>{count}</span> 會因為 0 是 falsy 而短路，但 0 本身會被渲染出來。正確做法應該用 count > 0 && <span>{count}</span> 做明確判斷，才能在計數為 0 時不顯示任何東西。"
+      }
     },
     {
       "id": "8.4",
@@ -272,7 +341,30 @@
           "level": 3,
           "text": "實戰：Card component"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在 React 中，如果想要讓一個 Component 能夠接收父層傳進來的資料或設定，應該使用什麼方式？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Props：在 Component 的參數中接收、父層用屬性傳入"
+          },
+          {
+            "value": "b",
+            "label": "直接改變 Component 內部的變數值"
+          },
+          {
+            "value": "c",
+            "label": "把所有資料寫死在 Component 裡面"
+          },
+          {
+            "value": "d",
+            "label": "使用 children 就能解決所有資料傳遞的問題"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Props 是 React 傳遞資料的核心機制，允許父層向子層傳遞參數。b 是錯誤的做法（改 props 違反原則），c 失去重用性，d 雖然 children 是特殊 prop，但不是解決所有資料傳遞的唯一方法。"
+      }
     },
     {
       "id": "8.5",
@@ -337,7 +429,30 @@
           "level": 3,
           "text": "常見 state 錯誤"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "關於 React 的 useState，下列敘述何者正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "useState 回傳一個陣列，包含當前狀態值和更新該狀態的函式"
+          },
+          {
+            "value": "b",
+            "label": "可以在 component 外部呼叫 useState"
+          },
+          {
+            "value": "c",
+            "label": "修改狀態時可以直接用 count++，React 會自動偵測"
+          },
+          {
+            "value": "d",
+            "label": "當狀態變更時，不會觸發 component 重新渲染"
+          }
+        ],
+        "answer": "a",
+        "explanation": "useState 的作用就是回傳 [當前值, setter]，透過 setter 更新狀態會觸發 re-render。選 b 違反 hook 規則、選 c 和 d 都違反 React 狀態管理的基本原則。"
+      }
     },
     {
       "id": "8.6",
@@ -398,7 +513,30 @@
           "level": 3,
           "text": "常見錯誤"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在 React 中，為什麼 `<button onClick={handleClick()}>` 是錯的，而 `<button onClick={handleClick}>` 是對的？",
+        "options": [
+          {
+            "value": "a",
+            "label": "第一種會立刻執行函式，不是綁定事件；第二種傳入函式 reference，被點擊時才執行"
+          },
+          {
+            "value": "b",
+            "label": "第一種無法取得 event 物件；第二種可以正常接收 event"
+          },
+          {
+            "value": "c",
+            "label": "第一種會導致效能問題；第二種會自動最佳化"
+          },
+          {
+            "value": "d",
+            "label": "第一種 TypeScript 會報錯；第二種符合型別檢查"
+          }
+        ],
+        "answer": "a",
+        "explanation": "onClick={handleClick()} 立刻呼叫函式，返回值被設為 onClick 的值（通常是 undefined），所以事件根本不會綁定。onClick={handleClick} 傳入函式本身，React 會在使用者點擊時才執行它，這是正確的做法。"
+      }
     },
     {
       "id": "8.7",
@@ -467,7 +605,30 @@
           "level": 3,
           "text": "常見錯誤"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的 todo 清單用陣列存，每個項目有唯一的 id。現在用戶刪除第一個 todo，接著你在第二個 todo 的 input 欄位打字。如果你用 index 當 key，會發生什麼問題？",
+        "options": [
+          {
+            "value": "a",
+            "label": "React 會報錯，程式無法執行"
+          },
+          {
+            "value": "b",
+            "label": "第二個 todo 的 input 會顯示第一個 todo 的文字，因為 React 混淆了誰是誰"
+          },
+          {
+            "value": "c",
+            "label": "效能變差，但功能正常"
+          },
+          {
+            "value": "d",
+            "label": "完全沒問題，index 當 key 就是為了這種情況"
+          }
+        ],
+        "answer": "b",
+        "explanation": "用 index 當 key 的核心問題：列表順序變了，key 也會重新對應到不同的項目。React 根據 key 追蹤元件內部狀態，所以會把舊狀態附加到錯的項目上。正確做法是用穩定、唯一的 id 當 key。"
+      }
     },
     {
       "id": "8.8",
@@ -532,7 +693,30 @@
           "level": 3,
           "text": "實戰：訂閱 + 訂閱清理"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "如果你想在 component 初次載入時 fetch 資料，並且在 user ID 改變時重新 fetch，useEffect 應該怎麼寫？",
+        "options": [
+          {
+            "value": "a",
+            "label": "useEffect(() => { fetch(`/api/users/${id}`); }); 不加 dependency array"
+          },
+          {
+            "value": "b",
+            "label": "useEffect(() => { fetch(`/api/users/${id}`); }, [id]);"
+          },
+          {
+            "value": "c",
+            "label": "useEffect(() => { fetch(`/api/users/${id}`); }, []);"
+          },
+          {
+            "value": "d",
+            "label": "useEffect(() => { fetch(`/api/users/${id}`); }, [id, fetch]);"
+          }
+        ],
+        "answer": "b",
+        "explanation": "選項 b 才對。加上 [id] 作為 dependency，這樣 id 變化時會重新跑 effect、觸發新的 fetch。選項 a 會無限迴圈（每 render 都 fetch），選項 c 只跑一次（id 變時不會 fetch），選項 d 多加 fetch 是不必要的。"
+      }
     },
     {
       "id": "8.9",
@@ -589,7 +773,30 @@
           "level": 3,
           "text": "實戰：infinite scroll"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在做一個秒錶功能，需要存 setInterval 回傳的 ID，這樣才能之後用 clearInterval 來停止。你應該用 useState 還是 useRef 來存這個 ID？為什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 useState，因為 ID 是重要資料，應該讓 React 追蹤"
+          },
+          {
+            "value": "b",
+            "label": "用 useRef，因為只是存 ID 用，改了不需要觸發 re-render"
+          },
+          {
+            "value": "c",
+            "label": "用 useState，因為 useRef 只能存 DOM 元素"
+          },
+          {
+            "value": "d",
+            "label": "用 useRef，但要搭配 setState 才能真正更新值"
+          }
+        ],
+        "answer": "b",
+        "explanation": "useRef 的第二個用途就是存「不觸發 re-render 的值」。interval ID 改變時不需要重新渲染畫面，所以 useRef 是最適合的。useState 反而會造成不必要的 re-render。"
+      }
     },
     {
       "id": "8.10",
@@ -650,7 +857,30 @@
           "level": 3,
           "text": "常見性能錯誤"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的父 component 因為 state 變化而 re-render，但子 component 的 props 其實沒有改變。這時候子 component 預設會發生什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "子 component 也會 re-render，即使 props 沒變"
+          },
+          {
+            "value": "b",
+            "label": "子 component 不會 re-render，React 很聰明會自動判斷"
+          },
+          {
+            "value": "c",
+            "label": "子 component 會發生錯誤，因為 props 不同步"
+          },
+          {
+            "value": "d",
+            "label": "取決於子 component 內部有沒有使用 useState"
+          }
+        ],
+        "answer": "a",
+        "explanation": "React 預設行為是「父 re-render → 所有子都 re-render」，即使 props 沒變。這是效能瓶頸的來源，需要用 React.memo、useMemo、useCallback 等工具才能優化。"
+      }
     },
     {
       "id": "8.11",
@@ -707,7 +937,30 @@
           "level": 3,
           "text": "常見錯誤"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下面哪一個說法正確地描述了 Custom Hook 的特點？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Custom Hook 是一個用 use 開頭命名的函式，可以抽出可重用的邏輯，多個 component 使用同一個 custom hook 時會共享同一個 state"
+          },
+          {
+            "value": "b",
+            "label": "Custom Hook 必須回傳一個物件，裡面包含 state 和對應的 setter 函式"
+          },
+          {
+            "value": "c",
+            "label": "Custom Hook 無法使用其他 hook，只能寫純邏輯程式碼"
+          },
+          {
+            "value": "d",
+            "label": "Custom Hook 一旦建立就固定了，不能根據不同的參數調整行為"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Custom Hook 確實用 use 開頭，可以抽出邏輯供多個 component 重用，但每個 component 使用時各自獨立有自己的 state（不會共享）。選項 b 錯在不一定要回傳物件；選項 c 錯在內部可以用其他 hook；選項 d 錯在可以接參數調整行為（如 useCounter(initial) 或 useDebounce(value, delay)）。"
+      }
     },
     {
       "id": "8.12",
@@ -768,7 +1021,30 @@
           "level": 3,
           "text": "常見 Context 錯誤"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你有個 React app，user 資料要從 App 元件傳到深層的 UserProfile 元件。如果不用 Context，你需要一層層用 props 傳遞（props drilling），這樣會發生什麼問題？",
+        "options": [
+          {
+            "value": "a",
+            "label": "中間經過的元件都要寫 user prop，即使它們根本不需要用到 user"
+          },
+          {
+            "value": "b",
+            "label": "user 資料會自動遺失，無法傳到最深層"
+          },
+          {
+            "value": "c",
+            "label": "每個元件都要寫 useContext hook 才能接收 props"
+          },
+          {
+            "value": "d",
+            "label": "props 會發生命名衝突，導致資料覆蓋"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Props drilling 的痛點就是中間的元件 Layout、Sidebar、Menu 都要接收並傳遞 user，即使它們本身不需要這個資料。Context 的作用就是讓需要的元件直接取用，跳過中間層。"
+      }
     },
     {
       "id": "8.13",
@@ -825,7 +1101,30 @@
           "level": 3,
           "text": "2026 替代方案"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的 React 專案中有一個購物車元件，需要管理「商品列表、總價、折扣碼、運費」四個相關聯的資料，而且常常要執行「加商品、移除商品、套用折扣、計算總價」等多個動作。下列哪個選擇最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 useState 分別管理每個欄位（setProducts、setTotal、setDiscount、setShipping），邏輯清楚"
+          },
+          {
+            "value": "b",
+            "label": "用 useReducer 集中管理購物車 state 和所有 action，邏輯改動時只需改 reducer"
+          },
+          {
+            "value": "c",
+            "label": "直接用全域 state 管理套件（Redux / Zustand），useReducer 功能不夠"
+          },
+          {
+            "value": "d",
+            "label": "用 useState 搭配 useCallback 優化效能，就足以應付複雜的 state"
+          }
+        ],
+        "answer": "b",
+        "explanation": "這個場景符合 useReducer 的三個條件：(1) state 是物件、多欄位 (2) 多種相關 action (3) action 之間有依賴關係（如加商品會影響總價、套用折扣也會影響總價）。useReducer 能把所有邏輯集中在 reducer 裡，比多個 useState 更好維護。"
+      }
     },
     {
       "id": "8.14",
@@ -890,7 +1189,30 @@
           "level": 3,
           "text": "常見錯誤"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在做一個大型 dashboard，有 Analytics、Settings、Users 三個分頁，每個都是很重的元件。為了優化首屏加載，你決定用 Suspense + lazy。請問這個做法的主要好處是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "首屏 bundle 變小，用戶按下分頁時才下載該分頁的 code，期間自動顯示 loading 畫面"
+          },
+          {
+            "value": "b",
+            "label": "三個分頁會同時下載，但 Suspense 會控制它們同時出現，避免畫面閃爍"
+          },
+          {
+            "value": "c",
+            "label": "用 Suspense 可以捕捉元件內的錯誤，讓頁面不會整個崩潰"
+          },
+          {
+            "value": "d",
+            "label": "lazy load 會自動優化 React 的 render 效能，減少不必要的重繪"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Suspense + lazy 的核心目的是 code splitting，把大的 bundle 拆小，按需加載。用戶點擊分頁時才下載該 chunk，Suspense 的 fallback 會自動顯示 loading 狀態。選項 b 理解錯了（不是同時下載），c 是 Error Boundary 的工作，d 也不是重點。"
+      }
     },
     {
       "id": "8.15",
@@ -947,7 +1269,30 @@
           "level": 3,
           "text": "常見錯誤"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在 React Hook Form + Zod 的方案中，Zod schema 的主要目的是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "定義表單的資料結構和驗證規則，同時提供型別安全"
+          },
+          {
+            "value": "b",
+            "label": "直接控制 input 元素的 DOM 更新和 re-render"
+          },
+          {
+            "value": "c",
+            "label": "管理表單的 loading 狀態和 disabled 屬性"
+          },
+          {
+            "value": "d",
+            "label": "取代 React Hook Form 的 register 功能"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Zod schema 在課程中是用來一次性定義欄位的格式（如 email()、min(8)）和對應的型別（z.infer），避免像 useState 方案那樣分散的手動驗證邏輯。b 是 register 的工作、c 是 formState 的工作、d 是誤解。"
+      }
     },
     {
       "id": "8.16",
@@ -1008,7 +1353,30 @@
           "level": 3,
           "text": "React Query vs SWR"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的 React 應用中，兩個不同的 component 都呼叫 useQuery 抓同一個用戶資料（queryKey 都是 [\"user\", 1]）。使用 React Query 會發生什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "只發送一次 API 請求，兩個 component 共用同一份 cache 資料"
+          },
+          {
+            "value": "b",
+            "label": "各發送一次 API 請求，共兩次，因為有兩個 component"
+          },
+          {
+            "value": "c",
+            "label": "發送一次請求，但第二個 component 要等第一個載入完才能用"
+          },
+          {
+            "value": "d",
+            "label": "每個 component 都發送請求，然後自動刪除舊的 cache"
+          }
+        ],
+        "answer": "a",
+        "explanation": "React Query 的 deduplication 機制會自動判斷相同 queryKey，只發送一次 API 請求，之後兩個 component 都從同一份 cache 中取資料。這正是使用 React Query 取代 useEffect 的主要優勢之一。"
+      }
     },
     {
       "id": "8.17",
@@ -1057,7 +1425,30 @@
           "level": 3,
           "text": "選擇指南"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的新專案要選狀態管理方案，不需要複雜的中間件、也不想學太多概念。根據課程內容，最適合用什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Zustand，因為學習曲線低、bundle size 小、是 2026 主流"
+          },
+          {
+            "value": "b",
+            "label": "Redux Toolkit，因為功能最完整、適合所有專案"
+          },
+          {
+            "value": "c",
+            "label": "React Context，因為不用額外安裝、內建就有"
+          },
+          {
+            "value": "d",
+            "label": "Jotai，因為派生 atom 功能比 Zustand 強大"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Zustand 在學習曲線、檔案大小、2026 業界主流度上都最平衡，特別適合新專案。Context 性能差、Redux 學習曲線中等，Jotai 則適合需要細粒度派生狀態的場景。"
+      }
     },
     {
       "id": "8.18",
@@ -1122,7 +1513,30 @@
           "level": 3,
           "text": "Web Vitals"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的 React 應用有 5000 筆資料要顯示在清單上，但頁面很卡。下列哪個做法最能解決「大 list 渲染卡頓」的問題？",
+        "options": [
+          {
+            "value": "a",
+            "label": "馬上給所有 item component 套上 React.memo，防止 re-render"
+          },
+          {
+            "value": "b",
+            "label": "使用 Virtual Scrolling，一次只渲染視窗內看得到的項目"
+          },
+          {
+            "value": "c",
+            "label": "把整個清單用 useMemo 包起來，cache 計算結果"
+          },
+          {
+            "value": "d",
+            "label": "使用 Code Splitting 把清單頁面分離成另一個 bundle"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Virtual Scrolling 是解決「一次渲染 1000+ 個 DOM 卡頓」的標準方案，只渲染看得見的部分而不是全部。React.memo、useMemo、Code Splitting 都不是針對這個問題的直接解方。"
+      }
     },
     {
       "id": "8.19",
@@ -1187,7 +1601,30 @@
           "level": 3,
           "text": "測試心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據 Testing Library 的哲學，以下哪個做法是正確的測試方式？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 screen.getByRole 查找按鈕，測試用戶點擊後看到的結果"
+          },
+          {
+            "value": "b",
+            "label": "直接檢查元件的 internal state（如 useState 的值）"
+          },
+          {
+            "value": "c",
+            "label": "優先使用 data-testid 來選取元素，因為最精確"
+          },
+          {
+            "value": "d",
+            "label": "測試 className 有沒有被正確加上，以確保樣式正確"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Testing Library 的核心哲學是『Test like a user uses it』，要從用戶角度測試——看得到的內容、能做的操作。getByRole 是最 accessible 的查詢方式，應優先使用；而 b 測試 internal state、c 和 d 測試實作細節都違反了這個原則。"
+      }
     },
     {
       "id": "8.20",
@@ -1252,7 +1689,30 @@
           "level": 3,
           "text": "RSC 心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下列敘述何者正確？RSC（React Server Components）最核心的改變是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Component 在 Server 執行並直接產生 HTML，Client 只接收 HTML 不接收 component 程式碼"
+          },
+          {
+            "value": "b",
+            "label": "所有 React component 都改成在 Server 執行，完全不需要 Client-side JavaScript"
+          },
+          {
+            "value": "c",
+            "label": "RSC 讓你可以在 component 內直接用 useState 和 useEffect，但執行環境換到 Server"
+          },
+          {
+            "value": "d",
+            "label": "RSC 的主要好處是讓 bundle 變小，同時保留所有傳統 React 的互動能力"
+          }
+        ],
+        "answer": "a",
+        "explanation": "RSC 的革命在於 Server 執行 component、回傳 HTML、不送 component 程式碼到 client，這樣可以解決首屏快、SEO 好、bundle 小的問題。選 b 錯誤因為還是需要 Client Components 做互動；選 c 錯因為 Server Component 不能用 useState/useEffect；選 d 錯因為 RSC 必須放棄某些互動才能換來效能。"
+      }
     },
     {
       "id": "8.21",
@@ -1313,7 +1773,30 @@
           "level": 3,
           "text": "業界 2026 範例"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據 2026 indie SaaS 黃金組合，以下哪個選項最完整地涵蓋了「資料管理層」的三個核心部分？",
+        "options": [
+          {
+            "value": "a",
+            "label": "React Query（server state）+ Zustand（client state）+ React Hook Form + Zod（form）"
+          },
+          {
+            "value": "b",
+            "label": "Next.js + TypeScript + Tailwind CSS"
+          },
+          {
+            "value": "c",
+            "label": "PostgreSQL + Drizzle ORM + Clerk"
+          },
+          {
+            "value": "d",
+            "label": "Vercel Blob + Cloudflare R2 + Resend"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確列出 State / Data 層包含三部分：React Query 管理 server state、Zustand 管理 client state、React Hook Form + Zod 管理表單。其他選項分別是 Framework、Database、或 Storage/Email 層，不是資料管理的完整組合。"
+      }
     },
     {
       "id": "8.22",
@@ -1357,7 +1840,30 @@
           "level": 3,
           "text": "給 indie 的最後建議"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這課的學習路徑，如果你現在剛學完 React 基礎（props、useState、useEffect），下一個 2-6 個月最應該重點加強什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "馬上學 Monorepo、設計系統、無障礙設計，為成為資深工程師做準備"
+          },
+          {
+            "value": "b",
+            "label": "自訂 Hooks、狀態管理、測試、效能最佳化，並目標是做出有 1000+ 使用者的產品"
+          },
+          {
+            "value": "c",
+            "label": "專注於讀官方文件和追蹤 React 大師的部落格，積累理論知識"
+          },
+          {
+            "value": "d",
+            "label": "直接從進階專案開始，例如做 SaaS 或開源工具來快速進步"
+          }
+        ],
+        "answer": "b",
+        "explanation": "階段 2（第 2-6 個月）的重點就是學 Custom Hooks、效能、測試、Server Components，並完成 1000+ 使用者的產品目標。選項 a 超前（那是階段 3），選項 c 和 d 都跳過了中階的系統性學習。"
+      }
     },
     {
       "title": "React 19 新特性：Actions + use() + Server Components",
@@ -1402,7 +1908,30 @@
           "level": 2,
           "text": "React Server Components（RSC）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "React 19 的 Actions 相比 React 18 的最大改變是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 useActionState hook 一次管理 pending、error、optimistic update，不用自己寫多個 useState"
+          },
+          {
+            "value": "b",
+            "label": "改用 onSubmit 代替 action 屬性來處理表單"
+          },
+          {
+            "value": "c",
+            "label": "所有 async 操作都必須用 use() hook 才能執行"
+          },
+          {
+            "value": "d",
+            "label": "自動把所有 form 轉成 Server Components"
+          }
+        ],
+        "answer": "a",
+        "explanation": "React 19 的 useActionState 核心價值就是「一個 hook 管三件事」(pending / error / state)，取代 React 18 需要多個 useState 的繁瑣寫法。b 錯在改的是用 action 屬性而非 onSubmit；c 和 d 都超出課程範圍。"
+      }
     },
     {
       "title": "React Server Components vs Client Components",
@@ -1451,7 +1980,30 @@
           "level": 2,
           "text": "傳資料：server → client"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你寫了一個 React 元件，功能是顯示文章列表，並且讓使用者可以透過輸入框搜尋文章。根據 Server Components vs Client Components 的概念，這個元件應該怎麼分割？",
+        "options": [
+          {
+            "value": "a",
+            "label": "整個都寫成 Server Component，在 Server 端過濾文章，傳回過濾好的結果"
+          },
+          {
+            "value": "b",
+            "label": "Server Component 負責從資料庫抓文章，傳給 Client Component；Client Component 負責搜尋輸入和即時過濾"
+          },
+          {
+            "value": "c",
+            "label": "整個都寫成 Client Component，用 useEffect 從 API 抓文章，這樣才能用 useState 做搜尋"
+          },
+          {
+            "value": "d",
+            "label": "寫成 Server Component，但加上 useState 和 onChange 事件來處理搜尋邏輯"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Server Component 可以直接存取資料庫抓資料，但不能用 useState 和事件監聽；Client Component 則相反。最佳實作是 Server 端負責資料抓取，Client 端負責互動邏輯，兩者搭配才能兼得效能和互動性。"
+      }
     },
     {
       "title": "React Performance：memo / useMemo / useCallback 何時用",
@@ -1504,7 +2056,30 @@
           "level": 2,
           "text": "React 19 Compiler（殺手鐧）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的專案中有一個計算很複雜的篩選功能，但每次用 useMemo 包裝後，效能反而變得更差。根據這課的內容，最可能的原因是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "計算本身耗時不到 5ms，useMemo 的儲存和依賴比較成本反而更大"
+          },
+          {
+            "value": "b",
+            "label": "useMemo 的依賴陣列每次都在變，所以 memo 永遠不命中"
+          },
+          {
+            "value": "c",
+            "label": "應該用 React.memo 而不是 useMemo"
+          },
+          {
+            "value": "d",
+            "label": "useMemo 不支援複雜計算，只能用在簡單值"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調 useMemo 有成本——儲存結果 + 比較依賴。如果原本計算就很快（< 5ms），useMemo 的開銷反而使總耗時更長。這是『不是永遠包』的核心概念——要先 measure 再 optimize。"
+      }
     }
   ],
   "boss": {
@@ -1518,5 +2093,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "React 就是把網頁拆成可重複使用的積木（Component），每個積木管理自己的狀態和邏輯。",
+    "JSX 讓你在 JavaScript 裡寫 HTML，Props 讓父元件傳資料給子元件，useState 讓元件記住狀態。",
+    "useEffect 處理副作用（API、計時器）、useRef 抓 DOM、列表用 map() + key 來渲染。",
+    "表單用 onChange 接收輸入、onClick 處理點擊、onSubmit 提交資料，複雜邏輯可以抽成 Custom Hook。",
+    "大專案用 Context / useReducer / React Query 管理全域狀態和非同步資料，Server Components 是新趨勢。"
+  ],
+  "faq": [
+    {
+      "q": "學 React 之前一定要會 Vue 或其他框架嗎？",
+      "a": "不一定，但要會原生 JavaScript（變數、函式、陣列、物件）。React 的邏輯就是 JS，不是另一套語言，所以只要 JS 扎實，React 反而更容易上手。"
+    },
+    {
+      "q": "看起來要學好多東西（Hook、Context、useReducer...），會不會太複雜？",
+      "a": "不用一次全學，先把 useState、useEffect、Props 學透徹，能寫出可動的功能就可以。其他 Hook 是應付更大專案的工具，用到再學也不遲，越用越熟。"
+    },
+    {
+      "q": "學完 React 能直接做案子 / 找工作嗎？",
+      "a": "學完這章你能理解 React 怎麼運作、寫出基礎元件，但實戰還會遇到路由、API、部署、團隊協作等挑戰。這章是打底，讓你有信心繼續往前走。"
+    }
+  ]
 }

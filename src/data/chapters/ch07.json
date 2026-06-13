@@ -73,7 +73,30 @@
           "level": 3,
           "text": "同個程式、不同語言怎麼跑"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你寫了一個 Python 程式，直接用 `python script.py` 執行。與編譯型語言（如 Go）相比，這個過程有什麼根本上的差異？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Python 程式碼一行一行被直譯器讀取並執行，而 Go 程式需要先編譯成機器碼再執行"
+          },
+          {
+            "value": "b",
+            "label": "Python 比 Go 快，因為它不需要編譯就能直接跑"
+          },
+          {
+            "value": "c",
+            "label": "Python 和 Go 都需要先編譯，只是編譯工具不同"
+          },
+          {
+            "value": "d",
+            "label": "Python 用 JIT 編譯所以執行速度和 Go 一樣快"
+          }
+        ],
+        "answer": "a",
+        "explanation": "直譯型語言（Python）由直譯器在執行時逐行讀取並執行原始碼；編譯型語言（Go）先經過編譯器轉成機器碼，再直接被 CPU 執行。這是兩種流程的根本差異。選項 b 錯因為直譯通常比編譯慢；c 和 d 混淆了語言分類。"
+      }
     },
     {
       "id": "7.2",
@@ -134,7 +157,30 @@
           "level": 3,
           "text": "變數提升（Hoisting）—JS 特有陷阱"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "變數最根本的定義是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "記憶體中一塊空間的名字"
+          },
+          {
+            "value": "b",
+            "label": "存放數字和文字的容器"
+          },
+          {
+            "value": "c",
+            "label": "程式裡用來計算的工具"
+          },
+          {
+            "value": "d",
+            "label": "每個程式語言都必須有的功能"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程開頭就明確說「變數 = 記憶體中一塊空間的名字」，它是人類友善的別名，電腦只記位址（如 0x1000），我們用變數名字（如 age）來存取。其他選項都是衍生的用途或特性，不是本質定義。"
+      }
     },
     {
       "id": "7.3",
@@ -183,7 +229,30 @@
           "level": 3,
           "text": "Null 引發的災難"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下列哪個敘述正確地說明了「整數溢位」和「浮點數精度」這兩個陷阱的核心差異？",
+        "options": [
+          {
+            "value": "a",
+            "label": "整數溢位是因為超過資料型態上限會自動轉換，浮點數精度問題是因為十進制無法用二進制完美表示"
+          },
+          {
+            "value": "b",
+            "label": "整數溢位和浮點數精度問題都是因為電腦記憶體不足，Python 和 JavaScript 都能完美解決"
+          },
+          {
+            "value": "c",
+            "label": "整數溢位只在 Java 發生，浮點數精度問題只在 Python 發生，所以要選適合的語言"
+          },
+          {
+            "value": "d",
+            "label": "整數溢位會導致 NullPointerException，浮點數精度問題需要用 Optional chaining 來解決"
+          }
+        ],
+        "answer": "a",
+        "explanation": "整數溢位是因為型態有上限（如 u8 最多 255），超出會 wrap 或 panic；浮點數精度問題則是因為 0.1、0.2 等十進制小數在二進制中無限循環，無法精確表示。這兩個是不同根源的陷阱，所有語言都會遇到，選項 b、c、d 都混淆了概念或給出錯誤的解決方案。"
+      }
     },
     {
       "id": "7.4",
@@ -248,7 +317,30 @@
           "level": 3,
           "text": "三元運算子"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下列哪個選項最能說明「短路評估」在實務上的主要好處？",
+        "options": [
+          {
+            "value": "a",
+            "label": "讓程式碼更短、更容易閱讀"
+          },
+          {
+            "value": "b",
+            "label": "避免不必要的運算，同時防止對 null 值的危險操作"
+          },
+          {
+            "value": "c",
+            "label": "自動把字串轉成數字，避免型別不符"
+          },
+          {
+            "value": "d",
+            "label": "可以在一行內寫完 if-else 判斷"
+          }
+        ],
+        "answer": "b",
+        "explanation": "短路評估的核心是：AND 在左邊為 False 時就停止、OR 在左邊為 True 時就停止。這樣既節省效能（不執行後面的運算），也防止 null 錯誤（例如 user != None and user.is_active，如果 user 是 None 就不會執行 .is_active）。選項 a 是三元運算子的優點、c 是寬鬆相等的特性、d 也是三元運算子。"
+      }
     },
     {
       "id": "7.5",
@@ -301,7 +393,30 @@
           "level": 3,
           "text": "Guard Clause（早 return）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在寫一個程式判斷分數等級。分數 85 分應該是 B，分數 92 分應該是 A。如果用下面這段程式碼，會出現什麼問題？\n\nif (score >= 70):\n    grade = \"C\"\nelif (score >= 80):\n    grade = \"B\"\nelif (score >= 90):\n    grade = \"A\"",
+        "options": [
+          {
+            "value": "a",
+            "label": "分數 92 會被判成 C，因為第一個條件就符合了"
+          },
+          {
+            "value": "b",
+            "label": "分數 92 會被判成 B，因為第二個條件先被檢查"
+          },
+          {
+            "value": "c",
+            "label": "分數 92 會被判成 A，程式可以正常運作"
+          },
+          {
+            "value": "d",
+            "label": "程式會出現語法錯誤，因為 elif 的寫法不對"
+          }
+        ],
+        "answer": "b",
+        "explanation": "elif 是從上往下逐個檢查，分數 92 符合第一個條件（>= 70）就直接被判成 C，後面的 elif 不會再檢查。正確做法是條件要從大到小排列：先檢查 >= 90，再 >= 80，最後 >= 70。"
+      }
     },
     {
       "id": "7.6",
@@ -333,7 +448,30 @@
           "level": 3,
           "text": "常見迴圈 pattern"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你有一個含有 100 萬個數字的串列，需要找出前 5 個大於 10 的數字。下列哪種做法最有效率？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 for 迴圈逐一檢查每個數字，存入新串列，檢查到 5 個後 break"
+          },
+          {
+            "value": "b",
+            "label": "用 filter() 先把所有大於 10 的數字篩出來，再用 slice 取前 5 個"
+          },
+          {
+            "value": "c",
+            "label": "用 generator 或 iterator 搭配 filter()，設定只取前 5 個（lazy 評估）"
+          },
+          {
+            "value": "d",
+            "label": "把 100 萬個數字全部複製到新串列再處理，這樣最安全"
+          }
+        ],
+        "answer": "c",
+        "explanation": "答案 c 用懶式評估，只在需要時才計算下一個元素，不會浪費資源去處理全部 100 萬個數字。答案 b 會先篩出所有符合條件的（可能幾十萬個），才取前 5 個，浪費效能。答案 a 可行但不夠優雅。答案 d 最沒效率。"
+      }
     },
     {
       "id": "7.7",
@@ -389,7 +527,30 @@
           "level": 3,
           "text": "遞迴（Recursion）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "函數最根本的目的是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "給一段程式碼取個名字，之後叫名字就執行，避免重複寫同樣的程式碼"
+          },
+          {
+            "value": "b",
+            "label": "讓程式執行得更快"
+          },
+          {
+            "value": "c",
+            "label": "讓程式碼看起來更複雜更專業"
+          },
+          {
+            "value": "d",
+            "label": "用來宣告變數和儲存資料"
+          }
+        ],
+        "answer": "a",
+        "explanation": "函數就是 DRY（Don't Repeat Yourself）的核心概念——把重複的邏輯封裝成一個單位，只要叫名字就能執行。b 是副作用、c 是誤會、d 是變數的工作，都不是函數的真正目的。"
+      }
     },
     {
       "id": "7.8",
@@ -433,7 +594,30 @@
           "level": 3,
           "text": "常見陣列陷阱"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "假設你有一個陣列 fruits = [\"蘋果\", \"香蕉\", \"橘子\", \"西瓜\"]，現在要取出「香蕉」，應該寫什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "fruits[1]"
+          },
+          {
+            "value": "b",
+            "label": "fruits[2]"
+          },
+          {
+            "value": "c",
+            "label": "fruits[\"香蕉\"]"
+          },
+          {
+            "value": "d",
+            "label": "fruits.get(1)"
+          }
+        ],
+        "answer": "a",
+        "explanation": "香蕉是陣列的第二個元素，但陣列從 0 開始編號，所以香蕉的位置是 [1]。選項 b 是橘子、選項 c 和 d 是語法錯誤或不適用於基本陣列操作。"
+      }
     },
     {
       "id": "7.9",
@@ -481,7 +665,30 @@
           "level": 3,
           "text": "什麼時候用陣列 vs 字典"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你現在想建立一個資料結構，儲存「學生名字」對應「成績」。例如Alice 是90分、Bob 是85分。下列哪個敘述最正確地說明字典適合用來做這件事的原因？",
+        "options": [
+          {
+            "value": "a",
+            "label": "字典可以用名字（key）直接找到對應的成績（value），不用像陣列一樣記住數字編號"
+          },
+          {
+            "value": "b",
+            "label": "字典比陣列更節省電腦記憶體空間"
+          },
+          {
+            "value": "c",
+            "label": "字典可以同時儲存多種資料型別，陣列只能儲存一種"
+          },
+          {
+            "value": "d",
+            "label": "字典的速度比陣列快三倍"
+          }
+        ],
+        "answer": "a",
+        "explanation": "字典的核心概念就是用『有意義的名字』（key）當編號來找值（value），比起陣列必須記住 0、1、2... 的數字位置，字典用『Alice』、『Bob』這樣的名字直接查詢更直觀方便。其他選項不是字典設計的主要目的。"
+      }
     },
     {
       "id": "7.10",
@@ -529,7 +736,30 @@
           "level": 3,
           "text": "各語言 Set / Tuple 對比表"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想寫一個程式統計一份名單中有多少個『不重複的訪客』。已知名單中有很多人重複出現。下列哪個資料結構最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Set（集合）"
+          },
+          {
+            "value": "b",
+            "label": "Tuple（元組）"
+          },
+          {
+            "value": "c",
+            "label": "Stack（堆疊）"
+          },
+          {
+            "value": "d",
+            "label": "Queue（佇列）"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Set 的核心特性就是「自動去重」，把重複的訪客名單丟進 Set 後會自動只保留不重複的元素。這正是課程中提到的「去掉重複」用途，比用陣列 + 判斷簡單 100 倍。其他選項都不是為了去重而設計的。"
+      }
     },
     {
       "id": "7.11",
@@ -569,7 +799,30 @@
           "level": 3,
           "text": "2026 OOP 觀念演進"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你朋友說：「OOP 就是把資料和功能分開放，這樣管理起來很清楚。」這個說法對不對？為什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "不對。OOP 是把資料和功能綁在一起，而不是分開放。"
+          },
+          {
+            "value": "b",
+            "label": "對。OOP 就是資料歸資料、功能歸功能，分開管理。"
+          },
+          {
+            "value": "c",
+            "label": "對。但只有 Python 和 JavaScript 才能這樣做。"
+          },
+          {
+            "value": "d",
+            "label": "不對。OOP 只能用來管理資料，功能要另外寫。"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程的核心是『把東西跟它能做的事綁在一起』，也就是屬性和方法在同一個 class 內。朋友的說法恰好相反，把 OOP 的優點—內聚性—誤解為分離。"
+      }
     },
     {
       "id": "7.12",
@@ -597,7 +850,30 @@
           "level": 3,
           "text": "各語言繼承語法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，OOP 三大特性中，「繼承」主要解決的問題是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "避免在多個子類別中重複寫相同的程式碼"
+          },
+          {
+            "value": "b",
+            "label": "隱藏物件的內部細節，只開放必要的操作"
+          },
+          {
+            "value": "c",
+            "label": "讓同一個方法在不同物件上有不同的表現"
+          },
+          {
+            "value": "d",
+            "label": "確保程式碼執行速度更快"
+          }
+        ],
+        "answer": "a",
+        "explanation": "繼承的核心概念就是「兒子繼承爸爸的能力」，讓子類別可以重複使用父類別已經寫好的程式碼（如 eat、sleep），不用重新寫一遍。選項 b 是封裝、c 是多型、d 與三大特性無關。"
+      }
     },
     {
       "id": "7.13",
@@ -649,7 +925,30 @@
           "level": 3,
           "text": "什麼語言適合函數式"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下列哪一個說法最能解釋「純函數」的核心意義？",
+        "options": [
+          {
+            "value": "a",
+            "label": "純函數是指函數沒有任何參數，只依賴自己內部的邏輯"
+          },
+          {
+            "value": "b",
+            "label": "純函數是指同樣的輸入永遠產生同樣的輸出，不改變外部狀態，讓程式好測試和好除錯"
+          },
+          {
+            "value": "c",
+            "label": "純函數是指函數一定要回傳不可變的資料結構"
+          },
+          {
+            "value": "d",
+            "label": "純函數是指使用 map、filter、reduce 寫出來的函數"
+          }
+        ],
+        "answer": "b",
+        "explanation": "純函數的定義就是：同樣輸入→同樣輸出，且不改外部狀態。這讓程式好預測、好測試、能快取、能平行執行。a、c、d 都是概念混淆或只是函數式的工具，不是純函數的核心。"
+      }
     },
     {
       "id": "7.14",
@@ -693,7 +992,30 @@
           "level": 3,
           "text": "2026 型別系統發展趨勢"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，TypeScript 和 Rust 在「型別系統四個維度」上的共同特徵是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "都是強靜態、推導、null safe"
+          },
+          {
+            "value": "b",
+            "label": "都是強靜態、推導，但 Rust 更 null safe"
+          },
+          {
+            "value": "c",
+            "label": "都是弱動態、推導、null unsafe"
+          },
+          {
+            "value": "d",
+            "label": "都是強動態、顯式、null safe"
+          }
+        ],
+        "answer": "b",
+        "explanation": "TypeScript 是強靜態、推導、半 null safe（strict 模式），Rust 是強靜態、推導、null safe。共同點是強靜態和推導，但 Rust 的 null safe 程度更高、更強制。"
+      }
     },
     {
       "id": "7.15",
@@ -741,7 +1063,30 @@
           "level": 3,
           "text": "各語言記憶體管理"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在 Python 中，當你執行以下程式碼時，為什麼 `a` 的內容會跟著改變？\n\n```\na = [1, 2, 3]\nb = a\nb.append(4)\nprint(a)  # [1, 2, 3, 4]\n```",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 `b = a` 時，Python 複製了整個陣列給 b，所以兩個陣列是同步的"
+          },
+          {
+            "value": "b",
+            "label": "因為 `b = a` 是「參考傳遞」，b 和 a 都指向 Heap 裡的同一個陣列物件"
+          },
+          {
+            "value": "c",
+            "label": "因為陣列是簡單型別，所以改 b 會自動影響 a"
+          },
+          {
+            "value": "d",
+            "label": "因為 Python 在執行 append 時會同時更新所有指向該陣列的變數"
+          }
+        ],
+        "answer": "b",
+        "explanation": "陣列是複雜型別（物件），存放在 Heap。當 `b = a` 時，b 和 a 都是指向同一個 Heap 上陣列物件的參考（地址），所以改動陣列內容時，兩個變數都會看到變化。選項 a 錯誤因為沒有複製；選項 c 錯誤因為陣列不是簡單型別；選項 d 的說法不精確，不是「自動更新」，而是本來就指向同一個物件。"
+      }
     },
     {
       "id": "7.16",
@@ -797,7 +1142,30 @@
           "level": 3,
           "text": "實戰 pattern：層層上拋"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "以下哪個說法最正確地解釋「Exception（try/catch）」和「Result/Option」這兩種錯誤處理方式的根本差異？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Exception 會丟出錯誤讓外面接住，Result/Option 則是函數直接回傳『成功或失敗』的結果，讓你明確處理"
+          },
+          {
+            "value": "b",
+            "label": "Exception 只能用在 Python/Java，Result/Option 只能用在 Rust/Swift，兩者互不相容"
+          },
+          {
+            "value": "c",
+            "label": "Exception 比 Result/Option 更安全，因為它一定會強制你用 try/catch 接住"
+          },
+          {
+            "value": "d",
+            "label": "Result/Option 會自動修復錯誤，Exception 則需要人工介入才能繼續執行"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Exception 用「丟出 / 接住」的機制，錯誤會打斷流程；Result/Option 則是函數明確回傳成功或失敗的結果，編譯器強制你處理，這是兩種方式的核心差別。"
+      }
     },
     {
       "id": "7.17",
@@ -841,7 +1209,30 @@
           "level": 3,
           "text": "命名空間（Namespace）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的 Python 專案寫到 10000 行，現在要分成 user.py、order.py、email.py 三個檔案。下列哪個敘述最能說明「分檔」的核心好處？",
+        "options": [
+          {
+            "value": "a",
+            "label": "檔案數量越多，程式執行速度越快"
+          },
+          {
+            "value": "b",
+            "label": "每個檔案各司其職，降低改動影響範圍、方便多人開發"
+          },
+          {
+            "value": "c",
+            "label": "分檔後就不需要 import 和 export 了"
+          },
+          {
+            "value": "d",
+            "label": "分檔是為了讓 pip 自動安裝所有依賴套件"
+          }
+        ],
+        "answer": "b",
+        "explanation": "分檔的核心目的是降低複雜度、提高維護性。每個檔案負責一個職責（user、order、email），改動某部分不會影響全部，多人開發也不會互踩腳。a、c、d 都是對模組化的誤解。"
+      }
     },
     {
       "id": "7.18",
@@ -885,7 +1276,30 @@
           "level": 3,
           "text": "命名 vs 註解"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在寫 Python 程式，看到同事用這個變數名：`usr_cnt = 10`。根據命名的 5 大原則，這個命名主要違反了哪一項？",
+        "options": [
+          {
+            "value": "a",
+            "label": "違反「看名字就懂用途」—太縮寫，一眼看不出是使用者數量"
+          },
+          {
+            "value": "b",
+            "label": "違反「變數用名詞、函數用動詞」—應該用動詞開頭"
+          },
+          {
+            "value": "c",
+            "label": "違反「一致性」—在 Python 應該用 camelCase 而不是 snake_case"
+          },
+          {
+            "value": "d",
+            "label": "違反「避免 magic number」—10 這個數字沒有被定義為常數"
+          }
+        ],
+        "answer": "a",
+        "explanation": "這題考的是命名清晰度。`usr_cnt` 過度縮寫，違反第 1 原則「看名字就懂用途」；正確應該寫 `user_count`。選項 b 錯因為變數就是名詞不需要動詞；選項 c 錯因為 Python 本來就用 snake_case；選項 d 錯因為這是真正的變數值，不是 magic number（magic number 是那些硬寫在程式裡的無意義數字如 18、1000）。"
+      }
     },
     {
       "id": "7.19",
@@ -937,7 +1351,30 @@
           "level": 3,
           "text": "「過度設計」的警告"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在寫一個電商系統，下訂單時需要「寄確認信」、「扣庫存」、「記錄日誌」。如果直接把這些邏輯都寫在訂單函數裡，之後要加「傳簡訊通知」就得改訂單函數。用 Observer 模式可以怎樣改善？",
+        "options": [
+          {
+            "value": "a",
+            "label": "訂單函數只負責核心邏輯，其他功能當成 observer 自動訂閱，有新需求只加新 observer，不改訂單函數"
+          },
+          {
+            "value": "b",
+            "label": "用 Singleton 確保整個系統只有一個訂單物件，這樣所有功能都自動同步"
+          },
+          {
+            "value": "c",
+            "label": "用 Factory 工廠自動判斷要寄信還是扣庫存，程式碼會更清潔"
+          },
+          {
+            "value": "d",
+            "label": "把寄信、扣庫存、記日誌改成 23 個設計模式各用一次，功能最完整"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Observer 模式的核心是「解耦事件發布者與多個訂閱者」，訂單函數只發通知，各項服務各自註冊 observer 監聽，新需求只加 observer 不改原函數。b 是 Singleton 用途、c 是 Factory 用途、d 誤解了設計模式的目的。"
+      }
     },
     {
       "id": "7.20",
@@ -985,7 +1422,30 @@
           "level": 3,
           "text": "Thread Pool：別亂開 thread"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "為什麼在 Python 中，即使用了 thread 做 CPU 密集型工作，效能還是不會明顯提升？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 Python 的 GIL（全域解釋器鎖）限制同時只能一個 thread 執行 Python bytecode"
+          },
+          {
+            "value": "b",
+            "label": "因為 thread 會互相搶奪記憶體空間，導致衝突"
+          },
+          {
+            "value": "c",
+            "label": "因為 thread 在 CPU 密集型工作上無法共享變數"
+          },
+          {
+            "value": "d",
+            "label": "因為多 thread 的切換成本太高，抵銷了並發的好處"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Python 的 GIL 讓同時只有一個 thread 能執行 Python bytecode，所以 CPU 密集型工作用 thread 沒用；必須改用 multiprocessing（多行程）才能突破 GIL、達到真平行。"
+      }
     },
     {
       "id": "7.21",
@@ -1033,7 +1493,30 @@
           "level": 3,
           "text": "Go：channel + goroutine"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "假設你要同時從 3 個 API 拿資料，每個 API 各要等 100ms。用同步方式需要 300ms，但用 async 大約只要多少時間？",
+        "options": [
+          {
+            "value": "a",
+            "label": "100ms（因為三個並行，只要最慢的那個）"
+          },
+          {
+            "value": "b",
+            "label": "150ms（省一半時間）"
+          },
+          {
+            "value": "c",
+            "label": "300ms（async 跟同步一樣快）"
+          },
+          {
+            "value": "d",
+            "label": "30ms（快 10 倍）"
+          }
+        ],
+        "answer": "a",
+        "explanation": "async 的核心是利用 I/O 等待時間做其他事，所以三個 API 可以同時等，總時間只取決於最慢的那個（100ms），不是 300ms。這就是課程開頭「max(100, 50, 200)」的概念。"
+      }
     },
     {
       "id": "7.22",
@@ -1073,7 +1556,30 @@
           "level": 3,
           "text": "實戰選擇"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "訊息傳遞（message passing）相比共享記憶體 + lock，最大的優勢是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "完全不需要任何同步機制，程式永遠不會卡"
+          },
+          {
+            "value": "b",
+            "label": "每個 actor/goroutine 有自己的狀態，互相不共享記憶體，所以不會有 race condition 或 deadlock"
+          },
+          {
+            "value": "c",
+            "label": "執行速度一定比 lock 快很多"
+          },
+          {
+            "value": "d",
+            "label": "可以寫出更少行數的程式碼"
+          }
+        ],
+        "answer": "b",
+        "explanation": "訊息傳遞的核心是「不共享記憶體」，每個 actor 只改自己的狀態，透過訊息溝通，所以不會發生兩個執行緒搶同一變數的 race condition，也不會互等鎖造成 deadlock。a 錯因為 channel 本身也有同步機制；c 和 d 不是這課的重點。"
+      }
     },
     {
       "id": "7.23",
@@ -1117,7 +1623,30 @@
           "level": 3,
           "text": "實戰：怎麼分析複雜度"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "假設你寫了一個程式，需要在 100 萬筆資料中找到某個數字。你有兩個選擇：線性搜尋 O(n) 和二元搜尋 O(log n)。根據課程內容，為什麼二元搜尋會快那麼多？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為二元搜尋用的電腦硬體更好"
+          },
+          {
+            "value": "b",
+            "label": "因為二元搜尋每次把問題縮一半，資料量變大時成長趨勢完全不同"
+          },
+          {
+            "value": "c",
+            "label": "因為二元搜尋不需要看每個元素"
+          },
+          {
+            "value": "d",
+            "label": "因為二元搜尋省去了常數時間的操作"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Big O 的核心概念就是看「資料量變大時的成長趨勢」。線性搜尋 n 變 10 倍，時間就變 10 倍；但二元搜尋每次砍半，n 變 100 萬倍只多花不到 20 次操作，這才是快 25,000 倍的根本原因。"
+      }
     },
     {
       "id": "7.24",
@@ -1141,7 +1670,30 @@
           "level": 3,
           "text": "排序"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在面試中遇到一個排序陣列的問題，陣列有 100 萬個數字。你應該怎麼做？",
+        "options": [
+          {
+            "value": "a",
+            "label": "自己寫 Quick Sort 或 Merge Sort 演算法來排序"
+          },
+          {
+            "value": "b",
+            "label": "直接用語言內建的排序函式（如 Python 的 sorted、JS 的 sort）"
+          },
+          {
+            "value": "c",
+            "label": "用 Bubble Sort，確保邏輯最簡單不會出錯"
+          },
+          {
+            "value": "d",
+            "label": "先用 Binary Search 確認陣列是否已排序，再決定要不要排"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調『所有語言都有內建排序——別自己寫』，實務上應該用內建函式，省時又穩定。自己寫排序只在面試要求『實作』時才需要。"
+      }
     },
     {
       "id": "7.25",
@@ -1189,7 +1741,30 @@
           "level": 3,
           "text": "2026 進階：用 AI 寫正則"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在寫一個表單驗證程式，需要檢查使用者輸入的電話號碼是否為「10 位數字」。下面哪個做法最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 split() 切割字串，數一下長度是不是 10"
+          },
+          {
+            "value": "b",
+            "label": "用正則表達式檢查模式是否符合「10 位數字」"
+          },
+          {
+            "value": "c",
+            "label": "逐個字元用 in 檢查是否包含數字"
+          },
+          {
+            "value": "d",
+            "label": "用 replace() 把所有非數字字元移除，再檢查長度"
+          }
+        ],
+        "answer": "b",
+        "explanation": "正則表達式就是為了「按模式快速驗證格式」而生—寫 /^\\d{10}$/ 一行搞定。a、c、d 都能動但低效且容易出錯，不符合字串處理的實務做法。"
+      }
     },
     {
       "id": "7.26",
@@ -1237,7 +1812,30 @@
           "level": 3,
           "text": "SQL vs NoSQL"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想讀取一個 JSON 設定檔，並在 Python 中把裡面的資料轉換成可以用的物件。下列哪個做法最合適？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 open() 以 'r' 模式開檔，再用 json.load() 直接讀取"
+          },
+          {
+            "value": "b",
+            "label": "用 open() 以 'rb' 模式開檔，讓 Python 自動識別 JSON 格式"
+          },
+          {
+            "value": "c",
+            "label": "用 requests.get() 從本機檔案路徑讀取，再用 .json() 轉換"
+          },
+          {
+            "value": "d",
+            "label": "用 open() 開檔後，再用 str.split() 手動解析 JSON 字串"
+          }
+        ],
+        "answer": "a",
+        "explanation": "json.load() 搭配 open() 的 'r' 模式，是 Python 讀取 JSON 檔案的標準做法。'rb' 是給二進制檔案用（如圖片），requests 是給網路請求用，手動解析是沒必要且容易出錯。"
+      }
     },
     {
       "id": "7.27",
@@ -1289,7 +1887,30 @@
           "level": 3,
           "text": "2026 測試最佳實踐"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據測試金字塔的概念，為什麼單元測試應該占整體測試的 70%，而 E2E 測試只占 10%？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為單元測試最重要、E2E 測試根本不需要做"
+          },
+          {
+            "value": "b",
+            "label": "因為單元測試快速便宜、容易維護，E2E 測試慢且複雜，所以比例要反過來"
+          },
+          {
+            "value": "c",
+            "label": "因為 E2E 測試已經涵蓋了所有情況、不需要單元測試"
+          },
+          {
+            "value": "d",
+            "label": "因為公司規定必須這樣配置"
+          }
+        ],
+        "answer": "b",
+        "explanation": "單元測試快、多、便宜，適合大量寫；E2E 測試慢、少、貴，只用來驗證關鍵使用者流程。測試金字塔就是在說明最經濟有效的測試配置比例。"
+      }
     },
     {
       "id": "7.28",
@@ -1341,7 +1962,30 @@
           "level": 3,
           "text": "Debug 心態"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在 production 環境中發現用戶反映「付款失敗」，但不知道原因。以下哪種 log 策略最能幫你快速 debug？",
+        "options": [
+          {
+            "value": "a",
+            "label": "在付款函式的每一行都加 print，記錄所有變數值，確保不會漏掉任何細節"
+          },
+          {
+            "value": "b",
+            "label": "在付款操作前後加 ERROR 等級的 log，記錄用戶 ID、金額、失敗原因等 context，用結構化格式存成 JSON"
+          },
+          {
+            "value": "c",
+            "label": "把用戶的信用卡號、密碼等敏感資訊也 log 下來，這樣最完整"
+          },
+          {
+            "value": "d",
+            "label": "只在程式爆掉時才 log，平時不記錄，以免 log 檔案太大"
+          }
+        ],
+        "answer": "b",
+        "explanation": "正確答案是 B。Production debug 的核心是「有意義的 context」（誰、什麼、為什麼），用結構化 log 才能快速查詢和分析。A 會製造噪音，C 洩露敏感資訊违反安全，D 完全無法追蹤問題。"
+      }
     }
   ],
   "boss": {
@@ -1355,5 +1999,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "程式就是一系列指令，編譯語言先轉成機器碼再執行，直譯語言邊執行邊翻譯。",
+    "變數、資料型態、運算子是所有語言的基本磚塊，掌握這些就能看懂大多數程式。",
+    "if/else、for/while 是控制程式流程的核心工具，學會它們才能寫出有邏輯的程式。",
+    "函數、陣列、字典是高效組織程式碼的方式，資料結構選對了程式才能跑得快又清楚。",
+    "OOP、函數式、記憶體模型、設計模式等進階觀念幫你寫出更穩定、可維護的程式，不同語言只是語法不同而已。"
+  ],
+  "faq": [
+    {
+      "q": "為什麼要學『程式邏輯共通』，不直接學一個語言就好？",
+      "a": "因為邏輯概念跨越所有語言，學一次就能套用到 Python、JavaScript、Java、Rust 等等。直接學語言容易被語法混淆，反而更慢。"
+    },
+    {
+      "q": "這章會教我們寫真實程式嗎？",
+      "a": "這章著重概念和邏輯，會有簡單的程式片段展示，但真正寫完整程式還是要等學到具體語言。這是打地基，地基穩了後面才快。"
+    },
+    {
+      "q": "那些進階的（OOP、函數式、記憶體模型）現在學有用嗎？",
+      "a": "有的，因為它們會一直出現在你讀的程式碼和主管的要求裡。現在理解基本概念，之後用真實語言寫的時候就不會很吃驚。"
+    }
+  ]
 }

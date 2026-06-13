@@ -71,7 +71,30 @@
           "level": 3,
           "text": "什麼時候不用 TS？"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "TypeScript 最核心的價值是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "在編譯時期抓出型別錯誤，減少上線後的 bug，同時 IDE 補全更精準"
+          },
+          {
+            "value": "b",
+            "label": "TypeScript 是一個全新的程式語言，瀏覽器和 Node.js 都能直接執行"
+          },
+          {
+            "value": "c",
+            "label": "用 TypeScript 寫程式會自動執行型別檢查，不需要額外編譯步驟"
+          },
+          {
+            "value": "d",
+            "label": "TypeScript 只適合大型專案，小專案和一次性 script 一定要用純 JS"
+          }
+        ],
+        "answer": "a",
+        "explanation": "這課強調 TS 的四大好處：編譯時抓 bug、IDE 補全、重構安全、自我文件。選項 b 錯在 TS 必須編譯成 JS；選項 c 錯在型別檢查發生在編譯期而非執行期；選項 d 過度絕對，課程只說一次性 script 可不用 TS。"
+      }
     },
     {
       "id": "5.2",
@@ -128,7 +151,30 @@
           "level": 3,
           "text": "常見新手坑"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你現在要快速開始一個 TypeScript 專案，不想用框架。開發時想邊改邊自動重跑，不想每次都手動編譯。應該用什麼工具？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 tsc 編譯成 JS，再用 node 跑 JS 檔案"
+          },
+          {
+            "value": "b",
+            "label": "用 tsx 搭配 watch mode，直接跑 TS"
+          },
+          {
+            "value": "c",
+            "label": "用 npm i -g typescript 裝全域版本，直接跑 .ts"
+          },
+          {
+            "value": "d",
+            "label": "用 node 直接跑 .ts 檔案，不裝任何套件"
+          }
+        ],
+        "answer": "b",
+        "explanation": "tsx 是開發的主流工具，可以直接跑 TS 不用編譯，而且有 watch mode 支援邊改邊重跑。tsc 是編譯工具（production 用），node 不能直接跑 .ts（會 SyntaxError），全域 typescript 違反專案隔離原則。"
+      }
     },
     {
       "id": "5.3",
@@ -181,7 +227,30 @@
           "level": 3,
           "text": "常見錯誤訊息"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下列哪個做法最符合 TypeScript 的最佳實踐？",
+        "options": [
+          {
+            "value": "a",
+            "label": "const name: string = \"Alice\"; 明確標註所有常數的型別，讓程式更清楚"
+          },
+          {
+            "value": "b",
+            "label": "let count: number = 0; 因為是 let 宣告，需要明確標註型別讓 TS 知道"
+          },
+          {
+            "value": "c",
+            "label": "let x: any = getData(); 用 any 最安全，避免型別檢查出錯"
+          },
+          {
+            "value": "d",
+            "label": "function add(a, b) { return a + b; } 參數不標型別沒關係，TS 會自動推導"
+          }
+        ],
+        "answer": "b",
+        "explanation": "const 可以讓 TS 推導不用寫，但 let 一定要標型別；any 會放棄檢查應改用 unknown；函式參數必須明確標型別、TS 才能檢查呼叫端的正確性。"
+      }
     },
     {
       "id": "5.4",
@@ -242,7 +311,30 @@
           "level": 3,
           "text": "實戰：完整 type"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在 TypeScript 中，假設你定義了一個物件型別 User，要讓 age 欄位變成可選的，下面哪個做法是正確的？",
+        "options": [
+          {
+            "value": "a",
+            "label": "type User = { name: string; age?: number; };"
+          },
+          {
+            "value": "b",
+            "label": "type User = { name: string; age: number | null; };"
+          },
+          {
+            "value": "c",
+            "label": "type User = { name: string; age*: number; };"
+          },
+          {
+            "value": "d",
+            "label": "type User = { name: string; [age]: number; };"
+          }
+        ],
+        "answer": "a",
+        "explanation": "在物件型別中，用 ? 符號來表示欄位可選（optional）。選項 b 允許 null，但不是可選；c 和 d 都是不合法的語法。"
+      }
     },
     {
       "id": "5.5",
@@ -295,7 +387,30 @@
           "level": 3,
           "text": "narrowing（縮窄型別）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下列哪個選項最正確描述 Literal Type 的用途？",
+        "options": [
+          {
+            "value": "a",
+            "label": "限制變數只能是某些特定的值，而不是整個型別範圍"
+          },
+          {
+            "value": "b",
+            "label": "讓變數可以同時接受多種不同的型別"
+          },
+          {
+            "value": "c",
+            "label": "確保陣列有固定的長度和順序"
+          },
+          {
+            "value": "d",
+            "label": "允許物件屬性可以是 null 或 undefined"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Literal Type 的核心是「精確性」—用 'active' | 'inactive' 代替籠統的 string，讓 TS 只允許那些確切的值。選項 b 是 Union Type、c 是 Tuple、d 則是 union with null 的用法，都不是 Literal Type 的主要目的。"
+      }
     },
     {
       "id": "5.6",
@@ -352,7 +467,30 @@
           "level": 3,
           "text": "實戰：型別化 array methods"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下列關於 TypeScript 函式型別的敘述，何者正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Optional 參數（?）可以放在必需參數之前，TS 會自動調整順序"
+          },
+          {
+            "value": "b",
+            "label": "函式型別別名用 => 表示，interface 的 method 風格用冒號表示，兩者都能描述函式型別"
+          },
+          {
+            "value": "c",
+            "label": "void 回傳型別表示函式一定不能有回傳值，回傳任何東西都會報錯"
+          },
+          {
+            "value": "d",
+            "label": "never 用來表示函式可能永遠回不來，主要用途是做窮舉檢查（exhaustive check）"
+          }
+        ],
+        "answer": "b",
+        "explanation": "型別別名（type AddFunction = (a: number) => number）和 interface 的 method 風格（interface { add(a: number): number }）都是合法的函式型別寫法。a 錯在 optional 必須在最後；c 錯在 void 是「不在乎」回傳值，回傳東西也可以；d 的 never 確實用於窮舉檢查，但不是主要用途，而是它的應用場景之一。"
+      }
     },
     {
       "id": "5.7",
@@ -405,7 +543,30 @@
           "level": 3,
           "text": "實戰：完整資料結構"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你有個使用者陣列，用 find() 找特定使用者。TS 會推導出什麼型別？為什麼要特別注意？",
+        "options": [
+          {
+            "value": "a",
+            "label": "User 型別，因為 find() 一定會找到符合的元素"
+          },
+          {
+            "value": "b",
+            "label": "User | undefined 型別，因為 find() 可能找不到符合條件的元素"
+          },
+          {
+            "value": "c",
+            "label": "User[] 型別，因為 find() 回傳的是一個陣列"
+          },
+          {
+            "value": "d",
+            "label": "any 型別，因為 find() 不知道會找到什麼"
+          }
+        ],
+        "answer": "b",
+        "explanation": "find() 在找不到符合條件的元素時會回傳 undefined，所以型別是 User | undefined。使用前一定要檢查（if 判斷），否則會有 runtime 錯誤。"
+      }
     },
     {
       "id": "5.8",
@@ -458,7 +619,30 @@
           "level": 3,
           "text": "實戰：通用 fetch wrapper"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下面哪個選項最能說明「為什麼要用泛型」而不用 any？",
+        "options": [
+          {
+            "value": "a",
+            "label": "泛型可以讓程式碼執行速度更快"
+          },
+          {
+            "value": "b",
+            "label": "泛型寫一次就能支援不同型別，同時保留型別資訊讓 TS 能檢查"
+          },
+          {
+            "value": "c",
+            "label": "泛型只能用在 function，不能用在 class"
+          },
+          {
+            "value": "d",
+            "label": "泛型會自動把所有型別轉成 string"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程核心就是：泛型用 T 這個「型別參數」解決重複寫多個版本的問題，又不會像 any 那樣失去型別安全。選項 a 說速度快是錯的、c 和 d 都是課內明確反駁的。"
+      }
     },
     {
       "id": "5.9",
@@ -527,7 +711,30 @@
           "level": 3,
           "text": "實戰：組合 Utility Types"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你有一個 User 介面，包含 id、name、email、password 四個欄位。現在要做一個公開的使用者資訊頁面，不能露出密碼欄位。應該用哪個 Utility Type 最合適？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Partial<User>，讓所有欄位都變 optional"
+          },
+          {
+            "value": "b",
+            "label": "Pick<User, 'id' | 'name' | 'email'>，只保留需要的欄位"
+          },
+          {
+            "value": "c",
+            "label": "Omit<User, 'password'>，移除密碼欄位"
+          },
+          {
+            "value": "d",
+            "label": "Readonly<User>，讓欄位變唯讀"
+          }
+        ],
+        "answer": "c",
+        "explanation": "Omit 就是拿掉不要的欄位，直接 Omit<User, 'password'> 最簡潔。Pick 也可以但要列舉保留的欄位，Partial 和 Readonly 解決的是欄位必填性和可寫性，不是「隱藏欄位」的問題。"
+      }
     },
     {
       "id": "5.10",
@@ -584,7 +791,30 @@
           "level": 3,
           "text": "跟 enum 互通（舊 codebase）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的新專案需要定義 HTTP 方法（GET、POST、PUT、DELETE），並且在程式碡中要能取到具體的值、也要遍歷所有方法。根據 2026 的主流做法，應該用什麼寫法？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用傳統 enum，因為它有雙向映射、最安全"
+          },
+          {
+            "value": "b",
+            "label": "用 as const + literal union，因為能取值、型別安全、編譯後沒額外 code"
+          },
+          {
+            "value": "c",
+            "label": "用純 literal union（type Status = \"GET\" | \"POST\"），因為最簡單"
+          },
+          {
+            "value": "d",
+            "label": "三種都可以，看團隊偏好"
+          }
+        ],
+        "answer": "b",
+        "explanation": "需要拿值跟遍歷就不能用純 literal union；傳統 enum 2026 不推薦且 tree-shake 差。as const 才是既能取值、編譯後乾淨、又符合現代標準的選擇。"
+      }
     },
     {
       "id": "5.11",
@@ -637,7 +867,30 @@
           "level": 3,
           "text": "2026 業界共識"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下列哪種情況 interface 無法做到、一定要用 type？",
+        "options": [
+          {
+            "value": "a",
+            "label": "定義物件結構，有多個屬性和方法"
+          },
+          {
+            "value": "b",
+            "label": "定義 union 型別，例如 type Status = \"active\" | \"inactive\""
+          },
+          {
+            "value": "c",
+            "label": "使用 extends 讓一個介面繼承另一個介面"
+          },
+          {
+            "value": "d",
+            "label": "使用宣告合併來擴展第三方 library 的型別"
+          }
+        ],
+        "answer": "b",
+        "explanation": "interface 不支援 union（|）運算，只有 type 可以定義 union 型別。而 a、c、d 都是 interface 做得到的事：a 是 interface 的基本用法、c 是 interface extends 的語法、d 是 interface 獨特的宣告合併功能。"
+      }
     },
     {
       "id": "5.12",
@@ -694,7 +947,30 @@
           "level": 3,
           "text": "2026 用 class 還是 function？"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下列關於 TypeScript class 的敘述，哪一個正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "private 屬性在編譯後，runtime 時完全無法被存取"
+          },
+          {
+            "value": "b",
+            "label": "readonly 屬性可以在 constructor 裡設定一次，之後就不能改"
+          },
+          {
+            "value": "c",
+            "label": "protected 屬性可以從 class 外部直接存取，跟 public 一樣"
+          },
+          {
+            "value": "d",
+            "label": "在 constructor 參數寫 public，可以自動建立並初始化屬性"
+          }
+        ],
+        "answer": "b",
+        "explanation": "readonly 的特性就是建立後不能改；a 錯因 TS private 只有編譯檢查，runtime 仍可存取，應用 # 才是真私密；c 錯因 protected 只能在 class 內和子 class 用；d 看似對但表述不全，應該說是「自動建立、宣告和初始化」"
+      }
     },
     {
       "id": "5.13",
@@ -751,7 +1027,30 @@
           "level": 3,
           "text": "tsconfig 模組設定（2026 主流）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在 user.ts 檔案中只定義了一個型別 User interface，不需要在執行時用它（只當型別用），那麼在 main.ts 中應該怎麼 import 最恰當？",
+        "options": [
+          {
+            "value": "a",
+            "label": "import { User } from \"./user\"; 一般 import 就可以"
+          },
+          {
+            "value": "b",
+            "label": "import type { User } from \"./user\"; 用 type-only import"
+          },
+          {
+            "value": "c",
+            "label": "import * as user from \"./user\"; 全部 import"
+          },
+          {
+            "value": "d",
+            "label": "import User from \"./user\"; 用 default import"
+          }
+        ],
+        "answer": "b",
+        "explanation": "當只需要型別、不在執行時使用（不 new、不呼叫）時，應該用 type-only import。這樣編譯後不會留下 import 語句，不影響 bundle 大小，也避免循環依賴問題。一般 import 雖然也能拿型別，但不如 type-only 明確意圖。"
+      }
     },
     {
       "id": "5.14",
@@ -812,7 +1111,30 @@
           "level": 3,
           "text": "Exhaustive Check（窮舉）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "假設你有一個函式參數型別是 `string | number | null`，想要在後續程式碼裡確保值既不是 null 也不是 undefined。下列哪個條件判斷最精確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 `if (value)` 就夠了，TS 會自動縮窄為 string | number"
+          },
+          {
+            "value": "b",
+            "label": "用 `if (value !== null && value !== undefined)` 才能精確縮窄為 string | number"
+          },
+          {
+            "value": "c",
+            "label": "用 `typeof value === \"string\" || typeof value === \"number\"` 是唯一正確方式"
+          },
+          {
+            "value": "d",
+            "label": "用 `if (value instanceof String)` 能檢查是否為字串"
+          }
+        ],
+        "answer": "b",
+        "explanation": "因為 `if (value)` 會把 0 和空字串 \"\" 也當成 falsy 排除掉，無法精確縮窄。只有明確檢查 `!== null && !== undefined` 才能保留 0 和 \"\" 的可能性。"
+      }
     },
     {
       "id": "5.15",
@@ -873,7 +1195,30 @@
           "level": 3,
           "text": "常見 tsconfig 問題"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據 2026 主流 preset，如果你要開發一個 Node.js 後端應用，以下哪個選項的 tsconfig 設定組合最恰當？",
+        "options": [
+          {
+            "value": "a",
+            "label": "target: ES2022、module: NodeNext、lib: [\"ES2023\"]、strict: true"
+          },
+          {
+            "value": "b",
+            "label": "target: ES5、module: CommonJS、lib: [\"ES2023\", \"DOM\"]、strict: false"
+          },
+          {
+            "value": "c",
+            "label": "target: ES2022、module: ESNext、lib: [\"ES2023\", \"DOM\", \"DOM.Iterable\"]、noEmit: true"
+          },
+          {
+            "value": "d",
+            "label": "target: ES2023、module: NodeNext、lib: [\"ES2023\", \"DOM\"]、skipLibCheck: false"
+          }
+        ],
+        "answer": "a",
+        "explanation": "後端應該用 NodeNext（2026 主流）而非 CommonJS 或 ESNext，lib 只需要 ES2023（不需要 DOM），strict 必開。選項 c 是 frontend preset（有 DOM、noEmit），選項 b 太舊，選項 d 的 DOM 不需要且 skipLibCheck 應該開。"
+      }
     },
     {
       "id": "5.16",
@@ -926,7 +1271,30 @@
           "level": 3,
           "text": "漸進採用 strict"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "如果你在 strict 模式下寫了這段程式碼，TypeScript 會報錯。請問下面哪個理由是對的？\n\n```typescript\nclass Product {\n  price: number;\n  \n  constructor() {}\n}\n```",
+        "options": [
+          {
+            "value": "a",
+            "label": "strictNullChecks 不允許 price 是 null，要改成 price: number | null"
+          },
+          {
+            "value": "b",
+            "label": "strictPropertyInitialization 要求 class 屬性必須初始化，price 沒有預設值或在 constructor 內設定"
+          },
+          {
+            "value": "c",
+            "label": "strictFunctionTypes 不允許在 class 內宣告屬性，要改用 method"
+          },
+          {
+            "value": "d",
+            "label": "useUnknownInCatchVariables 禁止使用 number 型別，要改成 unknown"
+          }
+        ],
+        "answer": "b",
+        "explanation": "strict 模式中的 strictPropertyInitialization 規則強制要求 class 屬性必須在宣告時或 constructor 內初始化，否則編譯器會報錯。price 屬性既沒有預設值，constructor 也沒有設定它，所以違反這個規則。"
+      }
     },
     {
       "id": "5.17",
@@ -983,7 +1351,30 @@
           "level": 3,
           "text": "常見坑"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你用了一個叫 `axios` 的 JavaScript 套件，但 TypeScript 一直說找不到型別。下面哪個做法最直接？",
+        "options": [
+          {
+            "value": "a",
+            "label": "安裝 `npm install -D @types/axios`，之後就能用型別了"
+          },
+          {
+            "value": "b",
+            "label": "自己寫 `.d.ts` 檔案，因為第三方套件都沒有官方型別"
+          },
+          {
+            "value": "c",
+            "label": "直接在 `tsconfig.json` 加 `skipLibCheck: true`，忽略型別檢查"
+          },
+          {
+            "value": "d",
+            "label": "改用 `require` 取代 `import`，就不用型別檢查"
+          }
+        ],
+        "answer": "a",
+        "explanation": "主流 JS 套件（如 axios、express）通常沒內建型別，要靠 @types/xxx 補。這是最快、最標準的做法。選 b 是備案（沒 @types 才自己寫），c 和 d 是逃避問題，不是解法。"
+      }
     },
     {
       "id": "5.18",
@@ -1044,7 +1435,30 @@
           "level": 3,
           "text": "Context"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想寫一個 React Function Component，接收 label 和 onClick 兩個 props，用 TypeScript 確保型別安全。下列哪個寫法是 2026 前端的推薦做法？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 interface 定義 Props，function component 直接解構參數"
+          },
+          {
+            "value": "b",
+            "label": "用 FC（React.FC）搭配 arrow function，不需要額外定義 interface"
+          },
+          {
+            "value": "c",
+            "label": "直接用 any 型別，讓 TypeScript 自動推導"
+          },
+          {
+            "value": "d",
+            "label": "用 class component 搭配 React.Component"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調 2026 趨勢是直接用 function + interface Props 定義，不用 FC 型別（FC 有缺點），這樣最簡潔且 type-safe。選項 b 是舊做法、c 失去型別保護、d 是 class component 不符合現代潮流。"
+      }
     },
     {
       "id": "5.19",
@@ -1097,7 +1511,30 @@
           "level": 3,
           "text": "Zod vs tRPC vs OpenAPI"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "為什麼說光用 TypeScript 的型別系統不能完全解決 API 資料安全的問題？",
+        "options": [
+          {
+            "value": "a",
+            "label": "TypeScript 只能在編譯時檢查型別，但後端 API 回傳的實際資料在 runtime 時沒有被驗證，可能不符合預期的格式"
+          },
+          {
+            "value": "b",
+            "label": "TypeScript 的型別推導功能不夠強大，無法自動判斷 API 回傳資料的正確型別"
+          },
+          {
+            "value": "c",
+            "label": "TypeScript 不支援 fetch 函式，所以無法確保從網路取得的資料安全"
+          },
+          {
+            "value": "d",
+            "label": "TypeScript 編譯後會移除所有型別資訊，導致無法在任何時候檢查資料"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程的核心重點就是：TS 的型別只存在編譯時，無法檢查 runtime 的真實資料。當後端改了 API 回應的欄位名（如 name 改成 fullName），TS 編譯時不會報錯，但 runtime 就會存取 undefined。Zod 正是來解決這個 runtime 驗證缺口的。"
+      }
     },
     {
       "id": "5.20",
@@ -1142,7 +1579,30 @@
           "level": 3,
           "text": "// @ts-ignore vs @ts-expect-error"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你看到 TS 的紅線訊息「Property 'email' does not exist on type 'User'」，下面哪一個是最直接的解決方法？",
+        "options": [
+          {
+            "value": "a",
+            "label": "把 email 欄位加進 User 的 interface 定義裡"
+          },
+          {
+            "value": "b",
+            "label": "在所有用到 email 的地方改成 name"
+          },
+          {
+            "value": "c",
+            "label": "用 any 型別強制覆蓋掉 User 的定義"
+          },
+          {
+            "value": "d",
+            "label": "把 User 物件全部用 () 重新呼叫一次"
+          }
+        ],
+        "answer": "a",
+        "explanation": "這個錯誤訊息是在說 User 型別裡沒定義 email 欄位，所以要在 interface 裡補上它（可用 email?: string 做成 optional）。b 是掩耳盜鈴、c 是逃避型別檢查、d 與問題無關。"
+      }
     },
     {
       "id": "5.21",
@@ -1203,7 +1663,30 @@
           "level": 3,
           "text": "實戰：100k 行 codebase 遷移"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你現在有個老 JS 專案要加 TypeScript，專案裡還有很多 .js 檔案。根據「漸進式遷移」的做法，以下哪個是正確的進行策略？",
+        "options": [
+          {
+            "value": "a",
+            "label": "一次把所有 .js 都改成 .ts，然後開啟 strict 模式，最後修錯誤"
+          },
+          {
+            "value": "b",
+            "label": "先設定 tsconfig 讓 JS 和 TS 共存（allowJs: true），從入口檔開始一個一個改，每改完跑測試，最後再漸進開嚴格選項"
+          },
+          {
+            "value": "c",
+            "label": "先開 strict: true 和 noImplicitAny: true，確保型別檢查最嚴格，再開始改檔案"
+          },
+          {
+            "value": "d",
+            "label": "把所有檔案改成 .ts，檔名改好就算完成，不用馬上寫型別註解"
+          }
+        ],
+        "answer": "b",
+        "explanation": "漸進式遷移的核心是「分階段」：第 1 階段寬鬆環境準備（allowJs + 關嚴格模式），第 2 階段按順序改檔案，第 3 階段才漸進開嚴格。這樣可以避免一次改太多檔導致改不完，也能邊改邊測試確保功能不破。"
+      }
     },
     {
       "id": "5.22",
@@ -1251,7 +1734,30 @@
           "level": 3,
           "text": "下一步"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "如果你想從「能寫 TypeScript」進階到「能讀懂 open source 程式碼」，根據課程的 3 階段路徑，你需要重點學習哪些東西？",
+        "options": [
+          {
+            "value": "a",
+            "label": "繼續加強變數、函式、React 基礎，把基礎打得更紮實"
+          },
+          {
+            "value": "b",
+            "label": "學習 Advanced generics、Conditional types、Mapped types 等進階特性"
+          },
+          {
+            "value": "c",
+            "label": "直接開始設計自己的函式庫 API 和自寫 Utility Type"
+          },
+          {
+            "value": "d",
+            "label": "只需要玩 type-challenges 的簡單題就夠了"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確指出階段 2（2-6 個月）的目標就是「能讀 open source TS code」，而該階段的重點內容正是 Advanced generics、Conditional types、Mapped types 等。選項 a 是階段 1、選項 c 是階段 3、選項 d 則太膚淺。"
+      }
     },
     {
       "title": "Generic 泛型完全攻略",
@@ -1369,7 +1875,30 @@
           "level": 3,
           "text": "NonNullable<T>"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你有一個 User 型別包含 id、name、email、password、createdAt 五個欄位。現在要做一個「公開 API 回傳的使用者資料」，需要隱藏 password 欄位，其他都保留。用哪個 Utility Type 最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Pick<User, \"id\" | \"name\" | \"email\" | \"createdAt\">"
+          },
+          {
+            "value": "b",
+            "label": "Omit<User, \"password\">"
+          },
+          {
+            "value": "c",
+            "label": "Partial<User>"
+          },
+          {
+            "value": "d",
+            "label": "Record<User, string>"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Omit 是「黑名單」做法，直接去掉 password 就得到公開版本，最簡潔。Pick 雖然也行但要列舉所有保留欄位，不夠簡潔；Partial 是變成可選欄位，不符合需求；Record 是用來建立 key-value 物件，不是用來改造既有型別。"
+      }
     },
     {
       "title": "TS 4.9+ 新特性：satisfies / const type / Template literal",
@@ -1418,7 +1947,30 @@
           "level": 2,
           "text": "using（5.2 新增、resource management）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你寫了一個設定物件，想確保它符合 { apiUrl: string; timeout: number } 這個型別，但又希望保留 apiUrl 的具體字面值（比如 \"https://api.example.com\" 而不是籠統的 string）。下列哪個寫法能同時達到這兩個目標？",
+        "options": [
+          {
+            "value": "a",
+            "label": "const config = { apiUrl: \"https://api.example.com\", timeout: 5000 } as { apiUrl: string; timeout: number };"
+          },
+          {
+            "value": "b",
+            "label": "const config: { apiUrl: string; timeout: number } = { apiUrl: \"https://api.example.com\", timeout: 5000 };"
+          },
+          {
+            "value": "c",
+            "label": "const config = { apiUrl: \"https://api.example.com\", timeout: 5000 } satisfies { apiUrl: string; timeout: number };"
+          },
+          {
+            "value": "d",
+            "label": "const config = { apiUrl: \"https://api.example.com\", timeout: 5000 }; // 不需要任何型別標註"
+          }
+        ],
+        "answer": "c",
+        "explanation": "satisfies 會檢查物件是否符合型別規範，但保留具體的字面值資訊；as 和 : Type 都會把具體值擦成籠統的型別，失去精確資訊；不標註則完全沒有型別檢查。"
+      }
     }
   ],
   "boss": {
@@ -1432,5 +1984,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "TypeScript = JavaScript + 靜態型別檢查，執行前就能抓出許多 bug。",
+    "型別系統包括基本型別、物件型別、泛型、Utility Types，層層遞進。",
+    "Interface 和 Type 各有用途；Union、Literal Type 讓型別更精確；Generic 讓程式碼可重用。",
+    "tsconfig.json 和 strict 模式決定檢查嚴格度；Class、Module 則組織大型專案。",
+    "React、API、第三方套件整合都有 TS 技巧；漸進式重構讓舊專案平穩升級。"
+  ],
+  "faq": [
+    {
+      "q": "TypeScript 會讓我寫程式變慢嗎？",
+      "a": "剛開始確實要多花時間寫型別、理解錯誤訊息，但長期來說能少改 bug、重構更安心、團隊溝通更清楚，反而省時間。"
+    },
+    {
+      "q": "一定要用 TypeScript 嗎？",
+      "a": "不一定。小專案、快速原型可以用純 JS；但當程式變複雜、團隊變大，TS 的價值就顯著了。"
+    },
+    {
+      "q": "我會 JavaScript，學 TypeScript 要多久？",
+      "a": "基本概念可能 1-2 週上手，但要靈活運用泛型、型別設計需要 1-2 個月邊做邊練。"
+    }
+  ]
 }

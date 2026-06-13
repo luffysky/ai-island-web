@@ -80,7 +80,30 @@
           "level": 2,
           "text": "不要的選項"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "如果你是一個獨立開發者，想用最少的人力快速推出 iOS 和 Android 兩個版本的 App，下列哪一個選擇最合適？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 RN + Expo，一份 code 快速部署兩平台"
+          },
+          {
+            "value": "b",
+            "label": "先學 Swift 寫 iOS，再學 Kotlin 寫 Android，各寫一套"
+          },
+          {
+            "value": "c",
+            "label": "用已經凋零的 Cordova 降低學習成本"
+          },
+          {
+            "value": "d",
+            "label": "選 Flutter，但要花時間學 Dart 語言"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確說明 Indie 推薦方案就是『RN + Expo：1 個工程師、一條龍』。選項 b 是原生路線（兩倍工作量）、c 是已凋零技術、d 雖然也可以但需要學新語言，RN + Expo 對獨立開發者最友善。"
+      }
     },
     {
       "title": "React Native + Expo 完整入門",
@@ -129,7 +152,30 @@
           "level": 2,
           "text": "NativeWind（Tailwind for RN）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你已經會寫 React，現在想快速開發手機 App。為什麼選擇 Expo 而不是直接用 React Native？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Expo 不用安裝 Xcode 或 Android Studio，掃 QR 碼就能在手機看到結果，開發流程更簡單快速"
+          },
+          {
+            "value": "b",
+            "label": "Expo 的效能比原生 React Native 快 10 倍以上"
+          },
+          {
+            "value": "c",
+            "label": "Expo 支援的元件比 React Native 多很多，功能更全面"
+          },
+          {
+            "value": "d",
+            "label": "Expo 是免費的，React Native 需要付費購買"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Expo 的核心優勢就是省去複雜的環境設定（不用 Xcode/Android Studio）、讓你快速起專案、用 QR 掃描即時預覽。其他選項都是誤解——效能、元件豐富度、付費等都不是 Expo 的主要賣點。"
+      }
     },
     {
       "title": "Expo Router：檔案系統路由",
@@ -174,7 +220,30 @@
           "level": 2,
           "text": "導航"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在 Expo Router 中要建立一個 /user/123 的頁面，讓使用者能看到 ID 為 123 的使用者資訊。下面哪個做法是正確的？",
+        "options": [
+          {
+            "value": "a",
+            "label": "在 app/ 資料夾下建立 [id].tsx 檔案，用 useLocalSearchParams() 取得 id 參數"
+          },
+          {
+            "value": "b",
+            "label": "在 app/user/ 資料夾下建立 [id].tsx 檔案，用 useLocalSearchParams() 取得 id 參數"
+          },
+          {
+            "value": "c",
+            "label": "在 app/ 資料夾下建立 user/123.tsx 檔案，直接寫死使用者 ID"
+          },
+          {
+            "value": "d",
+            "label": "在 app/user/ 資料夾下建立 index.tsx，在 Stack 設定裡手動新增路由規則"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Expo Router 的檔案系統路由中，檔案路徑直接對應網址，[id].tsx 是動態參數。要建立 /user/[id] 路由，就要在 app/user/ 資料夾下放 [id].tsx，然後用 useLocalSearchParams() 讀取動態參數。"
+      }
     },
     {
       "title": "UI + 設計系統",
@@ -219,7 +288,30 @@
           "level": 2,
           "text": "Dark Mode"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你為什麼要先花時間自己寫 Button、Card 這類核心元件，而不是直接用 UI 元件庫？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為自己寫的元件執行效能一定比現成的快"
+          },
+          {
+            "value": "b",
+            "label": "為了統一整個 App 的設計風格，並且方便之後維護修改——就像先做好樂高基本件，後面組裝畫面才快速一致"
+          },
+          {
+            "value": "c",
+            "label": "因為 Tamagui、React Native Paper 都不好用"
+          },
+          {
+            "value": "d",
+            "label": "為了學習 React Native 的所有底層原理"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調的核心是「設計系統」的概念——先建立可複用、風格一致的元件基礎，讓後續開發快速且維護容易。a 項錯在效能不一定更快；c、d 項都不是重點。"
+      }
     },
     {
       "title": "狀態管理：Zustand + TanStack Query",
@@ -264,7 +356,30 @@
           "level": 2,
           "text": "分工"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "假設你在做一個購物 App，需要管理「使用者喜好的主題顏色」和「從 API 撈出來的商品列表」。根據這堂課教的分工原則，這兩個狀態應該分別用什麼工具管理？",
+        "options": [
+          {
+            "value": "a",
+            "label": "主題顏色用 Zustand、商品列表用 TanStack Query"
+          },
+          {
+            "value": "b",
+            "label": "兩個都用 TanStack Query"
+          },
+          {
+            "value": "c",
+            "label": "主題顏色用 TanStack Query、商品列表用 Zustand"
+          },
+          {
+            "value": "d",
+            "label": "兩個都用 Zustand"
+          }
+        ],
+        "answer": "a",
+        "explanation": "主題顏色是 App 自己的 UI 狀態（client state）用 Zustand 管，商品列表是從 API 拿來的資料（server state）用 TanStack Query 管。這堂課的核心就是分工：Zustand 管自家東西、Query 管 API 的資料。"
+      }
     },
     {
       "title": "表單：React Hook Form + Zod",
@@ -301,7 +416,30 @@
           "level": 2,
           "text": "進階驗證"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在 React Hook Form + Zod 的組合中，`zodResolver(schema)` 的主要作用是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "將 Zod 的驗證規則連接到 React Hook Form，讓表單自動按照 schema 驗證資料"
+          },
+          {
+            "value": "b",
+            "label": "把表單資料直接轉換成 TypeScript 類型，避免型別錯誤"
+          },
+          {
+            "value": "c",
+            "label": "監聽所有 input 變化，即時顯示錯誤訊息在畫面上"
+          },
+          {
+            "value": "d",
+            "label": "自動生成表單的 HTML 結構和 CSS 樣式"
+          }
+        ],
+        "answer": "a",
+        "explanation": "zodResolver 是連接器，它讓 React Hook Form 知道要用哪個 Zod schema 去驗證；b 是 z.infer 的功能、c 是 Controller 和 errors 的配合、d 不在這個組合的範圍內。"
+      }
     },
     {
       "title": "FlatList / 列表效能",
@@ -342,7 +480,30 @@
           "level": 2,
           "text": "expo-image"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的 App 要顯示 5000 筆商品清單，使用者會一直滑下去。如果你用普通的 ScrollView 把所有商品都渲染出來，會發生什麼問題？為什麼 FlatList 能解決這個問題？",
+        "options": [
+          {
+            "value": "a",
+            "label": "ScrollView 會把全部 5000 筆都畫出來，吃掉大量記憶體；FlatList 只渲染看得到的部分，其他回收"
+          },
+          {
+            "value": "b",
+            "label": "ScrollView 的滑動速度比 FlatList 快，但是無法搜尋；FlatList 可以邊滑邊搜尋"
+          },
+          {
+            "value": "c",
+            "label": "ScrollView 無法添加下拉刷新功能；FlatList 內建 refreshControl 所以更好用"
+          },
+          {
+            "value": "d",
+            "label": "ScrollView 只能顯示文字；FlatList 才能顯示圖片和複雜元件"
+          }
+        ],
+        "answer": "a",
+        "explanation": "FlatList 的核心優勢就是『虛擬化』——只渲染畫面上看得到的項目，其他項目暫時不渲染、等滑到才畫。這樣無論多少筆資料都不會卡，記憶體使用量固定。b、c、d 都是次要功能或描述錯誤。"
+      }
     },
     {
       "title": "AsyncStorage + SecureStore + MMKV",
@@ -391,7 +552,30 @@
           "level": 2,
           "text": "選擇"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的 App 要存放使用者的 JWT token，同時也要存放 App 的主題設定（light/dark）。應該用什麼方式分別存這兩種資料？",
+        "options": [
+          {
+            "value": "a",
+            "label": "JWT token 用 SecureStore，主題設定用 AsyncStorage"
+          },
+          {
+            "value": "b",
+            "label": "JWT token 和主題設定都用 AsyncStorage 就可以了"
+          },
+          {
+            "value": "c",
+            "label": "JWT token 用 MMKV，主題設定用 SQLite"
+          },
+          {
+            "value": "d",
+            "label": "JWT token 和主題設定都用 SecureStore 最安全"
+          }
+        ],
+        "answer": "a",
+        "explanation": "JWT token 是敏感資料，要用 SecureStore 存在加密的地方（iOS Keychain / Android Encrypted Storage）。主題設定是一般設定檔，用 AsyncStorage 就夠了。選 b 會讓 token 暴露在風險中，c 和 d 則是配置不當的浪費。"
+      }
     },
     {
       "title": "Camera + 圖片上傳",
@@ -432,7 +616,30 @@
           "level": 2,
           "text": "壓縮"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想讓使用者從手機相簿選一張圖片，然後上傳到 Supabase。下列流程順序哪個是對的？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 ImagePicker 選圖 → 取得 uri → 轉成 blob → 上傳到 Supabase → 取得公開網址"
+          },
+          {
+            "value": "b",
+            "label": "直接用 Supabase 的 upload 功能選圖 → 自動轉 blob → 回傳網址"
+          },
+          {
+            "value": "c",
+            "label": "上傳到 Supabase → 再用 ImagePicker 選圖 → 才能取得 uri"
+          },
+          {
+            "value": "d",
+            "label": "用 ImageManipulator 壓縮圖片 → 自動上傳到相簿 → 拍照完成"
+          }
+        ],
+        "answer": "a",
+        "explanation": "ImagePicker 是選圖工具，用它拿到 uri；然後把 uri 轉成 blob（原始檔案資料）；最後用 Supabase storage 的 upload 上傳，再用 getPublicUrl 取得可公開分享的網址。b 的 Supabase 沒有選圖功能、c 流程反了、d 把 ImageManipulator 的用途搞反了。"
+      }
     },
     {
       "title": "地圖 + 地理位置",
@@ -477,7 +684,30 @@
           "level": 2,
           "text": "距離（haversine）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想做一個外送 App，需要顯示餐廳在地圖上，並即時監聽使用者的位置變化。下列哪個做法最符合這個需求？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 getCurrentPositionAsync() 取得一次位置，用 MapView 搭配 Marker 顯示餐廳座標"
+          },
+          {
+            "value": "b",
+            "label": "用 watchPositionAsync() 持續監聽使用者位置，用 MapView 搭配 Marker 顯示餐廳座標，並用 haversine 計算距離"
+          },
+          {
+            "value": "c",
+            "label": "用 geocodeAsync() 轉換地址成座標，然後每 5 秒呼叫一次 getCurrentPositionAsync()"
+          },
+          {
+            "value": "d",
+            "label": "用 reverseGeocodeAsync() 將使用者座標轉換成地址，再顯示在 MapView 上"
+          }
+        ],
+        "answer": "b",
+        "explanation": "外送 App 需要「即時」監聽使用者位置變化，所以要用 watchPositionAsync() 而不是只取一次；MapView + Marker 用來顯示地圖和餐廳位置；haversine 用來計算使用者到餐廳的距離。選項 a 只取一次無法即時更新，c 和 d 用錯了 API 的用途。"
+      }
     },
     {
       "title": "Push Notification",
@@ -522,7 +752,30 @@
           "level": 2,
           "text": "本地通知"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，Push Notification 的完整流程中，下列哪個步驟是「必須」的，才能讓使用者真正收到推播通知？",
+        "options": [
+          {
+            "value": "a",
+            "label": "向使用者請求通知權限，並取得 token 後存到後端"
+          },
+          {
+            "value": "b",
+            "label": "直接在前端用 scheduleNotificationAsync 排程所有通知"
+          },
+          {
+            "value": "c",
+            "label": "在 Notifications.setNotificationHandler 中設定 shouldPlaySound 為 true"
+          },
+          {
+            "value": "d",
+            "label": "在 addNotificationResponseReceivedListener 中自動跳轉到特定頁面"
+          }
+        ],
+        "answer": "a",
+        "explanation": "取得權限和 token 是發送推播的前置條件——沒有 token 後端就無法針對該使用者發送推播。其他選項都是接收後的處理或本地通知，不是推播流程的必要步驟。"
+      }
     },
     {
       "title": "Auth：Supabase / Clerk",
@@ -563,7 +816,30 @@
           "level": 2,
           "text": "Apple Sign-In（iOS 必備）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，為什麼開發 App 時應該用 Supabase 或 Clerk 這類 SaaS 來處理登入認證，而不是自己寫？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為這些 SaaS 提供現成的解決方案，登入認證是高風險且繁瑣的事，交給專業的最安全也最省時間"
+          },
+          {
+            "value": "b",
+            "label": "因為自己寫登入系統會讓程式碼行數太多，影響 App 效能"
+          },
+          {
+            "value": "c",
+            "label": "因為 Supabase 和 Clerk 是唯一支援 OAuth 登入的服務"
+          },
+          {
+            "value": "d",
+            "label": "因為使用 SaaS 可以完全免費，不需要付任何費用"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程用保全公司比喻說明核心概念——登入認證是專業且風險高的工作，應該交給 SaaS 專業方案而非自己實作。選項 b 只是表面因素、c 錯誤（還有其他服務也支援 OAuth）、d 錯誤（Clerk 是付費的）。"
+      }
     },
     {
       "title": "Animation：Reanimated 3",
@@ -612,7 +888,30 @@
           "level": 2,
           "text": "Moti（簡化版）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想在 React Native 中做一個元件，讓它出現時淡入、消失時淡出，並且位置改變時用彈簧動畫過渡。應該怎麼做？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 Animated.View 搭配 entering={FadeIn.duration(400)}、exiting={FadeOut}、layout={Layout.springify()}"
+          },
+          {
+            "value": "b",
+            "label": "用普通 View 搭配 useSharedValue 和 withSpring，手動控制透明度"
+          },
+          {
+            "value": "c",
+            "label": "用 MotiView 搭配 from 和 animate 屬性，設定 type 為 spring"
+          },
+          {
+            "value": "d",
+            "label": "在 babel.config.js 加 react-native-reanimated/plugin，動畫就會自動套用"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Animated.View 的 entering、exiting、layout 屬性是 Reanimated 3 專門為進場、退場、佈局改變動畫設計的；選項 b 需要手動控制透明度比較麻煩；選項 c 的 MotiView 是簡化版，功能較少；選項 d 只是設定工具，不能自動套用動畫。"
+      }
     },
     {
       "title": "Deep Linking + Universal Links",
@@ -661,7 +960,30 @@
           "level": 2,
           "text": "測試"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的 App 現在設定了 Deep Linking，使用者點擊 https://example.com/posts/123 這個網址連結後，App 會開啟並直接進到商品頁面。請問這個功能主要解決了什麼問題？",
+        "options": [
+          {
+            "value": "a",
+            "label": "讓使用者不用每次都從 App 首頁開始，可以直接跳到特定的頁面"
+          },
+          {
+            "value": "b",
+            "label": "讓 App 可以開啟任何外部網址，包括瀏覽器功能"
+          },
+          {
+            "value": "c",
+            "label": "讓 App 能夠自動登入並保存使用者的個人資料"
+          },
+          {
+            "value": "d",
+            "label": "提高 App 的下載速度和安裝效率"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Deep Linking 的核心功能就是讓連結能夠直接帶使用者進到 App 的特定頁面（如商品頁、文章頁），而不是只能打開 App 首頁。其他選項都超出了 Deep Linking 的範圍。"
+      }
     },
     {
       "title": "Offline / Local-first",
@@ -710,7 +1032,30 @@
           "level": 2,
           "text": "UI 反饋"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "假設你用 React Query 做了持久化設定，使用者在沒網路時新增了一篇貼文。為了讓這個操作在恢復網路時自動同步上去，你還需要額外實作什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "建立 Write Queue 來存放離線操作，並在偵測到網路恢復時逐一執行"
+          },
+          {
+            "value": "b",
+            "label": "只需要 persistQueryClient 就夠了，React Query 會自動同步所有離線操作"
+          },
+          {
+            "value": "c",
+            "label": "使用 WatermelonDB 替換 React Query，才能做到自動同步"
+          },
+          {
+            "value": "d",
+            "label": "設定更長的 gcTime 時間，讓快取永遠不會被清除"
+          }
+        ],
+        "answer": "a",
+        "explanation": "持久化只是把資料存下來，但不會自動同步。Write Queue 才是記錄「離線時使用者做了什麼操作」，然後在網路恢復時透過偵測連線狀態來逐一執行那些操作——這是 local-first 的核心機制。"
+      }
     },
     {
       "title": "App 效能優化",
@@ -759,7 +1104,30 @@
           "level": 2,
           "text": "紅旗"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的 App 首次打開需要 5 秒才能看到主頁面，超過了效能指標。下列哪個做法最直接能改善這個 Cold Start 問題？",
+        "options": [
+          {
+            "value": "a",
+            "label": "使用 expo-splash-screen 延遲隱藏啟動畫面，讓 App 有時間完成初始化後再顯示"
+          },
+          {
+            "value": "b",
+            "label": "把所有圖片改成 expo-image 優化載入"
+          },
+          {
+            "value": "c",
+            "label": "把巨量列表改用 FlashList 取代 FlatList"
+          },
+          {
+            "value": "d",
+            "label": "所有 CSS 都改用 StyleSheet 寫在元件外面"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Cold Start < 3s 是優化指標，expo-splash-screen 的 preventAutoHideAsync + hideAsync 就是為了在 App 準備好後才隱藏啟動畫面，給使用者視覺上順暢的體驗。其他選項是通用優化但不針對首次啟動問題。"
+      }
     },
     {
       "title": "Testing：Jest + Maestro",
@@ -812,7 +1180,30 @@
           "level": 2,
           "text": "Indie 簡易版"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，indie 開發者如果時間有限，應該優先在哪個環節寫測試？",
+        "options": [
+          {
+            "value": "a",
+            "label": "盡量多寫 E2E 測試，確保所有使用者操作路徑都被覆蓋"
+          },
+          {
+            "value": "b",
+            "label": "優先寫金流、登入等重要邏輯的單元測試，配合上線前手動測試 happy path"
+          },
+          {
+            "value": "c",
+            "label": "只安裝 Sentry，不需要寫任何自動化測試"
+          },
+          {
+            "value": "d",
+            "label": "先寫 Maestro E2E 測試，再補 Jest 單元測試"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確指出 indie 簡易版的做法：沒時間寫測試沒關係、至少裝 Sentry，但重要邏輯（金流/auth）一定要寫單元測試，上線前手動測 happy path。這樣能用最少時間達到最高 CP 值。"
+      }
     },
     {
       "title": "上架 App Store + Play Store",
@@ -905,7 +1296,30 @@
           "level": 2,
           "text": "ASO"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的 App 要同時上架到 iOS 和 Android，以下哪個步驟的順序是正確的？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 EAS Build 分別打包 iOS 和 Android → 上傳到 App Store Connect 和 Play Console → 等審核 → 用 EAS Submit 提交"
+          },
+          {
+            "value": "b",
+            "label": "先註冊 Apple Developer 和 Play Console → 直接上傳原始碼 → 平台自動編譯 → 審核"
+          },
+          {
+            "value": "c",
+            "label": "上傳到 Play Console 後馬上上傳到 App Store → 兩邊同時審核會更快"
+          },
+          {
+            "value": "d",
+            "label": "只需要用 EAS Update 就可以同時更新 iOS 和 Android 版本，不用分別上架"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程清楚說明流程是：先用 EAS Build 針對各平台打包 → 上傳到各自的平台管理後台（App Store Connect / Play Console）→ 等待審核 → 用 EAS Submit 提交。b 錯在直接上傳原始碼；c 錯在兩邊需要分別提交；d 錯在 EAS Update 是用來 OTA 更新，不是初次上架用的。"
+      }
     },
     {
       "title": "App 變現：IAP / 訂閱 / 廣告",
@@ -966,7 +1380,30 @@
           "level": 2,
           "text": "監控"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "如果你的 App 是遊戲，想要最大化營收，應該採用哪種變現模式最合適？",
+        "options": [
+          {
+            "value": "a",
+            "label": "付費下載，一次性收費"
+          },
+          {
+            "value": "b",
+            "label": "訂閱模式，讓玩家每月付費"
+          },
+          {
+            "value": "c",
+            "label": "IAP + 廣告混合，玩家可買虛寶或看廣告獲得獎勵"
+          },
+          {
+            "value": "d",
+            "label": "只靠廣告，完全免費遊玩"
+          }
+        ],
+        "answer": "c",
+        "explanation": "遊戲最常用 IAP（虛寶購買）+ 廣告混合模式，因為玩家習慣氪金買角色/道具（IAP），又能透過看廣告獲得獎勵（廣告）來提升體驗。訂閱對遊戲不太適合，付費下載已過時，只靠廣告eCPM太低不夠賺。"
+      }
     },
     {
       "title": "上線後：Sentry + Analytics + EAS Update",
@@ -1023,7 +1460,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，為什麼上線後「第一件事」應該先設置 Sentry 和 Analytics，而不是等到接到使用者回報再處理？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為使用者通常不會主動回報問題，你必須自己監控才能看到錯誤和使用者行為"
+          },
+          {
+            "value": "b",
+            "label": "因為 Sentry 和 Analytics 是法律規定所有 App 都要安裝的工具"
+          },
+          {
+            "value": "c",
+            "label": "因為這兩個工具可以保證 App 不會出現任何 bug"
+          },
+          {
+            "value": "d",
+            "label": "因為只有安裝監控工具才能通過 App Store 審核"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程的核心心法是『上線 ≠ 完成，是開始監控 + 迭代』，並強調『使用者通常不會主動回報問題，你得自己「看得到」』。監控的目的是讓你能看到實際發生什麼，而不是被動地等使用者告訴你。"
+      }
     },
     {
       "title": "Todo App 完整實戰",
@@ -1084,7 +1544,30 @@
           "level": 2,
           "text": "checklist"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在這個 Todo App 實戰中，為什麼要在 Supabase 的 todos 表格上設定 Row Level Security（RLS）政策？",
+        "options": [
+          {
+            "value": "a",
+            "label": "讓每個使用者只能看到和操作自己的 Todo，防止有人偷看別人的待辦事項"
+          },
+          {
+            "value": "b",
+            "label": "加快資料庫查詢速度，減少 Supabase 的伺服器負擔"
+          },
+          {
+            "value": "c",
+            "label": "自動把使用者輸入的資料格式轉換成正確的時間戳記"
+          },
+          {
+            "value": "d",
+            "label": "啟用 Realtime 功能，讓多人同時編輯時能即時同步"
+          }
+        ],
+        "answer": "a",
+        "explanation": "RLS 政策（own_todos）的核心目的是資料隔離——確保 auth.uid() 只能操作自己的資料。b 是效能議題無關 RLS，c 是資料型別轉換，d 是 Realtime 的前置條件但不是 RLS 的目的。"
+      }
     },
     {
       "title": "學習路徑 + 接案 / 職涯",
@@ -1152,7 +1635,30 @@
           "level": 2,
           "text": "給新手建議"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程的建議，如果你想在 6 個月內改變職涯軌跡，正確的學習順序應該是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "先深入學 Reanimated 和 Native Module，再學基礎 React + Expo"
+          },
+          {
+            "value": "b",
+            "label": "按月份順序：基礎（React + TS + Expo）→ 核心（狀態管理 + Supabase）→ 上線（EAS Build）"
+          },
+          {
+            "value": "c",
+            "label": "直接學 Supabase 和狀態管理，基礎可以邊做邊學"
+          },
+          {
+            "value": "d",
+            "label": "先做 3 個複雜的完整 App，再考慮上線和找工作"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確規劃了 6-12 個月的階段式學習路徑（基礎→核心→上線→進階），這是循序漸進的順序。選項 a 是本末倒置，選項 c 跳過基礎容易卡關，選項 d 違反了「第一版功能少、之後迭代」的心法。"
+      }
     },
     {
       "title": "Native Modules + Bridging",
@@ -1221,7 +1727,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，以下哪個情況最適合使用 Native Module？",
+        "options": [
+          {
+            "value": "a",
+            "label": "要在 App 裡顯示一個簡單的清單和按鈕"
+          },
+          {
+            "value": "b",
+            "label": "需要進行影像重度處理或 ML 推論（如人臉辨識）"
+          },
+          {
+            "value": "c",
+            "label": "要從後端 API 取得資料並在頁面上展示"
+          },
+          {
+            "value": "d",
+            "label": "要製作一個自訂的彈出視窗效果"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確列出需要 Native Module 的場景包括「影像/影音重處理」和「ML inference」。a、c、d 都是純 JavaScript 就能做到的功能，不需要原生模組。"
+      }
     },
     {
       "title": "Mobile Auth 深度：JWT / OAuth / Biometric",
@@ -1278,7 +1807,30 @@
           "level": 2,
           "text": "安全 checklist"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在 Mobile 應用中，當 API 回傳 401 Unauthorized 時，使用 Axios Interceptor 應該怎麼做才是正確的流程？",
+        "options": [
+          {
+            "value": "a",
+            "label": "直接用 SecureStore 拿存的 refresh token 去呼叫 /api/refresh，拿新的 access token，然後重試原本的請求"
+          },
+          {
+            "value": "b",
+            "label": "清空所有 token，要求使用者重新登入"
+          },
+          {
+            "value": "c",
+            "label": "在 response interceptor 直接修改原請求的 Authorization header，不需要真的去換 token"
+          },
+          {
+            "value": "d",
+            "label": "無限重試原本的請求，直到成功為止"
+          }
+        ],
+        "answer": "a",
+        "explanation": "這是標準的 token refresh 流程：當收到 401 時，用 refresh token 去換新的 access token，再重試原請求。選項 b 是終極方案（不是自動 refresh 的目的），選項 c 沒有真的解決過期問題，選項 d 會造成無限迴圈。"
+      }
     },
     {
       "title": "App 國際化（i18n）+ 在地化",
@@ -1351,7 +1903,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的 App 目前只支援繁體中文，現在想要加入英文支援。根據課程內容，下列做法何者最符合 i18n 的最佳實踐？",
+        "options": [
+          {
+            "value": "a",
+            "label": "把所有介面文字都寫死在程式碼裡（例如 <Text>歡迎</Text>），等之後再一次性改成 t() 函式"
+          },
+          {
+            "value": "b",
+            "label": "從一開始就用 useTranslation 的 t() 函式管理所有文字，日期、貨幣用 Intl 格式化，並透過 i18n.changeLanguage() 切換語言"
+          },
+          {
+            "value": "c",
+            "label": "只在登入頁面用 i18next，其他頁面繼續寫死文字，這樣可以減少開發時間"
+          },
+          {
+            "value": "d",
+            "label": "先用中文完成整個 App，然後用翻譯軟體自動翻成英文，就不需要設定 i18next"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調 Day 1 就要把所有 string 抽到 t() 函式，後期加 i18n 會很痛苦。選項 b 涵蓋了完整的國際化做法：用 t() 管理文字、Intl 處理日期貨幣、changeLanguage() 動態切換。其他選項都是反面教材（寫死文字、只做部分、用軟體自動翻譯不專業）。"
+      }
     }
   ],
   "boss": {
@@ -1365,5 +1940,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "原生開發最快但要學兩套語言、RN 用 JS 一份代碼跑雙平台、Flutter 用 Dart 性能最強但生態相對小",
+    "React Native 配 Expo 最適合快速開發、檔案系統路由自動產生導航、狀態管理用 Zustand 簡單夠用",
+    "行動 App 講究效能、FlatList 虛擬滾動、AsyncStorage 存本地資料、推播和深連結用來提升用戶回訪",
+    "上架前要處理簽證、打包、隱私政策，上架後用 Sentry 監測崩潰、EAS Update 熱更新、Analytics 看用戶行為",
+    "行動開發的坑多、通常比網頁複雜，但學好了接案和工作機會都不少"
+  ],
+  "faq": [
+    {
+      "q": "我完全不懂行動開發，應該學原生還是 React Native？",
+      "a": "如果你已經會 JavaScript 和 React，直接學 React Native 最省力，用 Expo 可以邊開發邊在手機上看成果。原生（Swift / Kotlin）門檻高，除非你有特別需求（像效能極端要求或要深度用系統功能）。"
+    },
+    {
+      "q": "一份 React Native 代碼真的可以同時跑 iOS 和 Android？",
+      "a": "理論上可以，但實務上兩個平台還是會有小差異，得針對各平台調整。不過共用率通常在 70-80%，省掉重寫一套的功夫。"
+    },
+    {
+      "q": "學完這章能直接接案或找到工作嗎？",
+      "a": "能具備基礎能力，但行動開發通常要自己多做幾個實戰專案、才能應付真實需求。課程打底、經驗靠自己累積。"
+    }
+  ]
 }

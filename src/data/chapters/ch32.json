@@ -79,7 +79,30 @@
           "level": 3,
           "text": "Go 專案結構"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "Go 語言在 2026 年最適合用在哪些場景？",
+        "options": [
+          {
+            "value": "a",
+            "label": "高並發 HTTP API server、微服務、DevOps 工具、系統程式"
+          },
+          {
+            "value": "b",
+            "label": "AI/ML 模型訓練、Web 前端、行動 App、遊戲開發"
+          },
+          {
+            "value": "c",
+            "label": "快速 prototype、GUI 桌面應用、資料科學分析"
+          },
+          {
+            "value": "d",
+            "label": "所有場景都適合，Go 是通用語言"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確列出 Go 的主場是雲端基礎建設、微服務、API server、DevOps 等；不適合 AI/ML、前端、行動開發等領域。選 b、c、d 都是課程裡標明『不適合』的用途。"
+      }
     },
     {
       "id": "32.2",
@@ -120,7 +143,30 @@
           "level": 3,
           "text": "常數"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "小明想在 Go 函數內快速宣告變數 age，初值為 25，下面哪種寫法最恰當？",
+        "options": [
+          {
+            "value": "a",
+            "label": "age := 25"
+          },
+          {
+            "value": "b",
+            "label": "var age = 25"
+          },
+          {
+            "value": "c",
+            "label": "var age int = 25"
+          },
+          {
+            "value": "d",
+            "label": "age = 25"
+          }
+        ],
+        "answer": "a",
+        "explanation": "`:=` 是 Go 函數內的快寫法，會自動推導型別（25 推導為 int），最簡潔。選項 b、c 也能用但比較冗長；選項 d 缺少宣告關鍵字會編譯出錯。"
+      }
     },
     {
       "id": "32.3",
@@ -161,7 +207,30 @@
           "level": 3,
           "text": "switch"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "Go 語言的 switch 陳述式和 C 語言最大的差異是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Go 的 switch 預設不會 fallthrough，C 語言則預設會"
+          },
+          {
+            "value": "b",
+            "label": "Go 的 switch 只能比較字串，C 語言可以比較任何型別"
+          },
+          {
+            "value": "c",
+            "label": "Go 的 switch 不需要 break，C 語言一定要寫 break"
+          },
+          {
+            "value": "d",
+            "label": "Go 的 switch 沒有 default，C 語言一定要有 default"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Go 預設每個 case 執行後自動停止，不會繼續執行下一個 case（不 fallthrough）；而 C 語言預設會繼續執行下一個 case，需要明確寫 break 才能停止。Go 要繼續執行時才需明確寫 fallthrough。"
+      }
     },
     {
       "id": "32.4",
@@ -218,7 +287,30 @@
           "level": 3,
           "text": "常見 pattern"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下列程式碼執行後，result 和 err 會分別是什麼？\n\nfunc divide(a, b int) (int, error) {\n    if b == 0 {\n        return 0, errors.New(\"division by zero\")\n    }\n    return a / b, nil\n}\n\nresult, err := divide(10, 0)",
+        "options": [
+          {
+            "value": "a",
+            "label": "result = 10、err = nil"
+          },
+          {
+            "value": "b",
+            "label": "result = 0、err 是一個 error 物件"
+          },
+          {
+            "value": "c",
+            "label": "result = 0、err = nil"
+          },
+          {
+            "value": "d",
+            "label": "程式會 panic，無法賦值"
+          }
+        ],
+        "answer": "b",
+        "explanation": "因為 b 為 0，函數執行 if 條件進去，回傳 0 和「division by zero」錯誤物件。Go 多回傳值的模式是 (result, error)，這裡 error 不是 nil，代表有錯誤發生。"
+      }
     },
     {
       "id": "32.5",
@@ -275,7 +367,30 @@
           "level": 3,
           "text": "slices / maps 標準庫（Go 1.21+）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下列關於 Go 的 Slice 敘述，何者正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Slice 是固定長度的容器，宣告時一定要指定大小"
+          },
+          {
+            "value": "b",
+            "label": "Slice 是指向底層 array 的 view，多個 slice 可能共享同一個底層 array，修改其中一個會影響其他"
+          },
+          {
+            "value": "c",
+            "label": "使用 append 時，新 slice 一定會完全獨立，不會受到原 slice 的影響"
+          },
+          {
+            "value": "d",
+            "label": "Slice 跟 Array 在 Go 中是同一個概念，只是寫法不同"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Slice 是底層 array 的 view，多個 slice 可共享同一底層，所以修改會互相影響。答案 a 錯（slice 動態長度）、c 錯（append 可能還共享）、d 錯（Array 固定長度、Slice 動態）。"
+      }
     },
     {
       "id": "32.6",
@@ -323,7 +438,30 @@
           "level": 3,
           "text": "Pointer 跟 Value 的選擇"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "Go 裡面要改變 struct 的欄位值，method 的 receiver 應該怎麼宣告？",
+        "options": [
+          {
+            "value": "a",
+            "label": "值 receiver（例如 func (r Rectangle)），因為簡單"
+          },
+          {
+            "value": "b",
+            "label": "指標 receiver（例如 func (r *Rectangle)），才能改到原本的 struct"
+          },
+          {
+            "value": "c",
+            "label": "兩種都可以，Go 會自動選最適合的"
+          },
+          {
+            "value": "d",
+            "label": "不能改，要改就用 constructor 函數"
+          }
+        ],
+        "answer": "b",
+        "explanation": "值 receiver 只會複製一份 struct，改了也只是改複製品；指標 receiver 才能改到原本的 struct。Scale 例子就示範了這點。"
+      }
     },
     {
       "id": "32.7",
@@ -367,7 +505,30 @@
           "level": 3,
           "text": "常見 pattern"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下面哪個敘述是正確的？",
+        "options": [
+          {
+            "value": "a",
+            "label": "在 Go 中，直接傳 slice 到函數，函數內修改 slice 元素會影響外面的 slice，但 append 可能不會"
+          },
+          {
+            "value": "b",
+            "label": "Go 的指標支援指標運算（如 p++、p+5），這是 Go 比 C 更強大的地方"
+          },
+          {
+            "value": "c",
+            "label": "對 nil 指標解引用（*p）是安全的，Go 會自動傳回零值而不 panic"
+          },
+          {
+            "value": "d",
+            "label": "new(User) 和 &User{Name: \"Alice\"} 兩種寫法完全一樣，選哪個都行"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Slice 是引用型別，底層指向同一個陣列，所以修改元素會影響外面；但 append 可能配置新的底層陣列（當超過容量時），所以不一定影響。選項 b 錯：Go 刻意移除指標運算來提升安全性。選項 c 錯：解引用 nil pointer 會 panic。選項 d 錯：&T{} 支援初始化，new(T) 不行。"
+      }
     },
     {
       "id": "32.8",
@@ -407,7 +568,30 @@
           "level": 3,
           "text": "常見 interface pattern"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "Go 的 interface 為什麼說是「隱式實作」？這對寫程式有什麼好處？",
+        "options": [
+          {
+            "value": "a",
+            "label": "struct 只要有相同名稱和簽名的方法，就自動實作 interface，不用寫 implements 關鍵字"
+          },
+          {
+            "value": "b",
+            "label": "struct 實作 interface 時，可以隱藏某些方法，讓外界看不到"
+          },
+          {
+            "value": "c",
+            "label": "interface 定義時要隱式宣告它的用途，別人看不出來"
+          },
+          {
+            "value": "d",
+            "label": "Go 會自動根據 struct 的名稱猜測要實作哪個 interface"
+          }
+        ],
+        "answer": "a",
+        "explanation": "隱式實作是指不用明確寫 implements，只要 struct 有符合 interface 要求的方法就算。這樣做的好處是靈活性高、可以後來才定義 interface（duck typing），不用提前規劃。b、c、d 都是誤會 Go 的設計理念。"
+      }
     },
     {
       "id": "32.9",
@@ -443,7 +627,30 @@
           "text": "🎯 重點回顧",
           "level": 3
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在 for 迴圈裡用 go 啟動 goroutine，直接在匿名函式裡抓迴圈變數 i，結果所有 goroutine 都印出同一個數字。這是為什麼，該怎麼解決？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為所有 goroutine 共用同一個 i 變數，應該用參數傳值把 i 傳進 goroutine 裡"
+          },
+          {
+            "value": "b",
+            "label": "因為 goroutine 啟動太快，應該在迴圈裡加 time.Sleep() 讓它們錯開執行"
+          },
+          {
+            "value": "c",
+            "label": "因為忘記用 sync.WaitGroup，應該加 wg.Add() 和 wg.Wait() 就能修正"
+          },
+          {
+            "value": "d",
+            "label": "因為 Go 的 runtime 有 bug，應該改用 OS Thread 就不會有這問題"
+          }
+        ],
+        "answer": "a",
+        "explanation": "迴圈變數 i 只有一份，所有 goroutine 都指向同一個 i。當迴圈跑完 i 已經是最後值，各 goroutine 再去讀 i 就都拿到最後的數字。正確做法是用參數 `go func(n int){ ... }(i)` 把當下的 i 值傳進去，每個 goroutine 就能各自持有一份副本。"
+      }
     },
     {
       "id": "32.10",
@@ -483,7 +690,30 @@
           "text": "🎯 重點回顧",
           "level": 3
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下面哪一個敘述**錯誤**？",
+        "options": [
+          {
+            "value": "a",
+            "label": "無緩衝 channel 發送時，如果沒有 goroutine 同時在接收，發送方會卡住"
+          },
+          {
+            "value": "b",
+            "label": "有緩衝 channel 可以先放資料進去，不一定要馬上有人接收"
+          },
+          {
+            "value": "c",
+            "label": "任何 goroutine 都可以呼叫 close() 來關閉 channel"
+          },
+          {
+            "value": "d",
+            "label": "可以用 for range 迴圈來接收 channel 的資料，直到 channel 被關閉"
+          }
+        ],
+        "answer": "c",
+        "explanation": "只有發送方該 close channel，不是任意 goroutine 都能關。對已關閉的 channel 發送會 panic，所以關閉的權責要明確。"
+      }
     },
     {
       "id": "32.11",
@@ -519,7 +749,30 @@
           "text": "🎯 重點回顧",
           "level": 3
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你寫了一個函式，會同時向三個不同的 API 發請求、要用哪個 Go 工具來處理「誰先回應就用誰的結果」這種情況？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 select 同時等三個 channel、誰先有資料就處理誰"
+          },
+          {
+            "value": "b",
+            "label": "用 context 設定一個 timeout、三個 API 輪流試"
+          },
+          {
+            "value": "c",
+            "label": "用 goroutine 開三條、然後用 if-else 判斷哪個先完成"
+          },
+          {
+            "value": "d",
+            "label": "用 switch 語句列舉三種情況、依序檢查"
+          }
+        ],
+        "answer": "a",
+        "explanation": "select 就是為了「同時等多個 channel」設計的——case 分別對應三個 API 的 channel，哪個先回應就處理哪個。context 是用來傳遞取消/超時信號，goroutine 配 if-else 則無法優雅地「誰先就用誰」，switch 也不適合等待 channel。"
+      }
     },
     {
       "id": "32.12",
@@ -567,7 +820,30 @@
           "level": 3,
           "text": "Error vs Exception 哲學"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "Go 的 error handling 與其他語言最大的差異是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 error 作為回傳值，需要明確檢查而不是用 try-catch"
+          },
+          {
+            "value": "b",
+            "label": "Go 完全不允許程式拋出異常，所以比較安全"
+          },
+          {
+            "value": "c",
+            "label": "error 必須永遠是函數的第一個回傳值"
+          },
+          {
+            "value": "d",
+            "label": "Go 用 panic 取代 try-catch，寫法更簡潔"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Go 的核心設計就是用 error 型別當回傳值，搭配 if err != nil 的檢查，這樣每個錯誤都要被處理者明確決定—比 try-catch 的隱式往上拋更明確。其他選項都不符合課程內容：b 說「不允許拋異常」不準確、c 說「必須第一個」錯誤（應該是最後一個）、d 說「用 panic 比較簡潔」則誤解了 panic 的用途。"
+      }
     },
     {
       "id": "32.13",
@@ -615,7 +891,30 @@
           "level": 3,
           "text": "常用第三方套件 2026 主流"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在 Go 中，如果你在 `utils` package 裡定義了一個函數 `calcPrice()` （小寫開頭），然後在 `main` package 裡 import 了 `utils`，下面哪個敘述是正確的？",
+        "options": [
+          {
+            "value": "a",
+            "label": "可以用 `utils.calcPrice()` 呼叫，因為已經 import 了 utils"
+          },
+          {
+            "value": "b",
+            "label": "不能呼叫 `calcPrice()`，因為小寫開頭表示只在 utils package 內使用"
+          },
+          {
+            "value": "c",
+            "label": "需要在 go.mod 裡特別設定才能使用小寫函數"
+          },
+          {
+            "value": "d",
+            "label": "可以呼叫，但要改成 `utils.CalcPrice()` 的寫法"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Go 用大小寫控制 export，小寫開頭的函數只能在同 package 內使用，其他 package 無法存取，不管有沒有 import。這是 Go 的命名規則，不需要 public/private 關鍵字。"
+      }
     },
     {
       "id": "32.14",
@@ -647,7 +946,30 @@
           "level": 3,
           "text": "time：時間處理"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在寫 Go 的 HTTP API，收到用戶傳來的 JSON 請求。下面哪個做法最符合課堂教的標準做法？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 io.ReadAll 讀完 r.Body，再用 json.Unmarshal 轉成 struct"
+          },
+          {
+            "value": "b",
+            "label": "直接用 json.NewDecoder(r.Body).Decode(&user) 解析進 struct"
+          },
+          {
+            "value": "c",
+            "label": "用 http.Post 把 request body 送出去，讓對方幫忙解析"
+          },
+          {
+            "value": "d",
+            "label": "把 JSON 字串存到檔案，用 os 套件讀出來再解析"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課堂直接示範在 HTTP handler 裡用 json.NewDecoder(r.Body).Decode(&u) 來解析請求的 JSON，這是標準 Stream decoding 做法。a 雖然也能動，但不是課堂教的推薦方式；c 和 d 都是把用途搞反了。"
+      }
     },
     {
       "id": "32.15",
@@ -687,7 +1009,30 @@
           "level": 3,
           "text": "Graceful Shutdown"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這課的內容，Go 標準庫 `net/http` 能寫 production server 的主要原因是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Go 1.22+ 增強了 ServeMux，內建支援 HTTP method + 路徑參數，不一定需要框架"
+          },
+          {
+            "value": "b",
+            "label": "Go 標準庫的 http server 速度比所有框架都快"
+          },
+          {
+            "value": "c",
+            "label": "因為 Hugo 和 Caddy 都是用標準庫寫的，所以標準庫一定比框架好"
+          },
+          {
+            "value": "d",
+            "label": "標準庫自動幫你處理所有 JSON 轉換和驗證"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程重點是強調 Go 1.22+ 前 ServeMux 太弱需要框架，但 1.22 後內建路由和參數支援變強，所以「不一定要框架」。其他選項都是誇大或歪曲課意。"
+      }
     },
     {
       "id": "32.16",
@@ -723,7 +1068,30 @@
           "level": 3,
           "text": "Chi（輕量、最 idiomatic）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，如果你要開發一個對性能沒有極端要求、但希望完全依賴 Go 標準庫、未來方便維護和遷移的 Web 專案，應該選擇哪個框架？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Gin，因為它是最普及的、生態最大"
+          },
+          {
+            "value": "b",
+            "label": "Fiber，因為它速度最快、性能最優"
+          },
+          {
+            "value": "c",
+            "label": "Chi，因為它用標準庫、輕量、不偏離 Go 原生風格"
+          },
+          {
+            "value": "d",
+            "label": "三個都可以，因為它們都支援 net/http"
+          }
+        ],
+        "answer": "c",
+        "explanation": "Chi 的定位就是『輕量、不偏離標準』，底層使用 net/http 而非自訂實現，這讓你的程式更符合 Go 社群慣例。Gin 雖然最普及但不是為了輕量設計，Fiber 則因為用 fasthttp 反而無法直接用標準庫 middleware。"
+      }
     },
     {
       "id": "32.17",
@@ -771,7 +1139,30 @@
           "level": 3,
           "text": "Migration（schema 版控）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，為什麼不直接用標準庫 database/sql，而要改用 GORM 或 sqlx？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 database/sql 速度比較慢，GORM 和 sqlx 執行效率更好"
+          },
+          {
+            "value": "b",
+            "label": "因為 database/sql 很 raw，Scan 要手動寫很煩、容易出 bug，GORM 和 sqlx 可以簡化這些重複工作"
+          },
+          {
+            "value": "c",
+            "label": "因為 database/sql 不支援 PostgreSQL，只有 GORM 和 sqlx 才能連 Postgres"
+          },
+          {
+            "value": "d",
+            "label": "因為標準庫沒有提供 soft delete 功能，只有 ORM 才能做到"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確指出標準庫 database/sql 的缺點是「寫 Scan 很煩、容易 bug」，這正是 GORM 和 sqlx 要解決的問題。其他選項都超出課程範圍或是錯誤説法。"
+      }
     },
     {
       "id": "32.18",
@@ -815,7 +1206,30 @@
           "level": 3,
           "text": "Refresh Token Pattern"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在 JWT 認證流程中，bcrypt 和 JWT 各自的角色是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "bcrypt 用來加密密碼存進資料庫，JWT 用來生成登入後的 token 給客戶端"
+          },
+          {
+            "value": "b",
+            "label": "bcrypt 和 JWT 都是用來生成 token，只是演算法不同"
+          },
+          {
+            "value": "c",
+            "label": "JWT 用來驗證密碼是否正確，bcrypt 用來生成登入 token"
+          },
+          {
+            "value": "d",
+            "label": "bcrypt 只在註冊時用一次，之後所有驗證都改用 JWT"
+          }
+        ],
+        "answer": "a",
+        "explanation": "bcrypt 是單向 hash 函數，用來安全地儲存和驗證密碼；JWT 是簽名的 token，用來在登入後代表使用者身份。兩者在認證流程中分工不同、缺一不可。"
+      }
     },
     {
       "id": "32.19",
@@ -863,7 +1277,30 @@
           "level": 3,
           "text": "Benchmark（性能測試）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "關於 Go 的測試檔案命名，下列何者正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "測試檔案名稱必須以 _test.go 結尾，且要放在同一個 package 裡"
+          },
+          {
+            "value": "b",
+            "label": "測試檔案必須放在 test 資料夾裡，檔名可以任意"
+          },
+          {
+            "value": "c",
+            "label": "測試檔案要用 test_ 開頭，和正式檔案要在不同 package"
+          },
+          {
+            "value": "d",
+            "label": "測試檔案名稱沒有限制，只要用 `go test` 指令就會自動找到"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Go 的測試檔案必須以 _test.go 結尾（如 math_test.go），且要在同一個 package 內。這樣 `go test` 才能自動發現並執行。選項 b、c、d 都是常見的錯誤迷思。"
+      }
     },
     {
       "id": "32.20",
@@ -903,7 +1340,30 @@
           "level": 3,
           "text": "2026 部署平台"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，為什麼 Go 應用特別適合用 Docker 部署？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 Go 編譯出單一 binary、沒有外部依賴，所以 Docker image 可以非常小（5MB 左右），遠比 Node.js 或 Python 應用小"
+          },
+          {
+            "value": "b",
+            "label": "因為 Go 可以跨平台編譯，所以 Docker 會自動幫你編譯成所有平台的版本"
+          },
+          {
+            "value": "c",
+            "label": "因為 Go 可以使用 UPX 壓縮，所以 Docker image 永遠不會超過 1MB"
+          },
+          {
+            "value": "d",
+            "label": "因為 Go 支援 docker-compose，所以可以一次啟動整個應用 stack"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程的核心優勢就是 Go 編譯出單一 binary 無需依賴，搭配 multi-stage Dockerfile 和 CGO_ENABLED=0，最終 image 可以只有 5-30MB，遠小於 Node.js（200-500MB）或 Python（300-1000MB）的應用。其他選項雖然都是課程提到的技巧，但不是 Go 部署的根本優勢。"
+      }
     },
     {
       "title": "Go HTTP server：net/http + Gin / Fiber",
@@ -960,7 +1420,30 @@
           "level": 2,
           "text": "何時用什麼"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，如果你要開發一個簡單的 microservice，只需要基本的 HTTP 路由和響應，不需要複雜的生態支持，應該選擇哪個方案？",
+        "options": [
+          {
+            "value": "a",
+            "label": "直接用 net/http，不用額外框架"
+          },
+          {
+            "value": "b",
+            "label": "一定要用 Gin，因為它是最熱門的框架"
+          },
+          {
+            "value": "c",
+            "label": "用 Fiber，因為它速度最快"
+          },
+          {
+            "value": "d",
+            "label": "用 Echo，因為生態最完整"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確說『簡單 microservice → net/http 直接寫』，因為 Go 的內建 net/http 已經很強。Gin 和 Fiber 是當你需要更多便利功能（middleware、數據驗證等）時才加上去的框架。"
+      }
     },
     {
       "title": "Go Concurrency：goroutine + channel 進階",
@@ -1029,7 +1512,30 @@
           "level": 2,
           "text": "注意事項"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你有 3 個 goroutine 在處理工作，想要等它們全部完成才往下執行。下列哪個做法最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 sync.WaitGroup，每個 goroutine 執行前 Add(1)，執行完呼叫 Done()，主程式最後呼叫 Wait()"
+          },
+          {
+            "value": "b",
+            "label": "用 sync.Mutex 鎖住一個計數器，每個 goroutine 完成時遞減，主程式不停檢查計數器是否為 0"
+          },
+          {
+            "value": "c",
+            "label": "開 3 個 buffered channel，每個 goroutine 完成後寫入一個值，主程式用迴圈讀 3 次"
+          },
+          {
+            "value": "d",
+            "label": "用 time.Sleep() 讓主程式睡眠足夠長的時間，等所有 goroutine 自然結束"
+          }
+        ],
+        "answer": "a",
+        "explanation": "sync.WaitGroup 就是為了這種「等所有 goroutine 結束」的場景設計的，用 Add/Done/Wait 三步曲最安全優雅。選項 b 很容易出現 race condition，選項 c 太繁瑣，選項 d 不可靠又浪費時間。"
+      }
     },
     {
       "title": "Go 錯誤處理 + panic / recover",
@@ -1102,7 +1608,30 @@
           "level": 2,
           "text": "Go 1.13+ Error Wrapping 完整流程"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在寫一個函式，用來從資料庫查詢使用者。查詢失敗時，下層函式回傳了 sql.ErrNoRows 錯誤。根據 Go 的錯誤處理原則，你應該怎麼做？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 panic 直接讓程式爆掉，因為查詢失敗了"
+          },
+          {
+            "value": "b",
+            "label": "用 fmt.Errorf 包裝原始錯誤並加上上下文訊息，回傳給呼叫方"
+          },
+          {
+            "value": "c",
+            "label": "檢查 err 是否非 nil 後，忽略它繼續執行，避免程式中斷"
+          },
+          {
+            "value": "d",
+            "label": "用 errors.New 產生新的錯誤訊息，覆蓋掉原始的 sql.ErrNoRows"
+          }
+        ],
+        "answer": "b",
+        "explanation": "查詢資料庫是預期會失敗的操作（使用者不存在很常見），應該用 error 處理而非 panic。用 fmt.Errorf 搭配 %w 可以包裝原始錯誤並保留上下文，讓呼叫方既能看到『發生了什麼』也能用 errors.Is 檢查是否是 NoRows。"
+      }
     },
     {
       "title": "Go Module + 依賴管理",
@@ -1187,7 +1716,30 @@
           "level": 2,
           "text": "CI 範例"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在 Go 專案中執行 `go get github.com/example/lib@v1.5.0`，之後又執行 `go get -u`。請問 `go.mod` 中 github.com/example/lib 的版本會變成什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "還是 v1.5.0，因為已經明確指定過版本"
+          },
+          {
+            "value": "b",
+            "label": "升級到該套件的最新版本（例如 v1.9.0）"
+          },
+          {
+            "value": "c",
+            "label": "升級到滿足需求的最小版本"
+          },
+          {
+            "value": "d",
+            "label": "保持不變，除非手動執行 `go get github.com/example/lib@latest`"
+          }
+        ],
+        "answer": "b",
+        "explanation": "`go get -u` 的 `-u` 就是升級全部依賴套件的意思，會更新到最新可用版本。選項 c 混淆了「Minimal Version Selection」的概念，那是 Go 選擇版本的底層策略，不是 `-u` 做的事。"
+      }
     },
     {
       "title": "Go testing：內建測試框架夠強",
@@ -1256,7 +1808,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想測試一個計算函數在各種輸入下的表現（正數、負數、零等），Go 建議用什麼寫法？",
+        "options": [
+          {
+            "value": "a",
+            "label": "寫多個 TestAdd1、TestAdd2、TestAdd3... 分別測不同情境"
+          },
+          {
+            "value": "b",
+            "label": "用 table-driven tests，把測試案例放在 struct slice 裡逐個執行"
+          },
+          {
+            "value": "c",
+            "label": "用 testify 套件的 assert，一次寫完所有斷言"
+          },
+          {
+            "value": "d",
+            "label": "用 BenchmarkAdd 跑效能測試，順便檢查邏輯"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Table-driven tests 是 Go 的風格，可以用一個結構化的資料表把多個測試案例寫在一起，再用迴圈+t.Run逐個執行。a 是重複冗長、c 和 d 分別是為了驗證和效能，都不是「測多種輸入」的標準做法。"
+      }
     }
   ],
   "boss": {
@@ -1270,5 +1845,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "Goroutine 是輕量級執行緒，channel 是他們之間溝通的管道，select 和 context 用來控制並發流程。",
+    "Go 沒有 try-catch，用 error 值和 panic/recover 來處理異常，寫法跟其他語言不太一樣。",
+    "Struct 搭配 method 就是 Go 的物件導向，interface 用 duck typing 定義行為，很靈活。",
+    "Gin 是輕量 HTTP 框架，幾行程式碼就能寫 API，middleware 和路由分組讓大專案好管理。",
+    "Go 的套件系統乾淨、編譯快、執行檔小，Docker 和跨平台編譯讓部署特別簡單。"
+  ],
+  "faq": [
+    {
+      "q": "Go 真的能替代 Python / Node.js 嗎？",
+      "a": "取決於用途。Go 在寫 API 伺服器、CLI 工具、微服務時特別順手，因為編譯快、執行檔小、並發強。但資料科學、快速原型就還是 Python 方便。"
+    },
+    {
+      "q": "Goroutine 會不會把我搞瘋？",
+      "a": "初期會有點陌生，但比起 Python 的 threading 或 async/await，Go 的並發模型其實簡潔多了。只要把 channel 當成安全的信箱，思路清楚就沒問題。"
+    },
+    {
+      "q": "學完這章能馬上寫線上產品嗎？",
+      "a": "能寫基本的 API 和工具沒問題，但實戰還需要碰資料庫、快取、部署等細節。這章打好基礎，剩下靠經驗累積。"
+    }
+  ]
 }

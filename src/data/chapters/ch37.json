@@ -123,7 +123,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這堂課，以下哪種客戶類型「最不適合」用 WordPress 來接案？",
+        "options": [
+          {
+            "value": "a",
+            "label": "中小企業要做公司官網，預算 50k，需要 1-2 週完成"
+          },
+          {
+            "value": "b",
+            "label": "客戶是大型企業，需要高度客製化和企業級系統，預算 500k+"
+          },
+          {
+            "value": "c",
+            "label": "自媒體工作者要開部落格分享文章，預算 30k"
+          },
+          {
+            "value": "d",
+            "label": "中小電商要用 WooCommerce 賣產品，預算 100k"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確說不要碰『需大客製、企業級』的案子，應該用 Laravel / Next.js 等框架。而 a、c、d 都是課程列舉的適合 WordPress 的客戶類型（中小企業官網、部落格、電商）。"
+      }
     },
     {
       "title": "WordPress 後台 + 主題",
@@ -236,7 +259,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你要幫客戶做一個公司網站，預算有限但需要快速交付。根據課程建議，最適合的選擇是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 WP Engine 主機 + 自己從零開發 custom theme"
+          },
+          {
+            "value": "b",
+            "label": "用 Cloudways + Astra 主題 + Elementor Pro"
+          },
+          {
+            "value": "c",
+            "label": "用共享主機（BlueHost）+ Gutenberg 內建編輯器"
+          },
+          {
+            "value": "d",
+            "label": "用 Kinsta 主機 + Bricks Builder（因為性能最好）"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確指出 Indie 接案建議就是 Astra + Elementor Pro，原因是客戶易維護、快交付。Cloudways 是台灣友善選擇、CP 值好。選 a 浪費成本、c 速度不行、d 雖然性能好但對小案子成本過高。"
+      }
     },
     {
       "title": "WooCommerce + 客製化 + 接案",
@@ -357,7 +403,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "如果你接了一個電商案子，客戶要求在開發過程中任意新增功能、修改設計，都不額外收費。根據課程的接案 SOP，你應該怎麼處理？",
+        "options": [
+          {
+            "value": "a",
+            "label": "全部答應，這樣客戶滿意度最高，有利於轉介紹"
+          },
+          {
+            "value": "b",
+            "label": "在報價單和合約中明確寫明包含 3 次大改，超過部分另外計費"
+          },
+          {
+            "value": "c",
+            "label": "先做著看，等到後期才跟客戶說需要加錢"
+          },
+          {
+            "value": "d",
+            "label": "直接拒絕這個客戶，因為無限改會虧錢"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確提到報價單必有『Scope（做什麼/不做什麼）』，且合約注意不包『無限改』、包『3次大改』，加項另計。這是保護自己和客戶的標準做法，既能提供彈性又能管理成本預期。"
+      }
     },
     {
       "title": "WordPress 仍是台灣接案主力",
@@ -474,7 +543,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，為什麼 WordPress 在台灣接案市場仍然是主流？下列哪個選項最完整地說明了這個現象？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 WordPress 是最新的技術，功能最強大，所以所有客戶都用它"
+          },
+          {
+            "value": "b",
+            "label": "因為中小企業佔台灣大多數，他們需要不用會程式、便宜、可自己維護的網站解決方案，而 WordPress 完全符合這些需求"
+          },
+          {
+            "value": "c",
+            "label": "因為 WordPress 是唯一支援電商和 SEO 的平台，競爭者都不行"
+          },
+          {
+            "value": "d",
+            "label": "因為台灣的接案 developer 都只會 WordPress，所以客戶被迫使用"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調 WordPress 在台灣是接案主力，原因是：台灣 70-80% 中小企業用 WP，這些客戶本身就是大多數市場需求。WP 符合他們「不用會 code、plugin 多、主機便宜、自己改維護」的需求，而不是因為技術最強或唯一選擇。選項 a、c、d 都偏離了課程核心——「客戶端的實際需求」。"
+      }
     },
     {
       "title": "WordPress 性能優化",
@@ -587,7 +679,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程的優化 SOP，如果你要幫一個 WordPress 網站做完整優化，以下哪個順序最合理？",
+        "options": [
+          {
+            "value": "a",
+            "label": "先換成輕量主題，再設定 CDN，最後才考慮升級主機"
+          },
+          {
+            "value": "b",
+            "label": "先升級主機或用 CDN（基礎），再裝 Cache plugin，再優化圖片和清理 plugin"
+          },
+          {
+            "value": "c",
+            "label": "直接裝 WP Rocket 和圖片優化 plugin，其他都不用改"
+          },
+          {
+            "value": "d",
+            "label": "把所有 plugin 都刪掉，換主題，再慢慢調整"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程 Phase 1-10 的邏輯是：從「主機基礎」開始（最影響速度），再疊加 CDN 和 Cache，然後才是圖片、清理、調細節。先改基礎設施效果最大，直接裝 plugin 或亂刪都沒有抓到根本。"
+      }
     },
     {
       "title": "WordPress 客製 + Block Editor",
@@ -664,7 +779,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你要幫客戶做一個「作品集網站」，客戶希望能自己在 WordPress 後台新增、編輯作品資料，而不用寫程式。下列哪個做法最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 ACF 新增「作品標題」、「作品描述」等自訂欄位，客戶直接在後台填寫"
+          },
+          {
+            "value": "b",
+            "label": "寫一個自訂 Block，用 JavaScript 和 PHP 從零打造作品編輯介面"
+          },
+          {
+            "value": "c",
+            "label": "改用 Headless WordPress + React，把前後端完全分離"
+          },
+          {
+            "value": "d",
+            "label": "修改 WordPress 預設的 Post 文章類型，不新增任何東西"
+          }
+        ],
+        "answer": "a",
+        "explanation": "ACF 正是為了讓客戶「不寫程式也能自訂欄位」而生的，是接案最快的方案。選 b 太複雜（新手不適合），c 是進階方案（超出需求），d 會混淆作品和部落格文章。"
+      }
     }
   ],
   "boss": {
@@ -678,5 +816,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "WordPress 全球市佔最高、台灣接案最常見，因為快、便宜、有生態系統。",
+    "後台直觀、主題換一套、外掛加功能，新手可以無痛上手。",
+    "WooCommerce 是電商標配，大多數中小企業購物網站都用它。",
+    "性能優化不是選項是必修，圖片、快取、CDN 是三大招。",
+    "Block Editor 讓客戶自己改內容，減少日後維護需求與困擾。"
+  ],
+  "faq": [
+    {
+      "q": "我完全沒寫過程式，可以靠 WordPress 接案嗎？",
+      "a": "可以的，WordPress 的目的就是讓不懂程式的人也能做網站。你只要會用後台、裝外掛、調主題設定，就能完成大部分中小企業案子，真的需要寫 code 的工作量反而比較少。"
+    },
+    {
+      "q": "WordPress 跟 Shopify / 自架電商有什麼差別？",
+      "a": "WordPress 最便宜、最自由、最多外掛，但你要自己管主機、安全、備份；Shopify 是託管、開箱即用但功能受限、費用較高。台灣接案普遍用 WordPress 因為成本優勢。"
+    },
+    {
+      "q": "學完這章是不是就能直接接案賺錢？",
+      "a": "你會具備接案的技術底子，知道怎麼建站、怎麼優化、怎麼評估難度，但真正賺錢還要加上銷售、談判、專案管理這些軟實力，這些得靠實戰累積。"
+    }
+  ]
 }

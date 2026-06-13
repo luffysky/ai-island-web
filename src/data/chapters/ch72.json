@@ -37,6 +37,29 @@
         "question": "把你現有 component 內某段 useState + useEffect、抽成一個 useXXX 自訂 Hook、放在 src/hooks/。",
         "hint": "找一個寫超過一次的 fetch + loading + error pattern、抽成 useFetch。",
         "answer": "Custom Hook 命名規則：`use` 開頭、PascalCase 後綴。回傳建議用 `as const` 變 tuple 或 object 結構穩定。"
+      },
+      "miniQuiz": {
+        "question": "你寫了一個搜尋框，用 useState 存搜尋詞，搭配 useEffect 延遲 300ms 才發送 API。現在另一個頁面的篩選表單也需要同樣的「延遲搜尋」邏輯。你應該怎麼做？",
+        "options": [
+          {
+            "value": "a",
+            "label": "把 useState + useEffect 的程式碼複製到新 component，改改變數名稱就好"
+          },
+          {
+            "value": "b",
+            "label": "抽出 useDebounce Custom Hook，兩個 component 都呼叫它"
+          },
+          {
+            "value": "c",
+            "label": "把延遲邏輯寫成一個普通 function，return 延遲後的值"
+          },
+          {
+            "value": "d",
+            "label": "用 useContext 包裝延遲邏輯，提供給全域使用"
+          }
+        ],
+        "answer": "b",
+        "explanation": "這就是拆 Custom Hook 的經典場景：同樣的 useState/useEffect 組合在 ≥2 個 component 重複。useDebounce 就能把這個邏輯封裝成可重用的函式。選項 a 是重複程式碼（違反 DRY），選項 c 的普通 function 無法用 Hook，選項 d 用 useContext 也不是為了共用邏輯。"
       }
     },
     {
@@ -54,6 +77,29 @@
       "exercise": {
         "question": "建一個 ThemeContext + Provider、做 light/dark mode 切換、整站 button 跟 div 都跟著變色。",
         "answer": "重點：value 用 `{ theme, setTheme }` object、若 component 只讀 theme 不寫、可以拆兩個 Context (ThemeStateContext + ThemeDispatchContext) 避免不必要 re-render。"
+      },
+      "miniQuiz": {
+        "question": "你的 React App 有個「語言選擇功能」，用户可以在頂部切換繁體中文或英文，整個網站 10 層深的各個 component 都要用到這個語言設定。下列哪個做法最符合 Context 的使用場景？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 Context 存語言設定，在 App 頂層放 Provider，各層 component 用 useContext 直接拿語言值"
+          },
+          {
+            "value": "b",
+            "label": "用 Context 存每個用户的滑鼠移動位置，這樣任何 component 都能即時偵測滑鼠"
+          },
+          {
+            "value": "c",
+            "label": "用 Context 控制某個 modal 的開關狀態，讓彈窗層級的 component 直接 useContext 判斷要不要顯示"
+          },
+          {
+            "value": "d",
+            "label": "因為只是語言設定，直接在每個 component 寫死「繁體 / 英文」，不用 Context 比較簡潔"
+          }
+        ],
+        "answer": "a",
+        "explanation": "語言設定是「整站都要的、層級深、不頻繁更新」的典型 Context 場景，放在 App 頂層 Provider 讓深層 component 直接拿、避免 props drilling。B 選項頻繁更新該用 ref，C 選項局部狀態該用 useState，D 選項硬編碼無法動態切換。"
       }
     },
     {
@@ -72,7 +118,30 @@
         "hint": "排查順序：1) console.log state 看是不是真的變了、2) 變了但沒 re-render → reference 沒變、3) 改用 [...arr, newItem] 或 {...obj, key: val}。",
         "answer": "口訣：'New reference, not new value'。改 array 用 [...arr]、改 object 用 {...obj}、改深層用 structuredClone 或 Immer。"
       },
-      "xp": 20
+      "xp": 20,
+      "miniQuiz": {
+        "question": "你在 useEffect 裡用 setInterval 讀取 count 的值，但發現 count 永遠停留在初始值 0，不會增加。下列哪個做法能正確解決這個「Stale Closure」問題？",
+        "options": [
+          {
+            "value": "a",
+            "label": "把 count 加入 useEffect 的依賴陣列 [count]，這樣每次 count 變化時都會重新執行 setInterval"
+          },
+          {
+            "value": "b",
+            "label": "用 functional setter `setCount(prev => prev + 1)` 來讀取最新的 state，而不是直接在 setInterval 裡引用 count 變數"
+          },
+          {
+            "value": "c",
+            "label": "把 setInterval 移到 useEffect 外面，這樣就能直接存取最新的 count 值"
+          },
+          {
+            "value": "d",
+            "label": "改用 useRef 存 count 的值，這樣 setInterval 就能拿到最新的引用"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Stale Closure 問題是因為空依賴 [] 讓 setInterval 只建立一次、抓住初始的 count。解法不是改依賴（會無限建立 interval），而是用 functional setter `prev => prev + 1` 讓 React 自動給你最新 state，不靠外層變數引用。"
+      }
     },
     {
       "id": "72.4",
@@ -89,7 +158,30 @@
         "question": "在你現有的「按讚」按鈕加上 useOptimistic — 點下去 UI 立刻 +1、背景 fetch、失敗自動還原。",
         "answer": "Pattern：const [opt, add] = useOptimistic(likes, (s, n) => s + n); 然後 async function 內先 add(1)、再 await fetch。React 會自動處理失敗回滾。"
       },
-      "xp": 20
+      "xp": 20,
+      "miniQuiz": {
+        "question": "你想做一個「按讚」功能，要求是：使用者一按按鈕，UI 馬上顯示 +1 的讚數，同時背景才慢慢送請求到伺服器。如果伺服器失敗，讚數就要回復。應該用哪個 React 19 功能最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "useTransition — 把 setLikes(likes + 1) 包起來，避免阻塞 UI"
+          },
+          {
+            "value": "b",
+            "label": "useOptimistic — 先在 UI 上加 1，背景再送請求，失敗自動回復"
+          },
+          {
+            "value": "c",
+            "label": "Actions — 直接在 form 裡寫 async 函式，用 formData 傳送按讚資料"
+          },
+          {
+            "value": "d",
+            "label": "useState — 建立一個 state 儲存讚數，然後 onClick 時更新它"
+          }
+        ],
+        "answer": "b",
+        "explanation": "useOptimistic 的核心就是『樂觀更新』：UI 立刻展示結果，背景再做真實請求，失敗就自動復原。其他選項都不符合『先改 UI、再確認』的需求。"
+      }
     },
     {
       "id": "72.5",
@@ -107,7 +199,51 @@
         "hint": "用 Next.js 的 `next build` 看 First Load JS、Server 區應該降到 0 額外 KB。",
         "answer": "重點：Server Component 可以接 Client Component 當 children、用 props 傳資料下去。Client 內部不能 await fetch、要靠 server 先抓好傳進來。"
       },
-      "xp": 25
+      "xp": 25,
+      "miniQuiz": {
+        "question": "你的頁面需要顯示從資料庫抓出來的文章列表，然後在列表上面有一個搜尋框讓使用者輸入。照著「能 Server 就 Server，互動才 Client」的原則，下面哪個做法最恰當？",
+        "options": [
+          {
+            "value": "a",
+            "label": "整個頁面標 'use client'，這樣 useState 和資料庫查詢都能用"
+          },
+          {
+            "value": "b",
+            "label": "頁面保持 Server Component，在 Server 直接 await 資料庫查詢，搜尋框抽成獨立的 Client Component"
+          },
+          {
+            "value": "c",
+            "label": "頁面標 'use client'，用 useEffect 在 browser 端才做資料庫查詢"
+          },
+          {
+            "value": "d",
+            "label": "列表用 Server Component 抓資料，搜尋框也用 Server Component，input 的 onChange 用普通 function"
+          }
+        ],
+        "answer": "b",
+        "explanation": "搜尋框需要 useState / input onChange，必須是 Client Component；但資料庫查詢應該留在 Server，直接 await 避免暴露敏感資訊。選 a 會浪費 Server 能力、選 c 會把 DB 查詢暴露到前端、選 d 無法實現互動功能。"
+      }
+    }
+  ],
+  "summary": [
+    "Custom Hook 就是寫普通函式、名字用 use 開頭、裡面放 useState/useEffect 再回傳出去。",
+    "Context 是為了避免逐層傳 props、createContext 配 Provider 和 useContext 用。",
+    "React 常見坑包括無限迴圈、dependency array 寫錯、忘記加 key、閉包陷阱、忘記清理副作用。",
+    "React 19 的 useTransition 讓你標記耗時更新、useOptimistic 可以先顯示樂觀結果再等 server。",
+    "Server Component 預設跑在伺服器、可以直接存取資料庫、Client Component 才能用 hook 和互動。"
+  ],
+  "faq": [
+    {
+      "q": "Custom Hook 和普通函式有什麼差別？",
+      "a": "Custom Hook 就是普通 function，差別是名字一定要用 use 開頭、裡面才能呼叫 useState / useEffect 這些 hook。如果不用 use 開頭、React 會警告你。"
+    },
+    {
+      "q": "Context 會不會拖累效能？",
+      "a": "Context 本身不會慢，但如果 value 一直改變、所有用到它的元件都會重新 render。所以要拆分 Context、或搭配 useMemo 來優化。"
+    },
+    {
+      "q": "要學完進階才能學 Next.js 嗎？",
+      "a": "不一定要全部學完，但至少要懂 Custom Hook 和 Context，因為 Next.js 很多範例都會用到。如果直接跳過進階硬上 Next.js，後面會一直卡。"
     }
   ]
 }

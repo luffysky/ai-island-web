@@ -61,7 +61,30 @@
           "level": 3,
           "text": "2026 Vue 生態"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這課的說法，Vue 相比 React 最大的設計理念差異是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Vue 是漸進式框架，可以只在現有網站的一部分用，不必全部重寫；React 則傾向要嘛全用、要嘛不用"
+          },
+          {
+            "value": "b",
+            "label": "Vue 用 template 語法，React 用 JSX，所以 Vue 的學習曲線比較陡"
+          },
+          {
+            "value": "c",
+            "label": "Vue 是中國團隊寫的，React 是 Facebook 寫的，所以 Vue 功能比較少"
+          },
+          {
+            "value": "d",
+            "label": "Vue 3 用 Composition API，React 用 Hooks，兩者在解決狀態管理的問題上思路完全不同"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確定義「漸進式框架」是 Vue 的核心理念——可以漸進地採用、只在一個頁面試水溫，不必整個重寫。這就是「漸進式」vs「全有或全無」的本質差異。選項 b 講的是語法差異不是理念、c 是地域刻板印象、d 是兩者都在解的同一個問題、不是「最大的設計理念差異」。"
+      }
     },
     {
       "id": "9.2",
@@ -102,7 +125,30 @@
           "level": 3,
           "text": "Vue vs React 寫法對照"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你剛學完第一個 Vue 應用，現在想開始寫程式。請問以下哪個敘述是錯的？",
+        "options": [
+          {
+            "value": "a",
+            "label": "一個 .vue 檔分成 <script>、<template>、<style> 三塊，是 Vue 的 SFC 單檔元件寫法"
+          },
+          {
+            "value": "b",
+            "label": "用 npm create vue@latest 指令可以 5 分鐘快速產生一個能跑的 Vue 專案骨架"
+          },
+          {
+            "value": "c",
+            "label": "localhost:5173 是外面網路也能連到的公開網址，朋友可以直接在他的電腦看到你的應用"
+          },
+          {
+            "value": "d",
+            "label": "npm install 會根據 package.json 把專案需要的套件裝下來"
+          }
+        ],
+        "answer": "c",
+        "explanation": "localhost 是你電腦本機的網址，外人看不到、只有你自己的瀏覽器能連。如果要讓朋友看到，需要把應用部署到真正的網路伺服器。其他三個選項都是課程的重點概念。"
+      }
     },
     {
       "id": "9.3",
@@ -143,7 +189,30 @@
           "level": 3,
           "text": "v-model 修飾符"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在 Vue 中想要動態改變一個按鈕的 class，讓它在 isActive 為 true 時加上 'active' 這個 class，應該怎麼寫？",
+        "options": [
+          {
+            "value": "a",
+            "label": "<button :class=\"{ active: isActive }\">按我</button>"
+          },
+          {
+            "value": "b",
+            "label": "<button v-bind:class=\"active: isActive\">按我</button>"
+          },
+          {
+            "value": "c",
+            "label": "<button class=\"{{ active ? 'active' : '' }}\">按我</button>"
+          },
+          {
+            "value": "d",
+            "label": "<button @class=\"isActive\">按我</button>"
+          }
+        ],
+        "answer": "a",
+        "explanation": "v-bind:class（簡寫 :class）搭配物件語法 { className: boolean } 是 Vue 動態切換 class 的標準寫法。選項 b 語法錯誤、c 混淆了插值用法、d 是事件綁定不是屬性綁定。"
+      }
     },
     {
       "id": "9.4",
@@ -196,7 +265,30 @@
           "level": 3,
           "text": "背後的魔法：Proxy"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "小美有一個物件 state，裡面放了 count 和 name 兩個屬性。她想用 const { count, name } = state 這樣解構出來直接用，請問這樣做會有什麼問題？",
+        "options": [
+          {
+            "value": "a",
+            "label": "解構後的 count 和 name 會失去響應性，改變它們時畫面不會自動更新"
+          },
+          {
+            "value": "b",
+            "label": "這樣解構是錯的，JavaScript 語法不允許"
+          },
+          {
+            "value": "c",
+            "label": "state 物件本身會被破壞，之後無法再使用"
+          },
+          {
+            "value": "d",
+            "label": "解構沒有問題，count 和 name 會保持完整的響應性"
+          }
+        ],
+        "answer": "a",
+        "explanation": "用 reactive 的物件直接解構會失去響應性。要保持響應性得用 toRefs() 包一層才能解構，否則解出來的只是普通變數。這也是業界傾向全用 ref 的原因之一——ref 解構就不會有這問題。"
+      }
     },
     {
       "id": "9.5",
@@ -245,7 +337,30 @@
           "level": 3,
           "text": "Provide / Inject（跨層傳值）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你有一個「商品列表」父元件，要把使用者選中的商品數量傳回去更新父元件的 state。下列哪個方法最符合 Vue 的「單向資料流」原則？",
+        "options": [
+          {
+            "value": "a",
+            "label": "在子元件直接修改父元件傳下來的 props（例如 props.quantity = 5）"
+          },
+          {
+            "value": "b",
+            "label": "子元件用 emit 發送事件，告訴父元件「數量改了」，由父元件負責更新 state"
+          },
+          {
+            "value": "c",
+            "label": "把父元件的 state 用 ref 傳給子元件，子元件直接改這個 ref"
+          },
+          {
+            "value": "d",
+            "label": "用 provide/inject 把商品數量注入到子元件，子元件直接修改"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Vue 的核心設計是「props 單向、子不能改」，子元件如果要改資料要用 emit 通知父元件。選項 a、c、d 都會破壞單向資料流、容易產生難以追蹤的 bug。"
+      }
     },
     {
       "id": "9.6",
@@ -286,7 +401,30 @@
           "level": 3,
           "text": "VueUse：composables 超大集合"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在 onMounted 裡用 setInterval 設定了一個每秒執行一次的計時器，但沒有在 onUnmounted 裡清理它。這會造成什麼問題？",
+        "options": [
+          {
+            "value": "a",
+            "label": "使用者切換到其他頁面後，計時器還會繼續在背景執行，造成記憶體洩漏"
+          },
+          {
+            "value": "b",
+            "label": "計時器會自動停止，因為元件已經銷毀了"
+          },
+          {
+            "value": "c",
+            "label": "只有在瀏覽器重新整理時才會出現問題"
+          },
+          {
+            "value": "d",
+            "label": "Vue 會自動偵測並警告你沒有清理資源"
+          }
+        ],
+        "answer": "a",
+        "explanation": "生命週期的核心規則是：在 onMounted 訂閱的資源（timer、listener 等），必須在 onUnmounted 對應清理，否則元件銷毀後資源仍在執行，造成記憶體洩漏。B 錯因為銷毀元件不會自動停止 timer，C 和 D 都不是這課教的內容。"
+      }
     },
     {
       "id": "9.7",
@@ -323,7 +461,30 @@
           "level": 3,
           "text": "持久化（搭配 plugin）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你有一個購物車應用，需要在 Header、Sidebar、Cart 頁面三個不同位置都顯示購物車商品數量，並且當任何位置加入商品時其他地方要同步更新。用 Pinia 的話，應該怎麼做才是最正確的做法？",
+        "options": [
+          {
+            "value": "a",
+            "label": "把購物車資料定義在 Pinia store 裡，三個元件都用 useCartStore() 直接讀取和修改"
+          },
+          {
+            "value": "b",
+            "label": "在 App.vue 用 props 逐層傳遞購物車資料給 Header、Sidebar、Cart 頁面"
+          },
+          {
+            "value": "c",
+            "label": "在 Header 定義購物車資料，然後用 emit 傳給其他元件，讓它們互相監聽"
+          },
+          {
+            "value": "d",
+            "label": "用瀏覽器 localStorage 手動儲存購物車資料，各元件各自讀取"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Pinia 的核心價值就是解決「跨多個元件共享資料」的問題。把狀態放在 store 裡，任何元件直接用 useCartStore() 拿取，自動同步無需 props 傳遞。選項 b（props 傳法）就是 Pinia 要解決的痛點；選項 c、d 都是過時或複雜的做法。"
+      }
     },
     {
       "id": "9.8",
@@ -356,7 +517,30 @@
           "level": 3,
           "text": "程式化導航"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "小王做了一個 Vue 應用，現在每次點選「關於」連結就整頁重新整理、網址變成 `/about`，但所有的資料都消失了。他用的是哪一個標籤，以及怎樣改才能變成 SPA 的秒切效果？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用了 `<a href=\"/about\">` 標籤，應該改成 `<router-link to=\"/about\">`"
+          },
+          {
+            "value": "b",
+            "label": "用了 `<router-link to=\"/about\">` 標籤，應該改成 `<a href=\"/about\">`"
+          },
+          {
+            "value": "c",
+            "label": "用了 `<button @click=\"location.href='/about'\">` 標籤，應該改成 `<a href=\"/about\">`"
+          },
+          {
+            "value": "d",
+            "label": "用了 `<router-view />` 標籤，應該改成 `<router-link to=\"/about\">`"
+          }
+        ],
+        "answer": "a",
+        "explanation": "普通的 `<a>` 標籤會請求新 HTML、整頁刷新，導致資料消失。Vue Router 的 `<router-link>` 只切換元件、URL 變但不刷新，才是 SPA 應該用的方式。"
+      }
     },
     {
       "id": "9.9",
@@ -401,7 +585,30 @@
           "level": 3,
           "text": "SSR / SSG / Hybrid"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你現在要做一個部落格網站，需要好的 SEO、快速首屏，但內容每天更新。下列哪個選擇最適合用 Nuxt？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用純 Vue + SSR，讓 server 每次都渲染頁面給使用者"
+          },
+          {
+            "value": "b",
+            "label": "用純 Vue SPA，直接在瀏覽器用 fetch 抓資料、不用煩惱 server"
+          },
+          {
+            "value": "c",
+            "label": "用 Nuxt + SSR，server 幫忙先渲染 HTML、給爬蟲和使用者都有內容"
+          },
+          {
+            "value": "d",
+            "label": "用 Nuxt + SSG，build 時把所有文章預先產成靜態 HTML、丟 CDN"
+          }
+        ],
+        "answer": "c",
+        "explanation": "因為內容每天更新，SSG（d）不適合——每次內容改就要重新 build。純 Vue SPA（b）會讓爬蟲看到空白 HTML，SEO 差。Nuxt + SSR（c）能在 server 即時渲染最新內容，爬蟲看得到、首屏也快，最符合「經常變動但要好 SEO」的需求。"
+      }
     },
     {
       "id": "9.10",
@@ -437,7 +644,30 @@
           "level": 3,
           "text": "遷移成本"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，如果你在台灣找前端工作，應該優先學習哪個框架？為什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "React，因為台灣市場機會多 3-5 倍、工作數量絕對較多"
+          },
+          {
+            "value": "b",
+            "label": "Vue，因為課程說 Vue 對設計師更友善、寫法更簡潔"
+          },
+          {
+            "value": "c",
+            "label": "兩個都學，課程提到 TypeScript 滿分所以兩個都一樣好"
+          },
+          {
+            "value": "d",
+            "label": "React Native，因為課程說它是跨平台的唯一選項"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程開頭的『一句話結論』明確說明『台灣 / 美國找工作 → React（機會多 3-5 倍）』，且對比表中台灣招募 React 是 5 顆星、Vue 只有 2 顆星。Vue 雖然寫法簡潔，但在台灣就業市場上不是首選。"
+      }
     },
     {
       "title": "Vue Composition API：setup + ref + reactive",
@@ -502,7 +732,30 @@
           "level": 2,
           "text": "Lifecycle hooks"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在 Vue 3 的 <script setup> 裡宣告了一個響應式變數 `const count = ref(0)`，下列敘述何者正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "在 script 內修改時要用 `count.value++`，但在 template 內直接用 `{{ count }}` 不用加 .value"
+          },
+          {
+            "value": "b",
+            "label": "在 script 內修改時直接用 `count++` 就行，template 內才要加 .value"
+          },
+          {
+            "value": "c",
+            "label": "在 script 和 template 內都要用 .value，才能保持響應式"
+          },
+          {
+            "value": "d",
+            "label": "ref 只能用在物件和陣列，數字要改用 reactive"
+          }
+        ],
+        "answer": "a",
+        "explanation": "ref 在 script 內需要 `.value` 來存取真實值，但 Vue 在 template 內會自動解包，所以不用寫 `.value`。選項 b 錯在 script 內要用 `.value`；選項 c 錯在 template 不用 `.value`；選項 d 錯在 ref 本來就能用原始值，reactive 才只能用物件。"
+      }
     },
     {
       "title": "Vue 模板語法：v-if / v-for / v-model",
@@ -567,7 +820,30 @@
           "level": 2,
           "text": "v-slot"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想做一個「登入/登出」的頁面切換，用戶點按鈕時頻繁切換登入狀態。下列哪個選擇最合適？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 v-if 搭配登入狀態，因為切換次數多，v-if 的效能最好"
+          },
+          {
+            "value": "b",
+            "label": "用 v-show 搭配登入狀態，因為切換次數多，用 CSS 隱藏比 unmount 更有效率"
+          },
+          {
+            "value": "c",
+            "label": "用 v-for 迭代所有登入頁面版本"
+          },
+          {
+            "value": "d",
+            "label": "用 v-model 綁定登入按鈕的點擊事件"
+          }
+        ],
+        "answer": "b",
+        "explanation": "v-show 用 CSS display:none 隱藏，DOM 保留在記憶體，適合頻繁切換；v-if 會 unmount/mount 元件，切換多次會造成效能消耗。v-for 和 v-model 在這個場景都不是正確工具。"
+      }
     },
     {
       "title": "Vue Component：props / emit / slots",
@@ -640,7 +916,30 @@
           "level": 2,
           "text": "v-model on Component（雙向綁定）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你要做一個『商品卡片』元件，需要從父元件接收商品名稱和價格，還要讓父元件決定卡片內部要顯示什麼額外內容（像圖片或描述）。請問應該分別用哪兩個 Vue 功能來實現？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Props 傳商品資料、Slot 讓父元件決定內部內容"
+          },
+          {
+            "value": "b",
+            "label": "Emit 傳商品資料、Props 讓父元件決定內部內容"
+          },
+          {
+            "value": "c",
+            "label": "Props 傳商品資料、Emit 讓父元件決定內部內容"
+          },
+          {
+            "value": "d",
+            "label": "Slot 傳商品資料、v-model 讓父元件決定內部內容"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Props 是『父傳子』的單向資料流，適合傳商品名稱和價格這類資料。Slot 是『插槽』，讓父元件自由決定元件內部要放什麼內容，正好滿足讓父元件決定卡片額外內容的需求。"
+      }
     },
     {
       "title": "Pinia：Vue 官方狀態管理",
@@ -701,7 +1000,30 @@
           "level": 2,
           "text": "SSR 友善"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在 Vue 元件中使用 Pinia store，想要從 useUserStore 拿出 name 和 xp 這兩個 state，並且保持響應性。以下做法何者正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "const { name, xp } = storeToRefs(user); // 保持響應性"
+          },
+          {
+            "value": "b",
+            "label": "const { name, xp } = user; // 直接解構即可"
+          },
+          {
+            "value": "c",
+            "label": "const name = user.name; const xp = user.xp; // 逐個賦值"
+          },
+          {
+            "value": "d",
+            "label": "import { name, xp } from '@/stores/user'; // 從檔案匯入"
+          }
+        ],
+        "answer": "a",
+        "explanation": "使用 storeToRefs() 解構 state 才能保持響應性，直接解構會失去反應。Action 才能直接解構，因為它們不需要響應性追蹤。"
+      }
     },
     {
       "title": "Vue Router：SPA 路由",
@@ -762,7 +1084,30 @@
           "level": 2,
           "text": "Scroll behavior"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在 Vue Router 的 SPA 應用中，當你想要從一個頁面導航到另一個頁面時，下列敘述何者正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "使用 router-link 元件可以實現無刷新切換頁面，URL 會改變但整個頁面不會重新載入"
+          },
+          {
+            "value": "b",
+            "label": "每次點擊路由連結都會觸發整頁刷新，這就是 SPA 的特性"
+          },
+          {
+            "value": "c",
+            "label": "使用 router.push() 時必須搭配頁面刷新才能真正切換路由"
+          },
+          {
+            "value": "d",
+            "label": "route-view 負責管理導航動作，router-link 負責顯示路由元件"
+          }
+        ],
+        "answer": "a",
+        "explanation": "SPA 的核心就是不刷新整頁、只改 URL 切換畫面。router-link 和 router.push() 都能做到這點。選項 b 錯在 SPA 「不需要」刷新、c 把因果關係反了、d 把元件角色搞反了。"
+      }
     },
     {
       "title": "Vue 元件生命週期",
@@ -823,7 +1168,30 @@
           "level": 2,
           "text": "跟 React useEffect 對比"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在元件中用 window.innerWidth 拿螢幕寬度，現在要上線到支援 SSR 的專案。下面哪個寫法才不會在 server 端爆炸？",
+        "options": [
+          {
+            "value": "a",
+            "label": "在 setup 最上面直接寫 const width = window.innerWidth"
+          },
+          {
+            "value": "b",
+            "label": "用 ref 存寬度，在 onMounted 裡面才去讀 window.innerWidth 並更新"
+          },
+          {
+            "value": "c",
+            "label": "在 onBeforeMount 裡面讀 window.innerWidth"
+          },
+          {
+            "value": "d",
+            "label": "在 onUpdated 裡面讀 window.innerWidth"
+          }
+        ],
+        "answer": "b",
+        "explanation": "SSR 時 server 沒有 window 物件，所以必須把 window 相關的邏輯放在 onMounted（client only）才跑。選項 a 在 server 端會報錯；c 和 d 都不是專門為了初始化設計的時機。"
+      }
     },
     {
       "title": "Composables：可重用邏輯",
@@ -880,7 +1248,30 @@
           "level": 2,
           "text": "VueUse（社群 composables）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "關於 Vue Composables，以下敘述何者正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Composable 是用來封裝可重用的 reactive 邏輯，命名慣例以 `use` 開頭"
+          },
+          {
+            "value": "b",
+            "label": "Composable 只能用在 <script setup> 中，不能在其他地方使用"
+          },
+          {
+            "value": "c",
+            "label": "Composable 不需要 return 任何東西，直接在函數內修改全域狀態即可"
+          },
+          {
+            "value": "d",
+            "label": "使用 Composable 時，每次呼叫都會共享相同的狀態，無法獨立使用"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Composable 的核心特點就是封裝可重用的 reactive 邏輯，用 `use` 開頭命名（如 useCounter、useFetch）。選項 b 錯在限制只能在 setup 中；c 錯在必須 return 供外部使用；d 錯在每次呼叫會建立獨立的狀態實例。"
+      }
     },
     {
       "title": "Vue Teleport / Suspense / Transition",
@@ -937,7 +1328,30 @@
           "level": 2,
           "text": "進階：自訂 transition with JS hooks"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你寫了一個彈窗元件，放在深層的父元素裡面，但發現彈窗被父元素的 overflow:hidden 切掉了。下面哪個 Vue 功能最適合解決這個問題？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 Teleport 把彈窗傳送到 body，讓它不再被父元素的層級關係影響"
+          },
+          {
+            "value": "b",
+            "label": "用 Transition 加上動畫效果，這樣彈窗就不會被遮住"
+          },
+          {
+            "value": "c",
+            "label": "用 KeepAlive 快取彈窗的狀態，避免重複渲染"
+          },
+          {
+            "value": "d",
+            "label": "用 Suspense 等待彈窗完全載入後再顯示"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Teleport 的核心功能就是把元件渲染到 DOM 的其他位置（如 body），避免被父層的 overflow、z-index 等層級問題影響。Transition 是做動畫、KeepAlive 是快取狀態、Suspense 是等非同步元件——都不是解決『被父層遮住』這個問題的工具。"
+      }
     },
     {
       "title": "Nuxt 3：Vue 的 Next.js",
@@ -1010,7 +1424,30 @@
           "level": 2,
           "text": "Nuxt vs Next.js"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想在 Nuxt 3 中建立一個動態路由來顯示單一部落格文章，網址格式是 /blog/my-first-post，應該怎麼建立檔案？",
+        "options": [
+          {
+            "value": "a",
+            "label": "在 pages/blog/ 底下建立名為 [slug].vue 的檔案"
+          },
+          {
+            "value": "b",
+            "label": "在 pages/ 底下建立名為 blog-[slug].vue 的檔案"
+          },
+          {
+            "value": "c",
+            "label": "在 server/api/ 底下建立 blog/[slug].get.ts"
+          },
+          {
+            "value": "d",
+            "label": "在 pages/blog/ 底下建立名為 :slug.vue 的檔案"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Nuxt 3 的自動路由系統用方括號 [slug] 表示動態片段，放在對應的資料夾內就會自動轉成路由參數。選項 b 是 Next.js 的寫法、選項 c 是 API route 的寫法、選項 d 的冒號寫法是舊版 Vue Router 的語法。"
+      }
     },
     {
       "title": "Vue 3 TypeScript 完整",
@@ -1083,7 +1520,30 @@
           "level": 2,
           "text": "tsconfig.json 推薦"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在 Vue 3 + TypeScript 中，如果要給一個 ref 變數指定為「可能是 User 物件，也可能是 null」的型別，應該怎麼寫？",
+        "options": [
+          {
+            "value": "a",
+            "label": "const user = ref<User | null>(null);"
+          },
+          {
+            "value": "b",
+            "label": "const user = ref(User | null);"
+          },
+          {
+            "value": "c",
+            "label": "const user: User | null = ref(null);"
+          },
+          {
+            "value": "d",
+            "label": "const user = ref<null>(User);"
+          }
+        ],
+        "answer": "a",
+        "explanation": "ref 的型別要在角括號 <> 裡明確指定，所以是 ref<User | null>(null)。選項 b 缺少角括號，選項 c 把型別標註在錯誤位置，選項 d 語法不合理。"
+      }
     },
     {
       "title": "Vue 樣式：Scoped CSS / CSS Modules / Tailwind",
@@ -1172,7 +1632,30 @@
           "level": 2,
           "text": "不要過度"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的團隊要選一種 Vue 樣式方案。需求是：樣式只影響當前元件、不污染其他元件、開發速度快、DevTools 看 class 名要直觀。下列哪個選擇最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 Scoped CSS，因為內建、簡單、class 名看得懂，足應付 99% 場景"
+          },
+          {
+            "value": "b",
+            "label": "用 CSS Modules，因為 class 名會自動 hash、完全零衝突風險"
+          },
+          {
+            "value": "c",
+            "label": "用 Tailwind，因為是目前最新、社群最熱"
+          },
+          {
+            "value": "d",
+            "label": "混搭 Scoped + Modules + Tailwind，這樣最靈活"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Scoped CSS 是 Vue 內建、編譯後靠 data-v 屬性自動限制作用域，夠安全且簡單。CSS Modules 雖然零衝突，但 class 名 hash 化在 DevTools 難讀。混搭多種寫法會造成團隊維護混亂。Tailwind 雖熱門但是另一種策略，不是首選。"
+      }
     },
     {
       "title": "Vue + Vite：開發工具鏈",
@@ -1241,7 +1724,30 @@
           "level": 2,
           "text": "Vitest（同生態的測試框架）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你用 Vite 開發 Vue 專案，想要在程式碼裡使用後端 API 網址，同時保護敏感資訊不外洩。下列哪個做法最正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "在 .env.local 創建 VITE_API_URL=http://localhost:8000，然後用 import.meta.env.VITE_API_URL 在程式碼裡讀取"
+          },
+          {
+            "value": "b",
+            "label": "在 .env.local 創建 API_URL=http://localhost:8000，然後用 process.env.API_URL 在程式碼裡讀取"
+          },
+          {
+            "value": "c",
+            "label": "把網址寫死在 vite.config.ts 的 server.proxy 設定，這樣最安全"
+          },
+          {
+            "value": "d",
+            "label": "在 public/ 資料夾裡建 config.json 放網址，用 fetch 動態載入"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Vite 環境變數必須以 VITE_ 開頭才會暴露給客戶端程式碼，用 import.meta.env 讀取。選項 b 用 process.env 是 Node.js 語法不適用、選項 c 只是 proxy 配置不是環境變數、選項 d 把敏感資訊放在 public 會直接外洩。"
+      }
     },
     {
       "title": "Vue 與 React 全面對比",
@@ -1338,7 +1844,30 @@
           "level": 2,
           "text": "跨工作的學習"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，React 和 Vue 的核心心智模型最大的差異在於什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "React 把 component 看成「每次都重跑的純函式」，Vue 把 component 看成「只設定一次的 reactive 物件」"
+          },
+          {
+            "value": "b",
+            "label": "React 用 JSX 寫 component，Vue 用 template 寫 component"
+          },
+          {
+            "value": "c",
+            "label": "React 需要用 useState，Vue 需要用 ref，兩者功能完全一樣"
+          },
+          {
+            "value": "d",
+            "label": "React 的學習曲線比 Vue 平緩，所以初學者應該先學 React"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確指出：React 的心智模型是「component 是純函式，每次 render 整個 function 重跑一次」，而 Vue 的心智模型是「component 是 reactive object，setup 只跑一次，Vue 自動追蹤變數變化」。這個根本差異決定了後續 API 設計、依賴宣告、以及 debug 方式。b 只是表面語法差異、c 忽視兩者哲學差異、d 與課程結論相反。"
+      }
     },
     {
       "title": "Vue 實戰：完整 Todo App + Pinia + Supabase",
@@ -1407,7 +1936,30 @@
           "level": 2,
           "text": "加分功能（自己練）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在這個 Todo App 中，為什麼需要在 Pinia store 的 `subscribe()` 方法裡呼叫 `supabase.channel()` 和 `.subscribe()`？",
+        "options": [
+          {
+            "value": "a",
+            "label": "讓不同裝置上的使用者能即時看到彼此的 Todo 更新，不用手動重整"
+          },
+          {
+            "value": "b",
+            "label": "加密使用者的密碼，確保 Supabase 資料庫的安全性"
+          },
+          {
+            "value": "c",
+            "label": "驗證使用者的登入身份，防止未授權的人存取資料"
+          },
+          {
+            "value": "d",
+            "label": "加速 Todo 的新增、編輯、刪除速度"
+          }
+        ],
+        "answer": "a",
+        "explanation": "這個課程的重點需求就是「即時同步多裝置」，Supabase Realtime 的 `subscribe()` 會監聽資料庫變化，當任何裝置修改了 Todo，其他裝置就能立即收到通知並重新載入資料。其他選項都不是 Realtime 的作用。"
+      }
     },
     {
       "title": "Vue 生態 + 學習資源",
@@ -1487,7 +2039,30 @@
           "level": 2,
           "text": "我的建議"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你剛學完 Vue 基礎，想開始做一個中型企業後台管理系統專案。根據課程介紹的生態工具，下列組合最恰當？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Vue 3 + Vite + Pinia + Element Plus + VeeValidate"
+          },
+          {
+            "value": "b",
+            "label": "Vue 3 + Vite + Vuex + shadcn-vue + Quasar"
+          },
+          {
+            "value": "c",
+            "label": "Vue 3 + Webpack + Pinia + Tailwind UI + GSAP"
+          },
+          {
+            "value": "d",
+            "label": "Vue 3 + Vite + Pinia + Naive UI + Motion One"
+          }
+        ],
+        "answer": "a",
+        "explanation": "企業後台系統需要完整的表單 + 資料管理，Element Plus 是課程明確推薦的「企業 + 後台最強」選擇；Pinia 是現代官方狀態管理（取代 Vuex）；VeeValidate 是表單驗證標配。選項 b 混搭不當（Vuex 已過時、shadcn 偏個人、Quasar 用於跨平台）；c 用了過時 Webpack；d 的 Motion One 適合一般 App 而非後台重交互場景。"
+      }
     }
   ],
   "boss": {
@@ -1501,5 +2076,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "Vue 是漸進式框架、特別受亞洲團隊歡迎、學習曲線比 React 平緩、Composition API 是 Vue 3 的標準寫法",
+    "響應系統是 Vue 的核心、ref 包裝基本型別、reactive 處理物件、computed 自動追蹤相依變化",
+    "元件通訊的三種主流方式——Props 單向傳遞、Emit 往上回傳、Provide/Inject 跨層級注入、搞懂這些就能寫出乾淨的元件",
+    "Pinia 取代了 Vuex、更簡潔直觀、Vue Router 搭配它就能做出單頁應用、Nuxt 3 在 Vue 之上整合了 SSR 和全端能力",
+    "Vue + TypeScript、Tailwind 樣式、Vite 開發工具形成現代開發工具鏈、從 Todo App 到實戰專案都適用"
+  ],
+  "faq": [
+    {
+      "q": "Vue 和 React 差在哪、我該學哪一個？",
+      "a": "Vue 的語法更接近傳統 HTML、新手容易上手、亞洲公司用得多；React 生態更大、國際企業用得多。建議看你未來目標產業是什麼，但說實話 Vue 學會了 React 也不難轉。"
+    },
+    {
+      "q": "一定要學 TypeScript 嗎？",
+      "a": "不一定。純 JavaScript 也能寫 Vue、但 TypeScript 能幫你在開發時抓出更多錯誤、專案大了之後特別有感。建議先學 JavaScript 版本熟悉後、再慢慢加 TypeScript。"
+    },
+    {
+      "q": "Pinia、Nuxt、Vite 傻傻分不清、真的都要學嗎？",
+      "a": "Pinia 是狀態管理工具、Nuxt 是全端框架、Vite 是開發工具、三個東西解決不同問題。先學好核心 Vue、再根據專案需求逐步加上去就行、不用全部一起學。"
+    }
+  ]
 }

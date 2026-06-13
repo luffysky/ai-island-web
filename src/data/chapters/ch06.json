@@ -51,7 +51,30 @@
           "level": 3,
           "text": "2026 的 JSON 使用場景"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，JSON 之所以成為「事實標準」，最主要的原因是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為它是 Douglas Crockford 最早發明的資料格式"
+          },
+          {
+            "value": "b",
+            "label": "因為它人類易讀、機器解析快、所有語言都支援、夠簡潔，所以到處都能用"
+          },
+          {
+            "value": "c",
+            "label": "因為它比 protobuf 的速度更快、功能更強大"
+          },
+          {
+            "value": "d",
+            "label": "因為 IETF 在 2006 年規定所有 API 都要用 JSON"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調 JSON 贏在『人讀得懂、機器解析快、所有語言都支援、夠簡單』，並用 USB Type-C 的比喻說明它不是最強但『哪都能用』才是真正的勝因。選項 a 只是歷史、c 被課程否定、d 曲解了標準化過程。"
+      }
     },
     {
       "id": "6.2",
@@ -92,7 +115,30 @@
           "level": 3,
           "text": "JSON5：給人類用的進化版"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下面哪個 JSON 片段是合法的？",
+        "options": [
+          {
+            "value": "a",
+            "label": "{\"name\": \"招財\", \"age\": 25}"
+          },
+          {
+            "value": "b",
+            "label": "{name: '招財', age: 25}"
+          },
+          {
+            "value": "c",
+            "label": "{\"name\": \"招財\", \"age\": 25,}"
+          },
+          {
+            "value": "d",
+            "label": "{\"name\": \"招財\", // 註解\n\"age\": 25}"
+          }
+        ],
+        "answer": "a",
+        "explanation": "只有 a 符合 JSON 嚴格規則：鍵用雙引號、字串用雙引號、沒有 trailing comma、沒有註解。b 是 JSON5 語法；c 多了尾逗號違法；d 有註解違法。"
+      }
     },
     {
       "id": "6.3",
@@ -133,7 +179,30 @@
           "level": 3,
           "text": "更快的 JSON 套件"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你收到一個 JSON 字串，裡面有使用者資料包括 name、email 和 password。如果你想把它解析成物件，但同時又要確保 password 欄位不會被序列化回去（例如存檔或傳送時），在 JavaScript 應該怎麼做？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 JSON.parse() 解析，然後用自訂 replacer 函式在 JSON.stringify() 時過濾掉 password 欄位"
+          },
+          {
+            "value": "b",
+            "label": "用 JSON.parse() 解析時加上 reviver 參數，直接在解析時刪除 password"
+          },
+          {
+            "value": "c",
+            "label": "用 JSON.parse() 解析後，手動在物件上寫一個 getter 讓 password 回傳 undefined"
+          },
+          {
+            "value": "d",
+            "label": "這沒辦法做，JSON 無法在序列化時移除特定欄位"
+          }
+        ],
+        "answer": "a",
+        "explanation": "JSON.stringify() 的第二個參數支援 replacer 函式，可以在序列化時檢查每個 key，遇到 password 就回傳 undefined 來排除它。reviver 是 parse 時用的，用來轉換已解析的值，不是用來刪除欄位的。"
+      }
     },
     {
       "id": "6.4",
@@ -170,7 +239,30 @@
           "level": 3,
           "text": "進階：條件式 schema"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的後端期待收到 age 是數字，但前端傳來的是字串「25」。根據 JSON Schema 的概念，該怎麼用 Schema 來解決這個問題？",
+        "options": [
+          {
+            "value": "a",
+            "label": "在 age 欄位寫 \"type\": \"integer\"，這樣不合規的資料就會被檔下來"
+          },
+          {
+            "value": "b",
+            "label": "寫一個 JavaScript 函式自動把字串轉成數字，不需要 Schema"
+          },
+          {
+            "value": "c",
+            "label": "在資料庫用 integer 欄位型別存，自動轉換成數字"
+          },
+          {
+            "value": "d",
+            "label": "用 enum 限制只能填特定的幾個數字"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Schema 的核心就是定規矩——用 \"type\" 關鍵字指定欄位型別（字串、數字、陣列等），收到不符型別的資料就拒收。選項 b、c 是驗證後的動作，不是 Schema 的角色；選項 d 的 enum 是限定特定值，不是解決型別問題。"
+      }
     },
     {
       "id": "6.5",
@@ -215,7 +307,30 @@
           "level": 3,
           "text": "2026 業界選擇"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的 API 收到一個使用者資料的 JSON，裡面年齡欄位寫的是字串 \"25\" 而不是數字 25。用 Zod 或 Pydantic 驗證時，哪一個做法最能解決這個問題？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 z.coerce.date() 或 Field() 自動把字串轉成數字，驗證後資料就是正確的型別"
+          },
+          {
+            "value": "b",
+            "label": "直接寫 z.number() 或 int 型別檢查，如果格式不對就返回 400 錯誤給使用者"
+          },
+          {
+            "value": "c",
+            "label": "跳過驗證，直接在前端用 parseInt() 轉換，後端就不用擔心了"
+          },
+          {
+            "value": "d",
+            "label": "用 JSON Schema 定義好欄位，瀏覽器會自動驗證資料格式"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Zod 的 z.coerce 和 Pydantic 的 Field 設定可以在驗證時自動把字串轉成正確的型別（如 coerce.date() 把字串轉 Date）。選項 b 會直接拒絕，c 把責任丟給前端不安全，d 是純定義規格不能真的驗證。"
+      }
     },
     {
       "id": "6.6",
@@ -252,7 +367,30 @@
           "level": 3,
           "text": "反過來：denormalize（API 回傳時）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你是前端工程師，管理一個論壇應用的狀態。同一個使用者的頭像改了，但因為資料結構是巢狀的，導致要改 50 個地方。怎樣才能解決這個問題？",
+        "options": [
+          {
+            "value": "a",
+            "label": "把資料正規化，使用者資料只存一份，其他地方用 user_id 指向它"
+          },
+          {
+            "value": "b",
+            "label": "在每個巢狀層級加上快取，這樣改一次快取就全部更新"
+          },
+          {
+            "value": "c",
+            "label": "使用反正規化，故意在每個地方複製使用者資料，這樣改一次就全部改了"
+          },
+          {
+            "value": "d",
+            "label": "直接從 API 要求回傳完整巢狀資料，前端就不用管重複問題"
+          }
+        ],
+        "answer": "a",
+        "explanation": "正規化的核心就是消除重複——把重複的資料（使用者）只存一份，其他地方用 ID 指向它，這樣改一個地方就搞定。反正規化（選項 c）反而是故意複製，會讓問題更嚴重。"
+      }
     },
     {
       "id": "6.7",
@@ -297,7 +435,30 @@
           "level": 3,
           "text": "Function Calling vs JSON Mode 選擇"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "如果你想讓 LLM 回傳結構化的 JSON 資料，下列哪個做法最有效且能同時做到「編譯期型別檢查」和「執行期驗證」？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 Zod 定義 schema，轉成 JSON Schema 餵給 LLM，LLM 回傳後再用同一個 Zod 驗證"
+          },
+          {
+            "value": "b",
+            "label": "直接寫死 JSON 格式的提示詞，告訴 LLM『一定要回傳 JSON』"
+          },
+          {
+            "value": "c",
+            "label": "用 OpenAI 的 response_format 就夠了，不需要額外的驗證"
+          },
+          {
+            "value": "d",
+            "label": "用 Claude 的 tool use，因為它比 OpenAI 的 JSON Mode 更強"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程重點是用 Zod 一份 schema 三邊用：產生 TypeScript 型別（編譯期）、轉成 JSON Schema 餵 LLM、LLM 回傳後用同一個 Zod parse（執行期驗證）。這是「三位一體」的正確做法。b 只是提示詞沒有真正強制；c 和 d 都只解決了 LLM 回傳結構，缺少執行期驗證層。"
+      }
     },
     {
       "id": "6.8",
@@ -342,7 +503,30 @@
           "level": 3,
           "text": "該選哪個？"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在開發一個行動應用，需要從伺服器拿使用者名稱、信箱和最新 3 篇文章的標題，但不需要文章的其他欄位。如果用 RESTful，可能需要多次請求才能拿完整資料；如果用 GraphQL，可以一次請求精確取得需要的欄位。這個場景最適合用哪個 API 風格？",
+        "options": [
+          {
+            "value": "a",
+            "label": "RESTful，因為它最常見、大多數後端都支持"
+          },
+          {
+            "value": "b",
+            "label": "GraphQL，因為可以一次請求精確取得前端需要的欄位，減少資料傳輸"
+          },
+          {
+            "value": "c",
+            "label": "JSON-RPC，因為它適合所有內部通訊需求"
+          },
+          {
+            "value": "d",
+            "label": "三個都可以，沒有明顯差別"
+          }
+        ],
+        "answer": "b",
+        "explanation": "GraphQL 的核心優勢就是「前端要什麼就拿什麼」，避免 over-fetching（拿過多欄位）和 under-fetching（需要多次請求），特別適合行動端優化和複雜資料圖的場景。"
+      }
     },
     {
       "id": "6.9",
@@ -375,7 +559,30 @@
           "level": 3,
           "text": "工具鏈"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你跟客戶討論一個新 API 專案。根據這課的核心價值，你應該在什麼時候寫 OpenAPI 規格最有效？",
+        "options": [
+          {
+            "value": "a",
+            "label": "等後端程式都寫好了，再用 OpenAPI 把規格寫出來當文件"
+          },
+          {
+            "value": "b",
+            "label": "需求確認後就先一起寫 OpenAPI 規格，再開始開發"
+          },
+          {
+            "value": "c",
+            "label": "前端想用 API 時才臨時寫，邊做邊改"
+          },
+          {
+            "value": "d",
+            "label": "只有大型企業專案才需要寫，小接案可以跳過"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調「先一起寫 OpenAPI 規格再開工」能少 50% 後續溝通成本，這是當作合約用、雙方對 API 規格有共識的關鍵。選 a 是反向用法、選 c 會失去規格的價值、選 d 低估了它的實用性。"
+      }
     },
     {
       "id": "6.10",
@@ -416,7 +623,30 @@
           "level": 3,
           "text": "實戰：用 JMESPath 處理 API 回應"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你公司的 API 回傳一個大型 JSON 檔案，裡面有 100 筆訂單資料。你想快速從中篩出「已付款且金額超過 1000 元」的訂單，只抽出客戶名稱和金額。下列哪個做法最符合這課教的概念？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 JMESPath 的過濾語法（?()) 篩選條件，搭配 {} 物件投影只取需要的欄位"
+          },
+          {
+            "value": "b",
+            "label": "把整個 JSON 檔案用 for 迴圈一筆筆讀，手動比對每筆是否符合條件"
+          },
+          {
+            "value": "c",
+            "label": "把 JSON 轉成 JSONL 格式，這樣自動會篩出符合條件的資料"
+          },
+          {
+            "value": "d",
+            "label": "用 JSONPath 的 sort_by() 函數排序後，再手動選取符合的那幾行"
+          }
+        ],
+        "answer": "a",
+        "explanation": "JMESPath 的 ?() 語法就是用來做過濾篩選、{} 用來做投影抽取欄位，這正是課文實戰例子在做的事。B 是笨方法、C 誤解 JSONL 的用途（JSONL 是格式標準、不會自動篩選）、D 混淆了 JSONPath 和 JMESPath 的功能。"
+      }
     },
     {
       "id": "6.11",
@@ -465,7 +695,30 @@
           "level": 3,
           "text": "地雷 5：編碼"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的後端 API 回傳一個很大的用戶 ID：9007199254740993，前端用 JSON.parse() 接收後，這個數字會發生什麼事？",
+        "options": [
+          {
+            "value": "a",
+            "label": "數字保持正確，因為 JSON 格式沒問題"
+          },
+          {
+            "value": "b",
+            "label": "數字精度遺失，變成 9007199254740992"
+          },
+          {
+            "value": "c",
+            "label": "JavaScript 會拋出 TypeError 例外"
+          },
+          {
+            "value": "d",
+            "label": "數字自動轉成科學記號保存"
+          }
+        ],
+        "answer": "b",
+        "explanation": "JSON 的 number 用 IEEE 754 雙精度浮點表示，安全整數上限是 2^53 - 1 = 9007199254740991，超過這個範圍就會精度遺失。9007199254740993 超過上限，所以會被四捨五入成 9007199254740992。解法是把大數字存成字串。"
+      }
     },
     {
       "id": "6.12",
@@ -493,7 +746,30 @@
           "level": 3,
           "text": "什麼時候該換掉 JSON？"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，什麼情況下「不需要」從 JSON 換到 Protobuf？",
+        "options": [
+          {
+            "value": "a",
+            "label": "系統每秒處理 5,000 個請求，API 回應資料量中等"
+          },
+          {
+            "value": "b",
+            "label": "系統每秒處理 50,000 個請求，需要極致效能"
+          },
+          {
+            "value": "c",
+            "label": "需要在不同服務間演進資料格式，容忍度低"
+          },
+          {
+            "value": "d",
+            "label": "IoT 裝置網路流量有限，每 byte 都要省"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確說「JSON 撐到 100k QPS 不是問題」、「99% 場景用 JSON 就好」。5,000 QPS 的中等流量場景完全在 JSON 的舒適區，不需要為了效能過早優化。其他三個選項都是課程提到的「應該換」的場景（高 QPS、需要 schema 演進、流量寶貴）。"
+      }
     },
     {
       "id": "6.13",
@@ -538,7 +814,30 @@
           "level": 3,
           "text": "Web Worker 處理 JSON"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你有一個 500MB 的 JSON 檔，裡面是一個陣列，包含數百萬筆用戶資料。如果直接用 JSON.parse() 一次載入整個檔案，最主要的問題是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "會把整個檔案一次吞進記憶體，可能導致記憶體爆滿或應用程式當機"
+          },
+          {
+            "value": "b",
+            "label": "JSON.parse() 本身執行速度很慢，需要用 SIMD JSON 才能加速"
+          },
+          {
+            "value": "c",
+            "label": "大型 JSON 檔會自動分散到多個 Web Worker，造成管理困難"
+          },
+          {
+            "value": "d",
+            "label": "主執行緒會被卡住，但只是暫時的，不會有長期的效能問題"
+          }
+        ],
+        "answer": "a",
+        "explanation": "這課的核心重點就是：大型 JSON 一次全載入會爆掉記憶體。正確做法是用串流解析（邊讀邊處理）、分批處理，或丟到 Worker 背景做。b 選項雖然 SIMD 可以加速，但加速解決的是速度，不是記憶體溢出的根本問題；c、d 都是錯誤的理解。"
+      }
     },
     {
       "id": "6.14",
@@ -565,6 +864,29 @@
         "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
         "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
         "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "miniQuiz": {
+        "question": "在這個型別安全的 API 層 pattern 中，為什麼需要用 Zod 的 parse() 來驗證伺服器回應？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 TypeScript 編譯期無法保證執行時期的資料確實符合型別，所以需要在執行期用 Zod 驗證實際收到的資料"
+          },
+          {
+            "value": "b",
+            "label": "因為 fetch API 本身不支援型別檢查，所以必須用 Zod 才能取得型別"
+          },
+          {
+            "value": "c",
+            "label": "因為伺服器可能故意傳錯誤的資料，Zod 可以防止駭客攻擊"
+          },
+          {
+            "value": "d",
+            "label": "因為 Zod 可以自動把伺服器回應轉換成 TypeScript 型別，不需要手動定義 type"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程重點是『編譯期型別 + 執行期驗證』的結合——TS 型別只存在開發時期，真實執行時伺服器可能傳回意外的資料格式，所以 Zod 的 parse() 負責在執行期檢驗。b 誤解了 fetch 能力，c 是防安全但不是主要目的，d 弄反了方向。"
       }
     },
     {
@@ -618,7 +940,30 @@
           "level": 2,
           "text": "工具"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的後端 API 回傳一筆使用者資料，你用 fetch 拿到後直接存取 `data.user.name`。為什麼業界建議要用 JSON Schema 加 Ajv 驗證，而不是直接用？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 JSON Schema 能檢查資料內容是否符合預期結構（比如必填欄位、型別、格式），而不只是能否 parse"
+          },
+          {
+            "value": "b",
+            "label": "因為 JSON Schema 能讓你的 JavaScript 程式碼執行速度變快"
+          },
+          {
+            "value": "c",
+            "label": "因為 JSON Schema 是國際標準，不用的話會被扣分"
+          },
+          {
+            "value": "d",
+            "label": "因為 Ajv 是唯一能讀取 JSON 檔案的工具"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程核心是區分『能 parse』和『內容對不對』——JSON Schema 驗證的是資料結構本身（該有的欄位有沒有、型別對不對、格式符不符）。b 講效能無關、c 說國際標準不是重點、d 完全誤解用途。"
+      }
     },
     {
       "title": "Zod：TS 友善的 Schema 驗證",
@@ -671,7 +1016,30 @@
           "level": 2,
           "text": "整合 Next.js Server Action"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在 Zod 中，為什麼很多人說「寫一份規格就能自動推導出 TS 型別」？下列何者是這個好處的正確理由？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 z.infer<typeof Schema> 就能從驗證規格自動生出對應的 TypeScript 型別，驗證跟型別定義一次到位"
+          },
+          {
+            "value": "b",
+            "label": "Zod 會自動把所有驗證規則轉成 interface，不需要手動寫 type 定義"
+          },
+          {
+            "value": "c",
+            "label": "TypeScript 編譯器能自動識別 Zod schema，所以不用額外的型別推導工具"
+          },
+          {
+            "value": "d",
+            "label": "Zod 會在執行時自動生成型別檔案，省去手寫 .d.ts 的麻煩"
+          }
+        ],
+        "answer": "a",
+        "explanation": "z.infer<typeof Schema> 是 Zod 的核心特色，能從驗證 schema 自動推導出 TypeScript 型別；b 混淆了概念（不是自動轉成 interface），c 和 d 都誤描了 Zod 的運作方式。"
+      }
     },
     {
       "title": "JSON Path / JSONPath：在大物件裡找資料",
@@ -732,7 +1100,30 @@
           "level": 2,
           "text": "工具"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "假設你有一個包含多個商品的 JSON，每個商品都有 name 和 price。現在你要找出所有價格超過 100 元的商品名稱，應該用哪個 JSONPath 表達式？",
+        "options": [
+          {
+            "value": "a",
+            "label": "$.products[?(@.price > 100)].name"
+          },
+          {
+            "value": "b",
+            "label": "$.products[*].name > 100"
+          },
+          {
+            "value": "c",
+            "label": "$.products.name[price > 100]"
+          },
+          {
+            "value": "d",
+            "label": "$..price > 100"
+          }
+        ],
+        "answer": "a",
+        "explanation": "正確語法是 [?(@.price > 100)] 用來過濾，然後 .name 取字段。選 b 的語法不對、選 c 順序顛倒、選 d 只會找所有 price 不是 name。"
+      }
     },
     {
       "title": "JSON5 / JSONC / YAML：人類友善的 JSON",
@@ -789,7 +1180,30 @@
           "level": 2,
           "text": "Node 讀寫"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在寫一個 Node.js 專案的設定檔，想要在檔案裡加上註解說明每個設定的用途，同時也想保留尾逗號讓後續編輯更方便。下列哪個格式最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "純 JSON，因為它是最通用的標準格式"
+          },
+          {
+            "value": "b",
+            "label": "JSON5 或 YAML，因為都支援註解和尾逗號"
+          },
+          {
+            "value": "c",
+            "label": "JSONC，因為 VS Code 預設支援"
+          },
+          {
+            "value": "d",
+            "label": "TOML，因為 Node.js 最推薦用這個"
+          }
+        ],
+        "answer": "b",
+        "explanation": "JSON5 和 YAML 都支援註解和尾逗號，是給人手寫設定檔用的。純 JSON 不支援這兩個，JSONC 只支援註解和尾逗號但不支援 key 無引號，TOML 雖然好用但不是 Node.js 的預設選擇。"
+      }
     },
     {
       "title": "JSON Streaming：處理 100GB 大檔不爆記憶體",
@@ -850,7 +1264,30 @@
           "level": 2,
           "text": "ChatGPT / Claude streaming response"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "如果你要處理一個 100GB 的 JSON 檔案，為什麼不能直接用 JSON.parse() 一次讀整個檔案？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為會把整個檔案載入記憶體，記憶體會爆掉"
+          },
+          {
+            "value": "b",
+            "label": "因為 JSON.parse() 只能處理最多 10GB 的檔案"
+          },
+          {
+            "value": "c",
+            "label": "因為檔案太大，讀取速度會很慢，瀏覽器會當掉"
+          },
+          {
+            "value": "d",
+            "label": "因為 Node.js 不支援 JSON.parse()"
+          }
+        ],
+        "answer": "a",
+        "explanation": "JSON Streaming 的核心重點就是避免整檔載入記憶體。直接 JSON.parse() 會把整個檔案先讀進記憶體再解析，100GB 檔案會直接爆記憶體。串流方式是一行一行（或一塊一塊）讀進來立刻處理，記憶體永遠只用一點點。"
+      }
     },
     {
       "title": "GraphQL：選擇性查詢 vs REST",
@@ -919,7 +1356,30 @@
           "level": 2,
           "text": "何時不該用 GraphQL"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "假設你的前端只需要使用者的名字和信箱，用 REST 和 GraphQL 分別會怎樣？",
+        "options": [
+          {
+            "value": "a",
+            "label": "REST 會只傳名字和信箱，GraphQL 會傳整個使用者物件"
+          },
+          {
+            "value": "b",
+            "label": "REST 會傳整個使用者物件，GraphQL 讓前端指定只要名字和信箱"
+          },
+          {
+            "value": "c",
+            "label": "兩者都會傳整個使用者物件，不管前端要不要"
+          },
+          {
+            "value": "d",
+            "label": "GraphQL 需要發兩個請求才能拿到名字和信箱"
+          }
+        ],
+        "answer": "b",
+        "explanation": "REST 的特性是伺服器定義固定的回傳結構，前端沒辦法選擇，所以會收到整包資料。GraphQL 的核心優勢就是前端可以自己決定需要哪些欄位，伺服器只回傳你要的部分。"
+      }
     },
     {
       "title": "tRPC：純 TS 全端 type-safe API",
@@ -976,7 +1436,30 @@
           "level": 2,
           "text": "tRPC vs 別的"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "使用 tRPC 時，前端為什麼能享受完美的 TypeScript 型別提示和自動完成，而不需要額外的 codegen 步驟？",
+        "options": [
+          {
+            "value": "a",
+            "label": "前端直接 import 後端 router 的型別定義，兩端型別共享在同一個 TypeScript 專案中"
+          },
+          {
+            "value": "b",
+            "label": "tRPC 會自動掃描前端程式碼，根據呼叫方式反推出正確的型別"
+          },
+          {
+            "value": "c",
+            "label": "前端需要跑一個快速的 codegen 命令，雖然速度比 OpenAPI 快很多"
+          },
+          {
+            "value": "d",
+            "label": "後端在 response 中帶上型別資訊，前端在執行時動態推斷"
+          }
+        ],
+        "answer": "a",
+        "explanation": "tRPC 的核心革命在於『零 codegen』——前端透過 TypeScript 的 import 機制直接共享後端 router 的型別（`import type { AppRouter }`），利用 TS 的型別系統在編譯時期同步，不需要運行額外工具。b 是瞎編的，c 與課程『零 codegen』矛盾，d 是運時而非編譯時。"
+      }
     },
     {
       "title": "JWT：JSON Web Token 認證",
@@ -1057,7 +1540,30 @@
           "level": 2,
           "text": "替代方案"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的 Node.js 後端簽發了一個 JWT token 給前端，前端存在 localStorage。一小時後，使用者要求登出。正確的做法是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "立刻刪除前端 localStorage 裡的 token，這樣就完成登出了"
+          },
+          {
+            "value": "b",
+            "label": "刪除 localStorage 的 token，但因為 JWT 無法撤銷，所以要用 refresh token 機制或 blacklist 來真正撤銷"
+          },
+          {
+            "value": "c",
+            "label": "要求使用者重新設定密碼，才能讓舊 token 失效"
+          },
+          {
+            "value": "d",
+            "label": "改變 SECRET，所有 token 就自動失效了"
+          }
+        ],
+        "answer": "b",
+        "explanation": "JWT 的重大陷阱是「簽出去就無法收回」，只刪前端 token 是假登出，後端仍會接受舊 token 直到過期。真正做法要配合 refresh token 短期化或維護 blacklist。改 SECRET 會影響所有合法使用者，不是好方案。"
+      }
     },
     {
       "title": "JSON Patch：增量更新格式",
@@ -1118,7 +1624,30 @@
           "level": 2,
           "text": "真實案例"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "假設你要透過 REST API 只改使用者的電子郵件，不動其他欄位。用 JSON Patch 和 JSON Merge Patch 分別怎麼做？下列敘述哪個正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "JSON Patch 傳 [{\"op\": \"replace\", \"path\": \"/email\", \"value\": \"new@x.com\"}]，JSON Merge Patch 傳 {\"email\": \"new@x.com\"}，兩種都可以"
+          },
+          {
+            "value": "b",
+            "label": "JSON Patch 無法單獨改一個欄位，一定要傳整個物件；JSON Merge Patch 才能只傳異動的欄位"
+          },
+          {
+            "value": "c",
+            "label": "JSON Patch 和 JSON Merge Patch 功能完全相同，選哪個都一樣"
+          },
+          {
+            "value": "d",
+            "label": "JSON Merge Patch 比較複雜，實務上都用 JSON Patch，不會用 Merge Patch"
+          }
+        ],
+        "answer": "a",
+        "explanation": "JSON Patch 用 op 和 path 精確指定操作（如 replace /email），JSON Merge Patch 直接寫新值（如 {\"email\": \"new@x.com\"}）。兩種都能只傳異動欄位，只是格式和複雜度不同。b 錯在 Patch 完全能做；c 錯在兩者設計思想和適用場景不同；d 錯在 Merge Patch 也常被使用。"
+      }
     },
     {
       "title": "OpenAPI / Swagger：API 文件規範",
@@ -1171,7 +1700,30 @@
           "level": 2,
           "text": "商業價值"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，OpenAPI / Swagger 最核心的功能是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 YAML 或 JSON 描述 API 的規格，自動產生互動式文件和 Client SDK"
+          },
+          {
+            "value": "b",
+            "label": "取代 GraphQL，成為所有 API 開發的唯一標準"
+          },
+          {
+            "value": "c",
+            "label": "自動幫你寫 API 程式碼，不用手動開發"
+          },
+          {
+            "value": "d",
+            "label": "只是一個用來畫圖的設計工具，沒有實際功能"
+          }
+        ],
+        "answer": "a",
+        "explanation": "OpenAPI 的核心就是用結構化格式描述 API，然後自動產生文件工具（Swagger UI、Redoc 等）和多語言 Client SDK。選項 b 錯誤（OpenAPI 和 GraphQL 各有用途），選項 c 和 d 都是錯誤理解。"
+      }
     },
     {
       "title": "實戰：寫 Type-Safe Next.js API（Zod + tRPC）",
@@ -1228,7 +1780,30 @@
           "level": 2,
           "text": "完整檢查"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在這個 Type-Safe Next.js API 的範例中，為什麼要把 CreateUserSchema 放在共用的 lib/schemas.ts 檔案，而不是分別在前端和後端各寫一份驗證規則？",
+        "options": [
+          {
+            "value": "a",
+            "label": "這樣前端和後端都能用同一份 schema，資料格式保持一致，不會因為驗證規則不同而出錯"
+          },
+          {
+            "value": "b",
+            "label": "因為 Zod 的 schema 無法在前端使用，一定要放在共用位置才能用"
+          },
+          {
+            "value": "c",
+            "label": "共用 schema 可以減少檔案數量，讓專案結構看起來更簡潔"
+          },
+          {
+            "value": "d",
+            "label": "Next.js App Router 規定所有 schema 都必須集中在 lib 資料夾"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Single Source of Truth 的核心就是用同一份 schema 驗證，確保前端表單驗證和後端 API 驗證規則一致，避免資料不同步的問題。選項 b 錯誤（Zod 可在前端用），c 和 d 都不是真實原因。"
+      }
     }
   ],
   "boss": {
@@ -1242,5 +1817,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "JSON 是業界標準，只有 6 種值型別（string、number、boolean、null、array、object）和 2 個容器（陣列 / 物件）",
+    "每個語言都有內建工具解析 JSON，JS 用 JSON.parse()、Python 用 json module、TS 要加驗證層才安全",
+    "Schema 驗證（JSON Schema / Zod / Pydantic）是擋住爛資料的第一道防線，值得投資",
+    "API 設計有三種主流模式：REST 最簡單、GraphQL 最靈活、tRPC 最 type-safe（如果用 TS）",
+    "JSON 常見坑：型別混亂、巢狀太深、大檔案爆記憶體、格式不統一，認識它們才能預防"
+  ],
+  "faq": [
+    {
+      "q": "JSON 和其他格式（Protobuf / XML）差在哪，我什麼時候該用 JSON？",
+      "a": "JSON 人類可讀、幾乎所有語言都支援，適合 Web API；Protobuf 更小更快但需事先定義，適合高頻內部通訊。初期選 JSON 準沒錯，除非效能卡住再換。"
+    },
+    {
+      "q": "為什麼要驗證 JSON？直接用不行嗎？",
+      "a": "因為前端會亂傳、後端會漏檢查，驗證層可以在資料進系統前就擋掉垃圾。比事後除蟲快得多。"
+    },
+    {
+      "q": "REST、GraphQL、tRPC，我該學哪個？",
+      "a": "REST 最容易上手，大多數工作都用；GraphQL 適合複雜查詢場景；tRPC 最 type-safe 但限定 TS 全端。初期專注 REST，後面再視需求擴展。"
+    }
+  ]
 }

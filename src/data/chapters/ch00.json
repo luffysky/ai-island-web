@@ -36,7 +36,30 @@
         "3 天 onboarding 流程：Day 1 認識、Day 2 動手、Day 3 整合",
         "Mac vs Windows：兩條路都能走、別用 cmd",
         "為什麼不教 IDE、為什麼必裝 AI 助手"
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這章，為什麼在 2026 年學程式時，「會用 AI 助手」被列為工程師必備的 4 個工具之一？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 AI 可以完全替代工程師寫程式，不用自己學"
+          },
+          {
+            "value": "b",
+            "label": "因為現代工程師用 AI 來加快卡關解決、查資料、寫文案，效率比沒 AI 快 10 倍"
+          },
+          {
+            "value": "c",
+            "label": "因為 ChatGPT 是最新流行的東西，就像 10 年前一定要學 Facebook"
+          },
+          {
+            "value": "d",
+            "label": "因為 AI 比 VS Code 和 Git 更重要，應該優先學"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確指出：有 AI 的工程師卡關 3 分鐘解決，沒 AI 的要 30 分鐘查文章；這說明 AI 是加快工作流程的工具，不是替代學習，也不是隨便的流行趨勢。選項 a 誤解了 AI 的用途、c 和 d 則抓不到重點。"
+      }
     },
     {
       "id": "0.2",
@@ -57,7 +80,30 @@
         "5 個新手最常卡的錯（command not found / permission denied / 路徑錯）",
         "推薦升級：iTerm2 / Windows Terminal",
         "練習作業：10 步驟熟悉基本動作"
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在終端機打了指令後完全沒有反應，想了想自己好像人在 C:\\Users\\Desktop，想進去 Documents 資料夾。下面哪一個做法最合理？",
+        "options": [
+          {
+            "value": "a",
+            "label": "先用 pwd 確認自己現在在哪，再用 cd Documents 進去，最後用 ls 看資料夾裡有什麼"
+          },
+          {
+            "value": "b",
+            "label": "直接一直打 cd..回到根目錄，然後盲目亂打指令"
+          },
+          {
+            "value": "c",
+            "label": "打 rm -rf Documents 來清掉資料夾，重新建一個"
+          },
+          {
+            "value": "d",
+            "label": "關掉終端機重新開，因為指令沒反應代表出問題了"
+          }
+        ],
+        "answer": "a",
+        "explanation": "這課教的核心肌肉記憶就是：用 pwd 確認位置 → 用 cd 切資料夾 → 用 ls 確認成功。選項 b 亂打危險、c 是核武器級的刪除、d 不會解決問題——只有 a 是新手最安全的習慣。"
+      }
     },
     {
       "id": "0.3",
@@ -79,7 +125,30 @@
         "之後每天工作流（3 行）+ Conventional Commits 慣例",
         "GitHub 重要概念：repo / branch / commit / PR / fork / star",
         "3 個常見卡關錯（密碼 / SSH / main vs master）"
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你剛寫完一個新功能，想把改動保存到 GitHub。以下順序哪個是正確的？",
+        "options": [
+          {
+            "value": "a",
+            "label": "git add . → git commit -m \"說明\" → git push"
+          },
+          {
+            "value": "b",
+            "label": "git push → git add . → git commit -m \"說明\""
+          },
+          {
+            "value": "c",
+            "label": "git commit -m \"說明\" → git add . → git push"
+          },
+          {
+            "value": "d",
+            "label": "git push → git commit -m \"說明\" → git add ."
+          }
+        ],
+        "answer": "a",
+        "explanation": "正確流程是：先用 git add . 把改動加進待 commit 區、再用 git commit -m 確認改動並寫說明、最後 git push 推到 GitHub。其他順序會因為還沒 commit 或還沒 add 而失敗。"
+      }
     },
     {
       "id": "0.4",
@@ -101,7 +170,30 @@
         "10 個必學快捷鍵（Cmd+P / Cmd+Shift+P / Cmd+` / 等）",
         "開專案 + 開終端機 + 主題字型推薦",
         "設定同步（換電腦不重設）"
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在 Windows 上安裝 VS Code 後，打開終端機想用 `code` 指令開啟編輯器，但什麼都沒發生。根據課程內容，最可能的原因是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "安裝時沒有勾選「Add to PATH」選項"
+          },
+          {
+            "value": "b",
+            "label": "需要先安裝 Prettier 擴充才能使用終端機"
+          },
+          {
+            "value": "c",
+            "label": "Windows 系統不支援 `code` 指令，只有 Mac 支援"
+          },
+          {
+            "value": "d",
+            "label": "需要按 Ctrl + Shift + P 重新載入視窗"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確提到 Windows 安裝時要勾「Add to PATH」，否則終端機才能打 `code` 開啟編輯器。b、c、d 都是課程沒有提到的，是似是而非的干擾選項。"
+      }
     },
     {
       "id": "0.5",
@@ -123,7 +215,51 @@
         "紅線：機密 / password / 個資 / 全盤照抄 / 健康法律金融建議",
         "VS Code Copilot 整合用法",
         "推薦組合：學員免費 / 進階 $20-40 / 重度 $80+"
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，新手一開始學程式時，面對 AI 助手「答得很爛」的真正原因是什麼？應該怎麼解決？",
+        "options": [
+          {
+            "value": "a",
+            "label": "AI 模型本身不夠聰明，一定要付費升級到付費版才能得到好答案"
+          },
+          {
+            "value": "b",
+            "label": "問題太模糊，需要用「角色+場景+目標」、貼具體 code、要求 step-by-step 解釋來改善"
+          },
+          {
+            "value": "c",
+            "label": "因為免費版有使用次數限制，所以答得不好，應該馬上辦理 Plus 方案"
+          },
+          {
+            "value": "d",
+            "label": "AI 助手不適合初學者用，應該等程度進階了再開始用 AI 學程式"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確指出「AI 答得很爛 → 多半是問題太模糊」，並教了「問好問題 3 招」來解決，而不是換工具或付費。這是本課的核心重點——學會問問題比選哪個 AI 工具更重要。"
+      }
+    }
+  ],
+  "summary": [
+    "終端機是工程師的基本技能，10 個指令就能應付 80% 的日常工作",
+    "Git 是版本控制、GitHub 是協作平台，先搞懂 add、commit、push 這 3 招再說",
+    "VS Code 裝對擴充才好用，別裝一堆沒在用的東西",
+    "AI 助手很強但你得會問，「怎樣寫迴圈」比「教我寫程式」有效多了",
+    "3 天後你會有全套工具，可以跟其他人用同樣的方式工作"
+  ],
+  "faq": [
+    {
+      "q": "我是 Windows / Mac / Linux，應該選哪個？",
+      "a": "不用選，課程全部都教。終端機指令略有差異但邏輯一樣，課裡會特別標注。建議用你現在的電腦，不用為了學程式去換系統。"
+    },
+    {
+      "q": "一定要用 ChatGPT / Claude 嗎？",
+      "a": "不一定，但 AI 助手能幫你除錯、想不出名字時問一下、理解陌生概念。學會用它會節省超多時間，打底還是強烈推薦。"
+    },
+    {
+      "q": "3 天真的裝得完嗎？不會很趕？",
+      "a": "不會趕，因為就是 4 個工具的安裝 + 基礎用法。每個工具不用全部學，只要懂核心 5-10 個功能就能跟著後面的章節。如果卡住了就花多一點時間，沒關係。"
     }
   ]
 }

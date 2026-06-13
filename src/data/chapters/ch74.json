@@ -37,7 +37,30 @@
         "question": "拿一個現有 CRA / Webpack 專案、跑一次 `time npm run dev`、跟 Vite 同樣大小的專案比較啟動時間。",
         "answer": "典型差距：CRA 25-40 秒、Vite < 2 秒。HMR 改一個 component CRA 3-5 秒、Vite < 100ms。"
       },
-      "xp": 15
+      "xp": 15,
+      "miniQuiz": {
+        "question": "根據課程，Vite 開發環境能這麼快的本質原因是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "利用瀏覽器原生 ESM 支援，讓瀏覽器自己去抓 import，而不是先把所有檔打包成幾個大檔"
+          },
+          {
+            "value": "b",
+            "label": "使用 esbuild 把所有檔案編譯得比 Webpack 快 10-100 倍"
+          },
+          {
+            "value": "c",
+            "label": "Production 階段改用 Rollup，所以整個開發流程變快"
+          },
+          {
+            "value": "d",
+            "label": "Pre-bundle node_modules 減少 HTTP request 數量"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Vite 的核心差異是改變了思路：不是先全部 bundle 再啟動，而是一開始就啟動 dev server，讓瀏覽器用原生 ESM 動態載入。選項 b、c、d 都是 Vite 的優化技術，但不是「本質差異」的主因。"
+      }
     },
     {
       "id": "74.2",
@@ -54,7 +77,30 @@
         "question": "用 npm create vite 建一個 React + TS 專案、加 alias '@' → 'src/'、新增一個 vite.config 的 proxy 把 /api 指到 localhost:8000。",
         "answer": "alias 寫在 resolve.alias 內、TS 還要在 tsconfig.json 加 paths 才不會紅線：\"paths\": { \"@/*\": [\"src/*\"] }。"
       },
-      "xp": 15
+      "xp": 15,
+      "miniQuiz": {
+        "question": "你用 `npm create vite@latest my-app` 建立了一個 React 專案，現在想在開發環境中把所有 `/api` 開頭的請求轉發到後端服務（localhost:8000）。應該在哪裡設定這個功能？",
+        "options": [
+          {
+            "value": "a",
+            "label": "在 vite.config.ts 的 server.proxy 中設定"
+          },
+          {
+            "value": "b",
+            "label": "在 .env 檔案中用 VITE_ 開頭的變數設定"
+          },
+          {
+            "value": "c",
+            "label": "在 index.html 中用 <meta> tag 設定"
+          },
+          {
+            "value": "d",
+            "label": "在 src/main.tsx 中用 fetch 攔截器設定"
+          }
+        ],
+        "answer": "a",
+        "explanation": "vite.config.ts 的 server.proxy 就是用來設定開發環境 API 轉發的地方。.env 變數是給應用程式讀取的設定值（如 API 網址），不是代理設定。"
+      }
     },
     {
       "id": "74.3",
@@ -72,7 +118,30 @@
         "hint": "常見肥兒：moment.js（改 date-fns/dayjs）、lodash 全引入（改具名 import）、大圖示套件全引入（改 tree-shake 友善的）。",
         "answer": "重點：先量再改。先看 Network → JS 總下載量、再針對 Top 3 開刀、改完再量一次確認真的有降。"
       },
-      "xp": 20
+      "xp": 20,
+      "miniQuiz": {
+        "question": "你想讓 React 和 Framer Motion 分別成為獨立的 chunk，原因是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 React 半年不更新、Framer Motion 常更新，分開 chunk 可以提高 cache 命中率"
+          },
+          {
+            "value": "b",
+            "label": "因為分別獨立 chunk 可以讓整個專案的檔案大小變小"
+          },
+          {
+            "value": "c",
+            "label": "因為 Vite 會自動把不同的套件分成不同 chunk，不需要手動設定"
+          },
+          {
+            "value": "d",
+            "label": "因為獨立 chunk 可以讓使用者在首屏時更快載入所有功能"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程重點是透過分析更新頻率不同的套件，手動切分 chunk 來優化 cache 策略——React 不常變，Framer Motion 常變，分開 chunk 才能讓不變的部分持續被瀏覽器快取。b 錯因為分 chunk 不會變小；c 錯因為這是手動設定；d 錯因為獨立 chunk 反而需要載入多個檔案。"
+      }
     },
     {
       "id": "74.4",
@@ -89,7 +158,51 @@
         "question": "為現有 Vite 專案加 2 個 plugin：vite-plugin-pwa（變 PWA）+ unplugin-auto-import（不用 import useState）。觀察 dev 啟動時間是否變慢。",
         "answer": "PWA plugin 在 build 階段才會明顯影響時間；auto-import 在 dev 影響微小。實務裝 plugin 前先看 README 的 'overhead' 段。"
       },
-      "xp": 20
+      "xp": 20,
+      "miniQuiz": {
+        "question": "根據課程內容，下列哪個 plugin 的作用是「讓你寫 React 程式時不用手動 import useState、useEffect 等函數」？",
+        "options": [
+          {
+            "value": "a",
+            "label": "unplugin-auto-import"
+          },
+          {
+            "value": "b",
+            "label": "unplugin-vue-components"
+          },
+          {
+            "value": "c",
+            "label": "vite-plugin-svgr"
+          },
+          {
+            "value": "d",
+            "label": "vite-plugin-pwa"
+          }
+        ],
+        "answer": "a",
+        "explanation": "unplugin-auto-import 可以設定 imports: ['react'] 來自動引入 React 的常用函數（如 useState），讓開發者寫程式時不需要手動寫 import 語句。其他選項分別是用於 PWA、Vue 元件自動引入、和 SVG 元件化。"
+      }
+    }
+  ],
+  "summary": [
+    "Vite 用 ES modules 做 dev server、按需編譯，Webpack 是全量打包，所以開發速度快得多。",
+    "Vite 專案建立超快，npm create vite@latest 就行，自動選 React / Vue / Svelte 範本。",
+    "production build 會產生多個 chunk，可以用內建工具分析大小，找出需要優化的依賴。",
+    "常見 plugin 有圖片最佳化、自動 import、環境變數管理，選對了能省去很多手工設定。",
+    "vite.config.js 集中管理 dev server 設定、build 輸出、別名、代理等，一個檔案搞定。"
+  ],
+  "faq": [
+    {
+      "q": "我之前用 Webpack、現在改 Vite 會很麻煩嗎？",
+      "a": "大部分情況蠻順的，因為 Vite 用法更簡單。不過如果你的 Webpack 有很多客製 plugin，可能要找 Vite 的對應方案或改寫，但大多數常見需求 Vite 都內建或有 plugin 支援。"
+    },
+    {
+      "q": "Vite 的 dev server 和 production build 出來的東西會不一樣嗎？",
+      "a": "會有差異，dev 是按需編譯、不打包，production 才是完整的 bundling、minify、code split，所以有時候在 dev 跑好、build 卻爆雷。這章會教你怎麼分析和修。"
+    },
+    {
+      "q": "一定要用 plugin 嗎？還是 Vite 本身就夠了？",
+      "a": "Vite 預設功能已經滿完整，但專案長大了通常會需要 plugin 處理圖片、字體、第三方套件最佳化等。這章會教你怎麼判斷什麼時候該裝，不會讓你亂裝。"
     }
   ]
 }

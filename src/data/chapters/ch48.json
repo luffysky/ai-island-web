@@ -69,7 +69,30 @@
           "level": 3,
           "text": "但別誤會「Vibe Coding 萬能」"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，2026年業界版的「Vibe Coding」跟Karpathy極端版最大的差別是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "業界版會讓AI寫更多code，而極端版只讓AI寫一部分"
+          },
+          {
+            "value": "b",
+            "label": "業界版加入人的工程紀律（架構決策、code review、文件、測試），確保能上線維護；極端版只追求快，不適合production"
+          },
+          {
+            "value": "c",
+            "label": "業界版用Cursor工具，極端版用ChatGPT工具"
+          },
+          {
+            "value": "d",
+            "label": "業界版的工程師需要看懂每一行code，極端版則完全不看code"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確表示業界版是「Karpathy的精神＋工程紀律」，加入了人的決策（架構、規格、review）和流程（測試、Git紀錄）來保證品質，而極端版不適合production。選項a、c、d都扭曲了重點。"
+      }
     },
     {
       "id": "48.2",
@@ -106,7 +129,30 @@
           "level": 3,
           "text": "典型一天的 AI-first workflow"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據 AI-first 開發流程的心法，以下哪個做法最符合「先讓 AI 想 5 個方案、再選一個」的核心精神？",
+        "options": [
+          {
+            "value": "a",
+            "label": "直接告訴 AI 你想要的做法，讓它立刻開始寫程式"
+          },
+          {
+            "value": "b",
+            "label": "自己想好一個方案，寫到一半卡住才問 AI 怎麼解決"
+          },
+          {
+            "value": "c",
+            "label": "先把問題告訴 AI，請它列出 5 個解法的優缺點，你評估後再選一個"
+          },
+          {
+            "value": "d",
+            "label": "讓 AI 自己選擇最好的方案，你只負責檢查最終的程式碼"
+          }
+        ],
+        "answer": "c",
+        "explanation": "心法 1 的重點是「決策前多看幾個選項」——讓 AI 列出多個方案讓你評估，而不是一開始就鎖定一個想法。這樣做的好處是結果會比傳統「邊寫邊改」好很多，時間也不會更長。"
+      }
     },
     {
       "id": "48.3",
@@ -159,7 +205,30 @@
           "level": 3,
           "text": "Cursor 的競爭對手"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，Cursor 的 Tab Autocomplete 相比一般 IDE 的程式碼補全，最大的特別之處是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "可以補全多行程式碼，並且會看整個檔案的 context 和編輯歷史來預測你下一步要做什麼"
+          },
+          {
+            "value": "b",
+            "label": "補全速度比 VS Code 快 10 倍以上"
+          },
+          {
+            "value": "c",
+            "label": "可以連接到網際網路即時搜尋補全建議"
+          },
+          {
+            "value": "d",
+            "label": "不需要任何設定檔就能自動學習你的編碼風格"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確指出 Tab Autocomplete 的特別之處是：不只補當前行、補多行，看整個檔案 context、看編輯歷史、預測多行編輯。其他選項課程沒有提及或是錯誤的。"
+      }
     },
     {
       "id": "48.4",
@@ -232,7 +301,30 @@
           "level": 3,
           "text": "什麼時候不該用 Claude Code"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在終端機執行 `claude` 指令後，想要讓 Claude Code 幫你新增一個功能。根據課程內容，以下哪個做法最符合 Claude Code 的典型使用流程？",
+        "options": [
+          {
+            "value": "a",
+            "label": "在終端機的「>」符號後面用中文或英文描述你要做的事，按 Enter 讓它自動執行，遇到改檔詢問時選擇 Yes 或調整方向"
+          },
+          {
+            "value": "b",
+            "label": "必須先在 IDE 中開啟 Cursor，才能使用 Claude Code 來修改檔案"
+          },
+          {
+            "value": "c",
+            "label": "直接執行 `/init` 指令讓 Claude Code 自動完成所有工作，不用給它任何具體的需求描述"
+          },
+          {
+            "value": "d",
+            "label": "手動編輯 CLAUDE.md 後，Claude Code 才能讀取你的專案資訊並開始工作"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Claude Code 的核心使用方式就是在終端機的「>」提示符後輸入需求，它會自動分析專案、修改檔案，改檔前會詢問你的同意。b 錯在 Claude Code 是 Terminal CLI 不需要 Cursor；c 錯在 `/init` 只是產生 CLAUDE.md 不會自動完成工作；d 錯在 CLAUDE.md 是選擇項、不是必須先編輯才能使用。"
+      }
     },
     {
       "id": "48.4b",
@@ -289,7 +381,30 @@
           "level": 3,
           "text": "新手最容易踩的 3 個雷"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你第一次使用 Codex CLI 時，為了安全起見，應該怎麼做？",
+        "options": [
+          {
+            "value": "a",
+            "label": "直接用 Full Auto 模式，讓它自動改檔和跑指令，效率最高"
+          },
+          {
+            "value": "b",
+            "label": "用 Suggest 模式，任何改檔或指令前都先問你確認"
+          },
+          {
+            "value": "c",
+            "label": "先用 Auto Edit 模式，改檔不問但跑指令會問"
+          },
+          {
+            "value": "d",
+            "label": "跳過 approval 設定，直接開始對話就好"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確說新手一定要從 Suggest（建議）模式開始，這樣任何改檔或跑指令前都會先問你，最安全。Full Auto 和 Auto Edit 是熟悉後才用的進階模式。"
+      }
     },
     {
       "id": "48.4d",
@@ -338,7 +453,30 @@
           "level": 3,
           "text": "新手怎麼選"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這課的重點，學習 Gemini CLI / Antigravity 最應該重視什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "掌握 ReAct 迴圈的核心邏輯，這樣換任何終端 agent 都能快速上手"
+          },
+          {
+            "value": "b",
+            "label": "把所有 CLI 指令背起來，這樣才不會在實務中出錯"
+          },
+          {
+            "value": "c",
+            "label": "優先學 Gemini CLI，因為它是 Google 官方最穩定的版本"
+          },
+          {
+            "value": "d",
+            "label": "記住 Gemini CLI 和 Antigravity 的所有差異，才能選對工具"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課的最後明說：別花力氣背某個 CLI 的指令，因為工具每幾個月就洗牌。重點是理解「終端 agent = 給目標、它用 ReAct 自己動手」這個不變的核心邏輯，這樣無論 Gemini CLI、Antigravity 或其他工具怎麼改，你都能快速適應。"
+      }
     },
     {
       "id": "48.4c",
@@ -391,7 +529,30 @@
           "level": 3,
           "text": "你剛剛完成了什麼"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這堂課的方法，如果你想改變網站上按鈕的顏色，應該怎麼做？",
+        "options": [
+          {
+            "value": "a",
+            "label": "打開 index.html，自己找到 CSS 按鈕的顏色代碼，手動改成新顏色"
+          },
+          {
+            "value": "b",
+            "label": "把修改需求（例如「按鈕顏色改成綠色」）講給 AI，讓 AI 幫你改"
+          },
+          {
+            "value": "c",
+            "label": "刪除原本的按鈕，重新寫一遍 HTML 和 CSS"
+          },
+          {
+            "value": "d",
+            "label": "部署到 Netlify 後，在線上編輯器直接改顏色"
+          }
+        ],
+        "answer": "b",
+        "explanation": "這堂課的核心是『Vibe Coding』——用講需求的方式讓 AI 寫 code 和迭代，而不是自己手改語法。課文明確示範『繼續用嘴改』、把修改需求告訴 AI 就行。"
+      }
     },
     {
       "id": "48.5",
@@ -460,7 +621,30 @@
           "level": 3,
           "text": "2026 SnowRealm 真實組合"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你是設計師，想快速產出一個 React UI 元件放進現有的 Next.js 專案裡。下列哪個工具最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "v0"
+          },
+          {
+            "value": "b",
+            "label": "Bolt"
+          },
+          {
+            "value": "c",
+            "label": "Lovable"
+          },
+          {
+            "value": "d",
+            "label": "Windsurf"
+          }
+        ],
+        "answer": "a",
+        "explanation": "v0 的定位就是『設計師 / 工程師的 React UI 生成器』，輸出 Next.js + Tailwind + shadcn/ui 程式碼可直接下載融入現有專案。Bolt 適合快速 prototype、Lovable 適合非技術 founder 做 MVP、Windsurf 是 IDE agent，都不是產 UI 元件的最佳選擇。"
+      }
     },
     {
       "id": "48.5b",
@@ -493,7 +677,30 @@
           "level": 3,
           "text": "放在你的流程哪一步"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，Claude Design 最主要的定位和用途是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "幫程式設計師快速生成 React 元件和程式碼，直接融入現有專案"
+          },
+          {
+            "value": "b",
+            "label": "讓沒有設計底子的創辦人或 PM，用講的快速做出能展示、能對齊需求的互動式視覺原型"
+          },
+          {
+            "value": "c",
+            "label": "建立完整的全棧應用程式，包含資料庫和用戶驗證功能"
+          },
+          {
+            "value": "d",
+            "label": "將靜態設計稿自動轉換成 Figma 設計檔案供設計師修改"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確指出 Claude Design 是給「有想法、不會設計」的人用的，特別強調「快速做出能展示、能對齊需求的視覺」，產出是「活的 HTML」可互動。選項 a 是 v0 的定位、c 是 Lovable 的定位、d 超出本課範圍。"
+      }
     },
     {
       "id": "48.6",
@@ -545,7 +752,30 @@
           "level": 3,
           "text": "2026 SnowRealm 的 prompt 文化"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，為什麼「糟糕 prompt」容易導致 AI 寫出你不能用的程式？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 AI 的能力不足，無法理解任何指令"
+          },
+          {
+            "value": "b",
+            "label": "因為 prompt 沒有清楚說明 What、Where、How 等架構規格，AI 就只能亂猜你要什麼"
+          },
+          {
+            "value": "c",
+            "label": "因為好的 prompt 一定要超過 500 字才能讓 AI 理解"
+          },
+          {
+            "value": "d",
+            "label": "因為 AI 故意不配合，所以需要用魔咒才能召喚出對的程式"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程核心是：prompt 不是「請求」而是「架構規格」。糟糕 prompt 會讓 AI 不知道用什麼框架、風格、認證方式，所以隨便寫一個；好 prompt 要包含六大元素（What、Where、How、Style、Don't、Verify），這樣 AI 才能精準交付。其他選項都是誤解。"
+      }
     },
     {
       "id": "48.7",
@@ -598,7 +828,30 @@
           "level": 3,
           "text": "怎麼維護這些檔案"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "如果你想讓 Claude Code CLI、Cursor IDE 和 Claude Agent 都能自動讀到專案規範，應該怎麼做？",
+        "options": [
+          {
+            "value": "a",
+            "label": "只寫一個 CLAUDE.md，裡面包含所有規則，三個工具都會自動讀"
+          },
+          {
+            "value": "b",
+            "label": "分別寫 CLAUDE.md、.cursorrules 和 Skills 資料夾，內容互相對齊"
+          },
+          {
+            "value": "c",
+            "label": "只寫 .cursorrules，因為它最通用，其他工具都認得"
+          },
+          {
+            "value": "d",
+            "label": "寫在專案的 README.md，然後每次啟動 AI 時手動複製貼上規則"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確說明三種檔案各自給不同工具用（Claude CLI 用 CLAUDE.md、Cursor IDE 用 .cursorrules、Claude Agent 用 Skills），2026 業界趨勢是三個都寫且內容互相對齊，這樣才能確保 AI 每次啟動都自動讀到一致的規範。"
+      }
     },
     {
       "id": "48.8",
@@ -655,7 +908,30 @@
           "level": 3,
           "text": "2026 SnowRealm 真實做法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據 Vibe Coding 的「文檔驅動開發」理念，為什麼一定要寫 spec.md 和 design.md，而不是直接讓 AI 讀 code 就開始做？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 code 只能表達「現在是什麼」，文檔才能表達「為什麼這樣」和商業決策，AI 和多人協作都需要這個共識"
+          },
+          {
+            "value": "b",
+            "label": "因為 AI 看 code 會出錯，文檔可以避免 AI 理解錯誤"
+          },
+          {
+            "value": "c",
+            "label": "因為公司規定要寫文檔，這樣事後能查驗"
+          },
+          {
+            "value": "d",
+            "label": "因為寫文檔能加快開發速度，省去 code review 的時間"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確指出 Code 表達「現在是什麼」、文檔表達「為什麼這樣」，目的是讓 AI 看到商業決策、權衡、邊界條件，以及多人/多 agent 協作時的共識。其他選項都是衍伸理由或誤解。"
+      }
     },
     {
       "id": "48.9",
@@ -699,7 +975,30 @@
           "level": 3,
           "text": "單一 agent vs 多 agent 何時用"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據「多 Agent 工作流」的核心概念，為什麼不能讓一個 AI 既做規劃又做執行？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為一個 AI 容易忘記規格、做著做著偏離計畫，而且無法客觀審視自己的工作"
+          },
+          {
+            "value": "b",
+            "label": "因為 AI 不夠聰明，沒辦法同時處理規劃和執行的工作"
+          },
+          {
+            "value": "c",
+            "label": "因為規劃和執行應該用同一個強度的模型比較便宜"
+          },
+          {
+            "value": "d",
+            "label": "因為多 Agent 系統一定要用 LangGraph 或 CrewAI 框架才能運作"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調「避免『一個 AI 又想又做』—忘規格的問題」和「Review 是新的 context—不會被自己『合理化』騙」。多 Agent 分工的關鍵是隔離 context 和角色，讓不同 AI 各司其職、互相監督，而不是 AI 的能力不足（b 錯）、成本考量（c 只是附加好處）或框架限制（d 錯）。"
+      }
     },
     {
       "id": "48.10",
@@ -759,7 +1058,30 @@
           "level": 3,
           "text": "不適合雙 Agent 的場景"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在 SnowRealm 雙 Agent 完整流程中，為什麼需要 Claude 和 Codex 兩個 Agent 分別負責不同階段？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Claude 專門寫代碼、Codex 專門規劃設計，各司其職"
+          },
+          {
+            "value": "b",
+            "label": "Claude 用來規劃和審查（思考力強），Codex 用來執行實作（執行力強），分工提高效率"
+          },
+          {
+            "value": "c",
+            "label": "因為 Claude 和 Codex 各只能做一種工作，無法互換"
+          },
+          {
+            "value": "d",
+            "label": "Claude 負責前端、Codex 負責後端的技術分工"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程展示 Claude 在 Phase 1 做規劃產出 spec 和 design、Phase 3 做審查檢查品質，Codex 在 Phase 2 逐步執行 TODO 清單，體現了分工模式：高層思考用 Claude、細節實作用 Codex，最後再用 Claude 審查。這不是工具限制，而是發揮各自優勢的策略。"
+      }
     },
     {
       "id": "48.11",
@@ -783,7 +1105,30 @@
           "level": 3,
           "text": "AI 能一次寫好的範圍"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，為什麼「訂單管理」應該先拆成「訂單建立、訂單列表、訂單詳細」等多個 feature，而不是直接拆成「schema、API、UI」三大部分？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 schema、API、UI 三個部分太複雜，AI 寫不動"
+          },
+          {
+            "value": "b",
+            "label": "因為縱切能讓每個階段都有可驗收的完整 feature，不用等到最後才看到成果"
+          },
+          {
+            "value": "c",
+            "label": "因為 feature 級別的拆解能減少 commit 次數，讓歷史更清晰"
+          },
+          {
+            "value": "d",
+            "label": "因為先做 feature 再拆技術細節，AI 能更好地理解業務邏輯"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調「縱切而非橫切」的原則：橫切（所有 schema、再所有 API、再所有 UI）要等很久才能看到完整功能，縱切（一個 feature 從 schema 到 API 到 UI）每個階段都能 demo 和驗收。"
+      }
     },
     {
       "id": "48.12",
@@ -840,7 +1185,30 @@
           "level": 3,
           "text": "Long-context 模型（Gemini 2M）的迷思"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的 AI 助手在一個 session 裡工作了 6 小時，現在要開始做另一個完全不同的新功能。以下哪個做法最符合 context 管理的最佳實踐？",
+        "options": [
+          {
+            "value": "a",
+            "label": "直接在同一個 session 繼續聊，這樣 AI 能參考前面的程式碼和經驗"
+          },
+          {
+            "value": "b",
+            "label": "執行 /clear 開始新 session，讀入 CLAUDE.md 和新功能的規格文件，保持 context 乾淨"
+          },
+          {
+            "value": "c",
+            "label": "執行 /compact 壓縮舊對話歷史，把所有程式碼摘要塞進去再繼續"
+          },
+          {
+            "value": "d",
+            "label": "用 @codebase 把整個專案一次塞進去，讓 AI 對全局有完整認識"
+          }
+        ],
+        "answer": "b",
+        "explanation": "長時間工作後開始新任務應該 /clear 重來，避免舊內容污染新工作，同時讓 AI 只關注新需求；A 會讓前面的東西干擾新功能，C 的壓縮還是佔用 context，D 則是最浪費且不必要的做法。"
+      }
     },
     {
       "id": "48.13",
@@ -909,7 +1277,30 @@
           "level": 3,
           "text": "Pre-commit / Pre-push hook"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在 Vibe Coding 時代，為什麼 Git 變得比以前更重要？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 AI 隨時可能出錯，需要能快速 rollback 到上個正常狀態"
+          },
+          {
+            "value": "b",
+            "label": "因為團隊人數增加，需要更多人同時協作 Git 上的檔案"
+          },
+          {
+            "value": "c",
+            "label": "因為 Git 功能升級，現在可以自動修復 bug"
+          },
+          {
+            "value": "d",
+            "label": "因為需要記錄更詳細的 commit message 給未來的團隊成員看"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程開頭明確說『AI 隨時可能搞砸、要能 rollback』是 Vibe Coding 時代 Git 變重要的核心原因。詳細 commit message（選項 d）是配套做法而非主要原因；選項 b、c 都不是課程內容。"
+      }
     },
     {
       "id": "48.14",
@@ -965,7 +1356,30 @@
           "level": 3,
           "text": "什麼不該寫測試"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，在 Vibe Coding 時代，為什麼測試變得更重要？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 AI 寫的 code 看似對、但實際上有很多細微 bug，測試是機器幫機器把關"
+          },
+          {
+            "value": "b",
+            "label": "因為傳統手寫 code 的時代已經過去，測試現在只需要 AI 自動生成就夠"
+          },
+          {
+            "value": "c",
+            "label": "因為 AI 的測試工具變得更先進，可以完全取代人工檢查"
+          },
+          {
+            "value": "d",
+            "label": "因為現在的 code 複雜度更高，所以需要更多層級的測試工具堆棧"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程開篇明確指出「AI 寫 code 看似對、實際細微 bug 多。測試是『機器幫機器把關』」—這是測試在 AI 時代變更重要的核心原因。b、c 描述錯誤（不能只靠 AI、不能完全取代人工），d 只是結果而非原因。"
+      }
     },
     {
       "id": "48.15",
@@ -1025,7 +1439,30 @@
           "level": 3,
           "text": "SnowRealm 真實 debug 流程"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程，用 AI debug 時最容易犯的「致命錯誤」是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "直接相信 AI 給的修法、沒驗證就套上去，結果只是隱藏症狀而不是修根因"
+          },
+          {
+            "value": "b",
+            "label": "貼完錯誤訊息就等 AI 回應、沒有提供重現步驟和已試過的方案"
+          },
+          {
+            "value": "c",
+            "label": "要求 AI 先直接改 code、跳過分析根因的步驟"
+          },
+          {
+            "value": "d",
+            "label": "貼 console.log 太多、AI 讀不完會放棄分析"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調「驗證很重要」—AI 的 fix 不一定對，必須理解『為什麼會是 null』而不是盲目加 null check。其他選項雖然也是常見錯誤，但課程把「相信 AI 修法、沒驗證」列為最危險的誤區，因為它會讓你陷入『修症狀、隱藏根因』的死循環。"
+      }
     },
     {
       "id": "48.16",
@@ -1082,7 +1519,30 @@
           "level": 3,
           "text": "Review checklist for AI code"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，為什麼「另一個 AI session review」能看出原本對話看不到的問題？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為另一個 AI 的模型版本更新、能力更強"
+          },
+          {
+            "value": "b",
+            "label": "因為新 session 沒被原本對話「洗腦」、看法更客觀、沒有先入為主"
+          },
+          {
+            "value": "c",
+            "label": "因為另一個 AI 會用更嚴格的 review 工具和 checklist"
+          },
+          {
+            "value": "d",
+            "label": "因為多個 AI 一起 review 能用集體智慧找出所有 bug"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確說『新 session 沒被原本對話「洗腦」、看法客觀』，這是跨 session review 的核心價值。不是因為能力強或工具多，而是新的上下文環境讓 AI 能以全新、不帶假設的角度檢視 code。"
+      }
     },
     {
       "id": "48.17",
@@ -1143,7 +1603,30 @@
           "level": 3,
           "text": "AI 重構的真實限制"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，為什麼大規模重構時「漸進式」比「Big Bang」更適合 production 系統，而 AI 的角色是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "漸進式風險低、AI 讓漸進式變快，不是讓你能一次全改"
+          },
+          {
+            "value": "b",
+            "label": "Big Bang 太危險，所以 AI 不支援 Big Bang 方式"
+          },
+          {
+            "value": "c",
+            "label": "漸進式花時間長，AI 能幫你縮短漸進式的時間，最終變成 Big Bang"
+          },
+          {
+            "value": "d",
+            "label": "AI 能完全取代人工判斷，所以用 AI 就可以直接 Big Bang"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確指出「業界 99% 建議漸進式。AI 讓漸進式變快—不是讓你能 Big Bang」。漸進式之所以比 Big Bang 更安全，是因為風險低、能逐步驗證，而 AI 的作用是加速這個過程，但不改變漸進式的本質。"
+      }
     },
     {
       "id": "48.18",
@@ -1191,7 +1674,30 @@
           "level": 3,
           "text": "避免「AI 依賴症」"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這課的建議，以下哪個場景最不適合交給 AI 來做？",
+        "options": [
+          {
+            "value": "a",
+            "label": "寫一個標準的 React 表單元件（輸入框、按鈕、驗證）"
+          },
+          {
+            "value": "b",
+            "label": "決定系統的使用者權限架構應該怎麼設計"
+          },
+          {
+            "value": "c",
+            "label": "生成假資料來填充測試資料庫"
+          },
+          {
+            "value": "d",
+            "label": "寫 API 的 CRUD endpoint"
+          }
+        ],
+        "answer": "b",
+        "explanation": "這課強調「架構決策」是 AI 不適合做的事，因為 AI 不知道商業背景和產品脈絡。權限系統更是關鍵，一個漏洞會造成災難。而 a、c、d 都是課程列舉的「AI 適合做」的事務（boilerplate、產假資料、已知模式）。"
+      }
     },
     {
       "id": "48.19",
@@ -1247,7 +1753,30 @@
           "level": 3,
           "text": "2026 各領域工具地圖"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，為什麼 AI 在寫「前端」的表現比「DevOps」強很多？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為前端工作比較簡單，DevOps 需要更高階的技能"
+          },
+          {
+            "value": "b",
+            "label": "因為前端有大量公開訓練資料、模式固定、可即時視覺驗證；DevOps 環境特定、錯誤影響大、訓練資料少"
+          },
+          {
+            "value": "c",
+            "label": "因為前端開發者比 DevOps 工程師多，所以前端工具發展更快"
+          },
+          {
+            "value": "d",
+            "label": "因為 AI 廠商優先投資前端工具，暫時沒有專注 DevOps"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確指出 AI 強的領域特徵是「訓練資料量大、模式固定、可即時驗證」（前端具備），而 DevOps 是「環境特定、錯誤影響面大、訓練資料相對少」，這是技術特性差異而非工作難度差異。"
+      }
     },
     {
       "id": "48.20",
@@ -1291,7 +1820,30 @@
           "level": 3,
           "text": "常見阻礙 + 解法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據 Vibe Coding workflow，一個人從點子到 production 最重要的「日常節奏」是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "每天選 3-5 個 task、邊寫程式邊部署到 staging、每天做完 commit 就能 demo"
+          },
+          {
+            "value": "b",
+            "label": "先把全部 feature 設計完美、再一次性開發、最後一起部署到 production"
+          },
+          {
+            "value": "c",
+            "label": "白天只寫程式、晚上才測試，一週才部署一次確保品質"
+          },
+          {
+            "value": "d",
+            "label": "靠 AI 寫完所有程式、自己只負責測試和上線"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課文強調『每 commit 都能 demo、每天 push staging、每週部署 production』，這才是 Vibe Coding 的核心節奏。選項 b、c 是傳統瀑布式開發，d 誤會了 AI 的角色—AI 是協作夥伴，不是全自動化。"
+      }
     },
     {
       "title": "終端 agent 三巨頭 + 編輯器怎麼選",
@@ -1347,7 +1899,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，如果你現在的日常工作是「每天寫一些小功能和修 bug」，同時公司也有付 ChatGPT Plus，那麼最適合的工具組合是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "只用 Cursor，日常 90% 場景都夠用"
+          },
+          {
+            "value": "b",
+            "label": "Cursor + Codex 雙軌，Codex 處理複雜改寫任務"
+          },
+          {
+            "value": "c",
+            "label": "只用 Claude Code，因為它能自主完成任務"
+          },
+          {
+            "value": "d",
+            "label": "同時裝 Cursor、Claude Code、Codex 三個，用最順手的"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程選擇建議表明「已付 ChatGPT」的人應該用「Cursor + Codex 雙軌」——Cursor 處理日常 90% 的快速寫 code，Codex 則用於 refactor / 新 feature 等複雜任務。選 a 忽視了已有 ChatGPT 資源，選 c 和 d 都不符合課程推薦的組合策略。"
+      }
     },
     {
       "title": "Prompt 寫法：給 AI 寫對 code",
@@ -1399,7 +1974,30 @@
           "level": 2,
           "text": "避免幻覺"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想讓 AI 寫一個「用戶登出功能」。下面哪個 prompt 寫法最容易讓 AI 產出符合你專案的正確 code？",
+        "options": [
+          {
+            "value": "a",
+            "label": "幫我寫一個登出功能"
+          },
+          {
+            "value": "b",
+            "label": "用 Next.js 15 App Router + Supabase Auth 寫登出 API route，路徑 /api/auth/logout，成功後 redirect 到 /login，參考既有的 /api/auth/login 風格：[貼現有 login code]"
+          },
+          {
+            "value": "c",
+            "label": "寫一個登出、用 React、要快、要安全"
+          },
+          {
+            "value": "d",
+            "label": "幫我寫登出，可以用任何方法都可以"
+          }
+        ],
+        "answer": "b",
+        "explanation": "選項 b 包含了課程強調的四個要素：CONTEXT（Next.js 15 + Supabase）、TASK（具體路徑和行為）、CONSTRAINTS（redirect 到哪）、EXAMPLES（貼既有 code 參考風格）。其他選項都太模糊，AI 容易寫出不符合你 codebase 的 generic 代碼。"
+      }
     },
     {
       "title": "AI 寫完一定要做的 3 件事",
@@ -1487,7 +2085,30 @@
           "level": 2,
           "text": "AI 寫的「該砍掉」"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你用 AI 寫完一個登入功能，AI 生成了程式碼。下列做法中，哪一個最符合這堂課教的「正確流程」？",
+        "options": [
+          {
+            "value": "a",
+            "label": "直接把 AI 寫的程式碼 commit、push 到 main branch，有問題再說"
+          },
+          {
+            "value": "b",
+            "label": "看一遍邏輯、跑現有測試、寫新測試cover error case、才 commit 上 PR"
+          },
+          {
+            "value": "c",
+            "label": "AI 寫得很快，所以先 ship 到 production，邊用邊修"
+          },
+          {
+            "value": "d",
+            "label": "假設 AI 生成的密鑰 hardcode 是正常的，直接交付"
+          }
+        ],
+        "answer": "b",
+        "explanation": "這堂課的 3 件核心事就是 Review（看邏輯、抓紅旗）、Test（跑現有 + 寫新測試）、Commit + PR（清楚的訊息、小 PR 易 review）。選項 b 涵蓋了這三步，是正確流程；a、c 是「不看直接 ship」的反 pattern；d 踩了安全紅旗。"
+      }
     },
     {
       "title": "AI 大 refactor：codebase 改造工作流",
@@ -1563,7 +2184,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在把一個 Express 專案改造成 Next.js，同時想加一個新的認證功能。根據這課教的做法，你應該怎麼做？",
+        "options": [
+          {
+            "value": "a",
+            "label": "把 Express 改造成 Next.js 跟加新認證功能混在一個大 PR 裡，一次完成效率最高"
+          },
+          {
+            "value": "b",
+            "label": "先出一個 PR 把 Express 改造成 Next.js（行為保持一樣），改造完後再另外出 PR 加新認證功能"
+          },
+          {
+            "value": "c",
+            "label": "同時改造 Express 跟加功能沒關係，只要測試夠完整就能一起做"
+          },
+          {
+            "value": "d",
+            "label": "先把整個專案全部改造成 Next.js，確保沒有遺漏任何地方"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確強調「不要混重構 + 新 feature」，因為混在一起會難以 debug 跟 review。正確做法是分開：PR 1 純改造（行為不變）→ PR 2 加新功能（在已改造的基礎上）。這樣每個 PR 都是獨立、可測試、可控的。"
+      }
     },
     {
       "title": "Vibe Coding 心態 + 學習方式",
@@ -1647,7 +2291,30 @@
           "level": 2,
           "text": "學習資源（2026）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這課內容，為什麼新人「還是應該」學寫 code，而不是完全依賴 AI？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 AI 寫的 code 你需要能看懂、review，而且當 AI 出錯時你得會 debug"
+          },
+          {
+            "value": "b",
+            "label": "因為學寫 code 會讓你更聰明，這是基礎教育必修"
+          },
+          {
+            "value": "c",
+            "label": "因為 AI 還不夠聰明，等 AI 更強大就可以完全依賴"
+          },
+          {
+            "value": "d",
+            "label": "因為公司會要求員工會寫 code，不然會被開除"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程重點強調 AI review、debug、引導 AI 都需要你懂 code，不是說學 code 有道德高地，而是實務上根本做不了事。其他選項都偏離了課程核心的『能力』和『context』需求。"
+      }
     }
   ],
   "boss": {
@@ -1661,5 +2328,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "Vibe Coding 就是用 AI 輔助寫程式、重點是人指揮 AI 而不是 AI 自動做決定",
+    "Cursor / Claude Code / Codex / Gemini CLI 各有優劣、要選對工具搭配自己的工作流",
+    "先寫好 prompt + 文檔（spec.md / design.md），AI 才寫得對，光問 AI 一句話會踩坑",
+    "拆任務很重要、要細到 AI 一次能寫完、太大的 refactor 要分步驟慢慢來",
+    "AI 寫完一定要看、測試、review、整理 context，不能盲目信任，這才是快速開發的關鍵"
+  ],
+  "faq": [
+    {
+      "q": "零基礎真的能用 AI 寫出程式嗎？",
+      "a": "可以，但不是「放著讓 AI 自動做」，而是你主導、AI 寫細節。你需要懂邏輯、會拆任務、看得懂 code 去 review，這樣才能又快又不會出大問題。"
+    },
+    {
+      "q": "Cursor 跟 Claude Code 我該選哪個？",
+      "a": "Cursor 是編輯器內建 AI，用起來最方便；Claude Code 是純終端 agent，適合自動化流程。新手先用 Cursor 習慣工作流最快，之後再搭其他工具。"
+    },
+    {
+      "q": "AI 寫的 code 能信任嗎？會不會有隱藏的 bug？",
+      "a": "AI 會出錯、尤其複雜邏輯或邊界情況，所以你一定要測試、review、加測試案例。這不是浪費時間，是省時間的必要步驟，因為自己寫也要測。"
+    }
+  ]
 }

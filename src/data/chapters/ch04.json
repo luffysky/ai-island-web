@@ -134,7 +134,30 @@
           "level": 3,
           "text": "閉包（Closure）— 最重要的概念"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下面程式執行後會印出什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "印出 undefined，然後印出 10"
+          },
+          {
+            "value": "b",
+            "label": "印出 ReferenceError，程式停止"
+          },
+          {
+            "value": "c",
+            "label": "印出 10，然後印出 10"
+          },
+          {
+            "value": "d",
+            "label": "印出 Cannot access 'x' before initialization"
+          }
+        ],
+        "answer": "a",
+        "explanation": "因為用的是 `var`，會發生 hoisting——宣告被提升到最前面但賦值留在原地，所以第一個 console.log 印 undefined；第二行的 `x = 10` 才執行賦值。如果改成 `let` 就會是選項 b（ReferenceError）或 d（TDZ）。"
+      }
     },
     {
       "id": "4.3",
@@ -179,7 +202,30 @@
           "level": 3,
           "text": "真假值（Truthy / Falsy）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下面哪個敘述是「正確的」？",
+        "options": [
+          {
+            "value": "a",
+            "label": "陣列是一種特殊的原始型別，可以用 typeof 判斷它是否為陣列"
+          },
+          {
+            "value": "b",
+            "label": "null 和 undefined 都表示「沒有值」，但 null 是故意設定的、undefined 是系統預設的"
+          },
+          {
+            "value": "c",
+            "label": "symbol 和 bigint 的作用完全一樣，都是用來表示超大的數字"
+          },
+          {
+            "value": "d",
+            "label": "物件型別的變數之間修改值時，兩個變數會互相影響，因為它們各自擁有獨立的複製"
+          }
+        ],
+        "answer": "b",
+        "explanation": "題目考的是對原始型別和 null/undefined 的理解。選項 b 正確：null 是程式設計師明確指定的「沒值」，undefined 是 JavaScript 系統預設的「還沒給值」。選項 a 錯因為陣列是物件型別、要用 Array.isArray() 判斷；選項 c 錯因為 symbol 是獨一無二的識別、bigint 才是大整數；選項 d 錯因為物件型別是「引用傳遞」（共用同一個實體），不是各自複製。"
+      }
     },
     {
       "id": "4.4",
@@ -224,7 +270,30 @@
           "level": 3,
           "text": "展開運算符（spread）跟其餘參數（rest）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下列關於 == 和 === 的敘述，哪一個是正確的？",
+        "options": [
+          {
+            "value": "a",
+            "label": "== 是嚴格相等、會比較型別和值，=== 是寬鬆相等、會先做型別轉換"
+          },
+          {
+            "value": "b",
+            "label": "=== 是嚴格相等、型別跟值都要一樣，== 會偷偷做型別轉換所以容易出 bug"
+          },
+          {
+            "value": "c",
+            "label": "== 和 === 在比較時完全相同，只是寫法不同而已"
+          },
+          {
+            "value": "d",
+            "label": "== 比較安全、應該永遠優先使用，=== 只在特殊情況才用"
+          }
+        ],
+        "answer": "b",
+        "explanation": "=== 是嚴格相等，不做型別轉換，最安全。== 會偷偷轉型別（例如 0 == \"\" 會是 true），所以容易造成 bug，這課特別強調要永遠用 ===。"
+      }
     },
     {
       "id": "4.5",
@@ -336,7 +405,30 @@
           "level": 3,
           "text": "陣列建立技巧"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "假設你有一個訂單清單 `orders = [15, 8, 42, 3, 56]`，現在要找出金額超過 20 的訂單，並把它們都乘以 1.1（打九折後的價格）。下面哪個做法最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "orders.filter(n => n > 20).map(n => n * 1.1)"
+          },
+          {
+            "value": "b",
+            "label": "orders.map(n => n * 1.1).filter(n => n > 20)"
+          },
+          {
+            "value": "c",
+            "label": "orders.sort().filter(n => n > 20)"
+          },
+          {
+            "value": "d",
+            "label": "orders.reduce((acc, n) => n > 20 ? acc + n : acc, 0)"
+          }
+        ],
+        "answer": "a",
+        "explanation": "先用 filter 篩出 > 20 的訂單 [42, 56]，再用 map 把每個都乘以 1.1。選項 b 順序反了會先改變數值再篩選（邏輯不對）；選項 c 和 d 分別用了排序和求和，都不符合「篩選+轉換」的需求。"
+      }
     },
     {
       "id": "4.7",
@@ -381,7 +473,30 @@
           "level": 3,
           "text": "WeakMap / WeakSet：垃圾回收友善"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在寫一個購物網站，需要儲存「商品 ID → 商品資訊」的對應關係。商品 ID 是數字（1、2、3...），商品資訊是物件（包含名稱、價格等）。以下哪個選擇最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 Object，因為 Object 是最基本的資料結構"
+          },
+          {
+            "value": "b",
+            "label": "用 Map，因為 key 是數字、且需要頻繁新增刪除商品"
+          },
+          {
+            "value": "c",
+            "label": "用 Set，因為 Set 比 Map 效能更好"
+          },
+          {
+            "value": "d",
+            "label": "用 Object，然後用 JSON.stringify 轉換成字符串存檔"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Map 的 key 可以是任何型別（包括數字），Object 的 key 只能是字串或 Symbol；而且 Map 在頻繁新增刪除時效能更好。Object 適合結構固定的資料（如 user 物件），而「ID → 資料」的字典對應典型就用 Map。"
+      }
     },
     {
       "id": "4.8",
@@ -418,7 +533,30 @@
           "level": 3,
           "text": "2026 的觀點"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下面關於 ES2015 class 的敘述，哪一個正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "class 是完全新的東西，和 prototype 沒有關係"
+          },
+          {
+            "value": "b",
+            "label": "class 本質上是 prototype 的語法糖，用來簡化物件模板的寫法"
+          },
+          {
+            "value": "c",
+            "label": "private fields（#開頭）只是程式慣例，外部仍可以強制存取"
+          },
+          {
+            "value": "d",
+            "label": "在 constructor 裡使用 this 之前，可以選擇性地呼叫 super()"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確說明 class 是『糖衣』、本質還是 prototype。選項 a 錯因為 class 只是語法包裝；c 錯因為 # 是真正的私有（語法層級擋住），不像 _ 慣例可被破；d 錯因為繼承時『必須先呼叫 super()、再用 this』是強制規則。"
+      }
     },
     {
       "id": "4.9",
@@ -459,7 +597,30 @@
           "level": 3,
           "text": "檢查原型"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "為什麼寫 `const arr = [1,2,3]; arr.push(4)` 時，arr 物件本身沒有定義 push 方法，卻還是能成功呼叫？",
+        "options": [
+          {
+            "value": "a",
+            "label": "JS 沿著原型鏈往上找，在 Array.prototype 中找到了 push 方法"
+          },
+          {
+            "value": "b",
+            "label": "push 是 JS 引擎內建的全域函式，會自動套用到所有陣列"
+          },
+          {
+            "value": "c",
+            "label": "建立陣列時，JS 會直接把 push 方法複製到 arr 物件內"
+          },
+          {
+            "value": "d",
+            "label": "陣列繼承自 Object 類別，Object 裡面定義了所有方法包括 push"
+          }
+        ],
+        "answer": "a",
+        "explanation": "原型鏈的核心就是：物件自己沒有的屬性，會沿著 __proto__ 往上找爸爸（Array.prototype）、爺爺（Object.prototype）一直找到 null。arr.push 就是這樣從 Array.prototype 找來的。b 錯在 push 不是全域函式、c 錯在沒有複製而是查找、d 錯在 push 在 Array.prototype 不在 Object.prototype。"
+      }
     },
     {
       "id": "4.10",
@@ -504,7 +665,30 @@
           "level": 3,
           "text": "長任務優化"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下面這段程式會印出什麼順序？",
+        "options": [
+          {
+            "value": "a",
+            "label": "1, 2, 3, 4"
+          },
+          {
+            "value": "b",
+            "label": "1, 4, 3, 2"
+          },
+          {
+            "value": "c",
+            "label": "1, 4, 2, 3"
+          },
+          {
+            "value": "d",
+            "label": "1, 3, 2, 4"
+          }
+        ],
+        "answer": "b",
+        "explanation": "同步程式碼（console.log(\"1\")、\"4\"）先跑完，再清 microtask queue（Promise.then = \"3\"），最後才跑 task queue（setTimeout = \"2\"）。Microtask 優先級永遠高過 macrotask，這是 event loop 的核心規則。"
+      }
     },
     {
       "id": "4.11",
@@ -549,7 +733,30 @@
           "level": 3,
           "text": "並行 vs 序列"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在寫一個函式，需要同時向三個不同的 API 伺服器請求資料，只要其中任何一個成功回應就可以繼續執行，不用等全部回來。應該用哪個方法？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Promise.all"
+          },
+          {
+            "value": "b",
+            "label": "Promise.any"
+          },
+          {
+            "value": "c",
+            "label": "Promise.race"
+          },
+          {
+            "value": "d",
+            "label": "Promise.allSettled"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Promise.any 是「任一成功就回」，適合多重備援情況。Promise.all 要全部成功才行（缺一不可）、Promise.race 是誰最快就誰（包括失敗）、Promise.allSettled 是全部完成才回。"
+      }
     },
     {
       "id": "4.12",
@@ -573,7 +780,30 @@
           "level": 3,
           "text": "Iterator 協議"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下列敘述何者正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "iterable 是有 next() 方法的物件，iterator 是有 [Symbol.iterator] 方法的物件"
+          },
+          {
+            "value": "b",
+            "label": "iterator 是有 next() 方法的物件，每次 next() 回傳 { value, done }；iterable 是有 [Symbol.iterator] 方法的物件"
+          },
+          {
+            "value": "c",
+            "label": "generator 函式用 function* 定義，執行後直接回傳最終結果，不能暫停"
+          },
+          {
+            "value": "d",
+            "label": "yield 和 return 作用相同，都是結束函式執行並回傳值"
+          }
+        ],
+        "answer": "b",
+        "explanation": "iterator 有 next() 方法會回傳 { value, done }，而 iterable 有 [Symbol.iterator] 方法。選項 a 搞反了，選項 c 和 d 都誤解了 generator 和 yield 的特性——generator 能暫停、yield 只是暫停不是結束。"
+      }
     },
     {
       "id": "4.13",
@@ -614,7 +844,30 @@
           "level": 3,
           "text": "觀察 API"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你用 document.querySelectorAll('.item') 找到了 5 個元素，然後用 JavaScript 新增了一個 class='item' 的新元素到網頁上。這時候用 forEach 去遍歷之前存的結果，會得到幾個元素？",
+        "options": [
+          {
+            "value": "a",
+            "label": "5 個，因為 querySelectorAll 回傳靜態快照，不會自動更新"
+          },
+          {
+            "value": "b",
+            "label": "6 個，因為 querySelectorAll 會動態同步 DOM 的最新狀況"
+          },
+          {
+            "value": "c",
+            "label": "5 個，但如果改成用 getElementsByClassName 就會自動變成 6 個"
+          },
+          {
+            "value": "d",
+            "label": "無法確定，要看新增的元素在哪個位置"
+          }
+        ],
+        "answer": "a",
+        "explanation": "querySelectorAll 回傳的 NodeList 是「靜態快照」，拍下呼叫時的狀況就不再改變；相對的 getElementsByClassName 才是「動態 live」會隨 DOM 同步。這是兩者最重要的差異。"
+      }
     },
     {
       "id": "4.14",
@@ -655,7 +908,30 @@
           "level": 3,
           "text": "其他連線方式"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你用 fetch 拉資料時，伺服器回傳 HTTP 404 狀態碼，fetch 會發生什麼事？",
+        "options": [
+          {
+            "value": "a",
+            "label": "fetch 的 Promise 會自動 reject，進入 .catch()"
+          },
+          {
+            "value": "b",
+            "label": "fetch 的 Promise 會 resolve，但你要自己檢查 r.ok 或 r.status 來判斷是否出錯"
+          },
+          {
+            "value": "c",
+            "label": "fetch 會拋出一個通用的 HTTP 錯誤，你不需要額外檢查"
+          },
+          {
+            "value": "d",
+            "label": "404 錯誤只有在用 XMLHttpRequest 時才會被察覺，fetch 無法處理"
+          }
+        ],
+        "answer": "b",
+        "explanation": "fetch 的大坑：404 / 500 這類 HTTP 錯誤不會自動 reject Promise——只有網路斷線或 CORS 擋住才會 reject。HTTP 錯誤必須自己檢查 r.ok（或 r.status）來判斷。"
+      }
     },
     {
       "id": "4.15",
@@ -688,7 +964,30 @@
           "level": 3,
           "text": "Cache API（給 Service Worker 用）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的網站需要存一個使用者的 session token（登入憑證），下列哪個儲存方式最安全？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 localStorage 存 token，這樣 JS 隨時都能讀到"
+          },
+          {
+            "value": "b",
+            "label": "用 httpOnly cookie 存 token，讓 server 自動帶上、JS 讀不到"
+          },
+          {
+            "value": "c",
+            "label": "用 sessionStorage 存 token，分頁關閉就自動刪除"
+          },
+          {
+            "value": "d",
+            "label": "直接寫在 HTML 的 data 屬性，這樣最簡單"
+          }
+        ],
+        "answer": "b",
+        "explanation": "httpOnly cookie 是存 token 的正確方法，因為 JS 讀不到（防 XSS 攻擊），且會自動跟著 HTTP 請求發送給 server。localStorage 存 token 會被任何 XSS 漏洞盜走，sessionStorage 雖然會自動刪除但仍可被 XSS 讀取。"
+      }
     },
     {
       "id": "4.16",
@@ -729,7 +1028,30 @@
           "level": 3,
           "text": "Worker 通訊：SharedArrayBuffer"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的網頁在計算一個超大陣列的總和，結果整個頁面卡住、按鈕點不了。根據這課內容，最適合的解決方案是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "把計算邏輯搬到 Web Worker，讓它在另一條執行緒計算，主執行緒保持自由"
+          },
+          {
+            "value": "b",
+            "label": "用 Service Worker 攔截計算請求，在背景完成計算"
+          },
+          {
+            "value": "c",
+            "label": "把陣列分成很多小段，用 setTimeout 一段一段計算"
+          },
+          {
+            "value": "d",
+            "label": "改用 SharedWorker 這樣多個分頁可以共用計算結果"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Web Worker 的核心價值就是處理「重運算卡 UI」的問題——把計算搬到 Worker 執行緒，主執行緒才能自由處理 DOM 和事件。Service Worker 是用來攔截網路請求和離線，不適合這個場景；setTimeout 只是延遲不是真正並行；SharedWorker 是多分頁共用的情況。"
+      }
     },
     {
       "id": "4.17",
@@ -766,7 +1088,30 @@
           "level": 3,
           "text": "什麼時候用 WASM？"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的網站需要在瀏覽器內直接轉檔影片、同時也要在後端邊緣機房（Cloudflare Workers）執行影片處理邏輯。根據這課內容，下列哪個方案最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "前後端都用 JavaScript，因為 JS 是通用語言"
+          },
+          {
+            "value": "b",
+            "label": "前端用 ffmpeg.wasm 轉檔、後端部署 WASM 到 Cloudflare Workers，因為 WASM 跨瀏覽器和邊緣運算平台"
+          },
+          {
+            "value": "c",
+            "label": "只在瀏覽器用 WASM、後端還是用傳統語言，因為 WASM 只能在瀏覽器跑"
+          },
+          {
+            "value": "d",
+            "label": "用 WebSocket 即時串流，WASM 不適合影片處理"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調 WASM 的核心價值是「二進位格式、速度快、能在瀏覽器和邊緣運算平台跑」。ffmpeg.wasm 是熱門套件、WASI 標準讓 WASM 不限瀏覽器，可在 Cloudflare Workers 等邊緣機房部署，實現真正的跨平台。選項 c 錯在對 WASI 的誤解。"
+      }
     },
     {
       "id": "4.18",
@@ -803,7 +1148,30 @@
           "level": 3,
           "text": "瀏覽器使用 ESM"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在寫一個新的 Node.js 專案，想用 import/export 語法。下列哪個做法是正確的？",
+        "options": [
+          {
+            "value": "a",
+            "label": "在 package.json 加上 \"type\": \"module\"，之後 .js 檔就會用 ESM 解析"
+          },
+          {
+            "value": "b",
+            "label": "直接在 .js 檔寫 import/export，Node.js 會自動識別不需要設定"
+          },
+          {
+            "value": "c",
+            "label": "使用 CommonJS 的 require/module.exports，因為 Node.js 只支援這種方式"
+          },
+          {
+            "value": "d",
+            "label": "把所有檔案副檔名改成 .mjs，這樣就能用 import/export"
+          }
+        ],
+        "answer": "a",
+        "explanation": "設定 package.json 的 \"type\": \"module\" 是讓 Node.js 把 .js 檔當 ESM 解析的標準做法。選項 b 會報錯（預設是 CJS）、選項 c 過時、選項 d 是反過來的做法（沒設定時才需要）。"
+      }
     },
     {
       "id": "4.19",
@@ -856,7 +1224,30 @@
           "level": 3,
           "text": "Proxy：metaprogramming"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "設計模式的核心目的是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "把常見問題的最佳解法套路整理成可重複使用的方案，讓寫 code 時自然套用、別人也看得懂"
+          },
+          {
+            "value": "b",
+            "label": "強制所有 code 都要用設計模式，這樣才算是好的程式設計"
+          },
+          {
+            "value": "c",
+            "label": "學會所有設計模式的理論細節，為了設計而設計"
+          },
+          {
+            "value": "d",
+            "label": "只有大公司和資深工程師才需要知道設計模式"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程開頭明確說明『設計模式 = 老一輩工程師整理出的常見問題解法套路』，價值在於『不是為設計而設計、而是看懂後在寫 code 時自然會用』。強調的是實戰應用和理解他人代碼，而非盲目套用或只有菁英才用。"
+      }
     },
     {
       "id": "4.20",
@@ -901,7 +1292,30 @@
           "level": 3,
           "text": "虛擬列表（Virtual List）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "效能優化課講了 6 大招式，其中「debounce（防抖）」和「throttle（節流）」都是用來減少函式執行次數。請問：搜尋框使用者一邊打字一邊觸發 API，應該用哪個技巧，以及原因是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 debounce，因為只需要在使用者「停止打字」後才打 API"
+          },
+          {
+            "value": "b",
+            "label": "用 throttle，因為要保證每 100ms 執行一次 API 呼叫"
+          },
+          {
+            "value": "c",
+            "label": "用 memoize，因為搜尋結果會重複，可以直接用快取"
+          },
+          {
+            "value": "d",
+            "label": "用 Performance API，因為要測量 API 回應時間"
+          }
+        ],
+        "answer": "a",
+        "explanation": "debounce 適合「最後一次才有效」的場景，搜尋框正是——使用者連續輸入時，等他停手（300ms 沒新輸入）才一次發 API。throttle 則用在 scroll/mousemove 這種「固定間隔持續跑」的場景。"
+      }
     },
     {
       "id": "4.21",
@@ -946,7 +1360,30 @@
           "level": 3,
           "text": "Prototype Pollution"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的留言系統允許使用者貼 HTML 內容，但不想讓攻擊者透過 <script> 標籤執行惡意 JavaScript。下列做法中，哪一個最安全且最實用？",
+        "options": [
+          {
+            "value": "a",
+            "label": "使用 div.innerHTML = userInput，但在前端用 if 檢查有沒有 <script> 字串"
+          },
+          {
+            "value": "b",
+            "label": "使用 div.textContent = userInput，或用 DOMPurify 過濾後才用 innerHTML"
+          },
+          {
+            "value": "c",
+            "label": "設定 CSP header 禁止 inline script，就能完全解決 XSS"
+          },
+          {
+            "value": "d",
+            "label": "用 CSRF token 驗證使用者身份，確認是本人才顯示留言"
+          }
+        ],
+        "answer": "b",
+        "explanation": "textContent 把輸入當純文字不執行 HTML，或用 DOMPurify 移除危險標籤後再用 innerHTML，才能既安全又保留必要的 HTML 格式。選 a 的字串檢查容易被繞過，選 c 的 CSP 是額外防護而非主要手段，選 d 搞混了 CSRF 和 XSS 的概念。"
+      }
     },
     {
       "id": "4.22",
@@ -995,7 +1432,30 @@
           "level": 3,
           "text": "測試金字塔"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據測試金字塔的規則，你應該怎麼分配測試的力氣？",
+        "options": [
+          {
+            "value": "a",
+            "label": "70% 寫單元測試、20% 整合測試、10% E2E，因為下層測試快又便宜"
+          },
+          {
+            "value": "b",
+            "label": "50% 寫 E2E、30% 整合測試、20% 單元測試，才能涵蓋完整使用者流程"
+          },
+          {
+            "value": "c",
+            "label": "100% 寫 E2E 測試最保險，可以一次測完整個系統"
+          },
+          {
+            "value": "d",
+            "label": "只寫整合測試就夠了，單元和 E2E 都容易浪費時間"
+          }
+        ],
+        "answer": "a",
+        "explanation": "測試金字塔的核心是「底層測得越多越好（快、便宜），頂層精選關鍵流程（慢、貴）」。單元測試占 70% 可以快速檢查邊角案例，不要 100% E2E 因為既慢又不穩定。"
+      }
     },
     {
       "id": "4.23",
@@ -1036,7 +1496,30 @@
           "level": 3,
           "text": "檢測：Chrome Memory tab"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的網頁開了一小時後開始變慢，懷疑是記憶體洩漏。下列哪個情況最可能造成記憶體洩漏，讓 JS 的垃圾回收無法清理？",
+        "options": [
+          {
+            "value": "a",
+            "label": "從 root（window）出發還能追蹤到的物件，即使你認為不需要用了"
+          },
+          {
+            "value": "b",
+            "label": "使用 var 宣告的全域變數"
+          },
+          {
+            "value": "c",
+            "label": "建立了一個 setInterval，但沒有立即 clearInterval"
+          },
+          {
+            "value": "d",
+            "label": "在 closure 裡面宣告了一個很大的陣列"
+          }
+        ],
+        "answer": "a",
+        "explanation": "垃圾回收用 mark-and-sweep：只要物件從 root 找得到（reachable），就認為還在用、不會回收。即使程式設計師知道不需要，但只要鏈條沒斷，JS 就不敢清。選項 c 和 d 都會造成 leak，但答案 a 才是 leak 的根本原因——「找得到就不清」。"
+      }
     },
     {
       "id": "4.24",
@@ -1069,7 +1552,30 @@
           "level": 3,
           "text": "實戰範例"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想驗證台灣手機號碼（09 開頭、共 10 碼數字），下列哪個 regex 最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "/^09\\d{8}$/"
+          },
+          {
+            "value": "b",
+            "label": "/09\\d{8}/"
+          },
+          {
+            "value": "c",
+            "label": "/^09\\d+$/"
+          },
+          {
+            "value": "d",
+            "label": "/09\\d{8}$/g"
+          }
+        ],
+        "answer": "a",
+        "explanation": "選項 a 用 ^ 和 $ 確保整個字串從 09 開頭、接 8 個數字後立即結束，避免匹配到「09123456789 後面還有垃圾」。選項 b 沒有邊界檢查、選項 c 的 \\d+ 次數不固定、選項 d 的 g flag 用在 test/match 驗證場景不必要。"
+      }
     },
     {
       "id": "4.25",
@@ -1096,6 +1602,29 @@
         "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
         "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
         "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+      },
+      "miniQuiz": {
+        "question": "根據這課所說，為什麼 2026 年寫 JS 程式時「一定要認識這些新特性」？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為舊特性已經被官方禁用、不能再用了"
+          },
+          {
+            "value": "b",
+            "label": "因為 JS 每年都進化、新特性提升效率跟可讀性、面試也會考"
+          },
+          {
+            "value": "c",
+            "label": "因為新特性可以讓程式執行速度快 10 倍以上"
+          },
+          {
+            "value": "d",
+            "label": "因為只有大公司的專案才會用新特性"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程開頭明確說明：新特性讓寫 code 時『效率上升、可讀性大增』，而且『停在 ES2015 寫 code 就 out 了』、『面試聊 JS 馬上加分』。選項 a 不對（舊特性未禁用）、c 誇大其詞、d 也錯（任何新專案都該用新特性）。"
       }
     }
   ],
@@ -1110,5 +1639,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "JavaScript 是單執行緒、事件驅動的動態語言，用 var/let/const 宣告變數要選對、== 和 === 不能亂用",
+    "函式是 JS 的靈魂，陣列和物件是最常用的資料結構，Class 和 Prototype 是物件導向的兩種做法",
+    "非同步的祕密在於事件迴圈和 Promise，Generator 可以自製複雜的迭代邏輯",
+    "DOM 操作搭配事件監聽讓頁面互動，Fetch API 負責網路通訊，localStorage 把資料存在瀏覽器",
+    "模組系統（ESM/CommonJS）組織大型專案，設計模式和測試確保程式品質，資安和記憶體管理決定產品壽命"
+  ],
+  "faq": [
+    {
+      "q": "JavaScript 到底是什麼？為什麼學 JavaScript 這麼重要？",
+      "a": "JavaScript 是瀏覽器的官方語言，用來讓網頁有互動、動畫、即時通訊這些功能。現在 Node.js 還讓 JS 能寫後端，所以學 JS 幾乎等於學會前後端共通語言。"
+    },
+    {
+      "q": "var、let、const 到底該用誰？感覺很複雜。",
+      "a": "簡單說：const 優先（大部分情況）、let 次之（真的要改值再用）、var 已過時別用。新手記住 const 當預設值就對了，這樣也更容易抓 bug。"
+    },
+    {
+      "q": "為什麼 JavaScript 有這麼多奇怪的地方，像 == 和 ===？",
+      "a": "JavaScript 早期設計得很快，留下不少古怪的地方。== 會自動轉型常出bug，所以現代 JS 都用 === 嚴格相等；其他怪招也是一樣，懂原理後就能避開。"
+    }
+  ]
 }

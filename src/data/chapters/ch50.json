@@ -65,7 +65,30 @@
           "level": 3,
           "text": "自動化的天花板"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程，為什麼自動化在 2026 年對 indie hacker 特別重要？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為自動化可以完全取代寫程式的需求"
+          },
+          {
+            "value": "b",
+            "label": "因為 1 人公司沒有員工，需要用自動化來處理重複工作並提供 24 小時服務"
+          },
+          {
+            "value": "c",
+            "label": "因為自動化比 Agent 的學習曲線更高，更容易打造護城河"
+          },
+          {
+            "value": "d",
+            "label": "因為所有公司都只用一個 SaaS 工具，需要自動化來管理"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調 1 人公司流行、客戶期待更快回應，自動化是 indie 最大護城河。選項 a 錯因為自動化不是取代程式，c 錯因為自動化學習曲線其實很低，d 錯因為課程說是 10+ 個 SaaS 需要串，不是只有一個。"
+      }
     },
     {
       "id": "50.2",
@@ -130,7 +153,30 @@
           "level": 3,
           "text": "2026 業界趨勢"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你是一家 SMB（中小企業），每月需要處理約 5000 個 task，技術團隊有 1-2 人懂程式，特別在意成本。根據課程內容，下列哪個選擇最適合你？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Zapier，因為整合最多、UI 最簡單、不用自架"
+          },
+          {
+            "value": "b",
+            "label": "n8n 自架版，因為省錢、不限 task 數、有技術人可維運"
+          },
+          {
+            "value": "c",
+            "label": "Zapier + Make 混用，因為這樣可以用到最多功能"
+          },
+          {
+            "value": "d",
+            "label": "Make，因為視覺化最好、價格在中間、不用寫程式"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調「適合」而非「最好」。有技術背景 + 在意成本的 SMB，n8n 自架版是最佳選擇：5000 task 用 Zapier 會花 $70-100/月、Make 約 $16-31/月，但 n8n 自架只需 $5-20/月伺服器費且不限 task 數。Make 雖便宜，但題目已有技術人維運，用 n8n 更省錢；Zapier 則是為非技術 founder 設計的。"
+      }
     },
     {
       "id": "50.3",
@@ -175,7 +221,30 @@
           "level": 3,
           "text": "升級 n8n"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "如果你要在生產環境自架 n8n，下列哪個組合是最適合的？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 Docker + PostgreSQL + 設定 N8N_ENCRYPTION_KEY，資料儲存在自己的伺服器"
+          },
+          {
+            "value": "b",
+            "label": "用 npm 本機跑 + SQLite，因為最快最簡單"
+          },
+          {
+            "value": "c",
+            "label": "直接用 n8n Cloud 付月費，省去自架麻煩"
+          },
+          {
+            "value": "d",
+            "label": "用 Docker + 內建 SQLite，這樣不用額外設定資料庫"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Docker + PostgreSQL + 加密金鑰是生產環境的標配。npm 本機只適合學習、Cloud 需付費失去自架優勢、SQLite 會在 scale 時出問題且沒持久化保障。"
+      }
     },
     {
       "id": "50.4",
@@ -232,7 +301,30 @@
           "level": 3,
           "text": "多 items：n8n 自動處理"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想建一個 workflow，每當有人透過 Webhook 向你的 n8n 發送訂單資料時，自動把訂單存進資料庫。請問這個 workflow 最少需要幾個節點？",
+        "options": [
+          {
+            "value": "a",
+            "label": "1 個（只要 Trigger 就夠）"
+          },
+          {
+            "value": "b",
+            "label": "2 個（Trigger + Action）"
+          },
+          {
+            "value": "c",
+            "label": "3 個（Trigger + 2 個 Action）"
+          },
+          {
+            "value": "d",
+            "label": "4 個以上（需要條件判斷和轉換）"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Webhook Trigger 接收訂單資料後，只需要 1 個 DB Operation Action 就能存進資料庫，共 2 個節點即可完成。不需要額外的條件判斷或轉換。"
+      }
     },
     {
       "id": "50.5",
@@ -293,7 +385,30 @@
           "level": 3,
           "text": "除錯技巧"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你有 1000 筆客戶資料要透過 API 寄信，但 API 每分鐘最多 100 次呼叫。為了避免超過限制，應該用什麼節點搭配什麼做法？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 Split In Batches 分批（比如每批 50 筆），並在每個 batch 之間加 Wait 節點暫停 30 秒"
+          },
+          {
+            "value": "b",
+            "label": "直接用 IF 節點判斷有沒有超過 100 筆，超過就分次發送"
+          },
+          {
+            "value": "c",
+            "label": "用 Switch 節點根據客戶類型分別處理，這樣自動平衡負載"
+          },
+          {
+            "value": "d",
+            "label": "設定節點的 Retry On Fail，失敗時自動重試就不會超限"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Split In Batches 正是為了處理大量資料避免 API 超限而設計的，搭配 Wait 節點在 batch 之間暫停，就能控制執行速度。其他選項都無法解決 rate limit 的問題。"
+      }
     },
     {
       "id": "50.6",
@@ -346,7 +461,30 @@
           "level": 3,
           "text": "多 item 處理：$items()"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在 n8n 的某個欄位想要顯示「今天日期（格式：2026-05-12）+ 使用者名稱」，下列哪個 Expression 寫法最合適？",
+        "options": [
+          {
+            "value": "a",
+            "label": "{{ $now.toFormat(\"yyyy-MM-dd\") + $json.name }}"
+          },
+          {
+            "value": "b",
+            "label": "{{ $now + \" \" + $json.name }}"
+          },
+          {
+            "value": "c",
+            "label": "{{ new Date().toFormat(\"yyyy-MM-dd\") + $json.name }}"
+          },
+          {
+            "value": "d",
+            "label": "{{ $json.today + $json.name }}"
+          }
+        ],
+        "answer": "a",
+        "explanation": "n8n 用 $now 搭配 Luxon 的 toFormat() 來格式化時間，$now.toFormat(\"yyyy-MM-dd\") 會得到 2026-05-12 這樣的格式。b 用 $now 會輸出完整時間物件、c 用 new Date() 在 n8n 環境不適用、d 虛構欄位 $json.today 不存在。"
+      }
     },
     {
       "id": "50.7",
@@ -407,7 +545,30 @@
           "level": 3,
           "text": "注意：sandbox 限制"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你有一個 Code Node 要處理 100 筆客戶資料，每筆都要加上「是否成年」的欄位。下面哪個做法最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 Run Once for All Items mode，一次處理全部 100 筆，return 一個包含 100 個轉換後 items 的陣列"
+          },
+          {
+            "value": "b",
+            "label": "用 Run Once for Each Item mode，Node 會自動跑 100 次，每次處理一筆、return 一個 item"
+          },
+          {
+            "value": "c",
+            "label": "兩種 mode 效果一樣，選哪個都可以"
+          },
+          {
+            "value": "d",
+            "label": "用 Run Once for All Items，但只處理第一筆，其他筆用 $input.last() 補"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Run Once for Each Item mode 就是設計給「逐個轉換」場景用的，100 筆資料會自動跑 100 次，每次只要 return 一個轉換後的 item。Run Once for All Items 是用來做批次處理（如合併、篩選多筆），不是這個場景。"
+      }
     },
     {
       "id": "50.8",
@@ -459,7 +620,30 @@
           "level": 3,
           "text": "HTTP Request 安全"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的 n8n workflow 需要呼叫一個 API，但 n8n 沒有對應的專用 node。應該用什麼方法解決？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 HTTP Request node 直接呼叫任何 REST / GraphQL API"
+          },
+          {
+            "value": "b",
+            "label": "向 n8n 官方要求新增 node，等待更新"
+          },
+          {
+            "value": "c",
+            "label": "用 Script node 自己寫 HTTP 程式碼呼叫"
+          },
+          {
+            "value": "d",
+            "label": "這個 API 不支援就放棄，改用其他服務"
+          }
+        ],
+        "answer": "a",
+        "explanation": "HTTP Request 是 n8n 的萬用工具，能直接呼叫任何 REST / GraphQL API，不需要等待專用 node。支援各種認證方式（Bearer Token、OAuth、Basic Auth）、Headers、Query Parameters、Body 等設定，是解決「沒對應 node」的標準做法。"
+      }
     },
     {
       "id": "50.9",
@@ -524,7 +708,30 @@
           "level": 3,
           "text": "成本對比"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "如果你想在 n8n 中快速建立一個「能記住聊天歷史」的 AI 客服 Bot，下列哪個組合最完整？",
+        "options": [
+          {
+            "value": "a",
+            "label": "只用 OpenAI Node 呼叫 GPT-4o，把整個聊天記錄放在 prompt 裡"
+          },
+          {
+            "value": "b",
+            "label": "AI Agent Node + Window Buffer Memory（用 user_id 做 session）+ 工具（如 HTTP Tool 接內部 API）"
+          },
+          {
+            "value": "c",
+            "label": "Chain Node + Pinecone Vector Store，這樣就能自動記得上一輪對話"
+          },
+          {
+            "value": "d",
+            "label": "用 Ollama 跑本地 LLM，不需要其他節點就能做多輪對話"
+          }
+        ],
+        "answer": "b",
+        "explanation": "AI Agent Node 負責智能決策、Window Buffer Memory 負責保留對話歷史、工具（Tool nodes）讓 agent 能執行實際操作。這三個元素合起來才是完整的會話式 AI 客服。Vector Store 是用來做 RAG 檢索，不是記憶；Ollama 只是模型運行方式，不包括記憶管理。"
+      }
     },
     {
       "id": "50.10",
@@ -588,7 +795,30 @@
           "level": 3,
           "text": "2026 進階：External Vault"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "為什麼 n8n 要用 Credentials 來管理 API key，而不是直接在 workflow 裡寫明文 key？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 Credentials 可以集中管理、跨 workflow 共用、換 key 只需改一個地方，而明文 key 會暴露在 workflow export 和 execution log 裡"
+          },
+          {
+            "value": "b",
+            "label": "因為 Credentials 比環境變數更快速，不用重啟 n8n"
+          },
+          {
+            "value": "c",
+            "label": "因為直接寫 API key 會讓 workflow 執行速度變慢"
+          },
+          {
+            "value": "d",
+            "label": "因為 Credentials 支援 OAuth2，而直接寫 key 不支援"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調 Credentials 的核心價值是「集中管理」，避免 key 暴露在 workflow export/log、支援跨 workflow 共用、一次改動全部更新。b 是環境變數的特性不是 Credentials；c 和 d 都超出課程範圍。"
+      }
     },
     {
       "id": "50.11",
@@ -632,7 +862,30 @@
           "level": 3,
           "text": "進化路線"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這堂課的個人早安簡報 workflow，為什麼要在「天氣、行事曆、Gmail」三個節點之後加入「Merge」節點？",
+        "options": [
+          {
+            "value": "a",
+            "label": "把三個不同來源的資料合併成一個，才能一次性傳給 AI 整合和寫建議"
+          },
+          {
+            "value": "b",
+            "label": "Merge 節點可以幫我們刪除重複的郵件和行程"
+          },
+          {
+            "value": "c",
+            "label": "Merge 節點會自動決定哪些資訊比較重要、優先推播給使用者"
+          },
+          {
+            "value": "d",
+            "label": "因為 Telegram 推播功能只能接收已合併的資料格式"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Merge 節點的作用是「Combine（合併）」三個 branch 的結果到一個 item，這樣後面的 OpenAI 節點才能同時存取所有資料去寫簡報。b 說刪除重複是 Merge 的功能，c 說優先排序、d 說 Telegram 格式要求，都不是這個 workflow 中 Merge 的真正目的。"
+      }
     },
     {
       "id": "50.12",
@@ -664,7 +917,30 @@
           "level": 3,
           "text": "節點細節"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，使用 AI workflow 自動化內容發布的最大好處是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "每次發布可以省下 25 分鐘的時間"
+          },
+          {
+            "value": "b",
+            "label": "能夠穩定持續發布內容，累積 audience 成為護城河"
+          },
+          {
+            "value": "c",
+            "label": "可以自動生成更高品質的文章內容"
+          },
+          {
+            "value": "d",
+            "label": "不需要手動登入各個社群平台帳號"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調自動化的真正威力不在『省時』，而在『持續性』——手動發會因偷懶而斷，自動化則能天天發、累積 audience，這才是 indie hacker 的護城河。選項 a 只看到時間節省、c 和 d 超出課程範圍。"
+      }
     },
     {
       "id": "50.13",
@@ -696,7 +972,30 @@
           "level": 3,
           "text": "細節"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在這個 LINE 客服 bot 的架構中，當使用者問一個一般性問題（比如「你們的退費政策是什麼？」）時，系統會經過哪些主要步驟來回覆？",
+        "options": [
+          {
+            "value": "a",
+            "label": "直接從 PostgreSQL 訂單資料庫查詢、然後用 OpenAI 寫成人話回覆"
+          },
+          {
+            "value": "b",
+            "label": "用 OpenAI 分類判斷是一般問題、用 Embeddings 查 Pinecone 知識庫找相關內容、再由 OpenAI 生成回覆"
+          },
+          {
+            "value": "c",
+            "label": "判斷是複雜問題後、立即通知 Slack 讓真人處理"
+          },
+          {
+            "value": "d",
+            "label": "用 OpenAI 從訊息中抽取關鍵字、然後直接回覆「我不確定、請聯絡客服」"
+          }
+        ],
+        "answer": "b",
+        "explanation": "一般詢問（general）走 RAG 流程：先用 OpenAI 分類確認是一般問題，再用 Embeddings 把問題轉向量、在 Pinecone 查知識庫取相關文件，最後由 OpenAI 根據 context 生成回覆。選項 a 是訂單問題的流程、c 是抱怨的流程、d 則是 unknown 的流程。"
+      }
     },
     {
       "id": "50.14",
@@ -737,7 +1036,30 @@
           "level": 3,
           "text": "Node 基本範例"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "下列哪個情況最適合寫 Custom Node，而不是用 HTTP Request 節點就好？",
+        "options": [
+          {
+            "value": "a",
+            "label": "你要呼叫一個有完整 API 文件的公開服務"
+          },
+          {
+            "value": "b",
+            "label": "你公司的內部 API 沒有公開文件，而且會被很多人重複使用，想要有友善的 UI 介面"
+          },
+          {
+            "value": "c",
+            "label": "你只需要簡單的 GET/POST 請求到某個外部 API"
+          },
+          {
+            "value": "d",
+            "label": "你想快速測試某個 API 是否能用"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Custom Node 適合用在「內部 API 沒公開文件」且「想做 UI 友善的節點」這種常用場景。HTTP Request 足以應付有文件的公開 API，而 Custom Node 才能提供像素級的使用體驗和重複使用性。"
+      }
     },
     {
       "id": "50.15",
@@ -777,7 +1099,30 @@
           "level": 3,
           "text": "實作 Idempotency Table"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的 workflow 會呼叫第三方 API 扣款。如果 webhook 重送了，同一筆訂單被扣了兩次，客戶投訴。要防止這個問題，應該怎麼做？",
+        "options": [
+          {
+            "value": "a",
+            "label": "設定 Retry on Fail，讓失敗自動重試 3 次，這樣就不會漏掉任何請求"
+          },
+          {
+            "value": "b",
+            "label": "建立 idempotency table，先查這個 event_id 有沒有處理過，處理過就直接回傳結果，沒有才繼續"
+          },
+          {
+            "value": "c",
+            "label": "用 Error Trigger workflow 監控失敗，失敗時馬上寄信通知 dev"
+          },
+          {
+            "value": "d",
+            "label": "在節點設定 Continue on Fail，這樣即使失敗也會繼續往下跑"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Idempotency 是防止重複操作（尤其金流）的關鍵。a 是重試機制但無法防重複、c 只是通知不是防止、d 會讓失敗的扣款直接跳過反而更危險。"
+      }
     },
     {
       "id": "50.16",
@@ -834,7 +1179,30 @@
           "level": 3,
           "text": "Cost Monitoring（LLM API）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的 n8n workflow 跑了 1000 次、其中 50 次失敗了，但你用 n8n 內建的 Executions 面板查了兩次都沒發現。最可能的原因是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "n8n 內建 Executions 只能看成功的執行、不會紀錄失敗"
+          },
+          {
+            "value": "b",
+            "label": "n8n UI 沒有 alert 機制、你需要主動去查、不會自動通知你有失敗"
+          },
+          {
+            "value": "c",
+            "label": "失敗的紀錄會在 24 小時後自動刪除"
+          },
+          {
+            "value": "d",
+            "label": "你的 workflow 沒有加 Error Trigger、所以失敗會被自動隱藏"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調『不看 monitoring 你不會知道』的關鍵在於：n8n UI 有 Executions 面板可以看紀錄，但沒有 alert、沒有 metrics dashboard，你必須主動查看。Executions 確實會紀錄失敗狀態和 error，但不會主動通知你。"
+      }
     },
     {
       "id": "50.17",
@@ -882,7 +1250,30 @@
           "level": 3,
           "text": "真實案例"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，indie hacker 用 n8n 賺錢時，為什麼「定價 NT$10,000/月 retainer + 一次性 setup NT$30,000」比「定價 NT$1,000」更容易成交？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為客戶更在意省下來的人力成本（ROI），而不是服務本身的價格"
+          },
+          {
+            "value": "b",
+            "label": "因為高價格會讓客戶覺得你更專業、更值得信任"
+          },
+          {
+            "value": "c",
+            "label": "因為 NT$1,000 太便宜、容易被砍價"
+          },
+          {
+            "value": "d",
+            "label": "因為大企業客戶只看預算高的服務商、小預算會被忽視"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調「客戶簽得很開心」的原因是你幫他省 NT$30,000 人力成本、收 NT$10,000 retainer 就有 3 倍 ROI，客戶看的是價值而非價格本身。其他選項都混淆了價格與價值的區別。"
+      }
     },
     {
       "id": "50.18",
@@ -942,7 +1333,30 @@
           "level": 3,
           "text": "跟 Ch20 串起來"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，2026-2030 年 indie 開發者在自動化領域最有機會的策略是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "學會 n8n 和 Agent 技術後，直接開發一個比 n8n 更好用的自動化平台"
+          },
+          {
+            "value": "b",
+            "label": "選擇特定垂直產業（如餐廳、房仲），用 n8n + Agent 混合架構提供完整解決方案，並持續累積受眾"
+          },
+          {
+            "value": "c",
+            "label": "把所有自己設計的 workflow 和 template 免費分享到網路上，靠廣告變現"
+          },
+          {
+            "value": "d",
+            "label": "只學 Agent 不學 n8n，因為 Agent 在 2028-2030 會完全取代 workflow 工具"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調「不一定要會寫 code、要會組合工具創造結果」，並提出黃金公式：(n8n 自動化 + AI Agent) × 你的領域 × 持續累積 audience。選項 a 是課程明說別做的事（「替代 n8n 做平台」），c 違反「商業機密留著」原則，d 錯誤地預測 Agent 會完全取代 workflow。"
+      }
     },
     {
       "title": "n8n 是什麼 + 跟 Zapier / Make 比",
@@ -995,7 +1409,30 @@
           "level": 2,
           "text": "適合誰"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "如果你是一個小型新創公司，想要自動化工作流程但預算有限，同時希望資料完全保存在自己的伺服器上，n8n 相比 Zapier 和 Make 的最大優勢是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "n8n 的整合數量最多，可以連接 6000 個以上的應用"
+          },
+          {
+            "value": "b",
+            "label": "n8n 是開源且可自架，可以用很低的成本自己部署，資料掌握在自己手上"
+          },
+          {
+            "value": "c",
+            "label": "n8n 的介面最簡單，完全不懂技術的人也能快速上手"
+          },
+          {
+            "value": "d",
+            "label": "n8n 只支援 JavaScript，所以程式碼更安全"
+          }
+        ],
+        "answer": "b",
+        "explanation": "這課的核心是 n8n 的殺手特色——開源、可自架、低成本。選項 b 準確說出了相比其他兩者的關鍵優勢。a 錯誤（n8n 整合數反而最少），c 錯誤（n8n 適合開發者，不是完全新手），d 曲解了 JS 的意義（是優點不是安全理由）。"
+      }
     },
     {
       "title": "n8n 核心概念：Node / Trigger / Workflow",
@@ -1064,7 +1501,30 @@
           "level": 2,
           "text": "模板 (Templates)"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "小明想用 n8n 做一個自動化流程：每天早上 9 點自動從 API 抓取銷售數據、用 AI 分析後、寄信給老闆。下列敘述何者正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Schedule Node 負責「每天早上 9 點」、HTTP Request Node 負責「抓 API」、Code Node 或 AI Node 負責「分析」、Gmail Node 負責「寄信」——這四個 Node 加起來就是 Workflow"
+          },
+          {
+            "value": "b",
+            "label": "因為只有一個 Trigger（Schedule），所以整個 Workflow 只能設定一次時間，無法改動"
+          },
+          {
+            "value": "c",
+            "label": "Workflow 完成後、每次都要手動點 Execute 才能跑，不能真正自動化"
+          },
+          {
+            "value": "d",
+            "label": "這個流程中的 Trigger 應該是 Gmail Node，因為它負責最後一步的寄信動作"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Trigger（Schedule）是起點決定何時啟動，後續的 HTTP Request、AI 分析、Gmail 都是 Node——一個一個的動作，整個串起來就是 Workflow。b 錯因為 Trigger 設定後每次都會自動按時執行；c 錯因為設好的 Workflow 會自動運行；d 錯因為 Trigger 必須在最前面啟動整個流程，不會是最後一個 Node。"
+      }
     },
     {
       "title": "Webhook + API 整合：n8n 變後端",
@@ -1116,7 +1576,30 @@
           "level": 2,
           "text": "Indie 真實 stack"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，下列何者是 n8n 作為後端最適合的使用場景？",
+        "options": [
+          {
+            "value": "a",
+            "label": "處理每秒 1000 筆請求的高流量電商訂單系統"
+          },
+          {
+            "value": "b",
+            "label": "接收 Stripe 付款完成的 webhook，自動更新資料庫並寄感謝信"
+          },
+          {
+            "value": "c",
+            "label": "實現複雜的購物車商品推薦演算法"
+          },
+          {
+            "value": "d",
+            "label": "建立需要嚴格 SLA 保證的金融交易核心系統"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確列出 n8n 適合「簡單 webhook 處理」和「跨 service 整合」，Stripe webhook 例子正是典型應用。而 a、c、d 都違反課程提到的 n8n 不適合場景（高流量、複雜業務邏輯、嚴格 SLA）。"
+      }
     },
     {
       "title": "n8n + AI Agent：自動化 + LLM 整合",
@@ -1172,7 +1655,30 @@
           "level": 2,
           "text": "案例"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在 n8n 的 AI Agent 中，『AI Agent』和『一般的 LLM 節點』最大的差別是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "AI Agent 可以自己決定要用哪個工具來處理問題，而一般 LLM 只能被動回答"
+          },
+          {
+            "value": "b",
+            "label": "AI Agent 支援多種語言，但一般 LLM 只支援英文"
+          },
+          {
+            "value": "c",
+            "label": "AI Agent 可以記住對話歷史，但一般 LLM 無法記憶"
+          },
+          {
+            "value": "d",
+            "label": "AI Agent 比一般 LLM 便宜、成本更低"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程重點強調 AI Agent 不只『呼叫 LLM』，而是『給 LLM 工具讓它自主執行』——AI 會看使用者問題、自己判斷該調用哪個工具（如查 DB、發信、呼叫 API）。這才是 Agent 相比普通 LLM 的核心差異。"
+      }
     },
     {
       "title": "n8n Self-host 部署 + 環境",
@@ -1257,7 +1763,30 @@
           "level": 2,
           "text": "安全 checklist"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這課內容，為什麼部署 n8n 時一定要設定 N8N_ENCRYPTION_KEY 這個環境變數？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用來加密敏感資料（像密碼、API key），確保資料安全"
+          },
+          {
+            "value": "b",
+            "label": "用來連接 PostgreSQL 資料庫，沒設的話無法存資料"
+          },
+          {
+            "value": "c",
+            "label": "用來設定 webhook 的 URL，讓外部系統能呼叫 n8n"
+          },
+          {
+            "value": "d",
+            "label": "用來設定時區，讓 workflow 執行時間正確"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調 N8N_ENCRYPTION_KEY 是『一定要設』的重要環保變數，專門用來加密敏感資訊。其他選項分別是 DB 連線、webhook 設定、時區設定的變數，但都不是 encryption key 的用途。"
+      }
     },
     {
       "title": "n8n 實戰：寄送週報",
@@ -1330,7 +1859,30 @@
           "level": 2,
           "text": "類似 workflow 範本"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，如果你要設定這個週報 workflow 在每週一早上 9 點自動執行，應該在哪個 node 設定時間和頻率？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Schedule node（排程節點），設定 Mode 為 Every Week、Day 為 Monday、Time 為 09:00"
+          },
+          {
+            "value": "b",
+            "label": "Postgres node（資料庫節點），在 SQL 查詢中加入排程指令"
+          },
+          {
+            "value": "c",
+            "label": "Set node（設定節點），用 JavaScript 計算下次執行時間"
+          },
+          {
+            "value": "d",
+            "label": "Gmail node（信件節點），在寄信時設定延遲時間"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Schedule node 是 n8n 專門用來設定工作流自動執行時間的節點，在這個案例中透過設定 Mode、Day 和 Time 來控制每週一 9 點的執行；其他節點的功能是取資料、計算、寫信，不負責排程。"
+      }
     },
     {
       "title": "n8n 接案 + 變現",
@@ -1410,7 +1962,30 @@
           "level": 2,
           "text": "心智模式轉換"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "如果你接了一個蝦皮賣家的自動化案子，幫他設定訂單 → Notion → Gmail → LINE 的流程，收了 NT$50k 一次性費用，之後還收 NT$3k 月費做維護。這個商業模式最核心的優勢是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "一次性收費高，客戶一次付清就完成了"
+          },
+          {
+            "value": "b",
+            "label": "把一次性專案轉成穩定的月費訂閱，建立被動收入流"
+          },
+          {
+            "value": "c",
+            "label": "n8n 軟體本身很便宜，利潤空間大"
+          },
+          {
+            "value": "d",
+            "label": "可以教客戶自己改 workflow，省去維護時間"
+          }
+        ],
+        "answer": "b",
+        "explanation": "這課強調的核心心法是「跑 10 個客戶 = 月入 NT$30k 被動」——把案子變成月費訂閱才是真正變現。一次性收費只是入場，月費維護才是穩定現金流。a 只是短期利益、c 與課程無關、d 反而失去月費機會。"
+      }
     }
   ],
   "boss": {
@@ -1424,5 +1999,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "n8n 是開源自動化平台，比 Zapier / Make 便宜、自由度高、支援自架",
+    "Workflow = Trigger（觸發）+ 一連串 Action（動作），Expression 和 Code Node 處理邏輯",
+    "HTTP Request、Webhook、AI Nodes 等核心功能讓你連接幾乎任何服務和 LLM",
+    "Error Handling、Credentials 加密、Monitoring 確保 workflow 穩定運作不爆炸",
+    "個人早安簡報、內容工廠、客服 RAG bot 是從接案到 SaaS 的變現起點"
+  ],
+  "faq": [
+    {
+      "q": "n8n 真的比 Zapier 便宜很多嗎？",
+      "a": "是的，n8n 自架版本完全免費，即使用雲端版也是按工作量計費。Zapier 一個 action 就要錢，用量大的話 n8n 能省很多。但有個前提是你要自己維護和部署，技術成本要算進去。"
+    },
+    {
+      "q": "完全不懂 JavaScript 可以學嗎？",
+      "a": "可以。一開始用拖拉拖拉的 GUI 節點就能做很多事，Expression 和 Code Node 是進階課題。我們會從最簡單的 Trigger + Action 開始，慢慢讓你摸熟再進 JavaScript。"
+    },
+    {
+      "q": "學完 n8n 真的能接案賺錢嗎？",
+      "a": "可以，但不是「學完保證月入X」那種。n8n 自動化是真實需求，很多小公司願意付費外包這類工作。關鍵是你要組出對客戶有價值的 workflow，這需要理解他們的痛點，不是只會工具而已。"
+    }
+  ]
 }

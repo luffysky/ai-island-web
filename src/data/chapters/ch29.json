@@ -64,7 +64,30 @@
           "level": 3,
           "text": "實際對照範例"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，如果你正在做一個「全端網頁應用，需要定期爬取資料、進行資料分析後存到資料庫」的專案，應該優先選哪個語言？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Node.js，因為可以用同一個語言搞定前端、爬蟲、後端全部"
+          },
+          {
+            "value": "b",
+            "label": "Python，因為 pandas 和資料分析工具最完整"
+          },
+          {
+            "value": "c",
+            "label": "Node.js，因為執行速度一定比 Python 快"
+          },
+          {
+            "value": "d",
+            "label": "Python，因為爬蟲套件資源最多"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調「什麼場景選什麼」，全端應用是 Node 的主場景（一語言搞定所有），資料分析強度沒有金融量化那麼重。選項 b、d 強調 Python 的優勢，但在全端 Indie SaaS 場景不是主要考量。"
+      }
     },
     {
       "id": "29.2",
@@ -113,7 +136,30 @@
           "level": 3,
           "text": "Cheerio 進階用法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在 Node 環境用 fetch + cheerio 爬網頁時，以下流程順序哪個才是正確的？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 cheerio.load() 解析 HTML → 用 fetch() 抓網頁 → 用 $ 選取元素"
+          },
+          {
+            "value": "b",
+            "label": "用 fetch() 抓網頁 → 用 res.text() 拿 HTML 文字 → 用 cheerio.load() 解析"
+          },
+          {
+            "value": "c",
+            "label": "用 $ 直接選取遠端網頁元素 → 用 fetch() 確認連線 → cheerio 最後才處理"
+          },
+          {
+            "value": "d",
+            "label": "cheerio 和 fetch 可以同時執行，順序無關緊要"
+          }
+        ],
+        "answer": "b",
+        "explanation": "fetch + cheerio 的正確流程是：先用 fetch() 請求網頁拿到 response、再用 res.text() 轉換成 HTML 文字、最後用 cheerio.load() 把 HTML 解析成可用 jQuery 語法選取的物件。順序很重要，不能顛倒。"
+      }
     },
     {
       "id": "29.3",
@@ -166,7 +212,30 @@
           "level": 3,
           "text": "截攔 Request / Response"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在寫爬蟲，需要控制瀏覽器自動點擊、填表、爬取資料。下面哪個敘述最正確地反映 Puppeteer 的核心優勢？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Puppeteer 能控制所有瀏覽器（Chrome、Firefox、Safari），是目前最通用的方案"
+          },
+          {
+            "value": "b",
+            "label": "Puppeteer 是 Google 官方工具，與 Chrome 整合最好、社群大，特別適合爬 Chrome 環境的網站"
+          },
+          {
+            "value": "c",
+            "label": "Puppeteer 比 Playwright 新，所以 API 更現代、功能更強"
+          },
+          {
+            "value": "d",
+            "label": "安裝 puppeteer 時會自動下載 Chromium，安裝 puppeteer-core 也會但可以用自己的 Chrome"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調 Puppeteer 是『Google 親兒子』，與 Chrome 整合最好、社群大，雖然 Playwright 更現代但 Puppeteer 仍主流。選項 a 錯在 Puppeteer 只支援 Chrome；c 錯在 Playwright 才是更新更強；d 錯在 puppeteer-core 不下載 Chromium。"
+      }
     },
     {
       "id": "29.4",
@@ -219,7 +288,30 @@
           "level": 3,
           "text": "並發爬多頁"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想寫一個爬蟲程式，需要同時測試 Chrome、Firefox 和 Safari 三種瀏覽器。用 Puppeteer 和 Playwright 哪一個比較適合？為什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Puppeteer，因為它是最老牌的爬蟲工具"
+          },
+          {
+            "value": "b",
+            "label": "Playwright，因為它支援跨瀏覽器，而 Puppeteer 只支援 Chromium"
+          },
+          {
+            "value": "c",
+            "label": "Puppeteer，因為它有自動等待（auto-wait）功能"
+          },
+          {
+            "value": "d",
+            "label": "Playwright，因為它有 Codegen 可以自動錄製操作"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確指出 Playwright 的優勢之一就是『跨瀏覽器（Chrome / Firefox / Safari）』，而 Puppeteer 則『Chromium only』。雖然 Codegen 和 auto-wait 也是 Playwright 的優點，但題目問的是『同時測試三種瀏覽器』，最直接的答案是跨瀏覽器支援。"
+      }
     },
     {
       "id": "29.5",
@@ -272,7 +364,30 @@
           "level": 3,
           "text": "Apify 平台託管（賺錢用）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你要爬一個有 5000 頁的靜態網站、每頁只需要解析 HTML 拿商品名稱和價格。下列哪個選擇最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 CheerioCrawler、因為它速度最快、不需要開瀏覽器"
+          },
+          {
+            "value": "b",
+            "label": "用 PlaywrightCrawler、因為它功能最全、最穩定"
+          },
+          {
+            "value": "c",
+            "label": "用 fetch + cheerio 就好、不用 Crawlee 這麼複雜"
+          },
+          {
+            "value": "d",
+            "label": "用 PuppeteerCrawler、因為它是最新的渲染引擎"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確提示：爬量 > 1 萬頁要用 Crawlee（你這是 5000 頁、邊界案例但用 Crawlee 更保險）。5000 頁靜態網站最快的選擇是 CheerioCrawler（⭐⭐⭐ 速度最快），不需要開瀏覽器渲染。c 選項只適合 < 1000 頁的小爬蟲。"
+      }
     },
     {
       "id": "29.6",
@@ -305,7 +420,30 @@
           "level": 3,
           "text": "進階：接 Next.js API Route（變 SaaS）"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在這個爬蝦皮商品的專案中，為什麼要「攔截後端 API 回應」而不是直接解析 HTML？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為蝦皮頁面的商品資料是透過 JavaScript 呼叫 API 動態載入的，直接解析 HTML 拿不到完整商品資料"
+          },
+          {
+            "value": "b",
+            "label": "因為攔截 API 比較快、可以節省伺服器資源"
+          },
+          {
+            "value": "c",
+            "label": "因為蝦皮有防爬蟲機制，只有攔截 API 才能通過檢查"
+          },
+          {
+            "value": "d",
+            "label": "因為 API 回應的 JSON 格式統一，不用費力解析複雜的 HTML 結構"
+          }
+        ],
+        "answer": "a",
+        "explanation": "蝦皮搜尋頁是現代 SPA 應用，商品資料由前端 JavaScript 動態從 /api/v4/search 等 API 拿取後渲染，所以必須攔截這些 API 回應才能取得結構化資料；直接解析頁面 HTML 只會看到空的容器。選項 b、d 是優點但不是主要原因、選項 c 對蝦皮防爬的理解不正確。"
+      }
     },
     {
       "title": "Node.js 爬蟲：fetch + cheerio",
@@ -354,7 +492,30 @@
           "level": 2,
           "text": "並發"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在用 Node.js 下載一個 500MB 的 CSV 檔案來爬蟲，如果直接用 res.text() 讀取整個檔案，會發生什麼問題？應該用什麼方式解決？",
+        "options": [
+          {
+            "value": "a",
+            "label": "會導致記憶體爆炸（OOM），應該用 Stream 配合 pipeline 邊下載邊存檔"
+          },
+          {
+            "value": "b",
+            "label": "會超時，應該改用 AbortSignal.timeout() 來設定逾時時間"
+          },
+          {
+            "value": "c",
+            "label": "fetch 會自動分片下載，res.text() 沒問題，可以直接用"
+          },
+          {
+            "value": "d",
+            "label": "應該用 AbortController 手動取消 fetch，避免無限等待"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確說大檔（>100MB）要用 Stream + pipeline 來避免把整個檔放在記憶體。res.text() 會一次載入全檔導致 OOM，這是 Stream 設計的核心目的；其他選項都是 AbortController 或 Timeout 的功能，不符合這個情境。"
+      }
     },
     {
       "title": "Playwright JS：跨平台動態",
@@ -411,7 +572,30 @@
           "level": 2,
           "text": "反偵測"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "為什麼爬蟲專案也要用 Playwright Test Runner？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為爬蟲容易因網站改版失效，用 Test Runner 寫 assertion、透過 CI 定期檢測可以第一時間發現失效"
+          },
+          {
+            "value": "b",
+            "label": "因為 Test Runner 執行速度比普通爬蟲快 10 倍"
+          },
+          {
+            "value": "c",
+            "label": "因為 Test Runner 是唯一能跑多 worker 的工具"
+          },
+          {
+            "value": "d",
+            "label": "因為 Test Runner 可以自動修復網站改版造成的問題"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程一開頭就說明：爬蟲常因網站改版壞掉，用 Test Runner 寫 assertion、CI 每天跑、第一時間發現失效。b、c、d 都是似是而非的說法，但不是這課強調的真正目的。"
+      }
     },
     {
       "title": "Puppeteer：Google 出的競品",
@@ -464,7 +648,30 @@
           "level": 2,
           "text": "對比"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "為什麼要直接使用 CDP（Chrome DevTools Protocol）而不是只用 Puppeteer 提供的方法？",
+        "options": [
+          {
+            "value": "a",
+            "label": "CDP 比 Puppeteer 快很多倍、能明顯提升爬蟲效率"
+          },
+          {
+            "value": "b",
+            "label": "CDP 是 Chrome 的底層 API、可以做 Puppeteer 沒包裝的功能（如地理位置、權限、效能監測等）"
+          },
+          {
+            "value": "c",
+            "label": "CDP 的語法比較簡單、新手更容易上手"
+          },
+          {
+            "value": "d",
+            "label": "Puppeteer 會在未來版本被移除、所以必須改用 CDP"
+          }
+        ],
+        "answer": "b",
+        "explanation": "這課的核心重點就是：Puppeteer 只是 CDP 的 wrapper，直接用 CDP 能存取更完整的底層功能（GeoLocation / Permission / Coverage / Performance）。其他選項都是似是而非的理由。"
+      }
     },
     {
       "title": "Crawlee：JS 版 Scrapy",
@@ -517,7 +724,30 @@
           "level": 2,
           "text": "Crawlee vs Scrapy"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你要爬一個網站 50 萬頁，擔心 IP 被封。下列哪個組合是「最推薦的生產級做法」？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用自己找的 3 個免費 proxy，搭配 Session Pool 管理 cookie，設定每個 session 用 50 次就換"
+          },
+          {
+            "value": "b",
+            "label": "用 Apify Proxy 的 RESIDENTIAL 住宅 IP，搭配 Session Pool 自動管理 cookie 和失敗重試"
+          },
+          {
+            "value": "c",
+            "label": "只開多個瀏覽器分頁爬，不用 proxy 也不用 session pool，靠 UA 輪流變化就夠"
+          },
+          {
+            "value": "d",
+            "label": "用 DATACENTER 資料中心 IP 因為最便宜，加上 Fingerprint Generator 仿真指紋"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調「推薦用 Apify Proxy」（不用自己找、全球 IP pool），搭配 Session Pool 自動管理 cookie、標記壞掉的 session。選項 a 的免費 proxy 不穩定；選項 c 無法大規模防 IP 被封；選項 d 的 DATACENTER IP 容易被擋、價格便宜反而是缺點。"
+      }
     },
     {
       "title": "Bun + 爬蟲：快 3 倍",
@@ -566,7 +796,30 @@
           "level": 2,
           "text": "vs Node"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你要寫一個爬蟲，需要用 TypeScript、存資料到 SQLite、讀取 .env 檔的密鑰。用 Bun 的話，下列敘述何者最正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "可以直接 bun run scrape.ts，內建支援 TS、SQLite、.env，都不用另外裝套件"
+          },
+          {
+            "value": "b",
+            "label": "需要 npm install typescript 和 npm install sqlite3，但 .env 可以直接讀"
+          },
+          {
+            "value": "c",
+            "label": "需要用 tsx 編譯 TS，再自己手動引入 sqlite 和 dotenv"
+          },
+          {
+            "value": "d",
+            "label": "Bun 只比 Node 快，其他功能跟 Node 一樣，實際開發還是要裝套件"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Bun 的核心賣點就是內建 TS 編譯、內建 SQLite（bun:sqlite）、內建 .env 讀取，這三樣都不用額外安裝；b、c、d 都落入「還是要裝套件或額外步驟」的過時做法，正是 Bun 想解決的問題。"
+      }
     },
     {
       "title": "攔截 + 修改 Network",
@@ -623,7 +876,30 @@
           "level": 2,
           "text": "抓 GraphQL"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想爬一個 React 購物網站，後端用 API 傳回商品 JSON。如果要直接拿 API 回應的 JSON 資料（不用解 HTML），應該用什麼方法？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 page.on('response') 監聽回應、攔到 /api 的請求後用 response.json() 拿資料"
+          },
+          {
+            "value": "b",
+            "label": "用 page.route('**/*') 阻擋所有圖片、這樣頁面載更快"
+          },
+          {
+            "value": "c",
+            "label": "用 route.fulfill() mock 一個假 API、自己塞測試資料進去"
+          },
+          {
+            "value": "d",
+            "label": "用 page.goto() 進去頁面後、再用 page.$eval() 解析 HTML 標籤"
+          }
+        ],
+        "answer": "a",
+        "explanation": "監聽 Response 是 SPA 爬蟲的核心技巧，可以直接攔 API 的 JSON 不用解 HTML。B 是優化速度、C 是 mock 測試、D 是傳統爬蟲，都不是題目要求的方法。"
+      }
     },
     {
       "title": "Cloudflare Workers 爬蟲",
@@ -680,7 +956,30 @@
           "level": 2,
           "text": "限制"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想用 Cloudflare Workers 寫一個爬蟲、每天自動抓資料一次。下列敘述哪個最符合 Workers 的特性？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Workers 免費方案每天 100k requests、內建 Cron Triggers 定時功能、不需要額外部署 GitHub Actions"
+          },
+          {
+            "value": "b",
+            "label": "Workers 跑 Puppeteer 速度很快、適合爬需要執行 JavaScript 的複雜網站"
+          },
+          {
+            "value": "c",
+            "label": "用 Workers 爬蟲一定要用 cheerio 解析 HTML、才能達到最佳效能"
+          },
+          {
+            "value": "d",
+            "label": "Workers 只能用來處理單一地區的請求、無法利用全球分散式 IP"
+          }
+        ],
+        "answer": "a",
+        "explanation": "這課的核心是：Workers 免費 100k req/day、內建 Cron（不用 GitHub Actions）、全球 300+ IP 分散。選項 b 錯在 Workers 免費版 CPU 限制 10ms 不能跑 Puppeteer；c 錯在應該用 HTMLRewriter 而非 cheerio；d 明顯不符課意。"
+      }
     },
     {
       "title": "反 fingerprint 進階",
@@ -737,7 +1036,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "網站想偵測你是用爬蟲還是真人，以下哪個方法最有效率地一次對付 17+ 種偵測技巧？",
+        "options": [
+          {
+            "value": "a",
+            "label": "直接用 stealth plugin，自動修改 webdriver、plugins、languages 等隱藏指標"
+          },
+          {
+            "value": "b",
+            "label": "只修改 navigator.webdriver，因為這是網站最主要的偵測方式"
+          },
+          {
+            "value": "c",
+            "label": "模擬人類打字和滑鼠移動，這樣就不會被 canvas fingerprint 偵測"
+          },
+          {
+            "value": "d",
+            "label": "改變螢幕解析度和時區，讓 fingerprint 每次都不一樣"
+          }
+        ],
+        "answer": "a",
+        "explanation": "stealth plugin 是一套完整解決方案，內建自動修 17+ 個偵測指標（webdriver、plugins、languages、platform、WebGL 等），最省力。其他選項都只針對某個單一指標，無法全面對抗。"
+      }
     },
     {
       "title": "Curl Impersonate：TLS fingerprint",
@@ -790,7 +1112,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "為什麼 Python requests 和 Node fetch 容易被反爬網站擋掉，而真實瀏覽器（Chrome / Firefox）卻能順利訪問？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 Python requests 和 Node fetch 的 HTTP headers 與真實瀏覽器不同"
+          },
+          {
+            "value": "b",
+            "label": "因為它們的 TLS Client Hello 指紋與瀏覽器不同，網站用 JA3/JA4 工具可以直接識別並擋掉"
+          },
+          {
+            "value": "c",
+            "label": "因為它們不支援 HTTPS 協議，只能用 HTTP"
+          },
+          {
+            "value": "d",
+            "label": "因為網站檢查了 IP 位址，自動化工具的 IP 都被標記"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程核心重點是 TLS fingerprint（TLS Client Hello 的指紋）而非單純 headers。Python requests 和 Node fetch 送出的 TLS 握手訊息（加密套件順序、擴展、橢圓曲線等）與真實瀏覽器不同，網站用 JA3/JA4 等工具一眼就能分辨，這是被擋的根本原因。"
+      }
     },
     {
       "title": "RSS / Sitemap：合法 + 友善",
@@ -843,7 +1188,30 @@
           "level": 2,
           "text": "應用"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "為什麼說用 RSS 和 Sitemap 來爬資料是「100% 合法 + 友善」的方式？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為網站主動提供 RSS 和 Sitemap 給使用者，這是網站本身允許的合理使用方式"
+          },
+          {
+            "value": "b",
+            "label": "因為 RSS 和 Sitemap 是用 XML 格式，比爬 HTML 更不容易被法律限制"
+          },
+          {
+            "value": "c",
+            "label": "因為 Google 認可 RSS 和 Sitemap，所以任何人都可以自由使用"
+          },
+          {
+            "value": "d",
+            "label": "因為使用 rss-parser 和 fast-xml-parser 套件會自動避免違反 ToS"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程的核心重點是：RSS 是網站「主動提供」給 reader 用、Sitemap 是網站「告訴 Google 來爬」用——都是網站主動公開的資料，所以拿來用就是合理使用。其他選項混淆了技術工具或誤解了合法性的來源。"
+      }
     },
     {
       "title": "Apify：商業爬蟲平台",
@@ -896,7 +1264,30 @@
           "level": 2,
           "text": "替代品"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想爬 Google Maps 上某城市的所有餐廳資料，但自己寫爬蟲要花 2 週時間。用 Apify 最快的做法是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "直接去 Apify Store 搜「Google Maps Scraper」，設定參數後按 Run，幾分鐘內拿到結果"
+          },
+          {
+            "value": "b",
+            "label": "下載 Crawlee 框架自己寫爬蟲，速度會比現成 Actor 快"
+          },
+          {
+            "value": "c",
+            "label": "用 apify-cli 建立自己的 Actor，然後上架 Apify Store 賣給別人"
+          },
+          {
+            "value": "d",
+            "label": "用 ApifyClient SDK 整合到自己的程式裡，這樣可以免費爬取"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調「用法 1：用現成 Actor（最快）」就是針對這類情境——已有 2000+ 現成爬蟲在 Store 裡，直接用省時間。b 錯在自己寫反而更慢；c 是用法 3（上架賣）；d 用 SDK 還是要付 compute 費用、不是免費。"
+      }
     },
     {
       "title": "TypeScript 爬蟲：型別安全",
@@ -949,7 +1340,30 @@
           "level": 2,
           "text": "Result type"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "為什麼爬蟲特別需要 TypeScript 的型別系統？",
+        "options": [
+          {
+            "value": "a",
+            "label": "能在編譯期就抓出型別錯誤，避免 runtime 才發現網站欄位變了、資料格式不對等問題"
+          },
+          {
+            "value": "b",
+            "label": "TypeScript 可以自動爬蟲，不需要手寫 cheerio 或 fetch 的程式碼"
+          },
+          {
+            "value": "c",
+            "label": "Zod 會自動檢測網站有沒有改版，如果改版就停止爬蟲"
+          },
+          {
+            "value": "d",
+            "label": "型別系統可以讓爬蟲速度變快，處理大量資料時效能更好"
+          }
+        ],
+        "answer": "a",
+        "explanation": "爬蟲容易因為網站改版、欄位 null、資料格式錯誤而出問題。TS 型別系統 + Zod 在編譯期和 runtime 驗證，能提早發現問題，不會等到線上才爆炸。其他選項都超出課程範圍或說法不對。"
+      }
     },
     {
       "title": "爬蟲監控 + 告警（JS）",
@@ -1006,7 +1420,30 @@
           "level": 2,
           "text": "Indie 黃金組合"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，爬蟲為什麼需要主動監控？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為爬蟲沒人在用，出問題時不會有人主動發現，所以要靠監控工具自動告警"
+          },
+          {
+            "value": "b",
+            "label": "因為爬蟲的程式碼特別複雜，比 web app 容易出錯"
+          },
+          {
+            "value": "c",
+            "label": "因為爬蟲一旦啟動就無法停止，需要時時監控"
+          },
+          {
+            "value": "d",
+            "label": "因為爬蟲需要連接網路，要監控網路連線狀態"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程開頭就強調『爬蟲不像 web app、沒人在用就沒人發現壞了』，這是爬蟲監控的核心原因——沒有使用者會主動回報問題，所以必須用 Sentry、Healthchecks.io 等工具主動監控並推送告警。"
+      }
     },
     {
       "title": "Vercel / Netlify Functions 爬蟲",
@@ -1079,7 +1516,30 @@
           "level": 2,
           "text": "何時用"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "如果你要做一個每天自動爬蟲的專案，需要在 Vercel Hobby（免費方案）上跑，下列哪個說法是正確的？",
+        "options": [
+          {
+            "value": "a",
+            "label": "可以設定 40 個 Cron Jobs 自動排程每天爬蟲"
+          },
+          {
+            "value": "b",
+            "label": "免費方案只能設 1 個 Cron Job，但 Timeout 10 秒足以處理簡單爬蟲"
+          },
+          {
+            "value": "c",
+            "label": "可以在 Vercel 上跑 Puppeteer 爬蟲，但需要升級到 Pro 方案"
+          },
+          {
+            "value": "d",
+            "label": "Vercel Hobby 免費方案完全不支援 Cron Job，必須自己另外寫排程"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Vercel Hobby 免費方案確實只能設 1 個 Cron Job（Pro 才有 40 個），Timeout 10 秒對基本爬蟲（用 cheerio）夠用。Vercel 整體不支援 Puppeteer（chromium 太大），Cron Jobs 則是 Vercel 內建功能，不是完全不支援。"
+      }
     },
     {
       "title": "Web Scraping APIs：付費省心",
@@ -1144,7 +1604,30 @@
           "level": 2,
           "text": "Indie 建議"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想爬一個用 JavaScript 動態生成內容的網站，但不想自己處理代理、反爬、瀏覽器渲染的麻煩。根據這堂課的內容，Web Scraping API 服務最適合的使用情境是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "付費讓 API 服務幫你處理反爬和渲染，直接拿乾淨的 HTML 或結構化資料"
+          },
+          {
+            "value": "b",
+            "label": "用免費的 API 服務爬取大量資料，成本比自己寫更便宜"
+          },
+          {
+            "value": "c",
+            "label": "學習 Web Scraping 技術，練習寫爬蟲程式的最佳方式"
+          },
+          {
+            "value": "d",
+            "label": "爬取超過 100 萬筆資料，用 API 服務是最經濟的選擇"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Web Scraping API 的核心價值就是『付費換省心』——你不用自己搞代理、反爬、渲染，直接打 API 就能拿乾淨資料，這對接案快交付、商業 SaaS 最適合。相反地，個人練習、爆量資料反而不適合用付費 API。"
+      }
     },
     {
       "title": "完整實戰：蝦皮比價工具",
@@ -1209,7 +1692,30 @@
           "level": 2,
           "text": "變現"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "這個蝦皮比價 SaaS 的核心架構中，爬蟲每天早上 6 點自動執行的觸發點是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Cloudflare Workers Cron 定時器"
+          },
+          {
+            "value": "b",
+            "label": "Next.js API Route 的 setTimeout"
+          },
+          {
+            "value": "c",
+            "label": "Bun 內建的 setInterval 函數"
+          },
+          {
+            "value": "d",
+            "label": "PostgreSQL 的 scheduled trigger"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程架構圖明確顯示排程由『Cloudflare Workers Cron』負責，每天早上 6 點觸發 Bun + Playwright 爬蟲。其他選項雖然技術上可行，但不是本課選擇的設計方案（Cloudflare Workers Cron 因為免費且可靠）。"
+      }
     },
     {
       "title": "AI 爬蟲：browser-use / Magnitude",
@@ -1274,7 +1780,30 @@
           "level": 2,
           "text": "未來"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "傳統爬蟲和 AI 爬蟲最大的差別是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "AI 爬蟲不需要寫 CSS selector，而是讓 LLM 看畫面自己決定操作"
+          },
+          {
+            "value": "b",
+            "label": "AI 爬蟲速度比傳統爬蟲快 10 倍以上"
+          },
+          {
+            "value": "c",
+            "label": "AI 爬蟲只能用 Python 寫，傳統爬蟲可以用任何語言"
+          },
+          {
+            "value": "d",
+            "label": "AI 爬蟲完全不會被網站反爬，傳統爬蟲則會"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程重點就在說 AI 爬蟲的核心優勢是：給目標→ AI 看畫面自己操作，不需要寫 selector，也不怕網站改版。b、c、d 都是似是而非的優點，但不是這課真正在教的核心。"
+      }
     },
     {
       "title": "OCR + CV：圖片資料爬",
@@ -1327,7 +1856,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你要從發票圖片中自動抽出「商家名稱、日期、總金額、品項清單」這些結構化資料，下列哪個方案最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 Tesseract.js，設定語言為 chi_tra+eng，跑完後自己寫 regex 解析文字"
+          },
+          {
+            "value": "b",
+            "label": "用 PaddleOCR 辨識中文，但還要靠程式邏輯判斷哪些是商家名稱、哪些是金額"
+          },
+          {
+            "value": "c",
+            "label": "用 Claude Vision，直接讓 AI 看圖、告訴它要什麼欄位、回傳結構化 JSON"
+          },
+          {
+            "value": "d",
+            "label": "三個方案都可以，準確度是一樣的"
+          }
+        ],
+        "answer": "c",
+        "explanation": "課程明確指出 Claude Vision 的殺手鐧就是「結構化抽取」——不只讀文字，而是理解並自動萃取你要的欄位格式；Tesseract 和 PaddleOCR 是純 OCR，抽完文字後還要自己寫邏輯來解析。"
+      }
     },
     {
       "title": "Node 爬蟲學習路徑",
@@ -1403,7 +1955,30 @@
           "level": 2,
           "text": "給新手建議"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這課的 6 個月學習地圖，以下哪一個敘述最符合「第 3 個月底」應該達成的成果？",
+        "options": [
+          {
+            "value": "a",
+            "label": "完成 3 個靜態爬蟲、會寫部落格分享"
+          },
+          {
+            "value": "b",
+            "label": "1 個可運作的中型爬蟲系統，包含代理、資料庫、日更新機制"
+          },
+          {
+            "value": "c",
+            "label": "3 個動態爬蟲、加上 Sentry 監控和 Discord 通知"
+          },
+          {
+            "value": "d",
+            "label": "1 個上線運作的 production 級爬蟲，已部署到 Vercel"
+          }
+        ],
+        "answer": "b",
+        "explanation": "第 3 個月重點是「規模」——學並發、代理、資料庫，目標是爬 1 萬筆資料並寫入 DB；第 2 個月才是動態爬蟲 + 監控（a、c 混淆），第 4 個月才是 production 部署（d 是第 4 月目標）。"
+      }
     }
   ],
   "boss": {
@@ -1417,5 +1992,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "Node.js 爬蟲比 Python 更輕、更快，fetch + Cheerio 最小依賴、Puppeteer / Playwright 用來爬需要 JavaScript 才能顯示的內容。",
+    "Cheerio 讀懂 HTML 結構找資料，Puppeteer 是 Google 官方、Playwright 支援多瀏覽器引擎，Crawlee 是 Node 版的 Scrapy 框架。",
+    "反爬蟲常見招數：User-Agent、驗證碼、IP 限制、TLS fingerprint，用改 headers、延遲請求、輪流換 IP 或改 User-Agent 來躲過。",
+    "商業方案有 Apify 爬蟲平台、Web Scraping APIs，Cloudflare Workers / Vercel Functions 可跑無伺服器爬蟲。",
+    "進階玩法：Bun 執行速度快 3 倍、TypeScript 增加型別安全、用 RSS / Sitemap 合法取資料、AI 爬蟲工具新興但還在實驗階段。"
+  ],
+  "faq": [
+    {
+      "q": "我要爬蝦皮、Dcard 這種有動態內容的網站，用 Cheerio 可以嗎？",
+      "a": "不行，Cheerio 只看得到頁面載入時的 HTML，動態內容是 JavaScript 跑出來的，看不到。要用 Puppeteer 或 Playwright 才行，讓它真的開瀏覽器去跑 JavaScript。"
+    },
+    {
+      "q": "為什麼網站要設反爬蟲，我爬蟲是不是違法？",
+      "a": "反爬蟲是網站自我保護，爬蟲本身沒違法，但你得看網站的 robots.txt 和使用條款，不要爬個資、不要大量佔用伺服器資源、不要拿去商業用途，基本上尊重網站就沒問題。"
+    },
+    {
+      "q": "Puppeteer vs Playwright 該選哪個？",
+      "a": "Puppeteer 是 Google 官方出的、用戶最多、文件最齊，Playwright 支援 Chrome / Firefox / Safari 三種引擎、速度快、更新積極，新專案建議選 Playwright，舊專案用 Puppeteer 也沒問題。"
+    }
+  ]
 }

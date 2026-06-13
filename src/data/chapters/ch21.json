@@ -88,7 +88,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的公司有個應用程式，使用者 Alice 用 Face ID 成功登入、然後被拒絕進入財務報表頁面。這個例子中，哪個敘述最正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Face ID 通過的是認證、被拒進入財務頁面的是授權"
+          },
+          {
+            "value": "b",
+            "label": "Face ID 通過和被拒進入財務頁面、都是認證的一部分"
+          },
+          {
+            "value": "c",
+            "label": "Face ID 通過的是授權、被拒進入財務頁面的是認證"
+          },
+          {
+            "value": "d",
+            "label": "這個例子沒有涉及認證或授權、只是權限設定"
+          }
+        ],
+        "answer": "a",
+        "explanation": "認證（AuthN）是驗證「你是誰」（Face ID 證明 Alice 是 Alice），授權（AuthZ）是決定「你能做什麼」（決定 Alice 能不能看財務報表）。兩個完全不同，都要懂。"
+      }
     },
     {
       "title": "密碼 + OAuth + Magic Link",
@@ -185,7 +208,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的應用要存使用者密碼，下列哪個做法最安全？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 SHA256 hash 密碼後存進 DB，因為 SHA256 是業界標準"
+          },
+          {
+            "value": "b",
+            "label": "用 argon2 hash 密碼，設定較高的記憶體成本和迭代次數"
+          },
+          {
+            "value": "c",
+            "label": "用 AES 加密密碼存進 DB，這樣需要時可以解密出來驗證"
+          },
+          {
+            "value": "d",
+            "label": "直接存明文密碼，但限制只有 admin 可以看 DB"
+          }
+        ],
+        "answer": "b",
+        "explanation": "argon2 是 2026 推薦標準，能同時抗 GPU 和 ASIC 攻擊，且記憶體成本和迭代次數可調；SHA256 太快容易被暴力破解；加密（encrypt）密碼是錯誤做法，密碼必須用 hash（單向、無法還原）；明文密碼無論如何都不能存。"
+      }
     },
     {
       "title": "2FA / MFA / Passkeys",
@@ -254,7 +300,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "公司想選擇一個 2FA 方式，要求「完全離線可用、無 SIM 卡風險、不燒簡訊費」。以下哪個方案最符合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "SMS 簡訊驗證碼"
+          },
+          {
+            "value": "b",
+            "label": "TOTP（Google Authenticator）"
+          },
+          {
+            "value": "c",
+            "label": "Push 通知（需網路）"
+          },
+          {
+            "value": "d",
+            "label": "Passkey（但課程未深入）"
+          }
+        ],
+        "answer": "b",
+        "explanation": "TOTP 是唯一符合三個條件的：無需網路（離線可用）、基於時間演算而非簡訊（無 SIM swap 和費用問題）。SMS 有 SIM swap 和費用問題；Push 需網路；Passkey 雖好但本課未詳細說明其運作。"
+      }
     },
     {
       "title": "RBAC + RLS：細緻權限",
@@ -327,7 +396,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你開發一個部落格平台，需要確保使用者只能編輯自己的文章。如果只用 RBAC（角色型權限），為什麼不夠安全？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 RBAC 無法判斷誰是文章的作者，只能按角色給權限，導致同角色的人可能編輯別人的文章"
+          },
+          {
+            "value": "b",
+            "label": "因為 RBAC 無法在資料庫層級執行，權限檢查容易被繞過"
+          },
+          {
+            "value": "c",
+            "label": "因為 RBAC 需要對每篇文章逐一設定角色，太麻煩了"
+          },
+          {
+            "value": "d",
+            "label": "因為 RBAC 無法支援多租戶的隔離"
+          }
+        ],
+        "answer": "a",
+        "explanation": "RBAC 只能根據角色給權限（如『編輯可以更新文章』），但無法判斷『這篇文章是不是你寫的』。需要用 ABAC、Casl 或 RLS 這類細緻權限，才能加入『author_id === user.id』這種條件檢查。"
+      }
     },
     {
       "title": "Session vs JWT 實作",
@@ -380,7 +472,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，為什麼 JWT 實作中要把 Refresh Token 存在資料庫，而不是像 Access Token 一樣完全無狀態？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 Refresh Token 需要能被主動撤銷（revoke），才能在發現洩漏時立即中止所有登入"
+          },
+          {
+            "value": "b",
+            "label": "因為 Refresh Token 的有效期比較長，必須存在資料庫才能延長期限"
+          },
+          {
+            "value": "c",
+            "label": "因為 JWT 技術本身不支援無狀態的長期憑證，一定要用資料庫輔助"
+          },
+          {
+            "value": "d",
+            "label": "因為存在資料庫的 Token 比放在 Cookie 裡更安全，可以防止 XSS 攻擊"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確提到「存 refresh token 在 DB（可 revoke）」以及「舊的被用 = 知道有人偷 → revoke 全部」，核心目的就是保留撤銷能力。Access Token 無狀態是為了效能，但 Refresh Token 需要能主動註銷以應對安全威脅。"
+      }
     },
     {
       "title": "Session vs JWT vs Cookie 完整對比",
@@ -472,7 +587,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "假設你在設計一個認證系統，需要在使用者登出的一瞬間立刻讓他的所有裝置都無法再用原本的憑證。下列哪個選項最適合？",
+        "options": [
+          {
+            "value": "a",
+            "label": "使用 Session，因為 server 可以立刻刪除 Redis 裡的記錄"
+          },
+          {
+            "value": "b",
+            "label": "使用 JWT，因為 token 本身就是自帶資料、效率最高"
+          },
+          {
+            "value": "c",
+            "label": "使用 Cookie，因為瀏覽器會自動清除過期的 cookie"
+          },
+          {
+            "value": "d",
+            "label": "用 JWT 搭配設定很長的過期時間，這樣最安全"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Session 儲存在 server（Redis/DB），server 有完全控制權，刪一筆資料就能立刻讓該 session 失效；JWT 是自帶簽章的 token，一旦簽發就沒辦法立刻撤銷（除非用 blacklist，但那就回到 stateful），所以必須用 Session 才能做到「隨時可撤銷」。"
+      }
     },
     {
       "title": "OAuth 2.0 完整流程",
@@ -537,7 +675,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在 OAuth 2.0 Authorization Code Flow 中，為什麼 App 的 backend 要用 code 去換 token，而不是直接在前端換？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 client_secret 不能在前端暴露，必須在 backend 安全地保管"
+          },
+          {
+            "value": "b",
+            "label": "因為 Google 的伺服器只接受 backend 發出的請求"
+          },
+          {
+            "value": "c",
+            "label": "因為前端的網路連線速度比較慢"
+          },
+          {
+            "value": "d",
+            "label": "因為要減少 Google 伺服器的負擔"
+          }
+        ],
+        "answer": "a",
+        "explanation": "OAuth 2.0 的核心安全原則是 client_secret 必須保密，只能存在 backend；前端無法安全保管它，所以 token 交換一定要由 backend 負責。其他選項都不是主要原因。"
+      }
     },
     {
       "title": "Role-Based Access Control (RBAC)",
@@ -614,7 +775,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "使用 RBAC 時，如果要讓某個 API endpoint 只有擁有「lesson:write」權限的人才能存取，應該在程式碼中怎麼做？",
+        "options": [
+          {
+            "value": "a",
+            "label": "在 route handler 前面套上 requirePermission middleware，傳入 \"lesson:write\" 作為參數"
+          },
+          {
+            "value": "b",
+            "label": "直接在 route handler 內用 if/else 檢查 user.email 和 user.id"
+          },
+          {
+            "value": "c",
+            "label": "在 database schema 裡設定 lesson table 的存取權限"
+          },
+          {
+            "value": "d",
+            "label": "給所有 editor 角色的人自動賦予所有 permission，不用檢查"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程教學的重點就是用 middleware 來集中管理權限檢查，而不是散落在各個 route handler 裡。requirePermission(\"lesson:write\") 會在 request 進入 handler 前先驗證使用者是否有該權限，這是 RBAC 架構的核心做法。"
+      }
     },
     {
       "title": "Multi-factor Authentication (MFA)",
@@ -715,7 +899,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "假設你的密碼在某個網站的資料庫洩漏了，但你有啟用 MFA。攻擊者即使得到你的密碼，為什麼還是很難登入你的帳號？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為密碼會自動每 30 秒更換一次，攻擊者追不上"
+          },
+          {
+            "value": "b",
+            "label": "因為攻擊者還需要你的第二驗證因素（例如手機上的 TOTP、生物特徵或硬體 key），光有密碼不夠"
+          },
+          {
+            "value": "c",
+            "label": "因為網站會自動鎖定洩漏的密碼，讓所有人都無法用它登入"
+          },
+          {
+            "value": "d",
+            "label": "因為 MFA 會加密密碼，所以即使洩漏的密碼也是加密狀態，攻擊者無法破解"
+          }
+        ],
+        "answer": "b",
+        "explanation": "MFA 的核心概念是「多因素」——需要兩個以上的驗證方式。即使密碼洩漏，攻擊者還需要掌握你的手機、臉部辨識或硬體 key 等第二因素才能成功登入，大幅提高破解難度。其他選項都曲解了 MFA 的運作原理。"
+      }
     },
     {
       "title": "Password 安全 + Hashing",
@@ -804,7 +1011,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的公司要存放使用者密碼，以下哪個做法最安全？",
+        "options": [
+          {
+            "value": "a",
+            "label": "使用 bcrypt 搭配 cost factor 12，並在資料庫中存放 hash 後的密碼"
+          },
+          {
+            "value": "b",
+            "label": "使用 SHA256 加上自己定義的 salt（例如公司名稱），這樣快又安全"
+          },
+          {
+            "value": "c",
+            "label": "存放明文密碼在資料庫，因為有防火牆保護"
+          },
+          {
+            "value": "d",
+            "label": "使用 MD5 hash，再加上公司的 secret key 當 salt"
+          }
+        ],
+        "answer": "a",
+        "explanation": "bcrypt 搭配適當的 cost factor（12 推薦）是業界標準，能夠抵禦 GPU 攻擊並讓密碼破解困難。選項 b、d 的自定義 salt 仍不夠慢且容易被彩虹表破解；選項 c 明文存放會在資料庫洩漏時完全暴露所有密碼。"
+      }
     }
   ],
   "boss": {
@@ -818,5 +1048,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "認證是驗證你是誰、授權是決定你能做什麼，兩件事分開想才不會亂",
+    "登入方式百百種：密碼 + hashing、OAuth 委外給大平台、Magic Link 免密碼，各有優缺點",
+    "Session 存在伺服器、JWT 存在用戶端，實作邏輯完全不同要先想清楚",
+    "RBAC 讓你定義角色（admin、user、guest）再派權限；RLS 讓資料庫自動擋掉沒權限的查詢",
+    "2FA / MFA 是用第二個驗證方式（簡訊、authenticator app、生物辨識）降低帳號被盜風險"
+  ],
+  "faq": [
+    {
+      "q": "JWT 和 session 到底選哪個？",
+      "a": "小專案、單一伺服器選 session 簡單；分散式系統、行動 app、需要跨域認證選 JWT。沒有絕對答案，看你的架構。"
+    },
+    {
+      "q": "密碼要怎麼存才安全？",
+      "a": "一定要用 bcrypt、Argon2 之類的 hashing 演算法，不能存明文或簡單加密。Hashing 是單向的，駭客偷走密碼雜湊也解不回來。"
+    },
+    {
+      "q": "Clerk 這類服務值得用嗎？還是自己寫？",
+      "a": "認證很容易挖坑（密碼儲存、session 管理、OAuth 流程），新手用 Clerk / Auth0 反而更安全，省時間；等你很熟了再考慮自己寫。"
+    }
+  ]
 }

@@ -14,7 +14,7 @@
       "title": "通用多語言遊樂場",
       "oneLineSummary": "支援多種語言、一站搞定。",
       "xp": 50,
-      "content": "下面這些遊樂場都支援多種語言、可以瀏覽器內直接寫 + 跑 code。\n\n**☕ 用人話講**\n\n通用多語言遊樂場。**一句話記住**：像線上試菜——不用裝環境，就能線上試跑各種語言的 code。\n",
+      "content": "## 什麼是通用多語言遊樂場？\n\n簡單講，就是「線上程式碼編輯器」——你打開瀏覽器，不用裝 Python、不用裝 Java、不用裝什麼鬼東西，直接在網頁上寫程式、按一個鍵就跑，馬上看結果。超方便學習、驗證想法、或快速分享 code 給別人看。\n\n## 最常用的 5 大遊樂場\n\n### 1. **Replit**——新手最友善\n🌐 https://replit.com\n\n- 支援 50+ 語言（Python、JavaScript、Java、C++、Go 都有）\n- 可以免費建立專案、版本控制、還能協作\n- 介面乾淨、有內建終端機（terminal）\n- 適合：小學期間完整練習、分享 code 給朋友改\n\n### 2. **CodePen**——前端王者\n🌐 https://codepen.io\n\n- 專門寫 HTML、CSS、JavaScript\n- 按下去直接看網頁效果（零延遲）\n- 內建範例庫超多、適合抄+改練習\n- 適合：做網頁、看別人怎麼寫前端\n\n### 3. **LeetCode**——刷題專用\n🌐 https://leetcode.com\n\n- 支援 15+ 語言\n- 免費版就有千題演算法題\n- 邊寫邊測試、自動判分\n- 適合：練習演算法、準備面試\n\n### 4. **Ideone**——極簡主義\n🌐 https://ideone.com\n\n- 支援 60+ 語言（包括冷門的 Rust、Kotlin）\n- 介面超簡單：貼 code、按 run\n- 可以產生分享連結\n- 適合：快速測試單一段 code、不想註冊\n\n### 5. **Glitch**——全棧小網站\n🌐 https://glitch.com\n\n- Node.js + 前端完整環境\n- 可以做小 API、小網站、馬上部署上網\n- 免費，還能看別人的原始碼（remix）\n- 適合：全端小專案、想練習後端邏輯\n\n## 快速比較表\n\n| 遊樂場 | 最強項 | 免費版 | 學習曲線 |\n|--------|--------|--------|----------|\n| **Replit** | 全語言 + 完整環境 | 夠用 | 極低 |\n| **CodePen** | 前端視覺化 | 很棒 | 極低 |\n| **LeetCode** | 演算法刷題 | 夠練 | 中等 |\n| **Ideone** | 冷門語言支援 | 完整 | 低 |\n| **Glitch** | 實際部署專案 | 可用 | 低 |\n\n## 怎麼開始？\n\n1. **決定目標**：學 Python？做網頁？刷題？\n2. **選一個遊樂場**：上面任選一個點進去\n3. **點「New Project / Pen」或登入**：大多免費，可不登入試玩\n4. **貼或寫 code**：複製貼上教材的例子、或自己打\n5. **按 Run / Submit**：看結果、改 bug、再跑一次\n\n## 小秘訣\n\n- **卡住了？**看遊樂場內建的範例，跟著改\n- **想看別人怎麼寫？**CodePen 和 Glitch 可以直接看別人的 code\n- **想練習特定語言？**Replit 和 Ideone 最齊全\n- **想邊學邊練？**Replit 有教學社群，經常有人發教學專案\n\n**☕ 用人話講**\n\n選一個順眼的遊樂場，從今天開始就能寫 code——不用裝環境、不用浪費時間設定、打開網頁就寫。Replit 是新手首選、CodePen 是前端神器、LeetCode 是找工作必練。隨便挑一個，開始爽。",
       "resourceGroups": [
         {
           "title": "🎮 多語言通用",
@@ -149,6 +149,11 @@
         "question": "在 Replit 開一個你不熟的語言、寫一個 Hello World。",
         "hint": "Replit 不用裝任何東西、開瀏覽器就能用 50 種語言。",
         "answer": "推薦試 Rust 或 Go——你可能聽過但沒寫過、5 分鐘體驗一下。"
+      },
+      "analogy": "像去自助餐廳試吃，不用先買齊所有食材回家",
+      "tip": {
+        "type": "practical",
+        "text": "挑一個介面順眼的就開始，不用糾結選哪個，多數都夠用"
       }
     },
     {
@@ -157,7 +162,7 @@
       "title": "各語言官方遊樂場",
       "oneLineSummary": "每個語言官方都有 playground、體驗最原汁原味。",
       "xp": 50,
-      "content": "官方 playground 通常有最新語言特性、可以分享 URL。\n\n**☕ 用人話講**\n\n各語言官方遊樂場。**一句話記住**：像原廠試駕——每個語言官方都有 playground，體驗最原汁原味。\n",
+      "content": "## 為什麼要用官方 playground\n\n- **最新語言特性**：官方立刻更新，不會漏掉新功能\n- **零安裝成本**：打開瀏覽器就寫，不佔電腦空間\n- **可直接分享**：產生 URL 分享給別人，對方點開就看到你的 code\n- **穩定性最高**：官方維護，不會突然掛掉或有奇怪 bug\n\n## 熱門語言官方 playground\n\n| 語言 | 官方 playground | 特色 |\n|------|-----------------|------|\n| **Python** | [python.org/shell](https://www.python.org/shell/) | 原始簡潔，適合新手 |\n| **JavaScript** | [jsfiddle.net](https://jsfiddle.net/) / [codepen.io](https://codepen.io/) | 可看到 HTML/CSS 即時效果 |\n| **Java** | [replit.com](https://replit.com/) (選 Java) | 跨語言支援最齊 |\n| **Go** | [go.dev/play](https://go.dev/play/) | 官方品質保證 |\n| **Rust** | [play.rust-lang.org](https://play.rust-lang.org/) | 編譯錯誤提示超詳細 |\n| **C/C++** | [godbolt.org](https://godbolt.org/) | 能看到組合語言，進階用 |\n| **PHP** | [sandbox.onlinephpinterpreter.com](https://www.onlinephpinterpreter.com/) | 支援資料庫連接 |\n| **SQL** | [sqlfiddle.com](http://sqlfiddle.com/) | 建表、查詢、看結果一條龍 |\n| **TypeScript** | [typescriptlang.org/play](https://www.typescriptlang.org/play/) | 即時顯示型別檢查 |\n| **Kotlin** | [play.kotlinlang.org](https://play.kotlinlang.org/) | JVM 生態體驗 |\n\n## 怎麼使用\n\n**第一步：打開官方 playground**\n- 複製上表的連結到瀏覽器\n\n**第二步：貼上或寫 code**\n- 大多數有「範例程式」，點一下預載範例\n- 或直接在編輯框寫你的 code\n\n**第三步：按「Run」或「Execute」**\n- 通常快 1～3 秒出結果\n- 右邊或下方會秀輸出結果\n\n**第四步：分享（選用）**\n```\n點「Share」或「Save」，會產生一個唯一 URL\n複製網址傳給別人，對方不用裝任何東西就能看到你的 code 和輸出\n```\n\n## 進階玩法\n\n- **Replit**：支援 60+ 語言、還能建立專案資料夾，比單純 playground 進階\n- **Godbolt**：適合想看「code 怎麼被編譯」的進階玩家\n- **LeetCode / HackerRank**：雖然是刷題平台，但也有官方 playground 功能\n\n## 常見坑\n\n- **網路不穩會卡**：如果 code 一直在轉圈，可能是伺服器忙\n- **無法讀本地檔案**：官方 playground 沒權限存取你電腦的檔案，只能用硬編碼資料測試\n- **執行時間有限制**：無限迴圈會被強制停止（通常 5～10 秒），保護伺服器\n\n---\n\n**☕ 用人話講**\n\n官方 playground 就是「廠牌親自開的試用間」。想學新語言？先去官方 playground 玩 15 分鐘，體驗語法、看看輸出，比裝軟體快一百倍。大多數人習慣了才會決定在自己電腦裝，千萬別還沒試就先狂下載。bookmark 上表，需要時秒開即用。",
       "resourceGroups": [
         {
           "title": "🎯 後端語言官方",
@@ -463,6 +468,11 @@
         "question": "在 TypeScript Playground 玩 5 分鐘、看 examples 內的進階範例。",
         "hint": "TS Playground 是學 TypeScript 最好的工具、看編譯後 JS 才知道在做什麼。",
         "answer": "點 Examples → Type Manipulation、看那些變態的 type 怎麼推導出來、會打開新世界。"
+      },
+      "analogy": "就像去麥當勞吃漢堡，你會去官方門市而不是仿冒店——官方 playground 保證語言最新、執行最穩。",
+      "tip": {
+        "type": "practical",
+        "text": "先把常用語言的官方 playground 網址存書籤，寫 code 前先試試看、再決定是否安裝。"
       }
     },
     {
@@ -471,7 +481,7 @@
       "title": "資料庫 / SQL 遊樂場",
       "oneLineSummary": "不裝 DB 就能練 SQL、查 schema。",
       "xp": 50,
-      "content": "練 SQL 不用裝 Postgres、線上 playground 就夠。\n\n**☕ 用人話講**\n\n資料庫 / SQL 遊樂場。**一句話記住**：像不用裝 DB 的練習場——線上就能練 SQL、查 schema，零安裝。\n",
+      "content": "## 資料庫 / SQL 遊樂場\n\n練 SQL 不用裝 Postgres、MySQL 或任何資料庫軟體，線上 playground 就夠了。以下是最常用、最好用的幾個：\n\n### 🌟 首選平台\n\n**SQLite Online**\n- 網址：https://sqliteonline.com/\n- 特色：預載示範資料、介面超簡潔、直接執行 SQL\n- 適合：從零開始學 SELECT、WHERE、JOIN\n- 用法：選一個預設資料庫（如 Chinook），直接寫 SQL 查詢\n\n**W3Schools SQL Tutorial**\n- 網址：https://www.w3schools.com/sql/trysql.asp\n- 特色：內建教學 + 練習場、有現成的 Customers 表格\n- 適合：邊學邊練、新手友善\n- 用法：看完一段教學，立刻用「Try it Yourself」練習\n\n**LeetCode Database**\n- 網址：https://leetcode.com/problemset/database/\n- 特色：有實戰題目、難度分級、對標企業面試\n- 適合：想練進階 SQL、準備技術面試\n- 用法：提交 SQL 後系統自動測試，看有沒有過所有測案例\n\n### 🛠️ 進階選擇\n\n**HackerRank SQL**\n- 網址：https://www.hackerrank.com/domains/sql\n- 特色：題目多、難度清楚、有公司出的真題\n- 適合：刷題練手感\n\n**Mode Analytics SQL Tutorial**\n- 網址：https://mode.com/sql-tutorial/\n- 特色：教學很詳細、有真實資料集練習\n- 適合：想深入理解 JOIN、GROUP BY 邏輯\n\n**BigQuery Sandbox**\n- 網址：https://cloud.google.com/bigquery/docs/sandbox\n- 特色：Google 提供、免費 1TB 月流量、用大規模資料練\n- 適合：進階使用者、想用真實大資料\n\n### 📋 怎麼選\n\n| 平台 | 難度 | 最適合的人 |\n|------|------|----------|\n| SQLite Online | ⭐ 新手 | 剛開始學 SQL |\n| W3Schools | ⭐⭐ 初級 | 想邊教邊練 |\n| LeetCode | ⭐⭐⭐ 中階 | 準備面試 |\n| HackerRank | ⭐⭐⭐ 中階 | 喜歡刷題 |\n| Mode Analytics | ⭐⭐ 初級 | 想懂原理 |\n| BigQuery | ⭐⭐⭐⭐ 進階 | 玩大資料 |\n\n### 💡 實用技巧\n\n**看 Schema（資料表結構）**\n- 大多平台左邊都有「Tables」列表，點下去看欄位名稱和型態\n- 不知道表格長什麼樣，先 🖥️ `SELECT * FROM table_name LIMIT 5;` 看幾筆資料\n\n**存草稿**\n- SQLite Online 有存檔功能\n- LeetCode 和 HackerRank 會自動保存你的答案\n\n**對比答案**\n- 做完題目提交後，可以看別人的解法\n- 很多時候會發現有更簡潔的寫法\n\n**練習順序建議**\n1. 先用 W3Schools 搞懂 SELECT、WHERE、ORDER BY\n2. 轉到 SQLite Online 用真實資料練 JOIN\n3. 上 LeetCode / HackerRank 做實戰題\n4. 有興趣再試 BigQuery 玩大資料\n\n### 🚀 快速開始\n\n1️⃣ 打開 SQLite Online（https://sqliteonline.com/）\n2️⃣ 左邊選一個示範資料庫（Chinook 或 Northwind）\n3️⃣ 上面輸入框寫這行：\n\n```sql\nSELECT * FROM customers LIMIT 10;\n```\n\n4️⃣ 按「Run」，看結果跑出來\n\n就這樣，你已經在線上執行 SQL 了。\n\n---\n\n**☕ 用人話講**\n\nSQL 遊樂場就像練功房——不用自己架資料庫，打開網站、選個平台，馬上開始寫 SELECT、JOIN、GROUP BY。W3Schools 最友善、LeetCode 最硬核、SQLite Online 最乾淨。建議先在 W3Schools 搞懂基礎語法，再跳到 SQLite Online 用真資料練，最後上 LeetCode 刷面試題。一個平台就夠了，別裝太多。",
       "resourceGroups": [
         {
           "title": "🗄️ SQL / DB",
@@ -593,6 +603,11 @@
         "question": "在 SQLZoo 完成第一關（SELECT basics）。",
         "hint": "SQL 是工程師最不會過時的技能、不會就吃虧一輩子。",
         "answer": "做完 SQLZoo 前 5 章 + 1 章 Window Functions、SQL 已經贏過 80% 工程師。"
+      },
+      "analogy": "就像虛擬筆記本一樣，打開網站就能寫 SQL，不用在電腦裡裝一堆資料庫軟體。",
+      "tip": {
+        "type": "practical",
+        "text": "挑一個趁手的平台就好，最重要是把 SELECT、WHERE、JOIN 這些基礎語法練熟，別貪心裝太多工具。"
       }
     },
     {
@@ -601,7 +616,7 @@
       "title": "AI / ML 遊樂場",
       "oneLineSummary": "玩 LLM、訓練模型、看 prompt 效果。",
       "xp": 50,
-      "content": "AI 圈很多 playground 可以體驗、不用自己架。\n\n**☕ 用人話講**\n\nAI / ML 遊樂場。**一句話記住**：像 AI 試玩場——玩 prompt、訓練模型、看效果，邊玩邊懂。\n",
+      "content": "## AI / ML 遊樂場速查清單\n\n### 1. **Prompt 實驗室**（最容易上手）\n\n| 工具名稱 | 功能 | 適合誰 |\n|---------|------|------|\n| **ChatGPT Playground** | 直接跟 GPT 對話、調整參數（溫度、token 數） | 想體驗語言模型的人 |\n| **Hugging Face Chat** | 免費線上 AI 對話、支援多個開源模型 | 想試用不同 LLM 的人 |\n| **Claude.ai** | Anthropic 的 AI、擅長長文本、邏輯強 | 寫文案、分析資料的人 |\n| **Poe** | 一個介面玩多個 AI（GPT、Claude、Gemini 等） | 想比較模型的人 |\n\n**怎麼用**：打開網頁，輸入 prompt，按送出——就像傳 LINE 訊息一樣。\n\n---\n\n### 2. **機器學習快速體驗**（看演算法動作）\n\n| 工具名稱 | 體驗內容 | 特色 |\n|---------|--------|------|\n| **TensorFlow Playground** | 視覺化神經網路訓練（點點按鈕，看資料點分類） | 直觀看到「神經元如何學習」 |\n| **ML5.js Demo** | 影像分類、姿態辨識、文字分析（直接用網頁攝影機） | 零程式碼，按鈕就能試 |\n| **Google Teachable Machine** | 自己拍照或上傳圖片，訓練簡單分類模型 | 5 分鐘做出會辨識貓狗的模型 |\n| **Orange Data Mining** | 拖拉操作介面做資料分析、視覺化 | 像樂高一樣組合分析流程 |\n\n**怎麼用**：這些都是「視覺化介面」，不用寫程式碼，直接在網頁上點按鈕、拖拉、看結果。\n\n---\n\n### 3. **程式碼實驗（可以寫 Python、JavaScript）**\n\n| 工具名稱 | 特色 | 適合場景 |\n|---------|------|--------|\n| **Google Colab** | 免費 Jupyter 筆記本、直接跑 Python、整合 GPU | 學 NumPy、Pandas、訓練模型 |\n| **Replit** | 線上 IDE、支援 Python 和各種語言、可直接執行 | 寫小程式、試驗演算法 |\n| **Kaggle Notebooks** | 資料科學競賽平台、內建數據集、可跑 ML 程式 | 學 ML、做專案實戰 |\n| **Observable** | 互動式 JavaScript 筆記本、即時渲染視覺化 | 做資料視覺化、互動圖表 |\n\n**範例流程**：\n1. 打開 Google Colab（不用登出）\n2. 新建筆記本\n3. 貼入下面程式碼：\n\n```python\nimport numpy as np\nfrom sklearn.datasets import make_blobs\nimport matplotlib.pyplot as plt\n\n# 隨機生成一些資料點\nX, y = make_blobs(n_samples=100, centers=3, random_state=42)\n\n# 畫出來\nplt.scatter(X[:, 0], X[:, 1], c=y)\nplt.title(\"資料點視覺化\")\nplt.show()\n```\n\n4. 按「播放」鍵執行，馬上看到圖表。\n\n---\n\n### 4. **AI 應用試玩**（體驗真實應用）\n\n| 工具名稱 | 能做什麼 | 用途 |\n|---------|--------|------|\n| **Stable Diffusion（Hugging Face 版）** | 文字生圖（輸入描述，AI 生成圖片） | 體驗生成式 AI |\n| **DALL-E Mini / Craiyon** | 簡易文字生圖、超快速 | 看 AI 怎麼理解文字 |\n| **OpenAI API Playground** | 有視覺介面調整各項參數、看輸出 | 理解 API 工作原理 |\n| **Hugging Face Spaces** | 開源者分享的應用（文案、翻譯、聊天機器人等） | 玩現成小工具 |\n\n---\n\n## 怎麼選？\n\n- **完全新手** → 從「ChatGPT Playground + Google Teachable Machine」開始\n- **想看演算法原理** → TensorFlow Playground 必試\n- **想寫程式碼體驗** → Google Colab 最無痛\n- **想看 AI 實際應用** → 試試文字生圖或語言模型\n- **想比較很多工具** → Hugging Face Spaces 逛逛有什麼現成應用\n\n---\n\n## ⚠️ 小提醒\n\n- 大部分免費，但有流量限制（如 OpenAI Playground 每月有額度）\n- 這些遊樂場適合「體驗 + 學習概念」，真正開發案子還是得用本機環境或付費雲端\n- 不要把長期的敏感資料上傳到免費遊樂場（比如公司客戶名單）\n\n---\n\n**☕ 用人話講**\n\nAI / ML 遊樂場就是「不用裝軟體、直接玩」的地方。從最簡單的「跟 AI 聊天」開始，到「自己訓練小模型」、「看演算法動作」、「玩文字生圖」，都能零成本試驗。想學 AI 但怕麻煩？直接選一個遊樂場開始玩吧——邊玩邊懂，比死讀書快多了。",
       "resourceGroups": [
         {
           "title": "🤖 LLM 對話",
@@ -870,6 +885,11 @@
         "question": "在 TensorFlow Playground 玩 5 分鐘、調整參數看 neural network 學習過程。",
         "hint": "視覺化看 NN 學習超震撼、抽象概念瞬間具象化。",
         "answer": "從 Circle 資料集開始、加 hidden layer、看 decision boundary 怎麼變化。看一遍勝過讀一本書。"
+      },
+      "analogy": "像電玩試玩間——不用買遊戲，直接在店裡玩幾關，感受操控感，再決定要不要深入學。",
+      "tip": {
+        "type": "practical",
+        "text": "遊樂場適合「先體驗再學程式」；如果想認真開發，還是得裝本機環境（但這邊讓你零成本試水溫）。"
       }
     },
     {
@@ -878,7 +898,7 @@
       "title": "Regex / 工具類遊樂場",
       "oneLineSummary": "正則、JSON、API、CSS 各種工具網站。",
       "xp": 50,
-      "content": "工具型 playground、寫 code 時常開。\n\n**☕ 用人話講**\n\nRegex / 工具類遊樂場。**一句話記住**：像線上工具箱——測 regex、格式化 JSON、調 CSS，隨手就有。\n",
+      "content": "## 正規表達式（Regex）測試\n\n**Regex101** —— 全世界寫 code 的人最愛用的 regex 遊樂場\n\n- 網址：https://regex101.com/\n- 左邊貼正規表達式、右邊貼要測的文字，立即看有沒有符合\n- 支援 JavaScript、Python、PHP 等多種語言的 regex 風味差異\n- 會自動解釋你寫的 regex 是什麼意思（左下角 Explanation）\n- 免費版已經夠用，付費版只是多了協作和保存功能\n\n**使用情景**：寫驗證 email、手機號、日期格式的 regex 時，在這裡一邊試、一邊調，省掉「本地跑一次、改一個字、再跑」的死迴圈。\n\n---\n\n## JSON 格式化 + 驗證\n\n**JSON.cn** —— 最快速的中文 JSON 工具\n\n- 網址：https://www.json.cn/\n- 貼一坨醜亂的 JSON，按按鈕自動排版、縮排、上色\n- 有「驗證」功能，格式錯誤會紅字告訴你是哪行出問題\n- 支援 JSON 轉 XML、轉表格、轉 YAML 等格式互換\n\n**使用情景**：後端回傳的 API 結果是一行爛糊糊的 JSON，複製貼進去瞬間變漂亮，還能馬上看出資料結構。\n\n---\n\n## CSS 視覺測試\n\n**CodePen** —— 寫 HTML + CSS + JavaScript，邊寫邊看效果\n\n- 網址：https://codepen.io/\n- 分成三欄：左邊寫 HTML、中間寫 CSS、右邊寫 JavaScript，右側即時預覽\n- 免費版免登入可用，登入後能保存你的作品\n- 社群超大，可以看別人怎麼寫特效、怎麼排版\n\n**使用情景**：想測試一個 CSS 動畫效果行不行、或是快速打個 HTML 版面的小原型。\n\n**JSFiddle** —— CodePen 的簡易版\n\n- 網址：https://jsfiddle.net/\n- 功能類似但介面更簡潔，不喜歡 CodePen 花俏的話用這個\n- 特別適合臨時測試一小段 JavaScript\n\n---\n\n## 色碼 / 設計工具\n\n**Coolors.co** —— 配色配到爽\n\n- 網址：https://coolors.co/\n- 按空白鍵自動生成配色方案，找到喜歡的就 lock 住\n- 支援匯出色碼（HEX、RGB、HSL）\n- 有「調色盤」功能，可以上傳圖片自動提取色碼\n\n**使用情景**：設計頁面不知道用什麼顏色組合，來這裡按幾下按鍵，秒出 5 個配色方案。\n\n---\n\n## 單位換算 + 響應式設計預覽\n\n**ScreenFly** —— 一次看所有螢幕尺寸\n\n- 網址：https://www.screenfly.org/\n- 輸入網址，同時看手機、平板、桌機的預覽效果\n- 不用開開關關瀏覽器開發者工具，一頁看完\n\n**使用情景**：寫完響應式網頁，想快速檢查各裝置看起來怎樣，不用真的拿手機試。\n\n---\n\n## 快速清單\n\n| 工具 | 網址 | 最常用場景 |\n|------|------|----------|\n| Regex101 | regex101.com | 寫驗證、抓資料的正規式 |\n| JSON.cn | json.cn | 整理、驗證 JSON 結構 |\n| CodePen | codepen.io | 測試 HTML/CSS/JS 效果 |\n| JSFiddle | jsfiddle.net | 快速測一小段程式 |\n| Coolors.co | coolors.co | 配色方案找靈感 |\n| ScreenFly | screenfly.org | 看手機、平板、桌機預覽 |\n\n---\n\n## ☕ 用人話講\n\n**工具型遊樂場不是拿來「學」程式的，是拿來「救」程式的。** 寫 code 最常卡在三個地方：regex 邏輯寫不對、JSON 格式亂掉、CSS 樣式沒生效，這些工具一個都不缺。重點是**全部免費、不用裝任何東西、打開就用**——比起本地環境來回編譯測試快多了。把它們當成你的「線上工具箱」，遇到問題先開書籤，90% 的時候能秒解決。",
       "resourceGroups": [
         {
           "title": "🔍 正則表達式",
@@ -1105,7 +1125,41 @@
         "question": "用 regex101 寫一個 regex、能匹配 email。",
         "hint": "右邊有 explanation panel、看 regex 每個字元做什麼。",
         "answer": "簡單版：[\\w.-]+@[\\w.-]+\\.\\w+。精確版很複雜（RFC 5322 完整 email 有 600 字元）、實務上 80% 場景簡單版就夠。"
+      },
+      "analogy": "像走進便利商店——你不用家裡備齐所有工具，需要什麼就拿什麼，用完就走。",
+      "tip": {
+        "type": "practical",
+        "text": "把這些網址加書籤，寫 code 卡住時秒救命；尤其 regex 和 JSON 格式化，幾乎每週都用得上。"
       }
     }
-  ]
+  ],
+  "outcomes": [
+    "找到適合自己想學語言的線上遊樂場、馬上開始寫 code",
+    "知道哪些官方工具可以直接試新語言特性、不用裝開發環境",
+    "會用線上 SQL 編輯器練習資料庫操作、從小到大測試",
+    "能在瀏覽器裡跑 Python、試 LLM API、玩機器學習範例",
+    "快速用 regex 測試工具驗證自己的正規表達式、邊寫邊看結果"
+  ],
+  "summary": [
+    "Replit、CodePen、Glitch 這類通用遊樂場支援十幾種語言、適合初心者快速試驗。",
+    "Go、Rust、PHP 等語言都有官方 playground、直接用官方工具最沒問題。",
+    "SQLFiddle、LeetCode 資料庫區、DBeaver 線上版能讓你安全地練 SQL、不怕搞壞真實資料。",
+    "Kaggle、Google Colab、Hugging Face 提供免費運算、適合學機器學習和 LLM 的人。",
+    "regex101、Regexr 等工具能實時看到 pattern 怎麼配對、是快速學正規表達式的神器。"
+  ],
+  "faq": [
+    {
+      "q": "線上遊樂場會不會很慢、不能用來真正開發？",
+      "a": "線上遊樂場主要是學習和測試用、不適合開發大專案。但如果你只是想快速試新東西、寫小指令、驗證想法，它們快又方便、省掉裝環境的時間。"
+    },
+    {
+      "q": "這麼多遊樂場、我應該選哪一個？",
+      "a": "先試最通用的（Replit、CodePen）摸熟基本操作。碰到特定語言或需求時、再用對應的官方或專門工具。不用全部都會、知道它們存在就夠了。"
+    },
+    {
+      "q": "線上寫 code 安全嗎、會不會被駭？",
+      "a": "公開分享的程式碼當然誰都看得到、所以別放密鑰。如果是練習、小實驗、通常沒問題。敏感的工作還是在本地裝開發環境比較安心。"
+    }
+  ],
+  "status": "published"
 }

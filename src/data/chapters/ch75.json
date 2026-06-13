@@ -38,7 +38,30 @@
         "hint": "github API 是公開的、不會被擋。先 curl -I 看 header、再 curl -v 看完整。",
         "answer": "常見 header：x-ratelimit-remaining (剩餘配額)、x-github-request-id (debug 用)、cache-control (cache 策略)、strict-transport-security (強制 HTTPS)、content-encoding (壓縮方式)、vary (依哪個 header 變 cache)。"
       },
-      "xp": 15
+      "xp": 15,
+      "miniQuiz": {
+        "question": "如果你在瀏覽器網址列輸入 `https://example.com/users?id=123#profile`，下列哪個敘述是正確的？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Server 會收到完整的 URL，包括 #profile 這個 fragment"
+          },
+          {
+            "value": "b",
+            "label": "fragment (#profile) 只在前端用來導航，Server 看不到；query string (?id=123) 才會被送到 Server"
+          },
+          {
+            "value": "c",
+            "label": "query string 和 fragment 都不會被送到 Server，只有 path 會被送過去"
+          },
+          {
+            "value": "d",
+            "label": "HTTPS 會加密整個 URL，所以 fragment 被隱藏保護"
+          }
+        ],
+        "answer": "b",
+        "explanation": "HTTP request 只會把 scheme、host、port、path 和 query 送到 server；fragment (#後面的部分) 純粹是瀏覽器的前端路由機制，server 永遠看不到。選項 a 錯誤因為 server 看不到 fragment；c 錯誤因為 query string 確實會被送到 server；d 錯誤因為加密跟 fragment 是否被送到 server 沒有關係。"
+      }
     },
     {
       "id": "75.2",
@@ -56,7 +79,30 @@
         "hint": "例：POST /api/orders（建訂單、非 idempotent、非 safe）、DELETE /api/orders/[id]（刪訂單、idempotent、非 safe）。",
         "answer": "錯誤示範要警惕：GET /api/users/delete?id=42 是大忌。改成 DELETE /api/users/42 才對。"
       },
-      "xp": 15
+      "xp": 15,
+      "miniQuiz": {
+        "question": "你的網站有一個「登出」功能，現在要選一個 HTTP method 來實作。下列哪個選擇最安全？",
+        "options": [
+          {
+            "value": "a",
+            "label": "GET /logout — 簡單直接，使用者點一下就登出"
+          },
+          {
+            "value": "b",
+            "label": "POST /logout — 會改變 server 狀態（刪除 session），不能被爬蟲或瀏覽器 preload 意外觸發"
+          },
+          {
+            "value": "c",
+            "label": "PUT /logout — 因為是 idempotent，重複登出不會有問題"
+          },
+          {
+            "value": "d",
+            "label": "DELETE /logout — 專門用來刪除資源，最符合「刪除登入狀態」的概念"
+          }
+        ],
+        "answer": "b",
+        "explanation": "GET 是 safe method，不應該改變 server 狀態（包含刪除 session）。爬蟲、Chrome preload 或 preview link 都會意外觸發 GET，導致所有使用者被登出。登出是「改變 server 狀態」的動作，必須用 POST 才能防止被無意中觸發。"
+      }
     },
     {
       "id": "75.3",
@@ -73,7 +119,30 @@
         "question": "用 fetch 寫一個 wrapper、依 status code 分流處理：200 回 data、401 跳 /login、403 顯示「無權限」、404 顯示「找不到」、5xx 顯示「server 出錯、請稍後」。",
         "answer": "Pattern：if (!res.ok) { if (res.status===401) location='/login'; else if (res.status<500) throw new ClientError(); else throw new ServerError(); }。重點 5xx 該自動 retry、4xx 不該。"
       },
-      "xp": 18
+      "xp": 18,
+      "miniQuiz": {
+        "question": "你的前端用 fetch 發送 API 請求，伺服器回覆 200 OK，但 response body 裡有 { \"error\": \"unauthorized\" }。這時應該怎麼做？",
+        "options": [
+          {
+            "value": "a",
+            "label": "直接當成成功處理，因為 status code 是 200"
+          },
+          {
+            "value": "b",
+            "label": "這是錯誤示範，伺服器應該回傳 401 Unauthorized，才能讓 fetch / Cloudflare 等工具正確判斷"
+          },
+          {
+            "value": "c",
+            "label": "檢查 response body 裡的 error 欄位，根據內容判斷成功或失敗"
+          },
+          {
+            "value": "d",
+            "label": "回傳 200 + error body 是業界標準做法，不需要改"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調：用 status code 做決定，不要 200 + error body。200 會被當成成功進 cache / SEO，監控工具也會誤判。應該回 401 Unauthorized，這樣工具才能正確識別是未授權的失敗。"
+      }
     },
     {
       "id": "75.4",
@@ -90,7 +159,30 @@
         "question": "找你網站的登入 cookie（DevTools → Application → Cookies）、確認 HttpOnly / Secure / SameSite 三個 flag 都有設。沒有就跟後端要求加上去。",
         "answer": "AI 島 (Supabase Auth) 預設這三個都對。自架的話 Next.js 寫 cookie 用 cookies().set() 加 { httpOnly: true, secure: true, sameSite: 'lax' }。"
       },
-      "xp": 20
+      "xp": 20,
+      "miniQuiz": {
+        "question": "你在開發一個網站，使用 JWT token 作為認證方式。用戶登入後，server 發給他一張有效期 1 小時的 JWT。但 30 分鐘後，你發現用戶的帳號被盜用了，想立刻禁止他的登入。下列做法何者最能解決這個問題？",
+        "options": [
+          {
+            "value": "a",
+            "label": "直接刪除用戶帳號，JWT 就自動失效了"
+          },
+          {
+            "value": "b",
+            "label": "立刻將該 JWT 加入 blacklist，server 驗證時直接拒絕"
+          },
+          {
+            "value": "c",
+            "label": "等 1 小時後 JWT 自動過期，期間無法立刻禁用"
+          },
+          {
+            "value": "d",
+            "label": "改用 Session + Cookie 方式重新登入，JWT 就會被覆蓋"
+          }
+        ],
+        "answer": "b",
+        "explanation": "JWT 的缺點就是無狀態、server 不存資料，所以登出不能立刻生效。唯一解決方案是維護一個 blacklist，把廢掉的 token ID 記起來，驗證時檢查。刪帳號、等過期、改 Session 都無法在不改架構下馬上禁用。"
+      }
     },
     {
       "id": "75.5",
@@ -108,7 +200,51 @@
         "hint": "Vite proxy 範例：server: { proxy: { '/api': 'https://api.example.com' } }。fetch '/api/x' 就會被 Vite 轉到 api.example.com、瀏覽器以為是同 origin。",
         "answer": "三個方案優先順序：production 用「同 origin 部署」最乾淨、dev 用「Vite proxy」最快、沒後端權限才走「請後端加白名單」（風險最大、容易設成 * 變不安全）。"
       },
-      "xp": 22
+      "xp": 22,
+      "miniQuiz": {
+        "question": "假設你的 React 前端在 https://app.example.com，要去呼叫 https://api.example.com 的 API，瀏覽器會先做什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "直接送 POST request，不用任何預檢"
+          },
+          {
+            "value": "b",
+            "label": "先送 OPTIONS preflight 詢問 server 允不允許，server 回應 Access-Control-Allow-Origin 才送真正的 request"
+          },
+          {
+            "value": "c",
+            "label": "直接送 GET request 測試連線，成功後再送 POST"
+          },
+          {
+            "value": "d",
+            "label": "因為都是 HTTPS，瀏覽器不會擋，直接送 request"
+          }
+        ],
+        "answer": "b",
+        "explanation": "因為 subdomain 不同（app vs api），屬於不同 origin，跨域 request 會觸發 preflight。瀏覽器會先送 OPTIONS 給 server 問有沒有允許，只有 server 回 Access-Control-Allow-Origin 對應的 origin，才會送真正的 request。HTTPS 是加密通道，但無法解決瀏覽器的同源政策限制。"
+      }
+    }
+  ],
+  "summary": [
+    "HTTP 是前後端溝通的協定，一個 request 由 method、URL、header、body 組成，server 回傳 status code 和 response。",
+    "GET 拿資料、POST 新增、PUT 整個覆蓋、PATCH 部分修改、DELETE 刪除——method 選對才能跟 server 講清楚你要幹嘛。",
+    "Status code 第一位數字代表類別：2xx 成功、3xx 重導向、4xx 你的問題、5xx server 的問題。",
+    "Header 放請求的額外訊息（如認證、格式），cookie 存在瀏覽器裡用來標記身份，兩個都是前後端溝通的關鍵。",
+    "CORS 限制跨域請求、HTTPS 加密資料、HTTP2 更快——這些都是為了讓網路溝通更安全、更有效率。"
+  ],
+  "faq": [
+    {
+      "q": "為什麼要學 HTTP？我不是就在用 fetch 或 axios 嗎？",
+      "a": "fetch 和 axios 只是幫你包裝 HTTP 的工具，底層還是在發送 HTTP request。如果你不懂 HTTP，遇到 CORS、header、status code 這些問題時就只能亂槍打鳥，學 HTTP 等於拿到了真正的說明書。"
+    },
+    {
+      "q": "GET 和 POST 差在哪？都能拿到資料啊？",
+      "a": "技術上兩個都能做，但 GET 是拿資料、POST 是新增資料——這不是強制的，而是一種約定俗成。跟著約定走，別人才能猜到你的 code 想幹嘛，維護也容易；亂來的話日後會一團亂。"
+    },
+    {
+      "q": "status code 這麼多，真的要全部背起來嗎？",
+      "a": "不用全背，先掌握常見的就行：200 成功、301 / 302 重導向、400 你的請求有問題、401 沒有身份驗證、403 沒有權限、404 找不到、500 server 爆炸。其他的遇到再查，重點是理解它們在幹嘛。"
     }
   ]
 }

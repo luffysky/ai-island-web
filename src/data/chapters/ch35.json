@@ -24,7 +24,7 @@
       "title": "C# + .NET 為什麼選",
       "oneLineSummary": "Microsoft 出、跨平台、企業愛",
       "analogy": "台灣金融 / 政府常用。",
-      "content": "## C# 是什麼\n- Microsoft 2000 年發表\n- 類 Java 但更現代\n- 主要寫 Windows / 遊戲 / Web / Mobile\n\n## .NET vs .NET Framework\n- .NET Framework：舊、Windows only（停止支援中）\n- .NET 8 / 9：新、跨平台（Linux / macOS / Windows）\n\n新專案永遠選 .NET 8+。\n\n## 為什麼選\n\n### ✅ 適合\n- Microsoft 環境\n- 金融 / 政府（台灣大量用）\n- Unity 遊戲開發\n- 高性能 web API\n- 企業內部系統\n\n### ❌ 不適合\n- 個人 / Indie startup\n- 開源優先環境\n- 全 stack 一致（用 TS 簡單）\n\n## C# vs Java\n\n| 面向 | C# | Java |\n|---|---|---|\n| 語法 | 現代、語法糖多 | 較囉嗦 |\n| 跨平台 | 8+ 全跨 | 全跨 |\n| 生態 | 大、MS-centric | 巨、開源多 |\n| Mobile | MAUI / Xamarin | Spring 不適合 mobile |\n| 遊戲 | Unity 主流 | 弱 |\n| 求職（台灣）| 中等 | 多 |\n\n## ASP.NET Core\n.NET 的 web framework：\n- 高性能（Top 10）\n- 跨平台\n- 內建 DI、middleware、auth\n\n## 學習路線\n1. C# 基礎（語法、OOP、LINQ）\n2. ASP.NET Core\n3. EF Core（ORM）\n4. Identity（auth）\n5. 部署（Azure / Docker）\n\n## 工具\n- **Visual Studio**：Windows / Mac\n- **Rider**：JetBrains（推薦）\n- **VS Code + C# Dev Kit**\n\n## 心法\n- .NET 8+ 是現代\n- 別碰 .NET Framework\n- Rider > VS Code > Visual Studio\n- 學一次、企業職缺多\n\n**☕ 用人話講**\n\nC# + .NET——**微軟出品、跨平台、企業愛用、效能又好**。**一句話記住**：C# 像微軟版的 Java——企業愛用、生態完整；加上遊戲業霸主 Unity 也用 C#，等於學一個語言開兩扇門（後端 + 遊戲）。\n",
+      "content": "## C# 是什麼\n\nC#（念法：「C Sharp」）是微軟在 2000 年推出的程式語言，最初的設計靈感就是來自 Java，但微軟有意打造「比 Java 更現代、更簡潔」的版本。簡單說，C# 就是「Java 的進化版」，融合了很多語言設計上的最新想法。\n\nC# 主要用在四個地方：\n- **Windows 桌面應用**（比如企業內部管理系統）\n- **遊戲開發**（Unity 引擎的標準語言）\n- **Web API / 網站後端**（透過 ASP.NET Core）\n- **行動應用**（Android / iOS，透過 MAUI 框架）\n\n簡單的類比：如果 Java 是「大企業的公務機」，C# 就是「大企業的公務機升級版」——功能更多、飛得更快、座位更舒服。\n\n## .NET vs .NET Framework——選新不選舊\n\n這裡很容易搞混，要搞清楚：\n\n### .NET Framework（舊時代）\n- Microsoft 在 2000 年代推出\n- **只能在 Windows 上跑**\n- 現在已經停止更新維護，慢慢被淘汰\n- 如果你看到老公司的系統用 .NET Framework，那是因為「太多錢的重構成本」，不是「真的好」\n\n### .NET 8 / 9（新時代）\n- 2020 年微軟推出新的 .NET（他們把原來的 \".NET Core\" 直接改名成 \".NET\"）\n- **跨平台**：Windows、Linux、macOS 都能跑\n- 持續更新，效能也一直在進步\n- 已經成為業界標準\n\n**鐵律：新專案永遠選 .NET 8 或更新版本**。如果有人叫你用 .NET Framework，禮貌地問一下「為什麼不是 .NET 8」——通常沒有好理由。\n\n## 為什麼選 C# + .NET？\n\n### ✅ C# + .NET 真的適合的場景\n\n**金融 / 政府 / 大企業系統**\n- 台灣銀行、政府單位大量使用 .NET\n- 因為：安全性好、企業支援多、不容易被坑\n\n**Unity 遊戲開發**\n- 全世界遊戲引擎排名，Unity 是前三大\n- 所有 Unity 遊戲都是用 C# 寫的\n- 學了 C#，可以直接做遊戲，不用再學別的語言\n\n**高性能 Web API**\n- ASP.NET Core 在各種 Web 框架的效能測試中，排進全球前十\n- 比 Node.js / Python 快很多倍\n- 如果你的服務每秒要處理一百萬筆請求，C# 比較不會「累趴下」\n\n**企業內部系統**\n- 公司內的各種管理軟體、資料庫工具、自動化腳本\n- 微軟生態完整，連「系統管理員工具」都是 C# 寫的\n\n### ❌ C# + .NET 不太適合的場景\n\n**個人專案 / Indie Game Studio**\n- 學習曲線陡（相比 Python）\n- 部署稍微麻煩（要裝 runtime）\n- 不如 Python / JavaScript 快速上手\n\n**開源優先的團隊**\n- Java / Python 的開源生態更成熟\n- C# 的開源庫雖然在增加，但比不上 Java\n\n**全 Stack 用同一個語言**\n- 如果想前後端都用 JavaScript / TypeScript，那用 Node.js\n- .NET 後端配 JavaScript 前端沒問題，但心智切換有點累\n\n## C# vs Java——該選誰？\n\n| 面向 | C# | Java |\n|---|---|---|\n| **語法現代程度** | ✅ 語法糖多、舒服 | 囉嗦、得寫很多樣板代碼 |\n| **跨平台** | ✅ .NET 8+ 完全跨平台 | ✅ 一樣跨平台 |\n| **生態規模** | ✅ 大、但微軟中心 | ✅✅ 巨大、開源專案超多 |\n| **Mobile 開發** | ✅ MAUI / Xamarin 好用 | ❌ Java 不適合做 mobile |\n| **遊戲開發** | ✅✅ Unity 標準語言 | ❌ Java 遊戲引擎少 |\n| **台灣求職** | 👍 中等、銀行金融多 | 👍👍 超多、科技新創最愛 |\n| **學習難度** | 容易 | 中等偏難 |\n\n**實話**：C# 如果學過，Java 會超簡單（因為語法更麻煩）；反之亦然。\n\n## ASP.NET Core——.NET 的 Web 框架\n\nASP.NET Core 就是 .NET 裡面的「Web 框架」，讓你用 C# 寫後端 API。\n\n**它的優點**：\n- **效能超快**：官方效能測試排進全球 Web 框架前十，比 Django / Flask 快一百倍不是誇張\n- **跨平台**：Linux / Windows / Mac 都能跑\n- **內建功能多**：\n  - DI（Dependency Injection）——幫你管理物件，不用手動 new\n  - Middleware——請求在到達你的程式碼之前，可以先經過一堆驗證層\n  - Authentication / Authorization——登入、權限驗證都有現成的\n- **微軟官方維護**：有問題有人修\n\n簡單說，ASP.NET Core 比 Express.js 複雜一點點，但功能強大很多。\n\n## 學習路線\n\n如果你決定學 C# + .NET，建議這個順序：\n\n1. **C# 基礎**（2~3 週）\n   - 變數、迴圈、條件判斷\n   - 函數、類別、物件導向\n   - LINQ（C# 的魔法工具，用來處理資料列表）\n\n2. **ASP.NET Core 基礎**（1~2 週）\n   - 怎麼建一個簡單的 API\n   - Router / Controller 怎麼寫\n   - 怎麼接收 JSON、回傳 JSON\n\n3. **EF Core**（1 週）\n   - ORM（Object-Relational Mapping）——把資料庫當物件來用\n   - 不用寫 SQL，用 C# 操作資料庫\n\n4. **身份驗證 / 授權**（1 週）\n   - Identity System——使用者登入、角色管理\n   - JWT Token\n\n5. **部署**（1 週）\n   - Docker——打包應用\n   - Azure / Linux Server——放上去跑\n\n## 開發工具\n\n### Visual Studio（微軟官方）\n- **優點**：功能最完整、IntelliSense（自動完成）最聰明\n- **缺點**：軟體本身很大、啟動慢、有點臃腫\n- **適合**：大型企業專案\n\n### Rider（JetBrains）\n- **優點**：快、介面乾淨、好用（我們推薦）\n- **缺點**：要付錢（但學生免費，企業也常買）\n- **適合**：專業開發者\n\n### VS Code + C# Dev Kit\n- **優點**：輕量、免費\n- **缺點**：功能比不上 Visual Studio / Rider\n- **適合**：學習初期、簡單專案\n\n**我們建議**：剛開始用 VS Code 學，公司真的要付錢的時候再用 Visual Studio 或 Rider。\n\n## 心法——C# 選手必知\n\n1. **.NET 8+ 是現代標準**——不要碰 .NET Framework，新專案一律用 .NET 8 或更新\n2. **C# 加上 Unity，就是遊戲 + 後端雙面手**——學一個語言、開兩扇職業門\n3. **台灣金融 / 政府用很多**——求職的話，C# 在特定產業很吃香\n4. **效能真的好**——不是虛言，高並發的情況下會看出差異\n5. **生態完整、不用找亂七八糟的套件**——微軟把大部分東西都內建了\n\n---\n\n**☕ 用人話講**\n\nC# + .NET——**微軟出品、跨平台、效能頂尖、企業愛用**。最關鍵的是，C# 是 Unity（全球最流行遊戲引擎）的唯一選擇，等於你只要學一個語言，就能同時寫後端和遊戲，職業選項直接倍增。台灣銀行、金融業、政府更是大量用 .NET，所以在特定產業求職超吃香。缺點是學習曲線比 Python 陡，但只要學會，企業級專案的複雜度你都吃得消。**新專案一律選 .NET 8+，別碰 .NET Framework——那是黑歷史**。",
       "tip": {
         "type": "practical",
         "text": "台灣金融 / 政府很常用 .NET。"
@@ -87,7 +87,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，如果你現在要開始一個新的企業級後端專案，下列哪個選擇最符合課程建議？",
+        "options": [
+          {
+            "value": "a",
+            "label": "選擇 .NET Framework，因為它是 Microsoft 官方的正式版本"
+          },
+          {
+            "value": "b",
+            "label": "選擇 .NET 8 以上，因為它是現代、跨平台且仍持續支援的版本"
+          },
+          {
+            "value": "c",
+            "label": "選擇 Java，因為它的跨平台能力比 C# 更強大"
+          },
+          {
+            "value": "d",
+            "label": "選擇 Node.js + TypeScript，因為全 stack 一致更簡單"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確指出新專案永遠選 .NET 8+，因為 .NET Framework 已停止支援且只限 Windows；A 選項誤解了版本策略，C 和 D 選項雖然有其優點但不符合課程為企業後端專案的推薦。"
+      }
     },
     {
       "title": "ASP.NET Core 起步",
@@ -160,13 +183,36 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在 ASP.NET Core 中，如果你想讓資料庫欄位的異動自動對應到程式碼裡，應該使用什麼功能？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Minimal API"
+          },
+          {
+            "value": "b",
+            "label": "EF Core Migration"
+          },
+          {
+            "value": "c",
+            "label": "Dependency Injection"
+          },
+          {
+            "value": "d",
+            "label": "Controller-based routing"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Migration 是用來管理資料庫結構變更的工具，透過 `dotnet ef migrations add` 和 `dotnet ef database update` 來同步資料庫 schema 與程式碼。其他選項分別是 API 路由方式、依賴注入和控制器架構，都不是用來管理資料庫版本的。"
+      }
     },
     {
       "title": ".NET 進階 + 接案",
       "oneLineSummary": "C# 接案市場 + 進階主題",
       "analogy": "台灣金融 / 政府需求穩定。",
-      "content": "## SignalR（即時通訊）\nWebSocket / SSE 統一 API：\n```csharp\npublic class ChatHub : Hub\n{\n    public async Task SendMessage(string user, string message)\n    {\n        await Clients.All.SendAsync(\"ReceiveMessage\", user, message);\n    }\n}\n\napp.MapHub<ChatHub>(\"/chathub\");\n```\n\nClient（JS）：\n```javascript\nconst connection = new signalR.HubConnectionBuilder()\n    .withUrl(\"/chathub\")\n    .build();\n\nawait connection.start();\nawait connection.invoke(\"SendMessage\", \"Alice\", \"Hello\");\nconnection.on(\"ReceiveMessage\", (user, msg) => console.log(`${user}: ${msg}`));\n```\n\n## Background Jobs\n```csharp\npublic class EmailWorker : BackgroundService\n{\n    protected override async Task ExecuteAsync(CancellationToken stoppingToken)\n    {\n        while (!stoppingToken.IsCancellationRequested)\n        {\n            await SendPendingEmails();\n            await Task.Delay(60000, stoppingToken);\n        }\n    }\n}\n\nbuilder.Services.AddHostedService<EmailWorker>();\n```\n\nHangfire 是 popular cron lib。\n\n## gRPC\n比 REST 快、Microsoft 力推：\n```csharp\npublic class GreeterService : Greeter.GreeterBase\n{\n    public override Task<HelloReply> SayHello(HelloRequest request, ServerCallContext context)\n    {\n        return Task.FromResult(new HelloReply { Message = $\"Hello {request.Name}\" });\n    }\n}\n\napp.MapGrpcService<GreeterService>();\n```\n\n## Blazor（C# 寫前端）\n```razor\n@page \"/counter\"\n\n<h1>Counter</h1>\n<p>Current count: @currentCount</p>\n<button @onclick=\"Increment\">Click me</button>\n\n@code {\n    private int currentCount = 0;\n    \n    private void Increment()\n    {\n        currentCount++;\n    }\n}\n```\n\n兩種模式：\n- Server：HTML 在 server 渲染、SignalR 連線\n- WASM：跑在瀏覽器（WebAssembly）\n\n替代 React、但生態不如。\n\n## MAUI（跨平台 App）\n.NET MAUI：一份 code 跑 iOS / Android / Windows / Mac。\n類 Flutter / React Native。\n\n## Unity（遊戲）\n全用 C#：\n- 2D / 3D 遊戲\n- AR / VR\n- Indie 遊戲首選\n\n## 接案市場（台灣 2026）\n\n### 全職\n- 金融 / 銀行：NT$ 80-180k\n- 政府專案：NT$ 60-120k\n- 跨國企業：NT$ 100-200k\n\n### 接案\n- 企業內部系統：NT$ 200k-2M\n- ERP 客製：NT$ 500k-5M\n- Unity 遊戲：NT$ 100k-1M\n\n## 為什麼接案少\n- 大企業愛找 vendor、不 freelance\n- 案子大、要團隊\n- Indie 個人接到的多是維護\n\n## Indie 路線\n- 全職企業薪水高\n- 副業：Unity 遊戲\n- SaaS：不流行（用 Node / Go 更輕）\n\n## 學習資源\n- Microsoft Learn（官方、免費）\n- .NET YouTube channel\n- Tim Corey YouTube\n- Nick Chapsas YouTube\n\n## 心法\n- C# 是「養老」型語言\n- 學會 + 進企業 = 穩定高薪\n- 不適合 Indie SaaS\n- Unity 遊戲是個人變現出路\n\n**☕ 用人話講**\n\nC# 接案市場 + .NET 進階主題。**一句話記住**：像學會一門企業愛用的手藝——.NET 的案子穩定、單價不低，把進階主題學起來就能接。\n",
+      "content": "## SignalR（即時通訊）—— 讓前後端說話不用排隊\n\n### 什麼是 SignalR？\nSignalR 是微軟的「即時通訊框架」。白話說，它讓伺服器可以主動推送訊息給客戶端，而不是客戶端一直問「有新訊息嗎？有嗎？」。\n\n底層用 WebSocket（全雙向持久連線）或降級到 SSE（伺服器發送事件），但你用 SignalR 時不用管——它自動選最佳方案。想像成 UPS 快遞：不管用貨車還是機車，你只要寄件就行。\n\n### 伺服器端：Hub 是心臟\n```csharp\npublic class ChatHub : Hub\n{\n    // 客戶端呼叫這個方法\n    public async Task SendMessage(string user, string message)\n    {\n        // 推送給「全部連線的客戶端」\n        await Clients.All.SendAsync(\"ReceiveMessage\", user, message);\n    }\n    \n    // 只推給特定客戶端\n    public async Task SendPrivateMessage(string recipientId, string message)\n    {\n        await Clients.Client(recipientId).SendAsync(\"ReceivePrivateMessage\", message);\n    }\n    \n    // 推給除了自己以外的所有人\n    public async Task NotifyOthers(string notification)\n    {\n        await Clients.Others.SendAsync(\"Notify\", notification);\n    }\n    \n    // 當客戶端連線時觸發\n    public override async Task OnConnectedAsync()\n    {\n        await Clients.All.SendAsync(\"UserConnected\", Context.ConnectionId);\n        await base.OnConnectedAsync();\n    }\n}\n```\n\n在 Program.cs 註冊：\n```csharp\nbuilder.Services.AddSignalR();\nvar app = builder.Build();\napp.MapHub<ChatHub>(\"/chathub\");\n```\n\n**常見雷**：`Clients.All` 會推送給所有連線，記憶體會爆炸嗎？不會，訊息很輕，但大型應用會用「群組」分流。\n\n### 客戶端：JavaScript 連線\n```javascript\n// 建立連線\nconst connection = new signalR.HubConnectionBuilder()\n    .withUrl(\"/chathub\")\n    .withAutomaticReconnect() // 斷線自動重連\n    .build();\n\n// 啟動連線\nconnection.start().catch(err => console.error(\"連線失敗\", err));\n\n// 監聽伺服器推過來的訊息\nconnection.on(\"ReceiveMessage\", (user, msg) => {\n    console.log(`${user}: ${msg}`);\n    // 更新 DOM\n    document.getElementById(\"messages\").innerHTML += `<p>${user}: ${msg}</p>`;\n});\n\n// 客戶端呼叫伺服器方法\nasync function sendMessage(user, message) {\n    try {\n        await connection.invoke(\"SendMessage\", user, message);\n    } catch (err) {\n        console.error(\"發送失敗\", err);\n    }\n}\n\n// 連線斷開時\nconnection.onclose(async () => {\n    console.log(\"連線已斷開\");\n    // 5 秒後自動重連\n    await new Promise(resolve => setTimeout(resolve, 5000));\n    await connection.start();\n});\n```\n\n**實戰應用**：聊天室、即時通知、股票行情更新、多人遊戲。\n\n---\n\n## Background Jobs（後台任務）—— 不堵塞主線程\n\n### 為什麼需要 Background Jobs？\n有時候要做費時的事——寄 100 封信、壓縮影片、更新統計數據——但又不能讓使用者等。後台任務就是幕後的忙碌小幫手。\n\n### 內建的 BackgroundService\n```csharp\npublic class EmailWorker : BackgroundService\n{\n    private readonly ILogger<EmailWorker> _logger;\n    \n    public EmailWorker(ILogger<EmailWorker> logger)\n    {\n        _logger = logger;\n    }\n    \n    protected override async Task ExecuteAsync(CancellationToken stoppingToken)\n    {\n        while (!stoppingToken.IsCancellationRequested)\n        {\n            try\n            {\n                await SendPendingEmails();\n                // 每 60 秒執行一次\n                await Task.Delay(60000, stoppingToken);\n            }\n            catch (Exception ex)\n            {\n                _logger.LogError($\"郵件發送失敗: {ex.Message}\");\n            }\n        }\n    }\n    \n    private async Task SendPendingEmails()\n    {\n        // 查資料庫、找未發送的信、寄出去\n        _logger.LogInformation(\"正在發送待審郵件...\");\n        // TODO: 實作寄信邏輯\n    }\n}\n\n// Program.cs\nbuilder.Services.AddHostedService<EmailWorker>();\n```\n\n**缺點**：只能週期性執行（每 N 秒），無法精準排程、不能持久化。\n\n### Hangfire（生產級方案）\nHangfire 是第三方套件，提供「排隊 + 排程」功能，像郵局快遞系統。\n\n```csharp\n// NuGet: Hangfire.Core + Hangfire.SqlServer\n\nbuilder.Services.AddHangfire(x =>\n{\n    x.UseSqlServerStorage(\"DefaultConnection\");\n});\nbuilder.Services.AddHangfireServer();\n\nvar app = builder.Build();\napp.UseHangfireDashboard(); // 提供監控 UI\n```\n\n使用：\n```csharp\npublic class EmailService\n{\n    public void SendEmail(string to, string subject, string body)\n    {\n        // 實際的寄信邏輯\n        SmtpClient client = new();\n        client.Send(\"noreply@mysite.com\", to, subject, body);\n    }\n}\n\n// 在 Controller 或 Service 裡\npublic class OrderController : ControllerBase\n{\n    private readonly IBackgroundJobClient _jobClient;\n    \n    public OrderController(IBackgroundJobClient jobClient)\n    {\n        _jobClient = jobClient;\n    }\n    \n    [HttpPost]\n    public IActionResult CreateOrder(Order order)\n    {\n        // 立即入隊、排隊發信\n        _jobClient.Enqueue<EmailService>(x => \n            x.SendEmail(order.Email, \"訂單確認\", \"感謝你的訂單...\")\n        );\n        \n        // 也可以延遲執行\n        _jobClient.Schedule<EmailService>(x =>\n            x.SendEmail(order.Email, \"提醒\", \"再不領貨就退回了\"),\n            TimeSpan.FromDays(7) // 7 天後\n        );\n        \n        return Ok();\n    }\n}\n```\n\n**實戰應用**：發送郵件、生成報表、定期備份、聲譽檢查。\n\n---\n\n## gRPC（高效 RPC 框架）—— 比 REST 快 10 倍\n\n### REST vs gRPC\n- REST 用 HTTP + JSON，人類容易讀，但資料大、慢\n- gRPC 用 HTTP/2 + Protocol Buffers（二進制格式），快 10 倍、更省流量\n\n想像 REST 是用中文寫信（易讀）、gRPC 是用密碼本通訊（超快）。\n\n### 定義服務（Proto 檔）\n```protobuf\n// greeter.proto\nsyntax = \"proto3\";\n\nservice Greeter {\n  rpc SayHello (HelloRequest) returns (HelloReply);\n}\n\nmessage HelloRequest {\n  string name = 1;\n}\n\nmessage HelloReply {\n  string message = 1;\n}\n```\n\n編譯後自動產生 C# 類別。\n\n### 伺服器實作\n```csharp\npublic class GreeterService : Greeter.GreeterBase\n{\n    private readonly ILogger<GreeterService> _logger;\n    \n    public GreeterService(ILogger<GreeterService> logger)\n    {\n        _logger = logger;\n    }\n    \n    public override Task<HelloReply> SayHello(HelloRequest request, ServerCallContext context)\n    {\n        _logger.LogInformation($\"收到請求: {request.Name}\");\n        return Task.FromResult(new HelloReply \n        { \n            Message = $\"Hello {request.Name}\" \n        });\n    }\n}\n\n// Program.cs\napp.MapGrpcService<GreeterService>();\n```\n\n### 客戶端呼叫\n```csharp\n// .NET 客戶端\nvar channel = GrpcChannel.ForAddress(\"https://localhost:7000\");\nvar client = new Greeter.GreeterClient(channel);\n\nvar reply = await client.SayHelloAsync(new HelloRequest { Name = \"Alice\" });\nConsole.WriteLine(reply.Message); // 輸出: Hello Alice\n```\n\n**什麼時候用 gRPC？** 微服務之間通訊、高頻流量、低延遲要求（金融、遊戲）。\n\n---\n\n## Blazor（C# 寫前端）—— 不用學 JavaScript\n\n### 概念\nBlazor 讓你用 C# 寫前端元件，自動轉成 HTML / CSS / JS 在瀏覽器跑。像是「C# 版的 React」，但內建於 .NET 生態。\n\n### 兩種模式\n\n**1. Blazor Server** —— 伺服器渲染，用 SignalR 同步\n```razor\n@page \"/counter\"\n@rendermode InteractiveServer\n\n<h1>計數器</h1>\n<p>目前數字: @currentCount</p>\n<button @onclick=\"Increment\" class=\"btn btn-primary\">加 1</button>\n\n@code {\n    private int currentCount = 0;\n    \n    private void Increment()\n    {\n        currentCount++;\n    }\n}\n```\n\n優點：能用 C# 全棧、直接存取後端資料庫。缺點：每個互動都走 SignalR、需要伺服器。\n\n**2. Blazor WebAssembly** —— 跑在瀏覽器，完全離線能力\n```razor\n@page \"/counter\"\n@rendermode InteractiveWebAssembly\n\n<h1>計數器（客戶端）</h1>\n<p>目前數字: @currentCount</p>\n<button @onclick=\"Increment\" class=\"btn btn-primary\">加 1</button>\n\n@code {\n    private int currentCount = 0;\n    \n    private void Increment()\n    {\n        currentCount++;\n    }\n}\n```\n\n優點：不需伺服器就能跑、可離線。缺點：初載入大、只能呼叫 API、無法直接存取資料庫。\n\n### 實戰混合架構\n```razor\n@page \"/products\"\n@inject HttpClient Http\n@rendermode InteractiveWebAssembly\n\n<h2>商品列表</h2>\n\n@if (",
       "tip": {
         "type": "practical",
         "text": ".NET 在企業 / 金融案很穩；學進階先掌握 async / await、DI 容器、EF Core 這三樣，是實務最常用的。"
@@ -241,13 +287,36 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，為什麼用 .NET 做個人 SaaS 專案不如用 Node.js 或 Go？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 .NET 的執行效能比 Node.js 差很多"
+          },
+          {
+            "value": "b",
+            "label": "因為 .NET 生態在 SaaS 領域不如 Node / Go 輕量，而 .NET 的優勢在企業系統"
+          },
+          {
+            "value": "c",
+            "label": "因為 .NET 只能用來寫 Unity 遊戲，不能做網站"
+          },
+          {
+            "value": "d",
+            "label": "因為台灣接案市場沒有人用 .NET"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確說「SaaS：不流行（用 Node / Go 更輕）」，核心原因是 .NET 適合企業系統、團隊大案子，但對個人 SaaS 來說過於重；而 Node / Go 在輕量、快速部署上更有優勢。其他選項都是誤解。"
+      }
     },
     {
       "title": ".NET Core / 9 完整心法",
       "oneLineSummary": "Microsoft 生態、跨平台、性能優",
       "analogy": "不只 Windows、Mac / Linux 都跑。",
-      "content": "## .NET 9（2025）\n\n### 是什麼\nMicrosoft 主推 backend framework。\n.NET Core → .NET 5/6/7/8/9（每年新版）。\n\n### 跨平台\n- Windows / macOS / Linux\n- Docker / K8s\n- 雲端 / 邊緣\n\n### 性能\n- 業界前段（跟 Go / Rust 一級）\n- ASP.NET Core 是 benchmarks 常勝軍\n\n## Hello World\n```csharp\n// Program.cs\nvar builder = WebApplication.CreateBuilder(args);\nvar app = builder.Build();\n\napp.MapGet(\"/\", () => \"Hello, World!\");\napp.MapGet(\"/api/users/{id}\", (int id) => new { id, name = \"Alice\" });\n\napp.Run();\n```\n\n3 行就跑得起來。\n\n跑：\n```bash\ndotnet run\n```\n\n## Minimal API vs Controller\n\n### Minimal（簡單）\n```csharp\napp.MapPost(\"/users\", (UserDto dto) => {\n    var user = userService.Create(dto);\n    return Results.Created($\"/users/{user.Id}\", user);\n});\n```\n\n### Controller（傳統、適合大專案）\n```csharp\n[ApiController]\n[Route(\"api/[controller]\")]\npublic class UsersController : ControllerBase\n{\n    private readonly IUserService _service;\n    \n    public UsersController(IUserService service) {\n        _service = service;\n    }\n    \n    [HttpPost]\n    public async Task<IActionResult> Create(UserDto dto) {\n        var user = await _service.CreateAsync(dto);\n        return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);\n    }\n}\n```\n\n## Entity Framework Core\n\n```csharp\npublic class AppDbContext : DbContext\n{\n    public DbSet<User> Users { get; set; }\n    public DbSet<Post> Posts { get; set; }\n}\n\n// Service\nvar users = await db.Users\n    .Where(u => u.IsActive)\n    .Include(u => u.Posts)\n    .ToListAsync();\n```\n\nLINQ to SQL、跟 JPA 類似。\n\n## DI（Dependency Injection）\n```csharp\nbuilder.Services.AddScoped<IUserService, UserService>();\nbuilder.Services.AddDbContext<AppDbContext>(opts =>\n    opts.UseNpgsql(connectionString));\n```\n\n## 心法\n- .NET 9+ 比 Java 快、現代\n- 微軟生態強（Azure / Office）\n- 適合：企業 / 金融 / 接案\n- Indie 用較少、但越來越多\n- C# 語法現代、像 Java + TypeScript\n\n**☕ 用人話講**\n\n.NET 9 完整心法——**微軟生態、跨平台、效能持續優化**。**一句話記住**：像微軟的全能引擎——一套 .NET 就能做後端、桌面、遊戲，而且效能一年比一年強。\n",
+      "content": "## .NET 9（2025）——完整心法\n\n### 是什麼、為什麼要學它\n\n**.NET 9 是微軟主推的後端開發框架**——全名「.NET Core 統一平台」。從 2020 年的 .NET Core 3.1 開始，微軟決定拋棄舊的 .NET Framework（只能跑 Windows），改推「.NET Core」——一個真正跨平台、開源、現代化的框架。後來索性改名：.NET 5 → 6 → 7 → 8 → 9，每年固定發新版本。\n\n**為什麼選 .NET 而不是 Java、Node.js、Python？**\n- **效能**：官方 benchmarks（TechEmpower）consistently 排前幾名，跟 Go / Rust 一個等級，遠快過 Python\n- **生態**：微軟體系強——Azure、Office 365 API、企業工具無縫整合\n- **語法現代**：C# 融合了 Java 的穩定性、Python 的簡潔、TypeScript 的型別系統\n- **企業青睞**：金融、銀行、大型公司用得多；接案、外包也很常見\n\n但老實說，個人開發者、新創用得不如 Node.js / Python 多。不過趨勢在轉，越來越多小團隊開始用。\n\n### 跨平台真實樣貌\n\n**.NET 9 能跑哪些地方？**\n\n- **Windows**：最原生、最順、VS + Visual Studio Code 整合最好\n- **macOS / Linux**：也能跑，但工具生態沒 Windows 豐富\n- **Docker 容器**：.NET Core 設計本來就是容器友善\n- **Kubernetes（K8s）**：大型企業用 K8s 調度 .NET 服務很常見\n- **Azure 雲端**：無縫整合（這是微軟自家的雲）\n- **邊緣運算（IoT）**：.NET MAUI / Blazor 也能跑小型設備\n\n**實務例子**：你寫的 .NET API 可以在開發時用 Windows + Visual Studio，丟進 Docker 後跑在 Linux 伺服器，最後部署到 Azure 或 AWS，一行程式碼都不用改。這就是「跨平台」的真實威力。\n\n### 性能——不是吹牛\n\n.NET 官方會定期參與 **TechEmpower benchmarks**（網路框架的公開性能測試）。近幾年 ASP.NET Core 經常排進前 5，有時甚至前 3。\n\n**對比感受**：\n- .NET 9 單機可以每秒處理數十萬個 HTTP 請求\n- Python Django / Flask：可能是 .NET 的 1/10～1/100\n- Java Spring Boot：接近 .NET，但記憶體用量通常更大\n- Node.js：單執行緒設計，用 cluster 模組才能追上\n\n微軟從 .NET Core 開始就把「高效」當核心目標，每年版本都會優化垃圾回收、JIT 編譯、非同步執行等。\n\n---\n\n## Hello World——從零開始跑起來\n\n### 最小化程式\n\n```csharp\n// Program.cs\nvar builder = WebApplication.CreateBuilder(args);\nvar app = builder.Build();\n\napp.MapGet(\"/\", () => \"Hello, World!\");\napp.MapGet(\"/api/users/{id}\", (int id) => new { id, name = \"Alice\" });\n\napp.Run();\n```\n\n**這只需要三個核心步驟**：\n1. `CreateBuilder(args)`——初始化應用設定\n2. `builder.Build()`——建立應用物件\n3. `app.Run()`——啟動伺服器\n\n沒有繁瑣的設定檔、沒有 XML，就是純 C# code。\n\n### 跑起來\n\n🖥️ 終端機執行：\n```bash\ndotnet run\n```\n\n💬 你會看到：\n```\nBuilding...\ninfo: Microsoft.Hosting.Lifetime[14]\n      Now listening on: http://localhost:5000\n      Now listening on: https://localhost:5001\n```\n\n⌨️ 打開瀏覽器去 `http://localhost:5000`，就看到 `Hello, World!`。\n\n⌨️ 訪問 `http://localhost:5000/api/users/123`，得到：\n```json\n{\"id\":123,\"name\":\"Alice\"}\n```\n\n**為什麼只需 3 行就能動？**因為 .NET 9 用「Minimal API」設計——砍掉所有不必要的樣板（boilerplate），直接讓你寫邏輯。\n\n---\n\n## Minimal API vs Controller——何時用哪個\n\n### 選擇心法\n\n| 情境 | 用 Minimal | 用 Controller |\n|------|-----------|--------------|\n| 小型 API、微服務 | ✅ | ❌ |\n| 快速原型 | ✅ | ❌ |\n| 企業大專案（100+ 個 API） | ❌ | ✅ |\n| 需要複雜路由邏輯 | ❌ | ✅ |\n| 新手入門 | ✅ | ❌ |\n\n### Minimal API——現代、簡潔\n\n```csharp\n// 直接在 Program.cs 裡定義\nvar builder = WebApplication.CreateBuilder(args);\nvar app = builder.Build();\n\n// POST /users\napp.MapPost(\"/users\", async (UserDto dto, IUserService service) =>\n{\n    var user = await service.CreateAsync(dto);\n    return Results.Created($\"/users/{user.Id}\", user);\n});\n\n// GET /users/{id}\napp.MapGet(\"/users/{id}\", async (int id, IUserService service) =>\n{\n    var user = await service.GetByIdAsync(id);\n    return user == null ? Results.NotFound() : Results.Ok(user);\n});\n\napp.Run();\n```\n\n**優點**：\n- 視覺上清楚、一眼看全部 API\n- 少一層檔案，開發快\n- 依賴注入（DI）內建、直接寫參數就 ok\n\n**缺點**：\n- Program.cs 檔案會很長\n- 大型專案容易混亂\n\n### Controller——傳統、結構化\n\n```csharp\n[ApiController]\n[Route(\"api/[controller]\")]\npublic class UsersController : ControllerBase\n{\n    private readonly IUserService _service;\n    \n    // 建構子注入依賴\n    public UsersController(IUserService service)\n    {\n        _service = service;\n    }\n    \n    // GET /api/users/{id}\n    [HttpGet(\"{id}\")]\n    public async Task<IActionResult> GetById(int id)\n    {\n        var user = await _service.GetByIdAsync(id);\n        if (user == null)\n            return NotFound();\n        \n        return Ok(user);\n    }\n    \n    // POST /api/users\n    [HttpPost]\n    public async Task<IActionResult> Create(UserDto dto)\n    {\n        var user = await _service.CreateAsync(dto);\n        return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);\n    }\n}\n```\n\n**優點**：\n- 邏輯分散到多個檔案、團隊合作容易\n- 複雜業務易於組織\n- 大公司都用這套\n\n**缺點**：\n- 多幾個檔案、多幾行樣板\n- 新手看起來複雜\n\n**實務建議**：新手或小專案用 Minimal；公司專案（尤其多人協作）用 Controller。\n\n---\n\n## Entity Framework Core——資料庫 ORM\n\n### 什麼是 ORM？\n\n**ORM（Object-Relational Mapping）—— 把資料庫裡的表格自動轉成 C# 物件**。不用自己寫 SQL，用物件導向的方式操作資料庫。\n\n.NET 的 ORM 是 **Entity Framework Core（EF Core）**，類似 Java 的 JPA / Hibernate、Python 的 SQLAlchemy。\n\n### 定義資料模型\n\n```csharp\n// Models/User.cs\npublic class User\n{\n    public int Id { get; set; }\n    public string Name { get; set; }\n    public string Email { get; set; }\n    public bool IsActive { get; set; }\n    \n    // 關聯：一個使用者有多篇文章\n    public List<Post> Posts { get; set; } = new();\n}\n\npublic class Post\n{\n    public int Id { get; set; }\n    public string Title { get; set; }\n    public string Content { get; set; }\n    \n    // 外鍵\n    public int UserId { get; set; }\n    public User User { get; set; }\n}\n\n// DbContext——資料庫連線物件\npublic class AppDbContext : DbContext\n{\n    public DbSet<User> Users { get; set; }\n    public DbSet<Post> Posts { get; set; }\n    \n    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)\n    {\n        optionsBuilder.UseNpgsql(\"Host=localhost;Database=myapp;Username=postgres;Password=pass\");\n    }\n}\n```\n\n### 查詢資料\n\n```csharp\n// 取得所有活躍使用者，包括他們的文章\nvar users = await db.Users\n    .Where(u => u.IsActive)           // SQL WHERE\n    .Include(u => u.Posts)             // SQL LEFT JOIN\n    .ToListAsync();                    // 執行查詢\n\n// 結果就是 C# 物件清單\nforeach (var user in users)\n{\n    Console.WriteLine($\"{user.Name}：{user.Posts.Count} 篇文章\");\n}\n```\n\n**背後發生什麼？** EF Core 自動把你的 LINQ 轉成 SQL，送給資料庫，把結果對應回物件。你完全感受不到 SQL，就是 C# 物件操作。\n\n### 新增、編輯、刪除\n\n```csharp\n// 新增\nvar newUser = new User { Name = \"Bob\", Email = \"bob@example.com\" };\ndb.Users.Add(newUser);\nawait db.SaveChangesAsync();\n\n// 編輯\nvar user = await db.Users.FindAsync(1);\nuser.Name = \"Alice Updated\";\nawait db.SaveChangesAsync();\n\n// 刪除\nvar user = await db.Users.FindAsync(1);\ndb.Users.Remove(user);\nawait db.SaveChangesAsync();\n```\n\n---\n\n## DI（Dependency Injection）——服務注入心法\n\n### 為什麼需要 DI？\n\n假設你的 `UserController` 需要 `UserService`、`EmailService`、`Logger`，如果直接在",
       "tip": {
         "type": "practical",
         "text": ".NET 性能逼近 Go、學習比 Java 平。"
@@ -314,13 +383,36 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，.NET 9 相比傳統 Java 框架的主要優勢是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "性能更強、跨平台、C# 語法現代，適合企業與金融應用"
+          },
+          {
+            "value": "b",
+            "label": "只能在 Windows 上運行，但性能是業界最快"
+          },
+          {
+            "value": "c",
+            "label": "Minimal API 讓你完全不需要學習任何框架概念"
+          },
+          {
+            "value": "d",
+            "label": "自動幫你寫出所有的業務邏輯程式碼"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調 .NET 9 性能在業界前段、跨 Windows/macOS/Linux、C# 語法現代且適合企業應用。選項 b 錯在限制平台、c 誇大了簡化程度、d 不符合框架實際功能。"
+      }
     },
     {
       "title": "Blazor + WPF + MAUI",
       "oneLineSummary": "微軟全平台 UI 方案",
       "analogy": "想做 C# 全棧必懂。",
-      "content": "## Blazor（Web）\n\nC# 跑在瀏覽器！不寫 JS。\n\n### Blazor Server\n```razor\n@page \"/counter\"\n\n<h1>Counter</h1>\n<p>Count: @count</p>\n<button @onclick=\"Increment\">+</button>\n\n@code {\n    int count = 0;\n    void Increment() => count++;\n}\n```\n\nUI 在 server、SignalR 同步。\n\n### Blazor WebAssembly\nC# 編譯成 WASM、跑瀏覽器：\n- 完整 SPA\n- 離線可用\n- 但 bundle 較大（~ 3-5MB）\n\n### .NET 8+ Blazor United\nServer + WASM 混合模式。\n\n## WPF（Windows Desktop）\n\n```xml\n<Window x:Class=\"MyApp.MainWindow\">\n    <Grid>\n        <Button Content=\"Click me\" Click=\"OnClick\" />\n    </Grid>\n</Window>\n```\n\n```csharp\nvoid OnClick(object sender, RoutedEventArgs e) {\n    MessageBox.Show(\"Hello\");\n}\n```\n\n只 Windows、適合：企業內部工具。\n\n## MAUI（跨平台）\n\n寫一份、跑 iOS / Android / macOS / Windows：\n\n```csharp\npublic class MainPage : ContentPage\n{\n    public MainPage() {\n        var button = new Button { Text = \"Click\" };\n        button.Clicked += (s, e) => DisplayAlert(\"Hi\", \"Hello!\", \"OK\");\n        Content = button;\n    }\n}\n```\n\nvs React Native / Flutter：\n- 優：C# 共用、Visual Studio\n- 劣：生態較小\n\n## Indie 選擇\n\n| 需求 | 推薦 |\n|---|---|\n| Web | Blazor（如果你 C# 強） |\n| Windows desktop | WPF / WinUI 3 |\n| 跨平台 mobile | MAUI（C# 強）或 RN / Flutter |\n| 全 web/mobile | Blazor + MAUI |\n| AI / 資料 | ❌ Python 強 |\n\n## 心法\n- C# 全棧夢：Blazor + MAUI\n- 但學習資源比 React 少\n- Indie 選擇較少\n- 適合：已會 C# 的人\n\n## 對手分析\n\n### Blazor vs React\n- 開發者數：React 10x\n- 生態：React 大\n- 性能：類似\n- 學會 C# 用 Blazor = 不用碰 JS\n\n### MAUI vs RN/Flutter\n- MAUI < Flutter < RN（採用度）\n- C# 開發者愛 MAUI\n- 其他人多選 Flutter / RN\n\n**☕ 用人話講**\n\nBlazor + WPF + MAUI——**微軟的全平台 UI 方案**。**一句話記住**：像微軟的 UI 全家桶——網頁（Blazor）、桌面（WPF）、跨平台 App（MAUI），全部用同一個 C# 搞定。\n",
+      "content": "## Blazor（Web）—— 在瀏覽器裡寫 C#，不碰 JavaScript\n\n### 為什麼要用 Blazor？\n\n想像你是個 C# 開發者，一直在寫桌面程式或後端。突然要做網頁了，卻發現前端全是 JavaScript、TypeScript、React 這些陌生東西。**Blazor 的核心承諾很簡單：讓你用 C# 寫前端**，就像寫桌面程式一樣。\n\n不用學新語言、不用在 C# 和 JS 之間切換、Visual Studio 裡的智慧提示、型別檢查全部都有。聽起來很美——但前提是你得理解它的兩種運作模式。\n\n### Blazor Server—— 邏輯在伺服器、UI 靠 SignalR 同步\n\n```razor\n@page \"/counter\"\n\n<h1>計數器</h1>\n<p>目前數字：@count</p>\n<button @onclick=\"Increment\">加 1</button>\n\n@code {\n    int count = 0;\n    \n    void Increment()\n    {\n        count++;\n    }\n}\n```\n\n這個 .razor 檔（副檔名就叫 .razor）混合了 HTML 和 C#。什麼時候跑？\n\n1. **使用者在瀏覽器按下按鈕** ⬅️ 瀏覽器\n2. **這個點擊事件透過 WebSocket（SignalR—— 一個即時連線技術）傳到伺服器** 📡\n3. **伺服器執行 `Increment()` 方法、count 變成 1** ⬅️ 伺服器\n4. **伺服器說「我更新了」、把新的 HTML 傳回瀏覽器** 📡\n5. **瀏覽器自動重新渲染** ⬅️ 瀏覽器\n\n**核心特點**：\n- ✅ 邏輯全在伺服器，安全（用戶看不到你的程式碼）\n- ✅ 可以直接連資料庫、呼叫 API\n- ✅ Bundle 很小（瀏覽器下載的東西少）\n- ❌ 需要持續網路連線——用戶掉線就會卡住\n- ❌ 延遲明顯（每次互動都要往返伺服器）\n- ❌ 要付錢養伺服器\n\n**適合**：企業內網、內部工具、不需要離線的應用。比如人資系統、財務報表、CRM——這些東西本來就整天連著網路。\n\n### Blazor WebAssembly—— 把 C# 編譯成瀏覽器能跑的機器碼\n\n「為什麼不直接在瀏覽器裡跑 C# 呢？」——微軟問自己。答案是 WebAssembly（WASM）—— 一種二進制的程式格式，所有現代瀏覽器都支援，執行速度接近原生程式。\n\n```csharp\n// 同樣的 .razor 檔\n\n@page \"/counter\"\n\n<h1>計數器</h1>\n<p>目前數字：@count</p>\n<button @onclick=\"Increment\">加 1</button>\n\n@code {\n    int count = 0;\n    \n    void Increment()\n    {\n        count++;\n    }\n}\n```\n\n這次的流程：\n\n1. **你訪問網站、瀏覽器下載 HTML + CSS + 編譯好的 C# WASM** 📥\n2. **.NET Runtime 也被下載到瀏覽器（這就是為什麼檔案大）** 📥\n3. **瀏覽器執行整個應用，邏輯完全在本地跑** ⚡\n4. **按按鈕？直接在你電腦上執行，零延遲** ⬅️ 瀏覽器\n\n**核心特點**：\n- ✅ 完整的 SPA（Single Page Application—— 頁面只載入一次、後續靠 JavaScript 切換內容）\n- ✅ 離線可用（一旦載入完、沒網路也能跑）\n- ✅ 零延遲（邏輯在本地）\n- ❌ 首次載入慢（bundle 3~5MB、甚至更大）\n- ❌ 不能訪問伺服器的資料庫（要透過 API）\n- ❌ 用戶可以看到你的程式碼（WASM 可以反組譯）\n\n**適合**：大型前端應用、需要離線功能、對延遲敏感的互動（比如圖表、畫布、編輯器）。\n\n### Blazor Server vs WebAssembly—— 怎麼選？\n\n| 角度 | Server | WebAssembly |\n|---|---|---|\n| **網路依賴** | 必須線上 | 離線可用 |\n| **首次載入** | 快（只下載 HTML） | 慢（3-5MB+） |\n| **互動延遲** | 有（往返伺服器） | 無（本地執行） |\n| **安全性** | 高（邏輯在伺服器） | 低（用戶看得到程式碼） |\n| **成本** | 需要伺服器 | 靜態主機就行 |\n| **存取資源** | 直接訪問 DB、檔案系統 | 只能透過 API |\n\n### .NET 8+ 的 Blazor United—— Server + WebAssembly 混合\n\n微軟發現「我得在這兩個之間選，好痛苦」，於是在 .NET 8 推出了 **Blazor United**：\n\n- **首頁和初始渲染用 Server**（快速載入）\n- **載入完之後自動切換到 WebAssembly**（零延遲互動）\n- **可以混合使用**（有些頁面在伺服器、有些在客戶端）\n\n實際上就是、同時部署 Server 和 WebAssembly，自動幫你協調。進階玩法，先別太深入。\n\n---\n\n## WPF（Windows Desktop）—— 微軟的桌面 UI 框架\n\n如果你只需要做 Windows 程式，WPF（Windows Presentation Foundation）是微軟最強大的桌面工具。\n\n### 基本結構：XAML + C#\n\nXAML（可擴展應用標記語言）是 XML 的方言，描述 UI 長什麼樣子：\n\n```xml\n<Window x:Class=\"MyApp.MainWindow\"\n        xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n        Title=\"我的應用\" Height=\"300\" Width=\"400\">\n    <Grid>\n        <StackPanel Orientation=\"Vertical\" Padding=\"20\">\n            <TextBlock Text=\"歡迎使用\" FontSize=\"20\" />\n            <Button Content=\"點我\" Click=\"OnButtonClick\" Margin=\"0,10,0,0\" />\n            <TextBlock Name=\"StatusText\" Margin=\"0,10,0,0\" />\n        </StackPanel>\n    </Grid>\n</Window>\n```\n\n對應的 C# 後端代碼：\n\n```csharp\npublic partial class MainWindow : Window\n{\n    public MainWindow()\n    {\n        InitializeComponent();\n    }\n    \n    void OnButtonClick(object sender, RoutedEventArgs e)\n    {\n        StatusText.Text = \"你按下了按鈕！\";\n        MessageBox.Show(\"你好！\");\n    }\n}\n```\n\n### WPF 的強大之處\n\n- **資料繫結（Data Binding）**：UI 可以自動同步資料，改個物件、介面自動更新\n- **樣式和樣板**：用 XAML 定義全應用的外觀、改一個地方全部生效\n- **動畫**：內建動畫框架，拖動、淡出、放大都很簡單\n- **向量圖形**：可以畫形狀、路徑，不只是按鈕\n\n### 為什麼只有 Windows？\n\nWPF 是建在 Windows 底層的 API 上，深度綁定。想跨平台就得用 MAUI。\n\n**適合**：企業內部工具、Windows-only 軟體、需要複雜 UI 的應用。比如設計軟體、資料分析工具、員工管理系統。\n\n---\n\n## MAUI（跨平台 App）—— 一份程式跑 iOS、Android、macOS、Windows\n\nMAUI（Multi-platform App UI）是微軟的野心：**寫一份 C# 程式碼，編譯成 iOS App、Android App、Windows App、Mac App**。\n\n### 怎麼寫？\n\n```csharp\nnamespace MyMauiApp;\n\npublic partial class MainPage : ContentPage\n{\n    int count = 0;\n\n    public MainPage()\n    {\n        InitializeComponent();\n    }\n\n    private void OnCounterClicked(object sender, EventArgs e)\n    {\n        count++;\n        CounterBtn.Text = $\"按下 {count} 次\";\n\n        SemanticScreenReader.Announce(CounterBtn.Text);\n    }\n}\n```\n\n或者 XAML 做 UI：\n\n```xml\n<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<ContentPage xmlns=\"http://schemas.microsoft.com/dotnet/2021/maui\"\n             Title=\"首頁\">\n    <VerticalStackLayout Padding=\"30\" Spacing=\"25\">\n        <Label Text=\"計數器\" FontSize=\"32\" HorizontalOptions=\"Center\" />\n        <Button x:Name=\"CounterBtn\" Text=\"按我\" Clicked=\"OnCounterClicked\" />\n    </VerticalStackLayout>\n</ContentPage>\n```\n\n### MAUI vs React Native vs Flutter\n\n| 角度 | MAUI | React Native | Flutter |\n|---|---|---|---|\n| **語言** | C# | JavaScript | Dart |\n| **生態** | 小（微軟主要用戶） | 大（Facebook 支持） | 大（Google 支持） |\n| **效能** | 接近原生 | 接近原生 | 最佳 |\n| **學習曲線** | 中等（C# 開發者友善） | 易（JS 開發者友善） | 易（新語言但簡潔） |\n| **社群大小** | 最小 | 最大 | 次大 |\n| **採用度** | 低（企業較多） | 高（Uber、Instagram） | 高（Google、eBay） |\n\n**",
       "tip": {
         "type": "practical",
         "text": "Blazor 適合 C# 全棧、但市場小於 React。"
@@ -387,13 +479,36 @@
           "level": 3,
           "text": "MAUI vs RN/Flutter"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "如果你已經會 C#，想同時做網頁和手機 App，用 Blazor + MAUI 的最大好處是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "不用學 JavaScript，也不用學 Swift 或 Kotlin，全部用 C# 寫"
+          },
+          {
+            "value": "b",
+            "label": "開發速度比 React + React Native 快 10 倍"
+          },
+          {
+            "value": "c",
+            "label": "生態和資源比 Flutter 和 React Native 都多"
+          },
+          {
+            "value": "d",
+            "label": "可以直接在手機瀏覽器裡跑桌面版應用"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程的核心心法就是『C# 全棧夢』——用同一個語言搞定網頁、桌面、跨平台，省去學其他語言的成本。選項 b、c 都是錯的（生態其實比較小），d 是混淆概念。"
+      }
     },
     {
       "title": "Unity + C# 遊戲開發",
       "oneLineSummary": "C# 第二大用途、遊戲業界霸主",
       "analogy": "會 C# 順便會做遊戲。",
-      "content": "## Unity 是什麼\n\n- 遊戲引擎 #1\n- C# scripting\n- 2D / 3D / VR / AR\n- 跨平台（PC / Mobile / Console / Web）\n\n## 為什麼選 Unity\n\n- 學習資源最多\n- Asset Store 大\n- 接案 / 工作多\n- Indie 友善\n\n## Hello Game\n\n```csharp\npublic class PlayerController : MonoBehaviour\n{\n    public float speed = 5f;\n    Rigidbody rb;\n    \n    void Start() {\n        rb = GetComponent<Rigidbody>();\n    }\n    \n    void Update() {\n        float h = Input.GetAxis(\"Horizontal\");\n        float v = Input.GetAxis(\"Vertical\");\n        rb.velocity = new Vector3(h, 0, v) * speed;\n    }\n}\n```\n\n掛到 GameObject 上、立刻可玩。\n\n## Unity 結構\n\n### GameObject\n- 場景中所有東西\n- 含 Component（行為）\n\n### Component\n- Transform（位置）\n- Renderer（顯示）\n- Collider（碰撞）\n- Script（你寫的邏輯）\n\n### Scene\n- 一個關卡 / 場景\n\n### Prefab\n- 可重用的 GameObject 模板\n\n## 生命週期\n```csharp\nvoid Awake() { }       // 場景載入\nvoid Start() { }       // 第一次 update 前\nvoid Update() { }      // 每 frame\nvoid FixedUpdate() { } // 物理更新（穩定 fps）\nvoid OnDestroy() { }   // 銷毀\n```\n\n## Variety 遊戲類型\n\n### 2D\n- Sprite\n- 2D physics\n- Tilemap\n\n### 3D\n- Mesh\n- 3D physics\n- Lighting\n\n### VR / AR\n- XR Toolkit\n- AR Foundation\n\n## 上架\n\n### 平台\n- Steam（PC）\n- App Store / Play Store\n- Console（Switch / PS / Xbox）\n- itch.io（Indie 友善）\n\n### Indie 起點\n- itch.io（簡單上架）\n- App Store（手遊）\n- Steam（PC、$100 申請費）\n\n## 變現\n\n### 模式\n- 一次付費（$5-30）\n- F2P + IAP\n- F2P + ads\n- 廣告（incentivized）\n\n### Indie 案例\n- Stardew Valley（$15、賣 1000 萬份）\n- Vampire Survivors（$5、賣百萬份）\n- Among Us（手遊、廣告 + IAP）\n\n## Unity 接案\n\n### 類型\n- 手遊外包\n- AR 應用\n- 模擬 / 訓練\n- VR 體驗\n\n### 報價\n- 簡單 2D：NT$ 50-200k\n- 中型：NT$ 200-500k\n- 複雜：NT$ 500k+\n- 月薪：NT$ 60-150k\n\n## 競爭對手\n\n### Unreal\n- 3D 強、Epic 出\n- C++ / Blueprint\n- AAA 級\n- 學習曲線陡\n\n### Godot\n- 開源、輕量\n- GDScript / C#\n- 2D 強\n- 新興\n\n### Indie 推薦\n- 2D：Godot / Unity\n- 3D：Unity / Unreal\n- VR：Unity\n- 跨平台：Unity 最廣\n\n## 心法\n- 第一個遊戲做小（pong / snake）\n- 完整上線 > 完美\n- Asset Store 善用\n- 累積作品 = 開始接案\n\n**☕ 用人話講**\n\nUnity + C#——**C# 的第二大用途，遊戲業界的霸主**。**一句話記住**：C# 不只能寫後端——Unity 讓它成為遊戲業的霸主，學 C# 等於同時打開「企業後端」跟「遊戲開發」兩條路。\n",
+      "content": "## Unity 是什麼\n\nUnity 是一個遊戲引擎（Game Engine）—— 就像蓋房子的工具箱，但工具箱裡裝的是 3D 模型、物理系統、聲音、動畫等遊戲製作的一切。你不用自己寫「怎麼讓角色掉下來」、「怎麼算碰撞」，Unity 已經幫你寫好了；你只要負責「遊戲邏輯」—— 按下按鈕角色往哪裡跑、怪物碰到玩家發生什麼事。\n\n而 Unity 使用 C# 當程式語言，也就是說你在上一章學的 C# 語法、物件導向、事件系統，通通都用得上。Unity 還支援：\n\n- **2D 遊戲**（像是地獄邊境、薩爾達傳說試煉島素描版）\n- **3D 遊戲**（像是寶可夢朱紫、黑暗靈魂類）\n- **VR / AR**（虛擬實境、擴增實境的應用）\n- **跨平台發佈**（同一份程式碼，一鍵打包到 Windows、Mac、iOS、Android、Nintendo Switch、PlayStation、網頁遊戲）\n\n這就是為什麼全球有 900+ 萬 Unity 開發者——一次學會，到處用。\n\n## 為什麼選 Unity\n\n**1. 學習資源爆炸多**\n\n搜尋「Unity 教學」，YouTube 上千萬支影片；搜尋「怎麼做跳躍」，Stack Overflow 100 種答案。如果卡住，十秒內一定找到人遇過同樣問題。\n\n**2. Asset Store 讓你不用從零開始**\n\n想要角色模型？上 Asset Store 買（或免費下載）。想要粒子特效？也有。想要完整遊戲框架？也有。這些美術資源、程式框架都能節省你數周的開發時間。Godot、Unreal 也有素材庫，但 Unity 的生態圈最成熟。\n\n**3. 接案 / 就業機會最多**\n\n全球遊戲業大多數小公司、獨立開發者、手遊廠商都用 Unity。如果你想靠遊戲開發賺錢——不管是接外包、進公司、或自己開發賣遊戲——Unity 經驗是敲門磚。\n\n**4. Indie 開發者的寵兒**\n\nSteam 上 80% 的獨立遊戲是 Unity 做的。為什麼？因為 Unity 免費（個人開發、年收入 < $100k）、上手快、社群大、能跨平台。有些獨立開發者一個人用 Unity 做出百萬銷售的遊戲（下面有案例）。\n\n## 遊戲開發的核心概念\n\n在寫程式前，先理解 Unity 怎麼組織遊戲世界。\n\n### GameObject —— 遊戲中所有東西的容器\n\n場景裡的任何東西都是 GameObject（遊戲物體）：玩家角色是、敵人是、樹是、光源是、甚至看不見的「邏輯管理器」也是。GameObject 本身只是個空殼子，真正的功能靠 Component（元件）來實現。\n\n### Component —— 給 GameObject 添加行為\n\n你可以把 Component 想成「樂高積木」。一個 GameObject 可以裝很多 Component，不同 Component 組合就變成不同的東西：\n\n- **Transform**：位置、旋轉、縮放（每個 GameObject 都有，不能刪）\n- **Renderer** 或 **Sprite Renderer**：長什麼樣子（貼圖、模型）\n- **Collider**：碰撞形狀（圓形、方形、複雜形狀），用來偵測「有沒有碰到」\n- **Rigidbody**：物理系統（重力、速度、摩擦力）\n- **AudioSource**：播放聲音\n- **你寫的 Script**：遊戲邏輯（玩家控制、敵人 AI、勝負判定）\n\n例如「玩家」這個 GameObject 可能包含：Transform（在哪裡） + SpriteRenderer（長什麼樣） + CircleCollider（圓形碰撞） + Rigidbody（受重力影響） + PlayerController Script（按鍵往哪跑）。\n\n### Scene —— 一個遊戲場景 = 一個關卡或介面\n\n想像一個遊戲有「主選單」、「第一關」、「第二關」、「結束畫面」四個場景。切換關卡就是讀取不同 Scene；場景內的所有 GameObject、設定都會被載入。\n\n### Prefab —— 可重複使用的 GameObject 模板\n\n如果你做了一個「敵人」GameObject，裡面包含了模型、碰撞、AI 邏輯，你可以把它存成 Prefab（預製體）。之後需要生出 100 個敵人，就 Instantiate（複製）這個 Prefab 100 次，而不用手動建 100 個。\n\n## Hello Game —— 讓玩家動起來\n\n現在看看真實的遊戲程式碼。這個例子讓玩家用鍵盤控制角色移動：\n\n```csharp\nusing UnityEngine;\n\npublic class PlayerController : MonoBehaviour\n{\n    public float speed = 5f;  // 移動速度\n    Rigidbody rb;\n    \n    void Start() {\n        // 在遊戲開始時，拿到這個 GameObject 上的 Rigidbody\n        rb = GetComponent<Rigidbody>();\n    }\n    \n    void Update() {\n        // 每一 frame 執行一次\n        // 取得玩家按了上下左右（或 WASD）的輸入\n        float h = Input.GetAxis(\"Horizontal\");  // -1（左） ~ 1（右）\n        float v = Input.GetAxis(\"Vertical\");    // -1（下） ~ 1（上）\n        \n        // 改變速度方向和大小\n        rb.velocity = new Vector3(h, 0, v) * speed;\n    }\n}\n```\n\n怎麼用？\n\n1. 在 Unity 編輯器裡建立一個新 GameObject（右鍵 > Create Empty）\n2. 加上 Rigidbody Component（右下角 Add Component）\n3. 加上一個 Cube（3D 模型，這樣看得見角色）\n4. 把上面這份程式碼存成 `PlayerController.cs`\n5. 把這個 script 拖進 Inspector（GameObject 的設定面板）\n6. 按 Play —— 角色就能用 WASD 移動\n\n**程式碼講解**：\n\n- `GetComponent<Rigidbody>()`：從這個 GameObject 上找出 Rigidbody Component\n- `Input.GetAxis()`：取得輸入（Unity 內建的輸入系統，自動對應鍵盤、搖桿、觸控）\n- `rb.velocity`：改變物理速度，Rigidbody 會自動計算動畫、碰撞\n- `new Vector3(h, 0, v)`：建立三維向量（X 軸、Y 軸 0 不動、Z 軸）\n\n## 遊戲生命週期\n\nUnity 遊戲執行時，每個 Script 都會經過一套固定的生命週期，知道這套順序很重要：\n\n```csharp\nvoid Awake() {\n    // ☆ 最早執行（場景載入時立刻跑）\n    // 用來初始化變數、設定之間的參考\n}\n\nvoid Start() {\n    // ★ 第一次 Update 之前執行（只執行一次）\n    // 拿取 Component、初始化遊戲邏輯\n}\n\nvoid Update() {\n    // ★★★ 每一 frame 執行一次（最常用）\n    // 處理輸入、更新邏輯、動畫\n    // 執行頻率 = 螢幕刷新率（通常 60 fps = 每秒 60 次）\n}\n\nvoid FixedUpdate() {\n    // ★ 物理計算用（每個物理時間步執行）\n    // 如果要改 Rigidbody，放這裡而不是 Update\n}\n\nvoid LateUpdate() {\n    // Update 之後執行（通常用來讓相機跟隨角色）\n}\n\nvoid OnDestroy() {\n    // 物件被銷毀時執行\n    // 清理資源、存檔\n}\n```\n\n**為什麼分那麼多？** 舉個例子：\n\n- 玩家按鍵在 `Update()` 改位置\n- 但相機要在 `LateUpdate()` 才跟隨（確保玩家已經移動）\n- 物理碰撞在 `FixedUpdate()` 算（固定時間步，不受卡頓影響）\n\n如果全部都在 Update 做，順序混亂可能導致角色穿牆、相機卡頓。\n\n## 2D vs 3D 遊戲的差異\n\n### 2D 遊戲\n- 用 **Sprite**（平面圖片）而不是 3D 模型\n- 座標只有 X、Y（沒有 Z）\n- 物理用 **2D Collider** 和 **Rigidbody2D**\n- 例：薩爾達傳說曠野之息（復古版）、Celeste、Hollow Knight\n\n### 3D 遊戲\n- 用 **Mesh**（3D 模型）\n- 座標有 X、Y、Z\n- 物理用 **3D Collider** 和 **Rigidbody**\n- 還要考慮攝影機視角、光源、陰影\n- 例：寶可夢朱紫、黑魂系列\n\n## 上架和變現\n\n### 平台選擇\n\n**Steam（PC 遊戲）**\n- 申請費 $100 / 款\n- 玩家最多的 PC 平台\n- 分潤 Steam 抽 30%\n\n**App Store / Google Play（手機遊戲）**\n- 年費 $99（Apple）、$25（Google",
       "tip": {
         "type": "milestone",
         "text": "會 C# 順便會 Unity = Indie 2 條路。"
@@ -524,7 +639,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，Unity 適合作為初學者學習遊戲開發的主要原因是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Unity 是唯一能做 2D 和 3D 遊戲的引擎"
+          },
+          {
+            "value": "b",
+            "label": "學習資源最多、Asset Store 大、接案工作多、對 Indie 友善"
+          },
+          {
+            "value": "c",
+            "label": "Unity 用 C++ 開發，比其他引擎效能更好"
+          },
+          {
+            "value": "d",
+            "label": "Unity 只需要上架到 Steam，不用考慮其他平台"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確列出「為什麼選 Unity」的四大理由：學習資源最多、Asset Store 大、接案/工作多、Indie 友善。其他選項都錯誤：a 忽略了其他引擎也能做 2D/3D、c 混淆了 C# 而非 C++、d 誤解了 Unity 支援多平台。"
+      }
     }
   ],
   "boss": {
@@ -538,5 +676,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "C# 是微軟的語言、.NET 是執行環境、兩個一起用才能在 Windows 生態裡發揮最大威力",
+    "ASP.NET Core 是現代網站框架、輕量、快速、跨平台、是新案子的首選",
+    ".NET 有很多版本（Framework、Core、9），選錯版本會很麻煩，一定要搞清楚",
+    "Blazor 讓你用 C# 寫前後端、WPF 做桌面應用、MAUI 跨 Windows / Mac / iOS / Android",
+    "Unity 用 C# 寫遊戲、從物理、碰撞、UI 都有現成工具，新手進門相對友善"
+  ],
+  "faq": [
+    {
+      "q": "C# 和 Python 選哪個學？",
+      "a": "看你要做什麼。Python 學習曲線緩、適合資料分析；C# 偏向企業開發、遊戲、Windows 應用。如果想進入公司上班、接案做商業系統，C# 更吃香。"
+    },
+    {
+      "q": "我完全新手，ASP.NET Core 會不會太難？",
+      "a": "會有一點進度，但課程會從最基礎開始。前提是你得先學過 C# 基本語法，不然直接上框架會卡殼。只要一步步來，新手是能學會的。"
+    },
+    {
+      "q": "學 .NET 能接案嗎？",
+      "a": "能。企業、公司很常找 .NET 開發者做內部系統、API、網站。但接案難度取決於你做得好不好、能不能自己除錯、溝通清楚，不是語言問題。"
+    }
+  ]
 }

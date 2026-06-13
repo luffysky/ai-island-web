@@ -24,7 +24,7 @@
       "title": "遊戲開發總圖",
       "oneLineSummary": "不只 Unity、選 engine 看類型",
       "analogy": "台灣 Indie 遊戲市場小但有。",
-      "content": "## Game Engine 主流\n\n### Unity\n- C# 寫\n- 2D / 3D 都行\n- 生態最大\n- 占 50%+ Indie 遊戲\n- 學習資源最多\n\n### Unreal Engine\n- C++ / Blueprint（視覺化）\n- 3D / AAA 級畫面\n- 學習陡\n- 適合：影視級 3D\n\n### Godot\n- GDScript（類 Python）/ C# / C++\n- 開源、免費\n- 2D 超強\n- 輕量、上手快\n- 適合：Indie / 學習\n\n### Cocos2d\n- JS / C++\n- 2D 為主\n- 中文社群大\n\n### PlayCanvas / Three.js\n- Web 遊戲\n- JS\n\n### Phaser\n- JS、2D Web 遊戲\n- HTML5 Game\n\n### Bevy\n- Rust、新興\n- ECS 架構\n\n## 怎選\n\n| 需求 | 推薦 |\n|---|---|\n| 學遊戲開發 | Godot（免費 + 輕量）|\n| 想進大公司 | Unity / Unreal |\n| 2D Indie | Godot / Unity |\n| 3D AAA | Unreal |\n| Web 遊戲 | Phaser / Three.js |\n| 手遊（iOS / Android）| Unity（主流） |\n| 已會 JS | Phaser / Three.js |\n| 已會 Python | Godot（GDScript 像）|\n\n## 遊戲類型\n\n### Hyper-casual\n- 1 分鐘玩\n- 廣告變現\n- Unity + admob\n\n### 休閒手遊\n- Match 3 / Idle\n- IAP + 廣告\n- Unity 主流\n\n### Indie 故事\n- Roguelike / pixel art\n- Steam 上架\n- Godot / Unity\n\n### AAA\n- 大團隊（100+）\n- Unreal / 自研 engine\n\n### Web 遊戲\n- itch.io / Kongregate\n- Phaser / Three.js\n\n## 台灣遊戲市場\n- 手遊：競爭激烈、難 Indie\n- 獨立遊戲：Steam 上架機會\n- 客製外包：少\n- 大公司：智冠 / 雷亞 / 唯晶\n\n## Indie 變現\n\n### Steam（PC）\n- 一次性 $5-30\n- 70% 給開發者\n- 適合：完整故事遊戲\n\n### Mobile（iOS / Android）\n- F2P + 廣告 / IAP\n- 競爭激烈\n\n### Web（itch.io）\n- 試水場\n- 變現難\n\n### Console\n- 進入門檻高\n- 適合：已有口碑\n\n## 學習資源\n- **Brackeys** YouTube（Unity）\n- **GDQuest**（Godot）\n- **Coding Train**（JS games）\n- **Game Dev TV** Udemy\n\n## 心法\n- 第一個遊戲一定爛、沒關係\n- 完成 > 完美\n- 從小開始（pong / snake / flappy bird）\n- 不要追 AAA、追「玩起來爽」\n\n**☕ 用人話講**\n\n遊戲開發總圖——**不只 Unity，選引擎要看遊戲類型**。**一句話記住**：像選交通工具要看路況——2D 小品用 Godot、3D 大作用 Unity / Unreal；先想清楚要做什麼遊戲，再選引擎。\n",
+      "content": "## 遊戲開發總圖\n\n你現在站在一個十字路口：想做遊戲，但不知道該選哪個工具（Game Engine —— 製作遊戲的軟體平台）。這課不會教你程式碼，而是帶你看清整個遊戲開發的地圖——從選引擎、選遊戲類型、到變現方式。\n\n---\n\n## Game Engine 主流\n\n### Unity\n**最保險的選擇**。用 C#（一種程式語言，念起來像「C Sharp」）寫程式。\n\n- 2D / 3D 都能做，沒有天花板\n- 市場占有率 50%+ 的 Indie 遊戲都用它\n- 學習資源多到爆——YouTube 影片、論壇、課程滿坑滿谷\n- 手遊（iOS / Android）上架超方便，一鍵編譯\n- 公司用得最廣，履歷上寫「會 Unity」找工作加分\n- **缺點**：檔案有點大、免費版本有限制、訂閱模式惹議\n\n**適合**：想走遊戲開發職業路，或做中型 Indie 遊戲的人。\n\n### Unreal Engine\n**畫面最漂亮的選項**。出名就是「AAA 級（大廠花大錢做的）遊戲都用它」。\n\n- 用 C++ 或 Blueprint（視覺化程式語言，拖拖拉拉就能做邏輯）\n- 3D 效果一流，光影、粒子特效都超細膩\n- 學習曲線陡——對完全新手來說是「燒腦」等級\n- 需要電腦配備夠強（記憶體 16GB+ 會比較舒服）\n- **免費**，但發布時要抽稅（營收 100 萬以上抽 5%）\n\n**適合**：已經有程式基礎、想做 3D 大作、或對畫面品質執著的人。\n\n### Godot\n**最輕量、最自由的選擇**。開源（Open Source —— 代碼公開給全世界改進）、完全免費。\n\n- 用 GDScript（類似 Python，超好讀）、C# 或 C++ 都行\n- 檔案超小，硬碟和記憶體都不浪費\n- 2D 遊戲特別強——Pixel Art（像素藝術）遊戲做起來特爽\n- 社群小但成長快，有愈來愈多人用\n- **沒有訂閱費、沒有抽稅**，做的遊戲 100% 是你的\n- 文件還在完善中，偶爾得靠 YouTube 摸索\n\n**適合**：預算有限的學生、Indie 開發者、或已經會 Python 的人。\n\n### Cocos2d\n**東亞遊戲圈的老牌**。中文社群特別大。\n\n- 支援 JavaScript / C++\n- 2D 為主\n- 特別受中國手遊開發者歡迎\n\n**適合**：要融入中文遊戲社群的人。\n\n### Phaser\n**Web 遊戲的首選**。直接在瀏覽器玩，不用安裝。\n\n- 用 JavaScript（網頁程式語言）\n- 2D 遊戲專家\n- 極輕量，學習門檻低\n- 非常適合做 Hyper-casual（一分鐘遊戲）試水\n\n**適合**：已經會 JavaScript、或想快速驗證遊戲點子的人。\n\n### Three.js / PlayCanvas\n**3D Web 遊戲**，用 JavaScript 在瀏覽器裡做 3D。\n\n- 技術門檻高一點\n- 手機、電腦都能玩\n\n**適合**：已經是網頁工程師的人。\n\n### Bevy\n**新興的 Rust 引擎**。Rust 是很安全、很快的程式語言。\n\n- ECS 架構（Entity Component System —— 把遊戲物件拆成小零件，很靈活）\n- 社群還小，文件少\n- 不建議新手碰\n\n---\n\n## 怎選引擎？\n\n| **你的情況** | **推薦** | **為什麼** |\n|---|---|---|\n| 剛開始學遊戲開發 | **Godot** | 免費、輕量、上手快、不怕犯錯 |\n| 想進大公司（國際） | **Unity 或 Unreal** | 業界用得最廣，履歷有用 |\n| 要做 2D Indie 遊戲 | **Godot 或 Unity** | Godot 免費輕量，Unity 資源多 |\n| 要做 3D 大作（AAA） | **Unreal** | 畫面品質無可挑剔 |\n| 會 JavaScript，要做 Web 遊戲 | **Phaser** | 直接用熟悉的語言，快速上手 |\n| 要做手遊（iOS / Android） | **Unity** | 一鍵打包、上架流程順 |\n| 已經懂 Python | **Godot** | GDScript 很像 Python，過渡順暢 |\n\n---\n\n## 遊戲類型 ＆ 引擎配對\n\n### Hyper-casual（超輕量休閒）\n你見過那種「只要點一下」、「玩一分鐘就關掉」的小遊戲嗎？那就是它。\n\n- Flappy Bird、Tap Tap Boom、Color Switch 都是這類\n- **變現**：廣告（玩家看廣告換體力 / 金幣）\n- **引擎**：Phaser、Unity\n- **特點**：要快速做出來、靠廣告聯播網賺錢\n\n### 休閒手遊（中等規模）\n- Match 3（三消遊戲）、Idle Game（放置類）、Merge（合成遊戲）\n- **變現**：内購（IAP —— In-App Purchase，花錢買遊戲內物品）+ 廣告\n- **引擎**：Unity（絕對主流）\n- **特點**：畫面不需超精美，但要抓住「想一直玩下去」的心理\n\n### Indie 故事驅動遊戲\n- Roguelike（邊打邊撿東西、死了重來）、Pixel Art 冒險、敘事遊戲\n- **變現**：Steam 一次性購買（$5-30）\n- **引擎**：Godot 或 Unity\n- **特點**：需要完整的故事、關卡設計、視覺風格要獨特\n\n### 3D AAA 大作\n- 幾十人到 100+ 人的團隊、數年開發、數千萬預算\n- **引擎**：Unreal（主流）或自研引擎\n- **變現**：購買 / 訂閱 / 遊戲通行證\n- **特點**：這不是「Indie 開發者」的舞台\n\n### Web 遊戲\n- itch.io 上的小遊戲、Game Jam（遊戲快速開發競賽）作品\n- **變現**：很難（主要靠 Tips / 捐贈）\n- **引擎**：Phaser、Three.js\n- **特點**：門檻低、試水場\n\n---\n\n## 台灣遊戲市場現況\n\n**手遊市場**：競爭激烈到爆炸。大廠（King.com、Zynga）已經佔據所有廣告位，小開發者很難出頭。除非你的遊戲特別創新或有名人推薦，否則賺不到錢。\n\n**獨立遊戲（Steam）**：是台灣開發者比較有機會的地方。Steam 上每週都有新遊戲上架，只要遊戲品質不錯、有故事、有獨特風格，就有被玩家發現的機會。\n\n**客製外包**：減少中，大多給中國或東南亞廠商做。\n\n**本地大公司**：智冠、雷亞、唯晶等仍在招人，但職缺不多，競爭激烈。\n\n---\n\n## Indie 遊戲變現方式\n\n### Steam（PC）\n- **模式**：玩家買一次（$5-30），你拿 70%\n- **例子**：Hollow Knight、Hades、帕斯卡契約\n- **適合**：有完整故事、流程 10 小時+、品質穩定的遊戲\n- **風險**：要通過 Steam 審核、競爭激烈，不是每款都賣得動\n\n### Mobile（iOS / Android）\n- **模式**：免費下載，用廣告 + 內購變現\n- **現實**：手遊市場飽和，新遊戲很難出頭\n- **變現難度**：⭐⭐⭐⭐⭐（最難）\n\n### itch.io（Web + Desktop）\n- **模式**：免費或「Pay What You Want」（自由定價）\n- **優點**：上架快、沒審核、社群友善\n- **缺點**：訪客少、變現難\n- **適合**：Game Jam 作品、小實驗、或累積粉絲\n\n### Console（Nintendo Switch / PlayStation）\n- **進入門檻**：申請開發者帳號、簽合約、要真正遵守硬體商的規則\n- **成本**：開發費用高、行銷預算也高\n- **適合**：已經在 Steam 上小有成績、想進一步的人\n\n---\n\n## 學習資源（中英文都有）\n\n- **Brackeys**（YouTube）：Unity 教學頻道，內容深入淺出，已停更但很有參考價值\n- **GDQuest**（YouTube / 官網）：Godot 專家，教學品質一流\n- **Coding Train**（YouTube）：用 p5.js、Processing 教程式和遊戲邏輯，超有趣\n- **Game Dev TV**（Udemy）：便宜課程，Unity / Unreal / Godot 都有\n\n---\n\n## 遊戲開發心法\n\n**第一個遊戲一定爛、沒關係。** 你不會一步登天，",
       "tip": {
         "type": "practical",
         "text": "Indie 遊戲入門：Godot（免費） or Unity。"
@@ -139,7 +139,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想做一款 2D 的獨立遊戲、放在 Steam 上賣、而且想快速上手不花錢買軟體。根據課程內容，最適合選哪個引擎？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Godot"
+          },
+          {
+            "value": "b",
+            "label": "Unreal Engine"
+          },
+          {
+            "value": "c",
+            "label": "Unity"
+          },
+          {
+            "value": "d",
+            "label": "Phaser"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Godot 同時符合三個條件：開源免費、2D 超強、輕量易上手。雖然 Unity 也適合 2D Indie，但要付費；Unreal 是 3D 為主；Phaser 則是 Web 遊戲工具，不適合 Steam。"
+      }
     },
     {
       "title": "Unity 入門：C# + Component",
@@ -248,7 +271,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在 Unity 中，GameObject 和 Component 的關係是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "GameObject 是容器，Component 是掛在上面的行為邏輯"
+          },
+          {
+            "value": "b",
+            "label": "Component 是容器，GameObject 是裡面的行為"
+          },
+          {
+            "value": "c",
+            "label": "GameObject 和 Component 是獨立的，沒有特別關係"
+          },
+          {
+            "value": "d",
+            "label": "GameObject 用來畫圖，Component 用來處理音樂"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程核心就是『GameObject = 容器、Component = 行為』。你寫的 PlayerController 就是一個 Component，掛到 GameObject 上就自動執行。其他選項都是反過來或完全錯誤的概念。"
+      }
     },
     {
       "title": "Godot + Indie 遊戲變現",
@@ -385,7 +431,30 @@
           "level": 2,
           "text": "學習路徑"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，為什麼 Godot 特別適合獨立遊戲開發者用來做 2D 遊戲？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 Godot 完全免費開源、輕量級、2D 功能超強，而且 GDScript 像 Python 一樣容易學"
+          },
+          {
+            "value": "b",
+            "label": "因為 Godot 的 3D 引擎比 Unity 和 Unreal 都強大，適合所有遊戲類型"
+          },
+          {
+            "value": "c",
+            "label": "因為 Godot 是市面上最流行的引擎，生態最完整，資源最多"
+          },
+          {
+            "value": "d",
+            "label": "因為 Godot 不需要學程式語言，可以直接拖拉組件製作遊戲"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確列出 Godot 的優點包括開源免費、輕量、2D 超強、GDScript 易學（類 Python），這些都是讓獨立開發者選擇它的關鍵原因。選項 b 錯在課程明確標註 3D 不如 Unity/Unreal；選項 c 錯在課程提到生態小是缺點；選項 d 則是對遊戲開發的誤解。"
+      }
     },
     {
       "title": "Godot 4 完整心法",
@@ -478,13 +547,36 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，為什麼 Godot 特別適合 Indie 開發者相比 Unity？",
+        "options": [
+          {
+            "value": "a",
+            "label": "開源免費、沒有 royalty、檔案輕、2D 強，學習曲線平緩"
+          },
+          {
+            "value": "b",
+            "label": "3D 效果最好，生態系統最完善，工作機會最多"
+          },
+          {
+            "value": "c",
+            "label": "只能做 2D 遊戲，不支援其他平台上架"
+          },
+          {
+            "value": "d",
+            "label": "必須用 C# 才能開發，比 GDScript 更強大"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程重點強調 Godot 的優勢在於開源免費（無 royalty）、輕量、2D 強、GDScript 簡單、不被收購風險，這些都是 Indie 開發者的核心需求。選項 b 恰好相反（3D 是缺點、生態小、工作少），c 和 d 都是課程明確否定的內容。"
+      }
     },
     {
       "title": "遊戲設計心法",
       "oneLineSummary": "不是技術、是「玩起來爽」",
       "analogy": "90% Indie 遊戲失敗 = 設計問題、不是 code。",
-      "content": "## Core Game Loop\n\n### 是什麼\n玩家「想再玩一次」的循環：\n```\n動作 → 獎勵 → 進步 → 想再來\n```\n\n例：\n- 殺敵 → 經驗 + 金幣 → 升級裝備 → 更強 → 殺更強敵人\n- 跳 → 過障礙 → 高 score → 想破紀錄\n\n### 沒 loop = 沒人玩\n\n## 30 秒 - 30 分鐘 - 30 小時\n\n### 30 秒\n新玩家頭 30 秒：\n- 知道目標\n- 知道怎麼玩\n- 玩得起來\n\n### 30 分鐘\n留 1 個 session：\n- 熟練核心 mechanic\n- 解鎖 1 個新東西\n- 知道後續長啥樣\n\n### 30 小時\n留長期：\n- 多 build / class / strategy\n- 內容變化\n- 社群 / metagame\n\n## Juice（爽度）\n\n讓「按 1 個按鈕」感覺爽：\n- 視覺 feedback（screen shake / particle）\n- 音效（hit sound）\n- Animation（hit lag / squish）\n- Camera zoom\n\n範例：\n- 殺敵 → 螢幕震 + 粒子噴 + 音效 + 飄字 +XP\n\n沒這些 = 像 Excel。\n\n## 難度曲線\n\n### Flow Theory\n- 太簡單 = 無聊\n- 太難 = 挫敗\n- 對的難度 = flow\n\n### 設計\n- 開始：簡單、教學\n- 中期：穩定提升\n- 後期：挑戰\n- Boss 戰：高峰\n\n### Tools\n- 給選擇難度\n- Adaptive（系統自動調）\n- 「死多了給 hint」\n\n## 死亡 / 失敗\n\n### Bad\n- 死了從頭來\n- 無懲罰但無學習\n- 隨機死\n\n### Good\n- 失敗有 partial progress（roguelike）\n- 死了學新東西\n- 不公平的死 = 玩家罵\n\n## 遊戲類型\n\n### Roguelike（Indie 最熱）\n- Hades / Slay the Spire / Vampire Survivors\n- Run-based、死了重來\n- 隨機 + meta progression\n- 開發容易（小範圍 + 大重玩）\n\n### Platformer\n- Celeste / Hollow Knight\n- 跳跳跳\n\n### RPG\n- 故事 + 角色養成\n- 開發超慢\n\n### Puzzle\n- Baba Is You / Patrick's Parabox\n- 小團隊友善\n\n### Simulation\n- Factorio / Stardew Valley\n- 玩家自己創造目標\n\n## 設計 SOP\n\n### 1. Core idea\n1 句話描述：「你是 X、做 Y、為了 Z」。\n\n例：「你是賣咖啡的老闆、煮咖啡賣給客人、為了還清家裡負債。」\n\n### 2. Core loop\n最簡 5 步循環。\n\n### 3. Prototype\n1 週做出能玩的、沒美術沒音效。\n玩起來有趣？沒 → 改 idea。\n\n### 4. Vertical slice\n1 個 level / boss、有完整玩法（美術 / 音效 / UI）。\n\n### 5. Content\n加更多 level / 敵人 / 武器。\n\n### 6. Polish\njuice / balance / bug\n\n### 7. Launch\nitch.io → Steam\n\n## 心法\n- 技術 < 設計 < 玩起來爽\n- Prototype 醜也要先玩\n- 多測（找朋友 / Discord）\n- 看自己 game 玩家 reaction\n- 別愛上自己 design（殺寶貝）\n\n**☕ 用人話講**\n\n遊戲設計心法——**重點不是技術，是「玩起來爽」**。**一句話記住**：像做菜不只是會用爐子——好玩（手感、節奏、回饋）才是遊戲的靈魂，技術只是實現它的工具。\n",
+      "content": "## 遊戲設計心法\n\n### 為什麼要學設計，不只學寫程式\n\n你可能想問：「我學會 Unity，就能做遊戲了吧？」答案是……會卡關。\n\n會寫程式的人很多，但「寫出玩家想一直玩的遊戲」的人少得多。一個遊戲爛掉，通常不是因為技術差——而是設計爛、不好玩。所以在碰引擎前，先搞懂「什麼叫好玩」。\n\n---\n\n## Core Game Loop（核心遊戲迴圈）—— 玩家一直玩下去的祕密\n\n### 是什麼：一個無限重複、讓玩家欲罷不能的循環\n\n想像你在玩「打怪升級」遊戲：\n\n```\n1. 你找到敵人、按攻擊鍵\n  ↓\n2. 敵人死了、掉經驗值 + 金幣\n  ↓\n3. 你升級了、武器變強\n  ↓\n4. 你心想「我現在能打更強的怪了」\n  ↓\n5. 回到步驟 1\n```\n\n這 5 步就是「核心遊戲迴圈」。每一圈玩家都有進度（升級）、有回報（經驗值）、有目標（下一個敵人更強）。所以他會一直按「我再玩一場」。\n\n**再看一個例子**：Flappy Bird（那個點擊跳躍的小鳥）：\n\n```\n點擊 → 鳥往上飛 → 躲過管道、+1 分 → 看分數增長 → 想破紀錄 → 再點一次\n```\n\n這個迴圈短到不行（只有 3 秒），但超容易上癮。為什麼？因為每次你都看到「分數」在增加、有進度感。\n\n### 沒有 Core Loop = 沒人玩\n\n如果一個遊戲設計得「殺敵完全沒獎勵、死了也沒懲罰、升級也沒感覺」——那玩家幹嘛一直玩？他會玩 5 分鐘就刪掉。\n\n**你的第一工作是：設計出一個「爽、簡單、會重複」的迴圈。** 美術、音效、故事都是 A 咖，但這個迴圈是 S 咖。\n\n---\n\n## 30 秒 - 30 分鐘 - 30 小時：三個不同層級的體驗\n\n做遊戲要考慮三種玩家狀態，每種需要不同設計。\n\n### 前 30 秒：「新手期」—— 讓人能馬上玩起來\n\n新玩家剛進遊戲，他們的腦子是空白的。你有 30 秒讓他們：\n\n1. **知道目標是什麼**（「我要幹什麼？」）\n   - 不要靠長文字\n   - 要靠直覺：看畫面就懂\n   - 例：看到紅色敵人撲過來，玩家自動知道要躲或打\n\n2. **知道怎麼操作**（「我要按什麼？」）\n   - 第一個房間/場景就給個簡單教學\n   - 不是「讀教學文字」，是「玩一個簡單版本」\n   - 例：Celeste（那個爬山遊戲）開始直接讓你跳、然後按住跳更高——沒教學文字，直接玩就懂\n\n3. **玩得起來**（「我現在有信心了」）\n   - 頭 3 關要簡單到不行\n   - 讓新手贏幾場、累積自信\n   - 再慢慢難起來\n\n**實例**：Vampire Survivors（吸血鬼倖存者）\n- 遊戲開始，你在螢幕中間、一堆怪往你衝\n- 滑鼠一移動，敵人自動死\n- 10 秒內你就懂了：「躲避 + 敵人會死」\n- 新手興奮感：「哇我很強欸」\n\n### 玩一個 Session（1 個遊戲場次，約 30 分鐘）：「熟練期」\n\n30 秒過後，玩家開始認真玩一局。在這 30 分鐘內，他要：\n\n1. **熟練核心 mechanic**（遊戲的主要玩法）\n   - 例：如果是射擊遊戲，30 分鐘內要讓他從「亂射」進步到「會瞄準」\n   - 一開始敵人少、容易射；慢慢增加敵人、提高難度\n   - 讓他感覺「咦，我越來越厲害了」\n\n2. **解鎖 1~2 個新東西**\n   - 新武器、新技能、新敵人類型\n   - 這樣不會無聊\n   - 例：Hades（冥府遊戲）每幾層會給新武器或敵人\n\n3. **能預期後面的樣子**\n   - 他玩了一局，要知道「再玩一局會變怎樣」\n   - 例：看到有「5 個難度等級」、要解鎖角色之類\n   - 這樣他才願意「再來一局」\n\n### 長期（30 小時以上）：「深度期」\n\n有人真的把你的遊戲當成主遊戲，每周玩 10 小時。你要給他：\n\n1. **多種構築方式**（Build：裝備組合）\n   - 同一個角色，可以玩出 10 種不同玩法\n   - 例：暗黑破壞神的法師，可以「冰凍流」、「火焰流」、「電擊流」，每種玩起來完全不同\n   - 玩家自己試驗組合，這本身就很爽\n\n2. **內容會變化**\n   - 不是永遠打同樣的敵人、同樣的地圖\n   - 隨機元素讓每局不一樣\n   - 或真的加新角色、新地圖\n\n3. **社群 / Metagame（玩家間的競爭或合作）**\n   - Discord 讓玩家分享心得、最強構築\n   - 排行榜讓人互相較勁\n   - 這東西本身就能讓遊戲活更久\n\n---\n\n## Juice（爽度）—— 讓「按 1 個按鈕」感覺超爽\n\n你有沒有玩過那種「按下去沒反應」的遊戲？很怄。反之，有些遊戲「按下去天地動搖」——那就是 Juice。\n\nJuice（日本人叫「フィールド」）= **視覺、聽覺、觸覺的完整回饋**。簡單動作（打敵人、跳躍）要有 4 層反應：\n\n### 1. 視覺回饋\n\n敵人被打、應該：\n- **螢幕震一下**（Screen Shake）—— 敲敲敲的感覺\n- **粒子噴出來**（Particle Effect）—— 血、火花、爆炸\n- **敵人往後彈飛**（Knockback）—— 被打的物理感\n- **飄出傷害數字**（Damage Number）—— 看到「-50HP」或「Critical!」\n\n例：Hades 打一隻小怪，螢幕會晃、敵人飛出血、有音效、還飄「Hit」字樣。看起來就是超滿足、超有力量感。\n\n### 2. 音效回饋\n\n沒音效的打擊聲音，玩家會覺得「怎麼軟軟的」。加上扎實的「砰」或「刀聲」，整個等級翻倍。\n\n- 打中敵人：「砰！」（低音）\n- 掉東西：「叮！」（高音）\n- 升級：「噔噔噔！」（升調）\n- 選單點擊：「咔」\n\n### 3. 動作回饋\n\n不只敵人要動，你的角色也要「表演」打擊：\n\n- **Hit Lag（僵直）**：打中敵人那一刻，遊戲暫停 0.1 秒，讓玩家感覺「咦，我打中了」\n- **Squish & Stretch（擠壓與拉伸）**：敵人被打時縮一下、再彈回去，像真的被撞到\n\n例：Mario 跳起來踩敵人，敵人會被壓扁（Squish），然後敵人消失時會彈起來（Stretch）——超 cute、超滿足。\n\n### 4. 鏡頭回饋\n\n遊戲鏡頭（Camera）也要動：\n\n- **Camera Zoom In**：打到敵人時，鏡頭往前推，讓打擊感更近身\n- **Camera Pan**：鏡頭跟著爆炸移動，帶出視覺衝擊\n\n**完整例子**：你在 Vampire Survivors 咂死一堆敵人：\n```\n按滑鼠 \n  → 敵人死（粒子噴出）+ 螢幕晃 + 音效（砰砰砰）+ 掉金幣（叮叮） + 鏡頭震 \n  → 爽度 = ∞\n```\n\n對比沒 Juice 的版本：\n```\n按滑鼠 \n  → 敵人的 HP 減少、安安靜靜地消失 \n  → 感覺像在操作 Excel…\n```\n\n**所以**：Juice 不是「多加一堆特效」，而是「每個動作都要有回饋」。即使是簡單遊戲（Flappy Bird），也要靠音效 + 分數飄字 + 鏡頭震來製造爽度。\n\n---\n\n## 難度曲線：讓玩家一直在「舒服的挑戰」狀態\n\n### Flow Theory（心流理論）\n\n心",
       "tip": {
         "type": "milestone",
         "text": "遊戲做給「玩家」、不是給「自己」。"
@@ -627,13 +719,36 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，為什麼說「沒有 Core Game Loop 就沒人玩」？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為玩家需要感受到「動作→獎勵→進步→想再來」的循環，才會持續想玩下去"
+          },
+          {
+            "value": "b",
+            "label": "因為遊戲一定要有複雜的技術系統和大量內容"
+          },
+          {
+            "value": "c",
+            "label": "因為沒有 Loop 就無法製作出高品質的視覺和音效"
+          },
+          {
+            "value": "d",
+            "label": "因為玩家只在乎遊戲的故事和角色設定"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Core Game Loop 的本質就是讓玩家感受到「我在進步、我變強了、我想再玩一次」的正向循環。沒有這個循環，玩家就沒有被激勵的理由繼續玩。其他選項都偏離了課程重點（技術≠爽、內容是後期、故事不是 loop 的核心）。"
+      }
     },
     {
       "title": "遊戲變現：Steam / Mobile / Web",
       "oneLineSummary": "不同平台不同玩法",
       "analogy": "選錯 = 0 收入。",
-      "content": "## Steam（PC、Indie 主場）\n\n### 商業模式\n- 一次性 $5-30\n- Steam 抽 30%\n- DLC / season pass\n\n### 上架\n- Steam Direct $100 申請費\n- 寫 store page（最重要）\n- Wishlist 累積\n- Launch discount 10-30%\n\n### 數字\n- Indie 平均：< 1000 份\n- 中等：1k-10k\n- Hit：100k+\n- 神作：100 萬+\n\n### Wishlist 策略\n- Trailer 1 個月前上\n- 持續 update\n- 社群（Twitter / Reddit / Discord）\n- Streamer / YouTuber 試玩\n\n## 手遊（F2P + 廣告 / IAP）\n\n### Hyper-casual\n- 玩 1-2 分鐘\n- 廣告變現\n- Voodoo / Lion 出版\n\n### Mid-core\n- 留存高\n- IAP + 廣告\n- Match-3 / RPG / Idle\n\n### 抽成\n- Apple / Google：15-30%\n- 廣告 SDK：30%\n\n### 廣告 SDK\n- AdMob（Google）\n- AppLovin / IronSource\n- Unity Ads\n\n### 數字\n- Hyper-casual：失敗多、Hit 月入 $1M\n- Mid-core：穩 $100-10000/月\n\n## Web Game（itch.io / 自架）\n\n### Free + 自願捐\n- itch.io：no cut\n- 玩家自己 set price\n\n### Free + ads\n- GameDistribution\n- 自己網站 + AdSense\n\n### 賣 source code / asset\n- GitHub 開源\n- 月訂閱（Patreon）\n\n## Console（高門檻）\n- Switch / PS / Xbox\n- 需要 dev kit + 通過審查\n- 適合：已紅遊戲 port\n\n## 訂閱平台\n- **Apple Arcade**：$5/月 給開發者\n- **Netflix Games**：包含費用\n- **Xbox Game Pass**\n\n## DLC + 後續\n\n### Roguelike pattern\n免費更新（season）：\n- 留 player base\n- Wishlist 增加\n- Sale 也好\n\n### Expansion\n大 DLC（$10-20）：\n- 1-2 年後\n- 老玩家回鍋\n\n## Indie 案例\n\n### 神作（萬中選一）\n- **Stardew Valley**：1 人 4 年、賣 1500 萬份\n- **Vampire Survivors**：1 人 2 個月、月入 $1M\n\n### 一般 Indie\n- 賣 1000-10000 份\n- 收入 $5k-$50k\n- 不能單靠\n\n### 失敗（多數）\n- 賣 < 100 份\n- 收入 < $1000\n- 學經驗\n\n## 收入結構（Indie 開發者）\n\n**模型 1：純靠遊戲**\n- 5+ 年累積 5 個 game\n- 一個爆紅 = 退休\n- 大部分人沒到\n\n**模型 2：游戲 + 副業**\n- Game 為熱情\n- 接案 / 教課過活\n- 5-10 年才轉純 dev\n\n**模型 3：教遊戲開發**\n- YouTube channel\n- Patreon\n- Asset Store 賣 asset\n\n## 心法\n- 遊戲是「機率遊戲」\n- 5 年才看到第 1 桶金\n- 別靠 Indie game 過活（先有副業）\n- 完成 > 完美\n- 上線 > 持續完美\n\n## 學習資源\n- **Brackeys** YT（Unity）\n- **GDQuest**（Godot）\n- **Game Dev TV**（Udemy）\n- **The Art of Game Design** 書\n- **r/gamedev** subreddit\n\n**☕ 用人話講**\n\n遊戲變現：Steam / Mobile / Web——**不同平台、不同玩法**。**一句話記住**：像同一個商品在不同通路賣——Steam 買斷、手遊內購、Web 靠廣告；平台決定了你怎麼賺錢。\n",
+      "content": "## Steam（PC、Indie 主場）\n\n### 為什麼 Steam 是 Indie 開發者的首選？\n\nSteam 是全球最大的 PC 遊戲平台，擁有超過 1.2 億月活躍使用者。對 Indie 開發者來說，這裡的優勢很明顯：門檻相對低（只要 $100 申請費）、玩家基數龐大、支付系統完整。但反過來說，正因為門檻低，上架遊戲數每年暴增，競爭也越來越激烈——每天都有幾十個新遊戲上線，你的遊戲要脫穎而出，需要實實在在的內容和行銷策略。\n\n### 商業模式：賣多少、Steam 賺多少、你賺多少\n\n**基礎模式：一次性購買**\n- 訂價區間：$5 - $30（最常見）\n- 超過 $30：必須有理由（大製作、大量內容）、否則轉化率差\n- Steam 抽成：30%（永遠的 30%）\n- **你拿到手：70%**\n\n舉例：你定價 $10，賣出 1000 份\n- 總收入：$10,000\n- Steam 拿走：$3,000\n- 你到手：$7,000\n\n這看起來公平，但要記住—— Steam 給你的不只是一個支付通道，還有 1.2 億使用者的曝光潛力、完整的 Wishlist 系統、社群討論區、評測頁面。沒有 Steam，你得自己搞定這些。\n\n**附加變現：DLC / Season Pass / Bundle**\n- DLC（Downloadable Content，額外內容）：$5 - $20，推薦 6 個月後上線\n- Season Pass（季票）：一次買齊整季內容，通常 $15 - $25\n- Steam 同樣抽 30%\n\nDLC 的妙處在於——老玩家已經熟悉遊戲了，不用你再花行銷費用教育他們；他們願意花錢就是因為喜歡。Stardew Valley 從不出 DLC，但大多數遊戲都該考慮。\n\n### 上架流程：從想法到商店頁面\n\n**Step 1：支付 $100 申請費**\n- 一次性、不退款\n- 透過 Steam Direct 申請（Valve 後來關閉了舊的出版商計畫，只剩這個）\n- 需要銀行帳戶、完整公司資訊（個人開發者也行，寫清楚就好）\n\n**Step 2：製作 Store Page（商店頁面）—— 最重要的地方**\n\n你的 Steam 頁面會決定 80% 的轉化率。玩家點進來，看到什麼？\n\n- **遊戲標題 + 1 句推文**：必須立刻吸引人、3 秒決定留下或走人\n- **宣傳圖片**（Main capsule）：486×729 像素、必須是視覺衝擊力最強的畫面\n- **截圖 5 - 10 張**：展示遊戲最有趣的 moment、不要讓玩家猜你的遊戲在幹嘛\n- **遊戲簡介 300 字以內**：白話、有重點、列 bullet point\n- **系統需求**：最低規格、推薦規格要寫清楚（預防差評）\n- **標籤**（Tags）：選 5 個最貼切的（比如「策略」「獨立」「2D」）、幫助演算法推薦\n\n常見雷：開發者放上自己喜歡的截圖、但玩家看不出遊戲玩法。比如一個益智遊戲，截圖卻全是美術細節、沒有展示解謎的過程，轉化率就會很低。\n\n**Step 3：Wishlist 累積策略**\n\nWishlist（願望清單）是 Steam 上最神奇的機制。玩家加入願望清單，代表「有興趣但還不買」；當遊戲降價或上線時，他們會收到通知。數據顯示——**上線時有 1000 個 Wishlist，比 0 個的成功率高 10 倍以上**。\n\n怎麼累積 Wishlist？\n\n1. **發佈 Trailer（預告片）：上線前 1 個月**\n   - 長度 1 - 2 分鐘\n   - 開頭 10 秒必須抓住人（靜音也能看懂）\n   - 配音 / 字幕（多語言加分）\n   - 上傳到 YouTube，再嵌入 Steam 頁面\n\n2. **持續更新 Devlog（開發日誌）**\n   - 每月 2 - 4 次、寫在 Steam 的「News」區\n   - 不求長，但要真誠、秀具體進度（「我們做了 X」勝過「開發中」）\n   - 讓玩家看到你還活著、遊戲還在做\n\n3. **社群行銷**\n   - Twitter / X：每週發進度圖、3-5 秒 GIF\n   - Reddit：在 r/gamedev、r/IndieGaming 等社群分享\n   - Discord：開自己的伺服器、邀請 beta 玩家\n   - 別硬推銷，展示有趣的東西、社群自己會傳播\n\n4. **Streamer / YouTuber 試玩**\n   - 聯絡有 10k - 100k 訂閱的頻道（太大的理你不理）\n   - 免費給 key、請他們試玩\n   - 預期：50% 不回應、30% 玩了沒上傳、20% 真的上傳\n   - 一個好的試玩影片 = 幾百個 Wishlist\n\n### Launch Discount：上線折扣策略\n\n上線前兩週宣佈 10% - 30% 折扣，這會在 Steam 首頁的「新遊戲」區放一週左右。折扣的目的不是「便宜賣」，而是**造成「限時感」，刺激玩家馬上買**。\n\n- 折扣 10%：溫和、不會讓你賠錢、老牌遊戲的選擇\n- 折扣 20%：積極、常見、符合市場預期\n- 折扣 30% 以上：通常用在特殊情況（特殊節日、大型更新）\n\n**重點**：折扣後不要馬上停止行銷。繼續發 Devlog、參加活動、上架 DLC——你的第一週銷售，往往決定 Steam 演算法怎麼推薦你。\n\n### 現實數字：不同等級的遊戲銷售量\n\n這些是根據 Steam Spy（一個統計 Steam 遊戲銷售量的第三方工具）的數據，別當完全準確，但方向對：\n\n**< 1000 份（失敗）**\n- 佔所有上架遊戲的 50% - 60%\n- 通常是：製作不完整、行銷 0、品質明顯低於預期\n\n**1000 - 10000 份（小成功）**\n- Indie 開發者的正常期望\n- 一個人 / 小團隊做 1 - 2 年、上線時有 500+ Wishlist\n- 收入：$5k - $50k（稅前）\n\n**10000 - 100000 份（中等成功）**\n- 已經是漂亮成績\n- 通常需要：良好的遊戲品質 + 明智的定價 + 持續更新\n- 收入：$50k - $500k\n\n**100000 份 +（大成功）**\n- 已登上 Steam 銷售排行榜\n- 收入：$500k - $5M +\n- 例子：Hollow Knight（售 300 萬份）、Among Us（售 500 萬份）\n\n**100 萬份 +（現象級）**\n- Stardew Valley、Elden Ring 等級\n- 這是「萬中選一」、不要期望\n\n**重要提醒**：這些數字只統計「銷售量」，沒算伺服器成本、稅務、退款。一個賣 10000 份、$15 的遊戲，實際到手（扣掉 30%、稅 / 退款 / 成本）可能只有 $80k 左右，如果團隊 5 人做 2 年，平均每人年薪才 $8k——比開發案少得多。\n\n---\n\n## 手遊變現：兩個完全不同的世界\n\n手遊變現是「量身訂做」的——根據遊戲類型，可能是廣告地獄、也可能是內購天堂。沒有統一模式。\n\n### Hyper-casual（超休閒）：廣告帝國\n\n**遊戲特質**\n- 玩法超簡單：1 - 2 分鐘一局\n- 上手 0 學習曲線（開起來就知道怎麼玩）\n- 不需要故事 / 世界觀\n- 例子：Flappy Bird、Happy Jump、Snake vs Block\n\n**變現方式：全靠廣告**\n- 玩家免費下載、免費玩\n- 每局結束強制看 30 秒廣告（或自願看換獎勵）\n- 你的收入 = 下載量 × 日活躍率 × 廣告次數 × 廣告單價\n\n**盈利潛力：兩極化**\n- 失敗多數：< 10 萬下載、收入 < $1000\n- 爆紅小眾：每月百萬下載、月入 $1M（但維持不久）\n\n為什麼不穩定？因為 hyper-casual 市場淘汰快、新鮮感只有 2 - 4 週。玩家玩膩就刪除，沒有「老玩家」這種東西。\n\n**出版策略**\n- Voodoo、Lion Studio 等「超休閒發行商」會找你發行\n- 他們的算法非常精準（",
       "tip": {
         "type": "warning",
         "text": "Indie 遊戲是浪漫、不是飯碗。先有副業。"
@@ -755,7 +870,30 @@
           "level": 2,
           "text": "學習資源"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據課程內容，一個 Indie 遊戲開發者想要靠遊戲變現維生，最務實的做法是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "先專心開發一款完美的遊戲，確保品質，再上架變現"
+          },
+          {
+            "value": "b",
+            "label": "邊做遊戲邊有副業收入，累積 5-10 年後才考慮轉為純開發者"
+          },
+          {
+            "value": "c",
+            "label": "選擇手遊開發，因為 IAP 變現能力最強，風險最低"
+          },
+          {
+            "value": "d",
+            "label": "直接投入 Console 開發，因為審查通過的遊戲銷量最穩定"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程明確指出「模型 2：遊戲 + 副業」是 Indie 開發者的現實做法——先靠接案或教課過活，遊戲作為熱情項目，5-10 年累積後才能轉為純開發者。其他選項違反課程核心心法（完成 > 完美）或忽視 Indie 的高風險現實。"
+      }
     }
   ],
   "boss": {
@@ -769,5 +907,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "Unity 適合大型遊戲和商業專案、Godot 輕量級且開源、Phaser 專攻網頁遊戲",
+    "遊戲引擎的核心是 Component 驅動的架構，把功能拆成小積木組合",
+    "C# 是 Unity 的語言，GDScript 是 Godot 的專屬語言，語法學習難度差不多",
+    "好的遊戲設計靠「直覺易懂的規則」和「有意思的失敗反饋」，不是只靠畫面漂亮",
+    "獨立遊戲變現要挑對平臺：Steam 人數最多但審核嚴、手機要用心做推廣、Web 遊戲適合快速測試"
+  ],
+  "faq": [
+    {
+      "q": "我完全不懂程式，能學遊戲開發嗎？",
+      "a": "能，但要有耐心。遊戲開發會教你邊寫程式邊做東西，比純程式課程更有趣。建議先從 Godot 或 Phaser 開始，難度比較平緩。"
+    },
+    {
+      "q": "Unity vs Godot，我該選哪一個？",
+      "a": "想快速上手、社群教材最多就選 Unity；想用開源免費工具、專注遊戲邏輯就選 Godot。兩個都學也行，核心觀念是通用的。"
+    },
+    {
+      "q": "做好遊戲後真的能靠這個賺錢嗎？",
+      "a": "能，但不容易。獨立遊戲成功要靠遊戲品質、行銷、運氣各佔一角，沒人能保證。這章會告訴你現實的獲利方式，你再決定值不值得投入。"
+    }
+  ]
 }

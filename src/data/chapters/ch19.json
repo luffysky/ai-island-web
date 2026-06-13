@@ -60,7 +60,30 @@
           "level": 2,
           "text": "學習路線"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "DB 進階和 DB 入門最大的差別是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "進階教新的 SQL 語法，入門只教基本的"
+          },
+          {
+            "value": "b",
+            "label": "入門教小資料量下怎麼寫 SQL，進階教大資料量 / 高流量 / 不能停機時要會的招式"
+          },
+          {
+            "value": "c",
+            "label": "進階用 PostgreSQL，入門用 MySQL"
+          },
+          {
+            "value": "d",
+            "label": "進階要學 NoSQL，入門只用傳統 SQL"
+          }
+        ],
+        "answer": "b",
+        "explanation": "進階的重點不是新語法，而是把「會寫 SELECT」升級到「100 萬筆資料下還跑很快、多人同時寫不出錯、半夜掛掉 5 分鐘救回來」——用 Index、Transaction、Replication 等招式解決現實問題。"
+      }
     },
     {
       "title": "Index 深入：B-tree / GIN / GiST",
@@ -129,7 +152,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的電商網站有 500 萬筆訂單，90% 的查詢都在找『還沒出貨』的訂單（status='pending'），只有少數查詢需要看已完成的訂單。如果要讓查詢速度最快又不浪費空間，應該怎麼加 index？",
+        "options": [
+          {
+            "value": "a",
+            "label": "在整個 orders 表的 status 欄加 B-tree index，這樣什麼查詢都快"
+          },
+          {
+            "value": "b",
+            "label": "加 Partial Index，只針對 status='pending' 的訂單建 index"
+          },
+          {
+            "value": "c",
+            "label": "用 GIN index，因為全文搜尋最快"
+          },
+          {
+            "value": "d",
+            "label": "用 BRIN index 在 created_at 上，因為訂單資料量大"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Partial Index 正是為了這種情境設計——只 index 你真正常查的那部分資料（pending 的 1%），讓 index 更小更快，避免浪費空間在你永遠不查的已完成訂單上。選項 a 會浪費 90% 的 index 空間；c 和 d 都用錯了索引類型。"
+      }
     },
     {
       "title": "EXPLAIN ANALYZE：找慢 query",
@@ -218,7 +264,30 @@
           "level": 2,
           "text": "常見 anti-pattern"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你想用 EXPLAIN ANALYZE 來分析一個複雜的 DELETE 語句，確保它不會誤刪資料。以下哪個做法最安全？",
+        "options": [
+          {
+            "value": "a",
+            "label": "直接輸入 EXPLAIN ANALYZE DELETE FROM orders WHERE ...; 它只是估計不會真的執行"
+          },
+          {
+            "value": "b",
+            "label": "先用 BEGIN; 開啟 transaction，執行 EXPLAIN ANALYZE DELETE，最後用 ROLLBACK; 來取消"
+          },
+          {
+            "value": "c",
+            "label": "改用 EXPLAIN（不加 ANALYZE）來估計，然後根據執行計畫再手動刪除"
+          },
+          {
+            "value": "d",
+            "label": "使用 EXPLAIN ANALYZE 搭配 BUFFERS 參數就足夠了，不需要額外防護"
+          }
+        ],
+        "answer": "b",
+        "explanation": "EXPLAIN ANALYZE 會真的執行 query，所以 DELETE 會真的刪資料。用 transaction 包裹再 ROLLBACK 可以安全地看到執行計畫，又不怕永久刪除。選項 a 錯在 ANALYZE 一定會真的執行；選項 c 只用 EXPLAIN 看不到實際時間和 rows 數；選項 d 的 BUFFERS 參數無法阻止刪除發生。"
+      }
     },
     {
       "title": "Transaction + Isolation Levels",
@@ -311,7 +380,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "小王在開發轉帳功能時，寫了兩行 SQL：先從帳戶 A 扣 100 元、再加到帳戶 B。如果執行第一行後系統當機，會發生什麼問題？用 Transaction 怎麼解決？",
+        "options": [
+          {
+            "value": "a",
+            "label": "A 會被扣 100 元、B 收不到，資料不一致。用 Transaction 包起來，中間當機時會自動 ROLLBACK，兩筆都不執行。"
+          },
+          {
+            "value": "b",
+            "label": "系統會自動幫你完成 B 的加款動作，所以不用擔心。"
+          },
+          {
+            "value": "c",
+            "label": "只要在最後加 COMMIT，就能保證兩筆都會成功執行。"
+          },
+          {
+            "value": "d",
+            "label": "這是 Dirty Read 問題，需要改成 Serializable 隔離等級才能解決。"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Transaction 的 Atomicity（原子性）保證「全成功或全失敗」。選項 b 錯在資料庫不會自動完成；選項 c 錯在 COMMIT 只是提交、當機還是會中斷；選項 d 混淆了概念，Dirty Read 是讀髒資料，這是寫入中斷問題。"
+      }
     },
     {
       "title": "Replication：讀寫分離 + HA",
@@ -392,7 +484,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "假設你的 web app 有一台 Primary DB 和 3 台 Replica。現在 Primary 剛寫入一筆「使用者建立訂單」的資料，立刻有個 request 要讀取這筆訂單資料。如果用非同步 Replication（Async），可能會遇到什麼問題？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Replica 資料沒有同步完、讀不到剛寫入的訂單，造成 Replication Lag"
+          },
+          {
+            "value": "b",
+            "label": "Replica 已經有資料了，但 Primary 機器太忙沒有回應"
+          },
+          {
+            "value": "c",
+            "label": "讀取速度會變慢，因為要等 3 台 Replica 都確認後才回應"
+          },
+          {
+            "value": "d",
+            "label": "Primary 會自動切換到 Replica，導致寫入失敗"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Async Replication 是 Primary 寫完立刻回應 client，才同步傳給 Replica，所以有延遲。這課特別提到「剛寫完那個 request 強制讀 Primary」是解法，說明 Async 會有 Replication Lag 問題。Sync 才是每次寫都等 Replica 確認，而 failover 和速度問題不是 Async 的主要特性。"
+      }
     },
     {
       "title": "Sharding / Partitioning",
@@ -485,7 +600,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "假設你有個服務現在有 5 億筆使用者資料，單台 PostgreSQL 寫入已經變慢，加了 Replica 後還是一樣慢。這時應該用什麼解決？",
+        "options": [
+          {
+            "value": "a",
+            "label": "再加更多 Replica 來分散讀寫"
+          },
+          {
+            "value": "b",
+            "label": "改用 Partitioning 把表切成好幾塊"
+          },
+          {
+            "value": "c",
+            "label": "用 Sharding 把資料分散到不同機器"
+          },
+          {
+            "value": "d",
+            "label": "改用垂直分割，把欄位分到不同表"
+          }
+        ],
+        "answer": "c",
+        "explanation": "Replica 只複製資料，寫入還是打到同一台主機，所以加再多也沒用。Partitioning 也只是同一台機器內部的分區。只有 Sharding 才能把資料分散到多台機器，真正分散寫入壓力。"
+      }
     },
     {
       "title": "Connection Pooling",
@@ -554,7 +692,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的 Node.js 應用正在用 Connection Pool，現在要執行一個需要多個 SQL 語句必須在同一個連線上執行的交易（transaction）。下列做法何者正確？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 pool.query('BEGIN'); pool.query('UPDATE...'); pool.query('COMMIT'); 就可以了"
+          },
+          {
+            "value": "b",
+            "label": "用 const client = await pool.connect() 借出單一連線、在同一個 client 上執行 BEGIN、UPDATE、COMMIT、最後 client.release() 還回"
+          },
+          {
+            "value": "c",
+            "label": "pool 會自動管理 transaction、直接用 pool.query() 執行多個語句就行"
+          },
+          {
+            "value": "d",
+            "label": "transaction 不需要特別處理，Connection Pool 本身就會保證多個 query 在同一個連線上"
+          }
+        ],
+        "answer": "b",
+        "explanation": "pool.query() 每次都會從 pool 借不同的連線，所以多個 query 會散落在不同連線上，transaction 會失效。必須用 pool.connect() 借出單一 client、在它上面執行完整的 BEGIN、DML、COMMIT，最後才 release() 還回 pool。"
+      }
     },
     {
       "title": "Cache 策略：Redis + 多層",
@@ -651,7 +812,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的應用有 1000 個使用者同時查詢同一個熱門商品的資料，但 Redis 中沒有快取。如果什麼都不做，會發生什麼問題？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Cache Stampede — 1000 個請求同時打到資料庫查詢，造成資料庫過載"
+          },
+          {
+            "value": "b",
+            "label": "所有使用者都會超時，因為 Redis 容量不足"
+          },
+          {
+            "value": "c",
+            "label": "Redis 會自動從資料庫同步資料，不會有問題"
+          },
+          {
+            "value": "d",
+            "label": "只有第一個使用者能查到資料，其他人都會被拒絕"
+          }
+        ],
+        "answer": "a",
+        "explanation": "這就是課程中提到的 Stampede 問題——快取沒命中時，多個請求同時發往資料庫查詢同一筆資料，造成 DB 瞬間高負載。解法是用 lock 機制讓同 key 只有一個 fetch。"
+      }
     },
     {
       "title": "慢查詢監控 + 調優",
@@ -744,7 +928,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的應用上線後，想要主動找出哪些查詢跑得很慢。下列做法中，哪一個是最完整的監控策略？",
+        "options": [
+          {
+            "value": "a",
+            "label": "只依靠用戶反映「系統很慢」，然後才去查 slow query log"
+          },
+          {
+            "value": "b",
+            "label": "上線 Day 1 開啟 slow query log，並定期用 pg_stat_statements 檢視 top 10 慢查詢進行優化"
+          },
+          {
+            "value": "c",
+            "label": "每次查詢都用 EXPLAIN ANALYZE，確保每條 SQL 都最優化"
+          },
+          {
+            "value": "d",
+            "label": "設定 log_min_duration_statement，然後每年檢查一次慢查詢"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程強調的心法是「主動」且「持續」的監控——上線 Day 1 就開 slow query log，並定期（如月度）用 pg_stat_statements 找出 top 10 慢查詢優化，而不是被動等用戶抱怨或做一次性檢查。選項 a 是被動做法、c 過度、d 檢查頻率太低。"
+      }
     },
     {
       "title": "Database Migration 策略",
@@ -837,7 +1044,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的線上服務正在跑，現在要把 users 表的 status 欄位從 VARCHAR 改成 ENUM 型別。直接執行 ALTER TABLE users ALTER COLUMN status TYPE ENUM(...) 會發生什麼問題？應該用什麼策略解決？",
+        "options": [
+          {
+            "value": "a",
+            "label": "會鎖住整張表，服務停擺。應該用「加新欄位 → 回填資料 → 切讀寫 → 刪舊欄位」的三段式策略"
+          },
+          {
+            "value": "b",
+            "label": "不會有問題，ALTER TYPE 在所有版本的 PostgreSQL 都是秒殺不鎖表的操作"
+          },
+          {
+            "value": "c",
+            "label": "只會鎖一秒鐘左右，完全不用擔心，直接改就好"
+          },
+          {
+            "value": "d",
+            "label": "應該先 DROP 舊欄位，再 ADD 新欄位，這樣不會 lock"
+          }
+        ],
+        "answer": "a",
+        "explanation": "ALTER COLUMN TYPE 會導致整張表重寫（rewrite），在 PG 11 之前是高危險操作。正確做法是加新欄位 → 批次回填舊資料 → application 切讀寫 → 刪舊欄位，這就是課程重點的「Expand → Migrate → Contract」三段式。"
+      }
     },
     {
       "title": "Backup + Disaster Recovery",
@@ -942,7 +1172,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你的公司每天凌晨 2 點做一次完整的 pg_dump 備份到 S3，但沒有設定 WAL 歸檔。今天下午 3 點工程師誤刪了很重要的客戶資料表，你最多能還原到什麼時間點？",
+        "options": [
+          {
+            "value": "a",
+            "label": "今天下午 2 點（最近的備份時間）"
+          },
+          {
+            "value": "b",
+            "label": "昨天凌晨 2 點（上一次備份）"
+          },
+          {
+            "value": "c",
+            "label": "今天下午 3 點（誤刪當下）"
+          },
+          {
+            "value": "d",
+            "label": "無法還原，因為 Replica 也會同步刪除"
+          }
+        ],
+        "answer": "b",
+        "explanation": "沒有 WAL 歸檔的情況下，你只能還原到最近一次的 pg_dump 備份點（昨天凌晨 2 點）；中間 25 小時的資料都會掉。這就是為什麼課程強調「備份不只要做，還要搭配增量備份或 WAL」才能降低 RPO。"
+      }
     },
     {
       "title": "Multi-tenant 架構",
@@ -1027,7 +1280,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你正在開發一個 SaaS 產品，採用 Shared Schema 架構（共用表 + tenant_id）。某天發現程式有個 bug，查詢 posts 表時漏寫了 WHERE tenant_id 條件。這會導致什麼問題？",
+        "options": [
+          {
+            "value": "a",
+            "label": "系統會自動拋出錯誤，防止查詢執行"
+          },
+          {
+            "value": "b",
+            "label": "所有 tenant 的資料都會被一個客戶看到，造成嚴重的資料隱私洩漏"
+          },
+          {
+            "value": "c",
+            "label": "只有該客戶自己的資料會被查到，其他 tenant 不受影響"
+          },
+          {
+            "value": "d",
+            "label": "資料庫會自動備份，等待管理員手動修復"
+          }
+        ],
+        "answer": "b",
+        "explanation": "Shared Schema 的核心風險就是如果漏寫 WHERE tenant_id，會回傳所有 tenant 的資料。這是為什麼課程特別提到「漏寫一個 WHERE tenant_id = 大災難」，以及為什麼 RLS（Row Level Security）這種自動化防護機制這麼重要。"
+      }
     },
     {
       "title": "CDC + Event Sourcing",
@@ -1108,7 +1384,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在做一個簡單的部落格平台（只需基本的新增、編輯、刪除文章），現在老闆要求能看到「誰在什麼時間改過文章」。根據這課的內容，最務實的做法是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "直接建一個 audit table，用 trigger 自動記錄每次異動的舊資料和新資料"
+          },
+          {
+            "value": "b",
+            "label": "導入完整的 Event Sourcing，把每個變動都存成 immutable event"
+          },
+          {
+            "value": "c",
+            "label": "用 Debezium 把資料庫變動同步到 Kafka，再消費到另一個系統"
+          },
+          {
+            "value": "d",
+            "label": "改用 PostgreSQL LISTEN/NOTIFY，在應用層記錄所有通知"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確說 indie 應該用 audit table 這個折衷方案，80% 解決需求且簡單可行。Event Sourcing 是大鎚、不適合簡單 CRUD；CDC/Kafka 是用來同步外部系統，不是為了單純的 audit log。"
+      }
     },
     {
       "title": "Search：Postgres FTS / Meilisearch / Algolia",
@@ -1197,7 +1496,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "為什麼 LIKE 搜尋不適合用在真正的搜尋功能上？",
+        "options": [
+          {
+            "value": "a",
+            "label": "因為 LIKE 無法使用 index，搜尋速度慢，且不會根據相關度排序、無法容忍使用者打字錯誤"
+          },
+          {
+            "value": "b",
+            "label": "因為 LIKE 不支援中文"
+          },
+          {
+            "value": "c",
+            "label": "因為 LIKE 需要額外的搜尋服務，成本很高"
+          },
+          {
+            "value": "d",
+            "label": "因為 LIKE 只能搜尋短文字，不能搜尋長內容"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程明確列出 LIKE 的四大缺點：不用 index = 慢、不支援多語言、不會排序相關度、不支援 typo。選項 b 只是缺點之一且表述不精確，選項 c 和 d 都是錯誤認知。"
+      }
     }
   ],
   "boss": {
@@ -1211,5 +1533,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "不同索引類型適合不同查詢：B-tree 最通用、GIN 用於陣列／文本搜索、GiST 用於地理資訊",
+    "EXPLAIN ANALYZE 是調優的第一步，先看執行計畫找瓶頸，再決定加索引還是改 query",
+    "Transaction 隔離層級從低到高是 Read Uncommitted / Read Committed / Repeatable Read / Serializable，隔離越強效能越差",
+    "讀寫分離讓主從同步，搭配連線池、快取層可大幅減輕資料庫負擔",
+    "Sharding 按資料分散儲存、Partitioning 按邏輯分割同一資料庫，大資料量時才需要"
+  ],
+  "faq": [
+    {
+      "q": "什麼時候才需要加索引？隨便加不行嗎？",
+      "a": "不行，亂加索引會拖慢寫入速度。先用 EXPLAIN ANALYZE 看慢查詢真的在哪裡卡，確認索引能幫上忙再加。最常見的是在 WHERE / JOIN / ORDER BY 的欄位加索引。"
+    },
+    {
+      "q": "聽過 Redis 快取，但資料庫還是需要吧？",
+      "a": "沒錯，Redis 是加速層不是替代品。快取常常會失效或過期，最終還是要回資料庫撈。要設計快取策略，例如熱資料放 Redis、冷資料留資料庫。"
+    },
+    {
+      "q": "一個資料庫突然變很慢，怎麼快速診斷？",
+      "a": "先看連線數有沒有爆炸（太多連線卡住）、再檢查慢查詢日誌（log 有哪些 query 超時）、最後用 EXPLAIN ANALYZE 拆解最慢的那幾隻。通常是缺索引或查詢寫得爛。"
+    }
+  ]
 }

