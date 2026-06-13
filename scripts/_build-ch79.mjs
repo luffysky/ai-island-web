@@ -601,7 +601,7 @@ const chapter = {
   id: 79,
   slug: "language-models",
   stage: 4,
-  sortIndex: 28.8,
+  sortIndex: 28.9,
   title: "語言模型入門",
   subtitle: "從 Token 到 Transformer 到動手微調、9 課搞懂 LLM",
   icon: "bot",

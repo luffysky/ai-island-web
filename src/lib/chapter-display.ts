@@ -60,6 +60,7 @@ const CHAPTER_SORT_INDEX: Record<number, number> = {
   76: 9.9, // Angular     → Ch09c（前端三大框架之一）
   77: 28.5, // 機器學習入門 → Ch28a（Python 系列、ML）
   78: 28.7, // 深度學習入門 → Ch28b（Python 系列、DL）
+  79: 28.9, // 語言模型入門 → Ch28c（Python 系列、LLM）
 };
 
 /** 只有 chapter id 時、用這個算顯示編號（自動套用衍生章節的 sortIndex） */
