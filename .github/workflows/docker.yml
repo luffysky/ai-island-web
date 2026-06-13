@@ -75,7 +75,8 @@ jobs:
           SERVICE_ID: "6a2dd61f00b9937b8de229c3"
           ENVIRONMENT_ID: "6a00c698e5ed304c1d845a93"
         run: |
-          query="mutation { redeployService(serviceID: \"$SERVICE_ID\", environmentID: \"$ENVIRONMENT_ID\") }"
+          # image 服務不能用 redeployService（那是 git build）；用 restartService 重建容器、重拉 :latest
+          query="mutation { restartService(serviceID: \"$SERVICE_ID\", environmentID: \"$ENVIRONMENT_ID\") }"
           payload=$(jq -nc --arg q "$query" '{query: $q}')
           resp=$(curl -sS -X POST https://api.zeabur.com/graphql \
             -H "Authorization: Bearer $ZEABUR_API_TOKEN" \
