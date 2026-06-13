@@ -24,6 +24,9 @@ node scripts/import_chapters_to_db.mjs ch79   # 只同步指定章
 - 顯示編號（Ch28a/28b/28c）= `src/lib/chapter-display.ts` 用 `sortIndex` 的小數段算（.5/.6→a、.7/.8→b、.9→c）。**這是 code、要靠部署 image**；新增衍生章記得在 `CHAPTER_SORT_INDEX` 補一筆。
 - 排查口訣：**線上章節怪 → 先看 DB（`chapters.sort_index`、有沒有該章）、不是看 JSON、也不是換 image。**
 
+### ⚠️ Supabase 1000 筆截斷（lessons 已 >1000）
+PostgREST 預設一次最多回 **1000 筆**。`lessons` 表已 1258 筆、任何「一次撈全部 lessons」的查詢（`from('lessons').select('*')` 不帶 chapter 過濾）會被**默默截斷**、導致部分章節缺課（最後灌的 ch79 整批掉光、顯示 0 節）。`content.ts` 的 `getAllChapters`/`getChapterMetas`/`getNavChapters` 已改用 `fetchAllLessons()`（`.range()` 分頁撈滿）。**之後任何撈整表的查詢都要分頁、別直接 `.select('*')`。**（單章用 `.eq('chapter_id', id)` 過濾的不受影響。）
+
 ---
 
 ## 部署：Zeabur + GHCR（prebuilt image）
