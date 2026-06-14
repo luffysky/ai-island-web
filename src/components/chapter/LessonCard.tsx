@@ -123,6 +123,20 @@ export function LessonCard({
                 remarkPlugins={[remarkGfm]}
                 rehypePlugins={[rehypeRaw, rehypeSmartLang, [rehypeHighlight, { detect: true }]]}
                 components={{
+                  // 整段只是裝飾橫線（━━━ / ─── 一長串）→ 改成 CSS 橫線。
+                  // 不然手機螢幕窄、那串 ━ 會被斷成好幾行。
+                  p: ({ node, children, ...props }: any) => {
+                    const text =
+                      typeof children === "string"
+                        ? children
+                        : Array.isArray(children) && children.every((c) => typeof c === "string")
+                          ? children.join("")
+                          : null;
+                    if (text && /^[━─═]{3,}$/.test(text.trim())) {
+                      return <hr className="my-3 border-0 border-t border-border" />;
+                    }
+                    return <p {...props}>{children}</p>;
+                  },
                   pre: ({ node, children, ...props }) => {
                     // 從子節點抽 className（hast 結構：pre > code）
                     const codeEl = (children as any)?.props ?? {};
