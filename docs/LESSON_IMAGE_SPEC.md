@@ -425,8 +425,8 @@
 | `ch26.12_comprehension` | 26.4 | 📊 List Comprehension 三段拆解 `[x*2 for x in nums if x>0]` vs 傳統 for | ✅ |
 | `ch26.13_args_kwargs` | 26.6 | 📊 `*args`（收成 tuple）/ `**kwargs`（收成 dict）/ lambda | ✅ |
 | `ch26.14_file_io_with` | 26.8 | 📊 `with open()` 自動關檔（對比忘了 close 的坑） | ✅ |
-| `ch26.25_index_access` | 26.4 | 📊 索引與取值：`list[i]` / 負索引 / `dict[key]`（從 0 開始；image seq=25、非 lesson 號） | ✅ |
-| `ch26.26_slicing` | 26.4 | 📊 切片 `[start:end:step]`：取一段、反轉 `[::-1]`、含頭不含尾（已更新 **v2**、引用為 `_dark_v2`） | ✅ |
+| `ch26.25_index_access` | 26.4 | 📊 索引與取值：`list[i]` / 負索引 / `dict[key]`（從 0 開始；image seq=25、非 lesson 號；已更新 **v2**、引用為 `_dark_v2`） | ✅ |
+| `ch26.26_slicing` | 26.4 | 📊 切片 `[start:end:step]`：取一段、反轉 `[::-1]`、含頭不含尾（已更新 **v3**、引用為 `_dark_v3`） | ✅ |
 | `ch26.27_for_loop` | 26.5 | 📊 `for x in iterable`：list/str/range/enumerate 依序取出（image seq=27、非 lesson 號） | ✅ |
 | `ch26.15_exception_flow` | 26.9 | 📊 try / except / else / finally 執行流程 | ✅ |
 | `ch26.16_oop_class` | 26.10 | 📊 class→實例、繼承、`dataclass` 省樣板（藍圖→房子比喻） | ✅ |
