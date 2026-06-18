@@ -32,20 +32,31 @@ function extractOutline(content: string): Array<{ text: string; level: number }>
   return outline;
 }
 
+// 掌握徽章樣式
+const MASTERY_BADGE: Record<"mastered" | "read" | "skim", { label: string; cls: string }> = {
+  mastered: { label: "✓ 已掌握", cls: "bg-green-500/15 text-green-600 dark:text-green-300" },
+  read: { label: "已讀完", cls: "bg-blue-500/15 text-blue-600 dark:text-blue-300" },
+  skim: { label: "讀過一些", cls: "bg-bg-elevated text-fg-muted" },
+};
+
 export function LessonCard({
   lesson,
   index,
   completed,
   isLoggedIn,
   chapterId,
+  mastery,
   onComplete,
+  onEngage,
 }: {
   lesson: Lesson;
   index: number;
   completed: boolean;
   isLoggedIn: boolean;
   chapterId: number;
+  mastery?: "mastered" | "read" | "skim" | null;
   onComplete: (lessonId: string, xp: number) => void;
+  onEngage?: (patch: { quizPassed?: boolean; playgroundRun?: boolean }) => void;
 }) {
   // 預設展開（之前是收起的）
   const [expanded, setExpanded] = useState(true);
@@ -69,6 +80,11 @@ export function LessonCard({
           <h3 className="text-xl font-bold">{lesson.title}</h3>
         </div>
         <div className="flex items-center gap-1 relative">
+          {mastery && !completed && (
+            <span className={`text-[10px] px-1.5 py-1 rounded mr-1 ${MASTERY_BADGE[mastery].cls}`} title="依你的閱讀/測驗推估">
+              {MASTERY_BADGE[mastery].label}
+            </span>
+          )}
           {readingMinutes > 0 && (
             <span className="text-[10px] px-1.5 py-1 rounded bg-bg-elevated text-fg-muted mr-1 flex items-center gap-1" title="預估閱讀時間">
               <Clock size={10} /> {formatReadingTime(readingMinutes)}
@@ -205,13 +221,13 @@ export function LessonCard({
             🎮 <span>學習園地</span>
           </div>
           {lesson.playgrounds.map((p) => (
-            <PlaygroundCard key={p.key} playground={p} lessonId={lesson.id} isLoggedIn={isLoggedIn} />
+            <PlaygroundCard key={p.key} playground={p} lessonId={lesson.id} isLoggedIn={isLoggedIn} onRun={() => onEngage?.({ playgroundRun: true })} />
           ))}
         </div>
       )}
 
       {/* MiniQuiz */}
-      {lesson.miniQuiz && <MiniQuizCard quiz={lesson.miniQuiz} />}
+      {lesson.miniQuiz && <MiniQuizCard quiz={lesson.miniQuiz} onPass={() => onEngage?.({ quizPassed: true })} />}
 
       {/* Files */}
       {lesson.files && lesson.files.length > 0 && <FilesPanel files={lesson.files} />}

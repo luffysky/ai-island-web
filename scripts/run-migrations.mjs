@@ -77,6 +77,8 @@ const MIGRATIONS = [
   "onboarding_migration.sql",
   // 2026-05-29 — Stripe 訂閱付款（webhook + customer + subscription mapping）
   "stripe_migration.sql",
+  // 2026-06-18 — 學習進度細節跨裝置同步（reading_position current+furthest / lesson_engagement 捲動深度·停留·掌握）
+  "learning_progress_detail_migration.sql",
 ];
 
 // 從 .env.local 讀（不依賴 dotenv pkg）

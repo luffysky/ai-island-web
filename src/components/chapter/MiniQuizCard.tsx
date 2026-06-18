@@ -3,7 +3,7 @@ import { useState } from "react";
 import { MiniQuiz } from "@/lib/types";
 import { Check, X, HelpCircle } from "lucide-react";
 
-export function MiniQuizCard({ quiz }: { quiz: MiniQuiz }) {
+export function MiniQuizCard({ quiz, onPass }: { quiz: MiniQuiz; onPass?: () => void }) {
   const [selected, setSelected] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
 
@@ -50,7 +50,7 @@ export function MiniQuizCard({ quiz }: { quiz: MiniQuiz }) {
 
       {!submitted ? (
         <button
-          onClick={() => setSubmitted(true)}
+          onClick={() => { setSubmitted(true); if (selected === quiz.answer) onPass?.(); }}
           disabled={!selected}
           className="mt-3 px-4 py-1.5 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600 disabled:opacity-40"
         >

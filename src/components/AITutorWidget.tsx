@@ -7,7 +7,7 @@ import { useEdgeSafe } from "@/lib/use-edge-safe";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { devLog } from "@/lib/dev-log";
 import { trackEvent } from "@/lib/analytics";
-import { getReadingPos, formatLessonNumber, type ReadingPos } from "@/lib/reading-position";
+import { getReading, getLastChapterId, hydrateFromServer, formatLessonNumber, type ChapterReading, type Pos } from "@/lib/reading-position";
 
 const TUTOR_POS_KEY = "ai_tutor_ball_pos";
 const TUTOR_SIZE_KEY = "ai_tutor_panel_size";
@@ -597,17 +597,44 @@ export function AITutorWidget({
   const selectedModel = models.find((m) => m.id === selectedModelId);
   const isAuto = selectedModelId === "auto";
 
-  // 「跳到上次看的段落」：打開綠寶時讀最後閱讀位置（localStorage）
-  const [resumePos, setResumePos] = useState<ReadingPos | null>(null);
+  // 繼續學習：打開綠寶時讀最近活躍章的 current/furthest（登入先跟 DB 合併）+ 已完成章節清單
+  const [resumeRec, setResumeRec] = useState<ChapterReading | null>(null);
+  const [resumeChapterId, setResumeChapterId] = useState<number | null>(null);
+  const [completedChapters, setCompletedChapters] = useState<Array<{ chapterId: number; title: string; lessons: Array<{ id: string; number: string; title: string }> }>>([]);
+  const [openCompletedCh, setOpenCompletedCh] = useState<number | null>(null);
+  const [showCompleted, setShowCompleted] = useState(false);
+
   useEffect(() => {
     if (!open) return;
-    setResumePos(getReadingPos() ?? null);
+    let alive = true;
+    (async () => {
+      await hydrateFromServer(); // 401(未登入) 內部自行忽略
+      if (!alive) return;
+      setResumeRec(getReading());
+      setResumeChapterId(getLastChapterId());
+      // 已完成章節（給複習下拉）：lesson_progress ∩ nav
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { setCompletedChapters([]); return; }
+      const { data: prog } = await supabase.from("lesson_progress").select("lesson_id, chapter_id").eq("user_id", user.id);
+      if (!prog || prog.length === 0) { if (alive) setCompletedChapters([]); return; }
+      const doneIds = new Set(prog.map((p: any) => p.lesson_id));
+      let nav: any[] = [];
+      try { nav = (await (await fetch("/api/nav")).json()).chapters ?? []; } catch { nav = []; }
+      const list = nav.map((ch: any) => {
+        const lessons = (ch.lessons ?? []).filter((l: any) => doneIds.has(l.id)).map((l: any) => ({ id: l.id, number: l.number, title: l.title }));
+        return { chapterId: ch.id, title: ch.title, lessons };
+      }).filter((c: any) => c.lessons.length > 0);
+      if (alive) setCompletedChapters(list);
+    })();
+    return () => { alive = false; };
   }, [open]);
-  const jumpToReading = useCallback((pos: ReadingPos) => {
-    trackEvent("tutor_resume_jump", { chapter: pos.chapterId });
-    const onThisChapter = contextChapterId != null && Number(contextChapterId) === pos.chapterId;
+
+  // 跳到某章某節（同章捲動、跨章導頁 + hash）
+  const goLesson = useCallback((chapterId: number, lessonId: string) => {
+    trackEvent("tutor_resume_jump", { chapter: chapterId });
+    const onThisChapter = contextChapterId != null && Number(contextChapterId) === chapterId;
     if (onThisChapter) {
-      const el = document.getElementById(`lesson-${pos.lessonId}`);
+      const el = document.getElementById(`lesson-${lessonId}`);
       if (el) {
         setOpen(false); // 收起綠寶才看得到教材
         el.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -616,9 +643,20 @@ export function AITutorWidget({
         return;
       }
     }
-    // 不同章節（或當頁找不到）→ 直接導去該章 + hash，ChapterView 會自動捲過去
-    window.location.href = `/chapters/${pos.chapterId}#lesson-${pos.lessonId}`;
+    window.location.href = `/chapters/${chapterId}#lesson-${lessonId}`;
   }, [contextChapterId]);
+
+  // resume 標籤
+  const posLabel = (p?: Pos) => {
+    if (!p) return "";
+    const parts = [`Ch${chapterDisplayNumberById(resumeChapterId ?? 0)}`];
+    const num = formatLessonNumber(p.lessonNumber);
+    if (num) parts.push(num);
+    if (p.lessonTitle) parts.push(p.lessonTitle);
+    return parts.join(" · ");
+  };
+  const showCurrentBtn = resumeChapterId != null && resumeRec?.current?.lessonId
+    && resumeRec.current.lessonId !== resumeRec.furthest?.lessonId;
 
   return (
     <>
@@ -957,20 +995,72 @@ export function AITutorWidget({
                 <Sparkles size={32} className="mx-auto mb-2 opacity-50" />
                 <p className="font-medium mb-1">AI 學習導師</p>
                 <p className="text-xs">問我任何 AI 島課程的問題</p>
-                {resumePos && (
+                {/* 繼續學習：接續學習進度（最遠到達）為主、若在複習前面再給「從上次閱讀處繼續」 */}
+                {resumeChapterId != null && resumeRec?.furthest?.lessonId && (
                   <button
-                    onClick={() => jumpToReading(resumePos)}
+                    onClick={() => goLesson(resumeChapterId, resumeRec.furthest.lessonId)}
                     className="mt-4 w-full rounded-lg border border-accent/40 bg-accent/10 px-3 py-2 text-left text-xs transition hover:bg-accent/15"
-                    title="回到你上次看到的段落"
+                    title="接續你的學習進度（上次學習最後的地方）"
                   >
-                    📍 跳到我上次看的段落
-                    <span className="mt-0.5 block truncate text-[11px] text-fg-muted">
-                      Ch{chapterDisplayNumberById(resumePos.chapterId)}
-                      {formatLessonNumber(resumePos.lessonNumber) ? ` · ${formatLessonNumber(resumePos.lessonNumber)}` : ""}
-                      {resumePos.lessonTitle ? ` · ${resumePos.lessonTitle}` : ""}
-                    </span>
+                    📍 接續學習進度
+                    <span className="mt-0.5 block text-[10px] text-accent/80">上次學習最後的地方</span>
+                    <span className="mt-0.5 block truncate text-[11px] text-fg-muted">{posLabel(resumeRec.furthest)}</span>
                   </button>
                 )}
+                {showCurrentBtn && (
+                  <button
+                    onClick={() => goLesson(resumeChapterId!, resumeRec!.current.lessonId)}
+                    className="mt-2 w-full rounded-lg border border-border bg-bg-elevated px-3 py-2 text-left text-xs transition hover:border-accent/40"
+                    title="回到你上次實際停留的位置"
+                  >
+                    ↩ 從上次閱讀的地方繼續
+                    <span className="mt-0.5 block truncate text-[11px] text-fg-muted">{posLabel(resumeRec!.current)}</span>
+                  </button>
+                )}
+
+                {/* 已完成章節下拉：看要不要複習 */}
+                {completedChapters.length > 0 && (
+                  <div className="mt-4 rounded-lg border border-border overflow-hidden">
+                    <button
+                      onClick={() => setShowCompleted((s) => !s)}
+                      className="w-full flex items-center justify-between px-3 py-2 text-left text-xs font-medium bg-bg-elevated hover:bg-bg-card transition"
+                    >
+                      <span>✅ 已完成章節（{completedChapters.length}）· 想複習嗎</span>
+                      <ChevronDown size={14} className={`transition-transform ${showCompleted ? "rotate-180" : ""}`} />
+                    </button>
+                    {showCompleted && (
+                      <ul className="max-h-56 overflow-y-auto overscroll-contain divide-y divide-border text-left">
+                        {completedChapters.map((c) => (
+                          <li key={c.chapterId}>
+                            <button
+                              onClick={() => setOpenCompletedCh((id) => (id === c.chapterId ? null : c.chapterId))}
+                              className="w-full flex items-center justify-between px-3 py-2 text-xs hover:bg-bg-elevated transition"
+                            >
+                              <span className="truncate">Ch{chapterDisplayNumberById(c.chapterId)} · {c.title}</span>
+                              <span className="shrink-0 ml-2 text-[10px] text-fg-muted">{c.lessons.length} 節 ▾</span>
+                            </button>
+                            {openCompletedCh === c.chapterId && (
+                              <ul className="bg-bg-elevated/50">
+                                {c.lessons.map((l) => (
+                                  <li key={l.id}>
+                                    <button
+                                      onClick={() => goLesson(c.chapterId, l.id)}
+                                      className="w-full px-3 py-1.5 pl-6 text-left text-[11px] text-fg-muted hover:text-accent hover:bg-bg-card transition truncate"
+                                      title="跳去複習這節"
+                                    >
+                                      ↪ {formatLessonNumber(l.number) ?? l.number} · {l.title}
+                                    </button>
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
+
                 <div className="mt-4 space-y-1 text-xs">
                   <SuggestedQ onPick={setInput}>什麼是 RAG？</SuggestedQ>
                   <SuggestedQ onPick={setInput}>怎麼從 0 開始學 Next.js？</SuggestedQ>

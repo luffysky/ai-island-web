@@ -196,10 +196,12 @@ export function PlaygroundCard({
   playground,
   lessonId,
   isLoggedIn,
+  onRun,
 }: {
   playground: Playground;
   lessonId: string;
   isLoggedIn: boolean;
+  onRun?: () => void;
 }) {
   const [lang, setLang] = useState<string>(playground.language);
   const [code, setCode] = useState(playground.initialCode);
@@ -279,6 +281,7 @@ export function PlaygroundCard({
   const run = async () => {
     setRunning(true);
     setOutput("");
+    onRun?.(); // 記「跑過 playground」訊號（掌握度）
 
     if (lang === "html") {
       if (iframeRef.current) iframeRef.current.srcdoc = buildHtmlPreview(code);
