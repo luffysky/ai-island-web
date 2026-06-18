@@ -17,7 +17,7 @@ import { XpToast, type XpToastData } from "../gamification/XpToast";
 import { ChevronLeft, ChevronRight, Clock, Trophy, BookmarkCheck, X } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/components/ui/Toast";
-import { saveReadingPos, getReadingPos } from "@/lib/reading-position";
+import { saveReadingPos, getReadingPos, formatLessonNumber } from "@/lib/reading-position";
 
 // 平滑捲到某個 lesson 卡並短暫高亮（跟 hash 跳轉同效果）
 function scrollToLesson(lessonId: string) {
@@ -101,7 +101,7 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
     if (chapter.lessons[0]?.id === pos.lessonId) { setResume(null); return; }
     // lesson 還在這章才提示（內容改版後 id 可能不存在）
     if (!chapter.lessons.some((l) => l.id === pos.lessonId)) { setResume(null); return; }
-    const num = pos.lessonNumber != null ? `LESSON ${pos.lessonNumber}` : "上次的段落";
+    const num = formatLessonNumber(pos.lessonNumber) ?? "你的段落";
     setResume({ lessonId: pos.lessonId, label: pos.lessonTitle ? `${num} · ${pos.lessonTitle}` : num });
   }, [chapter.id]);
 
@@ -133,11 +133,15 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
           currentId = (best as { id: string }).id;
           if (timer) clearTimeout(timer);
           timer = setTimeout(() => {
-            const lesson = chapter.lessons.find((l) => l.id === currentId);
+            const lessonIdx = chapter.lessons.findIndex((l) => l.id === currentId);
+            const lesson = chapter.lessons[lessonIdx];
             if (lesson) {
+              // 記「最遠到達」：reading-position 內部只在 lessonIndex 前進時才寫，
+              // 回頭複習前面段落不會覆蓋進度。
               saveReadingPos({
                 chapterId: chapter.id,
                 lessonId: lesson.id,
+                lessonIndex: lessonIdx,
                 lessonNumber: lesson.number,
                 lessonTitle: lesson.title,
               });
@@ -298,7 +302,7 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
         <div className="mb-4 flex items-center gap-3 rounded-2xl border border-accent/40 bg-accent/5 px-4 py-3">
           <BookmarkCheck size={18} className="shrink-0 text-accent" />
           <div className="min-w-0 flex-1">
-            <div className="text-xs text-fg-muted">上次看到這裡</div>
+            <div className="text-xs text-fg-muted">你的進度到這裡</div>
             <div className="truncate text-sm font-semibold">{resume.label}</div>
           </div>
           <button

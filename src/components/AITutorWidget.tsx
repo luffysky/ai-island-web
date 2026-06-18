@@ -7,7 +7,7 @@ import { useEdgeSafe } from "@/lib/use-edge-safe";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { devLog } from "@/lib/dev-log";
 import { trackEvent } from "@/lib/analytics";
-import { getReadingPos, type ReadingPos } from "@/lib/reading-position";
+import { getReadingPos, formatLessonNumber, type ReadingPos } from "@/lib/reading-position";
 
 const TUTOR_POS_KEY = "ai_tutor_ball_pos";
 const TUTOR_SIZE_KEY = "ai_tutor_panel_size";
@@ -966,7 +966,7 @@ export function AITutorWidget({
                     📍 跳到我上次看的段落
                     <span className="mt-0.5 block truncate text-[11px] text-fg-muted">
                       Ch{chapterDisplayNumberById(resumePos.chapterId)}
-                      {resumePos.lessonNumber != null ? ` · LESSON ${resumePos.lessonNumber}` : ""}
+                      {formatLessonNumber(resumePos.lessonNumber) ? ` · ${formatLessonNumber(resumePos.lessonNumber)}` : ""}
                       {resumePos.lessonTitle ? ` · ${resumePos.lessonTitle}` : ""}
                     </span>
                   </button>
