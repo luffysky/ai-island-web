@@ -1,4 +1,4 @@
-import { readdirSync, statSync } from "node:fs";
+import { readdirSync, statSync, readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { AuditClient } from "./AuditClient";
 import { PageHero } from "@/components/admin/PageHero";
@@ -76,9 +76,45 @@ function makeEntry(urlPattern: string, file: string, type: "page" | "api"): Rout
   };
 }
 
+// 正式機（standalone image、CMD node server.js）不含 src/app 原始碼 → 改讀 build 產出的
+// app-paths-manifest.json（standalone 也有）。dev 掃 src/app、撈不到才回退讀 manifest。
+function manifestRoutes(): RouteEntry[] {
+  const candidates = [
+    join(process.cwd(), ".next", "server", "app-paths-manifest.json"),
+    join(process.cwd(), ".next", "standalone", ".next", "server", "app-paths-manifest.json"),
+  ];
+  let manifest: Record<string, string> | null = null;
+  for (const p of candidates) {
+    try {
+      if (existsSync(p)) { manifest = JSON.parse(readFileSync(p, "utf-8")); break; }
+    } catch { /* try next */ }
+  }
+  if (!manifest) return [];
+
+  const out: RouteEntry[] = [];
+  const seen = new Set<string>();
+  for (const [key, file] of Object.entries(manifest)) {
+    if (key.includes("/@") || key.includes("/(.")) continue; // parallel / intercepting routes
+    let type: "page" | "api";
+    let pattern: string;
+    if (key.endsWith("/route")) { type = "api"; pattern = key.slice(0, -"/route".length); }
+    else if (key.endsWith("/page")) { type = "page"; pattern = key.slice(0, -"/page".length); }
+    else continue;
+    if (pattern === "") pattern = "/";
+    if (pattern.startsWith("/_")) continue; // _not-found 等內部頁
+    const dedupe = `${type} ${pattern}`;
+    if (seen.has(dedupe)) continue;
+    seen.add(dedupe);
+    out.push(makeEntry(pattern, typeof file === "string" ? file : `app${key}.js`, type));
+  }
+  return out;
+}
+
 export default function AdminSiteAuditPage() {
   const appDir = join(process.cwd(), "src", "app");
-  const routes = scanRoutes(appDir);
+  let routes = scanRoutes(appDir);
+  let source: "src/app" | ".next manifest" = "src/app";
+  if (routes.length === 0) { routes = manifestRoutes(); source = ".next manifest"; }
 
   const stats = {
     total: routes.length,
@@ -95,7 +131,7 @@ export default function AdminSiteAuditPage() {
       <PageHero
         emoji="🩺"
         title="全站體檢"
-        desc="自動掃描全站所有頁面 + API、即時 ping。動態路徑 [id] 會跳過、需手動測。401/403 也算 OK、代表 guard 正常擋未登入。"
+        desc={`自動掃描全站所有頁面 + API、即時 ping。動態路徑 [id] 會跳過、需手動測。401/403 也算 OK、代表 guard 正常擋未登入。（路由來源：${source}，共 ${routes.length} 條）`}
         gradient="from-teal-500/10 via-cyan-500/10 to-sky-500/10"
         borderColor="border-teal-500/30"
       />

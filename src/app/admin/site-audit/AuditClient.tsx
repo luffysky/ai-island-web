@@ -188,7 +188,7 @@ export function AuditClient({ routes }: { routes: RouteEntry[] }) {
       </div>
 
       {/* summary banner */}
-      {Object.keys(results).length > 0 && (
+      {results.size > 0 && (
         <div className="grid grid-cols-2 md:grid-cols-6 gap-2 text-center text-xs">
           <SummaryCard label="✅ 通了" value={summary.ok} color="text-green-400" />
           <SummaryCard label="🟡 需手動驗" value={summary.partial} color="text-yellow-400" />
