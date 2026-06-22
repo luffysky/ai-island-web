@@ -24,7 +24,7 @@ export function GrantModal({
   const submit = async () => {
     setMsg(null);
     if (reason.trim().length < 5) {
-      setMsg("理由必填、至少 5 字");
+      setMsg("明細必填、至少 5 字");
       return;
     }
     setBusy(true);
@@ -143,13 +143,13 @@ export function GrantModal({
 
           <div>
             <label className="text-xs text-fg-muted block mb-1">
-              理由（必填、≥ 5 字、會寫進 audit log）
+              明細 / 理由（必填、≥ 5 字｜會顯示在使用者的「Z幣/經驗明細」+ 後台 audit log）
             </label>
             <textarea
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               rows={2}
-              placeholder="例：4/1 活動補償、客服案件修復"
+              placeholder="例：4/1 活動補償、客服案件修復、教學影片獎勵"
               className="w-full px-3 py-2 bg-bg border border-border rounded-lg text-sm focus:border-accent outline-none resize-none"
             />
           </div>
