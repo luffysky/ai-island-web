@@ -241,9 +241,23 @@ function SettingEditor({ settingKey, value, onChange }: { settingKey: string; va
       );
 
     default:
-      // Fallback: JSON 編輯
+      // 布林開關（含所有 feature_*_enabled / *_enabled）→ on/off toggle、不要 true/false
+      if (typeof value === "boolean" || /_enabled$/.test(settingKey)) {
+        return <ToggleRow label="啟用" value={parseBool(value)} onChange={onChange} help={helpFor(settingKey)} />;
+      }
+      // 其餘（物件 / 字串 / null）→ JSON 編輯
       return <JsonFallback value={value} onChange={onChange} />;
   }
+}
+
+function helpFor(key: string): string {
+  const map: Record<string, string> = {
+    feature_island_enabled: "首頁 3D 島嶼 + /island（關 = 維護頁、入口隱藏）",
+    feature_blog_enabled: "/blogs 部落格區（關 = 顯示關閉通知）",
+    feature_forum_enabled: "/forum 論壇區（關 = 顯示關閉通知）",
+    feature_pet_enabled: "寵物系統開關",
+  };
+  return map[key] ?? "";
 }
 
 function ToggleRow({
@@ -320,7 +334,11 @@ const fldCls =
 function labelFor(key: string): string {
   const map: Record<string, string> = {
     signup_enabled: "🔓 開放註冊",
-    island_enabled: "🏝️ AI 島嶼開關",
+    island_enabled: "🏝️ 島嶼（舊鍵、改用 feature_island_enabled）",
+    feature_island_enabled: "🏝️ 3D 島嶼",
+    feature_blog_enabled: "✍️ 部落格",
+    feature_forum_enabled: "🗣️ 論壇",
+    feature_pet_enabled: "🐾 寵物系統",
     maintenance_mode: "🛠️ 維護模式",
     site_announcement: "📢 全站公告 banner",
     premium_price: "💎 Premium 定價",

@@ -31,12 +31,34 @@ export function invalidateAppSettings() {
   cache = null;
 }
 
-// 常用 flag 捷徑
-export async function isIslandEnabled(): Promise<boolean> {
-  const v = await getAppSetting<any>("island_enabled", false);
-  // 兼容 JSON true / "true" / { enabled: true }
+// 把 JSON true / "true" / { enabled: true } 都當開
+function truthyFlag(v: any): boolean {
   if (typeof v === "boolean") return v;
   if (typeof v === "string") return v === "true";
   if (v && typeof v === "object" && "enabled" in v) return !!v.enabled;
   return false;
+}
+
+// 常用 flag 捷徑
+export async function isIslandEnabled(): Promise<boolean> {
+  const map = await loadAll();
+  // 後台開關鍵 = feature_island_enabled；舊鍵 island_enabled 當 legacy fallback
+  const raw = map.has("feature_island_enabled") ? map.get("feature_island_enabled") : map.get("island_enabled");
+  return truthyFlag(raw);
+}
+
+/** 功能總開關：讀 feature_<name>_enabled（預設開、缺鍵也視為開、避免誤關）。 */
+export async function isFeatureEnabled(name: "blog" | "forum" | "pet" | "island"): Promise<boolean> {
+  if (name === "island") return isIslandEnabled();
+  const map = await loadAll();
+  const key = `feature_${name}_enabled`;
+  if (!map.has(key)) return true; // 沒設過 = 預設開
+  return truthyFlag(map.get(key));
+}
+
+/** 開放註冊？signup_enabled 預設開。 */
+export async function isSignupEnabled(): Promise<boolean> {
+  const map = await loadAll();
+  if (!map.has("signup_enabled")) return true;
+  return truthyFlag(map.get("signup_enabled"));
 }

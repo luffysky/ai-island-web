@@ -223,8 +223,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               <AdminLink href="/admin/rate-limits">🚦 Rate Limit</AdminLink>
               <AdminLink href="/admin/gdpr">🔐 GDPR 請求</AdminLink>
               <AdminLink href="/admin/ops">🛠️ Ops (DB / 快取)</AdminLink>
-              <AdminLink href="/admin/settings">⚙️ 系統設定</AdminLink>
-              <AdminLink href="/admin/app-settings">🎛️ 應用設定 CRUD</AdminLink>
+              <AdminLink href="/admin/settings">⚙️ 系統設定（功能開關 / 定價 / 維護）</AdminLink>
             </NavGroup>
 
           </nav>
