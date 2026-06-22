@@ -383,7 +383,8 @@ export function AITutorWidget({
 
     // overrideText（如「繼續」）不帶圖、也不清空使用者正在打的字
     const useImages = !overrideText;
-    const userMsg = baseText.trim() || (useImages && images.length > 0 ? "（看圖回答）" : "");
+    // 只傳圖片時不塞「（看圖回答）」placeholder、直接傳圖（訊息泡泡只顯示圖、不顯示文字）
+    const userMsg = baseText.trim();
     const sendImages = useImages ? images.map((img) => ({ base64: img.base64, mediaType: img.mediaType })) : [];
     const userImagesPreview = useImages ? images.map((img) => ({ previewUrl: img.previewUrl, mediaType: img.mediaType })) : [];
     if (!overrideText) {

@@ -43,6 +43,16 @@ function isQuotaOrTransient(e: any): boolean {
     || /(quota|rate.?limit|overloaded|insufficient|exceeded|payment|credit|too many requests|capacity|unavailable|timeout|aborted)/.test(s);
 }
 
+/** 額度滿/限流/掛掉的錯誤訊息 → 值得換模型重試。對外給聊天串流路由判斷用。 */
+export function isQuotaOrTransientError(e: any): boolean {
+  return isQuotaOrTransient(e);
+}
+
+/** 智慧備援：撈 active 模型、排除剛失敗的 provider、優先 is_default、再來最便宜、且該 provider 有 key。對外給聊天串流 fallback 用。 */
+export async function pickFallbackModel(excludeProvider?: Provider): Promise<Resolved | null> {
+  return resolveFallback(excludeProvider);
+}
+
 // 智慧備援：撈 active 模型、排除剛失敗的 provider、優先 is_default、再來最便宜、且該 provider 有 key。
 async function resolveFallback(excludeProvider?: Provider): Promise<Resolved | null> {
   const { createSupabaseAdmin } = await import("./supabase-admin");

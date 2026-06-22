@@ -78,9 +78,16 @@ function toOpenAIMessages(messages: AIMessage[]): any[] {
   });
 }
 
+// OpenAI 相容 endpoint base（OpenAI / Groq / OpenRouter 共用 chat/completions 格式）
+function openAiLikeUrl(provider: string): string {
+  if (provider === "groq") return "https://api.groq.com/openai/v1/chat/completions";
+  if (provider === "openrouter") return "https://openrouter.ai/api/v1/chat/completions";
+  return "https://api.openai.com/v1/chat/completions";
+}
+
 async function callOpenAI(req: AICompletionRequest): Promise<AICompletionResponse> {
   const t0 = Date.now();
-  const res = await fetchWithTimeout("https://api.openai.com/v1/chat/completions", {
+  const res = await fetchWithTimeout(openAiLikeUrl(req.provider), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -96,7 +103,7 @@ async function callOpenAI(req: AICompletionRequest): Promise<AICompletionRespons
 
   if (!res.ok) {
     const err = await res.text();
-    throw new Error(`OpenAI error ${res.status}: ${err}`);
+    throw new Error(`${req.provider} error ${res.status}: ${err}`);
   }
 
   const data = await res.json();
@@ -305,6 +312,7 @@ async function callGroq(req: AICompletionRequest): Promise<AICompletionResponse>
 export async function callAI(req: AICompletionRequest): Promise<AICompletionResponse> {
   switch (req.provider) {
     case "openai":
+    case "openrouter":  // OpenAI 相容
       return callOpenAI(req);
     case "anthropic":
       return callAnthropic(req);
@@ -326,6 +334,7 @@ export async function* streamAI(req: AICompletionRequest): AsyncGenerator<Stream
     case "openai":
     case "groq":
     case "meta":
+    case "openrouter":
       yield* streamOpenAILike(req);
       break;
     case "anthropic":
@@ -341,9 +350,7 @@ export async function* streamAI(req: AICompletionRequest): AsyncGenerator<Stream
 
 // OpenAI / Groq SSE（一樣格式）
 async function* streamOpenAILike(req: AICompletionRequest): AsyncGenerator<StreamChunk> {
-  const url = req.provider === "openai"
-    ? "https://api.openai.com/v1/chat/completions"
-    : "https://api.groq.com/openai/v1/chat/completions";
+  const url = openAiLikeUrl(req.provider);
 
   const res = await fetch(url, {
     method: "POST",
@@ -353,10 +360,10 @@ async function* streamOpenAILike(req: AICompletionRequest): AsyncGenerator<Strea
     },
     body: JSON.stringify({
       model: req.model,
-      // groq 不支援 image、強制純文字；openai 用 multimodal 格式
-      messages: req.provider === "openai"
-        ? toOpenAIMessages(req.messages)
-        : req.messages.map((m) => ({ role: m.role, content: contentToText(m.content) })),
+      // groq 不支援 image、強制純文字；openai / openrouter 用 multimodal 格式
+      messages: req.provider === "groq"
+        ? req.messages.map((m) => ({ role: m.role, content: contentToText(m.content) }))
+        : toOpenAIMessages(req.messages),
       temperature: req.temperature ?? 0.7,
       max_tokens: req.maxTokens ?? 2000,
       stream: true,

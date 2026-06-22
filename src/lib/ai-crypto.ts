@@ -65,6 +65,12 @@ export function maskKey(key: string): string {
 const providerKeyCache = new Map<string, { key: string | null; ts: number }>();
 const PROVIDER_KEY_TTL = 60_000;
 
+// 少數 provider 的 key 放 env（不在 ai_api_keys 表）→ DB 沒有就退這裡。
+function envProviderKey(provider: string): string | null {
+  if (provider === "openrouter") return process.env.OPEN_ROUTER_API_KEY || process.env.OPENROUTER_API_KEY || null;
+  return null;
+}
+
 export async function getProviderKey(provider: string): Promise<string | null> {
   const cached = providerKeyCache.get(provider);
   if (cached && Date.now() - cached.ts < PROVIDER_KEY_TTL) return cached.key;
@@ -79,8 +85,9 @@ export async function getProviderKey(provider: string): Promise<string | null> {
     .maybeSingle();
 
   if (!data || !(data as any).enabled) {
-    providerKeyCache.set(provider, { key: null, ts: Date.now() });
-    return null;
+    const envKey = envProviderKey(provider);
+    providerKeyCache.set(provider, { key: envKey, ts: Date.now() });
+    return envKey;
   }
 
   try {
@@ -89,8 +96,9 @@ export async function getProviderKey(provider: string): Promise<string | null> {
     return key;
   } catch (e: any) {
     console.warn(`[ai-crypto] decrypt ${provider} key failed:`, e?.message);
-    providerKeyCache.set(provider, { key: null, ts: Date.now() });
-    return null;
+    const envKey = envProviderKey(provider);
+    providerKeyCache.set(provider, { key: envKey, ts: Date.now() });
+    return envKey;
   }
 }
 

@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { createSupabaseServer, createSupabaseAdmin } from "@/lib/supabase";
 import { streamAI, estimateCost } from "@/lib/ai-providers";
+import { pickFallbackModel, isQuotaOrTransientError, providerFromModel } from "@/lib/resolve-usage-ai";
 import { buildTutorSystemPrompt } from "@/lib/ai-tutor-prompt";
 import { getUserLearningState, formatLearningStateForPrompt } from "@/lib/user-learning-state";
 import { decryptKey } from "@/lib/ai-crypto";
@@ -159,7 +160,7 @@ async function handlePost(req: NextRequest) {
       .from("ai_conversations")
       .insert({
         user_id: user.id,
-        title: message.slice(0, 60),
+        title: (message?.trim() ? message : "🖼️ 圖片").slice(0, 60),
         model_id: effectiveModelId,
         tone: tone ?? "friendly",
         context_chapter_id: contextChapterId,
@@ -231,10 +232,11 @@ async function handlePost(req: NextRequest) {
     historyCount: history?.length ?? 0,
   });
 
-  // user message：有圖片時用 multimodal content array、純文字保持 string
+  // user message：有圖片時用 multimodal content array、純文字保持 string。
+  // 只傳圖、沒打字 → 不塞 placeholder 文字 block、直接傳圖（模型仍會看圖回答）。
   const userContent: any = images.length > 0
     ? [
-        { type: "text", text: message || "（看圖回答）" },
+        ...(message && message.trim() ? [{ type: "text", text: message }] : []),
         ...images.map((img) => ({ type: "image", mediaType: img.mediaType, data: img.base64 })),
       ]
     : message;
@@ -333,27 +335,41 @@ async function handlePost(req: NextRequest) {
       let tokensInput = 0;
       let tokensOutput = 0;
       let streamError = "";
+      // 實際回答的模型（可能因主模型額度滿/限流被自動換成備援）
+      let usedProvider = model.provider;
+      let usedModel = model.model_name;
 
       try {
-        for await (const chunk of streamAI({
-          provider: model.provider,
-          model: model.model_name,
-          apiKey,
-          messages,
-          // 放寬回覆長度：原本 2000 常把教學長答案切掉。8192 是各家模型（Haiku/Sonnet/
-          // GPT-4o/Gemini/Llama）都支援的輸出上限、實務上等於「不限制」一般問答。
-          maxTokens: 8192,
-        })) {
-          if (chunk.type === "text" && chunk.text) {
-            fullText += chunk.text;
-            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "text", text: chunk.text })}\n\n`));
-          } else if (chunk.type === "done") {
-            tokensInput = chunk.tokensInput ?? 0;
-            tokensOutput = chunk.tokensOutput ?? 0;
-          } else if (chunk.type === "error") {
-            streamError = chunk.error || "AI provider error";
-            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "error", error: streamError })}\n\n`));
+        // 串流；主模型「還沒吐字就 error」（如 OpenRouter 免費額度滿/429）→ 自動換備援模型重串、使用者無感
+        const attempts: Array<{ provider: string; model: string; apiKey: string }> = [
+          { provider: model.provider, model: model.model_name, apiKey },
+        ];
+        for (let i = 0; i < attempts.length; i++) {
+          const a = attempts[i];
+          let gotError = "";
+          // 放寬回覆長度：8192 是各家模型都支援的輸出上限、實務上等於不限制一般問答。
+          for await (const chunk of streamAI({ provider: a.provider, model: a.model, apiKey: a.apiKey, messages, maxTokens: 8192 })) {
+            if (chunk.type === "text" && chunk.text) {
+              fullText += chunk.text;
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "text", text: chunk.text })}\n\n`));
+            } else if (chunk.type === "done") {
+              tokensInput = chunk.tokensInput ?? 0;
+              tokensOutput = chunk.tokensOutput ?? 0;
+            } else if (chunk.type === "error") {
+              gotError = chunk.error || "AI provider error";
+            }
           }
+          if (!gotError) { usedProvider = a.provider; usedModel = a.model; break; }
+          // 還沒吐任何字 + 還沒排過備援 + 是額度/限流類錯誤 → 加一個備援模型再試
+          if (!fullText && attempts.length === 1 && isQuotaOrTransientError(gotError)) {
+            const fb = await pickFallbackModel(providerFromModel(a.model) as any);
+            if (fb) { attempts.push({ provider: fb.provider, model: fb.model, apiKey: fb.apiKey }); continue; }
+          }
+          // 沒得退 or 已吐字一半才壞 → 回報 error
+          streamError = gotError;
+          usedProvider = a.provider; usedModel = a.model;
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "error", error: streamError })}\n\n`));
+          break;
         }
 
         if (streamError) {
@@ -361,7 +377,7 @@ async function handlePost(req: NextRequest) {
             conversation_id: convId,
             role: "assistant",
             content: "",
-            model_used: `${model.provider}/${model.model_name}`,
+            model_used: `${usedProvider}/${usedModel}`,
             error: streamError,
             latency_ms: Date.now() - t0,
           });
@@ -380,7 +396,7 @@ async function handlePost(req: NextRequest) {
           conversation_id: convId,
           role: "assistant",
           content: fullText,
-          model_used: `${model.provider}/${model.model_name}`,
+          model_used: `${usedProvider}/${usedModel}`,
           tokens_input: tokensInput,
           tokens_output: tokensOutput,
           cost_usd: cost,
@@ -389,7 +405,7 @@ async function handlePost(req: NextRequest) {
 
         // 寫快取：只在「第一則訊息 + 有內容」時
         if (isFirstMessage && fullText) {
-          writeCache(message, fullText, `${model.provider}/${model.model_name}`, cacheKey);
+          writeCache(message, fullText, `${usedProvider}/${usedModel}`, cacheKey);
         }
 
         // 更新對話時間
@@ -432,7 +448,8 @@ async function handlePost(req: NextRequest) {
           tokensInput,
           tokensOutput,
           cost: Number(cost.toFixed(6)),
-          modelUsed: model.display_name || model.model_name,  // Auto 模式讓前端顯示實際選了哪個
+          // 顯示實際回答的模型（Auto 模式 / 自動退備援時都讓前端看到真正用的那個）
+          modelUsed: usedModel !== model.model_name ? usedModel : (model.display_name || model.model_name),
         })}\n\n`));
       } catch (e: any) {
         controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "error", error: e.message })}\n\n`));

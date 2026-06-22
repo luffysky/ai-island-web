@@ -81,6 +81,8 @@ const MIGRATIONS = [
   "learning_progress_detail_migration.sql",
   // 2026-06-19 — AI 模型清單更新（gemini-2.0 下架、各家補新選項）
   "ai_models_refresh_2026_06.sql",
+  // 2026-06-23 — OpenRouter 免費模型（key 在 env、智慧備援 fallback）
+  "ai_models_openrouter.sql",
 ];
 
 // 從 .env.local 讀（不依賴 dotenv pkg）
