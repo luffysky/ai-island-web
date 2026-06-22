@@ -1,0 +1,33 @@
+name: Update Wandbox compiler ids (monthly)
+
+# 每月 1 號 03:00 UTC 跑一次、抓 wandbox 最新 compiler id、有變更才 commit。
+# Wandbox 慢慢淘汰舊版、寫死的 id 失效該語言就跑不了 → 自動跟上。
+# 月跑一次、耗用 Actions 分鐘數可忽略（< 1 分）。
+on:
+  schedule:
+    - cron: "0 3 1 * *"
+  workflow_dispatch: {}
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Update compiler ids
+        run: node scripts/update-wandbox-compilers.mjs
+      - name: Commit if changed
+        run: |
+          if [[ -n "$(git status --porcelain src/lib/wandbox-compilers.ts)" ]]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add src/lib/wandbox-compilers.ts
+            git commit -m "chore(sandbox): 自動更新 Wandbox compiler ids"
+            git push
+          else
+            echo "no change"
+          fi

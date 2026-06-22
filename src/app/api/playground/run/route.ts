@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase";
 import { rateLimit } from "@/lib/rate-limit";
+import { WANDBOX_COMPILER } from "@/lib/wandbox-compilers";
 
 // 程式碼沙盒（多語言）。三個後端、依序嘗試、前一個失敗自動退下一個：
 //  1. 自架 Piston（設 PISTON_BASE_URL）— 最快、可裝 runtime。
@@ -49,13 +50,6 @@ const FILE_EXTS: Record<string, string> = {
   csharp: "cs", "c++": "cpp", c: "c", php: "php", ruby: "rb",
   kotlin: "kt", swift: "swift", typescript: "ts", bash: "sh",
   sqlite3: "sql", lua: "lua", dart: "dart", r: "r", scala: "scala",
-};
-
-// piston 正規語言名 → Wandbox compiler id（取自 wandbox.org/api/list.json、可隨時更新）
-const WANDBOX_COMPILER: Record<string, string> = {
-  bash: "bash", python: "cpython-3.14.0", "c++": "gcc-13.2.0", c: "gcc-13.2.0-c",
-  go: "go-1.23.2", rust: "rust-1.82.0", java: "openjdk-jdk-21+35", csharp: "mono-6.12.0.199",
-  ruby: "ruby-3.4.9", php: "php-8.3.12", typescript: "typescript-5.6.2", lua: "lua-5.4.7",
 };
 
 // piston 正規語言名 → Judge0 CE language_id
