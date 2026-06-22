@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { notifyUserLine } from "@/lib/notify-user-line";
-import { getProviderKey } from "@/lib/ai-crypto";
-import { getModelNameForUsage } from "@/lib/ai-usage-models";
+import { completeForUsage } from "@/lib/resolve-usage-ai";
 import { loadUserMemory } from "@/lib/user-ai-memory";
 import { buildSimpleCard } from "@/lib/line-flex";
 import { verifyCronAuth } from "@/lib/cron-auth";
@@ -59,10 +58,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ ok: true, candidates: 0, pushed: 0, message: "沒人需要關懷、全員活躍" });
   }
 
-  // 取 anthropic key、生成個人化訊息
-  const apiKey = await getProviderKey("anthropic");
-  const useAi = !!apiKey;
-  const modelName = useAi ? await getModelNameForUsage("admin_assistant", "claude-haiku-4-5-20251001") : "";
+  // AI 生成個人化召回訊息（completeForUsage 內部處理 provider/key/備援；失敗則用下方 fallback 文案）
+  const useAi = true;
 
   let pushed = 0;
   let skipped = 0;
@@ -107,17 +104,8 @@ ${mem?.preferences?.style ? `- 風格：${mem.preferences.style}` : ""}
 
 只輸出訊息內文、不要 markdown、不要前綴。`;
 
-        const r = await fetch("https://api.anthropic.com/v1/messages", {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "x-api-key": apiKey, "anthropic-version": "2023-06-01" },
-          body: JSON.stringify({ model: modelName, max_tokens: 300, temperature: 0.7, messages: [{ role: "user", content: prompt }] }),
-          signal: AbortSignal.timeout(20_000),
-        });
-        if (r.ok) {
-          const data = await r.json();
-          const text = (data.content ?? []).filter((c: any) => c.type === "text").map((c: any) => c.text).join("").trim();
-          if (text) body = text.slice(0, 200);
-        }
+        const { text } = await completeForUsage("admin_assistant", { user: prompt, maxTokens: 300, temperature: 0.7 });
+        if (text) body = text.trim().slice(0, 200);
       } catch (e: any) {
         console.warn("[recall] AI gen fail:", e?.message);
       }

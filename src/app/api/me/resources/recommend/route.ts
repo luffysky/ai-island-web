@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
-import { getProviderKey } from "@/lib/ai-crypto";
-import { getModelNameForUsage } from "@/lib/ai-usage-models";
+import { completeForUsage } from "@/lib/resolve-usage-ai";
 import { loadUserMemory } from "@/lib/user-ai-memory";
 
 export const dynamic = "force-dynamic";
@@ -48,18 +47,6 @@ export async function POST() {
     return NextResponse.json({ ok: true, picks: [] });
   }
 
-  const apiKey = await getProviderKey("anthropic");
-  if (!apiKey) {
-    // fallback: 不用 AI、純規則隨機 6 個
-    const shuffled = [...resList].sort(() => Math.random() - 0.5).slice(0, 6);
-    return NextResponse.json({
-      ok: true,
-      picks: shuffled.map((r) => ({ resource_id: r.id, reason: "（AI 不可用、隨機推薦）" })),
-      fallback: true,
-    });
-  }
-  const modelName = await getModelNameForUsage("admin_assistant", "claude-haiku-4-5-20251001");
-
   const prompt = `你是雪鑰、AI 島的 AI 助手。學員打開外部資源頁、問你「推薦適合我的」。
 
 # 學員背景
@@ -86,23 +73,18 @@ ${resList.map((r, i) => `${i + 1}. [${r.id}] ${r.title} (${r.type} / ${r.difficu
 }`;
 
   try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-api-key": apiKey, "anthropic-version": "2023-06-01" },
-      body: JSON.stringify({ model: modelName, max_tokens: 1000, temperature: 0.4, messages: [{ role: "user", content: prompt }] }),
-      signal: AbortSignal.timeout(25_000),
-    });
-    if (!res.ok) {
-      const body = await res.text();
-      return NextResponse.json({ error: `anthropic ${res.status}: ${body.slice(0, 200)}` }, { status: 502 });
-    }
-    const data = await res.json();
-    const text = (data.content ?? []).filter((c: any) => c.type === "text").map((c: any) => c.text).join("").trim();
+    const { text } = await completeForUsage("admin_assistant", { user: prompt, maxTokens: 1000, temperature: 0.4 });
     const m = text.match(/\{[\s\S]*\}/);
     if (!m) return NextResponse.json({ error: "no_json", raw: text.slice(0, 300) }, { status: 500 });
     const parsed = JSON.parse(m[0]);
     return NextResponse.json({ ok: true, picks: (parsed.picks ?? []).slice(0, 6) });
-  } catch (e: any) {
-    return NextResponse.json({ error: e?.message ?? "ai_failed" }, { status: 500 });
+  } catch {
+    // AI 全掛（含備援）→ 純規則隨機 6 個
+    const shuffled = [...resList].sort(() => Math.random() - 0.5).slice(0, 6);
+    return NextResponse.json({
+      ok: true,
+      picks: shuffled.map((r) => ({ resource_id: r.id, reason: "（AI 不可用、隨機推薦）" })),
+      fallback: true,
+    });
   }
 }

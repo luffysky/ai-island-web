@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
-import { getProviderKey } from "@/lib/ai-crypto";
-import { getModelNameForUsage } from "@/lib/ai-usage-models";
+import { completeForUsage } from "@/lib/resolve-usage-ai";
 import { requireAdmin } from "@/lib/admin-guard";
 
 export const dynamic = "force-dynamic";
@@ -41,10 +40,6 @@ async function handle(req: NextRequest) {
   if (!text) return NextResponse.json({ error: "missing_text" }, { status: 400 });
   const targetBoard = body.target_board === "wishlist" ? "wishlist" : (body.target_board === "todo" ? "todo" : null);
 
-  const apiKey = await getProviderKey("anthropic");
-  if (!apiKey) return NextResponse.json({ error: "no_anthropic_key" }, { status: 503 });
-  const modelName = await getModelNameForUsage("admin_assistant", "claude-haiku-4-5-20251001");
-
   const prompt = `你是雪鑰、AI 島的 AI 助手。林董給你一段話、要建一張看板卡片。
 
 # 輸入
@@ -68,27 +63,7 @@ ${text}
 - 不確定 → wishlist（保守）`;
 
   try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model: modelName,
-        max_tokens: 400,
-        temperature: 0.2,
-        messages: [{ role: "user", content: prompt }],
-      }),
-      signal: AbortSignal.timeout(20_000),
-    });
-    if (!res.ok) {
-      const errBody = await res.text();
-      return NextResponse.json({ error: `anthropic ${res.status}: ${errBody.slice(0, 200)}` }, { status: 502 });
-    }
-    const data = await res.json();
-    const responseText = (data.content ?? []).filter((c: any) => c.type === "text").map((c: any) => c.text).join("").trim();
+    const { text: responseText } = await completeForUsage("admin_assistant", { user: prompt, maxTokens: 400, temperature: 0.2 });
     const m = responseText.match(/\{[\s\S]*\}/);
     if (!m) return NextResponse.json({ error: "no_json_in_response", raw: responseText.slice(0, 300) }, { status: 500 });
     const parsed = JSON.parse(m[0]);

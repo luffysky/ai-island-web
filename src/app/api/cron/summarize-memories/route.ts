@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
-import { getProviderKey, decryptKey } from "@/lib/ai-crypto";
-import { getModelNameForUsage } from "@/lib/ai-usage-models";
+import { completeForUsage } from "@/lib/resolve-usage-ai";
 import { verifyCronAuth } from "@/lib/cron-auth";
 
 export const dynamic = "force-dynamic";
@@ -66,11 +65,6 @@ export async function GET(req: NextRequest) {
   if (authErr) return authErr;
 
   const admin = createSupabaseAdmin();
-  const apiKey = await getProviderKey("anthropic");
-  if (!apiKey) {
-    return NextResponse.json({ error: "no_anthropic_key" }, { status: 503 });
-  }
-  const modelName = await getModelNameForUsage("admin_assistant", "claude-haiku-4-5-20251001");
 
   // 1. 撈活躍 user（過去 24h 對話 ≥ 5 條）
   const since = new Date(Date.now() - 24 * 60 * 60_000).toISOString();
@@ -128,38 +122,15 @@ ${JSON.stringify(existingMem, null, 2)}
 最近對話（${msgs.length} 條、時序由舊到新）:
 ${msgs.map((m) => `[${m.role}] ${m.content.slice(0, 800)}`).join("\n")}`;
 
-      const ctrl = new AbortController();
-      const timer = setTimeout(() => ctrl.abort(), 30_000);
-      let parsed: any;
-      try {
-        const res = await fetch("https://api.anthropic.com/v1/messages", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-api-key": apiKey,
-            "anthropic-version": "2023-06-01",
-          },
-          signal: ctrl.signal,
-          body: JSON.stringify({
-            model: modelName,
-            max_tokens: 700,
-            temperature: 0.3,
-            system: SUMMARIZE_PROMPT,
-            messages: [{ role: "user", content: userBlock }],
-          }),
-        });
-        if (!res.ok) {
-          const body = await res.text();
-          throw new Error(`anthropic ${res.status}: ${body.slice(0, 200)}`);
-        }
-        const data = await res.json();
-        const text = (data.content ?? []).filter((c: any) => c.type === "text").map((c: any) => c.text).join("").trim();
-        const m = text.match(/\{[\s\S]*\}/);
-        if (!m) throw new Error(`no JSON in response: ${text.slice(0, 200)}`);
-        parsed = JSON.parse(m[0]);
-      } finally {
-        clearTimeout(timer);
-      }
+      const { text } = await completeForUsage("admin_assistant", {
+        system: SUMMARIZE_PROMPT,
+        user: userBlock,
+        maxTokens: 700,
+        temperature: 0.3,
+      });
+      const m = (text ?? "").match(/\{[\s\S]*\}/);
+      if (!m) throw new Error(`no JSON in response: ${(text ?? "").slice(0, 200)}`);
+      const parsed = JSON.parse(m[0]);
 
       const newTurnCount = ((existing as any)?.turn_count ?? 0) + msgs.length;
       const { error: upErr } = await admin

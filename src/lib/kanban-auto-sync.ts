@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
-import { getProviderKey } from "@/lib/ai-crypto";
-import { getModelNameForUsage } from "@/lib/ai-usage-models";
+import { completeForUsage } from "@/lib/resolve-usage-ai";
 
 /**
  * 雪鑰自動掃 launchpad worker — 對比 GitHub 最近 commits 跟 TODO/DOING 卡、自動移完成的到 DONE。
@@ -87,12 +86,6 @@ export async function runAutoSync() {
     });
   }
 
-  const apiKey = await getProviderKey("anthropic");
-  if (!apiKey) {
-    return NextResponse.json({ ok: false, error: "no_anthropic_key" }, { status: 503 });
-  }
-  const modelName = await getModelNameForUsage("admin_assistant", "claude-haiku-4-5-20251001");
-
   const promptHeader = githubAvailable
     ? "你是雪鑰、AI 島常駐 AI。林董叫你掃 launchpad 看哪些「待辦 / 進行中」其實已做完、要移到 DONE。"
     : "你是雪鑰、AI 島常駐 AI。GitHub API 暫不可達、改用 DONE column 卡片當「已完成」reference、找 TODO/DOING 重複的。";
@@ -113,18 +106,7 @@ export async function runAutoSync() {
 
   let parsed: any;
   try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-api-key": apiKey, "anthropic-version": "2023-06-01" },
-      body: JSON.stringify({ model: modelName, max_tokens: 2000, temperature: 0.2, messages: [{ role: "user", content: prompt }] }),
-      signal: AbortSignal.timeout(60_000),
-    });
-    if (!res.ok) {
-      const body = await res.text();
-      return NextResponse.json({ ok: false, error: `anthropic ${res.status}: ${body.slice(0, 200)}` }, { status: 502 });
-    }
-    const data = await res.json();
-    const text = (data.content ?? []).filter((c: any) => c.type === "text").map((c: any) => c.text).join("").trim();
+    const { text } = await completeForUsage("admin_assistant", { user: prompt, maxTokens: 2000, temperature: 0.2 });
     const m = text.match(/\{[\s\S]*\}/);
     if (!m) return NextResponse.json({ ok: false, error: "no_json", raw: text.slice(0, 300) });
     parsed = JSON.parse(m[0]);

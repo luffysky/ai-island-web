@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
-import { getProviderKey } from "@/lib/ai-crypto";
-import { getModelNameForUsage } from "@/lib/ai-usage-models";
+import { completeForUsage } from "@/lib/resolve-usage-ai";
 import { loadUserMemory } from "@/lib/user-ai-memory";
 
 export const dynamic = "force-dynamic";
@@ -81,12 +80,6 @@ async function handle() {
     daysSinceJoin,
   });
 
-  const apiKey = await getProviderKey("anthropic");
-  if (!apiKey) {
-    return NextResponse.json({ ok: true, ai: false, ...ruleBased });
-  }
-  const modelName = await getModelNameForUsage("admin_assistant", "claude-haiku-4-5-20251001");
-
   const userName = (profile as any)?.display_name || (profile as any)?.username || "你";
 
   const prompt = `你是雪鑰、AI 島常駐 AI。為 ${userName} 推薦最適合的訂閱方案。
@@ -124,17 +117,7 @@ ${memory?.preferences?.style ? `- 風格：${memory.preferences.style}` : ""}
 - 連勝 ≥ 7 → 習慣養成、推 yearly`;
 
   try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-api-key": apiKey, "anthropic-version": "2023-06-01" },
-      body: JSON.stringify({ model: modelName, max_tokens: 400, temperature: 0.3, messages: [{ role: "user", content: prompt }] }),
-      signal: AbortSignal.timeout(15_000),
-    });
-    if (!res.ok) {
-      return NextResponse.json({ ok: true, ai: false, ai_error: `${res.status}`, ...ruleBased });
-    }
-    const data = await res.json();
-    const text = (data.content ?? []).filter((c: any) => c.type === "text").map((c: any) => c.text).join("").trim();
+    const { text } = await completeForUsage("admin_assistant", { user: prompt, maxTokens: 400, temperature: 0.3 });
     const m = text.match(/\{[\s\S]*\}/);
     if (!m) return NextResponse.json({ ok: true, ai: false, ai_error: "no_json", ...ruleBased });
     const parsed = JSON.parse(m[0]);
