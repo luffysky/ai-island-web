@@ -24,6 +24,15 @@ export default async function ApiKeysPage() {
           <Link href="/docs/api" className="text-accent hover:underline ml-1">看 API 文件</Link>
         </p>
       </header>
+      {/* 釐清：這頁是「對外金鑰」；想填自己的模型 key（BYOK）在另一頁 */}
+      <div className="mb-5 rounded-xl border border-accent/30 bg-accent/5 p-4 text-sm">
+        <div className="font-bold mb-0.5">🔑 想用「自己的」OpenAI / Claude / Gemini key？</div>
+        <p className="text-fg-muted">
+          這頁是發給你的<b>對外 API key</b>（讓你的 app 呼叫 AI 島）。若你想<b>自帶模型 API key</b>
+          （跳過免費額度、用自己額度跟原廠對話）→
+          <Link href="/settings/ai-keys" className="text-accent hover:underline font-bold ml-1">前往 BYOK 設定 →</Link>
+        </p>
+      </div>
       <ApiKeysClient />
     </div>
   );

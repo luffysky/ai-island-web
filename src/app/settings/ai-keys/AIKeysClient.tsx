@@ -1,9 +1,10 @@
 "use client";
 import { useState } from "react";
-import { Trash2, Plus, ExternalLink } from "lucide-react";
+import { Trash2, Plus, ExternalLink, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/components/ui/Toast";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
+import { BYOK_PROVIDERS } from "@/lib/ai-key-test";
 
 interface UserKey {
   id: string;
@@ -14,12 +15,7 @@ interface UserKey {
   last_used_at: string | null;
 }
 
-const PROVIDERS = [
-  { value: "anthropic", label: "Anthropic Claude", url: "https://console.anthropic.com/settings/keys" },
-  { value: "openai", label: "OpenAI GPT", url: "https://platform.openai.com/api-keys" },
-  { value: "google", label: "Google Gemini", url: "https://aistudio.google.com/apikey" },
-  { value: "groq", label: "Groq (Llama)", url: "https://console.groq.com/keys" },
-];
+const PROVIDERS = BYOK_PROVIDERS;
 
 export function AIKeysClient({ initialKeys }: { initialKeys: UserKey[] }) {
   const toast = useToast();
@@ -31,6 +27,29 @@ export function AIKeysClient({ initialKeys }: { initialKeys: UserKey[] }) {
   const [label, setLabel] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [testing, setTesting] = useState(false);
+  const [testResult, setTestResult] = useState<{ ok: boolean; hint: string } | null>(null);
+
+  const testKey = async () => {
+    if (!apiKey.trim()) return;
+    setTesting(true);
+    setTestResult(null);
+    setError("");
+    try {
+      const res = await fetch("/api/user/ai-keys/test", {
+        credentials: "include",
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ provider, apiKey }),
+      });
+      const d = await res.json();
+      setTestResult({ ok: !!d.ok, hint: d.hint || d.error || "驗證失敗" });
+    } catch (e: any) {
+      setTestResult({ ok: false, hint: e.message });
+    } finally {
+      setTesting(false);
+    }
+  };
 
   const save = async () => {
     if (!apiKey.trim()) return;
@@ -137,6 +156,10 @@ export function AIKeysClient({ initialKeys }: { initialKeys: UserKey[] }) {
             >
               <ExternalLink size={12} /> 取得 {provider} API key
             </a>
+            <div className="mt-1.5 text-[11px] text-fg-muted">
+              這把 key 可解鎖的模型：{PROVIDERS.find((p) => p.value === provider)?.models.join("、")}
+              <span className="block mt-0.5">（存好後、在 AI 對話框打開「用自己的 key」就能選這些模型用你的額度）</span>
+            </div>
           </div>
 
           <div>
@@ -162,8 +185,20 @@ export function AIKeysClient({ initialKeys }: { initialKeys: UserKey[] }) {
           </div>
 
           {error && <p className="text-sm text-red-400">{error}</p>}
+          {testResult && (
+            <p className={`text-sm flex items-center gap-1.5 ${testResult.ok ? "text-emerald-500" : "text-red-400"}`}>
+              {testResult.ok ? <CheckCircle2 size={14} /> : <XCircle size={14} />} {testResult.hint}
+            </p>
+          )}
 
           <div className="flex gap-2">
+            <button
+              onClick={testKey}
+              disabled={testing || !apiKey}
+              className="px-4 py-2 border border-accent text-accent rounded font-semibold disabled:opacity-50 flex items-center gap-1.5"
+            >
+              {testing ? <Loader2 size={14} className="animate-spin" /> : null} 測試
+            </button>
             <button
               onClick={save}
               disabled={saving || !apiKey}
@@ -172,7 +207,7 @@ export function AIKeysClient({ initialKeys }: { initialKeys: UserKey[] }) {
               {saving ? "儲存中..." : "儲存"}
             </button>
             <button
-              onClick={() => { setAdding(false); setApiKey(""); setLabel(""); setError(""); }}
+              onClick={() => { setAdding(false); setApiKey(""); setLabel(""); setError(""); setTestResult(null); }}
               className="px-4 py-2 border border-border rounded text-sm"
             >
               取消

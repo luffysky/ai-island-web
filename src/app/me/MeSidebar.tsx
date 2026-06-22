@@ -35,6 +35,7 @@ const ME_LINKS: { href: string; icon: React.ReactNode; label: string }[] = [
   { href: "/me", icon: <LayoutDashboard size={16} />, label: "學習總覽" },
   { href: "/me/dashboard", icon: <span>📊</span>, label: "學習儀表板" },
   { href: "/me/ledger", icon: <span>🪙</span>, label: "Z幣/經驗明細" },
+  { href: "/settings/ai-keys", icon: <span>🔑</span>, label: "我的模型 Key (BYOK)" },
   { href: "/me/notes", icon: <StickyNote size={16} />, label: "我的筆記" },
   { href: "/me/bookmarks", icon: <Bookmark size={16} />, label: "我的書籤" },
   { href: "/me/playgrounds", icon: <Code2 size={16} />, label: "我的程式碼" },
