@@ -205,7 +205,7 @@ export function VirtualTerminal({
           <div className="text-emerald-400/40">
             {mode === "python"
               ? "互動式 Python：打指令按 Enter（Shift+Enter 換行）。變數會保留，例如先 x = 5、再打 x + 1。"
-              : "Shell：打指令按 Enter。例如 echo hello、ls、pwd。（需管理員設好自架 Piston）"}
+              : "Shell：打指令按 Enter。例如 echo hello、ls、pwd、python3 -c 'print(1+1)'。（雲端沙盒執行、cd/變數會在這個 session 內延續）"}
           </div>
         )}
         {lines.map((l, i) => (

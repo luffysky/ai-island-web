@@ -277,7 +277,7 @@ export function NamiPlayground({
           {active === "exercises" && <Exercises />}
           {active === "challenges" && <ChallengeMode />}
           {active === "ide" && <MiniIDE />}
-          {active === "terminal" && <VirtualTerminal defaultMode="python" className="max-w-3xl" />}
+          {active === "terminal" && <VirtualTerminal defaultMode="shell" className="max-w-3xl" />}
           {active === "charts" && <ChartsGallery />}
         </motion.div>
       </AnimatePresence>

@@ -5,6 +5,7 @@ import { Play, Loader2, X, Download, Upload, FolderPlus, FilePlus, Save, Chevron
 import { usePyodide } from "@/hooks/usePyodide";
 import { CodeEditor } from "@/components/ui/CodeEditor";
 import { AskAI } from "@/components/nami/AskAI";
+import { VirtualTerminal } from "@/components/chapter/VirtualTerminal";
 import { FileTree } from "./FileTree";
 import {
   loadFs, saveFs, loadActive, saveActive, loadOpenTabs, saveOpenTabs,
@@ -501,6 +502,12 @@ ${activeFile.content}
             </div>
           </div>
         </div>
+      </div>
+
+      {/* 整合終端機 — 真的打指令（Shell via Wandbox 沙盒 + Python REPL，可切換）*/}
+      <div>
+        <div className="text-xs font-bold text-fg-muted mb-1.5 px-1">🖥️ 整合終端機（可打指令：ls / pwd / echo / python -c …）</div>
+        <VirtualTerminal defaultMode="shell" />
       </div>
 
       {/* 教學 */}
