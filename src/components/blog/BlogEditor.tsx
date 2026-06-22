@@ -26,7 +26,7 @@ import {
   Link as LinkIcon, Image as ImageIcon, Table as TableIcon, Undo, Redo,
   Highlighter, AlignLeft, AlignCenter, AlignRight,
   FileCode, Minus, CheckSquare, Upload, Loader2, Baseline, Type,
-  Video as VideoIcon, Music, Youtube,
+  Video as VideoIcon, Music, Youtube, Paperclip,
 } from "lucide-react";
 import { TextStyleColorSize } from "@/lib/tiptap-text-style";
 import { useToast } from "@/components/ui/Toast";
@@ -144,6 +144,7 @@ function Toolbar({ editor }: { editor: Editor }) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const videoInputRef = useRef<HTMLInputElement | null>(null);
   const audioInputRef = useRef<HTMLInputElement | null>(null);
+  const attachInputRef = useRef<HTMLInputElement | null>(null);
   const [uploading, setUploading] = useState(false);
 
   const addLink = () => {
@@ -218,6 +219,44 @@ function Toolbar({ editor }: { editor: Editor }) {
     if (f) uploadAndInsert(f);
     if (ref.current) ref.current.value = "";
   };
+
+  // 任意檔案附件（pdf / word / excel / ppt / txt / md / zip…）→ 插入下載連結
+  const fileIcon = (name: string) => {
+    const ext = name.split(".").pop()?.toLowerCase() || "";
+    if (["pdf"].includes(ext)) return "📕";
+    if (["doc", "docx"].includes(ext)) return "📘";
+    if (["xls", "xlsx", "csv"].includes(ext)) return "📗";
+    if (["ppt", "pptx"].includes(ext)) return "📙";
+    if (["zip", "rar", "7z"].includes(ext)) return "🗜️";
+    if (["md", "txt"].includes(ext)) return "📄";
+    return "📎";
+  };
+  const uploadAttachment = async (file: File) => {
+    if (file.size > 25 * 1024 * 1024) { toast.error("附件不可超過 25 MB"); return; }
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("folder", "blog");
+      const res = await fetch("/api/upload", { credentials: "include", method: "POST", body: fd });
+      const j = await res.json();
+      if (!res.ok) throw new Error(j.message || j.error || "上傳失敗");
+      const kb = file.size < 1024 * 1024 ? `${Math.max(1, Math.round(file.size / 1024))} KB` : `${(file.size / 1024 / 1024).toFixed(1)} MB`;
+      editor.chain().focus().insertContent(
+        `<p><a href="${j.url}" download="${file.name}" target="_blank" rel="noopener noreferrer">${fileIcon(file.name)} ${file.name}（${kb}）</a></p>`
+      ).run();
+      toast.success("已插入附件");
+    } catch (e: any) {
+      toast.error(e?.message || "上傳失敗");
+    } finally {
+      setUploading(false);
+    }
+  };
+  const onPickAttachment = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (f) uploadAttachment(f);
+    if (attachInputRef.current) attachInputRef.current.value = "";
+  };
   // 拖放 / 貼上圖片到編輯器 → 自動上傳
   useEffect(() => {
     const el = (editor.view.dom as HTMLElement);
@@ -290,7 +329,7 @@ function Toolbar({ editor }: { editor: Editor }) {
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/jpeg,image/png,image/webp,image/gif"
+        accept="image/*"
         className="hidden"
         onChange={(e) => onPickFile(e, fileInputRef)}
       />
@@ -306,7 +345,7 @@ function Toolbar({ editor }: { editor: Editor }) {
       <input
         ref={videoInputRef}
         type="file"
-        accept="video/mp4,video/webm,video/quicktime,video/ogg"
+        accept="video/*"
         className="hidden"
         onChange={(e) => onPickFile(e, videoInputRef)}
       />
@@ -322,9 +361,24 @@ function Toolbar({ editor }: { editor: Editor }) {
       <input
         ref={audioInputRef}
         type="file"
-        accept="audio/mpeg,audio/wav,audio/ogg,audio/mp4,audio/x-m4a,audio/aac,audio/webm"
+        accept="audio/*"
         className="hidden"
         onChange={(e) => onPickFile(e, audioInputRef)}
+      />
+      <button
+        type="button"
+        onClick={() => attachInputRef.current?.click()}
+        disabled={uploading}
+        className={btn(false)}
+        title="上傳附件（PDF / Word / Excel / PPT / TXT / MD / ZIP… 任意檔案，≤ 25MB，插入下載連結）"
+      >
+        <Paperclip size={16} />
+      </button>
+      <input
+        ref={attachInputRef}
+        type="file"
+        className="hidden"
+        onChange={onPickAttachment}
       />
       <button type="button" onClick={addEmbed} className={btn(false)} title="嵌入 YouTube / Vimeo 影片連結"><Youtube size={16} /></button>
       <button type="button" onClick={addTable} className={btn(false)} title="表格"><TableIcon size={16} /></button>

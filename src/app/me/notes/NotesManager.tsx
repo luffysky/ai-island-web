@@ -1081,7 +1081,7 @@ function NoteBackgroundEditor({ value, onChange }: { value: NoteBg | null; onCha
           </div>
         </>
       )}
-      <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" className="hidden" onChange={onPick} />
+      <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={onPick} />
     </div>
   );
 }

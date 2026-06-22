@@ -7,8 +7,6 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 const MB = 1024 * 1024;
-const VIDEO_TYPES = new Set(["video/mp4", "video/webm", "video/quicktime", "video/ogg"]);
-const AUDIO_TYPES = new Set(["audio/mpeg", "audio/mp3", "audio/wav", "audio/x-wav", "audio/ogg", "audio/webm", "audio/mp4", "audio/x-m4a", "audio/aac"]);
 const ALLOWED_FOLDERS = new Set(["blog", "portfolio", "social", "misc"]);
 
 /**
@@ -31,7 +29,9 @@ export async function POST(req: NextRequest) {
   try { body = await req.json(); } catch { return NextResponse.json({ error: "bad_json" }, { status: 400 }); }
 
   const { filename, contentType, folder, size } = body ?? {};
-  const kind = VIDEO_TYPES.has(contentType) ? "video" : AUDIO_TYPES.has(contentType) ? "audio" : null;
+  const ct = String(contentType || "");
+  // 支援所有影片/音訊格式（大類前綴判斷、不限白名單）
+  const kind = ct.startsWith("video/") ? "video" : ct.startsWith("audio/") ? "audio" : null;
   if (!kind) {
     return NextResponse.json({ error: "type_not_allowed", message: "presign 只給影片 / 音訊大檔" }, { status: 400 });
   }

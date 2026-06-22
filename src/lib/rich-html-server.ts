@@ -27,7 +27,7 @@ export function sanitizeRichHtmlStrict(html: unknown): string {
   return sanitizeHtml(html, {
     allowedTags: ALLOWED_TAGS,
     allowedAttributes: {
-      a: ["href", "title", "target", "rel"],
+      a: ["href", "title", "target", "rel", "download"],
       img: ["src", "alt", "title", "width", "height"],
       video: ["src", "controls", "width", "height", "poster", "preload", "loop", "muted", "playsinline", "class"],
       audio: ["src", "controls", "preload", "loop", "class"],
