@@ -71,6 +71,16 @@ type RunOut = {
   via: string;
 };
 
+// C# (mono) 預設把非 ASCII（中文）輸出成「?」——因為 stdout 被導向時 console encoding 退回 ASCII。
+// 改寫 Console.Out 成 UTF-8 StreamWriter（不能用 Console.OutputEncoding、導向時會丟例外）。
+// 只在能找到 Main(...) { 時注入（top-level program 不動、避免破壞）。
+function fixCsharpUtf8(code: string): string {
+  if (/OpenStandardOutput|OutputEncoding/.test(code)) return code; // 學員已自行處理就不重複
+  const inject = "System.Console.SetOut(new System.IO.StreamWriter(System.Console.OpenStandardOutput(), new System.Text.UTF8Encoding(false)){AutoFlush=true});";
+  const re = /(static\s+(?:async\s+)?(?:void|int|Task|Task<int>|System\.Threading\.Tasks\.Task(?:<int>)?)\s+Main\s*\([^)]*\)\s*\{)/;
+  return re.test(code) ? code.replace(re, `$1 ${inject}`) : code;
+}
+
 // 帶 timeout 的 fetch：自架 Piston 若卡住、要快點失敗才能退回 Wandbox（不然整個請求卡到平台上限）
 async function fetchTimeout(url: string, opts: RequestInit, ms: number): Promise<Response> {
   const ctrl = new AbortController();
@@ -148,20 +158,22 @@ export async function POST(req: NextRequest) {
   if (code.length > 50000) return NextResponse.json({ error: "Code 太長（max 50KB）" }, { status: 400 });
 
   const filename = `main.${FILE_EXTS[langConfig.piston] ?? "txt"}`;
+  // C# 中文輸出修正（mono 會把非 ASCII 變 ?）
+  const finalCode = langConfig.piston === "csharp" ? fixCsharpUtf8(code) : code;
 
   // 後端選擇：有自架 Piston → 先 Piston、失敗退 Wandbox；否則直接 Wandbox。
   let out: RunOut | null = null;
   let pistonErr = "";
   if (PISTON_BASE) {
     try {
-      out = await runViaPiston(langConfig.piston, langConfig.version, filename, code, stdin ?? "");
+      out = await runViaPiston(langConfig.piston, langConfig.version, filename, finalCode, stdin ?? "");
     } catch (e: any) {
       pistonErr = e?.message ?? "piston failed";
     }
   }
   if (!out) {
     try {
-      out = await runViaWandbox(langConfig.piston, code, stdin ?? "");
+      out = await runViaWandbox(langConfig.piston, finalCode, stdin ?? "");
     } catch (e: any) {
       return NextResponse.json({
         error: `這個語言目前無法執行：${e?.message ?? "no backend"}${pistonErr ? `（Piston: ${pistonErr}）` : ""}`,

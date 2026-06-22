@@ -17,6 +17,7 @@ import { FrameworkLab } from "./tabs/FrameworkLab";
 import { ChallengeMode } from "./tabs/ChallengeMode";
 import { MiniIDE } from "./tabs/MiniIDE";
 import { DatabaseLab } from "./tabs/DatabaseLab";
+import { VirtualTerminal } from "@/components/chapter/VirtualTerminal";
 
 /** Tab 列 drag-to-scroll wrapper — 滑鼠按住拖 / touch swipe / 滑鼠滾輪橫向 */
 function DraggableTabs({ children }: { children: React.ReactNode }) {
@@ -104,6 +105,7 @@ const TABS = [
   { id: "repl", label: "Python REPL", emoji: "🐍", icon: Terminal, desc: "互動式 Python、一次跑一段" },
   { id: "notebook", label: "Jupyter Notebook", emoji: "📓", icon: BookOpen, desc: "多 cell 編寫、變數共享" },
   { id: "ide", label: "Mini IDE", emoji: "💻", icon: FolderOpen, desc: "多檔案、main.py 可 import" },
+  { id: "terminal", label: "終端機", emoji: "🖥️", icon: Terminal, desc: "真實打指令：Python REPL + Shell（Wandbox 沙盒）" },
   { id: "scrape", label: "Scrape Lab", emoji: "🕷️", icon: Bug, desc: "爬蟲練習場、業界資料源" },
   { id: "backend", label: "Backend Lab", emoji: "⚡", icon: Zap, desc: "FastAPI / Flask / SQLite / asyncio" },
   { id: "web", label: "Web Lab", emoji: "🌐", icon: Globe, desc: "HTML / CSS / JS 即時預覽" },
@@ -275,6 +277,7 @@ export function NamiPlayground({
           {active === "exercises" && <Exercises />}
           {active === "challenges" && <ChallengeMode />}
           {active === "ide" && <MiniIDE />}
+          {active === "terminal" && <VirtualTerminal defaultMode="python" className="max-w-3xl" />}
           {active === "charts" && <ChartsGallery />}
         </motion.div>
       </AnimatePresence>
