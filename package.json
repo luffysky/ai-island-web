@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "test:smoke": "node scripts/smoke-test.mjs",
     "seed": "tsx scripts/seed-content.ts",
     "gen:secrets": "node scripts/generate-secrets.js",
     "db:apply": "pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/run_supabase_sql.ps1",

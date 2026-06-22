@@ -85,22 +85,33 @@ jobs:
       # image 推完後、自動打 Zeabur GraphQL API 觸發該服務重部署、拉最新 image。
       # 因為 Zeabur 是 Prebuilt Image 模式、不會自己重拉 :latest、所以這裡主動觸發。
       # serviceID / environmentID 非機密、直接寫；token 放 GitHub secret。
+      # ⚠️ 重點：image 已在上一步 build + push 成功。這步只是「觸發 Zeabur 重拉」、
+      # 失敗不該讓整個 workflow 變紅（不然會誤以為「部署錯誤」、但其實 image 是好的）。
+      # → continue-on-error + 不 exit 1；先試 restartService、失敗再試 redeployService。
       - name: Trigger Zeabur redeploy
+        continue-on-error: true
         env:
           ZEABUR_API_TOKEN: ${{ secrets.ZEABUR_API_TOKEN }}
           SERVICE_ID: "6a2dd61f00b9937b8de229c3"
           ENVIRONMENT_ID: "6a00c698e5ed304c1d845a93"
         run: |
-          # image 服務不能用 redeployService（那是 git build）；用 restartService 重建容器、重拉 :latest
-          query="mutation { restartService(serviceID: \"$SERVICE_ID\", environmentID: \"$ENVIRONMENT_ID\") }"
-          payload=$(jq -nc --arg q "$query" '{query: $q}')
-          resp=$(curl -sS -X POST https://api.zeabur.com/graphql \
-            -H "Authorization: Bearer $ZEABUR_API_TOKEN" \
-            -H "Content-Type: application/json" \
-            -d "$payload")
-          echo "Zeabur response: $resp"
+          trigger() {
+            local mut="$1"
+            local q="mutation { $mut(serviceID: \"$SERVICE_ID\", environmentID: \"$ENVIRONMENT_ID\") }"
+            local payload; payload=$(jq -nc --arg q "$q" '{query: $q}')
+            curl -sS -X POST https://api.zeabur.com/graphql \
+              -H "Authorization: Bearer $ZEABUR_API_TOKEN" -H "Content-Type: application/json" -d "$payload"
+          }
+          resp=$(trigger "restartService")
+          echo "restartService -> $resp"
           if echo "$resp" | grep -q '"errors"'; then
-            echo "::error::Zeabur redeploy 失敗（檢查 mutation 欄位名 / token / IDs）"
-            exit 1
+            resp2=$(trigger "redeployService")
+            echo "redeployService -> $resp2"
+            if echo "$resp2" | grep -q '"errors"'; then
+              echo "::warning::Zeabur 自動重部署觸發失敗（image 已成功推上 GHCR、請到 Zeabur 手動 Restart 拉 :latest）"
+            else
+              echo "✅ redeployService 觸發成功"
+            fi
+          else
+            echo "✅ restartService 觸發成功"
           fi
-          echo "✅ 已觸發 Zeabur redeploy"

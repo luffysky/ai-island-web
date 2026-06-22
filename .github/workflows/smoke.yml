@@ -1,0 +1,25 @@
+name: Smoke test (prod)
+
+# 每天打一次關鍵公開路由、確認站還活著（整片 500/404 早知道）。手動也可跑。
+# 對正式機跑、不需 secrets；耗 Actions 分鐘數可忽略（< 1 分）。
+on:
+  schedule:
+    - cron: "0 1 * * *"
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: "要測的 base URL（留空=正式機）"
+        required: false
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Smoke test
+        env:
+          BASE_URL: ${{ github.event.inputs.base_url }}
+        run: node scripts/smoke-test.mjs

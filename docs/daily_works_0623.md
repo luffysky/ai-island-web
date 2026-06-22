@@ -35,3 +35,40 @@
 
 ---
 待辦見 docs/TODO.md。
+
+---
+
+# Part 2 — 大功能批次 + 後台/費用/明細 + 部落格美化（同日續）
+
+## 🧩 7 大功能
+- **沙盒 stdin 互動 + 圖表**：Pyodide worker 讓 `plt.show()` 自動輸出圖、`input()` 改讀 stdin 欄位（一行一個、echo）；PlaygroundCard 顯示 matplotlib 圖 + Python 也能開 stdin。
+- **每日測驗難度自適應**：近 14 天答對率 → effectiveR = userR+(acc-0.7)*300；題型比例隨等級調。
+- **學習儀表板** `/me/dashboard`：掌握度圓餅 / 學習時間 / 測驗準確率折線 / 各章「最遠 vs 完成」雙層條。
+- **部落格社交**：查證 CommentSection/ReactionBar/TOC/ReadingProgress/Subscribe 早已具備（免移植）。
+- **R2 大檔 presigned 直傳**：`/api/upload/presign` + r2.getPresignedUploadUrl；影片 ≤500MB 直傳 R2（需設 R2 CORS）。
+- **離線 PWA 章節快取**：sw.js v6 加 OFFLINE_CACHE（持久）+「存離線」鈕 + 離線橫幅。
+- **e2e 煙霧測試**：Playwright 在此環境裝不起來（registry 版本壞）→ 改零依賴 `scripts/smoke-test.mjs`（11 路由、實測全過）+ 每日 GH workflow。
+
+## 🛠️ AI / 後台 / 費用
+- **providerFromModel 去重**：抽 `resolve-usage-ai`（providerFromModel/resolveUsageAI/`completeForUsage` 含智慧備援）；6 個寫死 anthropic 的呼叫端改一行、admin 改用途模型不再 404。
+- **OpenRouter**：接成 provider（OpenAI 相容）、後台可設 key（DB 優先、退 env）、加 4 免費模型；聊天串流主模型 429/額度滿 → **自動換備援模型重串、無感**。
+- **圖片對話**：只傳圖不打字 → 不再塞「（看圖回答）」。
+- **AI 費用準**：`callAI` 全記用量 → 新 `ai_model_usage`（每月每模型）+ inc_system_key_usage；修「後台 $1 / Claude $10」低估。
+- **admin/ai/models 測 key**：結果改顯示在該 provider 旁（不再跑最上面被擋）。
+- **owner-only**：`/admin/ai/usage`、`/admin/ai/conversations`、`/admin/users/[id]` 詳細頁 + 列表連結（非 owner 點不進去）；nav 也隱藏。
+- **admin/users 角色**：下拉加 owner（只 owner 能授予/撤銷、同步 is_owner）。
+- ⚠️ 查到 **2 個 owner 帳號**（luffysky00 + luffysky004）— 待林董確認 004 是否該保留。
+
+## 🪙 經驗 / Z幣明細
+- `ledger-labels`：reason+meta → 人話（每日測驗/簽到/完成課程 ChXX/管理員發放…）。
+- admin/users/[id] XP+Z幣 panel 改人話 + 修 coin `e.type` bug + 顯示餘額；補帳 GrantModal 理由欄改標「明細」。
+- 新 `/me/ledger`「Z幣/經驗明細」頁 + 側欄入口。
+- 修 `/api/me/feed`：部落格連結用 blog_slug（非 profile username、否則 404）。
+
+## ✍️ 部落格公開頁美化 + 加功能
+- 標題加大 + 分類膠囊 + 閱讀時間 + 上下邊線；封面陰影；作者卡 bio。
+- 加：訂閱作者、更多文章（同作者 4 篇）、可點標籤、系列上一篇/下一篇、回到頂部。
+
+## 🔍 收尾檢查
+- 全程 tsc 0 / build 綠；`run-migrations` 49/0；`audit-db-columns` 無欄位接錯、256 route 全 export；smoke 11/11。
+- Groq 主力模型已重新啟用（誤停用已復原）。

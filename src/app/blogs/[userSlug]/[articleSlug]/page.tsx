@@ -12,6 +12,7 @@ import { ShareArticleButton } from "@/components/blog/ShareArticleButton";
 import { ReadingProgress } from "@/components/blog/ReadingProgress";
 import { TableOfContents } from "@/components/blog/TableOfContents";
 import { SubscribeForm } from "@/components/blog/SubscribeForm";
+import { BackToTop } from "@/components/blog/BackToTop";
 import { sanitizeRichHtmlStrict } from "@/lib/rich-html-server";
 import { estimateReadingTime, formatReadingTime } from "@/lib/reading-time";
 import { articleSchema, breadcrumbSchema, jsonLdScript } from "@/lib/seo-jsonld";
@@ -88,6 +89,24 @@ export default async function ArticlePage({
     .neq("id", article.id)
     .order("published_at", { ascending: false })
     .limit(4);
+
+  // 系列：上一篇 / 下一篇
+  let seriesPrev: any = null, seriesNext: any = null;
+  if (article.series_id != null) {
+    const { data: sibs } = await adminSb
+      .from("user_blog_articles")
+      .select("title, slug, series_order")
+      .eq("user_id", blog.settings.user_id)
+      .eq("series_id", article.series_id)
+      .eq("is_public", true)
+      .order("series_order", { ascending: true });
+    const list = (sibs as any[]) ?? [];
+    const idx = list.findIndex((x) => x.slug === article.slug);
+    if (idx >= 0) {
+      seriesPrev = idx > 0 ? list[idx - 1] : null;
+      seriesNext = idx < list.length - 1 ? list[idx + 1] : null;
+    }
+  }
 
   // JSON-LD: Article + BreadcrumbList
   const ld = [
@@ -202,6 +221,24 @@ export default async function ArticlePage({
         </div>
       )}
 
+      {/* 系列：上一篇 / 下一篇 */}
+      {(seriesPrev || seriesNext) && (
+        <div className="mt-8 grid grid-cols-2 gap-3">
+          {seriesPrev ? (
+            <Link href={`/blogs/${userSlug}/${seriesPrev.slug}`} className="rounded-xl border border-border bg-bg-card p-3 hover:border-accent/50 transition">
+              <div className="text-[11px] text-fg-muted">← 系列上一篇</div>
+              <div className="text-sm font-semibold truncate">{seriesPrev.title}</div>
+            </Link>
+          ) : <div />}
+          {seriesNext ? (
+            <Link href={`/blogs/${userSlug}/${seriesNext.slug}`} className="rounded-xl border border-border bg-bg-card p-3 hover:border-accent/50 transition text-right">
+              <div className="text-[11px] text-fg-muted">系列下一篇 →</div>
+              <div className="text-sm font-semibold truncate">{seriesNext.title}</div>
+            </Link>
+          ) : <div />}
+        </div>
+      )}
+
       {/* 作者卡 */}
       <div className="mt-8 p-5 rounded-2xl bg-gradient-to-br from-bg-card to-bg-elevated border border-border flex items-start gap-4">
         {blog.profile?.avatar_url ? (
@@ -252,6 +289,7 @@ export default async function ArticlePage({
 
       {/* 留言區 */}
       <CommentSection userSlug={userSlug} articleSlug={articleSlug} />
+      <BackToTop />
     </article>
   );
 }
