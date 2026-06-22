@@ -56,6 +56,14 @@ export async function GET() {
       .limit(15),
   ] as any);
 
+  // 部落格連結要用 blog_slug（user_blog_settings）、不是 profile username（兩者不同、用 username 會 404）
+  const blogAuthorIds = Array.from(new Set(((blogs as any[]) ?? []).map((b: any) => b.user_id)));
+  const blogSlugMap = new Map<string, string>();
+  if (blogAuthorIds.length > 0) {
+    const { data: bset } = await admin.from("user_blog_settings").select("user_id, blog_slug").in("user_id", blogAuthorIds);
+    for (const s of (bset as any[]) ?? []) if (s.blog_slug) blogSlugMap.set(s.user_id, s.blog_slug);
+  }
+
   const items: any[] = [];
 
   for (const r of lessons ?? []) items.push({
@@ -84,7 +92,7 @@ export async function GET() {
     display_name: b.user?.display_name ?? null,
     avatar_url: b.user?.avatar_url ?? null,
     title: b.title,
-    link: `/blogs/${b.user?.username}/${b.slug}`,
+    link: `/blogs/${blogSlugMap.get(b.user_id) ?? b.user_id}/${b.slug}`,
     at: b.published_at,
   });
   for (const t of threads ?? []) items.push({

@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { adminHref } from "@/lib/admin-href";
 import { ArrowLeft } from "lucide-react";
 import { formatTW, formatTWDate, formatTWRelative } from "@/lib/format-date";
+import { ledgerLabel } from "@/lib/ledger-labels";
 
 export const dynamic = "force-dynamic";
 
@@ -41,8 +42,8 @@ export default async function AdminUserDetailPage({
     { data: forumReplies, count: forumReplyCount },
     { data: lastSession },
   ] = await Promise.all([
-    admin.from("xp_events").select("*").eq("user_id", id).order("created_at", { ascending: false }).limit(20),
-    admin.from("coin_transactions").select("*").eq("user_id", id).order("created_at", { ascending: false }).limit(20),
+    admin.from("xp_events").select("*").eq("user_id", id).order("created_at", { ascending: false }).limit(40),
+    admin.from("coin_transactions").select("*").eq("user_id", id).order("created_at", { ascending: false }).limit(40),
     admin.from("user_achievements").select("achievement_id, unlocked_at").eq("user_id", id).order("unlocked_at", { ascending: false }),
     admin.from("lesson_progress").select("chapter_id, lesson_id, xp_awarded, created_at:completed_at", { count: "exact" }).eq("user_id", id).order("completed_at", { ascending: false }).limit(10),
     admin.from("quiz_attempts").select("*", { count: "exact", head: true }).eq("user_id", id),
@@ -148,25 +149,25 @@ export default async function AdminUserDetailPage({
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Panel title="近期 XP 事件" empty="無 XP 紀錄">
+        <Panel title="📈 經驗（XP）明細" empty="無 XP 紀錄">
           {(xpEvents ?? []).map((e: any) => (
             <Row
               key={e.id}
               left={`${e.amount > 0 ? "+" : ""}${e.amount}`}
               leftClass={e.amount > 0 ? "text-green-400" : "text-red-400"}
-              mid={e.reason || "—"}
+              mid={ledgerLabel(e.reason, e.meta)}
               right={formatTW(e.created_at)}
             />
           ))}
         </Panel>
-        <Panel title="近期 Z-coin 流水" empty="無 Z-coin 紀錄">
+        <Panel title="🪙 Z幣明細" empty="無 Z-coin 紀錄">
           {(coinTxn ?? []).map((e: any) => (
             <Row
               key={e.id}
               left={`${e.amount > 0 ? "+" : ""}${e.amount}`}
               leftClass={e.amount > 0 ? "text-yellow-400" : "text-red-400"}
-              mid={`${e.type} · ${e.reason || ""}`}
-              right={formatTW(e.created_at)}
+              mid={ledgerLabel(e.reason, e.meta)}
+              right={`${e.balance_after != null ? `餘 ${e.balance_after} · ` : ""}${formatTW(e.created_at)}`}
             />
           ))}
         </Panel>
