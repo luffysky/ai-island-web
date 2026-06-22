@@ -1,7 +1,7 @@
 # 免費 / 有免費額度的 AI 模型 API（2026-06 整理）
 
-> 📌 **程式碼執行**（非 LLM）已改用 **Wandbox**（wandbox.org、免費免 key）為預設沙盒後端，
-> C#/Go/Rust/Java… 立即可跑；之後若要更快可選配自架 Piston（設 `PISTON_BASE_URL`）。下面講的是 **AI 模型**。
+> 📌 **程式碼執行**（非 LLM）後端鏈：**Piston（自架，選配）→ Judge0（設 key，選配）→ Wandbox（免費保底）**。
+> 依序嘗試、前一個失敗自動退下一個。下面講的是 **AI 模型**；程式碼執行後端設定見文末。
 
 
 林董參考用。重點：**這個專案的 provider 架構大多是「OpenAI 相容」**（`src/lib/ai-providers.ts` 已支援 openai / anthropic / google / groq）。
@@ -49,3 +49,32 @@
 - 「免費」幾乎都有 **rate limit / 每日上限 / 資料可能被拿去訓練**。正式對外服務要看條款（尤其學員資料隱私）。
 - 免費模型品質參差：DeepSeek R1、Llama 3.3 70B、Qwen3 算堪用；要高品質仍建議 Claude / GPT 付費層。
 - 模型會下架（像這次 Gemini 2.0）。接哪家都要保留「在 /admin/ai/models 一鍵關掉」的能力（已具備）。
+
+---
+
+## 🖥️ 程式碼執行後端設定（Judge0 / Piston / Wandbox）
+
+後端鏈：有設就用、依序退避。`/api/playground/run` 回應的 `via` 標明這次用哪個。
+
+### Judge0（建議補上、UTF-8 乾淨、品質比 Wandbox 好）
+**怎麼申請 API key（RapidAPI、有免費層）：**
+1. 到 https://rapidapi.com 註冊一個帳號（可用 Google 登入）。
+2. 搜尋 **「Judge0 CE」**、或直接開 https://rapidapi.com/judge0-official/api/judge0-ce
+3. 點 **Subscribe to Test** → 選 **Basic（免費，約每日有限次）**；要更多再升付費方案。
+4. 在該 API 頁面右上 **X-RapidAPI-Key** 複製那串 key。
+5. 到 AI 島的 **Zeabur env** 加：
+   ```
+   JUDGE0_URL=https://judge0-ce.p.rapidapi.com
+   JUDGE0_KEY=<剛剛複製的 X-RapidAPI-Key>
+   JUDGE0_HOST=judge0-ce.p.rapidapi.com
+   ```
+6. 重新部署即生效。playground 跑跑看、`via` 應顯示 `judge0`。
+
+> 自架 Judge0（不經 RapidAPI）：只設 `JUDGE0_URL=https://你的judge0` + `JUDGE0_KEY=<token>`（不要設 `JUDGE0_HOST`），會改用 `X-Auth-Token` 認證。
+
+### Piston（選配、最快）
+見 `docs/piston-selfhost.md`。Zeabur 跑不起來（需特權）、要自架建議用 VPS。設 `PISTON_BASE_URL`。
+
+### Wandbox（預設、免設定）
+免費免 key、永遠墊底。C# 中文輸出已自動修正（注入 UTF-8 writer）。
+偶爾限流；compiler id 在 route 內 `WANDBOX_COMPILER`、失效時對 wandbox.org/api/list.json 更新。

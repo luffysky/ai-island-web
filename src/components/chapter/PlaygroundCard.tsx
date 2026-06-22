@@ -215,6 +215,7 @@ export function PlaygroundCard({
   const [fullscreen, setFullscreen] = useState(false);
   const [showStdin, setShowStdin] = useState(false);
   const [showTerminal, setShowTerminal] = useState(false);
+  const [filename, setFilename] = useState("");  // 沙盒檔名（空=後端自動命名；Java 一律對齊 class 名）
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const supabase = createSupabaseBrowser();
   const pyodide = usePyodide(false);
@@ -249,7 +250,7 @@ export function PlaygroundCard({
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ language: lang, code, stdin }),
+        body: JSON.stringify({ language: lang, code, stdin, filename: filename.trim() || undefined }),
       });
 
       const contentType = res.headers.get("content-type") || "";
@@ -396,6 +397,15 @@ export function PlaygroundCard({
               <option key={l} value={l}>{LANG_LABELS[l] ?? l}</option>
             ))}
           </select>
+          {isSandbox && (
+            <input
+              value={filename}
+              onChange={(e) => setFilename(e.target.value)}
+              placeholder={`main.${SANDBOX_LANGS[lang]?.piston === "java" ? "java（自動對齊 class）" : (lang === "py" ? "py" : lang)}`}
+              title="檔名（可留空、Java 會自動用 public class 名）"
+              className="text-xs font-mono px-2 py-1 rounded bg-bg border border-border outline-none focus:border-accent w-36 shrink-0"
+            />
+          )}
           <span className="text-xs text-fg-muted truncate">
             {playground.title ?? "編輯左邊、按 ▶ 執行"}
           </span>
