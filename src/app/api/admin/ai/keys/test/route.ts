@@ -80,6 +80,35 @@ async function testGoogle(key: string): Promise<{ ok: boolean; status?: number; 
   }
 }
 
+async function testOpenRouter(key: string): Promise<{ ok: boolean; status?: number; body?: string }> {
+  try {
+    // /key 端點回 key 的 label / usage / limit → 驗證 key 有效（免費 key 也可）
+    const res = await fetch("https://openrouter.ai/api/v1/key", {
+      headers: { Authorization: `Bearer ${key}` },
+      signal: AbortSignal.timeout(15_000),
+    });
+    if (res.ok) return { ok: true, status: res.status };
+    const body = await res.text();
+    return { ok: false, status: res.status, body: body.slice(0, 500) };
+  } catch (e: any) {
+    return { ok: false, body: `fetch failed: ${e?.message ?? "unknown"}` };
+  }
+}
+
+async function testGroq(key: string): Promise<{ ok: boolean; status?: number; body?: string }> {
+  try {
+    const res = await fetch("https://api.groq.com/openai/v1/models", {
+      headers: { Authorization: `Bearer ${key}` },
+      signal: AbortSignal.timeout(15_000),
+    });
+    if (res.ok) return { ok: true, status: res.status };
+    const body = await res.text();
+    return { ok: false, status: res.status, body: body.slice(0, 500) };
+  } catch (e: any) {
+    return { ok: false, body: `fetch failed: ${e?.message ?? "unknown"}` };
+  }
+}
+
 export async function GET(req: NextRequest) {
   const me = await requireAdmin();
   if (!me) return NextResponse.json({ error: "forbidden" }, { status: 403 });
@@ -131,6 +160,8 @@ export async function GET(req: NextRequest) {
       provider === "anthropic" ? "sk-ant-..."
         : provider === "openai" ? "sk-..."
         : provider === "google" ? "AIza..."
+        : provider === "openrouter" ? "sk-or-..."
+        : provider === "groq" ? "gsk_..."
         : "(unknown)",
   };
 
@@ -138,6 +169,8 @@ export async function GET(req: NextRequest) {
   if (provider === "anthropic") apiResult = await testAnthropic(decrypted);
   else if (provider === "openai") apiResult = await testOpenAI(decrypted);
   else if (provider === "google") apiResult = await testGoogle(decrypted);
+  else if (provider === "openrouter") apiResult = await testOpenRouter(decrypted);
+  else if (provider === "groq") apiResult = await testGroq(decrypted);
   else apiResult = { ok: false, body: `no test for provider=${provider}` };
 
   const hint = apiResult.ok
