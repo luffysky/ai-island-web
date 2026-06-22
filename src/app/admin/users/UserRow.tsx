@@ -44,6 +44,7 @@ export function UserRow({ user }: { user: any }) {
             <option value="member">member</option>
             <option value="editor">editor</option>
             <option value="admin">admin</option>
+            <option value="owner">owner</option>
           </select>
         </td>
         <td className="px-4 py-3 text-xs text-fg-muted">

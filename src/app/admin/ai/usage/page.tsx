@@ -1,8 +1,20 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { AIUsageChart } from "./AIUsageChart";
 import { PageHero } from "@/components/admin/PageHero";
+import { requireOwner } from "@/lib/admin-guard";
 
 export default async function AIUsagePage() {
+  // 只有 owner 看得到（一般 admin 看不到使用量、避免被金額嚇到）
+  const gate = await requireOwner();
+  if (!gate.ok) {
+    return (
+      <div className="bg-bg-card border border-border rounded-xl p-10 text-center">
+        <div className="text-3xl mb-2">🔒</div>
+        <div className="font-bold">這頁只有 owner 看得到</div>
+        <div className="text-sm text-fg-muted mt-1">AI 使用量 / 費用屬機密、未開放給一般管理員。</div>
+      </div>
+    );
+  }
   const supabase = createSupabaseAdmin();
 
   // 過去 30 天

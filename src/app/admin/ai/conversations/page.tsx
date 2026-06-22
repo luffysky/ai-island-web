@@ -13,6 +13,17 @@ export default async function ConversationsPage() {
   const ownerCheck = user ? await checkOwnerByProfileId(user.id, supabase) : null;
   const isOwner = ownerCheck?.isOwner === true;
 
+  // 只有 owner 看得到（一般 admin 完全不顯示）
+  if (!isOwner) {
+    return (
+      <div className="bg-bg-card border border-border rounded-xl p-10 text-center">
+        <div className="text-3xl mb-2">🔒</div>
+        <div className="font-bold">這頁只有 owner 看得到</div>
+        <div className="text-sm text-fg-muted mt-1">學員 AI 對話內容屬隱私、未開放給一般管理員。</div>
+      </div>
+    );
+  }
+
   const { data: convs, error } = await supabase
     .from("ai_conversations")
     .select("*, profiles(username, display_name)")

@@ -84,6 +84,9 @@ export function ModelsManagerClient({
   const [savingKey, setSavingKey] = useState<string | null>(null);
   const [keySaved, setKeySaved] = useState<string | null>(null);
   const [notice, setNotice] = useState<Notice | null>(null);
+  // 測 key 結果：直接顯示在該 provider 的按鈕旁、不再跑去最上面被擋住
+  const [testResults, setTestResults] = useState<Record<string, { ok: boolean; msg: string }>>({});
+  const [testingProvider, setTestingProvider] = useState<string | null>(null);
 
   const showNotice = (type: Notice["type"], message: string) => {
     setNotice({ type, message });
@@ -176,26 +179,31 @@ export function ModelsManagerClient({
   };
 
   const testKey = async (provider: string) => {
+    setTestingProvider(provider);
+    setTestResults((r) => ({ ...r, [provider]: { ok: false, msg: "測試中…" } }));
+    const setResult = (ok: boolean, msg: string) => setTestResults((r) => ({ ...r, [provider]: { ok, msg } }));
     try {
       const res = await fetch(`/api/admin/ai/keys/test?provider=${encodeURIComponent(provider)}`);
       const ct = res.headers.get("content-type") ?? "";
       if (!ct.includes("application/json")) {
-        showNotice("error", `API 沒回 JSON（${res.status}）、可能 Zeabur 還在 build`);
+        setResult(false, `API 沒回 JSON（${res.status}）、可能還在 build`);
         return;
       }
       const data = await res.json();
       if (data.ok) {
-        showNotice("success", `✅ key 有效 · prefix=${data.key_info?.prefix} · len=${data.key_info?.length}`);
+        setResult(true, `✅ key 有效 · prefix=${data.key_info?.prefix} · len=${data.key_info?.length}`);
       } else {
         const detail = data.api_test?.status
-          ? `${data.api_test.status} ${(data.api_test.body ?? "").slice(0, 100)}`
+          ? `${data.api_test.status} ${(data.api_test.body ?? "").slice(0, 80)}`
           : data.reason ?? data.error ?? "unknown";
-        showNotice("error", `❌ ${detail}\n💡 ${data.hint ?? ""}`);
+        setResult(false, `❌ ${detail}${data.hint ? ` · 💡 ${data.hint}` : ""}`);
       }
       // eslint-disable-next-line no-console
       console.log(`[test-key:${provider}]`, data);
     } catch (e) {
-      showNotice("error", e instanceof Error ? e.message : "test 失敗");
+      setResult(false, e instanceof Error ? e.message : "test 失敗");
+    } finally {
+      setTestingProvider(null);
     }
   };
 
@@ -341,12 +349,23 @@ export function ModelsManagerClient({
                 </button>
                 <button
                   onClick={() => testKey(provider)}
-                  disabled={!key || !hasSecret}
+                  disabled={!key || !hasSecret || testingProvider === provider}
                   className="btn-chip btn-chip-info"
                   title="跑一個小請求驗證 key 真的可用"
                 >
-                  🧪 測 key
+                  🧪 {testingProvider === provider ? "測試中…" : "測 key"}
                 </button>
+                {testResults[provider] && (
+                  <span
+                    className={`text-xs px-2 py-1 rounded-md max-w-full break-words ${
+                      testResults[provider].ok
+                        ? "bg-green-500/15 text-green-600 dark:text-green-300"
+                        : "bg-red-500/15 text-red-600 dark:text-red-300"
+                    }`}
+                  >
+                    {testResults[provider].msg}
+                  </span>
+                )}
                 <button
                   onClick={() => deleteKey(provider)}
                   disabled={!key}
