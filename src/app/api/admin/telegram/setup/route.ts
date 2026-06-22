@@ -48,7 +48,10 @@ const BOT_COMMANDS = [
 
 async function run() {
   const token = process.env.ADMIN_TELEGRAM_BOT_TOKEN;
-  const site = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
+  // ⚠️ 一定要去尾斜線：NEXT_PUBLIC_SITE_URL 結尾有 "/" 的話、`${site}/api/...` 會變成
+  // 「//api/telegram-webhook」雙斜線 → Next.js 回 308 Redirect → Telegram 不跟 redirect →
+  // 更新永遠送不到 webhook handler → bot 完全沒反應。（這就是之前 TG AI 不回的真因。）
+  const site = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet").replace(/\/+$/, "");
   if (!token) return NextResponse.json({ error: "ADMIN_TELEGRAM_BOT_TOKEN 未設" }, { status: 503 });
 
   const webhookUrl = `${site}/api/telegram-webhook`;
