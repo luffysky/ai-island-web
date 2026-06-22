@@ -2,9 +2,10 @@
 import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { Playground } from "@/lib/types";
-import { Play, RotateCcw, Copy, Check, Save, Maximize2, Minimize2, Loader2 } from "lucide-react";
+import { Play, RotateCcw, Copy, Check, Save, Maximize2, Minimize2, Loader2, TerminalSquare } from "lucide-react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { usePyodide } from "@/hooks/usePyodide";
+import { VirtualTerminal } from "./VirtualTerminal";
 
 // Monaco 動態載入（避免 SSR）
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
@@ -213,6 +214,7 @@ export function PlaygroundCard({
   const [saved, setSaved] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
   const [showStdin, setShowStdin] = useState(false);
+  const [showTerminal, setShowTerminal] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const supabase = createSupabaseBrowser();
   const pyodide = usePyodide(false);
@@ -416,6 +418,13 @@ export function PlaygroundCard({
               {saved ? <Check size={14} className="text-accent" /> : <Save size={14} />}
             </button>
           )}
+          <button
+            onClick={() => setShowTerminal((s) => !s)}
+            className={`p-1.5 rounded ${showTerminal ? "bg-emerald-500/20 text-emerald-400" : "hover:bg-bg-card"}`}
+            title="虛擬終端機（可實際打指令）"
+          >
+            <TerminalSquare size={14} />
+          </button>
           <button onClick={reset} className="p-1.5 hover:bg-bg-card rounded" title="重置">
             <RotateCcw size={14} />
           </button>
@@ -535,6 +544,13 @@ export function PlaygroundCard({
       {playground.hint && !fullscreen && (
         <div className="border-t border-border p-3 text-xs text-fg-muted bg-yellow-500/5 shrink-0">
           💡 {playground.hint}
+        </div>
+      )}
+
+      {/* 虛擬終端機（可實際打指令）。Python→瀏覽器內 REPL（變數持久）、Shell→沙盒後端 */}
+      {showTerminal && !fullscreen && (
+        <div className="border-t border-border p-3 shrink-0">
+          <VirtualTerminal defaultMode={isPython ? "python" : "shell"} />
         </div>
       )}
     </div>

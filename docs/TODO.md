@@ -1,12 +1,13 @@
 # AI 島 — 全專案待辦（2026-06-19 整理）
 
+## ✅ 課程沙盒 / 終端機（已修，Wandbox 免費後端）
+- [x] **沙盒改用 Wandbox**（免費、免 key）為預設執行後端 → C#/Go/Rust/Java… 立即可跑。
+- [x] **虛擬終端機**：所有 playground 加「終端機」鈕。Python=瀏覽器內 Pyodide REPL（變數持久）、其他=Wandbox。
+- [ ] **（選配）自架 Piston 加速**：設 `PISTON_BASE_URL` 後優先用 Piston、失敗自動退 Wandbox。量大/要更快再做（見 docs/piston-selfhost.md）。
+- [ ] **Wandbox 版本維護**：route 內 `WANDBOX_COMPILER` 的 compiler id 偶爾要更新（從 wandbox.org/api/list.json 對）。
+
 ## 🔴 需林董決策 / 需 infra
-- [ ] **課程沙盒修復**：公開 Piston 2026-02-15 起白名單制 → C#/Go/Rust/Java… 全掛。選一條：
-      (a) 自架 Piston 到 Zeabur + 設 `PISTON_BASE_URL`（code 已支援，見 docs/piston-selfhost.md）
-      (b) 改接其他執行服務（Judge0 付費 / Wandbox 免費無 key）
-      (c) 只保 Python（Pyodide 瀏覽器內、已可用）+ JS/HTML
-- [ ] **遊樂場虛擬終端機**：依賴上面的執行後端。Python 可先做 Pyodide 瀏覽器 REPL（不需後端）。
-- [ ] **Zeabur runtime env 檢查**：確認 `R2_*`（圖片上傳）、`DISCORD_OWNER_USER_IDS`、`PISTON_BASE_URL`、各家 AI key 都已貼。
+- [ ] **Zeabur runtime env 檢查**：`R2_*`（已確認在）、`DISCORD_OWNER_USER_IDS`、各家 AI key。Wandbox 免設定。
 - [ ] **GDPR `user_settings`**：表不存在、gdpr/export 默默漏掉這塊。建表 or 刪那行。
 
 ## 🟠 技術債 / 健壯性

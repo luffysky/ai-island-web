@@ -1,5 +1,9 @@
 # 免費 / 有免費額度的 AI 模型 API（2026-06 整理）
 
+> 📌 **程式碼執行**（非 LLM）已改用 **Wandbox**（wandbox.org、免費免 key）為預設沙盒後端，
+> C#/Go/Rust/Java… 立即可跑；之後若要更快可選配自架 Piston（設 `PISTON_BASE_URL`）。下面講的是 **AI 模型**。
+
+
 林董參考用。重點：**這個專案的 provider 架構大多是「OpenAI 相容」**（`src/lib/ai-providers.ts` 已支援 openai / anthropic / google / groq）。
 凡是「OpenAI 相容 endpoint」的服務，幾乎都能用「自訂 base URL + key」接進來、不必大改 code。
 
