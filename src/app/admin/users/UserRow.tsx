@@ -8,7 +8,7 @@ import { useUserActions } from "./_useUserActions";
 
 const ADMIN_SLUG = process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2";
 
-export function UserRow({ user }: { user: any }) {
+export function UserRow({ user, isOwner }: { user: any; isOwner?: boolean }) {
   const a = useUserActions(user);
   const detailHref = `/${ADMIN_SLUG}/admin/users/${user.id}`;
 
@@ -17,15 +17,29 @@ export function UserRow({ user }: { user: any }) {
       <tr className="border-b border-border hover:bg-bg-elevated">
         <td className="px-4 py-3">
           <div className="flex items-center gap-3">
-            <Link href={detailHref as any} className="shrink-0">
-              <RowAvatar src={user.avatar_url} name={user.display_name || user.username} />
-            </Link>
-            <div className="min-w-0">
-              <Link href={detailHref as any} className="font-semibold flex items-center gap-1 hover:text-accent transition">
-                {user.display_name || user.username}
-                {a.role === "admin" && <ShieldCheck size={14} className="text-yellow-400" />}
-                {a.role === "editor" && <Shield size={14} className="text-blue-400" />}
+            {isOwner ? (
+              <Link href={detailHref as any} className="shrink-0">
+                <RowAvatar src={user.avatar_url} name={user.display_name || user.username} />
               </Link>
+            ) : (
+              <span className="shrink-0">
+                <RowAvatar src={user.avatar_url} name={user.display_name || user.username} />
+              </span>
+            )}
+            <div className="min-w-0">
+              {isOwner ? (
+                <Link href={detailHref as any} className="font-semibold flex items-center gap-1 hover:text-accent transition">
+                  {user.display_name || user.username}
+                  {a.role === "admin" && <ShieldCheck size={14} className="text-yellow-400" />}
+                  {a.role === "editor" && <Shield size={14} className="text-blue-400" />}
+                </Link>
+              ) : (
+                <span className="font-semibold flex items-center gap-1">
+                  {user.display_name || user.username}
+                  {a.role === "admin" && <ShieldCheck size={14} className="text-yellow-400" />}
+                  {a.role === "editor" && <Shield size={14} className="text-blue-400" />}
+                </span>
+              )}
               <div className="text-xs text-fg-muted">@{user.username}</div>
             </div>
           </div>

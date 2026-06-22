@@ -12,6 +12,7 @@
  */
 
 import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import crypto from "crypto";
 
 let _client: S3Client | null = null;
@@ -69,6 +70,31 @@ export async function uploadToR2(
   );
 
   return `${publicUrl()}/${key}`;
+}
+
+/**
+ * 產生 presigned PUT URL：給「大檔」（影片）讓瀏覽器直接 PUT 到 R2、不經過 server 記憶體。
+ * 回 { uploadUrl（前端 PUT 用、10 分內有效）, publicUrl（之後讀取用）, key }。
+ * ⚠️ R2 bucket 需設 CORS 允許從站點 origin PUT（見 docs）。
+ */
+export async function getPresignedUploadUrl(
+  originalName: string,
+  contentType: string,
+  folder: string = "uploads",
+): Promise<{ uploadUrl: string; publicUrl: string; key: string }> {
+  const safeFolder = folder.replace(/[^a-zA-Z0-9_/-]/g, "_").slice(0, 64);
+  const ext = (originalName.split(".").pop() || "bin").toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 6) || "bin";
+  const hash = crypto.randomBytes(12).toString("hex");
+  const key = `${safeFolder}/${Date.now()}-${hash}.${ext}`;
+  const cmd = new PutObjectCommand({
+    Bucket: bucket(),
+    Key: key,
+    ContentType: contentType,
+    CacheControl: "public, max-age=31536000, immutable",
+  });
+  // cast：presigner 與 client-s3 的 S3Client 型別宣告分離（private field）、runtime 相容、TS 需 cast
+  const uploadUrl = await getSignedUrl(r2Client() as any, cmd as any, { expiresIn: 600 });
+  return { uploadUrl, publicUrl: `${publicUrl()}/${key}`, key };
 }
 
 /** 從 R2 刪除（用完整 URL、自動扣掉 publicUrl prefix 拿 key） */

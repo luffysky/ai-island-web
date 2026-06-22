@@ -1,4 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { createSupabaseServer } from "@/lib/supabase-server";
+import { checkOwnerByProfileId } from "@/lib/is-owner";
 import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
 import { UserRow } from "./UserRow";
@@ -32,6 +34,12 @@ export default async function AdminUsersPage({
   const page = Math.max(1, parseInt(sp.page ?? "1", 10) || 1);
   const from = (page - 1) * PAGE_SIZE;
   const to = from + PAGE_SIZE - 1;
+
+  // 只有 owner 能點進使用者詳細頁；一般 admin 看得到列表、但點不進去
+  const serverSb = await createSupabaseServer();
+  const { data: { user: me } } = await serverSb.auth.getUser();
+  const ownerCheck = me ? await checkOwnerByProfileId(me.id, createSupabaseAdmin()) : null;
+  const isOwner = ownerCheck?.isOwner === true;
 
   const supabase = createSupabaseAdmin();
   let query = supabase
@@ -174,7 +182,7 @@ export default async function AdminUsersPage({
                 </td>
               </tr>
             ) : (
-              users?.map((u: any) => <UserRow key={u.id} user={u} />)
+              users?.map((u: any) => <UserRow key={u.id} user={u} isOwner={isOwner} />)
             )}
           </tbody>
         </table>
@@ -187,7 +195,7 @@ export default async function AdminUsersPage({
             沒有符合條件的使用者
           </div>
         ) : (
-          users?.map((u: any) => <UserCard key={u.id} user={u} />)
+          users?.map((u: any) => <UserCard key={u.id} user={u} isOwner={isOwner} />)
         )}
       </div>
 

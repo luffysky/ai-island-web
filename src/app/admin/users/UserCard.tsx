@@ -33,29 +33,41 @@ function Avatar({ src, name, size = 40 }: { src?: string | null; name: string; s
   );
 }
 
-export function UserCard({ user }: { user: any }) {
+export function UserCard({ user, isOwner }: { user: any; isOwner?: boolean }) {
   const a = useUserActions(user);
   const detailHref = `/${ADMIN_SLUG}/admin/users/${user.id}`;
+  const NameInner = (
+    <>
+      <div className="font-bold flex items-center gap-1 truncate">
+        {user.display_name || user.username}
+        {a.role === "admin" && <ShieldCheck size={14} className="text-yellow-400 shrink-0" />}
+        {a.role === "editor" && <Shield size={14} className="text-blue-400 shrink-0" />}
+      </div>
+      <div className="text-xs text-fg-muted truncate">@{user.username}</div>
+    </>
+  );
 
   return (
     <>
       <article className="bg-bg-card border border-border rounded-xl overflow-hidden">
         {/* Header */}
         <header className="px-4 py-3 border-b border-border flex items-center gap-3">
-          <Link href={detailHref as any} className="shrink-0">
-            <Avatar src={user.avatar_url} name={user.display_name || user.username} size={40} />
-          </Link>
-          <Link
-            href={detailHref as any}
-            className="flex-1 min-w-0 hover:text-accent transition"
-          >
-            <div className="font-bold flex items-center gap-1 truncate">
-              {user.display_name || user.username}
-              {a.role === "admin" && <ShieldCheck size={14} className="text-yellow-400 shrink-0" />}
-              {a.role === "editor" && <Shield size={14} className="text-blue-400 shrink-0" />}
-            </div>
-            <div className="text-xs text-fg-muted truncate">@{user.username}</div>
-          </Link>
+          {isOwner ? (
+            <Link href={detailHref as any} className="shrink-0">
+              <Avatar src={user.avatar_url} name={user.display_name || user.username} size={40} />
+            </Link>
+          ) : (
+            <span className="shrink-0">
+              <Avatar src={user.avatar_url} name={user.display_name || user.username} size={40} />
+            </span>
+          )}
+          {isOwner ? (
+            <Link href={detailHref as any} className="flex-1 min-w-0 hover:text-accent transition">
+              {NameInner}
+            </Link>
+          ) : (
+            <div className="flex-1 min-w-0">{NameInner}</div>
+          )}
           <span className="text-xs px-2 py-0.5 rounded bg-gradient-to-r from-accent to-accent-2 text-black font-bold shrink-0">
             Lv {a.localLevel}
           </span>

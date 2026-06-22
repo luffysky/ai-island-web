@@ -6,6 +6,7 @@ import { adminHref } from "@/lib/admin-href";
 import { ArrowLeft } from "lucide-react";
 import { formatTW, formatTWDate, formatTWRelative } from "@/lib/format-date";
 import { ledgerLabel } from "@/lib/ledger-labels";
+import { requireOwner } from "@/lib/admin-guard";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +15,10 @@ export default async function AdminUserDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  // 只有 owner 能看單一使用者詳細頁；一般 admin → 當 404（點了沒反應、不進入）
+  const gate = await requireOwner();
+  if (!gate.ok) notFound();
+
   const { id } = await params;
   const admin = createSupabaseAdmin();
 

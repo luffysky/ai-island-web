@@ -160,23 +160,38 @@ function Toolbar({ editor }: { editor: Editor }) {
       toast.error("只支援 圖片 / 影片 / 音訊");
       return;
     }
-    const maxMb = isImage ? 8 : isAudio ? 20 : 50;
+    // 影片走 presign 直傳 R2（不經 server 記憶體、可到 500MB）；圖/音走一般上傳
+    const maxMb = isImage ? 8 : isAudio ? 20 : 500;
     if (file.size > maxMb * 1024 * 1024) {
       toast.error(`檔案不可超過 ${maxMb} MB`);
       return;
     }
     setUploading(true);
     try {
-      const fd = new FormData();
-      fd.append("file", file);
-      fd.append("folder", "blog");
-      const res = await fetch("/api/upload", {
-      credentials: "include", method: "POST", body: fd });
-      const j = await res.json();
-      if (!res.ok) throw new Error(j.message || j.error || "上傳失敗");
-      if (isImage) editor.chain().focus().setImage({ src: j.url }).run();
-      else if (isVideo) editor.chain().focus().insertContent(`<video src="${j.url}" controls></video>`).run();
-      else editor.chain().focus().insertContent(`<audio src="${j.url}" controls></audio>`).run();
+      let url: string;
+      if (isVideo) {
+        const ps = await fetch("/api/upload/presign", {
+          credentials: "include", method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ filename: file.name, contentType: file.type, folder: "blog", size: file.size }),
+        });
+        const pj = await ps.json();
+        if (!ps.ok) throw new Error(pj.message || pj.error || "presign 失敗");
+        const put = await fetch(pj.uploadUrl, { method: "PUT", headers: { "Content-Type": file.type }, body: file });
+        if (!put.ok) throw new Error("直傳 R2 失敗（請確認 R2 已設 CORS 允許本站 PUT）");
+        url = pj.publicUrl;
+      } else {
+        const fd = new FormData();
+        fd.append("file", file);
+        fd.append("folder", "blog");
+        const res = await fetch("/api/upload", { credentials: "include", method: "POST", body: fd });
+        const j = await res.json();
+        if (!res.ok) throw new Error(j.message || j.error || "上傳失敗");
+        url = j.url;
+      }
+      if (isImage) editor.chain().focus().setImage({ src: url }).run();
+      else if (isVideo) editor.chain().focus().insertContent(`<video src="${url}" controls></video>`).run();
+      else editor.chain().focus().insertContent(`<audio src="${url}" controls></audio>`).run();
       toast.success("已插入");
     } catch (e: any) {
       toast.error(e?.message || "上傳失敗");
