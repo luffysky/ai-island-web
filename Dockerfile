@@ -48,10 +48,15 @@ RUN npm run build
 # ============ 3. runtime ============
 FROM node:22-bookworm-slim AS runner
 WORKDIR /app
+# 部署版本資訊（/api/version 用）；由 docker.yml build-arg 帶 github.sha 進來。
+ARG APP_COMMIT=dev
+ARG APP_BUILT_AT
 ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
     HOSTNAME=0.0.0.0 \
-    PORT=3000
+    PORT=3000 \
+    APP_COMMIT=$APP_COMMIT \
+    APP_BUILT_AT=$APP_BUILT_AT
 
 # 非 root 執行
 RUN groupadd -g 1001 nodejs && useradd -u 1001 -g nodejs -m nextjs

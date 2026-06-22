@@ -72,3 +72,17 @@
 ## 🔍 收尾檢查
 - 全程 tsc 0 / build 綠；`run-migrations` 49/0；`audit-db-columns` 無欄位接錯、256 route 全 export；smoke 11/11。
 - Groq 主力模型已重新啟用（誤停用已復原）。
+
+---
+
+# Part 3 — 技術債清零 + 收尾（同日續）
+
+- **Owner 收斂**：luffysky004 → member（is_owner=false）；luffysky00 設 role=owner。現在唯一 owner。
+- **/api/version**：回線上 commit / build 時間（Dockerfile 收 APP_COMMIT build-arg、docker.yml 帶 github.sha）→ 部署後一眼確認最新版。
+- **YouTube/Vimeo 內嵌鈕**：BlogEditor 加按鈕、貼連結自動轉 embed iframe（sanitizer 白名單已放行）。
+- **AI 導師串課程上下文**：綠寶本就帶「目前章節 + lesson 內容」，再補「完成 X/Y 節、miniQuiz 答對 N 題」→ 答案深淺自動調整、建議複習。
+- **章節掌握度 → 推薦複習**：章節進度條下加「🔁 有 N 節只快速滑過、建議回頭細看」（用 lessonMastery 的 skim 判定）。
+- **AI 草稿抽查（自動化）**：`scripts/audit-miniquiz.mjs` 結構抽查 1238 題 miniQuiz → **0 錯 0 警**（答案都在選項內、無重複選項、都有解析）；語意正確性仍需人工、但機械錯誤已清零。
+- **ch46 gemini**：查證已是 gemini-2.5（無 2.0、TODO 為舊資訊）。
+- **leetcode 題庫加量**：`seed-leetcode-questions.mjs --limit 300` 執行中（93 → 持續增加）。
+- 收尾：tsc 0 / build 綠；audit-db-columns 無錯接、route 全 export。

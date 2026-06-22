@@ -26,7 +26,7 @@ import {
   Link as LinkIcon, Image as ImageIcon, Table as TableIcon, Undo, Redo,
   Highlighter, AlignLeft, AlignCenter, AlignRight,
   FileCode, Minus, CheckSquare, Upload, Loader2, Baseline, Type,
-  Video as VideoIcon, Music,
+  Video as VideoIcon, Music, Youtube,
 } from "lucide-react";
 import { TextStyleColorSize } from "@/lib/tiptap-text-style";
 import { useToast } from "@/components/ui/Toast";
@@ -150,6 +150,20 @@ function Toolbar({ editor }: { editor: Editor }) {
     const url = window.prompt("連結網址：");
     if (url) editor.chain().focus().setLink({ href: url }).run();
     else editor.chain().focus().unsetLink().run();
+  };
+  // 嵌入 YouTube / Vimeo 影片連結
+  const addEmbed = () => {
+    const url = window.prompt("貼上 YouTube 或 Vimeo 影片連結：");
+    if (!url) return;
+    const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([\w-]{11})/);
+    const vm = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+    let src = "";
+    if (yt) src = `https://www.youtube.com/embed/${yt[1]}`;
+    else if (vm) src = `https://player.vimeo.com/video/${vm[1]}`;
+    else { toast.error("只支援 YouTube / Vimeo 連結"); return; }
+    editor.chain().focus().insertContent(
+      `<iframe src="${src}" class="w-full aspect-video rounded-lg my-4" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen title="影片"></iframe><p></p>`
+    ).run();
   };
   // 上傳圖 / 影 / 音，依類型插入對應節點（文章內直接播放）
   const uploadAndInsert = async (file: File) => {
@@ -312,6 +326,7 @@ function Toolbar({ editor }: { editor: Editor }) {
         className="hidden"
         onChange={(e) => onPickFile(e, audioInputRef)}
       />
+      <button type="button" onClick={addEmbed} className={btn(false)} title="嵌入 YouTube / Vimeo 影片連結"><Youtube size={16} /></button>
       <button type="button" onClick={addTable} className={btn(false)} title="表格"><TableIcon size={16} /></button>
       <Sep />
       <button type="button" onClick={() => editor.chain().focus().undo().run()} className={btn(false)} title="復原"><Undo size={16} /></button>

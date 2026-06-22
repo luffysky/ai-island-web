@@ -81,6 +81,8 @@ jobs:
             NEXT_PUBLIC_SENTRY_DSN=${{ vars.NEXT_PUBLIC_SENTRY_DSN || secrets.NEXT_PUBLIC_SENTRY_DSN }}
             NEXT_PUBLIC_USER_LINE_BOT_BASIC_ID=${{ vars.NEXT_PUBLIC_USER_LINE_BOT_BASIC_ID || secrets.NEXT_PUBLIC_USER_LINE_BOT_BASIC_ID }}
             SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+            APP_COMMIT=${{ github.sha }}
+            APP_BUILT_AT=${{ github.event.head_commit.timestamp }}
 
       # image 推完後、自動打 Zeabur GraphQL API 觸發該服務重部署、拉最新 image。
       # 因為 Zeabur 是 Prebuilt Image 模式、不會自己重拉 :latest、所以這裡主動觸發。

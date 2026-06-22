@@ -206,6 +206,23 @@ export async function buildTutorSystemPrompt(options: {
     const ch = chapters.find((c) => c.id === options.contextChapterId);
     if (ch) {
       contextInfo += `\n\n## 用戶目前在學：Ch${chapterDisplayNumberById(ch.id)} ${ch.title}\n`;
+      // 串「掌握度」：完成節數 + miniQuiz 答對數 → 讓綠寶調整深淺、建議複習
+      if (options.userId) {
+        try {
+          const { createSupabaseAdmin } = await import("./supabase-admin");
+          const admin = createSupabaseAdmin();
+          const total = (lessonsByChapter[ch.id] ?? []).length;
+          const [{ data: prog }, { data: eng }] = await Promise.all([
+            admin.from("lesson_progress").select("lesson_id").eq("user_id", options.userId).eq("chapter_id", ch.id),
+            admin.from("lesson_engagement").select("quiz_passed").eq("user_id", options.userId).eq("chapter_id", ch.id),
+          ]);
+          const done = (prog ?? []).length;
+          const quizzed = (eng ?? []).filter((e: any) => e.quiz_passed).length;
+          if (total > 0) {
+            contextInfo += `（用戶在這章：完成 ${done}/${total} 節、miniQuiz 答對 ${quizzed} 題。回答深淺請據此調整，必要時建議他回頭複習還沒掌握的部分。）\n`;
+          }
+        } catch { /* 掌握度非必要、失敗不阻塞 */ }
+      }
       if (options.contextLessonId) {
         const lesson = await getLessonFull(options.contextLessonId);
         if (lesson) {

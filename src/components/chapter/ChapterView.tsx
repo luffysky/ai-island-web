@@ -272,6 +272,8 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
   const totalLessons = chapter.lessons.length;
   const completedCount = chapter.lessons.filter(l => completedIds.has(l.id)).length;
   const progress = totalLessons > 0 ? completedCount / totalLessons : 0;
+  // 掌握度推薦複習：只「快速滑過」(skim) 的節數 → 建議回頭細看
+  const skimCount = chapter.lessons.filter(l => lessonMastery(l.id, completedIds.has(l.id)) === "skim").length;
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 min-w-0 overflow-hidden">
@@ -341,6 +343,11 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
                 <span>預估 {Math.round(chapter.estimatedHours * 10) / 10} 小時</span>
               )}
             </div>
+            {skimCount > 0 && (
+              <div className="mt-2 text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                🔁 有 {skimCount} 節你只快速滑過、建議回頭細看
+              </div>
+            )}
           </div>
         )}
 

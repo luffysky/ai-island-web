@@ -33,16 +33,16 @@
 - [ ] **2 個 owner 帳號**：luffysky00 + luffysky004 都 is_owner=true。要不要撤掉 004？
 
 ## 🟠 技術債 / 健壯性
-- [ ] **AI 草稿人工抽查**：80 章 metadata / 1238 miniQuiz（尤其答案）/ 補厚章技術正確性。
-- [ ] **章節「掌握度」串進度條**：lesson_engagement 已收集、儀表板已呈現；再餵章節進度條 / 推薦複習。
-- [ ] **ch46.json 教學內容**：model-routing 範例還寫 `gemini-2.0-flash`（已下架）→ 改 2.5-flash（純教學、低優先）。
+- [x] **AI 草稿抽查（自動化）**：`scripts/audit-miniquiz.mjs` 結構抽查 1238 題 → 0 錯 0 警。語意正確性仍建議人工抽看。
+- [x] **章節「掌握度」串進度條**：章節進度條下加「🔁 N 節只滑過、建議複習」（lessonMastery skim）。
+- [x] **ch46.json gemini**：查證已是 2.5（TODO 為舊資訊、無需改）。
+- [x] **AI 導師串課程上下文**：綠寶帶「目前章節 + 完成節數 + miniQuiz 答對數」。
+- [x] **YouTube/Vimeo 內嵌鈕**：編輯器加按鈕、貼連結轉 embed。
+- [x] **/api/version**：線上 commit / build 時間。
 
 ## 🟡 增強 / 之後
-- [ ] **AI 導師串課程上下文**：綠寶回答時自動帶「目前章節 + 你的掌握度」當 context。
-- [ ] **YouTube/Vimeo 內嵌鈕**：sanitizer 已放行 iframe 白名單、編輯器再加一顆「嵌入影片連結」鈕。
-- [ ] **`/api/version` 端點**：顯示線上部署的 commit，之後一眼確認線上是不是最新版（已向林董提議）。
+- [~] **leetcode 題庫加量**：`--limit 300` 執行中（93 → 持續）。
 - [ ] **PWA icon**：補 PNG 192/512 maskable。
-- [ ] **leetcode 題庫加量**：`node scripts/seed-leetcode-questions.mjs --limit 300`。
 - [ ] **GDPR `user_settings`**：表不存在、gdpr/export 默默漏掉。建表 or 刪那行。
 - [ ] **（選配）自架 Piston 加速**：需 VPS（Zeabur 跑不起來、需特權）。設 `PISTON_BASE_URL`。
 
