@@ -19,6 +19,7 @@ import { ToastProvider } from "@/components/ui/Toast";
 import { ConfirmProvider } from "@/components/ui/ConfirmDialog";
 import { WebVitalsReporter } from "@/components/WebVitalsReporter";
 import { PWAInstall } from "@/components/PWAInstall";
+import { OfflineBanner } from "@/components/OfflineBanner";
 import { LineBindBanner } from "@/components/LineBindBanner";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { OnboardingTour } from "@/components/onboarding/OnboardingTour";
@@ -143,6 +144,7 @@ gtag('config', '${gaId}');`}
               <InteractionTracker />
               <WebVitalsReporter />
               <PWAInstall />
+              <OfflineBanner />
               <LineBindBanner />
               <AdminFloatingToolbar />
               <Pet />

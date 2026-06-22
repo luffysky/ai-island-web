@@ -18,6 +18,7 @@ import { ChevronLeft, ChevronRight, Clock, Trophy, BookmarkCheck, X } from "luci
 import Link from "next/link";
 import { useToast } from "@/components/ui/Toast";
 import { saveReadingPos, getReading, recordEngagement, lessonMastery, hydrateFromServer, setSyncEnabled, formatLessonNumber, type Pos } from "@/lib/reading-position";
+import { OfflineSaveButton } from "./OfflineSaveButton";
 
 // 平滑捲到某個 lesson 卡並短暫高亮（跟 hash 跳轉同效果）
 function scrollToLesson(lessonId: string) {
@@ -276,8 +277,9 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 min-w-0 overflow-hidden">
       {/* Header */}
       <header className="mb-10">
-        <div className="text-xs text-fg-muted mb-2">
-          CHAPTER {chapterDisplayNumber(chapter)} · {stageColor.emoji} {stageColor.name}
+        <div className="text-xs text-fg-muted mb-2 flex items-center justify-between gap-2 flex-wrap">
+          <span>CHAPTER {chapterDisplayNumber(chapter)} · {stageColor.emoji} {stageColor.name}</span>
+          <OfflineSaveButton chapterId={chapter.id} />
         </div>
         <h1 className="text-4xl font-bold mb-3">
           {chapter.title}

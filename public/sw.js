@@ -10,10 +10,12 @@
  *   - 不主動 navigate clients、避免破 OAuth callback (#access_token)
  */
 
-const VERSION = "v5-2026-05-28";
+const VERSION = "v6-2026-06-23";
 const STATIC_CACHE = `static-${VERSION}`;
 const PAGES_CACHE = `pages-${VERSION}`;
 const PYODIDE_CACHE = `pyodide-v0.26.4`;  // 跟 Pyodide 版本綁定、版本沒變就不換 cache
+// 使用者主動「存離線」的章節：不帶版本、SW 更新也不清掉（地鐵也看得到已存章節）
+const OFFLINE_CACHE = "offline-saved";
 const OFFLINE_URL = "/offline";
 
 // 不攔截 / 不快取的路徑
@@ -40,11 +42,10 @@ self.addEventListener("install", (event) => {
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     (async () => {
-      // 清掉舊版 cache
+      // 清掉舊版 cache（保留目前版本 + pyodide + 使用者存離線的章節）
+      const keep = new Set([STATIC_CACHE, PAGES_CACHE, PYODIDE_CACHE, OFFLINE_CACHE]);
       const keys = await caches.keys();
-      await Promise.all(
-        keys.filter((k) => !k.endsWith(VERSION)).map((k) => caches.delete(k)),
-      );
+      await Promise.all(keys.filter((k) => !keep.has(k)).map((k) => caches.delete(k)));
       await self.clients.claim();
     })(),
   );
@@ -52,8 +53,34 @@ self.addEventListener("activate", (event) => {
 
 // 收到 SKIP_WAITING 訊息 → 立刻接手 (PWAInstall update banner 觸發)
 self.addEventListener("message", (event) => {
-  if (event.data && event.data.type === "SKIP_WAITING") {
+  const data = event.data;
+  if (!data) return;
+  if (data.type === "SKIP_WAITING") {
     self.skipWaiting();
+    return;
+  }
+  // 使用者按「存離線」→ 把該章 URL 抓下來放進 OFFLINE_CACHE（永久、SW 更新也留著）
+  if (data.type === "OFFLINE_SAVE" && data.url) {
+    event.waitUntil((async () => {
+      try {
+        const cache = await caches.open(OFFLINE_CACHE);
+        const res = await fetch(data.url, { credentials: "include" });
+        if (res.ok) await cache.put(data.url, res.clone());
+        const client = event.source;
+        if (client) client.postMessage({ type: "OFFLINE_SAVED", url: data.url, ok: res.ok });
+      } catch {
+        const client = event.source;
+        if (client) client.postMessage({ type: "OFFLINE_SAVED", url: data.url, ok: false });
+      }
+    })());
+  }
+  if (data.type === "OFFLINE_REMOVE" && data.url) {
+    event.waitUntil((async () => {
+      const cache = await caches.open(OFFLINE_CACHE);
+      await cache.delete(data.url);
+      const client = event.source;
+      if (client) client.postMessage({ type: "OFFLINE_REMOVED", url: data.url });
+    })());
   }
 });
 
@@ -122,6 +149,10 @@ async function networkFirst(req, cacheName) {
   } catch {
     const cached = await cache.match(req);
     if (cached) return cached;
+    // 試使用者主動「存離線」的章節（OFFLINE_CACHE 永久、SW 更新也留著）
+    const offlineCache = await caches.open(OFFLINE_CACHE);
+    const saved = await offlineCache.match(req, { ignoreSearch: true });
+    if (saved) return saved;
     // 離線 + 沒 cache → 給 offline 頁
     const offline = await cache.match(OFFLINE_URL);
     if (offline) return offline;
