@@ -223,13 +223,14 @@ export function usePyodide(autoLoad = false) {
     async (
       code: string,
       callbacks?: { onStdout?: (chunk: string) => void; onImage?: (b64: string) => void },
+      stdin?: string,
     ): Promise<RunResult> => {
       if (!window.__pyodideWorkerReady) {
         const ok = await load();
         if (!ok) return { stdout: "", stderr: error ?? "Pyodide 沒載入成功", result: null, ok: false, images: [] };
       }
       try {
-        const r = await sendToWorker("run", { code }, callbacks);
+        const r = await sendToWorker("run", { code, stdin }, callbacks);
         return {
           stdout: r.stdout ?? "",
           stderr: r.stderr ?? "",

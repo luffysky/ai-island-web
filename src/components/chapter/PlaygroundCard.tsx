@@ -209,6 +209,7 @@ export function PlaygroundCard({
   const [stdin, setStdin] = useState("");
   const isLight = useIsLight();
   const [output, setOutput] = useState("");
+  const [pyImages, setPyImages] = useState<string[]>([]);  // Python matplotlib 圖（base64 PNG）
   const [running, setRunning] = useState(false);
   const [copied, setCopied] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -284,6 +285,7 @@ export function PlaygroundCard({
   const run = async () => {
     setRunning(true);
     setOutput("");
+    setPyImages([]);
     onRun?.(); // 記「跑過 playground」訊號（掌握度）
 
     if (lang === "html") {
@@ -307,13 +309,14 @@ export function PlaygroundCard({
       // Python 優先用 Pyodide（瀏覽器內、不依賴 Piston）
       try {
         setOutput(pyodide.status === "ready" ? "執行中..." : "首次載入 Python 環境（約 5-15 秒）...");
-        const r = await pyodide.run(code);
+        const r = await pyodide.run(code, undefined, stdin);  // stdin → input() 互動
         const stdout = r.stdout || "";
         const stderr = r.stderr || "";
+        setPyImages(r.images ?? []);   // matplotlib 圖直接顯示
         if (!r.ok && stderr) {
           setOutput(`${stdout}${stdout ? "\n\n" : ""}❌ ${stderr.trim()}`);
         } else {
-          setOutput(stdout || "(無輸出、加 print() 看結果)");
+          setOutput(stdout || ((r.images?.length ?? 0) > 0 ? "" : "(無輸出、加 print() 看結果)"));
         }
       } catch (e: any) {
         // Pyodide 載入失敗 → fallback 到 Piston
@@ -411,11 +414,11 @@ export function PlaygroundCard({
           </span>
         </div>
         <div className="flex items-center gap-1 shrink-0">
-          {isSandbox && (
+          {(isSandbox || isPython) && (
             <button
               onClick={() => setShowStdin(!showStdin)}
               className={`p-1.5 rounded text-xs ${showStdin ? "bg-bg-card" : "hover:bg-bg-card"}`}
-              title="stdin 輸入"
+              title="stdin 輸入（input() 會一行一行讀這裡）"
             >
               📥
             </button>
@@ -453,13 +456,13 @@ export function PlaygroundCard({
       </div>
 
       {/* stdin */}
-      {showStdin && isSandbox && (
+      {showStdin && (isSandbox || isPython) && (
         <div className="px-3 py-2 border-b border-border bg-bg shrink-0">
-          <div className="text-xs text-fg-muted mb-1">📥 標準輸入（stdin）：</div>
+          <div className="text-xs text-fg-muted mb-1">📥 標準輸入（stdin）：{isPython && <span className="text-fg-muted/70">每行一個 input()</span>}</div>
           <textarea
             value={stdin}
             onChange={(e) => setStdin(e.target.value)}
-            placeholder="輸入給程式的資料、會傳到 stdin"
+            placeholder={isPython ? "input() 會一行一行讀這裡（例如先填 Nami 再填 25）" : "輸入給程式的資料、會傳到 stdin"}
             rows={2}
             className="w-full font-mono text-xs p-2 bg-bg-card border border-border rounded outline-none"
           />
@@ -545,8 +548,17 @@ export function PlaygroundCard({
             </div>
           </div>
           <pre className="text-xs font-mono whitespace-pre-wrap text-fg overflow-x-auto">
-            {output || (running ? "執行中..." : "點 ▶ 執行")}
+            {output || (pyImages.length === 0 ? (running ? "執行中..." : "點 ▶ 執行") : "")}
           </pre>
+          {/* matplotlib 圖表 */}
+          {pyImages.length > 0 && (
+            <div className="mt-2 space-y-2">
+              {pyImages.map((b64, i) => (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img key={i} src={`data:image/png;base64,${b64}`} alt={`圖表 ${i + 1}`} className="max-w-full rounded border border-border bg-white" />
+              ))}
+            </div>
+          )}
         </div>
       )}
 

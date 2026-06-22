@@ -111,6 +111,24 @@ _b.nami_fetch = nami_fetch
   };
   await loadPhase(3, ["numpy", "pandas"]);
   await loadPhase(4, ["matplotlib"]);
+  // 讓 plt.show() 自動把每張圖輸出成 __IMAGE__<base64>（worker 會抓出來、前端直接顯示圖表）
+  try {
+    await pyodide.runPythonAsync(`
+import matplotlib
+matplotlib.use("AGG")
+import matplotlib.pyplot as _plt, io as _io, base64 as _b64
+def _nami_show(*a, **k):
+    import matplotlib.pyplot as p
+    for _num in p.get_fignums():
+        _fig = p.figure(_num)
+        _buf = _io.BytesIO()
+        _fig.savefig(_buf, format="png", bbox_inches="tight", dpi=110)
+        _buf.seek(0)
+        print("__IMAGE__" + _b64.b64encode(_buf.read()).decode())
+        p.close(_fig)
+_plt.show = _nami_show
+`);
+  } catch (e) { /* matplotlib patch skip */ }
   await loadPhase(5, ["lxml", "beautifulsoup4", "regex", "pillow", "sqlite3"]);
   await loadPhase(6, ["scikit-learn", "scipy"]);
 
@@ -163,6 +181,23 @@ self.onmessage = async (e) => {
           self.postMessage({ id, type: "chunk", kind: "stderr", text: s });
         },
       });
+      // stdin 互動：把下方 stdin 欄位內容餵給 input()（一行一個、會 echo 出來像終端機）。
+      try {
+        const stdinLines = typeof payload.stdin === "string" && payload.stdin.length
+          ? payload.stdin.replace(/\r\n/g, "\n").split("\n") : [];
+        await pyodide.runPythonAsync(
+          "import builtins as _b\n" +
+          "__nami_stdin = " + JSON.stringify(stdinLines) + "\n" +
+          "def _nami_input(prompt=''):\n" +
+          "    if prompt: print(prompt, end='', flush=True)\n" +
+          "    if __nami_stdin:\n" +
+          "        _line = __nami_stdin.pop(0)\n" +
+          "        print(_line, flush=True)\n" +
+          "        return _line\n" +
+          "    raise EOFError('沒有更多輸入了 — 在下方 stdin 欄位多填幾行再執行')\n" +
+          "_b.input = _nami_input\n"
+        );
+      } catch { /* 設定 input 失敗不擋執行 */ }
       try {
         const result = await pyodide.runPythonAsync(payload.code);
         let resultStr = null;
