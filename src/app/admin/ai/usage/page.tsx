@@ -82,15 +82,34 @@ export default async function AIUsagePage() {
   });
   const topUsersSorted = Object.values(userTotals).sort((a: any, b: any) => b.cost - a.cost).slice(0, 10);
 
-  // 本月每模型用量/費用（callAI 全記、含 bot / 排程 / 推薦 → 比上面的 ai_usage_daily 更完整）
+  // 本月各模型用量/費用 — 合併兩個「不重疊」來源：
+  //   web 聊天 → ai_usage_daily（有 model_id）；bot/排程/推薦 → ai_model_usage（有 model_name）。
   const thisMonth = new Date().toISOString().slice(0, 7);
-  const { data: modelUsage } = await supabase
-    .from("ai_model_usage")
-    .select("*")
-    .eq("month", thisMonth)
-    .order("cost_usd", { ascending: false });
-  const muThisMonth = (modelUsage as any[]) ?? [];
-  const muTotalCost = muThisMonth.reduce((s, m) => s + Number(m.cost_usd), 0);
+  const monthStart = thisMonth + "-01";
+  const [{ data: modelMap }, { data: dailyRows }, { data: botRows }] = await Promise.all([
+    supabase.from("ai_models").select("id, provider, model_name"),
+    supabase.from("ai_usage_daily").select("model_id, provider, tokens_input, tokens_output, cost_usd, message_count").gte("date", monthStart),
+    supabase.from("ai_model_usage").select("provider, model_name, tokens_input, tokens_output, cost_usd, calls").eq("month", thisMonth),
+  ]);
+  const idToModel = new Map<string, { provider: string; model_name: string }>();
+  for (const m of (modelMap as any[]) ?? []) idToModel.set(m.id, { provider: m.provider, model_name: m.model_name });
+
+  const muAgg = new Map<string, { provider: string; model_name: string; tokens_input: number; tokens_output: number; cost_usd: number; calls: number }>();
+  const muAdd = (provider: string, model_name: string, ti: number, to: number, cost: number, calls: number) => {
+    const key = `${provider}/${model_name}`;
+    const cur = muAgg.get(key) ?? { provider, model_name, tokens_input: 0, tokens_output: 0, cost_usd: 0, calls: 0 };
+    cur.tokens_input += ti; cur.tokens_output += to; cur.cost_usd += cost; cur.calls += calls;
+    muAgg.set(key, cur);
+  };
+  for (const r of (dailyRows as any[]) ?? []) {
+    const m = idToModel.get(r.model_id);
+    muAdd(m?.provider ?? r.provider, m?.model_name ?? "(未知模型)", r.tokens_input || 0, r.tokens_output || 0, Number(r.cost_usd) || 0, r.message_count || 0);
+  }
+  for (const r of (botRows as any[]) ?? []) {
+    muAdd(r.provider, r.model_name, r.tokens_input || 0, r.tokens_output || 0, Number(r.cost_usd) || 0, r.calls || 0);
+  }
+  const muThisMonth = Array.from(muAgg.values()).sort((a, b) => b.cost_usd - a.cost_usd);
+  const muTotalCost = muThisMonth.reduce((s, m) => s + m.cost_usd, 0);
 
   return (
     <div className="space-y-6">
@@ -135,7 +154,10 @@ export default async function AIUsagePage() {
             </table>
           </div>
         )}
-        <p className="text-[11px] text-fg-muted mt-2">涵蓋所有走 callAI 的呼叫（含 LINE/TG/Discord bot、排程、推薦）。先前後台費用低估、就是因為這些沒被記。</p>
+        <p className="text-[11px] text-fg-muted mt-2">
+          涵蓋 <b>web 聊天</b>（ai_usage_daily）+ <b>LINE/TG/Discord bot・排程・推薦</b>（callAI）。
+          ⚠️ <b>不含命令列腳本</b>（章節生成 / 題庫 seed 等）直接用 API key 的花費 — 那些不經 App、後台看不到，是「Claude 後台數字 &gt; 這裡」的主因。
+        </p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
