@@ -2,10 +2,26 @@ name: Build & push image to GHCR
 
 # push 到 main 就自動 build（用 repo 根目錄的 Dockerfile）並推到 GHCR，
 # 然後 Zeabur 直接拉這個 image，繞開 registry-oci.zeabur.cloud。
+#
+# 💸 省 Actions 分鐘數：
+#  - paths-ignore：純文件 / SQL / 腳本的 commit「不會」觸發 build（這些不進 runtime image）。
+#    DB migration 是本地手動跑、章節內容是同步進 DB，都不需要重建 image。
+#  - concurrency cancel-in-progress：連續推好幾個 commit 時、只 build 最後一個、舊的取消。
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
+      - 'supabase/**'
+      - 'scripts/**'
+      - '.gitignore'
+      - 'bug/**'
   workflow_dispatch: {}
+
+concurrency:
+  group: docker-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   REGISTRY: ghcr.io
