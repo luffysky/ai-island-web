@@ -82,6 +82,16 @@ export default async function AIUsagePage() {
   });
   const topUsersSorted = Object.values(userTotals).sort((a: any, b: any) => b.cost - a.cost).slice(0, 10);
 
+  // 本月每模型用量/費用（callAI 全記、含 bot / 排程 / 推薦 → 比上面的 ai_usage_daily 更完整）
+  const thisMonth = new Date().toISOString().slice(0, 7);
+  const { data: modelUsage } = await supabase
+    .from("ai_model_usage")
+    .select("*")
+    .eq("month", thisMonth)
+    .order("cost_usd", { ascending: false });
+  const muThisMonth = (modelUsage as any[]) ?? [];
+  const muTotalCost = muThisMonth.reduce((s, m) => s + Number(m.cost_usd), 0);
+
   return (
     <div className="space-y-6">
       <PageHero
@@ -91,6 +101,42 @@ export default async function AIUsagePage() {
         gradient="from-yellow-500/10 via-amber-500/10 to-orange-500/10"
         borderColor="border-yellow-500/30"
       />
+
+      {/* 本月各模型費用（含 bot / 排程 / 推薦、最完整）*/}
+      <div className="bg-bg-card border border-border rounded-xl p-5">
+        <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+          <h2 className="font-bold">💰 本月各模型費用（{thisMonth}）</h2>
+          <span className="text-sm">總計 <b className="text-yellow-400">${muTotalCost.toFixed(4)}</b></span>
+        </div>
+        {muThisMonth.length === 0 ? (
+          <p className="text-sm text-fg-muted">本月還沒有用量紀錄（部署後新的 AI 呼叫才會開始記）。</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="text-left text-xs text-fg-muted">
+                <tr>
+                  <th className="py-1">模型</th><th>provider</th>
+                  <th className="text-right">呼叫</th><th className="text-right">in tok</th>
+                  <th className="text-right">out tok</th><th className="text-right">費用</th>
+                </tr>
+              </thead>
+              <tbody>
+                {muThisMonth.map((m: any) => (
+                  <tr key={m.provider + m.model_name} className="border-t border-border">
+                    <td className="py-1.5 font-mono text-xs">{m.model_name}</td>
+                    <td className="text-fg-muted">{m.provider}</td>
+                    <td className="text-right tabular-nums">{m.calls}</td>
+                    <td className="text-right tabular-nums">{Number(m.tokens_input).toLocaleString()}</td>
+                    <td className="text-right tabular-nums">{Number(m.tokens_output).toLocaleString()}</td>
+                    <td className="text-right tabular-nums text-yellow-400">${Number(m.cost_usd).toFixed(4)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+        <p className="text-[11px] text-fg-muted mt-2">涵蓋所有走 callAI 的呼叫（含 LINE/TG/Discord bot、排程、推薦）。先前後台費用低估、就是因為這些沒被記。</p>
+      </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Stat label="總費用" value={`$${totalCost.toFixed(2)}`} color="text-yellow-400" />

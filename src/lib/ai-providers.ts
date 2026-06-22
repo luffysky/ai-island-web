@@ -309,7 +309,7 @@ async function callGroq(req: AICompletionRequest): Promise<AICompletionResponse>
 }
 
 // ============ Dispatcher ============
-export async function callAI(req: AICompletionRequest): Promise<AICompletionResponse> {
+async function dispatchCallAI(req: AICompletionRequest): Promise<AICompletionResponse> {
   switch (req.provider) {
     case "openai":
     case "openrouter":  // OpenAI 相容
@@ -324,6 +324,15 @@ export async function callAI(req: AICompletionRequest): Promise<AICompletionResp
     default:
       throw new Error(`Unsupported provider: ${req.provider}`);
   }
+}
+
+export async function callAI(req: AICompletionRequest): Promise<AICompletionResponse> {
+  const res = await dispatchCallAI(req);
+  // best-effort 記用量/費用（bot / 排程 / 推薦等非串流呼叫都會被算到；web 串流自己記）
+  import("./ai-usage-log")
+    .then((m) => m.logAiUsage(req.provider, req.model, res.tokensInput ?? 0, res.tokensOutput ?? 0))
+    .catch(() => {});
+  return res;
 }
 
 // ============ Streaming ============

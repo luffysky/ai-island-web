@@ -83,6 +83,8 @@ const MIGRATIONS = [
   "ai_models_refresh_2026_06.sql",
   // 2026-06-23 — OpenRouter 免費模型（key 在 env、智慧備援 fallback）
   "ai_models_openrouter.sql",
+  // 2026-06-23 — 每月每模型用量/費用（callAI 全記、後台費用才準）
+  "ai_model_usage_migration.sql",
 ];
 
 // 從 .env.local 讀（不依賴 dotenv pkg）
