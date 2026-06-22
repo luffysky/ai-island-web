@@ -86,3 +86,26 @@
 - **ch46 gemini**：查證已是 gemini-2.5（無 2.0、TODO 為舊資訊）。
 - **leetcode 題庫加量**：`seed-leetcode-questions.mjs --limit 300` 執行中（93 → 持續增加）。
 - 收尾：tsc 0 / build 綠；audit-db-columns 無錯接、route 全 export。
+
+---
+
+# Part 4 — 版本可視化 + 修測 key + 收尾（同日續）
+
+- **/api/version + admin 🚀 角標**：admin header 右上顯示線上 commit + build 時間（owner 限定、讀 /api/version；Dockerfile 收 APP_COMMIT、docker.yml 帶 github.sha）→ 部署後一眼確認最新版。
+- **修「測 key 顯示 unknown」**：原本只測 anthropic/openai/google，openrouter/groq 走預設分支吐 unknown。加 `testOpenRouter`(/api/v1/key) + `testGroq`(/v1/models) + expected_prefix（sk-or-/gsk_）。→ OpenRouter key 其實有效、只是沒被測到。
+- **OpenRouter 收費釐清**：免費模型（:free）$0 可用、有速率限制（~20/分、$0≈50/天、充 $10≈1000/天）；非按次扣款。
+- **R2 CORS**：林董已自行設好（含 PUT、localhost + 正式機）。
+- **leetcode 題庫**：93 → 277（seed --limit 300 接近完成）。
+- **部署健壯化**：docker.yml redeploy 步驟改 continue-on-error（image 推成功就不再讓 workflow 變紅誤判「部署錯誤」）。
+
+## 📌 仍待處理（寫進待辦、見 docs/TODO.md）
+### 🔴 要林董做（非程式）
+- **確認部署**：Zeabur → 服務 → **Restart** 拉 `:latest`。驗證：admin 🚀 角標顯示最新 commit、或 `/api/version`、或 `/api/upload/presign` 不再 404。
+  - ⚠️ 今天所有修正（含 OpenRouter 測 key、presigned、明細、owner 權限頁…）都要這步才生效。
+- **OpenRouter 測 key**：上面 Restart 後再測一次（修正才會在線上）。
+
+### 🟡 之後可做
+- [ ] **PWA icon**：補 PNG 192/512 maskable。
+- [ ] **GDPR `user_settings`**：表不存在、gdpr/export 默默漏該欄 → 建表 or 刪那行。
+- [ ] **（選配）自架 Piston 加速**：需 VPS（Zeabur 跑不起來、需特權）；設 `PISTON_BASE_URL`。
+- [ ] **AI 草稿語意抽查**：結構已自動驗過（1238 題 0 錯）；答案「對不對」仍建議人工抽看。
