@@ -4,14 +4,16 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { createSupabaseAdmin } from "@/lib/supabase";
 import { resolveBlog } from "@/lib/blog-resolve";
-import { Eye, Calendar, ArrowLeft } from "lucide-react";
+import { Eye, Calendar, ArrowLeft, Clock } from "lucide-react";
 import { BlogViewTracker } from "@/components/blog/BlogViewTracker";
 import { ReactionBar } from "@/components/blog/ReactionBar";
 import { CommentSection } from "@/components/blog/CommentSection";
 import { ShareArticleButton } from "@/components/blog/ShareArticleButton";
 import { ReadingProgress } from "@/components/blog/ReadingProgress";
 import { TableOfContents } from "@/components/blog/TableOfContents";
+import { SubscribeForm } from "@/components/blog/SubscribeForm";
 import { sanitizeRichHtmlStrict } from "@/lib/rich-html-server";
+import { estimateReadingTime, formatReadingTime } from "@/lib/reading-time";
 import { articleSchema, breadcrumbSchema, jsonLdScript } from "@/lib/seo-jsonld";
 
 // OPT-9 ISR：公開文章每 5 分鐘 revalidate，省掉每次造訪都打 DB（瀏覽數/留言/反應都走 client component、不受影響）
@@ -72,6 +74,21 @@ export default async function ArticlePage({
   const name = blog.profile?.display_name || blog.profile?.username || "用戶";
   const articleUrl = `${SITE_URL}/blogs/${userSlug}/${articleSlug}`;
 
+  // 閱讀時間（從內文 HTML 去標籤估）
+  const plainText = (article.content || "").replace(/<[^>]+>/g, " ");
+  const readMinutes = estimateReadingTime(plainText);
+
+  // 同作者其他文章（文末「更多文章」）
+  const adminSb = createSupabaseAdmin();
+  const { data: moreArticles } = await adminSb
+    .from("user_blog_articles")
+    .select("title, slug, summary, cover_image, view_count, published_at")
+    .eq("user_id", blog.settings.user_id)
+    .eq("is_public", true)
+    .neq("id", article.id)
+    .order("published_at", { ascending: false })
+    .limit(4);
+
   // JSON-LD: Article + BreadcrumbList
   const ld = [
     articleSchema({
@@ -113,7 +130,7 @@ export default async function ArticlePage({
 
       {/* 封面 */}
       {article.cover_image && (
-        <div className="relative w-full h-60 sm:h-80 mb-6 rounded-2xl overflow-hidden">
+        <div className="relative w-full h-60 sm:h-80 mb-6 rounded-2xl overflow-hidden shadow-xl ring-1 ring-border">
           <Image
             src={article.cover_image}
             alt=""
@@ -130,39 +147,32 @@ export default async function ArticlePage({
       {/* 標題區 */}
       <header className="mb-8">
         {article.category && (
-          <span className="text-sm text-accent font-medium">{article.category}</span>
+          <span className="inline-block text-[11px] font-bold tracking-wider uppercase text-accent bg-accent/10 px-2.5 py-1 rounded-full">
+            {article.category}
+          </span>
         )}
-        <h1 className="text-3xl sm:text-4xl font-bold mt-1 mb-3">{article.title}</h1>
+        <h1 className="text-3xl sm:text-5xl font-extrabold leading-[1.15] tracking-tight mt-3 mb-4">{article.title}</h1>
         {article.summary && (
-          <p className="text-lg text-fg-muted mb-4">{article.summary}</p>
+          <p className="text-lg sm:text-xl text-fg-muted leading-relaxed mb-5">{article.summary}</p>
         )}
-        <div className="flex items-center gap-3 text-sm text-fg-muted flex-wrap">
-          <span className="flex items-center gap-1">
+        <div className="flex items-center gap-x-4 gap-y-2 text-sm text-fg-muted flex-wrap border-y border-border py-3">
+          <span className="flex items-center gap-1.5 font-medium text-fg">
             {blog.profile?.avatar_url ? (
-              <Image
-                src={blog.profile.avatar_url}
-                alt=""
-                width={20}
-                height={20}
-                unoptimized
-                className="w-5 h-5 rounded-full object-cover"
-              />
-            ) : null}
+              <Image src={blog.profile.avatar_url} alt="" width={24} height={24} unoptimized className="w-6 h-6 rounded-full object-cover" />
+            ) : (
+              <span className="w-6 h-6 rounded-full bg-gradient-to-br from-accent to-accent-2 flex items-center justify-center text-[11px] font-bold text-black">{name[0]}</span>
+            )}
             {name}
           </span>
-          <span className="flex items-center gap-1">
-            <Calendar size={13} />
-            {new Date(article.published_at).toLocaleDateString("zh-TW")}
-          </span>
-          <span className="flex items-center gap-1">
-            <Eye size={13} /> {article.view_count}
-          </span>
+          <span className="flex items-center gap-1"><Calendar size={13} />{new Date(article.published_at).toLocaleDateString("zh-TW")}</span>
+          <span className="flex items-center gap-1"><Clock size={13} /> {formatReadingTime(readMinutes)}</span>
+          <span className="flex items-center gap-1"><Eye size={13} /> {article.view_count}</span>
         </div>
       </header>
 
       {/* 內文 */}
       <div
-        className="prose-custom max-w-none"
+        className="prose-custom prose-lg max-w-none"
         dangerouslySetInnerHTML={{ __html: sanitizeRichHtmlStrict(article.content) }}
       />
 
@@ -181,36 +191,64 @@ export default async function ArticlePage({
       {article.tags?.length > 0 && (
         <div className="flex flex-wrap gap-1.5 mt-8 pt-6 border-t border-border">
           {article.tags.map((t: string) => (
-            <span key={t} className="text-xs px-2 py-1 rounded-full bg-bg-elevated text-fg-muted">
+            <Link
+              key={t}
+              href={`/blogs/${userSlug}?tag=${encodeURIComponent(t)}`}
+              className="text-xs px-2.5 py-1 rounded-full bg-bg-elevated text-fg-muted hover:bg-accent/10 hover:text-accent transition"
+            >
               #{t}
-            </span>
+            </Link>
           ))}
         </div>
       )}
 
       {/* 作者卡 */}
-      <div className="mt-8 p-5 rounded-xl bg-bg-card border border-border flex items-center gap-4">
+      <div className="mt-8 p-5 rounded-2xl bg-gradient-to-br from-bg-card to-bg-elevated border border-border flex items-start gap-4">
         {blog.profile?.avatar_url ? (
-          <Image
-            src={blog.profile.avatar_url}
-            alt=""
-            width={48}
-            height={48}
-            unoptimized
-            className="w-12 h-12 rounded-full object-cover"
-          />
+          <Image src={blog.profile.avatar_url} alt="" width={56} height={56} unoptimized className="w-14 h-14 rounded-full object-cover ring-2 ring-accent/30" />
         ) : (
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-accent to-accent-2 flex items-center justify-center font-bold text-black">
-            {name[0]}
-          </div>
+          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-accent to-accent-2 flex items-center justify-center font-bold text-xl text-black">{name[0]}</div>
         )}
-        <div className="min-w-0">
-          <div className="font-bold">{name}</div>
-          <Link href={`/blogs/${userSlug}`} className="text-sm text-accent">
-            看更多文章 →
-          </Link>
+        <div className="min-w-0 flex-1">
+          <div className="font-bold text-lg">{name}</div>
+          {blog.settings.blog_desc && <p className="text-sm text-fg-muted mt-0.5 line-clamp-2">{blog.settings.blog_desc}</p>}
+          <Link href={`/blogs/${userSlug}`} className="inline-block text-sm text-accent font-medium mt-1.5 hover:underline">看更多文章 →</Link>
         </div>
       </div>
+
+      {/* 訂閱 */}
+      <div className="mt-6 p-5 rounded-2xl bg-accent/5 border border-accent/20 text-center">
+        <div className="font-bold mb-1">📬 喜歡這篇？訂閱 {name} 的新文章</div>
+        <p className="text-xs text-fg-muted mb-3">有新文章發布時通知你、不漏接。</p>
+        <div className="max-w-sm mx-auto"><SubscribeForm userSlug={userSlug} /></div>
+      </div>
+
+      {/* 更多文章 */}
+      {moreArticles && moreArticles.length > 0 && (
+        <section className="mt-10 pt-8 border-t border-border">
+          <h2 className="text-xl font-bold mb-4">📚 {name} 的更多文章</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {moreArticles.map((m: any) => (
+              <Link
+                key={m.slug}
+                href={`/blogs/${userSlug}/${m.slug}`}
+                className="group rounded-xl border border-border bg-bg-card overflow-hidden hover:border-accent/50 transition flex flex-col"
+              >
+                {m.cover_image && (
+                  <div className="relative w-full h-32 overflow-hidden">
+                    <Image src={m.cover_image} alt="" fill unoptimized sizes="400px" className="object-cover group-hover:scale-105 transition" />
+                  </div>
+                )}
+                <div className="p-3 flex-1">
+                  <h3 className="font-bold text-sm line-clamp-2 group-hover:text-accent transition">{m.title}</h3>
+                  {m.summary && <p className="text-xs text-fg-muted mt-1 line-clamp-2">{m.summary}</p>}
+                  <div className="text-[10px] text-fg-muted mt-2 flex items-center gap-1"><Eye size={10} /> {m.view_count} · {new Date(m.published_at).toLocaleDateString("zh-TW")}</div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* 留言區 */}
       <CommentSection userSlug={userSlug} articleSlug={articleSlug} />
