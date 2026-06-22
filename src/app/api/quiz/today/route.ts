@@ -97,14 +97,21 @@ export async function GET() {
   const sinceDate = new Date(Date.now() - RECENT_DAYS * 86_400_000).toISOString().slice(0, 10);
   const { data: recentAttempts } = await supabase
     .from("daily_quiz_attempts")
-    .select("questions")
+    .select("questions, correct, total, submitted_at")
     .eq("user_id", user.id)
     .gte("quiz_date", sinceDate);
   const recentIds = new Set<string>();
+  let answeredCorrect = 0, answeredTotal = 0;
   for (const a of recentAttempts ?? []) {
     const qs = Array.isArray((a as any).questions) ? (a as any).questions : [];
     for (const q of qs) if (q?.source_id) recentIds.add(String(q.source_id));
+    if ((a as any).submitted_at && (a as any).total) {
+      answeredCorrect += (a as any).correct ?? 0;
+      answeredTotal += (a as any).total;
+    }
   }
+  // 近期答對率（用來把難度往上/往下調）
+  const recentAccuracy = answeredTotal > 0 ? answeredCorrect / answeredTotal : null;
 
   // 學過的 lesson
   const { data: progress } = await supabase
@@ -113,16 +120,20 @@ export async function GET() {
     .eq("user_id", user.id);
   const completedSet = new Set((progress ?? []).map((p: any) => p.lesson_id as string));
 
-  const leetcodeCount = Math.floor(TOTAL_QUESTIONS * LEETCODE_RATIO);
+  // ELO + 近期答對率 → 自適應難度
+  const { data: profileRow } = await supabase.from("profiles").select("elo_rating").eq("id", user.id).single();
+  const userR = (profileRow as any)?.elo_rating ?? ELO_DEFAULT;
+  // 近期答對率高（>0.7）→ 目標難度上調、低 → 下調（比純 ELO 更快反應「最近表現」）
+  const effectiveR = recentAccuracy == null ? userR
+    : Math.max(800, Math.min(2200, Math.round(userR + (recentAccuracy - 0.7) * 300)));
+  // 新手（rating 低）多給親民的章節題、進階多給 leetcode
+  const leetRatio = effectiveR < 1000 ? 0.375 : effectiveR > 1400 ? 0.625 : LEETCODE_RATIO;
+  const leetcodeCount = Math.round(TOTAL_QUESTIONS * leetRatio);
   const chapterCount = TOTAL_QUESTIONS - leetcodeCount;
 
   // 章節題池 → 優先抽沒出過的
   const chapterPool = buildChapterPool(completedSet);
   const chapterQs = pickPreferFresh(chapterPool, chapterCount, recentIds);
-
-  // ELO 自適應 leetcode：拿用戶 elo_rating、優先在沒出過的題裡挑
-  const { data: profileRow } = await supabase.from("profiles").select("elo_rating").eq("id", user.id).single();
-  const userR = (profileRow as any)?.elo_rating ?? ELO_DEFAULT;
 
   const { data: leetcode } = await supabase
     .from("leetcode_questions")
@@ -132,13 +143,13 @@ export async function GET() {
 
   const leetAll = (leetcode as any[]) ?? [];
   const leetFresh = leetAll.filter((l) => !recentIds.has(String(l.id)));
-  let leetPicked = pickQuestions(leetFresh, userR, leetcodeCount);
+  let leetPicked = pickQuestions(leetFresh, effectiveR, leetcodeCount);
   if (leetPicked.length < leetcodeCount) {
     // 沒出過的不夠 → 從全部（含最近出過）補、去掉已選
     const chosen = new Set(leetPicked.map((x: any) => String(x.id)));
     leetPicked = [
       ...leetPicked,
-      ...pickQuestions(leetAll.filter((l) => !chosen.has(String(l.id))), userR, leetcodeCount - leetPicked.length),
+      ...pickQuestions(leetAll.filter((l) => !chosen.has(String(l.id))), effectiveR, leetcodeCount - leetPicked.length),
     ];
   }
   const leetcodeQs: QuizQuestion[] = leetPicked.map(toLeetQuestion);
@@ -159,7 +170,7 @@ export async function GET() {
     const usedLeet = new Set(leetPicked.map((x: any) => String(x.id)));
     const more = pickQuestions(
       leetAll.filter((l) => !usedLeet.has(String(l.id))),
-      userR,
+      effectiveR,
       TOTAL_QUESTIONS - questions.length,
     ).map(toLeetQuestion);
     questions = [...questions, ...more];
