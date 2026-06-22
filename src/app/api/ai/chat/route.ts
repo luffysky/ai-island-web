@@ -340,7 +340,9 @@ async function handlePost(req: NextRequest) {
           model: model.model_name,
           apiKey,
           messages,
-          maxTokens: 2000,
+          // 放寬回覆長度：原本 2000 常把教學長答案切掉。8192 是各家模型（Haiku/Sonnet/
+          // GPT-4o/Gemini/Llama）都支援的輸出上限、實務上等於「不限制」一般問答。
+          maxTokens: 8192,
         })) {
           if (chunk.type === "text" && chunk.text) {
             fullText += chunk.text;

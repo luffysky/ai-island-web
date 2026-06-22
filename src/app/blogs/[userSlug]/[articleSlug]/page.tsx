@@ -27,7 +27,7 @@ async function getArticle(userSlug: string, articleSlug: string) {
     .from("user_blog_articles")
     .select("*")
     .eq("user_id", blog.settings.user_id)
-    .eq("slug", articleSlug)
+    .ilike("slug", articleSlug)
     .eq("is_public", true)
     .maybeSingle();
   if (!article) return null;

@@ -41,6 +41,7 @@ const nextConfig = {
       { protocol: 'https', hostname: 'avatars.githubusercontent.com' }, // GitHub OAuth avatar
       { protocol: 'https', hostname: 'gravatar.com' },
       { protocol: 'https', hostname: 'www.gravatar.com' },
+      { protocol: 'https', hostname: '*.r2.dev' }, // Cloudflare R2 公開圖（上傳的封面/附件靠這顯示）
     ],
   },
 };

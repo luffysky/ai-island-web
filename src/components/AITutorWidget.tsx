@@ -369,8 +369,9 @@ export function AITutorWidget({
     handleFiles(e.dataTransfer.files);
   };
 
-  const send = async () => {
-    if ((!input.trim() && images.length === 0) || sending) return;
+  const send = async (overrideText?: string) => {
+    const baseText = overrideText ?? input;
+    if ((!baseText.trim() && images.length === 0) || sending) return;
     if (!isLoggedIn) {
       setError("請先登入才能使用 AI 導師");
       return;
@@ -380,11 +381,15 @@ export function AITutorWidget({
       return;
     }
 
-    const userMsg = input.trim() || (images.length > 0 ? "（看圖回答）" : "");
-    const sendImages = images.map((img) => ({ base64: img.base64, mediaType: img.mediaType }));
-    const userImagesPreview = images.map((img) => ({ previewUrl: img.previewUrl, mediaType: img.mediaType }));
-    setInput("");
-    setImages([]);
+    // overrideText（如「繼續」）不帶圖、也不清空使用者正在打的字
+    const useImages = !overrideText;
+    const userMsg = baseText.trim() || (useImages && images.length > 0 ? "（看圖回答）" : "");
+    const sendImages = useImages ? images.map((img) => ({ base64: img.base64, mediaType: img.mediaType })) : [];
+    const userImagesPreview = useImages ? images.map((img) => ({ previewUrl: img.previewUrl, mediaType: img.mediaType })) : [];
+    if (!overrideText) {
+      setInput("");
+      setImages([]);
+    }
     setError("");
     const now = new Date().toISOString();
     setMessages((prev) => [...prev,
@@ -1195,6 +1200,16 @@ export function AITutorWidget({
                     </>
                   )}
                 </div>
+                {/* 「繼續」：回覆若被截斷、一鍵讓綠寶從中斷處接著寫（最後一則 AI 訊息、非傳送中才顯示） */}
+                {m.role === "assistant" && m.content && !sending && m._i === messages.length - 1 && (
+                  <button
+                    onClick={() => send("請接續上一則回答被中斷的地方繼續寫，不要重複前面已經講過的內容。")}
+                    className="mt-1 px-2.5 py-1 rounded-full border border-accent/40 bg-accent/10 text-[11px] text-accent hover:bg-accent/20 transition"
+                    title="如果上面回答被截斷、點這讓綠寶接著寫"
+                  >
+                    ↪ 繼續回答
+                  </button>
+                )}
               </div>
             ))}
             {sending && messages[messages.length - 1]?.role === "assistant" && !messages[messages.length - 1]?.content && (
@@ -1281,7 +1296,7 @@ export function AITutorWidget({
                 style={{ maxHeight: "120px" }}
               />
               <button
-                onClick={send}
+                onClick={() => send()}
                 disabled={(!input.trim() && images.length === 0) || sending || authState !== "in"}
                 className="p-2 bg-accent text-black rounded-lg hover:scale-105 transition disabled:opacity-30 disabled:hover:scale-100"
               >

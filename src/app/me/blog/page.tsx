@@ -155,6 +155,16 @@ export default function MyBlogPage() {
                 </div>
               </div>
               <div className="flex gap-1 shrink-0">
+                {a.is_public && blogUrl !== "#" && (
+                  <Link
+                    href={`${blogUrl}/${a.slug}` as any}
+                    target="_blank"
+                    className="px-3 py-1.5 rounded-lg bg-bg-elevated text-sm hover:text-accent transition flex items-center gap-1"
+                    title="在新分頁查看公開文章"
+                  >
+                    <ExternalLink size={13} /> 查看
+                  </Link>
+                )}
                 <Link
                   href={`/me/blog/edit/${a.id}`}
                   className="px-3 py-1.5 rounded-lg bg-bg-elevated text-sm hover:text-accent transition"

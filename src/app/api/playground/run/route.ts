@@ -100,6 +100,16 @@ export async function POST(req: NextRequest) {
 
     if (!res.ok) {
       const txt = await res.text();
+      // 2026-02-15 起公開 Piston（emkc.org）改白名單制、未自架會回 401 + "whitelist only"。
+      // 給清楚訊息、引導設定自架 PISTON_BASE_URL（見 docs/piston-selfhost.md）。
+      const usingPublic = !process.env.PISTON_BASE_URL;
+      if (usingPublic && (res.status === 401 || res.status === 403 || /whitelist/i.test(txt))) {
+        return NextResponse.json({
+          error: "程式執行服務暫時停用中：公開 Piston 已改白名單制。管理員需自架 Piston 並設定 PISTON_BASE_URL（見 docs/piston-selfhost.md）。",
+          detail: txt.slice(0, 300),
+          code: "piston_whitelisted",
+        }, { status: 503 });
+      }
       return NextResponse.json({ error: `Piston 錯誤：${res.status}`, detail: txt }, { status: 502 });
     }
 

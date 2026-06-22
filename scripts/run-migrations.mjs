@@ -79,6 +79,8 @@ const MIGRATIONS = [
   "stripe_migration.sql",
   // 2026-06-18 — 學習進度細節跨裝置同步（reading_position current+furthest / lesson_engagement 捲動深度·停留·掌握）
   "learning_progress_detail_migration.sql",
+  // 2026-06-19 — AI 模型清單更新（gemini-2.0 下架、各家補新選項）
+  "ai_models_refresh_2026_06.sql",
 ];
 
 // 從 .env.local 讀（不依賴 dotenv pkg）
