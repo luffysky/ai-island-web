@@ -1,6 +1,7 @@
 "use client";
 
 import { useEditor, EditorContent, type Editor } from "@tiptap/react";
+import { Node as TiptapNode } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import Link from "@tiptap/extension-link";
@@ -25,11 +26,44 @@ import {
   Link as LinkIcon, Image as ImageIcon, Table as TableIcon, Undo, Redo,
   Highlighter, AlignLeft, AlignCenter, AlignRight,
   FileCode, Minus, CheckSquare, Upload, Loader2, Baseline, Type,
+  Video as VideoIcon, Music,
 } from "lucide-react";
 import { TextStyleColorSize } from "@/lib/tiptap-text-style";
 import { useToast } from "@/components/ui/Toast";
 
 const lowlight = createLowlight(common);
+
+// 影片節點：可上傳 MP4/WebM、文章內直接播放
+const VideoNode = TiptapNode.create({
+  name: "video",
+  group: "block",
+  atom: true,
+  draggable: true,
+  selectable: true,
+  addAttributes() {
+    return { src: { default: null }, controls: { default: true } };
+  },
+  parseHTML() { return [{ tag: "video[src]" }]; },
+  renderHTML({ HTMLAttributes }) {
+    return ["video", { controls: "true", preload: "metadata", playsinline: "true", class: "rounded-lg max-w-full my-3", ...HTMLAttributes }];
+  },
+});
+
+// 音訊節點：可上傳 MP3/WAV/M4A、文章內直接播放
+const AudioNode = TiptapNode.create({
+  name: "audio",
+  group: "block",
+  atom: true,
+  draggable: true,
+  selectable: true,
+  addAttributes() {
+    return { src: { default: null }, controls: { default: true } };
+  },
+  parseHTML() { return [{ tag: "audio[src]" }]; },
+  renderHTML({ HTMLAttributes }) {
+    return ["audio", { controls: "true", preload: "metadata", class: "w-full my-3", ...HTMLAttributes }];
+  },
+});
 
 interface BlogEditorProps {
   content: string;
@@ -47,6 +81,8 @@ export function BlogEditor({ content, onChange, placeholder, editable = true }: 
       Placeholder.configure({ placeholder: placeholder ?? "開始寫你的文章..." }),
       Link.configure({ openOnClick: false, HTMLAttributes: { class: "text-accent underline" } }),
       Image.configure({ HTMLAttributes: { class: "rounded-lg max-w-full" } }),
+      VideoNode,
+      AudioNode,
       Underline,
       TextStyleColorSize,
       Highlight.configure({ multicolor: false }),
@@ -106,6 +142,8 @@ function Toolbar({ editor }: { editor: Editor }) {
 
   const toast = useToast();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const videoInputRef = useRef<HTMLInputElement | null>(null);
+  const audioInputRef = useRef<HTMLInputElement | null>(null);
   const [uploading, setUploading] = useState(false);
 
   const addLink = () => {
@@ -113,13 +151,18 @@ function Toolbar({ editor }: { editor: Editor }) {
     if (url) editor.chain().focus().setLink({ href: url }).run();
     else editor.chain().focus().unsetLink().run();
   };
+  // 上傳圖 / 影 / 音，依類型插入對應節點（文章內直接播放）
   const uploadAndInsert = async (file: File) => {
-    if (!file.type.startsWith("image/")) {
-      toast.error("只支援圖片");
+    const isImage = file.type.startsWith("image/");
+    const isVideo = file.type.startsWith("video/");
+    const isAudio = file.type.startsWith("audio/");
+    if (!isImage && !isVideo && !isAudio) {
+      toast.error("只支援 圖片 / 影片 / 音訊");
       return;
     }
-    if (file.size > 8 * 1024 * 1024) {
-      toast.error("檔案不可超過 8 MB");
+    const maxMb = isImage ? 8 : isAudio ? 20 : 50;
+    if (file.size > maxMb * 1024 * 1024) {
+      toast.error(`檔案不可超過 ${maxMb} MB`);
       return;
     }
     setUploading(true);
@@ -131,7 +174,9 @@ function Toolbar({ editor }: { editor: Editor }) {
       credentials: "include", method: "POST", body: fd });
       const j = await res.json();
       if (!res.ok) throw new Error(j.message || j.error || "上傳失敗");
-      editor.chain().focus().setImage({ src: j.url }).run();
+      if (isImage) editor.chain().focus().setImage({ src: j.url }).run();
+      else if (isVideo) editor.chain().focus().insertContent(`<video src="${j.url}" controls></video>`).run();
+      else editor.chain().focus().insertContent(`<audio src="${j.url}" controls></audio>`).run();
       toast.success("已插入");
     } catch (e: any) {
       toast.error(e?.message || "上傳失敗");
@@ -139,26 +184,27 @@ function Toolbar({ editor }: { editor: Editor }) {
       setUploading(false);
     }
   };
-  const onPickImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onPickFile = (e: React.ChangeEvent<HTMLInputElement>, ref: React.RefObject<HTMLInputElement | null>) => {
     const f = e.target.files?.[0];
     if (f) uploadAndInsert(f);
-    if (fileInputRef.current) fileInputRef.current.value = "";
+    if (ref.current) ref.current.value = "";
   };
   // 拖放 / 貼上圖片到編輯器 → 自動上傳
   useEffect(() => {
     const el = (editor.view.dom as HTMLElement);
+    const isMedia = (f?: File | null) => !!f && (f.type.startsWith("image/") || f.type.startsWith("video/") || f.type.startsWith("audio/"));
     const onDrop = (e: DragEvent) => {
       const f = e.dataTransfer?.files?.[0];
-      if (f && f.type.startsWith("image/")) {
+      if (isMedia(f)) {
         e.preventDefault();
-        uploadAndInsert(f);
+        uploadAndInsert(f!);
       }
     };
     const onPaste = (e: ClipboardEvent) => {
       const f = e.clipboardData?.files?.[0];
-      if (f && f.type.startsWith("image/")) {
+      if (isMedia(f)) {
         e.preventDefault();
-        uploadAndInsert(f);
+        uploadAndInsert(f!);
       }
     };
     el.addEventListener("drop", onDrop);
@@ -217,7 +263,39 @@ function Toolbar({ editor }: { editor: Editor }) {
         type="file"
         accept="image/jpeg,image/png,image/webp,image/gif"
         className="hidden"
-        onChange={onPickImage}
+        onChange={(e) => onPickFile(e, fileInputRef)}
+      />
+      <button
+        type="button"
+        onClick={() => videoInputRef.current?.click()}
+        disabled={uploading}
+        className={btn(false)}
+        title="上傳影片（MP4 / WebM / MOV，≤ 50MB、文章內直接播放）"
+      >
+        <VideoIcon size={16} />
+      </button>
+      <input
+        ref={videoInputRef}
+        type="file"
+        accept="video/mp4,video/webm,video/quicktime,video/ogg"
+        className="hidden"
+        onChange={(e) => onPickFile(e, videoInputRef)}
+      />
+      <button
+        type="button"
+        onClick={() => audioInputRef.current?.click()}
+        disabled={uploading}
+        className={btn(false)}
+        title="上傳音樂 / 音訊（MP3 / WAV / M4A / OGG，≤ 20MB、文章內直接播放）"
+      >
+        <Music size={16} />
+      </button>
+      <input
+        ref={audioInputRef}
+        type="file"
+        accept="audio/mpeg,audio/wav,audio/ogg,audio/mp4,audio/x-m4a,audio/aac,audio/webm"
+        className="hidden"
+        onChange={(e) => onPickFile(e, audioInputRef)}
       />
       <button type="button" onClick={addTable} className={btn(false)} title="表格"><TableIcon size={16} /></button>
       <Sep />

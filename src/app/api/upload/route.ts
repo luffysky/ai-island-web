@@ -7,14 +7,21 @@ import { rateLimit } from "@/lib/rate-limit";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-const ALLOWED_TYPES = new Set([
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-  "image/gif",
-  "image/svg+xml",
-]);
-const MAX_SIZE = 8 * 1024 * 1024; // 8 MB
+const MB = 1024 * 1024;
+const IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif", "image/svg+xml"]);
+const VIDEO_TYPES = new Set(["video/mp4", "video/webm", "video/quicktime", "video/ogg"]);
+const AUDIO_TYPES = new Set(["audio/mpeg", "audio/mp3", "audio/wav", "audio/x-wav", "audio/ogg", "audio/webm", "audio/mp4", "audio/x-m4a", "audio/aac"]);
+const MAX_SIZE: Record<"image" | "video" | "audio", number> = {
+  image: 8 * MB,
+  audio: 20 * MB,
+  video: 50 * MB,
+};
+function mediaKind(t: string): "image" | "video" | "audio" | null {
+  if (IMAGE_TYPES.has(t)) return "image";
+  if (VIDEO_TYPES.has(t)) return "video";
+  if (AUDIO_TYPES.has(t)) return "audio";
+  return null;
+}
 
 const ALLOWED_FOLDERS = new Set([
   "avatar",
@@ -62,11 +69,13 @@ export async function POST(req: NextRequest) {
   if (!(file instanceof File)) {
     return NextResponse.json({ error: "file_required" }, { status: 400 });
   }
-  if (!ALLOWED_TYPES.has(file.type)) {
-    return NextResponse.json({ error: "type_not_allowed", message: "只接受 JPG / PNG / WebP / GIF / SVG" }, { status: 400 });
+  const kind = mediaKind(file.type);
+  if (!kind) {
+    return NextResponse.json({ error: "type_not_allowed", message: "只接受 圖片(JPG/PNG/WebP/GIF/SVG) / 影片(MP4/WebM/MOV) / 音訊(MP3/WAV/OGG/M4A)" }, { status: 400 });
   }
-  if (file.size > MAX_SIZE) {
-    return NextResponse.json({ error: "too_large", message: "檔案不可超過 8 MB" }, { status: 400 });
+  if (file.size > MAX_SIZE[kind]) {
+    const mb = Math.round(MAX_SIZE[kind] / MB);
+    return NextResponse.json({ error: "too_large", message: `${kind === "image" ? "圖片" : kind === "video" ? "影片" : "音訊"}不可超過 ${mb} MB` }, { status: 400 });
   }
   const folder = ALLOWED_FOLDERS.has(folderInput) ? folderInput : "misc";
 

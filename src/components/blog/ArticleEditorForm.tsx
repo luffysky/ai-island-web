@@ -8,10 +8,12 @@ import { ImageUploader } from "@/components/ui/ImageUploader";
 import { Save, Globe, Lock, ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/components/ui/Toast";
+import { slugify } from "@/lib/blog-types";
 
 interface ArticleFormData {
   id?: string;
   title: string;
+  slug: string;
   summary: string;
   content: string;
   cover_image: string;
@@ -31,6 +33,7 @@ export function ArticleEditorForm({ initial }: { initial?: Partial<ArticleFormDa
   const [data, setData] = useState<ArticleFormData>({
     id: initial?.id,
     title: initial?.title ?? "",
+    slug: (initial as any)?.slug ?? "",
     summary: initial?.summary ?? "",
     content: initial?.content ?? "",
     cover_image: initial?.cover_image ?? "",
@@ -45,6 +48,8 @@ export function ArticleEditorForm({ initial }: { initial?: Partial<ArticleFormDa
   const [tagInput, setTagInput] = useState("");
   const [saving, setSaving] = useState(false);
   const [showMeta, setShowMeta] = useState(false);
+  // 還沒手動改過 slug → 跟著標題自動產生（已存在的文章預設視為「已自訂」、不亂動）
+  const [slugTouched, setSlugTouched] = useState(!!(initial as any)?.slug);
   const [seriesList, setSeriesList] = useState<{ id: string; title: string }[]>([]);
 
   useEffect(() => {
@@ -128,10 +133,38 @@ export function ArticleEditorForm({ initial }: { initial?: Partial<ArticleFormDa
       {/* 標題 */}
       <input
         value={data.title}
-        onChange={(e) => set("title", e.target.value)}
+        onChange={(e) => {
+          const title = e.target.value;
+          setData((d) => ({
+            ...d,
+            title,
+            // slug 還沒被手動改過 → 自動跟著標題生成
+            slug: slugTouched ? d.slug : slugify(title),
+          }));
+        }}
         placeholder="文章標題"
-        className="w-full bg-transparent text-3xl font-bold mb-3 outline-none placeholder:text-fg-muted/40"
+        className="w-full bg-transparent text-3xl font-bold mb-2 outline-none placeholder:text-fg-muted/40"
       />
+
+      {/* 網址 slug（可自訂；發布後的文章連結就用這個）*/}
+      <div className="flex items-center gap-1.5 mb-3 text-sm">
+        <span className="text-fg-muted shrink-0 font-mono text-xs">/blogs/你/</span>
+        <input
+          value={data.slug}
+          onChange={(e) => { setSlugTouched(true); set("slug", e.target.value); }}
+          onBlur={(e) => set("slug", slugify(e.target.value))}
+          placeholder="article-slug"
+          className="flex-1 bg-bg-card border border-border rounded-lg px-2.5 py-1.5 text-sm font-mono outline-none focus:border-accent"
+        />
+        {data.slug && (
+          <button
+            type="button"
+            onClick={() => { setSlugTouched(false); set("slug", slugify(data.title)); }}
+            className="shrink-0 text-xs text-fg-muted hover:text-accent"
+            title="改回用標題自動產生"
+          >↺ 重設</button>
+        )}
+      </div>
 
       {/* 摘要 */}
       <textarea

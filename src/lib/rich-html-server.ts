@@ -18,6 +18,8 @@ const ALLOWED_TAGS = [
   "a", "img", "span",
   "table", "thead", "tbody", "tr", "th", "td",
   "figure", "figcaption",
+  // 媒體：部落格可內嵌圖/影/音 + YouTube
+  "video", "audio", "source", "iframe",
 ];
 
 export function sanitizeRichHtmlStrict(html: unknown): string {
@@ -27,6 +29,10 @@ export function sanitizeRichHtmlStrict(html: unknown): string {
     allowedAttributes: {
       a: ["href", "title", "target", "rel"],
       img: ["src", "alt", "title", "width", "height"],
+      video: ["src", "controls", "width", "height", "poster", "preload", "loop", "muted", "playsinline", "class"],
+      audio: ["src", "controls", "preload", "loop", "class"],
+      source: ["src", "type"],
+      iframe: ["src", "width", "height", "frameborder", "allow", "allowfullscreen", "title", "class"],
       span: ["style", "class"],
       mark: ["style"],
       p: ["style", "class"],
@@ -38,7 +44,15 @@ export function sanitizeRichHtmlStrict(html: unknown): string {
     },
     // href/連結只放安全協定；img 另外放 data:（貼上時的內嵌圖）
     allowedSchemes: ["http", "https", "mailto", "tel"],
-    allowedSchemesByTag: { img: ["http", "https", "data"] },
+    allowedSchemesByTag: {
+      img: ["http", "https", "data"],
+      video: ["http", "https"],
+      audio: ["http", "https"],
+      source: ["http", "https"],
+      iframe: ["https"],
+    },
+    // iframe 只放行影片平台、擋掉任意網站內嵌（防 clickjacking / 釣魚）
+    allowedIframeHostnames: ["www.youtube.com", "youtube.com", "www.youtube-nocookie.com", "player.vimeo.com"],
     allowProtocolRelative: false,
     // 只放行視覺類 inline style，擋掉 position/expression 之類
     allowedStyles: {
