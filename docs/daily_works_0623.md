@@ -109,3 +109,27 @@
 - [ ] **GDPR `user_settings`**：表不存在、gdpr/export 默默漏該欄 → 建表 or 刪那行。
 - [ ] **（選配）自架 Piston 加速**：需 VPS（Zeabur 跑不起來、需特權）；設 `PISTON_BASE_URL`。
 - [ ] **AI 草稿語意抽查**：結構已自動驗過（1238 題 0 錯）；答案「對不對」仍建議人工抽看。
+
+---
+
+# Part 5 — 模型用量準確 + 設定頁大修（同日續）
+
+## 💰 模型用量/費用「不準」修正
+- 真因：/admin/ai/usage 的「各模型費用」只讀 `ai_model_usage`（僅 bot/排程、且幾乎空）、漏掉 web 聊天。
+- 改：合併兩個**不重疊**來源 → web 聊天 `ai_usage_daily`(接 model_id→名) + bot `ai_model_usage`。完整且不重複。
+- 釐清殘差：**命令列腳本**（章節生成 / 題庫 seed）直接用 API key、不經 App、後台看不到 → 這是「Claude 後台 $ > 後台明細」的主因（已在頁面註明）。
+- 修「測 key 顯示 unknown」：補 `testOpenRouter`/`testGroq`（原本只測 anthropic/openai/google）。
+
+## ⚙️ 系統設定頁大修
+- **修 3D 島消失**：`isIslandEnabled` 讀 `island_enabled`、但後台開關是 `feature_island_enabled` → **鍵不符**。改讀 feature_island_enabled（舊鍵 fallback）。
+- **死開關接上**：`feature_blog/forum_enabled`、`signup_enabled` 原本 **0 程式讀取**（toggle 按了沒用）。加 `isFeatureEnabled`/`isSignupEnabled` + /blogs /forum /signup 的 layout 真正 gate（關 → FeatureOffNotice）。
+- **改 on/off 開關**：SettingsEditor 所有 `*_enabled` 布林改 ToggleRow（不再 true/false JSON）。
+- **整合兩頁**：/admin/app-settings（raw CRUD）轉址到 /admin/settings（友善版、本來就 select * 全鍵）→ 留一個入口、同表不再兩處編輯。
+
+## 📦 其他
+- leetcode 題庫：93 → **374**。
+- 部署：正式機已確認在最新（/api/version = b83f2d6）；後續仍以 Zeabur Restart 拉新 image。
+
+## 📌 仍待（見 TODO.md）
+- 命令列腳本用量無法進後台（結構限制、可考慮給 script 也打 log API）。
+- PWA icon PNG、GDPR user_settings、（選配）自架 Piston。
