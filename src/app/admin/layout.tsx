@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { CollapsibleAside } from "./CollapsibleAside";
 import { LottieBackground } from "@/components/admin/LottieBackground";
+import { DeployVersionBadge } from "@/components/admin/DeployVersionBadge";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { checkOwner, OWNER_NAME_TW } from "@/lib/is-owner";
 import { NavGroup } from "./NavGroup";
@@ -87,12 +88,15 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               </p>
             </div>
           </div>
-          <Link
-            href="/"
-            className="text-sm text-fg-muted hover:text-accent transition px-3 py-1.5 rounded-full hover:bg-bg-elevated"
-          >
-            ← 回前台
-          </Link>
+          <div className="flex items-center gap-2">
+            {isOwner && <DeployVersionBadge />}
+            <Link
+              href="/"
+              className="text-sm text-fg-muted hover:text-accent transition px-3 py-1.5 rounded-full hover:bg-bg-elevated"
+            >
+              ← 回前台
+            </Link>
+          </div>
         </div>
 
       <div className="flex gap-6">

@@ -28,9 +28,9 @@
 ---
 
 ## 🔴 待林董處理（非程式、要你決定 / 設定）
-- [ ] **確認部署**：GitHub Actions 頁看紅 run 卡在 build 還是 redeploy / 分鐘是否用光；Zeabur 手動 Restart 拉 `:latest`。驗證：`/api/upload/presign` 不再 404。
-- [ ] **R2 CORS**：presigned 直傳要在 Cloudflare R2 bucket 設 CORS 允許本站 origin PUT，否則影片直傳會失敗。
-- [ ] **2 個 owner 帳號**：luffysky00 + luffysky004 都 is_owner=true。要不要撤掉 004？
+- [ ] **確認部署**：Zeabur 手動 Restart 拉 `:latest`；驗證 `…/api/version` commit 是最新、或 `/api/upload/presign` 不再 404。（admin header 右上已有 🚀 版本角標可一眼看。）
+- [x] **R2 CORS**：林董已設好（含 PUT、localhost + 正式機 origin）。
+- [x] **2 個 owner 帳號**：已收斂 → luffysky004 改 member、luffysky00 唯一 owner。
 
 ## 🟠 技術債 / 健壯性
 - [x] **AI 草稿抽查（自動化）**：`scripts/audit-miniquiz.mjs` 結構抽查 1238 題 → 0 錯 0 警。語意正確性仍建議人工抽看。
