@@ -1,5 +1,10 @@
 # 自架 Piston（程式碼沙盒）
 
+> ⚙️ **目前狀態（2026-06）**：沙盒預設用 **Wandbox**（免費免 key、已可用）。
+> 自架 Piston 屬「**選配的加速 / 備援**」。一旦設了 `PISTON_BASE_URL`：
+> **Piston 為主、Wandbox 為備**（Piston 掛掉 / 某語言沒裝 / 9 秒沒回 → 自動退回 Wandbox）。
+> 不設則純用 Wandbox。回應的 `via` 欄位會標明這次是哪個後端執行的。
+
 ## 為什麼要自架
 
 `/api/playground/run` 用 [Piston](https://github.com/engineer-man/piston) 跑 30+ 語言程式碼（Python 已用 Pyodide、其他語言走 Piston）。
@@ -60,8 +65,22 @@ PISTON_BASE_URL=https://piston-yourname.zeabur.app/api/v2/piston
 ```
 （注意：要含 `/api/v2/piston`、`/api/playground/run/route.ts` 會自動加 `/execute`）
 
+### 5b.（選）用自己的網域、不要 zeabur.app
+**可以**。`PISTON_BASE_URL` 填什麼網域都行、code 只是對它發 fetch。步驟：
+1. Piston 服務 → Zeabur **Networking → Domains → Add Domain**，填子網域、例如 `piston.snowrealm.pet`。
+2. 到你的 DNS（Cloudflare 等）照 Zeabur 給的指示加 **CNAME**（指到 Zeabur 提供的目標）。
+   - 用 Cloudflare 的話、那筆 CNAME 建議設 **DNS only（灰雲、不要開橘色 proxy）**；開 proxy 有時會擋非標準路徑/逾時。
+3. 等憑證簽好（Zeabur 自動）、之後 env 改填：
+```
+PISTON_BASE_URL=https://piston.snowrealm.pet/api/v2/piston
+```
+> 一樣要含 `/api/v2/piston`、結尾**不要**加斜線（code 會自己接 `/execute`）。
+> 不論 `*.zeabur.app` 或自訂網域、行為完全一樣。
+
 ### 6. 驗證
-打開 `https://ai-island-web.snowrealm.pet/admin` 後台、進任一章節 playground、跑 Go / Rust hello world、應該回應 < 2 秒。
+- 後台進任一章節 playground、跑 Go / Rust hello world、應該回應 < 2 秒。
+- 看 `/api/playground/run` 回應的 `"via"`：是 `"piston"` 代表走自架、`"wandbox"` 代表退回備援。
+- 也可直接打 `https://你的網域/api/v2/piston/runtimes`、能列出已裝語言就代表通了。
 
 ## 替代方案
 

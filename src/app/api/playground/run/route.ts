@@ -71,8 +71,19 @@ type RunOut = {
   via: string;
 };
 
+// 帶 timeout 的 fetch：自架 Piston 若卡住、要快點失敗才能退回 Wandbox（不然整個請求卡到平台上限）
+async function fetchTimeout(url: string, opts: RequestInit, ms: number): Promise<Response> {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), ms);
+  try {
+    return await fetch(url, { ...opts, signal: ctrl.signal });
+  } finally {
+    clearTimeout(t);
+  }
+}
+
 async function runViaPiston(piston: string, version: string, filename: string, code: string, stdin: string): Promise<RunOut> {
-  const res = await fetch(`${PISTON_BASE}/execute`, {
+  const res = await fetchTimeout(`${PISTON_BASE}/execute`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -82,7 +93,7 @@ async function runViaPiston(piston: string, version: string, filename: string, c
       compile_timeout: 10000, run_timeout: 5000,
       compile_memory_limit: -1, run_memory_limit: -1,
     }),
-  });
+  }, 9000);
   if (!res.ok) throw new Error(`piston ${res.status}: ${(await res.text()).slice(0, 120)}`);
   const d = await res.json();
   return {
@@ -97,11 +108,11 @@ async function runViaPiston(piston: string, version: string, filename: string, c
 async function runViaWandbox(piston: string, code: string, stdin: string): Promise<RunOut> {
   const compiler = WANDBOX_COMPILER[piston];
   if (!compiler) throw new Error(`wandbox 不支援 ${piston}`);
-  const res = await fetch(WANDBOX_URL, {
+  const res = await fetchTimeout(WANDBOX_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ compiler, code, stdin: stdin ?? "" }),
-  });
+  }, 15000);
   if (!res.ok) throw new Error(`wandbox ${res.status}: ${(await res.text()).slice(0, 120)}`);
   const d = await res.json();
   const compileErr = (d.compiler_error ?? "").trim();
