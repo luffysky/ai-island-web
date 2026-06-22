@@ -11,6 +11,9 @@ import { StageMap } from "@/components/home/StageMap";
 import { MissionDungeons } from "@/components/home/MissionDungeons";
 import { TrapBosses } from "@/components/home/TrapBosses";
 
+// 不靜態快照：島嶼開關 / 章節數要能即時反映後台改動（否則 toggle 了首頁不變）。
+export const revalidate = 30;
+
 export async function generateMetadata(): Promise<Metadata> {
   // 後台 seo_pages 有 "/" override 就用 override（含 placeholder 渲染）；
   // 沒有就走 layout.tsx 的預設 metadata。
