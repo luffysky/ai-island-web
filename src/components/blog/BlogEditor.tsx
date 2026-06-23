@@ -257,23 +257,23 @@ function Toolbar({ editor }: { editor: Editor }) {
     if (f) uploadAttachment(f);
     if (attachInputRef.current) attachInputRef.current.value = "";
   };
-  // 拖放 / 貼上圖片到編輯器 → 自動上傳
+  // 拖放 / 貼上檔案到編輯器 → 自動上傳（圖/影/音內嵌、其他檔案插下載連結）
   useEffect(() => {
     const el = (editor.view.dom as HTMLElement);
-    const isMedia = (f?: File | null) => !!f && (f.type.startsWith("image/") || f.type.startsWith("video/") || f.type.startsWith("audio/"));
+    const isMedia = (f: File) => f.type.startsWith("image/") || f.type.startsWith("video/") || f.type.startsWith("audio/");
+    const handle = (f?: File | null) => {
+      if (!f) return false;
+      if (isMedia(f)) uploadAndInsert(f);
+      else uploadAttachment(f);
+      return true;
+    };
     const onDrop = (e: DragEvent) => {
       const f = e.dataTransfer?.files?.[0];
-      if (isMedia(f)) {
-        e.preventDefault();
-        uploadAndInsert(f!);
-      }
+      if (f) { e.preventDefault(); handle(f); }
     };
     const onPaste = (e: ClipboardEvent) => {
       const f = e.clipboardData?.files?.[0];
-      if (isMedia(f)) {
-        e.preventDefault();
-        uploadAndInsert(f!);
-      }
+      if (f) { e.preventDefault(); handle(f); }
     };
     el.addEventListener("drop", onDrop);
     el.addEventListener("paste", onPaste);
