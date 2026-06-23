@@ -133,3 +133,20 @@
 ## 📌 仍待（見 TODO.md）
 - 命令列腳本用量無法進後台（結構限制、可考慮給 script 也打 log API）。
 - PWA icon PNG、GDPR user_settings、（選配）自架 Piston。
+
+---
+
+# Part 6 — BYOK / 上傳全格式 / 終端 / 島嶼·章數 / 設定 / 用量準（同日續）
+
+- **模型用量準**：usage 頁改合併 web 聊天(ai_usage_daily)+bot(ai_model_usage)；殘差=CLI 腳本(章節/題庫生成)不經 App、是 Claude 後台 $>後台 主因。測 key 補 openrouter/groq。
+- **修 3D 島消失**：isIslandEnabled 讀的鍵(island_enabled)≠後台開關(feature_island_enabled)；首頁無 revalidate→靜態凍住。改讀正確鍵 + 首頁 revalidate=30。
+- **修 title 79→80 章**：chapters.ts 漏 import ch00（環境準備）。
+- **系統設定大修**：feature_blog/forum/signup 是死開關→接上真 gate(FeatureOffNotice)；布林改 on/off ToggleRow；/admin/app-settings 轉址整合進 /admin/settings。
+- **終端機可打指令**：nami-playground 預設 shell、nami-ide 加整合終端機（Wandbox 雲端 bash，實測可跑 ls/pwd/python3）。
+- **BYOK 強化**：釐清 /me/api-keys(對外金鑰) vs /settings/ai-keys(自帶模型 key)；後者加驗證(/api/user/ai-keys/test)+OpenRouter+模型提示+入口導引+側欄。
+- **上傳**：所有 accept→image/*·video/*·audio/*（手機原生相簿）；後端改 MIME 前綴判斷收所有格式；部落格加任意檔案附件(📎)+拖放/貼上。
+- **leetcode**：93 → 374。
+
+## ✅ 收尾檢查
+- ai 島 tsc 0 / build 綠；audit-db-columns 無錯接、route 全 export；本批無新增 schema、無需跑 migration。
+- insight：DB 連線正常(127 表)、無新 schema；整站卡死(SW 快取 HTML)已修+部署。
