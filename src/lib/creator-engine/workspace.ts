@@ -134,10 +134,32 @@ export async function seedSampleWorks(workspaceId: string, userId: string): Prom
       title: "範例 · 一篇短文：外婆家的米甕", work_type: "article", status: "draft",
       body: "外婆家的廚房有一個比我還高的米甕。\n\n小時候我以為那裡面住著一個世界——每次掀開蓋子，米的香氣像是從很遠的地方飄來。後來才知道，那香氣裡其實藏著外婆每天清晨的手。\n\n她走後，米甕空了。我才第一次發現，原來有些聲音，是要等到再也聽不到，才聽得見的。",
     },
+    {
+      title: "範例 · 短篇小說：未接來電 7 通", work_type: "短篇小說", status: "draft",
+      body: "手機螢幕亮起又暗下，第七通。\n\n他盯著那個名字，像盯著一道自己出的、卻解不開的題。三年前那場爭吵之後，他把她設成了拒接，又在某個喝醉的夜裡偷偷取消——只是再也沒按下回撥。\n\n第八通沒有來。取而代之的是一則簡訊：「我媽走了。她臨走前一直問你。」\n\n他第一次發現，原來世界上最遠的距離，是七通他都聽見、卻假裝沒聽見的鈴聲。",
+    },
   ];
-  await admin.from("ci_works").insert(
-    works.map((w) => ({ workspace_id: workspaceId, created_by: userId, ...w, source_type: "human_original" })),
-  ).then(() => {}, () => {});
+  const { data: inserted } = await admin.from("ci_works").insert(
+    works.map((w) => ({ workspace_id: workspaceId, created_by: userId, ...w, source_type: "ai_assisted" })),
+  ).select("id");
+  // 連到幾個碎片（讓「創作家譜」顯示由哪些碎片長成）
+  const wks = (inserted as any[]) ?? [];
+  const { data: frags } = await admin.from("ci_fragments").select("id").eq("workspace_id", workspaceId).limit(30);
+  const fids = ((frags as any[]) ?? []).map((f) => f.id);
+  if (fids.length) {
+    const links: any[] = [];
+    wks.forEach((w, wi) => {
+      for (let i = 0; i < 3; i++) { const fid = fids[(wi * 3 + i) % fids.length]; if (fid) links.push({ work_id: w.id, fragment_id: fid, position: i }); }
+    });
+    if (links.length) await admin.from("ci_work_fragments").insert(links).then(() => {}, () => {});
+  }
+}
+
+/** 取單一 workspace（給 ws 切換用）。 */
+export async function getWorkspaceById(id: string): Promise<Workspace | null> {
+  const admin = createSupabaseAdmin();
+  const { data } = await admin.from("ci_workspaces").select("id, name, type, visibility, owner_id, created_at").eq("id", id).maybeSingle();
+  return (data as Workspace) ?? null;
 }
 
 /** M0：active workspace = Personal Workspace（之後支援 cookie 選定）。 */

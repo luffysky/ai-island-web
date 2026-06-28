@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { isCreatorIslandEnabled } from "@/lib/app-settings";
 import { FeatureOffNotice } from "@/components/FeatureOffNotice";
-import { getOrCreatePersonalWorkspace } from "@/lib/creator-engine/workspace";
+import { getOrCreatePersonalWorkspace, getWorkspaceById, getWorkspaceRole } from "@/lib/creator-engine/workspace";
 import { listFragments } from "@/lib/creator-engine/fragments";
 import { listCollectionsWithItems } from "@/lib/creator-engine/collections";
 import { BackgroundBeams } from "@/components/ui/BackgroundBeams";
@@ -13,7 +13,7 @@ import { CreatorIslandClient } from "./CreatorIslandClient";
 // 旗標 / workspace 要即時反映
 export const dynamic = "force-dynamic";
 
-export default async function CreatorIslandPage() {
+export default async function CreatorIslandPage({ searchParams }: { searchParams: Promise<{ ws?: string }> }) {
   // 1) 功能旗標（預設關、owner 在 /admin/settings 開）
   if (!(await isCreatorIslandEnabled())) {
     return <FeatureOffNotice title="🎨 創作者島嶼即將開放" desc="這座島還在建造中，敬請期待。" />;
@@ -26,9 +26,18 @@ export default async function CreatorIslandPage() {
 
   // 3) 首次進來 lazy-create Personal Workspace（+ E2 種島）
   const personal = await getOrCreatePersonalWorkspace(user.id);
+  // 可切到自己有份的工作室（?ws=<id>）；非成員 fallback personal
+  const { ws: wsParam } = await searchParams;
+  let active = personal;
+  if (wsParam && wsParam !== personal.id) {
+    const role = await getWorkspaceRole(wsParam, user.id);
+    const target = role ? await getWorkspaceById(wsParam) : null;
+    if (target) active = target;
+  }
+  const isStudio = active.id !== personal.id;
   const [{ items: fragments }, collections] = await Promise.all([
-    listFragments(personal.id, { limit: 100 }),
-    listCollectionsWithItems(personal.id),
+    listFragments(active.id, { limit: 100 }),
+    listCollectionsWithItems(active.id),
   ]);
 
   // 4) 創作者島嶼主畫面（M3）
@@ -40,7 +49,11 @@ export default async function CreatorIslandPage() {
         <div className="relative flex items-end justify-between gap-3 flex-wrap">
           <div>
             <h1 className="text-3xl sm:text-4xl font-black bg-gradient-to-r from-amber-300 via-pink-400 to-violet-400 bg-clip-text text-transparent">🎨 創作者島嶼</h1>
-            <p className="text-sm text-fg-muted mt-1.5">把散落的碎片，變成你的創作宇宙。綠寶 ✨ 陪你一起。</p>
+            <p className="text-sm text-fg-muted mt-1.5">
+              {isStudio
+                ? <>🏢 工作室：<b className="text-fg">{active.name}</b> · <Link href="/creator-island" className="text-accent hover:underline">回我的島</Link></>
+                : "把散落的碎片，變成你的創作宇宙。綠寶 ✨ 陪你一起。"}
+            </p>
           </div>
           <nav className="flex items-center gap-1.5 text-sm flex-wrap">
             {[["/creator-island/works", "📚 作品庫"], ["/creator-island/studio", "🏢 工作室"], ["/creator-island/market", "🏪 市集"], ["/creator-island/community", "🌐 社群"], ["/creator-island/growth", "📈 成長"]].map(([href, label]) => (
@@ -51,7 +64,7 @@ export default async function CreatorIslandPage() {
       </div>
 
       {/* 創作循環：捕捉 → 凝聚/演化/編織 → 存 */}
-      <CreatorIslandClient workspaceId={personal.id} initialFragments={fragments as any} initialCollections={collections} />
+      <CreatorIslandClient workspaceId={active.id} initialFragments={fragments as any} initialCollections={collections} />
     </div>
   );
 }

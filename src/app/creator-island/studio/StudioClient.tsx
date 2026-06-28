@@ -97,7 +97,10 @@ function StudioCard({ ws, onRemoved }: { ws: Ws; onRemoved: () => void }) {
     <div className="bg-bg-card border border-border rounded-2xl p-4 space-y-2">
       <div className="flex items-center justify-between">
         <div className="font-bold flex items-center gap-2">🏢 {ws.name} <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-bg-elevated text-fg-muted">{ws.role}</span></div>
-        <button onClick={loadMembers} className="text-xs text-accent">成員</button>
+        <div className="flex items-center gap-3 text-xs">
+          <a href={`/creator-island?ws=${ws.id}`} className="px-2.5 py-1 rounded-full bg-accent text-white font-bold">進入工作室 →</a>
+          <button onClick={loadMembers} className="text-accent">成員</button>
+        </div>
       </div>
       {err && <div className="text-xs text-red-400">⚠️ {err}</div>}
       {members && (

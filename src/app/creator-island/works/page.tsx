@@ -18,6 +18,15 @@ export default async function WorksPage() {
   if (!user) redirect("/login?next=/creator-island/works");
   const ws = await getActiveWorkspace(user.id);
   const { items } = await listWorks(ws.id, { limit: 50 });
+  // 每個作品由幾個碎片長成
+  const { createSupabaseAdmin } = await import("@/lib/supabase-admin");
+  const admin = createSupabaseAdmin();
+  const ids = items.map((w) => w.id);
+  const srcCount: Record<string, number> = {};
+  if (ids.length) {
+    const { data: wf } = await admin.from("ci_work_fragments").select("work_id").in("work_id", ids);
+    for (const r of ((wf as any[]) ?? [])) srcCount[r.work_id] = (srcCount[r.work_id] ?? 0) + 1;
+  }
 
   return (
     <div className="max-w-4xl mx-auto px-6 py-10 space-y-5">
@@ -36,6 +45,7 @@ export default async function WorksPage() {
               {w.published_blog_id && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300">已發布</span>}
             </div>
             <div className="text-xs text-fg-muted mt-1 line-clamp-2">{w.body?.slice(0, 120)}</div>
+            {srcCount[w.id] > 0 && <div className="text-[11px] text-accent-3 mt-1.5">🔗 由 {srcCount[w.id]} 個碎片長成</div>}
           </Link>
         ))}
       </div>
