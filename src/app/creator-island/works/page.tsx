@@ -35,7 +35,7 @@ export default async function WorksPage() {
         <Link href="/creator-island" className="text-sm text-accent hover:underline">← 回島</Link>
       </header>
       {items.length === 0 && <div className="text-center text-fg-muted py-12 text-sm">還沒有作品。回島上把碎片「編織」成作品吧。</div>}
-      <div className="space-y-2">
+      <div className="space-y-2 max-h-[74vh] overflow-y-auto pr-1">
         {items.map((w) => (
           <Link key={w.id} href={`/creator-island/works/${w.id}`} className="block bg-bg-card border border-border rounded-xl p-4 hover:border-accent transition">
             <div className="font-bold flex items-center gap-2">

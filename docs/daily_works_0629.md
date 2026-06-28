@@ -36,7 +36,21 @@
 - **工作室可進入**：studio →自己的島（碎片/分類/迴圈獨立）。**作品庫範例**連實際碎片、顯示「由 N 個碎片長成」。
 - **後台監看** `/admin/creator-island`：活動計數 + AI 對話紀錄(ci_agent_runs) + 通知監看；AI 用量併入 /admin/ai/usage。
 - **社群升級**（參考 Insight、對接 profiles/ci_）：Phase1 8 表（貼文/限動/短影音/留言/收藏/好友 ci_friendships/私訊 ci_dm_*）+ Phase2 動態牆（發文+圖影音 R2+讚+留言+收藏）。/api/upload 放寬上限。
-- 待續：限動 UI、好友+私訊、通知+OG 圖卡+島內對話 AI、cross-post 到本站部落格。
+- 待續：島內對話 AI、cross-post 到本站部落格。
+
+## 🌐 社群完整化（同日，參考 Insight 對接本專案）
+- **Schema**：8 表（ci_posts/stories/story_views/post_comments/bookmarks/friendships/dm_threads/dm_messages）+ RPC（ci_bump_post_count/story_views）。讚沿用 ci_likes、通知沿用 notifications。
+- **動態牆**：發文(文字+圖/影/音 R2)、讚、留言、收藏、刪文、短影音標記。
+- **限動 Stories**(24h)：限動列(漸層圈分組)+全螢幕檢視器+記觀看。
+- **好友**：搜尋使用者/邀請/接受拒絕(ci_friendships) + /friends 頁。
+- **私訊**：thread 去重(user_lo<user_hi)+文字/附件 + /messages 頁。
+- **站長監看私訊** `/admin/creator-island/messages`：owner-only + 每次檢視寫 audit_logs，含所有媒體。
+- **通知**：讚/留言/好友/私訊→鈴鐺(notifications)；貼文/新創作者/市集成交→Discord/LINE/TG(notifyAdmin)。
+- **OG 圖卡**：作品頁 generateMetadata→/api/og 動態分享圖。
+- **內容單獨複製**：歌詞/Suno/MV/內容/凝聚結果各自複製。
+- **聚光導覽** IslandTour：12 步介紹整座島（首訪自動+右下❓重看）。
+- **RWD**：碎片森林/作品庫/市集列表各自 scroll（不撐爆頁面）。**PWA**：sw v7 + manifest 加「創作者島嶼」捷徑。
+- **接線驗收**：7/7 社群嵌入查詢實跑通過；欄位審計僅 template-literal 誤報；build 綠。
 
 ## ⚙️ 後台
 - **`/admin/ai/creator-island`**：5 個 agent（凝聚/演化/編織/轉譯/DNA）各自選模型（含 **OpenRouter**），預設自動。`creator_island_agent_models` app_setting。

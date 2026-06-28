@@ -10,7 +10,7 @@
  *   - 不主動 navigate clients、避免破 OAuth callback (#access_token)
  */
 
-const VERSION = "v6-2026-06-23";
+const VERSION = "v7-2026-06-29";
 const STATIC_CACHE = `static-${VERSION}`;
 const PAGES_CACHE = `pages-${VERSION}`;
 const PYODIDE_CACHE = `pyodide-v0.26.4`;  // 跟 Pyodide 版本綁定、版本沒變就不換 cache

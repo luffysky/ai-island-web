@@ -3,7 +3,7 @@
  * 寫走 service-role；授權在 API 層（requireCreatorUser）。
  */
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
-import { notify, displayName } from "@/lib/creator-engine/notify";
+import { notify, displayName, notifyIslandAdmin } from "@/lib/creator-engine/notify";
 
 const POST_COLS = "id, user_id, workspace_id, type, title, content, images, video_url, video_thumbnail_url, audio_url, tags, visibility, status, likes_count, comments_count, views_count, created_at";
 const AUTHOR = "author:profiles!ci_posts_user_id_fkey(id, username, display_name, avatar_url)";
@@ -23,6 +23,7 @@ export async function createPost(userId: string, p: NewPost) {
     tags: (p.tags ?? []).slice(0, 10), visibility: p.visibility ?? "public", status: "published",
   }).select(POST_COLS).single();
   if (error) throw new Error(error.message);
+  notifyIslandAdmin(`${await displayName(userId)} 發佈了${p.type === "reel" ? "短影音" : "貼文"}`, `post:${(data as any).id}`);
   return data;
 }
 

@@ -366,7 +366,7 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
         <div className="text-[10px] text-fg-muted mb-3">把碎片卡拖到分類上＝複製進該分類（一個碎片可同時屬於多類）。</div>
 
         <div data-tour="forest" className="text-sm uppercase tracking-wider text-fg-muted mb-2">🌲 碎片森林（{shownFragments.length}）</div>
-        <div className="columns-1 sm:columns-2 gap-3 [&>*]:mb-3 [&>*]:break-inside-avoid">
+        <div className="columns-1 sm:columns-2 gap-3 [&>*]:mb-3 [&>*]:break-inside-avoid max-h-[78vh] overflow-y-auto pr-1">
           {shownFragments.map((f) => (
             <DraggableFragment key={f.id} f={f} on={selected.has(f.id)} onToggle={() => toggle(f.id)} onEdit={() => setEditing(f)} />
           ))}

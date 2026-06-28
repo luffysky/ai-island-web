@@ -101,7 +101,7 @@ export function MarketClient({ workspaceId, listings, myAssets, poolPicks = [] }
       )}
 
       {tab === "browse" && (
-        <div className="grid sm:grid-cols-2 gap-3">
+        <div className="grid sm:grid-cols-2 gap-3 max-h-[68vh] overflow-y-auto pr-1">
           {rows.length === 0 && <div className="text-sm text-fg-muted col-span-2 text-center py-8">還沒有人上架。去「上架」分享你的第一個資產。</div>}
           {rows.map((l) => (
             <div key={l.id} className="bg-bg-card border border-border rounded-xl p-4 space-y-2">

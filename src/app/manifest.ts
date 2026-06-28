@@ -32,6 +32,13 @@ export default function manifest(): MetadataRoute.Manifest {
     ],
     shortcuts: [
       {
+        name: "創作者島嶼",
+        short_name: "創作島",
+        description: "碎片→作品、社群、限動",
+        url: "/creator-island",
+        icons: [{ src: "/favicon.svg", sizes: "192x192", type: "image/svg+xml" }],
+      },
+      {
         name: "看章節",
         short_name: "章節",
         description: `${ch} 章課程地圖`,

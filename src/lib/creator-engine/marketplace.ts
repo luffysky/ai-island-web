@@ -45,6 +45,9 @@ export async function purchaseListing(listingId: string, buyerId: string): Promi
   const admin = createSupabaseAdmin();
   const { data, error } = await admin.rpc("ci_purchase_listing", { p_listing_id: listingId, p_buyer: buyerId });
   if (error) throw new Error(error.message);
+  if ((data as any)?.ok && !(data as any)?.already_owned) {
+    import("@/lib/creator-engine/notify").then((m) => m.notifyIslandAdmin(`市集成交：花 ${(data as any).spent ?? 0} Z 幣`, `sale:${(data as any).transaction}`)).catch(() => {});
+  }
   return data;
 }
 

@@ -77,6 +77,7 @@ export async function getOrCreatePersonalWorkspace(userId: string): Promise<Work
   // E2 種島：放碎片 + 範例作品，島一開始就不空（best-effort）
   await seedSampleFragments((ws as any).id, userId).catch(() => {});
   await seedSampleWorks((ws as any).id, userId).catch(() => {});
+  import("@/lib/creator-engine/notify").then((m) => m.notifyIslandAdmin("有新創作者加入島嶼 🎉", `newcreator:${userId}`)).catch(() => {});
 
   return ws as Workspace;
 }
