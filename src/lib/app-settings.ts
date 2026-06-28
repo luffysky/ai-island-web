@@ -48,12 +48,19 @@ export async function isIslandEnabled(): Promise<boolean> {
 }
 
 /** 功能總開關：讀 feature_<name>_enabled（預設開、缺鍵也視為開、避免誤關）。 */
-export async function isFeatureEnabled(name: "blog" | "forum" | "pet" | "island"): Promise<boolean> {
+export async function isFeatureEnabled(name: "blog" | "forum" | "pet" | "island" | "creator_island"): Promise<boolean> {
   if (name === "island") return isIslandEnabled();
   const map = await loadAll();
   const key = `feature_${name}_enabled`;
-  if (!map.has(key)) return true; // 沒設過 = 預設開
+  // creator_island = 新功能、灰度上線：預設「關」、由 owner 在 /admin/settings 明確開啟。
+  if (name === "creator_island") return map.has(key) ? truthyFlag(map.get(key)) : false;
+  if (!map.has(key)) return true; // 其餘功能：沒設過 = 預設開
   return truthyFlag(map.get(key));
+}
+
+/** Creator Island 是否啟用（feature_creator_island_enabled，預設關）。 */
+export async function isCreatorIslandEnabled(): Promise<boolean> {
+  return isFeatureEnabled("creator_island");
 }
 
 /** 開放註冊？signup_enabled 預設開。 */

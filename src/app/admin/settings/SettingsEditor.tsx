@@ -253,6 +253,7 @@ function SettingEditor({ settingKey, value, onChange }: { settingKey: string; va
 function helpFor(key: string): string {
   const map: Record<string, string> = {
     feature_island_enabled: "首頁 3D 島嶼 + /island（關 = 維護頁、入口隱藏）",
+    feature_creator_island_enabled: "創作者島嶼 /creator-island（首頁第三模式、預設關、灰度上線）",
     feature_blog_enabled: "/blogs 部落格區（關 = 顯示關閉通知）",
     feature_forum_enabled: "/forum 論壇區（關 = 顯示關閉通知）",
     feature_pet_enabled: "寵物系統開關",
@@ -336,6 +337,7 @@ function labelFor(key: string): string {
     signup_enabled: "🔓 開放註冊",
     island_enabled: "🏝️ 島嶼（舊鍵、改用 feature_island_enabled）",
     feature_island_enabled: "🏝️ 3D 島嶼",
+    feature_creator_island_enabled: "🎨 創作者島嶼",
     feature_blog_enabled: "✍️ 部落格",
     feature_forum_enabled: "🗣️ 論壇",
     feature_pet_enabled: "🐾 寵物系統",

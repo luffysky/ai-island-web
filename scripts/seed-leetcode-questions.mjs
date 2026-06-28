@@ -17,6 +17,7 @@
  */
 import pg from "pg";
 import { loadEnv, loadProviderKey, pickModelName } from "./_lib/ai-crypto.mjs";
+import { logCliUsage } from "./_lib/log-cli-usage.mjs";
 
 // ---- args ----
 const args = process.argv.slice(2);
@@ -94,6 +95,7 @@ async function genOne(p) {
     throw new Error(`AI ${res.status}: ${(await res.text()).slice(0, 200)}`);
   }
   const data = await res.json();
+  await logCliUsage(c, { model, inputTokens: data.usage?.input_tokens, outputTokens: data.usage?.output_tokens });
   let raw = (data.content ?? []).filter((b) => b.type === "text").map((b) => b.text).join("").trim();
   raw = raw.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/, "");
   const first = raw.indexOf("{");

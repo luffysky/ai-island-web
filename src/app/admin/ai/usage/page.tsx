@@ -155,8 +155,8 @@ export default async function AIUsagePage() {
           </div>
         )}
         <p className="text-[11px] text-fg-muted mt-2">
-          涵蓋 <b>web 聊天</b>（ai_usage_daily）+ <b>LINE/TG/Discord bot・排程・推薦</b>（callAI）。
-          ⚠️ <b>不含命令列腳本</b>（章節生成 / 題庫 seed 等）直接用 API key 的花費 — 那些不經 App、後台看不到，是「Claude 後台數字 &gt; 這裡」的主因。
+          涵蓋 <b>web 聊天</b>（ai_usage_daily）+ <b>LINE/TG/Discord bot・排程・推薦</b>（callAI）+ <b>命令列腳本</b>（章節生成 / 題庫 seed，記為 <code>cli:</code> 開頭的模型）。
+          ⚠️ 僅 <b>2026-06-29 之後</b>跑的 CLI 腳本才有記錄；在那之前的批次（如 6/13、6/22）仍只在 Claude 官方後台看得到。
         </p>
       </div>
 

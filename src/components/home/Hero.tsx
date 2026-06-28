@@ -13,9 +13,12 @@ type HeroProps = {
   totalLessons: number;
   stageCount: number;
   islandEnabled?: boolean;
+  creatorIslandEnabled?: boolean;
 };
 
-export function Hero({ totalChapters, totalLessons, stageCount, islandEnabled = true }: HeroProps) {
+export function Hero({ totalChapters, totalLessons, stageCount, islandEnabled = true, creatorIslandEnabled = false }: HeroProps) {
+  const modeCount = 1 + (islandEnabled ? 1 : 0) + (creatorIslandEnabled ? 1 : 0);
+  const modeGrid = modeCount >= 3 ? "sm:grid-cols-2 lg:grid-cols-3" : modeCount === 2 ? "sm:grid-cols-2" : "";
   return (
     <section className="relative overflow-hidden border-b border-border bg-gradient-to-b from-bg via-bg/95 to-bg">
       {/* Aceternity 風格背景 */}
@@ -76,8 +79,24 @@ export function Hero({ totalChapters, totalLessons, stageCount, islandEnabled = 
               <strong className="text-fg">從零基礎到能接案 / 找全端工作</strong>。
             </p>
 
-            {/* 雙模式入口 */}
-            <div className={`grid grid-cols-1 ${islandEnabled ? "sm:grid-cols-2" : ""} gap-3`}>
+            {/* 模式入口（經典 / 島嶼 / 創作者島嶼） */}
+            <div className={`grid grid-cols-1 ${modeGrid} gap-3`}>
+              {creatorIslandEnabled && (
+                <motion.div whileHover={{ y: -3, scale: 1.01 }} transition={{ duration: 0.18 }}>
+                  <Link
+                    href={"/creator-island" as any}
+                    className="group relative overflow-hidden rounded-2xl border-2 border-accent-3/40 p-5 bg-gradient-to-br from-accent-3/15 via-pink-500/8 to-violet-500/10 hover:border-accent-3 transition-all backdrop-blur block"
+                  >
+                    <div className="absolute -top-4 -right-4 text-5xl opacity-30 group-hover:opacity-60 group-hover:scale-110 transition duration-500">🎨</div>
+                    <div className="relative">
+                      <div className="text-2xl mb-1">🎨 創作者島嶼</div>
+                      <div className="font-bold text-lg mb-1">把碎片變成作品</div>
+                      <p className="text-xs text-fg-muted leading-relaxed">收集靈感碎片 → AI 凝聚/演化/編織 → 完成創作。</p>
+                      <span className="text-[10px] text-accent-3 mt-2 inline-block group-hover:translate-x-1 transition">一句話也能開始 →</span>
+                    </div>
+                  </Link>
+                </motion.div>
+              )}
               {islandEnabled && (
                 <motion.div whileHover={{ y: -3, scale: 1.01 }} transition={{ duration: 0.18 }}>
                   <Link

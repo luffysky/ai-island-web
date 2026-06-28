@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getChapterMetas } from "@/lib/content";
 import { getSiteStats } from "@/lib/stats";
 import { getSeoForPath } from "@/lib/seo-render";
-import { isIslandEnabled } from "@/lib/app-settings";
+import { isIslandEnabled, isCreatorIslandEnabled } from "@/lib/app-settings";
 import { ChapterMap } from "@/components/home/ChapterMap";
 import { Hero } from "@/components/home/Hero";
 import { CareerPathSection } from "@/components/home/CareerPathSection";
@@ -25,6 +25,7 @@ export default async function HomePage() {
   const chapters = await getChapterMetas();
   const stats = getSiteStats();
   const islandEnabled = await isIslandEnabled();
+  const creatorIslandEnabled = await isCreatorIslandEnabled();
 
   // 章/課數直接從資料庫算（getChapterMetas 已是 DB 即時資料），避免 build 快照過時。
   // 撈不到時 fallback 靜態 stats。
@@ -39,6 +40,7 @@ export default async function HomePage() {
         totalLessons={totalLessons}
         stageCount={stats.stageCount}
         islandEnabled={islandEnabled}
+        creatorIslandEnabled={creatorIslandEnabled}
       />
       <MascotIntro />
       <StageMap />
