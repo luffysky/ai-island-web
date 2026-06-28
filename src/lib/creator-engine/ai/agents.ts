@@ -31,7 +31,7 @@ async function runAgent<T>(opts: {
   temperature?: number;
   maxTokens?: number;
 }): Promise<{ result: T; agentRunId: number }> {
-  const resolved = await resolveModel();
+  const resolved = await resolveModel(opts.agentType);
   if (!resolved.ok) throw new AgentError(resolved.message, resolved.status);
   const { provider, model, apiKey } = resolved.model;
 
