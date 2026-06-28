@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { DndContext, useDraggable, useDroppable, PointerSensor, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core";
 import { EggHatch } from "./EggHatch";
+import { IslandTour } from "./IslandTour";
 
 type Fragment = { id: string; title: string; subtitle?: string | null; content: string; tags: string[]; mood?: string | null; category?: string | null; source_type: string };
 type Collection = { id: string; name: string; assetIds: string[] };
@@ -210,7 +211,7 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
   return (
     <div className="space-y-5 pb-32">
       {/* HUD */}
-      <div className="flex items-center gap-2 flex-wrap text-xs">
+      <div data-tour="hud" className="flex items-center gap-2 flex-wrap text-xs">
         <span className="px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-500/20 to-yellow-500/10 border border-amber-500/30 text-amber-200">🪙 Dust {dust ?? "…"}</span>
         <span className="px-3 py-1.5 rounded-full bg-bg-card border border-border text-fg-muted">🌲 碎片 {fragments.length}</span>
         {sel.length > 0 && <span className="px-3 py-1.5 rounded-full bg-accent/20 border border-accent/40 text-accent">已選 {sel.length}</span>}
@@ -231,10 +232,10 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
 
       {/* 頂部雙卡：靈感蛋 + 捕捉 */}
       <div className="grid sm:grid-cols-5 gap-3">
-        <div className="sm:col-span-2">
+        <div className="sm:col-span-2" data-tour="egg">
           <EggHatch onOpen={openEgg} disabled={busy !== null} />
         </div>
-        <div className="sm:col-span-3 rounded-2xl p-4 bg-bg-card border border-border space-y-2">
+        <div data-tour="capture" className="sm:col-span-3 rounded-2xl p-4 bg-bg-card border border-border space-y-2">
           <div className="font-bold text-sm flex items-center gap-2">✍️ 捕捉碎片
             <button onClick={startVoice} title="語音" className="ml-auto text-base hover:scale-110 transition">🎤</button>
             <label title="拍照/圖片" className="text-base cursor-pointer hover:scale-110 transition">📷<input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) onPhoto(f); e.currentTarget.value = ""; }} /></label>
@@ -249,7 +250,7 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
       </div>
 
       {/* 探索列 */}
-      <div className="flex gap-2 text-xs flex-wrap">
+      <div data-tour="explore" className="flex gap-2 text-xs flex-wrap">
         <button onClick={explorePairs} disabled={busy !== null} className="px-3 py-1.5 rounded-full bg-violet-500/15 text-violet-200 hover:bg-violet-500/25 disabled:opacity-40">🔗 意外配對</button>
         <button onClick={loadWorkflows} className="px-3 py-1.5 rounded-full bg-bg-card border border-border hover:text-accent">🛠️ 工作流{recording.length > 0 ? `（錄製 ${recording.length}）` : ""}</button>
         {recording.length > 0 && <button onClick={saveWorkflow} className="px-3 py-1.5 rounded-full bg-amber-500/20 text-amber-200">存成工作流</button>}
@@ -364,7 +365,7 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
         </div>
         <div className="text-[10px] text-fg-muted mb-3">把碎片卡拖到分類上＝複製進該分類（一個碎片可同時屬於多類）。</div>
 
-        <div className="text-sm uppercase tracking-wider text-fg-muted mb-2">🌲 碎片森林（{shownFragments.length}）</div>
+        <div data-tour="forest" className="text-sm uppercase tracking-wider text-fg-muted mb-2">🌲 碎片森林（{shownFragments.length}）</div>
         <div className="columns-1 sm:columns-2 gap-3 [&>*]:mb-3 [&>*]:break-inside-avoid">
           {shownFragments.map((f) => (
             <DraggableFragment key={f.id} f={f} on={selected.has(f.id)} onToggle={() => toggle(f.id)} onEdit={() => setEditing(f)} />
@@ -413,6 +414,8 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
       <AnimatePresence>
         {editing && <FragmentEditModal frag={editing} onClose={() => setEditing(null)} onSave={saveEdit} onDelete={deleteFragment} />}
       </AnimatePresence>
+
+      <IslandTour />
     </div>
   );
 }

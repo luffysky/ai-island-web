@@ -57,7 +57,7 @@ export default async function CreatorIslandPage({ searchParams }: { searchParams
           </div>
           <nav className="flex items-center gap-1.5 text-sm flex-wrap">
             {[["/creator-island/works", "📚 作品庫"], ["/creator-island/studio", "🏢 工作室"], ["/creator-island/market", "🏪 市集"], ["/creator-island/community", "🌐 社群"], ["/creator-island/growth", "📈 成長"]].map(([href, label]) => (
-              <Link key={href} href={href} className="px-3 py-1.5 rounded-full bg-bg-card/60 border border-border/60 backdrop-blur hover:border-accent hover:text-accent transition">{label}</Link>
+              <Link key={href} href={href} data-tour={`nav-${href.split("/").pop()}`} className="px-3 py-1.5 rounded-full bg-bg-card/60 border border-border/60 backdrop-blur hover:border-accent hover:text-accent transition">{label}</Link>
             ))}
           </nav>
         </div>
