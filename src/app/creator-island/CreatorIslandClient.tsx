@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { EggHatch } from "./EggHatch";
 
-type Fragment = { id: string; title: string; content: string; tags: string[]; source_type: string };
+type Fragment = { id: string; title: string; subtitle?: string | null; content: string; tags: string[]; mood?: string | null; category?: string | null; source_type: string };
 
 async function api(url: string, body?: any) {
   const res = await fetch(url, { method: "POST", headers: body ? { "Content-Type": "application/json" } : undefined, body: body ? JSON.stringify(body) : undefined });
@@ -34,8 +34,31 @@ export function CreatorIslandClient({ workspaceId, initialFragments }: { workspa
   const [recording, setRecording] = useState<{ agent: string; params?: any }[]>([]);
   const [workflows, setWorkflows] = useState<any[] | null>(null);
   const [panel, setPanel] = useState<"none" | "pairs" | "flows">("none");
+  const [editing, setEditing] = useState<Fragment | null>(null);
 
   useEffect(() => { fetch("/api/creator-island/dust").then((r) => r.json()).then((j) => setDust(j.balance ?? 0)).catch(() => {}); }, []);
+
+  async function patchFragment(id: string, body: any) {
+    const res = await fetch(`/api/creator-island/fragments/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    const j = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(j.message || j.error || `HTTP ${res.status}`);
+    return j.fragment as Fragment;
+  }
+  async function saveEdit(updated: Fragment) {
+    try {
+      const f = await patchFragment(updated.id, { title: updated.title, subtitle: updated.subtitle, content: updated.content, tags: updated.tags, mood: updated.mood, category: updated.category });
+      setFragments((p) => p.map((x) => (x.id === f.id ? f : x))); setEditing(null);
+    } catch (e: any) { setErr(e.message); }
+  }
+  async function deleteFragment(id: string) {
+    if (!confirm("刪除這個碎片？")) return;
+    try {
+      const res = await fetch(`/api/creator-island/fragments/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("刪除失敗");
+      setFragments((p) => p.filter((x) => x.id !== id)); setEditing(null);
+      setSelected((p) => { const n = new Set(p); n.delete(id); return n; });
+    } catch (e: any) { setErr(e.message); }
+  }
 
   const sel = Array.from(selected);
   const toggle = (id: string) => setSelected((p) => { const n = new Set(p); n.has(id) ? n.delete(id) : n.add(id); return n; });
@@ -249,13 +272,20 @@ export function CreatorIslandClient({ workspaceId, initialFragments }: { workspa
           {fragments.map((f) => {
             const on = selected.has(f.id);
             return (
-              <motion.button layout key={f.id} onClick={() => toggle(f.id)} whileHover={{ y: -2 }}
-                className={`block w-full text-left rounded-xl p-3 border transition ${on ? "border-accent bg-accent/[0.08] ring-1 ring-accent/40" : "border-border bg-bg-card hover:border-accent/40"}`}>
-                <div className="font-bold text-sm flex items-start gap-1.5"><span>{SRC_ICON[f.source_type] ?? "✍️"}</span><span className="flex-1">{f.title}</span>{on && <span className="text-accent">✓</span>}</div>
+              <motion.div layout key={f.id} onClick={() => toggle(f.id)} whileHover={{ y: -2 }} role="button" tabIndex={0}
+                className={`group relative block w-full text-left rounded-xl p-3 border transition cursor-pointer ${on ? "border-accent bg-accent/[0.08] ring-1 ring-accent/40" : "border-border bg-bg-card hover:border-accent/40"}`}>
+                <button onClick={(e) => { e.stopPropagation(); setEditing(f); }} title="編輯"
+                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition text-fg-muted hover:text-accent text-sm">✎</button>
+                <div className="font-bold text-sm flex items-start gap-1.5 pr-5"><span>{SRC_ICON[f.source_type] ?? "✍️"}</span><span className="flex-1">{f.title}</span>{on && <span className="text-accent">✓</span>}</div>
+                {f.subtitle && <div className="text-xs text-accent-3 mt-0.5">{f.subtitle}</div>}
                 {f.content && !f.content.startsWith("![](") && <div className="text-xs text-fg-muted mt-1 line-clamp-3 whitespace-pre-wrap">{f.content}</div>}
                 {f.content?.startsWith("![](") && <img src={f.content.slice(4, -1)} alt="" className="mt-2 rounded-lg max-h-40 w-full object-cover" />}
-                {f.tags?.length > 0 && <div className="mt-1.5 flex flex-wrap gap-1">{f.tags.map((t) => <span key={t} className="text-[10px] px-1.5 py-0.5 rounded-full bg-bg-elevated text-fg-muted">#{t}</span>)}</div>}
-              </motion.button>
+                <div className="mt-1.5 flex flex-wrap gap-1 items-center">
+                  {f.category && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-accent/15 text-accent">🗂 {f.category}</span>}
+                  {f.mood && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-pink-500/15 text-pink-300">{f.mood}</span>}
+                  {f.tags?.map((t) => <span key={t} className="text-[10px] px-1.5 py-0.5 rounded-full bg-bg-elevated text-fg-muted">#{t}</span>)}
+                </div>
+              </motion.div>
             );
           })}
         </div>
@@ -281,6 +311,50 @@ export function CreatorIslandClient({ workspaceId, initialFragments }: { workspa
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* 碎片編輯 modal */}
+      <AnimatePresence>
+        {editing && <FragmentEditModal frag={editing} onClose={() => setEditing(null)} onSave={saveEdit} onDelete={deleteFragment} />}
+      </AnimatePresence>
     </div>
+  );
+}
+
+function FragmentEditModal({ frag, onClose, onSave, onDelete }: { frag: Fragment; onClose: () => void; onSave: (f: Fragment) => void; onDelete: (id: string) => void }) {
+  const [title, setTitle] = useState(frag.title);
+  const [subtitle, setSubtitle] = useState(frag.subtitle ?? "");
+  const [content, setContent] = useState(frag.content);
+  const [tags, setTags] = useState((frag.tags ?? []).join("、"));
+  const [mood, setMood] = useState(frag.mood ?? "");
+  const [category, setCategory] = useState(frag.category ?? "");
+
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
+      <motion.div initial={{ scale: 0.95, y: 10 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0 }} onClick={(e) => e.stopPropagation()}
+        className="w-[min(94vw,560px)] max-h-[88vh] overflow-y-auto bg-bg-card border border-border rounded-2xl p-5 space-y-3">
+        <div className="flex items-center justify-between"><div className="font-bold">✎ 編輯碎片</div><button onClick={onClose} className="text-fg-muted hover:text-fg">✕</button></div>
+        <label className="block text-xs text-fg-muted">標題
+          <input value={title} onChange={(e) => setTitle(e.target.value)} className="mt-1 w-full bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm text-fg outline-none focus:border-accent" /></label>
+        <label className="block text-xs text-fg-muted">副標題
+          <input value={subtitle} onChange={(e) => setSubtitle(e.target.value)} placeholder="一句副標 / 註解" className="mt-1 w-full bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm text-fg outline-none focus:border-accent" /></label>
+        <label className="block text-xs text-fg-muted">內容
+          <textarea value={content} onChange={(e) => setContent(e.target.value)} rows={6} className="mt-1 w-full bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm text-fg outline-none focus:border-accent resize-y" /></label>
+        <div className="grid grid-cols-2 gap-3">
+          <label className="block text-xs text-fg-muted">類別
+            <input value={category} onChange={(e) => setCategory(e.target.value)} placeholder="例：歌詞素材" className="mt-1 w-full bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm text-fg outline-none focus:border-accent" /></label>
+          <label className="block text-xs text-fg-muted">心情
+            <input value={mood} onChange={(e) => setMood(e.target.value)} placeholder="例：懷舊" className="mt-1 w-full bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm text-fg outline-none focus:border-accent" /></label>
+        </div>
+        <label className="block text-xs text-fg-muted">標籤（逗號分隔）
+          <input value={tags} onChange={(e) => setTags(e.target.value)} className="mt-1 w-full bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm text-fg outline-none focus:border-accent" /></label>
+        <div className="flex items-center gap-2 pt-1">
+          <button onClick={() => onSave({ ...frag, title, subtitle, content, mood, category, tags: tags.split(/[,，、]/).map((t) => t.trim()).filter(Boolean) })}
+            disabled={!title.trim()} className="px-4 py-2 rounded-full bg-accent text-white text-sm font-bold disabled:opacity-40">儲存</button>
+          <button onClick={onClose} className="px-4 py-2 rounded-full bg-bg-elevated text-sm">取消</button>
+          <button onClick={() => onDelete(frag.id)} className="ml-auto px-3 py-2 rounded-full bg-red-500/15 text-red-300 text-sm hover:bg-red-500/25">刪除</button>
+        </div>
+      </motion.div>
+    </motion.div>
   );
 }

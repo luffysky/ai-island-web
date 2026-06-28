@@ -10,6 +10,7 @@ export type Fragment = {
   workspace_id: string;
   created_by: string | null;
   title: string;
+  subtitle: string | null;
   content: string;
   tags: string[];
   mood: string | null;
@@ -20,7 +21,7 @@ export type Fragment = {
   updated_at: string;
 };
 
-const COLS = "id, workspace_id, created_by, title, content, tags, mood, category, source_type, ai_summary, created_at, updated_at";
+const COLS = "id, workspace_id, created_by, title, subtitle, content, tags, mood, category, source_type, ai_summary, created_at, updated_at";
 
 export type ListOpts = { cursor?: string | null; q?: string | null; tag?: string | null; limit?: number };
 
@@ -49,7 +50,7 @@ export async function getFragment(id: string): Promise<Fragment | null> {
 export async function createFragment(
   workspaceId: string,
   userId: string,
-  input: { title: string; content?: string; tags?: string[]; mood?: string; category?: string; sourceType?: string },
+  input: { title: string; subtitle?: string; content?: string; tags?: string[]; mood?: string; category?: string; sourceType?: string },
 ): Promise<Fragment> {
   const admin = createSupabaseAdmin();
   const { data, error } = await admin
@@ -58,6 +59,7 @@ export async function createFragment(
       workspace_id: workspaceId,
       created_by: userId,
       title: input.title.slice(0, 200),
+      subtitle: input.subtitle ?? null,
       content: input.content ?? "",
       tags: (input.tags ?? []).map((t) => t.trim()).filter(Boolean).slice(0, 30),
       mood: input.mood ?? null,
@@ -70,10 +72,11 @@ export async function createFragment(
   return data as Fragment;
 }
 
-export async function updateFragment(id: string, patch: Partial<Pick<Fragment, "title" | "content" | "tags" | "mood" | "category">>): Promise<Fragment> {
+export async function updateFragment(id: string, patch: Partial<Pick<Fragment, "title" | "subtitle" | "content" | "tags" | "mood" | "category">>): Promise<Fragment> {
   const admin = createSupabaseAdmin();
   const clean: Record<string, unknown> = { updated_at: new Date().toISOString() };
   if (patch.title !== undefined) clean.title = patch.title.slice(0, 200);
+  if (patch.subtitle !== undefined) clean.subtitle = patch.subtitle;
   if (patch.content !== undefined) clean.content = patch.content;
   if (patch.tags !== undefined) clean.tags = patch.tags.map((t) => t.trim()).filter(Boolean).slice(0, 30);
   if (patch.mood !== undefined) clean.mood = patch.mood;
