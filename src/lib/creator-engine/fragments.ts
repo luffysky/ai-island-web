@@ -89,6 +89,14 @@ export async function deleteFragment(id: string): Promise<void> {
   if (error) throw new Error(error.message);
 }
 
+/** 取多個碎片（限定 workspace，AI 動作用）。 */
+export async function getFragmentsByIds(workspaceId: string, ids: string[]): Promise<Fragment[]> {
+  if (!ids.length) return [];
+  const admin = createSupabaseAdmin();
+  const { data } = await admin.from("ci_fragments").select(COLS).eq("workspace_id", workspaceId).in("id", ids.slice(0, 50));
+  return (data as Fragment[]) ?? [];
+}
+
 /** 取碎片所屬 workspace（API 層權限檢查用）。 */
 export async function fragmentWorkspace(id: string): Promise<string | null> {
   const admin = createSupabaseAdmin();
