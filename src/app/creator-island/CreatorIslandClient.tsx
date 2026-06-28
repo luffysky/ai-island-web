@@ -41,6 +41,7 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
   const [workflows, setWorkflows] = useState<any[] | null>(null);
   const [panel, setPanel] = useState<"none" | "pairs" | "flows">("none");
   const [editing, setEditing] = useState<Fragment | null>(null);
+  const [advice, setAdvice] = useState<any>(null);
 
   useEffect(() => { fetch("/api/creator-island/dust").then((r) => r.json()).then((j) => setDust(j.balance ?? 0)).catch(() => {}); }, []);
 
@@ -161,6 +162,19 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
       setRecording((p) => [...p, { agent: action, params: action === "evolve" ? { count: 6 } : action === "compose" ? { workType } : {} }]);
     } catch (e: any) { setErr(e.message); } finally { setBusy(null); }
   }
+  async function getAdvice() {
+    setErr(null); setAdvice(null); setBusy("advise");
+    try { const j = await api("/api/creator-island/ai/advise", { workspaceId, fragmentIds: sel }); setAdvice(j); }
+    catch (e: any) { setErr(e.message); } finally { setBusy(null); }
+  }
+  async function composeAs(wt: string) {
+    setWorkType(wt); setAdvice(null); setErr(null); setResult(null); setBusy("compose");
+    try {
+      const json = await api("/api/creator-island/ai/compose", { workspaceId, fragmentIds: sel, workType: wt });
+      setResult({ action: "compose", ...json });
+      setRecording((p) => [...p, { agent: "compose", params: { workType: wt } }]);
+    } catch (e: any) { setErr(e.message); } finally { setBusy(null); }
+  }
   async function saveFragment(title: string, content: string) {
     try { const { fragment } = await api("/api/creator-island/fragments", { workspaceId, title, content, sourceType: "ai_assisted" }); setFragments((p) => [fragment, ...p]); setResult(null); setSelected(new Set()); }
     catch (e: any) { setErr(e.message); }
@@ -278,6 +292,26 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
         )}
       </AnimatePresence>
 
+      {/* 💡 創作顧問建議 */}
+      <AnimatePresence>
+        {advice && (
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-gradient-to-br from-amber-500/10 to-pink-500/10 border border-amber-500/30 rounded-2xl p-4 space-y-2">
+            <div className="flex items-center justify-between"><div className="font-bold">💡 這些碎片適合做什麼</div><button onClick={() => setAdvice(null)} className="text-fg-muted hover:text-fg text-sm">✕</button></div>
+            {advice.insight && <p className="text-sm text-fg-muted">{advice.insight}</p>}
+            <div className="grid sm:grid-cols-2 gap-2">
+              {(advice.suggestions ?? []).map((s: any, i: number) => (
+                <div key={i} className="bg-bg-card/60 rounded-lg p-3 text-sm">
+                  <div className="font-bold">{s.workType} <span className="text-xs text-accent">· {s.genre}</span></div>
+                  <div className="text-xs text-fg-muted mt-0.5">{s.why}</div>
+                  {s.angle && <div className="text-xs text-accent-3 mt-0.5">切入：{s.angle}</div>}
+                  <button onClick={() => composeAs(s.genre ? `${s.workType}（${s.genre}）` : s.workType)} disabled={busy !== null} className="mt-1.5 text-xs px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-200 disabled:opacity-40">用這個編織 →</button>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* AI 結果 */}
       <AnimatePresence>
         {result && (
@@ -340,9 +374,25 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
               <button onClick={() => run("synthesize")} disabled={busy !== null || sel.length < 2} className="px-3 py-2 rounded-full bg-bg-elevated text-sm hover:text-accent disabled:opacity-40">🧲 凝聚</button>
               <button onClick={() => run("evolve")} disabled={busy !== null || sel.length !== 1} className="px-3 py-2 rounded-full bg-bg-elevated text-sm hover:text-accent disabled:opacity-40">🌿 演化</button>
               <button onClick={() => findRelated(sel[0])} disabled={busy !== null || sel.length !== 1} className="px-3 py-2 rounded-full bg-bg-elevated text-sm hover:text-accent disabled:opacity-40">🔍 相關</button>
+              <button onClick={getAdvice} disabled={busy !== null || sel.length < 1} className="px-3 py-2 rounded-full bg-amber-500/15 text-amber-200 text-sm hover:bg-amber-500/25 disabled:opacity-40">💡 適合做什麼</button>
               <select value={transLang} onChange={(e) => setTransLang(e.target.value)} className="bg-bg-elevated border border-border rounded-full px-2 py-2 text-xs">{["日語", "韓語", "English", "法語", "西班牙語", "粵語", "文言文"].map((l) => <option key={l} value={l}>{l}</option>)}</select>
               <button onClick={transcreateSel} disabled={busy !== null || sel.length !== 1} className="px-3 py-2 rounded-full bg-bg-elevated text-sm hover:text-accent disabled:opacity-40">🌏 轉譯</button>
-              <select value={workType} onChange={(e) => setWorkType(e.target.value)} className="bg-bg-elevated border border-border rounded-full px-2 py-2 text-xs"><option value="article">文章</option><option value="song">歌曲</option><option value="story">故事</option></select>
+              <select value={workType} onChange={(e) => setWorkType(e.target.value)} className="bg-bg-elevated border border-border rounded-full px-2 py-2 text-xs">
+                <option value="article">文章</option>
+                <option value="散文">散文</option>
+                <option value="song">歌曲</option>
+                <option value="詩">詩</option>
+                <option value="短篇小說">短篇小說</option>
+                <option value="story">故事</option>
+                <option value="劇本">劇本</option>
+                <option value="短影音腳本">短影音腳本</option>
+                <option value="文案">文案/Slogan</option>
+                <option value="品牌故事">品牌故事</option>
+                <option value="世界觀">世界觀設定</option>
+                <option value="角色設定">角色設定</option>
+                <option value="課程大綱">課程大綱</option>
+                <option value="產品企劃">產品企劃</option>
+              </select>
               <button onClick={() => run("compose")} disabled={busy !== null || sel.length < 1} className="px-4 py-2 rounded-full bg-gradient-to-r from-amber-400 to-pink-500 text-black text-sm font-bold disabled:opacity-40">🧵 編織</button>
               <button onClick={() => setSelected(new Set())} className="text-fg-muted hover:text-fg text-sm px-1">✕</button>
             </div>

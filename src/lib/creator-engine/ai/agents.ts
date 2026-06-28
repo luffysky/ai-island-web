@@ -12,7 +12,7 @@ import { resolveModel } from "@/lib/creator-engine/ai/router";
 import { estimateCostUsd, resolveZCharge } from "@/lib/creator-engine/ai/cost";
 import { getInjectableMemory, recordMemoryUsage } from "@/lib/creator-engine/memory";
 
-export type AgentType = "synthesize" | "evolve" | "compose" | "transcreate" | "dna";
+export type AgentType = "synthesize" | "evolve" | "compose" | "transcreate" | "dna" | "advise";
 
 class AgentError extends Error {
   status: number;
@@ -189,6 +189,28 @@ export async function analyzeDNA(workspaceId: string, userId: string, samples: s
     input: { count: samples.length },
     system, user: `創作者的素材：\n\n${samples.slice(0, 30).join("\n---\n").slice(0, 6000)}`,
     temperature: 0.7, maxTokens: 1200,
+  });
+}
+
+// ===== 創作顧問 Advise：這些碎片適合做什麼類型 + 風格 =====
+const AdviseSchema = z.object({
+  insight: z.string(),
+  suggestions: z.array(z.object({
+    workType: z.string(),   // 作品類型（歌曲/短篇小說/故事/詩/劇本/文案…）
+    genre: z.string(),      // 該類型下的風格子類（city pop / 懸疑 / 寓言…）
+    why: z.string(),        // 為什麼適合
+    angle: z.string().optional(), // 可切入的角度
+  })).min(1),
+});
+export async function advise(workspaceId: string, userId: string, frags: { id: string; title: string; content: string }[]) {
+  const system = `你是「創作策展顧問」。看這些碎片，判斷它們最適合長成哪些『作品類型』，並在每個類型下給具體的『風格／子類型』。
+範例對應：音樂→city pop / 民謠 / lo-fi / 嘻哈；小說→懸疑 / 愛情 / 科幻 / 都市奇幻 短篇；故事→寓言 / 都市傳說 / 兒童故事；也可以是 詩 / 劇本 / 短影音腳本 / 文案 / 品牌故事 / 世界觀。
+給 3–5 個方向，每個說明為什麼適合、以及一個可立刻切入的角度。
+只回傳 JSON：{"insight":"這些碎片的核心是什麼(一句)","suggestions":[{"workType":"類型","genre":"風格子類","why":"為什麼適合","angle":"切入角度"}]}。全部繁體中文。`;
+  return runAgent({
+    agentType: "advise", workspaceId, userId, schema: AdviseSchema,
+    input: { fragmentIds: frags.map((f) => f.id) },
+    system, user: `碎片：\n\n${fragmentBlock(frags)}`, temperature: 0.85, maxTokens: 1400,
   });
 }
 
