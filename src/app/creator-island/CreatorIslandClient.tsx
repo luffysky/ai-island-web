@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { DndContext, useDraggable, useDroppable, PointerSensor, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core";
 import { EggHatch } from "./EggHatch";
 
 type Fragment = { id: string; title: string; subtitle?: string | null; content: string; tags: string[]; mood?: string | null; category?: string | null; source_type: string };
+type Collection = { id: string; name: string; assetIds: string[] };
 
 async function api(url: string, body?: any) {
   const res = await fetch(url, { method: "POST", headers: body ? { "Content-Type": "application/json" } : undefined, body: body ? JSON.stringify(body) : undefined });
@@ -18,8 +20,12 @@ const SRC_ICON: Record<string, string> = {
   work_recycled: "♻️", transcreated: "🌏", market_imported: "🍴", human_selected: "👆",
 };
 
-export function CreatorIslandClient({ workspaceId, initialFragments }: { workspaceId: string; initialFragments: Fragment[] }) {
+export function CreatorIslandClient({ workspaceId, initialFragments, initialCollections = [] }: { workspaceId: string; initialFragments: Fragment[]; initialCollections?: Collection[] }) {
   const [fragments, setFragments] = useState<Fragment[]>(initialFragments);
+  const [collections, setCollections] = useState<Collection[]>(initialCollections);
+  const [activeCol, setActiveCol] = useState<string | null>(null);
+  const [dropTarget, setDropTarget] = useState<string | null>(null);
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [nt, setNt] = useState("");
   const [ntags, setNtags] = useState("");
@@ -59,6 +65,36 @@ export function CreatorIslandClient({ workspaceId, initialFragments }: { workspa
       setSelected((p) => { const n = new Set(p); n.delete(id); return n; });
     } catch (e: any) { setErr(e.message); }
   }
+
+  // === 自訂分類（Collections） ===
+  async function createCollection() {
+    const name = prompt("新分類名稱："); if (!name?.trim()) return;
+    try {
+      const { collection } = await api("/api/creator-island/collections", { workspaceId, name: name.trim() });
+      setCollections((p) => [...p, { id: collection.id, name: collection.name, assetIds: [] }]);
+    } catch (e: any) { setErr(e.message); }
+  }
+  async function deleteCollection(id: string) {
+    if (!confirm("刪除這個分類？（碎片本身不會刪）")) return;
+    try {
+      await fetch(`/api/creator-island/collections/${id}`, { method: "DELETE" });
+      setCollections((p) => p.filter((c) => c.id !== id));
+      if (activeCol === id) setActiveCol(null);
+    } catch (e: any) { setErr(e.message); }
+  }
+  async function addToCollection(colId: string, assetId: string) {
+    setCollections((p) => p.map((c) => (c.id === colId && !c.assetIds.includes(assetId) ? { ...c, assetIds: [...c.assetIds, assetId] } : c)));
+    try { await api(`/api/creator-island/collections/${colId}/items`, { assetId, assetType: "fragment" }); }
+    catch (e: any) { setErr(e.message); }
+  }
+  function onDragEnd(e: DragEndEvent) {
+    setDropTarget(null);
+    const colId = e.over?.id ? String(e.over.id) : null;
+    const assetId = e.active?.id ? String(e.active.id) : null;
+    if (colId && assetId && colId.startsWith("col:")) addToCollection(colId.slice(4), assetId);
+  }
+
+  const shownFragments = activeCol ? fragments.filter((f) => collections.find((c) => c.id === activeCol)?.assetIds.includes(f.id)) : fragments;
 
   const sel = Array.from(selected);
   const toggle = (id: string) => setSelected((p) => { const n = new Set(p); n.has(id) ? n.delete(id) : n.add(id); return n; });
@@ -265,31 +301,26 @@ export function CreatorIslandClient({ workspaceId, initialFragments }: { workspa
         )}
       </AnimatePresence>
 
-      {/* 碎片森林（瀑布流） */}
-      <div>
-        <div className="text-sm uppercase tracking-wider text-fg-muted mb-2">🌲 碎片森林</div>
-        <div className="columns-1 sm:columns-2 gap-3 [&>*]:mb-3 [&>*]:break-inside-avoid">
-          {fragments.map((f) => {
-            const on = selected.has(f.id);
-            return (
-              <motion.div layout key={f.id} onClick={() => toggle(f.id)} whileHover={{ y: -2 }} role="button" tabIndex={0}
-                className={`group relative block w-full text-left rounded-xl p-3 border transition cursor-pointer ${on ? "border-accent bg-accent/[0.08] ring-1 ring-accent/40" : "border-border bg-bg-card hover:border-accent/40"}`}>
-                <button onClick={(e) => { e.stopPropagation(); setEditing(f); }} title="編輯"
-                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition text-fg-muted hover:text-accent text-sm">✎</button>
-                <div className="font-bold text-sm flex items-start gap-1.5 pr-5"><span>{SRC_ICON[f.source_type] ?? "✍️"}</span><span className="flex-1">{f.title}</span>{on && <span className="text-accent">✓</span>}</div>
-                {f.subtitle && <div className="text-xs text-accent-3 mt-0.5">{f.subtitle}</div>}
-                {f.content && !f.content.startsWith("![](") && <div className="text-xs text-fg-muted mt-1 line-clamp-3 whitespace-pre-wrap">{f.content}</div>}
-                {f.content?.startsWith("![](") && <img src={f.content.slice(4, -1)} alt="" className="mt-2 rounded-lg max-h-40 w-full object-cover" />}
-                <div className="mt-1.5 flex flex-wrap gap-1 items-center">
-                  {f.category && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-accent/15 text-accent">🗂 {f.category}</span>}
-                  {f.mood && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-pink-500/15 text-pink-300">{f.mood}</span>}
-                  {f.tags?.map((t) => <span key={t} className="text-[10px] px-1.5 py-0.5 rounded-full bg-bg-elevated text-fg-muted">#{t}</span>)}
-                </div>
-              </motion.div>
-            );
-          })}
+      {/* 自訂分類 + 碎片森林（可拖曳複製到分類） */}
+      <DndContext sensors={sensors} onDragEnd={onDragEnd} onDragOver={(e) => setDropTarget(e.over ? String(e.over.id) : null)} onDragCancel={() => setDropTarget(null)}>
+        <div className="flex items-center gap-2 flex-wrap text-xs mb-1">
+          <span className="text-fg-muted">🗂 分類：</span>
+          <button onClick={() => setActiveCol(null)} className={`px-2.5 py-1 rounded-full border transition ${activeCol === null ? "border-accent bg-accent/10 text-accent" : "border-border bg-bg-card hover:border-accent/40"}`}>全部 {fragments.length}</button>
+          {collections.map((c) => (
+            <CollectionChip key={c.id} c={c} active={activeCol === c.id} isOver={dropTarget === `col:${c.id}`}
+              onClick={() => setActiveCol(activeCol === c.id ? null : c.id)} onDelete={() => deleteCollection(c.id)} />
+          ))}
+          <button onClick={createCollection} className="px-2.5 py-1 rounded-full border border-dashed border-border text-fg-muted hover:text-accent">＋ 新分類</button>
         </div>
-      </div>
+        <div className="text-[10px] text-fg-muted mb-3">把碎片卡拖到分類上＝複製進該分類（一個碎片可同時屬於多類）。</div>
+
+        <div className="text-sm uppercase tracking-wider text-fg-muted mb-2">🌲 碎片森林（{shownFragments.length}）</div>
+        <div className="columns-1 sm:columns-2 gap-3 [&>*]:mb-3 [&>*]:break-inside-avoid">
+          {shownFragments.map((f) => (
+            <DraggableFragment key={f.id} f={f} on={selected.has(f.id)} onToggle={() => toggle(f.id)} onEdit={() => setEditing(f)} />
+          ))}
+        </div>
+      </DndContext>
 
       {/* 浮層創作工具（選了碎片才亮） */}
       <AnimatePresence>
@@ -316,6 +347,38 @@ export function CreatorIslandClient({ workspaceId, initialFragments }: { workspa
       <AnimatePresence>
         {editing && <FragmentEditModal frag={editing} onClose={() => setEditing(null)} onSave={saveEdit} onDelete={deleteFragment} />}
       </AnimatePresence>
+    </div>
+  );
+}
+
+function CollectionChip({ c, active, isOver, onClick, onDelete }: { c: Collection; active: boolean; isOver: boolean; onClick: () => void; onDelete: () => void }) {
+  const { setNodeRef } = useDroppable({ id: `col:${c.id}` });
+  return (
+    <span ref={setNodeRef}
+      className={`group inline-flex items-center gap-1 px-2.5 py-1 rounded-full border transition ${isOver ? "border-accent bg-accent/25 scale-110" : active ? "border-accent bg-accent/10 text-accent" : "border-border bg-bg-card hover:border-accent/40"}`}>
+      <button onClick={onClick}>🗂 {c.name} {c.assetIds.length}</button>
+      <button onClick={onDelete} title="刪除分類" className="opacity-0 group-hover:opacity-100 text-fg-muted hover:text-red-400">✕</button>
+    </span>
+  );
+}
+
+function DraggableFragment({ f, on, onToggle, onEdit }: { f: Fragment; on: boolean; onToggle: () => void; onEdit: () => void }) {
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: f.id });
+  const style = transform ? { transform: `translate(${transform.x}px, ${transform.y}px)` } : undefined;
+  return (
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners} onClick={onToggle} role="button" tabIndex={0}
+      className={`group relative block w-full text-left rounded-xl p-3 border transition cursor-grab active:cursor-grabbing ${isDragging ? "opacity-70 ring-2 ring-accent z-50 shadow-xl" : on ? "border-accent bg-accent/[0.08] ring-1 ring-accent/40" : "border-border bg-bg-card hover:border-accent/40"}`}>
+      <button onClick={(e) => { e.stopPropagation(); onEdit(); }} onPointerDown={(e) => e.stopPropagation()} title="編輯"
+        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition text-fg-muted hover:text-accent text-sm">✎</button>
+      <div className="font-bold text-sm flex items-start gap-1.5 pr-5"><span>{SRC_ICON[f.source_type] ?? "✍️"}</span><span className="flex-1">{f.title}</span>{on && <span className="text-accent">✓</span>}</div>
+      {f.subtitle && <div className="text-xs text-accent-3 mt-0.5">{f.subtitle}</div>}
+      {f.content && !f.content.startsWith("![](") && <div className="text-xs text-fg-muted mt-1 line-clamp-3 whitespace-pre-wrap">{f.content}</div>}
+      {f.content?.startsWith("![](") && <img src={f.content.slice(4, -1)} alt="" className="mt-2 rounded-lg max-h-40 w-full object-cover" />}
+      <div className="mt-1.5 flex flex-wrap gap-1 items-center">
+        {f.category && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-accent/15 text-accent">🗂 {f.category}</span>}
+        {f.mood && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-pink-500/15 text-pink-300">{f.mood}</span>}
+        {f.tags?.map((t) => <span key={t} className="text-[10px] px-1.5 py-0.5 rounded-full bg-bg-elevated text-fg-muted">#{t}</span>)}
+      </div>
     </div>
   );
 }

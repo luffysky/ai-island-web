@@ -5,6 +5,7 @@ import { isCreatorIslandEnabled } from "@/lib/app-settings";
 import { FeatureOffNotice } from "@/components/FeatureOffNotice";
 import { getOrCreatePersonalWorkspace } from "@/lib/creator-engine/workspace";
 import { listFragments } from "@/lib/creator-engine/fragments";
+import { listCollectionsWithItems } from "@/lib/creator-engine/collections";
 import { CreatorIslandClient } from "./CreatorIslandClient";
 
 // 旗標 / workspace 要即時反映
@@ -23,7 +24,10 @@ export default async function CreatorIslandPage() {
 
   // 3) 首次進來 lazy-create Personal Workspace（+ E2 種島）
   const personal = await getOrCreatePersonalWorkspace(user.id);
-  const { items: fragments } = await listFragments(personal.id, { limit: 50 });
+  const [{ items: fragments }, collections] = await Promise.all([
+    listFragments(personal.id, { limit: 100 }),
+    listCollectionsWithItems(personal.id),
+  ]);
 
   // 4) 創作者島嶼主畫面（M3）
   return (
@@ -43,7 +47,7 @@ export default async function CreatorIslandPage() {
       </header>
 
       {/* 創作循環：捕捉 → 凝聚/演化/編織 → 存 */}
-      <CreatorIslandClient workspaceId={personal.id} initialFragments={fragments as any} />
+      <CreatorIslandClient workspaceId={personal.id} initialFragments={fragments as any} initialCollections={collections} />
     </div>
   );
 }
