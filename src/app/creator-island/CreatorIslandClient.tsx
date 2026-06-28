@@ -25,6 +25,8 @@ export function CreatorIslandClient({ workspaceId, initialFragments }: { workspa
   const [err, setErr] = useState<string | null>(null);
   const [result, setResult] = useState<any>(null);
   const [dust, setDust] = useState<number | null>(null);
+  const [pairs, setPairs] = useState<any[] | null>(null);
+  const [related, setRelated] = useState<any[] | null>(null);
 
   useEffect(() => {
     fetch("/api/creator-island/dust").then((r) => r.json()).then((j) => setDust(j.balance ?? 0)).catch(() => {});
@@ -36,6 +38,17 @@ export function CreatorIslandClient({ workspaceId, initialFragments }: { workspa
       const j = await api("/api/creator-island/eggs/open", { workspaceId });
       setFragments((p) => [j.fragment, ...p]); setDust(j.balance ?? dust);
     } catch (e: any) { setErr(e.message); } finally { setBusy(null); }
+  }
+
+  async function explorePairs() {
+    setErr(null); setBusy("pairs");
+    try { const j = await api("/api/creator-island/fragments/pairs", { workspaceId }); setPairs(j.pairs ?? []); }
+    catch (e: any) { setErr(e.message); } finally { setBusy(null); }
+  }
+  async function findRelated(fragmentId: string) {
+    setErr(null); setBusy("related");
+    try { const j = await fetch(`/api/creator-island/fragments/related?workspaceId=${workspaceId}&fragmentId=${fragmentId}`).then((r) => r.json()); setRelated(j.related ?? []); }
+    catch (e: any) { setErr(e.message); } finally { setBusy(null); }
   }
 
   const sel = Array.from(selected);
@@ -129,6 +142,8 @@ export function CreatorIslandClient({ workspaceId, initialFragments }: { workspa
           className="px-3 py-1.5 rounded-full bg-bg-elevated text-sm hover:text-accent disabled:opacity-40">🧲 凝聚</button>
         <button onClick={() => run("evolve")} disabled={busy !== null || sel.length !== 1}
           className="px-3 py-1.5 rounded-full bg-bg-elevated text-sm hover:text-accent disabled:opacity-40">🌿 演化</button>
+        <button onClick={() => findRelated(sel[0])} disabled={busy !== null || sel.length !== 1}
+          className="px-3 py-1.5 rounded-full bg-bg-elevated text-sm hover:text-accent disabled:opacity-40">🔍 找相關</button>
         <select value={workType} onChange={(e) => setWorkType(e.target.value)} className="bg-bg-elevated border border-border rounded-full px-2 py-1.5 text-xs">
           <option value="article">文章</option><option value="song">歌曲</option><option value="story">故事</option>
         </select>
@@ -136,7 +151,41 @@ export function CreatorIslandClient({ workspaceId, initialFragments }: { workspa
           className="px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-400 to-pink-500 text-black text-sm font-bold disabled:opacity-40">🧵 編織</button>
       </div>
       {busy && busy !== "add" && (
-        <div className="text-sm text-fg-muted">{busy === "synthesize" ? "正在凝聚碎片…" : busy === "evolve" ? "正在演化想法…" : busy === "compose" ? "正在編織作品…" : "處理中…"}</div>
+        <div className="text-sm text-fg-muted">{busy === "synthesize" ? "正在凝聚碎片…" : busy === "evolve" ? "正在演化想法…" : busy === "compose" ? "正在編織作品…" : busy === "pairs" ? "探索意外配對中…" : busy === "related" ? "搜尋相關碎片…" : "處理中…"}</div>
+      )}
+
+      {/* E5 意外配對 */}
+      <div className="bg-bg-card border border-violet-500/30 rounded-2xl p-4 space-y-2">
+        <div className="flex items-center justify-between gap-2">
+          <div className="text-sm font-bold">🔗 AI 意外配對 <span className="text-xs font-normal text-fg-muted">語意遠、卻可能藏著張力的組合</span></div>
+          <button onClick={explorePairs} disabled={busy !== null} className="text-xs px-2.5 py-1 rounded-full bg-violet-500/20 text-violet-200 disabled:opacity-40">探索</button>
+        </div>
+        {pairs && pairs.length === 0 && <div className="text-xs text-fg-muted">還配不出來（碎片太少或需要更多語意向量）。多寫幾個再探索。</div>}
+        {pairs && pairs.length > 0 && (
+          <div className="grid sm:grid-cols-2 gap-2">
+            {pairs.map((p, i) => (
+              <button key={i} onClick={() => { setSelected(new Set([p.a_id, p.b_id])); }}
+                className="text-left bg-bg-elevated rounded-lg px-3 py-2 text-xs hover:ring-1 hover:ring-violet-400">
+                <b>{p.a_title}</b> <span className="text-violet-300">×</span> <b>{p.b_title}</b>
+                <span className="text-fg-muted ml-1">{Math.round(p.similarity * 100)}%</span>
+                <div className="text-[10px] text-violet-300 mt-0.5">點一下選這對 → 凝聚/編織</div>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* E4 主動回憶 */}
+      {related && (
+        <div className="bg-bg-card border border-border rounded-2xl p-4 space-y-2">
+          <div className="text-sm font-bold">🔍 你可能也想到過…</div>
+          {related.length === 0 && <div className="text-xs text-fg-muted">沒找到明顯相關的舊碎片。</div>}
+          {related.map((r) => (
+            <button key={r.id} onClick={() => setSelected((p) => new Set([...p, r.id]))} className="block text-left text-xs text-fg-muted hover:text-accent">
+              ＋ {r.title} <span className="opacity-60">{Math.round((r.similarity ?? 0) * 100)}%</span>
+            </button>
+          ))}
+        </div>
       )}
 
       {/* 結果 */}
