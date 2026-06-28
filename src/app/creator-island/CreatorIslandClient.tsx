@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { EggHatch } from "./EggHatch";
 
 type Fragment = { id: string; title: string; content: string; tags: string[]; source_type: string };
 
@@ -48,9 +49,9 @@ export function CreatorIslandClient({ workspaceId, initialFragments }: { workspa
     } catch (e: any) { setErr(e.message); } finally { setBusy(null); }
   }
   async function openEgg() {
-    setErr(null); setBusy("egg");
-    try { const j = await api("/api/creator-island/eggs/open", { workspaceId }); setFragments((p) => [j.fragment, ...p]); setDust(j.balance ?? dust); }
-    catch (e: any) { setErr(e.message); } finally { setBusy(null); }
+    const j = await api("/api/creator-island/eggs/open", { workspaceId });
+    setFragments((p) => [j.fragment, ...p]); setDust(j.balance ?? dust);
+    return j.fragment as Fragment;
   }
   function startVoice() {
     const SR = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
@@ -149,12 +150,9 @@ export function CreatorIslandClient({ workspaceId, initialFragments }: { workspa
 
       {/* 頂部雙卡：靈感蛋 + 捕捉 */}
       <div className="grid sm:grid-cols-5 gap-3">
-        <motion.button whileHover={{ y: -3 }} onClick={openEgg} disabled={busy !== null}
-          className="sm:col-span-2 text-left rounded-2xl p-4 bg-gradient-to-br from-amber-500/15 to-orange-500/10 border border-amber-500/30 hover:border-amber-400 disabled:opacity-50 transition">
-          <div className="text-3xl">🥚</div>
-          <div className="font-bold mt-1">{busy === "egg" ? "開蛋中…" : "今日碎片蛋"}</div>
-          <div className="text-xs text-fg-muted">沒靈感？換個起點（花 1 Dust）</div>
-        </motion.button>
+        <div className="sm:col-span-2">
+          <EggHatch onOpen={openEgg} disabled={busy !== null} />
+        </div>
         <div className="sm:col-span-3 rounded-2xl p-4 bg-bg-card border border-border space-y-2">
           <div className="font-bold text-sm flex items-center gap-2">✍️ 捕捉碎片
             <button onClick={startVoice} title="語音" className="ml-auto text-base hover:scale-110 transition">🎤</button>
