@@ -12,7 +12,7 @@ import { resolveModel } from "@/lib/creator-engine/ai/router";
 import { estimateCostUsd, resolveZCharge } from "@/lib/creator-engine/ai/cost";
 import { getInjectableMemory, recordMemoryUsage } from "@/lib/creator-engine/memory";
 
-export type AgentType = "synthesize" | "evolve" | "compose" | "transcreate";
+export type AgentType = "synthesize" | "evolve" | "compose" | "transcreate" | "dna";
 
 class AgentError extends Error {
   status: number;
@@ -166,6 +166,25 @@ export async function transcreate(workspaceId: string, userId: string, text: str
     system,
     user: `原文：\n${text}\n\n目標語言：${targetLanguage}\n目標文化／風格：${targetCulture}`,
     temperature: 0.85, maxTokens: 1500,
+  });
+}
+
+// ===== 創作 DNA（E9）=====
+const DnaSchema = z.object({
+  imagery: z.array(z.string()).default([]),
+  tone: z.string().default(""),
+  strengths: z.array(z.string()).default([]),
+  weaknesses: z.array(z.string()).default([]),
+  formats: z.array(z.string()).default([]),
+});
+export async function analyzeDNA(workspaceId: string, userId: string, samples: string[]) {
+  const system = `你是「創作 DNA 分析師」。從創作者的碎片/作品歸納其風格指紋。建設性、像教練、不羞辱。
+只回傳 JSON：{"imagery":["常見意象"],"tone":"整體語氣一句話","strengths":["強項"],"weaknesses":["可加強(用鼓勵語氣)"],"formats":["擅長的形式"]}。全部繁體中文。`;
+  return runAgent({
+    agentType: "dna", workspaceId, userId, schema: DnaSchema,
+    input: { count: samples.length },
+    system, user: `創作者的素材：\n\n${samples.slice(0, 30).join("\n---\n").slice(0, 6000)}`,
+    temperature: 0.7, maxTokens: 1200,
   });
 }
 
