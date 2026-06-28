@@ -71,13 +71,13 @@
 
 > 18 份規格全 Codex PASS；執行細節 `docs/ideas_os/TODO.md`。**整段都是未做**（要從 M0 開工）。
 
-## MVP（v0 凍結）— `ci_` 前綴新表
-- [ ] **M0 Foundation**：`ci_workspaces`/members/invitations/wallet/ai_settings + RLS；RPC transfer_owner/debit_wallet；lazy-create；`feature_creator_island_enabled`(擴 `isFeatureEnabled` union)；`/creator-island` 殼。
-- [ ] **M1 Assets**：`ci_fragments`/works/work_fragments/asset_relations(多型 trigger)/versions/packages/collections；`src/lib/creator-engine/`（從 admin idea-fragments 抽共用、admin 不變）。
-- [ ] **M2 AI loop**：`ci_agent_runs`；Model Router + Cost Manager；凝聚/演化/編織(Zod)；**E11 Composer song → Suno/MV prompt**。
-- [ ] **M3 Shell**：Dashboard/Editor/工具 UI/Studio 管理/首頁第三入口；**E1 first-run 一句話→一首歌**；**E2 種島**；**E10 不做 token-trap**。
-- [ ] **M4 Memory + skeletons**：`ci_memories`(與 user_ai_memory 分開)+usage；`ci_dust_ledger`+Egg；Marketplace/Community/Growth skeleton。
-- [ ] **M5 Hardening + launch**：測試/a11y/perf/security-review；smoke 擴 `/creator-island`；db:apply→GHCR→Zeabur→flag owner→beta→all。
+## MVP（v0）— `ci_` 前綴新表　**已實作於 branch `feat/creator-island-m0`、migrations 已 db:apply**
+- [x] ~~**M0 Foundation**：6 張 ci_ workspace 表 + RLS + RPC(transfer/debit) + lazy-create + flag(預設開) + `/creator-island` 殼。~~
+- [x] ~~**M1 Assets**：ci_fragments/works/work_fragments/asset_relations(多型 trigger)/versions/packages/collections + creator-engine 服務 + API。~~
+- [x] ~~**M2 AI loop**：ci_agent_runs；Model Router + Cost Manager(核心免費)；凝聚/演化/編織(zod)；E11 Suno/MV song mode；usage parity。~~
+- [x] ~~**M3 Shell**：首頁第三入口 + 創作循環 UI + 作品庫/編輯器 + 工作室管理 + 發布到 blog；E1 first-run；E2 種島；E10 免費。~~
+- [x] ~~**M4 Memory + skeletons**：ci_memories(與 user_ai_memory 分開)+usage + 注入 agents；ci_dust_ledger + 碎片蛋；market/community/growth skeleton。~~
+- [~] **M5 Hardening + launch**：smoke 擴 `/creator-island` ✅；測試/a11y/perf/security-review 待補；**merge→push→Zeabur 部署**（進行中）。
 
 ## Phase 2 — `ENHANCEMENTS.md` + 各 doc Future
 - [ ] E3 創作家譜視覺、E4 主動回憶、E5 意外配對每日、E6 語音/拍照捕捉、E7 工作流錄製、E8 文化轉譯楔子、E9 Creator DNA 卡、E11 完整版(封面/風格庫/Prompt Pack)。

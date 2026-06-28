@@ -19,6 +19,7 @@ const CHECKS = [
   ["/sitemap.xml", 200, null],
   ["/robots.txt", 200, null],
   ["/api/nav", 200, "chapters"],
+  ["/creator-island", 307, null], // flag 開 + 未登入 → 轉址 /login
   ["/this-page-should-not-exist-xyz", 404, null],
 ];
 
