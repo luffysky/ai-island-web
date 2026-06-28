@@ -89,7 +89,9 @@
 
 ## Creator Island 收尾（2026-06-29 全站對接驗收後）
 > 驗收結果：30 ci_ 表 + 11 RPC 全建、欄位審計 0 錯接、41 API 全 export、8 UI 頁全接、RWD/PWA 已接。詳見 `docs/daily_works_0629.md`。
-- [~] **碎片庫補到 10000**：`node scripts/gen-fragment-pool.mjs --target 10000`（背景跑、可重跑累積、ON CONFLICT 去重）。截稿約 3300。
+- [x] ~~**碎片庫滿 10009**（R 5497 / SR 3843 / SSR 669；形式：畫面/物件/句子/人物/地點/對話/詞/意象；去重）~~。可再跑 `gen-fragment-pool.mjs` 擴充。
+- [~] **社群（參考 Insight）**：Phase1 schema ✅ + Phase2 動態牆(發文/圖影音/讚/留言/收藏) ✅；剩 Phase3 限動 UI、Phase4 好友+私訊、Phase5 通知+OG圖卡+島內對話AI。
+- [ ] **發佈到本站部落格**（cross-post v1，works→blog 已有；社群貼文→blog 待接）。
 - [ ] **PWA PNG icons**：`app/manifest.ts` 仍只指 `favicon.svg`；補 192/512 maskable + apple-touch（與平台共用 TODO）。
 - [ ] **記憶管理使用者頁**（選配）：`ci_memories` 後端 + agent 注入已備，缺 user-facing 管理 UI。
 - [ ] **AI run / 成本儀表板**（選配）：`/api/creator-island/ai/runs` 已備、缺前端。
