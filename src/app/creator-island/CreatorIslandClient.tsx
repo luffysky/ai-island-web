@@ -110,7 +110,12 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
   async function openEgg() {
     const j = await api("/api/creator-island/eggs/open", { workspaceId });
     setFragments((p) => [j.fragment, ...p]); setDust(j.balance ?? dust);
-    return j.fragment as Fragment;
+    return { title: j.fragment?.title as string, rarity: j.rarity as string };
+  }
+  async function seedPool() {
+    setErr(null); setBusy("seed");
+    try { const j = await api("/api/creator-island/seed-pool", { workspaceId }); if (j.skipped) { setErr(j.message); setBusy(null); return; } window.location.reload(); }
+    catch (e: any) { setErr(e.message); setBusy(null); }
   }
   function startVoice() {
     const SR = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
@@ -200,10 +205,13 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
 
       {err && <div className="bg-red-500/10 border border-red-500/30 text-red-300 rounded-xl px-4 py-2 text-sm flex justify-between"><span>⚠️ {err}</span><button onClick={() => setErr(null)}>✕</button></div>}
 
-      {empty && (
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="bg-gradient-to-br from-accent-3/15 via-pink-500/10 to-violet-500/15 border border-accent-3/30 rounded-2xl p-5">
-          <div className="text-lg font-bold">🌱 從一句話開始</div>
-          <p className="text-sm text-fg-muted mt-1">寫下一句想法 → 勾選它 → 演化出更多 → 編織成作品。綠寶會一路幫你。</p>
+      {fragments.length < 50 && (
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="bg-gradient-to-br from-accent-3/15 via-pink-500/10 to-violet-500/15 border border-accent-3/30 rounded-2xl p-5 flex items-center justify-between gap-3 flex-wrap">
+          <div>
+            <div className="text-lg font-bold">🎁 讓島嶼長滿靈感</div>
+            <p className="text-sm text-fg-muted mt-1">從全站碎片庫抽 <b>300 顆</b>靈感碎片到你的島（含稀有 SSR），自動分好類。也可以自己寫第一句。</p>
+          </div>
+          <button onClick={seedPool} disabled={busy === "seed"} className="px-5 py-2.5 rounded-full bg-gradient-to-r from-amber-400 to-pink-500 text-black text-sm font-bold disabled:opacity-50 whitespace-nowrap">{busy === "seed" ? "種島中…" : "種 300 顆 🌱"}</button>
         </motion.div>
       )}
 

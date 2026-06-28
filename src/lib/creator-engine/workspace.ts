@@ -81,20 +81,43 @@ export async function getOrCreatePersonalWorkspace(userId: string): Promise<Work
 }
 
 /** E2 種島：給新工作空間放幾個示範碎片（讓「空島」一開始就有東西玩）。 */
-async function seedSampleFragments(workspaceId: string, userId: string): Promise<void> {
+/**
+ * 種島：從全站碎片庫 ci_fragment_pool 加權抽 300（SSR 稀有）→ 寫成使用者碎片，
+ * 並依 category 建預設分類(Collections) + 歸類。池為空時 fallback 幾個示範碎片。
+ */
+export async function seedFromPool(workspaceId: string, userId: string, n = 300): Promise<number> {
   const admin = createSupabaseAdmin();
-  const samples = [
-    { title: "我墊著腳尖走在妳的世界", tags: ["歌詞", "暗戀"], category: "靈感" },
-    { title: "清晨第一口咖啡的蒸氣，像把昨天的疲憊都蒸散了", tags: ["日常", "畫面"], category: "靈感" },
-    { title: "如果通知能『先幫我想好怎麼回』，而不是只提醒我", tags: ["產品點子"], category: "點子" },
-    { title: "小時候那台永遠調不準的收音機，雜訊裡藏著整個夏天", tags: ["回憶"], category: "故事種子" },
-  ];
-  await admin.from("ci_fragments").insert(
-    samples.map((s) => ({
+  const { data: drawn } = await admin.rpc("ci_draw_from_pool", { p_n: n, p_ssr: Math.round(n * 0.03), p_sr: Math.round(n * 0.17) });
+  let rows = (drawn as any[]) ?? [];
+  if (!rows.length) {
+    rows = [
+      { text: "我墊著腳尖走在妳的世界", category: "靈感", rarity: "R", tags: ["歌詞"] },
+      { text: "清晨第一口咖啡的蒸氣，像把昨天的疲憊都蒸散了", category: "靈感", rarity: "R", tags: ["日常"] },
+      { text: "小時候那台永遠調不準的收音機，雜訊裡藏著整個夏天", category: "故事種子", rarity: "SR", tags: ["回憶"] },
+    ];
+  }
+  // 寫碎片（rarity 放進 tags 讓卡面看得到）
+  const { data: inserted } = await admin.from("ci_fragments").insert(
+    rows.map((r) => ({
       workspace_id: workspaceId, created_by: userId,
-      title: s.title, tags: s.tags, category: s.category, source_type: "egg_generated",
+      title: r.text, category: r.category, tags: [r.rarity, ...(r.tags ?? [])].slice(0, 4), source_type: "egg_generated",
     })),
-  ).then(() => {}, () => {});
+  ).select("id, category");
+  const frags = (inserted as any[]) ?? [];
+  // 依 category 建預設分類 + 歸類
+  const byCat = new Map<string, string[]>();
+  for (const f of frags) { const a = byCat.get(f.category) ?? []; a.push(f.id); byCat.set(f.category, a); }
+  for (const [cat, ids] of byCat) {
+    if (!cat) continue;
+    const { data: col } = await admin.from("ci_collections").insert({ workspace_id: workspaceId, created_by: userId, name: cat }).select("id").single();
+    const colId = (col as any)?.id;
+    if (colId) await admin.from("ci_collection_items").insert(ids.map((id) => ({ collection_id: colId, asset_id: id, asset_type: "fragment" }))).then(() => {}, () => {});
+  }
+  return frags.length;
+}
+
+async function seedSampleFragments(workspaceId: string, userId: string): Promise<void> {
+  await seedFromPool(workspaceId, userId, 300).catch(() => {});
 }
 
 /** M0：active workspace = Personal Workspace（之後支援 cookie 選定）。 */

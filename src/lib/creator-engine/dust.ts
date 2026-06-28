@@ -36,14 +36,26 @@ const EGG_POOL = [
   "把一個產品點子，講給五歲的自己聽",
 ];
 
-/** 開碎片蛋：扣 1 Dust → 產一個靈感碎片。 */
-export async function openEgg(workspaceId: string, userId: string): Promise<{ ok: boolean; fragment?: any; balance?: number; error?: string }> {
+/** 開碎片蛋：扣 1 Dust → 從碎片庫抽 1 顆（扭蛋式，SSR 稀有）。回傳含 rarity。 */
+export async function openEgg(workspaceId: string, userId: string): Promise<{ ok: boolean; fragment?: any; rarity?: string; balance?: number; error?: string }> {
   await grantDailyDust(userId); // 順手發每日免費
   const admin = createSupabaseAdmin();
   const r = await admin.rpc("ci_dust_tx", { p_user_id: userId, p_amount: -1, p_reason: "egg_open", p_meta: { workspaceId } });
   const res = r.data as { ok: boolean; error?: string; balance_after?: number };
   if (!res?.ok) return { ok: false, error: res?.error ?? "insufficient_dust" };
-  const seed = EGG_POOL[Math.floor((Date.now() / 1000) % EGG_POOL.length)];
-  const fragment = await createFragment(workspaceId, userId, { title: seed, tags: ["碎片蛋"], sourceType: "egg_generated" });
-  return { ok: true, fragment, balance: res.balance_after };
+
+  // 從池加權抽 1（SSR≈3% / SR≈17% / R）
+  const { data: pool } = await admin.rpc("ci_draw_from_pool", { p_n: 1, p_ssr: 0, p_sr: 0 });
+  const roll = Math.floor((Date.now() / 7) % 100);
+  const rarityWant = roll < 3 ? "SSR" : roll < 20 ? "SR" : "R";
+  const { data: picked } = await admin.from("ci_fragment_pool").select("text, category, rarity, tags").eq("rarity", rarityWant).order("created_at", { ascending: false }).limit(50);
+  const cands = (picked as any[]) ?? (pool as any[]) ?? [];
+  const chosen = cands.length ? cands[Math.floor((Date.now() / 13) % cands.length)] : null;
+
+  const title = chosen?.text ?? EGG_POOL[Math.floor((Date.now() / 1000) % EGG_POOL.length)];
+  const rarity = chosen?.rarity ?? "R";
+  const fragment = await createFragment(workspaceId, userId, {
+    title, category: chosen?.category ?? undefined, tags: [rarity, "碎片蛋", ...(chosen?.tags ?? [])].slice(0, 4), sourceType: "egg_generated",
+  });
+  return { ok: true, fragment, rarity, balance: res.balance_after };
 }

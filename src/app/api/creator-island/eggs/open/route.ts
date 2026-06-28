@@ -16,5 +16,5 @@ export async function POST(req: NextRequest) {
   if (gate instanceof NextResponse) return gate;
   const r = await openEgg(workspaceId, u.userId);
   if (!r.ok) return NextResponse.json({ error: r.error, message: "Dust 不足（每日會自動補充）" }, { status: 402 });
-  return NextResponse.json({ fragment: r.fragment, balance: r.balance });
+  return NextResponse.json({ fragment: r.fragment, rarity: r.rarity, balance: r.balance });
 }
