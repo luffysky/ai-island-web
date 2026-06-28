@@ -27,6 +27,8 @@ export function CreatorIslandClient({ workspaceId, initialFragments }: { workspa
   const [dust, setDust] = useState<number | null>(null);
   const [pairs, setPairs] = useState<any[] | null>(null);
   const [related, setRelated] = useState<any[] | null>(null);
+  const [recording, setRecording] = useState<{ agent: string; params?: any }[]>([]);
+  const [workflows, setWorkflows] = useState<any[] | null>(null);
 
   useEffect(() => {
     fetch("/api/creator-island/dust").then((r) => r.json()).then((j) => setDust(j.balance ?? 0)).catch(() => {});
@@ -110,7 +112,24 @@ export function CreatorIslandClient({ workspaceId, initialFragments }: { workspa
       else if (action === "evolve") json = await api("/api/creator-island/ai/evolve", { workspaceId, fragmentId: sel[0], count: 6 });
       else json = await api("/api/creator-island/ai/compose", { workspaceId, fragmentIds: sel, workType });
       setResult({ action, ...json });
+      setRecording((p) => [...p, { agent: action, params: action === "evolve" ? { count: 6 } : action === "compose" ? { workType } : {} }]);
     } catch (e: any) { setErr(e.message); } finally { setBusy(null); }
+  }
+
+  async function saveWorkflow() {
+    const title = prompt(`把剛剛這 ${recording.length} 步存成工作流，取個名字：`);
+    if (!title) return;
+    try { await api("/api/creator-island/workflows", { workspaceId, title, steps: recording }); setRecording([]); alert("✅ 已存成工作流"); }
+    catch (e: any) { setErr(e.message); }
+  }
+  async function loadWorkflows() {
+    try { const j = await fetch(`/api/creator-island/workflows?workspaceId=${workspaceId}`).then((r) => r.json()); setWorkflows(j.workflows ?? []); }
+    catch (e: any) { setErr(e.message); }
+  }
+  async function replay(id: string) {
+    setErr(null); setBusy("replay");
+    try { const j = await api(`/api/creator-island/workflows/${id}/run`, { fragmentIds: Array.from(selected) }); setResult({ action: "replay", results: j.results }); }
+    catch (e: any) { setErr(e.message); } finally { setBusy(null); }
   }
 
   async function saveFragment(title: string, content: string) {
@@ -195,6 +214,24 @@ export function CreatorIslandClient({ workspaceId, initialFragments }: { workspa
         <div className="text-sm text-fg-muted">{busy === "synthesize" ? "正在凝聚碎片…" : busy === "evolve" ? "正在演化想法…" : busy === "compose" ? "正在編織作品…" : busy === "pairs" ? "探索意外配對中…" : busy === "related" ? "搜尋相關碎片…" : "處理中…"}</div>
       )}
 
+      {/* E7 工作流（錄製/重播） */}
+      <div className="bg-bg-card border border-border rounded-2xl p-4 space-y-2">
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          <div className="text-sm font-bold">🛠️ 工作流 {recording.length > 0 && <span className="text-xs font-normal text-amber-300">· 錄製中 {recording.length} 步</span>}</div>
+          <div className="flex gap-2">
+            {recording.length > 0 && <button onClick={saveWorkflow} className="text-xs px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-200">存成工作流</button>}
+            <button onClick={loadWorkflows} className="text-xs px-2.5 py-1 rounded-full bg-bg-elevated hover:text-accent">我的工作流</button>
+          </div>
+        </div>
+        {workflows && workflows.length === 0 && <div className="text-xs text-fg-muted">還沒有工作流。做幾個動作後按「存成工作流」，下次一鍵重播。</div>}
+        {workflows && workflows.map((w) => (
+          <div key={w.id} className="flex items-center justify-between text-xs bg-bg-elevated rounded-lg px-3 py-2">
+            <span><b>{w.title}</b> <span className="text-fg-muted">· {(w.steps ?? []).map((s: any) => s.agent).join("→")}</span></span>
+            <button onClick={() => replay(w.id)} disabled={busy !== null || selected.size < 1} className="text-accent disabled:opacity-40">▶ 重播</button>
+          </div>
+        ))}
+      </div>
+
       {/* E5 意外配對 */}
       <div className="bg-bg-card border border-violet-500/30 rounded-2xl p-4 space-y-2">
         <div className="flex items-center justify-between gap-2">
@@ -255,6 +292,17 @@ export function CreatorIslandClient({ workspaceId, initialFragments }: { workspa
                   </div>
                 ))}
               </div>
+            </>
+          )}
+          {result.action === "replay" && (
+            <>
+              <div className="font-bold">▶ 工作流重播結果</div>
+              {result.results?.map((s: any, i: number) => (
+                <div key={i} className="text-xs bg-bg-elevated rounded-lg p-2">
+                  <b>{s.agent}</b> {s.ok ? "✅" : `❌ ${s.error}`}
+                  {s.ok && <div className="text-fg-muted mt-0.5 whitespace-pre-wrap">{s.output?.title ?? s.output?.coreIdea ?? (s.output?.variants ? `${s.output.variants.length} 個變體` : JSON.stringify(s.output).slice(0, 200))}</div>}
+                </div>
+              ))}
             </>
           )}
           {result.action === "compose" && (
