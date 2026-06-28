@@ -40,6 +40,41 @@ export function CreatorIslandClient({ workspaceId, initialFragments }: { workspa
     } catch (e: any) { setErr(e.message); } finally { setBusy(null); }
   }
 
+  // E6 語音輸入（瀏覽器原生 SpeechRecognition）
+  function startVoice() {
+    const SR = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
+    if (!SR) { setErr("此瀏覽器不支援語音輸入"); return; }
+    const rec = new SR(); rec.lang = "zh-TW"; rec.interimResults = false;
+    rec.onresult = (e: any) => setNt((prev) => (prev ? prev + " " : "") + e.results[0][0].transcript);
+    rec.onerror = () => setErr("語音輸入失敗");
+    rec.start();
+  }
+
+  // E6 拍照/上傳圖片 → 碎片
+  async function onPhoto(file: File) {
+    setErr(null); setBusy("photo");
+    try {
+      const fd = new FormData(); fd.append("file", file);
+      const up = await fetch("/api/upload", { method: "POST", body: fd }).then((r) => r.json());
+      if (!up.url) throw new Error(up.message || "上傳失敗");
+      const { fragment } = await api("/api/creator-island/fragments", { workspaceId, title: file.name.slice(0, 60) || "圖片碎片", content: `![](${up.url})`, tags: ["圖片"] });
+      setFragments((p) => [fragment, ...p]);
+    } catch (e: any) { setErr(e.message); } finally { setBusy(null); }
+  }
+
+  // E8 文化轉譯
+  async function transcreateSel() {
+    const lang = prompt("轉譯成哪種語言／風格？（例：日系、韓系、English indie、文言文）");
+    if (!lang) return;
+    const fid = Array.from(selected)[0];
+    if (!fid) return;
+    setErr(null); setBusy("transcreate");
+    try {
+      const j = await api("/api/creator-island/ai/transcreate", { workspaceId, fragmentId: fid, targetLanguage: lang, targetCulture: lang });
+      setFragments((p) => [j.fragment, ...p]);
+    } catch (e: any) { setErr(e.message); } finally { setBusy(null); }
+  }
+
   async function explorePairs() {
     setErr(null); setBusy("pairs");
     try { const j = await api("/api/creator-island/fragments/pairs", { workspaceId }); setPairs(j.pairs ?? []); }
@@ -130,6 +165,10 @@ export function CreatorIslandClient({ workspaceId, initialFragments }: { workspa
         <div className="flex gap-2">
           <input value={ntags} onChange={(e) => setNtags(e.target.value)} placeholder="標籤（逗號分隔）"
             className="flex-1 bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm outline-none focus:border-accent" />
+          <button onClick={startVoice} title="語音輸入" className="px-3 py-2 rounded-full bg-bg-elevated text-sm hover:text-accent">🎤</button>
+          <label title="拍照/上傳圖片成碎片" className="px-3 py-2 rounded-full bg-bg-elevated text-sm hover:text-accent cursor-pointer">
+            📷<input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) onPhoto(f); e.currentTarget.value = ""; }} />
+          </label>
           <button onClick={addFragment} disabled={busy === "add" || !nt.trim()}
             className="px-4 py-2 rounded-full bg-accent text-white text-sm font-bold disabled:opacity-40">＋ 新增</button>
         </div>
@@ -144,6 +183,8 @@ export function CreatorIslandClient({ workspaceId, initialFragments }: { workspa
           className="px-3 py-1.5 rounded-full bg-bg-elevated text-sm hover:text-accent disabled:opacity-40">🌿 演化</button>
         <button onClick={() => findRelated(sel[0])} disabled={busy !== null || sel.length !== 1}
           className="px-3 py-1.5 rounded-full bg-bg-elevated text-sm hover:text-accent disabled:opacity-40">🔍 找相關</button>
+        <button onClick={transcreateSel} disabled={busy !== null || sel.length !== 1}
+          className="px-3 py-1.5 rounded-full bg-bg-elevated text-sm hover:text-accent disabled:opacity-40">🌏 轉譯</button>
         <select value={workType} onChange={(e) => setWorkType(e.target.value)} className="bg-bg-elevated border border-border rounded-full px-2 py-1.5 text-xs">
           <option value="article">文章</option><option value="song">歌曲</option><option value="story">故事</option>
         </select>

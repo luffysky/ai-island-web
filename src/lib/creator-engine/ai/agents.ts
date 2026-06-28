@@ -12,7 +12,7 @@ import { resolveModel } from "@/lib/creator-engine/ai/router";
 import { estimateCostUsd, resolveZCharge } from "@/lib/creator-engine/ai/cost";
 import { getInjectableMemory, recordMemoryUsage } from "@/lib/creator-engine/memory";
 
-export type AgentType = "synthesize" | "evolve" | "compose";
+export type AgentType = "synthesize" | "evolve" | "compose" | "transcreate";
 
 class AgentError extends Error {
   status: number;
@@ -152,6 +152,20 @@ export async function compose(workspaceId: string, userId: string, workType: str
     agentType: "compose", workspaceId, userId, schema: ComposeBase,
     input: { workType, fragmentIds: frags.map((f) => f.id) },
     system, user: `碎片：\n\n${fragmentBlock(frags)}`, maxTokens: 3000,
+  });
+}
+
+// ===== 文化轉譯 Transcreate（E8）=====
+const TranscreateSchema = z.object({ output: z.string(), note: z.string() });
+export async function transcreate(workspaceId: string, userId: string, text: string, targetLanguage: string, targetCulture: string) {
+  const system = `你是「文化轉譯者」。這不是逐字翻譯——保留原文的情感內核、意象與節奏，轉成目標語言與文化下『自然、地道』的表達。
+只回傳 JSON：{"output":"轉譯後的文字","note":"你做了哪些文化調整、為什麼"}。`;
+  return runAgent({
+    agentType: "transcreate", workspaceId, userId, schema: TranscreateSchema,
+    input: { targetLanguage, targetCulture },
+    system,
+    user: `原文：\n${text}\n\n目標語言：${targetLanguage}\n目標文化／風格：${targetCulture}`,
+    temperature: 0.85, maxTokens: 1500,
   });
 }
 
