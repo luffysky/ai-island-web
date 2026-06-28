@@ -6,6 +6,7 @@ import { getActiveWorkspace } from "@/lib/creator-engine/workspace";
 import { listFragments } from "@/lib/creator-engine/fragments";
 import { listWorks } from "@/lib/creator-engine/works";
 import { listListings } from "@/lib/creator-engine/marketplace";
+import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { MarketClient } from "./MarketClient";
 
 export const dynamic = "force-dynamic";
@@ -25,5 +26,8 @@ export default async function MarketPage() {
     ...frags.map((f) => ({ id: f.id, type: "fragment" as const, title: f.title })),
     ...works.map((w) => ({ id: w.id, type: "work" as const, title: w.title })),
   ];
-  return <MarketClient workspaceId={ws.id} listings={listings as any} myAssets={myAssets} />;
+  // 靈感精選：從碎片庫抽幾顆（市集不空 + 探索）
+  const admin = createSupabaseAdmin();
+  const { data: poolPicks } = await admin.rpc("ci_draw_from_pool", { p_n: 12, p_ssr: 3, p_sr: 5 });
+  return <MarketClient workspaceId={ws.id} listings={listings as any} myAssets={myAssets} poolPicks={(poolPicks ?? []) as any} />;
 }

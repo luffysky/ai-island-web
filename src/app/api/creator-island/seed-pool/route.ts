@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireCreatorUser, requireWorkspaceRole } from "@/lib/creator-engine/api";
-import { seedFromPool } from "@/lib/creator-engine/workspace";
+import { seedFromPool, seedSampleWorks } from "@/lib/creator-engine/workspace";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 
 export const dynamic = "force-dynamic";
@@ -21,5 +21,7 @@ export async function POST(req: NextRequest) {
   const { count } = await admin.from("ci_fragments").select("id", { count: "exact", head: true }).eq("workspace_id", workspaceId);
   if ((count ?? 0) > 250) return NextResponse.json({ skipped: true, message: "你的碎片已經夠多了" });
   const added = await seedFromPool(workspaceId, u.userId, 300);
+  const { count: wc } = await admin.from("ci_works").select("id", { count: "exact", head: true }).eq("workspace_id", workspaceId);
+  if ((wc ?? 0) === 0) await seedSampleWorks(workspaceId, u.userId).catch(() => {});
   return NextResponse.json({ added });
 }

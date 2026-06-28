@@ -74,8 +74,9 @@ export async function getOrCreatePersonalWorkspace(userId: string): Promise<Work
   await admin.from("ci_workspace_wallet").insert({ workspace_id: (ws as any).id, balance: 0 }).then(() => {}, () => {});
   await admin.from("ci_workspace_ai_settings").insert({ workspace_id: (ws as any).id }).then(() => {}, () => {});
 
-  // E2 種島：放幾個示範碎片，島一開始就不空（best-effort）
+  // E2 種島：放碎片 + 範例作品，島一開始就不空（best-effort）
   await seedSampleFragments((ws as any).id, userId).catch(() => {});
+  await seedSampleWorks((ws as any).id, userId).catch(() => {});
 
   return ws as Workspace;
 }
@@ -118,6 +119,25 @@ export async function seedFromPool(workspaceId: string, userId: string, n = 300)
 
 async function seedSampleFragments(workspaceId: string, userId: string): Promise<void> {
   await seedFromPool(workspaceId, userId, 300).catch(() => {});
+}
+
+/** 種兩個範例作品，讓「作品庫」一開始就不空、也示範成品長什麼樣。 */
+export async function seedSampleWorks(workspaceId: string, userId: string): Promise<void> {
+  const admin = createSupabaseAdmin();
+  const works = [
+    {
+      title: "範例 · 一首關於回家的歌", work_type: "song", status: "draft",
+      body: "[Verse 1]\n最後一班車的玻璃上\n我用指尖寫你的名字\n窗外的城市倒退著\n像所有我沒說出口的話\n\n[Chorus]\n回家的路那麼長\n長到我把自己走丟\n但只要還有一盞燈\n我就還認得回頭的方向",
+      meta: { sunoPrompt: "lo-fi mandopop, warm, late-night bus, nostalgic, soft piano + rain texture", mvPrompt: "夜晚公車車窗倒影、城市霓虹後退、暖黃路燈" },
+    },
+    {
+      title: "範例 · 一篇短文：外婆家的米甕", work_type: "article", status: "draft",
+      body: "外婆家的廚房有一個比我還高的米甕。\n\n小時候我以為那裡面住著一個世界——每次掀開蓋子，米的香氣像是從很遠的地方飄來。後來才知道，那香氣裡其實藏著外婆每天清晨的手。\n\n她走後，米甕空了。我才第一次發現，原來有些聲音，是要等到再也聽不到，才聽得見的。",
+    },
+  ];
+  await admin.from("ci_works").insert(
+    works.map((w) => ({ workspace_id: workspaceId, created_by: userId, ...w, source_type: "human_original" })),
+  ).then(() => {}, () => {});
 }
 
 /** M0：active workspace = Personal Workspace（之後支援 cookie 選定）。 */

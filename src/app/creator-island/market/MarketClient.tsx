@@ -13,9 +13,20 @@ async function call(url: string, method: string, body?: any) {
   return j;
 }
 
-export function MarketClient({ workspaceId, listings, myAssets }: { workspaceId: string; listings: Listing[]; myAssets: Asset[] }) {
+type Pick = { id: string; text: string; category: string; rarity: string };
+
+export function MarketClient({ workspaceId, listings, myAssets, poolPicks = [] }: { workspaceId: string; listings: Listing[]; myAssets: Asset[]; poolPicks?: Pick[] }) {
   const [tab, setTab] = useState<"browse" | "sell">("browse");
   const [rows, setRows] = useState<Listing[]>(listings);
+  const [picks, setPicks] = useState<Pick[]>(poolPicks);
+
+  async function grabPick(p: Pick) {
+    setErr(null); setBusy("pick" + p.id);
+    try {
+      await call("/api/creator-island/fragments", "POST", { workspaceId, title: p.text, category: p.category, tags: [p.rarity], sourceType: "market_imported" });
+      setPicks((arr) => arr.filter((x) => x.id !== p.id)); setMsg("已加到你的島");
+    } catch (e: any) { setErr(e.message); } finally { setBusy(null); }
+  }
   const [err, setErr] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
@@ -70,6 +81,21 @@ export function MarketClient({ workspaceId, listings, myAssets }: { workspaceId:
             <input type="number" min={0} value={price} onChange={(e) => setPrice(e.target.value)} className="w-28 bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm" />
             <span className="text-xs text-fg-muted">Z 幣（0 = 免費分享）</span>
             <button onClick={createListing} disabled={busy === "sell"} className="ml-auto px-4 py-2 rounded-full bg-accent text-white text-sm font-bold disabled:opacity-40">上架</button>
+          </div>
+        </div>
+      )}
+
+      {tab === "browse" && picks.length > 0 && (
+        <div className="bg-gradient-to-br from-violet-500/10 to-pink-500/10 border border-violet-500/25 rounded-2xl p-4">
+          <div className="text-sm font-bold mb-2">✨ 靈感精選 <span className="text-xs font-normal text-fg-muted">來自全站碎片庫，看到喜歡的就帶回島上</span></div>
+          <div className="grid sm:grid-cols-2 gap-2">
+            {picks.map((p) => (
+              <div key={p.id} className="bg-bg-card/60 rounded-lg px-3 py-2 text-sm flex items-start gap-2">
+                <span className={`text-[10px] px-1.5 py-0.5 rounded-full shrink-0 ${p.rarity === "SSR" ? "bg-amber-400/20 text-amber-300" : p.rarity === "SR" ? "bg-violet-400/20 text-violet-300" : "bg-bg-elevated text-fg-muted"}`}>{p.rarity}</span>
+                <span className="flex-1">{p.text}</span>
+                <button onClick={() => grabPick(p)} disabled={busy === "pick" + p.id} className="shrink-0 text-xs text-accent hover:underline disabled:opacity-40">＋帶走</button>
+              </div>
+            ))}
           </div>
         </div>
       )}
