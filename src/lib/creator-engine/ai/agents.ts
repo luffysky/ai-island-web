@@ -158,13 +158,17 @@ export async function compose(workspaceId: string, userId: string, workType: str
 // ===== 文化轉譯 Transcreate（E8）=====
 const TranscreateSchema = z.object({ output: z.string(), note: z.string() });
 export async function transcreate(workspaceId: string, userId: string, text: string, targetLanguage: string, targetCulture: string) {
-  const system = `你是「文化轉譯者」。這不是逐字翻譯——保留原文的情感內核、意象與節奏，轉成目標語言與文化下『自然、地道』的表達。
-只回傳 JSON：{"output":"轉譯後的文字","note":"你做了哪些文化調整、為什麼"}。`;
+  const system = `你是「文化轉譯者」。這不是逐字翻譯——保留原文的情感內核、意象與節奏，重寫成目標語言與文化下『自然、地道』的表達，融入該語言的慣用語、語感與在地文化。
+
+【最重要】"output" 欄位『必須用目標語言（${targetLanguage}）本身書寫』——例如目標是日語，output 就要是日文（可含當地慣用漢字/假名）；目標是英文就用英文；目標是韓語就用韓文。**絕對不要用中文寫 output**（除非目標語言就是中文）。
+"note" 欄位才用繁體中文，說明你做了哪些文化／語感上的調整。
+
+只回傳 JSON（不要 markdown fence）：{"output":"<用 ${targetLanguage} 書寫的轉譯結果>","note":"<繁體中文說明>"}。`;
   return runAgent({
     agentType: "transcreate", workspaceId, userId, schema: TranscreateSchema,
     input: { targetLanguage, targetCulture },
     system,
-    user: `原文：\n${text}\n\n目標語言：${targetLanguage}\n目標文化／風格：${targetCulture}`,
+    user: `原文（請理解其情感與意象，再用 ${targetLanguage} 重新創作）：\n${text}\n\n目標語言：${targetLanguage}\n目標文化／風格：${targetCulture}\n\n再次提醒：output 用 ${targetLanguage} 書寫，不要用中文。`,
     temperature: 0.85, maxTokens: 1500,
   });
 }
