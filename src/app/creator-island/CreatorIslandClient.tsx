@@ -321,7 +321,10 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
               <p className="text-sm text-fg-muted whitespace-pre-wrap">{result.result.summary}</p>
               <div className="text-xs"><b className="text-accent">核心：</b>{result.result.coreIdea}</div>
               {result.result.connections?.length > 0 && <ul className="text-xs text-fg-muted list-disc list-inside">{result.result.connections.map((c: string, i: number) => <li key={i}>{c}</li>)}</ul>}
-              <button onClick={() => saveFragment(result.result.title, `${result.result.coreIdea}\n\n${result.result.summary}`)} className="px-3 py-1.5 rounded-full bg-accent text-white text-sm">存成碎片</button>
+              <div className="flex gap-2">
+                <button onClick={() => saveFragment(result.result.title, `${result.result.coreIdea}\n\n${result.result.summary}`)} className="px-3 py-1.5 rounded-full bg-accent text-white text-sm">存成碎片</button>
+                <button onClick={() => navigator.clipboard?.writeText(`${result.result.title}\n${result.result.coreIdea}\n\n${result.result.summary}`)} className="text-xs px-3 py-1.5 rounded-full bg-bg-elevated hover:text-accent">📋 複製</button>
+              </div>
             </>)}
             {result.action === "evolve" && (<>
               <div className="font-bold">🌿 演化出 {result.variants.length} 個</div>
@@ -337,7 +340,12 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
               <div className="font-bold">🧵 {result.result.title}</div>
               <pre className="text-sm text-fg-muted whitespace-pre-wrap font-sans">{result.result.lyricsSectioned ?? result.result.body}</pre>
               {result.result.sunoPrompt && <div className="text-xs bg-bg-elevated rounded-lg p-2"><b>🎵 Suno：</b>{result.result.sunoPrompt}<br /><b>🎬 MV：</b>{result.result.mvPrompt}</div>}
-              <button onClick={saveWork} disabled={busy === "savework"} className="px-3 py-1.5 rounded-full bg-accent text-white text-sm disabled:opacity-40">存成作品</button>
+              <div className="flex flex-wrap gap-2">
+                <button onClick={() => navigator.clipboard?.writeText(result.result.lyricsSectioned ?? result.result.body ?? "")} className="text-xs px-3 py-1.5 rounded-full bg-bg-elevated hover:text-accent">📋 複製{result.result.lyricsSectioned ? "歌詞" : "內容"}</button>
+                {result.result.sunoPrompt && <button onClick={() => navigator.clipboard?.writeText(result.result.sunoPrompt)} className="text-xs px-3 py-1.5 rounded-full bg-bg-elevated hover:text-accent">📋 Suno</button>}
+                {result.result.mvPrompt && <button onClick={() => navigator.clipboard?.writeText(result.result.mvPrompt)} className="text-xs px-3 py-1.5 rounded-full bg-bg-elevated hover:text-accent">📋 MV</button>}
+                <button onClick={saveWork} disabled={busy === "savework"} className="px-3 py-1.5 rounded-full bg-accent text-white text-sm disabled:opacity-40">存成作品</button>
+              </div>
             </>)}
           </motion.div>
         )}

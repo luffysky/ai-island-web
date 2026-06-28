@@ -3,6 +3,7 @@
  * 寫走 service-role；授權在 API 層（requireCreatorUser）。
  */
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { notify, displayName } from "@/lib/creator-engine/notify";
 
 const POST_COLS = "id, user_id, workspace_id, type, title, content, images, video_url, video_thumbnail_url, audio_url, tags, visibility, status, likes_count, comments_count, views_count, created_at";
 const AUTHOR = "author:profiles!ci_posts_user_id_fkey(id, username, display_name, avatar_url)";
@@ -67,6 +68,8 @@ export async function togglePostLike(postId: string, userId: string): Promise<{ 
   }
   await admin.from("ci_likes").insert({ asset_id: postId, user_id: userId });
   await admin.rpc("ci_bump_post_count", { p_post: postId, p_col: "likes_count", p_delta: 1 }).then(() => {}, () => {});
+  const owner = await postOwner(postId);
+  if (owner && owner !== userId) notify(owner, { kind: "ci_like", title: `${await displayName(userId)} 喜歡你的貼文`, link: "/creator-island/community" });
   return { on: true };
 }
 
@@ -92,5 +95,7 @@ export async function addPostComment(postId: string, userId: string, body: strin
     .select("id, user_id, parent_id, body, created_at").single();
   if (error) throw new Error(error.message);
   await admin.rpc("ci_bump_post_count", { p_post: postId, p_col: "comments_count", p_delta: 1 }).then(() => {}, () => {});
+  const owner = await postOwner(postId);
+  if (owner && owner !== userId) notify(owner, { kind: "ci_comment", title: `${await displayName(userId)} 留言了你的貼文`, body: body.slice(0, 80), link: "/creator-island/community" });
   return data;
 }

@@ -2,6 +2,7 @@
  * Creator Engine — 好友系統（ci_friendships：邀請/接受/封鎖）。對接 profiles。
  */
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { notify, displayName } from "@/lib/creator-engine/notify";
 
 const PROFILE = "id, username, display_name, avatar_url";
 
@@ -21,15 +22,18 @@ export async function sendRequest(me: string, otherId: string) {
   if (ex) return { id: (ex as any).id, status: (ex as any).status, existed: true };
   const { data, error } = await admin.from("ci_friendships").insert({ requester_id: me, addressee_id: otherId, status: "pending" }).select("id, status").single();
   if (error) throw new Error(error.message);
+  notify(otherId, { kind: "ci_friend_request", title: `${await displayName(me)} 想加你好友`, link: "/creator-island/friends" });
   return { ...(data as any), existed: false };
 }
 
 export async function respondRequest(friendshipId: string, me: string, accept: boolean) {
   const admin = createSupabaseAdmin();
-  const { data: f } = await admin.from("ci_friendships").select("id, addressee_id, status").eq("id", friendshipId).maybeSingle();
+  const { data: f } = await admin.from("ci_friendships").select("id, requester_id, addressee_id, status").eq("id", friendshipId).maybeSingle();
   if (!f || (f as any).addressee_id !== me || (f as any).status !== "pending") throw new Error("無效的邀請");
-  if (accept) await admin.from("ci_friendships").update({ status: "accepted", updated_at: new Date().toISOString() }).eq("id", friendshipId);
-  else await admin.from("ci_friendships").delete().eq("id", friendshipId);
+  if (accept) {
+    await admin.from("ci_friendships").update({ status: "accepted", updated_at: new Date().toISOString() }).eq("id", friendshipId);
+    notify((f as any).requester_id, { kind: "ci_friend_accept", title: `${await displayName(me)} 接受了你的好友邀請`, link: "/creator-island/friends" });
+  } else await admin.from("ci_friendships").delete().eq("id", friendshipId);
   return { ok: true };
 }
 

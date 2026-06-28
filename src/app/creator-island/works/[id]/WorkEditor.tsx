@@ -27,6 +27,10 @@ export function WorkEditor({ work, canEdit, usedFragments = [], derivedCount = 0
   const [err, setErr] = useState<string | null>(null);
   const meta = work.meta || {};
 
+  function copy(t: string, label: string) {
+    navigator.clipboard?.writeText(t).then(() => { setMsg(`已複製${label}`); setTimeout(() => setMsg(null), 1500); }, () => setErr("複製失敗"));
+  }
+
   async function save() {
     setBusy("save"); setErr(null); setMsg(null);
     try { await patch(`/api/creator-island/works/${work.id}`, { title, body, status }); setMsg("已儲存"); }
@@ -70,6 +74,12 @@ export function WorkEditor({ work, canEdit, usedFragments = [], derivedCount = 0
       <textarea value={body} onChange={(e) => setBody(e.target.value)} disabled={!canEdit} rows={18}
         className="w-full bg-bg-card border border-border rounded-xl p-4 text-sm outline-none focus:border-accent resize-y whitespace-pre-wrap" />
 
+      <div className="flex flex-wrap gap-2">
+        <button onClick={() => copy(body, "內容")} className="text-xs px-3 py-1.5 rounded-full bg-bg-elevated hover:text-accent">📋 複製{work.work_type === "song" ? "歌詞" : "內容"}</button>
+        {meta.sunoPrompt && <button onClick={() => copy(meta.sunoPrompt, "Suno 提示詞")} className="text-xs px-3 py-1.5 rounded-full bg-bg-elevated hover:text-accent">📋 複製 Suno 提示詞</button>}
+        {meta.mvPrompt && <button onClick={() => copy(meta.mvPrompt, "MV 提示詞")} className="text-xs px-3 py-1.5 rounded-full bg-bg-elevated hover:text-accent">📋 複製 MV 提示詞</button>}
+        {meta.sunoPrompt && <button onClick={() => copy(`${title}\n\n${body}\n\n— Suno —\n${meta.sunoPrompt}\n\n— MV —\n${meta.mvPrompt ?? ""}`, "全部")} className="text-xs px-3 py-1.5 rounded-full bg-accent/15 text-accent">📋 複製全部</button>}
+      </div>
       {(meta.sunoPrompt || meta.mvPrompt) && (
         <div className="bg-bg-elevated rounded-xl p-3 text-xs space-y-1">
           {meta.sunoPrompt && <div><b>🎵 Suno：</b>{meta.sunoPrompt}</div>}

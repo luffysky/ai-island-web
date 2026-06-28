@@ -3,6 +3,7 @@
  * thread 以 user_lo<user_hi 去重。
  */
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { notify, displayName } from "@/lib/creator-engine/notify";
 
 const PROFILE = "id, username, display_name, avatar_url";
 const pair = (a: string, b: string) => (a < b ? [a, b] : [b, a]);
@@ -74,5 +75,11 @@ export async function sendMessage(threadId: string, sender: string, body?: strin
     .select("id, sender_id, body, media_url, media_type, created_at").single();
   if (error) throw new Error(error.message);
   await admin.from("ci_dm_threads").update({ last_message_at: new Date().toISOString() }).eq("id", threadId);
+  // 通知對方
+  const { data: th } = await admin.from("ci_dm_threads").select("user_lo, user_hi").eq("id", threadId).maybeSingle();
+  if (th) {
+    const other = (th as any).user_lo === sender ? (th as any).user_hi : (th as any).user_lo;
+    notify(other, { kind: "ci_dm", title: `${await displayName(sender)} 傳了訊息給你`, body: (body ?? "（媒體）").slice(0, 60), link: `/creator-island/messages?t=${threadId}` });
+  }
   return data;
 }

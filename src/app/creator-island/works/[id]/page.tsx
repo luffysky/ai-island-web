@@ -10,6 +10,19 @@ import { WorkEditor } from "./WorkEditor";
 
 export const dynamic = "force-dynamic";
 
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const work = await getWork(id).catch(() => null);
+  const title = work?.title ?? "創作者島嶼作品";
+  const sub = work ? `${{ song: "🎵 歌曲", article: "📄 文章", story: "📖 故事" }[work.work_type as string] ?? "作品"}・創作者島嶼` : "創作者島嶼";
+  const og = `/api/og?title=${encodeURIComponent(title.slice(0, 40))}&subtitle=${encodeURIComponent(sub)}`;
+  return {
+    title: `${title}｜創作者島嶼`,
+    openGraph: { title, description: sub, images: [{ url: og, width: 1200, height: 630 }] },
+    twitter: { card: "summary_large_image", title, description: sub, images: [og] },
+  };
+}
+
 export default async function WorkPage({ params }: { params: Promise<{ id: string }> }) {
   if (!(await isCreatorIslandEnabled())) return <FeatureOffNotice title="🎨 創作者島嶼即將開放" />;
   const { id } = await params;
