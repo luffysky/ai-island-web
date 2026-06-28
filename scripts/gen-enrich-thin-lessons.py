@@ -12,6 +12,8 @@
 flags：--only 77,78（只做這些章）、--max-len 2500（只擴寫短於此字數的課）、--limit N、--dry
 """
 import json, os, sys, time, urllib.request, argparse, glob, re
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "_lib"))
+from log_cli_usage import log_usage  # noqa: E402  記 CLI 用量 → 後台 usage
 sys.stdout.reconfigure(encoding="utf-8")
 
 ap = argparse.ArgumentParser()
@@ -58,6 +60,8 @@ def call_ai(user):
     })
     with urllib.request.urlopen(req, timeout=150) as r:
         data = json.load(r)
+    u = data.get("usage", {})
+    log_usage(MODEL, u.get("input_tokens", 0), u.get("output_tokens", 0))
     raw = "".join(b.get("text", "") for b in data.get("content", []) if b.get("type") == "text").strip()
     return _strip_wrap_fence(raw)
 

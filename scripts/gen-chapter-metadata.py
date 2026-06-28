@@ -10,6 +10,8 @@
 flags：--limit N（最多處理幾章）、--only 26,27（只做這些）、--dry（不寫檔）
 """
 import json, os, sys, time, urllib.request, urllib.error, argparse, glob, re
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "_lib"))
+from log_cli_usage import log_usage  # noqa: E402  記 CLI 用量 → 後台 usage
 sys.stdout.reconfigure(encoding="utf-8")
 
 ap = argparse.ArgumentParser()
@@ -48,6 +50,8 @@ def call_ai(user):
     })
     with urllib.request.urlopen(req, timeout=90) as r:
         data = json.load(r)
+    u = data.get("usage", {})
+    log_usage(MODEL, u.get("input_tokens", 0), u.get("output_tokens", 0))
     raw = "".join(b.get("text", "") for b in data.get("content", []) if b.get("type") == "text").strip()
     raw = re.sub(r"^```(?:json)?\s*", "", raw)
     raw = re.sub(r"\s*```$", "", raw)
