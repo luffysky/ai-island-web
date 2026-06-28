@@ -1,13 +1,29 @@
+import { redirect } from "next/navigation";
+import { createSupabaseServer } from "@/lib/supabase-server";
 import { isCreatorIslandEnabled } from "@/lib/app-settings";
 import { FeatureOffNotice } from "@/components/FeatureOffNotice";
-import { ComingSoon } from "@/components/creator-island/ComingSoon";
+import { getActiveWorkspace } from "@/lib/creator-engine/workspace";
+import { listFragments } from "@/lib/creator-engine/fragments";
+import { listWorks } from "@/lib/creator-engine/works";
+import { listListings } from "@/lib/creator-engine/marketplace";
+import { MarketClient } from "./MarketClient";
 
 export const dynamic = "force-dynamic";
 
 export default async function MarketPage() {
   if (!(await isCreatorIslandEnabled())) return <FeatureOffNotice title="🎨 創作者島嶼即將開放" />;
-  return (
-    <ComingSoon emoji="🏪" title="市集" desc="把你的碎片包、提示詞包、工作流上架，用 Z 幣交易（第一階段站內經濟）。"
-      previews={["碎片包 / 提示詞包 / 工作流包", "授權 + 收益分潤（平台費）", "評價・排行", "Z 幣購買（真金流為未來）"]} />
-  );
+  const sb = await createSupabaseServer();
+  const { data: { user } } = await sb.auth.getUser();
+  if (!user) redirect("/login?next=/creator-island/market");
+  const ws = await getActiveWorkspace(user.id);
+  const [{ items: listings }, { items: frags }, { items: works }] = await Promise.all([
+    listListings({ limit: 24 }),
+    listFragments(ws.id, { limit: 50 }),
+    listWorks(ws.id, { limit: 50 }),
+  ]);
+  const myAssets = [
+    ...frags.map((f) => ({ id: f.id, type: "fragment" as const, title: f.title })),
+    ...works.map((w) => ({ id: w.id, type: "work" as const, title: w.title })),
+  ];
+  return <MarketClient workspaceId={ws.id} listings={listings as any} myAssets={myAssets} />;
 }
