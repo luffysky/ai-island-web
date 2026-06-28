@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { uploadMedia } from "@/lib/creator-upload";
 
 type Story = { id: string; user_id: string; media_url: string; media_type: "image" | "video"; caption?: string | null; created_at: string; author?: { id?: string; username?: string; display_name?: string; avatar_url?: string } };
 const name = (a?: Story["author"]) => a?.display_name || a?.username || "創作者";
@@ -24,11 +25,9 @@ export function Stories({ initial, meId }: { initial: Story[]; meId: string }) {
   async function add(file: File) {
     setErr(null); setBusy(true);
     try {
-      const fd = new FormData(); fd.append("file", file);
-      const up = await fetch("/api/upload", { method: "POST", body: fd }).then((r) => r.json());
-      if (!up.url) throw new Error(up.message || "上傳失敗");
+      const url = await uploadMedia(file);
       const mediaType = file.type.startsWith("video") ? "video" : "image";
-      const { story } = await fetch("/api/creator-island/social/stories", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ mediaUrl: up.url, mediaType, caption: "" }) }).then((r) => r.json());
+      const { story } = await fetch("/api/creator-island/social/stories", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ mediaUrl: url, mediaType, caption: "" }) }).then((r) => r.json());
       setStories((p) => [{ ...story, author: { id: meId } }, ...p]);
     } catch (e: any) { setErr(e.message); } finally { setBusy(false); }
   }

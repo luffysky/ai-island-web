@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { uploadMedia } from "@/lib/creator-upload";
 
 type Author = { id?: string; username?: string; display_name?: string; avatar_url?: string };
 type Post = {
@@ -16,12 +17,7 @@ async function call(url: string, method: string, body?: any) {
   if (!res.ok) throw new Error(j.message || j.error || `HTTP ${res.status}`);
   return j;
 }
-async function uploadFile(file: File): Promise<string> {
-  const fd = new FormData(); fd.append("file", file);
-  const r = await fetch("/api/upload", { method: "POST", body: fd }).then((x) => x.json());
-  if (!r.url) throw new Error(r.message || "上傳失敗");
-  return r.url;
-}
+const uploadFile = uploadMedia;
 const name = (a?: Author) => a?.display_name || a?.username || "創作者";
 
 export function SocialFeed({ initialPosts, meId }: { initialPosts: Post[]; meId: string }) {
@@ -115,6 +111,7 @@ function PostCard({ p, meId, onDelete }: { p: Post; meId: string; onDelete: () =
       <div className="flex items-center gap-4 text-sm text-fg-muted pt-1">
         <button onClick={like} className={liked ? "text-pink-400" : "hover:text-pink-400"}>{liked ? "❤️" : "🤍"} {likes}</button>
         <button onClick={loadComments} className="hover:text-accent">💬 {p.comments_count}</button>
+        {p.user_id === meId && <button onClick={async () => { try { await call(`/api/creator-island/social/posts/${p.id}/publish-blog`, "POST"); alert("已發佈成部落格草稿"); } catch (e: any) { alert(e.message); } }} className="hover:text-accent" title="發佈到部落格">📝</button>}
         <button onClick={bookmark} className={`ml-auto ${saved ? "text-amber-300" : "hover:text-amber-300"}`}>{saved ? "🔖" : "📑"}</button>
       </div>
       {showC && (

@@ -82,6 +82,26 @@ export async function toggleBookmark(postId: string, userId: string): Promise<{ 
   return { on: true };
 }
 
+/** 把貼文發佈成本站部落格草稿（user_blog_articles, is_public=false）。 */
+export async function publishPostToBlog(postId: string, userId: string): Promise<{ blogId: string }> {
+  const admin = createSupabaseAdmin();
+  const { data: post } = await admin.from("ci_posts").select("user_id, title, content, images, video_url, audio_url").eq("id", postId).maybeSingle();
+  if (!post) throw new Error("post_not_found");
+  if ((post as any).user_id !== userId) throw new Error("forbidden");
+  const p = post as any;
+  const title = (p.title || (p.content || "").slice(0, 40) || "我的貼文").trim();
+  const imgs = (p.images ?? []).map((im: any) => `<img src="${im.url}" alt="" />`).join("");
+  const vid = p.video_url ? `<video src="${p.video_url}" controls></video>` : "";
+  const aud = p.audio_url ? `<audio src="${p.audio_url}" controls></audio>` : "";
+  const html = `${(p.content || "").split(/\n\s*\n/).map((x: string) => `<p>${x.replace(/\n/g, "<br>")}</p>`).join("")}${imgs}${vid}${aud}`;
+  const slug = `post-${postId.slice(0, 8)}`;
+  const { data, error } = await admin.from("user_blog_articles")
+    .upsert({ user_id: userId, title, slug, content: html, is_public: false }, { onConflict: "user_id,slug" })
+    .select("id").single();
+  if (error) throw new Error(error.message);
+  return { blogId: (data as any).id };
+}
+
 export async function listPostComments(postId: string) {
   const admin = createSupabaseAdmin();
   const { data } = await admin.from("ci_post_comments")

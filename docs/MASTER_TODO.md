@@ -92,9 +92,10 @@
 - [x] ~~**碎片庫滿 10009**（R 5497 / SR 3843 / SSR 669；形式：畫面/物件/句子/人物/地點/對話/詞/意象；去重）~~。可再跑 `gen-fragment-pool.mjs` 擴充。
 - [x] ~~**社群（參考 Insight）完整**：動態牆(發文/圖影音/讚/留言/收藏) + 限動 Stories(24h) + 短影音 + 好友(邀請/接受) + 私訊(文字+附件) + 站長監看私訊(owner-only+稽核)~~。
 - [x] ~~**通知**(讚/留言/好友/私訊→鈴鐺) + **分享 OG 圖卡**(作品) + **Discord/LINE/TG**(貼文/新創作者/成交→notifyAdmin) + **內容單獨複製** + **聚光導覽**~~。
-- [ ] **島內對話 AI**（多模態聊天，圖/語音/檔案）— Phase5 最後一項，未做。
-- [ ] **發佈到本站部落格**（works→blog 已有；社群貼文→blog 待接）。
-- [ ] 真無上限上傳（presigned R2，目前 img50/audio200/video1000MB）。
+- [x] ~~**島內對話 AI 綠寶**（多模態聊天：文字/🎤語音/📷看圖(vision)/📎檔案；寫 ci_agent_runs → 後台 AI 對話可見）~~。
+- [x] ~~**發佈到本站部落格**（works→blog + 社群貼文→blog publishPostToBlog）~~。
+- [x] ~~**presigned 直傳 R2**（圖/影/音/檔皆可、client 直 PUT 不經 server、上限放寬至 GB 級；社群/限動/私訊/聊天皆改用）~~。
+- [ ] 真·外部平台 cross-post（Threads/IG/Medium，需 OAuth 金鑰，未做）。
 - [ ] **PWA PNG icons**：`app/manifest.ts` 仍只指 `favicon.svg`；補 192/512 maskable + apple-touch（與平台共用 TODO）。
 - [ ] **記憶管理使用者頁**（選配）：`ci_memories` 後端 + agent 注入已備，缺 user-facing 管理 UI。
 - [ ] **AI run / 成本儀表板**（選配）：`/api/creator-island/ai/runs` 已備、缺前端。

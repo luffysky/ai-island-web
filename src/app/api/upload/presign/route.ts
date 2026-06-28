@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 const MB = 1024 * 1024;
-const ALLOWED_FOLDERS = new Set(["blog", "portfolio", "social", "misc"]);
+const ALLOWED_FOLDERS = new Set(["blog", "portfolio", "social", "misc", "creator-island"]);
 
 /**
  * POST /api/upload/presign  { filename, contentType, folder, size }
@@ -30,14 +30,11 @@ export async function POST(req: NextRequest) {
 
   const { filename, contentType, folder, size } = body ?? {};
   const ct = String(contentType || "");
-  // 支援所有影片/音訊格式（大類前綴判斷、不限白名單）
-  const kind = ct.startsWith("video/") ? "video" : ct.startsWith("audio/") ? "audio" : null;
-  if (!kind) {
-    return NextResponse.json({ error: "type_not_allowed", message: "presign 只給影片 / 音訊大檔" }, { status: 400 });
-  }
-  const maxMb = kind === "video" ? 500 : 60;
+  // 直傳 R2、不經 server 記憶體 → 圖/影/音/檔皆可、上限放很寬（防濫用上限 5GB）
+  const kind = ct.startsWith("video/") ? "video" : ct.startsWith("audio/") ? "audio" : ct.startsWith("image/") ? "image" : "file";
+  const maxMb = kind === "video" ? 5000 : kind === "audio" ? 1000 : kind === "image" ? 500 : 1000;
   if (Number(size) > maxMb * MB) {
-    return NextResponse.json({ error: "too_large", message: `${kind === "video" ? "影片" : "音訊"}不可超過 ${maxMb} MB` }, { status: 400 });
+    return NextResponse.json({ error: "too_large", message: `檔案不可超過 ${maxMb} MB` }, { status: 400 });
   }
   const f = ALLOWED_FOLDERS.has(folder) ? folder : "misc";
 

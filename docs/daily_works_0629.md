@@ -36,7 +36,12 @@
 - **工作室可進入**：studio →自己的島（碎片/分類/迴圈獨立）。**作品庫範例**連實際碎片、顯示「由 N 個碎片長成」。
 - **後台監看** `/admin/creator-island`：活動計數 + AI 對話紀錄(ci_agent_runs) + 通知監看；AI 用量併入 /admin/ai/usage。
 - **社群升級**（參考 Insight、對接 profiles/ci_）：Phase1 8 表（貼文/限動/短影音/留言/收藏/好友 ci_friendships/私訊 ci_dm_*）+ Phase2 動態牆（發文+圖影音 R2+讚+留言+收藏）。/api/upload 放寬上限。
-- 待續：島內對話 AI、cross-post 到本站部落格。
+- ~~待續：島內對話 AI、cross-post~~ → 已完成（見下）。
+
+## 🤖 Phase 5 收尾（島內對話 AI + cross-post + presigned）
+- **島內對話 AI「綠寶」**：右下浮動聊天（IslandChat）。多模態——文字 / 🎤 語音(STT) / 📷 看圖(Claude vision、base64) / 📎 檔案(presign 直傳)。`/api/creator-island/ai/chat` 用 Model Router + callAI 多模態，寫 ci_agent_runs（後台「AI 對話」可見）+ logAiUsage。
+- **cross-post 到本站部落格**：社群貼文「📝」→ user_blog_articles 草稿（publishPostToBlog；works→blog 本就有）。
+- **presigned 直傳 R2**：`creator-upload.ts uploadMedia` 走 /api/upload/presign 直 PUT（圖/影/音/檔，上限放寬至 GB 級、不經 server OOM）；社群發文/限動/私訊/聊天附件全改用。
 
 ## 🌐 社群完整化（同日，參考 Insight 對接本專案）
 - **Schema**：8 表（ci_posts/stories/story_views/post_comments/bookmarks/friendships/dm_threads/dm_messages）+ RPC（ci_bump_post_count/story_views）。讚沿用 ci_likes、通知沿用 notifications。

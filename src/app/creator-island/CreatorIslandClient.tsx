@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { DndContext, useDraggable, useDroppable, PointerSensor, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core";
 import { EggHatch } from "./EggHatch";
 import { IslandTour } from "./IslandTour";
+import { IslandChat } from "./IslandChat";
 
 type Fragment = { id: string; title: string; subtitle?: string | null; content: string; tags: string[]; mood?: string | null; category?: string | null; source_type: string };
 type Collection = { id: string; name: string; assetIds: string[] };
@@ -416,6 +417,7 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
       </AnimatePresence>
 
       <IslandTour />
+      <IslandChat workspaceId={workspaceId} />
     </div>
   );
 }

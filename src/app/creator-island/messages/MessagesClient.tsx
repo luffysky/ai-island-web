@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { uploadMedia } from "@/lib/creator-upload";
 
 type Thread = { id: string; last_message_at?: string; other?: { id: string; username?: string; display_name?: string; avatar_url?: string } };
 type Msg = { id: number; sender_id: string; body?: string | null; media_url?: string | null; media_type?: string | null; created_at: string };
@@ -37,11 +38,9 @@ export function MessagesClient({ initialThreads, meId, initialThreadId }: { init
   async function sendMedia(file: File) {
     if (!active) return; setBusy(true); setErr(null);
     try {
-      const fd = new FormData(); fd.append("file", file);
-      const up = await fetch("/api/upload", { method: "POST", body: fd }).then((r) => r.json());
-      if (!up.url) throw new Error(up.message || "上傳失敗");
+      const url = await uploadMedia(file);
       const mt = file.type.startsWith("video") ? "video" : file.type.startsWith("audio") ? "audio" : file.type.startsWith("image") ? "image" : "file";
-      const j = await call(`/api/creator-island/social/dm/${active}`, "POST", { mediaUrl: up.url, mediaType: mt });
+      const j = await call(`/api/creator-island/social/dm/${active}`, "POST", { mediaUrl: url, mediaType: mt });
       setMsgs((m) => [...m, j.message]);
     } catch (e: any) { setErr(e.message); } finally { setBusy(false); }
   }
