@@ -51,6 +51,22 @@ export async function listMessages(threadId: string) {
   return data ?? [];
 }
 
+// ===== 後台監看（owner-only，service-role 繞 RLS）=====
+export async function adminListAllThreads() {
+  const admin = createSupabaseAdmin();
+  const { data } = await admin.from("ci_dm_threads")
+    .select("id, user_lo, user_hi, last_message_at, created_at, lo:profiles!ci_dm_threads_user_lo_fkey(id,username,display_name), hi:profiles!ci_dm_threads_user_hi_fkey(id,username,display_name)")
+    .order("last_message_at", { ascending: false, nullsFirst: false }).limit(200);
+  return data ?? [];
+}
+export async function adminThreadMessages(threadId: string) {
+  const admin = createSupabaseAdmin();
+  const { data } = await admin.from("ci_dm_messages")
+    .select("id, sender_id, body, media_url, media_type, created_at, sender:profiles!ci_dm_messages_sender_id_fkey(username,display_name)")
+    .eq("thread_id", threadId).order("created_at", { ascending: true });
+  return data ?? [];
+}
+
 export async function sendMessage(threadId: string, sender: string, body?: string, mediaUrl?: string, mediaType?: string) {
   const admin = createSupabaseAdmin();
   const { data, error } = await admin.from("ci_dm_messages")

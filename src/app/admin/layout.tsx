@@ -181,6 +181,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               <AdminLink href="/admin/ai/models">🎛️ AI 模型管理</AdminLink>
               <AdminLink href="/admin/ai/usage-models">🔌 用途 ↔ 模型對應</AdminLink>
               <AdminLink href="/admin/creator-island">🏝️ 創作者島嶼監看</AdminLink>
+              {isOwner && <AdminLink href="/admin/creator-island/messages">🔒 私訊紀錄（站長）</AdminLink>}
               <AdminLink href="/admin/ai/creator-island">🏝️ 創作者島嶼 AI 模型</AdminLink>
               {isOwner && <AdminLink href="/admin/ai/usage">📊 Token 用量</AdminLink>}
               <AdminLink href="/admin/ai/cache">🗄️ 回應快取</AdminLink>
