@@ -89,6 +89,28 @@ export async function workFragmentIds(workId: string): Promise<string[]> {
   return ((data as any[]) ?? []).map((r) => r.fragment_id);
 }
 
+/** 把作品發布成部落格草稿（user_blog_articles，is_public=false）。回 { blogId }。 */
+export async function publishWorkToBlog(workId: string, userId: string): Promise<{ blogId: string }> {
+  const admin = createSupabaseAdmin();
+  const work = await getWork(workId);
+  if (!work) throw new Error("work_not_found");
+
+  const base = (work.title || "work").toLowerCase().replace(/[^a-z0-9一-鿿]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40) || "work";
+  const slug = `${base}-${work.id.slice(0, 6)}`;
+  // body → 簡易 HTML（段落）
+  const html = (work.body || "").split(/\n\s*\n/).map((p) => `<p>${p.replace(/\n/g, "<br>")}</p>`).join("");
+
+  const { data, error } = await admin
+    .from("user_blog_articles")
+    .upsert({ user_id: userId, title: work.title, slug, content: html, is_public: false }, { onConflict: "user_id,slug" })
+    .select("id")
+    .single();
+  if (error) throw new Error(error.message);
+  const blogId = (data as any).id as string;
+  await admin.from("ci_works").update({ published_blog_id: blogId, updated_at: new Date().toISOString() }).eq("id", workId);
+  return { blogId };
+}
+
 /**
  * 封存作品 → 回收成新碎片（每段非空白行成一個碎片），記 recycled_from。
  * 簡化版：把 body 依空行切段。

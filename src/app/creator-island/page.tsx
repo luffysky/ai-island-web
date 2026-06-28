@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { isCreatorIslandEnabled } from "@/lib/app-settings";
@@ -32,9 +33,11 @@ export default async function CreatorIslandPage() {
           <h1 className="text-2xl font-bold">🎨 創作者島嶼</h1>
           <p className="text-sm text-fg-muted mt-1">把散落的碎片，變成你的創作宇宙。</p>
         </div>
-        <div className="text-xs text-fg-muted">
-          目前工作空間：<b className="text-fg">{personal.name}</b>
-        </div>
+        <nav className="flex items-center gap-3 text-sm">
+          <Link href="/creator-island/works" className="text-fg-muted hover:text-accent">📚 作品庫</Link>
+          <Link href="/creator-island/studio" className="text-fg-muted hover:text-accent">🏢 工作室</Link>
+          <span className="text-xs text-fg-muted">·&nbsp;{personal.name}</span>
+        </nav>
       </header>
 
       {/* 創作循環：捕捉 → 凝聚/演化/編織 → 存 */}
