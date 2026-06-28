@@ -21,6 +21,7 @@ export function CreatorIslandClient({ workspaceId, initialFragments }: { workspa
   const [nt, setNt] = useState("");
   const [ntags, setNtags] = useState("");
   const [workType, setWorkType] = useState("article");
+  const [transLang, setTransLang] = useState("日語");
   const [busy, setBusy] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [result, setResult] = useState<any>(null);
@@ -64,15 +65,13 @@ export function CreatorIslandClient({ workspaceId, initialFragments }: { workspa
     } catch (e: any) { setErr(e.message); } finally { setBusy(null); }
   }
 
-  // E8 文化轉譯
+  // E8 文化轉譯（用下拉選的語言）
   async function transcreateSel() {
-    const lang = prompt("轉譯成哪種語言／風格？（例：日系、韓系、English indie、文言文）");
-    if (!lang) return;
     const fid = Array.from(selected)[0];
     if (!fid) return;
     setErr(null); setBusy("transcreate");
     try {
-      const j = await api("/api/creator-island/ai/transcreate", { workspaceId, fragmentId: fid, targetLanguage: lang, targetCulture: lang });
+      const j = await api("/api/creator-island/ai/transcreate", { workspaceId, fragmentId: fid, targetLanguage: transLang, targetCulture: transLang });
       setFragments((p) => [j.fragment, ...p]);
     } catch (e: any) { setErr(e.message); } finally { setBusy(null); }
   }
@@ -202,6 +201,10 @@ export function CreatorIslandClient({ workspaceId, initialFragments }: { workspa
           className="px-3 py-1.5 rounded-full bg-bg-elevated text-sm hover:text-accent disabled:opacity-40">🌿 演化</button>
         <button onClick={() => findRelated(sel[0])} disabled={busy !== null || sel.length !== 1}
           className="px-3 py-1.5 rounded-full bg-bg-elevated text-sm hover:text-accent disabled:opacity-40">🔍 找相關</button>
+        <select value={transLang} onChange={(e) => setTransLang(e.target.value)} title="轉譯目標語言"
+          className="bg-bg-elevated border border-border rounded-full px-2 py-1.5 text-xs">
+          {["日語", "韓語", "English", "法語", "西班牙語", "粵語", "文言文"].map((l) => <option key={l} value={l}>{l}</option>)}
+        </select>
         <button onClick={transcreateSel} disabled={busy !== null || sel.length !== 1}
           className="px-3 py-1.5 rounded-full bg-bg-elevated text-sm hover:text-accent disabled:opacity-40">🌏 轉譯</button>
         <select value={workType} onChange={(e) => setWorkType(e.target.value)} className="bg-bg-elevated border border-border rounded-full px-2 py-1.5 text-xs">
