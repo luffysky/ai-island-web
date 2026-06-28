@@ -74,7 +74,27 @@ export async function getOrCreatePersonalWorkspace(userId: string): Promise<Work
   await admin.from("ci_workspace_wallet").insert({ workspace_id: (ws as any).id, balance: 0 }).then(() => {}, () => {});
   await admin.from("ci_workspace_ai_settings").insert({ workspace_id: (ws as any).id }).then(() => {}, () => {});
 
+  // E2 種島：放幾個示範碎片，島一開始就不空（best-effort）
+  await seedSampleFragments((ws as any).id, userId).catch(() => {});
+
   return ws as Workspace;
+}
+
+/** E2 種島：給新工作空間放幾個示範碎片（讓「空島」一開始就有東西玩）。 */
+async function seedSampleFragments(workspaceId: string, userId: string): Promise<void> {
+  const admin = createSupabaseAdmin();
+  const samples = [
+    { title: "我墊著腳尖走在妳的世界", tags: ["歌詞", "暗戀"], category: "靈感" },
+    { title: "清晨第一口咖啡的蒸氣，像把昨天的疲憊都蒸散了", tags: ["日常", "畫面"], category: "靈感" },
+    { title: "如果通知能『先幫我想好怎麼回』，而不是只提醒我", tags: ["產品點子"], category: "點子" },
+    { title: "小時候那台永遠調不準的收音機，雜訊裡藏著整個夏天", tags: ["回憶"], category: "故事種子" },
+  ];
+  await admin.from("ci_fragments").insert(
+    samples.map((s) => ({
+      workspace_id: workspaceId, created_by: userId,
+      title: s.title, tags: s.tags, category: s.category, source_type: "egg_generated",
+    })),
+  ).then(() => {}, () => {});
 }
 
 /** M0：active workspace = Personal Workspace（之後支援 cookie 選定）。 */

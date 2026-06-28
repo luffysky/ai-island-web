@@ -2,7 +2,9 @@ import { redirect } from "next/navigation";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { isCreatorIslandEnabled } from "@/lib/app-settings";
 import { FeatureOffNotice } from "@/components/FeatureOffNotice";
-import { getOrCreatePersonalWorkspace, listWorkspaces } from "@/lib/creator-engine/workspace";
+import { getOrCreatePersonalWorkspace } from "@/lib/creator-engine/workspace";
+import { listFragments } from "@/lib/creator-engine/fragments";
+import { CreatorIslandClient } from "./CreatorIslandClient";
 
 // 旗標 / workspace 要即時反映
 export const dynamic = "force-dynamic";
@@ -18,11 +20,11 @@ export default async function CreatorIslandPage() {
   const { data: { user } } = await sb.auth.getUser();
   if (!user) redirect("/login?next=/creator-island");
 
-  // 3) 首次進來 lazy-create Personal Workspace
+  // 3) 首次進來 lazy-create Personal Workspace（+ E2 種島）
   const personal = await getOrCreatePersonalWorkspace(user.id);
-  const workspaces = await listWorkspaces(user.id);
+  const { items: fragments } = await listFragments(personal.id, { limit: 50 });
 
-  // 4) M0：先給最小 Dashboard 殼（M3 再做完整 IA）
+  // 4) 創作者島嶼主畫面（M3）
   return (
     <div className="max-w-5xl mx-auto px-6 py-10 space-y-6">
       <header className="flex items-center justify-between gap-3 flex-wrap">
@@ -35,27 +37,8 @@ export default async function CreatorIslandPage() {
         </div>
       </header>
 
-      <section className="bg-bg-card border border-border rounded-2xl p-6">
-        <h2 className="font-bold mb-2">🚧 M0 基礎已就緒</h2>
-        <p className="text-sm text-fg-muted leading-relaxed">
-          工作空間系統已啟用。碎片庫、創作工具（凝聚 / 演化 / 編織）、作品庫將陸續上線。
-        </p>
-      </section>
-
-      <section>
-        <h2 className="text-sm uppercase tracking-wider text-fg-muted mb-3">你的工作空間（{workspaces.length}）</h2>
-        <div className="grid sm:grid-cols-2 gap-3">
-          {workspaces.map((w) => (
-            <div key={w.id} className="bg-bg-card border border-border rounded-xl p-4">
-              <div className="font-bold text-sm flex items-center gap-2">
-                {w.type === "personal" ? "👤" : "🏢"} {w.name}
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-bg-elevated text-fg-muted">{w.role}</span>
-              </div>
-              <div className="text-[11px] text-fg-muted mt-1">{w.type === "personal" ? "個人工作空間" : "工作室"}</div>
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* 創作循環：捕捉 → 凝聚/演化/編織 → 存 */}
+      <CreatorIslandClient workspaceId={personal.id} initialFragments={fragments as any} />
     </div>
   );
 }
