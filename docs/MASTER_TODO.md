@@ -79,10 +79,13 @@
 - [x] ~~**M4 Memory + skeletons**：ci_memories(與 user_ai_memory 分開)+usage + 注入 agents；ci_dust_ledger + 碎片蛋；market/community/growth skeleton。~~
 - [~] **M5 Hardening + launch**：smoke 擴 `/creator-island` ✅；測試/a11y/perf/security-review 待補；**merge→push→Zeabur 部署**（進行中）。
 
-## Phase 2 — `ENHANCEMENTS.md` + 各 doc Future
-- [ ] E3 創作家譜視覺、E4 主動回憶、E5 意外配對每日、E6 語音/拍照捕捉、E7 工作流錄製、E8 文化轉譯楔子、E9 Creator DNA 卡、E11 完整版(封面/風格庫/Prompt Pack)。
-- [ ] 完整 Marketplace（Z幣 phase1 → 真金流 phase2 KYC）、完整 Community、完整 Growth(DNA/skill tree/Monthly)、Workflow 視覺編輯器+n8n、其餘 agents(孵化/回收/轉譯/評審/教練)、Knowledge 區。
-- [ ] Agent Blueprint 變 Asset（ADR-015）、沉浸式島嶼世界 UX。
+## Phase 2 — **已實作 + 部署（2026-06-29）**
+- [x] ~~E3 創作家譜（作品顯示 composition+衍生）~~
+- [x] ~~E4 主動回憶（語意 related）~~ + [x] ~~E5 意外配對（ci_surprising_pairs + embedding backfill）~~
+- [x] ~~E6 語音/拍照捕捉~~、[x] ~~E7 工作流錄製/重播~~、[x] ~~E8 文化轉譯（Transcreator + 家譜）~~、[x] ~~E9 Creator DNA 卡 + Growth 頁~~
+- [x] ~~完整 Marketplace（Z幣 phase1、抽成 0%、賣家進 workspace wallet、entitlement）~~
+- [x] ~~完整 Community（follow/collect/like/comment + fork/remix→複製+家譜）~~
+- [ ] 仍 future：真金流 marketplace（KYC，需決策）、Workflow 視覺編輯器+n8n、其餘 agents(孵化/回收/評審/教練)、Knowledge 區、Growth skill tree/Monthly report、E11 完整版(封面/風格庫/Prompt Pack)、Agent Blueprint 變 Asset(ADR-015)、沉浸式島嶼世界 UX。
 
 ## 其他島嶼（長線）
 - [ ] Learning / Business / Research Island（共用 Ideas OS 核心）。
