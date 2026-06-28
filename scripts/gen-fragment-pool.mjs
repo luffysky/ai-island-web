@@ -54,14 +54,23 @@ const CATS = [
   ["光與影", "黃昏、霓虹、影子、停電的夜"],
 ];
 
-const SYSTEM = `你是頂尖的中文創意總監，為創作者產出「創作碎片」——一句能立刻點燃創作的靈感句子（約 10–34 字），給人當寫作/作曲/企劃的起點。
+const SYSTEM = `你是頂尖的中文創意總監，為創作者產出「創作碎片」——能點燃創作的原始素材。碎片『不限形式、不一定是完整句子』，可以是：
+- 人物：一句速寫一個人。例「總在頂樓抽菸、從不說話的鄰居老兵」
+- 地點：例「外婆家那個會回音的米甕」「下午四點的廢棄泳池」
+- 物件：例「調不準的收音機」「她沒拆的最後一份禮物」
+- 畫面/日常片段：例「公車急煞時所有人同時往前傾」
+- 意象/一個詞：例「退潮後沙上的洞」「未接來電 7 通」
+- 對話/心聲：例「『你先走，我看一下就來』——他再也沒來」
+- 完整的靈感句（也可以，但不要每個都是）
+長度幾個字到約 34 字都行。
 鐵律：
-1) 每一句都要新鮮、具體、有畫面或情緒張力。嚴禁陳腔濫調、心靈雞湯、勵志格言、廢話。
-2) 同一批內彼此角度要迥異，不要同一套句型套不同詞（不要流水帳、不要模板）。
-3) 不敷衍、不湊數，寧缺勿濫；每句都要像精心想過的。
-4) 稀有度 rarity：'R'=日常但依然鮮活的切角；'SR'=讓人眼睛一亮的獨特角度；'SSR'=罕見、深刻、或顛覆認知，讀到會起雞皮疙瘩、想立刻寫下去。
+1) 新鮮、具體、有畫面或張力。嚴禁陳腔濫調、心靈雞湯、勵志格言、湊數廢話。
+2) 同一批『形式要混搭』——人物/地點/物件/畫面/意象/對話/詞/句子都要有，不要全是句子，也不要同一句型複製（不流水）。
+3) 不敷衍、寧缺勿濫，每個都像精心想過。
+4) rarity：R=日常但鮮活；SR=獨特角度；SSR=罕見、深刻或顛覆，讀到會想立刻寫下去。
+每個 item 標 form（人物/地點/物件/畫面/意象/對話/詞/句子 之一）。
 只回傳「純 JSON 陣列」，不要 markdown、不要多餘文字：
-[{"text":"靈感句","rarity":"R|SR|SSR","tags":["1-3個關鍵字"]}]
+[{"text":"碎片","form":"人物","rarity":"R|SR|SSR","tags":["1-2個關鍵字"]}]
 全部繁體中文。`;
 
 const env = loadEnv();
@@ -77,7 +86,7 @@ async function sampleExisting(cat) {
 
 async function genBatch(cat, vibe) {
   const avoid = await sampleExisting(cat);
-  const userMsg = `主題領域：「${cat}」（${vibe}）。\n產 ${PER} 句彼此迥異的碎片，其中約 1 句 SSR、4 句 SR、其餘 R。\n${avoid.length ? `避免與這些重複或太像：\n${avoid.map((t) => "- " + t).join("\n")}` : ""}`;
+  const userMsg = `主題領域：「${cat}」（${vibe}）。\n產 ${PER} 個彼此迥異的碎片，形式要混搭（人物/地點/物件/畫面/意象/對話/詞/句子都要有，不要全是句子），約 1 個 SSR、4 個 SR、其餘 R。\n${avoid.length ? `避免與這些重複或太像：\n${avoid.map((t) => "- " + t).join("\n")}` : ""}`;
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: { "x-api-key": apiKey, "anthropic-version": "2023-06-01", "content-type": "application/json" },
@@ -91,8 +100,8 @@ async function genBatch(cat, vibe) {
   const s = raw.indexOf("["), e = raw.lastIndexOf("]");
   if (s >= 0 && e > s) raw = raw.slice(s, e + 1);
   const arr = JSON.parse(raw);
-  return arr.filter((x) => x && typeof x.text === "string" && x.text.trim().length >= 4)
-    .map((x) => ({ text: x.text.trim().slice(0, 200), rarity: ["R", "SR", "SSR"].includes(x.rarity) ? x.rarity : "R", tags: Array.isArray(x.tags) ? x.tags.slice(0, 3) : [] }));
+  return arr.filter((x) => x && typeof x.text === "string" && x.text.trim().length >= 2)
+    .map((x) => ({ text: x.text.trim().slice(0, 200), rarity: ["R", "SR", "SSR"].includes(x.rarity) ? x.rarity : "R", tags: [x.form, ...(Array.isArray(x.tags) ? x.tags : [])].filter(Boolean).slice(0, 3) }));
 }
 
 async function insertBatch(cat, rows) {
