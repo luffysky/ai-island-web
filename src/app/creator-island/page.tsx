@@ -6,6 +6,8 @@ import { FeatureOffNotice } from "@/components/FeatureOffNotice";
 import { getOrCreatePersonalWorkspace } from "@/lib/creator-engine/workspace";
 import { listFragments } from "@/lib/creator-engine/fragments";
 import { listCollectionsWithItems } from "@/lib/creator-engine/collections";
+import { BackgroundBeams } from "@/components/ui/BackgroundBeams";
+import { Sparkles } from "@/components/ui/Sparkles";
 import { CreatorIslandClient } from "./CreatorIslandClient";
 
 // 旗標 / workspace 要即時反映
@@ -31,20 +33,22 @@ export default async function CreatorIslandPage() {
 
   // 4) 創作者島嶼主畫面（M3）
   return (
-    <div className="max-w-5xl mx-auto px-6 py-10 space-y-6">
-      <header className="flex items-center justify-between gap-3 flex-wrap">
-        <div>
-          <h1 className="text-2xl font-bold">🎨 創作者島嶼</h1>
-          <p className="text-sm text-fg-muted mt-1">把散落的碎片，變成你的創作宇宙。</p>
+    <div className="max-w-5xl mx-auto px-6 py-8 space-y-6">
+      <div className="relative overflow-hidden rounded-3xl border border-accent/20 bg-gradient-to-br from-accent/10 via-violet-500/10 to-pink-500/10 p-6">
+        <BackgroundBeams className="opacity-40" />
+        <Sparkles count={14} />
+        <div className="relative flex items-end justify-between gap-3 flex-wrap">
+          <div>
+            <h1 className="text-3xl sm:text-4xl font-black bg-gradient-to-r from-amber-300 via-pink-400 to-violet-400 bg-clip-text text-transparent">🎨 創作者島嶼</h1>
+            <p className="text-sm text-fg-muted mt-1.5">把散落的碎片，變成你的創作宇宙。綠寶 ✨ 陪你一起。</p>
+          </div>
+          <nav className="flex items-center gap-1.5 text-sm flex-wrap">
+            {[["/creator-island/works", "📚 作品庫"], ["/creator-island/studio", "🏢 工作室"], ["/creator-island/market", "🏪 市集"], ["/creator-island/community", "🌐 社群"], ["/creator-island/growth", "📈 成長"]].map(([href, label]) => (
+              <Link key={href} href={href} className="px-3 py-1.5 rounded-full bg-bg-card/60 border border-border/60 backdrop-blur hover:border-accent hover:text-accent transition">{label}</Link>
+            ))}
+          </nav>
         </div>
-        <nav className="flex items-center gap-3 text-sm">
-          <Link href="/creator-island/works" className="text-fg-muted hover:text-accent">📚 作品庫</Link>
-          <Link href="/creator-island/studio" className="text-fg-muted hover:text-accent">🏢 工作室</Link>
-          <Link href="/creator-island/market" className="text-fg-muted hover:text-accent">🏪 市集</Link>
-          <Link href="/creator-island/community" className="text-fg-muted hover:text-accent">🌐 社群</Link>
-          <Link href="/creator-island/growth" className="text-fg-muted hover:text-accent">📈 成長</Link>
-        </nav>
-      </header>
+      </div>
 
       {/* 創作循環：捕捉 → 凝聚/演化/編織 → 存 */}
       <CreatorIslandClient workspaceId={personal.id} initialFragments={fragments as any} initialCollections={collections} />
