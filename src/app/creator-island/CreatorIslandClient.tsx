@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type Fragment = { id: string; title: string; content: string; tags: string[]; source_type: string };
 
@@ -24,6 +24,19 @@ export function CreatorIslandClient({ workspaceId, initialFragments }: { workspa
   const [busy, setBusy] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [result, setResult] = useState<any>(null);
+  const [dust, setDust] = useState<number | null>(null);
+
+  useEffect(() => {
+    fetch("/api/creator-island/dust").then((r) => r.json()).then((j) => setDust(j.balance ?? 0)).catch(() => {});
+  }, []);
+
+  async function openEgg() {
+    setErr(null); setBusy("egg");
+    try {
+      const j = await api("/api/creator-island/eggs/open", { workspaceId });
+      setFragments((p) => [j.fragment, ...p]); setDust(j.balance ?? dust);
+    } catch (e: any) { setErr(e.message); } finally { setBusy(null); }
+  }
 
   const sel = Array.from(selected);
   const toggle = (id: string) =>
@@ -89,6 +102,12 @@ export function CreatorIslandClient({ workspaceId, initialFragments }: { workspa
           <p className="text-fg-muted mt-1">寫下一句想法 → 勾選它 → 按「演化」生出更多 → 再「編織」成作品。試試看？</p>
         </div>
       )}
+
+      {/* 今日碎片蛋 */}
+      <div className="bg-bg-card border border-border rounded-2xl p-4 flex items-center justify-between gap-2 flex-wrap">
+        <div className="text-sm">🥚 今日碎片蛋 <span className="text-xs text-fg-muted">— 沒靈感？開一顆換個起點{dust !== null ? `（Dust ${dust}）` : ""}</span></div>
+        <button onClick={openEgg} disabled={busy !== null} className="px-3 py-1.5 rounded-full bg-bg-elevated text-sm hover:text-accent disabled:opacity-40">{busy === "egg" ? "開蛋中…" : "開蛋"}</button>
+      </div>
 
       {/* 捕捉 */}
       <div className="bg-bg-card border border-border rounded-2xl p-4 space-y-2">

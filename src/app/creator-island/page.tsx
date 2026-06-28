@@ -36,7 +36,9 @@ export default async function CreatorIslandPage() {
         <nav className="flex items-center gap-3 text-sm">
           <Link href="/creator-island/works" className="text-fg-muted hover:text-accent">📚 作品庫</Link>
           <Link href="/creator-island/studio" className="text-fg-muted hover:text-accent">🏢 工作室</Link>
-          <span className="text-xs text-fg-muted">·&nbsp;{personal.name}</span>
+          <Link href="/creator-island/market" className="text-fg-muted hover:text-accent">🏪 市集</Link>
+          <Link href="/creator-island/community" className="text-fg-muted hover:text-accent">🌐 社群</Link>
+          <Link href="/creator-island/growth" className="text-fg-muted hover:text-accent">📈 成長</Link>
         </nav>
       </header>
 

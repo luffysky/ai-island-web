@@ -10,6 +10,7 @@ import { logAiUsage } from "@/lib/ai-usage-log";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { resolveModel } from "@/lib/creator-engine/ai/router";
 import { estimateCostUsd, resolveZCharge } from "@/lib/creator-engine/ai/cost";
+import { getInjectableMemory, recordMemoryUsage } from "@/lib/creator-engine/memory";
 
 export type AgentType = "synthesize" | "evolve" | "compose";
 
@@ -35,20 +36,25 @@ async function runAgent<T>(opts: {
   const { provider, model, apiKey } = resolved.model;
 
   const admin = createSupabaseAdmin();
+  // 注入相關記憶（M4，current intent 仍以 user 訊息為主、記憶只是背景）
+  const mem = await getInjectableMemory(opts.workspaceId, opts.userId).catch(() => ({ text: "", ids: [] as string[] }));
+  const systemWithMem = mem.text ? `${opts.system}\n\n${mem.text}\n（以上為背景偏好；若與當前指令衝突，以當前指令為準。）` : opts.system;
+
   // 開一筆 running run
   const { data: runRow } = await admin.from("ci_agent_runs").insert({
     workspace_id: opts.workspaceId, user_id: opts.userId, agent_type: opts.agentType,
     input: opts.input as any, provider, model, status: "running",
   }).select("id").single();
   const agentRunId = (runRow as any)?.id as number;
+  if (mem.ids.length) await recordMemoryUsage(mem.ids, agentRunId).catch(() => {});
 
   let tin = 0, tout = 0;
   try {
     let parsed: T | null = null;
     let lastText = "";
     for (let attempt = 0; attempt < 2 && parsed === null; attempt++) {
-      const sys = attempt === 0 ? opts.system
-        : opts.system + "\n\n（上次輸出無法解析，請『只』回傳合法 JSON、不要任何多餘文字。）";
+      const sys = attempt === 0 ? systemWithMem
+        : systemWithMem + "\n\n（上次輸出無法解析，請『只』回傳合法 JSON、不要任何多餘文字。）";
       const r = await callAI({
         provider, model, apiKey,
         messages: [{ role: "system", content: sys }, { role: "user", content: opts.user }],
