@@ -8,11 +8,12 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 const MB = 1024 * 1024;
+// 放寬上限（社群圖/影/音）。真正「無上限」需改 presigned 直傳 R2（避免 server OOM）— 見 MASTER_TODO。
 const MAX_SIZE: Record<"image" | "video" | "audio" | "file", number> = {
-  image: 8 * MB,
-  audio: 20 * MB,
-  video: 50 * MB,
-  file: 25 * MB, // 文件附件（pdf/word/excel/ppt/txt/md/zip…）
+  image: 50 * MB,
+  audio: 200 * MB,
+  video: 1000 * MB,
+  file: 200 * MB,
 };
 // 圖片/影片/音檔用大類前綴判斷（任何格式都收）；其餘一律當「附件」（任意檔案）。
 function mediaKind(t: string): "image" | "video" | "audio" | "file" {
