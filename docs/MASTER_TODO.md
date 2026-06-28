@@ -87,6 +87,14 @@
 - [x] ~~完整 Community（follow/collect/like/comment + fork/remix→複製+家譜）~~
 - [ ] 仍 future：真金流 marketplace（KYC，需決策）、Workflow 視覺編輯器+n8n、其餘 agents(孵化/回收/評審/教練)、Knowledge 區、Growth skill tree/Monthly report、E11 完整版(封面/風格庫/Prompt Pack)、Agent Blueprint 變 Asset(ADR-015)、沉浸式島嶼世界 UX。
 
+## Creator Island 收尾（2026-06-29 全站對接驗收後）
+> 驗收結果：30 ci_ 表 + 11 RPC 全建、欄位審計 0 錯接、41 API 全 export、8 UI 頁全接、RWD/PWA 已接。詳見 `docs/daily_works_0629.md`。
+- [~] **碎片庫補到 10000**：`node scripts/gen-fragment-pool.mjs --target 10000`（背景跑、可重跑累積、ON CONFLICT 去重）。截稿約 3300。
+- [ ] **PWA PNG icons**：`app/manifest.ts` 仍只指 `favicon.svg`；補 192/512 maskable + apple-touch（與平台共用 TODO）。
+- [ ] **記憶管理使用者頁**（選配）：`ci_memories` 後端 + agent 注入已備，缺 user-facing 管理 UI。
+- [ ] **AI run / 成本儀表板**（選配）：`/api/creator-island/ai/runs` 已備、缺前端。
+- [ ] **真金流 marketplace**（KYC，需林董拍板）。
+
 ## 其他島嶼（長線）
 - [ ] Learning / Business / Research Island（共用 Ideas OS 核心）。
 
