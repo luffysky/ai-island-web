@@ -184,7 +184,8 @@ flowchart TD
 **NEW surfaces introduced by Ideas OS (do NOT assume they exist yet):**
 route `/creator-island` · flag `feature_creator_island_enabled` · tables `workspaces` / `workspace_members` / `works` / `agent_runs` (+ workspace AI/wallet tables) · module `src/lib/creator-engine/` · agents Model Router / Cost Manager.
 
-- New tables carry `workspace_id` (FK → `workspaces`) + workspace-scoped RLS modeled on `idea_fragments_migration.sql`.
+- **Naming rule:** every NEW Creator Island table uses the **`ci_` prefix** (`ci_workspaces`, `ci_fragments`, `ci_works`, …) to match the platform's domain-prefix convention and avoid collisions; reused existing tables keep their names. Authoritative list in `13_DATABASE.md`.
+- New tables carry `workspace_id` (FK → `ci_workspaces`) + workspace-scoped RLS modeled on `idea_fragments_migration.sql`.
 - Do not alter existing `user_id` tables. Whether Workspace Wallet is a dedicated ledger table vs. `workspace_id`-tagged rows is resolved in `13_DATABASE.md`.
 - Any "fetch all" on large tables must paginate (`.range()`) — PostgREST truncates at 1000 rows (platform gotcha).
 - Full schemas live in `13_DATABASE.md`; this doc only locks ownership/economy invariants.
