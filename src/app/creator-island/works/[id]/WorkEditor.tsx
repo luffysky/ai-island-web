@@ -18,7 +18,7 @@ async function patch(url: string, body: any) {
   return j;
 }
 
-export function WorkEditor({ work, canEdit }: { work: Work; canEdit: boolean }) {
+export function WorkEditor({ work, canEdit, usedFragments = [], derivedCount = 0 }: { work: Work; canEdit: boolean; usedFragments?: { id: string; title: string }[]; derivedCount?: number }) {
   const [title, setTitle] = useState(work.title);
   const [body, setBody] = useState(work.body);
   const [status, setStatus] = useState(work.status);
@@ -74,6 +74,17 @@ export function WorkEditor({ work, canEdit }: { work: Work; canEdit: boolean }) 
         <div className="bg-bg-elevated rounded-xl p-3 text-xs space-y-1">
           {meta.sunoPrompt && <div><b>🎵 Suno：</b>{meta.sunoPrompt}</div>}
           {meta.mvPrompt && <div><b>🎬 MV：</b>{meta.mvPrompt}</div>}
+        </div>
+      )}
+
+      {/* E3 創作家譜：這篇由哪些碎片長成 + 衍生數 */}
+      {(usedFragments.length > 0 || derivedCount > 0) && (
+        <div className="bg-bg-card border border-border rounded-xl p-3 text-xs space-y-1">
+          <div className="font-bold text-fg-muted">🔗 創作家譜</div>
+          {usedFragments.length > 0 && (
+            <div>由 <b>{usedFragments.length}</b> 個碎片長成：{usedFragments.map((f) => f.title).join("、")}</div>
+          )}
+          {derivedCount > 0 && <div>已衍生出 <b>{derivedCount}</b> 個資產（封存回收等）</div>}
         </div>
       )}
     </div>
