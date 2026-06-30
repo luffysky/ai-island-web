@@ -100,7 +100,8 @@ async function actualSend(msg: {
   headers: Record<string, string>;
 }) {
   const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.EMAIL_FROM || "AI 島 <noreply@ai-island-web.snowrealm.pet>";
+  // 寄件網域要在 Resend 驗證過。已驗證 snowrealm.pet（apex）；子網域 ai-island-web.* 沒驗 → 用 apex。
+  const from = process.env.EMAIL_FROM || "AI 島 <noreply@snowrealm.pet>";
 
   if (!apiKey) {
     if (process.env.NODE_ENV === "development") {
