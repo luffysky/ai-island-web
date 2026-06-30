@@ -29,10 +29,10 @@ export function AgentModelsClient({ agents, models, current }: { agents: Agent[]
 
       <div className="space-y-3">
         {agents.map((a) => (
-          <div key={a.key} className="flex items-center gap-3">
-            <div className="w-48 text-sm">{a.label}</div>
+          <div key={a.key} className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-3">
+            <div className="sm:w-56 shrink-0 text-sm">{a.label}</div>
             <select value={map[a.key] ?? ""} onChange={(e) => setMap((p) => ({ ...p, [a.key]: e.target.value }))}
-              className="flex-1 bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm">
+              className="w-full sm:flex-1 min-w-0 bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm">
               <option value="">自動（最佳可用）</option>
               {models.map((m) => <option key={m.model_name} value={m.model_name}>{m.provider} ｜ {m.model_name}</option>)}
             </select>

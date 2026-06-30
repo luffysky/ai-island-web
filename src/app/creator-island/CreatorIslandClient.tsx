@@ -59,6 +59,9 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
   const [panel, setPanel] = useState<"none" | "pairs" | "flows">("none");
   const [editing, setEditing] = useState<Fragment | null>(null);
   const [advice, setAdvice] = useState<any>(null);
+  const [toast, setToast] = useState<string | null>(null);
+  const [savedKeys, setSavedKeys] = useState<Set<string>>(new Set());
+  function flash(m: string) { setToast(m); setTimeout(() => setToast(null), 1600); }
 
   useEffect(() => { fetch("/api/creator-island/dust").then((r) => r.json()).then((j) => setDust(j.balance ?? 0)).catch(() => {}); }, []);
 
@@ -193,8 +196,29 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
     } catch (e: any) { setErr(e.message); } finally { setBusy(null); }
   }
   async function saveFragment(title: string, content: string) {
-    try { const { fragment } = await api("/api/creator-island/fragments", { workspaceId, title, content, sourceType: "ai_assisted" }); setFragments((p) => [fragment, ...p]); setResult(null); setSelected(new Set()); }
+    try { const { fragment } = await api("/api/creator-island/fragments", { workspaceId, title, content, sourceType: "ai_assisted" }); setFragments((p) => [fragment, ...p]); flash("已存成碎片 ✓"); setResult(null); setSelected(new Set()); }
     catch (e: any) { setErr(e.message); }
+  }
+  // 演化變體：單獨存（不關面板、標記已存、跳提示），可全部存
+  async function saveVariant(v: { title: string; content: string }, key: string) {
+    if (savedKeys.has(key)) return;
+    try {
+      const { fragment } = await api("/api/creator-island/fragments", { workspaceId, title: v.title, content: v.content, sourceType: "ai_assisted" });
+      setFragments((p) => [fragment, ...p]); setSavedKeys((p) => new Set(p).add(key)); flash("已存成碎片 ✓");
+    } catch (e: any) { setErr(e.message); }
+  }
+  async function saveAllVariants(variants: { title: string; content: string }[]) {
+    setBusy("saveall");
+    try {
+      const created: Fragment[] = [];
+      for (let i = 0; i < variants.length; i++) {
+        const key = `evolve:${i}`; if (savedKeys.has(key)) continue;
+        const { fragment } = await api("/api/creator-island/fragments", { workspaceId, title: variants[i].title, content: variants[i].content, sourceType: "ai_assisted" });
+        created.push(fragment); setSavedKeys((p) => new Set(p).add(key));
+      }
+      if (created.length) { setFragments((p) => [...created.reverse(), ...p]); flash(`已存 ${created.length} 個碎片 ✓`); }
+      else flash("都已經存過了");
+    } catch (e: any) { setErr(e.message); } finally { setBusy(null); }
   }
   async function saveWork() {
     const r = result?.result; if (!r) return; setBusy("savework");
@@ -358,10 +382,18 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
               </div>
             </>)}
             {result.action === "evolve" && (<>
-              <div className="font-bold">🌿 演化出 {result.variants.length} 個</div>
-              <div className="space-y-2">{result.variants.map((v: any, i: number) => (
-                <div key={i} className="bg-bg-elevated rounded-lg p-2 text-sm flex justify-between gap-2"><div><b>{v.title}</b><div className="text-xs text-fg-muted whitespace-pre-wrap">{v.content}</div></div><button onClick={() => saveFragment(v.title, v.content)} className="shrink-0 text-xs text-accent">＋存</button></div>
-              ))}</div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <div className="font-bold">🌿 演化出 {result.variants.length} 個</div>
+                <button onClick={() => saveAllVariants(result.variants)} disabled={busy === "saveall"} className="ml-auto text-xs px-3 py-1.5 rounded-full bg-accent text-white font-bold disabled:opacity-40">{busy === "saveall" ? "存入中…" : "＋ 全部存起來"}</button>
+              </div>
+              <div className="space-y-2">{result.variants.map((v: any, i: number) => {
+                const saved = savedKeys.has(`evolve:${i}`);
+                return (
+                <div key={i} className="bg-bg-elevated rounded-lg p-2 text-sm flex justify-between gap-2"><div><b>{v.title}</b><div className="text-xs text-fg-muted whitespace-pre-wrap">{v.content}</div></div>
+                  <motion.button whileTap={{ scale: 0.9 }} onClick={() => saveVariant(v, `evolve:${i}`)} disabled={saved}
+                    className={`shrink-0 text-xs px-2 self-start rounded-full ${saved ? "text-emerald-400" : "text-accent hover:bg-accent/10"}`}>{saved ? "✓ 已存" : "＋存"}</motion.button>
+                </div>
+              ); })}</div>
             </>)}
             {result.action === "replay" && (<>
               <div className="font-bold">▶ 工作流重播</div>
@@ -444,6 +476,13 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
       {/* 碎片編輯 modal */}
       <AnimatePresence>
         {editing && <FragmentEditModal frag={editing} onClose={() => setEditing(null)} onSave={saveEdit} onDelete={deleteFragment} />}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {toast && (
+          <motion.div initial={{ opacity: 0, y: 12, scale: 0.9 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 12 }}
+            className="fixed bottom-[5.5rem] md:bottom-6 left-1/2 -translate-x-1/2 z-[58] px-4 py-2 rounded-full bg-emerald-500 text-black text-sm font-bold shadow-lg">{toast}</motion.div>
+        )}
       </AnimatePresence>
 
       <IslandTour />

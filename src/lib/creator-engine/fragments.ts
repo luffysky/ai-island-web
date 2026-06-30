@@ -41,6 +41,23 @@ export async function listFragments(workspaceId: string, opts: ListOpts = {}): P
   return { items, nextCursor: hasMore ? items[items.length - 1].created_at : null };
 }
 
+/** 撈整個 workspace 的碎片（分頁、避免 PostgREST 1000 截斷）。給主畫面用、不限 100。 */
+export async function listAllFragments(workspaceId: string, cap = 5000): Promise<Fragment[]> {
+  const admin = createSupabaseAdmin();
+  const PAGE = 1000;
+  const out: Fragment[] = [];
+  for (let from = 0; from < cap; from += PAGE) {
+    const { data, error } = await admin.from("ci_fragments").select(COLS)
+      .eq("workspace_id", workspaceId).order("created_at", { ascending: false })
+      .range(from, from + PAGE - 1);
+    if (error) throw new Error(error.message);
+    const rows = (data as Fragment[]) ?? [];
+    out.push(...rows);
+    if (rows.length < PAGE) break;
+  }
+  return out;
+}
+
 export async function getFragment(id: string): Promise<Fragment | null> {
   const admin = createSupabaseAdmin();
   const { data } = await admin.from("ci_fragments").select(COLS).eq("id", id).maybeSingle();

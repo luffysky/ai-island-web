@@ -4,7 +4,7 @@ import { createSupabaseServer } from "@/lib/supabase-server";
 import { isCreatorIslandEnabled } from "@/lib/app-settings";
 import { FeatureOffNotice } from "@/components/FeatureOffNotice";
 import { getOrCreatePersonalWorkspace, getWorkspaceById, getWorkspaceRole } from "@/lib/creator-engine/workspace";
-import { listFragments } from "@/lib/creator-engine/fragments";
+import { listAllFragments } from "@/lib/creator-engine/fragments";
 import { listCollectionsWithItems } from "@/lib/creator-engine/collections";
 import { BackgroundBeams } from "@/components/ui/BackgroundBeams";
 import { Sparkles } from "@/components/ui/Sparkles";
@@ -35,8 +35,8 @@ export default async function CreatorIslandPage({ searchParams }: { searchParams
     if (target) active = target;
   }
   const isStudio = active.id !== personal.id;
-  const [{ items: fragments }, collections] = await Promise.all([
-    listFragments(active.id, { limit: 100 }),
+  const [fragments, collections] = await Promise.all([
+    listAllFragments(active.id),
     listCollectionsWithItems(active.id),
   ]);
 
