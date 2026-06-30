@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import type { Editor } from "@tiptap/react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Wrench, Lightbulb, Trees, X, Copy, ArrowDownToLine, Disc3, Library, Plus, FileText } from "lucide-react";
 import { BlogEditor } from "@/components/blog/BlogEditor";
 import { IslandChat } from "../../IslandChat";
 import { getType, type Tool } from "../engine-types";
@@ -38,7 +39,7 @@ export function EngineWorkspace({ draft, fragments }: { draft: Draft; fragments:
   // 系列/專輯（歌詞=專輯，其餘=系列）
   const seriesKind = draft.work_type === "song" ? "album" : "series";
   const seriesNoun = seriesKind === "album" ? "專輯" : "系列";
-  const seriesEmoji = seriesKind === "album" ? "💿" : "📚";
+  const SeriesIcon = seriesKind === "album" ? Disc3 : Library;
   const [seriesList, setSeriesList] = useState<{ id: string; title: string; category: string }[]>([]);
   const [seriesId, setSeriesId] = useState<string | null>(draft.series_id ?? null);
   useEffect(() => {
@@ -158,11 +159,11 @@ export function EngineWorkspace({ draft, fragments }: { draft: Draft; fragments:
         <span className="text-xl">{t.emoji}</span>
         <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="作品標題…"
           className="flex-1 min-w-[140px] bg-transparent text-lg sm:text-xl font-bold outline-none border-b border-transparent focus:border-accent py-1" />
-        <Link href="/me/blog" className="text-xs px-2.5 py-1.5 rounded-full bg-bg-card border border-border hover:border-accent hover:text-accent transition whitespace-nowrap">📝 部落格</Link>
-        <span className={`text-xs ${save === "saved" ? "text-emerald-400" : "text-fg-muted"}`}>{saveLabel}</span>
+        <Link href="/me/blog" className="inline-flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-full bg-bg-card border border-border hover:border-accent hover:text-accent transition whitespace-nowrap"><FileText size={13} /> 部落格</Link>
+        <span className={`text-xs ${save === "saved" ? "text-emerald-500" : "text-fg-muted"}`}>{saveLabel}</span>
       </div>
 
-      {err && <div className="bg-red-500/10 border border-red-500/30 text-red-300 rounded-xl px-4 py-2 text-sm mb-3 flex justify-between"><span>⚠️ {err}</span><button onClick={() => setErr(null)}>✕</button></div>}
+      {err && <div className="bg-red-500/10 border border-red-500/30 text-red-700 dark:text-red-300 rounded-xl px-4 py-2 text-sm mb-3 flex justify-between items-center gap-2"><span>{err}</span><button onClick={() => setErr(null)}><X size={14} /></button></div>}
 
       <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr),340px] gap-4">
         {/* 編輯器 */}
@@ -171,9 +172,9 @@ export function EngineWorkspace({ draft, fragments }: { draft: Draft; fragments:
 
           {/* 完稿動作 */}
           <div className="flex flex-wrap gap-2 mt-3">
-            <button onClick={() => saveAsWork(false)} disabled={publishing} className="px-4 py-2 rounded-full bg-accent text-white text-sm font-bold disabled:opacity-40">{publishing ? "處理中…" : "💾 存成作品"}</button>
-            <button onClick={() => saveAsWork(true)} disabled={publishing} className="px-4 py-2 rounded-full bg-bg-card border border-border text-sm hover:border-accent disabled:opacity-40">📝 存成作品並發部落格草稿</button>
-            {draft.published_work_id && <Link href="/creator-island/works" className="px-4 py-2 rounded-full bg-bg-card border border-border text-sm hover:text-accent">📚 作品庫</Link>}
+            <button onClick={() => saveAsWork(false)} disabled={publishing} className="px-4 py-2 rounded-full bg-accent text-white text-sm font-bold disabled:opacity-40">{publishing ? "處理中…" : "存成作品"}</button>
+            <button onClick={() => saveAsWork(true)} disabled={publishing} className="inline-flex items-center gap-1 px-4 py-2 rounded-full bg-bg-card border border-border text-sm hover:border-accent disabled:opacity-40"><FileText size={14} /> 存成作品並發部落格草稿</button>
+            {draft.published_work_id && <Link href="/creator-island/works" className="inline-flex items-center gap-1 px-4 py-2 rounded-full bg-bg-card border border-border text-sm hover:text-accent"><Library size={14} /> 作品庫</Link>}
           </div>
         </div>
 
@@ -181,7 +182,7 @@ export function EngineWorkspace({ draft, fragments }: { draft: Draft; fragments:
         <aside className="space-y-4 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:sticky lg:top-4 pr-0.5">
           {/* 類型專屬工具 */}
           <div className="rounded-2xl border border-border bg-bg-card p-3">
-            <div className="text-sm font-bold mb-2">🛠️ {t.label}工具</div>
+            <div className="text-sm font-bold mb-2 inline-flex items-center gap-1.5"><Wrench size={14} /> {t.label}工具</div>
             <div className="grid grid-cols-2 gap-1.5">
               {t.tools.map((tool) => (
                 <button key={tool.mode + tool.label} onClick={() => runTool(tool)} disabled={busy !== null}
@@ -191,18 +192,18 @@ export function EngineWorkspace({ draft, fragments }: { draft: Draft; fragments:
                 </button>
               ))}
             </div>
-            <div className="text-[10px] text-fg-muted mt-2">💡 選取一段文字後再按「改寫/潤稿/轉譯」，會就地處理那段。</div>
+            <div className="text-[10px] text-fg-muted mt-2 flex items-start gap-1"><Lightbulb size={11} className="mt-0.5 shrink-0" /> 選取一段文字後再按「改寫/潤稿/轉譯」，會就地處理那段。</div>
           </div>
 
           {/* 系列 / 專輯 */}
           <div className="rounded-2xl border border-border bg-bg-card p-3">
-            <div className="text-sm font-bold mb-2">{seriesEmoji} {seriesNoun}</div>
+            <div className="text-sm font-bold mb-2 inline-flex items-center gap-1.5"><SeriesIcon size={15} /> {seriesNoun}</div>
             <select value={seriesId ?? ""} onChange={(e) => assignSeries(e.target.value || null)}
               className="w-full bg-bg-elevated border border-border rounded-lg px-2 py-2 text-sm outline-none focus:border-accent">
               <option value="">（不屬於任何{seriesNoun}）</option>
               {seriesList.map((s) => <option key={s.id} value={s.id}>{s.category ? `[${s.category}] ` : ""}{s.title}</option>)}
             </select>
-            <button onClick={newSeries} className="mt-2 text-xs px-2.5 py-1 rounded-full border border-dashed border-border text-fg-muted hover:text-accent">＋ 新{seriesNoun}</button>
+            <button onClick={newSeries} className="mt-2 inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full border border-dashed border-border text-fg-muted hover:text-accent"><Plus size={12} /> 新{seriesNoun}</button>
             <div className="text-[10px] text-fg-muted mt-2">把作品歸進{seriesNoun}；{seriesNoun}可再用「分類」分組。</div>
           </div>
 
@@ -213,12 +214,12 @@ export function EngineWorkspace({ draft, fragments }: { draft: Draft; fragments:
                 className="rounded-2xl border border-accent/40 bg-bg-card p-3 overflow-hidden">
                 <div className="flex items-center justify-between mb-1.5">
                   <div className="text-sm font-bold">{panel.title}</div>
-                  <button onClick={() => setPanel(null)} className="text-fg-muted hover:text-fg text-sm">✕</button>
+                  <button onClick={() => setPanel(null)} className="text-fg-muted hover:text-fg"><X size={15} /></button>
                 </div>
                 <pre className="text-xs text-fg-muted whitespace-pre-wrap font-sans max-h-64 overflow-y-auto">{panel.text}</pre>
                 <div className="flex gap-2 mt-2">
-                  <button onClick={() => { navigator.clipboard?.writeText(panel.text); flash("已複製"); }} className="text-xs px-3 py-1.5 rounded-full bg-bg-elevated hover:text-accent">📋 複製</button>
-                  <button onClick={() => { insertAtEnd(panel.text); flash("已插入文末"); }} className="text-xs px-3 py-1.5 rounded-full bg-bg-elevated hover:text-accent">↧ 插入文末</button>
+                  <button onClick={() => { navigator.clipboard?.writeText(panel.text); flash("已複製"); }} className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full bg-bg-elevated hover:text-accent"><Copy size={12} /> 複製</button>
+                  <button onClick={() => { insertAtEnd(panel.text); flash("已插入文末"); }} className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full bg-bg-elevated hover:text-accent"><ArrowDownToLine size={12} /> 插入文末</button>
                 </div>
               </motion.div>
             )}
@@ -226,7 +227,7 @@ export function EngineWorkspace({ draft, fragments }: { draft: Draft; fragments:
 
           {/* 碎片素材欄 */}
           <div className="rounded-2xl border border-border bg-bg-card p-3">
-            <div className="text-sm font-bold mb-2">🌲 碎片素材（{fragments.length}）</div>
+            <div className="text-sm font-bold mb-2 inline-flex items-center gap-1.5"><Trees size={14} /> 碎片素材（{fragments.length}）</div>
             {fragments.length === 0 ? (
               <div className="text-xs text-fg-muted">這座島還沒有碎片。回島上捕捉或種島。</div>
             ) : (

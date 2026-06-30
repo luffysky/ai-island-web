@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { Library, Disc3, Tag, FolderOpen } from "lucide-react";
 import { CREATION_TYPES, getType } from "./engine-types";
 import { IslandChat } from "../IslandChat";
 
@@ -28,7 +29,7 @@ export function CreatePicker({ workspaceId, drafts, series = [] }: { workspaceId
 
   return (
     <div className="space-y-7">
-      {err && <div className="bg-red-500/10 border border-red-500/30 text-red-300 rounded-xl px-4 py-2 text-sm">⚠️ {err}</div>}
+      {err && <div className="bg-red-500/10 border border-red-500/30 text-red-700 dark:text-red-300 rounded-xl px-4 py-2 text-sm">{err}</div>}
 
       {/* 開新創作 */}
       <section>
@@ -53,18 +54,18 @@ export function CreatePicker({ workspaceId, drafts, series = [] }: { workspaceId
         series.forEach((s) => { (byCat[s.category || "未分類"] ??= []).push(s); });
         return (
           <section>
-            <div className="text-sm font-bold text-fg-muted mb-3">📚 系列 / 💿 專輯（依分類）</div>
+            <div className="text-sm font-bold text-fg-muted mb-3 inline-flex items-center gap-1.5"><Library size={14} /> 系列 / <Disc3 size={14} /> 專輯（依分類）</div>
             <div className="space-y-4">
               {Object.entries(byCat).map(([cat, list]) => (
                 <div key={cat}>
-                  <div className="text-xs font-bold text-accent mb-1.5">🏷 {cat}</div>
+                  <div className="text-xs font-bold text-accent mb-1.5 inline-flex items-center gap-1"><Tag size={12} /> {cat}</div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {list.map((s) => {
                       const items = drafts.filter((d) => d.series_id === s.id);
                       return (
                         <div key={s.id} className="rounded-xl border border-border bg-bg-card p-3">
                           <div className="font-bold text-sm flex items-center gap-1.5">
-                            <span>{s.kind === "album" ? "💿" : "📚"}</span><span className="truncate">{s.title}</span>
+                            {s.kind === "album" ? <Disc3 size={14} className="shrink-0" /> : <Library size={14} className="shrink-0" />}<span className="truncate">{s.title}</span>
                             <span className="ml-auto text-[11px] text-fg-muted shrink-0">{items.length} 篇</span>
                           </div>
                           {items.length > 0 && (
@@ -92,7 +93,7 @@ export function CreatePicker({ workspaceId, drafts, series = [] }: { workspaceId
 
       {/* 我的草稿 */}
       <section>
-        <div className="text-sm font-bold text-fg-muted mb-3">📂 繼續未完成的草稿（{drafts.length}）</div>
+        <div className="text-sm font-bold text-fg-muted mb-3 inline-flex items-center gap-1.5"><FolderOpen size={14} /> 繼續未完成的草稿（{drafts.length}）</div>
         {drafts.length === 0 ? (
           <div className="text-sm text-fg-muted bg-bg-card border border-border rounded-2xl p-6 text-center">還沒有草稿。從上面挑一種開始，或在島上「編織」後一鍵導入。</div>
         ) : (
