@@ -7,7 +7,7 @@
 
 const BASE = (process.argv[2] || process.env.BASE_URL || "https://ai-island-web.snowrealm.pet").replace(/\/$/, "");
 
-// [path, expectedStatus, mustContain?]
+// [path, expectedStatus(數字或陣列), mustContain?]
 const CHECKS = [
   ["/", 200, "AI"],
   ["/chapters", 200, null],
@@ -19,7 +19,8 @@ const CHECKS = [
   ["/sitemap.xml", 200, null],
   ["/robots.txt", 200, null],
   ["/api/nav", 200, "chapters"],
-  ["/creator-island", 307, null], // flag 開 + 未登入 → 轉址 /login
+  // flag 開 + 未登入 → 307 轉址 /login；flag 關 → 200（FeatureOffNotice）。兩者都代表頁活著、非 500/404。
+  ["/creator-island", [200, 307], null],
   ["/this-page-should-not-exist-xyz", 404, null],
 ];
 
@@ -30,7 +31,7 @@ async function check(pathname, expectStatus, mustContain) {
     const res = await fetch(url, { redirect: "manual", headers: { "User-Agent": "ai-island-smoke" } });
     const ms = Date.now() - t0;
     // 2xx 或 3xx（轉址）對某些頁也算活著；但這裡用明確 expectStatus
-    let ok = res.status === expectStatus;
+    let ok = Array.isArray(expectStatus) ? expectStatus.includes(res.status) : res.status === expectStatus;
     let note = `${res.status} ${ms}ms`;
     if (ok && mustContain) {
       const body = await res.text();

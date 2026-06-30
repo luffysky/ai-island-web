@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { uploadMedia } from "@/lib/creator-upload";
 
 type Msg = { role: "user" | "assistant"; content: string };
+
+const BTN = 52; // 綠寶按鈕直徑(px)
 
 export function IslandChat({ workspaceId }: { workspaceId: string }) {
   const [open, setOpen] = useState(false);
@@ -14,6 +16,50 @@ export function IslandChat({ workspaceId }: { workspaceId: string }) {
   const [busy, setBusy] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
   useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [msgs, open]);
+
+  // === 可拖曳的浮動位置（預設左下、避開手機底部導覽列）===
+  const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
+  const drag = useRef<{ ox: number; oy: number; moved: boolean } | null>(null);
+  useEffect(() => {
+    // 預設：左下角、清開底部導覽列(行動裝置 56px)+安全區
+    const navGap = window.matchMedia("(min-width: 768px)").matches ? 16 : 88;
+    setPos({ x: 16, y: window.innerHeight - navGap - BTN });
+  }, []);
+  const clamp = useCallback((x: number, y: number) => ({
+    x: Math.max(8, Math.min(x, window.innerWidth - BTN - 8)),
+    y: Math.max(8, Math.min(y, window.innerHeight - BTN - 8)),
+  }), []);
+  function onDown(e: React.PointerEvent) {
+    if (!pos) return;
+    (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
+    drag.current = { ox: e.clientX - pos.x, oy: e.clientY - pos.y, moved: false };
+  }
+  function onMove(e: React.PointerEvent) {
+    if (!drag.current) return;
+    const nx = e.clientX - drag.current.ox, ny = e.clientY - drag.current.oy;
+    if (Math.abs(nx - (pos?.x ?? 0)) > 4 || Math.abs(ny - (pos?.y ?? 0)) > 4) drag.current.moved = true;
+    setPos(clamp(nx, ny));
+  }
+  function onUp(e: React.PointerEvent) {
+    const moved = drag.current?.moved;
+    drag.current = null;
+    (e.target as HTMLElement).releasePointerCapture?.(e.pointerId);
+    if (!moved) setOpen((o) => !o); // 沒拖動 = 點擊開關
+  }
+
+  // 面板位置：盡量貼著按鈕、且永不超出視口
+  const panel = (() => {
+    if (!pos) return { left: 16, top: 80 };
+    const W = Math.min(window.innerWidth * 0.92, 380);
+    const H = Math.min(window.innerHeight * 0.7, 560);
+    let left = pos.x;
+    if (left + W > window.innerWidth - 8) left = window.innerWidth - W - 8;
+    left = Math.max(8, left);
+    let top = pos.y - H - 10;                 // 預設開在按鈕上方
+    if (top < 8) top = Math.min(pos.y + BTN + 10, window.innerHeight - H - 8); // 上方放不下→下方
+    top = Math.max(8, top);
+    return { left, top, width: W, height: H };
+  })();
 
   function voice() {
     const SR = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
@@ -44,22 +90,28 @@ export function IslandChat({ workspaceId }: { workspaceId: string }) {
     } catch (e: any) { setMsgs((m) => [...m, { role: "assistant", content: "出錯了：" + e.message }]); } finally { setBusy(false); }
   }
 
+  if (!pos) return null;
+
   return (
     <>
-      <button onClick={() => setOpen((o) => !o)} title="問綠寶"
-        className="fixed bottom-4 left-4 z-30 h-12 px-4 rounded-full bg-gradient-to-r from-emerald-400 to-teal-500 text-black shadow-lg grid place-items-center font-bold hover:scale-105 transition">✨ 問綠寶</button>
+      {/* 可拖曳的綠寶按鈕（避開底部導覽列、點擊開關、長按拖動） */}
+      <button
+        onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp}
+        title="問綠寶（可拖曳）" style={{ left: pos.x, top: pos.y, touchAction: "none" }}
+        className="fixed z-[55] h-[52px] px-4 rounded-full bg-gradient-to-r from-emerald-400 to-teal-500 text-black shadow-lg grid place-items-center font-bold hover:scale-105 transition select-none cursor-grab active:cursor-grabbing">✨ 問綠寶</button>
 
       <AnimatePresence>
         {open && (
           <motion.div initial={{ opacity: 0, y: 20, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 20, scale: 0.96 }}
-            className="fixed bottom-20 left-4 z-40 w-[min(92vw,380px)] h-[min(70vh,560px)] bg-bg-card border border-emerald-500/40 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+            style={{ left: panel.left, top: panel.top, width: panel.width, height: panel.height }}
+            className="fixed z-[56] bg-bg-card border border-emerald-500/40 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
             <div className="p-3 border-b border-border flex items-center gap-2">
               <span className="font-bold">✨ 綠寶</span><span className="text-xs text-fg-muted">創作夥伴</span>
               <button onClick={() => setOpen(false)} className="ml-auto text-fg-muted hover:text-fg">✕</button>
             </div>
             <div className="flex-1 overflow-y-auto p-3 space-y-2">
               {msgs.map((m, i) => (
-                <div key={i} className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm whitespace-pre-wrap ${m.role === "user" ? "ml-auto bg-accent text-white" : "bg-bg-elevated"}`}>{m.content}</div>
+                <div key={i} className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm whitespace-pre-wrap break-words ${m.role === "user" ? "ml-auto bg-accent text-white" : "bg-bg-elevated"}`}>{m.content}</div>
               ))}
               {busy && <div className="text-xs text-fg-muted animate-pulse">綠寶思考中…</div>}
               <div ref={endRef} />
@@ -69,7 +121,7 @@ export function IslandChat({ workspaceId }: { workspaceId: string }) {
               <button onClick={voice} title="語音" className="text-lg hover:text-accent">🎤</button>
               <label title="圖片(可看圖)" className="text-lg cursor-pointer hover:text-accent">📷<input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) pickImage(f); e.currentTarget.value = ""; }} /></label>
               <label title="檔案" className="text-lg cursor-pointer hover:text-accent">📎<input type="file" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) pickFile(f); e.currentTarget.value = ""; }} /></label>
-              <input value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }} placeholder="問綠寶…" className="flex-1 bg-bg-elevated border border-border rounded-full px-3 py-2 text-sm outline-none focus:border-accent" />
+              <input value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }} placeholder="問綠寶…" className="flex-1 min-w-0 bg-bg-elevated border border-border rounded-full px-3 py-2 text-sm outline-none focus:border-accent" />
               <button onClick={send} disabled={busy} className="px-3 py-2 rounded-full bg-accent text-white text-sm disabled:opacity-40">送</button>
             </div>
           </motion.div>

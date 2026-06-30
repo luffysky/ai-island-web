@@ -95,6 +95,9 @@
 - [x] ~~**島內對話 AI 綠寶**（多模態聊天：文字/🎤語音/📷看圖(vision)/📎檔案；寫 ci_agent_runs → 後台 AI 對話可見）~~。
 - [x] ~~**發佈到本站部落格**（works→blog + 社群貼文→blog publishPostToBlog）~~。
 - [x] ~~**presigned 直傳 R2**（圖/影/音/檔皆可、client 直 PUT 不經 server、上限放寬至 GB 級；社群/限動/私訊/聊天皆改用）~~。
+- [x] ~~**創作引擎**（2026-06-30）：`/creator-island/create`「✨ 創作引擎」直接開寫 7 類型（小說/短篇/歌詞/詩/劇本/文章/文案），每類型專屬工具(章節大綱/角色卡/押韻/Suno/MV/分鏡/SEO/Slogan…)＋通用 TipTap 編輯器＋碎片素材欄＋綠寶 assist＋自動存草稿＋存作品/發部落格；`ci_drafts` 表(live CRUD 驗證)；編織完一鍵導入續寫~~。
+- [x] ~~**後台 AI 補齊**：admin/ai/creator-island 補 advise/chat/assist（原僅 5 個）；chat 接 `resolveModel("chat")`~~。
+- [x] ~~**RWD/視口修復**：綠寶可拖曳+清開底部 nav、導覽 tooltip 夾進視口、手機碎片編輯鈕常駐、浮動 UI 抬高 `bottom-[5.5rem]`~~。
 - [ ] 真·外部平台 cross-post（Threads/IG/Medium，需 OAuth 金鑰，未做）。
 - [ ] **PWA PNG icons**：`app/manifest.ts` 仍只指 `favicon.svg`；補 192/512 maskable + apple-touch（與平台共用 TODO）。
 - [ ] **記憶管理使用者頁**（選配）：`ci_memories` 後端 + agent 注入已備，缺 user-facing 管理 UI。

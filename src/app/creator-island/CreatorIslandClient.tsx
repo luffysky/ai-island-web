@@ -22,6 +22,21 @@ const SRC_ICON: Record<string, string> = {
   work_recycled: "♻️", transcreated: "🌏", market_imported: "🍴", human_selected: "👆",
 };
 
+/** 編織 workType（中文label/含括號子類）→ 創作引擎 type key。 */
+function engineTypeFromWorkType(wt: string): string {
+  const s = wt || "";
+  if (s.includes("歌")) return "song";
+  if (s.includes("詩")) return "poem";
+  if (s.includes("劇本") || s.includes("腳本") || s.includes("短影音")) return "script";
+  if (s.includes("短篇") || s.includes("故事")) return "short_story";
+  if (s.includes("小說")) return "novel";
+  if (s.includes("文案") || s.includes("品牌") || s.includes("slogan")) return "copy";
+  return "article";
+}
+function composeBodyToHtml(text: string): string {
+  return (text || "").split(/\n{2,}/).map((p) => `<p>${p.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/\n/g, "<br>")}</p>`).join("");
+}
+
 export function CreatorIslandClient({ workspaceId, initialFragments, initialCollections = [] }: { workspaceId: string; initialFragments: Fragment[]; initialCollections?: Collection[] }) {
   const [fragments, setFragments] = useState<Fragment[]>(initialFragments);
   const [collections, setCollections] = useState<Collection[]>(initialCollections);
@@ -190,6 +205,20 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
       await api("/api/creator-island/works", body); setResult(null); setSelected(new Set()); alert("✅ 已存成作品（作品庫看）");
     } catch (e: any) { setErr(e.message); } finally { setBusy(null); }
   }
+  async function importToEngine() {
+    const r = result?.result; if (!r) return;
+    setBusy("import"); setErr(null);
+    try {
+      const isSong = !!r.lyricsSectioned;
+      const html = composeBodyToHtml(r.lyricsSectioned ?? r.body ?? "");
+      const { draft } = await api("/api/creator-island/drafts", {
+        workspaceId, workType: engineTypeFromWorkType(workType),
+        title: r.title || "未命名草稿", body: html, fragmentIds: sel,
+        meta: isSong ? { sunoPrompt: r.sunoPrompt, mvPrompt: r.mvPrompt } : {},
+      });
+      window.location.href = `/creator-island/create/${draft.id}`;
+    } catch (e: any) { setErr(e.message); setBusy(null); }
+  }
   async function saveWorkflow() {
     const title = prompt(`把剛剛這 ${recording.length} 步存成工作流，取個名字：`); if (!title) return;
     try { await api("/api/creator-island/workflows", { workspaceId, title, steps: recording }); setRecording([]); alert("✅ 已存成工作流"); }
@@ -346,6 +375,7 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
                 <button onClick={() => navigator.clipboard?.writeText(result.result.lyricsSectioned ?? result.result.body ?? "")} className="text-xs px-3 py-1.5 rounded-full bg-bg-elevated hover:text-accent">📋 複製{result.result.lyricsSectioned ? "歌詞" : "內容"}</button>
                 {result.result.sunoPrompt && <button onClick={() => navigator.clipboard?.writeText(result.result.sunoPrompt)} className="text-xs px-3 py-1.5 rounded-full bg-bg-elevated hover:text-accent">📋 Suno</button>}
                 {result.result.mvPrompt && <button onClick={() => navigator.clipboard?.writeText(result.result.mvPrompt)} className="text-xs px-3 py-1.5 rounded-full bg-bg-elevated hover:text-accent">📋 MV</button>}
+                <button onClick={importToEngine} disabled={busy === "import"} className="px-3 py-1.5 rounded-full bg-violet-500/20 text-violet-200 text-sm hover:bg-violet-500/30 disabled:opacity-40">{busy === "import" ? "導入中…" : "📝 導入創作引擎續寫"}</button>
                 <button onClick={saveWork} disabled={busy === "savework"} className="px-3 py-1.5 rounded-full bg-accent text-white text-sm disabled:opacity-40">存成作品</button>
               </div>
             </>)}
@@ -378,7 +408,7 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
       <AnimatePresence>
         {sel.length > 0 && (
           <motion.div initial={{ y: 80, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 80, opacity: 0 }}
-            className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 w-[min(92vw,720px)] bg-bg-card/95 backdrop-blur border-2 border-accent/40 rounded-2xl shadow-2xl shadow-accent/10 p-3">
+            className="fixed bottom-[5.5rem] md:bottom-4 left-1/2 -translate-x-1/2 z-[52] w-[min(92vw,720px)] max-h-[55vh] overflow-y-auto bg-bg-card/95 backdrop-blur border-2 border-accent/40 rounded-2xl shadow-2xl shadow-accent/10 p-3">
             <div className="flex items-center gap-2 flex-wrap">
               <span className="text-xs text-fg-muted mr-auto">🪄 已選 <b className="text-fg">{sel.length}</b> 個碎片</span>
               <button onClick={() => run("synthesize")} disabled={busy !== null || sel.length < 2} className="px-3 py-2 rounded-full bg-bg-elevated text-sm hover:text-accent disabled:opacity-40">🧲 凝聚</button>
@@ -440,7 +470,7 @@ function DraggableFragment({ f, on, onToggle, onEdit }: { f: Fragment; on: boole
     <div ref={setNodeRef} style={style} {...attributes} {...listeners} onClick={onToggle} role="button" tabIndex={0}
       className={`group relative block w-full text-left rounded-xl p-3 border transition cursor-grab active:cursor-grabbing ${isDragging ? "opacity-70 ring-2 ring-accent z-50 shadow-xl" : on ? "border-accent bg-accent/[0.08] ring-1 ring-accent/40" : "border-border bg-bg-card hover:border-accent/40"}`}>
       <button onClick={(e) => { e.stopPropagation(); onEdit(); }} onPointerDown={(e) => e.stopPropagation()} title="編輯"
-        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition text-fg-muted hover:text-accent text-sm">✎</button>
+        className="absolute top-2 right-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition text-fg-muted hover:text-accent text-base p-1 -m-1">✎</button>
       <div className="font-bold text-sm flex items-start gap-1.5 pr-5"><span>{SRC_ICON[f.source_type] ?? "✍️"}</span><span className="flex-1">{f.title}</span>{on && <span className="text-accent">✓</span>}</div>
       {f.subtitle && <div className="text-xs text-accent-3 mt-0.5">{f.subtitle}</div>}
       {f.content && !f.content.startsWith("![](") && <div className="text-xs text-fg-muted mt-1 line-clamp-3 whitespace-pre-wrap">{f.content}</div>}

@@ -12,6 +12,9 @@ export const AGENTS = [
   { key: "compose", label: "🧵 編織（成品/歌曲）" },
   { key: "transcreate", label: "🌏 文化轉譯" },
   { key: "dna", label: "🧬 創作 DNA 分析" },
+  { key: "advise", label: "💡 創作顧問（適合做什麼）" },
+  { key: "chat", label: "✨ 綠寶對話（島內多模態聊天）" },
+  { key: "assist", label: "🖋️ 創作引擎助手（續寫/改寫/各類型工具）" },
 ];
 
 /** GET → { models, current } 給後台選單。 */

@@ -12,7 +12,7 @@ import { resolveModel } from "@/lib/creator-engine/ai/router";
 import { estimateCostUsd, resolveZCharge } from "@/lib/creator-engine/ai/cost";
 import { getInjectableMemory, recordMemoryUsage } from "@/lib/creator-engine/memory";
 
-export type AgentType = "synthesize" | "evolve" | "compose" | "transcreate" | "dna" | "advise";
+export type AgentType = "synthesize" | "evolve" | "compose" | "transcreate" | "dna" | "advise" | "assist" | "chat";
 
 class AgentError extends Error {
   status: number;
@@ -212,6 +212,38 @@ export async function advise(workspaceId: string, userId: string, frags: { id: s
     input: { fragmentIds: frags.map((f) => f.id) },
     system, user: `碎片：\n\n${fragmentBlock(frags)}`, temperature: 0.85, maxTokens: 1400,
   });
+}
+
+// ===== 創作引擎 Assist：純文字（續寫/改寫/潤稿/大綱/角色卡/押韻/Suno…），不走 JSON schema =====
+/** 跑一次純文字補全，記 ci_agent_runs(agent_type:'assist') + logAiUsage。回 { text }。 */
+export async function assistText(
+  workspaceId: string, userId: string,
+  opts: { system: string; user: string; mode: string; temperature?: number; maxTokens?: number },
+): Promise<{ text: string }> {
+  const resolved = await resolveModel("assist");
+  if (!resolved.ok) throw new AgentError(resolved.message, resolved.status);
+  const { provider, model, apiKey } = resolved.model;
+  const admin = createSupabaseAdmin();
+  const mem = await getInjectableMemory(workspaceId, userId).catch(() => ({ text: "", ids: [] as string[] }));
+  const system = mem.text ? `${opts.system}\n\n${mem.text}\n（以上為背景偏好；與當前指令衝突時以當前指令為準。）` : opts.system;
+  try {
+    const r = await callAI({
+      provider, model, apiKey,
+      messages: [{ role: "system", content: system }, { role: "user", content: opts.user }],
+      temperature: opts.temperature ?? 0.85, maxTokens: opts.maxTokens ?? 1800,
+    });
+    const cost = await estimateCostUsd(provider, model, r.tokensInput, r.tokensOutput).catch(() => 0);
+    await logAiUsage(provider, model, r.tokensInput, r.tokensOutput).catch(() => {});
+    await admin.from("ci_agent_runs").insert({
+      workspace_id: workspaceId, user_id: userId, agent_type: "assist",
+      input: { mode: opts.mode, prompt: opts.user.slice(0, 500) }, output: { text: r.text?.slice(0, 2000) },
+      provider, model, tokens_input: r.tokensInput, tokens_output: r.tokensOutput, cost_usd: cost, status: "succeeded",
+    }).then(() => {}, () => {});
+    return { text: (r.text || "").trim() };
+  } catch (e) {
+    if (e instanceof AgentError) throw e;
+    throw new AgentError((e as Error).message ?? "assist_failed", 502);
+  }
 }
 
 export { AgentError };

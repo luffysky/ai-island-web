@@ -70,9 +70,11 @@ interface BlogEditorProps {
   onChange: (html: string) => void;
   placeholder?: string;
   editable?: boolean;
+  /** 編輯器就緒時回傳 editor 實例（給創作引擎做 AI 插入/取代選取）。 */
+  onReady?: (editor: Editor) => void;
 }
 
-export function BlogEditor({ content, onChange, placeholder, editable = true }: BlogEditorProps) {
+export function BlogEditor({ content, onChange, placeholder, editable = true, onReady }: BlogEditorProps) {
   const editor = useEditor({
     immediatelyRender: false,
     editable,
@@ -115,6 +117,12 @@ export function BlogEditor({ content, onChange, placeholder, editable = true }: 
   useEffect(() => {
     if (editor) editor.setEditable(editable);
   }, [editor, editable]);
+
+  // 就緒時回傳 editor 實例
+  useEffect(() => {
+    if (editor && onReady) onReady(editor);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editor]);
 
   if (!editor) {
     return <div className="h-[460px] rounded-xl border border-border bg-bg-card animate-pulse" />;

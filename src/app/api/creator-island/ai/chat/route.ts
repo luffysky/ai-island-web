@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
   const history = Array.isArray(b.messages) ? b.messages.slice(-12) : [];
   if (!history.length) return NextResponse.json({ error: "validation" }, { status: 422 });
 
-  const resolved = await resolveModel();
+  const resolved = await resolveModel("chat");
   if (!resolved.ok) return NextResponse.json({ error: resolved.error, message: resolved.message }, { status: resolved.status });
   const { provider, model, apiKey } = resolved.model;
 
