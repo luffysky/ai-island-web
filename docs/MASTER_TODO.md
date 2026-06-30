@@ -104,6 +104,35 @@
 - [ ] **AI run / 成本儀表板**（選配）：`/api/creator-island/ai/runs` 已備、缺前端。
 - [ ] **真金流 marketplace**（KYC，需林董拍板）。
 
+## 2026-06-30 ~ 07-01 衝刺（含臨時交辦、做完畫刪除線、未做保留）
+> 詳見 `docs/daily_works_0630.md`、`docs/daily_works_0701.md`。
+
+### ✅ 已完成（含原不在清單上的臨時交辦）
+- [x] ~~**系列 / 專輯 + 再分類**：`ci_series`(kind series/album, category)；草稿/作品 series_id；創作引擎指派(歌詞=專輯)+建立頁依分類分組~~。
+- [x] ~~**綠寶島內對話歷史**：`ci_chat_sessions`(訊息 jsonb，RLS) + 列表/載入/刪除；聊天框 🕘 歷史 + 開新對話~~。
+- [x] ~~**工作室/創作引擎/編輯頁 加「我的部落格」入口**~~。
+- [x] ~~**註冊 Email 驗證碼**：`email_verifications`(sha256/10分/限流) + send-code/verify + 密碼👁 + 防自動填入；Resend 寄件改已驗證 `snowrealm.pet` 網域~~。
+- [x] ~~**OAuth 首次登入自選顯示名稱**：`profiles.display_name_set` + `/onboarding/name` + ensure-profile 不直接用第三方真名~~。
+- [x] ~~**AI 回答分享短連結**：`ai_shares` + `/share/ai/[token]` 落地頁(撐完整回答 + OG)；取代長編碼亂碼網址~~。
+- [x] ~~**社群三分流**(公共/別人(好友)/自己) + **貼文分享**(`/creator-island/p/[id]` 公開永久連結 + OG)~~。
+- [x] ~~**好友「送出的邀請」名單**(listSent + 可收回)；工作室角色標示修(成員→查看成員/中文角色)~~。
+- [x] ~~章節「快速滑過」提醒**可展開列出哪幾節**並一鍵跳去細看~~。
+- [x] ~~綠寶**不誇大/不掛保證**(tutor prompt)、後台標題直排修、分享網址亂碼修、碎片手機可編輯、手機導覽出界、綠寶可拖曳~~。
+- [x] ~~bug 105–108：導覽出界(數值置中)、演化**全部可存+toast**、碎片**不再限 100**(listAllFragments)、後台 AI 模型頁 RWD~~。
+- [x] ~~**AI 成本記帳全面修**：H1 Anthropic prompt-cache tokens 計價、H3 創作島重複記帳移除、H4 top-spender keying、H2 四個 raw 黑洞(LINE admin/student 工具迴圈、寵物聊天、改寫課程)補 logging~~。
+- [x] ~~**全站 emoji → lucide UI icon**：創作島全頁 + 共用 chrome(TopNav/SideNav/通知/首頁/章節UI) + 後台 99 檔。保留教學內容/quiz/訊息字串/主題 emoji~~。
+- [x] ~~**對比度**：~25+ 處亮色看不到字 badge 補 `dark:`；**RWD** 5 處破版；**PWA** sw v9→v11~~。
+- [x] ~~**安全加固**(Codex/Claude 審計)：admin guard 永遠放行 bug(9處)、og 診斷端點鎖 requireOwner、fetch-url SSRF 防護、upload/presign 上限+MIME allowlist、sudo 移除 dev-secret fallback、resume markdown XSS、sanitize-html nonTextTags 防 xmp、`npm audit fix`(ws DoS 等)~~。
+- [x] ~~Logo PNG 512/192 產生(給 Google OAuth consent screen)~~。
+
+### ⏳ 未做 / 待續
+- [ ] **emoji 零星未換**：首頁 Hero/MissionDungeons/吉祥物的主題性 emoji(刻意保留行銷設計)、ResourceCard 成長刻度(🌱🌿🌳)、無對應 lucide 的 🐹🗺️👹🐍、engine-types 的 type `emoji:` 欄位(需把 CreationType 改帶 Icon component)。
+- [ ] **PWA PNG icons 接線**：logo 192/512 已產生，但 `app/manifest.ts` 仍指 `favicon.svg` → 換成 PNG + 補 apple-touch/maskable。
+- [ ] **Google 同意畫面去除 `supabase.co` 字樣**：需 Supabase 自訂網域(付費 add-on) 或 GCC OAuth consent screen 設 App name「AI 島」+logo+發布(林董手動)。
+- [ ] **輪替 Supabase service key / DB 密碼**：林董指示「等專案完成再做」。
+- [ ] **H2 殘留(非 Claude、低額、可選)**：embeddings(OpenAI)、Whisper、og/ai 圖片生成 仍未記用量。
+- [ ] **EMAIL_FROM 確認**：Zeabur 若有設要改成 `AI島 <service@snowrealm.pet>`(已驗證網域)。
+
 ## 其他島嶼（長線）
 - [ ] Learning / Business / Research Island（共用 Ideas OS 核心）。
 
