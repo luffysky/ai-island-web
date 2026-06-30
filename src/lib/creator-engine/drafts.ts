@@ -6,14 +6,15 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { createWork } from "@/lib/creator-engine/works";
 
-const COLS = "id, workspace_id, user_id, work_type, title, body, doc, meta, fragment_ids, word_count, status, published_work_id, created_at, updated_at";
+const COLS = "id, workspace_id, user_id, work_type, title, body, doc, meta, fragment_ids, word_count, status, published_work_id, series_id, series_order, created_at, updated_at";
 
 export type Draft = {
   id: string; workspace_id: string; user_id: string;
   work_type: string; title: string; body: string;
   doc: Record<string, unknown>; meta: Record<string, unknown>;
   fragment_ids: string[]; word_count: number; status: string;
-  published_work_id: string | null; created_at: string; updated_at: string;
+  published_work_id: string | null; series_id: string | null; series_order: number;
+  created_at: string; updated_at: string;
 };
 
 /** 由 HTML/markdown 粗估字數（中文逐字、英文逐詞）。 */
@@ -66,7 +67,7 @@ export async function createDraft(
 
 export async function updateDraft(
   id: string,
-  patch: Partial<Pick<Draft, "title" | "body" | "doc" | "meta" | "work_type" | "status">> & { fragmentIds?: string[] },
+  patch: Partial<Pick<Draft, "title" | "body" | "doc" | "meta" | "work_type" | "status">> & { fragmentIds?: string[]; seriesId?: string | null; seriesOrder?: number },
 ): Promise<Draft> {
   const admin = createSupabaseAdmin();
   const clean: Record<string, unknown> = { updated_at: new Date().toISOString() };
@@ -77,6 +78,8 @@ export async function updateDraft(
   if (patch.work_type !== undefined) clean.work_type = patch.work_type;
   if (patch.status !== undefined) clean.status = patch.status;
   if (patch.fragmentIds !== undefined) clean.fragment_ids = patch.fragmentIds.filter(Boolean);
+  if (patch.seriesId !== undefined) clean.series_id = patch.seriesId;
+  if (patch.seriesOrder !== undefined) clean.series_order = patch.seriesOrder;
   const { data, error } = await admin.from("ci_drafts").update(clean).eq("id", id).select(COLS).single();
   if (error) throw new Error(error.message);
   return data as Draft;
@@ -97,6 +100,10 @@ export async function publishDraftToWork(draftId: string, userId: string): Promi
     fragmentIds: draft.fragment_ids, sourceType: "human_original", meta: draft.meta,
   });
   const admin = createSupabaseAdmin();
+  // 系列/專輯歸屬帶到作品
+  if (draft.series_id) {
+    await admin.from("ci_works").update({ series_id: draft.series_id, series_order: draft.series_order }).eq("id", work.id).then(() => {}, () => {});
+  }
   await admin.from("ci_drafts")
     .update({ status: "published", published_work_id: work.id, updated_at: new Date().toISOString() })
     .eq("id", draftId);

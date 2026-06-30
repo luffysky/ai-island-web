@@ -13,6 +13,7 @@ type Draft = {
   id: string; workspace_id: string; work_type: string; title: string; body: string;
   doc: Record<string, unknown>; meta: Record<string, unknown>; fragment_ids: string[];
   status: string; published_work_id: string | null;
+  series_id: string | null; series_order: number;
 };
 
 function htmlify(text: string): string {
@@ -33,6 +34,29 @@ export function EngineWorkspace({ draft, fragments }: { draft: Draft; fragments:
   const [toast, setToast] = useState<string | null>(null);
   const editorRef = useRef<Editor | null>(null);
   const first = useRef(true);
+
+  // 系列/專輯（歌詞=專輯，其餘=系列）
+  const seriesKind = draft.work_type === "song" ? "album" : "series";
+  const seriesNoun = seriesKind === "album" ? "專輯" : "系列";
+  const seriesEmoji = seriesKind === "album" ? "💿" : "📚";
+  const [seriesList, setSeriesList] = useState<{ id: string; title: string; category: string }[]>([]);
+  const [seriesId, setSeriesId] = useState<string | null>(draft.series_id ?? null);
+  useEffect(() => {
+    fetch(`/api/creator-island/series?workspaceId=${draft.workspace_id}&kind=${seriesKind}`)
+      .then((r) => r.json()).then((j) => setSeriesList(j.items ?? [])).catch(() => {});
+  }, [draft.workspace_id, seriesKind]);
+  async function assignSeries(id: string | null) {
+    setSeriesId(id);
+    fetch(`/api/creator-island/drafts/${draft.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ seriesId: id }) }).catch(() => {});
+  }
+  async function newSeries() {
+    const title = window.prompt(`新${seriesNoun}名稱：`); if (!title?.trim()) return;
+    const category = window.prompt(`分類（再分類，可留空。例：${seriesKind === "album" ? "情歌 / 搖滾" : "都市奇幻 / 懸疑"}）`) || "";
+    try {
+      const r = await fetch("/api/creator-island/series", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ workspaceId: draft.workspace_id, kind: seriesKind, title: title.trim(), category }) }).then((x) => x.json());
+      if (r.series) { setSeriesList((p) => [r.series, ...p]); assignSeries(r.series.id); }
+    } catch (e: any) { setErr(e.message); }
+  }
 
   // 自動存草稿（debounce）
   useEffect(() => {
@@ -167,6 +191,18 @@ export function EngineWorkspace({ draft, fragments }: { draft: Draft; fragments:
               ))}
             </div>
             <div className="text-[10px] text-fg-muted mt-2">💡 選取一段文字後再按「改寫/潤稿/轉譯」，會就地處理那段。</div>
+          </div>
+
+          {/* 系列 / 專輯 */}
+          <div className="rounded-2xl border border-border bg-bg-card p-3">
+            <div className="text-sm font-bold mb-2">{seriesEmoji} {seriesNoun}</div>
+            <select value={seriesId ?? ""} onChange={(e) => assignSeries(e.target.value || null)}
+              className="w-full bg-bg-elevated border border-border rounded-lg px-2 py-2 text-sm outline-none focus:border-accent">
+              <option value="">（不屬於任何{seriesNoun}）</option>
+              {seriesList.map((s) => <option key={s.id} value={s.id}>{s.category ? `[${s.category}] ` : ""}{s.title}</option>)}
+            </select>
+            <button onClick={newSeries} className="mt-2 text-xs px-2.5 py-1 rounded-full border border-dashed border-border text-fg-muted hover:text-accent">＋ 新{seriesNoun}</button>
+            <div className="text-[10px] text-fg-muted mt-2">把作品歸進{seriesNoun}；{seriesNoun}可再用「分類」分組。</div>
           </div>
 
           {/* AI 結果面板（不直接插入的，如 Suno/一致性/Slogan） */}

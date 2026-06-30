@@ -6,9 +6,10 @@ import { motion } from "framer-motion";
 import { CREATION_TYPES, getType } from "./engine-types";
 import { IslandChat } from "../IslandChat";
 
-type Draft = { id: string; work_type: string; title: string; word_count: number; status: string; updated_at: string };
+type Draft = { id: string; work_type: string; title: string; word_count: number; status: string; updated_at: string; series_id?: string | null };
+type Series = { id: string; kind: string; title: string; category: string };
 
-export function CreatePicker({ workspaceId, drafts }: { workspaceId: string; drafts: Draft[] }) {
+export function CreatePicker({ workspaceId, drafts, series = [] }: { workspaceId: string; drafts: Draft[]; series?: Series[] }) {
   const router = useRouter();
   const [busy, setBusy] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
@@ -45,6 +46,49 @@ export function CreatePicker({ workspaceId, drafts }: { workspaceId: string; dra
           ))}
         </div>
       </section>
+
+      {/* 系列 / 專輯（依分類分組） */}
+      {series.length > 0 && (() => {
+        const byCat: Record<string, Series[]> = {};
+        series.forEach((s) => { (byCat[s.category || "未分類"] ??= []).push(s); });
+        return (
+          <section>
+            <div className="text-sm font-bold text-fg-muted mb-3">📚 系列 / 💿 專輯（依分類）</div>
+            <div className="space-y-4">
+              {Object.entries(byCat).map(([cat, list]) => (
+                <div key={cat}>
+                  <div className="text-xs font-bold text-accent mb-1.5">🏷 {cat}</div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {list.map((s) => {
+                      const items = drafts.filter((d) => d.series_id === s.id);
+                      return (
+                        <div key={s.id} className="rounded-xl border border-border bg-bg-card p-3">
+                          <div className="font-bold text-sm flex items-center gap-1.5">
+                            <span>{s.kind === "album" ? "💿" : "📚"}</span><span className="truncate">{s.title}</span>
+                            <span className="ml-auto text-[11px] text-fg-muted shrink-0">{items.length} 篇</span>
+                          </div>
+                          {items.length > 0 && (
+                            <ul className="mt-2 space-y-1">
+                              {items.map((d) => (
+                                <li key={d.id}>
+                                  <button onClick={() => router.push(`/creator-island/create/${d.id}`)}
+                                    className="w-full text-left text-xs text-fg-muted hover:text-accent truncate flex items-center gap-1.5">
+                                    <span>{getType(d.work_type).emoji}</span><span className="truncate">{d.title || "未命名草稿"}</span>
+                                  </button>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        );
+      })()}
 
       {/* 我的草稿 */}
       <section>

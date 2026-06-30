@@ -35,6 +35,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     title: body.title, body: body.body, doc: body.doc, meta: body.meta,
     work_type: body.workType, status: body.status,
     fragmentIds: Array.isArray(body.fragmentIds) ? body.fragmentIds : undefined,
+    seriesId: body.seriesId === undefined ? undefined : (body.seriesId || null),
+    seriesOrder: typeof body.seriesOrder === "number" ? body.seriesOrder : undefined,
   });
   return NextResponse.json({ draft });
 }

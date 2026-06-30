@@ -5,6 +5,7 @@ import { isCreatorIslandEnabled } from "@/lib/app-settings";
 import { FeatureOffNotice } from "@/components/FeatureOffNotice";
 import { getOrCreatePersonalWorkspace, getWorkspaceById, getWorkspaceRole } from "@/lib/creator-engine/workspace";
 import { listDrafts } from "@/lib/creator-engine/drafts";
+import { listSeries } from "@/lib/creator-engine/series";
 import { CreatePicker } from "./CreatePicker";
 
 export const dynamic = "force-dynamic";
@@ -25,7 +26,10 @@ export default async function CreateEnginePage({ searchParams }: { searchParams:
     const target = role ? await getWorkspaceById(wsParam) : null;
     if (target) active = target;
   }
-  const drafts = await listDrafts(active.id, { limit: 50 });
+  const [drafts, series] = await Promise.all([
+    listDrafts(active.id, { limit: 50 }),
+    listSeries(active.id),
+  ]);
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 space-y-6">
@@ -36,7 +40,7 @@ export default async function CreateEnginePage({ searchParams }: { searchParams:
         </div>
         <Link href="/creator-island" className="text-sm px-3 py-1.5 rounded-full bg-bg-card border border-border hover:border-accent hover:text-accent transition">← 回島嶼</Link>
       </div>
-      <CreatePicker workspaceId={active.id} drafts={drafts as any} />
+      <CreatePicker workspaceId={active.id} drafts={drafts as any} series={series as any} />
     </div>
   );
 }
