@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireCreatorUser, requireWorkspaceRole } from "@/lib/creator-engine/api";
 import { resolveModel } from "@/lib/creator-engine/ai/router";
 import { callAI } from "@/lib/ai-providers";
-import { logAiUsage } from "@/lib/ai-usage-log";
 import { estimateCostUsd } from "@/lib/creator-engine/ai/cost";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 
@@ -46,7 +45,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const res = await callAI({ provider, model, apiKey, messages: msgs, maxTokens: 1500, temperature: 0.8 });
-    await logAiUsage(provider, model, res.tokensInput, res.tokensOutput).catch(() => {});
+    // callAI 已自動 logAiUsage（含 cache tokens），這裡不重複
     // 寫進 ci_agent_runs → 後台「AI 對話」看得到
     const admin = createSupabaseAdmin();
     const cost = await estimateCostUsd(provider, model, res.tokensInput, res.tokensOutput).catch(() => 0);

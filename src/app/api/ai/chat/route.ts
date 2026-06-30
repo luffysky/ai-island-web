@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { createSupabaseServer, createSupabaseAdmin } from "@/lib/supabase";
-import { streamAI, estimateCost } from "@/lib/ai-providers";
+import { streamAI, estimateCost, billableInputTokens } from "@/lib/ai-providers";
 import { pickFallbackModel, isQuotaOrTransientError, providerFromModel } from "@/lib/resolve-usage-ai";
 import { buildTutorSystemPrompt } from "@/lib/ai-tutor-prompt";
 import { getUserLearningState, formatLearningStateForPrompt } from "@/lib/user-learning-state";
@@ -334,6 +334,8 @@ async function handlePost(req: NextRequest) {
       let fullText = "";
       let tokensInput = 0;
       let tokensOutput = 0;
+      let cacheWriteTokens = 0;
+      let cacheReadTokens = 0;
       let streamError = "";
       // 實際回答的模型（可能因主模型額度滿/限流被自動換成備援）
       let usedProvider = model.provider;
@@ -355,6 +357,8 @@ async function handlePost(req: NextRequest) {
             } else if (chunk.type === "done") {
               tokensInput = chunk.tokensInput ?? 0;
               tokensOutput = chunk.tokensOutput ?? 0;
+              cacheWriteTokens = chunk.cacheWriteTokens ?? 0;
+              cacheReadTokens = chunk.cacheReadTokens ?? 0;
             } else if (chunk.type === "error") {
               gotError = chunk.error || "AI provider error";
             }
@@ -384,12 +388,16 @@ async function handlePost(req: NextRequest) {
           return;
         }
 
+        // 含 Anthropic prompt-cache 的等效 input（否則快取後 input_tokens 幾乎為 0、成本會被嚴重低估）
+        const billIn = billableInputTokens(tokensInput, cacheWriteTokens, cacheReadTokens);
         const cost = estimateCost(
-          tokensInput,
+          billIn,
           tokensOutput,
           Number(model.cost_input_per_1m),
           Number(model.cost_output_per_1m)
         );
+        // tokens_input 記實際處理量（含 cache）
+        tokensInput = tokensInput + cacheWriteTokens + cacheReadTokens;
 
         // 存 assistant message
         await admin.from("ai_messages").insert({

@@ -58,7 +58,7 @@ export async function GET(req: NextRequest) {
     .select("id, username, display_name")
     .in("id", userIds.length > 0 ? userIds : ["00000000-0000-0000-0000-000000000000"]);
   const profMap: Record<string, any> = {};
-  for (const p of (profiles ?? []) as any[]) profMap[gate.userId] = p;
+  for (const p of (profiles ?? []) as any[]) profMap[p.id] = p;
 
   // 抓所有 active subscriptions
   const { data: subs } = await admin

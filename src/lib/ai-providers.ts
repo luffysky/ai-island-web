@@ -40,6 +40,9 @@ export interface AICompletionResponse {
   tokensOutput: number;
   latencyMs: number;
   raw?: any;
+  // Anthropic prompt-cache：實際計費要含這兩個（input_tokens 只含未命中部分）
+  cacheWriteTokens?: number;
+  cacheReadTokens?: number;
 }
 
 export interface StreamChunk {
@@ -47,6 +50,8 @@ export interface StreamChunk {
   text?: string;
   tokensInput?: number;
   tokensOutput?: number;
+  cacheWriteTokens?: number;
+  cacheReadTokens?: number;
   error?: string;
 }
 
@@ -213,13 +218,11 @@ async function callAnthropic(req: AICompletionRequest): Promise<AICompletionResp
     text,
     tokensInput: data.usage?.input_tokens ?? 0,
     tokensOutput: data.usage?.output_tokens ?? 0,
+    cacheWriteTokens: data.usage?.cache_creation_input_tokens ?? 0,
+    cacheReadTokens: data.usage?.cache_read_input_tokens ?? 0,
     latencyMs: Date.now() - t0,
     raw: data,
-    // 帶 cache 資訊讓 caller 看實際省了多少
-    ...(data.usage?.cache_creation_input_tokens || data.usage?.cache_read_input_tokens
-      ? { cache: { write: data.usage.cache_creation_input_tokens ?? 0, read: data.usage.cache_read_input_tokens ?? 0 } }
-      : {}),
-  } as any;
+  };
 }
 
 // ============ Google Gemini ============
@@ -328,9 +331,9 @@ async function dispatchCallAI(req: AICompletionRequest): Promise<AICompletionRes
 
 export async function callAI(req: AICompletionRequest): Promise<AICompletionResponse> {
   const res = await dispatchCallAI(req);
-  // best-effort 記用量/費用（bot / 排程 / 推薦等非串流呼叫都會被算到；web 串流自己記）
+  // best-effort 記用量/費用（含 Anthropic prompt-cache tokens；web 串流自己記）
   import("./ai-usage-log")
-    .then((m) => m.logAiUsage(req.provider, req.model, res.tokensInput ?? 0, res.tokensOutput ?? 0))
+    .then((m) => m.logAiUsage(req.provider, req.model, res.tokensInput ?? 0, res.tokensOutput ?? 0, { write: res.cacheWriteTokens ?? 0, read: res.cacheReadTokens ?? 0 }))
     .catch(() => {});
   return res;
 }
@@ -453,6 +456,8 @@ async function* streamAnthropic(req: AICompletionRequest): AsyncGenerator<Stream
   let buffer = "";
   let tokensInput = 0;
   let tokensOutput = 0;
+  let cacheWriteTokens = 0;
+  let cacheReadTokens = 0;
 
   while (true) {
     const { done, value } = await reader.read();
@@ -472,6 +477,8 @@ async function* streamAnthropic(req: AICompletionRequest): AsyncGenerator<Stream
         }
         if (json.type === "message_start" && json.message?.usage) {
           tokensInput = json.message.usage.input_tokens ?? 0;
+          cacheWriteTokens = json.message.usage.cache_creation_input_tokens ?? 0;
+          cacheReadTokens = json.message.usage.cache_read_input_tokens ?? 0;
         }
         if (json.type === "message_delta" && json.usage) {
           tokensOutput = json.usage.output_tokens ?? 0;
@@ -480,7 +487,7 @@ async function* streamAnthropic(req: AICompletionRequest): AsyncGenerator<Stream
     }
   }
 
-  yield { type: "done", tokensInput, tokensOutput };
+  yield { type: "done", tokensInput, tokensOutput, cacheWriteTokens, cacheReadTokens };
 }
 
 // Google Gemini SSE（streamGenerateContent）
@@ -560,4 +567,13 @@ export function estimateCost(
   costOutputPer1M: number
 ): number {
   return (tokensInput * costInputPer1M + tokensOutput * costOutputPer1M) / 1_000_000;
+}
+
+/**
+ * Anthropic prompt-cache 等效 input tokens：
+ *   命中讀取 cache_read 只收 0.1× input 費率、寫入 cache_creation 收 1.25×。
+ *   未命中的 input_tokens 照 1×。回「等效 input tokens」直接乘 input 費率即可。
+ */
+export function billableInputTokens(input: number, cacheWrite = 0, cacheRead = 0): number {
+  return (input || 0) + (cacheWrite || 0) * 1.25 + (cacheRead || 0) * 0.1;
 }

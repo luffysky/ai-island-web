@@ -6,7 +6,6 @@
 import { z } from "zod";
 import { callAI } from "@/lib/ai-providers";
 import { extractJson } from "@/lib/idea-ai";
-import { logAiUsage } from "@/lib/ai-usage-log";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { resolveModel } from "@/lib/creator-engine/ai/router";
 import { estimateCostUsd, resolveZCharge } from "@/lib/creator-engine/ai/cost";
@@ -69,7 +68,7 @@ async function runAgent<T>(opts: {
     }
 
     const cost = await estimateCostUsd(provider, model, tin, tout);
-    await logAiUsage(provider, model, tin, tout); // usage parity（既有後台）
+    // 不在這裡 logAiUsage：callAI 已自動記一次，重複會讓 ai_model_usage 翻倍。
 
     if (parsed === null) {
       await admin.from("ci_agent_runs").update({
@@ -233,7 +232,7 @@ export async function assistText(
       temperature: opts.temperature ?? 0.85, maxTokens: opts.maxTokens ?? 1800,
     });
     const cost = await estimateCostUsd(provider, model, r.tokensInput, r.tokensOutput).catch(() => 0);
-    await logAiUsage(provider, model, r.tokensInput, r.tokensOutput).catch(() => {});
+    // callAI 已自動 logAiUsage，這裡不重複
     await admin.from("ci_agent_runs").insert({
       workspace_id: workspaceId, user_id: userId, agent_type: "assist",
       input: { mode: opts.mode, prompt: opts.user.slice(0, 500) }, output: { text: r.text?.slice(0, 2000) },
