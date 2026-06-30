@@ -4,7 +4,7 @@ import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { trackEvent } from "@/lib/analytics";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Sparkles, ArrowRight, Mail, Lock } from "lucide-react";
+import { Sparkles, ArrowRight, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { BackgroundBeams } from "@/components/ui/BackgroundBeams";
 import { Sparkles as SparklesParticles } from "@/components/ui/Sparkles";
 
@@ -25,6 +25,7 @@ const AUTH_ERROR_LABELS: Record<string, string> = {
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const supabase = createSupabaseBrowser();
@@ -175,13 +176,17 @@ export default function LoginPage() {
             <div className="relative">
               <Lock size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-fg-muted" />
               <input
-                type="password"
+                type={showPw ? "text" : "password"}
                 required
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 placeholder="密碼"
-                className="w-full pl-9 pr-3 py-2.5 bg-bg-elevated border border-border rounded-xl focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition"
+                autoComplete="current-password"
+                className="w-full pl-9 pr-10 py-2.5 bg-bg-elevated border border-border rounded-xl focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition"
               />
+              <button type="button" onClick={() => setShowPw(s => !s)} aria-label={showPw ? "隱藏密碼" : "顯示密碼"} className="absolute right-3 top-1/2 -translate-y-1/2 text-fg-muted hover:text-fg">
+                {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
             </div>
             {error && (
               <motion.p
