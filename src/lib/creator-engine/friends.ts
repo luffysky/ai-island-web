@@ -60,3 +60,12 @@ export async function listPending(me: string) {
     .eq("addressee_id", me).eq("status", "pending").order("created_at", { ascending: false });
   return data ?? [];
 }
+
+/** 我送出、對方還沒回應的邀請（可取消）。 */
+export async function listSent(me: string) {
+  const admin = createSupabaseAdmin();
+  const { data } = await admin.from("ci_friendships")
+    .select(`id, addressee_id, created_at, addressee:profiles!ci_friendships_addressee_id_fkey(${PROFILE})`)
+    .eq("requester_id", me).eq("status", "pending").order("created_at", { ascending: false });
+  return data ?? [];
+}

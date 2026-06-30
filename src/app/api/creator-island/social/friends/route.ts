@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireCreatorUser } from "@/lib/creator-engine/api";
-import { searchUsers, sendRequest, listFriends, listPending, removeFriend } from "@/lib/creator-engine/friends";
+import { searchUsers, sendRequest, listFriends, listPending, listSent, removeFriend } from "@/lib/creator-engine/friends";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -13,6 +13,7 @@ export async function GET(req: NextRequest) {
   const type = sp.get("type") ?? "friends";
   if (type === "search") return NextResponse.json({ users: await searchUsers(sp.get("q") ?? "", u.userId) });
   if (type === "pending") return NextResponse.json({ pending: await listPending(u.userId) });
+  if (type === "sent") return NextResponse.json({ sent: await listSent(u.userId) });
   return NextResponse.json({ friends: await listFriends(u.userId) });
 }
 

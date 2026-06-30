@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Search } from "lucide-react";
 
 type P = { id: string; username?: string; display_name?: string; avatar_url?: string };
 const nm = (p?: P) => p?.display_name || p?.username || "創作者";
@@ -17,18 +18,26 @@ function Avatar({ p }: { p?: P }) {
   return p?.avatar_url ? <img src={p.avatar_url} className="w-9 h-9 rounded-full object-cover" /> : <div className="w-9 h-9 rounded-full bg-accent/20 grid place-items-center text-xs">{nm(p)[0]}</div>;
 }
 
-export function FriendsClient({ initialFriends, initialPending }: { initialFriends: P[]; initialPending: any[] }) {
+export function FriendsClient({ initialFriends, initialPending, initialSent = [] }: { initialFriends: P[]; initialPending: any[]; initialSent?: any[] }) {
   const router = useRouter();
-  const [tab, setTab] = useState<"friends" | "pending" | "search">("friends");
+  const [tab, setTab] = useState<"friends" | "pending" | "sent" | "search">("friends");
   const [friends, setFriends] = useState<P[]>(initialFriends);
   const [pending, setPending] = useState<any[]>(initialPending);
+  const [sent, setSent] = useState<any[]>(initialSent);
   const [q, setQ] = useState(""); const [results, setResults] = useState<P[]>([]);
   const [msg, setMsg] = useState<string | null>(null); const [err, setErr] = useState<string | null>(null);
 
   async function search() {
     setErr(null); try { const j = await call(`/api/creator-island/social/friends?type=search&q=${encodeURIComponent(q)}`, "GET"); setResults(j.users ?? []); } catch (e: any) { setErr(e.message); }
   }
-  async function add(id: string) { try { await call("/api/creator-island/social/friends", "POST", { addresseeId: id }); setMsg("已送出邀請"); } catch (e: any) { setErr(e.message); } }
+  async function add(id: string) {
+    try { await call("/api/creator-island/social/friends", "POST", { addresseeId: id }); setMsg("已送出邀請");
+      try { const j = await call(`/api/creator-island/social/friends?type=sent`, "GET"); setSent(j.sent ?? []); } catch { /* ignore */ }
+    } catch (e: any) { setErr(e.message); }
+  }
+  async function cancelSent(addresseeId: string, fid: string) {
+    try { await call(`/api/creator-island/social/friends?otherId=${addresseeId}`, "DELETE"); setSent((p) => p.filter((x) => x.id !== fid)); setMsg("已收回邀請"); } catch (e: any) { setErr(e.message); }
+  }
   async function respond(fid: string, accept: boolean) {
     try { await call("/api/creator-island/social/friends/respond", "POST", { friendshipId: fid, accept }); setPending((p) => p.filter((x) => x.id !== fid)); if (accept) setMsg("已成為好友"); } catch (e: any) { setErr(e.message); }
   }
@@ -36,9 +45,11 @@ export function FriendsClient({ initialFriends, initialPending }: { initialFrien
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-2 text-sm">
-        {(["friends", "pending", "search"] as const).map((t) => (
-          <button key={t} onClick={() => setTab(t)} className={`px-3 py-1.5 rounded-full ${tab === t ? "bg-accent text-white" : "bg-bg-elevated"}`}>{t === "friends" ? `好友 ${friends.length}` : t === "pending" ? `邀請 ${pending.length}` : "🔍 找人"}</button>
+      <div className="flex gap-2 text-sm flex-wrap">
+        {(["friends", "pending", "sent", "search"] as const).map((t) => (
+          <button key={t} onClick={() => setTab(t)} className={`px-3 py-1.5 rounded-full inline-flex items-center gap-1.5 ${tab === t ? "bg-accent text-white" : "bg-bg-elevated"}`}>
+            {t === "friends" ? `好友 ${friends.length}` : t === "pending" ? `收到的邀請 ${pending.length}` : t === "sent" ? `送出的邀請 ${sent.length}` : <><Search size={14} /> 找人</>}
+          </button>
         ))}
       </div>
       {err && <div className="bg-red-500/10 border border-red-500/30 text-red-300 rounded-xl px-4 py-2 text-sm">⚠️ {err}</div>}
@@ -66,6 +77,18 @@ export function FriendsClient({ initialFriends, initialPending }: { initialFrien
               <Avatar p={f.requester} /><span className="text-sm flex-1">{nm(f.requester)}</span>
               <button onClick={() => respond(f.id, true)} className="text-xs px-3 py-1.5 rounded-full bg-accent text-white">接受</button>
               <button onClick={() => respond(f.id, false)} className="text-xs px-3 py-1.5 rounded-full bg-bg-elevated">拒絕</button>
+            </div>
+          ))}
+        </div>
+      )}
+      {tab === "sent" && (
+        <div className="space-y-2">
+          {sent.length === 0 && <div className="text-sm text-fg-muted text-center py-8">沒有送出中的邀請。</div>}
+          {sent.map((f) => (
+            <div key={f.id} className="flex items-center gap-3 bg-bg-card border border-border rounded-xl p-3">
+              <Avatar p={f.addressee} />
+              <span className="text-sm flex-1">{nm(f.addressee)} <span className="text-xs text-fg-muted">· 等待回應</span></span>
+              <button onClick={() => cancelSent(f.addressee_id, f.id)} className="text-xs px-3 py-1.5 rounded-full bg-bg-elevated hover:text-red-400">收回</button>
             </div>
           ))}
         </div>

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Image as ImageIcon, Film, Music, Heart, MessageCircle, FileText, Link2, Bookmark, Globe, Users, User } from "lucide-react";
 import { uploadMedia } from "@/lib/creator-upload";
 
 type Author = { id?: string; username?: string; display_name?: string; avatar_url?: string };
@@ -21,10 +22,10 @@ const uploadFile = uploadMedia;
 const name = (a?: Author) => a?.display_name || a?.username || "創作者";
 
 type Scope = "public" | "friends" | "mine";
-const SCOPES: { key: Scope; label: string }[] = [
-  { key: "public", label: "🌐 公共" },
-  { key: "friends", label: "👥 別人（好友）" },
-  { key: "mine", label: "🙋 自己" },
+const SCOPES: { key: Scope; label: string; Icon: typeof Globe }[] = [
+  { key: "public", label: "公共", Icon: Globe },
+  { key: "friends", label: "別人（好友）", Icon: Users },
+  { key: "mine", label: "自己", Icon: User },
 ];
 
 export function SocialFeed({ initialPosts, meId }: { initialPosts: Post[]; meId: string }) {
@@ -75,9 +76,9 @@ export function SocialFeed({ initialPosts, meId }: { initialPosts: Post[]; meId:
         {video && <video src={video} controls className="w-full rounded-lg max-h-60" />}
         {audio && <audio src={audio} controls className="w-full" />}
         <div className="flex items-center gap-2 text-sm">
-          <label className="cursor-pointer hover:text-accent" title="圖片">🖼️<input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) attach("image", f); e.currentTarget.value = ""; }} /></label>
-          <label className="cursor-pointer hover:text-accent" title="影片/短影音">🎬<input type="file" accept="video/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) attach("video", f); e.currentTarget.value = ""; }} /></label>
-          <label className="cursor-pointer hover:text-accent" title="音樂">🎵<input type="file" accept="audio/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) attach("audio", f); e.currentTarget.value = ""; }} /></label>
+          <label className="cursor-pointer hover:text-accent" title="圖片"><ImageIcon size={18} /><input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) attach("image", f); e.currentTarget.value = ""; }} /></label>
+          <label className="cursor-pointer hover:text-accent" title="影片/短影音"><Film size={18} /><input type="file" accept="video/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) attach("video", f); e.currentTarget.value = ""; }} /></label>
+          <label className="cursor-pointer hover:text-accent" title="音樂"><Music size={18} /><input type="file" accept="audio/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) attach("audio", f); e.currentTarget.value = ""; }} /></label>
           {busy === "upload" && <span className="text-xs text-fg-muted">上傳中…</span>}
           <button onClick={post} disabled={busy !== null} className="ml-auto px-4 py-1.5 rounded-full bg-accent text-white text-sm font-bold disabled:opacity-40">{busy === "post" ? "發佈中…" : "發佈"}</button>
         </div>
@@ -88,7 +89,7 @@ export function SocialFeed({ initialPosts, meId }: { initialPosts: Post[]; meId:
       <div className="flex items-center gap-1.5 text-sm">
         {SCOPES.map((s) => (
           <button key={s.key} onClick={() => switchScope(s.key)}
-            className={`px-3 py-1.5 rounded-full border transition ${scope === s.key ? "border-accent bg-accent/10 text-accent" : "border-border bg-bg-card hover:border-accent/40"}`}>{s.label}</button>
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border transition ${scope === s.key ? "border-accent bg-accent/10 text-accent" : "border-border bg-bg-card hover:border-accent/40"}`}><s.Icon size={14} /> {s.label}</button>
         ))}
         {loadingScope && <span className="text-xs text-fg-muted animate-pulse">載入中…</span>}
       </div>
@@ -137,11 +138,11 @@ function PostCard({ p, meId, onDelete }: { p: Post; meId: string; onDelete: () =
       {p.video_url && <video src={p.video_url} controls className="w-full rounded-lg max-h-96" />}
       {p.audio_url && <audio src={p.audio_url} controls className="w-full" />}
       <div className="flex items-center gap-4 text-sm text-fg-muted pt-1">
-        <button onClick={like} className={liked ? "text-pink-400" : "hover:text-pink-400"}>{liked ? "❤️" : "🤍"} {likes}</button>
-        <button onClick={loadComments} className="hover:text-accent">💬 {p.comments_count}</button>
-        {p.user_id === meId && <button onClick={async () => { try { await call(`/api/creator-island/social/posts/${p.id}/publish-blog`, "POST"); alert("已發佈成部落格草稿"); } catch (e: any) { alert(e.message); } }} className="hover:text-accent" title="發佈到部落格">📝</button>}
-        <button onClick={share} className="hover:text-accent" title="分享貼文">🔗</button>
-        <button onClick={bookmark} className={`ml-auto ${saved ? "text-amber-300" : "hover:text-amber-300"}`}>{saved ? "🔖" : "📑"}</button>
+        <button onClick={like} className={`inline-flex items-center gap-1 ${liked ? "text-pink-400" : "hover:text-pink-400"}`}><Heart size={16} className={liked ? "fill-pink-400" : ""} /> {likes}</button>
+        <button onClick={loadComments} className="inline-flex items-center gap-1 hover:text-accent"><MessageCircle size={16} /> {p.comments_count}</button>
+        {p.user_id === meId && <button onClick={async () => { try { await call(`/api/creator-island/social/posts/${p.id}/publish-blog`, "POST"); alert("已發佈成部落格草稿"); } catch (e: any) { alert(e.message); } }} className="hover:text-accent" title="發佈到部落格"><FileText size={16} /></button>}
+        <button onClick={share} className="hover:text-accent" title="分享貼文"><Link2 size={16} /></button>
+        <button onClick={bookmark} className={`ml-auto ${saved ? "text-amber-300" : "hover:text-amber-300"}`} title="收藏"><Bookmark size={16} className={saved ? "fill-amber-300" : ""} /></button>
       </div>
       {showC && (
         <div className="border-t border-border pt-2 space-y-2">

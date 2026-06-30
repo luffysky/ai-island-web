@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { Building2, Plus, Ticket, Users, ArrowRight } from "lucide-react";
 
 type Ws = { id: string; name: string; type: "personal" | "studio"; role: string };
 
@@ -40,7 +41,7 @@ export function StudioClient({ initialWorkspaces }: { initialWorkspaces: Ws[] })
   return (
     <div className="max-w-3xl mx-auto px-6 py-10 space-y-6">
       <header className="flex items-center justify-between gap-2 flex-wrap">
-        <h1 className="text-2xl font-bold">🏢 工作室</h1>
+        <h1 className="text-2xl font-bold inline-flex items-center gap-2"><Building2 size={22} /> 工作室</h1>
         <div className="flex items-center gap-2 flex-wrap">
           <Link href="/me/blog" className="text-sm px-3 py-1.5 rounded-full bg-bg-card border border-border hover:border-accent hover:text-accent transition">📝 我的部落格</Link>
           <Link href="/creator-island" className="text-sm text-accent hover:underline">← 回島</Link>
@@ -51,12 +52,12 @@ export function StudioClient({ initialWorkspaces }: { initialWorkspaces: Ws[] })
 
       <div className="grid sm:grid-cols-2 gap-3">
         <div className="bg-bg-card border border-border rounded-2xl p-4 space-y-2">
-          <div className="font-bold text-sm">➕ 建立工作室</div>
+          <div className="font-bold text-sm inline-flex items-center gap-1.5"><Plus size={15} /> 建立工作室</div>
           <input value={name} onChange={(e) => setName(e.target.value)} placeholder="工作室名稱" className="w-full bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm outline-none focus:border-accent" />
           <button onClick={createStudio} disabled={busy || !name.trim()} className="px-4 py-2 rounded-full bg-accent text-white text-sm font-bold disabled:opacity-40">建立</button>
         </div>
         <div className="bg-bg-card border border-border rounded-2xl p-4 space-y-2">
-          <div className="font-bold text-sm">🎟️ 用邀請碼加入</div>
+          <div className="font-bold text-sm inline-flex items-center gap-1.5"><Ticket size={15} /> 用邀請碼加入</div>
           <input value={redeem} onChange={(e) => setRedeem(e.target.value)} placeholder="貼上邀請碼" className="w-full bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm outline-none focus:border-accent" />
           <button onClick={redeemCode} disabled={busy || !redeem.trim()} className="px-4 py-2 rounded-full bg-bg-elevated text-sm disabled:opacity-40">加入</button>
         </div>
@@ -99,10 +100,10 @@ function StudioCard({ ws, onRemoved }: { ws: Ws; onRemoved: () => void }) {
   return (
     <div className="bg-bg-card border border-border rounded-2xl p-4 space-y-2">
       <div className="flex items-center justify-between">
-        <div className="font-bold flex items-center gap-2">🏢 {ws.name} <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-bg-elevated text-fg-muted">{ws.role}</span></div>
+        <div className="font-bold flex items-center gap-2"><Building2 size={16} /> {ws.name} <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-accent/15 text-accent">{ws.role === "owner" ? "擁有者" : ws.role === "admin" ? "管理員" : "成員"}</span></div>
         <div className="flex items-center gap-3 text-xs">
-          <a href={`/creator-island?ws=${ws.id}`} className="px-2.5 py-1 rounded-full bg-accent text-white font-bold">進入工作室 →</a>
-          <button onClick={loadMembers} className="text-accent">成員</button>
+          <a href={`/creator-island?ws=${ws.id}`} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-accent text-white font-bold">進入工作室 <ArrowRight size={13} /></a>
+          <button onClick={loadMembers} className="inline-flex items-center gap-1 text-accent"><Users size={13} /> 查看成員</button>
         </div>
       </div>
       {err && <div className="text-xs text-red-400">⚠️ {err}</div>}
