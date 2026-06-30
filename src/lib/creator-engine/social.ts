@@ -27,14 +27,30 @@ export async function createPost(userId: string, p: NewPost) {
   return data;
 }
 
-export async function listFeed(opts: { cursor?: string | null; limit?: number; type?: string | null; userId?: string | null } = {}) {
+/** 我已接受的好友 id。 */
+export async function friendIds(userId: string): Promise<string[]> {
+  const admin = createSupabaseAdmin();
+  const { data } = await admin.from("ci_friendships").select("requester_id, addressee_id")
+    .eq("status", "accepted").or(`requester_id.eq.${userId},addressee_id.eq.${userId}`);
+  return ((data as any[]) ?? []).map((r) => (r.requester_id === userId ? r.addressee_id : r.requester_id));
+}
+
+export async function listFeed(opts: { cursor?: string | null; limit?: number; type?: string | null; userId?: string | null; authorIds?: string[]; publicOnly?: boolean } = {}) {
   const admin = createSupabaseAdmin();
   const limit = Math.max(1, Math.min(30, opts.limit ?? 15));
   let q = admin.from("ci_posts").select(`${POST_COLS}, ${AUTHOR}`).eq("status", "published")
     .order("created_at", { ascending: false }).limit(limit + 1);
   if (opts.type) q = q.eq("type", opts.type);
-  if (opts.userId) q = q.eq("user_id", opts.userId);
-  else q = q.in("visibility", ["public", "followers"]);
+  if (opts.userId) {
+    q = q.eq("user_id", opts.userId);                              // 自己（含非公開）
+  } else if (opts.authorIds) {
+    if (opts.authorIds.length === 0) return { items: [], nextCursor: null };
+    q = q.in("user_id", opts.authorIds).in("visibility", ["public", "followers"]); // 別人（好友）
+  } else if (opts.publicOnly) {
+    q = q.eq("visibility", "public");                             // 公共
+  } else {
+    q = q.in("visibility", ["public", "followers"]);
+  }
   if (opts.cursor) q = q.lt("created_at", opts.cursor);
   const { data } = await q;
   const rows = (data as any[]) ?? [];

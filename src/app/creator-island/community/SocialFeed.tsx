@@ -20,8 +20,17 @@ async function call(url: string, method: string, body?: any) {
 const uploadFile = uploadMedia;
 const name = (a?: Author) => a?.display_name || a?.username || "創作者";
 
+type Scope = "public" | "friends" | "mine";
+const SCOPES: { key: Scope; label: string }[] = [
+  { key: "public", label: "🌐 公共" },
+  { key: "friends", label: "👥 別人（好友）" },
+  { key: "mine", label: "🙋 自己" },
+];
+
 export function SocialFeed({ initialPosts, meId }: { initialPosts: Post[]; meId: string }) {
   const [posts, setPosts] = useState<Post[]>(initialPosts);
+  const [scope, setScope] = useState<Scope>("public");
+  const [loadingScope, setLoadingScope] = useState(false);
   const [text, setText] = useState("");
   const [imgs, setImgs] = useState<string[]>([]);
   const [video, setVideo] = useState<string | null>(null);
@@ -50,6 +59,11 @@ export function SocialFeed({ initialPosts, meId }: { initialPosts: Post[]; meId:
       setText(""); setImgs([]); setVideo(null); setAudio(null);
     } catch (e: any) { setErr(e.message); } finally { setBusy(null); }
   }
+  async function switchScope(s: Scope) {
+    setScope(s); setLoadingScope(true); setErr(null);
+    try { const j = await call(`/api/creator-island/social/posts?scope=${s}`, "GET"); setPosts(j.items ?? []); }
+    catch (e: any) { setErr(e.message); } finally { setLoadingScope(false); }
+  }
 
   return (
     <div className="space-y-4">
@@ -70,8 +84,17 @@ export function SocialFeed({ initialPosts, meId }: { initialPosts: Post[]; meId:
       </div>
       {err && <div className="bg-red-500/10 border border-red-500/30 text-red-300 rounded-xl px-4 py-2 text-sm">⚠️ {err}</div>}
 
+      {/* 分流：公共 / 別人(好友) / 自己 */}
+      <div className="flex items-center gap-1.5 text-sm">
+        {SCOPES.map((s) => (
+          <button key={s.key} onClick={() => switchScope(s.key)}
+            className={`px-3 py-1.5 rounded-full border transition ${scope === s.key ? "border-accent bg-accent/10 text-accent" : "border-border bg-bg-card hover:border-accent/40"}`}>{s.label}</button>
+        ))}
+        {loadingScope && <span className="text-xs text-fg-muted animate-pulse">載入中…</span>}
+      </div>
+
       {/* 動態牆 */}
-      {posts.length === 0 && <div className="text-center text-fg-muted py-10 text-sm">還沒有貼文。發第一篇吧！</div>}
+      {posts.length === 0 && !loadingScope && <div className="text-center text-fg-muted py-10 text-sm">{scope === "mine" ? "你還沒發過貼文。" : scope === "friends" ? "好友還沒有貼文（先去加好友）。" : "還沒有貼文。發第一篇吧！"}</div>}
       <div className="space-y-3">
         <AnimatePresence>
           {posts.map((p) => <PostCard key={p.id} p={p} meId={meId} onDelete={() => setPosts((arr) => arr.filter((x) => x.id !== p.id))} />)}
@@ -94,6 +117,11 @@ function PostCard({ p, meId, onDelete }: { p: Post; meId: string; onDelete: () =
   async function loadComments() { setShowC((s) => !s); if (comments) return; try { const j = await call(`/api/creator-island/social/posts/${p.id}/comments`, "GET"); setComments(j.comments ?? []); } catch {} }
   async function addComment() { if (!cbody.trim()) return; try { const j = await call(`/api/creator-island/social/posts/${p.id}/comments`, "POST", { body: cbody.trim() }); setComments((c) => [...(c ?? []), j.comment]); setCbody(""); } catch {} }
   async function del() { if (!confirm("刪除這篇貼文？")) return; try { await call(`/api/creator-island/social/posts/${p.id}`, "DELETE"); onDelete(); } catch {} }
+  async function share() {
+    const url = `${window.location.origin}/creator-island/p/${p.id}`;
+    if ((navigator as any).share) { try { await (navigator as any).share({ title: "AI 島貼文", url }); return; } catch { /* 取消 */ } }
+    try { await navigator.clipboard.writeText(url); alert("貼文連結已複製"); } catch { window.prompt("複製連結：", url); }
+  }
 
   return (
     <motion.div layout initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-bg-card border border-border rounded-2xl p-4 space-y-2">
@@ -112,6 +140,7 @@ function PostCard({ p, meId, onDelete }: { p: Post; meId: string; onDelete: () =
         <button onClick={like} className={liked ? "text-pink-400" : "hover:text-pink-400"}>{liked ? "❤️" : "🤍"} {likes}</button>
         <button onClick={loadComments} className="hover:text-accent">💬 {p.comments_count}</button>
         {p.user_id === meId && <button onClick={async () => { try { await call(`/api/creator-island/social/posts/${p.id}/publish-blog`, "POST"); alert("已發佈成部落格草稿"); } catch (e: any) { alert(e.message); } }} className="hover:text-accent" title="發佈到部落格">📝</button>}
+        <button onClick={share} className="hover:text-accent" title="分享貼文">🔗</button>
         <button onClick={bookmark} className={`ml-auto ${saved ? "text-amber-300" : "hover:text-amber-300"}`}>{saved ? "🔖" : "📑"}</button>
       </div>
       {showC && (

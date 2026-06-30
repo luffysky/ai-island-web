@@ -1,16 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireCreatorUser } from "@/lib/creator-engine/api";
-import { listFeed, createPost } from "@/lib/creator-engine/social";
+import { listFeed, createPost, friendIds } from "@/lib/creator-engine/social";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-/** GET ?cursor&type&userId → { items, nextCursor } 動態牆 */
+/** GET ?scope=mine|friends|public &cursor&type → { items, nextCursor } 動態牆 */
 export async function GET(req: NextRequest) {
   const u = await requireCreatorUser();
   if (u instanceof NextResponse) return u;
   const sp = req.nextUrl.searchParams;
-  return NextResponse.json(await listFeed({ cursor: sp.get("cursor"), type: sp.get("type"), userId: sp.get("userId"), limit: Number(sp.get("limit")) || 15 }));
+  const base = { cursor: sp.get("cursor"), type: sp.get("type"), limit: Number(sp.get("limit")) || 15 };
+  const scope = sp.get("scope");
+  if (scope === "mine") return NextResponse.json(await listFeed({ ...base, userId: u.userId }));
+  if (scope === "friends") return NextResponse.json(await listFeed({ ...base, authorIds: await friendIds(u.userId) }));
+  if (scope === "public") return NextResponse.json(await listFeed({ ...base, publicOnly: true }));
+  return NextResponse.json(await listFeed({ ...base, userId: sp.get("userId") }));
 }
 
 /** POST { type, content, images[], videoUrl, audioUrl, tags[], visibility } → { post } */
