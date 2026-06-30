@@ -72,6 +72,7 @@ async function rewriteOne(apiKey: string, lesson: any): Promise<{ analogy?: stri
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), 30_000);
   try {
+    const model = await (await import("@/lib/ai-usage-models")).getModelNameForUsage("rewrite_lessons", DEFAULT_REWRITE_MODEL);
     const res = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: {
@@ -81,7 +82,7 @@ async function rewriteOne(apiKey: string, lesson: any): Promise<{ analogy?: stri
       },
       signal: ctrl.signal,
       body: JSON.stringify({
-        model: await (await import("@/lib/ai-usage-models")).getModelNameForUsage("rewrite_lessons", DEFAULT_REWRITE_MODEL),
+        model,
         max_tokens: 400,
         temperature: 0.8,
         messages: [{ role: "user", content: buildRewritePrompt(lesson) }],
@@ -92,6 +93,11 @@ async function rewriteOne(apiKey: string, lesson: any): Promise<{ analogy?: stri
       return { error: `${res.status}: ${err.slice(0, 200)}` };
     }
     const data = await res.json();
+    if (data.usage) {
+      const { logAiUsage } = await import("@/lib/ai-usage-log");
+      logAiUsage("anthropic", model, data.usage.input_tokens ?? 0, data.usage.output_tokens ?? 0,
+        { write: data.usage.cache_creation_input_tokens ?? 0, read: data.usage.cache_read_input_tokens ?? 0 }).catch(() => {});
+    }
     const text = (data.content ?? []).filter((c: any) => c.type === "text").map((c: any) => c.text).join("").trim();
     // 抽 JSON（怕 AI 加 markdown）
     const m = text.match(/\{[\s\S]*"analogy"[\s\S]*?\}/);

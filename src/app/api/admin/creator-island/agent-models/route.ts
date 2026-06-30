@@ -3,19 +3,9 @@ import { requireAdmin } from "@/lib/admin-guard";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { invalidateAppSettings } from "@/lib/app-settings";
 import { AGENT_MODEL_SETTING_KEY } from "@/lib/creator-engine/ai/router";
+import { AGENTS } from "@/lib/creator-engine/ai/agent-list";
 
 export const dynamic = "force-dynamic";
-
-export const AGENTS = [
-  { key: "synthesize", label: "🧲 凝聚（多碎片整合）" },
-  { key: "evolve", label: "🌿 演化（單碎片變體）" },
-  { key: "compose", label: "🧵 編織（成品/歌曲）" },
-  { key: "transcreate", label: "🌏 文化轉譯" },
-  { key: "dna", label: "🧬 創作 DNA 分析" },
-  { key: "advise", label: "💡 創作顧問（適合做什麼）" },
-  { key: "chat", label: "✨ 綠寶對話（島內多模態聊天）" },
-  { key: "assist", label: "🖋️ 創作引擎助手（續寫/改寫/各類型工具）" },
-];
 
 /** GET → { models, current } 給後台選單。 */
 export async function GET() {

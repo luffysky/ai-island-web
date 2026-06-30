@@ -265,6 +265,7 @@ ${sharedMemoryBlock}
     async start(controller) {
       let petReply = "";
       try {
+        let usage = { tin: 0, tout: 0, cw: 0, cr: 0 };
         for await (const chunk of streamAI({
           provider: model.provider,
           model: model.model_name,
@@ -276,9 +277,17 @@ ${sharedMemoryBlock}
             const text = (chunk as any).text;
             petReply += text;
             controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "text", text })}\n\n`));
+          } else if ((chunk as any).type === "done") {
+            const c: any = chunk;
+            usage = { tin: c.tokensInput ?? 0, tout: c.tokensOutput ?? 0, cw: c.cacheWriteTokens ?? 0, cr: c.cacheReadTokens ?? 0 };
           }
         }
         controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "done" })}\n\n`));
+        // 記用量（streamAI 不自動記）
+        if (usage.tin || usage.tout) {
+          const { logAiUsage } = await import("@/lib/ai-usage-log");
+          logAiUsage(model.provider, model.model_name, usage.tin, usage.tout, { write: usage.cw, read: usage.cr }).catch(() => {});
+        }
       } catch (e: any) {
         controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "error", error: e.message })}\n\n`));
       }

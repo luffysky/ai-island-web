@@ -13,6 +13,14 @@
 import { createSupabaseAdmin } from "./supabase-admin";
 import { vectorSearchLessons, vectorSearchForum } from "./ai-embeddings";
 import { stripLoneSurrogates } from "./ai-providers";
+import { logAiUsage } from "./ai-usage-log";
+
+/** 記一輪 Anthropic 用量（含 prompt-cache tokens）。best-effort。 */
+function logAnthropicUsage(model: string, usage: any) {
+  if (!usage) return;
+  logAiUsage("anthropic", model, usage.input_tokens ?? 0, usage.output_tokens ?? 0,
+    { write: usage.cache_creation_input_tokens ?? 0, read: usage.cache_read_input_tokens ?? 0 }).catch(() => {});
+}
 
 // 深層清掉落單 surrogate（半個 emoji）— 這條 tool 路徑自己組 Anthropic body、
 // 沒走 ai-providers 的 toAnthropicMessages，所以注入的筆記/lesson 內容若被 slice 切到 emoji 中間
@@ -339,6 +347,7 @@ async function runStudentLoop(opts: {
         throw new Error(`Anthropic ${res.status}: ${err.slice(0, 200)}`);
       }
       data = await res.json();
+      logAnthropicUsage(opts.model, data.usage);
     } finally {
       clearTimeout(timer);
     }
@@ -398,6 +407,7 @@ async function fallbackPlain(
     });
     if (!res.ok) return "嗯？我這邊沒抓到、再問一次？";
     const data = await res.json();
+    logAnthropicUsage(opts.model, data.usage);
     const text = (data.content ?? []).filter((c: any) => c.type === "text").map((c: any) => c.text).join("\n").trim();
     return text || "嗯？我這邊沒抓到、再問一次？";
   } catch {

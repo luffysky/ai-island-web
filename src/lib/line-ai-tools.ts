@@ -10,6 +10,14 @@
 
 import { createSupabaseAdmin } from "./supabase-admin";
 import { runBotCommand } from "./line-bot-commands";
+import { logAiUsage } from "./ai-usage-log";
+
+/** 記一輪 Anthropic 用量（含 prompt-cache tokens）。best-effort、不阻塞。 */
+function logAnthropicUsage(model: string, usage: any) {
+  if (!usage) return;
+  logAiUsage("anthropic", model, usage.input_tokens ?? 0, usage.output_tokens ?? 0,
+    { write: usage.cache_creation_input_tokens ?? 0, read: usage.cache_read_input_tokens ?? 0 }).catch(() => {});
+}
 import type { AdminLineUser } from "./admin-line-users";
 import { formatTW, formatTWRelative } from "./format-date";
 import { getPeriodReport } from "./site-period-report";
@@ -466,6 +474,7 @@ async function runToolLoop(opts: {
         return `❌ ${friendlyAnthropicError(res.status, err, opts.model)}`;
       }
       data = await res.json();
+      logAnthropicUsage(opts.model, data.usage);
     } catch (e: any) {
       const m = e?.name === "AbortError" || /timeout/i.test(e?.message ?? "")
         ? "AI 回應太慢（超過 25 秒）、再傳一次"
@@ -548,6 +557,7 @@ async function fallbackPlainText(
     });
     if (!res.ok) return "嗯？剛剛沒抓到、再說一次？";
     const data = await res.json();
+    logAnthropicUsage(opts.model, data.usage);
     const text = (data.content ?? [])
       .filter((c: any) => c.type === "text")
       .map((c: any) => c.text)

@@ -1,7 +1,7 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { PageHero } from "@/components/admin/PageHero";
 import { AgentModelsClient } from "./AgentModelsClient";
-import { AGENTS } from "@/app/api/admin/creator-island/agent-models/route";
+import { AGENTS } from "@/lib/creator-engine/ai/agent-list";
 import { AGENT_MODEL_SETTING_KEY } from "@/lib/creator-engine/ai/router";
 
 export const dynamic = "force-dynamic";
