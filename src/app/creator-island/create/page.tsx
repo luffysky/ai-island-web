@@ -38,7 +38,10 @@ export default async function CreateEnginePage({ searchParams }: { searchParams:
           <h1 className="text-2xl sm:text-3xl font-black bg-gradient-to-r from-amber-300 via-pink-400 to-violet-400 bg-clip-text text-transparent">✨ 創作引擎</h1>
           <p className="text-sm text-fg-muted mt-1">選一種要創作的東西，直接開寫。每種類型都帶齊它該有的工具。</p>
         </div>
-        <Link href="/creator-island" className="text-sm px-3 py-1.5 rounded-full bg-bg-card border border-border hover:border-accent hover:text-accent transition">← 回島嶼</Link>
+        <div className="flex items-center gap-2 flex-wrap">
+          <Link href="/me/blog" className="text-sm px-3 py-1.5 rounded-full bg-bg-card border border-border hover:border-accent hover:text-accent transition">📝 我的部落格</Link>
+          <Link href="/creator-island" className="text-sm px-3 py-1.5 rounded-full bg-bg-card border border-border hover:border-accent hover:text-accent transition">← 回島嶼</Link>
+        </div>
       </div>
       <CreatePicker workspaceId={active.id} drafts={drafts as any} series={series as any} />
     </div>

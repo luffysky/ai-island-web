@@ -158,6 +158,7 @@ export function EngineWorkspace({ draft, fragments }: { draft: Draft; fragments:
         <span className="text-xl">{t.emoji}</span>
         <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="作品標題…"
           className="flex-1 min-w-[140px] bg-transparent text-lg sm:text-xl font-bold outline-none border-b border-transparent focus:border-accent py-1" />
+        <Link href="/me/blog" className="text-xs px-2.5 py-1.5 rounded-full bg-bg-card border border-border hover:border-accent hover:text-accent transition whitespace-nowrap">📝 部落格</Link>
         <span className={`text-xs ${save === "saved" ? "text-emerald-400" : "text-fg-muted"}`}>{saveLabel}</span>
       </div>
 
