@@ -254,7 +254,7 @@ export function AskAI({
                   </div>
                 )}
                 {err && (
-                  <div className="rounded-lg bg-red-500/10 border border-red-500/30 p-3 text-xs text-red-300">
+                  <div className="rounded-lg bg-red-500/10 border border-red-500/30 p-3 text-xs text-red-700 dark:text-red-300">
                     ⚠️ {err}
                   </div>
                 )}

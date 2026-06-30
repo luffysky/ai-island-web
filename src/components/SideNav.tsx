@@ -349,7 +349,7 @@ export function SideNav() {
                       <span className="text-xs text-fg-muted font-mono shrink-0">
                         Ch{chapterDisplayNumberById(ch.id)}
                       </span>
-                      <span className="text-sm flex-1 truncate font-medium">{ch.title}</span>
+                      <span className="text-sm flex-1 min-w-0 truncate font-medium">{ch.title}</span>
                       <span className="text-[10px] text-fg-muted shrink-0">
                         {ch.lessons.length}
                       </span>

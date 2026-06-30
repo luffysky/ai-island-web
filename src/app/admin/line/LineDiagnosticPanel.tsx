@@ -95,8 +95,8 @@ export function LineDiagnosticPanel() {
           <div
             className={`text-sm font-bold p-2 rounded-lg ${
               health.summary.fail === 0
-                ? "bg-emerald-500/10 text-emerald-300"
-                : "bg-red-500/10 text-red-300"
+                ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
+                : "bg-red-500/10 text-red-700 dark:text-red-300"
             }`}
           >
             {health.verdict}

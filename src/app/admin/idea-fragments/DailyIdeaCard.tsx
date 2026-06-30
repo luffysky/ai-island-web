@@ -57,7 +57,7 @@ export function DailyIdeaCard({
     <div className="bg-gradient-to-br from-violet-500/15 via-pink-500/10 to-amber-500/15 border border-violet-500/30 rounded-2xl p-4">
       <div className="flex items-center justify-between gap-2 mb-1">
         <div className="font-bold flex items-center gap-2 text-sm">
-          <CalendarHeart size={16} className="text-violet-300" /> 今日點子
+          <CalendarHeart size={16} className="text-violet-700 dark:text-violet-300" /> 今日點子
         </div>
         {idea && (
           <span className="text-[11px] text-fg-muted">

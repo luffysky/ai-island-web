@@ -376,7 +376,7 @@ export function IdeaFragmentsClient({
   return (
     <div className="space-y-4">
       {err && (
-        <div className="bg-red-500/10 border border-red-500/30 text-red-300 rounded-xl px-4 py-2 text-sm flex items-center justify-between">
+        <div className="bg-red-500/10 border border-red-500/30 text-red-700 dark:text-red-300 rounded-xl px-4 py-2 text-sm flex items-center justify-between">
           <span>⚠️ {err}</span>
           <button onClick={() => setErr(null)} className="opacity-60 hover:opacity-100"><X size={14} /></button>
         </div>
@@ -413,7 +413,7 @@ export function IdeaFragmentsClient({
         <div className="bg-bg-card border border-violet-500/30 rounded-2xl p-4">
           <div className="flex items-center justify-between mb-2 gap-2 flex-wrap">
             <div className="font-bold text-sm flex items-center gap-2">
-              <Link2 size={15} className="text-violet-300" /> AI 發現的意外配對
+              <Link2 size={15} className="text-violet-700 dark:text-violet-300" /> AI 發現的意外配對
               <span className="text-[11px] font-normal text-fg-muted">語意上遠、卻可能藏著張力的碎片組合</span>
             </div>
             <button
@@ -429,14 +429,14 @@ export function IdeaFragmentsClient({
               <div key={i} className="flex items-center justify-between gap-2 bg-bg-elevated rounded-lg px-3 py-2 text-xs">
                 <div className="min-w-0">
                   <b className="text-fg">{p.a_title}</b>
-                  <span className="text-violet-300 mx-1">×</span>
+                  <span className="text-violet-700 dark:text-violet-300 mx-1">×</span>
                   <b className="text-fg">{p.b_title}</b>
                   <span className="text-[10px] text-fg-muted ml-1">{Math.round(p.similarity * 100)}%</span>
                 </div>
                 <button
                   onClick={() => generateFromPair(p)}
                   disabled={generating}
-                  className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-violet-500/20 text-violet-200 hover:bg-violet-500/40 transition disabled:opacity-40"
+                  className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-violet-500/20 text-violet-800 dark:text-violet-200 hover:bg-violet-500/40 transition disabled:opacity-40"
                 ><Sparkles size={11} /> 用這對</button>
               </div>
             ))}
@@ -448,7 +448,7 @@ export function IdeaFragmentsClient({
           <button
             onClick={refreshPairs}
             disabled={pairsBusy || fragments.length < 2}
-            className="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-violet-500/20 text-violet-200 hover:bg-violet-500/40 transition disabled:opacity-40"
+            className="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-violet-500/20 text-violet-800 dark:text-violet-200 hover:bg-violet-500/40 transition disabled:opacity-40"
           >
             {pairsBusy ? <Loader2 size={12} className="animate-spin" /> : <Link2 size={12} />} 建立語意向量
           </button>
@@ -472,7 +472,7 @@ export function IdeaFragmentsClient({
               <button
                 onClick={fetchUrl}
                 disabled={fetchingUrl}
-                className="inline-flex items-center gap-1.5 text-[11px] px-2.5 py-1 rounded-full bg-sky-500/15 text-sky-300 hover:bg-sky-500/30 transition disabled:opacity-40"
+                className="inline-flex items-center gap-1.5 text-[11px] px-2.5 py-1 rounded-full bg-sky-500/15 text-sky-700 dark:text-sky-300 hover:bg-sky-500/30 transition disabled:opacity-40"
               >
                 {fetchingUrl ? <Loader2 size={12} className="animate-spin" /> : <Link2 size={12} />} 從網址抓標題 / 摘要
               </button>
@@ -655,9 +655,9 @@ export function IdeaFragmentsClient({
 
                 {(f.category || f.mood || f.folder_id || (f.created_by && memberNames[f.created_by])) && (
                   <div className="flex gap-1.5 mt-1.5 text-[11px] flex-wrap">
-                    {f.folder_id && <span className="px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300">📁 {folderName(f.folder_id)}</span>}
-                    {f.category && <span className="px-1.5 py-0.5 rounded bg-violet-500/15 text-violet-300">{f.category}</span>}
-                    {f.mood && <span className="px-1.5 py-0.5 rounded bg-pink-500/15 text-pink-300">{f.mood}</span>}
+                    {f.folder_id && <span className="px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-700 dark:text-amber-300">📁 {folderName(f.folder_id)}</span>}
+                    {f.category && <span className="px-1.5 py-0.5 rounded bg-violet-500/15 text-violet-700 dark:text-violet-300">{f.category}</span>}
+                    {f.mood && <span className="px-1.5 py-0.5 rounded bg-pink-500/15 text-pink-700 dark:text-pink-300">{f.mood}</span>}
                     {f.created_by && memberNames[f.created_by] && (
                       <span className="px-1.5 py-0.5 rounded bg-bg-elevated text-fg-muted">🙋 {memberNames[f.created_by]}</span>
                     )}
@@ -713,7 +713,7 @@ export function IdeaFragmentsClient({
               <div className="flex items-start justify-between gap-2">
                 <div className="font-bold flex items-center gap-2">
                   {idea.title}
-                  {idea.idea_type && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-violet-500/20 text-violet-300 font-normal">{idea.idea_type}</span>}
+                  {idea.idea_type && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-violet-500/20 text-violet-700 dark:text-violet-300 font-normal">{idea.idea_type}</span>}
                 </div>
                 <button
                   onClick={() => toggleSave(idea)}
@@ -729,7 +729,7 @@ export function IdeaFragmentsClient({
 
               {idea.connections?.length > 0 && (
                 <div className="mt-2 text-xs bg-violet-500/[0.07] rounded-lg p-2 border-l-2 border-violet-400">
-                  <div className="font-bold text-violet-300 mb-0.5">🔗 為什麼這些碎片值得組合</div>
+                  <div className="font-bold text-violet-700 dark:text-violet-300 mb-0.5">🔗 為什麼這些碎片值得組合</div>
                   <ul className="list-disc list-inside text-fg-muted space-y-0.5">
                     {idea.connections.map((c, i) => <li key={i}>{c}</li>)}
                   </ul>
@@ -772,13 +772,13 @@ export function IdeaFragmentsClient({
                 <button
                   onClick={() => convert(idea.id, "product_plan")}
                   disabled={busyIdea === idea.id}
-                  className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-violet-500/15 hover:bg-violet-500/30 text-violet-300 transition disabled:opacity-40"
+                  className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-violet-500/15 hover:bg-violet-500/30 text-violet-700 dark:text-violet-300 transition disabled:opacity-40"
                 >
                   {busyIdea === idea.id ? <Loader2 size={12} className="animate-spin" /> : <Rocket size={12} />} 轉成產品企劃
                 </button>
                 <button
                   onClick={() => openDeepen(idea)}
-                  className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-sky-500/15 hover:bg-sky-500/30 text-sky-300 transition"
+                  className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-sky-500/15 hover:bg-sky-500/30 text-sky-700 dark:text-sky-300 transition"
                 ><MessageCircle size={12} /> 深化 / 追問</button>
                 <div className="ml-auto flex items-center gap-1">
                   <button
@@ -863,7 +863,7 @@ export function IdeaFragmentsClient({
           <div className="bg-bg-card border border-border rounded-2xl w-full max-w-lg flex flex-col max-h-[80vh]" onClick={(e) => e.stopPropagation()}>
             <div className="p-4 border-b border-border flex items-start justify-between gap-2">
               <div className="min-w-0">
-                <div className="font-bold flex items-center gap-2"><MessageCircle size={16} className="text-sky-300" /> 深化點子</div>
+                <div className="font-bold flex items-center gap-2"><MessageCircle size={16} className="text-sky-700 dark:text-sky-300" /> 深化點子</div>
                 <div className="text-xs text-fg-muted mt-0.5 truncate">{deepen.title}</div>
               </div>
               <button onClick={() => setDeepen(null)} className="text-fg-muted hover:text-accent shrink-0"><X size={16} /></button>

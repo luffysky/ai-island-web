@@ -146,7 +146,7 @@ export function ReportsClient({
                 </div>
               )}
               {r.resolution_note && (
-                <div className="mt-2 p-2 bg-emerald-500/10 rounded-lg text-xs text-emerald-300">
+                <div className="mt-2 p-2 bg-emerald-500/10 rounded-lg text-xs text-emerald-700 dark:text-emerald-300">
                   解決：{r.resolution_note}
                 </div>
               )}

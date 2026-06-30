@@ -138,7 +138,7 @@ export function GeolocationConsent({ trigger }: { trigger?: React.ReactNode }) {
               </div>
 
               {state === "denied" && (
-                <div className="mt-3 p-3 rounded-lg bg-yellow-500/10 text-xs text-yellow-300 flex gap-2">
+                <div className="mt-3 p-3 rounded-lg bg-yellow-500/10 text-xs text-yellow-700 dark:text-yellow-300 flex gap-2">
                   <AlertCircle size={14} className="shrink-0 mt-0.5" />
                   <span>你目前已關閉。重新啟用、瀏覽器可能會再問一次。</span>
                 </div>

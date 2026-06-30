@@ -61,7 +61,7 @@ export default async function CreatorIslandAdminPage() {
               <summary className="cursor-pointer flex items-center gap-2 flex-wrap">
                 <span className="font-bold">{AGENT_LABEL[r.agent_type] ?? r.agent_type}</span>
                 <span className="text-xs text-fg-muted">{r.provider}/{r.model}</span>
-                <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${r.status === "succeeded" ? "bg-emerald-500/15 text-emerald-300" : r.status === "failed" ? "bg-red-500/15 text-red-300" : "bg-bg-card text-fg-muted"}`}>{r.status}</span>
+                <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${r.status === "succeeded" ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300" : r.status === "failed" ? "bg-red-500/15 text-red-700 dark:text-red-300" : "bg-bg-card text-fg-muted"}`}>{r.status}</span>
                 <span className="text-xs text-fg-muted">in {r.tokens_input ?? 0} / out {r.tokens_output ?? 0} tok · ${Number(r.cost_usd ?? 0).toFixed(4)}</span>
                 <span className="ml-auto text-[10px] text-fg-muted">{new Date(r.created_at).toLocaleString("zh-TW")}</span>
               </summary>
@@ -82,7 +82,7 @@ export default async function CreatorIslandAdminPage() {
             <div key={n.id} className="flex items-center gap-2 text-sm bg-bg-elevated rounded-lg px-3 py-2">
               <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-bg-card text-fg-muted">{n.kind}</span>
               <span className="flex-1">{n.title}</span>
-              {!n.read_at && <span className="text-[10px] text-amber-300">未讀</span>}
+              {!n.read_at && <span className="text-[10px] text-amber-700 dark:text-amber-300">未讀</span>}
               <span className="text-[10px] text-fg-muted">{new Date(n.created_at).toLocaleString("zh-TW")}</span>
             </div>
           ))}

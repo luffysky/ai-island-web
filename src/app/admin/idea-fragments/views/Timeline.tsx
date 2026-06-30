@@ -49,8 +49,8 @@ export function Timeline({ fragments, onSelect }: { fragments: Frag[]; onSelect:
                 >
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-bold text-sm">{f.title}</span>
-                    {f.category && <span className="text-[10px] px-1.5 py-0.5 rounded bg-violet-500/15 text-violet-300">{f.category}</span>}
-                    {f.mood && <span className="text-[10px] px-1.5 py-0.5 rounded bg-pink-500/15 text-pink-300">{f.mood}</span>}
+                    {f.category && <span className="text-[10px] px-1.5 py-0.5 rounded bg-violet-500/15 text-violet-700 dark:text-violet-300">{f.category}</span>}
+                    {f.mood && <span className="text-[10px] px-1.5 py-0.5 rounded bg-pink-500/15 text-pink-700 dark:text-pink-300">{f.mood}</span>}
                     <span className="text-[10px] text-fg-muted ml-auto">
                       {new Date(f.created_at).toLocaleTimeString("zh-TW", { hour: "2-digit", minute: "2-digit" })}
                     </span>

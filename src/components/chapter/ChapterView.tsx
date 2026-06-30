@@ -364,7 +364,7 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
                         className="group text-left text-xs px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-300 hover:bg-amber-500/20 transition flex items-center gap-2"
                       >
                         <span className="font-bold tabular-nums shrink-0">第 {chapter.lessons.indexOf(l) + 1} 節</span>
-                        <span className="flex-1 truncate text-fg group-hover:text-amber-700 dark:group-hover:text-amber-200">{l.title}</span>
+                        <span className="flex-1 min-w-0 truncate text-fg group-hover:text-amber-700 dark:group-hover:text-amber-200">{l.title}</span>
                         <span className="shrink-0 text-amber-500 group-hover:translate-x-0.5 transition">回頭看 →</span>
                       </button>
                     ))}
