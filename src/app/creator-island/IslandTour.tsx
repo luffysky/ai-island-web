@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { HelpCircle } from "lucide-react";
 
 type Step = { sel?: string; title: string; body: string };
 
@@ -72,7 +73,7 @@ export function IslandTour() {
 
   return (
     <>
-      <button onClick={start} title="導覽" className="fixed bottom-[5.5rem] md:bottom-4 right-4 z-[55] w-11 h-11 rounded-full bg-accent text-white shadow-lg grid place-items-center text-lg hover:scale-105 transition">❓</button>
+      <button onClick={start} title="導覽" className="fixed bottom-[5.5rem] md:bottom-4 right-4 z-[55] w-11 h-11 rounded-full bg-accent text-white shadow-lg grid place-items-center hover:scale-105 transition"><HelpCircle size={20} /></button>
 
       <AnimatePresence>
         {open && (

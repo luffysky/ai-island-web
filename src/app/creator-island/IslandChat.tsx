@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Sparkles, History, Plus, X, Mic, Camera, Paperclip, Send } from "lucide-react";
 import { uploadMedia } from "@/lib/creator-upload";
 
 type Msg = { role: "user" | "assistant"; content: string };
@@ -130,7 +131,7 @@ export function IslandChat({ workspaceId }: { workspaceId: string }) {
       <button
         onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp}
         title="問綠寶（可拖曳）" style={{ left: pos.x, top: pos.y, touchAction: "none" }}
-        className="fixed z-[55] h-[52px] px-4 rounded-full bg-gradient-to-r from-emerald-400 to-teal-500 text-black shadow-lg grid place-items-center font-bold hover:scale-105 transition select-none cursor-grab active:cursor-grabbing">✨ 問綠寶</button>
+        className="fixed z-[55] h-[52px] px-4 rounded-full bg-gradient-to-r from-emerald-400 to-teal-500 text-black shadow-lg inline-flex items-center gap-1.5 font-bold hover:scale-105 transition select-none cursor-grab active:cursor-grabbing"><Sparkles size={18} /> 問綠寶</button>
 
       <AnimatePresence>
         {open && (
@@ -138,15 +139,15 @@ export function IslandChat({ workspaceId }: { workspaceId: string }) {
             style={{ left: panel.left, top: panel.top, width: panel.width, height: panel.height }}
             className="fixed z-[56] bg-bg-card border border-emerald-500/40 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
             <div className="p-3 border-b border-border flex items-center gap-2">
-              <span className="font-bold">✨ 綠寶</span><span className="text-xs text-fg-muted">創作夥伴</span>
-              <button onClick={() => { setShowHist((v) => !v); if (!showHist) loadSessions(); }} title="歷史對話" className="ml-auto text-fg-muted hover:text-accent">🕘</button>
-              <button onClick={newChat} title="開新對話" className="text-fg-muted hover:text-accent">＋</button>
-              <button onClick={() => setOpen(false)} className="text-fg-muted hover:text-fg">✕</button>
+              <span className="font-bold inline-flex items-center gap-1"><Sparkles size={16} className="text-emerald-400" /> 綠寶</span><span className="text-xs text-fg-muted">創作夥伴</span>
+              <button onClick={() => { setShowHist((v) => !v); if (!showHist) loadSessions(); }} title="歷史對話" className="ml-auto text-fg-muted hover:text-accent"><History size={16} /></button>
+              <button onClick={newChat} title="開新對話" className="text-fg-muted hover:text-accent"><Plus size={16} /></button>
+              <button onClick={() => setOpen(false)} className="text-fg-muted hover:text-fg"><X size={16} /></button>
             </div>
 
             {showHist && (
               <div className="absolute inset-0 top-[49px] z-10 bg-bg-card overflow-y-auto p-2 space-y-1">
-                <div className="text-xs text-fg-muted px-1 py-1">🕘 歷史對話（{sessions.length}）</div>
+                <div className="text-xs text-fg-muted px-1 py-1 inline-flex items-center gap-1"><History size={13} /> 歷史對話（{sessions.length}）</div>
                 {sessions.length === 0 ? (
                   <div className="text-xs text-fg-muted px-1 py-4 text-center">還沒有對話紀錄。</div>
                 ) : sessions.map((s) => (
@@ -155,7 +156,7 @@ export function IslandChat({ workspaceId }: { workspaceId: string }) {
                       <div className="truncate">{s.title}</div>
                       <div className="text-[10px] text-fg-muted">{new Date(s.updated_at).toLocaleString("zh-TW", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })}</div>
                     </button>
-                    <button onClick={() => delSession(s.id)} title="刪除" className="px-2 text-fg-muted opacity-0 group-hover:opacity-100 hover:text-red-400">✕</button>
+                    <button onClick={() => delSession(s.id)} title="刪除" className="px-2 text-fg-muted opacity-0 group-hover:opacity-100 hover:text-red-400"><X size={14} /></button>
                   </div>
                 ))}
               </div>
@@ -170,11 +171,11 @@ export function IslandChat({ workspaceId }: { workspaceId: string }) {
             </div>
             {img && <div className="px-3 pb-1"><img src={img.preview} className="h-14 rounded inline-block" /><button onClick={() => setImg(null)} className="text-xs text-fg-muted ml-2">移除</button></div>}
             <div className="p-2 border-t border-border flex items-center gap-1.5">
-              <button onClick={voice} title="語音" className="text-lg hover:text-accent">🎤</button>
-              <label title="圖片(可看圖)" className="text-lg cursor-pointer hover:text-accent">📷<input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) pickImage(f); e.currentTarget.value = ""; }} /></label>
-              <label title="檔案" className="text-lg cursor-pointer hover:text-accent">📎<input type="file" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) pickFile(f); e.currentTarget.value = ""; }} /></label>
+              <button onClick={voice} title="語音" className="hover:text-accent"><Mic size={18} /></button>
+              <label title="圖片(可看圖)" className="cursor-pointer hover:text-accent"><Camera size={18} /><input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) pickImage(f); e.currentTarget.value = ""; }} /></label>
+              <label title="檔案" className="cursor-pointer hover:text-accent"><Paperclip size={18} /><input type="file" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) pickFile(f); e.currentTarget.value = ""; }} /></label>
               <input value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }} placeholder="問綠寶…" className="flex-1 min-w-0 bg-bg-elevated border border-border rounded-full px-3 py-2 text-sm outline-none focus:border-accent" />
-              <button onClick={send} disabled={busy} className="px-3 py-2 rounded-full bg-accent text-white text-sm disabled:opacity-40">送</button>
+              <button onClick={send} disabled={busy} title="送出" className="px-3 py-2 rounded-full bg-accent text-white disabled:opacity-40"><Send size={16} /></button>
             </div>
           </motion.div>
         )}

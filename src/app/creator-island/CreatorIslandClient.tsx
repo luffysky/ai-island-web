@@ -3,6 +3,11 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { DndContext, useDraggable, useDroppable, PointerSensor, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core";
+import {
+  Coins, Trees, Gift, Sprout, PenLine, Mic, Camera, Plus, Shuffle, Wrench, Play, Search,
+  Lightbulb, Magnet, Leaf, Wand2, Languages, FolderTree, Pencil, Copy, Music, Film, PenTool,
+  X, Check, Bot, Egg, Recycle, GitFork, Hand, type LucideIcon,
+} from "lucide-react";
 import { EggHatch } from "./EggHatch";
 import { IslandTour } from "./IslandTour";
 import { IslandChat } from "./IslandChat";
@@ -17,10 +22,14 @@ async function api(url: string, body?: any) {
   return json;
 }
 
-const SRC_ICON: Record<string, string> = {
-  human_original: "✍️", ai_assisted: "🤖", ai_generated: "🤖", egg_generated: "🥚",
-  work_recycled: "♻️", transcreated: "🌏", market_imported: "🍴", human_selected: "👆",
+const SRC_ICON: Record<string, LucideIcon> = {
+  human_original: PenLine, ai_assisted: Bot, ai_generated: Bot, egg_generated: Egg,
+  work_recycled: Recycle, transcreated: Languages, market_imported: GitFork, human_selected: Hand,
 };
+function SrcIcon({ type }: { type: string }) {
+  const I = SRC_ICON[type] ?? PenLine;
+  return <I size={14} className="inline shrink-0" />;
+}
 
 /** 編織 workType（中文label/含括號子類）→ 創作引擎 type key。 */
 function engineTypeFromWorkType(wt: string): string {
@@ -266,21 +275,21 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
     <div className="space-y-5 pb-32">
       {/* HUD */}
       <div data-tour="hud" className="flex items-center gap-2 flex-wrap text-xs">
-        <span className="px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-500/20 to-yellow-500/10 border border-amber-500/30 text-amber-200">🪙 Dust {dust ?? "…"}</span>
-        <span className="px-3 py-1.5 rounded-full bg-bg-card border border-border text-fg-muted">🌲 碎片 {fragments.length}</span>
+        <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-500/20 to-yellow-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-200"><Coins size={13} /> Dust {dust ?? "…"}</span>
+        <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-bg-card border border-border text-fg-muted"><Trees size={13} /> 碎片 {fragments.length}</span>
         {sel.length > 0 && <span className="px-3 py-1.5 rounded-full bg-accent/20 border border-accent/40 text-accent">已選 {sel.length}</span>}
-        <span className="ml-auto text-fg-muted">綠寶 ✨ 陪你創作中</span>
+        <span className="ml-auto text-fg-muted">綠寶陪你創作中</span>
       </div>
 
-      {err && <div className="bg-red-500/10 border border-red-500/30 text-red-300 rounded-xl px-4 py-2 text-sm flex justify-between"><span>⚠️ {err}</span><button onClick={() => setErr(null)}>✕</button></div>}
+      {err && <div className="bg-red-500/10 border border-red-500/30 text-red-700 dark:text-red-300 rounded-xl px-4 py-2 text-sm flex justify-between items-center gap-2"><span>{err}</span><button onClick={() => setErr(null)}><X size={14} /></button></div>}
 
       {fragments.length < 50 && (
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="bg-gradient-to-br from-accent-3/15 via-pink-500/10 to-violet-500/15 border border-accent-3/30 rounded-2xl p-5 flex items-center justify-between gap-3 flex-wrap">
           <div>
-            <div className="text-lg font-bold">🎁 讓島嶼長滿靈感</div>
+            <div className="text-lg font-bold inline-flex items-center gap-1.5"><Gift size={18} /> 讓島嶼長滿靈感</div>
             <p className="text-sm text-fg-muted mt-1">從全站碎片庫抽 <b>300 顆</b>靈感碎片到你的島（含稀有 SSR），自動分好類。也可以自己寫第一句。</p>
           </div>
-          <button onClick={seedPool} disabled={busy === "seed"} className="px-5 py-2.5 rounded-full bg-gradient-to-r from-amber-400 to-pink-500 text-black text-sm font-bold disabled:opacity-50 whitespace-nowrap">{busy === "seed" ? "種島中…" : "種 300 顆 🌱"}</button>
+          <button onClick={seedPool} disabled={busy === "seed"} className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-gradient-to-r from-amber-400 to-pink-500 text-black text-sm font-bold disabled:opacity-50 whitespace-nowrap">{busy === "seed" ? "種島中…" : <><Sprout size={15} /> 種 300 顆</>}</button>
         </motion.div>
       )}
 
@@ -290,31 +299,31 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
           <EggHatch onOpen={openEgg} disabled={busy !== null} />
         </div>
         <div data-tour="capture" className="sm:col-span-3 rounded-2xl p-4 bg-bg-card border border-border space-y-2">
-          <div className="font-bold text-sm flex items-center gap-2">✍️ 捕捉碎片
-            <button onClick={startVoice} title="語音" className="ml-auto text-base hover:scale-110 transition">🎤</button>
-            <label title="拍照/圖片" className="text-base cursor-pointer hover:scale-110 transition">📷<input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) onPhoto(f); e.currentTarget.value = ""; }} /></label>
+          <div className="font-bold text-sm flex items-center gap-2"><PenLine size={15} /> 捕捉碎片
+            <button onClick={startVoice} title="語音" className="ml-auto hover:scale-110 transition"><Mic size={17} /></button>
+            <label title="拍照/圖片" className="cursor-pointer hover:scale-110 transition"><Camera size={17} /><input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) onPhoto(f); e.currentTarget.value = ""; }} /></label>
           </div>
           <input value={nt} onChange={(e) => setNt(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") addFragment(); }} placeholder="一句想法 / 回憶 / 點子…"
             className="w-full bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm outline-none focus:border-accent" />
           <div className="flex gap-2">
             <input value={ntags} onChange={(e) => setNtags(e.target.value)} placeholder="標籤（逗號分隔）" className="flex-1 bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm outline-none focus:border-accent" />
-            <button onClick={addFragment} disabled={busy === "add" || !nt.trim()} className="px-4 rounded-lg bg-accent text-white text-sm font-bold disabled:opacity-40">＋</button>
+            <button onClick={addFragment} disabled={busy === "add" || !nt.trim()} title="新增" className="px-4 rounded-lg bg-accent text-white font-bold disabled:opacity-40 grid place-items-center"><Plus size={16} /></button>
           </div>
         </div>
       </div>
 
       {/* 探索列 */}
       <div data-tour="explore" className="flex gap-2 text-xs flex-wrap">
-        <button onClick={explorePairs} disabled={busy !== null} className="px-3 py-1.5 rounded-full bg-violet-500/15 text-violet-200 hover:bg-violet-500/25 disabled:opacity-40">🔗 意外配對</button>
-        <button onClick={loadWorkflows} className="px-3 py-1.5 rounded-full bg-bg-card border border-border hover:text-accent">🛠️ 工作流{recording.length > 0 ? `（錄製 ${recording.length}）` : ""}</button>
-        {recording.length > 0 && <button onClick={saveWorkflow} className="px-3 py-1.5 rounded-full bg-amber-500/20 text-amber-200">存成工作流</button>}
+        <button onClick={explorePairs} disabled={busy !== null} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-violet-500/15 text-violet-700 dark:text-violet-200 hover:bg-violet-500/25 disabled:opacity-40"><Shuffle size={13} /> 意外配對</button>
+        <button onClick={loadWorkflows} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-bg-card border border-border hover:text-accent"><Wrench size={13} /> 工作流{recording.length > 0 ? `（錄製 ${recording.length}）` : ""}</button>
+        {recording.length > 0 && <button onClick={saveWorkflow} className="px-3 py-1.5 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-200">存成工作流</button>}
       </div>
 
       {/* 意外配對面板 */}
       <AnimatePresence>
         {panel === "pairs" && pairs && (
           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="bg-bg-card border border-violet-500/30 rounded-2xl p-4 overflow-hidden">
-            <div className="text-sm font-bold mb-2">🔗 AI 意外配對 <span className="text-xs font-normal text-fg-muted">點一對 → 凝聚/編織</span></div>
+            <div className="text-sm font-bold mb-2 inline-flex items-center gap-1.5"><Shuffle size={14} /> AI 意外配對 <span className="text-xs font-normal text-fg-muted">點一對 → 凝聚/編織</span></div>
             {pairs.length === 0 ? <div className="text-xs text-fg-muted">碎片太少、或需要更多語意向量，多寫幾個再探索。</div> : (
               <div className="grid sm:grid-cols-2 gap-2">
                 {pairs.map((p, i) => (
@@ -328,7 +337,7 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
         )}
         {panel === "flows" && workflows && (
           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="bg-bg-card border border-border rounded-2xl p-4 overflow-hidden space-y-1">
-            <div className="text-sm font-bold mb-1">🛠️ 我的工作流</div>
+            <div className="text-sm font-bold mb-1 inline-flex items-center gap-1.5"><Wrench size={14} /> 我的工作流</div>
             {workflows.length === 0 ? <div className="text-xs text-fg-muted">還沒有。做幾個動作後「存成工作流」，下次一鍵重播。</div> :
               workflows.map((w) => (
                 <div key={w.id} className="flex items-center justify-between text-xs bg-bg-elevated rounded-lg px-3 py-2">
@@ -340,7 +349,7 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
         )}
         {related && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-bg-card border border-border rounded-2xl p-4">
-            <div className="text-sm font-bold mb-1">🔍 你可能也想到過…</div>
+            <div className="text-sm font-bold mb-1 inline-flex items-center gap-1.5"><Search size={14} /> 你可能也想到過…</div>
             {related.length === 0 ? <div className="text-xs text-fg-muted">沒找到明顯相關的舊碎片。</div> :
               related.map((r) => <button key={r.id} onClick={() => setSelected((p) => new Set([...p, r.id]))} className="block text-left text-xs text-fg-muted hover:text-accent">＋ {r.title} <span className="opacity-60">{Math.round((r.similarity ?? 0) * 100)}%</span></button>)}
           </motion.div>
@@ -351,7 +360,7 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
       <AnimatePresence>
         {advice && (
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-gradient-to-br from-amber-500/10 to-pink-500/10 border border-amber-500/30 rounded-2xl p-4 space-y-2">
-            <div className="flex items-center justify-between"><div className="font-bold">💡 這些碎片適合做什麼</div><button onClick={() => setAdvice(null)} className="text-fg-muted hover:text-fg text-sm">✕</button></div>
+            <div className="flex items-center justify-between"><div className="font-bold inline-flex items-center gap-1.5"><Lightbulb size={16} /> 這些碎片適合做什麼</div><button onClick={() => setAdvice(null)} className="text-fg-muted hover:text-fg"><X size={15} /></button></div>
             {advice.insight && <p className="text-sm text-fg-muted">{advice.insight}</p>}
             <div className="grid sm:grid-cols-2 gap-2">
               {(advice.suggestions ?? []).map((s: any, i: number) => (
@@ -359,7 +368,7 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
                   <div className="font-bold">{s.workType} <span className="text-xs text-accent">· {s.genre}</span></div>
                   <div className="text-xs text-fg-muted mt-0.5">{s.why}</div>
                   {s.angle && <div className="text-xs text-accent-3 mt-0.5">切入：{s.angle}</div>}
-                  <button onClick={() => composeAs(s.genre ? `${s.workType}（${s.genre}）` : s.workType)} disabled={busy !== null} className="mt-1.5 text-xs px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-200 disabled:opacity-40">用這個編織 →</button>
+                  <button onClick={() => composeAs(s.genre ? `${s.workType}（${s.genre}）` : s.workType)} disabled={busy !== null} className="mt-1.5 text-xs px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-200 disabled:opacity-40">用這個編織 →</button>
                 </div>
               ))}
             </div>
@@ -372,42 +381,42 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
         {result && (
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-bg-card border-2 border-accent/40 rounded-2xl p-4 space-y-3 shadow-lg shadow-accent/5">
             {result.action === "synthesize" && (<>
-              <div className="font-bold">🧲 {result.result.title}</div>
+              <div className="font-bold inline-flex items-center gap-1.5"><Magnet size={15} /> {result.result.title}</div>
               <p className="text-sm text-fg-muted whitespace-pre-wrap">{result.result.summary}</p>
               <div className="text-xs"><b className="text-accent">核心：</b>{result.result.coreIdea}</div>
               {result.result.connections?.length > 0 && <ul className="text-xs text-fg-muted list-disc list-inside">{result.result.connections.map((c: string, i: number) => <li key={i}>{c}</li>)}</ul>}
               <div className="flex gap-2">
                 <button onClick={() => saveFragment(result.result.title, `${result.result.coreIdea}\n\n${result.result.summary}`)} className="px-3 py-1.5 rounded-full bg-accent text-white text-sm">存成碎片</button>
-                <button onClick={() => navigator.clipboard?.writeText(`${result.result.title}\n${result.result.coreIdea}\n\n${result.result.summary}`)} className="text-xs px-3 py-1.5 rounded-full bg-bg-elevated hover:text-accent">📋 複製</button>
+                <button onClick={() => navigator.clipboard?.writeText(`${result.result.title}\n${result.result.coreIdea}\n\n${result.result.summary}`)} className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full bg-bg-elevated hover:text-accent"><Copy size={12} /> 複製</button>
               </div>
             </>)}
             {result.action === "evolve" && (<>
               <div className="flex items-center gap-2 flex-wrap">
-                <div className="font-bold">🌿 演化出 {result.variants.length} 個</div>
-                <button onClick={() => saveAllVariants(result.variants)} disabled={busy === "saveall"} className="ml-auto text-xs px-3 py-1.5 rounded-full bg-accent text-white font-bold disabled:opacity-40">{busy === "saveall" ? "存入中…" : "＋ 全部存起來"}</button>
+                <div className="font-bold inline-flex items-center gap-1.5"><Leaf size={16} /> 演化出 {result.variants.length} 個</div>
+                <button onClick={() => saveAllVariants(result.variants)} disabled={busy === "saveall"} className="ml-auto inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full bg-accent text-white font-bold disabled:opacity-40">{busy === "saveall" ? "存入中…" : <><Plus size={12} /> 全部存起來</>}</button>
               </div>
               <div className="space-y-2">{result.variants.map((v: any, i: number) => {
                 const saved = savedKeys.has(`evolve:${i}`);
                 return (
                 <div key={i} className="bg-bg-elevated rounded-lg p-2 text-sm flex justify-between gap-2"><div><b>{v.title}</b><div className="text-xs text-fg-muted whitespace-pre-wrap">{v.content}</div></div>
                   <motion.button whileTap={{ scale: 0.9 }} onClick={() => saveVariant(v, `evolve:${i}`)} disabled={saved}
-                    className={`shrink-0 text-xs px-2 self-start rounded-full ${saved ? "text-emerald-400" : "text-accent hover:bg-accent/10"}`}>{saved ? "✓ 已存" : "＋存"}</motion.button>
+                    className={`shrink-0 inline-flex items-center gap-0.5 text-xs px-2 self-start rounded-full ${saved ? "text-emerald-500" : "text-accent hover:bg-accent/10"}`}>{saved ? <><Check size={12} /> 已存</> : <><Plus size={12} /> 存</>}</motion.button>
                 </div>
               ); })}</div>
             </>)}
             {result.action === "replay" && (<>
-              <div className="font-bold">▶ 工作流重播</div>
+              <div className="font-bold inline-flex items-center gap-1.5"><Play size={15} /> 工作流重播</div>
               {result.results?.map((s: any, i: number) => <div key={i} className="text-xs bg-bg-elevated rounded-lg p-2"><b>{s.agent}</b> {s.ok ? "✅" : `❌ ${s.error}`}{s.ok && <div className="text-fg-muted mt-0.5">{s.output?.title ?? s.output?.coreIdea ?? (s.output?.variants ? `${s.output.variants.length} 變體` : "")}</div>}</div>)}
             </>)}
             {result.action === "compose" && (<>
-              <div className="font-bold">🧵 {result.result.title}</div>
+              <div className="font-bold inline-flex items-center gap-1.5"><Wand2 size={15} /> {result.result.title}</div>
               <pre className="text-sm text-fg-muted whitespace-pre-wrap font-sans">{result.result.lyricsSectioned ?? result.result.body}</pre>
-              {result.result.sunoPrompt && <div className="text-xs bg-bg-elevated rounded-lg p-2"><b>🎵 Suno：</b>{result.result.sunoPrompt}<br /><b>🎬 MV：</b>{result.result.mvPrompt}</div>}
+              {result.result.sunoPrompt && <div className="text-xs bg-bg-elevated rounded-lg p-2"><b className="inline-flex items-center gap-1"><Music size={12} /> Suno：</b>{result.result.sunoPrompt}<br /><b className="inline-flex items-center gap-1"><Film size={12} /> MV：</b>{result.result.mvPrompt}</div>}
               <div className="flex flex-wrap gap-2">
-                <button onClick={() => navigator.clipboard?.writeText(result.result.lyricsSectioned ?? result.result.body ?? "")} className="text-xs px-3 py-1.5 rounded-full bg-bg-elevated hover:text-accent">📋 複製{result.result.lyricsSectioned ? "歌詞" : "內容"}</button>
-                {result.result.sunoPrompt && <button onClick={() => navigator.clipboard?.writeText(result.result.sunoPrompt)} className="text-xs px-3 py-1.5 rounded-full bg-bg-elevated hover:text-accent">📋 Suno</button>}
-                {result.result.mvPrompt && <button onClick={() => navigator.clipboard?.writeText(result.result.mvPrompt)} className="text-xs px-3 py-1.5 rounded-full bg-bg-elevated hover:text-accent">📋 MV</button>}
-                <button onClick={importToEngine} disabled={busy === "import"} className="px-3 py-1.5 rounded-full bg-violet-500/20 text-violet-200 text-sm hover:bg-violet-500/30 disabled:opacity-40">{busy === "import" ? "導入中…" : "📝 導入創作引擎續寫"}</button>
+                <button onClick={() => navigator.clipboard?.writeText(result.result.lyricsSectioned ?? result.result.body ?? "")} className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full bg-bg-elevated hover:text-accent"><Copy size={12} /> 複製{result.result.lyricsSectioned ? "歌詞" : "內容"}</button>
+                {result.result.sunoPrompt && <button onClick={() => navigator.clipboard?.writeText(result.result.sunoPrompt)} className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full bg-bg-elevated hover:text-accent"><Copy size={12} /> Suno</button>}
+                {result.result.mvPrompt && <button onClick={() => navigator.clipboard?.writeText(result.result.mvPrompt)} className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full bg-bg-elevated hover:text-accent"><Copy size={12} /> MV</button>}
+                <button onClick={importToEngine} disabled={busy === "import"} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-violet-500/20 text-violet-700 dark:text-violet-200 text-sm hover:bg-violet-500/30 disabled:opacity-40">{busy === "import" ? "導入中…" : <><PenTool size={13} /> 導入創作引擎續寫</>}</button>
                 <button onClick={saveWork} disabled={busy === "savework"} className="px-3 py-1.5 rounded-full bg-accent text-white text-sm disabled:opacity-40">存成作品</button>
               </div>
             </>)}
@@ -418,17 +427,17 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
       {/* 自訂分類 + 碎片森林（可拖曳複製到分類） */}
       <DndContext sensors={sensors} onDragEnd={onDragEnd} onDragOver={(e) => setDropTarget(e.over ? String(e.over.id) : null)} onDragCancel={() => setDropTarget(null)}>
         <div className="flex items-center gap-2 flex-wrap text-xs mb-1">
-          <span className="text-fg-muted">🗂 分類：</span>
+          <span className="text-fg-muted inline-flex items-center gap-1"><FolderTree size={13} /> 分類：</span>
           <button onClick={() => setActiveCol(null)} className={`px-2.5 py-1 rounded-full border transition ${activeCol === null ? "border-accent bg-accent/10 text-accent" : "border-border bg-bg-card hover:border-accent/40"}`}>全部 {fragments.length}</button>
           {collections.map((c) => (
             <CollectionChip key={c.id} c={c} active={activeCol === c.id} isOver={dropTarget === `col:${c.id}`}
               onClick={() => setActiveCol(activeCol === c.id ? null : c.id)} onDelete={() => deleteCollection(c.id)} />
           ))}
-          <button onClick={createCollection} className="px-2.5 py-1 rounded-full border border-dashed border-border text-fg-muted hover:text-accent">＋ 新分類</button>
+          <button onClick={createCollection} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-dashed border-border text-fg-muted hover:text-accent"><Plus size={12} /> 新分類</button>
         </div>
         <div className="text-[10px] text-fg-muted mb-3">把碎片卡拖到分類上＝複製進該分類（一個碎片可同時屬於多類）。</div>
 
-        <div data-tour="forest" className="text-sm uppercase tracking-wider text-fg-muted mb-2">🌲 碎片森林（{shownFragments.length}）</div>
+        <div data-tour="forest" className="text-sm uppercase tracking-wider text-fg-muted mb-2 inline-flex items-center gap-1.5"><Trees size={14} /> 碎片森林（{shownFragments.length}）</div>
         <div className="columns-1 sm:columns-2 gap-3 [&>*]:mb-3 [&>*]:break-inside-avoid max-h-[78vh] overflow-y-auto pr-1">
           {shownFragments.map((f) => (
             <DraggableFragment key={f.id} f={f} on={selected.has(f.id)} onToggle={() => toggle(f.id)} onEdit={() => setEditing(f)} />
@@ -442,13 +451,13 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
           <motion.div initial={{ y: 80, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 80, opacity: 0 }}
             className="fixed bottom-[5.5rem] md:bottom-4 left-1/2 -translate-x-1/2 z-[52] w-[min(92vw,720px)] max-h-[55vh] overflow-y-auto bg-bg-card/95 backdrop-blur border-2 border-accent/40 rounded-2xl shadow-2xl shadow-accent/10 p-3">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-xs text-fg-muted mr-auto">🪄 已選 <b className="text-fg">{sel.length}</b> 個碎片</span>
-              <button onClick={() => run("synthesize")} disabled={busy !== null || sel.length < 2} className="px-3 py-2 rounded-full bg-bg-elevated text-sm hover:text-accent disabled:opacity-40">🧲 凝聚</button>
-              <button onClick={() => run("evolve")} disabled={busy !== null || sel.length !== 1} className="px-3 py-2 rounded-full bg-bg-elevated text-sm hover:text-accent disabled:opacity-40">🌿 演化</button>
-              <button onClick={() => findRelated(sel[0])} disabled={busy !== null || sel.length !== 1} className="px-3 py-2 rounded-full bg-bg-elevated text-sm hover:text-accent disabled:opacity-40">🔍 相關</button>
-              <button onClick={getAdvice} disabled={busy !== null || sel.length < 1} className="px-3 py-2 rounded-full bg-amber-500/15 text-amber-200 text-sm hover:bg-amber-500/25 disabled:opacity-40">💡 適合做什麼</button>
+              <span className="text-xs text-fg-muted mr-auto inline-flex items-center gap-1"><Wand2 size={13} /> 已選 <b className="text-fg">{sel.length}</b> 個碎片</span>
+              <button onClick={() => run("synthesize")} disabled={busy !== null || sel.length < 2} className="inline-flex items-center gap-1 px-3 py-2 rounded-full bg-bg-elevated text-sm hover:text-accent disabled:opacity-40"><Magnet size={14} /> 凝聚</button>
+              <button onClick={() => run("evolve")} disabled={busy !== null || sel.length !== 1} className="inline-flex items-center gap-1 px-3 py-2 rounded-full bg-bg-elevated text-sm hover:text-accent disabled:opacity-40"><Leaf size={14} /> 演化</button>
+              <button onClick={() => findRelated(sel[0])} disabled={busy !== null || sel.length !== 1} className="inline-flex items-center gap-1 px-3 py-2 rounded-full bg-bg-elevated text-sm hover:text-accent disabled:opacity-40"><Search size={14} /> 相關</button>
+              <button onClick={getAdvice} disabled={busy !== null || sel.length < 1} className="inline-flex items-center gap-1 px-3 py-2 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-200 text-sm hover:bg-amber-500/25 disabled:opacity-40"><Lightbulb size={14} /> 適合做什麼</button>
               <select value={transLang} onChange={(e) => setTransLang(e.target.value)} className="bg-bg-elevated border border-border rounded-full px-2 py-2 text-xs">{["日語", "韓語", "English", "法語", "西班牙語", "粵語", "文言文"].map((l) => <option key={l} value={l}>{l}</option>)}</select>
-              <button onClick={transcreateSel} disabled={busy !== null || sel.length !== 1} className="px-3 py-2 rounded-full bg-bg-elevated text-sm hover:text-accent disabled:opacity-40">🌏 轉譯</button>
+              <button onClick={transcreateSel} disabled={busy !== null || sel.length !== 1} className="inline-flex items-center gap-1 px-3 py-2 rounded-full bg-bg-elevated text-sm hover:text-accent disabled:opacity-40"><Languages size={14} /> 轉譯</button>
               <select value={workType} onChange={(e) => setWorkType(e.target.value)} className="bg-bg-elevated border border-border rounded-full px-2 py-2 text-xs">
                 <option value="article">文章</option>
                 <option value="散文">散文</option>
@@ -465,8 +474,8 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
                 <option value="課程大綱">課程大綱</option>
                 <option value="產品企劃">產品企劃</option>
               </select>
-              <button onClick={() => run("compose")} disabled={busy !== null || sel.length < 1} className="px-4 py-2 rounded-full bg-gradient-to-r from-amber-400 to-pink-500 text-black text-sm font-bold disabled:opacity-40">🧵 編織</button>
-              <button onClick={() => setSelected(new Set())} className="text-fg-muted hover:text-fg text-sm px-1">✕</button>
+              <button onClick={() => run("compose")} disabled={busy !== null || sel.length < 1} className="inline-flex items-center gap-1 px-4 py-2 rounded-full bg-gradient-to-r from-amber-400 to-pink-500 text-black text-sm font-bold disabled:opacity-40"><Wand2 size={14} /> 編織</button>
+              <button onClick={() => setSelected(new Set())} title="清除選取" className="text-fg-muted hover:text-fg px-1"><X size={15} /></button>
             </div>
             {busyMsg && <div className="text-xs text-accent mt-2 animate-pulse">{busyMsg}</div>}
           </motion.div>
@@ -496,8 +505,8 @@ function CollectionChip({ c, active, isOver, onClick, onDelete }: { c: Collectio
   return (
     <span ref={setNodeRef}
       className={`group inline-flex items-center gap-1 px-2.5 py-1 rounded-full border transition ${isOver ? "border-accent bg-accent/25 scale-110" : active ? "border-accent bg-accent/10 text-accent" : "border-border bg-bg-card hover:border-accent/40"}`}>
-      <button onClick={onClick}>🗂 {c.name} {c.assetIds.length}</button>
-      <button onClick={onDelete} title="刪除分類" className="opacity-0 group-hover:opacity-100 text-fg-muted hover:text-red-400">✕</button>
+      <button onClick={onClick} className="inline-flex items-center gap-1"><FolderTree size={12} /> {c.name} {c.assetIds.length}</button>
+      <button onClick={onDelete} title="刪除分類" className="opacity-0 group-hover:opacity-100 text-fg-muted hover:text-red-400"><X size={12} /></button>
     </span>
   );
 }
@@ -509,14 +518,14 @@ function DraggableFragment({ f, on, onToggle, onEdit }: { f: Fragment; on: boole
     <div ref={setNodeRef} style={style} {...attributes} {...listeners} onClick={onToggle} role="button" tabIndex={0}
       className={`group relative block w-full text-left rounded-xl p-3 border transition cursor-grab active:cursor-grabbing ${isDragging ? "opacity-70 ring-2 ring-accent z-50 shadow-xl" : on ? "border-accent bg-accent/[0.08] ring-1 ring-accent/40" : "border-border bg-bg-card hover:border-accent/40"}`}>
       <button onClick={(e) => { e.stopPropagation(); onEdit(); }} onPointerDown={(e) => e.stopPropagation()} title="編輯"
-        className="absolute top-2 right-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition text-fg-muted hover:text-accent text-base p-1 -m-1">✎</button>
-      <div className="font-bold text-sm flex items-start gap-1.5 pr-5"><span>{SRC_ICON[f.source_type] ?? "✍️"}</span><span className="flex-1">{f.title}</span>{on && <span className="text-accent">✓</span>}</div>
+        className="absolute top-2 right-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition text-fg-muted hover:text-accent p-1 -m-1"><Pencil size={14} /></button>
+      <div className="font-bold text-sm flex items-start gap-1.5 pr-5"><span className="mt-0.5"><SrcIcon type={f.source_type} /></span><span className="flex-1">{f.title}</span>{on && <Check size={14} className="text-accent shrink-0" />}</div>
       {f.subtitle && <div className="text-xs text-accent-3 mt-0.5">{f.subtitle}</div>}
       {f.content && !f.content.startsWith("![](") && <div className="text-xs text-fg-muted mt-1 line-clamp-3 whitespace-pre-wrap">{f.content}</div>}
       {f.content?.startsWith("![](") && <img src={f.content.slice(4, -1)} alt="" className="mt-2 rounded-lg max-h-40 w-full object-cover" />}
       <div className="mt-1.5 flex flex-wrap gap-1 items-center">
-        {f.category && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-accent/15 text-accent">🗂 {f.category}</span>}
-        {f.mood && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-pink-500/15 text-pink-300">{f.mood}</span>}
+        {f.category && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-accent/15 text-accent inline-flex items-center gap-0.5"><FolderTree size={10} /> {f.category}</span>}
+        {f.mood && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-pink-500/15 text-pink-700 dark:text-pink-300">{f.mood}</span>}
         {f.tags?.map((t) => <span key={t} className="text-[10px] px-1.5 py-0.5 rounded-full bg-bg-elevated text-fg-muted">#{t}</span>)}
       </div>
     </div>
@@ -536,7 +545,7 @@ function FragmentEditModal({ frag, onClose, onSave, onDelete }: { frag: Fragment
       className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
       <motion.div initial={{ scale: 0.95, y: 10 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0 }} onClick={(e) => e.stopPropagation()}
         className="w-[min(94vw,560px)] max-h-[88vh] overflow-y-auto bg-bg-card border border-border rounded-2xl p-5 space-y-3">
-        <div className="flex items-center justify-between"><div className="font-bold">✎ 編輯碎片</div><button onClick={onClose} className="text-fg-muted hover:text-fg">✕</button></div>
+        <div className="flex items-center justify-between"><div className="font-bold inline-flex items-center gap-1.5"><Pencil size={15} /> 編輯碎片</div><button onClick={onClose} className="text-fg-muted hover:text-fg"><X size={16} /></button></div>
         <label className="block text-xs text-fg-muted">標題
           <input value={title} onChange={(e) => setTitle(e.target.value)} className="mt-1 w-full bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm text-fg outline-none focus:border-accent" /></label>
         <label className="block text-xs text-fg-muted">副標題
