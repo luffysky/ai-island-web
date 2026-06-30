@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { requireOwner } from "@/lib/admin-guard";
 
 /**
  * AI 圖 provider 診斷 — 直接打開看 prod env 跟 fetch 到底卡哪
@@ -34,6 +35,8 @@ async function pingProvider(name: string, fn: () => Promise<Response>): Promise<
 }
 
 export async function GET() {
+  const gate = await requireOwner();
+  if (!gate.ok) return gate.response;
   const result: any = {
     timestamp: new Date().toISOString(),
     runtime: "nodejs",

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { decryptKey } from "@/lib/ai-crypto";
+import { requireOwner } from "@/lib/admin-guard";
 
 /**
  * AI key 真實解密健檢 (public、不洩漏 key 內容、只 mask)
@@ -14,6 +15,8 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
+  const gate = await requireOwner();
+  if (!gate.ok) return gate.response;
   const result: any = {
     timestamp: new Date().toISOString(),
     env: {

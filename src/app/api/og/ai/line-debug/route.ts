@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
+import { requireOwner } from "@/lib/admin-guard";
 
 /**
- * LINE channel token / secret 公開健檢
+ * LINE channel token / secret 健檢（僅限 owner）
  *
  * 不需要登入、跟 /api/og/ai/debug 一樣
  * 不顯示 token / secret 本身、只顯示「有沒設 / 長度 / prefix」
@@ -42,6 +43,8 @@ async function pingLine(token: string) {
 }
 
 export async function GET() {
+  const gate = await requireOwner();
+  if (!gate.ok) return gate.response;
   const result: any = {
     timestamp: new Date().toISOString(),
     env: {

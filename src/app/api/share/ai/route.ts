@@ -1,12 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { randomUUID } from "crypto";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { rateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 /** POST { persona, question, answer } → { token, path }：建立 AI 回答分享短連結。 */
 export async function POST(req: NextRequest) {
+  // 公開端點：用 IP 限流，防無上限灌 row（每分鐘 20 次）
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || "unknown";
+  const rl = rateLimit(`share-ai:${ip}`, 20, 60_000);
+  if (!rl.ok) return NextResponse.json({ error: "rate_limited", message: "太頻繁，請稍後再試" }, { status: 429 });
+
   const b = await req.json().catch(() => ({} as any));
   const persona = String(b.persona ?? "綠寶").slice(0, 16);
   const question = String(b.question ?? "").slice(0, 200);

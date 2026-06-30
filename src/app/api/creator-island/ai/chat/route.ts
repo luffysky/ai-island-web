@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireCreatorUser } from "@/lib/creator-engine/api";
+import { requireCreatorUser, requireWorkspaceRole } from "@/lib/creator-engine/api";
 import { resolveModel } from "@/lib/creator-engine/ai/router";
 import { callAI } from "@/lib/ai-providers";
 import { logAiUsage } from "@/lib/ai-usage-log";
@@ -21,6 +21,13 @@ export async function POST(req: NextRequest) {
   const b = await req.json().catch(() => ({} as any));
   const history = Array.isArray(b.messages) ? b.messages.slice(-12) : [];
   if (!history.length) return NextResponse.json({ error: "validation" }, { status: 422 });
+
+  // 只把 run 記到「使用者真的是成員」的 workspace，否則不歸屬（防污染他人 workspace 的 AI 用量/成本）
+  let workspaceId: string | null = b.workspaceId ?? null;
+  if (workspaceId) {
+    const gate = await requireWorkspaceRole(workspaceId, u.userId, "viewer");
+    if (gate instanceof NextResponse) workspaceId = null;
+  }
 
   const resolved = await resolveModel("chat");
   if (!resolved.ok) return NextResponse.json({ error: resolved.error, message: resolved.message }, { status: resolved.status });
@@ -44,7 +51,7 @@ export async function POST(req: NextRequest) {
     const admin = createSupabaseAdmin();
     const cost = await estimateCostUsd(provider, model, res.tokensInput, res.tokensOutput).catch(() => 0);
     await admin.from("ci_agent_runs").insert({
-      workspace_id: b.workspaceId ?? null, user_id: u.userId, agent_type: "chat",
+      workspace_id: workspaceId, user_id: u.userId, agent_type: "chat",
       input: { last: String(history[history.length - 1]?.content ?? "").slice(0, 500), hasImage: !!b.image }, output: { reply: res.text?.slice(0, 1000) },
       provider, model, tokens_input: res.tokensInput, tokens_output: res.tokensOutput, cost_usd: cost, status: "succeeded",
     }).then(() => {}, () => {});
