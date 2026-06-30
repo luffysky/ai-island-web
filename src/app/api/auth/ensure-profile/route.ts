@@ -51,7 +51,7 @@ export async function POST() {
   const admin = createSupabaseAdmin();
   const { data: existing, error: selectError } = await admin
     .from("profiles")
-    .select("id")
+    .select("id, display_name_set")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -59,11 +59,18 @@ export async function POST() {
     return NextResponse.json({ error: selectError.message }, { status: 500 });
   }
 
+  // OAuth（Google/LINE…）登入：不直接用第三方真名當顯示名稱，先給中性的 username、
+  // 標記 display_name_set=false → 首次登入導去 onboarding 讓本人自己填。
+  const provider = (user.app_metadata as any)?.provider || "email";
+  const isOAuth = provider !== "email";
+
   if (!existing) {
+    const username = buildUsername(user);
     const { error: insertError } = await admin.from("profiles").insert({
       id: user.id,
-      username: buildUsername(user),
-      display_name: buildDisplayName(user),
+      username,
+      display_name: isOAuth ? username : buildDisplayName(user),
+      display_name_set: !isOAuth,
       avatar_url: user.user_metadata?.avatar_url || user.user_metadata?.picture || null,
       xp: 0,
       z_coin: 100,
@@ -73,7 +80,8 @@ export async function POST() {
     if (insertError) {
       return NextResponse.json({ error: insertError.message }, { status: 500 });
     }
+    return NextResponse.json({ ok: true, needsDisplayName: isOAuth });
   }
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, needsDisplayName: (existing as any).display_name_set === false });
 }
