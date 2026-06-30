@@ -7,15 +7,45 @@ import { uploadMedia } from "@/lib/creator-upload";
 type Msg = { role: "user" | "assistant"; content: string };
 
 const BTN = 52; // 綠寶按鈕直徑(px)
+const GREETING: Msg = { role: "assistant", content: "嗨，我是綠寶 ✨ 想做什麼作品？丟碎片、貼圖、或直接問我都可以。" };
 
 export function IslandChat({ workspaceId }: { workspaceId: string }) {
   const [open, setOpen] = useState(false);
-  const [msgs, setMsgs] = useState<Msg[]>([{ role: "assistant", content: "嗨，我是綠寶 ✨ 想做什麼作品？丟碎片、貼圖、或直接問我都可以。" }]);
+  const [msgs, setMsgs] = useState<Msg[]>([GREETING]);
   const [text, setText] = useState("");
   const [img, setImg] = useState<{ data: string; mediaType: string; preview: string } | null>(null);
   const [busy, setBusy] = useState(false);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [sessions, setSessions] = useState<{ id: string; title: string; updated_at: string }[]>([]);
+  const [showHist, setShowHist] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
   useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [msgs, open]);
+
+  async function saveSession(allMsgs: Msg[]) {
+    if (allMsgs.length < 2) return; // 還沒對話內容
+    try {
+      const r = await fetch("/api/creator-island/ai/chat/sessions", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ workspaceId, sessionId, messages: allMsgs }),
+      }).then((x) => x.json());
+      if (r.id && r.id !== sessionId) setSessionId(r.id);
+    } catch { /* 存歷史失敗不影響聊天 */ }
+  }
+  async function loadSessions() {
+    try { const r = await fetch(`/api/creator-island/ai/chat/sessions?workspaceId=${workspaceId}`).then((x) => x.json()); setSessions(r.items ?? []); } catch { /* ignore */ }
+  }
+  async function openSession(id: string) {
+    try {
+      const r = await fetch(`/api/creator-island/ai/chat/sessions/${id}`).then((x) => x.json());
+      if (r.session) { setMsgs(r.session.messages?.length ? r.session.messages : [GREETING]); setSessionId(r.session.id); setShowHist(false); }
+    } catch { /* ignore */ }
+  }
+  async function delSession(id: string) {
+    try { await fetch(`/api/creator-island/ai/chat/sessions/${id}`, { method: "DELETE" }); } catch { /* ignore */ }
+    setSessions((p) => p.filter((s) => s.id !== id));
+    if (id === sessionId) newChat();
+  }
+  function newChat() { setMsgs([GREETING]); setSessionId(null); setShowHist(false); }
 
   // === 可拖曳的浮動位置（預設左下、避開手機底部導覽列）===
   const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
@@ -86,7 +116,9 @@ export function IslandChat({ workspaceId }: { workspaceId: string }) {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: next.map((m) => ({ role: m.role, content: m.content })), image: image ? { data: image.data, mediaType: image.mediaType } : undefined, workspaceId }),
       }).then((x) => x.json());
-      setMsgs((m) => [...m, { role: "assistant", content: r.reply || r.message || "（沒有回覆）" }]);
+      const final: Msg[] = [...next, { role: "assistant", content: r.reply || r.message || "（沒有回覆）" }];
+      setMsgs(final);
+      saveSession(final);
     } catch (e: any) { setMsgs((m) => [...m, { role: "assistant", content: "出錯了：" + e.message }]); } finally { setBusy(false); }
   }
 
@@ -107,8 +139,28 @@ export function IslandChat({ workspaceId }: { workspaceId: string }) {
             className="fixed z-[56] bg-bg-card border border-emerald-500/40 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
             <div className="p-3 border-b border-border flex items-center gap-2">
               <span className="font-bold">✨ 綠寶</span><span className="text-xs text-fg-muted">創作夥伴</span>
-              <button onClick={() => setOpen(false)} className="ml-auto text-fg-muted hover:text-fg">✕</button>
+              <button onClick={() => { setShowHist((v) => !v); if (!showHist) loadSessions(); }} title="歷史對話" className="ml-auto text-fg-muted hover:text-accent">🕘</button>
+              <button onClick={newChat} title="開新對話" className="text-fg-muted hover:text-accent">＋</button>
+              <button onClick={() => setOpen(false)} className="text-fg-muted hover:text-fg">✕</button>
             </div>
+
+            {showHist && (
+              <div className="absolute inset-0 top-[49px] z-10 bg-bg-card overflow-y-auto p-2 space-y-1">
+                <div className="text-xs text-fg-muted px-1 py-1">🕘 歷史對話（{sessions.length}）</div>
+                {sessions.length === 0 ? (
+                  <div className="text-xs text-fg-muted px-1 py-4 text-center">還沒有對話紀錄。</div>
+                ) : sessions.map((s) => (
+                  <div key={s.id} className="group flex items-center gap-1 rounded-lg hover:bg-bg-elevated">
+                    <button onClick={() => openSession(s.id)} className="flex-1 min-w-0 text-left px-2 py-2 text-sm">
+                      <div className="truncate">{s.title}</div>
+                      <div className="text-[10px] text-fg-muted">{new Date(s.updated_at).toLocaleString("zh-TW", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })}</div>
+                    </button>
+                    <button onClick={() => delSession(s.id)} title="刪除" className="px-2 text-fg-muted opacity-0 group-hover:opacity-100 hover:text-red-400">✕</button>
+                  </div>
+                ))}
+              </div>
+            )}
+
             <div className="flex-1 overflow-y-auto p-3 space-y-2">
               {msgs.map((m, i) => (
                 <div key={i} className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm whitespace-pre-wrap break-words ${m.role === "user" ? "ml-auto bg-accent text-white" : "bg-bg-elevated"}`}>{m.content}</div>
