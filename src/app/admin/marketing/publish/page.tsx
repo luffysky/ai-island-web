@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
 import { PageHero } from "@/components/admin/PageHero";
+import { AlertTriangle, ArrowLeft } from "lucide-react";
 
 export default function PublishPage() {
   const platforms = [
@@ -25,7 +26,7 @@ export default function PublishPage() {
       />
 
       <div className="bg-yellow-500/5 border border-yellow-500/30 rounded-2xl p-4 text-xs leading-relaxed">
-        <div className="font-bold text-yellow-300 mb-2">⚠️ 一鍵發佈現狀 / 接 OAuth 路線圖</div>
+        <div className="font-bold text-yellow-700 dark:text-yellow-300 mb-2 flex items-center gap-2"><AlertTriangle className="w-4 h-4" /> 一鍵發佈現狀 / 接 OAuth 路線圖</div>
         <p className="text-fg-muted">
           目前完整可用：<span className="text-emerald-400 font-bold">LINE OA 群發、Email Campaigns、站內公告</span>。
           <br />
@@ -53,9 +54,9 @@ export default function PublishPage() {
 
       <Link
         href={adminHref("/admin/marketing/schedule") as any}
-        className="inline-block px-4 py-2 rounded-full bg-purple-500/15 text-purple-900 dark:text-purple-100 border border-purple-500/30 text-sm"
+        className="inline-flex items-center gap-1 px-4 py-2 rounded-full bg-purple-500/15 text-purple-900 dark:text-purple-100 border border-purple-500/30 text-sm"
       >
-        ← 回排程列表
+        <ArrowLeft className="w-4 h-4" /> 回排程列表
       </Link>
     </div>
   );

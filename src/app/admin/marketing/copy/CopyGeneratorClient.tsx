@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Sparkles, Loader2, Copy, Check, Save, Wand2 } from "lucide-react";
+import { Sparkles, Loader2, Copy, Check, Save, Wand2, Pin, Target, Megaphone, AlertTriangle } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 
 const PLATFORMS = [
@@ -88,7 +88,7 @@ export function CopyGeneratorClient() {
       {/* Input area */}
       <div className="bg-bg-card border border-border rounded-2xl p-4 space-y-3">
         <div>
-          <label className="text-xs font-bold text-fg-muted mb-1 block">📌 主題 / 想推什麼 *</label>
+          <label className="text-xs font-bold text-fg-muted mb-1 flex items-center gap-1.5"><Pin className="w-3.5 h-3.5" /> 主題 / 想推什麼 *</label>
           <textarea
             value={topic}
             onChange={(e) => setTopic(e.target.value)}
@@ -99,7 +99,7 @@ export function CopyGeneratorClient() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
           <div>
-            <label className="text-xs font-bold text-fg-muted mb-1 block">🎯 目標受眾</label>
+            <label className="text-xs font-bold text-fg-muted mb-1 flex items-center gap-1.5"><Target className="w-3.5 h-3.5" /> 目標受眾</label>
             <input
               value={audience}
               onChange={(e) => setAudience(e.target.value)}
@@ -108,7 +108,7 @@ export function CopyGeneratorClient() {
             />
           </div>
           <div>
-            <label className="text-xs font-bold text-fg-muted mb-1 block">📢 CTA (行動呼籲)</label>
+            <label className="text-xs font-bold text-fg-muted mb-1 flex items-center gap-1.5"><Megaphone className="w-3.5 h-3.5" /> CTA (行動呼籲)</label>
             <input
               value={cta}
               onChange={(e) => setCta(e.target.value)}
@@ -153,7 +153,7 @@ export function CopyGeneratorClient() {
             </button>
           )}
           {savedAsDraft && (
-            <span className="text-[11px] text-emerald-400">✓ 已存草稿 (id={savedAsDraft.slice(0, 8)})</span>
+            <span className="text-[11px] text-emerald-400 inline-flex items-center gap-1"><Check className="w-3 h-3" /> 已存草稿 (id={savedAsDraft.slice(0, 8)})</span>
           )}
         </div>
       </div>
@@ -183,7 +183,7 @@ export function CopyGeneratorClient() {
                   <>
                     <pre className="whitespace-pre-wrap font-sans">{txt}</pre>
                     <div className="mt-2 text-[10px] text-fg-muted text-right">
-                      {txt.length} / {p.limit} 字 {txt.length > p.limit && <span className="text-orange-400">⚠️ 超過建議長度</span>}
+                      {txt.length} / {p.limit} 字 {txt.length > p.limit && <span className="text-orange-700 dark:text-orange-400 inline-flex items-center gap-1"><AlertTriangle className="w-3 h-3" /> 超過建議長度</span>}
                     </div>
                   </>
                 ) : (

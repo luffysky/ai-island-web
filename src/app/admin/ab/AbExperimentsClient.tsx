@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Play, Pause, Square, Trash2 } from "lucide-react";
+import { Plus, Play, Pause, Square, Trash2, Scale, Brain } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { formatTW } from "@/lib/format-date";
@@ -131,7 +131,7 @@ export function AbExperimentsClient({ initial, stats }: { initial: Experiment[];
     <div className="space-y-4">
       {/* 新增 */}
       <div className="rounded-xl bg-bg-card border border-border p-3 space-y-2">
-        <div className="text-sm font-bold">＋ 新增實驗</div>
+        <div className="text-sm font-bold flex items-center gap-1"><Plus size={14} /> 新增實驗</div>
         <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr_2fr_auto] gap-2">
           <input
             value={newKey}
@@ -174,23 +174,23 @@ export function AbExperimentsClient({ initial, stats }: { initial: Experiment[];
                 <div className="inline-flex rounded-full bg-bg-elevated p-0.5 text-[10px]" title="Allocation 演算法：weighted 固定權重 / thompson 自動依轉換率調整">
                   <button
                     onClick={() => setAllocation(e.id, "weighted")}
-                    className={`px-2 py-0.5 rounded-full transition ${
+                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full transition ${
                       (e.allocation ?? "weighted") === "weighted"
                         ? "bg-accent text-black font-bold"
                         : "text-fg-muted hover:text-fg"
                     }`}
                   >
-                    ⚖️ weighted
+                    <Scale size={12} /> weighted
                   </button>
                   <button
                     onClick={() => setAllocation(e.id, "thompson")}
-                    className={`px-2 py-0.5 rounded-full transition ${
+                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full transition ${
                       e.allocation === "thompson"
                         ? "bg-accent text-black font-bold"
                         : "text-fg-muted hover:text-fg"
                     }`}
                   >
-                    🧠 thompson
+                    <Brain size={12} /> thompson
                   </button>
                 </div>
                 <span className="text-[10px] text-fg-muted ml-auto">{formatTW(e.created_at)}</span>

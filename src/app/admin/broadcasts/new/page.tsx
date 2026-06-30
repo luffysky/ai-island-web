@@ -2,6 +2,7 @@ import { BroadcastForm } from "../BroadcastForm";
 import { adminHref } from "@/lib/admin-href";
 import Link from "next/link";
 import { PageHero } from "@/components/admin/PageHero";
+import { ArrowLeft } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -10,9 +11,9 @@ export default function NewBroadcastPage() {
     <div className="space-y-4">
       <Link
         href={adminHref("/admin/broadcasts") as any}
-        className="text-sm text-fg-muted hover:text-accent"
+        className="text-sm text-fg-muted hover:text-accent inline-flex items-center gap-2"
       >
-        ← 回公告列表
+        <ArrowLeft className="w-4 h-4" /> 回公告列表
       </Link>
       <PageHero
         emoji="📣"

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Bot, BarChart3, MessageSquare, Bell } from "lucide-react";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { PageHero } from "@/components/admin/PageHero";
 
@@ -39,8 +40,8 @@ export default async function CreatorIslandAdminPage() {
         gradient="from-cyan-500/10 via-teal-500/10 to-emerald-500/10" borderColor="border-teal-500/30" />
 
       <div className="flex gap-2 text-sm">
-        <Link href="/admin/ai/creator-island" className="px-3 py-1.5 rounded-full bg-bg-card border border-border hover:text-accent">🤖 各 agent 模型設定</Link>
-        <Link href="/admin/ai/usage" className="px-3 py-1.5 rounded-full bg-bg-card border border-border hover:text-accent">📊 AI Token 用量</Link>
+        <Link href="/admin/ai/creator-island" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-bg-card border border-border hover:text-accent"><Bot className="w-4 h-4" /> 各 agent 模型設定</Link>
+        <Link href="/admin/ai/usage" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-bg-card border border-border hover:text-accent"><BarChart3 className="w-4 h-4" /> AI Token 用量</Link>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -53,7 +54,7 @@ export default async function CreatorIslandAdminPage() {
       </div>
 
       <div id="runs" className="bg-bg-card border border-border rounded-2xl p-4">
-        <div className="font-bold mb-3">🗨️ AI 對話紀錄（最近 25）</div>
+        <div className="font-bold mb-3 flex items-center gap-2"><MessageSquare className="w-4 h-4" /> AI 對話紀錄（最近 25）</div>
         <div className="space-y-2">
           {(recentRuns ?? []).length === 0 && <div className="text-sm text-fg-muted">尚無紀錄。</div>}
           {(recentRuns as any[] ?? []).map((r) => (
@@ -75,7 +76,7 @@ export default async function CreatorIslandAdminPage() {
       </div>
 
       <div className="bg-bg-card border border-border rounded-2xl p-4">
-        <div className="font-bold mb-3">🔔 通知監看（最近 15）</div>
+        <div className="font-bold mb-3 flex items-center gap-2"><Bell className="w-4 h-4" /> 通知監看（最近 15）</div>
         <div className="space-y-1.5">
           {(notifs ?? []).length === 0 && <div className="text-sm text-fg-muted">尚無通知。</div>}
           {(notifs as any[] ?? []).map((n) => (

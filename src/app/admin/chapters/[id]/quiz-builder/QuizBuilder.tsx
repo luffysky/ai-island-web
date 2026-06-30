@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Trash2, Sparkles, Save } from "lucide-react";
+import { Plus, Trash2, Sparkles, Save, Bot } from "lucide-react";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 
 type Question = {
@@ -174,7 +174,7 @@ export function QuizBuilder({
             className="px-4 py-1.5 text-sm rounded-lg bg-purple-500/20 text-purple-900 dark:text-purple-100 border border-purple-500/30 hover:bg-purple-500/30 disabled:opacity-50 flex items-center gap-1.5"
           >
             <Sparkles size={14} />
-            {generating ? "AI 出題中..." : "🤖 AI 自動出 20 題"}
+            {generating ? "AI 出題中..." : <><Bot className="w-4 h-4" /> AI 自動出 20 題</>}
           </button>
           <button
             onClick={addQuestion}

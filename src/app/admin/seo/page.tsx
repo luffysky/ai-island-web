@@ -3,6 +3,7 @@ import { chapters } from "@/data/chapters";
 import { SEO_PLACEHOLDERS, SITE_STATS } from "@/lib/site-stats";
 import { SEOManagerClient } from "./SEOManagerClient";
 import { PageHero } from "@/components/admin/PageHero";
+import { Sparkles } from "lucide-react";
 
 export default async function SEOAdminPage() {
   const supabase = createSupabaseAdmin();
@@ -49,7 +50,7 @@ export default async function SEOAdminPage() {
       />
 
       <section className="bg-bg-card border border-border rounded-xl p-4 text-sm">
-        <div className="font-bold mb-2">🪄 動態數據佔位符</div>
+        <div className="font-bold mb-2 flex items-center gap-2"><Sparkles className="w-4 h-4" /> 動態數據佔位符</div>
         <p className="text-xs text-fg-muted mb-3">
           在任何 SEO 欄位（title / description / og_title / og_description / schema_jsonld）寫下方 token，網站渲染時會即時換成最新數字。內容更新後不用手改 SEO。
         </p>

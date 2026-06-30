@@ -2,6 +2,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import Link from "next/link";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { PageHero, AdminStatCard } from "@/components/admin/PageHero";
+import { ArrowRight, Flame, AlertTriangle } from "lucide-react";
 
 export default async function CRMPage({ searchParams }: { searchParams: Promise<{ status?: string; priority?: string }> }) {
   const params = await searchParams;
@@ -31,8 +32,8 @@ export default async function CRMPage({ searchParams }: { searchParams: Promise<
         gradient="from-blue-500/10 via-cyan-500/10 to-purple-500/10"
         borderColor="border-blue-500/30"
       >
-        <Link href={(`/${process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2"}/admin/tickets`) as any} className="text-xs px-3 py-1.5 rounded-full border border-border hover:border-accent hover:text-accent">
-          → 去工單管理
+        <Link href={(`/${process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2"}/admin/tickets`) as any} className="text-xs px-3 py-1.5 rounded-full border border-border hover:border-accent hover:text-accent inline-flex items-center gap-1">
+          <ArrowRight className="w-3.5 h-3.5" /> 去工單管理
         </Link>
       </PageHero>
 
@@ -48,7 +49,7 @@ export default async function CRMPage({ searchParams }: { searchParams: Promise<
         <FilterLink href="/admin/crm?status=pending" active={params.status === "pending"}>等回覆</FilterLink>
         <FilterLink href="/admin/crm?status=resolved" active={params.status === "resolved"}>已解決</FilterLink>
         <div className="border-l border-border mx-1" />
-        <FilterLink href="/admin/crm?priority=urgent" active={params.priority === "urgent"}>🔥 緊急</FilterLink>
+        <FilterLink href="/admin/crm?priority=urgent" active={params.priority === "urgent"}><span className="inline-flex items-center gap-1"><Flame className="w-3.5 h-3.5" /> 緊急</span></FilterLink>
         <FilterLink href="/admin/crm?priority=high" active={params.priority === "high"}>高</FilterLink>
       </div>
 
@@ -153,7 +154,7 @@ function StatusBadge({ status }: { status: string }) {
 function SchemaNeeded() {
   return (
     <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-6 text-sm">
-      <div className="font-bold mb-2">⚠️ 需要先跑 admin migration</div>
+      <div className="font-bold mb-2 flex items-center gap-2"><AlertTriangle className="w-4 h-4" /> 需要先跑 admin migration</div>
       <code className="block bg-bg p-3 rounded text-xs">supabase/admin_migration.sql</code>
     </div>
   );

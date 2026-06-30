@@ -3,6 +3,7 @@ import { GA4Charts } from "./GA4Charts";
 import { GA4SyncButton } from "./GA4SyncButton";
 import { InteractionPanels } from "./InteractionPanels";
 import { PageHero } from "@/components/admin/PageHero";
+import { MapPin, Settings, ExternalLink } from "lucide-react";
 
 export default async function GA4Page() {
   const supabase = createSupabaseAdmin();
@@ -85,7 +86,7 @@ export default async function GA4Page() {
       {/* Geo 覆蓋率（7 天）— IP 自動 vs GPS opt-in 兩條路 */}
       <section className="bg-bg-card border border-border rounded-xl p-4">
         <div className="flex items-baseline justify-between mb-3 gap-2 flex-wrap">
-          <h3 className="font-bold text-sm">📍 地理資料覆蓋率（過去 7 天）</h3>
+          <h3 className="font-bold text-sm flex items-center gap-2"><MapPin className="w-4 h-4" /> 地理資料覆蓋率（過去 7 天）</h3>
           <span className="text-xs text-fg-muted">{totalSessions.toLocaleString()} session</span>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -153,8 +154,8 @@ export default async function GA4Page() {
 
       {/* GA4 設定 / 同步：collapse 在最下方、不影響主畫面 */}
       <details className="bg-bg-card border border-border rounded-xl">
-        <summary className="cursor-pointer px-4 py-3 text-sm font-semibold">
-          ⚙️ GA4 設定（選用）
+        <summary className="cursor-pointer px-4 py-3 text-sm font-semibold flex items-center gap-2">
+          <Settings className="w-4 h-4" /> GA4 設定（選用）
         </summary>
         <div className="px-4 pb-4 text-sm space-y-3">
           <p className="text-xs text-fg-muted">
@@ -170,7 +171,7 @@ export default async function GA4Page() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-4 py-2 bg-bg-elevated text-fg rounded-lg text-sm font-semibold hover:bg-border transition"
             >
-              🔗 開啟 Google Analytics
+              <ExternalLink className="w-4 h-4" /> 開啟 Google Analytics
             </a>
           </div>
         </div>

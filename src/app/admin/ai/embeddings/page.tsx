@@ -1,6 +1,7 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { PageHero } from "@/components/admin/PageHero";
 import { BackfillClient } from "./BackfillClient";
+import { AlertTriangle, BookOpen } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -44,7 +45,7 @@ export default async function EmbeddingsAdminPage() {
 
       {setupError && (
         <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-6 text-sm">
-          <div className="font-bold mb-2">⚠️ 後端尚未就緒</div>
+          <div className="font-bold mb-2 flex items-center gap-2"><AlertTriangle className="w-4 h-4" /> 後端尚未就緒</div>
           <div className="text-fg-mid">{setupError}</div>
         </div>
       )}
@@ -70,7 +71,7 @@ export default async function EmbeddingsAdminPage() {
       />
 
       <div className="bg-bg-soft border border-border rounded-xl p-5 text-sm space-y-2">
-        <div className="font-bold text-fg">📖 怎麼用</div>
+        <div className="font-bold text-fg flex items-center gap-2"><BookOpen className="w-4 h-4" /> 怎麼用</div>
         <ul className="space-y-1 list-disc pl-5 text-fg-mid">
           <li>第一次：按「⚡ backfill 全部 lesson」、跑完約 1-2 分鐘、成本約 $0.015（750 lesson × $0.00002/1K tokens）</li>
           <li>新章節：寫完 import 進 DB 後、按「⚡ backfill 新章節 (lessons)」會只跑缺的</li>

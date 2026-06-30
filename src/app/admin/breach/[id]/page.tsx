@@ -4,6 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
 import { BreachDetailForm } from "./BreachDetailForm";
+import { ArrowLeft, Siren } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -41,11 +42,11 @@ export default async function BreachDetailPage({
         <div>
           <Link
             href={adminHref("/admin/breach") as any}
-            className="text-sm text-fg-muted hover:text-accent"
+            className="inline-flex items-center gap-1 text-sm text-fg-muted hover:text-accent"
           >
-            ← 回事件列表
+            <ArrowLeft className="w-4 h-4" /> 回事件列表
           </Link>
-          <h2 className="text-xl font-bold mt-1">🚨 事件 #{incident.id}</h2>
+          <h2 className="text-xl font-bold mt-1 flex items-center gap-2"><Siren className="w-4 h-4" /> 事件 #{incident.id}</h2>
         </div>
         {isOverdue && (
           <span className="px-3 py-1 rounded-full text-xs font-bold bg-red-500 text-white">

@@ -1,5 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { ModerationActions } from "./ModerationActions";
+import { ArrowLeft, ArrowRight, Circle, CheckCircle, List } from "lucide-react";
 import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
 import { PageHero } from "@/components/admin/PageHero";
@@ -45,13 +46,19 @@ export default async function CommentsModerationPage({
           <Link
             key={f}
             href={adminHref(`/admin/moderation/comments?filter=${f}`) as any}
-            className={`px-3 py-1.5 text-xs rounded-full transition ${
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-full transition ${
               filter === f
                 ? "bg-accent text-black font-bold"
                 : "bg-bg-card border border-border"
             }`}
           >
-            {f === "pending" ? "🟡 待審核" : f === "approved" ? "✅ 已通過" : "📋 全部"}
+            {f === "pending" ? (
+              <><Circle className="w-3.5 h-3.5" /> 待審核</>
+            ) : f === "approved" ? (
+              <><CheckCircle className="w-3.5 h-3.5" /> 已通過</>
+            ) : (
+              <><List className="w-3.5 h-3.5" /> 全部</>
+            )}
           </Link>
         ))}
       </div>
@@ -72,10 +79,10 @@ export default async function CommentsModerationPage({
                   {c.author_email && <span className="ml-2">{c.author_email}</span>}
                   <span className="ml-2">{new Date(c.created_at).toLocaleString("zh-TW")}</span>
                 </div>
-                <span className={`text-[10px] px-2 py-0.5 rounded-full ${
+                <span className={`inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full ${
                   c.is_approved ? "bg-emerald-500/20 text-emerald-500" : "bg-yellow-500/20 text-yellow-500"
                 }`}>
-                  {c.is_approved ? "✅ 通過" : "🟡 待審"}
+                  {c.is_approved ? <><CheckCircle className="w-3 h-3" /> 通過</> : <><Circle className="w-3 h-3" /> 待審</>}
                 </span>
               </div>
               <div className="text-sm whitespace-pre-wrap mb-2 break-words">{c.content}</div>
@@ -94,16 +101,16 @@ export default async function CommentsModerationPage({
         <div className="flex items-center justify-center gap-2 text-sm">
           <Link
             href={page > 1 ? (adminHref(`/admin/moderation/comments?filter=${filter}&page=${page - 1}`) as any) : "#"}
-            className={`px-3 py-1.5 rounded-lg border border-border ${page <= 1 ? "opacity-40 pointer-events-none" : "hover:bg-bg-elevated"}`}
+            className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-border ${page <= 1 ? "opacity-40 pointer-events-none" : "hover:bg-bg-elevated"}`}
           >
-            ← 上一頁
+            <ArrowLeft className="w-4 h-4" /> 上一頁
           </Link>
           <span className="text-xs text-fg-muted px-3">{page} / {totalPages}</span>
           <Link
             href={page < totalPages ? (adminHref(`/admin/moderation/comments?filter=${filter}&page=${page + 1}`) as any) : "#"}
-            className={`px-3 py-1.5 rounded-lg border border-border ${page >= totalPages ? "opacity-40 pointer-events-none" : "hover:bg-bg-elevated"}`}
+            className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-border ${page >= totalPages ? "opacity-40 pointer-events-none" : "hover:bg-bg-elevated"}`}
           >
-            下一頁 →
+            下一頁 <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
       )}

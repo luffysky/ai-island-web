@@ -1,4 +1,5 @@
 import { PageHero } from "@/components/admin/PageHero";
+import { CheckCircle, AlertTriangle } from "lucide-react";
 import { TelegramSetupButton } from "./TelegramSetupButton";
 
 export const dynamic = "force-dynamic";
@@ -51,7 +52,7 @@ export default function AdminTelegramPage() {
 function EnvRow({ label, ok, okText, badText }: { label: string; ok: boolean; okText: string; badText: string }) {
   return (
     <div className="flex items-start gap-2">
-      <span className={`mt-0.5 shrink-0 ${ok ? "text-emerald-400" : "text-amber-400"}`}>{ok ? "✅" : "⚠️"}</span>
+      <span className={`mt-0.5 shrink-0 ${ok ? "text-emerald-400" : "text-amber-400"}`}>{ok ? <CheckCircle className="w-4 h-4" /> : <AlertTriangle className="w-4 h-4" />}</span>
       <div>
         <code className="text-fg">{label}</code>
         <span className="text-fg-muted"> — {ok ? okText : badText}</span>

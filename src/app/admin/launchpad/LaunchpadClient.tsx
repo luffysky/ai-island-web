@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Plus, Trash2, X, Loader2, Search, Sparkles, Wand2, ExternalLink, ChevronDown, ChevronRight, RefreshCw } from "lucide-react";
+import { Plus, Trash2, X, XCircle, Loader2, Search, Sparkles, Wand2, ExternalLink, ChevronDown, ChevronRight, RefreshCw } from "lucide-react";
 
 type Board = { id: string; slug: string; title: string; emoji: string | null; description: string | null; position: number };
 type Column = { id: string; board_id: string; title: string; emoji: string | null; color: string; position: number };
@@ -446,7 +446,7 @@ function AiAddForm({ onSave }: { onSave: (text: string, target: "todo" | "wishli
         onClick={async () => { setBusy(true); await onSave(text.trim(), target); setBusy(false); }}
         className="btn-chip btn-chip-success w-full justify-center disabled:opacity-50"
       >
-        {busy ? <><Loader2 size={14} className="animate-spin" /> 雪鑰思考中...</> : "✨ 讓雪鑰建卡"}
+        {busy ? <><Loader2 size={14} className="animate-spin" /> 雪鑰思考中...</> : <><Sparkles size={14} /> 讓雪鑰建卡</>}
       </button>
     </div>
   );
@@ -464,7 +464,7 @@ function SuggestPanel({ loading, data, onPick }: { loading: boolean; data: any; 
   if (data?.error) {
     return (
       <div>
-        <h3 className="font-bold mb-2 text-red-500">❌ 雪鑰回應失敗</h3>
+        <h3 className="font-bold mb-2 text-red-500 flex items-center gap-2"><XCircle className="w-4 h-4" /> 雪鑰回應失敗</h3>
         <p className="text-sm bg-red-500/10 border border-red-500/30 rounded p-3 font-mono">
           {data.error}
         </p>

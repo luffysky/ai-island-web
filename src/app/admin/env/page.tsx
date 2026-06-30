@@ -1,4 +1,4 @@
-import { Check, X, Lock, Database } from "lucide-react";
+import { Check, X, Lock, Database, Key, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import { EnvRequestsPanel } from "./EnvRequestsPanel";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
@@ -181,7 +181,7 @@ export default async function AdminEnvPage() {
     <div className="space-y-6">
       <header>
         <h1 className="text-2xl font-bold flex items-center gap-2">
-          🔐 環境變數面板
+          <Key className="w-6 h-6" /> 環境變數面板
           <Hint title="環境變數（Environment Variable / ENV）">
             程式跑的時候、需要從外面塞給它的設定值。例如資料庫網址、第三方 API 金鑰、寄信地址等。我們把這些設在 Zeabur dashboard、網站才能讀到。
           </Hint>
@@ -211,7 +211,7 @@ export default async function AdminEnvPage() {
       {/* 必要項缺漏警示 */}
       {missingRequired.length > 0 && (
         <div className="rounded-xl bg-red-500/10 border border-red-500/30 p-4">
-          <div className="font-bold text-red-400 mb-2 flex items-center gap-2">⚠️ 必要項缺漏</div>
+          <div className="font-bold text-red-400 mb-2 flex items-center gap-2"><AlertTriangle className="w-4 h-4" /> 必要項缺漏</div>
           <ul className="space-y-1 text-sm">
             {missingRequired.map((v) => (
               <li key={v.key}>
@@ -285,11 +285,11 @@ export default async function AdminEnvPage() {
                       )}
                       {ok ? (
                         <span className="ml-1 inline-flex items-center gap-1 text-green-400 text-[10px] px-1.5 py-0.5 rounded-full bg-green-500/10">
-                          ✓ 可用
+                          <Check size={11} /> 可用
                         </span>
                       ) : (
                         <span className="ml-1 inline-flex items-center gap-1 text-red-400 text-[10px] px-1.5 py-0.5 rounded-full bg-red-500/10">
-                          ✗ 缺
+                          <X size={11} /> 缺
                         </span>
                       )}
                     </span>

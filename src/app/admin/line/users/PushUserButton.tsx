@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Send, Loader2, X, MessageSquareText } from "lucide-react";
+import { Send, Loader2, X, MessageSquareText, AlertTriangle } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 
 export function PushUserButton({
@@ -78,8 +78,8 @@ export function PushUserButton({
         </button>
       </div>
       {!notifyEnabled && (
-        <div className="text-[10px] text-yellow-400 bg-yellow-500/10 rounded p-1.5">
-          ⚠️ 此 user 已關「收 LINE 通知」、推下去 notifyUserLine 會被擋。可直接從這推測試（會 bypass user 設定）
+        <div className="text-[10px] text-yellow-700 dark:text-yellow-300 bg-yellow-500/10 rounded p-1.5 flex items-start gap-2">
+          <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" /> 此 user 已關「收 LINE 通知」、推下去 notifyUserLine 會被擋。可直接從這推測試（會 bypass user 設定）
         </div>
       )}
       <textarea

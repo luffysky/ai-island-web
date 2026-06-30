@@ -2,6 +2,7 @@ import { createSupabaseServer } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import { EmailTestForm } from "./EmailTestForm";
 import { PageHero } from "@/components/admin/PageHero";
+import { Search, Check, X, AlertTriangle } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -26,9 +27,9 @@ export default async function AdminEmailTestPage() {
       />
 
       <section className="rounded-xl bg-bg-card border border-border p-4 text-sm space-y-1">
-        <h2 className="font-bold flex items-center gap-2">🔍 環境狀態</h2>
+        <h2 className="font-bold flex items-center gap-2"><Search className="w-4 h-4" /> 環境狀態</h2>
         <Row label="RESEND_API_KEY">
-          {hasResend ? <span className="text-green-400">✓ 已設定</span> : <span className="text-red-400">✗ 未設定</span>}
+          {hasResend ? <span className="text-green-700 dark:text-green-300 inline-flex items-center gap-1"><Check className="w-3.5 h-3.5" /> 已設定</span> : <span className="text-red-700 dark:text-red-300 inline-flex items-center gap-1"><X className="w-3.5 h-3.5" /> 未設定</span>}
         </Row>
         <Row label="EMAIL_FROM">
           {emailFrom ? <code className="font-mono text-xs text-fg">{emailFrom}</code> : <span className="text-yellow-400 text-xs">⚠️ 沒設、用 fallback noreply@ai-island-web.snowrealm.pet</span>}
@@ -37,7 +38,7 @@ export default async function AdminEmailTestPage() {
 
       {!hasResend && (
         <section className="rounded-xl bg-yellow-500/10 border border-yellow-500/30 p-4 text-sm space-y-2">
-          <div className="font-bold text-yellow-400">⚠️ Resend 還沒接</div>
+          <div className="font-bold text-yellow-700 dark:text-yellow-300 flex items-center gap-2"><AlertTriangle className="w-4 h-4" /> Resend 還沒接</div>
           <ol className="text-xs text-fg-muted space-y-1 list-decimal list-inside">
             <li>到 <a href="https://resend.com" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">resend.com</a> 註冊（GitHub login）</li>
             <li>Domains → Add Domain → 輸入 <code className="bg-bg px-1 rounded">snowrealm.pet</code></li>

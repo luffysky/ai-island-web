@@ -2,6 +2,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { AIUsageChart } from "./AIUsageChart";
 import { PageHero } from "@/components/admin/PageHero";
 import { requireOwner } from "@/lib/admin-guard";
+import { Lock, AlertTriangle, DollarSign } from "lucide-react";
 
 export default async function AIUsagePage() {
   // 只有 owner 看得到（一般 admin 看不到使用量、避免被金額嚇到）
@@ -9,7 +10,7 @@ export default async function AIUsagePage() {
   if (!gate.ok) {
     return (
       <div className="bg-bg-card border border-border rounded-xl p-10 text-center">
-        <div className="text-3xl mb-2">🔒</div>
+        <div className="mb-2 flex justify-center"><Lock className="w-8 h-8 text-fg-muted" /></div>
         <div className="font-bold">這頁只有 owner 看得到</div>
         <div className="text-sm text-fg-muted mt-1">AI 使用量 / 費用屬機密、未開放給一般管理員。</div>
       </div>
@@ -29,7 +30,7 @@ export default async function AIUsagePage() {
   if (error?.message?.includes("does not exist")) {
     return (
       <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-6 text-sm">
-        <div className="font-bold mb-2">⚠️ 需要先跑 ai_migration.sql</div>
+        <div className="font-bold mb-2 flex items-center gap-2"><AlertTriangle className="w-4 h-4" /> 需要先跑 ai_migration.sql</div>
       </div>
     );
   }
@@ -124,7 +125,7 @@ export default async function AIUsagePage() {
       {/* 本月各模型費用（含 bot / 排程 / 推薦、最完整）*/}
       <div className="bg-bg-card border border-border rounded-xl p-5">
         <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
-          <h2 className="font-bold">💰 本月各模型費用（{thisMonth}）</h2>
+          <h2 className="font-bold flex items-center gap-2"><DollarSign className="w-4 h-4" /> 本月各模型費用（{thisMonth}）</h2>
           <span className="text-sm">總計 <b className="text-yellow-400">${muTotalCost.toFixed(4)}</b></span>
         </div>
         {muThisMonth.length === 0 ? (

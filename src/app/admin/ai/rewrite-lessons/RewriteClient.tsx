@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Pencil } from "lucide-react";
 
 type Result = {
   id: string;
@@ -61,7 +62,7 @@ export function RewriteClient({ targetChapters }: { targetChapters: number[] }) 
 
   return (
     <div className="bg-bg-soft border border-border rounded-xl p-5 space-y-4">
-      <div className="font-bold text-fg">✍️ 跑改寫</div>
+      <div className="font-bold text-fg flex items-center gap-2"><Pencil className="w-4 h-4" /> 跑改寫</div>
       <div className="grid sm:grid-cols-2 gap-3">
         <button
           disabled={!!busy}

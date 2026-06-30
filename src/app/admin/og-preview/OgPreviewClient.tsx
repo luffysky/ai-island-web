@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Sparkles, Loader2, Copy, Check, ExternalLink, AlertCircle, Settings } from "lucide-react";
+import { Sparkles, Loader2, Copy, Check, ExternalLink, AlertCircle, Settings, Image } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 
 type ModelStatus = "ok" | "flaky" | "paid" | "broken";
@@ -378,7 +378,7 @@ export function OgPreviewClient() {
       {imageUrl && (
         <div className="bg-bg-card border border-border rounded-2xl overflow-hidden">
           <div className="px-3 py-2 bg-bg-elevated text-xs text-fg-muted flex items-center justify-between">
-            <span>🖼️ {provider.name} / {model}</span>
+            <span className="inline-flex items-center gap-1"><Image className="w-3.5 h-3.5" /> {provider.name} / {model}</span>
             <a href={imageUrl} target="_blank" rel="noopener noreferrer" className="text-emerald-400 hover:underline inline-flex items-center gap-1">
               開原圖 <ExternalLink size={10} />
             </a>

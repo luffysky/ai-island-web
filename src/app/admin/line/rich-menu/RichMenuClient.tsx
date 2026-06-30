@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Upload, Loader2, CheckCircle2, XCircle, ImageIcon, Wand2 } from "lucide-react";
+import { Upload, Loader2, CheckCircle2, XCircle, ImageIcon, Wand2, AlertTriangle } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 
 const DEFAULT_AREAS = [
@@ -72,8 +72,8 @@ export function RichMenuClient({ currentImageUrl, hasUserBot }: { currentImageUr
   return (
     <div className="space-y-4">
       {!hasUserBot && (
-        <div className="rounded-xl bg-yellow-500/10 border border-yellow-500/30 p-3 text-xs text-yellow-700 dark:text-yellow-400">
-          ⚠️ User bot 還沒設定 (USER_LINE_CHANNEL_TOKEN/SECRET 未設)、Rich Menu 套用會失敗。先到 Zeabur 加 env。
+        <div className="rounded-xl bg-yellow-500/10 border border-yellow-500/30 p-3 text-xs text-yellow-700 dark:text-yellow-400 flex items-start gap-2">
+          <AlertTriangle className="w-4 h-4 flex-shrink-0" /> User bot 還沒設定 (USER_LINE_CHANNEL_TOKEN/SECRET 未設)、Rich Menu 套用會失敗。先到 Zeabur 加 env。
         </div>
       )}
 

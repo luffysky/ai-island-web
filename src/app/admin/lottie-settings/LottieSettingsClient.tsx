@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Save, Loader2, ExternalLink, Trash2, Check, Eye, Sparkles, Search, ArrowRight } from "lucide-react";
+import { Save, Loader2, ExternalLink, Trash2, Check, Eye, Sparkles, Search, ArrowRight, FlaskConical } from "lucide-react";
 import Script from "next/script";
 import { useToast } from "@/components/ui/Toast";
 
@@ -320,7 +320,7 @@ export function LottieSettingsClient({ slots, initial }: { slots: Slot[]; initia
 
       {/* 一鍵測試樣本 */}
       <div className="bg-bg-card border border-border rounded-2xl p-4">
-        <h3 className="text-sm font-bold mb-2">🧪 沒空找？一鍵試樣本</h3>
+        <h3 className="text-sm font-bold mb-2 flex items-center gap-2"><FlaskConical className="w-4 h-4" /> 沒空找？一鍵試樣本</h3>
         <p className="text-xs text-fg-muted mb-3">
           這幾個是公開的 Lottie URL、可能會失效 (LottieFiles 政策變)、純測試用。
           點下去會填到「後台整頁背景」、馬上能看 admin layout 跑起來、然後再去找喜歡的換。

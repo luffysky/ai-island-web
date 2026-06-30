@@ -1,6 +1,7 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import Link from "next/link";
 import { PageHero } from "@/components/admin/PageHero";
+import { Download, TrendingUp, Calendar } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -38,9 +39,9 @@ export default async function AdminKpiPage({ searchParams }: { searchParams: Pro
         ))}
         <a
           href={`/api/admin/kpi.csv?days=${days}`}
-          className="text-xs px-3 py-1.5 rounded-full border border-border hover:border-accent"
+          className="text-xs px-3 py-1.5 rounded-full border border-border hover:border-accent flex items-center gap-1.5"
         >
-          ⬇ CSV
+          <Download className="w-4 h-4" /> CSV
         </a>
       </PageHero>
 
@@ -56,12 +57,12 @@ export default async function AdminKpiPage({ searchParams }: { searchParams: Pro
       </section>
 
       <section className="rounded-xl bg-bg-card border border-border p-4">
-        <h2 className="font-bold mb-3">📈 漏斗（期間註冊用戶）</h2>
+        <h2 className="font-bold mb-3 flex items-center gap-2"><TrendingUp className="w-4 h-4" /> 漏斗（期間註冊用戶）</h2>
         <FunnelBar funnel={data.funnel} />
       </section>
 
       <section className="rounded-xl bg-bg-card border border-border p-4">
-        <h2 className="font-bold mb-3">📅 每日活躍 + 註冊</h2>
+        <h2 className="font-bold mb-3 flex items-center gap-2"><Calendar className="w-4 h-4" /> 每日活躍 + 註冊</h2>
         <DailyTable days={data.daily} />
       </section>
 

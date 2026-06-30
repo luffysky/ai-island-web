@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Loader2, Sparkles, AlertCircle, ChevronDown, ChevronRight } from "lucide-react";
+import { Loader2, Sparkles, AlertCircle, ChevronDown, ChevronRight, Circle } from "lucide-react";
 
 type Issue = { type?: string; severity: string; lesson?: string; lesson_number?: string; note?: string; issue?: string; suggestion?: string };
 type ChapterResult = { id: number; title: string; lesson_count: number; issues: Issue[]; ai_issues?: Issue[]; overall?: string; ai_error?: string };
@@ -89,9 +89,9 @@ export function ChaptersAuditClient() {
                   {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                   <span className="font-semibold flex-1">Ch{ch.id} {ch.title}</span>
                   <span className="text-xs text-fg-muted">{ch.lesson_count} lesson</span>
-                  {counts.high > 0 && <span className="chip chip-danger text-[10px]">🔴 {counts.high}</span>}
-                  {counts.med > 0 && <span className="chip chip-warn text-[10px]">🟡 {counts.med}</span>}
-                  {counts.low > 0 && <span className="chip chip-neutral text-[10px]">⚪ {counts.low}</span>}
+                  {counts.high > 0 && <span className="chip chip-danger text-[10px] inline-flex items-center gap-1"><Circle className="w-2.5 h-2.5 fill-current" /> {counts.high}</span>}
+                  {counts.med > 0 && <span className="chip chip-warn text-[10px] inline-flex items-center gap-1"><Circle className="w-2.5 h-2.5 fill-current" /> {counts.med}</span>}
+                  {counts.low > 0 && <span className="chip chip-neutral text-[10px] inline-flex items-center gap-1"><Circle className="w-2.5 h-2.5 fill-current" /> {counts.low}</span>}
                 </button>
 
                 {isExpanded && (

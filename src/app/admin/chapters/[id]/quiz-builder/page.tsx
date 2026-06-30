@@ -5,6 +5,7 @@ import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
 import { QuizBuilder } from "./QuizBuilder";
 import { PageHero } from "@/components/admin/PageHero";
+import { ArrowLeft } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -28,9 +29,9 @@ export default async function QuizBuilderPage({
     <div className="space-y-4">
       <Link
         href={adminHref(`/admin/chapters/${id}`) as any}
-        className="text-sm text-fg-muted hover:text-accent"
+        className="inline-flex items-center gap-1 text-sm text-fg-muted hover:text-accent"
       >
-        ← 回章節編輯
+        <ArrowLeft className="w-4 h-4" /> 回章節編輯
       </Link>
       <PageHero
         emoji="📝"

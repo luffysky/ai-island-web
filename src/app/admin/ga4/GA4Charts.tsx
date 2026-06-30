@@ -1,11 +1,12 @@
 "use client";
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { BarChart3, Clock } from "lucide-react";
 
 export function GA4Charts({ data }: { data: any[] }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div className="bg-bg-card border border-border rounded-xl p-5">
-        <h3 className="font-bold mb-3 text-sm">📊 每日瀏覽 / 訪客</h3>
+        <h3 className="font-bold mb-3 text-sm flex items-center gap-2"><BarChart3 className="w-4 h-4" /> 每日瀏覽 / 訪客</h3>
         <ResponsiveContainer width="100%" height={250}>
           <AreaChart data={data}>
             <defs>
@@ -30,7 +31,7 @@ export function GA4Charts({ data }: { data: any[] }) {
       </div>
 
       <div className="bg-bg-card border border-border rounded-xl p-5">
-        <h3 className="font-bold mb-3 text-sm">⏱️ 平均停留時間（秒）</h3>
+        <h3 className="font-bold mb-3 text-sm flex items-center gap-2"><Clock className="w-4 h-4" /> 平均停留時間（秒）</h3>
         <ResponsiveContainer width="100%" height={250}>
           <LineChart data={data}>
             <CartesianGrid strokeDasharray="3 3" stroke="#444" />

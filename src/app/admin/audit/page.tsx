@@ -3,6 +3,7 @@ import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { PageHero } from "@/components/admin/PageHero";
+import { AlertTriangle, ArrowRight, ArrowLeft, Download } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -87,7 +88,7 @@ export default async function AuditPage({
 
       {error?.message?.includes("does not exist") && (
         <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-6 text-sm">
-          <div className="font-bold mb-2">⚠️ 需要先跑 admin migration</div>
+          <div className="font-bold mb-2 flex items-center gap-2"><AlertTriangle className="w-4 h-4" /> 需要先跑 admin migration</div>
           <code className="block bg-bg p-3 rounded text-xs">supabase/admin_migration.sql</code>
         </div>
       )}
@@ -101,7 +102,7 @@ export default async function AuditPage({
             defaultValue={from}
             className="bg-bg border border-border rounded-lg px-2 py-1 text-xs"
           />
-          <span className="text-fg-muted">→</span>
+          <span className="text-fg-muted flex items-center"><ArrowRight className="w-4 h-4" /></span>
           <input
             type="date"
             name="to"
@@ -140,10 +141,10 @@ export default async function AuditPage({
           </button>
           <a
             href={exportHref}
-            className="px-3 py-1 text-xs border border-border rounded-lg hover:bg-bg-elevated"
+            className="px-3 py-1 text-xs border border-border rounded-lg hover:bg-bg-elevated inline-flex items-center gap-1"
             title="下載目前 filter 結果為 CSV"
           >
-            ⬇ 匯出 CSV
+            <Download className="w-4 h-4" /> 匯出 CSV
           </a>
           <Link href={adminHref("/admin/audit") as any} className="text-xs text-fg-muted hover:text-fg ml-auto">
             清除
@@ -203,16 +204,16 @@ export default async function AuditPage({
         <div className="flex items-center justify-center gap-2 text-sm">
           <Link
             href={page > 1 ? (buildHref({ page: String(page - 1) }) as any) : "#"}
-            className={`px-3 py-1.5 rounded-lg border border-border ${page <= 1 ? "opacity-40 pointer-events-none" : "hover:bg-bg-elevated"}`}
+            className={`px-3 py-1.5 rounded-lg border border-border inline-flex items-center gap-1 ${page <= 1 ? "opacity-40 pointer-events-none" : "hover:bg-bg-elevated"}`}
           >
-            ← 上一頁
+            <ArrowLeft className="w-4 h-4" /> 上一頁
           </Link>
           <span className="text-xs text-fg-muted px-3">{page} / {totalPages}</span>
           <Link
             href={page < totalPages ? (buildHref({ page: String(page + 1) }) as any) : "#"}
-            className={`px-3 py-1.5 rounded-lg border border-border ${page >= totalPages ? "opacity-40 pointer-events-none" : "hover:bg-bg-elevated"}`}
+            className={`px-3 py-1.5 rounded-lg border border-border inline-flex items-center gap-1 ${page >= totalPages ? "opacity-40 pointer-events-none" : "hover:bg-bg-elevated"}`}
           >
-            下一頁 →
+            下一頁 <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
       )}

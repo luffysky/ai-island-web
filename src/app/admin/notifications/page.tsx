@@ -2,6 +2,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { NotificationMatrix } from "./NotificationMatrix";
 import { Hint } from "@/components/ui/Hint";
 import { PageHero } from "@/components/admin/PageHero";
+import { AlertTriangle, Bell } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +17,7 @@ export default async function AdminNotificationsPage() {
   if (error) {
     return (
       <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-6 text-sm">
-        <div className="font-bold mb-2">⚠️ 需要先跑 migration</div>
+        <div className="font-bold mb-2 flex items-center gap-2"><AlertTriangle className="w-4 h-4" /> 需要先跑 migration</div>
         <code className="block bg-bg p-3 rounded text-xs mb-2">
           supabase/notification_settings_migration.sql
         </code>
@@ -35,7 +36,7 @@ export default async function AdminNotificationsPage() {
         borderColor="border-cyan-500/30"
       />
       <header className="hidden">
-        <h1 className="text-2xl font-bold flex items-center gap-2">🔔 通知設定</h1>
+        <h1 className="text-2xl font-bold flex items-center gap-2"><Bell className="w-4 h-4" /> 通知設定</h1>
         <p className="text-sm text-fg-muted mt-1">
           每個事件可分別設定走哪個{" "}
           <span className="inline-flex items-center">

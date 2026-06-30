@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { FlaskConical, Loader2 } from "lucide-react";
 
 export function NotifyTestButton() {
   const [busy, setBusy] = useState(false);
@@ -44,9 +45,9 @@ export function NotifyTestButton() {
       <button
         onClick={test}
         disabled={busy}
-        className="px-3 py-1.5 rounded-lg bg-purple-500/20 border border-purple-500/40 hover:bg-purple-500/30 disabled:opacity-40 text-xs font-bold text-purple-900 dark:text-purple-100 transition"
+        className="px-3 py-1.5 rounded-lg bg-purple-500/20 border border-purple-500/40 hover:bg-purple-500/30 disabled:opacity-40 text-xs font-bold text-purple-900 dark:text-purple-100 transition inline-flex items-center gap-1.5"
       >
-        {busy ? "⏳ 跑中…" : "🧪 測 3 通道通知"}
+        {busy ? <><Loader2 className="w-4 h-4 animate-spin" /> 跑中…</> : <><FlaskConical className="w-4 h-4" /> 測 3 通道通知</>}
       </button>
       {result && (
         <pre className="text-xs bg-bg p-2 rounded whitespace-pre-wrap text-fg-mid max-w-md">{result}</pre>

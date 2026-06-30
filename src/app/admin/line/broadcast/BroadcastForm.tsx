@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Send, Loader2, Users, AlertTriangle } from "lucide-react";
+import { Send, Loader2, Users, AlertTriangle, CheckCircle } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 
@@ -68,7 +68,7 @@ export function BroadcastForm({
                 : "border-border hover:border-accent/50"
             }`}
           >
-            <div className="font-bold text-sm">✅ 尊重 opt-out（建議）</div>
+            <div className="font-bold text-sm flex items-center gap-2"><CheckCircle className="w-4 h-4" /> 尊重 opt-out（建議）</div>
             <div className="text-xs text-fg-muted mt-1">
               已綁 + 「收通知」開的 user：<b className="text-fg">{notifyOnCount}</b> 人
             </div>
@@ -96,7 +96,7 @@ export function BroadcastForm({
 
       {/* 訊息 */}
       <section className="bg-bg-card border border-border rounded-xl p-4 space-y-3">
-        <h2 className="font-bold text-sm">📨 訊息內容</h2>
+        <h2 className="font-bold text-sm flex items-center gap-2"><Send className="w-4 h-4" /> 訊息內容</h2>
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}

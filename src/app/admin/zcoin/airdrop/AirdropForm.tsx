@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Search, Send } from "lucide-react";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 
 type Kind = "all" | "members" | "premium" | "xp_gte" | "level_gte";
@@ -125,9 +126,9 @@ export function AirdropForm() {
         <button
           onClick={doPreview}
           disabled={previewing}
-          className="px-4 py-1.5 text-sm rounded-lg border border-border hover:bg-bg-elevated disabled:opacity-50"
+          className="px-4 py-1.5 text-sm rounded-lg border border-border hover:bg-bg-elevated disabled:opacity-50 inline-flex items-center gap-1.5"
         >
-          {previewing ? "計算中..." : "🔍 預覽人數"}
+          {previewing ? "計算中..." : <><Search className="w-4 h-4" /> 預覽人數</>}
         </button>
         {preview && (
           <div className="text-sm">
@@ -139,9 +140,9 @@ export function AirdropForm() {
         <button
           onClick={doExecute}
           disabled={executing || !preview || preview.count === 0}
-          className="ml-auto px-5 py-1.5 text-sm rounded-lg bg-red-500 text-white font-bold disabled:opacity-30"
+          className="ml-auto px-5 py-1.5 text-sm rounded-lg bg-red-500 text-white font-bold disabled:opacity-30 inline-flex items-center justify-center gap-1.5"
         >
-          {executing ? "發放中..." : "💸 確認發放"}
+          {executing ? "發放中..." : <><Send className="w-4 h-4" /> 確認發放</>}
         </button>
       </div>
 

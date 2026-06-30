@@ -4,6 +4,7 @@ import { adminHref } from "@/lib/admin-href";
 import { formatTW, formatTWRelative } from "@/lib/format-date";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { PageHero } from "@/components/admin/PageHero";
+import { Siren, ScrollText, Flame } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -90,7 +91,7 @@ export default async function AdminHealthPage() {
       {/* 錯誤指標 */}
       <section className="rounded-xl bg-bg-card border border-border p-5">
         <h2 className="font-bold mb-3 text-sm flex items-center gap-2">
-          🚨 錯誤監看
+          <Siren className="w-4 h-4" /> 錯誤監看
           {errorTone === "danger" && <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-500/20 text-red-900 dark:text-red-200">高頻</span>}
           {errorTone === "warning" && <span className="text-[10px] px-2 py-0.5 rounded-full bg-warning/20 text-warning">注意</span>}
         </h2>
@@ -103,7 +104,7 @@ export default async function AdminHealthPage() {
       {/* 最新 audit log */}
       <section className="rounded-xl bg-bg-card border border-border">
         <header className="px-4 py-3 border-b border-border flex items-center justify-between">
-          <h2 className="font-bold text-sm flex items-center gap-2">📜 最新 admin 動作</h2>
+          <h2 className="font-bold text-sm flex items-center gap-2"><ScrollText className="w-4 h-4" /> 最新 admin 動作</h2>
           <Link href={adminHref("/admin/audit") as any} className="text-xs text-fg-muted hover:text-accent">
             完整 →
           </Link>
@@ -133,7 +134,7 @@ export default async function AdminHealthPage() {
       {/* 最新 error log */}
       <section className="rounded-xl bg-bg-card border border-border">
         <header className="px-4 py-3 border-b border-border flex items-center justify-between">
-          <h2 className="font-bold text-sm flex items-center gap-2">🔥 最新錯誤</h2>
+          <h2 className="font-bold text-sm flex items-center gap-2"><Flame className="w-4 h-4" /> 最新錯誤</h2>
           <Link href={adminHref("/admin/errors") as any} className="text-xs text-fg-muted hover:text-accent">
             完整 →
           </Link>

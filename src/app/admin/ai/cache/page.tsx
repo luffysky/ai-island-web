@@ -3,6 +3,7 @@ import { formatTW } from "@/lib/format-date";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ClearCacheButtons } from "./ClearCacheButtons";
 import { PageHero } from "@/components/admin/PageHero";
+import { Flame } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -44,7 +45,7 @@ export default async function AdminAiCachePage() {
       </div>
 
       <section className="rounded-xl bg-bg-card border border-border">
-        <div className="px-4 py-3 border-b border-border font-bold text-sm">🔥 最常被命中的問題 Top 20</div>
+        <div className="px-4 py-3 border-b border-border font-bold text-sm flex items-center gap-2"><Flame className="w-4 h-4" /> 最常被命中的問題 Top 20</div>
         {(topHits ?? []).length === 0 ? (
           <EmptyState emoji="💾" title="還沒有任何快取資料" desc="第一次有人問問題就會寫進來、第二次起命中" />
         ) : (

@@ -2,6 +2,7 @@ import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { redirect } from "next/navigation";
 import { PageHero } from "@/components/admin/PageHero";
+import { Zap, Key, Sparkles } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -49,7 +50,7 @@ export default async function DiscordConsole() {
 
       {/* Actions */}
       <section className="bg-bg-card border border-border rounded-xl p-4 space-y-3">
-        <h2 className="font-bold flex items-center gap-2">⚡ 一鍵動作</h2>
+        <h2 className="font-bold flex items-center gap-2"><Zap className="w-4 h-4" /> 一鍵動作</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
           <Action
             title="🛠️ 註冊 / 更新 slash commands"
@@ -71,7 +72,7 @@ export default async function DiscordConsole() {
 
       {/* Env check */}
       <section className="bg-bg-card border border-border rounded-xl p-4">
-        <h2 className="font-bold mb-3">🔑 必要 env</h2>
+        <h2 className="font-bold mb-3 flex items-center gap-2"><Key className="w-4 h-4" /> 必要 env</h2>
         <ul className="space-y-1 text-sm">
           {envChecklist.map((e) => (
             <li key={e.key} className="flex items-center gap-2">
@@ -88,7 +89,7 @@ export default async function DiscordConsole() {
 
       {/* 最近綁定 */}
       <section className="bg-bg-card border border-border rounded-xl p-4">
-        <h2 className="font-bold mb-3">🆕 最近綁定（20）</h2>
+        <h2 className="font-bold mb-3 flex items-center gap-2"><Sparkles className="w-4 h-4" /> 最近綁定（20）</h2>
         {((recent ?? []) as any[]).length === 0 ? (
           <p className="text-sm text-fg-muted">還沒有人綁 Discord。叫朋友去 /me/settings 試一輪。</p>
         ) : (

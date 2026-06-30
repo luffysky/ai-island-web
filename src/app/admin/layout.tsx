@@ -8,6 +8,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { checkOwner, OWNER_NAME_TW } from "@/lib/is-owner";
 import { NavGroup } from "./NavGroup";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { Crown, ArrowLeft } from "lucide-react";
 
 // 強制每次都 server-side render、不 cache
 export const dynamic = "force-dynamic";
@@ -76,10 +77,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
                 AI 島 · 後台
                 {isOwner && (
                   <span
-                    className="text-[10px] px-2 py-0.5 rounded-full bg-gradient-to-r from-yellow-400 to-pink-400 text-black font-bold cursor-help"
+                    className="text-[10px] px-2 py-0.5 rounded-full bg-gradient-to-r from-yellow-400 to-pink-400 text-black font-bold cursor-help inline-flex items-center gap-1"
                     title={`👑 Owner 識別命中: ${ownerCheck.reasons.join(" / ") || "(無、可能 bug)"}`}
                   >
-                    👑 OWNER
+                    <Crown className="w-3 h-3" /> OWNER
                   </span>
                 )}
               </h1>
@@ -92,9 +93,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             {isOwner && <DeployVersionBadge />}
             <Link
               href="/"
-              className="text-sm text-fg-muted hover:text-accent transition px-3 py-1.5 rounded-full hover:bg-bg-elevated"
+              className="text-sm text-fg-muted hover:text-accent transition px-3 py-1.5 rounded-full hover:bg-bg-elevated inline-flex items-center gap-1"
             >
-              ← 回前台
+              <ArrowLeft className="w-4 h-4" /> 回前台
             </Link>
           </div>
         </div>

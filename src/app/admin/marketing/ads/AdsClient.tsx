@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, X, Trash2, Save } from "lucide-react";
+import { Plus, X, Trash2, Save, ClipboardList, Pin, Ruler } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 
@@ -261,7 +261,7 @@ export function AdsClient({ initial }: { initial: Row[] }) {
       )}
 
       <div className="bg-purple-500/5 border border-purple-500/30 rounded-2xl p-4 text-sm">
-        <div className="font-bold text-purple-300 mb-2">📋 已建 ad creatives ({rows.length})</div>
+        <div className="font-bold text-purple-700 dark:text-purple-300 mb-2 flex items-center gap-2"><ClipboardList className="w-4 h-4" /> 已建 ad creatives ({rows.length})</div>
         {rows.length === 0 ? (
           <p className="text-xs text-fg-muted">還沒有 ad copy、點上方「新增」開始。</p>
         ) : (
@@ -300,7 +300,7 @@ export function AdsClient({ initial }: { initial: Row[] }) {
                 {r.headlines && r.headlines.length > 0 && (
                   <div className="mt-1 flex flex-wrap gap-1">
                     {r.headlines.map((h, i) => (
-                      <span key={i} className="text-[10px] px-1.5 py-0.5 bg-bg-elevated rounded">📌 {h}</span>
+                      <span key={i} className="text-[10px] px-1.5 py-0.5 bg-bg-elevated rounded inline-flex items-center gap-1"><Pin className="w-3 h-3" /> {h}</span>
                     ))}
                   </div>
                 )}
@@ -311,7 +311,7 @@ export function AdsClient({ initial }: { initial: Row[] }) {
       </div>
 
       <div className="bg-bg-elevated/40 border border-border rounded-2xl p-4 text-xs leading-relaxed text-fg-muted">
-        <div className="font-bold text-fg mb-1">📐 廣告 copy 守則</div>
+        <div className="font-bold text-fg mb-1 flex items-center gap-2"><Ruler className="w-4 h-4" /> 廣告 copy 守則</div>
         <ul className="list-disc list-inside space-y-1">
           <li>Meta：Headline 40 字、Primary Text 125 字、Description 30 字、3-5 個 headline A/B</li>
           <li>Google Search：3 個 Headline (30 字)、2 個 Description (90 字)、Final URL</li>

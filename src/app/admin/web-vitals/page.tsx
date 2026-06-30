@@ -1,6 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { Hint } from "@/components/ui/Hint";
-import { Zap, Eye, MousePointer2, Move, Gauge, Clock, AlertTriangle, TrendingDown } from "lucide-react";
+import { Zap, Eye, MousePointer2, Move, Gauge, Clock, AlertTriangle, TrendingDown, BookOpen } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -354,7 +354,7 @@ export default async function AdminWebVitalsPage() {
 
       {/* Legend */}
       <section className="rounded-xl bg-bg-elevated/30 border border-border p-4 text-[11px] text-fg-muted">
-        <div className="font-bold text-fg mb-2">📖 怎麼讀這頁</div>
+        <div className="font-bold text-fg mb-2 flex items-center gap-2"><BookOpen className="w-4 h-4" /> 怎麼讀這頁</div>
         <ul className="space-y-1 list-disc list-inside">
           <li>每個指標 hover 問號 (?) 看詳細解釋 + 修法</li>
           <li>看「整體健康度」評估全站、≥ 90% 是業界優等</li>

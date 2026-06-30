@@ -3,6 +3,7 @@ import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
 import { chapterDisplayNumber } from "@/lib/chapter-display";
 import { PageHero } from "@/components/admin/PageHero";
+import { Check, FileText } from "lucide-react";
 
 export default async function AdminChaptersPage() {
   const chapters = await getChapterMetas();
@@ -24,17 +25,17 @@ export default async function AdminChaptersPage() {
               <div className="font-semibold pr-12">{c.title}</div>
               <div className="text-xs mt-2 flex justify-between text-fg-muted">
                 <span>{c.lessonCount} lessons</span>
-                <span className={c.status === "published" ? "text-accent" : "text-orange-400"}>
-                  {c.status === "published" ? "✓ 已發布" : "撰寫中"}
+                <span className={`inline-flex items-center gap-1 ${c.status === "published" ? "text-accent" : "text-orange-400"}`}>
+                  {c.status === "published" ? <><Check className="w-3 h-3" /> 已發布</> : "撰寫中"}
                 </span>
               </div>
             </Link>
             <Link
               href={adminHref(`/admin/chapters/${c.id}/quiz-builder`) as any}
-              className="absolute top-2 right-2 text-xs px-2 py-1 rounded-full bg-purple-500/20 text-purple-900 dark:text-purple-100 border border-purple-500/30 hover:bg-purple-500/30 opacity-70 hover:opacity-100 transition"
+              className="absolute top-2 right-2 inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-purple-500/20 text-purple-900 dark:text-purple-100 border border-purple-500/30 hover:bg-purple-500/30 opacity-70 hover:opacity-100 transition"
               title="AI 出題助手"
             >
-              📝 出題
+              <FileText className="w-3.5 h-3.5" /> 出題
             </Link>
           </div>
         ))}

@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useToast } from "@/components/ui/Toast";
-import { Bell, Mail, MessageCircle, BellRing, Power, Loader2 } from "lucide-react";
+import { Bell, Mail, MessageCircle, BellRing, Power, Loader2, Wrench, Lock, BookOpen, Gem, MessageSquare, Pin } from "lucide-react";
 import { Hint } from "@/components/ui/Hint";
 
 type Setting = {
@@ -15,12 +15,12 @@ type Setting = {
   is_v1: boolean;
 };
 
-const CATEGORY_META: Record<string, { label: string; emoji: string }> = {
-  system: { label: "系統 / 客服", emoji: "🔧" },
-  security: { label: "安全", emoji: "🔐" },
-  learning: { label: "學習", emoji: "📚" },
-  commerce: { label: "商務", emoji: "💎" },
-  social: { label: "社群", emoji: "💬" },
+const CATEGORY_META: Record<string, { label: string; icon: any }> = {
+  system: { label: "系統 / 客服", icon: Wrench },
+  security: { label: "安全", icon: Lock },
+  learning: { label: "學習", icon: BookOpen },
+  commerce: { label: "商務", icon: Gem },
+  social: { label: "社群", icon: MessageSquare },
 };
 
 const CHANNEL_META: Array<{ key: "in_app" | "email" | "line" | "push"; label: string; icon: any; color: string }> = [
@@ -83,11 +83,11 @@ export function NotificationMatrix({ initial }: { initial: Setting[] }) {
   return (
     <div className="space-y-6">
       {Object.entries(grouped).map(([cat, list]) => {
-        const meta = CATEGORY_META[cat] ?? { label: cat, emoji: "📌" };
+        const meta = CATEGORY_META[cat] ?? { label: cat, icon: Pin };
         return (
           <section key={cat}>
             <h2 className="text-sm font-bold mb-2 flex items-center gap-2">
-              <span>{meta.emoji}</span>
+              <meta.icon className="w-4 h-4" />
               <span>{meta.label}</span>
               <span className="text-xs text-fg-muted font-normal">（{list.length}）</span>
             </h2>

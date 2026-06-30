@@ -1,5 +1,5 @@
 "use client";
-import { ShieldCheck, Shield, Ban, Sparkles, Gift, Flame, Coins } from "lucide-react";
+import { ShieldCheck, Shield, Ban, Sparkles, Gift, Flame, Coins, Check } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { GrantModal } from "./GrantModal";
@@ -131,7 +131,7 @@ export function UserCard({ user, isOwner }: { user: any; isOwner?: boolean }) {
             title={a.aiUnlimited ? "AI 無限特權開啟中" : "AI 無限特權關閉"}
           >
             <Sparkles size={13} className={a.aiUnlimited ? "fill-current" : ""} />
-            {a.aiUnlimited ? "AI ✓" : "AI"}
+            {a.aiUnlimited ? <>AI <Check size={11} /></> : "AI"}
           </button>
           <button
             onClick={a.banUser}

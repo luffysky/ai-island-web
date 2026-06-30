@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { Rocket } from "lucide-react";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { LaunchpadClient } from "./LaunchpadClient";
 
@@ -16,7 +17,7 @@ export default async function LaunchpadPage() {
     <div className="p-4 md:p-6 max-w-[1800px] mx-auto">
       <header className="mb-5">
         <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-2">
-          🚀 Launchpad
+          <Rocket className="w-7 h-7" /> Launchpad
         </h1>
         <p className="text-sm text-fg-muted mt-1">
           指揮中心：全功能總覽 / 待辦 / 許願池 — 拖曳卡片改狀態、可加卡片、可刪

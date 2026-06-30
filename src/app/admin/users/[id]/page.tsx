@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { adminHref } from "@/lib/admin-href";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Clock, VenetianMask, Sparkles, Ban, TrendingUp, Coins, Flame, Heart } from "lucide-react";
 import { formatTW, formatTWDate, formatTWRelative } from "@/lib/format-date";
 import { ledgerLabel } from "@/lib/ledger-labels";
 import { requireOwner } from "@/lib/admin-guard";
@@ -76,15 +76,15 @@ export default async function AdminUserDetailPage({
         <div className="flex gap-2">
           <Link
             href={adminHref(`/admin/users/${id}/timeline`) as any}
-            className="text-xs px-3 py-1.5 rounded-lg border border-border hover:border-accent hover:text-accent"
+            className="text-xs px-3 py-1.5 rounded-lg border border-border hover:border-accent hover:text-accent inline-flex items-center gap-1"
           >
-            🕐 活動時間軸
+            <Clock className="w-3.5 h-3.5" /> 活動時間軸
           </Link>
           <Link
             href={adminHref(`/admin/impersonate/${id}`) as any}
-            className="text-xs px-3 py-1.5 rounded-lg border border-yellow-400/40 text-yellow-400 hover:bg-yellow-500/10"
+            className="text-xs px-3 py-1.5 rounded-lg border border-yellow-400/40 text-yellow-400 hover:bg-yellow-500/10 inline-flex items-center gap-1"
           >
-            🕵️ Impersonate
+            <VenetianMask className="w-3.5 h-3.5" /> Impersonate
           </Link>
         </div>
       </div>
@@ -116,10 +116,10 @@ export default async function AdminUserDetailPage({
                 : "bg-gray-500/20 text-gray-900 dark:text-gray-100"
             }`}>{profile.role}</span>
             {profile.ai_unlimited && (
-              <span className="text-[10px] px-2 py-0.5 rounded bg-yellow-500/15 text-yellow-900 dark:text-yellow-100">✨ AI 特權</span>
+              <span className="text-[10px] px-2 py-0.5 rounded bg-yellow-500/15 text-yellow-900 dark:text-yellow-100 inline-flex items-center gap-1"><Sparkles className="w-3 h-3" /> AI 特權</span>
             )}
             {profile.banned_at && (
-              <span className="text-[10px] px-2 py-0.5 rounded bg-red-600/30 text-red-400">🚫 BANNED</span>
+              <span className="text-[10px] px-2 py-0.5 rounded bg-red-600/30 text-red-400 inline-flex items-center gap-1"><Ban className="w-3 h-3" /> BANNED</span>
             )}
           </div>
           <div className="text-xs text-fg-muted mt-0.5">
@@ -141,8 +141,8 @@ export default async function AdminUserDetailPage({
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Stat label="Level" value={`Lv ${profile.level ?? 1}`} hint={`${(profile.xp ?? 0).toLocaleString()} XP`} />
         <Stat label="Z-coin" value={profile.z_coin ?? 0} />
-        <Stat label="連勝" value={`🔥 ${profile.streak_days ?? 0}`} />
-        <Stat label="生命" value={`❤️ ${profile.hearts ?? 5}`} />
+        <Stat label="連勝" value={<span className="inline-flex items-center gap-1"><Flame className="w-4 h-4 text-orange-400" /> {profile.streak_days ?? 0}</span>} />
+        <Stat label="生命" value={<span className="inline-flex items-center gap-1"><Heart className="w-4 h-4 text-red-400" /> {profile.hearts ?? 5}</span>} />
         <Stat label="完成 lesson" value={progressCount ?? 0} />
         <Stat label="Quiz 嘗試" value={quizCount ?? 0} />
         <Stat label="書籤" value={bookmarkCount ?? 0} />
@@ -154,7 +154,7 @@ export default async function AdminUserDetailPage({
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Panel title="📈 經驗（XP）明細" empty="無 XP 紀錄">
+        <Panel title={<><TrendingUp className="w-4 h-4" /> 經驗（XP）明細</>} empty="無 XP 紀錄">
           {(xpEvents ?? []).map((e: any) => (
             <Row
               key={e.id}
@@ -165,7 +165,7 @@ export default async function AdminUserDetailPage({
             />
           ))}
         </Panel>
-        <Panel title="🪙 Z幣明細" empty="無 Z-coin 紀錄">
+        <Panel title={<><Coins className="w-4 h-4" /> Z幣明細</>} empty="無 Z-coin 紀錄">
           {(coinTxn ?? []).map((e: any) => (
             <Row
               key={e.id}
@@ -272,12 +272,12 @@ function Stat({ label, value, hint }: { label: string; value: any; hint?: string
   );
 }
 
-function Panel({ title, children, empty }: { title: string; children: React.ReactNode; empty: string }) {
+function Panel({ title, children, empty }: { title: React.ReactNode; children: React.ReactNode; empty: string }) {
   const arr = Array.isArray(children) ? children : [children];
   const filtered = arr.filter(Boolean);
   return (
     <div className="bg-bg-card border border-border rounded-xl p-4">
-      <h3 className="text-sm font-bold mb-2">{title}</h3>
+      <h3 className="text-sm font-bold mb-2 flex items-center gap-2">{title}</h3>
       {filtered.length === 0 ? (
         <p className="text-xs text-fg-muted py-4 text-center">{empty}</p>
       ) : (

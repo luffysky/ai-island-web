@@ -1,5 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { PageHero } from "@/components/admin/PageHero";
+import { Flame, Trophy } from "lucide-react";
 
 export default async function AdminAnalyticsPage() {
   const supabase = createSupabaseAdmin();
@@ -40,7 +41,7 @@ export default async function AdminAnalyticsPage() {
       />
 
       <div className="bg-bg-card border border-border rounded-xl p-5">
-        <h3 className="font-bold mb-4">🔥 Top 10 最熱門章節（完成 lesson 數）</h3>
+        <h3 className="font-bold mb-4 flex items-center gap-2"><Flame className="w-4 h-4" /> Top 10 最熱門章節（完成 lesson 數）</h3>
         <div className="space-y-2">
           {sortedChapters.map(([cid, count]) => (
             <div key={cid} className="flex items-center gap-3">
@@ -55,7 +56,7 @@ export default async function AdminAnalyticsPage() {
       </div>
 
       <div className="bg-bg-card border border-border rounded-xl p-5">
-        <h3 className="font-bold mb-4">🏆 Top 10 最常解鎖的成就</h3>
+        <h3 className="font-bold mb-4 flex items-center gap-2"><Trophy className="w-4 h-4" /> Top 10 最常解鎖的成就</h3>
         <div className="space-y-2">
           {sortedAch.map(([aid, info]) => (
             <div key={aid} className="flex items-center gap-3">

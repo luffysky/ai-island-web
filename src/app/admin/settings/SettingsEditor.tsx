@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Save } from "lucide-react";
 
 type Setting = {
   key: string;
@@ -99,9 +100,9 @@ function SettingCard({
           <button
             onClick={onSave}
             disabled={saving}
-            className="text-xs px-3 py-1 bg-accent text-black font-bold rounded-lg disabled:opacity-50"
+            className="text-xs px-3 py-1 bg-accent text-black font-bold rounded-lg disabled:opacity-50 inline-flex items-center gap-1"
           >
-            {saving ? "儲存中..." : "💾 儲存"}
+            {saving ? "儲存中..." : <><Save className="w-3.5 h-3.5" /> 儲存</>}
           </button>
         </div>
       </div>

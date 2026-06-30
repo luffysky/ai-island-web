@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, X, Trash2, Save } from "lucide-react";
+import { Plus, X, Trash2, Save, ClipboardList, Ruler } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 
@@ -184,7 +184,7 @@ export function CompetitorClient({ initial }: { initial: Row[] }) {
       )}
 
       <div className="bg-purple-500/5 border border-purple-500/30 rounded-2xl p-4 text-xs">
-        <div className="font-bold text-purple-300 mb-2">📋 已記錄競品 ({rows.length})</div>
+        <div className="font-bold text-purple-700 dark:text-purple-300 mb-2 flex items-center gap-2"><ClipboardList className="w-4 h-4" /> 已記錄競品 ({rows.length})</div>
         {rows.length === 0 ? (
           <p className="text-fg-muted">
             還沒記錄任何競品。建議追蹤：
@@ -231,7 +231,7 @@ export function CompetitorClient({ initial }: { initial: Row[] }) {
       </div>
 
       <div className="bg-bg-elevated/40 border border-border rounded-2xl p-4 text-xs leading-relaxed text-fg-muted">
-        <div className="font-bold text-fg mb-1">📐 競品分析框架</div>
+        <div className="font-bold text-fg mb-1 flex items-center gap-2"><Ruler className="w-4 h-4" /> 競品分析框架</div>
         <ul className="list-disc list-inside space-y-1">
           <li><b className="text-fg">威脅分級</b>：direct (同類同價位) / high (重疊大) / medium (部分重疊) / low (擦邊)</li>
           <li><b className="text-fg">看 3 維度</b>：價格 / 內容深度 / 用戶體驗</li>

@@ -10,6 +10,7 @@ import { CountUp } from "@/components/ui/CountUp";
 import { PulseDot } from "@/components/ui/PulseDot";
 import { AdminGreeting } from "@/components/admin/AdminGreeting";
 import { RingGauge } from "@/components/ui/RingGauge";
+import { Crown, AlertTriangle, CheckCircle, Megaphone, Zap, Users, DollarSign, MessageSquare, Bot, Search, Trophy, Sparkles } from "lucide-react";
 
 export default async function AdminOverviewPage() {
   const supabase = createSupabaseAdmin();
@@ -270,7 +271,7 @@ export default async function AdminOverviewPage() {
       {ownerCheck?.isOwner && (
         <div className="bg-gradient-to-r from-yellow-500/10 via-pink-500/10 to-purple-500/10 border border-yellow-500/30 rounded-2xl p-4">
           <div className="flex items-start gap-3 flex-wrap">
-            <span className="text-2xl">👑</span>
+            <Crown className="w-6 h-6 text-yellow-500 shrink-0" />
             <div className="flex-1 min-w-0">
               <div className="font-bold text-sm flex items-center gap-2 flex-wrap">
                 Owner 身份識別已生效
@@ -330,8 +331,10 @@ export default async function AdminOverviewPage() {
 
         {/* 即將逾期 breach */}
         <Link href={adminHref("/admin/breach") as any} className={`bg-bg-card border rounded-xl p-4 transition ${overdueBreaches.length > 0 ? "border-red-500/40 hover:border-red-500" : "border-border hover:border-accent"}`}>
-          <div className="text-[10px] uppercase tracking-wider text-fg-muted">
-            {overdueBreaches.length > 0 ? "⚠ 即將/已逾期 breach" : "✅ 無 breach 風險"}
+          <div className="text-[10px] uppercase tracking-wider text-fg-muted flex items-center gap-1">
+            {overdueBreaches.length > 0
+              ? <><AlertTriangle className="w-3 h-3 text-red-500" /> 即將/已逾期 breach</>
+              : <><CheckCircle className="w-3 h-3 text-emerald-500" /> 無 breach 風險</>}
           </div>
           <div className={`text-2xl font-bold mt-1 ${overdueBreaches.length > 0 ? "text-red-400" : "text-emerald-400"}`}>
             {overdueBreaches.length}
@@ -404,7 +407,7 @@ export default async function AdminOverviewPage() {
       {/* 📣 行銷快覽 (新) */}
       <div>
         <h2 className="text-sm uppercase tracking-wider text-fg-muted mb-3 flex items-center gap-2">
-          📣 行銷快覽
+          <Megaphone className="w-4 h-4" /> 行銷快覽
           <Link href={adminHref("/admin/marketing") as any} className="text-[10px] text-accent hover:underline">→ 主控台</Link>
         </h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -437,21 +440,21 @@ export default async function AdminOverviewPage() {
 
       {/* 快速操作 */}
       <div className="bg-bg-card border border-border rounded-xl p-5">
-        <h2 className="font-bold mb-3">⚡ 快速操作</h2>
+        <h2 className="font-bold mb-3 flex items-center gap-2"><Zap className="w-4 h-4" /> 快速操作</h2>
         <div className="grid grid-cols-2 md:grid-cols-6 gap-2 text-sm">
-          <QuickAction href="/admin/broadcasts" label="📣 發公告" />
-          <QuickAction href="/admin/users" label="👥 找用戶" />
-          <QuickAction href="/admin/orders" label="💰 訂單" />
-          <QuickAction href="/admin/crm" label="💬 客服" />
-          <QuickAction href="/admin/ai/models" label="🤖 AI 模型" />
-          <QuickAction href="/admin/seo" label="🔍 SEO" />
+          <QuickAction href="/admin/broadcasts" label={<><Megaphone className="w-4 h-4" /> 發公告</>} />
+          <QuickAction href="/admin/users" label={<><Users className="w-4 h-4" /> 找用戶</>} />
+          <QuickAction href="/admin/orders" label={<><DollarSign className="w-4 h-4" /> 訂單</>} />
+          <QuickAction href="/admin/crm" label={<><MessageSquare className="w-4 h-4" /> 客服</>} />
+          <QuickAction href="/admin/ai/models" label={<><Bot className="w-4 h-4" /> AI 模型</>} />
+          <QuickAction href="/admin/seo" label={<><Search className="w-4 h-4" /> SEO</>} />
         </div>
       </div>
 
       {/* 雙欄 */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="bg-bg-card border border-border rounded-xl p-5">
-          <h2 className="font-bold mb-3">🏆 Top 10 玩家</h2>
+          <h2 className="font-bold mb-3 flex items-center gap-2"><Trophy className="w-4 h-4 text-yellow-500" /> Top 10 玩家</h2>
           <div className="space-y-1.5">
             {topUsers?.map((u: any, i: number) => (
               <Link href={adminHref(`/admin/users?q=${u.username}`) as any} key={u.username} className="flex items-center justify-between text-sm py-1 hover:text-accent">
@@ -463,7 +466,7 @@ export default async function AdminOverviewPage() {
         </div>
 
         <div className="bg-bg-card border border-border rounded-xl p-5">
-          <h2 className="font-bold mb-3">🆕 最近註冊</h2>
+          <h2 className="font-bold mb-3 flex items-center gap-2"><Sparkles className="w-4 h-4 text-accent" /> 最近註冊</h2>
           <div className="space-y-1.5">
             {recentSignups?.map((u: any) => (
               <Link href={adminHref(`/admin/users?q=${u.username}`) as any} key={u.username} className="flex items-center justify-between text-sm py-1 hover:text-accent">
@@ -509,9 +512,9 @@ function Stat({
   );
 }
 
-function QuickAction({ href, label }: { href: string; label: string }) {
+function QuickAction({ href, label }: { href: string; label: React.ReactNode }) {
   return (
-    <Link href={adminHref(href) as any} className="px-3 py-2 bg-bg-elevated rounded-lg hover:bg-border hover:text-accent text-center transition">
+    <Link href={adminHref(href) as any} className="px-3 py-2 bg-bg-elevated rounded-lg hover:bg-border hover:text-accent text-center transition flex items-center justify-center gap-1.5">
       {label}
     </Link>
   );

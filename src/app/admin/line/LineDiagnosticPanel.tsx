@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Stethoscope, Send, Loader2 } from "lucide-react";
+import { Stethoscope, Send, Loader2, CheckCircle, AlertTriangle, XCircle } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 
 type HealthCheck = { step: string; status: "ok" | "warn" | "fail"; detail: string };
@@ -70,7 +70,7 @@ export function LineDiagnosticPanel() {
           className="px-3 py-1.5 rounded-full bg-cyan-500/15 text-cyan-900 dark:text-cyan-100 border border-cyan-500/30 text-xs inline-flex items-center gap-1 hover:bg-cyan-500/25 disabled:opacity-50"
         >
           {checking ? <Loader2 size={11} className="animate-spin" /> : <Stethoscope size={11} />}
-          🩺 跑健檢 (檢 env + DB + 解密)
+          跑健檢 (檢 env + DB + 解密)
         </button>
         <button
           onClick={() => push("admin")}
@@ -78,7 +78,7 @@ export function LineDiagnosticPanel() {
           className="px-3 py-1.5 rounded-full bg-emerald-500/15 text-emerald-900 dark:text-emerald-100 border border-emerald-500/30 text-xs inline-flex items-center gap-1 hover:bg-emerald-500/25 disabled:opacity-50"
         >
           {pushing ? <Loader2 size={11} className="animate-spin" /> : <Send size={11} />}
-          📤 推測試到我的 admin LINE
+          推測試到我的 admin LINE
         </button>
         <button
           onClick={() => push("user")}
@@ -86,7 +86,7 @@ export function LineDiagnosticPanel() {
           className="px-3 py-1.5 rounded-full bg-purple-500/15 text-purple-900 dark:text-purple-100 border border-purple-500/30 text-xs inline-flex items-center gap-1 hover:bg-purple-500/25 disabled:opacity-50"
         >
           {pushing ? <Loader2 size={11} className="animate-spin" /> : <Send size={11} />}
-          📤 推測試到我的 user LINE
+          推測試到我的 user LINE
         </button>
       </div>
 
@@ -100,8 +100,10 @@ export function LineDiagnosticPanel() {
             }`}
           >
             {health.verdict}
-            <div className="text-[10px] font-normal mt-1 text-fg-muted">
-              ✅ {health.summary.pass} · ⚠️ {health.summary.warn} · ❌ {health.summary.fail}
+            <div className="text-[10px] font-normal mt-1 text-fg-muted flex items-center gap-2">
+              <span className="inline-flex items-center gap-1"><CheckCircle className="w-3 h-3" /> {health.summary.pass}</span>
+              <span className="inline-flex items-center gap-1"><AlertTriangle className="w-3 h-3" /> {health.summary.warn}</span>
+              <span className="inline-flex items-center gap-1"><XCircle className="w-3 h-3" /> {health.summary.fail}</span>
             </div>
           </div>
           <div className="space-y-1">
@@ -116,8 +118,8 @@ export function LineDiagnosticPanel() {
                     : "border-red-500/40 bg-red-500/10"
                 }`}
               >
-                <div className="font-bold">
-                  {c.status === "ok" ? "✅" : c.status === "warn" ? "⚠️" : "❌"} {c.step}
+                <div className="font-bold flex items-center gap-2">
+                  {c.status === "ok" ? <CheckCircle className="w-4 h-4" /> : c.status === "warn" ? <AlertTriangle className="w-4 h-4" /> : <XCircle className="w-4 h-4" />} {c.step}
                 </div>
                 <div className="text-fg-muted mt-0.5 break-all">{c.detail}</div>
               </div>

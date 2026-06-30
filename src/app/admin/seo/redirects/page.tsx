@@ -1,5 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { PageHero } from "@/components/admin/PageHero";
+import { Check } from "lucide-react";
 
 export default async function RedirectsPage() {
   const supabase = createSupabaseAdmin();
@@ -54,7 +55,7 @@ export default async function RedirectsPage() {
                   <td className="px-4 py-3 font-mono text-xs">→ {r.to_path}</td>
                   <td className="px-4 py-3">{r.status_code}</td>
                   <td className="px-4 py-3">{r.hits}</td>
-                  <td className="px-4 py-3">{r.enabled ? "✓" : "—"}</td>
+                  <td className="px-4 py-3">{r.enabled ? <Check className="w-4 h-4" /> : "—"}</td>
                 </tr>
               ))}
             </tbody>

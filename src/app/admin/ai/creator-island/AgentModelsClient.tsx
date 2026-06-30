@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { AlertTriangle, CheckCircle } from "lucide-react";
 
 type Agent = { key: string; label: string };
 type Model = { provider: string; model_name: string };
@@ -23,9 +24,9 @@ export function AgentModelsClient({ agents, models, current }: { agents: Agent[]
 
   return (
     <div className="bg-bg-card border border-border rounded-2xl p-5 space-y-4 max-w-2xl">
-      {models.length === 0 && <div className="text-sm text-amber-700 dark:text-amber-300">⚠️ 目前沒有啟用的模型。先到 <a href="/admin/ai/models" className="underline">/admin/ai/models</a> 新增並啟用（可加 OpenRouter）。</div>}
-      {err && <div className="bg-red-500/10 border border-red-500/30 text-red-700 dark:text-red-300 rounded-lg px-3 py-2 text-sm">⚠️ {err}</div>}
-      {msg && <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 rounded-lg px-3 py-2 text-sm">✅ {msg}</div>}
+      {models.length === 0 && <div className="text-sm text-amber-700 dark:text-amber-300 flex items-center gap-2"><AlertTriangle className="w-4 h-4 shrink-0" /> <span>目前沒有啟用的模型。先到 <a href="/admin/ai/models" className="underline">/admin/ai/models</a> 新增並啟用（可加 OpenRouter）。</span></div>}
+      {err && <div className="bg-red-500/10 border border-red-500/30 text-red-700 dark:text-red-300 rounded-lg px-3 py-2 text-sm flex items-center gap-2"><AlertTriangle className="w-4 h-4 shrink-0" /> {err}</div>}
+      {msg && <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 rounded-lg px-3 py-2 text-sm flex items-center gap-2"><CheckCircle className="w-4 h-4 shrink-0" /> {msg}</div>}
 
       <div className="space-y-3">
         {agents.map((a) => (

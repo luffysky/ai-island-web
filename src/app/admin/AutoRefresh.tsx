@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { RefreshCw } from "lucide-react";
 
 const INTERVAL_MS = 60_000;  // 60 秒
 
@@ -56,10 +57,10 @@ export function AutoRefresh() {
       </button>
       <button
         onClick={refresh}
-        className="px-2 py-1 rounded border border-border bg-bg-elevated hover:border-accent transition"
+        className="px-2 py-1 rounded border border-border bg-bg-elevated hover:border-accent transition inline-flex items-center gap-1"
         title="立即重新整理（不重 page、只重抓資料）"
       >
-        🔄 立即更新
+        <RefreshCw className="w-3 h-3" /> 立即更新
       </button>
       <span className="text-[10px] opacity-70">
         上次：{lastRefresh.toLocaleTimeString("zh-TW", { hour12: false })}

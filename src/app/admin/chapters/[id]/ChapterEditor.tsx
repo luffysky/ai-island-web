@@ -4,7 +4,7 @@ import { Chapter } from "@/lib/types";
 import Link from "next/link";
 import { useToast } from "@/components/ui/Toast";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
-import { History, Save, Eye } from "lucide-react";
+import { History, Save, Eye, Pencil } from "lucide-react";
 import { ChapterVersionsPanel } from "./ChapterVersionsPanel";
 
 export function ChapterEditor({ chapter }: { chapter: Chapter }) {
@@ -66,8 +66,8 @@ export function ChapterEditor({ chapter }: { chapter: Chapter }) {
   return (
     <div>
       <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-        <h2 className="text-xl font-bold">
-          ✏️ Ch{String(chapter.id).padStart(2, "0")} · {chapter.title}
+        <h2 className="text-xl font-bold flex items-center gap-2">
+          <Pencil className="w-5 h-5" /> Ch{String(chapter.id).padStart(2, "0")} · {chapter.title}
         </h2>
         <div className="flex gap-2">
           <button

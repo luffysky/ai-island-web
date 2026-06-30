@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, Gift } from "lucide-react";
+import { X, Gift, Zap, Coins, Trophy } from "lucide-react";
 
 type GrantType = "xp" | "zcoin" | "achievement";
 
@@ -90,14 +90,14 @@ export function GrantModal({
             <label className="text-xs text-fg-muted block mb-1">類型</label>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
               {([
-                { v: "xp", label: "⚡ XP" },
-                { v: "zcoin", label: "🪙 Z-coin" },
-                { v: "achievement", label: "🏆 成就" },
+                { v: "xp", label: <><Zap size={12} /> XP</> },
+                { v: "zcoin", label: <><Coins size={12} /> Z-coin</> },
+                { v: "achievement", label: <><Trophy size={12} /> 成就</> },
               ] as const).map((t) => (
                 <button
                   key={t.v}
                   onClick={() => setType(t.v as GrantType)}
-                  className={`text-xs px-2 py-1.5 rounded-lg border transition ${
+                  className={`text-xs px-2 py-1.5 rounded-lg border transition inline-flex items-center justify-center gap-1 ${
                     type === t.v
                       ? "border-accent bg-accent/10 text-accent font-bold"
                       : "border-border hover:border-accent/50"

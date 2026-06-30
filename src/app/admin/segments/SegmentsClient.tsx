@@ -73,7 +73,7 @@ export function SegmentsClient({ initial }: { initial: Segment[] }) {
   return (
     <div className="space-y-4">
       <div className="rounded-xl bg-bg-card border border-border p-3 space-y-2">
-        <h2 className="text-sm font-bold">＋ 新增 segment</h2>
+        <h2 className="text-sm font-bold flex items-center gap-2"><Plus className="w-4 h-4" /> 新增 segment</h2>
         <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-2">
           <input value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="名稱（e.g. high_xp_members）" className="bg-bg border border-border rounded-lg px-2 py-1.5 text-sm" />
           <input value={newDesc} onChange={(e) => setNewDesc(e.target.value)} placeholder="說明" className="bg-bg border border-border rounded-lg px-2 py-1.5 text-sm" />

@@ -116,8 +116,8 @@ export default async function ImpersonateViewerPage({
       </div>
 
       <div className="text-right">
-        <Link href="/admin/impersonate" className="text-xs text-fg-muted hover:text-accent">
-          ← 回 impersonate 列表
+        <Link href="/admin/impersonate" className="text-xs text-fg-muted hover:text-accent inline-flex items-center gap-1">
+          <ArrowLeft size={14} /> 回 impersonate 列表
         </Link>
       </div>
     </div>

@@ -6,6 +6,7 @@ import { adminHref } from "@/lib/admin-href";
 import { UserRow } from "./UserRow";
 import { UserCard } from "./UserCard";
 import { PageHero } from "@/components/admin/PageHero";
+import { RefreshCw, ArrowLeft, ArrowRight } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -83,9 +84,9 @@ export default async function AdminUsersPage({
       >
         <Link
           href={adminHref("/admin/users/batch") as any}
-          className="text-xs px-3 py-1.5 rounded-full border border-border hover:border-accent hover:text-accent"
+          className="text-xs px-3 py-1.5 rounded-full border border-border hover:border-accent hover:text-accent inline-flex items-center gap-1"
         >
-          🔄 批次操作
+          <RefreshCw className="w-3.5 h-3.5" /> 批次操作
         </Link>
       </PageHero>
       <div className="flex items-center justify-between flex-wrap gap-2">
@@ -204,18 +205,18 @@ export default async function AdminUsersPage({
         <div className="flex items-center justify-center gap-2 mt-4 text-sm">
           <Link
             href={page > 1 ? (buildHref({ page: String(page - 1) }) as any) : "#"}
-            className={`px-3 py-1.5 rounded-lg border border-border ${page <= 1 ? "opacity-40 pointer-events-none" : "hover:bg-bg-elevated"}`}
+            className={`px-3 py-1.5 rounded-lg border border-border inline-flex items-center gap-1 ${page <= 1 ? "opacity-40 pointer-events-none" : "hover:bg-bg-elevated"}`}
           >
-            ← 上一頁
+            <ArrowLeft className="w-4 h-4" /> 上一頁
           </Link>
           <span className="text-xs text-fg-muted px-3">
             {page} / {totalPages}
           </span>
           <Link
             href={page < totalPages ? (buildHref({ page: String(page + 1) }) as any) : "#"}
-            className={`px-3 py-1.5 rounded-lg border border-border ${page >= totalPages ? "opacity-40 pointer-events-none" : "hover:bg-bg-elevated"}`}
+            className={`px-3 py-1.5 rounded-lg border border-border inline-flex items-center gap-1 ${page >= totalPages ? "opacity-40 pointer-events-none" : "hover:bg-bg-elevated"}`}
           >
-            下一頁 →
+            下一頁 <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
       )}

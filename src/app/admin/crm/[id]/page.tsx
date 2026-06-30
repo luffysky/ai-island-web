@@ -4,7 +4,7 @@ import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
 import { formatTW, formatTWRelative } from "@/lib/format-date";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, MessageSquare, User } from "lucide-react";
 import { ReplyForm } from "./ReplyForm";
 
 export const dynamic = "force-dynamic";
@@ -94,8 +94,8 @@ export default async function CRMTicketDetailPage({ params }: { params: Promise<
                 }`}
               >
                 <div className="flex items-center justify-between mb-1 text-xs text-fg-muted">
-                  <span className={isStaff ? "text-accent font-semibold" : "font-semibold text-fg"}>
-                    {isStaff ? "💬 " : "👤 "}{author}
+                  <span className={`inline-flex items-center gap-1 ${isStaff ? "text-accent font-semibold" : "font-semibold text-fg"}`}>
+                    {isStaff ? <MessageSquare size={12} /> : <User size={12} />}{author}
                   </span>
                   <span title={formatTW(m.created_at)}>{formatTWRelative(m.created_at)}</span>
                 </div>

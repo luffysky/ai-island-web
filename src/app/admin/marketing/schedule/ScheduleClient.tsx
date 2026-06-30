@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Calendar, Clock, Edit3, Trash2, Loader2, Save, X, Eye } from "lucide-react";
+import { Calendar, Clock, Edit3, Trash2, Loader2, Save, X, Eye, Check } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 
 type Draft = {
@@ -113,8 +113,8 @@ export function ScheduleClient({ initialDrafts }: { initialDrafts: Draft[] }) {
               </span>
             )}
             {d.published_at && (
-              <span className="text-[10px] text-emerald-400">
-                ✓ {new Date(d.published_at).toLocaleString("zh-TW", { dateStyle: "short" })}
+              <span className="text-[10px] text-emerald-400 inline-flex items-center gap-1">
+                <Check className="w-3 h-3" /> {new Date(d.published_at).toLocaleString("zh-TW", { dateStyle: "short" })}
               </span>
             )}
             <div className="flex items-center gap-1">

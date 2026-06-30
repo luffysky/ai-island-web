@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { ClearCacheButton } from "./ClearCacheButton";
 import { PageHero } from "@/components/admin/PageHero";
+import { Database, Zap, Key } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -65,7 +66,7 @@ export default async function OpsAdminPage() {
 
       {/* DB Health */}
       <section className="rounded-xl bg-bg-card border border-border p-4">
-        <h2 className="font-bold mb-3 flex items-center gap-2">🗄️ DB 健康</h2>
+        <h2 className="font-bold mb-3 flex items-center gap-2"><Database className="w-4 h-4" /> DB 健康</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 text-sm">
           {counts.map((c) => (
             <div key={c.table} className="rounded-lg bg-bg p-2.5">
@@ -82,7 +83,7 @@ export default async function OpsAdminPage() {
 
       {/* Cache */}
       <section className="rounded-xl bg-bg-card border border-border p-4">
-        <h2 className="font-bold mb-3 flex items-center gap-2">⚡ 快取</h2>
+        <h2 className="font-bold mb-3 flex items-center gap-2"><Zap className="w-4 h-4" /> 快取</h2>
         <p className="text-sm text-fg-muted mb-3">
           Next.js App Router 預設大部分頁面是 `force-dynamic` 即時 render；少數 static 頁面可由此手動 revalidate。
         </p>
@@ -91,7 +92,7 @@ export default async function OpsAdminPage() {
 
       {/* Env vars */}
       <section className="rounded-xl bg-bg-card border border-border p-4">
-        <h2 className="font-bold mb-3 flex items-center gap-2">🔑 環境變數（read-only mask）</h2>
+        <h2 className="font-bold mb-3 flex items-center gap-2"><Key className="w-4 h-4" /> 環境變數（read-only mask）</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
           {TRACKED_ENV_VARS.map((name) => {
             const v = process.env[name];

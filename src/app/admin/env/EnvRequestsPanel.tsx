@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Check, X, Loader2, ExternalLink } from "lucide-react";
+import { Plus, Check, X, Loader2, ExternalLink, Mail, Key } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -78,7 +78,7 @@ export function EnvRequestsPanel() {
     <section className="rounded-xl bg-bg-card border border-border">
       <header className="px-4 py-3 border-b border-border flex items-center justify-between">
         <h2 className="font-bold text-sm flex items-center gap-2">
-          📨 ENV 變更申請
+          <Mail className="w-4 h-4" /> ENV 變更申請
           {pending.length > 0 && (
             <span className="text-[10px] px-2 py-0.5 rounded-full bg-warning/20 text-warning">{pending.length} 待處理</span>
           )}
@@ -231,7 +231,7 @@ function RequestModal({
         onClick={(e) => e.stopPropagation()}
       >
         <header className="px-5 py-3 border-b border-border flex items-center justify-between">
-          <h3 className="font-bold flex items-center gap-2">🔐 申請新增 ENV 變數</h3>
+          <h3 className="font-bold flex items-center gap-2"><Key className="w-4 h-4" /> 申請新增 ENV 變數</h3>
           <button onClick={onClose} className="p-1 rounded hover:bg-bg-elevated"><X size={16} /></button>
         </header>
         <div className="p-5 space-y-3">

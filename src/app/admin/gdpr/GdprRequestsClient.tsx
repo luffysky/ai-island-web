@@ -95,11 +95,11 @@ export function GdprRequestsClient({ initial }: { initial: GdprRow[] }) {
                 <tr key={r.id}>
                   <td className="px-3 py-2">
                     {isDelete ? (
-                      <span className="text-red-400 font-bold flex items-center gap-1">
+                      <span className="text-red-700 dark:text-red-300 font-bold flex items-center gap-1">
                         <Trash2 size={12} /> 刪除
                       </span>
                     ) : (
-                      <span className="text-blue-400 font-bold flex items-center gap-1">
+                      <span className="text-blue-700 dark:text-blue-300 font-bold flex items-center gap-1">
                         <Download size={12} /> 匯出
                       </span>
                     )}
@@ -122,9 +122,13 @@ export function GdprRequestsClient({ initial }: { initial: GdprRow[] }) {
                   </td>
                   <td className="px-3 py-2 text-xs">
                     {isDelete && r.scheduled_hard_delete_at ? (
-                      <span className={due ? "text-red-400 font-semibold" : "text-fg-muted"}>
+                      <span className={due ? "text-red-700 dark:text-red-300 font-semibold" : "text-fg-muted"}>
                         {new Date(r.scheduled_hard_delete_at).toLocaleString("zh-TW", { hour12: false })}
-                        {due && " ✓ 可執行"}
+                        {due && (
+                          <span className="inline-flex items-center gap-1">
+                            <Check className="w-3 h-3" /> 可執行
+                          </span>
+                        )}
                       </span>
                     ) : (
                       "—"
@@ -137,7 +141,7 @@ export function GdprRequestsClient({ initial }: { initial: GdprRow[] }) {
                         className={`text-xs px-3 py-1 rounded-lg flex items-center gap-1 ${
                           due
                             ? "bg-red-500 text-white"
-                            : "border border-red-400/40 text-red-400 hover:bg-red-500/10"
+                            : "border border-red-400/40 text-red-700 dark:text-red-300 hover:bg-red-500/10"
                         }`}
                       >
                         <Trash2 size={11} /> 硬刪

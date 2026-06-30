@@ -4,6 +4,7 @@ import {
   AreaChart, Area, BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
 } from "recharts";
+import { TrendingUp, Bot, DollarSign, BookOpen, BarChart3, Smartphone, Clock } from "lucide-react";
 
 const COLORS = ["#50fa7b", "#8be9fd", "#bd93f9", "#ffb86c", "#ff79c6", "#f1fa8c", "#ff5555"];
 
@@ -32,7 +33,7 @@ export function DashboardCharts({
     <div className="space-y-4">
       {/* 第一排：註冊趨勢 + AI 用量 */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <ChartCard title="📈 註冊趨勢（近 30 天）" subtitle={`總計 ${signupData.reduce((s, d) => s + d.count, 0)} 人`}>
+        <ChartCard title={<><TrendingUp className="w-4 h-4" /> 註冊趨勢（近 30 天）</>} subtitle={`總計 ${signupData.reduce((s, d) => s + d.count, 0)} 人`}>
           <ResponsiveContainer width="100%" height={220}>
             <AreaChart data={signupData}>
               <defs>
@@ -51,7 +52,7 @@ export function DashboardCharts({
         </ChartCard>
 
         <ChartCard
-          title="🤖 AI 導師使用量（近 30 天）"
+          title={<><Bot className="w-4 h-4" /> AI 導師使用量（近 30 天）</>}
           subtitle={aiData.length === 0 ? "尚無數據" : `${aiData.reduce((s, d) => s + d.calls, 0)} 次對話 / $${aiData.reduce((s, d) => s + d.cost, 0).toFixed(2)}`}
           actions={
             <div className="flex gap-1 text-xs">
@@ -82,7 +83,7 @@ export function DashboardCharts({
       {/* 第二排：收入 + 完成度 */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <ChartCard
-          title="💰 收入趨勢（近 30 天）"
+          title={<><DollarSign className="w-4 h-4" /> 收入趨勢（近 30 天）</>}
           subtitle={revenueData.length === 0 ? "尚無訂單" : `NT$ ${revenueData.reduce((s, d) => s + d.revenue, 0).toLocaleString()}`}
         >
           {revenueData.length === 0 ? (
@@ -103,7 +104,7 @@ export function DashboardCharts({
         </ChartCard>
 
         <ChartCard
-          title="📚 章節完成率 Top 10"
+          title={<><BookOpen className="w-4 h-4" /> 章節完成率 Top 10</>}
           subtitle={lessonCompletionData.length === 0 ? "尚無數據" : "前 10 名最多人完成的章節"}
         >
           {lessonCompletionData.length === 0 ? (
@@ -125,7 +126,7 @@ export function DashboardCharts({
       {/* 第三排：Retention + 裝置 + Hourly */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <ChartCard
-          title="📊 Retention（D1-D30）"
+          title={<><BarChart3 className="w-4 h-4" /> Retention（D1-D30）</>}
           subtitle="新註冊用戶留存率"
         >
           {retentionData.length === 0 ? (
@@ -143,7 +144,7 @@ export function DashboardCharts({
           )}
         </ChartCard>
 
-        <ChartCard title="📱 裝置分佈" subtitle="近 7 天">
+        <ChartCard title={<><Smartphone className="w-4 h-4" /> 裝置分佈</>} subtitle="近 7 天">
           {deviceData.length === 0 ? (
             <Empty />
           ) : (
@@ -169,7 +170,7 @@ export function DashboardCharts({
           )}
         </ChartCard>
 
-        <ChartCard title="⏰ 每小時活躍" subtitle="找出 user peak time">
+        <ChartCard title={<><Clock className="w-4 h-4" /> 每小時活躍</>} subtitle="找出 user peak time">
           {hourlyActivityData.length === 0 ? (
             <Empty />
           ) : (
@@ -200,12 +201,12 @@ const tooltipStyle = {
 
 function ChartCard({
   title, subtitle, actions, children,
-}: { title: string; subtitle?: string; actions?: React.ReactNode; children: React.ReactNode }) {
+}: { title: React.ReactNode; subtitle?: string; actions?: React.ReactNode; children: React.ReactNode }) {
   return (
     <div className="bg-bg-card border border-border rounded-xl p-5">
       <div className="flex items-start justify-between mb-3">
         <div>
-          <h3 className="font-bold text-sm">{title}</h3>
+          <h3 className="font-bold text-sm flex items-center gap-2">{title}</h3>
           {subtitle && <p className="text-xs text-fg-muted mt-0.5">{subtitle}</p>}
         </div>
         {actions}

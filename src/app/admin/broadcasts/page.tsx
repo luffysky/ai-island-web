@@ -2,6 +2,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import Link from "next/link";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { PageHero } from "@/components/admin/PageHero";
+import { Send, AlertTriangle } from "lucide-react";
 
 export default async function BroadcastsPage() {
   const supabase = createSupabaseAdmin();
@@ -51,7 +52,7 @@ export default async function BroadcastsPage() {
                   <p className="text-sm text-fg-muted line-clamp-2">{b.content}</p>
                 </div>
                 <div className="text-right text-xs text-fg-muted shrink-0">
-                  {b.sent_at && <div>📤 {new Date(b.sent_at).toLocaleDateString('zh-TW')}</div>}
+                  {b.sent_at && <div className="flex items-center gap-2 justify-end"><Send className="w-4 h-4" /> {new Date(b.sent_at).toLocaleDateString('zh-TW')}</div>}
                   {b.sent_count > 0 && (
                     <div className="mt-1">
                       送達 {b.sent_count} · 開啟 {b.open_count} · 點擊 {b.click_count}
@@ -87,7 +88,7 @@ function StatusBadge({ status }: { status: string }) {
 function SchemaNeeded() {
   return (
     <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-6 text-sm">
-      <div className="font-bold mb-2">⚠️ 需要先跑 admin migration</div>
+      <div className="font-bold mb-2 flex items-center gap-2"><AlertTriangle className="w-4 h-4" /> 需要先跑 admin migration</div>
       <code className="block bg-bg p-3 rounded text-xs">supabase/admin_migration.sql</code>
     </div>
   );

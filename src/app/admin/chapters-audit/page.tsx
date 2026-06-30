@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { ChaptersAuditClient } from "./ChaptersAuditClient";
+import { Search } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +16,7 @@ export default async function ChaptersAuditPage() {
   return (
     <div className="p-4 md:p-6 max-w-6xl mx-auto">
       <header className="mb-5">
-        <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-2">🔍 章節 audit</h1>
+        <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-2"><Search className="w-6 h-6" /> 章節 audit</h1>
         <p className="text-sm text-fg-muted mt-1">
           雪鑰掃 76 章 lesson 品質：太短 / 缺 analogy / 缺 tip / 缺 summary。點章節跑 AI 深度檢查。
         </p>

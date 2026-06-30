@@ -1,6 +1,7 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { PageHero } from "@/components/admin/PageHero";
 import { RewriteClient } from "./RewriteClient";
+import { BookOpen } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -76,7 +77,7 @@ export default async function RewriteLessonsPage() {
       <RewriteClient targetChapters={TARGET_CHAPTERS} />
 
       <div className="bg-bg-soft border border-border rounded-xl p-5 text-sm space-y-2">
-        <div className="font-bold text-fg">📖 怎麼用</div>
+        <div className="font-bold text-fg flex items-center gap-2"><BookOpen className="w-4 h-4" /> 怎麼用</div>
         <ul className="space-y-1 list-disc pl-5 text-fg-mid">
           <li><b>第一次：</b>先按「🔍 dry-run sample (3 個)」看 AI 改成什麼樣、確認方向對</li>
           <li><b>OK 了：</b>按「✍️ apply：跑 3 章全部」、會走線上 anthropic key、約 ~$0.05 / 75 lesson</li>

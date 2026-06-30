@@ -1,6 +1,7 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import Link from "next/link";
 import { PageHero, AdminStatCard } from "@/components/admin/PageHero";
+import { AlertTriangle } from "lucide-react";
 
 export default async function OrdersPage({ searchParams }: { searchParams: Promise<{ status?: string; q?: string }> }) {
   const params = await searchParams;
@@ -137,7 +138,7 @@ function StatusBadge({ status }: { status: string }) {
 function SchemaNeeded() {
   return (
     <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-6 text-sm">
-      <div className="font-bold mb-2">⚠️ 需要先跑 admin migration</div>
+      <div className="font-bold mb-2 flex items-center gap-2"><AlertTriangle className="w-4 h-4" /> 需要先跑 admin migration</div>
       <p className="mb-3 text-fg-muted">
         訂單功能需要的 table 還沒建立。請去 Supabase Dashboard → SQL Editor、跑：
       </p>

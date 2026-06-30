@@ -1,5 +1,5 @@
 "use client";
-import { ShieldCheck, Shield, Ban, Sparkles, Gift } from "lucide-react";
+import { ShieldCheck, Shield, Ban, Sparkles, Gift, Flame, Check } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { GrantModal } from "./GrantModal";
@@ -47,7 +47,7 @@ export function UserRow({ user, isOwner }: { user: any; isOwner?: boolean }) {
         <td className="px-4 py-3 text-accent font-bold">Lv {a.localLevel}</td>
         <td className="px-4 py-3">{a.localXp.toLocaleString()}</td>
         <td className="px-4 py-3 text-yellow-400">{a.localCoin}</td>
-        <td className="px-4 py-3">🔥 {user.streak_days ?? 0}</td>
+        <td className="px-4 py-3"><span className="inline-flex items-center gap-1"><Flame size={13} className="text-orange-400" /> {user.streak_days ?? 0}</span></td>
         <td className="px-4 py-3">
           <select
             value={a.role}
@@ -89,7 +89,7 @@ export function UserRow({ user, isOwner }: { user: any; isOwner?: boolean }) {
               title={a.aiUnlimited ? "AI 無限特權：開啟中（點擊關閉）" : "AI 無限特權：關閉（點擊開啟）"}
             >
               <Sparkles size={12} className={a.aiUnlimited ? "fill-current" : ""} />
-              {a.aiUnlimited ? "AI 特權 ✓" : "AI 特權"}
+              {a.aiUnlimited ? <>AI 特權 <Check size={12} /></> : "AI 特權"}
             </button>
             <button
               onClick={a.banUser}

@@ -43,7 +43,7 @@ export default async function AdminGdprPage() {
         </div>
         <div className="rounded-xl bg-bg-card border border-border p-4">
           <div className="text-xs text-fg-muted">可硬刪</div>
-          <div className="text-2xl font-bold mt-1 text-red-400">{hardDeletable}</div>
+          <div className="text-2xl font-bold mt-1 text-red-700 dark:text-red-300">{hardDeletable}</div>
         </div>
         <div className="rounded-xl bg-bg-card border border-border p-4">
           <div className="text-xs text-fg-muted">總請求數</div>

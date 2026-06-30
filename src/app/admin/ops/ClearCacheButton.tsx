@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Eraser } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 
 const PATHS = [
@@ -38,7 +39,7 @@ export function ClearCacheButton() {
           disabled={busy === p.path}
           className="text-xs px-3 py-1.5 rounded-lg border border-border hover:border-accent hover:text-accent disabled:opacity-50 flex items-center gap-1"
         >
-          {busy === p.path ? "清中…" : "🧹"} {p.label}
+          {busy === p.path ? "清中…" : <Eraser className="w-3 h-3" />} {p.label}
           <code className="text-[9px] text-fg-muted ml-1">{p.path}</code>
         </button>
       ))}

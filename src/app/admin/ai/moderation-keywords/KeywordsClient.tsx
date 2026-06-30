@@ -74,7 +74,7 @@ export function KeywordsClient({ initial }: { initial: Keyword[] }) {
   return (
     <div className="space-y-4">
       <div className="rounded-xl bg-bg-card border border-border p-3 space-y-2">
-        <div className="text-sm font-bold">＋ 新增關鍵字</div>
+        <div className="text-sm font-bold flex items-center gap-2"><Plus className="w-4 h-4" /> 新增關鍵字</div>
         <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr_1fr_auto] gap-2">
           <input value={newKw} onChange={(e) => setNewKw(e.target.value)} placeholder="關鍵字（自動小寫）" className="bg-bg border border-border rounded-lg px-2 py-1.5 text-sm" />
           <select value={newSev} onChange={(e) => setNewSev(e.target.value)} className="bg-bg border border-border rounded-lg px-2 py-1.5 text-sm">

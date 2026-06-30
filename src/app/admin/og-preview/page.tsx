@@ -1,5 +1,6 @@
 import { OgPreviewClient } from "./OgPreviewClient";
 import { PageHero } from "@/components/admin/PageHero";
+import { Activity } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -19,7 +20,7 @@ export default function OgPreviewPage() {
           rel="noopener noreferrer"
           className="text-xs px-3 py-1.5 rounded-full border border-amber-500/40 text-amber-300 hover:bg-amber-500/10 inline-flex items-center gap-1 whitespace-nowrap"
         >
-          🩺 診斷 env + ping
+          <Activity className="w-3.5 h-3.5" /> 診斷 env + ping
         </a>
       </PageHero>
       <OgPreviewClient />

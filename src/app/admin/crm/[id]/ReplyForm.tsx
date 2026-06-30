@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Send, Loader2, MessageSquareText, AtSign, ChevronDown } from "lucide-react";
+import { Send, Loader2, MessageSquareText, AtSign, ChevronDown, MessageSquare } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 
 type CannedReply = {
@@ -111,7 +111,7 @@ export function ReplyForm({
     <section className="bg-bg-card border border-border rounded-xl p-4 space-y-3">
       <div className="flex items-center justify-between gap-2">
         <h2 className="font-bold text-sm flex items-center gap-2">
-          💬 回覆 <span className="text-xs text-fg-muted font-normal">→ {targetUserName}</span>
+          <MessageSquare className="w-4 h-4" /> 回覆 <span className="text-xs text-fg-muted font-normal">→ {targetUserName}</span>
         </h2>
         <div className="flex items-center gap-2">
           {/* 罐頭下拉 */}

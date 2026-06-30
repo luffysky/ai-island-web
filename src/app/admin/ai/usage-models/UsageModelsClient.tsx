@@ -67,7 +67,7 @@ export function UsageModelsClient({
             key={r.usage_key}
             className="grid grid-cols-12 gap-2 px-3 py-2.5 border-b border-border last:border-0 items-center hover:bg-bg-elevated/40"
           >
-            <code className="col-span-3 text-[11px] text-purple-300 font-mono">{r.usage_key}</code>
+            <code className="col-span-3 text-[11px] text-purple-700 dark:text-purple-300 font-mono">{r.usage_key}</code>
             <div className="col-span-4 text-xs text-fg-muted">{r.description}</div>
             <select
               className="col-span-4 bg-bg border border-border rounded-lg px-2 py-1.5 text-xs outline-none focus:border-purple-400"

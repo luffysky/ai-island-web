@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { adminHref } from "@/lib/admin-href";
 import { useToast } from "@/components/ui/Toast";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
+import { Check, Save } from "lucide-react";
 
 export function BroadcastForm({
   mode,
@@ -133,7 +134,7 @@ export function BroadcastForm({
         <div className="text-xs">
           {msg}
           {form.status === "sent" && form.channel === "in_app" && (
-            <span className="ml-2 text-emerald-500">✓ 將顯示在前台 marquee</span>
+            <span className="ml-2 text-emerald-500 inline-flex items-center gap-2"><Check className="w-4 h-4" /> 將顯示在前台 marquee</span>
           )}
         </div>
         <div className="flex items-center gap-2">
@@ -142,8 +143,8 @@ export function BroadcastForm({
               刪除
             </button>
           )}
-          <button onClick={save} disabled={saving} className="px-5 py-1.5 text-sm bg-accent text-black font-bold rounded-lg disabled:opacity-50">
-            {saving ? "儲存中..." : "💾 儲存"}
+          <button onClick={save} disabled={saving} className="px-5 py-1.5 text-sm bg-accent text-black font-bold rounded-lg disabled:opacity-50 inline-flex items-center gap-2">
+            {saving ? "儲存中..." : <><Save className="w-4 h-4" /> 儲存</>}
           </button>
         </div>
       </div>

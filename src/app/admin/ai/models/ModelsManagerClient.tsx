@@ -1,6 +1,6 @@
 "use client";
 import { useRef, useState } from "react";
-import { Check, Eye, EyeOff, Power, Save, Trash2, X } from "lucide-react";
+import { Check, Eye, EyeOff, Power, Save, Trash2, X, FlaskConical } from "lucide-react";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { devLog } from "@/lib/dev-log";
 import { useEdgeSafe } from "@/lib/use-edge-safe";
@@ -302,7 +302,7 @@ export function ModelsManagerClient({
               </div>
               <div className="flex items-center gap-2">
                 <span className={`chip ${hasSecret ? "chip-success" : "chip-neutral"}`}>
-                  {hasSecret ? "✓ 已設定" : "未設定 key"}
+                  {hasSecret ? <span className="inline-flex items-center gap-1"><Check className="w-3 h-3" />已設定</span> : "未設定 key"}
                 </span>
                 <span className={`chip ${key?.enabled ? "chip-info" : "chip-neutral"}`}>
                   {key?.enabled ? "啟用" : "停用"}
@@ -353,7 +353,7 @@ export function ModelsManagerClient({
                   className="btn-chip btn-chip-info"
                   title="跑一個小請求驗證 key 真的可用"
                 >
-                  🧪 {testingProvider === provider ? "測試中…" : "測 key"}
+                  <FlaskConical size={14} /> {testingProvider === provider ? "測試中…" : "測 key"}
                 </button>
                 {testResults[provider] && (
                   <span

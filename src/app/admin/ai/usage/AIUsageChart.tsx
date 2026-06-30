@@ -1,6 +1,7 @@
 "use client";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { useState } from "react";
+import { TrendingUp } from "lucide-react";
 
 export function AIUsageChart({ dailyData }: { dailyData: any[] }) {
   const [metric, setMetric] = useState<"cost" | "tokens" | "calls">("cost");
@@ -8,7 +9,7 @@ export function AIUsageChart({ dailyData }: { dailyData: any[] }) {
   return (
     <div className="bg-bg-card border border-border rounded-xl p-5">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-bold">📈 趨勢圖（近 30 天）</h3>
+        <h3 className="font-bold flex items-center gap-2"><TrendingUp className="w-4 h-4" /> 趨勢圖（近 30 天）</h3>
         <div className="flex gap-1 text-xs">
           <Tab active={metric === "cost"} onClick={() => setMetric("cost")}>費用</Tab>
           <Tab active={metric === "tokens"} onClick={() => setMetric("tokens")}>Tokens</Tab>

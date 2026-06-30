@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Rocket } from "lucide-react";
 
 // 顯示目前線上部署的 commit + build 時間（讀 /api/version）。
 // 部署後不用手打網址、admin header 一眼確認線上是不是最新版。
@@ -23,9 +24,9 @@ export function DeployVersionBadge() {
       target="_blank"
       rel="noreferrer"
       title={dev ? "本機 / 未注入 commit" : `線上部署版本 ${v.commit}${built ? `（build ${built}）` : ""}`}
-      className="text-[10px] font-mono px-2 py-1 rounded-full bg-bg-elevated text-fg-muted hover:text-accent transition whitespace-nowrap"
+      className="text-[10px] font-mono px-2 py-1 rounded-full bg-bg-elevated text-fg-muted hover:text-accent transition whitespace-nowrap inline-flex items-center gap-1"
     >
-      🚀 {dev ? "dev" : v.commitShort}{built ? ` · ${built}` : ""}
+      <Rocket className="w-3 h-3" /> {dev ? "dev" : v.commitShort}{built ? ` · ${built}` : ""}
     </a>
   );
 }

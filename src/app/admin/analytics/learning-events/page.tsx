@@ -2,6 +2,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
 import { PageHero } from "@/components/admin/PageHero";
+import { AlertTriangle, ArrowRight, ArrowLeft, Download } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -93,7 +94,7 @@ export default async function LearningEventsPage({
   if (error?.message?.includes("does not exist")) {
     return (
       <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-6 text-sm">
-        <div className="font-bold mb-2">⚠️ learning_events table 不存在</div>
+        <div className="font-bold mb-2 flex items-center gap-2"><AlertTriangle className="w-4 h-4" /> learning_events table 不存在</div>
         <p className="text-xs text-fg-muted">需先建表（schema.sql 應有）</p>
       </div>
     );
@@ -111,7 +112,7 @@ export default async function LearningEventsPage({
 
       <form action={adminHref("/admin/analytics/learning-events")} className="bg-bg-card border border-border rounded-xl p-3 flex flex-wrap items-center gap-2">
         <input type="date" name="from" defaultValue={from} className="bg-bg border border-border rounded-lg px-2 py-1 text-xs" />
-        <span className="text-fg-muted">→</span>
+        <span className="text-fg-muted flex items-center"><ArrowRight className="w-4 h-4" /></span>
         <input type="date" name="to" defaultValue={to} className="bg-bg border border-border rounded-lg px-2 py-1 text-xs" />
         <select name="event_type" defaultValue={eventType} className="bg-bg border border-border rounded-lg px-2 py-1 text-xs">
           <option value="all">所有事件</option>
@@ -120,8 +121,8 @@ export default async function LearningEventsPage({
         <input type="text" name="chapter_id" defaultValue={chapterId === "all" ? "" : chapterId} placeholder="章節 id" className="w-20 bg-bg border border-border rounded-lg px-2 py-1 text-xs" />
         <input type="text" name="user" defaultValue={userSearch} placeholder="user (username)" className="bg-bg border border-border rounded-lg px-2 py-1 text-xs" />
         <button type="submit" className="px-3 py-1 text-xs bg-accent text-black font-bold rounded-lg">套用</button>
-        <a href={`/api/admin/learning-events/export?${exportParams.toString()}`} className="px-3 py-1 text-xs border border-border rounded-lg hover:bg-bg-elevated">
-          ⬇ 匯出 CSV
+        <a href={`/api/admin/learning-events/export?${exportParams.toString()}`} className="inline-flex items-center gap-2 px-3 py-1 text-xs border border-border rounded-lg hover:bg-bg-elevated">
+          <Download className="w-4 h-4" /> 匯出 CSV
         </a>
       </form>
 
@@ -187,12 +188,12 @@ export default async function LearningEventsPage({
 
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-2 text-sm">
-          <Link href={page > 1 ? (buildHref({ page: String(page - 1) }) as any) : "#"} className={`px-3 py-1.5 rounded-lg border border-border ${page <= 1 ? "opacity-40 pointer-events-none" : "hover:bg-bg-elevated"}`}>
-            ← 上一頁
+          <Link href={page > 1 ? (buildHref({ page: String(page - 1) }) as any) : "#"} className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-border ${page <= 1 ? "opacity-40 pointer-events-none" : "hover:bg-bg-elevated"}`}>
+            <ArrowLeft className="w-4 h-4" /> 上一頁
           </Link>
           <span className="text-xs text-fg-muted px-3">{page} / {totalPages}</span>
-          <Link href={page < totalPages ? (buildHref({ page: String(page + 1) }) as any) : "#"} className={`px-3 py-1.5 rounded-lg border border-border ${page >= totalPages ? "opacity-40 pointer-events-none" : "hover:bg-bg-elevated"}`}>
-            下一頁 →
+          <Link href={page < totalPages ? (buildHref({ page: String(page + 1) }) as any) : "#"} className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-border ${page >= totalPages ? "opacity-40 pointer-events-none" : "hover:bg-bg-elevated"}`}>
+            下一頁 <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
       )}

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Save } from "lucide-react";
 
 export function BreachDetailForm({ incident }: { incident: any }) {
   const router = useRouter();
@@ -157,7 +158,7 @@ export function BreachDetailForm({ incident }: { incident: any }) {
           disabled={saving}
           className="ml-auto px-5 py-2 rounded-lg bg-accent text-black font-bold text-sm disabled:opacity-50"
         >
-          {saving ? "儲存中..." : "💾 儲存"}
+          {saving ? "儲存中..." : <span className="inline-flex items-center gap-2"><Save className="w-4 h-4" /> 儲存</span>}
         </button>
       </div>
     </div>

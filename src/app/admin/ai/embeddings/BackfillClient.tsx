@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Zap, AlertTriangle } from "lucide-react";
 
 type Result = {
   done: number;
@@ -68,7 +69,7 @@ export function BackfillClient({ lessonNeedBackfill, forumNeedBackfill }: {
 
   return (
     <div className="bg-bg-soft border border-border rounded-xl p-5 space-y-4">
-      <div className="font-bold text-fg">⚡ 跑 Backfill</div>
+      <div className="font-bold text-fg flex items-center gap-2"><Zap className="w-4 h-4" /> 跑 Backfill</div>
       <div className="grid sm:grid-cols-2 gap-3">
         <button
           disabled={!!busy}
@@ -97,9 +98,9 @@ export function BackfillClient({ lessonNeedBackfill, forumNeedBackfill }: {
             if (!confirm("確定要重算全部 embedding？這會覆蓋已有的、要花 1-3 分鐘 + 多花一次 token 錢")) return;
             run("all", true);
           }}
-          className="px-4 py-3 rounded-lg bg-red-500/15 border border-red-500/40 hover:bg-red-500/25 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-bold text-red-900 dark:text-red-100 transition"
+          className="px-4 py-3 rounded-lg bg-red-500/15 border border-red-500/40 hover:bg-red-500/25 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-bold text-red-900 dark:text-red-100 transition inline-flex items-center justify-center gap-2"
         >
-          ⚠️ 強制重算全部 (force=true)
+          <AlertTriangle className="w-4 h-4" /> 強制重算全部 (force=true)
         </button>
       </div>
       {log && (

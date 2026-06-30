@@ -2,6 +2,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { PageHero } from "@/components/admin/PageHero";
 import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
+import { AlertTriangle, Newspaper, Gift, BookOpen, Calendar, ArrowLeft, ArrowRight } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -83,7 +84,7 @@ export default async function SubscribersPage({
   if (error?.message?.includes("does not exist")) {
     return (
       <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-6 text-sm">
-        <div className="font-bold mb-2">⚠️ 需要先跑 migration</div>
+        <div className="font-bold mb-2 flex items-center gap-2"><AlertTriangle className="w-4 h-4" /> 需要先跑 migration</div>
         <code className="block bg-bg p-3 rounded text-xs">supabase/breach_and_email_migration.sql</code>
       </div>
     );
@@ -192,11 +193,13 @@ export default async function SubscribersPage({
                 <tr key={s.id} className="border-t border-border hover:bg-bg-elevated">
                   <td className="px-4 py-2 text-xs font-mono" title={s.email}>{maskEmail(s.email)}</td>
                   <td className="px-4 py-2 text-xs">
-                    {s.newsletter && "📰 "}
-                    {s.product_updates && "🎁 "}
-                    {s.course_announcements && "📚 "}
-                    {s.weekly_digest && "📅 "}
-                    {!(s.newsletter || s.product_updates || s.course_announcements || s.weekly_digest) && "—"}
+                    <span className="flex items-center gap-1">
+                      {s.newsletter && <Newspaper className="w-3.5 h-3.5" />}
+                      {s.product_updates && <Gift className="w-3.5 h-3.5" />}
+                      {s.course_announcements && <BookOpen className="w-3.5 h-3.5" />}
+                      {s.weekly_digest && <Calendar className="w-3.5 h-3.5" />}
+                      {!(s.newsletter || s.product_updates || s.course_announcements || s.weekly_digest) && "—"}
+                    </span>
                   </td>
                   <td className="px-4 py-2 text-xs text-fg-muted">
                     {s.last_email_at ? new Date(s.last_email_at).toLocaleDateString("zh-TW") : "—"}
@@ -221,12 +224,12 @@ export default async function SubscribersPage({
 
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-2 text-sm">
-          <Link href={page > 1 ? (buildHref({ page: String(page - 1) }) as any) : "#"} className={`px-3 py-1.5 rounded-lg border border-border ${page <= 1 ? "opacity-40 pointer-events-none" : "hover:bg-bg-elevated"}`}>
-            ← 上一頁
+          <Link href={page > 1 ? (buildHref({ page: String(page - 1) }) as any) : "#"} className={`px-3 py-1.5 rounded-lg border border-border inline-flex items-center gap-1 ${page <= 1 ? "opacity-40 pointer-events-none" : "hover:bg-bg-elevated"}`}>
+            <ArrowLeft className="w-4 h-4" /> 上一頁
           </Link>
           <span className="text-xs text-fg-muted px-3">{page} / {totalPages}</span>
-          <Link href={page < totalPages ? (buildHref({ page: String(page + 1) }) as any) : "#"} className={`px-3 py-1.5 rounded-lg border border-border ${page >= totalPages ? "opacity-40 pointer-events-none" : "hover:bg-bg-elevated"}`}>
-            下一頁 →
+          <Link href={page < totalPages ? (buildHref({ page: String(page + 1) }) as any) : "#"} className={`px-3 py-1.5 rounded-lg border border-border inline-flex items-center gap-1 ${page >= totalPages ? "opacity-40 pointer-events-none" : "hover:bg-bg-elevated"}`}>
+            下一頁 <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
       )}

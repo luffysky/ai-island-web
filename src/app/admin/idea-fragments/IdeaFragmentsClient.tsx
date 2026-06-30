@@ -10,7 +10,7 @@ import {
   Bookmark, BookmarkCheck, ListTodo, FileText, X, Check,
   List, Clock, Hash, Share2, Rocket, FolderPlus, Folder as FolderIcon,
   CheckSquare, Square, MousePointerClick, GripVertical, Link2, RefreshCw,
-  ThumbsUp, ThumbsDown, MessageCircle, Send,
+  ThumbsUp, ThumbsDown, MessageCircle, Send, User,
 } from "lucide-react";
 import { DailyIdeaCard } from "./DailyIdeaCard";
 import { TagCloud } from "./views/TagCloud";
@@ -523,8 +523,8 @@ export function IdeaFragmentsClient({
             {allTags.length > 0 && (
               <div className="flex flex-wrap gap-1.5">
                 {tagFilter && (
-                  <button onClick={() => setTagFilter(null)} className="text-[11px] px-2 py-0.5 rounded-full bg-accent/20 text-accent">
-                    清除篩選 ✕
+                  <button onClick={() => setTagFilter(null)} className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-accent/20 text-accent">
+                    清除篩選 <X className="w-3 h-3" />
                   </button>
                 )}
                 {allTags.map((t) => (
@@ -655,11 +655,11 @@ export function IdeaFragmentsClient({
 
                 {(f.category || f.mood || f.folder_id || (f.created_by && memberNames[f.created_by])) && (
                   <div className="flex gap-1.5 mt-1.5 text-[11px] flex-wrap">
-                    {f.folder_id && <span className="px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-700 dark:text-amber-300">📁 {folderName(f.folder_id)}</span>}
+                    {f.folder_id && <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-700 dark:text-amber-300"><FolderIcon className="w-3 h-3" /> {folderName(f.folder_id)}</span>}
                     {f.category && <span className="px-1.5 py-0.5 rounded bg-violet-500/15 text-violet-700 dark:text-violet-300">{f.category}</span>}
                     {f.mood && <span className="px-1.5 py-0.5 rounded bg-pink-500/15 text-pink-700 dark:text-pink-300">{f.mood}</span>}
                     {f.created_by && memberNames[f.created_by] && (
-                      <span className="px-1.5 py-0.5 rounded bg-bg-elevated text-fg-muted">🙋 {memberNames[f.created_by]}</span>
+                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-bg-elevated text-fg-muted"><User className="w-3 h-3" /> {memberNames[f.created_by]}</span>
                     )}
                   </div>
                 )}
@@ -729,7 +729,7 @@ export function IdeaFragmentsClient({
 
               {idea.connections?.length > 0 && (
                 <div className="mt-2 text-xs bg-violet-500/[0.07] rounded-lg p-2 border-l-2 border-violet-400">
-                  <div className="font-bold text-violet-700 dark:text-violet-300 mb-0.5">🔗 為什麼這些碎片值得組合</div>
+                  <div className="font-bold text-violet-700 dark:text-violet-300 mb-0.5 flex items-center gap-1"><Link2 className="w-3.5 h-3.5" /> 為什麼這些碎片值得組合</div>
                   <ul className="list-disc list-inside text-fg-muted space-y-0.5">
                     {idea.connections.map((c, i) => <li key={i}>{c}</li>)}
                   </ul>

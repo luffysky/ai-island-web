@@ -1,6 +1,7 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { ModelsManagerClient } from "./ModelsManagerClient";
 import { PageHero } from "@/components/admin/PageHero";
+import { AlertTriangle } from "lucide-react";
 
 export default async function ModelsAdminPage() {
   const supabase = createSupabaseAdmin();
@@ -17,7 +18,7 @@ export default async function ModelsAdminPage() {
   if (error?.message?.includes("does not exist")) {
     return (
       <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-6 text-sm">
-        <div className="font-bold mb-2">⚠️ 需要先跑 ai_migration.sql</div>
+        <div className="font-bold mb-2 flex items-center gap-2"><AlertTriangle className="w-4 h-4" /> 需要先跑 ai_migration.sql</div>
         <code className="block bg-bg p-3 rounded text-xs">supabase/ai_migration.sql</code>
       </div>
     );

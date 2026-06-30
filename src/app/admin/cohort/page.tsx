@@ -1,5 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { PageHero } from "@/components/admin/PageHero";
+import { Filter, Users } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -109,7 +110,7 @@ export default async function AdminCohortPage() {
 
       {/* Funnel */}
       <section className="rounded-xl bg-bg-card border border-border p-4">
-        <h2 className="font-bold mb-3">🪜 轉換漏斗（近 {(MAX_COHORTS + WEEKS) * 7} 天註冊用戶）</h2>
+        <h2 className="font-bold mb-3 flex items-center gap-2"><Filter className="w-4 h-4" /> 轉換漏斗（近 {(MAX_COHORTS + WEEKS) * 7} 天註冊用戶）</h2>
         <div className="space-y-2">
           {funnel.map((f, i) => {
             const pct = funnel[0].value > 0 ? (f.value / funnel[0].value) * 100 : 0;
@@ -140,7 +141,7 @@ export default async function AdminCohortPage() {
 
       {/* Cohort 留存表 */}
       <section className="rounded-xl bg-bg-card border border-border overflow-x-auto">
-        <div className="px-4 py-2 border-b border-border text-sm font-bold">👥 留存表（{sortedCohorts.length} cohorts × {WEEKS} 週）</div>
+        <div className="px-4 py-2 border-b border-border text-sm font-bold flex items-center gap-2"><Users className="w-4 h-4" /> 留存表（{sortedCohorts.length} cohorts × {WEEKS} 週）</div>
         <table className="w-full text-xs min-w-[700px]">
           <thead className="bg-bg-elevated text-fg-muted">
             <tr>

@@ -1,6 +1,7 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import Link from "next/link";
 import { PageHero, AdminStatCard } from "@/components/admin/PageHero";
+import { AlertTriangle } from "lucide-react";
 
 export default async function SubscriptionsPage({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
   const params = await searchParams;
@@ -132,7 +133,7 @@ function StatusBadge({ status }: { status: string }) {
 function SchemaNeeded() {
   return (
     <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-6 text-sm">
-      <div className="font-bold mb-2">⚠️ 需要先跑 admin migration</div>
+      <div className="font-bold mb-2 flex items-center gap-2"><AlertTriangle className="w-4 h-4" /> 需要先跑 admin migration</div>
       <code className="block bg-bg p-3 rounded text-xs">supabase/admin_migration.sql</code>
     </div>
   );

@@ -1,5 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { formatTW } from "@/lib/format-date";
 import { ImpersonateForm } from "./ImpersonateForm";
 import { PageHero } from "@/components/admin/PageHero";
@@ -63,9 +64,9 @@ export default async function ImpersonateLogPage() {
                     {r.target?.id && (
                       <Link
                         href={`/admin/impersonate/${r.target.id}` as any}
-                        className="text-xs text-accent hover:underline"
+                        className="text-xs text-accent hover:underline inline-flex items-center gap-1"
                       >
-                        檢視 →
+                        檢視 <ArrowRight size={12} />
                       </Link>
                     )}
                   </td>

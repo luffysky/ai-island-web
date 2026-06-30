@@ -255,8 +255,8 @@ export function AdminFloatingToolbar() {
         >
           <div className="flex items-center gap-1.5 text-pink-400">
             <GripVertical size={12} className="opacity-70" />
-            <span className="text-[10px] font-bold tracking-wider uppercase">
-              ✨ Admin 工具
+            <span className="text-[10px] font-bold tracking-wider uppercase inline-flex items-center gap-1">
+              <Sparkles size={11} /> Admin 工具
             </span>
           </div>
           <div className="flex items-center gap-1" data-no-drag>

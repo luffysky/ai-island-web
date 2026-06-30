@@ -2,6 +2,7 @@ import { createSupabaseServer } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { PageHero } from "@/components/admin/PageHero";
+import { AlertTriangle, Clock, ArrowRight, ClipboardList, CheckCircle } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -38,7 +39,7 @@ export default async function BreachPage() {
       {/* 緊急提醒 */}
       {incidents && incidents.some((i: any) => i.time_status === "overdue") && (
         <div className="mb-6 p-4 rounded-lg bg-red-500/10 border-2 border-red-500">
-          <h3 className="font-bold text-red-500">⚠️ 有逾期未通報的事件</h3>
+          <h3 className="font-bold text-red-500 flex items-center gap-2"><AlertTriangle className="w-4 h-4" /> 有逾期未通報的事件</h3>
           <p className="text-sm mt-1">
             根據個資法、發現外洩 72 小時內須通報。請立即處理。
           </p>
@@ -49,8 +50,8 @@ export default async function BreachPage() {
       <section className="mb-8">
         <h2 className="text-lg font-bold mb-3">進行中的事件</h2>
         {!incidents || incidents.length === 0 ? (
-          <div className="p-8 text-center text-fg-muted bg-bg-card rounded-lg border border-border">
-            ✅ 目前沒有未處理的外洩事件
+          <div className="p-8 flex items-center justify-center gap-2 text-fg-muted bg-bg-card rounded-lg border border-border">
+            <CheckCircle className="w-4 h-4" /> 目前沒有未處理的外洩事件
           </div>
         ) : (
           <div className="space-y-3">
@@ -78,13 +79,13 @@ export default async function BreachPage() {
                         #{inc.id} · {inc.incident_type}
                       </span>
                       {inc.time_status === "overdue" && (
-                        <span className="px-2 py-0.5 text-xs rounded bg-red-500 text-white">
-                          ⚠️ 已逾期
+                        <span className="px-2 py-0.5 text-xs rounded bg-red-500 text-white inline-flex items-center gap-1">
+                          <AlertTriangle className="w-3 h-3" /> 已逾期
                         </span>
                       )}
                       {inc.time_status === "urgent" && (
-                        <span className="px-2 py-0.5 text-xs rounded bg-yellow-500 text-black">
-                          ⏰ 急（{Math.floor(72 - inc.hours_since_discovered)} 小時內須通報）
+                        <span className="px-2 py-0.5 text-xs rounded bg-yellow-500 text-black inline-flex items-center gap-1">
+                          <Clock className="w-3 h-3" /> 急（{Math.floor(72 - inc.hours_since_discovered)} 小時內須通報）
                         </span>
                       )}
                     </div>
@@ -97,9 +98,9 @@ export default async function BreachPage() {
                   </div>
                   <Link
                     href={`./breach/${inc.id}` as any}
-                    className="text-accent text-sm hover:underline shrink-0"
+                    className="inline-flex items-center gap-1 text-accent text-sm hover:underline shrink-0"
                   >
-                    處理 →
+                    處理 <ArrowRight className="w-4 h-4" />
                   </Link>
                 </div>
               </div>
@@ -110,7 +111,7 @@ export default async function BreachPage() {
 
       {/* SOP 速查 */}
       <section className="p-5 rounded-lg bg-bg-card border border-border">
-        <h2 className="text-lg font-bold mb-3">📋 外洩應變 SOP</h2>
+        <h2 className="text-lg font-bold mb-3 flex items-center gap-2"><ClipboardList className="w-4 h-4" /> 外洩應變 SOP</h2>
         <ol className="space-y-2 text-sm">
           <li><strong>1. 圍堵（0-1 小時）</strong>：立即停止資料外流、修補漏洞</li>
           <li><strong>2. 評估（1-24 小時）</strong>：確認影響範圍、受影響用戶、外洩資料類型</li>

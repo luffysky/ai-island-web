@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { AiCostClient } from "./AiCostClient";
+import { DollarSign } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +16,7 @@ export default async function AiCostPage() {
   return (
     <div className="p-4 md:p-6 max-w-6xl mx-auto">
       <header className="mb-5">
-        <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-2">💰 AI 成本 / Unit Economics</h1>
+        <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-2"><DollarSign className="w-6 h-6" /> AI 成本 / Unit Economics</h1>
         <p className="text-sm text-fg-muted mt-1">
           每 user 月燒 / Top spender / Free vs Paid 平均 / breakeven 對照
         </p>

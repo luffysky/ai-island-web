@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Loader2, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { Loader2, AlertTriangle, CheckCircle2, BarChart3, Banknote, Flame } from "lucide-react";
 
 export function AiCostClient() {
   const [data, setData] = useState<any | null>(null);
@@ -50,7 +50,7 @@ export function AiCostClient() {
 
       {/* 分組 */}
       <div className="bg-bg-card border border-border rounded-xl p-5">
-        <h3 className="font-bold mb-3">📊 Free vs Paid 分組</h3>
+        <h3 className="font-bold mb-3 flex items-center gap-2"><BarChart3 className="w-4 h-4" /> Free vs Paid 分組</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {["free", "monthly", "yearly"].map((name) => {
             const segData = seg[name];
@@ -72,7 +72,7 @@ export function AiCostClient() {
 
       {/* Breakeven */}
       <div className="bg-bg-card border border-border rounded-xl p-5">
-        <h3 className="font-bold mb-3">💸 Breakeven 對照（目標 70% 毛利）</h3>
+        <h3 className="font-bold mb-3 flex items-center gap-2"><Banknote className="w-4 h-4" /> Breakeven 對照（目標 70% 毛利）</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <BreakevenCard plan="Monthly NT$ 299" data={be.monthly_plan} />
           <BreakevenCard plan="Yearly NT$ 2999" data={be.yearly_plan} />
@@ -81,7 +81,7 @@ export function AiCostClient() {
 
       {/* Top spenders */}
       <div className="bg-bg-card border border-border rounded-xl p-5">
-        <h3 className="font-bold mb-3">🔥 Top 10 spenders（{data.period_days} 天）</h3>
+        <h3 className="font-bold mb-3 flex items-center gap-2"><Flame className="w-4 h-4" /> Top 10 spenders（{data.period_days} 天）</h3>
         {top.length === 0 ? (
           <p className="text-fg-muted text-sm">沒人花</p>
         ) : (

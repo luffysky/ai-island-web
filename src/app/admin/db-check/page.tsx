@@ -2,6 +2,7 @@ import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { redirect } from "next/navigation";
 import { PageHero } from "@/components/admin/PageHero";
+import { AlertTriangle, CheckCircle, XCircle } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -73,8 +74,8 @@ export default async function AdminDbCheckPage() {
 
       {pending.length > 0 ? (
         <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4">
-          <div className="font-bold text-red-400">
-            ⚠️ {pending.length} 個 migration 需要跑
+          <div className="font-bold text-red-400 flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4" /> {pending.length} 個 migration 需要跑
           </div>
           <ul className="mt-2 text-sm space-y-1">
             {pending.map((p, i) => (
@@ -88,8 +89,8 @@ export default async function AdminDbCheckPage() {
           </ul>
         </div>
       ) : (
-        <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-4 text-green-400 text-sm">
-          ✅ 所有表 / 欄位都到位
+        <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-4 text-green-400 text-sm flex items-center gap-2">
+          <CheckCircle className="w-4 h-4" /> 所有表 / 欄位都到位
         </div>
       )}
 
@@ -111,11 +112,11 @@ export default async function AdminDbCheckPage() {
                   <td className="px-3 py-2 font-mono text-xs">{r.table}</td>
                   <td className="px-3 py-2">
                     {ok ? (
-                      <span className="text-green-400 text-xs">✅ OK</span>
+                      <span className="text-green-400 text-xs inline-flex items-center gap-1"><CheckCircle className="w-3 h-3" /> OK</span>
                     ) : !r.exists ? (
-                      <span className="text-red-400 text-xs">❌ 表不存在</span>
+                      <span className="text-red-400 text-xs inline-flex items-center gap-1"><XCircle className="w-3 h-3" /> 表不存在</span>
                     ) : (
-                      <span className="text-yellow-400 text-xs">⚠️ 缺欄位：{r.cols?.join(", ")}</span>
+                      <span className="text-yellow-400 text-xs inline-flex items-center gap-1"><AlertTriangle className="w-3 h-3" /> 缺欄位：{r.cols?.join(", ")}</span>
                     )}
                   </td>
                   <td className="px-3 py-2 text-xs text-fg-muted">{r.required_for}</td>

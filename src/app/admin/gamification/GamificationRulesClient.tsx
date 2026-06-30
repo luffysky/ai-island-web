@@ -106,7 +106,7 @@ export function GamificationRulesClient({ initial }: { initial: Rule[] }) {
     <div className="space-y-4">
       {/* 新增 */}
       <div className="rounded-xl bg-bg-card border border-border p-3 space-y-2">
-        <div className="text-sm font-bold">＋ 新增規則</div>
+        <div className="text-sm font-bold flex items-center gap-1"><Plus className="w-4 h-4" /> 新增規則</div>
         <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr_3fr_auto] gap-2">
           <select value={newKind} onChange={(e) => setNewKind(e.target.value)} className="bg-bg border border-border rounded-lg px-2 py-1.5 text-sm">
             {KINDS.map((k) => <option key={k} value={k}>{k}</option>)}

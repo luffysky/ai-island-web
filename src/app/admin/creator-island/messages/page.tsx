@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Lock } from "lucide-react";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/admin-guard";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
@@ -13,7 +14,7 @@ export default async function AdminDMPage({ searchParams }: { searchParams: Prom
   const gate = await requireAdmin();
   if (!gate.ok) redirect("/admin");
   if (!gate.isOwner) {
-    return <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-6 text-sm">🔒 私訊紀錄僅限站長（owner）檢視。</div>;
+    return <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-6 text-sm flex items-center gap-2"><Lock className="w-4 h-4 shrink-0" /> 私訊紀錄僅限站長（owner）檢視。</div>;
   }
 
   const { t } = await searchParams;
