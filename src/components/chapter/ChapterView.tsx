@@ -269,11 +269,14 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
     }
   };
 
+  const [showSkim, setShowSkim] = useState(false);
   const totalLessons = chapter.lessons.length;
   const completedCount = chapter.lessons.filter(l => completedIds.has(l.id)).length;
   const progress = totalLessons > 0 ? completedCount / totalLessons : 0;
-  // 掌握度推薦複習：只「快速滑過」(skim) 的節數 → 建議回頭細看
-  const skimCount = chapter.lessons.filter(l => lessonMastery(l.id, completedIds.has(l.id)) === "skim").length;
+  // 掌握度推薦複習：列出「只快速滑過」(skim) 的是哪幾節，點了就跳去細看（engTick 變動時重算）
+  const skimLessons = engTick >= 0
+    ? chapter.lessons.filter(l => lessonMastery(l.id, completedIds.has(l.id)) === "skim")
+    : [];
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 min-w-0 overflow-hidden">
@@ -343,9 +346,30 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
                 <span>預估 {Math.round(chapter.estimatedHours * 10) / 10} 小時</span>
               )}
             </div>
-            {skimCount > 0 && (
-              <div className="mt-2 text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1">
-                🔁 有 {skimCount} 節你只快速滑過、建議回頭細看
+            {skimLessons.length > 0 && (
+              <div className="mt-2">
+                <button
+                  onClick={() => setShowSkim(s => !s)}
+                  className="text-xs text-amber-600 dark:text-amber-400 inline-flex items-center gap-1 hover:underline"
+                >
+                  🔁 有 {skimLessons.length} 節你只快速滑過、建議回頭細看
+                  <span className="text-[10px] text-amber-500/80">{showSkim ? "▲ 收合" : "▼ 看是哪幾節"}</span>
+                </button>
+                {showSkim && (
+                  <div className="mt-2 flex flex-col gap-1.5">
+                    {skimLessons.map((l, i) => (
+                      <button
+                        key={l.id}
+                        onClick={() => scrollToLesson(l.id)}
+                        className="group text-left text-xs px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-300 hover:bg-amber-500/20 transition flex items-center gap-2"
+                      >
+                        <span className="font-bold tabular-nums shrink-0">第 {chapter.lessons.indexOf(l) + 1} 節</span>
+                        <span className="flex-1 truncate text-fg group-hover:text-amber-700 dark:group-hover:text-amber-200">{l.title}</span>
+                        <span className="shrink-0 text-amber-500 group-hover:translate-x-0.5 transition">回頭看 →</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </div>
