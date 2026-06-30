@@ -130,7 +130,7 @@ export function FloatingNoteButton({
             >
               <span className="text-sm font-semibold flex items-center gap-1.5">
                 <GripHorizontal size={14} className="text-fg-muted" />
-                📝 {activeLesson.number ?? activeLesson.id}
+                <StickyNote size={14} /> {activeLesson.number ?? activeLesson.id}
               </span>
               <button
                 onMouseDown={(e) => e.stopPropagation()}

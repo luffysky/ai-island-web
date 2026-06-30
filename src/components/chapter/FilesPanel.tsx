@@ -1,6 +1,6 @@
 "use client";
 import { FileResource } from "@/lib/types";
-import { Download, FileCode, FileText, FileJson, Database } from "lucide-react";
+import { Download, FileCode, FileText, FileJson, Database, Paperclip } from "lucide-react";
 
 const typeLabels: Record<string, { label: string; color: string }> = {
   starter: { label: "起手檔案", color: "bg-blue-500/20 text-blue-900 dark:text-blue-200" },
@@ -38,7 +38,7 @@ export function FilesPanel({ files }: { files: FileResource[] }) {
   return (
     <div className="my-4 rounded-xl border border-border bg-bg-card p-4">
       <div className="flex items-center gap-2 mb-3 font-semibold text-sm">
-        📎 <span>檔案範例</span>
+        <Paperclip size={16} /> <span>檔案範例</span>
       </div>
       <div className="space-y-2">
         {files.map((f, i) => {

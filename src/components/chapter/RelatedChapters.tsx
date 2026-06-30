@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Layers, BookOpen } from "lucide-react";
+import { ArrowRight, ArrowLeft, Layers, BookOpen } from "lucide-react";
 import { getChapterMetas } from "@/lib/content";
 import type { Chapter } from "@/lib/types";
 import { chapterDisplayNumberById } from "@/lib/chapter-display";
@@ -40,7 +40,7 @@ export async function RelatedChapters({ chapter }: { chapter: Chapter }) {
               href={`/chapters/${prev.id}` as any}
               className="block p-4 rounded-2xl border border-border bg-bg-card hover:border-accent hover:bg-bg-elevated/40 transition group"
             >
-              <div className="text-[10px] text-fg-muted mb-1 inline-flex items-center gap-1">← 上一章</div>
+              <div className="text-[10px] text-fg-muted mb-1 inline-flex items-center gap-1"><ArrowLeft size={11} /> 上一章</div>
               <div className="font-bold text-sm group-hover:text-accent transition">
                 Ch{chapterDisplayNumberById(prev.id)} {prev.title}
               </div>
@@ -52,7 +52,7 @@ export async function RelatedChapters({ chapter }: { chapter: Chapter }) {
               href={`/chapters/${next.id}` as any}
               className="block p-4 rounded-2xl border border-border bg-bg-card hover:border-accent hover:bg-bg-elevated/40 transition group text-right"
             >
-              <div className="text-[10px] text-fg-muted mb-1 inline-flex items-center gap-1">下一章 →</div>
+              <div className="text-[10px] text-fg-muted mb-1 inline-flex items-center gap-1">下一章 <ArrowRight size={11} /></div>
               <div className="font-bold text-sm group-hover:text-accent transition">
                 Ch{chapterDisplayNumberById(next.id)} {next.title}
               </div>

@@ -7,7 +7,7 @@ import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import rehypeRaw from "rehype-raw";
 import { rehypeSmartLang } from "@/lib/rehype-smart-lang";
-import { Check, Lock, List, Clock } from "lucide-react";
+import { Check, Lock, List, Clock, ChevronUp, ChevronDown, Gamepad2, Pencil } from "lucide-react";
 import { estimateReadingTime, formatReadingTime } from "@/lib/reading-time";
 import { motion } from "framer-motion";
 import { PlaygroundCard } from "./PlaygroundCard";
@@ -131,7 +131,7 @@ export function LessonCard({
             onClick={() => setExpanded(!expanded)}
             className="text-sm text-accent hover:underline mb-3 inline-flex items-center gap-1"
           >
-            {expanded ? "▲ 收起完整說明" : "▼ 展開完整說明"}
+            {expanded ? <><ChevronUp size={14} /> 收起完整說明</> : <><ChevronDown size={14} /> 展開完整說明</>}
           </button>
           {expanded && (
             <div className="prose-custom mb-4 min-w-0 max-w-full overflow-hidden">
@@ -218,7 +218,7 @@ export function LessonCard({
       {lesson.playgrounds && lesson.playgrounds.length > 0 && (
         <div className="mt-4">
           <div className="text-sm font-semibold mb-2 flex items-center gap-2">
-            🎮 <span>學習園地</span>
+            <Gamepad2 size={16} /> <span>學習園地</span>
           </div>
           {lesson.playgrounds.map((p) => (
             <PlaygroundCard key={p.key} playground={p} lessonId={lesson.id} isLoggedIn={isLoggedIn} onRun={() => onEngage?.({ playgroundRun: true })} />
@@ -247,7 +247,7 @@ export function LessonCard({
       {lesson.exercise && (
         <div className="border-t border-border mt-4 pt-4">
           <div className="text-sm font-semibold mb-2 flex items-center gap-2">
-            ✏️ <span>動手練習</span>
+            <Pencil size={16} /> <span>動手練習</span>
           </div>
           <p className="text-sm mb-2">{lesson.exercise.question}</p>
           {lesson.exercise.hint && (
@@ -264,9 +264,9 @@ export function LessonCard({
       {isLoggedIn && !completed && (
         <button
           onClick={() => onComplete(lesson.id, lesson.xp)}
-          className="mt-4 w-full px-4 py-2 bg-accent text-black rounded-lg font-bold hover:scale-[1.02] transition"
+          className="mt-4 w-full inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-accent text-black rounded-lg font-bold hover:scale-[1.02] transition"
         >
-          ✓ 標記完成 (+{lesson.xp} XP)
+          <Check size={16} /> 標記完成 (+{lesson.xp} XP)
         </button>
       )}
     </motion.div>

@@ -97,7 +97,7 @@ export function NotePanel({
         >
           <span className="text-sm font-semibold flex items-center gap-1.5">
             <GripHorizontal size={14} className="text-fg-muted" />
-            📝 我的筆記
+            <StickyNote size={14} /> 我的筆記
           </span>
           <button
             onMouseDown={(e) => e.stopPropagation()}

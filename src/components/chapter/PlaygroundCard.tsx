@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { Playground } from "@/lib/types";
-import { Play, RotateCcw, Copy, Check, Save, Maximize2, Minimize2, Loader2, TerminalSquare } from "lucide-react";
+import { Play, RotateCcw, Copy, Check, Save, Maximize2, Minimize2, Loader2, TerminalSquare, Download } from "lucide-react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { usePyodide } from "@/hooks/usePyodide";
 import { VirtualTerminal } from "./VirtualTerminal";
@@ -420,7 +420,7 @@ export function PlaygroundCard({
               className={`p-1.5 rounded text-xs ${showStdin ? "bg-bg-card" : "hover:bg-bg-card"}`}
               title="stdin 輸入（input() 會一行一行讀這裡）"
             >
-              📥
+              <Download size={14} />
             </button>
           )}
           <button onClick={copy} className="p-1.5 hover:bg-bg-card rounded" title="複製">
@@ -458,7 +458,7 @@ export function PlaygroundCard({
       {/* stdin */}
       {showStdin && (isSandbox || isPython) && (
         <div className="px-3 py-2 border-b border-border bg-bg shrink-0">
-          <div className="text-xs text-fg-muted mb-1">📥 標準輸入（stdin）：{isPython && <span className="text-fg-muted/70">每行一個 input()</span>}</div>
+          <div className="text-xs text-fg-muted mb-1 flex items-center gap-1.5"><Download size={12} /> 標準輸入（stdin）：{isPython && <span className="text-fg-muted/70">每行一個 input()</span>}</div>
           <textarea
             value={stdin}
             onChange={(e) => setStdin(e.target.value)}
@@ -530,7 +530,7 @@ export function PlaygroundCard({
       {!showPreview && (
         <div className="border-t border-border p-3 bg-bg-elevated shrink-0 max-h-[300px] overflow-auto">
           <div className="text-xs text-fg-muted mb-1 font-mono flex items-center justify-between">
-            <span>▶ 輸出</span>
+            <span className="inline-flex items-center gap-1"><Play size={11} fill="currentColor" /> 輸出</span>
             <div className="flex items-center gap-2">
               {isPython && <span className="text-xs">🐍 瀏覽器內 Pyodide</span>}
               {!isPython && isSandbox && <span className="text-xs">⚡ 遠端沙盒 (Piston)</span>}
@@ -539,10 +539,10 @@ export function PlaygroundCard({
                   onClick={() => {
                     navigator.clipboard?.writeText(output);
                   }}
-                  className="px-2 py-0.5 rounded hover:bg-white/10 transition text-[10px]"
+                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded hover:bg-white/10 transition text-[10px]"
                   aria-label="複製輸出"
                 >
-                  📋 複製
+                  <Copy size={11} /> 複製
                 </button>
               )}
             </div>

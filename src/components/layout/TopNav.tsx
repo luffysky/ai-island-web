@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { useAuth } from "@/lib/auth-context";
-import { Flame, Coins, Heart, LogOut, Settings, Trophy, User as UserIcon, ChevronDown, Menu, X } from "lucide-react";
+import { Flame, Coins, Heart, LogOut, Settings, Trophy, User as UserIcon, ChevronDown, Menu, X, Palmtree, Crown, BarChart3, Key } from "lucide-react";
 import { TodoDropdownButton } from "@/components/todo/TodoDropdown";
 import { CountUp } from "@/components/ui/CountUp";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
@@ -97,7 +97,7 @@ export function TopNav() {
             {mobileMenu ? <X size={18} /> : <Menu size={18} />}
           </button>
           <Link href="/" className="flex items-center gap-2 font-bold text-lg" onClick={() => setMobileMenu(false)}>
-            <span>🏝️</span>
+            <Palmtree size={20} className="text-accent" />
             <span className="bg-gradient-to-r from-accent to-accent-2 bg-clip-text text-transparent">AI 島</span>
           </Link>
         </div>
@@ -184,7 +184,7 @@ export function TopNav() {
                                   : "bg-gray-500/20 text-gray-900 dark:text-gray-100"
                               }`}
                             >
-                              {displayProfile.role === "owner" ? "👑 owner" : (displayProfile.role || "member")}
+                              {displayProfile.role === "owner" ? <span className="inline-flex items-center gap-1"><Crown size={11} /> owner</span> : (displayProfile.role || "member")}
                             </span>
                           </div>
                         </div>
@@ -205,7 +205,7 @@ export function TopNav() {
                       className="flex items-center gap-3 px-4 py-2 hover:bg-bg-elevated transition text-sm text-fg-muted"
                       onClick={() => setOpen(false)}
                     >
-                      <span className="ml-7">📊 學習進度</span>
+                      <span className="ml-7 inline-flex items-center gap-1.5"><BarChart3 size={16} /> 學習進度</span>
                     </Link>
 
                     <Link
@@ -231,7 +231,7 @@ export function TopNav() {
                       className="flex items-center gap-3 px-4 py-2 hover:bg-bg-elevated transition"
                       onClick={() => setOpen(false)}
                     >
-                      <span>🔑</span>
+                      <Key size={16} />
                       <span>我的 AI Keys（BYOK）</span>
                     </Link>
 
@@ -242,7 +242,7 @@ export function TopNav() {
                         onClick={() => setOpen(false)}
                       >
                         <Settings size={16} />
-                        <span>{displayProfile.role === "owner" ? "👑 平台後台 (林董)" : "後台管理"}</span>
+                        <span className="inline-flex items-center gap-1.5">{displayProfile.role === "owner" ? <><Crown size={14} /> 平台後台 (林董)</> : "後台管理"}</span>
                       </Link>
                     )}
 

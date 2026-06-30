@@ -2,7 +2,7 @@
 import { Chapter } from "@/lib/types";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, Swords } from "lucide-react";
+import { Heart, Swords, RotateCcw } from "lucide-react";
 
 export function BossBattle({ chapter, engine, isLoggedIn }: { chapter: Chapter; engine: any; isLoggedIn: boolean }) {
   const quiz = chapter.quiz!;
@@ -59,7 +59,7 @@ export function BossBattle({ chapter, engine, isLoggedIn }: { chapter: Chapter; 
         className="p-8 rounded-2xl bg-gradient-to-br from-red-950/40 to-purple-950/40 border-2 border-red-500/40 text-center"
       >
         <div className="text-6xl mb-4 animate-pulse-glow inline-block rounded-full">{boss.emoji}</div>
-        <h2 className="text-3xl font-bold mb-2 text-red-400">⚔️ Boss 戰：{boss.name}</h2>
+        <h2 className="text-3xl font-bold mb-2 text-red-400 flex items-center justify-center gap-2"><Swords size={26} /> Boss 戰：{boss.name}</h2>
         <p className="text-fg-muted mb-1">{boss.description}</p>
         <div className="flex justify-center gap-6 my-6 text-sm">
           <span>HP <span className="text-red-400 font-bold">{boss.hp}</span></span>
@@ -119,9 +119,9 @@ export function BossBattle({ chapter, engine, isLoggedIn }: { chapter: Chapter; 
 
         <button
           onClick={() => { setStarted(false); setSubmitted(false); setAnswers({}); setCurrentQ(0); setBossHp(boss.hp); setHearts(5); setResult(null); }}
-          className="mt-6 px-6 py-2 bg-bg-elevated border border-border rounded-lg hover:border-accent"
+          className="mt-6 inline-flex items-center gap-1.5 px-6 py-2 bg-bg-elevated border border-border rounded-lg hover:border-accent"
         >
-          🔁 再戰一次
+          <RotateCcw size={16} /> 再戰一次
         </button>
       </motion.div>
     );

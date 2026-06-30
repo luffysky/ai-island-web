@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { ArrowLeft, Copy, Music, Film, Link2 } from "lucide-react";
 
 type Work = { id: string; title: string; body: string; work_type: string; status: string; meta: any; published_blog_id: string | null };
 
@@ -51,7 +52,7 @@ export function WorkEditor({ work, canEdit, usedFragments = [], derivedCount = 0
   return (
     <div className="max-w-3xl mx-auto px-6 py-10 space-y-4">
       <div className="flex items-center justify-between">
-        <Link href="/creator-island/works" className="text-sm text-accent hover:underline">← 作品庫</Link>
+        <Link href="/creator-island/works" className="text-sm text-accent hover:underline inline-flex items-center gap-1.5"><ArrowLeft size={14} /> 作品庫</Link>
         <div className="flex gap-2 text-sm">
           {canEdit && <button onClick={save} disabled={busy !== null} className="px-3 py-1.5 rounded-full bg-accent text-white disabled:opacity-40">{busy === "save" ? "…" : "儲存"}</button>}
           {canEdit && work.work_type === "article" && <button onClick={publish} disabled={busy !== null} className="px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 disabled:opacity-40">發布成文章</button>}
@@ -64,7 +65,7 @@ export function WorkEditor({ work, canEdit, usedFragments = [], derivedCount = 0
       <input value={title} onChange={(e) => setTitle(e.target.value)} disabled={!canEdit}
         className="w-full bg-transparent text-2xl font-bold outline-none border-b border-border pb-2" />
       <div className="flex items-center gap-2 text-xs text-fg-muted">
-        <span className="px-2 py-0.5 rounded-full bg-violet-500/15 text-violet-300">{work.work_type}</span>
+        <span className="px-2 py-0.5 rounded-full bg-violet-500/15 text-violet-700 dark:text-violet-300">{work.work_type}</span>
         {canEdit && (
           <select value={status} onChange={(e) => setStatus(e.target.value)} className="bg-bg-elevated border border-border rounded-full px-2 py-0.5">
             <option value="draft">草稿</option><option value="in_progress">進行中</option><option value="done">完成</option><option value="archived">已封存</option>
@@ -75,22 +76,22 @@ export function WorkEditor({ work, canEdit, usedFragments = [], derivedCount = 0
         className="w-full bg-bg-card border border-border rounded-xl p-4 text-sm outline-none focus:border-accent resize-y whitespace-pre-wrap" />
 
       <div className="flex flex-wrap gap-2">
-        <button onClick={() => copy(body, "內容")} className="text-xs px-3 py-1.5 rounded-full bg-bg-elevated hover:text-accent">📋 複製{work.work_type === "song" ? "歌詞" : "內容"}</button>
-        {meta.sunoPrompt && <button onClick={() => copy(meta.sunoPrompt, "Suno 提示詞")} className="text-xs px-3 py-1.5 rounded-full bg-bg-elevated hover:text-accent">📋 複製 Suno 提示詞</button>}
-        {meta.mvPrompt && <button onClick={() => copy(meta.mvPrompt, "MV 提示詞")} className="text-xs px-3 py-1.5 rounded-full bg-bg-elevated hover:text-accent">📋 複製 MV 提示詞</button>}
-        {meta.sunoPrompt && <button onClick={() => copy(`${title}\n\n${body}\n\n— Suno —\n${meta.sunoPrompt}\n\n— MV —\n${meta.mvPrompt ?? ""}`, "全部")} className="text-xs px-3 py-1.5 rounded-full bg-accent/15 text-accent">📋 複製全部</button>}
+        <button onClick={() => copy(body, "內容")} className="text-xs px-3 py-1.5 rounded-full bg-bg-elevated hover:text-accent inline-flex items-center gap-1.5"><Copy size={14} /> 複製{work.work_type === "song" ? "歌詞" : "內容"}</button>
+        {meta.sunoPrompt && <button onClick={() => copy(meta.sunoPrompt, "Suno 提示詞")} className="text-xs px-3 py-1.5 rounded-full bg-bg-elevated hover:text-accent inline-flex items-center gap-1.5"><Copy size={14} /> 複製 Suno 提示詞</button>}
+        {meta.mvPrompt && <button onClick={() => copy(meta.mvPrompt, "MV 提示詞")} className="text-xs px-3 py-1.5 rounded-full bg-bg-elevated hover:text-accent inline-flex items-center gap-1.5"><Copy size={14} /> 複製 MV 提示詞</button>}
+        {meta.sunoPrompt && <button onClick={() => copy(`${title}\n\n${body}\n\n— Suno —\n${meta.sunoPrompt}\n\n— MV —\n${meta.mvPrompt ?? ""}`, "全部")} className="text-xs px-3 py-1.5 rounded-full bg-accent/15 text-accent inline-flex items-center gap-1.5"><Copy size={14} /> 複製全部</button>}
       </div>
       {(meta.sunoPrompt || meta.mvPrompt) && (
         <div className="bg-bg-elevated rounded-xl p-3 text-xs space-y-1">
-          {meta.sunoPrompt && <div><b>🎵 Suno：</b>{meta.sunoPrompt}</div>}
-          {meta.mvPrompt && <div><b>🎬 MV：</b>{meta.mvPrompt}</div>}
+          {meta.sunoPrompt && <div><b className="inline-flex items-center gap-1.5"><Music size={14} /> Suno：</b>{meta.sunoPrompt}</div>}
+          {meta.mvPrompt && <div><b className="inline-flex items-center gap-1.5"><Film size={14} /> MV：</b>{meta.mvPrompt}</div>}
         </div>
       )}
 
       {/* E3 創作家譜：這篇由哪些碎片長成 + 衍生數 */}
       {(usedFragments.length > 0 || derivedCount > 0) && (
         <div className="bg-bg-card border border-border rounded-xl p-3 text-xs space-y-1">
-          <div className="font-bold text-fg-muted">🔗 創作家譜</div>
+          <div className="font-bold text-fg-muted inline-flex items-center gap-1.5"><Link2 size={14} /> 創作家譜</div>
           {usedFragments.length > 0 && (
             <div>由 <b>{usedFragments.length}</b> 個碎片長成：{usedFragments.map((f) => f.title).join("、")}</div>
           )}

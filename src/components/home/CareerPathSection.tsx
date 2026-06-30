@@ -1,11 +1,12 @@
 import { CAREER_PATHS } from "@/lib/types";
 import { SITE_STATS } from "@/lib/site-stats";
 import Link from "next/link";
+import { Target, ArrowRight } from "lucide-react";
 
 export function CareerPathSection() {
   return (
     <section className="max-w-6xl mx-auto px-6 py-16">
-      <h2 className="text-3xl font-bold mb-2 text-center">🎯 選一條職業路線</h2>
+      <h2 className="text-3xl font-bold mb-2 inline-flex w-full items-center justify-center gap-2"><Target size={28} /> 選一條職業路線</h2>
       <p className="text-center text-fg-muted mb-10">不用全 {SITE_STATS.chapterCount} 章—鎖定目標、走最短路徑、最快上場</p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -22,7 +23,7 @@ export function CareerPathSection() {
               </div>
             </div>
             <h3 className="font-bold text-lg mb-1">{path.name}</h3>
-            <div className="text-sm text-accent mb-2">→ {path.title}</div>
+            <div className="text-sm text-accent mb-2 inline-flex items-center gap-1.5"><ArrowRight size={14} /> {path.title}</div>
             <p className="text-xs text-fg-muted leading-relaxed">{path.description}</p>
           </Link>
         ))}

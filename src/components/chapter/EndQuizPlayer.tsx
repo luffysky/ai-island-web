@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Sparkles, Trophy, RotateCw, Check, X, Lock } from "lucide-react";
+import { Sparkles, Trophy, RotateCw, Check, X, Lock, Zap, Coins } from "lucide-react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { trackEvent } from "@/lib/analytics";
 import { useAuth } from "@/lib/auth-context";
@@ -337,13 +337,13 @@ export function EndQuizPlayer({ chapterId }: { chapterId: number }) {
         {(result.xpAwarded > 0 || result.zCoinAwarded > 0) && (
           <div className="mt-4 inline-flex items-center gap-3 px-4 py-2 rounded-full bg-accent/15 text-sm">
             {result.xpAwarded > 0 && (
-              <span>
-                ⚡ <span className="font-bold text-accent">+{result.xpAwarded} XP</span>
+              <span className="inline-flex items-center gap-1">
+                <Zap size={14} className="text-accent" /> <span className="font-bold text-accent">+{result.xpAwarded} XP</span>
               </span>
             )}
             {result.zCoinAwarded > 0 && (
-              <span>
-                🪙 <span className="font-bold text-yellow-400">+{result.zCoinAwarded}</span>
+              <span className="inline-flex items-center gap-1">
+                <Coins size={14} className="text-yellow-400" /> <span className="font-bold text-yellow-400">+{result.zCoinAwarded}</span>
               </span>
             )}
           </div>

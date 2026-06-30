@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { Store, ArrowLeft, Sparkles, Plus, ThumbsUp, Bookmark, GitFork, MessageCircle } from "lucide-react";
 
 type Listing = { id: string; asset_id: string; asset_type: string; title: string; description: string; price_z: number };
 type Asset = { id: string; type: "fragment" | "work"; title: string };
@@ -60,8 +61,8 @@ export function MarketClient({ workspaceId, listings, myAssets, poolPicks = [] }
   return (
     <div className="max-w-4xl mx-auto px-6 py-10 space-y-5">
       <header className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">🏪 市集 <span className="text-xs font-normal text-fg-muted">Z 幣交易・抽成 0%</span></h1>
-        <Link href="/creator-island" className="text-sm text-accent hover:underline">← 回島</Link>
+        <h1 className="text-2xl font-bold inline-flex items-center gap-1.5"><Store size={20} /> 市集 <span className="text-xs font-normal text-fg-muted">Z 幣交易・抽成 0%</span></h1>
+        <Link href="/creator-island" className="text-sm text-accent hover:underline inline-flex items-center gap-1.5"><ArrowLeft size={14} /> 回島</Link>
       </header>
       <div className="flex gap-2 text-sm">
         <button onClick={() => setTab("browse")} className={`px-3 py-1.5 rounded-full ${tab === "browse" ? "bg-accent text-white" : "bg-bg-elevated"}`}>瀏覽</button>
@@ -87,13 +88,13 @@ export function MarketClient({ workspaceId, listings, myAssets, poolPicks = [] }
 
       {tab === "browse" && picks.length > 0 && (
         <div className="bg-gradient-to-br from-violet-500/10 to-pink-500/10 border border-violet-500/25 rounded-2xl p-4">
-          <div className="text-sm font-bold mb-2">✨ 靈感精選 <span className="text-xs font-normal text-fg-muted">來自全站碎片庫，看到喜歡的就帶回島上</span></div>
+          <div className="text-sm font-bold mb-2 inline-flex items-center gap-1.5"><Sparkles size={14} /> 靈感精選 <span className="text-xs font-normal text-fg-muted">來自全站碎片庫，看到喜歡的就帶回島上</span></div>
           <div className="grid sm:grid-cols-2 gap-2">
             {picks.map((p) => (
               <div key={p.id} className="bg-bg-card/60 rounded-lg px-3 py-2 text-sm flex items-start gap-2">
-                <span className={`text-[10px] px-1.5 py-0.5 rounded-full shrink-0 ${p.rarity === "SSR" ? "bg-amber-400/20 text-amber-300" : p.rarity === "SR" ? "bg-violet-400/20 text-violet-300" : "bg-bg-elevated text-fg-muted"}`}>{p.rarity}</span>
+                <span className={`text-[10px] px-1.5 py-0.5 rounded-full shrink-0 ${p.rarity === "SSR" ? "bg-amber-400/20 text-amber-700 dark:text-amber-300" : p.rarity === "SR" ? "bg-violet-400/20 text-violet-700 dark:text-violet-300" : "bg-bg-elevated text-fg-muted"}`}>{p.rarity}</span>
                 <span className="flex-1">{p.text}</span>
-                <button onClick={() => grabPick(p)} disabled={busy === "pick" + p.id} className="shrink-0 text-xs text-accent hover:underline disabled:opacity-40">＋帶走</button>
+                <button onClick={() => grabPick(p)} disabled={busy === "pick" + p.id} className="shrink-0 text-xs text-accent hover:underline disabled:opacity-40 inline-flex items-center gap-1.5"><Plus size={12} />帶走</button>
               </div>
             ))}
           </div>
@@ -105,14 +106,14 @@ export function MarketClient({ workspaceId, listings, myAssets, poolPicks = [] }
           {rows.length === 0 && <div className="text-sm text-fg-muted col-span-2 text-center py-8">還沒有人上架。去「上架」分享你的第一個資產。</div>}
           {rows.map((l) => (
             <div key={l.id} className="bg-bg-card border border-border rounded-xl p-4 space-y-2">
-              <div className="font-bold text-sm">{l.title} <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-violet-500/15 text-violet-300">{l.asset_type}</span></div>
+              <div className="font-bold text-sm">{l.title} <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-violet-500/15 text-violet-700 dark:text-violet-300">{l.asset_type}</span></div>
               {l.description && <div className="text-xs text-fg-muted line-clamp-2">{l.description}</div>}
               <div className="flex items-center gap-2 flex-wrap text-xs">
                 <button onClick={() => buy(l.id)} disabled={busy === l.id} className="px-3 py-1 rounded-full bg-accent text-white disabled:opacity-40">{l.price_z > 0 ? `購買 ${l.price_z} Z` : "免費取得"}</button>
-                <button onClick={() => act("like", l)} className="px-2 py-1 rounded-full bg-bg-elevated hover:text-accent">👍 讚</button>
-                <button onClick={() => act("collect", l)} className="px-2 py-1 rounded-full bg-bg-elevated hover:text-accent">🔖 收藏</button>
-                <button onClick={() => act("fork", l)} className="px-2 py-1 rounded-full bg-bg-elevated hover:text-accent">🍴 Fork</button>
-                <button onClick={async () => { const body = prompt("留言："); if (!body) return; setBusy(l.id + "c"); setErr(null); try { await call("/api/creator-island/community/comments", "POST", { assetId: l.asset_id, assetType: l.asset_type, body }); setMsg("已留言"); } catch (e: any) { setErr(e.message); } finally { setBusy(null); } }} className="px-2 py-1 rounded-full bg-bg-elevated hover:text-accent">💬 留言</button>
+                <button onClick={() => act("like", l)} className="px-2 py-1 rounded-full bg-bg-elevated hover:text-accent inline-flex items-center gap-1.5"><ThumbsUp size={14} /> 讚</button>
+                <button onClick={() => act("collect", l)} className="px-2 py-1 rounded-full bg-bg-elevated hover:text-accent inline-flex items-center gap-1.5"><Bookmark size={14} /> 收藏</button>
+                <button onClick={() => act("fork", l)} className="px-2 py-1 rounded-full bg-bg-elevated hover:text-accent inline-flex items-center gap-1.5"><GitFork size={14} /> Fork</button>
+                <button onClick={async () => { const body = prompt("留言："); if (!body) return; setBusy(l.id + "c"); setErr(null); try { await call("/api/creator-island/community/comments", "POST", { assetId: l.asset_id, assetType: l.asset_type, body }); setMsg("已留言"); } catch (e: any) { setErr(e.message); } finally { setBusy(null); } }} className="px-2 py-1 rounded-full bg-bg-elevated hover:text-accent inline-flex items-center gap-1.5"><MessageCircle size={14} /> 留言</button>
               </div>
             </div>
           ))}

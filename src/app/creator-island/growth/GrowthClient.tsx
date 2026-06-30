@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { TrendingUp, ArrowLeft, Dna } from "lucide-react";
 
 type Dna = { traits: any; confidence: number; updated_at: string } | null;
 
@@ -24,8 +25,8 @@ export function GrowthClient({ stats, initialDna }: { stats: { fragments: number
   return (
     <div className="max-w-3xl mx-auto px-6 py-10 space-y-5">
       <header className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">📈 成長</h1>
-        <Link href="/creator-island" className="text-sm text-accent hover:underline">← 回島</Link>
+        <h1 className="text-2xl font-bold inline-flex items-center gap-1.5"><TrendingUp size={20} /> 成長</h1>
+        <Link href="/creator-island" className="text-sm text-accent hover:underline inline-flex items-center gap-1.5"><ArrowLeft size={14} /> 回島</Link>
       </header>
 
       <div className="grid grid-cols-3 gap-3">
@@ -40,7 +41,7 @@ export function GrowthClient({ stats, initialDna }: { stats: { fragments: number
       {/* E9 創作 DNA 卡 */}
       <div className="bg-gradient-to-br from-accent-3/10 via-pink-500/10 to-violet-500/10 border border-accent-3/30 rounded-2xl p-5 space-y-3">
         <div className="flex items-center justify-between">
-          <div className="font-bold">🧬 我的創作 DNA</div>
+          <div className="font-bold inline-flex items-center gap-1.5"><Dna size={16} /> 我的創作 DNA</div>
           <button onClick={recompute} disabled={busy} className="text-xs px-3 py-1.5 rounded-full bg-accent text-white disabled:opacity-40">{busy ? "分析中…" : dna ? "更新" : "產生"}</button>
         </div>
         {err && <div className="text-xs text-red-400">⚠️ {err}</div>}

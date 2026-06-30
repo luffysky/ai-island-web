@@ -4,6 +4,7 @@ import Link from "next/link";
 import { STAGE_COLORS, DIFFICULTY_LABELS } from "@/lib/utils";
 import { chapterDisplayNumberById } from "@/lib/chapter-display";
 import { motion } from "framer-motion";
+import { BookOpen } from "lucide-react";
 
 interface Props {
   chapters: any[];
@@ -93,7 +94,7 @@ export function ChapterMap({ chapters }: Props) {
                       </div>
                     ) : (
                       <div className="mt-2 text-xs flex items-center gap-1 text-fg-muted">
-                        <span>📖</span>
+                        <BookOpen size={14} />
                         <span className="truncate">速查附錄</span>
                       </div>
                     )}

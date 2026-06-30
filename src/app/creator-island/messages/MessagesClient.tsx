@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { ArrowLeft, Paperclip } from "lucide-react";
 import { uploadMedia } from "@/lib/creator-upload";
 
 type Thread = { id: string; last_message_at?: string; other?: { id: string; username?: string; display_name?: string; avatar_url?: string } };
@@ -66,7 +67,7 @@ export function MessagesClient({ initialThreads, meId, initialThreadId }: { init
         {active && (
           <>
             <div className="p-3 border-b border-border text-sm font-bold flex items-center gap-2">
-              <button onClick={() => setActive(null)} className="sm:hidden text-fg-muted">←</button>{nm(activeThread?.other)}
+              <button onClick={() => setActive(null)} className="sm:hidden text-fg-muted"><ArrowLeft size={16} /></button>{nm(activeThread?.other)}
             </div>
             <div className="flex-1 overflow-y-auto p-3 space-y-2 max-h-[55vh]">
               {err && <div className="text-xs text-red-400">⚠️ {err}</div>}
@@ -81,7 +82,7 @@ export function MessagesClient({ initialThreads, meId, initialThreadId }: { init
               ))}
             </div>
             <div className="p-2 border-t border-border flex items-center gap-2">
-              <label className="cursor-pointer text-lg hover:text-accent">📎<input type="file" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) sendMedia(f); e.currentTarget.value = ""; }} /></label>
+              <label className="cursor-pointer hover:text-accent"><Paperclip size={18} /><input type="file" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) sendMedia(f); e.currentTarget.value = ""; }} /></label>
               <input value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") send(); }} placeholder="訊息…" className="flex-1 bg-bg-elevated border border-border rounded-full px-3 py-2 text-sm outline-none focus:border-accent" />
               <button onClick={send} disabled={busy} className="px-4 py-2 rounded-full bg-accent text-white text-sm disabled:opacity-40">送</button>
             </div>

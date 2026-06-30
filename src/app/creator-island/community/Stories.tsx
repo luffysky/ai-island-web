@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Plus, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { uploadMedia } from "@/lib/creator-upload";
 
 type Story = { id: string; user_id: string; media_url: string; media_type: "image" | "video"; caption?: string | null; created_at: string; author?: { id?: string; username?: string; display_name?: string; avatar_url?: string } };
@@ -50,7 +51,7 @@ export function Stories({ initial, meId }: { initial: Story[]; meId: string }) {
     <div>
       <div className="flex gap-3 overflow-x-auto pb-1">
         <label className="shrink-0 flex flex-col items-center gap-1 cursor-pointer">
-          <div className="w-16 h-16 rounded-full border-2 border-dashed border-accent/50 grid place-items-center text-accent text-xl">{busy ? "…" : "＋"}</div>
+          <div className="w-16 h-16 rounded-full border-2 border-dashed border-accent/50 grid place-items-center text-accent text-xl">{busy ? "…" : <Plus size={20} />}</div>
           <span className="text-[10px] text-fg-muted">{busy ? "上傳" : "我的限動"}</span>
           <input type="file" accept="image/*,video/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) add(f); e.currentTarget.value = ""; }} />
         </label>
@@ -68,17 +69,17 @@ export function Stories({ initial, meId }: { initial: Story[]; meId: string }) {
       <AnimatePresence>
         {cur && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center" onClick={() => setViewer(null)}>
-            <button onClick={(e) => { e.stopPropagation(); step(-1); }} className="absolute left-2 sm:left-8 text-white/70 text-3xl">‹</button>
+            <button onClick={(e) => { e.stopPropagation(); step(-1); }} className="absolute left-2 sm:left-8 text-white/70"><ChevronLeft size={32} /></button>
             <div className="max-w-md w-full px-4" onClick={(e) => e.stopPropagation()}>
               <div className="flex items-center gap-2 mb-2 text-white text-sm">
                 <span className="font-bold">{name(cur.author)}</span>
                 <span className="text-xs text-white/50">{new Date(cur.created_at).toLocaleString("zh-TW")}</span>
-                <button onClick={() => setViewer(null)} className="ml-auto text-white/70">✕</button>
+                <button onClick={() => setViewer(null)} className="ml-auto text-white/70"><X size={18} /></button>
               </div>
               {cur.media_type === "video" ? <video src={cur.media_url} autoPlay controls className="w-full rounded-xl max-h-[78vh]" /> : <img src={cur.media_url} className="w-full rounded-xl max-h-[78vh] object-contain" />}
               {cur.caption && <div className="text-white text-sm mt-2 text-center">{cur.caption}</div>}
             </div>
-            <button onClick={(e) => { e.stopPropagation(); step(1); }} className="absolute right-2 sm:right-8 text-white/70 text-3xl">›</button>
+            <button onClick={(e) => { e.stopPropagation(); step(1); }} className="absolute right-2 sm:right-8 text-white/70"><ChevronRight size={32} /></button>
           </motion.div>
         )}
       </AnimatePresence>

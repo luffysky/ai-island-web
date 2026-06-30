@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import { chapterDisplayNumberById } from "@/lib/chapter-display";
 import {
   ChevronRight, ChevronLeft, ChevronDown, BookOpen, Bookmark, FileText,
-  Menu, X, Search, History, Star, Plus, Trash2,
+  Menu, X, Search, History, Star, Plus, Trash2, Palmtree,
 } from "lucide-react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { useAuth } from "@/lib/auth-context";
@@ -274,7 +274,7 @@ export function SideNav() {
         {/* Header */}
         <div className="flex shrink-0 items-center justify-between p-3 border-b border-border">
           <div className="font-bold flex items-center gap-2">
-            🏝️ <span>AI 島導覽</span>
+            <Palmtree size={18} className="text-accent" /> <span>AI 島導覽</span>
           </div>
           <button
             onClick={() => setOpen(false)}

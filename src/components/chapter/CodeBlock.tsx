@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useMemo } from "react";
-import { Copy, Check, TerminalSquare, FileCode2, BookOpen } from "lucide-react";
+import { Copy, Check, TerminalSquare, FileCode2, BookOpen, ChevronUp, ChevronDown } from "lucide-react";
 import { CLI_GLOSSARY, extractCliCommands, looksLikeTerminal } from "@/lib/cli-glossary";
 
 interface CodeBlockProps {
@@ -158,7 +158,7 @@ export function CodeBlock({ children, className }: CodeBlockProps) {
           >
             <BookOpen size={12} />
             指令說明（{commands.length}）
-            <span className="ml-auto text-emerald-300/50">{showGlossary ? "▲ 收起" : "▼ 看這些指令是什麼"}</span>
+            <span className="ml-auto inline-flex items-center gap-0.5 text-emerald-300/50">{showGlossary ? <><ChevronUp size={11} /> 收起</> : <><ChevronDown size={11} /> 看這些指令是什麼</>}</span>
           </button>
           {showGlossary && (
             <ul className="px-3.5 pb-3 pt-0.5 space-y-1.5 text-xs">

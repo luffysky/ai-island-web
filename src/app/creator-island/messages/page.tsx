@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Mail, ArrowLeft } from "lucide-react";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { isCreatorIslandEnabled } from "@/lib/app-settings";
 import { FeatureOffNotice } from "@/components/FeatureOffNotice";
@@ -18,8 +19,8 @@ export default async function MessagesPage({ searchParams }: { searchParams: Pro
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 space-y-4">
       <header className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">✉️ 訊息</h1>
-        <Link href="/creator-island/community" className="text-sm text-accent hover:underline">← 社群</Link>
+        <h1 className="text-2xl font-bold inline-flex items-center gap-1.5"><Mail size={20} /> 訊息</h1>
+        <Link href="/creator-island/community" className="text-sm text-accent hover:underline inline-flex items-center gap-1.5"><ArrowLeft size={14} /> 社群</Link>
       </header>
       <MessagesClient initialThreads={threads as any} meId={user.id} initialThreadId={t ?? null} />
     </div>

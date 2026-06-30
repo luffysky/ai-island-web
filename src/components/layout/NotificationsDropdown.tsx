@@ -91,7 +91,7 @@ export function NotificationsDropdown() {
       </button>
       <PopoverPanel api={popover} className="w-80 max-w-[calc(100vw-1rem)]">
         <header className="px-4 py-2.5 border-b border-border flex items-center justify-between">
-          <h3 className="font-bold text-sm flex items-center gap-1.5">🔔 通知</h3>
+          <h3 className="font-bold text-sm inline-flex items-center gap-1.5"><Bell size={14} /> 通知</h3>
           {items.some((n) => !n.read_at) && (
             <button onClick={markAllRead} className="text-[10px] text-accent hover:underline inline-flex items-center gap-0.5">
               <Check size={11} /> 全標已讀

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Globe, Mail, Users, ArrowLeft } from "lucide-react";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { isCreatorIslandEnabled } from "@/lib/app-settings";
 import { FeatureOffNotice } from "@/components/FeatureOffNotice";
@@ -20,11 +21,11 @@ export default async function CommunityPage() {
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8 space-y-5">
       <header className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">🌐 社群</h1>
+        <h1 className="text-2xl font-bold inline-flex items-center gap-1.5"><Globe size={20} /> 社群</h1>
         <div className="flex items-center gap-3 text-sm">
-          <Link href="/creator-island/messages" className="text-fg-muted hover:text-accent">✉️ 訊息</Link>
-          <Link href="/creator-island/friends" className="text-fg-muted hover:text-accent">👥 好友</Link>
-          <Link href="/creator-island" className="text-accent hover:underline">← 回島</Link>
+          <Link href="/creator-island/messages" className="text-fg-muted hover:text-accent inline-flex items-center gap-1.5"><Mail size={14} /> 訊息</Link>
+          <Link href="/creator-island/friends" className="text-fg-muted hover:text-accent inline-flex items-center gap-1.5"><Users size={14} /> 好友</Link>
+          <Link href="/creator-island" className="text-accent hover:underline inline-flex items-center gap-1.5"><ArrowLeft size={14} /> 回島</Link>
         </div>
       </header>
       <Stories initial={stories as any} meId={user.id} />

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { STAGE_COLORS } from "@/lib/utils";
+import { BookOpen, Sparkles } from "lucide-react";
 
 const STAGES = [
   { stage: 1, subtitle: "前端入門與網頁基礎", desc: "HTML、CSS、UI/UX、JavaScript 基礎，先把網頁與互動的底子打穩。", color: "from-green-400 to-cyan-400", chapters: "Ch01-08" },
@@ -58,16 +59,16 @@ export function StageMap() {
                 <p className="text-xs text-fg-muted leading-relaxed mb-3">
                   {item.desc}
                 </p>
-                <div className="text-xs font-mono text-accent">
-                  📚 {item.chapters}
+                <div className="text-xs font-mono text-accent inline-flex items-center gap-1">
+                  <BookOpen size={14} /> {item.chapters}
                 </div>
               </Link>
             );
           })}
         </div>
 
-        <div className="text-center mt-8 text-sm text-fg-muted">
-          ✨ 基礎 × 前端 × 後端 × 多語言 × 商業 × AI ✨
+        <div className="mt-8 text-sm text-fg-muted inline-flex w-full items-center justify-center gap-1.5">
+          <Sparkles size={14} /> 基礎 × 前端 × 後端 × 多語言 × 商業 × AI <Sparkles size={14} />
         </div>
       </div>
     </section>

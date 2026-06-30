@@ -14,7 +14,7 @@ import { FloatingNoteButton } from "./FloatingNoteButton";
 import { AchievementToast } from "../gamification/AchievementToast";
 import { LevelUpModal } from "../gamification/LevelUpModal";
 import { XpToast, type XpToastData } from "../gamification/XpToast";
-import { ChevronLeft, ChevronRight, Clock, Trophy, BookmarkCheck, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Clock, Trophy, BookmarkCheck, X, BarChart3, Target, BookOpen, HelpCircle, Check, ArrowRight, ChevronUp, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/components/ui/Toast";
 import { saveReadingPos, getReading, recordEngagement, lessonMastery, hydrateFromServer, setSyncEnabled, formatLessonNumber, type Pos } from "@/lib/reading-position";
@@ -326,7 +326,7 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
           <div className="p-4 rounded-2xl bg-gradient-to-br from-bg-card to-bg-elevated border border-border mb-6 shadow-sm">
             <div className="flex items-center justify-between mb-2 text-sm">
               <span className="inline-flex items-center gap-1.5">
-                📊 章節進度
+                <BarChart3 size={14} /> 章節進度
                 {progress >= 1 && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-green-500/15 text-green-600 dark:text-green-300 font-bold">已完成 🎉</span>}
               </span>
               <span className="font-bold tabular-nums">
@@ -353,7 +353,7 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
                   className="text-xs text-amber-600 dark:text-amber-400 inline-flex items-center gap-1 hover:underline"
                 >
                   🔁 有 {skimLessons.length} 節你只快速滑過、建議回頭細看
-                  <span className="text-[10px] text-amber-500/80">{showSkim ? "▲ 收合" : "▼ 看是哪幾節"}</span>
+                  <span className="text-[10px] text-amber-500/80 inline-flex items-center gap-0.5">{showSkim ? <><ChevronUp size={11} /> 收合</> : <><ChevronDown size={11} /> 看是哪幾節</>}</span>
                 </button>
                 {showSkim && (
                   <div className="mt-2 flex flex-col gap-1.5">
@@ -378,10 +378,10 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
         {/* Outcomes */}
         {chapter.outcomes && chapter.outcomes.length > 0 && (
           <div className="p-5 rounded-lg bg-bg-card border border-border">
-            <h3 className="font-bold mb-3">🎯 完成後你會：</h3>
+            <h3 className="font-bold mb-3 inline-flex items-center gap-1.5"><Target size={18} /> 完成後你會：</h3>
             <ul className="space-y-1 text-sm">
               {chapter.outcomes.map((o, i) => (
-                <li key={i} className="flex gap-2"><span className="text-accent">✓</span>{o}</li>
+                <li key={i} className="flex gap-2"><Check size={16} className="text-accent shrink-0 mt-0.5" />{o}</li>
               ))}
             </ul>
           </div>
@@ -401,9 +401,9 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
             </div>
             <button
               onClick={() => { scrollToLesson((resume.furthest ?? resume.current)!.lessonId); setResume(null); }}
-              className="shrink-0 rounded-lg bg-accent px-3 py-1.5 text-sm font-bold text-black transition hover:scale-105"
+              className="shrink-0 inline-flex items-center gap-1.5 rounded-lg bg-accent px-3 py-1.5 text-sm font-bold text-black transition hover:scale-105"
             >
-              {resume.furthest ? "接續學習進度 →" : "繼續閱讀 →"}
+              {resume.furthest ? "接續學習進度" : "繼續閱讀"} <ArrowRight size={14} />
             </button>
             <button
               onClick={() => setResume(null)}
@@ -455,10 +455,10 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
       {/* Summary */}
       {chapter.summary && chapter.summary.length > 0 && (
         <section className="mt-12 p-6 rounded-xl bg-bg-card border border-border">
-          <h2 className="text-2xl font-bold mb-4">📚 章節總結</h2>
+          <h2 className="text-2xl font-bold mb-4 inline-flex items-center gap-2"><BookOpen size={22} /> 章節總結</h2>
           <ul className="space-y-2 text-sm">
             {chapter.summary.map((s, i) => (
-              <li key={i} className="flex gap-2"><span className="text-accent">→</span>{s}</li>
+              <li key={i} className="flex gap-2"><ArrowRight size={16} className="text-accent shrink-0 mt-0.5" />{s}</li>
             ))}
           </ul>
         </section>
@@ -467,7 +467,7 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
       {/* FAQ */}
       {chapter.faq && chapter.faq.length > 0 && (
         <section className="mt-8">
-          <h2 className="text-2xl font-bold mb-4">❓ 常見 FAQ</h2>
+          <h2 className="text-2xl font-bold mb-4 inline-flex items-center gap-2"><HelpCircle size={22} /> 常見 FAQ</h2>
           <div className="space-y-2">
             {chapter.faq.map((f, i) => (
               <details key={i} className="p-4 rounded-lg bg-bg-card border border-border cursor-pointer">
