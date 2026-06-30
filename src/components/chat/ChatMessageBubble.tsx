@@ -49,11 +49,22 @@ export function ChatMessageBubble({
   const share = async () => {
     // assistant 回答 + 有 shareCard → 分享成圖卡（HTML 落地頁，LINE/FB 才讀得到 og:image）
     if (shareCard && !isUser && content && typeof window !== "undefined") {
-      const p = new URLSearchParams();
-      p.set("persona", shareCard.persona);
-      if (shareCard.question) p.set("q", shareCard.question.slice(0, 70));
-      p.set("a", content.slice(0, 400));
-      const url = `${window.location.origin}/share/ai?${p.toString()}`;
+      // 短連結：把完整 Q&A 存 server、分享乾淨的 /share/ai/<token>（不再塞長串編碼進網址）
+      let url = "";
+      try {
+        const r = await fetch("/api/share/ai", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ persona: shareCard.persona, question: shareCard.question ?? "", answer: content }),
+        }).then((x) => x.json());
+        if (r.path) url = `${window.location.origin}${r.path}`;
+      } catch { /* 落到下面舊式 query 連結 */ }
+      if (!url) {
+        const p = new URLSearchParams();
+        p.set("persona", shareCard.persona);
+        if (shareCard.question) p.set("q", shareCard.question.slice(0, 70));
+        p.set("a", content.slice(0, 400));
+        url = `${window.location.origin}/share/ai?${p.toString()}`;
+      }
       if ((navigator as any).share) {
         try {
           await (navigator as any).share({ title: `${shareCard.persona} 的回答`, url });

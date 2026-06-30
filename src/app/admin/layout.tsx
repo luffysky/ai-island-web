@@ -66,13 +66,13 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     <div className="admin-skin relative">
       <LottieBackground src={lottieSrc ?? undefined} opacity={lottieOpacity} blur={1} speed={0.4} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 relative z-10">
-        <div className="mb-6 flex items-center justify-between bg-bg-card border border-border rounded-2xl p-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent to-accent-2 flex items-center justify-center text-white text-lg shadow-lg">
+        <div className="mb-6 flex items-center justify-between gap-3 flex-wrap bg-bg-card border border-border rounded-2xl p-4">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-10 h-10 shrink-0 rounded-full bg-gradient-to-br from-accent to-accent-2 flex items-center justify-center text-white text-lg shadow-lg">
               🌸
             </div>
-            <div>
-              <h1 className="text-xl font-bold flex items-center gap-2">
+            <div className="min-w-0">
+              <h1 className="text-xl font-bold flex items-center gap-2 whitespace-nowrap">
                 AI 島 · 後台
                 {isOwner && (
                   <span
@@ -88,7 +88,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0 flex-wrap">
             {isOwner && <DeployVersionBadge />}
             <Link
               href="/"

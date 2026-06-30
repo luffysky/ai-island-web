@@ -1091,17 +1091,27 @@ export function AITutorWidget({
                         {m.role === "assistant" && <SpeakButton text={m.content} size={10} />}
                         {m.role === "assistant" && (
                           <button
-                            onClick={() => {
+                            onClick={async () => {
                               trackEvent("share_answer", { persona: persona.name });
                               // 對應的提問（前一則 user 訊息），讓圖卡有 Q 更豐富
                               const prev = messages[m._i - 1];
                               const q = prev && prev.role === "user" ? prev.content : "";
-                              const p = new URLSearchParams();
-                              p.set("persona", persona.name);
-                              if (q) p.set("q", q.slice(0, 70));
-                              p.set("a", m.content.slice(0, 400));
-                              // 分享「HTML 落地頁」而非圖片端點，LINE/FB 才讀得到 og:image 生預覽卡（否則只貼出一串編碼亂碼網址）
-                              const url = `${window.location.origin}/share/ai?${p.toString()}`;
+                              // 短連結：完整 Q&A 存 server、分享乾淨 /share/ai/<token>（落地頁撐完整回答 + og 圖卡）
+                              let url = "";
+                              try {
+                                const r = await fetch("/api/share/ai", {
+                                  method: "POST", headers: { "Content-Type": "application/json" },
+                                  body: JSON.stringify({ persona: persona.name, question: q, answer: m.content }),
+                                }).then((x) => x.json());
+                                if (r.path) url = `${window.location.origin}${r.path}`;
+                              } catch { /* fallback 舊式 query 連結 */ }
+                              if (!url) {
+                                const p = new URLSearchParams();
+                                p.set("persona", persona.name);
+                                if (q) p.set("q", q.slice(0, 70));
+                                p.set("a", m.content.slice(0, 400));
+                                url = `${window.location.origin}/share/ai?${p.toString()}`;
+                              }
                               if (typeof navigator !== "undefined" && (navigator as any).share) {
                                 (navigator as any).share({ title: `${persona.name} 的回答`, url }).catch(() => {});
                               } else {
