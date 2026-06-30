@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { Editor } from "@tiptap/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BlogEditor } from "@/components/blog/BlogEditor";
+import { IslandChat } from "../../IslandChat";
 import { getType, type Tool } from "../engine-types";
 
 type Fragment = { id: string; title: string; content: string; source_type: string };
@@ -216,6 +217,9 @@ export function EngineWorkspace({ draft, fragments }: { draft: Draft; fragments:
             className="fixed bottom-[5.5rem] md:bottom-6 left-1/2 -translate-x-1/2 z-[60] px-4 py-2 rounded-full bg-emerald-500 text-black text-sm font-bold shadow-lg">{toast}</motion.div>
         )}
       </AnimatePresence>
+
+      {/* 綠寶：創作引擎裡也能隨側陪聊（圖/語音/檔案） */}
+      <IslandChat workspaceId={draft.workspace_id} />
     </div>
   );
 }

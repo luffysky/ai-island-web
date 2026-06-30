@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { CREATION_TYPES, getType } from "./engine-types";
+import { IslandChat } from "../IslandChat";
 
 type Draft = { id: string; work_type: string; title: string; word_count: number; status: string; updated_at: string };
 
@@ -71,6 +72,8 @@ export function CreatePicker({ workspaceId, drafts }: { workspaceId: string; dra
           </ul>
         )}
       </section>
+
+      <IslandChat workspaceId={workspaceId} />
     </div>
   );
 }
