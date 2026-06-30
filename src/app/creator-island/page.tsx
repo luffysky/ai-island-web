@@ -8,7 +8,17 @@ import { listAllFragments } from "@/lib/creator-engine/fragments";
 import { listCollectionsWithItems } from "@/lib/creator-engine/collections";
 import { BackgroundBeams } from "@/components/ui/BackgroundBeams";
 import { Sparkles } from "@/components/ui/Sparkles";
+import { PenTool, Library, Building2, Store, Globe, TrendingUp, Palette } from "lucide-react";
 import { CreatorIslandClient } from "./CreatorIslandClient";
+
+const NAV = [
+  { href: "/creator-island/create", label: "創作引擎", Icon: PenTool },
+  { href: "/creator-island/works", label: "作品庫", Icon: Library },
+  { href: "/creator-island/studio", label: "工作室", Icon: Building2 },
+  { href: "/creator-island/market", label: "市集", Icon: Store },
+  { href: "/creator-island/community", label: "社群", Icon: Globe },
+  { href: "/creator-island/growth", label: "成長", Icon: TrendingUp },
+] as const;
 
 // 旗標 / workspace 要即時反映
 export const dynamic = "force-dynamic";
@@ -48,7 +58,7 @@ export default async function CreatorIslandPage({ searchParams }: { searchParams
         <Sparkles count={14} />
         <div className="relative flex items-end justify-between gap-3 flex-wrap">
           <div>
-            <h1 className="text-3xl sm:text-4xl font-black bg-gradient-to-r from-amber-300 via-pink-400 to-violet-400 bg-clip-text text-transparent">🎨 創作者島嶼</h1>
+            <h1 className="text-3xl sm:text-4xl font-black bg-gradient-to-r from-amber-300 via-pink-400 to-violet-400 bg-clip-text text-transparent inline-flex items-center gap-2"><Palette className="text-pink-400" size={32} /> 創作者島嶼</h1>
             <p className="text-sm text-fg-muted mt-1.5">
               {isStudio
                 ? <>🏢 工作室：<b className="text-fg">{active.name}</b> · <Link href="/creator-island" className="text-accent hover:underline">回我的島</Link></>
@@ -56,8 +66,8 @@ export default async function CreatorIslandPage({ searchParams }: { searchParams
             </p>
           </div>
           <nav className="flex items-center gap-1.5 text-sm flex-wrap">
-            {[["/creator-island/create", "✨ 創作引擎"], ["/creator-island/works", "📚 作品庫"], ["/creator-island/studio", "🏢 工作室"], ["/creator-island/market", "🏪 市集"], ["/creator-island/community", "🌐 社群"], ["/creator-island/growth", "📈 成長"]].map(([href, label]) => (
-              <Link key={href} href={href} data-tour={`nav-${href.split("/").pop()}`} className="px-3 py-1.5 rounded-full bg-bg-card/60 border border-border/60 backdrop-blur hover:border-accent hover:text-accent transition">{label}</Link>
+            {NAV.map(({ href, label, Icon }) => (
+              <Link key={href} href={href} data-tour={`nav-${href.split("/").pop()}`} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-bg-card/60 border border-border/60 backdrop-blur hover:border-accent hover:text-accent transition"><Icon size={15} /> {label}</Link>
             ))}
           </nav>
         </div>
