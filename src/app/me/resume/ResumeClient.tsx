@@ -20,7 +20,12 @@ function renderMarkdown(md: string): string {
     .replace(/^&gt; (.+)$/gm, "<blockquote class='border-l-2 border-accent-2 pl-3 italic text-fg-muted my-2'>$1</blockquote>")
     .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
     .replace(/\*(.+?)\*/g, "<em>$1</em>")
-    .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">$1</a>')
+    .replace(/\[(.+?)\]\((.+?)\)/g, (_m, text, url) => {
+      // 只放安全協定 + escape 引號，擋掉 href 屬性注入 / javascript: 等 XSS 向量
+      const u = String(url).trim();
+      const safe = /^(https?:\/\/|mailto:|\/)/i.test(u) ? u.replace(/"/g, "%22").replace(/'/g, "%27") : "#";
+      return `<a href="${safe}" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">${text}</a>`;
+    })
     .replace(/^- (.+)$/gm, "<li class='ml-5 list-disc my-0.5'>$1</li>")
     .replace(/\n\n/g, "<br/>");
 }

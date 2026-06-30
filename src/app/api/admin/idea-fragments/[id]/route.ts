@@ -15,7 +15,7 @@ async function guard() {
  * PATCH /api/admin/idea-fragments/[id]  { title?, content?, tags?, mood?, category? }
  */
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  if (!(await guard())) return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  if (!(await guard()).ok) return NextResponse.json({ error: "forbidden" }, { status: 403 });
   const { id } = await params;
   const body = await req.json().catch(() => ({} as any));
 
@@ -43,7 +43,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
  * DELETE /api/admin/idea-fragments/[id]
  */
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  if (!(await guard())) return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  if (!(await guard()).ok) return NextResponse.json({ error: "forbidden" }, { status: 403 });
   const { id } = await params;
   const admin = createSupabaseAdmin();
   const { error } = await admin.from("idea_fragments").delete().eq("id", id);

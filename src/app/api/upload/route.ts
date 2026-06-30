@@ -8,12 +8,13 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 const MB = 1024 * 1024;
-// 放寬上限（社群圖/影/音）。真正「無上限」需改 presigned 直傳 R2（避免 server OOM）— 見 MASTER_TODO。
+// server upload 會 file.arrayBuffer() 整檔讀進記憶體 → 上限壓低防 OOM。
+// 大檔（影/音/大附件）一律走 /api/upload/presign 直傳 R2，不經 server。
 const MAX_SIZE: Record<"image" | "video" | "audio" | "file", number> = {
-  image: 50 * MB,
-  audio: 200 * MB,
-  video: 1000 * MB,
-  file: 200 * MB,
+  image: 20 * MB,
+  audio: 30 * MB,
+  video: 30 * MB,
+  file: 30 * MB,
 };
 // 圖片/影片/音檔用大類前綴判斷（任何格式都收）；其餘一律當「附件」（任意檔案）。
 function mediaKind(t: string): "image" | "video" | "audio" | "file" {

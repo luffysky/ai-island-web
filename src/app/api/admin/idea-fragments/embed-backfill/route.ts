@@ -15,7 +15,7 @@ async function guard() {
 
 /** POST → 幫所有「還沒有 embedding」的碎片補算向量。回 { done, failed, total } */
 export async function POST() {
-  if (!(await guard())) return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  if (!(await guard()).ok) return NextResponse.json({ error: "forbidden" }, { status: 403 });
 
   const admin = createSupabaseAdmin();
   const { data: rows } = await admin

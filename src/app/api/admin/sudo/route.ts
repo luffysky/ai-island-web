@@ -7,6 +7,10 @@ export async function POST(req: NextRequest) {
   const gate = await requireAdmin();
   if (!gate.ok) return gate.response;
 
+  // sudo cookie 用 AI_KEY_SECRET 簽 HMAC；缺 secret 一律拒絕（禁用 dev fallback、防偽造）
+  const secret = process.env.AI_KEY_SECRET;
+  if (!secret) return NextResponse.json({ error: "server_misconfig", message: "AI_KEY_SECRET 未設、sudo 不可用" }, { status: 500 });
+
   // 簽 HMAC cookie，1 小時有效
   const payload = {
     uid: gate.userId,
@@ -15,7 +19,7 @@ export async function POST(req: NextRequest) {
   };
   const payloadB64 = Buffer.from(JSON.stringify(payload)).toString("base64url");
   const sig = crypto
-    .createHmac("sha256", process.env.AI_KEY_SECRET || "dev-secret")
+    .createHmac("sha256", secret)
     .update(payloadB64)
     .digest("base64url");
   const cookieValue = `${payloadB64}.${sig}`;

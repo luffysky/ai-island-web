@@ -77,5 +77,8 @@ export function sanitizeRichHtmlStrict(html: unknown): string {
       },
     },
     disallowedTagsMode: "discard",
+    // 防 sanitize-html xmp/raw-text passthrough XSS（GHSA-rpr9-rxv7-x643，目前無修補版）：
+    // 這些「原始文字」標籤連內容一起丟掉，不只是去標籤、避免內文被當原始 HTML 透出。
+    nonTextTags: ["style", "script", "textarea", "option", "xmp", "noscript", "noembed", "noframes", "plaintext"],
   });
 }

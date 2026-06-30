@@ -13,7 +13,7 @@ async function guard() {
 
 /** GET ?folder= → { pairs } 語意意外配對（驚喜連結引擎） */
 export async function GET(req: NextRequest) {
-  if (!(await guard())) return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  if (!(await guard()).ok) return NextResponse.json({ error: "forbidden" }, { status: 403 });
   const folder = req.nextUrl.searchParams.get("folder") || null;
   const pairs = await fetchSurprisingPairs({ count: 8, folder });
   return NextResponse.json({ pairs });

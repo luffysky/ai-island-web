@@ -25,7 +25,7 @@ function decodeEntities(s: string): string {
 
 /** POST { url } → { title, description, url } 抓網頁標題/摘要當碎片 */
 export async function POST(req: NextRequest) {
-  if (!(await guard())) return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  if (!(await guard()).ok) return NextResponse.json({ error: "forbidden" }, { status: 403 });
   const body = await req.json().catch(() => ({} as any));
   let url = String(body.url ?? "").trim();
   if (!/^https?:\/\//i.test(url)) url = "https://" + url;
