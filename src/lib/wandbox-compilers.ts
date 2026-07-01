@@ -2,7 +2,7 @@
 // ⚠️ 這個檔由 `node scripts/update-wandbox-compilers.mjs` 自動產生/更新（每月一次、見
 //    .github/workflows/wandbox-update.yml）。手動改也行、但下次自動更新會覆蓋。
 // 來源：https://wandbox.org/api/list.json
-// 最後更新：2026-06-22
+// 最後更新：2026-07-01
 export const WANDBOX_COMPILER: Record<string, string> = {
   bash: "bash",
   python: "cpython-3.14.0",
