@@ -54,4 +54,26 @@
 - **後台 P3**（AI 營運助手+效能，被 session limit 中斷、待重跑）、**#55** AI 批改+學習教練、**#56** 市集上線+作品→SEO一鍵、**#57** 求職閉環、**#54** Web Push（需 VAPID 金鑰）、**#63–65** AI 路由/免費模型/intent、**#74 RBAC**（待林董定角色）、**#4 Yjs 協作**（待選即時後端）。
 - 林董手動：申請金流商金鑰、Cloudflare 關 AI 封鎖、Google 同意畫面去 supabase.co、輪替金鑰。
 
-> 註：本日大量用「多代理並行 + 每波 build→commit→push」推進；尾段遇 Opus classifier 暫不可用 + session limit，代理 fan-out 受限、待重置續跑。所有已完成項目都已 build 綠並上線。
+> 註：本日大量用「多代理並行 + 每波 build→commit→push」推進；中段遇 Opus classifier 暫不可用 + session limit，代理 fan-out 一度受限、重置後續跑。
+
+---
+
+## 🚀 尾段補完（roadmap 100% 清空）
+- **AI 架構 #63–65**：`ai_usage_models.candidates` 候選鏈（fallback+低信心升級）、circuit breaker、Cloudflare Workers AI provider、`ai_feedback`(usage_key/meta)、`classifyIntent/assembleContext`、WebLLM（runtime 載入、`flag_webllm` 預設關、不進 bundle）。
+- **#54 Web Push**：`push_subscriptions` 表 + subscribe/unsubscribe/test API + `sendPushToUser`(VAPID 未設 no-op) + 訂閱 UI(掛通知鈴鐺) + 觸發(讚/留言→作者、連勝快斷 cron) + community 補通知。裝 `web-push`。
+- **#75 Yjs 協作**：Supabase Realtime provider(broadcast+presence+awareness) + BlogEditor opt-in collab(預設路徑不變) + `ci_drafts.ydoc` 持久化 + EngineWorkspace 工作室草稿共編+在線人數 + `flag_collab`。裝 yjs/y-protocols/@tiptap/extension-collaboration(+caret)/y-tiptap。
+- **#74 RBAC**：角色 owner/admin(超管,全開) + support/marketing/finance/content(分區)；`admin-roles.ts`(section map/canAccessSection)、`requireAdminSection`(requireAdmin 簽名不變)、middleware x-admin-path、layout 單一頁面 gate + nav 依角色過濾(ownerOnly 保留)、敏感金流 API 加 finance 守衛、指派角色防越權；**不碰創作者島嶼工作室角色**。
+- **SEO/robots**：`robots.ts` AI 爬蟲只開放 `/chapters /courses /blogs`；Cloudflare「受管理的 robots.txt」林董已關 → 線上生效(不再擋 ClaudeBot/GPTBot)。
+- **`docs/OWNER_SETUP.md`**：林董手動待辦 + env 總清單（金流金鑰/cron 排程/VAPID/Cloudflare/選配/安全）。
+
+## ✅ 推前總驗證（2026-07-04 尾）
+- `npm run build` ✅ 綠、90 頁。
+- **API**：350 route 全 export HTTP method、**DB 欄位錯接 0**。
+- **DB**：16 表 / 10 RPC / 7 關鍵欄位 **全部存在**（0 缺）；158 個 migration 全套用。
+- **RWD**：全域護欄(body overflow-x hidden + fixed/absolute max-width) + 新頁響應式。
+
+## 📋 只剩林董手動（見 `docs/OWNER_SETUP.md`）
+- 🔴 金流金鑰（綠界/藍新/Stripe env + webhook URL + 測試機驗一筆再開 PAYMENTS_LIVE）
+- 🟡 3 支新 cron 排程（ops-alerts / learning-coach / streak-reminder，GitHub Actions + CRON_SECRET）
+- 🟡 VAPID 同步到 Zeabur
+- ✅ Cloudflare AI-bot 封鎖 — 已關、已驗證

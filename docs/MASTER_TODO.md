@@ -6,6 +6,24 @@
 
 ---
 
+## 2026-07-04 衝刺 — roadmap 100% 清空（詳見 `docs/daily_works_0704.md` + `docs/OWNER_SETUP.md`）
+
+- [x] ~~金流上線（綠界/藍新/Stripe＋Z幣＋Pro）+ 商業模式/Z幣經濟設計~~
+- [x] ~~修一堆真壞掉的：6 缺失 RPC(島獎勵/測驗XP/寵物任務/扣血/刪帳號)、每日任務欄位錯、寵物白領、生成欄位 level、後台守衛安全洞、deploy(npm ci)~~
+- [x] ~~後台 P1/P2/P3：營運總覽+主動告警+金流工作台 / Cmd+K+flags+審計 / AI營運助手+分頁~~
+- [x] ~~三通訊(LINE/Discord/TG)全稽核 + 全美化一致~~
+- [x] ~~TipTap 全做(AI BubbleMenu/Slash/Callout/貼圖轉R2/code/MD/TOC/@/emoji/匯出/手機工具列)~~
+- [x] ~~全站 emoji→icon(含字串型) + Lottie CC0 動畫~~
+- [x] ~~AI-P1 記憶頁 / BYOK 多把key / PWA / WorkEditor rich / 非Claude用量 / 章節一行寫法 / 定價全免費~~
+- [x] ~~SRS 錯題複習+AI隨堂考 / 成長病毒(OG卡/推薦分潤/精選) / 語意搜尋+PWA安裝~~
+- [x] ~~AI 架構(智慧路由+fallback+升級 / 免費provider / WebLLM / intent+回饋)~~
+- [x] ~~Web Push(訂閱+觸發+連勝cron) / Yjs 即時協作(Supabase Realtime) / 求職閉環 / 市集上線+作品→SEO~~
+- [x] ~~RBAC 後台角色分級(owner/admin/support/marketing/finance/content，ownerOnly 保留，不碰創作島)~~
+- [x] ~~robots AI 爬蟲限教學/副本/部落格；Cloudflare 受管理 robots 已關~~
+- ⏳ 林董手動：金流金鑰、3 支新 cron 排程、VAPID 同步 Zeabur（Cloudflare 已完成）
+
+---
+
 ## 2026-07-03 衝刺（詳見 `docs/daily_works_0703.md`）
 
 - [x] ~~章節一行寫法：拿掉 JS/Java/C 對比、改列原本普通 Python 寫法（ch26）+ 修 CodeBlock CSHARP 標籤~~
