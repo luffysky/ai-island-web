@@ -1,0 +1,54 @@
+name: E2E (Playwright, prod)
+
+# 瀏覽器點擊流程 E2E：對「線上正式站」跑 Playwright。
+# 故意「不」在每次 push 跑——對 prod 跑會慢又偶爾抖、當每次 commit 的硬關卡不划算。
+#   → 排程每天一次 + 手動觸發（workflow_dispatch）。
+# 平時擋 PR 的關卡由 ci.yml（lint / typecheck / 單元測試 / build）負責、跟這支無關。
+on:
+  schedule:
+    - cron: "30 1 * * *" # 每天 01:30 UTC（跟 smoke 錯開）
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: "要測的 base URL（留空=正式機）"
+        required: false
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22 # 對齊 ci.yml / Dockerfile runtime
+          cache: npm
+
+      # repo 有 .npmrc（legacy-peer-deps=true）→ npm ci 會自動吃。
+      - name: Install deps
+        run: npm ci
+
+      # 只裝 chromium（兩個 project：Desktop Chrome + Pixel 5 都是 chromium）。
+      - name: Install Playwright chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run E2E
+        env:
+          # 手動觸發可覆寫 base_url；否則吃 repo variable、再 fallback 正式機。
+          E2E_BASE_URL: ${{ github.event.inputs.base_url || vars.E2E_BASE_URL || 'https://ai-island-web.snowrealm.pet' }}
+        run: npm run test:e2e
+
+      # 失敗時把 HTML 報告存成 artifact、方便回看 trace / 截圖。
+      - name: Upload Playwright report
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14
