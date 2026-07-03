@@ -44,7 +44,11 @@ jobs:
         run: npm run test
 
       # build：也必須綠（確認能真的建出來）。
+      # ⚠️ next build 會 prerender-probe 頁面、server component 會建 Supabase client，
+      #    所以要跟 docker.yml 一樣把 NEXT_PUBLIC_SUPABASE_* 帶進來、否則 /settings 之類會炸。
       - name: Build
         run: npm run build
         env:
           NEXT_PUBLIC_SITE_URL: https://ai-island-web.snowrealm.pet
+          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL || secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
