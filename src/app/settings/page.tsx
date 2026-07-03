@@ -9,6 +9,9 @@ import { LineBindSection } from "./LineBindSection";
 import { DiscordBindSection } from "./DiscordBindSection";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 
+// 設定頁需登入 + service-role 讀資料 → 一律動態、不在 build 時 prerender
+export const dynamic = "force-dynamic";
+
 export default async function SettingsPage() {
   const supabase = await createSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();

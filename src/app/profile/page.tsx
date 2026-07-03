@@ -4,6 +4,9 @@ import { Trophy, Flame, Coins, Heart, Award, BookOpen } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
+// 個人頁需登入 + 讀使用者資料 → 一律動態、不在 build 時 prerender（避免建 Supabase client 拿不到 env 而炸）
+export const dynamic = "force-dynamic";
+
 export default async function ProfilePage() {
   const supabase = await createSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();

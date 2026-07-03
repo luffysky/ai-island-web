@@ -2,6 +2,9 @@ import { createSupabaseServer } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import { AIKeysClient } from "./AIKeysClient";
 
+// 需登入 + 讀使用者金鑰 → 一律動態、不在 build 時 prerender
+export const dynamic = "force-dynamic";
+
 export default async function AIKeysSettingsPage() {
   const supabase = await createSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
