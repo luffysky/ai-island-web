@@ -892,10 +892,24 @@ export async function POST(req: NextRequest) {
       }
       const result = await askUserAI("", profile as any, userId, [img]);
       if (!result) {
-        await lineReply(replyToken, "AI 暫時無法分析、稍後再試或描述一下圖片內容讓我幫忙。", token, QUICK_REPLY);
+        await lineReply(
+          replyToken,
+          buildSimpleCard({
+            emoji: "📷",
+            title: "AI 暫時看不了這張圖",
+            accentColor: "#ef4444",
+            body: "稍後再試、或直接打字描述一下圖片內容、我幫你看。",
+            buttons: [{ label: "📚 看章節", uri: `${SITE_URL}/chapters`, primary: true }],
+          }),
+          token,
+          QUICK_REPLY,
+        );
         continue;
       }
-      await lineReply(replyToken, result.reply.slice(0, 4900), token, QUICK_REPLY);
+      // 跟文字流程一致：短回答包 Flex 卡、長/含 code 走純文字 + footer 卡
+      const imgMsgs = buildAITutorMessages(result.reply, result.displayName, result.ownerMode);
+      const imgQr = result.assistantMsgId ? buildNoteQuickReply(result.assistantMsgId) : QUICK_REPLY;
+      await lineReply(replyToken, imgMsgs, token, imgQr);
       continue;
     }
 

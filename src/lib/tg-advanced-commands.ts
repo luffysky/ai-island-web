@@ -364,7 +364,14 @@ export async function cmdBroadcast(args: string[], audience: "all" | "premium" =
   const { data: targets } = await q.limit(2000);
 
   let sent = 0, failed = 0;
-  const lineToken = process.env.LINE_CHANNEL_ACCESS_TOKEN;
+  // 學員的 line_user_id 是綁在「USER bot」channel、要用 USER token push；
+  // 沒設才 fallback admin token。之前錯用 LINE_CHANNEL_ACCESS_TOKEN（全站沒這個 env）→ 永遠送 0 人。
+  const lineToken = process.env.USER_LINE_CHANNEL_TOKEN || process.env.ADMIN_LINE_CHANNEL_TOKEN;
+  if (!lineToken) {
+    return "❌ <b>沒設 LINE token</b>\n<i>去 Zeabur 設 USER_LINE_CHANNEL_TOKEN（或 ADMIN_LINE_CHANNEL_TOKEN）才能群發</i>";
+  }
+  const targetCount = (targets as any[])?.length ?? 0;
+  if (targetCount === 0) return "📭 <b>沒有可推播的 LINE 綁定用戶</b>";
   if (lineToken && targets) {
     for (const u of targets as any[]) {
       try {
@@ -504,7 +511,7 @@ export async function cmdRisk(): Promise<string> {
     "",
     ...lines,
     "",
-    `<i>建議：/broadcast 留念訊息 或 /grant_premium 延期`,
+    `<i>建議：/broadcast 留念訊息 或 /grant_premium 延期</i>`,
   ].join("\n");
 }
 
