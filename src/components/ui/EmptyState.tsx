@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
+import { EmptyStateVisual } from "./EmptyStateVisual";
 
 /**
  * 統一 Empty state 元件（沒資料時用）
@@ -24,15 +25,18 @@ export function EmptyState({
   action?: { label: string; href?: string; onClick?: () => void };
   compact?: boolean;
 }) {
+  // 原本的視覺節點（lucide icon 或 emoji）— 當 empty_state Lottie 沒設 / 載不出來時的 fallback
+  const fallbackVisual = Icon ? (
+    <span className="text-fg-muted">
+      <Icon className={compact ? "w-8 h-8" : "w-12 h-12"} strokeWidth={1.5} />
+    </span>
+  ) : (
+    <span className={compact ? "text-3xl" : "text-5xl"}>{emoji ?? "📦"}</span>
+  );
+
   return (
     <div className={`text-center ${compact ? "py-6" : "py-16"} text-fg-muted`}>
-      {Icon ? (
-        <div className={`flex justify-center ${compact ? "mb-1" : "mb-3"} text-fg-muted`}>
-          <Icon className={compact ? "w-8 h-8" : "w-12 h-12"} strokeWidth={1.5} />
-        </div>
-      ) : (
-        <div className={compact ? "text-3xl mb-1" : "text-5xl mb-3"}>{emoji ?? "📦"}</div>
-      )}
+      <EmptyStateVisual fallback={fallbackVisual} compact={compact} />
       <div className={compact ? "text-sm font-medium text-fg" : "text-base font-bold text-fg"}>{title}</div>
       {desc && <div className="text-xs mt-1 max-w-xs mx-auto leading-relaxed">{desc}</div>}
       {action && (

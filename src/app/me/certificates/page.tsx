@@ -1,6 +1,9 @@
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { chapters } from "@/data/chapters";
 import { Award } from "lucide-react";
+import { ShareButton } from "@/components/share/ShareButton";
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://ai-island-web.snowrealm.pet";
 
 export default async function CertificatesPage() {
   const supabase = await createSupabaseServer();
@@ -50,6 +53,16 @@ export default async function CertificatesPage() {
                 {c.verification_code && (
                   <div className="text-xs font-mono text-fg-muted mt-2">
                     驗證碼：{c.verification_code}
+                  </div>
+                )}
+                {c.verification_code && (
+                  <div className="mt-3">
+                    <ShareButton
+                      url={`${SITE_URL}/certificates/${c.verification_code}`}
+                      title={`我在 AI 島拿到「${c.title}」完課證書`}
+                      text={`我在 AI 島完成了「${c.title}」🎓`}
+                      label="炫耀 / 分享"
+                    />
                   </div>
                 )}
               </div>

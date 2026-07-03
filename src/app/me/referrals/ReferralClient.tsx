@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Copy, Share2, Users, Gift } from "lucide-react";
+import { Copy, Share2, Users, Gift, Coins } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import { formatTWDate } from "@/lib/format-date";
 
@@ -17,11 +17,13 @@ type Referral = {
 export function ReferralClient({
   code,
   usesCount,
+  earnedZcoin,
   siteUrl,
   referrals,
 }: {
   code: string;
   usesCount: number;
+  earnedZcoin: number;
   siteUrl: string;
   referrals: Referral[];
 }) {
@@ -55,7 +57,6 @@ export function ReferralClient({
     }
   };
 
-  const triggered = referrals.filter((r) => r.first_lesson_at).length;
 
   return (
     <div className="space-y-4">
@@ -76,9 +77,9 @@ export function ReferralClient({
 
       {/* 統計 */}
       <div className="grid grid-cols-3 gap-3">
-        <Stat label="總使用次數" value={usesCount} icon={<Users size={16} />} />
-        <Stat label="已註冊" value={referrals.length} icon={<Users size={16} />} />
-        <Stat label="已觸發獎勵" value={triggered} icon={<Gift size={16} />} />
+        <Stat label="成功邀請" value={referrals.length} icon={<Users size={16} />} />
+        <Stat label="使用次數" value={usesCount} icon={<Gift size={16} />} />
+        <Stat label="已賺 Z幣" value={earnedZcoin} icon={<Coins size={16} />} />
       </div>
 
       {/* 列表 */}
@@ -113,7 +114,7 @@ export function ReferralClient({
                     ? "bg-emerald-500/15 text-emerald-900 dark:text-emerald-200"
                     : "bg-yellow-500/15 text-yellow-900 dark:text-yellow-200"
                 }`}>
-                  {r.reward_granted ? "✓ 已獎勵" : "等首 lesson"}
+                  {r.reward_granted ? "✓ 已獎勵 +50" : "處理中"}
                 </span>
               </li>
             ))}

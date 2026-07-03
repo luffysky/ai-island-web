@@ -12,6 +12,7 @@ import { estimateReadingTime, formatReadingTime } from "@/lib/reading-time";
 import { motion } from "framer-motion";
 import { PlaygroundCard } from "./PlaygroundCard";
 import { MiniQuizCard } from "./MiniQuizCard";
+import { PopQuiz } from "./PopQuiz";
 import { FilesPanel } from "./FilesPanel";
 import { BookmarkButton } from "./BookmarkButton";
 import { NotePanel } from "./NotePanel";
@@ -227,7 +228,18 @@ export function LessonCard({
       )}
 
       {/* MiniQuiz */}
-      {lesson.miniQuiz && <MiniQuizCard quiz={lesson.miniQuiz} onPass={() => onEngage?.({ quizPassed: true })} />}
+      {lesson.miniQuiz && (
+        <MiniQuizCard
+          quiz={lesson.miniQuiz}
+          onPass={() => onEngage?.({ quizPassed: true })}
+          lessonRef={isLoggedIn ? `${chapterId}:${lesson.id}` : undefined}
+        />
+      )}
+
+      {/* 隨堂考（AI 出題）— 只在登入且有內容時顯示 */}
+      {isLoggedIn && hasContent && (
+        <PopQuiz chapterId={chapterId} lessonId={lesson.id} lessonText={lesson.content} />
+      )}
 
       {/* Files */}
       {lesson.files && lesson.files.length > 0 && <FilesPanel files={lesson.files} />}

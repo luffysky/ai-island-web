@@ -10,6 +10,7 @@ import { MascotIntro } from "@/components/home/MascotIntro";
 import { StageMap } from "@/components/home/StageMap";
 import { MissionDungeons } from "@/components/home/MissionDungeons";
 import { TrapBosses } from "@/components/home/TrapBosses";
+import { FeaturedCreators } from "@/components/home/FeaturedCreators";
 import { Map } from "lucide-react";
 
 // 不靜態快照：島嶼開關 / 章節數要能即時反映後台改動（否則 toggle 了首頁不變）。
@@ -52,6 +53,7 @@ export default async function HomePage() {
       </section>
       <MissionDungeons />
       <TrapBosses />
+      {creatorIslandEnabled && <FeaturedCreators />}
       <CareerPathSection />
     </div>
   );

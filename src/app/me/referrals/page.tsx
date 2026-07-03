@@ -51,16 +51,25 @@ export default async function MyReferralsPage() {
     .eq("referrer_id", user.id)
     .order("signed_up_at", { ascending: false });
 
+  // 累計已賺 Z幣（referral_commissions 稽核帳本，source=referral_signup）
+  const { data: commissions } = await admin
+    .from("referral_commissions")
+    .select("amount_twd")
+    .eq("referrer_id", user.id)
+    .eq("source", "referral_signup");
+  const earnedZcoin = (commissions ?? []).reduce((s: number, c: any) => s + (c.amount_twd ?? 0), 0);
+
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">🎁 我的邀請碼</h1>
       <p className="text-sm text-fg-muted">
-        分享邀請碼給朋友、對方註冊並完成第 1 個 lesson 後、你會獲得 100 XP + 20 Z-coin 獎勵。
+        分享邀請碼給朋友，對方用你的連結註冊後，<span className="text-accent font-semibold">雙方各立即獲得 50 Z幣</span>。
       </p>
 
       <ReferralClient
         code={code!.code}
         usesCount={code!.uses_count}
+        earnedZcoin={earnedZcoin}
         siteUrl={SITE_URL}
         referrals={(referrals ?? []) as any}
       />

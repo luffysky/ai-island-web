@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { trackEvent } from "@/lib/analytics";
 import { Eye, EyeOff } from "lucide-react";
@@ -17,7 +17,16 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [info, setInfo] = useState("");
+  const [ref, setRef] = useState("");
   const supabase = createSupabaseBrowser();
+
+  // 讀網址上的邀請碼 ?ref=（用 window 讀、避免 useSearchParams 的 Suspense 需求）
+  useEffect(() => {
+    try {
+      const r = new URLSearchParams(window.location.search).get("ref");
+      if (r) setRef(r.trim().toUpperCase());
+    } catch {}
+  }, []);
 
   // Step 1：驗證欄位 → 寄驗證碼到 email
   const sendCode = async (e: React.FormEvent) => {
@@ -57,13 +66,17 @@ export default function SignupPage() {
     try {
       const r = await fetch("/api/auth/signup/verify", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim().toLowerCase(), code: code.trim(), password, username }),
+        body: JSON.stringify({ email: email.trim().toLowerCase(), code: code.trim(), password, username, ref: ref || undefined }),
       }).then((x) => x.json());
       if (!r.ok) { setError(r.message || "驗證失敗"); setLoading(false); return; }
       // 帳號已建立 → 登入拿 session → 建 profile
       const { error: signErr } = await supabase.auth.signInWithPassword({ email: email.trim().toLowerCase(), password });
       if (signErr) { setError("帳號已建立，請改用登入頁登入：" + signErr.message); setLoading(false); return; }
-      await fetch("/api/auth/ensure-profile", { credentials: "include", method: "POST" });
+      await fetch("/api/auth/ensure-profile", {
+        credentials: "include", method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ref: ref || undefined }),
+      });
       trackEvent("sign_up", { method: "email" });
       window.location.href = "/";
     } catch (e: any) { setError(e.message); setLoading(false); }
@@ -78,6 +91,11 @@ export default function SignupPage() {
         <div className="mt-3 inline-block px-3 py-1 rounded-full text-xs bg-accent/10 border border-accent/30 text-accent">
           🎁 註冊送 100 Z-coin + 5 hearts
         </div>
+        {ref && (
+          <div className="mt-2 inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
+            🤝 已套用邀請碼 <span className="font-mono font-bold">{ref}</span>，註冊後雙方各得 50 Z幣
+          </div>
+        )}
       </div>
 
       <div className="bg-bg-card border border-border rounded-xl p-6">

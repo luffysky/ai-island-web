@@ -1,13 +1,30 @@
 "use client";
 import { useState } from "react";
 import { MiniQuiz } from "@/lib/types";
-import { Check, X, HelpCircle, Lightbulb } from "lucide-react";
+import { Check, X, HelpCircle, Lightbulb, RotateCcw } from "lucide-react";
 
-export function MiniQuizCard({ quiz, onPass }: { quiz: MiniQuiz; onPass?: () => void }) {
+export function MiniQuizCard({ quiz, onPass, lessonRef }: { quiz: MiniQuiz; onPass?: () => void; lessonRef?: string }) {
   const [selected, setSelected] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
+  const [enqueued, setEnqueued] = useState(false);
 
   const isCorrect = selected === quiz.answer;
+
+  // 答錯 → fire-and-forget 排入 SRS 複習佇列（不阻塞測驗 UX）
+  function handleSubmit() {
+    setSubmitted(true);
+    if (selected === quiz.answer) {
+      onPass?.();
+    } else if (lessonRef && !enqueued) {
+      setEnqueued(true);
+      fetch("/api/review/schedule", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ lessonRef, question: quiz }),
+        keepalive: true,
+      }).catch(() => {});
+    }
+  }
 
   return (
     <div className="my-4 rounded-xl border border-blue-500/30 bg-blue-500/5 p-4">
@@ -50,7 +67,7 @@ export function MiniQuizCard({ quiz, onPass }: { quiz: MiniQuiz; onPass?: () => 
 
       {!submitted ? (
         <button
-          onClick={() => { setSubmitted(true); if (selected === quiz.answer) onPass?.(); }}
+          onClick={handleSubmit}
           disabled={!selected}
           className="mt-3 px-4 py-1.5 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600 disabled:opacity-40"
         >
@@ -66,9 +83,15 @@ export function MiniQuizCard({ quiz, onPass }: { quiz: MiniQuiz; onPass?: () => 
               <Lightbulb size={13} className="mt-0.5 shrink-0" /><span>{quiz.explanation}</span>
             </div>
           )}
+          {!isCorrect && enqueued && (
+            <div className="text-[11px] text-fg-muted inline-flex items-center gap-1">
+              <RotateCcw size={11} /> 已加入複習佇列、明天在
+              <a href="/me/review" className="text-blue-400 hover:underline">複習</a>再考你一次
+            </div>
+          )}
           <button
             onClick={() => { setSelected(null); setSubmitted(false); }}
-            className="text-xs text-blue-400 hover:underline"
+            className="text-xs text-blue-400 hover:underline block"
           >
             再試一次
           </button>

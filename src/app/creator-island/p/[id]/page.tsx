@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getPost } from "@/lib/creator-engine/social";
+import { ShareButton } from "@/components/share/ShareButton";
 
 export const dynamic = "force-dynamic";
 
@@ -11,15 +12,19 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const { id } = await params;
   const post: any = await getPost(id);
   if (!post || post.visibility !== "public") return { title: "貼文 · AI 島", robots: { index: false } };
-  const title = `${name(post.author)} 的貼文 · AI 島`;
+  const author = name(post.author);
+  const title = `${author} 的貼文 · AI 島`;
   const desc = (post.content || "在 AI 島看更多創作").replace(/\s+/g, " ").slice(0, 110);
-  const img = post.images?.[0]?.url || post.video_thumbnail_url || undefined;
+  // 有作品圖 → 直接拿圖當 OG；沒圖 → 用產生的品牌卡（/api/og）。
+  const userImg = post.images?.[0]?.url || post.video_thumbnail_url || undefined;
+  const cardSub = (post.content || "在 AI 島創作").replace(/\s+/g, " ").slice(0, 60);
+  const ogImg = userImg || `${SITE_URL}/api/og?title=${encodeURIComponent(author + " 的作品")}&subtitle=${encodeURIComponent(cardSub)}`;
   return {
     title, description: desc,
     alternates: { canonical: `/creator-island/p/${id}` },
     robots: { index: false, follow: true },
-    openGraph: { title, description: desc, images: img ? [{ url: img }] : undefined, type: "article", siteName: "AI 島", url: `${SITE_URL}/creator-island/p/${id}` },
-    twitter: { card: img ? "summary_large_image" : "summary", title, description: desc, images: img ? [img] : undefined },
+    openGraph: { title, description: desc, images: [{ url: ogImg, width: 1200, height: 630 }], type: "article", siteName: "AI 島", url: `${SITE_URL}/creator-island/p/${id}` },
+    twitter: { card: "summary_large_image", title, description: desc, images: [ogImg] },
   };
 }
 
@@ -52,7 +57,14 @@ export default async function PostPermalink({ params }: { params: Promise<{ id: 
         {post.images?.length > 0 && <div className={`grid gap-1 ${post.images.length > 1 ? "grid-cols-2" : ""}`}>{post.images.map((im: any, i: number) => <img key={i} src={im.url} alt="" className="rounded-lg w-full object-cover max-h-96" />)}</div>}
         {post.video_url && <video src={post.video_url} controls className="w-full rounded-lg max-h-[80vh]" />}
         {post.audio_url && <audio src={post.audio_url} controls className="w-full" />}
-        <div className="text-xs text-fg-muted pt-1">❤️ {post.likes_count} · 💬 {post.comments_count}</div>
+        <div className="flex items-center justify-between pt-1">
+          <div className="text-xs text-fg-muted">❤️ {post.likes_count} · 💬 {post.comments_count}</div>
+          <ShareButton
+            url={`${SITE_URL}/creator-island/p/${id}`}
+            title={`${name(post.author)} 的作品 · AI 島`}
+            text={(post.content || "在 AI 島看更多創作").replace(/\s+/g, " ").slice(0, 80)}
+          />
+        </div>
       </article>
       <div className="flex flex-wrap items-center justify-center gap-3">
         <Link href="/creator-island/community" className="px-5 py-2.5 rounded-full bg-accent text-black font-semibold hover:opacity-90 transition">🏝️ 來 AI 島社群</Link>

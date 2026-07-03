@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { createSupabaseServer } from "@/lib/supabase-server";
+import { processReferralSignup } from "@/lib/referral";
 
 function buildUsername(user: { id: string; email?: string; user_metadata?: Record<string, any> }) {
   const raw =
@@ -33,7 +34,7 @@ function buildDisplayName(user: { email?: string; user_metadata?: Record<string,
   );
 }
 
-export async function POST() {
+export async function POST(req: NextRequest) {
   const supabase = await createSupabaseServer();
   const {
     data: { user },
@@ -80,6 +81,21 @@ export async function POST() {
     if (insertError) {
       return NextResponse.json({ error: insertError.message }, { status: 500 });
     }
+
+    // 邀請獎勵：只在「首次建立 profile」時處理（天然冪等）。
+    // ref 來源：POST body.ref（signup 頁直接帶）或註冊時寫進的 user_metadata.referral_code。
+    let ref: string | null = null;
+    try {
+      const body = await req.json().catch(() => ({} as any));
+      ref = body?.ref ?? null;
+    } catch {
+      /* no body */
+    }
+    ref = ref || (user.user_metadata as any)?.referral_code || null;
+    if (ref) {
+      await processReferralSignup(admin, user.id, ref);
+    }
+
     return NextResponse.json({ ok: true, needsDisplayName: isOAuth });
   }
 

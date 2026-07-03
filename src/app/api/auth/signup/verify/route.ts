@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createHash } from "crypto";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { rateLimit } from "@/lib/rate-limit";
+import { normalizeReferralCode } from "@/lib/referral";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -19,6 +20,7 @@ export async function POST(req: NextRequest) {
   const code = String(b.code ?? "").trim();
   const password = String(b.password ?? "");
   const username = String(b.username ?? "").trim();
+  const referralCode = normalizeReferralCode(b.ref);
   if (!email || !/^\d{6}$/.test(code)) return NextResponse.json({ error: "bad_input", message: "請輸入 6 位數驗證碼" }, { status: 400 });
   if (password.length < 8) return NextResponse.json({ error: "bad_password", message: "密碼至少 8 字" }, { status: 400 });
   if (username.length < 3) return NextResponse.json({ error: "bad_username", message: "使用者名稱至少 3 字" }, { status: 400 });
@@ -42,7 +44,7 @@ export async function POST(req: NextRequest) {
   // 驗證通過 → 建帳號（email_confirm:true，因為我們已用驗證碼確認信箱）
   const { error: createErr } = await admin.auth.admin.createUser({
     email, password, email_confirm: true,
-    user_metadata: { username, agreed_terms_at: new Date().toISOString() },
+    user_metadata: { username, agreed_terms_at: new Date().toISOString(), ...(referralCode ? { referral_code: referralCode } : {}) },
   });
   if (createErr) {
     const msg = /already|registered|exists/i.test(createErr.message) ? "這個 Email 已經註冊過了" : createErr.message;

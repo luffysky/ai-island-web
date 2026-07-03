@@ -1,13 +1,29 @@
 "use client";
 import { motion } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import confetti from "canvas-confetti";
+import { LottieIcon } from "@/components/ui/LottieIcon";
 
 export function LevelUpModal({ level, onClose }: { level: number; onClose: () => void }) {
+  const [celebrationUrl, setCelebrationUrl] = useState<string | null>(null);
+
   useEffect(() => {
     confetti({ particleCount: 130, spread: 85, origin: { y: 0.5 }, zIndex: 60 });
     const t = setTimeout(() => confetti({ particleCount: 70, spread: 110, startVelocity: 38, origin: { y: 0.42 }, zIndex: 60 }), 260);
     return () => clearTimeout(t);
+  }, []);
+
+  // 慶祝 Lottie（admin 在 /admin/lottie-settings 設 celebration_lottie_url）— 沒設就 fallback ⭐
+  useEffect(() => {
+    let alive = true;
+    fetch("/api/app-settings?keys=celebration_lottie_url")
+      .then((r) => r.json())
+      .then((j) => {
+        const u = j?.settings?.celebration_lottie_url;
+        if (alive && typeof u === "string" && u.trim()) setCelebrationUrl(u.trim());
+      })
+      .catch(() => {});
+    return () => { alive = false; };
   }, []);
   return (
     <motion.div
@@ -24,7 +40,18 @@ export function LevelUpModal({ level, onClose }: { level: number; onClose: () =>
         onClick={e => e.stopPropagation()}
       >
         <div className="bg-bg-elevated rounded-[14px] px-12 py-10 text-center">
-          <div className="text-7xl mb-4 animate-pulse-glow inline-block">⭐</div>
+          <div className="mb-4 flex justify-center">
+            {celebrationUrl ? (
+              <LottieIcon
+                src={celebrationUrl}
+                size={112}
+                loop
+                fallback={<span className="text-7xl animate-pulse-glow inline-block">⭐</span>}
+              />
+            ) : (
+              <span className="text-7xl animate-pulse-glow inline-block">⭐</span>
+            )}
+          </div>
           <div className="text-sm text-fg-muted mb-2 tracking-widest">LEVEL UP</div>
           <div className="text-6xl font-bold bg-gradient-to-r from-accent to-accent-2 bg-clip-text text-transparent mb-3">
             Lv {level}

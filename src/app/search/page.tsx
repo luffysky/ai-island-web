@@ -1,5 +1,15 @@
 import Link from "next/link";
-import { Search as SearchIcon, Sparkles } from "lucide-react";
+import {
+  Search as SearchIcon,
+  Sparkles,
+  BookOpen,
+  Swords,
+  PenLine,
+  MessageCircle,
+  FileText,
+  MessageSquareText,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
 
 export const dynamic = "force-dynamic";
@@ -9,14 +19,17 @@ export const metadata = {
   description: "語意搜尋：找章節、副本、部落格、論壇 — 用自然語言問都可以。",
 };
 
-const TYPE_LABEL: Record<string, { emoji: string; text: string; tone: string }> = {
-  chapter: { emoji: "📚", text: "章節", tone: "text-accent" },
-  dungeon: { emoji: "⚔️", text: "副本", tone: "text-purple-400" },
-  blog: { emoji: "📝", text: "部落格", tone: "text-blue-400" },
-  forum_thread: { emoji: "💭", text: "論壇", tone: "text-pink-400" },
+const TYPE_META: Record<string, { icon: LucideIcon; text: string; tone: string }> = {
+  chapter: { icon: BookOpen, text: "章節", tone: "text-accent" },
+  dungeon: { icon: Swords, text: "副本", tone: "text-purple-400" },
+  blog: { icon: PenLine, text: "部落格", tone: "text-blue-400" },
+  forum_thread: { icon: MessageCircle, text: "論壇", tone: "text-pink-400" },
 };
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
+// 分組顯示順序
+const GROUP_ORDER = ["chapter", "dungeon", "blog", "forum_thread"];
+
+const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet").replace(/\/+$/, "");
 
 type SearchResult = {
   type: string;
@@ -50,22 +63,34 @@ export default async function SearchPage({
   const q = (sp.q ?? "").trim();
   const results = await doSearch(q);
 
+  // 依 content_type 分組
+  const groups = new Map<string, SearchResult[]>();
+  for (const r of results) {
+    if (!groups.has(r.type)) groups.set(r.type, []);
+    groups.get(r.type)!.push(r);
+  }
+  const orderedTypes = [
+    ...GROUP_ORDER.filter((t) => groups.has(t)),
+    ...[...groups.keys()].filter((t) => !GROUP_ORDER.includes(t)),
+  ];
+
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-2 flex items-center gap-2">
-        <Sparkles size={20} className="text-accent" />
+        <Sparkles size={20} className="text-accent" aria-hidden="true" />
         語意搜尋
       </h1>
       <p className="text-sm text-fg-muted mb-6">
         用自然語言問問題、AI 幫你找跨章節 / 副本 / 部落格 / 論壇的最相關內容。
       </p>
 
-      <form action="/search" method="GET" className="mb-6">
+      <form action="/search" method="GET" className="mb-6" role="search">
         <div className="flex gap-2">
           <input
             type="search"
             name="q"
             defaultValue={q}
+            aria-label="搜尋內容"
             placeholder="例如：怎麼從 0 開始學 React Hook、AI Agent 是什麼、台灣 SEO 要怎麼做..."
             className="flex-1 bg-bg-card border border-border rounded-lg px-4 py-2.5 text-sm outline-none focus:border-accent"
             autoFocus
@@ -74,7 +99,7 @@ export default async function SearchPage({
             type="submit"
             className="px-5 py-2.5 bg-accent text-black font-bold rounded-lg inline-flex items-center gap-1"
           >
-            <SearchIcon size={14} />
+            <SearchIcon size={14} aria-hidden="true" />
             搜尋
           </button>
         </div>
@@ -86,36 +111,50 @@ export default async function SearchPage({
         <EmptyState
           icon={SearchIcon}
           title={`沒找到「${q}」相關內容`}
-          desc="試試不同關鍵字、或用更具體 / 更簡短的問題。"
+          desc="試試不同關鍵字、或用更具體 / 更簡短的問題。（若剛部署、內容索引可能還在建立中。）"
         />
       ) : (
-        <ul className="space-y-3">
-          {results.map((r) => {
-            const tag = TYPE_LABEL[r.type] ?? { emoji: "📄", text: r.type, tone: "" };
+        <div className="space-y-8">
+          {orderedTypes.map((type) => {
+            const meta = TYPE_META[type] ?? { icon: FileText, text: type, tone: "" };
+            const Icon = meta.icon;
+            const items = groups.get(type)!;
             return (
-              <li key={`${r.type}-${r.id}`}>
-                <Link
-                  href={r.url.replace(SITE_URL, "") as any}
-                  className="block bg-bg-card border border-border hover:border-accent/50 rounded-xl p-4 transition group"
-                >
-                  <div className="flex items-center gap-2 mb-1 text-xs">
-                    <span className={`font-bold ${tag.tone}`}>
-                      {tag.emoji} {tag.text}
-                    </span>
-                    <span className="text-fg-muted">·</span>
-                    <span className="text-fg-muted font-mono text-[10px]">
-                      相似度 {(r.similarity * 100).toFixed(0)}%
-                    </span>
-                  </div>
-                  <h3 className="font-bold group-hover:text-accent transition">{r.title}</h3>
-                  {r.snippet && (
-                    <p className="text-sm text-fg-muted mt-1 line-clamp-2">{r.snippet}</p>
-                  )}
-                </Link>
-              </li>
+              <section key={type} aria-label={meta.text}>
+                <h2 className={`text-sm font-bold mb-3 flex items-center gap-1.5 ${meta.tone}`}>
+                  <Icon size={15} aria-hidden="true" />
+                  {meta.text}
+                  <span className="text-fg-muted font-normal">({items.length})</span>
+                </h2>
+                <ul className="space-y-3">
+                  {items.map((r) => (
+                    <li key={`${r.type}-${r.id}`}>
+                      <Link
+                        href={r.url.replace(SITE_URL, "") as any}
+                        className="block bg-bg-card border border-border hover:border-accent/50 rounded-xl p-4 transition group"
+                      >
+                        <div className="flex items-center gap-2 mb-1 text-xs">
+                          <span className={`font-bold inline-flex items-center gap-1 ${meta.tone}`}>
+                            <Icon size={12} aria-hidden="true" />
+                            {meta.text}
+                          </span>
+                          <span className="text-fg-muted">·</span>
+                          <span className="text-fg-muted font-mono text-[10px]">
+                            相似度 {(r.similarity * 100).toFixed(0)}%
+                          </span>
+                        </div>
+                        <h3 className="font-bold group-hover:text-accent transition">{r.title}</h3>
+                        {r.snippet && (
+                          <p className="text-sm text-fg-muted mt-1 line-clamp-2">{r.snippet}</p>
+                        )}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </section>
             );
           })}
-        </ul>
+        </div>
       )}
     </div>
   );
@@ -133,18 +172,19 @@ function SuggestionBlock() {
     <div className="space-y-3">
       <p className="text-sm text-fg-muted">試試這些問題：</p>
       <div className="grid gap-2">
-        {examples.map((q) => (
+        {examples.map((ex) => (
           <Link
-            key={q}
-            href={`/search?q=${encodeURIComponent(q)}` as any}
-            className="block px-4 py-3 bg-bg-card border border-border hover:border-accent rounded-xl text-sm transition"
+            key={ex}
+            href={`/search?q=${encodeURIComponent(ex)}` as any}
+            className="flex items-center gap-2 px-4 py-3 bg-bg-card border border-border hover:border-accent rounded-xl text-sm transition"
           >
-            💬 {q}
+            <MessageSquareText size={14} className="text-accent shrink-0" aria-hidden="true" />
+            {ex}
           </Link>
         ))}
       </div>
       <p className="text-[11px] text-fg-muted mt-6 leading-relaxed">
-        💡 <b>語意搜尋</b> 比一般關鍵字強：可以問問題（「怎麼...」「為什麼...」）、可以用同義詞、可以跨章節找答案。
+        <b>語意搜尋</b> 比一般關鍵字強：可以問問題（「怎麼...」「為什麼...」）、可以用同義詞、可以跨章節找答案。
         <br />
         實作：OpenAI text-embedding-3-small + pgvector cosine similarity、跨類型 ranking。
       </p>
