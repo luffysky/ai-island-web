@@ -1,0 +1,34 @@
+name: Learning Coach
+
+# 每週一 09:00 台灣（01:00 UTC）：為近期活躍學員產「每週學習教練報告」。
+
+on:
+  schedule:
+    - cron: '0 1 * * 1'   # 每週一 01:00 UTC = 週一 09:00 台灣
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Call /api/cron/learning-coach
+        env:
+          SITE_URL: ${{ secrets.SITE_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$SITE_URL" ] || [ -z "$CRON_SECRET" ]; then
+            echo "::error::SITE_URL or CRON_SECRET secret missing"
+            exit 1
+          fi
+          response=$(curl -sS -w "\n%{http_code}" \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            "$SITE_URL/api/cron/learning-coach")
+          body=$(echo "$response" | head -n -1)
+          code=$(echo "$response" | tail -n 1)
+          echo "HTTP $code"
+          echo "$body"
+          if [ "$code" -ne 200 ]; then
+            echo "::error::endpoint returned $code"
+            exit 1
+          fi

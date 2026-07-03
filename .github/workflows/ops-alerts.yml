@@ -1,0 +1,35 @@
+name: Ops Alerts
+
+# 每 30 分鐘：AI 超支 / 單用戶異常用量 / 24h 金流失敗 / 1h 錯誤暴增 / churn 風險 → notifyAdmin
+# 門檻可在 /admin/settings 的 app_settings(ops_alert_thresholds) 調。
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'   # 每 30 分鐘（UTC）
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Call /api/cron/ops-alerts
+        env:
+          SITE_URL: ${{ secrets.SITE_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$SITE_URL" ] || [ -z "$CRON_SECRET" ]; then
+            echo "::error::SITE_URL or CRON_SECRET secret missing"
+            exit 1
+          fi
+          response=$(curl -sS -w "\n%{http_code}" \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            "$SITE_URL/api/cron/ops-alerts")
+          body=$(echo "$response" | head -n -1)
+          code=$(echo "$response" | tail -n 1)
+          echo "HTTP $code"
+          echo "$body"
+          if [ "$code" -ne 200 ]; then
+            echo "::error::endpoint returned $code"
+            exit 1
+          fi

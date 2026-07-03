@@ -3,6 +3,11 @@
 董事長林董（Luffy Lin）。雪鑰值班。
 主題：**金流上線 + 商業模式/Z幣經濟 + 修一堆真壞掉的 + 後台 P1/P2 升級 + 三通訊美化 + TipTap 全做 + roadmap 多波（Lottie/SRS/成長病毒/語意搜尋）+ SEO robots**。超長衝刺、多代理並行。
 
+> 🔔 **林董下次要看/做**：
+> 1. **`docs/OWNER_SETUP.md`** — 你手動待辦 + env 總清單（一張勾選表）。
+> 2. **`docs/payments_setup.md`** — 金流設定細節。**金流金鑰下次設**（申請綠界/Stripe → 填 env → webhook URL → 測試機驗一筆 → 開 `PAYMENTS_LIVE=1`）。
+> 3. **下次做**：線上 QA 實跑關鍵流程（登入→每日任務→/store→career-path→協作→推播）。
+
 ---
 
 ## 💳 金流（課程免費、金流用於 Z幣/Pro）
