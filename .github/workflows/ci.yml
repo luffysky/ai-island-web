@@ -45,10 +45,15 @@ jobs:
 
       # build：也必須綠（確認能真的建出來）。
       # ⚠️ next build 會 prerender-probe 頁面、server component 會建 Supabase client，
-      #    所以要跟 docker.yml 一樣把 NEXT_PUBLIC_SUPABASE_* 帶進來、否則 /settings 之類會炸。
+      #    所以要跟 docker.yml「完全一致」地把 env 帶進來、否則 build 時會炸：
+      #    - NEXT_PUBLIC_SUPABASE_*：browser client（/settings 之類）
+      #    - SUPABASE_SERVICE_ROLE_KEY：有些公開頁（/forum …）prerender 時走 admin client 讀 DB、
+      #      缺了會 hard-throw「required env var SUPABASE_SERVICE_ROLE_KEY is missing」→ 整個 build 失敗。
+      #      docker.yml 早就有帶這個 secret（所以部署 image 一直是綠的）、CI 要對齊才不會誤紅。
       - name: Build
         run: npm run build
         env:
           NEXT_PUBLIC_SITE_URL: https://ai-island-web.snowrealm.pet
           NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL || secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
