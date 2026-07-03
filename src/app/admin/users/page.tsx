@@ -6,7 +6,8 @@ import { adminHref } from "@/lib/admin-href";
 import { UserRow } from "./UserRow";
 import { UserCard } from "./UserCard";
 import { PageHero } from "@/components/admin/PageHero";
-import { RefreshCw, ArrowLeft, ArrowRight, Users } from "lucide-react";
+import { RefreshCw, ArrowLeft, ArrowRight, Users, ShieldCheck } from "lucide-react";
+import { ROLE_LEGEND } from "@/lib/admin-roles";
 
 export const dynamic = "force-dynamic";
 
@@ -89,6 +90,30 @@ export default async function AdminUsersPage({
           <RefreshCw className="w-3.5 h-3.5" /> 批次操作
         </Link>
       </PageHero>
+
+      {/* 角色權限說明（RBAC legend）— 每個後台角色能存取哪些區塊 */}
+      <details className="bg-bg-card border border-border rounded-xl px-4 py-3 text-sm">
+        <summary className="cursor-pointer font-semibold flex items-center gap-2 text-fg-muted hover:text-accent">
+          <ShieldCheck className="w-4 h-4" /> 後台角色權限說明（點開）
+        </summary>
+        <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-2">
+          {ROLE_LEGEND.map((r) => (
+            <div key={r.role} className="flex items-start gap-2 rounded-lg bg-bg-elevated/50 p-2.5">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-accent/15 text-accent shrink-0 mt-0.5">
+                {r.role}
+              </span>
+              <div className="min-w-0">
+                <div className="font-semibold text-xs">{r.label}</div>
+                <div className="text-[11px] text-fg-muted leading-relaxed">{r.desc}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <p className="mt-2 text-[11px] text-fg-muted">
+          owner / admin 擁有完整後台權限；support / marketing / finance / content 為 scoped 角色、只能看到與進入自己負責的區塊、且無法呼叫其他區塊的敏感 API。只有站長 (owner) 能指派 owner / admin。
+        </p>
+      </details>
+
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div />
         <div className="flex items-center gap-3">
@@ -114,6 +139,10 @@ export default async function AdminUsersPage({
           <option value="all">所有角色</option>
           <option value="member">member</option>
           <option value="editor">editor</option>
+          <option value="support">support</option>
+          <option value="marketing">marketing</option>
+          <option value="finance">finance</option>
+          <option value="content">content</option>
           <option value="admin">admin</option>
           <option value="owner">owner</option>
         </select>

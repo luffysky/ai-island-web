@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAdmin as adminGate } from "@/lib/admin-guard";
+import { requireAdminSection } from "@/lib/admin-guard";
 import { createSupabaseServer, createSupabaseAdmin } from "@/lib/supabase";
 
 const MAX_PER_USER = 5000;
@@ -14,8 +14,9 @@ type Segment =
   | { kind: "level_gte"; value: number }
   | { kind: "ids"; ids: string[] };
 
+// Z-coin airdrop 屬金流：owner/admin 或 finance 角色可執行；其他 scoped 角色 403。
 async function requireAdmin() {
-  const gate = await adminGate();
+  const gate = await requireAdminSection("finance");
   if (!gate.ok) return null;
   return { id: gate.userId, role: gate.role, username: gate.username };
 }

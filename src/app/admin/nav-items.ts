@@ -8,6 +8,8 @@
  * 給指令面板做模糊搜尋用。ownerOnly = 只有站長(林董)看得到。
  */
 
+import { canAccessSection, sectionForPath } from "@/lib/admin-roles";
+
 export type AdminNavItem = {
   href: string; // 內部路徑（/admin/...），render 時用 adminHref() 加 slug
   label: string; // 含 emoji 的顯示字（跟側邊欄一致）
@@ -192,15 +194,25 @@ export function stripEmoji(label: string): string {
     .trim();
 }
 
-/** 扁平化所有可導覽目的地（含群組標題），依 ownerOnly 過濾。 */
-export function flattenNav(isOwner: boolean): Array<AdminNavItem & { group: string; plain: string }> {
+/**
+ * 扁平化所有可導覽目的地（含群組標題），依 ownerOnly + RBAC section 過濾。
+ * 傳入 role 時、scoped 角色只會看到自己 section 的項目（跟側邊欄一致）；
+ * 不傳 role（或 owner/admin）→ 沿用舊行為、只看 ownerOnly。
+ */
+export function flattenNav(
+  isOwner: boolean,
+  role?: string | null,
+): Array<AdminNavItem & { group: string; plain: string }> {
   const out: Array<AdminNavItem & { group: string; plain: string }> = [];
+  const allow = (href: string) => canAccessSection(role ?? null, isOwner, sectionForPath(href));
   for (const it of ADMIN_NAV_TOP) {
+    if (!allow(it.href)) continue;
     out.push({ ...it, group: "捷徑", plain: stripEmoji(it.label) });
   }
   for (const g of ADMIN_NAV_GROUPS) {
     for (const it of g.items) {
       if (it.ownerOnly && !isOwner) continue;
+      if (!allow(it.href)) continue;
       out.push({ ...it, group: stripEmoji(g.title) || g.title, plain: stripEmoji(it.label) });
     }
   }

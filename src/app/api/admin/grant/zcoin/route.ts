@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase";
-import { requireAdmin } from "@/lib/admin-guard";
+import { requireAdminSection } from "@/lib/admin-guard";
 
 const MAX_GRANT = 5000;
 const MIN_REASON_LEN = 5;
 
 export async function POST(req: NextRequest) {
-  const gate = await requireAdmin();
+  // Z-coin 補帳屬金流：owner/admin 或 finance 角色可執行；其他 scoped 角色 403。
+  const gate = await requireAdminSection("finance");
   if (!gate.ok) return gate.response;
 
   const { userId, amount, reason } = await req.json();

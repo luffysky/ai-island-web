@@ -1,5 +1,6 @@
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import Link from "next/link";
 import { CollapsibleAside } from "./CollapsibleAside";
 import { LottieBackground } from "@/components/admin/LottieBackground";
@@ -11,6 +12,14 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Crown, ArrowLeft } from "lucide-react";
 import { ADMIN_NAV_TOP, ADMIN_NAV_GROUPS } from "./nav-items";
 import { CommandPalette } from "@/components/admin/CommandPalette";
+import {
+  isAdminStaff,
+  isScopedRole,
+  canAccessPath,
+  canAccessSection,
+  sectionForPath,
+  landingPathForRole,
+} from "@/lib/admin-roles";
 
 // 強制每次都 server-side render、不 cache
 export const dynamic = "force-dynamic";
@@ -44,10 +53,20 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     email: user.email ?? null,
   });
   const isOwner = ownerCheck.isOwner;
+  const role = profile?.role ?? null;
 
-  // owner = 林董；admin = 一般管理員、都可進後台
-  if (!profile || !(isOwner || profile.role === "admin")) {
+  // 進後台的資格：owner / admin / scoped 角色（support/marketing/finance/content）都可進。
+  // owner/admin = 全權；scoped 角色只能看/進自己負責的 section（下面 gate）。
+  if (!profile || !isAdminStaff(role, isOwner)) {
     redirect("/");
+  }
+
+  // === RBAC 頁面 gate（單一入口涵蓋所有 admin 頁）===
+  // 從 middleware 塞的 x-admin-path 取當前內部路徑；scoped 角色進不了的 section → 導回自己落地頁。
+  const scoped = isScopedRole(role) && !isOwner;
+  const currentPath = (await headers()).get("x-admin-path") || "/admin";
+  if (scoped && !canAccessPath(role, isOwner, currentPath)) {
+    redirect(landingPathForRole(role, isOwner).replace(/^\/admin/, ADMIN_BASE));
   }
 
   // 後台 Lottie 背景設定 (從 app_settings 撈、林董可在「應用設定 CRUD」調)
@@ -68,7 +87,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <div className="admin-skin relative">
       <LottieBackground src={lottieSrc ?? undefined} opacity={lottieOpacity} blur={1} speed={0.4} />
-      <CommandPalette isOwner={isOwner} />
+      <CommandPalette isOwner={isOwner} role={role} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 relative z-10">
         <div className="mb-6 flex items-center justify-between gap-3 flex-wrap bg-bg-card border border-border rounded-2xl p-4">
           <div className="flex items-center gap-3 min-w-0">
@@ -107,21 +126,31 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <CollapsibleAside>
           <nav className="space-y-4 text-sm">
 
-            {/* ⭐ 置頂、不歸類 */}
-            {ADMIN_NAV_TOP.map((it) => (
-              <AdminLink key={it.href} href={it.href}>{it.label}</AdminLink>
-            ))}
+            {/* ⭐ 置頂、不歸類 — scoped 角色也要過 section 權限 */}
+            {ADMIN_NAV_TOP
+              .filter((it) => (!it.ownerOnly || isOwner) && canAccessSection(role, isOwner, sectionForPath(it.href)))
+              .map((it) => (
+                <AdminLink key={it.href} href={it.href}>{it.label}</AdminLink>
+              ))}
 
-            {/* 側邊欄與 Cmd+K 指令面板共用 ./nav-items.ts 這一份資料 */}
-            {ADMIN_NAV_GROUPS.map((g) => (
-              <NavGroup key={g.title} title={g.title}>
-                {g.items
-                  .filter((it) => !it.ownerOnly || isOwner)
-                  .map((it) => (
+            {/* 側邊欄與 Cmd+K 指令面板共用 ./nav-items.ts 這一份資料。
+                RBAC：每個項目用 sectionForPath 判定 section、scoped 角色只看得到自己 section。
+                group 內全數被過濾掉時整組不顯示。 */}
+            {ADMIN_NAV_GROUPS.map((g) => {
+              const visible = g.items.filter(
+                (it) =>
+                  (!it.ownerOnly || isOwner) &&
+                  canAccessSection(role, isOwner, sectionForPath(it.href)),
+              );
+              if (visible.length === 0) return null;
+              return (
+                <NavGroup key={g.title} title={g.title}>
+                  {visible.map((it) => (
                     <AdminLink key={it.href} href={it.href}>{it.label}</AdminLink>
                   ))}
-              </NavGroup>
-            ))}
+                </NavGroup>
+              );
+            })}
 
           </nav>
         </CollapsibleAside>

@@ -27,6 +27,7 @@
 import { NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { checkOwner } from "@/lib/is-owner";
+import { canAccessSection, type AdminSectionKey } from "@/lib/admin-roles";
 
 export type GuardOk = {
   ok: true;
@@ -129,6 +130,35 @@ export async function requireStaff(allowedRoles: string[]): Promise<GuardResult>
 
   const allowed = actor.isOwner || (actor.role != null && allowedRoles.includes(actor.role));
   if (!allowed) return fail(403, "forbidden");
+
+  return {
+    ok: true,
+    userId: actor.userId,
+    role: actor.role,
+    username: actor.username,
+    isOwner: actor.isOwner,
+  };
+}
+
+/**
+ * Scoped section gate（RBAC）：owner/admin 一律放行；
+ * scoped 角色（support/marketing/finance/content）只有在自己負責的 section 才放行、
+ * 其餘（含另一個 section 的敏感 API）回 403。
+ *
+ * ⚠️ 這是**新增**的 helper、不改 requireAdmin 的語意。多數 route 仍用 requireAdmin
+ *    （owner/admin only、scoped 角色本來就 403、已經安全）。只有「明確屬於某 section
+ *    且該 section 的 scoped 角色應該能操作」的敏感 mutation 才改用這個。
+ *
+ *   const gate = await requireAdminSection("finance");
+ *   if (!gate.ok) return gate.response;
+ */
+export async function requireAdminSection(section: AdminSectionKey): Promise<GuardResult> {
+  const actor = await resolveActor();
+  if (!actor.ok) return actor;
+
+  if (!canAccessSection(actor.role, actor.isOwner, section)) {
+    return fail(403, "forbidden");
+  }
 
   return {
     ok: true,

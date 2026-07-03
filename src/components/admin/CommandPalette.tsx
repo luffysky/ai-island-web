@@ -7,6 +7,7 @@ import {
   ADMIN_QUICK_ACTIONS,
   flattenNav,
 } from "@/app/admin/nav-items";
+import { canAccessSection, sectionForPath } from "@/lib/admin-roles";
 import {
   Search,
   CornerDownLeft,
@@ -57,7 +58,7 @@ function fuzzyScore(query: string, target: string): number | null {
   return 1000 + gaps; // 子序列命中排在子字串之後
 }
 
-export function CommandPalette({ isOwner }: { isOwner: boolean }) {
+export function CommandPalette({ isOwner, role }: { isOwner: boolean; role?: string | null }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -67,7 +68,7 @@ export function CommandPalette({ isOwner }: { isOwner: boolean }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
-  const navItems = useMemo(() => flattenNav(isOwner), [isOwner]);
+  const navItems = useMemo(() => flattenNav(isOwner, role), [isOwner, role]);
 
   // 開/關快捷鍵：Cmd/Ctrl+K
   useEffect(() => {
@@ -137,7 +138,9 @@ export function CommandPalette({ isOwner }: { isOwner: boolean }) {
       href: n.href,
       group: "頁面",
     }));
-    const actions: Item[] = ADMIN_QUICK_ACTIONS.filter((a) => !a.ownerOnly || isOwner).map((a) => ({
+    const actions: Item[] = ADMIN_QUICK_ACTIONS.filter(
+      (a) => (!a.ownerOnly || isOwner) && canAccessSection(role ?? null, isOwner, sectionForPath(a.href)),
+    ).map((a) => ({
       key: `action:${a.id}`,
       kind: "action",
       title: a.label,

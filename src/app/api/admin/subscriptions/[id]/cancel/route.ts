@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/admin-guard";
+import { requireAdminSection } from "@/lib/admin-guard";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { notifyAdmin } from "@/lib/notify-admin";
 
@@ -20,7 +20,8 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const gate = await requireAdmin();
+  // 金流敏感操作：owner/admin 或 finance 角色可執行；其他 scoped 角色 403。
+  const gate = await requireAdminSection("finance");
   if (!gate.ok) return gate.response;
 
   const { id } = await params;

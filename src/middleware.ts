@@ -13,7 +13,11 @@ export async function middleware(request: NextRequest) {
     const newPath = `/admin${rest}`;
     const url = request.nextUrl.clone();
     url.pathname = newPath;
-    return NextResponse.rewrite(url);
+    // 把內部後台路徑透過 request header 傳給 layout（server component 無法直接讀 pathname）
+    // → layout 用它做 RBAC section 頁面 gate（見 src/lib/admin-roles.ts）。
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set("x-admin-path", newPath);
+    return NextResponse.rewrite(url, { request: { headers: requestHeaders } });
   }
 
   // 2. 阻擋直接訪問 /admin（任何想猜的人都會 404）

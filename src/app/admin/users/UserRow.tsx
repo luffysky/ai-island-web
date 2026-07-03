@@ -55,10 +55,20 @@ export function UserRow({ user, isOwner }: { user: any; isOwner?: boolean }) {
             disabled={a.busy}
             className="bg-bg-elevated border border-border rounded px-2 py-1 text-xs disabled:opacity-50"
           >
-            <option value="member">member</option>
-            <option value="editor">editor</option>
-            <option value="admin">admin</option>
-            <option value="owner">owner</option>
+            <optgroup label="一般">
+              <option value="member">member</option>
+              <option value="editor">editor</option>
+            </optgroup>
+            <optgroup label="後台 scoped 角色">
+              <option value="support">support（客服）</option>
+              <option value="marketing">marketing（行銷）</option>
+              <option value="finance">finance（財務/金流）</option>
+              <option value="content">content（內容/審核）</option>
+            </optgroup>
+            <optgroup label="高權限（限站長指派）">
+              <option value="admin" disabled={!isOwner}>admin（超管）</option>
+              <option value="owner" disabled={!isOwner}>owner（站長）</option>
+            </optgroup>
           </select>
         </td>
         <td className="px-4 py-3 text-xs text-fg-muted">
