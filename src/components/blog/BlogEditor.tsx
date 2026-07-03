@@ -17,6 +17,13 @@ import TableHeader from "@tiptap/extension-table-header";
 import TableCell from "@tiptap/extension-table-cell";
 import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
+// 即時共編（opt-in）：只有 EngineWorkspace 傳 collab 時才載入這條路徑。
+// ⚠️ TipTap v3（本專案 3.23.5）把 CollaborationCursor 改名為 CollaborationCaret、
+//   套件 @tiptap/extension-collaboration-cursor → @tiptap/extension-collaboration-caret。
+//   舊的 -cursor 套件停在 v2、跟 v3 core 不相容。故這裡用 -caret（= 需求說的 cursor 的 v3 版）。
+import Collaboration from "@tiptap/extension-collaboration";
+import CollaborationCaret from "@tiptap/extension-collaboration-caret";
+import type { Doc as YDoc } from "yjs";
 import { Markdown } from "tiptap-markdown";
 import { common, createLowlight } from "lowlight";
 import { useEffect, useRef, useState } from "react";
@@ -97,7 +104,8 @@ async function uploadExternalImage(src: string): Promise<string | null> {
 }
 
 interface BlogEditorProps {
-  content: string;
+  /** 單人模式的初始/受控內容。共編（collab）模式不需要、也不應傳（內容由 Yjs doc 掌控）。 */
+  content?: string;
   onChange: (html: string) => void;
   placeholder?: string;
   editable?: boolean;
@@ -105,14 +113,27 @@ interface BlogEditorProps {
   onReady?: (editor: Editor) => void;
   /** 內文變動時回傳目錄 / 預估閱讀時間 / 字詞數（消費頁可自行渲染 TOC）。 */
   onStats?: (stats: EditorStats) => void;
+  /**
+   * 即時共編（opt-in）。傳入時：內容改由 Yjs 文件（doc）掌控——
+   *  - 不吃 `content` prop、也不跑外部 content 同步 effect（避免與 Collaboration 重複灌內容）。
+   *  - StarterKit 內建的 undo/redo（undoRedo）關掉，改用 Collaboration 的歷史。
+   * 不傳時：行為 100% 不變（單人編輯，走 content / onChange）。
+   */
+  collab?: {
+    doc: YDoc;
+    /** 需帶 `.awareness`（給游標）；本專案是 SupabaseYjsProvider。 */
+    provider: { awareness: unknown };
+    user: { name: string; color: string };
+  };
 }
 
-export function BlogEditor({ content, onChange, placeholder, editable = true, onReady, onStats }: BlogEditorProps) {
+export function BlogEditor({ content, onChange, placeholder, editable = true, onReady, onStats, collab }: BlogEditorProps) {
   const editor = useEditor({
     immediatelyRender: false,
     editable,
     extensions: [
-      StarterKit.configure({ codeBlock: false }),
+      // 共編時關掉 StarterKit 的 undoRedo（歷史交給 Collaboration，否則會衝突）
+      StarterKit.configure(collab ? { codeBlock: false, undoRedo: false } : { codeBlock: false }),
       Placeholder.configure({ placeholder: placeholder ?? "開始寫你的文章...（輸入 / 叫出指令選單）" }),
       Link.configure({ openOnClick: false, HTMLAttributes: { class: "text-accent underline" } }),
       Image.configure({ HTMLAttributes: { class: "rounded-lg max-w-full" } }),
@@ -133,8 +154,16 @@ export function BlogEditor({ content, onChange, placeholder, editable = true, on
       MentionExt,
       ExternalImageUpload.configure({ upload: uploadExternalImage }),
       Markdown.configure({ html: true, transformPastedText: true, transformCopiedText: false, linkify: true }),
+      // 共編擴充（僅 collab 存在時）——放最後、且不與 content prop 併用（見下方 content 守衛）
+      ...(collab
+        ? [
+            Collaboration.configure({ document: collab.doc }),
+            CollaborationCaret.configure({ provider: collab.provider as any, user: collab.user }),
+          ]
+        : []),
     ],
-    content: content || "",
+    // 共編時內容來源 = Yjs doc，絕不從 content prop 灌（否則會與 Collaboration 重複／打架）
+    content: collab ? undefined : (content || ""),
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML());
       if (onStats) onStats(computeStats(editor));
@@ -146,8 +175,10 @@ export function BlogEditor({ content, onChange, placeholder, editable = true, on
     },
   });
 
-  // 外部 content 變動時同步（編輯既有文章）
+  // 外部 content 變動時同步（編輯既有文章）。共編時「絕不」跑——內容由 Yjs doc 掌控，
+  // 若這裡 setContent 會蓋掉 / 重複灌 CRDT 內容（duplication bug）。
   useEffect(() => {
+    if (collab) return;
     if (editor && content !== editor.getHTML()) {
       editor.commands.setContent(content || "");
     }

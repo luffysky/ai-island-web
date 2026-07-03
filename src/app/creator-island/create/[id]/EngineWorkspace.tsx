@@ -4,10 +4,11 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import type { Editor } from "@tiptap/react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Wrench, Lightbulb, Trees, X, Copy, ArrowDownToLine, Disc3, Library, Plus, FileText, Search } from "lucide-react";
+import { Wrench, Lightbulb, Trees, X, Copy, ArrowDownToLine, Disc3, Library, Plus, FileText, Search, Users } from "lucide-react";
 import { BlogEditor } from "@/components/blog/BlogEditor";
 import { IslandChat } from "../../IslandChat";
 import { getType, type Tool } from "../engine-types";
+import { useDraftCollab } from "@/lib/collab/use-draft-collab";
 
 type Fragment = { id: string; title: string; content: string; source_type: string };
 type Draft = {
@@ -21,7 +22,7 @@ function htmlify(text: string): string {
   return text.split(/\n{2,}/).map((p) => `<p>${p.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/\n/g, "<br>")}</p>`).join("");
 }
 
-export function EngineWorkspace({ draft, fragments }: { draft: Draft; fragments: Fragment[] }) {
+export function EngineWorkspace({ draft, fragments, currentUser }: { draft: Draft; fragments: Fragment[]; currentUser?: { id: string; name: string } }) {
   const t = getType(draft.work_type);
   const [title, setTitle] = useState(draft.title);
   const [body, setBody] = useState(draft.body);
@@ -36,6 +37,13 @@ export function EngineWorkspace({ draft, fragments }: { draft: Draft; fragments:
   const [toast, setToast] = useState<string | null>(null);
   const editorRef = useRef<Editor | null>(null);
   const first = useRef(true);
+
+  // 即時共編（opt-in / 特性旗標 flag_collab）。realtime 失敗會優雅退回單人。
+  const { collab, status: collabStatus, peers, seedEditor } = useDraftCollab({
+    draftId: draft.id,
+    user: currentUser ?? null,
+    initialBody: draft.body,
+  });
 
   // 系列/專輯（歌詞=專輯，其餘=系列）
   const seriesKind = draft.work_type === "song" ? "album" : "series";
@@ -161,6 +169,22 @@ export function EngineWorkspace({ draft, fragments }: { draft: Draft; fragments:
         <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="作品標題…"
           className="flex-1 min-w-[140px] bg-transparent text-lg sm:text-xl font-bold outline-none border-b border-transparent focus:border-accent py-1" />
         <Link href="/me/blog" className="inline-flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-full bg-bg-card border border-border hover:border-accent hover:text-accent transition whitespace-nowrap"><FileText size={13} /> 部落格</Link>
+        {/* 共編狀態：N 人共編中 / 離線編輯 */}
+        {collab && collabStatus !== "off" && (
+          collabStatus === "offline" ? (
+            <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 whitespace-nowrap" title="即時同步暫時斷線，你仍可繼續編輯、變更會自動儲存">
+              <Users size={12} /> 離線編輯中
+            </span>
+          ) : peers > 1 ? (
+            <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 whitespace-nowrap">
+              <Users size={12} /> {peers} 人共編中
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-bg-elevated text-fg-muted whitespace-nowrap" title="即時共編已開啟，目前只有你在線">
+              <Users size={12} /> 可共編
+            </span>
+          )
+        )}
         <span className={`text-xs ${save === "saved" ? "text-emerald-500" : "text-fg-muted"}`}>{saveLabel}</span>
       </div>
 
@@ -169,7 +193,25 @@ export function EngineWorkspace({ draft, fragments }: { draft: Draft; fragments:
       <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr),340px] gap-4">
         {/* 編輯器 */}
         <div className="min-w-0">
-          <BlogEditor content={body} onChange={setBody} placeholder={t.placeholder} onReady={(ed) => { editorRef.current = ed; }} />
+          {collab === null && collabStatus === "connecting" ? (
+            <div className="h-[460px] rounded-xl border border-border bg-bg-card animate-pulse" />
+          ) : collab ? (
+            <BlogEditor
+              key="collab"
+              collab={collab}
+              onChange={setBody}
+              placeholder={t.placeholder}
+              onReady={(ed) => { editorRef.current = ed; seedEditor(ed); }}
+            />
+          ) : (
+            <BlogEditor
+              key="solo"
+              content={body}
+              onChange={setBody}
+              placeholder={t.placeholder}
+              onReady={(ed) => { editorRef.current = ed; }}
+            />
+          )}
 
           {/* 完稿動作 */}
           <div className="flex flex-wrap gap-2 mt-3">

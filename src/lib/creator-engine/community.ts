@@ -4,6 +4,22 @@
  */
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { addRelation, type AssetType } from "@/lib/creator-engine/lineage";
+import { notify, displayName } from "@/lib/creator-engine/notify";
+import { sendPushToUser } from "@/lib/web-push";
+
+/** 找社群資產（work / fragment）的擁有者 user id。找不到回 null。best-effort。 */
+async function assetOwner(assetId: string, assetType?: string): Promise<string | null> {
+  const admin = createSupabaseAdmin();
+  const tables = assetType === "work" ? ["ci_works"]
+    : assetType === "fragment" ? ["ci_fragments"]
+    : ["ci_works", "ci_fragments"];
+  for (const t of tables) {
+    const { data } = await admin.from(t).select("created_by").eq("id", assetId).maybeSingle();
+    const owner = (data as any)?.created_by;
+    if (owner) return owner as string;
+  }
+  return null;
+}
 
 async function toggle(table: string, match: Record<string, any>): Promise<{ on: boolean }> {
   const admin = createSupabaseAdmin();
@@ -19,8 +35,18 @@ export const toggleFollow = (userId: string, targetType: "creator" | "studio", t
   toggle("ci_follows", { follower_id: userId, target_type: targetType, target_id: targetId });
 export const toggleCollect = (userId: string, assetId: string, assetType: string) =>
   toggle("ci_collects", { user_id: userId, asset_id: assetId, asset_type: assetType });
-export const toggleLike = (userId: string, assetId: string) =>
-  toggle("ci_likes", { user_id: userId, asset_id: assetId });
+export async function toggleLike(userId: string, assetId: string): Promise<{ on: boolean }> {
+  const res = await toggle("ci_likes", { user_id: userId, asset_id: assetId });
+  if (res.on) {
+    const owner = await assetOwner(assetId);
+    if (owner && owner !== userId) {
+      const who = await displayName(userId);
+      notify(owner, { kind: "ci_like", title: `${who} 喜歡你的作品`, link: "/creator-island/community" });
+      void sendPushToUser(owner, { title: "有人讚你的作品 ❤️", body: `${who} 喜歡你的作品`, url: "/creator-island/community", tag: `asset-like:${assetId}` });
+    }
+  }
+  return res;
+}
 
 export async function likeCount(assetId: string): Promise<number> {
   const admin = createSupabaseAdmin();
@@ -41,6 +67,12 @@ export async function addComment(assetId: string, assetType: string, userId: str
     .insert({ asset_id: assetId, asset_type: assetType, user_id: userId, body: body.slice(0, 2000), parent_id: parentId ?? null })
     .select("id, user_id, body, parent_id, created_at").single();
   if (error) throw new Error(error.message);
+  const owner = await assetOwner(assetId, assetType);
+  if (owner && owner !== userId) {
+    const who = await displayName(userId);
+    notify(owner, { kind: "ci_comment", title: `${who} 留言了你的作品`, body: body.slice(0, 80), link: "/creator-island/community" });
+    void sendPushToUser(owner, { title: "有人留言你的作品 💬", body: `${who}：${body.slice(0, 60)}`, url: "/creator-island/community", tag: `asset-comment:${assetId}` });
+  }
   return data;
 }
 

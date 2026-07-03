@@ -83,10 +83,16 @@ function toOpenAIMessages(messages: AIMessage[]): any[] {
   });
 }
 
-// OpenAI 相容 endpoint base（OpenAI / Groq / OpenRouter 共用 chat/completions 格式）
+// OpenAI 相容 endpoint base（OpenAI / Groq / OpenRouter / Cloudflare 共用 chat/completions 格式）
 function openAiLikeUrl(provider: string): string {
   if (provider === "groq") return "https://api.groq.com/openai/v1/chat/completions";
   if (provider === "openrouter") return "https://openrouter.ai/api/v1/chat/completions";
+  if (provider === "cloudflare") {
+    // Cloudflare Workers AI 有 OpenAI 相容 endpoint（需 account id）。
+    // account id 放 env（不是機密、但每帳號不同）；token 走 apiKey（BYOK / ai_api_keys）。
+    const acct = process.env.CLOUDFLARE_ACCOUNT_ID || process.env.CF_ACCOUNT_ID || "";
+    return `https://api.cloudflare.com/client/v4/accounts/${acct}/ai/v1/chat/completions`;
+  }
   return "https://api.openai.com/v1/chat/completions";
 }
 
@@ -316,6 +322,7 @@ async function dispatchCallAI(req: AICompletionRequest): Promise<AICompletionRes
   switch (req.provider) {
     case "openai":
     case "openrouter":  // OpenAI 相容
+    case "cloudflare":  // Cloudflare Workers AI — OpenAI 相容 endpoint（免費額度）
       return callOpenAI(req);
     case "anthropic":
       return callAnthropic(req);
@@ -347,6 +354,7 @@ export async function* streamAI(req: AICompletionRequest): AsyncGenerator<Stream
     case "groq":
     case "meta":
     case "openrouter":
+    case "cloudflare":
       yield* streamOpenAILike(req);
       break;
     case "anthropic":
@@ -372,8 +380,8 @@ async function* streamOpenAILike(req: AICompletionRequest): AsyncGenerator<Strea
     },
     body: JSON.stringify({
       model: req.model,
-      // groq 不支援 image、強制純文字；openai / openrouter 用 multimodal 格式
-      messages: req.provider === "groq"
+      // groq / cloudflare 多數 model 不支援 image、強制純文字；openai / openrouter 用 multimodal 格式
+      messages: (req.provider === "groq" || req.provider === "cloudflare")
         ? req.messages.map((m) => ({ role: m.role, content: contentToText(m.content) }))
         : toOpenAIMessages(req.messages),
       temperature: req.temperature ?? 0.7,

@@ -26,5 +26,12 @@ export default async function DraftEditorPage({ params }: { params: Promise<{ id
   // 全部碎片（跟島上碎片庫同一來源、不再只截 100 個 → 素材欄跟碎片庫同步）
   const fragments = await listAllFragments(draft.workspace_id);
 
-  return <EngineWorkspace draft={draft as any} fragments={fragments as any} />;
+  // 即時共編需要「我是誰」（游標名字 / presence）。伺服端已確認是成員，這裡只帶顯示名。
+  const { data: profile } = await sb.from("profiles").select("username, display_name").eq("id", user.id).maybeSingle();
+  const currentUser = {
+    id: user.id,
+    name: (profile as any)?.display_name || (profile as any)?.username || "訪客",
+  };
+
+  return <EngineWorkspace draft={draft as any} fragments={fragments as any} currentUser={currentUser} />;
 }

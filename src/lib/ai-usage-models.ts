@@ -49,26 +49,71 @@ export const USAGE_LABELS: Record<AiUsageKey, string> = {
  * 沒設 → 回 defaultModel；admin 後台 /admin/ai/usage-models 改即時生效（invalidateUsageCache 已串）
  */
 export async function getModelNameForUsage(usageKey: AiUsageKey, defaultModel: string): Promise<string> {
-  const map = await loadUsageMap();
-  return map[usageKey] ?? defaultModel;
+  const { models } = await loadUsageMap();
+  return models[usageKey] ?? defaultModel;
+}
+
+/**
+ * 候選模型（智慧路由用）。
+ *  - role: primary（先打）/ fallback（前面失敗才退）/ escalate（低信心才升級）
+ *  - 存在 ai_usage_models.candidates（JSONB 有序陣列，additive）；元素可為
+ *    "model_name" 字串、或 { model, role } 物件。
+ */
+export type UsageCandidate = { model: string; role: "primary" | "fallback" | "escalate" };
+
+/**
+ * 拿某用途的「有序候選模型鏈」。
+ * 沒設 candidates → 退回單一 model_name（→ defaultModel），行為與舊版完全一致。
+ */
+export async function getCandidatesForUsage(
+  usageKey: AiUsageKey,
+  defaultModel: string,
+): Promise<UsageCandidate[]> {
+  const { models, candidates } = await loadUsageMap();
+  const raw = candidates[usageKey];
+  const out: UsageCandidate[] = [];
+  if (Array.isArray(raw) && raw.length) {
+    for (const item of raw) {
+      if (typeof item === "string" && item.trim()) {
+        out.push({ model: item.trim(), role: out.length === 0 ? "primary" : "fallback" });
+      } else if (item && typeof item === "object" && typeof item.model === "string" && item.model.trim()) {
+        const role = item.role === "escalate" || item.role === "fallback" || item.role === "primary"
+          ? item.role
+          : (out.length === 0 ? "primary" : "fallback");
+        out.push({ model: item.model.trim(), role });
+      }
+    }
+  }
+  if (out.length) {
+    // 保底：至少要有一個 primary
+    if (!out.some((c) => c.role === "primary")) out[0].role = "primary";
+    return out;
+  }
+  // 無 candidates：退單一設定 model（維持舊行為）
+  const single = models[usageKey] ?? defaultModel;
+  return [{ model: single, role: "primary" }];
 }
 
 // in-memory cache (1 min)
-let cache: { at: number; data: Record<string, string> } | null = null;
+let cache: { at: number; models: Record<string, string>; candidates: Record<string, any[]> } | null = null;
 const TTL = 60_000;
 
-async function loadUsageMap(): Promise<Record<string, string>> {
-  if (cache && Date.now() - cache.at < TTL) return cache.data;
+async function loadUsageMap(): Promise<{ models: Record<string, string>; candidates: Record<string, any[]> }> {
+  if (cache && Date.now() - cache.at < TTL) return cache;
   const admin = createSupabaseAdmin();
   const { data } = await admin
     .from("ai_usage_models")
-    .select("usage_key, model_name, enabled");
-  const map: Record<string, string> = {};
+    .select("usage_key, model_name, enabled, candidates");
+  const models: Record<string, string> = {};
+  const candidates: Record<string, any[]> = {};
   for (const r of (data as any[]) ?? []) {
-    if (r.enabled !== false) map[r.usage_key] = r.model_name;
+    if (r.enabled !== false) {
+      models[r.usage_key] = r.model_name;
+      if (Array.isArray(r.candidates) && r.candidates.length) candidates[r.usage_key] = r.candidates;
+    }
   }
-  cache = { at: Date.now(), data: map };
-  return map;
+  cache = { at: Date.now(), models, candidates };
+  return cache;
 }
 
 export function invalidateUsageCache() {
@@ -83,8 +128,8 @@ export async function pickModelForUsage(
   usage: AiUsageKey,
   activeModels: Array<{ model_name: string; provider: string; [k: string]: any }>,
 ): Promise<{ model_name: string; provider: string; [k: string]: any } | null> {
-  const map = await loadUsageMap();
-  const wanted = map[usage];
+  const { models } = await loadUsageMap();
+  const wanted = models[usage];
   if (!wanted) return null;
   return activeModels.find((m) => m.model_name === wanted) ?? null;
 }

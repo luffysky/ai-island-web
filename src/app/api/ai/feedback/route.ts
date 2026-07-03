@@ -19,6 +19,14 @@ export async function POST(req: NextRequest) {
   if (!rating) return NextResponse.json({ error: "invalid_rating" }, { status: 400 });
 
   const str = (v: any, n: number) => (typeof v === "string" ? v.slice(0, n) : null);
+  // meta：任意結構化附註（fellBack / latencyMs / candidateChain…），限制大小避免灌爆
+  let meta: any = null;
+  if (body.meta && typeof body.meta === "object" && !Array.isArray(body.meta)) {
+    try {
+      const s = JSON.stringify(body.meta);
+      if (s.length <= 4000) meta = body.meta;
+    } catch { /* 非可序列化 → 忽略 */ }
+  }
   const admin = createSupabaseAdmin();
   const { error } = await admin.from("ai_feedback").insert({
     user_id: user.id,
@@ -29,6 +37,8 @@ export async function POST(req: NextRequest) {
     model: str(body.model, 100),
     persona: str(body.persona, 50),
     note: str(body.note, 500),
+    usage_key: str(body.usageKey, 50),
+    meta,
   });
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ ok: true });

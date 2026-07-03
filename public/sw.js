@@ -180,13 +180,21 @@ self.addEventListener("push", (event) => {
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
-  const url = event.notification.data?.url || "/";
+  const raw = event.notification.data?.url || "/";
+  const target = new URL(raw, self.location.origin).href; // 相對路徑轉絕對
   event.waitUntil(
     self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((list) => {
+      // 已開著同站分頁 → 聚焦並導到目標網址
       for (const c of list) {
-        if (c.url === url && "focus" in c) return c.focus();
+        if (c.url === target && "focus" in c) return c.focus();
       }
-      return self.clients.openWindow(url);
+      for (const c of list) {
+        if (c.url.startsWith(self.location.origin) && "focus" in c) {
+          if ("navigate" in c) { c.navigate(target).catch(() => {}); }
+          return c.focus();
+        }
+      }
+      return self.clients.openWindow(target);
     }),
   );
 });

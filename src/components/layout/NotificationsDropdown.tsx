@@ -9,6 +9,7 @@ import { useOverlayRegister } from "@/lib/overlay-stack";
 import { formatTWRelative } from "@/lib/format-date";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { usePopover, PopoverPanel } from "@/components/ui/Popover";
+import PushSubscribe from "@/components/PushSubscribe";
 
 type Notif = {
   id: string;
@@ -132,6 +133,7 @@ export function NotificationsDropdown() {
             </ul>
           )}
         </div>
+        <PushSubscribe />
       </PopoverPanel>
     </>
   );
