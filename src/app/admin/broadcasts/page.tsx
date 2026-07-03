@@ -1,17 +1,30 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import Link from "next/link";
+import { adminHref } from "@/lib/admin-href";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { PageHero } from "@/components/admin/PageHero";
-import { Send, AlertTriangle, Megaphone } from "lucide-react";
+import { Send, AlertTriangle, Megaphone, ArrowLeft, ArrowRight } from "lucide-react";
 
-export default async function BroadcastsPage() {
+const PAGE_SIZE = 50;
+
+export default async function BroadcastsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const sp = await searchParams;
+  const page = Math.max(1, parseInt(sp.page ?? "1", 10) || 1);
+  const from = (page - 1) * PAGE_SIZE;
+
   const supabase = createSupabaseAdmin();
 
-  const { data: broadcasts, error } = await supabase
+  const { data: broadcasts, count, error } = await supabase
     .from("broadcasts")
-    .select("*, profiles(username)")
+    .select("*, profiles(username)", { count: "exact" })
     .order("created_at", { ascending: false })
-    .limit(50);
+    .range(from, from + PAGE_SIZE - 1);
+
+  const totalPages = Math.max(1, Math.ceil((count ?? 0) / PAGE_SIZE));
 
   return (
     <div className="space-y-4">
@@ -62,6 +75,18 @@ export default async function BroadcastsPage() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 text-sm">
+          <Link href={page > 1 ? (adminHref(`/admin/broadcasts?page=${page - 1}`) as any) : "#"} className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-border ${page <= 1 ? "opacity-40 pointer-events-none" : "hover:bg-bg-elevated"}`}>
+            <ArrowLeft className="w-4 h-4" /> 上一頁
+          </Link>
+          <span className="text-xs text-fg-muted px-3">{page} / {totalPages}（共 {(count ?? 0).toLocaleString()} 筆）</span>
+          <Link href={page < totalPages ? (adminHref(`/admin/broadcasts?page=${page + 1}`) as any) : "#"} className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-border ${page >= totalPages ? "opacity-40 pointer-events-none" : "hover:bg-bg-elevated"}`}>
+            下一頁 <ArrowRight className="w-4 h-4" />
+          </Link>
         </div>
       )}
     </div>

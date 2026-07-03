@@ -4,6 +4,7 @@ import { chapterDisplayNumberById } from "@/lib/chapter-display";
 import { Flame, Coins, Heart, Trophy, Calendar, Award, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { DailyCheckin } from "@/components/gamification/DailyCheckin";
+import { LearningCoachCard } from "@/components/dashboard/LearningCoachCard";
 
 export function DashboardView({ profile, progress, achievements, quests }: any) {
   const xpInfo = xpForNextLevel(profile.xp ?? 0);
@@ -106,6 +107,9 @@ export function DashboardView({ profile, progress, achievements, quests }: any) 
           )}
         </div>
       </div>
+
+      {/* AI 學習教練 */}
+      <LearningCoachCard />
 
       {/* Continue learning */}
       <div className="mt-6 bg-bg-card border border-border rounded-xl p-5">

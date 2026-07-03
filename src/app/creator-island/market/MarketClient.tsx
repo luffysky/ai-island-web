@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Store, ArrowLeft, Sparkles, Plus, ThumbsUp, Bookmark, GitFork, MessageCircle } from "lucide-react";
+import { Store, ArrowLeft, Sparkles, Plus, ThumbsUp, Bookmark, GitFork, MessageCircle, Check, Tag } from "lucide-react";
 
-type Listing = { id: string; asset_id: string; asset_type: string; title: string; description: string; price_z: number };
+type Listing = { id: string; workspace_id: string; asset_id: string; asset_type: string; title: string; description: string; price_z: number };
 type Asset = { id: string; type: "fragment" | "work"; title: string };
 
 async function call(url: string, method: string, body?: any) {
@@ -16,10 +16,12 @@ async function call(url: string, method: string, body?: any) {
 
 type Pick = { id: string; text: string; category: string; rarity: string };
 
-export function MarketClient({ workspaceId, listings, myAssets, poolPicks = [] }: { workspaceId: string; listings: Listing[]; myAssets: Asset[]; poolPicks?: Pick[] }) {
+export function MarketClient({ workspaceId, listings, myAssets, poolPicks = [], ownedAssetIds = [], myWorkspaceIds = [] }: { workspaceId: string; listings: Listing[]; myAssets: Asset[]; poolPicks?: Pick[]; ownedAssetIds?: string[]; myWorkspaceIds?: string[] }) {
   const [tab, setTab] = useState<"browse" | "sell">("browse");
   const [rows, setRows] = useState<Listing[]>(listings);
   const [picks, setPicks] = useState<Pick[]>(poolPicks);
+  const [owned, setOwned] = useState<Set<string>>(new Set(ownedAssetIds));
+  const mine = new Set(myWorkspaceIds);
 
   async function grabPick(p: Pick) {
     setErr(null); setBusy("pick" + p.id);
@@ -35,9 +37,13 @@ export function MarketClient({ workspaceId, listings, myAssets, poolPicks = [] }
   const [assetKey, setAssetKey] = useState("");
   const [price, setPrice] = useState("0");
 
-  async function buy(id: string) {
-    setErr(null); setMsg(null); setBusy(id);
-    try { const r = await call(`/api/creator-island/marketplace/listings/${id}/purchase`, "POST"); setMsg(r.already_owned ? "你已擁有" : `已購買（花 ${r.spent} Z 幣）`); }
+  async function buy(l: Listing) {
+    setErr(null); setMsg(null); setBusy(l.id);
+    try {
+      const r = await call(`/api/creator-island/marketplace/listings/${l.id}/purchase`, "POST");
+      setOwned((s) => new Set(s).add(l.asset_id));
+      setMsg(r.already_owned ? "你已擁有此資產" : l.price_z > 0 ? `已購買（花 ${r.spent} Z 幣，平台抽成 ${r.fee ?? 0}）` : "已免費取得");
+    }
     catch (e: any) { setErr(e.message); } finally { setBusy(null); }
   }
   async function act(kind: "like" | "collect" | "fork", l: Listing) {
@@ -61,7 +67,7 @@ export function MarketClient({ workspaceId, listings, myAssets, poolPicks = [] }
   return (
     <div className="max-w-4xl mx-auto px-6 py-10 space-y-5">
       <header className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold inline-flex items-center gap-1.5"><Store size={20} /> 市集 <span className="text-xs font-normal text-fg-muted">Z 幣交易・抽成 0%</span></h1>
+        <h1 className="text-2xl font-bold inline-flex items-center gap-1.5"><Store size={20} /> 市集 <span className="text-xs font-normal text-fg-muted">Z 幣交易・平台抽成 10%</span></h1>
         <Link href="/creator-island" className="text-sm text-accent hover:underline inline-flex items-center gap-1.5"><ArrowLeft size={14} /> 回島</Link>
       </header>
       <div className="flex gap-2 text-sm">
@@ -104,19 +110,31 @@ export function MarketClient({ workspaceId, listings, myAssets, poolPicks = [] }
       {tab === "browse" && (
         <div className="grid sm:grid-cols-2 gap-3 max-h-[68vh] overflow-y-auto pr-1">
           {rows.length === 0 && <div className="text-sm text-fg-muted col-span-2 text-center py-8">還沒有人上架。去「上架」分享你的第一個資產。</div>}
-          {rows.map((l) => (
+          {rows.map((l) => {
+            const isMine = mine.has(l.workspace_id);
+            const isOwned = owned.has(l.asset_id);
+            return (
             <div key={l.id} className="bg-bg-card border border-border rounded-xl p-4 space-y-2">
-              <div className="font-bold text-sm">{l.title} <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-violet-500/15 text-violet-700 dark:text-violet-300">{l.asset_type}</span></div>
+              <div className="font-bold text-sm">{l.title} <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-violet-500/15 text-violet-700 dark:text-violet-300">{l.asset_type}</span>
+                {isMine && <span className="ml-1 text-[10px] px-1.5 py-0.5 rounded-full bg-amber-400/20 text-amber-700 dark:text-amber-300 inline-flex items-center gap-1"><Tag size={10} /> 你的作品</span>}
+              </div>
               {l.description && <div className="text-xs text-fg-muted line-clamp-2">{l.description}</div>}
               <div className="flex items-center gap-2 flex-wrap text-xs">
-                <button onClick={() => buy(l.id)} disabled={busy === l.id} className="px-3 py-1 rounded-full bg-accent text-white disabled:opacity-40">{l.price_z > 0 ? `購買 ${l.price_z} Z` : "免費取得"}</button>
+                {isMine ? (
+                  <span className="px-3 py-1 rounded-full bg-bg-elevated text-fg-muted">你上架的{l.price_z > 0 ? `・${l.price_z} Z` : "・免費"}</span>
+                ) : isOwned ? (
+                  <span className="px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 inline-flex items-center gap-1"><Check size={14} /> 已擁有</span>
+                ) : (
+                  <button onClick={() => buy(l)} disabled={busy === l.id} className="px-3 py-1 rounded-full bg-accent text-white disabled:opacity-40">{busy === l.id ? "…" : l.price_z > 0 ? `購買 ${l.price_z} Z` : "免費取得"}</button>
+                )}
                 <button onClick={() => act("like", l)} className="px-2 py-1 rounded-full bg-bg-elevated hover:text-accent inline-flex items-center gap-1.5"><ThumbsUp size={14} /> 讚</button>
                 <button onClick={() => act("collect", l)} className="px-2 py-1 rounded-full bg-bg-elevated hover:text-accent inline-flex items-center gap-1.5"><Bookmark size={14} /> 收藏</button>
                 <button onClick={() => act("fork", l)} className="px-2 py-1 rounded-full bg-bg-elevated hover:text-accent inline-flex items-center gap-1.5"><GitFork size={14} /> Fork</button>
                 <button onClick={async () => { const body = prompt("留言："); if (!body) return; setBusy(l.id + "c"); setErr(null); try { await call("/api/creator-island/community/comments", "POST", { assetId: l.asset_id, assetType: l.asset_type, body }); setMsg("已留言"); } catch (e: any) { setErr(e.message); } finally { setBusy(null); } }} className="px-2 py-1 rounded-full bg-bg-elevated hover:text-accent inline-flex items-center gap-1.5"><MessageCircle size={14} /> 留言</button>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

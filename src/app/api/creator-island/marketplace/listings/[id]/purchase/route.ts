@@ -13,7 +13,13 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
   const r = await purchaseListing(id, u.userId);
   if (!r?.ok) {
     const st = r?.error === "insufficient_funds" ? 402 : r?.error === "not_found" ? 404 : 409;
-    return NextResponse.json({ error: r?.error ?? "purchase_failed", message: r?.error === "insufficient_funds" ? "Z 幣不足" : "購買失敗", ...r }, { status: st });
+    const MSG: Record<string, string> = {
+      insufficient_funds: "Z 幣不足",
+      own_listing: "不能購買自己上架的資產",
+      not_listed: "這個資產已下架",
+      not_found: "找不到這個上架項目",
+    };
+    return NextResponse.json({ error: r?.error ?? "purchase_failed", message: MSG[r?.error as string] ?? "購買失敗", ...r }, { status: st });
   }
   return NextResponse.json(r);
 }

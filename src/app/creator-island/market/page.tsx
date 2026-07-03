@@ -5,7 +5,7 @@ import { FeatureOffNotice } from "@/components/FeatureOffNotice";
 import { getActiveWorkspace } from "@/lib/creator-engine/workspace";
 import { listFragments } from "@/lib/creator-engine/fragments";
 import { listWorks } from "@/lib/creator-engine/works";
-import { listListings } from "@/lib/creator-engine/marketplace";
+import { listListings, buyerOwnedAssetIds, userWorkspaceIds } from "@/lib/creator-engine/marketplace";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { MarketClient } from "./MarketClient";
 
@@ -17,10 +17,12 @@ export default async function MarketPage() {
   const { data: { user } } = await sb.auth.getUser();
   if (!user) redirect("/login?next=/creator-island/market");
   const ws = await getActiveWorkspace(user.id);
-  const [{ items: listings }, { items: frags }, { items: works }] = await Promise.all([
+  const [{ items: listings }, { items: frags }, { items: works }, ownedAssetIds, myWorkspaceIds] = await Promise.all([
     listListings({ limit: 24 }),
     listFragments(ws.id, { limit: 50 }),
     listWorks(ws.id, { limit: 50 }),
+    buyerOwnedAssetIds(user.id),
+    userWorkspaceIds(user.id),
   ]);
   const myAssets = [
     ...frags.map((f) => ({ id: f.id, type: "fragment" as const, title: f.title })),
@@ -29,5 +31,5 @@ export default async function MarketPage() {
   // 靈感精選：從碎片庫抽幾顆（市集不空 + 探索）
   const admin = createSupabaseAdmin();
   const { data: poolPicks } = await admin.rpc("ci_draw_from_pool", { p_n: 12, p_ssr: 3, p_sr: 5 });
-  return <MarketClient workspaceId={ws.id} listings={listings as any} myAssets={myAssets} poolPicks={(poolPicks ?? []) as any} />;
+  return <MarketClient workspaceId={ws.id} listings={listings as any} myAssets={myAssets} poolPicks={(poolPicks ?? []) as any} ownedAssetIds={ownedAssetIds} myWorkspaceIds={myWorkspaceIds} />;
 }

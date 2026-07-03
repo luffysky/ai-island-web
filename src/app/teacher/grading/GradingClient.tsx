@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Check } from "lucide-react";
+import { Check, Sparkles } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useToast } from "@/components/ui/Toast";
@@ -29,6 +29,45 @@ export function GradingClient({ initial, filterStatus }: { initial: Submission[]
   const [subs, setSubs] = useState(initial);
   const [drafts, setDrafts] = useState<Record<string, { score: string; feedback: string }>>({});
   const [busy, setBusy] = useState<string | null>(null);
+  const [aiBusy, setAiBusy] = useState<string | null>(null);
+
+  // AI 建議評分：填入 score + feedback 欄位，老師檢查修改後再送出（永不自動批改）
+  const aiSuggest = async (s: Submission) => {
+    setAiBusy(s.id);
+    try {
+      const res = await fetch(`/api/teacher/submissions/${s.id}/ai-grade`, {
+        credentials: "include",
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+      const data = await res.json().catch(() => ({} as any));
+      if (!res.ok || !data?.ok) throw new Error(data?.message || "AI 評分失敗");
+
+      const parts: string[] = [];
+      if (Array.isArray(data.strengths) && data.strengths.length) {
+        parts.push("**做得好：**\n" + data.strengths.map((x: string) => `- ${x}`).join("\n"));
+      }
+      if (Array.isArray(data.issues) && data.issues.length) {
+        parts.push("**可改進：**\n" + data.issues.map((x: string) => `- ${x}`).join("\n"));
+      }
+      if (data.suggestedComment) parts.push(data.suggestedComment);
+      const feedback = parts.join("\n\n");
+
+      const cur = drafts[s.id] ?? { score: String(s.score ?? ""), feedback: s.feedback_md ?? "" };
+      setDrafts({
+        ...drafts,
+        [s.id]: {
+          score: Number.isFinite(data.scoreSuggestion) ? String(data.scoreSuggestion) : cur.score,
+          feedback: feedback || cur.feedback,
+        },
+      });
+      toast.success("已填入 AI 建議、請檢查修改後再送出");
+    } catch (e: any) {
+      toast.error(e?.message || "AI 評分失敗");
+    } finally {
+      setAiBusy(null);
+    }
+  };
 
   const grade = async (s: Submission) => {
     const d = drafts[s.id] ?? { score: String(s.score ?? ""), feedback: s.feedback_md ?? "" };
@@ -128,13 +167,24 @@ export function GradingClient({ initial, filterStatus }: { initial: Submission[]
                   className="w-full bg-bg border border-border rounded-lg p-2 text-sm"
                 />
               </div>
-              <button
-                onClick={() => grade(s)}
-                disabled={busy === s.id}
-                className="px-4 py-2 rounded-lg bg-accent text-black font-bold text-sm disabled:opacity-50"
-              >
-                {busy === s.id ? "送出…" : s.graded_at ? "重新評分" : "完成批改"}
-              </button>
+              <div className="flex flex-col gap-2">
+                <button
+                  onClick={() => aiSuggest(s)}
+                  disabled={aiBusy === s.id || busy === s.id}
+                  title="用 AI 產生建議分數與回饋、填入欄位供你檢查修改（不會自動送出）"
+                  className="px-4 py-2 rounded-lg border border-accent text-accent font-bold text-sm disabled:opacity-50 flex items-center justify-center gap-1.5 hover:bg-accent/10"
+                >
+                  <Sparkles size={14} />
+                  {aiBusy === s.id ? "AI 分析中…" : "AI 建議評分"}
+                </button>
+                <button
+                  onClick={() => grade(s)}
+                  disabled={busy === s.id || aiBusy === s.id}
+                  className="px-4 py-2 rounded-lg bg-accent text-black font-bold text-sm disabled:opacity-50"
+                >
+                  {busy === s.id ? "送出…" : s.graded_at ? "重新評分" : "完成批改"}
+                </button>
+              </div>
             </div>
           </div>
         );

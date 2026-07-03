@@ -1,21 +1,28 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import Link from "next/link";
+import { adminHref } from "@/lib/admin-href";
 import { PageHero, AdminStatCard } from "@/components/admin/PageHero";
-import { AlertTriangle, Gem } from "lucide-react";
+import { AlertTriangle, Gem, ArrowLeft, ArrowRight } from "lucide-react";
 
-export default async function SubscriptionsPage({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
+const PAGE_SIZE = 200;
+
+export default async function SubscriptionsPage({ searchParams }: { searchParams: Promise<{ status?: string; page?: string }> }) {
   const params = await searchParams;
+  const page = Math.max(1, parseInt(params.page ?? "1", 10) || 1);
+  const from = (page - 1) * PAGE_SIZE;
   const supabase = createSupabaseAdmin();
 
   let query = supabase
     .from("subscriptions")
-    .select("*, profiles(username, display_name, email)")
+    .select("*, profiles(username, display_name, email)", { count: "exact" })
     .order("created_at", { ascending: false })
-    .limit(200);
+    .range(from, from + PAGE_SIZE - 1);
 
   if (params.status) query = query.eq("status", params.status);
 
-  const { data: subs, error } = await query;
+  const { data: subs, count, error } = await query;
+  const totalPages = Math.max(1, Math.ceil((count ?? 0) / PAGE_SIZE));
+  const pageHref = (p: number) => adminHref(`/admin/subscriptions?${params.status ? `status=${params.status}&` : ""}page=${p}`);
 
   // MRR
   const activeSubsAll = (subs ?? []).filter((s: any) => s.status === "active");
@@ -81,6 +88,18 @@ export default async function SubscriptionsPage({ searchParams }: { searchParams
               )}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 text-sm">
+          <Link href={page > 1 ? (pageHref(page - 1) as any) : "#"} className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-border ${page <= 1 ? "opacity-40 pointer-events-none" : "hover:bg-bg-elevated"}`}>
+            <ArrowLeft className="w-4 h-4" /> 上一頁
+          </Link>
+          <span className="text-xs text-fg-muted px-3">{page} / {totalPages}（共 {(count ?? 0).toLocaleString()} 筆）</span>
+          <Link href={page < totalPages ? (pageHref(page + 1) as any) : "#"} className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-border ${page >= totalPages ? "opacity-40 pointer-events-none" : "hover:bg-bg-elevated"}`}>
+            下一頁 <ArrowRight className="w-4 h-4" />
+          </Link>
         </div>
       )}
     </div>

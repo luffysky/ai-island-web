@@ -55,3 +55,24 @@ export async function unlistListing(id: string): Promise<void> {
   const admin = createSupabaseAdmin();
   await admin.from("ci_listings").update({ status: "unlisted" }).eq("id", id);
 }
+
+/** 這位使用者已擁有（買過 / entitlement）的 asset_id 集合 → 前台標「已擁有」。 */
+export async function buyerOwnedAssetIds(userId: string): Promise<string[]> {
+  const admin = createSupabaseAdmin();
+  const { data } = await admin.from("ci_entitlements").select("asset_id").eq("buyer_id", userId);
+  return Array.from(new Set(((data as any[]) ?? []).map((r) => r.asset_id).filter(Boolean)));
+}
+
+/** 這位使用者所屬（成員或擁有者）的 workspace_id 集合 → 前台標「你的作品」、不能買自己。 */
+export async function userWorkspaceIds(userId: string): Promise<string[]> {
+  const admin = createSupabaseAdmin();
+  const [m, o] = await Promise.all([
+    admin.from("ci_workspace_members").select("workspace_id").eq("user_id", userId),
+    admin.from("ci_workspaces").select("id").eq("owner_id", userId),
+  ]);
+  const ids = [
+    ...(((m.data as any[]) ?? []).map((r) => r.workspace_id)),
+    ...(((o.data as any[]) ?? []).map((r) => r.id)),
+  ].filter(Boolean);
+  return Array.from(new Set(ids));
+}

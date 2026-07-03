@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowLeft, Copy, Music, Film, Link2 } from "lucide-react";
+import { ArrowLeft, Copy, Music, Film, Link2, Sparkles, ExternalLink } from "lucide-react";
 import { BlogEditor } from "@/components/blog/BlogEditor";
 
 type Work = { id: string; title: string; body: string; work_type: string; status: string; meta: any; published_blog_id: string | null };
@@ -27,6 +27,7 @@ export function WorkEditor({ work, canEdit, usedFragments = [], derivedCount = 0
   const [busy, setBusy] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  const [seoLink, setSeoLink] = useState<string | null>(null);
   const meta = work.meta || {};
 
   function copy(t: string, label: string) {
@@ -43,6 +44,14 @@ export function WorkEditor({ work, canEdit, usedFragments = [], derivedCount = 0
     try { await api(`/api/creator-island/works/${work.id}/publish`); setMsg("已發布成部落格草稿"); }
     catch (e: any) { setErr(e.message); } finally { setBusy(null); }
   }
+  async function toSeo() {
+    setBusy("seo"); setErr(null); setMsg(null); setSeoLink(null);
+    try {
+      const r = await api(`/api/creator-island/works/${work.id}/to-seo`);
+      setMsg("已用 AI 產生 SEO 部落格草稿");
+      setSeoLink(r.editUrl || `/me/blog/edit/${r.articleId}`);
+    } catch (e: any) { setErr(e.message); } finally { setBusy(null); }
+  }
   async function archive() {
     if (!confirm("封存並回收成碎片？")) return;
     setBusy("archive"); setErr(null);
@@ -57,11 +66,13 @@ export function WorkEditor({ work, canEdit, usedFragments = [], derivedCount = 0
         <div className="flex gap-2 text-sm">
           {canEdit && <button onClick={save} disabled={busy !== null} className="px-3 py-1.5 rounded-full bg-accent text-white disabled:opacity-40">{busy === "save" ? "…" : "儲存"}</button>}
           {canEdit && work.work_type === "article" && <button onClick={publish} disabled={busy !== null} className="px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 disabled:opacity-40">發布成文章</button>}
+          {canEdit && <button onClick={toSeo} disabled={busy !== null} className="px-3 py-1.5 rounded-full bg-violet-500/20 text-violet-300 disabled:opacity-40 inline-flex items-center gap-1.5"><Sparkles size={14} /> {busy === "seo" ? "AI 生成中…" : "轉成 SEO 文章"}</button>}
           {canEdit && status !== "archived" && <button onClick={archive} disabled={busy !== null} className="px-3 py-1.5 rounded-full bg-bg-elevated disabled:opacity-40">封存→回收</button>}
         </div>
       </div>
       {err && <div className="bg-red-500/10 border border-red-500/30 text-red-300 rounded-xl px-4 py-2 text-sm">⚠️ {err}</div>}
       {msg && <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 rounded-xl px-4 py-2 text-sm">✅ {msg}</div>}
+      {seoLink && <Link href={seoLink} className="bg-violet-500/10 border border-violet-500/30 text-violet-300 rounded-xl px-4 py-2 text-sm inline-flex items-center gap-1.5 hover:underline"><ExternalLink size={14} /> 打開 SEO 部落格草稿編輯</Link>}
 
       <input value={title} onChange={(e) => setTitle(e.target.value)} disabled={!canEdit}
         className="w-full bg-transparent text-2xl font-bold outline-none border-b border-border pb-2" />
