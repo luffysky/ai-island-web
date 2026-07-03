@@ -68,6 +68,15 @@ export default async function AuditPage({
     return adminHref("/admin/audit" + (params.toString() ? "?" + params.toString() : ""));
   };
 
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const daysAgoStr = (n: number) => new Date(Date.now() - n * 86400_000).toISOString().slice(0, 10);
+  const presets: Array<{ label: string; from: string; to: string }> = [
+    { label: "今天", from: todayStr, to: todayStr },
+    { label: "近 7 天", from: daysAgoStr(7), to: todayStr },
+    { label: "近 30 天", from: daysAgoStr(30), to: todayStr },
+    { label: "近 90 天", from: daysAgoStr(90), to: todayStr },
+  ];
+
   const exportParams = new URLSearchParams();
   exportParams.set("from", `${from}T00:00:00.000Z`);
   exportParams.set("to", `${to}T23:59:59.999Z`);
@@ -152,6 +161,26 @@ export default async function AuditPage({
         </div>
       </form>
 
+      <div className="flex flex-wrap items-center gap-2 text-xs">
+        <span className="text-fg-muted">快速範圍：</span>
+        {presets.map((p) => {
+          const activeP = from === p.from && to === p.to;
+          return (
+            <Link
+              key={p.label}
+              href={buildHref({ from: p.from, to: p.to, page: "1" }) as any}
+              className={`px-2.5 py-1 rounded-lg border transition ${
+                activeP
+                  ? "border-accent/60 bg-accent/10 text-accent font-bold"
+                  : "border-border hover:bg-bg-elevated text-fg-muted"
+              }`}
+            >
+              {p.label}
+            </Link>
+          );
+        })}
+      </div>
+
       {logs?.length === 0 ? (
         <div className="bg-bg-card border border-border rounded-xl">
           <EmptyState emoji="🪵" title="沒有 audit log" desc="目前條件下沒有任何紀錄。試試清掉篩選或拉長時間區間。" />
@@ -183,13 +212,31 @@ export default async function AuditPage({
                     {log.target_type && (
                       <span className="text-fg-muted">{log.target_type}:</span>
                     )}
-                    <span className="ml-1 font-mono">{log.target_id?.slice?.(0, 8) ?? "—"}</span>
+                    <span className="ml-1 font-mono" title={log.target_id ?? ""}>
+                      {log.target_id ? (log.target_id.length > 12 ? log.target_id.slice(0, 12) + "…" : log.target_id) : "—"}
+                    </span>
                   </td>
-                  <td className="px-4 py-3 text-[10px] text-fg-muted max-w-xs">
-                    {log.changes && (
-                      <code className="block truncate" title={JSON.stringify(log.changes)}>
-                        {JSON.stringify(log.changes).slice(0, 80)}
-                      </code>
+                  <td className="px-4 py-3 text-[10px] text-fg-muted max-w-xs align-top">
+                    {log.changes ? (
+                      <details className="group">
+                        <summary className="cursor-pointer list-none text-accent/80 hover:text-accent select-none">
+                          <span className="group-open:hidden font-mono truncate block max-w-[220px]" title="點開看完整內容">
+                            {JSON.stringify(log.changes).slice(0, 60)}
+                          </span>
+                          <span className="hidden group-open:inline">收合 ▲</span>
+                        </summary>
+                        <pre className="mt-1 bg-bg p-2 rounded text-[10px] leading-snug whitespace-pre-wrap break-all max-w-sm max-h-64 overflow-auto text-fg">
+{JSON.stringify(log.changes, null, 2)}
+                        </pre>
+                        {log.user_agent && (
+                          <div className="mt-1 text-[9px] text-fg-muted break-all">UA: {log.user_agent}</div>
+                        )}
+                        {log.actor_id && (
+                          <div className="text-[9px] text-fg-muted break-all">actor_id: {log.actor_id}</div>
+                        )}
+                      </details>
+                    ) : (
+                      "—"
                     )}
                   </td>
                   <td className="px-4 py-3 text-xs text-fg-muted">{log.ip ?? "—"}</td>
