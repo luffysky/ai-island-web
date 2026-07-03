@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { TrendingUp, ArrowLeft, Dna } from "lucide-react";
+import { TrendingUp, ArrowLeft, Dna, Palmtree, AlertTriangle } from "lucide-react";
 
 type Dna = { traits: any; confidence: number; updated_at: string } | null;
 type WsLite = { id: string; name: string; type: "personal" | "studio" };
@@ -38,8 +38,8 @@ export function GrowthClient({ stats, initialDna, workspaces = [], scope = "all"
             const on = scope === w.id;
             return (
               <Link key={w.id} href={`/creator-island/growth?ws=${w.id}`}
-                className={`px-2.5 py-1 rounded-full border transition ${on ? "border-accent bg-accent/10 text-accent" : "border-border bg-bg-card hover:border-accent/40"}`}>
-                {w.type === "personal" ? "🏝️ 個人島" : w.name}
+                className={`px-2.5 py-1 rounded-full border transition inline-flex items-center gap-1 ${on ? "border-accent bg-accent/10 text-accent" : "border-border bg-bg-card hover:border-accent/40"}`}>
+                {w.type === "personal" ? <><Palmtree size={12} /> 個人島</> : w.name}
               </Link>
             );
           })}
@@ -66,7 +66,7 @@ export function GrowthClient({ stats, initialDna, workspaces = [], scope = "all"
           <div className="font-bold inline-flex items-center gap-1.5"><Dna size={16} /> 我的創作 DNA</div>
           <button onClick={recompute} disabled={busy} className="text-xs px-3 py-1.5 rounded-full bg-accent text-white disabled:opacity-40">{busy ? "分析中…" : dna ? "更新" : "產生"}</button>
         </div>
-        {err && <div className="text-xs text-red-400">⚠️ {err}</div>}
+        {err && <div className="text-xs text-red-400 inline-flex items-center gap-1"><AlertTriangle size={12} className="shrink-0" /> {err}</div>}
         {!dna && <p className="text-sm text-fg-muted">還沒建立。多寫幾個碎片/作品後，按「產生」讓 AI 歸納你的風格指紋。</p>}
         {dna && (
           <div className="space-y-2 text-sm">

@@ -23,6 +23,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { getProviderKey } from "@/lib/ai-crypto";
 import { getModelNameForUsage } from "@/lib/ai-usage-models";
 import { callAI } from "@/lib/ai-providers";
+import { logAiUsage } from "@/lib/ai-usage-log";
 
 const TG = "https://api.telegram.org/bot";
 
@@ -545,7 +546,11 @@ export async function transcribeVoice(token: string, fileId: string): Promise<st
     });
     if (!r.ok) return null;
     const j = await r.json();
-    return String(j.text ?? "").trim() || null;
+    const outText = String(j.text ?? "").trim();
+    // best-effort 記用量：Whisper 按音檔時長計費、無 token 回傳。
+    // 沒有 duration → 用轉出文字長度當 proxy（至少 1、讓後台看得到這筆花費）。
+    logAiUsage("openai", "whisper-1", Math.max(1, outText.length), 0).catch(() => {});
+    return outText || null;
   } catch {
     return null;
   }

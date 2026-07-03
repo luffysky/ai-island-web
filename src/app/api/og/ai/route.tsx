@@ -1,4 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
+import { logAiUsage } from "@/lib/ai-usage-log";
+
+// best-effort 記一張生圖的用量。logAiUsage 以 token 計、影像無 token →
+// 用 tokensIn=1 當「1 張圖」的 proxy，讓後台至少看得到這筆花費（provider 沒定價則 cost=0）。
+function logImageGen(provider: string, model: string) {
+  logAiUsage(provider, model || "(default)", 1, 0).catch(() => {});
+}
 
 /**
  * AI 生 OG 圖 — 統一路由、依 provider 分流到 5 個 API
@@ -61,6 +68,7 @@ export async function GET(req: NextRequest) {
 // 1. Pollinations.ai — 無 key
 async function runPollinations(prompt: string, w: number, h: number, seed: string, model: string) {
   const url = `${POLLINATIONS_BASE}/${encodeURIComponent(prompt)}?width=${w}&height=${h}&seed=${seed}&model=${model}&nologo=true&enhance=true`;
+  logImageGen("pollinations", model);
   return NextResponse.redirect(url, {
     status: 302,
     headers: { "Cache-Control": "public, max-age=86400, s-maxage=604800, immutable" },
@@ -141,6 +149,7 @@ async function runCloudflare(prompt: string, w: number, h: number, seed: string,
       hint: "base64 解出來不是 PNG、檢查 Cloudflare 是否切了 response format",
     });
   }
+  logImageGen("cloudflare", model);
   return new NextResponse(new Uint8Array(pngBuf), {
     status: 200,
     headers: { "Content-Type": "image/png", "Cache-Control": "public, max-age=86400, s-maxage=604800" },
@@ -197,6 +206,7 @@ async function runTogether(prompt: string, w: number, h: number, seed: string, m
   }
   const url = j?.data?.[0]?.url;
   if (!url) return errJson("together", "no_image_in_response", 502, { raw: txt.slice(0, 600) });
+  logImageGen("together", model);
   return NextResponse.redirect(url, { status: 302, headers: { "Cache-Control": "public, max-age=86400, s-maxage=604800" } });
 }
 
@@ -244,6 +254,7 @@ async function runHuggingFace(prompt: string, w: number, h: number, model: strin
     return errJson("huggingface", "not_image_response", 502, { content_type: ct, raw: txt.slice(0, 400) });
   }
   const buf = await res.arrayBuffer();
+  logImageGen("huggingface", model);
   return new NextResponse(buf, {
     status: 200,
     headers: { "Content-Type": ct, "Cache-Control": "public, max-age=86400, s-maxage=604800" },
@@ -338,5 +349,6 @@ async function runReplicate(prompt: string, w: number, h: number, model: string)
     }
   }
   if (!out) return errJson("replicate", "no_output", 502, { raw: txt.slice(0, 400), hint: "Replicate 沒回 output 也沒 polling URL、API 行為異常" });
+  logImageGen("replicate", model);
   return NextResponse.redirect(out, { status: 302, headers: { "Cache-Control": "public, max-age=86400, s-maxage=604800" } });
 }

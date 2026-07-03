@@ -14,6 +14,7 @@
 import { createSupabaseAdmin } from "./supabase-admin";
 import { decryptKey } from "./ai-crypto";
 import { getModelNameForUsage } from "./ai-usage-models";
+import { logAiUsage } from "./ai-usage-log";
 
 const DEFAULT_EMBED_MODEL = "text-embedding-3-small";  // fallback；後台改 usage_key=embedding 即覆蓋
 const EMBED_DIM = 1536;
@@ -43,13 +44,14 @@ export async function embedText(text: string): Promise<number[] | null> {
   const key = await getOpenAIKey();
   if (!key) return null;
   const input = text.slice(0, 8000);  // OpenAI 限制 8192 token、保守抓 8000 字元
+  const modelName = await getModelNameForUsage("embedding", DEFAULT_EMBED_MODEL);
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), 10_000);
   try {
     const res = await fetch("https://api.openai.com/v1/embeddings", {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
-      body: JSON.stringify({ model: await getModelNameForUsage("embedding", DEFAULT_EMBED_MODEL), input }),
+      body: JSON.stringify({ model: modelName, input }),
       signal: ctrl.signal,
     });
     if (!res.ok) {
@@ -60,6 +62,9 @@ export async function embedText(text: string): Promise<number[] | null> {
     const data = await res.json();
     const vec = data?.data?.[0]?.embedding;
     if (!Array.isArray(vec) || vec.length !== EMBED_DIM) return null;
+    // best-effort 記用量（embedding 只有 input、output=0）
+    const tokens = data?.usage?.total_tokens ?? Math.ceil(input.length / 4);
+    logAiUsage("openai", modelName, tokens, 0).catch(() => {});
     return vec;
   } catch (e: any) {
     console.warn("[ai-embeddings] embed error:", e?.message);

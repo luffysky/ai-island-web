@@ -3,6 +3,7 @@
 import {
   Youtube, BookOpen, Globe, Smartphone, Mic, Github, GraduationCap,
   ExternalLink, Code2, Newspaper, MessageCircle,
+  Sprout, Leaf, TreePine, Sparkles,
 } from "lucide-react";
 
 export type ResourceType =
@@ -57,11 +58,11 @@ const PRICE_BADGE: Record<string, { label: string; color: string }> = {
   freemium: { label: "部分免費", color: "bg-blue-500/20 text-blue-900 dark:text-blue-200" },
 };
 
-const LEVEL_LABEL: Record<string, string> = {
-  beginner:     "🌱 新手",
-  intermediate: "🌿 中階",
-  advanced:     "🌳 進階",
-  all:          "✨ 全程度",
+const LEVEL_LABEL: Record<string, { icon: any; label: string }> = {
+  beginner:     { icon: Sprout,   label: "新手" },
+  intermediate: { icon: Leaf,     label: "中階" },
+  advanced:     { icon: TreePine, label: "進階" },
+  all:          { icon: Sparkles, label: "全程度" },
 };
 
 export function ResourceCard({ res }: { res: Resource }) {
@@ -92,11 +93,14 @@ export function ResourceCard({ res }: { res: Resource }) {
                 {PRICE_BADGE[res.price].label}
               </span>
             )}
-            {res.level && res.level !== "all" && (
-              <span className="text-[10px] text-fg-muted">
-                {LEVEL_LABEL[res.level]}
-              </span>
-            )}
+            {res.level && res.level !== "all" && (() => {
+              const LevelIcon = LEVEL_LABEL[res.level].icon;
+              return (
+                <span className="text-[10px] text-fg-muted inline-flex items-center gap-0.5">
+                  <LevelIcon size={11} /> {LEVEL_LABEL[res.level].label}
+                </span>
+              );
+            })()}
           </div>
           <h3 className="font-bold text-sm leading-tight group-hover:text-accent transition flex items-start gap-1">
             <span className="flex-1">{res.title}</span>

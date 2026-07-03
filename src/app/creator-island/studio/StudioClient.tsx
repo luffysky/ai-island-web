@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Building2, Plus, Ticket, Users, ArrowRight } from "lucide-react";
+import { Building2, Plus, Ticket, Users, ArrowRight, FileText, AlertTriangle, CheckCircle } from "lucide-react";
 
 type Ws = { id: string; name: string; type: "personal" | "studio"; role: string };
 
@@ -43,12 +43,12 @@ export function StudioClient({ initialWorkspaces }: { initialWorkspaces: Ws[] })
       <header className="flex items-center justify-between gap-2 flex-wrap">
         <h1 className="text-2xl font-bold inline-flex items-center gap-2"><Building2 size={22} /> 工作室</h1>
         <div className="flex items-center gap-2 flex-wrap">
-          <Link href="/me/blog" className="text-sm px-3 py-1.5 rounded-full bg-bg-card border border-border hover:border-accent hover:text-accent transition">📝 我的部落格</Link>
+          <Link href="/me/blog" className="text-sm px-3 py-1.5 rounded-full bg-bg-card border border-border hover:border-accent hover:text-accent transition inline-flex items-center gap-1.5"><FileText size={14} /> 我的部落格</Link>
           <Link href="/creator-island" className="text-sm text-accent hover:underline">← 回島</Link>
         </div>
       </header>
-      {err && <div className="bg-red-500/10 border border-red-500/30 text-red-300 rounded-xl px-4 py-2 text-sm">⚠️ {err}</div>}
-      {msg && <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 rounded-xl px-4 py-2 text-sm">✅ {msg}</div>}
+      {err && <div className="bg-red-500/10 border border-red-500/30 text-red-300 rounded-xl px-4 py-2 text-sm inline-flex items-center gap-1.5"><AlertTriangle size={14} className="shrink-0" /> {err}</div>}
+      {msg && <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 rounded-xl px-4 py-2 text-sm inline-flex items-center gap-1.5"><CheckCircle size={14} className="shrink-0" /> {msg}</div>}
 
       <div className="grid sm:grid-cols-2 gap-3">
         <div className="bg-bg-card border border-border rounded-2xl p-4 space-y-2">
@@ -118,7 +118,7 @@ function StudioCard({ ws, onRemoved }: { ws: Ws; onRemoved: () => void }) {
           </button>
         </div>
       </div>
-      {err && <div className="text-xs text-red-400">⚠️ {err}</div>}
+      {err && <div className="text-xs text-red-400 inline-flex items-center gap-1"><AlertTriangle size={12} className="shrink-0" /> {err}</div>}
       {showMembers && members && (
         <div className="bg-bg-elevated rounded-xl p-3 space-y-1.5">
           <div className="text-xs font-bold inline-flex items-center gap-1.5 text-fg"><Users size={13} /> 成員（{members.length}）</div>

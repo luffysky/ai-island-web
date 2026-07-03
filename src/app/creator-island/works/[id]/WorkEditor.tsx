@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { ArrowLeft, Copy, Music, Film, Link2 } from "lucide-react";
+import { BlogEditor } from "@/components/blog/BlogEditor";
 
 type Work = { id: string; title: string; body: string; work_type: string; status: string; meta: any; published_blog_id: string | null };
 
@@ -72,8 +73,7 @@ export function WorkEditor({ work, canEdit, usedFragments = [], derivedCount = 0
           </select>
         )}
       </div>
-      <textarea value={body} onChange={(e) => setBody(e.target.value)} disabled={!canEdit} rows={18}
-        className="w-full bg-bg-card border border-border rounded-xl p-4 text-sm outline-none focus:border-accent resize-y whitespace-pre-wrap" />
+      <BlogEditor content={body} onChange={setBody} editable={canEdit} placeholder={work.work_type === "song" ? "在這裡寫歌詞…" : "在這裡編輯內容…"} />
 
       <div className="flex flex-wrap gap-2">
         <button onClick={() => copy(body, "內容")} className="text-xs px-3 py-1.5 rounded-full bg-bg-elevated hover:text-accent inline-flex items-center gap-1.5"><Copy size={14} /> 複製{work.work_type === "song" ? "歌詞" : "內容"}</button>

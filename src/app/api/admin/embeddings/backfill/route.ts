@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin as adminGate } from "@/lib/admin-guard";
 import { createSupabaseServer, createSupabaseAdmin } from "@/lib/supabase";
 import { decryptKey } from "@/lib/ai-crypto";
+import { logAiUsage } from "@/lib/ai-usage-log";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -41,6 +42,9 @@ async function embedBatch(apiKey: string, texts: string[]): Promise<number[][]> 
       throw new Error(`OpenAI ${res.status}: ${err.slice(0, 300)}`);
     }
     const data = await res.json();
+    // best-effort 記用量（embedding 只有 input、output=0）
+    const tokens = data.usage?.total_tokens ?? texts.reduce((s, t) => s + Math.ceil(t.length / 4), 0);
+    logAiUsage("openai", EMBED_MODEL, tokens, 0).catch(() => {});
     return data.data.map((d: any) => d.embedding);
   } finally {
     clearTimeout(t);

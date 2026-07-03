@@ -11,6 +11,7 @@
 
 import { getProviderKey } from "./ai-crypto";
 import { getModelNameForUsage } from "./ai-usage-models";
+import { logAiUsage } from "./ai-usage-log";
 
 const DEFAULT_MODEL = "text-embedding-3-small";  // fallback；後台改 usage_key=embedding 即覆蓋
 const DIMS = 1536;                                // 跟 small / ada-002 相符；換 model 要同步改 schema
@@ -25,6 +26,7 @@ export async function generateEmbedding(text: string): Promise<EmbeddingResult> 
   if (!apiKey) throw new Error("openai key not configured in ai_api_keys");
 
   const input = text.slice(0, 8000); // 安全 cap、模型限制 8191 token
+  const modelName = await getModelNameForUsage("embedding", DEFAULT_MODEL);
 
   const res = await fetch("https://api.openai.com/v1/embeddings", {
     method: "POST",
@@ -33,7 +35,7 @@ export async function generateEmbedding(text: string): Promise<EmbeddingResult> 
       Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: await getModelNameForUsage("embedding", DEFAULT_MODEL),
+      model: modelName,
       input,
       dimensions: DIMS,
     }),
@@ -50,6 +52,9 @@ export async function generateEmbedding(text: string): Promise<EmbeddingResult> 
   if (!Array.isArray(embedding) || embedding.length !== DIMS) {
     throw new Error("invalid_embedding_response");
   }
+  const tokens = data.usage?.total_tokens ?? Math.ceil(input.length / 4);
+  // best-effort 記用量（embedding 只有 input、output=0）
+  logAiUsage("openai", modelName, tokens, 0).catch(() => {});
   return { embedding, tokens: data.usage?.total_tokens ?? 0 };
 }
 
@@ -61,6 +66,7 @@ export async function generateEmbeddingsBatch(texts: string[]): Promise<Embeddin
   if (texts.length > 100) throw new Error("batch_too_large_max_100");
 
   const inputs = texts.map((t) => t.slice(0, 8000));
+  const modelName = await getModelNameForUsage("embedding", DEFAULT_MODEL);
   const res = await fetch("https://api.openai.com/v1/embeddings", {
     method: "POST",
     headers: {
@@ -68,7 +74,7 @@ export async function generateEmbeddingsBatch(texts: string[]): Promise<Embeddin
       Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: await getModelNameForUsage("embedding", DEFAULT_MODEL),
+      model: modelName,
       input: inputs,
       dimensions: DIMS,
     }),
@@ -81,7 +87,9 @@ export async function generateEmbeddingsBatch(texts: string[]): Promise<Embeddin
   }
 
   const data = await res.json();
-  const totalTokens = data.usage?.total_tokens ?? 0;
+  const totalTokens = data.usage?.total_tokens ?? inputs.reduce((s, t) => s + Math.ceil(t.length / 4), 0);
+  // best-effort 記用量（整批一次記、output=0）
+  logAiUsage("openai", modelName, totalTokens, 0).catch(() => {});
   const perItem = Math.floor(totalTokens / texts.length);
   return (data.data ?? []).map((d: any) => ({
     embedding: d.embedding,

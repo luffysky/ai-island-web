@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ScrollText, ArrowLeft, Sparkles, Sprout, Wand2, PenTool } from "lucide-react";
+import { ScrollText, ArrowLeft, Sparkles, Sprout, Wand2, PenTool, Palmtree } from "lucide-react";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { isCreatorIslandEnabled } from "@/lib/app-settings";
 import { FeatureOffNotice } from "@/components/FeatureOffNotice";
@@ -42,8 +42,8 @@ export default async function ActivityPage({ searchParams }: { searchParams: Pro
           <span className="text-fg-muted mr-0.5">範圍：</span>
           {workspaces.map((w) => (
             <Link key={w.id} href={`/creator-island/activity?ws=${w.id}`}
-              className={`px-2.5 py-1 rounded-full border transition ${scope === w.id ? "border-accent bg-accent/10 text-accent" : "border-border bg-bg-card hover:border-accent/40"}`}>
-              {w.type === "personal" ? "🏝️ 個人島" : w.name}
+              className={`px-2.5 py-1 rounded-full border transition inline-flex items-center gap-1 ${scope === w.id ? "border-accent bg-accent/10 text-accent" : "border-border bg-bg-card hover:border-accent/40"}`}>
+              {w.type === "personal" ? <><Palmtree size={12} /> 個人島</> : w.name}
             </Link>
           ))}
           <Link href="/creator-island/activity?ws=all"
