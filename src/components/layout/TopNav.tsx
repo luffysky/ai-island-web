@@ -119,10 +119,10 @@ export function TopNav() {
                   <Flame size={14} className="text-orange-400" />
                   <CountUp value={displayProfile.streak_days ?? 0} />
                 </span>
-                <span className="flex items-center gap-1" title="Z-coin">
+                <Link href="/store" className="flex items-center gap-1 hover:text-yellow-400 transition" title="Z-coin（點我儲值）">
                   <Coins size={14} className="text-yellow-400" />
                   <CountUp value={displayProfile.z_coin ?? 0} />
-                </span>
+                </Link>
                 <span className="flex items-center gap-1" title="生命">
                   <Heart size={14} className="text-red-400" />
                   <CountUp value={displayProfile.hearts ?? 5} />
@@ -207,6 +207,15 @@ export function TopNav() {
                       onClick={() => setOpen(false)}
                     >
                       <span className="ml-7 inline-flex items-center gap-1.5"><BarChart3 size={16} /> 學習進度</span>
+                    </Link>
+
+                    <Link
+                      href="/store"
+                      className="flex items-center gap-3 px-4 py-2 hover:bg-bg-elevated transition"
+                      onClick={() => setOpen(false)}
+                    >
+                      <Coins size={16} className="text-yellow-500" />
+                      <span>商店 · 儲值 / Pro</span>
                     </Link>
 
                     <Link
