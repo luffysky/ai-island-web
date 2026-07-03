@@ -1,5 +1,5 @@
 import { PageHero } from "@/components/admin/PageHero";
-import { CheckCircle, AlertTriangle } from "lucide-react";
+import { CheckCircle, AlertTriangle, Send } from "lucide-react";
 import { TelegramSetupButton } from "./TelegramSetupButton";
 
 export const dynamic = "force-dynamic";
@@ -11,7 +11,7 @@ export default function AdminTelegramPage() {
   return (
     <div>
       <PageHero
-        emoji="📨"
+        icon={Send}
         title="Telegram Bot 設定"
         desc="一鍵把 admin Telegram bot 的 webhook 指到本站 + 註冊命令選單。改了 BOT_COMMANDS 或換 domain 後重按一次即可。"
         gradient="from-sky-500/10 via-blue-500/10 to-cyan-500/10"

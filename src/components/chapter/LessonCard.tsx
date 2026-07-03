@@ -7,7 +7,7 @@ import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import rehypeRaw from "rehype-raw";
 import { rehypeSmartLang } from "@/lib/rehype-smart-lang";
-import { Check, Lock, List, Clock, ChevronUp, ChevronDown, Gamepad2, Pencil } from "lucide-react";
+import { Check, Lock, List, Clock, ChevronUp, ChevronDown, Gamepad2, Pencil, Lightbulb } from "lucide-react";
 import { estimateReadingTime, formatReadingTime } from "@/lib/reading-time";
 import { motion } from "framer-motion";
 import { PlaygroundCard } from "./PlaygroundCard";
@@ -34,7 +34,7 @@ function extractOutline(content: string): Array<{ text: string; level: number }>
 
 // 掌握徽章樣式
 const MASTERY_BADGE: Record<"mastered" | "read" | "skim", { label: string; cls: string }> = {
-  mastered: { label: "✓ 已掌握", cls: "bg-green-500/15 text-green-600 dark:text-green-300" },
+  mastered: { label: "已掌握", cls: "bg-green-500/15 text-green-600 dark:text-green-300" },
   read: { label: "已讀完", cls: "bg-blue-500/15 text-blue-600 dark:text-blue-300" },
   skim: { label: "讀過一些", cls: "bg-bg-elevated text-fg-muted" },
 };
@@ -81,8 +81,8 @@ export function LessonCard({
         </div>
         <div className="flex items-center gap-1 relative">
           {mastery && !completed && (
-            <span className={`text-[10px] px-1.5 py-1 rounded mr-1 ${MASTERY_BADGE[mastery].cls}`} title="依你的閱讀/測驗推估">
-              {MASTERY_BADGE[mastery].label}
+            <span className={`text-[10px] px-1.5 py-1 rounded mr-1 inline-flex items-center gap-0.5 ${MASTERY_BADGE[mastery].cls}`} title="依你的閱讀/測驗推估">
+              {mastery === "mastered" && <Check size={11} />}{MASTERY_BADGE[mastery].label}
             </span>
           )}
           {readingMinutes > 0 && (
@@ -251,7 +251,7 @@ export function LessonCard({
           </div>
           <p className="text-sm mb-2">{lesson.exercise.question}</p>
           {lesson.exercise.hint && (
-            <p className="text-xs text-fg-muted mb-2">💡 提示：{lesson.exercise.hint}</p>
+            <p className="text-xs text-fg-muted mb-2 inline-flex items-start gap-1"><Lightbulb size={12} className="mt-0.5 shrink-0" /><span>提示：{lesson.exercise.hint}</span></p>
           )}
           <details className="text-xs">
             <summary className="cursor-pointer text-accent">查看建議解答</summary>

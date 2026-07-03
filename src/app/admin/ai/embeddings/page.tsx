@@ -1,7 +1,7 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { PageHero } from "@/components/admin/PageHero";
 import { BackfillClient } from "./BackfillClient";
-import { AlertTriangle, BookOpen } from "lucide-react";
+import { AlertTriangle, BookOpen, Brain, MessageSquare, Zap } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -36,7 +36,7 @@ export default async function EmbeddingsAdminPage() {
   return (
     <div className="space-y-6">
       <PageHero
-        emoji="🧠"
+        icon={Brain}
         title="AI 語意搜尋（Embeddings）"
         desc="把 75 章 lesson + 論壇主題跑 OpenAI text-embedding-3-small (1536 維)、學員 LINE AI 用 vector cosine 找最像的內容回答問題。沒 backfill 之前 AI 退回 ILIKE 模糊搜尋（弱很多）。"
         gradient="from-cyan-500/10 via-blue-500/10 to-indigo-500/10"
@@ -52,13 +52,13 @@ export default async function EmbeddingsAdminPage() {
 
       <div className="grid md:grid-cols-2 gap-4">
         <CoverageCard
-          label="📚 Lessons"
+          label={<span className="inline-flex items-center gap-1"><BookOpen className="w-4 h-4" /> Lessons</span>}
           total={lessonTotal}
           embedded={lessonEmbedded}
           pct={lessonPct}
         />
         <CoverageCard
-          label="💭 Forum threads"
+          label={<span className="inline-flex items-center gap-1"><MessageSquare className="w-4 h-4" /> Forum threads</span>}
           total={forumTotal}
           embedded={forumEmbedded}
           pct={forumPct}
@@ -73,8 +73,8 @@ export default async function EmbeddingsAdminPage() {
       <div className="bg-bg-soft border border-border rounded-xl p-5 text-sm space-y-2">
         <div className="font-bold text-fg flex items-center gap-2"><BookOpen className="w-4 h-4" /> 怎麼用</div>
         <ul className="space-y-1 list-disc pl-5 text-fg-mid">
-          <li>第一次：按「⚡ backfill 全部 lesson」、跑完約 1-2 分鐘、成本約 $0.015（750 lesson × $0.00002/1K tokens）</li>
-          <li>新章節：寫完 import 進 DB 後、按「⚡ backfill 新章節 (lessons)」會只跑缺的</li>
+          <li>第一次：按「<Zap className="inline-block align-[-2px] w-3.5 h-3.5" /> backfill 全部 lesson」、跑完約 1-2 分鐘、成本約 $0.015（750 lesson × $0.00002/1K tokens）</li>
+          <li>新章節：寫完 import 進 DB 後、按「<Zap className="inline-block align-[-2px] w-3.5 h-3.5" /> backfill 新章節 (lessons)」會只跑缺的</li>
           <li>論壇 backfill 主要用於後台搜尋、學員 LINE AI 也會用到</li>
           <li>「重算全部」是 force=true、會覆蓋已有 embedding（升 model 時用）</li>
         </ul>
@@ -83,7 +83,7 @@ export default async function EmbeddingsAdminPage() {
   );
 }
 
-function CoverageCard({ label, total, embedded, pct }: { label: string; total: number; embedded: number; pct: number }) {
+function CoverageCard({ label, total, embedded, pct }: { label: React.ReactNode; total: number; embedded: number; pct: number }) {
   const ok = pct >= 95;
   const warn = pct >= 50;
   const color = ok ? "from-green-500/20 to-emerald-500/20 border-green-500/40"

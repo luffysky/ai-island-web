@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Sparkles, FileText } from "lucide-react";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { isCreatorIslandEnabled } from "@/lib/app-settings";
 import { FeatureOffNotice } from "@/components/FeatureOffNotice";
@@ -35,11 +36,11 @@ export default async function CreateEnginePage({ searchParams }: { searchParams:
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 space-y-6">
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black bg-gradient-to-r from-amber-300 via-pink-400 to-violet-400 bg-clip-text text-transparent">✨ 創作引擎</h1>
+          <h1 className="text-2xl sm:text-3xl font-black bg-gradient-to-r from-amber-300 via-pink-400 to-violet-400 bg-clip-text text-transparent inline-flex items-center gap-2"><Sparkles className="text-pink-400" size={28} /> 創作引擎</h1>
           <p className="text-sm text-fg-muted mt-1">選一種要創作的東西，直接開寫。每種類型都帶齊它該有的工具。</p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
-          <Link href="/me/blog" className="text-sm px-3 py-1.5 rounded-full bg-bg-card border border-border hover:border-accent hover:text-accent transition">📝 我的部落格</Link>
+          <Link href="/me/blog" className="text-sm px-3 py-1.5 rounded-full bg-bg-card border border-border hover:border-accent hover:text-accent transition inline-flex items-center gap-1.5"><FileText size={14} /> 我的部落格</Link>
           <Link href="/creator-island" className="text-sm px-3 py-1.5 rounded-full bg-bg-card border border-border hover:border-accent hover:text-accent transition">← 回島嶼</Link>
         </div>
       </div>

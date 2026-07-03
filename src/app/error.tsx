@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
-import { AlertTriangle, RotateCcw, Home } from "lucide-react";
+import { AlertTriangle, RotateCcw, Home, Frown } from "lucide-react";
 
 export default function GlobalError({
   error,
@@ -18,7 +18,7 @@ export default function GlobalError({
   return (
     <div className="min-h-[60vh] flex items-center justify-center px-4 py-12">
       <div className="max-w-md w-full bg-bg-card border border-border rounded-2xl p-6 sm:p-8 text-center">
-        <div className="text-5xl mb-3">😵</div>
+        <Frown size={48} strokeWidth={1.5} className="mx-auto mb-3 text-orange-400" />
         <h1 className="text-xl font-bold mb-2 inline-flex items-center gap-1.5">
           <AlertTriangle size={20} className="text-orange-400" />
           頁面壞掉了

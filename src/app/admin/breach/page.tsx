@@ -2,7 +2,7 @@ import { createSupabaseServer } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { PageHero } from "@/components/admin/PageHero";
-import { AlertTriangle, Clock, ArrowRight, ClipboardList, CheckCircle } from "lucide-react";
+import { AlertTriangle, Clock, ArrowRight, ClipboardList, CheckCircle, Siren } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -22,7 +22,7 @@ export default async function BreachPage() {
   return (
     <div className="space-y-4">
       <PageHero
-        emoji="🚨"
+        icon={Siren}
         title="個資外洩通報管理"
         desc="依個資法、發現外洩 72 小時內必須通報主管機關並通知當事人。逾期 dashboard 會紅色提醒。"
         gradient="from-red-500/10 via-orange-500/10 to-yellow-500/10"

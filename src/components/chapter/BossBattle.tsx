@@ -2,7 +2,7 @@
 import { Chapter } from "@/lib/types";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, Swords, RotateCcw } from "lucide-react";
+import { Heart, Swords, RotateCcw, Trophy, Sparkles, Skull, Check, X } from "lucide-react";
 
 export function BossBattle({ chapter, engine, isLoggedIn }: { chapter: Chapter; engine: any; isLoggedIn: boolean }) {
   const quiz = chapter.quiz!;
@@ -83,7 +83,7 @@ export function BossBattle({ chapter, engine, isLoggedIn }: { chapter: Chapter; 
         animate={{ opacity: 1, scale: 1 }}
         className="p-8 rounded-2xl bg-bg-card border border-border text-center"
       >
-        <div className="text-6xl mb-4">{result.perfect ? "🏆" : result.correct >= quiz.questions.length / 2 ? "✨" : "💀"}</div>
+        <div className="mb-4 flex justify-center">{result.perfect ? <Trophy size={56} className="text-yellow-400" /> : result.correct >= quiz.questions.length / 2 ? <Sparkles size={56} className="text-accent" /> : <Skull size={56} className="text-red-400" />}</div>
         <h2 className="text-3xl font-bold mb-2">
           {result.perfect ? "完美勝利！" : result.correct >= quiz.questions.length / 2 ? "戰勝 boss！" : "敗北⋯再試一次"}
         </h2>
@@ -100,14 +100,14 @@ export function BossBattle({ chapter, engine, isLoggedIn }: { chapter: Chapter; 
                 <div className="font-semibold mb-2">Q{i + 1}. {q.text}</div>
                 <div className="text-sm space-y-1">
                   {q.options.map(o => (
-                    <div key={o.value} className={
+                    <div key={o.value} className={`flex items-center gap-1 ${
                       o.value === q.answer ? "text-green-400" :
                       o.value === userAns ? "text-red-400" :
                       "text-fg-muted"
-                    }>
-                      {o.value === q.answer && "✓ "}
-                      {o.value === userAns && o.value !== q.answer && "✗ "}
-                      {o.label}
+                    }`}>
+                      {o.value === q.answer && <Check size={13} className="shrink-0" />}
+                      {o.value === userAns && o.value !== q.answer && <X size={13} className="shrink-0" />}
+                      <span>{o.label}</span>
                     </div>
                   ))}
                 </div>
@@ -130,7 +130,7 @@ export function BossBattle({ chapter, engine, isLoggedIn }: { chapter: Chapter; 
   if (hearts === 0) {
     return (
       <div className="p-8 rounded-2xl bg-red-950/40 border-2 border-red-500/40 text-center animate-fade-in">
-        <div className="text-6xl mb-4">💀</div>
+        <div className="mb-4 flex justify-center"><Skull size={56} className="text-red-400" /></div>
         <h2 className="text-2xl font-bold mb-2 text-red-400">敗北⋯</h2>
         <p className="text-fg-muted mb-4">你被 {boss.name} 擊倒了</p>
         <button onClick={() => { setStarted(false); setAnswers({}); setCurrentQ(0); setBossHp(boss.hp); setHearts(5); }} className="px-6 py-2 bg-accent text-black rounded-lg font-bold">捲土重來</button>
@@ -193,8 +193,8 @@ export function BossBattle({ chapter, engine, isLoggedIn }: { chapter: Chapter; 
                 >
                   <span className="font-mono text-sm mr-2">{o.value.toUpperCase()}.</span>
                   {o.label}
-                  {isAnswered && isCorrect && <span className="ml-2 text-green-400">✓</span>}
-                  {isAnswered && isUser && !isCorrect && <span className="ml-2 text-red-400">✗</span>}
+                  {isAnswered && isCorrect && <Check size={15} className="ml-2 inline text-green-400" />}
+                  {isAnswered && isUser && !isCorrect && <X size={15} className="ml-2 inline text-red-400" />}
                 </button>
               );
             })}

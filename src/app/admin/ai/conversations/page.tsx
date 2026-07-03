@@ -3,7 +3,7 @@ import { createSupabaseServer } from "@/lib/supabase-server";
 import { checkOwnerByProfileId } from "@/lib/is-owner";
 import { PageHero } from "@/components/admin/PageHero";
 import { ConversationsClient } from "./ConversationsClient";
-import { Lock, AlertTriangle } from "lucide-react";
+import { Lock, AlertTriangle, MessageSquare } from "lucide-react";
 
 export default async function ConversationsPage() {
   const supabase = createSupabaseAdmin();
@@ -42,7 +42,7 @@ export default async function ConversationsPage() {
   return (
     <div className="space-y-4">
       <PageHero
-        emoji="💬"
+        icon={MessageSquare}
         title="AI 對話紀錄"
         desc={
           isOwner

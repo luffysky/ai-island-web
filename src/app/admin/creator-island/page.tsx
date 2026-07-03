@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Bot, BarChart3, MessageSquare, Bell } from "lucide-react";
+import { Bot, BarChart3, MessageSquare, Bell, TreePalm } from "lucide-react";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { PageHero } from "@/components/admin/PageHero";
 
@@ -36,7 +36,7 @@ export default async function CreatorIslandAdminPage() {
 
   return (
     <div className="space-y-6">
-      <PageHero emoji="🏝️" title="創作者島嶼 — 監看" desc="島嶼活動總覽、AI 對話紀錄（含 token/成本）、通知監看。AI 用量已併入 /admin/ai/usage。"
+      <PageHero icon={TreePalm} title="創作者島嶼 — 監看" desc="島嶼活動總覽、AI 對話紀錄（含 token/成本）、通知監看。AI 用量已併入 /admin/ai/usage。"
         gradient="from-cyan-500/10 via-teal-500/10 to-emerald-500/10" borderColor="border-teal-500/30" />
 
       <div className="flex gap-2 text-sm">

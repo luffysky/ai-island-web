@@ -1,11 +1,12 @@
 import Image from "next/image";
+import { Handshake, Sword, Ruler, Sparkles } from "lucide-react";
 
 export function MascotIntro() {
   return (
     <section className="border-b border-border py-16">
       <div className="max-w-6xl mx-auto px-6">
         <div className="text-center mb-10">
-          <h2 className="text-3xl font-bold mb-2">🤝 AI 島核心夥伴</h2>
+          <h2 className="text-3xl font-bold mb-2 inline-flex items-center gap-2"><Handshake size={28} className="text-accent" /> AI 島核心夥伴</h2>
           <p className="text-fg-muted">三種力量、一個目標、陪你走完冒險旅程</p>
         </div>
 
@@ -23,7 +24,7 @@ export function MascotIntro() {
         <div className="grid md:grid-cols-3 gap-4">
           <div className="p-5 rounded-xl border border-orange-400/30 bg-orange-400/5">
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-2xl">⚔️</span>
+              <Sword size={22} className="text-orange-400" />
               <h3 className="text-xl font-bold text-orange-400">肥仔</h3>
             </div>
             <div className="text-sm text-fg-muted mb-2">衝鋒隊長 · 行動派先鋒</div>
@@ -34,7 +35,7 @@ export function MascotIntro() {
 
           <div className="p-5 rounded-xl border border-purple-400/30 bg-purple-400/5">
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-2xl">📐</span>
+              <Ruler size={22} className="text-purple-400" />
               <h3 className="text-xl font-bold text-purple-400">菇寶</h3>
             </div>
             <div className="text-sm text-fg-muted mb-2">策略軍師 · 冷靜分析</div>
@@ -45,7 +46,7 @@ export function MascotIntro() {
 
           <div className="p-5 rounded-xl border border-green-400/30 bg-green-400/5">
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-2xl">✨</span>
+              <Sparkles size={22} className="text-green-400" />
               <h3 className="text-xl font-bold text-green-400">綠寶</h3>
             </div>
             <div className="text-sm text-fg-muted mb-2">AI 精靈 · 創造無限</div>

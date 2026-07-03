@@ -2,7 +2,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import Link from "next/link";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { PageHero, AdminStatCard } from "@/components/admin/PageHero";
-import { ArrowRight, Flame, AlertTriangle } from "lucide-react";
+import { ArrowRight, Flame, AlertTriangle, MessageSquare, Heart } from "lucide-react";
 
 export default async function CRMPage({ searchParams }: { searchParams: Promise<{ status?: string; priority?: string }> }) {
   const params = await searchParams;
@@ -26,7 +26,7 @@ export default async function CRMPage({ searchParams }: { searchParams: Promise<
   return (
     <div className="space-y-4">
       <PageHero
-        emoji="💬"
+        icon={MessageSquare}
         title="客服 (CRM)"
         desc="對話客服：點 ticket 進去聊天 + 套罐頭 + 自動推 LINE。批次改狀態 / 派單 / SLA 請去工單管理。"
         gradient="from-blue-500/10 via-cyan-500/10 to-purple-500/10"
@@ -83,7 +83,7 @@ export default async function CRMPage({ searchParams }: { searchParams: Promise<
                   <tr key={t.id} className="border-t border-border hover:bg-bg-elevated">
                     <td className="px-4 py-3">
                       <Link href={`/${process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2"}/admin/crm/${t.id}` as any} className="hover:text-accent font-medium inline-flex items-center gap-1.5">
-                        {isLine && <span className="text-[10px] px-1 rounded bg-green-500/15 text-green-900 dark:text-green-200">💚 LINE</span>}
+                        {isLine && <span className="text-[10px] px-1 rounded bg-green-500/15 text-green-900 dark:text-green-200 inline-flex items-center gap-1"><Heart size={10} /> LINE</span>}
                         {t.subject}
                       </Link>
                     </td>

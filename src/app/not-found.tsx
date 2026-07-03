@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Compass, Home, BookOpen, Users } from "lucide-react";
+import { Compass, Home, BookOpen, Users, MapPinned } from "lucide-react";
 
 export const metadata = {
   title: "找不到這頁 | AI 島",
@@ -10,7 +10,7 @@ export default function NotFound() {
   return (
     <div className="min-h-[60vh] flex items-center justify-center px-4 py-12">
       <div className="max-w-lg w-full bg-bg-card border border-border rounded-2xl p-6 sm:p-8 text-center">
-        <div className="text-6xl mb-2">🗺️</div>
+        <MapPinned size={56} strokeWidth={1.5} className="mx-auto mb-2 text-accent" />
         <h1 className="text-2xl sm:text-3xl font-extrabold mb-1">
           這座島找不到喔
         </h1>

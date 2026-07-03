@@ -3,7 +3,7 @@ import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { PageHero } from "@/components/admin/PageHero";
-import { AlertTriangle, ArrowRight, ArrowLeft, Download } from "lucide-react";
+import { AlertTriangle, ArrowRight, ArrowLeft, Download, FileText } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -79,7 +79,7 @@ export default async function AuditPage({
   return (
     <div className="space-y-4">
       <PageHero
-        emoji="📝"
+        icon={FileText}
         title="操作紀錄"
         desc={`所有 admin 動作會寫到 audit_logs、可依 actor / target / action 過濾。匹配 ${(count ?? 0).toLocaleString()} 筆、第 ${page}/${totalPages} 頁。`}
         gradient="from-stone-500/10 via-zinc-500/10 to-slate-500/10"

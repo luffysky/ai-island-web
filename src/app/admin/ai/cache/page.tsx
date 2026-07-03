@@ -3,7 +3,7 @@ import { formatTW } from "@/lib/format-date";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ClearCacheButtons } from "./ClearCacheButtons";
 import { PageHero } from "@/components/admin/PageHero";
-import { Flame } from "lucide-react";
+import { Flame, Database, Shield } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -28,7 +28,7 @@ export default async function AdminAiCachePage() {
   return (
     <div>
       <PageHero
-        emoji="💾"
+        icon={Database}
         title="AI 回應快取"
         desc="相同問題第二次秒回、不燒 token。依 greenbao_ai_cost_spec v0。命中率高省 AI 費用、命中低代表 prompt 太多樣。"
         gradient="from-emerald-500/10 via-green-500/10 to-lime-500/10"
@@ -75,7 +75,7 @@ export default async function AdminAiCachePage() {
       </section>
 
       <p className="text-[11px] text-fg-muted mt-4">
-        🛡️ 鐵則：快取錯了也不能比現在差。失敗自動 fallback 到正常 AI 呼叫。
+        <Shield size={12} className="inline-block align-[-2px]" /> 鐵則：快取錯了也不能比現在差。失敗自動 fallback 到正常 AI 呼叫。
         命中條件：問題正規化後完全相同 + 對話第一則訊息 + tone/persona/context 全部相同。
       </p>
     </div>

@@ -1,6 +1,7 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { TicketsClient } from "./TicketsClient";
 import { PageHero, AdminStatCard } from "@/components/admin/PageHero";
+import { Ticket } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -38,7 +39,7 @@ export default async function AdminTicketsPage({
   return (
     <div className="space-y-4">
       <PageHero
-        emoji="🎫"
+        icon={Ticket}
         title="客訴工單"
         desc="使用者透過 /me/support + LINE bot 提交的工單、可分配 / 回覆 / 結案。"
         gradient="from-cyan-500/10 via-blue-500/10 to-purple-500/10"

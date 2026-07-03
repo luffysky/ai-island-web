@@ -157,7 +157,7 @@ export function EngineWorkspace({ draft, fragments }: { draft: Draft; fragments:
       {/* 標頭 */}
       <div className="flex items-center gap-2 flex-wrap mb-3">
         <Link href="/creator-island/create" className="text-sm px-2.5 py-1.5 rounded-full bg-bg-card border border-border hover:text-accent">←</Link>
-        <span className="text-xl">{t.emoji}</span>
+        <t.icon size={20} className="text-accent shrink-0" />
         <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="作品標題…"
           className="flex-1 min-w-[140px] bg-transparent text-lg sm:text-xl font-bold outline-none border-b border-transparent focus:border-accent py-1" />
         <Link href="/me/blog" className="inline-flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-full bg-bg-card border border-border hover:border-accent hover:text-accent transition whitespace-nowrap"><FileText size={13} /> 部落格</Link>

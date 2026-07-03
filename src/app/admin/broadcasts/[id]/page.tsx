@@ -4,7 +4,7 @@ import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
 import { BroadcastForm } from "../BroadcastForm";
 import { PageHero } from "@/components/admin/PageHero";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Megaphone } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -31,7 +31,7 @@ export default async function EditBroadcastPage({
         <ArrowLeft className="w-4 h-4" /> 回公告列表
       </Link>
       <PageHero
-        emoji="📣"
+        icon={Megaphone}
         title={`編輯公告 #${broadcast.id.slice(0, 8)}`}
         desc={`${broadcast.sent_count ?? 0} 已寄 · ${broadcast.open_count ?? 0} 開信 · ${broadcast.click_count ?? 0} 點擊。已寄部分不可撤回。`}
         gradient="from-orange-500/10 via-red-500/10 to-pink-500/10"

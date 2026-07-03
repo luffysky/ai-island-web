@@ -1,6 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { PageHero } from "@/components/admin/PageHero";
-import { Check } from "lucide-react";
+import { Check, CornerDownRight, AlertTriangle } from "lucide-react";
 
 export default async function RedirectsPage() {
   const supabase = createSupabaseAdmin();
@@ -13,7 +13,7 @@ export default async function RedirectsPage() {
   if (error?.message?.includes("does not exist")) {
     return (
       <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-6 text-sm">
-        <div className="font-bold mb-2">⚠️ 需要先跑 ai_migration.sql</div>
+        <div className="font-bold mb-2 inline-flex items-center gap-1"><AlertTriangle size={16} className="inline-block align-[-2px]" /> 需要先跑 ai_migration.sql</div>
       </div>
     );
   }
@@ -21,7 +21,7 @@ export default async function RedirectsPage() {
   return (
     <div className="space-y-4">
       <PageHero
-        emoji="↪️"
+        icon={CornerDownRight}
         title="轉址管理"
         desc="301 / 302 轉址、避免 404 影響 SEO。從舊網址 redirect 到新位置、保留 Google 連結權重。"
         gradient="from-lime-500/10 via-green-500/10 to-emerald-500/10"

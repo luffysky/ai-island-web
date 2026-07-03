@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Lock, Crown, ArrowRight } from "lucide-react";
+import { Lock, Crown, ArrowRight, Lightbulb } from "lucide-react";
 import { SITE_STATS } from "@/lib/site-stats";
 
 /**
@@ -9,7 +9,7 @@ import { SITE_STATS } from "@/lib/site-stats";
 export function PaywallOverlay({ chapterId, chapterTitle }: { chapterId: number; chapterTitle: string }) {
   return (
     <div className="rounded-2xl border-2 border-accent/40 bg-gradient-to-br from-accent/15 via-accent-2/10 to-accent-3/5 p-8 my-8 text-center">
-      <div className="text-6xl mb-3">🔒</div>
+      <div className="mb-3 flex justify-center"><Lock size={52} className="text-accent" /></div>
       <h2 className="text-2xl font-bold mb-2 flex items-center justify-center gap-2">
         <Crown size={22} className="text-yellow-400" />
         Premium 內容
@@ -28,8 +28,8 @@ export function PaywallOverlay({ chapterId, chapterTitle }: { chapterId: number;
       >
         <Crown size={16} /> 看完整方案 <ArrowRight size={14} />
       </Link>
-      <p className="text-xs text-fg-muted mt-4">
-        💡 已訂閱？<Link href="/me" className="text-accent hover:underline">回個人後台</Link> 查看；新教師？<Link href="/teacher" className="text-accent hover:underline">teacher 後台</Link>
+      <p className="text-xs text-fg-muted mt-4 inline-flex items-center flex-wrap justify-center gap-1">
+        <Lightbulb size={12} /> 已訂閱？<Link href="/me" className="text-accent hover:underline">回個人後台</Link> 查看；新教師？<Link href="/teacher" className="text-accent hover:underline">teacher 後台</Link>
       </p>
     </div>
   );

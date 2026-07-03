@@ -14,7 +14,7 @@ import { FloatingNoteButton } from "./FloatingNoteButton";
 import { AchievementToast } from "../gamification/AchievementToast";
 import { LevelUpModal } from "../gamification/LevelUpModal";
 import { XpToast, type XpToastData } from "../gamification/XpToast";
-import { ChevronLeft, ChevronRight, Clock, Trophy, BookmarkCheck, X, BarChart3, Target, BookOpen, HelpCircle, Check, ArrowRight, ChevronUp, ChevronDown } from "lucide-react";
+import { ChevronLeft, ChevronRight, Clock, Trophy, BookmarkCheck, X, BarChart3, Target, BookOpen, HelpCircle, Check, ArrowRight, ChevronUp, ChevronDown, PartyPopper, Repeat, CornerUpLeft } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/components/ui/Toast";
 import { saveReadingPos, getReading, recordEngagement, lessonMastery, hydrateFromServer, setSyncEnabled, formatLessonNumber, type Pos } from "@/lib/reading-position";
@@ -327,7 +327,7 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
             <div className="flex items-center justify-between mb-2 text-sm">
               <span className="inline-flex items-center gap-1.5">
                 <BarChart3 size={14} /> 章節進度
-                {progress >= 1 && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-green-500/15 text-green-600 dark:text-green-300 font-bold">已完成 🎉</span>}
+                {progress >= 1 && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-green-500/15 text-green-600 dark:text-green-300 font-bold inline-flex items-center gap-0.5">已完成 <PartyPopper size={11} /></span>}
               </span>
               <span className="font-bold tabular-nums">
                 {completedCount} / {totalLessons}
@@ -352,7 +352,7 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
                   onClick={() => setShowSkim(s => !s)}
                   className="text-xs text-amber-600 dark:text-amber-400 inline-flex items-center gap-1 hover:underline"
                 >
-                  🔁 有 {skimLessons.length} 節你只快速滑過、建議回頭細看
+                  <Repeat size={12} className="shrink-0" /> 有 {skimLessons.length} 節你只快速滑過、建議回頭細看
                   <span className="text-[10px] text-amber-500/80 inline-flex items-center gap-0.5">{showSkim ? <><ChevronUp size={11} /> 收合</> : <><ChevronDown size={11} /> 看是哪幾節</>}</span>
                 </button>
                 {showSkim && (
@@ -417,9 +417,9 @@ export function ChapterView({ chapter }: { chapter: Chapter }) {
           {resume.furthest && resume.current && (
             <button
               onClick={() => { scrollToLesson(resume.current!.lessonId); setResume(null); }}
-              className="mt-2 ml-[30px] text-xs text-accent hover:underline"
+              className="mt-2 ml-[30px] text-xs text-accent hover:underline inline-flex items-center gap-1"
             >
-              ↩ 或回到上次閱讀的位置（{resume.current.label}）
+              <CornerUpLeft size={12} className="shrink-0" /> 或回到上次閱讀的位置（{resume.current.label}）
             </button>
           )}
         </div>

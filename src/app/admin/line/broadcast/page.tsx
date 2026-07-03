@@ -1,7 +1,7 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
-import { ArrowLeft, Send } from "lucide-react";
+import { ArrowLeft, Send, Megaphone } from "lucide-react";
 import { BroadcastForm } from "./BroadcastForm";
 import { PageHero } from "@/components/admin/PageHero";
 
@@ -29,7 +29,7 @@ export default async function AdminLineBroadcastPage() {
       </Link>
 
       <PageHero
-        emoji="📣"
+        icon={Megaphone}
         title="群發訊息"
         desc="推給綁定 LINE 的用戶、依「收通知」狀態自動過濾。LINE multicast 限制 500 人 / 次、會自動分批。"
         gradient="from-amber-500/10 via-orange-500/10 to-red-500/10"

@@ -1,6 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { PageHero } from "@/components/admin/PageHero";
-import { Flame, Trophy } from "lucide-react";
+import { Flame, Trophy, BarChart3 } from "lucide-react";
 
 export default async function AdminAnalyticsPage() {
   const supabase = createSupabaseAdmin();
@@ -33,7 +33,7 @@ export default async function AdminAnalyticsPage() {
   return (
     <div className="space-y-6">
       <PageHero
-        emoji="📈"
+        icon={BarChart3}
         title="數據分析"
         desc="Top 10 熱門章節 / 成就解鎖排行、看用戶最愛玩什麼、定產品方向。"
         gradient="from-pink-500/10 via-purple-500/10 to-blue-500/10"

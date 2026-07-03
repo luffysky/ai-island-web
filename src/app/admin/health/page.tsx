@@ -4,7 +4,7 @@ import { adminHref } from "@/lib/admin-href";
 import { formatTW, formatTWRelative } from "@/lib/format-date";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { PageHero } from "@/components/admin/PageHero";
-import { Siren, ScrollText, Flame } from "lucide-react";
+import { Siren, ScrollText, Flame, HeartPulse, Lightbulb } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -73,7 +73,7 @@ export default async function AdminHealthPage() {
   return (
     <div className="space-y-6">
       <PageHero
-        emoji="💓"
+        icon={HeartPulse}
         title="系統健康"
         desc="一目了然系統狀態。10 秒整理完今天有沒有出狀況、session / error / AI 用量 / audit 一頁全包。"
         gradient="from-emerald-500/10 via-cyan-500/10 to-blue-500/10"
@@ -170,7 +170,7 @@ export default async function AdminHealthPage() {
       </section>
 
       <p className="text-[11px] text-fg-muted leading-relaxed">
-        💡 <b>建議</b>：每天進站先看這頁、3 秒判斷昨天系統有沒有出事。
+        <Lightbulb size={13} className="inline-block align-[-2px] mr-1" /><b>建議</b>：每天進站先看這頁、3 秒判斷昨天系統有沒有出事。
         如果「過去 1 小時錯誤」超過 5 條、優先到 <code className="font-mono text-accent">admin/errors</code> 看細節。
       </p>
     </div>

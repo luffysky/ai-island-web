@@ -2,7 +2,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
 import { PageHero } from "@/components/admin/PageHero";
-import { AlertTriangle, ArrowRight, ArrowLeft, Download } from "lucide-react";
+import { AlertTriangle, ArrowRight, ArrowLeft, Download, BarChart3 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -103,7 +103,7 @@ export default async function LearningEventsPage({
   return (
     <div className="space-y-4">
       <PageHero
-        emoji="📊"
+        icon={BarChart3}
         title="學習行為事件"
         desc={`站內 lesson 完成 / quiz 嘗試 / 章節進入 等行為的原始 event 流。匹配 ${(count ?? 0).toLocaleString()} 筆 · 第 ${page}/${totalPages} 頁`}
         gradient="from-blue-500/10 via-cyan-500/10 to-teal-500/10"

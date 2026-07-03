@@ -1,14 +1,18 @@
 import Link from "next/link";
+import type { LucideIcon } from "lucide-react";
 
 /**
  * 後台頁 hero header — 跟 Dashboard / 行銷主控台 / Lottie 設定 一致的視覺
  *
- * 用法：
- *   <PageHero emoji="💰" title="訂單管理" desc="近 30 天 ..." gradient="from-emerald-500/10 via-green-500/10 to-yellow-500/10">
+ * 用法（優先用 lucide icon）：
+ *   <PageHero icon={Coins} title="訂單管理" desc="近 30 天 ..." gradient="from-emerald-500/10 via-green-500/10 to-yellow-500/10">
  *     <Link href="...">操作 button</Link>
  *   </PageHero>
+ *
+ * emoji 仍保留向後相容；若同時給 icon 與 emoji、優先用 icon。
  */
 export function PageHero({
+  icon: Icon,
   emoji,
   title,
   desc,
@@ -16,7 +20,8 @@ export function PageHero({
   borderColor = "border-purple-500/30",
   children,
 }: {
-  emoji: string;
+  icon?: LucideIcon;
+  emoji?: string;
   title: string;
   desc?: string;
   gradient?: string;
@@ -28,7 +33,13 @@ export function PageHero({
       <div className="flex items-start justify-between gap-3 flex-wrap">
         <div className="min-w-0 flex-1">
           <h1 className="text-2xl font-extrabold mb-1 flex items-center gap-2">
-            <span className="text-3xl">{emoji}</span>
+            {Icon ? (
+              <span className="inline-flex items-center justify-center text-accent">
+                <Icon className="w-7 h-7" strokeWidth={2.25} />
+              </span>
+            ) : (
+              <span className="text-3xl">{emoji}</span>
+            )}
             {title}
           </h1>
           {desc && <p className="text-sm text-fg-muted leading-relaxed">{desc}</p>}

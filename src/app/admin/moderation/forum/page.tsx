@@ -1,5 +1,5 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
-import { Ban, Lock, Pin, Star } from "lucide-react";
+import { Ban, Lock, Pin, Star, MessagesSquare } from "lucide-react";
 import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
 import { ThreadActions, ReplyActions } from "./Actions";
@@ -38,7 +38,7 @@ export default async function ForumModerationPage({
   return (
     <div className="space-y-6">
       <PageHero
-        emoji="🗣️"
+        icon={MessagesSquare}
         title="論壇審核"
         desc="釘文、鎖串、隱藏、刪除。所有操作寫進 audit log。"
         gradient="from-indigo-500/10 via-blue-500/10 to-sky-500/10"

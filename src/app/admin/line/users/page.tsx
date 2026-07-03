@@ -5,7 +5,7 @@ import { adminHref } from "@/lib/admin-href";
 import { formatTWRelative } from "@/lib/format-date";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { PushUserButton } from "./PushUserButton";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Users } from "lucide-react";
 import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
@@ -31,7 +31,7 @@ export default async function AdminLineUsersPage() {
       </Link>
 
       <PageHero
-        emoji="👥"
+        icon={Users}
         title="LINE 綁定用戶"
         desc={`共 ${list.length} 人綁定、點「推訊息」直接送 LINE。`}
         gradient="from-green-500/10 via-emerald-500/10 to-teal-500/10"

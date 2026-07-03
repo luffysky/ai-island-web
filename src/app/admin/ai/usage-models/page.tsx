@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { USAGE_LABELS } from "@/lib/ai-usage-models";
 import { UsageModelsClient } from "./UsageModelsClient";
 import { PageHero } from "@/components/admin/PageHero";
+import { SlidersHorizontal } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -44,7 +45,7 @@ export default async function UsageModelsPage() {
   return (
     <div className="space-y-4">
       <PageHero
-        emoji="🎛️"
+        icon={SlidersHorizontal}
         title="AI 用途 ↔ 模型對應"
         desc="每個 AI 場景可獨立指定 model：LINE bot 用 Sonnet、Nami 出題用 Opus、留言審核用 Haiku 省錢。改完 1 分鐘內生效（in-memory cache）。"
         gradient="from-indigo-500/10 via-violet-500/10 to-purple-500/10"

@@ -1,7 +1,7 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import Link from "next/link";
 import { PageHero, AdminStatCard } from "@/components/admin/PageHero";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Coins } from "lucide-react";
 
 export default async function OrdersPage({ searchParams }: { searchParams: Promise<{ status?: string; q?: string }> }) {
   const params = await searchParams;
@@ -31,7 +31,7 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
   return (
     <div className="space-y-4">
       <PageHero
-        emoji="💰"
+        icon={Coins}
         title="訂單管理"
         desc={`近 100 筆訂單、依狀態 / 關鍵字 搜尋。本月 ${monthOrders?.length ?? 0} 筆訂單。`}
         gradient="from-emerald-500/10 via-yellow-500/10 to-amber-500/10"

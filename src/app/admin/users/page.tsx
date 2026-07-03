@@ -6,7 +6,7 @@ import { adminHref } from "@/lib/admin-href";
 import { UserRow } from "./UserRow";
 import { UserCard } from "./UserCard";
 import { PageHero } from "@/components/admin/PageHero";
-import { RefreshCw, ArrowLeft, ArrowRight } from "lucide-react";
+import { RefreshCw, ArrowLeft, ArrowRight, Users } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -76,7 +76,7 @@ export default async function AdminUsersPage({
   return (
     <div className="space-y-4">
       <PageHero
-        emoji="👥"
+        icon={Users}
         title="使用者管理"
         desc="搜尋、過濾、批次操作所有使用者。可看 XP / Z-coin / 等級 / 簽到 / 寵物等學習狀態。"
         gradient="from-blue-500/10 via-cyan-500/10 to-purple-500/10"

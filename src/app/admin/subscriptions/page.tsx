@@ -1,7 +1,7 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import Link from "next/link";
 import { PageHero, AdminStatCard } from "@/components/admin/PageHero";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Gem } from "lucide-react";
 
 export default async function SubscriptionsPage({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
   const params = await searchParams;
@@ -25,7 +25,7 @@ export default async function SubscriptionsPage({ searchParams }: { searchParams
   return (
     <div className="space-y-4">
       <PageHero
-        emoji="💎"
+        icon={Gem}
         title="訂閱管理"
         desc="所有月訂 / 年訂 / 終身訂閱、可看狀態 / 升降級 / 流失。MRR 跟活躍訂閱數即時計算。"
         gradient="from-yellow-500/10 via-amber-500/10 to-pink-500/10"

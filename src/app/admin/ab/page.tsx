@@ -1,6 +1,7 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { AbExperimentsClient } from "./AbExperimentsClient";
 import { PageHero } from "@/components/admin/PageHero";
+import { FlaskConical } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -38,7 +39,7 @@ export default async function AdminAbPage() {
   return (
     <div>
       <PageHero
-        emoji="🧪"
+        icon={FlaskConical}
         title="A/B 測試"
         desc="建立 / 啟動 / 暫停實驗、看 variant assignment 數 + conversion rate。code 呼叫 useAbVariant('key')。"
         gradient="from-violet-500/10 via-purple-500/10 to-pink-500/10"

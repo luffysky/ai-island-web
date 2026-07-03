@@ -1,6 +1,7 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import Link from "next/link";
 import { PageHero } from "@/components/admin/PageHero";
+import { Coins } from "lucide-react";
 
 export default async function ZcoinPage() {
   const supabase = createSupabaseAdmin();
@@ -30,7 +31,7 @@ export default async function ZcoinPage() {
   return (
     <div className="space-y-4">
       <PageHero
-        emoji="🪙"
+        icon={Coins}
         title="Z-coin 流水"
         desc="平台代幣即時統計：總流通量、本月發放/消耗。所有交易在 coin_transactions、可 audit。"
         gradient="from-yellow-500/10 via-amber-500/10 to-orange-500/10"

@@ -1,5 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { PageHero } from "@/components/admin/PageHero";
+import { Trophy } from "lucide-react";
 
 export default async function AchievementsAdminPage() {
   const supabase = createSupabaseAdmin();
@@ -22,7 +23,7 @@ export default async function AchievementsAdminPage() {
   return (
     <div className="space-y-4">
       <PageHero
-        emoji="🏆"
+        icon={Trophy}
         title="成就管理"
         desc="所有可解鎖成就的條件 / XP / Z-coin 獎勵 / 圖示。改完用戶下次達成條件會用新規則。"
         gradient="from-yellow-500/10 via-amber-500/10 to-pink-500/10"

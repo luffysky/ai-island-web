@@ -1,6 +1,7 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { KeywordsClient } from "./KeywordsClient";
 import { PageHero } from "@/components/admin/PageHero";
+import { Type } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +16,7 @@ export default async function AdminAiKeywordsPage() {
   return (
     <div>
       <PageHero
-        emoji="🔤"
+        icon={Type}
         title="AI 審核關鍵字"
         desc="L1 keyword 過濾 (最便宜層)。觸發後寫 ai_moderation_flags 給 admin 看、avoid LLM moderation 太貴。"
         gradient="from-rose-500/10 via-red-500/10 to-orange-500/10"

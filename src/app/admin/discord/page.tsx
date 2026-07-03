@@ -2,7 +2,7 @@ import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { redirect } from "next/navigation";
 import { PageHero } from "@/components/admin/PageHero";
-import { Zap, Key, Sparkles } from "lucide-react";
+import { Zap, Key, Sparkles, MessageSquare, Wrench, RefreshCw, Stethoscope } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -35,7 +35,7 @@ export default async function DiscordConsole() {
   return (
     <div className="space-y-4">
       <PageHero
-        emoji="🟣"
+        icon={MessageSquare}
         title="Discord 控制台"
         desc="一鍵註冊 slash command、role 同步、綁定統計、新人 onboarding。"
         gradient="from-indigo-500/10 via-purple-500/10 to-pink-500/10"
@@ -53,17 +53,17 @@ export default async function DiscordConsole() {
         <h2 className="font-bold flex items-center gap-2"><Zap className="w-4 h-4" /> 一鍵動作</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
           <Action
-            title="🛠️ 註冊 / 更新 slash commands"
+            title={<span className="inline-flex items-center gap-1"><Wrench className="w-3.5 h-3.5" /> 註冊 / 更新 slash commands</span>}
             desc="把最新的 11 條 slash command (含 /quote /recommend /vision /bind) 推到 Discord。改過 commands 後跑一次。"
             href="/api/admin/discord/setup"
           />
           <Action
-            title="🔁 一鍵 sync 全 VIP role"
+            title={<span className="inline-flex items-center gap-1"><RefreshCw className="w-3.5 h-3.5" /> 一鍵 sync 全 VIP role</span>}
             desc="掃所有已綁 user × active subscription、自動 assign / revoke Premium role。每天 cron 也可以叫。"
             href="/api/admin/discord/sync-roles"
           />
           <Action
-            title="🩺 Token / App ID 診斷"
+            title={<span className="inline-flex items-center gap-1"><Stethoscope className="w-3.5 h-3.5" /> Token / App ID 診斷</span>}
             desc="401 註冊失敗時點這個、會回報 bot token 對應到哪個 app、跟 env DISCORD_APPLICATION_ID 是否一致。"
             href="/api/admin/discord/diag"
           />
@@ -127,7 +127,7 @@ function Card({ title, value, hint }: { title: string; value: number | string; h
   );
 }
 
-function Action({ title, desc, href }: { title: string; desc: string; href: string }) {
+function Action({ title, desc, href }: { title: React.ReactNode; desc: string; href: string }) {
   return (
     <a
       href={href}

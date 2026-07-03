@@ -3,7 +3,7 @@ import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
 import { chapterDisplayNumber } from "@/lib/chapter-display";
 import { PageHero } from "@/components/admin/PageHero";
-import { Check, FileText } from "lucide-react";
+import { Check, FileText, BookOpen } from "lucide-react";
 
 export default async function AdminChaptersPage() {
   const chapters = await getChapterMetas();
@@ -11,7 +11,7 @@ export default async function AdminChaptersPage() {
   return (
     <div className="space-y-4">
       <PageHero
-        emoji="📚"
+        icon={BookOpen}
         title="章節管理"
         desc="點章節進入編輯。每章右上「📝 出題」按鈕、可叫 AI 生 20 題章末測驗。published / draft 狀態即時切換。"
         gradient="from-indigo-500/10 via-blue-500/10 to-cyan-500/10"

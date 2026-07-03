@@ -2,7 +2,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { AIUsageChart } from "./AIUsageChart";
 import { PageHero } from "@/components/admin/PageHero";
 import { requireOwner } from "@/lib/admin-guard";
-import { Lock, AlertTriangle, DollarSign } from "lucide-react";
+import { Lock, AlertTriangle, DollarSign, BarChart3 } from "lucide-react";
 
 export default async function AIUsagePage() {
   // 只有 owner 看得到（一般 admin 看不到使用量、避免被金額嚇到）
@@ -115,7 +115,7 @@ export default async function AIUsagePage() {
   return (
     <div className="space-y-6">
       <PageHero
-        emoji="📊"
+        icon={BarChart3}
         title="AI Token 使用量"
         desc="近 30 天各 provider / model 用了多少 token / 多少錢。月底對帳用、超預算 alert。"
         gradient="from-yellow-500/10 via-amber-500/10 to-orange-500/10"
@@ -157,7 +157,7 @@ export default async function AIUsagePage() {
         )}
         <p className="text-[11px] text-fg-muted mt-2">
           涵蓋 <b>web 聊天</b>（ai_usage_daily）+ <b>LINE/TG/Discord bot・排程・推薦</b>（callAI）+ <b>命令列腳本</b>（章節生成 / 題庫 seed，記為 <code>cli:</code> 開頭的模型）。
-          ⚠️ 僅 <b>2026-06-29 之後</b>跑的 CLI 腳本才有記錄；在那之前的批次（如 6/13、6/22）仍只在 Claude 官方後台看得到。
+          <AlertTriangle className="inline-block align-[-2px] w-3.5 h-3.5" /> 僅 <b>2026-06-29 之後</b>跑的 CLI 腳本才有記錄；在那之前的批次（如 6/13、6/22）仍只在 Claude 官方後台看得到。
         </p>
       </div>
 

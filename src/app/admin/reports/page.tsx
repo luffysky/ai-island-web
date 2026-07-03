@@ -1,6 +1,7 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { ReportsClient } from "./ReportsClient";
 import { PageHero } from "@/components/admin/PageHero";
+import { Siren } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -39,7 +40,7 @@ export default async function AdminReportsPage({
   return (
     <div>
       <PageHero
-        emoji="🚨"
+        icon={Siren}
         title="檢舉收件箱"
         desc="使用者送出的檢舉、按時序處理。所有處置寫進 audit log。"
         gradient="from-red-500/10 via-orange-500/10 to-amber-500/10"

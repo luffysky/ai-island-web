@@ -2,6 +2,7 @@ import { readdirSync, statSync, readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { AuditClient } from "./AuditClient";
 import { PageHero } from "@/components/admin/PageHero";
+import { Stethoscope } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -129,7 +130,7 @@ export default function AdminSiteAuditPage() {
   return (
     <div className="space-y-4">
       <PageHero
-        emoji="🩺"
+        icon={Stethoscope}
         title="全站體檢"
         desc={`自動掃描全站所有頁面 + API、即時 ping。動態路徑 [id] 會跳過、需手動測。401/403 也算 OK、代表 guard 正常擋未登入。（路由來源：${source}，共 ${routes.length} 條）`}
         gradient="from-teal-500/10 via-cyan-500/10 to-sky-500/10"

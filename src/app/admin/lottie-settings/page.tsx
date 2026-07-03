@@ -2,6 +2,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { LottieSettingsClient } from "./LottieSettingsClient";
 import { LOTTIE_SLOTS } from "./slots";
 import { PageHero } from "@/components/admin/PageHero";
+import { Palette } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -20,7 +21,7 @@ export default async function LottieSettingsPage() {
   return (
     <div className="space-y-4">
       <PageHero
-        emoji="🎨"
+        icon={Palette}
         title="Lottie 動畫設定"
         desc="幫每個用途 paste 一個 LottieFiles .lottie URL、右側即時 preview、按「儲存」就上線、不用改 code。推薦關鍵字在每個欄位下方。"
         gradient="from-pink-500/10 via-purple-500/10 to-violet-500/10"

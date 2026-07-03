@@ -1,6 +1,7 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { ModerationClient } from "./ModerationClient";
 import { PageHero } from "@/components/admin/PageHero";
+import { Shield } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -36,7 +37,7 @@ export default async function AdminAIModerationPage({
   return (
     <div>
       <PageHero
-        emoji="🛡️"
+        icon={Shield}
         title="AI 對話審核"
         desc="AI / 使用者訊息被 flag 後待處理。可由 keyword / user_report / classifier / manual 觸發。"
         gradient="from-red-500/10 via-rose-500/10 to-pink-500/10"

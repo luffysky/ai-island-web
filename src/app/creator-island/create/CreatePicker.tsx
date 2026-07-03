@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Library, Disc3, Tag, FolderOpen } from "lucide-react";
+import { Library, Disc3, Tag, FolderOpen, Sparkles } from "lucide-react";
 import { CREATION_TYPES, getType } from "./engine-types";
 import { IslandChat } from "../IslandChat";
 
@@ -33,13 +33,13 @@ export function CreatePicker({ workspaceId, drafts, series = [] }: { workspaceId
 
       {/* 開新創作 */}
       <section>
-        <div className="text-sm font-bold text-fg-muted mb-3">🆕 開始一個新創作</div>
+        <div className="text-sm font-bold text-fg-muted mb-3 inline-flex items-center gap-1.5"><Sparkles size={14} /> 開始一個新創作</div>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
           {CREATION_TYPES.map((t) => (
             <motion.button key={t.key} onClick={() => startNew(t.key)} disabled={busy !== null}
               whileHover={{ y: -3 }} whileTap={{ scale: 0.97 }}
               className="text-left rounded-2xl p-4 bg-bg-card border border-border hover:border-accent/60 transition disabled:opacity-50 group">
-              <div className="text-3xl">{t.emoji}</div>
+              <t.icon size={30} className="text-accent" />
               <div className="font-bold mt-2 group-hover:text-accent transition">{t.label}</div>
               <div className="text-[11px] text-fg-muted mt-1 leading-relaxed line-clamp-3">{t.blurb}</div>
               {busy === t.key && <div className="text-[11px] text-accent mt-1 animate-pulse">建立中…</div>}
@@ -70,14 +70,17 @@ export function CreatePicker({ workspaceId, drafts, series = [] }: { workspaceId
                           </div>
                           {items.length > 0 && (
                             <ul className="mt-2 space-y-1">
-                              {items.map((d) => (
+                              {items.map((d) => {
+                                const DraftIcon = getType(d.work_type).icon;
+                                return (
                                 <li key={d.id}>
                                   <button onClick={() => router.push(`/creator-island/create/${d.id}`)}
                                     className="w-full text-left text-xs text-fg-muted hover:text-accent truncate flex items-center gap-1.5">
-                                    <span>{getType(d.work_type).emoji}</span><span className="truncate">{d.title || "未命名草稿"}</span>
+                                    <DraftIcon size={13} className="shrink-0" /><span className="truncate">{d.title || "未命名草稿"}</span>
                                   </button>
                                 </li>
-                              ))}
+                                );
+                              })}
                             </ul>
                           )}
                         </div>
@@ -104,7 +107,7 @@ export function CreatePicker({ workspaceId, drafts, series = [] }: { workspaceId
                 <li key={d.id}>
                   <button onClick={() => router.push(`/creator-island/create/${d.id}`)}
                     className="w-full text-left flex items-center gap-3 rounded-xl px-4 py-3 bg-bg-card border border-border hover:border-accent/50 transition">
-                    <span className="text-2xl shrink-0">{t.emoji}</span>
+                    <t.icon size={24} className="shrink-0 text-accent" />
                     <span className="min-w-0 flex-1">
                       <span className="font-bold block truncate">{d.title || "未命名草稿"}</span>
                       <span className="text-xs text-fg-muted">{t.label} · {d.word_count} 字 · {new Date(d.updated_at).toLocaleDateString("zh-TW")}{d.status === "published" && " · 已發布"}</span>

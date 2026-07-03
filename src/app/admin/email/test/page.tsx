@@ -2,7 +2,7 @@ import { createSupabaseServer } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import { EmailTestForm } from "./EmailTestForm";
 import { PageHero } from "@/components/admin/PageHero";
-import { Search, Check, X, AlertTriangle } from "lucide-react";
+import { Search, Check, X, AlertTriangle, FlaskConical } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -19,7 +19,7 @@ export default async function AdminEmailTestPage() {
   return (
     <div className="space-y-4 max-w-3xl">
       <PageHero
-        emoji="🧪"
+        icon={FlaskConical}
         title="Email 發送測試"
         desc="確認 Resend API key、EMAIL_FROM、DKIM 設定是否都接得通。本機 dev / Zeabur prod 都該過。"
         gradient="from-yellow-500/10 via-amber-500/10 to-orange-500/10"
@@ -32,7 +32,7 @@ export default async function AdminEmailTestPage() {
           {hasResend ? <span className="text-green-700 dark:text-green-300 inline-flex items-center gap-1"><Check className="w-3.5 h-3.5" /> 已設定</span> : <span className="text-red-700 dark:text-red-300 inline-flex items-center gap-1"><X className="w-3.5 h-3.5" /> 未設定</span>}
         </Row>
         <Row label="EMAIL_FROM">
-          {emailFrom ? <code className="font-mono text-xs text-fg">{emailFrom}</code> : <span className="text-yellow-400 text-xs">⚠️ 沒設、用 fallback noreply@ai-island-web.snowrealm.pet</span>}
+          {emailFrom ? <code className="font-mono text-xs text-fg">{emailFrom}</code> : <span className="text-yellow-400 text-xs inline-flex items-center gap-1"><AlertTriangle className="w-3.5 h-3.5" /> 沒設、用 fallback noreply@ai-island-web.snowrealm.pet</span>}
         </Row>
       </section>
 

@@ -1,7 +1,16 @@
 import Link from "next/link";
 import Image from "next/image";
 import { STAGE_COLORS } from "@/lib/utils";
-import { BookOpen, Sparkles } from "lucide-react";
+import { BookOpen, Sparkles, Map, Landmark, Castle, Settings, Globe, Briefcase, Bot, type LucideIcon } from "lucide-react";
+
+const STAGE_ICONS: Record<number, LucideIcon> = {
+  1: Landmark,
+  2: Castle,
+  3: Settings,
+  4: Globe,
+  5: Briefcase,
+  6: Bot,
+};
 
 const STAGES = [
   { stage: 1, subtitle: "前端入門與網頁基礎", desc: "HTML、CSS、UI/UX、JavaScript 基礎，先把網頁與互動的底子打穩。", color: "from-green-400 to-cyan-400", chapters: "Ch01-08" },
@@ -17,7 +26,7 @@ export function StageMap() {
     <section className="border-b border-border py-16 bg-gradient-to-b from-transparent to-bg-elevated/20">
       <div className="max-w-6xl mx-auto px-6">
         <div className="text-center mb-10">
-          <h2 className="text-3xl font-bold mb-2">🗺️ AI 島技術地圖</h2>
+          <h2 className="text-3xl font-bold mb-2 inline-flex items-center gap-2"><Map size={28} className="text-accent" /> AI 島技術地圖</h2>
           <p className="text-fg-muted">從網頁基礎到 AI 整合、六大技術區域串起完整學習路線</p>
         </div>
 
@@ -37,6 +46,7 @@ export function StageMap() {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
           {STAGES.map((item) => {
             const stage = STAGE_COLORS[item.stage];
+            const StageIcon = STAGE_ICONS[item.stage] ?? Sparkles;
             return (
               <Link
                 key={item.stage}
@@ -47,8 +57,8 @@ export function StageMap() {
                   className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${item.color}`}
                 />
                 <div className="flex items-start gap-3 mb-3">
-                  <div className={`text-3xl bg-gradient-to-br ${item.color} bg-clip-text`}>
-                    {stage.emoji}
+                  <div className="shrink-0" style={{ color: stage.from }}>
+                    <StageIcon size={30} strokeWidth={1.75} />
                   </div>
                   <div>
                     <div className="text-xs font-mono text-fg-muted">STAGE {item.stage}</div>

@@ -1,6 +1,6 @@
 import { OgPreviewClient } from "./OgPreviewClient";
 import { PageHero } from "@/components/admin/PageHero";
-import { Activity } from "lucide-react";
+import { Activity, Palette } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -8,7 +8,7 @@ export default function OgPreviewPage() {
   return (
     <div className="space-y-4">
       <PageHero
-        emoji="🎨"
+        icon={Palette}
         title="AI OG 圖預覽 / 切 model"
         desc="5 個免費 AI 生圖 API (Pollinations / Cloudflare / Together / HF / Replicate)、可比較同 prompt 不同 provider 效果。設好 env 按生成即時看圖。"
         gradient="from-purple-500/10 via-pink-500/10 to-rose-500/10"

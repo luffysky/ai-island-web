@@ -1,6 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { PageHero } from "@/components/admin/PageHero";
-import { Filter, Users } from "lucide-react";
+import { Filter, Users, BarChart3 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -101,7 +101,7 @@ export default async function AdminCohortPage() {
   return (
     <div className="space-y-6">
       <PageHero
-        emoji="📈"
+        icon={BarChart3}
         title="Cohort 留存 + Funnel"
         desc="依註冊週分組看 N 週後留存率、轉換漏斗顯示用戶從註冊到付費的流失點。低留存的 cohort 立刻 follow up。"
         gradient="from-purple-500/10 via-pink-500/10 to-blue-500/10"

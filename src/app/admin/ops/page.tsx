@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { ClearCacheButton } from "./ClearCacheButton";
 import { PageHero } from "@/components/admin/PageHero";
-import { Database, Zap, Key } from "lucide-react";
+import { Database, Zap, Key, Settings } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -57,7 +57,7 @@ export default async function OpsAdminPage() {
   return (
     <div className="space-y-6">
       <PageHero
-        emoji="⚙️"
+        icon={Settings}
         title="系統 Ops"
         desc="DB 健康 + 快取 + 環境變數 (運維剛需)。看 connection pool / 清快取 / DB 表大小都在這。"
         gradient="from-slate-500/10 via-gray-500/10 to-zinc-500/10"

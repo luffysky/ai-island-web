@@ -1,6 +1,7 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { RateLimitRulesClient } from "./RateLimitRulesClient";
 import { PageHero } from "@/components/admin/PageHero";
+import { Gauge } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -36,7 +37,7 @@ export default async function RateLimitsAdminPage() {
   return (
     <div>
       <PageHero
-        emoji="🚦"
+        icon={Gauge}
         title="API Rate Limit"
         desc="每 user + scope 滑動視窗限流。沒對應規則 = 不限。anon 請求 = 不限。防 AI key 燒過頭必設。"
         gradient="from-orange-500/10 via-red-500/10 to-pink-500/10"

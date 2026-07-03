@@ -1,6 +1,7 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { SegmentsClient } from "./SegmentsClient";
 import { PageHero } from "@/components/admin/PageHero";
+import { Target } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +15,7 @@ export default async function AdminSegmentsPage() {
   return (
     <div>
       <PageHero
-        emoji="🎯"
+        icon={Target}
         title="Segments"
         desc={`建立可重複使用的使用者區隔。filter_json 範例：${JSON.stringify({xp_gte:100,role:"member"})}`}
         gradient="from-cyan-500/10 via-purple-500/10 to-pink-500/10"

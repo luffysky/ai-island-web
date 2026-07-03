@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
 import { PageHero } from "@/components/admin/PageHero";
-import { AlertTriangle, ArrowLeft } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Send } from "lucide-react";
 
 export default function PublishPage() {
   const platforms = [
@@ -18,7 +18,7 @@ export default function PublishPage() {
   return (
     <div className="space-y-4">
       <PageHero
-        emoji="📤"
+        icon={Send}
         title="多平台一鍵發佈"
         desc="排程到期或手動觸發、把同一草稿推到多平台。各平台需先設 OAuth / API token、已配好可立即用。"
         gradient="from-emerald-500/10 via-green-500/10 to-lime-500/10"

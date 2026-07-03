@@ -1,6 +1,7 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { CampaignsClient } from "./CampaignsClient";
 import { PageHero } from "@/components/admin/PageHero";
+import { Mail } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +15,7 @@ export default async function AdminEmailCampaignsPage() {
   return (
     <div>
       <PageHero
-        emoji="✉️"
+        icon={Mail}
         title="Email Campaigns"
         desc="建立 / 排程 / 發送 email 行銷活動、追蹤開信率 + 點擊率。實際 SMTP 走 Resend。"
         gradient="from-indigo-500/10 via-purple-500/10 to-pink-500/10"

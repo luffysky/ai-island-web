@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { MiniQuiz } from "@/lib/types";
-import { Check, X, HelpCircle } from "lucide-react";
+import { Check, X, HelpCircle, Lightbulb } from "lucide-react";
 
 export function MiniQuizCard({ quiz, onPass }: { quiz: MiniQuiz; onPass?: () => void }) {
   const [selected, setSelected] = useState<string | null>(null);
@@ -58,12 +58,12 @@ export function MiniQuizCard({ quiz, onPass }: { quiz: MiniQuiz; onPass?: () => 
         </button>
       ) : (
         <div className="mt-3 space-y-2">
-          <div className={`text-sm font-semibold ${isCorrect ? "text-green-400" : "text-red-400"}`}>
-            {isCorrect ? "✓ 答對了！" : "✗ 再想想..."}
+          <div className={`text-sm font-semibold inline-flex items-center gap-1 ${isCorrect ? "text-green-400" : "text-red-400"}`}>
+            {isCorrect ? <Check size={15} /> : <X size={15} />}{isCorrect ? "答對了！" : "再想想..."}
           </div>
           {quiz.explanation && (
-            <div className="text-xs text-fg-muted p-3 bg-bg rounded-lg">
-              💡 {quiz.explanation}
+            <div className="text-xs text-fg-muted p-3 bg-bg rounded-lg flex items-start gap-1.5">
+              <Lightbulb size={13} className="mt-0.5 shrink-0" /><span>{quiz.explanation}</span>
             </div>
           )}
           <button

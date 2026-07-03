@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { chapters } from "@/data/chapters";
 import { SeoPreviewClient } from "./SeoPreviewClient";
 import { PageHero } from "@/components/admin/PageHero";
+import { Search } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -30,7 +31,7 @@ export default async function ChapterSeoPreviewPage({ params }: { params: Promis
   return (
     <div>
       <PageHero
-        emoji="🔍"
+        icon={Search}
         title={`SEO 預覽 · Ch${String(id).padStart(2, "0")}`}
         desc="模擬 Google search snippet + Open Graph 預覽。可即時編輯 override、不用改 code。"
         gradient="from-green-500/10 via-emerald-500/10 to-teal-500/10"

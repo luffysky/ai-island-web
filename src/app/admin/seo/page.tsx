@@ -3,7 +3,7 @@ import { chapters } from "@/data/chapters";
 import { SEO_PLACEHOLDERS, SITE_STATS } from "@/lib/site-stats";
 import { SEOManagerClient } from "./SEOManagerClient";
 import { PageHero } from "@/components/admin/PageHero";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Search, AlertTriangle } from "lucide-react";
 
 export default async function SEOAdminPage() {
   const supabase = createSupabaseAdmin();
@@ -16,7 +16,7 @@ export default async function SEOAdminPage() {
   if (error?.message?.includes("does not exist")) {
     return (
       <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-6 text-sm">
-        <div className="font-bold mb-2">⚠️ 需要先跑 ai_migration.sql</div>
+        <div className="font-bold mb-2 inline-flex items-center gap-1"><AlertTriangle size={16} className="inline-block align-[-2px]" /> 需要先跑 ai_migration.sql</div>
       </div>
     );
   }
@@ -42,7 +42,7 @@ export default async function SEOAdminPage() {
   return (
     <div className="space-y-6">
       <PageHero
-        emoji="🔍"
+        icon={Search}
         title="SEO 管理"
         desc="管每個頁面的 title / description / OG / 結構化資料 / GEO 設定。用 token 動態套站內統計、不用手改。"
         gradient="from-green-500/10 via-emerald-500/10 to-teal-500/10"

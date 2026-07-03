@@ -5,7 +5,7 @@ import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
 import { QuizBuilder } from "./QuizBuilder";
 import { PageHero } from "@/components/admin/PageHero";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, FileText } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -34,7 +34,7 @@ export default async function QuizBuilderPage({
         <ArrowLeft className="w-4 h-4" /> 回章節編輯
       </Link>
       <PageHero
-        emoji="📝"
+        icon={FileText}
         title={`Ch${String(chapter.id).padStart(2, "0")} 章末測驗`}
         desc={`${chapter.title} · AI 出題助手會吃整章 lesson 內容自動產 20 題草稿、admin 校稿後存檔。`}
         gradient="from-purple-500/10 via-fuchsia-500/10 to-pink-500/10"

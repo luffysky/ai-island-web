@@ -1,5 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { PageHero } from "@/components/admin/PageHero";
+import { Handshake } from "lucide-react";
 import { AffiliatesClient } from "./AffiliatesClient";
 
 export const dynamic = "force-dynamic";
@@ -17,7 +18,7 @@ export default async function AffiliatesPage() {
   return (
     <div className="space-y-4">
       <PageHero
-        emoji="🤝"
+        icon={Handshake}
         title="推薦碼 / Affiliate"
         desc="KOL / 員工 / 學員 推薦碼。每碼可設折扣 % 跟佣金 %、追蹤點擊 / 轉換 / 收益 / 已付佣金。停用後該碼不再接受新使用、歷史保留。"
         gradient="from-cyan-500/10 via-teal-500/10 to-emerald-500/10"

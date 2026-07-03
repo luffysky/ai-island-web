@@ -1,7 +1,7 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import Link from "next/link";
 import { PageHero } from "@/components/admin/PageHero";
-import { Download, TrendingUp, Calendar } from "lucide-react";
+import { Download, TrendingUp, Calendar, BarChart3, Lightbulb } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -22,7 +22,7 @@ export default async function AdminKpiPage({ searchParams }: { searchParams: Pro
   return (
     <div className="space-y-6">
       <PageHero
-        emoji="📊"
+        icon={BarChart3}
         title="KPI 報表"
         desc={`當前期間：${days} 天 · 期末對齊今日 (台北日)。三段切換看趨勢、可匯出 CSV 給高層看。`}
         gradient="from-yellow-500/10 via-amber-500/10 to-pink-500/10"
@@ -67,7 +67,7 @@ export default async function AdminKpiPage({ searchParams }: { searchParams: Pro
       </section>
 
       <section className="rounded-xl bg-bg-card border border-border p-3 text-xs text-fg-muted">
-        💡 想自動每週發 email？呼叫 <code>/api/admin/kpi.json?days=7</code> 拿 JSON、餵給 cron + Resend / Mailgun 即可。
+        <Lightbulb className="inline-block align-[-2px] w-4 h-4" /> 想自動每週發 email？呼叫 <code>/api/admin/kpi.json?days=7</code> 拿 JSON、餵給 cron + Resend / Mailgun 即可。
       </section>
     </div>
   );

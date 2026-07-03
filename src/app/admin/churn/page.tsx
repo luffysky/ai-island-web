@@ -1,5 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { PageHero } from "@/components/admin/PageHero";
+import { Siren } from "lucide-react";
 import { scoreRfm, SEGMENT_LABEL, SEGMENT_COLOR, type RfmSegment } from "@/lib/rfm";
 import { ChurnClient } from "./ChurnClient";
 
@@ -95,7 +96,7 @@ export default async function AdminChurnPage({
   return (
     <div>
       <PageHero
-        emoji="🚨"
+        icon={Siren}
         title="RFM 流失預警"
         desc="Recency × Frequency × Monetary 三維評分 (每維 1-5 分)、自動分 8 個 segment。聚焦四高風險：at_risk / cant_lose / hibernating / lost。"
         gradient="from-red-500/10 via-orange-500/10 to-yellow-500/10"

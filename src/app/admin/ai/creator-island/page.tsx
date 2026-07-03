@@ -1,5 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { PageHero } from "@/components/admin/PageHero";
+import { Palmtree } from "lucide-react";
 import { AgentModelsClient } from "./AgentModelsClient";
 import { AGENTS } from "@/lib/creator-engine/ai/agent-list";
 import { AGENT_MODEL_SETTING_KEY } from "@/lib/creator-engine/ai/router";
@@ -16,7 +17,7 @@ export default async function CreatorIslandAIPage() {
   return (
     <div className="space-y-6">
       <PageHero
-        emoji="🏝️"
+        icon={Palmtree}
         title="創作者島嶼 — AI 模型"
         desc="指定每個創作 agent 用哪個模型。留空＝自動挑最佳可用。這些任務不需高階模型，可選便宜的（含 OpenRouter）。在 /admin/ai/models 新增/啟用模型與 key。"
         gradient="from-cyan-500/10 via-teal-500/10 to-emerald-500/10"

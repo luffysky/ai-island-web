@@ -4,7 +4,17 @@ import Link from "next/link";
 import { STAGE_COLORS, DIFFICULTY_LABELS } from "@/lib/utils";
 import { chapterDisplayNumberById } from "@/lib/chapter-display";
 import { motion } from "framer-motion";
-import { BookOpen } from "lucide-react";
+import { BookOpen, Landmark, Castle, Settings, Globe, Briefcase, Bot, type LucideIcon } from "lucide-react";
+
+const STAGE_ICONS: Record<number, LucideIcon> = {
+  1: Landmark,
+  2: Castle,
+  3: Settings,
+  4: Globe,
+  5: Briefcase,
+  6: Bot,
+  7: BookOpen,
+};
 
 interface Props {
   chapters: any[];
@@ -32,11 +42,12 @@ export function ChapterMap({ chapters }: Props) {
     <div className="space-y-12">
       {[1, 2, 3, 4, 5, 6, 7].map((stage) => {
         const cfg = STAGE_COLORS[stage];
+        const StageIcon = STAGE_ICONS[stage] ?? BookOpen;
         const list = byStage[stage] ?? [];
         return (
           <div key={stage}>
             <div className="flex items-center gap-3 mb-4">
-              <span className="text-2xl">{cfg.emoji}</span>
+              <StageIcon size={24} className="shrink-0" style={{ color: cfg.from }} />
               <h3 className="text-xl font-bold" style={{ color: cfg.from }}>
                 Stage {stage} · {cfg.name}
               </h3>

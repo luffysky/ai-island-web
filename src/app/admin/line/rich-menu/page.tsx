@@ -2,7 +2,7 @@ import { createSupabaseServer } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, LayoutGrid } from "lucide-react";
 import { RichMenuClient } from "./RichMenuClient";
 import { PageHero } from "@/components/admin/PageHero";
 
@@ -28,7 +28,7 @@ export default async function AdminRichMenuPage() {
       </Link>
 
       <PageHero
-        emoji="🎴"
+        icon={LayoutGrid}
         title="Rich Menu"
         desc="LINE bot 對話框下方那塊大圖選單。點圖上不同區域跳到網站不同頁面。⚠️ 需要 2500×1686 的 PNG / JPEG 圖、≤ 1 MB"
         gradient="from-pink-500/10 via-rose-500/10 to-purple-500/10"

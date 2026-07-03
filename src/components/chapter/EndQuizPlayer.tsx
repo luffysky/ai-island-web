@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Sparkles, Trophy, RotateCw, Check, X, Lock, Zap, Coins } from "lucide-react";
+import { Sparkles, Trophy, RotateCw, Check, X, Lock, Zap, Coins, Lightbulb, PartyPopper, Dumbbell } from "lucide-react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { trackEvent } from "@/lib/analytics";
 import { useAuth } from "@/lib/auth-context";
@@ -282,7 +282,7 @@ export function EndQuizPlayer({ chapterId }: { chapterId: number }) {
                 </div>
                 {q.hint && selected === undefined && (
                   <details className="mt-2 pl-10 text-xs text-fg-muted">
-                    <summary className="cursor-pointer">💡 提示</summary>
+                    <summary className="cursor-pointer inline-flex items-center gap-1"><Lightbulb size={12} /> 提示</summary>
                     <p className="mt-1">{q.hint}</p>
                   </details>
                 )}
@@ -321,8 +321,8 @@ export function EndQuizPlayer({ chapterId }: { chapterId: number }) {
   return (
     <section className="mt-12 rounded-2xl border border-border bg-bg-card p-6">
       <div className="text-center mb-6">
-        <div className="text-5xl mb-2">
-          {result.perfect ? "🏆" : result.passed ? "🎉" : "💪"}
+        <div className="mb-2 flex justify-center">
+          {result.perfect ? <Trophy size={48} className="text-yellow-400" /> : result.passed ? <PartyPopper size={48} className="text-accent" /> : <Dumbbell size={48} className="text-fg-muted" />}
         </div>
         <h2 className="text-2xl font-bold mb-1">
           {result.perfect
@@ -388,7 +388,7 @@ export function EndQuizPlayer({ chapterId }: { chapterId: number }) {
                     </div>
                   )}
                   {p.explanation && (
-                    <div className="mt-1 text-fg-muted">💡 {p.explanation}</div>
+                    <div className="mt-1 text-fg-muted flex items-start gap-1"><Lightbulb size={12} className="mt-0.5 shrink-0" /><span>{p.explanation}</span></div>
                   )}
                 </div>
               </div>

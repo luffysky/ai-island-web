@@ -10,6 +10,7 @@ import { MascotIntro } from "@/components/home/MascotIntro";
 import { StageMap } from "@/components/home/StageMap";
 import { MissionDungeons } from "@/components/home/MissionDungeons";
 import { TrapBosses } from "@/components/home/TrapBosses";
+import { Map } from "lucide-react";
 
 // 不靜態快照：島嶼開關 / 章節數要能即時反映後台改動（否則 toggle 了首頁不變）。
 export const revalidate = 30;
@@ -45,7 +46,7 @@ export default async function HomePage() {
       <MascotIntro />
       <StageMap />
       <section className="max-w-7xl mx-auto px-6 py-16 border-b border-border">
-        <h2 className="text-3xl font-bold mb-2 text-center">🗺️ 完整章節地圖</h2>
+        <h2 className="text-3xl font-bold mb-2 inline-flex w-full items-center justify-center gap-2"><Map size={28} className="text-accent" /> 完整章節地圖</h2>
         <p className="text-center text-fg-muted mb-8">{totalChapters} 章 × {totalLessons}+ lesson — 點亮整片島嶼</p>
         <ChapterMap chapters={chapters} />
       </section>

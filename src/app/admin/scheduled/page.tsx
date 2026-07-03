@@ -3,6 +3,7 @@ import Link from "next/link";
 import { formatTW } from "@/lib/format-date";
 import { adminHref } from "@/lib/admin-href";
 import { PageHero } from "@/components/admin/PageHero";
+import { Clock } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -29,7 +30,7 @@ export default async function AdminScheduledPage() {
   return (
     <div className="space-y-6">
       <PageHero
-        emoji="⏰"
+        icon={Clock}
         title="排程發布隊列"
         desc="所有「未來會自動上線」的內容。cron job 每分鐘掃到期項目觸發 publish。"
         gradient="from-cyan-500/10 via-teal-500/10 to-emerald-500/10"

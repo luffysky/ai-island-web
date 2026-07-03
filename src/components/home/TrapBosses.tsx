@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Skull } from "lucide-react";
 
 const TRAP_BOSSES = [
   {
@@ -52,7 +52,7 @@ export function TrapBosses() {
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs bg-red-500/10 border border-red-500/30 text-red-400 mb-3">
             <AlertTriangle size={14} /> 90% 的新手都會中招
           </div>
-          <h2 className="text-3xl font-bold mb-2">👹 新手最容易踩的 5 大坑</h2>
+          <h2 className="text-3xl font-bold mb-2 inline-flex items-center gap-2"><Skull size={28} className="text-red-400" /> 新手最容易踩的 5 大坑</h2>
           <p className="text-fg-muted">五大陷阱魔王、打敗它們才能真正升級！</p>
         </div>
 

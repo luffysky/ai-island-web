@@ -2,7 +2,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { PageHero } from "@/components/admin/PageHero";
 import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
-import { AlertTriangle, Newspaper, Gift, BookOpen, Calendar, ArrowLeft, ArrowRight } from "lucide-react";
+import { AlertTriangle, Newspaper, Gift, BookOpen, Calendar, ArrowLeft, ArrowRight, Mail } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -93,7 +93,7 @@ export default async function SubscribersPage({
   return (
     <div className="space-y-4">
       <PageHero
-        emoji="📧"
+        icon={Mail}
         title="Email 訂閱戶"
         desc={`管理所有 newsletter 訂閱戶。匹配 ${(count ?? 0).toLocaleString()} 筆、第 ${page}/${totalPages} 頁。可批次取消訂閱。`}
         gradient="from-indigo-500/10 via-blue-500/10 to-cyan-500/10"

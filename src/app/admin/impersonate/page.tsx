@@ -1,6 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, VenetianMask } from "lucide-react";
 import { formatTW } from "@/lib/format-date";
 import { ImpersonateForm } from "./ImpersonateForm";
 import { PageHero } from "@/components/admin/PageHero";
@@ -22,7 +22,7 @@ export default async function ImpersonateLogPage() {
   return (
     <div className="space-y-6">
       <PageHero
-        emoji="🕵️"
+        icon={VenetianMask}
         title="Impersonate 紀錄"
         desc="以使用者身份檢視 (read-only)。所有 session 都會紀錄、被 impersonate 的人也能看見。客服 debug 用。"
         gradient="from-fuchsia-500/10 via-purple-500/10 to-indigo-500/10"

@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { Playground } from "@/lib/types";
-import { Play, RotateCcw, Copy, Check, Save, Maximize2, Minimize2, Loader2, TerminalSquare, Download } from "lucide-react";
+import { Play, RotateCcw, Copy, Check, Save, Maximize2, Minimize2, Loader2, TerminalSquare, Download, Zap, Lightbulb } from "lucide-react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { usePyodide } from "@/hooks/usePyodide";
 import { VirtualTerminal } from "./VirtualTerminal";
@@ -533,7 +533,7 @@ export function PlaygroundCard({
             <span className="inline-flex items-center gap-1"><Play size={11} fill="currentColor" /> 輸出</span>
             <div className="flex items-center gap-2">
               {isPython && <span className="text-xs">🐍 瀏覽器內 Pyodide</span>}
-              {!isPython && isSandbox && <span className="text-xs">⚡ 遠端沙盒 (Piston)</span>}
+              {!isPython && isSandbox && <span className="text-xs inline-flex items-center gap-1"><Zap size={11} /> 遠端沙盒 (Piston)</span>}
               {output && (
                 <button
                   onClick={() => {
@@ -564,8 +564,8 @@ export function PlaygroundCard({
 
       {/* Hint */}
       {playground.hint && !fullscreen && (
-        <div className="border-t border-border p-3 text-xs text-fg-muted bg-yellow-500/5 shrink-0">
-          💡 {playground.hint}
+        <div className="border-t border-border p-3 text-xs text-fg-muted bg-yellow-500/5 shrink-0 flex items-start gap-1.5">
+          <Lightbulb size={13} className="mt-0.5 shrink-0" /><span>{playground.hint}</span>
         </div>
       )}
 

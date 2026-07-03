@@ -1,7 +1,7 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { PageHero } from "@/components/admin/PageHero";
 import { RewriteClient } from "./RewriteClient";
-import { BookOpen } from "lucide-react";
+import { BookOpen, PenLine, Search } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -35,7 +35,7 @@ export default async function RewriteLessonsPage() {
   return (
     <div className="space-y-6">
       <PageHero
-        emoji="✍️"
+        icon={PenLine}
         title="批次改寫短 Analogy（ch28/29/30）"
         desc={`用 Claude Sonnet 4.6 把 analogy < ${MIN_LEN} 字 的 lesson 擴寫成 80-150 字日常類比版本。先 dry-run 看 sample、確認 OK 再 apply 寫進 DB。`}
         gradient="from-fuchsia-500/10 via-purple-500/10 to-pink-500/10"
@@ -79,8 +79,8 @@ export default async function RewriteLessonsPage() {
       <div className="bg-bg-soft border border-border rounded-xl p-5 text-sm space-y-2">
         <div className="font-bold text-fg flex items-center gap-2"><BookOpen className="w-4 h-4" /> 怎麼用</div>
         <ul className="space-y-1 list-disc pl-5 text-fg-mid">
-          <li><b>第一次：</b>先按「🔍 dry-run sample (3 個)」看 AI 改成什麼樣、確認方向對</li>
-          <li><b>OK 了：</b>按「✍️ apply：跑 3 章全部」、會走線上 anthropic key、約 ~$0.05 / 75 lesson</li>
+          <li><b>第一次：</b>先按「<Search className="inline-block align-[-2px] w-3.5 h-3.5" /> dry-run sample (3 個)」看 AI 改成什麼樣、確認方向對</li>
+          <li><b>OK 了：</b>按「<PenLine className="inline-block align-[-2px] w-3.5 h-3.5" /> apply：跑 3 章全部」、會走線上 anthropic key、約 ~$0.05 / 75 lesson</li>
           <li><b>不滿意某個：</b>到 /admin/ai/conversations 看 raw prompt、調 prompt 重跑</li>
           <li><b>安全：</b>只改 lessons.analogy 欄位、不動 content / title、改錯可從 git history 還原</li>
         </ul>

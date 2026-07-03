@@ -2,7 +2,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import Link from "next/link";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { PageHero } from "@/components/admin/PageHero";
-import { Send, AlertTriangle } from "lucide-react";
+import { Send, AlertTriangle, Megaphone } from "lucide-react";
 
 export default async function BroadcastsPage() {
   const supabase = createSupabaseAdmin();
@@ -16,7 +16,7 @@ export default async function BroadcastsPage() {
   return (
     <div className="space-y-4">
       <PageHero
-        emoji="📣"
+        icon={Megaphone}
         title="公告 / 群發訊息"
         desc="站內公告 + Email 群發。發出去後所有用戶 in-app bell 跟 newsletter 都會收到。"
         gradient="from-rose-500/10 via-pink-500/10 to-fuchsia-500/10"

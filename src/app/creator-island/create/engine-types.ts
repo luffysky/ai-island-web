@@ -1,5 +1,8 @@
 /** 創作引擎：7 種創作類型 + 各自的專屬工具（mode 對應 /api/creator-island/ai/assist）。 */
 
+import type { LucideIcon } from "lucide-react";
+import { BookOpen, NotebookPen, Music, Feather, Clapperboard, PenLine, Megaphone } from "lucide-react";
+
 export type ToolAction =
   | "insertEnd"   // 把 AI 輸出插到文末（續寫/大綱/角色卡/骨架…）
   | "replaceSel"  // 取代選取（沒選取則插到游標）（改寫/潤稿/擴寫…）
@@ -16,7 +19,7 @@ export type Tool = {
 
 export type CreationType = {
   key: string;
-  emoji: string;
+  icon: LucideIcon;
   label: string;
   blurb: string;         // 類型一句話介紹
   placeholder: string;
@@ -35,7 +38,7 @@ const COMMON: Tool[] = [
 
 export const CREATION_TYPES: CreationType[] = [
   {
-    key: "novel", emoji: "📖", label: "長篇小說",
+    key: "novel", icon: BookOpen, label: "長篇小說",
     blurb: "章節大綱、角色卡、世界觀、續寫與一致性檢查。",
     placeholder: "第一章……從一個畫面、一句對白開始。",
     tools: [
@@ -48,7 +51,7 @@ export const CREATION_TYPES: CreationType[] = [
     ],
   },
   {
-    key: "short_story", emoji: "📝", label: "短篇 / 故事",
+    key: "short_story", icon: NotebookPen, label: "短篇 / 故事",
     blurb: "三幕骨架、結局發想、續寫、取標題。",
     placeholder: "一個人物、一個慾望、一個阻礙……",
     tools: [
@@ -59,7 +62,7 @@ export const CREATION_TYPES: CreationType[] = [
     ],
   },
   {
-    key: "song", emoji: "🎵", label: "歌詞",
+    key: "song", icon: Music, label: "歌詞",
     blurb: "段落結構、押韻建議、Suno 與 MV 提示詞。",
     placeholder: "【Verse】\n……\n【Chorus】\n……",
     tools: [
@@ -71,7 +74,7 @@ export const CREATION_TYPES: CreationType[] = [
     ],
   },
   {
-    key: "poem", emoji: "🪶", label: "詩",
+    key: "poem", icon: Feather, label: "詩",
     blurb: "選形式骨架、意象擴展、煉字。",
     placeholder: "把一個瞬間，寫成一行……",
     tools: [
@@ -81,7 +84,7 @@ export const CREATION_TYPES: CreationType[] = [
     ],
   },
   {
-    key: "script", emoji: "🎬", label: "劇本 / 腳本",
+    key: "script", icon: Clapperboard, label: "劇本 / 腳本",
     blurb: "場景骨架、對白生成、分鏡、短影音腳本。",
     placeholder: "場景一　內　咖啡廳　日\n……",
     tools: [
@@ -93,7 +96,7 @@ export const CREATION_TYPES: CreationType[] = [
     ],
   },
   {
-    key: "article", emoji: "✍️", label: "文章",
+    key: "article", icon: PenLine, label: "文章",
     blurb: "大綱、續寫、潤稿、SEO 標題與摘要。",
     placeholder: "這篇文章想帶讀者得到什麼？",
     tools: [
@@ -104,7 +107,7 @@ export const CREATION_TYPES: CreationType[] = [
     ],
   },
   {
-    key: "copy", emoji: "📣", label: "文案 / 品牌",
+    key: "copy", icon: Megaphone, label: "文案 / 品牌",
     blurb: "Slogan、品牌故事、賣點、平台適配。",
     placeholder: "你要賣的是什麼？給誰？",
     tools: [

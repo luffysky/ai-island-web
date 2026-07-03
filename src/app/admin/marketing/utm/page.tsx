@@ -1,6 +1,7 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { UtmBuilderClient } from "./UtmBuilderClient";
 import { PageHero } from "@/components/admin/PageHero";
+import { Link2 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -18,7 +19,7 @@ export default async function UtmPage() {
   return (
     <div className="space-y-4">
       <PageHero
-        emoji="🔗"
+        icon={Link2}
         title="UTM Builder"
         desc={`建短連結 + UTM 參數、追蹤每個 campaign / source / medium 的點擊跟轉換。產出短碼 ${SITE_URL}/s/<code>、貼到社群 / 廣告 / Email、自動 redirect 帶 UTM。`}
         gradient="from-purple-500/10 via-violet-500/10 to-indigo-500/10"

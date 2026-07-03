@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { BackgroundBeams } from "@/components/ui/BackgroundBeams";
 import { Sparkles } from "@/components/ui/Sparkles";
 import { NumberTicker } from "@/components/ui/NumberTicker";
-import { Sparkles as SparkleIcon } from "lucide-react";
+import { Sparkles as SparkleIcon, Palette, Palmtree, ClipboardList, Sword, Ruler } from "lucide-react";
 
 type HeroProps = {
   totalChapters: number;
@@ -87,9 +87,9 @@ export function Hero({ totalChapters, totalLessons, stageCount, islandEnabled = 
                     href={"/creator-island" as any}
                     className="group relative overflow-hidden rounded-2xl border-2 border-accent-3/40 p-5 bg-gradient-to-br from-accent-3/15 via-pink-500/8 to-violet-500/10 hover:border-accent-3 transition-all backdrop-blur block"
                   >
-                    <div className="absolute -top-4 -right-4 text-5xl opacity-30 group-hover:opacity-60 group-hover:scale-110 transition duration-500">🎨</div>
+                    <Palette className="absolute -top-4 -right-4 text-accent-3 opacity-30 group-hover:opacity-60 group-hover:scale-110 transition duration-500" size={56} strokeWidth={1.5} />
                     <div className="relative">
-                      <div className="text-2xl mb-1">🎨 創作者島嶼</div>
+                      <div className="text-lg font-semibold mb-1 inline-flex items-center gap-2"><Palette size={22} className="text-accent-3" /> 創作者島嶼</div>
                       <div className="font-bold text-lg mb-1">把碎片變成作品</div>
                       <p className="text-xs text-fg-muted leading-relaxed">收集靈感碎片 → AI 凝聚/演化/編織 → 完成創作。</p>
                       <span className="text-[10px] text-accent-3 mt-2 inline-block group-hover:translate-x-1 transition">一句話也能開始 →</span>
@@ -103,10 +103,10 @@ export function Hero({ totalChapters, totalLessons, stageCount, islandEnabled = 
                     href={"/island" as any}
                     className="group relative overflow-hidden rounded-2xl border-2 border-accent/40 p-5 bg-gradient-to-br from-accent/15 via-accent-2/8 to-accent-3/10 hover:border-accent transition-all backdrop-blur block"
                   >
-                    <div className="absolute -top-4 -right-4 text-5xl opacity-30 group-hover:opacity-60 group-hover:scale-110 transition duration-500">🏝️</div>
+                    <Palmtree className="absolute -top-4 -right-4 text-accent opacity-30 group-hover:opacity-60 group-hover:scale-110 transition duration-500" size={56} strokeWidth={1.5} />
                     <div className="absolute inset-0 bg-gradient-to-br from-accent/0 to-accent-2/0 group-hover:from-accent/10 group-hover:to-accent-2/5 transition duration-500" />
                     <div className="relative">
-                      <div className="text-2xl mb-1">🏝️ 島嶼模式</div>
+                      <div className="text-lg font-semibold mb-1 inline-flex items-center gap-2"><Palmtree size={22} className="text-accent" /> 島嶼模式</div>
                       <div className="font-bold text-lg mb-1">進入 AI 島</div>
                       <p className="text-xs text-fg-muted leading-relaxed">3D 沉浸式探索、有 AI 夥伴陪你闖關。</p>
                       <span className="text-[10px] text-accent mt-2 inline-block group-hover:translate-x-1 transition">v0 / coming soon →</span>
@@ -119,9 +119,9 @@ export function Hero({ totalChapters, totalLessons, stageCount, islandEnabled = 
                   href="/chapters"
                   className="group relative overflow-hidden rounded-2xl border-2 border-border p-5 bg-bg-card hover:border-accent transition-all backdrop-blur block"
                 >
-                  <div className="absolute -top-4 -right-4 text-5xl opacity-30 group-hover:opacity-60 group-hover:scale-110 transition duration-500">📋</div>
+                  <ClipboardList className="absolute -top-4 -right-4 text-accent opacity-30 group-hover:opacity-60 group-hover:scale-110 transition duration-500" size={56} strokeWidth={1.5} />
                   <div className="relative">
-                    <div className="text-2xl mb-1">📋 經典模式</div>
+                    <div className="text-lg font-semibold mb-1 inline-flex items-center gap-2"><ClipboardList size={22} className="text-accent" /> 經典模式</div>
                     <div className="font-bold text-lg mb-1">快速開始學習</div>
                     <p className="text-xs text-fg-muted leading-relaxed">清單式、直接看章節、高效率。</p>
                     <span className="text-[10px] text-accent mt-2 inline-block group-hover:translate-x-1 transition">推薦給想快速學的人 →</span>
@@ -179,14 +179,14 @@ export function Hero({ totalChapters, totalLessons, stageCount, islandEnabled = 
               transition={{ delay: 0.8, duration: 0.5 }}
               className="absolute -bottom-3 left-1/2 -translate-x-1/2 flex gap-2"
             >
-              <span className="px-2.5 py-1 rounded-full text-xs bg-bg-card/95 backdrop-blur border border-orange-400/40 text-orange-400 shadow-lg shadow-orange-500/10">
-                ⚔️ 肥仔
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs bg-bg-card/95 backdrop-blur border border-orange-400/40 text-orange-400 shadow-lg shadow-orange-500/10">
+                <Sword size={12} /> 肥仔
               </span>
-              <span className="px-2.5 py-1 rounded-full text-xs bg-bg-card/95 backdrop-blur border border-purple-400/40 text-purple-400 shadow-lg shadow-purple-500/10">
-                📐 菇寶
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs bg-bg-card/95 backdrop-blur border border-purple-400/40 text-purple-400 shadow-lg shadow-purple-500/10">
+                <Ruler size={12} /> 菇寶
               </span>
-              <span className="px-2.5 py-1 rounded-full text-xs bg-bg-card/95 backdrop-blur border border-green-400/40 text-green-400 shadow-lg shadow-green-500/10">
-                ✨ 綠寶
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs bg-bg-card/95 backdrop-blur border border-green-400/40 text-green-400 shadow-lg shadow-green-500/10">
+                <SparkleIcon size={12} /> 綠寶
               </span>
             </motion.div>
           </motion.div>

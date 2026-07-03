@@ -3,7 +3,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, MessageSquare } from "lucide-react";
 import { CannedClient } from "./CannedClient";
 import { PageHero } from "@/components/admin/PageHero";
 
@@ -34,7 +34,7 @@ export default async function AdminCannedPage() {
       </Link>
 
       <PageHero
-        emoji="💬"
+        icon={MessageSquare}
         title="罐頭訊息管理"
         desc="常用客服回覆模板、CRM 回覆 ticket / LINE 推 user 訊息時一鍵套用。支援變數 {{username}} / {{ticket_id}} / {{ticket_subject}}。"
         gradient="from-blue-500/10 via-cyan-500/10 to-green-500/10"

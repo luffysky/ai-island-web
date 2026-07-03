@@ -29,7 +29,7 @@ export default async function AdminNotificationsPage() {
   return (
     <div className="space-y-4">
       <PageHero
-        emoji="🔔"
+        icon={Bell}
         title="通知設定"
         desc="每個事件分別設定走哪個 channel (站內鈴鐺 / Email / LINE / PWA 推播)、改完 60 秒 cache 後生效。"
         gradient="from-cyan-500/10 via-sky-500/10 to-blue-500/10"
@@ -48,7 +48,7 @@ export default async function AdminNotificationsPage() {
           。改完即時生效（60 秒 cache、就是 60 秒內後台會記住設定、之後第一筆通知會用新的）。
           <br />
           <span className="text-yellow-400 text-xs">
-            ⚠️ 標 v2 的事件還沒實際接上、設定先存著、之後 module 接上會讀此表。
+            <AlertTriangle className="inline-block align-[-2px] w-3.5 h-3.5" /> 標 v2 的事件還沒實際接上、設定先存著、之後 module 接上會讀此表。
           </span>
         </p>
       </header>

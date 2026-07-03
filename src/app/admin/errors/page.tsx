@@ -1,6 +1,7 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { ErrorLogsClient } from "./ErrorLogsClient";
 import { PageHero, AdminStatCard } from "@/components/admin/PageHero";
+import { Shield } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -45,7 +46,7 @@ export default async function AdminErrorLogsPage({
   return (
     <div className="space-y-4">
       <PageHero
-        emoji="🛡️"
+        icon={Shield}
         title="錯誤日誌"
         desc="server-side / API 失敗的紀錄。任何 fail-soft 都會落到這、可逐筆解決、看 stack / context。"
         gradient="from-red-500/10 via-orange-500/10 to-yellow-500/10"

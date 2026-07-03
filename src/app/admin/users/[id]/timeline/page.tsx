@@ -1,7 +1,7 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Clock } from "lucide-react";
 import { formatTW } from "@/lib/format-date";
 import { adminHref } from "@/lib/admin-href";
 import { PageHero } from "@/components/admin/PageHero";
@@ -92,7 +92,7 @@ export default async function UserTimelinePage({ params }: { params: Promise<{ i
       </div>
 
       <PageHero
-        emoji="🕐"
+        icon={Clock}
         title={`${profile.display_name || profile.username} 的活動時間軸`}
         desc="近 30 天用戶活動：登入、完成 lesson、發文、留言、購買…所有 admin_events 收集統一展示。"
         gradient="from-violet-500/10 via-purple-500/10 to-fuchsia-500/10"

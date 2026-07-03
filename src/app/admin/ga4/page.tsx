@@ -3,7 +3,8 @@ import { GA4Charts } from "./GA4Charts";
 import { GA4SyncButton } from "./GA4SyncButton";
 import { InteractionPanels } from "./InteractionPanels";
 import { PageHero } from "@/components/admin/PageHero";
-import { MapPin, Settings, ExternalLink } from "lucide-react";
+import { MapPin, Settings, ExternalLink, BarChart3, Trophy, PlaneLanding, Link2, Globe, Building2, Smartphone, Chrome, Monitor, Languages, Repeat } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 export default async function GA4Page() {
   const supabase = createSupabaseAdmin();
@@ -76,7 +77,7 @@ export default async function GA4Page() {
   return (
     <div className="space-y-6">
       <PageHero
-        emoji="📊"
+        icon={BarChart3}
         title="站台分析"
         desc="站內第一方追蹤 (即時 + 24h 歷史) 為主數據源、GA4 可選同步當二次驗證。"
         gradient="from-green-500/10 via-emerald-500/10 to-teal-500/10"
@@ -137,17 +138,17 @@ export default async function GA4Page() {
           </div>
           <GA4Charts data={snapshots} />
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-            <TopTable title="🏆 熱門頁面" items={topPages} valueKey="views" labelKey="path" />
-            <TopTable title="🛬 到達網頁" items={topLandingPages} valueKey="views" labelKey="path" />
-            <TopTable title="📊 流量管道" items={topChannels} valueKey="users" labelKey="channel" />
-            <TopTable title="🔗 引薦來源" items={topReferrers} valueKey="visits" labelKey="source" />
-            <TopTable title="🌍 國家" items={topCountries} valueKey="users" labelKey="country" />
-            <TopTable title="🏙️ 城市 / 地區" items={topCities} valueKey="users" labelKey="city" />
-            <TopTable title="📱 裝置" items={topDevices} valueKey="users" labelKey="device" />
-            <TopTable title="🌐 瀏覽器" items={topBrowsers} valueKey="users" labelKey="browser" />
-            <TopTable title="💻 作業系統" items={topOs} valueKey="users" labelKey="os" />
-            <TopTable title="🗣️ 語言" items={topLanguages} valueKey="users" labelKey="language" />
-            <TopTable title="🔁 新 / 回訪" items={newVsReturning} valueKey="users" labelKey="type" />
+            <TopTable icon={Trophy} title="熱門頁面" items={topPages} valueKey="views" labelKey="path" />
+            <TopTable icon={PlaneLanding} title="到達網頁" items={topLandingPages} valueKey="views" labelKey="path" />
+            <TopTable icon={BarChart3} title="流量管道" items={topChannels} valueKey="users" labelKey="channel" />
+            <TopTable icon={Link2} title="引薦來源" items={topReferrers} valueKey="visits" labelKey="source" />
+            <TopTable icon={Globe} title="國家" items={topCountries} valueKey="users" labelKey="country" />
+            <TopTable icon={Building2} title="城市 / 地區" items={topCities} valueKey="users" labelKey="city" />
+            <TopTable icon={Smartphone} title="裝置" items={topDevices} valueKey="users" labelKey="device" />
+            <TopTable icon={Chrome} title="瀏覽器" items={topBrowsers} valueKey="users" labelKey="browser" />
+            <TopTable icon={Monitor} title="作業系統" items={topOs} valueKey="users" labelKey="os" />
+            <TopTable icon={Languages} title="語言" items={topLanguages} valueKey="users" labelKey="language" />
+            <TopTable icon={Repeat} title="新 / 回訪" items={newVsReturning} valueKey="users" labelKey="type" />
           </div>
         </>
       )}
@@ -207,10 +208,10 @@ function Stat({ label, value, color }: { label: string; value: any; color: strin
   );
 }
 
-function TopTable({ title, items, valueKey, labelKey }: { title: string; items: any[]; valueKey: string; labelKey: string }) {
+function TopTable({ icon: Icon, title, items, valueKey, labelKey }: { icon?: LucideIcon; title: string; items: any[]; valueKey: string; labelKey: string }) {
   return (
     <div className="bg-bg-card border border-border rounded-xl p-4">
-      <h4 className="font-bold mb-2 text-sm">{title}</h4>
+      <h4 className="font-bold mb-2 text-sm flex items-center gap-1.5">{Icon && <Icon className="w-4 h-4" />} {title}</h4>
       {items.length === 0 ? (
         <p className="text-xs text-fg-muted py-4 text-center">尚無數據</p>
       ) : (

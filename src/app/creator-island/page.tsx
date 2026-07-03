@@ -61,7 +61,7 @@ export default async function CreatorIslandPage({ searchParams }: { searchParams
             <h1 className="text-3xl sm:text-4xl font-black bg-gradient-to-r from-amber-300 via-pink-400 to-violet-400 bg-clip-text text-transparent inline-flex items-center gap-2"><Palette className="text-pink-400" size={32} /> 創作者島嶼</h1>
             <p className="text-sm text-fg-muted mt-1.5">
               {isStudio
-                ? <>🏢 工作室：<b className="text-fg">{active.name}</b> · <Link href="/creator-island" className="text-accent hover:underline">回我的島</Link></>
+                ? <span className="inline-flex items-center gap-1"><Building2 size={13} className="shrink-0" /> 工作室：<b className="text-fg">{active.name}</b> · <Link href="/creator-island" className="text-accent hover:underline">回我的島</Link></span>
                 : "把散落的碎片，變成你的創作宇宙。綠寶 ✨ 陪你一起。"}
             </p>
           </div>

@@ -2,7 +2,7 @@ import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { redirect } from "next/navigation";
 import { PageHero } from "@/components/admin/PageHero";
-import { AlertTriangle, CheckCircle, XCircle } from "lucide-react";
+import { AlertTriangle, CheckCircle, XCircle, Stethoscope } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -65,7 +65,7 @@ export default async function AdminDbCheckPage() {
   return (
     <div className="space-y-4">
       <PageHero
-        emoji="🩺"
+        icon={Stethoscope}
         title="DB 狀態檢查"
         desc="一次列出所有表 / 關鍵欄位是否存在、紅色那行就是 migration 還沒跑。"
         gradient="from-cyan-500/10 via-blue-500/10 to-purple-500/10"

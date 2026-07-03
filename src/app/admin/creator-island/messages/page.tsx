@@ -32,7 +32,7 @@ export default async function AdminDMPage({ searchParams }: { searchParams: Prom
 
   return (
     <div className="space-y-6">
-      <PageHero emoji="🔒" title="私訊紀錄（站長監看）" desc="所有使用者私訊完整內容（含圖/影/音/檔案）。僅 owner 可見；每次檢視會留稽核紀錄。"
+      <PageHero icon={Lock} title="私訊紀錄（站長監看）" desc="所有使用者私訊完整內容（含圖/影/音/檔案）。僅 owner 可見；每次檢視會留稽核紀錄。"
         gradient="from-red-500/10 via-rose-500/10 to-pink-500/10" borderColor="border-red-500/30" />
 
       <div className="grid sm:grid-cols-[260px_1fr] gap-3">

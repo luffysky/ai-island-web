@@ -1,7 +1,7 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { ModelsManagerClient } from "./ModelsManagerClient";
 import { PageHero } from "@/components/admin/PageHero";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Bot } from "lucide-react";
 
 export default async function ModelsAdminPage() {
   const supabase = createSupabaseAdmin();
@@ -27,7 +27,7 @@ export default async function ModelsAdminPage() {
   return (
     <div className="space-y-6">
       <PageHero
-        emoji="🤖"
+        icon={Bot}
         title="AI 模型管理"
         desc="設定每個 provider 的 API key、月預算、模型可用性、免費 quota。配合 /admin/ai/usage-models 細分用途。"
         gradient="from-purple-500/10 via-fuchsia-500/10 to-pink-500/10"

@@ -1,6 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { ModerationActions } from "./ModerationActions";
-import { ArrowLeft, ArrowRight, Circle, CheckCircle, List } from "lucide-react";
+import { ArrowLeft, ArrowRight, Circle, CheckCircle, List, FileText } from "lucide-react";
 import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
 import { PageHero } from "@/components/admin/PageHero";
@@ -34,7 +34,7 @@ export default async function CommentsModerationPage({
   return (
     <div className="space-y-4">
       <PageHero
-        emoji="📝"
+        icon={FileText}
         title="部落格留言審核"
         desc={`${filter === "pending" ? "待審核" : filter === "approved" ? "已通過" : "全部"} ${(count ?? 0).toLocaleString()} 筆。先檢查 spam / NSFW、再批准。`}
         gradient="from-blue-500/10 via-sky-500/10 to-cyan-500/10"
@@ -65,7 +65,7 @@ export default async function CommentsModerationPage({
 
       {comments?.length === 0 ? (
         <div className="bg-bg-card border border-border rounded-xl p-12 text-center text-fg-muted">
-          {filter === "pending" ? "✅ 沒有待審留言" : "—"}
+          {filter === "pending" ? (<span className="inline-flex items-center gap-1"><CheckCircle size={16} className="inline-block align-[-2px]" /> 沒有待審留言</span>) : "—"}
         </div>
       ) : (
         <div className="space-y-3">

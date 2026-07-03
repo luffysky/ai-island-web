@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Check, X, Loader2, ExternalLink, Mail, Key } from "lucide-react";
+import { Plus, Check, X, Loader2, ExternalLink, Mail, Key, Shield } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -258,7 +258,7 @@ function RequestModal({
             <div className="text-[10px] text-fg-muted mt-1">{purpose.length} / 500</div>
           </div>
           <div className="text-[10px] text-fg-muted leading-relaxed bg-bg-elevated rounded-lg p-2">
-            🛡️ <b>提醒</b>：這只送出「申請單」、變數的 <b>值不要寫在用途欄</b>。
+            <Shield size={12} className="inline-block align-[-2px] mr-1" /><b>提醒</b>：這只送出「申請單」、變數的 <b>值不要寫在用途欄</b>。
             林董收到 LINE 通知後會私下跟你確認、再到 Zeabur dashboard 加。
           </div>
         </div>

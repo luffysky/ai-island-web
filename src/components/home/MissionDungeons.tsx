@@ -1,12 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
+import { Swords, Skull, PenLine, Palette, Clapperboard, Settings, Code } from "lucide-react";
 
 const DUNGEONS = [
   {
     id: "writing",
     no: 1,
     name: "文案副本",
-    emoji: "✍️",
+    icon: PenLine,
     subtitle: "文字的力量",
     boss: "空洞文案怪",
     bossDesc: "創造吸引人、有影響力的文字內容",
@@ -19,7 +20,7 @@ const DUNGEONS = [
     id: "design",
     no: 2,
     name: "圖像副本",
-    emoji: "🎨",
+    icon: Palette,
     subtitle: "視覺的魔法",
     boss: "模糊指令魔",
     bossDesc: "將想法轉化為精美且獨特的視覺作品",
@@ -32,7 +33,7 @@ const DUNGEONS = [
     id: "video",
     no: 3,
     name: "影片副本",
-    emoji: "🎬",
+    icon: Clapperboard,
     subtitle: "影像的敘事",
     boss: "剪輯混亂獸",
     bossDesc: "製作吸睛影片、說好你的故事",
@@ -45,7 +46,7 @@ const DUNGEONS = [
     id: "automation",
     no: 4,
     name: "自動化副本",
-    emoji: "⚙️",
+    icon: Settings,
     subtitle: "流程的解放",
     boss: "重複勞動怪",
     bossDesc: "打造自動化流程、讓 AI 幫你跑工作",
@@ -58,7 +59,7 @@ const DUNGEONS = [
     id: "code",
     no: 5,
     name: "程式副本",
-    emoji: "💻",
+    icon: Code,
     subtitle: "邏輯的宇宙",
     boss: "BUG 混沌蟲",
     bossDesc: "寫程式、除錯能力、打造你的數位作品",
@@ -74,7 +75,7 @@ export function MissionDungeons() {
     <section className="border-b border-border py-16">
       <div className="max-w-6xl mx-auto px-6">
         <div className="text-center mb-10">
-          <h2 className="text-3xl font-bold mb-2">⚔️ AI 任務副本系統</h2>
+          <h2 className="text-3xl font-bold mb-2 inline-flex items-center gap-2"><Swords size={28} className="text-accent" /> AI 任務副本系統</h2>
           <p className="text-fg-muted">5 大任務副本、挑戰你的 AI 實戰力</p>
         </div>
 
@@ -105,7 +106,7 @@ export function MissionDungeons() {
                   >
                     {d.no}
                   </div>
-                  <span className="text-2xl">{d.emoji}</span>
+                  <d.icon size={24} className="text-fg" />
                 </div>
                 <span className="text-[10px] px-2 py-0.5 rounded bg-red-500/20 text-red-900 dark:text-red-200 font-bold">
                   BOSS
@@ -115,7 +116,7 @@ export function MissionDungeons() {
               <div className="text-xs text-fg-muted mb-3">{d.subtitle}</div>
 
               <div className="text-sm mb-3">
-                <div className="font-semibold mb-1">👹 {d.boss}</div>
+                <div className="font-semibold mb-1 inline-flex items-center gap-1.5"><Skull size={15} className="text-red-400" /> {d.boss}</div>
                 <p className="text-xs text-fg-muted leading-relaxed">
                   {d.bossDesc}
                 </p>

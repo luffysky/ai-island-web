@@ -1,7 +1,7 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
-import { Users, Send, MessageCircle, MessageSquareText, ImageIcon, Settings, Activity, AlertCircle } from "lucide-react";
+import { Users, Send, MessageCircle, MessageSquareText, ImageIcon, Settings, Activity, AlertCircle, Heart, Lock, Sprout } from "lucide-react";
 import { PageHero } from "@/components/admin/PageHero";
 import { LineDiagnosticPanel } from "./LineDiagnosticPanel";
 
@@ -48,7 +48,7 @@ export default async function AdminLinePage() {
   return (
     <div className="space-y-6">
       <PageHero
-        emoji="💚"
+        icon={Heart}
         title="LINE 控制台"
         desc="兩個 bot (admin + user)、群發、罐頭、客服對話、Rich Menu 都在這。"
         gradient="from-green-500/10 via-lime-500/10 to-emerald-500/10"
@@ -60,14 +60,14 @@ export default async function AdminLinePage() {
         <BotStatusCard
           name="Admin bot（後台監看）"
           ready={adminBotReady}
-          emoji="🔐"
+          icon={Lock}
           desc="收 admin 通知 + AI 對話 + 報表"
           webhookPath="/api/line-webhook"
         />
         <BotStatusCard
           name="User bot（使用者通知 + 客服）"
           ready={userBotReady}
-          emoji="🌱"
+          icon={Sprout}
           desc="推 user 學習動態 + 收 LINE 客服"
           webhookPath="/api/line-webhook-user"
         />
@@ -134,11 +134,11 @@ export default async function AdminLinePage() {
   );
 }
 
-function BotStatusCard({ name, ready, emoji, desc, webhookPath }: any) {
+function BotStatusCard({ name, ready, icon: Icon, desc, webhookPath }: any) {
   return (
     <div className={`rounded-xl border p-4 ${ready ? "bg-emerald-500/5 border-emerald-500/30" : "bg-red-500/5 border-red-500/30"}`}>
       <div className="flex items-center gap-2 mb-1">
-        <span className="text-2xl">{emoji}</span>
+        <span className="inline-flex items-center justify-center text-accent">{Icon && <Icon className="w-6 h-6" />}</span>
         <span className="font-bold text-sm">{name}</span>
         <span className={`ml-auto text-[10px] px-2 py-0.5 rounded-full font-bold ${ready ? "bg-emerald-500/20 text-emerald-900 dark:text-emerald-200" : "bg-red-500/20 text-red-900 dark:text-red-200"}`}>
           {ready ? "● 已設定" : "○ 未設定"}

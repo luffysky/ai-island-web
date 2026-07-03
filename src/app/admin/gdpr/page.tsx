@@ -1,6 +1,7 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { GdprRequestsClient } from "./GdprRequestsClient";
 import { PageHero } from "@/components/admin/PageHero";
+import { ShieldCheck } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -29,7 +30,7 @@ export default async function AdminGdprPage() {
   return (
     <div>
       <PageHero
-        emoji="🔐"
+        icon={ShieldCheck}
         title="GDPR 請求"
         desc="匯出 (Art.15) / 刪除 (Art.17) 請求佇列。軟刪後超過 7 天可手動硬刪。法規時程必須遵守。"
         gradient="from-slate-500/10 via-gray-500/10 to-zinc-500/10"

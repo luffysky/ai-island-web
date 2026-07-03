@@ -2,6 +2,7 @@ import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { redirect } from "next/navigation";
 import { PageHero } from "@/components/admin/PageHero";
+import { Lightbulb } from "lucide-react";
 import { fetchSurprisingPairs } from "@/lib/idea-ai";
 import { IdeaFragmentsClient } from "./IdeaFragmentsClient";
 
@@ -36,7 +37,7 @@ export default async function IdeaFragmentsPage() {
   return (
     <div className="space-y-4">
       <PageHero
-        emoji="💡"
+        icon={Lightbulb}
         title="給我一個點子"
         desc="把散落的人生碎片，變成下一個可能。收集靈感碎片 → AI 分析 → 重組出全新的點子。"
         gradient="from-amber-500/10 via-pink-500/10 to-violet-500/10"
