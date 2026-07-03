@@ -19,6 +19,30 @@ function providerFromModel(model: string): "anthropic" | "openai" | "google" | "
 
 function todayISO() { return new Date().toISOString().slice(0, 10); }
 
+/** 驗證使用者「今天真的做了」對應類別的事，才准領寵物任務獎勵。 */
+async function petQuestDone(admin: ReturnType<typeof createSupabaseAdmin>, userId: string, category: string, target: number): Promise<boolean> {
+  const today = todayISO();
+  const start = `${today}T00:00:00`;
+  if (category === "streak") {
+    const { data } = await admin.from("daily_checkins").select("id").eq("user_id", userId).eq("checkin_date", today).maybeSingle();
+    return !!data;
+  }
+  if (category === "quiz") {
+    const { count } = await admin.from("daily_quiz_attempts").select("id", { count: "exact", head: true }).eq("user_id", userId).eq("quiz_date", today);
+    return (count ?? 0) >= 1;
+  }
+  if (category === "interview") {
+    const { count } = await admin.from("mock_interview_sessions").select("id", { count: "exact", head: true }).eq("user_id", userId).gte("created_at", start);
+    return (count ?? 0) >= 1;
+  }
+  if (category === "lesson" || category === "review") {
+    const { count } = await admin.from("lesson_progress").select("id", { count: "exact", head: true }).eq("user_id", userId).eq("completed", true).gte("completed_at", start);
+    return (count ?? 0) >= Math.max(1, target);
+  }
+  // leetcode / 其他無法伺服器端可靠驗證的 → 先擋、避免白領（寧可少發也不亂發）
+  return false;
+}
+
 /** GET — 拿今日寵物 quest（沒今天的就生新的） */
 export async function GET() {
   const supabase = await createSupabaseServer();
@@ -145,6 +169,12 @@ export async function POST(req: NextRequest) {
   const q = (pet as any).daily_quest;
   if (!q || q.date !== todayISO()) return NextResponse.json({ error: "no_today_quest" }, { status: 400 });
   if (q.completed) return NextResponse.json({ ok: true, message: "已完成過了" });
+
+  // ⚠️ 防白領：一定要真的做了對應的事、才准領獎（不能只 POST complete）
+  const done = await petQuestDone(admin, user.id, String(q.category), Number(q.target) || 1);
+  if (!done) {
+    return NextResponse.json({ ok: false, error: "not_completed", message: "任務還沒完成喔，先去把它做完再來領 🐾" }, { status: 400 });
+  }
 
   // 標記完成
   const updated = { ...q, completed: true, progress: q.target, completed_at: new Date().toISOString() };

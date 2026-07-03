@@ -56,7 +56,18 @@ export async function POST(req: NextRequest) {
   // 第一次 pass：加 XP + 記 xp_events
   if (isFirstPass) {
     const xp = (challenge as any).xp_award ?? 50;
-    try { await admin.rpc("add_xp", { p_user_id: gate.userId, p_amount: xp }); } catch {}
+    // add_xp RPC 不存在（DB 沒這支）→ 直接更新 profile（service role 跳 field_lock），
+    // 對齊 /api/admin/grant/xp 的 Lv 公式；原本 rpc 呼叫被 try/catch 吞掉、XP 從沒真的加上去。
+    try {
+      const { data: prof } = await admin
+        .from("profiles")
+        .select("xp")
+        .eq("id", gate.userId)
+        .maybeSingle();
+      const newXp = Math.max(0, ((prof as any)?.xp ?? 0) + xp);
+      // profiles.level 是 GENERATED 欄位、不能寫 → 只更新 xp
+      await admin.from("profiles").update({ xp: newXp }).eq("id", gate.userId);
+    } catch {}
     try {
       await admin.from("xp_events").insert({
         user_id: gate.userId,

@@ -52,9 +52,10 @@ export async function POST(req: NextRequest) {
   if (evErr) return NextResponse.json({ error: evErr.message }, { status: 500 });
 
   // 直接更新 profile（service role 跳 field_lock trigger）
+  // ⚠️ profiles.level 是 GENERATED 欄位、不能寫（寫了會 428C9 報錯）→ 只更新 xp、level 自動算
   const { error: updErr } = await admin
     .from("profiles")
-    .update({ xp: newXp, level: newLevel })
+    .update({ xp: newXp })
     .eq("id", userId);
   if (updErr) return NextResponse.json({ error: updErr.message }, { status: 500 });
 
