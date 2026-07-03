@@ -29,3 +29,9 @@ bugpic/
 
 # Kenney / asset source packs（複製需要的 GLB 到 public/models/、原始包不進 repo）
 asset/
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/.playwright/
