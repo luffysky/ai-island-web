@@ -57,6 +57,10 @@ export async function loadUserMemory(userId: string | null | undefined): Promise
 /** 把 memory 格式化進 system prompt（不到 100 字、佔少量 token） */
 export function formatMemoryForPrompt(mem: UserAIMemory | null): string {
   if (!mem) return "";
+  const p = mem.preferences || {};
+  // 使用者關掉「記住我的偏好」→ 完全不注入任何長期記憶（尊重 opt-out）
+  if (p.remember_enabled === false) return "";
+
   const parts: string[] = [];
   parts.push("\n# 你對這位 user 的長期記憶（從 N 次對話累積、隨時更新）");
 
@@ -64,7 +68,21 @@ export function formatMemoryForPrompt(mem: UserAIMemory | null): string {
     parts.push(`- 近期狀態：${mem.summary}`);
   }
 
-  const p = mem.preferences || {};
+  // 使用者自訂指示（來自 /me/ai 的自訂 prompt）— 最高優先、要遵守
+  if (typeof p.custom_prompt === "string" && p.custom_prompt.trim()) {
+    parts.push(`- 使用者自訂指示（請優先遵守）：${p.custom_prompt.trim().slice(0, 800)}`);
+  }
+  // 語氣偏好
+  const toneLabels: Record<string, string> = {
+    short: "簡短扼要",
+    detailed: "詳細完整",
+    encouraging: "鼓勵溫暖",
+    direct: "直接切重點",
+  };
+  if (typeof p.tone === "string" && p.tone.trim()) {
+    parts.push(`- 語氣偏好：${toneLabels[p.tone] || p.tone}`);
+  }
+
   if (p.style) parts.push(`- 風格：${p.style}`);
   if (Array.isArray(p.tone_hints) && p.tone_hints.length > 0) {
     parts.push(`- 風格提示：${p.tone_hints.slice(0, 3).join(" / ")}`);
@@ -87,4 +105,56 @@ export function formatMemoryForPrompt(mem: UserAIMemory | null): string {
 export function invalidateMemoryCache(userId?: string) {
   if (userId) cache.delete(userId);
   else cache.clear();
+}
+
+/**
+ * upsert user_ai_memory 一列、把 patch 合併進 preferences JSONB（不覆蓋其他 key）、
+ * 並可選擇更新 summary。用於 /me/ai 使用者自行編輯記憶/偏好。
+ *
+ * patch 可含：{ custom_prompt?, tone?, remember_enabled?, ...任意 preferences key }
+ * 若帶 summary（string | null）→ 一併更新 summary 欄位。
+ */
+export async function setUserAiPreferences(
+  userId: string,
+  patch: {
+    summary?: string | null;
+    preferences?: Record<string, any>;
+  },
+): Promise<UserAIMemory | null> {
+  if (!userId) return null;
+  const admin = createSupabaseAdmin();
+
+  // 讀現有列、拿到目前的 preferences 以便 merge（不 clobber 既有 key）
+  const { data: existing } = await admin
+    .from("user_ai_memory")
+    .select("summary, preferences, topics, turn_count, last_summarized_at")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  const currentPrefs = (existing as any)?.preferences ?? {};
+  const mergedPrefs = { ...currentPrefs, ...(patch.preferences ?? {}) };
+
+  const row: Record<string, any> = {
+    user_id: userId,
+    preferences: mergedPrefs,
+    updated_at: new Date().toISOString(),
+  };
+  if ("summary" in patch) row.summary = patch.summary;
+
+  const { data, error } = await admin
+    .from("user_ai_memory")
+    .upsert(row, { onConflict: "user_id" })
+    .select("summary, preferences, topics, turn_count, last_summarized_at")
+    .maybeSingle();
+
+  invalidateMemoryCache(userId);
+  if (error || !data) return null;
+
+  return {
+    summary: (data as any).summary ?? null,
+    preferences: (data as any).preferences ?? {},
+    topics: Array.isArray((data as any).topics) ? (data as any).topics : [],
+    turn_count: (data as any).turn_count ?? 0,
+    last_summarized_at: (data as any).last_summarized_at ?? null,
+  };
 }

@@ -9,8 +9,9 @@ export default async function AIKeysSettingsPage() {
 
   const { data: keys } = await supabase
     .from("user_api_keys")
-    .select("id, provider, label, is_active, created_at, last_used_at")
-    .eq("user_id", user.id);
+    .select("id, provider, label, is_active, created_at, last_used_at, metadata")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false });
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-8 space-y-6">

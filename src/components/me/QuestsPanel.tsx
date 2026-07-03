@@ -11,8 +11,8 @@ type Quest = {
   progress: number;
   completed: boolean;
   claimed: boolean;
-  reward_xp: number;
-  reward_z: number;
+  xp_reward: number;
+  z_coin_reward: number;
 };
 
 const TYPE_META: Record<string, { label: string; icon: string }> = {
@@ -66,7 +66,7 @@ export function QuestsPanel() {
 
   const totalReward = quests
     .filter((q) => q.completed && !q.claimed)
-    .reduce((s, q) => ({ xp: s.xp + q.reward_xp, z: s.z + q.reward_z }), { xp: 0, z: 0 });
+    .reduce((s, q) => ({ xp: s.xp + q.xp_reward, z: s.z + q.z_coin_reward }), { xp: 0, z: 0 });
 
   return (
     <section className="rounded-xl bg-bg-card border border-border p-4">
@@ -98,7 +98,7 @@ export function QuestsPanel() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">{meta.label} ({q.progress}/{q.target})</span>
-                    <span className="text-xs text-fg-muted">+{q.reward_xp} XP · +{q.reward_z} 🪙</span>
+                    <span className="text-xs text-fg-muted">+{q.xp_reward} XP · +{q.z_coin_reward} 🪙</span>
                   </div>
                   <div className="h-1.5 bg-bg-elevated rounded-full overflow-hidden mt-1">
                     <div

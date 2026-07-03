@@ -4,6 +4,7 @@ import { resolveModel } from "@/lib/creator-engine/ai/router";
 import { callAI } from "@/lib/ai-providers";
 import { estimateCostUsd } from "@/lib/creator-engine/ai/cost";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { loadUserMemory, formatMemoryForPrompt } from "@/lib/user-ai-memory";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -39,8 +40,16 @@ export async function POST(req: NextRequest) {
       focus.map((f: any, i: number) => `(${i + 1}) ${String(f.title ?? "").slice(0, 80)}：${String(f.content ?? "").slice(0, 600)}`).join("\n")
     : "";
 
+  // 注入使用者長期記憶 / 自訂指示（fire-and-forget safe：載入失敗就當作沒記憶）
+  let memoryText = "";
+  try {
+    memoryText = formatMemoryForPrompt(await loadUserMemory(u.userId));
+  } catch {
+    memoryText = "";
+  }
+
   // 組訊息；最後一則 user 若帶圖 → 多模態 content
-  const msgs: any[] = [{ role: "system", content: SYSTEM + focusText }];
+  const msgs: any[] = [{ role: "system", content: SYSTEM + memoryText + focusText }];
   history.forEach((m: any, i: number) => {
     const isLast = i === history.length - 1;
     if (isLast && m.role === "user" && b.image?.data) {

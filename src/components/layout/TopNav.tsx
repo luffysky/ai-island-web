@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { useAuth } from "@/lib/auth-context";
-import { Flame, Coins, Heart, LogOut, Settings, Trophy, User as UserIcon, ChevronDown, Menu, X, Palmtree, Crown, BarChart3, Key, BookOpen, Swords, MessagesSquare, Newspaper, Route, Palette } from "lucide-react";
+import { Flame, Coins, Heart, LogOut, Settings, Trophy, User as UserIcon, ChevronDown, Menu, X, Palmtree, Crown, BarChart3, Key, BookOpen, Swords, MessagesSquare, Newspaper, Route, Palette, Brain } from "lucide-react";
 import { TodoDropdownButton } from "@/components/todo/TodoDropdown";
 import { CountUp } from "@/components/ui/CountUp";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
@@ -234,6 +234,15 @@ export function TopNav() {
                     >
                       <Settings size={16} />
                       <span>設定</span>
+                    </Link>
+
+                    <Link
+                      href={"/me/ai" as any}
+                      className="flex items-center gap-3 px-4 py-2 hover:bg-bg-elevated transition"
+                      onClick={() => setOpen(false)}
+                    >
+                      <Brain size={16} />
+                      <span>AI 記憶 · 提示詞</span>
                     </Link>
 
                     <Link

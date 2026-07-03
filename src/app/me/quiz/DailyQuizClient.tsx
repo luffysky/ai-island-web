@@ -85,6 +85,13 @@ export function DailyQuizClient() {
       toast.success(`${j.correct}/${j.total} 答對 · +${j.reward_xp} XP · +${j.reward_z} 🪙`);
       // 島嶼每日學習任務 — 做完一次每日測驗
       import("@/components/island/island-bus").then((m) => m.bumpQuest("quiz", 1)).catch(() => {});
+      // 每日任務進度（daily_quests）
+      fetch("/api/quests/progress", {
+        credentials: "include",
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "daily_quiz", delta: 1 }),
+      }).catch(() => {});
     } catch (e: any) {
       toast.error(`送出失敗：${e?.message || ""}`);
     } finally {
