@@ -54,14 +54,16 @@ export function PageHero({
   );
 }
 
-/** 後台 stat 卡 — 跟 Dashboard 一致的視覺、含 trend arrow */
+/** 後台 stat 卡 — 跟 Dashboard 一致的視覺、含 trend arrow
+ *  hint 可搭配 hintIcon（lucide）當前導小圖示，例如警示 <AlertTriangle/>、緊急 <Flame/> */
 export function AdminStatCard({
-  label, value, hint, color = "text-fg",
+  label, value, hint, hintIcon: HintIcon, color = "text-fg",
   trend,
 }: {
   label: string;
   value: React.ReactNode;
   hint?: string;
+  hintIcon?: LucideIcon;
   color?: string;
   trend?: { pct: number; dir: "up" | "down" | "flat" };
 }) {
@@ -80,7 +82,12 @@ export function AdminStatCard({
           )}
         </div>
         <div className={`text-2xl font-bold mt-1 ${color}`}>{value}</div>
-        {hint && <div className="text-[11px] text-fg-muted mt-1 leading-tight">{hint}</div>}
+        {hint && (
+          <div className="text-[11px] text-fg-muted mt-1 leading-tight inline-flex items-center gap-1">
+            {HintIcon && <HintIcon className="w-3 h-3 shrink-0" strokeWidth={2.25} />}
+            {hint}
+          </div>
+        )}
       </div>
     </div>
   );

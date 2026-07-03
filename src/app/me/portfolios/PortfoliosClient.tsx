@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Plus, Trash2, Edit, ExternalLink, Eye, Globe, Lock } from "lucide-react";
+import { Plus, Trash2, Edit, ExternalLink, Eye, Globe, Lock, Palette } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { formatTWDate } from "@/lib/format-date";
@@ -149,7 +149,7 @@ export function PortfoliosClient({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {list.length === 0 ? (
           <div className="md:col-span-2">
-            <EmptyState emoji="🎨" title="還沒有作品集" desc="把你寫過的 code / 作品集中放一處、做個對外展示" />
+            <EmptyState icon={Palette} title="還沒有作品集" desc="把你寫過的 code / 作品集中放一處、做個對外展示" />
           </div>
         ) : list.map((p) => (
           <div key={p.id} className="rounded-xl bg-bg-card border border-border p-4">

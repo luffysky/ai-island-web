@@ -84,7 +84,7 @@ export default async function SearchPage({
         <SuggestionBlock />
       ) : results.length === 0 ? (
         <EmptyState
-          emoji="🔍"
+          icon={SearchIcon}
           title={`沒找到「${q}」相關內容`}
           desc="試試不同關鍵字、或用更具體 / 更簡短的問題。"
         />

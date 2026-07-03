@@ -32,7 +32,7 @@ export default async function BroadcastsPage() {
       ) : broadcasts?.length === 0 ? (
         <div className="bg-bg-card border border-border rounded-xl">
           <EmptyState
-            emoji="📣"
+            icon={Megaphone}
             title="還沒發過任何公告"
             desc="支援站內訊息 / Email / LINE / Push Notification、點右上「+ 新建」開始"
             action={{ label: "+ 新建公告", href: `/${process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2"}/admin/broadcasts/new` }}

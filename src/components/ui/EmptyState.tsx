@@ -1,17 +1,23 @@
 import Link from "next/link";
+import type { LucideIcon } from "lucide-react";
 
 /**
  * 統一 Empty state 元件（沒資料時用）
- *   <EmptyState emoji="📝" title="還沒有筆記" desc="去章節隨手記點什麼"
+ *   <EmptyState icon={NotebookPen} title="還沒有筆記" desc="去章節隨手記點什麼"
  *               action={{ label: "去看章節", href: "/chapters" }} />
+ *
+ * 優先用 lucide icon；emoji 仍保留向後相容（吉祥物 🐹 / 🐍 等沒有合適 icon 的才用）。
+ * 若同時給 icon 與 emoji、優先用 icon。
  */
 export function EmptyState({
-  emoji = "📦",
+  icon: Icon,
+  emoji,
   title,
   desc,
   action,
   compact = false,
 }: {
+  icon?: LucideIcon;
   emoji?: string;
   title: string;
   desc?: string;
@@ -20,7 +26,13 @@ export function EmptyState({
 }) {
   return (
     <div className={`text-center ${compact ? "py-6" : "py-16"} text-fg-muted`}>
-      <div className={compact ? "text-3xl mb-1" : "text-5xl mb-3"}>{emoji}</div>
+      {Icon ? (
+        <div className={`flex justify-center ${compact ? "mb-1" : "mb-3"} text-fg-muted`}>
+          <Icon className={compact ? "w-8 h-8" : "w-12 h-12"} strokeWidth={1.5} />
+        </div>
+      ) : (
+        <div className={compact ? "text-3xl mb-1" : "text-5xl mb-3"}>{emoji ?? "📦"}</div>
+      )}
       <div className={compact ? "text-sm font-medium text-fg" : "text-base font-bold text-fg"}>{title}</div>
       {desc && <div className="text-xs mt-1 max-w-xs mx-auto leading-relaxed">{desc}</div>}
       {action && (

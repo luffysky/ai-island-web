@@ -1,7 +1,7 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { TicketsClient } from "./TicketsClient";
 import { PageHero, AdminStatCard } from "@/components/admin/PageHero";
-import { Ticket } from "lucide-react";
+import { Ticket, AlertTriangle, Flame } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -47,8 +47,8 @@ export default async function AdminTicketsPage({
       />
 
       <div className="grid grid-cols-3 gap-3">
-        <AdminStatCard label="未處理" value={(openCount ?? 0).toLocaleString()} color="text-orange-400" hint={openCount && openCount > 10 ? "⚠️ 偏多" : undefined} />
-        <AdminStatCard label="緊急未處理" value={(urgentOpen ?? 0).toLocaleString()} color="text-red-400" hint={urgentOpen && urgentOpen > 0 ? "🔥 馬上處理" : undefined} />
+        <AdminStatCard label="未處理" value={(openCount ?? 0).toLocaleString()} color="text-orange-400" hint={openCount && openCount > 10 ? "偏多" : undefined} hintIcon={AlertTriangle} />
+        <AdminStatCard label="緊急未處理" value={(urgentOpen ?? 0).toLocaleString()} color="text-red-400" hint={urgentOpen && urgentOpen > 0 ? "馬上處理" : undefined} hintIcon={Flame} />
         <AdminStatCard label="目前篩選" value={(count ?? 0).toLocaleString()} color="text-accent" />
       </div>
 

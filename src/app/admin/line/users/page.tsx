@@ -5,7 +5,7 @@ import { adminHref } from "@/lib/admin-href";
 import { formatTWRelative } from "@/lib/format-date";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { PushUserButton } from "./PushUserButton";
-import { ArrowLeft, Users } from "lucide-react";
+import { ArrowLeft, Users, Sprout } from "lucide-react";
 import { PageHero } from "@/components/admin/PageHero";
 
 export const dynamic = "force-dynamic";
@@ -40,7 +40,7 @@ export default async function AdminLineUsersPage() {
 
       {list.length === 0 ? (
         <EmptyState
-          emoji="🌱"
+          icon={Sprout}
           title="還沒有任何用戶綁 LINE"
           desc="user 要先到 /settings → 🌱 LINE 個人通知、加 bot 為好友 + 輸入 code 綁定"
         />

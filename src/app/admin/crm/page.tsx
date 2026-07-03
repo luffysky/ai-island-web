@@ -2,7 +2,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import Link from "next/link";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { PageHero, AdminStatCard } from "@/components/admin/PageHero";
-import { ArrowRight, Flame, AlertTriangle, MessageSquare, Heart } from "lucide-react";
+import { ArrowRight, Flame, AlertTriangle, MessageSquare, Heart, Inbox } from "lucide-react";
 
 export default async function CRMPage({ searchParams }: { searchParams: Promise<{ status?: string; priority?: string }> }) {
   const params = await searchParams;
@@ -38,9 +38,9 @@ export default async function CRMPage({ searchParams }: { searchParams: Promise<
       </PageHero>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <AdminStatCard label="待處理" value={open} color="text-red-400" hint={open > 5 ? "⚠️ 偏多" : undefined} />
+        <AdminStatCard label="待處理" value={open} color="text-red-400" hint={open > 5 ? "偏多" : undefined} hintIcon={AlertTriangle} />
         <AdminStatCard label="等待回覆" value={pending} color="text-yellow-400" />
-        <AdminStatCard label="緊急" value={urgent} color="text-red-500" hint={urgent > 0 ? "🔥 馬上看" : undefined} />
+        <AdminStatCard label="緊急" value={urgent} color="text-red-500" hint={urgent > 0 ? "馬上看" : undefined} hintIcon={Flame} />
       </div>
 
       <div className="flex gap-2 text-sm flex-wrap">
@@ -72,7 +72,7 @@ export default async function CRMPage({ searchParams }: { searchParams: Promise<
               {tickets?.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-4 py-2">
-                    <EmptyState emoji="💌" title="目前沒有客服 ticket" desc="使用者從 /support 開單後會出現在這" />
+                    <EmptyState icon={Inbox} title="目前沒有客服 ticket" desc="使用者從 /support 開單後會出現在這" />
                   </td>
                 </tr>
               ) : (

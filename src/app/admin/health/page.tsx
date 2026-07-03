@@ -4,7 +4,7 @@ import { adminHref } from "@/lib/admin-href";
 import { formatTW, formatTWRelative } from "@/lib/format-date";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { PageHero } from "@/components/admin/PageHero";
-import { Siren, ScrollText, Flame, HeartPulse, Lightbulb } from "lucide-react";
+import { Siren, ScrollText, Flame, HeartPulse, Lightbulb, CheckCircle2 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -110,7 +110,7 @@ export default async function AdminHealthPage() {
           </Link>
         </header>
         {!auditLatest.data || auditLatest.data.length === 0 ? (
-          <EmptyState emoji="📜" title="沒有 audit log" desc="admin 進行任何敏感動作都會記到這" />
+          <EmptyState icon={ScrollText} title="沒有 audit log" desc="admin 進行任何敏感動作都會記到這" />
         ) : (
           <ul className="divide-y divide-border">
             {auditLatest.data.map((a: any) => (
@@ -140,7 +140,7 @@ export default async function AdminHealthPage() {
           </Link>
         </header>
         {!errorLatest.data || errorLatest.data.length === 0 ? (
-          <EmptyState emoji="🎉" title="沒有錯誤" desc="過去 1 小時系統乾淨。" />
+          <EmptyState icon={CheckCircle2} title="沒有錯誤" desc="過去 1 小時系統乾淨。" />
         ) : (
           <ul className="divide-y divide-border">
             {errorLatest.data.map((e: any) => (

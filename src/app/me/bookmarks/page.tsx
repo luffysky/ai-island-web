@@ -1,7 +1,7 @@
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { chapters } from "@/data/chapters";
 import Link from "next/link";
-import { BookmarkCheck } from "lucide-react";
+import { BookmarkCheck, Bookmark } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
 
 export default async function BookmarksPage() {
@@ -28,7 +28,7 @@ export default async function BookmarksPage() {
       <p className="text-sm text-fg-muted">共 {bookmarks?.length ?? 0} 個書籤</p>
 
       {!bookmarks || bookmarks.length === 0 ? (
-        <EmptyState emoji="🔖" title="還沒有書籤" desc="在 lesson 頁面點 🔖 圖示加入書籤" action={{ label: "看章節", href: "/chapters" }} />
+        <EmptyState icon={Bookmark} title="還沒有書籤" desc="在 lesson 頁面點 🔖 圖示加入書籤" action={{ label: "看章節", href: "/chapters" }} />
       ) : (
         <div className="space-y-6">
           {Object.entries(grouped).map(([chId, items]) => {

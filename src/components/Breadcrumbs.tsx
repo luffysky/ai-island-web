@@ -26,14 +26,17 @@ export function Breadcrumbs({ className = "" }: { className?: string }) {
     <nav aria-label="麵包屑" className={`text-xs text-fg-muted flex items-center gap-1 flex-wrap py-2 px-4 sm:px-6 ${className}`}>
       {crumbs.map((c, i) => {
         const isLast = i === crumbs.length - 1;
+        const Icon = c.icon;
         return (
           <span key={i} className="inline-flex items-center gap-1 min-w-0">
             {c.href && !isLast ? (
-              <Link href={c.href as any} className="hover:text-accent transition truncate max-w-[180px]">
+              <Link href={c.href as any} className="hover:text-accent transition truncate max-w-[180px] inline-flex items-center gap-1">
+                {Icon && <Icon size={12} className="shrink-0" />}
                 {c.label}
               </Link>
             ) : (
-              <span className={`truncate max-w-[200px] ${isLast ? "text-fg font-medium" : ""}`} aria-current={isLast ? "page" : undefined}>
+              <span className={`truncate max-w-[200px] inline-flex items-center gap-1 ${isLast ? "text-fg font-medium" : ""}`} aria-current={isLast ? "page" : undefined}>
+                {Icon && <Icon size={12} className="shrink-0" />}
                 {c.label}
               </span>
             )}

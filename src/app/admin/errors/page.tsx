@@ -1,7 +1,7 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { ErrorLogsClient } from "./ErrorLogsClient";
 import { PageHero, AdminStatCard } from "@/components/admin/PageHero";
-import { Shield } from "lucide-react";
+import { Shield, AlertTriangle } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -54,7 +54,7 @@ export default async function AdminErrorLogsPage({
       />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <AdminStatCard label="待解決" value={openCount ?? 0} color="text-orange-400" hint={openCount && openCount > 20 ? "⚠️ 偏多" : undefined} />
+        <AdminStatCard label="待解決" value={openCount ?? 0} color="text-orange-400" hint={openCount && openCount > 20 ? "偏多" : undefined} hintIcon={AlertTriangle} />
         <AdminStatCard label="今日新增" value={todayCount ?? 0} color="text-blue-400" />
         <AdminStatCard label="本週累計" value={weekCount ?? 0} color="text-purple-400" />
         <AdminStatCard label="目前篩選" value={count ?? 0} color="text-fg-muted" />

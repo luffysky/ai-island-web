@@ -47,7 +47,7 @@ export default async function AdminAiCachePage() {
       <section className="rounded-xl bg-bg-card border border-border">
         <div className="px-4 py-3 border-b border-border font-bold text-sm flex items-center gap-2"><Flame className="w-4 h-4" /> 最常被命中的問題 Top 20</div>
         {(topHits ?? []).length === 0 ? (
-          <EmptyState emoji="💾" title="還沒有任何快取資料" desc="第一次有人問問題就會寫進來、第二次起命中" />
+          <EmptyState icon={Database} title="還沒有任何快取資料" desc="第一次有人問問題就會寫進來、第二次起命中" />
         ) : (
           <table className="w-full text-sm">
             <thead className="bg-bg-elevated text-fg-muted text-xs">

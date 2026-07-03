@@ -115,7 +115,7 @@ export default function MyBlogPage() {
 
       {/* 文章列表 */}
       {articles.length === 0 ? (
-        <EmptyState emoji="✍️" title="還沒有文章" desc="寫第一篇分享學習心得" action={{ label: "開始寫作", href: "/me/blog/new" }} />
+        <EmptyState icon={PenLine} title="還沒有文章" desc="寫第一篇分享學習心得" action={{ label: "開始寫作", href: "/me/blog/new" }} />
       ) : (
         <div className="space-y-2">
           {articles.map((a) => (

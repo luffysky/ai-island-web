@@ -23,7 +23,7 @@ export default async function MyPlaygroundsPage() {
       </p>
 
       {!playgrounds || playgrounds.length === 0 ? (
-        <EmptyState emoji="💻" title="還沒存過任何 code" desc="在學習園地改完 code 按 💾 存到雲端" action={{ label: "看章節", href: "/chapters" }} />
+        <EmptyState icon={Code2} title="還沒存過任何 code" desc="在學習園地改完 code 按 💾 存到雲端" action={{ label: "看章節", href: "/chapters" }} />
       ) : (
         <div className="space-y-3">
           {playgrounds.map((p: any) => {

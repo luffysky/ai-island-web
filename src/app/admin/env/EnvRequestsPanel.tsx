@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Check, X, Loader2, ExternalLink, Mail, Key, Shield } from "lucide-react";
+import { Plus, Check, X, Loader2, ExternalLink, Mail, Key, Shield, Sprout } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -97,7 +97,7 @@ export function EnvRequestsPanel() {
         </div>
       ) : list.length === 0 ? (
         <EmptyState
-          emoji="🌱"
+          icon={Sprout}
           title="還沒有任何申請"
           desc="需要新增 / 修改 Zeabur 環境變數時、點上面按鈕提交申請、林董會收到 LINE 通知"
         />

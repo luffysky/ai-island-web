@@ -183,7 +183,7 @@ export default async function AuditPage({
 
       {logs?.length === 0 ? (
         <div className="bg-bg-card border border-border rounded-xl">
-          <EmptyState emoji="🪵" title="沒有 audit log" desc="目前條件下沒有任何紀錄。試試清掉篩選或拉長時間區間。" />
+          <EmptyState icon={FileText} title="沒有 audit log" desc="目前條件下沒有任何紀錄。試試清掉篩選或拉長時間區間。" />
         </div>
       ) : (
         <div className="bg-bg-card border border-border rounded-xl overflow-x-auto">

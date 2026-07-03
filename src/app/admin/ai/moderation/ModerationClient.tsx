@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check, X, ArrowUp } from "lucide-react";
+import { Check, X, ArrowUp, CheckCircle2 } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import { formatTW } from "@/lib/format-date";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -78,7 +78,7 @@ export function ModerationClient({ initial, filters }: { initial: Flag[]; filter
 
       <div className="rounded-xl bg-bg-card border border-border divide-y divide-border">
         {rows.length === 0 ? (
-          <EmptyState emoji="🎉" title="沒有待處理的 flag" desc="AI 對話審核全部清乾淨了。新進來的會自動列上" />
+          <EmptyState icon={CheckCircle2} title="沒有待處理的 flag" desc="AI 對話審核全部清乾淨了。新進來的會自動列上" />
         ) : rows.map((r) => (
           <div key={r.id} className="p-3">
             <div className="flex items-center gap-2 mb-2">

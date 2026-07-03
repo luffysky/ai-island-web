@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
-import { Bell, Loader2, Check } from "lucide-react";
+import { Bell, BellOff, Loader2, Check } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { useOverlayRegister } from "@/lib/overlay-stack";
@@ -102,7 +102,7 @@ export function NotificationsDropdown() {
           {loading ? (
             <div className="text-center py-8 text-fg-muted text-xs"><Loader2 size={14} className="animate-spin inline mr-1" /> 載入中</div>
           ) : items.length === 0 ? (
-            <EmptyState emoji="🌱" title="目前沒通知" desc="完成 lesson / 收到回覆會出現在這" compact />
+            <EmptyState icon={BellOff} title="目前沒通知" desc="完成 lesson / 收到回覆會出現在這" compact />
           ) : (
             <ul className="divide-y divide-border">
               {items.map((n) => (
