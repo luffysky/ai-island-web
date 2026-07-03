@@ -1,0 +1,50 @@
+name: CI
+
+# PR 與 push main 都跑：lint → typecheck → 單元測試 → build。
+# 目的：擋住「合進 main 才發現壞掉」。真正的部署 image 由 docker.yml 負責、跟這支無關。
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22 # 對齊 Dockerfile 的 runtime
+          cache: npm
+
+      # repo 有 .npmrc（legacy-peer-deps=true）→ npm ci 會自動吃、不用額外傳參。
+      - name: Install deps
+        run: npm ci
+
+      # lint 目前可能還有 warning / legacy 問題 → 不讓它擋 CI（只當提示）。
+      - name: Lint
+        run: npm run lint
+        continue-on-error: true
+
+      # 型別檢查：專案可能有既有 tsc 錯誤（legacy debt）→ 先設 continue-on-error、
+      # 不讓 CI 因為舊債變紅。等舊錯誤清乾淨後、把這行拿掉讓它變硬性關卡。
+      - name: Typecheck
+        run: npx tsc --noEmit
+        continue-on-error: true
+
+      # 單元測試：必須全過（這是這支 workflow 的硬性關卡）。
+      - name: Unit tests
+        run: npm run test
+
+      # build：也必須綠（確認能真的建出來）。
+      - name: Build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_SITE_URL: https://ai-island-web.snowrealm.pet
