@@ -77,8 +77,25 @@
 - **DB**：16 表 / 10 RPC / 7 關鍵欄位 **全部存在**（0 缺）；158 個 migration 全套用。
 - **RWD**：全域護欄(body overflow-x hidden + fixed/absolute max-width) + 新頁響應式。
 
+## 🧪 測試 + CI/CD + Cloudflare（尾段補完）
+- **單元測試（Vitest）**：新增 `vitest.config.ts` + `tests/**`，**102 斷言 / 12 檔全過**。重點測「重要的門」：
+  - 付款驗簽 ×3（綠界 CheckMacValue / 藍新 TradeSha / Stripe 簽章，竄改任一欄位即 fail、狀態不對即 fail）
+  - 訂單金額防偽 + 已付款冪等（`fulfillOrder`）、`grantZcoinOnce` 同單號不重複發
+  - RBAC 越權矩陣（`canAccessSection`：owner/admin 全開、各分區角色只進自己的、進不了 admin-only）
+  - 純邏輯：payments config / robots AI 允許路徑 / ai-providers billableInput / ai-intent / chapter-display / text-utils
+- **E2E 點擊測試（Playwright）**：`playwright.config.ts` + `e2e/**`，對線上站實跑 **32 pass / 2 skip**（桌機 Chromium + 手機 Pixel5）：
+  - 首頁載入→導覽點「章節」跳頁、章節清單→點進看 lesson、搜尋輸入「python」→出結果、定價/部落格/論壇/登入/排行榜渲染、**RWD 手機視窗無橫向溢出**、robots/sitemap SEO
+  - auth-gated（結帳/後台）skip、註明需測試帳號 storageState（不硬編憑證）
+- **API 全端點掃描**：347 個 route GET 打一遍 → **0 × 5xx**（4xx 是登入/method/驗證閘門正常擋、非錯誤；排除 og/ai 生圖避免花錢）。
+- **CI/CD**：
+  - `.github/workflows/ci.yml`：push main + PR → `npm ci` → lint(soft) + tsc(soft) + **單元測試(硬 gate)** + **build(硬 gate)**，Node 22。
+  - `.github/workflows/e2e.yml`：排程(每日) + 手動，失敗上傳 Playwright report artifact。
+  - 3 支 cron workflow（ops-alerts/learning-coach/streak-reminder）。
+- **Cloudflare 403 修復**：GitHub Actions cron 被 Cloudflare Managed Challenge 擋(403「Just a moment」)。根因＝Cloudflare 對非瀏覽器的伺服器對伺服器請求開挑戰，會連帶擋**金流/LINE/Discord/TG webhook**。解法＝Cloudflare WAF 自訂規則 **Skip `/api/`**（全勾要跳過的元件）→ 已驗證 `/api/cron/*`、`/api/payments/webhook/*` 直達 app(401/405、非 CF 挑戰)。API 各端點自有鎖、安全不減。
+
 ## 📋 只剩林董手動（見 `docs/OWNER_SETUP.md`）
-- 🔴 金流金鑰（綠界/藍新/Stripe env + webhook URL + 測試機驗一筆再開 PAYMENTS_LIVE）
-- 🟡 3 支新 cron 排程（ops-alerts / learning-coach / streak-reminder，GitHub Actions + CRON_SECRET）
-- 🟡 VAPID 同步到 Zeabur
-- ✅ Cloudflare AI-bot 封鎖 — 已關、已驗證
+- 🔴 **金流金鑰**（綠界/藍新/Stripe env + webhook URL + 測試機驗一筆再開 PAYMENTS_LIVE）← 唯一還缺的，林董下次設
+- 🟡 VAPID 同步到 Zeabur（`.env.local` 已有、確認正式站同一對）
+- ✅ 3 支新 cron workflow — 已加（去 GitHub Actions Re-run 即綠）
+- ✅ Cloudflare「受管理的 robots.txt」— 已關、已驗證
+- ✅ Cloudflare WAF Skip `/api/` — 已設、已驗證（cron/webhook 直達 app）
