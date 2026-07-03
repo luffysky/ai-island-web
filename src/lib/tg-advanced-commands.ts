@@ -131,7 +131,7 @@ export async function cmdMe(tgUsername?: string): Promise<string> {
     .limit(1)
     .maybeSingle();
 
-  if (!owner) return "❌ 找不到 owner profile";
+  if (!owner) return "❌ <b>找不到 owner profile</b>\n<i>資料庫沒有 is_owner / role=owner 的帳號</i>";
 
   const [{ count: lessonsToday }, { count: aiToday }, { count: notesToday }, { data: lastLogin }] = await Promise.all([
     admin.from("lesson_progress").select("id", { count: "exact", head: true }).eq("user_id", (owner as any).id).gte("completed_at", dayStart),
@@ -225,7 +225,7 @@ export async function cmdJournal(content: string): Promise<string> {
     content: content.slice(0, 4000),
     mood: moodEmoji,
   });
-  if (error) return `❌ 寫入失敗：${escapeHTML(error.message)}`;
+  if (error) return `❌ <b>寫入失敗</b>\n<i>${escapeHTML(error.message)}</i>`;
   return [
     `${moodEmoji} <b>已記入日誌</b>`,
     "",
@@ -246,7 +246,7 @@ export async function cmdTranslate(content: string): Promise<string> {
     `Translate the following text to ${target}. Only output the translation, no explanation:\n\n${content.slice(0, 1500)}`,
     { temperature: 0.2, maxTokens: 800 }
   );
-  if (!r) return "❌ 翻譯失敗 (AI 不可用)";
+  if (!r) return "❌ <b>翻譯失敗</b>\n<i>AI 暫時不可用、稍後再試</i>";
   return [
     `🌐 <b>${isChinese ? "中→英" : "英→中"}</b>`,
     "",
@@ -268,7 +268,7 @@ export async function cmdRewrite(content: string): Promise<string> {
     `只回潤稿結果、不要解釋。\n\n原文：\n${content.slice(0, 1500)}`,
     { temperature: 0.4, maxTokens: 1000 }
   );
-  if (!r) return "❌ 潤稿失敗 (AI 不可用)";
+  if (!r) return "❌ <b>潤稿失敗</b>\n<i>AI 暫時不可用、稍後再試</i>";
   return [
     `✏️ <b>潤稿完成</b>`,
     "",
@@ -323,7 +323,7 @@ export async function cmdIdea(content: string): Promise<string> {
     tags,
     ai_reaction: reaction,
   });
-  if (error) return `❌ 寫入失敗：${escapeHTML(error.message)}`;
+  if (error) return `❌ <b>寫入失敗</b>\n<i>${escapeHTML(error.message)}</i>`;
   const pri: Record<string, string> = { p0: "🔥 立刻做", p1: "📍 本週", p2: "📅 本月", p3: "💭 以後" };
   return [
     `💡 <b>靈感已收進箱</b>`,
@@ -358,7 +358,7 @@ export async function cmdBroadcast(args: string[], audience: "all" | "premium" =
     // 查 active subscriptions
     const { data: subs } = await admin.from("subscriptions").select("user_id").eq("status", "active");
     const uids = ((subs ?? []) as any[]).map((s) => s.user_id);
-    if (uids.length === 0) return "❌ 沒 active premium 用戶";
+    if (uids.length === 0) return "❌ <b>沒 active premium 用戶</b>";
     q = q.in("id", uids);
   }
   const { data: targets } = await q.limit(2000);
@@ -421,7 +421,7 @@ export async function cmdGrantPremium(args: string[]): Promise<string> {
   // username or display_name
   const { data: user } = await admin.from("profiles").select("id, username, display_name")
     .or(`username.eq.${target},display_name.eq.${target}`).maybeSingle();
-  if (!user) return `❌ 找不到用戶 <code>${escapeHTML(target)}</code>`;
+  if (!user) return `❌ <b>找不到用戶</b>\n<code>${escapeHTML(target)}</code>`;
 
   const endDate = new Date(Date.now() + days * 86400_000);
   const { error } = await admin.from("subscriptions").upsert({
@@ -432,7 +432,7 @@ export async function cmdGrantPremium(args: string[]): Promise<string> {
     expires_at: endDate.toISOString(),
     granted_by: "telegram_admin",
   }, { onConflict: "user_id" });
-  if (error) return `❌ 失敗：${escapeHTML(error.message)}`;
+  if (error) return `❌ <b>給 Premium 失敗</b>\n<i>${escapeHTML(error.message)}</i>`;
 
   // DC#4: 同步 Discord VIP role
   let discordSync = "";

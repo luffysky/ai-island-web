@@ -15,6 +15,19 @@ export function isCommand(text: string): boolean {
 
 export type BotReply = { text: string; flex?: FlexMessage };
 
+// 小卡 helper — 讓錯誤 / 空狀態 / 用法提示都跟報表卡同一套風格。
+// ⚠️ text 欄位保留原句：Telegram 走 dressUpAdminReply(reply.text) 靠它、別動內容。
+type CardBtn = { label: string; uri?: string; text?: string; postback?: string; primary?: boolean; displayText?: string };
+function errReply(text: string, title: string, body?: string, buttons?: CardBtn[]): BotReply {
+  return { text, flex: buildSimpleCard({ emoji: "❌", title, accentColor: "#ff5555", body, buttons: buttons as any }) };
+}
+function okReply(text: string, opts: { emoji?: string; title: string; accentColor?: string; body?: string; meta?: Array<{ label: string; value: string }>; buttons?: CardBtn[] }): BotReply {
+  return { text, flex: buildSimpleCard({ emoji: opts.emoji ?? "✅", title: opts.title, accentColor: opts.accentColor ?? "#50fa7b", body: opts.body, meta: opts.meta, buttons: opts.buttons as any }) };
+}
+function infoReply(text: string, opts: { emoji: string; title: string; accentColor?: string; body?: string; buttons?: CardBtn[] }): BotReply {
+  return { text, flex: buildSimpleCard({ emoji: opts.emoji, title: opts.title, accentColor: opts.accentColor ?? "#8be9fd", body: opts.body, buttons: opts.buttons as any }) };
+}
+
 export async function runBotCommand(text: string, user: AdminLineUser): Promise<BotReply> {
   const parts = text.trim().split(/\s+/);
   const cmd = parts[0].slice(1).toLowerCase(); // 去掉 /
@@ -53,7 +66,11 @@ export async function runBotCommand(text: string, user: AdminLineUser): Promise<
       case "todo":      return await cmdTodo(args.join(" "));
       case "idea":      return await cmdIdea(args.join(" "));
       case "碎片":      return await cmdIdea(args.join(" "));
-      default: return { text: `❓ 未知命令 /${cmd}、輸入 /help 看清單` };
+      default: return infoReply(`❓ 未知命令 /${cmd}、輸入 /help 看清單`, {
+        emoji: "❓", title: "未知命令", accentColor: "#ffb86c",
+        body: `/${cmd} 不認得、輸入 /help 看命令清單。`,
+        buttons: [{ label: "📖 看 /help", text: "/help" }],
+      });
     }
   } catch (e: any) {
     // 寫 error_logs、林董到 /admin/errors 看真實 stack
@@ -70,7 +87,12 @@ export async function runBotCommand(text: string, user: AdminLineUser): Promise<
         },
       });
     } catch {}
-    return { text: `❌ /${cmd} 失敗：${e?.message ?? "未知錯誤"}\n(已寫 error_logs、可去 /admin/errors 看 stack)` };
+    return errReply(
+      `❌ /${cmd} 失敗：${e?.message ?? "未知錯誤"}\n(已寫 error_logs、可去 /admin/errors 看 stack)`,
+      `/${cmd} 失敗`,
+      `${e?.message ?? "未知錯誤"}\n已寫 error_logs、可去後台看 stack。`,
+      [{ label: "🛡️ 看 error log", uri: `${SITE_URL}/${ADMIN_SLUG}/admin/errors`, primary: true }],
+    );
   }
 }
 
@@ -182,7 +204,9 @@ async function cmdUsers(args: string[]): Promise<BotReply> {
     .select("username, display_name, created_at, level, xp")
     .order("created_at", { ascending: false })
     .limit(n);
-  if (!data || data.length === 0) return { text: "🌱 還沒有用戶" };
+  if (!data || data.length === 0) return infoReply("🌱 還沒有用戶", {
+    emoji: "🌱", title: "還沒有用戶", accentColor: "#8be9fd", body: "目前資料庫沒有註冊紀錄。",
+  });
   const lines = (data as any[]).map((u, i) =>
     `${i + 1}. ${u.display_name || u.username} · Lv${u.level ?? 1} · ${u.xp ?? 0} XP · ${new Date(u.created_at).toLocaleDateString("zh-TW")}`
   );
@@ -209,7 +233,9 @@ async function cmdChurn(): Promise<BotReply> {
     .is("banned_at", null)
     .order("xp", { ascending: false })
     .limit(10);
-  if (!data || data.length === 0) return { text: "✅ 沒有高風險流失用戶" };
+  if (!data || data.length === 0) return okReply("✅ 沒有高風險流失用戶", {
+    title: "沒有高風險流失用戶", body: "XP≥100 的用戶近 14 天都有回來、很健康。",
+  });
   const items = (data as any[]).map((u) => {
     const days = u.last_active_at ? Math.floor((Date.now() - new Date(u.last_active_at).getTime()) / 86400_000) : "?";
     return { primary: u.display_name || u.username, secondary: `Lv${u.level} · ${u.xp} XP · 離開 ${days} 天` };
@@ -231,7 +257,9 @@ async function cmdErrors(): Promise<BotReply> {
       .select("level, message, path:request_path, created_at:occurred_at")
       .order("occurred_at", { ascending: false })
       .limit(10);
-    if (!data || data.length === 0) return { text: "✅ 最近沒有錯誤" };
+    if (!data || data.length === 0) return okReply("✅ 最近沒有錯誤", {
+      title: "最近沒有錯誤", body: "error_logs 近期乾淨、系統穩定。",
+    });
     const items = (data as any[]).map((e) => {
       const t = new Date(e.created_at).toLocaleString("zh-TW", { hour12: false });
       return { primary: `[${e.level}] ${e.message?.slice(0, 60)}`, secondary: `${e.path ?? ""} · ${t}` };
@@ -244,7 +272,7 @@ async function cmdErrors(): Promise<BotReply> {
       footerButton: { label: "看 errors 後台", uri: `${SITE_URL}/${ADMIN_SLUG}/admin/errors` },
     })};
   } catch {
-    return { text: "⚠️ error_log 表還沒建（要跑 error_log_migration.sql）" };
+    return errReply("⚠️ error_log 表還沒建（要跑 error_log_migration.sql）", "error_log 表還沒建", "要先跑 error_log_migration.sql 建表。");
   }
 }
 
@@ -264,7 +292,9 @@ async function cmdOnline(): Promise<BotReply> {
     primary: u.display_name || u.username,
     secondary: `${u.role === "admin" ? "👑 " : ""}${Math.round((Date.now() - new Date(u.last_active_at).getTime()) / 1000)} 秒前`,
   }));
-  if (items.length === 0) return { text: "🌙 目前沒人在線（過去 5 分鐘）" };
+  if (items.length === 0) return infoReply("🌙 目前沒人在線（過去 5 分鐘）", {
+    emoji: "🌙", title: "目前沒人在線", accentColor: "#6272a4", body: "過去 5 分鐘沒有活躍用戶。",
+  });
   return {
     text: `🟢 線上 ${count ?? 0} 人\n` + items.map((x, i) => `${i + 1}. ${x.primary} · ${x.secondary}`).join("\n"),
     flex: buildListCard({ title: `🟢 線上 ${count ?? 0} 人（5 分內）`, emoji: "🟢", items }),
@@ -303,7 +333,9 @@ async function cmdOrders(args: string[]): Promise<BotReply> {
     .select("id, amount_twd:amount, status, plan_label:product_name, created_at, user_id")
     .order("created_at", { ascending: false })
     .limit(n);
-  if (!data || data.length === 0) return { text: "📭 沒有訂單" };
+  if (!data || data.length === 0) return infoReply("📭 沒有訂單", {
+    emoji: "📭", title: "沒有訂單", accentColor: "#8be9fd", body: "目前查不到任何訂單紀錄。",
+  });
   const items = (data as any[]).map((o) => ({
     primary: `NT$${o.amount_twd?.toLocaleString?.() ?? o.amount_twd} · ${o.status}`,
     secondary: `${o.plan_label ?? ""} · ${new Date(o.created_at).toLocaleString("zh-TW", { hour12: false })}`,
@@ -324,8 +356,11 @@ async function cmdAiCost(args: string[]): Promise<BotReply> {
     .select("provider, tokens_input, tokens_output, cost_usd, message_count")
     .gte("date", sinceDate)
     .limit(50000);
-  if (error) return { text: `⚠️ 讀 AI 用量失敗：${error.message}` };
-  if (!data || data.length === 0) return { text: `💸 近 ${days} 天無 AI 用量紀錄` };
+  if (error) return errReply(`⚠️ 讀 AI 用量失敗：${error.message}`, "讀 AI 用量失敗", error.message,
+    [{ label: "🤖 AI 用量後台", uri: `${SITE_URL}/${ADMIN_SLUG}/admin/ai/usage`, primary: true }]);
+  if (!data || data.length === 0) return infoReply(`💸 近 ${days} 天無 AI 用量紀錄`, {
+    emoji: "💸", title: "無 AI 用量紀錄", accentColor: "#8be9fd", body: `近 ${days} 天沒有任何 AI 呼叫。`,
+  });
   let inTok = 0, outTok = 0, usd = 0, msgs = 0;
   const byProvider: Record<string, { in: number; out: number; usd: number }> = {};
   for (const r of data as any[]) {
@@ -356,11 +391,13 @@ async function cmdAiCost(args: string[]): Promise<BotReply> {
 
 async function cmdNotify(msg: string): Promise<BotReply> {
   const text = msg.trim();
-  if (!text || text.length < 2) return { text: "用法：/notify 訊息內容（會發給所有用戶）" };
+  if (!text || text.length < 2) return infoReply("用法：/notify 訊息內容（會發給所有用戶）", {
+    emoji: "📣", title: "用法：/notify", accentColor: "#ffd700", body: "/notify 訊息內容\n（會發給所有用戶）",
+  });
   const admin = createSupabaseAdmin();
   const { data: users } = await admin.from("profiles").select("id").is("banned_at", null);
   const ids = ((users as any[]) ?? []).map((u: any) => u.id);
-  if (ids.length === 0) return { text: "❌ 沒有用戶" };
+  if (ids.length === 0) return errReply("❌ 沒有用戶", "沒有用戶", "資料庫沒有可接收公告的用戶。");
   const rows = ids.map((id) => ({ user_id: id, kind: "system", title: "📣 系統公告", body: text.slice(0, 500) }));
   // 批次 insert（一次 1000）
   for (let i = 0; i < rows.length; i += 1000) {
@@ -373,7 +410,9 @@ async function cmdNotify(msg: string): Promise<BotReply> {
 }
 
 async function cmdMaint(arg?: string): Promise<BotReply> {
-  if (arg !== "on" && arg !== "off") return { text: "用法：/maint on 或 /maint off" };
+  if (arg !== "on" && arg !== "off") return infoReply("用法：/maint on 或 /maint off", {
+    emoji: "🚧", title: "用法：/maint", accentColor: "#ffb86c", body: "/maint on　開啟維護模式\n/maint off　關閉維護模式",
+  });
   const admin = createSupabaseAdmin();
   const enabled = arg === "on";
   // maintenance_mode 唯一真相是 app_settings（admin 設定頁 + getAppSetting 都讀這裡）；
@@ -386,17 +425,23 @@ async function cmdMaint(arg?: string): Promise<BotReply> {
 }
 
 async function cmdLeetcode(username?: string): Promise<BotReply> {
-  if (!username) return { text: "用法：/leetcode [username 或 user uuid]" };
+  if (!username) return infoReply("用法：/leetcode [username 或 user uuid]", {
+    emoji: "💻", title: "用法：/leetcode", accentColor: "#8be9fd", body: "/leetcode [username 或 user uuid]",
+  });
   const admin = createSupabaseAdmin();
   // 先 by username、否則 by id
   let q = admin.from("profiles").select("username, display_name, leetcode_username, leetcode_stats");
   q = q.eq("username", username);
   const { data } = await q.maybeSingle();
-  if (!data) return { text: `❌ 找不到用戶 ${username}` };
+  if (!data) return errReply(`❌ 找不到用戶 ${username}`, "找不到用戶", `查無 username：${username}`);
   const p = data as any;
-  if (!p.leetcode_username) return { text: `${p.display_name || p.username} 還沒綁 leetcode` };
+  if (!p.leetcode_username) return infoReply(`${p.display_name || p.username} 還沒綁 leetcode`, {
+    emoji: "💻", title: "還沒綁 Leetcode", accentColor: "#ffb86c", body: `${p.display_name || p.username} 尚未綁定 Leetcode 帳號。`,
+  });
   const s = p.leetcode_stats;
-  if (!s) return { text: `${p.display_name || p.username} 綁定 ${p.leetcode_username}、但尚無 stats` };
+  if (!s) return infoReply(`${p.display_name || p.username} 綁定 ${p.leetcode_username}、但尚無 stats`, {
+    emoji: "💻", title: "尚無 Leetcode stats", accentColor: "#ffb86c", body: `${p.display_name || p.username} 綁定 ${p.leetcode_username}、但還沒抓到解題統計。`,
+  });
   return {
     text: `💻 @${p.leetcode_username}：${s.totalSolved}/${s.totalQuestions} · E${s.easySolved} M${s.mediumSolved} H${s.hardSolved}`,
     flex: buildSimpleCard({
@@ -425,7 +470,9 @@ async function cmdIsland(): Promise<BotReply> {
       .gte("created_at", new Date(today).toISOString())
       .like("reason", "island_%")
       .limit(5000);
-    if (!data || data.length === 0) return { text: "🏝️ 今天島嶼還沒人玩" };
+    if (!data || data.length === 0) return infoReply("🏝️ 今天島嶼還沒人玩", {
+      emoji: "🏝️", title: "今天島嶼還沒人玩", accentColor: "#8be9fd", body: "今日還沒有島嶼相關的 z 幣紀錄。",
+    });
     const groups: Record<string, { count: number; sum: number }> = {};
     for (const r of data as any[]) {
       const kind = (r.reason as string).split(":")[0]; // island_chest / island_fish / island_quest
@@ -441,7 +488,7 @@ async function cmdIsland(): Promise<BotReply> {
       flex: buildListCard({ title: "🏝️ 今日島嶼", emoji: "🏝️", items }),
     };
   } catch {
-    return { text: "❌ 抓不到島嶼統計" };
+    return errReply("❌ 抓不到島嶼統計", "抓不到島嶼統計", "查詢 coin_transactions 失敗、稍後再試。");
   }
 }
 
@@ -454,7 +501,9 @@ async function cmdQuizStats(): Promise<BotReply> {
     .eq("quiz_date", today)
     .limit(5000);
   const arr = (data as any[]) ?? [];
-  if (arr.length === 0) return { text: "🧠 今天還沒人做測驗" };
+  if (arr.length === 0) return infoReply("🧠 今天還沒人做測驗", {
+    emoji: "🧠", title: "今天還沒人做測驗", accentColor: "#bd93f9", body: "今日每日測驗還沒有任何作答紀錄。",
+  });
   const submitted = arr.filter((a) => a.total > 0).length;
   const passes = arr.filter((a) => a.pass).length;
   const avgPct = submitted > 0 ? (arr.reduce((s, a) => s + (a.total > 0 ? a.correct / a.total : 0), 0) / submitted * 100).toFixed(1) : "—";
@@ -472,10 +521,13 @@ async function cmdQuizStats(): Promise<BotReply> {
 }
 
 async function cmdRefund(orderId?: string): Promise<BotReply> {
-  if (!orderId) return { text: "用法：/refund [order_id]" };
+  if (!orderId) return infoReply("用法：/refund [order_id]", {
+    emoji: "💸", title: "用法：/refund", accentColor: "#ff79c6", body: "/refund [order_id]",
+  });
   const admin = createSupabaseAdmin();
   const { error } = await admin.from("orders").update({ status: "refunded", refunded_at: new Date().toISOString() }).eq("id", orderId);
-  if (error) return { text: `❌ 退款失敗：${error.message}` };
+  if (error) return errReply(`❌ 退款失敗：${error.message}`, "退款失敗", error.message,
+    [{ label: "💰 看訂單後台", uri: `${SITE_URL}/${ADMIN_SLUG}/admin/orders`, primary: true }]);
   return { text: `💸 訂單 ${orderId.slice(0, 8)} 已標記退款`, flex: buildSimpleCard({
     emoji: "💸", title: "退款已處理", accentColor: "#ff79c6",
     meta: [{ label: "訂單 ID", value: orderId }],
@@ -483,38 +535,51 @@ async function cmdRefund(orderId?: string): Promise<BotReply> {
 }
 
 async function cmdFeature(key?: string, value?: string): Promise<BotReply> {
-  if (!key) return { text: "用法：/feature [key] on|off" };
+  if (!key) return infoReply("用法：/feature [key] on|off", {
+    emoji: "🎚️", title: "用法：/feature", accentColor: "#8be9fd", body: "/feature [key] on|off",
+  });
   const enabled = value === "on";
   const admin = createSupabaseAdmin();
   // flag 存進 app_settings（每個 flag 一個 key、value={enabled}），跟 island_enabled / maintenance_mode 同一套；
   // getAppSetting / isIslandEnabled 都讀得到。舊碼的 feature_flags 表不存在、已改掉
   const { error } = await admin.from("app_settings").upsert({ key, value: { enabled }, updated_at: new Date().toISOString() });
-  if (error) return { text: `❌ 寫入失敗：${error.message}` };
-  return { text: `🎚️ Feature [${key}] 已 ${enabled ? "ON" : "OFF"}` };
+  if (error) return errReply(`❌ 寫入失敗：${error.message}`, "寫入失敗", error.message);
+  return okReply(`🎚️ Feature [${key}] 已 ${enabled ? "ON" : "OFF"}`, {
+    emoji: "🎚️", title: `Feature ${enabled ? "ON" : "OFF"}`, accentColor: enabled ? "#50fa7b" : "#6272a4",
+    meta: [{ label: "flag", value: key }, { label: "狀態", value: enabled ? "ON" : "OFF" }],
+  });
 }
 
 async function cmdEmail(usernameOrId?: string, body?: string): Promise<BotReply> {
-  if (!usernameOrId || !body) return { text: "用法：/email [user] [內容]" };
+  if (!usernameOrId || !body) return infoReply("用法：/email [user] [內容]", {
+    emoji: "📩", title: "用法：/email", accentColor: "#8be9fd", body: "/email [user] [內容]",
+  });
   const admin = createSupabaseAdmin();
   let userId = usernameOrId;
   if (!usernameOrId.includes("-")) {
     const { data } = await admin.from("profiles").select("id").eq("username", usernameOrId).maybeSingle();
-    if (!data) return { text: `❌ 找不到 ${usernameOrId}` };
+    if (!data) return errReply(`❌ 找不到 ${usernameOrId}`, "找不到用戶", `查無 username：${usernameOrId}`);
     userId = (data as any).id;
   }
   // 寫進 notifications + 寄 email（如果 email helper 存在）
   await admin.from("notifications").insert({ user_id: userId, kind: "system", title: "📩 來自管理員", body: body.slice(0, 500) });
-  return { text: `📩 已寄給 ${usernameOrId}（in-app 通知）` };
+  return okReply(`📩 已寄給 ${usernameOrId}（in-app 通知）`, {
+    emoji: "📩", title: "訊息已送出", accentColor: "#50fa7b",
+    meta: [{ label: "對象", value: usernameOrId }, { label: "方式", value: "in-app 通知" }],
+    body: body.slice(0, 200),
+  });
 }
 
 async function cmdGrantPrompt(usernameOrId?: string, amount?: number): Promise<BotReply> {
-  if (!usernameOrId || !amount || amount <= 0) return { text: "用法：/grant [user] [amount]" };
+  if (!usernameOrId || !amount || amount <= 0) return infoReply("用法：/grant [user] [amount]", {
+    emoji: "🎁", title: "用法：/grant", accentColor: "#ffd700", body: "/grant [user] [amount]\n（補 z 幣、金額 ≥ 500 需雙重確認）",
+  });
   const admin = createSupabaseAdmin();
   let userId = usernameOrId;
   let name = usernameOrId;
   if (!usernameOrId.includes("-")) {
     const { data } = await admin.from("profiles").select("id, display_name, username").eq("username", usernameOrId).maybeSingle();
-    if (!data) return { text: `❌ 找不到 ${usernameOrId}` };
+    if (!data) return errReply(`❌ 找不到 ${usernameOrId}`, "找不到用戶", `查無 username：${usernameOrId}`);
     userId = (data as any).id;
     name = (data as any).display_name || (data as any).username || userId;
   }
@@ -556,7 +621,10 @@ async function cmdTodo(text: string): Promise<BotReply> {
 async function cmdIdea(text: string): Promise<BotReply> {
   const body = text.trim();
   if (!body) {
-    return { text: "用法：/idea <想法 / 回憶 / 概念 / 網址>\n例：/idea 小時候外婆灶腳的柴火味" };
+    return infoReply("用法：/idea <想法 / 回憶 / 概念 / 網址>\n例：/idea 小時候外婆灶腳的柴火味", {
+      emoji: "💡", title: "用法：/idea", accentColor: "#ffd700",
+      body: "/idea <想法 / 回憶 / 概念 / 網址>\n例：/idea 小時候外婆灶腳的柴火味",
+    });
   }
   const admin = createSupabaseAdmin();
   const { data: owner } = await admin.from("profiles").select("id").eq("is_owner", true).maybeSingle();
@@ -566,18 +634,27 @@ async function cmdIdea(text: string): Promise<BotReply> {
     .insert({ created_by: (owner as any)?.id ?? null, title, content: body.length > 200 ? body : "", tags: ["LINE"] })
     .select("id, title, content, tags, mood, category")
     .single();
-  if (error) return { text: `❌ 存碎片失敗：${error.message}` };
+  if (error) return errReply(`❌ 存碎片失敗：${error.message}`, "存碎片失敗", error.message);
   // best-effort 算語意向量（之後在後台就能被「意外配對」引擎撈到）
   try {
     const { embedFragmentRow } = await import("./idea-ai");
     await embedFragmentRow((data as any).id, data);
   } catch {}
-  return { text: `💡 收進碎片庫了：\n「${title}」\n\n之後在後台「給我一個點子」可以分析 / 重組成新點子。` };
+  return okReply(`💡 收進碎片庫了：\n「${title}」\n\n之後在後台「給我一個點子」可以分析 / 重組成新點子。`, {
+    emoji: "💡", title: "收進碎片庫了", accentColor: "#ffd700",
+    body: `「${title}」\n\n之後在後台「給我一個點子」可以分析 / 重組成新點子。`,
+    buttons: [{ label: "💡 給我一個點子", uri: `${SITE_URL}/${ADMIN_SLUG}/admin/idea-fragments`, primary: true }],
+  });
 }
 
 async function cmdLaunchpadAdd(text: string, board: "todo" | "wishlist"): Promise<BotReply> {
   if (!text.trim()) {
-    return { text: `用法：/${board === "wishlist" ? "wish" : "todo"} <你想到的東西>\n例：/wish AI 自動建議下一個該做的事` };
+    return infoReply(`用法：/${board === "wishlist" ? "wish" : "todo"} <你想到的東西>\n例：/wish AI 自動建議下一個該做的事`, {
+      emoji: board === "wishlist" ? "🌠" : "📝",
+      title: `用法：/${board === "wishlist" ? "wish" : "todo"}`,
+      accentColor: "#8be9fd",
+      body: `/${board === "wishlist" ? "wish" : "todo"} <你想到的東西>\n例：/wish AI 自動建議下一個該做的事`,
+    });
   }
   // provider-aware：用 admin_assistant 設定的模型解析（可能是 OpenAI/Anthropic/Google）、寫進 kanban
   // （之前 hardcode Anthropic endpoint + key、但 admin_assistant 設定成 gpt-4o → 送 OpenAI 模型給 Anthropic = 404）
@@ -595,7 +672,12 @@ async function cmdLaunchpadAdd(text: string, board: "todo" | "wishlist"): Promis
         : modelName.startsWith("llama") ? "groq"
         : "openai");
     const apiKey = await getProviderKey(provider);
-    if (!apiKey) return { text: `❌ ${provider} key 沒設、雪鑰沒辦法分類（到後台「AI 模型管理」加）` };
+    if (!apiKey) return errReply(
+      `❌ ${provider} key 沒設、雪鑰沒辦法分類（到後台「AI 模型管理」加）`,
+      `${provider} key 沒設`,
+      "雪鑰沒辦法分類、到後台「AI 模型管理」加 key。",
+      [{ label: "🤖 AI 模型管理", uri: `${SITE_URL}/${ADMIN_SLUG}/admin/ai/models`, primary: true }],
+    );
 
     const prompt = `解析這段話成看板卡片：「${text}」
 
@@ -607,17 +689,21 @@ async function cmdLaunchpadAdd(text: string, board: "todo" | "wishlist"): Promis
       const res = await callAI({ provider, model: modelName, apiKey, messages: [{ role: "user", content: prompt }], temperature: 0.2, maxTokens: 300 });
       respText = (res.text || "").trim();
     } catch (e: any) {
-      return { text: `❌ AI fail（${provider}/${modelName}）：${e?.message?.slice(0, 80) ?? "unknown"}` };
+      return errReply(
+        `❌ AI fail（${provider}/${modelName}）：${e?.message?.slice(0, 80) ?? "unknown"}`,
+        "AI 分類失敗",
+        `${provider}/${modelName}\n${e?.message?.slice(0, 80) ?? "unknown"}`,
+      );
     }
     const m = respText.match(/\{[\s\S]*\}/);
-    if (!m) return { text: `❌ AI 沒回 JSON：${respText.slice(0, 100)}` };
+    if (!m) return errReply(`❌ AI 沒回 JSON：${respText.slice(0, 100)}`, "AI 沒回 JSON", respText.slice(0, 100));
     const parsed = JSON.parse(m[0]);
 
     // 找 column
     const { data: boardRow } = await admin.from("admin_kanban_boards").select("id").eq("slug", board).maybeSingle();
     const colTitle = board === "todo" ? "TODO" : "想法";
     const { data: col } = await admin.from("admin_kanban_columns").select("id").eq("board_id", (boardRow as any)?.id).eq("title", colTitle).maybeSingle();
-    if (!col) return { text: `❌ column ${colTitle} 找不到` };
+    if (!col) return errReply(`❌ column ${colTitle} 找不到`, "找不到看板欄位", `column「${colTitle}」不存在。`);
 
     const { count } = await admin.from("admin_kanban_cards").select("id", { count: "exact", head: true }).eq("column_id", (col as any).id);
 
@@ -628,11 +714,24 @@ async function cmdLaunchpadAdd(text: string, board: "todo" | "wishlist"): Promis
       category: parsed.category,
       position: count ?? 0,
     });
-    if (error) return { text: `❌ DB error: ${error.message}` };
+    if (error) return errReply(`❌ DB error: ${error.message}`, "寫入看板失敗", error.message);
 
-    return { text: `✨ 已加進 ${board === "wishlist" ? "許願池" : "待辦"}：\n📝 ${parsed.title}\n${parsed.description ? `   ${parsed.description}\n` : ""}🏷️ ${parsed.category ?? "—"}\n\n看：${process.env.NEXT_PUBLIC_SITE_URL}/${process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2"}/admin/launchpad` };
+    return okReply(
+      `✨ 已加進 ${board === "wishlist" ? "許願池" : "待辦"}：\n📝 ${parsed.title}\n${parsed.description ? `   ${parsed.description}\n` : ""}🏷️ ${parsed.category ?? "—"}\n\n看：${process.env.NEXT_PUBLIC_SITE_URL}/${process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2"}/admin/launchpad`,
+      {
+        emoji: "✨",
+        title: `已加進${board === "wishlist" ? "許願池" : "待辦"}`,
+        accentColor: "#50fa7b",
+        body: parsed.description ? String(parsed.description) : undefined,
+        meta: [
+          { label: "📝 標題", value: String(parsed.title ?? "") },
+          { label: "🏷️ 分類", value: String(parsed.category ?? "—") },
+        ],
+        buttons: [{ label: "🚀 看 Launchpad", uri: `${SITE_URL}/${ADMIN_SLUG}/admin/launchpad`, primary: true }],
+      },
+    );
   } catch (e: any) {
-    return { text: `❌ ${e?.message ?? "unknown"}` };
+    return errReply(`❌ ${e?.message ?? "unknown"}`, "處理失敗", e?.message ?? "unknown");
   }
 }
 
@@ -681,7 +780,11 @@ async function cmdModel(args: string[]): Promise<BotReply> {
   }
 
   if (args.length < 2) {
-    return { text: "用法：/model <usage_key> <model_name>、或 /model 看當前清單" };
+    return infoReply("用法：/model <usage_key> <model_name>、或 /model 看當前清單", {
+      emoji: "🎛️", title: "用法：/model", accentColor: "#8be9fd",
+      body: "/model <usage_key> <model_name>\n或 /model 看當前清單",
+      buttons: [{ label: "🎛️ 看當前設定", text: "/model" }],
+    });
   }
 
   const usageKey = args[0];
@@ -690,10 +793,14 @@ async function cmdModel(args: string[]): Promise<BotReply> {
   // - 表示清空、走 fallback
   if (modelArg === "-" || modelArg === "fallback") {
     const { error } = await admin.from("ai_usage_models").delete().eq("usage_key", usageKey);
-    if (error) return { text: `❌ 清失敗：${error.message}` };
+    if (error) return errReply(`❌ 清失敗：${error.message}`, "清除失敗", error.message);
     const { invalidateUsageCache } = await import("./ai-usage-models");
     invalidateUsageCache();
-    return { text: `🧹 ${usageKey} 已清回 fallback（60 秒內全 instance 同步）` };
+    return okReply(`🧹 ${usageKey} 已清回 fallback（60 秒內全 instance 同步）`, {
+      emoji: "🧹", title: "已清回 fallback", accentColor: "#50fa7b",
+      meta: [{ label: "用途", value: usageKey }],
+      body: "60 秒內全 instance 同步。",
+    });
   }
 
   // 驗 model 存在
@@ -703,7 +810,12 @@ async function cmdModel(args: string[]): Promise<BotReply> {
     .eq("model_name", modelArg)
     .eq("is_active", true)
     .maybeSingle();
-  if (!m) return { text: `❌ 沒有 active model "${modelArg}"、用 /model 看可選清單` };
+  if (!m) return errReply(
+    `❌ 沒有 active model "${modelArg}"、用 /model 看可選清單`,
+    "找不到 active model",
+    `"${modelArg}" 不在 is_active 清單裡。`,
+    [{ label: "🎛️ 看可選清單", text: "/model" }],
+  );
 
   // upsert
   const { error } = await admin.from("ai_usage_models").upsert({
@@ -712,7 +824,7 @@ async function cmdModel(args: string[]): Promise<BotReply> {
     enabled: true,
     updated_at: new Date().toISOString(),
   });
-  if (error) return { text: `❌ 改失敗：${error.message}` };
+  if (error) return errReply(`❌ 改失敗：${error.message}`, "切換失敗", error.message);
 
   // 清 cache、新 model 立即生效
   const { invalidateUsageCache } = await import("./ai-usage-models");

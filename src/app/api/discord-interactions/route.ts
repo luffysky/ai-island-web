@@ -175,20 +175,6 @@ async function patchOriginalEmbed(appId: string, interactionToken: string, paylo
   }
 }
 
-// Discord webhook 用 PATCH 把 deferred response 補上 AI 結果
-async function patchOriginal(appId: string, interactionToken: string, content: string) {
-  try {
-    await fetch(`https://discord.com/api/v10/webhooks/${appId}/${interactionToken}/messages/@original`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ content: content.slice(0, 2000) }),
-      signal: AbortSignal.timeout(10_000),
-    });
-  } catch (e) {
-    console.warn("[discord-interactions] patchOriginal failed:", (e as any)?.message);
-  }
-}
-
 // background AI、deferred response 配套
 async function runAIAndPatch(appId: string, interactionToken: string, userId: string, prompt: string) {
   const state = getState(userId);
@@ -196,7 +182,12 @@ async function runAIAndPatch(appId: string, interactionToken: string, userId: st
   const { data: models } = await admin.from("ai_models").select("*").eq("is_active", true).limit(20);
   const activeModels = (models as any[]) ?? [];
   if (activeModels.length === 0) {
-    await patchOriginal(appId, interactionToken, "❌ ai_models 沒任何 active");
+    await patchOriginalEmbed(appId, interactionToken, embedCard({
+      title: "⚠️ 沒有 active model",
+      description: "ai_models 沒任何 active、去後台 AI 模型管理啟用至少 1 個 model",
+      color: COLOR.warn,
+      buttons: [{ label: "🔧 去後台啟用", url: `${adminConsoleUrl()}/ai/models` }],
+    }));
     return;
   }
   const model =
@@ -363,7 +354,15 @@ export async function POST(req: NextRequest) {
   }
 
   if (body.type !== TYPE_APP_CMD) {
-    return NextResponse.json({ type: REPLY_MESSAGE, data: { content: "未支援的 interaction type" } });
+    return NextResponse.json({
+      type: REPLY_MESSAGE,
+      data: embedCard({
+        title: "⚠️ 未支援的 interaction",
+        description: "這個 bot 只處理 slash command interaction。",
+        color: COLOR.warn,
+        ephemeral: true,
+      }),
+    });
   }
 
   const cmd = String(body.data?.name ?? "").toLowerCase();

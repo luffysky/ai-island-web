@@ -275,9 +275,18 @@ async function processTelegramUpdate(token: string, body: any) {
 
   if (!ownerAllowed(tgUserId, tgUsername)) {
     await tgSend(token, chatId,
-      `🔒 此 bot 限白名單 owner 使用。\n\n` +
-      `你的 Telegram:\nuser_id: \`${tgUserId}\`\nusername: ${tgUsername ?? "(none)"}\n\n` +
-      `要授權自己: Zeabur env 加 \`TELEGRAM_OWNER_USER_IDS=${tgUserId}\` 或 \`TELEGRAM_OWNER_USERNAMES=${tgUsername ?? "your_handle"}\``,
+      [
+        "🔒 <b>此 bot 限白名單 owner 使用</b>",
+        "",
+        "<b>你的 Telegram：</b>",
+        `<code>user_id: ${tgUserId}</code>`,
+        `<code>username: ${escapeHTML(tgUsername ?? "(none)")}</code>`,
+        "",
+        "<i>要授權自己：Zeabur env 加</i>",
+        `<code>TELEGRAM_OWNER_USER_IDS=${tgUserId}</code>`,
+        `<i>或</i> <code>TELEGRAM_OWNER_USERNAMES=${escapeHTML(tgUsername ?? "your_handle")}</code>`,
+      ].join("\n"),
+      { parseMode: "HTML" },
     );
     return NextResponse.json({ ok: true });
   }
@@ -374,19 +383,29 @@ async function processTelegramUpdate(token: string, body: any) {
       if (args.length === 0) {
         const cur = state.model_name ?? (active.find((m) => m.provider === "anthropic")?.model_name ?? active[0]?.model_name) ?? "(none)";
         if (active.length === 0) {
-          await tgSend(token, chatId, "❌ 沒有 active model、去 /admin/ai/models 啟用");
+          await tgSend(token, chatId,
+            "❌ <b>沒有 active model</b>\n<i>去後台 AI 模型管理啟用至少 1 個 model</i>",
+            { parseMode: "HTML", keyboard: [[{ text: "🔧 去後台啟用", url: `${adminConsoleUrl()}/ai/models` }]] });
         } else {
-          const list = active.map((m) => `• \`${m.model_name}\` (${m.provider})${m.model_name === cur ? " ← *當前*" : ""}`).join("\n");
-          await tgSend(token, chatId, `*可用 model* (傳 \`/model <name>\` 切換)\n\n${list}`);
+          const list = active
+            .map((m) => `• <code>${escapeHTML(m.model_name)}</code> (${escapeHTML(m.provider)})${m.model_name === cur ? " ← <b>當前</b>" : ""}`)
+            .join("\n");
+          await tgSend(token, chatId,
+            `🎛️ <b>可用 model</b>\n<i>傳 </i><code>/model &lt;name&gt;</code><i> 切換</i>\n\n${list}`,
+            { parseMode: "HTML", keyboard: [[{ text: "🔧 後台模型管理", url: `${adminConsoleUrl()}/ai/models` }]] });
         }
       } else {
         const target = args.join(" ");
         const found = active.find((m) => m.model_name === target || `${m.provider}/${m.model_name}` === target || m.display_name === target);
         if (!found) {
-          await tgSend(token, chatId, `❌ 找不到 \`${target}\`。傳 /model 看清單。`);
+          await tgSend(token, chatId,
+            `❌ <b>找不到 model</b>\n<code>${escapeHTML(target)}</code>\n<i>傳 /model 看可用清單</i>`,
+            { parseMode: "HTML" });
         } else {
           state.model_name = found.model_name;
-          await tgSend(token, chatId, `✅ 已切到 \`${found.provider}/${found.model_name}\``);
+          await tgSend(token, chatId,
+            `✅ <b>已切換 model</b>\n<code>${escapeHTML(found.provider)}/${escapeHTML(found.model_name)}</code>`,
+            { parseMode: "HTML" });
         }
       }
       return NextResponse.json({ ok: true });
@@ -466,7 +485,9 @@ async function processTelegramUpdate(token: string, body: any) {
   const { data: models } = await adminDb.from("ai_models").select("*").eq("is_active", true).limit(20);
   const activeModels = (models as any[]) ?? [];
   if (activeModels.length === 0) {
-    await tgSend(token, chatId, "❌ ai_models 沒任何 active");
+    await tgSend(token, chatId,
+      "❌ <b>沒有 active model</b>\n<i>ai_models 沒任何 active、去後台啟用</i>",
+      { parseMode: "HTML", keyboard: [[{ text: "🔧 去後台啟用", url: `${adminConsoleUrl()}/ai/models` }]] });
     return NextResponse.json({ ok: true });
   }
 
@@ -478,7 +499,8 @@ async function processTelegramUpdate(token: string, body: any) {
     activeModels[0];
 
   if (!model) {
-    await tgSend(token, chatId, "❌ 沒可用 model");
+    await tgSend(token, chatId, "❌ <b>沒可用 model</b>\n<i>去後台 AI 模型管理啟用</i>",
+      { parseMode: "HTML", keyboard: [[{ text: "🔧 去後台啟用", url: `${adminConsoleUrl()}/ai/models` }]] });
     return NextResponse.json({ ok: true });
   }
 
@@ -488,7 +510,9 @@ async function processTelegramUpdate(token: string, body: any) {
     .eq("provider", model.provider)
     .maybeSingle();
   if (!keyRow || !(keyRow as any).enabled) {
-    await tgSend(token, chatId, `❌ ${model.provider} key 沒 enabled、去 /admin/ai/models 啟用`);
+    await tgSend(token, chatId,
+      `❌ <b>${escapeHTML(model.provider)} key 沒啟用</b>\n<i>去後台 AI 模型管理啟用 ${escapeHTML(model.provider)} 的 key</i>`,
+      { parseMode: "HTML", keyboard: [[{ text: "🔧 去後台修", url: `${adminConsoleUrl()}/ai/models` }]] });
     return NextResponse.json({ ok: true });
   }
 
@@ -496,7 +520,9 @@ async function processTelegramUpdate(token: string, body: any) {
   try {
     apiKey = decryptKey((keyRow as any).api_key_encrypted);
   } catch (e: any) {
-    await tgSend(token, chatId, `❌ key 解密失敗 (AI_KEY_SECRET 變過？): ${e?.message}`);
+    await tgSend(token, chatId,
+      `❌ <b>key 解密失敗</b>\n<i>AI_KEY_SECRET 可能跟當時加密的不一致</i>\n<code>${escapeHTML((e?.message ?? "unknown").slice(0, 120))}</code>`,
+      { parseMode: "HTML" });
     return NextResponse.json({ ok: true });
   }
 

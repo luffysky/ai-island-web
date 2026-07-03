@@ -797,7 +797,10 @@ export async function POST(req: NextRequest) {
       if (action === "save_note") {
         const msgId = params.get("msg_id");
         if (!msgId) {
-          await lineReply(replyToken, "❌ 缺少訊息 id、再試一次", token, QUICK_REPLY);
+          await lineReply(replyToken, buildSimpleCard({
+            emoji: "❌", title: "存筆記失敗", accentColor: "#ef4444",
+            body: "缺少訊息 id、請再按一次「存筆記」試試。",
+          }), token, QUICK_REPLY);
           continue;
         }
         const admin = createSupabaseAdmin();
@@ -817,7 +820,10 @@ export async function POST(req: NextRequest) {
           .eq("id", msgId)
           .maybeSingle();
         if (!msg || !(msg as any).content) {
-          await lineReply(replyToken, "❌ 找不到原訊息、可能太舊了", token, QUICK_REPLY);
+          await lineReply(replyToken, buildSimpleCard({
+            emoji: "❌", title: "找不到原訊息", accentColor: "#ef4444",
+            body: "這則 AI 回覆可能太舊了、找不到內容。再問一次就能存新的。",
+          }), token, QUICK_REPLY);
           continue;
         }
         const content = String((msg as any).content).slice(0, 4000);
@@ -887,7 +893,11 @@ export async function POST(req: NextRequest) {
       }
       const img = await fetchLineImageBase64(ev.message.id, token);
       if (!img) {
-        await lineReply(replyToken, "圖片下載失敗、再傳一次試試？", token, QUICK_REPLY);
+        await lineReply(replyToken, buildSimpleCard({
+          emoji: "📷", title: "圖片下載失敗", accentColor: "#ef4444",
+          body: "圖片沒收到、再傳一次試試？或直接打字描述圖片內容、我幫你看。",
+          buttons: [{ label: "📚 看章節", uri: `${SITE_URL}/chapters`, primary: true }],
+        }), token, QUICK_REPLY);
         continue;
       }
       const result = await askUserAI("", profile as any, userId, [img]);
