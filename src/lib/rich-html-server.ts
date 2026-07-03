@@ -20,6 +20,8 @@ const ALLOWED_TAGS = [
   "figure", "figcaption",
   // 媒體：部落格可內嵌圖/影/音 + YouTube
   "video", "audio", "source", "iframe",
+  // Callout 提示框（TipTap 自訂節點）→ 存檔會吐 <div data-callout="info">…</div>
+  "div",
 ];
 
 export function sanitizeRichHtmlStrict(html: unknown): string {
@@ -33,15 +35,19 @@ export function sanitizeRichHtmlStrict(html: unknown): string {
       audio: ["src", "controls", "preload", "loop", "class"],
       source: ["src", "type"],
       iframe: ["src", "width", "height", "frameborder", "allow", "allowfullscreen", "title", "class"],
-      span: ["style", "class"],
+      // span：+ Mention（@提及）會吐 data-type/data-id/data-label
+      span: ["style", "class", "data-type", "data-id", "data-label"],
       mark: ["style"],
       p: ["style", "class"],
+      // Callout 提示框外框：data-callout 決定 info/warn/success（class 已由 "*" 放行）
+      div: ["class", "data-callout"],
       // TextAlign 會把 style 寫到 heading/blockquote/li 上；沒放行的話對齊會在存檔時被清掉
       h1: ["style", "class"], h2: ["style", "class"], h3: ["style", "class"],
       h4: ["style", "class"], h5: ["style", "class"], h6: ["style", "class"],
       blockquote: ["style", "class"], li: ["style", "class"],
       code: ["class"],
-      pre: ["class"],
+      // pre：+ 升級版程式碼區塊的檔名（存成 data-filename）
+      pre: ["class", "data-filename"],
       th: ["colspan", "rowspan", "scope"],
       td: ["colspan", "rowspan"],
       "*": ["class"],

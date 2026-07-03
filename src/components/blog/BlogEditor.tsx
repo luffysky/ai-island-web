@@ -1,6 +1,7 @@
 "use client";
 
 import { useEditor, EditorContent, type Editor } from "@tiptap/react";
+import { FloatingMenu } from "@tiptap/react/menus";
 import { Node as TiptapNode } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
@@ -16,7 +17,7 @@ import TableHeader from "@tiptap/extension-table-header";
 import TableCell from "@tiptap/extension-table-cell";
 import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
-import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
+import { Markdown } from "tiptap-markdown";
 import { common, createLowlight } from "lowlight";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -26,10 +27,18 @@ import {
   Link as LinkIcon, Image as ImageIcon, Table as TableIcon, Undo, Redo,
   Highlighter, AlignLeft, AlignCenter, AlignRight,
   FileCode, Minus, CheckSquare, Upload, Loader2, Baseline, Type,
-  Video as VideoIcon, Music, Youtube, Paperclip,
+  Video as VideoIcon, Music, Youtube, Paperclip, Info, Download, Printer,
 } from "lucide-react";
 import { TextStyleColorSize } from "@/lib/tiptap-text-style";
 import { useToast } from "@/components/ui/Toast";
+import { CodeBlockUpgraded } from "./tiptap/code-block";
+import { Callout } from "./tiptap/callout";
+import { SlashCommand } from "./tiptap/slash-command";
+import { MentionExt } from "./tiptap/mention-suggestion";
+import { ExternalImageUpload } from "./tiptap/external-image";
+import { AIBubbleMenu } from "./tiptap/ai-bubble-menu";
+import { EmojiButton } from "./tiptap/emoji-picker";
+import { computeStats, estimateReadingMinutes, type EditorStats } from "./tiptap/toc";
 
 const lowlight = createLowlight(common);
 
@@ -65,6 +74,28 @@ const AudioNode = TiptapNode.create({
   },
 });
 
+// 貼上/拖入外部圖片 → 抓回重傳 R2、換 src（連結防腐）。CORS 擋掉時 graceful 回 null、保留原 src。
+async function uploadExternalImage(src: string): Promise<string | null> {
+  try {
+    const resp = await fetch(src, { mode: "cors" });
+    if (!resp.ok) return null;
+    const blob = await resp.blob();
+    if (!blob.type.startsWith("image/")) return null;
+    if (blob.size > 8 * 1024 * 1024) return null;
+    const ext = (blob.type.split("/")[1] || "png").split("+")[0];
+    const file = new File([blob], `pasted-${Date.now()}.${ext}`, { type: blob.type });
+    const fd = new FormData();
+    fd.append("file", file);
+    fd.append("folder", "blog");
+    const up = await fetch("/api/upload", { credentials: "include", method: "POST", body: fd });
+    const j = await up.json().catch(() => ({}));
+    if (!up.ok) return null;
+    return j.url ?? null;
+  } catch {
+    return null;
+  }
+}
+
 interface BlogEditorProps {
   content: string;
   onChange: (html: string) => void;
@@ -72,15 +103,17 @@ interface BlogEditorProps {
   editable?: boolean;
   /** 編輯器就緒時回傳 editor 實例（給創作引擎做 AI 插入/取代選取）。 */
   onReady?: (editor: Editor) => void;
+  /** 內文變動時回傳目錄 / 預估閱讀時間 / 字詞數（消費頁可自行渲染 TOC）。 */
+  onStats?: (stats: EditorStats) => void;
 }
 
-export function BlogEditor({ content, onChange, placeholder, editable = true, onReady }: BlogEditorProps) {
+export function BlogEditor({ content, onChange, placeholder, editable = true, onReady, onStats }: BlogEditorProps) {
   const editor = useEditor({
     immediatelyRender: false,
     editable,
     extensions: [
       StarterKit.configure({ codeBlock: false }),
-      Placeholder.configure({ placeholder: placeholder ?? "開始寫你的文章..." }),
+      Placeholder.configure({ placeholder: placeholder ?? "開始寫你的文章...（輸入 / 叫出指令選單）" }),
       Link.configure({ openOnClick: false, HTMLAttributes: { class: "text-accent underline" } }),
       Image.configure({ HTMLAttributes: { class: "rounded-lg max-w-full" } }),
       VideoNode,
@@ -94,10 +127,18 @@ export function BlogEditor({ content, onChange, placeholder, editable = true, on
       TableRow, TableHeader, TableCell,
       TaskList,
       TaskItem.configure({ nested: true }),
-      CodeBlockLowlight.configure({ lowlight }),
+      CodeBlockUpgraded.configure({ lowlight }),
+      Callout,
+      SlashCommand,
+      MentionExt,
+      ExternalImageUpload.configure({ upload: uploadExternalImage }),
+      Markdown.configure({ html: true, transformPastedText: true, transformCopiedText: false, linkify: true }),
     ],
     content: content || "",
-    onUpdate: ({ editor }) => onChange(editor.getHTML()),
+    onUpdate: ({ editor }) => {
+      onChange(editor.getHTML());
+      if (onStats) onStats(computeStats(editor));
+    },
     editorProps: {
       attributes: {
         class: "prose-custom max-w-none min-h-[400px] focus:outline-none px-4 py-3",
@@ -118,9 +159,10 @@ export function BlogEditor({ content, onChange, placeholder, editable = true, on
     if (editor) editor.setEditable(editable);
   }, [editor, editable]);
 
-  // 就緒時回傳 editor 實例
+  // 就緒時回傳 editor 實例 + 首次 stats
   useEffect(() => {
     if (editor && onReady) onReady(editor);
+    if (editor && onStats) onStats(computeStats(editor));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editor]);
 
@@ -128,15 +170,42 @@ export function BlogEditor({ content, onChange, placeholder, editable = true, on
     return <div className="h-[460px] rounded-xl border border-border bg-bg-card animate-pulse" />;
   }
 
+  const chars = editor.storage.characterCount.characters();
+  const words = editor.storage.characterCount.words();
+
   return (
     <div className="rounded-xl border border-border bg-bg-card overflow-hidden">
+      {/* 只在列印時隱藏工具列 / 底部列 */}
+      <style>{`@media print { .blog-editor-toolbar, .blog-editor-footer { display: none !important; } }`}</style>
       {editable && <Toolbar editor={editor} />}
+      {editable && <AIBubbleMenu editor={editor} />}
+      {editable && (
+        <FloatingMenu editor={editor} options={{ placement: "left-start" }}>
+          <div className="flex items-center gap-0.5 rounded-lg border border-border bg-bg-card p-1 shadow-xl">
+            <QuickBtn onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} title="標題"><Heading2 size={15} /></QuickBtn>
+            <QuickBtn onClick={() => editor.chain().focus().toggleBulletList().run()} title="項目清單"><ListIcon size={15} /></QuickBtn>
+            <QuickBtn onClick={() => editor.chain().focus().toggleTaskList().run()} title="待辦"><CheckSquare size={15} /></QuickBtn>
+            <QuickBtn onClick={() => editor.chain().focus().toggleCodeBlock().run()} title="程式碼區塊"><FileCode size={15} /></QuickBtn>
+            <QuickBtn onClick={() => editor.chain().focus().setCallout("info").run()} title="提示框"><Info size={15} /></QuickBtn>
+            <QuickBtn onClick={() => editor.view.dom.dispatchEvent(new CustomEvent("blogeditor:pick-image"))} title="圖片"><ImageIcon size={15} /></QuickBtn>
+          </div>
+        </FloatingMenu>
+      )}
       <EditorContent editor={editor} />
-      <div className="px-4 py-2 border-t border-border text-xs text-fg-muted flex justify-between">
-        <span>{editor.storage.characterCount.characters()} 字</span>
-        <span>{editor.storage.characterCount.words()} 詞</span>
+      <div className="blog-editor-footer px-4 py-2 border-t border-border text-xs text-fg-muted flex flex-wrap gap-x-4 gap-y-1 justify-between">
+        <span>{chars} 字</span>
+        <span>約 {estimateReadingMinutes(chars, words)} 分鐘閱讀</span>
+        <span>{words} 詞</span>
       </div>
     </div>
+  );
+}
+
+function QuickBtn({ onClick, title, children }: { onClick: () => void; title: string; children: React.ReactNode }) {
+  return (
+    <button type="button" onClick={onClick} title={title} className="p-1.5 rounded text-fg hover:bg-bg-elevated transition">
+      {children}
+    </button>
   );
 }
 
@@ -266,6 +335,7 @@ function Toolbar({ editor }: { editor: Editor }) {
     if (attachInputRef.current) attachInputRef.current.value = "";
   };
   // 拖放 / 貼上檔案到編輯器 → 自動上傳（圖/影/音內嵌、其他檔案插下載連結）
+  // 另監聽 slash / FloatingMenu 觸發的「選圖片」事件。
   useEffect(() => {
     const el = (editor.view.dom as HTMLElement);
     const isMedia = (f: File) => f.type.startsWith("image/") || f.type.startsWith("video/") || f.type.startsWith("audio/");
@@ -283,11 +353,14 @@ function Toolbar({ editor }: { editor: Editor }) {
       const f = e.clipboardData?.files?.[0];
       if (f) { e.preventDefault(); handle(f); }
     };
+    const onPickImage = () => fileInputRef.current?.click();
     el.addEventListener("drop", onDrop);
     el.addEventListener("paste", onPaste);
+    el.addEventListener("blogeditor:pick-image", onPickImage as EventListener);
     return () => {
       el.removeEventListener("drop", onDrop);
       el.removeEventListener("paste", onPaste);
+      el.removeEventListener("blogeditor:pick-image", onPickImage as EventListener);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editor]);
@@ -296,8 +369,23 @@ function Toolbar({ editor }: { editor: Editor }) {
     editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
   };
 
+  // 匯出 Markdown（.md 下載）
+  const exportMarkdown = () => {
+    try {
+      const md = (editor.storage as any).markdown?.getMarkdown?.() ?? "";
+      const blob = new Blob([md], { type: "text/markdown;charset=utf-8" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `文章-${new Date().toISOString().slice(0, 10)}.md`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    } catch {
+      toast.error("匯出失敗");
+    }
+  };
+
   return (
-    <div className="flex flex-wrap items-center gap-0.5 p-2 border-b border-border sticky top-0 bg-bg-card z-10">
+    <div className="blog-editor-toolbar flex flex-wrap items-center gap-0.5 p-2 border-b border-border sticky top-0 bg-bg-card z-10 overflow-x-auto max-w-full">
       <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} className={btn(editor.isActive("heading", { level: 1 }))} title="標題 1"><Heading1 size={16} /></button>
       <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} className={btn(editor.isActive("heading", { level: 2 }))} title="標題 2"><Heading2 size={16} /></button>
       <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} className={btn(editor.isActive("heading", { level: 3 }))} title="標題 3"><Heading3 size={16} /></button>
@@ -310,11 +398,13 @@ function Toolbar({ editor }: { editor: Editor }) {
       <Sep />
       <FontSizeSelect editor={editor} />
       <ColorButton editor={editor} />
+      <EmojiButton editor={editor} />
       <Sep />
       <button type="button" onClick={() => editor.chain().focus().toggleBulletList().run()} className={btn(editor.isActive("bulletList"))} title="項目符號"><ListIcon size={16} /></button>
       <button type="button" onClick={() => editor.chain().focus().toggleOrderedList().run()} className={btn(editor.isActive("orderedList"))} title="編號清單"><ListOrdered size={16} /></button>
       <button type="button" onClick={() => editor.chain().focus().toggleTaskList().run()} className={btn(editor.isActive("taskList"))} title="待辦清單"><CheckSquare size={16} /></button>
       <button type="button" onClick={() => editor.chain().focus().toggleBlockquote().run()} className={btn(editor.isActive("blockquote"))} title="引言"><Quote size={16} /></button>
+      <button type="button" onClick={() => editor.chain().focus().setCallout("info").run()} className={btn(editor.isActive("callout"))} title="提示框（注意 / 警告 / 成功；或用 / 指令）"><Info size={16} /></button>
       <Sep />
       <button type="button" onClick={() => editor.chain().focus().toggleCode().run()} className={btn(editor.isActive("code"))} title="行內程式碼"><Code size={16} /></button>
       <button type="button" onClick={() => editor.chain().focus().toggleCodeBlock().run()} className={btn(editor.isActive("codeBlock"))} title="程式碼區塊"><FileCode size={16} /></button>
@@ -390,6 +480,9 @@ function Toolbar({ editor }: { editor: Editor }) {
       />
       <button type="button" onClick={addEmbed} className={btn(false)} title="嵌入 YouTube / Vimeo 影片連結"><Youtube size={16} /></button>
       <button type="button" onClick={addTable} className={btn(false)} title="表格"><TableIcon size={16} /></button>
+      <Sep />
+      <button type="button" onClick={exportMarkdown} className={btn(false)} title="匯出 Markdown（.md）"><Download size={16} /></button>
+      <button type="button" onClick={() => window.print()} className={btn(false)} title="列印 / 匯出 PDF"><Printer size={16} /></button>
       <Sep />
       <button type="button" onClick={() => editor.chain().focus().undo().run()} className={btn(false)} title="復原"><Undo size={16} /></button>
       <button type="button" onClick={() => editor.chain().focus().redo().run()} className={btn(false)} title="重做"><Redo size={16} /></button>
