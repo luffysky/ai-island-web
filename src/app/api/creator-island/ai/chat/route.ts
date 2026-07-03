@@ -32,8 +32,15 @@ export async function POST(req: NextRequest) {
   if (!resolved.ok) return NextResponse.json({ error: resolved.error, message: resolved.message }, { status: resolved.status });
   const { provider, model, apiKey } = resolved.model;
 
+  // 聚焦碎片：使用者在島上選了碎片、綠寶要針對這些碎片回答
+  const focus = Array.isArray(b.focusFragments) ? b.focusFragments.slice(0, 8) : [];
+  const focusText = focus.length
+    ? `\n\n【使用者目前選中、要你聚焦的 ${focus.length} 個碎片】——回答時請圍繞這些碎片、把它們納入你的建議：\n` +
+      focus.map((f: any, i: number) => `(${i + 1}) ${String(f.title ?? "").slice(0, 80)}：${String(f.content ?? "").slice(0, 600)}`).join("\n")
+    : "";
+
   // 組訊息；最後一則 user 若帶圖 → 多模態 content
-  const msgs: any[] = [{ role: "system", content: SYSTEM }];
+  const msgs: any[] = [{ role: "system", content: SYSTEM + focusText }];
   history.forEach((m: any, i: number) => {
     const isLast = i === history.length - 1;
     if (isLast && m.role === "user" && b.image?.data) {

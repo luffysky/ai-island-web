@@ -5,12 +5,19 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { analyzeDNA } from "@/lib/creator-engine/ai/agents";
 
-export async function getStats(userId: string): Promise<{ fragments: number; works: number; aiRuns: number }> {
+/**
+ * 成長統計。傳 workspaceId → 只算「這個工作室」的（個人島也是一個 workspace）；
+ * 不傳 → 該使用者跨所有工作室加總（舊行為）。
+ * 一個人可以有多個工作室，碎片/作品本來就綁 workspace，所以要能分開看。
+ */
+export async function getStats(userId: string, workspaceId?: string | null): Promise<{ fragments: number; works: number; aiRuns: number }> {
   const admin = createSupabaseAdmin();
+  const scope = <T extends { eq: (col: string, val: string) => T }>(q: T) =>
+    (workspaceId ? q.eq("workspace_id", workspaceId) : q);
   const [f, w, r] = await Promise.all([
-    admin.from("ci_fragments").select("id", { count: "exact", head: true }).eq("created_by", userId),
-    admin.from("ci_works").select("id", { count: "exact", head: true }).eq("created_by", userId),
-    admin.from("ci_agent_runs").select("id", { count: "exact", head: true }).eq("user_id", userId),
+    scope(admin.from("ci_fragments").select("id", { count: "exact", head: true }).eq("created_by", userId) as any),
+    scope(admin.from("ci_works").select("id", { count: "exact", head: true }).eq("created_by", userId) as any),
+    scope(admin.from("ci_agent_runs").select("id", { count: "exact", head: true }).eq("user_id", userId) as any),
   ]);
   return { fragments: f.count ?? 0, works: w.count ?? 0, aiRuns: r.count ?? 0 };
 }

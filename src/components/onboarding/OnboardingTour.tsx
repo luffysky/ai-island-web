@@ -110,7 +110,7 @@ export function OnboardingTour() {
 
   return (
     <div className="fixed inset-0 z-[80] flex items-end sm:items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fade-in">
-      <div className="relative w-full max-w-md bg-bg-card border border-border rounded-2xl shadow-2xl overflow-hidden">
+      <div className="relative w-full max-w-[min(28rem,calc(100vw-2rem))] mx-auto bg-bg-card border border-border rounded-2xl shadow-2xl overflow-hidden">
         {/* progress */}
         <div className="h-1 bg-bg-elevated">
           <div className="h-full bg-gradient-to-r from-accent to-accent-2 transition-all" style={{ width: `${((step + 1) / STEPS.length) * 100}%` }} />

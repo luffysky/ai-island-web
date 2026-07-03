@@ -36,6 +36,10 @@ export function sanitizeRichHtmlStrict(html: unknown): string {
       span: ["style", "class"],
       mark: ["style"],
       p: ["style", "class"],
+      // TextAlign 會把 style 寫到 heading/blockquote/li 上；沒放行的話對齊會在存檔時被清掉
+      h1: ["style", "class"], h2: ["style", "class"], h3: ["style", "class"],
+      h4: ["style", "class"], h5: ["style", "class"], h6: ["style", "class"],
+      blockquote: ["style", "class"], li: ["style", "class"],
       code: ["class"],
       pre: ["class"],
       th: ["colspan", "rowspan", "scope"],
@@ -60,6 +64,10 @@ export function sanitizeRichHtmlStrict(html: unknown): string {
         color: [/^#[0-9a-fA-F]{3,8}$/, /^rgb\(/, /^rgba\(/, /^[a-zA-Z]+$/],
         "background-color": [/^#[0-9a-fA-F]{3,8}$/, /^rgb\(/, /^rgba\(/, /^[a-zA-Z]+$/],
         "text-align": [/^(left|right|center|justify)$/],
+        // TipTap TextStyleColorSize 會吐 font-size（px/em/rem/pt/%）；之前沒放行 → 存檔被清掉、字級跑掉
+        "font-size": [/^\d{1,3}(\.\d+)?(px|em|rem|pt|%)$/],
+        "font-family": [/^[\w\s,"'-]+$/],
+        "line-height": [/^\d{1,3}(\.\d+)?(px|em|rem|%)?$/],
       },
     },
     // 外連一律 noopener + nofollow + 新分頁

@@ -108,18 +108,45 @@ export default async function ArticlePage({
     }
   }
 
-  // JSON-LD: Article + BreadcrumbList
+  // GEO：純文字內文（去標籤、收斂空白）+ 字數，餵給 Article JSON-LD 的 articleBody / wordCount
+  const bodyText = plainText.replace(/\s+/g, " ").trim();
+  const articleBody = bodyText.length > 5000 ? bodyText.slice(0, 5000) : bodyText;
+  // 中文以字元計、英文以空白斷詞計；取兩者估算的較大值
+  const wordCount = Math.max(
+    bodyText.replace(/\s+/g, "").length,
+    bodyText.split(/\s+/).filter(Boolean).length,
+  );
+  const tags: string[] = Array.isArray(article.tags) ? article.tags : [];
+
+  // 文末 GEO 摘要用的重點條列（只從文章自身的 summary / tags 推、不杜撰）
+  const geoTakeaways: string[] = [
+    ...(article.summary ? [article.summary as string] : []),
+    ...(tags.length ? [`主題標籤：${tags.map((t) => `#${t}`).join("、")}`] : []),
+    `作者：${name}`,
+    ...(article.category ? [`分類：${article.category}`] : []),
+  ];
+  const geoSummaryText =
+    (article.seo_desc as string) ||
+    (article.summary as string) ||
+    `本文〈${article.title}〉由 ${name} 發表於 AI 島部落格。`;
+
+  // JSON-LD: Article（強化：keywords / articleBody / wordCount）+ BreadcrumbList
   const ld = [
-    articleSchema({
-      headline: article.title,
-      description: article.seo_desc || article.summary || article.title,
-      url: articleUrl,
-      imageUrl: article.cover_image || `${SITE_URL}/og.png`,
-      authorName: name,
-      authorUrl: `${SITE_URL}/blogs/${userSlug}`,
-      publishedAt: article.published_at || article.created_at,
-      updatedAt: article.updated_at,
-    }),
+    {
+      ...articleSchema({
+        headline: article.title,
+        description: article.seo_desc || article.summary || article.title,
+        url: articleUrl,
+        imageUrl: article.cover_image || `${SITE_URL}/og.png`,
+        authorName: name,
+        authorUrl: `${SITE_URL}/blogs/${userSlug}`,
+        publishedAt: article.published_at || article.created_at,
+        updatedAt: article.updated_at,
+      }),
+      ...(tags.length ? { keywords: tags.join(", ") } : {}),
+      ...(articleBody ? { articleBody } : {}),
+      ...(wordCount ? { wordCount } : {}),
+    },
     breadcrumbSchema([
       { name: "首頁", url: SITE_URL },
       { name: "部落格", url: `${SITE_URL}/blogs` },
@@ -286,6 +313,21 @@ export default async function ArticlePage({
           </div>
         </section>
       )}
+
+      {/* GEO：機器可讀的 AI 摘要區塊（真實文字、供 LLM 爬蟲擷取；內容只從本文 summary/tags 推導） */}
+      <section
+        aria-label="AI 摘要"
+        data-geo="summary"
+        className="mt-10 pt-6 border-t border-border text-sm text-fg-muted"
+      >
+        <h2 className="text-base font-semibold text-fg mb-2">AI 摘要（本文重點）</h2>
+        <p className="leading-relaxed mb-3">{geoSummaryText}</p>
+        <ul className="list-disc pl-5 space-y-1">
+          {geoTakeaways.map((t, i) => (
+            <li key={i}>{t}</li>
+          ))}
+        </ul>
+      </section>
 
       {/* 留言區 */}
       <CommentSection userSlug={userSlug} articleSlug={articleSlug} />

@@ -71,15 +71,25 @@ export function StudioClient({ initialWorkspaces }: { initialWorkspaces: Ws[] })
   );
 }
 
+const ROLE_ZH: Record<string, string> = { owner: "擁有者", manager: "管理員", admin: "管理員", contributor: "創作者", viewer: "檢視者", member: "成員" };
+
 function StudioCard({ ws, onRemoved }: { ws: Ws; onRemoved: () => void }) {
   const [members, setMembers] = useState<any[] | null>(null);
+  const [showMembers, setShowMembers] = useState(false);
+  const [loadingMembers, setLoadingMembers] = useState(false);
   const [code, setCode] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const canManage = ws.role === "owner" || ws.role === "manager";
 
   async function loadMembers() {
-    try { const { members } = await call(`/api/creator-island/workspaces/${ws.id}/members`, "GET"); setMembers(members); }
-    catch (e: any) { setErr(e.message); }
+    // 再按一次＝收合
+    if (showMembers) { setShowMembers(false); return; }
+    setShowMembers(true); setErr(null);
+    if (members) return; // 已載過就直接展開
+    setLoadingMembers(true);
+    try { const { members } = await call(`/api/creator-island/workspaces/${ws.id}/members`, "GET"); setMembers(members ?? []); }
+    catch (e: any) { setErr(e.message); setShowMembers(false); }
+    finally { setLoadingMembers(false); }
   }
   async function invite() {
     try { const r = await call(`/api/creator-island/workspaces/${ws.id}/invitations`, "POST", { role: "contributor", maxUses: 10, expiresInDays: 14 }); setCode(r.code); }
@@ -100,16 +110,25 @@ function StudioCard({ ws, onRemoved }: { ws: Ws; onRemoved: () => void }) {
   return (
     <div className="bg-bg-card border border-border rounded-2xl p-4 space-y-2">
       <div className="flex items-center justify-between">
-        <div className="font-bold flex items-center gap-2"><Building2 size={16} /> {ws.name} <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-accent/15 text-accent">{ws.role === "owner" ? "擁有者" : ws.role === "admin" ? "管理員" : "成員"}</span></div>
+        <div className="font-bold flex items-center gap-2"><Building2 size={16} /> {ws.name} <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-accent/15 text-accent">{ROLE_ZH[ws.role] ?? ws.role}</span></div>
         <div className="flex items-center gap-3 text-xs">
           <a href={`/creator-island?ws=${ws.id}`} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-accent text-white font-bold">進入工作室 <ArrowRight size={13} /></a>
-          <button onClick={loadMembers} className="inline-flex items-center gap-1 text-accent"><Users size={13} /> 查看成員</button>
+          <button onClick={loadMembers} className="inline-flex items-center gap-1 text-accent">
+            <Users size={13} /> {loadingMembers ? "載入中…" : showMembers ? "收合成員" : "查看成員"}
+          </button>
         </div>
       </div>
       {err && <div className="text-xs text-red-400">⚠️ {err}</div>}
-      {members && (
-        <div className="text-xs text-fg-muted space-y-0.5">
-          {members.map((m: any) => <div key={m.user_id}>{m.profile?.display_name || m.profile?.username || m.user_id} · {m.role}</div>)}
+      {showMembers && members && (
+        <div className="bg-bg-elevated rounded-xl p-3 space-y-1.5">
+          <div className="text-xs font-bold inline-flex items-center gap-1.5 text-fg"><Users size={13} /> 成員（{members.length}）</div>
+          {members.length === 0 ? <div className="text-xs text-fg-muted">還沒有其他成員。用「產生邀請碼」邀請夥伴。</div> :
+            members.map((m: any) => (
+              <div key={m.user_id} className="flex items-center justify-between text-xs">
+                <span className="text-fg truncate">{m.profile?.display_name || m.profile?.username || m.user_id}</span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-accent/15 text-accent shrink-0">{ROLE_ZH[m.role] ?? m.role}</span>
+              </div>
+            ))}
         </div>
       )}
       {canManage && (

@@ -102,8 +102,9 @@ const SynthesizeSchema = z.object({
   connections: z.array(z.string()).default([]),
 });
 export async function synthesize(workspaceId: string, userId: string, frags: { id: string; title: string; content: string }[]) {
-  const system = `你是「靈感凝聚器」。把多個碎片濃縮成一個核心點子，並指出碎片之間「非顯而易見」的連結。
-只回傳 JSON：{"title":"點子名","summary":"2~3句","coreIdea":"一句核心","connections":["碎片A的X和碎片B的Y之間的線，具體"]}。全部繁體中文。`;
+  const system = `你是「靈感凝聚器」。把多個碎片凝聚成「一個」有機的核心點子——不是並列摘要，而是找出貫穿它們的『同一條線』（共同的情感、母題或人物處境），讓這些碎片讀起來像同一件事的不同切面。
+summary 要用這條主線把碎片自然串起來（不要一句一個碎片地列點），coreIdea 是這條線最凝練的一句。connections 每條要具體指出「碎片A的X」與「碎片B的Y」之間是怎麼扣上的。
+只回傳 JSON：{"title":"點子名","summary":"2~3句、用主線串起","coreIdea":"一句核心","connections":["碎片A的X和碎片B的Y之間的線，具體"]}。全部繁體中文。`;
   return runAgent({
     agentType: "synthesize", workspaceId, userId, schema: SynthesizeSchema,
     input: { fragmentIds: frags.map((f) => f.id) },
@@ -113,15 +114,22 @@ export async function synthesize(workspaceId: string, userId: string, frags: { i
 
 // ===== 演化 Evolve =====
 const EvolveSchema = z.object({ variants: z.array(z.object({ title: z.string(), content: z.string() })).min(1) });
-export async function evolve(workspaceId: string, userId: string, seed: { id: string; title: string; content: string }, count: number, direction?: string) {
-  const n = Math.max(1, Math.min(20, count || 5));
-  const system = `你是「創意演化器」。把一個種子碎片延伸出 ${n} 個不同方向的新碎片（角度要有差異、不要近似重複）。
+/** 種子可為單一或多個碎片：多個時交叉演化（每個新碎片可融合多個種子）。 */
+export async function evolve(workspaceId: string, userId: string, seeds: { id: string; title: string; content: string }[], count: number, direction?: string) {
+  const list = Array.isArray(seeds) ? seeds : [seeds];
+  const n = Math.max(1, Math.min(24, count || 6));
+  const multi = list.length > 1;
+  const system = multi
+    ? `你是「創意演化器」。把這 ${list.length} 個種子碎片『交叉演化』出 ${n} 個不同方向的新碎片——每個新碎片可以融合 2 個以上種子的元素，長出原本單一碎片不會有的火花。角度要彼此有差異、不要近似重複。
+只回傳 JSON：{"variants":[{"title":"...","content":"..."}]}（最多 ${n} 個）。全部繁體中文。`
+    : `你是「創意演化器」。把一個種子碎片延伸出 ${n} 個不同方向的新碎片（角度要有差異、不要近似重複）。
 只回傳 JSON：{"variants":[{"title":"...","content":"..."}]}（最多 ${n} 個）。全部繁體中文。`;
   return runAgent({
     agentType: "evolve", workspaceId, userId, schema: EvolveSchema,
-    input: { fragmentId: seed.id, count: n, direction },
-    system, user: `種子碎片：「${seed.title}」\n${seed.content}\n${direction ? `方向：${direction}` : ""}`,
-    temperature: 0.95, maxTokens: 2500,
+    input: { fragmentIds: list.map((s) => s.id), count: n, direction },
+    system,
+    user: `${multi ? `${list.length} 個種子碎片：\n\n${fragmentBlock(list)}` : `種子碎片：「${list[0].title}」\n${list[0].content}`}\n${direction ? `方向：${direction}` : ""}`,
+    temperature: 0.95, maxTokens: 3000,
   });
 }
 
@@ -137,7 +145,7 @@ const ComposeSong = z.object({
 export async function compose(workspaceId: string, userId: string, workType: string, frags: { id: string; title: string; content: string }[]) {
   const isSong = workType === "song";
   if (isSong) {
-    const system = `你是「編織者」。把碎片編成一首歌，並產出可直接用的音樂提示詞。
+    const system = `你是「編織者」。把這些碎片編成『一首完整、前後呼應』的歌——不是把碎片各塞一段，而是先定一個貫穿全曲的主題與情緒弧線，再讓每個碎片成為推進這條線的段落，副歌要收束整首的核心。並產出可直接用的音樂提示詞。
 只回傳 JSON：{"title":"歌名","lyricsSectioned":"含【Verse】【Pre-Chorus】【Chorus】【Bridge】【Outro】標記的完整歌詞","sunoPrompt":"Suno 風格英文提示","mvPrompt":"MV 視覺英文提示","usedFragmentIds":["用到的碎片id"]}。歌詞繁中、prompt 可英文。`;
     return runAgent({
       agentType: "compose", workspaceId, userId, schema: ComposeSong,
@@ -145,8 +153,21 @@ export async function compose(workspaceId: string, userId: string, workType: str
       system, user: `碎片：\n\n${fragmentBlock(frags)}`, maxTokens: 3000,
     });
   }
-  const system = `你是「編織者」。把碎片編織成一篇 ${workType} 作品草稿，保留作者語氣。
-只回傳 JSON：{"title":"標題","body":"內容(markdown)","usedFragmentIds":["用到的碎片id"]}。全部繁體中文。`;
+  const system = `你是「編織者」。把這些碎片『融合』成一篇 ${workType} 作品草稿。最重要的目標：讀起來是「一個整體」，不是「東一塊西一塊」的碎片拼貼。
+
+先在心裡完成這三步，再動筆：
+1. 找出貫穿所有碎片的『一條主線』——同一個母題、同一個人物、同一種情緒，或一條時間／空間動線。
+2. 決定敘事順序與視角（統一的 POV、時態），讓碎片變成這條主線上依序出現的場景。
+3. 找出碎片之間可以「接上」的意象與細節，讓它們互相呼應、前後扣合。
+
+寫作硬規則：
+- 不可以一段塞一個碎片、也不要照碎片原順序流水帳。
+- 段落之間要有轉場與因果／情緒的承接，必要時補寫連接段落與過場。
+- 合併重複的意象、刪掉冗語，讓不同碎片的元素在同一段裡自然交融。
+- 開頭要立主題、結尾要收束呼應開頭，中間有推進。
+- 保留作者原有語氣與用字風格。
+
+只回傳 JSON：{"title":"標題","body":"內容(markdown)","usedFragmentIds":["真正融進作品的碎片id"]}。全部繁體中文。`;
   return runAgent({
     agentType: "compose", workspaceId, userId, schema: ComposeBase,
     input: { workType, fragmentIds: frags.map((f) => f.id) },

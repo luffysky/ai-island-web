@@ -48,7 +48,7 @@ export async function runWorkflow(workspaceId: string, userId: string, workflowI
       if (step.agent === "synthesize" && frags.length >= 2) {
         const r = await synthesize(workspaceId, userId, frags); results.push({ agent: "synthesize", ok: true, output: r.result });
       } else if (step.agent === "evolve" && frags[0]) {
-        const r = await evolve(workspaceId, userId, frags[0], step.params?.count ?? 5); results.push({ agent: "evolve", ok: true, output: r.result });
+        const r = await evolve(workspaceId, userId, frags, step.params?.count ?? 6); results.push({ agent: "evolve", ok: true, output: r.result });
       } else if (step.agent === "compose" && frags.length >= 1) {
         const r = await compose(workspaceId, userId, step.params?.workType ?? "article", frags); results.push({ agent: "compose", ok: true, output: r.result });
       } else if (step.agent === "transcreate" && frags[0]) {

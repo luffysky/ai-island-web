@@ -13,8 +13,12 @@ export async function POST(req: NextRequest) {
   if (u instanceof NextResponse) return u;
   const b = await req.json().catch(() => ({} as any));
   const workspaceId = String(b.workspaceId ?? "");
-  const ids = Array.isArray(b.fragmentIds) ? b.fragmentIds : [];
-  if (!workspaceId || !ids.length) return NextResponse.json({ error: "validation", message: "缺碎片" }, { status: 422 });
+  const allIds = (Array.isArray(b.fragmentIds) ? b.fragmentIds : []).map((x: unknown) => String(x)).filter(Boolean);
+  if (!workspaceId || !allIds.length) return NextResponse.json({ error: "validation", message: "缺碎片" }, { status: 422 });
+  // 全選可能上百個 → 均勻抽樣最多 60 個代表，控成本又保留多樣性
+  const CAP = 60;
+  const ids = allIds.length <= CAP ? allIds
+    : Array.from({ length: CAP }, (_, i) => allIds[Math.floor((i * allIds.length) / CAP)]);
   const gate = await requireWorkspaceRole(workspaceId, u.userId, "viewer");
   if (gate instanceof NextResponse) return gate;
   const frags = await getFragmentsByIds(workspaceId, ids);

@@ -388,8 +388,8 @@ export function PlaygroundCard({
   return (
     <div className={containerClass + " overflow-hidden flex flex-col"}>
       {/* Header */}
-      <div className="flex items-center justify-between px-3 py-2 bg-bg-elevated border-b border-border shrink-0">
-        <div className="flex items-center gap-2 min-w-0">
+      <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 bg-bg-elevated border-b border-border shrink-0">
+        <div className="flex items-center gap-2 min-w-0 flex-1">
           {/* 語言下拉 */}
           <select
             value={lang}
@@ -406,14 +406,14 @@ export function PlaygroundCard({
               onChange={(e) => setFilename(e.target.value)}
               placeholder={`main.${SANDBOX_LANGS[lang]?.piston === "java" ? "java（自動對齊 class）" : (lang === "py" ? "py" : lang)}`}
               title="檔名（可留空、Java 會自動用 public class 名）"
-              className="text-xs font-mono px-2 py-1 rounded bg-bg border border-border outline-none focus:border-accent w-36 shrink-0"
+              className="text-xs font-mono px-2 py-1 rounded bg-bg border border-border outline-none focus:border-accent min-w-0 flex-1 sm:flex-none sm:w-36 truncate"
             />
           )}
           <span className="text-xs text-fg-muted truncate">
             {playground.title ?? "編輯左邊、按 ▶ 執行"}
           </span>
         </div>
-        <div className="flex items-center gap-1 shrink-0">
+        <div className="flex flex-wrap items-center justify-end gap-1 shrink-0">
           {(isSandbox || isPython) && (
             <button
               onClick={() => setShowStdin(!showStdin)}

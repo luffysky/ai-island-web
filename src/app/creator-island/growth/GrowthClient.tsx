@@ -5,8 +5,9 @@ import { useState } from "react";
 import { TrendingUp, ArrowLeft, Dna } from "lucide-react";
 
 type Dna = { traits: any; confidence: number; updated_at: string } | null;
+type WsLite = { id: string; name: string; type: "personal" | "studio" };
 
-export function GrowthClient({ stats, initialDna }: { stats: { fragments: number; works: number; aiRuns: number }; initialDna: Dna }) {
+export function GrowthClient({ stats, initialDna, workspaces = [], scope = "all" }: { stats: { fragments: number; works: number; aiRuns: number }; initialDna: Dna; workspaces?: WsLite[]; scope?: string }) {
   const [dna, setDna] = useState<Dna>(initialDna);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -29,6 +30,26 @@ export function GrowthClient({ stats, initialDna }: { stats: { fragments: number
         <Link href="/creator-island" className="text-sm text-accent hover:underline inline-flex items-center gap-1.5"><ArrowLeft size={14} /> 回島</Link>
       </header>
 
+      {/* 範圍切換：個人島 vs 各工作室 vs 全部（碎片/作品本來就綁工作室、要能分開看） */}
+      {workspaces.length > 0 && (
+        <div className="flex items-center gap-1.5 flex-wrap text-xs">
+          <span className="text-fg-muted mr-0.5">範圍：</span>
+          {workspaces.map((w) => {
+            const on = scope === w.id;
+            return (
+              <Link key={w.id} href={`/creator-island/growth?ws=${w.id}`}
+                className={`px-2.5 py-1 rounded-full border transition ${on ? "border-accent bg-accent/10 text-accent" : "border-border bg-bg-card hover:border-accent/40"}`}>
+                {w.type === "personal" ? "🏝️ 個人島" : w.name}
+              </Link>
+            );
+          })}
+          <Link href="/creator-island/growth?ws=all"
+            className={`px-2.5 py-1 rounded-full border transition ${scope === "all" ? "border-accent bg-accent/10 text-accent" : "border-border bg-bg-card hover:border-accent/40"}`}>
+            全部加總
+          </Link>
+        </div>
+      )}
+
       <div className="grid grid-cols-3 gap-3">
         {[["碎片", stats.fragments], ["作品", stats.works], ["AI 動作", stats.aiRuns]].map(([l, v]) => (
           <div key={l as string} className="bg-bg-card border border-border rounded-xl p-4 text-center">
@@ -37,6 +58,7 @@ export function GrowthClient({ stats, initialDna }: { stats: { fragments: number
           </div>
         ))}
       </div>
+      <p className="text-[11px] text-fg-muted -mt-2">{scope === "all" ? "目前顯示：你所有工作室加總。" : "目前顯示：此工作室的統計。切換上方範圍看個人島或其他工作室。"}</p>
 
       {/* E9 創作 DNA 卡 */}
       <div className="bg-gradient-to-br from-accent-3/10 via-pink-500/10 to-violet-500/10 border border-accent-3/30 rounded-2xl p-5 space-y-3">

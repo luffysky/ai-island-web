@@ -3,6 +3,51 @@ import { getChapterMetas } from "@/lib/content";
 import { DUNGEONS } from "@/data/dungeons";
 import { SITE_STATS } from "@/lib/site-stats";
 import { chapterDisplayNumber } from "@/lib/chapter-display";
+import { createSupabaseAdmin } from "@/lib/supabase";
+
+// 最新公開部落格文章（best-effort、失敗就回空陣列、不讓 llms.txt 掛掉）
+async function getRecentBlogLines(): Promise<string[]> {
+  try {
+    const admin = createSupabaseAdmin();
+    const { data } = await admin
+      .from("user_blog_articles")
+      .select("title, slug, summary, user_id")
+      .eq("is_public", true)
+      .order("published_at", { ascending: false })
+      .limit(12);
+    const rows = (data as any[]) ?? [];
+    if (!rows.length) return [];
+    const userIds = Array.from(new Set(rows.map((r) => r.user_id)));
+
+    // 只列出「已啟用」部落格；作者 slug 優先用 blog_slug、沒設就退回 profile username
+    const { data: settings } = await admin
+      .from("user_blog_settings")
+      .select("user_id, blog_slug, is_enabled")
+      .in("user_id", userIds);
+    const { data: profs } = await admin
+      .from("profiles")
+      .select("id, username")
+      .in("id", userIds);
+    const usernameById: Record<string, string> = {};
+    for (const p of (profs as any[]) ?? []) if (p.username) usernameById[p.id] = p.username;
+
+    const slugByUser: Record<string, string> = {};
+    for (const s of (settings as any[]) ?? []) {
+      if (s.is_enabled === false) continue;
+      const uslug = s.blog_slug || usernameById[s.user_id];
+      if (uslug) slugByUser[s.user_id] = uslug;
+    }
+    return rows
+      .filter((r) => slugByUser[r.user_id])
+      .map((r) => {
+        const url = `${SITE_URL}/blogs/${slugByUser[r.user_id]}/${r.slug}`;
+        const desc = (r.summary ? String(r.summary) : "").replace(/\s+/g, " ").trim().slice(0, 100);
+        return `- [${r.title}](${url})${desc ? ` — ${desc}` : ""}`;
+      });
+  } catch {
+    return [];
+  }
+}
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
 
@@ -19,6 +64,7 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snow
  */
 export async function GET() {
   const chapters = await getChapterMetas();
+  const recentBlogLines = await getRecentBlogLines();
 
   const lines: string[] = [];
 
@@ -68,6 +114,14 @@ export async function GET() {
     lines.push(`- [${d.emoji} ${d.name}](${SITE_URL}/courses/${d.slug})${d.subtitle ? ` — ${d.subtitle}` : ""}`);
   }
   lines.push("");
+
+  // 最新部落格文章（讓 AI 爬蟲能發現個別文章、不只 /blogs 索引頁）
+  if (recentBlogLines.length) {
+    lines.push("## 最新部落格文章");
+    lines.push("");
+    lines.push(...recentBlogLines);
+    lines.push("");
+  }
 
   // 政策
   lines.push("## 政策 / 法規");

@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { DndContext, useDraggable, useDroppable, PointerSensor, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core";
 import {
   Coins, Trees, Gift, Sprout, PenLine, Mic, Camera, Plus, Shuffle, Wrench, Play, Search,
   Lightbulb, Magnet, Leaf, Wand2, Languages, FolderTree, Pencil, Copy, Music, Film, PenTool,
-  X, Check, Bot, Egg, Recycle, GitFork, Hand, type LucideIcon,
+  X, Check, Bot, Egg, Recycle, GitFork, Hand, ScrollText, type LucideIcon,
 } from "lucide-react";
 import { EggHatch } from "./EggHatch";
 import { IslandTour } from "./IslandTour";
@@ -50,6 +51,7 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
   const [fragments, setFragments] = useState<Fragment[]>(initialFragments);
   const [collections, setCollections] = useState<Collection[]>(initialCollections);
   const [activeCol, setActiveCol] = useState<string | null>(null);
+  const [q, setQ] = useState("");
   const [dropTarget, setDropTarget] = useState<string | null>(null);
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -124,10 +126,24 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
     if (colId && assetId && colId.startsWith("col:")) addToCollection(colId.slice(4), assetId);
   }
 
-  const shownFragments = activeCol ? fragments.filter((f) => collections.find((c) => c.id === activeCol)?.assetIds.includes(f.id)) : fragments;
+  const colFiltered = activeCol ? fragments.filter((f) => collections.find((c) => c.id === activeCol)?.assetIds.includes(f.id)) : fragments;
+  const qLower = q.trim().toLowerCase();
+  const shownFragments = qLower
+    ? colFiltered.filter((f) => [f.title, f.subtitle, f.content, f.category, f.mood, ...(f.tags ?? [])]
+        .some((s) => s && String(s).toLowerCase().includes(qLower)))
+    : colFiltered;
 
   const sel = Array.from(selected);
   const toggle = (id: string) => setSelected((p) => { const n = new Set(p); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  const focusFrags = fragments.filter((f) => selected.has(f.id)).map((f) => ({ id: f.id, title: f.title, content: f.content }));
+  // 全選：目前顯示（含搜尋/分類過濾）的碎片。再按一次＝取消。
+  const allShownSelected = shownFragments.length > 0 && shownFragments.every((f) => selected.has(f.id));
+  const toggleSelectAllShown = () => setSelected((p) => {
+    const n = new Set(p);
+    if (allShownSelected) shownFragments.forEach((f) => n.delete(f.id));
+    else shownFragments.forEach((f) => n.add(f.id));
+    return n;
+  });
 
   async function addFragment() {
     if (!nt.trim()) return;
@@ -184,11 +200,12 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
     setErr(null); setResult(null); setBusy(action);
     try {
       let json: any;
+      const evolveCount = sel.length > 1 ? Math.min(12, sel.length * 3) : 6;
       if (action === "synthesize") json = await api("/api/creator-island/ai/synthesize", { workspaceId, fragmentIds: sel });
-      else if (action === "evolve") json = await api("/api/creator-island/ai/evolve", { workspaceId, fragmentId: sel[0], count: 6 });
+      else if (action === "evolve") json = await api("/api/creator-island/ai/evolve", { workspaceId, fragmentIds: sel, count: evolveCount });
       else json = await api("/api/creator-island/ai/compose", { workspaceId, fragmentIds: sel, workType });
       setResult({ action, ...json });
-      setRecording((p) => [...p, { agent: action, params: action === "evolve" ? { count: 6 } : action === "compose" ? { workType } : {} }]);
+      setRecording((p) => [...p, { agent: action, params: action === "evolve" ? { count: evolveCount } : action === "compose" ? { workType } : {} }]);
     } catch (e: any) { setErr(e.message); } finally { setBusy(null); }
   }
   async function getAdvice() {
@@ -317,6 +334,7 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
         <button onClick={explorePairs} disabled={busy !== null} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-violet-500/15 text-violet-700 dark:text-violet-200 hover:bg-violet-500/25 disabled:opacity-40"><Shuffle size={13} /> 意外配對</button>
         <button onClick={loadWorkflows} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-bg-card border border-border hover:text-accent"><Wrench size={13} /> 工作流{recording.length > 0 ? `（錄製 ${recording.length}）` : ""}</button>
         {recording.length > 0 && <button onClick={saveWorkflow} className="px-3 py-1.5 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-200">存成工作流</button>}
+        <Link href={`/creator-island/activity?ws=${workspaceId}`} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-bg-card border border-border hover:text-accent"><ScrollText size={13} /> 操作記錄</Link>
       </div>
 
       {/* 意外配對面板 */}
@@ -437,7 +455,20 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
         </div>
         <div className="text-[10px] text-fg-muted mb-3">把碎片卡拖到分類上＝複製進該分類（一個碎片可同時屬於多類）。</div>
 
-        <div data-tour="forest" className="text-sm uppercase tracking-wider text-fg-muted mb-2 inline-flex items-center gap-1.5"><Trees size={14} /> 碎片森林（{shownFragments.length}）</div>
+        <div className="flex items-center gap-2 flex-wrap mb-2">
+          <div data-tour="forest" className="text-sm uppercase tracking-wider text-fg-muted inline-flex items-center gap-1.5"><Trees size={14} /> 碎片森林（{shownFragments.length}）</div>
+          <div className="relative flex-1 min-w-[140px] max-w-xs">
+            <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-fg-muted pointer-events-none" />
+            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="搜尋碎片…"
+              className="w-full bg-bg-elevated border border-border rounded-full pl-7 pr-7 py-1.5 text-xs outline-none focus:border-accent" />
+            {q && <button onClick={() => setQ("")} title="清除" className="absolute right-2 top-1/2 -translate-y-1/2 text-fg-muted hover:text-fg"><X size={12} /></button>}
+          </div>
+          {shownFragments.length > 0 && (
+            <button onClick={toggleSelectAllShown} className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full border border-border bg-bg-card text-xs hover:border-accent/40 whitespace-nowrap">
+              <Check size={12} /> {allShownSelected ? "取消全選" : `全選${qLower || activeCol ? "本頁" : ""}`}
+            </button>
+          )}
+        </div>
         <div className="columns-1 sm:columns-2 gap-3 [&>*]:mb-3 [&>*]:break-inside-avoid max-h-[78vh] overflow-y-auto pr-1">
           {shownFragments.map((f) => (
             <DraggableFragment key={f.id} f={f} on={selected.has(f.id)} onToggle={() => toggle(f.id)} onEdit={() => setEditing(f)} />
@@ -453,7 +484,7 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
             <div className="flex items-center gap-2 flex-wrap">
               <span className="text-xs text-fg-muted mr-auto inline-flex items-center gap-1"><Wand2 size={13} /> 已選 <b className="text-fg">{sel.length}</b> 個碎片</span>
               <button onClick={() => run("synthesize")} disabled={busy !== null || sel.length < 2} className="inline-flex items-center gap-1 px-3 py-2 rounded-full bg-bg-elevated text-sm hover:text-accent disabled:opacity-40"><Magnet size={14} /> 凝聚</button>
-              <button onClick={() => run("evolve")} disabled={busy !== null || sel.length !== 1} className="inline-flex items-center gap-1 px-3 py-2 rounded-full bg-bg-elevated text-sm hover:text-accent disabled:opacity-40"><Leaf size={14} /> 演化</button>
+              <button onClick={() => run("evolve")} disabled={busy !== null || sel.length < 1} title={sel.length > 1 ? "把選中的碎片交叉演化" : "演化這個碎片"} className="inline-flex items-center gap-1 px-3 py-2 rounded-full bg-bg-elevated text-sm hover:text-accent disabled:opacity-40"><Leaf size={14} /> 演化{sel.length > 1 ? `×${sel.length}` : ""}</button>
               <button onClick={() => findRelated(sel[0])} disabled={busy !== null || sel.length !== 1} className="inline-flex items-center gap-1 px-3 py-2 rounded-full bg-bg-elevated text-sm hover:text-accent disabled:opacity-40"><Search size={14} /> 相關</button>
               <button onClick={getAdvice} disabled={busy !== null || sel.length < 1} className="inline-flex items-center gap-1 px-3 py-2 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-200 text-sm hover:bg-amber-500/25 disabled:opacity-40"><Lightbulb size={14} /> 適合做什麼</button>
               <select value={transLang} onChange={(e) => setTransLang(e.target.value)} className="bg-bg-elevated border border-border rounded-full px-2 py-2 text-xs">{["日語", "韓語", "English", "法語", "西班牙語", "粵語", "文言文"].map((l) => <option key={l} value={l}>{l}</option>)}</select>
@@ -495,7 +526,7 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
       </AnimatePresence>
 
       <IslandTour />
-      <IslandChat workspaceId={workspaceId} />
+      <IslandChat workspaceId={workspaceId} focusFragments={focusFrags} onClearFocus={() => setSelected(new Set())} />
     </div>
   );
 }

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { BlogEditor } from "@/components/blog/BlogEditor";
 import { AiWriteHelper } from "@/components/blog/AiWriteHelper";
 import { ImageUploader } from "@/components/ui/ImageUploader";
-import { Save, Globe, Lock, ArrowLeft, Loader2 } from "lucide-react";
+import { Save, Globe, Lock, ArrowLeft, Loader2, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/components/ui/Toast";
 import { slugify } from "@/lib/blog-types";
@@ -48,6 +48,9 @@ export function ArticleEditorForm({ initial }: { initial?: Partial<ArticleFormDa
   const [tagInput, setTagInput] = useState("");
   const [saving, setSaving] = useState(false);
   const [showMeta, setShowMeta] = useState(false);
+  const [aiSeoLoading, setAiSeoLoading] = useState(false);
+  // GEO 建議（geoSummary + faqs）：DB 沒有對應欄位、不持久化、僅供作者參考
+  const [aiSeoPreview, setAiSeoPreview] = useState<{ geoSummary: string; faqs: { q: string; a: string }[] } | null>(null);
   // 還沒手動改過 slug → 跟著標題自動產生（已存在的文章預設視為「已自訂」、不亂動）
   const [slugTouched, setSlugTouched] = useState(!!(initial as any)?.slug);
   const [seriesList, setSeriesList] = useState<{ id: string; title: string }[]>([]);
@@ -66,6 +69,51 @@ export function ArticleEditorForm({ initial }: { initial?: Partial<ArticleFormDa
     const t = tagInput.trim();
     if (t && !data.tags.includes(t)) set("tags", [...data.tags, t]);
     setTagInput("");
+  };
+
+  // ✨ AI 建議 SEO：打 /api/blog/ai-seo、回填 seo_title / seo_desc、合併 keywords 進 tags、預覽 GEO
+  const aiSuggestSeo = async () => {
+    if (!data.title.trim() && !data.content.trim()) {
+      toast.warning("請先填標題或內文");
+      return;
+    }
+    setAiSeoLoading(true);
+    try {
+      const res = await fetch("/api/blog/ai-seo", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: data.title, content: data.content, summary: data.summary }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.ok) {
+        toast.error("AI 生成失敗：" + (json.message || json.error || "未知錯誤"));
+        return;
+      }
+      setData((d) => {
+        // keywords 合併進既有 tags（不覆蓋、去重、上限 20）
+        const merged = [...d.tags];
+        for (const k of (json.keywords as string[]) ?? []) {
+          const kk = String(k).trim();
+          if (kk && !merged.includes(kk) && merged.length < 20) merged.push(kk);
+        }
+        return {
+          ...d,
+          seo_title: json.seoTitle || d.seo_title,
+          seo_desc: json.seoDesc || d.seo_desc,
+          tags: merged,
+        };
+      });
+      setAiSeoPreview({
+        geoSummary: json.geoSummary || "",
+        faqs: Array.isArray(json.faqs) ? json.faqs : [],
+      });
+      toast.success("已套用 AI SEO 建議");
+    } catch (e: any) {
+      toast.error("AI 生成失敗：" + (e?.message ?? "網路錯誤"));
+    } finally {
+      setAiSeoLoading(false);
+    }
   };
 
   const save = async (publish?: boolean) => {
@@ -254,6 +302,48 @@ export function ArticleEditorForm({ initial }: { initial?: Partial<ArticleFormDa
                 </div>
               </div>
             )}
+            {/* ✨ AI 建議 SEO + GEO */}
+            <div className="rounded-lg border border-accent/30 bg-accent/5 p-3">
+              <div className="flex items-center justify-between gap-2 flex-wrap">
+                <div className="text-sm">
+                  <div className="font-semibold flex items-center gap-1.5"><Sparkles size={14} className="text-accent" /> AI 建議 SEO + GEO</div>
+                  <p className="text-xs text-fg-muted mt-0.5">依標題與內文自動產生 SEO 標題／描述、關鍵字，並給 AI 回答引擎（GEO）摘要。</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={aiSuggestSeo}
+                  disabled={aiSeoLoading}
+                  className="shrink-0 px-3 py-2 rounded-lg bg-accent text-black text-sm font-bold hover:scale-105 transition flex items-center gap-1 disabled:opacity-50"
+                >
+                  {aiSeoLoading ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+                  {aiSeoLoading ? "生成中…" : "✨ AI 建議 SEO"}
+                </button>
+              </div>
+              {aiSeoPreview && (aiSeoPreview.geoSummary || aiSeoPreview.faqs.length > 0) && (
+                <div className="mt-3 pt-3 border-t border-accent/20 space-y-2 text-sm">
+                  {aiSeoPreview.geoSummary && (
+                    <div>
+                      <div className="text-xs font-semibold text-fg-muted mb-0.5">GEO 摘要（供 AI 回答引擎參考、僅預覽不儲存）</div>
+                      <p className="text-fg-muted leading-relaxed">{aiSeoPreview.geoSummary}</p>
+                    </div>
+                  )}
+                  {aiSeoPreview.faqs.length > 0 && (
+                    <div>
+                      <div className="text-xs font-semibold text-fg-muted mb-1">建議 FAQ（僅預覽、可自行寫進內文）</div>
+                      <ul className="space-y-1.5">
+                        {aiSeoPreview.faqs.map((f, i) => (
+                          <li key={i} className="text-xs">
+                            <span className="font-medium text-fg">Q：{f.q}</span>
+                            <br />
+                            <span className="text-fg-muted">A：{f.a}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
             <div>
               <label className="text-sm font-medium mb-1 block">SEO 標題（留空用文章標題）</label>
               <input

@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { useAuth } from "@/lib/auth-context";
-import { Flame, Coins, Heart, LogOut, Settings, Trophy, User as UserIcon, ChevronDown, Menu, X, Palmtree, Crown, BarChart3, Key } from "lucide-react";
+import { Flame, Coins, Heart, LogOut, Settings, Trophy, User as UserIcon, ChevronDown, Menu, X, Palmtree, Crown, BarChart3, Key, BookOpen, Swords, MessagesSquare, Newspaper, Route, Palette } from "lucide-react";
 import { TodoDropdownButton } from "@/components/todo/TodoDropdown";
 import { CountUp } from "@/components/ui/CountUp";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
@@ -13,12 +13,13 @@ import { usePopover, PopoverPanel } from "@/components/ui/Popover";
 import { devLog } from "@/lib/dev-log";
 
 const NAV_LINKS = [
-  { href: "/chapters", label: "章節" },
-  { href: "/courses", label: "副本" },
-  { href: "/forum", label: "討論區" },
-  { href: "/blogs", label: "部落格" },
-  { href: "/leaderboard", label: "排行榜" },
-  { href: "/career", label: "職業路線" },
+  { href: "/chapters", label: "章節", icon: BookOpen },
+  { href: "/courses", label: "副本", icon: Swords },
+  { href: "/forum", label: "討論區", icon: MessagesSquare },
+  { href: "/blogs", label: "部落格", icon: Newspaper },
+  { href: "/leaderboard", label: "排行榜", icon: Trophy },
+  { href: "/career", label: "職業路線", icon: Route },
+  { href: "/creator-island", label: "創作者島嶼", icon: Palette },
 ];
 
 export function TopNav() {
@@ -269,18 +270,27 @@ export function TopNav() {
       </div>
 
       {mobileMenu && (
-        <div className="md:hidden border-t border-border bg-bg px-4 py-3">
-          <div className="flex flex-col gap-1 text-sm">
-            {NAV_LINKS.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href as any}
-                className="rounded-lg px-3 py-2 hover:bg-bg-card hover:text-accent"
-                onClick={() => setMobileMenu(false)}
-              >
-                {item.label}
-              </Link>
-            ))}
+        <div className="md:hidden border-t border-border bg-bg px-3 py-3">
+          <div className="px-2 pb-1.5 text-[10px] font-semibold uppercase tracking-wider text-fg-muted">
+            探索
+          </div>
+          <div className="flex flex-col gap-0.5 text-sm">
+            {NAV_LINKS.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href as any}
+                  className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-fg hover:bg-bg-card hover:text-accent active:scale-[0.98] transition"
+                  onClick={() => setMobileMenu(false)}
+                >
+                  <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-bg-card text-accent shrink-0">
+                    <Icon size={16} />
+                  </span>
+                  <span className="font-medium">{item.label}</span>
+                </Link>
+              );
+            })}
           </div>
         </div>
       )}

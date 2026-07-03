@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import type { Editor } from "@tiptap/react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Wrench, Lightbulb, Trees, X, Copy, ArrowDownToLine, Disc3, Library, Plus, FileText } from "lucide-react";
+import { Wrench, Lightbulb, Trees, X, Copy, ArrowDownToLine, Disc3, Library, Plus, FileText, Search } from "lucide-react";
 import { BlogEditor } from "@/components/blog/BlogEditor";
 import { IslandChat } from "../../IslandChat";
 import { getType, type Tool } from "../engine-types";
@@ -31,6 +31,7 @@ export function EngineWorkspace({ draft, fragments }: { draft: Draft; fragments:
   const [busy, setBusy] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [panel, setPanel] = useState<{ title: string; text: string } | null>(null);
+  const [fragQ, setFragQ] = useState("");
   const [publishing, setPublishing] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const editorRef = useRef<Editor | null>(null);
@@ -228,11 +229,24 @@ export function EngineWorkspace({ draft, fragments }: { draft: Draft; fragments:
           {/* 碎片素材欄 */}
           <div className="rounded-2xl border border-border bg-bg-card p-3">
             <div className="text-sm font-bold mb-2 inline-flex items-center gap-1.5"><Trees size={14} /> 碎片素材（{fragments.length}）</div>
+            {fragments.length > 0 && (
+              <div className="relative mb-2">
+                <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-fg-muted pointer-events-none" />
+                <input value={fragQ} onChange={(e) => setFragQ(e.target.value)} placeholder="搜尋碎片素材…"
+                  className="w-full bg-bg-elevated border border-border rounded-full pl-7 pr-7 py-1.5 text-xs outline-none focus:border-accent" />
+                {fragQ && <button onClick={() => setFragQ("")} className="absolute right-2 top-1/2 -translate-y-1/2 text-fg-muted hover:text-fg"><X size={12} /></button>}
+              </div>
+            )}
             {fragments.length === 0 ? (
               <div className="text-xs text-fg-muted">這座島還沒有碎片。回島上捕捉或種島。</div>
-            ) : (
+            ) : (() => {
+              const ql = fragQ.trim().toLowerCase();
+              const shown = ql ? fragments.filter((f) => (f.title + " " + (f.content ?? "")).toLowerCase().includes(ql)) : fragments;
+              return shown.length === 0 ? (
+                <div className="text-xs text-fg-muted">找不到符合「{fragQ}」的碎片。</div>
+              ) : (
               <ul className="space-y-1.5 max-h-72 overflow-y-auto pr-1">
-                {fragments.map((f) => (
+                {shown.map((f) => (
                   <li key={f.id}>
                     <button onClick={() => addFragment(f)}
                       className={`w-full text-left rounded-lg px-2.5 py-1.5 text-xs border transition ${fragIds.includes(f.id) ? "border-accent/50 bg-accent/[0.06]" : "border-border bg-bg-elevated hover:border-accent/40"}`}>
@@ -242,7 +256,8 @@ export function EngineWorkspace({ draft, fragments }: { draft: Draft; fragments:
                   </li>
                 ))}
               </ul>
-            )}
+              );
+            })()}
             <div className="text-[10px] text-fg-muted mt-2">點碎片＝放進內文並列為素材（作品家譜會記）。</div>
           </div>
         </aside>

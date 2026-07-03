@@ -2,15 +2,16 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, History, Plus, X, Mic, Camera, Paperclip, Send } from "lucide-react";
+import { Sparkles, History, Plus, X, Mic, Camera, Paperclip, Send, Target } from "lucide-react";
 import { uploadMedia } from "@/lib/creator-upload";
 
 type Msg = { role: "user" | "assistant"; content: string };
+type FocusFrag = { id: string; title: string; content: string };
 
 const BTN = 52; // 綠寶按鈕直徑(px)
 const GREETING: Msg = { role: "assistant", content: "嗨，我是綠寶 ✨ 想做什麼作品？丟碎片、貼圖、或直接問我都可以。" };
 
-export function IslandChat({ workspaceId }: { workspaceId: string }) {
+export function IslandChat({ workspaceId, focusFragments = [], onClearFocus }: { workspaceId: string; focusFragments?: FocusFrag[]; onClearFocus?: () => void }) {
   const [open, setOpen] = useState(false);
   const [msgs, setMsgs] = useState<Msg[]>([GREETING]);
   const [text, setText] = useState("");
@@ -113,9 +114,10 @@ export function IslandChat({ workspaceId }: { workspaceId: string }) {
     const next = [...msgs, userMsg];
     setMsgs(next); setText(""); const image = img; setImg(null); setBusy(true);
     try {
+      const focus = (focusFragments ?? []).slice(0, 8).map((f) => ({ title: f.title, content: (f.content || "").slice(0, 600) }));
       const r = await fetch("/api/creator-island/ai/chat", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: next.map((m) => ({ role: m.role, content: m.content })), image: image ? { data: image.data, mediaType: image.mediaType } : undefined, workspaceId }),
+        body: JSON.stringify({ messages: next.map((m) => ({ role: m.role, content: m.content })), image: image ? { data: image.data, mediaType: image.mediaType } : undefined, workspaceId, focusFragments: focus.length ? focus : undefined }),
       }).then((x) => x.json());
       const final: Msg[] = [...next, { role: "assistant", content: r.reply || r.message || "（沒有回覆）" }];
       setMsgs(final);
@@ -169,6 +171,15 @@ export function IslandChat({ workspaceId }: { workspaceId: string }) {
               {busy && <div className="text-xs text-fg-muted animate-pulse">綠寶思考中…</div>}
               <div ref={endRef} />
             </div>
+            {focusFragments.length > 0 && (
+              <div className="px-3 pt-1.5 pb-0.5">
+                <div className="flex items-center gap-1.5 text-[11px] text-emerald-700 dark:text-emerald-300 bg-emerald-500/10 border border-emerald-500/25 rounded-full px-2.5 py-1">
+                  <Target size={12} className="shrink-0" />
+                  <span className="truncate">綠寶正在看你選的 <b>{focusFragments.length}</b> 個碎片</span>
+                  {onClearFocus && <button onClick={onClearFocus} title="取消聚焦" className="ml-auto shrink-0 hover:text-fg"><X size={12} /></button>}
+                </div>
+              </div>
+            )}
             {img && <div className="px-3 pb-1"><img src={img.preview} className="h-14 rounded inline-block" /><button onClick={() => setImg(null)} className="text-xs text-fg-muted ml-2">移除</button></div>}
             <div className="p-2 border-t border-border flex items-center gap-1.5">
               <button onClick={voice} title="語音" className="hover:text-accent"><Mic size={18} /></button>

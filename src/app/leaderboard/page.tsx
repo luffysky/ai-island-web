@@ -78,7 +78,7 @@ export default async function LeaderboardPage() {
           <>
             {/* 🥇🥈🥉 Podium */}
             {top3.length > 0 && (
-              <section className="flex items-end justify-center gap-2 md:gap-4 flex-wrap">
+              <section className="flex items-end justify-center gap-2 md:gap-4 flex-wrap pb-6">
                 {/* 第 2 名 */}
                 {top3[1] && <PodiumCard user={top3[1]} rank={2} />}
                 {/* 第 1 名 */}
@@ -162,7 +162,7 @@ export default async function LeaderboardPage() {
 function PodiumCard({ user, rank }: { user: LbUser; rank: 1 | 2 | 3 }) {
   const config = {
     1: {
-      height: "h-44 md:h-52",
+      height: "min-h-[11rem] md:min-h-[13rem]",
       gradient: "from-yellow-400 via-amber-400 to-orange-400",
       ring: "ring-yellow-400/50",
       shadow: "shadow-yellow-500/30",
@@ -173,7 +173,7 @@ function PodiumCard({ user, rank }: { user: LbUser; rank: 1 | 2 | 3 }) {
       scale: "scale-110 md:scale-115",
     },
     2: {
-      height: "h-36 md:h-44",
+      height: "min-h-[9rem] md:min-h-[11rem]",
       gradient: "from-slate-300 via-zinc-300 to-slate-400",
       ring: "ring-slate-300/40",
       shadow: "shadow-slate-400/20",
@@ -184,7 +184,7 @@ function PodiumCard({ user, rank }: { user: LbUser; rank: 1 | 2 | 3 }) {
       scale: "",
     },
     3: {
-      height: "h-32 md:h-40",
+      height: "min-h-[8rem] md:min-h-[10rem]",
       gradient: "from-orange-400 via-amber-700 to-orange-700",
       ring: "ring-orange-400/40",
       shadow: "shadow-orange-700/20",
