@@ -1,73 +1,84 @@
-# 🏝️ AI 島 v3 — Next.js 全端養成班
+# 🏝️ AI 島 v3 — Next.js 全端養成班 + 創作者島嶼
 
-把 AI 島從靜態 HTML 升級成完整 Next.js + Supabase 應用 — 60 章課程、會員系統、遊戲化引擎、AI 學習導師、部落格、討論區、後台 ERP / GA4 / 互動分析。
+從靜態 HTML 升級成完整 Next.js 15 + Supabase 應用：**80 章免費課程 + 遊戲化學習引擎 + 綠寶 AI 導師 + 部落格 / 討論區 + 創作者島嶼（AI 內容工作室）+ Z 幣 / Pro 金流 + RBAC 後台 ERP**。
 
 > 由 SnowRealm 生態製作 · 招財 🐹 守護
+> 線上站點：**[ai-island-web.snowrealm.pet](https://ai-island-web.snowrealm.pet)**
 
 ---
 
 ## ✨ 功能總覽
 
-### 🎯 學習引擎
-- **60 章節 / 70 個內容 JSON**、單章可 30+ lessons（持續寫作中）
-- **遊戲化**：XP / Level（公式 `floor(sqrt(xp/100))+1`、上限 Lv 60）、連勝（streak）、25 個內建成就（4 階稀有度）、Z-coin 經濟、5 hearts、Boss Battle
-- **每日簽到**（`do_checkin` RPC + 7 天格子 UI）
-- **每日任務、自由筆記、書籤、證書**
-- **6 大職業路線**：前端 / 全端 / AI / 資料 / 接案 / Indie
+### 🎯 學習引擎（課程全免費）
+- **80 章節 JSON / 1200+ lessons**（活資料化進 Supabase `chapters` / `lessons`）、單章可 30+ lessons
+- **遊戲化**：XP / Level（公式 `floor(sqrt(xp/100))+1`、上限 Lv 60，`level` 為 DB generated column）、連勝 streak、內建成就（4 階稀有度）、Z 幣經濟、5 hearts、Boss Battle
+- **每日簽到**（`do_checkin` RPC + 7 天格子）、**每日任務**、**每日測驗**（章節 miniQuiz + leetcode 題庫雙邊抽）
+- **SRS 間隔複習**（`/me/review`）+ **章節內 AI 隨堂考 PopQuiz** + **AI 學習教練**（每日 cron 產生個人化建議）
+- 自由筆記（資料夾 / 便利貼 / SRS）、書籤、閱讀進度、公開證書頁（`/certificates/[code]` + OG 圖）
+- **6 大職業路線** + **求職閉環**：`/me/career-path` 漏斗、作品集 `/portfolio`
 
-### 🧠 綠寶導師（AI Tutor）
-- 多模型（Claude / GPT / Gemini / Llama 等 7 個 active 模型）
+### 🧠 綠寶導師（AI Tutor）與智慧 AI 架構
+- 多模型（Claude / GPT / Gemini / Llama 等）+ 章節 context 自動注入、語氣切換、stream 回覆、對話歷史、語音輸入/輸出
+- **AI 路由器**（`ai-router` / `resolve-usage-ai`）：per-usage 候選鏈 + fallback + 升級 + 熔斷器（circuit breaker）
+- **免費供應商**：Cloudflare Workers AI、可選 **WebLLM**（瀏覽器端本地推論，flag 控制）
+- **AI 記憶**（`user-ai-memory` / `ci_memories`）、語意搜尋（embeddings）、意圖辨識（`ai-intent`）
 - 免費 quota（per-model `free_tier_daily_limit`）+ admin 無限額度特權
-- BYOK（使用者自帶 API key）
-- 對話歷史、章節 context 自動注入、語氣切換、stream 回覆
-- 月預算追蹤、可單支模型啟用 / 停用 / 設預設
+- **BYOK**：使用者自帶各家 API key（`/settings/ai-keys`，DB 加密存放、不收手續費）
+- 月預算追蹤、單支模型啟用 / 停用 / 設預設 / 成本監控
+
+### 🎨 創作者島嶼（Creator Island — AI 內容工作室）
+- **碎片系統**：10,000+ 碎片庫（`ci_fragment_pool`）、建工作室自動抽 300、碎片搜尋
+- **演化 / 編織**：多碎片演化多碎片、AI 全選、編織成完整作品（解決「東一塊西一塊」的融合問題）
+- **創作引擎**（`creator-engine`）：drafts / works / series / stories / collections / workflows / lineage 血統
+- **市集**（`ci_listings` / marketplace）、**社群**（貼文 / 留言 / 追蹤 / 好友 / DM / 動態）
+- **Yjs 即時協作**（Supabase Realtime broadcast + presence，opt-in）
+- **工作室錢包**（`ci_workspace_wallet`）、成員邀請、工作室層級 AI 設定與 RBAC（與後台權限分離）
+- **一鍵發佈**到各大平台（草稿 → 公開頁 / 外部平台）
+
+### 💳 金流（Z 幣儲值 + Pro 訂閱）
+- **三家金流可選**：綠界 ECPay、藍新 NewebPay、Stripe（使用者結帳時選）
+- **Z 幣**：1:10（NT$1 = 10 Z 幣）、儲值越多送越多的階梯包
+- **Pro**：月 149 / 年 1490
+- 冪等下單 / 出貨（`orders` + `coin_transactions`，防重複發放 + 金額比對防竄改）
+- 完整 Z 幣經濟：所有來源 / 消耗 / ledger（`/store`、`/pricing`）
 
 ### 📝 部落格系統
-- TipTap 富文字編輯器（17 個 extension + lowlight 語法高亮）
+- TipTap 3 富文字編輯器（AI BubbleMenu / Slash 指令 / Callout 等升級 + lowlight 語法高亮）
 - 文章 / 系列 / 留言（threaded）/ emoji reaction / 按讚
-- 全文搜尋、訂閱（含 unsubscribe token）、RSS feed
+- **AI 輔助 SEO + GEO**、全文搜尋、訂閱（unsubscribe token）、RSS feed
 - AI 寫作助手（接綠寶同一套 model / key pool）
 
 ### 💬 討論區
-- 11 個初始 boards（依 `post_role` 控管發文權限）
+- 多個 boards（依 `post_role` 控管發文權限）
 - Thread / Reply / Reaction / Like / 採納解答 / 設精華
 - 全文搜尋、個人頁、Forum XP 引擎（發串 +15、回覆 +5、採納 +30、精華 +50）
 
+### 📢 通知與通訊機器人
+- **LINE / Discord / Telegram** 三軟體（學員 + 管理員）指令 + 通知，全部美化成一致風格
+- **Web Push**（VAPID）：訂閱 / 退訂 / streak 提醒 cron
+- 站內通知、email 廣播、營運告警（`ops-alerts`）
+
 ### 🎨 SEO & 分享
-- 自製 OG 圖（chapter / dungeon 各一支 route，next/og）
-- Sitemap 自動產生
-- SEO 後台可逐頁編輯 title / description / keywords / OG / canonical / robots / hreflang
-- 結構化資料（schema.org JSON-LD）
+- 自製 OG 圖（chapter / dungeon / cert 各一支 route，next/og）
+- Sitemap / robots / llms.txt 自動產生
+- **robots.txt AI 爬蟲白名單**：GPTBot / ClaudeBot 等只允許 `/chapters`、`/courses`、`/blogs`；`/api`、`/admin`、`/me`、`/settings`、`/auth` 全擋
+- SEO 後台逐頁編輯 title / description / keywords / OG / canonical / robots / hreflang + schema.org JSON-LD
+- 推薦分潤（referral，雙方 +50 Z 幣）、精選創作者
 
 ### 🔐 會員 & 認證
 - Email / 密碼 + Google OAuth + LINE OAuth
-- Server-side `ensure-profile` 自動建 profile（避開 RLS 寫入問題）
-- Singleton browser client、雙路徑 callback（`code` / `token_hash` / hash token）
-- 角色制（member / editor / admin）+ ban 機制
-- Cookie banner + 隱私 / 條款 / Cookie 三頁
+- Server-side `ensure-profile` 自動建 profile（避開 RLS）、singleton browser client、雙路徑 callback
+- Cookie banner + 隱私 / 條款 / Cookie 三頁 + GDPR 匯出 / 刪除
 
-### 👑 後台（隱碼路由）
-- 路徑用 `ADMIN_SLUG` 混淆（middleware rewrite `/<slug>/admin/*` → `/admin/*`）
-- 直接訪問 `/admin/*` 一律 404，無洩漏
-- **總覽**：使用者 / lesson 完成 / Quiz / 訂單 / 工單 / MRR / AI 成本 30 天趨勢
-- **ERP**：訂單、訂閱、CRM 工單、廣播
-- **AI 管理**：模型 / API key / 使用量 / 對話紀錄
-- **內容**：章節、成就、SEO、redirects
-- **遊戲化**：Z-coin ledger（唯讀）
-- **GA4 儀表板**：sync + iframe（需設 GA4 env）
-- **互動分析**：站內第一方追蹤、即時在線、24h 頁面停留 / scroll / 完成率
-- **合規**：Audit log、外洩事件（72h 通報倒數）
-- **Settings**：app_settings 鍵值預覽
-
-### 📡 站內第一方分析（v3 新）
-- 15 秒 heartbeat、scroll 深度、頁面停留、visibility / unload 出口
-- `analytics_sessions` / `analytics_page_views` / `analytics_events` 三表
-- 後台「現在誰在用 / 最熱頁面 / 裝置 / 區域 / 平均停留 / 看完率」面板
-
-### ⚖️ 合規 & 安全
-- 個資外洩事件追蹤（72h 通報倒數視圖）
-- Email 訂閱 + CAN-SPAM 退訂 token
-- Audit log 全覆蓋（user / order / ai / setting 變更）
+### 👑 後台（隱碼路由 + RBAC）
+- 路徑用 `ADMIN_SLUG` 混淆（middleware rewrite），直接訪問 `/admin/*` 一律 404
+- **RBAC 角色**（`admin-roles`）：客服 support（工單/客服）、行銷 marketing、財務 finance（金流）、內容 content（章節/審核）、**超管 admin**（全部）；owner / admin 恆可存取，`ownerOnly` 頁面保留
+- **P1 營運總覽**、**P2 告警**、**P3 金流工作台**
+- **Cmd+K 命令面板**、**Feature Flags** 管理、**AI 助理**（自然語言 → 白名單指標，非任意 SQL）
+- ERP：訂單 / 訂閱 / CRM 工單 / 廣播；AI 管理：模型 / key / 使用量 / 對話
+- 內容：章節 / 成就 / SEO / redirects；遊戲化：Z 幣 ledger
+- GA4 儀表板 + 站內第一方互動分析（即時在線 / 頁面停留 / scroll / 完成率）
+- 合規：Audit log 全覆蓋、外洩事件 72h 通報倒數
 
 ---
 
@@ -78,26 +89,30 @@
 | 框架 | Next.js 15（App Router）+ React 19 |
 | 樣式 | Tailwind v4 + custom design tokens |
 | DB / Auth | Supabase（Postgres + Auth + RLS + RPC） |
-| Client SDK | `@supabase/ssr` 0.5 + `@supabase/supabase-js` 2.x |
+| Client SDK | `@supabase/ssr` + `@supabase/supabase-js` 2.x |
 | 編輯器 | TipTap 3.x + lowlight |
-| Markdown 渲染 | react-markdown + remark-gfm + rehype-highlight + rehype-raw |
-| Charts | recharts |
-| 動畫 | framer-motion + canvas-confetti |
-| Icons | lucide-react |
-| State | zustand（局部）+ React state（多數） |
+| 協作 | Yjs + Supabase Realtime（broadcast + presence） |
+| AI | Anthropic / OpenAI / Google / Cloudflare Workers AI / WebLLM（prompt caching） |
+| 金流 | 綠界 ECPay / 藍新 NewebPay / Stripe |
+| 推播 | Web Push（VAPID） |
+| Charts / 動畫 | recharts / framer-motion / canvas-confetti |
+| Icons | lucide-react（emoji 已全站 icon 化） |
+| 測試 | Vitest（單元）+ Playwright（E2E） |
 | OG image | next/og（ImageResponse） |
+| 部署 | GHCR prebuilt image → Zeabur（standalone `node server.js`）+ Cloudflare |
 
 ---
 
 ## 🚀 Quick Start
 
-### 1. 安裝
 ```bash
 npm install
+# 建 .env.local（見下方環境變數；完整清單見 docs/OWNER_SETUP.md）
+npm run dev            # → http://localhost:3000
+# Windows 本機若 Node fetch 報 TLS：NODE_OPTIONS=--use-system-ca npm run dev
 ```
 
-### 2. 環境變數
-建立 `.env.local`，最少需要：
+### 環境變數（最小集）
 ```env
 # Supabase（必填）
 NEXT_PUBLIC_SUPABASE_URL=https://<ref>.supabase.co
@@ -105,49 +120,15 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_...
 SUPABASE_SERVICE_ROLE_KEY=sb_secret_...
 SUPABASE_DB_URL=postgresql://postgres.<ref>:<pwd>@aws-...pooler.supabase.com:6543/postgres?pgbouncer=true
 
-# 後台隱碼（自選）
+# 站點 / 後台
+NEXT_PUBLIC_SITE_URL=https://ai-island-web.snowrealm.pet
 ADMIN_SLUG=console-x7k2
 
-# 站點 URL
-NEXT_PUBLIC_SITE_URL=https://ai-island-web.snowrealm.pet
-
-# GA4 sync（可選；未設則 sync route 回 503）
-GA4_PROPERTY_ID=
-GA4_SA_CREDENTIALS=
-CRON_SECRET=
+# 選用：GA4 / cron / Web Push / AI / 金流 … 完整清單見 docs/OWNER_SETUP.md
 ```
 
-### 3. 跑 migrations（依順序）
-```bash
-npm run db:apply -- -Files supabase/schema.sql
-npm run db:apply -- -Files supabase/setup_admins.sql
-npm run db:apply -- -Files supabase/admin_migration.sql
-npm run db:apply -- -Files supabase/ai_migration.sql
-npm run db:apply -- -Files supabase/ai_models_rls_fix.sql
-npm run db:apply -- -Files supabase/free_notes_migration.sql
-npm run db:apply -- -Files supabase/checkin_migration.sql
-npm run db:apply -- -Files supabase/blog_migration.sql
-npm run db:apply -- -Files supabase/forum_migration.sql
-npm run db:apply -- -Files supabase/comment_likes_migration.sql
-npm run db:apply -- -Files supabase/ai_unlimited_migration.sql
-npm run db:apply -- -Files supabase/breach_and_email_migration.sql
-npm run db:apply -- -Files supabase/interaction_analytics_migration.sql
-```
-
-或一次性套用全部 feature migration：
-```bash
-npm run db:apply -- -AllNewFeatureSql
-```
-
-### 4. 啟動
-```bash
-# Windows 本機若 Node 24 fetch 報 TLS：
-NODE_OPTIONS=--use-system-ca npm run dev
-
-# 一般狀況
-npm run dev
-# → http://localhost:3000
-```
+> **金流金鑰**（`ECPAY_*` / `NEWEBPAY_*` / `STRIPE_*` / `PAYMENTS_LIVE`）與 **VAPID** 設定見
+> [`docs/OWNER_SETUP.md`](docs/OWNER_SETUP.md)（手動待辦 + env 總清單）與 [`docs/payments_setup.md`](docs/payments_setup.md)。
 
 ---
 
@@ -155,161 +136,73 @@ npm run dev
 
 | 指令 | 用途 |
 |---|---|
-| `npm run dev` | 啟動開發伺服器 |
+| `npm run dev` | 開發伺服器 |
 | `npm run build` | Production build |
 | `npm run start` | 啟動 build 後的伺服器 |
 | `npm run lint` | ESLint |
-| `npm run db:apply` | 套用 Supabase migration（PS 腳本、含 dollar-quote 感知 SQL splitter） |
+| `npm run test` | Vitest 單元測試（金流簽章 / 冪等 / RBAC / robots …） |
+| `npm run test:e2e` | Playwright E2E 點擊測試 |
+| `npm run db:apply` | 套用 Supabase migration（dollar-quote 感知 SQL splitter） |
 | `npm run git:push` | 整理過的 commit + push 助手 |
-| `npm run gen:secrets` | 產生隨機 secret（用於 ADMIN_SLUG 等） |
+
+### ⚠️ 改章節內容一定要同步進 DB
+前台章節是讀 **Supabase**、JSON 只是 fallback。改完 `src/data/chapters/*.json` 後必跑：
+```bash
+node scripts/import_chapters_to_db.mjs        # 全部 upsert 進 chapters + lessons
+node scripts/import_chapters_to_db.mjs ch79   # 只同步指定章
+```
+`sort_index` 一定要同步（衍生章 Ch28a/b/c 排序靠它）。詳見 `CLAUDE.md`。
 
 ---
 
-## 📁 檔案結構
+## 🧪 測試 & CI/CD
+
+- **單元測試（Vitest）**：金流三家簽章驗證（ECPay CheckMacValue / NewebPay AES+TradeSha / Stripe）、下單冪等 + 金額防竄改、Z 幣、RBAC 權限矩陣、robots 白名單、AI 供應商 / 意圖、章節顯示編號等。**必須全綠**。
+- **E2E（Playwright）**：首頁 / 章節 / 搜尋 / 公開頁 / RWD / SEO / auth-gated。
+- **GitHub Actions**：`ci.yml`（lint → typecheck → 單元測試 → build）、`e2e.yml`，另有 `docker.yml`（build + 推 GHCR + 自動重部署 Zeabur）與多支 cron（`ops-alerts` / `learning-coach` / `streak-reminder` / `anomaly-check` / `kpi-email` / `line-daily` …）。
+- CI build 需帶 `NEXT_PUBLIC_SUPABASE_URL` / `ANON_KEY`（否則 server component prerender 建 Supabase client 會炸）；需登入的頁面已加 `export const dynamic = "force-dynamic"`。
+
+---
+
+## 📁 檔案結構（重點）
 
 ```text
-ai_island_v3/
-├── src/
-│   ├── app/
-│   │   ├── layout.tsx               # 全站 layout + InteractionTracker
-│   │   ├── page.tsx                 # 首頁（hero + 60 章地圖）
-│   │   ├── globals.css              # Tailwind v4 + 主題
-│   │   ├── admin/                   # 後台（middleware rewrite 才進得來）
-│   │   │   ├── ai/                  # 模型 / API key / 使用量 / 對話
-│   │   │   ├── analytics/           # 站內成就 + 章節完成
-│   │   │   ├── audit/               # Audit log
-│   │   │   ├── breach/              # 外洩事件追蹤
-│   │   │   ├── broadcasts/          # 廣播 / 電子報
-│   │   │   ├── chapters/            # 章節編輯
-│   │   │   ├── crm/                 # 工單
-│   │   │   ├── ga4/                 # GA4 + 即時互動
-│   │   │   ├── orders/              # 訂單
-│   │   │   ├── seo/                 # SEO + redirects
-│   │   │   ├── settings/            # app_settings 預覽
-│   │   │   ├── subscriptions/       # 訂閱
-│   │   │   ├── users/               # 使用者管理
-│   │   │   └── zcoin/               # Z-coin ledger
-│   │   ├── api/
-│   │   │   ├── admin/               # 後台 mutation API
-│   │   │   ├── ai/chat/             # 綠寶 streaming chat
-│   │   │   ├── analytics/track/     # 第一方互動 tracker
-│   │   │   ├── auth/                # ensure-profile / logout
-│   │   │   ├── blog/                # 部落格 CRUD + 留言 + reactions + RSS + AI write
-│   │   │   ├── forum/               # 討論區 CRUD + reactions + search + 採納
-│   │   │   ├── email/, og/, playground/, user/, nav/
-│   │   ├── auth/                    # OAuth callback（Google / LINE）
-│   │   ├── blogs/                   # 公開部落格頁 + RSS feed + unsubscribe
-│   │   ├── chapters/[id]/           # 章節閱讀頁
-│   │   ├── courses/[slug]/          # AI 副本（dungeon）
-│   │   ├── forum/                   # 公開論壇頁
-│   │   ├── leaderboard/             # 排行榜
-│   │   ├── me/                      # 個人頁（blog / notes / history / 證書 / 收藏...）
-│   │   ├── login/, signup/, settings/
-│   │   ├── privacy/, terms/, cookies/, unsubscribe/
-│   ├── components/
-│   │   ├── AITutorWidget.tsx        # 綠寶懸浮窗（多模型 / quota / 歷史）
-│   │   ├── AITutorAutoContext.tsx
-│   │   ├── analytics/InteractionTracker.tsx
-│   │   ├── blog/                    # TipTap editor / comment / reaction / RSS subscribe / AI write helper
-│   │   ├── forum/                   # ThreadList / Replies / Reactions / Search
-│   │   ├── chapter/                 # ChapterView / LessonCard / BossBattle / CodeBlock / NotePanel
-│   │   ├── dashboard/, gamification/, layout/, home/
-│   │   └── CookieBanner.tsx
-│   ├── lib/
-│   │   ├── supabase.ts              # browser / server / admin client（singleton browser）
-│   │   ├── supabase-browser.ts
-│   │   ├── supabase-server.ts
-│   │   ├── supabase-admin.ts
-│   │   ├── gamification.ts          # XP / level / confetti
-│   │   ├── content.ts               # 60 章 JSON loader
-│   │   ├── ai-privilege.ts          # hasAiUnlimited()
-│   │   ├── analytics-device.ts      # UA parse
-│   │   ├── blog-*.ts                # types / resolve helpers
-│   │   ├── forum-*.ts               # types / XP engine
-│   │   ├── rich-html.ts             # TipTap HTML 清洗
-│   │   └── linkify-chapters.ts      # AI 回應內 ch## 自動連結
-│   ├── data/chapters/               # 70 個章節 JSON（活資料）
-│   └── middleware.ts                # admin slug rewrite + session refresh
-├── supabase/
-│   ├── schema.sql                   # 主 schema + RLS + trigger + 25 成就
-│   ├── setup_admins.sql
-│   ├── admin_migration.sql          # ERP 表（orders / subs / tickets / broadcasts / audit）
-│   ├── ai_migration.sql             # AI 模型 / 對話 / quota / 使用量
-│   ├── ai_models_rls_fix.sql        # 補 ai_models public SELECT policy
-│   ├── ai_unlimited_migration.sql   # AI 無限額度特權
-│   ├── blog_migration.sql
-│   ├── forum_migration.sql          # 含 11 筆初始 boards
-│   ├── checkin_migration.sql
-│   ├── comment_likes_migration.sql
-│   ├── free_notes_migration.sql
-│   ├── breach_and_email_migration.sql  # 個資外洩 + email 訂閱
-│   └── interaction_analytics_migration.sql
-├── scripts/
-│   ├── run_supabase_sql.ps1         # SQL 套用工具（pooler 5432 / dollar-quote 感知）
-│   ├── push_current_changes.ps1     # commit + push 助手
-│   ├── generate-secrets.js
-│   └── ...（內容匯入腳本）
-├── docs/
-│   ├── Claude_to_Codex.md           # 桌面 Claude 移植日誌
-│   ├── Codex_to_Claude.md           # Codex → Claude Code 接手文件
-│   ├── daily_works_0522.md          # 2026-05-22 雙人工作日誌
-│   ├── GA4_SETUP.md
-│   ├── RULE/                        # 協作規則（SnowRealm 體系 / sprint gate / zip handoff）
-│   └── admin_upgrade/               # 後台升級路線圖 + Phase 1 spec
-│       ├── README.md
-│       └── specs/QW-01..QW-05.md
-├── public/                          # 靜態資源（OG 預設圖、favicon）
-├── package.json
-├── next.config.mjs                  # next/image 允許 supabase.co + cdn.jsdelivr.net
-├── tailwind.config.* / postcss.config.mjs
-└── tsconfig.json
+src/
+├── app/
+│   ├── admin/            # 後台（RBAC + 隱碼 rewrite）
+│   ├── api/              # 350+ route：ai / blog / forum / payments / push / creator-island / cron …
+│   ├── creator-island/   # 創作者島嶼（碎片 / 演化 / 編織 / 市集 / 社群 / 引擎）
+│   ├── store/, pricing/  # Z 幣儲值 + Pro 結帳
+│   ├── chapters/[id]/     # 章節閱讀（讀 DB）
+│   ├── courses/[slug]/    # AI 副本 dungeon
+│   ├── me/, profile/, settings/  # 個人（含 /settings/ai-keys BYOK）
+│   ├── certificates/, portfolio/, career/  # 證書 / 作品集 / 職涯
+│   ├── blogs/, forum/, leaderboard/, search/
+│   └── robots.ts, sitemap.ts, llms.txt, manifest.ts
+├── components/           # AITutorWidget / blog(TipTap) / forum / chapter / creator / push …
+├── lib/
+│   ├── payments/         # config / orders / gateways(ecpay,newebpay,stripe) / index
+│   ├── creator-engine/   # fragments / works / evolve / marketplace / social / dm / lineage …
+│   ├── collab/           # Yjs over Supabase Realtime
+│   ├── ai-router.ts, resolve-usage-ai.ts, ai-usage-models.ts, ai-providers.ts
+│   ├── admin-roles.ts, admin-guard.ts   # RBAC
+│   ├── zcoin.ts, web-push.ts, srs.ts, learning-coach.ts, referral.ts
+│   └── supabase*.ts, content.ts, gamification.ts …
+├── data/chapters/        # 80 個章節 JSON（fallback 來源，改完要 import 進 DB）
+└── middleware.ts         # admin slug rewrite + x-admin-path + session refresh
+supabase/                 # schema + 150+ migration（含 ci_* 創作者島嶼表）
+tests/  e2e/              # Vitest 單元 + Playwright E2E
+docs/   scripts/          # 文件 + 內容匯入 / 部署腳本
 ```
 
 ---
 
-## 🔑 重要環境變數
+## 🎯 部署（GHCR + Zeabur）
 
-| 變數 | 必填 | 用途 |
-|---|:--:|---|
-| `NEXT_PUBLIC_SUPABASE_URL` | ✅ | Supabase REST endpoint |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | ✅ | 前端 anon key（受 RLS 保護） |
-| `SUPABASE_SERVICE_ROLE_KEY` | ✅ | Server 端 admin client，跳 RLS |
-| `SUPABASE_DB_URL` | ✅ | `npm run db:apply` 用（自動轉 5432） |
-| `ADMIN_SLUG` | 建議 | 後台隱碼路徑，預設 `console-x7k2`；上 production 務必改 |
-| `NEXT_PUBLIC_SITE_URL` | ✅ | OG 圖 + sitemap 用的 absolute URL |
-| `GA4_PROPERTY_ID` | 選用 | GA4 sync；未設則後台 sync 回 503 |
-| `GA4_SA_CREDENTIALS` | 選用 | Service Account JSON 整段 |
-| `CRON_SECRET` | 選用 | GA4 sync cron 驗證；至少 16 字元 |
-
----
-
-## 🛡️ 高敏感區（修改前務必看 `docs/RULE/AI_ISLAND_COLLAB_RULE.md`）
-
-以下檔案修改前必須有明確 task / file scope。零容忍誤改：
-
-```text
-src/app/login/page.tsx
-src/app/signup/page.tsx
-src/app/auth/**
-src/app/api/auth/**
-src/lib/supabase*.ts
-src/middleware.ts
-```
-
-OAuth callback 必須同時支援 `code`、`token_hash`、hash token 三種路徑；profile 建立優先走 server-side `ensure-profile` 避免 RLS 擋寫。
-
----
-
-## 🎯 部署（Zeabur）
-
-1. Push 上 GitHub（已有 `luffysky/ai-island-web`）
-2. Zeabur 連 repo、自動偵測 Next.js
-3. 設定環境變數（同 `.env.local`、外加 production-only 的 `ADMIN_SLUG`）
-4. 跑 migrations（從本機 `npm run db:apply` 對 production Supabase 套用）
-5. 設 Zeabur Cron Job：每日 00:00 打 `GET /api/admin/ga4/sync` 帶 `x-cron-secret`
-6. Deploy
-
-線上 production Linux 環境沒有本機 Windows 的 Node 24 TLS 問題，不需 `--use-system-ca`。
+- push `main` → `docker.yml` 用 `Dockerfile`（standalone、`CMD node server.js`）build → 推 `ghcr.io/luffysky/ai-island-web:latest` → GraphQL `restartService` 自動重部署。
+- Zeabur 服務設 **Prebuilt Image**（繞開 zbpack 偶發只跑 Caddy 靜態的雷）、Port 3000、runtime env 貼 `.env.local`。
+- DB 改完即時生效（`/chapters` force-dynamic、`/chapters/[id]` revalidate=60），不用 rebuild。
+- 細節見 `CLAUDE.md` 部署段 + 記憶 `deploy-zeabur-ghcr-fallback`。
 
 ---
 
@@ -317,49 +210,20 @@ OAuth callback 必須同時支援 `code`、`token_hash`、hash token 三種路�
 
 | 文件 | 用途 |
 |---|---|
-| [docs/RULE/AI_ISLAND_COLLAB_RULE.md](docs/RULE/AI_ISLAND_COLLAB_RULE.md) | AI Island 專屬協作 / zip handoff 規則 |
-| [docs/RULE/SNOWREALM_TEAM_MASTER.md](docs/RULE/SNOWREALM_TEAM_MASTER.md) | 八人團隊身份、職責、KPI、考績 |
-| [docs/RULE/SPRINT_GATE_RULE.md](docs/RULE/SPRINT_GATE_RULE.md) | Sprint / Phase / Round gate 流程 |
-| [docs/RULE/ROUND_GATE_COLLAB_RULE.md](docs/RULE/ROUND_GATE_COLLAB_RULE.md) | 單一 gate 文件 / 提交鏈 / 額度不足代班規則 |
-| [docs/RULE/LOCK_RULES.md](docs/RULE/LOCK_RULES.md) | 高敏感檔案鎖定 |
-| [docs/RULE/SPEC_EXAMPLE.md](docs/RULE/SPEC_EXAMPLE.md) | SPEC 文件範例 |
-| [docs/RULE/TASK_TEMPLATE.md](docs/RULE/TASK_TEMPLATE.md) | TASK 模板 |
-| [docs/admin_upgrade/README.md](docs/admin_upgrade/README.md) | 後台 9 維度成熟度 + 三階段升級路線圖 |
-| [docs/admin_upgrade/specs/](docs/admin_upgrade/specs/) | Phase 1 五個 Quick Win 詳細 SPEC |
-| [docs/Codex_to_Claude.md](docs/Codex_to_Claude.md) | Codex → Claude Code 接手手冊 |
-| [docs/Claude_to_Codex.md](docs/Claude_to_Codex.md) | 桌面 Claude → Codex 移植日誌 |
-| [docs/daily_works_0522.md](docs/daily_works_0522.md) | 2026-05-22 雙人工作日誌 |
-| [docs/GA4_SETUP.md](docs/GA4_SETUP.md) | GA4 整合步驟 |
+| [CLAUDE.md](CLAUDE.md) | 專案最重要的雷（DB vs JSON、1000 筆截斷、部署 fallback、內容生成） |
+| [docs/OWNER_SETUP.md](docs/OWNER_SETUP.md) | 老闆手動待辦 + env 總清單（金流 / VAPID / cron） |
+| [docs/payments_setup.md](docs/payments_setup.md) | 綠界 / 藍新 / Stripe 設定步驟 |
+| [docs/daily_works_0704.md](docs/daily_works_0704.md) | 最新工作日誌（含測試 / CI 段） |
+| [docs/MASTER_TODO.md](docs/MASTER_TODO.md) | 路線圖與進度 |
+| [docs/RULE/](docs/RULE/) | 協作 / sprint / lock 規則 |
 
 ---
 
-## 🚧 進行中與規劃
+## 🔒 安全備註
 
-### 短期（Phase 1 Quick Wins，~3 天，待動工）
-- 使用者列表搜尋 + 分頁
-- 手動發放 XP / Z-coin / 成就
-- Audit log 篩選 + CSV 匯出
-- Email 訂閱戶清單頁
-- Dashboard 即時 widgets（在線 / breach / audit / AI 預算）
-
-詳見 [`docs/admin_upgrade/specs/`](docs/admin_upgrade/specs/)。
-
-### 中期（Phase 2）
-- Impersonate 使用者、Blog / Forum 審核佇列、Z-coin airdrop、Learning events 查詢、Breach 詳細頁、AI cost 警示
-
-### 長線（Phase 3）
-- 檢舉收件箱、GDPR 匯出 / 刪除、Cohort / funnel / retention、遊戲化規則編輯器、效能 ops、批次 user 操作
-
----
-
-## 📊 數據（截至 2026-05-22）
-
-- 70 章節 JSON · 31 章已發布
-- 569+ lessons 活資料化
-- 25 內建成就（4 階稀有度）
-- 6 大職業路線
-- 7 個 AI 模型線上可用、月預算追蹤中
-- 第一方互動分析 + GA4 雙軌
+- `.env.local` 內含真實 service_role key / DB 密碼、已 gitignore、**永不 commit**。
+- 金鑰輪替（Supabase service_role + DB 密碼）待專案完成後執行。
+- OAuth callback 支援 `code` / `token_hash` / hash token 三路徑；profile 建立走 server-side `ensure-profile`。
 
 ---
 
