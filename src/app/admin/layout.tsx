@@ -155,7 +155,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
             {/* 5. 💰 商務 (ERP) */}
             <NavGroup title="💰 商務 (ERP)">
-              <AdminLink href="/admin/orders">💰 訂單</AdminLink>
+              <AdminLink href="/admin/orders">💰 金流工作台</AdminLink>
               <AdminLink href="/admin/subscriptions">💎 訂閱</AdminLink>
               <AdminLink href="/admin/zcoin">🪙 Z-coin 流水</AdminLink>
               <AdminLink href="/admin/zcoin/airdrop">💸 Z-coin Airdrop</AdminLink>

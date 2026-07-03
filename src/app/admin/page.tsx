@@ -10,7 +10,8 @@ import { CountUp } from "@/components/ui/CountUp";
 import { PulseDot } from "@/components/ui/PulseDot";
 import { AdminGreeting } from "@/components/admin/AdminGreeting";
 import { RingGauge } from "@/components/ui/RingGauge";
-import { Crown, AlertTriangle, CheckCircle, Megaphone, Zap, Users, DollarSign, MessageSquare, Bot, Search, Trophy, Sparkles } from "lucide-react";
+import { Crown, AlertTriangle, CheckCircle, Megaphone, Zap, Users, DollarSign, MessageSquare, Bot, Search, Trophy, Sparkles, Activity, BellRing } from "lucide-react";
+import { runOpsAlertChecks } from "@/lib/ops-alerts";
 
 export default async function AdminOverviewPage() {
   const supabase = createSupabaseAdmin();
@@ -97,6 +98,50 @@ export default async function AdminOverviewPage() {
 
   const userTrend = calcTrend(usersThisWeek ?? 0, usersLastWeek ?? 0);
   const revTrend = calcTrend(revThisWeek, revLastWeek);
+
+  // ============ 今日營運總覽（全部即時查 DB、無寫死）============
+  const startOfYesterday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1).toISOString();
+  const todayDateStr = new Date().toISOString().slice(0, 10);
+
+  const [
+    { data: paidThisMonth },
+    { data: paidTodayRows },
+    { data: paidYesterdayRows },
+    { count: newUsersYesterday },
+    { data: checkinsToday },
+    { data: lessonProgToday },
+    { data: aiKeysAll },
+    { data: aiUsageThisMonth },
+  ] = await Promise.all([
+    supabase.from("orders").select("amount").eq("status", "paid").gte("paid_at", startOfMonth),
+    supabase.from("orders").select("amount").eq("status", "paid").gte("paid_at", startOfToday),
+    supabase.from("orders").select("amount").eq("status", "paid").gte("paid_at", startOfYesterday).lt("paid_at", startOfToday),
+    supabase.from("profiles").select("*", { count: "exact", head: true }).gte("created_at", startOfYesterday).lt("created_at", startOfToday),
+    supabase.from("daily_checkins").select("user_id").eq("checkin_date", todayDateStr),
+    supabase.from("lesson_progress").select("user_id").gte("completed_at", startOfToday),
+    supabase.from("ai_api_keys").select("used_this_month_usd"),
+    supabase.from("ai_usage_daily").select("cost_usd").gte("date", startOfMonth.slice(0, 10)),
+  ] as any);
+
+  const revenueTodayNTD = ((paidTodayRows as any[]) ?? []).reduce((s, o) => s + Number(o.amount ?? 0), 0);
+  const revenueYesterdayNTD = ((paidYesterdayRows as any[]) ?? []).reduce((s, o) => s + Number(o.amount ?? 0), 0);
+  const revenueMonthNTD = ((paidThisMonth as any[]) ?? []).reduce((s, o) => s + Number(o.amount ?? 0), 0);
+
+  // 今日活躍 = 今日打卡 ∪ 今日完成課程 的 distinct user
+  const activeTodaySet = new Set<string>();
+  for (const r of ((checkinsToday as any[]) ?? [])) if (r.user_id) activeTodaySet.add(r.user_id);
+  for (const r of ((lessonProgToday as any[]) ?? [])) if (r.user_id) activeTodaySet.add(r.user_id);
+  const activeTodayCount = activeTodaySet.size;
+
+  // 本月 AI 成本（USD）：ai_api_keys.used_this_month_usd 加總（已按月 reset）、對照 ai_usage_daily
+  const aiCostMonthUsd = ((aiKeysAll as any[]) ?? []).reduce((s, k) => s + Number(k.used_this_month_usd ?? 0), 0);
+  const aiCostMonthDailyUsd = ((aiUsageThisMonth as any[]) ?? []).reduce((s, r) => s + Number(r.cost_usd ?? 0), 0);
+
+  const revTodayTrend = calcTrend(revenueTodayNTD, revenueYesterdayNTD);
+  const newUserTodayTrend = calcTrend(newUsersToday ?? 0, newUsersYesterday ?? 0);
+
+  // 目前觸發中的營運告警（跟 cron /api/cron/ops-alerts 同一組檢查、server-side 算）
+  const { alerts: opsAlerts } = await runOpsAlertChecks();
 
   // === 行銷數據 (新) === — 用 try-catch 包、某張表不存在不要整頁炸
   let utmStats: any[] = [];
@@ -266,6 +311,79 @@ export default async function AdminOverviewPage() {
         name={ownerCheck?.isOwner ? "林董" : ((currentProfile as any)?.username ?? "管理員")}
         signupsToday={newUsersToday ?? 0}
       />
+
+      {/* ============ 今日營運總覽（即時） ============ */}
+      <div>
+        <h2 className="text-sm uppercase tracking-wider text-fg-muted mb-3 flex items-center gap-2">
+          <Activity className="w-4 h-4" /> 今日營運總覽
+          <span className="text-[10px] text-fg-muted/70 normal-case">即時查 DB · 每分鐘自動刷新</span>
+        </h2>
+        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
+          <Stat
+            label="今日營收"
+            value={`NT$ ${revenueTodayNTD.toLocaleString()}`}
+            color="text-emerald-400"
+            hint={`昨日 NT$ ${revenueYesterdayNTD.toLocaleString()}`}
+            trend={revTodayTrend}
+          />
+          <Stat
+            label="本月營收"
+            value={`NT$ ${revenueMonthNTD.toLocaleString()}`}
+            color="text-emerald-400"
+            hint={`${((paidThisMonth as any[]) ?? []).length} 筆已付款`}
+          />
+          <Stat
+            label="今日新用戶"
+            value={newUsersToday ?? 0}
+            color="text-blue-400"
+            hint={`昨日 ${newUsersYesterday ?? 0}`}
+            trend={newUserTodayTrend}
+          />
+          <Stat
+            label="今日活躍"
+            value={activeTodayCount}
+            color="text-green-400"
+            hint="打卡 ∪ 完成課程"
+            live
+          />
+          <Stat
+            label="本月 AI 成本"
+            value={`$${aiCostMonthUsd.toFixed(2)}`}
+            color="text-orange-400"
+            hint={`每日明細 $${aiCostMonthDailyUsd.toFixed(2)}`}
+          />
+          <Stat
+            label="待處理工單"
+            value={openTickets ?? 0}
+            color={openTickets && openTickets > 0 ? "text-red-400" : "text-fg-muted"}
+            hint={openTickets && openTickets > 0 ? "需回覆" : "已清空"}
+          />
+        </div>
+      </div>
+
+      {/* ============ 主動告警（跟 cron ops-alerts 同組檢查）============ */}
+      <div className={`rounded-2xl border p-4 ${opsAlerts.length > 0 ? "bg-red-500/5 border-red-500/30" : "bg-emerald-500/5 border-emerald-500/25"}`}>
+        <h2 className="text-sm font-bold mb-3 flex items-center gap-2">
+          {opsAlerts.length > 0
+            ? <><BellRing className="w-4 h-4 text-red-500" /> 目前觸發中的告警 <span className="text-[11px] px-2 py-0.5 rounded-full bg-red-500/20 text-red-900 dark:text-red-100">{opsAlerts.length}</span></>
+            : <><CheckCircle className="w-4 h-4 text-emerald-500" /> 目前無告警觸發</>}
+        </h2>
+        {opsAlerts.length === 0 ? (
+          <p className="text-[11px] text-fg-muted">AI 成本 / 金流失敗 / 錯誤暴增 / 流失風險 皆在門檻內。門檻可在 <code className="text-purple-300">app_settings.ops_alert_thresholds</code> 調整。</p>
+        ) : (
+          <div className="space-y-2">
+            {opsAlerts.map((a) => (
+              <div key={a.key} className={`flex items-start gap-2 rounded-lg p-2.5 ${a.level === "error" ? "bg-red-500/10" : a.level === "warn" ? "bg-orange-500/10" : "bg-blue-500/10"}`}>
+                <AlertTriangle className={`w-4 h-4 shrink-0 mt-0.5 ${a.level === "error" ? "text-red-500" : a.level === "warn" ? "text-orange-400" : "text-blue-400"}`} />
+                <div className="min-w-0">
+                  <div className="text-sm font-bold">{a.title}</div>
+                  <div className="text-[11px] text-fg-muted leading-relaxed">{a.detail}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Owner identity card — 顯示 AI 為什麼判你 owner */}
       {ownerCheck?.isOwner && (
