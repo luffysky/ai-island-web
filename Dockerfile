@@ -5,7 +5,8 @@
 # ============ 1. 安裝依賴 ============
 FROM node:22-bookworm-slim AS deps
 WORKDIR /app
-COPY package.json package-lock.json ./
+# 帶上 .npmrc（含 legacy-peer-deps + fetch-retry 設定）→ npm ci 才吃得到、否則 tiptap peer 衝突會讓 npm ci 掛
+COPY package.json package-lock.json .npmrc ./
 RUN npm ci
 
 # ============ 2. build ============
