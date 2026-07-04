@@ -78,7 +78,8 @@ BEGIN
   ELSIF p_type = 'work' THEN SELECT EXISTS(SELECT 1 FROM public.ci_works WHERE id=p_id) INTO v_exists;
   ELSIF p_type = 'package' THEN SELECT EXISTS(SELECT 1 FROM public.ci_packages WHERE id=p_id) INTO v_exists;
   ELSIF p_type = 'collection' THEN SELECT EXISTS(SELECT 1 FROM public.ci_collections WHERE id=p_id) INTO v_exists;
-  ELSE v_exists := true; -- workflow 等尚未建表 → 放行
+  ELSIF p_type = 'workflow' THEN SELECT EXISTS(SELECT 1 FROM public.ci_workflows WHERE id=p_id) INTO v_exists; -- #96 workflow 表已建、不再放行
+  ELSE v_exists := true; -- 真正未知型別 → 放行（forward-compat）
   END IF;
   RETURN v_exists;
 END;
@@ -88,10 +89,10 @@ CREATE OR REPLACE FUNCTION public.ci_asset_relations_check()
 RETURNS trigger LANGUAGE plpgsql AS $$
 BEGIN
   IF NOT public.ci_validate_asset_ref(NEW.from_asset_id, NEW.from_asset_type) THEN
-    RAISE EXCEPTION 'from_asset % (%s) 不存在', NEW.from_asset_id, NEW.from_asset_type;
+    RAISE EXCEPTION 'from_asset % (%) 不存在', NEW.from_asset_id, NEW.from_asset_type;
   END IF;
   IF NOT public.ci_validate_asset_ref(NEW.to_asset_id, NEW.to_asset_type) THEN
-    RAISE EXCEPTION 'to_asset % (%s) 不存在', NEW.to_asset_id, NEW.to_asset_type;
+    RAISE EXCEPTION 'to_asset % (%) 不存在', NEW.to_asset_id, NEW.to_asset_type;
   END IF;
   RETURN NEW;
 END;

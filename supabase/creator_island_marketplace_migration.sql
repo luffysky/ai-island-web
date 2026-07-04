@@ -65,9 +65,23 @@ BEGIN
   IF v_price IS NULL THEN RETURN jsonb_build_object('ok', false, 'error', 'not_found'); END IF;
   IF v_status <> 'listed' THEN RETURN jsonb_build_object('ok', false, 'error', 'not_listed'); END IF;
 
-  IF EXISTS (SELECT 1 FROM public.ci_entitlements WHERE buyer_id = p_buyer AND asset_id = v_asset) THEN
-    RETURN jsonb_build_object('ok', true, 'already_owned', true);
+  -- #94 防自買自賣（下沉 RPC 層）：買家不可是賣方 workspace 的擁有者/成員。
+  IF v_seller_ws IS NOT NULL AND (
+       EXISTS (SELECT 1 FROM public.ci_workspaces        WHERE id = v_seller_ws AND owner_id = p_buyer)
+    OR EXISTS (SELECT 1 FROM public.ci_workspace_members WHERE workspace_id = v_seller_ws AND user_id = p_buyer)
+  ) THEN
+    RETURN jsonb_build_object('ok', false, 'error', 'own_listing');
   END IF;
+
+  -- #96 重複購買：回傳既有 entitlement / transaction id（不只 ok）。
+  DECLARE v_ent UUID; v_ent_tx BIGINT;
+  BEGIN
+    SELECT id, transaction_id INTO v_ent, v_ent_tx
+      FROM public.ci_entitlements WHERE buyer_id = p_buyer AND asset_id = v_asset LIMIT 1;
+    IF v_ent IS NOT NULL THEN
+      RETURN jsonb_build_object('ok', true, 'already_owned', true, 'entitlement', v_ent, 'transaction', v_ent_tx);
+    END IF;
+  END;
 
   SELECT z_coin INTO v_bal FROM public.profiles WHERE id = p_buyer FOR UPDATE;
   IF v_bal IS NULL OR v_bal < v_price THEN
