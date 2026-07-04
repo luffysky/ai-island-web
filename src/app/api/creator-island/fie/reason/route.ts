@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireCreatorUser, requireWorkspaceRole } from "@/lib/creator-engine/api";
 import { runReasoning } from "@/lib/creator-engine/fie/reason";
+import { bumpCreatorXp } from "@/lib/creator-engine/growth";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -18,6 +19,7 @@ export async function POST(req: NextRequest) {
   if (gate instanceof NextResponse) return gate;
   try {
     const result = await runReasoning({ workspaceId, userId: u.userId, seedFragmentIds, mode: b.mode, intent: b.intent, maxCandidates: b.maxCandidates });
+    void bumpCreatorXp(u.userId, 5); // #91 完成一次推理 +5 Creator XP
     return NextResponse.json(result);
   } catch (e) {
     return NextResponse.json({ error: "reason_failed", message: (e as Error).message }, { status: 502 });

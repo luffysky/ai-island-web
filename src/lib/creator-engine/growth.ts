@@ -11,16 +11,35 @@ import { createCandidateMemory } from "@/lib/creator-engine/memory";
  * 不傳 → 該使用者跨所有工作室加總（舊行為）。
  * 一個人可以有多個工作室，碎片/作品本來就綁 workspace，所以要能分開看。
  */
-export async function getStats(userId: string, workspaceId?: string | null): Promise<{ fragments: number; works: number; aiRuns: number }> {
+/** Creator 等級：由 creator_xp 換算（每級門檻遞增）。 */
+export function creatorLevel(xp: number): { level: number; cur: number; next: number } {
+  // 需求 XP：L 級 = 50 * L * (L+1) / 2 累積；簡化用平方根
+  const level = Math.max(1, Math.floor(Math.sqrt(xp / 50)) + 1);
+  const need = (l: number) => 50 * ((l - 1) * l) / 2;
+  return { level, cur: xp - need(level), next: need(level + 1) - need(level) };
+}
+
+export async function getStats(userId: string, workspaceId?: string | null): Promise<{ fragments: number; works: number; aiRuns: number; creatorXp: number; creatorLevel: number }> {
   const admin = createSupabaseAdmin();
   const scope = <T extends { eq: (col: string, val: string) => T }>(q: T) =>
     (workspaceId ? q.eq("workspace_id", workspaceId) : q);
-  const [f, w, r] = await Promise.all([
+  const [f, w, r, s] = await Promise.all([
     scope(admin.from("ci_fragments").select("id", { count: "exact", head: true }).eq("created_by", userId) as any),
     scope(admin.from("ci_works").select("id", { count: "exact", head: true }).eq("created_by", userId) as any),
     scope(admin.from("ci_agent_runs").select("id", { count: "exact", head: true }).eq("user_id", userId) as any),
+    admin.from("ci_creator_stats").select("creator_xp").eq("user_id", userId).maybeSingle(),
   ]);
-  return { fragments: f.count ?? 0, works: w.count ?? 0, aiRuns: r.count ?? 0 };
+  const creatorXp = (s.data as any)?.creator_xp ?? 0;
+  return { fragments: f.count ?? 0, works: w.count ?? 0, aiRuns: r.count ?? 0, creatorXp, creatorLevel: creatorLevel(creatorXp).level };
+}
+
+/** #91 累加 Creator XP（創作行為觸發，冪等靠 upsert 增量）。fire-and-forget。 */
+export async function bumpCreatorXp(userId: string, delta: number): Promise<void> {
+  if (!userId || delta <= 0) return;
+  const admin = createSupabaseAdmin();
+  const { data } = await admin.from("ci_creator_stats").select("creator_xp").eq("user_id", userId).maybeSingle();
+  const cur = (data as any)?.creator_xp ?? 0;
+  await admin.from("ci_creator_stats").upsert({ user_id: userId, creator_xp: cur + delta, updated_at: new Date().toISOString() }, { onConflict: "user_id" }).then(() => {}, () => {});
 }
 
 /** AI 教練：用 stats + DNA + 近期題材給本週建議。核心動作、免費（Cost Manager coach=0）。 */

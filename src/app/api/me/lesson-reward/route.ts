@@ -154,6 +154,7 @@ export async function POST(req: NextRequest) {
         await admin.from("profiles").update({ xp: ((prof as any)?.xp ?? 0) + CHAPTER_XP }).eq("id", user.id);
       }
       cert = { code, title, justIssued: true };
+      reward = { zcoin: CHAPTER_COIN, xp: CHAPTER_XP };
     }
   }
 

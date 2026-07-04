@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireCreatorUser, requireWorkspaceRole } from "@/lib/creator-engine/api";
 import { listWorks, createWork } from "@/lib/creator-engine/works";
+import { bumpCreatorXp } from "@/lib/creator-engine/growth";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -35,5 +36,6 @@ export async function POST(req: NextRequest) {
     fragmentIds: Array.isArray(body.fragmentIds) ? body.fragmentIds : undefined,
     sourceType: body.sourceType,
   });
+  void bumpCreatorXp(u.userId, 20); // #91 完成作品 +20 Creator XP
   return NextResponse.json({ work });
 }

@@ -14,7 +14,7 @@ function nameColorClass(v?: string): string {
   return "";
 }
 
-export function GrowthClient({ stats, initialDna, workspaces = [], scope = "all", equipped = {}, displayName = "創作者" }: { stats: { fragments: number; works: number; aiRuns: number }; initialDna: Dna; workspaces?: WsLite[]; scope?: string; equipped?: Equipped; displayName?: string }) {
+export function GrowthClient({ stats, initialDna, workspaces = [], scope = "all", equipped = {}, displayName = "創作者" }: { stats: { fragments: number; works: number; aiRuns: number; creatorXp?: number; creatorLevel?: number }; initialDna: Dna; workspaces?: WsLite[]; scope?: string; equipped?: Equipped; displayName?: string }) {
   const [dna, setDna] = useState<Dna>(initialDna);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -74,6 +74,14 @@ export function GrowthClient({ stats, initialDna, workspaces = [], scope = "all"
             className={`px-2.5 py-1 rounded-full border transition ${scope === "all" ? "border-accent bg-accent/10 text-accent" : "border-border bg-bg-card hover:border-accent/40"}`}>
             全部加總
           </Link>
+        </div>
+      )}
+
+      {/* #91 Creator XP / 等級（創作行為累積，與平台 XP 分開）*/}
+      {(stats.creatorXp ?? 0) > 0 && (
+        <div className="bg-gradient-to-r from-accent/10 to-accent-3/10 border border-accent/20 rounded-2xl p-4 flex items-center justify-between">
+          <div className="font-bold inline-flex items-center gap-1.5">🎨 創作者 Lv {stats.creatorLevel ?? 1}</div>
+          <div className="text-sm text-fg-muted">Creator XP {stats.creatorXp}（寫碎片/作品/推理累積）</div>
         </div>
       )}
 

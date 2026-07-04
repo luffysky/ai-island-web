@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireCreatorUser, requireWorkspaceRole } from "@/lib/creator-engine/api";
 import { listFragments, createFragment } from "@/lib/creator-engine/fragments";
 import { addRelation, type RelationType } from "@/lib/creator-engine/lineage";
+import { bumpCreatorXp } from "@/lib/creator-engine/growth";
 
 // 碎片衍生自碎片時允許的血緣關係（#2：防家譜空掉）。
 const FRAG_RELATIONS: RelationType[] = ["condensed_from", "evolved_from", "transcreated_from", "inspired_by", "remixed_from", "forked_from"];
@@ -53,5 +54,7 @@ export async function POST(req: NextRequest) {
       ),
     );
   }
+  // #91 Creator XP：真創作(人工/AI 協作)才給，egg/匯入不給
+  if (!body.sourceType || ["human_original", "ai_assisted"].includes(body.sourceType)) void bumpCreatorXp(u.userId, 3);
   return NextResponse.json({ fragment });
 }
