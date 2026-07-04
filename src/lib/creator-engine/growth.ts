@@ -4,6 +4,7 @@
  */
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { analyzeDNA, coach } from "@/lib/creator-engine/ai/agents";
+import { createCandidateMemory } from "@/lib/creator-engine/memory";
 
 /**
  * 成長統計。傳 workspaceId → 只算「這個工作室」的（個人島也是一個 workspace）；
@@ -66,6 +67,13 @@ export async function computeDNA(userId: string, workspaceId: string): Promise<{
       { user_id: userId, traits: result, confidence, updated_at: new Date().toISOString() },
       { onConflict: "user_id" },
     );
+    // #92 candidate 推論：把 DNA 特徵轉成「候選記憶」待創作者確認（fire-and-forget、免額外 LLM）
+    const t = result as any;
+    const cands: string[] = [];
+    if (t.tone) cands.push(`語氣傾向：${t.tone}`);
+    if (Array.isArray(t.imagery) && t.imagery.length) cands.push(`常用意象：${t.imagery.slice(0, 5).join("、")}`);
+    if (Array.isArray(t.strengths) && t.strengths.length) cands.push(`創作強項：${t.strengths.slice(0, 3).join("、")}`);
+    void Promise.all(cands.map((text) => createCandidateMemory({ scope: "personal", userId, kind: "style", text })));
     return { traits: result };
   } catch (e) {
     return { error: (e as Error).message };

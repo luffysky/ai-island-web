@@ -11,7 +11,7 @@ import { resolveModel } from "@/lib/creator-engine/ai/router";
 import { estimateCostUsd, computeZCharge, chargeWorkspace, refundWorkspace } from "@/lib/creator-engine/ai/cost";
 import { getInjectableMemory, recordMemoryUsage } from "@/lib/creator-engine/memory";
 
-export type AgentType = "synthesize" | "evolve" | "compose" | "transcreate" | "dna" | "advise" | "assist" | "chat" | "coach";
+export type AgentType = "synthesize" | "evolve" | "compose" | "transcreate" | "dna" | "advise" | "assist" | "chat" | "coach" | "reason";
 
 class AgentError extends Error {
   status: number;
@@ -36,7 +36,7 @@ async function runAgent<T>(opts: {
 
   const admin = createSupabaseAdmin();
   // 注入相關記憶（M4，current intent 仍以 user 訊息為主、記憶只是背景）
-  const mem = await getInjectableMemory(opts.workspaceId, opts.userId).catch(() => ({ text: "", ids: [] as string[] }));
+  const mem = await getInjectableMemory(opts.workspaceId, opts.userId, opts.user).catch(() => ({ text: "", ids: [] as string[] }));
   const systemWithMem = mem.text ? `${opts.system}\n\n${mem.text}\n（以上為背景偏好；若與當前指令衝突，以當前指令為準。）` : opts.system;
 
   // 開一筆 running run
@@ -227,6 +227,33 @@ export async function analyzeDNA(workspaceId: string, userId: string, samples: s
   });
 }
 
+// ===== FIE Reasoning（推理，先理解再生成）=====
+import { ReasonOutputSchema, type ReasoningMode } from "@/lib/creator-engine/fie/types";
+const MODE_HINT: Record<ReasoningMode, string> = {
+  familiar: "貼近創作者既有風格、穩健推理，候選 2–3 個。",
+  adjacent: "在熟悉風格附近探索、帶入相關但非顯而易見的連結，候選 3–4 個。",
+  exploratory: "刻意遠離慣性、追求高新穎度（可低 confidence），候選 4–6 個。",
+};
+export async function reason(
+  workspaceId: string, userId: string,
+  ctx: { seeds: { id: string; title: string; content: string }[]; mode: ReasoningMode; evidence: { id: string; title: string }[]; intent?: string },
+) {
+  const system = `你是「FIE 推理器」。**先理解、再生成**：不要直接寫作品，而是對這些碎片做推理。
+步驟：先 Observation（只建立事實，不臆測故事）→ 提出多個 Candidate（不同敘事方向，非唯一答案），每個附：為何合理(rationale)、模型自評 confidence(0~1)、用到哪些碎片 id(evidenceFragmentIds，只能用下方提供的 id)、還缺什麼(missing)。
+模式：${MODE_HINT[ctx.mode]}
+只回傳 JSON：{"observation":"...","candidates":[{"title":"","body":"敘事方向","rationale":"","confidence":0.0,"evidenceFragmentIds":["id"],"missing":["還缺的資訊"]}]}。全部繁體中文。`;
+  const fragBlock = ctx.seeds.map((f) => `[#${f.id}] ${f.title}\n${(f.content || "").slice(0, 400)}`).join("\n\n");
+  const evBlock = ctx.evidence.length ? `\n\n【可引用的相關碎片(evidence)，id 只能用這些】\n${ctx.evidence.map((e) => `[#${e.id}] ${e.title}`).join("\n")}` : "";
+  return runAgent({
+    agentType: "reason", workspaceId, userId, schema: ReasonOutputSchema,
+    input: { seedIds: ctx.seeds.map((s) => s.id), mode: ctx.mode, intent: ctx.intent ?? null },
+    system,
+    user: `種子碎片：\n\n${fragBlock}${evBlock}${ctx.intent ? `\n\n創作意圖：${ctx.intent}` : ""}`,
+    temperature: ctx.mode === "exploratory" ? 0.95 : ctx.mode === "adjacent" ? 0.85 : 0.6,
+    maxTokens: 2500,
+  });
+}
+
 // ===== 創作教練 Coach（E9 週報）=====
 const CoachSchema = z.object({
   encouragement: z.string(),
@@ -283,7 +310,7 @@ export async function assistText(
   if (!resolved.ok) throw new AgentError(resolved.message, resolved.status);
   const { provider, model, apiKey } = resolved.model;
   const admin = createSupabaseAdmin();
-  const mem = await getInjectableMemory(workspaceId, userId).catch(() => ({ text: "", ids: [] as string[] }));
+  const mem = await getInjectableMemory(workspaceId, userId, opts.user).catch(() => ({ text: "", ids: [] as string[] }));
   const system = mem.text ? `${opts.system}\n\n${mem.text}\n（以上為背景偏好；與當前指令衝突時以當前指令為準。）` : opts.system;
   try {
     const r = await callAI({

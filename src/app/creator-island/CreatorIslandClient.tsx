@@ -7,7 +7,7 @@ import { DndContext, useDraggable, useDroppable, PointerSensor, useSensor, useSe
 import {
   Coins, Trees, Gift, Sprout, PenLine, Mic, Camera, Plus, Shuffle, Wrench, Play, Search,
   Lightbulb, Magnet, Leaf, Wand2, Languages, FolderTree, Pencil, Copy, Music, Film, PenTool,
-  X, Check, Bot, Egg, Recycle, GitFork, Hand, ScrollText, type LucideIcon,
+  X, Check, Bot, Egg, Recycle, GitFork, Hand, ScrollText, BrainCircuit, type LucideIcon,
 } from "lucide-react";
 import { EggHatch } from "./EggHatch";
 import { IslandTour } from "./IslandTour";
@@ -339,6 +339,7 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
         <button onClick={loadWorkflows} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-bg-card border border-border hover:text-accent"><Wrench size={13} /> 工作流{recording.length > 0 ? `（錄製 ${recording.length}）` : ""}</button>
         {recording.length > 0 && <button onClick={saveWorkflow} className="px-3 py-1.5 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-200">存成工作流</button>}
         <Link href={`/creator-island/activity?ws=${workspaceId}`} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-bg-card border border-border hover:text-accent"><ScrollText size={13} /> 操作記錄</Link>
+        <Link href="/creator-island/reason" className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-accent/15 text-accent border border-accent/30 hover:bg-accent/25"><BrainCircuit size={13} /> 推理台</Link>
       </div>
 
       {/* 意外配對面板 */}

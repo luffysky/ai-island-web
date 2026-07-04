@@ -4,6 +4,7 @@
  * 與既有 user_ai_memory 分開（用途不同）。
  */
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { embedText } from "@/lib/ai-embeddings";
 
 export type MemoryScope = "personal" | "workspace" | "project" | "session";
 export type Memory = {
@@ -13,20 +14,48 @@ export type Memory = {
 
 const COLS = "id, scope, user_id, workspace_id, kind, text, confidence, status, source, created_at";
 
-/** 取要注入 prompt 的記憶（personal[user] + workspace[active]，active 狀態、有上限）。 */
-export async function getInjectableMemory(workspaceId: string, userId: string, limit = 6): Promise<{ text: string; ids: string[] }> {
+/**
+ * 取要注入 prompt 的記憶（personal[user] + workspace[active]，active 狀態、有上限）。
+ * #92：傳 queryText 且有 OpenAI key → **語意相關**檢索（ci_memories_semantic）；否則退回「最近用 last_used_at」。
+ */
+export async function getInjectableMemory(workspaceId: string, userId: string, queryText?: string, limit = 6): Promise<{ text: string; ids: string[] }> {
   const admin = createSupabaseAdmin();
-  const { data } = await admin
-    .from("ci_memories")
-    .select("id, kind, text, scope")
-    .eq("status", "active")
-    .or(`and(scope.eq.personal,user_id.eq.${userId}),and(scope.in.(workspace,project),workspace_id.eq.${workspaceId})`)
-    .order("last_used_at", { ascending: false, nullsFirst: false })
-    .limit(limit);
-  const rows = (data as any[]) ?? [];
+  let rows: any[] | null = null;
+
+  if (queryText && queryText.trim()) {
+    const vec = await embedText(queryText.slice(0, 4000)).catch(() => null);
+    if (vec) {
+      const { data } = await admin.rpc("ci_memories_semantic", {
+        p_user: userId, p_workspace: workspaceId, p_embedding: `[${vec.join(",")}]`, match_count: limit,
+      });
+      rows = (data as any[]) ?? [];
+    }
+  }
+  // 無 query / 無 key / 語意查空 → 退回最近用
+  if (rows === null) {
+    const { data } = await admin
+      .from("ci_memories")
+      .select("id, kind, text, scope")
+      .eq("status", "active")
+      .or(`and(scope.eq.personal,user_id.eq.${userId}),and(scope.in.(workspace,project),workspace_id.eq.${workspaceId})`)
+      .order("last_used_at", { ascending: false, nullsFirst: false })
+      .limit(limit);
+    rows = (data as any[]) ?? [];
+  }
+
   if (!rows.length) return { text: "", ids: [] };
   const text = "【關於這位創作者 / 此工作空間的已知偏好】\n" + rows.map((r) => `- (${r.kind}) ${r.text}`).join("\n");
   return { text, ids: rows.map((r) => r.id) };
+}
+
+/** #92 讀「本次用到的記憶」（給透明化顯示）。 */
+export async function listUsedMemories(agentRunId: number): Promise<{ id: string; kind: string; text: string }[]> {
+  const admin = createSupabaseAdmin();
+  const { data } = await admin
+    .from("ci_memory_usage")
+    .select("memory:ci_memories(id, kind, text)")
+    .eq("agent_run_id", agentRunId);
+  return ((data as any[]) ?? []).map((r) => r.memory).filter(Boolean);
 }
 
 /** 記錄哪些記憶被注入哪個 run（透明度）。 */
@@ -50,17 +79,28 @@ export async function createMemory(input: {
   scope: MemoryScope; userId?: string; workspaceId?: string; kind?: string; text: string; status?: string; source?: string;
 }): Promise<Memory> {
   const admin = createSupabaseAdmin();
+  const text = input.text.slice(0, 2000);
+  // #92：建立時就算 embedding（有 OpenAI key 才有值），供語意檢索。
+  const vec = await embedText(text).catch(() => null);
   const { data, error } = await admin.from("ci_memories").insert({
     scope: input.scope,
     user_id: input.scope === "personal" ? input.userId : null,
     workspace_id: input.scope === "personal" ? null : input.workspaceId,
     kind: input.kind ?? "note",
-    text: input.text.slice(0, 2000),
+    text,
     status: input.status ?? "active",
     source: input.source ?? "user",
+    ...(vec ? { embedding: `[${vec.join(",")}]` } : {}),
   }).select(COLS).single();
   if (error) throw new Error(error.message);
   return data as Memory;
+}
+
+/** #92 建立「候選記憶」（AI 從互動推論出、待創作者確認）。source='agent_run'、status='candidate'。 */
+export async function createCandidateMemory(input: { scope: MemoryScope; userId?: string; workspaceId?: string; kind?: string; text: string }): Promise<Memory | null> {
+  try {
+    return await createMemory({ ...input, status: "candidate", source: "agent_run" });
+  } catch { return null; }
 }
 
 export async function setMemoryStatus(id: string, status: "active" | "rejected"): Promise<void> {
