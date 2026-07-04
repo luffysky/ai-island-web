@@ -140,8 +140,12 @@ export function IslandChat({ workspaceId, focusFragments = [], onClearFocus }: {
           <motion.div initial={{ opacity: 0, y: 20, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 20, scale: 0.96 }}
             style={{ left: panel.left, top: panel.top, width: panel.width, height: panel.height }}
             className="fixed z-[56] bg-bg-card border border-emerald-500/40 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
-            <div className="p-3 border-b border-border flex items-center gap-2">
-              <span className="font-bold inline-flex items-center gap-1"><Sparkles size={16} className="text-emerald-400" /> 綠寶</span><span className="text-xs text-fg-muted">創作夥伴</span>
+            <div className="p-3 border-b border-border flex items-center gap-2 bg-gradient-to-r from-emerald-500/10 to-transparent">
+              <span className="shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 text-black grid place-items-center shadow-sm"><Sparkles size={16} /></span>
+              <div className="leading-tight">
+                <div className="font-bold text-sm">綠寶</div>
+                <div className="text-[11px] text-emerald-600 dark:text-emerald-400 inline-flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />創作夥伴 · 在線</div>
+              </div>
               <button onClick={() => { setShowHist((v) => !v); if (!showHist) loadSessions(); }} title="歷史對話" className="ml-auto text-fg-muted hover:text-accent"><History size={16} /></button>
               <button onClick={newChat} title="開新對話" className="text-fg-muted hover:text-accent"><Plus size={16} /></button>
               <button onClick={() => setOpen(false)} className="text-fg-muted hover:text-fg"><X size={16} /></button>
@@ -164,11 +168,29 @@ export function IslandChat({ workspaceId, focusFragments = [], onClearFocus }: {
               </div>
             )}
 
-            <div className="flex-1 overflow-y-auto p-3 space-y-2">
+            <div className="flex-1 overflow-y-auto p-3 space-y-3 bg-gradient-to-b from-emerald-500/[0.04] to-transparent">
               {msgs.map((m, i) => (
-                <div key={i} className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm whitespace-pre-wrap break-words ${m.role === "user" ? "ml-auto bg-accent text-white" : "bg-bg-elevated"}`}>{m.content}</div>
+                m.role === "user" ? (
+                  <div key={i} className="flex justify-end">
+                    <div className="max-w-[85%] rounded-2xl rounded-br-md px-3.5 py-2 text-sm leading-relaxed whitespace-pre-wrap break-words bg-gradient-to-br from-emerald-400 to-teal-500 text-black shadow-sm">{m.content}</div>
+                  </div>
+                ) : (
+                  <div key={i} className="flex items-end gap-2">
+                    <span className="shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 text-black grid place-items-center shadow-sm"><Sparkles size={14} /></span>
+                    <div className="max-w-[82%] rounded-2xl rounded-bl-md px-3.5 py-2 text-sm leading-relaxed whitespace-pre-wrap break-words bg-bg-elevated border border-border text-fg shadow-sm">{m.content}</div>
+                  </div>
+                )
               ))}
-              {busy && <div className="text-xs text-fg-muted animate-pulse">綠寶思考中…</div>}
+              {busy && (
+                <div className="flex items-end gap-2">
+                  <span className="shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 text-black grid place-items-center shadow-sm"><Sparkles size={14} /></span>
+                  <div className="rounded-2xl rounded-bl-md px-3.5 py-2.5 bg-bg-elevated border border-border inline-flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-bounce [animation-delay:-0.3s]" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-bounce [animation-delay:-0.15s]" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-bounce" />
+                  </div>
+                </div>
+              )}
               <div ref={endRef} />
             </div>
             {focusFragments.length > 0 && (
@@ -185,8 +207,8 @@ export function IslandChat({ workspaceId, focusFragments = [], onClearFocus }: {
               <button onClick={voice} title="語音" className="hover:text-accent"><Mic size={18} /></button>
               <label title="圖片(可看圖)" className="cursor-pointer hover:text-accent"><Camera size={18} /><input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) pickImage(f); e.currentTarget.value = ""; }} /></label>
               <label title="檔案" className="cursor-pointer hover:text-accent"><Paperclip size={18} /><input type="file" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) pickFile(f); e.currentTarget.value = ""; }} /></label>
-              <input value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }} placeholder="問綠寶…" className="flex-1 min-w-0 bg-bg-elevated border border-border rounded-full px-3 py-2 text-sm outline-none focus:border-accent" />
-              <button onClick={send} disabled={busy} title="送出" className="px-3 py-2 rounded-full bg-accent text-white disabled:opacity-40"><Send size={16} /></button>
+              <input value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }} placeholder="問綠寶…" className="flex-1 min-w-0 bg-bg-elevated border border-border rounded-full px-3 py-2 text-sm outline-none focus:border-emerald-400 transition" />
+              <button onClick={send} disabled={busy || (!text.trim() && !img)} title="送出" className="shrink-0 w-9 h-9 grid place-items-center rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 text-black shadow-sm hover:scale-105 active:scale-95 transition disabled:opacity-40 disabled:hover:scale-100"><Send size={16} /></button>
             </div>
           </motion.div>
         )}
