@@ -18,6 +18,10 @@ export async function POST(req: NextRequest) {
     const asset = await forkAsset(String(b.assetId), b.assetType, toWorkspaceId, u.userId, !!b.remix);
     return NextResponse.json({ asset });
   } catch (e) {
-    return NextResponse.json({ error: "fork_failed", message: (e as Error).message }, { status: 400 });
+    const msg = (e as Error).message;
+    if (msg === "asset_gated_buy_required") {
+      return NextResponse.json({ error: "asset_gated_buy_required", message: "這個資產已在市集上架，請用市集購買後才能取得" }, { status: 402 });
+    }
+    return NextResponse.json({ error: "fork_failed", message: msg }, { status: 400 });
   }
 }

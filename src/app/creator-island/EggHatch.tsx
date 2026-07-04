@@ -14,22 +14,24 @@ const RARITY = {
   R: { label: "R", cls: "text-fg-muted", glow: "bg-amber-300/50", emo: "🌱" },
 } as const;
 
-export function EggHatch({ onOpen, disabled }: { onOpen: () => Promise<{ title?: string; rarity?: string } | null>; disabled?: boolean }) {
+export function EggHatch({ onOpen, disabled }: { onOpen: () => Promise<{ title?: string; rarity?: string; duplicate?: boolean; message?: string } | null>; disabled?: boolean }) {
   const [phase, setPhase] = useState<"idle" | "shake" | "burst" | "done">("idle");
   const [hatched, setHatched] = useState<string | null>(null);
   const [rarity, setRarity] = useState<keyof typeof RARITY>("R");
+  const [dup, setDup] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
   async function go() {
     if (phase !== "idle" && phase !== "done") return;
-    setErr(null); setHatched(null); setPhase("shake");
+    setErr(null); setHatched(null); setDup(false); setPhase("shake");
     try {
       // 動畫與 API 並行；至少讓晃動跑 ~1.1s
       const [frag] = await Promise.all([onOpen(), new Promise((r) => setTimeout(r, 1100))]);
       const rr = (frag?.rarity as keyof typeof RARITY) || "R";
       setRarity(RARITY[rr] ? rr : "R");
+      setDup(!!frag?.duplicate);
       setPhase("burst");
-      setHatched(frag?.title ?? "新的靈感碎片");
+      setHatched(frag?.duplicate ? (frag?.message ?? "你已經有這顆了，已退還 Dust") : (frag?.title ?? "新的靈感碎片"));
       setTimeout(() => setPhase("done"), 1700);
     } catch (e: any) {
       setErr(e?.message ?? "開蛋失敗"); setPhase("idle");
@@ -70,10 +72,12 @@ export function EggHatch({ onOpen, disabled }: { onOpen: () => Promise<{ title?:
           )}
         </AnimatePresence>
         <div className="ml-3">
-          <div className="font-bold">{phase === "shake" ? "孵化中…" : phase === "burst" || phase === "done" ? "孵出來了！" : "今日碎片蛋"}</div>
+          <div className="font-bold">{phase === "shake" ? "孵化中…" : phase === "burst" || phase === "done" ? (dup ? "又是這顆！" : "孵出來了！") : "今日碎片蛋"}</div>
           <div className="text-xs text-fg-muted">
             {err ? <span className="text-red-300">{err}</span>
-              : hatched ? <span className={rar.cls}><b>{rar.emo} {rar.label}</b>「{hatched}」已落入碎片森林</span>
+              : hatched ? (dup
+                  ? <span className="text-amber-300">♻️ {hatched}</span>
+                  : <span className={rar.cls}><b>{rar.emo} {rar.label}</b>「{hatched}」已落入碎片森林</span>)
               : "沒靈感？敲開一顆，換個起點（花 1 Dust）"}
           </div>
         </div>

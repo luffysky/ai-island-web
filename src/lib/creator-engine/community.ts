@@ -82,9 +82,29 @@ export async function myCollects(userId: string) {
   return data ?? [];
 }
 
+/** 資產目前是否在市集上架販售中（#1：已上架/收費資產不能免費 fork）。 */
+async function isListedForSale(assetId: string): Promise<boolean> {
+  const admin = createSupabaseAdmin();
+  const { data } = await admin.from("ci_listings").select("id").eq("asset_id", assetId).eq("status", "listed").limit(1).maybeSingle();
+  return !!data;
+}
+
+/** 使用者是否已可存取此資產：已購買(entitlement) 或 本人擁有。 */
+async function buyerHasAccess(assetId: string, userId: string): Promise<boolean> {
+  const admin = createSupabaseAdmin();
+  const { data: ent } = await admin.from("ci_entitlements").select("id").eq("buyer_id", userId).eq("asset_id", assetId).limit(1).maybeSingle();
+  if (ent) return true;
+  const owner = await assetOwner(assetId);
+  return owner === userId;
+}
+
 /** Fork/remix：把公開的 fragment/work 複製進目標 workspace + 記家譜。 */
 export async function forkAsset(assetId: string, assetType: AssetType, toWorkspaceId: string, userId: string, remix = false): Promise<{ id: string; type: AssetType }> {
   const admin = createSupabaseAdmin();
+  // #1：已上架販售的資產不能免費 fork（除非本人擁有或已購買）→ 要走市集購買。
+  if (await isListedForSale(assetId) && !(await buyerHasAccess(assetId, userId))) {
+    throw new Error("asset_gated_buy_required");
+  }
   let newId: string;
   if (assetType === "fragment") {
     const { data: src } = await admin.from("ci_fragments").select("title, content, tags").eq("id", assetId).maybeSingle();

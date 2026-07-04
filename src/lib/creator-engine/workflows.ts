@@ -41,19 +41,34 @@ export async function runWorkflow(workspaceId: string, userId: string, workflowI
     .select("id").single();
   const runId = (runRow as any)?.id;
 
-  const frags = await getFragmentsByIds(workspaceId, fragmentIds);
+  const seed = await getFragmentsByIds(workspaceId, fragmentIds);
+  // 真 pipeline：每步的產出成為下一步的輸入（current 工作集）。
+  let current: { id: string; title: string; content: string }[] = seed;
   const results: any[] = [];
+  let stepIdx = 0;
   for (const step of steps) {
+    stepIdx++;
     try {
-      if (step.agent === "synthesize" && frags.length >= 2) {
-        const r = await synthesize(workspaceId, userId, frags); results.push({ agent: "synthesize", ok: true, output: r.result });
-      } else if (step.agent === "evolve" && frags[0]) {
-        const r = await evolve(workspaceId, userId, frags, step.params?.count ?? 6); results.push({ agent: "evolve", ok: true, output: r.result });
-      } else if (step.agent === "compose" && frags.length >= 1) {
-        const r = await compose(workspaceId, userId, step.params?.workType ?? "article", frags); results.push({ agent: "compose", ok: true, output: r.result });
-      } else if (step.agent === "transcreate" && frags[0]) {
-        const r = await transcreate(workspaceId, userId, `${frags[0].title}\n${frags[0].content}`, step.params?.targetLanguage ?? "English", step.params?.targetCulture ?? "natural");
+      if (step.agent === "synthesize" && current.length >= 2) {
+        const r = await synthesize(workspaceId, userId, current);
+        results.push({ agent: "synthesize", ok: true, output: r.result });
+        // 凝聚出的核心點子 → 下一步的單一輸入
+        current = [{ id: `syn${stepIdx}`, title: r.result.title, content: `${r.result.coreIdea}\n\n${r.result.summary}` }];
+      } else if (step.agent === "evolve" && current[0]) {
+        const r = await evolve(workspaceId, userId, current, step.params?.count ?? 6);
+        results.push({ agent: "evolve", ok: true, output: r.result });
+        // 演化出的變體 → 下一步的工作集
+        current = r.result.variants.map((v, i) => ({ id: `ev${stepIdx}_${i}`, title: v.title, content: v.content }));
+      } else if (step.agent === "compose" && current.length >= 1) {
+        const r = await compose(workspaceId, userId, step.params?.workType ?? "article", current);
+        results.push({ agent: "compose", ok: true, output: r.result });
+        // compose 為終端；把成品文字帶下去（若後面還有步驟，如 transcreate）
+        const body = (r.result as any).body ?? (r.result as any).lyricsSectioned ?? "";
+        current = [{ id: `cmp${stepIdx}`, title: r.result.title, content: body }];
+      } else if (step.agent === "transcreate" && current[0]) {
+        const r = await transcreate(workspaceId, userId, `${current[0].title}\n${current[0].content}`, step.params?.targetLanguage ?? "English", step.params?.targetCulture ?? "natural");
         results.push({ agent: "transcreate", ok: true, output: r.result });
+        current = [{ id: `tr${stepIdx}`, title: current[0].title, content: r.result.output }];
       } else {
         results.push({ agent: step.agent, ok: false, error: "input_not_met" });
       }

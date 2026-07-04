@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireCreatorUser, requireWorkspaceRole } from "@/lib/creator-engine/api";
 import { listFragments, createFragment } from "@/lib/creator-engine/fragments";
+import { addRelation, type RelationType } from "@/lib/creator-engine/lineage";
+
+// 碎片衍生自碎片時允許的血緣關係（#2：防家譜空掉）。
+const FRAG_RELATIONS: RelationType[] = ["condensed_from", "evolved_from", "transcreated_from", "inspired_by", "remixed_from", "forked_from"];
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -39,5 +43,15 @@ export async function POST(req: NextRequest) {
     tags: Array.isArray(body.tags) ? body.tags : undefined,
     sourceType: body.sourceType,
   });
+  // #2 血緣：AI 衍生（凝聚/演化…）帶來源 → 寫 ci_asset_relations，家譜才看得到來源。
+  const derivedFrom: string[] = Array.isArray(body.derivedFrom) ? body.derivedFrom.filter((x: any) => typeof x === "string") : [];
+  const relationType = body.relationType as RelationType | undefined;
+  if (derivedFrom.length && relationType && FRAG_RELATIONS.includes(relationType)) {
+    await Promise.all(
+      derivedFrom.slice(0, 50).map((srcId) =>
+        addRelation(workspaceId, { id: fragment.id, type: "fragment" }, { id: srcId, type: "fragment" }, relationType).catch(() => {}),
+      ),
+    );
+  }
   return NextResponse.json({ fragment });
 }

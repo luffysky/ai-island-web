@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireCreatorUser, requireWorkspaceRole } from "@/lib/creator-engine/api";
-import { memoryById, setMemoryStatus, deleteMemory } from "@/lib/creator-engine/memory";
+import { memoryById, setMemoryStatus, deleteMemory, updateMemoryText } from "@/lib/creator-engine/memory";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -17,7 +17,7 @@ async function gate(id: string, userId: string) {
   return { m };
 }
 
-/** PATCH { status:'active'|'rejected' } → { ok } 確認/拒絕記憶。 */
+/** PATCH { status?:'active'|'rejected', text? } → { ok } 確認/拒絕 或 編輯記憶文字。 */
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const u = await requireCreatorUser();
   if (u instanceof NextResponse) return u;
@@ -25,8 +25,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const g = await gate(id, u.userId);
   if (g.error) return g.error;
   const body = await req.json().catch(() => ({} as any));
-  const status = body.status === "rejected" ? "rejected" : "active";
-  await setMemoryStatus(id, status);
+  // #7：支援編輯記憶文字（spec PATCH {text}）。
+  if (typeof body.text === "string" && body.text.trim()) await updateMemoryText(id, body.text.trim());
+  if (body.status === "active" || body.status === "rejected") await setMemoryStatus(id, body.status);
   return NextResponse.json({ ok: true });
 }
 

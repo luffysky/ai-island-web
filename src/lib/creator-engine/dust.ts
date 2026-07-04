@@ -3,9 +3,11 @@
  * 每日免費發放 + 開碎片蛋消耗。
  */
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
-import { createFragment } from "@/lib/creator-engine/fragments";
+import { createFragment, findDuplicateByTitle } from "@/lib/creator-engine/fragments";
 
 const DAILY_FREE = 3;
+const EGG_COST = 1;      // 開一次蛋消耗的 Dust
+const DUP_REFUND = 1;    // 抽到重複：退回消耗的 Dust（不新增碎片、不當金錢；ADR-004）
 
 export async function getDustBalance(userId: string): Promise<number> {
   const admin = createSupabaseAdmin();
@@ -36,11 +38,23 @@ const EGG_POOL = [
   "把一個產品點子，講給五歲的自己聽",
 ];
 
-/** 開碎片蛋：扣 1 Dust → 從碎片庫抽 1 顆（扭蛋式，SSR 稀有）。回傳含 rarity。 */
-export async function openEgg(workspaceId: string, userId: string): Promise<{ ok: boolean; fragment?: any; rarity?: string; balance?: number; error?: string }> {
+export type EggResult = {
+  ok: boolean;
+  fragment?: any;
+  rarity?: string;
+  balance?: number;
+  duplicate?: boolean;      // 抽到已擁有的碎片
+  dupOf?: string;           // 命中的既有碎片 id
+  dustRefunded?: number;    // 重複時退回的 Dust
+  error?: string;
+};
+
+/** 開碎片蛋：扣 1 Dust → 從碎片庫抽 1 顆（扭蛋式，SSR 稀有）。
+ *  抽到「已擁有」的重複碎片 → 不新增、退回 Dust、標記 duplicate（spec 05:258 + ADR-004，不碰 Z 幣）。 */
+export async function openEgg(workspaceId: string, userId: string): Promise<EggResult> {
   await grantDailyDust(userId); // 順手發每日免費
   const admin = createSupabaseAdmin();
-  const r = await admin.rpc("ci_dust_tx", { p_user_id: userId, p_amount: -1, p_reason: "egg_open", p_meta: { workspaceId } });
+  const r = await admin.rpc("ci_dust_tx", { p_user_id: userId, p_amount: -EGG_COST, p_reason: "egg_open", p_meta: { workspaceId } });
   const res = r.data as { ok: boolean; error?: string; balance_after?: number };
   if (!res?.ok) return { ok: false, error: res?.error ?? "insufficient_dust" };
 
@@ -54,6 +68,15 @@ export async function openEgg(workspaceId: string, userId: string): Promise<{ ok
 
   const title = chosen?.text ?? EGG_POOL[Math.floor((Date.now() / 1000) % EGG_POOL.length)];
   const rarity = chosen?.rarity ?? "R";
+
+  // 重複偵測：已擁有同一顆 → 退 Dust、不新增碎片
+  const dup = await findDuplicateByTitle(workspaceId, title);
+  if (dup) {
+    const back = await admin.rpc("ci_dust_tx", { p_user_id: userId, p_amount: DUP_REFUND, p_reason: "dup_refund", p_meta: { workspaceId, dupOf: dup.id } });
+    const backRes = back.data as { balance_after?: number };
+    return { ok: true, duplicate: true, dupOf: dup.id, dustRefunded: DUP_REFUND, rarity, balance: backRes?.balance_after ?? res.balance_after };
+  }
+
   const fragment = await createFragment(workspaceId, userId, {
     title, category: chosen?.category ?? undefined, tags: [rarity, "碎片蛋", ...(chosen?.tags ?? [])].slice(0, 4), sourceType: "egg_generated",
   });

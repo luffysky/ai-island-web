@@ -123,3 +123,28 @@ export async function fragmentWorkspace(id: string): Promise<string | null> {
   const { data } = await admin.from("ci_fragments").select("workspace_id").eq("id", id).maybeSingle();
   return (data as any)?.workspace_id ?? null;
 }
+
+/** 標準化標題（去重比對用）：去頭尾空白、內部空白收斂、轉小寫、去尾標點。 */
+export function normalizeForDedup(s: string): string {
+  return (s || "").trim().replace(/\s+/g, " ").replace(/[。.、,!！?？~～]+$/u, "").toLowerCase();
+}
+
+/**
+ * 重複偵測（spec 05_ASSET_SYSTEM.md:258 — same fingerprint → flag as duplicate）。
+ * v1 用標題精確比對（抽蛋當下 embedding 多半未回填、故不靠向量）；命中回既有碎片 id。
+ * 之後 embedding 回填後可加語意近似（cosine>0.95）當第二層。
+ */
+export async function findDuplicateByTitle(workspaceId: string, title: string): Promise<{ id: string; title: string } | null> {
+  const norm = normalizeForDedup(title);
+  if (!norm) return null;
+  const admin = createSupabaseAdmin();
+  // 撈同 workspace、相近標題的候選（縮小範圍後在 JS 做標準化精確比對）
+  const { data } = await admin
+    .from("ci_fragments")
+    .select("id, title")
+    .eq("workspace_id", workspaceId)
+    .ilike("title", `${title.trim().slice(0, 40)}%`)
+    .limit(50);
+  const hit = ((data as { id: string; title: string }[]) ?? []).find((f) => normalizeForDedup(f.title) === norm);
+  return hit ?? null;
+}

@@ -68,6 +68,12 @@ export async function setMemoryStatus(id: string, status: "active" | "rejected")
   await admin.from("ci_memories").update({ status }).eq("id", id);
 }
 
+/** #7 編輯記憶文字（spec PATCH {text}）。 */
+export async function updateMemoryText(id: string, text: string): Promise<void> {
+  const admin = createSupabaseAdmin();
+  await admin.from("ci_memories").update({ text: text.slice(0, 2000) }).eq("id", id);
+}
+
 export async function deleteMemory(id: string): Promise<void> {
   const admin = createSupabaseAdmin();
   await admin.from("ci_memories").delete().eq("id", id);

@@ -2,11 +2,28 @@
  * Creator Engine — Marketplace（Z 幣 phase1；抽成 0%、賣家進 workspace wallet）。
  */
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { forkAsset } from "@/lib/creator-engine/community";
+import { getOrCreatePersonalWorkspace } from "@/lib/creator-engine/workspace";
+import type { AssetType } from "@/lib/creator-engine/lineage";
 
 const COLS = "id, workspace_id, asset_id, asset_type, title, description, price_z, ai_generated_label, status, created_at";
 
+const ASSET_TABLE: Record<string, string> = { fragment: "ci_fragments", work: "ci_works", package: "ci_packages", collection: "ci_collections" };
+
+/** #5 驗資產真的屬於此 workspace（防上架別人的資產）。 */
+export async function assetBelongsToWorkspace(assetId: string, assetType: string, workspaceId: string): Promise<boolean> {
+  const table = ASSET_TABLE[assetType];
+  if (!table) return false;
+  const admin = createSupabaseAdmin();
+  const { data } = await admin.from(table).select("id").eq("id", assetId).eq("workspace_id", workspaceId).maybeSingle();
+  return !!data;
+}
+
 export async function createListing(workspaceId: string, userId: string, input: { assetId: string; assetType: string; title: string; description?: string; priceZ: number }) {
   const admin = createSupabaseAdmin();
+  // #5：資產必須屬於上架的 workspace，否則拒絕（route 會轉 403）。
+  const owns = await assetBelongsToWorkspace(input.assetId, input.assetType, workspaceId);
+  if (!owns) throw new Error("asset_not_in_workspace");
   const { data, error } = await admin.from("ci_listings").insert({
     workspace_id: workspaceId, created_by: userId,
     asset_id: input.assetId, asset_type: input.assetType,
@@ -43,12 +60,27 @@ export async function listingWorkspace(id: string): Promise<string | null> {
 
 export async function purchaseListing(listingId: string, buyerId: string): Promise<any> {
   const admin = createSupabaseAdmin();
+  const listing = (await getListing(listingId)) as any;
+  if (!listing) return { ok: false, error: "not_found" };
+  // #4 防自買自賣：買家不可是賣方 workspace 的成員/擁有者（洗幣/繞經濟第一環）。
+  if (listing.workspace_id) {
+    const mine = await userWorkspaceIds(buyerId);
+    if (mine.includes(listing.workspace_id)) return { ok: false, error: "own_listing" };
+  }
   const { data, error } = await admin.rpc("ci_purchase_listing", { p_listing_id: listingId, p_buyer: buyerId });
   if (error) throw new Error(error.message);
-  if ((data as any)?.ok && !(data as any)?.already_owned) {
-    import("@/lib/creator-engine/notify").then((m) => m.notifyIslandAdmin(`市集成交：花 ${(data as any).spent ?? 0} Z 幣`, `sale:${(data as any).transaction}`)).catch(() => {});
+  const res = data as any;
+  if (res?.ok && !res?.already_owned) {
+    // #1 交付：把買到的資產「複製」進買家的個人工作空間（RPC 已寫 entitlement → 可繞過 fork 收費閘）。
+    try {
+      const ws = await getOrCreatePersonalWorkspace(buyerId);
+      const copied = await forkAsset(listing.asset_id, listing.asset_type as AssetType, ws.id, buyerId, false);
+      res.deliveredAssetId = copied.id;
+      res.deliveredWorkspaceId = ws.id;
+    } catch { /* 交付失敗不回滾付款；entitlement 仍在，之後可重試交付 */ }
+    import("@/lib/creator-engine/notify").then((m) => m.notifyIslandAdmin(`市集成交：花 ${res.spent ?? 0} Z 幣`, `sale:${res.transaction}`)).catch(() => {});
   }
-  return data;
+  return res;
 }
 
 export async function unlistListing(id: string): Promise<void> {

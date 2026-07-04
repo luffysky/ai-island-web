@@ -43,6 +43,8 @@ export async function surprisingPairs(workspaceId: string, count = 8): Promise<P
 /** E4：找跟某碎片語意相關的其他碎片（主動回憶）。 */
 export async function relatedFragments(workspaceId: string, fragmentId: string, count = 6): Promise<any[]> {
   const admin = createSupabaseAdmin();
+  // #8：先補齊同 workspace 其他碎片的向量，否則 E4 在沒跑過 E5 的 workspace 會回空。
+  await backfillWorkspaceEmbeddings(workspaceId).catch(() => {});
   const { data: f } = await admin.from("ci_fragments").select("title, content, tags, embedding").eq("id", fragmentId).maybeSingle();
   if (!f) return [];
   let emb = (f as any).embedding as string | null;

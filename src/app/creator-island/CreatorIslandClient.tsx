@@ -155,7 +155,11 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
   }
   async function openEgg() {
     const j = await api("/api/creator-island/eggs/open", { workspaceId });
-    setFragments((p) => [j.fragment, ...p]); setDust(j.balance ?? dust);
+    setDust(j.balance ?? dust);
+    if (j.duplicate) {
+      return { rarity: j.rarity as string, duplicate: true, message: j.message as string };
+    }
+    setFragments((p) => [j.fragment, ...p]);
     return { title: j.fragment?.title as string, rarity: j.rarity as string };
   }
   async function seedPool() {
@@ -204,7 +208,7 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
       if (action === "synthesize") json = await api("/api/creator-island/ai/synthesize", { workspaceId, fragmentIds: sel });
       else if (action === "evolve") json = await api("/api/creator-island/ai/evolve", { workspaceId, fragmentIds: sel, count: evolveCount });
       else json = await api("/api/creator-island/ai/compose", { workspaceId, fragmentIds: sel, workType });
-      setResult({ action, ...json });
+      setResult({ action, sourceIds: [...sel], ...json });
       setRecording((p) => [...p, { agent: action, params: action === "evolve" ? { count: evolveCount } : action === "compose" ? { workType } : {} }]);
     } catch (e: any) { setErr(e.message); } finally { setBusy(null); }
   }
@@ -217,19 +221,19 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
     setWorkType(wt); setAdvice(null); setErr(null); setResult(null); setBusy("compose");
     try {
       const json = await api("/api/creator-island/ai/compose", { workspaceId, fragmentIds: sel, workType: wt });
-      setResult({ action: "compose", ...json });
+      setResult({ action: "compose", sourceIds: [...sel], ...json });
       setRecording((p) => [...p, { agent: "compose", params: { workType: wt } }]);
     } catch (e: any) { setErr(e.message); } finally { setBusy(null); }
   }
   async function saveFragment(title: string, content: string) {
-    try { const { fragment } = await api("/api/creator-island/fragments", { workspaceId, title, content, sourceType: "ai_assisted" }); setFragments((p) => [fragment, ...p]); flash("已存成碎片 ✓"); setResult(null); setSelected(new Set()); }
+    try { const { fragment } = await api("/api/creator-island/fragments", { workspaceId, title, content, sourceType: "ai_assisted", derivedFrom: result?.sourceIds ?? [], relationType: "condensed_from" }); setFragments((p) => [fragment, ...p]); flash("已存成碎片 ✓"); setResult(null); setSelected(new Set()); }
     catch (e: any) { setErr(e.message); }
   }
   // 演化變體：單獨存（不關面板、標記已存、跳提示），可全部存
   async function saveVariant(v: { title: string; content: string }, key: string) {
     if (savedKeys.has(key)) return;
     try {
-      const { fragment } = await api("/api/creator-island/fragments", { workspaceId, title: v.title, content: v.content, sourceType: "ai_assisted" });
+      const { fragment } = await api("/api/creator-island/fragments", { workspaceId, title: v.title, content: v.content, sourceType: "ai_assisted", derivedFrom: result?.sourceIds ?? [], relationType: "evolved_from" });
       setFragments((p) => [fragment, ...p]); setSavedKeys((p) => new Set(p).add(key)); flash("已存成碎片 ✓");
     } catch (e: any) { setErr(e.message); }
   }
@@ -239,7 +243,7 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
       const created: Fragment[] = [];
       for (let i = 0; i < variants.length; i++) {
         const key = `evolve:${i}`; if (savedKeys.has(key)) continue;
-        const { fragment } = await api("/api/creator-island/fragments", { workspaceId, title: variants[i].title, content: variants[i].content, sourceType: "ai_assisted" });
+        const { fragment } = await api("/api/creator-island/fragments", { workspaceId, title: variants[i].title, content: variants[i].content, sourceType: "ai_assisted", derivedFrom: result?.sourceIds ?? [], relationType: "evolved_from" });
         created.push(fragment); setSavedKeys((p) => new Set(p).add(key));
       }
       if (created.length) { setFragments((p) => [...created.reverse(), ...p]); flash(`已存 ${created.length} 個碎片 ✓`); }

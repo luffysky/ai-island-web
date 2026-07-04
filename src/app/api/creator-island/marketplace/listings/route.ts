@@ -22,6 +22,11 @@ export async function POST(req: NextRequest) {
   if (!workspaceId || !b.assetId || !b.assetType || !b.title) return NextResponse.json({ error: "validation", message: "缺欄位" }, { status: 422 });
   const gate = await requireWorkspaceRole(workspaceId, u.userId, "manager");
   if (gate instanceof NextResponse) return gate;
-  const listing = await createListing(workspaceId, u.userId, { assetId: b.assetId, assetType: b.assetType, title: b.title, description: b.description, priceZ: Number(b.priceZ) || 0 });
-  return NextResponse.json({ listing });
+  try {
+    const listing = await createListing(workspaceId, u.userId, { assetId: b.assetId, assetType: b.assetType, title: b.title, description: b.description, priceZ: Number(b.priceZ) || 0 });
+    return NextResponse.json({ listing });
+  } catch (e: any) {
+    if (e?.message === "asset_not_in_workspace") return NextResponse.json({ error: "asset_not_in_workspace", message: "這個資產不屬於你的工作室，不能上架" }, { status: 403 });
+    throw e;
+  }
 }
