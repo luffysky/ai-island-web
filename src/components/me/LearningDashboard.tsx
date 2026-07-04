@@ -9,7 +9,7 @@ type Data = {
   mastered: number; read: number; skim: number;
   totalStudyMinutes: number; quizPassed: number; playgroundRun: number;
   completedCount: number; totalLessons: number;
-  level: number; xp: number; elo: number;
+  level: number; xp: number; elo: number | null;
   chapterProgress: { id: number; title: string; furthestPct: number; donePct: number }[];
   quizTrend: { date: string; acc: number }[];
 };
@@ -115,10 +115,11 @@ export function LearningDashboard({ data }: { data: Data }) {
         )}
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
+      {/* ELO 只在有對戰紀錄(做過 leetcode 測驗)時顯示，否則所有人都是預設 1200、無意義 */}
+      <div className={`grid ${data.elo != null ? "grid-cols-3" : "grid-cols-2"} gap-3`}>
         <Stat label="等級" value={`Lv ${data.level}`} color="text-purple-400" />
         <Stat label="XP" value={data.xp} color="text-accent" />
-        <Stat label="解題段位 ELO" value={data.elo} color="text-pink-400" />
+        {data.elo != null && <Stat label="解題段位 ELO" value={data.elo} color="text-pink-400" />}
       </div>
     </div>
   );

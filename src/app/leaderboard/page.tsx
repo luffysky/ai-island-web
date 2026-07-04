@@ -5,12 +5,12 @@ import Link from "next/link";
 import { Crown, Flame, Trophy, Sparkles, Award } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "全島排行榜 — 每天 00:00 更新 | AI 島",
-  description: "看誰連勝最久、誰 XP 最高、誰 z-coin 最多。每天 00:00 更新、努力者上榜。",
+  title: "全島排行榜 — 即時更新 | AI 島",
+  description: "看誰連勝最久、誰 XP 最高、誰 z-coin 最多。即時更新、努力者上榜。",
   alternates: { canonical: "/leaderboard" },
   openGraph: {
     title: "全島排行榜 | AI 島",
-    description: "每天 00:00 更新、看誰學最多、誰連勝最久。",
+    description: "即時更新、看誰學最多、誰連勝最久。",
     type: "website",
   },
 };
@@ -58,7 +58,7 @@ export default async function LeaderboardPage() {
           <h1 className="text-4xl md:text-5xl font-extrabold mb-2 bg-gradient-to-r from-yellow-400 via-amber-300 to-orange-400 bg-clip-text text-transparent">
             全島排行榜
           </h1>
-          <p className="text-sm text-fg-muted">每天 <code className="bg-bg-card px-1.5 py-0.5 rounded">00:00</code> 更新 · 努力者上榜</p>
+          <p className="text-sm text-fg-muted">即時更新 · 努力者上榜</p>
           <div className="mt-3 inline-flex items-center gap-2 text-xs text-fg-muted">
             <span className="inline-flex items-center gap-1"><Award size={11} className="text-yellow-400" /> {list.length} 位玩家</span>
           </div>
@@ -134,7 +134,7 @@ export default async function LeaderboardPage() {
           <ul className="space-y-0.5 list-disc list-inside">
             <li>主要按 <b className="text-fg">XP</b> 排序、相同 XP 看連續簽到</li>
             <li>連續中斷會在隔天 03:00 重設</li>
-            <li>排行榜每天 00:00 自動更新</li>
+            <li>排行榜即時更新（依 XP 排序）</li>
           </ul>
         </div>
       </main>

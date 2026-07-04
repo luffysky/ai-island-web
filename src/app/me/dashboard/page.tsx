@@ -14,7 +14,7 @@ export default async function LearningDashboardPage() {
     supabase.from("lesson_progress").select("lesson_id, chapter_id").eq("user_id", user.id),
     supabase.from("reading_position").select("chapter_id, furthest_lesson_index, furthest_lesson_title").eq("user_id", user.id),
     supabase.from("profiles").select("level, xp, elo_rating").eq("id", user.id).maybeSingle(),
-    supabase.from("daily_quiz_attempts").select("quiz_date, correct, total").eq("user_id", user.id).not("submitted_at", "is", null).order("quiz_date", { ascending: true }).limit(30),
+    supabase.from("daily_quiz_attempts").select("quiz_date, correct, total, elo_delta").eq("user_id", user.id).not("submitted_at", "is", null).order("quiz_date", { ascending: true }).limit(30),
   ] as any);
 
   const completed = new Set<string>(((prog as any[]) ?? []).map((p) => p.lesson_id as string));
@@ -52,6 +52,9 @@ export default async function LearningDashboardPage() {
     acc: q.total ? Math.round((q.correct / q.total) * 100) : 0,
   }));
 
+  // 有 leetcode 對戰紀錄(elo_delta)才顯示 ELO；否則所有人都是預設 1200、不顯示
+  const hasElo = ((quiz as any[]) ?? []).some((q) => typeof q.elo_delta === "number");
+
   return (
     <LearningDashboard
       data={{
@@ -59,7 +62,7 @@ export default async function LearningDashboardPage() {
         totalStudyMinutes: Math.round(totalDwellMs / 60000),
         quizPassed, playgroundRun,
         completedCount: completed.size, totalLessons,
-        level: (prof as any)?.level ?? 1, xp: (prof as any)?.xp ?? 0, elo: (prof as any)?.elo_rating ?? 1200,
+        level: (prof as any)?.level ?? 1, xp: (prof as any)?.xp ?? 0, elo: hasElo ? ((prof as any)?.elo_rating ?? 1200) : null,
         chapterProgress, quizTrend,
       }}
     />
