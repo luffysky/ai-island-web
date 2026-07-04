@@ -3,6 +3,7 @@ import { randomBytes } from "crypto";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { grantZcoinOnce } from "@/lib/zcoin";
+import { calcXp, isTaipeiWeekend } from "@/lib/dynamic-xp";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -10,13 +11,13 @@ export const runtime = "nodejs";
 const LESSON_COIN = 5;    // 完成一小節（首次）
 const CHAPTER_COIN = 80;  // 完成一整章
 const CHAPTER_XP = 150;   // 完成一整章 XP bonus
+const MAX_BASE_XP = 50;   // 防前端灌爆：base XP 上限（真實 lesson base ~10）
 
 /**
- * 完成小節/章節的伺服器端獎勵（server-authoritative、冪等，防偽造/重領）。
- * 由 completeLesson 在寫完 lesson_progress 後呼叫。
- * - 首次完成小節 → 5 Z 幣（grantZcoinOnce 依 lessonId 去重）
- * - 整章全部小節完成 → 發證書（certificates，UNIQUE(user,cert_key) 冪等）+ 80 Z 幣 + 150 XP
- * POST { chapterId:number, lessonId:string } → { lessonCoin, chapterCompleted, cert? }
+ * 完成小節（server-authoritative、冪等，防偽造/重領/灌 XP）。
+ * XP 由伺服器算（clamp base + 動態倍率），寫進 lesson_progress → trigger 加 XP+streak+xp_event（AFTER INSERT，只第一次）。
+ * 首次完成 → 5 Z幣；整章全完成 → 發證書 + 80 Z幣 + 150 XP。
+ * POST { chapterId:number, lessonId:string, baseXp?:number } → { awardedXp, alreadyDone, level, leveledUp, lessonCoin, chapterCompleted, cert? }
  */
 export async function POST(req: NextRequest) {
   const sb = await createSupabaseServer();
@@ -25,53 +26,83 @@ export async function POST(req: NextRequest) {
   const b = await req.json().catch(() => ({} as any));
   const chapterId = Number(b.chapterId);
   const lessonId = String(b.lessonId ?? "");
+  const baseXp = Math.max(1, Math.min(MAX_BASE_XP, Number(b.baseXp) || 10)); // 伺服器 clamp、不信前端數值
   if (!Number.isFinite(chapterId) || !lessonId) return NextResponse.json({ error: "validation" }, { status: 422 });
 
   const admin = createSupabaseAdmin();
 
-  // 驗證：這位使用者真的有完成這個小節（防偽造）
-  const { data: lp } = await admin.from("lesson_progress")
-    .select("id").eq("user_id", user.id).eq("lesson_id", lessonId).eq("completed", true).maybeSingle();
-  if (!lp) return NextResponse.json({ error: "lesson_not_completed" }, { status: 409 });
+  // 目前狀態
+  const [{ data: before }, { data: existing }, { count: totalDone }] = await Promise.all([
+    admin.from("profiles").select("level, streak_days, last_active_at").eq("id", user.id).maybeSingle(),
+    admin.from("lesson_progress").select("id").eq("user_id", user.id).eq("lesson_id", lessonId).maybeSingle(),
+    admin.from("lesson_progress").select("id", { count: "exact", head: true }).eq("user_id", user.id).eq("completed", true),
+  ]);
+  const oldLevel = (before as any)?.level ?? 1;
+
+  let awardedXp = 0, multiplier = 1;
+  const alreadyDone = !!existing;
+  if (!alreadyDone) {
+    // 伺服器算動態 XP（不信前端）
+    const daysSinceLastActive = (before as any)?.last_active_at
+      ? Math.max(0, Math.floor((Date.now() - new Date((before as any).last_active_at).getTime()) / 86400_000))
+      : 0;
+    const decision = calcXp({
+      baseXp,
+      streakDays: (before as any)?.streak_days ?? 0,
+      daysSinceLastActive,
+      totalLessonsDone: (totalDone as number) ?? 0,
+      isWeekend: isTaipeiWeekend(),
+      isBirthday: false,
+      hasDoubleCoinBuff: false,
+    });
+    awardedXp = decision.finalXp;
+    multiplier = decision.multiplier;
+    // 寫進度（AFTER INSERT trigger 會加 XP + 更新 streak + 寫 xp_event，只第一次）
+    const { error: insErr } = await admin.from("lesson_progress").insert({
+      user_id: user.id, chapter_id: chapterId, lesson_id: lessonId,
+      xp_awarded: awardedXp, completed: true, completed_at: new Date().toISOString(),
+    });
+    if (insErr) return NextResponse.json({ error: "progress_write_failed", message: insErr.message }, { status: 500 });
+    admin.from("learning_events").insert({
+      user_id: user.id, event_type: "lesson_complete", chapter_id: chapterId, lesson_id: lessonId,
+      metadata: { xp_awarded: awardedXp, base_xp: baseXp, multiplier },
+    }).then(() => {}, () => {});
+  }
 
   // 小節獎勵：首次完成才給（依 lessonId 冪等）
   const coinRes = await grantZcoinOnce(user.id, LESSON_COIN, "lesson_complete", `lesson:${lessonId}`, { lessonId, chapterId });
   const lessonCoin = coinRes.ok && !coinRes.duplicated ? LESSON_COIN : 0;
+
+  // 升等偵測
+  const { data: after } = await admin.from("profiles").select("level, streak_days").eq("id", user.id).maybeSingle();
+  const newLevel = (after as any)?.level ?? oldLevel;
 
   // 章節完成偵測
   const [{ count: total }, { count: done }] = await Promise.all([
     admin.from("lessons").select("id", { count: "exact", head: true }).eq("chapter_id", chapterId),
     admin.from("lesson_progress").select("id", { count: "exact", head: true }).eq("user_id", user.id).eq("chapter_id", chapterId).eq("completed", true),
   ]);
+  const base = { awardedXp, alreadyDone, level: newLevel, leveledUp: newLevel > oldLevel, streak: (after as any)?.streak_days, lessonCoin, multiplier };
   const totalN = total ?? 0, doneN = done ?? 0;
-  if (totalN === 0 || doneN < totalN) {
-    return NextResponse.json({ lessonCoin, chapterCompleted: false });
-  }
+  if (totalN === 0 || doneN < totalN) return NextResponse.json({ ...base, chapterCompleted: false });
 
   // 整章完成 → 發證書（冪等）
   const certKey = `ch${chapterId}`;
-  const { data: existing } = await admin.from("certificates")
-    .select("verification_code, title").eq("user_id", user.id).eq("cert_key", certKey).maybeSingle();
-  if (existing) {
-    return NextResponse.json({ lessonCoin, chapterCompleted: true, cert: { code: (existing as any).verification_code, title: (existing as any).title, alreadyIssued: true } });
-  }
+  const { data: existCert } = await admin.from("certificates").select("verification_code, title").eq("user_id", user.id).eq("cert_key", certKey).maybeSingle();
+  if (existCert) return NextResponse.json({ ...base, chapterCompleted: true, cert: { code: (existCert as any).verification_code, title: (existCert as any).title, alreadyIssued: true } });
 
   const { data: ch } = await admin.from("chapters").select("title").eq("id", chapterId).maybeSingle();
-  const chTitle = (ch as any)?.title || `第 ${chapterId} 章`;
-  const title = `${chTitle} 完課證書`;
-  const code = randomBytes(6).toString("hex"); // 12 碼驗證碼
-
-  const { error: insErr } = await admin.from("certificates").insert({
-    user_id: user.id, cert_type: "chapter", cert_key: certKey, title,
-    verification_code: code, metadata: { chapterId, lessons: totalN },
+  const title = `${(ch as any)?.title || `第 ${chapterId} 章`} 完課證書`;
+  const code = randomBytes(6).toString("hex");
+  const { error: certErr } = await admin.from("certificates").insert({
+    user_id: user.id, cert_type: "chapter", cert_key: certKey, title, verification_code: code, metadata: { chapterId, lessons: totalN },
   });
-  // 可能因並發被 UNIQUE 擋下 → 撈回既有
-  if (insErr) {
+  if (certErr) {
     const { data: again } = await admin.from("certificates").select("verification_code, title").eq("user_id", user.id).eq("cert_key", certKey).maybeSingle();
-    return NextResponse.json({ lessonCoin, chapterCompleted: true, cert: again ? { code: (again as any).verification_code, title: (again as any).title, alreadyIssued: true } : null });
+    return NextResponse.json({ ...base, chapterCompleted: true, cert: again ? { code: (again as any).verification_code, title: (again as any).title, alreadyIssued: true } : null });
   }
 
-  // 章節獎勵：Z 幣（冪等）+ XP bonus（依 chapter 去重）
+  // 章節獎勵：Z幣（冪等）+ XP bonus（依 chapter 去重）
   await grantZcoinOnce(user.id, CHAPTER_COIN, "chapter_complete", `chapter:${chapterId}`, { chapterId });
   const { data: xpDup } = await admin.from("xp_events").select("id").eq("user_id", user.id).eq("reason", "chapter_complete").contains("meta", { chapterId }).limit(1);
   if (!xpDup || xpDup.length === 0) {
@@ -80,10 +111,5 @@ export async function POST(req: NextRequest) {
     await admin.from("profiles").update({ xp: ((prof as any)?.xp ?? 0) + CHAPTER_XP }).eq("id", user.id);
   }
 
-  return NextResponse.json({
-    lessonCoin,
-    chapterCompleted: true,
-    cert: { code, title, justIssued: true },
-    reward: { zcoin: CHAPTER_COIN, xp: CHAPTER_XP },
-  });
+  return NextResponse.json({ ...base, chapterCompleted: true, cert: { code, title, justIssued: true }, reward: { zcoin: CHAPTER_COIN, xp: CHAPTER_XP } });
 }

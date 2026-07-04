@@ -31,94 +31,37 @@ export class GamificationEngine {
     const { data: { user } } = await this.supabase.auth.getUser();
     if (!user) return { error: 'not_logged_in' };
 
-    // 1. 取目前 level / streak / last_active / 完成數
-    const [{ data: before }, { count: totalLessons }] = await Promise.all([
-      this.supabase.from('profiles').select('level, xp, streak_days, last_active_at').eq('id', user.id).single(),
-      this.supabase.from('lesson_progress').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
-    ] as any);
-    const oldLevel = (before as any)?.level ?? 1;
-
-    // 2. 動態 XP — 用 dynamic-xp 演算法 #4 算最終獎勵
-    const { calcXp, isTaipeiWeekend } = await import('./dynamic-xp');
-    const daysSinceLastActive = (before as any)?.last_active_at
-      ? Math.max(0, Math.floor((Date.now() - new Date((before as any).last_active_at).getTime()) / 86400_000))
-      : 0;
-    const decision = calcXp({
-      baseXp,
-      streakDays: (before as any)?.streak_days ?? 0,
-      daysSinceLastActive,
-      totalLessonsDone: (totalLessons as number) ?? 0,
-      isWeekend: isTaipeiWeekend(),
-      isBirthday: false,
-      hasDoubleCoinBuff: false,
-    });
-    const xp = decision.finalXp;
-
-    // 3. 寫進度（trigger 會自動加 XP + 更新 streak）
-    const { error } = await this.supabase
-      .from('lesson_progress')
-      .upsert(
-        {
-          user_id: user.id,
-          chapter_id: chapterId,
-          lesson_id: lessonId,
-          xp_awarded: xp,
-          completed: true,
-          completed_at: new Date().toISOString(),
-        },
-        { onConflict: 'user_id,lesson_id' },
-      );
-
-    if (error) {
-      console.error('[completeLesson] upsert failed:', error);
-      return { error: error.message };
-    }
-
-    // 3.5. 寫 learning_events（給 admin/analytics/learning-events 跟 /me/footprint 用）
-    // 之前漏寫、admin 頁面永遠空。fail-soft、不擋主流程。
-    this.supabase.from('learning_events').insert({
-      user_id: user.id,
-      event_type: 'lesson_complete',
-      chapter_id: chapterId,
-      lesson_id: lessonId,
-      metadata: { xp_awarded: xp, base_xp: baseXp, multiplier: decision.multiplier },
-    }).then(({ error: evErr }) => {
-      if (evErr) console.warn('[completeLesson] learning_events insert failed:', evErr.message);
-    });
-
-    // 4. 取更新後狀態
-    const { data: after } = await this.supabase
-      .from('profiles').select('level, xp, streak_days').eq('id', user.id).single();
-
-    if (after && after.level > oldLevel) {
-      this.celebrateLevelUp(after.level);
-      this.onLevelUp?.(after.level);
-      // 升等 → admin + user 通知（fire-and-forget client-side）
-      fetch('/api/me/notify-levelup', {
-      credentials: "include",
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ newLevel: after.level }),
-      }).catch(() => {});
-    } else {
-      this.celebrateXp(xp);
-    }
-
-    await this.checkAchievements(user.id, { type: 'lesson_complete', chapterId, lessonId });
-
-    // 伺服器端獎勵：首次完成小節 5 Z幣 + 整章全部完成 → 發證書 + 章節獎勵（server-authoritative、冪等）
-    let reward: any = null;
+    // 進度寫入 + XP/Z幣/證書全部走伺服器端（server-authoritative、防偽造/灌 XP、冪等）。
+    // 前端只負責慶祝特效與通知。
+    let r: any = null;
     try {
-      reward = await fetch('/api/me/lesson-reward', {
+      r = await fetch('/api/me/lesson-reward', {
         credentials: 'include',
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chapterId, lessonId }),
-      }).then((r) => (r.ok ? r.json() : null));
-      if (reward?.cert?.justIssued) this.celebrateChapterCert();
-    } catch { /* fail-soft，不擋主流程 */ }
+        body: JSON.stringify({ chapterId, lessonId, baseXp }),
+      }).then((res) => (res.ok ? res.json() : null));
+    } catch { /* 網路失敗 */ }
+    if (!r) return { error: 'reward_failed' };
 
-    return { success: true, level: after?.level, xp: after?.xp, streak: after?.streak_days, awardedXp: xp, baseXp, multiplier: decision.multiplier, reward };
+    // 慶祝
+    if (r.leveledUp) {
+      this.celebrateLevelUp(r.level);
+      this.onLevelUp?.(r.level);
+      fetch('/api/me/notify-levelup', {
+        credentials: 'include',
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ newLevel: r.level }),
+      }).catch(() => {});
+    } else if (r.awardedXp > 0) {
+      this.celebrateXp(r.awardedXp);
+    }
+    if (r.cert?.justIssued) this.celebrateChapterCert();
+
+    await this.checkAchievements(user.id, { type: 'lesson_complete', chapterId, lessonId });
+
+    return { success: true, level: r.level, streak: r.streak, awardedXp: r.awardedXp, baseXp, multiplier: r.multiplier, reward: r };
   }
 
   private celebrateChapterCert() {
@@ -133,47 +76,27 @@ export class GamificationEngine {
   /**
    * 提交 quiz
    */
-  async submitQuiz(chapterId: number, quizId: string, answers: Record<string, string>, questions: any[]) {
+  async submitQuiz(chapterId: number, quizId: string, answers: Record<string, string>, _questions?: any[]) {
     const { data: { user } } = await this.supabase.auth.getUser();
     if (!user) return { error: 'not_logged_in' };
 
-    let correct = 0;
-    for (const q of questions) {
-      if (answers[q.id] === q.answer) correct++;
-    }
-    const total = questions.length;
-    const score = Math.round((correct / total) * 100);
-    const perfect = correct === total;
-    const xpAwarded = perfect ? 100 : Math.round(score * 0.3);
-    const zCoinAwarded = perfect ? 20 : 5;
+    // 評分 + XP/Z幣全部走伺服器端（答案在伺服器、前端不能自評/自灌）。
+    let r: any = null;
+    try {
+      r = await fetch('/api/me/quiz-submit', {
+        credentials: 'include',
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chapterId, quizId, answers }),
+      }).then((res) => (res.ok ? res.json() : null));
+    } catch { /* 網路失敗 */ }
+    if (!r) return { error: 'submit_failed' };
 
-    await this.supabase.from('quiz_attempts').insert({
-      user_id: user.id, chapter_id: chapterId, quiz_id: quizId,
-      score, total_questions: total, correct,
-      xp_awarded: xpAwarded, z_coin_awarded: zCoinAwarded,
-    });
-
-    // 寫 learning_events（admin/analytics/learning-events 用）
-    this.supabase.from('learning_events').insert({
-      user_id: user.id,
-      event_type: perfect ? 'quiz_perfect' : 'quiz_complete',
-      chapter_id: chapterId,
-      lesson_id: quizId,
-      metadata: { score, correct, total, perfect, xp_awarded: xpAwarded, z_coin_awarded: zCoinAwarded },
-    }).then(({ error: evErr }) => {
-      if (evErr) console.warn('[submitQuiz] learning_events insert failed:', evErr.message);
-    });
-
-    // 加 XP / Z-coin
-    await this.addXp(user.id, xpAwarded, perfect ? 'quiz_perfect' : 'quiz_pass', { chapterId });
-    await this.addCoin(user.id, zCoinAwarded, perfect ? 'quiz_perfect' : 'quiz_pass');
-
-    if (perfect) {
+    if (r.perfect) {
       this.celebratePerfect();
       await this.checkAchievements(user.id, { type: 'quiz_perfect', chapterId });
     }
-
-    return { success: true, score, correct, perfect, xpAwarded, zCoinAwarded };
+    return { success: true, score: r.score, correct: r.correct, perfect: r.perfect, xpAwarded: r.xpAwarded, zCoinAwarded: r.zCoinAwarded };
   }
 
   /**
@@ -185,31 +108,8 @@ export class GamificationEngine {
     await this.supabase.rpc('decrement_hearts', { user_id: user.id });
   }
 
-  /**
-   * 加 XP
-   */
-  private async addXp(userId: string, amount: number, reason: string, meta?: any) {
-    await this.supabase.from('xp_events').insert({ user_id: userId, amount, reason, meta });
-    const { data: { user } } = await this.supabase.auth.getUser();
-    if (!user) return;
-    const { data } = await this.supabase.from('profiles').select('xp').eq('id', userId).single();
-    await this.supabase.from('profiles').update({ xp: (data?.xp ?? 0) + amount }).eq('id', userId);
-  }
-
-  /**
-   * 加 / 減 Z-coin
-   */
-  async addCoin(userId: string, amount: number, reason: string) {
-    const { data } = await this.supabase.from('profiles').select('z_coin').eq('id', userId).single();
-    const newBalance = (data?.z_coin ?? 0) + amount;
-    if (newBalance < 0) return { error: 'insufficient_coins' };
-
-    await this.supabase.from('profiles').update({ z_coin: newBalance }).eq('id', userId);
-    await this.supabase.from('coin_transactions').insert({
-      user_id: userId, amount, balance_after: newBalance, reason,
-    });
-    return { success: true, balance: newBalance };
-  }
+  // addXp / addCoin 已移除：XP/Z幣一律由伺服器端授予（防前端偽造/刷分）。
+  // lesson → /api/me/lesson-reward；quiz → /api/me/quiz-submit。
 
   /**
    * 檢查成就解鎖條件
