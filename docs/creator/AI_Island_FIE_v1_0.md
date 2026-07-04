@@ -4020,3 +4020,3560 @@ Agent 與 FIE 都有「多步驟、有推理、可調用工具」的外觀，實
 上述三者可以濃縮成一句話：**RAG 停在檢索、KG 停在客觀事實、Agent 停在完成任務，三者都在「意義該如何被推理與保留」這一層留白，而 FIE 正是把這一層補上的架構**——以 Fragment 為最小意義單位、以 Creator Context 為推理座標、以多 Candidate + Confidence + Reasoning Trace 為推理產物、以持續演化的記憶為長期資產。
 
 > ⟢ **AI 島現況對照**：本附錄的比較採理想化 greenfield 立場，與目前 Creator Island 實作有落差。**已具備**對照表右欄的部分能力——`ci_fragments`（含 `embedding vector(1536)`）已是意義單位而非純 chunk、`ci_surprising_pairs` 已實作「不相似卻有意義」的關係、Creator DNA（`analyzeDNA → ci_creator_dna`）已使 Creator Context 成為一等公民、`ci_memories` 已做到記憶回注 prompt、`ci_agent_runs` 已是 Reasoning Trace 的雛形。**尚缺**表中被標為 FIE 強項的幾項：正式的 Reasoning Layer、Fragment Representation 分層、多 Candidate + Confidence 排序、完整（而非雛形）的 Reasoning Trace，以及 Familiar / Adjacent / Exploratory 三種推理模式。因此在當前實作中，FIE 相對 RAG/Agent 的差異化偏向「**已在資料與關係層兌現、尚未在推理層完全兌現**」，本表右欄應讀作目標態而非現況。
+
+---
+
+# Part II — Implementation Specification（實作規格）
+
+> 本 Part 把 Part I 的概念落成**可直接開工的工程規格**，接地於現有 Creator Island 的 `ci_*` schema 與 `src/lib/creator-engine/` 服務。
+> 原則：沿用既有（fragments / embeddings / memory / ai.agents / Cost Manager / ci_agent_runs），只新增缺的（Representation / Reasoning / Candidate / Trace 層）。
+> 命名沿用 `ci_` 前綴；AI 呼叫一律走既有 `runAgent()` 樣板；新表沿用現有 workspace RLS 樣式。
+
+## II-1　實作架構與模組對應（Architecture & Module Map）
+
+本節把 Part I 定義的 FIE 五層落到 `src/lib/creator-engine/` 的**具體檔案**，明確標示「沿用（reuse）」與「新增（new）」，並固定每個新模組的職責、公開函式簽名與依賴。原則：**理解層（Representation → Reasoning → Candidate）是新增的獨立階段，生成層與資料層沿用既有資產，不重造**。
+
+### II-1.1　五層 → 檔案對應表
+
+| FIE Layer（Part I） | 職責 | 落點檔案 | 狀態 | 主要資料表 |
+|---|---|---|---|---|
+| **Fragment** | 原子碎片的儲存 / CRUD / 去重 | `creator-engine/fragments.ts` | **沿用** | `ci_fragments` |
+| **Representation** | 把 Fragment 轉為可推理的結構化資料（role / causality / surprise / embedding）| `creator-engine/reasoning/representation.ts` | **新增** | `ci_fragments.embedding`、`ci_fragment_repr`（新）|
+| （Representation 的語意檢索原料）| embedding 回填、意外配對、語意相關 | `creator-engine/embeddings.ts` + `src/lib/ai-embeddings.ts` | **沿用** | RPC `ci_surprising_pairs` / `ci_related_fragments` |
+| **Reasoning** | Observation→Hypothesis→Evidence→Missing 四階段、三種模式 | `creator-engine/reasoning/pipeline.ts` | **新增** | `ci_reasoning_traces`、`ci_reasoning_hypotheses`（新）|
+| **Candidate + Creator Context** | 多 Candidate 產出、Confidence/Weight 排序、DNA/記憶對齊 | `creator-engine/reasoning/candidate.ts` + `reasoning/context.ts` | **新增** | `ci_candidates`（新）、`ci_creator_dna`、`ci_memories` |
+| **Reasoning Trace** | 物化、可重放、可否決的推理軌跡（橫切 Reasoning/Candidate）| `creator-engine/reasoning/trace.ts` | **新增** | `ci_reasoning_traces` 及子表（新）|
+| **Generation** | 消費結構化 Candidate、產出作品草稿 | `creator-engine/ai/agents.ts`（`compose`/`evolve`/`transcreate`…）| **沿用** | `ci_agent_runs`、`ci_works` |
+| （橫切）AI 呼叫 / 模型解析 / 計費 | `resolveModel`→`callAI`→`extractJson`→zod、`computeZCharge` | `ai/router.ts`、`src/lib/ai-providers`、`src/lib/idea-ai`、`ai/cost.ts` | **沿用** | `ci_agent_runs` |
+
+> 沿用契約重點：新的 Reasoning/Candidate agents **不自己接 provider**，一律走 `ai/agents.ts` 既有的 `runAgent()` 樣板（`resolveModel → callAI → extractJson → zod 驗證(重試一次) → 寫 `ci_agent_runs` + Cost Manager`），只是把 `AgentType` 擴充為 `"observe" | "hypothesize" | "candidate"`。這樣 Reasoning 自動繼承既有的計費（核心免費 `z_charged=0`）、記憶注入（`getInjectableMemory`）、usage log 與失敗退款。
+
+### II-1.2　請求 → 模組 → 資料表（ASCII）
+
+```
+ POST /api/creator-island/reasoning/run           ← 新增 API（auth: requireCreatorUser + requireWorkspaceRole）
+   { workspaceId, fragmentIds[], mode }
+        │
+        ▼
+ ┌──────────────────────────────────────────────────────────────────────────┐
+ │ reasoning/pipeline.ts :: runReasoning()   ── orchestrator（新增）           │
+ └──────────────────────────────────────────────────────────────────────────┘
+   │ 1. load fragments
+   ▼
+ fragments.ts :: getFragmentsByIds() ─────────────────────────▶ ci_fragments
+   │ 2. build representation
+   ▼
+ reasoning/representation.ts :: buildRepresentation()
+   ├─ embeddings.ts :: backfillWorkspaceEmbeddings() ─────────▶ ci_fragments.embedding
+   ├─ embeddings.ts :: relatedFragments() / surprisingPairs()─▶ RPC ci_related_fragments / ci_surprising_pairs
+   └─ ai/agents.ts :: runAgent("observe")  (role/surprise 標記)▶ ci_agent_runs (+ upsert ci_fragment_repr)
+   │ 3. hypotheses + evidence + missing
+   ▼
+ reasoning/pipeline.ts :: proposeHypotheses()
+   └─ ai/agents.ts :: runAgent("hypothesize") ────────────────▶ ci_agent_runs
+   │ 4. rank into candidates, align to creator
+   ▼
+ reasoning/candidate.ts :: buildCandidates()
+   ├─ reasoning/context.ts :: loadCreatorContext() ───────────▶ ci_creator_dna + ci_memories
+   └─ ai/agents.ts :: runAgent("candidate") ──────────────────▶ ci_agent_runs
+   │ 5. persist trace (橫切全流程)
+   ▼
+ reasoning/trace.ts :: openTrace()/appendStage()/closeTrace()─▶ ci_reasoning_traces
+                                                                ci_reasoning_hypotheses
+                                                                ci_candidates
+        │  回傳 { traceId, candidates[] (帶 confidence/weight/evidence) }
+        ▼
+ （創作者選一個 candidate）→ ai/agents.ts :: compose()/evolve() ─▶ ci_works / ci_agent_runs
+```
+
+關鍵解耦：Reasoning Layer 的產物是**結構化的 Candidate 物件（帶 Evidence/Confidence/Weight）寫進 `ci_candidates`**，Generation（既有 `compose`/`evolve`）只消費被選中的那一個 candidate 的結構，不再解析散文——對應 Part I「理解層與生成層要解耦」。
+
+### II-1.3　新增模組規格
+
+所有新模組置於 `src/lib/creator-engine/reasoning/`。共用型別放 `reasoning/types.ts`（zod schema + `z.infer`，供 `runAgent` 驗證與 API 回傳共用）。
+
+#### `reasoning/types.ts`（新增，型別中樞）
+
+```typescript
+import { z } from "zod";
+
+export type ReasoningMode = "familiar" | "adjacent" | "exploratory";
+
+/** 單顆碎片的 Representation（顯式標記 role/surprise，杜絕 co-occurrence 冒充理解）。*/
+export const FragmentReprSchema = z.object({
+  fragmentId: z.string(),
+  role: z.enum(["theme", "emotion", "character", "setting", "motif", "detail", "conflict"]),
+  salience: z.number().min(0).max(1),          // 主題權重（打破「四詞齊平」）
+  surprise: z.number().min(0).max(1).default(0), // 與其他碎片的語意反差
+  causalLinks: z.array(z.object({ toId: z.string(), kind: z.string() })).default([]),
+  summary: z.string(),
+});
+export type FragmentRepr = z.infer<typeof FragmentReprSchema>;
+
+export const EvidenceSchema = z.object({
+  fragmentId: z.string(),
+  supports: z.number().min(-1).max(1),   // +支持 / -反駁該 hypothesis
+  note: z.string(),
+});
+export const HypothesisSchema = z.object({
+  id: z.string(),                        // 流水 h1/h2…
+  narrative: z.string(),                 // 敘事方向一句話
+  emotion: z.string(),
+  evidence: z.array(EvidenceSchema).default([]),
+  missing: z.array(z.string()).default([]), // Missing Fragment：需補的碎片描述
+  confidence: z.number().min(0).max(1),
+  mode: z.enum(["familiar", "adjacent", "exploratory"]),
+});
+export type Hypothesis = z.infer<typeof HypothesisSchema>;
+
+export const CandidateSchema = z.object({
+  hypothesisId: z.string(),
+  title: z.string(),
+  direction: z.string(),
+  weight: z.number().min(0).max(1),      // 最終排序權重（confidence × context alignment）
+  contextAlignment: z.number().min(0).max(1),
+  fragmentIds: z.array(z.string()),
+});
+export type Candidate = z.infer<typeof CandidateSchema>;
+
+export type ReasoningResult = {
+  traceId: string;
+  representation: FragmentRepr[];
+  hypotheses: Hypothesis[];
+  candidates: Candidate[];   // 已按 weight 降序、保證 ≥2（多 Candidate 硬性契約）
+};
+```
+
+#### `reasoning/representation.ts`（新增）
+
+- **職責**：把一組 raw `ci_fragments` 升為 Representation——回填 embedding、以 RPC 取語意鄰居與意外配對、呼叫 `runAgent("observe")` 標記 `role/salience/surprise/causalLinks`。**只建立事實，不做故事假設**（對應 Stage 1 Observation）。結果 upsert 進 `ci_fragment_repr`（cache，key = fragment_id + content hash，內容沒變則跳過重算）。
+- **公開簽名**：
+```typescript
+export async function buildRepresentation(
+  workspaceId: string, userId: string, fragmentIds: string[],
+): Promise<FragmentRepr[]>;
+
+/** 讀 cache（給不需重算的呼叫方，如 UI 預覽）。*/
+export async function getCachedRepr(fragmentIds: string[]): Promise<FragmentRepr[]>;
+```
+- **依賴**：`fragments.ts`(`getFragmentsByIds`)、`embeddings.ts`(`backfillWorkspaceEmbeddings`/`relatedFragments`/`surprisingPairs`)、`ai/agents.ts`(`runAgent`)、`createSupabaseAdmin`。**降級**：無 OpenAI key（`embedText`→null）時 `surprise`/鄰居退為空、`role` 仍靠 LLM 標，功能不中斷（沿用 embeddings.ts 既有降級策略）。
+
+#### `reasoning/pipeline.ts`（新增，orchestrator）
+
+- **職責**：串起四階段（Observation→Hypothesis→Evidence→Missing），依 `mode` 調整發散度並產出 Candidate，全程開/寫/關 Trace。是 API 唯一進入點。
+- **三種模式如何落地**（同一 pipeline、不同參數）：
+
+| mode | 選材（representation 鄰居半徑）| `runAgent` temperature | hypothesis 數 | 用途 |
+|---|---|---|---|---|
+| `familiar` | 只用選定碎片 + 高相似鄰居 | 0.6 | 2–3 | 穩健、貼近既有 DNA |
+| `adjacent` | 納入 `ci_related_fragments` 中相似度中段 | 0.85 | 3–4 | 帶入相關但非顯而易見的連結 |
+| `exploratory` | 納入 `ci_surprising_pairs`（低相似/高新穎）| 0.95 | 4–6 | 高新穎、低 confidence 的 Adjacent Hypothesis |
+
+- **公開簽名**：
+```typescript
+export async function runReasoning(opts: {
+  workspaceId: string; userId: string;
+  fragmentIds: string[];
+  mode?: ReasoningMode;          // 預設 "adjacent"
+  maxCandidates?: number;        // 預設 4，clamp 2..8
+}): Promise<ReasoningResult>;
+
+/** 內部階段（匯出供測試/重放）。*/
+export async function proposeHypotheses(
+  workspaceId: string, userId: string, repr: FragmentRepr[], mode: ReasoningMode,
+): Promise<Hypothesis[]>;
+```
+- **依賴**：`reasoning/representation.ts`、`reasoning/candidate.ts`、`reasoning/trace.ts`、`ai/agents.ts`(`runAgent("hypothesize")`)。
+- **驗收**：回傳 `candidates.length ≥ 2` 且兩兩 `direction` 差異度需過門檻（避免 Part I「多假設淪為換句話說」——用 candidate embedding cosine < 0.92 檢查，過近則合併並補提一條）；`fragmentIds` 過少（<2）或全部 `salience` 過低時，回 confidence < 0.3 並在 `missing` 提示補碎片，不硬編故事。
+
+#### `reasoning/candidate.ts`（新增）
+
+- **職責**：Hypothesis → Candidate 的排序與**Creator Context Alignment**。`weight = confidence × contextAlignment`，降序輸出；寫入 `ci_candidates`。
+- **公開簽名**：
+```typescript
+export async function buildCandidates(
+  workspaceId: string, userId: string,
+  hypotheses: Hypothesis[], maxCandidates: number,
+): Promise<Candidate[]>;
+```
+- **依賴**：`reasoning/context.ts`(`loadCreatorContext`)、`ai/agents.ts`(`runAgent("candidate")`)。
+
+#### `reasoning/context.ts`（新增）
+
+- **職責**：載入創作者背景，算出每個 hypothesis 的 `contextAlignment`。沿用既有 DNA 與記憶，不新建偏好系統。
+- **公開簽名**：
+```typescript
+export type CreatorContext = { dna: any | null; memoryText: string; memoryIds: string[] };
+
+export async function loadCreatorContext(
+  workspaceId: string, userId: string,
+): Promise<CreatorContext>;
+
+/** 用 DNA 的 imagery/tone/strengths 與 hypothesis 語意對齊，回 0..1。*/
+export function alignmentScore(h: Hypothesis, ctx: CreatorContext): number;
+```
+- **依賴**：`ci_creator_dna`（既有 `analyzeDNA` 產物）、`memory.ts`(`getInjectableMemory`)。注意：`runAgent` 本身已注入記憶到 system prompt，`context.ts` 只**額外**把 DNA 用於 `alignmentScore` 的數值排序，兩者不衝突。
+
+#### `reasoning/trace.ts`（新增）
+
+- **職責**：把推理過程**物化成可重放、可否決**的 Trace（對應 Part I「缺少 Reasoning Trace」與「可回溯是唯一可審計證據」）。`ci_agent_runs` 記的是「執行過程」；Trace 記的是「被提出/被否決的故事線 + confidence」，兩者互補。每個 stage 的 `agent_run_id` 回指 `ci_agent_runs` 做交叉稽核。
+- **公開簽名**：
+```typescript
+export async function openTrace(input: {
+  workspaceId: string; userId: string; fragmentIds: string[]; mode: ReasoningMode;
+}): Promise<{ traceId: string }>;
+
+export async function appendStage(traceId: string, stage: {
+  kind: "observation" | "hypothesis" | "candidate";
+  agentRunId?: number | null;   // 回指 ci_agent_runs
+  payload: unknown;             // FragmentRepr[] | Hypothesis[] | Candidate[]
+}): Promise<void>;
+
+export async function closeTrace(traceId: string, status: "succeeded" | "failed"): Promise<void>;
+
+/** 讀回整條 trace（供 UI 呈現、重放、否決）。*/
+export async function getTrace(traceId: string): Promise<{
+  trace: any; hypotheses: Hypothesis[]; candidates: Candidate[];
+}>;
+
+/** 創作者否決某 hypothesis（可證偽契約）：標記 rejected，供後續 DNA 回饋。*/
+export async function rejectHypothesis(traceId: string, hypothesisId: string, note?: string): Promise<void>;
+```
+- **依賴**：`createSupabaseAdmin`，新資料表 `ci_reasoning_traces` / `ci_reasoning_hypotheses` / `ci_candidates`（DDL 於 II-2 定義；均沿用 `ci_` 前綴、`workspace_id` + RLS 對齊 `ci_fragments`）。
+
+### II-1.4　沿用清單（明確不重造）
+
+| 需求 | 直接用既有 | 不要做的事 |
+|---|---|---|
+| 碎片存取 / 去重 | `fragments.ts`（`getFragmentsByIds`/`findDuplicateByTitle`）| 另建碎片表 |
+| 向量 / 語意鄰居 / 意外配對 | `embeddings.ts` + RPC `ci_related_fragments`、`ci_surprising_pairs` | 自己寫 pgvector 查詢 |
+| AI 呼叫樣板 | `ai/agents.ts` 的 `runAgent()`（含 zod 重試、run 紀錄、計費、記憶注入）| 直接 `callAI` 繞過 run/計費 |
+| 模型解析 | `ai/router.ts` 的 `resolveModel(agentType)` | 硬編 provider/model |
+| 計費 | `ai/cost.ts`（`computeZCharge`；Reasoning 核心動作設 `z_charged=0`）| 另立錢包邏輯 |
+| Creator Context | `ci_creator_dna`（`analyzeDNA`）+ `memory.ts` | 新做偏好系統 |
+| 執行紀錄 | `ci_agent_runs`（每個 stage 一筆）| 用 Trace 取代 run log |
+| Generation | `ai/agents.ts` 的 `compose`/`evolve`/`transcreate` | 為 FIE 重寫生成器 |
+
+**新增總計**：`reasoning/{types,representation,pipeline,candidate,context,trace}.ts` 六檔、`AgentType` 擴充三個值、三張新表（`ci_reasoning_traces`/`ci_reasoning_hypotheses`/`ci_candidates`）＋一張 cache 表（`ci_fragment_repr`）、一支新 API `/api/creator-island/reasoning/run`（auth 沿用 `requireCreatorUser` + `requireWorkspaceRole`）。其餘全部沿用。
+
+---
+
+## II-2　資料庫 Schema（完整 DDL）
+
+本節給出可直接 `db:apply` 的 Postgres DDL。所有物件沿用 Creator Island 既有慣例：`ci_` 前綴、`gen_random_uuid()` 主鍵（log 類用 `BIGSERIAL`）、`vector(1536)` 向量、`ivfflat … WITH (lists = 50)` 索引、RLS 只做「讀取 backstop」（寫一律走 `createSupabaseAdmin` service-role + 程式內 `requireWorkspaceRole` 檢查），RLS 一律用既有 helper `public.ci_is_workspace_member(uuid)`。所有敘述採冪等（`IF NOT EXISTS` / `CREATE OR REPLACE` / `DROP POLICY IF EXISTS`），可重跑。
+
+建議落地為單一新 migration：`supabase/creator_island_fie_migration.sql`（在 `creator_island_assets` / `_ai` / `_memory` / `_growth` 之後執行）。
+
+```sql
+-- Creator Island FIE — Fragment Intelligence Engine（Part II 實作）
+-- 依賴：creator_island_workspace / assets / ai / memory / growth migration 已跑。
+-- helper ci_is_workspace_member(uuid) 來自 workspace migration。冪等。
+CREATE EXTENSION IF NOT EXISTS vector;
+```
+
+---
+
+### II-2.1　Fragment Representation 分層 ＝ 擴充既有 `ci_fragments` ＋ 新表 `ci_fragment_representation`
+
+**設計決策：不動 `ci_fragments` 的既有欄位與 `embedding`（那是熱路徑、已有 ivfflat 索引與大量既有查詢/RPC 依賴），只做兩件事：**
+
+1. 對 `ci_fragments` **加 3 個輕量欄位**（representation 版本戳記與旗標），用 `ADD COLUMN IF NOT EXISTS`，不破壞既有 insert。
+2. **新開 1:1 側表 `ci_fragment_representation`**，承載四層結構化表徵（Surface / Semantic / Relational / Latent）。分表的理由：representation 由背景 pipeline（見 II-4）非同步計算、會頻繁重寫，隔離開避免污染 `ci_fragments` 的 `updated_at` 與 embedding 索引。
+
+```sql
+-- ===== 擴充既有 ci_fragments（新增欄位、非新表）=====
+ALTER TABLE public.ci_fragments
+  ADD COLUMN IF NOT EXISTS repr_version   INTEGER NOT NULL DEFAULT 0,   -- 0 = 尚未建表徵
+  ADD COLUMN IF NOT EXISTS repr_status    TEXT NOT NULL DEFAULT 'pending'
+    CHECK (repr_status IN ('pending','building','ready','failed')),
+  ADD COLUMN IF NOT EXISTS repr_updated_at TIMESTAMPTZ;
+
+-- pipeline 撈「待建表徵」用；partial index 只索引尚未 ready 的
+CREATE INDEX IF NOT EXISTS idx_ci_fragments_repr_pending
+  ON public.ci_fragments(workspace_id, repr_status)
+  WHERE repr_status IN ('pending','failed');
+```
+
+```sql
+-- ===== 新表：ci_fragment_representation（四層表徵，1:1 對 ci_fragments）=====
+CREATE TABLE IF NOT EXISTS public.ci_fragment_representation (
+  fragment_id   UUID PRIMARY KEY REFERENCES public.ci_fragments(id) ON DELETE CASCADE,
+  workspace_id  UUID NOT NULL REFERENCES public.ci_workspaces(id) ON DELETE CASCADE,
+  version       INTEGER NOT NULL DEFAULT 1,
+
+  -- L1 Surface：原文衍生的可觀察特徵（長度、語言、格式訊號）— 純規則、無 AI
+  surface       JSONB NOT NULL DEFAULT '{}'::jsonb,
+    -- { charLen, wordLen, lang, hasList, hasCode, sentenceCount, format }
+
+  -- L2 Semantic：AI 抽取的語意 —— concepts / entities / claims / 摘要
+  --   embedding 沿用 ci_fragments.embedding（不重存），此處放結構化語意
+  semantic      JSONB NOT NULL DEFAULT '{}'::jsonb,
+    -- { concepts[], entities[], claims[], topic, abstractLevel:1..5 }
+
+  -- L3 Relational：關係層 —— motifs / 與其他 fragment 的顯式關聯摘要
+  relational    JSONB NOT NULL DEFAULT '{}'::jsonb,
+    -- { motifs[], neighborIds[], relationSummary }
+
+  -- L4 Latent：學習/推導出的潛在屬性 —— 供 Reasoning Layer 對齊用
+  latent        JSONB NOT NULL DEFAULT '{}'::jsonb,
+    -- { valence, novelty, reusability, creatorFitHint }
+  latent_embedding vector(1536),   -- 選用：latent 空間向量（與 surface embedding 不同投影）
+
+  model         TEXT,              -- 建表徵用的模型（callAI resolveModel 回傳）
+  created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_ci_fragrepr_ws
+  ON public.ci_fragment_representation(workspace_id);
+CREATE INDEX IF NOT EXISTS idx_ci_fragrepr_concepts
+  ON public.ci_fragment_representation USING GIN ((semantic -> 'concepts'));
+CREATE INDEX IF NOT EXISTS idx_ci_fragrepr_motifs
+  ON public.ci_fragment_representation USING GIN ((relational -> 'motifs'));
+CREATE INDEX IF NOT EXISTS idx_ci_fragrepr_latent_emb
+  ON public.ci_fragment_representation USING ivfflat (latent_embedding vector_cosine_ops) WITH (lists = 50);
+
+ALTER TABLE public.ci_fragment_representation ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS ci_fragrepr_read ON public.ci_fragment_representation;
+CREATE POLICY ci_fragrepr_read ON public.ci_fragment_representation FOR SELECT
+  USING (public.ci_is_workspace_member(workspace_id));
+```
+
+---
+
+### II-2.2　新表 `ci_reasoning_runs`（一次推理的頂層記錄）
+
+平行於既有 `ci_agent_runs`，但語意不同：`ci_agent_runs` 記「一次 LLM agent 呼叫（synthesize/evolve/…）＋成本」；`ci_reasoning_runs` 記「一次**推理任務**」——含推理模式、種子片段、產出的多個 candidate。一個 reasoning run 底下可能觸發 0..N 個 `ci_agent_runs`（透過 `ci_reasoning_trace.agent_run_id` 掛回），成本仍由 `ci_agent_runs` 統一經 Cost Manager 記帳，此表**不重複記帳**。
+
+```sql
+CREATE TABLE IF NOT EXISTS public.ci_reasoning_runs (
+  id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id  UUID NOT NULL REFERENCES public.ci_workspaces(id) ON DELETE CASCADE,
+  user_id       UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
+
+  -- 三種推理模式（II 概念層對應 Familiar/Adjacent/Exploratory）
+  mode          TEXT NOT NULL DEFAULT 'adjacent'
+    CHECK (mode IN ('familiar','adjacent','exploratory')),
+
+  -- 種子輸入：驅動這次推理的 fragment（多型 id 陣列；不設跨表 FK，比照 ci_asset_relations）
+  seed_fragment_ids UUID[] NOT NULL DEFAULT '{}',
+  intent        TEXT,                                  -- 使用者意圖/prompt（可空 = 自主推理）
+  input         JSONB NOT NULL DEFAULT '{}'::jsonb,    -- 完整輸入快照（含解析後的 context ref）
+
+  status        TEXT NOT NULL DEFAULT 'running'
+    CHECK (status IN ('running','succeeded','failed','cancelled')),
+  error         TEXT,
+
+  candidate_count INTEGER NOT NULL DEFAULT 0 CHECK (candidate_count >= 0),
+  top_confidence  NUMERIC(4,3) CHECK (top_confidence IS NULL OR (top_confidence >= 0 AND top_confidence <= 1)),
+
+  model         TEXT,                                  -- 主推理模型
+  creator_context_id UUID,                             -- 對齊時使用的 context 快照（見 II-2.5）
+  created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  finished_at   TIMESTAMPTZ
+);
+
+CREATE INDEX IF NOT EXISTS idx_ci_reasoning_runs_ws
+  ON public.ci_reasoning_runs(workspace_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_ci_reasoning_runs_mode
+  ON public.ci_reasoning_runs(workspace_id, mode);
+CREATE INDEX IF NOT EXISTS idx_ci_reasoning_runs_seeds
+  ON public.ci_reasoning_runs USING GIN (seed_fragment_ids);
+
+ALTER TABLE public.ci_reasoning_runs ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS ci_reasoning_runs_read ON public.ci_reasoning_runs;
+CREATE POLICY ci_reasoning_runs_read ON public.ci_reasoning_runs FOR SELECT
+  USING (public.ci_is_workspace_member(workspace_id));
+```
+
+---
+
+### II-2.3　新表 `ci_candidates`（多 Candidate ＋ Confidence / Weight）
+
+一個 `ci_reasoning_runs` 產出 1..N 個 candidate，各帶 `confidence`（模型自評，0..1）與 `weight`（融合排序權重，含 mode 加權/creator context 對齊加成後的最終分）。Candidate 是「尚未落地的產物」——被採納時再由服務層寫進 `ci_fragments` / `ci_works`，並用既有 `ci_asset_relations`（`relation_type='inspired_by'` 或 `'evolved_from'`）建 lineage，`materialized_asset_id` 回填。
+
+```sql
+CREATE TABLE IF NOT EXISTS public.ci_candidates (
+  id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  reasoning_run_id UUID NOT NULL REFERENCES public.ci_reasoning_runs(id) ON DELETE CASCADE,
+  workspace_id   UUID NOT NULL REFERENCES public.ci_workspaces(id) ON DELETE CASCADE,
+
+  rank           INTEGER NOT NULL DEFAULT 0,           -- 0 = 最佳
+  kind           TEXT NOT NULL DEFAULT 'idea'
+    CHECK (kind IN ('idea','fragment','work_seed','connection','question')),
+  title          TEXT,
+  content        TEXT NOT NULL DEFAULT '',
+  rationale      TEXT,                                 -- 「為什麼提出這個」給使用者看的一句話
+
+  confidence     NUMERIC(4,3) NOT NULL DEFAULT 0.5
+    CHECK (confidence >= 0 AND confidence <= 1),       -- 模型自評
+  weight         NUMERIC(6,4) NOT NULL DEFAULT 0       -- 最終融合分（排序用）
+    CHECK (weight >= 0),
+  novelty        NUMERIC(4,3) CHECK (novelty IS NULL OR (novelty >= 0 AND novelty <= 1)),
+  context_fit    NUMERIC(4,3) CHECK (context_fit IS NULL OR (context_fit >= 0 AND context_fit <= 1)),
+
+  -- 溯源：這個 candidate 引用了哪些 fragment（多型 id、不設跨表 FK）
+  source_fragment_ids UUID[] NOT NULL DEFAULT '{}',
+
+  -- 落地狀態：被採納後回填
+  status         TEXT NOT NULL DEFAULT 'proposed'
+    CHECK (status IN ('proposed','accepted','rejected','materialized')),
+  materialized_asset_id   UUID,
+  materialized_asset_type TEXT
+    CHECK (materialized_asset_type IS NULL OR materialized_asset_type IN ('fragment','work')),
+
+  created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_ci_candidates_run
+  ON public.ci_candidates(reasoning_run_id, rank);
+CREATE INDEX IF NOT EXISTS idx_ci_candidates_ws_status
+  ON public.ci_candidates(workspace_id, status);
+CREATE INDEX IF NOT EXISTS idx_ci_candidates_sources
+  ON public.ci_candidates USING GIN (source_fragment_ids);
+
+ALTER TABLE public.ci_candidates ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS ci_candidates_read ON public.ci_candidates;
+CREATE POLICY ci_candidates_read ON public.ci_candidates FOR SELECT
+  USING (public.ci_is_workspace_member(workspace_id));
+```
+
+---
+
+### II-2.4　新表 `ci_reasoning_trace`（Observation→…→Alignment 逐步痕跡）
+
+Reasoning Layer 的六階段各寫 1..N 步：`observation`（觀察到什麼）→ `hypothesis`（假設）→ `evidence`（支持證據，引用 fragment）→ `missing`（缺什麼/資訊斷點）→ `candidate`（提出候選，掛 `candidate_id`）→ `alignment`（Creator Context Alignment，帶對齊分數）。`step_no` 保證同一 run 內順序唯一。每步可選掛回觸發的 `ci_agent_runs.id`（`BIGINT`，對齊該表主鍵型別），讓成本/trace 對得起來。
+
+```sql
+CREATE TABLE IF NOT EXISTS public.ci_reasoning_trace (
+  id             BIGSERIAL PRIMARY KEY,
+  reasoning_run_id UUID NOT NULL REFERENCES public.ci_reasoning_runs(id) ON DELETE CASCADE,
+  workspace_id   UUID NOT NULL REFERENCES public.ci_workspaces(id) ON DELETE CASCADE,
+
+  step_no        INTEGER NOT NULL,                     -- run 內遞增順序
+  phase          TEXT NOT NULL
+    CHECK (phase IN ('observation','hypothesis','evidence','missing','candidate','alignment')),
+  text           TEXT NOT NULL,                        -- 該步的自然語言內容（給使用者看的透明痕跡）
+  data           JSONB NOT NULL DEFAULT '{}'::jsonb,   -- 結構化附載（引用的 fragment id、分數細項…）
+
+  -- 交叉引用（皆選用）
+  candidate_id   UUID REFERENCES public.ci_candidates(id) ON DELETE SET NULL,  -- phase='candidate'
+  ref_fragment_ids UUID[] NOT NULL DEFAULT '{}',       -- phase='evidence' 引用的 fragment
+  alignment_score NUMERIC(4,3)                          -- phase='alignment'
+    CHECK (alignment_score IS NULL OR (alignment_score >= 0 AND alignment_score <= 1)),
+  agent_run_id   BIGINT,                               -- 對回 ci_agent_runs.id（此步若打了 LLM）
+
+  created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- 同一 run 的 step_no 唯一 + 天然排序索引
+CREATE UNIQUE INDEX IF NOT EXISTS uq_ci_trace_run_step
+  ON public.ci_reasoning_trace(reasoning_run_id, step_no);
+CREATE INDEX IF NOT EXISTS idx_ci_trace_run_phase
+  ON public.ci_reasoning_trace(reasoning_run_id, phase);
+
+ALTER TABLE public.ci_reasoning_trace ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS ci_trace_read ON public.ci_reasoning_trace;
+CREATE POLICY ci_trace_read ON public.ci_reasoning_trace FOR SELECT
+  USING (public.ci_is_workspace_member(workspace_id));
+```
+
+---
+
+### II-2.5　Creator Context ＝ 沿用 `ci_creator_dna`（擴充）＋ 新表 `ci_creator_context`
+
+**設計決策：`ci_creator_dna` 是既有 personal-scoped 的「創作者本質特徵長期畫像」（`traits jsonb` + `confidence`，見 `growth` migration + `analyzeDNA` agent），繼續當唯一權威來源。** FIE 的 Creator Context Alignment 需要的是「某次推理當下、解析出來的 context 快照」——它混合了 personal DNA + workspace/project memory（既有 `ci_memories`）+ 當前種子。因此：
+
+1. 對 `ci_creator_dna` **加 2 個欄位**，補上 FIE 需要的偏好維度（不改既有 `traits` 結構、向前相容）。
+2. **新開 `ci_creator_context`**：workspace-scoped 的「已解析 context 快照」，被 `ci_reasoning_runs.creator_context_id` 引用，讓每次推理可重現、可審計（哪版 DNA + 哪些 memory 進了對齊步）。
+
+```sql
+-- ===== 擴充既有 ci_creator_dna =====
+ALTER TABLE public.ci_creator_dna
+  ADD COLUMN IF NOT EXISTS preferences JSONB NOT NULL DEFAULT '{}'::jsonb,
+    -- { avoid[], favor[], riskAppetite:0..1, defaultMode:'familiar'|'adjacent'|'exploratory' }
+  ADD COLUMN IF NOT EXISTS dna_version INTEGER NOT NULL DEFAULT 1;
+
+-- ===== 新表：ci_creator_context（推理當下的 resolved 快照）=====
+CREATE TABLE IF NOT EXISTS public.ci_creator_context (
+  id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id  UUID NOT NULL REFERENCES public.ci_workspaces(id) ON DELETE CASCADE,
+  user_id       UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
+
+  dna_id        UUID REFERENCES public.ci_creator_dna(id) ON DELETE SET NULL,
+  dna_version   INTEGER,                               -- 快照當下的 DNA 版本（可重現）
+
+  -- 解析後注入對齊步的內容（皆為快照、不隨來源變動）
+  traits_snapshot   JSONB NOT NULL DEFAULT '{}'::jsonb,   -- 來自 ci_creator_dna.traits
+  memory_ids        UUID[] NOT NULL DEFAULT '{}',         -- 注入的 ci_memories.id（透明度，比照 ci_memory_usage）
+  context_embedding vector(1536),                         -- context 的聚合向量（對齊時算 cosine）
+  summary       TEXT,                                      -- 人類可讀的一段「這位創作者現在的取向」
+
+  created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_ci_creator_context_ws
+  ON public.ci_creator_context(workspace_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_ci_creator_context_user
+  ON public.ci_creator_context(user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_ci_creator_context_emb
+  ON public.ci_creator_context USING ivfflat (context_embedding vector_cosine_ops) WITH (lists = 50);
+
+ALTER TABLE public.ci_creator_context ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS ci_creator_context_read ON public.ci_creator_context;
+CREATE POLICY ci_creator_context_read ON public.ci_creator_context FOR SELECT
+  USING (
+    user_id = auth.uid()
+    OR public.ci_is_workspace_member(workspace_id)
+  );
+
+-- ci_reasoning_runs.creator_context_id 事後補 FK（避免建表順序問題）
+ALTER TABLE public.ci_reasoning_runs
+  DROP CONSTRAINT IF EXISTS fk_reasoning_creator_context;
+ALTER TABLE public.ci_reasoning_runs
+  ADD CONSTRAINT fk_reasoning_creator_context
+  FOREIGN KEY (creator_context_id) REFERENCES public.ci_creator_context(id) ON DELETE SET NULL;
+```
+
+---
+
+### II-2.6　與現有 `ci_*` 的關係（落地對照）
+
+| FIE 物件 | 新增 / 擴充 | 與既有的關係 |
+|---|---|---|
+| `ci_fragments.repr_*` 欄位 | **擴充既有** | 不動 `embedding` / 既有欄位；只加表徵版本旗標，pipeline（II-4）用 `idx_ci_fragments_repr_pending` 撈待建。 |
+| `ci_fragment_representation` | **新表（1:1）** | `fragment_id` FK→`ci_fragments`；Surface/Semantic/Relational/Latent 四層。語意向量仍用 `ci_fragments.embedding`（沿用 `embedText`），此表只存結構化特徵 + 選用 `latent_embedding`。 |
+| `ci_reasoning_runs` | **新表** | 平行於 `ci_agent_runs`（不取代）。成本仍由 `ci_agent_runs` + Cost Manager（`computeZCharge`）記帳；本表透過 `ci_reasoning_trace.agent_run_id` 掛回，**不重複扣 Z 幣**。種子/引用比照 `ci_asset_relations` 用多型 uuid 陣列、無跨表 FK。 |
+| `ci_candidates` | **新表** | 被採納 → 服務層寫進 `ci_fragments`/`ci_works`，並用既有 `ci_asset_relations`（`inspired_by`/`evolved_from`）建 lineage，`materialized_asset_id` 回填。 |
+| `ci_reasoning_trace` | **新表** | 六階段透明痕跡。`agent_run_id`（BIGINT）對回 `ci_agent_runs.id`；透明度設計比照既有 `ci_memory_usage`。 |
+| `ci_creator_dna.preferences/dna_version` | **擴充既有** | `ci_creator_dna` 仍是 personal DNA 權威來源（`analyzeDNA` 產出）；只補 FIE 偏好維度，向前相容既有 `traits`。 |
+| `ci_creator_context` | **新表** | 推理當下的 resolved 快照 = DNA 快照 + 注入的 `ci_memories`（`memory_ids` 保透明度）。被 `ci_reasoning_runs.creator_context_id` 引用，供 Alignment 步重現/審計。 |
+
+**RLS 一致性：** 全部 workspace-scoped 表用 `public.ci_is_workspace_member(workspace_id)` 做 SELECT backstop；personal 相關（`ci_creator_context`）額外允許 `user_id = auth.uid()`；寫入一律 service-role（`createSupabaseAdmin`）＋ `requireWorkspaceRole`，與既有 `ci_fragments` / `ci_agent_runs` 完全一致。**向量索引：** 所有 `vector(1536)` 欄位一律建 `ivfflat … vector_cosine_ops WITH (lists = 50)`，與 `ci_fragments` / `ci_memories` 現況同參數。
+
+---
+
+## II-3　資料模型（TypeScript 型別 + JSON Schema）
+
+本節把 II-1 的 Reasoning Layer 概念與 II-2 的 DDL 收斂成**單一權威型別集**：六個核心型別 `RepresentedFragment`、`Hypothesis`、`Candidate`、`ReasoningTrace`、`CreatorContext`、`ReasoningRun`。
+
+三種表示：
+- **TypeScript interface** — 服務層（`src/lib/creator-engine/`）與 API route 的編譯期契約，放 `src/lib/creator-engine/fie/types.ts`。
+- **JSON Schema（draft 2020-12）** — runtime 驗證。搭配既有 `zod`（`agents.ts` 已用 zod 驗 AI 輸出），JSON Schema 作為 `ci_reasoning_runs.trace`（jsonb）欄位的 DB 契約與 AI 回傳的重試依據；zod schema 由本節 JSON Schema 逐欄鏡射（見 II-5）。
+- **Example** — 一律用主軸四碎片「高中／夏天／我們／宜蘭」。
+
+### II-3.0　共用慣例與 primitive
+
+| 約定 | 規則 |
+|---|---|
+| Case | TS 用 `camelCase`；持久化到 jsonb / 傳給前端的 JSON 亦用 `camelCase`（與 `ci_agent_runs.output` 既有慣例一致）。**只有** DB 欄位名用 `snake_case`。 |
+| 主鍵 | 頂層列（`ReasoningRun`）用 `bigint`（對齊 `ci_agent_runs.id`）；jsonb 內嵌物件（Hypothesis/Candidate/step）用**本地字串 id** `h1`/`c1`/`s1`，只在同一 run 內唯一。 |
+| Confidence / Weight / Novelty / Similarity | 一律 `number ∈ [0,1]`，四捨五入到小數三位。`confidence` = 假設為真的信念；`weight` = 排序展示權重（= confidence × mode 係數 × diversity 調整，見 II-4）；`novelty` = 與慣性共現的偏離度；`similarity` = 餘弦相似度（`1 - (a<=>b)`，同 `ci_surprising_pairs`）。 |
+| Mode | `'familiar' | 'adjacent' | 'exploratory'`，全型別共用列舉 `ReasoningMode`。 |
+| Phase | Reasoning 六階段列舉 `ReasoningPhase`：`'observation' | 'hypothesis' | 'evidence' | 'missing' | 'candidate' | 'alignment'`。 |
+| 時間 | ISO-8601 UTC 字串（`timestamptz` 序列化）。 |
+| Fragment 參照 | 一律用 `ci_fragments.id`（uuid）字串，不內嵌整份碎片，避免 trace 膨脹。 |
+
+```ts
+// src/lib/creator-engine/fie/types.ts
+export type ReasoningMode = 'familiar' | 'adjacent' | 'exploratory';
+export type ReasoningPhase =
+  | 'observation' | 'hypothesis' | 'evidence'
+  | 'missing' | 'candidate' | 'alignment';
+export type Uuid = string;   // ci_fragments.id / ci_workspaces.id
+export type LocalId = string; // run 內本地 id：h1, c1, s1, e1
+export type Unit = number;    // [0,1]
+```
+
+---
+
+### II-3.1　RepresentedFragment
+
+Fragment 的**分層表示**（II-1 Representation Layer）。不新增碎片實體 —— 它是 `ci_fragments` 一列的**衍生投影**，由 `src/lib/creator-engine/fie/representation.ts` 在 reasoning 前組裝：surface 直接來自 `ci_fragments` 欄位；semantic 來自 `embedding` + `ai_summary`（`embeddings.ts`）；relational 來自 `ci_asset_relations` + `ci_related_fragments` RPC；contextual 由 `CreatorContext` 對此碎片的 override 疊加。可快取於 II-2 的 `ci_fragment_representations(fragment_id, workspace_id, layers jsonb, embedding_version, computed_at)`。
+
+```ts
+export interface RepresentedFragment {
+  fragmentId: Uuid;              // ci_fragments.id
+  workspaceId: Uuid;             // ci_fragments.workspace_id
+  layers: {
+    surface: {                   // 直取 ci_fragments 欄位，零推理
+      title: string;
+      content: string;
+      tags: string[];
+      mood: string | null;       // ci_fragments.mood
+      category: string | null;   // ci_fragments.category
+      sourceType: string;        // ci_fragments.source_type
+    };
+    semantic: {                  // embeddings.ts 產物
+      aiSummary: string | null;  // ci_fragments.ai_summary
+      hasEmbedding: boolean;     // embedding IS NOT NULL
+      embeddingModel: string;    // e.g. 'text-embedding-3-small'
+      keyConcepts: string[];     // AI 抽出的語義關鍵詞（非 tags）
+    };
+    relational: {                // ci_asset_relations + ci_related_fragments
+      relatedFragmentIds: Uuid[];
+      edges: Array<{
+        toFragmentId: Uuid;
+        relationType: string;    // ci_asset_relations.relation_type
+        similarity: Unit | null; // 語義邊給值；顯式關聯邊為 null
+      }>;
+    };
+    contextual: {                // CreatorContext 對此碎片的個人化覆寫
+      creatorMeaning: string | null; // 個人語義（宜蘭=喪禮 而非青春）
+      overrideConfidence: Unit;      // 覆寫可信度；0 = 純語料共現
+      sourceMemoryIds: string[];     // ci_memories.id 佐證
+    };
+  };
+  computedAt: string;
+  embeddingVersion: number;      // 失效重算依據
+}
+```
+
+**JSON Schema**
+
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fie/RepresentedFragment.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["fragmentId", "workspaceId", "layers", "computedAt", "embeddingVersion"],
+  "properties": {
+    "fragmentId": { "type": "string", "format": "uuid" },
+    "workspaceId": { "type": "string", "format": "uuid" },
+    "computedAt": { "type": "string", "format": "date-time" },
+    "embeddingVersion": { "type": "integer", "minimum": 0 },
+    "layers": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["surface", "semantic", "relational", "contextual"],
+      "properties": {
+        "surface": {
+          "type": "object", "additionalProperties": false,
+          "required": ["title", "content", "tags", "mood", "category", "sourceType"],
+          "properties": {
+            "title": { "type": "string", "minLength": 1, "maxLength": 200 },
+            "content": { "type": "string" },
+            "tags": { "type": "array", "items": { "type": "string" } },
+            "mood": { "type": ["string", "null"] },
+            "category": { "type": ["string", "null"] },
+            "sourceType": { "type": "string" }
+          }
+        },
+        "semantic": {
+          "type": "object", "additionalProperties": false,
+          "required": ["aiSummary", "hasEmbedding", "embeddingModel", "keyConcepts"],
+          "properties": {
+            "aiSummary": { "type": ["string", "null"] },
+            "hasEmbedding": { "type": "boolean" },
+            "embeddingModel": { "type": "string" },
+            "keyConcepts": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "relational": {
+          "type": "object", "additionalProperties": false,
+          "required": ["relatedFragmentIds", "edges"],
+          "properties": {
+            "relatedFragmentIds": { "type": "array", "items": { "type": "string", "format": "uuid" } },
+            "edges": {
+              "type": "array",
+              "items": {
+                "type": "object", "additionalProperties": false,
+                "required": ["toFragmentId", "relationType", "similarity"],
+                "properties": {
+                  "toFragmentId": { "type": "string", "format": "uuid" },
+                  "relationType": { "type": "string" },
+                  "similarity": { "type": ["number", "null"], "minimum": 0, "maximum": 1 }
+                }
+              }
+            }
+          }
+        },
+        "contextual": {
+          "type": "object", "additionalProperties": false,
+          "required": ["creatorMeaning", "overrideConfidence", "sourceMemoryIds"],
+          "properties": {
+            "creatorMeaning": { "type": ["string", "null"] },
+            "overrideConfidence": { "type": "number", "minimum": 0, "maximum": 1 },
+            "sourceMemoryIds": { "type": "array", "items": { "type": "string" } }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+**Example —「宜蘭」碎片**
+
+```json
+{
+  "fragmentId": "b3e1c0a2-1111-4a00-9000-000000000004",
+  "workspaceId": "0a00-…-ws01",
+  "layers": {
+    "surface": {
+      "title": "宜蘭",
+      "content": "外婆家在宜蘭，稻田、雨、火車站前的小吃。",
+      "tags": ["地點", "童年", "家族"],
+      "mood": "nostalgic",
+      "category": "place",
+      "sourceType": "human_original"
+    },
+    "semantic": {
+      "aiSummary": "以宜蘭為核心的家族與童年空間記憶。",
+      "hasEmbedding": true,
+      "embeddingModel": "text-embedding-3-small",
+      "keyConcepts": ["外婆家", "稻田", "限定時空", "家族聚合"]
+    },
+    "relational": {
+      "relatedFragmentIds": ["…0002_夏天", "…0003_我們"],
+      "edges": [
+        { "toFragmentId": "…0002_夏天", "relationType": "co_occurrence", "similarity": 0.41 },
+        { "toFragmentId": "…0003_我們", "relationType": "semantic", "similarity": 0.38 }
+      ]
+    },
+    "contextual": {
+      "creatorMeaning": "宜蘭＝最後一次全家到齊的地方",
+      "overrideConfidence": 0.72,
+      "sourceMemoryIds": ["mem_9f2…"]
+    }
+  },
+  "computedAt": "2026-07-05T04:00:00Z",
+  "embeddingVersion": 1
+}
+```
+
+---
+
+### II-3.2　Hypothesis
+
+一條**可解釋的敘事假設**（II-1 原則 4：同一組碎片應產生多條）。每條假設**必須**附至少一項 `Evidence`（連回具體 `ci_fragments.id`），並顯性列出 `missingFragments`。持久化在 II-2 `ci_hypotheses`（或 `ci_reasoning_runs.trace.hypotheses[]` jsonb）。
+
+```ts
+export interface Evidence {
+  id: LocalId;                   // e1
+  fragmentId: Uuid;              // 佐證來源碎片
+  role: 'theme' | 'setting' | 'time' | 'actor' | 'turn' | 'contrast';
+  contribution: Unit;            // 此證據對 confidence 的貢獻權重
+  similarity: Unit | null;       // 若來自語義邊
+  note: string;                  // 人可讀：為何此碎片支持此假設
+}
+
+export interface Hypothesis {
+  id: LocalId;                   // h1
+  label: string;                 // 「高中畢業旅行」
+  direction: string;             // 敘事方向（一句）
+  impliedMood: string;           // 隱含情緒
+  mode: ReasoningMode;           // familiar / adjacent / exploratory
+  evidence: Evidence[];          // ≥1，硬性契約
+  missingFragments: Array<{      // 顯性標記缺口（原則：Missing 要被承認）
+    gap: string;                 // 「這段關係如何結束」
+    impact: Unit;                // 缺此碎片對 confidence 的壓抑
+  }>;
+  confidence: Unit;              // 假設為真的信念
+  weight: Unit;                  // 展示排序權重（見 II-4）
+  novelty: Unit;                 // 對慣性共現的偏離
+  status: 'proposed' | 'accepted' | 'rejected' | 'superseded';
+  supersededBy: LocalId | null;  // 增量推理：被哪條取代（範例二 H3↑）
+}
+```
+
+**JSON Schema（節錄核心，`Evidence` 為 `$defs`）**
+
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fie/Hypothesis.json",
+  "$defs": {
+    "Evidence": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "fragmentId", "role", "contribution", "similarity", "note"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^e[0-9]+$" },
+        "fragmentId": { "type": "string", "format": "uuid" },
+        "role": { "enum": ["theme", "setting", "time", "actor", "turn", "contrast"] },
+        "contribution": { "type": "number", "minimum": 0, "maximum": 1 },
+        "similarity": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+        "note": { "type": "string", "minLength": 1 }
+      }
+    }
+  },
+  "type": "object", "additionalProperties": false,
+  "required": ["id", "label", "direction", "impliedMood", "mode",
+               "evidence", "missingFragments", "confidence", "weight",
+               "novelty", "status", "supersededBy"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^h[0-9]+$" },
+    "label": { "type": "string", "minLength": 1 },
+    "direction": { "type": "string", "minLength": 1 },
+    "impliedMood": { "type": "string" },
+    "mode": { "enum": ["familiar", "adjacent", "exploratory"] },
+    "evidence": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/Evidence" } },
+    "missingFragments": {
+      "type": "array",
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["gap", "impact"],
+        "properties": {
+          "gap": { "type": "string", "minLength": 1 },
+          "impact": { "type": "number", "minimum": 0, "maximum": 1 }
+        }
+      }
+    },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "weight": { "type": "number", "minimum": 0, "maximum": 1 },
+    "novelty": { "type": "number", "minimum": 0, "maximum": 1 },
+    "status": { "enum": ["proposed", "accepted", "rejected", "superseded"] },
+    "supersededBy": { "type": ["string", "null"], "pattern": "^h[0-9]+$" }
+  }
+}
+```
+
+**Example — H3「多年後重返宜蘭」（adjacent 模式）**
+
+```json
+{
+  "id": "h3",
+  "label": "多年後重返宜蘭",
+  "direction": "成年後的敘事者重回宜蘭，物是人非，追憶那個高中的夏天與『我們』。",
+  "impliedMood": "追憶、物是人非",
+  "mode": "adjacent",
+  "evidence": [
+    { "id": "e1", "fragmentId": "…0004_宜蘭", "role": "setting",
+      "contribution": 0.35, "similarity": null,
+      "note": "宜蘭承載外婆家＝最後一次全家到齊，適合重返敘事" },
+    { "id": "e2", "fragmentId": "…0003_我們", "role": "theme",
+      "contribution": 0.30, "similarity": 0.38,
+      "note": "『我們』綁在即將分離的個體上，支撐物是人非" },
+    { "id": "e3", "fragmentId": "…0001_高中", "role": "time",
+      "contribution": 0.20, "similarity": null,
+      "note": "高中界定被追憶的時間點" }
+  ],
+  "missingFragments": [
+    { "gap": "這段關係如何結束（離別的觸發事件）", "impact": 0.25 }
+  ],
+  "confidence": 0.58,
+  "weight": 0.63,
+  "novelty": 0.66,
+  "status": "proposed",
+  "supersededBy": null
+}
+```
+
+---
+
+### II-3.3　Candidate
+
+由某條 `Hypothesis` 展開的**具體敘事候選**（Composition 消費對象；II-1：不得在內部收斂到單一答案）。多 Candidate 之間必須具 `diversityGroup` 差異度標記，避免「換句話說」。持久化在 II-2 `ci_candidates`。
+
+```ts
+export interface Candidate {
+  id: LocalId;                   // c1
+  hypothesisId: LocalId;         // 溯源假設（h3）
+  synopsis: string;              // 候選敘事梗概（結構化，非成品）
+  seedFragmentIds: Uuid[];       // 進 Composition 的碎片組
+  angle: string;                 // 切入角度：喜劇 / 離別 / 追憶…
+  confidence: Unit;              // 繼承 hypothesis 並依可展開性調整
+  weight: Unit;                  // 展示排序（同 II-4 公式）
+  novelty: Unit;
+  diversityGroup: string;        // 差異度分群 key（同 group = 語義雷同）
+  earlyStopped: boolean;         // 是否因低 weight 早停未展開全文
+  status: 'proposed' | 'chosen' | 'rejected';
+}
+```
+
+**JSON Schema**
+
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fie/Candidate.json",
+  "type": "object", "additionalProperties": false,
+  "required": ["id", "hypothesisId", "synopsis", "seedFragmentIds", "angle",
+               "confidence", "weight", "novelty", "diversityGroup",
+               "earlyStopped", "status"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^c[0-9]+$" },
+    "hypothesisId": { "type": "string", "pattern": "^h[0-9]+$" },
+    "synopsis": { "type": "string", "minLength": 1 },
+    "seedFragmentIds": { "type": "array", "minItems": 1,
+                         "items": { "type": "string", "format": "uuid" } },
+    "angle": { "type": "string" },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "weight": { "type": "number", "minimum": 0, "maximum": 1 },
+    "novelty": { "type": "number", "minimum": 0, "maximum": 1 },
+    "diversityGroup": { "type": "string" },
+    "earlyStopped": { "type": "boolean" },
+    "status": { "enum": ["proposed", "chosen", "rejected"] }
+  }
+}
+```
+
+**Example — C3（由 H3 展開）**
+
+```json
+{
+  "id": "c3",
+  "hypothesisId": "h3",
+  "synopsis": "三十歲的敘事者搭火車回宜蘭，站前小吃還在、外婆已不在；夏天的雨讓他想起高中那次全員到齊的旅行，以及後來各自散去的『我們』。",
+  "seedFragmentIds": ["…0004_宜蘭", "…0003_我們", "…0001_高中", "…0002_夏天"],
+  "angle": "離別 / 追憶",
+  "confidence": 0.56,
+  "weight": 0.61,
+  "novelty": 0.66,
+  "diversityGroup": "return-loss",
+  "earlyStopped": false,
+  "status": "proposed"
+}
+```
+
+---
+
+### II-3.4　ReasoningTrace
+
+**完整可重放的推理軌跡**（II-1：Reasoning 必須 Explainable、可被創作者否決）。以六階段 `ReasoningPhase` 為序的 `steps[]` 記錄 Observation→Hypothesis→Evidence→Missing→Candidate→Creator Context Alignment。這是 `ci_agent_runs` 記不到的東西（後者記執行，不記「被否決的故事線」）。存 `ci_reasoning_runs.trace` jsonb。
+
+```ts
+export interface ReasoningStep {
+  id: LocalId;                   // s1
+  phase: ReasoningPhase;
+  summary: string;               // 此步結論（一句人可讀）
+  producedHypothesisIds: LocalId[]; // 本步產出/更新的假設
+  producedCandidateIds: LocalId[];
+  refFragmentIds: Uuid[];        // 本步引用的碎片
+  detail: string;                // 推理細節（可展開檢視）
+}
+
+export interface ReasoningTrace {
+  reasoningRunId: string;        // 對齊 ci_reasoning_runs.id（bigint 轉字串）
+  mode: ReasoningMode;           // 本 run 主導模式
+  steps: ReasoningStep[];        // 六階段，順序即 phase 序
+  hypotheses: Hypothesis[];      // run 內全部假設（含 rejected/superseded）
+  candidates: Candidate[];       // run 內全部候選
+  contextAlignment: {            // 第六階段：與 CreatorContext 對齊結果
+    creatorContextVersion: number;
+    alignedHypothesisIds: LocalId[];   // 因個人語義而升權者
+    conflictHypothesisIds: LocalId[];  // 與創作者意圖衝突、需人工導正
+    notes: string;
+  };
+}
+```
+
+**JSON Schema（引用前述 `$id`，此處以 `$ref` 組合）**
+
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fie/ReasoningTrace.json",
+  "$defs": {
+    "ReasoningStep": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "phase", "summary", "producedHypothesisIds",
+                   "producedCandidateIds", "refFragmentIds", "detail"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^s[0-9]+$" },
+        "phase": { "enum": ["observation","hypothesis","evidence","missing","candidate","alignment"] },
+        "summary": { "type": "string", "minLength": 1 },
+        "producedHypothesisIds": { "type": "array", "items": { "type": "string", "pattern": "^h[0-9]+$" } },
+        "producedCandidateIds": { "type": "array", "items": { "type": "string", "pattern": "^c[0-9]+$" } },
+        "refFragmentIds": { "type": "array", "items": { "type": "string", "format": "uuid" } },
+        "detail": { "type": "string" }
+      }
+    }
+  },
+  "type": "object", "additionalProperties": false,
+  "required": ["reasoningRunId", "mode", "steps", "hypotheses", "candidates", "contextAlignment"],
+  "properties": {
+    "reasoningRunId": { "type": "string" },
+    "mode": { "enum": ["familiar", "adjacent", "exploratory"] },
+    "steps": { "type": "array", "minItems": 6, "items": { "$ref": "#/$defs/ReasoningStep" } },
+    "hypotheses": { "type": "array", "minItems": 1, "items": { "$ref": "fie/Hypothesis.json" } },
+    "candidates": { "type": "array", "items": { "$ref": "fie/Candidate.json" } },
+    "contextAlignment": {
+      "type": "object", "additionalProperties": false,
+      "required": ["creatorContextVersion", "alignedHypothesisIds", "conflictHypothesisIds", "notes"],
+      "properties": {
+        "creatorContextVersion": { "type": "integer", "minimum": 0 },
+        "alignedHypothesisIds": { "type": "array", "items": { "type": "string", "pattern": "^h[0-9]+$" } },
+        "conflictHypothesisIds": { "type": "array", "items": { "type": "string", "pattern": "^h[0-9]+$" } },
+        "notes": { "type": "string" }
+      }
+    }
+  }
+}
+```
+
+**Example（steps 節錄；hypotheses/candidates 引用前述 H3/C3）**
+
+```json
+{
+  "reasoningRunId": "10471",
+  "mode": "adjacent",
+  "steps": [
+    { "id": "s1", "phase": "observation",
+      "summary": "四碎片：高中(time)、夏天(time/turn)、我們(theme)、宜蘭(setting)",
+      "producedHypothesisIds": [], "producedCandidateIds": [],
+      "refFragmentIds": ["…0001_高中","…0002_夏天","…0003_我們","…0004_宜蘭"],
+      "detail": "判定『我們』為主題、高中×夏天界定限定時空、宜蘭為 setting。" },
+    { "id": "s2", "phase": "hypothesis",
+      "summary": "提出 H1 畢業旅行 / H2 暗戀 / H3 多年後重返",
+      "producedHypothesisIds": ["h1","h2","h3"], "producedCandidateIds": [],
+      "refFragmentIds": [], "detail": "三條方向覆蓋 familiar→adjacent。" },
+    { "id": "s3", "phase": "evidence",
+      "summary": "為 H3 綁定宜蘭(setting)/我們(theme)/高中(time) 三證據",
+      "producedHypothesisIds": ["h3"], "producedCandidateIds": [],
+      "refFragmentIds": ["…0004_宜蘭","…0003_我們","…0001_高中"], "detail": "…" },
+    { "id": "s4", "phase": "missing",
+      "summary": "偵測缺口：缺『這段關係如何結束』碎片，壓抑 H3 confidence 0.25",
+      "producedHypothesisIds": ["h3"], "producedCandidateIds": [],
+      "refFragmentIds": [], "detail": "顯性標記而非用最高共現詞補上。" },
+    { "id": "s5", "phase": "candidate",
+      "summary": "由 H3 展開 C3（離別/追憶）",
+      "producedHypothesisIds": [], "producedCandidateIds": ["c3"],
+      "refFragmentIds": [], "detail": "diversityGroup=return-loss，與 C1 畢旅群分離。" },
+    { "id": "s6", "phase": "alignment",
+      "summary": "CreatorContext『宜蘭＝最後一次全家到齊』升 H3 權重",
+      "producedHypothesisIds": ["h3"], "producedCandidateIds": [],
+      "refFragmentIds": ["…0004_宜蘭"], "detail": "無衝突假設。" }
+  ],
+  "hypotheses": [ { "id": "h3", "...": "見 II-3.2 範例" } ],
+  "candidates": [ { "id": "c3", "...": "見 II-3.3 範例" } ],
+  "contextAlignment": {
+    "creatorContextVersion": 3,
+    "alignedHypothesisIds": ["h3"],
+    "conflictHypothesisIds": [],
+    "notes": "個人語義使 adjacent 假設 H3 超越 familiar 假設 H1。"
+  }
+}
+```
+
+---
+
+### II-3.5　CreatorContext
+
+創作者的**個人語義層**，供第六階段 alignment 使用。不新造來源：`traits` 沿用 `ci_creator_dna(traits jsonb, confidence)`；`personalSemantics` 由 `ci_memories`（`scope`/`kind`/`text`/`embedding`/`status='active'`）聚合。由 `src/lib/creator-engine/fie/context.ts` 組裝，可快取於 II-2 `ci_creator_context(user_id, workspace_id, version, snapshot jsonb, built_at)`。
+
+```ts
+export interface CreatorContext {
+  userId: Uuid;                  // ci_creator_dna.user_id
+  workspaceId: Uuid | null;      // null = 跨 workspace 的 personal scope
+  version: number;               // 每次重建 +1，寫入 trace.contextAlignment
+  traits: Record<string, unknown>; // 直接取 ci_creator_dna.traits
+  traitConfidence: Unit;         // ci_creator_dna.confidence
+  personalSemantics: Array<{     // 個人化語義覆寫（宜蘭=喪禮 而非青春）
+    term: string;                // 詞或碎片 title
+    meaning: string;
+    confidence: Unit;
+    sourceMemoryIds: string[];   // ci_memories.id
+  }>;
+  modeBias: Record<ReasoningMode, Unit>; // 此創作者偏好的推理模式權重
+  builtAt: string;
+}
+```
+
+**JSON Schema**
+
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fie/CreatorContext.json",
+  "type": "object", "additionalProperties": false,
+  "required": ["userId", "workspaceId", "version", "traits", "traitConfidence",
+               "personalSemantics", "modeBias", "builtAt"],
+  "properties": {
+    "userId": { "type": "string", "format": "uuid" },
+    "workspaceId": { "type": ["string", "null"], "format": "uuid" },
+    "version": { "type": "integer", "minimum": 0 },
+    "traits": { "type": "object" },
+    "traitConfidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "personalSemantics": {
+      "type": "array",
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["term", "meaning", "confidence", "sourceMemoryIds"],
+        "properties": {
+          "term": { "type": "string", "minLength": 1 },
+          "meaning": { "type": "string", "minLength": 1 },
+          "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+          "sourceMemoryIds": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "modeBias": {
+      "type": "object", "additionalProperties": false,
+      "required": ["familiar", "adjacent", "exploratory"],
+      "properties": {
+        "familiar": { "type": "number", "minimum": 0, "maximum": 1 },
+        "adjacent": { "type": "number", "minimum": 0, "maximum": 1 },
+        "exploratory": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    }
+  }
+}
+```
+
+**Example**
+
+```json
+{
+  "userId": "u-luffy-001",
+  "workspaceId": "0a00-…-ws01",
+  "version": 3,
+  "traits": { "voice": "節制、留白", "recurringThemes": ["離別", "家族", "時間"] },
+  "traitConfidence": 0.64,
+  "personalSemantics": [
+    { "term": "宜蘭", "meaning": "外婆家；最後一次全家到齊的地方",
+      "confidence": 0.72, "sourceMemoryIds": ["mem_9f2…"] },
+    { "term": "夏天", "meaning": "轉折點，不是風景；那個夏天之後就再也沒有夏天",
+      "confidence": 0.55, "sourceMemoryIds": ["mem_3ab…"] }
+  ],
+  "modeBias": { "familiar": 0.3, "adjacent": 0.5, "exploratory": 0.2 },
+  "builtAt": "2026-07-05T03:59:00Z"
+}
+```
+
+---
+
+### II-3.6　ReasoningRun
+
+**頂層持久化列**，一次 reasoning 呼叫的完整記錄。刻意鏡射 `ci_agent_runs`（同 provider/model/tokens/cost/z_charged/status 語義），差別是多了 `mode`、`inputFragmentIds` 與展開的 `trace`。存 II-2 `ci_reasoning_runs`（欄位對映見下表）；成本/計費仍走既有 Cost Manager（`computeZCharge`）並可在 `ci_agent_runs` 留一筆執行紀錄（`agent_type='fie_reason'`）交叉索引。
+
+| TS 欄位 | ci_reasoning_runs 欄位 | 對照 ci_agent_runs |
+|---|---|---|
+| `id` | `id bigserial` | `id` |
+| `workspaceId` | `workspace_id uuid` | 同 |
+| `userId` | `user_id uuid` | 同 |
+| `inputFragmentIds` | `input_fragment_ids uuid[]` | （新增） |
+| `mode` | `mode text` | （新增） |
+| `trace` | `trace jsonb` | ≈ `output` |
+| `provider`/`model` | `provider`/`model` | 同 |
+| `tokensInput`/`tokensOutput` | `tokens_input`/`tokens_output` | 同 |
+| `costUsd` | `cost_usd numeric(12,6)` | 同 |
+| `zCharged` | `z_charged integer` | 同 |
+| `status` | `status text CHECK in (running,succeeded,failed)` | 同 |
+| `createdAt` | `created_at timestamptz` | 同 |
+
+```ts
+export interface ReasoningRun {
+  id: string;                    // bigint 序列化為字串
+  workspaceId: Uuid;
+  userId: Uuid | null;
+  inputFragmentIds: Uuid[];      // 觸發本次推理的碎片組
+  mode: ReasoningMode;           // 請求或路由決定的主導模式
+  trace: ReasoningTrace;         // 完整軌跡（含 hypotheses/candidates）
+  provider: string;              // callAI 回傳
+  model: string;
+  tokensInput: number;
+  tokensOutput: number;
+  costUsd: number;               // 內部分析用
+  zCharged: number;              // 實扣 Z 幣（核心動作可 0）
+  status: 'running' | 'succeeded' | 'failed';
+  error: string | null;
+  createdAt: string;
+}
+```
+
+**JSON Schema**
+
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fie/ReasoningRun.json",
+  "type": "object", "additionalProperties": false,
+  "required": ["id", "workspaceId", "userId", "inputFragmentIds", "mode",
+               "trace", "provider", "model", "tokensInput", "tokensOutput",
+               "costUsd", "zCharged", "status", "error", "createdAt"],
+  "properties": {
+    "id": { "type": "string" },
+    "workspaceId": { "type": "string", "format": "uuid" },
+    "userId": { "type": ["string", "null"], "format": "uuid" },
+    "inputFragmentIds": { "type": "array", "minItems": 1,
+                          "items": { "type": "string", "format": "uuid" } },
+    "mode": { "enum": ["familiar", "adjacent", "exploratory"] },
+    "trace": { "$ref": "fie/ReasoningTrace.json" },
+    "provider": { "type": "string" },
+    "model": { "type": "string" },
+    "tokensInput": { "type": "integer", "minimum": 0 },
+    "tokensOutput": { "type": "integer", "minimum": 0 },
+    "costUsd": { "type": "number", "minimum": 0 },
+    "zCharged": { "type": "integer", "minimum": 0 },
+    "status": { "enum": ["running", "succeeded", "failed"] },
+    "error": { "type": ["string", "null"] },
+    "createdAt": { "type": "string", "format": "date-time" }
+  }
+}
+```
+
+**Example（四碎片一次 adjacent run）**
+
+```json
+{
+  "id": "10471",
+  "workspaceId": "0a00-…-ws01",
+  "userId": "u-luffy-001",
+  "inputFragmentIds": ["…0001_高中","…0002_夏天","…0003_我們","…0004_宜蘭"],
+  "mode": "adjacent",
+  "trace": { "reasoningRunId": "10471", "mode": "adjacent", "...": "見 II-3.4 範例" },
+  "provider": "openai",
+  "model": "gpt-4o-mini",
+  "tokensInput": 1840,
+  "tokensOutput": 1230,
+  "costUsd": 0.0021,
+  "zCharged": 0,
+  "status": "succeeded",
+  "error": null,
+  "createdAt": "2026-07-05T04:00:03Z"
+}
+```
+
+---
+
+### II-3.7　驗收準則（DoD）
+
+1. `src/lib/creator-engine/fie/types.ts` 匯出全部六型別 + `ReasoningMode`/`ReasoningPhase`/`Evidence`/`ReasoningStep`，`tsc --noEmit` 通過。
+2. 六份 JSON Schema 置於 `src/lib/creator-engine/fie/schema/*.json`，`$ref` 互引可被 Ajv（`strict:true`）成功編譯；本節六個 Example 全部 `validate === true`。
+3. 每個 TS interface 欄位與同名 JSON Schema `required`/型別**逐欄一致**（CI 加一支 schema↔type 對照測試）。
+4. 型別欄位對齊 II-2 DDL：`ci_reasoning_runs`、`ci_hypotheses`、`ci_candidates`、`ci_fragment_representations`、`ci_creator_context` 的欄位皆能無損序列化本節型別；`fragmentId` 一律可 join 回 `ci_fragments.id`。
+5. 硬性契約可被 schema 擋下：`Hypothesis.evidence` 空陣列、`Candidate.seedFragmentIds` 空陣列、`confidence`/`weight` 越界（>1）、`ReasoningTrace.steps` 少於六階段——皆驗證失敗。
+6. 四碎片主軸 Example 可作為 II-5 reasoning pipeline 的 golden fixture，重放 `trace` 得到相同 hypotheses/candidates 排序。
+
+---
+
+## II-4　Reasoning Pipeline（各階段演算法與 I/O 契約）
+
+本節把 Part I Chapter 3 的四階段推理，展開成**七個可獨立測試、可獨立降級的 stage**，並給出每個 stage 的輸入型別 → 輸出型別 → 演算法（pseudocode）→ 使用的模型 / RPC / embedding → 錯誤與降級策略。
+
+Pipeline 由一個 orchestrator `runReasoningPipeline()` 串起，逐 stage 把 I/O 寫進 `ci_reasoning_traces`（結構見 II-3）。**每個使用 LLM 的 stage 都是既有 `runAgent()`（`src/lib/creator-engine/ai/agents.ts`）的薄包裝**——直接繼承 resolveModel → callAI → extractJson → zod 驗證（重試一次）→ 寫 `ci_agent_runs` + Cost Manager 的完整行為，FIE 不重造這條路。純程式 stage 不進 `ci_agent_runs`（不耗 token、不收 Z 幣）。
+
+### II-4.0　全域約定
+
+```ts
+// 沿用 ci_ 前綴；新檔 src/lib/creator-engine/reasoning/{pipeline,observe,hypothesize,evidence,missing,rank,align}.ts
+export type ReasoningMode = "familiar" | "adjacent" | "exploratory";
+
+// 新增 AgentType（agents.ts 的 union 補三個；resolveModel() 需能解析）
+//   "observe" | "hypothesize" | "validate"
+// —— 讓三個 LLM stage 各自成為一筆 ci_agent_runs、各自被 Cost Manager 計價。
+
+export interface ReasoningInput {
+  workspaceId: string;
+  userId: string;
+  fragmentIds: string[];      // 使用者選中的 core 碎片（ci_fragments.id, uuid）
+  mode: ReasoningMode;        // 三種推理模式，預設 "adjacent"
+  maxCandidates?: number;     // 預設 5
+}
+
+// stage 之間傳遞的信封；orchestrator 逐段 append trace
+export interface StageEnvelope<T> {
+  stage: string;
+  ok: boolean;
+  degraded: boolean;          // 是否走了降級路徑
+  data: T;
+  meta: { agentRunId?: number; ms: number; note?: string };
+}
+```
+
+**Mode 只改「Hypothesis 擴展時撈哪一段語意鄰域」與生成溫度**，不改後段演算法：
+
+| Mode | 語意鄰域來源 | RPC / 參數 | callAI temperature |
+|---|---|---|---|
+| `familiar` | 最近鄰（穩、可預期） | `ci_related_fragments`，top-k=6 | 0.6 |
+| `adjacent` | 意外配對中間帶（表面遠、深層有張力） | `ci_surprising_pairs`，`min_sim=0.28,max_sim=0.55` | 0.85 |
+| `exploratory` | 更遠的張力帶 + 高溫發散 | `ci_surprising_pairs`，`min_sim=0.15,max_sim=0.40` | 1.0 |
+
+### II-4.1　Stage 0 — Representation（純程式 + embedding）
+
+把 core 碎片與其語意鄰域整理成推理層的統一表徵。**不呼叫 LLM**。
+
+```ts
+export interface FragmentRepresentation {
+  id: string;
+  title: string;
+  content: string;            // 截斷至 4000 字（對齊 embeddings.ts embedInput）
+  tags: string[];
+  mood: string | null;
+  category: string | null;
+  aiSummary: string | null;   // 沿用 ci_fragments.ai_summary，不重算
+  embedding: number[] | null; // ci_fragments.embedding vector(1536)
+  neighborhood: {             // 語意鄰域（由 mode 決定來源）
+    fragmentId: string; title: string; similarity: number;
+    via: "recalled" | "surprising";
+  }[];
+}
+export interface RepresentationResult { core: FragmentRepresentation[]; }
+```
+
+演算法：
+
+```text
+function buildRepresentation(input):
+  admin = createSupabaseAdmin()
+  core = admin.from("ci_fragments")
+              .select("id,title,content,tags,mood,category,ai_summary,embedding")
+              .in("id", input.fragmentIds)              # 單章式過濾、不會踩 1000 筆截斷
+  # 補向量：沿用 embeddings.ts 的既有函式，不另寫
+  await backfillWorkspaceEmbeddings(input.workspaceId)  # best-effort
+  for f in core where f.embedding is null:
+      vec = await embedText(embedInput(f))              # src/lib/ai-embeddings
+      if vec: persist f.embedding = `[${vec}]`
+  # 依 mode 撈鄰域（見 II-4.0 表）
+  for f in core:
+      if input.mode == "familiar":
+          f.neighborhood = relatedFragments(ws, f.id, 6).map(via="recalled")
+      else:
+          # adjacent / exploratory 用 workspace 級意外配對，取含 f 的 pair
+          pairs = surprisingPairs(ws, 24, band(mode))
+          f.neighborhood = pairs.filter(p => p touches f.id).map(via="surprising")
+  return { core }
+```
+
+- **embedding**：`embedText`（`src/lib/ai-embeddings`，需 `ai_api_keys` 有 OpenAI key）。
+- **RPC**：`ci_related_fragments`（familiar）、`ci_surprising_pairs`（adjacent/exploratory），皆透過 `embeddings.ts` 既有 `relatedFragments()` / `surprisingPairs()` 呼叫，band 參數需在 `surprisingPairs()` 開放 `min_sim/max_sim` 傳參（RPC 已支援，只是目前呼叫端寫死）。
+- **降級**：`embedText` 回 `null`（無 OpenAI key）→ `neighborhood = []`、`RepresentationResult.degraded = true`，後段 Hypothesis 只用 core 碎片與 tag 重疊，mode 實質降為 `familiar-lite`。core 碎片查不到 → 直接 400（`fragmentIds` 無效）。
+
+### II-4.2　Stage 1 — Observation（LLM，經 runAgent，agentType `"observe"`）
+
+只標事實層角色，**不做故事假設**（對齊 Part I「刻意保持無立場」）。
+
+```ts
+export type FactRole =
+  | "time" | "place" | "group" | "life_stage"
+  | "emotion" | "person" | "object" | "action" | "motif";
+
+export interface FragmentObservation {
+  fragmentId: string;
+  facts: { role: FactRole; value: string; confidence: number }[]; // confidence 0..1
+}
+export interface ObservationResult { observations: FragmentObservation[]; }
+
+const ObservationSchema = z.object({
+  observations: z.array(z.object({
+    fragmentId: z.string(),
+    facts: z.array(z.object({
+      role: z.enum(["time","place","group","life_stage","emotion","person","object","action","motif"]),
+      value: z.string(),
+      confidence: z.number().min(0).max(1).default(0.6),
+    })).default([]),
+  })).default([]),
+});
+```
+
+演算法：
+
+```text
+system = "你是觀察器。只抽取事實層角色(時間/地點/群體/人生階段/情緒/人物/物件/動作/母題)，
+          禁止推測故事、主題或情節。每個 fact 給 confidence。只回 JSON。"
+user   = fragmentBlock(core)   # 沿用 agents.ts 既有 helper
+return runAgent({ agentType:"observe", schema:ObservationSchema, temperature:0.3, maxTokens:1500, ... })
+```
+
+- **模型**：`resolveModel("observe")` → `callAI`。低溫（0.3）求穩定抽取。
+- **降級**：runAgent 兩次仍解析失敗 → **純程式 fallback**：`facts` 由 `tags`（role=`motif`）、`mood`（role=`emotion`）、`category` 直接映射，全部 `confidence=0.4`，`degraded=true`。不阻斷 pipeline。
+
+### II-4.3　Stage 2 — Hypothesis Generation（LLM，agentType `"hypothesize"`）
+
+發散：寧可多不可漏。輸入 = Observation + core 表徵 + 鄰域。
+
+```ts
+export interface Hypothesis {
+  id: string;                 // 本地 "H1".."Hn"
+  theme: string;
+  rationale: string;
+  seededByFragmentIds: string[];
+  origin: "core" | "recalled" | "surprising";
+}
+export interface HypothesisSet { hypotheses: Hypothesis[]; }
+
+const HypothesisSchema = z.object({
+  hypotheses: z.array(z.object({
+    id: z.string(),
+    theme: z.string(),
+    rationale: z.string(),
+    seededByFragmentIds: z.array(z.string()).default([]),
+    origin: z.enum(["core","recalled","surprising"]).default("core"),
+  })).min(1),
+});
+```
+
+演算法：
+
+```text
+n = mode == "exploratory" ? 8 : mode == "adjacent" ? 6 : 4
+system = "你是假設產生器。根據事實觀察與語意鄰域，發散出彼此有差異的 " + n + " 個主題假設。
+          寧可多不可漏，不要近似重複。每個假設標明是哪些碎片支撐、來源(core/recalled/surprising)。只回 JSON。"
+user   = renderObservations(obs) + "\n\n語意鄰域：\n" + renderNeighborhood(core)
+res = runAgent({ agentType:"hypothesize", schema:HypothesisSchema,
+                 temperature: modeTemp(mode), maxTokens:2000, ... })
+dedupe(res.hypotheses by theme 語意近似)   # 純程式：對 theme 兩兩比對，過近者留 rationale 較長者
+```
+
+- **模型**：`resolveModel("hypothesize")` → `callAI`，溫度由 mode 決定（II-4.0 表）。
+- **鄰域**來自 Stage 0（已含 pgvector 結果），本 stage 不再打 RPC。
+- **降級**：LLM 失敗 → fallback 產生**單一** Hypothesis：`theme = core[0].ai_summary`（或 title），`origin="core"`，`degraded=true`；mode 記為降級，Confidence 上限後段自動被壓低。
+
+### II-4.4　Stage 3 — Evidence Validation（LLM，agentType `"validate"`）
+
+對每個 Hypothesis 逐一問：哪些碎片支持 / 衝突 / 缺失。
+
+```ts
+export type EvidenceStance = "support" | "conflict";
+export interface EvidenceItem {
+  hypothesisId: string;
+  perFragment: { fragmentId: string; stance: EvidenceStance; note: string; weight: number }[]; // weight 0..1
+  missingDescriptions: string[];  // 需要但現有碎片沒提供的
+}
+export interface EvidenceResult { evidence: EvidenceItem[]; }
+
+const EvidenceSchema = z.object({
+  evidence: z.array(z.object({
+    hypothesisId: z.string(),
+    perFragment: z.array(z.object({
+      fragmentId: z.string(),
+      stance: z.enum(["support","conflict"]),
+      note: z.string(),
+      weight: z.number().min(0).max(1).default(0.5),
+    })).default([]),
+    missingDescriptions: z.array(z.string()).default([]),
+  })).default([]),
+});
+```
+
+演算法（一次 call 驗證全部 Hypothesis，避免 N 次 token 爆量）：
+
+```text
+system = "你是證據驗證器。對每個假設，逐一判定每個碎片是 support 還是 conflict 並給 weight，
+          並列出該假設『需要但現有碎片缺少』的關鍵證據。不得引用不存在的碎片 id。只回 JSON。"
+user   = renderHypotheses(H) + "\n\n碎片：\n" + fragmentBlock(core)
+res = runAgent({ agentType:"validate", schema:EvidenceSchema, temperature:0.4, maxTokens:2500, ... })
+# 純程式後處理：丟棄 perFragment 裡不在 core.id 的幻覺 id
+res.evidence[*].perFragment = filter(fragmentId ∈ coreIds)
+```
+
+- **模型**：`resolveModel("validate")` → `callAI`，低溫（0.4）求判斷穩定。
+- **降級**：LLM 失敗 → 純程式退化 evidence：對每個 Hypothesis，凡 `seededByFragmentIds` 內的碎片記 `stance=support, weight=0.5`，`missingDescriptions=[]`，`degraded=true`。此時 Confidence 會偏低但仍可排序。
+
+### II-4.5　Stage 4 — Missing Fragment Detection（純程式 + pgvector）
+
+把 Evidence 的 `missingDescriptions` 落成結構化缺口，並用 pgvector **反查**：這個「缺的東西」其實 workspace 裡已經有近似碎片嗎？
+
+```ts
+export interface MissingFragment {
+  hypothesisId: string;
+  description: string;
+  role: FactRole | "event" | "relation" | "turning_point";
+  existsNearbyFragmentId: string | null;  // 若鄰域已有近似 → 其實不缺、可提示「連上它」
+  existsSimilarity: number | null;
+  critical: boolean;                        // 是否計入 confidence 懲罰
+}
+export interface MissingResult { missing: MissingFragment[]; }
+```
+
+演算法：
+
+```text
+for each ev in evidence:
+  for each desc in ev.missingDescriptions:
+     role = classifyRole(desc)          # 純程式關鍵詞規則 → FactRole|event|relation|turning_point
+     hit = null
+     if embedText available:
+        vec = await embedText(desc)      # 把「缺口描述」向量化
+        near = ci_related_fragments(ws, `[${vec}]`, exclude=coreIds首個, match_count=1)
+        if near[0].similarity >= 0.82:   # 已存在近似碎片 → 不算真缺
+           hit = near[0]
+     missing.push({ hypothesisId: ev.hypothesisId, description: desc, role,
+                    existsNearbyFragmentId: hit?.id ?? null,
+                    existsSimilarity: hit?.similarity ?? null,
+                    critical: hit == null })   # 真的找不到才 critical
+```
+
+- **RPC / embedding**：`embedText` 向量化缺口描述 + `ci_related_fragments` 反查。**這是 pgvector，不是 LLM。**
+- **降級**：`embedText` 為 `null` → 跳過反查，全部 `existsNearby=null, critical=true`（保守：假設都缺），`degraded=true`。
+
+### II-4.6　Stage 5 — Candidate Ranking（純程式，決定性、可解釋）
+
+**完全不呼叫 LLM。** Confidence 是可回放的合成分數，不是玄學。
+
+```ts
+export interface Candidate {
+  hypothesisId: string;
+  theme: string;
+  confidence: number;                    // 0..1
+  weightBreakdown: { coverage: number; conflictRate: number; missingPenalty: number };
+  fragmentWeights: { fragmentId: string; weight: number; role: "axis" | "background" }[];
+  supportingFragmentIds: string[];
+  missing: MissingFragment[];
+}
+export interface RankResult { candidates: Candidate[]; } // 依 confidence 降冪
+```
+
+演算法（對照 Part I 表格語意）：
+
+```text
+const N = core.length
+for each H:
+  ev   = evidence[H.id]
+  S    = Σ weight over ev.perFragment where stance=="support"
+  C    = Σ weight over ev.perFragment where stance=="conflict"
+  crit = count(missing[H.id] where critical)
+  coverage      = clamp01( (distinct supporting fragments) / N )
+  conflictRate  = C / (S + C + 1e-6)
+  missingPenalty= min(0.4, 0.12 * crit)
+  confidence    = clamp01( coverage * (1 - conflictRate) * (1 - missingPenalty) )
+  if H.degraded or evidence.degraded: confidence = min(confidence, 0.5)  # 降級路徑封頂
+  # Fragment Weight：支撐權重最高者為 axis(主軸)、其餘 background
+  fragmentWeights = normalize(support weights); role = top ? "axis" : "background"
+sort candidates by confidence desc; take input.maxCandidates
+```
+
+- **降級**：無（純算術，永不 throw）。這是 pipeline 的穩定底座——即使前面每個 LLM stage 都降級，本 stage 仍輸出可排序的 Candidate。
+
+### II-4.7　Stage 6 — Creator Context Alignment（純程式 + 選用 embedding）
+
+用 `ci_creator_dna` 對 Candidate **reweight**，讓同一組碎片對不同創作者排序不同（Part I「DNA 影響先想到哪些故事」）。**只調權重、絕不捏造 Fragment 事實。**
+
+```ts
+export interface AlignedCandidate extends Candidate {
+  alignedConfidence: number;
+  dnaAffinity: number;   // 0..1，主題與 DNA 母題的契合度
+  dnaBoost: number;      // alignedConfidence - confidence（可正可負）
+  dnaRationale: string;
+}
+export interface ReasoningResult {
+  runId: number;
+  mode: ReasoningMode;
+  status: "ok" | "low_confidence" | "degraded";
+  core: FragmentRepresentation[];
+  candidates: AlignedCandidate[];   // 依 alignedConfidence 降冪
+  trace: { stage: string; degraded: boolean; agentRunId?: number }[];
+}
+```
+
+演算法：
+
+```text
+dna = admin.from("ci_creator_dna").select("traits,confidence").eq("user_id", userId).maybeSingle()
+if not dna or dna.confidence < 0.3:
+   alignedConfidence = confidence for all; dnaBoost = 0; status stays
+else:
+   motifs = dna.traits.imagery ∪ dna.traits.formats     # 沿用 analyzeDNA 產出的欄位
+   if embedText available:
+      dnaVec = centroid( embedText(each motif) )         # 可快取到 ci_creator_dna
+      for cand: dnaAffinity = cosine( embedText(cand.theme), dnaVec )  # pgvector 不需、就地算 cosine
+   else:
+      dnaAffinity = jaccard( tokens(cand.theme), tokens(motifs) )      # 純程式 fallback
+   β = 0.25
+   alignedConfidence = clamp01( confidence * (1 + β * (dnaAffinity - 0.5) * 2 * dna.confidence) )
+sort by alignedConfidence desc
+```
+
+- **embedding**：選用（把 DNA 母題與 candidate theme 向量化算 cosine）；無 key → 退化為 token Jaccard，功能不掛。
+- **無 LLM、無新 RPC。**
+
+### II-4.8　Orchestrator：整體錯誤與 Low-Confidence 降級
+
+```ts
+export async function runReasoningPipeline(input: ReasoningInput): Promise<ReasoningResult>;
+```
+
+```text
+open ci_reasoning_runs(status:"running")            # 對齊 ci_agent_runs 開 run 模式（見 II-3）
+rep  = Stage0 Representation      # 失敗(core 空) → throw 400
+obs  = Stage1 Observation         # 降級不阻斷
+hyp  = Stage2 Hypothesis          # 降級 → 單假設
+evi  = Stage3 Evidence            # 降級 → seed-only evidence
+mis  = Stage4 Missing             # 降級 → 全 critical
+rank = Stage5 Ranking             # 決定性
+al   = Stage6 Alignment
+each stage: append StageEnvelope → ci_reasoning_traces(run_id, stage, input, output)
+
+topConf = max(al.candidates.alignedConfidence)
+if topConf < 0.35:
+   status = "low_confidence"
+   # 不自動往 Generation 送；回傳 Missing Fragment 提示，請創作者補碎片或連上 existsNearbyFragmentId
+elif any stage.degraded: status = "degraded"
+else: status = "ok"
+close ci_reasoning_runs(status:"succeeded", top_confidence, mode)
+```
+
+**Low-Confidence 契約（最重要的降級語意）**：`topConf < 0.35` 時 pipeline **不失敗、不自動生成**，而是回 `status:"low_confidence"` + 每個 candidate 的 `missing`（優先列 `critical && existsNearby==null` 者）。呼叫端（未來 `/api/creator-island/ai/reason`，auth 沿用 `requireCreatorUser` + `requireWorkspaceRole`）據此提示使用者「再補一個關鍵碎片」或「連上已存在的近似碎片」，而非硬吐一篇賭出來的作品——這正是 FIE 相對於既有 `synthesize`/`compose` 的核心差異。
+
+### II-4.9　各 Stage 計算類型 / 依賴一覽
+
+| Stage | 計算類型 | 模型 / RPC / embedding | AgentType（計價） | 降級後果 |
+|---|---|---|---|---|
+| 0 Representation | 純程式 + embedding | `embedText`、`ci_related_fragments` / `ci_surprising_pairs`（經 `embeddings.ts`） | — | 無鄰域，mode→familiar-lite |
+| 1 Observation | **LLM** | `resolveModel("observe")`→`callAI` | `observe` | tag/mood 映射 fallback |
+| 2 Hypothesis | **LLM** | `resolveModel("hypothesize")`→`callAI` | `hypothesize` | 單一假設 |
+| 3 Evidence | **LLM** | `resolveModel("validate")`→`callAI` | `validate` | seed-only 證據 |
+| 4 Missing | 純程式 + pgvector | `embedText` + `ci_related_fragments` | — | 全 critical |
+| 5 Ranking | 純程式（決定性） | — | — | 無（永不失敗） |
+| 6 Alignment | 純程式 + 選用 embedding | `ci_creator_dna` + `embedText`（選用） | — | Jaccard fallback |
+
+三個 LLM stage 各自落一筆 `ci_agent_runs`（沿用 runAgent 的 token/cost/`z_charged` 記錄）；整條 pipeline 另落一筆 `ci_reasoning_runs` + 每 stage 一筆 `ci_reasoning_traces`，即 Part I 要求的可回放 **Reasoning Trace**。
+
+---
+
+## II-5　Confidence 與 Weight 計分規格（Scoring Spec）
+
+本節把 II-4 Reasoning Layer 產出的中間結構（Observation / Hypothesis / Evidence / Missing / Candidate）轉成**可排序的數值**。所有分數皆為**確定性、可重算、可稽核**：給定同一組輸入必得同一分數，且每一項原始成分都寫進 reasoning trace（見 II-4 的 `ci_reasoning_traces` / `ci_candidates`），供事後 calibration。計分**不呼叫額外 LLM**，只吃 Reasoning Layer 已生成的欄位 + 既有語意 RPC（`ci_related_fragments`、`ci_surprising_pairs`）與 `embedText`（`src/lib/ai-embeddings`）算好的向量。
+
+> 設計原則：**LLM 負責「判斷」（stance、strength、contextAlign），本節公式負責「聚合」。** 把主觀分數收斂成可校準的純函式，避免把排序權力交給不可重現的生成。
+
+### II-5.0　符號與範圍
+
+| 符號 | 意義 | 範圍 | 來源 |
+|---|---|---|---|
+| `sim(a,b)` | cosine 相似度 `1 - (a <=> b)`，**負值 clamp 到 0** | [0,1] | pgvector（同 `ci_related_fragments`） |
+| `w(f)` | Fragment Weight（相對當前 hypothesis） | [0,1]，∑=1 | II-5.1 |
+| `Conf(h)` | Hypothesis Confidence | [0,1] | II-5.2 |
+| `Fit(c)` | Creator Fitness | [0,1] | II-5.3 |
+| `mode(c)` | 模式權重 | [0,1.06] | II-5.4 |
+| `Score(c)` | Candidate 最終排序分數 | [0,~0.76] | II-5.5 |
+
+所有 clamp/normalize 都在下方函式內做，禁止把未正規化的 raw 值直接排序。
+
+```ts
+// src/lib/creator-engine/ai/scoring.ts（新增；純函式、無 I/O）
+export type Stance = 'support' | 'contradict';
+
+export interface FragmentScoreInput {
+  fragmentId: string;
+  sim: number;          // sim(fragment, hypothesis) — 已 clamp
+  tagOverlap: number;   // Jaccard(tags(f), keywords(h)) ∈ [0,1]
+  recencyDays: number;  // now - fragment.updated_at，天
+  isSeed: boolean;      // 在 ci_work_fragments 或使用者釘選 → true
+}
+export interface EvidenceInput {
+  fragmentId: string;
+  stance: Stance;
+  strength: number;     // LLM 判定的證據力 ∈ [0,1]
+}
+```
+
+---
+
+### II-5.1　Fragment Weight（碎片相對權重）
+
+衡量「這顆碎片對**當前這條 hypothesis** 有多重要」，非全域重要性。四成分線性組合後對候選集合**和正規化**（softmax 太尖、會吃掉次要碎片，故用 sum-normalize）。
+
+```
+W_raw(f,h) = 0.60·sim(f,h)          // 語意貼合（主項）
+           + 0.20·tagOverlap(f,h)   // 標籤/關鍵字 Jaccard
+           + 0.15·recency(f)        // recency(f) = exp(-Δdays / 90)
+           + 0.05·seedBoost(f)      // isSeed ? 1.0 : 0.5
+
+w(f) = W_raw(f,h) / Σ_{g∈F} W_raw(g,h)      // ∑ w = 1
+```
+
+- `sim` 取自對 hypothesis 文字 `embedText` 後跑 `ci_related_fragments`（或直接對 workspace 碎片向量算 `<=>`）。
+- `recency` 用半衰期 τ=90 天的指數衰減，避免舊碎片被時間完全歸零（仍 >0）。
+- 係數（0.60/0.20/0.15/0.05）存成常數 `FRAGMENT_WEIGHT_COEF`，calibration 時可調但**不可在 request 內動態改**（否則不可重算）。
+
+```ts
+export function fragmentWeights(fs: FragmentScoreInput[]): Map<string, number> {
+  const raw = fs.map(f =>
+    0.60 * clamp01(f.sim) +
+    0.20 * clamp01(f.tagOverlap) +
+    0.15 * Math.exp(-f.recencyDays / 90) +
+    0.05 * (f.isSeed ? 1.0 : 0.5),
+  );
+  const sum = raw.reduce((a, b) => a + b, 0) || 1;
+  return new Map(fs.map((f, i) => [f.fragmentId, raw[i] / sum]));
+}
+```
+
+---
+
+### II-5.2　Hypothesis Confidence（假設信心）
+
+把 Evidence 依 **支持 / 矛盾 / 缺口** 三類聚合。核心：**矛盾比支持更傷（λ>1）**、**缺口壓低整體覆蓋率**、最後過 logistic 收進 [0,1]。
+
+```
+S = Σ_{support}     w(f)·strength        // 支持質量（用碎片權重加權）
+C = Σ_{contradict}  w(f)·strength        // 矛盾質量
+M = Missing 未填的必需證據槽數
+filled = 已填證據槽數
+
+netSupport = S − λ·C                      // λ = 1.5（矛盾懲罰）
+Coverage   = filled / (filled + M)        // ∈ (0,1]
+
+Conf(h) = σ( a·netSupport + b ) · Coverage
+          σ(x)=1/(1+e^-x),  a = 2.0,  b = −0.5
+```
+
+- `b=−0.5` 是**先驗偏誤**：零證據時 `σ(−0.5)·Coverage ≈ 0.38·Coverage`，天然壓低「憑空自信」。
+- `Coverage` 是**乘法**而非加法 → 只要有 Missing，信心一定被打折，逼系統把「缺什麼」講清楚（對齊 II-4 的 Missing 步驟）。
+- `strength` 由 Reasoning Layer 的 zod schema 產出（`evidence[].strength`），不在此處生成。
+
+```ts
+export function hypothesisConfidence(
+  ev: EvidenceInput[], w: Map<string, number>, missing: number,
+): { conf: number; S: number; C: number; coverage: number } {
+  let S = 0, C = 0;
+  for (const e of ev) {
+    const mass = (w.get(e.fragmentId) ?? 0) * clamp01(e.strength);
+    if (e.stance === 'support') S += mass; else C += mass;
+  }
+  const coverage = ev.length / (ev.length + missing); // filled = ev.length
+  const conf = sigmoid(2.0 * (S - 1.5 * C) - 0.5) * coverage;
+  return { conf, S, C, coverage };
+}
+```
+
+---
+
+### II-5.3　Creator Fitness（創作者契合度）
+
+「這個 Candidate 像不像**這位創作者**會做/會愛的東西」，對齊 II-4 的 Creator Context Alignment 步驟。三成分沿用既有 `ci_creator_dna` 與 `ci_memories`：
+
+```
+Fit(c) = 0.50·dnaCosine      // sim(candidate向量, Creator DNA 質心)
+       + 0.30·contextAlign   // Reasoning Layer 產出的對齊分 ∈ [0,1]
+       + 0.20·moodTagFit      // 候選 mood/category 命中創作者主調的比例
+```
+
+- `dnaCosine`：`ci_creator_dna.traits` 摘要 `embedText` 得 DNA 質心，或取該 user 全碎片向量平均；與候選敘述向量算 cosine、clamp 到 [0,1]。
+- `contextAlign`：直接讀 Candidate 物件上 LLM 給的 `creatorAlignment` 分數（[0,1]）。
+- `moodTagFit`：候選的 `mood`+`category` 對比創作者近 N 顆碎片的眾數/直方圖命中率；也可掛 `ci_memories`（scope=user、kind=preference）做加成。
+
+---
+
+### II-5.4　三種推理模式權重（Mode Weight）
+
+模式**不改** Confidence 或 Fitness，只依候選的**新穎度 novelty** 重新賦權，實現 Familiar / Adjacent / Exploratory 的取向差異。
+
+```
+novelty(c) = 1 − maxSim(c, 既有 ci_works / 已定稿碎片)     // 用 ci_surprising_pairs / <=>
+```
+
+| 模式 | ModeWeight 公式（ρ=0.6） | 取向 |
+|---|---|---|
+| **Familiar** | `1 − ρ·novelty` | 懲罰新穎、偏安全靠近既有風格 |
+| **Adjacent** | `1 − ρ·2·|novelty − 0.5|` | 在 novelty≈0.5 達峰，偏「熟悉的變奏」 |
+| **Exploratory** | `0.4 + ρ·novelty` | 獎勵新穎、容忍疏遠 |
+
+補充規則（Exploratory 專屬）：探索模式對「證據不足」較寬容，故排序時對 `Conf` 開根號軟化：`Conf^0.5`（僅 Exploratory）。Familiar/Adjacent 用原始 `Conf`。此指數存於 `MODE_CONF_EXPONENT`，寫進 trace。
+
+---
+
+### II-5.5　Candidate 最終排序分數
+
+```
+Score(c) = Conf(h_c)^{p_mode} · Fit(c) · mode(c)
+
+  p_familiar = 1.0,  p_adjacent = 1.0,  p_exploratory = 0.5
+```
+
+- 三項相乘 → 任一項近 0 都會拉垮總分（**要件式**：信心低、不像創作者、或模式不合，皆不該上榜），符合 Reasoning Layer 對「多 Candidate 擇優」的意圖。
+- 多 Candidate 時對同一 hypothesis 算完排序，取 top-K 回 API（`/api/creator-island/ai/*` 的 output）；**同時回傳 `Score` 分解**（`conf/fit/mode/novelty/S/C/coverage`）進 `ci_agent_runs.output` 與 `ci_candidates`，前台可展開「為什麼排這名」。
+
+```ts
+export function candidateScore(
+  conf: number, fit: number, novelty: number,
+  reasoningMode: 'familiar' | 'adjacent' | 'exploratory',
+): { score: number; mode: number } {
+  const rho = 0.6, n = clamp01(novelty);
+  const mode =
+    reasoningMode === 'familiar'   ? 1 - rho * n :
+    reasoningMode === 'adjacent'   ? 1 - rho * 2 * Math.abs(n - 0.5) :
+                                     0.4 + rho * n;
+  const p = reasoningMode === 'exploratory' ? 0.5 : 1.0;
+  return { score: Math.pow(clamp01(conf), p) * clamp01(fit) * mode, mode };
+}
+```
+
+---
+
+### II-5.6　主軸四碎片走一遍（Worked Example）
+
+Workspace 主題「城市夜行」，hypothesis **h**：「以『城市不眠者』為題，把孤獨與微光編成一組夜行敘事。」四顆主軸碎片跑完全鏈：
+
+**Step 1 — Fragment Weight**
+
+| Fragment | sim | tagOverlap | recencyDays | isSeed | `W_raw` | `w(f)` |
+|---|---|---|---|---|---|---|
+| F1 凌晨四點的便利商店 | 0.82 | 0.50 | ~10 (rec 0.90) | ✓ 1.0 | 0.777 | **0.329** |
+| F2 霓虹反射在濕柏油路 | 0.75 | 0.33 | ~20 (0.80) | 0.5 | 0.661 | **0.280** |
+| F3 夜班司機的獨白 | 0.68 | 0.25 | ~46 (0.60) | 0.5 | 0.573 | **0.243** |
+| F4 一段失眠日記 | 0.40 | 0.20 | ~108 (0.30) | 0.5 | 0.350 | **0.148** |
+
+例：`W_raw(F1)=0.60·0.82+0.20·0.50+0.15·0.90+0.05·1.0 = 0.492+0.100+0.135+0.050 = 0.777`；`Σ W_raw = 2.361` → `w1 = 0.777/2.361 = 0.329`。∑w=1.000 ✓
+
+**Step 2 — Confidence**（F1/F2/F3 支持、F4 矛盾＝調性偏離「微光」；1 個 Missing：缺「收束/結尾 beat」）
+
+```
+S = 0.329·0.85 + 0.280·0.78 + 0.243·0.70 = 0.2797+0.2184+0.1701 = 0.6682
+C = 0.148·0.55 = 0.0814
+netSupport = 0.6682 − 1.5·0.0814 = 0.5461
+σ(2.0·0.5461 − 0.5) = σ(0.5922) = 0.6438
+Coverage = 4 / (4 + 1) = 0.80
+Conf(h) = 0.6438 · 0.80 = 0.515      // 中等信心，含一個未補缺口
+```
+
+**Step 3 — Creator Fitness**（dnaCosine 0.72、contextAlign 0.80、moodTagFit 0.60）
+
+```
+Fit = 0.50·0.72 + 0.30·0.80 + 0.20·0.60 = 0.36+0.24+0.12 = 0.72
+```
+
+**Step 4 — Novelty & 三模式最終分**（候選 vs 既有 ci_works maxSim=0.55 → novelty=0.45，base=`Conf·Fit`）
+
+| 模式 | `p` | `Conf^p` | ModeWeight | **Score** |
+|---|---|---|---|---|
+| Familiar | 1.0 | 0.515 | `1−0.6·0.45 = 0.73` | 0.515·0.72·0.73 = **0.271** |
+| **Adjacent** | 1.0 | 0.515 | `1−0.6·2·|0.45−0.5| = 0.94` | 0.515·0.72·0.94 = **0.349** |
+| Exploratory | 0.5 | 0.718 | `0.4+0.6·0.45 = 0.67` | 0.718·0.72·0.67 = **0.346** |
+
+**結論**：此候選在 **Adjacent（熟悉的變奏）** 模式排最高（0.349），Exploratory 因 `Conf^0.5` 軟化雖近追（0.346），Familiar 最低（0.271）——與 novelty=0.45 落在「熟悉的變奏」甜蜜點一致。系統據此在 Adjacent 模式優先呈現本候選，並在 trace 標註「補上結尾 beat 可把 Coverage 0.80→1.0、Conf 拉到 ~0.64」。
+
+---
+
+### II-5.7　Calibration 提醒（避免過度自信）
+
+分數是**排序訊號、不是機率**。落地時強制以下護欄，全部寫進 `ci_reasoning_traces` 供事後對照：
+
+1. **證據數下限收縮（shrinkage）**：`filled < 3` 時，`Conf ← Conf · (filled/3)`。少量證據不得撐出高信心。
+2. **矛盾地板**：`C > S` 時強制 `Conf ≤ 0.35` 並在 trace 標 `contradicted`，即使 logistic 仍給高值。
+3. **信心天花板**：任何情況 `Conf ≤ 0.92`（永不宣稱「確定」），Missing>0 時額外 `≤ 0.75`。
+4. **溫度/去尖峰**：Fragment Weight 用 sum-normalize（非 softmax），避免單一碎片壟斷；係數在 `FRAGMENT_WEIGHT_COEF` 常數化、變更需版本化。
+5. **可校準性**：`Score` 的每個成分（`S/C/coverage/dnaCosine/contextAlign/novelty/mode/p`）獨立存欄，週期性用實際採用率（creator 是否採納該 candidate）做 reliability diagram；若 `Conf=0.7` 桶的實際採用率只有 ~0.4，則調 `a/b` 或引入 Platt scaling，**改係數不改公式結構**。
+6. **語意化呈現**：UI 不直接顯示裸數字，映射為級距（`<0.35 探索性假設` / `0.35–0.6 有依據` / `0.6–0.8 證據充分` / `>0.8 高度收斂`），並永遠附「缺什麼可以更確定」（即 Missing）——把不確定性當一等公民，而非隱藏。
+
+---
+
+## II-6　Prompt 模板（Reasoning 各階段）
+
+本節為 Reasoning Layer 的五個階段各給出一份**可直接貼進 `agents.ts` 使用**的 system prompt，以及對齊 II-3 型別的 zod schema。所有 prompt 一律遵守既有 `runAgent()` 慣例（見 `src/lib/creator-engine/ai/agents.ts`）：
+
+- **只回傳合法 JSON**（不要 markdown fence、不要前後文），交給 `extractJson` + `schema.safeParse`；解析失敗時 `runAgent` 會自動加尾句「上次輸出無法解析，請只回傳合法 JSON」**重試一次**。
+- 全部繁體中文；欄位名沿用英文（對齊 II-3 型別）。
+- 每個階段是**獨立 agent**（理解層與生成層解耦，見 Part I §「不要把 Reasoning 實作成更長的 Prompt」），需在 `AgentType` union 擴充：`"observe" | "hypothesize" | "validate" | "detect_missing" | "align"`，並在 `router.ts::resolveModel` 與 `cost.ts::computeZCharge`（核心免費、`z_charged=0`）各補一筆。每次呼叫都落一列 `ci_agent_runs`，`input`/`output` 即該階段的 **Reasoning Trace 節點**（對齊 II-5）。
+
+> 溫度依推理模式調整（見各階段）：`Familiar` 0.5、`Adjacent` 0.8、`Exploratory` 1.0。三種模式透過 user 訊息注入的 `mode` 參數控制 Hypothesis 的擴散幅度，不改 prompt 主體。
+
+貫穿本節的 filled 範例 = **主軸四碎片**（沿用 Part I 的 running example）：
+
+```jsonc
+// 輸入碎片（取自 ci_fragments，欄位對齊既有表）
+[
+  { "id": "frag_summer", "title": "夏天",   "content": "蟬聲、汽水、午後雷陣雨。那種黏黏的、走到哪都出汗的夏天。", "mood": "nostalgic" },
+  { "id": "frag_we",     "title": "我們",   "content": "我們那時候總說以後要一起。沒有講清楚是什麼關係，也沒必要。", "mood": "tender" },
+  { "id": "frag_hs",     "title": "高中",   "content": "制服、晚自習、腳踏車。有效期限三年，過了就散。", "mood": "bittersweet" },
+  { "id": "frag_yilan",  "title": "宜蘭",   "content": "外婆家在宜蘭。夏天會去住一陣子，海很近，火車很慢。", "mood": "calm" }
+]
+```
+
+---
+
+### II-6.1　Observation（碎片觀察）
+
+把每顆碎片拆成 II-2 的分層 Representation（surface / semantic-motif / affective / relational-timespace），並抽出跨碎片的共現訊號與整體張力。**只描述、不下結論、不寫故事**。
+
+**System prompt**
+
+```text
+你是「碎片觀察器（Fragment Observer）」，Reasoning Layer 的第一站。
+你的工作是「看清楚」，不是「編故事」——只客觀拆解每顆碎片，抽出可作為推理證據的觀察訊號。嚴禁在這一步就推論主題或敘事方向。
+
+對每顆碎片，抽出：
+- entities：具體的人事物地（名詞）
+- motifs：反覆出現的母題／意象（如「有效期限」「距離」「緩慢」）
+- affect：情感座標，valence(-1~1 負到正) 與 arousal(0~1 平靜到激動)，mood 一詞
+- timeSpace：可辨識的時間與地點（無則留空字串）
+
+再看「跨碎片」：
+- cooccurrence：哪兩顆碎片之間有值得注意的呼應或反差（give fragmentId 對）
+- overallTension：這組碎片整體透出的、尚未言明的張力（一句話）
+
+只回傳 JSON（不要任何多餘文字）：
+{"fragments":[{"fragmentId":"...","entities":["..."],"motifs":["..."],"affect":{"valence":0.0,"arousal":0.0,"mood":"..."},"timeSpace":{"time":"...","place":"..."}}],"cooccurrence":[{"a":"fragmentId","b":"fragmentId","note":"呼應或反差，具體"}],"overallTension":"一句話"}
+全部繁體中文（欄位名保留英文）。
+```
+
+**zod schema**（對齊 II-3 `FragmentObservation` / `ObservationResult`）
+
+```ts
+const AffectSchema = z.object({
+  valence: z.number().min(-1).max(1),
+  arousal: z.number().min(0).max(1),
+  mood: z.string(),
+});
+const FragmentObservationSchema = z.object({
+  fragmentId: z.string(),
+  entities: z.array(z.string()).default([]),
+  motifs: z.array(z.string()).default([]),
+  affect: AffectSchema,
+  timeSpace: z.object({ time: z.string().default(""), place: z.string().default("") }),
+});
+export const ObservationResultSchema = z.object({
+  fragments: z.array(FragmentObservationSchema).min(1),
+  cooccurrence: z.array(z.object({ a: z.string(), b: z.string(), note: z.string() })).default([]),
+  overallTension: z.string(),
+});
+export type ObservationResult = z.infer<typeof ObservationResultSchema>;
+```
+
+呼叫（`temperature: 0.4`，觀察要穩定）：
+
+```ts
+return runAgent({
+  agentType: "observe", workspaceId, userId, schema: ObservationResultSchema,
+  input: { fragmentIds: frags.map(f => f.id) },
+  system: OBSERVE_SYSTEM,
+  user: `碎片：\n\n${fragmentBlock(frags)}`,   // 沿用 agents.ts 既有 fragmentBlock()
+  temperature: 0.4, maxTokens: 1600,
+});
+```
+
+**Filled 範例（output）**
+
+```json
+{
+  "fragments": [
+    { "fragmentId": "frag_summer", "entities": ["蟬", "汽水", "雷陣雨"], "motifs": ["黏膩感", "重複的日常"], "affect": { "valence": 0.5, "arousal": 0.4, "mood": "nostalgic" }, "timeSpace": { "time": "夏天午後", "place": "" } },
+    { "fragmentId": "frag_we", "entities": ["我們"], "motifs": ["未命名的關係", "以後", "留白"], "affect": { "valence": 0.6, "arousal": 0.3, "mood": "tender" }, "timeSpace": { "time": "過去", "place": "" } },
+    { "fragmentId": "frag_hs", "entities": ["制服", "晚自習", "腳踏車"], "motifs": ["有效期限", "必然的散場"], "affect": { "valence": -0.1, "arousal": 0.5, "mood": "bittersweet" }, "timeSpace": { "time": "高中三年", "place": "校園" } },
+    { "fragmentId": "frag_yilan", "entities": ["外婆", "海", "火車"], "motifs": ["緩慢", "距離", "避暑地"], "affect": { "valence": 0.4, "arousal": 0.2, "mood": "calm" }, "timeSpace": { "time": "夏天", "place": "宜蘭" } }
+  ],
+  "cooccurrence": [
+    { "a": "frag_hs", "b": "frag_we", "note": "「有效期限三年」與「沒講清楚是什麼關係」相扣：關係的曖昧正因時間有限而被容許" },
+    { "a": "frag_summer", "b": "frag_yilan", "note": "兩者共享『夏天』，宜蘭把抽象的夏天落地成一個具體地點" }
+  ],
+  "overallTension": "一段有明確期限、卻始終沒被命名的關係——期限本身就是尚未言明的張力來源"
+}
+```
+
+---
+
+### II-6.2　Hypothesis Generation（假設生成）
+
+消費 Observation，產出**多條**帶 Evidence / Confidence / Weight 的 Candidate（原則 4：單一 Candidate 是缺陷）。`mode` 控制擴散：`Familiar` 走最高共現的安穩敘事、`Adjacent` 走 `ci_surprising_pairs` 式的意外連結、`Exploratory` 允許遠距跳躍。**要求彼此有語義差異（diversity），不可換句話說。**
+
+**System prompt**
+
+```text
+你是「假設生成器（Hypothesis Generator）」。基於觀察結果，對「這組碎片在講什麼故事」提出多條彼此不同的合理假設。你只提出可能性，不做裁決——最終由創作者選。
+
+推理模式 = {{mode}}：
+- Familiar：走證據最扎實、最直覺的主線，confidence 高、novelty 低。
+- Adjacent：從碎片間的反差或意外呼應切入，找共現統計不會給的連結，confidence 中、novelty 中高。
+- Exploratory：容許遠距跳躍與反諷解讀（例如「夏天之後再也沒有夏天」），confidence 低、novelty 高。
+
+硬規則：
+1. 產出 3~5 條，彼此的 narrative 必須有實質語義差異（不是換句話說）。
+2. 每條至少引 2 顆碎片當 evidence，claim 要具體指出「這顆碎片支持這個方向的哪一點」，strength 為該證據強度 0~1。
+3. confidence(0~1)=此假設被現有證據支持的程度；weight(0~1)=在缺 Creator Context 時的先驗權重；novelty(0~1)=相對共現直覺的新穎度。
+4. 若某假設明顯缺一塊碎片才成立，填 missingHint 一句（供下游 Missing 偵測參考）。
+
+只回傳 JSON：
+{"hypotheses":[{"id":"h1","title":"...","narrative":"這條敘事一句話","impliedEmotion":"...","mode":"Familiar|Adjacent|Exploratory","evidence":[{"fragmentId":"...","claim":"...","strength":0.0}],"confidence":0.0,"weight":0.0,"novelty":0.0,"missingHint":""}]}
+全部繁體中文（欄位名與 mode 值保留英文）。
+```
+
+**zod schema**（對齊 II-3 `Hypothesis` / `Candidate`）
+
+```ts
+export const ReasoningMode = z.enum(["Familiar", "Adjacent", "Exploratory"]);
+const EvidenceLinkSchema = z.object({
+  fragmentId: z.string(),
+  claim: z.string(),
+  strength: z.number().min(0).max(1),
+});
+export const HypothesisSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  narrative: z.string(),
+  impliedEmotion: z.string(),
+  mode: ReasoningMode,
+  evidence: z.array(EvidenceLinkSchema).min(1),
+  confidence: z.number().min(0).max(1),
+  weight: z.number().min(0).max(1),
+  novelty: z.number().min(0).max(1),
+  missingHint: z.string().default(""),
+});
+export const HypothesisSetSchema = z.object({ hypotheses: z.array(HypothesisSchema).min(1) });
+export type Hypothesis = z.infer<typeof HypothesisSchema>;
+```
+
+呼叫（temperature 由 mode 決定，Adjacent 模式可先跑 `ci_surprising_pairs` 把意外配對塞進 user 訊息）：
+
+```ts
+const TEMP: Record<z.infer<typeof ReasoningMode>, number> = { Familiar: 0.5, Adjacent: 0.8, Exploratory: 1.0 };
+return runAgent({
+  agentType: "hypothesize", workspaceId, userId, schema: HypothesisSetSchema,
+  input: { mode, observationRunId },
+  system: HYPO_SYSTEM.replace("{{mode}}", mode),
+  user: `觀察結果：\n${JSON.stringify(observation)}\n${mode === "Adjacent" ? `\n意外配對候選：${JSON.stringify(surprisingPairs)}` : ""}`,
+  temperature: TEMP[mode], maxTokens: 2400,
+});
+```
+
+**Filled 範例（output，mode=Adjacent）**
+
+```json
+{
+  "hypotheses": [
+    {
+      "id": "h1", "title": "有效期限內的我們",
+      "narrative": "一段明知會在畢業散場、卻始終沒被命名的青春關係",
+      "impliedEmotion": "珍惜與預先的失落",
+      "mode": "Familiar",
+      "evidence": [
+        { "fragmentId": "frag_hs", "claim": "「有效期限三年，過了就散」直接給出關係的時間邊界", "strength": 0.9 },
+        { "fragmentId": "frag_we", "claim": "「沒講清楚是什麼關係」正對應這段關係的未命名狀態", "strength": 0.85 }
+      ],
+      "confidence": 0.82, "weight": 0.7, "novelty": 0.2, "missingHint": "缺一個關係如何結束的具體場景"
+    },
+    {
+      "id": "h2", "title": "宜蘭那年夏天",
+      "narrative": "以外婆家宜蘭為舞台、一段只在暑假成立的短暫相處",
+      "impliedEmotion": "被距離保存的溫柔",
+      "mode": "Adjacent",
+      "evidence": [
+        { "fragmentId": "frag_yilan", "claim": "宜蘭＋海＋慢火車提供關係得以發生的 setting", "strength": 0.8 },
+        { "fragmentId": "frag_summer", "claim": "夏天是這段相處的唯一時間窗", "strength": 0.7 }
+      ],
+      "confidence": 0.6, "weight": 0.5, "novelty": 0.55, "missingHint": "缺一顆把宜蘭與『我們』綁在一起的碎片"
+    },
+    {
+      "id": "h3", "title": "夏天之後就再也沒有夏天",
+      "narrative": "從現在回望——那個夏天結束後，人生的夏天感也一併結束了",
+      "impliedEmotion": "成年後的悼念",
+      "mode": "Exploratory",
+      "evidence": [
+        { "fragmentId": "frag_summer", "claim": "夏天被當成一種一去不返的狀態，而非季節", "strength": 0.6 },
+        { "fragmentId": "frag_hs", "claim": "「過了就散」暗示一個不可逆的分界點", "strength": 0.7 }
+      ],
+      "confidence": 0.45, "weight": 0.4, "novelty": 0.85, "missingHint": "缺一顆『現在』視角的碎片來成立回望結構"
+    }
+  ]
+}
+```
+
+---
+
+### II-6.3　Evidence Validation（證據驗證）
+
+逐條檢查某個 Hypothesis 的每個 evidence link 是否真的被碎片原文支持（防止 LLM 幻想證據），據此**調整 confidence** 並給 accept / revise / reject 裁決。這是 II-3 `Candidate.confidence` 的收斂機制。
+
+**System prompt**
+
+```text
+你是「證據驗證器（Evidence Validator）」。給你一條假設與它引用的碎片原文，你要逐條核對：這個 claim 真的能從碎片原文推出來嗎？還是模型自己腦補的？
+
+對每條 evidence 判定 verdict：
+- supported：碎片原文明確支持這個 claim
+- weak：有點沾邊、但要靠額外推論才成立
+- unsupported：碎片裡根本沒有這個資訊（幻想證據）
+grounding 欄位要「引用碎片原文的字句」來佐證你的判定。
+
+再給整體：
+- adjustedConfidence(0~1)：把 unsupported/weak 扣分後，這條假設應有的 confidence
+- verdict：accept（證據夠）/ revise（部分成立、需補或改）/ reject（核心證據站不住）
+- reason：一句話說明
+
+只回傳 JSON：
+{"hypothesisId":"...","checkedEvidence":[{"fragmentId":"...","claim":"...","verdict":"supported|weak|unsupported","grounding":"引用原文"}],"adjustedConfidence":0.0,"verdict":"accept|revise|reject","reason":"..."}
+全部繁體中文（欄位名與 verdict 值保留英文）。
+```
+
+**zod schema**（對齊 II-3 `EvidenceValidation`）
+
+```ts
+export const EvidenceVerdict = z.enum(["supported", "weak", "unsupported"]);
+export const EvidenceValidationSchema = z.object({
+  hypothesisId: z.string(),
+  checkedEvidence: z.array(z.object({
+    fragmentId: z.string(),
+    claim: z.string(),
+    verdict: EvidenceVerdict,
+    grounding: z.string(),
+  })).min(1),
+  adjustedConfidence: z.number().min(0).max(1),
+  verdict: z.enum(["accept", "revise", "reject"]),
+  reason: z.string(),
+});
+export type EvidenceValidation = z.infer<typeof EvidenceValidationSchema>;
+```
+
+呼叫（`temperature: 0.2`，驗證要嚴格）：
+
+```ts
+return runAgent({
+  agentType: "validate", workspaceId, userId, schema: EvidenceValidationSchema,
+  input: { hypothesisId: h.id },
+  system: VALIDATE_SYSTEM,
+  user: `假設：${JSON.stringify(h)}\n\n引用碎片原文：\n${fragmentBlock(citedFrags)}`,
+  temperature: 0.2, maxTokens: 1200,
+});
+```
+
+**Filled 範例（驗證 h2「宜蘭那年夏天」）**
+
+```json
+{
+  "hypothesisId": "h2",
+  "checkedEvidence": [
+    { "fragmentId": "frag_yilan", "claim": "宜蘭＋海＋慢火車提供關係得以發生的 setting", "verdict": "weak", "grounding": "原文有「海很近，火車很慢」，但只寫『去住一陣子』，沒有任何第二個人在場" },
+    { "fragmentId": "frag_summer", "claim": "夏天是這段相處的唯一時間窗", "verdict": "supported", "grounding": "原文「那種黏黏的…夏天」與宜蘭「夏天會去住一陣子」時間一致" }
+  ],
+  "adjustedConfidence": 0.42,
+  "verdict": "revise",
+  "reason": "宜蘭作為 setting 成立，但『我們在宜蘭』缺乏碎片支持——需補一顆把人物與地點綁定的碎片，否則此假設是推測"
+}
+```
+
+---
+
+### II-6.4　Missing Fragment（缺失碎片偵測）
+
+顯性標記故事結構缺口（衝突 / 收束 / 關係定義 / 動機…），對抗 Part I 指出的「用最高共現詞悄悄補上」。輸出可直接轉成給創作者的補碎片提示。**允許回空陣列**（避免 over-inference 打擾氛圍散文，見 Part I 邊界案例）。
+
+**System prompt**
+
+```text
+你是「缺失偵測器（Missing Fragment Detector）」。給你一組碎片與目前最有力的假設，你要指出「這個故事若要成立，還缺哪一塊碎片」。你要指出的是『不存在的東西』，不是補全已有的東西。
+
+以故事完整性的結構期望來檢查是否缺：
+- conflict（衝突／張力來源）
+- resolution（收束／結束的理由）
+- relation（關係未定義，如「我們」沒說是什麼關係）
+- setting / time（時空未定位）
+- motivation（人物為何這樣做）
+- other
+
+每個缺口給：description（缺什麼）、whyNeeded（為何這個故事需要它）、suggestedPrompt（給創作者的一句補碎片提問）、severity(0~1)、confidence(0~1)。
+completeness(0~1)=就目前碎片，這個故事的結構完整度。
+
+重要：如果碎片本就是氛圍導向、不需要衝突或收束，missing 可以是空陣列——不要為了填而編缺口。
+
+只回傳 JSON：
+{"missing":[{"kind":"conflict|resolution|relation|setting|time|motivation|other","description":"...","whyNeeded":"...","suggestedPrompt":"...","severity":0.0,"confidence":0.0}],"completeness":0.0}
+全部繁體中文（欄位名與 kind 值保留英文）。
+```
+
+**zod schema**（對齊 II-3 `MissingFragment` / `MissingReport`）
+
+```ts
+export const MissingKind = z.enum(["conflict", "resolution", "relation", "setting", "time", "motivation", "other"]);
+export const MissingFragmentSchema = z.object({
+  kind: MissingKind,
+  description: z.string(),
+  whyNeeded: z.string(),
+  suggestedPrompt: z.string(),
+  severity: z.number().min(0).max(1),
+  confidence: z.number().min(0).max(1),
+});
+export const MissingReportSchema = z.object({
+  missing: z.array(MissingFragmentSchema).default([]),   // 允許空
+  completeness: z.number().min(0).max(1),
+});
+export type MissingReport = z.infer<typeof MissingReportSchema>;
+```
+
+呼叫（`temperature: 0.5`）：
+
+```ts
+return runAgent({
+  agentType: "detect_missing", workspaceId, userId, schema: MissingReportSchema,
+  input: { topHypothesisId: top.id },
+  system: MISSING_SYSTEM,
+  user: `碎片：\n${fragmentBlock(frags)}\n\n目前最有力的假設：${JSON.stringify(top)}`,
+  temperature: 0.5, maxTokens: 1200,
+});
+```
+
+**Filled 範例（output，針對 h1）**
+
+```json
+{
+  "missing": [
+    {
+      "kind": "resolution",
+      "description": "缺一個『這段關係如何結束』的具體場景或物件",
+      "whyNeeded": "碎片給了『有效期限』的前提，卻沒給到期那一刻——沒有收束，故事只是氛圍而非敘事",
+      "suggestedPrompt": "畢業那天你們最後一次見面，是什麼場景？有沒有一句沒說出口的話？",
+      "severity": 0.8, "confidence": 0.75
+    },
+    {
+      "kind": "relation",
+      "description": "「我們」的關係性質始終未定義（朋友／曖昧／戀人）",
+      "whyNeeded": "關係定位會決定整篇的情感強度與讀者代入方式",
+      "suggestedPrompt": "如果要用一個動作而不是名詞來定義『我們』，那個動作是什麼？",
+      "severity": 0.5, "confidence": 0.6
+    }
+  ],
+  "completeness": 0.55
+}
+```
+
+---
+
+### II-6.5　Creator Context Alignment（創作者上下文對齊）
+
+拿 Hypothesis 對照該創作者的 `ci_creator_dna.traits` 與注入的 `ci_memories`，算對齊分數並**調整 weight**（Part I 原則 5：AI 提案、創作者裁決；此階段只調權重，不覆寫 confidence）。標記與創作者風格衝突之處，供 UI 呈現「這條比較像你 / 這條偏離你」。DNA 由既有 `analyzeDNA()` 產生。
+
+**System prompt**
+
+```text
+你是「創作者對齊器（Creator Context Aligner）」。給你一條假設，以及這位創作者的創作 DNA 與過往偏好記憶。判斷這條假設有多「像這位創作者會寫的東西」。
+
+你不改假設的證據強度（confidence），你只評估風格契合度，用來調整它的呈現權重（weight）：
+- alignmentScore(0~1)：整體契合度
+- matchedTraits：假設命中了 DNA 的哪些特質（trait + 對應到假設的哪一點）
+- conflicts：假設與創作者風格衝突之處（trait + tension 說明）；沒有就空陣列
+- weightAdjustment(-0.5~0.5)：對這條假設 weight 的加減量（契合就加、衝突就減）
+- rationale：一句話總結
+
+注意：契合不代表更好。若一條 novelty 高但偏離 DNA 的假設，仍要如實給低 alignment、由創作者自己決定要不要挑戰自己。
+
+只回傳 JSON：
+{"hypothesisId":"...","alignmentScore":0.0,"matchedTraits":[{"trait":"...","evidence":"..."}],"conflicts":[{"trait":"...","tension":"..."}],"weightAdjustment":0.0,"rationale":"..."}
+全部繁體中文（欄位名保留英文）。
+```
+
+**zod schema**（對齊 II-3 `ContextAlignment`）
+
+```ts
+export const ContextAlignmentSchema = z.object({
+  hypothesisId: z.string(),
+  alignmentScore: z.number().min(0).max(1),
+  matchedTraits: z.array(z.object({ trait: z.string(), evidence: z.string() })).default([]),
+  conflicts: z.array(z.object({ trait: z.string(), tension: z.string() })).default([]),
+  weightAdjustment: z.number().min(-0.5).max(0.5),
+  rationale: z.string(),
+});
+export type ContextAlignment = z.infer<typeof ContextAlignmentSchema>;
+```
+
+呼叫（DNA 走 `ci_creator_dna`；記憶由 `runAgent` 內建 `getInjectableMemory` 自動注入 system，這裡另把 DNA 塞進 user）：
+
+```ts
+const { data: dna } = await admin.from("ci_creator_dna").select("traits,confidence").eq("user_id", userId).maybeSingle();
+return runAgent({
+  agentType: "align", workspaceId, userId, schema: ContextAlignmentSchema,
+  input: { hypothesisId: h.id },
+  system: ALIGN_SYSTEM,
+  user: `假設：${JSON.stringify(h)}\n\n創作者 DNA：${JSON.stringify(dna?.traits ?? {})}（信心 ${dna?.confidence ?? 0}）`,
+  temperature: 0.4, maxTokens: 900,
+});
+```
+
+**Filled 範例**（DNA = `analyzeDNA` 產出：`tone`「內斂、留白」、`imagery`「夏天、火車、海」、`strengths`「氛圍營造」、`weaknesses`「戲劇衝突」）
+
+```json
+{
+  "hypothesisId": "h1",
+  "alignmentScore": 0.86,
+  "matchedTraits": [
+    { "trait": "內斂、留白的語氣", "evidence": "「未命名的關係」正合創作者不把話說死的風格" },
+    { "trait": "常見意象：夏天／火車／海", "evidence": "假設的青春夏日場景與 DNA 意象庫高度重疊" }
+  ],
+  "conflicts": [
+    { "trait": "弱項：戲劇衝突", "tension": "此假設需要一個明確的散場場景收束，正踩在創作者較不擅長的衝突處理上" }
+  ],
+  "weightAdjustment": 0.18,
+  "rationale": "語氣與意象都很像這位創作者，適合當主打；唯收束需在編織階段特別扶一把"
+}
+```
+
+> **下游串接**：五階段輸出（Observation → Hypotheses → 各 Hypothesis 的 Validation + Alignment + 全局 Missing）由 II-4 的 Orchestrator 合成 `finalWeight = clamp(weight + weightAdjustment) × adjustedConfidence`，排序後的 Candidate 陣列與整條 Reasoning Trace（每階段 `ci_agent_runs.id` 串成 lineage）交給既有 `compose()` 消費**結構**而非散文，完成理解層與生成層的解耦。
+
+---
+
+## II-7　API 規格（Endpoints）
+
+本節定義 FIE Reasoning Layer 對外的 HTTP 介面。所有端點置於 **`/api/creator-island/reasoning/*`** 命名空間下，與既有 `/api/creator-island/ai/*`（`synthesize`/`evolve`/`compose`/`advise`/`transcreate`）平行。實作沿用既有 route 骨架（見 `src/app/api/creator-island/ai/compose/route.ts`）——**不重造 auth、不重造 workspace 權限、不重造 Cost Manager**。
+
+### II-7.0　共用約定（Conventions）
+
+**Route 檔頭（每個 route.ts 一律相同）**
+
+```ts
+import { NextRequest, NextResponse } from "next/server";
+import { requireCreatorUser, requireWorkspaceRole } from "@/lib/creator-engine/api";
+import { AgentError } from "@/lib/creator-engine/ai/agents";
+
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+export const maxDuration = 60; // reason 為多輪推理，沿用 60s 上限；必要時 II-8 拆非同步
+```
+
+**Auth gate（沿用，不新增）**
+
+```ts
+const u = await requireCreatorUser();            // → { userId } | NextResponse(401 未登入 / 404 功能關閉)
+if (u instanceof NextResponse) return u;
+const gate = await requireWorkspaceRole(workspaceId, u.userId, "contributor");
+if (gate instanceof NextResponse) return gate;   // → WorkspaceRole | NextResponse(403 權限不足)
+```
+
+- 產生型端點（`POST /reason`、`POST /represent`、`select`）要求角色 **`contributor`**（與 `compose` 一致）。
+- 唯讀端點（`GET /reason/{id}`、`GET /reason/{id}/trace`、`GET /creator-context`）要求角色 **`viewer`**。
+
+**統一錯誤格式**　所有錯誤回傳 `{ error: string, message: string }`，`error` 為機器可讀 slug、`message` 為繁中人話（沿用既有慣例）。
+
+| HTTP | error slug | 觸發條件 | 來源 |
+|------|-----------|---------|------|
+| 401 | `unauthorized` | 未登入 | `requireCreatorUser` |
+| 404 | `feature_off` | 創作者島嶼未開放 | `requireCreatorUser` |
+| 403 | `forbidden` | workspace 角色不足 | `requireWorkspaceRole` |
+| 402 | `ai` | Z 幣不足（`AgentError.status=402`） | `runReasoning` → Cost Manager `chargeWorkspace` |
+| 422 | `validation` | zod 解析失敗 / 碎片不足 / run 狀態不符 | route body 驗證 |
+| 404 | `not_found` | runId / candidateId / fragmentId 不存在或不屬此 workspace | route |
+| 502 | `ai` | AI 回傳無法解析、上游失敗（`AgentError.status=502`） | `runReasoning` |
+| 409 | `conflict` | run 尚在 `running` / 已 `selected` 卻重複 select | route |
+
+**zod 驗證樣板**（取代手寫 `String(body.x ?? "")`，回 422）
+
+```ts
+const parsed = ReasonRequest.safeParse(await req.json().catch(() => ({})));
+if (!parsed.success)
+  return NextResponse.json(
+    { error: "validation", message: parsed.error.issues[0]?.message ?? "參數錯誤" },
+    { status: 422 },
+  );
+```
+
+**AgentError → HTTP 對映**（沿用 `compose` route 的 catch）
+
+```ts
+} catch (e) {
+  const st = e instanceof AgentError ? e.status : 500; // 402 / 502 直接透傳
+  return NextResponse.json({ error: "ai", message: (e as Error).message }, { status: st });
+}
+```
+
+> 本節假設 Reasoning Layer 服務層已依 II-5 建立 `src/lib/creator-engine/reasoning/`（`runReasoning`、`getReasoningRun`、`getTrace`、`selectCandidate`、`upsertRepresentation`、`getCreatorContext`），且各服務內部照 `runAgent()` 既有流程寫 `ci_agent_runs` + `computeZCharge`/`chargeWorkspace`。Endpoint 只做「驗證 → gate → 呼叫服務 → 包 JSON」。
+
+---
+
+### II-7.1　`POST /api/creator-island/reasoning/reason`
+
+碎片 → 建立一次 ReasoningRun，跑 Observation→Hypothesis→Evidence→Missing→Candidate→Creator Context Alignment，回多個 Candidate。
+
+**Auth**　`requireCreatorUser` + `requireWorkspaceRole(contributor)`
+
+**Request（zod）**
+
+```ts
+import { z } from "zod";
+
+export const ReasonRequest = z.object({
+  workspaceId: z.string().uuid(),
+  fragmentIds: z.array(z.string().uuid()).min(1).max(12), // ≥1；synthesize 需≥2，reason 允許單碎片探索
+  mode: z.enum(["familiar", "adjacent", "exploratory"]).default("adjacent"),
+  maxCandidates: z.number().int().min(1).max(6).default(3),
+  goal: z.string().max(500).optional(),           // 選填：創作者當下意圖，餵進 Alignment 步驟
+  seedContext: z.string().max(2000).optional(),   // 選填：額外語境
+});
+export type ReasonRequest = z.infer<typeof ReasonRequest>;
+```
+
+**Response `201`**
+
+```jsonc
+{
+  "run": {
+    "id": "b1f2…",                    // ci_reasoning_runs.id
+    "workspaceId": "…",
+    "mode": "adjacent",
+    "status": "completed",           // running | completed | failed | selected
+    "fragmentIds": ["…"],
+    "agentRunId": "…",               // 對應 ci_agent_runs.id（成本/稽核）
+    "createdAt": "2026-07-05T…Z"
+  },
+  "candidates": [
+    {
+      "id": "c-01",                  // ci_reasoning_candidates.id
+      "title": "把兩則筆記接成一篇對照論述",
+      "summary": "…",
+      "reasoningPath": "familiar",   // 該候選採用的推理模式
+      "confidence": 0.78,            // 0–1，模型自評 × evidence 覆蓋率
+      "weight": 0.42,                // 正規化後排序權重（Σweight=1）
+      "supportingFragmentIds": ["…"],
+      "missingInfo": ["缺一個真實案例佐證第 3 段"],
+      "alignment": { "score": 0.81, "dnaMatch": ["對照式敘事", "務實語氣"] }
+    }
+    // … 依 weight 由高到低
+  ],
+  "traceId": "b1f2…"                 // = run.id，供 GET /trace 查完整推理軌跡
+}
+```
+
+**錯誤**　422（碎片為空／>12／mode 非法）、404 `not_found`（`getFragmentsByIds(workspaceId, ids)` 回空——沿用 `compose` 的 `frags.length` 檢查）、402（Z 幣不足）、502（AI 解析失敗）。
+
+**Route 實作骨架**
+
+```ts
+export async function POST(req: NextRequest) {
+  const u = await requireCreatorUser();
+  if (u instanceof NextResponse) return u;
+  const parsed = ReasonRequest.safeParse(await req.json().catch(() => ({})));
+  if (!parsed.success)
+    return NextResponse.json({ error: "validation", message: parsed.error.issues[0]?.message ?? "參數錯誤" }, { status: 422 });
+  const { workspaceId, fragmentIds, mode, maxCandidates, goal, seedContext } = parsed.data;
+
+  const gate = await requireWorkspaceRole(workspaceId, u.userId, "contributor");
+  if (gate instanceof NextResponse) return gate;
+
+  const frags = await getFragmentsByIds(workspaceId, fragmentIds); // 既有 fragments.ts
+  if (!frags.length) return NextResponse.json({ error: "not_found", message: "碎片不存在" }, { status: 404 });
+
+  try {
+    const { run, candidates } = await runReasoning({          // reasoning/reason.ts（內部走 runAgent → ci_agent_runs + computeZCharge）
+      workspaceId, userId: u.userId, fragments: frags, mode, maxCandidates, goal, seedContext,
+    });
+    return NextResponse.json({ run, candidates, traceId: run.id }, { status: 201 });
+  } catch (e) {
+    const st = e instanceof AgentError ? e.status : 500;
+    return NextResponse.json({ error: "ai", message: (e as Error).message }, { status: st });
+  }
+}
+```
+
+**fetch 範例**
+
+```ts
+const res = await fetch("/api/creator-island/reasoning/reason", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    workspaceId, fragmentIds: [f1, f2], mode: "adjacent", maxCandidates: 3, goal: "想做一篇對照散文",
+  }),
+});
+const { run, candidates } = await res.json();
+```
+
+---
+
+### II-7.2　`GET /api/creator-island/reasoning/reason/{runId}`
+
+取單一 run 的完整狀態 + candidates（+ 精簡 trace 摘要）。前端輪詢 run 狀態或重新載入用。
+
+**Auth**　`requireCreatorUser` + `requireWorkspaceRole(viewer)`（workspaceId 由 run 反查）
+
+**Path param**　`runId: uuid`
+
+**Response `200`**
+
+```jsonc
+{
+  "run": { "id": "…", "workspaceId": "…", "mode": "adjacent", "status": "completed",
+           "fragmentIds": ["…"], "selectedCandidateId": null, "agentRunId": "…", "createdAt": "…" },
+  "candidates": [ /* 同 II-7.1，含 confidence/weight/alignment */ ],
+  "trace": { "steps": 6, "traceId": "…" }   // 摘要；完整用 /trace
+}
+```
+
+**錯誤**　404 `not_found`（run 不存在）、403（run 所屬 workspace 無 viewer 權限）。
+
+```ts
+export async function GET(_req: NextRequest, { params }: { params: Promise<{ runId: string }> }) {
+  const u = await requireCreatorUser();
+  if (u instanceof NextResponse) return u;
+  const { runId } = await params;
+  const run = await getReasoningRun(runId);                       // 反查含 workspace_id
+  if (!run) return NextResponse.json({ error: "not_found", message: "推理紀錄不存在" }, { status: 404 });
+  const gate = await requireWorkspaceRole(run.workspaceId, u.userId, "viewer");
+  if (gate instanceof NextResponse) return gate;
+  return NextResponse.json({ run, candidates: run.candidates, trace: { steps: run.traceSteps, traceId: run.id } });
+}
+```
+
+```bash
+curl -s "$BASE/api/creator-island/reasoning/reason/$RUN_ID" -H "Cookie: $SB_COOKIE"
+```
+
+---
+
+### II-7.3　`GET /api/creator-island/reasoning/reason/{runId}/trace`
+
+取完整 Reasoning Trace（六步驟逐條）。供「解釋為什麼推薦這個 candidate」的可觀測性 UI。
+
+**Auth**　`requireCreatorUser` + `requireWorkspaceRole(viewer)`
+
+**Response `200`**（對映 II-4 的 `ci_reasoning_trace` 資料表）
+
+```jsonc
+{
+  "runId": "…",
+  "mode": "adjacent",
+  "steps": [
+    { "seq": 1, "phase": "observation",  "content": "兩碎片皆談『失敗後的復盤』但語氣相反", "refs": { "fragmentIds": ["…"] } },
+    { "seq": 2, "phase": "hypothesis",   "content": "可用對照結構凸顯情緒落差", "confidence": 0.7 },
+    { "seq": 3, "phase": "evidence",     "content": "碎片A第2句與碎片B結尾形成呼應", "refs": { "fragmentIds": ["…"] } },
+    { "seq": 4, "phase": "missing",      "content": "缺一個中性視角收束" },
+    { "seq": 5, "phase": "candidate",    "content": "候選①對照散文", "refs": { "candidateId": "c-01" } },
+    { "seq": 6, "phase": "alignment",    "content": "符合 DNA『對照式敘事』", "refs": { "dnaTraits": ["對照式敘事"] }, "score": 0.81 }
+  ]
+}
+```
+
+- `phase` enum：`observation | hypothesis | evidence | missing | candidate | alignment`。
+- `refs` 為 jsonb，指回 `ci_fragments` / `ci_reasoning_candidates` / `ci_creator_dna` traits。
+
+**錯誤**　404 `not_found`、403。
+
+---
+
+### II-7.4　`POST /api/creator-island/reasoning/reason/{runId}/candidate/{candidateId}/select`
+
+創作者選定一個 candidate，把 run 標記為 `selected`，並**直接串接既有 `compose` agent** 產生作品草稿（避免要前端再打一次 `/api/creator-island/ai/compose`）。
+
+**Auth**　`requireCreatorUser` + `requireWorkspaceRole(contributor)`
+
+**Request（zod）**
+
+```ts
+export const SelectRequest = z.object({
+  compose: z.boolean().default(true),         // true→選定後立即呼叫 compose；false→只標記 selected
+  workType: z.string().max(40).default("article"), // 透傳給既有 compose(workspaceId, userId, workType, frags)
+});
+```
+
+**行為**
+
+1. 校驗 run 存在、屬本 workspace、`status ∈ {completed}`（否則 409 `conflict`）；candidate 屬此 run（否則 404）。
+2. `selectCandidate(runId, candidateId)` → 更新 `ci_reasoning_runs.status='selected'`、`selected_candidate_id`，並在 `ci_asset_relations` 寫一筆 `relation_type='reasoned_from'`（from=將產生的 work、to=來源碎片；lineage 沿用既有 `lineage.ts`）。
+3. 若 `compose=true`：以 candidate 的 `supportingFragmentIds` 取碎片，呼叫既有 `compose(workspaceId, u.userId, workType, frags)`，把 candidate 的 `title`/`summary`/`reasoningPath` 併入 compose 的 input context。
+
+**Response `200`**
+
+```jsonc
+{
+  "run": { "id": "…", "status": "selected", "selectedCandidateId": "c-01" },
+  "composed": {                       // compose=false 時為 null
+    "result": { /* 既有 compose agent 的 output（work draft） */ },
+    "agentRunId": "…"                 // 既有 compose 寫入的 ci_agent_runs.id
+  }
+}
+```
+
+**錯誤**　404 `not_found`（run/candidate）、409 `conflict`（run 仍 `running` 或已 `selected`）、402（compose 扣 Z 幣不足）、502（compose AI 失敗）。
+
+**Route 骨架（串接 compose）**
+
+```ts
+import { compose, AgentError } from "@/lib/creator-engine/ai/agents";
+
+export async function POST(req: NextRequest, { params }: { params: Promise<{ runId: string; candidateId: string }> }) {
+  const u = await requireCreatorUser();
+  if (u instanceof NextResponse) return u;
+  const { runId, candidateId } = await params;
+  const parsed = SelectRequest.safeParse(await req.json().catch(() => ({})));
+  if (!parsed.success)
+    return NextResponse.json({ error: "validation", message: "參數錯誤" }, { status: 422 });
+
+  const run = await getReasoningRun(runId);
+  if (!run) return NextResponse.json({ error: "not_found", message: "推理紀錄不存在" }, { status: 404 });
+  const gate = await requireWorkspaceRole(run.workspaceId, u.userId, "contributor");
+  if (gate instanceof NextResponse) return gate;
+  const cand = run.candidates.find((c) => c.id === candidateId);
+  if (!cand) return NextResponse.json({ error: "not_found", message: "候選不存在" }, { status: 404 });
+  if (run.status === "running") return NextResponse.json({ error: "conflict", message: "推理尚未完成" }, { status: 409 });
+
+  const updated = await selectCandidate(runId, candidateId); // 標記 selected + 寫 ci_asset_relations(reasoned_from)
+
+  if (!parsed.data.compose) return NextResponse.json({ run: updated, composed: null });
+
+  const frags = await getFragmentsByIds(run.workspaceId, cand.supportingFragmentIds);
+  if (!frags.length) return NextResponse.json({ error: "validation", message: "候選碎片不足" }, { status: 422 });
+  try {
+    const { result, agentRunId } = await compose(run.workspaceId, u.userId, parsed.data.workType, frags);
+    return NextResponse.json({ run: updated, composed: { result, agentRunId } });
+  } catch (e) {
+    const st = e instanceof AgentError ? e.status : 500;
+    return NextResponse.json({ error: "ai", message: (e as Error).message }, { status: st });
+  }
+}
+```
+
+> **串接說明**：本端點即「Reasoning → Compose」橋。若客戶端想自行控制 compose 時機，傳 `compose:false`，之後照舊打 `POST /api/creator-island/ai/compose`（body `{ workspaceId, fragmentIds, workType }`），兩條路徑產出的 work 都走同一個 `ci_agent_runs` + Cost Manager，稽核一致。
+
+---
+
+### II-7.5　`POST /api/creator-island/reasoning/represent`
+
+為既有碎片補齊 Representation 分層（II-2 的 surface/semantic/structural 層），寫入/更新 `ci_fragment_representations`，並確保 `ci_fragments.embedding` 已生成（缺則呼叫既有 `embedText`）。冪等 upsert。
+
+**Auth**　`requireCreatorUser` + `requireWorkspaceRole(contributor)`
+
+**Request（zod）**
+
+```ts
+export const RepresentRequest = z.object({
+  workspaceId: z.string().uuid(),
+  fragmentIds: z.array(z.string().uuid()).min(1).max(50),
+  layers: z.array(z.enum(["surface", "semantic", "structural"])).default(["semantic", "structural"]),
+  force: z.boolean().default(false),   // true→即使已有 representation 也重算
+});
+```
+
+**Response `200`**
+
+```jsonc
+{
+  "processed": 5,
+  "results": [
+    { "fragmentId": "…", "embedded": true, "layers": ["semantic","structural"], "skipped": false },
+    { "fragmentId": "…", "embedded": false, "layers": ["semantic","structural"], "skipped": true, "reason": "已存在（force=false）" }
+  ]
+}
+```
+
+- `embedded:true` 表本次呼叫了 `embedText`（需 `ai_api_keys` 有 OpenAI key；缺 key → 502 `ai`，訊息「尚未設定 OpenAI 金鑰」，沿用既有 embedding 錯誤）。
+- 沿用既有 `src/lib/creator-engine/embeddings.ts` 與 `src/lib/ai-embeddings` 的 `embedText`；本端點只是批次驅動 + 寫 `ci_fragment_representations`。
+
+**錯誤**　422、404 `not_found`（碎片不存在）、502（embedding 上游/金鑰失敗）。
+
+```bash
+curl -s -X POST "$BASE/api/creator-island/reasoning/represent" \
+  -H "Content-Type: application/json" -H "Cookie: $SB_COOKIE" \
+  -d '{"workspaceId":"'$WS'","fragmentIds":["'$F1'","'$F2'"],"layers":["semantic","structural"]}'
+```
+
+---
+
+### II-7.6　`GET /api/creator-island/reasoning/creator-context`
+
+回傳 Creator Context Alignment 步驟使用的創作者語境快照：DNA traits + 記憶摘要 + 近期主題。供前端顯示「本次推理如何對齊你」以及供 `runReasoning` 內部復用（同一組裝函式）。
+
+**Auth**　`requireCreatorUser` + `requireWorkspaceRole(viewer)`
+
+**Query params**　`workspaceId=uuid`（必填，決定 workspace scope 記憶）
+
+**Response `200`**（組裝自既有 `ci_creator_dna` + `ci_memories`）
+
+```jsonc
+{
+  "userId": "…",
+  "workspaceId": "…",
+  "dna": {                            // 直接讀 ci_creator_dna
+    "traits": { "voice": "務實", "structure": ["對照","清單"], "themes": ["復盤","學習"] },
+    "confidence": 0.64
+  },
+  "memories": [                       // ci_memories where status='active'，scope∈{user,workspace}
+    { "id": "…", "kind": "preference", "text": "偏好短句、少形容詞", "scope": "user" }
+  ],
+  "recentThemes": ["失敗復盤", "學習方法"],  // 由近期 ci_fragments.tags / ai_summary 聚合
+  "generatedAt": "2026-07-05T…Z"
+}
+```
+
+**錯誤**　422（缺 `workspaceId`）、403。**若 DNA 尚未分析**（無 `ci_creator_dna` 列）→ 仍回 `200`、`dna:null`、附 `hint:"尚未分析創作 DNA，可先跑 /api/creator-island/growth/dna"`（不擋流程，`runReasoning` 於 DNA 缺席時降級為純語意對齊）。
+
+```ts
+export async function GET(req: NextRequest) {
+  const u = await requireCreatorUser();
+  if (u instanceof NextResponse) return u;
+  const workspaceId = new URL(req.url).searchParams.get("workspaceId") ?? "";
+  if (!workspaceId) return NextResponse.json({ error: "validation", message: "缺 workspaceId" }, { status: 422 });
+  const gate = await requireWorkspaceRole(workspaceId, u.userId, "viewer");
+  if (gate instanceof NextResponse) return gate;
+  const ctx = await getCreatorContext(u.userId, workspaceId); // reasoning/context.ts：讀 ci_creator_dna + ci_memories(active)
+  return NextResponse.json(ctx);
+}
+```
+
+---
+
+### II-7.7　端點總表
+
+| Method | Path | 最低角色 | 主要服務（`src/lib/creator-engine/reasoning/`） | 主要錯誤碼 |
+|--------|------|---------|-----------------------------------|-----------|
+| POST | `/reasoning/reason` | contributor | `runReasoning` | 401/403/422/402/502 |
+| GET  | `/reasoning/reason/{runId}` | viewer | `getReasoningRun` | 401/403/404 |
+| GET  | `/reasoning/reason/{runId}/trace` | viewer | `getTrace` | 401/403/404 |
+| POST | `/reasoning/reason/{runId}/candidate/{candidateId}/select` | contributor | `selectCandidate` → `compose`（既有） | 401/403/404/409/402/502 |
+| POST | `/reasoning/represent` | contributor | `upsertRepresentation` + `embedText`（既有） | 401/403/422/404/502 |
+| GET  | `/reasoning/creator-context` | viewer | `getCreatorContext` | 401/403/422 |
+
+**與既有 AI 端點的關係**：`/reasoning/reason` 是 `/ai/synthesize`｜`/ai/compose` 的**前置決策層**——前者只給單一結果，後者把「先想清楚要做什麼（多 candidate + trace）」外顯，選定後才落到既有 `compose`。三者共用 `requireCreatorUser`/`requireWorkspaceRole`、`getFragmentsByIds`、`ci_agent_runs`、Cost Manager（`computeZCharge`/`chargeWorkspace`），不新增第二套稽核或計費路徑。
+
+---
+
+## II-8　與現有系統整合 + 遷移（Integration & Migration）
+
+本節把 II-1〜II-7 定義的 FIE 各層（Representation / Reasoning / Candidate / Evidence / Trace / 三模式）**映射到現有 Creator Island 資產**，並給出**不破壞現有 UX 的漸進遷移路徑**。核心原則：**沿用既有表與服務，只新增 Reasoning 相關的薄層；既有 `ci_fragments`、`ci_agent_runs`、`ci_creator_dna`、embedding、Cost Manager 一律重用，不重造。**
+
+---
+
+### II-8.1　資產映射總表（Asset Mapping）
+
+| FIE 概念（Part I / II 定義） | 沿用的既有資產 | 新增（本規格） | 說明 |
+|---|---|---|---|
+| **Representation：向量層** | `ci_fragments.embedding vector(1536)` + `embedText`（`src/lib/ai-embeddings`）+ `backfillWorkspaceEmbeddings`（`creator-engine/embeddings.ts`） | 無（直接讀） | 向量來源＝既有 embedding 欄位，不另建向量表 |
+| **Representation：結構層** | `ci_fragments`（title/subtitle/content/tags/mood/category/ai_summary） | `ci_fragment_representation`（衍生特徵快取，II-1） | 結構特徵由既有欄位 + 一次性 AI 抽取產生，快取化 |
+| **Relationship / Evidence（語意相關）** | RPC `ci_related_fragments`（`relatedFragments()`） | 無 | 直接當「支持某 Hypothesis 的正證據」來源 |
+| **Evidence（意外配對 / 新穎連結）** | RPC `ci_surprising_pairs`（`surprisingPairs()`） | 無 | 當 Adjacent / Exploratory 模式的 Hypothesis 種子 |
+| **Creator Context Alignment** | `analyzeDNA()` → `ci_creator_dna(traits, confidence)` | 無（讀） | 對 Candidate 做 alignment 打分的依據 |
+| **Reasoning Run（底層 trace / 計費 / token）** | `ci_agent_runs`（含 input/output/provider/model/tokens/cost_usd/z_charged/status） | `ci_reasoning_runs`、`ci_reasoning_candidates`、`ci_reasoning_steps`（II-3/II-4/II-5） | 新表存「結構化推理」；每個 reasoning run **仍寫一筆 `ci_agent_runs`** 當底層執行 trace 與計費錨點 |
+| **計價** | `computeZCharge()` + `chargeWorkspace/refundWorkspace`（`creator-engine/ai/cost.ts`）+ RPC `ci_debit_workspace_wallet` | `computeZCharge` 增 `reason` 分支 | reasoning 沿用同一預扣→退款流程 |
+| **模型解析 / 執行 / 驗證** | `resolveModel` + `callAI` + `extractJson` + zod（`runAgent()`） | `runReasoning()`（包一層，見 II-8.6） | reasoning agent 走同一 `runAgent` 骨架 |
+
+> 一句話：**FIE 不是新系統，是在既有「凝聚—演化—編織」管線的 `callAI` 之前，插入一層讀 `ci_fragments`/`ci_related_fragments`/`ci_creator_dna`、寫 `ci_reasoning_runs` 的 Reasoning Layer。**
+
+---
+
+### II-8.2　Representation 的向量來源＝`ci_fragments.embedding`（沿用）
+
+Reasoning Layer 的 Observation / Evidence 檢索**不新建向量表**，直接讀既有欄位與服務：
+
+```typescript
+// 沿用 creator-engine/embeddings.ts —— 不改簽名
+import { backfillWorkspaceEmbeddings, relatedFragments, surprisingPairs } from "@/lib/creator-engine/embeddings";
+import { embedText } from "@/lib/ai-embeddings";
+
+// Reasoning 進場前的向量保底（沿用既有 backfill；有上限、best-effort）
+await backfillWorkspaceEmbeddings(workspaceId); // 內部：ci_fragments where embedding is null → embedText → update
+```
+
+新增的 `ci_fragment_representation` 只快取「結構特徵」（非向量），向量欄位仍指回 `ci_fragments`：
+
+```sql
+-- II-1 已定義；此處只標示外鍵沿用關係
+CREATE TABLE IF NOT EXISTS public.ci_fragment_representation (
+  fragment_id   UUID PRIMARY KEY REFERENCES public.ci_fragments(id) ON DELETE CASCADE,
+  workspace_id  UUID NOT NULL REFERENCES public.ci_workspaces(id) ON DELETE CASCADE,
+  -- 語意向量「不複製」：查詢時 JOIN ci_fragments.embedding，避免雙寫不一致
+  motifs        JSONB NOT NULL DEFAULT '[]',   -- 母題（AI 抽取）
+  emotion_axis  JSONB NOT NULL DEFAULT '{}',   -- 情緒座標
+  entities      JSONB NOT NULL DEFAULT '[]',
+  representation_version INT NOT NULL DEFAULT 1,
+  built_at      TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+-- RLS 沿用 ci_ 既有 workspace-member policy 樣板（見 creator_island_workspace_migration.sql）
+```
+
+**遷移不需回填全部**：`ci_fragment_representation` 採 **lazy build**——某 fragment 首次進入 reasoning 時才建，缺就即時抽一次並快取。既有已存的 `ai_summary` / `tags` / `mood` 直接當初始特徵，降低首波成本。
+
+---
+
+### II-8.3　Relationship / Evidence＝現有兩支 RPC（沿用，不重寫相似度）
+
+Evidence 檢索**完全複用** `ci_related_fragments`（正相關證據）與 `ci_surprising_pairs`（新穎連結），不自寫 pgvector 查詢：
+
+```typescript
+// Reasoning Layer 的 Evidence 收集器（新增，但只是編排既有 RPC）
+async function gatherEvidence(workspaceId: string, seedFragmentId: string, mode: ReasoningMode) {
+  const related = await relatedFragments(workspaceId, seedFragmentId, 6);   // 既有 RPC ci_related_fragments
+  const surprising = mode === "familiar"
+    ? []
+    : await surprisingPairs(workspaceId, 8);                                // 既有 RPC ci_surprising_pairs
+  return { related, surprising };
+}
+```
+
+三模式對兩支 RPC 的取用策略（對應 II-6）：
+
+| 模式 | `ci_related_fragments` | `ci_surprising_pairs` | Evidence 權重 |
+|---|---|---|---|
+| **Familiar** | 高相似（similarity 高的前段） | 不取 | 正證據為主 |
+| **Adjacent** | 中段相似 | 取，中 similarity 的 pair | 混合 |
+| **Exploratory** | 尾段 / 少量 | 取，**低 similarity 高新穎** 的 pair | 以 surprising 為 Hypothesis 種子 |
+
+> 這確保「三種推理模式」是**同一組 Evidence RPC 的不同取樣策略**，而非三套新引擎——直接可測、可驗收（同一 workspace 切模式，Evidence 集合可見差異即通過）。
+
+---
+
+### II-8.4　Creator Context＝`analyzeDNA → ci_creator_dna`（沿用讀取）
+
+Candidate 的 **Creator Context Alignment** 打分讀既有 `ci_creator_dna`；若該 user 尚無 DNA，走既有 `analyzeDNA()`（不新增分析器）：
+
+```typescript
+import { analyzeDNA } from "@/lib/creator-engine/ai/agents";
+
+async function loadCreatorContext(workspaceId: string, userId: string): Promise<CreatorDNA | null> {
+  const admin = createSupabaseAdmin();
+  const { data } = await admin.from("ci_creator_dna")
+    .select("traits, confidence").eq("user_id", userId).maybeSingle();
+  if (data?.traits) return data.traits as CreatorDNA;
+  // 沒 DNA → 不強制生成（避免拖慢 reasoning）；回 null，alignment 降權處理（見下）
+  return null;
+}
+
+// alignment 打分：DNA 缺席時不 fail，改成中性分（0.5），Confidence 標記 dna_missing
+function alignScore(candidate: Candidate, dna: CreatorDNA | null): { score: number; note?: string } {
+  if (!dna || (dna.confidence ?? 0) < 0.3)
+    return { score: 0.5, note: "dna_missing_or_low_confidence" };
+  // 用 dna.tone / imagery / strengths 對 candidate 做契合度（沿用 II-4 打分函式）
+  return { score: scoreAgainstDNA(candidate, dna) };
+}
+```
+
+**降級語意**：DNA 缺席不阻斷推理，只讓 alignment 中性化並在 Confidence 上留下 `dna_missing` 註記（對應 Part I 「Confidence 過低要坦承」的契約）。
+
+---
+
+### II-8.5　Reasoning Run 的底層 Trace＝`ci_agent_runs`（沿用計費/token 錨點）
+
+新 `ci_reasoning_runs` 存**結構化推理**（Observation→Hypothesis→Evidence→Missing→Candidate），但**每次 reasoning 執行仍寫一筆 `ci_agent_runs`** 當底層 trace、token 統計與計費錨點，兩表以外鍵相連：
+
+```sql
+-- II-3 已定義；此處標示與既有 ci_agent_runs 的錨定
+ALTER TABLE public.ci_reasoning_runs
+  ADD COLUMN IF NOT EXISTS agent_run_id BIGINT
+    REFERENCES public.ci_agent_runs(id) ON DELETE SET NULL;
+-- ci_reasoning_runs：mode, seed_fragment_ids[], observation jsonb, missing jsonb, status
+-- ci_reasoning_candidates(run_id, hypothesis, confidence numeric, weight numeric, evidence jsonb, alignment jsonb)
+-- ci_reasoning_steps(run_id, seq, stage, payload jsonb)  ← Reasoning Trace 明細
+```
+
+分工原則：
+
+- **`ci_agent_runs`**：一如既往記 provider/model/tokens_input/tokens_output/cost_usd/z_charged/status——**計費與用量的唯一真相**（`callAI` 已自動 `logAiUsage`，勿重複）。
+- **`ci_reasoning_runs` / `_candidates` / `_steps`**：記「推理內容」——多 Candidate、Confidence、Weight、Evidence 引用、Trace。UI 的「為什麼這樣寫」讀這三表。
+
+驗收點：任一 `ci_reasoning_runs` 都能 `JOIN ci_agent_runs` 拿到 token 成本，也能 `JOIN ci_reasoning_steps` 重放推理路徑（Explainable / Replayable 契約）。
+
+---
+
+### II-8.6　計價＝`computeZCharge`（沿用預扣→退款流程，只加 `reason` 分支）
+
+reasoning **不新建計費系統**，沿用 `runAgent()` 的 `computeZCharge → chargeWorkspace →（失敗退款）refundWorkspace` 流程（底層 RPC `ci_debit_workspace_wallet`）。只在 `cost.ts` 增一個分支：
+
+```typescript
+// cost.ts computeZCharge：核心動作免費（E10 no-token-trap）。reasoning 沿用同精神。
+export function computeZCharge(agentType: string, input: unknown): number {
+  switch (agentType) {
+    // ...既有 synthesize/evolve/compose/... 分支不動
+    case "reason": {
+      // 純推理（產生 Hypothesis/Candidate，不落地生成內容）＝核心動作，免費
+      // 只有「多 Candidate 並行放大」超過門檻才收費，避免濫用高成本 Exploratory
+      const n = (input as any)?.candidateCount ?? 1;
+      const mode = (input as any)?.mode;
+      if (mode === "exploratory" && n > 6) return n - 6; // 超額 Candidate 每條 1 Z
+      return 0;
+    }
+  }
+  return 0;
+}
+```
+
+`runReasoning()` 直接包 `runAgent()` 骨架（同一 resolveModel/callAI/extractJson/zod/預扣退款），把 `agentType:"reason"` 傳進去即自動計費、自動寫 `ci_agent_runs`：
+
+```typescript
+// creator-engine/ai/reasoning.ts（新增；復用 agents.ts 的 runAgent 私有骨架，或抽出共用）
+export async function runReasoning(ws: string, uid: string, opts: ReasoningOpts) {
+  // 1) gatherEvidence（II-8.3 既有 RPC） 2) loadCreatorContext（II-8.4 ci_creator_dna）
+  // 3) runAgent({ agentType:"reason", schema: ReasoningSchema, input:{mode, candidateCount}, ... })
+  //    → 自動：computeZCharge、chargeWorkspace、寫 ci_agent_runs、驗證重試一次
+  // 4) 把 result 展開寫入 ci_reasoning_runs / _candidates / _steps，回填 agent_run_id
+}
+```
+
+Confidence / early-stop（Part I「多 Candidate 有成本」的控管）落在此層：Familiar 預設 2–3 Candidate、Exploratory 才放大，且以 Confidence 排序早停。
+
+---
+
+### II-8.7　Embedding 降級路徑（無 `ai_api_keys` OpenAI key）
+
+Representation 向量依賴 `ai_api_keys` 有 OpenAI key（`embedText` 無 key 回 `null`，`backfillWorkspaceEmbeddings` 遇 `null` 即停）。FIE 必須在**無 key** 時仍可運作，降級如下：
+
+| 能力 | 有 OpenAI key | 無 key（降級） |
+|---|---|---|
+| Evidence 檢索（related / surprising） | 走 `ci_related_fragments` / `ci_surprising_pairs`（向量相似度） | **改用 `tags` / `category` / `mood` 重疊 + 全文關鍵詞**做 Evidence（lexical fallback，見下），標記 `evidence_source:"lexical"` |
+| Observation 結構抽取 | 用向量 + AI 抽 motifs | 只用既有 `ai_summary` / `tags`（略過向量步驟） |
+| 三模式 | 全支援 | Exploratory 降為「基於 tag 罕見共現」的近似 surprising，Confidence 上限打折 |
+| Confidence | 正常 | 一律附 `degraded:true`，並在 UI 提示「補 OpenAI key 可提升推理品質」 |
+
+```typescript
+async function gatherEvidenceSafe(ws: string, seedId: string, mode: ReasoningMode) {
+  const hasVectorPath = await embedText("probe").then(v => v !== null).catch(() => false);
+  if (hasVectorPath) return { source: "vector", ...(await gatherEvidence(ws, seedId, mode)) };
+  // 降級：純結構 lexical evidence（不呼叫任何 embedding / 向量 RPC）
+  return { source: "lexical", ...(await gatherLexicalEvidence(ws, seedId, mode)) };
+}
+```
+
+**驗收**：把 `ai_api_keys` 的 OpenAI key 移除後，reasoning 仍能回傳帶 `degraded:true` 的 Candidate、不丟 500。
+
+---
+
+### II-8.8　漸進遷移步驟（reason-then-generate，不破壞現有 UX）
+
+目標：把既有 `synthesize` / `evolve` / `compose`（現在是「碎片 → 直接 callAI 生成」）逐步改成「**先 reason，再 generate**」，且**每一步都可獨立上線、可回退（feature flag）、對使用者無感或只加不減**。
+
+**Phase 0 — 基建（無 UX 變化）**
+1. 建 `ci_reasoning_runs` / `_candidates` / `_steps` / `ci_fragment_representation`（RLS 沿用既有 workspace 樣板）。
+2. `cost.ts` 加 `reason` 分支（回 0，先不收費）。
+3. 落地 `runReasoning()`（包 `runAgent`）+ `gatherEvidenceSafe` + 降級路徑。
+4. **shadow 模式**：既有 `synthesize/evolve/compose` API **照舊回應**，但**背景並行**跑一次 `runReasoning`（`await Promise.allSettled`），只寫表、不影響回傳。用來累積真實資料、驗證 Confidence 分布。此階段 UX 零變化。
+
+**Phase 1 — 讓生成「消費」reasoning（輸出不變，品質提升）**
+5. 在 `synthesize/evolve/compose` 內部：先 `runReasoning` 取 top-1 Candidate 的 Hypothesis + Evidence，**注入為既有 prompt 的一段 system 上下文**（類似現有 `getInjectableMemory` 注入方式），再走原本 `callAI`。回傳 schema **完全不變** → 前端零改動。
+6. 用 feature flag（可沿用 workspace/tenant 設定或 env）灰度：先內部 workspace、再放量。異常即關 flag 回到 Phase 0 行為。
+
+**Phase 2 — 對外露出「多 Candidate + 為什麼」（純增能）**
+7. 既有端點**新增可選欄位**回傳（不移除舊欄位）：`reasoningRunId`、`candidates[]`（含 confidence/weight）、`trace`。舊前端忽略新欄位照常運作；新 UI 才渲染「AI 提了 3 條方向，你選一條」。
+8. 新增 `GET /api/creator-island/ai/reasoning/[runId]`（auth 沿用 `requireCreatorUser` + `requireWorkspaceRole`）讀 `ci_reasoning_runs` 展開 Trace，供「為什麼這樣寫」面板。
+
+**Phase 3 — 模式化與計費啟用**
+9. 端點加可選 `mode: familiar|adjacent|exploratory`（預設 `familiar`＝最接近現況行為，確保預設 UX 不變）。
+10. 開啟 `computeZCharge` 的 `reason` 超額分支（僅 Exploratory 大量 Candidate 收費），沿用既有預扣→退款，餘額不足回 402（與現行 agent 行為一致）。
+
+**回退保證**：每個 Phase 皆可獨立關閉——關 flag 後，`synthesize/evolve/compose` 退回「直接 callAI」的既有路徑，`ci_reasoning_*` 表僅為歷史資料、不影響線上。既有 API 契約在 Phase 0–1 完全不變、Phase 2–3 只增不減，滿足「不破壞現有 UX」。
+
+**遷移驗收清單**
+
+- [ ] Phase 0 上線後，每次 `synthesize` 都能在 `ci_reasoning_runs` 找到對應 shadow run，且 `agent_run_id` 可 JOIN 回 `ci_agent_runs`。
+- [ ] 移除 OpenAI key，reasoning 回 `degraded:true` 不報錯（II-8.7）。
+- [ ] 無 `ci_creator_dna` 的新 user，alignment 走中性分、Confidence 帶 `dna_missing`（II-8.4）。
+- [ ] 舊前端（未讀新欄位）在 Phase 2 端點上行為不變。
+- [ ] Exploratory 超額 Candidate 觸發 `computeZCharge`，餘額不足時走既有 refund，`ci_agent_runs.status` 正確標 `failed`。
+
+---
+
+## II-9　里程碑與建置順序（Milestones & Build Order）
+
+本節把 FIE 的落地拆成 5 個里程碑（M1–M5），**嚴格線性相依**：每個里程碑都建立在前一個的產出之上，且各自可獨立部署、可驗收。命名沿用 `ci_` 前綴與既有 `src/lib/creator-engine/` 結構；FIE 新增檔案統一放 `src/lib/creator-engine/fie/`、新增 API 統一放 `/api/creator-island/fie/`（既有 `/ai/*` 不動）。
+
+**總覽**
+
+| 里程碑 | 主題 | 對應前述節 | 核心產出 | 相依 |
+|---|---|---|---|---|
+| M1 | Fragment Representation 分層 + DDL | II-2, II-3 | `ci_fragment_representations`、backfill job、`fie/representation.ts` | 既有 `ci_fragments`、`embedText` |
+| M2 | Reasoning Pipeline（單 hypothesis） | II-4 | `ci_reasoning_runs`、`reason` agent、`/fie/reason` API | M1 |
+| M3 | 多 Candidate + Confidence/Weight | II-5 | `ci_reasoning_candidates`、scoring | M2 |
+| M4 | Creator Context 三模式 | II-6, II-7 | mode router、`ci_creator_dna` 對齊、`ci_related_fragments`/`ci_surprising_pairs` 接線 | M3 |
+| M5 | Reasoning Trace UI + Feedback Loop | II-8 | `ci_reasoning_trace`、Trace UI、`ci_reasoning_feedback`、回寫 `ci_memories` | M4 |
+
+> **共通驗收基線**（每個 Mx 都必須維持）：`tsc --noEmit` 0 error；新增 API 全部經 `requireCreatorUser` + `requireWorkspaceRole`；所有 AI 呼叫走 `callAI`、成本經 Cost Manager（`computeZCharge`）寫入 `ci_agent_runs`；新表全部開 RLS，policy 對齊既有 `ci_fragments`（`workspace_id` 成員可讀、service-role 全權）。
+
+---
+
+### M1　Fragment Representation 分層 + DDL
+
+**範圍**：把 `ci_fragments` 從「單層文字 + 單一 embedding」升級成 FIE 的 Representation 分層（Surface / Semantic / Structural / Latent），**不改既有欄位、只旁掛新表**，並提供 backfill 讓現有 fragment 全數具備分層表徵。
+
+**相依**：既有 `ci_fragments`（含 `content`、`embedding vector(1536)`、`ai_summary`、`tags`、`mood`、`category`）、`embedText`（需 `ai_api_keys` 有 OpenAI key）、`createSupabaseAdmin`。
+
+**產出**
+
+- **表** `ci_fragment_representations`（1:1 對 `ci_fragments`，可重算）：
+
+```sql
+create table if not exists ci_fragment_representations (
+  fragment_id   uuid primary key references ci_fragments(id) on delete cascade,
+  workspace_id  uuid not null references ci_workspaces(id) on delete cascade,
+  -- Surface: 既有欄位的正規化投影（不重存原文，存衍生）
+  surface       jsonb  not null default '{}'::jsonb,   -- {lang, len, keyphrases[], entities[]}
+  -- Semantic: 沿用既有 embedding，這裡存語意標籤/主題
+  semantic      jsonb  not null default '{}'::jsonb,   -- {themes[], sentiment, abstraction_level}
+  -- Structural: 片段在 lineage/relation 圖上的角色
+  structural    jsonb  not null default '{}'::jsonb,   -- {role, in_degree, out_degree, cluster_id}
+  -- Latent: 額外的 concept embedding（與原 embedding 分離，供 Adjacent/Exploratory 用）
+  concept_embedding vector(1536),
+  rep_version   int    not null default 1,
+  computed_at   timestamptz not null default now()
+);
+create index on ci_fragment_representations (workspace_id);
+create index on ci_fragment_representations using ivfflat (concept_embedding vector_cosine_ops) with (lists = 100);
+alter table ci_fragment_representations enable row level security;
+-- policy 比照 ci_fragments（workspace 成員 select、service-role all）
+```
+
+- **服務** `src/lib/creator-engine/fie/representation.ts`：
+  - `buildRepresentation(fragmentId): Promise<Representation>` — 讀 `ci_fragments` 一列，抽 surface（keyphrases/entities，可用 `callAI` 輕量抽取或純程式）、semantic（themes/abstraction）、structural（讀 `ci_asset_relations` 算 in/out degree、cluster）、concept_embedding（`embedText` 對 `ai_summary || content`）。
+  - `upsertRepresentation(fragmentId)` — 算完 upsert 進 `ci_fragment_representations`。
+  - zod 型別 `RepresentationSchema` 匯出給後續 M2 使用。
+- **Backfill script** `scripts/fie-backfill-representations.mjs`（可重跑、分頁 `.range()` 撈滿避免 1000 筆截斷、`--workspace <id>` 可限定、對已有且 `rep_version` 相同者跳過）。
+- **UI**：無（純資料層）。
+
+**Definition of Done（M1）**
+
+1. Migration `supabase/creator_island_fie_representation_migration.sql` 套用成功，`ci_fragment_representations` 存在且 RLS 開啟。
+2. 對任一測試 workspace 跑 backfill 後，**`ci_fragments` 與 `ci_fragment_representations` 筆數一致**（`select count(*)` 相等；SQL 可驗）。
+3. 隨機抽 5 筆，`surface/semantic/structural` 皆非空 `{}`、`concept_embedding` 非 null（維度 1536）。
+4. Backfill **可重跑不重複、不報錯**；第二次跑對未變更 fragment 為 no-op（log 顯示 skipped 數）。
+5. `tsc --noEmit` 0 error；無任何寫回 `ci_fragments` 原欄位的行為（既有資料零破壞）。
+
+---
+
+### M2　Reasoning Pipeline（單 hypothesis）
+
+**範圍**：實作 Reasoning Layer 的**完整六階段但只走一條假設**：Observation → Hypothesis → Evidence → Missing → Candidate（single）→ Creator Context Alignment（此里程碑先用 placeholder 對齊，真正三模式留給 M4）。目標是先把 pipeline 端到端跑通、可追蹤、有輸出。
+
+**相依**：M1（讀 `ci_fragment_representations`）、既有 `runAgent()` 骨架（`resolveModel→callAI→extractJson→zod→寫 ci_agent_runs + computeZCharge`）、既有 `ci_related_fragments` RPC（供 Evidence 檢索）。
+
+**產出**
+
+- **表** `ci_reasoning_runs`（一次推理一列，關聯回 `ci_agent_runs`）：
+
+```sql
+create table if not exists ci_reasoning_runs (
+  id            uuid primary key default gen_random_uuid(),
+  workspace_id  uuid not null references ci_workspaces(id) on delete cascade,
+  user_id       uuid not null,
+  agent_run_id  uuid references ci_agent_runs(id),      -- 沿用既有成本/模型紀錄
+  mode          text not null default 'familiar',       -- M4 才真正分流；先固定
+  input         jsonb not null,                         -- {seed_fragment_ids[], intent}
+  observation   jsonb,                                  -- 抽到的訊號
+  hypothesis    text,                                   -- 單一假設
+  evidence      jsonb,                                  -- [{fragment_id, why, score}]
+  missing       jsonb,                                  -- 缺口清單
+  candidate     jsonb,                                  -- 單一 candidate（M3 擴為多筆）
+  status        text not null default 'pending',        -- pending|done|failed
+  created_at    timestamptz not null default now()
+);
+create index on ci_reasoning_runs (workspace_id, created_at desc);
+alter table ci_reasoning_runs enable row level security;
+```
+
+- **Agent** 在 `src/lib/creator-engine/ai/agents.ts` 新增 `reason(workspaceId, userId, seeds, intent)`，嚴格沿用既有 pattern（`resolveModel`→prompt→`callAI`→`extractJson`→zod 驗證 + 重試一次→寫 `ci_agent_runs` + `computeZCharge`）。輸出 zod schema `ReasoningOutputSchema` = `{observation, hypothesis, evidence[], missing[], candidate}`。
+- **服務** `src/lib/creator-engine/fie/reason.ts`：`runReasoning(...)` — 組 Observation（讀 seed 的 representation）、呼 `ci_related_fragments` 取候選 Evidence、呼 `reason` agent、把結果寫 `ci_reasoning_runs`（`agent_run_id` 指回 `ci_agent_runs`）。
+- **API** `POST /api/creator-island/fie/reason`（`requireCreatorUser` + `requireWorkspaceRole('editor')`；body zod：`{workspaceId, seedFragmentIds[], intent?}`）→ 回 `ci_reasoning_runs` 一列。
+- **UI**：最小 debug 面板（可在既有 Creator Island 後台頁）顯示一次 run 的六階段 JSON。
+
+**Definition of Done（M2）**
+
+1. `POST /fie/reason` 帶 2 個 seed fragment，回 `status='done'` 的 run，六個階段欄位**全部非 null**（observation/hypothesis/evidence/missing/candidate）。
+2. 該 run 在 `ci_agent_runs` 有對應列、`z_charged > 0`、`tokens_input/output` 有值（成本鏈路接通，SQL 可驗 `agent_run_id` 外鍵存在）。
+3. Evidence 內每筆 `fragment_id` 都真實存在於該 workspace 的 `ci_fragments`（不得幻覺出不存在的 id；可用 join 驗）。
+4. zod 驗證失敗會觸發**一次重試**、二次仍失敗則 `status='failed'` 且不寫髒資料（人工注入壞 prompt 可測）。
+5. 非 workspace 成員呼叫回 403；`tsc --noEmit` 0 error。
+
+---
+
+### M3　多 Candidate + Confidence / Weight
+
+**範圍**：把 M2 的 single candidate 擴成 **N 個 candidate**，每個帶 `confidence`（模型自評）+ `weight`（系統依 evidence 強度/context 對齊算出的排序權重），並可排序回傳 Top-K。
+
+**相依**：M2（`ci_reasoning_runs`、`reason` agent）。
+
+**產出**
+
+- **表** `ci_reasoning_candidates`（多筆對一 run）：
+
+```sql
+create table if not exists ci_reasoning_candidates (
+  id            uuid primary key default gen_random_uuid(),
+  run_id        uuid not null references ci_reasoning_runs(id) on delete cascade,
+  workspace_id  uuid not null,
+  rank          int  not null,                 -- 系統排序後名次（1 = 最佳）
+  content       jsonb not null,                -- {title, body, rationale}
+  confidence    numeric(4,3) not null,         -- 0..1，模型自評
+  weight        numeric(6,4) not null,         -- 系統計算的最終權重
+  evidence_ids  uuid[] not null default '{}',  -- 支撐此 candidate 的 fragment
+  created_at    timestamptz not null default now()
+);
+create index on ci_reasoning_candidates (run_id, rank);
+alter table ci_reasoning_candidates enable row level security;
+```
+
+- **服務**：`reason` agent 輸出 schema 改為 `candidates: Candidate[]`（每筆含 `confidence`）；`fie/reason.ts` 新增 `scoreCandidates(run, candidates)` — `weight = f(confidence, evidence_strength, novelty)`（公式在 II-5 定義，此處實作 + 單元測試），依 `weight` 排序寫 `ci_reasoning_candidates.rank`。`ci_reasoning_runs.candidate` 保留為 `rank=1` 的快照（向後相容 M2）。
+- **API**：`/fie/reason` 回應新增 `candidates: [...]`（已排序）；新增 `topK` query 參數（預設 3）。
+- **UI**：debug 面板列出 N 個 candidate，顯示 `rank / confidence / weight` 與其 evidence。
+
+**Definition of Done（M3）**
+
+1. 單次 run 產生 **≥3 個 candidate**，全部寫入 `ci_reasoning_candidates`，`rank` 連續（1..N 無重複，SQL 可驗）。
+2. `weight` 排序正確：`rank=1` 的 `weight` 為該 run 最大值（`order by weight desc` 與 `order by rank` 一致）。
+3. `scoreCandidates` 有**純函數單元測試**：給定固定 confidence/evidence 輸入，輸出 weight 與排序穩定可重現（不呼叫 AI）。
+4. 每個 candidate 的 `evidence_ids` ⊆ 該 run 的 `evidence` fragment 集合（不得引用 run 外的 evidence）。
+5. M2 的 `/fie/reason` 舊回傳欄位仍在（`candidate` = rank 1），既有呼叫端不破。`tsc --noEmit` 0 error。
+
+---
+
+### M4　Creator Context 三模式（Familiar / Adjacent / Exploratory）
+
+**範圍**：實作真正的 Creator Context Alignment 與三種推理模式路由——不同模式改變 Evidence 檢索範圍、candidate 生成 prompt、與 weight 中「對齊 vs 新奇」的配比。
+
+**相依**：M3（candidates + weight）、既有 `ci_creator_dna`（`traits`, `confidence`）、既有 RPC `ci_related_fragments`（語意近鄰 → Familiar）與 `ci_surprising_pairs`（意外配對 → Exploratory）。
+
+**產出**
+
+- **服務** `src/lib/creator-engine/fie/modes.ts`：
+  - `resolveMode(intent, requestedMode?)` — 明示優先、否則由 intent 啟發式決定。
+  - 三模式 evidence 檢索策略：
+    - **Familiar** = `ci_related_fragments`（高相似、同 cluster）；weight 偏 alignment。
+    - **Adjacent** = concept_embedding 中距離近鄰 + 跨 cluster 一跳（`ci_asset_relations`）；weight 平衡。
+    - **Exploratory** = `ci_surprising_pairs`（低相似高潛在張力）；weight 偏 novelty。
+  - `alignToCreator(candidates, dna)` — 讀 `ci_creator_dna.traits`，對 candidate 做對齊分數（併入 M3 的 weight 公式，權重依 `dna.confidence` 調整；DNA 缺席時退回中性）。
+- **改動**：`ci_reasoning_runs.mode` 由此里程碑真正生效；`reason` agent prompt 依 mode 切換系統指令（三份 prompt 模板）。
+- **API**：`/fie/reason` body 接受 `mode?: 'familiar'|'adjacent'|'exploratory'`；回應標註實際採用 mode 與檢索來源 RPC。
+- **UI**：模式切換器（3 選項）+ 顯示「此結果偏對齊/偏新奇」的指示。
+
+**Definition of Done（M4）**
+
+1. 同一組 seed 在三種 mode 下呼叫，**evidence 來源集合明顯不同**（Familiar 與 Exploratory 的 evidence fragment 交集比例 < 50%，可用 SQL 對比兩 run 驗證）。
+2. `ci_reasoning_runs.mode` 正確記錄實際採用模式；未指定時 `resolveMode` 有決定性行為（相同 intent → 相同 mode，單元測試）。
+3. `alignToCreator` 在有 `ci_creator_dna` 時，candidate 的 alignment 分量進入 weight 且可解釋（trait 命中數影響排序，測試可驗）；DNA 不存在時不報錯、退回中性權重。
+4. Exploratory 模式的 Top-1 candidate 平均 `novelty` 分量高於 Familiar 模式（同 seed 對照，統計可驗）。
+5. 三份 prompt 模板皆經 zod 驗證通過、成本正常寫 `ci_agent_runs`。`tsc --noEmit` 0 error。
+
+---
+
+### M5　Reasoning Trace UI + Feedback Loop
+
+**範圍**：把每次推理的完整推理鏈落成可回放的 **Reasoning Trace**，前台呈現六階段 + candidate 排序 + 依據；並建立 Feedback Loop——創作者對 candidate 的採納/否決回寫成 `ci_memories`，影響後續檢索與對齊。
+
+**相依**：M4（完整 pipeline + 三模式）、既有 `ci_memories`（`scope,user_id,workspace_id,kind,text,embedding,status`）、`ci_memory_usage`、`embedText`。
+
+**產出**
+
+- **表** `ci_reasoning_trace`（逐階段結構化步驟，供回放/稽核）：
+
+```sql
+create table if not exists ci_reasoning_trace (
+  id          uuid primary key default gen_random_uuid(),
+  run_id      uuid not null references ci_reasoning_runs(id) on delete cascade,
+  step_no     int  not null,
+  stage       text not null,      -- observation|hypothesis|evidence|missing|candidate|alignment
+  detail      jsonb not null,     -- 該階段輸入/輸出/引用
+  created_at  timestamptz not null default now(),
+  unique(run_id, step_no)
+);
+alter table ci_reasoning_trace enable row level security;
+```
+
+- **表** `ci_reasoning_feedback`：
+
+```sql
+create table if not exists ci_reasoning_feedback (
+  id            uuid primary key default gen_random_uuid(),
+  candidate_id  uuid not null references ci_reasoning_candidates(id) on delete cascade,
+  run_id        uuid not null references ci_reasoning_runs(id) on delete cascade,
+  user_id       uuid not null,
+  verdict       text not null,     -- accepted|rejected|edited
+  note          text,
+  created_at    timestamptz not null default now()
+);
+alter table ci_reasoning_feedback enable row level security;
+```
+
+- **服務**：`fie/reason.ts` 在每階段 append `ci_reasoning_trace`（step_no 遞增）；新增 `fie/feedback.ts` 的 `recordFeedback(candidateId, verdict, note)` — 寫 `ci_reasoning_feedback`，並將 accepted candidate 內容經 `embedText` 寫入 `ci_memories`（`kind='reasoning_feedback'`, `status='active'`），rejected 則寫入抑制記憶（`status` 供後續檢索降權）。
+- **API**：`GET /api/creator-island/fie/reason/[runId]/trace`（回完整 trace + candidates）；`POST /api/creator-island/fie/reason/[runId]/feedback`（body zod：`{candidateId, verdict, note?}`）。
+- **UI**：Reasoning Trace 視覺化元件（六階段時間軸 + 每 candidate 的 confidence/weight/evidence 連結原 fragment）+ 每 candidate 的「採納 / 否決 / 編輯後採納」按鈕。
+
+**Definition of Done（M5）**
+
+1. 任一 M4 產生的 run，`GET .../trace` 回**恰好 6 個 stage**（step_no 連續、`unique(run_id, step_no)` 未衝突），前台時間軸可完整渲染。
+2. Trace 中 evidence 階段的 fragment 連結可點回既有 `ci_fragments` 詳情（id 對得上）。
+3. 對某 candidate 送 `accepted` feedback 後：`ci_reasoning_feedback` 新增一列，且 `ci_memories` 出現對應 `kind='reasoning_feedback'`、`embedding` 非 null 的記憶（SQL 可驗）。
+4. **Feedback 影響後續**：同 workspace 後續同類 run 的檢索/對齊會納入該記憶（可用「accepted 前後同 seed 兩次 run，Top-1 candidate 變化」對照驗證，並在 `ci_memory_usage` 看到該記憶被引用）。
+5. rejected candidate 產生的抑制記憶使其近似內容在後續 run 的 weight 下降（對照測試可觀察）。`tsc --noEmit` 0 error；全部 5 個里程碑的 API 皆通過 `requireCreatorUser` + `requireWorkspaceRole` 權限測試。
+
+---
+
+### 建置順序與並行度
+
+- **必須線性**：M1 → M2 → M3 是硬相依（表徵 → 推理 → 排序），不可跳。
+- **可局部並行**：M4 的三份 prompt 模板、M5 的 Trace UI 元件可在 M3 完成後**提前開工**（UI 用 mock run 資料），但合併需等各自後端 DoD 達成。
+- **每個 Mx 皆可獨立部署上線**：M2 上線即有「單解推理」可用；M3 起有多解；M4 起有模式；M5 起有回饋閉環。任一里程碑未完成不阻塞既有 `/api/creator-island/ai/*`（synthesize/evolve/compose/advise/transcreate）運作——FIE 全程為**旁掛新增、不改既有路徑**。
+
+---
+
+## II-10　測試計畫（Test Plan）
+
+本節定義 FIE Reasoning Layer 的驗收測試。**分層策略沿用既有 vitest 慣例**（`vitest.config.ts`：`environment: "node"`、`include: ["src/**/*.test.ts","tests/**/*.test.ts"]`、`@/` alias 由 `vite-tsconfig-paths` 解析），既有純模組單元測試（`tests/creator-island-economy.test.ts`）已示範 `describe/it/expect` + 直接 import `@/lib/creator-engine/...` 的寫法。FIE 測試延續此結構，並補一個**受環境 gate 的 integration project**（跑真 Supabase）。
+
+測試金字塔：
+
+| 層 | 位置 | 依賴 | 何時跑 |
+|---|---|---|---|
+| **Unit** | `src/lib/creator-engine/reasoning/*.test.ts`、`tests/fie-*.test.ts` | 純函式、無 DB/網路/AI | 每次 `pnpm test`（CI 必過） |
+| **Integration** | `tests/integration/fie-*.int.test.ts` | 真 Supabase（RLS）、mock callAI/embedText | `pnpm test:int`（有 `SUPABASE_TEST_URL` 才跑） |
+| **Reasoning Quality（golden）** | `tests/integration/fie-golden.int.test.ts` | 真 DB + 真/錄放 embedding | `pnpm test:int` |
+
+---
+
+### II-10.1　新增測試工程配置
+
+不動既有 `vitest.config.ts`（它刻意排除 DB/網路），改用 workspace 拆分 unit / integration：
+
+```ts
+// vitest.workspace.ts（新增）
+import { defineWorkspace } from "vitest/config";
+
+export default defineWorkspace([
+  "./vitest.config.ts", // 既有：純單元
+  {
+    extends: "./vitest.config.ts",
+    test: {
+      name: "integration",
+      include: ["tests/integration/**/*.int.test.ts"],
+      // 沒有測試 DB 憑證時整批 skip（本機無憑證也能跑 unit）
+      setupFiles: ["tests/integration/_setup.ts"],
+      testTimeout: 30_000,
+      hookTimeout: 30_000,
+      fileParallelism: false, // 共用一個 DB schema、避免互相踩
+    },
+  },
+]);
+```
+
+```jsonc
+// package.json scripts（新增）
+{
+  "test": "vitest run --project ai_island_v3", // 既有 unit
+  "test:int": "vitest run --project integration"
+}
+```
+
+```ts
+// tests/integration/_setup.ts
+import { beforeAll } from "vitest";
+export const HAS_DB = !!process.env.SUPABASE_TEST_URL && !!process.env.SUPABASE_TEST_SERVICE_ROLE_KEY;
+// 每個 *.int.test.ts 開頭：describe.skipIf(!HAS_DB)(...) → 沒憑證自動略過、CI 綠燈不誤殺
+beforeAll(() => { if (!HAS_DB) console.warn("[FIE int] 無測試 DB 憑證、略過 integration"); });
+```
+
+---
+
+### II-10.2　Unit — Scoring 公式（純函式）
+
+被測對象：`src/lib/creator-engine/reasoning/scoring.ts`（Part II-4 定義），必須是**無副作用純函式**才好測。至少涵蓋：
+
+```ts
+// 被測簽名（對齊 II-4 scoring 規格）
+export function candidateConfidence(input: {
+  evidenceSim: number[];        // 每條 Evidence 對 candidate 的 cosine（0..1）
+  evidenceCount: number;
+  missingCount: number;         // Missing Fragment 數
+  contextAlignment: number;     // Creator Context Alignment（0..1）
+  mode: ReasoningMode;          // "familiar" | "adjacent" | "exploratory"
+}): number;                      // → 0..1
+
+export function candidateWeight(confidence: number, novelty: number, mode: ReasoningMode): number;
+export function rankCandidates<T extends { confidence: number }>(cands: T[]): T[]; // 穩定排序，desc
+```
+
+`tests/fie-scoring.test.ts`：
+
+```ts
+import { describe, it, expect } from "vitest";
+import { candidateConfidence, candidateWeight, rankCandidates } from "@/lib/creator-engine/reasoning/scoring";
+
+describe("FIE scoring — candidateConfidence", () => {
+  it("有效範圍夾在 [0,1]、極端輸入不炸", () => {
+    const c = candidateConfidence({ evidenceSim: [0.99, 0.98], evidenceCount: 2, missingCount: 0, contextAlignment: 1, mode: "familiar" });
+    expect(c).toBeGreaterThan(0); expect(c).toBeLessThanOrEqual(1);
+    expect(candidateConfidence({ evidenceSim: [], evidenceCount: 0, missingCount: 0, contextAlignment: 0, mode: "exploratory" })).toBe(0);
+  });
+
+  it("Evidence 越多越相關 → confidence 單調不減", () => {
+    const base = { missingCount: 0, contextAlignment: 0.8, mode: "familiar" as const };
+    const low  = candidateConfidence({ ...base, evidenceSim: [0.7], evidenceCount: 1 });
+    const high = candidateConfidence({ ...base, evidenceSim: [0.9, 0.88, 0.85], evidenceCount: 3 });
+    expect(high).toBeGreaterThan(low);
+  });
+
+  it("Missing Fragment 是 confidence 的懲罰項（越多缺口越不確定）", () => {
+    const base = { evidenceSim: [0.9, 0.9], evidenceCount: 2, contextAlignment: 0.8, mode: "adjacent" as const };
+    expect(candidateConfidence({ ...base, missingCount: 2 })).toBeLessThan(candidateConfidence({ ...base, missingCount: 0 }));
+  });
+
+  it("Creator Context Alignment 拉高最終 confidence", () => {
+    const base = { evidenceSim: [0.85], evidenceCount: 1, missingCount: 0, mode: "familiar" as const };
+    expect(candidateConfidence({ ...base, contextAlignment: 0.9 })).toBeGreaterThan(candidateConfidence({ ...base, contextAlignment: 0.2 }));
+  });
+});
+
+describe("FIE scoring — mode 對 weight 的影響", () => {
+  it("同 confidence 下，exploratory 放大 novelty 權重、familiar 壓抑", () => {
+    const novel = 0.9;
+    expect(candidateWeight(0.6, novel, "exploratory")).toBeGreaterThan(candidateWeight(0.6, novel, "familiar"));
+  });
+});
+
+describe("FIE scoring — rankCandidates", () => {
+  it("依 confidence 由高到低、且為穩定排序（同分保留輸入序）", () => {
+    const r = rankCandidates([
+      { id: "a", confidence: 0.5 }, { id: "b", confidence: 0.9 },
+      { id: "c", confidence: 0.5 }, { id: "d", confidence: 0.7 },
+    ]);
+    expect(r.map(x => x.id)).toEqual(["b", "d", "a", "c"]);
+  });
+});
+```
+
+**驗收**：分支覆蓋 scoring.ts ≥ 90%；`missingCount`、`contextAlignment`、`mode` 三個因子各至少一條「單調方向」斷言。
+
+---
+
+### II-10.3　Unit — Pipeline 各階段純函式
+
+Reasoning pipeline（Part II-5）拆成可獨立測的純階段函式，AI/DB 以參數注入（dependency injection），單元層一律注入 stub，不打網路：
+
+```ts
+// src/lib/creator-engine/reasoning/pipeline.ts（節錄簽名）
+export function buildObservation(fragments: FragmentRepr[]): Observation;              // 純：抽共同軸/張力
+export function deriveHypotheses(obs: Observation, mode: ReasoningMode): Hypothesis[]; // 純
+export function attachEvidence(h: Hypothesis, related: RelatedFragment[]): Evidence[]; // 純：門檻過濾
+export function detectMissing(h: Hypothesis, evidence: Evidence[]): MissingFragment[]; // 純：缺口偵測
+export function toCandidate(h: Hypothesis, ev: Evidence[], miss: MissingFragment[], ctx: CreatorContext): Candidate;
+export function buildTrace(stages: StageRecord[]): ReasoningTrace; // 純：組裝可序列化 trace
+```
+
+`src/lib/creator-engine/reasoning/pipeline.test.ts`：
+
+```ts
+describe("pipeline — attachEvidence 門檻過濾", () => {
+  it("低於 sim 門檻（<0.75）的 related 不成為 Evidence", () => {
+    const ev = attachEvidence(hStub, [rel(0.9), rel(0.74), rel(0.8)]);
+    expect(ev).toHaveLength(2);
+    expect(ev.every(e => e.sim >= 0.75)).toBe(true);
+  });
+});
+
+describe("pipeline — detectMissing 缺口偵測", () => {
+  it("Hypothesis 要求的軸沒有任何 Evidence 覆蓋 → 產出一個 MissingFragment", () => {
+    const miss = detectMissing({ requiredAxes: ["聲音", "觸覺"] } as any, [ev("聲音")]);
+    expect(miss.map(m => m.axis)).toEqual(["觸覺"]);
+  });
+  it("全覆蓋 → 無 Missing", () => {
+    expect(detectMissing({ requiredAxes: ["聲音"] } as any, [ev("聲音")])).toHaveLength(0);
+  });
+});
+
+describe("pipeline — buildTrace 可序列化且階段齊全", () => {
+  it("trace 含六階段、且 JSON.stringify 不丟資訊（要能寫進 ci_reason_runs.output jsonb）", () => {
+    const t = buildTrace(sixStages);
+    expect(t.stages.map(s => s.kind)).toEqual(
+      ["observation","hypothesis","evidence","missing","candidate","context_alignment"]);
+    expect(() => JSON.parse(JSON.stringify(t))).not.toThrow();
+  });
+});
+
+describe("pipeline — deriveHypotheses 受 mode 影響數量/跳躍度", () => {
+  it("exploratory 產生的 hypothesis 數 ≥ familiar（更發散）", () => {
+    expect(deriveHypotheses(obsStub, "exploratory").length)
+      .toBeGreaterThanOrEqual(deriveHypotheses(obsStub, "familiar").length);
+  });
+});
+```
+
+**驗收**：pipeline 每個 export 階段至少一條 happy path + 一條邊界（空輸入 / 門檻邊界 / 全覆蓋）。
+
+---
+
+### II-10.4　Integration — RLS（每張新表）
+
+新表沿用 `ci_` 前綴與既有 RLS 樣式（對照 `supabase/creator_island_*.sql` 的 `ci_fragments` / `ci_agent_runs` policy）。至少三張新表需逐表驗 RLS：`ci_reason_runs`、`ci_reason_candidates`、`ci_reason_traces`（或 trace 併入 `ci_reason_runs.output`；若併入則測 `ci_reason_runs` 即可涵蓋）。
+
+測試以**兩把使用者 client**（user A、user B，皆 `createSupabaseServer` 等價的 anon+JWT）+ 一把 `createSupabaseAdmin`（service-role）建資料，斷言跨 workspace 隔離：
+
+```ts
+// tests/integration/fie-rls.int.test.ts
+import { describe, it, expect } from "vitest";
+import { HAS_DB } from "./_setup";
+import { adminClient, userClient, seedWorkspace } from "./_helpers";
+
+describe.skipIf(!HAS_DB)("RLS — ci_reason_runs / ci_reason_candidates", () => {
+  it("同 workspace 成員讀得到自己的 reason run", async () => {
+    const { wsId, userA } = await seedWorkspace();
+    const run = await seedReasonRun(adminClient, wsId, userA.id);
+    const { data } = await userClient(userA).from("ci_reason_runs").select("*").eq("id", run.id);
+    expect(data).toHaveLength(1);
+  });
+
+  it("非成員（user B）讀不到別的 workspace 的 reason run（RLS 擋、回 0 筆非 error）", async () => {
+    const { wsId, userA } = await seedWorkspace();
+    const run = await seedReasonRun(adminClient, wsId, userA.id);
+    const userB = await seedOutsider();
+    const { data, error } = await userClient(userB).from("ci_reason_runs").select("*").eq("id", run.id);
+    expect(error).toBeNull();
+    expect(data).toHaveLength(0);
+  });
+
+  it("使用者 client 無法直接 INSERT candidates（僅 service-role 寫入）", async () => {
+    const { wsId, userA } = await seedWorkspace();
+    const { error } = await userClient(userA).from("ci_reason_candidates")
+      .insert({ run_id: crypto.randomUUID(), title: "x", confidence: 0.5 });
+    expect(error).not.toBeNull(); // RLS/policy 拒絕
+  });
+
+  it("candidates 經 run_id 繼承 workspace 隔離：外人讀不到別人 run 的 candidates", async () => {
+    /* seed run under wsA、以 userB 查同 run_id → 0 筆 */
+  });
+});
+```
+
+**驗收**：每張新表 ≥ 3 條（成員可讀 / 外人 0 筆 / 使用者不可寫）。斷言外人是「回 `[]` 且 `error===null`」而非 throw（符合 PostgREST RLS 行為，避免把「擋住」誤判成「壞掉」）。
+
+---
+
+### II-10.5　Integration — reason API 端到端
+
+被測：`POST /api/creator-island/ai/reason`（新增，auth 沿用 `requireCreatorUser` + `requireWorkspaceRole`，內部走新 agent `runReason`，寫 `ci_agent_runs` + `ci_reason_runs`）。`callAI`、`embedText` 以 **mock/錄放**注入（不打真 provider、不需 `ai_api_keys` OpenAI key），DB 為真：
+
+```ts
+// tests/integration/fie-reason-api.int.test.ts
+describe.skipIf(!HAS_DB)("POST /api/creator-island/ai/reason", () => {
+  it("未登入 → 401", async () => {
+    const res = await POST(reqNoAuth({ fragmentIds: ["x"], mode: "familiar" }));
+    expect(res.status).toBe(401);
+  });
+
+  it("非該 workspace 成員 → 403（requireWorkspaceRole）", async () => { /* ... */ });
+
+  it("zod schema：mode 非三值之一 → 400", async () => {
+    const res = await POST(reqAs(userA, { fragmentIds: [f1], mode: "wild" }));
+    expect(res.status).toBe(400);
+  });
+
+  it("happy path：回多 Candidate（含 confidence/weight）+ reasoning trace，且寫入 DB", async () => {
+    mockCallAI(FIXTURE_REASON_JSON); // extractJson→zod 能過
+    const res = await POST(reqAs(userA, { workspaceId: wsId, fragmentIds: [f1, f2, f3, f4], mode: "adjacent" }));
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.candidates.length).toBeGreaterThanOrEqual(2);
+    expect(body.candidates[0]).toHaveProperty("confidence");
+    expect(body.candidates[0]).toHaveProperty("weight");
+    expect(body.trace.stages.map((s: any) => s.kind)).toContain("missing");
+    // 落庫：ci_agent_runs 記一筆（沿用既有 runAgent 寫入路徑）+ ci_reason_runs 記一筆
+    const { data: runs } = await adminClient.from("ci_agent_runs").select("*").eq("agent_type", "reason").eq("user_id", userA.id);
+    expect(runs!.length).toBe(1);
+    expect(runs![0].status).toBe("ok");
+  });
+
+  it("callAI 回非 JSON → runAgent 既有『重試一次』後仍失敗 → 500 且 ci_agent_runs.status='error'", async () => {
+    mockCallAI("不是 JSON", "還是不是 JSON");
+    const res = await POST(reqAs(userA, { workspaceId: wsId, fragmentIds: [f1], mode: "familiar" }));
+    expect(res.status).toBe(500);
+    const { data } = await adminClient.from("ci_agent_runs").select("status").eq("agent_type","reason").order("created_at",{ascending:false}).limit(1);
+    expect(data![0].status).toBe("error");
+  });
+});
+```
+
+**驗收**：涵蓋 401 / 403 / 400(zod) / 200(happy) / 500(AI 壞) 五條路徑；happy path 必須斷言「回應內容」與「DB 落庫」兩面。
+
+---
+
+### II-10.6　Integration — Cost Manager 計價
+
+reason 動作要在 `computeZCharge`（`src/lib/creator-engine/ai/cost.ts`）加分支，並比照既有 `tests/creator-island-economy.test.ts` 加**純單元**測試（此段可放 unit project，不需 DB）：
+
+```ts
+// tests/fie-cost.test.ts（延續既有 economy 測試風格）
+import { computeZCharge } from "@/lib/creator-engine/ai/cost";
+
+describe("Cost Manager — reason 計價", () => {
+  it("familiar / adjacent 推理免費（核心探索體驗）", () => {
+    expect(computeZCharge("reason", { mode: "familiar" })).toBe(0);
+    expect(computeZCharge("reason", { mode: "adjacent" })).toBe(0);
+  });
+  it("exploratory 深推理（高算力）計費：每次 N Z", () => {
+    expect(computeZCharge("reason", { mode: "exploratory" })).toBe(EXPLORATORY_Z); // 依 II-9 定價常數
+  });
+  it("空/未知輸入不炸、回 0（對齊既有容錯）", () => {
+    expect(computeZCharge("reason", undefined)).toBe(0);
+    expect(computeZCharge("reason", { mode: "???" })).toBe(0);
+  });
+});
+```
+
+integration 面補一條「計費動作真的扣錢」：驗 `ci_debit_workspace_wallet` RPC 被呼叫、`ci_agent_runs.z_charged` 與錢包餘額一致：
+
+```ts
+describe.skipIf(!HAS_DB)("reason exploratory 實際扣 Z", () => {
+  it("跑一次 exploratory → 錢包餘額 -EXPLORATORY_Z、z_charged 記帳一致", async () => {
+    const before = await walletBalance(wsId);
+    await POST(reqAs(userA, { workspaceId: wsId, fragmentIds: [f1,f2,f3,f4], mode: "exploratory" }));
+    expect(await walletBalance(wsId)).toBe(before - EXPLORATORY_Z);
+    const { data } = await adminClient.from("ci_agent_runs").select("z_charged").eq("agent_type","reason").order("created_at",{ascending:false}).limit(1);
+    expect(data![0].z_charged).toBe(EXPLORATORY_Z);
+  });
+  it("餘額不足 → RPC 擋、回 402/409 且不落 candidates", async () => { /* ci_debit_workspace_wallet 失敗路徑 */ });
+});
+```
+
+**驗收**：unit 覆蓋三 mode 的價目 + 容錯；integration 驗「餘額變化 = z_charged」與「餘額不足擋下」。
+
+---
+
+### II-10.7　Reasoning Quality — Golden Case（主軸四碎片）
+
+以**一組固定的四碎片主軸**作 golden fixture，seed 進測試 workspace（含真 embedding 或錄放向量），對 reason 輸出下**可斷言的品質門檻**。這是 FIE 的核心驗收：不是驗「有回應」，而是驗「推理結構對」。
+
+**Golden fixture（`tests/integration/fixtures/fie-golden.ts`）**——刻意設計成「三顆共享一條隱含軸、第四顆是張力點、且明顯缺一塊拼圖」：
+
+```ts
+export const GOLDEN_FRAGMENTS = [
+  { key: "F1", title: "雨夜的便利商店",   content: "深夜無人的日光燈、玻璃上的水痕、關東煮的蒸氣。", tags: ["城市","孤獨","光"], mood: "melancholy" },
+  { key: "F2", title: "母親的舊收音機",   content: "沙沙的雜訊裡有一段走音的老歌、旋鈕轉不準。",     tags: ["記憶","聲音","家"], mood: "warm" },
+  { key: "F3", title: "候車亭的陌生人",   content: "兩個人共用一個屋簷躲雨、誰都沒說話。",           tags: ["城市","相遇","雨"], mood: "quiet" },
+  { key: "F4", title: "凌晨四點的城市",   content: "清潔車的聲音、還沒亮的天、第一班公車的燈。",     tags: ["城市","時間","聲音"], mood: "liminal" },
+  // 共同軸：城市裡「被看見/被聽見的孤獨」。缺塊：沒有任何『觸覺/身體』碎片 → 期望被 detectMissing 抓到。
+];
+
+export const GOLDEN_EXPECTATIONS = {
+  minCandidates: 3,
+  // 期望至少一個 candidate 的主軸命中「孤獨 × 城市 × 聲音」語意群
+  mustSurfaceThemeAny: ["孤獨", "聲音", "城市", "夜"],
+  // 期望偵測到「缺一塊」：觸覺/身體 維度沒有 Evidence 覆蓋
+  expectMissingAxisAny: ["觸覺", "身體", "溫度"],
+};
+```
+
+**斷言（`tests/integration/fie-golden.int.test.ts`）**：
+
+```ts
+describe.skipIf(!HAS_DB)("FIE Golden — 主軸四碎片推理品質", () => {
+  let out: ReasonResult;
+  beforeAll(async () => {
+    const { wsId, userA, fragIds } = await seedGolden(GOLDEN_FRAGMENTS); // 真 embedText 或錄放
+    out = await runReasonDirect({ workspaceId: wsId, userId: userA.id, fragmentIds: fragIds, mode: "adjacent" });
+  });
+
+  it("A. Candidate 數量：至少 3 個（多候選、非單一答案）", () => {
+    expect(out.candidates.length).toBeGreaterThanOrEqual(GOLDEN_EXPECTATIONS.minCandidates);
+  });
+
+  it("B. Confidence 排序：candidates 依 confidence 由高到低、且皆落在 [0,1]", () => {
+    const cs = out.candidates.map(c => c.confidence);
+    expect(cs).toEqual([...cs].sort((a, b) => b - a));           // 已排序
+    expect(cs.every(c => c >= 0 && c <= 1)).toBe(true);
+    expect(cs[0]).toBeGreaterThan(cs[cs.length - 1]);            // 有辨別度、非全相同
+  });
+
+  it("C. 主軸命中：top candidate 的主題/證據至少觸及共同語意群", () => {
+    const top = out.candidates[0];
+    const blob = (top.title + top.rationale + top.evidence.map(e => e.fragmentTitle).join()).toLowerCase();
+    expect(GOLDEN_EXPECTATIONS.mustSurfaceThemeAny.some(k => blob.includes(k))).toBe(true);
+  });
+
+  it("D. Missing Fragment 偵測：抓到『觸覺/身體/溫度』這條沒被四碎片覆蓋的軸", () => {
+    const axes = out.trace.stages.filter(s => s.kind === "missing").flatMap((s: any) => s.items.map((i: any) => i.axis));
+    expect(GOLDEN_EXPECTATIONS.expectMissingAxisAny.some(a => axes.includes(a))).toBe(true);
+  });
+
+  it("E. Reasoning Trace 完整：六階段齊全且每階段有輸入來源可追溯", () => {
+    const kinds = out.trace.stages.map(s => s.kind);
+    ["observation","hypothesis","evidence","missing","candidate","context_alignment"].forEach(k => expect(kinds).toContain(k));
+    out.trace.stages.forEach(s => expect(s).toHaveProperty("inputRefs")); // 每階段引用了哪些 fragment/上一階段
+  });
+
+  it("F. 模式差異：exploratory vs familiar 產出不同（發散度可觀測）", async () => {
+    const fam = await runReasonDirect({ ...baseArgs, mode: "familiar" });
+    const exp = await runReasonDirect({ ...baseArgs, mode: "exploratory" });
+    // exploratory 平均 novelty 高於 familiar、或引入 familiar 未用到的 fragment/外部關聯
+    expect(avg(exp.candidates.map(c => c.novelty))).toBeGreaterThan(avg(fam.candidates.map(c => c.novelty)));
+  });
+
+  it("G. Creator Context Alignment：注入 ci_creator_dna traits 後、對齊分數上升", async () => {
+    await seedCreatorDNA(userA.id, { traits: { prefersTheme: "孤獨", prefersMedium: "聲音" }, confidence: 0.8 });
+    const withDna = await runReasonDirect(baseArgs);
+    expect(withDna.candidates[0].contextAlignment).toBeGreaterThan(out.candidates[0].contextAlignment);
+  });
+});
+```
+
+**穩定性策略（避免 golden test flaky）**：
+- 斷言用**結構性 + 語意群集合命中**（`some(includes)`、排序、缺軸集合），**不**逐字比對 AI 生成文字。
+- Embedding 用**錄放**（首跑寫入 `tests/integration/fixtures/embeddings.recorded.json`，之後 `embedText` mock 讀檔），確保 `ci_related_fragments` / `ci_surprising_pairs` RPC 的向量結果可重現。
+- `callAI` 對 golden 用**固定 fixture JSON**（可過 `extractJson`→zod），品質斷言鎖在「pipeline 如何組裝 candidate / 偵測 missing / 排序」，而非模型當日心情。若要驗真模型，另立 `@quality` tag、只在 nightly 跑、門檻放寬（僅斷言 A/B/D/E 結構項）。
+
+**驗收**：golden case 七條斷言（A–G）在錄放模式下**穩定綠燈**；對應 Part I 概念 → Part II 結構的可觀測對照：多 Candidate（A）、Confidence/Weight（B）、Creator Context Alignment（C/G）、Missing Fragment 偵測（D）、Reasoning Trace（E）、三種推理模式（F）。
+
+---
+
+### II-10.8　CI 整合與覆蓋率門檻
+
+- **PR 必跑**：`pnpm test`（unit project，含 scoring / pipeline / cost 純函式）。無測試 DB 憑證、integration 自動 skip（`describe.skipIf`），不阻擋一般開發。
+- **合併 main / nightly**：注入 `SUPABASE_TEST_URL` / `SUPABASE_TEST_SERVICE_ROLE_KEY`（指向拋棄式 test schema）跑 `pnpm test:int`（RLS / reason API / Cost / golden）。
+- **覆蓋率門檻**（`vitest --coverage`，只對 FIE 新模組設 gate，不動既有）：`src/lib/creator-engine/reasoning/**` lines ≥ 85%、`scoring.ts` branches ≥ 90%。
+- **測試資料清理**：integration `afterAll` 以 `createSupabaseAdmin` 清掉 seed 的 workspace / fragments / reason runs（或每檔用獨立 `workspace_id`、跑完 `delete ... where workspace_id = $test`），`fileParallelism: false` 已避免並行互踩。
