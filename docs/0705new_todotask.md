@@ -4,28 +4,24 @@
 > 來源：全站數據真實性稽核 + Creator Island 靜默 bug 稽核 + 完課獎勵/證書 + gamification 伺服器化 + FIE 白皮書 v1.0。
 > 本輪**已完成**的不在此列（見 git log / memory）；此檔只列**還沒做**的。
 > 標記：優先序 P0(該做) / P1(中) / P2(可延)。每項含：問題 → 檔案位置 → 做法 → 驗收。
+> 進度更新（2026-07-05）：~~劃線~~＝已完成。已完成：#86 #87 #88（commit `ae21ca8`）、白皮書 v1.0 + Part II（#97–#101，commit `060c707`）。剩：#89–#96。
 
 ---
 
-## A. 資料真實性小修（幾行的小改，最快清）
+## A. 資料真實性小修（幾行的小改，最快清）　✅ 全部完成
 
-### #86 — LearningDashboard 的 ELO 小 tile 仍固定 1200　`P1`
+### ~~#86 — LearningDashboard 的 ELO 小 tile 仍固定 1200~~　✅ 已完成 `P1`
+> 已做：dashboard 查 `daily_quiz_attempts.elo_delta`，沒對戰紀錄就不顯示 ELO tile（grid 改 2 欄）。commit `ae21ca8`。
 - **問題**：`/me` 的大 ELO 卡已隱藏（沒對戰紀錄不顯示），但 `LearningDashboard.tsx` 裡的 ELO 小方塊仍讀 `profiles.elo_rating`（所有人=預設 1200），看起來像壞的。
 - **檔案**：`src/components/me/LearningDashboard.tsx`（ELO tile）；資料源 `src/app/me/dashboard/page.tsx`。
 - **做法**：跟 `/me` 一樣，判斷「有沒有 elo 對戰紀錄」（`daily_quiz_attempts.elo_delta` 非 null）才顯示該 tile；沒有就隱藏或改成「尚未開始解題對戰」。
 - **驗收**：新用戶 dashboard 不再出現固定 1200 的 ELO 方塊。
 
-### #87 — 排行榜「每天 00:00 更新」標籤誤導　`P2`
-- **問題**：`leaderboard` 其實是即時 SQL view，但頁面文案寫「每天 00:00 更新」。
-- **檔案**：`src/app/leaderboard/page.tsx`。
-- **做法**：文案改成「即時更新」或移除該句。
-- **驗收**：文案與實際行為一致。
+### ~~#87 — 排行榜「每天 00:00 更新」標籤誤導~~　✅ 已完成 `P2`
+> 已做：5 處文案「每天 00:00 更新」→「即時更新」（頁面每請求動態渲染＝即時）；保留「隔天 03:00 streak 重設」真排程。commit `ae21ca8`。
 
-### #88 — openrouter 用量 cost=0（缺費率）　`P2`
-- **問題**：有 1 筆 `ai_usage_daily`（openrouter, 約 79k tokens）`cost_usd=0`，因 `ai_models` 缺該 model 的 `cost_input_per_1m/cost_output_per_1m` → 成本低估。
-- **檔案**：DB `ai_models` 表（該 openrouter model 那列）；估價邏輯 `src/lib/ai-usage-log.ts` / `ai-providers.ts`。
-- **做法**：在 `ai_models` 補該 model 的費率；或估價找不到費率時 log 警告。
-- **驗收**：`ai_model_usage`/`ai_usage_daily` 對該 model 有非 0 成本。
+### ~~#88 — openrouter 用量 cost=0（缺費率）~~　✅ 已查證：非 bug `P2`
+> 查證結果：那筆 cost=0 是 OpenRouter **`google/gemma-4-31b-it:free`** 免費模型，`cost_input/output_per_1m=0` **本來就正確**（免費模型 $0）。稽核代理誤判成「缺費率」。**不改**（硬塞非 0 費率反而會讓免費模型虛報成本）。
 
 ---
 
@@ -99,9 +95,10 @@
 
 ## D. FIE 白皮書 v1.0　✅ 已完成（2026-07-05）
 
-> **產出：`docs/creator/AI_Island_FIE_v1_0.md`（4023 行，12 章 + 附錄 A–G）。**
-> 多代理工作流 19 個代理全成功；審校通過（12 章各區塊齊、無進度灌水、附錄 G 比較表完整、AI 島現況對照 30 處）。
-> #97 生成 12 章 ✅ · #98 附錄 A–G ✅ · #99 組稿 ✅ · #100 審校 ✅
+> **產出：`docs/creator/AI_Island_FIE_v1_0.md`（7579 行 = Part I 白皮書 + Part II 實作規格）。commit `79ef5a3` + `060c707`。**
+> ~~#97 生成 12 章~~ ✅ · ~~#98 附錄 A–G~~ ✅ · ~~#99 組稿~~ ✅ · ~~#100 審校~~ ✅ · ~~#101 Part II 實作規格~~ ✅
+> Part I：12 章 + 附錄 A–G（多代理 19 agent 全成功、審校通過、AI 島現況對照 30 處）。
+> Part II：II-1~II-10（完整 DDL+RLS / TS型別+JSON Schema / Pipeline 演算法 / Confidence 公式 / Prompt 模板 / API 契約 / 整合遷移 / 里程碑 M1-M5 / 測試計畫），全接地 `ci_*`。
 > 原 v0.3 稿 `AI_Island_Fragment_Intelligence_Engine_v0_3_COMPLETE.md` 保留未動（可留作歷史或封存）。
 
 <details><summary>原任務拆解（保留紀錄）</summary>
@@ -129,9 +126,44 @@
 
 ---
 
+## E. FIE 實作（依 `docs/creator/AI_Island_FIE_v1_0.md` Part II）
+
+> 規格已完整寫在白皮書 Part II（II-1~II-10）。以下依 II-9 里程碑拆成可執行 todo。
+> 全程**旁掛新增、不改既有** `/api/creator-island/ai/*`；新檔放 `src/lib/creator-engine/fie/`、新 API 放 `/api/creator-island/fie/`、新表 `ci_` 前綴 + RLS（比照 ci_fragments）。
+> 共通驗收基線：`tsc --noEmit` 0 error；API 過 `requireCreatorUser`+`requireWorkspaceRole`；AI 走 `callAI`+Cost Manager 寫 `ci_agent_runs`。
+> 相依**線性**：M1→M2→M3 硬相依；M4/M5 部分可在 M3 後並行（UI 用 mock）。每個 Mx 可獨立上線。
+
+### #102 — FIE M1：Fragment Representation 分層 + DDL　`P1`（先做）
+- **範圍**：`ci_fragments` 旁掛分層表徵（Surface/Semantic/Structural/Latent），不改既有欄位。
+- **產出**：migration `supabase/creator_island_fie_representation_migration.sql`（新表 `ci_fragment_representations` 1:1 對 ci_fragments、concept_embedding vector(1536)+ivfflat、RLS）；`src/lib/creator-engine/fie/representation.ts`（`buildRepresentation`/`upsertRepresentation`+zod）；`scripts/fie-backfill-representations.mjs`（可重跑、分頁）。沿用 `embedText`（需 OpenAI key）。
+- **DoD**：backfill 後 ci_fragments 與新表筆數一致；抽 5 筆各層非空、concept_embedding 非 null(1536)；可重跑 no-op；既有資料零破壞。詳見 II-9 M1。
+
+### #103 — FIE M2：Reasoning Pipeline（單 hypothesis）　`P1`
+- **範圍**：六階段端到端跑通、只走一條假設（Observation→Hypothesis→Evidence→Missing→單 Candidate→對齊 placeholder）。
+- **產出**：新表 `ci_reasoning_runs`（關聯 `ci_agent_runs`）；`ai/agents.ts` 加 `reason` agent（沿用 runAgent+zod `ReasoningOutputSchema`）；`fie/reason.ts`（`runReasoning`，用 `ci_related_fragments` 取 evidence）；`POST /api/creator-island/fie/reason`；最小 debug 面板。
+- **DoD**：帶 2 seed 回 status=done 六階段全非 null；`ci_agent_runs` 有對應列且 z_charged>0；evidence 的 fragment_id 真實存在；zod 失敗重試一次、二次 failed 不寫髒；非成員 403。詳見 II-9 M2。
+
+### #104 — FIE M3：多 Candidate + Confidence/Weight　`P1`
+- **範圍**：single→N candidate，每個帶 confidence(模型自評)+weight(系統算)，排序回 Top-K。
+- **產出**：新表 `ci_reasoning_candidates`（多對一 run、rank/confidence/weight/evidence_ids）；`reason` 輸出改 `candidates[]`；`fie/reason.ts` 加 `scoreCandidates`（weight 公式見 II-5，**純函數+單元測試**）；`/fie/reason` 回 `candidates[]`+`topK`。
+- **DoD**：≥3 candidate、rank 連續、weight 排序正確；scoreCandidates 有純函數測試可重現；evidence_ids ⊆ run 的 evidence；M2 舊回傳不破。詳見 II-9 M3。
+
+### #105 — FIE M4：Creator Context 三模式（Familiar/Adjacent/Exploratory）　`P2`
+- **範圍**：三模式改變 evidence 檢索範圍 + prompt + weight 的「對齊 vs 新奇」配比。
+- **產出**：`fie/modes.ts`（`resolveMode`、三檢索策略：Familiar=`ci_related_fragments`、Adjacent=concept 近鄰+跨 cluster、Exploratory=`ci_surprising_pairs`；`alignToCreator` 讀 `ci_creator_dna`）；三份 prompt 模板；`/fie/reason` 收 `mode`。
+- **DoD**：三模式 evidence 交集<50%；mode 正確記錄且 resolveMode 有決定性；alignToCreator 有 DNA 時影響排序、無 DNA 退中性；Exploratory 的 Top-1 novelty 高於 Familiar。詳見 II-9 M4。
+
+### #106 — FIE M5：Reasoning Trace UI + Feedback Loop　`P2`
+- **範圍**：完整推理鏈落成可回放 Trace；創作者採納/否決回寫 `ci_memories` 影響後續。
+- **產出**：新表 `ci_reasoning_trace`（逐階段）+`ci_reasoning_feedback`；`fie/reason.ts` 每階段 append trace；`fie/feedback.ts`（`recordFeedback`→寫 feedback + accepted 經 embedText 寫 `ci_memories`）；`GET /fie/reason/[runId]/trace`、`POST .../feedback`；Trace 視覺化 UI + 採納/否決按鈕。
+- **DoD**：trace 恰 6 stage、step_no 連續；evidence 可點回 ci_fragments；accepted 後 ci_memories 出現對應記憶(embedding 非 null)；feedback 影響後續 run（同 seed 前後 Top-1 變化 + ci_memory_usage 有引用）。詳見 II-9 M5。
+
+---
+
 ## 建議執行順序
-1. **A 組**（#86/#87/#88）——幾行小修，先清乾淨。
-2. **#93 + #92**——記憶/embeddings 讓 Creator Island 語意功能真的會動。
+1. ~~**A 組**（#86/#87/#88）~~　✅ 已清。
+2. **#93 + #92**（下一步建議）——記憶/embeddings 讓 Creator Island 語意功能真的會動（也是 FIE Part II 的地基）。
 3. **#90**（路徑證書）+ **#94/#96**（防濫用/RPC 小修）。
 4. **#89 / #91 / #95**——需先建底層系統或屬設計決策，排後面。
-5. **FIE 白皮書**（#97–#100）——獨立進行中，與程式碼工作不衝突。
+5. ~~**FIE 白皮書**（#97–#101，含 Part II）~~　✅ 已完成。
+6. **FIE 實作 #102–#106（M1→M5，線性）**——#93 embeddings 回填是 M1 的地基，建議先清 #93 再進 M1。
