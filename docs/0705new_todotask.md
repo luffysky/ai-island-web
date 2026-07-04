@@ -6,7 +6,8 @@
 > 標記：優先序 P0(該做) / P1(中) / P2(可延)。每項含：問題 → 檔案位置 → 做法 → 驗收。
 > 進度更新（2026-07-05）：~~劃線~~＝已完成。
 > **已完成**：#86 #87 #88（`ae21ca8`）、#93（`63c5410`）、#94 #96（`73d0e49`）、#90（`c6b05d7`）、#88/#95 查證為非缺陷、白皮書+Part II #97–#101（`060c707`）。
-> **剩**：#89（需先建底層系統）、#91（creator XP，設計決策）、#92（記憶系統，較大）；**FIE 實作 #102–#106**（M1 地基 #93 已備）。
+> **再完成（2026-07-05 下午）**：#92 記憶系統、#94/#96 RPC、#90 證書、**FIE M1–M5 #102–#106**、SECURITY DEFINER view 修復。
+> **剩**：#89（需先建底層系統）、#91（creator XP，設計決策）。
 
 ---
 
@@ -77,7 +78,8 @@
 
 ## C. 記憶 / Embeddings
 
-### #92 — 記憶系統剩餘（語意檢索 + candidate + 顯示 + embedding 回填）　`P1`
+### ~~#92 — 記憶系統剩餘（語意檢索 + candidate + 顯示 + embedding 回填）~~　✅ 已完成 `P1`
+> 已做：`ci_memories_semantic` RPC + `getInjectableMemory(queryText)` 語意注入；`createMemory` 設 embedding；DNA→候選記憶(candidate)；`/memory/used` API + 推理台顯示「用到的記憶」。
 - **問題**：記憶注入 prompt 有做、文字編輯已補；仍缺：
   1. 檢索是「最近用 `last_used_at`」而非**語意相關**。
   2. **candidate 推論流程沒做**（沒東西會產生 `status='candidate'` 的候選記憶）。
@@ -129,7 +131,13 @@
 
 ---
 
-## E. FIE 實作（依 `docs/creator/AI_Island_FIE_v1_0.md` Part II）
+## E. FIE 實作（依 `docs/creator/AI_Island_FIE_v1_0.md` Part II）　✅ M1–M5 全完成（2026-07-05）
+
+> 產出：5 表(ci_fragment_representations/reasoning_runs/candidates/trace/feedback)+`fie/{types,representation,reason,feedback}.ts`+`reason` agent+`/fie/reason*` API+`/creator-island/reason` 推理台 UI（含三模式/candidates/trace/採納否決/用到的記憶）+`fie-scoring.test.ts`(8 測試)。全 db:apply + 117 測試過。
+> ~~#102 M1~~ ✅ · ~~#103 M2~~ ✅ · ~~#104 M3~~ ✅ · ~~#105 M4~~ ✅ · ~~#106 M5~~ ✅
+
+<details><summary>原里程碑拆解（保留紀錄）</summary>
+
 
 > 規格已完整寫在白皮書 Part II（II-1~II-10）。以下依 II-9 里程碑拆成可執行 todo。
 > 全程**旁掛新增、不改既有** `/api/creator-island/ai/*`；新檔放 `src/lib/creator-engine/fie/`、新 API 放 `/api/creator-island/fie/`、新表 `ci_` 前綴 + RLS（比照 ci_fragments）。
@@ -161,11 +169,13 @@
 - **產出**：新表 `ci_reasoning_trace`（逐階段）+`ci_reasoning_feedback`；`fie/reason.ts` 每階段 append trace；`fie/feedback.ts`（`recordFeedback`→寫 feedback + accepted 經 embedText 寫 `ci_memories`）；`GET /fie/reason/[runId]/trace`、`POST .../feedback`；Trace 視覺化 UI + 採納/否決按鈕。
 - **DoD**：trace 恰 6 stage、step_no 連續；evidence 可點回 ci_fragments；accepted 後 ci_memories 出現對應記憶(embedding 非 null)；feedback 影響後續 run（同 seed 前後 Top-1 變化 + ci_memory_usage 有引用）。詳見 II-9 M5。
 
+</details>
+
 ---
 
 ## 建議執行順序
 1. ~~**A 組**（#86/#87/#88）~~　✅ 已清。
 2. ~~**#93**（embeddings 回填 cron）~~　✅ · ~~**#94/#96**（防濫用/RPC 小修）~~　✅ · ~~**#90**（路徑證書）~~　✅
-3. **剩下需你決策/較大**：#89（商店品項，需先建章節鎖/次數/cosmetic-render/倍率系統）、#91（creator XP，做或標 deprecated）、#92（記憶系統語意檢索+candidate+顯示，較大）。
+3. ~~**#92 記憶系統**~~　✅ · ~~**FIE 實作 #102–#106（M1→M5）**~~　✅ · ~~**SECURITY DEFINER view 修**~~　✅
 4. ~~**FIE 白皮書**（#97–#101，含 Part II）~~　✅ 已完成。
-5. **FIE 實作 #102–#106（M1→M5，線性）**——地基 #93 已備，可直接進 **M1（#102）**。
+5. **剩下需你決策/較大**：#89（商店品項，需先建章節鎖/次數/cosmetic-render/倍率系統）、#91（creator XP，做或標 deprecated）。
