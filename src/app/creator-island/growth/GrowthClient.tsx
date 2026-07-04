@@ -6,8 +6,15 @@ import { TrendingUp, ArrowLeft, Dna, Palmtree, AlertTriangle, Sparkles, Target, 
 
 type Dna = { traits: any; confidence: number; updated_at: string } | null;
 type WsLite = { id: string; name: string; type: "personal" | "studio" };
+type Equipped = { title?: string; name_color?: string; avatar_frame?: string };
 
-export function GrowthClient({ stats, initialDna, workspaces = [], scope = "all" }: { stats: { fragments: number; works: number; aiRuns: number }; initialDna: Dna; workspaces?: WsLite[]; scope?: string }) {
+function nameColorClass(v?: string): string {
+  if (v === "aurora") return "bg-gradient-to-r from-cyan-400 via-fuchsia-400 to-amber-300 bg-clip-text text-transparent";
+  if (v === "gold") return "text-amber-500 dark:text-amber-300";
+  return "";
+}
+
+export function GrowthClient({ stats, initialDna, workspaces = [], scope = "all", equipped = {}, displayName = "創作者" }: { stats: { fragments: number; works: number; aiRuns: number }; initialDna: Dna; workspaces?: WsLite[]; scope?: string; equipped?: Equipped; displayName?: string }) {
   const [dna, setDna] = useState<Dna>(initialDna);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -42,6 +49,13 @@ export function GrowthClient({ stats, initialDna, workspaces = [], scope = "all"
         <h1 className="text-2xl font-bold inline-flex items-center gap-1.5"><TrendingUp size={20} /> 成長</h1>
         <Link href="/creator-island" className="text-sm text-accent hover:underline inline-flex items-center gap-1.5"><ArrowLeft size={14} /> 回島</Link>
       </header>
+
+      {/* 身分：名稱（可帶名稱顏色）+ 裝備中的稱號 */}
+      <div className="flex items-center gap-2 flex-wrap">
+        <span className={`text-lg font-bold ${nameColorClass(equipped.name_color)}`}>{displayName}</span>
+        {equipped.title && <span className="text-xs px-2 py-0.5 rounded-full bg-accent/10 border border-accent/30 text-accent font-bold">{equipped.title}</span>}
+        <Link href="/store?tab=redeem" className="text-[11px] text-fg-muted hover:text-accent">＋ 裝飾</Link>
+      </div>
 
       {/* 範圍切換：個人島 vs 各工作室 vs 全部（碎片/作品本來就綁工作室、要能分開看） */}
       {workspaces.length > 0 && (

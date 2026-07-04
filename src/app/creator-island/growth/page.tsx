@@ -4,6 +4,7 @@ import { isCreatorIslandEnabled } from "@/lib/app-settings";
 import { FeatureOffNotice } from "@/components/FeatureOffNotice";
 import { getStats, getDNA } from "@/lib/creator-engine/growth";
 import { listWorkspaces } from "@/lib/creator-engine/workspace";
+import { getEquippedCosmetics } from "@/lib/store-redeem";
 import { GrowthClient } from "./GrowthClient";
 
 export const dynamic = "force-dynamic";
@@ -21,7 +22,11 @@ export default async function GrowthPage({ searchParams }: { searchParams: Promi
   const scope = ws ?? personal?.id ?? "all";
   const wsId = scope === "all" ? null : scope;
 
-  const [stats, dna] = await Promise.all([getStats(user.id, wsId), getDNA(user.id)]);
+  const [stats, dna, equipped, { data: prof }] = await Promise.all([
+    getStats(user.id, wsId), getDNA(user.id), getEquippedCosmetics(user.id),
+    sb.from("profiles").select("display_name, username").eq("id", user.id).maybeSingle(),
+  ]);
   const wsList = workspaces.map((w) => ({ id: w.id, name: w.name, type: w.type }));
-  return <GrowthClient stats={stats} initialDna={dna} workspaces={wsList} scope={scope} />;
+  const displayName = (prof as any)?.display_name || (prof as any)?.username || "創作者";
+  return <GrowthClient stats={stats} initialDna={dna} workspaces={wsList} scope={scope} equipped={equipped} displayName={displayName} />;
 }
