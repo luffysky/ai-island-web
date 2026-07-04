@@ -1,5 +1,7 @@
 import { getChapter, getAllChapters } from "@/lib/content";
 import { notFound } from "next/navigation";
+import { createSupabaseServer } from "@/lib/supabase-server";
+import { hasEarlyAccess } from "@/lib/store-redeem";
 import { ChapterView } from "@/components/chapter/ChapterView";
 import { ChapterResources } from "@/components/chapter/ChapterResources";
 import { AiSummaryBlock } from "@/components/chapter/AiSummaryBlock";
@@ -81,6 +83,23 @@ export default async function ChapterPage({ params }: { params: Promise<{ id: st
   const { id } = await params;
   const chapter = await getChapter(Number(id));
   if (!chapter) notFound();
+
+  // #89 未發布章節 gating：需商店「章節搶先」才可提前看（目前全部已發布、此為排程章節預留、零影響）
+  if (chapter.status && chapter.status !== "published") {
+    const sb = await createSupabaseServer();
+    const { data: { user } } = await sb.auth.getUser();
+    const allowed = user ? await hasEarlyAccess(user.id) : false;
+    if (!allowed) {
+      return (
+        <main className="max-w-lg mx-auto px-4 py-24 text-center space-y-4">
+          <div className="text-5xl">🔒</div>
+          <h1 className="text-xl font-bold">這章還沒正式發布</h1>
+          <p className="text-sm text-fg-muted">用商店的「章節搶先」就能提前看整章。</p>
+          <a href="/store?tab=redeem" className="inline-block px-5 py-2.5 rounded-full bg-accent text-white font-semibold">去解鎖</a>
+        </main>
+      );
+    }
+  }
 
   // JSON-LD：Course (含 author+reviewer) + Breadcrumb + ItemList(lessons) + FAQ
   const chapterUrl = `${SITE_URL}/chapters/${chapter.id}`;

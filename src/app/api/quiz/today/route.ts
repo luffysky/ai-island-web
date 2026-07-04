@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
+import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { chapters } from "@/data/chapters";
 import { pickQuestions, ELO_DEFAULT } from "@/lib/elo";
+import { consumeQuizCredit, quizCreditsLeft } from "@/lib/store-redeem";
 
 export const dynamic = "force-dynamic";
 
@@ -71,13 +73,14 @@ function toLeetQuestion(l: any): QuizQuestion {
   };
 }
 
-// GET /api/quiz/today
-export async function GET() {
+// GET /api/quiz/today  (?extra=1 用商店「額外測驗次數」再開一份)
+export async function GET(req: Request) {
   const supabase = await createSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
   const today = new Date().toISOString().slice(0, 10);
+  const extra = new URL(req.url).searchParams.get("extra") === "1";
 
   // 已存在 → 直接回（同一天鎖同一份考卷）
   const { data: existing } = await supabase
@@ -87,10 +90,15 @@ export async function GET() {
     .eq("quiz_date", today)
     .maybeSingle();
   if (existing) {
-    return NextResponse.json({
-      attempt: existing,
-      finished: !!existing.submitted_at,
-    });
+    // #89 額外測驗次數：今日已做完 + 有 credit + 明示 extra → 消耗 1 次 credit、重置今日考卷再開新的
+    if (extra && existing.submitted_at) {
+      const ok = await consumeQuizCredit(user.id);
+      if (!ok) return NextResponse.json({ attempt: existing, finished: true, noCredit: true, creditsLeft: 0 });
+      await createSupabaseAdmin().from("daily_quiz_attempts").delete().eq("user_id", user.id).eq("quiz_date", today);
+      // 往下產生新考卷
+    } else {
+      return NextResponse.json({ attempt: existing, finished: !!existing.submitted_at, creditsLeft: await quizCreditsLeft(user.id) });
+    }
   }
 
   // 最近 RECENT_DAYS 天出過的 source_id（防短期重複）

@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Coins, Crown, Check, Sparkles, CreditCard, Loader2, Info, Gift, Wallet, Palette } from "lucide-react";
+import { Coins, Crown, Check, Sparkles, CreditCard, Loader2, Info, Gift, Wallet, Palette, Zap } from "lucide-react";
 
 type Pkg = { id: string; twd: number; zcoin: number; bonusPct: number; popular?: boolean };
 type Plan = { id: string; label: string; twd: number; period: string; months: number; perMonth: number; popular?: boolean };
 type Provider = { id: string; label: string; fee: string; methods: string[] };
-type StoreItem = { id: string; category: "ai_credit" | "cosmetic"; name: string; desc: string; priceZ: number; effect: any };
+type StoreItem = { id: string; category: "ai_credit" | "cosmetic" | "boost" | "unlock" | "pet"; name: string; desc: string; priceZ: number; effect: any };
 type Cosmetic = { cosmetic_id: string; cosmetic_type: string; value: string; equipped: boolean };
 type Studio = { id: string; name: string };
 
@@ -33,7 +33,7 @@ export function StoreClient({ balance, isPro, packages, plans, perks, providers,
       const j = await res.json();
       if (!res.ok) throw new Error(j.message || j.error || "兌換失敗");
       if (typeof j.balance === "number") setBal(j.balance);
-      if (item.category === "cosmetic") setOwned((o) => [...o, { cosmetic_id: item.id, cosmetic_type: item.effect?.cosmeticType ?? "title", value: item.effect?.value ?? "", equipped: false }]);
+      if (item.category === "cosmetic" || item.category === "pet") setOwned((o) => [...o, { cosmetic_id: item.id, cosmetic_type: item.effect?.cosmeticType ?? "title", value: item.effect?.value ?? "", equipped: false }]);
       setRMsg("兌換成功 ✓");
     } catch (e: any) { setRErr(e.message); } finally { setRBusy(null); }
   }
@@ -152,9 +152,9 @@ export function StoreClient({ balance, isPro, packages, plans, perks, providers,
 
           {/* 裝飾 / 稱號 */}
           <div className="space-y-2">
-            <div className="text-sm font-bold inline-flex items-center gap-1.5"><Palette size={15} /> 裝飾・稱號（顯示在創作者島）</div>
+            <div className="text-sm font-bold inline-flex items-center gap-1.5"><Palette size={15} /> 裝飾・稱號・寵物造型</div>
             <div className="grid grid-cols-2 gap-3">
-              {catalog.filter((i) => i.category === "cosmetic").map((i) => {
+              {catalog.filter((i) => i.category === "cosmetic" || i.category === "pet").map((i) => {
                 const has = ownedIds.has(i.id);
                 const mine = owned.find((c) => c.cosmetic_id === i.id);
                 return (
@@ -174,6 +174,21 @@ export function StoreClient({ balance, isPro, packages, plans, perks, providers,
                   </div>
                 );
               })}
+            </div>
+          </div>
+
+          {/* Boost / 學習解鎖（消耗型，可重複買）*/}
+          <div className="space-y-2">
+            <div className="text-sm font-bold inline-flex items-center gap-1.5"><Zap size={15} /> Boost・學習解鎖</div>
+            <div className="grid grid-cols-2 gap-3">
+              {catalog.filter((i) => i.category === "boost" || i.category === "unlock").map((i) => (
+                <button key={i.id} onClick={() => redeem(i)} disabled={rBusy === i.id || bal < i.priceZ}
+                  className="text-left rounded-2xl border-2 border-border bg-bg-card p-4 hover:border-accent/40 disabled:opacity-40 transition">
+                  <div className="font-bold">{i.name}</div>
+                  <div className="text-xs text-fg-muted mt-0.5">{i.desc}</div>
+                  <div className="text-sm font-bold text-amber-600 dark:text-amber-300 mt-2 inline-flex items-center gap-1"><Coins size={14} /> {i.priceZ.toLocaleString()}{rBusy === i.id && <Loader2 size={13} className="animate-spin ml-1" />}</div>
+                </button>
+              ))}
             </div>
           </div>
 

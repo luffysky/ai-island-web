@@ -34,6 +34,34 @@ export function DailyQuizClient() {
   const [answers, setAnswers] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<{ correct: number; total: number; pass: boolean; reward_xp: number; reward_z: number } | null>(null);
+  const [creditsLeft, setCreditsLeft] = useState(0);
+  const [reloading, setReloading] = useState(false);
+
+  const applyPayload = (j: any) => {
+    if (j.empty) {
+      setEmpty(j.message);
+      setAttempt(null);
+      return;
+    }
+    setEmpty(null);
+    if (typeof j.creditsLeft === "number") setCreditsLeft(j.creditsLeft);
+    if (j.attempt) {
+      setAttempt(j.attempt);
+      if (j.finished && j.attempt.submitted_at) {
+        setResult({
+          correct: j.attempt.correct ?? 0,
+          total: j.attempt.total ?? 0,
+          pass: (j.attempt.correct ?? 0) / (j.attempt.total || 1) >= 0.6,
+          reward_xp: j.attempt.reward_xp,
+          reward_z: j.attempt.reward_z,
+        });
+        setAnswers(j.attempt.answers ?? []);
+      } else {
+        setResult(null);
+        setAnswers(Array(j.attempt.questions.length).fill(""));
+      }
+    }
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -41,22 +69,7 @@ export function DailyQuizClient() {
       .then((r) => r.json())
       .then((j) => {
         if (cancelled) return;
-        if (j.empty) {
-          setEmpty(j.message);
-        } else if (j.attempt) {
-          setAttempt(j.attempt);
-          setAnswers(Array(j.attempt.questions.length).fill(""));
-          if (j.finished && j.attempt.submitted_at) {
-            setResult({
-              correct: j.attempt.correct ?? 0,
-              total: j.attempt.total ?? 0,
-              pass: (j.attempt.correct ?? 0) / (j.attempt.total || 1) >= 0.6,
-              reward_xp: j.attempt.reward_xp,
-              reward_z: j.attempt.reward_z,
-            });
-            setAnswers(j.attempt.answers ?? []);
-          }
-        }
+        applyPayload(j);
       })
       .catch(() => toast.error("載入測驗失敗"))
       .finally(() => !cancelled && setLoading(false));
@@ -64,6 +77,25 @@ export function DailyQuizClient() {
       cancelled = true;
     };
   }, []);
+
+  // #89 商店「額外測驗次數」：消耗 1 次 credit、重抽今日考卷
+  const retryExtra = async () => {
+    setReloading(true);
+    try {
+      const j = await fetch("/api/quiz/today?extra=1").then((r) => r.json());
+      if (j.noCredit) {
+        setCreditsLeft(0);
+        toast.warning("沒有可用的測驗次數了");
+        return;
+      }
+      applyPayload(j);
+      toast.success("已用 1 次測驗次數、重新抽題");
+    } catch {
+      toast.error("重抽失敗");
+    } finally {
+      setReloading(false);
+    }
+  };
 
   const submit = async () => {
     if (!attempt) return;
@@ -134,6 +166,16 @@ export function DailyQuizClient() {
           <div className="text-xs text-fg-muted mt-2">
             明天再來、題庫會重新抽。今天的解答都在下方。
           </div>
+          {creditsLeft > 0 && (
+            <button
+              onClick={retryExtra}
+              disabled={reloading}
+              className="mt-3 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-accent/15 text-accent font-semibold text-sm hover:bg-accent/25 disabled:opacity-50"
+            >
+              {reloading ? <Loader2 size={14} className="animate-spin" /> : <RotateCcw size={14} />}
+              再測一次（剩 {creditsLeft} 次測驗次數）
+            </button>
+          )}
         </div>
       )}
 

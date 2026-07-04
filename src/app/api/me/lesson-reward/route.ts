@@ -4,6 +4,7 @@ import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { grantZcoinOnce } from "@/lib/zcoin";
 import { calcXp, isTaipeiWeekend } from "@/lib/dynamic-xp";
+import { getActiveXpMultiplier } from "@/lib/store-redeem";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -96,8 +97,10 @@ export async function POST(req: NextRequest) {
       isBirthday: false,
       hasDoubleCoinBuff: false,
     });
-    awardedXp = decision.finalXp;
-    multiplier = decision.multiplier;
+    // #89 XP 加倍卡：套用商店 boost 倍率
+    const xpMult = await getActiveXpMultiplier(user.id);
+    awardedXp = Math.round(decision.finalXp * xpMult);
+    multiplier = decision.multiplier * xpMult;
     // 寫進度（AFTER INSERT trigger 會加 XP + 更新 streak + 寫 xp_event，只第一次）
     const { error: insErr } = await admin.from("lesson_progress").insert({
       user_id: user.id, chapter_id: chapterId, lesson_id: lessonId,
