@@ -31,6 +31,30 @@ export default async function ConversationsPage() {
     .order("updated_at", { ascending: false })
     .limit(100);
 
+  // 創作者島「綠寶」對話（ci_chat_sessions，訊息內嵌 JSONB、user_id 無 FK → 手動補 profile）
+  const { data: ciRows } = await supabase
+    .from("ci_chat_sessions")
+    .select("id, workspace_id, user_id, title, messages, created_at, updated_at")
+    .order("updated_at", { ascending: false })
+    .limit(100);
+  const ciUserIds = [...new Set(((ciRows ?? []) as any[]).map((r) => r.user_id).filter(Boolean))];
+  const ciWsIds = [...new Set(((ciRows ?? []) as any[]).map((r) => r.workspace_id).filter(Boolean))];
+  const [{ data: ciProfiles }, { data: ciWorkspaces }] = await Promise.all([
+    ciUserIds.length ? supabase.from("profiles").select("id, username, display_name").in("id", ciUserIds) : Promise.resolve({ data: [] as any[] }),
+    ciWsIds.length ? supabase.from("ci_workspaces").select("id, name").in("id", ciWsIds) : Promise.resolve({ data: [] as any[] }),
+  ]);
+  const profById = new Map(((ciProfiles ?? []) as any[]).map((p) => [p.id, p]));
+  const wsById = new Map(((ciWorkspaces ?? []) as any[]).map((w) => [w.id, w.name]));
+  const ciConvs = ((ciRows ?? []) as any[]).map((r) => ({
+    id: r.id,
+    title: r.title,
+    updated_at: r.updated_at,
+    created_at: r.created_at,
+    workspace_name: wsById.get(r.workspace_id) ?? null,
+    profiles: profById.get(r.user_id) ?? null,
+    messages: Array.isArray(r.messages) ? r.messages : [],
+  }));
+
   if (error?.message?.includes("does not exist")) {
     return (
       <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-6 text-sm">
@@ -53,7 +77,7 @@ export default async function ConversationsPage() {
         borderColor="border-violet-500/30"
       />
 
-      <ConversationsClient convs={(convs ?? []) as any} isOwner={isOwner} />
+      <ConversationsClient convs={(convs ?? []) as any} ciConvs={ciConvs as any} isOwner={isOwner} />
     </div>
   );
 }

@@ -25,19 +25,31 @@ type Message = {
   cost_usd?: number | null;
 };
 
+type CiConv = {
+  id: string;
+  title: string | null;
+  updated_at: string;
+  created_at: string;
+  workspace_name: string | null;
+  profiles: { username?: string | null; display_name?: string | null } | null;
+  messages: { role: string; content: string }[];
+};
+
 const PERSONA: Record<string, string> = {
   greenbao: "💎 綠寶",
   feizai: "🍔 肥仔",
   guba: "🍄 菇寶",
 };
 
-export function ConversationsClient({ convs, isOwner }: { convs: Conv[]; isOwner: boolean }) {
+export function ConversationsClient({ convs, ciConvs = [], isOwner }: { convs: Conv[]; ciConvs?: CiConv[]; isOwner: boolean }) {
+  const [view, setView] = useState<"tutor" | "creator">("tutor");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [convDetail, setConvDetail] = useState<any | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [msgSearch, setMsgSearch] = useState("");
+  const [ciSelected, setCiSelected] = useState<CiConv | null>(null);
 
   useEffect(() => {
     if (!selectedId) {
@@ -63,6 +75,66 @@ export function ConversationsClient({ convs, isOwner }: { convs: Conv[]; isOwner
 
   return (
     <>
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => setView("tutor")}
+          className={`px-3 py-1.5 rounded-full text-sm font-semibold border transition ${view === "tutor" ? "bg-accent text-black border-transparent" : "border-border text-fg-muted hover:text-fg"}`}
+        >
+          🎓 學習導師（{convs.length}）
+        </button>
+        <button
+          onClick={() => setView("creator")}
+          className={`px-3 py-1.5 rounded-full text-sm font-semibold border transition ${view === "creator" ? "bg-accent text-black border-transparent" : "border-border text-fg-muted hover:text-fg"}`}
+        >
+          💎 創作者島・綠寶（{ciConvs.length}）
+        </button>
+      </div>
+
+      {view === "creator" ? (
+        <div className="bg-bg-card border border-border rounded-xl overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-bg-elevated text-left text-xs text-fg-muted uppercase">
+              <tr>
+                <th className="px-4 py-3">主題</th>
+                <th className="px-4 py-3">用戶</th>
+                <th className="px-4 py-3">工作區</th>
+                <th className="px-4 py-3">訊息數</th>
+                <th className="px-4 py-3">最後更新</th>
+                {isOwner && <th className="px-4 py-3 w-24"></th>}
+              </tr>
+            </thead>
+            <tbody>
+              {ciConvs.length === 0 ? (
+                <tr><td colSpan={isOwner ? 6 : 5} className="px-4 py-8 text-center text-fg-muted">還沒有綠寶對話</td></tr>
+              ) : (
+                ciConvs.map((c) => (
+                  <tr key={c.id} className="border-t border-border hover:bg-bg-elevated">
+                    <td className="px-4 py-3 max-w-xs truncate">{c.title || "(無標題)"}</td>
+                    <td className="px-4 py-3">
+                      <Link href={`/admin/users?q=${c.profiles?.username}` as any} className="hover:text-accent">
+                        {c.profiles?.display_name || c.profiles?.username || "—"}
+                      </Link>
+                    </td>
+                    <td className="px-4 py-3 text-xs text-fg-muted max-w-[10rem] truncate">{c.workspace_name || "—"}</td>
+                    <td className="px-4 py-3 text-xs tabular-nums">{c.messages.length}</td>
+                    <td className="px-4 py-3 text-xs text-fg-muted">{new Date(c.updated_at).toLocaleString("zh-TW")}</td>
+                    {isOwner && (
+                      <td className="px-4 py-3">
+                        <button
+                          onClick={() => setCiSelected(c)}
+                          className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded border border-border hover:border-accent hover:text-accent"
+                        >
+                          <MessageSquare size={11} /> 看內容
+                        </button>
+                      </td>
+                    )}
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      ) : (
       <div className="bg-bg-card border border-border rounded-xl overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-bg-elevated text-left text-xs text-fg-muted uppercase">
@@ -106,6 +178,7 @@ export function ConversationsClient({ convs, isOwner }: { convs: Conv[]; isOwner
           </tbody>
         </table>
       </div>
+      )}
 
       {isOwner && selectedId && (
         <div
@@ -195,6 +268,56 @@ export function ConversationsClient({ convs, isOwner }: { convs: Conv[]; isOwner
                       ))
                   )}
                 </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isOwner && ciSelected && (
+        <div
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center p-4"
+          onClick={() => setCiSelected(null)}
+        >
+          <div
+            className="bg-bg-card border border-border rounded-2xl w-full max-w-3xl max-h-[85vh] flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="border-b border-border px-4 py-3 flex items-center justify-between sticky top-0 bg-bg-card rounded-t-2xl">
+              <h3 className="font-bold inline-flex items-center gap-1.5">💎 綠寶對話</h3>
+              <button onClick={() => setCiSelected(null)} className="p-1 text-fg-muted hover:text-fg">
+                <X size={16} />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+              <div className="text-xs text-fg-muted pb-3 border-b border-border space-y-1">
+                <div className="font-semibold text-sm text-fg">{ciSelected.title || "(無標題)"}</div>
+                <div>
+                  用戶：{ciSelected.profiles?.display_name || ciSelected.profiles?.username || "—"} ·
+                  工作區：{ciSelected.workspace_name || "—"} · 建立：{formatTW(ciSelected.created_at)}
+                </div>
+              </div>
+              {ciSelected.messages.length === 0 ? (
+                <div className="text-center text-fg-muted text-sm py-8">此對話沒有訊息</div>
+              ) : (
+                ciSelected.messages.map((m, i) => (
+                  <div
+                    key={i}
+                    className={`group/msg p-3 rounded-2xl relative shadow-sm ${
+                      m.role === "user"
+                        ? "bg-gradient-to-br from-accent/15 to-accent-2/10 ml-8 border border-accent/20"
+                        : "bg-gradient-to-br from-emerald-500/10 to-teal-500/5 mr-8 border border-emerald-500/20"
+                    }`}
+                  >
+                    <div className="text-[10px] text-fg-muted mb-1 flex items-center gap-2">
+                      <span className="font-bold">{m.role === "user" ? "用戶" : "💎 綠寶"}</span>
+                      <span className="md:opacity-0 md:group-hover/msg:opacity-100 transition ml-auto">
+                        <CopyButton text={m.content} size={10} />
+                      </span>
+                    </div>
+                    <div className="text-sm whitespace-pre-wrap break-words">{m.content || <span className="text-fg-muted italic">(空)</span>}</div>
+                  </div>
+                ))
               )}
             </div>
           </div>
