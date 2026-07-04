@@ -106,7 +106,28 @@ export class GamificationEngine {
 
     await this.checkAchievements(user.id, { type: 'lesson_complete', chapterId, lessonId });
 
-    return { success: true, level: after?.level, xp: after?.xp, streak: after?.streak_days, awardedXp: xp, baseXp, multiplier: decision.multiplier };
+    // 伺服器端獎勵：首次完成小節 5 Z幣 + 整章全部完成 → 發證書 + 章節獎勵（server-authoritative、冪等）
+    let reward: any = null;
+    try {
+      reward = await fetch('/api/me/lesson-reward', {
+        credentials: 'include',
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chapterId, lessonId }),
+      }).then((r) => (r.ok ? r.json() : null));
+      if (reward?.cert?.justIssued) this.celebrateChapterCert();
+    } catch { /* fail-soft，不擋主流程 */ }
+
+    return { success: true, level: after?.level, xp: after?.xp, streak: after?.streak_days, awardedXp: xp, baseXp, multiplier: decision.multiplier, reward };
+  }
+
+  private celebrateChapterCert() {
+    // 整章完課 → 盛大慶祝（金色）
+    confetti({ particleCount: 260, spread: 110, origin: { y: 0.55 }, colors: ['#ffd700', '#ffed4a', '#50fa7b', '#8be9fd', '#ff79c6'] });
+    setTimeout(() => {
+      confetti({ particleCount: 120, angle: 60, spread: 60, origin: { x: 0 }, colors: ['#ffd700', '#ffed4a'] });
+      confetti({ particleCount: 120, angle: 120, spread: 60, origin: { x: 1 }, colors: ['#ffd700', '#ffed4a'] });
+    }, 350);
   }
 
   /**

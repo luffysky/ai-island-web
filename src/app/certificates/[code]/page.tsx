@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Award } from "lucide-react";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { ShareButton } from "@/components/share/ShareButton";
+import { CertActions } from "./CertActions";
 
 export const dynamic = "force-dynamic";
 
@@ -67,7 +68,7 @@ export default async function CertificatePage({ params }: { params: Promise<{ co
   return (
     <main className="max-w-xl mx-auto px-4 py-12 space-y-6">
       {/* 證書卡 */}
-      <div className="relative rounded-3xl border-2 border-yellow-500/50 bg-gradient-to-br from-yellow-500/15 via-orange-500/10 to-bg-card p-8 text-center overflow-hidden">
+      <div id="cert-card" className="relative rounded-3xl border-2 border-yellow-500/50 bg-gradient-to-br from-yellow-500/15 via-orange-500/10 to-bg-card p-8 text-center overflow-hidden">
         <div className="absolute -top-24 -right-16 w-64 h-64 rounded-full bg-yellow-400/10 blur-3xl" />
         <div className="relative">
           <Award size={56} className="text-yellow-400 mx-auto mb-3" />
@@ -86,13 +87,17 @@ export default async function CertificatePage({ params }: { params: Promise<{ co
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center justify-center gap-3">
+      <div className="cert-no-print flex flex-wrap items-center justify-center gap-3">
         <ShareButton
           url={`${SITE_URL}/certificates/${code}`}
           title={`${cert.learner} 的完課證書：${cert.title}`}
           text={`我在 AI 島完成了「${cert.title}」🎓`}
           label="炫耀這張證書"
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-semibold hover:opacity-90 transition"
+        />
+        <CertActions
+          ogImageUrl={`${SITE_URL}/api/og/cert?title=${encodeURIComponent(cert.title)}&name=${encodeURIComponent(cert.learner)}&code=${encodeURIComponent(cert.verification_code || "")}`}
+          fileBase={`AI島完課證書-${cert.title}`}
         />
         <Link href="/chapters" className="px-5 py-2.5 rounded-full border border-border hover:bg-bg-elevated transition">來 AI 島學習</Link>
       </div>
