@@ -90,8 +90,8 @@ export default async function MeOverviewPage() {
       {/* 每日簽到 */}
       <DailyCheckin />
 
-      {/* 解題段位 (ELO) */}
-      <EloProgress rating={eloRating} recentDeltas={recentDeltas} />
+      {/* 解題段位 (ELO)：有對戰紀錄（做過 leetcode 測驗）才顯示，否則所有人都是預設 1200、意義不大 */}
+      {recentDeltas.length > 0 && <EloProgress rating={eloRating} recentDeltas={recentDeltas} />}
 
       {/* 統計 */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">

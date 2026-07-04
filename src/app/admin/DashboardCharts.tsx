@@ -123,27 +123,8 @@ export function DashboardCharts({
         </ChartCard>
       </div>
 
-      {/* 第三排：Retention + 裝置 + Hourly */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <ChartCard
-          title={<><BarChart3 className="w-4 h-4" /> Retention（D1-D30）</>}
-          subtitle="新註冊用戶留存率"
-        >
-          {retentionData.length === 0 ? (
-            <Empty />
-          ) : (
-            <ResponsiveContainer width="100%" height={200}>
-              <LineChart data={retentionData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-                <XAxis dataKey="day" stroke="#999" fontSize={10} />
-                <YAxis stroke="#999" fontSize={10} domain={[0, 100]} />
-                <Tooltip {...tooltipStyle} formatter={(v: any) => `${v}%`} />
-                <Line type="monotone" dataKey="retention" stroke="#ffb86c" strokeWidth={2} dot={{ r: 3 }} />
-              </LineChart>
-            </ResponsiveContainer>
-          )}
-        </ChartCard>
-
+      {/* 第三排：裝置 + Hourly（Retention 留存分析在 /admin/cohort，此處不重複空圖）*/}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <ChartCard title={<><Smartphone className="w-4 h-4" /> 裝置分佈</>} subtitle="近 7 天">
           {deviceData.length === 0 ? (
             <Empty />

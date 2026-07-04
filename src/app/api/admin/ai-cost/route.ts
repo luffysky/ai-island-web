@@ -106,12 +106,20 @@ export async function GET(req: NextRequest) {
     .sort((a, b) => b.cost_usd - a.cost_usd)
     .slice(0, 10);
 
-  // breakeven: monthly NT$ 299 ≈ $9.5 USD (TWD/USD ~31.5)
-  // assume gross margin target 70% → AI cost budget per paid user $2.85/月
-  const monthlyPriceUsd = 299 / 31.5;
-  const yearlyPriceUsd = 2999 / 31.5 / 12;
-  const grossMarginTarget = 0.7;
+  // breakeven 的「商業假設」值可由 app_settings 覆寫（否則用預設）。這些是假設、非實測；
+  // 實際 AI 成本（actual_avg_cost）才是量測值。
+  const { data: pricingRows } = await admin.from("app_settings").select("key, value")
+    .in("key", ["pricing_monthly_twd", "pricing_yearly_twd", "pricing_usd_twd_rate", "pricing_gross_margin"]);
+  const pMap = new Map(((pricingRows as any[]) ?? []).map((r) => [r.key, r.value]));
+  const num = (k: string, d: number) => { const v = Number(pMap.get(k)); return Number.isFinite(v) && v > 0 ? v : d; };
+  const monthlyTwd = num("pricing_monthly_twd", 299);
+  const yearlyTwd = num("pricing_yearly_twd", 2999);
+  const usdTwdRate = num("pricing_usd_twd_rate", 31.5);
+  const grossMarginTarget = num("pricing_gross_margin", 0.7);
+  const monthlyPriceUsd = monthlyTwd / usdTwdRate;
+  const yearlyPriceUsd = yearlyTwd / usdTwdRate / 12;
   const breakeven = {
+    assumptions: { monthly_twd: monthlyTwd, yearly_twd: yearlyTwd, usd_twd_rate: usdTwdRate, gross_margin_target: grossMarginTarget, note: "商業假設值，可在 app_settings 調整（pricing_*）；actual_avg_cost 才是實測" },
     monthly_plan: {
       revenue_usd: Math.round(monthlyPriceUsd * 100) / 100,
       ai_budget_70pct_margin: Math.round(monthlyPriceUsd * (1 - grossMarginTarget) * 100) / 100,
