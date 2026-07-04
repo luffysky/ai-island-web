@@ -70,6 +70,14 @@ PAYMENTS_LIVE=1
 - **Supabase Realtime（協作用）**：Yjs 協作走 Realtime broadcast。到 Supabase → Realtime 確認已啟用。**正式環境建議**再開 **Realtime Authorization / RLS**（對 `realtime.messages` 依 `ci_workspace_members` 設 policy），讓非成員連 channel 都進不來（現在是 UI 層擋、傳輸層未擋）。
 - **輪替金鑰**（你說等專案完成再做）：Supabase `service_role` key + DB 密碼。`.env.local` 有真值、已 gitignore；輪替後記得同步 Zeabur。
 - **migrations 追蹤（選配）**：這次的 `supabase/*.sql` **都已直接套用到正式 DB**；若要納入可重跑清單，把檔名加進 `scripts/run-migrations.mjs`（都是 idempotent）。
+  <br>本輪（2026-07 創作者島 / 商店 / FIE / 安全）已套用、但**尚未**進 `run-migrations.mjs` 的檔（重建 DB 時要補跑，全 idempotent）：
+  - `creator_island_store_effects_migration.sql` — 商店兌換效果表 `ci_store_effects` + `ci_consume_store_effect` RPC（#89）
+  - `creator_island_chat_sessions_migration.sql` — 綠寶對話 `ci_chat_sessions`（後台對話紀錄靠它）
+  - `creator_island_fie_migration.sql` — FIE 推理引擎 5 張表
+  - `creator_island_memory_semantic_migration.sql` — 記憶語意檢索 `ci_memories_semantic` RPC
+  - `fix_function_security_migration.sql` — 14 支 SECURITY DEFINER 函式 REVOKE FROM PUBLIC + GRANT service_role（Supabase linter 修正）
+  - `security_invoker_views_migration.sql` — 3 個 view 設 `security_invoker=on`（Supabase linter 修正）
+  > 套用指令：`npm run db:apply -- -Files supabase/<檔名>.sql`（一次一檔）。
 
 ---
 
