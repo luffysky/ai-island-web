@@ -7,7 +7,8 @@
 > 進度更新（2026-07-05）：~~劃線~~＝已完成。
 > **已完成**：#86 #87 #88（`ae21ca8`）、#93（`63c5410`）、#94 #96（`73d0e49`）、#90（`c6b05d7`）、#88/#95 查證為非缺陷、白皮書+Part II #97–#101（`060c707`）。
 > **再完成（2026-07-05 下午）**：#92 記憶系統、#94/#96 RPC、#90 證書、**FIE M1–M5 #102–#106**、SECURITY DEFINER view 修復。
-> **剩**：#89（需先建底層系統）、#91（creator XP，設計決策）。
+> **最後完成（2026-07-05 晚）**：**#89 商店兌換效果全接上**（`435e61e`）、**#91 Creator XP 系統**（`3a2470a`）、函式安全 REVOKE FROM PUBLIC（`fix_function_security`）、綠寶對話暗色白字修+美化（`a5e9e54`）、綠寶對話進後台（`f7e7b8f`）。
+> **剩**：✅ **無**——此清單全部完成。
 
 ---
 
@@ -30,7 +31,14 @@
 
 ## B. Creator Island 經濟 / 市集 / 證書 中型項
 
-### #89 — 商店「花 Z 幣兌換」剩餘品項（需先建底層系統）　`P1`
+### ~~#89 — 商店「花 Z 幣兌換」剩餘品項（需先建底層系統）~~　✅ 已完成 `P1`
+> 已做：底層 `ci_store_effects` 表 + `ci_consume_store_effect` RPC（原子扣次）。5 種效果全接上並可驗證：
+> 1. **章節搶先** → `chapters/[id]` 未發布章 gating（`hasEarlyAccess`，排程章預留）
+> 2. **測驗次數** → `/api/quiz/today?extra=1` 消耗 credit 重抽；`DailyQuizClient` 加「再測一次（剩 N 次）」按鈕
+> 3. **寵物造型** → `ci_user_cosmetics` 加 `pet_skin`；`me/pet/evolve` 顯示裝備造型徽章
+> 4. **Boost（XP 加倍）** → `getActiveXpMultiplier` 接進 `lesson-reward` server 端算 XP
+> 5. **補簽卡** → `streak_restore` 即時補 `profiles.streak_days`
+> catalog+UI 全上（pet/boost/unlock 分類渲染）。tsc0/eslint0/build0/117測試過/DB探針OK。commit `435e61e`。
 - **問題**：兌換分頁目前只做了 **AI 額度加值** + **裝飾/稱號**（已上線）。「章節搶先 / 測驗次數 / 寵物造型 / Boost」尚未做，因為對應底層系統不存在。
 - **底層現況**：`profiles` 無 cosmetic 欄位；章節無 per-user 鎖定；無測驗次數上限；無 XP 倍率/補簽 hook。
 - **檔案**：catalog `src/lib/store-redeem.ts`（加 item + effect kind）；UI `src/app/store/StoreClient.tsx`；效果各接對應系統。
@@ -48,7 +56,8 @@
 - **做法**：定義 path/all 完成條件（例：某 stage 全部章節完成→path 證書；全 80 章完成→all 證書），在完課檢查時一併判斷、`cert_key='path_xxx'`/`'all'` 發證（冪等靠 `UNIQUE(user_id,cert_key)`）。
 - **驗收**：完成一個學習路徑 → 自動拿到 path 證書，可下載圖片/PDF。
 
-### #91 — Creator XP 表接線（ci_creator_stats/creator_xp 死碼）　`P2`
+### ~~#91 — Creator XP 表接線（ci_creator_stats/creator_xp 死碼）~~　✅ 已完成 `P2`
+> 已做真系統（非標 deprecated）：`growth.ts` 加 `creatorLevel(xp)` 換算 + `bumpCreatorXp(userId,delta)`（upsert 累加 `ci_creator_stats.creator_xp`）。寫入點：寫碎片 +3、產出作品 +20、FIE 推理 +5（`fragments`/`works`/`fie/reason` 三 route）。`GrowthClient` 在 XP>0 時顯示「🎨 創作者 Lv N + Creator XP」。commit `3a2470a`。
 - **問題**：`ci_creator_stats`/`creator_xp` 整表從沒被寫；`growth.ts getStats` 改用即時 COUNT（畫面正常，但 spec 的 creator XP/等級/成就沒接）。
 - **檔案**：`src/lib/creator-engine/growth.ts`；建立/作品/AI 動作的寫入點（`creator-engine` 各 service）。
 - **做法**：決定要不要真的做 creator XP 系統。若要：在 fragment/work/agent 成功時 bump `ci_creator_stats.creator_xp`（RPC 或 upsert，冪等）；否則正式把該表標為 deprecated。
@@ -178,4 +187,9 @@
 2. ~~**#93**（embeddings 回填 cron）~~　✅ · ~~**#94/#96**（防濫用/RPC 小修）~~　✅ · ~~**#90**（路徑證書）~~　✅
 3. ~~**#92 記憶系統**~~　✅ · ~~**FIE 實作 #102–#106（M1→M5）**~~　✅ · ~~**SECURITY DEFINER view 修**~~　✅
 4. ~~**FIE 白皮書**（#97–#101，含 Part II）~~　✅ 已完成。
-5. **剩下需你決策/較大**：#89（商店品項，需先建章節鎖/次數/cosmetic-render/倍率系統）、#91（creator XP，做或標 deprecated）。
+5. ~~**剩下需你決策/較大**：#89（商店品項）、#91（creator XP）~~　✅ 兩者皆做成真系統完成（`435e61e` / `3a2470a`）。
+
+---
+
+## ✅ 全清單完成（2026-07-05）
+本檔所有項目已完成或查證為非缺陷。#89/#91 為最後兩項，均已建成**真實可驗證系統**（非佔位、非標 deprecated）。後續新工作另開檔。
