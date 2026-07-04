@@ -1,6 +1,6 @@
 # 工作日誌 2026-07-05
 
-> 本日大工程：Creator Island 深度稽核修復 → 經濟/證書/獎勵 → 全站數據真實性 → gamification 伺服器化 → FIE 白皮書 v1.0 + 實作規格 → FIE M1–M5 實作 → 記憶系統 → 安全修復。全程 typecheck 0、測試 117 passed、DB 皆 db:apply + probe 驗證。
+> 本日大工程：Creator Island 深度稽核修復 → 經濟/證書/獎勵 → 全站數據真實性 → gamification 伺服器化 → FIE 白皮書 v1.0 + 實作規格 → FIE M1–M5 實作 → 記憶系統 → 安全修復 → #89 商店兌換效果 + #91 Creator XP（兩項最後 todo 收尾）→ 綠寶對話修 UI/進後台 → CI build 修。全程 typecheck 0、lint 0 error、build exit 0、測試 117 passed、DB 皆 db:apply + probe 驗證。`docs/0705new_todotask.md` 全清單完成。
 
 ## 一、Creator Island 靜默 bug 修復（有 UI/表但沒真接）
 - 市集「買了等於白買」→ 買=複製資產進買家 workspace + 已上架資產擋免費 fork。
@@ -44,12 +44,37 @@
 
 ## 八、安全 / RPC 修
 - **SECURITY DEFINER view** 3 個 ERROR（Supabase linter）→ 套用既有 `security_invoker_views_migration.sql`（5 view 全設 security_invoker=on，資料完好）。
+- **SECURITY DEFINER 函式權限**（Supabase linter WARN）：14 支給值/改狀態的函式（grant_zcoin/award_z_coin/increment_profile_xp/ci_fruit_tx/ci_dust_tx/ci_debit_workspace_wallet/ci_purchase_listing/…）原本 EXECUTE 預設 grant 給 PUBLIC → anon 可直接呼叫。`fix_function_security_migration.sql`：`REVOKE FROM PUBLIC` + `GRANT service_role`。實測 anon→grant_zcoin 回「permission denied」、service_role 正常。
 - RPC：workflow asset-ref 不再放行、重複購買回 id、錯誤訊息 `(%s)→(%)`。
 
-## 驗證
-- `tsc --noEmit` 0 error；`vitest` **117 passed（14 檔）**；所有 migration db:apply + node probe 驗證；DB 欄位稽核（audit-db-columns）我改的檔零錯接；362 route 全有 export；新 UI RWD 響應式、無固定寬。
-- 連接性：FIE UI↔API↔後端↔表全接通；記憶 used API 已由推理台呼叫。
+## 九、#89 商店兌換效果全接上（真系統）
+- 底層：`ci_store_effects` 表 + `ci_consume_store_effect` RPC（原子扣次、FOR UPDATE、service_role only）。
+- 5 種效果全接且可驗證：
+  1. **XP 加倍卡** → `getActiveXpMultiplier` 接進 `/api/me/lesson-reward` 伺服器端算 XP。
+  2. **測驗次數** → `/api/quiz/today?extra=1` 消耗 credit 重抽考卷；`DailyQuizClient` 加「再測一次（剩 N 次）」按鈕（原本買了無處可用）。
+  3. **寵物造型** → `ci_user_cosmetics` 加 `pet_skin`；`me/pet/evolve` 顯示裝備造型徽章。
+  4. **章節搶先** → `chapters/[id]` 未發布章 `hasEarlyAccess` gating（排程章預留）。
+  5. **補簽卡** → `streak_restore` 即時補 `profiles.streak_days`。
+- catalog + `StoreClient` 全上（pet/boost/unlock 分類渲染）。commit `435e61e`。
 
-## 剩餘（未做，需決策/底層系統）
-- #89 商店章節搶先/測驗次數/寵物造型/Boost（需先建對應底層）。
-- #91 Creator XP 表（做 or 標 deprecated）。
+## 十、#91 Creator XP（真系統，非標 deprecated）
+- `growth.ts`：`creatorLevel(xp)` 換算 + `bumpCreatorXp(userId,delta)`（upsert 累加 `ci_creator_stats.creator_xp`）。
+- 寫入點：寫碎片 +3、產出作品 +20、FIE 推理 +5（`fragments`/`works`/`fie/reason` 三 route）。
+- `GrowthClient` 在 XP>0 顯示「🎨 創作者 Lv N + Creator XP」。commit `3a2470a`。
+
+## 十一、綠寶對話 UI 修 + 進後台
+- **暗色模式白字看不清**：使用者訊息泡泡 `text-white`→`text-black`（暗色 accent 是亮綠 #50fa7b、白字低對比；沿用 globals.css 既有系統，明亮模式自動翻白）。同 bug 的好友訊息 `MessagesClient` 一併修。
+- **對話介面美化**：`IslandChat` 重繪（品牌漸層氣泡+氣泡尾、綠寶頭像、打字中三點動畫、header 在線狀態、送出鍵漸層）。commit `a5e9e54`。
+- **綠寶對話進後台**：AI 對話紀錄頁加分頁「🎓 學習導師 / 💎 創作者島・綠寶」；讀 `ci_chat_sessions`（訊息內嵌 JSONB、user_id 無 FK → server 端手動補 profile+workspace 名），沿用 owner-only 隱私閘門。commit `f7e7b8f`。
+
+## 十二、CI / 文件
+- **CI build 修**：`lesson-reward` 的 `let reward` 從未 reassign → `prefer-const` ESLint **error** 讓 `next build` 炸（CI 紅）。在發證分支補 `reward = {...}`，CI 恢復綠。
+- **OWNER_SETUP.md**：本輪 6 支已套用但未進 `run-migrations.mjs` 的 migration 具體列出（重建 DB 時補跑）；確認本輪**無新 env、無需手動操作**。commit `1b43ea5`。
+
+## 驗證
+- `tsc --noEmit` 0 error；`next lint` 0 **error**；`npm run build` exit 0；`vitest` **117 passed（14 檔）**；所有 migration db:apply + node probe 驗證；DB 欄位稽核（audit-db-columns）我改的檔零錯接；新 UI RWD 響應式、無固定寬。
+- 連接性：FIE UI↔API↔後端↔表全接通；記憶 used API 已由推理台呼叫；商店 5 效果 UI↔API↔DB 全接（含測驗次數觸發鈕）。
+- 每筆 commit 前皆走：tsc → lint → build → test → DB 探針，通過才 push。
+
+## 剩餘
+- ✅ **無**——`docs/0705new_todotask.md` 全清單完成（#89/#91 為最後兩項，均做成真實可驗證系統）。後續新工作另開檔。
