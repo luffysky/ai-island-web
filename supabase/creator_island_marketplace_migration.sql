@@ -57,6 +57,7 @@ RETURNS JSONB LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
 DECLARE
   v_price INTEGER; v_seller_ws UUID; v_asset UUID; v_atype TEXT; v_status TEXT;
   v_bal INTEGER; v_fee INTEGER; v_net INTEGER; v_tx BIGINT; v_wbal INTEGER;
+  v_seller_user UUID; v_fruit_bal INTEGER;
 BEGIN
   SELECT price_z, workspace_id, asset_id, asset_type, status
     INTO v_price, v_seller_ws, v_asset, v_atype, v_status
@@ -81,14 +82,15 @@ BEGIN
   INSERT INTO public.coin_transactions(user_id, amount, balance_after, reason, meta)
   VALUES (p_buyer, -v_price, v_bal - v_price, 'ci_marketplace_purchase', jsonb_build_object('listing', p_listing_id));
 
-  -- 加賣方 workspace wallet
+  -- 加賣方「果實」（創作者收入貨幣，與 Z 幣分離、反洗幣）。
+  -- 買方付的 Z 幣是 sink（不轉給賣方 Z 幣餘額）；賣方 workspace 擁有者收到等額果實。
   IF v_seller_ws IS NOT NULL AND v_net > 0 THEN
-    INSERT INTO public.ci_workspace_wallet(workspace_id, balance) VALUES (v_seller_ws, 0)
-      ON CONFLICT (workspace_id) DO NOTHING;
-    UPDATE public.ci_workspace_wallet SET balance = balance + v_net, updated_at = NOW()
-      WHERE workspace_id = v_seller_ws RETURNING balance INTO v_wbal;
-    INSERT INTO public.ci_workspace_wallet_tx(workspace_id, user_id, amount, balance_after, reason, meta)
-    VALUES (v_seller_ws, p_buyer, v_net, v_wbal, 'marketplace_sale', jsonb_build_object('listing', p_listing_id));
+    SELECT owner_id INTO v_seller_user FROM public.ci_workspaces WHERE id = v_seller_ws;
+    IF v_seller_user IS NOT NULL THEN
+      SELECT COALESCE((SELECT balance_after FROM public.ci_fruit_ledger WHERE user_id = v_seller_user ORDER BY id DESC LIMIT 1), 0) INTO v_fruit_bal;
+      INSERT INTO public.ci_fruit_ledger(user_id, workspace_id, amount, balance_after, reason, meta)
+      VALUES (v_seller_user, v_seller_ws, v_net, v_fruit_bal + v_net, 'marketplace_sale', jsonb_build_object('listing', p_listing_id, 'buyer', p_buyer));
+    END IF;
   END IF;
 
   INSERT INTO public.ci_marketplace_transactions(listing_id, buyer_id, seller_workspace_id, asset_id, asset_type, price_z, platform_fee_z, seller_net_z)

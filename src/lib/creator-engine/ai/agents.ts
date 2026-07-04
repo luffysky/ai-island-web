@@ -8,10 +8,10 @@ import { callAI } from "@/lib/ai-providers";
 import { extractJson } from "@/lib/idea-ai";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { resolveModel } from "@/lib/creator-engine/ai/router";
-import { estimateCostUsd, resolveZCharge } from "@/lib/creator-engine/ai/cost";
+import { estimateCostUsd, computeZCharge, chargeWorkspace, refundWorkspace } from "@/lib/creator-engine/ai/cost";
 import { getInjectableMemory, recordMemoryUsage } from "@/lib/creator-engine/memory";
 
-export type AgentType = "synthesize" | "evolve" | "compose" | "transcreate" | "dna" | "advise" | "assist" | "chat";
+export type AgentType = "synthesize" | "evolve" | "compose" | "transcreate" | "dna" | "advise" | "assist" | "chat" | "coach";
 
 class AgentError extends Error {
   status: number;
@@ -47,6 +47,20 @@ async function runAgent<T>(opts: {
   const agentRunId = (runRow as any)?.id as number;
   if (mem.ids.length) await recordMemoryUsage(mem.ids, agentRunId).catch(() => {});
 
+  // Cost Manager（E10）：核心免費、大量/商用才收費。先預扣（reserve），失敗再退。
+  const zCharge = computeZCharge(opts.agentType, opts.input);
+  let refunded = false;
+  if (zCharge > 0) {
+    const paid = await chargeWorkspace(opts.workspaceId, opts.userId, zCharge, `ai_${opts.agentType}`, { agentRunId });
+    if (!paid.ok) {
+      await admin.from("ci_agent_runs").update({ status: "failed", error: `insufficient_funds:${zCharge}` }).eq("id", agentRunId).then(() => {}, () => {});
+      throw new AgentError(`Z 幣不足（此動作需 ${zCharge} Z 幣）`, 402);
+    }
+  }
+  const doRefund = async () => {
+    if (zCharge > 0 && !refunded) { refunded = true; await refundWorkspace(opts.workspaceId, opts.userId, zCharge, `ai_${opts.agentType}_refund`, { agentRunId }).catch(() => {}); }
+  };
+
   let tin = 0, tout = 0;
   try {
     let parsed: T | null = null;
@@ -71,14 +85,14 @@ async function runAgent<T>(opts: {
     // 不在這裡 logAiUsage：callAI 已自動記一次，重複會讓 ai_model_usage 翻倍。
 
     if (parsed === null) {
+      await doRefund(); // 生成失敗 → 退回預扣的 Z 幣
       await admin.from("ci_agent_runs").update({
-        status: "failed", tokens_input: tin, tokens_output: tout, cost_usd: cost,
+        status: "failed", tokens_input: tin, tokens_output: tout, cost_usd: cost, z_charged: 0,
         error: "output_validation_failed", output: { raw: lastText.slice(0, 2000) },
       }).eq("id", agentRunId);
       throw new AgentError("AI 回傳格式無法解析，請重試", 502);
     }
 
-    const zCharge = await resolveZCharge(opts.workspaceId, opts.agentType);
     await admin.from("ci_agent_runs").update({
       status: "succeeded", tokens_input: tin, tokens_output: tout, cost_usd: cost,
       z_charged: zCharge, output: parsed as any,
@@ -86,6 +100,7 @@ async function runAgent<T>(opts: {
 
     return { result: parsed, agentRunId };
   } catch (e) {
+    await doRefund(); // 任何例外 → 退回預扣的 Z 幣
     if (e instanceof AgentError) throw e;
     await admin.from("ci_agent_runs").update({ status: "failed", error: (e as Error).message?.slice(0, 500) }).eq("id", agentRunId).then(() => {}, () => {});
     throw new AgentError((e as Error).message ?? "agent_failed", 502);
@@ -209,6 +224,30 @@ export async function analyzeDNA(workspaceId: string, userId: string, samples: s
     input: { count: samples.length },
     system, user: `創作者的素材：\n\n${samples.slice(0, 30).join("\n---\n").slice(0, 6000)}`,
     temperature: 0.7, maxTokens: 1200,
+  });
+}
+
+// ===== 創作教練 Coach（E9 週報）=====
+const CoachSchema = z.object({
+  encouragement: z.string(),
+  wins: z.array(z.string()).default([]),
+  focus: z.string(),
+  nextSteps: z.array(z.string()).default([]),
+  challenge: z.string().default(""),
+});
+export async function coach(
+  workspaceId: string, userId: string,
+  ctx: { stats: { fragments: number; works: number; aiRuns: number }; dna: any; samples: string[] },
+) {
+  const system = `你是「創作教練」。根據創作者的統計、創作 DNA、近期題材，給『這一週』溫暖、具體、可執行的建議。像教練不像評審——先肯定，再指方向，鼓勵為主、不說教。
+只回傳 JSON：{"encouragement":"一句總結鼓勵","wins":["最近做得好的1-3點"],"focus":"本週最該專注的一件事(一句)","nextSteps":["具體可做的行動1-3"],"challenge":"一個好玩的小挑戰"}。全部繁體中文。`;
+  const dnaLine = ctx.dna ? `創作 DNA：語氣「${ctx.dna.tone ?? ""}」，強項「${(ctx.dna.strengths ?? []).join("、")}」，可加強「${(ctx.dna.weaknesses ?? []).join("、")}」。` : "（尚無創作 DNA）";
+  return runAgent({
+    agentType: "coach", workspaceId, userId, schema: CoachSchema,
+    input: { stats: ctx.stats },
+    system,
+    user: `創作者狀態：碎片 ${ctx.stats.fragments}、作品 ${ctx.stats.works}、AI 動作 ${ctx.stats.aiRuns}。\n${dnaLine}\n近期題材：\n${ctx.samples.slice(0, 15).map((s) => `- ${s}`).join("\n") || "（還很少）"}`,
+    temperature: 0.8, maxTokens: 1000,
   });
 }
 

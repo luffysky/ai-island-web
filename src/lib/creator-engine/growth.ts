@@ -3,7 +3,7 @@
  * stats 即時算；DNA 用 AI 從創作者素材歸納、存 ci_creator_dna。
  */
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
-import { analyzeDNA } from "@/lib/creator-engine/ai/agents";
+import { analyzeDNA, coach } from "@/lib/creator-engine/ai/agents";
 
 /**
  * 成長統計。傳 workspaceId → 只算「這個工作室」的（個人島也是一個 workspace）；
@@ -20,6 +20,24 @@ export async function getStats(userId: string, workspaceId?: string | null): Pro
     scope(admin.from("ci_agent_runs").select("id", { count: "exact", head: true }).eq("user_id", userId) as any),
   ]);
   return { fragments: f.count ?? 0, works: w.count ?? 0, aiRuns: r.count ?? 0 };
+}
+
+/** AI 教練：用 stats + DNA + 近期題材給本週建議。核心動作、免費（Cost Manager coach=0）。 */
+export async function getCoachAdvice(userId: string, workspaceId: string): Promise<{ advice: any } | { error: string }> {
+  const admin = createSupabaseAdmin();
+  const [stats, dna, { data: frags }] = await Promise.all([
+    getStats(userId, workspaceId),
+    getDNA(userId),
+    admin.from("ci_fragments").select("title").eq("created_by", userId).order("created_at", { ascending: false }).limit(15),
+  ]);
+  const samples = (((frags as any[]) ?? []).map((f) => f.title as string)).filter(Boolean);
+  if (stats.fragments + stats.works < 2) return { error: "samples_too_few" };
+  try {
+    const { result } = await coach(workspaceId, userId, { stats, dna: dna?.traits ?? null, samples });
+    return { advice: result };
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
 }
 
 export async function getDNA(userId: string): Promise<{ traits: any; confidence: number; updated_at: string } | null> {

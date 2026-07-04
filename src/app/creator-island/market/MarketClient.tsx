@@ -16,7 +16,7 @@ async function call(url: string, method: string, body?: any) {
 
 type Pick = { id: string; text: string; category: string; rarity: string };
 
-export function MarketClient({ workspaceId, listings, myAssets, poolPicks = [], ownedAssetIds = [], myWorkspaceIds = [] }: { workspaceId: string; listings: Listing[]; myAssets: Asset[]; poolPicks?: Pick[]; ownedAssetIds?: string[]; myWorkspaceIds?: string[] }) {
+export function MarketClient({ workspaceId, listings, myAssets, poolPicks = [], ownedAssetIds = [], myWorkspaceIds = [], fruitBalance = 0 }: { workspaceId: string; listings: Listing[]; myAssets: Asset[]; poolPicks?: Pick[]; ownedAssetIds?: string[]; myWorkspaceIds?: string[]; fruitBalance?: number }) {
   const [tab, setTab] = useState<"browse" | "sell">("browse");
   const [rows, setRows] = useState<Listing[]>(listings);
   const [picks, setPicks] = useState<Pick[]>(poolPicks);
@@ -67,8 +67,11 @@ export function MarketClient({ workspaceId, listings, myAssets, poolPicks = [], 
   return (
     <div className="max-w-4xl mx-auto px-6 py-10 space-y-5">
       <header className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold inline-flex items-center gap-1.5"><Store size={20} /> 市集 <span className="text-xs font-normal text-fg-muted">Z 幣交易・平台抽成 10%</span></h1>
-        <Link href="/creator-island" className="text-sm text-accent hover:underline inline-flex items-center gap-1.5"><ArrowLeft size={14} /> 回島</Link>
+        <h1 className="text-2xl font-bold inline-flex items-center gap-1.5"><Store size={20} /> 市集 <span className="text-xs font-normal text-fg-muted">買家付 Z 幣・賣家賺 🌰 果實・抽成 0%</span></h1>
+        <div className="inline-flex items-center gap-3">
+          <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-700 dark:text-amber-200 text-sm font-bold" title="創作收入（賣作品賺得，與 Z 幣分開）">🌰 {fruitBalance.toLocaleString()} 果實</span>
+          <Link href="/creator-island" className="text-sm text-accent hover:underline inline-flex items-center gap-1.5"><ArrowLeft size={14} /> 回島</Link>
+        </div>
       </header>
       <div className="flex gap-2 text-sm">
         <button onClick={() => setTab("browse")} className={`px-3 py-1.5 rounded-full ${tab === "browse" ? "bg-accent text-white" : "bg-bg-elevated"}`}>瀏覽</button>

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { TrendingUp, ArrowLeft, Dna, Palmtree, AlertTriangle } from "lucide-react";
+import { TrendingUp, ArrowLeft, Dna, Palmtree, AlertTriangle, Sparkles, Target, CheckCircle2, Flag } from "lucide-react";
 
 type Dna = { traits: any; confidence: number; updated_at: string } | null;
 type WsLite = { id: string; name: string; type: "personal" | "studio" };
@@ -12,6 +12,19 @@ export function GrowthClient({ stats, initialDna, workspaces = [], scope = "all"
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const t = dna?.traits ?? {};
+  const [coach, setCoach] = useState<any | null>(null);
+  const [coachBusy, setCoachBusy] = useState(false);
+  const [coachErr, setCoachErr] = useState<string | null>(null);
+
+  async function getCoach() {
+    setCoachBusy(true); setCoachErr(null);
+    try {
+      const res = await fetch("/api/creator-island/growth/coach", { method: "POST" });
+      const j = await res.json();
+      if (!res.ok) throw new Error(j.message || j.error);
+      setCoach(j.advice);
+    } catch (e: any) { setCoachErr(e.message); } finally { setCoachBusy(false); }
+  }
 
   async function recompute() {
     setBusy(true); setErr(null);
@@ -80,7 +93,32 @@ export function GrowthClient({ stats, initialDna, workspaces = [], scope = "all"
         )}
       </div>
 
-      <p className="text-xs text-fg-muted">技能圖、時間軸、AI 教練週報 — 即將推出。</p>
+      {/* AI 教練週報 */}
+      <div className="bg-bg-card border border-border rounded-2xl p-5 space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="font-bold inline-flex items-center gap-1.5"><Sparkles size={16} className="text-accent" /> AI 教練・本週建議</div>
+          <button onClick={getCoach} disabled={coachBusy} className="text-xs px-3 py-1.5 rounded-full bg-accent text-white disabled:opacity-40">{coachBusy ? "思考中…" : coach ? "重新產生" : "產生建議"}</button>
+        </div>
+        {coachErr && <div className="text-xs text-red-400 inline-flex items-center gap-1"><AlertTriangle size={12} className="shrink-0" /> {coachErr}</div>}
+        {!coach && !coachErr && <p className="text-sm text-fg-muted">按「產生建議」，教練會看你的統計、DNA 與近期題材，給這一週的方向。</p>}
+        {coach && (
+          <div className="space-y-3 text-sm">
+            <p className="text-fg">{coach.encouragement}</p>
+            {coach.wins?.length > 0 && (
+              <div><div className="text-emerald-500 font-bold inline-flex items-center gap-1 mb-1"><CheckCircle2 size={14} /> 最近做得好</div>
+                <ul className="space-y-0.5">{coach.wins.map((w: string, i: number) => <li key={i} className="text-fg-muted">・{w}</li>)}</ul></div>
+            )}
+            {coach.focus && <div className="bg-accent/[0.06] border border-accent/20 rounded-xl p-3"><div className="text-accent font-bold inline-flex items-center gap-1 mb-0.5"><Target size={14} /> 本週重點</div><div>{coach.focus}</div></div>}
+            {coach.nextSteps?.length > 0 && (
+              <div><div className="font-bold mb-1">具體行動</div>
+                <ul className="space-y-0.5">{coach.nextSteps.map((s: string, i: number) => <li key={i} className="text-fg-muted">{i + 1}. {s}</li>)}</ul></div>
+            )}
+            {coach.challenge && <div className="text-fg-muted inline-flex items-start gap-1.5"><Flag size={14} className="mt-0.5 shrink-0 text-pink-500" /> <span><b>小挑戰：</b>{coach.challenge}</span></div>}
+          </div>
+        )}
+      </div>
+
+      <p className="text-[11px] text-fg-muted">技能圖、時間軸 — 之後再加。</p>
     </div>
   );
 }
