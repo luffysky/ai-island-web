@@ -13,6 +13,47 @@ const CHAPTER_COIN = 80;  // 完成一整章
 const CHAPTER_XP = 150;   // 完成一整章 XP bonus
 const MAX_BASE_XP = 50;   // 防前端灌爆：base XP 上限（真實 lesson base ~10）
 
+/** 冪等發一張證書；已發過回 null（不重發、不視為新里程碑）。 */
+async function issueCert(admin: any, userId: string, certType: string, certKey: string, title: string, meta: Record<string, unknown>) {
+  const { data: exist } = await admin.from("certificates").select("verification_code").eq("user_id", userId).eq("cert_key", certKey).maybeSingle();
+  if (exist) return null;
+  const code = randomBytes(6).toString("hex");
+  const { error } = await admin.from("certificates").insert({ user_id: userId, cert_type: certType, cert_key: certKey, title, verification_code: code, metadata: meta });
+  if (error) return null;
+  return { code, title, justIssued: true };
+}
+
+/** #90 路徑(整個 stage 全章)/全站(所有已發布章) 完課 → 發里程碑證書（cert_type path|all）。 */
+async function issueMilestoneCerts(admin: any, userId: string, chapterId: number): Promise<{ pathCert?: any; allCert?: any }> {
+  const out: { pathCert?: any; allCert?: any } = {};
+  // 使用者已拿章節證書的 chapterId 集合（cert_key = ch{N}）
+  const { data: myCerts } = await admin.from("certificates").select("cert_key").eq("user_id", userId).eq("cert_type", "chapter");
+  const owned = new Set<number>(((myCerts as any[]) ?? [])
+    .map((c) => Number(String(c.cert_key).replace(/^ch/, "")))
+    .filter((n) => Number.isFinite(n)));
+
+  // path = 此章所屬 stage 的所有已發布章都拿到章節證書
+  const { data: chRow } = await admin.from("chapters").select("stage").eq("id", chapterId).maybeSingle();
+  const stage = (chRow as any)?.stage;
+  if (stage != null) {
+    const { data: stageChs } = await admin.from("chapters").select("id").eq("stage", stage).eq("status", "published");
+    const ids = ((stageChs as any[]) ?? []).map((c) => c.id as number);
+    if (ids.length > 0 && ids.every((id) => owned.has(id))) {
+      const c = await issueCert(admin, userId, "path", `path_stage${stage}`, `Stage ${stage} 全章完課證書`, { stage, chapters: ids.length });
+      if (c) out.pathCert = c;
+    }
+  }
+
+  // all = 所有已發布章都拿到章節證書
+  const { data: allChs } = await admin.from("chapters").select("id").eq("status", "published");
+  const allIds = ((allChs as any[]) ?? []).map((c) => c.id as number);
+  if (allIds.length > 0 && allIds.every((id) => owned.has(id))) {
+    const c = await issueCert(admin, userId, "all", "all", "AI 島全站完課證書", { chapters: allIds.length });
+    if (c) out.allCert = c;
+  }
+  return out;
+}
+
 /**
  * 完成小節（server-authoritative、冪等，防偽造/重領/灌 XP）。
  * XP 由伺服器算（clamp base + 動態倍率），寫進 lesson_progress → trigger 加 XP+streak+xp_event（AFTER INSERT，只第一次）。
@@ -86,30 +127,38 @@ export async function POST(req: NextRequest) {
   const totalN = total ?? 0, doneN = done ?? 0;
   if (totalN === 0 || doneN < totalN) return NextResponse.json({ ...base, chapterCompleted: false });
 
-  // 整章完成 → 發證書（冪等）
+  // 整章完成 → 發章節證書（冪等）
   const certKey = `ch${chapterId}`;
+  let cert: any = null;
+  let reward: any = undefined;
   const { data: existCert } = await admin.from("certificates").select("verification_code, title").eq("user_id", user.id).eq("cert_key", certKey).maybeSingle();
-  if (existCert) return NextResponse.json({ ...base, chapterCompleted: true, cert: { code: (existCert as any).verification_code, title: (existCert as any).title, alreadyIssued: true } });
-
-  const { data: ch } = await admin.from("chapters").select("title").eq("id", chapterId).maybeSingle();
-  const title = `${(ch as any)?.title || `第 ${chapterId} 章`} 完課證書`;
-  const code = randomBytes(6).toString("hex");
-  const { error: certErr } = await admin.from("certificates").insert({
-    user_id: user.id, cert_type: "chapter", cert_key: certKey, title, verification_code: code, metadata: { chapterId, lessons: totalN },
-  });
-  if (certErr) {
-    const { data: again } = await admin.from("certificates").select("verification_code, title").eq("user_id", user.id).eq("cert_key", certKey).maybeSingle();
-    return NextResponse.json({ ...base, chapterCompleted: true, cert: again ? { code: (again as any).verification_code, title: (again as any).title, alreadyIssued: true } : null });
+  if (existCert) {
+    cert = { code: (existCert as any).verification_code, title: (existCert as any).title, alreadyIssued: true };
+  } else {
+    const { data: ch } = await admin.from("chapters").select("title").eq("id", chapterId).maybeSingle();
+    const title = `${(ch as any)?.title || `第 ${chapterId} 章`} 完課證書`;
+    const code = randomBytes(6).toString("hex");
+    const { error: certErr } = await admin.from("certificates").insert({
+      user_id: user.id, cert_type: "chapter", cert_key: certKey, title, verification_code: code, metadata: { chapterId, lessons: totalN },
+    });
+    if (certErr) {
+      const { data: again } = await admin.from("certificates").select("verification_code, title").eq("user_id", user.id).eq("cert_key", certKey).maybeSingle();
+      cert = again ? { code: (again as any).verification_code, title: (again as any).title, alreadyIssued: true } : null;
+    } else {
+      // 章節獎勵：Z幣（冪等）+ XP bonus（依 chapter 去重）
+      await grantZcoinOnce(user.id, CHAPTER_COIN, "chapter_complete", `chapter:${chapterId}`, { chapterId });
+      const { data: xpDup } = await admin.from("xp_events").select("id").eq("user_id", user.id).eq("reason", "chapter_complete").contains("meta", { chapterId }).limit(1);
+      if (!xpDup || xpDup.length === 0) {
+        await admin.from("xp_events").insert({ user_id: user.id, amount: CHAPTER_XP, reason: "chapter_complete", meta: { chapterId } });
+        const { data: prof } = await admin.from("profiles").select("xp").eq("id", user.id).single();
+        await admin.from("profiles").update({ xp: ((prof as any)?.xp ?? 0) + CHAPTER_XP }).eq("id", user.id);
+      }
+      cert = { code, title, justIssued: true };
+    }
   }
 
-  // 章節獎勵：Z幣（冪等）+ XP bonus（依 chapter 去重）
-  await grantZcoinOnce(user.id, CHAPTER_COIN, "chapter_complete", `chapter:${chapterId}`, { chapterId });
-  const { data: xpDup } = await admin.from("xp_events").select("id").eq("user_id", user.id).eq("reason", "chapter_complete").contains("meta", { chapterId }).limit(1);
-  if (!xpDup || xpDup.length === 0) {
-    await admin.from("xp_events").insert({ user_id: user.id, amount: CHAPTER_XP, reason: "chapter_complete", meta: { chapterId } });
-    const { data: prof } = await admin.from("profiles").select("xp").eq("id", user.id).single();
-    await admin.from("profiles").update({ xp: ((prof as any)?.xp ?? 0) + CHAPTER_XP }).eq("id", user.id);
-  }
+  // #90 路徑/全站里程碑證書（章節證書已就緒後才判定）
+  const milestone = await issueMilestoneCerts(admin, user.id, chapterId);
 
-  return NextResponse.json({ ...base, chapterCompleted: true, cert: { code, title, justIssued: true }, reward: { zcoin: CHAPTER_COIN, xp: CHAPTER_XP } });
+  return NextResponse.json({ ...base, chapterCompleted: true, cert, ...milestone, reward });
 }

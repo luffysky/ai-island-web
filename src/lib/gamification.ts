@@ -57,7 +57,7 @@ export class GamificationEngine {
     } else if (r.awardedXp > 0) {
       this.celebrateXp(r.awardedXp);
     }
-    if (r.cert?.justIssued) this.celebrateChapterCert();
+    if (r.cert?.justIssued || r.pathCert?.justIssued || r.allCert?.justIssued) this.celebrateChapterCert();
 
     await this.checkAchievements(user.id, { type: 'lesson_complete', chapterId, lessonId });
 
