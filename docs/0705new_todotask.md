@@ -4,7 +4,9 @@
 > 來源：全站數據真實性稽核 + Creator Island 靜默 bug 稽核 + 完課獎勵/證書 + gamification 伺服器化 + FIE 白皮書 v1.0。
 > 本輪**已完成**的不在此列（見 git log / memory）；此檔只列**還沒做**的。
 > 標記：優先序 P0(該做) / P1(中) / P2(可延)。每項含：問題 → 檔案位置 → 做法 → 驗收。
-> 進度更新（2026-07-05）：~~劃線~~＝已完成。已完成：#86 #87 #88（commit `ae21ca8`）、白皮書 v1.0 + Part II（#97–#101，commit `060c707`）。剩：#89–#96。
+> 進度更新（2026-07-05）：~~劃線~~＝已完成。
+> **已完成**：#86 #87 #88（`ae21ca8`）、#93（`63c5410`）、#94 #96（`73d0e49`）、#90（`c6b05d7`）、#88/#95 查證為非缺陷、白皮書+Part II #97–#101（`060c707`）。
+> **剩**：#89（需先建底層系統）、#91（creator XP，設計決策）、#92（記憶系統，較大）；**FIE 實作 #102–#106**（M1 地基 #93 已備）。
 
 ---
 
@@ -38,7 +40,8 @@
   4. **Boost（XP加倍/補簽卡）**：先建 XP 倍率 buff + 補簽（`profiles.streak_days` 修復）機制。
 - **驗收**：每個上架品項兌換後**有真實效果**、可驗證，且不影響既有系統。
 
-### #90 — 路徑證書 / 全站證書（cert_type path|all）　`P1`
+### ~~#90 — 路徑證書 / 全站證書（cert_type path|all）~~　✅ 已完成 `P1`
+> 已做：完成整章後判定 stage 全章完成→發 path 證書、全站完成→發 all 證書（冪等，沿用 /certificates/[code]+OG 圖，可下載圖片/PDF）。commit `c6b05d7`。
 - **問題**：目前只做「完成整章自動發 chapter 證書」（`/api/me/lesson-reward`）。`certificates.cert_type` 還有 `path`（學習路徑）、`all`（全站）沒發。
 - **檔案**：`src/app/api/me/lesson-reward/route.ts`（chapter 發證的地方）；渲染共用 `src/app/certificates/[code]/page.tsx` + `/api/og/cert`（已支援任意 title）。
 - **做法**：定義 path/all 完成條件（例：某 stage 全部章節完成→path 證書；全 80 章完成→all 證書），在完課檢查時一併判斷、`cert_key='path_xxx'`/`'all'` 發證（冪等靠 `UNIQUE(user_id,cert_key)`）。
@@ -50,19 +53,18 @@
 - **做法**：決定要不要真的做 creator XP 系統。若要：在 fragment/work/agent 成功時 bump `ci_creator_stats.creator_xp`（RPC 或 upsert，冪等）；否則正式把該表標為 deprecated。
 - **驗收**：creator XP 有真實累積，或明確標記不使用。
 
-### #94 — 市集 self-deal 防禦下沉到 RPC 層　`P2`
+### ~~#94 — 市集 self-deal 防禦下沉到 RPC 層~~　✅ 已完成 `P2`
+> 已做：`ci_purchase_listing` 加 buyer≠賣方 workspace owner/member 檢查→own_listing；db:apply + probe 驗證。commit `73d0e49`。
 - **問題**：防自買自賣目前只在 lib 層 `marketplace.ts purchaseListing`（實務夠用，因為只有它呼叫 RPC）；直接打 `ci_purchase_listing` RPC 仍可繞。
 - **檔案**：`supabase/creator_island_marketplace_migration.sql`（`ci_purchase_listing`）。
 - **做法**：RPC 內加 buyer≠賣方 workspace owner/member 檢查（查 `ci_workspace_members`/`ci_workspaces.owner_id`），回 `own_listing`。改完 `npm run db:apply`。
 - **驗收**：直接呼叫 RPC 買自己上架的也被擋。
 
-### #95 — Creator AI 用量寫 ai_usage_daily（parity）　`P2`
-- **問題**：creator-engine 的 AI 動作只寫 `ai_model_usage`（callAI 自動）、沒寫 `ai_usage_daily`（web-chat 專用表）。spec 要 parity。
-- **檔案**：`src/lib/creator-engine/ai/agents.ts`；`src/lib/ai-usage-log.ts`。
-- **做法**：確認是否真的需要（`ai_usage_daily` 語意是 web 聊天）。若要 parity，在 agents 成功後也 upsert `ai_usage_daily`。
-- **驗收**：後台 AI 用量報表把 creator AI 也算進 daily（若決定要）。
+### ~~#95 — Creator AI 用量寫 ai_usage_daily（parity）~~　✅ 查證：非缺陷 `P2`
+> 查證結果：`ai_usage_daily` 是 **web 聊天專用表**；creator AI 走 `callAI` 自動記 `ai_model_usage`（後台「各模型費用」報表**有納入**、audit 確認）。寫進 `ai_usage_daily` 反而汙染 web-chat 指標。**current behavior 正確，不改**（同 #88）。
 
-### #96 — RPC 小瑕疵修正　`P2`
+### ~~#96 — RPC 小瑕疵修正~~　✅ 已完成 `P2`
+> 已做：workflow 分支(不再放行不存在 workflow)、重複購買回 entitlement/transaction id、`(%s)→(%)` 修訊息。db:apply + probe 驗證。commit `73d0e49`。
 - **問題**：
   1. `ci_validate_asset_ref` 對未知 `asset_type`（含 `workflow`）直接放行（`v_exists:=true`）→ 可指向不存在的 workflow。
   2. `ci_purchase_listing` 重複購買回傳 `{ok:true, already_owned:true}` 但沒帶既有 entitlement/transaction id。
@@ -85,7 +87,8 @@
 - **做法**：`getInjectableMemory` 改成先算 query 向量做語意檢索（需 embedding 回填）；AI 動作後從對話/選擇推論 candidate 記憶（`source='agent_run'`、`status='candidate'`）；API/UI 顯示「本次用到的記憶」。
 - **驗收**：記憶按相關性注入、有候選記憶待確認、使用者看得到本次用到哪些記憶。
 
-### #93 — ci_fragments embedding 全量回填 cron　`P1`
+### ~~#93 — ci_fragments embedding 全量回填 cron~~　✅ 已完成 `P1`
+> 已做：`/api/cron/ci-embeddings-backfill`（掃缺向量 workspace 逐一回填、上限 400、沒 key 則 no-op+warn）。cron-job.org 設每日 ?secret。commit `63c5410`。
 - **問題**：`createFragment` 不設 embedding；只有點「意外配對」時懶惰回填 40 筆、且需 `ai_api_keys` 有 OpenAI key。沒 key → E4/E5/語意搜尋全靜默空；沒有全量 cron。
 - **檔案**：`src/lib/creator-engine/embeddings.ts`（`backfillWorkspaceEmbeddings`）；新增 cron route `src/app/api/cron/ci-embeddings-backfill/route.ts`（仿現有 cron）。
 - **做法**：加一支 cron 定期分頁回填所有 workspace 缺向量的 ci_fragments（有 key 才跑）；或 createFragment 時 fire-and-forget 生成。
@@ -162,8 +165,7 @@
 
 ## 建議執行順序
 1. ~~**A 組**（#86/#87/#88）~~　✅ 已清。
-2. **#93 + #92**（下一步建議）——記憶/embeddings 讓 Creator Island 語意功能真的會動（也是 FIE Part II 的地基）。
-3. **#90**（路徑證書）+ **#94/#96**（防濫用/RPC 小修）。
-4. **#89 / #91 / #95**——需先建底層系統或屬設計決策，排後面。
-5. ~~**FIE 白皮書**（#97–#101，含 Part II）~~　✅ 已完成。
-6. **FIE 實作 #102–#106（M1→M5，線性）**——#93 embeddings 回填是 M1 的地基，建議先清 #93 再進 M1。
+2. ~~**#93**（embeddings 回填 cron）~~　✅ · ~~**#94/#96**（防濫用/RPC 小修）~~　✅ · ~~**#90**（路徑證書）~~　✅
+3. **剩下需你決策/較大**：#89（商店品項，需先建章節鎖/次數/cosmetic-render/倍率系統）、#91（creator XP，做或標 deprecated）、#92（記憶系統語意檢索+candidate+顯示，較大）。
+4. ~~**FIE 白皮書**（#97–#101，含 Part II）~~　✅ 已完成。
+5. **FIE 實作 #102–#106（M1→M5，線性）**——地基 #93 已備，可直接進 **M1（#102）**。
