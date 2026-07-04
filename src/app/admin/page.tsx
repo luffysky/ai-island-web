@@ -63,10 +63,10 @@ export default async function AdminOverviewPage() {
     supabase.from("quiz_attempts").select("*", { count: "exact", head: true }),
     supabase.from("profiles").select("username, xp, level, streak_days").order("xp", { ascending: false }).limit(10),
     supabase.from("profiles").select("username, created_at").order("created_at", { ascending: false }).limit(10),
-    supabase.from("orders").select("*", { count: "exact", head: true }).gte("created_at", startOfMonth).eq("status", "paid").maybeSingle(),
-    supabase.from("subscriptions").select("*", { count: "exact", head: true }).eq("status", "active").maybeSingle(),
-    supabase.from("tickets").select("*", { count: "exact", head: true }).eq("status", "open").maybeSingle(),
-    supabase.from("ai_usage_daily").select("date, cost_usd, message_count").gte("date", thirtyDaysAgoStr).order("date").maybeSingle().then((r: any) => ({ data: Array.isArray(r.data) ? r.data : [] })),
+    supabase.from("orders").select("*", { count: "exact", head: true }).gte("created_at", startOfMonth).eq("status", "paid"),
+    supabase.from("subscriptions").select("*", { count: "exact", head: true }).eq("status", "active"),
+    supabase.from("tickets").select("*", { count: "exact", head: true }).eq("status", "open"),
+    supabase.from("ai_usage_daily").select("date, cost_usd, message_count").gte("date", thirtyDaysAgoStr).order("date").then((r: any) => ({ data: Array.isArray(r.data) ? r.data : [] })),
     supabase.from("profiles").select("created_at").gte("created_at", thirtyDaysAgo).order("created_at"),
   ] as any);
 
@@ -243,6 +243,21 @@ export default async function AdminOverviewPage() {
     }
   });
   const hourlyActivityData = Object.entries(hourlyMap).map(([h, users]) => ({ hour: Number(h), users }));
+
+  // === 裝置分佈（近 7 天、站內 tracker analytics_sessions.device_type）===
+  const { data: deviceSessions } = await supabase
+    .from("analytics_sessions")
+    .select("device_type")
+    .gte("started_at", sevenDaysAgo);
+  const deviceMap: Record<string, number> = {};
+  (deviceSessions ?? []).forEach((s: any) => {
+    const d = s.device_type || "unknown";
+    deviceMap[d] = (deviceMap[d] ?? 0) + 1;
+  });
+  const DEVICE_LABEL: Record<string, string> = { desktop: "桌機", mobile: "手機", tablet: "平板", unknown: "未知" };
+  const deviceChartData = Object.entries(deviceMap)
+    .map(([name, value]) => ({ name: DEVICE_LABEL[name] ?? name, value }))
+    .sort((a, b) => b.value - a.value);
 
   // === 即時在線（站內 tracker、近 5 分鐘 last_seen_at、去重 by user_id / visitor_id）===
   const fiveMinAgo = new Date(Date.now() - 5 * 60_000).toISOString();
@@ -543,6 +558,7 @@ export default async function AdminOverviewPage() {
         revenueData={revenueChartData}
         lessonCompletionData={lessonCompletionData}
         hourlyActivityData={hourlyActivityData}
+        deviceData={deviceChartData}
       />
 
       {/* 第二排 */}
