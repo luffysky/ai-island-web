@@ -353,6 +353,7 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
         {recording.length > 0 && <button onClick={saveWorkflow} className="px-3 py-1.5 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-200">存成工作流</button>}
         <Link href={`/creator-island/activity?ws=${workspaceId}`} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-bg-card border border-border hover:text-accent"><ScrollText size={13} /> 操作記錄</Link>
         <Link href="/creator-island/reason" className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-accent/15 text-accent border border-accent/30 hover:bg-accent/25"><BrainCircuit size={13} /> 推理台</Link>
+        <Link href="/creator-island/universe" className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-gradient-to-r from-fuchsia-500/15 to-indigo-500/15 text-fuchsia-600 dark:text-fuchsia-300 border border-fuchsia-400/30 hover:opacity-90">🌌 碎片宇宙</Link>
       </div>
 
       {/* 意外配對面板 */}

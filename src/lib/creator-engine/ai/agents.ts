@@ -11,7 +11,7 @@ import { resolveModel } from "@/lib/creator-engine/ai/router";
 import { estimateCostUsd, computeZCharge, chargeWorkspace, refundWorkspace } from "@/lib/creator-engine/ai/cost";
 import { getInjectableMemory, recordMemoryUsage } from "@/lib/creator-engine/memory";
 
-export type AgentType = "synthesize" | "evolve" | "compose" | "transcreate" | "dna" | "advise" | "assist" | "chat" | "coach" | "reason";
+export type AgentType = "synthesize" | "evolve" | "compose" | "transcreate" | "dna" | "advise" | "assist" | "chat" | "coach" | "reason" | "universe";
 
 class AgentError extends Error {
   status: number;
@@ -251,6 +251,35 @@ export async function reason(
     user: `種子碎片：\n\n${fragBlock}${evBlock}${ctx.intent ? `\n\n創作意圖：${ctx.intent}` : ""}`,
     temperature: ctx.mode === "exploratory" ? 0.95 : ctx.mode === "adjacent" ? 0.85 : 0.6,
     maxTokens: 2500,
+  });
+}
+
+// ===== 🌌 碎片宇宙（創作洞察報告）=====
+const UniverseSchema = z.object({
+  headline: z.string(),          // 「你最常寫的是X，但真正的核心其實是Y」
+  hiddenCore: z.string(),        // 潛藏核心（一個詞或短語，如「害怕遺忘」）
+  throughLine: z.string(),       // 貫穿所有碎片的一條隱形線（2-3 句）
+  themes: z.array(z.object({ name: z.string(), essence: z.string() })).default([]), // 3-6 個母題 + 它其實在講什麼
+  surprising: z.string(),        // 一個你可能沒發現的反直覺 pattern
+  encouragement: z.string(),     // 溫暖收尾一句
+});
+/** 從創作者累積的碎片歸納「創作宇宙」：不是列統計，而是找出他一直在寫的東西、與潛藏的核心。 */
+export async function universeInsight(
+  workspaceId: string, userId: string,
+  ctx: { samples: string[]; topThemes: string[]; moods: string[]; count: number; spanDays: number },
+) {
+  const system = `你是「創作宇宙分析師」。看創作者長期累積的碎片，做一次「他自己都沒發現」的洞察——不是複述統計，而是像最懂他的讀者，指出他一直在寫的東西、以及那底下真正的核心。
+重點：headline 用「你最常寫的是X，但真正的核心其實是Y」這種句型（X 是表面題材、Y 是更深的情感需求）。hiddenCore 是那個 Y 的凝練（如「害怕遺忘」「渴望被看見」）。themes 給 3~6 個反覆出現的母題，每個附「它其實在講什麼」。surprising 給一個反直覺的發現。全程溫暖、像陪伴、不評判、不說教。
+只回傳 JSON：{"headline":"","hiddenCore":"","throughLine":"","themes":[{"name":"母題","essence":"它其實在講的"}],"surprising":"","encouragement":""}。全部繁體中文。`;
+  const user = `創作者累積了 ${ctx.count} 個碎片，橫跨約 ${ctx.spanDays} 天。
+常出現的題材/標籤：${ctx.topThemes.join("、") || "（尚不明顯）"}
+情緒色調：${ctx.moods.join("、") || "（未標）"}
+
+碎片樣本（節錄）：
+${ctx.samples.slice(0, 40).join("\n---\n").slice(0, 6500)}`;
+  return runAgent({
+    agentType: "universe", workspaceId, userId, schema: UniverseSchema,
+    input: { count: ctx.count }, system, user, temperature: 0.8, maxTokens: 1400,
   });
 }
 

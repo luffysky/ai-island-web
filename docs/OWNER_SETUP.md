@@ -78,6 +78,7 @@ PAYMENTS_LIVE=1
   - `fix_function_security_migration.sql` — 14 支 SECURITY DEFINER 函式 REVOKE FROM PUBLIC + GRANT service_role（Supabase linter 修正）
   - `security_invoker_views_migration.sql` — 3 個 view 設 `security_invoker=on`（Supabase linter 修正）
   - `leaderboard_lessons_migration.sql` — 完課排行榜 RPC `leaderboard_lessons`（#136 排行榜多榜別：XP/連勝/完課）
+  - `creator_island_universe_migration.sql` — 🌌 碎片宇宙洞察報告快取欄位（ci_creator_stats.universe/universe_at）
   > 套用指令：`npm run db:apply -- -Files supabase/<檔名>.sql`（一次一檔）。
 
 ---
