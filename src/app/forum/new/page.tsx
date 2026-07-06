@@ -19,6 +19,21 @@ function NewThreadForm() {
   const [tagInput, setTagInput] = useState("");
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState("");
+  const [similar, setSimilar] = useState<any[]>([]);
+  const [dismissedSimilar, setDismissedSimilar] = useState(false);
+
+  // 發文前查重：標題打到一定長度就找相似討論，把重複問題導到舊串
+  useEffect(() => {
+    const q = title.trim();
+    if (q.length < 4 || dismissedSimilar) { setSimilar([]); return; }
+    const t = setTimeout(() => {
+      fetch(`/api/forum/search?q=${encodeURIComponent(q)}`)
+        .then((r) => r.json())
+        .then((j) => setSimilar((j.results ?? []).slice(0, 4)))
+        .catch(() => setSimilar([]));
+    }, 450);
+    return () => clearTimeout(t);
+  }, [title, dismissedSimilar]);
 
   useEffect(() => {
     fetch("/api/forum/boards")
@@ -93,6 +108,24 @@ function NewThreadForm() {
           placeholder="主題標題"
           className="w-full bg-bg-card border border-border rounded-lg p-2.5 text-lg font-bold outline-none focus:border-accent"
         />
+
+        {/* 發文前查重：相似討論 */}
+        {similar.length > 0 && !dismissedSimilar && (
+          <div className="rounded-xl border border-amber-400/30 bg-amber-400/[0.07] p-3">
+            <div className="flex items-center justify-between mb-1.5">
+              <div className="text-xs font-bold text-amber-700 dark:text-amber-300">💡 有幾個相似的討論，先看看是不是已經有答案？</div>
+              <button onClick={() => setDismissedSimilar(true)} className="text-[11px] text-fg-muted hover:text-fg">還是要發新的 →</button>
+            </div>
+            <div className="space-y-1">
+              {similar.map((s) => (
+                <Link key={s.id} href={`/forum/thread/${s.id}`} target="_blank" className="block text-sm hover:text-accent truncate">
+                  <span className="text-fg-muted text-xs mr-1">{s.board?.emoji}</span>{s.title}
+                  <span className="text-[11px] text-fg-muted ml-1.5">· {s.reply_count} 回覆</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* 內文編輯器 */}
         <BlogEditor content={content} onChange={setContent} placeholder="說說你想討論什麼..." />
