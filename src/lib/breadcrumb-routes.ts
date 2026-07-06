@@ -132,6 +132,20 @@ const SEGMENT_MAP: Record<string, SegInfo> = {
 
 const HIDE_SEGMENTS = new Set(["console-x7k2", process.env.NEXT_PUBLIC_ADMIN_SLUG ?? ""].filter(Boolean));
 
+/**
+ * 「有子路由、但自己沒有 page」的群組資料夾 → 麵包屑點了會 404。
+ * 這些中間層麵包屑要顯示成純文字、不給連結。
+ * （由 src/app 掃出來：有子目錄但無 page.tsx 者。新增這類資料夾時要補進來。）
+ */
+const NO_PAGE_PATHS = new Set<string>([
+  "/quest/paint", "/quest/turtle", "/quest/number", "/quest/debug",
+  "/notes", "/notes/author", "/notes/join",
+  "/forum/thread", "/forum/user",
+  "/certificates", "/creator-island/p", "/portfolio", "/onboarding",
+  "/s", "/share", "/me/blog/edit", "/auth", "/auth/line",
+  "/admin/ai", "/admin/email", "/admin/moderation",
+]);
+
 function infoFor(seg: string, prevSeg?: string): SegInfo {
   if (SEGMENT_MAP[seg]) return SEGMENT_MAP[seg];
   // chapter id（ch01 / 1 / 26）
@@ -154,7 +168,9 @@ export function buildBreadcrumbs(pathname: string): Crumb[] {
     const seg = segs[i];
     acc += `/${seg}`;
     const info = infoFor(seg, segs[i - 1]);
-    crumbs.push({ label: info.label, icon: info.icon, href: i === segs.length - 1 ? undefined : acc });
+    // 最後一層、或「群組資料夾（無 page）」→ 不給連結（點了會 404）
+    const noHref = i === segs.length - 1 || NO_PAGE_PATHS.has(acc);
+    crumbs.push({ label: info.label, icon: info.icon, href: noHref ? undefined : acc });
   }
   return crumbs;
 }
