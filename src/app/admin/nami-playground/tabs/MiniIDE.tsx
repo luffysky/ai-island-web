@@ -5,6 +5,8 @@ import { Play, Loader2, FileCode, Plus, X, Trash2, Download, FolderOpen } from "
 import { usePyodide } from "@/hooks/usePyodide";
 import { CodeEditor, loadEditorValue } from "@/components/ui/CodeEditor";
 import { AskAI } from "@/components/nami/AskAI";
+import { useConfirm } from "@/components/ui/ConfirmDialog";
+import { useToast } from "@/components/ui/Toast";
 
 type FileEntry = {
   name: string;     // 'main.py' / 'utils.py'
@@ -93,6 +95,8 @@ function runModeForFile(name: string): RunMode {
 
 export function MiniIDE() {
   const { status, progress, error, load, run } = usePyodide();
+  const confirm = useConfirm();
+  const toast = useToast();
   const [files, setFiles] = useState<FileEntry[]>(() => loadFiles());
   const [activeName, setActiveName] = useState<string>(() => {
     if (typeof window === "undefined") return "main.py";
@@ -124,11 +128,11 @@ export function MiniIDE() {
     if (!name) name = `untitled-${files.length + 1}.py`;
     if (!name.includes(".")) name += ".py";
     if (files.find((f) => f.name === name)) {
-      alert("檔名已存在");
+      toast.error("檔名已存在");
       return;
     }
     if (!/^[a-zA-Z0-9_.-]+$/.test(name)) {
-      alert("檔名只能英數 + _ - .");
+      toast.error("檔名只能英數 + _ - .");
       return;
     }
     setFiles((prev) => [...prev, { name, content: "" }]);
@@ -136,12 +140,12 @@ export function MiniIDE() {
     setNewFileName("");
   };
 
-  const removeFile = (name: string) => {
+  const removeFile = async (name: string) => {
     if (files.length === 1) {
-      alert("至少要留一個檔");
+      toast.error("至少要留一個檔");
       return;
     }
-    if (!confirm(`刪除 ${name}？`)) return;
+    if (!(await confirm({ title: `刪除 ${name}？`, confirmLabel: "刪除", destructive: true }))) return;
     const next = files.filter((f) => f.name !== name);
     setFiles(next);
     if (activeName === name) setActiveName(next[0].name);

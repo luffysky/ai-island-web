@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { Loader2, Plus, Trash2, Copy, Eye, EyeOff } from "lucide-react";
+import { useToast } from "@/components/ui/Toast";
+import { useConfirm } from "@/components/ui/ConfirmDialog";
 
 type Key = {
   id: string;
@@ -15,6 +17,8 @@ type Key = {
 };
 
 export function ApiKeysClient() {
+  const toast = useToast();
+  const confirm = useConfirm();
   const [keys, setKeys] = useState<Key[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
@@ -34,7 +38,7 @@ export function ApiKeysClient() {
   }
 
   async function create() {
-    if (!name.trim()) { alert("給 key 一個名字"); return; }
+    if (!name.trim()) { toast.error("給 key 一個名字"); return; }
     setCreating(true);
     try {
       const r = await fetch("/api/me/api-keys", {
@@ -49,19 +53,19 @@ export function ApiKeysClient() {
         setName("");
         await load();
       } else {
-        alert(`❌ ${j.error}`);
+        toast.error(j.error ?? "建立失敗");
       }
     } finally { setCreating(false); }
   }
 
   async function disable(id: string) {
-    if (!confirm("停用這把 key？之後拿這 key 打 API 都會 403")) return;
+    if (!(await confirm({ title: "停用這把 key？", description: "之後拿這 key 打 API 都會 403", destructive: true, confirmLabel: "停用" }))) return;
     await fetch(`/api/me/api-keys?id=${id}`, { method: "DELETE", credentials: "include" });
     await load();
   }
 
   function copy(text: string) {
-    navigator.clipboard.writeText(text).then(() => alert("已複製"));
+    navigator.clipboard.writeText(text).then(() => toast.success("已複製"));
   }
 
   return (

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Store, ArrowLeft, Sparkles, Plus, ThumbsUp, Bookmark, GitFork, MessageCircle, Check, Tag } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
+import { usePrompt } from "@/components/ui/ConfirmDialog";
 
 type Listing = { id: string; workspace_id: string; asset_id: string; asset_type: string; title: string; description: string; price_z: number };
 type Asset = { id: string; type: "fragment" | "work"; title: string };
@@ -19,6 +20,7 @@ type Pick = { id: string; text: string; category: string; rarity: string };
 
 export function MarketClient({ workspaceId, listings, myAssets, poolPicks = [], ownedAssetIds = [], myWorkspaceIds = [], fruitBalance = 0 }: { workspaceId: string; listings: Listing[]; myAssets: Asset[]; poolPicks?: Pick[]; ownedAssetIds?: string[]; myWorkspaceIds?: string[]; fruitBalance?: number }) {
   const toast = useToast();
+  const prompt = usePrompt();
   const [tab, setTab] = useState<"browse" | "sell">("browse");
   const [liked, setLiked] = useState<Set<string>>(new Set());
   const [collected, setCollected] = useState<Set<string>>(new Set());
@@ -133,7 +135,7 @@ export function MarketClient({ workspaceId, listings, myAssets, poolPicks = [], 
                 <button onClick={() => act("like", l)} disabled={busy === l.id + "like"} className={`px-2 py-1 rounded-full inline-flex items-center gap-1.5 disabled:opacity-50 ${liked.has(l.asset_id) ? "bg-accent/20 text-accent" : "bg-bg-elevated hover:text-accent"}`}><ThumbsUp size={14} className={liked.has(l.asset_id) ? "fill-current" : ""} /> 讚</button>
                 <button onClick={() => act("collect", l)} disabled={busy === l.id + "collect"} className={`px-2 py-1 rounded-full inline-flex items-center gap-1.5 disabled:opacity-50 ${collected.has(l.asset_id) ? "bg-amber-500/20 text-amber-600 dark:text-amber-300" : "bg-bg-elevated hover:text-accent"}`}><Bookmark size={14} className={collected.has(l.asset_id) ? "fill-current" : ""} /> 收藏</button>
                 <button onClick={() => act("fork", l)} disabled={busy === l.id + "fork"} className="px-2 py-1 rounded-full bg-bg-elevated hover:text-accent inline-flex items-center gap-1.5 disabled:opacity-50"><GitFork size={14} /> Fork</button>
-                <button onClick={async () => { const body = prompt("留言："); if (!body) return; setBusy(l.id + "c"); try { await call("/api/creator-island/community/comments", "POST", { assetId: l.asset_id, assetType: l.asset_type, body }); toast.success("已留言 💬"); } catch (e: any) { toast.error(e.message); } finally { setBusy(null); } }} disabled={busy === l.id + "c"} className="px-2 py-1 rounded-full bg-bg-elevated hover:text-accent inline-flex items-center gap-1.5 disabled:opacity-50"><MessageCircle size={14} /> 留言</button>
+                <button onClick={async () => { const body = await prompt({ title: "留言", placeholder: "寫點什麼給作者…", multiline: true, confirmLabel: "送出", required: true }); if (!body) return; setBusy(l.id + "c"); try { await call("/api/creator-island/community/comments", "POST", { assetId: l.asset_id, assetType: l.asset_type, body }); toast.success("已留言 💬"); } catch (e: any) { toast.error(e.message); } finally { setBusy(null); } }} disabled={busy === l.id + "c"} className="px-2 py-1 rounded-full bg-bg-elevated hover:text-accent inline-flex items-center gap-1.5 disabled:opacity-50"><MessageCircle size={14} /> 留言</button>
               </div>
             </div>
             );

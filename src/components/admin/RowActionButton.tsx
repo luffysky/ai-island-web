@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { useConfirm, usePrompt } from "@/components/ui/ConfirmDialog";
 
 /**
  * 通用「危險列操作」按鈕 — 給金流工作台的退款 / 取消訂閱用。
@@ -23,16 +24,18 @@ export function RowActionButton({
   successLabel?: string;
 }) {
   const router = useRouter();
+  const confirm = useConfirm();
+  const prompt = usePrompt();
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   const [err, setErr] = useState<string>("");
 
   async function run() {
     if (busy || done) return;
-    if (!window.confirm(confirmText)) return;
+    if (!(await confirm({ title: confirmText }))) return;
     let reason = "";
     if (askReason) {
-      reason = window.prompt("原因（會寫進 audit log、可留空）：", "") ?? "";
+      reason = (await prompt({ title: "原因（會寫進 audit log、可留空）", defaultValue: "", multiline: true })) ?? "";
     }
     setBusy(true);
     setErr("");

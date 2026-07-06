@@ -9,6 +9,7 @@ import { BlogEditor } from "@/components/blog/BlogEditor";
 import { IslandChat } from "../../IslandChat";
 import { getType, type Tool } from "../engine-types";
 import { useDraftCollab } from "@/lib/collab/use-draft-collab";
+import { usePrompt } from "@/components/ui/ConfirmDialog";
 
 type Fragment = { id: string; title: string; content: string; source_type: string };
 type Draft = {
@@ -37,6 +38,7 @@ export function EngineWorkspace({ draft, fragments, currentUser }: { draft: Draf
   const [toast, setToast] = useState<string | null>(null);
   const editorRef = useRef<Editor | null>(null);
   const first = useRef(true);
+  const prompt = usePrompt();
 
   // 即時共編（opt-in / 特性旗標 flag_collab）。realtime 失敗會優雅退回單人。
   const { collab, status: collabStatus, peers, seedEditor } = useDraftCollab({
@@ -60,8 +62,8 @@ export function EngineWorkspace({ draft, fragments, currentUser }: { draft: Draf
     fetch(`/api/creator-island/drafts/${draft.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ seriesId: id }) }).catch(() => {});
   }
   async function newSeries() {
-    const title = window.prompt(`新${seriesNoun}名稱：`); if (!title?.trim()) return;
-    const category = window.prompt(`分類（再分類，可留空。例：${seriesKind === "album" ? "情歌 / 搖滾" : "都市奇幻 / 懸疑"}）`) || "";
+    const title = await prompt({ title: `新${seriesNoun}名稱` }); if (!title?.trim()) return;
+    const category = (await prompt({ title: `分類（再分類，可留空。例：${seriesKind === "album" ? "情歌 / 搖滾" : "都市奇幻 / 懸疑"}）` })) || "";
     try {
       const r = await fetch("/api/creator-island/series", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ workspaceId: draft.workspace_id, kind: seriesKind, title: title.trim(), category }) }).then((x) => x.json());
       if (r.series) { setSeriesList((p) => [r.series, ...p]); assignSeries(r.series.id); }
@@ -108,10 +110,10 @@ export function EngineWorkspace({ draft, fragments, currentUser }: { draft: Draf
 
     let instruction = "";
     if (tool.promptLang) {
-      const lang = window.prompt("轉譯成哪個語言？（例：日語 / English / 韓語 / 粵語 / 文言文）", "日語");
+      const lang = await prompt({ title: "轉譯成哪個語言？（例：日語 / English / 韓語 / 粵語 / 文言文）", defaultValue: "日語" });
       if (!lang) return; instruction = `目標語言：${lang}（請用該語言書寫，融入其文化語感）`;
     } else if (tool.mode === "poem_form") {
-      const form = window.prompt("詩的形式？（現代詩 / 俳句 / 絕句 / 律詩 / 十四行）", "現代詩");
+      const form = await prompt({ title: "詩的形式？（現代詩 / 俳句 / 絕句 / 律詩 / 十四行）", defaultValue: "現代詩" });
       if (!form) return; instruction = `形式：${form}`;
     }
 

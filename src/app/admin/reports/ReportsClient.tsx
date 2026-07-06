@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Check, X, AlertTriangle } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
-import { useConfirm } from "@/components/ui/ConfirmDialog";
+import { useConfirm, usePrompt } from "@/components/ui/ConfirmDialog";
 import { formatTW } from "@/lib/format-date";
 
 type Report = {
@@ -50,6 +50,7 @@ export function ReportsClient({
   const router = useRouter();
   const toast = useToast();
   const confirm = useConfirm();
+  const prompt = usePrompt();
   const [rows, setRows] = useState(initial);
 
   const updateFilter = (key: string, value: string) => {
@@ -64,7 +65,7 @@ export function ReportsClient({
   const act = async (id: string, action: "resolve" | "dismiss" | "escalate") => {
     let note: string | null = null;
     if (action === "resolve" || action === "escalate") {
-      note = window.prompt(`${action === "resolve" ? "解決" : "升級"}說明（選）：`);
+      note = await prompt({ title: `${action === "resolve" ? "解決" : "升級"}說明（選）`, multiline: true });
       if (note === null) return;
     } else {
       const ok = await confirm({

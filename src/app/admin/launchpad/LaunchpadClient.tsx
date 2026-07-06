@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Plus, Trash2, X, XCircle, Loader2, Search, Sparkles, Wand2, ExternalLink, ChevronDown, ChevronRight, RefreshCw } from "lucide-react";
+import { useConfirm, useAlert } from "@/components/ui/ConfirmDialog";
+import { useToast } from "@/components/ui/Toast";
 
 type Board = { id: string; slug: string; title: string; emoji: string | null; description: string | null; position: number };
 type Column = { id: string; board_id: string; title: string; emoji: string | null; color: string; position: number };
@@ -46,6 +48,9 @@ const CATEGORY_META: Record<string, { emoji: string; label: string }> = {
 const CATEGORY_OPTIONS = Object.keys(CATEGORY_META);
 
 export function LaunchpadClient() {
+  const confirm = useConfirm();
+  const alert = useAlert();
+  const toast = useToast();
   const [boards, setBoards] = useState<Board[]>([]);
   const [columns, setColumns] = useState<Column[]>([]);
   const [cards, setCards] = useState<Card[]>([]);
@@ -114,7 +119,7 @@ export function LaunchpadClient() {
   }
 
   async function deleteCard(id: string) {
-    if (!confirm("刪掉這張卡？")) return;
+    if (!(await confirm({ title: "刪掉這張卡？", confirmLabel: "刪除", destructive: true }))) return;
     const res = await fetch(`/api/admin/kanban/${id}`, { method: "DELETE", credentials: "include" });
     if (res.ok) setCards((cs) => cs.filter((c) => c.id !== id));
   }
@@ -146,7 +151,7 @@ export function LaunchpadClient() {
       setAiAddOpen(false);
       return j;
     }
-    alert(`AI 建卡失敗：${j.error ?? "unknown"}`);
+    toast.error(`AI 建卡失敗：${j.error ?? "unknown"}`);
     return null;
   }
 
@@ -175,7 +180,7 @@ export function LaunchpadClient() {
 
   async function autoSync() {
     if (autoSyncing) return;
-    if (!confirm("讓雪鑰掃 GitHub 最近 commit、自動把已完成的卡移到 DONE？")) return;
+    if (!(await confirm({ title: "讓雪鑰掃 GitHub 最近 commit、自動把已完成的卡移到 DONE？" }))) return;
     setAutoSyncing(true);
     try {
       const res = await fetch("/api/admin/kanban/auto-sync", { method: "POST", credentials: "include" });
@@ -184,10 +189,11 @@ export function LaunchpadClient() {
         const msg = j.moved > 0
           ? `✨ 雪鑰移了 ${j.moved} 張到 DONE：\n${(j.moved_details ?? []).slice(0, 5).map((d: any) => `✓ ${d.title}`).join("\n")}`
           : `雪鑰掃了 ${j.scanned_commits} 個 commit / ${j.scanned_cards} 張卡、沒看到能自動完成的`;
-        alert(msg);
+        const [msgTitle, ...msgRest] = msg.split("\n");
+        await alert({ title: msgTitle, description: msgRest.join("\n") || undefined });
         await reload();
       } else {
-        alert(`❌ 自動掃失敗：${j.error ?? "unknown"}`);
+        toast.error(`自動掃失敗：${j.error ?? "unknown"}`);
       }
     } finally {
       setAutoSyncing(false);

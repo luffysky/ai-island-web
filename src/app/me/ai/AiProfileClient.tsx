@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Brain, Sparkles, Save, Trash2, MessageSquare, Check, Loader2 } from "lucide-react";
+import { useConfirm } from "@/components/ui/ConfirmDialog";
 
 type Topic = { topic: string; count: number };
 type Prefs = {
@@ -34,6 +35,7 @@ const HIGHLIGHT_KEYS: { key: string; label: string }[] = [
 ];
 
 export function AiProfileClient({ initial }: { initial: Initial }) {
+  const confirm = useConfirm();
   const p = initial.preferences || {};
   const [customPrompt, setCustomPrompt] = useState<string>(p.custom_prompt ?? "");
   const [tone, setTone] = useState<string>(p.tone ?? "");
@@ -88,7 +90,7 @@ export function AiProfileClient({ initial }: { initial: Initial }) {
   };
 
   const clearAll = async () => {
-    if (!confirm("確定要清除 AI 對你的所有記憶嗎？此動作無法復原。")) return;
+    if (!(await confirm({ title: "確定要清除 AI 對你的所有記憶嗎？", description: "此動作無法復原。", destructive: true, confirmLabel: "清除" }))) return;
     setClearing(true);
     setErr(null);
     try {

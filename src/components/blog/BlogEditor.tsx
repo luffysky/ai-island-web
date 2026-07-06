@@ -38,6 +38,7 @@ import {
 } from "lucide-react";
 import { TextStyleColorSize } from "@/lib/tiptap-text-style";
 import { useToast } from "@/components/ui/Toast";
+import { usePrompt } from "@/components/ui/ConfirmDialog";
 import { CodeBlockUpgraded } from "./tiptap/code-block";
 import { Callout } from "./tiptap/callout";
 import { SlashCommand } from "./tiptap/slash-command";
@@ -249,20 +250,21 @@ function Toolbar({ editor }: { editor: Editor }) {
     }`;
 
   const toast = useToast();
+  const prompt = usePrompt();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const videoInputRef = useRef<HTMLInputElement | null>(null);
   const audioInputRef = useRef<HTMLInputElement | null>(null);
   const attachInputRef = useRef<HTMLInputElement | null>(null);
   const [uploading, setUploading] = useState(false);
 
-  const addLink = () => {
-    const url = window.prompt("連結網址：");
+  const addLink = async () => {
+    const url = await prompt({ title: "連結網址：" });
     if (url) editor.chain().focus().setLink({ href: url }).run();
     else editor.chain().focus().unsetLink().run();
   };
   // 嵌入 YouTube / Vimeo 影片連結
-  const addEmbed = () => {
-    const url = window.prompt("貼上 YouTube 或 Vimeo 影片連結：");
+  const addEmbed = async () => {
+    const url = await prompt({ title: "貼上 YouTube 或 Vimeo 影片連結：" });
     if (!url) return;
     const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([\w-]{11})/);
     const vm = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);

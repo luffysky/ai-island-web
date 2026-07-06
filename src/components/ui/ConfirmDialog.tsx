@@ -1,27 +1,25 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 /**
- * 全站 ConfirmDialog（取代 native confirm()）。
+ * 全站對話框系統（取代醜醜的 native confirm() / alert() / prompt()）。
  *
- * 用法：
+ * 三個 hook，全部走同一個 <ConfirmProvider>（layout 只掛一次）：
+ *
  *   const confirm = useConfirm();
- *   const ok = await confirm({
- *     title: "刪除這篇文章？",
- *     description: "刪了無法復原。",
- *     confirmLabel: "刪除",
- *     destructive: true,  // 紅色按鈕 + 0.5s 額外延遲防誤點
- *   });
- *   if (ok) { ... }
+ *   const ok = await confirm({ title: "刪除？", description: "無法復原", confirmLabel: "刪除", destructive: true });
  *
- * UX 細節：
- *  - Esc / 外部點擊 = 取消
- *  - destructive: 危險操作確認按鈕延遲 500ms（防滑鼠衝過去誤點）
- *  - 動畫 spring 進場、200ms 退出
- *  - focus trap 在 dialog 內、Tab 不會跳出
- *  - 預設 focus 取消按鈕（要主動移到確認、不點到惡的）
+ *   const alert = useAlert();
+ *   await alert("已儲存");                         // 字串速記
+ *   await alert({ title: "評分結果", description: "85 分\n寫得不錯" });
+ *
+ *   const prompt = usePrompt();
+ *   const name = await prompt({ title: "新分類名稱", placeholder: "例：我的碎片" }); // string | null
+ *   const val  = await prompt("留言：");           // 字串速記
+ *
+ * UX：Esc / 外部點擊 = 取消；spring 進場；focus trap；destructive 延遲 500ms 防誤點。
  */
 
 export type ConfirmOptions = {
@@ -32,150 +30,272 @@ export type ConfirmOptions = {
   destructive?: boolean;
 };
 
-type Pending = ConfirmOptions & {
-  resolve: (ok: boolean) => void;
+export type AlertOptions = {
+  title: string;
+  description?: string;
+  confirmLabel?: string;
 };
 
+export type PromptOptions = {
+  title: string;
+  description?: string;
+  label?: string;
+  placeholder?: string;
+  defaultValue?: string;
+  confirmLabel?: string;
+  cancelLabel?: string;
+  multiline?: boolean;
+  required?: boolean;
+};
+
+type ConfirmPending = ConfirmOptions & { kind: "confirm"; resolve: (ok: boolean) => void };
+type AlertPending = AlertOptions & { kind: "alert"; resolve: () => void };
+type PromptPending = PromptOptions & { kind: "prompt"; resolve: (val: string | null) => void };
+type Pending = ConfirmPending | AlertPending | PromptPending;
+
 const ConfirmCtx = createContext<((options: ConfirmOptions) => Promise<boolean>) | null>(null);
+const AlertCtx = createContext<((options: AlertOptions | string) => Promise<void>) | null>(null);
+const PromptCtx = createContext<((options: PromptOptions | string) => Promise<string | null>) | null>(null);
+
+const BTN_BASE: React.CSSProperties = {
+  padding: "8px 16px",
+  fontSize: 14,
+  borderRadius: 8,
+  cursor: "pointer",
+  transition: "transform 100ms, opacity 200ms, background 120ms",
+};
 
 export function ConfirmProvider({ children }: { children: ReactNode }) {
   const [pending, setPending] = useState<Pending | null>(null);
   const [armed, setArmed] = useState(false);
+  const [value, setValue] = useState("");
+  const inputRef = useRef<HTMLTextAreaElement | HTMLInputElement | null>(null);
 
   const confirm = useCallback((options: ConfirmOptions): Promise<boolean> => {
     return new Promise<boolean>((resolve) => {
-      setPending({ ...options, resolve });
+      setPending({ ...options, kind: "confirm", resolve });
       setArmed(false);
     });
   }, []);
 
-  const close = useCallback((ok: boolean) => {
-    if (!pending) return;
-    pending.resolve(ok);
-    setPending(null);
+  const alert = useCallback((options: AlertOptions | string): Promise<void> => {
+    const opts = typeof options === "string" ? { title: options } : options;
+    return new Promise<void>((resolve) => {
+      setPending({ ...opts, kind: "alert", resolve });
+      setArmed(false);
+    });
+  }, []);
+
+  const prompt = useCallback((options: PromptOptions | string): Promise<string | null> => {
+    const opts = typeof options === "string" ? { title: options } : options;
+    return new Promise<string | null>((resolve) => {
+      setValue(opts.defaultValue ?? "");
+      setPending({ ...opts, kind: "prompt", resolve });
+      setArmed(false);
+    });
+  }, []);
+
+  const settle = useCallback((result: boolean | string | null) => {
+    setPending((cur) => {
+      if (cur) {
+        if (cur.kind === "confirm") cur.resolve(result === true);
+        else if (cur.kind === "alert") cur.resolve();
+        else cur.resolve(result === false || result === null ? null : (result as string));
+      }
+      return null;
+    });
     setArmed(false);
-  }, [pending]);
+    setValue("");
+  }, []);
 
   useEffect(() => {
     if (!pending) return;
-    // destructive 時延遲 500ms 才解鎖確認按鈕、防誤點
-    if (pending.destructive) {
+    if (pending.kind === "confirm" && pending.destructive) {
       const t = setTimeout(() => setArmed(true), 500);
       return () => clearTimeout(t);
     }
     setArmed(true);
+    if (pending.kind === "prompt") {
+      const t = setTimeout(() => { inputRef.current?.focus(); inputRef.current?.select?.(); }, 60);
+      return () => clearTimeout(t);
+    }
   }, [pending]);
 
   useEffect(() => {
     if (!pending) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") close(false);
-      if (e.key === "Enter" && armed) close(true);
+      if (e.key === "Escape") settle(pending.kind === "alert" ? true : false);
+      if (e.key === "Enter" && armed) {
+        // prompt 多行時 Enter 換行、Cmd/Ctrl+Enter 才送出
+        if (pending.kind === "prompt") {
+          if (pending.multiline && !(e.metaKey || e.ctrlKey)) return;
+          e.preventDefault();
+          if (pending.required && !value.trim()) return;
+          settle(value);
+        } else {
+          settle(true);
+        }
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [pending, armed, close]);
+  }, [pending, armed, value, settle]);
+
+  const destructive = pending?.kind === "confirm" && pending.destructive;
+  const promptBlocked = pending?.kind === "prompt" && pending.required && !value.trim();
 
   return (
     <ConfirmCtx.Provider value={confirm}>
-      {children}
-      <AnimatePresence>
-        {pending && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.15 }}
-            onClick={() => close(false)}
-            style={{
-              position: "fixed",
-              inset: 0,
-              background: "rgba(0,0,0,0.55)",
-              zIndex: 10000,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              padding: 20,
-              backdropFilter: "blur(2px)",
-            }}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="confirm-title"
-          >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.92, y: 12 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 6, transition: { duration: 0.12 } }}
-              transition={{ type: "spring", stiffness: 360, damping: 26 }}
-              onClick={(e) => e.stopPropagation()}
-              style={{
-                background: "var(--color-bg-card, #fff)",
-                color: "var(--color-fg, #111)",
-                border: "1px solid var(--color-border, rgba(0,0,0,0.1))",
-                borderRadius: 14,
-                padding: 22,
-                maxWidth: 420,
-                width: "100%",
-                boxShadow: "0 16px 40px rgba(0,0,0,0.25)",
-              }}
-            >
-              <h3
-                id="confirm-title"
-                style={{ fontSize: 17, fontWeight: 700, margin: 0, marginBottom: pending.description ? 8 : 16 }}
+      <AlertCtx.Provider value={alert}>
+        <PromptCtx.Provider value={prompt}>
+          {children}
+          <AnimatePresence>
+            {pending && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.15 }}
+                onClick={() => settle(pending.kind === "alert" ? true : false)}
+                style={{
+                  position: "fixed",
+                  inset: 0,
+                  background: "rgba(0,0,0,0.55)",
+                  zIndex: 10000,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: 20,
+                  backdropFilter: "blur(2px)",
+                }}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="dialog-title"
               >
-                {pending.title}
-              </h3>
-              {pending.description && (
-                <p style={{ fontSize: 14, opacity: 0.75, margin: 0, marginBottom: 18, lineHeight: 1.5 }}>
-                  {pending.description}
-                </p>
-              )}
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
-                <button
-                  type="button"
-                  onClick={() => close(false)}
-                  autoFocus
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.92, y: 12 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: 6, transition: { duration: 0.12 } }}
+                  transition={{ type: "spring", stiffness: 360, damping: 26 }}
+                  onClick={(e) => e.stopPropagation()}
                   style={{
-                    padding: "8px 16px",
-                    fontSize: 14,
-                    fontWeight: 500,
-                    background: "transparent",
-                    border: "1px solid var(--color-border, rgba(0,0,0,0.15))",
-                    borderRadius: 8,
+                    background: "var(--color-bg-card, #fff)",
                     color: "var(--color-fg, #111)",
-                    cursor: "pointer",
-                    transition: "background 120ms",
+                    border: "1px solid var(--color-border, rgba(0,0,0,0.1))",
+                    borderRadius: 14,
+                    padding: 22,
+                    maxWidth: 440,
+                    width: "100%",
+                    boxShadow: "0 16px 40px rgba(0,0,0,0.25)",
                   }}
                 >
-                  {pending.cancelLabel ?? "取消"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => armed && close(true)}
-                  disabled={!armed}
-                  style={{
-                    padding: "8px 16px",
-                    fontSize: 14,
-                    fontWeight: 700,
-                    background: pending.destructive ? "#dc2626" : "var(--color-accent, #2563eb)",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: 8,
-                    cursor: armed ? "pointer" : "not-allowed",
-                    opacity: armed ? 1 : 0.55,
-                    transition: "transform 100ms, opacity 200ms",
-                  }}
-                  onMouseDown={(e) => armed && (e.currentTarget.style.transform = "scale(0.97)")}
-                  onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
-                  onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
-                >
-                  {pending.confirmLabel ?? "確認"}
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                  <h3
+                    id="dialog-title"
+                    style={{ fontSize: 17, fontWeight: 700, margin: 0, marginBottom: pending.description || pending.kind === "prompt" ? 8 : 16, whiteSpace: "pre-wrap" }}
+                  >
+                    {pending.title}
+                  </h3>
+                  {pending.description && (
+                    <p style={{ fontSize: 14, opacity: 0.75, margin: 0, marginBottom: 18, lineHeight: 1.5, whiteSpace: "pre-wrap" }}>
+                      {pending.description}
+                    </p>
+                  )}
+                  {pending.kind === "prompt" && (
+                    <div style={{ marginBottom: 18 }}>
+                      {pending.label && (
+                        <label style={{ fontSize: 13, opacity: 0.75, display: "block", marginBottom: 6 }}>{pending.label}</label>
+                      )}
+                      {pending.multiline ? (
+                        <textarea
+                          ref={inputRef as React.RefObject<HTMLTextAreaElement>}
+                          value={value}
+                          onChange={(e) => setValue(e.target.value)}
+                          placeholder={pending.placeholder}
+                          rows={4}
+                          style={{
+                            width: "100%",
+                            fontSize: 14,
+                            padding: "10px 12px",
+                            borderRadius: 10,
+                            border: "1px solid var(--color-border, rgba(0,0,0,0.15))",
+                            background: "var(--color-bg-elevated, rgba(0,0,0,0.03))",
+                            color: "var(--color-fg, #111)",
+                            outline: "none",
+                            resize: "vertical",
+                            lineHeight: 1.5,
+                            boxSizing: "border-box",
+                          }}
+                        />
+                      ) : (
+                        <input
+                          ref={inputRef as React.RefObject<HTMLInputElement>}
+                          value={value}
+                          onChange={(e) => setValue(e.target.value)}
+                          placeholder={pending.placeholder}
+                          style={{
+                            width: "100%",
+                            fontSize: 14,
+                            padding: "10px 12px",
+                            borderRadius: 10,
+                            border: "1px solid var(--color-border, rgba(0,0,0,0.15))",
+                            background: "var(--color-bg-elevated, rgba(0,0,0,0.03))",
+                            color: "var(--color-fg, #111)",
+                            outline: "none",
+                            boxSizing: "border-box",
+                          }}
+                        />
+                      )}
+                    </div>
+                  )}
+                  <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+                    {pending.kind !== "alert" && (
+                      <button
+                        type="button"
+                        onClick={() => settle(pending.kind === "prompt" ? null : false)}
+                        autoFocus={pending.kind === "confirm"}
+                        style={{
+                          ...BTN_BASE,
+                          fontWeight: 500,
+                          background: "transparent",
+                          border: "1px solid var(--color-border, rgba(0,0,0,0.15))",
+                          color: "var(--color-fg, #111)",
+                        }}
+                      >
+                        {(pending.kind === "confirm" || pending.kind === "prompt" ? pending.cancelLabel : undefined) ?? "取消"}
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!armed || promptBlocked) return;
+                        if (pending.kind === "prompt") settle(value);
+                        else if (pending.kind === "alert") settle(true);
+                        else settle(true);
+                      }}
+                      disabled={!armed || promptBlocked}
+                      autoFocus={pending.kind === "alert"}
+                      style={{
+                        ...BTN_BASE,
+                        fontWeight: 700,
+                        background: destructive ? "#dc2626" : "var(--color-accent, #2563eb)",
+                        color: destructive ? "#fff" : "var(--color-accent-contrast, #fff)",
+                        border: "none",
+                        cursor: armed && !promptBlocked ? "pointer" : "not-allowed",
+                        opacity: armed && !promptBlocked ? 1 : 0.55,
+                      }}
+                      onMouseDown={(e) => armed && !promptBlocked && (e.currentTarget.style.transform = "scale(0.97)")}
+                      onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                      onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                    >
+                      {(pending.kind === "confirm" || pending.kind === "prompt" || pending.kind === "alert" ? pending.confirmLabel : undefined) ?? (pending.kind === "prompt" ? "確定" : pending.kind === "alert" ? "知道了" : "確認")}
+                    </button>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </PromptCtx.Provider>
+      </AlertCtx.Provider>
     </ConfirmCtx.Provider>
   );
 }
@@ -183,5 +303,17 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
 export function useConfirm() {
   const ctx = useContext(ConfirmCtx);
   if (!ctx) throw new Error("useConfirm must be used within <ConfirmProvider>");
+  return ctx;
+}
+
+export function useAlert() {
+  const ctx = useContext(AlertCtx);
+  if (!ctx) throw new Error("useAlert must be used within <ConfirmProvider>");
+  return ctx;
+}
+
+export function usePrompt() {
+  const ctx = useContext(PromptCtx);
+  if (!ctx) throw new Error("usePrompt must be used within <ConfirmProvider>");
   return ctx;
 }

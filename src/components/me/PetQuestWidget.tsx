@@ -3,8 +3,12 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Cat, Check, Loader2, Sparkles } from "lucide-react";
+import { useToast } from "@/components/ui/Toast";
+import { useAlert } from "@/components/ui/ConfirmDialog";
 
 export function PetQuestWidget() {
+  const toast = useToast();
+  const alert = useAlert();
   const [quest, setQuest] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [completing, setCompleting] = useState(false);
@@ -35,9 +39,9 @@ export function PetQuestWidget() {
       const j = await r.json();
       if (j.ok) {
         setQuest(j.quest);
-        alert(`✨ 寵物開心啊！\n+${j.reward_z} 🪙 z 幣 / +${j.reward_affinity} 親密度`);
+        await alert({ title: "✨ 寵物開心啊！", description: `+${j.reward_z} 🪙 z 幣 / +${j.reward_affinity} 親密度` });
       } else {
-        alert(j.error ?? "失敗");
+        toast.error(j.error ?? "失敗");
       }
     } finally {
       setCompleting(false);

@@ -9,6 +9,7 @@ import {
   Lightbulb, Magnet, Leaf, Wand2, Languages, FolderTree, Pencil, Copy, Music, Film, PenTool,
   X, Check, Bot, Egg, Recycle, GitFork, Hand, ScrollText, BrainCircuit, type LucideIcon,
 } from "lucide-react";
+import { useConfirm, usePrompt } from "@/components/ui/ConfirmDialog";
 import { EggHatch } from "./EggHatch";
 import { IslandTour } from "./IslandTour";
 import { IslandChat } from "./IslandChat";
@@ -82,6 +83,8 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
   const [toast, setToast] = useState<string | null>(null);
   const [todayPair, setTodayPair] = useState<{ a_id: string; a_title: string; b_id: string; b_title: string; similarity: number } | null>(null);
   const [savedKeys, setSavedKeys] = useState<Set<string>>(new Set());
+  const confirm = useConfirm();
+  const prompt = usePrompt();
   function flash(m: string) { setToast(m); setTimeout(() => setToast(null), 1600); }
 
   useEffect(() => { fetch("/api/creator-island/dust").then((r) => r.json()).then((j) => setDust(j.balance ?? 0)).catch(() => {}); }, []);
@@ -111,7 +114,7 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
     } catch (e: any) { setErr(e.message); }
   }
   async function deleteFragment(id: string) {
-    if (!confirm("刪除這個碎片？")) return;
+    if (!(await confirm({ title: "刪除這個碎片？", confirmLabel: "刪除", destructive: true }))) return;
     try {
       const res = await fetch(`/api/creator-island/fragments/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("刪除失敗");
@@ -122,14 +125,14 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
 
   // === 自訂分類（Collections） ===
   async function createCollection() {
-    const name = prompt("新分類名稱："); if (!name?.trim()) return;
+    const name = await prompt({ title: "新分類名稱" }); if (!name?.trim()) return;
     try {
       const { collection } = await api("/api/creator-island/collections", { workspaceId, name: name.trim() });
       setCollections((p) => [...p, { id: collection.id, name: collection.name, assetIds: [] }]);
     } catch (e: any) { setErr(e.message); }
   }
   async function deleteCollection(id: string) {
-    if (!confirm("刪除這個分類？（碎片本身不會刪）")) return;
+    if (!(await confirm({ title: "刪除這個分類？", description: "碎片本身不會刪", confirmLabel: "刪除", destructive: true }))) return;
     try {
       await fetch(`/api/creator-island/collections/${id}`, { method: "DELETE" });
       setCollections((p) => p.filter((c) => c.id !== id));
@@ -288,7 +291,7 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
       const body = workType === "song"
         ? { workspaceId, title: r.title, workType, body: r.lyricsSectioned, fragmentIds: sel, sourceType: "ai_assisted", meta: { sunoPrompt: r.sunoPrompt, mvPrompt: r.mvPrompt } }
         : { workspaceId, title: r.title, workType, body: r.body, fragmentIds: sel, sourceType: "ai_assisted" };
-      await api("/api/creator-island/works", body); setResult(null); setSelected(new Set()); alert("✅ 已存成作品（作品庫看）");
+      await api("/api/creator-island/works", body); setResult(null); setSelected(new Set()); flash("已存成作品（作品庫看）");
     } catch (e: any) { setErr(e.message); } finally { setBusy(null); }
   }
   async function importToEngine() {
@@ -306,8 +309,8 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
     } catch (e: any) { setErr(e.message); setBusy(null); }
   }
   async function saveWorkflow() {
-    const title = prompt(`把剛剛這 ${recording.length} 步存成工作流，取個名字：`); if (!title) return;
-    try { await api("/api/creator-island/workflows", { workspaceId, title, steps: recording }); setRecording([]); alert("✅ 已存成工作流"); }
+    const title = await prompt({ title: `把剛剛這 ${recording.length} 步存成工作流，取個名字` }); if (!title) return;
+    try { await api("/api/creator-island/workflows", { workspaceId, title, steps: recording }); setRecording([]); flash("已存成工作流"); }
     catch (e: any) { setErr(e.message); }
   }
   async function loadWorkflows() {

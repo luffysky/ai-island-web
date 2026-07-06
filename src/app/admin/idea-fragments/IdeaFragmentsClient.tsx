@@ -12,6 +12,8 @@ import {
   CheckSquare, Square, MousePointerClick, GripVertical, Link2, RefreshCw,
   ThumbsUp, ThumbsDown, MessageCircle, Send, User,
 } from "lucide-react";
+import { useConfirm, usePrompt } from "@/components/ui/ConfirmDialog";
+import { useToast } from "@/components/ui/Toast";
 import { DailyIdeaCard } from "./DailyIdeaCard";
 import { TagCloud } from "./views/TagCloud";
 import { Timeline } from "./views/Timeline";
@@ -81,6 +83,9 @@ export function IdeaFragmentsClient({
   initialPairs: Pair[];
   memberNames: Record<string, string>;
 }) {
+  const confirm = useConfirm();
+  const prompt = usePrompt();
+  const toast = useToast();
   const [fragments, setFragments] = useState<Fragment[]>(initialFragments);
   const [ideas, setIdeas] = useState<Idea[]>(initialIdeas);
   const [folders, setFolders] = useState<Folder[]>(initialFolders);
@@ -179,7 +184,7 @@ export function IdeaFragmentsClient({
 
   // ===== 資料夾 =====
   async function createFolder() {
-    const name = prompt("資料夾名稱（例如：我的碎片 / Nami 的碎片）")?.trim();
+    const name = (await prompt({ title: "資料夾名稱（例如：我的碎片 / Nami 的碎片）" }))?.trim();
     if (!name) return;
     try {
       const { folder } = await api("/api/admin/idea-folders", "POST", { name });
@@ -189,7 +194,7 @@ export function IdeaFragmentsClient({
   }
 
   async function renameFolder(f: Folder) {
-    const name = prompt("改名", f.name)?.trim();
+    const name = (await prompt({ title: "改名", defaultValue: f.name }))?.trim();
     if (!name || name === f.name) return;
     try {
       const { folder } = await api(`/api/admin/idea-folders/${f.id}`, "PATCH", { name });
@@ -198,7 +203,7 @@ export function IdeaFragmentsClient({
   }
 
   async function deleteFolder(f: Folder) {
-    if (!confirm(`刪除資料夾「${f.name}」？裡面的碎片不會刪、會變成「未分類」。`)) return;
+    if (!(await confirm({ title: `刪除資料夾「${f.name}」？`, description: "裡面的碎片不會刪、會變成「未分類」。", confirmLabel: "刪除", destructive: true }))) return;
     try {
       await api(`/api/admin/idea-folders/${f.id}`, "DELETE");
       setFolders((prev) => prev.filter((x) => x.id !== f.id));
@@ -239,7 +244,7 @@ export function IdeaFragmentsClient({
   }
 
   async function deleteFragment(id: string) {
-    if (!confirm("確定刪除這個碎片？")) return;
+    if (!(await confirm({ title: "確定刪除這個碎片？", confirmLabel: "刪除", destructive: true }))) return;
     try {
       await api(`/api/admin/idea-fragments/${id}`, "DELETE");
       setFragments((prev) => prev.filter((f) => f.id !== id));
@@ -330,7 +335,7 @@ export function IdeaFragmentsClient({
   }
 
   async function deleteIdea(id: string) {
-    if (!confirm("丟掉這個點子？")) return;
+    if (!(await confirm({ title: "丟掉這個點子？", confirmLabel: "丟掉", destructive: true }))) return;
     try {
       await api(`/api/admin/generated-ideas/${id}`, "DELETE");
       setIdeas((prev) => prev.filter((i) => i.id !== id));
@@ -342,7 +347,7 @@ export function IdeaFragmentsClient({
     setErr(null);
     try {
       await api(`/api/admin/generated-ideas/${id}/convert`, "POST", { target });
-      alert(
+      toast.success(
         target === "task" ? "✅ 已轉成任務（到「待辦」看）"
         : target === "article" ? "✅ 已建立文章草稿（到部落格草稿看）"
         : "✅ AI 已展開成產品企劃，存成部落格草稿（標題【產品企劃】…）"

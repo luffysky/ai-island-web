@@ -6,6 +6,8 @@ import { usePyodide } from "@/hooks/usePyodide";
 import { CodeEditor } from "@/components/ui/CodeEditor";
 import { AskAI } from "@/components/nami/AskAI";
 import { VirtualTerminal } from "@/components/chapter/VirtualTerminal";
+import { useConfirm, usePrompt } from "@/components/ui/ConfirmDialog";
+import { useToast } from "@/components/ui/Toast";
 import { FileTree } from "./FileTree";
 import {
   loadFs, saveFs, loadActive, saveActive, loadOpenTabs, saveOpenTabs,
@@ -27,6 +29,9 @@ function runModeForPath(path: string): RunMode {
 
 export function VscodeIDE() {
   const { status, progress, error, load, run } = usePyodide();
+  const confirm = useConfirm();
+  const prompt = usePrompt();
+  const toast = useToast();
   const [tree, setTree] = useState<FsTree>(() => loadFs());
   const [activePath, setActivePath] = useState<string>(() => loadActive());
   const [openTabs, setOpenTabs] = useState<string[]>(() => loadOpenTabs());
@@ -78,11 +83,11 @@ export function VscodeIDE() {
     setTree(updateFileContent(tree, activePath, content));
   };
 
-  const onAddFile = (parentPath: string) => {
-    const name = window.prompt(`在「${parentPath || "/"}」新增檔案 (例：app.py / data.json / index.html)`);
+  const onAddFile = async (parentPath: string) => {
+    const name = await prompt({ title: `在「${parentPath || "/"}」新增檔案 (例：app.py / data.json / index.html)` });
     if (!name) return;
     if (!/^[a-zA-Z0-9_.-]+\.[a-zA-Z0-9]+$/.test(name)) {
-      alert("檔名格式：英數 + _ - . 且要有副檔名");
+      toast.error("檔名格式：英數 + _ - . 且要有副檔名");
       return;
     }
     try {
@@ -91,26 +96,31 @@ export function VscodeIDE() {
       const newPath = parentPath ? `${parentPath}/${name}` : name;
       openFile(newPath);
     } catch (e: any) {
-      alert(e.message);
+      toast.error(e.message);
     }
   };
 
-  const onAddFolder = (parentPath: string) => {
-    const name = window.prompt(`在「${parentPath || "/"}」新增資料夾`);
+  const onAddFolder = async (parentPath: string) => {
+    const name = await prompt({ title: `在「${parentPath || "/"}」新增資料夾` });
     if (!name) return;
     if (!/^[a-zA-Z0-9_-]+$/.test(name)) {
-      alert("資料夾名稱只能英數 + _ -");
+      toast.error("資料夾名稱只能英數 + _ -");
       return;
     }
     try {
       setTree(addNode(tree, parentPath, { type: "folder", name, children: [], expanded: true }));
     } catch (e: any) {
-      alert(e.message);
+      toast.error(e.message);
     }
   };
 
-  const onDelete = (path: string) => {
-    if (!confirm(`刪除「${path}」？` + (findNode(tree, path)?.node.type === "folder" ? "\n含底下所有檔案" : ""))) return;
+  const onDelete = async (path: string) => {
+    if (!(await confirm({
+      title: `刪除「${path}」？`,
+      description: findNode(tree, path)?.node.type === "folder" ? "含底下所有檔案" : undefined,
+      confirmLabel: "刪除",
+      destructive: true,
+    }))) return;
     setTree(deleteNode(tree, path));
     setOpenTabs(openTabs.filter((t) => !t.startsWith(path)));
     if (activePath.startsWith(path)) {
@@ -118,10 +128,10 @@ export function VscodeIDE() {
     }
   };
 
-  const onRename = (path: string) => {
+  const onRename = async (path: string) => {
     const parts = path.split("/");
     const oldName = parts[parts.length - 1];
-    const newName = window.prompt(`重新命名「${path}」`, oldName);
+    const newName = await prompt({ title: `重新命名「${path}」`, defaultValue: oldName });
     if (!newName || newName === oldName) return;
     try {
       setTree(renameNode(tree, path, newName));
@@ -130,7 +140,7 @@ export function VscodeIDE() {
       if (activePath === path) setActivePath(newPath);
       setOpenTabs(openTabs.map((t) => (t === path ? newPath : t.startsWith(path + "/") ? newPath + t.slice(path.length) : t)));
     } catch (e: any) {
-      alert(e.message);
+      toast.error(e.message);
     }
   };
 
@@ -315,12 +325,12 @@ ${activeFile.content}
       try {
         const parsed = JSON.parse(text);
         if (!Array.isArray(parsed)) throw new Error("格式不對");
-        if (!confirm("匯入會覆蓋現有檔案、確定？")) return;
+        if (!(await confirm({ title: "匯入會覆蓋現有檔案、確定？", confirmLabel: "匯入", destructive: true }))) return;
         setTree(parsed);
         setOpenTabs([]);
         setActivePath("");
       } catch (err: any) {
-        alert("匯入失敗：" + err.message);
+        toast.error("匯入失敗：" + err.message);
       }
     };
     input.click();

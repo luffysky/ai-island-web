@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Pencil } from "lucide-react";
+import { useConfirm } from "@/components/ui/ConfirmDialog";
 
 type Result = {
   id: string;
@@ -14,6 +15,7 @@ type Result = {
 
 export function RewriteClient({ targetChapters }: { targetChapters: number[] }) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [busy, setBusy] = useState<string | null>(null);
   const [log, setLog] = useState<string>("");
   const [results, setResults] = useState<Result[]>([]);
@@ -73,8 +75,8 @@ export function RewriteClient({ targetChapters }: { targetChapters: number[] }) 
         </button>
         <button
           disabled={!!busy}
-          onClick={() => {
-            if (!confirm("確定 apply？會寫進 lessons.analogy 欄位、3 章全部短 analogy 都會被改")) return;
+          onClick={async () => {
+            if (!(await confirm({ title: "確定 apply？", description: "會寫進 lessons.analogy 欄位、3 章全部短 analogy 都會被改" }))) return;
             run("apply");
           }}
           className="px-4 py-3 rounded-lg bg-fuchsia-500/20 border border-fuchsia-500/40 hover:bg-fuchsia-500/30 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-bold text-fuchsia-900 dark:text-fuchsia-100 transition"

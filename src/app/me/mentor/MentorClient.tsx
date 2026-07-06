@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { Loader2, Save, LogOut, Users, GraduationCap, Handshake } from "lucide-react";
+import { useToast } from "@/components/ui/Toast";
+import { useConfirm } from "@/components/ui/ConfirmDialog";
 
 const ROLES = [
   { value: "mentor",  label: "我想當 mentor 帶人",   emoji: "🎓", desc: "你已有經驗、想 give back、教更新的學員" },
@@ -17,6 +19,8 @@ const TOPIC_SUGGEST = [
 ];
 
 export function MentorClient() {
+  const toast = useToast();
+  const confirm = useConfirm();
   const [state, setState] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [role, setRole] = useState("");
@@ -45,7 +49,7 @@ export function MentorClient() {
   }
 
   async function save() {
-    if (!role) { alert("先選身份"); return; }
+    if (!role) { toast.error("先選身份"); return; }
     setSaving(true);
     try {
       const r = await fetch("/api/me/mentor", {
@@ -58,12 +62,12 @@ export function MentorClient() {
       });
       const j = await r.json();
       if (j.ok) await load();
-      else alert(`❌ ${j.error}`);
+      else toast.error(j.error ?? "失敗");
     } finally { setSaving(false); }
   }
 
   async function exit() {
-    if (!confirm("退出配對、不再被其他人看到？")) return;
+    if (!(await confirm({ title: "退出配對、不再被其他人看到？", destructive: true, confirmLabel: "退出" }))) return;
     await fetch("/api/me/mentor", { method: "DELETE", credentials: "include" });
     await load();
   }

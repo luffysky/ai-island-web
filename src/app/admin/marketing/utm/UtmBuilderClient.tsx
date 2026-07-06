@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Plus, Copy, Check, Trash2, Loader2, ExternalLink, RefreshCw } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
+import { useConfirm } from "@/components/ui/ConfirmDialog";
 
 type UtmRow = {
   id: string;
@@ -43,6 +44,7 @@ export function UtmBuilderClient({ initialLinks, siteUrl }: { initialLinks: UtmR
   const [saving, setSaving] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const toast = useToast();
+  const confirm = useConfirm();
 
   const buildFullUrl = (row: UtmRow | typeof form): string => {
     if (!row.dest_url) return "";
@@ -95,7 +97,7 @@ export function UtmBuilderClient({ initialLinks, siteUrl }: { initialLinks: UtmR
   };
 
   const archive = async (id: string) => {
-    if (!confirm("封存這條短連結？舊連結還能點、但不再顯示在列表")) return;
+    if (!(await confirm({ title: "封存這條短連結？", description: "舊連結還能點、但不再顯示在列表", confirmLabel: "封存", destructive: true }))) return;
     const res = await fetch("/api/admin/marketing/utm?id=" + id, { method: "DELETE" });
     if (res.ok) {
       setLinks(links.filter((l) => l.id !== id));

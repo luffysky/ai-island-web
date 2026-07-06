@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Zap, AlertTriangle } from "lucide-react";
+import { useConfirm } from "@/components/ui/ConfirmDialog";
 
 type Result = {
   done: number;
@@ -16,6 +17,7 @@ export function BackfillClient({ lessonNeedBackfill, forumNeedBackfill }: {
   forumNeedBackfill: number;
 }) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [busy, setBusy] = useState<string | null>(null);
   const [log, setLog] = useState<string>("");
   const [lastResult, setLastResult] = useState<{ lessons?: Result; forum?: Result } | null>(null);
@@ -94,8 +96,8 @@ export function BackfillClient({ lessonNeedBackfill, forumNeedBackfill }: {
         </button>
         <button
           disabled={!!busy}
-          onClick={() => {
-            if (!confirm("確定要重算全部 embedding？這會覆蓋已有的、要花 1-3 分鐘 + 多花一次 token 錢")) return;
+          onClick={async () => {
+            if (!(await confirm({ title: "確定要重算全部 embedding？", description: "這會覆蓋已有的、要花 1-3 分鐘 + 多花一次 token 錢" }))) return;
             run("all", true);
           }}
           className="px-4 py-3 rounded-lg bg-red-500/15 border border-red-500/40 hover:bg-red-500/25 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-bold text-red-900 dark:text-red-100 transition inline-flex items-center justify-center gap-2"

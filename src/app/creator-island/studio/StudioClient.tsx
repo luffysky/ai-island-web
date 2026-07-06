@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Building2, Plus, Ticket, Users, ArrowRight, FileText, AlertTriangle, CheckCircle } from "lucide-react";
+import { useConfirm, usePrompt } from "@/components/ui/ConfirmDialog";
+import { useToast } from "@/components/ui/Toast";
 
 type Ws = { id: string; name: string; type: "personal" | "studio"; role: string };
 
@@ -79,6 +81,9 @@ function StudioCard({ ws, onRemoved }: { ws: Ws; onRemoved: () => void }) {
   const [loadingMembers, setLoadingMembers] = useState(false);
   const [code, setCode] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  const confirm = useConfirm();
+  const prompt = usePrompt();
+  const toast = useToast();
   const canManage = ws.role === "owner" || ws.role === "manager";
 
   async function loadMembers() {
@@ -96,13 +101,13 @@ function StudioCard({ ws, onRemoved }: { ws: Ws; onRemoved: () => void }) {
     catch (e: any) { setErr(e.message); }
   }
   async function transfer() {
-    const to = prompt("輸入要轉移擁有權的成員 userId");
+    const to = await prompt({ title: "輸入要轉移擁有權的成員 userId" });
     if (!to) return;
-    try { await call(`/api/creator-island/workspaces/${ws.id}/transfer`, "POST", { toUserId: to.trim() }); alert("已轉移"); }
+    try { await call(`/api/creator-island/workspaces/${ws.id}/transfer`, "POST", { toUserId: to.trim() }); toast.success("已轉移"); }
     catch (e: any) { setErr(e.message); }
   }
   async function del() {
-    if (!confirm(`刪除工作室「${ws.name}」？`)) return;
+    if (!(await confirm({ title: `刪除工作室「${ws.name}」？`, confirmLabel: "刪除", destructive: true }))) return;
     try { await call(`/api/creator-island/workspaces/${ws.id}`, "DELETE"); onRemoved(); }
     catch (e: any) { setErr(e.message); }
   }

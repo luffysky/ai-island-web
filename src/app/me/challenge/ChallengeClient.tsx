@@ -2,10 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { Loader2, ExternalLink, Trophy, Send, RotateCw } from "lucide-react";
+import { useToast } from "@/components/ui/Toast";
+import { useAlert } from "@/components/ui/ConfirmDialog";
 
 const LANGS = ["python", "javascript", "typescript", "go", "rust", "java", "cpp"];
 
 export function ChallengeClient() {
+  const toast = useToast();
+  const alert = useAlert();
   const [state, setState] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [code, setCode] = useState("");
@@ -26,7 +30,7 @@ export function ChallengeClient() {
 
   async function submit() {
     if (!code.trim() || code.length < 20) {
-      alert("code 太短、至少 20 字");
+      toast.error("code 太短、至少 20 字");
       return;
     }
     setSubmitting(true);
@@ -38,10 +42,10 @@ export function ChallengeClient() {
       });
       const j = await r.json();
       if (j.ok) {
-        alert(`✨ 雪鑰評分：${j.score} 分\n\n${j.comment}`);
+        await alert({ title: `✨ 雪鑰評分：${j.score} 分`, description: j.comment });
         await load();
       } else {
-        alert(`❌ ${j.error ?? "失敗"}`);
+        toast.error(j.error ?? "失敗");
       }
     } finally {
       setSubmitting(false);

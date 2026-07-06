@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Check, X, ChevronDown, ChevronRight, Filter } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
-import { useConfirm } from "@/components/ui/ConfirmDialog";
+import { useConfirm, usePrompt } from "@/components/ui/ConfirmDialog";
 
 type ErrorLog = {
   id: string;
@@ -43,6 +43,7 @@ export function ErrorLogsClient({
   const router = useRouter();
   const toast = useToast();
   const confirm = useConfirm();
+  const prompt = usePrompt();
   const [logs, setLogs] = useState(initial);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [level, setLevel] = useState(filters.level);
@@ -67,7 +68,7 @@ export function ErrorLogsClient({
   };
 
   const resolveLog = async (id: string) => {
-    const note = window.prompt("解決說明（選填）：");
+    const note = await prompt({ title: "解決說明（選填）", multiline: true });
     if (note === null) return; // 取消
 
     // optimistic

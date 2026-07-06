@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Loader2, Download, Copy, Printer, Sparkles } from "lucide-react";
+import { useToast } from "@/components/ui/Toast";
 
 const TARGETS = [
   { value: "junior",    label: "Junior 工程師", emoji: "🌱" },
@@ -31,6 +32,7 @@ function renderMarkdown(md: string): string {
 }
 
 export function ResumeClient() {
+  const toast = useToast();
   const [target, setTarget] = useState("junior");
   const [md, setMd] = useState("");
   const [loading, setLoading] = useState(false);
@@ -63,7 +65,7 @@ export function ResumeClient() {
   }
 
   function copyMd() {
-    navigator.clipboard.writeText(md).then(() => alert("已複製 markdown 到剪貼簿"));
+    navigator.clipboard.writeText(md).then(() => toast.success("已複製 markdown 到剪貼簿"));
   }
 
   function downloadMd() {

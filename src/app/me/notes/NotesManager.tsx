@@ -20,6 +20,7 @@ import { STICKY_COLORS, clampOpacity, noteBgImgStyle, DEFAULT_NOTE_BG, type Note
 import { nextSrs, isDue, dueLabel, type SrsRating } from "@/lib/note-srs";
 import { loadFolders, saveFolders, folderDropId, FOLDER_DROP_PREFIX, UNCATEGORIZED } from "@/lib/note-folders";
 import { useToast } from "@/components/ui/Toast";
+import { useConfirm, usePrompt } from "@/components/ui/ConfirmDialog";
 import { trackEvent } from "@/lib/analytics";
 import { Plus, X, Save, Loader2, Sparkles, GripVertical, Folder, FolderPlus, Image as ImageIcon, RotateCw, Copy, Link2, Search, Repeat2, SlidersHorizontal, ChevronRight, ChevronDown, FileText } from "lucide-react";
 
@@ -252,6 +253,8 @@ export function NotesManager({
 }) {
   const supabase = createSupabaseBrowser();
   const toast = useToast();
+  const confirm = useConfirm();
+  const prompt = usePrompt();
   const [notes, setNotes] = useState<ManagedNote[]>(initial);
   const [reviews, setReviews] = useState<Record<string, ReviewRow>>(
     () => Object.fromEntries(initialReviews.map((r) => [r.note_id, r])),
@@ -363,11 +366,11 @@ export function NotesManager({
   const del = async (n: ManagedNote) => {
     const owned = n._owned ?? (n.user_id === meId);
     if (owned) {
-      if (!confirm("刪除這則筆記？")) return;
+      if (!(await confirm({ title: "刪除這則筆記？", destructive: true, confirmLabel: "刪除" }))) return;
       setNotes((p) => p.filter((x) => x.id !== n.id));
       await supabase.from("notes").delete().eq("id", n.id);
     } else {
-      if (!confirm("退出這則共用筆記？（不會刪掉原筆記）")) return;
+      if (!(await confirm({ title: "退出這則共用筆記？（不會刪掉原筆記）", destructive: true, confirmLabel: "退出" }))) return;
       setNotes((p) => p.filter((x) => x.id !== n.id));
       await fetch(`/api/me/notes/${n.id}/share`, {
         method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({}),
@@ -377,7 +380,7 @@ export function NotesManager({
 
   // 用邀請碼 / 連結加入共用筆記
   const joinByCode = async () => {
-    const raw = window.prompt("貼上邀請碼或邀請連結：");
+    const raw = await prompt({ title: "貼上邀請碼或邀請連結" });
     if (!raw) return;
     let code = raw.trim();
     const idx = code.indexOf("/join/");
@@ -672,6 +675,7 @@ function NoteEditor({
   onSaved: (n: ManagedNote) => void;
 }) {
   const supabase = createSupabaseBrowser();
+  const prompt = usePrompt();
   const owned = note ? (note._owned ?? note.user_id === meId) : true;
   const canEdit = !note || owned || note._role === "editor";
   const [title, setTitle] = useState(note?.title ?? "");
@@ -892,8 +896,8 @@ function NoteEditor({
               )}
               <button
                 type="button"
-                onClick={() => {
-                  const name = catTyped || window.prompt("新分類名稱：")?.trim() || "";
+                onClick={async () => {
+                  const name = catTyped || (await prompt({ title: "新分類名稱" }))?.trim() || "";
                   if (name) { onCreateFolder(name); setCategory(name); }
                   setCatOpen(false);
                 }}

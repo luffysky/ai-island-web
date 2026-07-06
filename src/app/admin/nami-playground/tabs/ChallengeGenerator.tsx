@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, Loader2, Plus, X, Check, Wand2, ChevronDown, ChevronRight } from "lucide-react";
+import { useAlert } from "@/components/ui/ConfirmDialog";
+import { useToast } from "@/components/ui/Toast";
 
 type GenChallenge = {
   tempId: string;
@@ -28,6 +30,8 @@ const LEVEL_META = {
 const CATEGORIES = ["basic", "pandas", "scrape", "fastapi", "web", "data", "algorithm"];
 
 export function ChallengeGenerator({ onInserted }: { onInserted: () => void }) {
+  const alert = useAlert();
+  const toast = useToast();
   const [open, setOpen] = useState(false);
   const [level, setLevel] = useState<"easy" | "medium" | "hard">("easy");
   const [count, setCount] = useState(3);
@@ -86,7 +90,7 @@ export function ChallengeGenerator({ onInserted }: { onInserted: () => void }) {
   const insertSelected = async () => {
     const toInsert = generated.filter((c) => selected.has(c.tempId));
     if (toInsert.length === 0) {
-      alert("選 0 題、要勾才能加");
+      toast.error("選 0 題、要勾才能加");
       return;
     }
     setInserting(true);
@@ -99,12 +103,12 @@ export function ChallengeGenerator({ onInserted }: { onInserted: () => void }) {
       });
       const j = await res.json();
       if (!res.ok) throw new Error(j.error || "失敗");
-      alert(`✅ 已加入 ${j.inserted} 題！\nIDs: ${j.ids.join(", ")}`);
+      await alert({ title: `✅ 已加入 ${j.inserted} 題！`, description: `IDs: ${j.ids.join(", ")}` });
       reset();
       setOpen(false);
       onInserted();
     } catch (e: any) {
-      alert(`❌ 加入失敗：${e?.message}`);
+      toast.error(`❌ 加入失敗：${e?.message}`);
     } finally {
       setInserting(false);
     }

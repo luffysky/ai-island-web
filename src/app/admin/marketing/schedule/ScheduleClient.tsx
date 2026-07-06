@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Calendar, Clock, Edit3, Trash2, Loader2, Save, X, Eye, Check } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
+import { useConfirm } from "@/components/ui/ConfirmDialog";
 
 type Draft = {
   id: string;
@@ -35,6 +36,7 @@ export function ScheduleClient({ initialDrafts }: { initialDrafts: Draft[] }) {
   const [scheduleDate, setScheduleDate] = useState("");
   const [saving, setSaving] = useState<string | null>(null);
   const toast = useToast();
+  const confirm = useConfirm();
 
   const startEdit = (d: Draft) => {
     setEditing(d.id);
@@ -72,7 +74,7 @@ export function ScheduleClient({ initialDrafts }: { initialDrafts: Draft[] }) {
   };
 
   const remove = async (id: string) => {
-    if (!confirm("封存這份草稿？")) return;
+    if (!(await confirm({ title: "封存這份草稿？", confirmLabel: "封存", destructive: true }))) return;
     const res = await fetch("/api/admin/marketing/drafts?id=" + id, { method: "DELETE" });
     if (res.ok) {
       setDrafts(drafts.filter((d) => d.id !== id));

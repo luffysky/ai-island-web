@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { ArrowLeft, Copy, Music, Film, Link2, Sparkles, ExternalLink } from "lucide-react";
 import { BlogEditor } from "@/components/blog/BlogEditor";
+import { useConfirm } from "@/components/ui/ConfirmDialog";
 
 type Work = { id: string; title: string; body: string; work_type: string; status: string; meta: any; published_blog_id: string | null };
 
@@ -28,6 +29,7 @@ export function WorkEditor({ work, canEdit, usedFragments = [], derivedCount = 0
   const [msg, setMsg] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [seoLink, setSeoLink] = useState<string | null>(null);
+  const confirm = useConfirm();
   const meta = work.meta || {};
 
   function copy(t: string, label: string) {
@@ -53,7 +55,7 @@ export function WorkEditor({ work, canEdit, usedFragments = [], derivedCount = 0
     } catch (e: any) { setErr(e.message); } finally { setBusy(null); }
   }
   async function archive() {
-    if (!confirm("封存並回收成碎片？")) return;
+    if (!(await confirm({ title: "封存並回收成碎片？", confirmLabel: "封存", destructive: true }))) return;
     setBusy("archive"); setErr(null);
     try { const r = await api(`/api/creator-island/works/${work.id}/archive`); setMsg(`已封存、回收 ${r.recycled} 個碎片`); setStatus("archived"); }
     catch (e: any) { setErr(e.message); } finally { setBusy(null); }

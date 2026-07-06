@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, History, Plus, X, Mic, Camera, Paperclip, Send, Target, Copy, Share2, PenLine, Check } from "lucide-react";
 import { uploadMedia } from "@/lib/creator-upload";
+import { useToast } from "@/components/ui/Toast";
 
 type Msg = { role: "user" | "assistant"; content: string };
 type FocusFrag = { id: string; title: string; content: string };
@@ -14,6 +15,7 @@ const GREETING: Msg = { role: "assistant", content: "嗨，我是綠寶 ✨ 想�
 
 export function IslandChat({ workspaceId, focusFragments = [], onClearFocus }: { workspaceId: string; focusFragments?: FocusFrag[]; onClearFocus?: () => void }) {
   const router = useRouter();
+  const toast = useToast();
   const [open, setOpen] = useState(false);
   const [msgs, setMsgs] = useState<Msg[]>([GREETING]);
   const [text, setText] = useState("");
@@ -99,7 +101,7 @@ export function IslandChat({ workspaceId, focusFragments = [], onClearFocus }: {
 
   function voice() {
     const SR = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
-    if (!SR) { alert("此瀏覽器不支援語音"); return; }
+    if (!SR) { toast.error("此瀏覽器不支援語音"); return; }
     const r = new SR(); r.lang = "zh-TW"; r.interimResults = false;
     r.onresult = (e: any) => setText((t) => (t ? t + " " : "") + e.results[0][0].transcript); r.start();
   }
@@ -110,7 +112,7 @@ export function IslandChat({ workspaceId, focusFragments = [], onClearFocus }: {
   }
   async function pickFile(file: File) {
     setBusy(true);
-    try { const url = await uploadMedia(file); setText((t) => `${t}\n[附件 ${file.name}] ${url}`.trim()); } catch { alert("上傳失敗"); } finally { setBusy(false); }
+    try { const url = await uploadMedia(file); setText((t) => `${t}\n[附件 ${file.name}] ${url}`.trim()); } catch { toast.error("上傳失敗"); } finally { setBusy(false); }
   }
   async function send() {
     if (!text.trim() && !img) return;
@@ -136,7 +138,7 @@ export function IslandChat({ workspaceId, focusFragments = [], onClearFocus }: {
   async function shareMsg(content: string) {
     try {
       if (navigator.share) await navigator.share({ text: content, title: "綠寶 · AI 島創作" });
-      else { await navigator.clipboard.writeText(content); alert("已複製，可貼上分享"); }
+      else { await navigator.clipboard.writeText(content); toast.success("已複製，可貼上分享"); }
     } catch { /* 使用者取消分享 */ }
   }
   function firstLine(s: string) {
@@ -151,8 +153,8 @@ export function IslandChat({ workspaceId, focusFragments = [], onClearFocus }: {
         body: JSON.stringify({ workspaceId, title: firstLine(content), body: content, fragmentIds: (focusFragments ?? []).map((f) => f.id), sourceType: "ai_assisted" }),
       }).then((x) => x.json());
       if (r.work?.id) router.push(`/creator-island/works/${r.work.id}`);
-      else { setWeaving(null); alert(r.message || "接入創作失敗"); }
-    } catch (e: any) { setWeaving(null); alert("接入創作失敗：" + e.message); }
+      else { setWeaving(null); toast.error(r.message || "接入創作失敗"); }
+    } catch (e: any) { setWeaving(null); toast.error("接入創作失敗：" + e.message); }
   }
 
   if (!pos) return null;

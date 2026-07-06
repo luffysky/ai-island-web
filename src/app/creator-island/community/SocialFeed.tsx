@@ -4,6 +4,8 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Image as ImageIcon, Film, Music, Heart, MessageCircle, FileText, Link2, Bookmark, Globe, Users, User } from "lucide-react";
 import { uploadMedia } from "@/lib/creator-upload";
+import { useConfirm, usePrompt } from "@/components/ui/ConfirmDialog";
+import { useToast } from "@/components/ui/Toast";
 
 type Author = { id?: string; username?: string; display_name?: string; avatar_url?: string };
 type Post = {
@@ -112,16 +114,19 @@ function PostCard({ p, meId, onDelete }: { p: Post; meId: string; onDelete: () =
   const [showC, setShowC] = useState(false);
   const [comments, setComments] = useState<any[] | null>(null);
   const [cbody, setCbody] = useState("");
+  const confirm = useConfirm();
+  const prompt = usePrompt();
+  const toast = useToast();
 
   async function like() { try { const r = await call(`/api/creator-island/social/posts/${p.id}/like`, "POST"); setLiked(r.on); setLikes((n) => n + (r.on ? 1 : -1)); } catch {} }
   async function bookmark() { try { const r = await call(`/api/creator-island/social/posts/${p.id}/bookmark`, "POST"); setSaved(r.on); } catch {} }
   async function loadComments() { setShowC((s) => !s); if (comments) return; try { const j = await call(`/api/creator-island/social/posts/${p.id}/comments`, "GET"); setComments(j.comments ?? []); } catch {} }
   async function addComment() { if (!cbody.trim()) return; try { const j = await call(`/api/creator-island/social/posts/${p.id}/comments`, "POST", { body: cbody.trim() }); setComments((c) => [...(c ?? []), j.comment]); setCbody(""); } catch {} }
-  async function del() { if (!confirm("刪除這篇貼文？")) return; try { await call(`/api/creator-island/social/posts/${p.id}`, "DELETE"); onDelete(); } catch {} }
+  async function del() { if (!(await confirm({ title: "刪除這篇貼文？", confirmLabel: "刪除", destructive: true }))) return; try { await call(`/api/creator-island/social/posts/${p.id}`, "DELETE"); onDelete(); } catch {} }
   async function share() {
     const url = `${window.location.origin}/creator-island/p/${p.id}`;
     if ((navigator as any).share) { try { await (navigator as any).share({ title: "AI 島貼文", url }); return; } catch { /* 取消 */ } }
-    try { await navigator.clipboard.writeText(url); alert("貼文連結已複製"); } catch { window.prompt("複製連結：", url); }
+    try { await navigator.clipboard.writeText(url); toast.success("貼文連結已複製"); } catch { await prompt({ title: "複製連結", defaultValue: url }); }
   }
 
   return (
@@ -140,7 +145,7 @@ function PostCard({ p, meId, onDelete }: { p: Post; meId: string; onDelete: () =
       <div className="flex items-center gap-4 text-sm text-fg-muted pt-1">
         <button onClick={like} className={`inline-flex items-center gap-1 ${liked ? "text-pink-400" : "hover:text-pink-400"}`}><Heart size={16} className={liked ? "fill-pink-400" : ""} /> {likes}</button>
         <button onClick={loadComments} className="inline-flex items-center gap-1 hover:text-accent"><MessageCircle size={16} /> {p.comments_count}</button>
-        {p.user_id === meId && <button onClick={async () => { try { await call(`/api/creator-island/social/posts/${p.id}/publish-blog`, "POST"); alert("已發佈成部落格草稿"); } catch (e: any) { alert(e.message); } }} className="hover:text-accent" title="發佈到部落格"><FileText size={16} /></button>}
+        {p.user_id === meId && <button onClick={async () => { try { await call(`/api/creator-island/social/posts/${p.id}/publish-blog`, "POST"); toast.success("已發佈成部落格草稿"); } catch (e: any) { toast.error(e.message); } }} className="hover:text-accent" title="發佈到部落格"><FileText size={16} /></button>}
         <button onClick={share} className="hover:text-accent" title="分享貼文"><Link2 size={16} /></button>
         <button onClick={bookmark} className={`ml-auto ${saved ? "text-amber-300" : "hover:text-amber-300"}`} title="收藏"><Bookmark size={16} className={saved ? "fill-amber-300" : ""} /></button>
       </div>

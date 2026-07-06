@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Loader2, Trash2, ChevronDown, ChevronRight, Trophy } from "lucide-react";
+import { useConfirm } from "@/components/ui/ConfirmDialog";
 
 const ROLE_LABEL: Record<string, string> = {
   frontend: "前端", backend: "後端", fullstack: "全端", mobile: "行動 App",
@@ -17,6 +18,7 @@ const MODE_LABEL: Record<string, string> = {
 };
 
 export function HistoryClient() {
+  const confirm = useConfirm();
   const [sessions, setSessions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
@@ -33,7 +35,7 @@ export function HistoryClient() {
   }
 
   async function del(id: string) {
-    if (!confirm("刪除這次面試記錄？")) return;
+    if (!(await confirm({ title: "刪除這次面試記錄？", destructive: true, confirmLabel: "刪除" }))) return;
     await fetch(`/api/me/mock-interview/history?id=${id}`, { method: "DELETE", credentials: "include" });
     setSessions((ss) => ss.filter((s) => s.id !== id));
   }

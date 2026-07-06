@@ -22,7 +22,7 @@ import type { Todo } from "@/lib/types-todo";
 import { TodoItem } from "./TodoItem";
 import { TodoEditModal } from "./TodoEditModal";
 import { useToast } from "@/components/ui/Toast";
-import { useConfirm } from "@/components/ui/ConfirmDialog";
+import { useConfirm, usePrompt } from "@/components/ui/ConfirmDialog";
 import { useAuth } from "@/lib/auth-context";
 import { usePopover, PopoverPanel } from "@/components/ui/Popover";
 
@@ -101,6 +101,7 @@ export function TodoDropdownButton() {
 function TodoPanelBody({ onClose }: { onClose: () => void }) {
   const toast = useToast();
   const confirm = useConfirm();
+  const prompt = usePrompt();
   const [todos, setTodos] = useState<Todo[]>([]);
   const [loading, setLoading] = useState(true);
   const [input, setInput] = useState("");
@@ -381,8 +382,8 @@ function TodoPanelBody({ onClose }: { onClose: () => void }) {
                       onDelete={remove}
                       onTitleChange={(id, title) => patchTodo(id, { title })}
                       onEditDetails={(t) => setEditTarget(t)}
-                      onAddChild={(parentId) => {
-                        const t = window.prompt("子任務內容：");
+                      onAddChild={async (parentId) => {
+                        const t = await prompt({ title: "子任務內容：" });
                         if (t && t.trim()) addTodo(parentId, t.trim());
                       }}
                     />
