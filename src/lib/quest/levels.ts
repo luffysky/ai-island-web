@@ -61,6 +61,27 @@ export const QUEST_LEVELS: QuestLevel[] = [
     grid: ["S.*.*.*.G"], startDir: 1,
     starter: "for i in range(8):\n    move()\n", parLines: 3, xp: 25, z: 15,
   },
+  {
+    id: "07-def", title: "第 7 關 · 自訂招式", concept: "def 定義函式", chapterHref: "/chapters",
+    intro: "要走一個「右一步、上一步」的樓梯重複三次。與其一直複製，不如自己定義一招 def，再重複用。",
+    hint: "def zigzag():\n    move()          # 往右\n    turn_left()     # 面向上\n    move()          # 往上\n    turn_right()    # 再面向右\n\nfor i in range(3):\n    zigzag()",
+    grid: ["...G", "....", "....", "S..."], startDir: 1,
+    starter: "def zigzag():\n    move()\n    turn_left()\n    move()\n    turn_right()\n\nfor i in range(3):\n    zigzag()\n", parLines: 8, xp: 28, z: 16,
+  },
+  {
+    id: "08-while2", title: "第 8 關 · 邊走邊撿", concept: "while + 收集", chapterHref: "/chapters",
+    intro: "一條長路上有寶石 💎。用 while 一直走到旗子，順手把寶石都撿了。",
+    hint: "while not at_goal():\n    move()",
+    grid: ["S..*..*..G"], startDir: 1,
+    starter: "while not at_goal():\n    move()\n", parLines: 2, xp: 26, z: 15,
+  },
+  {
+    id: "09-maze3", title: "第 9 關 · 大迷宮", concept: "while + if（綜合）", chapterHref: "/chapters",
+    intro: "更長的迷宮！一樣用『遇牆轉彎、否則前進』的招式，一路走到旗子。",
+    hint: "while not at_goal():\n    if wall_ahead():\n        turn_right()\n    else:\n        move()",
+    grid: ["S....", "####.", "....G"], startDir: 1,
+    starter: "while not at_goal():\n    if wall_ahead():\n        turn_right()\n    else:\n        move()\n", parLines: 6, xp: 30, z: 18,
+  },
 ];
 
 export function getLevel(id: string) {

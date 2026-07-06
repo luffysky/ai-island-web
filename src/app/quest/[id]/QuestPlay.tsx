@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { usePyodide } from "@/hooks/usePyodide";
 import type { QuestLevel } from "@/lib/quest/levels";
+import { ROBOT, GEM, FLAG, spriteCanvas } from "@/lib/quest/sprites";
 import { ArrowLeft, Play, RotateCcw, Loader2, Lightbulb, Sparkles } from "lucide-react";
 
 type Cell = 0 | 1;
@@ -28,7 +29,6 @@ function parseGrid(grid: string[]): Parsed {
 }
 
 function buildPython(p: Parsed, startDir: number, userCode: string): string {
-  const gemsPy = JSON.stringify(p.gems.map((g) => [g.x, g.y]));
   return `import sys
 _ops=[0]
 def _trace(f,e,a):
@@ -38,7 +38,7 @@ def _trace(f,e,a):
 sys.settrace(_trace)
 _grid=${JSON.stringify(p.cells)}
 _gx,_gy=${p.goal.x},${p.goal.y}
-_gems=${gemsPy}
+_gems=${JSON.stringify(p.gems.map((g) => [g.x, g.y]))}
 rx,ry,rdir=${p.start.x},${p.start.y},${startDir}
 _W,_H=${p.W},${p.H}
 _DX=[0,1,0,-1]; _DY=[-1,0,1,0]
@@ -78,14 +78,13 @@ function codeLines(code: string) {
   return code.split("\n").map((l) => l.trim()).filter((l) => l && !l.startsWith("#")).length;
 }
 
-// 音效：WebAudio 合成（零素材/零授權/離線可用）。fire-and-forget、安全。
+// 音效：WebAudio 合成（零素材/零授權/離線可用）。
 let _ac: AudioContext | null = null;
-function sfx(kind: "step" | "blocked" | "win" | "fail") {
+function sfx(kind: "step" | "blocked" | "win" | "fail" | "gem") {
   try {
     if (typeof window === "undefined") return;
     _ac = _ac || new (window.AudioContext || (window as any).webkitAudioContext)();
-    const ac = _ac;
-    const now = ac.currentTime;
+    const ac = _ac, now = ac.currentTime;
     const beep = (freq: number, start: number, dur: number, type: OscillatorType = "square", vol = 0.06) => {
       const o = ac.createOscillator(), g = ac.createGain();
       o.type = type; o.frequency.value = freq; o.connect(g); g.connect(ac.destination);
@@ -95,74 +94,113 @@ function sfx(kind: "step" | "blocked" | "win" | "fail") {
       o.start(now + start); o.stop(now + start + dur + 0.02);
     };
     if (kind === "step") beep(440, 0, 0.07, "square", 0.03);
+    else if (kind === "gem") { beep(880, 0, 0.08, "square", 0.05); beep(1320, 0.06, 0.1, "square", 0.04); }
     else if (kind === "blocked") beep(120, 0, 0.16, "sawtooth", 0.05);
     else if (kind === "fail") { beep(300, 0, 0.14, "triangle"); beep(200, 0.12, 0.2, "triangle"); }
     else if (kind === "win") { [523, 659, 784, 1047].forEach((f, i) => beep(f, i * 0.09, 0.14, "square", 0.05)); }
   } catch { /* 音效失敗不影響遊戲 */ }
 }
 
-const CELL = 46;
+const CELL = 48;
 
 export function QuestPlay({ level, done }: { level: QuestLevel; done: { stars: number } | null }) {
   const parsed = useMemo(() => parseGrid(level.grid), [level.grid]);
-  const { status, load, run } = usePyodide(true);
+  const { status, run } = usePyodide(true);
   const [code, setCode] = useState(level.starter);
   const [running, setRunning] = useState(false);
   const [msg, setMsg] = useState<{ type: "ok" | "err" | "info"; text: string } | null>(null);
   const [stars, setStars] = useState(done?.stars ?? 0);
   const [reward, setReward] = useState<{ xp: number; z: number } | null>(null);
   const [showHint, setShowHint] = useState(false);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [pixiErr, setPixiErr] = useState(false);
+
+  const mountRef = useRef<HTMLDivElement>(null);
+  const appRef = useRef<any>(null);
+  const robotRef = useRef<any>(null);
+  const gemSpritesRef = useRef<Map<string, any>>(new Map());
   const animRef = useRef<number | null>(null);
 
-  // 畫格子 + 機器人（dir 箭頭）
-  const draw = (rx: number, ry: number, dir: number, gems: Set<string>, blocked = false) => {
-    const cv = canvasRef.current; if (!cv) return;
-    const ctx = cv.getContext("2d"); if (!ctx) return;
-    ctx.clearRect(0, 0, cv.width, cv.height);
-    for (let y = 0; y < parsed.H; y++) for (let x = 0; x < parsed.W; x++) {
-      ctx.fillStyle = parsed.cells[y][x] === 1 ? "#1f2937" : "#0b3b2e";
-      ctx.fillRect(x * CELL + 1, y * CELL + 1, CELL - 2, CELL - 2);
-    }
-    ctx.font = "26px serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-    for (const g of parsed.gems) if (!gems.has(`${g.x},${g.y}`)) ctx.fillText("💎", g.x * CELL + CELL / 2, g.y * CELL + CELL / 2);
-    ctx.fillText("🎯", parsed.goal.x * CELL + CELL / 2, parsed.goal.y * CELL + CELL / 2);
-    // 機器人
-    ctx.save();
-    ctx.translate(rx * CELL + CELL / 2, ry * CELL + CELL / 2);
-    ctx.rotate((dir * Math.PI) / 2);
-    ctx.fillText("🤖", 0, 0);
-    ctx.restore();
-    if (blocked) { ctx.strokeStyle = "#ef4444"; ctx.lineWidth = 3; ctx.strokeRect(rx * CELL + 2, ry * CELL + 2, CELL - 4, CELL - 4); }
-  };
+  // 建立 PixiJS 場景（換關重建）
+  useEffect(() => {
+    let dead = false;
+    (async () => {
+      try {
+        const PIXI: any = await import("pixi.js");
+        if (dead || !mountRef.current) return;
+        const app = new PIXI.Application();
+        await app.init({ width: parsed.W * CELL, height: parsed.H * CELL, backgroundAlpha: 0, antialias: false });
+        if (dead) { app.destroy(true); return; }
+        mountRef.current.innerHTML = "";
+        mountRef.current.appendChild(app.canvas);
+        app.canvas.style.maxWidth = "100%";
+        app.canvas.style.height = "auto";
+        app.canvas.style.borderRadius = "10px";
+        appRef.current = app;
 
-  useEffect(() => { draw(parsed.start.x, parsed.start.y, level.startDir, new Set()); /* eslint-disable-next-line */ }, [parsed]);
+        const tex = (s: any) => new PIXI.Texture({ source: new PIXI.CanvasSource({ resource: spriteCanvas(s), scaleMode: "nearest" }) });
+        const robotTex = tex(ROBOT), gemTex = tex(GEM), flagTex = tex(FLAG);
 
+        // 地磚 / 牆
+        const board = new PIXI.Graphics();
+        for (let y = 0; y < parsed.H; y++) for (let x = 0; x < parsed.W; x++) {
+          const wall = parsed.cells[y][x] === 1;
+          board.roundRect(x * CELL + 1.5, y * CELL + 1.5, CELL - 3, CELL - 3, 6).fill(wall ? 0x1f2937 : 0x0d3b2e);
+          if (!wall) board.roundRect(x * CELL + 4, y * CELL + 4, CELL - 8, CELL - 8, 5).stroke({ color: 0xffffff, alpha: 0.05, width: 1 });
+        }
+        app.stage.addChild(board);
+
+        // 終點
+        const flag = new PIXI.Sprite(flagTex); flag.anchor.set(0.5); flag.width = CELL * 0.7; flag.height = CELL * 0.7;
+        flag.x = (parsed.goal.x + 0.5) * CELL; flag.y = (parsed.goal.y + 0.5) * CELL; app.stage.addChild(flag);
+
+        // 寶石
+        gemSpritesRef.current.clear();
+        for (const g of parsed.gems) {
+          const gs = new PIXI.Sprite(gemTex); gs.anchor.set(0.5); gs.width = CELL * 0.55; gs.height = CELL * 0.55;
+          gs.x = (g.x + 0.5) * CELL; gs.y = (g.y + 0.5) * CELL; app.stage.addChild(gs);
+          gemSpritesRef.current.set(`${g.x},${g.y}`, gs);
+        }
+
+        // 機器人
+        const robot = new PIXI.Sprite(robotTex); robot.anchor.set(0.5); robot.width = CELL * 0.78; robot.height = CELL * 0.78;
+        robot.x = (parsed.start.x + 0.5) * CELL; robot.y = (parsed.start.y + 0.5) * CELL; robot.rotation = (level.startDir * Math.PI) / 2;
+        app.stage.addChild(robot); robotRef.current = robot;
+      } catch (e) { setPixiErr(true); }
+    })();
+    return () => { dead = true; if (animRef.current) clearTimeout(animRef.current); const a = appRef.current; appRef.current = null; if (a) try { a.destroy(true); } catch { /* noop */ } };
+  }, [parsed, level.startDir]);
+
+  function placeRobot(x: number, y: number, dir: number, blocked: boolean) {
+    const r = robotRef.current; if (!r) return;
+    r.x = (x + 0.5) * CELL; r.y = (y + 0.5) * CELL; r.rotation = (dir * Math.PI) / 2;
+    r.tint = blocked ? 0xff6b6b : 0xffffff;
+  }
+  function resetScene() {
+    for (const gs of gemSpritesRef.current.values()) gs.visible = true;
+    placeRobot(parsed.start.x, parsed.start.y, level.startDir, false);
+  }
   const stopAnim = () => { if (animRef.current) { clearTimeout(animRef.current); animRef.current = null; } };
   useEffect(() => () => stopAnim(), []);
 
   async function runCode() {
     if (running) return;
-    setMsg(null); setReward(null); setRunning(true); stopAnim();
+    setMsg(null); setReward(null); setRunning(true); stopAnim(); resetScene();
     try {
-      const py = buildPython(parsed, level.startDir, code);
-      const r = await run(py);
+      const r = await run(buildPython(parsed, level.startDir, code));
       if (!r.ok) { setMsg({ type: "err", text: (r.stderr || "程式出錯了").split("\n").filter(Boolean).slice(-2).join("\n") }); setRunning(false); return; }
       const tLine = r.stdout.split("\n").find((l) => l.startsWith("__TRAIL__"));
       const wLine = r.stdout.split("\n").find((l) => l.startsWith("__WIN__"));
       const trail: any[] = tLine ? JSON.parse(tLine.slice(9)) : [];
       const win = wLine ? JSON.parse(wLine.slice(7)) : { win: false, gems: 0, total: 0 };
-      // 動畫
       let i = 0;
       const step = () => {
         const s = trail[i];
-        const collected = new Set<string>();
-        for (const g of parsed.gems) { const idxGem = trail.findIndex((t, k) => k <= i && t.x === g.x && t.y === g.y); if (idxGem >= 0) collected.add(`${g.x},${g.y}`); }
-        draw(s.x, s.y, s.dir, collected, s.blocked);
-        if (i > 0) sfx(s.blocked ? "blocked" : "step");
+        placeRobot(s.x, s.y, s.dir, s.blocked);
+        const gm = gemSpritesRef.current.get(`${s.x},${s.y}`);
+        if (gm && gm.visible) { gm.visible = false; if (i > 0) sfx("gem"); }
+        else if (i > 0) sfx(s.blocked ? "blocked" : "step");
         i++;
-        if (i < trail.length) { animRef.current = window.setTimeout(step, 240); }
-        else { finish(win); }
+        if (i < trail.length) { animRef.current = window.setTimeout(step, 230); } else { finish(win); }
       };
       step();
     } catch (e: any) { setMsg({ type: "err", text: e?.message ?? "執行失敗" }); setRunning(false); }
@@ -186,7 +224,7 @@ export function QuestPlay({ level, done }: { level: QuestLevel; done: { stars: n
     } catch { /* 發獎失敗不影響過關 */ }
   }
 
-  function resetLevel() { stopAnim(); setMsg(null); setReward(null); draw(parsed.start.x, parsed.start.y, level.startDir, new Set()); }
+  function resetLevel() { stopAnim(); setMsg(null); setReward(null); resetScene(); }
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6">
@@ -199,12 +237,11 @@ export function QuestPlay({ level, done }: { level: QuestLevel; done: { stars: n
       <p className="text-sm text-fg-muted mt-1 mb-3">{level.intro}</p>
 
       <div className="grid md:grid-cols-2 gap-4">
-        {/* 遊戲畫面 */}
-        <div className="bg-bg-card border border-border rounded-2xl p-3 flex items-center justify-center overflow-auto">
-          <canvas ref={canvasRef} width={parsed.W * CELL} height={parsed.H * CELL} className="rounded-lg" style={{ maxWidth: "100%", height: "auto" }} />
+        <div className="bg-bg-card border border-border rounded-2xl p-3 flex items-center justify-center overflow-hidden min-h-[180px]">
+          <div ref={mountRef} className="w-full flex items-center justify-center" />
+          {pixiErr && <div className="text-xs text-fg-muted">遊戲畫面載入失敗，重整看看。</div>}
         </div>
 
-        {/* 程式編輯 */}
         <div className="space-y-2">
           <textarea value={code} onChange={(e) => setCode(e.target.value)} spellCheck={false} rows={9}
             className="w-full bg-bg-elevated border border-border rounded-xl px-3 py-2 text-sm font-mono outline-none focus:border-accent resize-none" />
