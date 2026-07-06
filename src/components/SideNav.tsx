@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -67,13 +67,30 @@ export function SideNav() {
   const [mounted, setMounted] = useState(false);
   const [tip, setTip] = useState<{ num: string; text: string; x: number; y: number; side: "left" | "right" } | null>(null);
   useEffect(() => setMounted(true), []);
-  const showTip = (e: React.MouseEvent<HTMLElement>, num: string, text: string) => {
-    const r = e.currentTarget.getBoundingClientRect();
-    // 右邊放不下（手機 drawer 幾乎滿版）就翻到左邊，泡泡才不會被螢幕切掉。
+  // 依元素位置擺泡泡：右邊放不下（手機 drawer 幾乎滿版）就翻左邊，才不會被螢幕切掉。
+  const tipFor = (el: HTMLElement, num: string, text: string) => {
+    const r = el.getBoundingClientRect();
     const preferLeft = typeof window !== "undefined" && window.innerWidth - r.right < 280;
     setTip({ num, text, x: preferLeft ? r.left - 12 : r.right + 12, y: r.top + r.height / 2, side: preferLeft ? "left" : "right" });
   };
+  const showTip = (e: React.MouseEvent<HTMLElement>, num: string, text: string) => tipFor(e.currentTarget, num, text);
   const hideTip = () => setTip(null);
+  // 手機：hover 不會觸發 → 改用「長按」跳出泡泡（並抑制長按後那一下的導頁）。
+  const lpTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lpFired = useRef(false);
+  const lpCancel = () => { if (lpTimer.current) { clearTimeout(lpTimer.current); lpTimer.current = null; } };
+  const onLessonTouchStart = (e: React.TouchEvent<HTMLElement>, num: string, text: string) => {
+    lpFired.current = false;
+    const el = e.currentTarget;
+    lpCancel();
+    hideTip();
+    lpTimer.current = setTimeout(() => {
+      lpFired.current = true;
+      tipFor(el, num, text);
+      if (navigator.vibrate) try { navigator.vibrate(8); } catch { /* noop */ }
+      setTimeout(() => setTip(null), 2600); // 自動收起
+    }, 420);
+  };
   const [chapters, setChapters] = useState<NavChapter[]>([]);
   const [expandedCh, setExpandedCh] = useState<Set<number>>(new Set());
   const [expandedLs, setExpandedLs] = useState<Set<string>>(new Set());
@@ -367,10 +384,13 @@ export function SideNav() {
                             <div className="flex items-stretch">
                               <Link
                                 href={`/chapters/${ch.id}#lesson-${l.id}`}
-                                onClick={() => setOpen(false)}
+                                onClick={(e) => { if (lpFired.current) { e.preventDefault(); lpFired.current = false; return; } setOpen(false); }}
                                 onMouseEnter={(e) => showTip(e, l.number, l.title)}
                                 onMouseLeave={hideTip}
-                                className="flex-1 flex items-center gap-2 px-3 py-1.5 pl-9 text-xs hover:bg-bg-elevated transition min-w-0"
+                                onTouchStart={(e) => onLessonTouchStart(e, l.number, l.title)}
+                                onTouchEnd={lpCancel}
+                                onTouchMove={lpCancel}
+                                className="flex-1 flex items-center gap-2 px-3 py-1.5 pl-9 text-xs hover:bg-bg-elevated transition min-w-0 select-none"
                               >
                                 <span className="text-fg-muted font-mono shrink-0">
                                   {l.number}
