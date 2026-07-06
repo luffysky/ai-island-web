@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { chapters } from "@/data/chapters";
 import { NotesExportButton } from "./NotesExportButton";
@@ -64,7 +65,10 @@ export default async function NotesPage() {
           <h1 className="text-2xl font-bold">📝 我的筆記</h1>
           <p className="text-sm text-fg-muted">共 {list.length} 則筆記</p>
         </div>
-        {list.length > 0 && <NotesExportButton />}
+        <div className="flex items-center gap-2">
+          <Link href="/notes/market" className="text-sm px-3 py-1.5 rounded-full border border-border hover:border-accent inline-flex items-center gap-1.5">🏪 筆記市集</Link>
+          {list.length > 0 && <NotesExportButton />}
+        </div>
       </div>
 
       <NotesManager initial={list} chapterMap={chapterMap} meId={user.id} initialReviews={(reviewRows ?? []) as any} />
