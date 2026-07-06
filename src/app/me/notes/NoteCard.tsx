@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { ChevronDown, ChevronUp, ArrowRight, Pencil, Trash2, Copy, Check, LogOut, Eye, Pin, Repeat2, SlidersHorizontal } from "lucide-react";
+import { ChevronDown, ChevronUp, ArrowRight, Pencil, Trash2, Copy, Check, LogOut, Eye, Pin, Repeat2, SlidersHorizontal, Globe } from "lucide-react";
 import { formatTW } from "@/lib/format-date";
 import { sanitizeRichHtml } from "@/lib/rich-html";
 import { resolveSticky, stickyRotate, clampOpacity, hexToRgba, noteBgImgStyle, type NoteBg } from "@/lib/note-sticky";
@@ -32,6 +32,7 @@ export function NoteCard({
   onPin,
   srsDue,
   onToggleReview,
+  onPublishBlog,
 }: {
   note: {
     id: string;
@@ -61,6 +62,7 @@ export function NoteCard({
   onPin?: () => void;
   srsDue?: string | null;
   onToggleReview?: () => void;
+  onPublishBlog?: () => void;
 }) {
   const owned = note._owned ?? (note.user_id === meId);
   const isViewer = !owned && note._role === "viewer";
@@ -284,6 +286,7 @@ export function NoteCard({
           if (onToggleReview) items.push({ key: "review", icon: <Repeat2 size={14} className={srsDue ? "fill-current" : ""} />, title: srsDue ? `複習・${dueLabel(srsDue)}` : "加入間隔複習", onClick: onToggleReview, color: srsDue ? "#7c3aed" : "#444" });
           if (onPin) items.push({ key: "pin", icon: <Pin size={14} className={note.pinned ? "fill-current" : ""} />, title: note.pinned ? "取消置頂" : "置頂", onClick: onPin, color: note.pinned ? "#b45309" : "#444" });
           items.push({ key: "copy", icon: copied ? <Check size={14} /> : <Copy size={14} />, title: "複製整則", onClick: copyAll, color: copied ? "#15803d" : "#444" });
+          if (owned && onPublishBlog) items.push({ key: "blog", icon: <Globe size={14} />, title: note.is_public ? "再發佈成部落格" : "公開成部落格", onClick: () => onPublishBlog(), color: "#0ea5e9" });
           if (onEdit) items.push({ key: "edit", icon: isViewer ? <Eye size={14} /> : <Pencil size={14} />, title: isViewer ? "查看" : "編輯", onClick: onEdit, color: "#444" });
           if (onDelete) items.push({ key: "del", icon: owned ? <Trash2 size={14} /> : <LogOut size={14} />, title: owned ? "刪除" : "退出共用", onClick: onDelete, color: "#dc2626" });
           items.push({ key: "expand", icon: expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />, title: expanded ? "收合" : "展開", onClick: () => setExpanded(!expanded), color: "#444" });

@@ -249,6 +249,19 @@ export function NotesManager({
     await supabase.from("notes").update({ pinned }).eq("id", n.id);
   };
 
+  // 一鍵公開成部落格：同一份內容 → 生成一篇公開文章（不用複製貼上）
+  const publishBlog = async (n: ManagedNote) => {
+    toast.info?.("發佈中…");
+    try {
+      const res = await fetch(`/api/me/notes/${n.id}/publish-blog`, { method: "POST" });
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok) { toast.error(j.message || "發佈失敗"); return; }
+      setNotes((p) => p.map((x) => (x.id === n.id ? { ...x, is_public: true } : x)));
+      toast.success("已公開成部落格文章 🎉");
+      if (j.url) window.open(j.url, "_blank");
+    } catch { toast.error("發佈失敗、請再試一次"); }
+  };
+
   // 資料夾（= 分類）：localStorage 名單 ∪ 現有筆記 category
   const [folders, setFolders] = useState<string[]>([]);
   useEffect(() => setFolders(loadFolders()), []);
@@ -509,6 +522,7 @@ export function NotesManager({
                       onPin={() => togglePin(n)}
                       srsDue={reviews[n.id]?.due_at ?? null}
                       onToggleReview={() => (reviews[n.id] ? removeReview(n.id) : addReview(n.id))}
+                      onPublishBlog={() => publishBlog(n)}
                     />
                   </SortableNoteCard>
                 );
@@ -538,6 +552,7 @@ export function NotesManager({
                   onPin={() => togglePin(n)}
                   srsDue={reviews[n.id]?.due_at ?? null}
                   onToggleReview={() => (reviews[n.id] ? removeReview(n.id) : addReview(n.id))}
+                  onPublishBlog={() => publishBlog(n)}
                 />
               );
             })}
