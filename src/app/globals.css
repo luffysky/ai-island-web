@@ -206,6 +206,19 @@ html[data-theme="light"] body::before {
 .reveal-d4 { animation-delay: 0.24s; }
 .reveal-d5 { animation-delay: 0.30s; }
 
+/* Skeleton shimmer — 掃光比單純 pulse 更有質感 */
+@keyframes skeletonShimmer { 100% { transform: translateX(100%); } }
+.skeleton-shimmer { position: relative; overflow: hidden; }
+.skeleton-shimmer::after {
+  content: ""; position: absolute; inset: 0; transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--color-fg) 9%, transparent), transparent);
+  animation: skeletonShimmer 1.6s infinite;
+}
+
+/* 吉祥物 / 空狀態視覺輕輕浮動 */
+@keyframes softBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+.soft-bob { animation: softBob 3s ease-in-out infinite; }
+
 /* ============================================================
    全站 scroll 預設規則（避免內容被切）
    ============================================================ */

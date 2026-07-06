@@ -25,17 +25,18 @@ export function EmptyState({
   action?: { label: string; href?: string; onClick?: () => void };
   compact?: boolean;
 }) {
-  // 原本的視覺節點（lucide icon 或 emoji）— 當 empty_state Lottie 沒設 / 載不出來時的 fallback
+  // 原本的視覺節點（lucide icon 或 emoji）— 當 empty_state Lottie 沒設 / 載不出來時的 fallback。
+  // 放進柔和的 accent 圓形徽章 + 輕輕浮動，比裸 icon 更有溫度。
   const fallbackVisual = Icon ? (
-    <span className="text-fg-muted">
-      <Icon className={compact ? "w-8 h-8" : "w-12 h-12"} strokeWidth={1.5} />
+    <span className={`soft-bob inline-flex items-center justify-center rounded-full bg-accent/10 ring-1 ring-accent/20 text-accent ${compact ? "w-14 h-14" : "w-20 h-20"}`}>
+      <Icon className={compact ? "w-7 h-7" : "w-10 h-10"} strokeWidth={1.5} />
     </span>
   ) : (
-    <span className={compact ? "text-3xl" : "text-5xl"}>{emoji ?? "📦"}</span>
+    <span className={`soft-bob inline-flex items-center justify-center rounded-full bg-accent/10 ring-1 ring-accent/20 ${compact ? "w-14 h-14 text-2xl" : "w-20 h-20 text-4xl"}`}>{emoji ?? "📦"}</span>
   );
 
   return (
-    <div className={`text-center ${compact ? "py-6" : "py-16"} text-fg-muted`}>
+    <div className={`reveal text-center ${compact ? "py-6" : "py-16"} text-fg-muted`}>
       <EmptyStateVisual fallback={fallbackVisual} compact={compact} />
       <div className={compact ? "text-sm font-medium text-fg" : "text-base font-bold text-fg"}>{title}</div>
       {desc && <div className="text-xs mt-1 max-w-xs mx-auto leading-relaxed">{desc}</div>}
