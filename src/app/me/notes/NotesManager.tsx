@@ -47,6 +47,7 @@ export type ManagedNote = {
   sort_order: number | null;
   pinned: boolean | null;
   bg: NoteBg | null;
+  note_refs?: string[] | null; // L2：引用的其他筆記 id（存 id → 來源改動全站同步）
   _owned?: boolean;  // 我是擁有者（page 標記）
   _shared?: boolean; // 此筆記有共用關係
   _role?: string;    // 我的權限：owner / editor / viewer
@@ -339,6 +340,13 @@ export function NotesManager({
     await supabase.from("notes").update({ category }).eq("id", noteId);
   };
 
+  // L2 引用：即時把 note_refs 解析成 {title, snippet}（讀當前 notes → 來源改動全站同步）
+  const noteById = useMemo(() => { const m = new Map<string, ManagedNote>(); for (const n of notes) m.set(n.id, n); return m; }, [notes]);
+  const resolveRefs = (n: ManagedNote) => (n.note_refs ?? [])
+    .map((id) => { const r = noteById.get(id); return r ? { id, title: r.title?.trim() || "（無標題筆記）", snippet: r.content.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim().slice(0, 50) } : null; })
+    .filter(Boolean) as { id: string; title: string; snippet: string }[];
+  const openRef = (id: string) => { const r = noteById.get(id); if (r) setEditing(r); };
+
   const del = async (n: ManagedNote) => {
     const owned = n._owned ?? (n.user_id === meId);
     if (owned) {
@@ -528,6 +536,7 @@ export function NotesManager({
           meId={meId}
           categories={folderList}
           tags={allTags}
+          allNotes={notes.map((n) => ({ id: n.id, title: n.title?.trim() || "（無標題筆記）" }))}
           onCreateFolder={addFolder}
           onClose={() => setEditing(null)}
           onSaved={onSaved}
@@ -572,6 +581,8 @@ export function NotesManager({
                       srsDue={reviews[n.id]?.due_at ?? null}
                       onToggleReview={() => (reviews[n.id] ? removeReview(n.id) : addReview(n.id))}
                       onPublishBlog={() => publishBlog(n)}
+                      refNotes={resolveRefs(n)}
+                      onOpenRef={openRef}
                     />
                   </SortableNoteCard>
                 );
@@ -602,6 +613,8 @@ export function NotesManager({
                   srsDue={reviews[n.id]?.due_at ?? null}
                   onToggleReview={() => (reviews[n.id] ? removeReview(n.id) : addReview(n.id))}
                   onPublishBlog={() => publishBlog(n)}
+                  refNotes={resolveRefs(n)}
+                  onOpenRef={openRef}
                 />
               );
             })}
@@ -621,6 +634,7 @@ function NoteEditor({
   meId,
   categories,
   tags,
+  allNotes,
   onCreateFolder,
   onClose,
   onSaved,
@@ -629,6 +643,7 @@ function NoteEditor({
   meId: string;
   categories: string[];
   tags: string[];
+  allNotes: { id: string; title: string }[];
   onCreateFolder: (name: string) => void;
   onClose: () => void;
   onSaved: (n: ManagedNote) => void;
@@ -666,8 +681,12 @@ function NoteEditor({
   const [opacity, setOpacity] = useState<number>(clampOpacity(note?.opacity));
   const [noteBg, setNoteBg] = useState<NoteBg | null>(note?.bg ?? null);
   const [noteId, setNoteId] = useState<string | null>(note?.id ?? null);
+  const [noteRefs, setNoteRefs] = useState<string[]>(note?.note_refs ?? []);
+  const [refPick, setRefPick] = useState(""); // 引用筆記搜尋字
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState("");
+  const refTitle = (id: string) => allNotes.find((x) => x.id === id)?.title || "（無標題筆記）";
+  const refCandidates = allNotes.filter((x) => x.id !== noteId && !noteRefs.includes(x.id) && (!refPick.trim() || (x.title ?? "").toLowerCase().includes(refPick.trim().toLowerCase()))).slice(0, 6);
 
   // insert / update，回傳存好的 row（會 upsert 進列表、但不關閉）
   const persist = async (): Promise<ManagedNote | null> => {
@@ -685,6 +704,7 @@ function NoteEditor({
       color: color || null,
       opacity,
       bg: noteBg && noteBg.image ? noteBg : null,
+      note_refs: noteRefs,
       updated_at: new Date().toISOString(),
     };
     try {
@@ -882,6 +902,32 @@ function NoteEditor({
             </div>
           )}
         </div>
+      </div>
+      {/* 🔗 引用筆記（L2 區塊引用）：只存 id → 來源改動全站同步 */}
+      <div className="space-y-1.5">
+        <div className="text-xs text-fg-muted inline-flex items-center gap-1">🔗 引用筆記{noteRefs.length > 0 ? `（${noteRefs.length}）` : ""} <span className="opacity-60">· 來源改標題/內容會即時同步</span></div>
+        {noteRefs.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {noteRefs.map((id) => (
+              <span key={id} className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-sky-500/12 text-sky-700 dark:text-sky-300 border border-sky-500/25">
+                🔗 {refTitle(id)}
+                {canEdit && <button type="button" onClick={() => setNoteRefs(noteRefs.filter((x) => x !== id))} className="hover:text-red-400">×</button>}
+              </span>
+            ))}
+          </div>
+        )}
+        {canEdit && (
+          <div className="relative max-w-sm">
+            <input value={refPick} onChange={(e) => setRefPick(e.target.value)} placeholder="搜尋並引用其他筆記…" className="w-full bg-bg border border-border rounded-lg px-3 py-1.5 text-sm outline-none focus:border-accent" />
+            {refPick.trim() && refCandidates.length > 0 && (
+              <div className="absolute z-30 mt-1 left-0 right-0 max-h-52 overflow-auto rounded-lg border border-border bg-bg-card shadow-xl p-1">
+                {refCandidates.map((x) => (
+                  <button key={x.id} type="button" onClick={() => { setNoteRefs([...noteRefs, x.id]); setRefPick(""); }} className="w-full text-left px-3 py-1.5 text-sm hover:bg-bg-elevated rounded truncate">🔗 {x.title || "（無標題筆記）"}</button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
       {/* 便利貼外觀：顏色 + 透明度 */}
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">

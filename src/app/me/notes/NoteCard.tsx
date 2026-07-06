@@ -33,6 +33,8 @@ export function NoteCard({
   srsDue,
   onToggleReview,
   onPublishBlog,
+  refNotes,
+  onOpenRef,
 }: {
   note: {
     id: string;
@@ -63,6 +65,8 @@ export function NoteCard({
   srsDue?: string | null;
   onToggleReview?: () => void;
   onPublishBlog?: () => void;
+  refNotes?: { id: string; title: string; snippet: string }[];
+  onOpenRef?: (id: string) => void;
 }) {
   const owned = note._owned ?? (note.user_id === meId);
   const isViewer = !owned && note._role === "viewer";
@@ -270,6 +274,20 @@ export function NoteCard({
           )}
           {(note.tags ?? []).map((t) => (
             <span key={t} className="text-[11px] px-2 py-0.5 rounded-full" style={{ background: "rgba(0,0,0,0.07)", color: "#555" }}>#{t}</span>
+          ))}
+        </div>
+      )}
+
+      {/* 🔗 引用的筆記（即時解析標題/摘要 → 來源改動這裡跟著變）*/}
+      {refNotes && refNotes.length > 0 && (
+        <div className="mt-2 pt-2 border-t border-black/[0.06] space-y-1">
+          <div className="text-[11px]" style={{ color: MUTED }}>🔗 引用 {refNotes.length} 則</div>
+          {refNotes.map((r) => (
+            <button key={r.id} onClick={(e) => { e.stopPropagation(); onOpenRef?.(r.id); }}
+              className="block w-full text-left rounded px-1.5 py-1 hover:bg-black/[0.05] transition" title={r.snippet}>
+              <span className="text-xs font-medium truncate block" style={{ color: TEXT }}>🔗 {r.title}</span>
+              {r.snippet && <span className="text-[11px] truncate block" style={{ color: MUTED }}>{r.snippet}</span>}
+            </button>
           ))}
         </div>
       )}
