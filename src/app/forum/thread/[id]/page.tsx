@@ -150,7 +150,7 @@ export default async function ThreadPage({
       </article>
 
       {/* 回覆區 */}
-      <ThreadReplies threadId={id} initialReplies={replies} isLocked={thread.is_locked} threadOwnerId={thread.user_id} />
+      <ThreadReplies threadId={id} threadTitle={thread.title} initialReplies={replies} isLocked={thread.is_locked} threadOwnerId={thread.user_id} />
     </div>
   );
 }

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
-import { Send, Trash2, CornerDownRight, Loader2, Check } from "lucide-react";
+import { Send, Trash2, CornerDownRight, Loader2, Check, BookmarkPlus, FileText } from "lucide-react";
 import type { ForumReply } from "@/lib/forum-types";
 import { LikeButton } from "@/components/blog/LikeButton";
 import { useToast } from "@/components/ui/Toast";
@@ -12,11 +12,13 @@ import { ReportButton } from "@/components/ui/ReportButton";
 
 export function ThreadReplies({
   threadId,
+  threadTitle,
   initialReplies,
   isLocked,
   threadOwnerId,
 }: {
   threadId: string;
+  threadTitle?: string;
   initialReplies: ForumReply[];
   isLocked: boolean;
   threadOwnerId: string;
@@ -25,6 +27,9 @@ export function ThreadReplies({
   const confirm = useConfirm();
   const [replies, setReplies] = useState<ForumReply[]>(initialReplies);
   const [input, setInput] = useState("");
+  const [myNotes, setMyNotes] = useState<{ id: string; title: string }[]>([]);
+  const [showNotePick, setShowNotePick] = useState(false);
+  const [noteQ, setNoteQ] = useState("");
   const [replyTo, setReplyTo] = useState<string | null>(null);
   const [replyInput, setReplyInput] = useState("");
   const [sending, setSending] = useState(false);
@@ -163,6 +168,35 @@ export function ThreadReplies({
     }, 5000);
   };
 
+  // 解答沉澱：把一則回覆存進「我的知識庫」（附回討論串的連結）
+  const saveAsNote = async (reply: ForumReply) => {
+    if (!isLoggedIn) { toast.error("請先登入"); return; }
+    const supabase = createSupabaseBrowser();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { toast.error("請先登入"); return; }
+    const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const html = `<p>${esc(reply.content).replace(/\n/g, "<br>")}</p><p>—— 出自討論區：<a href="/forum/thread/${threadId}">${esc(threadTitle || "討論串")}</a></p>`;
+    const { error } = await supabase.from("notes").insert({ user_id: user.id, content: html, title: (threadTitle || "論壇解答").slice(0, 80), category: "論壇沉澱", tags: ["論壇"] });
+    if (error) { toast.error("存筆記失敗"); return; }
+    toast.success("已存進你的知識庫 📚", { action: { label: "去看", onClick: () => { window.location.href = "/me/notes"; } } });
+  };
+
+  // 討論↔筆記互引：載入我的筆記供插入引用
+  const openNotePick = async () => {
+    setShowNotePick((v) => !v);
+    if (myNotes.length === 0) {
+      const supabase = createSupabaseBrowser();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase.from("notes").select("id, title").eq("user_id", user.id).order("updated_at", { ascending: false }).limit(50);
+      setMyNotes((data ?? []).map((n: any) => ({ id: n.id, title: n.title?.trim() || "（無標題筆記）" })));
+    }
+  };
+  const insertNoteRef = (n: { id: string; title: string }) => {
+    setInput((prev) => `${prev}${prev && !prev.endsWith("\n") ? "\n" : ""}📄 引用我的筆記：${n.title}`.trim());
+    setShowNotePick(false); setNoteQ("");
+  };
+
   const markAnswer = async (replyId: string, isAnswer: boolean) => {
     // optimistic：立刻切換採納狀態
     setReplies((list) =>
@@ -205,7 +239,7 @@ export function ThreadReplies({
         <div className="space-y-3 mb-6">
           {replies.map((r) => (
             <div key={r.id}>
-              <ReplyItem reply={r} currentUserId={currentUserId} onDelete={remove} onReply={() => setReplyTo(replyTo === r.id ? null : r.id)} canMarkAnswer={isThreadOwner} onMarkAnswer={markAnswer} />
+              <ReplyItem reply={r} currentUserId={currentUserId} onDelete={remove} onReply={() => setReplyTo(replyTo === r.id ? null : r.id)} canMarkAnswer={isThreadOwner} onMarkAnswer={markAnswer} onSaveNote={isLoggedIn ? () => saveAsNote(r) : undefined} />
               {/* 回覆框 */}
               {replyTo === r.id && (
                 <div className="ml-10 mt-2 flex gap-2">
@@ -229,7 +263,7 @@ export function ThreadReplies({
               {r.replies && r.replies.length > 0 && (
                 <div className="ml-10 mt-2 space-y-2 border-l-2 border-border pl-3">
                   {r.replies.map((sub) => (
-                    <ReplyItem key={sub.id} reply={sub} currentUserId={currentUserId} onDelete={remove} isReply />
+                    <ReplyItem key={sub.id} reply={sub} currentUserId={currentUserId} onDelete={remove} isReply onSaveNote={isLoggedIn ? () => saveAsNote(sub) : undefined} />
                   ))}
                 </div>
               )}
@@ -256,7 +290,21 @@ export function ThreadReplies({
             rows={3}
             className="w-full bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent resize-none"
           />
-          <div className="flex justify-end mt-2">
+          <div className="flex items-center justify-between mt-2 gap-2">
+            <div className="relative">
+              <button onClick={openNotePick} className="text-xs text-fg-muted hover:text-accent inline-flex items-center gap-1">
+                <FileText size={13} /> 引用我的筆記
+              </button>
+              {showNotePick && (
+                <div className="absolute z-30 bottom-full mb-1 left-0 w-64 max-h-56 overflow-auto rounded-lg border border-border bg-bg-card shadow-xl p-2">
+                  <input value={noteQ} onChange={(e) => setNoteQ(e.target.value)} placeholder="搜尋我的筆記…" className="w-full bg-bg border border-border rounded px-2 py-1 text-xs outline-none focus:border-accent mb-1" />
+                  {myNotes.filter((n) => !noteQ.trim() || n.title.toLowerCase().includes(noteQ.trim().toLowerCase())).slice(0, 8).map((n) => (
+                    <button key={n.id} onClick={() => insertNoteRef(n)} className="w-full text-left px-2 py-1.5 text-xs hover:bg-bg-elevated rounded truncate">📄 {n.title}</button>
+                  ))}
+                  {myNotes.length === 0 && <div className="text-xs text-fg-muted px-2 py-2">還沒有筆記。</div>}
+                </div>
+              )}
+            </div>
             <button
               onClick={() => submit(input, null)}
               disabled={!input.trim()}
@@ -272,6 +320,14 @@ export function ThreadReplies({
   );
 }
 
+// 純文字回覆內的網址 → 可點連結（讓引用的筆記/部落格連結能點）
+function renderContent(text: string) {
+  return text.split(/(https?:\/\/[^\s]+)/g).map((p, i) =>
+    /^https?:\/\//.test(p)
+      ? <a key={i} href={p} target="_blank" rel="noreferrer" className="text-accent underline break-all">{p}</a>
+      : <span key={i}>{p}</span>);
+}
+
 function ReplyItem({
   reply,
   currentUserId,
@@ -280,6 +336,7 @@ function ReplyItem({
   isReply,
   canMarkAnswer,
   onMarkAnswer,
+  onSaveNote,
 }: {
   reply: ForumReply & { _pending?: boolean };
   currentUserId: string | null;
@@ -288,6 +345,7 @@ function ReplyItem({
   isReply?: boolean;
   canMarkAnswer?: boolean;
   onMarkAnswer?: (replyId: string, isAnswer: boolean) => void;
+  onSaveNote?: () => void;
 }) {
   const isOwn = currentUserId && reply.user_id === currentUserId;
   const name = reply.author?.display_name || reply.author?.username || "用戶";
@@ -326,9 +384,14 @@ function ReplyItem({
               <span className="text-[10px] text-fg-muted italic">傳送中...</span>
             )}
           </div>
-          <p className="text-sm mt-1 whitespace-pre-wrap break-words">{reply.content}</p>
-          <div className="flex items-center gap-3 mt-1.5">
+          <p className="text-sm mt-1 whitespace-pre-wrap break-words">{renderContent(reply.content)}</p>
+          <div className="flex items-center gap-3 mt-1.5 flex-wrap">
             <LikeButton kind="forum" targetId={reply.id} />
+            {onSaveNote && !reply._pending && (
+              <button onClick={onSaveNote} title="存進我的知識庫" className="text-xs text-fg-muted hover:text-accent flex items-center gap-0.5">
+                <BookmarkPlus size={11} /> 存成筆記
+              </button>
+            )}
             {!isReply && onReply && (
               <button onClick={onReply} className="text-xs text-fg-muted hover:text-accent flex items-center gap-0.5">
                 <CornerDownRight size={11} /> 回覆
