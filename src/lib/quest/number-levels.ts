@@ -28,6 +28,27 @@ export const NUMBER_LEVELS: NumberLevel[] = [
     expect: "2\n3\n5\n7\n11\n13\n17\n19",
     starter: "for n in range(2, 21):\n    # 判斷 n 是不是質數，是就 print(n)\n    pass\n", parLines: 8, xp: 20, z: 10,
   },
+  {
+    id: "num-04", title: "🔤 數單字", concept: "字串 split", chapterHref: "/chapters",
+    intro: "這句話有幾個單字（用空白分隔）？印出數量：'the quick brown fox'",
+    hint: "s = 'the quick brown fox'\nprint(len(s.split()))",
+    expect: "4",
+    starter: "s = 'the quick brown fox'\n# 算有幾個單字並印出\n", parLines: 2, xp: 14, z: 7,
+  },
+  {
+    id: "num-05", title: "📖 價目表", concept: "字典查表", chapterHref: "/chapters",
+    intro: "有一份價目表 {'apple': 30, 'banana': 20}。印出「一顆蘋果 + 一根香蕉」的總價。",
+    hint: "prices = {'apple': 30, 'banana': 20}\nprint(prices['apple'] + prices['banana'])",
+    expect: "50",
+    starter: "prices = {'apple': 30, 'banana': 20}\n# 印出 apple + banana 的總價\n", parLines: 2, xp: 16, z: 8,
+  },
+  {
+    id: "num-06", title: "🔤 拆字", concept: "字串迭代（for）", chapterHref: "/chapters",
+    intro: "把字串 'AI島' 的每個字，一行一個印出來。",
+    hint: "for ch in 'AI島':\n    print(ch)",
+    expect: "A\nI\n島",
+    starter: "for ch in 'AI島':\n    pass\n", parLines: 2, xp: 15, z: 8,
+  },
 ];
 
 export function getNumberLevel(id: string) { return NUMBER_LEVELS.find((l) => l.id === id) ?? null; }
