@@ -21,7 +21,7 @@ import { nextSrs, isDue, dueLabel, type SrsRating } from "@/lib/note-srs";
 import { loadFolders, saveFolders, folderDropId, FOLDER_DROP_PREFIX, UNCATEGORIZED } from "@/lib/note-folders";
 import { useToast } from "@/components/ui/Toast";
 import { trackEvent } from "@/lib/analytics";
-import { Plus, X, Save, Loader2, Sparkles, GripVertical, Folder, FolderPlus, Image as ImageIcon, RotateCw, Copy, Link2, Search, Repeat2, SlidersHorizontal } from "lucide-react";
+import { Plus, X, Save, Loader2, Sparkles, GripVertical, Folder, FolderPlus, Image as ImageIcon, RotateCw, Copy, Link2, Search, Repeat2, SlidersHorizontal, ChevronRight, ChevronDown, FileText } from "lucide-react";
 
 const UNCAT_FILTER = "__uncat__";
 
@@ -115,6 +115,29 @@ function DroppableFolderChip({
   );
 }
 
+/** 知識樹的一行（Notion 側欄風）；資料夾可拖入分類（droppable）。 */
+function FolderTreeRow({ dropId, active, droppable, indent, icon, label, count, onClick, onRemove, chevron, onToggle }: {
+  dropId?: string; active: boolean; droppable?: boolean; indent?: boolean; icon: React.ReactNode; label: string;
+  count?: number; onClick: () => void; onRemove?: () => void; chevron?: "open" | "closed" | "none"; onToggle?: () => void;
+}) {
+  const { setNodeRef, isOver } = useDroppable({ id: dropId ?? "__none__", disabled: !droppable || !dropId });
+  return (
+    <div ref={dropId ? setNodeRef : undefined} onClick={onClick}
+      className={`group flex items-center gap-1 rounded-md pr-1.5 py-1 cursor-pointer transition select-none text-sm ${indent ? "pl-6" : "pl-1.5"} ${isOver ? "ring-1 ring-accent bg-accent/20" : ""} ${active ? "bg-accent/15 text-accent font-medium" : "text-fg-muted hover:bg-bg-elevated hover:text-fg"}`}
+      title={droppable ? "點選篩選；把便利貼拖進來分類" : "點選篩選"}>
+      {chevron && chevron !== "none" ? (
+        <button type="button" onClick={(e) => { e.stopPropagation(); onToggle?.(); }} className="shrink-0 text-fg-muted hover:text-fg -ml-0.5">
+          {chevron === "open" ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+        </button>
+      ) : <span className="w-3.5 shrink-0" />}
+      <span className="shrink-0 grid place-items-center w-4">{icon}</span>
+      <span className="flex-1 min-w-0 truncate">{label}</span>
+      {typeof count === "number" && count > 0 && <span className="text-[10px] text-fg-muted/70 shrink-0">{count}</span>}
+      {onRemove && <button type="button" onClick={(e) => { e.stopPropagation(); onRemove(); }} className="opacity-0 group-hover:opacity-100 text-fg-muted hover:text-red-400 shrink-0"><X size={12} /></button>}
+    </div>
+  );
+}
+
 function FolderBar({
   folderList, folderCounts, uncategorizedCount, fCat, setFCat,
   onAddFolder, onRemoveFolder, allTags, fTag, setFTag, droppable,
@@ -126,11 +149,14 @@ function FolderBar({
 }) {
   const [adding, setAdding] = useState(false);
   const [name, setName] = useState("");
-  const [subAdding, setSubAdding] = useState(false);
+  const [subFor, setSubFor] = useState<string | null>(null);
   const [subName, setSubName] = useState("");
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const submit = () => { if (name.trim()) onAddFolder(name.trim()); setName(""); setAdding(false); };
+  const submitSub = (parent: string) => { if (subName.trim()) onAddFolder(`${parent}/${subName.trim()}`); setSubName(""); setSubFor(null); };
+  const total = Object.values(folderCounts).reduce((a, b) => a + b, 0) + uncategorizedCount;
 
-  // 知識樹（2 層）：資料夾用「父/子」慣例；由 folderList 建樹
+  // 知識樹（2 層）：資料夾用「父/子」慣例
   const tree = useMemo(() => {
     const m = new Map<string, { name: string; children: { full: string; name: string }[] }>();
     for (const f of folderList) {
@@ -143,81 +169,68 @@ function FolderBar({
     return [...m.values()].sort((a, b) => a.name.localeCompare(b.name, "zh-Hant"));
   }, [folderList]);
   const activeParent = fCat && fCat !== UNCAT_FILTER ? (fCat.indexOf("/") === -1 ? fCat : fCat.slice(0, fCat.indexOf("/"))) : "";
+  const isOpen = (n: string) => expanded.has(n) || activeParent === n;
+  const toggle = (n: string) => setExpanded((p) => { const s = new Set(p); s.has(n) ? s.delete(n) : s.add(n); return s; });
   const countUnder = (parent: string) => {
-    let total = folderCounts[parent] ?? 0;
-    for (const k in folderCounts) if (k.startsWith(parent + "/")) total += folderCounts[k];
-    return total;
+    let t = folderCounts[parent] ?? 0;
+    for (const k in folderCounts) if (k.startsWith(parent + "/")) t += folderCounts[k];
+    return t;
   };
-  const submitSub = () => { if (subName.trim() && activeParent) onAddFolder(`${activeParent}/${subName.trim()}`); setSubName(""); setSubAdding(false); };
-  const openParent = tree.find((t) => t.name === activeParent) ?? null;
 
   return (
-    <div className="space-y-2">
-      <div className="flex flex-wrap items-center gap-1.5 text-xs">
-        <span className="text-fg-muted inline-flex items-center gap-1"><Folder size={13} /> 知識樹：</span>
-        <button onClick={() => setFCat("")} className={`px-2 py-0.5 rounded-full ${!fCat ? "bg-accent text-black" : "bg-bg-elevated text-fg-muted hover:text-fg"}`}>全部</button>
-        <DroppableFolderChip
-          dropId={folderDropId(UNCATEGORIZED)} label="📥 未分類" count={uncategorizedCount}
-          active={fCat === UNCAT_FILTER} droppable={droppable}
-          onClick={() => setFCat(fCat === UNCAT_FILTER ? "" : UNCAT_FILTER)}
-        />
-        {tree.map((p) => (
-          <DroppableFolderChip
-            key={p.name} dropId={folderDropId(p.name)} label={`📁 ${p.name}${p.children.length ? ` ▾` : ""}`} count={countUnder(p.name)}
-            active={activeParent === p.name} droppable={droppable}
-            onClick={() => setFCat(fCat === p.name ? "" : p.name)}
+    <div className="space-y-0.5">
+      <div className="text-[11px] font-bold text-fg-muted px-1.5 mb-1 inline-flex items-center gap-1.5"><Folder size={13} /> 知識樹</div>
+      <FolderTreeRow dropId={undefined} active={!fCat} droppable={false} icon={<FileText size={14} />} label="全部筆記" count={total} onClick={() => setFCat("")} />
+      <FolderTreeRow dropId={folderDropId(UNCATEGORIZED)} active={fCat === UNCAT_FILTER} droppable={droppable} icon={<span className="text-xs">📥</span>} label="未分類" count={uncategorizedCount} onClick={() => setFCat(fCat === UNCAT_FILTER ? "" : UNCAT_FILTER)} />
+
+      {tree.map((p) => (
+        <div key={p.name}>
+          <FolderTreeRow
+            dropId={folderDropId(p.name)} active={activeParent === p.name} droppable={droppable}
+            icon={<span className="text-xs">📁</span>} label={p.name} count={countUnder(p.name)}
+            chevron={p.children.length ? (isOpen(p.name) ? "open" : "closed") : "none"}
+            onToggle={() => toggle(p.name)}
+            onClick={() => { setFCat(fCat === p.name ? "" : p.name); if (p.children.length) setExpanded((s) => new Set(s).add(p.name)); }}
             onRemove={countUnder(p.name) === 0 ? () => onRemoveFolder(p.name) : undefined}
           />
-        ))}
-        {adding ? (
-          <input
-            autoFocus value={name}
-            onChange={(e) => setName(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter") submit(); if (e.key === "Escape") { setName(""); setAdding(false); } }}
-            onBlur={submit}
-            placeholder="資料夾名稱"
-            className="px-2 py-0.5 rounded-full bg-bg border border-border text-xs w-28 outline-none focus:border-accent"
-          />
-        ) : (
-          <button
-            onClick={() => setAdding(true)}
-            className="px-2 py-0.5 rounded-full border border-dashed border-border text-fg-muted hover:border-accent hover:text-fg inline-flex items-center gap-1"
-          >
-            <FolderPlus size={12} /> 新增資料夾
-          </button>
-        )}
-      </div>
-      {/* 子資料夾列（選了某個父資料夾時展開，最多兩層）*/}
-      {openParent && (
-        <div className="flex flex-wrap items-center gap-1.5 text-xs pl-5">
-          <span className="text-fg-muted">↳</span>
-          {openParent.children.map((ch) => (
-            <DroppableFolderChip
-              key={ch.full} dropId={folderDropId(ch.full)} label={ch.name} count={folderCounts[ch.full] ?? 0}
-              active={fCat === ch.full} droppable={droppable}
-              onClick={() => setFCat(fCat === ch.full ? activeParent : ch.full)}
-              onRemove={(folderCounts[ch.full] ?? 0) === 0 ? () => onRemoveFolder(ch.full) : undefined}
-            />
-          ))}
-          {subAdding ? (
-            <input autoFocus value={subName}
-              onChange={(e) => setSubName(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter") submitSub(); if (e.key === "Escape") { setSubName(""); setSubAdding(false); } }}
-              onBlur={submitSub} placeholder="子資料夾名稱"
-              className="px-2 py-0.5 rounded-full bg-bg border border-border text-xs w-24 outline-none focus:border-accent" />
-          ) : (
-            <button onClick={() => setSubAdding(true)} className="px-2 py-0.5 rounded-full border border-dashed border-border text-fg-muted hover:border-accent hover:text-fg inline-flex items-center gap-1">
-              <FolderPlus size={11} /> 子資料夾
-            </button>
+          {isOpen(p.name) && (
+            <>
+              {p.children.map((ch) => (
+                <FolderTreeRow key={ch.full} dropId={folderDropId(ch.full)} active={fCat === ch.full} droppable={droppable} indent
+                  icon={<span className="text-[10px]">📄</span>} label={ch.name} count={folderCounts[ch.full] ?? 0}
+                  onClick={() => setFCat(fCat === ch.full ? p.name : ch.full)}
+                  onRemove={(folderCounts[ch.full] ?? 0) === 0 ? () => onRemoveFolder(ch.full) : undefined} />
+              ))}
+              {subFor === p.name ? (
+                <input autoFocus value={subName} onChange={(e) => setSubName(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter") submitSub(p.name); if (e.key === "Escape") { setSubName(""); setSubFor(null); } }}
+                  onBlur={() => submitSub(p.name)} placeholder="子資料夾名稱"
+                  className="ml-6 my-0.5 px-2 py-1 rounded-md bg-bg border border-border text-xs w-[calc(100%-1.5rem)] outline-none focus:border-accent" />
+              ) : (
+                <button type="button" onClick={() => { setSubFor(p.name); setSubName(""); }} className="pl-6 py-0.5 text-xs text-fg-muted/70 hover:text-accent inline-flex items-center gap-1"><FolderPlus size={11} /> 子資料夾</button>
+              )}
+            </>
           )}
         </div>
+      ))}
+
+      {adding ? (
+        <input autoFocus value={name} onChange={(e) => setName(e.target.value)}
+          onKeyDown={(e) => { if (e.key === "Enter") submit(); if (e.key === "Escape") { setName(""); setAdding(false); } }}
+          onBlur={submit} placeholder="資料夾名稱"
+          className="my-0.5 px-2 py-1 rounded-md bg-bg border border-border text-xs w-full outline-none focus:border-accent" />
+      ) : (
+        <button type="button" onClick={() => setAdding(true)} className="w-full text-left px-1.5 py-1 rounded-md text-xs text-fg-muted hover:bg-bg-elevated hover:text-fg inline-flex items-center gap-1.5"><FolderPlus size={13} /> 新增資料夾</button>
       )}
+
       {allTags.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 items-center text-xs">
-          <span className="text-fg-muted">標籤：</span>
-          {allTags.map((t) => (
-            <button key={t} onClick={() => setFTag(t === fTag ? "" : t)} className={`px-2 py-0.5 rounded-full ${fTag === t ? "bg-accent text-black" : "bg-bg-elevated text-fg-muted hover:text-fg"}`}>#{t}</button>
-          ))}
+        <div className="pt-2 mt-1 border-t border-border/60">
+          <div className="text-[11px] font-bold text-fg-muted px-1.5 mb-1">標籤</div>
+          <div className="flex flex-wrap gap-1 px-1">
+            {allTags.map((t) => (
+              <button key={t} onClick={() => setFTag(t === fTag ? "" : t)} className={`px-2 py-0.5 rounded-full text-xs ${fTag === t ? "bg-accent text-black" : "bg-bg-elevated text-fg-muted hover:text-fg"}`}>#{t}</button>
+            ))}
+          </div>
         </div>
       )}
     </div>
@@ -554,18 +567,22 @@ export function NotesManager({
 
       {canReorder ? (
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
-          <FolderBar
-            folderList={folderList} folderCounts={folderCounts} uncategorizedCount={uncategorizedCount}
-            fCat={fCat} setFCat={setFCat} onAddFolder={addFolder} onRemoveFolder={removeFolder}
-            allTags={allTags} fTag={fTag} setFTag={setFTag} droppable
-          />
-          {shown.length > 1 && (
-            <div className="flex items-center gap-1.5 text-xs text-fg-muted mt-2">
-              <GripVertical size={13} /> 拖卡片排序；拖到上方資料夾＝分類
-            </div>
-          )}
-          <SortableContext items={shown.map((n) => n.id)} strategy={rectSortingStrategy}>
-            <div className="grid sm:grid-cols-2 gap-3 mt-2">
+          <div className="flex flex-col md:flex-row gap-4">
+            <aside className="md:w-56 md:shrink-0 md:border-r md:border-border/60 md:pr-3 md:self-start md:sticky md:top-2 md:max-h-[82vh] md:overflow-y-auto">
+              <FolderBar
+                folderList={folderList} folderCounts={folderCounts} uncategorizedCount={uncategorizedCount}
+                fCat={fCat} setFCat={setFCat} onAddFolder={addFolder} onRemoveFolder={removeFolder}
+                allTags={allTags} fTag={fTag} setFTag={setFTag} droppable
+              />
+            </aside>
+            <div className="flex-1 min-w-0">
+              {shown.length > 1 && (
+                <div className="flex items-center gap-1.5 text-xs text-fg-muted mb-2">
+                  <GripVertical size={13} /> 拖卡片排序；拖到左側資料夾＝分類
+                </div>
+              )}
+              <SortableContext items={shown.map((n) => n.id)} strategy={rectSortingStrategy}>
+                <div className="grid sm:grid-cols-2 gap-3">
               {shown.map((n) => {
                 const meta = chapterMap[n.lesson_id ?? ""] ?? chapterMap[`ch${n.chapter_id}`] ?? null;
                 return (
@@ -587,17 +604,22 @@ export function NotesManager({
                   </SortableNoteCard>
                 );
               })}
+                </div>
+              </SortableContext>
             </div>
-          </SortableContext>
+          </div>
         </DndContext>
       ) : (
-        <>
-          <FolderBar
-            folderList={folderList} folderCounts={folderCounts} uncategorizedCount={uncategorizedCount}
-            fCat={fCat} setFCat={setFCat} onAddFolder={addFolder} onRemoveFolder={removeFolder}
-            allTags={allTags} fTag={fTag} setFTag={setFTag}
-          />
-          <div className="grid sm:grid-cols-2 gap-3 mt-2">
+        <div className="flex flex-col md:flex-row gap-4">
+          <aside className="md:w-56 md:shrink-0 md:border-r md:border-border/60 md:pr-3 md:self-start md:sticky md:top-2 md:max-h-[82vh] md:overflow-y-auto">
+            <FolderBar
+              folderList={folderList} folderCounts={folderCounts} uncategorizedCount={uncategorizedCount}
+              fCat={fCat} setFCat={setFCat} onAddFolder={addFolder} onRemoveFolder={removeFolder}
+              allTags={allTags} fTag={fTag} setFTag={setFTag}
+            />
+          </aside>
+          <div className="flex-1 min-w-0">
+          <div className="grid sm:grid-cols-2 gap-3">
             {shown.map((n) => {
               const meta = chapterMap[n.lesson_id ?? ""] ?? chapterMap[`ch${n.chapter_id}`] ?? null;
               return (
@@ -619,7 +641,8 @@ export function NotesManager({
               );
             })}
           </div>
-        </>
+          </div>
+        </div>
       )}
       {shown.length === 0 && (
         <div className="text-sm text-fg-muted py-8 text-center">沒有符合的筆記。點「新增筆記」開始記吧。</div>
