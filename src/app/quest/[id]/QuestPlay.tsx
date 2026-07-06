@@ -78,6 +78,29 @@ function codeLines(code: string) {
   return code.split("\n").map((l) => l.trim()).filter((l) => l && !l.startsWith("#")).length;
 }
 
+// 音效：WebAudio 合成（零素材/零授權/離線可用）。fire-and-forget、安全。
+let _ac: AudioContext | null = null;
+function sfx(kind: "step" | "blocked" | "win" | "fail") {
+  try {
+    if (typeof window === "undefined") return;
+    _ac = _ac || new (window.AudioContext || (window as any).webkitAudioContext)();
+    const ac = _ac;
+    const now = ac.currentTime;
+    const beep = (freq: number, start: number, dur: number, type: OscillatorType = "square", vol = 0.06) => {
+      const o = ac.createOscillator(), g = ac.createGain();
+      o.type = type; o.frequency.value = freq; o.connect(g); g.connect(ac.destination);
+      g.gain.setValueAtTime(0, now + start);
+      g.gain.linearRampToValueAtTime(vol, now + start + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, now + start + dur);
+      o.start(now + start); o.stop(now + start + dur + 0.02);
+    };
+    if (kind === "step") beep(440, 0, 0.07, "square", 0.03);
+    else if (kind === "blocked") beep(120, 0, 0.16, "sawtooth", 0.05);
+    else if (kind === "fail") { beep(300, 0, 0.14, "triangle"); beep(200, 0.12, 0.2, "triangle"); }
+    else if (kind === "win") { [523, 659, 784, 1047].forEach((f, i) => beep(f, i * 0.09, 0.14, "square", 0.05)); }
+  } catch { /* 音效失敗不影響遊戲 */ }
+}
+
 const CELL = 46;
 
 export function QuestPlay({ level, done }: { level: QuestLevel; done: { stars: number } | null }) {
@@ -136,6 +159,7 @@ export function QuestPlay({ level, done }: { level: QuestLevel; done: { stars: n
         const collected = new Set<string>();
         for (const g of parsed.gems) { const idxGem = trail.findIndex((t, k) => k <= i && t.x === g.x && t.y === g.y); if (idxGem >= 0) collected.add(`${g.x},${g.y}`); }
         draw(s.x, s.y, s.dir, collected, s.blocked);
+        if (i > 0) sfx(s.blocked ? "blocked" : "step");
         i++;
         if (i < trail.length) { animRef.current = window.setTimeout(step, 240); }
         else { finish(win); }
@@ -147,9 +171,11 @@ export function QuestPlay({ level, done }: { level: QuestLevel; done: { stars: n
   async function finish(win: { win: boolean; gems: number; total: number }) {
     setRunning(false);
     if (!win.win) {
+      sfx("fail");
       setMsg({ type: "err", text: win.total > 0 && win.gems < win.total ? `還差 ${win.total - win.gems} 顆寶石，或沒走到旗子 🎯` : "還沒走到旗子 🎯，再想想路線？" });
       return;
     }
+    sfx("win");
     const ln = codeLines(code);
     const earned = ln <= level.parLines ? 3 : ln <= level.parLines + 3 ? 2 : 1;
     setStars(earned);
