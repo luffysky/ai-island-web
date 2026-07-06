@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, History, Plus, X, Mic, Camera, Paperclip, Send, Target } from "lucide-react";
+import { Sparkles, History, Plus, X, Mic, Camera, Paperclip, Send, Target, Copy, Share2, PenLine, Check } from "lucide-react";
 import { uploadMedia } from "@/lib/creator-upload";
 
 type Msg = { role: "user" | "assistant"; content: string };
@@ -12,11 +13,14 @@ const BTN = 52; // 綠寶按鈕直徑(px)
 const GREETING: Msg = { role: "assistant", content: "嗨，我是綠寶 ✨ 想做什麼作品？丟碎片、貼圖、或直接問我都可以。" };
 
 export function IslandChat({ workspaceId, focusFragments = [], onClearFocus }: { workspaceId: string; focusFragments?: FocusFrag[]; onClearFocus?: () => void }) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [msgs, setMsgs] = useState<Msg[]>([GREETING]);
   const [text, setText] = useState("");
   const [img, setImg] = useState<{ data: string; mediaType: string; preview: string } | null>(null);
   const [busy, setBusy] = useState(false);
+  const [copied, setCopied] = useState<number | null>(null);
+  const [weaving, setWeaving] = useState<number | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [sessions, setSessions] = useState<{ id: string; title: string; updated_at: string }[]>([]);
   const [showHist, setShowHist] = useState(false);
@@ -125,6 +129,32 @@ export function IslandChat({ workspaceId, focusFragments = [], onClearFocus }: {
     } catch (e: any) { setMsgs((m) => [...m, { role: "assistant", content: "出錯了：" + e.message }]); } finally { setBusy(false); }
   }
 
+  // === 訊息動作：複製 / 分享 / 接入創作（跟課程綠寶一致）===
+  async function copyMsg(i: number, content: string) {
+    try { await navigator.clipboard.writeText(content); setCopied(i); setTimeout(() => setCopied((c) => (c === i ? null : c)), 1500); } catch { /* ignore */ }
+  }
+  async function shareMsg(content: string) {
+    try {
+      if (navigator.share) await navigator.share({ text: content, title: "綠寶 · AI 島創作" });
+      else { await navigator.clipboard.writeText(content); alert("已複製，可貼上分享"); }
+    } catch { /* 使用者取消分享 */ }
+  }
+  function firstLine(s: string) {
+    const line = (s.split("\n").find((l) => l.trim()) ?? "綠寶的創作").replace(/[#*`>_-]/g, "").trim();
+    return line.slice(0, 60) || "綠寶的創作";
+  }
+  async function weaveMsg(i: number, content: string) {
+    setWeaving(i);
+    try {
+      const r = await fetch("/api/creator-island/works", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ workspaceId, title: firstLine(content), body: content, fragmentIds: (focusFragments ?? []).map((f) => f.id), sourceType: "ai_assisted" }),
+      }).then((x) => x.json());
+      if (r.work?.id) router.push(`/creator-island/works/${r.work.id}`);
+      else { setWeaving(null); alert(r.message || "接入創作失敗"); }
+    } catch (e: any) { setWeaving(null); alert("接入創作失敗：" + e.message); }
+  }
+
   if (!pos) return null;
 
   return (
@@ -177,7 +207,20 @@ export function IslandChat({ workspaceId, focusFragments = [], onClearFocus }: {
                 ) : (
                   <div key={i} className="flex items-end gap-2">
                     <span className="shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 text-black grid place-items-center shadow-sm"><Sparkles size={14} /></span>
-                    <div className="max-w-[82%] rounded-2xl rounded-bl-md px-3.5 py-2 text-sm leading-relaxed whitespace-pre-wrap break-words bg-bg-elevated border border-border text-fg shadow-sm">{m.content}</div>
+                    <div className="max-w-[82%] min-w-0">
+                      <div className="rounded-2xl rounded-bl-md px-3.5 py-2 text-sm leading-relaxed whitespace-pre-wrap break-words bg-bg-elevated border border-border text-fg shadow-sm">{m.content}</div>
+                      {i > 0 && (
+                        <div className="mt-1 flex items-center gap-1 pl-1">
+                          <button onClick={() => copyMsg(i, m.content)} title="複製" className="text-[11px] text-fg-muted hover:text-accent inline-flex items-center gap-0.5">
+                            {copied === i ? <><Check size={12} className="text-emerald-500" /> 已複製</> : <><Copy size={12} /> 複製</>}
+                          </button>
+                          <button onClick={() => shareMsg(m.content)} title="分享" className="text-[11px] text-fg-muted hover:text-accent inline-flex items-center gap-0.5"><Share2 size={12} /> 分享</button>
+                          <button onClick={() => weaveMsg(i, m.content)} disabled={weaving !== null} title="把這段接入創作、開成作品" className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:opacity-80 inline-flex items-center gap-0.5 disabled:opacity-40">
+                            {weaving === i ? <Sparkles size={12} className="animate-spin" /> : <PenLine size={12} />} 接入創作
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )
               ))}

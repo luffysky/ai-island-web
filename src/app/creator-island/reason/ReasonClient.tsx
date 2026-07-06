@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { Brain, ArrowLeft, Sparkles, Check, X, Loader2, ChevronDown, ChevronRight } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
+import { Brain, ArrowLeft, Sparkles, Check, X, Loader2, ChevronDown, ChevronRight, Search, PenLine } from "lucide-react";
 
 type Frag = { id: string; title: string };
 type Cand = { title: string; body: string; rationale: string; confidence: number; weight: number; evidenceIds: string[]; missing: string[]; rank: number };
@@ -16,12 +17,18 @@ const MODES = [
 
 async function api(url: string, body: any) {
   const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-  const j = await res.json();
-  if (!res.ok) throw new Error(j.message || j.error || `HTTP ${res.status}`);
+  // 伺服器逾時 / gateway 錯誤時回的是 HTML，不是 JSON——直接 res.json() 會爆 "Unexpected token '<'"。先讀文字再解析。
+  const raw = await res.text();
+  let j: any = null;
+  try { j = raw ? JSON.parse(raw) : null; } catch {
+    throw new Error(res.status === 504 || res.status === 502 ? "伺服器忙不過來或逾時了，碎片少選幾個、稍後再試一次。" : `伺服器回應異常（HTTP ${res.status}）`);
+  }
+  if (!res.ok) throw new Error(j?.message || j?.error || `HTTP ${res.status}`);
   return j;
 }
 
 export function ReasonClient({ workspaceId, fragments }: { workspaceId: string; fragments: Frag[] }) {
+  const router = useRouter();
   const [sel, setSel] = useState<Set<string>>(new Set());
   const [mode, setMode] = useState("adjacent");
   const [intent, setIntent] = useState("");
@@ -32,10 +39,39 @@ export function ReasonClient({ workspaceId, fragments }: { workspaceId: string; 
   const [trace, setTrace] = useState<any[]>([]);
   const [usedMem, setUsedMem] = useState<{ id: string; kind: string; text: string }[]>([]);
   const [verdicts, setVerdicts] = useState<Record<number, string>>({});
+  const [q, setQ] = useState("");
+  const [weaving, setWeaving] = useState<number | null>(null);
   const selArr = Array.from(sel);
+
+  // 331 個碎片全給了 → 搜尋過濾 + 捲動；被選到的永遠留在清單頂端、不會被搜尋濾掉。
+  const shownFrags = useMemo(() => {
+    const kw = q.trim().toLowerCase();
+    const matched = kw ? fragments.filter((f) => f.title.toLowerCase().includes(kw)) : fragments;
+    const selSet = sel;
+    const picked = fragments.filter((f) => selSet.has(f.id));
+    const rest = matched.filter((f) => !selSet.has(f.id));
+    return [...picked, ...rest];
+  }, [fragments, q, sel]);
 
   function toggle(id: string) {
     setSel((p) => { const n = new Set(p); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  }
+
+  // 推理完的後續動作：把某個推理方向直接編織成作品草稿，帶著選到的碎片跳到作品編輯器。
+  async function weave(idx: number) {
+    if (!result) return;
+    const c = result.candidates[idx];
+    setWeaving(idx); setErr(null);
+    try {
+      const { work } = await api("/api/creator-island/works", {
+        workspaceId,
+        title: c.title,
+        body: `${c.body}\n\n---\n（由推理台方向 #${c.rank} 展開：${c.rationale || result.observation}）`,
+        fragmentIds: selArr,
+        sourceType: "reason",
+      });
+      router.push(`/creator-island/works/${work.id}`);
+    } catch (e: any) { setErr(e.message); setWeaving(null); }
   }
 
   async function run() {
@@ -76,18 +112,29 @@ export function ReasonClient({ workspaceId, fragments }: { workspaceId: string; 
 
       {/* 選碎片 */}
       <section className="space-y-2">
-        <div className="text-sm font-bold">選 1~數個碎片當線索</div>
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          <div className="text-sm font-bold">選 1~數個碎片當線索</div>
+          <div className="text-xs text-fg-muted">共 {fragments.length} 個{selArr.length > 0 ? ` · 已選 ${selArr.length}` : ""}</div>
+        </div>
         {fragments.length === 0 ? (
           <p className="text-sm text-fg-muted bg-bg-card border border-border rounded-xl p-3">還沒有碎片，先去<Link href="/creator-island" className="text-accent">島上</Link>捕捉幾個。</p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {fragments.map((f) => (
-              <button key={f.id} onClick={() => toggle(f.id)}
-                className={`text-left text-sm rounded-xl border px-3 py-2 transition inline-flex items-center gap-2 ${sel.has(f.id) ? "border-accent bg-accent/10 text-accent" : "border-border bg-bg-card hover:border-accent/40"}`}>
-                {sel.has(f.id) && <Check size={14} className="shrink-0" />}<span className="truncate">{f.title}</span>
-              </button>
-            ))}
-          </div>
+          <>
+            <div className="relative">
+              <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-fg-muted" />
+              <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="搜尋碎片…"
+                className="w-full text-sm rounded-xl border border-border bg-bg-card pl-9 pr-3 py-2 outline-none focus:border-accent/50" />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[46vh] overflow-y-auto pr-1">
+              {shownFrags.map((f) => (
+                <button key={f.id} onClick={() => toggle(f.id)}
+                  className={`text-left text-sm rounded-xl border px-3 py-2 transition inline-flex items-center gap-2 ${sel.has(f.id) ? "border-accent bg-accent/10 text-accent" : "border-border bg-bg-card hover:border-accent/40"}`}>
+                  {sel.has(f.id) && <Check size={14} className="shrink-0" />}<span className="truncate">{f.title}</span>
+                </button>
+              ))}
+              {shownFrags.length === 0 && <p className="text-sm text-fg-muted col-span-full px-1 py-2">沒有符合「{q}」的碎片。</p>}
+            </div>
+          </>
         )}
       </section>
 
@@ -107,7 +154,7 @@ export function ReasonClient({ workspaceId, fragments }: { workspaceId: string; 
       {err && <div className="bg-red-500/10 border border-red-500/30 text-red-700 dark:text-red-300 rounded-xl px-4 py-2 text-sm">{err}</div>}
 
       <button onClick={run} disabled={busy || selArr.length < 1}
-        className="w-full py-3 rounded-full bg-accent text-white font-bold disabled:opacity-40 inline-flex items-center justify-center gap-2">
+        className="w-full py-3 rounded-full bg-accent text-black font-bold disabled:opacity-40 inline-flex items-center justify-center gap-2">
         {busy ? <><Loader2 size={18} className="animate-spin" /> 推理中…</> : <><Sparkles size={18} /> 開始推理（{selArr.length} 個碎片）</>}
       </button>
 
@@ -135,7 +182,12 @@ export function ReasonClient({ workspaceId, fragments }: { workspaceId: string; 
               <p className="text-sm whitespace-pre-wrap">{c.body}</p>
               {c.rationale && <p className="text-xs text-fg-muted">為何：{c.rationale}</p>}
               {c.missing?.length > 0 && <p className="text-xs text-amber-600 dark:text-amber-400">還缺：{c.missing.join("、")}</p>}
-              <div className="flex items-center gap-2 pt-1">
+              <div className="flex items-center gap-2 pt-1 flex-wrap">
+                {/* 推理完的後續動作：直接用這個方向開一篇作品草稿 */}
+                <button onClick={() => weave(i)} disabled={weaving !== null}
+                  className="text-xs px-3 py-1.5 rounded-full bg-accent text-black font-bold inline-flex items-center gap-1 disabled:opacity-40">
+                  {weaving === i ? <Loader2 size={13} className="animate-spin" /> : <PenLine size={13} />} 用這個方向編織成作品
+                </button>
                 {verdicts[i] ? (
                   <span className={`text-xs font-bold ${verdicts[i] === "accepted" ? "text-emerald-500" : "text-fg-muted"}`}>{verdicts[i] === "accepted" ? "✓ 已採納（記入偏好）" : "已否決"}</span>
                 ) : (<>

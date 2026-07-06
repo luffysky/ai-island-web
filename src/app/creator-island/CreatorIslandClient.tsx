@@ -47,6 +47,14 @@ function composeBodyToHtml(text: string): string {
   return (text || "").split(/\n{2,}/).map((p) => `<p>${p.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/\n/g, "<br>")}</p>`).join("");
 }
 
+// 預置工作流範例：選幾個碎片就能一鍵重播的常用組合（步驟串是真的 agent pipeline）。
+const PRESET_WORKFLOWS: { title: string; desc: string; steps: { agent: string; params?: Record<string, any> }[] }[] = [
+  { title: "凝聚 → 短文", desc: "先把碎片凝成一個核心，再編織成短文", steps: [{ agent: "synthesize" }, { agent: "compose", params: { workType: "article" } }] },
+  { title: "演化 → 編織", desc: "先演化出多個變體，再編成一篇作品", steps: [{ agent: "evolve", params: { count: 6 } }, { agent: "compose", params: { workType: "article" } }] },
+  { title: "凝聚 → 一首歌", desc: "碎片凝聚後編成完整歌詞 + Suno/MV 提示", steps: [{ agent: "synthesize" }, { agent: "compose", params: { workType: "song" } }] },
+  { title: "編織 → 英文轉譯", desc: "編成短文後轉譯成道地英文", steps: [{ agent: "compose", params: { workType: "article" } }, { agent: "transcreate", params: { targetLanguage: "English", targetCulture: "natural" } }] },
+];
+
 export function CreatorIslandClient({ workspaceId, initialFragments, initialCollections = [] }: { workspaceId: string; initialFragments: Fragment[]; initialCollections?: Collection[] }) {
   const [fragments, setFragments] = useState<Fragment[]>(initialFragments);
   const [collections, setCollections] = useState<Collection[]>(initialCollections);
@@ -283,6 +291,11 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
     try { const j = await fetch(`/api/creator-island/workflows?workspaceId=${workspaceId}`).then((r) => r.json()); setWorkflows(j.workflows ?? []); }
     catch (e: any) { setErr(e.message); }
   }
+  async function addPreset(p: typeof PRESET_WORKFLOWS[number]) {
+    setErr(null);
+    try { await api("/api/creator-island/workflows", { workspaceId, title: p.title, steps: p.steps }); await loadWorkflows(); flash("已加入工作流 ✓、選碎片後就能重播"); }
+    catch (e: any) { setErr(e.message); }
+  }
   async function replay(id: string) {
     setErr(null); setBusy("replay");
     try { const j = await api(`/api/creator-island/workflows/${id}/run`, { fragmentIds: sel }); setResult({ action: "replay", results: j.results }); }
@@ -346,14 +359,22 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
       <AnimatePresence>
         {panel === "pairs" && pairs && (
           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="bg-bg-card border border-violet-500/30 rounded-2xl p-4 overflow-hidden">
-            <div className="text-sm font-bold mb-2 inline-flex items-center gap-1.5"><Shuffle size={14} /> AI 意外配對 <span className="text-xs font-normal text-fg-muted">點一對 → 凝聚/編織</span></div>
+            <div className="flex items-center justify-between gap-2 flex-wrap mb-2">
+              <div className="text-sm font-bold inline-flex items-center gap-1.5"><Shuffle size={14} /> AI 意外配對 <span className="text-xs font-normal text-fg-muted">可點多對累加碎片 → 一起凝聚/編織</span></div>
+              {sel.length > 0 && <button onClick={() => setSelected(new Set())} className="text-[11px] text-fg-muted hover:text-accent inline-flex items-center gap-0.5"><X size={11} /> 清空已選（{sel.length}）</button>}
+            </div>
             {pairs.length === 0 ? <div className="text-xs text-fg-muted">碎片太少、或需要更多語意向量，多寫幾個再探索。</div> : (
               <div className="grid sm:grid-cols-2 gap-2">
-                {pairs.map((p, i) => (
-                  <button key={i} onClick={() => setSelected(new Set([p.a_id, p.b_id]))} className="text-left bg-bg-elevated rounded-lg px-3 py-2 text-xs hover:ring-1 hover:ring-violet-400">
-                    <b>{p.a_title}</b> <span className="text-violet-300">×</span> <b>{p.b_title}</b> <span className="text-fg-muted">{Math.round(p.similarity * 100)}%</span>
-                  </button>
-                ))}
+                {pairs.map((p, i) => {
+                  const active = selected.has(p.a_id) && selected.has(p.b_id);
+                  return (
+                    <button key={i} onClick={() => setSelected((prev) => { const n = new Set(prev); if (n.has(p.a_id) && n.has(p.b_id)) { n.delete(p.a_id); n.delete(p.b_id); } else { n.add(p.a_id); n.add(p.b_id); } return n; })}
+                      className={`text-left rounded-lg px-3 py-2 text-xs transition inline-flex items-start gap-1.5 ${active ? "bg-violet-500/20 ring-1 ring-violet-400" : "bg-bg-elevated hover:ring-1 hover:ring-violet-400"}`}>
+                      {active && <Check size={13} className="text-violet-400 shrink-0 mt-0.5" />}
+                      <span><b>{p.a_title}</b> <span className="text-violet-300">×</span> <b>{p.b_title}</b> <span className="text-fg-muted">{Math.round(p.similarity * 100)}%</span></span>
+                    </button>
+                  );
+                })}
               </div>
             )}
           </motion.div>
@@ -361,13 +382,30 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
         {panel === "flows" && workflows && (
           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="bg-bg-card border border-border rounded-2xl p-4 overflow-hidden space-y-1">
             <div className="text-sm font-bold mb-1 inline-flex items-center gap-1.5"><Wrench size={14} /> 我的工作流</div>
-            {workflows.length === 0 ? <div className="text-xs text-fg-muted">還沒有。做幾個動作後「存成工作流」，下次一鍵重播。</div> :
+            {workflows.length === 0 ? <div className="text-xs text-fg-muted">還沒有自己的工作流。做幾個動作後「存成工作流」，或直接從下面的範例加入。</div> :
               workflows.map((w) => (
                 <div key={w.id} className="flex items-center justify-between text-xs bg-bg-elevated rounded-lg px-3 py-2">
                   <span><b>{w.title}</b> <span className="text-fg-muted">· {(w.steps ?? []).map((s: any) => s.agent).join("→")}</span></span>
                   <button onClick={() => replay(w.id)} disabled={busy !== null || sel.length < 1} className="text-accent disabled:opacity-40">▶ 重播</button>
                 </div>
               ))}
+            {/* 預置範例工作流：一鍵加入（尚未加入的才顯示） */}
+            {(() => {
+              const have = new Set((workflows ?? []).map((w: any) => w.title));
+              const avail = PRESET_WORKFLOWS.filter((p) => !have.has(p.title));
+              if (avail.length === 0) return null;
+              return (
+                <div className="pt-2 mt-1 border-t border-border/60 space-y-1">
+                  <div className="text-[11px] text-fg-muted px-1">✨ 範例工作流（點加入，選碎片後即可重播）</div>
+                  {avail.map((p) => (
+                    <div key={p.title} className="flex items-center justify-between gap-2 text-xs bg-bg-elevated/60 rounded-lg px-3 py-2">
+                      <span className="min-w-0"><b>{p.title}</b> <span className="text-fg-muted">· {p.desc}</span></span>
+                      <button onClick={() => addPreset(p)} className="shrink-0 text-accent hover:underline">＋ 加入</button>
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
           </motion.div>
         )}
         {related && (
@@ -547,12 +585,30 @@ function CollectionChip({ c, active, isOver, onClick, onDelete }: { c: Collectio
   );
 }
 
+// 稀有度分級（存在 tags 第一項：SSR/SR/R；碎片蛋/首抽帶）。每級不同底色/邊框，一眼分辨。
+const RARITY = ["N", "R", "SR", "SSR", "UR"];
+type RarityStyle = { card: string; pill: string; label: string };
+const RARITY_STYLE: Record<string, RarityStyle> = {
+  UR:  { card: "border-fuchsia-400/60 bg-gradient-to-br from-fuchsia-500/15 to-amber-400/10 hover:border-fuchsia-400", pill: "bg-gradient-to-r from-fuchsia-500 to-amber-400 text-black font-bold", label: "UR" },
+  SSR: { card: "border-amber-400/50 bg-amber-400/[0.10] hover:border-amber-400", pill: "bg-amber-400/90 text-black font-bold", label: "SSR" },
+  SR:  { card: "border-violet-400/45 bg-violet-500/[0.09] hover:border-violet-400", pill: "bg-violet-500/85 text-white font-bold", label: "SR" },
+  R:   { card: "border-sky-400/35 bg-sky-500/[0.07] hover:border-sky-400", pill: "bg-sky-500/80 text-white font-bold", label: "R" },
+  N:   { card: "border-border bg-bg-card hover:border-accent/40", pill: "bg-bg-elevated text-fg-muted", label: "N" },
+};
+/** 從 tags 找稀有度（大小寫容錯），沒有就回 N。 */
+function fragRarity(tags?: string[]): string {
+  for (const t of tags ?? []) { const u = t.trim().toUpperCase(); if (RARITY.includes(u)) return u; }
+  return "N";
+}
+
 function DraggableFragment({ f, on, onToggle, onEdit }: { f: Fragment; on: boolean; onToggle: () => void; onEdit: () => void }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: f.id });
   const style = transform ? { transform: `translate(${transform.x}px, ${transform.y}px)` } : undefined;
+  const rarity = fragRarity(f.tags);
+  const rs = RARITY_STYLE[rarity] ?? RARITY_STYLE.N;
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners} onClick={onToggle} role="button" tabIndex={0}
-      className={`group relative block w-full text-left rounded-xl p-3 border transition cursor-grab active:cursor-grabbing ${isDragging ? "opacity-70 ring-2 ring-accent z-50 shadow-xl" : on ? "border-accent bg-accent/[0.08] ring-1 ring-accent/40" : "border-border bg-bg-card hover:border-accent/40"}`}>
+      className={`group relative block w-full text-left rounded-xl p-3 border transition cursor-grab active:cursor-grabbing ${isDragging ? "opacity-70 ring-2 ring-accent z-50 shadow-xl" : on ? "border-accent bg-accent/[0.08] ring-1 ring-accent/40" : rs.card}`}>
       <button onClick={(e) => { e.stopPropagation(); onEdit(); }} onPointerDown={(e) => e.stopPropagation()} title="編輯"
         className="absolute top-2 right-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition text-fg-muted hover:text-accent p-1 -m-1"><Pencil size={14} /></button>
       <div className="font-bold text-sm flex items-start gap-1.5 pr-5"><span className="mt-0.5"><SrcIcon type={f.source_type} /></span><span className="flex-1">{f.title}</span>{on && <Check size={14} className="text-accent shrink-0" />}</div>
@@ -562,7 +618,9 @@ function DraggableFragment({ f, on, onToggle, onEdit }: { f: Fragment; on: boole
       <div className="mt-1.5 flex flex-wrap gap-1 items-center">
         {f.category && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-accent/15 text-accent inline-flex items-center gap-0.5"><FolderTree size={10} /> {f.category}</span>}
         {f.mood && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-pink-500/15 text-pink-700 dark:text-pink-300">{f.mood}</span>}
-        {f.tags?.map((t) => <span key={t} className="text-[10px] px-1.5 py-0.5 rounded-full bg-bg-elevated text-fg-muted">#{t}</span>)}
+        {f.tags?.map((t) => RARITY.includes(t.trim().toUpperCase())
+          ? <span key={t} className={`text-[10px] px-1.5 py-0.5 rounded-full ${(RARITY_STYLE[t.trim().toUpperCase()] ?? RARITY_STYLE.N).pill}`}>{t.trim().toUpperCase()}</span>
+          : <span key={t} className="text-[10px] px-1.5 py-0.5 rounded-full bg-bg-elevated text-fg-muted">#{t}</span>)}
       </div>
     </div>
   );

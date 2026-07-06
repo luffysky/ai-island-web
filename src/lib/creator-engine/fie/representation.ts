@@ -35,8 +35,8 @@ export async function buildRepresentation(workspaceId: string, fragmentIds: stri
   const { data: rels } = await admin.from("ci_asset_relations").select("from_asset_id, to_asset_id").in("from_asset_id", fragmentIds).limit(500);
   const relRows = (rels as any[]) ?? [];
 
-  const out: FragmentRepr[] = [];
-  for (const f of rows) {
+  // 每個碎片的 embedding 是獨立的網路往返——並行跑（原本 for 迴圈序列 await，種子一多就把整條推理拖到 gateway timeout）。
+  const out: FragmentRepr[] = await Promise.all(rows.map(async (f) => {
     const text = (f.ai_summary || f.content || f.title || "").toString();
     const surface = {
       len: text.length,
@@ -58,7 +58,7 @@ export async function buildRepresentation(workspaceId: string, fragmentIds: stri
 
     // salience：degree + 內容長度的粗略啟發式；surprise 先 0（由 pipeline 依鄰居算）
     const salience = Math.min(1, 0.4 + (inDeg + outDeg) * 0.1 + Math.min(0.3, text.length / 2000));
-    out.push({ fragmentId: f.id, role: structural.role, salience, surprise: 0, summary: f.ai_summary || f.title || text.slice(0, 80) });
-  }
+    return { fragmentId: f.id, role: structural.role, salience, surprise: 0, summary: f.ai_summary || f.title || text.slice(0, 80) } as FragmentRepr;
+  }));
   return out;
 }

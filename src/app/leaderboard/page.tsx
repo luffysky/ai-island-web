@@ -24,12 +24,41 @@ type LbUser = {
   xp: number;
   streak_days: number;
   z_coin?: number;
+  lessons_done?: number;
 };
 
-export default async function LeaderboardPage() {
+type Board = "xp" | "streak" | "lessons";
+const BOARDS: { id: Board; label: string; emoji: string; hint: string }[] = [
+  { id: "xp", label: "XP", emoji: "🏆", hint: "累積經驗值最高" },
+  { id: "streak", label: "連勝", emoji: "🔥", hint: "連續學習天數最長" },
+  { id: "lessons", label: "完課", emoji: "📚", hint: "完成最多小節" },
+];
+
+/** 依榜別取該使用者的主要數值 + 顯示。 */
+function metricOf(u: LbUser, board: Board): { value: number; text: string } {
+  if (board === "streak") return { value: u.streak_days ?? 0, text: `${u.streak_days ?? 0} 天連勝` };
+  if (board === "lessons") return { value: u.lessons_done ?? 0, text: `${u.lessons_done ?? 0} 課完成` };
+  return { value: u.xp ?? 0, text: `${(u.xp ?? 0).toLocaleString()} XP` };
+}
+
+export default async function LeaderboardPage({ searchParams }: { searchParams: Promise<{ tab?: string }> }) {
+  const { tab } = await searchParams;
+  const board: Board = tab === "streak" ? "streak" : tab === "lessons" ? "lessons" : "xp";
   const supabase = await createSupabaseServer();
-  const { data } = await supabase.from("leaderboard").select("*");
-  const list = (data ?? []) as LbUser[];
+
+  let list: LbUser[] = [];
+  if (board === "lessons") {
+    const { data } = await supabase.rpc("leaderboard_lessons", { p_limit: 100 });
+    list = (data ?? []) as LbUser[];
+  } else if (board === "streak") {
+    const { data } = await supabase.from("profiles")
+      .select("id, username, display_name, avatar_url, level, xp, streak_days")
+      .gt("streak_days", 0).order("streak_days", { ascending: false }).order("xp", { ascending: false }).limit(100);
+    list = (data ?? []) as LbUser[];
+  } else {
+    const { data } = await supabase.from("leaderboard").select("*");
+    list = (data ?? []) as LbUser[];
+  }
   const top3 = list.slice(0, 3);
   const rest = list.slice(3);
 
@@ -58,9 +87,18 @@ export default async function LeaderboardPage() {
           <h1 className="text-4xl md:text-5xl font-extrabold mb-2 bg-gradient-to-r from-yellow-400 via-amber-300 to-orange-400 bg-clip-text text-transparent">
             全島排行榜
           </h1>
-          <p className="text-sm text-fg-muted">即時更新 · 努力者上榜</p>
+          <p className="text-sm text-fg-muted">即時更新 · {BOARDS.find((b) => b.id === board)?.hint}</p>
           <div className="mt-3 inline-flex items-center gap-2 text-xs text-fg-muted">
             <span className="inline-flex items-center gap-1"><Award size={11} className="text-yellow-400" /> {list.length} 位玩家</span>
+          </div>
+          {/* 榜別切換 */}
+          <div className="mt-5 flex items-center justify-center gap-2 flex-wrap">
+            {BOARDS.map((b) => (
+              <Link key={b.id} href={b.id === "xp" ? "/leaderboard" : `/leaderboard?tab=${b.id}`} scroll={false}
+                className={`px-4 py-1.5 rounded-full text-sm font-bold border transition ${board === b.id ? "bg-gradient-to-r from-yellow-400 to-amber-500 text-black border-transparent shadow-lg shadow-yellow-500/20" : "bg-bg-card/60 border-border text-fg-muted hover:border-yellow-400/50 hover:text-fg"}`}>
+                {b.emoji} {b.label}
+              </Link>
+            ))}
           </div>
         </div>
       </header>
@@ -80,11 +118,11 @@ export default async function LeaderboardPage() {
             {top3.length > 0 && (
               <section className="flex items-end justify-center gap-2 md:gap-4 flex-wrap pb-6">
                 {/* 第 2 名 */}
-                {top3[1] && <PodiumCard user={top3[1]} rank={2} />}
+                {top3[1] && <PodiumCard user={top3[1]} rank={2} board={board} />}
                 {/* 第 1 名 */}
-                {top3[0] && <PodiumCard user={top3[0]} rank={1} />}
+                {top3[0] && <PodiumCard user={top3[0]} rank={1} board={board} />}
                 {/* 第 3 名 */}
-                {top3[2] && <PodiumCard user={top3[2]} rank={3} />}
+                {top3[2] && <PodiumCard user={top3[2]} rank={3} board={board} />}
               </section>
             )}
 
@@ -114,11 +152,14 @@ export default async function LeaderboardPage() {
                       </div>
                       <div className="text-right hidden sm:block">
                         <div className="text-xs font-bold text-accent">Lv {u.level}</div>
-                        <div className="text-[10px] text-fg-muted">{u.xp.toLocaleString()} XP</div>
+                        <div className="text-[10px] text-fg-muted">{(u.xp ?? 0).toLocaleString()} XP</div>
                       </div>
-                      <div className="text-right text-sm flex items-center gap-1 text-orange-400">
-                        <Flame size={12} />
-                        <span className="font-bold">{u.streak_days}</span>
+                      <div className="text-right min-w-[58px]">
+                        <div className="text-sm font-bold text-fg inline-flex items-center gap-1 justify-end">
+                          {board === "streak" && <Flame size={12} className="text-orange-400" />}
+                          {metricOf(u, board).value.toLocaleString()}
+                        </div>
+                        <div className="text-[10px] text-fg-muted">{BOARDS.find((b) => b.id === board)?.label}</div>
                       </div>
                     </div>
                   );
@@ -132,9 +173,9 @@ export default async function LeaderboardPage() {
         <div className="bg-bg-card/50 border border-border rounded-xl p-4 text-xs text-fg-muted">
           <div className="font-bold text-fg mb-1.5">📖 排名規則</div>
           <ul className="space-y-0.5 list-disc list-inside">
-            <li>主要按 <b className="text-fg">XP</b> 排序、相同 XP 看連續簽到</li>
+            <li>🏆 <b className="text-fg">XP</b>：累積經驗值 · 🔥 <b className="text-fg">連勝</b>：連續學習天數 · 📚 <b className="text-fg">完課</b>：完成的小節數</li>
             <li>連續中斷會在隔天 03:00 重設</li>
-            <li>排行榜即時更新（依 XP 排序）</li>
+            <li>三個榜都即時更新</li>
           </ul>
         </div>
       </main>
@@ -146,8 +187,8 @@ export default async function LeaderboardPage() {
             <div className="font-mono font-bold text-accent">#{myRank.rank}</div>
             <Avatar user={myRank.user} size={32} />
             <div className="flex-1 min-w-0">
-              <div className="text-xs font-bold truncate">你目前排第 {myRank.rank}</div>
-              <div className="text-[10px] text-fg-muted">Lv {myRank.user.level} · {myRank.user.xp.toLocaleString()} XP</div>
+              <div className="text-xs font-bold truncate">{BOARDS.find((b) => b.id === board)?.emoji} 你在「{BOARDS.find((b) => b.id === board)?.label}」榜第 {myRank.rank}</div>
+              <div className="text-[10px] text-fg-muted">{metricOf(myRank.user, board).text} · Lv {myRank.user.level}</div>
             </div>
             <Link href="/chapters" className="text-xs px-3 py-1.5 rounded-full bg-accent text-black font-bold">
               繼續學
@@ -159,7 +200,7 @@ export default async function LeaderboardPage() {
   );
 }
 
-function PodiumCard({ user, rank }: { user: LbUser; rank: 1 | 2 | 3 }) {
+function PodiumCard({ user, rank, board }: { user: LbUser; rank: 1 | 2 | 3; board: Board }) {
   const config = {
     1: {
       height: "min-h-[11rem] md:min-h-[13rem]",
@@ -217,13 +258,15 @@ function PodiumCard({ user, rank }: { user: LbUser; rank: 1 | 2 | 3 }) {
         </div>
         {/* 底座卡 */}
         <div className={`mt-2 px-3 py-2 rounded-xl border ring-1 ${config.ring} ${config.bg} text-center min-w-[110px] shadow-xl ${config.shadow}`}>
-          <div className={`text-xs font-bold bg-gradient-to-r ${config.gradient} bg-clip-text text-transparent`}>
-            Lv {user.level}
+          <div className={`text-sm font-extrabold bg-gradient-to-r ${config.gradient} bg-clip-text text-transparent`}>
+            {metricOf(user, board).text}
           </div>
-          <div className="text-[10px] text-fg-muted font-mono">{user.xp.toLocaleString()} XP</div>
-          <div className="text-[10px] text-orange-400 inline-flex items-center gap-0.5 mt-0.5">
-            <Flame size={9} />{user.streak_days}
-          </div>
+          <div className="text-[10px] text-fg-muted font-mono mt-0.5">Lv {user.level}{board !== "xp" ? ` · ${(user.xp ?? 0).toLocaleString()} XP` : ""}</div>
+          {board !== "streak" && (
+            <div className="text-[10px] text-orange-400 inline-flex items-center gap-0.5 mt-0.5">
+              <Flame size={9} />{user.streak_days}
+            </div>
+          )}
         </div>
       </div>
 

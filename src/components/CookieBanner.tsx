@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { setPreciseOptIn, getPreciseLocation } from "@/lib/geo-precise";
 
@@ -12,6 +12,18 @@ export function CookieBanner() {
   const [show, setShow] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [precise, setPrecise] = useState(false);
+  const rootRef = useRef<HTMLDivElement | null>(null);
+
+  // 把自身高度發佈成 CSS 變數，讓 PWA 更新橫幅疊在上面、不會在 iOS 底部重疊。
+  useEffect(() => {
+    const el = rootRef.current;
+    const setVar = (h: number) => document.documentElement.style.setProperty("--cookie-banner-h", `${h}px`);
+    if (!show || !el) { setVar(0); return; }
+    setVar(el.offsetHeight);
+    const ro = new ResizeObserver(() => setVar(el.offsetHeight));
+    ro.observe(el);
+    return () => { ro.disconnect(); setVar(0); };
+  }, [show, showDetails, precise]);
 
   useEffect(() => {
     try {
@@ -49,6 +61,7 @@ export function CookieBanner() {
 
   return (
     <div
+      ref={rootRef}
       role="dialog"
       aria-label="Cookie 同意"
       className="fixed bottom-0 left-0 right-0 z-50 p-4 md:p-6 bg-bg-card border-t-2 border-accent shadow-2xl"

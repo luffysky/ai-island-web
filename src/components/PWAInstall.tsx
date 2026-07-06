@@ -56,10 +56,11 @@ export function PWAInstall() {
 
   return (
     <div
-      className="fixed z-[60] left-2 right-2 bottom-2 md:left-auto md:right-4 md:bottom-4 md:max-w-sm
+      className="fixed z-[60] left-2 right-2 md:left-auto md:right-4 md:max-w-sm
                  bg-gradient-to-br from-purple-500/20 via-pink-500/15 to-cyan-500/20
                  border border-purple-400/60 rounded-2xl shadow-2xl shadow-purple-500/20 p-4
                  flex items-start gap-3"
+      style={{ bottom: "calc(var(--cookie-banner-h, 0px) + 0.5rem)" }}
       role="alert"
     >
       <RefreshCw size={26} className="text-purple-300 flex-shrink-0 mt-0.5" aria-hidden="true" />

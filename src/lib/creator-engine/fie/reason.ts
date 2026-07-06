@@ -86,17 +86,17 @@ export async function runReasoning(opts: {
   const addTrace = (stage: string, detail: any) => trace.push({ step_no: trace.length + 1, stage, detail });
 
   try {
-    // M1 Representation（Observation 前）
-    const repr = await buildRepresentation(opts.workspaceId, seedIds);
-    addTrace("observation", { representation: repr });
-
-    // seeds 內容
+    // seeds 內容（representation / evidence 都要用，先撈）
     const { data: seedFrags } = await admin.from("ci_fragments").select("id, title, content").in("id", seedIds);
     const seeds = (seedFrags as any[]) ?? [];
     const seedText = seeds.map((s) => `${s.title} ${s.content ?? ""}`).join("\n").slice(0, 6000);
 
-    // M4 evidence（依 mode）
-    const evidence = await retrieveEvidence(admin, opts.workspaceId, seedIds, seedText, mode);
+    // M1 Representation + M4 evidence 併行跑（各自都含 embedding 往返、序列會疊加成 timeout）。
+    const [repr, evidence] = await Promise.all([
+      buildRepresentation(opts.workspaceId, seedIds),
+      retrieveEvidence(admin, opts.workspaceId, seedIds, seedText, mode),
+    ]);
+    addTrace("observation", { representation: repr });
     addTrace("evidence", { mode, source: mode === "exploratory" ? "ci_surprising_pairs" : "ci_related_fragments", evidence });
 
     // M2 推理

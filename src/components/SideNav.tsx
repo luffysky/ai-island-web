@@ -65,11 +65,13 @@ export function SideNav() {
   const [tab, setTab] = useState<Tab>("chapters");
   // hover 泡泡：顯示 lesson 完整名稱（側欄會 truncate，hover 看全名）
   const [mounted, setMounted] = useState(false);
-  const [tip, setTip] = useState<{ num: string; text: string; x: number; y: number } | null>(null);
+  const [tip, setTip] = useState<{ num: string; text: string; x: number; y: number; side: "left" | "right" } | null>(null);
   useEffect(() => setMounted(true), []);
   const showTip = (e: React.MouseEvent<HTMLElement>, num: string, text: string) => {
     const r = e.currentTarget.getBoundingClientRect();
-    setTip({ num, text, x: r.right + 12, y: r.top + r.height / 2 });
+    // 右邊放不下（手機 drawer 幾乎滿版）就翻到左邊，泡泡才不會被螢幕切掉。
+    const preferLeft = typeof window !== "undefined" && window.innerWidth - r.right < 280;
+    setTip({ num, text, x: preferLeft ? r.left - 12 : r.right + 12, y: r.top + r.height / 2, side: preferLeft ? "left" : "right" });
   };
   const hideTip = () => setTip(null);
   const [chapters, setChapters] = useState<NavChapter[]>([]);
@@ -568,13 +570,18 @@ export function SideNav() {
       {/* Hover 泡泡：lesson 完整名稱（portal 到 body、不被側欄 overflow 裁切）*/}
       {mounted && tip && createPortal(
         <div
-          className="sidenav-tip pointer-events-none fixed z-[60] max-w-xs -translate-y-1/2"
+          className={`sidenav-tip pointer-events-none fixed z-[60] max-w-[min(20rem,calc(100vw-1.5rem))] -translate-y-1/2 ${tip.side === "left" ? "-translate-x-full" : ""}`}
           style={{ left: tip.x, top: tip.y }}
         >
           <div className="relative rounded-xl border border-accent/40 bg-bg-card/95 px-3 py-2 shadow-2xl backdrop-blur-sm">
-            {/* 左側小箭頭 */}
-            <span className="absolute right-full top-1/2 -translate-y-1/2 border-[6px] border-transparent border-r-accent/40" />
-            <span className="absolute right-full top-1/2 -translate-y-1/2 mr-[-1px] border-[6px] border-transparent border-r-bg-card" />
+            {/* 小箭頭：泡泡在右邊→箭頭指左；在左邊→箭頭指右 */}
+            {tip.side === "right" ? (<>
+              <span className="absolute right-full top-1/2 -translate-y-1/2 border-[6px] border-transparent border-r-accent/40" />
+              <span className="absolute right-full top-1/2 -translate-y-1/2 mr-[-1px] border-[6px] border-transparent border-r-bg-card" />
+            </>) : (<>
+              <span className="absolute left-full top-1/2 -translate-y-1/2 border-[6px] border-transparent border-l-accent/40" />
+              <span className="absolute left-full top-1/2 -translate-y-1/2 ml-[-1px] border-[6px] border-transparent border-l-bg-card" />
+            </>)}
             <div className="flex items-baseline gap-2">
               <span className="shrink-0 font-mono text-[10px] text-accent">{tip.num}</span>
               <span className="text-xs font-medium leading-snug text-fg">{tip.text}</span>
