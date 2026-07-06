@@ -85,6 +85,16 @@ const MIGRATIONS = [
   "ai_models_openrouter.sql",
   // 2026-06-23 — 每月每模型用量/費用（callAI 全記、後台費用才準）
   "ai_model_usage_migration.sql",
+  // 2026-07 — 創作者島嶼「碎片宇宙」（creator DNA 報告 / 碎片欄位擴充）
+  "creator_island_universe_migration.sql",
+  // 2026-07 — 程式副本島通關記錄（quest_completions、發 XP/Z 幣依賴）
+  "quest_completions_migration.sql",
+  // 2026-07 — 排行榜多榜別：完成最多 lesson 榜
+  "leaderboard_lessons_migration.sql",
+  // 2026-07 — 筆記區塊引用（notes.note_refs uuid[]、跨筆記引用）
+  "notes_refs_migration.sql",
+  // 2026-07 — 可販售筆記知識市集（note_products + buy_note_product RPC）
+  "notes_market_migration.sql",
 ];
 
 // 從 .env.local 讀（不依賴 dotenv pkg）
