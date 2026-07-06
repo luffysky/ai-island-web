@@ -1,6 +1,13 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
+import { Inter, Outfit, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+
+// 字體系統：Inter=內文、Outfit=標題(圓潤幾何顯示體)、JetBrains Mono=程式碼。
+// 中文走系統字（PingFang TC / 微軟正黑）→ 免下載數 MB 的 CJK webfont、又清晰。
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
+const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit", weight: ["500", "600", "700", "800"], display: "swap" });
+const jbMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jbmono", display: "swap" });
 import Link from "next/link";
 import { TopNav } from "@/components/layout/TopNav";
 import { AITutorAutoContext } from "@/components/AITutorAutoContext";
@@ -91,7 +98,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const gaId = process.env.NEXT_PUBLIC_GA_ID;
   return (
-    <html lang="zh-Hant-TW">
+    <html lang="zh-Hant-TW" className={`${inter.variable} ${outfit.variable} ${jbMono.variable}`}>
       <head>
         {/* JSON-LD 全站結構化資料：Organization + WebSite */}
         <script

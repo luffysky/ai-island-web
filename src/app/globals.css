@@ -43,8 +43,21 @@
   --chip-neutral-bg: #1f2937;   /* gray-800 on dark */
   --chip-neutral-fg: #d1d5db;   /* gray-300 — 對比 11:1 AAA */
 
-  --font-sans: "Inter", "Noto Sans TC", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", "Fira Code", monospace;
+  /* 字體：Latin 走 next/font 自架（--font-inter/outfit/jbmono）、中文走系統 CJK（清晰又免下載）*/
+  --font-cjk: "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", "Heiti TC", sans-serif;
+  --font-sans: var(--font-inter), var(--font-cjk), system-ui, sans-serif;
+  --font-display: var(--font-outfit), var(--font-inter), var(--font-cjk), system-ui, sans-serif;
+  --font-mono: var(--font-jbmono), "JetBrains Mono", ui-monospace, "Fira Code", monospace;
+
+  /* 圓角階梯 */
+  --radius-card: 16px;
+  --radius-lg: 20px;
+
+  /* 陰影 / 高度階梯（暗色系用較深的柔影）*/
+  --elev-1: 0 1px 2px rgba(0,0,0,0.25);
+  --elev-2: 0 4px 12px rgba(0,0,0,0.30);
+  --elev-3: 0 10px 30px rgba(0,0,0,0.38);
+  --elev-4: 0 18px 44px rgba(0,0,0,0.45);
 }
 
 * { box-sizing: border-box; }
@@ -84,10 +97,114 @@ html, body {
   color: var(--color-fg);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
   min-height: 100vh;
   transition: background-color 300ms cubic-bezier(0.4, 0, 0.2, 1),
               color 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* ============================================================
+   標題排版節奏 — 顯示體 Outfit（Latin）+ 系統 CJK；緊字距、平衡斷行、大級距。
+   只設 font/字距/行高，不動顏色與 margin（交給各元件的 Tailwind class）。
+   ============================================================ */
+h1, h2, h3, .font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+h1 { line-height: 1.12; }
+h2 { line-height: 1.18; }
+h3 { line-height: 1.25; }
+/* 內文舒適行高（不覆蓋已明確指定 leading 的元素）*/
+p { line-height: 1.65; text-wrap: pretty; }
+
+/* ============================================================
+   氛圍背景 — 暗底鋪一層極淡的藍紫 / 綠 徑向光暈（島嶼感、不搶內容）。
+   fixed 於最底層、pointer-events:none；亮色主題自動換更淡的暖光。
+   ============================================================ */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(60rem 60rem at 12% -10%, color-mix(in srgb, var(--color-accent) 8%, transparent), transparent 60%),
+    radial-gradient(50rem 50rem at 100% 0%, color-mix(in srgb, var(--color-accent-3) 9%, transparent), transparent 55%),
+    radial-gradient(70rem 40rem at 50% 120%, color-mix(in srgb, var(--color-accent-2) 6%, transparent), transparent 60%);
+}
+html[data-theme="light"] body::before {
+  background:
+    radial-gradient(60rem 60rem at 12% -10%, color-mix(in srgb, var(--color-accent) 6%, transparent), transparent 60%),
+    radial-gradient(50rem 50rem at 100% 0%, color-mix(in srgb, var(--color-accent-3) 7%, transparent), transparent 55%);
+}
+
+/* ============================================================
+   表面 primitives — 全站卡片統一質感（opt-in class，不強制改既有元件）。
+   .surface        基本卡片（bg-card + border + 圓角 + 柔影）
+   .surface-glass  玻璃感（半透明 + backdrop-blur）
+   .hover-lift     hover 微浮起 + 邊框亮 + 陰影加深
+   .glow-accent    accent 柔光暈（featured / CTA）
+   .gradient-border accent→青→紫 漸層描邊（精選/付費）
+   ============================================================ */
+.surface {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--elev-1);
+}
+.surface-glass {
+  background: color-mix(in srgb, var(--color-bg-card) 72%, transparent);
+  backdrop-filter: blur(12px) saturate(1.1);
+  -webkit-backdrop-filter: blur(12px) saturate(1.1);
+  border: 1px solid color-mix(in srgb, var(--color-border) 80%, transparent);
+  border-radius: var(--radius-card);
+}
+.hover-lift {
+  transition: transform 0.22s cubic-bezier(0.4,0,0.2,1),
+              box-shadow 0.22s cubic-bezier(0.4,0,0.2,1),
+              border-color 0.22s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--elev-3);
+  border-color: var(--color-border-hover);
+}
+.glow-accent {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-accent) 35%, transparent),
+              0 8px 34px color-mix(in srgb, var(--color-accent) 22%, transparent);
+}
+.gradient-border {
+  position: relative;
+  border-radius: var(--radius-card);
+  background: var(--color-bg-card);
+  border: 1px solid transparent;
+  background-clip: padding-box;
+}
+.gradient-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  margin: -1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-2), var(--color-accent-3));
+  opacity: 0.6;
+}
+
+/* ============================================================
+   進場動效 — reveal（淡入上浮）+ stagger delay 工具。尊重 reduced-motion（上方已統一歸零）。
+   ============================================================ */
+@keyframes revealUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.reveal { animation: revealUp 0.5s cubic-bezier(0.22,1,0.36,1) both; }
+.reveal-d1 { animation-delay: 0.06s; }
+.reveal-d2 { animation-delay: 0.12s; }
+.reveal-d3 { animation-delay: 0.18s; }
+.reveal-d4 { animation-delay: 0.24s; }
+.reveal-d5 { animation-delay: 0.30s; }
 
 /* ============================================================
    全站 scroll 預設規則（避免內容被切）

@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { useAuth } from "@/lib/auth-context";
-import { Flame, Coins, Heart, LogOut, Settings, Trophy, User as UserIcon, ChevronDown, Menu, X, Palmtree, Crown, BarChart3, Key, BookOpen, Swords, MessagesSquare, Newspaper, Route, Palette, Brain, Compass } from "lucide-react";
+import { Flame, Coins, Heart, LogOut, Settings, Trophy, User as UserIcon, ChevronDown, Menu, X, Palmtree, Crown, BarChart3, Key, BookOpen, Swords, MessagesSquare, Newspaper, Route, Palette, Brain, Compass, Gamepad2, NotebookPen } from "lucide-react";
 import { TodoDropdownButton } from "@/components/todo/TodoDropdown";
 import { CountUp } from "@/components/ui/CountUp";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
@@ -15,6 +15,8 @@ import { devLog } from "@/lib/dev-log";
 const NAV_LINKS = [
   { href: "/chapters", label: "章節", icon: BookOpen },
   { href: "/courses", label: "副本", icon: Swords },
+  { href: "/quest", label: "遊戲", icon: Gamepad2 },
+  { href: "/me/notes", label: "筆記", icon: NotebookPen },
   { href: "/forum", label: "討論區", icon: MessagesSquare },
   { href: "/blogs", label: "部落格", icon: Newspaper },
   { href: "/leaderboard", label: "排行榜", icon: Trophy },
