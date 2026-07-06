@@ -12,6 +12,7 @@ import {
 import { EggHatch } from "./EggHatch";
 import { IslandTour } from "./IslandTour";
 import { IslandChat } from "./IslandChat";
+import { DriftBottleSea } from "./DriftBottleSea";
 
 type Fragment = { id: string; title: string; subtitle?: string | null; content: string; tags: string[]; mood?: string | null; category?: string | null; source_type: string };
 type Collection = { id: string; name: string; assetIds: string[] };
@@ -192,6 +193,16 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
       setFragments((p) => [fragment, ...p]);
     } catch (e: any) { setErr(e.message); } finally { setBusy(null); }
   }
+  async function onVideo(file: File) {
+    setErr(null); setBusy("photo");
+    try {
+      const fd = new FormData(); fd.append("file", file);
+      const up = await fetch("/api/upload", { method: "POST", body: fd }).then((r) => r.json());
+      if (!up.url) throw new Error(up.message || "上傳失敗（影片上限 30MB）");
+      const { fragment } = await api("/api/creator-island/fragments", { workspaceId, title: file.name.slice(0, 60) || "影片碎片", content: `!video(${up.url})`, tags: ["影片"] });
+      setFragments((p) => [fragment, ...p]);
+    } catch (e: any) { setErr(e.message); } finally { setBusy(null); }
+  }
   async function transcreateSel() {
     const fid = sel[0]; if (!fid) return;
     setErr(null); setBusy("transcreate");
@@ -318,12 +329,16 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
       {err && <div className="bg-red-500/10 border border-red-500/30 text-red-700 dark:text-red-300 rounded-xl px-4 py-2 text-sm flex justify-between items-center gap-2"><span>{err}</span><button onClick={() => setErr(null)}><X size={14} /></button></div>}
 
       {fragments.length < 50 && (
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="bg-gradient-to-br from-accent-3/15 via-pink-500/10 to-violet-500/15 border border-accent-3/30 rounded-2xl p-5 flex items-center justify-between gap-3 flex-wrap">
-          <div>
-            <div className="text-lg font-bold inline-flex items-center gap-1.5">🌊 海上漂來了 300 個故事</div>
-            <p className="text-sm text-fg-muted mt-1">海面漂來 <b>300 個</b>來自各地的靈感碎片（含稀有 SSR），來自生活、夢境、回憶、街景、遺憾……它們不是你的，卻可以和你的回憶相遇。也可以自己先寫第一句。</p>
-          </div>
-          <button onClick={seedPool} disabled={busy === "seed"} className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 text-black text-sm font-bold disabled:opacity-50 whitespace-nowrap">{busy === "seed" ? "打撈中…" : <>🌊 撈起 300 個漂流瓶</>}</button>
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
+          <DriftBottleSea className="border border-cyan-400/25 shadow-xl">
+            <div className="p-5 sm:p-6 flex items-center justify-between gap-3 flex-wrap text-white">
+              <div className="max-w-md drop-shadow">
+                <div className="text-lg font-bold inline-flex items-center gap-1.5">🌊 海上漂來了 300 個故事</div>
+                <p className="text-sm text-cyan-50/90 mt-1">海面漂來 <b>300 個</b>來自各地的靈感碎片（含稀有 SSR）——生活、夢境、回憶、街景、遺憾……它們不是你的，卻可以和你的回憶相遇。也可以自己先寫第一句。</p>
+              </div>
+              <button onClick={seedPool} disabled={busy === "seed"} className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-gradient-to-r from-cyan-300 to-blue-400 text-black text-sm font-bold shadow-lg disabled:opacity-50 whitespace-nowrap hover:scale-105 transition">{busy === "seed" ? "打撈中…" : <>🌊 撈起 300 個漂流瓶</>}</button>
+            </div>
+          </DriftBottleSea>
         </motion.div>
       )}
 
@@ -336,6 +351,7 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
           <div className="font-bold text-sm flex items-center gap-2"><PenLine size={15} /> 捕捉碎片
             <button onClick={startVoice} title="語音" className="ml-auto hover:scale-110 transition"><Mic size={17} /></button>
             <label title="拍照/圖片" className="cursor-pointer hover:scale-110 transition"><Camera size={17} /><input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) onPhoto(f); e.currentTarget.value = ""; }} /></label>
+            <label title="影片（上限 30MB）" className="cursor-pointer hover:scale-110 transition"><Film size={17} /><input type="file" accept="video/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) onVideo(f); e.currentTarget.value = ""; }} /></label>
           </div>
           <input value={nt} onChange={(e) => setNt(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") addFragment(); }} placeholder="一句想法 / 回憶 / 點子…"
             className="w-full bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm outline-none focus:border-accent" />
@@ -617,8 +633,9 @@ function DraggableFragment({ f, on, onToggle, onEdit }: { f: Fragment; on: boole
         className="absolute top-2 right-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition text-fg-muted hover:text-accent p-1 -m-1"><Pencil size={14} /></button>
       <div className="font-bold text-sm flex items-start gap-1.5 pr-5"><span className="mt-0.5"><SrcIcon type={f.source_type} /></span><span className="flex-1">{f.title}</span>{on && <Check size={14} className="text-accent shrink-0" />}</div>
       {f.subtitle && <div className="text-xs text-accent-3 mt-0.5">{f.subtitle}</div>}
-      {f.content && !f.content.startsWith("![](") && <div className="text-xs text-fg-muted mt-1 line-clamp-3 whitespace-pre-wrap">{f.content}</div>}
+      {f.content && !f.content.startsWith("![](") && !f.content.startsWith("!video(") && <div className="text-xs text-fg-muted mt-1 line-clamp-3 whitespace-pre-wrap">{f.content}</div>}
       {f.content?.startsWith("![](") && <img src={f.content.slice(4, -1)} alt="" className="mt-2 rounded-lg max-h-40 w-full object-cover" />}
+      {f.content?.startsWith("!video(") && <video src={f.content.slice(7, -1)} controls playsInline className="mt-2 rounded-lg max-h-40 w-full bg-black" onClick={(e) => e.stopPropagation()} onPointerDown={(e) => e.stopPropagation()} />}
       <div className="mt-1.5 flex flex-wrap gap-1 items-center">
         {f.category && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-accent/15 text-accent inline-flex items-center gap-0.5"><FolderTree size={10} /> {f.category}</span>}
         {f.mood && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-pink-500/15 text-pink-700 dark:text-pink-300">{f.mood}</span>}
