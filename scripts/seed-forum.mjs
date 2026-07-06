@@ -186,6 +186,198 @@ const THREADS = [
     reacts: [{ author: A.frontelf, emoji: "👍" }, { author: A.greenbot, emoji: "👍" }],
     replies: [{ author: A.official, created: daysAgo(2, 12), html: P("收到！這個實用，排進待辦了，感謝建議 🙌") }],
   },
+
+  // ══════════════ 加量批次：每個版塊再多鋪一些 ══════════════
+  // ── questions 新手提問 ──
+  {
+    board: "questions", author: A.pygoblin, views: 176, created: daysAgo(22),
+    title: "print 出來的中文變成亂碼，是編碼問題嗎？", tags: ["Python", "編碼", "新手"],
+    html: P("跑別人的 .py 檔，print 中文全變成一堆 \\x 之類的怪符號，是不是編碼問題？該怎麼救 😵"),
+    reacts: [{ author: A.duowen, emoji: "👍" }],
+    replies: [
+      { author: A.pygoblin, created: daysAgo(21, 18), answer: true, html: P("多半是讀檔沒指定編碼。開檔加 <code>encoding=\"utf-8\"</code>：<code>open(\"a.txt\", encoding=\"utf-8\")</code>。Windows 終端機還亂碼的話，跑前先下 <code>chcp 65001</code> 切 UTF-8 就正常了。") },
+    ],
+  },
+  {
+    board: "questions", author: A.frontelf, views: 143, created: daysAgo(17),
+    title: "CSS 的 rem、em、px 到底差在哪？該用哪個？", tags: ["CSS", "新手", "單位"],
+    html: P("排版時 rem / em / px 一直搞混，有沒有簡單一點的判斷方式？"),
+    reacts: [{ author: A.duowen, emoji: "🔥" }, { author: A.greenbot, emoji: "👍" }],
+    replies: [
+      { author: A.frontelf, created: daysAgo(16, 20), answer: true, html: P("記三句就好：<b>px</b>＝寫死的絕對值（邊框、細節用）；<b>rem</b>＝相對「網頁根字級」，最好用、整頁縮放一致；<b>em</b>＝相對「自己父層字級」，會層層疊加容易失控。日常字級/間距優先用 rem，就不太會出錯。") },
+    ],
+  },
+  {
+    board: "questions", author: A.duowen, views: 88, created: daysAgo(7),
+    title: "git push 被拒，說我落後遠端，該先 pull 嗎？", tags: ["Git", "新手"],
+    html: P("push 的時候紅字說 <code>rejected ... behind</code>，是不是要先 pull？直接 pull 會不會蓋掉我的東西 😰"),
+    replies: [
+      { author: A.debug, created: daysAgo(6, 16), answer: true, html: P("不會蓋掉你「已 commit」的東西。先 <code>git pull --rebase</code>，它會把遠端的新 commit 拉下來、再把你的接上去，然後就能 push。真的衝突它會停下來讓你一個檔案一個檔案解，別怕。（還沒 commit 的改動記得先 commit 或 stash）") },
+    ],
+  },
+  // ── progress 學習心得 ──
+  {
+    board: "progress", author: A.duowen, views: 201, created: daysAgo(19),
+    title: "連續打卡 30 天了！分享我從零到看得懂 code 的心路", tags: ["打卡", "心得"],
+    html: P("今天剛好連續學習 30 天 🎉 一開始連變數是什麼都不知道，現在能看懂大部分範例、也改得動別人的 code。",
+      "最有用的一招：<b>每天只求 1% 進步、但天天來</b>。卡住就先睡，隔天再看常常就通了。給還在猶豫的人一點信心 💪"),
+    reacts: [{ author: A.greenbot, emoji: "🎉" }, { author: A.frontelf, emoji: "❤️" }, { author: A.debug, emoji: "🔥" }],
+    replies: [{ author: A.greenbot, created: daysAgo(18, 8), html: P("太讚了！「天天來」真的贏過「一次爆衝」，複利就是這樣 🌱") }],
+  },
+  {
+    board: "progress", author: A.frontelf, views: 117, created: daysAgo(13),
+    title: "把第一個副本破完了，紀錄一下卡最久的地方", tags: ["副本", "打卡"],
+    html: P("HTML/CSS 副本終於全破 ✅ 卡最久的是 Flexbox 的 <code>justify-content</code> 跟 <code>align-items</code> 一直記反。",
+      "後來記法：<b>justify＝主軸（預設橫向）、align＝交叉軸（預設縱向）</b>，就再也沒搞錯了。"),
+    reacts: [{ author: A.duowen, emoji: "👍" }],
+    replies: [{ author: A.frontelf, created: daysAgo(12, 10), html: P("恭喜破關！這兩個真的萬年混淆，你的記法很讚 ✨") }],
+  },
+  // ── help 卡關求助 ──
+  {
+    board: "help", author: A.duowen, views: 198, created: daysAgo(14),
+    title: "Python list 迴圈裡刪element，結果漏刪，為什麼？", tags: ["Python", "Bug", "迴圈"],
+    html: P("想把偶數刪掉，結果有些沒刪到：",
+      "<pre><code>nums = [1,2,3,4,5,6]\nfor n in nums:\n    if n % 2 == 0:\n        nums.remove(n)\nprint(nums)  # [1, 3, 5] 有時對有時錯</code></pre>"),
+    reacts: [{ author: A.frontelf, emoji: "👍" }],
+    replies: [
+      { author: A.pygoblin, created: daysAgo(13, 18), answer: true, html: P("經典雷：<b>一邊迭代一邊刪，索引會跳掉</b>。刪了 2，後面元素往前補，迴圈卻繼續往後走，就漏了。改成建新的：<code>nums = [n for n in nums if n % 2 != 0]</code>，乾淨又不會出錯。") },
+    ],
+  },
+  {
+    board: "help", author: A.duowen, views: 131, created: daysAgo(5),
+    title: "fetch 拿到的資料 console.log 是 Promise，不是資料？", tags: ["JavaScript", "fetch", "async"],
+    html: P("<pre><code>const data = fetch(url);\nconsole.log(data); // Promise {&lt;pending&gt;}</code></pre>為什麼印出來是 Promise 不是我要的 JSON 😭"),
+    replies: [
+      { author: A.frontelf, created: daysAgo(4, 20), answer: true, html: P("因為 fetch 是非同步的，回的是「之後才會有結果的券」。要 await 兩次：<code>const res = await fetch(url); const data = await res.json();</code>（第一個等連線、第二個等解析 body）。記得外層 function 要是 async。") },
+    ],
+  },
+  // ── tutorials 教學文章 ──
+  {
+    board: "tutorials", author: A.pygoblin, views: 312, created: daysAgo(18), featured: true,
+    title: "【教學】10 行 Python 寫一個抓網頁標題的小爬蟲", tags: ["Python", "爬蟲", "教學"],
+    html: P("很多人第一個想做的就是爬蟲。用 <code>requests</code> + <code>BeautifulSoup</code>，10 行就有成果：",
+      "<pre><code>import requests\nfrom bs4 import BeautifulSoup\n\nr = requests.get(\"https://example.com\")\nsoup = BeautifulSoup(r.text, \"html.parser\")\nprint(soup.title.text)</code></pre>",
+      "重點：先 <code>pip install requests beautifulsoup4</code>。爬之前看一下對方 robots.txt、別狂打人家伺服器 🙏"),
+    reacts: [{ author: A.duowen, emoji: "🔥" }, { author: A.frontelf, emoji: "👍" }, { author: A.greenbot, emoji: "❤️" }],
+    replies: [{ author: A.duowen, created: daysAgo(17, 6), html: P("跟著打第一次成功抓到標題，超有成就感 🎉") }],
+  },
+  {
+    board: "tutorials", author: A.debug, views: 167, created: daysAgo(9),
+    title: "【教學】看懂錯誤訊息的三步驟，紅字不再可怕", tags: ["Debug", "教學", "新手"],
+    html: P("新手看到紅字就慌，其實錯誤訊息是你最好的朋友。三步驟：",
+      "1）<b>看最後一行</b>——通常那句才是真正的錯（Error 類型 + 說明）；2）<b>看檔名跟行號</b>——它直接告訴你哪一行爆的；3）<b>把關鍵字貼去搜</b>——別貼整段，貼 Error 那句。",
+      "練幾次你會發現，80% 的錯自己就能解了 💪"),
+    reacts: [{ author: A.greenbot, emoji: "🔥" }, { author: A.duowen, emoji: "❤️" }],
+    replies: [{ author: A.greenbot, created: daysAgo(8, 10), html: P("「看最後一行」這招真的救了很多人 🙌") }],
+  },
+  // ── guides 副本攻略 ──
+  {
+    board: "guides", author: A.pygoblin, views: 124, created: daysAgo(16),
+    title: "Python 副本攻略：卡在字典那關的思路", tags: ["副本", "Python", "字典"],
+    html: P("字典（dict）那關很多人卡在「用 key 查 value」跟「遍歷」。記住：<code>d[key]</code> 查值、找不到會爆；用 <code>d.get(key, 預設值)</code> 比較安全。遍歷用 <code>for k, v in d.items()</code>。把這關的常見寫法整理一下 👇"),
+    replies: [{ author: A.duowen, created: daysAgo(15, 8), html: P("get 帶預設值這招學起來，之前一直 KeyError 😂") }],
+  },
+  {
+    board: "guides", author: A.frontelf, views: 103, created: daysAgo(6),
+    title: "JavaScript 副本攻略：事件那關的 e.target 是什麼", tags: ["副本", "JavaScript", "事件"],
+    html: P("事件那關卡最多的是 <code>e.target</code>。簡單說：<b>e.target＝實際被點到的那個元素</b>。做「事件委派」時很好用——監聽父層，靠 e.target 判斷點到哪個子元素，就不用每個按鈕各綁一次。"),
+    reacts: [{ author: A.duowen, emoji: "👍" }],
+    replies: [{ author: A.debug, created: daysAgo(5, 14), html: P("事件委派配 e.target，動態產生的元素也能一次搞定 👍") }],
+  },
+  // ── resources 資源分享 ──
+  {
+    board: "resources", author: A.frontelf, views: 208, created: daysAgo(14), featured: true,
+    title: "切版練習神網站整理（免費、附設計稿）", tags: ["資源", "CSS", "切版"],
+    html: P("想練切版又找不到題目的看這篇：Frontend Mentor（有設計稿、從簡到難）、CSS Battle（用最少 code 拼出圖形，超上癮）、Flexbox Froggy / Grid Garden（用遊戲學 Flex 跟 Grid）。全部免費 🎁"),
+    reacts: [{ author: A.duowen, emoji: "🔥" }, { author: A.pygoblin, emoji: "👍" }, { author: A.greenbot, emoji: "❤️" }],
+    replies: [{ author: A.duowen, created: daysAgo(13, 6), html: P("Flexbox Froggy 玩一玩就懂了，比看文件有效 🐸") }],
+  },
+  {
+    board: "resources", author: A.debug, views: 96, created: daysAgo(7),
+    title: "推薦幾個查文件/查語法的地方（別再只 google 農場文）", tags: ["資源", "文件"],
+    html: P("查語法優先看官方或這些：MDN（前端一切，中文也不錯）、DevDocs（把各家文件集合、可離線）、Python 官方 docs。養成看第一手文件的習慣，比看內容農場準太多 📚"),
+    replies: [{ author: A.frontelf, created: daysAgo(6, 10), html: P("MDN 真的是前端聖經，我 chrome 直接設成搜尋關鍵字 mdn ✨") }],
+  },
+  // ── intro 自我介紹 ──
+  {
+    board: "intro", author: A.duowen, views: 74, created: daysAgo(8),
+    title: "報到！30 歲轉職，怕太晚但還是想試試", tags: ["自我介紹", "轉職"],
+    html: P("大家好，本來做服務業，最近想學程式看看有沒有別條路。年紀有點焦慮，但看到島上很多人也是半路出家就安心一點。請多指教 🙇"),
+    reacts: [{ author: A.greenbot, emoji: "❤️" }, { author: A.frontelf, emoji: "🎉" }],
+    replies: [
+      { author: A.greenbot, created: daysAgo(7, 16), html: P("歡迎上島 🌴 「太晚」通常是自己嚇自己，天天累積比幾歲開始重要多了。卡關就來提問區找我們。") },
+      { author: A.debug, created: daysAgo(7, 4), html: P("服務業練出來的溝通跟耐性，寫程式接案時超吃香，別小看這段經歷 💪") },
+    ],
+  },
+  {
+    board: "intro", author: A.frontelf, views: 61, created: daysAgo(2),
+    title: "大學生報到，想利用課餘把前端練起來", tags: ["自我介紹", "學生"],
+    html: P("非本科大二生，想趁還有時間把前端弄熟、之後找實習。目標先把島上的 HTML/CSS/JS 副本破完，有一起的嗎 👀"),
+    reacts: [{ author: A.duowen, emoji: "👍" }],
+    replies: [{ author: A.frontelf, created: daysAgo(1, 12), html: P("歡迎～前端入門成就感回得快，很適合當第一站 ✨ 破關進度可以到「學習心得」打卡，會更有動力。") }],
+  },
+  // ── chat 閒聊灌水 ──
+  {
+    board: "chat", author: A.duowen, views: 166, created: daysAgo(13),
+    title: "大家都幾點寫 code 效率最高？我是深夜派 🌙", tags: ["閒聊", "日常"],
+    html: P("發現自己晚上 11 點後特別能寫，但隔天很崩 😂 你們的黃金時段是什麼時候？"),
+    reacts: [{ author: A.frontelf, emoji: "👍" }, { author: A.pygoblin, emoji: "🔥" }],
+    replies: [
+      { author: A.pygoblin, created: daysAgo(12, 20), html: P("早上派 🌅 起床沒人吵、腦子最清楚，寫一小時抵晚上三小時。") },
+      { author: A.frontelf, created: daysAgo(12, 8), html: P("下午茶時間配咖啡最順，但深夜寫的 code 隔天看常常想刪掉 😂") },
+    ],
+  },
+  {
+    board: "chat", author: A.debug, views: 142, created: daysAgo(6),
+    title: "說說你踩過最久的一個 bug，最後發現是什麼？", tags: ["閒聊", "Bug"],
+    html: P("我先：找一整晚，最後發現是變數名打錯一個字母 💀 來聽聽你們的血淚故事。"),
+    reacts: [{ author: A.duowen, emoji: "😂" }, { author: A.frontelf, emoji: "🔥" }],
+    replies: [
+      { author: A.frontelf, created: daysAgo(5, 18), html: P("CSS 沒生效找半天，結果是忘記存檔 🫠") },
+      { author: A.pygoblin, created: daysAgo(5, 6), html: P("縮排混了 tab 跟空白，IndentationError 找到懷疑人生 🐍") },
+    ],
+  },
+  // ── showcase 作品展示 ──
+  {
+    board: "showcase", author: A.pygoblin, views: 187, created: daysAgo(11), featured: true,
+    title: "示範：用 Python 做一個每天自動寄天氣的小工具 ☀️", tags: ["示範", "Python", "自動化"],
+    html: P("跟著自動化那段能做出的小東西：抓天氣 API → 整理成一句話 → 每天早上自動寄 email 提醒帶傘。",
+      "核心就 requests 抓資料 + smtplib 寄信 + 排程（Windows 工作排程 / cron）。第一次看到它「自己」寄信來，成就感爆棚 🎉"),
+    reacts: [{ author: A.duowen, emoji: "🔥" }, { author: A.frontelf, emoji: "❤️" }, { author: A.greenbot, emoji: "🎉" }],
+    replies: [{ author: A.greenbot, created: daysAgo(10, 8), html: P("很棒的練習題！把「無聊的重複事」自動化，最能體會程式的爽點 🌱") }],
+  },
+  {
+    board: "showcase", author: A.frontelf, views: 134, created: daysAgo(4),
+    title: "示範：純 HTML/CSS 做的個人名片頁（附排版思路）", tags: ["示範", "CSS", "RWD"],
+    html: P("給剛學完切版的人一個目標：一頁式個人名片（頭像 + 簡介 + 社群連結 + RWD）。",
+      "思路：手機優先、用 Flexbox 置中、社群 icon 用 Google Fonts Icons。做完丟到 GitHub Pages 就有自己的網址了，拿去當作品集第一張 🎨"),
+    reacts: [{ author: A.duowen, emoji: "👍" }, { author: A.pygoblin, emoji: "🔥" }],
+    replies: [{ author: A.duowen, created: daysAgo(3, 10), html: P("一頁式名片當第一個作品剛剛好，還能順便學部署 ✨") }],
+  },
+  // ── announcements 公告 ──
+  {
+    board: "announcements", author: A.official, featured: true, views: 254, created: daysAgo(12),
+    title: "📢 新增「遊戲副本」：邊玩邊學 Python 與前端", tags: ["公告", "更新"],
+    html: P("島上新開了「遊戲」區 🎮 把寫程式做成一關一關的小遊戲——畫圖、海龜繪圖、數字邏輯、抓 bug，通關還有獎勵。",
+      "適合看文字看累了、想換個方式練手的時候。從導覽列「遊戲」進去就能玩，歡迎回報心得跟 bug 🙌"),
+    reacts: [{ author: A.duowen, emoji: "🎉" }, { author: A.frontelf, emoji: "🔥" }, { author: A.pygoblin, emoji: "❤️" }],
+    replies: [{ author: A.duowen, created: daysAgo(11, 6), html: P("玩了數字關卡，不知不覺就把迴圈練熟了，這個好玩 😆") }],
+  },
+  // ── feedback 意見回饋 ──
+  {
+    board: "feedback", author: A.frontelf, views: 91, created: daysAgo(8),
+    title: "許願：筆記能不能支援像 Notion 那樣的資料夾/分類", tags: ["許願", "筆記"],
+    html: P("筆記越記越多，想要能分資料夾、加標籤，找起來比較快 🙏 現在都靠搜尋有點吃力。"),
+    reacts: [{ author: A.duowen, emoji: "👍" }, { author: A.pygoblin, emoji: "👍" }],
+    replies: [{ author: A.official, created: daysAgo(7, 10), html: P("剛好在做！筆記已經加上側邊資料夾樹 + 標籤了，去「筆記」看看順不順手，再回饋給我們 🙌") }],
+  },
+  {
+    board: "feedback", author: A.duowen, views: 63, created: daysAgo(2),
+    title: "回報：手機版側邊章節大綱的泡泡會跑出畫面", tags: ["回報", "Bug", "手機"],
+    html: P("手機長按章節大綱的項目時，跳出的提示泡泡有時會超出螢幕右邊看不到 😅 順手回報一下。"),
+    reacts: [{ author: A.frontelf, emoji: "👍" }],
+    replies: [{ author: A.official, created: daysAgo(1, 8), html: P("已修！泡泡改成夾在畫面內、不再出界，感謝回報 🙏") }],
+  },
 ];
 
 // 先清掉這批種子（依標題），再重鋪 → 可安全重跑、也蓋掉先前用真帳號鋪的那批
