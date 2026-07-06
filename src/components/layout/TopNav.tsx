@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { useAuth } from "@/lib/auth-context";
-import { Flame, Coins, Heart, LogOut, Settings, Trophy, User as UserIcon, ChevronDown, Menu, X, Palmtree, Crown, BarChart3, Key, BookOpen, Swords, MessagesSquare, Newspaper, Route, Palette, Brain } from "lucide-react";
+import { Flame, Coins, Heart, LogOut, Settings, Trophy, User as UserIcon, ChevronDown, Menu, X, Palmtree, Crown, BarChart3, Key, BookOpen, Swords, MessagesSquare, Newspaper, Route, Palette, Brain, Compass } from "lucide-react";
 import { TodoDropdownButton } from "@/components/todo/TodoDropdown";
 import { CountUp } from "@/components/ui/CountUp";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
@@ -28,6 +28,7 @@ export function TopNav() {
   const userMenu = usePopover({ placement: "bottom-end", maxWidth: 280 });
   const { open, setOpen } = userMenu;
   const [mobileMenu, setMobileMenu] = useState(false);
+  const [navDrawer, setNavDrawer] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const supabase = createSupabaseBrowser();
 
@@ -104,13 +105,16 @@ export function TopNav() {
         </div>
 
         <div className="flex items-center gap-4 text-sm">
-          <div className="hidden md:flex items-center gap-4">
-            {NAV_LINKS.map((item) => (
-              <Link key={item.href} href={item.href as any} className="hover:text-accent">
-                {item.label}
-              </Link>
-            ))}
-          </div>
+          {/* 桌機：導覽收合成右上角一顆鈕、點開右側抽屜（手機用下方 mobileMenu）*/}
+          <button
+            onClick={() => setNavDrawer(true)}
+            aria-label="開啟導覽選單"
+            title="探索"
+            className="hidden md:inline-flex items-center gap-1.5 py-1.5 pl-2.5 pr-3 rounded-full bg-bg-card/90 border border-border hover:border-accent/50 hover:bg-bg-elevated transition"
+          >
+            <Compass size={16} className="text-accent" />
+            <span className="text-xs font-semibold">探索</span>
+          </button>
 
           {user ? (
             <>
@@ -310,6 +314,41 @@ export function TopNav() {
               );
             })}
           </div>
+        </div>
+      )}
+
+      {/* 桌機右側導覽抽屜（收合鈕在右上角）*/}
+      {navDrawer && (
+        <div className="hidden md:block">
+          <div className="fixed inset-0 bg-black/50 z-40" onClick={() => setNavDrawer(false)} />
+          <aside className="fixed top-0 right-0 h-screen w-72 z-50 bg-bg-card border-l border-border flex flex-col shadow-2xl animate-[slideInRight_.25s_ease-out]">
+            <div className="flex shrink-0 items-center justify-between p-3 border-b border-border">
+              <div className="font-bold flex items-center gap-2">
+                <Compass size={18} className="text-accent" /> <span>探索 AI 島</span>
+              </div>
+              <button onClick={() => setNavDrawer(false)} aria-label="關閉" className="p-1 rounded hover:bg-bg-elevated">
+                <X size={18} />
+              </button>
+            </div>
+            <div className="flex flex-col gap-0.5 p-3 overflow-y-auto">
+              {NAV_LINKS.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href as any}
+                    className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-fg hover:bg-bg-elevated hover:text-accent active:scale-[0.98] transition"
+                    onClick={() => setNavDrawer(false)}
+                  >
+                    <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-bg-elevated text-accent shrink-0">
+                      <Icon size={16} />
+                    </span>
+                    <span className="font-medium">{item.label}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          </aside>
         </div>
       )}
     </nav>

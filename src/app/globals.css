@@ -23,6 +23,7 @@
   --color-fg-dim: #6e7681;
 
   --color-accent: #50fa7b;
+  --color-accent-contrast: #06120a;
   --color-accent-2: #8be9fd;
   --color-accent-3: #bd93f9;
   --color-warning: #ffb86c;
@@ -244,6 +245,7 @@ html[data-theme="light"] {
   --color-fg-dim: #818b95;
 
   --color-accent: #1f883d;
+  --color-accent-contrast: #ffffff;
   --color-accent-2: #218bff;
   --color-accent-3: #8250df;
   --color-warning: #bc4c00;
@@ -463,6 +465,7 @@ html[data-theme="light"] .hljs-class .hljs-title { color: #b06800; }
   --color-fg-dim: #c98ab1;
 
   --color-accent: #ec4899;
+  --color-accent-contrast: #ffffff;
   --color-accent-2: #c084fc;
   --color-accent-3: #f9a8d4;
   --color-warning: #f59e0b;
@@ -503,15 +506,12 @@ html[data-theme="light"] .hljs-class .hljs-title { color: #b06800; }
   box-shadow: 0 4px 14px rgba(236, 72, 153, 0.25);
 }
 
-/* 桌機常駐章節大綱側欄：主內容區保留側欄寬度、不被蓋住；展開時平滑往右縮（伸縮式）*/
-@media (min-width: 1024px) {
-  #main-content {
-    padding-left: 3rem;          /* 收合細欄寬（對齊 SideNav lg:w-12）*/
-    transition: padding-left 0.3s ease-in-out;
-  }
-  body.sidenav-open #main-content {
-    padding-left: 18rem;         /* 展開寬（對齊 SideNav lg:w-72）*/
-  }
+/* 章節大綱改成 overlay drawer（左上角按鈕開）→ 主內容不再保留側欄寬度、佔滿版面 */
+
+/* 右側導覽抽屜滑入 */
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(100%); }
+  to   { opacity: 1; transform: translateX(0); }
 }
 
 /* SideNav hover 泡泡：淡入 + 從左滑出一點 */

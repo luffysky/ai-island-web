@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import { chapterDisplayNumberById } from "@/lib/chapter-display";
 import {
   ChevronRight, ChevronLeft, ChevronDown, BookOpen, Bookmark, FileText,
-  Menu, X, Search, History, Star, Plus, Trash2, Palmtree,
+  X, Search, History, Star, Plus, Trash2, Palmtree, PanelLeft,
 } from "lucide-react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { useAuth } from "@/lib/auth-context";
@@ -43,25 +43,9 @@ export function SideNav() {
   const toast = useToast();
   const confirm = useConfirm();
   const [open, setOpen] = useState(false);
-  // 桌機（lg+）的大綱是「常駐側欄」、展開只把內容往右推、頁面照樣要能捲；
-  // 只有手機是「抽屜 modal」才需要鎖捲動 + 讓 Pet/Todo 退位。
-  const [isDesktop, setIsDesktop] = useState(false);
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const mq = window.matchMedia("(min-width: 1024px)");
-    const sync = () => setIsDesktop(mq.matches);
-    sync();
-    mq.addEventListener("change", sync);
-    return () => mq.removeEventListener("change", sync);
-  }, []);
-  // 通知 overlay-stack：只在「手機抽屜開啟」時鎖捲動 + Pet/Todo 讓位（桌機常駐側欄不鎖、否則內容滑不動）。
-  // isNav=true → 綠寶 / Admin「不」因大綱而隱藏（要能蓋在大綱上面）。
-  useOverlayRegister(open && !isDesktop, true, true);
-  // 桌機：展開時讓主內容區（#main-content）平滑往右縮，不被側欄蓋住（樣式在 globals.css）
-  useEffect(() => {
-    document.body.classList.toggle("sidenav-open", open);
-    return () => document.body.classList.remove("sidenav-open");
-  }, [open]);
+  // 章節大綱 = 左側抽屜（桌機/手機都是 overlay drawer，靠左上角按鈕開；不再常駐佔版面）。
+  // 開啟時鎖捲動 + Pet/Todo 讓位；isNav=true → 綠寶/Admin 不因大綱而隱藏（可蓋在大綱上）。
+  useOverlayRegister(open, true, true);
   const [tab, setTab] = useState<Tab>("chapters");
   // hover 泡泡：顯示 lesson 完整名稱（側欄會 truncate，hover 看全名）
   const [mounted, setMounted] = useState(false);
@@ -259,41 +243,34 @@ export function SideNav() {
 
   return (
     <>
-      {/* 手機漢堡鈕（只手機）*/}
-      <button
-        onClick={() => setOpen(true)}
-        aria-label="開啟導覽"
-        className="fixed left-3 top-20 z-30 p-2 rounded-lg bg-bg-card border border-border hover:bg-bg-elevated transition shadow-lg lg:hidden"
-      >
-        <Menu size={18} />
-      </button>
+      {/* 左上角切換鈕（桌機＋手機都有；開章節大綱抽屜）*/}
+      {!open && (
+        <button
+          onClick={() => setOpen(true)}
+          aria-label="開啟章節大綱"
+          title="章節大綱"
+          className="fixed left-3 top-[4.5rem] z-30 inline-flex items-center gap-1.5 py-2 pl-2 pr-3 rounded-full bg-bg-card/90 backdrop-blur border border-border hover:border-accent/50 hover:bg-bg-elevated transition shadow-lg"
+        >
+          <PanelLeft size={18} className="text-accent" />
+          <span className="hidden sm:inline text-xs font-semibold">章節</span>
+        </button>
+      )}
 
-      {/* Backdrop（只手機；桌機是 docked 側欄、不蓋黑幕）*/}
+      {/* Backdrop（桌機/手機都蓋黑幕，overlay drawer）*/}
       {open && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/50 z-40"
           onClick={() => setOpen(false)}
         />
       )}
 
-      {/* 側欄：手機=滑入抽屜、桌機=常駐側欄（收合成一條細欄、展開有寬度動畫）*/}
+      {/* 側欄：滑入抽屜（桌機/手機一致）*/}
       <aside
-        className={`fixed top-0 left-0 h-screen overflow-hidden z-50 bg-bg-card border-r border-border flex flex-col transition-all duration-300 ease-in-out
-          w-[85vw] max-w-sm ${open ? "translate-x-0" : "-translate-x-full"}
-          lg:translate-x-0 ${open ? "lg:w-72" : "lg:w-12"}`}
+        className={`fixed top-0 left-0 h-screen overflow-hidden z-50 bg-bg-card border-r border-border flex flex-col transition-transform duration-300 ease-in-out
+          w-[85vw] max-w-sm lg:w-80 ${open ? "translate-x-0" : "-translate-x-full"}`}
       >
-        {/* 桌機收合時的細欄（直書「章節大綱」、點一下展開）*/}
-        <button
-          onClick={() => setOpen(true)}
-          aria-label="展開章節大綱"
-          className={`${open ? "hidden" : "hidden lg:flex"} h-full w-full flex-col items-center gap-3 pt-4 hover:bg-bg-elevated transition`}
-        >
-          <Menu size={18} />
-          <span className="text-xs tracking-[0.35em] text-fg-muted [writing-mode:vertical-rl]">章節大綱</span>
-        </button>
-
-        {/* 完整內容（手機永遠顯示、桌機只在展開時）*/}
-        <div className={`${open ? "flex" : "flex lg:hidden"} flex-col min-h-0 flex-1`}>
+        {/* 完整內容 */}
+        <div className="flex flex-col min-h-0 flex-1">
         {/* Header */}
         <div className="flex shrink-0 items-center justify-between p-3 border-b border-border">
           <div className="font-bold flex items-center gap-2">
