@@ -58,6 +58,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       { href: "/admin/chapters", label: "📚 章節管理" },
       { href: "/admin/chapters-audit", label: "🔍 章節 audit (品質掃描)" },
       { href: "/admin/achievements", label: "🏆 成就管理" },
+      { href: "/admin/forum-seed", label: "🌱 討論區種子生成器" },
       { href: "/admin/gamification", label: "🎮 遊戲化規則" },
       { href: "/admin/changelog", label: "📜 更新日誌" },
       { href: "/admin/scheduled", label: "⏰ 排程隊列" },
