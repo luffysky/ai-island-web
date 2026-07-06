@@ -97,6 +97,20 @@ export function Hero({ totalChapters, totalLessons, stageCount, islandEnabled = 
                   </Link>
                 </motion.div>
               )}
+              <motion.div whileHover={{ y: -3, scale: 1.01 }} transition={{ duration: 0.18 }}>
+                <Link
+                  href={"/quest" as any}
+                  className="group relative overflow-hidden rounded-2xl border-2 border-emerald-400/40 p-5 bg-gradient-to-br from-emerald-500/15 via-teal-500/8 to-cyan-500/10 hover:border-emerald-400 transition-all backdrop-blur block"
+                >
+                  <span className="absolute -top-3 -right-2 text-5xl opacity-25 group-hover:opacity-50 group-hover:scale-110 transition duration-500">🎮</span>
+                  <div className="relative">
+                    <div className="text-lg font-semibold mb-1 inline-flex items-center gap-2">🎮 程式副本島</div>
+                    <div className="font-bold text-lg mb-1">玩遊戲學寫程式</div>
+                    <p className="text-xs text-fg-muted leading-relaxed">寫 Python 控制機器人過關 → 邊玩邊學迴圈、判斷、函式。</p>
+                    <span className="text-[10px] text-emerald-500 mt-2 inline-block group-hover:translate-x-1 transition">開始闖關 →</span>
+                  </div>
+                </Link>
+              </motion.div>
               {islandEnabled && (
                 <motion.div whileHover={{ y: -3, scale: 1.01 }} transition={{ duration: 0.18 }}>
                   <Link

@@ -83,6 +83,7 @@ PAYMENTS_LIVE=1
   - `creator_island_universe_migration.sql` — 🌌 碎片宇宙洞察報告快取欄位（ci_creator_stats.universe/universe_at）
   - `notes_refs_migration.sql` — 筆記區塊引用（notes.note_refs uuid[]，Notion 化 L2）
   - `notes_market_migration.sql` — 可販售筆記（note_products / note_product_purchases + buy_note_product RPC）
+  - `quest_completions_migration.sql` — 程式副本島通關紀錄（quest_completions，玩遊戲學寫程式）
   > 套用指令：`npm run db:apply -- -Files supabase/<檔名>.sql`（一次一檔）。
 
 ---
