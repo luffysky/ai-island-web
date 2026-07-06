@@ -6,6 +6,8 @@ import { PAINT_LEVELS } from "@/lib/quest/paint-levels";
 import { TURTLE_LEVELS } from "@/lib/quest/turtle-levels";
 import { NUMBER_LEVELS } from "@/lib/quest/number-levels";
 import { DEBUG_LEVELS } from "@/lib/quest/debug-levels";
+import { SORT_LEVELS } from "@/lib/quest/sort-levels";
+import { CSS_LEVELS } from "@/lib/quest/css-levels";
 import { Lock } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -22,6 +24,8 @@ const SECTIONS: { key: string; emoji: string; label: string; desc: string; base:
   { key: "turtle", emoji: "🐢", label: "Turtle 幾何", desc: "forward / right 畫形狀", base: "/quest/turtle", levels: TURTLE_LEVELS, grad: "from-lime-500/20 to-green-500/10", ring: "border-lime-400/40" },
   { key: "number", emoji: "🔢", label: "數字關卡", desc: "變數 + 運算解謎", base: "/quest/number", levels: NUMBER_LEVELS, grad: "from-sky-500/20 to-blue-500/10", ring: "border-sky-400/40" },
   { key: "debug", emoji: "🐛", label: "抓蟲關", desc: "改對壞掉的 code", base: "/quest/debug", levels: DEBUG_LEVELS, grad: "from-amber-500/20 to-orange-500/10", ring: "border-amber-400/40" },
+  { key: "sort", emoji: "📊", label: "排序視覺化", desc: "寫排序 · 看長條歸位", base: "/quest/sort", levels: SORT_LEVELS, grad: "from-cyan-500/20 to-blue-500/10", ring: "border-cyan-400/40" },
+  { key: "css", emoji: "🎯", label: "前端 CSS 關", desc: "寫 CSS 把方塊擺到定位", base: "/quest/css", levels: CSS_LEVELS, grad: "from-violet-500/20 to-purple-500/10", ring: "border-violet-400/40" },
 ];
 
 export default async function QuestPage() {
