@@ -861,8 +861,8 @@ export function AITutorWidget({
           {showSettings && (
             <div className="relative z-20 p-3 border-b border-border bg-bg space-y-3 text-sm overflow-visible">
               <div>
-                <label className="text-xs text-fg-muted mb-1 block">夥伴</label>
-                <div className="grid grid-cols-3 gap-1.5">
+                <label className="text-xs text-fg-muted mb-1 block">夥伴（{PERSONA_LIST.length} 位）</label>
+                <div className="grid grid-cols-3 gap-1.5 max-h-52 overflow-y-auto pr-1">
                   {PERSONA_LIST.map((p) => {
                     const active = personaId === p.id;
                     return (
