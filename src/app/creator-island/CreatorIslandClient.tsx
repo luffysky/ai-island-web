@@ -80,10 +80,23 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
   const [editing, setEditing] = useState<Fragment | null>(null);
   const [advice, setAdvice] = useState<any>(null);
   const [toast, setToast] = useState<string | null>(null);
+  const [todayPair, setTodayPair] = useState<{ a_id: string; a_title: string; b_id: string; b_title: string; similarity: number } | null>(null);
   const [savedKeys, setSavedKeys] = useState<Set<string>>(new Set());
   function flash(m: string) { setToast(m); setTimeout(() => setToast(null), 1600); }
 
   useEffect(() => { fetch("/api/creator-island/dust").then((r) => r.json()).then((j) => setDust(j.balance ?? 0)).catch(() => {}); }, []);
+  // 今日 AI 配對：碎片夠多才抽；依「今天是第幾天」決定性挑一組（同一天固定、回訪誘因）。
+  useEffect(() => {
+    if (fragments.length < 8) return;
+    fetch("/api/creator-island/fragments/pairs", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ workspaceId }) })
+      .then((r) => r.json()).then((j) => {
+        const list = (j.pairs ?? []) as any[];
+        if (!list.length) return;
+        const day = Math.floor(Date.now() / 86400000);
+        setTodayPair(list[day % list.length]);
+      }).catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function patchFragment(id: string, body: any) {
     const res = await fetch(`/api/creator-island/fragments/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
@@ -339,6 +352,22 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
               <button onClick={seedPool} disabled={busy === "seed"} className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-gradient-to-r from-cyan-300 to-blue-400 text-black text-sm font-bold shadow-lg disabled:opacity-50 whitespace-nowrap hover:scale-105 transition">{busy === "seed" ? "打撈中…" : <>🌊 撈起 300 個漂流瓶</>}</button>
             </div>
           </DriftBottleSea>
+        </motion.div>
+      )}
+
+      {/* 今日 AI 配對（每天一組、回訪誘因） */}
+      {todayPair && (
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+          className="bg-gradient-to-r from-violet-500/12 to-fuchsia-500/10 border border-violet-400/30 rounded-2xl p-4 flex items-center justify-between gap-3 flex-wrap">
+          <div className="min-w-0">
+            <div className="text-xs font-bold text-violet-600 dark:text-violet-300 inline-flex items-center gap-1.5"><Shuffle size={13} /> 今日 AI 配對</div>
+            <div className="text-sm mt-1"><b>{todayPair.a_title}</b> <span className="text-violet-400">×</span> <b>{todayPair.b_title}</b></div>
+            <div className="text-[11px] text-fg-muted mt-0.5">AI 覺得這兩個撞在一起有戲——今天就從這裡開始寫？</div>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <button onClick={() => setSelected(new Set([todayPair.a_id, todayPair.b_id]))} className="text-xs px-3 py-1.5 rounded-full bg-bg-card border border-border hover:border-accent">選起來</button>
+            <Link href={`/creator-island/reason?seed=${todayPair.a_id},${todayPair.b_id}`} className="text-xs px-3 py-1.5 rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white font-bold inline-flex items-center gap-1"><BrainCircuit size={13} /> 來推理</Link>
+          </div>
         </motion.div>
       )}
 
