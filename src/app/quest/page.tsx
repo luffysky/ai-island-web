@@ -8,6 +8,7 @@ import { NUMBER_LEVELS } from "@/lib/quest/number-levels";
 import { DEBUG_LEVELS } from "@/lib/quest/debug-levels";
 import { SORT_LEVELS } from "@/lib/quest/sort-levels";
 import { CSS_LEVELS } from "@/lib/quest/css-levels";
+import { listDbNumberLevels } from "@/lib/quest/db-levels";
 import { Lock } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -18,15 +19,6 @@ export const metadata: Metadata = {
 };
 
 type Lv = { id: string; title: string; concept: string; xp: number; z: number };
-const SECTIONS: { key: string; emoji: string; label: string; desc: string; base: string; levels: Lv[]; grad: string; ring: string }[] = [
-  { key: "maze", emoji: "🤖", label: "迷宮機器人", desc: "move / for / if / while", base: "/quest", levels: QUEST_LEVELS, grad: "from-emerald-500/20 to-teal-500/10", ring: "border-emerald-400/40" },
-  { key: "paint", emoji: "🎨", label: "畫圖機器人", desc: "paint() 上色拼圖案", base: "/quest/paint", levels: PAINT_LEVELS, grad: "from-fuchsia-500/20 to-pink-500/10", ring: "border-fuchsia-400/40" },
-  { key: "turtle", emoji: "🐢", label: "Turtle 幾何", desc: "forward / right 畫形狀", base: "/quest/turtle", levels: TURTLE_LEVELS, grad: "from-lime-500/20 to-green-500/10", ring: "border-lime-400/40" },
-  { key: "number", emoji: "🔢", label: "數字關卡", desc: "變數 + 運算解謎", base: "/quest/number", levels: NUMBER_LEVELS, grad: "from-sky-500/20 to-blue-500/10", ring: "border-sky-400/40" },
-  { key: "debug", emoji: "🐛", label: "抓蟲關", desc: "改對壞掉的 code", base: "/quest/debug", levels: DEBUG_LEVELS, grad: "from-amber-500/20 to-orange-500/10", ring: "border-amber-400/40" },
-  { key: "sort", emoji: "📊", label: "排序視覺化", desc: "寫排序 · 看長條歸位", base: "/quest/sort", levels: SORT_LEVELS, grad: "from-cyan-500/20 to-blue-500/10", ring: "border-cyan-400/40" },
-  { key: "css", emoji: "🎯", label: "前端 CSS 關", desc: "寫 CSS 把方塊擺到定位", base: "/quest/css", levels: CSS_LEVELS, grad: "from-violet-500/20 to-purple-500/10", ring: "border-violet-400/40" },
-];
 
 export default async function QuestPage() {
   const supabase = await createSupabaseServer();
@@ -36,6 +28,18 @@ export default async function QuestPage() {
     const { data } = await supabase.from("quest_completions").select("level_id, stars").eq("user_id", user.id);
     for (const r of (data ?? []) as any[]) doneMap[r.level_id] = r.stars;
   }
+  // AI 生成的數字關卡（DB）併進內建數字關後面
+  const dbNumber = await listDbNumberLevels();
+
+  const SECTIONS: { key: string; emoji: string; label: string; desc: string; base: string; levels: Lv[]; grad: string; ring: string }[] = [
+    { key: "maze", emoji: "🤖", label: "迷宮機器人", desc: "move / for / if / while", base: "/quest", levels: QUEST_LEVELS, grad: "from-emerald-500/20 to-teal-500/10", ring: "border-emerald-400/40" },
+    { key: "paint", emoji: "🎨", label: "畫圖機器人", desc: "paint() 上色拼圖案", base: "/quest/paint", levels: PAINT_LEVELS, grad: "from-fuchsia-500/20 to-pink-500/10", ring: "border-fuchsia-400/40" },
+    { key: "turtle", emoji: "🐢", label: "Turtle 幾何", desc: "forward / right 畫形狀", base: "/quest/turtle", levels: TURTLE_LEVELS, grad: "from-lime-500/20 to-green-500/10", ring: "border-lime-400/40" },
+    { key: "number", emoji: "🔢", label: "數字關卡", desc: "變數 + 運算解謎", base: "/quest/number", levels: [...NUMBER_LEVELS, ...dbNumber], grad: "from-sky-500/20 to-blue-500/10", ring: "border-sky-400/40" },
+    { key: "debug", emoji: "🐛", label: "抓蟲關", desc: "改對壞掉的 code", base: "/quest/debug", levels: DEBUG_LEVELS, grad: "from-amber-500/20 to-orange-500/10", ring: "border-amber-400/40" },
+    { key: "sort", emoji: "📊", label: "排序視覺化", desc: "寫排序 · 看長條歸位", base: "/quest/sort", levels: SORT_LEVELS, grad: "from-cyan-500/20 to-blue-500/10", ring: "border-cyan-400/40" },
+    { key: "css", emoji: "🎯", label: "前端 CSS 關", desc: "寫 CSS 把方塊擺到定位", base: "/quest/css", levels: CSS_LEVELS, grad: "from-violet-500/20 to-purple-500/10", ring: "border-violet-400/40" },
+  ];
   const totalLevels = SECTIONS.reduce((s, sec) => s + sec.levels.length, 0);
   const totalDone = SECTIONS.reduce((s, sec) => s + sec.levels.filter((l) => doneMap[l.id]).length, 0);
   const totalStars = SECTIONS.reduce((s, sec) => s + sec.levels.reduce((a, l) => a + (doneMap[l.id] ?? 0), 0), 0);

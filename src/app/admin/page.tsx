@@ -10,7 +10,7 @@ import { CountUp } from "@/components/ui/CountUp";
 import { PulseDot } from "@/components/ui/PulseDot";
 import { AdminGreeting } from "@/components/admin/AdminGreeting";
 import { RingGauge } from "@/components/ui/RingGauge";
-import { Crown, AlertTriangle, CheckCircle, Megaphone, Zap, Users, DollarSign, MessageSquare, Bot, Search, Trophy, Sparkles, Activity, BellRing, Sprout } from "lucide-react";
+import { Crown, AlertTriangle, CheckCircle, Megaphone, Zap, Users, DollarSign, MessageSquare, Bot, Search, Trophy, Sparkles, Activity, BellRing, Sprout, Gamepad2 } from "lucide-react";
 import { runOpsAlertChecks } from "@/lib/ops-alerts";
 
 export default async function AdminOverviewPage() {
@@ -575,8 +575,9 @@ export default async function AdminOverviewPage() {
       {/* 快速操作 */}
       <div className="bg-bg-card border border-border rounded-xl p-5">
         <h2 className="font-bold mb-3 flex items-center gap-2"><Zap className="w-4 h-4" /> 快速操作</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-7 gap-2 text-sm">
+        <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-2 text-sm">
           <QuickAction href="/admin/forum-seed" label={<><Sprout className="w-4 h-4" /> 討論區種子</>} />
+          <QuickAction href="/admin/quest-levels" label={<><Gamepad2 className="w-4 h-4" /> AI 關卡</>} />
           <QuickAction href="/admin/broadcasts" label={<><Megaphone className="w-4 h-4" /> 發公告</>} />
           <QuickAction href="/admin/users" label={<><Users className="w-4 h-4" /> 找用戶</>} />
           <QuickAction href="/admin/orders" label={<><DollarSign className="w-4 h-4" /> 訂單</>} />

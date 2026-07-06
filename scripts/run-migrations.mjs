@@ -95,6 +95,8 @@ const MIGRATIONS = [
   "notes_refs_migration.sql",
   // 2026-07 — 可販售筆記知識市集（note_products + buy_note_product RPC）
   "notes_market_migration.sql",
+  // 2026-07 — Code Quest AI 生成關卡（後台生成 → 存 DB → 遊戲載入）
+  "quest_ai_levels_migration.sql",
 ];
 
 // 從 .env.local 讀（不依賴 dotenv pkg）

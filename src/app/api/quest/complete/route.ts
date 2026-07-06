@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   const b = await req.json().catch(() => ({} as any));
-  const level = getAnyLevel(String(b.levelId ?? ""));   // 統一總表：所有遊戲的關卡都認得
+  const level = await getAnyLevel(String(b.levelId ?? ""));   // 統一總表：所有遊戲（含 AI 生成）的關卡都認得
   if (!level) return NextResponse.json({ error: "bad_level" }, { status: 422 });
   const stars = Math.max(1, Math.min(3, Math.floor(Number(b.stars) || 1)));
 
