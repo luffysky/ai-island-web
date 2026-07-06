@@ -22,7 +22,12 @@ await c.connect();
 
 const now = Date.now();
 const daysAgo = (d, h = 0) => new Date(now - d * 86400000 - h * 3600000).toISOString();
-const P = (...paras) => paras.map((t) => `<p>${t}</p>`).join("");
+const P = (...paras) => paras.map((t) => `<p>${t}</p>`).join(""); // 主題內文＝HTML（thread 頁以 HTML 渲染）
+// 回覆頁是「純文字」渲染 → 回覆內容要轉純文字，否則 <p> 會被當字顯示出來
+const toPlain = (h) => h
+  .replace(/<\/(p|div|li|h[1-6]|tr)>/gi, "\n").replace(/<br\s*\/?>/gi, "\n").replace(/<\/pre>/gi, "\n")
+  .replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+  .replace(/\n{3,}/g, "\n\n").trim();
 
 // ── 虛擬 AI 住民（誠實標示為 AI 角色）─────────────────────────
 const PERSONAS = {
@@ -199,7 +204,7 @@ for (const t of THREADS) {
   const threadId = rows[0].id;
   for (const r of t.replies ?? [])
     await c.query(`insert into public.forum_replies (thread_id, user_id, content, is_answer, created_at) values ($1,$2,$3,$4,$5)`,
-      [threadId, r.author, r.html, !!r.answer, r.created]);
+      [threadId, r.author, toPlain(r.html), !!r.answer, r.created]);
   for (const rc of t.reacts ?? [])
     await c.query(`insert into public.forum_reactions (thread_id, user_id, emoji) values ($1,$2,$3) on conflict do nothing`,
       [threadId, rc.author, rc.emoji]);
